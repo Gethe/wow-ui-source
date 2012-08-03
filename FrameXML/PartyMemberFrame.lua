@@ -306,7 +306,8 @@ function PartyMemberFrame_UpdateNotPresentIcon(self)
 	
 	local inPhase = UnitInPhase(partyID);
 	
-	if ( UnitInOtherParty(partyID) ) then
+	local inOtherGroup, canInteract = UnitInOtherParty(partyID);
+	if ( not canInteract ) then
 		self:SetAlpha(0.6);
 		self.notPresentIcon.texture:SetTexture("Interface\\PlayerFrame\\whisper-only");
 		self.notPresentIcon.texture:SetTexCoord(0.1875, 0.8125, 0.1875, 0.8125);

@@ -20,12 +20,14 @@ function InspectGuildFrame_Update()
 
 	InspectGuildFrame.guildName:SetText(guildName);
 
-	if ( GetGuildLevelEnabled() ) then
-		InspectGuildFrame.guildLevel:SetFormattedText(INSPECT_GUILD_LEVEL, guildLevel, guildFactionName);
-	else
-		InspectGuildFrame.guildLevel:SetFormattedText(INSPECT_GUILD_FACTION, guildFactionName);
+	if ( guildLevel and guildFactionName and guildNumMembers ) then
+		if ( GetGuildLevelEnabled() ) then
+			InspectGuildFrame.guildLevel:SetFormattedText(INSPECT_GUILD_LEVEL, guildLevel, guildFactionName);
+		else
+			InspectGuildFrame.guildLevel:SetFormattedText(INSPECT_GUILD_FACTION, guildFactionName);
+		end
+		InspectGuildFrame.guildNumMembers:SetFormattedText(INSPECT_GUILD_NUM_MEMBERS, guildNumMembers);
 	end
-	InspectGuildFrame.guildNumMembers:SetFormattedText(INSPECT_GUILD_NUM_MEMBERS, guildNumMembers);
 	
 	SetDoubleGuildTabardTextures(InspectFrame.unit, InspectGuildFrameTabardLeftIcon, InspectGuildFrameTabardRightIcon, InspectGuildFrameBanner, InspectGuildFrameBannerBorder);
 	

@@ -120,6 +120,9 @@ end
 function PetBattleFrame_Display(self)
 	AddFrameLock("PETBATTLES");		-- FrameLock removed by PetBattleFrame_Remove
 	self:Show();
+	if ( FCFManager_GetNumDedicatedFrames("PET_BATTLE_COMBAT_LOG") == 0 ) then
+		FCF_OpenTemporaryWindow("PET_BATTLE_COMBAT_LOG");
+	end
 	PetBattleFrame_UpdatePetSelectionFrame(self);
 	PetBattleFrame_UpdateAssignedUnitFrames(self);
 	PetBattleFrame_UpdateActionBarLayout(self);
@@ -523,6 +526,7 @@ function PetBattlePetSelectionFrame_Show(self)
 		PetBattleUnitFrame_UpdateHealthInstant(self["Pet"..i]);
 		PetBattleUnitFrame_UpdateDisplay(self["Pet"..i]);
 		self["Pet"..i]:Show();
+		self["Pet"..i]:SetEnabled(C_PetBattles.CanPetSwapIn(i));
 	end
 	for i=numPets + 1, NUM_BATTLE_PETS_IN_BATTLE do
 		self["Pet"..i]:Hide();
@@ -605,9 +609,14 @@ function PetBattleActionButton_UpdateState(self)
 		if ( C_PetBattles.ShouldShowPetSelect() == true ) then
 			isHidden = true;
 		end
+		
+		usable = false;
+		-- There must be at least one pet that can swap in
 		for i = 1, NUM_BATTLE_PETS_IN_BATTLE do
-			usable = usable or C_PetBattles.IsPetSwapAvailable(i);
+			usable = usable or C_PetBattles.CanPetSwapIn(i);
 		end
+		-- AND the active pet must be able to swap out
+		usable = usable and C_PetBattles.CanActivePetSwapOut();
 	elseif ( actionType == LE_BATTLE_PET_ACTION_SKIP ) then
 		usable = C_PetBattles.IsSkipAvailable();
 	else

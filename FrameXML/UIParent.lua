@@ -4056,9 +4056,9 @@ function GetTimeStringFromSeconds(timeAmount, hasMS)
 	local hours = floor(seconds / 3600);
 	local minutes = floor((seconds / 60) - (hours * 60));
 	seconds = seconds - hours * 3600 - minutes * 60;
-	if ( hasMS ) then
-		return format("%.2d:%.2d:%.2d.%.3d", hours, minutes, seconds, ms);
-	else
-		return format("%.2d:%.2d:%.2d", hours, minutes, seconds);
-	end
+--	if ( hasMS ) then
+--		return format(HOURS_MINUTES_SECONDS_MILLISECONDS, hours, minutes, seconds, ms);
+--	else
+		return format(HOURS_MINUTES_SECONDS, hours, minutes, seconds);
+--	end
 end

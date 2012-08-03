@@ -135,14 +135,15 @@ function EncounterJournal_OnShow(self)
 	
 	--automatically navigate to the current dungeon if you are in one;
 	local instanceID = EJ_GetCurrentInstance();
-	if instanceID ~= 0 and instanceID ~= EncounterJournal.lastInstance then
+	local _, _, difficultyIndex = GetInstanceInfo();
+	if instanceID ~= 0 and (instanceID ~= EncounterJournal.lastInstance or difficultyIndex ~= EncounterJournal.lastDifficultyIndex) then
 		EncounterJournal_ListInstances();
 		EncounterJournal_DisplayInstance(instanceID);
 		EncounterJournal.lastInstance = instanceID;
-		local _, _, difficultyIndex = GetInstanceInfo();
 		if IsPartyLFG() and IsInRaid() then
 			difficultyIndex = EJ_DIFF_LFRAID;
 		end
+		EncounterJournal.lastDifficultyIndex = difficultyIndex;
 		EJ_SetDifficulty(difficultyIndex);
 	elseif ( EncounterJournal.queuedPortraitUpdate ) then
 		-- fixes portraits when switching between fullscreen and windowed mode

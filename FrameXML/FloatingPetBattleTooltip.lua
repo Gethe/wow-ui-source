@@ -49,7 +49,16 @@ end
 -------------------------------------------
 local BATTLE_PET_FLOATING_TOOLTIP = {};
 
-function FloatingBattlePet_Show(speciesID, level, breedQuality, maxHealth, power, speed, customName)
+function FloatingBattlePet_Toggle(speciesID, level, breedQuality, maxHealth, power, speed, customName, bPetID)
+	if ( FloatingBattlePetTooltip:IsShown() and
+		FloatingBattlePetTooltip.battlePetID == bPetID and FloatingBattlePetTooltip.speciesID == speciesID ) then
+		FloatingBattlePetTooltip:Hide();
+	else
+		FloatingBattlePet_Show(speciesID, level, breedQuality, maxHealth, power, speed, customName, bPetID);
+	end
+end
+
+function FloatingBattlePet_Show(speciesID, level, breedQuality, maxHealth, power, speed, customName, bPetID)
 	if (speciesID and speciesID > 0) then
 		local name, icon, petType = C_PetJournal.GetPetInfoBySpeciesID(speciesID);
 		BATTLE_PET_FLOATING_TOOLTIP.speciesID = speciesID;
@@ -60,6 +69,7 @@ function FloatingBattlePet_Show(speciesID, level, breedQuality, maxHealth, power
 		BATTLE_PET_FLOATING_TOOLTIP.maxHealth = maxHealth;
 		BATTLE_PET_FLOATING_TOOLTIP.power = power;
 		BATTLE_PET_FLOATING_TOOLTIP.speed = speed;
+		BATTLE_PET_FLOATING_TOOLTIP.battlePetID = bPetID;
 		if (customName ~= BATTLE_PET_FLOATING_TOOLTIP.name) then
 			BATTLE_PET_FLOATING_TOOLTIP.customName = customName;
 		else
@@ -77,6 +87,7 @@ function BattlePetTooltip_OnLoad(self)
 end
 
 function BattlePetTooltipTemplate_SetBattlePet(tooltipFrame, data)
+	tooltipFrame.battlePetID = data.battlePetID;
 	tooltipFrame.speciesID = data.speciesID; -- For the button
 	tooltipFrame.Name:SetText(data.name);
 	if (data.breedQuality ~= -1) then
@@ -100,7 +111,13 @@ function BattlePetTooltipJournalClick_OnClick(self)
 		ShowUIPanel(PetJournalParent);
 	end
 	PetJournalParent_SetTab(PetJournalParent, 2);
-	if (self:GetParent().speciesID and self:GetParent().speciesID > 0) then
-		PetJournal_SelectSpecies(PetJournal, self:GetParent().speciesID);
+	if (self:GetParent().battlePetID and self:GetParent().battlePetID > 0 ) then 
+		local speciesID = C_PetJournal.GetPetInfoByPetID(self:GetParent().battlePetID);
+		if ( speciesID and speciesID == self:GetParent().speciesID ) then
+			PetJournal_SelectPet(PetJournal, self:GetParent().battlePetID);
+			return;
+		end
 	end
+	PetJournal_SelectSpecies(PetJournal, self:GetParent().speciesID);
 end
+

@@ -3113,6 +3113,7 @@ function CalendarViewEventFrame_Update()
 		CalendarViewEventFrame:SetHeight(CalendarViewEventFrame.defaultHeight);
 		if ( locked ) then
 			-- event locked...you cannot respond to the event
+			CalendarViewEvent_SetEventButtons(inviteType, calendarType);
 			CalendarViewEventAcceptButton:Disable();
 			CalendarViewEventTentativeButton:Disable();
 			CalendarViewEventDeclineButton:Disable();
@@ -3123,7 +3124,6 @@ function CalendarViewEventFrame_Update()
 		else
 			CalendarViewEventRSVP_Update(month, day, year, pendingInvite, inviteStatus, inviteType, calendarType);
 		end
-
 		CalendarViewEventInviteList_Update(inviteType, calendarType);
 	end
 	CalendarEventFrameBlocker_Update();
@@ -3199,21 +3199,10 @@ function CalendarViewEventRSVP_Update(month, day, year, pendingInvite, inviteSta
 	CalendarViewEventFrame.inviteType = inviteType;
 
 	local isTodayOrLater = _CalendarFrame_IsTodayOrLater(month, day, year);
+
+	CalendarViewEvent_SetEventButtons(inviteType, calendarType);
+
 	if ( _CalendarFrame_IsSignUpEvent(calendarType, inviteType) ) then
-		-- set buttons to sign up mode
-		CalendarViewEventAcceptButton:SetText(CALENDAR_SIGNUP);
-		CalendarViewEventAcceptButton:ClearAllPoints();
-		CalendarViewEventAcceptButton:SetPoint("TOPLEFT", CalendarViewEventTentativeButton:GetParent(), "TOPLEFT", 14, 0);
-		CalendarViewEventAcceptButton:SetWidth(CALENDAR_VIEWEVENTFRAME_GUILDEVENT_RSVPBUTTON_WIDTH);
-		CalendarViewEventAcceptButtonFlashTexture:Hide();
-		CalendarViewEventTentativeButton:ClearAllPoints();
-		CalendarViewEventTentativeButton:SetPoint("TOP", CalendarViewEventTentativeButton:GetParent(), "TOP", 0, 0);
-		CalendarViewEventTentativeButton:SetWidth(CALENDAR_VIEWEVENTFRAME_GUILDEVENT_RSVPBUTTON_WIDTH);
-		CalendarViewEventTentativeButtonFlashTexture:Hide();
-		CalendarViewEventRemoveButton:ClearAllPoints();
-		CalendarViewEventRemoveButton:SetWidth(CALENDAR_VIEWEVENTFRAME_GUILDEVENT_RSVPBUTTON_WIDTH);
-		CalendarViewEventRemoveButton:SetPoint("TOPRIGHT", CalendarViewEventRemoveButton:GetParent(), "TOPRIGHT", -14, 0);
-		CalendarViewEventDeclineButton:Hide();
 		-- update shown buttons
 		if ( isTodayOrLater ) then
 			if ( inviteStatus == CALENDAR_INVITESTATUS_NOT_SIGNEDUP ) then
@@ -3232,18 +3221,6 @@ function CalendarViewEventRSVP_Update(month, day, year, pendingInvite, inviteSta
 		end
 		CalendarViewEventFrame:SetScript("OnUpdate", nil);
 	else
-		-- set buttons to normal mode
-		CalendarViewEventAcceptButton:ClearAllPoints();
-		CalendarViewEventAcceptButton:SetPoint("TOPRIGHT", CalendarViewEventTentativeButton:GetParent(), "TOP", -10, 4);
-		CalendarViewEventAcceptButton:SetWidth(CALENDAR_VIEWEVENTFRAME_EVENT_RSVPBUTTON_WIDTH);
-		CalendarViewEventAcceptButton:SetText(ACCEPT);
-		CalendarViewEventTentativeButton:ClearAllPoints();
-		CalendarViewEventTentativeButton:SetPoint("TOPLEFT", CalendarViewEventTentativeButton:GetParent(), "TOP", 10, 4);
-		CalendarViewEventTentativeButton:SetWidth(CALENDAR_VIEWEVENTFRAME_EVENT_RSVPBUTTON_WIDTH);
-		CalendarViewEventDeclineButton:Show();
-		CalendarViewEventRemoveButton:ClearAllPoints();
-		CalendarViewEventRemoveButton:SetPoint("TOPLEFT", CalendarViewEventRemoveButton:GetParent(), "TOP", 10, -26);
-		CalendarViewEventRemoveButton:SetWidth(CALENDAR_VIEWEVENTFRAME_EVENT_RSVPBUTTON_WIDTH);
 		-- update shown buttons
 		local canRSVP = _CalendarFrame_CanInviteeRSVP(inviteStatus);
 		if ( isTodayOrLater and canRSVP ) then
@@ -3281,6 +3258,38 @@ function CalendarViewEventRSVP_Update(month, day, year, pendingInvite, inviteSta
 			CalendarViewEventDeclineButtonFlashTexture:Hide()
 			CalendarViewEventFlashTimer:Stop();
 		end
+	end
+end
+
+function CalendarViewEvent_SetEventButtons(inviteType, calendarType)
+	if ( _CalendarFrame_IsSignUpEvent(calendarType, inviteType) ) then
+		-- signup mode
+		CalendarViewEventAcceptButton:SetText(CALENDAR_SIGNUP);
+		CalendarViewEventAcceptButton:ClearAllPoints();
+		CalendarViewEventAcceptButton:SetPoint("TOPLEFT", CalendarViewEventTentativeButton:GetParent(), "TOPLEFT", 14, 0);
+		CalendarViewEventAcceptButton:SetWidth(CALENDAR_VIEWEVENTFRAME_GUILDEVENT_RSVPBUTTON_WIDTH);
+		CalendarViewEventAcceptButtonFlashTexture:Hide();
+		CalendarViewEventTentativeButton:ClearAllPoints();
+		CalendarViewEventTentativeButton:SetPoint("TOP", CalendarViewEventTentativeButton:GetParent(), "TOP", 0, 0);
+		CalendarViewEventTentativeButton:SetWidth(CALENDAR_VIEWEVENTFRAME_GUILDEVENT_RSVPBUTTON_WIDTH);
+		CalendarViewEventTentativeButtonFlashTexture:Hide();
+		CalendarViewEventRemoveButton:ClearAllPoints();
+		CalendarViewEventRemoveButton:SetWidth(CALENDAR_VIEWEVENTFRAME_GUILDEVENT_RSVPBUTTON_WIDTH);
+		CalendarViewEventRemoveButton:SetPoint("TOPRIGHT", CalendarViewEventRemoveButton:GetParent(), "TOPRIGHT", -14, 0);
+		CalendarViewEventDeclineButton:Hide();
+	else
+		-- normal mode
+		CalendarViewEventAcceptButton:ClearAllPoints();
+		CalendarViewEventAcceptButton:SetPoint("TOPRIGHT", CalendarViewEventTentativeButton:GetParent(), "TOP", -10, 4);
+		CalendarViewEventAcceptButton:SetWidth(CALENDAR_VIEWEVENTFRAME_EVENT_RSVPBUTTON_WIDTH);
+		CalendarViewEventAcceptButton:SetText(ACCEPT);
+		CalendarViewEventTentativeButton:ClearAllPoints();
+		CalendarViewEventTentativeButton:SetPoint("TOPLEFT", CalendarViewEventTentativeButton:GetParent(), "TOP", 10, 4);
+		CalendarViewEventTentativeButton:SetWidth(CALENDAR_VIEWEVENTFRAME_EVENT_RSVPBUTTON_WIDTH);
+		CalendarViewEventDeclineButton:Show();
+		CalendarViewEventRemoveButton:ClearAllPoints();
+		CalendarViewEventRemoveButton:SetPoint("TOPLEFT", CalendarViewEventRemoveButton:GetParent(), "TOP", 10, -26);
+		CalendarViewEventRemoveButton:SetWidth(CALENDAR_VIEWEVENTFRAME_EVENT_RSVPBUTTON_WIDTH);
 	end
 end
 

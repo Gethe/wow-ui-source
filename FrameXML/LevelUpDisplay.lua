@@ -594,6 +594,7 @@ function LevelUpDisplay_OnShow(self)
 				self.challengeModeBits.MedalIcon:Hide();
 				self.challengeModeBits.BottomFiligree:Hide();
 			end
+			PlaySound("UI_Challenges_NewRecord");
 			LevelUpDisplay:SetPoint("TOP", 0, -190);
 			playAnim = self.challengeModeFrame.challengeComplete;
 		else

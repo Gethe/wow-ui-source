@@ -1805,12 +1805,15 @@ end
 
 function AddFriendFrame_OnShow()
 	local factionGroup = UnitFactionGroup("player");
-	if ( factionGroup ) then
+	if ( factionGroup and factionGroup ~= "Neutral" ) then
 		local textureFile = "Interface\\FriendsFrame\\PlusManz-"..factionGroup;
 		AddFriendInfoFrameFactionIcon:SetTexture(textureFile);
 		AddFriendInfoFrameFactionIcon:Show();
 		AddFriendEntryFrameRightIcon:SetTexture(textureFile);
 		AddFriendEntryFrameRightIcon:Show();
+		AddFriendInfoFrameFactionIcon:Show();
+	else
+		AddFriendInfoFrameFactionIcon:Hide();
 	end
 end
 

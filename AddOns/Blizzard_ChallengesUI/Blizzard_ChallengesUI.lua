@@ -131,7 +131,7 @@ function ChallengesFrameBestTimes_Update(self, mapID)
 	mapID = mapID or self.selectedMapID or ChallengesFrameDungeonButton1.mapID;
 	local details = self.details;
 	
-	guildBest, realmBest = GetChallengeBestTime(mapID);
+	local guildBest, realmBest = GetChallengeBestTime(mapID);
 	
 	if (guildBest) then
 		guildBest = ceil(guildBest / 1000);
@@ -176,47 +176,50 @@ function ChallengesFrameLeaderboard_OnClick(self)
 end
 
 function ChallengesFrameGuild_OnEnter(self)
-	guildTime = ChallengesFrame.details.GuildTime;
-	if (not guildTime.hasTime) then
+	local guildTime = ChallengesFrame.details.GuildTime;
+	if (not guildTime.hasTime or not guildTime.mapID) then
 		return;
 	end
 	
 	GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
 	GameTooltip:SetText(CHALLENGE_MODE_GUILD_BEST);
 	
-	numGuildBest = GetChallengeBestTimeNum(guildTime.mapID, true);
+	local numGuildBest = GetChallengeBestTimeNum(guildTime.mapID, true);
 	for i = 1, numGuildBest do
-		name, className, class, specID = GetChallengeBestTimeInfo(guildTime.mapID, i, true);
-		local classColor = RAID_CLASS_COLORS[class].colorStr;
-		_, specName = GetSpecializationInfoByID(specID);
-		if (specName and specName ~= "") then
-			GameTooltip:AddLine(name.." - "..format(PLAYER_CLASS, classColor, specName, className));
-		else
-			GameTooltip:AddLine(name.." - "..format(PLAYER_CLASS_NO_SPEC, classColor, className));
+		local name, className, class, specID = GetChallengeBestTimeInfo(guildTime.mapID, i, true);
+		if (name) then
+			local classColor = RAID_CLASS_COLORS[class].colorStr;
+			_, specName = GetSpecializationInfoByID(specID);
+			if (specName and specName ~= "") then
+				GameTooltip:AddLine(name.." - "..format(PLAYER_CLASS, classColor, specName, className));
+			else
+				GameTooltip:AddLine(name.." - "..format(PLAYER_CLASS_NO_SPEC, classColor, className));
+			end
 		end
-		
 	end
 	
 	GameTooltip:Show();
 end
 
 function ChallengesFrameRealm_OnEnter(self)
-	realmTime = ChallengesFrame.details.RealmTime;
-	if (not realmTime.hasTime) then
+	local realmTime = ChallengesFrame.details.RealmTime;
+	if (not realmTime.hasTime or not realmTime.mapID) then
 		return;
 	end
 	
 	GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
 	GameTooltip:SetText(CHALLENGE_MODE_REALM_BEST);
-	numRealmBest = GetChallengeBestTimeNum(realmTime.mapID, false);
+	local numRealmBest = GetChallengeBestTimeNum(realmTime.mapID, false);
 	for i = 1, numRealmBest do
-		name, className, class, specID = GetChallengeBestTimeInfo(realmTime.mapID, i, false);
-		local classColor = RAID_CLASS_COLORS[class].colorStr;
-		_, specName = GetSpecializationInfoByID(specID);
-		if (specName and specName ~= "") then
-			GameTooltip:AddLine(name.." - "..format(PLAYER_CLASS, classColor, specName, className));
-		else
-			GameTooltip:AddLine(name.." - "..format(PLAYER_CLASS_NO_SPEC, classColor, className));
+		local name, className, class, specID = GetChallengeBestTimeInfo(realmTime.mapID, i, false);
+		if (name) then
+			local classColor = RAID_CLASS_COLORS[class].colorStr;
+			local _, specName = GetSpecializationInfoByID(specID);
+			if (specName and specName ~= "") then
+				GameTooltip:AddLine(name.." - "..format(PLAYER_CLASS, classColor, specName, className));
+			else
+				GameTooltip:AddLine(name.." - "..format(PLAYER_CLASS_NO_SPEC, classColor, className));
+			end
 		end
 	end
 	

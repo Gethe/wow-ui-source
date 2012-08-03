@@ -404,7 +404,7 @@ end
 -- [[ ScenarioAlertFrame ]] --
 SCENARIO_MAX_REWARDS = 1;
 function ScenarioAlertFrame_ShowAlert()
-	PlaySound("LFG_Rewards");
+	PlaySound("UI_Scenario_Ending");
 	local frame = ScenarioAlertFrame1;
 	--For now we only have 1 scenario alert frame
 	local name, typeID, subtypeID, textureFilename, moneyBase, moneyVar, experienceBase, experienceVar, numStrangers, numRewards = GetLFGCompletionReward();

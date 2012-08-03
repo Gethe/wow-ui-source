@@ -61,7 +61,7 @@ function UnitFrame_Initialize (self, unit, name, portrait, healthbar, healthtext
 	self:RegisterForClicks("LeftButtonUp", "RightButtonUp");
 	self:RegisterEvent("UNIT_NAME_UPDATE");
 	self:RegisterEvent("UNIT_DISPLAYPOWER");
-	self:RegisterUnitEvent("UNIT_PORTRAIT_UPDATE", unit);
+	self:RegisterEvent("UNIT_PORTRAIT_UPDATE");
 	if ( self.myHealPredictionBar ) then
 		self:RegisterUnitEvent("UNIT_MAXHEALTH", unit);
 		self:RegisterUnitEvent("UNIT_HEAL_PREDICTION", unit);
@@ -71,7 +71,6 @@ end
 function UnitFrame_SetUnit (self, unit, healthbar, manabar)
 	-- update unit events if unit changes
 	if ( self.unit ~= unit ) then
-		self:RegisterUnitEvent("UNIT_PORTRAIT_UPDATE", unit);
 		if ( self.myHealPredictionBar ) then
 			self:RegisterUnitEvent("UNIT_MAXHEALTH", unit);
 			self:RegisterUnitEvent("UNIT_HEAL_PREDICTION", unit);
@@ -134,6 +133,9 @@ function UnitFrame_OnEvent(self, event, ...)
 		elseif ( event == "UNIT_HEAL_PREDICTION" ) then
 			UnitFrameHealPredictionBars_Update(self);
 		end
+	elseif ( not arg1 and event == "UNIT_PORTRAIT_UPDATE" ) then
+		-- this is an update all portraits signal
+		UnitFramePortrait_Update(self);
 	end
 end
 

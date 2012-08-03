@@ -158,7 +158,7 @@ function SetItemRef(link, text, button, chatFrame)
 				if ( BNGetConversationInfo(chatTarget) ) then
 					ChatFrame_OpenChat("/"..(chatTarget + MAX_WOW_CHAT_CHANNELS), chatFrame);
 				end
-			elseif ( strupper(chatType) == "PET_BATTLE_COMBAT_LOG" ) then
+			elseif ( strupper(chatType) == "PET_BATTLE_COMBAT_LOG" or strupper(chatType) == "PET_BATTLE_INFO" ) then
 				--Don't do anything
 			else
 				ChatFrame_OpenChat("/"..chatType, chatFrame);
@@ -217,8 +217,13 @@ function SetItemRef(link, text, button, chatFrame)
 		end
 		return;
 	elseif ( strsub(link, 1, 9) == "battlepet" ) then
-		local _, speciesID, level, breedQuality, maxHealth, power, speed = strsplit(":", link);
-		FloatingBattlePet_Show(tonumber(speciesID), tonumber(level), tonumber(breedQuality), tonumber(maxHealth), tonumber(power), tonumber(speed), string.gsub(string.gsub(text, "^(.*)%[", ""), "%](.*)$", ""));
+		local _, speciesID, level, breedQuality, maxHealth, power, speed, battlePetID = strsplit(":", link);
+		if ( IsModifiedClick() ) then
+			local fixedLink = GetFixedLink(text);
+			HandleModifiedItemClick(fixedLink);
+		else
+			FloatingBattlePet_Toggle(tonumber(speciesID), tonumber(level), tonumber(breedQuality), tonumber(maxHealth), tonumber(power), tonumber(speed), string.gsub(string.gsub(text, "^(.*)%[", ""), "%](.*)$", ""), tonumber(battlePetID));
+		end
 		return;
 	end
     

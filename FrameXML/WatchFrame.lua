@@ -1857,6 +1857,9 @@ function WatchFrameScenario_DisplayScenario(lineFrame, nextAnchor, maxHeight, fr
 				popupFrame:SetHeight(contentHeight);
 			else
 				WatchFrame_SlideInFrame(popupFrame, "SCENARIO");
+				if ( popupFrame.stage ) then
+					PlaySound("UI_Scenario_Stage_End");
+				end
 			end
 			popupFrame.stage = currentStage;
 			-- set up return values
@@ -1867,7 +1870,7 @@ function WatchFrameScenario_DisplayScenario(lineFrame, nextAnchor, maxHeight, fr
 		numObjectives = 1;
 	else
 		popupFrame:Hide();
-		popupFrame.stage = 0;
+		popupFrame.stage = nil;
 	end
 
 	WatchFrame_ReleaseUnusedScenarioLines();

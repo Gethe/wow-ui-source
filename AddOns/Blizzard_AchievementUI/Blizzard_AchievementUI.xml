@@ -1349,6 +1349,10 @@
 			<OnClick>
 				AchievementStatButton_OnClick(self, button, down);
 			</OnClick>
+			<OnEnter function="AchievementStatButton_OnEnter"/>
+			<OnLeave>
+				GameTooltip:Hide();
+			</OnLeave>
 		</Scripts>
 		<ButtonText parentKey="text">
 			<Size x="400" y="13"/>

@@ -2084,6 +2084,13 @@ function AchievementStatButton_OnClick(self)
 	end
 end
 
+function AchievementStatButton_OnEnter(self)
+	if ( self.text:IsTruncated() ) then
+		GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+		GameTooltip:SetText(self.text:GetText(), 1, 1, 1, 1, 1);
+	end
+end
+
 -- [[ Summary Frame ]] --
 function AchievementFrameSummary_OnShow()
 	if ( achievementFunctions ~= COMPARISON_ACHIEVEMENT_FUNCTIONS and achievementFunctions ~= COMPARISON_STAT_FUNCTIONS ) then

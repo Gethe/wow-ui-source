@@ -826,7 +826,7 @@ TRAVEL PASS
 									</OnShow>
 								</Scripts>
 								<Frames>
-									<ScrollFrame parentKey="ScrollFrame" inherits="UIPanelScrollFrameTemplate">
+									<ScrollFrame name="$parentScrollFrame" parentKey="ScrollFrame" inherits="UIPanelScrollFrameTemplate">
 										<Size x="263" y="0"/>
 										<Anchors>
 											<Anchor point="TOP" x="0" y="-44"/>

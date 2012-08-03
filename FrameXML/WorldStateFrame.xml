@@ -1181,7 +1181,7 @@
 			<OnUpdate function="RequestBattlefieldScoreData"/>
 		</Scripts>
 	</Frame>
-	<Frame name="WorldStateChallengeModeTimer" hidden="true">
+	<Frame name="WorldStateChallengeModeFrame" hidden="true">
 		<Size x="198" y="55"/>
 		<Layers>
 			<Layer level="BACKGROUND">
@@ -1246,9 +1246,10 @@
 				<BarTexture file="Interface\TargetingFrame\UI-StatusBar"/>
 			</StatusBar>
 		</Frames>
+	</Frame>
+	<Frame name="WorldStateChallengeModeTimer" hidden="true">
 		<Scripts>
 			<OnUpdate function="WorldStateChallengeModeTimer_OnUpdate"/>
 		</Scripts>
-	</Frame>	
-
+	</Frame>
 </Ui>

@@ -184,9 +184,9 @@ function PetJournal_OnEvent(self, event, ...)
 	elseif event == "PET_JOURNAL_PETS_HEALED" then
 		PetJournal_UpdatePetLoadOut();
 	elseif event == "PET_JOURNAL_LIST_UPDATE" then
+		PetJournal_FindPetCardIndex();
 		PetJournal_UpdatePetList();
 		PetJournal_UpdatePetLoadOut();
-		PetJournal_FindPetCardIndex();
 		PetJournal_UpdatePetCard(PetJournalPetCard);
 		PetJournal_HidePetDropdown();
 	elseif event == "BATTLE_PET_CURSOR_CLEAR" then
@@ -205,17 +205,44 @@ function PetJournal_OnEvent(self, event, ...)
 end
 
 function PetJournal_SelectSpecies(self, targetSpeciesID)
-	PetJournalPetCard.petIndex = nil;
 	local numPets = C_PetJournal.GetNumPets(PetJournal.isWild);
+	local petIndex = nil;
 	for i = 1,numPets do
 		local petID, speciesID, owned = C_PetJournal.GetPetInfoByIndex(i, isWild);
 		if (speciesID == targetSpeciesID) then
-			PetJournalPetCard.petIndex = i;
+			petIndex = i;
 			break;
 		end
 	end
 	
-	PetJournal_ShowPetCard(PetJournalPetCard.petIndex);
+	if ( petIndex ) then --Might be filtered out and have no index.
+		PetJournalPetList_UpdateScrollPos(self.listScroll, petIndex);
+	end
+	PetJournal_ShowPetCardBySpeciesID(targetSpeciesID);
+end
+
+function PetJournal_SelectPet(self, targetPetID)
+	local numPets = C_PetJournal.GetNumPets(PetJournal.isWild);
+	local petIndex = nil;
+	for i = 1,numPets do
+		local petID, speciesID, owned = C_PetJournal.GetPetInfoByIndex(i, isWild);
+		if (petID == targetPetID) then
+			petIndex = i;
+			break;
+		end
+	end
+	
+	if ( petIndex ) then --Might be filtered out and have no index.
+		PetJournalPetList_UpdateScrollPos(self.listScroll, petIndex);
+	end
+	PetJournal_ShowPetCardByID(targetPetID);
+end
+
+function PetJournalPetList_UpdateScrollPos(self, visibleIndex)
+	local buttons = self.buttons;
+	local height = math.max(0, math.floor(self.buttonHeight * (visibleIndex - (#buttons)/2)));
+	HybridScrollFrame_SetOffset(self, height);
+	self.scrollBar:SetValue(height);
 end
 
 function PetJournal_UpdateSummonButtonState()
@@ -594,17 +621,14 @@ function PetJournal_UpdatePetLoadOut()
 			loadoutPlate.isDead:SetShown(health <= 0);
 			
 			loadoutPlate.model:Show();
+			local modelChanged = false;
 			if ( displayID ~= 0 ) then
 				if ( displayID ~= loadoutPlate.displayID ) then
 					loadoutPlate.creatureID = nil;
 					loadoutPlate.displayID = displayID;
 					loadoutPlate.model:SetDisplayInfo(displayID);
 					loadoutPlate.model:SetDoBlend(false);
-					if (health <= 0) then
-						loadoutPlate.model:SetAnimation(6,-1);
-					else
-						loadoutPlate.model:SetAnimation(0,-1);
-					end
+					modelChanged = true;
 				end
 			elseif ( creatureID ~= 0 ) then
 				if ( creatureID ~= loadoutPlate.creatureID ) then
@@ -612,12 +636,17 @@ function PetJournal_UpdatePetLoadOut()
 					loadoutPlate.displayID = nil;
 					loadoutPlate.model:SetCreature(creatureID);
 					loadoutPlate.model:SetDoBlend(false);
-					if (health <= 0) then
-						loadoutPlate.model:SetAnimation(6,-1);
-					else
-						loadoutPlate.model:SetAnimation(0,-1);
-					end
+					modelChanged = true;
 				end
+			end
+			local isDead = health <= 0;
+			if ( modelChanged or isDead ~= loadoutPlate.model.wasDead ) then
+				if ( isDead ) then
+					loadoutPlate.model:SetAnimation(6,-1);
+				else
+					loadoutPlate.model:SetAnimation(0,-1);
+				end
+				loadoutPlate.model.wasDead = isDead;
 			end
 
 			
@@ -904,6 +933,23 @@ function PetJournal_ShowPetCardByID(petID)
 	PetJournal_UpdateSummonButtonState();
 end
 
+function PetJournal_ShowPetCardBySpeciesID(speciesID)
+	if (not speciesID) then
+		PetJournal_ShowPetCard(1);
+		return;
+	end
+
+	PetJournal_HidePetDropdown();
+	
+	PetJournalPetCard.petID = nil;
+	PetJournalPetCard.speciesID = speciesID;
+	
+	PetJournal_FindPetCardIndex();
+	PetJournal_UpdatePetCard(PetJournalPetCard);
+	PetJournal_UpdatePetList();
+	PetJournal_UpdateSummonButtonState();
+end
+
 function PetJournal_ShowPetCard(index)
 	PetJournal_HidePetDropdown();
 	PetJournalPetCard.petIndex = index;
@@ -1079,17 +1125,14 @@ function PetJournal_UpdatePetCard(self)
 	Model_Reset(self.model);
 	self.model:Show();
 	self.shadows:Show();
+	local modelChanged = false;
 	if ( displayID and displayID ~= 0 ) then
 		if ( displayID ~= self.displayID ) then
 			self.creatureID = nil;
 			self.displayID = displayID;
 			self.model:SetDisplayInfo(displayID);
 			self.model:SetDoBlend(false);
-			if (isDead) then
-				self.model:SetAnimation(6,-1);
-			else
-				self.model:SetAnimation(0,-1);
-			end
+			modelChanged = true;
 		end
 	elseif ( creatureID ~= 0 ) then
 		if ( creatureID ~= self.creatureID ) then
@@ -1097,12 +1140,16 @@ function PetJournal_UpdatePetCard(self)
 			self.displayID = nil;
 			self.model:SetCreature(creatureID);
 			self.model:SetDoBlend(false);
-			if (isDead) then
-				self.model:SetAnimation(6,-1);
-			else
-				self.model:SetAnimation(0,-1);
-			end
+			modelChanged = true;
 		end
+	end
+	if ( modelChanged or self.model.wasDead ~= isDead ) then
+		if ( isDead ) then
+			self.model:SetAnimation(6,-1);
+		else
+			self.model:SetAnimation(0,-1);
+		end
+		self.model.wasDead = isDead;
 	end
 	
 	self.AbilitiesBG:SetShown(canBattle);

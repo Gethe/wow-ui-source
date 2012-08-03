@@ -713,7 +713,6 @@ function CharCreateCustomizationFrame_OnShow ()
 	-- we need to resize and remap the banner texture
 		local buttonx, buttony = CharCreateCustomizationButton1:GetSize()
 		local screenamount = resize*buttony;
-		print(screenamount);
 		local frameX, frameY = CharCreateCustomizationFrameBanner:GetSize();
 		local pctShrink = .2*resize; 
 		local uvXDefaultSize = BANNER_DEFAULT_TEXTURE_COORDS[2] - BANNER_DEFAULT_TEXTURE_COORDS[1];
@@ -721,9 +720,7 @@ function CharCreateCustomizationFrame_OnShow ()
 		local newYUV = pctShrink*uvYDefaultSize + BANNER_DEFAULT_TEXTURE_COORDS[3];
 		-- end coord stay the same
 		CharCreateCustomizationFrameBanner:SetTexCoord(BANNER_DEFAULT_TEXTURE_COORDS[1], BANNER_DEFAULT_TEXTURE_COORDS[2], newYUV, BANNER_DEFAULT_TEXTURE_COORDS[4]);
-		print(pctShrink);
 		CharCreateCustomizationFrameBanner:SetSize(frameX, frameY - screenamount);
-		print(CharCreateCustomizationFrameBanner:GetTexCoord());
 	end
 	
 	CharCreateRandomizeButton:SetPoint("TOP", _G["CharCreateCustomizationButton"..lastGood]:GetName(), "BOTTOM", 0, 0);
@@ -999,6 +996,7 @@ function CharCreate_PrepPreviewModels(reloadModels)
 		previewFrame.featureType = 0;
 		-- force model reload if class changed
 		if ( classSwap ) then
+			displayFrame.lastClass = class;
 			previewFrame.race = nil;
 			previewFrame.gender = nil;
 		end

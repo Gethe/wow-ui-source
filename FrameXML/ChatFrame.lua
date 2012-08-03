@@ -110,6 +110,7 @@ ChatTypeInfo["BN_INLINE_TOAST_CONVERSATION"]			= { sticky = 0, flashTab = true, 
 ChatTypeInfo["BN_WHISPER_PLAYER_OFFLINE"] 				= { sticky = 0, flashTab = false, flashTabOnGeneral = false };
 ChatTypeInfo["COMBAT_GUILD_XP_GAIN"]					= { sticky = 0, flashTab = false, flashTabOnGeneral = false };
 ChatTypeInfo["PET_BATTLE_COMBAT_LOG"]					= { sticky = 0, flashTab = false, flashTabOnGeneral = false };
+ChatTypeInfo["PET_BATTLE_INFO"]							= { sticky = 0, flashTab = false, flashTabOnGeneral = false };
 
 --NEW_CHAT_TYPE -Add the info here.
 
@@ -277,6 +278,9 @@ ChatTypeGroup["COMBAT_GUILD_XP_GAIN"] = {
 };
 ChatTypeGroup["PET_BATTLE_COMBAT_LOG"] = {
 	"CHAT_MSG_PET_BATTLE_COMBAT_LOG",
+};
+ChatTypeGroup["PET_BATTLE_INFO"] = {
+	"CHAT_MSG_PET_BATTLE_INFO",
 };
 
 --NEW_CHAT_TYPE - Add the chat type above.
@@ -2490,8 +2494,6 @@ end
 ChatFrame_SetupListProxyTable(SecureCmdList);
 ChatFrame_SetupListProxyTable(SlashCmdList);
 ChatFrame_SetupListProxyTable(ChatTypeInfo);
-ChatFrame_ImportAllListsToHash();
-ChatFrame_ImportEmoteTokensToHash();
 
 for index, value in pairs(ChatTypeInfo) do
 	value.r = 1.0;
@@ -2499,6 +2501,9 @@ for index, value in pairs(ChatTypeInfo) do
 	value.b = 1.0;
 	value.id = GetChatTypeIndex(index);
 end
+
+ChatFrame_ImportAllListsToHash();
+ChatFrame_ImportEmoteTokensToHash();
 	
 -- ChatFrame functions
 function ChatFrame_OnLoad(self)
@@ -4781,7 +4786,7 @@ function ChatChannelDropDown_PopOutChat(self, chatType, chatTarget)
 			ChatFrame_AddChannel(frame, Chat_GetChannelShortcutName(chatTarget));
 		end
 		
-		if ( chatType == "PET_BATTLE_COMBAT_LOG" ) then
+		if ( chatType == "PET_BATTLE_COMBAT_LOG" or chatType == "PET_BATTLE_INFO" ) then
 			frame.editBox:SetAttribute("chatType", "SAY");
 			frame.editBox:SetAttribute("stickyType", "SAY");
 		end

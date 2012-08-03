@@ -593,7 +593,7 @@ function UnitPopup_HideButtons ()
 				UnitPopupShown[UIDROPDOWNMENU_MENU_LEVEL][index] = 0;
 			end
 		elseif ( value == "ADD_FRIEND" ) then
-			if ( haveBattleTag or canCoop == 0 or not UnitIsSameServer("player", dropdownMenu.unit) or GetFriendInfo(UnitName(dropdownMenu.unit)) ) then
+			if ( haveBattleTag or canCoop == 0 or not UnitIsPlayer(dropdownMenu.unit) or not UnitIsSameServer("player", dropdownMenu.unit) or GetFriendInfo(UnitName(dropdownMenu.unit)) ) then
 				UnitPopupShown[UIDROPDOWNMENU_MENU_LEVEL][index] = 0;
 			end
 		elseif ( value == "ADD_FRIEND_MENU" ) then
@@ -729,6 +729,11 @@ function UnitPopup_HideButtons ()
 				UnitPopupShown[UIDROPDOWNMENU_MENU_LEVEL][index] = 0;
 			elseif ( dropdownMenu.isMobile ) then
 				UnitPopupShown[UIDROPDOWNMENU_MENU_LEVEL][index] = 0;
+			end
+		elseif ( value == "BN_TARGET" ) then
+			-- We don't want to show a menu option that will end up being blocked
+			if ( not dropdownMenu.presenceID or InCombatLockdown() or not issecure() ) then
+				enable = 0;
 			end
 		elseif ( value == "PROMOTE" ) then
 			if ( (inParty == 0) or (isLeader == 0) or HasLFGRestrictions()) then
@@ -1254,10 +1259,6 @@ function UnitPopup_OnUpdate (elapsed)
 						if ( not currentDropDown.presenceID or not CanGroupWithAccount(currentDropDown.presenceID) ) then
 							enable = 0;
 						end
-					elseif ( value == "BN_TARGET" ) then
-						if ( not currentDropDown.presenceID or not CanCooperateWithToon(currentDropDown.presenceID) ) then
-							enable = 0;
-						end
 					elseif ( value == "VOTE_TO_KICK" ) then
 						if ( inParty == 0 or not HasLFGRestrictions() ) then
 							enable = 0;
@@ -1463,9 +1464,11 @@ function UnitPopup_OnClick (self)
 			end
 		end
 	elseif ( button == "REPORT_BATTLE_PET" ) then
-		StaticPopup_Show("CONFIRM_REPORT_BATTLEPET_NAME", name);
+		local dialog = StaticPopup_Show("CONFIRM_REPORT_BATTLEPET_NAME", name);
+		dialog.data = name;
 	elseif ( button == "REPORT_PET" ) then
-		StaticPopup_Show("CONFIRM_REPORT_PET_NAME", name);		
+		local dialog = StaticPopup_Show("CONFIRM_REPORT_PET_NAME", name);
+		dialog.data = name;
 	elseif ( button == "REPORT_CHEATING" ) then
 		if ( GMQuickTicketSystemEnabled() and not GMQuickTicketSystemThrottled() ) then
 			HelpFrame_ShowReportCheatingDialog(dropdownFrame.unit or tonumber(dropdownFrame.lineID));
@@ -1516,7 +1519,7 @@ function UnitPopup_OnClick (self)
 	elseif ( button == "BN_TARGET" ) then
 		local presenceID, presenceName, battleTag, isBattleTagPresence, toonName = BNGetFriendInfoByID(dropdownFrame.presenceID);
 		if ( toonName ) then
-			TargetUnit(toonName, 1);
+			TargetUnit(toonName);
 		end
 	elseif ( button == "BLOCK_COMMUNICATION" ) then
 		BNSetToonBlocked(dropdownFrame.presenceID, true);

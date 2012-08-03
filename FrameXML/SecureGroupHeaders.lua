@@ -316,7 +316,8 @@ end
 local function doubleFillTable( tbl, ... )
 	fillTable(tbl, ...);
 	for i = 1, select("#", ...), 1 do
-		tbl[i] = strtrim(select(i, ...));
+		local key = select(i, ...)
+		tbl[i] = strtrim(key)
 	end
 end
 

@@ -511,13 +511,6 @@ function PaperDollFrame_OnEvent (self, event, ...)
 	elseif ( event == "SPELL_POWER_CHANGED" ) then
 		self:SetScript("OnUpdate", PaperDollFrame_QueuedUpdate);
 	end
-
-	--The ranged slot has been "removed" from the game
-	--Under the hood it still exists, but we hide it from the player. We want it to appear as though ranged weapons go in the main hand
-	--so do some trickery to show and hide the range and main hand weapon slot buttons depending on what is equipped
-	if (event == "PLAYER_ENTERING_WORLD" or event == "PLAYER_EQUIPMENT_CHANGED") then
-		UpdateRangedMainHandTrickery();
-	end
 end
 
 function PaperDollFrame_SetLevel()
@@ -2010,8 +2003,8 @@ function PaperDollFrame_SetExpertise(statFrame, unit)
 	local category = statFrame:GetParent().Category;
 
 	local expertise, offhandExpertise, rangedExpertise = GetExpertise();
-	expertise = format("%.2f%%", expertise);
-	offhandExpertise = format("%.2f%%", offhandExpertise);
+	expertise = format("%.2F%%", expertise);
+	offhandExpertise = format("%.2F%%", offhandExpertise);
 	rangedExpertise = format("%.2F%%", rangedExpertise);
 	local speed, offhandSpeed = UnitAttackSpeed(unit);
 	local text;
@@ -2215,16 +2208,6 @@ function CharacterSpellCritChance_OnEnter (self)
 	GameTooltip:Show();
 end
 
-function UpdateRangedMainHandTrickery()
-	if (GetInventoryItemID("player",INVSLOT_RANGED) ~= nil) then
-		CharacterRangedSlot:Show();
-		CharacterMainHandSlot:Hide();
-	else
-		CharacterRangedSlot:Hide();
-		CharacterMainHandSlot:Show();
-	end
-end
-
 function PaperDollFrame_OnShow (self)
 	CharacterStatsPane.initialOffsetY = 0;
 	CharacterFrameTitleText:SetText(UnitPVPName("player"));
@@ -2247,8 +2230,6 @@ function PaperDollFrame_OnShow (self)
 	SetPaperDollBackground(CharacterModelFrame, "player");
 	PaperDollBgDesaturate(1);
 	PaperDollSidebarTabs:Show();
-
-	UpdateRangedMainHandTrickery();
 end
  
 function PaperDollFrame_OnHide (self)

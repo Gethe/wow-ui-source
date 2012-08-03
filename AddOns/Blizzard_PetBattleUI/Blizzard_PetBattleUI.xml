@@ -179,7 +179,7 @@
 				PetBattleUnitFrame_OnLoad(self);
 			</OnLoad>
 			<OnClick>
-				if ( C_PetBattles.GetHealth(self.petOwner, self.petIndex) ~= 0 ) then
+				if ( C_PetBattles.CanPetSwapIn(self:GetID()) ) then
 					C_PetBattles.ChangePet(self:GetID());
 					PetBattlePetSelectionFrame_Hide(PetBattleFrame.BottomFrame.PetSelectionFrame);
 				end

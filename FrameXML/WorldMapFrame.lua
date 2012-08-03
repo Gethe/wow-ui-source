@@ -915,8 +915,10 @@ function WorldMapLevelDropDown_Initialize()
 	
 	local usesTerrainMap = DungeonUsesTerrainMap();
 	local floorMapCount, firstFloor = GetNumDungeonMapLevels();
-
+	local _, _, _, isMicroDungeon = GetMapInfo();
+	
 	local lastFloor = firstFloor + floorMapCount - 1;
+	
 	for i=firstFloor, lastFloor do
 		local floorNum = i;
 		if (usesTerrainMap) then

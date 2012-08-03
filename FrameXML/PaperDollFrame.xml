@@ -815,25 +815,6 @@
 							</Layer>
 						</Layers>
 					</Button>
-					<Button name="CharacterRangedSlot" inherits="PaperDollItemSlotButtonBottomTemplate">
-						<Anchors>
-							<Anchor point="BOTTOMLEFT" x="130" y="16"/>
-						</Anchors>
-						<Layers>
-							<Layer level="BACKGROUND">
-								<Texture inherits="Char-Slot-Bottom-Left">
-									<Anchors>
-										<Anchor point="TOPRIGHT" relativeTo="$parentFrame" relativePoint="TOPLEFT"/>
-									</Anchors>
-								</Texture>
-								<Texture inherits="Char-Slot-Bottom-Right">
-									<Anchors>
-										<Anchor point="TOPLEFT" relativeTo="$parentFrame" relativePoint="TOPRIGHT"/>
-									</Anchors>
-								</Texture>
-							</Layer>
-						</Layers>
-					</Button>
 				</Frames>
 			</Frame>
 		</Frames>

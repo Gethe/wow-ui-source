@@ -1038,7 +1038,7 @@ end
 
 -- WatchFrame handler function
 function WorldStateChallengeMode_DisplayTimers(lineFrame, nextAnchor, maxHeight, frameWidth)
-	local self = WorldStateChallengeModeTimer;
+	local self = WorldStateChallengeModeFrame;
 	if ( self.timerID ) then
 		self:SetParent(lineFrame);
 		if (nextAnchor) then
@@ -1047,8 +1047,9 @@ function WorldStateChallengeMode_DisplayTimers(lineFrame, nextAnchor, maxHeight,
 			self:SetPoint("TOPLEFT", lineFrame, "TOPLEFT", 0, -WATCHFRAME_INITIAL_OFFSET)
 		end
 		local _, elapsedTime = GetWorldElapsedTime(self.timerID);
-		self.baseTime = elapsedTime;
-		self.timeSinceBase = 0;
+		WorldStateChallengeModeTimer.baseTime = elapsedTime;
+		WorldStateChallengeModeTimer.timeSinceBase = 0;
+		WorldStateChallengeModeTimer.frame = self;
 		self:Show();
 		return self, 198, 0, 1;
 	else
@@ -1074,12 +1075,12 @@ function WorldStateChallengeMode_CheckTimers(...)
 end
 
 function WorldStateChallengeMode_ShowTimer(timerID, elapsedTime, ...)
-	local self = WorldStateChallengeModeTimer;
+	local self = WorldStateChallengeModeFrame;
 	if not ( self.medalTimes ) then
 		self.medalTimes = { };
 	end
 	for i = 1, select("#", ...) do
-		self.medalTimes[i] = select(i, ...);
+		self.medalTimes[i] = select(i, ...) / 5;
 	end
 	-- not currently being displayed, set up handler
 	if ( not self.timerID ) then
@@ -1089,27 +1090,30 @@ function WorldStateChallengeMode_ShowTimer(timerID, elapsedTime, ...)
 		end
 	end
 	self.timerID = timerID;
-	WorldStateChallengeModeTimer_UpdateMedal(self, elapsedTime);
-	WorldStateChallengeModeTimer_UpdateValues(self, elapsedTime);
+	WorldStateChallengeModeFrame_UpdateMedal(self, elapsedTime);
+	WorldStateChallengeModeFrame_UpdateValues(self, elapsedTime);
 	WatchFrame_ClearDisplay();
 	WatchFrame_Expand(WatchFrame);	-- will automatically do a watchframe update
+	WorldStateChallengeModeTimer:Show();
 end
 
 function WorldStateChallengeMode_HideTimer(timerID)
-	local self = WorldStateChallengeModeTimer;
+	local self = WorldStateChallengeModeFrame;
 	if ( not timerID or self.timerID == timerID ) then
 		self.timerID = nil;
 		if ( self.hidWatchedQuests ) then
 			WatchFrame_AddObjectiveHandler(WatchFrame_DisplayTrackedQuests);
 		end
 		self:Hide();
+		WorldStateChallengeModeTimer:Hide();
+		self.lastMedalShown = nil;
 		WatchFrame_RemoveObjectiveHandler(WorldStateChallengeMode_DisplayTimers);
 		WatchFrame_ClearDisplay();
 		WatchFrame_Update(WatchFrame);
 	end
 end
 
-function WorldStateChallengeModeTimer_UpdateMedal(self, elapsedTime)
+function WorldStateChallengeModeFrame_UpdateMedal(self, elapsedTime)
 	-- find best medal for current time
 	local prevMedalTime = 0;
 	for i = #self.medalTimes, 1, -1 do
@@ -1122,6 +1126,11 @@ function WorldStateChallengeModeTimer_UpdateMedal(self, elapsedTime)
 				self.medalIcon:Show();
 			end
 			self.noMedal:Hide();
+			-- play sound if medal changed
+			if ( self.lastMedalShown and self.lastMedalShown ~= i ) then
+				PlaySound("UI_Challenges_MedalExpires");
+			end
+			self.lastMedalShown = i;
 			return;
 		else
 			prevMedalTime = currentMedalTime;
@@ -1133,14 +1142,19 @@ function WorldStateChallengeModeTimer_UpdateMedal(self, elapsedTime)
 	self.statusBar.medalTime = nil;
 	self.noMedal:Show();
 	self.medalIcon:Hide();
+	-- play sound if medal changed
+	if ( self.lastMedalShown and self.lastMedalShown ~= 0 ) then
+		PlaySound("UI_Challenges_MedalExpires");
+	end
+	self.lastMedalShown = 0;
 end
 
-function WorldStateChallengeModeTimer_UpdateValues(self, elapsedTime)
+function WorldStateChallengeModeFrame_UpdateValues(self, elapsedTime)
 	local statusBar = self.statusBar;
 	if ( statusBar.medalTime ) then
 		local timeLeft = statusBar.medalTime - elapsedTime;
 		if ( timeLeft < 0 ) then
-			WorldStateChallengeModeTimer_UpdateMedal(self, elapsedTime);
+			WorldStateChallengeModeFrame_UpdateMedal(self, elapsedTime);
 		else
 			statusBar:SetValue(statusBar.medalTime - elapsedTime);
 			statusBar.timeLeft:SetText(GetTimeStringFromSeconds(statusBar.medalTime - elapsedTime));
@@ -1151,5 +1165,5 @@ end
 local floor = floor;
 function WorldStateChallengeModeTimer_OnUpdate(self, elapsed)
 	self.timeSinceBase = self.timeSinceBase + elapsed;
-	WorldStateChallengeModeTimer_UpdateValues(self, floor(self.baseTime + self.timeSinceBase));
+	WorldStateChallengeModeFrame_UpdateValues(self.frame, floor(self.baseTime + self.timeSinceBase));
 end
