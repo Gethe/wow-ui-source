@@ -48,17 +48,17 @@ local EJ_DIFF_LFRAID	 		= 5
 
 local EJ_DIFF_DUNGEON_TBL =  
 {
-	[1] = { enumValue = EJ_DIFF_5MAN, size = 5, prefix = PLAYER_DIFFICULTY1},
-	[2] = { enumValue = EJ_DIFF_5MAN_HEROIC, size = 5, prefix = PLAYER_DIFFICULTY2}
+	[1] = { enumValue = EJ_DIFF_5MAN, size = 5, prefix = PLAYER_DIFFICULTY1, difficultyID = 1 },
+	[2] = { enumValue = EJ_DIFF_5MAN_HEROIC, size = 5, prefix = PLAYER_DIFFICULTY2, difficultyID =  2 }
 }
 
 local EJ_DIFF_RAID_TBL =  
 {
-	[1] = { enumValue = EJ_DIFF_LFRAID, size = 25, prefix = PLAYER_DIFFICULTY3},
-	[2] = { enumValue = EJ_DIFF_10MAN, size = 10, prefix = PLAYER_DIFFICULTY1},
-	[3] = { enumValue = EJ_DIFF_10MAN_HEROIC, size = 10, prefix = PLAYER_DIFFICULTY2},
-	[4] = { enumValue = EJ_DIFF_25MAN, size = 25, prefix = PLAYER_DIFFICULTY1},
-	[5] = { enumValue = EJ_DIFF_25MAN_HEROIC, size = 25, prefix = PLAYER_DIFFICULTY2}
+	[1] = { enumValue = EJ_DIFF_LFRAID, size = 25, prefix = PLAYER_DIFFICULTY3, difficultyID = 7 },
+	[2] = { enumValue = EJ_DIFF_10MAN, size = 10, prefix = PLAYER_DIFFICULTY1, difficultyID = 3 },
+	[3] = { enumValue = EJ_DIFF_10MAN_HEROIC, size = 10, prefix = PLAYER_DIFFICULTY2, difficultyID = 5 },
+	[4] = { enumValue = EJ_DIFF_25MAN, size = 25, prefix = PLAYER_DIFFICULTY1, difficultyID = 4 },
+	[5] = { enumValue = EJ_DIFF_25MAN_HEROIC, size = 25, prefix = PLAYER_DIFFICULTY2, difficultyID = 6 }
 }
 
 local EJ_TIER_DATA =
@@ -1197,7 +1197,7 @@ function EncounterJournal_DifficultyInit(self, level)
 	local info = UIDropDownMenu_CreateInfo();
 	for i=1,#diffList do
 		local entry = diffList[i];
-		if EJ_IsValidInstanceDifficulty(entry.enumValue) then
+		if EJ_IsValidInstanceDifficulty(entry.difficultyID) then
 			info.func = EncounterJournal_SelectDifficulty;
 			info.text = string.format(ENCOUNTER_JOURNAL_DIFF_TEXT, entry.size, entry.prefix);
 			info.arg1 = entry.enumValue;

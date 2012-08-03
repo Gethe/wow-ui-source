@@ -23,8 +23,7 @@ REPUTATIONFRAME_ROWSPACING = 23;
 
 function ReputationFrame_OnLoad(self)
 	self:RegisterEvent("UPDATE_FACTION");
-	-- Initialize max player level
-	MAX_PLAYER_LEVEL = MAX_PLAYER_LEVEL_TABLE[GetExpansionLevel()];
+	ReputationWatchBar_UpdateMaxLevel();
 	--[[for i=1, NUM_FACTIONS_DISPLAYED, 1 do
 		_G["ReputationBar"..i.."FactionStanding"]:SetPoint("CENTER",_G["ReputationBar"..i.."ReputationBar"]);
 	end
@@ -433,6 +432,11 @@ function ReputationWatchBar_Update(newLevel)
 		UIParent_ManageFramePositions();
 		updateContainerFrameAnchors();
 	end
+end
+
+function ReputationWatchBar_UpdateMaxLevel()
+	-- Initialize max player level
+	MAX_PLAYER_LEVEL = MAX_PLAYER_LEVEL_TABLE[GetExpansionLevel()];
 end
 
 function ShowWatchedReputationBarText(lock)

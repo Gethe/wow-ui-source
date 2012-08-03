@@ -178,7 +178,7 @@
 		</Scripts>
 	</Button>
 	
-	<Frame name="ConsolidatedBuffsTooltip" frameStrata="TOOLTIP" clampedToScreen="true" hidden="true">
+	<Frame name="ConsolidatedBuffsTooltip" parent="UIParent" frameStrata="TOOLTIP" clampedToScreen="true" hidden="true">
 		<Anchors>
 			<Anchor point="TOPRIGHT" />
 		</Anchors>	

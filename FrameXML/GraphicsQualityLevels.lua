@@ -440,6 +440,7 @@ VideoData["Graphics_MultiSampleDropDown"]={
 		Graphics_LiquidDetailDropDown = "waterDetail",
 		Graphics_SunshaftsDropDown = "sunshafts",
 		Graphics_ResolutionDropDown = "gxResolution",
+		Graphics_SSAODropDown = "ssao",
 	},
 	restart = true,
 }
@@ -732,6 +733,9 @@ VideoData["Graphics_SSAODropDown"]={
 	dependent = {
 		"Graphics_Quality",
 	},
+	capTargets = {
+		"Graphics_MultiSampleDropDown",
+	}
 }
 
 -------------------------------------------------------------------------------------------------------

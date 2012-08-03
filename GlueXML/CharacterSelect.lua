@@ -185,6 +185,8 @@ function CharacterSelect_OnShow()
 	
 	-- character templates
 	CharacterTemplatesFrame_Update();
+
+	PromotionFrame_AwaitingPromotion();
 end
 
 function CharacterSelect_OnHide(self)
@@ -201,7 +203,7 @@ function CharacterSelect_OnHide(self)
 	end
 	SERVER_SPLIT_STATE_PENDING = -1;
 	
-	StarterEditionPopUp:Hide();
+	PromotionFrame_Hide();
 end
 
 function CharacterSelect_SaveCharacterOrder()
@@ -894,7 +896,6 @@ function AccountUpgradePanel_Update(isExpanded)
 		CharSelectAccountUpgradePanel:Hide();
 		CharSelectAccountUpgradeButton:Hide();
 		CharSelectAccountUpgradeMiniPanel:Hide();
-		StarterEditionPopUp:Hide();
 		return;
 	end
 
@@ -907,7 +908,6 @@ function AccountUpgradePanel_Update(isExpanded)
 		GameRoomBillingFrame:SetPoint("TOP", CharSelectAccountUpgradePanel, "BOTTOM", 0, -10);
 		local featureTable = ACCOUNT_UPGRADE_FEATURES[tag];
 		CharSelectAccountUpgradeButton:Show();
-		StarterEditionPopUp:Show();
 		if ( isExpanded ) then
 			CharSelectAccountUpgradePanel:Show();
 			CharSelectAccountUpgradeMiniPanel:Hide();

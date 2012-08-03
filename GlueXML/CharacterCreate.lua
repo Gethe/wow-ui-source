@@ -607,7 +607,7 @@ function CharacterCreate_Back()
 		CharCreateMoreInfoButton:Show();
 		CharCreateCustomizationFrame:Hide();
 		CharCreatePreviewFrame:Hide();
-		CharCreateOkayButton:SetText(NEXT);
+		CharCreateOkayButton:SetText(CUSTOMIZE);
 		CharacterCreateNameEdit:Hide();
 		CharacterCreateRandomName:Hide();
 

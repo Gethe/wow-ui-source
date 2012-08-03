@@ -48,7 +48,7 @@
 					<TexCoords  left="0.3496094" right="0.001953125" top="0.6992188" bottom="0.9960938"/>
 				</Texture>
 			</Layer>
-			<Layer level="BOARDER" textureSubLevel="1">
+			<Layer level="BORDER" textureSubLevel="1">
 				<Texture name="$parentDivider2" parentKey="Divider2">
 					<Size x="48" y="112"/>
 					<Anchors>
@@ -111,8 +111,8 @@
 					<TexCoords left="0.3046875" right="0.34375002" top="0.359375" bottom="0.5234375"/>
 				</Texture>
 			</Layer>
-			<Layer level="BOARDER" textureSubLevel="0">
-				<Texture name="$parentBoarder" parentKey="_Boader" horizTile="true">
+			<Layer level="BORDER" textureSubLevel="0">
+				<Texture name="$parentBorder" parentKey="_Border" horizTile="true">
 					<Size x="256" y="36"/>
 					<Anchors>
 						<Anchor point="TOPLEFT" relativeTo="$parentBG" y="18"/>
@@ -129,7 +129,7 @@
 					<Anchor point="BOTTOMRIGHT" relativeTo="$parentButtonBGL" relativePoint="BOTTOMLEFT" x="-5"/>
 				</Anchors>
 				<Layers>
-					<Layer level="BOARDER" textureSubLevel="1">
+					<Layer level="BORDER" textureSubLevel="1">
 						<Texture name="$parentDivider1" parentKey="Divider1">
 							<Size x="48" y="112"/>
 							<Anchors>
@@ -138,7 +138,7 @@
 							<TexCoords left="0.4042969" right="0.4980469" top="0.7792969" bottom="0.9980469"/>
 						</Texture>
 					</Layer>					
-					<Layer level="BOARDER" textureSubLevel="-1">			
+					<Layer level="BORDER" textureSubLevel="-1">			
 						<Texture name="$parentPitchOverlay" parentKey="PitchOverlay">
 							<Size x="26" y="94"/>
 							<Anchors>
@@ -241,7 +241,7 @@
 					<Anchor point="BOTTOMLEFT" relativeTo="$parentMicroBGR" relativePoint="BOTTOMRIGHT" x="5"/>
 				</Anchors>
 				<Layers>
-					<Layer level="BOARDER" textureSubLevel="1">
+					<Layer level="BORDER" textureSubLevel="1">
 						<Texture name="$parentDivider3" parentKey="Divider3">
 							<Size x="48" y="112"/>
 							<Anchors>
@@ -305,7 +305,7 @@
 							<Color r="0.0" g="0.0" b="0.0" a="0.5"/>
 						</Texture>
 					</Layer>
-					<Layer level="BACKGROUND" textureSubLevel="1">
+					<Layer level="ARTWORK" textureSubLevel="1">
 						<Texture name="$parentXpMid" parentKey="XpMid" horizTile="true">
 							<Size x="400" y="50"/>
 							<Anchors>

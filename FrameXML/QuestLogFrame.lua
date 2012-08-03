@@ -626,7 +626,7 @@ function QuestLog_SetSelection(questIndex)
 		QuestLogDetailScrollChildFrame:Show();
 	end
 
-	local title, level, questTag, suggestedGroup, isHeader, isCollapsed, isComplete, isDaily = GetQuestLogTitle(questIndex);
+	local title, level, questTag, suggestedGroup, isHeader, isCollapsed, isComplete, isDaily, questID = GetQuestLogTitle(questIndex);
 	if ( isHeader ) then
 		if ( isCollapsed ) then
 			ExpandQuestHeader(questIndex);
@@ -634,6 +634,12 @@ function QuestLog_SetSelection(questIndex)
 			CollapseQuestHeader(questIndex);
 		end
 		return;
+	end
+	
+	if ( CanAbandonQuest(questID) ) then
+		QuestLogFrameAbandonButton:Enable();
+	else
+		QuestLogFrameAbandonButton:Disable();
 	end
 	
 	if (isComplete and GetQuestLogIsAutoComplete(questIndex)) then

@@ -12,8 +12,8 @@
 				</Texture>
 			</Layer>
 			<Layer level="BACKGROUND">
-				<Texture name="InboxFrameBg" file="Interface\MailFrame\UI-MailFrameBG">
-					<Size x="512" y="512"/>
+				<Texture name="InboxFrameBg" file="Interface\QuestFrame\QuestBG">
+					<Size x="512" y="543"/>
 					<Anchors>
 						<Anchor point="TOPLEFT" x="7" y="-62"/>
 					</Anchors>
@@ -102,7 +102,7 @@
 								<Anchors>
 									<Anchor point="TOPLEFT" x="0" y="-15"/>
 								</Anchors>
-								<FontString inherits="ItemTextFontNormal"/>
+								<FontString inherits="QuestFont"/>
 							</SimpleHTML>
 						</Frames>
 					</Frame>

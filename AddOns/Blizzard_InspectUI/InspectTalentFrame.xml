@@ -40,6 +40,7 @@
 			<OnLeave>
 				GameTooltip_Hide();
 			</OnLeave>
+			<OnClick function="InspectTalentFrameTalent_OnClick" />
 		</Scripts>
 	</Button>
 	
@@ -101,7 +102,7 @@
 		<Scripts>
 			<OnLoad function="InspectGlyphFrameGlyph_OnLoad"/>
 			<OnShow function="InspectGlyphFrameGlyph_UpdateSlot"/>
-			<!-- <OnClick function="InspectGlyphFrameGlyph_OnClick"/> -->
+			<OnClick function="InspectGlyphFrameGlyph_OnClick"/>
 			<OnEnter function="InspectGlyphFrameGlyph_OnEnter"/>
 			<OnLeave function="InspectGlyphFrameGlyph_OnLeave"/>
 			<OnUpdate function="InspectGlyphFrameGlyph_OnUpdate"/>

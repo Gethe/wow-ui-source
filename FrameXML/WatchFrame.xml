@@ -613,12 +613,10 @@
 						<Anchor point="BOTTOM" x="0" y="-14"/>
 					</Anchors>
 					<Animations>
-						<AnimationGroup parentKey="MoveAnim">
-							<Translation startDelay="0.067" offsetX="175" offsetY="0" duration="0.467" order="1"/>
-						</AnimationGroup>
-						<AnimationGroup parentKey="AlphaAnim">
+						<AnimationGroup parentKey="Anim">
+							<Translation startDelay="0.067" offsetX="155" offsetY="0" duration="0.467" order="1"/>
 							<Alpha startDelay="0.067" change="1.0" duration="0.133" order="1"/>
-							<Alpha startDelay="0.133" change="-1.0" duration="0.033" order="2"/>
+							<Alpha startDelay="0.2" change="-1.0" duration="0.133" order="1" smoothing="IN"/>
 						</AnimationGroup>
 					</Animations>
 				</Texture>

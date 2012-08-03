@@ -80,12 +80,14 @@ function PetBattleFrame_OnEvent(self, event, ...)
 		PlaySoundKitID(32047); -- UI_PetBattle_Camera_Move_In
 		PetBattleFrame_Display(self);
 	elseif ( event == "PET_BATTLE_OPENING_DONE" ) then
+		PetBattleFrameTurnTimer_UpdateValues(self.BottomFrame.TurnTimer);
 		StartSplashTexture.splashAnim:Play();
 		PlaySoundKitID(31584); -- UI_PetBattle_Start
 		PetBattleFrame_UpdateSpeedIndicators(self);
 	elseif ( event == "PET_BATTLE_TURN_STARTED" ) then
 		PetBattleFrameTurnTimer_UpdateValues(self.BottomFrame.TurnTimer);
 	elseif ( event == "PET_BATTLE_PET_ROUND_PLAYBACK_COMPLETE" ) then
+		PetBattleFrameTurnTimer_UpdateValues(self.BottomFrame.TurnTimer);
 		PetBattleFrame_UpdatePetSelectionFrame(self);
 		PetBattleFrame_UpdateSpeedIndicators(self);
 		PetBattleFrame_UpdateInstructions(self);
@@ -416,7 +418,9 @@ local TIMER_BAR_TEXCOORD_RIGHT = 0.89453125;
 local TIMER_BAR_TEXCOORD_TOP = 0.00195313;
 local TIMER_BAR_TEXCOORD_BOTTOM = 0.03515625;
 function PetBattleFrameTurnTimer_OnUpdate(self, elapsed)
-	if ( C_PetBattles.GetBattleState() == LE_PET_BATTLE_STATE_WAITING_FOR_ROUND_PLAYBACK ) then
+	if ( ( C_PetBattles.GetBattleState() ~= LE_PET_BATTLE_STATE_WAITING_PRE_BATTLE ) and
+		 ( C_PetBattles.GetBattleState() ~= LE_PET_BATTLE_STATE_ROUND_IN_PROGRESS ) and
+		 ( C_PetBattles.GetBattleState() ~= LE_PET_BATTLE_STATE_WAITING_FOR_FRONT_PETS ) ) then
 		self.Bar:SetAlpha(0);
 		self.TimerText:SetText("");
 	elseif ( self.turnExpires ) then
@@ -604,6 +608,8 @@ function PetBattleActionButton_UpdateState(self)
 		for i = 1, NUM_BATTLE_PETS_IN_BATTLE do
 			usable = usable or C_PetBattles.IsPetSwapAvailable(i);
 		end
+	elseif ( actionType == LE_BATTLE_PET_ACTION_SKIP ) then
+		usable = C_PetBattles.IsSkipAvailable();
 	else
 		usable = true;
 	end
@@ -1144,7 +1150,11 @@ function PetBattleUnitTooltip_UpdateForUnit(self, petOwner, petIndex)
 			local abilityIcon = self["AbilityIcon"..i];
 			local abilityName = self["AbilityName"..i];
 			if ( id ) then
-				local modifier = C_PetBattles.GetAttackModifier(abilityPetType, enemyPetType);
+				local modifier = 1.0;
+				if (abilityPetType and enemyPetType) then
+					modifier = C_PetBattles.GetAttackModifier(abilityPetType, enemyPetType);
+				end
+				
 				if ( noStrongWeakHints or modifier == 1 ) then
 					abilityIcon:SetTexture("Interface\\PetBattles\\BattleBar-AbilityBadge-Neutral");
 				elseif ( modifier < 1 ) then

@@ -11,10 +11,16 @@
 			<OnLoad>
 				GameTooltip_OnLoad(self);
 				self.shoppingTooltips = { ShoppingTooltip1, ShoppingTooltip2, ShoppingTooltip3 };
+				if (BattlePetTooltip) then
+					BattlePetTooltip:Hide();
+				end
 			</OnLoad>
 			<OnTooltipSetUnit>
 				if ( self:IsUnit("mouseover") ) then
 					_G[self:GetName().."TextLeft1"]:SetTextColor(GameTooltip_UnitColor("mouseover"));
+				end
+				if (BattlePetTooltip) then
+					BattlePetTooltip:Hide();
 				end
 			</OnTooltipSetUnit>
 			<OnTooltipSetItem>
@@ -22,12 +28,18 @@
 				     (GetCVarBool("alwaysCompareItems") and not self:IsEquippedItem()) ) then
 					GameTooltip_ShowCompareItem(self, 1);
 				end
+				if (BattlePetTooltip) then
+					BattlePetTooltip:Hide();
+				end
 			</OnTooltipSetItem>
 			<OnHide>
 				GameTooltip_OnHide(self);
 				ShoppingTooltip1:Hide();
 				ShoppingTooltip2:Hide();
 				ShoppingTooltip3:Hide();
+				if (BattlePetTooltip) then
+					BattlePetTooltip:Hide();
+				end
 			</OnHide>
 			<OnUpdate function="GameTooltip_OnUpdate"/>
 		</Scripts>

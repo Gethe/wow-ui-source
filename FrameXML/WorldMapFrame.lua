@@ -406,7 +406,7 @@ function WorldMap_DrawWorldEffects()
 	
 	-- Hide unused icons in the pool
 	for i=scenarioIconCount, NUM_WORLDMAP_SCENARIO_POIS do
-		local scenarioPOIName = "WorldMapFrameScenarioPOI"..scenarioIconCount;
+		local scenarioPOIName = "WorldMapFrameScenarioPOI"..i;
 		local scenarioPOI = _G[scenarioPOIName];
 		scenarioPOI:Hide();
 	end
@@ -2513,6 +2513,7 @@ function WorldMapTitleDropDown_ToggleOpacity()
 end
 
 function WorldMapTitleDropDown_ResetPosition()
+	WorldMapFrame:ClearAllPoints();
 	WorldMapFrame:SetPoint("TOPLEFT", 10, -118);
 	WorldMapScreenAnchor:ClearAllPoints();
 	WorldMapScreenAnchor:StartMoving();

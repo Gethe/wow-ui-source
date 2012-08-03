@@ -154,15 +154,7 @@ end
 
 function GuildInfoFrame_UpdateText(infoText)
 	GuildInfoMOTD:SetText(GetGuildRosterMOTD(), true); --Extra argument ignores markup.
-	if ( infoText ) then
-		GuildInfoFrame.cachedInfoText = infoText;
-		GuildInfoFrame.cacheExpiry = GetTime() + 10;
-	else
-		if ( not GuildInfoFrame.cacheExpiry or GetTime() > GuildInfoFrame.cacheExpiry ) then 
-			GuildInfoFrame.cachedInfoText = GetGuildInfoText();
-		end
-	end
-	GuildInfoDetails:SetText(GuildInfoFrame.cachedInfoText);
+	GuildInfoDetails:SetText(infoText or GetGuildInfoText());
 	GuildInfoDetailsFrame:SetVerticalScroll(0);
 	GuildInfoDetailsFrameScrollBarScrollUpButton:Disable();
 end
@@ -526,7 +518,7 @@ function GuildTextEditFrame_Show(editType)
 	elseif ( editType == "info" ) then
 		GuildTextEditFrame:SetHeight(295);
 		GuildTextEditBox:SetMaxLetters(500);
-		GuildTextEditBox:SetText(GuildInfoFrame.cachedInfoText);
+		GuildTextEditBox:SetText(GetGuildInfoText());
 		GuildTextEditFrameTitle:SetText(GUILD_INFO_EDITLABEL);
 		GuildTextEditBox:SetScript("OnEnterPressed", nil);
 	end
@@ -542,8 +534,8 @@ function GuildTextEditFrame_OnAccept()
 		GuildSetMOTD(GuildTextEditBox:GetText());
 	elseif ( GuildTextEditFrame.type == "info" ) then
 		local infoText = GuildTextEditBox:GetText();
-		GuildInfoFrame_UpdateText(infoText);
 		SetGuildInfoText(infoText);
+		GuildInfoFrame_UpdateText(infoText);
 	end
 	GuildTextEditFrame:Hide();
 end

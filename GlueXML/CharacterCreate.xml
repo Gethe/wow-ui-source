@@ -345,7 +345,7 @@
 					</Layer>
 					<Layer level="ARTWORK">
 						<FontString name="$parentText" inherits="GlueFontNormalSmall" parentKey="text">
-							<Size x="0" y="0"/>
+							<Size x="96" y="0"/>
 							<Anchors>
 								<Anchor point="TOP" x="2" y="-59"/>
 							</Anchors>
@@ -1188,7 +1188,7 @@
 									</CheckButton>
 								</Frames>
 							</Frame>
-							<Frame name="CharCreatePandarenFactionFrame" enableMouse="true">
+							<Frame name="CharCreatePandarenFactionFrame" enableMouse="true" hidden="true">
 								<Size x="243" y="104"/>
 								<Anchors>
 									<Anchor point="BOTTOM" x="0" y="-570"/>
@@ -1834,7 +1834,7 @@
 						<Scripts>
 							<OnClick>
 								CharacterTemplateConfirmDialog:Hide();
-								CreateCharacter(CharacterCreateNameEdit:GetText(), 0);
+								CreateCharacter(CharacterCreateNameEdit:GetText(), "Horde");
 							</OnClick>
 							<OnUpdate>
 								CharacterSelect_DeathKnightSwap(self);
@@ -1849,7 +1849,7 @@
 						<Scripts>
 							<OnClick>
 								CharacterTemplateConfirmDialog:Hide();
-								CreateCharacter(CharacterCreateNameEdit:GetText(), 1);
+								CreateCharacter(CharacterCreateNameEdit:GetText(), "Alliance");
 							</OnClick> 
 							<OnUpdate>
 								CharacterSelect_DeathKnightSwap(self);

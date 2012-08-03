@@ -109,6 +109,20 @@ UI.xsd">
 						<Anchor point="LEFT" relativeKey="$parent.SpeedTexture" relativePoint="RIGHT" x="2" y="0"/>
 					</Anchors>
 				</FontString>
+			</Layer>
+		</Layers>
+		<Frames>
+			
+		</Frames>
+		<Scripts>
+			<OnLoad function="BattlePetTooltip_OnLoad"/>
+		</Scripts>
+	</Frame>
+	
+	<Frame name="FloatingBattlePetTooltip" inherits="BattlePetTooltipTemplate" movable="true" toplevel="true">
+		<Size x="260" y="150"/>
+		<Layers>	
+			<Layer level="ARTWORK">
 				<Texture parentKey="Delimiter">
 					<Size x="251" y="2"/>
 					<Anchors>
@@ -118,24 +132,6 @@ UI.xsd">
 				</Texture>
 			</Layer>
 		</Layers>
-		<Frames>
-			<Button parentKey="JournalClick" text="BATTLE_PET_TOOLTIP_CLICK">
-				<Size x="238" y="20"/>
-				<Anchors>
-					<Anchor point="TOP" relativeKey="$parent.Delimiter" relativePoint="BOTTOM" x="0" y="-3"/>
-				</Anchors>
-				<NormalFont style="GameFontNormalLeft"/>
-				<Scripts>
-					<OnClick function="BattlePetTooltipJournalClick_OnClick"/>
-				</Scripts>
-			</Button>
-		</Frames>
-		<Scripts>
-			<OnLoad function="BattlePetTooltip_OnLoad"/>
-		</Scripts>
-	</Frame>
-	
-	<Frame name="FloatingBattlePetTooltip" inherits="BattlePetTooltipTemplate" movable="true" toplevel="true">
 		<Anchors>
 			<Anchor point="BOTTOM" x="0" y="80"/>
 		</Anchors>
@@ -153,6 +149,16 @@ UI.xsd">
 				<NormalTexture file="Interface\Buttons\UI-Panel-MinimizeButton-Up"/>
 				<PushedTexture file="Interface\Buttons\UI-Panel-MinimizeButton-Down"/>
 				<HighlightTexture file="Interface\Buttons\UI-Panel-MinimizeButton-Highlight" alphaMode="ADD"/>
+			</Button>
+			<Button parentKey="JournalClick" text="BATTLE_PET_TOOLTIP_CLICK">
+				<Size x="238" y="20"/>
+				<Anchors>
+					<Anchor point="TOP" relativeKey="$parent.Delimiter" relativePoint="BOTTOM" x="0" y="-3"/>
+				</Anchors>
+				<NormalFont style="GameFontNormalLeft"/>
+				<Scripts>
+					<OnClick function="BattlePetTooltipJournalClick_OnClick"/>
+				</Scripts>
 			</Button>
 		</Frames>
 		<Scripts>

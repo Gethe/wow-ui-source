@@ -194,9 +194,9 @@ function ScrollOfResurrectionSelection_RebuildEligibleList()
 	SOR_AVAILABLE_LIST = {};
 	--First, add RID friends:
 	for i=1, BNGetNumFriends() do
-		local presenceID, givenName, surname, toonName, toonID, client, isOnline, lastOnline, isAFK, isDND, messageText, noteText, isRIDFriend, messageTime, canSoR = BNGetFriendInfo(i);
+		local presenceID, presenceName, battleTag, isBattleTagPresence, toonName, toonID, client, isOnline, lastOnline, isAFK, isDND, messageText, noteText, isRIDFriend, messageTime, canSoR = BNGetFriendInfo(i);
 		if ( canSoR ) then
-			tinsert(SOR_AVAILABLE_LIST, string.format(BATTLENET_NAME_FORMAT, givenName, surname));
+			tinsert(SOR_AVAILABLE_LIST, presenceName);
 			tinsert(SOR_AVAILABLE_LIST, presenceID);
 			tinsert(SOR_AVAILABLE_LIST, "bn");
 		end

@@ -133,6 +133,13 @@ UnitPopupButtons["UNLOCK_TARGET_FRAME"] = { text = UNLOCK_FRAME, dist = 0 };
 UnitPopupButtons["TARGET_FRAME_BUFFS_ON_TOP"] = { text = BUFFS_ON_TOP, dist = 0, checkable = 1, isNotRadio = 1 };
 UnitPopupButtons["RESET_TARGET_FRAME_POSITION"] = { text = RESET_POSITION, dist = 0 };
 
+-- Add Friend related
+UnitPopupButtons["ADD_FRIEND"] = { text = ADD_FRIEND, dist = 0 };
+UnitPopupButtons["ADD_FRIEND_MENU"] = { text = ADD_FRIEND, dist = 0, nested = 1 };
+UnitPopupButtons["CHARACTER_FRIEND"] = { text = ADD_CHARACTER_FRIEND, dist = 0 };
+UnitPopupButtons["BATTLETAG_FRIEND"] = { text = SEND_BATTLETAG_REQUEST, dist = 0 };
+UnitPopupButtons["GUILD_BATTLETAG_FRIEND"] = { text = SEND_BATTLETAG_REQUEST, dist = 0 };
+
 -- Voice Chat Related
 UnitPopupButtons["MUTE"] = { text = MUTE, dist = 0 };
 UnitPopupButtons["UNMUTE"] = { text = UNMUTE, dist = 0 };
@@ -175,26 +182,29 @@ UnitPopupMenus = { };
 UnitPopupMenus["SELF"] = { "SET_FOCUS", "PVP_FLAG", "LOOT_METHOD", "LOOT_THRESHOLD", "OPT_OUT_LOOT_TITLE", "LOOT_PROMOTE", "CONVERT_TO_RAID", "CONVERT_TO_PARTY", "DUNGEON_DIFFICULTY", "RAID_DIFFICULTY", "RESET_INSTANCES", "RESET_CHALLENGE_MODE", "RAID_TARGET_ICON", "SELECT_ROLE", "INSTANCE_LEAVE", "LEAVE", "MOVE_PLAYER_FRAME", "MOVE_TARGET_FRAME", "CANCEL"};
 UnitPopupMenus["PET"] = { "SET_FOCUS", "PET_PAPERDOLL", "PET_RENAME", "PET_DISMISS", "PET_ABANDON", "MOVE_PLAYER_FRAME", "MOVE_TARGET_FRAME", "CANCEL" };
 UnitPopupMenus["OTHERPET"] = { "SET_FOCUS", "RAID_TARGET_ICON", "MOVE_PLAYER_FRAME", "MOVE_TARGET_FRAME",  "REPORT_PET", "CANCEL" };
-UnitPopupMenus["PARTY"] = { "SET_FOCUS", "MUTE", "UNMUTE", "PARTY_SILENCE", "PARTY_UNSILENCE", "RAID_SILENCE", "RAID_UNSILENCE", "BATTLEGROUND_SILENCE", "BATTLEGROUND_UNSILENCE", "WHISPER", "PROMOTE", "PROMOTE_GUIDE", "LOOT_PROMOTE", "VOTE_TO_KICK", "UNINVITE", "INSPECT", "ACHIEVEMENTS", "TRADE", "FOLLOW", "DUEL", "PET_BATTLE_PVP_DUEL", "RAID_TARGET_ICON", "SELECT_ROLE", "PVP_REPORT_AFK", "RAF_SUMMON", "RAF_GRANT_LEVEL", "MOVE_PLAYER_FRAME", "MOVE_TARGET_FRAME", "REPORT_PLAYER", "CANCEL" };
-UnitPopupMenus["PLAYER"] = { "SET_FOCUS", "WHISPER", "INSPECT", "INVITE", "ACHIEVEMENTS", "TRADE", "FOLLOW", "DUEL", "PET_BATTLE_PVP_DUEL", "RAID_TARGET_ICON", "RAF_SUMMON", "RAF_GRANT_LEVEL", "MOVE_PLAYER_FRAME", "MOVE_TARGET_FRAME", "REPORT_PLAYER", "CANCEL" };
-UnitPopupMenus["RAID_PLAYER"] = { "SET_FOCUS", "MUTE", "UNMUTE", "RAID_SILENCE", "RAID_UNSILENCE", "BATTLEGROUND_SILENCE", "BATTLEGROUND_UNSILENCE", "WHISPER", "INSPECT", "ACHIEVEMENTS", "TRADE", "FOLLOW", "DUEL", "PET_BATTLE_PVP_DUEL", "RAID_TARGET_ICON", "SELECT_ROLE", "RAID_LEADER", "RAID_PROMOTE", "RAID_DEMOTE", "LOOT_PROMOTE", "VOTE_TO_KICK", "RAID_REMOVE", "PVP_REPORT_AFK", "RAF_SUMMON", "RAF_GRANT_LEVEL", "MOVE_PLAYER_FRAME", "MOVE_TARGET_FRAME", "REPORT_PLAYER", "CANCEL" };
+UnitPopupMenus["PARTY"] = { "ADD_FRIEND", "ADD_FRIEND_MENU", "SET_FOCUS", "MUTE", "UNMUTE", "PARTY_SILENCE", "PARTY_UNSILENCE", "RAID_SILENCE", "RAID_UNSILENCE", "BATTLEGROUND_SILENCE", "BATTLEGROUND_UNSILENCE", "WHISPER", "PROMOTE", "PROMOTE_GUIDE", "LOOT_PROMOTE", "VOTE_TO_KICK", "UNINVITE", "INSPECT", "ACHIEVEMENTS", "TRADE", "FOLLOW", "DUEL", "PET_BATTLE_PVP_DUEL", "RAID_TARGET_ICON", "SELECT_ROLE", "PVP_REPORT_AFK", "RAF_SUMMON", "RAF_GRANT_LEVEL", "MOVE_PLAYER_FRAME", "MOVE_TARGET_FRAME", "REPORT_PLAYER", "CANCEL" };
+UnitPopupMenus["PLAYER"] = { "ADD_FRIEND", "ADD_FRIEND_MENU", "SET_FOCUS", "WHISPER", "INSPECT", "INVITE", "ACHIEVEMENTS", "TRADE", "FOLLOW", "DUEL", "PET_BATTLE_PVP_DUEL", "RAID_TARGET_ICON", "RAF_SUMMON", "RAF_GRANT_LEVEL", "MOVE_PLAYER_FRAME", "MOVE_TARGET_FRAME", "REPORT_PLAYER", "CANCEL" };
+UnitPopupMenus["RAID_PLAYER"] = { "ADD_FRIEND", "ADD_FRIEND_MENU", "SET_FOCUS", "MUTE", "UNMUTE", "RAID_SILENCE", "RAID_UNSILENCE", "BATTLEGROUND_SILENCE", "BATTLEGROUND_UNSILENCE", "WHISPER", "INSPECT", "ACHIEVEMENTS", "TRADE", "FOLLOW", "DUEL", "PET_BATTLE_PVP_DUEL", "RAID_TARGET_ICON", "SELECT_ROLE", "RAID_LEADER", "RAID_PROMOTE", "RAID_DEMOTE", "LOOT_PROMOTE", "VOTE_TO_KICK", "RAID_REMOVE", "PVP_REPORT_AFK", "RAF_SUMMON", "RAF_GRANT_LEVEL", "MOVE_PLAYER_FRAME", "MOVE_TARGET_FRAME", "REPORT_PLAYER", "CANCEL" };
 UnitPopupMenus["RAID"] = { "SET_FOCUS", "MUTE", "UNMUTE", "RAID_SILENCE", "RAID_UNSILENCE", "BATTLEGROUND_SILENCE", "BATTLEGROUND_UNSILENCE", "RAID_LEADER", "RAID_PROMOTE", "RAID_MAINTANK", "RAID_MAINASSIST", "LOOT_PROMOTE", "RAID_DEMOTE", "VOTE_TO_KICK", "RAID_REMOVE", "PVP_REPORT_AFK", "MOVE_PLAYER_FRAME", "MOVE_TARGET_FRAME", "REPORT_PLAYER", "CANCEL" };
-UnitPopupMenus["FRIEND"] = { "WHISPER", "POP_OUT_CHAT", "INVITE", "TARGET", "SET_NOTE", "IGNORE", "REPORT_PLAYER", "GUILD_PROMOTE", "GUILD_LEAVE", "PVP_REPORT_AFK", "REMOVE_FRIEND", "CANCEL" };
+UnitPopupMenus["FRIEND"] = { "WHISPER", "POP_OUT_CHAT", "INVITE", "TARGET", "SET_NOTE", "IGNORE", "REPORT_PLAYER", "PVP_REPORT_AFK", "REMOVE_FRIEND", "CANCEL" };
 UnitPopupMenus["FRIEND_OFFLINE"] = { "SET_NOTE", "IGNORE", "REMOVE_FRIEND", "CANCEL" };
 UnitPopupMenus["BN_FRIEND"] = { "WHISPER", "POP_OUT_CHAT", "CREATE_CONVERSATION_WITH", "BN_INVITE", "BN_TARGET", "BN_SET_NOTE", "BN_VIEW_FRIENDS", "BLOCK_COMMUNICATION", "BN_REPORT", "BN_REMOVE_FRIEND", "CANCEL" };
 UnitPopupMenus["BN_FRIEND_OFFLINE"] = { "BN_SET_NOTE", "BN_VIEW_FRIENDS", "BN_REPORT", "BN_REMOVE_FRIEND", "CANCEL" };
+UnitPopupMenus["GUILD"] = { "GUILD_BATTLETAG_FRIEND", "WHISPER", "POP_OUT_CHAT", "INVITE", "TARGET", "IGNORE", "REPORT_PLAYER", "GUILD_PROMOTE", "GUILD_LEAVE", "PVP_REPORT_AFK", "CANCEL" };
+UnitPopupMenus["GUILD_OFFLINE"] = { "GUILD_BATTLETAG_FRIEND", "CANCEL" };
 UnitPopupMenus["TEAM"] = { "WHISPER", "INVITE", "TARGET", "TEAM_PROMOTE", "TEAM_KICK", "TEAM_LEAVE", "TEAM_DISBAND", "CANCEL" };
 UnitPopupMenus["RAID_TARGET_ICON"] = { "RAID_TARGET_1", "RAID_TARGET_2", "RAID_TARGET_3", "RAID_TARGET_4", "RAID_TARGET_5", "RAID_TARGET_6", "RAID_TARGET_7", "RAID_TARGET_8", "RAID_TARGET_NONE" };
 UnitPopupMenus["SELECT_ROLE"] = { "SET_ROLE_TANK", "SET_ROLE_HEALER", "SET_ROLE_DAMAGER", "SET_ROLE_NONE" };
 UnitPopupMenus["CHAT_ROSTER"] = { "WHISPER", "TARGET", "MUTE", "UNMUTE", "CHAT_SILENCE", "CHAT_UNSILENCE", "CHAT_PROMOTE", "CHAT_DEMOTE", "CHAT_OWNER", "CANCEL"  };
 UnitPopupMenus["VEHICLE"] = { "SET_FOCUS", "RAID_TARGET_ICON", "VEHICLE_LEAVE", "MOVE_PLAYER_FRAME", "MOVE_TARGET_FRAME", "CANCEL" };
-UnitPopupMenus["TARGET"] = { "SET_FOCUS", "RAID_TARGET_ICON", "MOVE_PLAYER_FRAME", "MOVE_TARGET_FRAME", "CANCEL" };
+UnitPopupMenus["TARGET"] = { "ADD_FRIEND", "ADD_FRIEND_MENU", "SET_FOCUS", "RAID_TARGET_ICON", "MOVE_PLAYER_FRAME", "MOVE_TARGET_FRAME", "CANCEL" };
 UnitPopupMenus["ARENAENEMY"] = { "SET_FOCUS", "CANCEL" };
 UnitPopupMenus["FOCUS"] = { "CLEAR_FOCUS", "LARGE_FOCUS", "MOVE_FOCUS_FRAME", "RAID_TARGET_ICON", "CANCEL" };
 UnitPopupMenus["BOSS"] = { "SET_FOCUS", "RAID_TARGET_ICON", "CANCEL" };
 UnitPopupMenus["BATTLEPET"] = { "REPORT_BATTLE_PET", "CANCEL" };
 
 -- Second level menus
+UnitPopupMenus["ADD_FRIEND_MENU"] = { "BATTLETAG_FRIEND", "CHARACTER_FRIEND" };
 UnitPopupMenus["PVP_FLAG"] = { "PVP_ENABLE", "PVP_DISABLE"};
 UnitPopupMenus["LOOT_METHOD"] = { "FREE_FOR_ALL", "ROUND_ROBIN", "MASTER_LOOTER", "GROUP_LOOT", "NEED_BEFORE_GREED", "CANCEL" };
 UnitPopupMenus["LOOT_THRESHOLD"] = { "ITEM_QUALITY2_DESC", "ITEM_QUALITY3_DESC", "ITEM_QUALITY4_DESC", "CANCEL" };
@@ -230,6 +240,7 @@ UnitPopupFrames = {
 	"PartyMemberFrame4DropDown",
 	"FriendsDropDown",
 	"PetBattleUnitFrameDropDown",
+	"GuildMemberDropDown",
 };
 
 function UnitPopup_ShowMenu (dropdownMenu, which, unit, name, userData)
@@ -567,10 +578,30 @@ function UnitPopup_HideButtons ()
 		canCoop = 1;
 	end
 	
+	local haveBattleTag;
+	if ( BNFeaturesEnabledAndConnected() ) then
+		local _, battleTag = BNGetInfo();
+		if ( battleTag ) then
+			haveBattleTag = true;
+		end
+	end
+
 	for index, value in ipairs(UnitPopupMenus[UIDROPDOWNMENU_MENU_VALUE] or UnitPopupMenus[dropdownMenu.which]) do
 		UnitPopupShown[UIDROPDOWNMENU_MENU_LEVEL][index] = 1;
 		if ( value == "TRADE" ) then
 			if ( canCoop == 0 ) then
+				UnitPopupShown[UIDROPDOWNMENU_MENU_LEVEL][index] = 0;
+			end
+		elseif ( value == "ADD_FRIEND" ) then
+			if ( haveBattleTag or canCoop == 0 or not UnitIsSameServer("player", dropdownMenu.unit) or GetFriendInfo(UnitName(dropdownMenu.unit)) ) then
+				UnitPopupShown[UIDROPDOWNMENU_MENU_LEVEL][index] = 0;
+			end
+		elseif ( value == "ADD_FRIEND_MENU" ) then
+			if ( not haveBattleTag or not UnitIsPlayer(dropdownMenu.unit) ) then
+				UnitPopupShown[UIDROPDOWNMENU_MENU_LEVEL][index] = 0;
+			end
+		elseif ( value == "GUILD_BATTLETAG_FRIEND" ) then
+			if ( not haveBattleTag or UnitName("player" ) == dropdownMenu.name ) then
 				UnitPopupShown[UIDROPDOWNMENU_MENU_LEVEL][index] = 0;
 			end
 		elseif ( value == "INVITE" ) then
@@ -596,7 +627,7 @@ function UnitPopup_HideButtons ()
 				end
 			end
 		elseif ( value == "BN_INVITE" ) then
-			local presenceID, givenName, surname, toonName = BNGetFriendInfoByID(dropdownMenu.presenceID);
+			local presenceID, presenceName, battleTag, isBattleTagPresence, toonName = BNGetFriendInfoByID(dropdownMenu.presenceID);
 			if ( CanCooperateWithToon(dropdownMenu.presenceID) and (UnitInParty(toonName) or UnitInRaid(toonName)) ) then
 				UnitPopupShown[UIDROPDOWNMENU_MENU_LEVEL][index] = 0;
 			end
@@ -617,7 +648,7 @@ function UnitPopup_HideButtons ()
 			if ( not dropdownMenu.presenceID or not BNFeaturesEnabledAndConnected()) then
 				UnitPopupShown[UIDROPDOWNMENU_MENU_LEVEL][index] = 0;
 			else
-				local presenceID, givenName, surname, toonName, toonID, client, isOnline = BNGetFriendInfoByID(dropdownMenu.presenceID);
+				local presenceID, presenceName, battleTag, isBattleTagPresence, toonName, toonID, client, isOnline = BNGetFriendInfoByID(dropdownMenu.presenceID);
 				if ( not isOnline ) then
 					UnitPopupShown[UIDROPDOWNMENU_MENU_LEVEL][index] = 0;
 				end
@@ -661,7 +692,7 @@ function UnitPopup_HideButtons ()
 		elseif ( value == "BLOCK_COMMUNICATION" ) then
 			-- only show it for presence IDs that are not friends
 			if ( dropdownMenu.presenceID and BNFeaturesEnabledAndConnected()) then
-				local presenceID, givenName, surname, toonName, toonID, client, isOnline, lastOnline, isAFK, isDND, broadcastText, noteText, isFriend = BNGetFriendInfoByID(dropdownMenu.presenceID);
+				local presenceID, presenceName, battleTag, isBattleTagPresence, toonName, toonID, client, isOnline, lastOnline, isAFK, isDND, broadcastText, noteText, isFriend = BNGetFriendInfoByID(dropdownMenu.presenceID);
 				if ( isFriend ) then
 					UnitPopupShown[UIDROPDOWNMENU_MENU_LEVEL][index] = 0;
 				end
@@ -708,11 +739,11 @@ function UnitPopup_HideButtons ()
 				UnitPopupShown[UIDROPDOWNMENU_MENU_LEVEL][index] = 0;
 			end
 		elseif ( value == "GUILD_PROMOTE" ) then
-			if ( not IsGuildLeader() or not UnitIsInMyGuild(dropdownMenu.name) or dropdownMenu.name == UnitName("player") or not GuildFrame or not GuildFrame:IsShown() ) then
+			if ( not IsGuildLeader() or dropdownMenu.name == UnitName("player") ) then
 				UnitPopupShown[UIDROPDOWNMENU_MENU_LEVEL][index] = 0;
 			end
 		elseif ( value == "GUILD_LEAVE" ) then
-			if ( dropdownMenu.name ~= UnitName("player") or not GuildFrame or not GuildFrame:IsShown() ) then
+			if ( dropdownMenu.name ~= UnitName("player") ) then
 				UnitPopupShown[UIDROPDOWNMENU_MENU_LEVEL][index] = 0;
 			end
 		elseif ( value == "TEAM_PROMOTE" ) then
@@ -1328,6 +1359,24 @@ function UnitPopup_OnUpdate (elapsed)
 						if ( not canBeDamager ) then
 							enable = 0;
 						end
+					elseif ( value == "BATTLETAG_FRIEND" ) then
+						if ( not BNFeaturesEnabledAndConnected() ) then
+							enable = 0;
+						end
+					elseif ( value == "GUILD_BATTLETAG_FRIEND" ) then
+						-- the unit popup menu cannot handle colors of options that can be disabled
+						if ( not BNFeaturesEnabledAndConnected() ) then
+							enable = 0;
+						end
+					elseif ( value == "CHARACTER_FRIEND" ) then
+						if ( not UnitCanCooperate("player", UIDROPDOWNMENU_INIT_MENU.unit) ) then
+							enable = 0;
+						else
+							-- disable if player is from another realm or already on friends list
+							if ( not UnitIsSameServer("player", UIDROPDOWNMENU_INIT_MENU.unit) or GetFriendInfo(UnitName(UIDROPDOWNMENU_INIT_MENU.unit)) ) then
+								enable = 0;
+							end
+						end
 					end
 
 					if ( level > 1 ) then
@@ -1446,12 +1495,15 @@ function UnitPopup_OnClick (self)
 		StaticPopup_Show("SET_FRIENDNOTE", name);
 		PlaySound("igCharacterInfoClose");
 	elseif ( button == "BN_REMOVE_FRIEND" ) then
-		local presenceID, givenName, surname = BNGetFriendInfoByID(dropdownFrame.presenceID);
+		local presenceID, presenceName, _, isBattleTagPresence = BNGetFriendInfoByID(dropdownFrame.presenceID);
 		if ( presenceID ) then
-			local dialog = StaticPopup_Show("CONFIRM_REMOVE_FRIEND", string.format(BATTLENET_NAME_FORMAT, givenName, surname));
-			if ( dialog ) then
-				dialog.data = presenceID;
+			local promptText;
+			if ( isBattleTagPresence ) then
+				promptText = string.format(BATTLETAG_REMOVE_FRIEND_CONFIRMATION, presenceName);
+			else
+				promptText = string.format(REMOVE_FRIEND_CONFIRMATION, presenceName);
 			end
+			local dialog = StaticPopup_Show("CONFIRM_REMOVE_FRIEND", promptText, nil, presenceID);
 		end
 	elseif ( button == "BN_SET_NOTE" ) then
 		FriendsFrame.NotesID = dropdownFrame.presenceID;
@@ -1462,7 +1514,7 @@ function UnitPopup_OnClick (self)
 	elseif ( button == "BN_INVITE" ) then
 		FriendsFrame_BattlenetInvite(nil, dropdownFrame.presenceID);
 	elseif ( button == "BN_TARGET" ) then
-		local presenceID, givenName, surname, toonName = BNGetFriendInfoByID(dropdownFrame.presenceID);
+		local presenceID, presenceName, battleTag, isBattleTagPresence, toonName = BNGetFriendInfoByID(dropdownFrame.presenceID);
 		if ( toonName ) then
 			TargetUnit(toonName, 1);
 		end
@@ -1660,6 +1712,24 @@ function UnitPopup_OnClick (self)
 		BNet_InitiateReport(dropdownFrame.presenceID, strsub(button, 11));
 	elseif ( strsub(button, 1, 9) == "SET_ROLE_" ) then
 		UnitSetRole(dropdownFrame.unit, strsub(button, 10));
+	elseif ( button == "ADD_FRIEND" or button == "CHARACTER_FRIEND" ) then
+		AddFriend(name);
+	elseif ( button == "BATTLETAG_FRIEND" ) then
+		_, battleTag = BNGetInfo();
+		if ( not battleTag ) then
+			StaticPopupSpecial_Show(CreateBattleTagFrame);
+		else
+			BNCheckBattleTagInviteToUnit(unit);
+		end
+		CloseDropDownMenus();
+	elseif ( button == "GUILD_BATTLETAG_FRIEND" ) then
+		_, battleTag = BNGetInfo();
+		if ( not battleTag ) then
+			StaticPopupSpecial_Show(CreateBattleTagFrame);
+		else
+			BNCheckBattleTagInviteToGuildMember(name);
+		end
+		CloseDropDownMenus();
 	end
 	PlaySound("UChatScrollButton");
 end

@@ -105,7 +105,7 @@ function QuestInfo_ShowObjectives()
 	local numVisibleObjectives = 0;
 	for i = 1, numObjectives do
 		text, type, finished = GetQuestLogLeaderBoard(i);
-		if (type ~= "spell") then
+		if (type ~= "spell" and type ~= "log") then
 			numVisibleObjectives = numVisibleObjectives+1;
 			objective = _G["QuestInfoObjective"..numVisibleObjectives];
 			if ( not text or strlen(text) == 0 ) then

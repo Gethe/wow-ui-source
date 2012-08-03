@@ -34,9 +34,9 @@
 							<TexCoords left="0" right="0.630859375" top="0" bottom="0.7578125"/>
 						</Texture>
 						<FontString name="ReadyCheckFrameText" inherits="GameFontNormal" justifyV="MIDDLE">
-							<Size x="240" y="36"/>
+							<Size x="240" y="0"/>
 							<Anchors>
-								<Anchor point="TOP" x="20" y="-15"/>
+								<Anchor point="CENTER" relativePoint="TOP" x="20" y="-35"/>
 							</Anchors>
 						</FontString>
 					</Layer>

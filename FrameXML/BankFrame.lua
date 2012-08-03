@@ -34,7 +34,15 @@ end
 
 function BankFrameItemButton_OnEnter (self)
 	GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
-	if ( not GameTooltip:SetInventoryItem("player", self:GetInventorySlot()) ) then
+
+	local hasItem, hasCooldown, repairCost, speciesID, level, breedQuality, maxHealth, power, speed, name = GameTooltip:SetInventoryItem("player", self:GetInventorySlot());
+	if(speciesID and speciesID > 0) then
+		BattlePetToolTip_Show(speciesID, level, breedQuality, maxHealth, power, speed, name);
+		CursorUpdate(self);
+		return;
+	end
+
+	if ( not hasItem ) then
 		if ( self.isBag ) then
 			GameTooltip:SetText(self.tooltipText);
 		end

@@ -781,13 +781,6 @@ function ContainerFrameItemButton_OnModifiedClick(self, button)
 	if ( HandleModifiedItemClick(GetContainerItemLink(self:GetParent():GetID(), self:GetID())) ) then
 		return;
 	end
-	if ( TradeSkillFrame and TradeSkillFrame:IsShown() and IsModifiedClick("TRADESEARCHADD") )  then
-		local name = GetItemInfo( GetContainerItemID( self:GetParent():GetID(), self:GetID()) );
-		TradeSkillFrameSearchBox:SetFontObject("ChatFontSmall");
-		TradeSkillFrameSearchBoxSearchIcon:SetVertexColor(1.0, 1.0, 1.0);
-		TradeSkillFrameSearchBox:SetText(name);
-		return;
-	end
 	if ( IsModifiedClick("SOCKETITEM") ) then
 		SocketContainerItem(self:GetParent():GetID(), self:GetID());
 	end
@@ -819,7 +812,12 @@ function ContainerFrameItemButton_OnEnter(self)
 	end
 
 	local showSell = nil;
-	local hasCooldown, repairCost = GameTooltip:SetBagItem(self:GetParent():GetID(), self:GetID());
+	local hasCooldown, repairCost, speciesID, level, breedQuality, maxHealth, power, speed, name = GameTooltip:SetBagItem(self:GetParent():GetID(), self:GetID());
+	if(speciesID and speciesID > 0) then
+		BattlePetToolTip_Show(speciesID, level, breedQuality, maxHealth, power, speed, name);
+		return;
+	end
+
 	if ( InRepairMode() and (repairCost and repairCost > 0) ) then
 		GameTooltip:AddLine(REPAIR_COST, "", 1, 1, 1);
 		SetTooltipMoney(GameTooltip, repairCost);

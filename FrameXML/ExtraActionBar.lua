@@ -10,6 +10,7 @@ end
 function ExtraActionBar_Update()
 	if ( HasExtraActionBar() ) then
 		ExtraActionBarFrame:Show();
+		ActionButton_UpdateUsable(self.button);
 	end
 end
 
@@ -17,6 +18,7 @@ end
 function ExtraActionBar_OnShow (self)
 	local texture = GetOverrideBarSkin() or DefaultExtraActionStyle;
 	self.button.style:SetTexture(texture);
+	ActionButton_UpdateUsable(self.button);
 	UIParent_ManageFramePositions();
 end
 

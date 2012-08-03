@@ -1983,7 +1983,7 @@ StaticPopupDialogs["SET_BNFRIENDNOTE"] = {
 		BNSetFriendNote(FriendsFrame.NotesID, self.editBox:GetText());
 	end,
 	OnShow = function(self)
-		local presenceID, givenName, surname, toonName, toonID, client, isOnline, lastOnline, isAFK, isDND, messageText, noteText = BNGetFriendInfoByID(FriendsFrame.NotesID);
+		local presenceID, presenceName, battleTag, isBattleTagPresence, toonName, toonID, client, isOnline, lastOnline, isAFK, isDND, messageText, noteText = BNGetFriendInfoByID(FriendsFrame.NotesID);
 		if ( noteText ) then
 			self.editBox:SetText(noteText);
 		end
@@ -3065,7 +3065,7 @@ StaticPopupDialogs["CONFIRM_BNET_REPORT"] = {
 };
 
 StaticPopupDialogs["CONFIRM_REMOVE_FRIEND"] = {
-	text = REMOVE_FRIEND_CONFIRMATION,
+	text = "%s",
 	button1 = ACCEPT,
 	button2 = CANCEL,
 	OnAccept = function(self, presenceID)

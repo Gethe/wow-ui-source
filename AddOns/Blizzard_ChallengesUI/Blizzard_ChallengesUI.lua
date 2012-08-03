@@ -159,12 +159,14 @@ function ChallengesFrame_OnShow(self)
 	PVEFrame.TitleText:SetText(CHALLENGES);
 	RequestChallengeModeMapInfo();
 	RequestChallengeModeRewards();
-	RequestChallengeModeLeaders(ChallengesFrameDungeonButton1.mapID);
+	local mapID = self.selectedMapID or ChallengesFrameDungeonButton1.mapID;
+	RequestChallengeModeLeaders(mapID);
 end
 
 function ChallengesFrameDungeonButton_OnClick(self, button)
 	PlaySound("igMainMenuOptionCheckBoxOn");
 	ChallengesFrame_Update(ChallengesFrame, self.mapID);
+	RequestChallengeModeLeaders(self.mapID);
 	ChallengesFrameBestTimes_Update(ChallengesFrame, self.mapID);
 end
 

@@ -169,6 +169,7 @@ SharedPetBattleTemplates.xml
 LootHistory.xml
 FloatingPetBattleTooltip.xml
 QueueStatusFrame.xml
+BattlePetTooltip.xml
 
 ## add new modules above here
 LocalizationPost.xml

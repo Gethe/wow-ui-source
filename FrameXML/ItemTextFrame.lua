@@ -38,9 +38,9 @@ function ItemTextFrame_OnEvent(self, event, ...)
 		local creator = ItemTextGetCreator();
 		if ( creator ) then
 			creator = "\n\n"..ITEM_TEXT_FROM.."\n"..creator.."\n\n\n";
-			ItemTextPageText:SetText("\n"..ItemTextGetText()..creator);
+			ItemTextPageText:SetText(ItemTextGetText()..creator);
 		else
-			ItemTextPageText:SetText("\n"..ItemTextGetText().."\n\n");
+			ItemTextPageText:SetText(ItemTextGetText().."\n\n");
 		end
 		
 		ItemTextScrollFrameScrollBar:SetValue(0);

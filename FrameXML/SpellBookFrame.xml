@@ -864,7 +864,7 @@
 			</OnReceiveDrag>
 			<OnEnter>
 				GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
-				GameTooltip:SetSpellByID(self.spellID);
+				GameTooltip:SetSpellByID(self.spellID, false, false, true);
 			</OnEnter>
 			<OnLeave>
 				GameTooltip:Hide();

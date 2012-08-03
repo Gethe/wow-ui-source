@@ -500,22 +500,22 @@
 		<Layer level="BACKGROUND">
 			<Texture name="$parentBackground" file="Interface\AchievementFrame\UI-Achievement-Alert-Background-Mini">
 				<Anchors>
-					<Anchor point="LEFT"/>
+					<Anchor point="LEFT" x="23" y="0"/>
 				</Anchors>
 			</Texture>
 			<FontString name="$parentUnlocked" inherits="GameFontBlackTiny" text="ACHIEVEMENT_PROGRESSED">
 				<Size x="200" y="0"/>
 				<Anchors>
 					<Anchor point="TOP">
-						<Offset x="0" y="-14"/>
+						<Offset x="23" y="-14"/>
 					</Anchor>
 				</Anchors>
 			</FontString>
 			<FontString name="$parentName" inherits="GameFontHighlight" text="For the Alliance!">
-				<Size x="200" y="0"/>
+				<Size x="200" y="16"/>
 				<Anchors>
 					<Anchor point="TOP">
-						<Offset x="0" y="-28"/>
+						<Offset x="23" y="-26"/>
 					</Anchor>
 				</Anchors>
 			</FontString>
@@ -524,7 +524,7 @@
 			<Texture name="$parentGlow" file="Interface\AchievementFrame\UI-Achievement-Alert-Glow" alphaMode="ADD" hidden="true" parentKey="glow">
 				<Size x="257" y="52"/>
 				<Anchors>
-					<Anchor point="CENTER" x="0" y="0"/>
+					<Anchor point="CENTER" x="23" y="0"/>
 				</Anchors>
 				<Animations>
 					<AnimationGroup name="$parentAnimIn" parentKey="animIn">
@@ -542,7 +542,7 @@
 			<Texture name="$parentShine" file="Interface\AchievementFrame\UI-Achievement-Alert-Glow" alphaMode="ADD" hidden="true" parentKey="shine">
 				<Size x="67" y="52"/>
 				<Anchors>
-					<Anchor point="TOPLEFT" x="0" y="0"/>
+					<Anchor point="TOPLEFT" x="23" y="0"/>
 				</Anchors>
 				<Animations>
 					<AnimationGroup name="$parentAnimIn" parentKey="animIn">
@@ -564,7 +564,7 @@
 		<Frame name="$parentIcon">
 			<Size x="116" y="116"/>
 			<Anchors>
-				<Anchor point="LEFT" x="-65" y="0"/>
+				<Anchor point="LEFT" x="-44" y="0"/>
 			</Anchors>		
 			<Layers>
 				<Layer level="BORDER">

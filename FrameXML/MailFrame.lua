@@ -288,7 +288,10 @@ function InboxFrameItem_OnEnter(self)
 	GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
 	if ( self.hasItem ) then
 		if ( self.itemCount == 1) then
-			GameTooltip:SetInboxItem(self.index);
+			local hasCooldown, speciesID, level, breedQuality, maxHealth, power, speed, name = GameTooltip:SetInboxItem(self.index);
+			if(speciesID and speciesID > 0) then
+				BattlePetToolTip_Show(speciesID, level, breedQuality, maxHealth, power, speed, name);
+			end
 		else
 			GameTooltip:AddLine(MAIL_MULTIPLE_ITEMS.." ("..self.itemCount..")");
 		end
@@ -759,7 +762,10 @@ end
 
 function OpenMailAttachment_OnEnter(self, index)
 	GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
-	GameTooltip:SetInboxItem(InboxFrame.openMailID, index);
+	local hasCooldown, speciesID, level, breedQuality, maxHealth, power, speed, name = GameTooltip:SetInboxItem(InboxFrame.openMailID, index);
+	if(speciesID and speciesID > 0) then
+		BattlePetToolTip_Show(speciesID, level, breedQuality, maxHealth, power, speed, name);
+	end
 
 	if ( OpenMailFrame.cod ) then
 		SetTooltipMoney(GameTooltip, OpenMailFrame.cod);
@@ -1097,7 +1103,10 @@ function SendMailAttachment_OnEnter(self)
 	local index = self:GetID();
 	GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
 	if ( GetSendMailItem(index) ) then
-		GameTooltip:SetSendMailItem(index);
+		local hasCooldown, speciesID, level, breedQuality, maxHealth, power, speed, name = GameTooltip:SetSendMailItem(index);
+		if(speciesID and speciesID > 0) then
+			BattlePetToolTip_Show(speciesID, level, breedQuality, maxHealth, power, speed, name);
+		end
 	else
 		GameTooltip:SetText(ATTACHMENT_TEXT, 1.0, 1.0, 1.0);
 	end

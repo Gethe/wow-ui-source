@@ -254,7 +254,7 @@
 						else
 							self:GetParent():UnlockHighlight();
 						end
-						GameTooltip:Hide();
+						GameTooltip_Hide();
 						ResetCursor();
 					</OnLeave>
 					<OnClick>
@@ -567,7 +567,7 @@
 						else
 							self:GetParent():UnlockHighlight();
 						end
-						GameTooltip:Hide();
+						GameTooltip_Hide();
 						ResetCursor();
 					</OnLeave>
 					<OnClick>
@@ -823,7 +823,7 @@
 						else
 							self:GetParent():UnlockHighlight();
 						end
-						GameTooltip:Hide();
+						GameTooltip_Hide();
 						ResetCursor();
 					</OnLeave>
 					<OnClick>

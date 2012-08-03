@@ -154,6 +154,7 @@ function ActionBarActionEventsFrame_OnLoad(self)
 	self:RegisterEvent("PET_STABLE_SHOW");
 	self:RegisterEvent("SPELL_ACTIVATION_OVERLAY_GLOW_SHOW");
 	self:RegisterEvent("SPELL_ACTIVATION_OVERLAY_GLOW_HIDE");
+	self:RegisterEvent("UPDATE_SUMMONPETS_ACTION");
 end
 
 function ActionBarActionEventsFrame_OnEvent(self, event, ...)
@@ -584,6 +585,14 @@ function ActionButton_OnEvent (self, event, ...)
 		end
 	elseif ( event == "SPELL_UPDATE_CHARGES" ) then
 		ActionButton_UpdateCount(self);
+	elseif ( event == "UPDATE_SUMMONPETS_ACTION" ) then
+		local actionType, id = GetActionInfo(self.action);
+		if (actionType == "summonpet") then
+			local texture = GetActionTexture(self.action);
+			if (texture) then
+				self.icon:SetTexture(texture);
+			end
+		end
 	end
 end
 

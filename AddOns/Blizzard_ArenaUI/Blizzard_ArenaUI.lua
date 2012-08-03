@@ -117,6 +117,8 @@ function ArenaEnemyFrame_OnLoad(self)
 	self.unitHPPercent = 1;
 	
 	self.classPortrait = _G[self:GetName().."ClassPortrait"];
+	self.specPortrait = _G[self:GetName().."SpecPortrait"];
+	self.specBorder = _G[self:GetName().."SpecBorder"];
 	ArenaEnemyFrame_UpdatePlayer(self, true);
 	self:RegisterEvent("UNIT_PET");
 	self:RegisterEvent("ARENA_OPPONENT_UPDATE");
@@ -154,7 +156,10 @@ function ArenaEnemyFrame_UpdatePlayer(self, useCVars)--At some points, we need t
 	local specID = GetArenaOpponentSpec(id);
 	if (specID and specID > 0) then 
 		local _, _, _, specIcon = GetSpecializationInfoByID(specID);
-		SetPortraitToTexture(_G["ArenaEnemyFrame"..id.."SpecPortrait"], specIcon);
+		self.specBorder:Show();
+		SetPortraitToTexture(self.specPortrait, specIcon);
+	else
+		self.specBorder:Hide();
 	end
 	
 	-- When not in an arena, show their faction icon (these are really flag carriers, not arena opponents)
@@ -313,6 +318,7 @@ function ArenaEnemyPetFrame_OnEvent(self, event, ...)
 		elseif ( arg2 == "cleared" ) then
 			ArenaEnemyFrame_Unlock(self);
 			self:Hide()
+			ArenaPrepFrames:Hide()
 		end
 	elseif ( event == "UNIT_CLASSIFICATION_CHANGED" and arg1 == self.unit ) then
 		UnitFrame_Update(self);

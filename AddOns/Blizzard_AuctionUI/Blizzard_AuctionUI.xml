@@ -1448,7 +1448,10 @@
 							<OnEnter>
 								GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
 								if ( GetAuctionSellItemInfo() ) then
-									GameTooltip:SetAuctionSellItem();
+									local hasCooldown, speciesID, level, breedQuality, maxHealth, power, speed, name = GameTooltip:SetAuctionSellItem();
+									if(speciesID and speciesID > 0) then
+										BattlePetToolTip_Show(speciesID, level, breedQuality, maxHealth, power, speed, name);
+									end
 								else
 									GameTooltip:SetText(AUCTION_ITEM_TEXT, 1.0, 1.0, 1.0);
 								end

@@ -1507,7 +1507,7 @@
 		</Size>
 		<Layers>
 			<Layer level="ARTWORK">
-				<Texture name="$parentTexture" file="Interface\FriendsFrame\InformationIcon">
+				<Texture name="$parentTexture" file="Interface\FriendsFrame\InformationIcon" parentKey="texture">
 					<Anchors>
 						<Anchor point="TOPLEFT"/>
 					</Anchors>
@@ -1516,10 +1516,10 @@
 		</Layers>
 		<Scripts>
 			<OnMouseDown>
-				_G[self:GetName().."Texture"]:SetPoint("TOPLEFT", 1, -1);
+				self.texture:SetPoint("TOPLEFT", 1, -1);
 			</OnMouseDown>
 			<OnMouseUp>
-				_G[self:GetName().."Texture"]:SetPoint("TOPLEFT", 0, 0);
+				self.texture:SetPoint("TOPLEFT", 0, 0);
 			</OnMouseUp>
 		</Scripts>
 		<HighlightTexture file="Interface\FriendsFrame\InformationIcon-Highlight" alphaMode="ADD">
@@ -3808,5 +3808,134 @@
 	<Frame name="HelpPlateBoxHighlight" inherits="GlowBorderTemplate" virtual="true" hidden="true">
 		<Size x="200" y="200"/>
 	</Frame>
+
+	<ScrollFrame name="InputScrollFrameTemplate" inherits="UIPanelScrollFrameTemplate" virtual="true">
+		<Size x="278" y="48"/>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="TopLeftTex" file="Interface\Common\Common-Input-Border-TL">
+					<Size x="8" y="8"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" x="-5" y="5"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="TopRightTex" file="Interface\Common\Common-Input-Border-TR">
+					<Size x="8" y="8"/>
+					<Anchors>
+						<Anchor point="TOPRIGHT" x="5" y="5"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="TopTex" file="Interface\Common\Common-Input-Border-T">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.TopLeftTex" relativePoint="TOPRIGHT"/>
+						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.TopRightTex" relativePoint="BOTTOMLEFT"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="BottomLeftTex" file="Interface\Common\Common-Input-Border-BL">
+					<Size x="8" y="8"/>
+					<Anchors>
+						<Anchor point="BOTTOMLEFT" x="-5" y="-5"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="BottomRightTex" file="Interface\Common\Common-Input-Border-BR">
+					<Size x="8" y="8"/>
+					<Anchors>
+						<Anchor point="BOTTOMRIGHT" x="5" y="-5"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="BottomTex" file="Interface\Common\Common-Input-Border-B">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.BottomLeftTex" relativePoint="TOPRIGHT"/>
+						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.BottomRightTex" relativePoint="BOTTOMLEFT"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="LeftTex" file="Interface\Common\Common-Input-Border-L">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.TopLeftTex" relativePoint="BOTTOMLEFT"/>
+						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.BottomLeftTex" relativePoint="TOPRIGHT"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="RightTex" file="Interface\Common\Common-Input-Border-R">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.TopRightTex" relativePoint="BOTTOMLEFT"/>
+						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.BottomRightTex" relativePoint="TOPRIGHT"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="MiddleTex" file="Interface\Common\Common-Input-Border-M">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.LeftTex" relativePoint="TOPRIGHT"/>
+						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.RightTex" relativePoint="BOTTOMLEFT"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="OVERLAY">
+				<FontString inherits="GameFontDisableLarge" parentKey="CharCount">
+					<Anchors>
+						<Anchor point="BOTTOMRIGHT" x="-6" y="0"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Button parentKey="FocusButton" setAllPoints="true">
+				<Scripts>
+					<OnClick>
+						self:GetParent().EditBox:SetFocus();
+					</OnClick>
+				</Scripts>
+			</Button>
+		</Frames>
+		<Scripts>
+			<OnLoad function="InputScrollFrame_OnLoad"/>
+		</Scripts>
+		<ScrollChild>
+			<EditBox parentKey="EditBox" multiLine="true" letters="127" countInvisibleLetters="true" autoFocus="false">
+				<Size x="1" y="1"/>
+				<Anchors>
+					<Anchor point="TOPLEFT"/>
+				</Anchors>
+				<Layers>
+					<Layer level="BORDER">
+						<FontString parentKey="PromptText" inherits="GameFontNormalSmall" justifyH="LEFT" justifyV="MIDDLE">
+							<Anchors>
+								<Anchor point="LEFT" x="3" y="0"/>
+							</Anchors>
+							<Color r="0.35" g="0.35" b="0.35"/>
+						</FontString>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnTabPressed>
+						if ( self.nextEditBox ) then
+							self.nextEditBox:SetFocus();
+						end
+					</OnTabPressed>
+					<OnTextChanged>
+						local scrollFrame = self:GetParent();
+						ScrollingEdit_OnTextChanged(self, scrollFrame);
+						if ( self:GetText() ~= "" ) then
+							self.PromptText:Hide();
+						else
+							self.PromptText:Show();
+						end
+						scrollFrame.CharCount:SetText(self:GetMaxLetters() - self:GetNumLetters());
+						if ( scrollFrame.ScrollBar:IsShown() ) then
+							scrollFrame.CharCount:SetPoint("BOTTOMRIGHT", -17, 0);
+						else
+							scrollFrame.CharCount:SetPoint("BOTTOMRIGHT", 0, 0);
+						end
+					</OnTextChanged> 
+					<OnCursorChanged function="ScrollingEdit_OnCursorChanged"/>
+					<OnUpdate>
+						ScrollingEdit_OnUpdate(self, elapsed, self:GetParent());
+					</OnUpdate>
+					<OnEscapePressed>
+						self:ClearFocus();
+					</OnEscapePressed>
+				</Scripts>
+				<FontString inherits="GameFontHighlightSmall"/>
+			</EditBox>
+		</ScrollChild>
+	</ScrollFrame>
 
 </Ui>

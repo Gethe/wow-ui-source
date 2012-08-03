@@ -1607,7 +1607,12 @@ end
 
 function AuctionFrameItem_OnEnter(self, type, index)
 	GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
-	GameTooltip:SetAuctionItem(type, index);
+
+	local hasCooldown, speciesID, level, breedQuality, maxHealth, power, speed, name = GameTooltip:SetAuctionItem(type, index);
+	if(speciesID and speciesID > 0) then
+		BattlePetToolTip_Show(speciesID, level, breedQuality, maxHealth, power, speed, name);
+		return;
+	end
 
 	-- add price per unit info
 	local button;

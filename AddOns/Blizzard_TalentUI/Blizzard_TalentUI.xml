@@ -199,19 +199,20 @@
 						<Anchor point="CENTER" relativeTo="$parentLeftCap" relativePoint="RIGHT" x="-5" y="0"/>
 					</Anchors>
 				</FontString>
-				<Texture parentKey="TopLine" hidden="true">					
-					<Size x="627" y = "1"/>
-					<Color r="1.0" g="0.823" b="0.0" a="0.3"/>
+				<Texture parentKey="TopLine" file="Interface\Common\talent-blue-glow" horizTile="true" hidden="true">					
+					<Size x="627" y = "16"/>
 					<Anchors>
-						<Anchor point="TOP" x="0" y="0"/>
+						<Anchor point="TOP" x="0" y="16"/>
 					</Anchors>
+					<Color r="1" g="1" b="1" a="0.5"/>
 				</Texture>
-				<Texture parentKey="BottomLine" hidden="true">					
-					<Size x="627" y = "1"/>
-					<Color r="1.0" g="0.823" b="0.0" a="0.3"/>
+				<Texture parentKey="BottomLine" file="Interface\Common\talent-blue-glow" horizTile="true" hidden="true">					
+					<Size x="627" y = "16"/>
 					<Anchors>
-						<Anchor point="BOTTOM" x="0" y="0"/>
+						<Anchor point="BOTTOM" x="0" y="-16"/>
 					</Anchors>
+					<TexCoords left="0" right="1" top="1" bottom="0"/>
+					<Color r="1" g="1" b="1" a="0.5"/>
 				</Texture>
 			</Layer>
 		</Layers>

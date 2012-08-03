@@ -62,7 +62,7 @@ end
 function InspectGlyphFrameGlyph_UpdateSlot (self, clear)
 	local id = self:GetID();
 	local talentGroup = PlayerTalentFrame and PlayerTalentFrame.talentGroup;
-	local enabled, glyphType, glyphTooltipIndex, glyphSpell, iconFilename = GetGlyphSocketInfo(id, talentGroup, true, inspectedUnit);
+	local enabled, glyphType, glyphTooltipIndex, glyphSpell, iconFilename, glyphID = GetGlyphSocketInfo(id, talentGroup, true, inspectedUnit);
 	if not glyphType then
 		return;
 	end
@@ -83,12 +83,12 @@ function InspectGlyphFrameGlyph_UpdateSlot (self, clear)
 		self:Hide();
 	elseif ( not glyphSpell or (clear == true)) then
 		slotAnimation.glyph = nil;
-		self.spell = nil;
+		self.glyphID = nil;
 		self.glyph:SetTexture("");
 		self:Show();
 	else
 		slotAnimation.glyph = true;
-		self.spell = glyphSpell;
+		self.glyphID = glyphID;
 		self.glyph:Show();
 		if ( iconFilename ) then
 			SetPortraitToTexture(self.glyph, iconFilename);
@@ -132,29 +132,12 @@ function InspectGlyphFrameGlyph_OnUpdate (self, elapsed)
 end
 
 
-function InspectGlyphFrameGlyph_OnClick (self, button)
-	local id = self:GetID();
-	local talentGroup = PlayerTalentFrame and PlayerTalentFrame.talentGroup;
-	local _, _, _, glyphSpell = GetGlyphSocketInfo(id, talentGroup);
+function InspectGlyphFrameGlyph_OnClick (self)
 
 	if IsModifiedClick("CHATLINK") and ChatEdit_GetActiveWindow() then
-		local link = GetGlyphLink(id, talentGroup);
+		local link = GetGlyphLinkByID(self.glyphID);
 		if link then
 			ChatEdit_InsertLink(link);
-		end
-	elseif talentGroup == GetActiveSpecGroup()  then
-		if button == "RightButton" then
-			local glyphName;
-			if ( glyphSpell ) then
-				glyphName = GetSpellInfo(glyphSpell);
-				local dialog = StaticPopup_Show("CONFIRM_REMOVE_GLYPH", nil, nil, {name = glyphName, id = id});
-			end
-		elseif  GlyphMatchesSocket(id)  then
-			if glyphSpell then
-				local dialog = StaticPopup_Show("CONFIRM_GLYPH_PLACEMENT", nil, nil, id);
-			else
-				PlaceGlyphInSocket(id);
-			end
 		end
 	end
 end
@@ -174,25 +157,6 @@ function InspectGlyphFrameGlyph_OnLeave (self)
 end
 
 
-function InspectGlyphFrameHeader_OnClick (self, button)
-	ToggleGlyphFilter(self.filter);
-	GlyphFrame_UpdateGlyphList ();
-end
-
-
-function InspectGlyphFrameSpell_OnClick (self, button)
-	if ( IsModifiedClick("CHATLINK") ) then
-		local _, _, _, _, _, link = GetGlyphInfo(self.glyphIndex);
-		if ( link ) then
-			ChatEdit_InsertLink(link);
-		end
-	else
-		if self.disabledBG:IsShown() then
-			return;
-		end
-		CastGlyph(self.glyphIndex);
-	end
-end
 
 --------------------------------------------------------------------------------
 ------------------  Specialization Button Functions     ---------------------------
@@ -255,3 +219,12 @@ function InspectTalentFrameTalent_OnEnter(self)
 	GameTooltip:SetTalent(self:GetID(),true, self.talentGroup, inspectedUnit, classID);
 end
 
+function InspectTalentFrameTalent_OnClick(self)
+	if ( IsModifiedClick("CHATLINK") ) then
+		local _, _, classID = UnitClass(inspectedUnit);
+		local link = GetTalentLink(self:GetID(), InspectTalentFrame.InspectTalents.inspect, classID);
+		if ( link ) then
+			ChatEdit_InsertLink(link);
+		end
+	end
+end

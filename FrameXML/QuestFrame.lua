@@ -452,7 +452,7 @@ function QuestDetailAcceptButton_OnClick()
 		QuestFrame.dialog = StaticPopup_Show("CONFIRM_ACCEPT_PVP_QUEST");
 	else
 		if ( QuestFrame.autoQuest ) then
-			HideUIPanel(QuestFrame);
+			AcknowledgeAutoAcceptQuest();
 		else
 			AcceptQuest();
 		end

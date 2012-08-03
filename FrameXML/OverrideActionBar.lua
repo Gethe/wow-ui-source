@@ -4,7 +4,7 @@ local textureList =  {
 	"_BG",
 	"EndCapL",
 	"EndCapR",
-	"_Boader",
+	"_Border",
 	"Divider1",
 	"Divider2",
 	"Divider3",
@@ -47,7 +47,7 @@ function OverrideActionBar_OnLoad(self)
 	local divWidth = self.xpBar.XpMid:GetWidth()/19;
 	local xpos = 6;	
 	for i=1,19 do
-		local texture = self.xpBar:CreateTexture("OverrideActionBarXpDiv"..i, "BACKGROUND", nil, 2);
+		local texture = self.xpBar:CreateTexture("OverrideActionBarXpDiv"..i, "ARTWORK", nil, 2);
 		texture:SetSize(7, 14);
 		texture:SetTexCoord(0.2773438, 0.2910156, 0.390625, 0.4179688);
 		self.xpBar["XpDiv"..i] = texture;
@@ -190,6 +190,7 @@ function OverrideActionBar_Setup(skin, barIndex)
 	for k=1,MAX_ALT_SPELLBUTTONS do
 		local button = OverrideActionBar["SpellButton"..k];
 		ActionButton_UpdateAction(button);
+		ActionButton_Update(button);
 		local _, spellID = GetActionInfo(button.action);
 		if spellID and spellID > 0 then
 			button:SetAttribute("statehidden", false);

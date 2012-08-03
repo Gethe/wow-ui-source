@@ -5,7 +5,12 @@ local SPELLFLYOUT_FINAL_SPACING = 4;
 
 
 function SpellFlyoutButton_OnClick(self)
-	if (self.spellName and not self.offSpec) then
+	if ( self.offSpec ) then
+		return;
+	elseif ( self.spellID ) then
+		CastSpellByID(self.spellID);
+		self:GetParent():Hide();
+	elseif ( self.spellName ) then
 		CastSpellByName(self.spellName);
 		self:GetParent():Hide();
 	end

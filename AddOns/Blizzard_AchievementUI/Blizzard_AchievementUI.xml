@@ -353,8 +353,14 @@
 					GameTooltip:AddLine(self.desc, 1, 1, 1, 1);
 				end
 				if ( self.numCriteria ) then
-					for i = 1, self.numCriteria do
-						GameTooltip:AddLine(self["criteria"..i]);
+					if ( self.numCriteria > 30 ) then
+						for i = 1, self.numCriteria, 2 do
+							GameTooltip:AddDoubleLine(self["criteria"..i], self["criteria"..(i+1)]);
+						end
+					else
+						for i = 1, self.numCriteria do
+							GameTooltip:AddLine(self["criteria"..i]);
+						end
 					end
 				end
 				GameTooltip:Show();

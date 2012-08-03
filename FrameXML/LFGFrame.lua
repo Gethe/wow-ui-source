@@ -799,6 +799,12 @@ function LFGDungeonReadyPopup_Update()
 		end
 
 		LFGDungeonReadyDialog_UpdateRewards(id, role);
+		LFGDungeonReadyDialogRewardsFrame:ClearAllPoints();
+		if ( subtypeID == LFG_SUBTYPEID_SCENARIO ) then
+			LFGDungeonReadyDialogRewardsFrame:SetPoint("BOTTOM", LFGDungeonReadyDialogRoleIcon, "BOTTOM", 0, 15);
+		else
+			LFGDungeonReadyDialogRewardsFrame:SetPoint("BOTTOMLEFT", LFGDungeonReadyDialogRoleIcon, "BOTTOMRIGHT", 19, 15);
+		end
 	end
 end
 
@@ -922,7 +928,7 @@ function LFGDungeonReadyDialog_UpdateInstanceInfo(name, completedEncounters, tot
 	local instanceInfoFrame = LFGDungeonReadyDialogInstanceInfoFrame;
 	instanceInfoFrame.name:SetFontObject(GameFontNormalLarge);
 	instanceInfoFrame.name:SetText(name);
-	if ( instanceInfoFrame.name:GetWidth() + 20 > LFGDungeonReadyDialog:GetWidth() ) then
+	if ( instanceInfoFrame.name:GetStringWidth() + 20 > LFGDungeonReadyDialog:GetWidth() ) then
 		instanceInfoFrame.name:SetFontObject(GameFontNormal);
 	end
 	

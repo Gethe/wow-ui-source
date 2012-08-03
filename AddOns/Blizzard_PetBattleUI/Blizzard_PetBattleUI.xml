@@ -94,6 +94,7 @@
 					<Color r="0" g="1" b="0"/>
 				</Texture>
 				<FontString parentKey="Name" inherits="GameFontNormalSmall" justifyH="LEFT">
+					<Size x="130" y="12"/>
 					<Anchors>
 						<Anchor point="TOPLEFT" relativeKey="$parent.Icon" relativePoint="TOPRIGHT" x="0" y="-3"/>
 					</Anchors>
@@ -1367,6 +1368,7 @@
 									<OnLoad>
 										PetBattleActionButton_Initialize(self, LE_BATTLE_PET_ACTION_SKIP);
 									</OnLoad>
+									<OnEvent function="PetBattleActionButton_OnEvent"/>
 									<OnClick>
 										StaticPopup_Hide("PET_BATTLE_FORFEIT",nil);
 										C_PetBattles.SkipTurn();
@@ -1534,6 +1536,9 @@
 		<Scripts>
 			<OnLoad function="PetBattleFrame_OnLoad"/>
 			<OnEvent function="PetBattleFrame_OnEvent"/>
+			<OnShow>
+				UIParent_ManageFramePositions();
+			</OnShow>
 		</Scripts>
 	</Frame>
 	<Frame name="PetBattlePrimaryUnitTooltip" inherits="PetBattleUnitTooltipTemplate"/>

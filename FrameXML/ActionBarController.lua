@@ -27,7 +27,6 @@ function ActionBarController_OnLoad(self)
 	self:RegisterEvent("UPDATE_SHAPESHIFT_FORM");
 	self:RegisterEvent("UPDATE_SHAPESHIFT_FORMS");
 	self:RegisterEvent("UPDATE_SHAPESHIFT_USABLE");
-	--self:RegisterEvent("UPDATE_SHAPESHIFT_COOLDOWN");
 	self:RegisterEvent("UPDATE_INVENTORY_ALERTS");	-- Wha?? Still Wha...
 	
 	-- Possess Bar

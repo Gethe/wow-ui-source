@@ -136,7 +136,7 @@
 						end
 					</OnUpdate>
 					<OnLeave>
-						GameTooltip:Hide();
+						GameTooltip_Hide();
 						SetMoneyFrameColor("GameTooltipMoneyFrame1", "white");
 					</OnLeave>
 				</Scripts>
@@ -239,7 +239,7 @@
 				end
 			</OnUpdate>
 			<OnLeave>
-				GameTooltip:Hide();
+				GameTooltip_Hide();
 			</OnLeave>
 		</Scripts>
 		<HighlightTexture alphaMode="ADD" file="Interface\Buttons\ButtonHilight-Square"/>
@@ -253,7 +253,10 @@
 			<OnEvent>
 				--GameTooltip:Hide();
 				if ( GameTooltip:IsOwned(self) ) then
-					GameTooltip:SetInboxItem(InboxFrame.openMailID, self:GetID());
+					local hasCooldown, speciesID, level, breedQuality, maxHealth, power, speed, name = GameTooltip:SetInboxItem(InboxFrame.openMailID, self:GetID());
+					if(speciesID and speciesID > 0) then
+						BattlePetToolTip_Show(speciesID, level, breedQuality, maxHealth, power, speed, name);
+					end
 					GameTooltip:Show();
 				end
 			</OnEvent>
@@ -273,7 +276,7 @@
 				end
 			</OnUpdate>
 			<OnLeave>
-				GameTooltip:Hide();
+				GameTooltip_Hide();
 				SetMoneyFrameColor("GameTooltipMoneyFrame1", "white");
 			</OnLeave>
 		</Scripts>

@@ -60,7 +60,7 @@
 			</OnEnter>
 			<OnLeave>
 				self.updateTooltip = nil;
-				GameTooltip:Hide();
+				GameTooltip_Hide();
 				ResetCursor();
 			</OnLeave>
 			<OnHide>

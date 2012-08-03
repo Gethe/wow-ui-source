@@ -16,7 +16,7 @@ function MerchantFrame_OnLoad(self)
 	
 	MoneyFrame_SetMaxDisplayWidth(MerchantMoneyFrame, 160);
 	
-	UIDropDownMenu_SetWidth(self.lootFilter, 95);
+	UIDropDownMenu_SetWidth(self.lootFilter, 132);
 	UIDropDownMenu_Initialize(self.lootFilter, MerchantFrame_InitFilter);
 end
 

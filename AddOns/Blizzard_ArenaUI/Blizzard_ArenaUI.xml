@@ -159,7 +159,7 @@
 		</Scripts>
 	</Button>
 	<Button name="ArenaPrepFrameTemplate" frameStrata="LOW" toplevel="true" movable="true" hidden="true" inherits="SecureUnitButtonTemplate" virtual="true">
-		<Size x="102" y="32"/>
+		<Size x="112" y="32"/>
 		<Layers>
 			<Layer level="BACKGROUND">
 				<Texture name="$parentFlash" file="Interface\TargetingFrame\UI-PartyFrame-Flash" hidden="true">
@@ -171,7 +171,7 @@
 				<Texture name="$parentClassPortrait" file="Interface\TargetingFrame\UI-Classes-Circles" parentKey="classPortrait">
 					<Size x="30" y="30"/>
 					<Anchors>
-						<Anchor point="TOPRIGHT" x="-1" y="-4"/>
+						<Anchor point="TOPRIGHT" x="-11" y="-4"/>
 					</Anchors>
 				</Texture>
 				<Texture name="$parentBackground">
@@ -220,9 +220,9 @@
 							</Layer>
 							<Layer level="BORDER">	
 								<Texture name="$parentSpecPortrait" >
-									<Size x="15" y="15"/>
+									<Size x="22" y="22"/>
 									<Anchors>
-										<Anchor point="TOPLEFT" relativeTo="$parentClassPortrait" relativePoint="CENTER" x="4" y="0"/>
+										<Anchor point="TOPLEFT" relativeTo="$parentClassPortrait" relativePoint="CENTER" x="2" y="2"/>
 									</Anchors>
 								</Texture>
 							</Layer>
@@ -232,9 +232,9 @@
 									<TexCoords left="0.0" right="0.2734375" top="0.0" bottom="0.5625"/>
 								</Texture>
 								<Texture name="$parentSpecBorder" file="Interface\Minimap\MiniMap-TrackingBorder">
-									<Size x="25" y="25"/>
+									<Size x="50" y="50"/>
 									<Anchors>
-										<Anchor point="TOPLEFT" relativeTo="$parentClassPortrait" relativePoint="CENTER" x="4" y="0"/>
+										<Anchor point="TOPLEFT" relativeTo="$parentClassPortrait" relativePoint="CENTER" x="0" y="4"/>
 									</Anchors>
 								</Texture>
 							</Layer>

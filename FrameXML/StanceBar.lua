@@ -6,6 +6,16 @@ NUM_STANCE_SLOTS = 10;
 ------- StanceBar (Shapsfit,Auras,Aspects) Code -------
 -------------------------------------------------------
 
+function StanceBar_OnLoad(self)
+	self:RegisterEvent("UPDATE_SHAPESHIFT_COOLDOWN");
+end
+
+function StanceBar_OnEvent(self)
+	if(event == UPDATE_SHAPESHIFT_COOLDOWN) then
+		StanceBar_UpdateState();
+	end
+end
+
 function StanceBar_Update ()
 	local numForms = GetNumShapeshiftForms();
 	local needFrameMgrUpdate = false;
@@ -15,10 +25,9 @@ function StanceBar_Update ()
 			if ( numForms == 1 ) then
 				StanceBarMiddle:Hide();
 				StanceBarRight:SetPoint("LEFT", "StanceBarLeft", "LEFT", 12, 0);
-				StanceButton1:SetPoint("BOTTOMLEFT", "StanceBarFrame", "BOTTOMLEFT", 12, 3);
 			elseif ( numForms == 2 ) then
 				StanceBarMiddle:Hide();
-				StanceBarRight:SetPoint("LEFT", "StanceBarLeft", "RIGHT", 0, 0);
+				StanceBarRight:SetPoint("LEFT", "StanceBarLeft", "RIGHT", 1, 0);
 			else
 				StanceBarMiddle:Show();
 				StanceBarMiddle:SetPoint("LEFT", "StanceBarLeft", "RIGHT", 0, 0);

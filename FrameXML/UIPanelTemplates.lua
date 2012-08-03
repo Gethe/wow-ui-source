@@ -389,7 +389,7 @@ function ScrollFrame_OnLoad(self)
 end
 
 function ScrollFrame_OnScrollRangeChanged(self, xrange, yrange)
-	local scrollbar = _G[self:GetName().."ScrollBar"];
+	local scrollbar = self.ScrollBar or _G[self:GetName().."ScrollBar"];
 	if ( not yrange ) then
 		yrange = self:GetVerticalScrollRange();
 	end
@@ -663,7 +663,7 @@ function MagicButton_OnLoad(self)
 			end
 			
 			self.LeftSeparator:SetTexture("Interface\\FrameGeneral\\UI-Frame");
-			self.LeftSeparator:SetTexCoord("0.00781250", "0.10937500", "0.75781250", "0.95312500");
+			self.LeftSeparator:SetTexCoord(0.00781250, 0.10937500, 0.75781250, 0.95312500);
 			self.LeftSeparator:SetWidth(13);
 			self.LeftSeparator:SetHeight(25);
 			self.LeftSeparator:SetPoint("TOPRIGHT", self, "TOPLEFT", 5, 1);
@@ -686,7 +686,7 @@ function MagicButton_OnLoad(self)
 			end
 			
 			self.RightSeparator:SetTexture("Interface\\FrameGeneral\\UI-Frame");
-			self.RightSeparator:SetTexCoord("0.00781250", "0.10937500", "0.75781250", "0.95312500");
+			self.RightSeparator:SetTexCoord(0.00781250, 0.10937500, 0.75781250, 0.95312500);
 			self.RightSeparator:SetWidth(13);
 			self.RightSeparator:SetHeight(25);
 			self.RightSeparator:SetPoint("TOPLEFT", self, "TOPRIGHT", -5, 1);
@@ -716,7 +716,7 @@ function MagicButton_OnLoad(self)
 			-- Add a Left border
 			self.LeftSeparator = self:CreateTexture(self:GetName().."_LeftSeparator", "BORDER");
 			self.LeftSeparator:SetTexture("Interface\\FrameGeneral\\UI-Frame");
-			self.LeftSeparator:SetTexCoord("0.24218750", "0.32812500", "0.63281250", "0.82812500");
+			self.LeftSeparator:SetTexCoord(0.24218750, 0.32812500, 0.63281250, 0.82812500);
 			self.LeftSeparator:SetWidth(11);
 			self.LeftSeparator:SetHeight(25);
 			self.LeftSeparator:SetPoint("TOPRIGHT", self, "TOPLEFT", 6, 1);
@@ -729,7 +729,7 @@ function MagicButton_OnLoad(self)
 			-- Add a Right border
 			self.RightSeparator = self:CreateTexture(self:GetName().."_RightSeparator", "BORDER");
 			self.RightSeparator:SetTexture("Interface\\FrameGeneral\\UI-Frame");
-			self.RightSeparator:SetTexCoord("0.90625000", "0.99218750", "0.00781250", "0.20312500");
+			self.RightSeparator:SetTexCoord(0.90625000, 0.99218750, 0.00781250, 0.20312500);
 			self.RightSeparator:SetWidth(11);
 			self.RightSeparator:SetHeight(25);
 			self.RightSeparator:SetPoint("TOPLEFT", self, "TOPRIGHT", -6, 1);
@@ -902,4 +902,20 @@ function CapProgressBar_Update(capBar, cap1Quantity, cap1Limit, cap2Quantity, ca
 		capBar.cap2:Hide();
 		capBar.cap2Marker:Hide();
 	end
+end
+
+function InputScrollFrame_OnLoad(self)
+	local scrollBar = self.ScrollBar;
+	scrollBar:SetFrameLevel(self.FocusButton:GetFrameLevel() + 2);
+	scrollBar:ClearAllPoints();
+	scrollBar:SetPoint("TOPLEFT", self, "TOPRIGHT", -13, -11);
+	scrollBar:SetPoint("BOTTOMLEFT", self, "BOTTOMRIGHT", -13, 9);
+	-- reposition the up and down buttons
+	_G[self:GetName().."ScrollBarScrollDownButton"]:SetPoint("TOP", scrollBar, "BOTTOM", 0, 4);
+	_G[self:GetName().."ScrollBarScrollUpButton"]:SetPoint("BOTTOM", scrollBar, "TOP", 0, -4);
+	-- make the scroll bar hideable and force it to start off hidden so positioning calculations can be done
+	-- as soon as it needs to be shown
+	self.scrollBarHideable = 1;
+	scrollBar:Hide();
+	self.EditBox:SetWidth(self:GetWidth() - 18);
 end

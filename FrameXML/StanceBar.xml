@@ -78,7 +78,7 @@
 				<Anchors>
 					<Anchor point="BOTTOMLEFT">
 						<Offset>
-							<AbsDimension x="10" y="3"/>
+							<AbsDimension x="11" y="3"/>
 						</Offset>
 					</Anchor>
 				</Anchors>
@@ -166,6 +166,8 @@
 			</CheckButton>
 		</Frames>
 		<Scripts>
+			<OnLoad function="StanceBar_OnLoad"/>
+			<OnEvent function="StanceBar_OnEvent"/>
 			<OnShow function="UIParent_ManageFramePositions"/>
 			<OnHide function="UIParent_ManageFramePositions"/>
 		</Scripts>

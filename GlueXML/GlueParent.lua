@@ -118,10 +118,10 @@ EXPANSION_HIGH_RES_BG = {
 }
 
 EXPANSION_LOW_RES_BG = {
-	TRIAL =  "Interface\\Glues\\Models\\UI_MainMenu_LowBandwidth\\UI_MainMenu_Cata_LowBandwidth.m2",
-	[1] =  "Interface\\Glues\\Models\\UI_MainMenu_LowBandwidth\\UI_MainMenu_Cata_LowBandwidth.m2",
-	[2] =  "Interface\\Glues\\Models\\UI_MainMenu_LowBandwidth\\UI_MainMenu_Cata_LowBandwidth.m2",
-	[3] =  "Interface\\Glues\\Models\\UI_MainMenu_LowBandwidth\\UI_MainMenu_Cata_LowBandwidth.m2",
+	TRIAL =  "Interface\\Glues\\Models\\UI_MainMenu_Cata_LowBandwidth\\UI_MainMenu_Cata_LowBandwidth.m2",
+	[1] =  "Interface\\Glues\\Models\\UI_MainMenu_Cata_LowBandwidth\\UI_MainMenu_Cata_LowBandwidth.m2",
+	[2] =  "Interface\\Glues\\Models\\UI_MainMenu_Cata_LowBandwidth\\UI_MainMenu_Cata_LowBandwidth.m2",
+	[3] =  "Interface\\Glues\\Models\\UI_MainMenu_Cata_LowBandwidth\\UI_MainMenu_Cata_LowBandwidth.m2",
 	[4] =  "Interface\\Glues\\Models\\UI_MainMenu_LowBandwidth\\UI_MainMenu_LowBandwidth.m2",
 }
 
@@ -389,7 +389,12 @@ function SetBackgroundModel(model, path)
 	if ( GlueAmbienceTracks[nameupper] ) then
 		PlayGlueAmbience(GlueAmbienceTracks[nameupper], 4.0);
 	end
-	SetLighting(model, nameupper)
+	if ( ( model == CharacterSelect ) and ( string.find(path, 'lowres') == nil ) ) then
+		SetLighting(model, nameupper)
+	else
+		SetLighting(model, "DEFAULT")
+	end
+
 	return nameupper;
 end
 

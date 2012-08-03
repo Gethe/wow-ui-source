@@ -2211,7 +2211,7 @@ end
 
 SlashCmdList["RAID_INFO"] = function(msg)
 	RaidFrame.slashCommand = 1;
-	if ( ( GetNumSavedInstances() > 0 ) and not RaidInfoFrame:Visible() ) then
+	if ( ( GetNumSavedInstances() > 0 ) and not RaidInfoFrame:IsVisible() ) then
 		ToggleRaidFrame();
 		RaidInfoFrame:Show();
 	elseif ( not RaidFrame:IsVisible() ) then
@@ -3102,7 +3102,7 @@ function ChatFrame_MessageEventHandler(self, event, ...)
 				message = globalstring;
 			elseif ( arg1 == "FRIEND_PENDING" ) then
 				message = format(BN_INLINE_TOAST_FRIEND_PENDING, BNGetNumFriendInvites());
-			elseif ( arg1 == "FRIEND_REMOVED" ) then
+			elseif ( arg1 == "FRIEND_REMOVED" or arg1 == "BATTLETAG_FRIEND_REMOVED" ) then
 				message = format(globalstring, arg2);
 			elseif ( arg1 == "FRIEND_ONLINE" or arg1 == "FRIEND_OFFLINE") then
 				local hasFocus, toonName, client, realmName, realmID, faction, race, class, guild, zoneName, level, gameText = BNGetToonInfo(arg13);
@@ -3115,7 +3115,6 @@ function ChatFrame_MessageEventHandler(self, event, ...)
 					elseif ( client == BNET_CLIENT_D3 ) then
 						toonNameText = "|TInterface\\ChatFrame\\UI-ChatIcon-D3:14|t"..toonNameText;
 					end
-					
 					local playerLink = format("|HBNplayer:%s:%s:%s:%s:%s|h[%s] (%s)|h", arg2, arg13, arg11, Chat_GetChatCategory(type), 0, arg2, toonNameText);
 					message = format(globalstring, playerLink);
 				else
@@ -3874,6 +3873,18 @@ function ChatEdit_InsertLink(text)
 		end
 		return true;
 	end
+	if ( TradeSkillFrame and TradeSkillFrame:IsShown() )  then
+		local item;
+		if ( strfind(text, "item:", 1, true) ) then
+			item = GetItemInfo(text);
+		end
+		if ( item ) then
+			TradeSkillFrameSearchBox:SetFontObject("ChatFontSmall");
+			TradeSkillFrameSearchBoxSearchIcon:SetVertexColor(1.0, 1.0, 1.0);
+			TradeSkillFrameSearchBox:SetText(item);
+			return true;
+		end
+	end
 	return false;
 end
 
@@ -4395,7 +4406,7 @@ function ChatEdit_ExtractTellTarget(editBox, msg, chatType)
 	end
 	
 	if(strsub(target, 1, 2) == "|K") then
-		target, msg = BNTokenCombineGivenAndSurname(target);
+		target, msg = BNTokenFindName(target);
 		--If there is a space just after the name (to trigger a parse), remove it.
 		if ( strsub(msg, 1, 1) == " " ) then
 			msg = strsub(msg, 2);

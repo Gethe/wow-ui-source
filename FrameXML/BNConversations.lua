@@ -180,8 +180,8 @@ function BNConversationInvite_Update()
 		local frame = _G["BNConversationInviteDialogListFriend"..i];
 		if ( index <= numBNetOnline ) then
 			local friendIndex = index;
-			local presenceID, givenName, surname = BNGetFriendInfo(friendIndex);
-			frame.name:SetFormattedText(BATTLENET_NAME_FORMAT, givenName, surname);
+			local presenceID, presenceName = BNGetFriendInfo(friendIndex);
+			frame.name:SetText(presenceName);
 			frame.id = presenceID;
 			frame:Show();
 		else

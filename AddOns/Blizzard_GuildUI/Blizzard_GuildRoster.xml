@@ -256,6 +256,7 @@
 -->
 	<Frame name="GuildRosterFrame" parent="GuildFrame" setAllPoints="true" hidden="true">
 		<Frames>
+			<Frame name="GuildMemberDropDown" inherits="UIDropDownMenuTemplate"/>
 			<Frame name="GuildRosterViewDropdown" inherits="UIDropDownMenuTemplate">
 				<Anchors>
 					<Anchor point="TOPRIGHT">

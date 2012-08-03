@@ -450,7 +450,7 @@ size=64,128
 	</CheckButton>
 
 	
-	<Frame name="CompanionLoadOutTemplate" virtual="true">
+	<Button name="CompanionLoadOutTemplate" virtual="true">
 		<Size x="399" y="106"/>
 		<Layers>
 			<Layer level="BACKGROUND">
@@ -497,7 +497,7 @@ size=64,128
 				<FontString name="$parentName" inherits="GameFontNormal" justifyH="LEFT" justifyV="BOTTOM" parentKey="name">
 					<Size x="210" y="0"/>
 					<Anchors>
-						<Anchor point="LEFT" relativePoint="RIGHT" relativeTo="$parentIcon" x="12" y="7"/>
+						<Anchor point="LEFT" relativePoint="RIGHT" relativeTo="$parentIcon" x="12" y="5"/>
 					</Anchors>
 				</FontString>
 				<FontString name="$parentSubName" inherits="GameFontNormalSmall" justifyH="LEFT" parentKey="subName">
@@ -784,7 +784,7 @@ size=64,128
 			</StatusBar>
 
 			<PlayerModel name="$parentModelFrame" useParentLevel="true" parentKey="model">
-				<Size x="130" y="106"/>
+				<Size x="130" y="96"/>
 				<Anchors>
 					<Anchor point="TOPRIGHT" x="0" y="0"/>
 				</Anchors>
@@ -860,11 +860,7 @@ size=64,128
 					<OnDragStart function="PetJournalDragButton_OnDragStart"/>
 				</Scripts>
 			</Button>
-			<Frame name="$parentEmptySlot" parentKey="emptyslot">
-				<Size x="401" y="166"/>
-				<Anchors>
-					<Anchor point="TOPLEFT" x="0" y="0"/>
-				</Anchors>
+			<Frame name="$parentEmptySlot" parentKey="emptyslot" setAllPoints="true">
 				<Layers>
 					<Layer level="OVERLAY">
 						<FontString name="$parentSlotInfo" inherits="GameFontNormal" parentKey ="slot" text="BATTLE_PET_SLOT" justifyH="LEFT">
@@ -935,9 +931,13 @@ size=64,128
 				self.abilities = {};
 				self.abilityLevels = {};
 				self.model:EnableMouse(false);
+				self:RegisterForClicks("LeftButtonDown", "LeftButtonUp");
 			</OnLoad>
+			<OnClick>
+				PetJournal_ShowPetCardByID(self.petID);
+			</OnClick>
 		</Scripts>
-	</Frame>
+	</Button>
 
 
 	<Button name="PetCardSpellButtonTemplate" virtual="true">
@@ -1291,6 +1291,7 @@ size=64,128
 								<Anchor point="CENTER"/>
 							</Anchors>
 						</Texture>
+						<Texture name="$parentLockIcon" parentKey="LockIcon" file="Interface\PetBattles\PetBattle-LockIcon" setAllPoints="true" hidden="true"/>
 						<FontString name="$parentSpellName" inherits="GameFontNormal" maxLines="2" justifyH="RIGHT" parentKey="spellname" text="">
 							<Size x="75" y="0"/>
 							<Color r="1" g="1" b="1"/>
@@ -1531,21 +1532,21 @@ size=64,128
 					<Anchor point="BOTTOMRIGHT" relativeTo="$parentRightInset" x="0" y="0"/>
 				</Anchors>
 				<Frames>
-					<Frame name="$parentPet1" inherits="CompanionLoadOutTemplate" id="1" parentKey="Pet1">
+					<Button name="$parentPet1" inherits="CompanionLoadOutTemplate" id="1" parentKey="Pet1">
 						<Anchors>
 							<Anchor point="TOP" x="0" y="-3"/>
 						</Anchors>
-					</Frame>
-					<Frame name="$parentPet2" inherits="CompanionLoadOutTemplate" id="2" parentKey="Pet2">
+					</Button>
+					<Button name="$parentPet2" inherits="CompanionLoadOutTemplate" id="2" parentKey="Pet2">
 						<Anchors>
 							<Anchor point="TOP" x="0" y="-110"/>
 						</Anchors>
-					</Frame>
-					<Frame name="$parentPet3" inherits="CompanionLoadOutTemplate" id="3" parentKey="Pet3">
+					</Button>
+					<Button name="$parentPet3" inherits="CompanionLoadOutTemplate" id="3" parentKey="Pet3">
 						<Anchors>
 							<Anchor point="TOP" x="0" y="-217"/>
 						</Anchors>
-					</Frame>
+					</Button>
  				</Frames>
 			</Frame>
 			
@@ -1592,7 +1593,7 @@ size=64,128
 				</Layers>
 				<Frames>
 					<Button name="$parentPetInfo" parentKey="PetInfo">
-						<Size x="200" y="42"/>
+						<Size x="275" y="42"/>
 						<Anchors>
 							<Anchor point="TOPLEFT" x="0" y="0"/>
 						</Anchors>
@@ -1606,11 +1607,11 @@ size=64,128
 								</Texture>
 							</Layer>
 							<Layer level="OVERLAY">
-								<FontString name="$parentName" inherits="GameFontNormal" justifyH="LEFT" justifyV="BOTTOM" parentKey="name" text="XXXX">
-									<Size x="0" y="0"/>
+								<FontString name="$parentName" inherits="GameFontNormal" justifyH="LEFT" justifyV="BOTTOM" parentKey="name">
+									<Size x="225" y="0"/>
 									<Anchors>
-										<Anchor point="LEFT" relativePoint="RIGHT" relativeTo="$parentIcon" x="12" y="5"/>
-										<!-- Move it down 5 if there's no SubName -->
+										<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" relativeTo="$parentIcon" x="12" y="3"/>
+										<!-- Move it down 8 if there's no SubName -->
 									</Anchors>
 								</FontString>
 								<FontString name="$parentSubName" inherits="GameFontNormalSmall" justifyH="LEFT" parentKey="subName" text="XXXXX">
@@ -2016,7 +2017,7 @@ size=64,128
 						</Scripts>
 					</StatusBar>
 					<PlayerModel name="$parentModelFrame" parentKey="model" inherits="ModelTemplate" creature="12257">
-						<Size x="173" y="145"/>
+						<Size x="173" y="135"/>
 						<Anchors>
 							<Anchor point="TOPLEFT" x="45" y="-21"/>
 						</Anchors>

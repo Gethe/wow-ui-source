@@ -402,10 +402,16 @@ TRAVEL PASS
 				</Texture>
 			</Layer>
 			<Layer level="ARTWORK">
+				<FontString inherits="FriendsFont_Small" parentKey="RIDTag" text="REAL_ID" hidden="true">
+					<Anchors>
+						<Anchor point="TOPRIGHT" x="-60" y="-8"/>
+					</Anchors>
+				</FontString>
 				<FontString name="$parentName" inherits="FriendsFont_Normal" justifyH="LEFT" parentKey="name" justifyV="TOP">
-					<Size x="235" y="10"/>
+					<Size x="0" y="10"/>
 					<Anchors>
 						<Anchor point="TOPLEFT" x="12" y="-7"/>
+						<Anchor point="RIGHT" relativeKey="$parent.RIDTag" relativePoint="LEFT" x="-12" y="0"/>
 					</Anchors>
 					<Color r="0.510" g="0.773" b="1" />
 				</FontString>
@@ -709,46 +715,302 @@ TRAVEL PASS
 			</Frame>
 			<Frame name="FriendsTabHeader" setAllPoints="true">
 				<Frames>
-					<Frame name="FriendsFrameBattlenetStatus" hidden="false">
-						<Size x="270" y="32"/>
+					<Frame name="FriendsFrameBattlenetFrame">
+						<Size x="190" y="29"/>
 						<Anchors>
-							<Anchor point="TOPLEFT" x="61" y="-27"/>
+							<Anchor point="TOPLEFT" x="109" y="-26"/>
 						</Anchors>
 						<Layers>
 							<Layer level="BACKGROUND">
-								<Texture setAllPoints="true" hidden="true">
-									<Color r="1" g="0" b="0"/>
+								<Texture file="Interface\FriendsFrame\battlenet-friends-main" setAllPoints="true">
+									<TexCoords left="0.00390625" right="0.74609375" top="0.00195313" bottom="0.05859375"/>
 								</Texture>
 							</Layer>
 							<Layer level="ARTWORK">
-								<FontString name="$parentText" inherits="FriendsFont_Large" text="BATTLENET_UNAVAILABLE">
+								<FontString parentKey="Tag" inherits="GameFontNormal">
 									<Anchors>
 										<Anchor point="CENTER"/>
 									</Anchors>
-									<Color r="1" g="0" b="0"/>
+									<Color r="0.345" g="0.667" b="0.867" />
 								</FontString>
-								<Texture file="Interface\FriendsFrame\PlusManz-BattleNet">
-									<Size x="28" y="28"/>
+								<FontString parentKey="UnavailableLabel" inherits="FriendsFont_Normal" text="BATTLENET_UNAVAILABLE" hidden="true">
 									<Anchors>
-										<Anchor point="RIGHT" relativeTo="$parentText" relativePoint="LEFT" x="-4" y="0"/>
+										<Anchor point="CENTER"/>
 									</Anchors>
-								</Texture>
+									<Color r="1" g="0.82" b="0"/>
+								</FontString>								
 							</Layer>
 						</Layers>
+						<Scripts>
+							<OnHide>
+								FriendsFrameBattlenetFrame_HideSubFrames();
+							</OnHide>
+						</Scripts>
 						<Frames>
-							<Button name="$parentInfoButton" inherits="UIPanelInfoButton">
+							<Button parentKey="BroadcastButton">
+								<Size x="32" y="32"/>
 								<Anchors>
-									<Anchor point="LEFT" relativePoint="RIGHT" relativeTo="$parentText" x="4" y="0"/>
+									<Anchor point="LEFT" relativeTo="$parent" relativePoint="RIGHT" x="2" y="0"/>
 								</Anchors>
 								<Scripts>
 									<OnClick>
-										StaticPopup_Show("BATTLENET_UNAVAILABLE");
+										PlaySound("igChatEmoteButton");
+										if ( self:GetParent().BroadcastFrame:IsShown() ) then
+											FriendsFrameBattlenetFrame_HideBroadcastFrame();
+										else
+											FriendsFrameBattlenetFrame_ShowBroadcastFrame();
+										end
+									</OnClick>
+									<OnEnter>
+										GameTooltip_AddNewbieTip(self, CHAT_LABEL, 1.0, 1.0, 1.0, NEWBIE_TOOLTIP_CHATMENU, 1);
+									</OnEnter>
+									<OnLeave function="GameTooltip_Hide"/>
+								</Scripts>
+								<NormalTexture file="Interface\FriendsFrame\broadcast-normal"/>
+								<PushedTexture file="Interface\FriendsFrame\broadcast-press"/>
+								<HighlightTexture file="Interface\Buttons\UI-Common-MouseHilight" alphaMode="ADD"/>
+							</Button>
+							<Button parentKey="UnavailableInfoButton" inherits="UIPanelInfoButton" hidden="true">
+								<Anchors>
+									<Anchor point="LEFT" relativeTo="$parent" relativePoint="RIGHT" x="4" y="0"/>
+								</Anchors>
+								<Scripts>
+									<OnClick>
+										local infoFrame = self:GetParent().UnavailableInfoFrame;
+										if ( infoFrame:IsShown() ) then
+											infoFrame:Hide();
+										else
+											infoFrame:SetHeight(86 + infoFrame.Text:GetHeight());
+											infoFrame:Show();
+										end
 									</OnClick>
 								</Scripts>
-							</Button>
+							</Button>							
+							<Frame parentKey="BroadcastFrame" frameStrata="HIGH" enableMouse="true" hidden="true">
+								<Size x="338" y="100"/>
+								<Anchors>
+									<Anchor point="TOPLEFT" x="-110" y="-24"/>
+								</Anchors>
+								<Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background" edgeFile="Interface\DialogFrame\UI-DialogBox-Border" tile="true">
+									<BackgroundInsets>
+										<AbsInset left="11" right="12" top="12" bottom="11"/>
+									</BackgroundInsets>
+									<TileSize>
+										<AbsValue val="32"/>
+									</TileSize>
+									<EdgeSize>
+										<AbsValue val="32"/>
+									</EdgeSize>
+								</Backdrop>
+								<Layers>
+									<Layer level="BACKGROUND" textureSubLevel="1">
+										<Texture>
+											<Anchors>
+												<Anchor point="TOPLEFT" x="10" y="-10"/>
+												<Anchor point="BOTTOMRIGHT" x="-10" y="10"/>
+											</Anchors>											
+											<Color r="0" g="0" b="0" a="0.7"/>
+										</Texture>
+									</Layer>
+									<Layer level="ARTWORK">
+										<FontString text="BATTLENET_BROADCAST" inherits="GameFontNormalMed3">
+											<Anchors>
+												<Anchor point="TOP" x="0" y="-20"/>
+											</Anchors>
+										</FontString>
+									</Layer>
+								</Layers>
+								<Scripts>
+									<OnShow>
+										FriendsFrameBattlenetFrame_UpdateBroadcast();
+									</OnShow>
+								</Scripts>
+								<Frames>
+									<ScrollFrame parentKey="ScrollFrame" inherits="UIPanelScrollFrameTemplate">
+										<Size x="263" y="0"/>
+										<Anchors>
+											<Anchor point="TOP" x="0" y="-44"/>
+											<Anchor point="BOTTOM" x="0" y="60"/>
+										</Anchors>										
+										<Layers>
+											<Layer level="BACKGROUND">
+												<Texture parentKey="TopLeftBorder" file="Interface\Common\Common-Input-Border-TL">
+													<Size x="8" y="8"/>
+													<Anchors>
+														<Anchor point="TOPLEFT" x="-4" y="4"/>
+													</Anchors>
+												</Texture>
+												<Texture parentKey="TopRightBorder" file="Interface\Common\Common-Input-Border-TR">
+													<Size x="8" y="8"/>
+													<Anchors>
+														<Anchor point="TOPRIGHT" x="4" y="4"/>
+													</Anchors>
+												</Texture>
+												<Texture parentKey="TopBorder" file="Interface\Common\Common-Input-Border-T">
+													<Anchors>
+														<Anchor point="TOPLEFT" relativeKey="$parent.TopLeftBorder" relativePoint="TOPRIGHT"/>
+														<Anchor point="BOTTOMRIGHT" relativeKey="$parent.TopRightBorder" relativePoint="BOTTOMLEFT"/>
+													</Anchors>
+												</Texture>
+												<Texture parentKey="BottomLeftBorder" file="Interface\Common\Common-Input-Border-BL">
+													<Size x="8" y="8"/>
+													<Anchors>
+														<Anchor point="BOTTOMLEFT" x="-4" y="-3"/>
+													</Anchors>
+												</Texture>
+												<Texture parentKey="BottomRightBorder" file="Interface\Common\Common-Input-Border-BR">
+													<Size x="8" y="8"/>
+													<Anchors>
+														<Anchor point="BOTTOMRIGHT" x="4" y="-3"/>
+													</Anchors>
+												</Texture>
+												<Texture parentKey="BottomBorder" file="Interface\Common\Common-Input-Border-B">
+													<Anchors>
+														<Anchor point="TOPLEFT" relativeKey="$parent.BottomLeftBorder" relativePoint="TOPRIGHT"/>
+														<Anchor point="BOTTOMRIGHT" relativeKey="$parent.BottomRightBorder" relativePoint="BOTTOMLEFT"/>
+													</Anchors>
+												</Texture>
+												<Texture parentKey="LeftBorder" file="Interface\Common\Common-Input-Border-L">
+													<Anchors>
+														<Anchor point="TOPLEFT" relativeKey="$parent.TopLeftBorder" relativePoint="BOTTOMLEFT"/>
+														<Anchor point="BOTTOMRIGHT" relativeKey="$parent.BottomLeftBorder" relativePoint="TOPRIGHT"/>
+													</Anchors>
+												</Texture>
+												<Texture parentKey="RightBorder" file="Interface\Common\Common-Input-Border-R">
+													<Anchors>
+														<Anchor point="TOPLEFT" relativeKey="$parent.TopRightBorder" relativePoint="BOTTOMLEFT"/>
+														<Anchor point="BOTTOMRIGHT" relativeKey="$parent.BottomRightBorder" relativePoint="TOPRIGHT"/>
+													</Anchors>
+												</Texture>
+												<Texture parentKey="MiddleBorder" file="Interface\Common\Common-Input-Border-M">
+													<Anchors>
+														<Anchor point="TOPLEFT" relativeKey="$parent.LeftBorder" relativePoint="TOPRIGHT"/>
+														<Anchor point="BOTTOMRIGHT" relativeKey="$parent.RightBorder" relativePoint="BOTTOMLEFT"/>
+													</Anchors>
+												</Texture>
+											</Layer>
+										</Layers>
+										<Frames>
+											<Button parentKey="FocusButton" setAllPoints="true">
+												<Scripts>
+													<OnClick>
+														self:GetParent().EditBox:SetFocus();
+													</OnClick>
+												</Scripts>
+											</Button>
+											<Button inherits="UIPanelButtonTemplate" parentKey="UpdateButton" text="UPDATE">
+												<Size x="110" y="24"/>
+												<Anchors>
+													<Anchor point="TOPLEFT" relativeKey="$parent" relativePoint="BOTTOMLEFT" x="-2" y="-12"/>
+												</Anchors>
+												<Scripts>
+													<OnClick>
+														FriendsFrameBattlenetFrame_SetBroadcast();
+													</OnClick>
+												</Scripts>
+											</Button>
+											<Button inherits="UIPanelButtonTemplate" parentKey="CancelButton" text="CANCEL">
+												<Size x="110" y="24"/>
+												<Anchors>
+													<Anchor point="TOPRIGHT" relativeKey="$parent" relativePoint="BOTTOMRIGHT" x="2" y="-12"/>
+												</Anchors>
+												<Scripts>
+													<OnClick>
+														FriendsFrameBattlenetFrame_UpdateBroadcast();
+														FriendsFrameBattlenetFrame_HideBroadcastFrame();
+													</OnClick>
+												</Scripts>												
+											</Button>											
+										</Frames>
+										<Scripts>
+											<OnLoad>
+												self.scrollBarHideable = 1;
+												self.ScrollBar:Hide();
+												
+												self.minHeight = 113 + self.EditBox.PromptText:GetHeight() * 2
+												self:GetParent():SetHeight(self.minHeight);
+												self.EditBox:SetPoint("TOPLEFT", 4, -4);
+											</OnLoad>
+										</Scripts>
+										<ScrollChild>
+											<EditBox parentKey="EditBox" multiLine="true" letters="127" countInvisibleLetters="true" autoFocus="false">
+												<Size x="256" y="1"/>
+												<Layers>
+													<Layer level="BORDER">
+														<FontString parentKey="PromptText" inherits="FriendsFont_Small" justifyH="LEFT" justifyV="MIDDLE" text="FRIENDS_LIST_ENTER_TEXT">
+															<Anchors>
+																<Anchor point="LEFT" x="0" y="0"/>
+															</Anchors>
+															<Color r="0.35" g="0.35" b="0.35"/>
+														</FontString>
+													</Layer>
+												</Layers>
+												<Scripts>
+													<OnTextChanged>
+														if ( self:GetText() ~= "" ) then
+															self.PromptText:Hide();
+														else
+															self.PromptText:Show();
+														end
+														local scrollFrame = self:GetParent();
+														scrollFrame:GetParent():SetHeight(max(scrollFrame.minHeight, 111 + self:GetHeight()));
+													</OnTextChanged> 
+													<OnCursorChanged function="ScrollingEdit_OnCursorChanged"/>
+													<OnEscapePressed>
+														self:ClearFocus();
+													</OnEscapePressed>
+													<OnEnterPressed>
+														FriendsFrameBattlenetFrame_SetBroadcast();
+													</OnEnterPressed>													
+												</Scripts>
+												<FontString inherits="FriendsFont_Small" spacing="2"/>
+											</EditBox>
+										</ScrollChild>
+									</ScrollFrame>								
+								</Frames>
+							</Frame>
+							<Frame parentKey="UnavailableInfoFrame" hidden="true">
+								<Size x="306" y="100"/>
+								<Anchors>
+									<Anchor point="TOPLEFT" relativeTo="FriendsFrame" relativePoint="TOPRIGHT" x="-2" y="-18"/>
+								</Anchors>
+								<Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background" edgeFile="Interface\DialogFrame\UI-DialogBox-Border" tile="true">
+									<BackgroundInsets>
+										<AbsInset left="11" right="12" top="12" bottom="11"/>
+									</BackgroundInsets>
+									<TileSize>
+										<AbsValue val="32"/>
+									</TileSize>
+									<EdgeSize>
+										<AbsValue val="32"/>
+									</EdgeSize>
+								</Backdrop>							
+								<Layers>
+									<Layer level="ARTWORK">
+										<FontString parentKey="Label" inherits="FriendsFont_Large" text="BATTLENET_UNAVAILABLE">
+											<Anchors>
+												<Anchor point="TOP" x="17" y="-26"/>
+											</Anchors>
+											<Color r="1" g="0.82" b="0"/>
+										</FontString>
+										<Texture file="Interface\FriendsFrame\PlusManz-BattleNet">
+											<Size x="32" y="32"/>
+											<Anchors>
+												<Anchor point="RIGHT" relativeKey="$parent.Label" relativePoint="LEFT" x="-2" y="0"/>
+											</Anchors>
+										</Texture>
+										<FontString parentKey="Text" inherits="FriendsFont_Normal" text="BATTLENET_UNAVAILABLE_ALERT" justifyH="LEFT" spacing="2">
+											<Size x="250" y="0"/>
+											<Anchors>
+												<Anchor point="TOP" x="0" y="-58"/>
+											</Anchors>
+										</FontString>
+									</Layer>
+								</Layers>
+							</Frame>
 						</Frames>
 					</Frame>
-					<Frame name="FriendsFrameStatusDropDown" inherits="UIDropDownMenuTemplate" hidden="true">
+					<Frame name="FriendsFrameStatusDropDown" inherits="UIDropDownMenuTemplate" hidden="false">
 						<Anchors>
 							<Anchor point="TOPLEFT" x="43" y="-27"/>
 						</Anchors>
@@ -911,11 +1173,7 @@ TRAVEL PASS
 								PanelTemplates_TabResize(self, 0);
 								_G[self:GetName().."HighlightTexture"]:SetWidth(self:GetTextWidth() + 31);
 							</OnLoad>
-							<OnClick>
-								PanelTemplates_Tab_OnClick(self, FriendsTabHeader);
-								FriendsFrame_Update();
-								PlaySound("igMainMenuOptionCheckBoxOn");							
-							</OnClick>
+							<OnClick function="FriendsTabHeader_ClickTab"/>
 						</Scripts>
 					</Button>
 					<Button name="FriendsTabHeaderTab2" inherits="TabButtonTemplate" text="IGNORE" id="2">
@@ -923,11 +1181,7 @@ TRAVEL PASS
 							<Anchor point="LEFT" relativeTo="FriendsTabHeaderTab1" relativePoint="RIGHT" x="0" y="0"/>
 						</Anchors>
 						<Scripts>
-							<OnClick>
-								PanelTemplates_Tab_OnClick(self, FriendsTabHeader);
-								FriendsFrame_Update();
-								PlaySound("igMainMenuOptionCheckBoxOn");
-							</OnClick>
+							<OnClick function="FriendsTabHeader_ClickTab"/>
 						</Scripts>
 					</Button>
 					<Button name="FriendsTabHeaderTab3" inherits="TabButtonTemplate" text="PENDING_INVITE" id="3">
@@ -935,11 +1189,7 @@ TRAVEL PASS
 							<Anchor point="LEFT" relativeTo="FriendsTabHeaderTab2" relativePoint="RIGHT" x="0" y="0"/>
 						</Anchors>
 						<Scripts>
-							<OnClick>
-								PanelTemplates_Tab_OnClick(self, FriendsTabHeader);
-								FriendsFrame_Update();
-								PlaySound("igMainMenuOptionCheckBoxOn");
-							</OnClick>
+							<OnClick function="FriendsTabHeader_ClickTab"/>
 							<OnEnter>
 								FriendsTabHeaderInviteAlert:Hide();
 							</OnEnter>
@@ -1248,7 +1498,7 @@ TRAVEL PASS
 					<Frame name="PendingListInfoFrame" enableMouse="true" hidden="true">
 						<Size x="298" y="309"/>
 						<Anchors>
-							<Anchor point="TOPLEFT" relativeTo="FriendsFrame" x="22" y="-99"/>
+							<Anchor point="TOPLEFT" relativeTo="FriendsFrame" x="7" y="-87"/>
 						</Anchors>
 						<Layers>
 							<Layer level="BACKGROUND">
@@ -2541,6 +2791,91 @@ TRAVEL PASS
 				PlaySound("igMainMenuClose");
 			</OnHide>
 			<OnEvent function="FriendsFriendsFrame_OnEvent"/>
+		</Scripts>
+	</Frame>
+
+	<Frame name="BattleTagInviteFrame" parent="UIParent" frameStrata="DIALOG" hidden="true">
+		<Size x="357" y="211"/>
+		<Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background" edgeFile="Interface\DialogFrame\UI-DialogBox-Border" tile="true">
+			<BackgroundInsets>
+				<AbsInset left="12" right="12" top="12" bottom="11"/>
+			</BackgroundInsets>
+			<TileSize>
+				<AbsValue val="32"/>
+			</TileSize>
+			<EdgeSize>
+				<AbsValue val="32"/>
+			</EdgeSize>
+		</Backdrop>		
+		<Layers>
+			<Layer level="ARTWORK">
+				<FontString inherits="FriendsFont_Normal" text="BATTLE_TAG_REQUEST">
+					<Anchors>
+						<Anchor point="TOP" x="0" y="-20"/>
+					</Anchors>
+				</FontString>
+				<FontString parentKey="BattleTag" inherits="FriendsFont_Large" text="">
+					<Anchors>
+						<Anchor point="TOP" x="0" y="-36"/>
+					</Anchors>
+					<Color r="1" g="0.82" b="0"/>
+				</FontString>
+				<FontString parentKey="InfoText" inherits="GameFontHighlightSmall" spacing="2" text="BATTLE_TAG_REQUEST_INFO">
+					<Size x="241" y="0"/>
+					<Anchors>
+						<Anchor point="CENTER" x="0" y="-29"/>
+					</Anchors>
+				</FontString>				
+			</Layer>
+		</Layers>
+		<Frames>			
+			<ScrollFrame name="$parentScrollFrame" inherits="InputScrollFrameTemplate" parentKey="NoteFrame">
+				<Size x="261" y="48"/>
+				<Anchors>
+					<Anchor point="TOP" x="0" y="-59"/>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						self.EditBox.PromptText:SetFontObject("FriendsFont_Small");
+						self.EditBox.PromptText:SetText(ENTER_INVITE_NOTE);
+						self.EditBox:SetFontObject("FriendsFont_Small");
+						InputScrollFrame_OnLoad(self);
+					</OnLoad>
+				</Scripts>
+			</ScrollFrame>
+			<Button inherits="UIPanelButtonTemplate" text="SEND_REQUEST">
+				<Size x="128" y="22"/>
+				<Anchors>
+					<Anchor point="LEFT" x="43" y="0"/>
+					<Anchor point="TOP" relativeKey="$parent.InfoText" relativePoint="BOTTOM" x="0" y="-17"/>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						PlaySound("igMainMenuOptionCheckBoxOn");
+						BNSendVerifiedBattleTagInvite(BattleTagInviteFrame.NoteFrame.EditBox:GetText());	-- unit should have been set with BNCheckBattleTagInviteToUnit or BNCheckBattleTagInviteToGuildMember
+						StaticPopupSpecial_Hide(self:GetParent());
+					</OnClick>
+				</Scripts>
+			</Button>
+			<Button inherits="UIPanelButtonTemplate" text="CANCEL">
+				<Size x="98" y="22"/>
+				<Anchors>
+					<Anchor point="RIGHT" x="-43" y="0"/>
+					<Anchor point="TOP" relativeKey="$parent.InfoText" relativePoint="BOTTOM" x="0" y="-17"/>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						PlaySound("igMainMenuOptionCheckBoxOn");
+						StaticPopupSpecial_Hide(self:GetParent());
+					</OnClick>
+				</Scripts>
+			</Button>			
+		</Frames>
+		<Scripts>
+			<OnLoad>
+				self.exclusive = true;
+				self.hideOnEscape = true;
+			</OnLoad>
 		</Scripts>
 	</Frame>
 </Ui>

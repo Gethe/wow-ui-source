@@ -1839,7 +1839,7 @@ function WatchFrameScenario_DisplayScenario(lineFrame, nextAnchor, maxHeight, fr
 				line.icon:SetTexture("Interface\\Scenarios\\ScenarioIcon-Combat");
 			end
 			-- animation
-			if ( criteriaID == animationCriteriaID ) then
+			if ( criteriaID == animationCriteriaID and criteriaCompleted ) then
 				WatchFrameScenario_PlayCriteriaAnimation(line);
 			end
 
@@ -1893,8 +1893,7 @@ function WatchFrameScenario_PlayCriteriaAnimation(targetLine)
 		animationLine.playState = "playing";
 		animationLine.Glow.ScaleAnim:Play();
 		animationLine.Glow.AlphaAnim:Play();
-		animationLine.Sheen.MoveAnim:Play();
-		animationLine.Sheen.AlphaAnim:Play();
+		animationLine.Sheen.Anim:Play();
 		animationLine.Check.Anim:Play();
 	end
 end
@@ -1904,8 +1903,7 @@ function WatchFrameScenario_StopCriteriaAnimation()
 	if ( animationLine.playState ) then
 		animationLine.Glow.ScaleAnim:Stop();
 		animationLine.Glow.AlphaAnim:Stop();
-		animationLine.Sheen.MoveAnim:Stop();
-		animationLine.Sheen.AlphaAnim:Stop();
+		animationLine.Sheen.Anim:Stop();
 		animationLine.Check.Anim:Stop();
 		animationLine.playState = nil;
 		animationLine.criteriaID = nil;

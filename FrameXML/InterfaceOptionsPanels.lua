@@ -1139,7 +1139,7 @@ function InterfaceOptionsNPCNamesDropDown_OnEvent (self, event, ...)
 		self.oldValue = value;
 		self.value = value;
 
-		UIDropDownMenu_SetWidth(self, 110);
+		UIDropDownMenu_SetWidth(self, 150);
 		UIDropDownMenu_Initialize(self, InterfaceOptionsNPCNamesDropDown_Initialize);
 		UIDropDownMenu_SetSelectedValue(self, value);
 
@@ -1150,13 +1150,20 @@ function InterfaceOptionsNPCNamesDropDown_OnEvent (self, event, ...)
 				if ( value == "1" ) then
 					SetCVar("UnitNameFriendlySpecialNPCName", "1");
 					SetCVar("UnitNameNPC", "0");
+					SetCVar("UnitNameHostleNPC", "0");
 					self.tooltip = NPC_NAMES_DROPDOWN_TRACKED_TOOLTIP;
 				elseif ( value == "2" ) then
+					SetCVar("UnitNameFriendlySpecialNPCName", "1");
+					SetCVar("UnitNameHostleNPC", "1");
+					self.tooltip = NPC_NAMES_DROPDOWN_HOSTILE_TOOLTIP;
+				elseif ( value == "3" ) then
 					SetCVar("UnitNameFriendlySpecialNPCName", "0");
+					SetCVar("UnitNameHostleNPC", "0");
 					SetCVar("UnitNameNPC", "1");
 					self.tooltip = NPC_NAMES_DROPDOWN_ALL_TOOLTIP;
 				else
 					SetCVar("UnitNameFriendlySpecialNPCName", "0");
+					SetCVar("UnitNameHostleNPC", "0");
 					SetCVar("UnitNameNPC", "0");
 					self.tooltip = NPC_NAMES_DROPDOWN_NONE_TOOLTIP;
 				end					
@@ -1193,9 +1200,21 @@ function InterfaceOptionsNPCNamesDropDown_Initialize(self)
 	info.tooltipText = NPC_NAMES_DROPDOWN_TRACKED_TOOLTIP;
 	UIDropDownMenu_AddButton(info);
 
-	info.text = NPC_NAMES_DROPDOWN_ALL;
+	info.text = NPC_NAMES_DROPDOWN_HOSTILE;
 	info.func = InterfaceOptionsNPCNamesDropDown_OnClick;
 	info.value = "2";
+	if ( info.value == selectedValue ) then
+		info.checked = 1;
+	else
+		info.checked = nil;
+	end
+	info.tooltipTitle = NPC_NAMES_DROPDOWN_HOSTILE;
+	info.tooltipText = NPC_NAMES_DROPDOWN_HOSTILE_TOOLTIP;
+	UIDropDownMenu_AddButton(info);
+
+	info.text = NPC_NAMES_DROPDOWN_ALL;
+	info.func = InterfaceOptionsNPCNamesDropDown_OnClick;
+	info.value = "3";
 	if ( info.value == selectedValue ) then
 		info.checked = 1;
 	else
@@ -1207,7 +1226,7 @@ function InterfaceOptionsNPCNamesDropDown_Initialize(self)
 
 	info.text = NPC_NAMES_DROPDOWN_NONE;
 	info.func = InterfaceOptionsNPCNamesDropDown_OnClick;
-	info.value = "3";
+	info.value = "4";
 	if ( info.value == selectedValue ) then
 		info.checked = 1;
 	else

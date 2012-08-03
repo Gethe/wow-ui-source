@@ -64,7 +64,7 @@ function SharedPetBattleAbilityTooltip_SetAbility(self, abilityInfo, additionalT
 	--Update name
 	self.Name:SetText(name);
 	
-	if ( numTurns > 1 ) then
+	if ( numTurns and numTurns > 1 ) then
 		self.Duration:SetFormattedText(BATTLE_PET_ABILITY_MULTIROUND, numTurns);
 		self.Duration:Show();
 		bottom = self.Duration;
@@ -238,6 +238,8 @@ do
 		PROC_ON_SWAP_IN = PET_BATTLE_EVENT_ON_SWAP_IN,
 		PROC_ON_SWAP_OUT = PET_BATTLE_EVENT_ON_SWAP_OUT,
 
+		--We automatically populate with state constants as well in the form STATE_%s
+
 		--Utility functions
 		ceil = math.ceil,
 		floor = math.floor,
@@ -362,6 +364,12 @@ do
 		weatherState = function(stateID)
 					return parsedAbilityInfo:GetWeatherState(stateID);
 				end,
+		abilityStateMod = function(stateID, abilityID)
+					if ( not abilityID ) then
+						abilityID = parsedAbilityInfo:GetAbilityID();
+					end
+					return C_PetBattles.GetAbilityStateModification(abilityID, stateID);
+				end,
 	};
 	
 	-- Dynamic fetching functions
@@ -379,6 +387,9 @@ do
 				return value;
 			end;
 	end
+
+	-- Fill out the environment with all states (format: STATE_%s)
+	C_PetBattles.GetAllStates(parserEnv);
 		
 	
 	--Alias helpers

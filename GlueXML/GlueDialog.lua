@@ -266,7 +266,9 @@ GlueDialogTypes["CONFIRM_PAID_SERVICE"] = {
 	button1 = DONE,
 	button2 = CANCEL,
 	OnAccept = function()
-		CreateCharacter(CharacterCreateNameEdit:GetText());
+		-- need to get desired faction in case of pandaren doing faction change to another pandaren
+		-- this will be nil in any other case
+		CreateCharacter(CharacterCreateNameEdit:GetText(), PandarenFactionButtons_GetSelectedFaction());
 	end,
 	OnCancel = function()
 	end,

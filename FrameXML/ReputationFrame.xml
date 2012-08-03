@@ -867,6 +867,7 @@
 					end
 					ReputationWatchBar_Update();
 				elseif( event == "PLAYER_LEVEL_UP" or event == "ENABLE_XP_GAIN" or event == "DISABLE_XP_GAIN" or event == "UPDATE_EXPANSION_LEVEL" ) then
+					ReputationWatchBar_UpdateMaxLevel();
 					ReputationWatchBar_Update(arg1);
 					UIParent_ManageFramePositions();
 				elseif( event == "CVAR_UPDATE" and arg1 == "XP_BAR_TEXT" ) then

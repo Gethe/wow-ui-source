@@ -2781,7 +2781,8 @@ function CombatLog_OnEvent(filterSettings, timestamp, event, hideCaster, sourceG
 	elseif ( event == "ENVIRONMENTAL_DAMAGE" ) then
 		--Environemental Type, Damage standard
 		environmentalType, amount, overkill, school, resisted, blocked, absorbed, critical, glancing, crushing = ...
-
+		environmentalType = string.upper(environmentalType);
+		
 		-- Miss Event
 		spellName = _G["ACTION_ENVIRONMENTAL_DAMAGE_"..environmentalType];
 		spellSchool = school;

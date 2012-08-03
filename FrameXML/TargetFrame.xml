@@ -798,4 +798,13 @@
 			</Anchor>
 		</Anchors>
 	</Button>	
+	<Button name="Boss5TargetFrame" inherits="BossTargetFrameTemplate" id="5">
+		<Anchors>
+			<Anchor point="TOPLEFT" relativeTo="Boss4TargetFrame" relativePoint="BOTTOMLEFT">
+				<Offset>
+					<AbsDimension x="0" y="-30"/>
+				</Offset>
+			</Anchor>
+		</Anchors>
+	</Button>	
 </Ui>

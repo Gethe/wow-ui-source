@@ -361,6 +361,7 @@ end
 function GameTooltip_Hide()
 	-- Used for XML OnLeave handlers
 	GameTooltip:Hide();
+	BattlePetTooltip:Hide();
 end
 
 function GameTooltip_HideResetCursor()

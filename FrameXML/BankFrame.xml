@@ -23,7 +23,7 @@
 				BankFrameItemButton_OnEnter(self, motion);
 			</OnEnter>
 			<OnLeave>
-				GameTooltip:Hide();
+				GameTooltip_Hide();
 				ResetCursor();
 			</OnLeave>
 			<OnClick>
@@ -63,7 +63,7 @@
 				BankFrameItemButton_OnEnter(self, motion);
 			</OnEnter>
 			<OnLeave>
-				GameTooltip:Hide();
+				GameTooltip_Hide();
 				ResetCursor();
 			</OnLeave>
 			<OnClick>

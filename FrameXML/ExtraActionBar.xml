@@ -43,6 +43,12 @@
 				</Anchors> 
 			</Cooldown>
 		</Frames>
+		<NormalTexture name="$parentNormalTexture" file="Interface\Buttons\UI-Quickslot2">
+			<Anchors>
+				<Anchor point="TOPLEFT" x="-15" y="15"/>
+				<Anchor point="BOTTOMRIGHT" x="15" y="-15"/>
+			</Anchors>
+		</NormalTexture>
 		<HighlightTexture alphaMode="ADD" file="Interface\Buttons\ButtonHilight-Square"/>
 		<CheckedTexture alphaMode="ADD" file="Interface\Buttons\CheckButtonHilight"/>
 		<Scripts>

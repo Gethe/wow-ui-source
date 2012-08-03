@@ -51,7 +51,7 @@
 				ContainerFrameItemButton_OnEnter(self, motion);
 			</OnEnter>
 			<OnLeave>
-				GameTooltip:Hide();
+				GameTooltip_Hide();
 				ResetCursor();
 			</OnLeave>
 			<OnHide>

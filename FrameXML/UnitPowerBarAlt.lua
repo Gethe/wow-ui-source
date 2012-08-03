@@ -180,7 +180,7 @@ function UnitPowerBarAlt_SetUp(self, barID)
 	UnitPowerBarAlt_HideTextures(self);	--It's up to the SetUp functions to show textures they need.
 	UnitPowerBarAlt_HidePills(self);
 
-	if ( barType == ALT_POWER_TYPE_PILL ) then
+	if ( barType == ALT_POWER_TYPE_PILL or barType == ALT_POWER_TYPE_COUNTER ) then
 		self.statusFrame:Hide();
 		self.statusFrame.enabled = false;
 	else
@@ -234,7 +234,7 @@ function UnitPowerBarAlt_UpdateAll(self)
 	if ( barType and (not hideFromOthers or self.isPlayerBar) ) then
 		UnitPowerBarAlt_TearDown(self);
 		UnitPowerBarAlt_SetUp(self);
-		
+
 		local currentPower = UnitPower(self.unit, ALTERNATE_POWER_INDEX);
 		if ( barType ~= ALT_POWER_TYPE_COUNTER ) then
 			local maxPower = UnitPowerMax(self.unit, ALTERNATE_POWER_INDEX);

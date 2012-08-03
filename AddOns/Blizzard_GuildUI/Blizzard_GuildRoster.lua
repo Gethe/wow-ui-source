@@ -55,6 +55,9 @@ function GuildRosterFrame_OnLoad(self)
 	GuildRoster_SetView(GetCVar("guildRosterView"));
 	SetGuildRosterSelection(0);
 	UIDropDownMenu_SetSelectedValue(GuildRosterViewDropdown, currentGuildView);
+	-- right-click dropdown
+	GuildMemberDropDown.displayMode = "MENU";
+
 	self.doRecipeQuery = true;
 end
 
@@ -155,7 +158,11 @@ function GuildRoster_Update()
 		else
 			GuildMemberDetailName:SetText(GuildFrame.selectedName);
 		end
-		GuildMemberDetailLevel:SetFormattedText(FRIENDS_LEVEL_TEMPLATE, level, class);
+		if ( level and class) then
+			GuildMemberDetailLevel:SetFormattedText(FRIENDS_LEVEL_TEMPLATE, level, class);
+		else
+			GuildMemberDetailLevel:SetText("");
+		end
 		GuildMemberDetailZoneText:SetText(isMobile and REMOTE_CHAT or zone);
 		GuildMemberDetailRankText:SetText(rank);
 		if ( online ) then
@@ -357,7 +364,7 @@ function GuildRosterButton_OnClick(self, button)
 				GetGuildMemberRecipes(playerName, skillID);
 			end
 		else
-			FriendsFrame_ShowDropdown(playerName, online, nil, nil, nil, nil, isMobile);
+			GuildRoster_ShowMemberDropDown(playerName, online, isMobile);
 		end
 	else
 		if ( button == "LeftButton" ) then
@@ -376,9 +383,37 @@ function GuildRosterButton_OnClick(self, button)
 			GuildRoster_Update();
 		else
 			local name, rank, rankIndex, level, class, zone, note, officernote, online, isAway, classFileName, achievementPoints, achievementRank, isMobile = GetGuildRosterInfo(self.guildIndex);
-			FriendsFrame_ShowDropdown(name, online, nil, nil, nil, nil, isMobile);
+			GuildRoster_ShowMemberDropDown(name, online, isMobile);
 		end
 	end
+end
+
+function GuildRoster_ShowMemberDropDown(name, online, isMobile)
+	if ( online ) then
+		GuildMemberDropDown.name = name;
+		GuildMemberDropDown.isMobile = isMobile;
+		GuildMemberDropDown.initialize = GuildMemberDropDown_Initialize;
+		ToggleDropDownMenu(1, nil, GuildMemberDropDown, "cursor");
+	else
+		-- show menu for offline members if player can send BattleTag request
+		if ( BNFeaturesEnabledAndConnected() ) then
+			local _, battleTag = BNGetInfo();
+			if ( battleTag ) then
+				GuildMemberDropDown.name = name;
+				GuildMemberDropDown.isMobile = false;
+				GuildMemberDropDown.initialize = GuildMemberOfflineDropDown_Initialize;
+				ToggleDropDownMenu(1, nil, GuildMemberDropDown, "cursor");
+			end
+		end
+	end
+end
+
+function GuildMemberDropDown_Initialize()
+	UnitPopup_ShowMenu(UIDROPDOWNMENU_OPEN_MENU, "GUILD", nil, GuildMemberDropDown.name);
+end
+
+function GuildMemberOfflineDropDown_Initialize()
+	UnitPopup_ShowMenu(UIDROPDOWNMENU_OPEN_MENU, "GUILD_OFFLINE", nil, GuildMemberDropDown.name);
 end
 
 function GuildRoster_UpdateTradeSkills()

@@ -1,7 +1,7 @@
 MAX_COMBO_POINTS = 5;
 MAX_TARGET_DEBUFFS = 16;
 MAX_TARGET_BUFFS = 32;
-MAX_BOSS_FRAMES = 4;
+MAX_BOSS_FRAMES = 5;
 
 -- aura positioning constants
 local AURA_START_X = 5;
