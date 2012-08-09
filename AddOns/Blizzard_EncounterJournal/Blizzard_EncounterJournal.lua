@@ -390,7 +390,7 @@ function EncounterJournal_DisplayEncounter(encounterID, noButton)
 	self.info.dungeonBG:Show();
 	
 	-- Setup Creatures
-	local id, displayInfo, iconImage;
+	local id, name, displayInfo, iconImage;
 	for i=1,MAX_CREATURES_PER_ENCOUNTER do 
 		id, name, description, displayInfo, iconImage = EJ_GetCreatureInfo(i);
 		
@@ -924,10 +924,10 @@ function EncounterJournal_SetFlagIcon(texture, index)
 	local columns = 256/iconSize;
 	local rows = 64/iconSize;
 
-	l = mod(index, columns) / columns;
-	r = l + (1/columns);
-	t = floor(index/columns) / rows;
-	b = t + (1/rows);
+	local l = mod(index, columns) / columns;
+	local r = l + (1/columns);
+	local t = floor(index/columns) / rows;
+	local b = t + (1/rows);
 	texture:SetTexCoord(l,r,t,b);
 end
 

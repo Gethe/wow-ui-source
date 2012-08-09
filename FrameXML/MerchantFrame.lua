@@ -509,6 +509,7 @@ function MerchantFrame_ConfirmExtendedItemCost(itemButton, numToPurchase)
 	
 	local itemName = "YOU HAVE FOUND A BUG!";
 	local itemQuality = 1;
+	local _;
 	local r, g, b = 1, 1, 1;
 	if(itemButton.link) then
 		itemName, _, itemQuality = GetItemInfo(itemButton.link);
@@ -639,7 +640,7 @@ function MerchantFrame_UpdateCurrencies()
 				tokenButton:SetScript("OnEnter", MerchantFrame_ShowCurrencyTooltip);
 			end
 
-			name, count, icon = GetCurrencyInfo(currencies[index]);
+			local name, count, icon = GetCurrencyInfo(currencies[index]);
 			if ( name and name ~= "" ) then
 				if ( count <= 99999 ) then
 					tokenButton.count:SetText(count);

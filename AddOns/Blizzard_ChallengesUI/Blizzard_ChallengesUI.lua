@@ -189,7 +189,7 @@ function ChallengesFrameGuild_OnEnter(self)
 		local name, className, class, specID = GetChallengeBestTimeInfo(guildTime.mapID, i, true);
 		if (name) then
 			local classColor = RAID_CLASS_COLORS[class].colorStr;
-			_, specName = GetSpecializationInfoByID(specID);
+			local _, specName = GetSpecializationInfoByID(specID);
 			if (specName and specName ~= "") then
 				GameTooltip:AddLine(name.." - "..format(PLAYER_CLASS, classColor, specName, className));
 			else

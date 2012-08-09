@@ -305,7 +305,7 @@ function InterfaceOptionsOptionsFrame_RefreshAddOns ()
 	end
 end
 
-uvarInfo = {
+UVARINFO = {
 	["REMOVE_CHAT_DELAY"] = { default = "0", cvar = "removeChatDelay", event = "REMOVE_CHAT_DELAY_TEXT" },
 	["LOCK_ACTIONBAR"] = { default = "0", cvar = "lockActionBars", event = "LOCK_ACTIONBAR_TEXT" },
 	["SHOW_BUFF_DURATIONS"] = { default = "1", cvar = "buffDurations", event = "SHOW_BUFF_DURATION_TEXT", func = function () SHOW_BUFF_DURATIONS = GetCVar("buffDurations"); BuffFrame_UpdatePositions(); end},
@@ -344,14 +344,14 @@ uvarInfo = {
 
 function InterfaceOptionsFrame_InitializeUVars ()
 	-- Setup UVars that keep settings
-	for uvar, setting in SecureNext, uvarInfo do
+	for uvar, setting in SecureNext, UVARINFO do
 		_G[uvar] = setting.default;
 	end
 end
 
 function InterfaceOptionsFrame_LoadUVars ()
 	local variable, cvarValue
-	for uvar, setting in SecureNext, uvarInfo do
+	for uvar, setting in SecureNext, UVARINFO do
 		variable = _G[uvar];
 		cvarValue = GetCVar(setting.cvar);
 		if ( cvarValue == setting.default and variable ~= setting.default ) then

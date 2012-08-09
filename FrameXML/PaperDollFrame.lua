@@ -540,11 +540,18 @@ function PaperDollFrame_SetLevel()
 		CharacterLevelText:SetPoint("TOP", 0, -36);
 	end
 	
-	if IsTrialAccount() then
+	local showTrialCap = false;
+	if (IsTrialAccount()) then
 		local rLevel = GetRestrictedAccountData();
-		if UnitLevel("player") >= rLevel then
-			CharacterTrialLevelErrorText:Show();
+		if (UnitLevel("player") >= rLevel) then
+			showTrialCap = true;
 		end
+	end
+	if (showTrialCap) then
+		CharacterTrialLevelErrorText:Show();
+		CharacterLevelText:SetPoint("TOP", PaperDollFrame, "TOP", 0, -30);
+	else
+		CharacterLevelText:SetPoint("TOP", PaperDollFrame, "TOP", 0, -37);
 	end
 end
 
@@ -854,7 +861,7 @@ function PaperDollFrame_SetDodge(statFrame, unit)
 	
 	local chance = GetDodgeChance();
 	PaperDollFrame_SetLabelAndText(statFrame, STAT_DODGE, chance, 1);
-	statFrame.tooltip = HIGHLIGHT_FONT_COLOR_CODE..format(PAPERDOLLFRAME_TOOLTIP_FORMAT, DODGE_CHANCE).." "..string.format("%.02f", chance).."%"..FONT_COLOR_CODE_CLOSE;
+	statFrame.tooltip = HIGHLIGHT_FONT_COLOR_CODE..format(PAPERDOLLFRAME_TOOLTIP_FORMAT, DODGE_CHANCE).." "..string.format("%.2F", chance).."%"..FONT_COLOR_CODE_CLOSE;
 	statFrame.tooltip2 = format(CR_DODGE_TOOLTIP, GetCombatRating(CR_DODGE), GetCombatRatingBonus(CR_DODGE));
 	statFrame:Show();
 end
@@ -867,7 +874,7 @@ function PaperDollFrame_SetBlock(statFrame, unit)
 	
 	local chance = GetBlockChance();
 	PaperDollFrame_SetLabelAndText(statFrame, STAT_BLOCK, chance, 1);
-	statFrame.tooltip = HIGHLIGHT_FONT_COLOR_CODE..format(PAPERDOLLFRAME_TOOLTIP_FORMAT, BLOCK_CHANCE).." "..string.format("%.02f", chance).."%"..FONT_COLOR_CODE_CLOSE;
+	statFrame.tooltip = HIGHLIGHT_FONT_COLOR_CODE..format(PAPERDOLLFRAME_TOOLTIP_FORMAT, BLOCK_CHANCE).." "..string.format("%.2F", chance).."%"..FONT_COLOR_CODE_CLOSE;
 	statFrame.tooltip2 = format(CR_BLOCK_TOOLTIP, GetCombatRating(CR_BLOCK), GetCombatRatingBonus(CR_BLOCK), GetShieldBlock());
 	statFrame:Show();
 end
@@ -880,7 +887,7 @@ function PaperDollFrame_SetParry(statFrame, unit)
 	
 	local chance = GetParryChance();
 	PaperDollFrame_SetLabelAndText(statFrame, STAT_PARRY, chance, 1);
-	statFrame.tooltip = HIGHLIGHT_FONT_COLOR_CODE..format(PAPERDOLLFRAME_TOOLTIP_FORMAT, PARRY_CHANCE).." "..string.format("%.02f", chance).."%"..FONT_COLOR_CODE_CLOSE;
+	statFrame.tooltip = HIGHLIGHT_FONT_COLOR_CODE..format(PAPERDOLLFRAME_TOOLTIP_FORMAT, PARRY_CHANCE).." "..string.format("%.2F", chance).."%"..FONT_COLOR_CODE_CLOSE;
 	statFrame.tooltip2 = format(CR_PARRY_TOOLTIP, GetCombatRating(CR_PARRY), GetCombatRatingBonus(CR_PARRY));
 	statFrame:Show();
 end
@@ -1112,9 +1119,8 @@ function PaperDollFrame_SetRangedDPS(statFrame, unit)
 	local text = _G[statFrame:GetName().."StatText"];
 
 	-- If no ranged attack then set to n/a
-	local hasRelic = UnitHasRelicSlot(unit);	
-	local rangedTexture = GetInventoryItemTexture("player", 18);
-	if ( rangedTexture and not hasRelic ) then
+	local rangedWeapon = IsRangedWeapon();
+	if ( rangedWeapon ) then
 		PaperDollFrame.noRanged = nil;
 	else
 		text:SetText(NOT_APPLICABLE);
@@ -1246,14 +1252,13 @@ function PaperDollFrame_SetRangedAttack(statFrame, unit)
 		return;
 	end
 
-	local hasRelic = UnitHasRelicSlot(unit);
 	local rangedAttackBase, rangedAttackMod = UnitRangedAttack(unit);
 	_G[statFrame:GetName().."Label"]:SetText(format(STAT_FORMAT, COMBAT_RATING_NAME1));
 	local text = _G[statFrame:GetName().."StatText"];
 
 	-- If no ranged texture then set stats to n/a
-	local rangedTexture = GetInventoryItemTexture("player", 18);
-	if ( rangedTexture and not hasRelic ) then
+	local rangedWeapon = IsRangedWeapon();
+	if ( rangedWeapon ) then
 		PaperDollFrame.noRanged = nil;
 	else
 		text:SetText(NOT_APPLICABLE);
@@ -1292,9 +1297,8 @@ function PaperDollFrame_SetRangedDamage(statFrame, unit)
 	local text = _G[statFrame:GetName().."StatText"];
 
 	-- If no ranged attack then set to n/a
-	local hasRelic = UnitHasRelicSlot(unit);	
-	local rangedTexture = GetInventoryItemTexture("player", 18);
-	if ( rangedTexture and not hasRelic ) then
+	local rangedWeapon = IsRangedWeapon();
+	if ( rangedWeapon ) then
 		PaperDollFrame.noRanged = nil;
 	else
 		text:SetText(NOT_APPLICABLE);
@@ -1408,7 +1412,7 @@ function PaperDollFrame_SetRangedAttackPower(statFrame, unit)
 	if (GetOverrideAPBySpellPower() ~= nil) then
 		local holySchool = 2;
 		-- Start at 2 to skip physical damage
-		spellPower = GetSpellBonusDamage(holySchool);		
+		local spellPower = GetSpellBonusDamage(holySchool);		
 		for i=(holySchool+1), MAX_SPELL_SCHOOLS do
 			spellPower = min(spellPower, GetSpellBonusDamage(i));
 		end

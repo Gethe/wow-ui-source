@@ -830,7 +830,7 @@ function SpellBook_GetCurrentPage()
 end
 
 local maxShines = 1;
-shineGet = {}
+local shineGet = {}
 function SpellBook_GetAutoCastShine ()
 	local shine = shineGet[1];
 	
@@ -1383,7 +1383,7 @@ CoreAbilitiesFrame_HelpPlate = {
 WhatHasChangedFrame_HelpPlate = {
 	FramePos = { x = 5,	y = -22 },
 	FrameSize = { width = 580, height = 500	},
-	[1] = { ButtonPos = { x = 430,	y = -30}, HighLightBox = { x = 65, y = -15, width = 460, height = 472 }, ToolTipDir = "BOTTOM",	ToolTipText = WHAT_HAS_CHANGED_HELP_1 },
+	[1] = { ButtonPos = { x = 430,	y = -30}, HighLightBox = { x = 65, y = -15, width = 460, height = 472 }, ToolTipDir = "DOWN",	ToolTipText = WHAT_HAS_CHANGED_HELP_1 },
 }
 
 function SpellBook_ToggleTutorial()

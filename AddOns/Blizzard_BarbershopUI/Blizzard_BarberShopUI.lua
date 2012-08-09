@@ -1,11 +1,25 @@
+local STYLE_HAIR_COLOR = 2;
+local STYLE_SKIN = 4;
+
 function BarberShop_OnLoad(self)
 	BarberShop_UpdateHairCustomization();
 	BarberShop_UpdateFacialHairCustomization();
 	self:RegisterEvent("BARBER_SHOP_APPEARANCE_APPLIED");
 	self:RegisterEvent("BARBER_SHOP_SUCCESS");
 	
-	if ( CanAlterSkin() ) then
-		BarberShop_ToFourAttributeFormat();
+	if ( IsBarberShopStyleValid(STYLE_SKIN) ) then
+		if ( IsBarberShopStyleValid(STYLE_HAIR_COLOR) ) then
+			-- tauren, worgen, female pandaren
+			BarberShop_ToFourAttributeFormat();
+		else
+			-- male pandaren
+			BarberShopFrameSelector2:Hide();
+			BarberShopFrameSelector3:SetPoint("TOPLEFT", BarberShopFrameSelector1, "BOTTOMLEFT", 0, -1);
+			BarberShopFrameSelector4:Show();
+			BarberShopFrameSelector4:SetPoint("TOPLEFT", BarberShopFrameSelector3, "BOTTOMLEFT", 0, -1);
+			BarberShopFrameMoneyFrame:SetPoint("TOP", BarberShopFrameSelector4, "BOTTOM", 7, -10);
+			BarberShopFrameOkayButton:SetPoint("RIGHT", BarberShopFrameSelector4, "BOTTOM", -2, -48);
+		end
 	end
 end
 
@@ -62,7 +76,9 @@ end
 function BarberShop_UpdateCost()
 	MoneyFrame_Update(BarberShopFrameMoneyFrame:GetName(), GetBarberShopTotalCost());
 	-- The 4th return from GetBarberShopStyleInfo is whether the selected style is the active character style
-	if ( select(4, GetBarberShopStyleInfo(1)) and select(4, GetBarberShopStyleInfo(2)) and select(4, GetBarberShopStyleInfo(3)) and ( not BarberShopFrameSelector4:IsShown() or select(4, GetBarberShopStyleInfo(4)) ) ) then
+	local defaultHairColor = not BarberShopFrameSelector2:IsShown() or select(4, GetBarberShopStyleInfo(2));
+	local defaultSkinColor = not BarberShopFrameSelector4:IsShown() or select(4, GetBarberShopStyleInfo(4));
+	if ( select(4, GetBarberShopStyleInfo(1)) and defaultHairColor and select(4, GetBarberShopStyleInfo(3)) and defaultSkinColor ) then
 		BarberShopFrameOkayButton:Disable();
 		BarberShopFrameResetButton:Disable();
 	else

@@ -154,16 +154,10 @@
 						_G[self:GetName().."Text"]:SetText(ALL_ASSIST_LABEL);
 						self:RegisterEvent("GROUP_ROSTER_UPDATE");
 						self:RegisterEvent("PARTY_LEADER_CHANGED");
+						RaidFrameAllAssistCheckButton_UpdateAvailable(self);
 					</OnLoad>
 					<OnEvent>
-						self:SetChecked(IsEveryoneAssistant());
-						if ( UnitIsGroupLeader("player") ) then
-							self:Enable();
-							self.text:SetFontObject(GameFontNormalSmall);
-						else
-							self:Disable();
-							self.text:SetFontObject(GameFontDisableSmall);
-						end
+						RaidFrameAllAssistCheckButton_UpdateAvailable(self);
 					</OnEvent>
 					<OnClick>
 						if (self.enabled) then 

@@ -381,24 +381,6 @@
 							</Anchor>
 						</Anchors>
 					</Button>
-					<Button name="InspectRangedSlot" inherits="InspectPaperDollItemSlotButtonBottomTemplate">
-						<Anchors>
-							<Anchor point="BOTTOMLEFT">
-								<Offset>
-									<AbsDimension x="130" y="16"/>
-								</Offset>
-							</Anchor>
-						</Anchors>
-						<Layers>
-							<Layer level="BACKGROUND">
-								<Texture inherits="Char-Slot-Bottom-Right">
-									<Anchors>
-										<Anchor point="TOPLEFT" relativeTo="$parentFrame" relativePoint="TOPRIGHT"/>
-									</Anchors>
-								</Texture>
-							</Layer>
-						</Layers>
-					</Button>
 				</Frames>
 			</Frame>
 		</Frames>

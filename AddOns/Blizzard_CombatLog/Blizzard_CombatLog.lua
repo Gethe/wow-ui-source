@@ -1784,7 +1784,7 @@ local function CombatLog_Color_ColorArrayBySchool(school, settings)
 		return settings.colors.schoolColoring.default;
 	end
 
-	return settings.colors.schoolColoring[school] or defaultColorArray
+	return settings.colors.schoolColoring[school] or settings.colors.defaults.spell;
 end
 _G.CombatLog_Color_ColorArrayBySchool = CombatLog_Color_ColorArrayBySchool
 
@@ -3278,6 +3278,10 @@ function CombatLog_OnEvent(filterSettings, timestamp, event, hideCaster, sourceG
 		amount = "";
 	end
 
+	if ( not extraAmount) then
+		extraAmount = "";
+	end
+	
 	if ( sourceString == "" and not hideCaster ) then
 		sourceString = UNKNOWN;
 	end

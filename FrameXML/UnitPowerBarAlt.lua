@@ -577,7 +577,7 @@ function CounterBar_SetStyle(self, useFactional, animNumbers, maxValue)
 			if digit == COUNTERBAR_LEADING_ZERO_INDEX then
 				digit = COUNTERBAR_SLASH_INDEX;
 			end
-			l,r,t,b = CounterBar_GetNumberCoord(digit);
+			local l,r,t,b = CounterBar_GetNumberCoord(digit);
 			digitFrame.number:SetTexCoord(l,r,t,b);
 			digitFrame.numberMask:Hide();
 		end
@@ -608,6 +608,7 @@ end
 
 
 function CounterBar_GetDigit(count, isFirstDigit)
+	local digit;
 	if count > 0 or isFirstDigit then
 		digit = mod(count, 10);
 	else

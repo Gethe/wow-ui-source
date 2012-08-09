@@ -388,7 +388,7 @@ function ReforgeFrame_OldStat_Initialize()
 	local lastStat = nil;
 	
 	for i=1,#stats,3 do
-		leftStat, _ = ReforgingFrame_GetStatRow(index, true);
+		leftStat = ReforgingFrame_GetStatRow(index, true);
 		local name, stat, value = stats[i], stats[i+1], stats[i+2];
 		local currValue = value;
 		local reforgable;
@@ -451,7 +451,7 @@ function ReforgeFrame_NewStat_Initialize(noneSelected, stat, value)
 	ReforgingFrame.destName = nil;
 	ReforgingFrame.reforgeID = nil;
 	local index = 1;
-	local rightStat;
+	local _, rightStat;
 	
 	for i=1,#stats,4 do
 		_, rightStat = ReforgingFrame_GetStatRow(index, true);

@@ -182,6 +182,7 @@ UnitPopupMenus = { };
 UnitPopupMenus["SELF"] = { "SET_FOCUS", "PVP_FLAG", "LOOT_METHOD", "LOOT_THRESHOLD", "OPT_OUT_LOOT_TITLE", "LOOT_PROMOTE", "CONVERT_TO_RAID", "CONVERT_TO_PARTY", "DUNGEON_DIFFICULTY", "RAID_DIFFICULTY", "RESET_INSTANCES", "RESET_CHALLENGE_MODE", "RAID_TARGET_ICON", "SELECT_ROLE", "INSTANCE_LEAVE", "LEAVE", "MOVE_PLAYER_FRAME", "MOVE_TARGET_FRAME", "CANCEL"};
 UnitPopupMenus["PET"] = { "SET_FOCUS", "PET_PAPERDOLL", "PET_RENAME", "PET_DISMISS", "PET_ABANDON", "MOVE_PLAYER_FRAME", "MOVE_TARGET_FRAME", "CANCEL" };
 UnitPopupMenus["OTHERPET"] = { "SET_FOCUS", "RAID_TARGET_ICON", "MOVE_PLAYER_FRAME", "MOVE_TARGET_FRAME",  "REPORT_PET", "CANCEL" };
+UnitPopupMenus["OTHERBATTLEPET"] = { "SET_FOCUS", "RAID_TARGET_ICON", "MOVE_PLAYER_FRAME", "MOVE_TARGET_FRAME",  "REPORT_BATTLE_PET", "CANCEL" };
 UnitPopupMenus["PARTY"] = { "ADD_FRIEND", "ADD_FRIEND_MENU", "SET_FOCUS", "MUTE", "UNMUTE", "PARTY_SILENCE", "PARTY_UNSILENCE", "RAID_SILENCE", "RAID_UNSILENCE", "BATTLEGROUND_SILENCE", "BATTLEGROUND_UNSILENCE", "WHISPER", "PROMOTE", "PROMOTE_GUIDE", "LOOT_PROMOTE", "VOTE_TO_KICK", "UNINVITE", "INSPECT", "ACHIEVEMENTS", "TRADE", "FOLLOW", "DUEL", "PET_BATTLE_PVP_DUEL", "RAID_TARGET_ICON", "SELECT_ROLE", "PVP_REPORT_AFK", "RAF_SUMMON", "RAF_GRANT_LEVEL", "MOVE_PLAYER_FRAME", "MOVE_TARGET_FRAME", "REPORT_PLAYER", "CANCEL" };
 UnitPopupMenus["PLAYER"] = { "ADD_FRIEND", "ADD_FRIEND_MENU", "SET_FOCUS", "WHISPER", "INSPECT", "INVITE", "ACHIEVEMENTS", "TRADE", "FOLLOW", "DUEL", "PET_BATTLE_PVP_DUEL", "RAID_TARGET_ICON", "RAF_SUMMON", "RAF_GRANT_LEVEL", "MOVE_PLAYER_FRAME", "MOVE_TARGET_FRAME", "REPORT_PLAYER", "CANCEL" };
 UnitPopupMenus["RAID_PLAYER"] = { "ADD_FRIEND", "ADD_FRIEND_MENU", "SET_FOCUS", "MUTE", "UNMUTE", "RAID_SILENCE", "RAID_UNSILENCE", "BATTLEGROUND_SILENCE", "BATTLEGROUND_UNSILENCE", "WHISPER", "INSPECT", "ACHIEVEMENTS", "TRADE", "FOLLOW", "DUEL", "PET_BATTLE_PVP_DUEL", "RAID_TARGET_ICON", "SELECT_ROLE", "RAID_LEADER", "RAID_PROMOTE", "RAID_DEMOTE", "LOOT_PROMOTE", "VOTE_TO_KICK", "RAID_REMOVE", "PVP_REPORT_AFK", "RAF_SUMMON", "RAF_GRANT_LEVEL", "MOVE_PLAYER_FRAME", "MOVE_TARGET_FRAME", "REPORT_PLAYER", "CANCEL" };
@@ -201,7 +202,6 @@ UnitPopupMenus["TARGET"] = { "ADD_FRIEND", "ADD_FRIEND_MENU", "SET_FOCUS", "RAID
 UnitPopupMenus["ARENAENEMY"] = { "SET_FOCUS", "CANCEL" };
 UnitPopupMenus["FOCUS"] = { "CLEAR_FOCUS", "LARGE_FOCUS", "MOVE_FOCUS_FRAME", "RAID_TARGET_ICON", "CANCEL" };
 UnitPopupMenus["BOSS"] = { "SET_FOCUS", "RAID_TARGET_ICON", "CANCEL" };
-UnitPopupMenus["BATTLEPET"] = { "REPORT_BATTLE_PET", "CANCEL" };
 
 -- Second level menus
 UnitPopupMenus["ADD_FRIEND_MENU"] = { "BATTLETAG_FRIEND", "CHARACTER_FRIEND" };
@@ -733,7 +733,7 @@ function UnitPopup_HideButtons ()
 		elseif ( value == "BN_TARGET" ) then
 			-- We don't want to show a menu option that will end up being blocked
 			if ( not dropdownMenu.presenceID or InCombatLockdown() or not issecure() ) then
-				enable = 0;
+				UnitPopupShown[UIDROPDOWNMENU_MENU_LEVEL][index] = 0;
 			end
 		elseif ( value == "PROMOTE" ) then
 			if ( (inParty == 0) or (isLeader == 0) or HasLFGRestrictions()) then
@@ -1463,12 +1463,12 @@ function UnitPopup_OnClick (self)
 				DEFAULT_CHAT_FRAME:AddMessage(ERR_REPORT_SUBMISSION_FAILED, info.r, info.g, info.b);
 			end
 		end
-	elseif ( button == "REPORT_BATTLE_PET" ) then
-		local dialog = StaticPopup_Show("CONFIRM_REPORT_BATTLEPET_NAME", name);
-		dialog.data = name;
 	elseif ( button == "REPORT_PET" ) then
-		local dialog = StaticPopup_Show("CONFIRM_REPORT_PET_NAME", name);
-		dialog.data = name;
+		SetPendingReportPetTarget(unit);
+		StaticPopup_Show("CONFIRM_REPORT_PET_NAME", name);
+	elseif ( button == "REPORT_BATTLE_PET" ) then
+		C_PetBattles.SetPendingReportTargetFromUnit(unit);
+		StaticPopup_Show("CONFIRM_REPORT_BATTLEPET_NAME", name);
 	elseif ( button == "REPORT_CHEATING" ) then
 		if ( GMQuickTicketSystemEnabled() and not GMQuickTicketSystemThrottled() ) then
 			HelpFrame_ShowReportCheatingDialog(dropdownFrame.unit or tonumber(dropdownFrame.lineID));
@@ -1650,7 +1650,7 @@ function UnitPopup_OnClick (self)
 	elseif ( button == "ITEM_QUALITY2_DESC" or button == "ITEM_QUALITY3_DESC" or button == "ITEM_QUALITY4_DESC" ) then
 		local id = self:GetID()+1;
 		SetLootThreshold(id);
-		UIDropDownMenu_SetButtonText(self:GetParent().parentLevel, self:GetParent().parentID, UnitPopupButtons[button].text);
+		UIDropDownMenu_SetButtonText(self:GetParent().parentLevel, self:GetParent().parentID, UnitPopupButtons[button].text, ITEM_QUALITY_COLORS[id].hex);
 	elseif ( strsub(button, 1, 12) == "RAID_TARGET_" and button ~= "RAID_TARGET_ICON" ) then
 		local raidTargetIndex = strsub(button, 13);
 		if ( raidTargetIndex == "NONE" ) then
@@ -1718,7 +1718,7 @@ function UnitPopup_OnClick (self)
 	elseif ( button == "ADD_FRIEND" or button == "CHARACTER_FRIEND" ) then
 		AddFriend(name);
 	elseif ( button == "BATTLETAG_FRIEND" ) then
-		_, battleTag = BNGetInfo();
+		local _, battleTag = BNGetInfo();
 		if ( not battleTag ) then
 			StaticPopupSpecial_Show(CreateBattleTagFrame);
 		else
@@ -1726,7 +1726,7 @@ function UnitPopup_OnClick (self)
 		end
 		CloseDropDownMenus();
 	elseif ( button == "GUILD_BATTLETAG_FRIEND" ) then
-		_, battleTag = BNGetInfo();
+		local _, battleTag = BNGetInfo();
 		if ( not battleTag ) then
 			StaticPopupSpecial_Show(CreateBattleTagFrame);
 		else

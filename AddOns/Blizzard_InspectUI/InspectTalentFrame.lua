@@ -62,7 +62,7 @@ end
 function InspectGlyphFrameGlyph_UpdateSlot (self, clear)
 	local id = self:GetID();
 	local talentGroup = PlayerTalentFrame and PlayerTalentFrame.talentGroup;
-	local enabled, glyphType, glyphTooltipIndex, glyphSpell, iconFilename, glyphID = GetGlyphSocketInfo(id, talentGroup, true, inspectedUnit);
+	local enabled, glyphType, glyphTooltipIndex, glyphSpell, iconFilename, glyphID = GetGlyphSocketInfo(id, talentGroup, true, INSPECTED_UNIT);
 	if not glyphType then
 		return;
 	end
@@ -72,7 +72,7 @@ function InspectGlyphFrameGlyph_UpdateSlot (self, clear)
 	self.elapsed = 0;
 	self.tintElapsed = 0;
 
-	local slotAnimation = slotAnimations[id];
+	local slotAnimation = SLOT_ANIMATIONS[id];
 	local _, _, _, offsetX, offsetY = self:GetPoint();
 	slotAnimation.xStop = offsetX;-- (self:GetWidth()/2.0);
 	slotAnimation.yStop = offsetY;-- (self:GetHeight()/2.0);
@@ -146,7 +146,7 @@ end
 function InspectGlyphFrameGlyph_OnEnter (self)
 	self.hasCursor = true;
 	GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
-	GameTooltip:SetGlyph(self:GetID(), 1, true, inspectedUnit);
+	GameTooltip:SetGlyph(self:GetID(), 1, true, INSPECTED_UNIT);
 	GameTooltip:Show();
 end
 
@@ -163,8 +163,8 @@ end
 --------------------------------------------------------------------------------
 function InspectTalentFrameSpec_OnShow(self)
 	local spec = nil;
-	if(inspectedUnit ~= nil) then
-		spec = GetInspectSpecialization(inspectedUnit);
+	if(INSPECTED_UNIT ~= nil) then
+		spec = GetInspectSpecialization(INSPECTED_UNIT);
 	end
 	if(spec ~= nil and spec > 0) then
 		local role1 = GetSpecializationRoleByID(spec);
@@ -214,14 +214,14 @@ function InspectTalentFrameTalents_OnShow(self)
 end
 
 function InspectTalentFrameTalent_OnEnter(self)
-	local classDisplayName, class, classID = UnitClass(inspectedUnit);
+	local classDisplayName, class, classID = UnitClass(INSPECTED_UNIT);
 	GameTooltip:SetOwner(self, "ANCHOR_RIGHT");	
-	GameTooltip:SetTalent(self:GetID(),true, self.talentGroup, inspectedUnit, classID);
+	GameTooltip:SetTalent(self:GetID(),true, self.talentGroup, INSPECTED_UNIT, classID);
 end
 
 function InspectTalentFrameTalent_OnClick(self)
 	if ( IsModifiedClick("CHATLINK") ) then
-		local _, _, classID = UnitClass(inspectedUnit);
+		local _, _, classID = UnitClass(INSPECTED_UNIT);
 		local link = GetTalentLink(self:GetID(), InspectTalentFrame.InspectTalents.inspect, classID);
 		if ( link ) then
 			ChatEdit_InsertLink(link);

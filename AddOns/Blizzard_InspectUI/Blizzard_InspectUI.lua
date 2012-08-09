@@ -6,12 +6,12 @@ UIPanelWindows["InspectFrame"] = { area = "left", pushable = 0, };
 function InspectFrame_Show(unit)
 	HideUIPanel(InspectFrame);
 	if ( CanInspect(unit, true) ) then
-		inspectedUnit = unit;
+		INSPECTED_UNIT = unit;
 		NotifyInspect(unit);
 		InspectFrame.unit = unit;
 		InspectSwitchTabs(1);
 	else
-		inspectedUnit = nil;
+		INSPECTED_UNIT = nil;
 	end
 end
 
@@ -22,7 +22,7 @@ function InspectFrame_OnLoad(self)
 	self:RegisterEvent("UNIT_PORTRAIT_UPDATE");
 	self:RegisterEvent("INSPECT_READY");
 	self.unit = nil;
-	inspectedUnit = nil;
+	INSPECTED_UNIT = nil;
 
 	-- Tab Handling code
 	PanelTemplates_SetNumTabs(self, 4);

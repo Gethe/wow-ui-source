@@ -275,6 +275,7 @@ function PetJournalHealPetButton_OnShow(self)
 	self:RegisterEvent("SPELLS_CHANGED");
 	self:RegisterEvent("PET_BATTLE_OPENING_START");
 	self:RegisterEvent("PET_BATTLE_CLOSE");
+	PetJournalHealPetButton_UpdateCooldown(self);
 	PetJournalHealPetButton_UpdateUsability(self);
 end
 
@@ -953,8 +954,9 @@ end
 function PetJournal_ShowPetCard(index)
 	PetJournal_HidePetDropdown();
 	PetJournalPetCard.petIndex = index;
+	local owned;
 	PetJournalPetCard.petID, PetJournalPetCard.speciesID, owned = C_PetJournal.GetPetInfoByIndex(index, PetJournal.isWild);		
-	if not owned then
+	if ( not owned ) then
 		PetJournalPetCard.petID = nil;
 	end
 	PetJournal_UpdatePetCard(PetJournalPetCard);
@@ -1823,5 +1825,26 @@ function MountListDragButton_OnClick(self, button)
 		end
 	else
 		PickupCompanion("MOUNT", parent.index);
+	end
+end
+
+function MountListItem_OnClick(self, button)
+	if ( button ~= "LeftButton" ) then
+		if ( self.active ) then
+			DismissCompanion("MOUNT");
+		else
+			CallCompanion("MOUNT", self.index);
+		end
+	elseif ( IsModifiedClick("CHATLINK") ) then
+		local id = self.spellID;
+		if ( MacroFrame and MacroFrame:IsShown() ) then
+			local spellName = GetSpellInfo(id);
+			ChatEdit_InsertLink(spellName);
+		else
+			local spellLink = GetSpellLink(id)
+			ChatEdit_InsertLink(spellLink);
+		end
+	elseif ( self.spellID ~= MountJournal_GetSelectedSpellID() ) then
+		MountJournal_Select(self.index);
 	end
 end

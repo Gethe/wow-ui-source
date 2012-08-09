@@ -824,7 +824,7 @@ end
 
 function CinematicsFrame_OnShow(self)
 	for i = 1, CinematicsFrame.numMovies do
-		button = _G["CinematicsButton"..i];
+		local button = _G["CinematicsButton"..i];
 		if ( not button ) then
 			break;
 		end

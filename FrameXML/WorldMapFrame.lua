@@ -468,7 +468,7 @@ function WorldMapFrame_Update()
 	
 	local numOfDetailTiles = GetNumberOfDetailTiles();
 	for i=1, numOfDetailTiles do
-		texName = path..fileName..i;
+		local texName = path..fileName..i;
 		_G["WorldMapDetailTile"..i]:SetTexture(texName);
 	end
 	--WorldMapHighlight:Hide();
@@ -948,7 +948,8 @@ function WorldMapLevelUp_OnClick(self)
 	SetDungeonMapLevel(currMapLevel - 1);
 	local newMapLevel = GetCurrentMapDungeonLevel();
 	if ( currMapLevel ~= newMapLevel ) then
-		UIDropDownMenu_SetSelectedID(WorldMapLevelDropDown, newMapLevel);
+		local floorMapCount, firstFloor = GetNumDungeonMapLevels();
+		UIDropDownMenu_SetSelectedID(WorldMapLevelDropDown, newMapLevel - firstFloor + 1);
 	end
 	PlaySound("UChatScrollButton");
 end
@@ -959,7 +960,8 @@ function WorldMapLevelDown_OnClick(self)
 	SetDungeonMapLevel(currMapLevel + 1);
 	local newMapLevel = GetCurrentMapDungeonLevel();
 	if ( currMapLevel ~= newMapLevel ) then
-		UIDropDownMenu_SetSelectedID(WorldMapLevelDropDown, newMapLevel);
+		local floorMapCount, firstFloor = GetNumDungeonMapLevels();
+		UIDropDownMenu_SetSelectedID(WorldMapLevelDropDown, newMapLevel - firstFloor + 1);
 	end
 	PlaySound("UChatScrollButton");
 end
@@ -1112,7 +1114,7 @@ function WorldMapButton_OnUpdate(self, elapsed)
 	local adjustedY = (centerY + (height/2) - y ) / height;
 	local adjustedX = (x - (centerX - (width/2))) / width;
 	
-	local name, fileName, texPercentageX, texPercentageY, textureX, textureY, scrollChildX, scrollChildY
+	local name, fileName, texPercentageX, texPercentageY, textureX, textureY, scrollChildX, scrollChildY, minLevel, maxLevel
 	if ( self:IsMouseOver() ) then
 		name, fileName, texPercentageX, texPercentageY, textureX, textureY, scrollChildX, scrollChildY, minLevel, maxLevel = UpdateMapHighlight( adjustedX, adjustedY );
 	end
@@ -1948,7 +1950,7 @@ end
 
 function WorldMapFrame_UpdateQuests()
 	local title, level, questTag, suggestedGroup, isHeader, isCollapsed, isComplete, isDaily;
-	local questId, questLogIndex;
+	local questId, questLogIndex, startEvent;
 	local questFrame;
 	local lastFrame;
 	local refFrame = WorldMapQuestFrame0;
@@ -1975,7 +1977,7 @@ function WorldMapFrame_UpdateQuests()
 		questId, questLogIndex = QuestPOIGetQuestIDByVisibleIndex(i);
 		if ( questLogIndex and questLogIndex > 0 ) then
 			questCount = questCount + 1;
-			title, level, questTag, suggestedGroup, isHeader, isCollapsed, isComplete, isDaily, questID, startEvent = GetQuestLogTitle(questLogIndex);
+			title, level, questTag, suggestedGroup, isHeader, isCollapsed, isComplete, isDaily, questId, startEvent = GetQuestLogTitle(questLogIndex);
 			requiredMoney = GetQuestLogRequiredMoney(questLogIndex);
 			numObjectives = GetNumQuestLeaderBoards(questLogIndex);
 			if ( isComplete and isComplete < 0 ) then
@@ -2017,7 +2019,7 @@ function WorldMapFrame_UpdateQuests()
 				local reversedText;
 				local numLines;
 				for j = 1, numObjectives do
-					text, objectiveType, finished = GetQuestLogLeaderBoard(j, questLogIndex);
+					local text, objectiveType, finished = GetQuestLogLeaderBoard(j, questLogIndex);
 					if ( text and not finished ) then
 						reversedText = ReverseQuestObjective(text, objectiveType);
 						questText = questText..reversedText.."|n";
@@ -2665,8 +2667,8 @@ function EncounterJournal_CheckQuestButtons()
 	
 	--Validate that there are no quest button intersection
 	local questI, bossI = 1, 1;
-	bossButton = _G["EJMapButton"..bossI];
-	questPOI = _G["poiWorldMapPOIFrame1_"..questI];
+	local bossButton = _G["EJMapButton"..bossI];
+	local questPOI = _G["poiWorldMapPOIFrame1_"..questI];
 	while bossButton and bossButton:IsShown() do
 		while questPOI and questPOI:IsShown() do
 			local qx,qy = questPOI:GetCenter();

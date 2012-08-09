@@ -14,9 +14,6 @@
 			<OnEvent function="PetBattleUnitFrame_OnEvent"/>
 			<OnClick function="PetBattleUnitFrame_OnClick"/>
 		</Scripts>
-		<Frames>
-			<Frame name="PetBattleUnitFrameDropDown" inherits="UIDropDownMenuTemplate" id="1" hidden="true"/>			
-		</Frames>
 	</Frame>
 	<Frame name="PetBattleAuraTemplate" virtual="true">
 		<Size x="60" y="49"/>
@@ -108,7 +105,7 @@
 			<Layer level="OVERLAY">
 				<FontString parentKey="HealthText" inherits="GameFontHighlightSmall" justifyH="LEFT">
 					<Anchors>
-						<Anchor point="CENTER" relativeKey="$parent.HealthBarBG" x="0" y="0"/>
+						<Anchor point="CENTER" relativeKey="$parent.HealthBarBG" x="0" y="1"/>
 					</Anchors>
 				</FontString>
 				<Texture parentKey="HealthDivider">
@@ -321,7 +318,6 @@
 				PetBattleUnitTooltip_Attach(PetBattlePrimaryUnitTooltip, "TOPRIGHT", self, "TOPLEFT", 0, 0);
 				PetBattleUnitTooltip_UpdateForUnit(PetBattlePrimaryUnitTooltip, self.petOwner, self.petIndex);
 				PetBattlePrimaryUnitTooltip:Show();
-				lastSelectedPetIndex = self.petIndex;
 			</OnEnter>
 			<OnLeave>
 				if ( PetBattlePrimaryUnitTooltip:GetParent() == self ) then
@@ -358,14 +354,14 @@
 			</Layer>
 			<Layer level="BACKGROUND" textureSubLevel="1">
 				<Texture parentKey="HealthBorder">
-					<Size x="232" y="12"/>
+					<Size x="232" y="16"/>
 					<Anchors>
 						<Anchor point="TOPLEFT" relativeKey="$parent.Icon" relativePoint="BOTTOMLEFT" x="-1" y="-6"/>
 					</Anchors>
 					<Color r="0.3" g="0.3" b="0.3"/>
 				</Texture>
 				<Texture parentKey="XPBorder">
-					<Size x="232" y="12"/>
+					<Size x="232" y="16"/>
 					<Anchors>
 						<Anchor point="TOPLEFT" relativeKey="$parent.HealthBorder" relativePoint="BOTTOMLEFT" x="0" y="-5"/>
 					</Anchors>
@@ -374,14 +370,14 @@
 			</Layer>
 			<Layer level="BORDER">
 				<Texture parentKey="HealthBG">
-					<Size x="230" y="10"/>
+					<Size x="230" y="14"/>
 					<Anchors>
 						<Anchor point="TOPLEFT" relativeKey="$parent.HealthBorder" relativePoint="TOPLEFT" x="1" y="-1"/>
 					</Anchors>
 					<Color r="0" g="0" b="0"/>
 				</Texture>
 				<Texture parentKey="XPBG">
-					<Size x="230" y="10"/>
+					<Size x="230" y="14"/>
 					<Anchors>
 						<Anchor point="TOPLEFT" relativeKey="$parent.XPBorder" relativePoint="TOPLEFT" x="1" y="-1"/>
 					</Anchors>
@@ -390,14 +386,14 @@
 			</Layer>
 			<Layer level="ARTWORK" textureSubLevel="2">
 				<Texture parentKey="ActualHealthBar" file="Interface\RaidFrame\Raid-Bar-Resource-Fill">
-					<Size x="230" y="11"/>
+					<Size x="230" y="15"/>
 					<Anchors>
 						<Anchor point="TOPLEFT" relativeKey="$parent.HealthBG" relativePoint="TOPLEFT" x="0" y="0"/>
 					</Anchors>
 					<Color r="0" g="1" b="0"/>
 				</Texture>
 				<Texture parentKey="XPBar" file="Interface\RaidFrame\Raid-Bar-Resource-Fill">
-					<Size x="230" y="11"/>
+					<Size x="230" y="15"/>
 					<Anchors>
 						<Anchor point="TOPLEFT" relativeKey="$parent.XPBG" relativePoint="TOPLEFT" x="0" y="0"/>
 					</Anchors>
@@ -504,12 +500,12 @@
 			<Layer level="OVERLAY">
 				<FontString parentKey="HealthText" inherits="GameFontHighlightSmall" justifyH="CENTER">
 					<Anchors>
-						<Anchor point="CENTER" relativeKey="$parent.ActualHealthBar" relativePoint="LEFT" x="100" y="0"/>
+						<Anchor point="CENTER" relativeKey="$parent.ActualHealthBar" relativePoint="LEFT" x="100" y="1"/>
 					</Anchors>
 				</FontString>
 				<FontString parentKey="XPText" inherits="GameFontHighlightSmall" justifyH="CENTER">
 					<Anchors>
-						<Anchor point="CENTER" relativeKey="$parent.XPBar" relativePoint="LEFT" x="100" y="0"/>
+						<Anchor point="CENTER" relativeKey="$parent.XPBar" relativePoint="LEFT" x="100" y="1"/>
 					</Anchors>
 				</FontString>
 				<FontString parentKey="Level" inherits="NumberFontNormalYellow" justifyH="CENTER">
@@ -520,14 +516,14 @@
 				<Texture parentKey="SpeedAdvantageIcon" file="Interface\PetBattles\PetBattle-StatIcons" hidden="true">
 					<Size x="16" y="16"/>
 					<Anchors>
-						<Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" x="8" y="32"/>
+						<Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" x="8" y="37"/>
 					</Anchors>
 					<TexCoords left="0.0" right="0.5" top="0.5" bottom="1.0"/>
 				</Texture>
 				<FontString parentKey="SpeedAdvantage" inherits="GameFontNormal" justifyH="LEFT" text="PET_BATTLE_TOOLTIP_SPEED_ADVANTAGE" hidden="true">
 					<Size x="226" y="0"/>
 					<Anchors>
-						<Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" x="26" y="32"/>
+						<Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" x="26" y="37"/>
 					</Anchors>
 				</FontString>
 			</Layer>
@@ -1181,7 +1177,6 @@
 						PetBattleUnitTooltip_Attach(PetBattlePrimaryUnitTooltip, "TOPLEFT", self, "BOTTOMLEFT", 0, 0);
 						PetBattleUnitTooltip_UpdateForUnit(PetBattlePrimaryUnitTooltip, self.petOwner, self.petIndex);
 						PetBattlePrimaryUnitTooltip:Show();
-						lastSelectedPetIndex = self.petIndex;
 					</OnEnter>
 					<OnLeave>
 						if ( PetBattlePrimaryUnitTooltip:GetParent() == self ) then
@@ -1622,5 +1617,13 @@
 				</Scripts>
 			</Frame>
 		</Frames>
+	</Frame>
+	<Frame name="PetBattleUnitFrameDropDown" inherits="UIDropDownMenuTemplate" id="1" hidden="true">			
+		<Scripts>
+			<OnLoad>
+				self.initialize = PetBattleUnitFrameDropDown_Initialize;
+				self.displayMode = "MENU";
+			</OnLoad>
+		</Scripts>
 	</Frame>
 </Ui>

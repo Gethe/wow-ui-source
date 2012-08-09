@@ -66,15 +66,6 @@ function TransmogrifyFrame_OnEvent(self, event, ...)
 		if ( dialog and dialog.data.slot == slot ) then
 			StaticPopup_Hide("TRANSMOGRIFY_BIND_CONFIRM");
 		end
-		-- check whether to show melee over ranged weapons
-		-- ranged weapons normally apply last so they take over melee weapons, but classes without ranged always show melee
-		if ( self.ranged ) then
-			if ( slot == INVSLOT_RANGED ) then
-				self.showMelee = nil;
-			elseif ( slot == INVSLOT_MAINHAND or slot == INVSLOT_OFFHAND ) then
-				self.showMelee = true;
-			end
-		end
 		TransmogrifyFrame_Update(self);
 	elseif ( event == "BAG_UPDATE" ) then
 		ValidateTransmogrifications();
@@ -97,6 +88,7 @@ function TransmogrifyFrame_OnEvent(self, event, ...)
 		if ( button ) then
 			TransmogrifyFrame_AnimateSlotButton(button);
 			TransmogrifyFrame_UpdateSlotButton(button);
+			TransmogrifyFrame_UpdateApplyButton();
 		end
 	elseif ( event == "TRANSMOGRIFY_BIND_CONFIRM" ) then
 		local slot, itemLink = ...;
@@ -270,16 +262,6 @@ function TransmogrifySlotButton_OnLeave(self)
 end
 
 function TransmogrifyFrame_Update(self)
-	-- ranged trickery
-	if (GetInventoryItemID("player",INVSLOT_RANGED) ~= nil) then
-		TransmogrifyFrameRangedSlot:Show();
-		TransmogrifyFrameMainHandSlot:Hide();
-		TransmogrifyFrame.showMelee = false;
-	else
-		TransmogrifyFrameRangedSlot:Hide();
-		TransmogrifyFrameMainHandSlot:Show();
-		TransmogrifyFrame.showMelee = true;
-	end
 
 	for _, button in pairs(BUTTONS) do
 		TransmogrifyFrame_UpdateSlotButton(button);
@@ -358,9 +340,7 @@ function TransmogrifyFrame_UpdateSlotButton(button)
 	
 
 	local showModel = true;
-	if ( TransmogrifyFrame.showMelee and button.id == INVSLOT_RANGED ) then
-		showModel = false;
-	elseif ( not TransmogrifyFrame.showMelee and ( button.id == INVSLOT_MAINHAND or button.id == INVSLOT_OFFHAND ) ) then
+	if ( button.id == INVSLOT_MAINHAND or button.id == INVSLOT_OFFHAND ) then
 		showModel = false;
 	end
 	if (button.id == INVSLOT_HEAD and not button.displayHelm) then

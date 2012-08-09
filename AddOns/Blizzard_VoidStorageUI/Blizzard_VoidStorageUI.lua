@@ -205,7 +205,7 @@ function VoidStorage_ItemsUpdate(doDeposit, doContents)
 	local button;
 	if ( doDeposit ) then
 		for i = 1, VOID_DEPOSIT_MAX do
-			itemID, textureName = GetVoidTransferDepositInfo(i);
+			local itemID, textureName = GetVoidTransferDepositInfo(i);
 			button = _G["VoidStorageDepositButton"..i];
 			button.icon:SetTexture(textureName);
 			if ( itemID ) then
@@ -218,7 +218,7 @@ function VoidStorage_ItemsUpdate(doDeposit, doContents)
 	if ( doContents ) then
 		-- withdrawal
 		for i = 1, VOID_WITHDRAW_MAX do
-			itemID, textureName = GetVoidTransferWithdrawalInfo(i);
+			local itemID, textureName = GetVoidTransferWithdrawalInfo(i);
 			button = _G["VoidStorageWithdrawButton"..i];
 			button.icon:SetTexture(textureName);
 			if ( itemID ) then
@@ -230,7 +230,7 @@ function VoidStorage_ItemsUpdate(doDeposit, doContents)
 		
 		-- storage
 		for i = 1, VOID_STORAGE_MAX do
-			itemID, textureName, locked, recentDeposit, isFiltered = GetVoidItemInfo(i);
+			local itemID, textureName, locked, recentDeposit, isFiltered = GetVoidItemInfo(i);
 			button = _G["VoidStorageStorageButton"..i];
 			button.icon:SetTexture(textureName);
 			if ( itemID ) then

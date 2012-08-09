@@ -1595,7 +1595,7 @@ function FCF_Tab_OnClick(self, button)
 			elseif ( chatFrame.isTemporary and (chatFrame.chatType == "WHISPER" or chatFrame.chatType == "BN_WHISPER") ) then
 				FCF_PopInWindow(self, chatFrame);
 				return;
-			elseif ( chatFrame.isTemporary and (chatFrame.chatType == "BN_CONVERSATION" ) ) then
+			elseif ( chatFrame.isTemporary and ( chatFrame.chatType == "BN_CONVERSATION" ) ) then
 				if ( GetCVar("conversationMode") == "popout" or GetCVar("conversationMode") == "popout_and_inline" ) then
 					FCF_LeaveConversation(self, chatFrame);
 					return;
@@ -1603,10 +1603,13 @@ function FCF_Tab_OnClick(self, button)
 					FCF_PopInWindow(self, chatFrame);
 					return;
 				end
+			elseif ( chatFrame.isTemporary and ( chatFrame.chatType == "PET_BATTLE_COMBAT_LOG" ) ) then
+				FCF_Close(chatFrame);
 			else
-				error(format("Unhandled temporary window type. chatType: %s, chatTarget %s", tostring(chatFrame.chatType), tostring(chatFrame.chatTarget)));
+				GMError(format("Unhandled temporary window type. chatType: %s, chatTarget %s", tostring(chatFrame.chatType), tostring(chatFrame.chatTarget)));
 			end
 		end
+		return;
 	end
 
 	-- Close all dropdowns

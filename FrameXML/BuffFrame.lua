@@ -120,7 +120,7 @@ function RaidBuffTray_Update()
 		return;
 	end
 
-	mask = 1;
+	local mask = 1;
 	for i=1,NUM_LE_RAID_BUFF_TYPES do
 		local name, rank, texture, duration, expiration, spellId, slot = GetRaidBuffTrayAuraInfo(i);
 		local buff = ConsolidatedBuffsTooltip["Buff"..i];

@@ -13,6 +13,7 @@ function AlternatePowerBar_Initialize(self)
 	local _, class = UnitClass("player");
 	if ( class == "MONK" ) then
 		-- ninja!
+		self:Hide();	-- hide the normal one
 		self = PlayerFrameMonkManaBar;
 		self.specRestriction = SPEC_MONK_MISTWEAVER;
 		self:RegisterEvent("PLAYER_SPECIALIZATION_CHANGED");

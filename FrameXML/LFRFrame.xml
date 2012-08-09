@@ -504,7 +504,7 @@
 								</Anchors>
 								<Scripts>
 									<OnLoad>
-										WhoFrameColumn_SetWidth(self, 34);
+										WhoFrameColumn_SetWidth(self, 43);
 										self.sortType = "level";
 									</OnLoad>
 								</Scripts>

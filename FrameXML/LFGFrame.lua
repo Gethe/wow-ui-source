@@ -420,7 +420,7 @@ function LFG_UpdateRolesChangeable()
 		LFG_UpdateAvailableRoles(LFDQueueFrameRoleButtonTank, LFDQueueFrameRoleButtonHealer, LFDQueueFrameRoleButtonDPS, LFDQueueFrameRoleButtonLeader);
 	end
 
-	mode, submode = GetLFGMode(LE_LFG_CATEGORY_LFR);
+	mode, subMode = GetLFGMode(LE_LFG_CATEGORY_LFR);
 	if ( mode == "queued" or mode == "listed" or mode == "rolecheck" or mode == "proposal" or mode == "suspended" ) then
 		LFG_DisableRoleButton(LFRQueueFrameRoleButtonTank, true);
 		LFG_DisableRoleButton(LFRQueueFrameRoleButtonHealer, true);
@@ -429,7 +429,7 @@ function LFG_UpdateRolesChangeable()
 		LFG_UpdateAvailableRoles(LFRQueueFrameRoleButtonTank, LFRQueueFrameRoleButtonHealer, LFRQueueFrameRoleButtonDPS, nil);
 	end
 
-	mode, submode = GetLFGMode(LE_LFG_CATEGORY_RF);
+	mode, subMode = GetLFGMode(LE_LFG_CATEGORY_RF);
 	if ( mode == "queued" or mode == "listed" or mode == "rolecheck" or mode == "proposal" or mode == "suspended" ) then
 		LFG_DisableRoleButton(RaidFinderQueueFrameRoleButtonTank, true);
 		LFG_DisableRoleButton(RaidFinderQueueFrameRoleButtonHealer, true);

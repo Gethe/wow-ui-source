@@ -770,7 +770,7 @@ function AuctionFrameBrowse_Update()
 	local offset = FauxScrollFrame_GetOffset(BrowseScrollFrame);
 	local index;
 	local isLastSlotEmpty;
-	local name, texture, count, quality, canUse, level, levelColHeader, minBid, minIncrement, buyoutPrice, duration, bidAmount, highBidder, owner;
+	local name, texture, count, quality, canUse, level, levelColHeader, minBid, minIncrement, buyoutPrice, duration, bidAmount, highBidder, owner, saleStatus, itemId, hasAllInfo;
 	local displayedPrice, requiredBid;
 	BrowseBidButton:Disable();
 	BrowseBuyoutButton:Disable();

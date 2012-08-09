@@ -48,7 +48,7 @@ function ContainerFrame_OnEvent(self, event, ...)
 			ContainerFrame_Update(self);
 		end
 	elseif ( event == "DISPLAY_SIZE_CHANGED" ) then
-		updateContainerFrameAnchors();
+		UpdateContainerFrameAnchors();
 	elseif ( event == "INVENTORY_SEARCH_UPDATE" ) then
 		ContainerFrame_UpdateSearchResults(self);
 	end
@@ -137,7 +137,7 @@ function ContainerFrame_OnHide(self)
 		end
 		index = index + 1;
 	end
-	updateContainerFrameAnchors();
+	UpdateContainerFrameAnchors();
 
 	if ( self:GetID() == KEYRING_CONTAINER ) then
 		UpdateMicroButtons();
@@ -578,11 +578,11 @@ function ContainerFrame_GenerateFrame(frame, size, id)
 
 	-- Add the bag to the baglist
 	frame:Show();
-	updateContainerFrameAnchors();
+	UpdateContainerFrameAnchors();
 	frame:Raise();
 end
 
-function updateContainerFrameAnchors()
+function UpdateContainerFrameAnchors()
 	local frame, xOffset, yOffset, screenHeight, freeScreenHeight, leftMostPoint, column;
 	local screenWidth = GetScreenWidth();
 	local containerScale = 1;

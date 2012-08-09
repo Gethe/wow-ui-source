@@ -160,13 +160,13 @@ function ItemUpgradeFrame_UpdateStats(setStatsRight)
 	local ilvlInc		= GetItemLevelIncrement();
 	
 	ItemUpgradeFrame.LeftItemLevel.iLvlText:SetText(itemLevel);
-	ItemUpgradeFrame.LeftItemLevel.ItemLevelText:SetText(STAT_AVERAGE_ITEM_LEVEL);
+	ItemUpgradeFrame.LeftItemLevel.ItemLevelText:SetText(ITEM_UPGRADE_STAT_AVERAGE_ITEM_LEVEL);
 	ItemUpgradeFrame.LeftItemLevel:Show();
 	
 	if ( setStatsRight ) then
 		ItemUpgradeFrame.RightItemLevel.incText:SetText(GREEN_FONT_COLOR_CODE.."+"..ilvlInc);
 		ItemUpgradeFrame.RightItemLevel.iLvlText:SetText(itemLevel + ilvlInc);
-		ItemUpgradeFrame.RightItemLevel.ItemLevelText:SetText(STAT_AVERAGE_ITEM_LEVEL);
+		ItemUpgradeFrame.RightItemLevel.ItemLevelText:SetText(ITEM_UPGRADE_STAT_AVERAGE_ITEM_LEVEL);
 		ItemUpgradeFrame.RightItemLevel:Show();
 	else
 		ItemUpgradeFrame.RightItemLevel:Hide();
@@ -177,7 +177,7 @@ function ItemUpgradeFrame_UpdateStats(setStatsRight)
 	local index = 1;
 
 	for i = 1, #statsLeft, 2 do
-		leftStat, rightStat = ItemUpgradeFrame_GetStatRow(index, true);
+		local leftStat, rightStat = ItemUpgradeFrame_GetStatRow(index, true);
 		-- Update the left stat text field.
 		local name, value = statsLeft[i], statsLeft[i + 1];
 		leftStat.ItemLevelText:SetText(value);

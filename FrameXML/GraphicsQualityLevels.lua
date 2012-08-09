@@ -1117,7 +1117,7 @@ VideoData["Advanced_GammaSlider"]={
 		function(self)
 			local parent = (self:GetParent()):GetName();
 			local checkbox = _G[parent .. "DesktopGamma"];
-			if(Graphics_DisplayModeDropDown:windowedmode()) then
+			if((IsMacClient() and not Graphics_DisplayModeDropDown:fullscreenmode()) or (not IsMacClient() and Graphics_DisplayModeDropDown:windowedmode())) then
 				self:Hide();
 				checkbox:Hide();
 			else

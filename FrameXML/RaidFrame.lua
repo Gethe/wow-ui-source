@@ -268,6 +268,16 @@ function RaidInfoExtendButton_OnClick(self)
 	RaidInfoFrame_Update();
 end
 
+function RaidFrameAllAssistCheckButton_UpdateAvailable(self)
+	self:SetChecked(IsEveryoneAssistant());
+	if ( UnitIsGroupLeader("player") ) then
+		self:Enable();
+		self.text:SetFontObject(GameFontNormalSmall);
+	else
+		self:Disable();
+		self.text:SetFontObject(GameFontDisableSmall);
+	end
+end
 
 
 

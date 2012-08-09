@@ -1,7 +1,4 @@
 
-
-MONKHARMONYBAR_SHOW_LEVEL = 0;
-
 function MonkHarmonyBar_SetEnergy(self, active)
 	if ( active ) then
 		if (self.deactivate:IsPlaying()) then
@@ -57,9 +54,6 @@ function MonkHarmonyBar_OnLoad (self)
 	if ( class ~= "MONK" ) then
 		self:Hide();
 		return;
-	elseif UnitLevel("player") < MONKHARMONYBAR_SHOW_LEVEL then
-		self:RegisterEvent("PLAYER_LEVEL_UP");
-		self:SetAlpha(0);
 	end
 	self.maxLight = 4;
 	self:SetFrameLevel(self:GetParent():GetFrameLevel() + 2);
@@ -73,13 +67,6 @@ end
 function MonkHarmonyBar_OnEvent (self, event, arg1, arg2)
 	if ( event == "UNIT_POWER_FREQUENT" ) then
 		if ( arg1 == self:GetParent().unit and (arg2 == "LIGHT_FORCE" or arg2 == "DARK_FORCE") ) then
-			MonkHarmonyBar_Update(self);
-		end
-	elseif( event ==  "PLAYER_LEVEL_UP" ) then
-		local level = arg1;
-		if level >= MONKHARMONYBAR_SHOW_LEVEL then
-			self:UnregisterEvent("PLAYER_LEVEL_UP");
-			self.showAnim:Play();
 			MonkHarmonyBar_Update(self);
 		end
 	else

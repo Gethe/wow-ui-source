@@ -68,7 +68,6 @@ function InspectPaperDollFrame_UpdateButtons()
 	InspectPaperDollItemSlotButton_Update(InspectTrinket1Slot);
 	InspectPaperDollItemSlotButton_Update(InspectMainHandSlot);
 	InspectPaperDollItemSlotButton_Update(InspectSecondaryHandSlot);
-	InspectPaperDollItemSlotButton_Update(InspectRangedSlot);
 end
 
 local factionLogoTextures = {

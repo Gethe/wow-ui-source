@@ -372,6 +372,8 @@ function TargetFrame_CheckClassification (self, forceNormalTexture)
 	else
 		self.haveElite = true;
 		TargetFrameBackground:SetSize(119,41);
+		self.Background:SetSize(119,25);
+		self.Background:SetPoint("BOTTOMLEFT", self, "BOTTOMLEFT", 7, 35);
 		if ( self.threatIndicator ) then
 			self.threatIndicator:SetTexCoord(0, 0.9453125, 0.181640625, 0.400390625);
 			self.threatIndicator:SetWidth(242);
@@ -415,7 +417,7 @@ local largeDebuffList = {};
 function TargetFrame_UpdateAuras (self)
 	local frame, frameName;
 	local frameIcon, frameCount, frameCooldown;
-	local name, rank, icon, count, debuffType, duration, expirationTime, caster, canStealOrPurge;
+	local name, rank, icon, count, debuffType, duration, expirationTime, caster, canStealOrPurge, spellId, _;
 	local frameStealable;
 	local numBuffs = 0;
 	local playerIsTarget = UnitIsUnit(PlayerFrame.unit, self.unit);
@@ -818,8 +820,9 @@ function TargetFrameDropDown_Initialize (self)
 		menu = "VEHICLE";
 	elseif ( UnitIsUnit("target", "pet") ) then
 		menu = "PET";
+	elseif ( UnitIsOtherPlayersBattlePet("target") ) then
+		menu = "OTHERBATTLEPET";
 	elseif ( UnitIsOtherPlayersPet("target") ) then
-		SetPendingReportTarget("target");
 		menu = "OTHERPET";	
 	elseif ( UnitIsPlayer("target") ) then
 		id = UnitInRaid("target");

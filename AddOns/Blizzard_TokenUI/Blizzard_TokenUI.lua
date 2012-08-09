@@ -173,7 +173,7 @@ end
 
 function BackpackTokenFrame_Update()
 	local watchButton;
-	local name, count, icon;
+	local name, count, icon, currencyID;
 	for i=1, MAX_WATCHED_TOKENS do
 		name, count, icon, currencyID = GetBackpackCurrencyInfo(i);
 		-- Update watched tokens

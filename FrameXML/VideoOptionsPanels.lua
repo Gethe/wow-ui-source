@@ -207,7 +207,7 @@ end
 
 function ControlCheckCapTargets(self)
 	for _, name in pairs(self.capTargets) do
-		frame = _G[name];
+		local frame = _G[name];
 		if ( frame and frame.onCapCheck ) then
 			frame.onCapCheck(frame);
 		end

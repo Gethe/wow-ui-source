@@ -102,3 +102,12 @@ function StanceBar_Select (id)
 	CastShapeshiftForm(id);
 end
 
+function StanceButton_OnEnter(self)
+	if ( GetCVarBool("UberTooltips") ) then
+		GameTooltip_SetDefaultAnchor(GameTooltip, self);
+	else
+		GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+	end
+	GameTooltip:SetShapeshift(self:GetID());
+	self.UpdateTooltip = StanceButton_OnEnter;
+end

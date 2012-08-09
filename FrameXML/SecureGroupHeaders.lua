@@ -693,8 +693,7 @@ end
 
 local enchantableSlots = {
 	[1] = "MainHandSlot", 
-	[2] = "SecondaryHandSlot", 
-	[3] = "RangedSlot",
+	[2] = "SecondaryHandSlot"
 }
 
 local function configureAuras(self, auraTable, consolidateTable, weaponPosition)

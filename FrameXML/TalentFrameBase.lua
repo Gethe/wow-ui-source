@@ -15,8 +15,6 @@ local max = max;
 local huge = math.huge;
 local rshift = bit.rshift;
 
-inspectedUnit = nil;
-
 function TalentFrame_Load(TalentFrame)
 	TalentFrame.TALENT_BRANCH_ARRAY={};
 	for i=1, MAX_NUM_TALENT_TIERS do
@@ -66,11 +64,9 @@ function TalentFrame_Update(TalentFrame)
 		TalentFrame.bg:SetDesaturated(disable);
 	end
 	
-	testTalent = GetInspectTalent(inspectedUnit, 1);
-	
 	local classDisplayName, class, classID;
 	if( TalentFrame.inspect ) then
-		 classDisplayName, class, classID = UnitClass(inspectedUnit); 
+		 classDisplayName, class, classID = UnitClass(INSPECTED_UNIT); 
 	end
 	
 	local rowAvailable = true;
@@ -78,7 +74,7 @@ function TalentFrame_Update(TalentFrame)
 	for i=1, MAX_NUM_TALENTS do
 		if ( i <= numTalents ) then
 			-- Set the button info
-			local name, iconTexture, tier, column, selected, available = GetTalentInfo(i, TalentFrame.inspect, TalentFrame.talentGroup, inspectedUnit, classID);
+			local name, iconTexture, tier, column, selected, available = GetTalentInfo(i, TalentFrame.inspect, TalentFrame.talentGroup, INSPECTED_UNIT, classID);
 			local button = TalentFrame["tier"..tier]["talent"..column];
 			local talentRow = TalentFrame["tier"..tier];
 			

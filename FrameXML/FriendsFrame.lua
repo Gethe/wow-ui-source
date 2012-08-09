@@ -47,6 +47,9 @@ FRIENDS_TOOLTIP_MAX_TOONS = 5;
 FRIENDS_TOOLTIP_MAX_WIDTH = 200;
 FRIENDS_TOOLTIP_MARGIN_WIDTH = 12;
 
+ADDFRIENDFRAME_WOWHEIGHT = 218;
+ADDFRIENDFRAME_BNETHEIGHT = 296;
+
 FRIEND_TABS_MAX_WIDTH = 0;		-- some locales may need to abbreviate tab headers to fit
 
 local INVITE_RESTRICTION_NO_TOONS = 0;
@@ -431,8 +434,7 @@ function FriendsList_Update()
 			local name, level, class, area;
 			name, level, class, area, isOnline = GetFriendInfo(selectedFriend);
 		elseif ( FriendsFrame.selectedFriendType == FRIENDS_BUTTON_TYPE_BNET ) then
-			local presenceID, givenName, surname, toonName, toonID, client;
-			presenceID, presenceName, battleTag, isBattleTagPresence, toonName, toonID, client, isOnline = BNGetFriendInfo(selectedFriend);
+			local presenceID, presenceName, battleTag, isBattleTagPresence, toonName, toonID, client, isOnline = BNGetFriendInfo(selectedFriend);
 			if ( not presenceName ) then
 				isOnline = false;
 			end
@@ -1624,7 +1626,7 @@ end
 
 function FriendsFrameBattlenetFrame_SetBroadcast()
 	local newBroadcastText = FriendsFrameBattlenetFrame.BroadcastFrame.ScrollFrame.EditBox:GetText();
-	_, _, _, broadcastText = BNGetInfo();
+	local _, _, _, broadcastText = BNGetInfo();
 	if ( newBroadcastText ~= broadcastText ) then
 		BNSetCustomMessage(newBroadcastText);
 	end
@@ -1886,8 +1888,8 @@ function AddFriendNameEditBox_OnTextChanged(self, userInput)
 end
 
 function AddFriendEntryFrame_Expand()
-	AddFriendEntryFrame:SetHeight(296);
-	AddFriendFrame:SetHeight(296);
+	AddFriendEntryFrame:SetHeight(ADDFRIENDFRAME_BNETHEIGHT);
+	AddFriendFrame:SetHeight(ADDFRIENDFRAME_BNETHEIGHT);
 	AddFriendNoteFrame:Show();
 	AddFriendEntryFrameAcceptButton:SetText(SEND_REQUEST);
 	AddFriendEntryFrameRightTitle:SetAlpha(0.35);
@@ -1899,8 +1901,8 @@ function AddFriendEntryFrame_Expand()
 end
 
 function AddFriendEntryFrame_Collapse(clearText)
-	AddFriendEntryFrame:SetHeight(218);
-	AddFriendFrame:SetHeight(218);
+	AddFriendEntryFrame:SetHeight(ADDFRIENDFRAME_WOWHEIGHT);
+	AddFriendFrame:SetHeight(ADDFRIENDFRAME_WOWHEIGHT);
 	AddFriendNoteFrame:Hide();
 	AddFriendEntryFrameAcceptButton:SetText(ADD_FRIEND);
 	AddFriendEntryFrameRightTitle:SetAlpha(1);

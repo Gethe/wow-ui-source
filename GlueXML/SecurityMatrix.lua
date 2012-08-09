@@ -83,7 +83,7 @@ function SecurityMatrix_HideHeaders()
 end
 
 function SecurityMatrix_CreateElements()
-	local prevFrame = nil;
+	local prevFrame, prevBackgroundFrame = nil, nil;
 	--loop through all the rows
 	for i=1, SECURITYMATRIX_NUM_ROWS do
 		--loop through all the columns
@@ -355,7 +355,7 @@ function SecurityMatrix_OnUpdateSlide(self, elapsed)
 	--keep the animation frame rate independant moving every 0.01 seconds
 	while(self.timeSinceLastUpdate > SecurityMatrix_updateSpeed) do
 		--get the current yOffset for the horizontal highlight
-		horizontalPoint, horizontalRelativeTo, horizontalRelativePoint, horizontalXOfs, horizontalYOfs = SecurityMatrixFrameHorizontalHighlightSlider:GetPoint(1)
+		local horizontalPoint, horizontalRelativeTo, horizontalRelativePoint, horizontalXOfs, horizontalYOfs = SecurityMatrixFrameHorizontalHighlightSlider:GetPoint(1)
 		--fix the floating point errors in WoW UI coordinates
 		horizontalYOfs = floor(horizontalYOfs+0.5);
 		--if the horizontal highlight is below the target row then move it up
@@ -369,7 +369,7 @@ function SecurityMatrix_OnUpdateSlide(self, elapsed)
 		end
 		
 		--get the current yOffset for the horizontal highlight
-		verticalPoint, verticalRelativeTo, verticalRelativePoint, verticalXOfs, verticalYOfs = SecurityMatrixFrameVerticalHighlightSlider:GetPoint(1)
+		local verticalPoint, verticalRelativeTo, verticalRelativePoint, verticalXOfs, verticalYOfs = SecurityMatrixFrameVerticalHighlightSlider:GetPoint(1)
 		--fix the floating point errors in WoW UI coordinates
 		verticalXOfs = floor(verticalXOfs+0.5);
 		--if the vertical highlight is below the target row then move it up
@@ -416,9 +416,9 @@ function SecurityMatrixPinwheel_OnUpdate(self, elapsed)
 	
 	local cursorX, cursorY = GetCursorPosition(SecurityMatrixKeypadFrame);
 	local centerX, centerY = SecurityMatrixKeypadFrame:GetCenter();
-	xOffset = cursorX - centerX;
-	yOffset = cursorY - centerY - SECURITYMATRIX_PINWHEEL_VERTICAL_OFFSET;
-	distance = math.sqrt(xOffset*xOffset + yOffset*yOffset);
+	local xOffset = cursorX - centerX;
+	local yOffset = cursorY - centerY - SECURITYMATRIX_PINWHEEL_VERTICAL_OFFSET;
+	local distance = math.sqrt(xOffset*xOffset + yOffset*yOffset);
 	
 	self.timeSinceLastUpdate = self.timeSinceLastUpdate + elapsed;
 	while(self.timeSinceLastUpdate > 0.01) do
@@ -438,7 +438,7 @@ end
 
 function SecurityMatrixPinwheel_HideNumbers()
 	for i=0, 9, 1 do
-		button = _G["SecurityMatrixPinwheelButton"..i];
+		local button = _G["SecurityMatrixPinwheelButton"..i];
 		button:SetText("");
 		button.stopSpinning = true;
 	end
@@ -446,7 +446,7 @@ end
 
 function SecurityMatrixPinwheel_ShowNumbers()
 	for i=0, 9, 1 do
-		button = _G["SecurityMatrixPinwheelButton"..i];
+		local button = _G["SecurityMatrixPinwheelButton"..i];
 		button:SetText(i);
 		button.stopSpinning = false;
 	end
@@ -454,14 +454,14 @@ end
 
 function SecurityMatrixPinwheel_EnableNumbers()
 	for i=0, 9, 1 do
-		button = _G["SecurityMatrixPinwheelButton"..i];
+		local button = _G["SecurityMatrixPinwheelButton"..i];
 		button:Enable();
 	end
 end
 
 function SecurityMatrixPinwheel_DisableNumbers()
 	for i=0, 9, 1 do
-		button = _G["SecurityMatrixPinwheelButton"..i];
+		local button = _G["SecurityMatrixPinwheelButton"..i];
 		button:Disable();
 	end
 end

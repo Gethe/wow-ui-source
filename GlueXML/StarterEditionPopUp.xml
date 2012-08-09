@@ -130,11 +130,6 @@
 		</Frames>
 		<Scripts>
 			<OnShow>
-				if ( HasShownTrialPopUp() ) then
-					self:Hide();
-					return;
-				end
-			
 				local featureTable = ACCOUNT_UPGRADE_FEATURES["TRIAL"];
 				self.Logo:SetTexture(featureTable.logo);
 				for i=1, #featureTable do
@@ -155,7 +150,6 @@
 					index = index + 1;
 					frame = _G["StarterEditionPopUpFeature"..index];
 				end
-				SetTrialPopUp();
 			</OnShow>
 			<OnKeyDown>
 				local key = key;--Used to catch key input

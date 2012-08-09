@@ -970,8 +970,8 @@ StaticPopupDialogs["CONFIRM_REPORT_BATTLEPET_NAME"] = {
 	text = REPORT_BATTLEPET_NAME_CONFIRMATION,
 	button1 = ACCEPT,
 	button2 = CANCEL,
-	OnAccept = function(self, name)
-		ReportPlayer(PLAYER_REPORT_TYPE_BAD_BATTLEPET_NAME, name);		
+	OnAccept = function(self)
+		ReportPlayer(PLAYER_REPORT_TYPE_BAD_BATTLEPET_NAME, "pending");		
 	end,
 	timeout = 0,
 	whileDead = 1,
@@ -983,8 +983,8 @@ StaticPopupDialogs["CONFIRM_REPORT_PET_NAME"] = {
 	text = REPORT_PET_NAME_CONFIRMATION,
 	button1 = ACCEPT,
 	button2 = CANCEL,
-	OnAccept = function(self, name)
-		ReportPlayer(PLAYER_REPORT_TYPE_BAD_PET_NAME, name);		
+	OnAccept = function(self)
+		ReportPlayer(PLAYER_REPORT_TYPE_BAD_PET_NAME, "pending");		
 	end,
 	timeout = 0,
 	whileDead = 1,
@@ -2324,10 +2324,10 @@ StaticPopupDialogs["PET_BATTLE_QUEUE_PROPOSE_MATCH"] = {
 	button2 = DECLINE,
 	sound = "igPlayerInvite",
 	OnAccept = function(self)
-		C_PetBattles.AcceptPVPMatch();
+		C_PetBattles.AcceptQueuedPVPMatch();
 	end,
 	OnCancel = function(self)
-		C_PetBattles.DeclinePVPMatch();
+		C_PetBattles.DeclineQueuedPVPMatch();
 	end,
 	timeout = STATICPOPUP_TIMEOUT,
 	hideOnEscape = 1

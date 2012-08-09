@@ -35,7 +35,7 @@ local runeColors = {
 	[RUNETYPE_FROST] = {0, 1, 1},
 	[RUNETYPE_DEATH] = {0.8, 0.1, 1},
 }
-runeMapping = {
+RUNE_MAPPING = {
 	[1] = "BLOOD",
 	[2] = "UNHOLY",
 	[3] = "FROST",
@@ -62,7 +62,7 @@ function RuneButton_Update (self, rune, dontFlash)
 		self.rune:SetTexture(iconTextures[runeType]);
 		self.rune:Show();
 		self.rune.runeType = runeType;
-		self.tooltipText = _G["COMBAT_TEXT_RUNE_"..runeMapping[runeType]];
+		self.tooltipText = _G["COMBAT_TEXT_RUNE_"..RUNE_MAPPING[runeType]];
 	else
 		self.rune:Hide();
 		self.tooltipText = nil;

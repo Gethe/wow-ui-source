@@ -403,7 +403,7 @@ function GlyphFrameGlyph_UpdateSlot (self)
 	self.elapsed = 0;
 	self.tintElapsed = 0;
 
-	local slotAnimation = slotAnimations[id];
+	local slotAnimation = SLOT_ANIMATIONS[id];
 	local _, _, _, offsetX, offsetY = self:GetPoint();
 	slotAnimation.xStop = offsetX;-- (self:GetWidth()/2.0);
 	slotAnimation.yStop = offsetY;-- (self:GetHeight()/2.0);

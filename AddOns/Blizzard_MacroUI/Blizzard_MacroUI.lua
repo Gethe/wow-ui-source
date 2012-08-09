@@ -289,9 +289,9 @@ function RefreshPlayerSpellIconInfo()
 	local numFlyouts = 0;
 
 	for i = 1, GetNumSpellTabs() do
-		tab, tabTex, offset, numSpells, _ = GetSpellTabInfo(i);
+		local tab, tabTex, offset, numSpells, _ = GetSpellTabInfo(i);
 		offset = offset + 1;
-		tabEnd = offset + numSpells;
+		local tabEnd = offset + numSpells;
 		for j = offset, tabEnd - 1 do
 			--to get spell info by slot, you have to pass in a pet argument
 			local spellType, ID = GetSpellBookItemInfo(j, "player"); 

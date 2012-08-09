@@ -409,7 +409,7 @@ function GlueDropDownMenu_AddButton(info, level)
 end
 
 function GlueDropDownMenu_Refresh(frame, useValue)
-	local button, checked, checkImage;
+	local button, checked, checkImage, uncheckImage;
 	local somethingChecked = nil; 
 	-- Just redraws the existing menu
 
@@ -550,6 +550,11 @@ function GlueDropDownMenuButton_OnClick(self)
 		return;
 	end
 	
+	local checked = self.checked;
+	if ( type (checked) == "function" ) then
+		checked = checked(self);
+	end
+
 	if ( self.keepShownOnClick ) then
 		if not self.notCheckable then
 			if ( checked ) then
@@ -692,7 +697,7 @@ function ToggleDropDownMenu(self, level, value, dropDownFrame, anchorName, xOffs
 		
 		--  If level 1 can only go off the bottom of the screen
 		if ( level == 1 ) then
-			anchorPoint = "TOPLEFT";
+			local anchorPoint = "TOPLEFT";
 			
 			listFrame:ClearAllPoints();
 			if ( anchorName == "cursor" ) then
@@ -773,7 +778,7 @@ function GlueDropDownMenu_ClearAll(frame)
 	frame.selectedValue = nil;
 	GlueDropDownMenu_SetText(frame, "");
 
-	local button, checkImage;
+	local button, checkImage, uncheckImage;
 	
 	local listFrame = _G["DropDownList"..GLUEDROPDOWNMENU_MENU_LEVEL];
 	for i=1, listFrame.maxButtons do

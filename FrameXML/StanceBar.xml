@@ -11,14 +11,7 @@
 				self:SetChecked(not self:GetChecked());
 				StanceBar_Select(self:GetID());
 			</OnClick>
-			<OnEnter>
-				if ( GetCVarBool("UberTooltips") ) then
-					GameTooltip_SetDefaultAnchor(GameTooltip, self);
-				else
-					GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
-				end
-				GameTooltip:SetShapeshift(self:GetID());
-			</OnEnter>
+			<OnEnter function="StanceButton_OnEnter"/>
 			<OnLeave function="GameTooltip_Hide"/>
 		</Scripts>
 		<NormalTexture name="$parentNormalTexture2" file="Interface\Buttons\UI-Quickslot2">

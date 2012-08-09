@@ -1500,7 +1500,7 @@ function PlayerTalentFrame_UpdateSpecFrame(self, spec)
 	end
 
 	-- hide unused spell buttons
-	frame = scrollChild["abilityButton"..index];
+	local frame = scrollChild["abilityButton"..index];
 	while frame do
 		frame:Hide();
 		frame.spellID = nil;

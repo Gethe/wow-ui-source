@@ -45,6 +45,8 @@ PVPHONOR_TEXTURELIST[30] = "Interface\\PVPFrame\\PvpBg-IsleOfConquest";
 PVPHONOR_TEXTURELIST[32] = "Interface\\PVPFrame\\PvpRandomBg";
 PVPHONOR_TEXTURELIST[108] = "Interface\\PVPFrame\\PvpBg-TwinPeaks";
 PVPHONOR_TEXTURELIST[120] = "Interface\\PVPFrame\\PvpBg-Gilneas";
+PVPHONOR_TEXTURELIST[699] = "Interface\\PVPFrame\\PvpBg-TempleofKotmogu";
+PVPHONOR_TEXTURELIST[708] = "Interface\\PVPFrame\\PvpBg-SilvershardMines";
 
 local WARGAMES_TEXTURELIST = {
 	  [0] = "Interface\\PVPFrame\\RandomPVPIcon",
@@ -1806,7 +1808,6 @@ end
 
 
 function PVP_UpdateStatus(tooltipOnly, mapIndex)
-	local status, mapName, instanceID, queueID, levelRangeMin, levelRangeMax, teamSize, registeredMatch;
 	local numberQueues = 0;
 	local timeInQueue;
 	local tooltip;
@@ -1814,7 +1815,7 @@ function PVP_UpdateStatus(tooltipOnly, mapIndex)
 	BATTLEFIELD_SHUTDOWN_TIMER = 0;
 
 	for i=1, GetMaxBattlefieldID() do
-		status, mapName, instanceID, levelRangeMin, levelRangeMax, teamSize, registeredMatch, eligibleInQueue, waitingOnOtherActivity = GetBattlefieldStatus(i);
+		local status, mapName, instanceID, levelRangeMin, levelRangeMax, teamSize, registeredMatch, eligibleInQueue, waitingOnOtherActivity = GetBattlefieldStatus(i);
 		if ( mapName ) then
 			if (  instanceID ~= 0 ) then
 				mapName = mapName.." "..instanceID;

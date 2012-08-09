@@ -302,6 +302,8 @@ size=64,128
 			</OnDragStart>
 		</Scripts>
 	</Button>
+	
+	
 	<Button name="MountListButtonTemplate" motionScriptsWhileDisabled="true" virtual="true">
 		<Size x="208" y="46"/>
 		<Layers>
@@ -375,11 +377,7 @@ size=64,128
 			<OnLoad>
 				self:RegisterForClicks("LeftButtonUp", "RightButtonUp");
 			</OnLoad>
-			<OnClick>
-				if ( self.spellID ~= MountJournal_GetSelectedSpellID() ) then
-					MountJournal_Select(self.index);
-				end
-			</OnClick>
+			<OnClick function="MountListItem_OnClick"/>	
 		</Scripts>
 	</Button>
 
@@ -1077,6 +1075,8 @@ size=64,128
 			<OnHide function="PetJournalParent_OnHide"/>
 		</Scripts>
 	</Frame>
+	
+	
 	<Frame name="MountJournal" parent="PetJournalParent" setAllPoints="true">
 		<Frames>
 			<Frame parentKey="LeftInset" useParentLevel="true" inherits="InsetFrameTemplate">
@@ -1229,6 +1229,7 @@ size=64,128
 		</Scripts>
 	</Frame>
 
+	
 	<Frame name="PetJournal" parent="PetJournalParent" setAllPoints="true" hidden="true">
 		<Frames>
 			<Frame parentKey="PetCount" useParentLevel="true" inherits="InsetFrameTemplate3">
@@ -1349,10 +1350,10 @@ size=64,128
 					<OnTextChanged function="PetJournal_OnSearchTextChanged"/>
 				</Scripts>
 			</EditBox>
-			<Button name="$parentFilterButton"  inherits="UIMenuButtonStretchTemplate" text="FILTER">
-				<Size x="75" y="22"/>
+			<Button name="$parentFilterButton" inherits="UIMenuButtonStretchTemplate" text="FILTER">
+				<Size x="93" y="22"/>
 				<Anchors>
-					<Anchor point="TOPRIGHT" relativeTo="$parentLeftInset" x="-10" y="-9"/>
+					<Anchor point="TOPRIGHT" relativeTo="$parentLeftInset" x="-5" y="-9"/>
 				</Anchors>
 				<Scripts>
 					<OnClick> 

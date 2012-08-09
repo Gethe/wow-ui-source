@@ -222,8 +222,8 @@ end
 
 function BlizzardOptionsPanel_SetCVarSafe (cvar, value, event)
 	local oldValue = GetCVar(cvar);
-	oldValueNum = tonumber(oldValue);
-	valueNum = tonumber(value);
+	local oldValueNum = tonumber(oldValue);
+	local valueNum = tonumber(value);
 	if ( oldValueNum or valueNum ) then
 		if ( oldValueNum ~= valueNum ) then
 			SetCVar(cvar, value, event);
@@ -412,7 +412,7 @@ function BlizzardOptionsPanel_SetupControl (control)
 			end
 		elseif ( control.GetValue ) then
 			if ( control.type == CONTROLTYPE_CHECKBOX ) then
-				value = control:GetValue();
+				local value = control:GetValue();
 				if ( value ) then
 					control.value = tostring(value);
 				else

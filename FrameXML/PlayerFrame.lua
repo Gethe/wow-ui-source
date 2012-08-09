@@ -670,6 +670,8 @@ function PlayerFrame_ShowVehicleTexture()
 		RuneFrame:Hide();
 	elseif ( class == "PRIEST" ) then
 		PriestBarFrame:Hide();
+	elseif ( class == "MONK" ) then
+		MonkHarmonyBar:Hide();
 	end
 end
 
@@ -690,6 +692,8 @@ function PlayerFrame_HideVehicleTexture()
 		RuneFrame:Show();
 	elseif ( class == "PRIEST" ) then
 		PriestBarFrame_CheckAndShow();
+	elseif ( class == "MONK" ) then
+		MonkHarmonyBar:Show();
 	end
 end
 

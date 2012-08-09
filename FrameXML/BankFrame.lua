@@ -278,7 +278,7 @@ function BankFrame_OnHide (self)
 	CloseAllBags(self);
 	CloseBankBagFrames();
 	CloseBankFrame();
-	updateContainerFrameAnchors();
+	UpdateContainerFrameAnchors();
 end
 
 function BankFrameItemButtonGeneric_OnClick (self, button)

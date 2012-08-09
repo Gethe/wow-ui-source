@@ -24,7 +24,7 @@
 		</Size>								
 		<Layers>
 			<Layer level="BACKGROUND">
-				<FontString name="$parentCategory" inherits="GameFontNormal" text="Hair Style">
+				<FontString name="$parentCategory" inherits="GameFontNormal">
 					<Size>
 						<AbsDimension x="90" y="14"/>
 					</Size>								
@@ -109,11 +109,6 @@
 						</Offset>
 					</Anchor>
 				</Anchors>
-				<Scripts>
-					<OnLoad>
-						_G[self:GetName().."Category"]:SetText("Hair Style");
-					</OnLoad>
-				</Scripts>
 			</Frame>
 			<Frame name="$parentSelector2" inherits="BarberShopSelectorTemplate" id="2">
 				<Anchors>
@@ -123,11 +118,6 @@
 						</Offset>
 					</Anchor>
 				</Anchors>
-				<Scripts>
-					<OnLoad>
-						_G[self:GetName().."Category"]:SetText("Hair Color");
-					</OnLoad>
-				</Scripts>
 			</Frame>
 			<Frame name="$parentSelector3" inherits="BarberShopSelectorTemplate" id="3">
 				<Anchors>
@@ -137,11 +127,6 @@
 						</Offset>
 					</Anchor>
 				</Anchors>
-				<Scripts>
-					<OnLoad>
-						_G[self:GetName().."Category"]:SetText("Facial Style");
-					</OnLoad>
-				</Scripts>
 			</Frame>
 			<Frame name="$parentSelector4" inherits="BarberShopSelectorTemplate" id="4" hidden="true">
 				<Anchors>

@@ -2147,7 +2147,7 @@ function FramePositionDelegate:UIParentManageFramePositions()
 	
 	-- Update chat dock since the dock could have moved
 	FCF_DockUpdate();
-	updateContainerFrameAnchors();
+	UpdateContainerFrameAnchors();
 end
 
 -- Call this function to update the positions of all frames that can appear on the right side of the screen

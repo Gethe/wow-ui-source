@@ -114,7 +114,7 @@ function WorldStateAlwaysUpFrame_OnEvent(self, event, ...)
 		local timerID = ...;
 		WorldStateChallengeMode_CheckTimers(timerID);
 	elseif ( event == "WORLD_STATE_TIMER_STOP" ) then
-		timerID = ...;
+		local timerID = ...;
 		WorldStateChallengeMode_HideTimer(timerID);
 	else
 		WorldStateAlwaysUpFrame_Update();
@@ -1080,7 +1080,7 @@ function WorldStateChallengeMode_ShowTimer(timerID, elapsedTime, ...)
 		self.medalTimes = { };
 	end
 	for i = 1, select("#", ...) do
-		self.medalTimes[i] = select(i, ...) / 5;
+		self.medalTimes[i] = select(i, ...);
 	end
 	-- not currently being displayed, set up handler
 	if ( not self.timerID ) then

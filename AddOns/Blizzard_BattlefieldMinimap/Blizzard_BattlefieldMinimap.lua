@@ -42,8 +42,8 @@ function BattlefieldMinimap_OnLoad (self)
 	self:RegisterEvent("ZONE_CHANGED_NEW_AREA");
 	self:RegisterEvent("PLAYER_LOGOUT");
 	self:RegisterEvent("WORLD_MAP_UPDATE");
-	self:RegisterEvent("ZONE_CHANGED_NEW_AREA");
 	self:RegisterEvent("GROUP_ROSTER_UPDATE");
+	self:RegisterEvent("NEW_WMO_CHUNK");
 
 	CreateMiniWorldMapArrowFrame(BattlefieldMinimap);
 
@@ -89,7 +89,7 @@ function BattlefieldMinimap_OnEvent(self, event, ...)
 			OpacityFrameSlider:SetValue(BattlefieldMinimapOptions.opacity);
 			BattlefieldMinimap_UpdateOpacity();
 		end
-	elseif ( event == "PLAYER_ENTERING_WORLD" or event == "ZONE_CHANGED" or event == "ZONE_CHANGED_NEW_AREA") then
+	elseif ( event == "PLAYER_ENTERING_WORLD" or event == "ZONE_CHANGED" or event == "ZONE_CHANGED_NEW_AREA" or event == "NEW_WMO_CHUNK" ) then
 		if ( BattlefieldMinimap:IsShown() ) then
 			if ( not WorldMapFrame:IsShown() ) then
 				SetMapToCurrentZone();

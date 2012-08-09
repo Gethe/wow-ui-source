@@ -497,7 +497,11 @@ do
 			--Don't let designer errors cause us to stop execution
 			local success, repl = pcall(expr);
 			if ( success ) then
-				return repl or "";
+				if ( type(repl) == "number" ) then
+					return math.floor(repl);	--We don't want to display any decimals.
+				else
+					return repl or "";
+				end
 			elseif ( IsGMClient() ) then
 				local err = string.match(repl, ":%d+: (.*)");
 				return "[DATA ERROR: "..err.."]";

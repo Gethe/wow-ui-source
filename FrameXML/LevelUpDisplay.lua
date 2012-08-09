@@ -339,7 +339,7 @@ function LevelUpDisplay_OnEvent(self, event, ...)
 end
 
 function LevelUpDisplay_BuildCharacterList(self)
-	local name, icon = "","";
+	local name, icon, link = "","",nil;
 	self.unlockList = {};
 
 	if LEVEL_UP_EVENTS[self.level] then

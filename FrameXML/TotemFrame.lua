@@ -8,6 +8,8 @@ function TotemFrame_OnLoad(self)
 	local _, class = UnitClass("player");
 	if ( class == "DEATHKNIGHT" ) then
 		self:SetPoint("TOPLEFT", PlayerFrame, "TOPLEFT", 65, -55);
+	elseif ( class == "WARLOCK" ) then
+		TotemFrame:SetPoint("TOPLEFT", PlayerFrame, "TOPLEFT", 28, -75);
 	end
 end
 
@@ -25,8 +27,6 @@ function TotemFrame_Update()
 		else
 			TotemFrame:SetPoint("TOPLEFT", PlayerFrame, "TOPLEFT", 67, -63);
 		end
-	elseif ( class == "WARLOCK" ) then
-		TotemFrame:SetPoint("TOPLEFT", PlayerFrame, "TOPLEFT", 28, -75);
 	elseif ( class == "DRUID" ) then
 		local form  = GetShapeshiftFormID();
 		if ( form == MOONKIN_FORM or not form ) then
@@ -44,7 +44,7 @@ function TotemFrame_Update()
 		TotemFrame:SetPoint("TOPLEFT", PlayerFrame, "TOPLEFT", 28, -75);
 	elseif ( class == "MAGE" ) then
 		TotemFrame:SetPoint("TOPLEFT", PlayerFrame, "TOPLEFT", 50, -75);
-	elseif ( hasPet  and class ~= "SHAMAN" ) then
+	elseif ( hasPet  and class ~= "SHAMAN" and class ~= "WARLOCK" ) then
 		TotemFrame:Hide();
 		return;
 	end
@@ -78,6 +78,7 @@ function TotemFrame_Update()
 	else
 		TotemFrame:Hide();
 	end
+	TotemFrame_AdjustPetFrame();
 	PlayerFrame_AdjustAttachments();
 end
 
@@ -106,6 +107,7 @@ function TotemFrame_OnEvent(self, event, ...)
 				else
 					self:Hide();
 				end
+				TotemFrame_AdjustPetFrame();
 				return;
 			end
 		end
@@ -149,5 +151,16 @@ function TotemButton_Update(button, startTime, duration, icon)
 		buttonCooldown:Hide();
 		button:SetScript("OnUpdate", nil);
 		button:Hide();
+	end
+end
+
+function TotemFrame_AdjustPetFrame()
+	local _, class = UnitClass("player");
+	if ( class == "WARLOCK" ) then
+		if ( PetFrame and PetFrame:IsShown() and TotemFrameTotem2:IsShown() ) then
+			PetFrame:SetPoint("TOPLEFT", PlayerFrame, "TOPLEFT", 93, -90);
+		else
+			PetFrame:SetPoint("TOPLEFT", PlayerFrame, "TOPLEFT", 60, -90);
+		end
 	end
 end

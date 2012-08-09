@@ -257,6 +257,7 @@ function WatchFrame_OnLoad (self)
 	self:RegisterEvent("QUEST_AUTOCOMPLETE");
 	self:RegisterEvent("SCENARIO_UPDATE");
 	self:RegisterEvent("SCENARIO_CRITERIA_UPDATE");
+	self:RegisterEvent("NEW_WMO_CHUNK");
 	self:SetScript("OnSizeChanged", WatchFrame_OnSizeChanged); -- Has to be set here instead of in XML for now due to OnSizeChanged scripts getting run before OnLoad scripts.
 	self.lineCache = UIFrameCache:New("FRAME", "WatchFrameLine", WatchFrameLines, "WatchFrameLineTemplate");
 	self.buttonCache = UIFrameCache:New("BUTTON", "WatchFrameLinkButton", WatchFrameLines, "WatchFrameLinkButtonTemplate")
@@ -327,7 +328,7 @@ function WatchFrame_OnEvent (self, event, ...)
 			WatchFrameScenario_ReadyCriteriaAnimation(...);
 		end
 		WatchFrame_Update();
-	elseif ( event == "ZONE_CHANGED_NEW_AREA" ) then
+	elseif ( event == "ZONE_CHANGED_NEW_AREA" or event == "NEW_WMO_CHUNK" ) then
 		if ( not WorldMapFrame:IsShown() and WatchFrame.showObjectives ) then
 			SetMapToCurrentZone();			-- update the zone to get the right POI numbers for the tracker
 		end
@@ -437,8 +438,7 @@ function WatchFrame_Update (self)
 	
 	local maxFrameWidth = WATCHFRAME_MAXLINEWIDTH;
 	local maxWidth = 0;
-	local maxLineWidth;
-	local numObjectives;
+	local maxLineWidth, numObjectives, numPopUps;
 	local totalObjectives = 0;
 	WATCHFRAME_NUM_POPUPS = 0;
 	
@@ -724,7 +724,7 @@ function WatchFrame_DisplayTrackedAchievements (lineFrame, nextAnchor, maxHeight
 	local linkButton;
 	
 	local numCriteria, criteriaDisplayed;
-	local achievementID, achievementName, completed, description, icon;
+	local achievementID, achievementName, completed, description, icon, wasEarnedByMe;
 	local criteriaString, criteriaType, criteriaCompleted, quantity, totalQuantity, name, flags, assetID, quantityString, criteriaID, eligible, achievementCategory;
 	local _, instanceType = IsInInstance();
 	local displayOnlyArena = ArenaEnemyFrames and ArenaEnemyFrames:IsShown() and (instanceType == "arena");
@@ -892,7 +892,7 @@ function WatchFrame_DisplayTrackedQuests (lineFrame, nextAnchor, maxHeight, fram
 	local text, finished, objectiveType;
 	local numQuestWatches = GetNumQuestWatches();
 	local numObjectives;
-	local title, level, questTag, suggestedGroup, isHeader, isCollapsed, isComplete, isDaily, questID;
+	local title, level, questTag, suggestedGroup, isHeader, isCollapsed, isComplete, isDaily, questID, startEvent;
 	local numValidQuests = 0;
 
 	local maxWidth = 0;

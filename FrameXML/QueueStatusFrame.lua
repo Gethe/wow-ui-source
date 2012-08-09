@@ -385,6 +385,14 @@ function QueueStatusDropDown_Show(self, relativeTo)
 	ToggleDropDownMenu(1, nil, self, relativeTo, 0, 0);
 end
 
+local wrappedFuncs = {};
+local function wrapFunc(func) --Lets us directly set .func = on dropdown entries.
+	if ( not wrappedFuncs[func] ) then
+		wrappedFuncs[func] = function(button, ...) func(...) end;
+	end
+	return wrappedFuncs[func];
+end
+
 function QueueStatusDropDown_Update()
 	local info = UIDropDownMenu_CreateInfo();
 
@@ -428,14 +436,6 @@ function QueueStatusDropDown_Update()
 	if ( C_PetBattles.GetPVPMatchmakingInfo() ) then
 		QueueStatusDropDown_AddPetBattleButtons(info);
 	end
-end
-
-local wrappedFuncs = {};
-function wrapFunc(func) --Lets us directly set .func = on dropdown entries.
-	if ( not wrappedFuncs[func] ) then
-		wrappedFuncs[func] = function(button, ...) func(...) end;
-	end
-	return wrappedFuncs[func];
 end
 
 function QueueStatusDropDown_AddWorldPvPButtons(info, idx)
@@ -637,11 +637,11 @@ function QueueStatusDropDown_AddPetBattleButtons(info)
 		UIDropDownMenu_AddButton(info);
 	elseif ( status == "proposal" ) then
 		info.text = ENTER_PET_BATTLE;
-		info.func = wrapFunc(C_PetBattles.AcceptPVPMatch);
+		info.func = wrapFunc(C_PetBattles.AcceptQueuedPVPMatch);
 		UIDropDownMenu_AddButton(info);
 
 		info.text = LEAVE_QUEUE;
-		info.func = wrapFunc(C_PetBattles.DeclinePVPMatch);
+		info.func = wrapFunc(C_PetBattles.DeclineQueuedPVPMatch);
 		UIDropDownMenu_AddButton(info);
 	elseif ( status == "entry" ) then
 		info.text = ENTER_PET_BATTLE;

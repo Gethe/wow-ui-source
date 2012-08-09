@@ -639,7 +639,7 @@
 							<TexCoords left="0.078125" right="0.75" top="0" bottom="1.0"/>
 						</Texture>
 						<FontString parentKey="Name" inherits="GameFontNormal" justifyH="LEFT" justifyV="MIDDLE">
-							<Size x="150" y="0"/>
+							<Size x="150" y="32"/>
 							<Anchors>
 								<Anchor point="LEFT" relativeKey="$parent.Left" x="5" y="0"/>
 							</Anchors>

@@ -53,6 +53,11 @@ ACHIEVEMENT_FILTER_ALL = 1;
 ACHIEVEMENT_FILTER_COMPLETE = 2;
 ACHIEVEMENT_FILTER_INCOMPLETE = 3;
 
+local FORCE_COLUMNS_MAX_WIDTH = 190;				-- if no columns normally, force 2 if max criteria width is <= this and number of criteria >= MIN_CRITERIA
+local FORCE_COLUMNS_MIN_CRITERIA = 40;
+local FORCE_COLUMNS_LEFT_OFFSET = -10;				-- offset for left column
+local FORCE_COLUMNS_RIGHT_OFFSET = 24;				-- offset for right column
+local FORCE_COLUMNS_RIGHT_COLUMN_SPACE = 150;		-- max room for first entry of the right column due to achievement shield
 
 AchievementFrameFilterStrings = {ACHIEVEMENT_FILTER_ALL_EXPLANATION, 
 ACHIEVEMENT_FILTER_COMPLETE_EXPLANATION, ACHIEVEMENT_FILTER_INCOMPLETE_EXPLANATION};
@@ -68,6 +73,7 @@ local displayStatCategories = {};
 local guildMemberRequestFrame;
 
 local trackedAchievements = {};
+local achievementFunctions;
 local function updateTrackedAchievements (...) 
 	local count = select("#", ...);
 	
@@ -1856,6 +1862,18 @@ function AchievementObjectives_DisplayCriteria (objectivesFrame, id)
 	elseif ( textStrings > 1 ) then
 		-- Figure out if we can make multiple columns worth of criteria instead of one long one
 		local numColumns = floor(ACHIEVEMENTUI_MAXCONTENTWIDTH/maxCriteriaWidth);
+		-- But if we have a lot of criteria, force 2 columns
+		local forceColumns = false;
+		if ( numColumns == 1 and textStrings >= FORCE_COLUMNS_MIN_CRITERIA and maxCriteriaWidth <= FORCE_COLUMNS_MAX_WIDTH ) then
+			numColumns = 2;
+			forceColumns = true;
+			-- if top right criteria would run into the achievement shield, move them all down 1 row
+			-- this assumes description is 1 or 2 lines, otherwise this wouldn't be a problem
+			if ( criteriaTable[2].name:GetStringWidth() > FORCE_COLUMNS_RIGHT_COLUMN_SPACE and progressBars == 0 ) then
+				initialOffset = initialOffset - criteriaTable[2]:GetHeight();
+				extraRows = extraRows + 1;
+			end
+		end	
 		if ( numColumns > 1 ) then
 			local step;
 			local rows = 1;
@@ -1869,7 +1887,15 @@ function AchievementObjectives_DisplayCriteria (objectivesFrame, id)
 				
 				if ( rows == 1 ) then
 					criteriaTable[i]:ClearAllPoints();
-					criteriaTable[i]:SetPoint("TOPLEFT", objectivesFrame, "TOPLEFT", (position - 1)*(ACHIEVEMENTUI_MAXCONTENTWIDTH/numColumns), initialOffset);
+					local xOffset = 0;
+					if ( forceColumns ) then
+						if ( position == 1 ) then
+							xOffset = FORCE_COLUMNS_LEFT_OFFSET;
+						elseif ( position == 2 ) then
+							xOffset = FORCE_COLUMNS_RIGHT_OFFSET;
+						end
+					end
+					criteriaTable[i]:SetPoint("TOPLEFT", objectivesFrame, "TOPLEFT", (position - 1)*(ACHIEVEMENTUI_MAXCONTENTWIDTH/numColumns) + xOffset, initialOffset);
 				else
 					criteriaTable[i]:ClearAllPoints();
 					criteriaTable[i]:SetPoint("TOPLEFT", criteriaTable[position + ((rows - 2) * numColumns)], "BOTTOMLEFT", 0, 0);
@@ -2155,7 +2181,7 @@ end
 
 function AchievementFrameSummary_UpdateAchievements(...)
 	local numAchievements = select("#", ...);
-	local id, name, points, completed, month, day, year, description, flags, icon;
+	local id, name, points, completed, month, day, year, description, flags, icon, rewardText, isGuild, wasEarnedByMe, earnedBy;
 	local buttons = AchievementFrameSummaryAchievements.buttons;
 	local button, anchorTo, achievementID;
 	local defaultAchievementCount = 1;
@@ -3375,7 +3401,7 @@ end
 
 
 function AchievementFrameFilterDropDown_OnEnter(self)
-	currentFilter = AchievementFrameFilterDropDown.value;
+	local currentFilter = AchievementFrameFilterDropDown.value;
 	GameTooltip:SetOwner(AchievementFrameFilterDropDown, "ANCHOR_RIGHT", -18, 0);
 	GameTooltip:AddLine(AchievementFrameFilterStrings[currentFilter]);
 	GameTooltip:Show();

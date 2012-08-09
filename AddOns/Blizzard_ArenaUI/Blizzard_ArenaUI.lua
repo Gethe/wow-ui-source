@@ -236,6 +236,10 @@ function ArenaEnemyFrame_OnEvent(self, event, arg1, arg2)
 			ArenaEnemyFrame_Unlock(self);
 			self:Hide();
 			ArenaEnemyFrames_UpdateVisible();
+			local _, instanceType = IsInInstance();
+			if (instanceType ~= "arena") then
+				ArenaPrepFrames:Hide()
+			end
 		end
 	elseif ( event == "UNIT_PET" and arg1 == self.unit ) then
 		ArenaEnemyFrame_UpdatePet(self);
@@ -318,7 +322,6 @@ function ArenaEnemyPetFrame_OnEvent(self, event, ...)
 		elseif ( arg2 == "cleared" ) then
 			ArenaEnemyFrame_Unlock(self);
 			self:Hide()
-			ArenaPrepFrames:Hide()
 		end
 	elseif ( event == "UNIT_CLASSIFICATION_CHANGED" and arg1 == self.unit ) then
 		UnitFrame_Update(self);

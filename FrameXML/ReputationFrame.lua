@@ -430,7 +430,7 @@ function ReputationWatchBar_Update(newLevel)
 	
 	if ( visibilityChanged ) then
 		UIParent_ManageFramePositions();
-		updateContainerFrameAnchors();
+		UpdateContainerFrameAnchors();
 	end
 end
 

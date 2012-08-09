@@ -14,8 +14,8 @@ EVENT_TRACE_EVENT_COLORS["Elapsed"] = { .6, .6, .6, 1 };
 
 local _EventTraceFrame;
 
-_framesSinceLast = 0;
-_timeSinceLast = 0;
+local _framesSinceLast = 0;
+local _timeSinceLast = 0;
 
 local _timer = CreateFrame("FRAME");
 _timer:SetScript("OnUpdate", function (self, elapsed) _framesSinceLast = _framesSinceLast + 1; _timeSinceLast = _timeSinceLast + elapsed; end);

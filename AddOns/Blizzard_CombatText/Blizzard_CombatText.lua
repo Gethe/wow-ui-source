@@ -193,7 +193,11 @@ function CombatText_OnEvent(self, event, ...)
 	if ( not info.show ) then
 		-- When Resists aren't being shown, partial resists should display as Damage
 		if (info.var == "COMBAT_TEXT_SHOW_RESISTANCES" and arg3) then
-			messageType = "DAMAGE";
+			if ( strsub(messageType, 1, 5) == "SPELL" ) then
+				messageType = arg4 and "SPELL_DAMAGE_CRIT" or "SPELL_DAMAGE";
+			else
+				messageType = arg4 and "DAMAGE_CRIT" or "DAMAGE";
+			end
 		else
 			return;
 		end

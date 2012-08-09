@@ -185,7 +185,7 @@ function CharacterCreate_OnShow()
 	SetCharacterRace(GetSelectedRace());
 	
 	CharacterCreateEnumerateClasses(GetAvailableClasses());
-	local_,_,index = GetSelectedClass();
+	local _,_,index = GetSelectedClass();
 	SetCharacterClass(index);
 
 	SetCharacterGender(GetSelectedSex())
@@ -488,7 +488,7 @@ function SetCharacterRace(id)
 	local raceText = _G["RACE_INFO_"..fileString];
 	local abilityIndex = 1;
 	local tempText = _G["ABILITY_INFO_"..fileString..abilityIndex];
-	abilityText = "";
+	local abilityText = "";
 	while ( tempText ) do
 		abilityText = abilityText..tempText.."\n\n";
 		abilityIndex = abilityIndex + 1;
@@ -541,7 +541,7 @@ function SetCharacterClass(id)
 	local className, classFileName, _, tank, healer, damage = GetSelectedClass();
 	local abilityIndex = 0;
 	local tempText = _G["CLASS_INFO_"..classFileName..abilityIndex];
-	abilityText = "";
+	local abilityText = "";
 	while ( tempText ) do
 		abilityText = abilityText..tempText.."\n\n";
 		abilityIndex = abilityIndex + 1;
@@ -995,7 +995,7 @@ function CharCreate_PrepPreviewModels(reloadModels)
 	for index, previewFrame in pairs(displayFrame.previews) do
 		previewFrame.featureType = 0;
 		-- force model reload if class changed
-		if ( classSwap ) then
+		if ( reloadModels or classSwap ) then
 			displayFrame.lastClass = class;
 			previewFrame.race = nil;
 			previewFrame.gender = nil;

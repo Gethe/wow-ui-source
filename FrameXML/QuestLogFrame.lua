@@ -885,7 +885,8 @@ function QuestLogControlPanel_UpdateState()
 		QuestLogFrameTrackButton:Disable();
 		QuestLogFramePushQuestButton:Disable();
 	else
-		if ( GetAbandonQuestName() ) then
+		local _, _, _, _, _, _, _, _, questID = GetQuestLogTitle(questLogSelection);
+		if ( GetAbandonQuestName() and CanAbandonQuest(questID)) then
 			QuestLogFrameAbandonButton:Enable();
 		else
 			QuestLogFrameAbandonButton:Disable();
