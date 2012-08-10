@@ -100,6 +100,7 @@ function PetBattleFrame_OnEvent(self, event, ...)
 		PlaySoundKitID(32052); -- UI_PetBattle_Camera_Move_Out
 	elseif ( event == "PET_BATTLE_CLOSE" ) then
 		PetBattleFrame_Remove(self);
+		StaticPopup_Hide("PET_BATTLE_FORFEIT");
 	elseif ( event == "UPDATE_BINDINGS" ) then
 		PetBattleFrame_UpdateAbilityButtonHotKeys(self);
 	elseif ( event == "PET_BATTLE_XP_CHANGED" ) then
@@ -986,7 +987,8 @@ function PetBattleUnitFrame_UpdateDisplay(self)
 			self.PetModel:SetAnimation(6, 0); --Display the dead animation
 			--self.PetModel:SetAnimation(0, 0);
 		else
-			self.PetModel:SetAnimation(0, 0);
+			self.PetModel:SetAnimation(742, 0); -- Display the PetBattleStand animation
+			--self.PetModel:SetAnimation(742, 0);
 		end
 	end
 

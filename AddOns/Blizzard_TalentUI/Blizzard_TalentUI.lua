@@ -362,7 +362,7 @@ function PlayerTalentFrame_OnLoad(self)
 	self:RegisterEvent("PET_SPECIALIZATION_CHANGED");
 	self:RegisterEvent("ACTIVE_TALENT_GROUP_CHANGED");
 	self:RegisterEvent("PREVIEW_TALENT_PRIMARY_TREE_CHANGED");
-	self:RegisterEvent("BAG_UPDATE");
+	self:RegisterEvent("BAG_UPDATE_DELAYED");
 	self.inspect = false;
 	self.talentGroup = 1;
 	self.hasBeenShown = false;
@@ -506,7 +506,7 @@ function PlayerTalentFrame_OnEvent(self, event, ...)
 			end
 		elseif (event == "LEARNED_SPELL_IN_TAB") then
 			-- Must update the Mastery bonus if you just learned Mastery
-		elseif (event == "BAG_UPDATE") then
+		elseif (event == "BAG_UPDATE_DELAYED") then
 			PlayerTalentFrame_RefreshClearInfo();
 		end
 	end

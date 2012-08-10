@@ -528,6 +528,7 @@ function PetJournal_UpdatePetLoadOut()
 			end
 			loadoutPlate.helpFrame.text:SetText(_G["BATTLE_PET_UNLOCK_HELP_"..i]);
 			loadoutPlate.helpFrame:Show();
+			loadoutPlate.petID = nil;
 		elseif (petID <= 0) then
 			loadoutPlate.name:Hide();
 			loadoutPlate.subName:Hide();
@@ -547,6 +548,7 @@ function PetJournal_UpdatePetLoadOut()
 			loadoutPlate.emptyslot.slot:SetText(format(BATTLE_PET_SLOT, i));
 			loadoutPlate.dragButton:Show();
 			loadoutPlate.isDead:Hide();
+			loadoutPlate.petID = nil;
 		else -- not locked and petID > 0
 			local speciesID, customName, level, xp, maxXp, displayID, name, icon, petType, creatureID = C_PetJournal.GetPetInfoByPetID(petID);
 			C_PetJournal.GetPetAbilityList(speciesID, loadoutPlate.abilities, loadoutPlate.abilityLevels);	--Read ability/ability levels into the correct tables
@@ -1358,7 +1360,7 @@ function PetOptionsMenu_Init(self, level)
 	if(PetJournal.menuPetID and C_PetJournal.PetIsCapturable(PetJournal.menuPetID)) then
 		info.text = BATTLE_PET_RELEASE;
 		info.func = function() StaticPopup_Show("BATTLE_PET_RELEASE", PetJournalUtil_GetDisplayName(PetJournal.menuPetID), nil, PetJournal.menuPetID); end
-		if (C_PetJournal.PetIsSlotted(PetJournal.menuPetID)) then
+		if (C_PetJournal.PetIsSlotted(PetJournal.menuPetID) or C_PetBattles.IsInBattle()) then
 			info.disabled = true;
 		else
 			info.disabled = nil; 

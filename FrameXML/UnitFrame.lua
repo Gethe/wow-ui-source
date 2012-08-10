@@ -130,6 +130,7 @@ function UnitFrame_OnEvent(self, event, ...)
 			end
 		elseif ( event == "UNIT_MAXHEALTH" ) then
 			UnitFrameHealPredictionBars_UpdateMax(self);
+			UnitFrameHealPredictionBars_Update(self);
 		elseif ( event == "UNIT_HEAL_PREDICTION" ) then
 			UnitFrameHealPredictionBars_Update(self);
 		end

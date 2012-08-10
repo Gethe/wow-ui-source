@@ -30,7 +30,7 @@
 		<Scripts>
 			<OnLoad>
 				PaperDollItemSlotButton_OnLoad(self);
-				self:RegisterEvent("BAG_UPDATE");
+				self:RegisterEvent("BAG_UPDATE_DELAYED");
 				self:RegisterEvent("INVENTORY_SEARCH_UPDATE");
 				self.isBag = 1;
 				self.UpdateTooltip = BagSlotButton_OnEnter;
@@ -40,7 +40,7 @@
 				self.maxDisplayCount = 999;
 			</OnLoad>
 			<OnEvent>
-				if ( event == "BAG_UPDATE" ) then
+				if ( event == "BAG_UPDATE_DELAYED" ) then
 					PaperDollItemSlotButton_Update(self);
 				elseif ( event == "INVENTORY_SEARCH_UPDATE" ) then
 					if ( IsContainerFiltered(self:GetID() - CharacterBag0Slot:GetID() + 1) ) then

@@ -70,7 +70,7 @@ function ArchaeologyFrame_OnLoad(self)
 	self:RegisterEvent("ARTIFACT_DIG_SITE_UPDATED");
 	self:RegisterEvent("CURRENCY_DISPLAY_UPDATE");
 	self:RegisterEvent("SKILL_LINES_CHANGED");
-	self:RegisterEvent("BAG_UPDATE");
+	self:RegisterEvent("BAG_UPDATE_DELAYED");
 	self:RegisterEvent("GET_ITEM_INFO_RECEIVED");
 	
 	
@@ -170,7 +170,7 @@ function ArchaeologyFrame_OnEvent(self, event, ...)
 		end
 	elseif event == "ARTIFACT_HISTORY_READY" then
 		self.currentFrame:UpdateFrame();
-	elseif event == "BAG_UPDATE" then
+	elseif event == "BAG_UPDATE_DELAYED" then
 		if self:IsShown() and self.artifactPage:IsShown() then
 			ArchaeologyFrame_CurrentArtifactUpdate(ArchaeologyFrame.artifactPage);
 		end

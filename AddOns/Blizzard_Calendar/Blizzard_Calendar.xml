@@ -1007,9 +1007,9 @@
 					</Anchors>
 				</FontString>
 				<FontString name="CalendarCreateEventTextureName" inherits="GameFontNormalSmall" justifyV="TOP" justifyH="LEFT" hidden="true">
+					<Size x="230" y="0"/>
 					<Anchors>
 						<Anchor point="TOPLEFT" relativeTo="CalendarCreateEventDateLabel" relativePoint="BOTTOMLEFT" x="0" y="0"/>
-						<Anchor point="BOTTOMRIGHT" relativePoint="TOPRIGHT" x="-8" y="-100"/>
 					</Anchors>
 				</FontString>
 				<FontString name="CalendarCreateEventCreatorName" inherits="GameFontNormalSmall" justifyH="LEFT">

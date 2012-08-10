@@ -2445,7 +2445,9 @@ function PaperDollItemSlotButton_Update (self)
 		self.ignoreTexture:Hide();
 	end
 
-	PaperDollItemSlotButton_UpdateLock(self);
+	if ( not self.isBag ) then
+		PaperDollItemSlotButton_UpdateLock(self);
+	end
 
 	-- Update repair all button status
 	MerchantFrame_UpdateGuildBankRepair();

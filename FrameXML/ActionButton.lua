@@ -158,8 +158,15 @@ function ActionBarActionEventsFrame_OnLoad(self)
 end
 
 function ActionBarActionEventsFrame_OnEvent(self, event, ...)
-	for k, frame in pairs(self.frames) do
-		ActionButton_OnEvent(frame, event, ...);
+	if ( event == "UNIT_INVENTORY_CHANGED" ) then
+		local unit = ...;
+		if ( unit == "player" and self.tooltipOwner and GameTooltip:GetOwner() == self.tooltipOwner ) then
+			ActionButton_SetTooltip(self.tooltipOwner);
+		end
+	else
+		for k, frame in pairs(self.frames) do
+			ActionButton_OnEvent(frame, event, ...);
+		end
 	end
 end
 
@@ -493,18 +500,15 @@ function ActionButton_OnEvent (self, event, ...)
 		if ( GameTooltip:GetOwner() == self ) then
 			ActionButton_SetTooltip(self);
 		end
-	end
-	if ( event == "ACTIONBAR_SLOT_CHANGED" ) then
+	elseif ( event == "ACTIONBAR_SLOT_CHANGED" ) then
 		if ( arg1 == 0 or arg1 == tonumber(self.action) ) then
 			ActionButton_Update(self);
 		end
 		return;
-	end
-	if ( event == "PLAYER_ENTERING_WORLD" ) then
+	elseif ( event == "PLAYER_ENTERING_WORLD" ) then
 		ActionButton_Update(self);
 		return;
-	end
-	if ( event == "UPDATE_SHAPESHIFT_FORM" ) then
+	elseif ( event == "UPDATE_SHAPESHIFT_FORM" ) then
 		-- need to listen for UPDATE_SHAPESHIFT_FORM because attack icons change when the shapeshift form changes
 		-- This is NOT intended to update everything about shapeshifting; most stuff should be handled by ActionBar-specific events such as UPDATE_BONUS_ACTIONBAR, UPDATE_USABLE, etc.
 		local texture = GetActionTexture(self.action);
@@ -512,23 +516,16 @@ function ActionButton_OnEvent (self, event, ...)
 			self.icon:SetTexture(texture);
 		end
 		return;
-	end
-	if ( event == "ACTIONBAR_SHOWGRID" ) then
+	elseif ( event == "ACTIONBAR_SHOWGRID" ) then
 		ActionButton_ShowGrid(self);
 		return;
-	end
-	if ( event == "ACTIONBAR_HIDEGRID" ) then
+	elseif ( event == "ACTIONBAR_HIDEGRID" ) then
 		ActionButton_HideGrid(self);
 		return;
-	end
-	if ( event == "UPDATE_BINDINGS" ) then
+	elseif ( event == "UPDATE_BINDINGS" ) then
 		ActionButton_UpdateHotkeys(self, self.buttonType);
 		return;
-	end
-
-	-- All event handlers below this line are only set when the button has an action
-
-	if ( event == "PLAYER_TARGET_CHANGED" ) then
+	elseif ( event == "PLAYER_TARGET_CHANGED" ) then	-- All event handlers below this line are only set when the button has an action
 		self.rangeTimer = -1;
 	elseif ( (event == "ACTIONBAR_UPDATE_STATE") or
 		((event == "UNIT_ENTERED_VEHICLE" or event == "UNIT_EXITED_VEHICLE") and (arg1 == "player")) or

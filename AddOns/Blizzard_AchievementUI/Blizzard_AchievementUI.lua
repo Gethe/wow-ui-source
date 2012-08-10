@@ -1336,7 +1336,7 @@ function AchievementButton_DisplayAchievement (button, category, achievement, se
 		else
 			button:Expand(height);
 		end
-		if ( not completed or not wasEarnedByMe ) then
+		if ( not completed or (not wasEarnedByMe and not isGuild) ) then
 			button.tracked:Show();
 		end
 	elseif ( button.selected ) then
@@ -2165,7 +2165,7 @@ function AchievementFrameSummary_ToggleView()
 		end
 	end
 	-- categories
-	for i = 1, 8 do
+	for i = 1, 10 do
 		local statusBar = _G["AchievementFrameSummaryCategoriesCategory"..i];
 		if ( tCategories[i] ) then
 			local categoryName = GetCategoryInfo(tCategories[i]);

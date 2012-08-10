@@ -350,9 +350,14 @@ function BattlefieldMinimap_OnUpdate(self, elapsed)
 					partyMemberFrame.unit = unit;
 					partyMemberFrame:Show();
 					playerCount = playerCount + 1;
+				else
+					partyMemberFrame:Hide();
 				end
 			end
 		else
+			for i=1, MAX_RAID_MEMBERS do
+				_G["BattlefieldMinimapRaid"..i]:Hide();
+			end
 			for i=1, MAX_PARTY_MEMBERS do
 				local partyX, partyY = GetPlayerMapPosition("party"..i);
 				local partyMemberFrame = _G["BattlefieldMinimapParty"..i];

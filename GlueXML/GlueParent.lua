@@ -389,7 +389,7 @@ function SetBackgroundModel(model, path)
 	if ( GlueAmbienceTracks[nameupper] ) then
 		PlayGlueAmbience(GlueAmbienceTracks[nameupper], 4.0);
 	end
-	if ( ( model == CharacterSelect ) and ( string.find(path, 'lowres') == nil ) ) then
+	if ( ( model == CharacterSelect ) and ( string.find(model:GetModel(), 'lowres') == nil ) ) then
 		SetLighting(model, nameupper)
 	else
 		SetLighting(model, "DEFAULT")

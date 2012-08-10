@@ -4,6 +4,8 @@ LEVEL_UP_TYPE_PET = "pet" -- Name used in globalstring PET_LEVEL_UP
 LEVEL_UP_TYPE_SCENARIO = "scenario";
 TOAST_QUEST_BOSS_EMOTE = "questbossemote";
 TOAST_PET_BATTLE_WINNER = "petbattlewinner";
+TOAST_PET_BATTLE_CAPTURE = "petbattlecapturetoast";
+TOAST_PET_BATTLE_LEVELUP = "petbattleleveluptoast";
 TOAST_CHALLENGE_MODE_RECORD = "challengemode";
 
 LEVEL_UP_EVENTS = {
@@ -47,6 +49,18 @@ local levelUpTexCoords = {
 		gLineDelay = 1.5,
 	},
 	[TOAST_PET_BATTLE_WINNER] = {
+		gLine = { 0.00195313, 0.81835938, 0.01953125, 0.03320313 },
+		tint = {1, 0.5, 0.25},
+		textTint = {1, 0.7, 0.25},
+		gLineDelay = 1.5,
+	},
+	[TOAST_PET_BATTLE_CAPTURE] = {
+		gLine = { 0.00195313, 0.81835938, 0.01953125, 0.03320313 },
+		tint = {1, 0.5, 0.25},
+		textTint = {1, 0.7, 0.25},
+		gLineDelay = 1.5,
+	},
+	[TOAST_PET_BATTLE_LEVELUP] = {
 		gLine = { 0.00195313, 0.81835938, 0.01953125, 0.03320313 },
 		tint = {1, 0.5, 0.25},
 		textTint = {1, 0.7, 0.25},
@@ -261,6 +275,8 @@ function LevelUpDisplay_OnLoad(self)
 	self:RegisterEvent("QUEST_BOSS_EMOTE");
 	self:RegisterEvent("CHALLENGE_MODE_NEW_RECORD");
 	self:RegisterEvent("PET_JOURNAL_TRAP_LEVEL_SET");
+	self:RegisterEvent("PET_BATTLE_LEVEL_CHANGED");
+	self:RegisterEvent("PET_BATTLE_CAPTURED");
 	self.currSpell = 0;
 end
 
@@ -297,12 +313,7 @@ function LevelUpDisplay_OnEvent(self, event, ...)
 	elseif ( event == "ZONE_CHANGED_NEW_AREA" ) then
 		self:UnregisterEvent("ZONE_CHANGED_NEW_AREA");
 		LevelUpDisplay_OnShow(self);
-	elseif ( event == "PET_BATTLE_CLOSE" ) then
-		self:UnregisterEvent("PET_BATTLE_LEVEL_CHANGED");
-		self:UnregisterEvent("PET_BATTLE_CAPTURED");
 	elseif ( event == "PET_BATTLE_FINAL_ROUND" ) then
-		self:RegisterEvent("PET_BATTLE_LEVEL_CHANGED");
-		self:RegisterEvent("PET_BATTLE_CAPTURED");
 		self.type = TOAST_PET_BATTLE_WINNER;
 		self.winner = arg1;
 		self:Show();
@@ -490,12 +501,13 @@ function LevelUpDisplay_AddBattlePetTrapUpgradeEvent(self, trapLevel)
 end
 
 function LevelUpDisplay_AddBattlePetLevelUpEvent(self, activePlayer, activePetSlot, newLevel)
-	if (self.currSpell == 0 or self.type ~= TOAST_PET_BATTLE_WINNER) then
+	if (activePlayer ~= LE_BATTLE_PET_ALLY) then
 		return;
 	end
 
-	if (activePlayer ~= LE_BATTLE_PET_ALLY) then
-		return;
+	if (self.currSpell == 0) then
+		self.type = TOAST_PET_BATTLE_LEVELUP;
+		self:Show();
 	end
 
 	local petID = C_PetJournal.GetPetLoadOutInfo(activePetSlot);
@@ -531,14 +543,15 @@ function LevelUpDisplay_AddBattlePetLevelUpEvent(self, activePlayer, activePetSl
 end
 
 function LevelUpDisplay_AddBattlePetCaptureEvent(self, fromPlayer, activePetSlot)
-	if (self.currSpell == 0 or self.type ~= TOAST_PET_BATTLE_WINNER) then
-		return;
-	end
-	
 	if (fromPlayer ~= LE_BATTLE_PET_ENEMY) then
 		return;
 	end
 
+	if (self.currSpell == 0) then
+		self.type = TOAST_PET_BATTLE_CAPTURE;
+		self:Show();
+	end
+	
 	local petName = C_PetBattles.GetName(fromPlayer, activePetSlot);
 	local petIcon = C_PetBattles.GetIcon(fromPlayer, activePetSlot);
 	local quality = C_PetBattles.GetBreedQuality(fromPlayer, activePetSlot);
@@ -629,6 +642,16 @@ function LevelUpDisplay_OnShow(self)
 				if (self.sound and self.sound == true) then
 					PlaySound("RaidBossEmoteWarning");
 				end
+				playAnim = self.levelFrame.fastReveal;
+			elseif (self.type == TOAST_PET_BATTLE_CAPTURE ) then
+				self.unlockList = {};
+				self.currSpell = 1;
+				self.levelFrame.singleline:SetText(BATTLE_PET_CAPTURED);
+				playAnim = self.levelFrame.fastReveal;
+			elseif (self.type == TOAST_PET_BATTLE_LEVELUP ) then
+				self.unlockList = {};
+				self.currSpell = 1;
+				self.levelFrame.singleline:SetText(PLAYER_LEVEL_UP);
 				playAnim = self.levelFrame.fastReveal;
 			end
 		end

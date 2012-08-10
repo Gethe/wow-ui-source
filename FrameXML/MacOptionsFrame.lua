@@ -115,8 +115,6 @@ function MacOptionsFrame_Load()
 			HideUIPanel(MacOptionsFrame);
 			HideUIPanel(GameMenuFrame);
 			_G["MacOptionsFrameCheckButton9"]:SetChecked(0);
-		else
-			MacOptions_SetOSShortcutsDisabled(checked == "1");
 		end
 	end;
 	

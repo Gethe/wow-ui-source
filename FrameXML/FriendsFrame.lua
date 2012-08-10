@@ -1747,7 +1747,7 @@ function FriendsFrameTooltip_Show(self)
 				toonNameString = _G["FriendsTooltipToon"..toonIndex.."Name"];
 				toonInfoString = _G["FriendsTooltipToon"..toonIndex.."Info"];
 				if ( client == BNET_CLIENT_WOW ) then
-					if ( realmName == playerRealmName and PLAYER_FACTION_GROUP[faction] == playerFactionGroup ) then
+					if ( realmName == playerRealmName and faction == playerFactionGroup ) then
 						text = string.format(FRIENDS_TOOLTIP_WOW_TOON_TEMPLATE, toonName, level, race, class);
 					else
 						text = string.format(FRIENDS_TOOLTIP_WOW_TOON_TEMPLATE, toonName..CANNOT_COOPERATE_LABEL, level, race, class);
@@ -2173,11 +2173,11 @@ end
 function CanCooperateWithToon(presenceID, hasTravelPass)
 	local hasFocus, toonName, client, realmName, realmID, faction = BNGetToonInfo(presenceID);
 	if ( hasTravelPass ) then
-		if ( realmID > 0 and PLAYER_FACTION_GROUP[faction] == playerFactionGroup ) then
+		if ( realmID > 0 and faction == playerFactionGroup ) then
 			return true;
 		end
 	else
-		if ( realmName == playerRealmName and PLAYER_FACTION_GROUP[faction] == playerFactionGroup ) then
+		if ( realmName == playerRealmName and faction == playerFactionGroup ) then
 			return true;
 		end
 	end
@@ -2213,7 +2213,7 @@ function FriendsFrame_GetInviteRestriction(index, canInvite)
 	for i = 1, numToons do
 		local hasFocus, toonName, client, realmName, realmID, faction = BNGetFriendToonInfo(index, i);
 		if ( client == BNET_CLIENT_WOW ) then
-			if ( PLAYER_FACTION_GROUP[faction] ~= playerFactionGroup ) then
+			if ( faction ~= playerFactionGroup ) then
 				restriction = max(INVITE_RESTRICTION_FACTION, restriction);
 			elseif ( realmID == 0 ) then
 				restriction = max(INVITE_RESTRICTION_INFO, restriction);
@@ -2282,7 +2282,7 @@ function TravelPassDropDown_Initialize(self)
 		restriction = INVITE_RESTRICTION_NONE;
 		local hasFocus, toonName, client, realmName, realmID, faction, race, class, _, _, level, _, _, _, _, toonID = BNGetFriendToonInfo(self.index, i);
 		if ( client == BNET_CLIENT_WOW ) then
-			if ( PLAYER_FACTION_GROUP[faction] ~= playerFactionGroup ) then
+			if ( faction ~= playerFactionGroup ) then
 				restriction = INVITE_RESTRICTION_FACTIONINVITE_RESTRICTION_FACTION;
 			elseif ( realmID == 0 ) then
 				restriction = INVITE_RESTRICTION_INFO;

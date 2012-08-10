@@ -859,6 +859,11 @@ ACCOUNT_UPGRADE_FEATURES = {
 		  [3] = { icon = "Interface\\Icons\\achievement_zone_icecrown_01", text = UPGRADE_FEATURE_6 },
 		  logo = "Interface\\Glues\\Common\\Glues-WoW-WotLKLogo",
 		  banner = { 0.0, 0.777, 0.411, 0.546 }},
+	[1] =	{ [1] = { icon = "Interface\\Icons\\achievement_level_80", text = UPGRADE_FEATURE_4 },
+		  [2] = { icon = "Interface\\Icons\\achievement_boss_lichking", text = UPGRADE_FEATURE_5 },
+		  [3] = { icon = "Interface\\Icons\\achievement_zone_icecrown_01", text = UPGRADE_FEATURE_6 },
+		  logo = "Interface\\Glues\\Common\\Glues-WoW-WotLKLogo",
+		  banner = { 0.0, 0.777, 0.411, 0.546 }},
 	[2] =	{ [1] = { icon = "Interface\\Icons\\achievement_level_85", text = UPGRADE_FEATURE_7 },
 		  [2] = { icon = "Interface\\Icons\\achievement_firelands raid_ragnaros", text = UPGRADE_FEATURE_8 },
 		  [3] = { icon = "Interface\\Icons\\Ability_Mount_CelestialHorse", text = UPGRADE_FEATURE_9 },
@@ -877,7 +882,10 @@ function AccountUpgradePanel_Update(isExpanded)
 	if ( IsTrialAccount() ) then
 		tag = "TRIAL";
 	else
-		tag = GetAccountExpansionLevel();
+		tag = max(GetAccountExpansionLevel(), GetExpansionLevel());
+		if ( IsExpansionTrial() ) then
+			tag = tag - 1;
+		end
 	end
 
 	if ( EXPANSION_LOGOS[tag] ) then

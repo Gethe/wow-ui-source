@@ -31,11 +31,13 @@
 			<OnEnter>
 				ActionButton_SetTooltip(self);
 				ActionBarButtonEventsFrame.tooltipOwner = self;
+				ActionBarActionEventsFrame.tooltipOwner = self;
 				ActionButton_UpdateFlyout(self);
 			</OnEnter>
 			<OnLeave>
 				GameTooltip:Hide();
 				ActionBarButtonEventsFrame.tooltipOwner = nil;
+				ActionBarActionEventsFrame.tooltipOwner = nil;
 				ActionButton_UpdateFlyout(self);
 			</OnLeave>
 			<OnUpdate>
