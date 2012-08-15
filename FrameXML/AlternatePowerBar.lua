@@ -37,8 +37,12 @@ end
 
 function AlternatePowerBar_OnEvent(self, event, arg1)
 	local parent = self:GetParent();
-	if ( event == "UNIT_DISPLAYPOWER" or event == "PLAYER_SPECIALIZATION_CHANGED" ) then
+	if ( event == "UNIT_DISPLAYPOWER" ) then
 		AlternatePowerBar_UpdatePowerType(self);
+	elseif ( event == "PLAYER_SPECIALIZATION_CHANGED" ) then
+		if ( arg1 == parent.unit ) then
+			AlternatePowerBar_UpdatePowerType(self);
+		end
 	elseif ( event=="PLAYER_ENTERING_WORLD" ) then
 		AlternatePowerBar_UpdateMaxValues(self);
 		AlternatePowerBar_UpdatePowerType(self);

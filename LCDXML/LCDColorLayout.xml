@@ -1,7 +1,7 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/ ..\FrameXML\UI.xsd">
 <!-- ENGLISH -->
 	<Screen name="WoWTitleScreen" BGColor="0,0,0">
-		<LCDBitmap name="WOWTITLEBG" id="0" type="texture" data="Interface\GLUES\COMMON\Glues-WoW-ClassicLogo.BLP" miplevel="1" alpha="0">
+		<LCDBitmap name="WOWTITLEBG" id="0" type="texture" data="Interface\GLUES\COMMON\Glues-WoW-MPLogo.BLP" miplevel="1" alpha="0">
 			<Origin x="0" y="40"/>
 			<Size x="320" y="160" />
 		</LCDBitmap>
@@ -23,15 +23,15 @@
 			<Origin x="10" y="10" />
 		</LCDText>
 		<LCDText name="STRENGTH_FLD" id="3">
-			<Font Size="LG_SMALL" Alignment="LG_RIGHT" MaxWidth="40" Wrap="false"/>
-			<RelOrigin RelTo="STRENGTH" x="105" y="0" />
+			<Font Size="LG_SMALL" Alignment="LG_RIGHT" MaxWidth="50" Wrap="false"/>
+			<RelOrigin RelTo="STRENGTH" x="95" y="0" />
 		</LCDText>
 		<LCDText name="AGILITY" text="AGILITY_COLON" id="4">
 			<Font Size="LG_SMALL" Alignment="LG_LEFT" MaxWidth="100" Wrap="false"/>
 			<RelOrigin RelTo="STRENGTH" x="0" y="16" />
 		</LCDText>
 		<LCDText name="AGILITY_FLD" id="5">
-			<Font Size="LG_SMALL" Alignment="LG_RIGHT" MaxWidth="40" Wrap="false"/>
+			<Font Size="LG_SMALL" Alignment="LG_RIGHT" MaxWidth="50" Wrap="false"/>
 			<RelOrigin RelTo="STRENGTH_FLD" x="0" y="16" />
 		</LCDText>
 		<LCDText name="STAMINA" text="STAMINA_COLON" id="6">
@@ -39,7 +39,7 @@
 			<RelOrigin RelTo="AGILITY" x="0" y="16" />
 		</LCDText>
 		<LCDText name="STAMINA_FLD" id="7">
-			<Font Size="LG_SMALL" Alignment="LG_RIGHT" MaxWidth="40" Wrap="false"/>
+			<Font Size="LG_SMALL" Alignment="LG_RIGHT" MaxWidth="50" Wrap="false"/>
 			<RelOrigin RelTo="AGILITY_FLD" x="0" y="16" />
 		</LCDText>
 		<LCDText name="INTELLECT" text="INTELLECT_COLON" id="8">
@@ -47,7 +47,7 @@
 			<RelOrigin RelTo="STAMINA" x="0" y="16" />
 		</LCDText>
 		<LCDText name="INTELLECT_FLD" id="9">
-			<Font Size="LG_SMALL" Alignment="LG_RIGHT" MaxWidth="40" Wrap="false"/>
+			<Font Size="LG_SMALL" Alignment="LG_RIGHT" MaxWidth="50" Wrap="false"/>
 			<RelOrigin RelTo="STAMINA_FLD" x="0" y="16" />
 		</LCDText>
 		<LCDText name="SPIRIT" text="SPIRIT_COLON" id="10">
@@ -55,7 +55,7 @@
 			<RelOrigin RelTo="INTELLECT" x="0" y="16" />
 		</LCDText>
 		<LCDText name="SPIRIT_FLD" id="11">
-			<Font Size="LG_SMALL" Alignment="LG_RIGHT" MaxWidth="40" Wrap="false"/>
+			<Font Size="LG_SMALL" Alignment="LG_RIGHT" MaxWidth="50" Wrap="false"/>
 			<RelOrigin RelTo="INTELLECT_FLD" x="0" y="16" />
 		</LCDText>
 		<LCDText name="MASTERY" text="STAT_MASTERY" id="12">
@@ -63,8 +63,8 @@
 			<RelOrigin RelTo="SPIRIT" x="0" y="16" />
 		</LCDText>
 		<LCDText name="MASTERY_FLD" id="13">
-			<Font Size="LG_SMALL" Alignment="LG_RIGHT" MaxWidth="45" Wrap="false"/>
-			<RelOrigin RelTo="SPIRIT_FLD" x="-5" y="16" />
+			<Font Size="LG_SMALL" Alignment="LG_RIGHT" MaxWidth="50" Wrap="false"/>
+			<RelOrigin RelTo="SPIRIT_FLD" x="0" y="16" />
 		</LCDText>
 		<LCDSubscreen name="Melee" id="0">
 			<LCDText name="DAMAGE" text="DAMAGE" id="14">
@@ -157,6 +157,14 @@
 				<Font Size="LG_SMALL" Alignment="LG_RIGHT" MaxWidth="60" Wrap="false"/>
 				<RelOrigin RelTo="BLOCK_FLD" x="0" y="16" />
 			</LCDText>
+      <LCDText name="PVPPOWER" text="STAT_PVP_POWER" id="49">
+        <Font Size="LG_SMALL" Alignment="LG_LEFT" MaxWidth="110" Wrap="false"/>
+        <RelOrigin RelTo="RESILIENCE" x="0" y="16" />
+      </LCDText>
+      <LCDText name="PVPPOWER_FLD" id="11">
+        <Font Size="LG_SMALL" Alignment="LG_RIGHT" MaxWidth="60" Wrap="false"/>
+        <RelOrigin RelTo="RESILIENCE_FLD" x="0" y="16" />
+      </LCDText>
 		</LCDSubscreen>
 		<LCDSubscreen name="Spell" id="2">
 			<LCDText name="SPELL_POWER" text="STAT_SPELLPOWER">
@@ -175,37 +183,29 @@
         <Font Size="LG_SMALL" Alignment="LG_RIGHT" MaxWidth="60" Wrap="false"/>
         <RelOrigin RelTo="SPELL_POWER_FLD" x="0" y="16" />
       </LCDText>
-      <LCDText name="SPELL_PENETRATION" text="SPELL_PENETRATION">
+      <LCDText name="SPELL_HIT" text="STAT_HIT_CHANCE">
         <Font Size="LG_SMALL" Alignment="LG_LEFT" MaxWidth="110" Wrap="false"/>
         <RelOrigin RelTo="SPELL_HASTE" x="0" y="16" />
       </LCDText>
-      <LCDText name="SPELL_PENETRATION_FLD">
+      <LCDText name="SPELL_HIT_FLD" text="HIT">
         <Font Size="LG_SMALL" Alignment="LG_RIGHT" MaxWidth="60" Wrap="false"/>
         <RelOrigin RelTo="SPELL_HASTE_FLD" x="0" y="16" />
       </LCDText>
       <LCDText name="MANA_REGEN" text="MANA_REGEN" id="54">
         <Font Size="LG_SMALL" Alignment="LG_LEFT" MaxWidth="110" Wrap="false"/>
-        <RelOrigin RelTo="SPELL_PENETRATION" x="0" y="16" />
+        <RelOrigin RelTo="SPELL_HIT" x="0" y="16" />
       </LCDText>
       <LCDText name="MANA_REGEN_FLD" text="HIT">
         <Font Size="LG_SMALL" Alignment="LG_RIGHT" MaxWidth="60" Wrap="false"/>
-        <RelOrigin RelTo="SPELL_PENETRATION_FLD" x="0" y="16" />
+        <RelOrigin RelTo="SPELL_HIT_FLD" x="0" y="16" />
       </LCDText>
-			<LCDText name="SPELL_HIT" text="STAT_HIT_CHANCE">
-				<Font Size="LG_SMALL" Alignment="LG_LEFT" MaxWidth="110" Wrap="false"/>
-				<RelOrigin RelTo="MANA_REGEN" x="0" y="16" />
-			</LCDText>
-			<LCDText name="SPELL_HIT_FLD" text="HIT">
-				<Font Size="LG_SMALL" Alignment="LG_RIGHT" MaxWidth="60" Wrap="false"/>
-				<RelOrigin RelTo="MANA_REGEN_FLD" x="0" y="16" />
-			</LCDText>
 			<LCDText name="SPELL_CRIT" text="MELEE_CRIT_CHANCE">
 				<Font Size="LG_SMALL" Alignment="LG_LEFT" MaxWidth="90" Wrap="false"/>
-				<RelOrigin RelTo="SPELL_HIT" x="0" y="16" />
+				<RelOrigin RelTo="MANA_REGEN" x="0" y="16" />
 			</LCDText>
 			<LCDText name="SPELL_CRIT_FLD">
 				<Font Size="LG_SMALL" Alignment="LG_RIGHT" MaxWidth="60" Wrap="false"/>
-				<RelOrigin RelTo="SPELL_HIT_FLD" x="0" y="16" />
+				<RelOrigin RelTo="MANA_REGEN_FLD" x="0" y="16" />
 			</LCDText>
 			
 		</LCDSubscreen>
@@ -863,6 +863,116 @@
       <Size x="144" y="115" />
     </LCDBitmap>
   </Screen>
+  <Screen name="SilverShardMinesMapScreen">
+    <LCDMap>
+      <Size x="571" y="296"/>
+      <Offset x="-125" y="-30"/>
+    </LCDMap>
+    <LCDBitmap name="SilverShardMinesMapScreen1" type="texture" data="Interface\WORLDMAP\STVDiamondMineBG\STVDiamondMineBG1_1.blp" miplevel="1">
+      <Origin x="-125" y="-30"/>
+      <!--<Origin x="0" y="0"/>-->
+      <Size x="144" y="115" />
+    </LCDBitmap>
+    <LCDBitmap name="SilverShardMinesMapScreen2" type="texture" data="Interface\WORLDMAP\STVDiamondMineBG\STVDiamondMineBG1_2.blp" miplevel="1">
+      <RelOrigin RelTo="SilverShardMinesMapScreen1" x="144" y="0"/>
+      <Size x="144" y="115" />
+    </LCDBitmap>
+    <LCDBitmap name="SilverShardMinesMapScreen3" type="texture" data="Interface\WORLDMAP\STVDiamondMineBG\STVDiamondMineBG1_3.blp" miplevel="1">
+      <RelOrigin RelTo="SilverShardMinesMapScreen2" x="144" y="0"/>
+      <Size x="144" y="115" />
+    </LCDBitmap>
+    <LCDBitmap name="SilverShardMinesMapScreen4" type="texture" data="Interface\WORLDMAP\STVDiamondMineBG\STVDiamondMineBG1_4.blp" miplevel="1">
+      <RelOrigin RelTo="SilverShardMinesMapScreen3" x="144" y="0"/>
+      <Size x="144" y="115" />
+    </LCDBitmap>
+    <LCDBitmap name="SilverShardMinesMapScreen5" type="texture" data="Interface\WORLDMAP\STVDiamondMineBG\STVDiamondMineBG1_5.blp" miplevel="1">
+      <RelOrigin RelTo="SilverShardMinesMapScreen1" x="0" y="115"/>
+      <Size x="144" y="115" />
+    </LCDBitmap>
+    <LCDBitmap name="SilverShardMinesMapScreen6" type="texture" data="Interface\WORLDMAP\STVDiamondMineBG\STVDiamondMineBG1_6.blp" miplevel="1">
+      <RelOrigin RelTo="SilverShardMinesMapScreen5" x="144" y="0"/>
+      <Size x="144" y="115" />
+    </LCDBitmap>
+    <LCDBitmap name="SilverShardMinesMapScreen7" type="texture" data="Interface\WORLDMAP\STVDiamondMineBG\STVDiamondMineBG1_7.blp" miplevel="1">
+      <RelOrigin RelTo="SilverShardMinesMapScreen6" x="144" y="0"/>
+      <Size x="144" y="115" />
+    </LCDBitmap>
+    <LCDBitmap name="SilverShardMinesMapScreen8" type="texture" data="Interface\WORLDMAP\STVDiamondMineBG\STVDiamondMineBG1_8.blp" miplevel="1">
+      <RelOrigin RelTo="SilverShardMinesMapScreen7" x="144" y="0"/>
+      <Size x="144" y="115" />
+    </LCDBitmap>
+    <LCDBitmap name="SilverShardMinesMapScreen9" type="texture" data="Interface\WORLDMAP\STVDiamondMineBG\STVDiamondMineBG1_9.blp" miplevel="1">
+      <RelOrigin RelTo="SilverShardMinesMapScreen5" x="0" y="115"/>
+      <Size x="144" y="115" />
+    </LCDBitmap>
+    <LCDBitmap name="SilverShardMinesMapScreen10" type="texture" data="Interface\WORLDMAP\STVDiamondMineBG\STVDiamondMineBG1_10.blp" miplevel="1">
+      <RelOrigin RelTo="SilverShardMinesMapScreen9" x="144" y="0"/>
+      <Size x="144" y="115" />
+    </LCDBitmap>
+    <LCDBitmap name="SilverShardMinesMapScreen11" type="texture" data="Interface\WORLDMAP\STVDiamondMineBG\STVDiamondMineBG1_11.blp" miplevel="1">
+      <RelOrigin RelTo="SilverShardMinesMapScreen10" x="144" y="0"/>
+      <Size x="144" y="115" />
+    </LCDBitmap>
+    <LCDBitmap name="SilverShardMinesMapScreen12" type="texture" data="Interface\WORLDMAP\STVDiamondMineBG\STVDiamondMineBG1_12.blp" miplevel="1">
+      <RelOrigin RelTo="SilverShardMinesMapScreen11" x="144" y="0"/>
+      <Size x="144" y="115" />
+    </LCDBitmap>
+  </Screen>
+  <Screen name="TempleOfKotmoguMapScreen">
+    <LCDMap>
+      <Size x="571" y="296"/>
+      <Offset x="-115" y="-40"/>
+    </LCDMap>
+    <LCDBitmap name="TempleOfKotmoguMapScreen1" type="texture" data="Interface\WORLDMAP\TempleofKotmogu\TempleofKotmogu1.blp" miplevel="1">
+      <Origin x="-115" y="-40"/>
+      <!--<Origin x="0" y="0"/>-->
+      <Size x="144" y="115" />
+    </LCDBitmap>
+    <LCDBitmap name="TempleOfKotmoguMapScreen2" type="texture" data="Interface\WORLDMAP\TempleofKotmogu\TempleofKotmogu2.blp" miplevel="1">
+      <RelOrigin RelTo="TempleOfKotmoguMapScreen1" x="144" y="0"/>
+      <Size x="144" y="115" />
+    </LCDBitmap>
+    <LCDBitmap name="TempleOfKotmoguMapScreen3" type="texture" data="Interface\WORLDMAP\TempleofKotmogu\TempleofKotmogu3.blp" miplevel="1">
+      <RelOrigin RelTo="TempleOfKotmoguMapScreen2" x="144" y="0"/>
+      <Size x="144" y="115" />
+    </LCDBitmap>
+    <LCDBitmap name="TempleOfKotmoguMapScreen4" type="texture" data="Interface\WORLDMAP\TempleofKotmogu\TempleofKotmogu4.blp" miplevel="1">
+      <RelOrigin RelTo="TempleOfKotmoguMapScreen3" x="144" y="0"/>
+      <Size x="144" y="115" />
+    </LCDBitmap>
+    <LCDBitmap name="TempleOfKotmoguMapScreen5" type="texture" data="Interface\WORLDMAP\TempleofKotmogu\TempleofKotmogu5.blp" miplevel="1">
+      <RelOrigin RelTo="TempleOfKotmoguMapScreen1" x="0" y="115"/>
+      <Size x="144" y="115" />
+    </LCDBitmap>
+    <LCDBitmap name="TempleOfKotmoguMapScreen6" type="texture" data="Interface\WORLDMAP\TempleofKotmogu\TempleofKotmogu6.blp" miplevel="1">
+      <RelOrigin RelTo="TempleOfKotmoguMapScreen5" x="144" y="0"/>
+      <Size x="144" y="115" />
+    </LCDBitmap>
+    <LCDBitmap name="TempleOfKotmoguMapScreen7" type="texture" data="Interface\WORLDMAP\TempleofKotmogu\TempleofKotmogu7.blp" miplevel="1">
+      <RelOrigin RelTo="TempleOfKotmoguMapScreen6" x="144" y="0"/>
+      <Size x="144" y="115" />
+    </LCDBitmap>
+    <LCDBitmap name="TempleOfKotmoguMapScreen8" type="texture" data="Interface\WORLDMAP\TempleofKotmogu\TempleofKotmogu8.blp" miplevel="1">
+      <RelOrigin RelTo="TempleOfKotmoguMapScreen7" x="144" y="0"/>
+      <Size x="144" y="115" />
+    </LCDBitmap>
+    <LCDBitmap name="TempleOfKotmoguMapScreen9" type="texture" data="Interface\WORLDMAP\TempleofKotmogu\TempleofKotmogu9.blp" miplevel="1">
+      <RelOrigin RelTo="TempleOfKotmoguMapScreen5" x="0" y="115"/>
+      <Size x="144" y="115" />
+    </LCDBitmap>
+    <LCDBitmap name="TempleOfKotmoguMapScreen10" type="texture" data="Interface\WORLDMAP\TempleofKotmogu\TempleofKotmogu10.blp" miplevel="1">
+      <RelOrigin RelTo="TempleOfKotmoguMapScreen9" x="144" y="0"/>
+      <Size x="144" y="115" />
+    </LCDBitmap>
+    <LCDBitmap name="TempleOfKotmoguMapScreen11" type="texture" data="Interface\WORLDMAP\TempleofKotmogu\TempleofKotmogu11.blp" miplevel="1">
+      <RelOrigin RelTo="TempleOfKotmoguMapScreen10" x="144" y="0"/>
+      <Size x="144" y="115" />
+    </LCDBitmap>
+    <LCDBitmap name="TempleOfKotmoguMapScreen12" type="texture" data="Interface\WORLDMAP\TempleofKotmogu\TempleofKotmogu12.blp" miplevel="1">
+      <RelOrigin RelTo="TempleOfKotmoguMapScreen11" x="144" y="0"/>
+      <Size x="144" y="115" />
+    </LCDBitmap>
+  </Screen>
 	<Globals>
 		<LCDBitmap name="PartyIcon1" type="texture" data="Interface\WORLDMAP\WorldMapPartyIcon.blp" miplevel="0">
 			<Origin x="0" y="0"/>
@@ -1047,5 +1157,7 @@
     <Map id="628" Screen="IsleOfConquestMapScreen"/>
     <Map id="726" Screen="TwinPeaksMapScreen"/>
     <Map id="761" Screen="BattleForGilneasMapScreen"/>
-	</POI>
+    <Map id="727" Screen="SilverShardMinesMapScreen"/>
+    <Map id="998" Screen="TempleOfKotmoguMapScreen"/>
+ 	</POI>
 </Ui>

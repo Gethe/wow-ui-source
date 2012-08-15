@@ -3850,7 +3850,10 @@ function ChatEdit_InsertLink(text)
 	end
 	if ( BrowseName and BrowseName:IsVisible() ) then
 		local item;
-		if ( strfind(text, "item:", 1, true) ) then
+		if ( strfind(text, "battlepet:") ) then
+			local petName = strmatch(text, "%[(.+)%]");
+			item = petName;
+		elseif ( strfind(text, "item:", 1, true) ) then
 			item = GetItemInfo(text);
 		end
 		if ( item ) then

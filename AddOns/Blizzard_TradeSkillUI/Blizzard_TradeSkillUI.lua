@@ -740,12 +740,12 @@ function TradeSkillUpdateFilterBar(subName, slotName)
 	TradeSkillFrame_Update();
 end
 
-function TradeSkillSetFilter(subclass, slot, subName, slotName)
+function TradeSkillSetFilter(subclass, slot, subName, slotName, subclassCategory)
 
 	TradeSkillFrame.filterTbl.subClassValue = subclass;
 	TradeSkillFrame.filterTbl.slotValue = slot;
 
-	SetTradeSkillSubClassFilter(subclass, 1, 1);
+	SetTradeSkillCategoryFilter(subclass, subclassCategory);
 	SetTradeSkillInvSlotFilter(slot, 1, 1);
 
 	
@@ -819,9 +819,9 @@ function TradeSkillFilterDropDown_Initialize(self, level)
 			local subslots = {};
 			for i,subClass in pairs(subClasses) do
 				info.text = subClass;
-				info.func =  function() TradeSkillSetFilter(i, 0, subClasses[i], ""); end
+				info.func =  function() TradeSkillSetFilter(i, 0, subClasses[i], "", 0); end
 				info.notCheckable = true;
-				subslots  = { GetTradeSkillSubClassFilteredSlots(i) };
+				subslots  = { GetTradeSkillSubCategories(i) };
 				info.hasArrow = #subslots > 1;
 				info.value = i;
 				UIDropDownMenu_AddButton(info, level);
@@ -829,10 +829,11 @@ function TradeSkillFilterDropDown_Initialize(self, level)
 		end
 	elseif level == 3 then	
 		local subClasses = { GetTradeSkillSubClasses() };
-		local subslots  = { GetTradeSkillSubClassFilteredSlots(UIDROPDOWNMENU_MENU_VALUE) };
+		local subslots;
+		subslots = { GetTradeSkillSubCategories(UIDROPDOWNMENU_MENU_VALUE) };
 		for i,slot in pairs(subslots) do
 			info.text = slot;
-			info.func =  function() TradeSkillSetFilter(UIDROPDOWNMENU_MENU_VALUE, i, subClasses[UIDROPDOWNMENU_MENU_VALUE], subslots[i]); end
+			info.func =  function() TradeSkillSetFilter(UIDROPDOWNMENU_MENU_VALUE, 0, subClasses[UIDROPDOWNMENU_MENU_VALUE], subslots[i], i); end
 			info.notCheckable = true;
 			info.value = {UIDROPDOWNMENU_MENU_VALUE, i};
 			UIDropDownMenu_AddButton(info, level);

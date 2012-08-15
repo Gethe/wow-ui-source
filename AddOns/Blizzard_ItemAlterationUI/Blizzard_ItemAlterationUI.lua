@@ -340,9 +340,6 @@ function TransmogrifyFrame_UpdateSlotButton(button)
 	
 
 	local showModel = true;
-	if ( button.id == INVSLOT_MAINHAND or button.id == INVSLOT_OFFHAND ) then
-		showModel = false;
-	end
 	if (button.id == INVSLOT_HEAD and not button.displayHelm) then
 		if ( hasChange ) then
 			button.displayHelm = true;

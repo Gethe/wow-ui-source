@@ -1493,7 +1493,7 @@ function PetBattleAuraHolder_Update(self)
 				elseif ( (nextFrame - 1) % numPerRow == 0 ) then
 					frame:SetPoint("TOP"..growsFrom, self.frames[nextFrame - numPerRow], "BOTTOM"..growsFrom, 0, 0);
 				else
-					frame:SetPoint("TOP"..growsFrom, self.frames[nextFrame - 1], "TOP"..growsTo, 0, 0);
+					frame:SetPoint("TOP"..growsFrom, self.frames[nextFrame - 1], "TOP"..growsTo, growsTo == "LEFT" and -4 or 4, 0);
 				end
 			end
 

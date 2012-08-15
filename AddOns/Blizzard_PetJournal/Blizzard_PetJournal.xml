@@ -904,7 +904,7 @@ size=64,128
 							<OnEnter>
 								GameTooltip:SetOwner(self, "ANCHOR_BOTTOMRIGHT", 0, 0);
 								GameTooltip:SetText(PET_JOURNAL_READONLY, 1, 1, 1, true);
-								GameTooltip:AddLine(PET_JOURNAL_READONLY_TEXT, nil, nil, nil, true);
+								GameTooltip:AddLine(self.tooltip, nil, nil, nil, true);
 								GameTooltip:SetMinimumWidth(150);
 								GameTooltip:Show();
 							</OnEnter>
@@ -1658,6 +1658,9 @@ size=64,128
 									GameTooltip:AddLine(self.sourceText, 1, 1, 1, true);
 									if ( not self.tradable ) then
 										GameTooltip:AddLine(BATTLE_PET_NOT_TRADABLE, 1, 0.1, 0.1, true);
+									end
+									if ( self.unique ) then
+										GameTooltip:AddLine(ITEM_UNIQUE, NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b, true);
 									end
 									if ( self.description and self.description ~= "" ) then
 										GameTooltip:AddLine(" ");

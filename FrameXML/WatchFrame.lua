@@ -257,6 +257,7 @@ function WatchFrame_OnLoad (self)
 	self:RegisterEvent("QUEST_AUTOCOMPLETE");
 	self:RegisterEvent("SCENARIO_UPDATE");
 	self:RegisterEvent("SCENARIO_CRITERIA_UPDATE");
+	self:RegisterEvent("CRITERIA_COMPLETE");
 	self:RegisterEvent("NEW_WMO_CHUNK");
 	self:SetScript("OnSizeChanged", WatchFrame_OnSizeChanged); -- Has to be set here instead of in XML for now due to OnSizeChanged scripts getting run before OnLoad scripts.
 	self.lineCache = UIFrameCache:New("FRAME", "WatchFrameLine", WatchFrameLines, "WatchFrameLineTemplate");
@@ -324,6 +325,8 @@ function WatchFrame_OnEvent (self, event, ...)
 			WatchFrame_Update();
 		end
 	elseif ( event == "SCENARIO_CRITERIA_UPDATE" ) then
+		WatchFrame_Update();
+	elseif ( event == "CRITERIA_COMPLETE" ) then
 		if ( not self.collapsed and self:IsShown() ) then
 			WatchFrameScenario_ReadyCriteriaAnimation(...);
 		end
@@ -1470,6 +1473,7 @@ end
 function WatchFrameQuestPOI_OnClick(self, button)
 	WORLDMAP_SETTINGS.selectedQuestId = self.questId;
 	QuestPOI_SelectButtonByQuestId("WatchFrameLines", self.questId, true);
+	WorldMapFrame_SelectQuestById(self.questId);
 	SetSuperTrackedQuestID(self.questId);
 	PlaySound("igMainMenuOptionCheckBoxOn");
 end

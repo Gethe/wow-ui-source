@@ -66,7 +66,8 @@ StaticPopupDialogs["BATTLE_PET_PUT_IN_CAGE"] = {
 };
 
 StaticPopupDialogs["BATTLE_PET_RELEASE"] = {
-	text = PET_RELEASE_LABEL,
+	-- Adding extra line breaks as a hack to make this look more distinct from the "Put In Cage" dialog
+	text = "\n\n" .. PET_RELEASE_LABEL .. "\n\n",
 	button1 = OKAY,
 	button2 = CANCEL,
 	maxLetters = 30,
@@ -78,7 +79,8 @@ StaticPopupDialogs["BATTLE_PET_RELEASE"] = {
 	end,
 	timeout = 0,
 	exclusive = 1,
-	hideOnEscape = 1
+	hideOnEscape = 1,
+	showAlert = 1,
 };
 
 function PetJournalUtil_GetDisplayName(petID)
@@ -125,6 +127,7 @@ function PetJournal_OnLoad(self)
 	self:RegisterEvent("BATTLE_PET_CURSOR_CLEAR");
 	self:RegisterEvent("COMPANION_UPDATE");
 	self:RegisterEvent("PET_BATTLE_LEVEL_CHANGED");
+	self:RegisterEvent("PET_BATTLE_QUEUE_STATUS");
 
 	self.listScroll.update = PetJournal_UpdatePetList;
 	self.listScroll.scrollBar.doNotHide = true;
@@ -201,6 +204,8 @@ function PetJournal_OnEvent(self, event, ...)
 		end
 	elseif event == "ACHIEVEMENT_EARNED" then
 		PetJournal.AchievementStatus.SumText:SetText(GetCategoryAchievementPoints(PET_ACHIEVEMENT_CATEGORY, true));
+	elseif event == "PET_BATTLE_QUEUE_STATUS" then
+		PetJournal_UpdatePetLoadOut();
 	end
 end
 
@@ -499,7 +504,15 @@ function PetJournal_UpdatePetLoadOut()
 		local loadoutPlate = PetJournal.Loadout["Pet"..i];
 		local petID, ability1ID, ability2ID, ability3ID, locked = C_PetJournal.GetPetLoadOutInfo(i);
 		
-		loadoutPlate.ReadOnlyFrame:SetShown(not C_PetJournal.IsJournalUnlocked());
+		if ( not C_PetJournal.IsJournalUnlocked() ) then
+			loadoutPlate.ReadOnlyFrame:Show();
+			loadoutPlate.ReadOnlyFrame.LockIcon.tooltip = PET_JOURNAL_READONLY_TEXT;
+		elseif ( C_PetBattles.GetPVPMatchmakingInfo() ) then
+			loadoutPlate.ReadOnlyFrame:Show();
+			loadoutPlate.ReadOnlyFrame.LockIcon.tooltip = ERR_PETBATTLE_QUEUE_QUEUED;
+		else
+			loadoutPlate.ReadOnlyFrame:Hide();
+		end
 		
 		if (locked) then
 			loadoutPlate.name:Hide();
@@ -528,6 +541,7 @@ function PetJournal_UpdatePetLoadOut()
 			end
 			loadoutPlate.helpFrame.text:SetText(_G["BATTLE_PET_UNLOCK_HELP_"..i]);
 			loadoutPlate.helpFrame:Show();
+			loadoutPlate.petTypeIcon:Hide();
 			loadoutPlate.petID = nil;
 		elseif (petID <= 0) then
 			loadoutPlate.name:Hide();
@@ -548,6 +562,7 @@ function PetJournal_UpdatePetLoadOut()
 			loadoutPlate.emptyslot.slot:SetText(format(BATTLE_PET_SLOT, i));
 			loadoutPlate.dragButton:Show();
 			loadoutPlate.isDead:Hide();
+			loadoutPlate.petTypeIcon:Hide();
 			loadoutPlate.petID = nil;
 		else -- not locked and petID > 0
 			local speciesID, customName, level, xp, maxXp, displayID, name, icon, petType, creatureID = C_PetJournal.GetPetInfoByPetID(petID);
@@ -597,6 +612,7 @@ function PetJournal_UpdatePetLoadOut()
 			loadoutPlate.level:SetText(level);
 			loadoutPlate.icon:SetTexture(icon);
 			
+			loadoutPlate.petTypeIcon:Show();
 			loadoutPlate.petTypeIcon:SetTexture(GetPetTypeTexture(petType));	
 			loadoutPlate.petID = petID;
 			loadoutPlate.speciesID = speciesID;
@@ -1035,9 +1051,9 @@ function PetJournal_UpdatePetCard(self)
 	end
 
 	local isDead = false;
-	local speciesID, customName, level, name, icon, petType, creatureID, xp, maxXp, displayID, sourceText, description, isWild, canBattle, tradable;
+	local speciesID, customName, level, name, icon, petType, creatureID, xp, maxXp, displayID, sourceText, description, isWild, canBattle, tradable, unique;
 	if PetJournalPetCard.petID then
-		speciesID, customName, level, xp, maxXp, displayID, name, icon, petType, creatureID, sourceText, description, isWild, canBattle, tradable = C_PetJournal.GetPetInfoByPetID(PetJournalPetCard.petID);
+		speciesID, customName, level, xp, maxXp, displayID, name, icon, petType, creatureID, sourceText, description, isWild, canBattle, tradable, unique = C_PetJournal.GetPetInfoByPetID(PetJournalPetCard.petID);
 		if ( not speciesID ) then
 			return;
 		end
@@ -1082,7 +1098,7 @@ function PetJournal_UpdatePetCard(self)
 		end
 	else
 		speciesID = PetJournalPetCard.speciesID;
-		name, icon, petType, creatureID, sourceText, description, isWild, canBattle, tradable = C_PetJournal.GetPetInfoBySpeciesID(PetJournalPetCard.speciesID);
+		name, icon, petType, creatureID, sourceText, description, isWild, canBattle, tradable, unique = C_PetJournal.GetPetInfoBySpeciesID(PetJournalPetCard.speciesID);
 		level = 1;
 		self.PetInfo.level:Hide();
 		self.PetInfo.levelBG:Hide();
@@ -1118,6 +1134,7 @@ function PetJournal_UpdatePetCard(self)
 
 	self.PetInfo.sourceText = sourceText;
 	self.PetInfo.tradable = tradable;
+	self.PetInfo.unique = unique;
 
 	if ( description ~= "" ) then
 		self.PetInfo.description = format([["%s"]], description);
@@ -1324,43 +1341,52 @@ function PetOptionsMenu_Init(self, level)
 	local info = UIDropDownMenu_CreateInfo();
 	info.notCheckable = true;
 	
-	info.text = BATTLE_PET_SUMMON;
-	if (PetJournal.menuPetID and C_PetJournal.GetSummonedPetID() == PetJournal.menuPetID) then
-		info.text = PET_DISMISS;
-	end
-	info.func = function() C_PetJournal.SummonPetByID(PetJournal.menuPetID); end
-	if (PetJournal.menuPetID and not C_PetJournal.PetIsSummonable(PetJournal.menuPetID)) then
-		info.disabled = true;
-	end
-	UIDropDownMenu_AddButton(info, level);
-	info.disabled = nil;
+	local isRevoked = PetJournal.menuPetID and C_PetJournal.PetIsRevoked(PetJournal.menuPetID);
+	local isLockedForConvert = PetJournal.menuPetID and C_PetJournal.PetIsLockedForConvert(PetJournal.menuPetID);
 	
-	info.text = BATTLE_PET_RENAME
-	info.func = 	function() StaticPopup_Show("BATTLE_PET_RENAME", nil, nil, PetJournal.menuPetID); end 
-	info.disabled = not C_PetJournal.IsJournalUnlocked();
-	UIDropDownMenu_AddButton(info, level);
-	info.disabled = nil;
+	if (not isRevoked and not isLockedForConvert) then
+		info.text = BATTLE_PET_SUMMON;
+		if (PetJournal.menuPetID and C_PetJournal.GetSummonedPetID() == PetJournal.menuPetID) then
+			info.text = PET_DISMISS;
+		end
+		info.func = function() C_PetJournal.SummonPetByID(PetJournal.menuPetID); end
+		if (PetJournal.menuPetID and not C_PetJournal.PetIsSummonable(PetJournal.menuPetID)) then
+			info.disabled = true;
+		end
+		UIDropDownMenu_AddButton(info, level);
+		info.disabled = nil;
+	end
+	
+	if (not isRevoked and not isLockedForConvert) then
+		info.text = BATTLE_PET_RENAME
+		info.func = 	function() StaticPopup_Show("BATTLE_PET_RENAME", nil, nil, PetJournal.menuPetID); end 
+		info.disabled = not C_PetJournal.IsJournalUnlocked();
+		UIDropDownMenu_AddButton(info, level);
+		info.disabled = nil;
+	end
 
-	if (PetJournal.menuPetID and C_PetJournal.PetIsFavorite(PetJournal.menuPetID)) then
-		info.text = BATTLE_PET_UNFAVORITE;
-		info.func = function() 
-			C_PetJournal.SetFavorite(PetJournal.menuPetID, 0); 
+	local isFavorite = PetJournal.menuPetID and C_PetJournal.PetIsFavorite(PetJournal.menuPetID);
+	if (isFavorite or (not isRevoked and not isLockedForConvert)) then
+		if (isFavorite) then
+			info.text = BATTLE_PET_UNFAVORITE;
+			info.func = function() 
+				C_PetJournal.SetFavorite(PetJournal.menuPetID, 0); 
+			end
+		else
+			info.text = BATTLE_PET_FAVORITE;
+			info.func = function() 
+				C_PetJournal.SetFavorite(PetJournal.menuPetID, 1); 
+			end
 		end
-	else
-		info.text = BATTLE_PET_FAVORITE;
-		info.func = function() 
-			C_PetJournal.SetFavorite(PetJournal.menuPetID, 1); 
-		end
+		info.disabled = not C_PetJournal.IsJournalUnlocked();
+		UIDropDownMenu_AddButton(info, level);
+		info.disabled = nil;
 	end
-	info.disabled = not C_PetJournal.IsJournalUnlocked();
-	UIDropDownMenu_AddButton(info, level);
-	info.disabled = nil;
 	
-	-- any pet that has the capturable flag can be released
-	if(PetJournal.menuPetID and C_PetJournal.PetIsCapturable(PetJournal.menuPetID)) then
+	if(PetJournal.menuPetID and C_PetJournal.PetCanBeReleased(PetJournal.menuPetID)) then
 		info.text = BATTLE_PET_RELEASE;
 		info.func = function() StaticPopup_Show("BATTLE_PET_RELEASE", PetJournalUtil_GetDisplayName(PetJournal.menuPetID), nil, PetJournal.menuPetID); end
-		if (C_PetJournal.PetIsSlotted(PetJournal.menuPetID) or C_PetBattles.IsInBattle()) then
+		if (C_PetJournal.PetIsSlotted(PetJournal.menuPetID) or C_PetBattles.IsInBattle() or not C_PetJournal.IsJournalUnlocked()) then
 			info.disabled = true;
 		else
 			info.disabled = nil; 

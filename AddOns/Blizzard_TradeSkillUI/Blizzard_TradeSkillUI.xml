@@ -521,7 +521,7 @@
 								TradeSkillFrame.filterTbl = {hasMaterials = false, hasSkillUp = false, subClassValue = -1, slotValue = -1 };
 								TradeSkillOnlyShowSkillUps(TradeSkillFrame.filterTbl.hasSkillUp);
 								TradeSkillOnlyShowMakeable(TradeSkillFrame.filterTbl.hasMaterials);
-								SetTradeSkillSubClassFilter(TradeSkillFrame.filterTbl.subClassValue, 1, 1);
+								SetTradeSkillCategoryFilter(TradeSkillFrame.filterTbl.subClassValue, 0);
 								SetTradeSkillInvSlotFilter(TradeSkillFrame.filterTbl.slotValue, 1, 1);
 								TradeSkillUpdateFilterBar();
 								CloseDropDownMenus();
@@ -593,7 +593,7 @@
 				</Scripts>
 			</ScrollFrame>
 			<ScrollFrame name="TradeSkillDetailScrollFrame" inherits="UIPanelScrollFrameTemplate">
-				<Size x="297" y="177"/>
+				<Size x="297" y="174"/>
 				<Anchors>
 					<Anchor point="TOPRIGHT" relativeTo="TradeSkillListScrollFrame" relativePoint="BOTTOMRIGHT" x="0" y="-8"/>
 				</Anchors>

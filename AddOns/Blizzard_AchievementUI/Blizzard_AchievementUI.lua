@@ -53,8 +53,8 @@ ACHIEVEMENT_FILTER_ALL = 1;
 ACHIEVEMENT_FILTER_COMPLETE = 2;
 ACHIEVEMENT_FILTER_INCOMPLETE = 3;
 
-local FORCE_COLUMNS_MAX_WIDTH = 190;				-- if no columns normally, force 2 if max criteria width is <= this and number of criteria >= MIN_CRITERIA
-local FORCE_COLUMNS_MIN_CRITERIA = 40;
+local FORCE_COLUMNS_MAX_WIDTH = 220;				-- if no columns normally, force 2 if max criteria width is <= this and number of criteria >= MIN_CRITERIA
+local FORCE_COLUMNS_MIN_CRITERIA = 20;
 local FORCE_COLUMNS_LEFT_OFFSET = -10;				-- offset for left column
 local FORCE_COLUMNS_RIGHT_OFFSET = 24;				-- offset for right column
 local FORCE_COLUMNS_RIGHT_COLUMN_SPACE = 150;		-- max room for first entry of the right column due to achievement shield

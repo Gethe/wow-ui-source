@@ -249,7 +249,7 @@ function RaidFinderFrameFindRaidButton_Update()
 	if ( mode == "queued" or mode == "rolecheck" or mode == "proposal" or mode == "suspended" ) then
 		RaidFinderFrameFindRaidButton:SetText(LEAVE_QUEUE);
 	else
-		if ( IsInGroup() ) then
+		if ( IsInGroup() and GetNumGroupMembers() > 1 ) then
 			RaidFinderFrameFindRaidButton:SetText(JOIN_AS_PARTY);
 		else
 			RaidFinderFrameFindRaidButton:SetText(FIND_A_GROUP);

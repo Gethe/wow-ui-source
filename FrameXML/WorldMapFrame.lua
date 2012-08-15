@@ -1886,7 +1886,9 @@ function WorldMapFrame_SelectQuestById(questId)
 		end
 	end
 	-- failed to find quest by id
-	WorldMapFrame_SelectQuestFrame(_G["WorldMapQuestFrame1"]);
+	if ( WorldMapQuestFrame1 ) then
+		WorldMapFrame_SelectQuestFrame(WorldMapQuestFrame1);
+	end
 end
 
 function WorldMapFrame_SetQuestMapView()

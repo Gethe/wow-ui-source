@@ -146,9 +146,9 @@ function SpellBookFrame_OnEvent(self, event, ...)
 		end
 	elseif ( event == "LEARNED_SPELL_IN_TAB" ) then
 		SpellBookFrame_Update();
-		local spellID, tabNum = ...;
+		local spellID, tabNum, isGuildSpell = ...;
 		local flashFrame = _G["SpellBookSkillLineTab"..tabNum.."Flash"];
-		if ( SpellBookFrame.bookType == BOOKTYPE_PET ) then
+		if ( SpellBookFrame.bookType == BOOKTYPE_PET or isGuildSpell) then
 			return;
 		elseif ( tabNum <= GetNumSpellTabs() ) then
 			if ( flashFrame ) then
@@ -167,8 +167,11 @@ function SpellBookFrame_OnEvent(self, event, ...)
 			SpellBookFrame_UpdateSkillLineTabs();
 		end
 	elseif ( event == "PLAYER_SPECIALIZATION_CHANGED" ) then
-		SpellBookFrame.selectedSkillLine = 2; -- number of skilllines will change!
-		SpellBookFrame_Update();
+		local unit = ...;
+		if ( unit == "player" ) then
+			SpellBookFrame.selectedSkillLine = 2; -- number of skilllines will change!
+			SpellBookFrame_Update();
+		end
 	end
 end
 

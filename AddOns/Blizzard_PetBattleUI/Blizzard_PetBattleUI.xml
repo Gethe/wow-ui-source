@@ -27,9 +27,9 @@
 				</Texture>
 			</Layer>
 			<Layer level="OVERLAY">
-				<FontString parentKey="Duration" inherits="GameFontHighlight" justifyH="CENTER" justifyV="TOP">
+				<FontString parentKey="Duration" inherits="GameFontHighlightSmall" justifyH="CENTER" justifyV="TOP">
 					<Anchors>
-						<Anchor point="TOP" relativeKey="$parent.Icon" relativePoint="BOTTOM"/>
+						<Anchor point="TOP" relativeKey="$parent.Icon" relativePoint="BOTTOM" x="0" y="-2"/>
 						<Anchor point="BOTTOMRIGHT" relativeKey="$parent" relativePoint="BOTTOMRIGHT"/>
 						<Anchor point="BOTTOMLEFT" relativeKey="$parent" relativePoint="BOTTOMLEFT"/>
 					</Anchors>

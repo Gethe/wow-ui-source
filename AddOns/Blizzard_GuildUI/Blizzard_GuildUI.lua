@@ -65,6 +65,7 @@ function GuildFrame_OnShow(self)
 	GuildRoster();
 	UpdateMicroButtons();
 	GuildNameChangeAlertFrame.topAnchored = true;
+	GuildFrame.hasForcedNameChange = GetGuildRenameRequired();
 	GuildFrame_CheckName();
 end
 

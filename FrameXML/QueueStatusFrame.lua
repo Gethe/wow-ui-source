@@ -600,7 +600,9 @@ function QueueStatusDropDown_AddLFGButtons(info, category)
 		info.func = nil;
 		info.disabled = true;
 		UIDropDownMenu_AddButton(info);
-	elseif ( mode == "lfgparty" or mode == "abandonedInDungeon" ) then
+	end
+
+	if ( IsPartyLFG() ) then
 		if ( IsInLFGDungeon() ) then
 			info.text = TELEPORT_OUT_OF_DUNGEON;
 			info.func = wrapFunc(LFGTeleport);

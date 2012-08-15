@@ -85,30 +85,32 @@ end
 function TotemFrame_OnEvent(self, event, ...)
 	if ( event == "PLAYER_TOTEM_UPDATE" ) then
 		local slot = ...;
-		local haveTotem, name, startTime, duration, icon = GetTotemInfo(slot);
-		local button;
-		for i=1, MAX_TOTEMS do
-			button = _G["TotemFrameTotem"..i];
-			if ( button.slot == slot ) then
-				local previouslyShown = button:IsShown();
-				TotemButton_Update(button, startTime, duration, icon);
-				-- if we have no active totems then we need to hide the whole frame, otherwise show it
-				if ( previouslyShown ) then
-					if ( not button:IsShown() ) then
-						self.activeTotems = self.activeTotems - 1;
+		if ( slot <= MAX_TOTEMS ) then
+			local haveTotem, name, startTime, duration, icon = GetTotemInfo(slot);
+			local button;
+			for i=1, MAX_TOTEMS do
+				button = _G["TotemFrameTotem"..i];
+				if ( button.slot == slot ) then
+					local previouslyShown = button:IsShown();
+					TotemButton_Update(button, startTime, duration, icon);
+					-- if we have no active totems then we need to hide the whole frame, otherwise show it
+					if ( previouslyShown ) then
+						if ( not button:IsShown() ) then
+							self.activeTotems = self.activeTotems - 1;
+						end
+					else
+						if ( button:IsShown() ) then
+							self.activeTotems = self.activeTotems + 1;
+						end
 					end
-				else
-					if ( button:IsShown() ) then
-						self.activeTotems = self.activeTotems + 1;
+					if ( self.activeTotems > 0 ) then
+						self:Show();
+					else
+						self:Hide();
 					end
+					TotemFrame_AdjustPetFrame();
+					return;
 				end
-				if ( self.activeTotems > 0 ) then
-					self:Show();
-				else
-					self:Hide();
-				end
-				TotemFrame_AdjustPetFrame();
-				return;
 			end
 		end
 	end

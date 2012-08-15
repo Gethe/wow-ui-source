@@ -1690,6 +1690,7 @@
 				self:RegisterEvent("UPDATE_TICKET");
 			</OnLoad>
 			<OnClick>
+				HelpOpenTicketButtonTutorial:Hide();
 				if ( TicketStatusFrame.hasGMSurvey ) then
 					GMSurveyFrame_LoadUI();
 					ShowUIPanel(GMSurveyFrame);
