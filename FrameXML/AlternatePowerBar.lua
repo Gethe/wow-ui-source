@@ -5,20 +5,12 @@ function AlternatePowerBar_OnLoad(self)
 	self.textLockable = 1;
 	self.cvar = "playerStatusText";
 	self.cvarLabel = "STATUS_TEXT_PLAYER";
+	self.capNumericDisplay = true;
 	AlternatePowerBar_Initialize(self);
 	TextStatusBar_Initialize(self);
 end
 
 function AlternatePowerBar_Initialize(self)
-	local _, class = UnitClass("player");
-	if ( class == "MONK" ) then
-		-- ninja!
-		self:Hide();	-- hide the normal one
-		self = PlayerFrameMonkManaBar;
-		self.specRestriction = SPEC_MONK_MISTWEAVER;
-		self:RegisterEvent("PLAYER_SPECIALIZATION_CHANGED");
-	end
-	
 	if ( not self.powerName ) then
 		self.powerName = ADDITIONAL_POWER_BAR_NAME;
 		self.powerIndex = ADDITIONAL_POWER_BAR_INDEX;
@@ -41,9 +33,16 @@ function AlternatePowerBar_OnEvent(self, event, arg1)
 		AlternatePowerBar_UpdatePowerType(self);
 	elseif ( event == "PLAYER_SPECIALIZATION_CHANGED" ) then
 		if ( arg1 == parent.unit ) then
+			AlternatePowerBar_SetLook(self);
 			AlternatePowerBar_UpdatePowerType(self);
 		end
 	elseif ( event=="PLAYER_ENTERING_WORLD" ) then
+		local _, class = UnitClass("player");
+		if ( class == "MONK" ) then
+			self.specRestriction = SPEC_MONK_MISTWEAVER;
+			self:RegisterEvent("PLAYER_SPECIALIZATION_CHANGED");
+			AlternatePowerBar_SetLook(self);
+		end
 		AlternatePowerBar_UpdateMaxValues(self);
 		AlternatePowerBar_UpdatePowerType(self);
 	elseif( (event == "UNIT_MAXPOWER") and (arg1 == parent.unit) ) then
@@ -78,5 +77,30 @@ function AlternatePowerBar_UpdatePowerType(self)
 	else
 		self.pauseUpdates = true;
 		self:Hide();
+	end
+end
+
+function AlternatePowerBar_SetLook(self)
+	local _, class = UnitClass("player");
+	if ( class == "MONK" and GetSpecialization() == SPEC_MONK_MISTWEAVER ) then
+		self:SetWidth(94);
+		self:SetPoint("BOTTOMLEFT", 118, 4);
+		self.DefaultBackground:Hide();
+		self.DefaultBorder:Hide();
+		self.DefaultBorderLeft:Hide();
+		self.DefaultBorderRight:Hide();
+		self.MonkBackground:Show();
+		self.MonkBorder:Show();
+		self:SetFrameLevel(100);
+	else
+		self:SetWidth(104);
+		self:SetPoint("BOTTOMLEFT", 114, 23);
+		self.DefaultBackground:Show();
+		self.DefaultBorder:Show();
+		self.DefaultBorderLeft:Show();
+		self.DefaultBorderRight:Show();
+		self.MonkBackground:Hide();
+		self.MonkBorder:Hide();
+		self:SetFrameLevel(0);
 	end
 end

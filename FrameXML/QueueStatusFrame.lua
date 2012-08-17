@@ -619,6 +619,14 @@ function QueueStatusDropDown_AddLFGButtons(info, category)
 	end
 end
 
+function QueueStatusDropDown_AcceptQueuedPVPMatch()
+	if ( IsFalling() ) then
+		UIErrorsFrame:AddMessage(ERR_NOT_WHILE_FALLING, 1.0, 0.1, 0.1, 1.0);	
+	else
+		C_PetBattles.AcceptQueuedPVPMatch()
+	end
+end
+
 function QueueStatusDropDown_AddPetBattleButtons(info)
 	wipe(info);
 
@@ -639,7 +647,7 @@ function QueueStatusDropDown_AddPetBattleButtons(info)
 		UIDropDownMenu_AddButton(info);
 	elseif ( status == "proposal" ) then
 		info.text = ENTER_PET_BATTLE;
-		info.func = wrapFunc(C_PetBattles.AcceptQueuedPVPMatch);
+		info.func = wrapFunc(QueueStatusDropDown_AcceptQueuedPVPMatch);
 		UIDropDownMenu_AddButton(info);
 
 		info.text = LEAVE_QUEUE;

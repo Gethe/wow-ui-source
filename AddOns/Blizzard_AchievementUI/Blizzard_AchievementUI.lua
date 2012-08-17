@@ -1212,8 +1212,8 @@ function AchievementButton_ToggleTracking (id)
 		return;
 	end
 	
-	local _, _, _, _, _, _, _, _, _, _, _, _, wasEarnedByMe = GetAchievementInfo(id)
-	if ( wasEarnedByMe ) then
+	local _, _, _, completed, _, _, _, _, _, _, _, isGuild, wasEarnedByMe = GetAchievementInfo(id)
+	if ( (completed and isGuild) or wasEarnedByMe ) then
 		UIErrorsFrame:AddMessage(ERR_ACHIEVEMENT_WATCH_COMPLETED, 1.0, 0.1, 0.1, 1.0);
 		return;
 	end

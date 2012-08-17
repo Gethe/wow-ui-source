@@ -120,9 +120,9 @@ PAPERDOLL_STATINFO = {
 	["POWER"] = {
 		updateFunc = function(statFrame, unit) PaperDollFrame_SetPower(statFrame, unit); end
 	},
-	["DRUIDMANA"] = {
+	["ALTERNATEMANA"] = {
 		-- Only appears for Druids when in shapeshift form
-		updateFunc = function(statFrame, unit) PaperDollFrame_SetDruidMana(statFrame, unit); end
+		updateFunc = function(statFrame, unit) PaperDollFrame_SetAlternateMana(statFrame, unit); end
 	},
 	["MASTERY"] = {
 		updateFunc = function(statFrame, unit) PaperDollFrame_SetMastery(statFrame, unit); end
@@ -263,7 +263,7 @@ PAPERDOLL_STATCATEGORIES = {
 			id = 1,
 			stats = { 
 				"HEALTH",
-				"DRUIDMANA",  -- Only appears for Druids when in bear/cat form
+				"ALTERNATEMANA",  -- Druids when in bear/cat form and Mistweaver Monks
 				"POWER",
 				"ITEMLEVEL",
 				"MOVESPEED",
@@ -697,12 +697,12 @@ function PaperDollFrame_SetPower(statFrame, unit)
 	end
 end
 
-function PaperDollFrame_SetDruidMana(statFrame, unit)
+function PaperDollFrame_SetAlternateMana(statFrame, unit)
 	if (not unit) then
 		unit = "player";
 	end
 	local _, class = UnitClass(unit);
-	if (class ~= "DRUID") then
+	if (class ~= "DRUID" and (class ~= "MONK" or GetSpecialization() ~= SPEC_MONK_MISTWEAVER)) then
 		statFrame:Hide();
 		return;
 	end

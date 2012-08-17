@@ -2329,6 +2329,13 @@ StaticPopupDialogs["PET_BATTLE_QUEUE_PROPOSE_MATCH"] = {
 	OnCancel = function(self)
 		C_PetBattles.DeclineQueuedPVPMatch();
 	end,
+	OnUpdate = function(self, elapsed)
+		if ( IsFalling() ) then
+			self.button1:Disable();
+		else
+			self.button1:Enable();
+		end
+	end,	
 	timeout = STATICPOPUP_TIMEOUT,
 	hideOnEscape = 1
 };

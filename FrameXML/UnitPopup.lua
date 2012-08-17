@@ -1170,7 +1170,7 @@ function UnitPopup_HideButtons ()
 				UnitPopupShown[UIDROPDOWNMENU_MENU_LEVEL][index] = 0;
 			end
 		elseif ( value == "SELECT_ROLE" ) then
-			if ( not ( IsInGroup() and not HasLFGRestrictions() and (isLeader ~= 0 or isAssistant ~= 0 or UnitIsUnit(dropdownMenu.unit, "player")) ) ) then
+			if ( C_Scenario.IsInScenario() or not ( IsInGroup() and not HasLFGRestrictions() and (isLeader ~= 0 or isAssistant ~= 0 or UnitIsUnit(dropdownMenu.unit, "player")) ) ) then
 				UnitPopupShown[UIDROPDOWNMENU_MENU_LEVEL][index] = 0;
 			end
 		end
