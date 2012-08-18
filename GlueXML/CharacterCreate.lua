@@ -433,7 +433,7 @@ function SetCharacterRace(id)
 	-- hard-coded for Pandaren because of alliance/horde pseudo buttons
 	local canProceed = true;
 	if ( id == PANDAREN_RACE_ID and PAID_SERVICE_TYPE ) then
-		local currentFaction = PaidChange_GetCurrentFaction();
+		local _, currentFaction = PaidChange_GetCurrentFaction();
 		if ( PaidChange_GetCurrentRaceIndex() == PANDAREN_RACE_ID and PAID_SERVICE_TYPE == PAID_FACTION_CHANGE ) then
 			-- this is an original pandaren staying or becoming selected
 			-- check the pseudo-buttons

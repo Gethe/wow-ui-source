@@ -9,7 +9,7 @@
 				</Texture>
 			</Layer>
 			<Layer level="ARTWORK">
-				<Texture parentKey="Artwork" setAllPoints="true" file="INTERFACE\GLUES\PROMOTIONS\ENUS-SBC-OFFER02V01">
+				<Texture parentKey="Artwork" setAllPoints="true">
 					<Size x="1024" y="512"/>
 					<Anchors>
 						<Anchor point="CENTER"/>
@@ -17,7 +17,7 @@
 				</Texture>
 			</Layer>
 			<Layer level="OVERLAY">
-				<Texture parentKey="Logo" file="INTERFACE\GLUES\PROMOTIONS\ENUS-SBC-LOGO">
+				<Texture parentKey="Logo">
 					<Size x="256" y="128"/>
 					<Anchors>
 						<Anchor point="CENTER" relativeKey="$parent.Artwork" relativePoint="TOP" x="0" y="-58"/>
@@ -31,13 +31,13 @@
 				<Anchors>
 					<Anchor point="CENTER" relativeKey="$parent.Artwork" relativePoint="BOTTOMLEFT" x="350" y="80"/>
 				</Anchors>
-				<NormalTexture file="INTERFACE\GLUES\PROMOTIONS\ENUS-BUTTON-UPGRADE">
+				<NormalTexture>
 					<Size x="256" y="64"/>
 					<Anchors>
 						<Anchor point="CENTER"/>
 					</Anchors>
 				</NormalTexture>
-				<PushedTexture file="INTERFACE\GLUES\PROMOTIONS\ENUS-BUTTON-UPGRADE">
+				<PushedTexture>
 					<Size x="256" y="64"/>
 					<Anchors>
 						<Anchor point="CENTER" x="1" y="-1"/>
@@ -54,13 +54,13 @@
 				<Anchors>
 					<Anchor point="CENTER" relativeKey="$parent.Artwork" relativePoint="BOTTOMRIGHT" x="-320" y="80"/>
 				</Anchors>
-				<NormalTexture file="INTERFACE\GLUES\PROMOTIONS\ENUS-BUTTON-PLAY">
+				<NormalTexture>
 					<Size x="256" y="64"/>
 					<Anchors>
 						<Anchor point="CENTER"/>
 					</Anchors>
 				</NormalTexture>
-				<PushedTexture file="INTERFACE\GLUES\PROMOTIONS\ENUS-BUTTON-PLAY">
+				<PushedTexture>
 					<Size x="256" y="64"/>
 					<Anchors>
 						<Anchor point="CENTER" x="1" y="-1"/>
