@@ -580,12 +580,12 @@ function QuestInfo_ShowRewards()
 end
 
 function QuestInfo_ShowFadingFrame()
-		QuestInfoFadingFrame:SetAlpha(0);		
-		QuestInfoFrame.acceptButton:Disable();
-		QuestInfoFadingFrame.fading = 1;
-		QuestInfoFadingFrame.fadingProgress = 0;
-		QuestInfoDescriptionText:SetAlphaGradient(0, QUEST_DESCRIPTION_GRADIENT_LENGTH);
-		QuestInfoFadingFrame.fadingProgress = 1024;
+		--QuestInfoFadingFrame:SetAlpha(0);		
+		--QuestInfoFrame.acceptButton:Disable();
+		--QuestInfoFadingFrame.fading = 1;
+		--QuestInfoFadingFrame.fadingProgress = 0;
+		--QuestInfoDescriptionText:SetAlphaGradient(0, QUEST_DESCRIPTION_GRADIENT_LENGTH);
+		--QuestInfoFadingFrame.fadingProgress = 1024;
 	return QuestInfoFadingFrame;
 end
 
