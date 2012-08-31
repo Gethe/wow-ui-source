@@ -171,7 +171,7 @@ function GlyphFrame_Update (self)
 	end
 
 	-- spec icon
-	local specialization = GetSpecialization(_, _, PlayerTalentFrame.talentGroup);
+	local specialization = GetSpecialization(false, false, PlayerTalentFrame.talentGroup);
 	if ( specialization ) then
 		local _, _, _, icon = GetSpecializationInfo(specialization, false, self.isPet);
 		local specIcon = GlyphFrame.specIcon;

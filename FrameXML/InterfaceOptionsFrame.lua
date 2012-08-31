@@ -314,7 +314,7 @@ UVARINFO = {
 	["SHOW_PARTY_BACKGROUND"] = { default = "0", cvar = "showPartyBackground", event = "SHOW_PARTY_BACKGROUND_TEXT" },
 	["SHOW_TARGET_OF_TARGET"] = { default = "0", cvar = "showTargetOfTarget", event = "SHOW_TARGET_OF_TARGET_TEXT" },
 	["SHOW_TARGET_OF_TARGET_STATE"] = { default = "5", cvar = "targetOfTargetMode", event = "SHOW_TARGET_OF_TARGET_STATE" },
-	["WORLD_PVP_OBJECTIVES_DISPLAY"] = { default = "2", cvar = "displayWorldPVPObjectives", event = "WORLD_PVP_OBJECTIVES_DISPLAY" },
+	["WORLD_PVP_OBJECTIVES_DISPLAY"] = { default = "1", cvar = "displayWorldPVPObjectives", event = "WORLD_PVP_OBJECTIVES_DISPLAY" },
 	["AUTO_QUEST_WATCH"] = { default = "1", cvar = "autoQuestWatch", event = "AUTO_QUEST_WATCH_TEXT" },
 	["LOOT_UNDER_MOUSE"] = { default = "0", cvar = "lootUnderMouse", event = "LOOT_UNDER_MOUSE_TEXT" },
 	["AUTO_LOOT_DEFAULT"] = { default = "0", cvar = "autoLootDefault", event = "AUTO_LOOT_DEFAULT_TEXT" },
