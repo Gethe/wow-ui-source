@@ -434,7 +434,8 @@ function FriendsList_Update()
 			local name, level, class, area;
 			name, level, class, area, isOnline = GetFriendInfo(selectedFriend);
 		elseif ( FriendsFrame.selectedFriendType == FRIENDS_BUTTON_TYPE_BNET ) then
-			local presenceID, presenceName, battleTag, isBattleTagPresence, toonName, toonID, client, isOnline = BNGetFriendInfo(selectedFriend);
+			local presenceID, presenceName, battleTag, isBattleTagPresence, toonName, toonID, client;
+			presenceID, presenceName, battleTag, isBattleTagPresence, toonName, toonID, client, isOnline = BNGetFriendInfo(selectedFriend);
 			if ( not presenceName ) then
 				isOnline = false;
 			end

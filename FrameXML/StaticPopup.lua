@@ -374,6 +374,7 @@ StaticPopupDialogs["CONFIRM_ACCEPT_PVP_QUEST"] = {
 		QuestFrameDeclineButton:Disable();
 	end,
 	OnHide = function()
+		QuestFrameAcceptButton:Enable();
 		QuestFrameDeclineButton:Enable();
 	end,
 	timeout = 0,
