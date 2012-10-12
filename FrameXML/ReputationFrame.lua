@@ -166,16 +166,27 @@ function ReputationFrame_Update()
 			end
 			factionRow.index = factionIndex;
 			factionRow.isCollapsed = isCollapsed;
-			local factionStandingtext = GetText("FACTION_STANDING_LABEL"..standingID, gender);
+
+			local colorIndex = standingID;
+			local factionStandingtext;
 
 			-- check if this is a friendship faction 
-			local friendID, friendRep, friendMaxRep, friendText, friendTexture, friendTextLevel, friendThresh = GetFriendshipReputationByID(factionID);
-
+			local isCappedFriendship;
+			local friendID, friendRep, friendMaxRep, friendName, friendText, friendTexture, friendTextLevel, friendThreshold, nextFriendThreshold = GetFriendshipReputation(factionID);
 			if (friendID ~= nil) then
 				factionStandingtext = friendTextLevel;
-				barValue = friendRep - friendThresh;
-				barMax = min( friendMaxRep - friendThresh, 8400);
-				barMin = 0;
+				if ( nextFriendThreshold ) then
+					barMin, barMax, barValue = friendThreshold, nextFriendThreshold, friendRep;
+				else
+					-- max rank, make it look like a full bar
+					barMin, barMax, barValue = 0, 1, 1;
+					isCappedFriendship = true;
+				end
+				colorIndex = 5;								-- always color friendships green
+				factionRow.friendshipID = friendID;			-- for doing friendship tooltip
+			else
+				factionStandingtext = GetText("FACTION_STANDING_LABEL"..standingID, gender);
+				factionRow.friendshipID = nil;
 			end
 
 			factionStanding:SetText(factionStandingtext);
@@ -186,10 +197,14 @@ function ReputationFrame_Update()
 			barMin = 0;
 			
 			factionRow.standingText = factionStandingtext;
-			factionRow.tooltip = HIGHLIGHT_FONT_COLOR_CODE.." "..barValue.." / "..barMax..FONT_COLOR_CODE_CLOSE;
+			if ( isCappedFriendship ) then
+				factionRow.tooltip = nil;
+			else
+				factionRow.tooltip = HIGHLIGHT_FONT_COLOR_CODE.." "..barValue.." / "..barMax..FONT_COLOR_CODE_CLOSE;
+			end
 			factionBar:SetMinMaxValues(0, barMax);
 			factionBar:SetValue(barValue);
-			local color = FACTION_BAR_COLORS[standingID];
+			local color = FACTION_BAR_COLORS[colorIndex];
 			factionBar:SetStatusBarColor(color.r, color.g, color.b);
 			
 			if ( isHeader and not isChild ) then
@@ -336,12 +351,33 @@ function ReputationBar_OnClick(self)
 end
 
 function ReputationWatchBar_Update(newLevel)
-	local name, reaction, min, max, value = GetWatchedFactionInfo();
+	local name, reaction, min, max, value, factionID = GetWatchedFactionInfo();
 	local visibilityChanged = nil;
 	if ( not newLevel ) then
 		newLevel = UnitLevel("player");
 	end
 	if ( name ) then
+		local colorIndex = reaction;
+		-- if it's a different faction, save possible friendship id
+		if ( ReputationWatchBar.factionID ~= factionID ) then
+			ReputationWatchBar.factionID = factionID;
+			ReputationWatchBar.friendshipID = GetFriendshipReputation(factionID);
+		end
+
+		local isCappedFriendship;
+		-- do something different for friendships
+		if ( ReputationWatchBar.friendshipID ) then
+			local friendID, friendRep, friendMaxRep, friendName, friendText, friendTexture, friendTextLevel, friendThreshold, nextFriendThreshold = GetFriendshipReputation(factionID);
+			if ( nextFriendThreshold ) then
+				min, max, value = friendThreshold, nextFriendThreshold, friendRep;
+			else
+				-- max rank, make it look like a full bar
+				min, max, value = 0, 1, 1;
+				isCappedFriendship = true;
+			end
+			colorIndex = 5;		-- always color friendships green
+		end
+
 		-- See if it was already shown or not
 		if ( not ReputationWatchBar:IsShown() ) then
 			visibilityChanged = 1;
@@ -353,8 +389,12 @@ function ReputationWatchBar_Update(newLevel)
 		min = 0;
 		ReputationWatchStatusBar:SetMinMaxValues(min, max);
 		ReputationWatchStatusBar:SetValue(value);
-		ReputationWatchStatusBarText:SetText(name.." "..value.." / "..max);
-		local color = FACTION_BAR_COLORS[reaction];
+		if ( isCappedFriendship ) then
+			ReputationWatchStatusBarText:SetText(name);
+		else
+			ReputationWatchStatusBarText:SetText(name.." "..value.." / "..max);
+		end
+		local color = FACTION_BAR_COLORS[colorIndex];
 		ReputationWatchStatusBar:SetStatusBarColor(color.r, color.g, color.b);
 		ReputationWatchBar:Show();
 		
@@ -455,5 +495,27 @@ function HideWatchedReputationBarText(unlock)
 		ReputationWatchBar.cvarLocked = nil;
 		ReputationWatchStatusBarText:Hide();
 		ReputationWatchBar.textLocked = nil;
+	end
+end
+
+function ShowFriendshipReputationTooltip(friendshipID, parent, anchor)
+	local id, rep, maxRep, name, text, texture, reaction, threshold, nextThreshold = GetFriendshipReputation(friendshipID);
+	if ( id and id > 0) then
+		GameTooltip:SetOwner(parent, anchor);
+		local currentRank, maxRank = GetFriendshipReputationRanks(id);
+		if ( maxRank > 0 ) then
+			GameTooltip:SetText(name.." ("..currentRank.." / "..maxRank..")", 1, 1, 1);
+		else
+			GameTooltip:SetText(name, 1, 1, 1);
+		end
+		GameTooltip:AddLine(text, nil, nil, nil, true);
+		if ( nextThreshold ) then
+			local current = rep - threshold;
+			local max = nextThreshold - threshold;
+			GameTooltip:AddLine(reaction.." ("..current.." / "..max..")" , 1, 1, 1, true);
+		else
+			GameTooltip:AddLine(reaction);
+		end
+		GameTooltip:Show();
 	end
 end

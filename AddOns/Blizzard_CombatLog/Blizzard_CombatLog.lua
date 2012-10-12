@@ -371,8 +371,6 @@ local CombatLogQuickButtonFrame, CombatLogQuickButtonFrameProgressBar, CombatLog
 _G.CombatLogQuickButtonFrame = CreateFrame("Frame", "CombatLogQuickButtonFrame", UIParent)
 
 local Blizzard_CombatLog_Update_QuickButtons
-local Blizzard_CombatLog_Filters
-local Blizzard_CombatLog_CurrentSettings
 local Blizzard_CombatLog_PreviousSettings
 
 
@@ -562,8 +560,7 @@ Blizzard_CombatLog_Filter_Defaults = {
 	currentFilter = 1;
 };
 
-local Blizzard_CombatLog_Filters = Blizzard_CombatLog_Filter_Defaults;
-_G.Blizzard_CombatLog_Filters = Blizzard_CombatLog_Filters
+Blizzard_CombatLog_Filters = Blizzard_CombatLog_Filter_Defaults;
 
 -- Combat Log Filter Resetting Code
 --
@@ -580,11 +577,14 @@ function Blizzard_CombatLog_ApplyFilters(config)
 	local eventList;
 	for k,v in pairs(config.filters) do	
 		local eList
-		-- Only use the first filter's eventList
+		-- Only use the first filter's eventList because for some reason each filter that the player can see actually 
+		-- has two filters, one for source flags and one for dest flags (??), even though only the eventList for the source
+		-- flags is updated properly
 		eventList = config.filters[1].eventList;
 		if ( eventList ) then
 			for k2,v2 in pairs(eventList) do 
 				if ( v2 == true ) then
+				-- The true comparison is because check boxes whose parent is unchecked will be non-false but not "true"
 					eList = eList and (eList .. "," .. k2) or k2
 				end
 			end
@@ -1831,7 +1831,7 @@ local function CombatLog_String_PowerType(powerType, amount, alternatePowerType)
 		end
 	elseif ( powerType == SPELL_POWER_HOLY_POWER ) then
 		return HOLY_POWER;
-	elseif ( powerType == SPELL_POWER_LIGHT_FORCE ) then
+	elseif ( powerType == SPELL_POWER_CHI ) then
 		return CHI_POWER; -- "Chi"
 	elseif ( powerType == SPELL_POWER_BURNING_EMBERS ) then
 		return BURNING_EMBERS_POWER;
@@ -1843,55 +1843,6 @@ local function CombatLog_String_PowerType(powerType, amount, alternatePowerType)
 	end
 end
 _G.CombatLog_String_PowerType = CombatLog_String_PowerType
-
-local SCHOOL_STRINGS = {
-	STRING_SCHOOL_PHYSICAL,
-	STRING_SCHOOL_HOLY,
-	STRING_SCHOOL_FIRE,
-	STRING_SCHOOL_NATURE,
-	STRING_SCHOOL_FROST,
-	STRING_SCHOOL_SHADOW,
-	STRING_SCHOOL_ARCANE
-}
-
-local SchoolStringTable = {
-	-- Single Schools
-	[SCHOOL_MASK_PHYSICAL]						= STRING_SCHOOL_PHYSICAL,
-	[SCHOOL_MASK_HOLY]							= STRING_SCHOOL_HOLY,
-	[SCHOOL_MASK_FIRE]							= STRING_SCHOOL_FIRE,
-	[SCHOOL_MASK_NATURE]						= STRING_SCHOOL_NATURE,
-	[SCHOOL_MASK_FROST]							= STRING_SCHOOL_FROST,
-	[SCHOOL_MASK_SHADOW]						= STRING_SCHOOL_SHADOW,
-	[SCHOOL_MASK_ARCANE]						= STRING_SCHOOL_ARCANE,
-	-- Physical and a Magical
-	[SCHOOL_MASK_PHYSICAL + SCHOOL_MASK_FIRE]	= STRING_SCHOOL_FLAMESTRIKE,
-	[SCHOOL_MASK_PHYSICAL + SCHOOL_MASK_FROST]	= STRING_SCHOOL_FROSTSTRIKE,
-	[SCHOOL_MASK_PHYSICAL + SCHOOL_MASK_ARCANE]	= STRING_SCHOOL_SPELLSTRIKE,
-	[SCHOOL_MASK_PHYSICAL + SCHOOL_MASK_NATURE]	= STRING_SCHOOL_STORMSTRIKE,
-	[SCHOOL_MASK_PHYSICAL + SCHOOL_MASK_SHADOW]	= STRING_SCHOOL_SHADOWSTRIKE,
-	[SCHOOL_MASK_PHYSICAL + SCHOOL_MASK_HOLY]	= STRING_SCHOOL_HOLYSTRIKE,
-	-- Two Magical Schools
-	[SCHOOL_MASK_FIRE + SCHOOL_MASK_FROST]		= STRING_SCHOOL_FROSTFIRE,
-	[SCHOOL_MASK_FIRE + SCHOOL_MASK_ARCANE]		= STRING_SCHOOL_SPELLFIRE,
-	[SCHOOL_MASK_FIRE + SCHOOL_MASK_NATURE]		= STRING_SCHOOL_FIRESTORM,
-	[SCHOOL_MASK_FIRE + SCHOOL_MASK_SHADOW]		= STRING_SCHOOL_SHADOWFLAME,
-	[SCHOOL_MASK_FIRE + SCHOOL_MASK_HOLY]		= STRING_SCHOOL_HOLYFIRE,
-	[SCHOOL_MASK_FROST + SCHOOL_MASK_ARCANE]	= STRING_SCHOOL_SPELLFROST,
-	[SCHOOL_MASK_FROST + SCHOOL_MASK_NATURE]	= STRING_SCHOOL_FROSTSTORM,
-	[SCHOOL_MASK_FROST + SCHOOL_MASK_SHADOW]	= STRING_SCHOOL_SHADOWFROST,
-	[SCHOOL_MASK_FROST + SCHOOL_MASK_HOLY]		= STRING_SCHOOL_HOLYFROST,
-	[SCHOOL_MASK_ARCANE + SCHOOL_MASK_NATURE]	= STRING_SCHOOL_SPELLSTORM,
-	[SCHOOL_MASK_ARCANE + SCHOOL_MASK_SHADOW]	= STRING_SCHOOL_SPELLSHADOW,
-	[SCHOOL_MASK_ARCANE + SCHOOL_MASK_HOLY]		= STRING_SCHOOL_DIVINE,
-	[SCHOOL_MASK_NATURE + SCHOOL_MASK_SHADOW]	= STRING_SCHOOL_SHADOWSTORM,
-	[SCHOOL_MASK_NATURE + SCHOOL_MASK_HOLY]		= STRING_SCHOOL_HOLYSTORM,
-	[SCHOOL_MASK_SHADOW + SCHOOL_MASK_HOLY]		= STRING_SCHOOL_SHADOWLIGHT,
-	-- Three or more schools
-	[SCHOOL_MASK_FIRE + SCHOOL_MASK_FROST + SCHOOL_MASK_NATURE]																						= STRING_SCHOOL_ELEMENTAL,
-	[SCHOOL_MASK_FIRE + SCHOOL_MASK_FROST + SCHOOL_MASK_ARCANE + SCHOOL_MASK_NATURE + SCHOOL_MASK_SHADOW]											= STRING_SCHOOL_CHROMATIC,
-	[SCHOOL_MASK_FIRE + SCHOOL_MASK_FROST + SCHOOL_MASK_ARCANE + SCHOOL_MASK_NATURE + SCHOOL_MASK_SHADOW + SCHOOL_MASK_HOLY]						= STRING_SCHOOL_MAGIC,
-	[SCHOOL_MASK_PHYSICAL + SCHOOL_MASK_FIRE + SCHOOL_MASK_FROST + SCHOOL_MASK_ARCANE + SCHOOL_MASK_NATURE + SCHOOL_MASK_SHADOW + SCHOOL_MASK_HOLY]	= STRING_SCHOOL_CHAOS,
-};
 
 local function CombatLog_String_SchoolString(school)
 	if ( not school or school == SCHOOL_MASK_NONE ) then
@@ -3717,7 +3668,5 @@ end
 
 function Blizzard_CombatLog_RefreshGlobalLinks()
 	-- Have to do this because Blizzard_CombatLog_Filters is a reference to the _G.Blizzard_CombatLog_Filters
-	Blizzard_CombatLog_Filters = _G.Blizzard_CombatLog_Filters;
 	Blizzard_CombatLog_CurrentSettings = Blizzard_CombatLog_Filters.filters[Blizzard_CombatLog_Filters.currentFilter];
-	_G.Blizzard_CombatLog_CurrentSettings = Blizzard_CombatLog_CurrentSettings;
 end

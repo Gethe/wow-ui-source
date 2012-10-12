@@ -81,10 +81,10 @@ function ItemUpgradeFrame_Update(self)
 
 		local canUpgradeItem = false;
 		if(numCurrUpgrades and numMaxUpgrades) then
-			ItemUpgradeFrame.UpgradeStatus:SetText(numCurrUpgrades.."/"..numMaxUpgrades.."*");
+			ItemUpgradeFrame.UpgradeStatus:SetText(numCurrUpgrades.."/"..numMaxUpgrades);
 			ItemUpgradeFrame.UpgradeStatus:Show();
 			if ( numCurrUpgrades < numMaxUpgrades ) then
-				ItemUpgradeFrame.UpgradeStatus:SetTextColor(HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b);
+				ItemUpgradeFrame.UpgradeStatus:SetTextColor(NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b);
 				canUpgradeItem = true;
 			else
 				ItemUpgradeFrame.UpgradeStatus:SetTextColor(RED_FONT_COLOR.r, RED_FONT_COLOR.g, RED_FONT_COLOR.b);			

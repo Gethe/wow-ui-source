@@ -20,10 +20,10 @@ function MonkHarmonyBar_SetEnergy(self, active)
 end
 
 function MonkHarmonyBar_Update(self)
-	local light = UnitPower( MonkHarmonyBar:GetParent().unit, SPELL_POWER_LIGHT_FORCE );
+	local light = UnitPower( MonkHarmonyBar:GetParent().unit, SPELL_POWER_CHI );
 
 	-- if max light changed, show/hide the 5th and update anchors 
-	local maxLight = UnitPowerMax( MonkHarmonyBar:GetParent().unit, SPELL_POWER_LIGHT_FORCE );
+	local maxLight = UnitPowerMax( MonkHarmonyBar:GetParent().unit, SPELL_POWER_CHI );
 	if ( self.maxLight ~= maxLight ) then
 		if ( maxLight == 4 ) then
 			self.lightEnergy1:SetPoint("LEFT", -43, 1);
@@ -66,7 +66,7 @@ end
 
 function MonkHarmonyBar_OnEvent (self, event, arg1, arg2)
 	if ( event == "UNIT_POWER_FREQUENT" ) then
-		if ( arg1 == self:GetParent().unit and (arg2 == "LIGHT_FORCE" or arg2 == "DARK_FORCE") ) then
+		if ( arg1 == self:GetParent().unit and (arg2 == "CHI" or arg2 == "DARK_FORCE") ) then
 			MonkHarmonyBar_Update(self);
 		end
 	else

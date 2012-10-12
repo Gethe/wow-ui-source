@@ -62,7 +62,7 @@ TRAVEL PASS
 					</Anchors>
 				</Texture>
 				<FontString name="$parentName" inherits="FriendsFont_Normal" justifyH="LEFT" parentKey="name">
-					<Size x="248" y="12"/>
+					<Size x="232" y="12"/>
 					<Anchors>
 						<Anchor point="TOPLEFT" x="20" y="-3"/>
 					</Anchors>
@@ -1376,7 +1376,12 @@ TRAVEL PASS
 							</OnLoad>
 							<OnClick>
 								if ( UnitCanCooperate("player", "target") ) then
-									AddIgnore(UnitName("target"));
+									local name, server = UnitName("target");
+									local fullname = name;
+									if ( server and not UnitIsSameServer("player", "target") ) then
+										fullname = name.."-"..server;
+									end
+									AddIgnore(fullname);
 									PlaySound("UChatScrollButton");
 								else
 									StaticPopup_Show("ADD_IGNORE");

@@ -1,0 +1,72 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\FrameXML\UI.xsd">
+
+	<Frame name="PetBattleQueueReadyFrame" hidden="true" parent="UIParent" frameStrata="DIALOG">
+		<Size x="320" y="200"/>
+		<Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background" edgeFile="Interface\DialogFrame\UI-DialogBox-Border" tile="true">
+			<BackgroundInsets>
+				<AbsInset left="11" right="12" top="12" bottom="11"/>
+			</BackgroundInsets>
+			<TileSize>
+				<AbsValue val="32"/>
+			</TileSize>
+			<EdgeSize>
+				<AbsValue val="32"/>
+			</EdgeSize>
+		</Backdrop>
+		<Layers>
+			<Layer level="ARTWORK">
+				<Texture parentKey="Art" file="Interface\PetBattles\PetBattlesQueue">
+					<Size x="256" y="100"/>
+					<Anchors>
+						<Anchor point="TOP" x="0" y="-20"/>
+					</Anchors>
+				</Texture>
+				<FontString parentKey="Label" inherits="GameFontHighlight" text="PET_BATTLE_QUEUE_PROPOSE_MATCH" justifyH="CENTER" justifyV="MIDDLE">
+					<Size x="300" y="0"/>
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent" relativePoint="BOTTOM" x="0" y="60"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Button parentKey="AcceptButton" inherits="UIPanelButtonTemplate" text="ACCEPT">
+				<Size x="120" y="21"/>
+				<Anchors>
+					<Anchor point="RIGHT" relativePoint="BOTTOM" x="-5" y="30"/>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						C_PetBattles.AcceptQueuedPVPMatch();
+						StaticPopupSpecial_Hide(self:GetParent());
+					</OnClick>
+				</Scripts>
+			</Button>
+			<Button parentKey="DeclineButton" inherits="UIPanelButtonTemplate" text="DECLINE">
+				<Size x="120" y="21"/>
+				<Anchors>
+					<Anchor point="LEFT" relativePoint="BOTTOM" x="5" y="30"/>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						C_PetBattles.DeclineQueuedPVPMatch();
+						StaticPopupSpecial_Hide(self:GetParent());
+					</OnClick>
+				</Scripts>
+			</Button>
+		</Frames>
+		<Scripts>
+			<OnLoad>
+				self.hideOnEscape = 1;
+			</OnLoad>
+			<OnUpdate>
+				if ( IsFalling() or UnitAffectingCombat("player") ) then
+					self.AcceptButton:Disable();
+				else
+					self.AcceptButton:Enable();
+				end
+			</OnUpdate>
+		</Scripts>
+	</Frame>
+</Ui>

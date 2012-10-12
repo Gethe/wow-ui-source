@@ -185,11 +185,20 @@ function GossipResize(titleButton)
 end
 
 function NPCFriendshipStatusBar_Update(frame)
-	local id, rep, maxRep, text, texture, reaction, threshold = GetFriendshipReputation();
+	local id, rep, maxRep, name, text, texture, reaction, threshold, nextThreshold = GetFriendshipReputation();
 	if ( id and id > 0 ) then
 		local statusBar = NPCFriendshipStatusBar;
 		statusBar:SetParent(frame);
-		statusBar:SetMinMaxValues(0, maxRep);
+		-- if max rank, make it look like a full bar
+		if ( not nextThreshold ) then
+			threshold, nextThreshold, rep = 0, 1, 1;
+		end
+		if ( texture ) then
+			statusBar.icon:SetTexture(texture);
+		else
+			statusBar.icon:SetTexture("Interface\\Common\\friendship-heart");
+		end
+		statusBar:SetMinMaxValues(threshold, nextThreshold);
 		statusBar:SetValue(rep);
 		statusBar:Show();
 	else
@@ -198,14 +207,5 @@ function NPCFriendshipStatusBar_Update(frame)
 end
 
 function NPCFriendshipStatusBar_OnEnter(self)
-	local id, rep, maxRep, text, texture, reaction, threshold = GetFriendshipReputation();
-	if ( id and id > 0) then
-		GameTooltip:SetOwner(self, "ANCHOR_BOTTOMRIGHT");
-		local name = UnitName("npc");
-		GameTooltip:SetText(name, 1, 1, 1);
-		GameTooltip:AddLine(text, nil, nil, nil, true);
-		local realMax = min( maxRep - threshold, 8400);
-		GameTooltip:AddLine(reaction.." ("..(rep-threshold).." / "..realMax..")" , 1, 1, 1, true);
-		GameTooltip:Show();
-	end
+	ShowFriendshipReputationTooltip(nil, self, "ANCHOR_BOTTOMRIGHT");
 end

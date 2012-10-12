@@ -104,17 +104,20 @@
 					HandleModifiedItemClick(link);
 				else
 					StaticPopup_Hide("DELETE_ITEM");
+					StaticPopup_Hide("DELETE_QUEST_ITEM");
 					StaticPopup_Hide("DELETE_GOOD_ITEM");
 					ClickSocketButton(self:GetID());
 				end
 			</OnClick>
 			<OnReceiveDrag>
 				StaticPopup_Hide("DELETE_ITEM");
+				StaticPopup_Hide("DELETE_QUEST_ITEM");
 				StaticPopup_Hide("DELETE_GOOD_ITEM");
 				ClickSocketButton(self:GetID());
 			</OnReceiveDrag>
 			<OnDragStart>
 				StaticPopup_Hide("DELETE_ITEM");
+				StaticPopup_Hide("DELETE_QUEST_ITEM");
 				StaticPopup_Hide("DELETE_GOOD_ITEM");
 				ClickSocketButton(self:GetID());
 			</OnDragStart>

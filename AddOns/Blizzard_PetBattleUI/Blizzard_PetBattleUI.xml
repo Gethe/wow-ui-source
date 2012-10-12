@@ -57,6 +57,43 @@
 			<OnEvent function="PetBattleAuraHolder_OnEvent"/>
 		</Scripts>
 	</Frame>
+	<Frame name="PetBattleUnitTooltipAuraTemplate" virtual="true">
+		<Size x="250" y="32"/>
+		<Layers>
+			<Layer level="ARTWORK">
+				<Texture parentKey="Icon">
+					<Size x="30" y="30"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativePoint="TOPLEFT" x="0" y="0"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="OVERLAY">
+				<FontString parentKey="Name" inherits="GameFontHighlight" justifyH="LEFT" justifyV="TOP">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.Icon" relativePoint="TOPRIGHT" x="5" y="0"/>
+						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Icon" relativePoint="BOTTOMRIGHT" x="210" y="12"/>
+					</Anchors>
+				</FontString>
+				<FontString parentKey="Duration" inherits="GameFontHighlightSmall" justifyH="LEFT" justifyV="TOP">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.Icon" relativePoint="BOTTOMRIGHT" x="5" y="10"/>
+						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Icon" relativePoint="BOTTOMRIGHT" x="210" y="0"/>
+					</Anchors>
+				</FontString>
+				<Texture parentKey="DebuffBorder" file="Interface\Buttons\UI-Debuff-Overlays">
+					<Size>
+						<AbsDimension x="33" y="32"/>
+					</Size>
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent.Icon" relativePoint="CENTER"/>
+					</Anchors>
+					<TexCoords left="0.296875" right="0.5703125" top="0" bottom="0.515625"/>
+					<Color r="1" g="0" b="0"/>
+				</Texture>	
+			</Layer>
+		</Layers>
+	</Frame>
 	<Button name="PetBattlePetSelectionButtonTemplate" inherits="PetBattleUnitFrame" virtual="true">
 		<Size x="192" y="200"/>
 		<Layers>
@@ -248,6 +285,7 @@
 				self.healthBarWidth = 35;
 				PetBattleUnitFrame_OnLoad(self);
 				self.hideWhenDeadList = { self.HealthBarBG, self.HealthDivider };
+				self:RegisterForClicks("LeftButtonUp", "RightButtonUp");
 			</OnLoad>
 			<OnEnter>
 				PetBattleUnitTooltip_Attach(PetBattlePrimaryUnitTooltip, "TOPLEFT", self, "TOPRIGHT", 0, 0);
@@ -351,6 +389,11 @@
 						<Anchor point="TOPLEFT" relativeKey="$parent.Icon" relativePoint="TOPRIGHT" x="7" y="-21"/>
 					</Anchors>
 				</FontString>
+				<FontString parentKey="CollectedText" inherits="GameFontHighlight" text="NOT_COLLECTED" justifyH="LEFT" hidden="true">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.Icon" relativePoint="BOTTOMLEFT" x="0" y="-4"/>
+					</Anchors>
+				</FontString>
 			</Layer>
 			<Layer level="BACKGROUND" textureSubLevel="1">
 				<Texture parentKey="HealthBorder">
@@ -385,6 +428,12 @@
 				</Texture>
 			</Layer>
 			<Layer level="ARTWORK" textureSubLevel="2">
+				<Texture parentKey="Border" file="Interface\Common\WhiteIconFrame">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativePoint="TOPLEFT" relativeKey="$parent.Icon"/>
+						<Anchor point="BOTTOMRIGHT" relativePoint="BOTTOMRIGHT" relativeKey="$parent.Icon"/>
+					</Anchors>
+				</Texture>
 				<Texture parentKey="ActualHealthBar" file="Interface\RaidFrame\Raid-Bar-Resource-Fill">
 					<Size x="230" y="15"/>
 					<Anchors>
@@ -516,16 +565,25 @@
 				<Texture parentKey="SpeedAdvantageIcon" file="Interface\PetBattles\PetBattle-StatIcons" hidden="true">
 					<Size x="16" y="16"/>
 					<Anchors>
-						<Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" x="8" y="37"/>
+						<Anchor point="TOPLEFT" relativeKey="$parent.AbilityIcon3" relativePoint="BOTTOMLEFT" x="-90" y="-10"/>
 					</Anchors>
 					<TexCoords left="0.0" right="0.5" top="0.5" bottom="1.0"/>
 				</Texture>
 				<FontString parentKey="SpeedAdvantage" inherits="GameFontNormal" justifyH="LEFT" text="PET_BATTLE_TOOLTIP_SPEED_ADVANTAGE" hidden="true">
 					<Size x="226" y="0"/>
 					<Anchors>
-						<Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" x="26" y="37"/>
+						<Anchor point="LEFT" relativeKey="$parent.SpeedAdvantageIcon" relativePoint="RIGHT" x="2" y="0"/>
 					</Anchors>
 				</FontString>
+			</Layer>
+			<Layer level="ARTWORK" textureSubLevel="2">
+				<Texture parentKey="Delimiter2">
+					<Size x="250" y="2"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.SpeedAdvantageIcon" relativePoint="BOTTOMLEFT" x="-3" y="-15"/>
+					</Anchors>
+					<Color r="0.2" g="0.2" b="0.2"/>
+				</Texture>
 			</Layer>
 		</Layers>
 		<Frames>
@@ -541,6 +599,18 @@
 						</Texture>
 					</Layer>
 				</Layers>
+			</Frame>
+			<Frame parentKey="Debuffs" hidden="true">
+				<Size x="250" y="0"/> <!-- Vertical size assigned in Lua -->
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.Delimiter2" relativePoint="BOTTOMLEFT" x="8" y="-10"/>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						self.frames = {}
+						self.template = "PetBattleUnitTooltipAuraTemplate"
+					</OnLoad>
+				</Scripts>
 			</Frame>
 		</Frames>
 		<Scripts>
@@ -931,7 +1001,7 @@
 								<Anchor point="CENTER" relativeKey="$parent.HealthBarBG" x="0" y="0"/>
 							</Anchors>
 						</FontString>
-						<Texture parentKey="SpeedIcon" file="Interface\PetBattles\PetBattle-StatIcons">
+						<Texture parentKey="SpeedIcon" file="Interface\PetBattles\PetBattle-StatIcons" hidden="true">
 							<Size x="16" y="16"/>
 							<Anchors>
 								<Anchor point="CENTER" relativeKey="$parent.SpeedUnderlay"/>
@@ -1005,6 +1075,7 @@
 					<OnLoad>
 						self.healthBarWidth = 145;
 						PetBattleUnitFrame_OnLoad(self);
+						self:RegisterForClicks("LeftButtonUp", "RightButtonUp");
 					</OnLoad>
 					<OnEnter>
 						PetBattleUnitTooltip_Attach(PetBattlePrimaryUnitTooltip, "TOPRIGHT", self, "BOTTOMRIGHT", 0, 0);
@@ -1097,7 +1168,7 @@
 								<Anchor point="CENTER" relativeKey="$parent.HealthBarBG" x="0" y="0"/>
 							</Anchors>
 						</FontString>
-						<Texture parentKey="SpeedIcon" file="Interface\PetBattles\PetBattle-StatIcons">
+						<Texture parentKey="SpeedIcon" file="Interface\PetBattles\PetBattle-StatIcons" hidden="true">
 							<Size x="16" y="16"/>
 							<Anchors>
 								<Anchor point="CENTER" relativeKey="$parent.SpeedUnderlay"/>

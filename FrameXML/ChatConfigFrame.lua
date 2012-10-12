@@ -4,9 +4,6 @@ GRAY_CHECKED = 1;
 UNCHECKED_ENABLED = 2;
 UNCHECKED_DISABLED = 3;
 CHATCONFIG_SELECTED_FILTER = nil;
-CHATCONFIG_SELECTED_FILTER_FILTERS = nil;
-CHATCONFIG_SELECTED_FILTER_COLORS = nil;
-CHATCONFIG_SELECTED_FILTER_SETTINGS = nil;
 CHATCONFIG_SELECTED_FILTER_OLD_SETTINGS = nil;
 MAX_COMBATLOG_FILTERS = 20;
 CHATCONFIG_CHANNELS_MAXWIDTH = 145;
@@ -432,15 +429,15 @@ COMBAT_CONFIG_MESSAGETYPES_LEFT = {
 			[1] = {
 				text = BENEFICIAL,
 				type = {"SPELL_AURA_APPLIED", "SPELL_AURA_APPLIED_DOSE", "SPELL_AURA_REMOVED", "SPELL_AURA_APPLIED_REMOVED_DOSE", "SPELL_AURA_REFRESH"};
-				checked = function () return not CHATCONFIG_SELECTED_FILTER_SETTINGS.hideBuffs end;
+				checked = function () return not CHATCONFIG_SELECTED_FILTER.settings.hideBuffs end;
 				func = function (self, checked) 
 					if ( checked ) then
-						CHATCONFIG_SELECTED_FILTER_SETTINGS.hideBuffs = false;
+						CHATCONFIG_SELECTED_FILTER.settings.hideBuffs = false;
 						ToggleMessageType(checked, "SPELL_AURA_APPLIED", "SPELL_AURA_APPLIED_DOSE", "SPELL_AURA_REMOVED", "SPELL_AURA_APPLIED_REMOVED_DOSE", "SPELL_AURA_REFRESH");
 					else
-						CHATCONFIG_SELECTED_FILTER_SETTINGS.hideBuffs = true;
+						CHATCONFIG_SELECTED_FILTER.settings.hideBuffs = true;
 						-- Only stop listening for the messages if hideDebuffs is also true
-						if ( CHATCONFIG_SELECTED_FILTER_SETTINGS.hideDebuffs ) then
+						if ( CHATCONFIG_SELECTED_FILTER.settings.hideDebuffs ) then
 							ToggleMessageType(checked, "SPELL_AURA_APPLIED", "SPELL_AURA_APPLIED_DOSE", "SPELL_AURA_REMOVED", "SPELL_AURA_APPLIED_REMOVED_DOSE", "SPELL_AURA_REFRESH");
 						end
 					end
@@ -450,15 +447,15 @@ COMBAT_CONFIG_MESSAGETYPES_LEFT = {
 			[2] = {
 				text = HOSTILE,
 				type = {"SPELL_AURA_APPLIED", "SPELL_AURA_APPLIED_DOSE", "SPELL_AURA_REMOVED", "SPELL_AURA_APPLIED_REMOVED_DOSE"};
-				checked = function () return not CHATCONFIG_SELECTED_FILTER_SETTINGS.hideDebuffs end;
+				checked = function () return not CHATCONFIG_SELECTED_FILTER.settings.hideDebuffs end;
 				func = function (self, checked) 
 					if ( checked ) then
-						CHATCONFIG_SELECTED_FILTER_SETTINGS.hideDebuffs = false;
+						CHATCONFIG_SELECTED_FILTER.settings.hideDebuffs = false;
 						ToggleMessageType(checked, "SPELL_AURA_APPLIED", "SPELL_AURA_APPLIED_DOSE", "SPELL_AURA_REMOVED", "SPELL_AURA_APPLIED_REMOVED_DOSE");
 					else
-						CHATCONFIG_SELECTED_FILTER_SETTINGS.hideDebuffs = true;
+						CHATCONFIG_SELECTED_FILTER.settings.hideDebuffs = true;
 						-- Only stop listening for the messages if hideDebuffs is also true
-						if ( CHATCONFIG_SELECTED_FILTER_SETTINGS.hideBuffs ) then
+						if ( CHATCONFIG_SELECTED_FILTER.settings.hideBuffs ) then
 							ToggleMessageType(checked, "SPELL_AURA_APPLIED", "SPELL_AURA_APPLIED_DOSE", "SPELL_AURA_REMOVED", "SPELL_AURA_APPLIED_REMOVED_DOSE");
 						end
 					end
@@ -703,6 +700,7 @@ COMBAT_CONFIG_UNIT_COLORS = {
 function ChatConfigFrame_OnLoad(self)
 	self:RegisterEvent("PLAYER_ENTERING_WORLD");
 	self:RegisterEvent("CHANNEL_UI_UPDATE");
+	ChatConfigCombatSettingsFilters.selectedFilter = 1;
 end
 
 function ChatConfigFrame_OnEvent(self, event, ...)
@@ -1091,45 +1089,45 @@ function ChatConfig_UpdateTieredCheckboxes(frame, index)
 end
 
 function CombatConfig_Colorize_Update()
-	if ( not CHATCONFIG_SELECTED_FILTER_SETTINGS ) then
+	if ( not CHATCONFIG_SELECTED_FILTER.settings ) then
 		return;
 	end
 	
-	CombatConfigColorsColorizeUnitNameCheck:SetChecked(CHATCONFIG_SELECTED_FILTER_SETTINGS.unitColoring);
+	CombatConfigColorsColorizeUnitNameCheck:SetChecked(CHATCONFIG_SELECTED_FILTER.settings.unitColoring);
 	
 	-- Spell Names
-	CombatConfigColorsColorizeSpellNamesCheck:SetChecked(CHATCONFIG_SELECTED_FILTER_SETTINGS.abilityColoring);
-	if ( CHATCONFIG_SELECTED_FILTER_SETTINGS.abilityColoring ) then
+	CombatConfigColorsColorizeSpellNamesCheck:SetChecked(CHATCONFIG_SELECTED_FILTER.settings.abilityColoring);
+	if ( CHATCONFIG_SELECTED_FILTER.settings.abilityColoring ) then
 		BlizzardOptionsPanel_CheckButton_Enable(CombatConfigColorsColorizeSpellNamesSchoolColoring, true);
 	else
 		BlizzardOptionsPanel_CheckButton_Disable(CombatConfigColorsColorizeSpellNamesSchoolColoring, true);
 	end
-	CombatConfigColorsColorizeSpellNamesSchoolColoring:SetChecked(CHATCONFIG_SELECTED_FILTER_SETTINGS.abilitySchoolColoring);
-	CombatConfigColorsColorizeSpellNamesColorSwatchNormalTexture:SetVertexColor(GetTableColor(CHATCONFIG_SELECTED_FILTER_COLORS.defaults.spell));
+	CombatConfigColorsColorizeSpellNamesSchoolColoring:SetChecked(CHATCONFIG_SELECTED_FILTER.settings.abilitySchoolColoring);
+	CombatConfigColorsColorizeSpellNamesColorSwatchNormalTexture:SetVertexColor(GetTableColor(CHATCONFIG_SELECTED_FILTER.colors.defaults.spell));
 	
 	-- Damage Number
-	CombatConfigColorsColorizeDamageNumberCheck:SetChecked(CHATCONFIG_SELECTED_FILTER_SETTINGS.amountColoring);
-	if ( CHATCONFIG_SELECTED_FILTER_SETTINGS.amountColoring ) then
+	CombatConfigColorsColorizeDamageNumberCheck:SetChecked(CHATCONFIG_SELECTED_FILTER.settings.amountColoring);
+	if ( CHATCONFIG_SELECTED_FILTER.settings.amountColoring ) then
 		BlizzardOptionsPanel_CheckButton_Enable(CombatConfigColorsColorizeDamageNumberSchoolColoring, true);
 	else
 		BlizzardOptionsPanel_CheckButton_Disable(CombatConfigColorsColorizeDamageNumberSchoolColoring, true);
 	end
-	CombatConfigColorsColorizeDamageNumberSchoolColoring:SetChecked(CHATCONFIG_SELECTED_FILTER_SETTINGS.amountSchoolColoring);
-	CombatConfigColorsColorizeDamageNumberColorSwatchNormalTexture:SetVertexColor(GetTableColor(CHATCONFIG_SELECTED_FILTER_COLORS.defaults.damage));
+	CombatConfigColorsColorizeDamageNumberSchoolColoring:SetChecked(CHATCONFIG_SELECTED_FILTER.settings.amountSchoolColoring);
+	CombatConfigColorsColorizeDamageNumberColorSwatchNormalTexture:SetVertexColor(GetTableColor(CHATCONFIG_SELECTED_FILTER.colors.defaults.damage));
 	
 	-- Damage School
-	CombatConfigColorsColorizeDamageSchoolCheck:SetChecked(CHATCONFIG_SELECTED_FILTER_SETTINGS.schoolNameColoring);
+	CombatConfigColorsColorizeDamageSchoolCheck:SetChecked(CHATCONFIG_SELECTED_FILTER.settings.schoolNameColoring);
 	
 	-- Line Coloring
-	CombatConfigColorsColorizeEntireLineCheck:SetChecked(CHATCONFIG_SELECTED_FILTER_SETTINGS.lineColoring);
-	if ( CHATCONFIG_SELECTED_FILTER_SETTINGS.lineColoring ) then
+	CombatConfigColorsColorizeEntireLineCheck:SetChecked(CHATCONFIG_SELECTED_FILTER.settings.lineColoring);
+	if ( CHATCONFIG_SELECTED_FILTER.settings.lineColoring ) then
 		BlizzardOptionsPanel_CheckButton_Enable(CombatConfigColorsColorizeEntireLineBySource, true);
 		BlizzardOptionsPanel_CheckButton_Enable(CombatConfigColorsColorizeEntireLineByTarget, true);
 	else
 		BlizzardOptionsPanel_CheckButton_Disable(CombatConfigColorsColorizeEntireLineBySource);
 		BlizzardOptionsPanel_CheckButton_Disable(CombatConfigColorsColorizeEntireLineByTarget);
 	end
-	if ( CHATCONFIG_SELECTED_FILTER_SETTINGS.lineColorPriority == 1 ) then
+	if ( CHATCONFIG_SELECTED_FILTER.settings.lineColorPriority == 1 ) then
 		CombatConfigColorsColorizeEntireLineBySource:SetChecked(1);
 		CombatConfigColorsColorizeEntireLineByTarget:SetChecked(nil);
 	else
@@ -1138,10 +1136,10 @@ function CombatConfig_Colorize_Update()
 	end
 
 	-- Line Highlighting
-	CombatConfigColorsHighlightingLine:SetChecked(CHATCONFIG_SELECTED_FILTER_SETTINGS.lineHighlighting);
-	CombatConfigColorsHighlightingAbility:SetChecked(CHATCONFIG_SELECTED_FILTER_SETTINGS.abilityHighlighting);
-	CombatConfigColorsHighlightingDamage:SetChecked(CHATCONFIG_SELECTED_FILTER_SETTINGS.amountHighlighting);
-	CombatConfigColorsHighlightingSchool:SetChecked(CHATCONFIG_SELECTED_FILTER_SETTINGS.schoolNameHighlighting);
+	CombatConfigColorsHighlightingLine:SetChecked(CHATCONFIG_SELECTED_FILTER.settings.lineHighlighting);
+	CombatConfigColorsHighlightingAbility:SetChecked(CHATCONFIG_SELECTED_FILTER.settings.abilityHighlighting);
+	CombatConfigColorsHighlightingDamage:SetChecked(CHATCONFIG_SELECTED_FILTER.settings.amountHighlighting);
+	CombatConfigColorsHighlightingSchool:SetChecked(CHATCONFIG_SELECTED_FILTER.settings.schoolNameHighlighting);
 
 	
 	local text, r, g, b = CombatLog_OnEvent(CHATCONFIG_SELECTED_FILTER, 0, "SPELL_DAMAGE", false, 0x0000000000000001, UnitName("player"), 0x511, 0, 0xF13000012B000820, EXAMPLE_TARGET_MONSTER, 0x10a28, 0, 116, EXAMPLE_SPELL_FROSTBOLT, SCHOOL_MASK_FROST, 27, SCHOOL_MASK_FROST, nil, nil, nil, 1, nil, nil);
@@ -1154,9 +1152,9 @@ function CombatConfig_Colorize_Update()
 end
 
 function CombatConfig_Formatting_Update()
-	CombatConfigFormattingShowTimeStamp:SetChecked(CHATCONFIG_SELECTED_FILTER_SETTINGS.timestamp);
-	CombatConfigFormattingShowBraces:SetChecked(CHATCONFIG_SELECTED_FILTER_SETTINGS.braces);
-	if ( CHATCONFIG_SELECTED_FILTER_SETTINGS.braces ) then
+	CombatConfigFormattingShowTimeStamp:SetChecked(CHATCONFIG_SELECTED_FILTER.settings.timestamp);
+	CombatConfigFormattingShowBraces:SetChecked(CHATCONFIG_SELECTED_FILTER.settings.braces);
+	if ( CHATCONFIG_SELECTED_FILTER.settings.braces ) then
 		BlizzardOptionsPanel_CheckButton_Enable(CombatConfigFormattingUnitNames, true);
 		BlizzardOptionsPanel_CheckButton_Enable(CombatConfigFormattingSpellNames, true);
 		BlizzardOptionsPanel_CheckButton_Enable(CombatConfigFormattingItemNames, true);
@@ -1165,10 +1163,10 @@ function CombatConfig_Formatting_Update()
 		BlizzardOptionsPanel_CheckButton_Disable(CombatConfigFormattingSpellNames);
 		BlizzardOptionsPanel_CheckButton_Disable(CombatConfigFormattingItemNames);
 	end
-	CombatConfigFormattingUnitNames:SetChecked(CHATCONFIG_SELECTED_FILTER_SETTINGS.unitBraces);
-	CombatConfigFormattingSpellNames:SetChecked(CHATCONFIG_SELECTED_FILTER_SETTINGS.spellBraces);
-	CombatConfigFormattingItemNames:SetChecked(CHATCONFIG_SELECTED_FILTER_SETTINGS.itemBraces);
-	CombatConfigFormattingFullText:SetChecked(CHATCONFIG_SELECTED_FILTER_SETTINGS.fullText);
+	CombatConfigFormattingUnitNames:SetChecked(CHATCONFIG_SELECTED_FILTER.settings.unitBraces);
+	CombatConfigFormattingSpellNames:SetChecked(CHATCONFIG_SELECTED_FILTER.settings.spellBraces);
+	CombatConfigFormattingItemNames:SetChecked(CHATCONFIG_SELECTED_FILTER.settings.itemBraces);
+	CombatConfigFormattingFullText:SetChecked(CHATCONFIG_SELECTED_FILTER.settings.fullText);
 
 	local text, r, g, b = CombatLog_OnEvent(CHATCONFIG_SELECTED_FILTER, 0, "SPELL_DAMAGE", false, 0x0000000000000001, UnitName("player"), 0x511, 0, 0xF13000012B000820, EXAMPLE_TARGET_MONSTER, 0x10a28, 0, 116, EXAMPLE_SPELL_FROSTBOLT, SCHOOL_MASK_FROST, 27, SCHOOL_MASK_FROST, nil, nil, nil, 1, nil, nil);
 	CombatConfigFormattingExampleString1:SetVertexColor(r, g, b);
@@ -1232,10 +1230,10 @@ function ToggleChatChannel(checked, channel)
 end
 
 function ToggleMessageSource(checked, filter)
-	if ( not CHATCONFIG_SELECTED_FILTER_FILTERS[1].sourceFlags ) then
-		CHATCONFIG_SELECTED_FILTER_FILTERS[1].sourceFlags = {};
+	if ( not CHATCONFIG_SELECTED_FILTER.filters[1].sourceFlags ) then
+		CHATCONFIG_SELECTED_FILTER.filters[1].sourceFlags = {};
 	end
-	local sourceFlags = CHATCONFIG_SELECTED_FILTER_FILTERS[1].sourceFlags;
+	local sourceFlags = CHATCONFIG_SELECTED_FILTER.filters[1].sourceFlags;
 	if ( checked ) then
 		sourceFlags[filter] = true;
 	else
@@ -1247,15 +1245,15 @@ function ToggleMessageDest(checked, filter)
 	local destFlags;
 
 	if ( UsesGUID( "SOURCE" )  ) then 
-		if ( not CHATCONFIG_SELECTED_FILTER_FILTERS[1].destFlags ) then
-			CHATCONFIG_SELECTED_FILTER_FILTERS[1].destFlags = {};
+		if ( not CHATCONFIG_SELECTED_FILTER.filters[1].destFlags ) then
+			CHATCONFIG_SELECTED_FILTER.filters[1].destFlags = {};
 		end
-		destFlags = CHATCONFIG_SELECTED_FILTER_FILTERS[1].destFlags;
+		destFlags = CHATCONFIG_SELECTED_FILTER.filters[1].destFlags;
 	else
-		if ( not CHATCONFIG_SELECTED_FILTER_FILTERS[2].destFlags ) then
-			CHATCONFIG_SELECTED_FILTER_FILTERS[2].destFlags = {};
+		if ( not CHATCONFIG_SELECTED_FILTER.filters[2].destFlags ) then
+			CHATCONFIG_SELECTED_FILTER.filters[2].destFlags = {};
 		end
-			destFlags = CHATCONFIG_SELECTED_FILTER_FILTERS[2].destFlags;
+			destFlags = CHATCONFIG_SELECTED_FILTER.filters[2].destFlags;
 	end
 	if ( checked ) then
 		destFlags[filter] = true;
@@ -1268,7 +1266,7 @@ end
 -- Create  parent is checked or unchecked if all children are unchecked
 function ToggleMessageTypeGroup(checked, frame, index)
 	local subTypes = frame.checkBoxTable[index].subTypes;
-	local eventList = CHATCONFIG_SELECTED_FILTER_FILTERS[1].eventList;
+	local eventList = CHATCONFIG_SELECTED_FILTER.filters[1].eventList;
 	if ( subTypes ) then
 		local state;
 		if ( checked ) then
@@ -1319,7 +1317,7 @@ function ToggleMessageTypeGroup(checked, frame, index)
 end
 
 function ToggleMessageType(checked, ...)
-	local eventList = CHATCONFIG_SELECTED_FILTER_FILTERS[1].eventList;
+	local eventList = CHATCONFIG_SELECTED_FILTER.filters[1].eventList;
 	for _, type in pairs ( {...} ) do 
 		if ( checked ) then
 			eventList[type] = true;
@@ -1367,22 +1365,22 @@ COMBATCONFIG_COLORPICKER_FUNCTIONS = {
 			CombatConfig_Colorize_Update();
 		end;
 	spellColorSwatch = function() 
-			SetTableColor(CHATCONFIG_SELECTED_FILTER_COLORS.defaults.spell, ColorPickerFrame:GetColorRGB());
+			SetTableColor(CHATCONFIG_SELECTED_FILTER.colors.defaults.spell, ColorPickerFrame:GetColorRGB());
 			_G[CHAT_CONFIG_CURRENT_COLOR_SWATCH:GetName().."NormalTexture"]:SetVertexColor(ColorPickerFrame:GetColorRGB());
 			CombatConfig_Colorize_Update();
 		end;
 	spellColorCancel = function() 
-			SetTableColor(CHATCONFIG_SELECTED_FILTER_COLORS.defaults.spell, ColorPicker_GetPreviousValues());
+			SetTableColor(CHATCONFIG_SELECTED_FILTER.colors.defaults.spell, ColorPicker_GetPreviousValues());
 			_G[CHAT_CONFIG_CURRENT_COLOR_SWATCH:GetName().."NormalTexture"]:SetVertexColor(ColorPicker_GetPreviousValues());
 			CombatConfig_Colorize_Update();
 		end;
 	damageColorSwatch = function() 
-			SetTableColor(CHATCONFIG_SELECTED_FILTER_COLORS.defaults.damage, ColorPickerFrame:GetColorRGB());
+			SetTableColor(CHATCONFIG_SELECTED_FILTER.colors.defaults.damage, ColorPickerFrame:GetColorRGB());
 			_G[CHAT_CONFIG_CURRENT_COLOR_SWATCH:GetName().."NormalTexture"]:SetVertexColor(ColorPickerFrame:GetColorRGB());
 			CombatConfig_Colorize_Update();
 		end;
 	damageColorCancel = function() 
-			SetTableColor(CHATCONFIG_SELECTED_FILTER_COLORS.defaults.damage, ColorPicker_GetPreviousValues());
+			SetTableColor(CHATCONFIG_SELECTED_FILTER.colors.defaults.damage, ColorPicker_GetPreviousValues());
 			_G[CHAT_CONFIG_CURRENT_COLOR_SWATCH:GetName().."NormalTexture"]:SetVertexColor(ColorPicker_GetPreviousValues());
 			CombatConfig_Colorize_Update();
 		end;
@@ -1424,7 +1422,7 @@ end
 function SpellColor_OpenColorPicker(self)
 	local info = UIDropDownMenu_CreateInfo();
 	CHAT_CONFIG_CURRENT_COLOR_SWATCH = self;
-	info.r, info.g, info.b = GetTableColor(CHATCONFIG_SELECTED_FILTER_COLORS.defaults.spell);
+	info.r, info.g, info.b = GetTableColor(CHATCONFIG_SELECTED_FILTER.colors.defaults.spell);
 	info.swatchFunc = COMBATCONFIG_COLORPICKER_FUNCTIONS.spellColorSwatch;
 	info.cancelFunc = COMBATCONFIG_COLORPICKER_FUNCTIONS.spellColorCancel;
 	OpenColorPicker(info);
@@ -1433,7 +1431,7 @@ end
 function DamageColor_OpenColorPicker(self)
 	local info = UIDropDownMenu_CreateInfo();
 	CHAT_CONFIG_CURRENT_COLOR_SWATCH = self;
-	info.r, info.g, info.b = GetTableColor(CHATCONFIG_SELECTED_FILTER_COLORS.defaults.damage);
+	info.r, info.g, info.b = GetTableColor(CHATCONFIG_SELECTED_FILTER.colors.defaults.damage);
 	info.swatchFunc = COMBATCONFIG_COLORPICKER_FUNCTIONS.damageColorSwatch;
 	info.cancelFunc = COMBATCONFIG_COLORPICKER_FUNCTIONS.damageColorCancel;
 	OpenColorPicker(info);
@@ -1467,21 +1465,21 @@ function GetMessageTypeColor(messageType)
 end
 
 function GetChatUnitColor(type)
-	local color = CHATCONFIG_SELECTED_FILTER_COLORS.unitColoring[_G[type]];
+	local color = CHATCONFIG_SELECTED_FILTER.colors.unitColoring[_G[type]];
 	return color.r, color.g, color.b;
 end
 
 function SetChatUnitColor(type, r, g, b)
-	SetTableColor(CHATCONFIG_SELECTED_FILTER_COLORS.unitColoring[_G[type]], r, g, b);
+	SetTableColor(CHATCONFIG_SELECTED_FILTER.colors.unitColoring[_G[type]], r, g, b);
 end
 
 function GetSpellNameColor()
-	local color = CHATCONFIG_SELECTED_FILTER_COLORS.defaults.spell;
+	local color = CHATCONFIG_SELECTED_FILTER.colors.defaults.spell;
 	return color.r, color.g, color.b;
 end
 
 function SetSpellNameColor(r, g, b)
-	SetTableColor(CHATCONFIG_SELECTED_FILTER_COLORS.defaults.spell, r, g, b);
+	SetTableColor(CHATCONFIG_SELECTED_FILTER.colors.defaults.spell, r, g, b);
 end
 
 -- Convenience functions for pulling and putting rgb values into tables
@@ -1632,9 +1630,6 @@ function ChatConfigFilter_OnClick(id)
 	if ( #Blizzard_CombatLog_Filters.filters > 0 ) then
 		ChatConfigCombatSettingsFilters.selectedFilter = id;
 		CHATCONFIG_SELECTED_FILTER = Blizzard_CombatLog_Filters.filters[ChatConfigCombatSettingsFilters.selectedFilter];
-		CHATCONFIG_SELECTED_FILTER_FILTERS = CHATCONFIG_SELECTED_FILTER.filters;
-		CHATCONFIG_SELECTED_FILTER_COLORS = CHATCONFIG_SELECTED_FILTER.colors;
-		CHATCONFIG_SELECTED_FILTER_SETTINGS = CHATCONFIG_SELECTED_FILTER.settings;
 	end
 	ChatConfig_UpdateFilterList();
 	ChatConfig_UpdateCombatSettings();
@@ -1690,15 +1685,15 @@ function ChatConfig_UpdateChatSettings()
 end
 
 function UsesGUID(direction)
-	if ( direction == "SOURCE" and CHATCONFIG_SELECTED_FILTER_FILTERS[1].sourceFlags ) then
-		for k,v in pairs( CHATCONFIG_SELECTED_FILTER_FILTERS[1].sourceFlags ) do
+	if ( direction == "SOURCE" and CHATCONFIG_SELECTED_FILTER.filters[1].sourceFlags ) then
+		for k,v in pairs( CHATCONFIG_SELECTED_FILTER.filters[1].sourceFlags ) do
 			if ( type(k) == "string" ) then
 				return true;
 			end
 		end
 	end
-	if ( direction == "DEST" and CHATCONFIG_SELECTED_FILTER_FILTERS[1].destFlags ) then
-		for k,v in pairs( CHATCONFIG_SELECTED_FILTER_FILTERS[1].destFlags ) do
+	if ( direction == "DEST" and CHATCONFIG_SELECTED_FILTER.filters[1].destFlags ) then
+		for k,v in pairs( CHATCONFIG_SELECTED_FILTER.filters[1].destFlags ) do
 			if ( type(k) == "string" ) then
 				return true;
 			end
@@ -1709,10 +1704,10 @@ end
 
 function IsMessageDoneBy(filter)
 	local sourceFlags;
-	if ( not CHATCONFIG_SELECTED_FILTER_FILTERS[1].sourceFlags ) then
+	if ( not CHATCONFIG_SELECTED_FILTER.filters[1].sourceFlags ) then
 		return true;
 	end
-	sourceFlags = CHATCONFIG_SELECTED_FILTER_FILTERS[1].sourceFlags;
+	sourceFlags = CHATCONFIG_SELECTED_FILTER.filters[1].sourceFlags;
 
 	return sourceFlags[filter];
 end
@@ -1721,10 +1716,10 @@ function IsMessageDoneTo(filter)
 	local destFlags;
 
 	if ( UsesGUID( "SOURCE" ) or UsesGUID("DEST") ) then 
-		if ( not CHATCONFIG_SELECTED_FILTER_FILTERS[1].destFlags ) then
+		if ( not CHATCONFIG_SELECTED_FILTER.filters[1].destFlags ) then
 			return true;
 		end
-		destFlags = CHATCONFIG_SELECTED_FILTER_FILTERS[1].destFlags;
+		destFlags = CHATCONFIG_SELECTED_FILTER.filters[1].destFlags;
 	else
 
 		destFlags = Blizzard_CombatLog_Filters.filters[ChatConfigCombatSettingsFilters.selectedFilter].filters[2].destFlags;
@@ -1763,9 +1758,9 @@ end
 
 function GetMessageTypeState(messageType)
 	if ( type(messageType) == "table" ) then
-		return CHATCONFIG_SELECTED_FILTER_FILTERS[1].eventList[messageType[1]];
+		return CHATCONFIG_SELECTED_FILTER.filters[1].eventList[messageType[1]];
 	else
-		return CHATCONFIG_SELECTED_FILTER_FILTERS[1].eventList[messageType];
+		return CHATCONFIG_SELECTED_FILTER.filters[1].eventList[messageType];
 	end
 end
 
@@ -1901,10 +1896,6 @@ function ChatConfigCancel_OnClick()
 		HideUIPanel(ChatConfigFrame);
 		return;
 	end
-
-	CHATCONFIG_SELECTED_FILTER_FILTERS = CHATCONFIG_SELECTED_FILTER.filters;
-	CHATCONFIG_SELECTED_FILTER_COLORS = CHATCONFIG_SELECTED_FILTER.colors;
-	CHATCONFIG_SELECTED_FILTER_SETTINGS = CHATCONFIG_SELECTED_FILTER.settings;
 	
 	HideUIPanel(ChatConfigFrame);
 end

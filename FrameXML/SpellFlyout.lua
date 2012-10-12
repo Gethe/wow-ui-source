@@ -5,11 +5,23 @@ local SPELLFLYOUT_FINAL_SPACING = 4;
 
 
 function SpellFlyoutButton_OnClick(self)
-	if ( self.offSpec ) then
+	
+	if ( IsModifiedClick("CHATLINK") ) then
+		local spellLink, tradeSkillLink = GetSpellLink(self.spellID);
+		if ( tradeSkillLink ) then
+			ChatEdit_InsertLink(tradeSkillLink);
+		elseif ( spellLink ) then
+			ChatEdit_InsertLink(spellLink);
+		end
+		SpellFlyoutButton_UpdateState(self);
 		return;
-	elseif ( self.spellName ) then
-		CastSpellByName(self.spellName);
-		self:GetParent():Hide();
+	else
+		if ( self.offSpec ) then
+			return;
+		elseif ( self.spellName ) then
+			CastSpellByName(self.spellName);
+			self:GetParent():Hide();
+		end
 	end
 end
 

@@ -295,6 +295,7 @@ PAPERDOLL_STATCATEGORIES = {
 				"CRITCHANCE", 
 				"EXPERTISE", 
 				"MASTERY",
+				"PVP_POWER", 
 			}
 	},
 				
@@ -311,6 +312,7 @@ PAPERDOLL_STATCATEGORIES = {
 				"RANGED_CRITCHANCE",
 				"EXPERTISE",
 				"MASTERY",
+				"PVP_POWER", 
 			}
 	},
 				
@@ -325,6 +327,7 @@ PAPERDOLL_STATCATEGORIES = {
 				"COMBATMANAREGEN",
 				"SPELLCRIT",
 				"MASTERY",
+				"PVP_POWER", 
 			}
 	},
 			
@@ -916,11 +919,24 @@ function PaperDollFrame_SetPvpPower(statFrame, unit)
 	end
 
 	local pvpPower = BreakUpLargeNumbers(GetCombatRating(CR_PVP_POWER));
-	local pvpPowerBonus = GetCombatRatingBonus(CR_PVP_POWER);
-	PaperDollFrame_SetLabelAndText(statFrame, STAT_PVP_POWER, pvpPowerBonus, 1);
+	local pvpDamage = GetPvpPowerDamage();
+	local pvpHealing = GetPvpPowerHealing();
 	
-	statFrame.tooltip = HIGHLIGHT_FONT_COLOR_CODE..format(PAPERDOLLFRAME_TOOLTIP_FORMAT, STAT_PVP_POWER).." "..format("%.2F%%", pvpPowerBonus)..FONT_COLOR_CODE_CLOSE;
-	statFrame.tooltip2 = PVP_POWER_TOOLTIP .. format(PVP_POWER_BASE_TOOLTIP, pvpPower, pvpPowerBonus);
+	if (pvpHealing > pvpDamage) then
+		PaperDollFrame_SetLabelAndText(statFrame, STAT_PVP_POWER, pvpHealing, 1);
+		statFrame.tooltip = HIGHLIGHT_FONT_COLOR_CODE..format(PAPERDOLLFRAME_TOOLTIP_FORMAT, STAT_PVP_POWER).." "..
+			format("%.2F%%", pvpDamage).." ("..SHOW_COMBAT_HEALING..")"..FONT_COLOR_CODE_CLOSE;
+		statFrame.tooltip2 = PVP_POWER_TOOLTIP .. format(PVP_POWER_HEALING_TOOLTIP, pvpPower, pvpHealing, pvpDamage);
+	else
+		PaperDollFrame_SetLabelAndText(statFrame, STAT_PVP_POWER, pvpDamage, 1);
+		statFrame.tooltip = HIGHLIGHT_FONT_COLOR_CODE..format(PAPERDOLLFRAME_TOOLTIP_FORMAT, STAT_PVP_POWER).." "..
+			format("%.2F%%", pvpHealing).." ("..DAMAGE..")"..FONT_COLOR_CODE_CLOSE;
+		statFrame.tooltip2 = PVP_POWER_TOOLTIP .. format(PVP_POWER_DAMAGE_TOOLTIP, pvpPower, pvpDamage, pvpHealing);
+	end
+	
+	local pvpPowerBonus = GetCombatRatingBonus(CR_PVP_POWER);
+	
+	
 	statFrame:Show();
 end
 
@@ -2686,6 +2702,54 @@ function PaperDollFrame_ExpandStatCategory(categoryFrame)
 	end
 end
 
+--helper function to determine if PVP power should be shown in a particular category
+--might be worth changing this so the locations of pvp power are stored in a table...but too late now
+function ShowStatInCategory(stat, category, unit)
+	local statInfo = PAPERDOLL_STATINFO[stat];
+	if (stat ~= "PVP_POWER") then
+		return statInfo
+	end
+	
+	local primaryTalentTree = GetSpecialization();
+	local _, class = UnitClass("player"); 
+	local role = nil;
+	local specID = nil;
+	
+	if (primaryTalentTree) then
+		specID, _, _, _, _, role = GetSpecializationInfo(primaryTalentTree);
+	end
+	
+	--Show PVP power in melee for tanks or damagers that aren't spell based
+	if (category == "MELEE") then
+		if (class == "ROGUE" or class == "DEATHKNIGHT" or class == "WARRIOR" or
+			((class == "SHAMAN" or class =="MONK" or class == "PALADIN" or class == "DRUID") and 
+			 (role == "DAMAGER" or role == "TANK") and SPEC_CORE_ABILITY_TEXT[specID] ~= "DRUID_BALANCE" and
+			 SPEC_CORE_ABILITY_TEXT[specID] ~= "SHAMAN_ELE")) then
+			return statInfo;
+		else
+			return nil;
+		end
+	--Show it in ranged for hunters
+	elseif (category == "RANGED") then
+		if (class == "HUNTER") then
+			return statInfo;
+		else
+			return nil;
+		end
+	--Show it in spells for healers and spell based damagers
+	elseif (category == "SPELL") then
+		if (class == "WARLOCK" or class == "MAGE" or class == "PRIEST" or
+			role == "HEALER" or SPEC_CORE_ABILITY_TEXT[specID] == "DRUID_BALANCE" or
+			 SPEC_CORE_ABILITY_TEXT[specID] == "SHAMAN_ELE") then
+			return statInfo;
+		else
+			return nil;
+		end
+	end
+	
+	return statInfo;
+end
+
 function PaperDollFrame_UpdateStatCategory(categoryFrame)
 	if (not categoryFrame.Category) then
 		categoryFrame:Hide();
@@ -2707,6 +2771,7 @@ function PaperDollFrame_UpdateStatCategory(categoryFrame)
 		local prevStatFrame = nil;
 		for index, stat in next, categoryInfo.stats do
 			local statInfo = PAPERDOLL_STATINFO[stat];
+			statInfo = ShowStatInCategory(stat, categoryFrame.Category, CharacterStatsPane.unit);
 			if (statInfo) then
 				local statFrame = _G[categoryFrame:GetName().."Stat"..numVisible+1];
 				if (not statFrame) then
@@ -3724,13 +3789,10 @@ end
 function SetPaperDollBackground(model, unit)
 	local race, fileName = UnitRace(unit);
 	local texture = DressUpTexturePath(fileName);
-	
-	--Temp Pandaren HACK
-	--model.BackgroundTopLeft:SetTexture(texture..1);
-	--model.BackgroundTopRight:SetTexture(texture..2);
-	--model.BackgroundBotLeft:SetTexture(texture..3);
-	--model.BackgroundBotRight:SetTexture(texture..4);
-	model.BackgroundOverlay:Hide();
+	model.BackgroundTopLeft:SetTexture(texture..1);
+	model.BackgroundTopRight:SetTexture(texture..2);
+	model.BackgroundBotLeft:SetTexture(texture..3);
+	model.BackgroundBotRight:SetTexture(texture..4);
 	
 	-- HACK - Adjust background brightness for different races
 	if ( strupper(fileName) == "BLOODELF") then

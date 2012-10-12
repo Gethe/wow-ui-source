@@ -601,7 +601,7 @@ function TargetFrame_ShouldShowDebuff(unit, index, filter)
 	if ( SHOW_ALL_ENEMY_DEBUFFS == "1" or not UnitCanAttack("player", unit) ) then
 		return true;
 	else
-		local name, rank, icon, count, debuffType, duration, expirationTime, unitCaster, canStealOrPurge, shouldConsolidate, spellId, canApplyAura, isBossDebuff, points1, points2, points3, isCastByPlayer = UnitDebuff(unit, index, filter);
+		local name, rank, icon, count, debuffType, duration, expirationTime, unitCaster, canStealOrPurge, shouldConsolidate, spellId, canApplyAura, isBossDebuff, isCastByPlayer = UnitDebuff(unit, index, filter);
 
 		local hasCustom, alwaysShowMine, showForMySpec = SpellGetVisibilityInfo(spellId, "ENEMY_TARGET");
 		if ( hasCustom ) then
@@ -822,6 +822,8 @@ function TargetFrameDropDown_Initialize (self)
 		menu = "PET";
 	elseif ( UnitIsOtherPlayersBattlePet("target") ) then
 		menu = "OTHERBATTLEPET";
+	elseif ( UnitIsBattlePet("target") ) then
+		menu = "BATTLEPET";
 	elseif ( UnitIsOtherPlayersPet("target") ) then
 		menu = "OTHERPET";	
 	elseif ( UnitIsPlayer("target") ) then

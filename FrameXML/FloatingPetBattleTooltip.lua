@@ -77,6 +77,19 @@ function FloatingBattlePet_Show(speciesID, level, breedQuality, maxHealth, power
 		end
 
 		BattlePetTooltipTemplate_SetBattlePet(FloatingBattlePetTooltip, BATTLE_PET_FLOATING_TOOLTIP);
+
+		local owned = C_PetJournal.GetOwnedBattlePetString(speciesID);
+		FloatingBattlePetTooltip.Owned:SetText(owned);
+		if(owned == nil) then
+			FloatingBattlePetTooltip:SetSize(260,150);
+			FloatingBattlePetTooltip.Delimiter:ClearAllPoints();
+			FloatingBattlePetTooltip.Delimiter:SetPoint("TOPLEFT",FloatingBattlePetTooltip.SpeedTexture,"BOTTOMLEFT",-6,-5);
+		else
+			FloatingBattlePetTooltip:SetSize(260,164);
+			FloatingBattlePetTooltip.Delimiter:ClearAllPoints();
+			FloatingBattlePetTooltip.Delimiter:SetPoint("TOPLEFT",FloatingBattlePetTooltip.SpeedTexture,"BOTTOMLEFT",-6,-19);
+		end
+
 		FloatingBattlePetTooltip:Show();
 	end
 end

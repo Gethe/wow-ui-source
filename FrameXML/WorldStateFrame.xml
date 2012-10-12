@@ -1098,8 +1098,7 @@
 				</Anchors>
 				<Scripts>
 					<OnClick>
-						WorldStateScoreFrame.leaving = true;
-						LeaveBattlefield();
+						ConfirmOrLeaveBattlefield();
 					</OnClick>
 				</Scripts>
 			</Button>
@@ -1161,7 +1160,7 @@
 			<OnLoad function="WorldStateScoreFrame_OnLoad"/>
 			<OnEvent>
 				if	( event == "UPDATE_BATTLEFIELD_SCORE" or event == "UPDATE_WORLD_STATES") then
-					if ( not WorldStateScoreFrame.leaving and (WorldStateScoreFrame:IsVisible() or GetBattlefieldWinner() ) ) then
+					if ( InActiveBattlefield() and (WorldStateScoreFrame:IsVisible() or GetBattlefieldWinner() ) ) then
 						WorldStateScoreFrame_Resize();
 						WorldStateScoreFrame_Update();
 					end
@@ -1199,7 +1198,7 @@
 				</Texture>			
 			</Layer>
 			<Layer level="ARTWORK">
-				<Texture parentKey="medalIcon">
+				<Texture parentKey="medalIcon" alphaMode="ADD">
 					<Size x="48" y="48"/>
 					<Anchors>
 						<Anchor point="LEFT" x="5" y="-2"/>
@@ -1212,7 +1211,7 @@
 					</Anchors>
 					<TexCoords left="0.93847656" right="0.94726563" top="0.00195313" bottom="0.02148438"/>
 				</Texture>
-			</Layer>			
+			</Layer>		
 		</Layers>
 		<Frames>
 			<StatusBar parentKey="statusBar">
@@ -1245,6 +1244,43 @@
 				</Scripts>
 				<BarTexture file="Interface\TargetingFrame\UI-StatusBar"/>
 			</StatusBar>
+			<Frame parentKey="GlowFrame">
+				<Layers>
+					<Layer level="OVERLAY">
+						<Texture parentKey="MedalGlow" file="Interface\Challenges\challenges-metalglow">
+							<Size x="150" y="150"/>
+							<Anchors>
+								<Anchor point="CENTER" relativeKey="$parent.$parent.medalIcon" />
+							</Anchors>
+						</Texture>
+						<Texture parentKey="MedalIcon" alphaMode="ADD">
+							<Size x="48" y="48"/>
+							<Anchors>
+								<Anchor point="CENTER" relativeKey="$parent.$parent.medalIcon"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnLoad>
+						self.MedalGlow:SetAlpha(0);
+						self.MedalIcon:SetAlpha(0);
+					</OnLoad>	
+				</Scripts>
+				<Animations>
+					<AnimationGroup parentKey="MedalGlowAnim">
+						<Alpha targetKey="$parent.$parent.MedalGlow" change="1" duration="0.4" order="1"/>
+						<Alpha targetKey="$parent.$parent.MedalGlow" change="-1" duration="2" order="2"/>
+					</AnimationGroup>
+					<AnimationGroup parentKey="MedalPulseAnim">
+						<Alpha targetKey="$parent.$parent.MedalIcon" change="1" duration="0.25" order="1"/>
+						<Alpha targetKey="$parent.$parent.MedalIcon" change="-1" endDelay=".5" duration="0.25" order="2"/>
+						<Scripts>
+							<OnFinished function="WorldStateChallengeModeAnim_OnFinished" />
+						</Scripts>
+					</AnimationGroup>
+				</Animations>
+			</Frame>
 		</Frames>
 	</Frame>
 	<Frame name="WorldStateChallengeModeTimer" hidden="true">

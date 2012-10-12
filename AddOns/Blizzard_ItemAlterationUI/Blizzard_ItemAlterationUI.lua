@@ -62,9 +62,9 @@ function TransmogrifyFrame_OnEvent(self, event, ...)
 				end
 			end
 		end
-		local dialog = StaticPopup_FindVisible("TRANSMOGRIFY_BIND_CONFIRM");
-		if ( dialog and dialog.data.slot == slot ) then
-			StaticPopup_Hide("TRANSMOGRIFY_BIND_CONFIRM");
+		if ( TransmogrifyConfirmationPopup:IsShown() and TransmogrifyConfirmationPopup.slot == slot ) then
+			TransmogrifyConfirmationPopup.slot = nil;		-- to keep popup from clearing slot on hide
+			StaticPopupSpecial_Hide(TransmogrifyConfirmationPopup);
 		end
 		TransmogrifyFrame_Update(self);
 	elseif ( event == "BAG_UPDATE" ) then
@@ -91,11 +91,7 @@ function TransmogrifyFrame_OnEvent(self, event, ...)
 			TransmogrifyFrame_UpdateApplyButton();
 		end
 	elseif ( event == "TRANSMOGRIFY_BIND_CONFIRM" ) then
-		local slot, itemLink = ...;
-		local itemName, _, itemQuality, _, _, _, _, _, _, texture = GetItemInfo(itemLink);
-		local r, g, b = GetItemQualityColor(itemQuality or 1);
-		StaticPopup_Show("TRANSMOGRIFY_BIND_CONFIRM", nil, nil, {["texture"] = texture, ["name"] = itemName, ["color"] = {r, g, b, 1}, ["link"] = itemLink, ["slot"] = slot});
-		TransmogrifyApplyButton:Disable();
+		TransmogrifyConfirmationPopup_Show(...);
 	elseif ( event == "UNIT_MODEL_CHANGED" ) then
 		local unit = ...;
 		if ( unit == "player" ) then
@@ -127,7 +123,7 @@ end
 
 function TransmogrifyFrame_OnHide(self)
 	PlaySound("UI_EtherealWindow_Close");
-	StaticPopup_Hide("TRANSMOGRIFY_BIND_CONFIRM");
+	StaticPopupSpecial_Hide(TransmogrifyConfirmationPopup);
 	self:UnregisterEvent("PLAYER_EQUIPMENT_CHANGED");
 	self:UnregisterEvent("BAG_UPDATE");
 	self:UnregisterEvent("UNIT_MODEL_CHANGED");
@@ -266,11 +262,10 @@ function TransmogrifyFrame_Update(self)
 	for _, button in pairs(BUTTONS) do
 		TransmogrifyFrame_UpdateSlotButton(button);
 	end
-	local hasWarningDialog = StaticPopup_FindVisible("TRANSMOGRIFY_BIND_CONFIRM");
-	TransmogrifyFrame_UpdateApplyButton(hasWarningDialog);
+	TransmogrifyFrame_UpdateApplyButton();
 end
 
-function TransmogrifyFrame_UpdateApplyButton(hasWarningDialog)
+function TransmogrifyFrame_UpdateApplyButton()
 	local cost, numChanges = GetTransmogrifyCost();
 	local canApply;
 	if ( cost > GetMoney() ) then
@@ -281,7 +276,7 @@ function TransmogrifyFrame_UpdateApplyButton(hasWarningDialog)
 			canApply = true;
 		end
 	end
-	if ( hasWarningDialog ) then
+	if ( TransmogrifyConfirmationPopup:IsShown() ) then
 		canApply = false;
 	end
 	MoneyFrame_Update("TransmogrifyMoneyFrame", cost);
@@ -388,4 +383,39 @@ end
 
 function TransmogrifyItemFlyout_GetItems(slot, itemTable)
 	GetInventoryItemsForSlot(slot, itemTable, "transmogrify");
+end
+
+function TransmogrifyConfirmationPopup_Show(slot, sourceItemLink, destinationItemLink)
+	local popup = TransmogrifyConfirmationPopup;
+	local baseHeight;
+	if ( sourceItemLink and destinationItemLink ) then
+		TransmogrifyConfirmationPopup_SetItem(popup.ItemFrame1, sourceItemLink);
+		TransmogrifyConfirmationPopup_SetItem(popup.ItemFrame2, destinationItemLink);
+		popup.Text:SetText(TRANSMOGRIFY_BIND_CONFIRMATION_BOTH.."\n"..CONFIRM_CONTINUE);
+		baseHeight = 160;
+	else
+		popup.ItemFrame2:Hide();
+		if ( sourceItemLink ) then
+			TransmogrifyConfirmationPopup_SetItem(popup.ItemFrame1, sourceItemLink);
+			popup.Text:SetText(TRANSMOGRIFY_BIND_CONFIRMATION_SOURCE.."\n"..CONFIRM_CONTINUE);
+		else
+			TransmogrifyConfirmationPopup_SetItem(popup.ItemFrame1, destinationItemLink);
+			popup.Text:SetText(TRANSMOGRIFY_BIND_CONFIRMATION_DESTINATION.."\n"..CONFIRM_CONTINUE);
+		end
+		baseHeight = 115;
+	end
+	popup:SetHeight(baseHeight + popup.Text:GetHeight());
+	StaticPopupSpecial_Show(popup);
+	popup.slot = slot;
+	TransmogrifyApplyButton:Disable();
+end
+
+function TransmogrifyConfirmationPopup_SetItem(itemFrame, itemLink)
+	local itemName, _, itemQuality, _, _, _, _, _, _, texture = GetItemInfo(itemLink);
+	local r, g, b = GetItemQualityColor(itemQuality or 1);
+	itemFrame.Text:SetText(itemName);
+	itemFrame.Text:SetTextColor(r, g, b);
+	itemFrame.icon:SetTexture(texture);
+	itemFrame:Show();
+	itemFrame.link = itemLink;
 end

@@ -52,12 +52,12 @@ end
 function RaidNotice_OnUpdate( noticeFrame, elapsedTime )
 	local inUse = false;
 	if ( noticeFrame.slot1:IsShown() ) then
-		RaidNotice_UpdateSlot( noticeFrame.slot1, noticeFrame.timings, elapsedTime );
+		RaidNotice_UpdateSlot( noticeFrame.slot1, noticeFrame.timings, elapsedTime, true );
 		inUse = true;
 	end
 
 	if ( noticeFrame.slot2:IsShown() ) then
-		RaidNotice_UpdateSlot( noticeFrame.slot2, noticeFrame.timings, elapsedTime );
+		RaidNotice_UpdateSlot( noticeFrame.slot2, noticeFrame.timings, elapsedTime, true );
 		inUse = true;
 	end
 	
@@ -76,19 +76,21 @@ function RaidNotice_ClearSlot( slotFrame )
 	slotFrame:Hide();
 end
 
-function RaidNotice_UpdateSlot( slotFrame, timings, elapsedTime )
+function RaidNotice_UpdateSlot( slotFrame, timings, elapsedTime, hasFading )
 	if ( slotFrame.scrollTime ) then
 		slotFrame.scrollTime = slotFrame.scrollTime + elapsedTime;
 		if ( slotFrame.scrollTime <= timings["RAID_NOTICE_SCALE_UP_TIME"] ) then
-			slotFrame:SetTextHeight(floor(timings["RAID_NOTICE_MIN_HEIGHT"]+((timings["RAID_NOTICE_MAX_HEIGHT"]-timings["RAID_NOTICE_MIN_HEIGHT"])*slotFrame.scrollTime/timings["RAID_NOTICE_SCALE_UP_TIME"])));
+			slotFrame:SetTextHeight(floor(timings["RAID_NOTICE_MIN_HEIGHT"]+((timings["RAID_NOTICE_MAX_HEIGHT"]-timings["RAID_NOTICE_MIN_HEIGHT"])*slotFrame.scrollTime/timings["RAID_NOTICE_SCALE_UP_TIME"])));			
 		elseif ( slotFrame.scrollTime <= timings["RAID_NOTICE_SCALE_DOWN_TIME"] ) then
 			slotFrame:SetTextHeight(floor(timings["RAID_NOTICE_MAX_HEIGHT"] - ((timings["RAID_NOTICE_MAX_HEIGHT"]-timings["RAID_NOTICE_MIN_HEIGHT"])*(slotFrame.scrollTime - timings["RAID_NOTICE_SCALE_UP_TIME"])/(timings["RAID_NOTICE_SCALE_DOWN_TIME"] - timings["RAID_NOTICE_SCALE_UP_TIME"]))));
 		else
 			slotFrame:SetTextHeight(timings["RAID_NOTICE_MIN_HEIGHT"]);
 			slotFrame.scrollTime = nil;
 		end
-	end	
-	FadingFrame_OnUpdate(slotFrame);
+	end
+	if ( hasFading ) then
+		FadingFrame_OnUpdate(slotFrame);
+	end
 end
 
 

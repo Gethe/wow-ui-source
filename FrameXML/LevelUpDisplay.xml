@@ -131,6 +131,8 @@
 						<Anchor point="BOTTOMRIGHT" relativePoint="BOTTOMRIGHT" relativeKey="$parent.icon"/>
 					</Anchors>
 				</Texture>
+			</Layer>
+			<Layer level="OVERLAY" textureSubLevel="2">
 				<Texture name="$parentSubIcon" parentKey="subIcon" file="Interface\LevelUp\LevelUpTex">
 					<Size x="22" y="22"/>
 					<Anchors>
@@ -153,27 +155,13 @@
 			<AnimationGroup parentKey="hideAnim">
 				<Alpha change="-1" duration="1.0" order="1" />
 				<Scripts>
-					<OnFinished>
-						local parent = LevelUpDisplay;
-						if ( parent.extraFrame ) then
-							parent.extraFrame:Hide();
-							parent.extraFrame = nil;
-						end
-						parent:Hide();
-					</OnFinished>
+					<OnFinished function="LevelUpDisplay_AnimOutFinished"/>
 				</Scripts>
 			</AnimationGroup>
 			<AnimationGroup parentKey="fastHideAnim">
 				<Alpha change="-1" duration="0.5" order="1" />
 				<Scripts>
-					<OnFinished>
-						local parent = LevelUpDisplay;
-						if ( parent.extraFrame ) then
-							parent.extraFrame:Hide();
-							parent.extraFrame = nil;
-						end
-						parent:Hide();
-					</OnFinished>
+					<OnFinished function="LevelUpDisplay_AnimOutFinished"/>
 				</Scripts>
 			</AnimationGroup>
 		</Animations>

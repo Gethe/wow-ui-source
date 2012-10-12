@@ -129,6 +129,7 @@ function PetBattleFrame_Display(self)
 	PetBattleFrame_UpdateActionBarLayout(self);
 	PetBattleFrame_UpdateAllActionButtons(self);
 	PetBattleFrame_InitSpeedIndicators(self);
+	PetBattleFrame_UpdateSpeedIndicators(self);
 	PetBattleFrame_UpdateXpBar(self);
 	PetBattleFrame_UpdatePassButtonAndTimer(self);
 	PetBattleFrame_UpdateInstructions(self);
@@ -181,11 +182,11 @@ function PetBattleFrame_UpdateSpeedIndicators(self)
 	local allyActive = C_PetBattles.GetActivePet(LE_BATTLE_PET_ALLY);
 	local allySpeed = C_PetBattles.GetSpeed(LE_BATTLE_PET_ALLY, allyActive);
 	
-	PetBattleFrame.ActiveAlly.Border:SetShown(enemySpeed <= allySpeed);
+	PetBattleFrame.ActiveEnemy.Border:SetShown(enemySpeed <= allySpeed);
 	PetBattleFrame.ActiveEnemy.Border2:SetShown(enemySpeed > allySpeed);
 	PetBattleFrame.ActiveEnemy.SpeedUnderlay:SetShown(enemySpeed > allySpeed);
 	PetBattleFrame.ActiveEnemy.SpeedIcon:SetShown(enemySpeed > allySpeed);
-
+	
 	PetBattleFrame.ActiveAlly.Border:SetShown(enemySpeed >= allySpeed);
 	PetBattleFrame.ActiveAlly.Border2:SetShown(enemySpeed < allySpeed);
 	PetBattleFrame.ActiveAlly.SpeedUnderlay:SetShown(enemySpeed < allySpeed);
@@ -890,14 +891,13 @@ end
 
 function PetBattleUnitFrame_ShowDropdown(self, petIndex)
 	--Right now, this only has the report option, so we won't display the dropdown if that won't be available
-	local name, speciesName = C_PetBattles.GetName(LE_BATTLE_PET_ENEMY, petIndex);
-	if (C_PetBattles.IsPlayerNPC(LE_BATTLE_PET_ENEMY) or not name or name == speciesName) then
-		return;
-	end
-
+	local name, speciesName = C_PetBattles.GetName(self.petOwner, petIndex);
+	
 	HideDropDownMenu(1);
+	PetBattleUnitFrameDropDown.petOwner = self.petOwner;	
 	PetBattleUnitFrameDropDown.name = name;	
 	PetBattleUnitFrameDropDown.petIndex = petIndex;
+	PetBattleUnitFrameDropDown.speciesID = C_PetBattles.GetPetSpeciesID(self.petOwner, self.petIndex);	
 	ToggleDropDownMenu(1, nil, PetBattleUnitFrameDropDown, "cursor");
 end
 
@@ -972,7 +972,23 @@ function PetBattleUnitFrame_UpdateDisplay(self)
 			self.SpeciesName:Hide();
 		end
 	end
-
+	
+	--Update the pet rarity border
+	if (self.Border) then
+		local rarity = C_PetBattles.GetBreedQuality(petOwner, petIndex);
+		if (ENABLE_COLORBLIND_MODE == "1") then 
+			self.Name:SetText(self.Name:GetText().." (".._G["BATTLE_PET_BREED_QUALITY"..rarity]..")");
+		else
+			self.Border:SetVertexColor(ITEM_QUALITY_COLORS[rarity-1].r, ITEM_QUALITY_COLORS[rarity-1].g, ITEM_QUALITY_COLORS[rarity-1].b);		
+			self.Name:SetVertexColor(ITEM_QUALITY_COLORS[rarity-1].r, ITEM_QUALITY_COLORS[rarity-1].g, ITEM_QUALITY_COLORS[rarity-1].b);
+		end
+	end
+	
+	if (self.BorderAlive and self.BorderAlive:IsShown()) then
+		local rarity = C_PetBattles.GetBreedQuality(petOwner, petIndex);
+		self.BorderAlive:SetVertexColor(ITEM_QUALITY_COLORS[rarity-1].r, ITEM_QUALITY_COLORS[rarity-1].g, ITEM_QUALITY_COLORS[rarity-1].b);		
+	end
+	
 	--Update the display of the level
 	if ( self.Level ) then
 		self.Level:SetText(C_PetBattles.GetLevel(petOwner, petIndex));
@@ -1118,13 +1134,30 @@ function PetBattleUnitFrameDropDown_Initialize(self)
 	info.notCheckable = 1;
 	UIDropDownMenu_AddButton(info);
 
-	info = UIDropDownMenu_CreateInfo();
-	info.text = REPORT_PET_NAME;
 	info.isTitle = nil;
-	info.notCheckable = 1;
-	info.func = PetBattleUnitFrameDropDown_ReportUnit;
-	info.arg1 = self.name;
-	info.arg2 = self.petIndex;
+	
+	local name, speciesName = C_PetBattles.GetName(self.petOwner, self.petIndex);
+	if (not C_PetBattles.IsPlayerNPC(LE_BATTLE_PET_ENEMY) and self.petOwner == LE_BATTLE_PET_ENEMY 
+		and name and name ~= speciesName) then
+		info.text = REPORT_PET_NAME;
+		info.func = PetBattleUnitFrameDropDown_ReportUnit;
+		info.arg1 = self.name;
+		info.arg2 = self.petIndex;
+		UIDropDownMenu_AddButton(info);
+	end
+	
+	info.disabled = nil;
+	info.text = PET_SHOW_IN_JOURNAL;
+	info.func = function ()
+					if (not PetJournalParent) then
+						PetJournal_LoadUI();
+					end
+					if (not PetJournalParent:IsShown()) then
+						ShowUIPanel(PetJournalParent);
+					end
+					PetJournalParent_SetTab(PetJournalParent, 2);
+					PetJournal_SelectSpecies(PetJournal, self.speciesID);
+				end
 	UIDropDownMenu_AddButton(info);
 end
 
@@ -1144,13 +1177,32 @@ function PetBattleUnitTooltip_UpdateForUnit(self, petOwner, petIndex)
 		height = height + 36;
 		self.SpeedAdvantage:Show();
 		self.SpeedAdvantageIcon:Show();
+		self.Delimiter2:SetPoint("TOPLEFT", self.SpeedAdvantageIcon, "BOTTOMLEFT", -3, -10)
 	else
 		self.SpeedAdvantage:Hide();
 		self.SpeedAdvantageIcon:Hide();
+		self.Delimiter2:SetPoint("TOPLEFT", self.SpeedAdvantageIcon, "BOTTOMLEFT", -3, 26)
 	end
 	
 	self.AttackAmount:SetText(attack);
 	self.SpeedAmount:SetText(speed);
+	
+	if (petOwner == LE_BATTLE_PET_ENEMY) then
+		local speciesID = C_PetBattles.GetPetSpeciesID(LE_BATTLE_PET_ENEMY, petIndex);
+		local numOwned, maxAllowed = C_PetJournal.GetNumCollectedInfo(speciesID);
+		if (numOwned < maxAllowed) then
+			self.CollectedText:SetText(GREEN_FONT_COLOR_CODE..format(ITEM_PET_KNOWN, numOwned, maxAllowed)..FONT_COLOR_CODE_CLOSE);
+		else
+			self.CollectedText:SetText(RED_FONT_COLOR_CODE..format(ITEM_PET_KNOWN, numOwned, maxAllowed)..FONT_COLOR_CODE_CLOSE);
+		end
+		self.CollectedText:Show();
+		self.HealthBorder:SetPoint("TOPLEFT", self.CollectedText, "BOTTOMLEFT", -1, -6);
+		height = height + self.CollectedText:GetHeight()
+	else
+		self.CollectedText:Hide();
+		self.HealthBorder:SetPoint("TOPLEFT", self.Icon, "BOTTOMLEFT", -1, -6);
+	end
+	
 
 	if ( petOwner == LE_BATTLE_PET_ALLY ) then
 		--Add the XP bar
@@ -1264,7 +1316,62 @@ function PetBattleUnitTooltip_UpdateForUnit(self, petOwner, petIndex)
 			texture:Hide();
 		end
 	end
+	
+	--Updates debuffs
+	local nextFrame = 1;
+	local debuffs = self.Debuffs;
+	local debuffsHeight = 0;
+	for i=1, C_PetBattles.GetNumAuras(petOwner, petIndex) do
+		local auraID, instanceID, turnsRemaining, isBuff = C_PetBattles.GetAuraInfo(petOwner, petIndex, i);
+		if (not isBuff) then
+			--We want to display this frame.
+			local frame = debuffs.frames[nextFrame];
+			if ( not frame ) then
+				--No frame, create one
+				debuffs.frames[nextFrame] = CreateFrame("FRAME", nil, debuffs, debuffs.template);
+				frame = debuffs.frames[nextFrame];
+				
+				--Anchor the new frame
+				if ( nextFrame == 1 ) then
+					frame:SetPoint("TOPLEFT", debuffs, "TOPLEFT", 0, 0);
+				else
+					frame:SetPoint("TOPLEFT", debuffs.frames[nextFrame - 1], "BOTTOMLEFT", 0, -6);
+				end
+			end
+			
+			--Update the actual aura
+			local id, name, icon, maxCooldown, description = C_PetBattles.GetAbilityInfoByID(auraID);
+			
+			frame.Icon:SetTexture(icon);
+			frame.Name:SetText(name);
+			if ( turnsRemaining < 0 ) then
+				frame.Duration:SetText("");
+			else
+				frame.Duration:SetFormattedText(PET_BATTLE_AURA_TURNS_REMAINING, turnsRemaining);
+			end
+			frame.auraIndex = i;
+			frame:Show();
 
+			nextFrame = nextFrame + 1;
+			debuffsHeight = debuffsHeight + 40;
+		end
+	end
+	
+	for i=nextFrame, #debuffs.frames do
+		debuffs.frames[i]:Hide();
+	end
+	
+	if (nextFrame > 1) then
+		debuffs:Show()
+		self.Delimiter2:Show()
+		debuffsHeight = debuffsHeight + 5 --extra padding to go below the debuffs
+	else
+		debuffs:Hide()
+		self.Delimiter2:Hide()
+	end
+	
+	debuffs:SetHeight(debuffsHeight);
+	height = height + debuffsHeight;
 	self:SetHeight(height);
 end
 
@@ -1622,7 +1729,11 @@ function PET_BATTLE_AURA_INFO:GetUnitFromToken(target)
 	end
 
 	if ( target == "aurawearer" ) then
-		return self.petOwner, self.petIndex;
+		local petOwner, petIndex = self.petOwner, self.petIndex; --The "wearer" refers to the affected pet, not the pad.
+		if ( petIndex == PET_BATTLE_PAD_INDEX ) then
+			petIndex = C_PetBattles.GetActivePet(petOwner);
+		end
+		return petOwner, petIndex;
 	elseif ( target == "auracaster" ) then
 		local _, _, _, _, casterOwner, casterIndex = C_PetBattles.GetAuraInfo(self.petOwner, self.petIndex, self.auraIndex);
 		return casterOwner, casterIndex;
@@ -1706,7 +1817,11 @@ function PET_BATTLE_AURA_ID_INFO:GetUnitFromToken(target)
 	end
 
 	if ( target == "aurawearer" ) then
-		return self.petOwner, self.petIndex;
+		local petOwner, petIndex = self.petOwner, self.petIndex;
+		if ( petIndex == PET_BATTLE_PAD_INDEX ) then --The "wearer" refers to the affected pet, not the pad.
+			petIndex = C_PetBattles.GetActivePet(petOwner);
+		end
+		return petOwner, petIndex;
 	elseif ( target == "auracaster" ) then
 		return self.petOwner, self.petIndex;	--Setting by ID should only occur for auras that aren't actually on the target (such as passives). These can be considered as cast by this pet.
 	else

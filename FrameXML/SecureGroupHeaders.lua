@@ -809,7 +809,7 @@ local function configureAuras(self, auraTable, consolidateTable, weaponPosition)
 		top = max(top, button:GetTop() or -math.huge);
 		bottom = min(bottom, button:GetBottom() or math.huge);
 	end
-	local deadIndex = display + 1;
+	local deadIndex = #(auraTable) + 1;
 	local button = self:GetAttribute("child"..deadIndex);
 	while ( button ) do
 		button:Hide();

@@ -506,6 +506,14 @@ size=64,128
 					<Color r="1" g="1" b="1" a="1"/>
 				</FontString>
 			</Layer>
+			<Layer level="ARTWORK" textureSubLevel="2">
+				<Texture name="$parentQualityBorder" parentKey="qualityBorder" file="Interface\Common\WhiteIconFrame">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativePoint="TOPLEFT" relativeKey="$parent.icon"/>
+						<Anchor point="BOTTOMRIGHT" relativePoint="BOTTOMRIGHT" relativeKey="$parent.icon"/>
+					</Anchors>
+				</Texture>
+			</Layer>
 			<Layer level="OVERLAY" textureSubLevel="1">
 				<Texture parentKey="isDead" file="Interface\PetBattles\DeadPetIcon" hidden="true">
 					<Size x="38" y="38"/>
@@ -528,6 +536,13 @@ size=64,128
 						<Anchor point="CENTER" relativePoint="CENTER" relativeTo="$parentLevelBG" x="1" y="-1"/>
 					</Anchors>
 				</FontString>
+				<Texture name="$parentFavorite" file="Interface\PetBattles\PetJournal" parentKey="favorite">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="$parentIcon" x="-8" y="8"/>
+					</Anchors>
+					<Size x="25" y="25"/>	
+					<TexCoords left="0.11328125" right="0.16210938" top="0.02246094" bottom="0.04687500"/>	
+				</Texture>
 			</Layer>
 		</Layers>
 		<Frames>
@@ -829,6 +844,10 @@ size=64,128
 					<OnClick>
 						local type, petID = GetCursorInfo();
 						if type == "battlepet" then
+							local _, dialog = StaticPopup_Visible("BATTLE_PET_RELEASE");
+							if ( dialog and dialog.data == petID ) then
+								StaticPopup_Hide("BATTLE_PET_RELEASE");
+							end
 							C_PetJournal.SetPetLoadOutInfo(self:GetParent():GetID(), petID);
 							PetJournal_UpdatePetLoadOut();
 							ClearCursor();
@@ -837,6 +856,10 @@ size=64,128
 					<OnReceiveDrag>
 						local type, petID = GetCursorInfo();
 						if type == "battlepet" then
+							local _, dialog = StaticPopup_Visible("BATTLE_PET_RELEASE");
+							if ( dialog and dialog.data == petID ) then
+								StaticPopup_Hide("BATTLE_PET_RELEASE");
+							end
 							C_PetJournal.SetPetLoadOutInfo(self:GetParent():GetID(), petID);
 							PetJournal_UpdatePetLoadOut();
 							ClearCursor();
@@ -854,6 +877,7 @@ size=64,128
 					<OnClick function="PetJournalPetLoadoutDragButton_OnClick"/>	
 					<OnLoad>
 						self:RegisterForDrag("LeftButton");
+						self:RegisterForClicks("RightButtonUp");
 					</OnLoad>
 					<OnDragStart function="PetJournalDragButton_OnDragStart"/>
 				</Scripts>
@@ -923,6 +947,23 @@ size=64,128
 					</OnEnter>
 				</Scripts>
 			</Frame>
+			<Button parentKey="MenuRegion">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentIcon" />
+					<Anchor point="BOTTOMRIGHT" relativeTo="$parentIcon" x="250" />
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						self:RegisterForClicks("RightButtonUp");
+					</OnLoad>
+					<OnClick>
+						loadout = self:GetParent();
+						if (button == "RightButton" and loadout.petID) then
+							PetJournal_ShowPetDropdown(nil, self, 0, 0, loadout.petID);
+						end
+					</OnClick>
+				</Scripts>
+			</Button>
 		</Frames>
 		<Scripts>
 			<OnLoad>
@@ -1069,7 +1110,11 @@ size=64,128
 				PetJournalParentTitleText:SetText(MOUNTS_AND_PETS);
 				SetPortraitToTexture(PetJournalParentPortrait,"Interface\\Icons\\MountJournalPortrait");
 				PanelTemplates_SetNumTabs(self, 2);
-				PanelTemplates_SetTab(self, 1);
+				if (GetCVar("petJournalTab") == "2") then
+					PanelTemplates_SetTab(self, 2);
+				else
+					PanelTemplates_SetTab(self, 1);
+				end
 			</OnLoad>
 			<OnShow function="PetJournalParent_OnShow"/>
 			<OnHide function="PetJournalParent_OnHide"/>
@@ -1092,6 +1137,15 @@ size=64,128
 					<Anchor point="BOTTOMLEFT" relativeKey="$parent.LeftInset" relativePoint="BOTTOMRIGHT" x="20" y="0"/>
 				</Anchors>
 			</Frame>
+			<EditBox name="$parentSearchBox" inherits="SearchBoxTemplate" parentKey="searchBox" letters="40">
+				<Size x="237" y="20"/>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.LeftInset" x="15" y="-9"/>
+				</Anchors>
+				<Scripts>
+					<OnTextChanged function="MountJournal_OnSearchTextChanged"/>
+				</Scripts>
+			</EditBox>
 			<Frame parentKey="MountCount" useParentLevel="true" inherits="InsetFrameTemplate3">
 				<Size x="130" y="20"/>
 				<Anchors>
@@ -1194,7 +1248,7 @@ size=64,128
 			<!--Name needed for HybridScrollFrameTemplate-->
 			<ScrollFrame name="$parentListScrollFrame" parentKey="ListScrollFrame" inherits="HybridScrollFrameTemplate">
 				<Anchors>
-					<Anchor point="TOPLEFT" relativeKey="$parent.LeftInset" x="3" y="-5"/>
+					<Anchor point="TOPLEFT" relativeKey="$parent.LeftInset" x="3" y="-36"/>
 					<Anchor point="BOTTOMRIGHT" relativeKey="$parent.LeftInset" x="-2" y="5"/>
 				</Anchors>
 				<Frames>
@@ -1607,6 +1661,14 @@ size=64,128
 									</Anchors>
 								</Texture>
 							</Layer>
+							<Layer level="ARTWORK" textureSubLevel="2">
+								<Texture name="$parentQualityBorder" parentKey="qualityBorder" file="Interface\Common\WhiteIconFrame">
+									<Anchors>
+										<Anchor point="TOPLEFT" relativePoint="TOPLEFT" relativeKey="$parent.icon"/>
+										<Anchor point="BOTTOMRIGHT" relativePoint="BOTTOMRIGHT" relativeKey="$parent.icon"/>
+									</Anchors>
+								</Texture>
+							</Layer>
 							<Layer level="OVERLAY">
 								<FontString name="$parentName" inherits="GameFontNormal" justifyH="LEFT" justifyV="BOTTOM" parentKey="name">
 									<Size x="225" y="0"/>
@@ -1643,6 +1705,13 @@ size=64,128
 										<Anchor point="CENTER" relativeTo="$parentLevelBubble" x="0" y="0"/>
 									</Anchors>
 								</FontString>
+								<Texture name="$parentFavorite" file="Interface\PetBattles\PetJournal" parentKey="favorite">
+									<Anchors>
+										<Anchor point="TOPLEFT" relativeTo="$parentIcon" x="-8" y="8"/>
+									</Anchors>
+									<Size x="25" y="25"/>	
+									<TexCoords left="0.11328125" right="0.16210938" top="0.02246094" bottom="0.04687500"/>	
+								</Texture>
 							</Layer>
 						</Layers>
 						<Scripts>

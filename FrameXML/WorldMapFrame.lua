@@ -102,6 +102,48 @@ VEHICLE_TEXTURES["Arrow"] = {
 	width=64,
 	height=64,
 };
+VEHICLE_TEXTURES["Trap Gold"] = {
+	"Interface\\Minimap\\Vehicle-Trap-Gold",
+	"Interface\\Minimap\\Vehicle-Trap-Gold",
+	width=64,
+	height=64,
+};
+VEHICLE_TEXTURES["Trap Grey"] = {
+	"Interface\\Minimap\\Vehicle-Trap-Grey",
+	"Interface\\Minimap\\Vehicle-Trap-Grey",
+	width=64,
+	height=64,
+};
+VEHICLE_TEXTURES["Trap Red"] = {
+	"Interface\\Minimap\\Vehicle-Trap-Red",
+	"Interface\\Minimap\\Vehicle-Trap-Red",
+	width=64,
+	height=64,
+};
+VEHICLE_TEXTURES["Hammer Gold 0"] = {
+	"Interface\\Minimap\\Vehicle-HammerGold",
+	"Interface\\Minimap\\Vehicle-HammerGold",
+	width=64,
+	height=64,
+};
+VEHICLE_TEXTURES["Hammer Gold 1"] = {
+	"Interface\\Minimap\\Vehicle-HammerGold-1",
+	"Interface\\Minimap\\Vehicle-HammerGold-1",
+	width=64,
+	height=64,
+};
+VEHICLE_TEXTURES["Hammer Gold 2"] = {
+	"Interface\\Minimap\\Vehicle-HammerGold-2",
+	"Interface\\Minimap\\Vehicle-HammerGold-2",
+	width=64,
+	height=64,
+};
+VEHICLE_TEXTURES["Hammer Gold 3"] = {
+	"Interface\\Minimap\\Vehicle-HammerGold-3",
+	"Interface\\Minimap\\Vehicle-HammerGold-3",
+	width=64,
+	height=64,
+};
 
 WORLDMAP_DEBUG_ICON_INFO = {};
 WORLDMAP_DEBUG_ICON_INFO[1] = { size =  6, r = 0.0, g = 1.0, b = 0.0 };
@@ -113,7 +155,7 @@ WORLDMAP_SETTINGS = {
 	opacity = 0,
 	locked = true,
 	selectedQuest = nil,
-	selectedQuestId = 0,
+	superTrackedQuestID = 0,
 	size = WORLDMAP_QUESTLIST_SIZE
 };
 
@@ -192,13 +234,22 @@ function WorldMapFrame_OnShow(self)
 	if ( WORLDMAP_SETTINGS.size ~= WORLDMAP_WINDOWED_SIZE ) then
 		SetupFullscreenScale(self);
 		WorldMap_LoadTextures();
+		-- pet battle level size adjustment
+		WorldMapFrameAreaPetLevels:SetFontObject("PVPInfoTextFont")
 		if ( not WatchFrame.showObjectives and WORLDMAP_SETTINGS.size ~= WORLDMAP_FULLMAP_SIZE ) then
 			WorldMapFrame_SetFullMapView();
-		end		
+		end
+	else
+		-- pet battle level size adjustment
+		WorldMapFrameAreaPetLevels:SetFontObject("SubZoneTextFont");
 	end
 	
 	UpdateMicroButtons();
-	SetMapToCurrentZone();
+	if (not WorldMapFrame.toggling) then
+		SetMapToCurrentZone();
+	else
+		WorldMapFrame.toggling = false;
+	end
 	PlaySound("igQuestLogOpen");
 	CloseDropDownMenus();
 	WorldMapFrame_PingPlayerPosition();	
@@ -224,8 +275,15 @@ function WorldMapFrame_OnHide(self)
 		self.showOnHide = nil;
 	end
 	-- forces WatchFrame event via the WORLD_MAP_UPDATE event, needed to restore the POIs in the tracker to the current zone
-	SetMapToCurrentZone();
+	if (not WorldMapFrame.toggling) then
+		SetMapToCurrentZone();
+	end
 	CancelEmote();
+	if ( WORLDMAP_SETTINGS.superTrackedQuestID > 0 ) then
+		SetSuperTrackedQuestID(WORLDMAP_SETTINGS.superTrackedQuestID);
+		QuestPOI_SelectButtonByQuestId("WatchFrameLines", WORLDMAP_SETTINGS.superTrackedQuestID, true);
+		WORLDMAP_SETTINGS.superTrackedQuestID = 0;
+	end
 end
 
 function WorldMapFrame_OnEvent(self, event, ...)
@@ -1114,11 +1172,13 @@ function WorldMapButton_OnUpdate(self, elapsed)
 	local adjustedY = (centerY + (height/2) - y ) / height;
 	local adjustedX = (x - (centerX - (width/2))) / width;
 	
-	local name, fileName, texPercentageX, texPercentageY, textureX, textureY, scrollChildX, scrollChildY, minLevel, maxLevel
+	local name, fileName, texPercentageX, texPercentageY, textureX, textureY, scrollChildX, scrollChildY, minLevel, maxLevel, petMinLevel, petMaxLevel
 	if ( self:IsMouseOver() ) then
-		name, fileName, texPercentageX, texPercentageY, textureX, textureY, scrollChildX, scrollChildY, minLevel, maxLevel = UpdateMapHighlight( adjustedX, adjustedY );
+		name, fileName, texPercentageX, texPercentageY, textureX, textureY, scrollChildX, scrollChildY, minLevel, maxLevel, petMinLevel, petMaxLevel = UpdateMapHighlight( adjustedX, adjustedY );
 	end
-
+	
+	WorldMapFrameAreaPetLevels:SetText(""); --make sure pet level is cleared
+	
 	WorldMapFrame.areaName = name;
 	if ( not WorldMapFrame.poiHighlight ) then
 		if ( WorldMapFrame.maelstromZoneText ) then
@@ -1141,7 +1201,38 @@ function WorldMapButton_OnUpdate(self, elapsed)
 				color = QuestDifficultyColors["difficult"];
 			end
 			color = ConvertRGBtoColorString(color);
-			WorldMapFrameAreaLabel:SetText(WorldMapFrameAreaLabel:GetText()..color.." ("..minLevel.."-"..maxLevel..")");
+			if (minLevel ~= maxLevel) then
+				WorldMapFrameAreaLabel:SetText(WorldMapFrameAreaLabel:GetText()..color.." ("..minLevel.."-"..maxLevel..")");
+			else
+				WorldMapFrameAreaLabel:SetText(WorldMapFrameAreaLabel:GetText()..color.." ("..maxLevel..")");
+			end
+		end
+		local _, _, _, _, locked = C_PetJournal.GetPetLoadOutInfo(1);
+		if (not locked) then --don't show pet levels for people who haven't unlocked battle petting
+			if (petMinLevel and petMaxLevel and petMinLevel > 0 and petMaxLevel > 0) then 
+				local teamLevel = C_PetJournal.GetPetTeamAverageLevel();
+				local color
+				if (teamLevel) then
+					if (teamLevel < petMinLevel) then
+						--add 2 to the min level because it's really hard to fight higher level pets
+						color = GetRelativeDifficultyColor(teamLevel, petMinLevel + 2);
+					elseif (teamLevel > petMaxLevel) then
+						color = GetRelativeDifficultyColor(teamLevel, petMaxLevel); 
+					else
+						--if your team is in the level range, no need to call the function, just make it yellow
+						color = QuestDifficultyColors["difficult"];
+					end
+				else
+					--If you unlocked pet battles but have no team, level ranges are meaningless so make them grey
+					color = QuestDifficultyColors["header"];
+				end
+				color = ConvertRGBtoColorString(color);
+				if (minLevel ~= maxLevel) then
+					WorldMapFrameAreaPetLevels:SetText(WORLD_MAP_WILDBATTLEPET_LEVEL..color.."("..petMinLevel.."-"..petMaxLevel..")");
+				else
+					WorldMapFrameAreaPetLevels:SetText(WORLD_MAP_WILDBATTLEPET_LEVEL..color.."("..petMaxLevel..")");
+				end
+			end
 		end
 	end
 	if ( fileName ) then
@@ -1682,6 +1773,7 @@ end
 
 function WorldMapFrame_ToggleWindowSize()
 	-- close the frame first so the UI panel system can do its thing	
+	WorldMapFrame.toggling = true;
 	ToggleFrame(WorldMapFrame);
 	-- apply magic
 	if ( WORLDMAP_SETTINGS.size == WORLDMAP_WINDOWED_SIZE ) then
@@ -1797,6 +1889,8 @@ function WorldMap_ToggleSizeDown()
 	WorldMapFrameTitle:ClearAllPoints();
 	WorldMapFrameTitle:SetPoint("TOP", WorldMapDetailFrame, 0, 20);
 	WorldMapTooltip:SetFrameStrata("TOOLTIP");
+	-- pet battle level size adjustment
+	WorldMapFrameAreaPetLevels:SetFontObject("SubZoneTextFont");
 	-- user-movable
 	WorldMapFrame:ClearAllPoints();
 	SetUIPanelAttribute(WorldMapFrame, "area", "center");
@@ -1848,15 +1942,10 @@ end
 
 function WorldMapFrame_DisplayQuests(selectQuestId)
 	if ( WorldMapFrame_UpdateQuests() > 0 ) then
-		if ( selectQuestId ) then
-			-- select the requested quest
-			WorldMapFrame_SelectQuestById(selectQuestId);
-		elseif ( WORLDMAP_SETTINGS.selectedQuestId ) then
-			-- try to select previously selected quest
-			WorldMapFrame_SelectQuestById(WORLDMAP_SETTINGS.selectedQuestId);
-		else
-			-- select the first quest
-			WorldMapFrame_SelectQuestFrame(_G["WorldMapQuestFrame1"]);
+		-- if a quest id wasn't passed in, try to select supertracked quest
+		if ( not WorldMapFrame_SelectQuestById(selectQuestId) and  WorldMapFrame_SelectQuestById(GetSuperTrackedQuestID()) and WorldMapQuestFrame1 ) then
+			-- quest id wasn't found on this map, select the first quest and save the supertracked quest id
+			WorldMapFrame_SelectQuestFrame(WorldMapQuestFrame1, true);
 		end
 		if ( WORLDMAP_SETTINGS.size == WORLDMAP_FULLMAP_SIZE ) then
 			WorldMapFrame_SetQuestMapView();
@@ -1875,6 +1964,10 @@ function WorldMapFrame_DisplayQuests(selectQuestId)
 end
 
 function WorldMapFrame_SelectQuestById(questId)
+	if ( not questId or questId <= 0 ) then
+		return false;
+	end
+
 	local questFrame;
 	for i = 1, MAX_NUM_QUESTS do
 		questFrame = _G["WorldMapQuestFrame"..i];
@@ -1882,13 +1975,10 @@ function WorldMapFrame_SelectQuestById(questId)
 			break
 		elseif ( questFrame.questId == questId ) then
 			WorldMapFrame_SelectQuestFrame(questFrame);
-			return;
+			return true;
 		end
 	end
-	-- failed to find quest by id
-	if ( WorldMapQuestFrame1 ) then
-		WorldMapFrame_SelectQuestFrame(WorldMapQuestFrame1);
-	end
+	return false;
 end
 
 function WorldMapFrame_SetQuestMapView()
@@ -1905,6 +1995,8 @@ function WorldMapFrame_SetQuestMapView()
 		_G["WorldMapFrameTexture"..i]:Hide();
 	end
 	EncounterJournal_AddMapButtons();
+	-- pet battle level size adjustment
+	WorldMapFrameAreaPetLevels:SetFontObject("PVPInfoTextFont")
 end
 
 function WorldMapFrame_SetFullMapView()
@@ -1921,6 +2013,8 @@ function WorldMapFrame_SetFullMapView()
 		_G["WorldMapFrameTexture"..i]:Show();
 	end
 	EncounterJournal_AddMapButtons();
+	-- pet battle level size adjustment
+	WorldMapFrameAreaPetLevels:SetFontObject("TextStatusBarTextLarge")
 end
 
 function WorldMapFrame_UpdateMap(questId)
@@ -2068,7 +2162,7 @@ function WorldMapFrame_UpdateQuests()
 	return questCount;
 end
 
-function WorldMapFrame_SelectQuestFrame(questFrame)
+function WorldMapFrame_SelectQuestFrame(questFrame, saveID)
 	local poiIcon;
 	local color;
 	-- clear current selection	
@@ -2085,8 +2179,13 @@ function WorldMapFrame_SelectQuestFrame(questFrame)
 		poiIcon:SetFrameLevel(WORLDMAP_POI_FRAMELEVEL);
 	end
 	WORLDMAP_SETTINGS.selectedQuest = questFrame;
-	WORLDMAP_SETTINGS.selectedQuestId = questFrame.questId;
-	SetSuperTrackedQuestID(WORLDMAP_SETTINGS.selectedQuestId);
+	-- Save the superTrackedQuestID to restore on map close
+	if ( saveID ) then
+		WORLDMAP_SETTINGS.superTrackedQuestID = GetSuperTrackedQuestID();
+	else
+		WORLDMAP_SETTINGS.superTrackedQuestID = 0;
+	end
+	SetSuperTrackedQuestID(questFrame.questId);
 	WorldMapQuestSelectedFrame:SetPoint("TOPLEFT", questFrame, "TOPLEFT", -10, 0);
 	WorldMapQuestSelectedFrame:SetHeight(questFrame:GetHeight());
 	WorldMapQuestSelectedFrame:Show();
@@ -2268,7 +2367,7 @@ function WorldMapQuestPOI_OnClick(self)
 	PlaySound("igMainMenuOptionCheckBoxOn");
 	if ( self.quest ~= WORLDMAP_SETTINGS.selectedQuest ) then
 		if ( WORLDMAP_SETTINGS.selectedQuest ) then
-			WorldMapBlobFrame:DrawBlob(WORLDMAP_SETTINGS.selectedQuestId, false);
+			WorldMapBlobFrame:DrawBlob(GetSuperTrackedQuestID(), false);
 		end
 		WorldMapFrame_SelectQuestFrame(self.quest);
 	end
@@ -2447,7 +2546,7 @@ end
 function WorldMapTitleButton_OnDragStart()
 	if ( not WORLDMAP_SETTINGS.locked ) then
 		if ( WORLDMAP_SETTINGS.selectedQuest ) then
-			WorldMapBlobFrame:DrawBlob(WORLDMAP_SETTINGS.selectedQuestId, false);
+			WorldMapBlobFrame:DrawBlob(GetSuperTrackedQuestID(), false);
 		end
 		WorldMapScreenAnchor:ClearAllPoints();
 		WorldMapFrame:ClearAllPoints();
@@ -2460,7 +2559,7 @@ function WorldMapTitleButton_OnDragStop()
 		WorldMapFrame:StopMovingOrSizing();
 		WorldMapBlobFrame_CalculateHitTranslations();
 		if ( WORLDMAP_SETTINGS.selectedQuest and not WORLDMAP_SETTINGS.selectedQuest.completed ) then
-			WorldMapBlobFrame:DrawBlob(WORLDMAP_SETTINGS.selectedQuestId, true);
+			WorldMapBlobFrame:DrawBlob(GetSuperTrackedQuestID(), true);
 		end		
 		-- move the anchor
 		WorldMapScreenAnchor:StartMoving();
@@ -2556,6 +2655,7 @@ end
 
 function WorldMapTrackQuest_Toggle(isChecked)
 	local questIndex = WORLDMAP_SETTINGS.selectedQuest.questLogIndex;
+	local questId = GetSuperTrackedQuestID();
 	if ( isChecked ) then
 		if ( GetNumQuestWatches() > MAX_WATCHABLE_QUESTS ) then
 			UIErrorsFrame:AddMessage(format(QUEST_WATCH_TOO_MANY, MAX_WATCHABLE_QUESTS), 1.0, 0.1, 0.1, 1.0);
@@ -2563,15 +2663,15 @@ function WorldMapTrackQuest_Toggle(isChecked)
 			return;
 		end
 		if ( LOCAL_MAP_QUESTS["zone"] == GetCurrentMapZone() ) then
-			LOCAL_MAP_QUESTS[WORLDMAP_SETTINGS.selectedQuestId] = true;
+			LOCAL_MAP_QUESTS[questId] = true;
 		end
 		AddQuestWatch(questIndex);	
 	else
-		LOCAL_MAP_QUESTS[WORLDMAP_SETTINGS.selectedQuestId] = nil;
+		LOCAL_MAP_QUESTS[questId] = nil;
 		RemoveQuestWatch(questIndex);
 	end
 	WatchFrame_Update();
-	WorldMapFrame_DisplayQuests(WORLDMAP_SETTINGS.selectedQuestId);	
+	WorldMapFrame_DisplayQuests(questId);
 end
 
 

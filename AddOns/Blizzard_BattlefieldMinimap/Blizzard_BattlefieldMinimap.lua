@@ -272,15 +272,12 @@ function BattlefieldMinimap_OnUpdate(self, elapsed)
 		BattlefieldMinimap.updateTimer = BATTLEFIELD_MINIMAP_UPDATE_RATE;
 	else
 		BattlefieldMinimap.updateTimer = BattlefieldMinimap.updateTimer - elapsed;
+		return;
 	end
 	
 	--Position player
 	UpdateWorldMapArrowFrames();
 	local playerX, playerY = GetPlayerMapPosition("player");
-	if ( playerX == 0 and playerY == 0 and not WorldMapFrame:IsShown() ) then
-		SetMapToCurrentZone();
-		playerX, playerY = GetPlayerMapPosition("player");
-	end
 	if ( playerX == 0 and playerY == 0 ) then
 		ShowMiniWorldMapArrowFrame(nil);
 	else

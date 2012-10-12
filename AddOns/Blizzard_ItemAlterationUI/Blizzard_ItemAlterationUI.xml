@@ -479,4 +479,132 @@
 			<OnHide function="TransmogrifyFrame_OnHide"/>
 		</Scripts>
 	</Frame>
+	<Frame name="TransmogrifyConfirmationPopup" toplevel="true" frameStrata="DIALOG" hidden="true">
+		<Size x="320" y="72"/>
+		<Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background" edgeFile="Interface\DialogFrame\UI-DialogBox-Border" tile="true">
+			<BackgroundInsets>
+				<AbsInset left="11" right="12" top="12" bottom="11"/>
+			</BackgroundInsets>
+			<TileSize>
+				<AbsValue val="32"/>
+			</TileSize>
+			<EdgeSize>
+				<AbsValue val="32"/>
+			</EdgeSize>
+		</Backdrop>
+		<Layers>
+			<Layer level="ARTWORK">
+				<FontString parentKey="Text" inherits="GameFontHighlight">
+					<Size x="290" y="0"/>
+					<Anchors>
+						<Anchor point="TOP" x="0" y="-16"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Button inherits="StaticPopupButtonTemplate" parentKey="Button1" text="OKAY">
+				<Anchors>
+					<Anchor point="BOTTOMRIGHT" relativePoint="BOTTOM" x="-6" y="16"/>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						TransmogrifyConfirmationPopup.slot = nil;		-- to keep popup from clearing slot on hide
+						StaticPopupSpecial_Hide(TransmogrifyConfirmationPopup);
+						TransmogrifyFrame_UpdateApplyButton();
+					</OnClick>
+				</Scripts>
+			</Button>
+			<Button inherits="StaticPopupButtonTemplate" parentKey="Button2" text="CANCEL">
+				<Anchors>
+					<Anchor point="LEFT" relativeKey="$parent.Button1" relativePoint="RIGHT" x="13" y="0"/>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						StaticPopupSpecial_Hide(TransmogrifyConfirmationPopup);
+					</OnClick>
+				</Scripts>
+			</Button>
+			<Button name="$parentItemFrame1" inherits="ItemButtonTemplate" parentKey="ItemFrame1">
+				<Size x="37" y="37"/>
+				<Anchors>
+					<Anchor point="BOTTOM" relativeKey="$parent.Button1" relativePoint="TOP" x="0" y="8"/>
+					<Anchor point="LEFT" x="82" y="0"/>
+				</Anchors>
+				<Layers>
+					<Layer level="ARTWORK">
+						<Texture file="Interface\QuestFrame\UI-QuestItemNameFrame">
+							<Size x="140" y="62"/>
+							<Anchors>
+								<Anchor point="LEFT" x="30" y="0"/>
+							</Anchors>
+						</Texture>
+						<FontString parentKey="Text" inherits="GameFontNormal" justifyH="LEFT">
+							<Size x="103" y="38"/>
+							<Anchors>
+								<Anchor point="LEFT" relativePoint="RIGHT" x="8" y="0"/>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnEnter>
+						if ( self.link ) then
+							GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+							GameTooltip:SetHyperlink(self.link);
+						end
+					</OnEnter>
+					<OnLeave>
+						GameTooltip:Hide();
+					</OnLeave>
+				</Scripts>
+			</Button>
+			<Button name="$parentItemFrame2" inherits="ItemButtonTemplate" parentKey="ItemFrame2">
+				<Size x="37" y="37"/>
+				<Anchors>
+					<Anchor point="BOTTOM" relativeKey="$parent.ItemFrame1" relativePoint="TOP" x="0" y="8"/>
+				</Anchors>
+				<Layers>
+					<Layer level="ARTWORK">
+						<Texture file="Interface\QuestFrame\UI-QuestItemNameFrame">
+							<Size x="140" y="62"/>
+							<Anchors>
+								<Anchor point="LEFT" x="30" y="0"/>
+							</Anchors>
+						</Texture>
+						<FontString parentKey="Text" inherits="GameFontNormal" justifyH="LEFT">
+							<Size x="103" y="38"/>
+							<Anchors>
+								<Anchor point="LEFT" relativePoint="RIGHT" x="8" y="0"/>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnEnter>
+						if ( self.link ) then
+							GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+							GameTooltip:SetHyperlink(self.link);
+						end
+					</OnEnter>
+					<OnLeave>
+						GameTooltip:Hide();
+					</OnLeave>
+				</Scripts>
+			</Button>
+		</Frames>
+		<Scripts>
+			<OnLoad>
+				self.exclusive = 1;
+				self.hideOnEscape = 1;
+			</OnLoad>
+			<OnHide>
+				if ( self.slot ) then
+					ClearTransmogrifySlot(self.slot);
+				else
+					PlaySound("igMainMenuClose");
+				end				
+			</OnHide>
+		</Scripts>
+	</Frame>
 </Ui>

@@ -270,6 +270,7 @@ function ActionButton_Update (self)
 		ActionButton_UpdateState(self);
 		ActionButton_UpdateUsable(self);
 		ActionButton_UpdateCooldown(self);
+		ActionButton_UpdateLossOfControlCooldown(self);
 		ActionButton_UpdateFlash(self);
 	else
 		if ( self.eventsRegistered ) then
@@ -426,6 +427,11 @@ function ActionButton_UpdateCooldown (self)
 	CooldownFrame_SetTimer(self.cooldown, start, duration, enable, charges, maxCharges);
 end
 
+function ActionButton_UpdateLossOfControlCooldown (self)
+	local start, duration = GetActionLossOfControlCooldown(self.action);
+	self.cooldown:SetLossOfControlCooldown(start, duration);
+end
+
 --Overlay stuff
 local unusedOverlayGlows = {};
 local numOverlays = 0;
@@ -539,6 +545,8 @@ function ActionButton_OnEvent (self, event, ...)
 		if ( GameTooltip:GetOwner() == self ) then
 			ActionButton_SetTooltip(self);
 		end
+	elseif ( event == "LOSS_OF_CONTROL_UPDATE" ) then	--Not actually registered for default action bars. Cooldowns are changed in C-code.
+		ActionButton_UpdateLossOfControlCooldown(self);
 	elseif ( event == "TRADE_SKILL_SHOW" or event == "TRADE_SKILL_CLOSE"  or event == "ARCHAEOLOGY_CLOSED" ) then
 		ActionButton_UpdateState(self);
 	elseif ( event == "PLAYER_ENTER_COMBAT" ) then
@@ -569,6 +577,8 @@ function ActionButton_OnEvent (self, event, ...)
 			if ( spellId and spellId == arg1 ) then
 				ActionButton_ShowOverlayGlow(self);
 			end
+		elseif (actionType == "flyout" and FlyoutHasSpell(id, arg1)) then
+			ActionButton_ShowOverlayGlow(self);
 		end
 	elseif ( event == "SPELL_ACTIVATION_OVERLAY_GLOW_HIDE" ) then
 		local actionType, id, subType = GetActionInfo(self.action);
@@ -579,6 +589,8 @@ function ActionButton_OnEvent (self, event, ...)
 			if (spellId and spellId == arg1 ) then
 				ActionButton_HideOverlayGlow(self);
 			end
+		elseif (actionType == "flyout" and FlyoutHasSpell(id, arg1)) then
+			ActionButton_HideOverlayGlow(self);
 		end
 	elseif ( event == "SPELL_UPDATE_CHARGES" ) then
 		ActionButton_UpdateCount(self);

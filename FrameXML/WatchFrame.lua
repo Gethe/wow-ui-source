@@ -771,7 +771,7 @@ function WatchFrame_DisplayTrackedAchievements (lineFrame, nextAnchor, maxHeight
 							-- Do not display this one
 							criteriaString = nil;
 							dash = DASH_NONE;
-						elseif ( criteriaDisplayed == WATCHFRAME_CRITERIA_PER_ACHIEVEMENT ) then
+						elseif ( criteriaDisplayed == WATCHFRAME_CRITERIA_PER_ACHIEVEMENT and numCriteria > (WATCHFRAME_CRITERIA_PER_ACHIEVEMENT + 1) ) then
 							-- We ran out of space to display incomplete criteria >_<
 							criteriaString = "...";
 							dash = DASH_HIDE;
@@ -916,8 +916,9 @@ function WatchFrame_DisplayTrackedQuests (lineFrame, nextAnchor, maxHeight, fram
 	
 	table.wipe(VISIBLE_WATCHES);
 	WatchFrame_ResetQuestLines();
-	
-	if ((numQuestWatches == 0) or (not IsQuestWatched(GetQuestLogIndexByID(GetSuperTrackedQuestID())))) then
+
+	-- if supertracked quest is not in the quest log anymore, stop supertracking it
+	if ( GetQuestLogIndexByID(GetSuperTrackedQuestID()) == 0 ) then
 		SetSuperTrackedQuestID(0);
 	end
 	
@@ -937,9 +938,8 @@ function WatchFrame_DisplayTrackedQuests (lineFrame, nextAnchor, maxHeight, fram
 			numValidQuests = numValidQuests + 1;
 			title, level, questTag, suggestedGroup, isHeader, isCollapsed, isComplete, isDaily, questID, startEvent = GetQuestLogTitle(questIndex);
 			
-			if (WORLDMAP_SETTINGS and GetSuperTrackedQuestID() == 0) then
+			if (GetSuperTrackedQuestID() == 0) then
 				SetSuperTrackedQuestID(questID);
-				WORLDMAP_SETTINGS.selectedQuestId = questID;
 			end
 			
 			local questFailed = false;
@@ -1095,9 +1095,10 @@ function WatchFrame_DisplayTrackedQuests (lineFrame, nextAnchor, maxHeight, fram
 	
 	WatchFrame_ReleaseUnusedQuestLines();
 
-	if ( WORLDMAP_SETTINGS and WORLDMAP_SETTINGS.selectedQuestId ) then
+	local trackedQuestID = GetSuperTrackedQuestID();
+	if ( trackedQuestID ) then
 		QuestPOIUpdateIcons();
-		QuestPOI_SelectButtonByQuestId("WatchFrameLines", WORLDMAP_SETTINGS.selectedQuestId, true);	
+		QuestPOI_SelectButtonByQuestId("WatchFrameLines", trackedQuestID, true);
 	end
 	
 	return lastLine or nextAnchor, maxWidth, numValidQuests, 0;
@@ -1471,9 +1472,10 @@ function WatchFrame_GetCurrentMapQuests()
 end
 
 function WatchFrameQuestPOI_OnClick(self, button)
-	WORLDMAP_SETTINGS.selectedQuestId = self.questId;
 	QuestPOI_SelectButtonByQuestId("WatchFrameLines", self.questId, true);
-	WorldMapFrame_SelectQuestById(self.questId);
+	if ( WorldMapFrame:IsShown() ) then
+		WorldMapFrame_SelectQuestById(self.questId);
+	end
 	SetSuperTrackedQuestID(self.questId);
 	PlaySound("igMainMenuOptionCheckBoxOn");
 end

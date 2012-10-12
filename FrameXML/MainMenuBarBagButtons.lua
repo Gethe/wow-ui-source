@@ -70,12 +70,10 @@ end
 function ItemAnim_OnEvent(self, event, ...)
 	if ( event == "ITEM_PUSH" ) then
 		local arg1, arg2 = ...;
-		local id = self:GetParent():GetID();
+		local id = self:GetID();
 		if ( id == arg1 ) then
-			self:ReplaceIconTexture(arg2);
-			self:SetSequence(0);
-			self:SetSequenceTime(0, 0);
-			self:Show();
+			self.animIcon:SetTexture(arg2);
+			self.flyin:Play(1);
 		end
 	end
 end

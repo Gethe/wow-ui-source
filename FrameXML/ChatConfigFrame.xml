@@ -1069,9 +1069,9 @@
 											<OnClick>
 												local checked = self:GetChecked()
 												if ( checked ) then
-													CHATCONFIG_SELECTED_FILTER_SETTINGS.lineHighlighting = true;
+													CHATCONFIG_SELECTED_FILTER.settings.lineHighlighting = true;
 												else
-													CHATCONFIG_SELECTED_FILTER_SETTINGS.lineHighlighting = false;
+													CHATCONFIG_SELECTED_FILTER.settings.lineHighlighting = false;
 												end
 												CombatConfig_Colorize_Update();
 												ChatConfigFrame_PlayCheckboxSound(checked);
@@ -1095,9 +1095,9 @@
 											<OnClick>
 												local checked = self:GetChecked()
 												if ( checked ) then
-													CHATCONFIG_SELECTED_FILTER_SETTINGS.abilityHighlighting = true;
+													CHATCONFIG_SELECTED_FILTER.settings.abilityHighlighting = true;
 												else
-													CHATCONFIG_SELECTED_FILTER_SETTINGS.abilityHighlighting = false;
+													CHATCONFIG_SELECTED_FILTER.settings.abilityHighlighting = false;
 												end
 												CombatConfig_Colorize_Update();
 												ChatConfigFrame_PlayCheckboxSound(checked);
@@ -1121,9 +1121,9 @@
 											<OnClick>
 												local checked = self:GetChecked()
 												if ( checked ) then
-													CHATCONFIG_SELECTED_FILTER_SETTINGS.amountHighlighting = true;
+													CHATCONFIG_SELECTED_FILTER.settings.amountHighlighting = true;
 												else
-													CHATCONFIG_SELECTED_FILTER_SETTINGS.amountHighlighting = false;
+													CHATCONFIG_SELECTED_FILTER.settings.amountHighlighting = false;
 												end
 												CombatConfig_Colorize_Update();
 												ChatConfigFrame_PlayCheckboxSound(checked);
@@ -1147,9 +1147,9 @@
 											<OnClick>
 												local checked = self:GetChecked()
 												if ( checked ) then
-													CHATCONFIG_SELECTED_FILTER_SETTINGS.schoolNameHighlighting = true;
+													CHATCONFIG_SELECTED_FILTER.settings.schoolNameHighlighting = true;
 												else
-													CHATCONFIG_SELECTED_FILTER_SETTINGS.schoolNameHighlighting = false;
+													CHATCONFIG_SELECTED_FILTER.settings.schoolNameHighlighting = false;
 												end
 												CombatConfig_Colorize_Update();
 												ChatConfigFrame_PlayCheckboxSound(checked);											
@@ -1217,13 +1217,13 @@
 													<OnClick>
 														local checked = self:GetChecked()
 														if ( checked ) then
-															CHATCONFIG_SELECTED_FILTER_SETTINGS.unitColoring = true;
-															CHATCONFIG_SELECTED_FILTER_SETTINGS.sourceColoring = true;
-															CHATCONFIG_SELECTED_FILTER_SETTINGS.destColoring = true;
+															CHATCONFIG_SELECTED_FILTER.settings.unitColoring = true;
+															CHATCONFIG_SELECTED_FILTER.settings.sourceColoring = true;
+															CHATCONFIG_SELECTED_FILTER.settings.destColoring = true;
 														else
-															CHATCONFIG_SELECTED_FILTER_SETTINGS.unitColoring = false;
-															CHATCONFIG_SELECTED_FILTER_SETTINGS.sourceColoring = false;
-															CHATCONFIG_SELECTED_FILTER_SETTINGS.destColoring = false;
+															CHATCONFIG_SELECTED_FILTER.settings.unitColoring = false;
+															CHATCONFIG_SELECTED_FILTER.settings.sourceColoring = false;
+															CHATCONFIG_SELECTED_FILTER.settings.destColoring = false;
 														end
 														CombatConfig_Colorize_Update();
 														ChatConfigFrame_PlayCheckboxSound(checked);
@@ -1272,9 +1272,9 @@
 													<OnClick>
 														local checked = self:GetChecked()
 														if ( checked ) then
-															CHATCONFIG_SELECTED_FILTER_SETTINGS.abilityColoring = true;
+															CHATCONFIG_SELECTED_FILTER.settings.abilityColoring = true;
 														else
-															CHATCONFIG_SELECTED_FILTER_SETTINGS.abilityColoring = false;
+															CHATCONFIG_SELECTED_FILTER.settings.abilityColoring = false;
 														end
 														CombatConfig_Colorize_Update();
 														ChatConfigFrame_PlayCheckboxSound(checked);
@@ -1295,9 +1295,9 @@
 													<OnClick>
 														local checked = self:GetChecked()
 														if ( checked ) then
-															CHATCONFIG_SELECTED_FILTER_SETTINGS.abilitySchoolColoring = true;
+															CHATCONFIG_SELECTED_FILTER.settings.abilitySchoolColoring = true;
 														else
-															CHATCONFIG_SELECTED_FILTER_SETTINGS.abilitySchoolColoring = false;
+															CHATCONFIG_SELECTED_FILTER.settings.abilitySchoolColoring = false;
 														end
 														CombatConfig_Colorize_Update();
 														ChatConfigFrame_PlayCheckboxSound(checked);
@@ -1379,9 +1379,9 @@
 													<OnClick>
 														local checked = self:GetChecked()
 														if ( checked ) then
-															CHATCONFIG_SELECTED_FILTER_SETTINGS.amountColoring = true;
+															CHATCONFIG_SELECTED_FILTER.settings.amountColoring = true;
 														else
-															CHATCONFIG_SELECTED_FILTER_SETTINGS.amountColoring = false;
+															CHATCONFIG_SELECTED_FILTER.settings.amountColoring = false;
 														end
 														CombatConfig_Colorize_Update();
 														ChatConfigFrame_PlayCheckboxSound(checked);
@@ -1402,9 +1402,9 @@
 													<OnClick>
 														local checked = self:GetChecked()
 														if ( checked ) then
-															CHATCONFIG_SELECTED_FILTER_SETTINGS.amountSchoolColoring = true;
+															CHATCONFIG_SELECTED_FILTER.settings.amountSchoolColoring = true;
 														else
-															CHATCONFIG_SELECTED_FILTER_SETTINGS.amountSchoolColoring = false;
+															CHATCONFIG_SELECTED_FILTER.settings.amountSchoolColoring = false;
 														end
 														CombatConfig_Colorize_Update();
 														ChatConfigFrame_PlayCheckboxSound(checked);
@@ -1486,9 +1486,9 @@
 													<OnClick>
 														local checked = self:GetChecked()
 														if ( checked ) then
-															CHATCONFIG_SELECTED_FILTER_SETTINGS.schoolNameColoring = true;
+															CHATCONFIG_SELECTED_FILTER.settings.schoolNameColoring = true;
 														else
-															CHATCONFIG_SELECTED_FILTER_SETTINGS.schoolNameColoring = false;
+															CHATCONFIG_SELECTED_FILTER.settings.schoolNameColoring = false;
 														end
 														CombatConfig_Colorize_Update();
 														ChatConfigFrame_PlayCheckboxSound(checked);
@@ -1537,9 +1537,9 @@
 													<OnClick>
 														local checked = self:GetChecked()
 														if ( checked ) then
-															CHATCONFIG_SELECTED_FILTER_SETTINGS.lineColoring = true;
+															CHATCONFIG_SELECTED_FILTER.settings.lineColoring = true;
 														else
-															CHATCONFIG_SELECTED_FILTER_SETTINGS.lineColoring = false;
+															CHATCONFIG_SELECTED_FILTER.settings.lineColoring = false;
 														end
 														CombatConfig_Colorize_Update();
 														ChatConfigFrame_PlayCheckboxSound(checked);
@@ -1559,7 +1559,7 @@
 													</OnLoad>
 													<OnClick>
 														local checked = self:GetChecked();
-														CHATCONFIG_SELECTED_FILTER_SETTINGS.lineColorPriority = 1;
+														CHATCONFIG_SELECTED_FILTER.settings.lineColorPriority = 1;
 														CombatConfig_Colorize_Update();
 														ChatConfigFrame_PlayCheckboxSound(checked);
 													</OnClick>
@@ -1578,7 +1578,7 @@
 													</OnLoad>
 													<OnClick>
 														local checked = self:GetChecked();
-														CHATCONFIG_SELECTED_FILTER_SETTINGS.lineColorPriority = 2;
+														CHATCONFIG_SELECTED_FILTER.settings.lineColorPriority = 2;
 														CombatConfig_Colorize_Update();
 														ChatConfigFrame_PlayCheckboxSound(checked);
 													</OnClick>
@@ -1656,9 +1656,9 @@
 									<OnClick>
 										local checked = self:GetChecked()
 										if ( checked ) then
-											CHATCONFIG_SELECTED_FILTER_SETTINGS.timestamp = true;
+											CHATCONFIG_SELECTED_FILTER.settings.timestamp = true;
 										else
-											CHATCONFIG_SELECTED_FILTER_SETTINGS.timestamp = false;
+											CHATCONFIG_SELECTED_FILTER.settings.timestamp = false;
 										end
 										CombatConfig_Formatting_Update();
 										ChatConfigFrame_PlayCheckboxSound(checked);
@@ -1682,9 +1682,9 @@
 									<OnClick>
 										local checked = self:GetChecked()
 										if ( checked ) then
-											CHATCONFIG_SELECTED_FILTER_SETTINGS.braces = true;
+											CHATCONFIG_SELECTED_FILTER.settings.braces = true;
 										else
-											CHATCONFIG_SELECTED_FILTER_SETTINGS.braces = false;
+											CHATCONFIG_SELECTED_FILTER.settings.braces = false;
 										end
 										CombatConfig_Formatting_Update();
 										ChatConfigFrame_PlayCheckboxSound(checked);
@@ -1705,13 +1705,13 @@
 									<OnClick>
 										local checked = self:GetChecked()
 										if ( checked ) then
-											CHATCONFIG_SELECTED_FILTER_SETTINGS.unitBraces = true;
-											CHATCONFIG_SELECTED_FILTER_SETTINGS.sourceBraces = true;
-											CHATCONFIG_SELECTED_FILTER_SETTINGS.destBraces = true;
+											CHATCONFIG_SELECTED_FILTER.settings.unitBraces = true;
+											CHATCONFIG_SELECTED_FILTER.settings.sourceBraces = true;
+											CHATCONFIG_SELECTED_FILTER.settings.destBraces = true;
 										else
-											CHATCONFIG_SELECTED_FILTER_SETTINGS.unitBraces = false;
-											CHATCONFIG_SELECTED_FILTER_SETTINGS.sourceBraces = false;
-											CHATCONFIG_SELECTED_FILTER_SETTINGS.destBraces = false;
+											CHATCONFIG_SELECTED_FILTER.settings.unitBraces = false;
+											CHATCONFIG_SELECTED_FILTER.settings.sourceBraces = false;
+											CHATCONFIG_SELECTED_FILTER.settings.destBraces = false;
 										end
 										CombatConfig_Formatting_Update();
 										ChatConfigFrame_PlayCheckboxSound(checked);
@@ -1732,9 +1732,9 @@
 									<OnClick>
 										local checked = self:GetChecked()
 										if ( checked ) then
-											CHATCONFIG_SELECTED_FILTER_SETTINGS.spellBraces = true;
+											CHATCONFIG_SELECTED_FILTER.settings.spellBraces = true;
 										else
-											CHATCONFIG_SELECTED_FILTER_SETTINGS.spellBraces = false;
+											CHATCONFIG_SELECTED_FILTER.settings.spellBraces = false;
 										end
 										CombatConfig_Formatting_Update();
 										ChatConfigFrame_PlayCheckboxSound(checked);
@@ -1755,9 +1755,9 @@
 									<OnClick>
 										local checked = self:GetChecked()
 										if ( checked ) then
-											CHATCONFIG_SELECTED_FILTER_SETTINGS.itemBraces = true;
+											CHATCONFIG_SELECTED_FILTER.settings.itemBraces = true;
 										else
-											CHATCONFIG_SELECTED_FILTER_SETTINGS.itemBraces = false;
+											CHATCONFIG_SELECTED_FILTER.settings.itemBraces = false;
 										end
 										CombatConfig_Formatting_Update();
 										ChatConfigFrame_PlayCheckboxSound(checked);
@@ -1778,9 +1778,9 @@
 									<OnClick>
 										local checked = self:GetChecked()
 										if ( checked ) then
-											CHATCONFIG_SELECTED_FILTER_SETTINGS.fullText = true;
+											CHATCONFIG_SELECTED_FILTER.settings.fullText = true;
 										else
-											CHATCONFIG_SELECTED_FILTER_SETTINGS.fullText = false;
+											CHATCONFIG_SELECTED_FILTER.settings.fullText = false;
 										end
 										CombatConfig_Formatting_Update();
 										ChatConfigFrame_PlayCheckboxSound(checked);
@@ -2045,6 +2045,7 @@
 			<OnLoad function="ChatConfigFrame_OnLoad"/>
 			<OnEvent function="ChatConfigFrame_OnEvent"/>
 			<OnShow>
+				CHATCONFIG_SELECTED_FILTER = Blizzard_CombatLog_Filters.filters[ChatConfigCombatSettingsFilters.selectedFilter];
 				CHATCONFIG_SELECTED_FILTER_OLD_SETTINGS = CopyTable(Blizzard_CombatLog_Filters);
 			</OnShow>
 		</Scripts>

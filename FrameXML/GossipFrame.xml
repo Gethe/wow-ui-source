@@ -415,8 +415,7 @@
 		</Layers>
 		<Scripts>
 			<OnLoad>
-				self:SetStatusBarTexture("", "BORDER", -1);
-				self:GetStatusBarTexture():SetTexture(1, 1, 1);
+				self:SetStatusBarTexture(1, 1, 1, "BORDER", -1);
 				self:GetStatusBarTexture():SetGradient("VERTICAL", 8/255, 93/255, 72/255, 11/255, 136/255, 105/255);
 				self:SetStatusBarColor(1, 0, 0);
 			</OnLoad>

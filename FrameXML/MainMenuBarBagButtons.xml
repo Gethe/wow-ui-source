@@ -1,34 +1,57 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\FrameXML\UI.xsd">
 	<Script file="MainMenuBarBagButtons.lua"/>
-	<Model name="ItemAnimTemplate" file="Interface\ItemAnimations\ForcedBackpackItem.mdx" hidden="true" virtual="true">
+	<Frame name="ItemAnimTemplate" virtual="true" alpha="1">
+		<Animations>
+			<AnimationGroup target="$parentAnimIcon" parentKey="flyin">
+				<Scale target="$parentAnimIcon" scaleX=".125" scaleY=".125" duration=".2" order="3"/>
+				<Scale target="$parentAnimIcon" scaleX="2" scaleY="2" duration=".5" order="2"/>
+				<Alpha target="$parentAnimIcon" change="1" duration=".25" order="2"/>
+				<Path target="$parentAnimIcon" curve="SMOOTH" duration=".5" order="2">
+					<ControlPoints>
+						<ControlPoint offsetX="-15" offsetY="30"/>
+						<ControlPoint offsetX="-75" offsetY="60"/>
+					</ControlPoints>
+				</Path>
+				<Scale target="$parentAnimIcon" scaleX=".5" scaleY=".5" duration="0" order="1"/>
+				<Alpha target="$parentAnimIcon" change="-1" duration="0" order="1"/>
+				<Scripts>
+					<OnPlay>
+						local iconFrame = self:GetParent();
+						self.strata = iconFrame:GetFrameStrata();
+						iconFrame:SetFrameStrata("HIGH");
+						iconFrame.animIcon:Show();
+					</OnPlay>
+					<OnFinished>
+						local iconFrame = self:GetParent();
+						iconFrame:SetFrameStrata(self.strata);
+						iconFrame.animIcon:Hide();
+					</OnFinished>
+				</Scripts>
+			</AnimationGroup>
+		</Animations>
+		<Layers>
+			<Layer level="OVERLAY">
+				<Texture name="$parentAnimIcon" parentKey="animIcon" setAllPoints="true">
+				</Texture>
+			</Layer>
+		</Layers>
 		<Scripts>
 			<OnLoad>
-				ItemAnim_OnLoad(self);
+				ItemAnim_OnLoad(self); 
+				--need to call this from the inheriting frame if it has an OnLoad
 			</OnLoad>
 			<OnEvent>
 				ItemAnim_OnEvent(self, event, ...);
+				--also might need to call this from inheriting frame
 			</OnEvent>
-			<OnAnimFinished>
-				ItemAnim_OnAnimFinished(self);
-			</OnAnimFinished>
 		</Scripts>
-	</Model>
-	<CheckButton name="BagSlotButtonTemplate" inherits="ItemButtonTemplate" virtual="true">
+	</Frame>
+	<CheckButton name="BagSlotButtonTemplate" inherits="ItemButtonTemplate,ItemAnimTemplate" virtual="true">
 		<Size x="30" y="30"/>
-		<Frames>
-			<Model name="$parentItemAnim" inherits="ItemAnimTemplate">
-				<Anchors>
-					<Anchor point="BOTTOMRIGHT">
-						<Offset>
-							<AbsDimension x="-10" y="0"/>
-						</Offset>
-					</Anchor>
-				</Anchors>
-			</Model>
-		</Frames>
 		<Scripts>
 			<OnLoad>
+				ItemAnim_OnLoad(self);
 				PaperDollItemSlotButton_OnLoad(self);
 				self:RegisterEvent("BAG_UPDATE_DELAYED");
 				self:RegisterEvent("INVENTORY_SEARCH_UPDATE");
@@ -40,6 +63,7 @@
 				self.maxDisplayCount = 999;
 			</OnLoad>
 			<OnEvent>
+				ItemAnim_OnEvent(self, event, ...);
 				if ( event == "BAG_UPDATE_DELAYED" ) then
 					PaperDollItemSlotButton_Update(self);
 				elseif ( event == "INVENTORY_SEARCH_UPDATE" ) then
@@ -81,7 +105,7 @@
 		</Scripts>
 		<CheckedTexture alphaMode="ADD" file="Interface\Buttons\CheckButtonHilight"/>
 	</CheckButton>
-	<CheckButton name="MainMenuBarBackpackButton" inherits="ItemButtonTemplate" parent="MainMenuBarArtFrame" id="0">
+	<CheckButton name="MainMenuBarBackpackButton" inherits="ItemButtonTemplate,ItemAnimTemplate" parent="MainMenuBarArtFrame" id="0">
 		<Size>
 			<AbsDimension x="30" y="30"/>
 		</Size>
@@ -92,19 +116,9 @@
 				</Offset>
 			</Anchor>
 		</Anchors>
-		<Frames>
-			<Model name="$parentItemAnim" inherits="ItemAnimTemplate">
-				<Anchors>
-					<Anchor point="BOTTOMRIGHT">
-						<Offset>
-							<AbsDimension x="-10" y="0"/>
-						</Offset>
-					</Anchor>
-				</Anchors>
-			</Model>
-		</Frames>
 		<Scripts>
 			<OnLoad>
+				ItemAnim_OnLoad(self);
 				self:RegisterForClicks("LeftButtonUp", "RightButtonUp");
 				MainMenuBarBackpackButtonIconTexture:SetTexture("Interface\\Buttons\\Button-Backpack-Up");
 				self:RegisterEvent("PLAYER_ENTERING_WORLD");
@@ -134,7 +148,10 @@
 				GameTooltip:Show();
 			</OnEnter>
 			<OnLeave function="GameTooltip_Hide"/>
-			<OnEvent function="MainMenuBarBackpackButton_OnEvent"/>
+			<OnEvent>
+				ItemAnim_OnEvent(self, event, ...);
+				MainMenuBarBackpackButton_OnEvent(self, event, ...);
+			</OnEvent>
 		</Scripts>
 		<CheckedTexture alphaMode="ADD" file="Interface\Buttons\CheckButtonHilight"/>
 	</CheckButton>

@@ -218,6 +218,9 @@
 				end
 				_G[self:GetName().."ReputationBarHighlight1"]:Show();
 				_G[self:GetName().."ReputationBarHighlight2"]:Show();
+				if ( self.friendshipID ) then
+					ShowFriendshipReputationTooltip(self.friendshipID, self, "ANCHOR_BOTTOMRIGHT");
+				end
 			</OnEnter>
 			<OnLeave>
 				_G[self:GetName().."ReputationBarFactionStanding"]:SetText(self.standingText);
@@ -225,6 +228,7 @@
 					_G[self:GetName().."ReputationBarHighlight1"]:Hide();
 					_G[self:GetName().."ReputationBarHighlight2"]:Hide();
 				end
+				GameTooltip:Hide();
 			</OnLeave>
 		</Scripts>
 	</Button>

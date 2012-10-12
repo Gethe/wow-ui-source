@@ -47,6 +47,7 @@ UnitPopupButtons["PET_DISMISS"] = { text = PET_DISMISS, dist = 0 };
 UnitPopupButtons["PET_ABANDON"] = { text = PET_ABANDON, dist = 0 };
 UnitPopupButtons["PET_PAPERDOLL"] = { text = PET_PAPERDOLL, dist = 0 };
 UnitPopupButtons["PET_RENAME"] = { text = PET_RENAME, dist = 0 };
+UnitPopupButtons["PET_SHOW_IN_JOURNAL"] = { text = PET_SHOW_IN_JOURNAL, dist = 0 };
 UnitPopupButtons["LOOT_METHOD"] = { text = LOOT_METHOD, dist = 0, nested = 1};
 UnitPopupButtons["FREE_FOR_ALL"] = { text = LOOT_FREE_FOR_ALL, dist = 0 };
 UnitPopupButtons["ROUND_ROBIN"] = { text = LOOT_ROUND_ROBIN, dist = 0 };
@@ -182,7 +183,8 @@ UnitPopupMenus = { };
 UnitPopupMenus["SELF"] = { "SET_FOCUS", "PVP_FLAG", "LOOT_METHOD", "LOOT_THRESHOLD", "OPT_OUT_LOOT_TITLE", "LOOT_PROMOTE", "CONVERT_TO_RAID", "CONVERT_TO_PARTY", "DUNGEON_DIFFICULTY", "RAID_DIFFICULTY", "RESET_INSTANCES", "RESET_CHALLENGE_MODE", "RAID_TARGET_ICON", "SELECT_ROLE", "INSTANCE_LEAVE", "LEAVE", "MOVE_PLAYER_FRAME", "MOVE_TARGET_FRAME", "CANCEL"};
 UnitPopupMenus["PET"] = { "SET_FOCUS", "PET_PAPERDOLL", "PET_RENAME", "PET_DISMISS", "PET_ABANDON", "MOVE_PLAYER_FRAME", "MOVE_TARGET_FRAME", "CANCEL" };
 UnitPopupMenus["OTHERPET"] = { "SET_FOCUS", "RAID_TARGET_ICON", "MOVE_PLAYER_FRAME", "MOVE_TARGET_FRAME",  "REPORT_PET", "CANCEL" };
-UnitPopupMenus["OTHERBATTLEPET"] = { "SET_FOCUS", "RAID_TARGET_ICON", "MOVE_PLAYER_FRAME", "MOVE_TARGET_FRAME",  "REPORT_BATTLE_PET", "CANCEL" };
+UnitPopupMenus["BATTLEPET"] = { "SET_FOCUS", "RAID_TARGET_ICON", "MOVE_PLAYER_FRAME", "MOVE_TARGET_FRAME",  "PET_SHOW_IN_JOURNAL", "CANCEL" };
+UnitPopupMenus["OTHERBATTLEPET"] = { "SET_FOCUS", "RAID_TARGET_ICON", "MOVE_PLAYER_FRAME", "MOVE_TARGET_FRAME",  "PET_SHOW_IN_JOURNAL", "REPORT_BATTLE_PET", "CANCEL" };
 UnitPopupMenus["PARTY"] = { "ADD_FRIEND", "ADD_FRIEND_MENU", "SET_FOCUS", "MUTE", "UNMUTE", "PARTY_SILENCE", "PARTY_UNSILENCE", "RAID_SILENCE", "RAID_UNSILENCE", "BATTLEGROUND_SILENCE", "BATTLEGROUND_UNSILENCE", "WHISPER", "PROMOTE", "PROMOTE_GUIDE", "LOOT_PROMOTE", "VOTE_TO_KICK", "UNINVITE", "INSPECT", "ACHIEVEMENTS", "TRADE", "FOLLOW", "DUEL", "PET_BATTLE_PVP_DUEL", "RAID_TARGET_ICON", "SELECT_ROLE", "PVP_REPORT_AFK", "RAF_SUMMON", "RAF_GRANT_LEVEL", "MOVE_PLAYER_FRAME", "MOVE_TARGET_FRAME", "REPORT_PLAYER", "CANCEL" };
 UnitPopupMenus["PLAYER"] = { "ADD_FRIEND", "ADD_FRIEND_MENU", "SET_FOCUS", "WHISPER", "INSPECT", "INVITE", "ACHIEVEMENTS", "TRADE", "FOLLOW", "DUEL", "PET_BATTLE_PVP_DUEL", "RAID_TARGET_ICON", "RAF_SUMMON", "RAF_GRANT_LEVEL", "MOVE_PLAYER_FRAME", "MOVE_TARGET_FRAME", "REPORT_PLAYER", "CANCEL" };
 UnitPopupMenus["RAID_PLAYER"] = { "ADD_FRIEND", "ADD_FRIEND_MENU", "SET_FOCUS", "MUTE", "UNMUTE", "RAID_SILENCE", "RAID_UNSILENCE", "BATTLEGROUND_SILENCE", "BATTLEGROUND_UNSILENCE", "WHISPER", "INSPECT", "ACHIEVEMENTS", "TRADE", "FOLLOW", "DUEL", "PET_BATTLE_PVP_DUEL", "RAID_TARGET_ICON", "SELECT_ROLE", "RAID_LEADER", "RAID_PROMOTE", "RAID_DEMOTE", "LOOT_PROMOTE", "VOTE_TO_KICK", "RAID_REMOVE", "PVP_REPORT_AFK", "RAF_SUMMON", "RAF_GRANT_LEVEL", "MOVE_PLAYER_FRAME", "MOVE_TARGET_FRAME", "REPORT_PLAYER", "CANCEL" };
@@ -1555,7 +1557,7 @@ function UnitPopup_OnClick (self)
 	elseif ( button == "LEAVE" ) then
 		LeaveParty();
 	elseif ( button == "INSTANCE_LEAVE" ) then
-		LeaveParty();
+		ConfirmOrLeaveLFGParty();
 	elseif ( button == "PET_DISMISS" ) then
 		if ( PetCanBeAbandoned() ) then
 			CastSpellByID(HUNTER_DISMISS_PET);
@@ -1570,6 +1572,15 @@ function UnitPopup_OnClick (self)
 		end
 	elseif ( button == "PET_RENAME" ) then
 		StaticPopup_Show("RENAME_PET");
+	elseif ( button == "PET_SHOW_IN_JOURNAL" ) then
+		if (not PetJournalParent) then
+			PetJournal_LoadUI();
+		end
+		if (not PetJournalParent:IsShown()) then
+			ShowUIPanel(PetJournalParent);
+		end
+		PetJournalParent_SetTab(PetJournalParent, 2);
+		PetJournal_SelectSpecies(PetJournal, UnitBattlePetSpeciesID(unit));
 	elseif ( button == "FREE_FOR_ALL" ) then
 		SetLootMethod("freeforall");
 		UIDropDownMenu_SetButtonText(self:GetParent().parentLevel, self:GetParent().parentID, UnitPopupButtons[button].text);

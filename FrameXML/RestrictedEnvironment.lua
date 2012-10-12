@@ -83,6 +83,9 @@ local DIRECT_MACRO_CONDITIONAL_NAMES = {
     "GetMouseButtonClicked", "GetActionBarPage", "GetBonusBarOffset",
     "IsMounted", "IsSwimming", "IsSubmerged", "IsFlying", "IsFlyableArea",
     "IsIndoors", "IsOutdoors",
+	"HasVehicleActionBar", "HasOverrideActionBar", "HasTempShapeshiftActionBar",
+	"HasOverrideUI", "GetVehicleBarIndex", "GetOverrideBarIndex",
+	"HasExtraActionBar", "GetTempShapeshiftBarIndex", "CanExitVehicle"
 };
 
 local OTHER_SAFE_FUNCTION_NAMES = {

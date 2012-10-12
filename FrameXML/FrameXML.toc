@@ -170,6 +170,8 @@ LootHistory.xml
 FloatingPetBattleTooltip.xml
 QueueStatusFrame.xml
 BattlePetTooltip.xml
+StaticPopupSpecial.xml
+LossOfControlFrame.xml
 
 ## add new modules above here
 LocalizationPost.xml

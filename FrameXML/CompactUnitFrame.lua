@@ -443,7 +443,7 @@ function CompactUnitFrame_UpdateStatusText(frame)
 		else
 			frame.statusText:Hide();
 		end
-	elseif ( frame.optionTable.healthText == "perc" ) then
+	elseif ( (frame.optionTable.healthText == "perc") and (UnitHealthMax(frame.displayedUnit) > 0) ) then
 		local perc = math.ceil(100 * (UnitHealth(frame.displayedUnit)/UnitHealthMax(frame.displayedUnit)));
 		frame.statusText:SetFormattedText("%d%%", perc);
 		frame.statusText:Show();
@@ -981,15 +981,13 @@ function DefaultCompactUnitFrameSetup(frame)
 	frame.myHealPredictionBar:SetPoint("TOPLEFT", frame.healthBar:GetStatusBarTexture(), "TOPRIGHT", 0, 0);
 	frame.myHealPredictionBar:SetPoint("BOTTOMLEFT", frame.healthBar:GetStatusBarTexture(), "BOTTOMRIGHT", 0, 0);
 	frame.myHealPredictionBar:SetWidth(options.width);
-	frame.myHealPredictionBar:SetStatusBarTexture("", "BORDER", -1);
-	frame.myHealPredictionBar:GetStatusBarTexture():SetTexture(1, 1, 1);
+	frame.myHealPredictionBar:SetStatusBarTexture(1, 1, 1, "BORDER", -1);
 	frame.myHealPredictionBar:GetStatusBarTexture():SetGradient("VERTICAL", 8/255, 93/255, 72/255, 11/255, 136/255, 105/255);
 	
 	frame.otherHealPredictionBar:SetPoint("TOPLEFT", frame.myHealPredictionBar:GetStatusBarTexture(), "TOPRIGHT", 0, 0);
 	frame.otherHealPredictionBar:SetPoint("BOTTOMLEFT", frame.myHealPredictionBar:GetStatusBarTexture(), "BOTTOMRIGHT", 0, 0);
 	frame.otherHealPredictionBar:SetWidth(options.width);
-	frame.otherHealPredictionBar:SetStatusBarTexture("", "BORDER", -1);
-	frame.otherHealPredictionBar:GetStatusBarTexture():SetTexture(1, 1, 1);
+	frame.otherHealPredictionBar:SetStatusBarTexture(1, 1, 1, "BORDER", -1);
 	frame.otherHealPredictionBar:GetStatusBarTexture():SetGradient("VERTICAL", 11/255, 53/255, 43/255, 21/255, 89/255, 72/255);
 	
 	frame.roleIcon:ClearAllPoints();
@@ -1149,15 +1147,13 @@ function DefaultCompactMiniFrameSetup(frame)
 	frame.myHealPredictionBar:SetPoint("TOPLEFT", frame.healthBar:GetStatusBarTexture(), "TOPRIGHT", 0, 0);
 	frame.myHealPredictionBar:SetPoint("BOTTOMLEFT", frame.healthBar:GetStatusBarTexture(), "BOTTOMRIGHT", 0, 0);
 	frame.myHealPredictionBar:SetWidth(70);
-	frame.myHealPredictionBar:SetStatusBarTexture("", "BORDER", -1);
-	frame.myHealPredictionBar:GetStatusBarTexture():SetTexture(1, 1, 1);
+	frame.myHealPredictionBar:SetStatusBarTexture(1, 1, 1, "BORDER", -1);
 	frame.myHealPredictionBar:GetStatusBarTexture():SetGradient("VERTICAL", 0, 139/255, 20/255, 10/255, 202/255, 29/255);
 	
 	frame.otherHealPredictionBar:SetPoint("TOPLEFT", frame.myHealPredictionBar:GetStatusBarTexture(), "TOPRIGHT", 0, 0);
 	frame.otherHealPredictionBar:SetPoint("BOTTOMLEFT", frame.myHealPredictionBar:GetStatusBarTexture(), "BOTTOMRIGHT", 0, 0);
 	frame.otherHealPredictionBar:SetWidth(70);
-	frame.otherHealPredictionBar:SetStatusBarTexture("", "BORDER", -1);
-	frame.otherHealPredictionBar:GetStatusBarTexture():SetTexture(1, 1, 1);
+	frame.otherHealPredictionBar:SetStatusBarTexture(1, 1, 1, "BORDER", -1);
 	frame.otherHealPredictionBar:GetStatusBarTexture():SetGradient("VERTICAL", 3/255, 72/255, 5/255, 2/255, 101/255, 18/255);
 	
 	frame.name:SetPoint("LEFT", 5, 1);

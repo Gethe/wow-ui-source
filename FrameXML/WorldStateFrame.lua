@@ -132,7 +132,7 @@ function WorldStateAlwaysUpFrame_Update()
 	local alwaysUpHeight = 10;
 	for i=1, numUI do
 		uiType, state, hidden, text, icon, dynamicIcon, tooltip, dynamicTooltip, extendedUI, extendedUIState1, extendedUIState2, extendedUIState3 = GetWorldStateUIInfo(i);
-		if ( (not hidden) and ((uiType ~= 1) or ((WORLD_PVP_OBJECTIVES_DISPLAY == "1") or (WORLD_PVP_OBJECTIVES_DISPLAY == "2" and IsSubZonePVPPOI()) or (instanceType == "pvp"))) ) then
+		if ( not hidden ) then
 			if ( state > 0 ) then
 				-- Handle always up frames and extended ui's completely differently
 				if ( extendedUI ~= "" ) then
@@ -1124,11 +1124,19 @@ function WorldStateChallengeModeFrame_UpdateMedal(self, elapsedTime)
 			if ( CHALLENGE_MEDAL_TEXTURES[i] ) then
 				self.medalIcon:SetTexture(CHALLENGE_MEDAL_TEXTURES[i]);
 				self.medalIcon:Show();
+				self.GlowFrame.MedalIcon:SetTexture(CHALLENGE_MEDAL_TEXTURES[i]);
+				self.GlowFrame.MedalGlowAnim:Play();
 			end
 			self.noMedal:Hide();
 			-- play sound if medal changed
 			if ( self.lastMedalShown and self.lastMedalShown ~= i ) then
-				PlaySound("UI_Challenges_MedalExpires");
+				if ( self.lastMedalShown == CHALLENGE_MEDAL_GOLD ) then
+					PlaySound("UI_Challenges_MedalExpires_GoldtoSilver");
+				elseif ( self.lastMedalShown == CHALLENGE_MEDAL_SILVER ) then
+					PlaySound("UI_Challenges_MedalExpires_SilvertoBronze");
+				else
+					PlaySound("UI_Challenges_MedalExpires");
+				end
 			end
 			self.lastMedalShown = i;
 			return;
@@ -1153,12 +1161,36 @@ function WorldStateChallengeModeFrame_UpdateValues(self, elapsedTime)
 	local statusBar = self.statusBar;
 	if ( statusBar.medalTime ) then
 		local timeLeft = statusBar.medalTime - elapsedTime;
+		local anim = self.GlowFrame.MedalPulseAnim;
+		if (timeLeft <= 5) then
+			if (anim:IsPlaying()) then 
+				anim.timeLeft = timeLeft;
+			else
+				self.GlowFrame.MedalPulseAnim:Play();
+			end
+		end
+		if (timeLeft == 10) then
+			if (not self.playedSound) then
+				PlaySoundKitID(34154);
+				self.playedSound = true;
+			end
+		else
+			self.playedSound = false;
+		end
 		if ( timeLeft < 0 ) then
 			WorldStateChallengeModeFrame_UpdateMedal(self, elapsedTime);
 		else
 			statusBar:SetValue(statusBar.medalTime - elapsedTime);
 			statusBar.timeLeft:SetText(GetTimeStringFromSeconds(statusBar.medalTime - elapsedTime));
 		end
+	end
+end
+
+function WorldStateChallengeModeAnim_OnFinished(self)
+	if (self.timeLeft and self.timeLeft > 0 and self.timeLeft < 5) then
+		self:Play();
+	else
+		self.timeLeft = nil;
 	end
 end
 

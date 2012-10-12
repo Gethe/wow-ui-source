@@ -23,14 +23,12 @@ local GLYPH_DURATION_MODIFIERS = { 1.25, 1.5, 1.8 };
 
 
 function GlyphFrame_Toggle ()
-	TalentFrame_LoadUI();
 	if ( PlayerTalentFrame_ToggleGlyphFrame ) then
 		PlayerTalentFrame_ToggleGlyphFrame(GetActiveSpecGroup());
 	end
 end
 
 function GlyphFrame_Open ()
-	TalentFrame_LoadUI();
 	if ( PlayerTalentFrame_OpenGlyphFrame ) then
 		PlayerTalentFrame_OpenGlyphFrame(GetActiveSpecGroup());
 	end

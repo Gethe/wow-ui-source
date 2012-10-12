@@ -1126,6 +1126,12 @@ SecureCmdList["STOPCASTING"] = function(msg)
 	end
 end
 
+SecureCmdList["STOPSPELLTARGET"] = function(msg)
+	if ( SecureCmdOptionParse(msg) ) then
+		SpellStopTargeting();
+	end
+end
+
 SecureCmdList["CANCELAURA"] = function(msg)
 	local spell = SecureCmdOptionParse(msg);
 	if ( spell ) then
@@ -1351,12 +1357,6 @@ SecureCmdList["CLEARFOCUS"] = function(msg)
 	end
 end
 
-SecureCmdList["CLEARMAINTANK"] = function(msg)
-	if ( SecureCmdOptionParse(msg) ) then
-		ClearPartyAssignment("MAINTANK");
-	end
-end
-
 SecureCmdList["MAINTANKON"] = function(msg)
 	local action, target = SecureCmdOptionParse(msg);
 	if ( action ) then
@@ -1380,12 +1380,6 @@ SecureCmdList["MAINTANKOFF"] = function(msg)
 			target = "target";
 		end
 		ClearPartyAssignment("MAINTANK", target);
-	end
-end
-
-SecureCmdList["CLEARMAINASSIST"] = function(msg)
-	if ( SecureCmdOptionParse(msg) ) then
-		ClearPartyAssignment("MAINASSIST");
 	end
 end
 
@@ -1543,6 +1537,39 @@ SecureCmdList["CLEAR_WORLD_MARKER"] = function(msg)
 		ClearRaidMarker(tonumber(marker));
 	elseif ( type(marker) == "string" and strtrim(strlower(marker)) == strlower(ALL) ) then
 		ClearRaidMarker(nil);	--Clear all world markers.
+	end
+end
+
+SecureCmdList["SUMMON_BATTLE_PET"] = function(msg)
+	local pet = SecureCmdOptionParse(msg);
+	if ( tonumber(pet) ) then
+		C_PetJournal.SummonPetByID(tonumber(pet));
+	elseif ( type(pet) == "string" ) then
+		local _, petID = C_PetJournal.FindPetIDByName(string.trim(pet));
+		if ( petID ) then
+			C_PetJournal.SummonPetByID(petID);
+		end
+	end
+end
+
+SecureCmdList["RANDOMPET"] = function(msg)
+	if ( SecureCmdOptionParse(msg) ) then
+		C_PetJournal.SummonRandomPet(true);
+	end
+end
+
+SecureCmdList["RANDOMFAVORITEPET"] = function(msg)
+	if ( SecureCmdOptionParse(msg) ) then
+		C_PetJournal.SummonRandomPet(false);
+	end
+end
+
+SecureCmdList["DISMISSBATTLEPET"] = function(msg)
+	if ( SecureCmdOptionParse(msg) ) then
+		local petID = C_PetJournal.GetSummonedPetID();
+		if ( petID ) then
+			C_PetJournal.SummonPetByID(petID);
+		end
 	end
 end
 
@@ -2394,13 +2421,6 @@ SlashCmdList["RELOAD"] = function(msg)
 	ConsoleExec("reloadui");
 end
 
-SlashCmdList["RANDOMPET"] = function(msg)
-	local numCompanions = GetNumCompanions("CRITTER");
-	if ( numCompanions > 0  ) then
-		local index = random(1, numCompanions);
-		CallCompanion("CRITTER", index);
-	end
-end
 
 
 SlashCmdList["WARGAME"] = function(msg)

@@ -585,7 +585,7 @@ StaticPopupDialogs["CONFIRM_BATTLEFIELD_ENTRY"] = {
 	button1 = ENTER_BATTLE,
 	button2 = LEAVE_QUEUE,
 	OnShow = function(self, data)
-		local status, mapName, instanceID, levelRangeMin, levelRangeMax, teamSize, registeredMatch = GetBattlefieldStatus(data);
+		local status, mapName, teamSize, registeredMatch = GetBattlefieldStatus(data);
 		if ( teamSize == 0 ) then
 			self.button2:Enable();
 		else
@@ -1784,6 +1784,30 @@ StaticPopupDialogs["DELETE_ITEM"] = {
 	showAlert = 1,
 	hideOnEscape = 1
 };
+StaticPopupDialogs["DELETE_QUEST_ITEM"] = {
+	text = DELETE_QUEST_ITEM,
+	button1 = YES,
+	button2 = NO,
+	OnAccept = function(self)
+		DeleteCursorItem();
+	end,
+	OnCancel = function (self)
+		ClearCursor();
+	end,
+	OnUpdate = function (self)
+		if ( not CursorHasItem() ) then
+			self:Hide();
+		end
+	end,
+	OnHide = function()
+		MerchantFrame_ResetRefundItem();
+	end,
+	timeout = 0,
+	whileDead = 1,
+	exclusive = 1,
+	showAlert = 1,
+	hideOnEscape = 1
+};
 StaticPopupDialogs["DELETE_GOOD_ITEM"] = {
 	text = DELETE_GOOD_ITEM,
 	button1 = YES,
@@ -2316,27 +2340,6 @@ StaticPopupDialogs["PET_BATTLE_PVP_DUEL_REQUESTED"] = {
 	OnCancel = function(self)
 		C_PetBattles.CancelPVPDuel();
 	end,
-	timeout = STATICPOPUP_TIMEOUT,
-	hideOnEscape = 1
-};
-StaticPopupDialogs["PET_BATTLE_QUEUE_PROPOSE_MATCH"] = {
-	text = PET_BATTLE_QUEUE_PROPOSE_MATCH,
-	button1 = ACCEPT,
-	button2 = DECLINE,
-	sound = "igPlayerInvite",
-	OnAccept = function(self)
-		C_PetBattles.AcceptQueuedPVPMatch();
-	end,
-	OnCancel = function(self)
-		C_PetBattles.DeclineQueuedPVPMatch();
-	end,
-	OnUpdate = function(self, elapsed)
-		if ( IsFalling() ) then
-			self.button1:Disable();
-		else
-			self.button1:Enable();
-		end
-	end,	
 	timeout = STATICPOPUP_TIMEOUT,
 	hideOnEscape = 1
 };
@@ -3175,22 +3178,6 @@ StaticPopupDialogs["VOID_DEPOSIT_CONFIRM"] = {
 	hideOnEscape = 1,
 	hasItemFrame = 1
 };
-StaticPopupDialogs["TRANSMOGRIFY_BIND_CONFIRM"] = {
-	text = TRANSMOGRIFY_BIND_CONFIRMATION.."\n"..CONFIRM_CONTINUE,
-	button1 = OKAY,
-	button2 = CANCEL,
-	OnAccept = function(self)
-		TransmogrifyFrame_UpdateApplyButton();
-	end,
-	OnCancel = function(self)
-		ClearTransmogrifySlot(self.data.slot);
-	end,
-	timeout = 0,
-	exclusive = 1,
-	whileDead = 1,
-	hideOnEscape = 1,
-	hasItemFrame = 1
-};
 
 StaticPopupDialogs["GUILD_IMPEACH"] = {
 	text = GUILD_IMPEACH_POPUP_TEXT ,
@@ -3226,6 +3213,38 @@ StaticPopupDialogs["CONFIRM_LAUNCH_URL"] = {
 	timeout = 0,
 }
 
+StaticPopupDialogs["CONFIRM_LEAVE_INSTANCE_PARTY"] = {
+	text = CONFIRM_LEAVE_INSTANCE_PARTY,
+	button1 = YES,
+	button2 = CANCEL,
+	OnAccept = function(self, data)
+		if ( IsInGroup(LE_PARTY_CATEGORY_INSTANCE) ) then
+			LeaveParty();
+		end
+	end,
+	whileDead = 1,
+	hideOnEscape = 1,
+	showAlert = 1,
+}
+
+StaticPopupDialogs["CONFIRM_LEAVE_BATTLEFIELD"] = {
+	text = CONFIRM_LEAVE_BATTLEFIELD,
+	button1 = YES,
+	button2 = CANCEL,
+	OnShow = function(self)
+		if ( IsActiveBattlefieldArena() ) then
+			self.text:SetText(CONFIRM_LEAVE_ARENA);
+		else
+			self.text:SetText(CONFIRM_LEAVE_BATTLEFIELD);
+		end
+	end,
+	OnAccept = function(self, data)
+		LeaveBattlefield();
+	end,
+	whileDead = 1,
+	hideOnEscape = 1,
+	showAlert = 1,
+}
 
 function StaticPopup_FindVisible(which, data)
 	local info = StaticPopupDialogs[which];
@@ -3508,7 +3527,7 @@ function StaticPopup_Show(which, text_arg1, text_arg2, data)
 
 	-- Set the miscellaneous variables for the dialog
 	dialog.which = which;
-	dialog.timeleft = info.timeout;
+	dialog.timeleft = info.timeout or 0;
 	dialog.hideOnEscape = info.hideOnEscape;
 	dialog.exclusive = info.exclusive;
 	dialog.enterClicksFirstButton = info.enterClicksFirstButton;
@@ -3880,7 +3899,7 @@ function StaticPopup_Visible(which)
 	for index = 1, STATICPOPUP_NUMDIALOGS, 1 do
 		local frame = _G["StaticPopup"..index];
 		if( frame:IsShown() and (frame.which == which) ) then 
-			return frame:GetName();
+			return frame:GetName(), frame;
 		end
 	end
 	return nil;

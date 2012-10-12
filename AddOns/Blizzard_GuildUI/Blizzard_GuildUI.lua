@@ -35,8 +35,8 @@ function GuildFrame_OnLoad(self)
 	GuildFrame_UpdateFaction();
 	local guildName = GetGuildInfo("player");
 	GuildFrameTitleText:SetText(guildName);
-	local totalMembers, onlineMembers = GetNumGuildMembers();
-	GuildFrameMembersCount:SetText(onlineMembers.." / "..totalMembers);
+	local totalMembers, onlineMembers, onlineAndMobileMembers = GetNumGuildMembers();
+	GuildFrameMembersCount:SetText(onlineAndMobileMembers.." / "..totalMembers);
 end
 
 function GuildFrame_OnShow(self)
@@ -85,8 +85,8 @@ end
 
 function GuildFrame_OnEvent(self, event, ...)
 	if ( event == "GUILD_ROSTER_UPDATE" ) then
-		local totalMembers, onlineMembers = GetNumGuildMembers();
-		GuildFrameMembersCount:SetText(onlineMembers.." / "..totalMembers);
+		local totalMembers, onlineMembers, onlineAndMobileMembers = GetNumGuildMembers();
+		GuildFrameMembersCount:SetText(onlineAndMobileMembers.." / "..totalMembers);
 	elseif ( event == "GUILD_XP_UPDATE" ) then
 		GuildFrame_UpdateXP();
 	elseif ( event == "UPDATE_FACTION" ) then

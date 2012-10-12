@@ -282,6 +282,9 @@ end
 
 local flaggedRoles = { "MAINTANK", "MAINASSIST" };
 function CompactRaidFrameContainer_AddFlaggedUnits(self)
+	if ( not IsInRaid() ) then
+		return;
+	end
 	for roleIndex = 1, #flaggedRoles do
 		local desiredRole = flaggedRoles[roleIndex]
 		for i=1, MAX_RAID_MEMBERS do

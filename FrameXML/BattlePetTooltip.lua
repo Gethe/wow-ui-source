@@ -18,6 +18,15 @@ function BattlePetToolTip_Show(speciesID, level, breedQuality, maxHealth, power,
 		end
 
 		BattlePetTooltipTemplate_SetBattlePet(BattlePetTooltip, BATTLE_PET_TOOLTIP);
+
+		local owned = C_PetJournal.GetOwnedBattlePetString(speciesID);
+		BattlePetTooltip.Owned:SetText(owned);
+		if(owned == nil) then
+			BattlePetTooltip:SetSize(260,122);
+		else
+			BattlePetTooltip:SetSize(260,136);
+		end
+
 		BattlePetTooltip:Show();
 
 		BattlePetTooltip:ClearAllPoints();

@@ -354,6 +354,8 @@
 						if ( self:GetText() == "0" ) then
 							self:SetText("1");
 						end
+						local number = max(self:GetNumber(), 1);
+						SetTradeSkillRepeatCount(TradeSkillFrame.selectedSkill, number);
 					</OnTextChanged> 
 					<OnEditFocusLost function="EditBox_ClearHighlight"/>
 					<OnEditFocusGained function="EditBox_HighlightText"/>
