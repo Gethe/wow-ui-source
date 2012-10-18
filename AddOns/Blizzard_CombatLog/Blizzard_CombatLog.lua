@@ -102,8 +102,8 @@ COMBATLOG_DEFAULT_SETTINGS = {
 	showHistory = true;
 	lineColorPriority = 1; -- 1 = source->dest->event, 2 = dest->source->event, 3 = event->source->dest
 	unitIcons = true;
-	hideBuffs = false;
-	hideDebuffs = false;
+	hideBuffs = true;
+	hideDebuffs = true;
 	--unitTokens = true;
 };
 

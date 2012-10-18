@@ -565,6 +565,8 @@ function PVPHonor_UpdateBattlegrounds()
 	local numBgs = GetNumBattlegroundTypes();
 	local numTypes = numWorldPvP + numBgs ;
 	
+	local pvpFrameShown = PVPFrame:IsShown();
+
 	for i=1,numTypes do
 		frame = _G["PVPHonorFrameBgButton"..currentFrameNum];
 		
@@ -597,7 +599,7 @@ function PVPHonor_UpdateBattlegrounds()
 
 				if canQueue then
 					frame:Enable();
-					if ( not PVPHonorFrame.selectedButtonIndex ) then
+					if ( pvpFrameShown and not PVPHonorFrame.selectedButtonIndex ) then
 						frame:Click();
 					end
 				else
@@ -979,7 +981,8 @@ function PVPConquestFrame_OnLoad(self)
 	self.ratedbgButton.title:SetText(PVP_RATED_BATTLEGROUND);		
 	self.arenaButton:SetWidth(321);
 	self.ratedbgButton:SetWidth(321);
-	
+	self.arenaButton.ThumbsDown:Hide();
+	self.ratedbgButton.ThumbsDown:Hide();
 	
 	self:RegisterEvent("GROUP_ROSTER_UPDATE");
 	self:RegisterEvent("ARENA_TEAM_UPDATE");

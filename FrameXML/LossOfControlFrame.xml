@@ -108,6 +108,7 @@
 			<OnLoad function="LossOfControlFrame_OnLoad"/>
 			<OnEvent function="LossOfControlFrame_OnEvent"/>
 			<OnUpdate function="LossOfControlFrame_OnUpdate"/>
+			<OnHide function="LossOfControlFrame_OnHide"/>
 		</Scripts>
 	</Frame>
 </Ui>

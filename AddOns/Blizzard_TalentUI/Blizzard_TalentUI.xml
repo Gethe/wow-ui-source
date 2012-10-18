@@ -998,7 +998,10 @@
 				</Layers>
 				<Scripts>
 					<OnClick>
-						StaticPopup_Show("CONFIRM_LEARN_TALENTS");
+						local talentGroup = PlayerTalentFrame and PlayerTalentFrame.talentGroup or 1;
+						if ( talentGroup == GetActiveSpecGroup() ) then
+							LearnTalents(PlayerTalentFrame_GetTalentSelections());
+						end
 					</OnClick>
 				</Scripts>
 			</Button>

@@ -20,6 +20,7 @@ function AlternatePowerBar_Initialize(self)
 	self:RegisterEvent("UNIT_MAXPOWER");
 	self:RegisterEvent("PLAYER_ENTERING_WORLD");
 	self:RegisterEvent("UNIT_DISPLAYPOWER");
+	self:RegisterEvent("UPDATE_VEHICLE_ACTIONBAR");
 	
 	SetTextStatusBarText(self, _G[self:GetName().."Text"])
 	
@@ -29,7 +30,7 @@ end
 
 function AlternatePowerBar_OnEvent(self, event, arg1)
 	local parent = self:GetParent();
-	if ( event == "UNIT_DISPLAYPOWER" ) then
+	if ( event == "UNIT_DISPLAYPOWER" or event == "UPDATE_VEHICLE_ACTIONBAR" ) then
 		AlternatePowerBar_UpdatePowerType(self);
 	elseif ( event == "PLAYER_SPECIALIZATION_CHANGED" ) then
 		if ( arg1 == parent.unit ) then
@@ -70,7 +71,8 @@ function AlternatePowerBar_UpdateMaxValues(self)
 end
 
 function AlternatePowerBar_UpdatePowerType(self)
-	if ( (UnitPowerType(self:GetParent().unit) ~= self.powerIndex) and (UnitPowerMax(self:GetParent().unit,self.powerIndex) ~= 0) and ( not self.specRestriction or self.specRestriction == GetSpecialization() ) ) then
+	if ( (UnitPowerType(self:GetParent().unit) ~= self.powerIndex) and (UnitPowerMax(self:GetParent().unit,self.powerIndex) ~= 0) and ( not self.specRestriction or self.specRestriction == GetSpecialization() ) 
+		and not UnitHasVehiclePlayerFrameUI("player") ) then
 		self.pauseUpdates = false;
 		AlternatePowerBar_UpdateValue(self);
 		self:Show();

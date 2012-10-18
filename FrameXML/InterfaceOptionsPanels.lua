@@ -261,6 +261,7 @@ CombatPanelOptions = {
 	reducedLagTolerance = { text = "REDUCED_LAG_TOLERANCE" },
 	MaxSpellStartRecoveryOffset = { text = "LAG_TOLERANCE", minValue = 0, maxValue = 400, valueStep = 10 },
 	ActionButtonUseKeyDown = { text = "ACTION_BUTTON_USE_KEY_DOWN" },
+	lossOfControl = { text = "LOSS_OF_CONTROL" },
 }
 
 function InterfaceOptionsCombatPanelReducedLagTolerance_UpdateText()
@@ -452,6 +453,79 @@ function InterfaceOptionsCombatPanelFocusCastKeyDropDown_Initialize()
 	UIDropDownMenu_AddButton(info);
 end
 
+-- Loss of Control Options --
+
+function InterfaceOptionsLossOfControl_OnEvent (self, event, ...)
+	if ( event == "VARIABLES_LOADED" ) then
+		-- set up dropdowns
+		InterfaceOptionsLossOfControl_SetUpDropdown(InterfaceOptionsCombatPanelLossOfControlFullDropDown, "lossOfControlFull", self);
+		InterfaceOptionsLossOfControl_SetUpDropdown(InterfaceOptionsCombatPanelLossOfControlInterruptDropDown, "lossOfControlInterrupt", self);
+		InterfaceOptionsLossOfControl_SetUpDropdown(InterfaceOptionsCombatPanelLossOfControlSilenceDropDown, "lossOfControlSilence", self);
+		InterfaceOptionsLossOfControl_SetUpDropdown(InterfaceOptionsCombatPanelLossOfControlDisarmDropDown, "lossOfControlDisarm", self);
+		InterfaceOptionsLossOfControl_SetUpDropdown(InterfaceOptionsCombatPanelLossOfControlRootDropDown, "lossOfControlRoot", self);
+	end
+end
+
+function InterfaceOptionsLossOfControlDropDown_SetValue(self, value)
+	self.value = value;
+	UIDropDownMenu_SetSelectedValue(self, value);
+	SetCVar(self.cvar, value);
+end
+
+function InterfaceOptionsLossOfControlDropDown_GetValue(self)
+	return UIDropDownMenu_GetSelectedValue(self);
+end
+
+function InterfaceOptionsLossOfControlDropDown_RefreshValue(self)
+	UIDropDownMenu_Initialize(self, InterfaceOptionsLossOfControlDropDown_Initialize);
+	UIDropDownMenu_SetSelectedValue(self, self.value);
+end
+
+function InterfaceOptionsLossOfControl_SetUpDropdown(dropDown, cvar, checkBox)
+	dropDown.cvar = cvar;
+	dropDown.value = GetCVar(cvar);
+	dropDown.defaultValue = GetCVarDefault(cvar);
+	dropDown.oldValue = dropDown.value;
+	dropDown.tooltip = "[PH] Tooltip here";
+
+	UIDropDownMenu_SetWidth(dropDown, 130);
+	UIDropDownMenu_Initialize(dropDown, InterfaceOptionsLossOfControlDropDown_Initialize);
+	UIDropDownMenu_SetSelectedValue(dropDown, value);
+
+	dropDown.SetValue = InterfaceOptionsLossOfControlDropDown_SetValue;
+	dropDown.GetValue = InterfaceOptionsLossOfControlDropDown_GetValue;
+	dropDown.RefreshValue = InterfaceOptionsLossOfControlDropDown_RefreshValue;
+
+	BlizzardOptionsPanel_SetupDependentControl(checkBox, dropDown);	
+end
+
+function InterfaceOptionsLossOfControlDropDown_OnClick(self)
+	local dropDown = UIDropDownMenu_GetCurrentDropDown();
+	dropDown:SetValue(self.value);
+end
+
+function InterfaceOptionsLossOfControlDropDown_Initialize(self)
+	local selectedValue = UIDropDownMenu_GetSelectedValue(self);
+	local info = UIDropDownMenu_CreateInfo();
+
+	info.text = LOC_OPTION_FULL;
+	info.func = InterfaceOptionsLossOfControlDropDown_OnClick;
+	info.value = "2";
+	info.checked = (info.value == selectedValue);
+	UIDropDownMenu_AddButton(info);
+
+	info.text = LOC_OPTION_ALERT;
+	info.func = InterfaceOptionsLossOfControlDropDown_OnClick;
+	info.value = "1";
+	info.checked = (info.value == selectedValue);
+	UIDropDownMenu_AddButton(info);
+
+	info.text = LOC_OPTION_OFF;
+	info.func = InterfaceOptionsLossOfControlDropDown_OnClick;
+	info.value = "0";
+	info.checked = (info.value == selectedValue);
+	UIDropDownMenu_AddButton(info);
+end
 
 -- [[ Display Options Panel ]] --
 

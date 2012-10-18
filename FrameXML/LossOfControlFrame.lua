@@ -15,9 +15,33 @@ local timeLeftTimings = {
 local TIME_LEFT_FRAME_WIDTH = 200;
 LOSS_OF_CONTROL_TIME_OFFSET = 6;
 
+local DISPLAY_TYPE_FULL = 2;
+local DISPLAY_TYPE_ALERT = 1;
+local DISPLAY_TYPE_NONE = 0;
+
+local PRIORITY_FULL = 5;
+local PRIORITY_INTERRUPT = 4;
+local PRIORITY_SILENCE = 3;
+local PRIORITY_DISARM = 2;
+local PRIORITY_ROOT = 1;
+
+local typePriority = {
+	["POSSESS"] = PRIORITY_FULL,
+	["CONFUSE"] = PRIORITY_FULL,
+	["CHARM"] = PRIORITY_FULL,
+	["FEAR"] = PRIORITY_FULL,
+	["STUN"] = PRIORITY_FULL,
+	["PACIFY"] = PRIORITY_SILENCE,
+	["ROOT"] = PRIORITY_ROOT,
+	["SILENCE"] = PRIORITY_SILENCE,
+	["PACIFYSILENCE"] = PRIORITY_SILENCE,
+	["DISARM"] = PRIORITY_DISARM,
+	["SCHOOL_INTERRUPT"] = PRIORITY_INTERRUPT,
+}
+
 function LossOfControlFrame_OnLoad(self)
-	self:RegisterEvent("LOSS_OF_CONTROL_UPDATE");
-	self:RegisterEvent("LOSS_OF_CONTROL_ADDED");
+	self:RegisterEvent("CVAR_UPDATE");
+	self:RegisterEvent("VARIABLES_LOADED");
 	-- figure out some string widths - our base width is for under 10 seconds which should be almost all loss of control durations
 	self.TimeLeft.baseNumberWidth = self.TimeLeft.NumberText:GetStringWidth() + LOSS_OF_CONTROL_TIME_OFFSET;
 	self.TimeLeft.secondsWidth = self.TimeLeft.SecondsText:GetStringWidth();
@@ -27,8 +51,36 @@ function LossOfControlFrame_OnEvent(self, event, ...)
 	if ( event == "LOSS_OF_CONTROL_UPDATE" ) then
 		LossOfControlFrame_UpdateDisplay(self, false);
 	elseif ( event == "LOSS_OF_CONTROL_ADDED" ) then
-		local locType, spellID, text, iconTexture, startTime, timeRemaining, duration, schoolMask, isActive = ...;
-		LossOfControlFrame_UpdateDisplay(self, isActive);
+		local locType, spellID, text, iconTexture, startTime, timeRemaining, duration, lockoutSchool, displayType, isActive = ...;
+		if ( displayType == DISPLAY_TYPE_ALERT ) then
+			-- only display an alert type if there's nothing up or it has higher priority or longer time remaining if same priority
+			if ( not self:IsShown() or typePriority[locType] > typePriority[self.locType] or
+				( typePriority[locType] == typePriority[self.locType] and timeRemaining > self.TimeLeft.timeRemaining ) ) then
+				LossOfControlFrame_SetUpDisplay(self, true, locType, spellID, text, iconTexture, startTime, timeRemaining, duration, lockoutSchool, displayType);
+			end
+			return;
+		end
+		if ( isActive ) then
+			self.fadeTime = nil;
+			LossOfControlFrame_SetUpDisplay(self, true);
+		end
+	elseif ( event == "CVAR_UPDATE" ) then
+		local cvar, value = ...;
+		if ( cvar == "LOSS_OF_CONTROL" ) then
+			if ( value == "1" ) then
+				self:RegisterEvent("LOSS_OF_CONTROL_UPDATE");
+				self:RegisterEvent("LOSS_OF_CONTROL_ADDED");
+			else
+				self:UnregisterEvent("LOSS_OF_CONTROL_UPDATE");
+				self:UnregisterEvent("LOSS_OF_CONTROL_ADDED");
+				self:Hide();
+			end
+		end
+	elseif ( event == "VARIABLES_LOADED" ) then
+		if ( GetCVarBool("lossOfControl" ) ) then
+			self:RegisterEvent("LOSS_OF_CONTROL_UPDATE");
+			self:RegisterEvent("LOSS_OF_CONTROL_ADDED");
+		end
 	end
 end
 
@@ -37,91 +89,108 @@ function LossOfControlFrame_OnUpdate(self, elapsed)
 	RaidNotice_UpdateSlot(self.TimeLeft.NumberText, timeLeftTimings, elapsed);
 	RaidNotice_UpdateSlot(self.TimeLeft.SecondsText, timeLeftTimings, elapsed);
 
-	-- Hack for Root and Interrupt display fading out
-	if(self.FadeTime) then
-		self.FadeTime = self.FadeTime - elapsed;
-		self:SetAlpha(max(self.FadeTime*2, 0.0));
-		if(self.FadeTime < 0) then
+	-- handle alert type
+	if(self.fadeTime) then
+		self.fadeTime = self.fadeTime - elapsed;
+		self:SetAlpha(max(self.fadeTime*2, 0.0));
+		if(self.fadeTime < 0) then
 			self:Hide();
-			self.FadeTime = nil;
+		else
+			-- no need to do any other work
+			return;
 		end
 	else
 		self:SetAlpha(1.0);
 	end
-	
-	LossOfControlFrame_UpdateDisplay(self, false);
+	LossOfControlFrame_UpdateDisplay(self);	
 end
 
-function LossOfControlFrame_UpdateDisplay(self, animate)
+function LossOfControlFrame_OnHide(self)
+	self.fadeTime = nil;
+	self.locType = nil;
+end
 
-	local locType, spellID, text, iconTexture, startTime, timeRemaining, duration, lockoutSchool = GetActiveLossOfControlInfo();
-	
-	-- Only full LoC should stay up
-	if ( locType == "POSSESS" or locType == "CONFUSE" or locType == "CHARM" or locType == "FEAR" or locType == "STUN" ) then
-		self.FadeTime = nil;
-	else
-		if(animate) then
-			self.FadeTime = 1.5;
-			timeRemaining = duration;  -- hack so that the full duration appears in the toast
-		else
-			if(self.FadeTime == nil) then
-				self:Hide();
-			end
-			return;
-		end
+function LossOfControlFrame_SetUpDisplay(self, animate, locType, spellID, text, iconTexture, startTime, timeRemaining, duration, lockoutSchool, displayType)
+	if ( not locType ) then
+		locType, spellID, text, iconTexture, startTime, timeRemaining, duration, lockoutSchool, displayType = GetActiveLossOfControlInfo();
 	end
-		
-	if ( text ) then
+	
+	if ( text and displayType ~= DISPLAY_TYPE_NONE ) then
 		-- ability name
-		if (locType == "SCHOOL_INTERRUPT") then
+		if ( locType == "SCHOOL_INTERRUPT" ) then
 			-- Replace text with school-specific lockout text
 			if(lockoutSchool and lockoutSchool ~= 0 and SchoolStringTable[lockoutSchool]) then
 				text = string.format(LOSS_OF_CONTROL_DISPLAY_INTERRUPT_SCHOOL, SchoolStringTable[lockoutSchool]);
 			end
 		end
 		self.AbilityName:SetText(text);
-		-- time remaining
-		local timeLeftFrame = self.TimeLeft;
-		if(timeRemaining) then
-			if ( timeRemaining >= 10 ) then
-				timeLeftFrame.NumberText:SetFormattedText("%d", timeRemaining);
-			else
-				timeLeftFrame.NumberText:SetFormattedText("%.1f", timeRemaining);
-			end
-			timeLeftFrame:Show();
-			LossOfControlTimeLeftFrame_SetNumberWidth(timeLeftFrame, timeRemaining);
-		else
-			timeLeftFrame:Hide();
-			startTime = 0;
-			duration = 0;
-		end
 		-- icon
 		self.Icon:SetTexture(iconTexture);
-		self.Cooldown:SetLossOfControlCooldown(startTime, duration);		
-		-- position strings and icon if it's a new string
-		if ( self.currentText ~= text or self.startTime ~= startTime ) then
-			self.currentText = text;
-			self.startTime = startTime;
-			local abilityWidth = self.AbilityName:GetWidth();
-			local longestTextWidth = max(abilityWidth, (timeLeftFrame.numberWidth + timeLeftFrame.secondsWidth));
-			local xOffset = (abilityWidth - longestTextWidth) / 2 + 27;
-			self.AbilityName:SetPoint("CENTER", xOffset, 11);
-			self.Icon:SetPoint("CENTER", -((6 + longestTextWidth) / 2), 0);
-			-- left-align the TimeLeft frame with the ability name using a center anchor (will need center for "animating" via frame scaling - NYI)
-			xOffset = xOffset + (TIME_LEFT_FRAME_WIDTH - abilityWidth) / 2;
-			timeLeftFrame:SetPoint("CENTER", xOffset, -12);
+		-- time
+		local timeLeftFrame = self.TimeLeft;
+		if ( displayType == DISPLAY_TYPE_ALERT ) then
+			timeRemaining = duration;
+			self.Cooldown:SetLossOfControlCooldown(0, 0);
+		else
+			self.Cooldown:SetLossOfControlCooldown(startTime, duration);
 		end
-		if(animate) then
+		LossOfControlTimeLeftFrame_SetTime(timeLeftFrame, timeRemaining);
+		-- align stuff
+		local abilityWidth = self.AbilityName:GetWidth();
+		local longestTextWidth = max(abilityWidth, (timeLeftFrame.numberWidth + timeLeftFrame.secondsWidth));
+		local xOffset = (abilityWidth - longestTextWidth) / 2 + 27;
+		self.AbilityName:SetPoint("CENTER", xOffset, 11);
+		self.Icon:SetPoint("CENTER", -((6 + longestTextWidth) / 2), 0);
+		-- left-align the TimeLeft frame with the ability name using a center anchor (will need center for "animating" via frame scaling - NYI)
+		xOffset = xOffset + (TIME_LEFT_FRAME_WIDTH - abilityWidth) / 2;
+		timeLeftFrame:SetPoint("CENTER", xOffset, -12);
+		-- show
+		if ( animate ) then
+			if ( displayType == DISPLAY_TYPE_ALERT ) then
+				self.fadeTime = 1.5;
+			end
 			self.Anim:Stop();
 			self.AbilityName.scrollTime = 0;
 			self.TimeLeft.NumberText.scrollTime = 0;
 			self.TimeLeft.SecondsText.scrollTime = 0;
 			self.Anim:Play();
 		end
+		self.locType = locType;
+		self.spellID = spellID;
+		self.startTime = startTime;
 		self:Show();
+	end
+end
+
+function LossOfControlFrame_UpdateDisplay(self)
+	-- if displaying an alert, wait for it to go away on its own
+	if ( self.fadeTime ) then
+		return;
+	end
+
+	local locType, spellID, text, iconTexture, startTime, timeRemaining, duration, lockoutSchool, displayType = GetActiveLossOfControlInfo();
+	if ( text and displayType == DISPLAY_TYPE_FULL ) then
+		if ( spellID ~= self.spellID or startTime ~= self.startTime ) then
+			LossOfControlFrame_SetUpDisplay(self, false, locType, spellID, text, iconTexture, startTime, timeRemaining, duration, lockoutSchool, displayType);
+		end
+		self.Cooldown:SetLossOfControlCooldown(startTime, duration);
+		LossOfControlTimeLeftFrame_SetTime(self.TimeLeft, timeRemaining);
 	else
-		self.currentText = nil;
-		self.startTime = nil;
+		self:Hide();
+	end
+end
+
+function LossOfControlTimeLeftFrame_SetTime(self, timeRemaining)
+	if( timeRemaining ) then
+		if ( timeRemaining >= 10 ) then
+			self.NumberText:SetFormattedText("%d", timeRemaining);
+		else
+			self.NumberText:SetFormattedText("%.1f", timeRemaining);
+		end
+		self:Show();
+		self.timeRemaining = timeRemaining;
+		LossOfControlTimeLeftFrame_SetNumberWidth(self, timeRemaining);
+	else
 		self:Hide();
 	end
 end

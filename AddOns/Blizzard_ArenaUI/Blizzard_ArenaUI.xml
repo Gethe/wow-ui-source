@@ -162,12 +162,6 @@
 		<Size x="112" y="32"/>
 		<Layers>
 			<Layer level="BACKGROUND">
-				<Texture name="$parentFlash" file="Interface\TargetingFrame\UI-PartyFrame-Flash" hidden="true">
-					<Size x="128" y="64"/>
-					<Anchors>
-						<Anchor point="TOPLEFT" x="-3" y="2"/>
-					</Anchors>
-				</Texture>
 				<Texture name="$parentClassPortrait" file="Interface\TargetingFrame\UI-Classes-Circles" parentKey="classPortrait">
 					<Size x="30" y="30"/>
 					<Anchors>
@@ -321,8 +315,7 @@
 				local prefix = "ArenaEnemyFrame"..id;
 				UnitFrame_Initialize(self, "arena"..id,  _G[prefix.."Name"], nil,
 					   _G[prefix.."HealthBar"], _G[prefix.."HealthBarText"], 
-					   _G[prefix.."ManaBar"], _G[prefix.."ManaBarText"],
-				       _G[prefix.."Flash"]);
+					   _G[prefix.."ManaBar"], _G[prefix.."ManaBarText"]);
 				SetTextStatusBarTextZeroText(_G[prefix.."HealthBar"], DEAD);
 				ArenaEnemyFrame_OnLoad(self);
 			</OnLoad>

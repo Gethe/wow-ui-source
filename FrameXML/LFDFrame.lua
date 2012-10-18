@@ -86,7 +86,7 @@ end
 function LFDFrame_UpdateBackfill(forceUpdate)
 	if ( CanPartyLFGBackfill() ) then
 		local currentSubtypeID = select(LFG_RETURN_VALUES.subtypeID, GetLFGDungeonInfo(GetPartyLFGID()));
-		if ( currentSubtypeID ~= LFG_SUBTYPEID_RAID and currentSubtypeID ~= LFG_SUBTYPEID_SCENARIO ) then
+		if ( currentSubtypeID ~= LFG_SUBTYPEID_RAID ) then
 			local name, lfgID, typeID = GetPartyLFGBackfillInfo();
 			LFDQueueFramePartyBackfillDescription:SetFormattedText(LFG_OFFER_CONTINUE, HIGHLIGHT_FONT_COLOR_CODE..name.."|r");
 			local mode, subMode = GetLFGMode(LE_LFG_CATEGORY_LFD);

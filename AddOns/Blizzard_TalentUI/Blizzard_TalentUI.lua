@@ -1,21 +1,4 @@
 
-StaticPopupDialogs["CONFIRM_LEARN_TALENTS"] = {
-	text = CONFIRM_LEARN_PREVIEW_TALENTS,
-	button1 = YES,
-	button2 = NO,
-	OnAccept = function (self)
-		local talentGroup = PlayerTalentFrame and PlayerTalentFrame.talentGroup or 1;
-		if ( talentGroup == GetActiveSpecGroup() ) then
-			LearnTalents(PlayerTalentFrame_GetTalentSelections());
-		end
-	end,
-	OnCancel = function (self)
-	end,
-	hideOnEscape = 1,
-	whileDead = 1,
-	timeout = 0,
-	exclusive = 1,
-}
 
 StaticPopupDialogs["CONFIRM_REMOVE_TALENT"] = {
 	text = "",
@@ -472,12 +455,10 @@ function PlayerTalentFrame_OnHide()
 		TalentMicroButtonAlert.Text:SetText(TALENT_MICRO_BUTTON_UNSAVED_CHANGES);
 		TalentMicroButtonAlert:SetHeight(TalentMicroButtonAlert.Text:GetHeight()+42);
 		TalentMicroButtonAlert:Show();
-		StaticPopup_Hide("CONFIRM_LEARN_TALENTS");
 	elseif ( GetNumUnspentTalents() > 0 ) then
 		TalentMicroButtonAlert.Text:SetText(TALENT_MICRO_BUTTON_UNSPENT_TALENTS);
 		TalentMicroButtonAlert:SetHeight(TalentMicroButtonAlert.Text:GetHeight()+42);
 		TalentMicroButtonAlert:Show();
-		StaticPopup_Hide("CONFIRM_LEARN_TALENTS");
 	end
 end
 
@@ -494,7 +475,6 @@ function PlayerTalentFrame_OnEvent(self, event, ...)
 				 event == "PREVIEW_TALENT_POINTS_CHANGED" or
 				 event == "PREVIEW_TALENT_PRIMARY_TREE_CHANGED" or
 				 event == "PLAYER_TALENT_UPDATE" ) then
-			StaticPopup_Hide("CONFIRM_LEARN_TALENTS");
 			PlayerTalentFrame_ClearTalentSelections();
 			PlayerTalentFrame_Refresh();
 		elseif ( event == "UNIT_LEVEL") then
@@ -1060,6 +1040,7 @@ function PlayerTalentTab_OnLoad(self)
 end
 
 function PlayerTalentTab_OnClick(self)
+	StaticPopup_Hide("CONFIRM_REMOVE_TALENT")
 	PlayerTalentFrameTab_OnClick(self);
 	SetButtonPulse(self, 0, 0);
 end
@@ -1082,6 +1063,7 @@ function PlayerGlyphTab_OnLoad(self)
 end
 
 function PlayerGlyphTab_OnClick(self)
+	StaticPopup_Hide("CONFIRM_REMOVE_TALENT")
 	PlayerTalentFrameTab_OnClick(self);
 	SetButtonPulse(_G["PlayerTalentFrameTab"..GLYPH_TAB], 0, 0);
 end

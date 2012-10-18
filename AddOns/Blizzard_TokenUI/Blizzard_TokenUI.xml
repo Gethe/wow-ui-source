@@ -316,7 +316,7 @@
 			<AbsDimension x="50" y="12"/>
 		</Size>
 		<Layers>
-			<Layer level="BACKGROUND">
+			<Layer level="ARTWORK">
 				<FontString name="$parentCount" inherits="GameFontHighlightSmall" justifyH="RIGHT" parentKey="count">
 					<Size x="38" y="10"/>
 					<Anchors>

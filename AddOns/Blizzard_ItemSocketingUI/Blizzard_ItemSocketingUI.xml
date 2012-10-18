@@ -129,7 +129,6 @@
 				ShoppingTooltip1:Hide();
 			</OnLeave>
 		</Scripts>
-		<NormalTexture file=""/>
 		<PushedTexture file="Interface\Buttons\UI-Quickslot-Depress"/>
 		<HighlightTexture file="Interface\Buttons\ButtonHilight-Square" alphaMode="ADD"/>
 	</Button>

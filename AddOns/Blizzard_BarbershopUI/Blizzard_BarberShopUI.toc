@@ -1,4 +1,4 @@
-## Interface: 50001
+## Interface: 50100
 ## Title: Blizzard Barber Shop UI
 ## Notes: The barber's blade went snicker-snack! Have you seen my Jabberwocky?
 ## Secure: 1
