@@ -225,7 +225,9 @@
 							<OnClick>
 								if ( self:GetChecked() ) then
 									PlaySound("igMainMenuOptionCheckBoxOn");
-									MacOptionsFrame_EnableCheckBox(MacOptionsFrameCheckButton3);
+									if (MovieRecording_IsCursorRecordingSupported()) then
+										MacOptionsFrame_EnableCheckBox(MacOptionsFrameCheckButton3);
+									end
 								else
 									PlaySound("igMainMenuOptionCheckBoxOff");
 									MacOptionsFrameCheckButton3:SetChecked(0);

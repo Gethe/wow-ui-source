@@ -3069,7 +3069,7 @@
 						<Anchor point="TOPLEFT" relativeTo="$parentTitleBg"/>
 						<Anchor point="BOTTOMRIGHT" relativeTo="$parentTitleBg"/>
 					</Anchors>
-					<Color r="0.302" g="0.102" b="0.204" a="0.5"/>
+					<Color r="0.302" g="0.102" b="0.204" a="1"/>
 				</Texture>
 			</Layer>
 		</Layers>

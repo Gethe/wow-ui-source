@@ -3,7 +3,7 @@
 	<Script file="Blizzard_ItemUpgradeUI.lua"/>
 
 	<Frame name="ItemUpgradeStatTemplate" hidden="true" virtual="true">
-		<Size x="185" y="15"/>
+		<Size x="165" y="15"/>
 		<Layers>
 			<Layer level="BACKGROUND">
 				<Texture  parentKey="BG" hidden="true">
@@ -67,25 +67,37 @@
 		</Layers>
 	</Frame>
 	
-	<Frame name="ItemUpgradeFrame" inherits="ButtonFrameTemplate" toplevel="true" movable="true" parent="UIParent" enableMouse="true" hidden="true">
-		<Size x="422" y="434"/>
+	<Frame name="ItemUpgradeFrame" inherits="EtherealFrameTemplate" toplevel="true" movable="true" parent="UIParent" enableMouse="true" hidden="true">
+		<Size x="428" y="434"/>
 
 		<Layers>
-			<Layer level="BORDER">
-				<Texture name="BackgroundHighlight" file="Interface\ItemSocketingFrame\UI-ItemSocketingFrame" virtual="true" >
+			<Layer level="BACKGROUND" textureSubLevel="-6">
+				<Texture parentKey="MarbleBg" file="Interface\FrameGeneral\UI-Background-Marble" horizTile="true" vertTile="true" setAllPoints="true"/>
+			</Layer>
+			<Layer level="BACKGROUND" textureSubLevel="-5">
+				<Texture setAllPoints="true">
+					<Color r="0.302" g="0.102" b="0.204" a="0.5"/>
+				</Texture>
+			</Layer>
+			<Layer level="BACKGROUND" textureSubLevel="-4">
+				<Texture parentKey="Lines" file="Interface\Transmogrify\EtherealLines.png" horizTile="true" vertTile="true" alpha="0.1" setAllPoints="true"/>
+				<Texture parentKey="MissingFadeOut" setAllPoints="true">
+					<Color r="0" g="0" b="0" a="0.5"/>
+				</Texture>
+				<Texture parentKey="ReceiptBG" file="Interface\Reforging\Reforge-Partchment" hidden="true">
 					<Anchors>
-						<Anchor point="TOPLEFT" x="8" y="-128"/>
-						<Anchor point="BOTTOMRIGHT" x="-10" y="24"/>
+						<Anchor point="TOPLEFT" x="12" y="-30"/>
+						<Anchor point="BOTTOMRIGHT" x="-15" y="36"/>
 					</Anchors>
-					<TexCoords left="0.00390625" right="0.50390625" top="0.41796875" bottom="0.91796875"/>  
+					<TexCoords left="0" right="0.732421875" top="0" bottom="0.705078125"/>
 				</Texture>
 			</Layer>
 			<Layer level="OVERLAY" textureSubLevel="2">
 				<Texture  parentKey="HorzBar">
 					<Size x="0" y="1"/>
 					<Anchors>
-						<Anchor point="TOPLEFT" x="9" y="-156"/>
-						<Anchor point="TOPRIGHT" x="-11" y="-156"/>
+						<Anchor point="TOPLEFT" x="22" y="-154"/>
+						<Anchor point="BOTTOMRIGHT" relativePoint="TOPRIGHT" x="-24" y="-155"/>
 					</Anchors>
 					<Color r="1" g="1" b="1" a="0.2"/>
 				</Texture>
@@ -105,7 +117,7 @@
 				</FontString>
 				<FontString parentKey="TitleTextLeft" inherits="GameFontNormalMed3" justifyH="LEFT" text="REFORGE_CURRENT">
 					<Anchors>
-						<Anchor point="TOPLEFT" x="20" y="-136"/>
+						<Anchor point="TOPLEFT" x="23" y="-136"/>
 					</Anchors>
 				</FontString>
 				<FontString parentKey="TitleTextRight" inherits="GameFontNormalMed3" justifyH="LEFT" text="UPGRADE">
@@ -122,12 +134,6 @@
 		</Layers>
 		
 		<Frames>
-			<Frame name="$parentShadows" inherits="ShadowOverlayTemplate" useParentLevel="true">
-				<Size x="404" y="276"/>
-				<Anchors>
-					<Anchor point="TOPLEFT" x="8" y="-128"/>
-				</Anchors>
-			</Frame>
 			<Frame parentKey="LeftItemLevel" hidden="true">
 				<Size x="180" y="24"/>
 				<Anchors>
@@ -195,37 +201,33 @@
 			<Button parentKey="ItemButton">
 				<Size x="58" y="58"/>
 				<Anchors>
-					<Anchor point="TOPLEFT" x="12" y="-68"/>
+					<Anchor point="TOPLEFT" x="20" y="-64"/>
 				</Anchors>
 				<Layers>
 					<Layer level="BORDER">
 						<Texture parentKey="IconTexture"/>
 					</Layer>
-					<Layer level="OVERLAY">
-						<Texture parentKey="ItemFrame" file="Interface\AchievementFrame\UI-Achievement-IconFrame">
-							<Size x="78" y="78"/> 
-							<Anchors>
-								<Anchor point="TOPLEFT" x="-10" y="10"/>
-							</Anchors>
-							<TexCoords left="0" right="0.5625" top="0" bottom="0.5625"/>
-						</Texture>
-					</Layer>
 					<Layer level="BACKGROUND">
-						<Texture parentKey="TextureFrameLeft" file="Interface\Common\GreyBorder64-Left">
-						<Anchors>
-							<Anchor point="LEFT" relativeKey="$parent.ItemFrame" relativePoint="RIGHT" x="-4"/>
-						</Anchors>
-						</Texture>
-						<Texture parentKey="TextureFrameMiddle" file="Interface\Common\GreyBorder64-Mid" horizTile="true">
-							<Size x="211" />
+						<Texture parentKey="Grabber" file="Interface\Transmogrify\Textures.png">
+							<Size x="20" y="49"/>
 							<Anchors>
-								<Anchor point="LEFT" relativeKey="$parent.TextureFrameLeft" relativePoint="RIGHT"/>
+								<Anchor point="RIGHT" relativeKey="$parent.Frame" relativePoint="LEFT" x="2" y="0"/>
+							</Anchors>
+							<TexCoords left="0.00781250" right="0.16406250" top="0.58203125" bottom="0.67773438"/>
+						</Texture>
+						<Texture parentKey="TextFrame" file="Interface\Reforging\Reforge-Texture" >
+							<Size x="348" y="73"/>	
+							<TexCoords left="0.13281250" right="0.81250000" top="0.00781250" bottom="0.57812500"/>
+							<Anchors>
+								<Anchor point="LEFT" relativePoint="RIGHT" x="-10" />
 							</Anchors>
 						</Texture>
-						<Texture parentKey="TextureFrameRight" file="Interface\Common\GreyBorder64-Right">
+						<Texture parentKey="TextGrabber" file="Interface\Transmogrify\Textures.png">
+							<Size x="20" y="49"/>
 							<Anchors>
-								<Anchor point="LEFT" relativeKey="$parent.TextureFrameMiddle" relativePoint="RIGHT"/>
+								<Anchor point="LEFT" relativeKey="$parent.TextFrame" relativePoint="RIGHT" x="-11" y="0"/>
 							</Anchors>
+							<TexCoords right="0.00781250" left="0.16406250" top="0.58203125" bottom="0.67773438"/>
 						</Texture>
 					</Layer>
 					<Layer level="ARTWORK">
@@ -252,7 +254,7 @@
 						<FontString parentKey="CurrencyAmount" inherits="GameFontNormal" justifyH="RIGHT">
 							<Size x="0" y="12"/>
 							<Anchors>
-								<Anchor point="BOTTOMRIGHT" relativeKey="$parent.TextureFrameRight" relativePoint="BOTTOMRIGHT" x="-13" y="15"/>
+								<Anchor point="BOTTOMRIGHT" relativeKey="$parent.TextFrame" relativePoint="BOTTOMRIGHT" x="-18" y="18"/>
 							</Anchors>
 							<Color r="1" g="1" b="1" a="1"/>
 						</FontString>
@@ -260,6 +262,15 @@
 							<Size x="12" y="12"/> 
 							<Anchors>
 								<Anchor point="RIGHT" relativeKey="$parent.CurrencyAmount" relativePoint="LEFT" x="-2" y="-1"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+					<Layer level="OVERLAY">
+						<Texture parentKey="Frame" file="Interface\Reforging\Reforge-Texture">
+							<Size x="78" y="77"/>	
+							<TexCoords left="0.81640625" right="0.96875000" top="0.00781250" bottom="0.60937500"/>
+							<Anchors>
+								<Anchor point="CENTER"/>
 							</Anchors>
 						</Texture>
 					</Layer>
@@ -288,10 +299,9 @@
 					</OnReceiveDrag>
 				</Scripts>
 				<PushedTexture file="Interface\Buttons\UI-Quickslot-Depress"/>
-				<HighlightTexture file="Interface\Buttons\ButtonHilight-SquareQuickslot" alphaMode="ADD">
-					<Anchors>
-					<Anchor x="-2" y="2"/>
-					</Anchors>
+				<HighlightTexture file="Interface\Reforging\Reforge-Texture" alphaMode="ADD">
+					<Size x="67" y="67"/>	
+					<TexCoords left="0.00195313" right="0.12890625" top="0.00781250" bottom="0.51562500"/>	
 				</HighlightTexture>
 			</Button>
 		  
@@ -303,9 +313,9 @@
 				</Anchors>
 				<Frames>
 					<Frame name="ItemUpgradeFrameMoneyFrame" inherits="ThinGoldEdgeTemplate">
-						<Size x="253" y="20"/>
+						<Size x="260" y="20"/>
 						<Anchors>
-							<Anchor point="BOTTOMLEFT" x="5" y="4"/>
+							<Anchor point="BOTTOMLEFT" x="2" y="5"/>
 						</Anchors>
 						<Frames>
 							<Button parentKey="Currency" inherits="BackpackTokenTemplate" hidden="false">
@@ -332,6 +342,31 @@
 						</Scripts>
 					</Button>
 				</Frames>
+				<Layers>
+					<Layer level="BORDER" textureSubLevel="1">
+						<Texture>
+							<Size x="334" y="21"/>
+							<Anchors>
+								<Anchor point="BOTTOMLEFT" x="1" y="5"/>
+							</Anchors>
+							<Color r="0" g="0" b="0"/>
+						</Texture>
+					</Layer>
+					<Layer level="BORDER" textureSubLevel="2">
+						<Texture parentKey="ButtonBorder" inherits="_UI-Frame-InnerBotTile">
+							<Anchors>
+								<Anchor point="BOTTOMLEFT" x="1" y="25"/>
+								<Anchor point="BOTTOMRIGHT" x="-3" y="25"/>
+							</Anchors>
+						</Texture>
+						<Texture parentKey="ButtonBottomBorder" inherits="_UI-Frame-BtnBotTile">
+							<Anchors>
+								<Anchor point="BOTTOMLEFT" x="6" y="2"/>
+								<Anchor point="BOTTOMRIGHT" x="-8" y="2"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
 			</Frame>
 			<Frame parentKey="FinishedGlow" setAllPoints="true">
 				<Animations>

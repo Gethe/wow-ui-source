@@ -23,14 +23,8 @@ function ItemUpgradeFrame_OnLoad(self)
 	self.LeftStat[1].BG:Show();
 	self.RightStat[1].BG:Show();
 	ItemUpgradeFrameTitleText:SetText(ITEM_UPGRADE);
-	ItemUpgradeFrameShadowsTopLeft:SetSize(32,32);
-	ItemUpgradeFrameShadowsTopRight:SetSize(32,32);
-	ItemUpgradeFrameShadowsBottomLeft:SetSize(32,32);
-	ItemUpgradeFrameShadowsBottomRight:SetSize(32,32);
-	ItemUpgradeFrameShadowsTop:SetHeight(32);
-	ItemUpgradeFrameShadowsBottom:SetHeight(32);
-	ItemUpgradeFrameShadowsLeft:SetWidth(32);
-	ItemUpgradeFrameShadowsRight:SetWidth(32);
+	ItemUpgradeFrameTopTileStreaks:Hide();
+	ItemUpgradeFrameBg:Hide();
 end
 
 function ItemUpgradeFrame_OnShow(self)
@@ -75,6 +69,7 @@ function ItemUpgradeFrame_Update(self)
 		ItemUpgradeFrame.ItemButton.MissingText:Hide();	
 		ItemUpgradeFrame.ItemButton.CurrencyAmount:SetText(cost);
 		ItemUpgradeFrame.MissingDescription:Hide();
+		ItemUpgradeFrame.MissingFadeOut:Hide();
 		ItemUpgradeFrame.TitleTextLeft:Show();
 		ItemUpgradeFrame.TitleTextRight:Show();
 		ItemUpgradeFrame.HorzBar:Show();
@@ -111,6 +106,7 @@ function ItemUpgradeFrame_Update(self)
 		ItemUpgradeFrame.ItemButton.CurrencyIcon:Hide();
 		ItemUpgradeFrame.ItemButton.CurrencyAmount:Hide();
 		ItemUpgradeFrame.MissingDescription:Show();
+		ItemUpgradeFrame.MissingFadeOut:Show();
 		ItemUpgradeFrame.TitleTextLeft:Hide();
 		ItemUpgradeFrame.TitleTextRight:Hide();
 		ItemUpgradeFrame.UpgradeStatus:Hide();

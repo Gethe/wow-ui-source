@@ -458,11 +458,11 @@ end
 function InterfaceOptionsLossOfControl_OnEvent (self, event, ...)
 	if ( event == "VARIABLES_LOADED" ) then
 		-- set up dropdowns
-		InterfaceOptionsLossOfControl_SetUpDropdown(InterfaceOptionsCombatPanelLossOfControlFullDropDown, "lossOfControlFull", self);
-		InterfaceOptionsLossOfControl_SetUpDropdown(InterfaceOptionsCombatPanelLossOfControlInterruptDropDown, "lossOfControlInterrupt", self);
-		InterfaceOptionsLossOfControl_SetUpDropdown(InterfaceOptionsCombatPanelLossOfControlSilenceDropDown, "lossOfControlSilence", self);
-		InterfaceOptionsLossOfControl_SetUpDropdown(InterfaceOptionsCombatPanelLossOfControlDisarmDropDown, "lossOfControlDisarm", self);
-		InterfaceOptionsLossOfControl_SetUpDropdown(InterfaceOptionsCombatPanelLossOfControlRootDropDown, "lossOfControlRoot", self);
+		InterfaceOptionsLossOfControl_SetUpDropdown(InterfaceOptionsCombatPanelLossOfControlFullDropDown, "lossOfControlFull", self, OPTION_LOSS_OF_CONTROL_FULL);
+		InterfaceOptionsLossOfControl_SetUpDropdown(InterfaceOptionsCombatPanelLossOfControlSilenceDropDown, "lossOfControlSilence", self, OPTION_LOSS_OF_CONTROL_SILENCE);
+		InterfaceOptionsLossOfControl_SetUpDropdown(InterfaceOptionsCombatPanelLossOfControlInterruptDropDown, "lossOfControlInterrupt", self, OPTION_LOSS_OF_CONTROL_INTERRUPT);
+		InterfaceOptionsLossOfControl_SetUpDropdown(InterfaceOptionsCombatPanelLossOfControlDisarmDropDown, "lossOfControlDisarm", self, OPTION_LOSS_OF_CONTROL_DISARM);
+		InterfaceOptionsLossOfControl_SetUpDropdown(InterfaceOptionsCombatPanelLossOfControlRootDropDown, "lossOfControlRoot", self, OPTION_LOSS_OF_CONTROL_ROOT);
 	end
 end
 
@@ -481,12 +481,12 @@ function InterfaceOptionsLossOfControlDropDown_RefreshValue(self)
 	UIDropDownMenu_SetSelectedValue(self, self.value);
 end
 
-function InterfaceOptionsLossOfControl_SetUpDropdown(dropDown, cvar, checkBox)
+function InterfaceOptionsLossOfControl_SetUpDropdown(dropDown, cvar, checkBox, tooltip)
 	dropDown.cvar = cvar;
 	dropDown.value = GetCVar(cvar);
 	dropDown.defaultValue = GetCVarDefault(cvar);
 	dropDown.oldValue = dropDown.value;
-	dropDown.tooltip = "[PH] Tooltip here";
+	dropDown.tooltip = tooltip;
 
 	UIDropDownMenu_SetWidth(dropDown, 130);
 	UIDropDownMenu_Initialize(dropDown, InterfaceOptionsLossOfControlDropDown_Initialize);

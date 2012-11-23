@@ -12,6 +12,10 @@ local timeLeftTimings = {
 	["RAID_NOTICE_SCALE_DOWN_TIME"] = 0.2,
 }
 
+local TEXT_OVERRIDE = {
+	[33786] = LOSS_OF_CONTROL_DISPLAY_CYCLONE,
+}
+
 local TIME_LEFT_FRAME_WIDTH = 200;
 LOSS_OF_CONTROL_TIME_OFFSET = 6;
 
@@ -98,6 +102,7 @@ function LossOfControlFrame_SetUpDisplay(self, animate, locType, spellID, text, 
 	end
 	if ( text and displayType ~= DISPLAY_TYPE_NONE ) then
 		-- ability name
+		text = TEXT_OVERRIDE[spellID] or text;
 		if ( locType == "SCHOOL_INTERRUPT" ) then
 			-- Replace text with school-specific lockout text
 			if(lockoutSchool and lockoutSchool ~= 0 and SchoolStringTable[lockoutSchool]) then
