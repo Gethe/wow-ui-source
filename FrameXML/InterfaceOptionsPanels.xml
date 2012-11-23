@@ -3558,37 +3558,11 @@
 					</OnLoad>
 				</Scripts>
 			</CheckButton>					
-			<Slider name="$parentMouseSensitivitySlider" inherits="OptionsSliderTemplate">
-				<Anchors>
-					<Anchor point="TOPLEFT" relativeTo="$parentInvertMouse" relativePoint="BOTTOMLEFT">
-						<Offset>
-							<AbsDimension x="4" y="-24"/>
-						</Offset>
-					</Anchor>
-				</Anchors>
-				<Scripts>
-					<OnLoad>
-						self.type = CONTROLTYPE_SLIDER;
-						self.cvar = "mouseSpeed";
-						self.SetDisplayValue = self.SetValue;
-						self.SetValue = function (self, value)
-							self:SetDisplayValue(value);
-							self.value = value;
-							SetCVar(self.cvar, value);
-						end
-						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
-					</OnLoad>
-					<OnValueChanged>
-						self.value = value;
-						SetCVar(self.cvar, value);
-					</OnValueChanged>
-				</Scripts>
-			</Slider>
 			<Slider name="$parentMouseLookSpeedSlider" inherits="OptionsSliderTemplate">
 				<Anchors>
-					<Anchor point="TOP" relativeTo="$parentMouseSensitivitySlider" relativePoint="BOTTOM">
+					<Anchor point="TOPLEFT" relativeTo="$parentInvertMouse" relativePoint="BOTTOM">
 						<Offset>
-							<AbsDimension x="0" y="-32"/>
+							<AbsDimension x="-2" y="-32"/>
 						</Offset>
 					</Anchor>
 				</Anchors>
@@ -3614,11 +3588,56 @@
 					</OnValueChanged>
 				</Scripts>
 			</Slider>
+			<CheckButton name="$parentEnableMouseSpeed" inherits="InterfaceOptionsCheckButtonTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentSubText" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="300" y="-8"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						self.type = CONTROLTYPE_CHECKBOX;
+						self.cvar = "enableMouseSpeed";
+						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
+					</OnLoad>
+				</Scripts>
+			</CheckButton>					
+			<Slider name="$parentMouseSensitivitySlider" inherits="OptionsSliderTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="$parentMouseLookSpeedSlider" relativePoint="LEFT">
+						<Offset>
+							<AbsDimension x="300" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						self.type = CONTROLTYPE_SLIDER;
+						self.cvar = "mouseSpeed";
+						self.SetDisplayValue = self.SetValue;
+						self.SetValue = function (self, value)
+							self:SetDisplayValue(value);
+							self.value = value;
+							SetCVar(self.cvar, value);
+						end
+						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
+						if(IsMacClient()) then
+							BlizzardOptionsPanel_SetupDependentControl(InterfaceOptionsMousePanelEnableMouseSpeed, self);
+						end
+					</OnLoad>
+					<OnValueChanged>
+						self.value = value;
+						SetCVar(self.cvar, value);
+					</OnValueChanged>
+				</Scripts>
+			</Slider>
 			<CheckButton name="$parentClickToMove" inherits="InterfaceOptionsCheckButtonTemplate">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeTo="$parentMouseLookSpeedSlider" relativePoint="BOTTOMLEFT">
 						<Offset>
-							<AbsDimension x="-6" y="-32"/>
+							<AbsDimension x="-6" y="-60"/>
 						</Offset>
 					</Anchor>
 				</Anchors>
@@ -3676,7 +3695,7 @@
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeTo="$parentClickMoveStyleDropDown" relativePoint="BOTTOMLEFT">
 						<Offset>
-							<AbsDimension x="16" y="-24"/>
+							<AbsDimension x="16" y="-50"/>
 						</Offset>
 					</Anchor>
 				</Anchors>
@@ -3703,6 +3722,11 @@
 				self.name = MOUSE_LABEL;
 				self.options = MousePanelOptions;
 				InterfaceOptionsPanel_OnLoad(self);
+				if(IsMacClient()) then
+					InterfaceOptionsMousePanelEnableMouseSpeed:Show();
+				else
+					InterfaceOptionsMousePanelEnableMouseSpeed:Hide();
+				end
 			</OnLoad>
 		</Scripts>	
 	</Frame>

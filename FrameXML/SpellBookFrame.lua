@@ -519,7 +519,9 @@ function SpellButton_UpdateCooldown(self)
 	local slot, slotType = SpellBook_GetSpellBookSlot(self);
 	if (slot) then
 		local start, duration, enable = GetSpellCooldown(slot, SpellBookFrame.bookType);
-		CooldownFrame_SetTimer(cooldown, start, duration, enable);
+		if (cooldown and start and duration) then
+			CooldownFrame_SetTimer(cooldown, start, duration, enable);
+		end
 	end
 end
 

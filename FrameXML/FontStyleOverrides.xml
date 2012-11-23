@@ -59,6 +59,74 @@
 			<AbsValue val="12"/>
 		</FontHeight>
 	</Font>
+
+	<Font name="GameFontHighlight_KO" font="Fonts\2002.TTF" alternateTo="GameFontHighlight" alternateAlphabetID = "0" virtual="true">
+		<Shadow>
+			<Offset>
+				<AbsDimension x="1" y="-1"/>
+			</Offset>
+			<Color r="0" g="0" b="0"/>
+		</Shadow>
+		<FontHeight>
+			<AbsValue val="12"/>
+		</FontHeight>
+	</Font>
+	<Font name="GameFontHighlight_ZH" font="Fonts\ARKai_T.ttf" alternateTo="GameFontHighlight" alternateAlphabetID = "1" virtual="true">
+		<Shadow>
+			<Offset>
+				<AbsDimension x="1" y="-1"/>
+			</Offset>
+			<Color r="0" g="0" b="0"/>
+		</Shadow>
+		<FontHeight>
+			<AbsValue val="15"/>
+		</FontHeight>
+	</Font>
+	<Font name="GameFontHighlight_RU" font="Fonts\FRIZQT___CYR.TTF" alternateTo="GameFontHighlight" alternateAlphabetID = "2" virtual="true">
+		<Shadow>
+			<Offset>
+				<AbsDimension x="1" y="-1"/>
+			</Offset>
+			<Color r="0" g="0" b="0"/>
+		</Shadow>
+		<FontHeight>
+			<AbsValue val="12"/>
+		</FontHeight>
+	</Font>
+	
+	<Font name="GameFontNormalSmallLeft_KO" font="Fonts\2002.TTF" alternateTo="GameFontNormalSmallLeft" alternateAlphabetID = "0" virtual="true">
+		<Shadow>
+			<Offset>
+				<AbsDimension x="1" y="-1"/>
+			</Offset>
+			<Color r="0" g="0" b="0"/>
+		</Shadow>
+		<FontHeight>
+			<AbsValue val="10"/>
+		</FontHeight>
+	</Font>	
+	<Font name="GameFontNormalSmallLeft_ZH" font="Fonts\ARKai_T.ttf" alternateTo="GameFontNormalSmallLeft" alternateAlphabetID = "1" virtual="true">
+		<Shadow>
+			<Offset>
+				<AbsDimension x="1" y="-1"/>
+			</Offset>
+			<Color r="0" g="0" b="0"/>
+		</Shadow>
+		<FontHeight>
+			<AbsValue val="13"/>
+		</FontHeight>
+	</Font>
+	<Font name="GameFontNormalSmallLeft_RU" font="Fonts\FRIZQT___CYR.TTF" alternateTo="GameFontNormalSmallLeft" alternateAlphabetID = "2" virtual="true">
+		<Shadow>
+			<Offset>
+				<AbsDimension x="1" y="-1"/>
+			</Offset>
+			<Color r="0" g="0" b="0"/>
+		</Shadow>
+		<FontHeight>
+			<AbsValue val="10"/>
+		</FontHeight>
+	</Font>
 	
 	<Font name="FriendsFont_NormalKO" font="Fonts\2002.TTF" alternateTo="FriendsFont_Normal" alternateAlphabetID = "0" virtual="true">
 		<Shadow>
@@ -157,6 +225,22 @@
 			</Offset>
 			<Color r="0" g="0" b="0"/>
 		</Shadow>
+		<FontHeight>
+			<AbsValue val="14"/>
+		</FontHeight>
+	</Font>
+
+	<Font name="ChatBubbleFont_KO" font="Fonts\2002.TTF" alternateTo="ChatBubbleFont" alternateAlphabetID = "0" virtual="true">
+		<FontHeight>
+			<AbsValue val="15"/>
+		</FontHeight>
+	</Font>
+	<Font name="ChatBubbleFont_ZH" font="Fonts\ARKai_T.ttf" alternateTo="ChatBubbleFont" alternateAlphabetID = "1" virtual="true">
+		<FontHeight>
+			<AbsValue val="15"/>
+		</FontHeight>
+	</Font>
+	<Font name="ChatBubbleFont_RU" font="Fonts\FRIZQT___CYR.TTF" alternateTo="ChatBubbleFont" alternateAlphabetID = "2" virtual="true">
 		<FontHeight>
 			<AbsValue val="14"/>
 		</FontHeight>

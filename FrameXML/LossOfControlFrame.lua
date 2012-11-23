@@ -153,7 +153,9 @@ function LossOfControlFrame_SetUpDisplay(self, animate, locType, spellID, text, 
 			self.AbilityName.scrollTime = 0;
 			self.TimeLeft.NumberText.scrollTime = 0;
 			self.TimeLeft.SecondsText.scrollTime = 0;
+			self.Cooldown:Hide();
 			self.Anim:Play();
+			PlaySoundKitID(34468);
 		end
 		self.locType = locType;
 		self.spellID = spellID;
@@ -173,7 +175,9 @@ function LossOfControlFrame_UpdateDisplay(self)
 		if ( spellID ~= self.spellID or startTime ~= self.startTime ) then
 			LossOfControlFrame_SetUpDisplay(self, false, locType, spellID, text, iconTexture, startTime, timeRemaining, duration, lockoutSchool, displayType);
 		end
-		self.Cooldown:SetLossOfControlCooldown(startTime, duration);
+		if ( not self.Anim:IsPlaying() ) then
+			self.Cooldown:SetLossOfControlCooldown(startTime, duration);
+		end
 		LossOfControlTimeLeftFrame_SetTime(self.TimeLeft, timeRemaining);
 	else
 		self:Hide();

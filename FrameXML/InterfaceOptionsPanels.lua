@@ -1781,6 +1781,7 @@ end
 -- [[ Mouse Options Panel ]] --
 
 MousePanelOptions = {
+	enableMouseSpeed = { text = "ENABLE_MOUSE_SPEED" },
 	mouseInvertPitch = { text = "INVERT_MOUSE" },
 	enableWoWMouse = { text = "WOW_MOUSE" },
 	autointeract = { text = "CLICK_TO_MOVE" },

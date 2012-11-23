@@ -245,7 +245,6 @@
 						self:RegisterEvent("UPDATE_INVENTORY_DURABILITY");
 					</OnLoad>
 				</Scripts>
-				<NormalTexture file=""/>
 				<PushedTexture file="Interface\Buttons\UI-Quickslot-Depress"/>
 				<HighlightTexture file="Interface\Buttons\ButtonHilight-Square" alphaMode="ADD"/>
 			</Button>
@@ -277,7 +276,6 @@
 						end
 					</OnClick>
 				</Scripts>
-				<NormalTexture file=""/>
 				<PushedTexture file="Interface\Buttons\UI-Quickslot-Depress"/>
 				<HighlightTexture file="Interface\Buttons\ButtonHilight-Square" alphaMode="ADD"/>
 			</Button>
@@ -340,7 +338,6 @@
 						self:RegisterEvent("UPDATE_INVENTORY_DURABILITY");
 					</OnLoad>
 				</Scripts>
-				<NormalTexture file=""/>
 				<PushedTexture file="Interface\Buttons\UI-Quickslot-Depress"/>
 				<HighlightTexture file="Interface\Buttons\ButtonHilight-Square" alphaMode="ADD"/>
 			</Button>

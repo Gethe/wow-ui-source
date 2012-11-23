@@ -130,7 +130,6 @@ end
 function EncounterJournal_OnShow(self)
 	UpdateMicroButtons();
 	PlaySound("igCharacterInfoOpen");
-	EJ_ResetLootFilter();
 	EncounterJournal_LootUpdate()
 	
 	--automatically navigate to the current dungeon if you are in one;

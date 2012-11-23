@@ -378,4 +378,9 @@
 		</Shadow>
 		<Color r="1.0" g="0.82" b="0"/>
 	</Font>
+	<Font name="ChatBubbleFont" font="Fonts\FRIZQT__.TTF" virtual="true">
+		<FontHeight>
+			<AbsValue val="13"/>
+		</FontHeight>
+	</Font>
 </Ui>

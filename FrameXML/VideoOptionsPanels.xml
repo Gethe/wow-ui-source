@@ -793,7 +793,7 @@
 			</CheckButton>
 			<!-- column B -->
 
-			<Slider name="$parentMaxFPSSlider" inherits="VideoOptionsSliderTemplate" minValue="8" maxValue="100" valueStep="5" >
+			<Slider name="$parentMaxFPSSlider" inherits="VideoOptionsSliderTemplate" minValue="8" maxValue="200" valueStep="5" >
 				<Size x="10" y="17"/>
 				<Anchors>
 					<Anchor point="LEFT" relativeTo="$parentBufferingDropDown" relativePoint="RIGHT">
@@ -824,7 +824,7 @@
 						_G[name.."Text"]:SetText(MAXFPS);
 
 						local minValue = "8";
-						local maxValue = "100";
+						local maxValue = "200";
 						_G[name.."Low"]:SetText(minValue);
 						_G[name.."High"]:SetText(maxValue);
 						VideoOptionsSlider_OnLoad(self);
@@ -863,7 +863,7 @@
 					</OnClick>
 				</Scripts>
 			</CheckButton>
-			<Slider name="$parentMaxFPSBKSlider" inherits="VideoOptionsSliderTemplate" minValue="8" maxValue="100" valueStep="5">
+			<Slider name="$parentMaxFPSBKSlider" inherits="VideoOptionsSliderTemplate" minValue="8" maxValue="200" valueStep="5">
 				<Size x="10" y="17"/>
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeTo="$parentMaxFPSSlider" relativePoint="BOTTOMLEFT">
@@ -891,7 +891,7 @@
 						_G[name.."Text"]:SetFontObject("OptionsFontSmall");
 						_G[name.."Text"]:SetText(MAXFPSBK);
 						local minValue = "8";
-						local maxValue = "100";
+						local maxValue = "200";
 						_G[name.."Low"]:SetText(minValue);
 						_G[name.."High"]:SetText(maxValue);
 						VideoOptionsSlider_OnLoad(self);

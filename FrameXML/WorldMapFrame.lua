@@ -105,44 +105,44 @@ VEHICLE_TEXTURES["Arrow"] = {
 VEHICLE_TEXTURES["Trap Gold"] = {
 	"Interface\\Minimap\\Vehicle-Trap-Gold",
 	"Interface\\Minimap\\Vehicle-Trap-Gold",
-	width=64,
-	height=64,
+	width=32,
+	height=32,
 };
 VEHICLE_TEXTURES["Trap Grey"] = {
 	"Interface\\Minimap\\Vehicle-Trap-Grey",
 	"Interface\\Minimap\\Vehicle-Trap-Grey",
-	width=64,
-	height=64,
+	width=32,
+	height=32,
 };
 VEHICLE_TEXTURES["Trap Red"] = {
 	"Interface\\Minimap\\Vehicle-Trap-Red",
 	"Interface\\Minimap\\Vehicle-Trap-Red",
-	width=64,
-	height=64,
+	width=32,
+	height=32,
 };
 VEHICLE_TEXTURES["Hammer Gold 0"] = {
 	"Interface\\Minimap\\Vehicle-HammerGold",
 	"Interface\\Minimap\\Vehicle-HammerGold",
-	width=64,
-	height=64,
+	width=32,
+	height=32,
 };
 VEHICLE_TEXTURES["Hammer Gold 1"] = {
 	"Interface\\Minimap\\Vehicle-HammerGold-1",
 	"Interface\\Minimap\\Vehicle-HammerGold-1",
-	width=64,
-	height=64,
+	width=32,
+	height=32,
 };
 VEHICLE_TEXTURES["Hammer Gold 2"] = {
 	"Interface\\Minimap\\Vehicle-HammerGold-2",
 	"Interface\\Minimap\\Vehicle-HammerGold-2",
-	width=64,
-	height=64,
+	width=32,
+	height=32,
 };
 VEHICLE_TEXTURES["Hammer Gold 3"] = {
 	"Interface\\Minimap\\Vehicle-HammerGold-3",
 	"Interface\\Minimap\\Vehicle-HammerGold-3",
-	width=64,
-	height=64,
+	width=32,
+	height=32,
 };
 
 WORLDMAP_DEBUG_ICON_INFO = {};
@@ -243,7 +243,10 @@ function WorldMapFrame_OnShow(self)
 		-- pet battle level size adjustment
 		WorldMapFrameAreaPetLevels:SetFontObject("SubZoneTextFont");
 	end
-	
+
+	-- Save the superTrackedQuestID to restore on map close
+	WORLDMAP_SETTINGS.superTrackedQuestID = GetSuperTrackedQuestID();
+
 	UpdateMicroButtons();
 	if (not WorldMapFrame.toggling) then
 		SetMapToCurrentZone();
@@ -473,6 +476,10 @@ end
 
 function WorldMapFrame_Update()
 	local mapName, textureHeight, _, isMicroDungeon, microDungeonMapName = GetMapInfo();
+	if (isMicroDungeon and (not microDungeonMapName or microDungeonMapName == "")) then
+		return;
+	end
+	
 	if ( not mapName ) then
 		if ( GetCurrentMapContinent() == WORLDMAP_COSMIC_ID ) then
 			mapName = "Cosmic";
@@ -1942,10 +1949,13 @@ end
 
 function WorldMapFrame_DisplayQuests(selectQuestId)
 	if ( WorldMapFrame_UpdateQuests() > 0 ) then
-		-- if a quest id wasn't passed in, try to select supertracked quest
-		if ( not WorldMapFrame_SelectQuestById(selectQuestId) and  WorldMapFrame_SelectQuestById(GetSuperTrackedQuestID()) and WorldMapQuestFrame1 ) then
-			-- quest id wasn't found on this map, select the first quest and save the supertracked quest id
-			WorldMapFrame_SelectQuestFrame(WorldMapQuestFrame1, true);
+		-- if a quest id wasn't passed in, try to select either current supertracked quest or original supertracked (saved when map was opened)
+		if ( not WorldMapFrame_SelectQuestById(selectQuestId) and not WorldMapFrame_SelectQuestById(GetSuperTrackedQuestID())
+			and not WorldMapFrame_SelectQuestById(WORLDMAP_SETTINGS.superTrackedQuestID) ) then
+			-- quest id wasn't found on this map, select the first quest
+			if ( WorldMapQuestFrame1 ) then
+				WorldMapFrame_SelectQuestFrame(WorldMapQuestFrame1);
+			end
 		end
 		if ( WORLDMAP_SETTINGS.size == WORLDMAP_FULLMAP_SIZE ) then
 			WorldMapFrame_SetQuestMapView();
@@ -2162,7 +2172,7 @@ function WorldMapFrame_UpdateQuests()
 	return questCount;
 end
 
-function WorldMapFrame_SelectQuestFrame(questFrame, saveID)
+function WorldMapFrame_SelectQuestFrame(questFrame, userAction)
 	local poiIcon;
 	local color;
 	-- clear current selection	
@@ -2179,11 +2189,9 @@ function WorldMapFrame_SelectQuestFrame(questFrame, saveID)
 		poiIcon:SetFrameLevel(WORLDMAP_POI_FRAMELEVEL);
 	end
 	WORLDMAP_SETTINGS.selectedQuest = questFrame;
-	-- Save the superTrackedQuestID to restore on map close
-	if ( saveID ) then
-		WORLDMAP_SETTINGS.superTrackedQuestID = GetSuperTrackedQuestID();
-	else
-		WORLDMAP_SETTINGS.superTrackedQuestID = 0;
+	-- Change the supertrackedquestID on user action
+	if ( userAction ) then
+		WORLDMAP_SETTINGS.superTrackedQuestID = questFrame.questId;
 	end
 	SetSuperTrackedQuestID(questFrame.questId);
 	WorldMapQuestSelectedFrame:SetPoint("TOPLEFT", questFrame, "TOPLEFT", -10, 0);
@@ -2340,8 +2348,8 @@ function WorldMapQuestFrame_OnMouseUp(self)
 		if ( WORLDMAP_SETTINGS.selectedQuest ~= self ) then
 			WorldMapQuestHighlightedFrame:Hide();
 			PlaySound("igMainMenuOptionCheckBoxOn");
-			WorldMapFrame_SelectQuestFrame(self);
 		end
+		WorldMapFrame_SelectQuestFrame(self, true);
 		if ( IsShiftKeyDown() ) then
 			local isChecked = not WorldMapTrackQuest:GetChecked();
 			WorldMapTrackQuest:SetChecked(isChecked);		
@@ -2369,8 +2377,8 @@ function WorldMapQuestPOI_OnClick(self)
 		if ( WORLDMAP_SETTINGS.selectedQuest ) then
 			WorldMapBlobFrame:DrawBlob(GetSuperTrackedQuestID(), false);
 		end
-		WorldMapFrame_SelectQuestFrame(self.quest);
 	end
+	WorldMapFrame_SelectQuestFrame(self.quest, true);
 	if ( IsShiftKeyDown() ) then
 		local isChecked = not WorldMapTrackQuest:GetChecked();
 		WorldMapTrackQuest:SetChecked(isChecked);		

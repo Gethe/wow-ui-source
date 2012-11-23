@@ -120,6 +120,10 @@ end
 function BattlefieldMinimap_Update()
 	-- Fill in map tiles
 	local mapFileName, textureHeight, _, isMicroDungeon, microDungeonMapName = GetMapInfo();
+	if (isMicroDungeon and (not microDungeonMapName or microDungeonMapName == "")) then
+		return;
+	end
+
 	if ( not mapFileName ) then
 		if ( GetCurrentMapContinent() == WORLDMAP_COSMIC_ID ) then
 			mapFileName = "Cosmic";

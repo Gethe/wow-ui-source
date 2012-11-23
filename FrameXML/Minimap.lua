@@ -391,7 +391,7 @@ end
 
 function MiniMapInstanceDifficulty_Update()
 	local _, instanceType, difficulty, _, maxPlayers, playerDifficulty, isDynamicInstance = GetInstanceInfo();
-	local isChallengeMode = GetChallengeMode();
+	local isChallengeMode = (difficulty == DIFFICULTY_DUNGEON_CHALLENGE);
 	if ( not IS_GUILD_GROUP and instanceType == "party" and isChallengeMode ) then
 		MiniMapChallengeMode:Show();
 		MiniMapInstanceDifficulty:Hide();

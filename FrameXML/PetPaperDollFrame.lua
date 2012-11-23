@@ -14,7 +14,6 @@ function PetPaperDollFrame_OnLoad (self)
 	self:RegisterEvent("PET_UI_CLOSE");
 	self:RegisterEvent("UNIT_NAME_UPDATE");
 	self:RegisterEvent("UNIT_PET");
-	self:RegisterEvent("UNIT_PET_EXPERIENCE");
 	self:RegisterEvent("UNIT_MODEL_CHANGED");
 	self:RegisterEvent("UNIT_LEVEL");
 	self:RegisterEvent("UNIT_RESISTANCES");
@@ -29,8 +28,6 @@ function PetPaperDollFrame_OnLoad (self)
 	self:RegisterEvent("PLAYER_ENTERING_WORLD");
 	self:RegisterEvent("PET_SPELL_POWER_UPDATE");
 	self:RegisterEvent("VARIABLES_LOADED");
-
-	SetTextStatusBarTextPrefix(PetPaperDollFrameExpBar, XP);
 end
 
 function PetPaperDollFrame_UpdateIsAvailable()
@@ -63,8 +60,6 @@ function PetPaperDollFrame_OnEvent (self, event, ...)
 		else
 			PetPaperDollFrame_UpdateIsAvailable();
 		end
-	elseif ( event == "UNIT_PET_EXPERIENCE" ) then
-		PetExpBar_Update();
 	elseif( event == "PET_SPELL_POWER_UPDATE" ) then
 		if (self:IsVisible()) then
 			self:SetScript("OnUpdate", PetPaperDollFrame_QueuedUpdate);
@@ -128,7 +123,6 @@ function PetPaperDollFrame_Update()
 		PetLevelText:SetFormattedText(UNIT_TYPE_LEVEL_TEMPLATE,UnitLevel("pet"),UnitCreatureFamily("pet"));
 	end
 	CharacterFrameTitleText:SetText(UnitName("pet"));
-	PetExpBar_Update();
 	PaperDollFrame_UpdateStats();
 	
 	local _, playerClass = UnitClass("player");
@@ -153,10 +147,4 @@ function PetPaperDollFrame_Update()
 	else
 		PetPaperDollPetInfo:Hide();
 	end
-end
-
-function PetExpBar_Update()
-	local currXP, nextXP = GetPetExperience();
-	PetPaperDollFrameExpBar:SetMinMaxValues(min(0, currXP), nextXP);
-	PetPaperDollFrameExpBar:SetValue(currXP);
 end
