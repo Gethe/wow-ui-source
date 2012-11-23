@@ -32,6 +32,7 @@ FRAMELOCK_STATES = {
 		MultiBarLeft		= "hidden",
 		MultiBarRight		= "hidden",
 		FocusFrame			= "hidden",
+		TemporaryEnchantFrame = "hidden",
 	},
 };
 
@@ -109,6 +110,9 @@ local function setFrameLock(lock, isLocked)
 			updateFrameByState(frame);
 		end
 	end
+	
+	-- Recalculate positions of elements like the Backpack and tooltips!
+	UIParent_ManageFramePositions();
 end
 
 ----------Publicly accessed functions------------

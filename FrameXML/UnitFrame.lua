@@ -81,6 +81,7 @@ function UnitFrame_SetUnit (self, unit, healthbar, manabar)
 		if ( manabar and not manabar.frequentUpdates ) then
 			UnitFrameManaBar_RegisterDefaultEvents(manabar);
 		end
+		healthbar:RegisterUnitEvent("UNIT_MAXHEALTH", unit);
 	end
 
 	self.unit = unit;

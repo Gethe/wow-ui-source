@@ -1300,7 +1300,6 @@ function WorldMapButton_OnUpdate(self, elapsed)
 	end
 
 	--Position groupmates
-	local playerCount = 0;
 	if ( IsInRaid() ) then
 		for i=1, MAX_PARTY_MEMBERS do
 			local partyMemberFrame = _G["WorldMapParty"..i];
@@ -1309,7 +1308,7 @@ function WorldMapButton_OnUpdate(self, elapsed)
 		for i=1, MAX_RAID_MEMBERS do
 			local unit = "raid"..i;
 			local partyX, partyY = GetPlayerMapPosition(unit);
-			local partyMemberFrame = _G["WorldMapRaid"..(playerCount + 1)];
+			local partyMemberFrame = _G["WorldMapRaid"..i];
 			if ( (partyX == 0 and partyY == 0) or UnitIsUnit(unit, "player") ) then
 				partyMemberFrame:Hide();
 			else
@@ -1337,10 +1336,13 @@ function WorldMapButton_OnUpdate(self, elapsed)
 				partyMemberFrame.name = nil;
 				partyMemberFrame.unit = unit;
 				partyMemberFrame:Show();
-				playerCount = playerCount + 1;
 			end
 		end
 	else
+		for i=1, MAX_RAID_MEMBERS do
+			local partyMemberFrame = _G["WorldMapRaid"..i];
+			partyMemberFrame:Hide();
+		end
 		for i=1, MAX_PARTY_MEMBERS do
 			local unit = "party"..i;
 			local partyX, partyY = GetPlayerMapPosition(unit);
@@ -1362,10 +1364,6 @@ function WorldMapButton_OnUpdate(self, elapsed)
 				end
 				partyMemberFrame:Show();
 			end
-		end
-		for i=1, MAX_RAID_MEMBERS do
-			local partyMemberFrame = _G["WorldMapRaid"..i];
-			partyMemberFrame:Hide();
 		end
 	end
 

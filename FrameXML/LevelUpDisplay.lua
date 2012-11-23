@@ -536,7 +536,7 @@ function LevelUpDisplay_AddBattlePetLevelUpEvent(self, activePlayer, activePetSl
 	end
 
 	local petID = C_PetJournal.GetPetLoadOutInfo(activePetSlot);
-	if (not petID) then
+	if (petID == nil) then
 		return;
 	end
 	

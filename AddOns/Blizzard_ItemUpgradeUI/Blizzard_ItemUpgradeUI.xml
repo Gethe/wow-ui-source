@@ -127,7 +127,7 @@
 				</FontString>
 				<FontString parentKey="UpgradeStatus" inherits="GameFontNormal" justifyH="LEFT">
 					<Anchors>
-						<Anchor point="LEFT" relativeKey="$parent.TitleTextRight" relativePoint="RIGHT" x="5" y="0"/>
+						<Anchor point="LEFT" relativeKey="$parent.TitleTextLeft" relativePoint="RIGHT" x="5" y="0"/>
 					</Anchors>
 				</FontString>
 			</Layer>
@@ -282,7 +282,7 @@
 					</OnLoad>
 					<OnEnter>
 						GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
-						GameTooltip:SetReforgeItem();
+						GameTooltip:SetUpgradeItem();
 						GameTooltip:Show();
 					</OnEnter>
 					<OnLeave>

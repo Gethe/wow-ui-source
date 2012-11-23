@@ -114,25 +114,25 @@ local ipairs = ipairs;
 -- local data
 local specs = {
 	["spec1"] = {
-		name = TALENT_SPEC_PRIMARY,
+		name = SPECIALIZATION_PRIMARY,
 		nameActive = TALENT_SPEC_PRIMARY_ACTIVE,
 		glyphName = TALENT_SPEC_PRIMARY_GLYPH,
 		glyphNameActive = TALENT_SPEC_PRIMARY_GLYPH_ACTIVE,
 		specName = SPECIALIZATION_PRIMARY,
 		specNameActive = SPECIALIZATION_PRIMARY_ACTIVE,
 		talentGroup = 1,
-		tooltip = TALENT_SPEC_PRIMARY,
+		tooltip = SPECIALIZATION_PRIMARY,
 		defaultSpecTexture = "Interface\\Icons\\Ability_Marksmanship",
 	},
 	["spec2"] = {
-		name = TALENT_SPEC_SECONDARY,
+		name = SPECIALIZATION_SECONDARY,
 		nameActive = TALENT_SPEC_SECONDARY_ACTIVE,
 		glyphName = TALENT_SPEC_SECONDARY_GLYPH,
 		glyphNameActive = TALENT_SPEC_SECONDARY_GLYPH_ACTIVE,
 		specName = SPECIALIZATION_SECONDARY,
 		specNameActive = SPECIALIZATION_SECONDARY_ACTIVE,
 		talentGroup = 2,
-		tooltip = TALENT_SPEC_SECONDARY,
+		tooltip = SPECIALIZATION_SECONDARY,
 		defaultSpecTexture = "Interface\\Icons\\Ability_Marksmanship",
 	},
 };
@@ -1258,18 +1258,17 @@ end
 function PlayerSpecTab_OnEnter(self)
 	local specIndex = self.specIndex;
 	local spec = specs[specIndex];
-	if ( spec.tooltip ) then
+	if ( spec.specNameActive and spec.specName ) then
 		GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
 		-- name
 		if ( GetNumSpecGroups(false) <= 1) then
 			-- set the tooltip to be the unit's name
 			GameTooltip:AddLine(UnitName("player"), NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b);
 		else
-			-- set the tooltip to be the spec name
-			GameTooltip:AddLine(spec.tooltip);
 			if ( self.specIndex == activeSpec ) then
-				-- add text to indicate that this spec is active
-				GameTooltip:AddLine(TALENT_ACTIVE_SPEC_STATUS, GREEN_FONT_COLOR.r, GREEN_FONT_COLOR.g, GREEN_FONT_COLOR.b);
+				GameTooltip:AddLine(spec.specNameActive);
+			else
+				GameTooltip:AddLine(spec.specName);
 			end
 		end
 		GameTooltip:Show();

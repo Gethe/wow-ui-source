@@ -395,23 +395,15 @@ function GuildRosterButton_OnClick(self, button)
 end
 
 function GuildRoster_ShowMemberDropDown(name, online, isMobile)
-	if ( online ) then
-		GuildMemberDropDown.name = name;
-		GuildMemberDropDown.isMobile = isMobile;
-		GuildMemberDropDown.initialize = GuildMemberDropDown_Initialize;
-		ToggleDropDownMenu(1, nil, GuildMemberDropDown, "cursor");
-	else
-		-- show menu for offline members if player can send BattleTag request
-		if ( BNFeaturesEnabledAndConnected() ) then
-			local _, battleTag = BNGetInfo();
-			if ( battleTag ) then
-				GuildMemberDropDown.name = name;
-				GuildMemberDropDown.isMobile = false;
-				GuildMemberDropDown.initialize = GuildMemberOfflineDropDown_Initialize;
-				ToggleDropDownMenu(1, nil, GuildMemberDropDown, "cursor");
-			end
-		end
+	local initFunc = GuildMemberDropDown_Initialize;
+	if ( not online and not isMobile ) then
+		initFunc = GuildMemberOfflineDropDown_Initialize;
 	end
+
+	GuildMemberDropDown.name = name;
+	GuildMemberDropDown.isMobile = isMobile;
+	GuildMemberDropDown.initialize = initFunc;
+	ToggleDropDownMenu(1, nil, GuildMemberDropDown, "cursor");
 end
 
 function GuildMemberDropDown_Initialize()

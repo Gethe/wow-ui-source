@@ -306,17 +306,18 @@ function PartyMemberFrame_UpdateNotPresentIcon(self)
 	
 	local inPhase = UnitInPhase(partyID);
 	
-	local inOtherGroup, canInteract = UnitInOtherParty(partyID);
-	if ( not canInteract ) then
+	if ( UnitInOtherParty(partyID) ) then
 		self:SetAlpha(0.6);
-		self.notPresentIcon.texture:SetTexture("Interface\\PlayerFrame\\whisper-only");
-		self.notPresentIcon.texture:SetTexCoord(0.1875, 0.8125, 0.1875, 0.8125);
+		self.notPresentIcon.texture:SetTexture("Interface\\LFGFrame\\LFG-Eye");
+		self.notPresentIcon.texture:SetTexCoord(0.125, 0.25, 0.25, 0.5);
+		self.notPresentIcon.Border:Show();
 		self.notPresentIcon.tooltip = PARTY_IN_PUBLIC_GROUP_MESSAGE;
 		self.notPresentIcon:Show();
 	elseif ( not inPhase and UnitExists(partyID) ) then
 		self:SetAlpha(0.6);
 		self.notPresentIcon.texture:SetTexture("Interface\\TargetingFrame\\UI-PhasingIcon");
 		self.notPresentIcon.texture:SetTexCoord(0.15625, 0.84375, 0.15625, 0.84375);
+		self.notPresentIcon.Border:Hide();
 		self.notPresentIcon.tooltip = PARTY_PHASED_MESSAGE;
 		self.notPresentIcon:Show();
 	else

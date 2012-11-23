@@ -1,7 +1,7 @@
 
 UIPanelWindows["ItemUpgradeFrame"] = { area = "left", pushable = 0};
 
-ITEM_UPGRADE_MAX_STATS_SHOWN = 8;
+ITEM_UPGRADE_MAX_STATS_SHOWN = 10;
 
 
 function ItemUpgradeFrame_Show()
@@ -19,7 +19,7 @@ function ItemUpgradeFrame_OnLoad(self)
 	self:RegisterEvent("ITEM_UPGRADE_MASTER_SET_ITEM");
 	self:RegisterEvent("ITEM_UPGRADE_MASTER_UPDATE");
 
-	SetPortraitToTexture(ItemUpgradeFramePortrait, "Interface\\Icons\\PVECurrency-Valor");
+	SetPortraitToTexture(ItemUpgradeFramePortrait, "Interface\\Icons\\Spell_Shaman_SpectralTransformation");
 	self.LeftStat[1].BG:Show();
 	self.RightStat[1].BG:Show();
 	ItemUpgradeFrameTitleText:SetText(ITEM_UPGRADE);
@@ -68,6 +68,8 @@ function ItemUpgradeFrame_Update(self)
 		ItemUpgradeFrame.ItemButton.BoundStatus:SetText(bound);
 		ItemUpgradeFrame.ItemButton.MissingText:Hide();	
 		ItemUpgradeFrame.ItemButton.CurrencyAmount:SetText(cost);
+		local _, _, currencyTexture = GetCurrencyInfo(currencyType);
+		ItemUpgradeFrame.ItemButton.CurrencyIcon:SetTexture("Interface\\Icons\\"..currencyTexture);
 		ItemUpgradeFrame.MissingDescription:Hide();
 		ItemUpgradeFrame.MissingFadeOut:Hide();
 		ItemUpgradeFrame.TitleTextLeft:Show();

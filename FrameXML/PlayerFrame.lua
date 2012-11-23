@@ -555,6 +555,45 @@ function PlayerFrame_SetupDeathKnniggetLayout ()
 	PlayerFrame:SetHitRectInsets(0,0,0,35);
 end
 
+function PlayerFrameMultiGroupFrame_OnLoad(self)
+	self:RegisterEvent("GROUP_ROSTER_UPDATE");
+	self:RegisterEvent("UPDATE_CHAT_COLOR");
+	self:RegisterForClicks("LeftButtonUp", "RightButtonUp");
+end
+
+function PlayerFrameMultiGroupFrame_OnEvent(self, event, ...)
+	if ( event == "GROUP_ROSTER_UPDATE" ) then
+		if ( IsInGroup(LE_PARTY_CATEGORY_HOME) and IsInGroup(LE_PARTY_CATEGORY_INSTANCE) ) then
+			self:Show();
+		else
+			self:Hide();
+		end
+	elseif ( event == "UPDATE_CHAT_COLOR" ) then
+		local public = ChatTypeInfo["INSTANCE_CHAT"];
+		local private = ChatTypeInfo["PARTY"];
+		self.HomePartyIcon:SetVertexColor(private.r, private.g, private.b);
+		self.InstancePartyIcon:SetVertexColor(public.r, public.g, public.b);
+	end
+end
+
+function PlayerFrameMultiGroupframe_OnEnter(self)
+	GameTooltip_SetDefaultAnchor(GameTooltip, self);
+	self.homePlayers = GetHomePartyInfo(self.homePlayers);
+
+	if ( IsInRaid(LE_PARTY_CATEGORY_HOME) ) then
+		GameTooltip:SetText(PLAYER_IN_MULTI_GROUP_RAID_MESSAGE, nil, nil, nil, nil, true);
+		GameTooltip:AddLine(format(MEMBER_COUNT_IN_RAID_LIST, #self.homePlayers + 1), 1, 1, 1, true);
+	else
+		GameTooltip:AddLine(PLAYER_IN_MULTI_GROUP_PARTY_MESSAGE, 1, 1, 1, true);
+		local playerList = self.homePlayers[1] or "";
+		for i=2, #self.homePlayers do
+			playerList = playerList..PLAYER_LIST_DELIMITER..self.homePlayers[i];
+		end
+		GameTooltip:AddLine(format(MEMBERS_IN_PARTY_LIST, playerList));
+	end
+	GameTooltip:Show();
+end
+
 CustomClassLayouts = {
 	["DEATHKNIGHT"] = PlayerFrame_SetupDeathKnniggetLayout,
 }

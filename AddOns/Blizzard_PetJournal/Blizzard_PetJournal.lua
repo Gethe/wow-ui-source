@@ -258,7 +258,7 @@ function PetJournal_UpdateSummonButtonState()
 		PetJournal.SummonButton:Disable();
 	end
 
-	if ( PetJournalPetCard.petID and PetJournalPetCard.petID == C_PetJournal.GetSummonedPetID() ) then
+	if ( PetJournalPetCard.petID and PetJournalPetCard.petID == C_PetJournal.GetSummonedPetGUID() ) then
 		PetJournal.SummonButton:SetText(PET_DISMISS);
 	else
 		PetJournal.SummonButton:SetText(BATTLE_PET_SUMMON);
@@ -546,7 +546,7 @@ function PetJournal_UpdatePetLoadOut()
 			loadoutPlate.helpFrame:Show();
 			loadoutPlate.petTypeIcon:Hide();
 			loadoutPlate.petID = nil;
-		elseif (petID <= 0) then
+		elseif (petID == nil) then
 			loadoutPlate.name:Hide();
 			loadoutPlate.subName:Hide();
 			loadoutPlate.level:Hide();
@@ -569,7 +569,7 @@ function PetJournal_UpdatePetLoadOut()
 			loadoutPlate.isDead:Hide();
 			loadoutPlate.petTypeIcon:Hide();
 			loadoutPlate.petID = nil;
-		else -- not locked and petID > 0
+		else -- not locked and petID is not nil
 			local speciesID, customName, level, xp, maxXp, displayID, isFavorite, name, icon, petType, creatureID = C_PetJournal.GetPetInfoByPetID(petID);
 			C_PetJournal.GetPetAbilityList(speciesID, loadoutPlate.abilities, loadoutPlate.abilityLevels);	--Read ability/ability levels into the correct tables
 
@@ -740,7 +740,7 @@ function PetJournal_UpdatePetList()
 	local numPets, numOwned = C_PetJournal.GetNumPets(isWild);
 	PetJournal.PetCount.Count:SetText(numOwned);
 	
-	local summonedPetID = C_PetJournal.GetSummonedPetID();
+	local summonedPetID = C_PetJournal.GetSummonedPetGUID();
 
 	for i = 1,#petButtons do
 		pet = petButtons[i];
@@ -951,7 +951,7 @@ function PetJournal_HidePetDropdown()
 end
 
 function PetJournal_ShowPetCardByID(petID)
-	if (not petID) then
+	if (petID == nil) then
 		PetJournal_ShowPetCard(1);
 		return;
 	end
@@ -1412,10 +1412,10 @@ function PetOptionsMenu_Init(self, level)
 	
 	if (not isRevoked and not isLockedForConvert) then
 		info.text = BATTLE_PET_SUMMON;
-		if (PetJournal.menuPetID and C_PetJournal.GetSummonedPetID() == PetJournal.menuPetID) then
+		if (PetJournal.menuPetID and C_PetJournal.GetSummonedPetGUID() == PetJournal.menuPetID) then
 			info.text = PET_DISMISS;
 		end
-		info.func = function() C_PetJournal.SummonPetByID(PetJournal.menuPetID); end
+		info.func = function() C_PetJournal.SummonPetByGUID(PetJournal.menuPetID); end
 		if (PetJournal.menuPetID and not C_PetJournal.PetIsSummonable(PetJournal.menuPetID)) then
 			info.disabled = true;
 		end

@@ -566,6 +566,9 @@
 					<Layer level="ARTWORK">
 						<Texture parentKey="texture" setAllPoints="true"/>
 					</Layer>
+					<Layer level="OVERLAY">
+						<Texture parentKey="Border" file="Interface\Common\RingBorder" setAllPoints="true"/>
+					</Layer>
 				</Layers>
 				<Scripts>
 					<OnEnter>

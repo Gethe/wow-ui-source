@@ -193,8 +193,8 @@ UnitPopupMenus["FRIEND"] = { "WHISPER", "POP_OUT_CHAT", "INVITE", "TARGET", "SET
 UnitPopupMenus["FRIEND_OFFLINE"] = { "SET_NOTE", "IGNORE", "REMOVE_FRIEND", "CANCEL" };
 UnitPopupMenus["BN_FRIEND"] = { "WHISPER", "POP_OUT_CHAT", "CREATE_CONVERSATION_WITH", "BN_INVITE", "BN_TARGET", "BN_SET_NOTE", "BN_VIEW_FRIENDS", "BLOCK_COMMUNICATION", "BN_REPORT", "BN_REMOVE_FRIEND", "CANCEL" };
 UnitPopupMenus["BN_FRIEND_OFFLINE"] = { "BN_SET_NOTE", "BN_VIEW_FRIENDS", "BN_REPORT", "BN_REMOVE_FRIEND", "CANCEL" };
-UnitPopupMenus["GUILD"] = { "GUILD_BATTLETAG_FRIEND", "WHISPER", "POP_OUT_CHAT", "INVITE", "TARGET", "IGNORE", "REPORT_PLAYER", "GUILD_PROMOTE", "GUILD_LEAVE", "PVP_REPORT_AFK", "CANCEL" };
-UnitPopupMenus["GUILD_OFFLINE"] = { "GUILD_BATTLETAG_FRIEND", "CANCEL" };
+UnitPopupMenus["GUILD"] = { "GUILD_BATTLETAG_FRIEND", "WHISPER", "INVITE", "TARGET", "IGNORE", "GUILD_PROMOTE", "GUILD_LEAVE", "CANCEL" };
+UnitPopupMenus["GUILD_OFFLINE"] = { "GUILD_BATTLETAG_FRIEND", "IGNORE", "GUILD_PROMOTE", "GUILD_LEAVE", "CANCEL" };
 UnitPopupMenus["TEAM"] = { "WHISPER", "INVITE", "TARGET", "TEAM_PROMOTE", "TEAM_KICK", "TEAM_LEAVE", "TEAM_DISBAND", "CANCEL" };
 UnitPopupMenus["RAID_TARGET_ICON"] = { "RAID_TARGET_1", "RAID_TARGET_2", "RAID_TARGET_3", "RAID_TARGET_4", "RAID_TARGET_5", "RAID_TARGET_6", "RAID_TARGET_7", "RAID_TARGET_8", "RAID_TARGET_NONE" };
 UnitPopupMenus["SELECT_ROLE"] = { "SET_ROLE_TANK", "SET_ROLE_HEALER", "SET_ROLE_DAMAGER", "SET_ROLE_NONE" };
@@ -619,6 +619,8 @@ function UnitPopup_HideButtons ()
 				end
 			elseif ( dropdownMenu == FriendsDropDown and dropdownMenu.isMobile ) then
 				UnitPopupShown[UIDROPDOWNMENU_MENU_LEVEL][index] = 0;
+			elseif ( dropdownMenu == GuildMenuDropDown and dropdownMenu.isMobile ) then
+				UnitPopupShown[UIDROPDOWNMENU_MENU_LEVEL][index] = 0;
 			else
 				if ( dropdownMenu.name == UnitName("party1") or
 					 dropdownMenu.name == UnitName("party2") or
@@ -867,11 +869,11 @@ function UnitPopup_HideButtons ()
 				UnitPopupShown[UIDROPDOWNMENU_MENU_LEVEL][index] = 0;
 			end
 		elseif ( value == "CONVERT_TO_RAID" ) then
-			if ( inParty ~= 1 or inRaid == 1 or isLeader ~= 1 ) then
+			if ( inParty ~= 1 or inRaid == 1 or isLeader ~= 1 or IsInGroup(LE_PARTY_CATEGORY_INSTANCE) ) then
 				UnitPopupShown[UIDROPDOWNMENU_MENU_LEVEL][index] = 0;
 			end
 		elseif ( value == "CONVERT_TO_PARTY" ) then
-			if ( inRaid ~= 1 or isLeader ~= 1 ) then
+			if ( inRaid ~= 1 or isLeader ~= 1 or IsInGroup(LE_PARTY_CATEGORY_INSTANCE) ) then
 				UnitPopupShown[UIDROPDOWNMENU_MENU_LEVEL][index] = 0;
 			end
 		elseif ( value == "RESET_INSTANCES" ) then

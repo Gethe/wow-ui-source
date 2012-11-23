@@ -2145,7 +2145,7 @@ size=64,128
 					</OnLoad>
 					<OnClick>
 						PlaySound("igMainMenuOptionCheckBoxOn");
-						C_PetJournal.SummonPetByID(PetJournalPetCard.petID);
+						C_PetJournal.SummonPetByGUID(PetJournalPetCard.petID);
 					</OnClick>
 					<OnEnter function="PetJournalSummonButton_OnEnter"/>
 					<OnLeave>

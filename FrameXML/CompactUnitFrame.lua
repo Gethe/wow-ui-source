@@ -561,15 +561,17 @@ function CompactUnitFrame_CheckReadyCheckDecay(frame, elapsed)
 end
 
 function CompactUnitFrame_UpdateCenterStatusIcon(frame)
-	local inOtherGroup, canInteract = UnitInOtherParty(frame.unit);
-	if ( frame.optionTable.displayInOtherGroup and not canInteract ) then
-		frame.centerStatusIcon.texture:SetTexture("Interface\\PlayerFrame\\whisper-only");
-		frame.centerStatusIcon.texture:SetTexCoord(0.15625, 0.84375, 0.15625, 0.84375);
+	if ( frame.optionTable.displayInOtherGroup and UnitInOtherParty(frame.unit) ) then
+		frame.centerStatusIcon.texture:SetTexture("Interface\\LFGFrame\\LFG-Eye");
+		frame.centerStatusIcon.texture:SetTexCoord(0.125, 0.25, 0.25, 0.5);
+		frame.centerStatusIcon.border:SetTexture("Interface\\Common\\RingBorder");
+		frame.centerStatusIcon.border:Show();
 		frame.centerStatusIcon.tooltip = PARTY_IN_PUBLIC_GROUP_MESSAGE;
 		frame.centerStatusIcon:Show();
 	elseif ( frame.optionTable.displayIncomingResurrect and UnitHasIncomingResurrection(frame.unit) ) then
 		frame.centerStatusIcon.texture:SetTexture("Interface\\RaidFrame\\Raid-Icon-Rez");
 		frame.centerStatusIcon.texture:SetTexCoord(0, 1, 0, 1);
+		frame.centerStatusIcon.border:Hide();
 		frame.centerStatusIcon.tooltip = nil;
 		frame.centerStatusIcon:Show();
 	else

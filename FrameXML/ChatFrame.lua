@@ -1542,12 +1542,12 @@ end
 
 SecureCmdList["SUMMON_BATTLE_PET"] = function(msg)
 	local pet = SecureCmdOptionParse(msg);
-	if ( tonumber(pet) ) then
-		C_PetJournal.SummonPetByID(tonumber(pet));
-	elseif ( type(pet) == "string" ) then
+	if ( type(pet) == "string" ) then
 		local _, petID = C_PetJournal.FindPetIDByName(string.trim(pet));
 		if ( petID ) then
-			C_PetJournal.SummonPetByID(petID);
+			C_PetJournal.SummonPetByGUID(petID);
+		else
+			C_PetJournal.SummonPetByGUID(pet);
 		end
 	end
 end
@@ -1566,9 +1566,9 @@ end
 
 SecureCmdList["DISMISSBATTLEPET"] = function(msg)
 	if ( SecureCmdOptionParse(msg) ) then
-		local petID = C_PetJournal.GetSummonedPetID();
+		local petID = C_PetJournal.GetSummonedPetGUID();
 		if ( petID ) then
-			C_PetJournal.SummonPetByID(petID);
+			C_PetJournal.SummonPetByGUID(petID);
 		end
 	end
 end
@@ -3196,10 +3196,6 @@ function ChatFrame_MessageEventHandler(self, event, ...)
 				showLink = nil;
 			else
 				arg1 = gsub(arg1, "%%", "%%%%");
-			end
-			
-			if ((type == "PARTY_LEADER") and (HasLFGRestrictions())) then
-				type = "PARTY_GUIDE";
 			end
 			
 			-- Search for icon links and replace them with texture links.

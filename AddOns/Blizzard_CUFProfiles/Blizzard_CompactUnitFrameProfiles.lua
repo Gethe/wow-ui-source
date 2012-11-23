@@ -3,6 +3,7 @@ function CompactUnitFrameProfiles_OnLoad(self)
 	self:RegisterEvent("COMPACT_UNIT_FRAME_PROFILES_LOADED");
 	self:RegisterEvent("PLAYER_ENTERING_WORLD");
 	self:RegisterEvent("ACTIVE_TALENT_GROUP_CHANGED");
+	self:RegisterEvent("GROUP_JOINED");
 	
 	--Get this working with the InterfaceOptions panel.
 	self.name = COMPACT_UNIT_FRAME_PROFILES_LABEL;
@@ -30,6 +31,11 @@ function CompactUnitFrameProfiles_OnEvent(self, event, ...)
 		CompactUnitFrameProfiles_CheckAutoActivation();
 	elseif ( event == "ACTIVE_TALENT_GROUP_CHANGED" ) then	--Check for changing specs
 		CompactUnitFrameProfiles_CheckAutoActivation();
+	elseif ( event == "GROUP_JOINED" ) then
+		local partyCategory = ...;
+		if ( partyCategory == LE_PARTY_CATEGORY_INSTANCE ) then
+			CompactUnitFrameProfiles_CheckAutoActivation();
+		end
 	end
 end
 
@@ -316,6 +322,8 @@ function CompactUnitFrameProfiles_GetAutoActivationState()
 end
 
 function CompactUnitFrameProfiles_CheckAutoActivation()
+	--We only want to adjust the profile when you 1) Zone or 2) change specs. We don't want to automatically
+	--change the profile when you are in the uninstanced world.
 	if ( not IsInGroup() ) then
 		CompactUnitFrameProfiles_SetLastActivationType(nil, nil, nil, nil);
 		return;

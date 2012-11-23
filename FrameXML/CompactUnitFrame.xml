@@ -193,6 +193,9 @@
 					<Layer level="ARTWORK">
 						<Texture setAllPoints="true" parentKey="texture"/>
 					</Layer>
+					<Layer level="BORDER">
+						<Texture setAllPoints="true" parentKey="border"/>
+					</Layer>
 				</Layers>
 				<Scripts>
 					<OnClick>
