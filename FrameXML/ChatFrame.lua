@@ -3133,14 +3133,7 @@ function ChatFrame_MessageEventHandler(self, event, ...)
 			elseif ( arg1 == "FRIEND_ONLINE" or arg1 == "FRIEND_OFFLINE") then
 				local hasFocus, toonName, client, realmName, realmID, faction, race, class, guild, zoneName, level, gameText = BNGetToonInfo(arg13);
 				if (toonName and toonName ~= "" and client and client ~= "") then
-					local toonNameText = toonName;
-					if ( client == BNET_CLIENT_WOW ) then
-						toonNameText = "|TInterface\\ChatFrame\\UI-ChatIcon-WOW:14|t"..toonNameText;
-					elseif ( client == BNET_CLIENT_SC2 ) then
-						toonNameText = "|TInterface\\ChatFrame\\UI-ChatIcon-SC2:14|t"..toonNameText;
-					elseif ( client == BNET_CLIENT_D3 ) then
-						toonNameText = "|TInterface\\ChatFrame\\UI-ChatIcon-D3:14|t"..toonNameText;
-					end
+					local toonNameText = BNet_GetClientEmbeddedTexture(client, 14)..toonName;
 					local playerLink = format("|HBNplayer:%s:%s:%s:%s:%s|h[%s] (%s)|h", arg2, arg13, arg11, Chat_GetChatCategory(type), 0, arg2, toonNameText);
 					message = format(globalstring, playerLink);
 				else

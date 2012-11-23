@@ -39,7 +39,11 @@
 			</OnLoad>
 			<OnDragStart>
 				if ( not self.disabled ) then
-					PickupSpell(self.spellID);
+					if (self.isPet) then
+						PickupPetSpell(self.spellID);
+					else
+						PickupSpell(self.spellID);
+					end
 				end
 			</OnDragStart>
 			<OnReceiveDrag>
@@ -1001,6 +1005,7 @@
 						local talentGroup = PlayerTalentFrame and PlayerTalentFrame.talentGroup or 1;
 						if ( talentGroup == GetActiveSpecGroup() ) then
 							LearnTalents(PlayerTalentFrame_GetTalentSelections());
+							PlayerTalentFrame_ClearTalentSelections();
 						end
 					</OnClick>
 				</Scripts>

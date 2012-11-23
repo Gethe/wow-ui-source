@@ -522,7 +522,7 @@ function UnitPopup_ShowMenu (dropdownMenu, which, unit, name, userData)
 					info.checked = 1;
 				end
 			end
-
+			
 			if ( UnitPopupButtons[value].nested ) then
 				info.hasArrow = 1;
 			else

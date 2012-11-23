@@ -37,6 +37,7 @@ StaticPopupDialogs["CONFIRM_UNLEARN_AND_SWITCH_TALENT"] = {
 		local talentGroup = PlayerTalentFrame and PlayerTalentFrame.talentGroup or 1;
 		if ( talentGroup == GetActiveSpecGroup() ) then
 			RemoveTalent(self.data.oldID);
+			PlayerTalentFrame_SelectTalent(self.data.id);
 		end
 	end,
 	OnShow = function(self)
@@ -475,7 +476,6 @@ function PlayerTalentFrame_OnEvent(self, event, ...)
 				 event == "PREVIEW_TALENT_POINTS_CHANGED" or
 				 event == "PREVIEW_TALENT_PRIMARY_TREE_CHANGED" or
 				 event == "PLAYER_TALENT_UPDATE" ) then
-			PlayerTalentFrame_ClearTalentSelections();
 			PlayerTalentFrame_Refresh();
 		elseif ( event == "UNIT_LEVEL") then
 			if ( selectedSpec ) then
@@ -1460,6 +1460,7 @@ function PlayerTalentFrame_UpdateSpecFrame(self, spec)
 		frame.name:SetText(name);
 		frame.spellID = bonuses[i];
 		frame.extraTooltip = nil;
+		frame.isPet = self.isPet;
 		local level = GetSpellLevelLearned(bonuses[i]);
 		if ( level and level > UnitLevel("player") ) then
 			frame.subText:SetFormattedText(SPELLBOOK_AVAILABLE_AT, level);

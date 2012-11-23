@@ -58,16 +58,14 @@ function LFDFrame_OnEvent(self, event, ...)
 		StaticPopup_Show("VOTE_BOOT_REASON_REQUIRED", targetName, nil, targetGUID);
 	elseif ( event == "LFG_UPDATE_RANDOM_INFO" ) then
 		if ( not LFDQueueFrame.type or (type(LFDQueueFrame.type) == "number" and not IsLFGDungeonJoinable(LFDQueueFrame.type)) ) then
-			LFDQueueFrame.type = GetRandomDungeonBestChoice();
-			UIDropDownMenu_SetSelectedValue(LFDQueueFrameTypeDropDown, LFDQueueFrame.type);
+			local bestChoice = GetRandomDungeonBestChoice();
+			if ( bestChoice ) then
+				LFDQueueFrame_SetType(bestChoice);
+			end
 		end
 		--If we still don't have a value, we should go to specific.
 		if ( not LFDQueueFrame.type ) then
-			LFDQueueFrame.type = "specific";
-			UIDropDownMenu_SetSelectedValue(LFDQueueFrameTypeDropDown, LFDQueueFrame.type);
-			LFDQueueFrame_SetTypeSpecificDungeon();
-		elseif ( LFDQueueFrameRandom:IsShown() ) then
-			LFDQueueFrameRandom_UpdateFrame();
+			LFDQueueFrame_SetType("specific");
 		end
 	elseif ( event == "LFG_OPEN_FROM_GOSSIP" ) then
 		local dungeonID = ...;
@@ -79,27 +77,7 @@ function LFDFrame_OnEvent(self, event, ...)
 end
 
 function LFDFrame_OnShow(self)
-	LFDFrame_UpdateBackfill(true);
-end
-
---Backfill option
-function LFDFrame_UpdateBackfill(forceUpdate)
-	if ( CanPartyLFGBackfill() ) then
-		local currentSubtypeID = select(LFG_RETURN_VALUES.subtypeID, GetLFGDungeonInfo(GetPartyLFGID()));
-		if ( currentSubtypeID ~= LFG_SUBTYPEID_RAID ) then
-			local name, lfgID, typeID = GetPartyLFGBackfillInfo();
-			LFDQueueFramePartyBackfillDescription:SetFormattedText(LFG_OFFER_CONTINUE, HIGHLIGHT_FONT_COLOR_CODE..name.."|r");
-			local mode, subMode = GetLFGMode(LE_LFG_CATEGORY_LFD);
-			if ( (forceUpdate or not LFDQueueFrame:IsVisible()) and mode ~= "queued" and mode ~= "suspended" ) then
-				LFDQueueFramePartyBackfill:Show();
-			end
-		else
-			LFDQueueFramePartyBackfill:Hide();
-		end
-	else
-		LFDQueueFramePartyBackfill:Hide();
-	end
-	LFDQueueFrameRandomCooldownFrame_Update();	--The cooldown frame won't show if the backfill is shown, so we need to update it.
+	LFGBackfillCover_Update(LFDQueueFrame.PartyBackfill, true);
 end
 
 --Role-related functions
@@ -329,22 +307,25 @@ function LFDQueueFrame_SetType(value)	--"specific" for the list or the record id
 	if ( value == "specific" ) then
 		LFDQueueFrame_SetTypeSpecificDungeon();
 	else
-		LFDQueueFrame_SetTypeRandomDungeon();
+		local name, typeID, subtypeID, minLevel, maxLevel, recLevel, minRecLevel, maxRecLevel, expansionLevel, groupID, textureFilename, difficulty, maxPlayers, description, isHoliday = GetLFGDungeonInfo(value);
+		LFDQueueFrame_SetTypeRandomDungeon(isHoliday);
 		LFDQueueFrameRandom_UpdateFrame();
 	end
 	LFDQueueFrame_UpdateRoleIncentives();
 end
 
-function LFDQueueFrame_SetTypeRandomDungeon()
+function LFDQueueFrame_SetTypeRandomDungeon(isHoliday)
 	LFDQueueFrameBackground:SetTexture("Interface\\LFGFrame\\UI-LFG-BACKGROUND-QUESTPAPER")
 	LFDQueueFrameSpecific:Hide();
 	LFDQueueFrameRandom:Show();
+	LFGCooldownCover_ChangeSettings(LFDQueueFrame.CooldownFrame, true, not isHoliday);
 end
 
 function LFDQueueFrame_SetTypeSpecificDungeon()
 	LFDQueueFrameBackground:SetTexture("Interface\\LFGFrame\\UI-LFG-BACKGROUND-DUNGEONWALL");
 	LFDQueueFrameRandom:Hide();
 	LFDQueueFrameSpecific:Show();
+	LFGCooldownCover_ChangeSettings(LFDQueueFrame.CooldownFrame, true, false);
 end
 
 function LFDQueueFrameRandom_UpdateFrame()

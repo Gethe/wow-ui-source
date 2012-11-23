@@ -1126,6 +1126,7 @@ function PetJournal_UpdatePetCard(self)
 		self.PowerFrame:Hide();
 		self.SpeedFrame:Hide();
 		self.QualityFrame:Hide();
+		self.PetInfo.qualityBorder:Hide();
 	end
 	self.PetInfo.isDead:SetShown(isDead);
 

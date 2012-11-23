@@ -19,25 +19,7 @@ local DISPLAY_TYPE_FULL = 2;
 local DISPLAY_TYPE_ALERT = 1;
 local DISPLAY_TYPE_NONE = 0;
 
-local PRIORITY_FULL = 5;
-local PRIORITY_INTERRUPT = 4;
-local PRIORITY_SILENCE = 3;
-local PRIORITY_DISARM = 2;
-local PRIORITY_ROOT = 1;
-
-local typePriority = {
-	["POSSESS"] = PRIORITY_FULL,
-	["CONFUSE"] = PRIORITY_FULL,
-	["CHARM"] = PRIORITY_FULL,
-	["FEAR"] = PRIORITY_FULL,
-	["STUN"] = PRIORITY_FULL,
-	["PACIFY"] = PRIORITY_SILENCE,
-	["ROOT"] = PRIORITY_ROOT,
-	["SILENCE"] = PRIORITY_SILENCE,
-	["PACIFYSILENCE"] = PRIORITY_SILENCE,
-	["DISARM"] = PRIORITY_DISARM,
-	["SCHOOL_INTERRUPT"] = PRIORITY_INTERRUPT,
-}
+local ACTIVE_INDEX = 1;
 
 function LossOfControlFrame_OnLoad(self)
 	self:RegisterEvent("CVAR_UPDATE");
@@ -51,16 +33,16 @@ function LossOfControlFrame_OnEvent(self, event, ...)
 	if ( event == "LOSS_OF_CONTROL_UPDATE" ) then
 		LossOfControlFrame_UpdateDisplay(self, false);
 	elseif ( event == "LOSS_OF_CONTROL_ADDED" ) then
-		local locType, spellID, text, iconTexture, startTime, timeRemaining, duration, lockoutSchool, displayType, isActive = ...;
+		local eventIndex = ...;
+		local locType, spellID, text, iconTexture, startTime, timeRemaining, duration, lockoutSchool, priority, displayType = C_LossOfControl.GetEventInfo(eventIndex);
 		if ( displayType == DISPLAY_TYPE_ALERT ) then
 			-- only display an alert type if there's nothing up or it has higher priority or longer time remaining if same priority
-			if ( not self:IsShown() or typePriority[locType] > typePriority[self.locType] or
-				( typePriority[locType] == typePriority[self.locType] and timeRemaining > self.TimeLeft.timeRemaining ) ) then
-				LossOfControlFrame_SetUpDisplay(self, true, locType, spellID, text, iconTexture, startTime, timeRemaining, duration, lockoutSchool, displayType);
+			if ( not self:IsShown() or priority > self.priority or ( priority == self.priority and timeRemaining > self.TimeLeft.timeRemaining ) ) then
+				LossOfControlFrame_SetUpDisplay(self, true, locType, spellID, text, iconTexture, startTime, timeRemaining, duration, lockoutSchool, priority, displayType);
 			end
 			return;
 		end
-		if ( isActive ) then
+		if ( eventIndex == ACTIVE_INDEX ) then
 			self.fadeTime = nil;
 			LossOfControlFrame_SetUpDisplay(self, true);
 		end
@@ -107,14 +89,13 @@ end
 
 function LossOfControlFrame_OnHide(self)
 	self.fadeTime = nil;
-	self.locType = nil;
+	self.priority = nil;
 end
 
-function LossOfControlFrame_SetUpDisplay(self, animate, locType, spellID, text, iconTexture, startTime, timeRemaining, duration, lockoutSchool, displayType)
+function LossOfControlFrame_SetUpDisplay(self, animate, locType, spellID, text, iconTexture, startTime, timeRemaining, duration, lockoutSchool, priority, displayType)
 	if ( not locType ) then
-		locType, spellID, text, iconTexture, startTime, timeRemaining, duration, lockoutSchool, displayType = GetActiveLossOfControlInfo();
+		locType, spellID, text, iconTexture, startTime, timeRemaining, duration, lockoutSchool, priority, displayType = C_LossOfControl.GetEventInfo(ACTIVE_INDEX);
 	end
-	
 	if ( text and displayType ~= DISPLAY_TYPE_NONE ) then
 		-- ability name
 		if ( locType == "SCHOOL_INTERRUPT" ) then
@@ -130,6 +111,8 @@ function LossOfControlFrame_SetUpDisplay(self, animate, locType, spellID, text, 
 		local timeLeftFrame = self.TimeLeft;
 		if ( displayType == DISPLAY_TYPE_ALERT ) then
 			timeRemaining = duration;
+			self.Cooldown:SetLossOfControlCooldown(0, 0);
+		elseif ( not startTime ) then
 			self.Cooldown:SetLossOfControlCooldown(0, 0);
 		else
 			self.Cooldown:SetLossOfControlCooldown(startTime, duration);
@@ -157,7 +140,7 @@ function LossOfControlFrame_SetUpDisplay(self, animate, locType, spellID, text, 
 			self.Anim:Play();
 			PlaySoundKitID(34468);
 		end
-		self.locType = locType;
+		self.priority = priority;
 		self.spellID = spellID;
 		self.startTime = startTime;
 		self:Show();
@@ -170,12 +153,12 @@ function LossOfControlFrame_UpdateDisplay(self)
 		return;
 	end
 
-	local locType, spellID, text, iconTexture, startTime, timeRemaining, duration, lockoutSchool, displayType = GetActiveLossOfControlInfo();
+	local locType, spellID, text, iconTexture, startTime, timeRemaining, duration, lockoutSchool, priority, displayType = C_LossOfControl.GetEventInfo(ACTIVE_INDEX);
 	if ( text and displayType == DISPLAY_TYPE_FULL ) then
 		if ( spellID ~= self.spellID or startTime ~= self.startTime ) then
-			LossOfControlFrame_SetUpDisplay(self, false, locType, spellID, text, iconTexture, startTime, timeRemaining, duration, lockoutSchool, displayType);
+			LossOfControlFrame_SetUpDisplay(self, false, locType, spellID, text, iconTexture, startTime, timeRemaining, duration, lockoutSchool, priority, displayType);
 		end
-		if ( not self.Anim:IsPlaying() ) then
+		if ( not self.Anim:IsPlaying() and startTime ) then
 			self.Cooldown:SetLossOfControlCooldown(startTime, duration);
 		end
 		LossOfControlTimeLeftFrame_SetTime(self.TimeLeft, timeRemaining);
@@ -196,6 +179,7 @@ function LossOfControlTimeLeftFrame_SetTime(self, timeRemaining)
 		LossOfControlTimeLeftFrame_SetNumberWidth(self, timeRemaining);
 	else
 		self:Hide();
+		self.numberWidth = 0;
 	end
 end
 

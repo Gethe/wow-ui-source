@@ -18,7 +18,11 @@ BN_TOAST_RIGHT_OFFSET = -1;
 BN_TOAST_LEFT_OFFSET = 1;
 BN_TOAST_TOP_BUFFER = 20;	-- the minimum distance in pixels from the toast to the top edge of the screen
 BN_TOAST_MAX_LINE_WIDTH = 196;
-	
+
+BNET_CLIENT_WOW = "WoW";
+BNET_CLIENT_SC2 = "S2";
+BNET_CLIENT_D3 = "D3";
+
 function BNet_OnLoad(self)
 	self:RegisterEvent("BN_CONNECTED");
 	self:RegisterEvent("BN_DISCONNECTED");
@@ -154,13 +158,7 @@ function BNToastFrame_Show()
 		
 		local _, toonName, client = BNGetToonInfo(presenceID);
 		if (toonName and toonName ~= "") then
-			if ( client == BNET_CLIENT_WOW ) then
-				toonName = "|TInterface\\ChatFrame\\UI-ChatIcon-WOW:14:14:0:-1|t"..toonName;
-			elseif ( client == BNET_CLIENT_SC2 ) then
-				toonName = "|TInterface\\ChatFrame\\UI-ChatIcon-SC2:14:14:0:-1|t"..toonName;
-			elseif ( client == BNET_CLIENT_D3 ) then
-				toonName = "|TInterface\\ChatFrame\\UI-ChatIcon-D3:14:14:0:-1|t"..toonName;
-			end
+			toonName = BNet_GetClientEmbeddedTexture(client, 14, 14, 0, -1)..toonName;
 			middleLine:SetFormattedText(toonName);
 			middleLine:SetTextColor(FRIENDS_BNET_NAME_COLOR.r, FRIENDS_BNET_NAME_COLOR.g, FRIENDS_BNET_NAME_COLOR.b);
 			middleLine:Show();
@@ -488,4 +486,35 @@ function BNet_ShouldProcessOfflineEvents()
 	end
 	-- no logout timers up, must be instant logout
 	return false;
+end
+
+function BNet_GetClientEmbeddedTexture(client, width, height, xOffset, yOffset)
+	if ( not height ) then
+		height = width;
+		xOffset = 0;
+		yOffset = 0;
+	end
+	local textureString;
+	if ( client == BNET_CLIENT_WOW ) then
+		textureString = "WOW";
+	elseif ( client == BNET_CLIENT_SC2 ) then
+		textureString = "SC2";
+	elseif ( client == BNET_CLIENT_D3 ) then
+		textureString = "D3";
+	else
+		textureString = "Battlenet";
+	end
+	return string.format("|TInterface\\ChatFrame\\UI-ChatIcon-%s:%d:%d:%d:%d|t", textureString, width, height, xOffset, yOffset);
+end
+
+function BNet_GetClientTexture(client)
+	if ( client == BNET_CLIENT_WOW ) then
+		return "Interface\\FriendsFrame\\Battlenet-WoWicon";
+	elseif ( client == BNET_CLIENT_SC2 ) then
+		return "Interface\\FriendsFrame\\Battlenet-Sc2icon";
+	elseif ( client == BNET_CLIENT_D3 ) then
+		return "Interface\\FriendsFrame\\Battlenet-D3icon";
+	else
+		return "Interface\\FriendsFrame\\Battlenet-Battleneticon";
+	end
 end

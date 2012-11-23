@@ -617,7 +617,7 @@
 							</OnClick>
 						</Scripts>
 					</Button>
-					<Frame name="$parentCooldownFrame" hidden="true" enableMouse="true">
+					<Frame name="$parentPartyBackfill" inherits="LFGBackfillCoverTemplate">
 						<Size>
 							<AbsDimension x="330" y="257"/>
 						</Size>
@@ -628,144 +628,13 @@
 								</Offset>
 							</Anchor>
 						</Anchors>
-						<Layers>
-							<Layer level="BACKGROUND">
-								<Texture name="$parentBlackFilter" setAllPoints="true">
-									<Color r="0" b="0" g="0" a="0.93"/>
-								</Texture>
-							</Layer>
-							<Layer level="ARTWORK">
-								<FontString name="$parentDescription" parentKey="description" inherits="GameFontNormal" text="LFG_RANDOM_COOLDOWN_OTHER" justifyH="CENTER">
-									<Size>
-										<AbsDimension x="300" y="0"/>
-									</Size>
-									<Anchors>
-										<Anchor point="TOP">
-											<Offset>
-												<AbsDimension x="0" y="-30"/>
-											</Offset>
-										</Anchor>
-									</Anchors>
-								</FontString>
-								<FontString name="$parentTime" parentKey="time" inherits="GameFontHighlightLarge" justifyH="CENTER">
-									<Anchors>
-										<Anchor point="TOP" relativeTo="$parentDescription" relativePoint="BOTTOM">
-											<Offset>
-												<AbsDimension x="0" y="-10"/>
-											</Offset>
-										</Anchor>
-									</Anchors>
-								</FontString>
-								<FontString name="$parentName1" inherits="GameFontNormal" justifyH="LEFT">
-									<Size>
-										<AbsDimension x="120" y="0"/>
-									</Size>
-									<Anchors>
-										<Anchor point="TOPLEFT" relativeTo="$parentDescription" relativePoint="BOTTOMLEFT">
-											<Offset>
-												<AbsDimension x="25" y="-60"/>
-											</Offset>
-										</Anchor>
-									</Anchors>
-								</FontString>
-								<FontString name="$parentStatus1" inherits="GameFontNormal" justifyH="RIGHT">
-									<Size>
-										<AbsDimension x="110" y="0"/>
-									</Size>
-									<Anchors>
-										<Anchor point="TOPLEFT" relativeTo="$parentName1" relativePoint="TOPRIGHT">
-											<Offset>
-												<AbsDimension x="0" y="0"/>
-											</Offset>
-										</Anchor>
-									</Anchors>
-								</FontString>
-								<FontString name="$parentName2" inherits="GameFontNormal" justifyH="LEFT">
-									<Size>
-										<AbsDimension x="120" y="0"/>
-									</Size>
-									<Anchors>
-										<Anchor point="TOP" relativeTo="$parentName1" relativePoint="BOTTOM">
-											<Offset>
-												<AbsDimension x="0" y="-5"/>
-											</Offset>
-										</Anchor>
-									</Anchors>
-								</FontString>
-								<FontString name="$parentStatus2" inherits="GameFontNormal" justifyH="RIGHT">
-									<Size>
-										<AbsDimension x="110" y="0"/>
-									</Size>
-									<Anchors>
-										<Anchor point="TOPLEFT" relativeTo="$parentName2" relativePoint="TOPRIGHT">
-											<Offset>
-												<AbsDimension x="0" y="0"/>
-											</Offset>
-										</Anchor>
-									</Anchors>
-								</FontString>
-								<FontString name="$parentName3" inherits="GameFontNormal" justifyH="LEFT">
-									<Size>
-										<AbsDimension x="120" y="0"/>
-									</Size>
-									<Anchors>
-										<Anchor point="TOP" relativeTo="$parentName2" relativePoint="BOTTOM">
-											<Offset>
-												<AbsDimension x="0" y="-5"/>
-											</Offset>
-										</Anchor>
-									</Anchors>
-								</FontString>
-								<FontString name="$parentStatus3" inherits="GameFontNormal" justifyH="RIGHT">
-									<Size>
-										<AbsDimension x="110" y="0"/>
-									</Size>
-									<Anchors>
-										<Anchor point="TOPLEFT" relativeTo="$parentName3" relativePoint="TOPRIGHT">
-											<Offset>
-												<AbsDimension x="0" y="0"/>
-											</Offset>
-										</Anchor>
-									</Anchors>
-								</FontString>
-								<FontString name="$parentName4" inherits="GameFontNormal" justifyH="LEFT">
-									<Size>
-										<AbsDimension x="120" y="0"/>
-									</Size>
-									<Anchors>
-										<Anchor point="TOP" relativeTo="$parentName3" relativePoint="BOTTOM">
-											<Offset>
-												<AbsDimension x="0" y="-5"/>
-											</Offset>
-										</Anchor>
-									</Anchors>
-								</FontString>
-								<FontString name="$parentStatus4" inherits="GameFontNormal" justifyH="RIGHT">
-									<Size>
-										<AbsDimension x="110" y="0"/>
-									</Size>
-									<Anchors>
-										<Anchor point="TOPLEFT" relativeTo="$parentName4" relativePoint="TOPRIGHT">
-											<Offset>
-												<AbsDimension x="0" y="0"/>
-											</Offset>
-										</Anchor>
-									</Anchors>
-								</FontString>
-							</Layer>
-						</Layers>
 						<Scripts>
-							<OnLoad function="LFDQueueFrameRandomCooldownFrame_OnLoad"/>
-							<OnEvent function="LFDQueueFrameRandomCooldownFrame_OnEvent"/>
-							<OnShow>
-								LFDQueueFrameFindGroupButton_Update();
-							</OnShow>
-							<OnHide>
-								LFDQueueFrameFindGroupButton_Update();
-							</OnHide>
+							<OnLoad>
+								LFGBackfillCover_SetUp(self, {LFG_SUBTYPEID_DUNGEON, LFG_SUBTYPEID_HEROIC}, LE_LFG_CATEGORY_LFD, LFDQueueFrameFindGroupButton_Update);
+							</OnLoad>
 						</Scripts>
 					</Frame>
-					<Frame name="$parentPartyBackfill" hidden="true" enableMouse="true">
+					<Frame name="$parentCooldownFrame" parentKey="CooldownFrame" inherits="LFGCooldownCoverTemplate">
 						<Size>
 							<AbsDimension x="330" y="257"/>
 						</Size>
@@ -776,75 +645,16 @@
 								</Offset>
 							</Anchor>
 						</Anchors>
-						<Layers>
-							<Layer level="BACKGROUND">
-								<Texture name="$parentBlackFilter" setAllPoints="true">
-									<Color r="0" b="0" g="0" a="0.93"/>
-								</Texture>
-							</Layer>
-							<Layer level="ARTWORK">
-								<FontString name="$parentDescription" inherits="GameFontNormal" justifyH="CENTER">
-									<Size>
-										<AbsDimension x="300" y="0"/>
-									</Size>
-									<Anchors>
-										<Anchor point="TOP">
-											<Offset>
-												<AbsDimension x="-0" y="-70"/>
-											</Offset>
-										</Anchor>
-									</Anchors>
-								</FontString>
-							</Layer>
-						</Layers>
-						<Frames>
-							<Button name="$parentBackfillButton" inherits="UIPanelButtonTemplate" text="YES">
-								<Size>
-									<AbsDimension x="153" y="22"/>
-								</Size>
-								<Anchors>
-									<Anchor point="TOPRIGHT" relativeTo="$parentDescription" relativePoint="BOTTOM">
-										<Offset>
-											<AbsDimension x="-5" y="-10"/>
-										</Offset>
-									</Anchor>
-								</Anchors>
-								<Scripts>
-									<OnClick>
-										StaticPopup_Hide("LFG_OFFER_CONTINUE");
-										PartyLFGStartBackfill();											
-									</OnClick>
-								</Scripts>
-							</Button>
-							<Button name="$parentNoBackfillButton" inherits="UIPanelButtonTemplate" text="HIDE">
-								<Size>
-									<AbsDimension x="153" y="22"/>
-								</Size>
-								<Anchors>
-									<Anchor point="TOPLEFT" relativeTo="$parentDescription" relativePoint="BOTTOM">
-										<Offset>
-											<AbsDimension x="5" y="-10"/>
-										</Offset>
-									</Anchor>
-								</Anchors>
-								<Scripts>
-									<OnClick>
-										PlaySound("UChatScrollButton");
-										self:GetParent():Hide();
-									</OnClick>
-								</Scripts>
-							</Button>
-						</Frames>
 						<Scripts>
+							<OnLoad>
+								LFGCooldownCover_SetUp(self, self:GetParent().PartyBackfill);
+							</OnLoad>
 							<OnShow>
 								LFDQueueFrameFindGroupButton_Update();
 							</OnShow>
 							<OnHide>
 								LFDQueueFrameFindGroupButton_Update();
 							</OnHide>
-							<OnLoad>
-								self:SetFrameLevel(14);
-							</OnLoad>
 						</Scripts>
 					</Frame>
 					<Frame name="$parentNoLFDWhileLFR" hidden="true" enableMouse="true">

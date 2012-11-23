@@ -3,7 +3,7 @@
 	<Script file="MacOptionsFrame.lua"/>
 	<Frame name="MacOptionsFrame" toplevel="true" frameStrata="DIALOG" movable="true" enableMouse="true" hidden="true" parent="UIParent">
 		<Size>
-			<AbsDimension x="426" y="555"/>
+			<AbsDimension x="456" y="555"/>
 		</Size>
 		<Anchors>
 			<Anchor point="CENTER"/>
@@ -48,7 +48,7 @@
 			<!-- Movie Recording section -->
 			<Frame name="MacOptionsFrameMovieRecording" inherits="OptionsBoxTemplate">
 				<Size>
-					<AbsDimension x="400" y="265"/>
+					<AbsDimension x="430" y="265"/>
 				</Size>
 				<Anchors>
 					<Anchor point="TOPLEFT">
@@ -405,7 +405,7 @@
 			<!-- iTunes Remote section -->
 			<Frame name="MacOptionsITunesRemote" inherits="OptionsBoxTemplate">
 				<Size>
-					<AbsDimension x="400" y="70"/>
+					<AbsDimension x="430" y="70"/>
 				</Size>
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeTo="MacOptionsFrameMovieRecording" relativePoint="BOTTOMLEFT">
@@ -446,7 +446,7 @@
 			
 			<Frame name="MacOptionsFrameMisc" inherits="OptionsBoxTemplate">
 				<Size>
-					<AbsDimension x="400" y="95"/>
+					<AbsDimension x="430" y="95"/>
 				</Size>
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeTo="MacOptionsITunesRemote" relativePoint="BOTTOMLEFT">
@@ -496,7 +496,7 @@
 			
 			<Button name="MacOptionsFrameCancel" inherits="OptionsButtonTemplate" text="CANCEL">
 				<Size>
-					<AbsDimension x="100" y="21"/>
+					<AbsDimension x="108" y="21"/>
 				</Size>
 				<Anchors>
 					<Anchor point="BOTTOMRIGHT">
@@ -514,7 +514,7 @@
 			</Button>
 			<Button name="MacOptionsFrameOkay" inherits="OptionsButtonTemplate" text="OKAY">
 				<Size>
-					<AbsDimension x="100" y="21"/>
+					<AbsDimension x="108" y="21"/>
 				</Size>
 				<Anchors>
 					<Anchor point="RIGHT" relativeTo="MacOptionsFrameCancel" relativePoint="LEFT">
@@ -531,9 +531,9 @@
 					</OnClick>
 				</Scripts>
 			</Button>
-			<Button name="MacOptionsFrameDefaults" inherits="UIPanelButtonTemplate" text="DEFAULTS">
+			<Button name="MacOptionsFrameDefaults" inherits="OptionsButtonTemplate" text="DEFAULTS">
 				<Size>
-					<AbsDimension x="100" y="21"/>
+					<AbsDimension x="108" y="21"/>
 				</Size>
 				<Anchors>
 					<Anchor point="BOTTOMLEFT">
@@ -549,9 +549,9 @@
 					</OnClick>
 				</Scripts>
 			</Button>
-			<Button name="MacOptionsButtonKeybindings" inherits="GameMenuButtonTemplate" text="KEY_BINDINGS_MAC">
+			<Button name="MacOptionsButtonKeybindings" inherits="OptionsButtonTemplate" text="KEY_BINDINGS_MAC">
 				<Size>
-					<AbsDimension x="103" y="21"/>
+					<AbsDimension x="108" y="21"/>
 				</Size>
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeTo="MacOptionsFrameDefaults" relativePoint="TOPRIGHT">

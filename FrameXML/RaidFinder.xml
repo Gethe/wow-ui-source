@@ -280,7 +280,7 @@
 							</Frame>
 						</ScrollChild>
 					</ScrollFrame>
-					<Frame name="$parentPartyBackfill" hidden="true" enableMouse="true">
+					<Frame name="$parentPartyBackfill" inherits="LFGBackfillCoverTemplate">
 						<Size>
 							<AbsDimension x="330" y="257"/>
 						</Size>
@@ -291,78 +291,13 @@
 								</Offset>
 							</Anchor>
 						</Anchors>
-						<Layers>
-							<Layer level="BACKGROUND">
-								<Texture name="$parentBlackFilter" setAllPoints="true">
-									<Color r="0" b="0" g="0" a="0.93"/>
-								</Texture>
-							</Layer>
-							<Layer level="ARTWORK">
-								<FontString name="$parentDescription" inherits="GameFontNormal" justifyH="CENTER">
-									<Size>
-										<AbsDimension x="300" y="0"/>
-									</Size>
-									<Anchors>
-										<Anchor point="TOP">
-											<Offset>
-												<AbsDimension x="-0" y="-70"/>
-											</Offset>
-										</Anchor>
-									</Anchors>
-								</FontString>
-							</Layer>
-						</Layers>
-						<Frames>
-							<Button name="$parentBackfillButton" inherits="UIPanelButtonTemplate" text="YES">
-								<Size>
-									<AbsDimension x="153" y="22"/>
-								</Size>
-								<Anchors>
-									<Anchor point="TOPRIGHT" relativeTo="$parentDescription" relativePoint="BOTTOM">
-										<Offset>
-											<AbsDimension x="-5" y="-10"/>
-										</Offset>
-									</Anchor>
-								</Anchors>
-								<Scripts>
-									<OnClick>
-										StaticPopup_Hide("LFG_OFFER_CONTINUE");
-										PartyLFGStartBackfill();											
-									</OnClick>
-								</Scripts>
-							</Button>
-							<Button name="$parentNoBackfillButton" inherits="UIPanelButtonTemplate" text="HIDE">
-								<Size>
-									<AbsDimension x="153" y="22"/>
-								</Size>
-								<Anchors>
-									<Anchor point="TOPLEFT" relativeTo="$parentDescription" relativePoint="BOTTOM">
-										<Offset>
-											<AbsDimension x="5" y="-10"/>
-										</Offset>
-									</Anchor>
-								</Anchors>
-								<Scripts>
-									<OnClick>
-										PlaySound("UChatScrollButton");
-										self:GetParent():Hide();
-									</OnClick>
-								</Scripts>
-							</Button>
-						</Frames>
 						<Scripts>
-							<OnShow>
-								RaidFinderFrameFindRaidButton_Update();
-							</OnShow>
-							<OnHide>
-								RaidFinderFrameFindRaidButton_Update();
-							</OnHide>
 							<OnLoad>
-								self:SetFrameLevel(14);
+								LFGBackfillCover_SetUp(self, {LFG_SUBTYPEID_RAID}, LE_LFG_CATEGORY_RF, RaidFinderFrameFindRaidButton_Update);
 							</OnLoad>
 						</Scripts>
 					</Frame>
-					<Frame name="$parentCooldownFrame" hidden="true" enableMouse="true">
+					<Frame name="$parentCooldownFrame" parentKey="CooldownFrame" inherits="LFGCooldownCoverTemplate">
 						<Size>
 							<AbsDimension x="330" y="257"/>
 						</Size>
@@ -373,116 +308,11 @@
 								</Offset>
 							</Anchor>
 						</Anchors>
-						<Layers>
-							<Layer level="BACKGROUND">
-								<Texture name="$parentBlackFilter" setAllPoints="true">
-									<Color r="0" b="0" g="0" a="0.93"/>
-								</Texture>
-							</Layer>
-							<Layer level="ARTWORK">
-								<FontString name="$parentDescription" parentKey="description" inherits="GameFontNormal" justifyH="CENTER">
-									<Size>
-										<AbsDimension x="300" y="0"/>
-									</Size>
-									<Anchors>
-										<Anchor point="TOP">
-											<Offset>
-												<AbsDimension x="0" y="-30"/>
-											</Offset>
-										</Anchor>
-									</Anchors>
-								</FontString>
-								<FontString name="$parentTime" parentKey="time" inherits="GameFontHighlightLarge" justifyH="CENTER">
-									<Anchors>
-										<Anchor point="TOP" relativeTo="$parentDescription" relativePoint="BOTTOM">
-											<Offset>
-												<AbsDimension x="0" y="-10"/>
-											</Offset>
-										</Anchor>
-									</Anchors>
-								</FontString>
-								<FontString name="$parentSecondaryDescription" parentKey="secondaryDescription" inherits="GameFontNormal" text="RF_DESERTER_OTHER" justifyH="CENTER">
-									<Size>
-										<AbsDimension x="300" y="0"/>
-									</Size>
-									<Anchors>
-										<Anchor point="TOP" relativeTo="$parentTime" relativePoint="BOTTOM">
-											<Offset>
-												<AbsDimension x="0" y="-10"/>
-											</Offset>
-										</Anchor>
-									</Anchors>
-								</FontString>
-								<FontString name="$parentName1" inherits="GameFontNormal" justifyH="CENTER">
-									<Size>
-										<AbsDimension x="120" y="0"/>
-									</Size>
-									<!--Anchored in script-->
-								</FontString>
-								<FontString name="$parentName2" inherits="GameFontNormal" justifyH="CENTER">
-									<Size>
-										<AbsDimension x="120" y="0"/>
-									</Size>
-									<!--Anchored in script-->
-								</FontString>
-								<FontString name="$parentName3" inherits="GameFontNormal" justifyH="CENTER">
-									<Size>
-										<AbsDimension x="120" y="0"/>
-									</Size>
-									<!--Anchored in script-->
-								</FontString>
-								<FontString name="$parentName4" inherits="GameFontNormal" justifyH="CENTER">
-									<Size>
-										<AbsDimension x="120" y="0"/>
-									</Size>
-									<!--Anchored in script-->
-								</FontString>
-								<FontString name="$parentName5" inherits="GameFontNormal" justifyH="CENTER">
-									<Size>
-										<AbsDimension x="120" y="0"/>
-									</Size>
-									<!--Anchored in script-->
-								</FontString>
-								<FontString name="$parentName6" inherits="GameFontNormal" justifyH="CENTER">
-									<Size>
-										<AbsDimension x="120" y="0"/>
-									</Size>
-									<!--Anchored in script-->
-								</FontString>
-								<FontString name="$parentName7" inherits="GameFontNormal" justifyH="CENTER">
-									<Size>
-										<AbsDimension x="120" y="0"/>
-									</Size>
-									<!--Anchored in script-->
-								</FontString>
-								<FontString name="$parentName8" inherits="GameFontNormal" justifyH="CENTER">
-									<Size>
-										<AbsDimension x="120" y="0"/>
-									</Size>
-									<!--Anchored in script-->
-								</FontString>
-							</Layer>
-						</Layers>
-						<Frames>
-							<Frame name="$parentAdditionalPlayersFrame" parentKey="additionalPlayersFrame">
-								<Size x="240" y="32"/>
-								<Anchors>
-									<Anchor point="BOTTOM" x="0" y="15"/>
-								</Anchors>
-								<Layers>
-									<Layer level="ARTWORK">
-										<FontString name="$parentText" inherits="GameFontNormal" justifyH="CENTER" setAllPoints="true" parentKey="text"/>
-									</Layer>
-								</Layers>
-								<Scripts>
-									<OnEnter function="RaidFinderQueueFrameCooldownAdditionalPlayers_OnEnter"/>
-									<OnLeave function="GameTooltip_Hide"/>
-								</Scripts>
-							</Frame>
-						</Frames>
 						<Scripts>
-							<OnLoad function="RaidFinderQueueFrameCooldownFrame_OnLoad"/>
-							<OnEvent function="RaidFinderQueueFrameCooldownFrame_OnEvent"/>
+							<OnLoad>
+								LFGCooldownCover_SetUp(self, self:GetParent().PartyBackfill);
+								LFGCooldownCover_ChangeSettings(self, false, false);
+							</OnLoad>
 							<OnShow>
 								RaidFinderFrameFindRaidButton_Update();
 							</OnShow>

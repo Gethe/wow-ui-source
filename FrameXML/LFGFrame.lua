@@ -203,13 +203,14 @@ function LFGEventFrame_OnEvent(self, event, ...)
 	LFG_UpdateRolesChangeable();
 	LFG_UpdateFindGroupButtons();
 	LFG_UpdateLockedOutPanels();
-	LFDFrame_UpdateBackfill();
-	RaidFinderFrame_UpdateBackfill();
+	LFGBackfillCover_Update(LFDQueueFrame.PartyBackfill);
+	LFGBackfillCover_Update(RaidFinderQueueFrame.PartyBackfill);
+	LFGBackfillCover_Update(ScenarioQueueFrame.PartyBackfill);
 end
 
 function LFG_DisplayGroupLeaderWarning(eventFrame)
 	local numRaidMembers = GetNumGroupMembers();
-	if ( not HasLFGRestrictions() or not IsInGroup() or IsInScenarioGroup() ) then
+	if ( not HasLFGRestrictions() or not IsInGroup() ) then
 		eventFrame.lastLeader = nil;
 		return;
 	end
@@ -1758,6 +1759,177 @@ function LFGDungeonListButton_OnEnter(button, tooltipTitle)
 			GameTooltip:Show();
 		end
 	end
+end
+
+function LFGCooldownCover_SetUp(self, backfillFrame)
+	self:SetFrameLevel(self:GetParent():GetFrameLevel() + 9);
+
+	self:RegisterEvent("PLAYER_ENTERING_WORLD");	--For logging in/reloading ui
+	self:RegisterEvent("UNIT_AURA");	--The cooldown is still technically a debuff
+	self:RegisterEvent("GROUP_ROSTER_UPDATE");
+
+	assert(backfillFrame);
+	self.backfillFrame = backfillFrame;
+end
+
+function LFGCooldownCover_ChangeSettings(self, showAll, showCooldown)
+	--showAll - whether we show people that have no cooldown/deserter
+	--showCooldown - whether we display "On Cooldown" for people with random dungeon cooldowns. (Only applies to queueing randomly, not to queueing for specifics.)
+	
+	self.showAll = showAll;
+	self.showCooldown = showCooldown;
+
+	LFGCooldownCover_Update(self);
+end
+
+function LFGCooldownCover_OnEvent(self, event, ...)
+	local arg1 = ...;
+	if ( event ~= "UNIT_AURA" or arg1 == "player" or strsub(arg1, 1, 5) == "party" or strsub(arg1, 1, 4) == "raid" ) then
+		if ( self:GetParent():IsVisible() ) then --Otherwise, we should be updated when the parent is shown.
+			LFGCooldownCover_Update(self);
+		end
+	end
+end
+
+function LFGCooldownCover_Update(self)
+	local shouldShow = false;
+	local hasDeserter = false; --If we have deserter, we want to show this over the specific frame as well as the random frame.
+	
+	local deserterExpiration = GetLFGDeserterExpiration();
+	
+	local myExpireTime;
+	if ( deserterExpiration ) then
+		myExpireTime = deserterExpiration;
+		hasDeserter = true;
+	elseif ( self.showCooldown ) then
+		myExpireTime = GetLFGRandomCooldownExpiration();
+	end
+	
+	self.myExpirationTime = myExpireTime;
+	
+	local nextIndex = 1;
+	local numPlayers, prefix;
+	if ( IsInRaid() ) then
+		numPlayers = GetNumGroupMembers();
+		prefix = "raid";
+	else
+		numPlayers = GetNumSubgroupMembers();
+		prefix = "party";
+	end
+
+	for i = 1, numPlayers do
+		local unit = prefix..i;
+
+		if ( nextIndex > #self.Names ) then
+			break;
+		end
+
+		local nameLabel = self.Names[nextIndex];
+		local statusLabel = self.Statuses[nextIndex];
+		local gender = UnitSex(unit);
+		
+		local showLabels = false;
+		if ( UnitHasLFGDeserter(unit) ) then
+			statusLabel:SetFormattedText(RED_FONT_COLOR_CODE.."%s|r", GetText("DESERTER", gender));
+			shouldShow = true;
+			hasDeserter = true;
+			showLabels = true;
+			nextIndex = nextIndex + 1;
+		elseif ( self.showCooldown and UnitHasLFGRandomCooldown(unit) ) then
+			statusLabel:SetFormattedText(RED_FONT_COLOR_CODE.."%s|r", GetText("ON_COOLDOWN", gender));
+			shouldShow = true;
+			showLabels = true;
+			nextIndex = nextIndex + 1;
+		elseif ( self.showAll ) then
+			statusLabel:SetFormattedText(GREEN_FONT_COLOR_CODE.."%s|r", GetText("READY", gender));
+			showLabels = true;
+			nextIndex = nextIndex + 1;
+		end
+
+		if ( showLabels ) then
+			nameLabel:Show();
+			statusLabel:Show();
+			
+			local _, classFilename = UnitClass(unit);
+			local classColor = classFilename and RAID_CLASS_COLORS[classFilename] or NORMAL_FONT_COLOR;
+			nameLabel:SetFormattedText("|cff%.2x%.2x%.2x%s|r", classColor.r * 255, classColor.g * 255, classColor.b * 255, UnitName(unit));
+		end
+	end
+	for i = nextIndex, #self.Names do
+		local nameLabel = self.Names[i];
+		local statusLabel = self.Statuses[i];
+		nameLabel:Hide();
+		statusLabel:Hide();
+	end
+	
+	if ( nextIndex == 1 ) then	--We haven't shown anything
+		self.description:SetPoint("TOP", 0, -85);
+	else
+		self.description:SetPoint("TOP", 0, -30);
+	end
+	
+	if ( myExpireTime and GetTime() < myExpireTime ) then
+		shouldShow = true;
+		if ( deserterExpiration ) then
+			self.description:SetText(LFG_DESERTER_YOU);
+		else
+			self.description:SetText(LFG_RANDOM_COOLDOWN_YOU);
+		end
+		self.time:SetText(SecondsToTime(ceil(myExpireTime - GetTime())));
+		self.time:Show();
+		
+		self:SetScript("OnUpdate", LFGCooldownCover_OnUpdate);
+	else
+		if ( hasDeserter ) then
+			self.description:SetText(LFG_DESERTER_OTHER);
+		else
+			self.description:SetText(LFG_RANDOM_COOLDOWN_OTHER);
+		end
+		self.time:Hide();
+		
+		self:SetScript("OnUpdate", nil);
+	end
+	
+	if ( shouldShow and not self.backfillFrame:IsShown() ) then
+		self:Show();
+	else
+		self:Hide();
+	end
+end
+
+function LFGCooldownCover_OnUpdate(self, elapsed)
+	local timeRemaining = self.myExpirationTime - GetTime();
+	if ( timeRemaining > 0 ) then
+		self.time:SetText(SecondsToTime(ceil(timeRemaining)));
+	else
+		LFGCooldownCover_Update(self);
+	end
+end
+
+function LFGBackfillCover_SetUp(self, subtypeIDs, lfgCategory, updateFunc)
+	self.subtypeIDs = subtypeIDs;
+	self.lfgCategory = lfgCategory;
+	self.updateFunc = updateFunc;
+	self:SetFrameLevel(self:GetParent():GetFrameLevel() + 9);
+end
+
+function LFGBackfillCover_Update(self, forceUpdate)
+	if ( CanPartyLFGBackfill() ) then
+		local currentSubtypeID = select(LFG_RETURN_VALUES.subtypeID, GetLFGDungeonInfo(GetPartyLFGID()));
+		if ( tContains(self.subtypeIDs, currentSubtypeID) ) then
+			local name, lfgID, typeID = GetPartyLFGBackfillInfo();
+			self.Description:SetFormattedText(LFG_OFFER_CONTINUE, HIGHLIGHT_FONT_COLOR_CODE..name.."|r");
+			local mode, subMode = GetLFGMode(self.lfgCategory);
+			if ( (forceUpdate or not self:GetParent():IsVisible()) and mode ~= "queued" and mode ~= "suspended" ) then
+				self:Show();
+			end
+		else
+			self:Hide();
+		end
+	else
+		self:Hide();
+	end
+	LFGCooldownCover_Update(self:GetParent().CooldownFrame); --The cooldown frame won't show if the backfill is shown, so we need to update it.
 end
 
 function LFGDungeonListCheckButton_OnClick(button, category, dungeonList, hiddenByCollapseList)

@@ -1121,7 +1121,7 @@ TRAVEL PASS
 										local editBox = FriendsFrameBroadcastInput;
 										editBox:SetFocus();
 										editBox:SetCursorPosition(strlen(editBox:GetText()));
-										editBox:HighlightText(0, -1);  -- highlight all										
+										editBox:HighlightText(0, -1);  -- highlight all
 										self:Hide();
 									</OnClick>
 									<OnEnter>

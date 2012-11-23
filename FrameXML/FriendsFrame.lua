@@ -40,9 +40,6 @@ SQUELCH_TYPE_BLOCK_TOON = 4;
 FRIENDS_FRIENDS_POTENTIAL = 1;
 FRIENDS_FRIENDS_MUTUAL = 2;
 FRIENDS_FRIENDS_ALL = 3;
-BNET_CLIENT_WOW = "WoW";
-BNET_CLIENT_SC2 = "S2";
-BNET_CLIENT_D3 = "D3";
 FRIENDS_TOOLTIP_MAX_TOONS = 5;
 FRIENDS_TOOLTIP_MAX_WIDTH = 200;
 FRIENDS_TOOLTIP_MARGIN_WIDTH = 12;
@@ -1390,14 +1387,10 @@ function FriendsFrame_UpdateFriends()
 						else
 							infoText = zoneName;
 						end
-						button.gameIcon:SetTexture("Interface\\FriendsFrame\\Battlenet-WoWicon");
-					elseif ( client == BNET_CLIENT_SC2 ) then
-						button.gameIcon:SetTexture("Interface\\FriendsFrame\\Battlenet-Sc2icon");
-						infoText = gameText;
-					elseif ( client == BNET_CLIENT_D3 ) then
-						button.gameIcon:SetTexture("Interface\\FriendsFrame\\Battlenet-D3icon");
+					else
 						infoText = gameText;
 					end
+					button.gameIcon:SetTexture(BNet_GetClientTexture(client));
 					nameColor = FRIENDS_BNET_NAME_COLOR;
 					button.gameIcon:Show();
 					-- travel pass
@@ -1481,12 +1474,12 @@ end
 function FriendsFrameStatusDropDown_ShowTooltip()
 	local statusText;
 	local status = FriendsFrameStatusDropDown.status;
-	if ( status == 2 ) then
-		statusText = FRIENDS_LIST_AWAY;
-	elseif ( status == 3 ) then
-		statusText = FRIENDS_LIST_BUSY;
-	else
+	if ( status == FRIENDS_TEXTURE_ONLINE ) then
 		statusText = FRIENDS_LIST_AVAILABLE;
+	elseif ( status == FRIENDS_TEXTURE_AFK ) then
+		statusText = FRIENDS_LIST_AWAY;
+	elseif ( status == FRIENDS_TEXTURE_DND ) then
+		statusText = FRIENDS_LIST_BUSY;
 	end
 	GameTooltip:SetOwner(FriendsFrameStatusDropDown, "ANCHOR_RIGHT", -18, 0);
 	GameTooltip:SetText(format(FRIENDS_LIST_STATUS_TOOLTIP, statusText));
@@ -1495,7 +1488,7 @@ end
 
 function FriendsFrameStatusDropDown_OnShow(self)
 	UIDropDownMenu_Initialize(self, FriendsFrameStatusDropDown_Initialize);
-	FriendsFrameStatusDropDown_Update(self);
+	FriendsFrameStatusDropDown_Update();
 end
 
 function FriendsFrameStatusDropDown_Initialize()
@@ -1507,47 +1500,47 @@ function FriendsFrameStatusDropDown_Initialize()
 	info.func = FriendsFrame_SetOnlineStatus;
 
 	info.text = string.format(optionText, FRIENDS_TEXTURE_ONLINE, FRIENDS_LIST_AVAILABLE);
+	info.value = FRIENDS_TEXTURE_ONLINE;
 	UIDropDownMenu_AddButton(info);
 
 	info.text = string.format(optionText, FRIENDS_TEXTURE_AFK, FRIENDS_LIST_AWAY);
+	info.value = FRIENDS_TEXTURE_AFK;
 	UIDropDownMenu_AddButton(info);
 
 	info.text = string.format(optionText, FRIENDS_TEXTURE_DND, FRIENDS_LIST_BUSY);
+	info.value = FRIENDS_TEXTURE_DND;
 	UIDropDownMenu_AddButton(info);
 end
 
-function FriendsFrameStatusDropDown_Update(self)
+function FriendsFrameStatusDropDown_Update()
 	local status;
-	self = self or FriendsFrameStatusDropDown;
 	if ( IsChatAFK() ) then
-		FriendsFrameStatusDropDownStatus:SetTexture(FRIENDS_TEXTURE_AFK);
-		status = 2;
+		status = FRIENDS_TEXTURE_AFK;
 	elseif ( IsChatDND() ) then
-		FriendsFrameStatusDropDownStatus:SetTexture(FRIENDS_TEXTURE_DND);
-		status = 3;
+		status = FRIENDS_TEXTURE_DND;
 	else
-		FriendsFrameStatusDropDownStatus:SetTexture(FRIENDS_TEXTURE_ONLINE);
-		status = 1;
+		status = FRIENDS_TEXTURE_ONLINE;
 	end
+	FriendsFrameStatusDropDownStatus:SetTexture(status);
 	FriendsFrameStatusDropDown.status = status;
 end
 
-function FriendsFrame_SetOnlineStatus(button, status)
-	status = status or button:GetID();
+function FriendsFrame_SetOnlineStatus(button)
+	local status = button.value;
 	if ( status == FriendsFrameStatusDropDown.status ) then
 		return;
 	end
-	if ( status == 1 ) then
+	if ( status == FRIENDS_TEXTURE_ONLINE ) then
 		if ( IsChatAFK() ) then
 			SendChatMessage("", "AFK");
 		elseif ( IsChatDND() ) then
 			SendChatMessage("", "DND");
 		end
-	elseif ( status == 2 ) then
+	elseif ( status == FRIENDS_TEXTURE_AFK ) then
 		if ( not IsChatAFK() ) then
 			SendChatMessage("", "AFK");
 		end
-	else
+	elseif ( status == FRIENDS_TEXTURE_DND ) then
 		if ( not IsChatDND() ) then
 			SendChatMessage("", "DND");
 		end
@@ -2293,12 +2286,9 @@ function TravelPassDropDown_Initialize(self)
 			else
 				info.text = string.format(FRIENDS_TOOLTIP_WOW_TOON_TEMPLATE, toonName..CANNOT_COOPERATE_LABEL, level, race, class);
 			end
-		elseif ( client == BNET_CLIENT_SC2 ) then
+		else
 			restriction = INVITE_RESTRICTION_CLIENT;
-			info.text = "|TInterface\\ChatFrame\\UI-ChatIcon-SC2:18|t"..toonName;
-		elseif ( client == BNET_CLIENT_D3 ) then
-			restriction = INVITE_RESTRICTION_CLIENT;
-			info.text = "|TInterface\\ChatFrame\\UI-ChatIcon-D3:18|t"..toonName;
+			info.text = BNet_GetClientEmbeddedTexture(client, 18)..toonName;
 		end
 		if ( restriction == INVITE_RESTRICTION_NONE ) then
 			info.arg1 = toonID;

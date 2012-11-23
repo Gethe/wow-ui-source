@@ -25,7 +25,7 @@ function RaidFinderFrame_OnShow(self)
 	RequestLFDPlayerLockInfo();
 	RequestLFDPartyLockInfo();
 	RaidFinderFrameFindRaidButton_Update();
-	RaidFinderFrame_UpdateBackfill(true);
+	LFGBackfillCover_Update(RaidFinderQueueFrame.PartyBackfill, true);
 	RaidFinderFrame_UpdateAvailability();
 	PlaySound("igCharacterInfoOpen");
 end
@@ -258,7 +258,7 @@ function RaidFinderFrameFindRaidButton_Update()
 	
 	if ( LFD_IsEmpowered() and mode ~= "proposal" and mode ~= "listed"  ) then --During the proposal, they must use the proposal buttons to leave the queue.
 		if ( (mode == "queued" or mode == "rolecheck" or mode == "suspended")	--The players can dequeue even if one of the two cover panels is up.
-			or (not RaidFinderQueueFramePartyBackfill:IsVisible() and not LFDQueueFrameCooldownFrame:IsVisible()) ) then
+			or (not RaidFinderQueueFramePartyBackfill:IsVisible() and not RaidFinderQueueFrameCooldownFrame:IsVisible()) ) then
 			RaidFinderFrameFindRaidButton:Enable();
 		else
 			RaidFinderFrameFindRaidButton:Disable();
@@ -272,26 +272,6 @@ function RaidFinderFrameFindRaidButton_Update()
 	else
 		RaidFinderQueueFramePartyBackfillBackfillButton:Disable();
 	end
-end
-
---Backfill option
-function RaidFinderFrame_UpdateBackfill(forceUpdate)
-	if ( CanPartyLFGBackfill() ) then
-		local currentSubtypeID = select(LFG_RETURN_VALUES.subtypeID, GetLFGDungeonInfo(GetPartyLFGID()));
-		if ( currentSubtypeID == LFG_SUBTYPEID_RAID ) then
-			local name, lfgID, typeID = GetPartyLFGBackfillInfo();
-			RaidFinderQueueFramePartyBackfillDescription:SetFormattedText(LFG_OFFER_CONTINUE, HIGHLIGHT_FONT_COLOR_CODE..name.."|r");
-			local mode, subMode = GetLFGMode(LE_LFG_CATEGORY_RF);
-			if ( (forceUpdate or not RaidFinderQueueFrame:IsVisible()) and mode ~= "queued" and mode ~= "suspended" ) then
-				RaidFinderQueueFramePartyBackfill:Show();
-			end
-		else
-			RaidFinderQueueFramePartyBackfill:Hide();
-		end
-	else
-		RaidFinderQueueFramePartyBackfill:Hide();
-	end
-	RaidFinderQueueFrameCooldownFrame_Update();	--The cooldown frame won't show if the backfill is shown, so we need to update it.
 end
 
 --Cooldown panel

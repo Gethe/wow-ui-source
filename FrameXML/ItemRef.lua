@@ -1,4 +1,3 @@
-
 function SetItemRef(link, text, button, chatFrame)
 	if ( strsub(link, 1, 6) == "player" ) then
 		local namelink, isGMLink;

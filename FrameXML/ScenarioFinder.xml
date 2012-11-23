@@ -401,86 +401,44 @@
 						</Scripts>
 					</Frame>
 					-->
-					<Frame name="$parentPartyBackfill" hidden="true" enableMouse="true">
+					<Frame name="$parentPartyBackfill" inherits="LFGBackfillCoverTemplate">
 						<Size>
-							<AbsDimension x="330" y="257"/>
+							<AbsDimension x="330" y="329"/>
 						</Size>
 						<Anchors>
 							<Anchor point="BOTTOMRIGHT">
 								<Offset>
-									<AbsDimension x="-6" y="27"/>
+									<AbsDimension x="-6" y="24"/>
 								</Offset>
 							</Anchor>
 						</Anchors>
-						<Layers>
-							<Layer level="BACKGROUND">
-								<Texture name="$parentBlackFilter" setAllPoints="true">
-									<Color r="0" b="0" g="0" a="0.93"/>
-								</Texture>
-							</Layer>
-							<Layer level="ARTWORK">
-								<FontString name="$parentDescription" inherits="GameFontNormal" justifyH="CENTER">
-									<Size>
-										<AbsDimension x="300" y="0"/>
-									</Size>
-									<Anchors>
-										<Anchor point="TOP">
-											<Offset>
-												<AbsDimension x="-0" y="-70"/>
-											</Offset>
-										</Anchor>
-									</Anchors>
-								</FontString>
-							</Layer>
-						</Layers>
-						<Frames>
-							<Button name="$parentBackfillButton" inherits="UIPanelButtonTemplate" text="YES">
-								<Size>
-									<AbsDimension x="153" y="22"/>
-								</Size>
-								<Anchors>
-									<Anchor point="TOPRIGHT" relativeTo="$parentDescription" relativePoint="BOTTOM">
-										<Offset>
-											<AbsDimension x="-5" y="-10"/>
-										</Offset>
-									</Anchor>
-								</Anchors>
-								<Scripts>
-									<OnClick>
-										StaticPopup_Hide("LFG_OFFER_CONTINUE");
-										PartyLFGStartBackfill();											
-									</OnClick>
-								</Scripts>
-							</Button>
-							<Button name="$parentNoBackfillButton" inherits="UIPanelButtonTemplate" text="HIDE">
-								<Size>
-									<AbsDimension x="153" y="22"/>
-								</Size>
-								<Anchors>
-									<Anchor point="TOPLEFT" relativeTo="$parentDescription" relativePoint="BOTTOM">
-										<Offset>
-											<AbsDimension x="5" y="-10"/>
-										</Offset>
-									</Anchor>
-								</Anchors>
-								<Scripts>
-									<OnClick>
-										PlaySound("UChatScrollButton");
-										self:GetParent():Hide();
-									</OnClick>
-								</Scripts>
-							</Button>
-						</Frames>
 						<Scripts>
+							<OnLoad>
+								LFGBackfillCover_SetUp(self, {LFG_SUBTYPEID_SCENARIO}, LE_LFG_CATEGORY_SCENARIO, ScenarioQueueFrameFindGroupButton_Update);
+							</OnLoad>
+						</Scripts>
+					</Frame>
+					<Frame name="$parentCooldownFrame" parentKey="CooldownFrame" inherits="LFGCooldownCoverTemplate">
+						<Size>
+							<AbsDimension x="330" y="329"/>
+						</Size>
+						<Anchors>
+							<Anchor point="BOTTOMRIGHT">
+								<Offset>
+									<AbsDimension x="-6" y="24"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnLoad>
+								LFGCooldownCover_SetUp(self, self:GetParent().PartyBackfill);
+							</OnLoad>
 							<OnShow>
 								ScenarioQueueFrameFindGroupButton_Update();
 							</OnShow>
 							<OnHide>
 								ScenarioQueueFrameFindGroupButton_Update();
 							</OnHide>
-							<OnLoad>
-								self:SetFrameLevel(14);
-							</OnLoad>
 						</Scripts>
 					</Frame>
 					<Button name="$parentFindGroupButton" inherits="MagicButtonTemplate" text="FIND_A_GROUP">

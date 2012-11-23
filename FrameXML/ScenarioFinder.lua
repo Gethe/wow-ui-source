@@ -16,23 +16,21 @@ function ScenarioFinderFrame_OnEvent(self, event, ...)
 	if ( event == "LFG_UPDATE_RANDOM_INFO" ) then
 		local queueFrame = ScenarioQueueFrame;
 		if ( not queueFrame.type or (type(queueFrame.type) == "number" and not IsLFGDungeonJoinable(queueFrame.type)) ) then
-			queueFrame.type = GetRandomScenarioBestChoice();
-			UIDropDownMenu_SetSelectedValue(queueFrame.Dropdown, queueFrame.type);
+			local bestChoice = GetRandomScenarioBestChoice();
+			if ( bestChoice ) then
+				ScenarioQueueFrame_SetType(bestChoice);
+			end
 		end
 		--If we still don't have a value, we should go to specific.
 		if ( not queueFrame.type ) then
-			queueFrame.type = "specific";
-			UIDropDownMenu_SetSelectedValue(queueFrame.Dropdown, queueFrame.type);
-			ScenarioQueueFrame_SetTypeSpecific();
-		elseif ( queueFrame.Random:IsShown() ) then
-			ScenarioQueueFrameRandom_UpdateFrame();
+			ScenarioQueueFrame_SetType("specific");
 		end
 		ScenarioFinderFrame_UpdateAvailability();
 	end
 end
 
 function ScenarioFinderFrame_OnShow(self)
-	--LFDFrame_UpdateBackfill(true);
+	LFGBackfillCover_Update(ScenarioQueueFrame.PartyBackfill, true);
 	ScenarioFinderFrame_UpdateAvailability();
 end
 
@@ -204,9 +202,20 @@ function ScenarioQueueFrameFindGroupButton_Update()
 	end
 
 	if ( LFD_IsEmpowered() and mode ~= "proposal" and mode ~= "listed"  ) then --During the proposal, they must use the proposal buttons to leave the queue.
-		ScenarioQueueFrameFindGroupButton:Enable();
+		if ( (mode == "queued" or mode == "rolecheck" or mode == "suspended")	--The players can dequeue even if one of the two cover panels is up.
+			or (not ScenarioQueueFramePartyBackfill:IsVisible() and not ScenarioQueueFrameCooldownFrame:IsVisible()) ) then
+			ScenarioQueueFrameFindGroupButton:Enable();
+		else
+			ScenarioQueueFrameFindGroupButton:Disable();
+		end
 	else
 		ScenarioQueueFrameFindGroupButton:Disable();
+	end
+
+	if ( LFD_IsEmpowered() and mode ~= "proposal" and mode ~= "queued" and mode ~= "suspended" and mode ~= "rolecheck" ) then
+		ScenarioQueueFramePartyBackfillBackfillButton:Enable();
+	else
+		ScenarioQueueFramePartyBackfillBackfillButton:Disable();
 	end
 end
 
@@ -296,6 +305,7 @@ function ScenarioQueueFrame_SetTypeRandom()
 	queueFrame.Bg:SetHeight(512);
 	queueFrame.Specific:Hide();
 	queueFrame.Random:Show();
+	LFGCooldownCover_ChangeSettings(ScenarioQueueFrame.CooldownFrame, true, true);
 end
 
 function ScenarioQueueFrame_SetTypeSpecific()
@@ -304,4 +314,5 @@ function ScenarioQueueFrame_SetTypeSpecific()
 	queueFrame.Bg:SetHeight(326);
 	queueFrame.Random:Hide();
 	queueFrame.Specific:Show();
+	LFGCooldownCover_ChangeSettings(ScenarioQueueFrame.CooldownFrame, true, false);
 end
