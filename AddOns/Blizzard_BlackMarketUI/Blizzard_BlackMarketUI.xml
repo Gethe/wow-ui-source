@@ -143,6 +143,15 @@
 					</Anchors>
 				</FontString>
 			</Layer>
+			<Layer level="OVERLAY">
+				<Texture file="Interface\HelpFrame\HelpFrameButton-Highlight" alphaMode="ADD" parentKey="Selection">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="33" y="0"/>
+						<Anchor point="BOTTOMRIGHT" x="0" y="4"/>
+					</Anchors>
+					<TexCoords left="0" right="1.0" top="0" bottom="0.578125"/>
+				</Texture>
+			</Layer>
 		</Layers>
 		<Frames>
 			<Button parentKey="Item">
@@ -168,7 +177,6 @@
 				<Scripts>
 					<OnEnter>
 						local parent = self:GetParent();
-						parent:GetHighlightTexture():SetAlpha(1);
 						parent:LockHighlight();
 						if ( parent.itemLink ) then
 							GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
@@ -180,10 +188,6 @@
 					<OnLeave>
 						local parent = self:GetParent();
 						parent:UnlockHighlight();
-						if ( parent == BlackMarketFrame.selectedButton ) then
-							parent:LockHighlight();
-							parent:GetHighlightTexture():SetAlpha(0.5);
-						end
 						GameTooltip:Hide();
 					</OnLeave>
 					<OnClick>
@@ -221,7 +225,6 @@
 				<Scripts>
 					<OnEnter>
 						local parent = self:GetParent();
-						parent:GetHighlightTexture():SetAlpha(1);
 						parent:LockHighlight();
 						if ( self.tooltip ) then
 							GameTooltip:SetOwner(self, "ANCHOR_TOP");
@@ -231,10 +234,6 @@
 					<OnLeave>
 						local parent = self:GetParent();
 						parent:UnlockHighlight();
-						if ( parent == BlackMarketFrame.selectedButton ) then
-							parent:LockHighlight();
-							parent:GetHighlightTexture():SetAlpha(0.5);
-						end
 						GameTooltip:Hide();
 					</OnLeave>
 					<OnClick>
@@ -266,23 +265,13 @@
 					BlackMarketItem_OnClick(self, button, down);
 				end
 			</OnClick>
-			<OnEnter>
-				self:GetHighlightTexture():SetAlpha(1);
-				self:UnlockHighlight();
-			</OnEnter>
-			<OnLeave>
-				if ( self == BlackMarketFrame.selectedButton ) then
-					self:LockHighlight();
-					self:GetHighlightTexture():SetAlpha(0.5);
-				end
-			</OnLeave>
 		</Scripts>
-		<HighlightTexture file="Interface\HelpFrame\HelpFrameButton-Highlight" alphaMode="ADD">
+		<HighlightTexture file="Interface\QuestFrame\UI-QuestLogTitleHighlight" alphaMode="ADD" alpha="0.8">
 			<Anchors>
 				<Anchor point="TOPLEFT" x="33" y="0"/>
-				<Anchor point="BOTTOMRIGHT" x="0" y="4"/>
+				<Anchor point="BOTTOMRIGHT" x="0" y="5"/>
 			</Anchors>
-			<TexCoords left="0" right="1.0" top="0" bottom="0.578125"/>
+			<Color r="0.243" g="0.570" b="1"/>
 		</HighlightTexture>
 	</Button>
 

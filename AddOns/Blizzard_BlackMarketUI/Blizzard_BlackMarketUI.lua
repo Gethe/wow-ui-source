@@ -180,6 +180,11 @@ function BlackMarketScrollFrame_Update()
 				
 				button.itemLink = link;
 				button.marketID = marketID;
+				if ( marketID == BlackMarketFrame.selectedMarketID ) then
+					button.Selection:Show();
+				else
+					button.Selection:Hide();
+				end
 
 				button:Show();
 			else
@@ -198,11 +203,7 @@ end
 function BlackMarketItem_OnClick(self, button, down)
 	MoneyInputFrame_SetCopper(BlackMarketBidPrice, self.minNextBid);
 	BlackMarketFrame.selectedMarketID = self.marketID;
-	if ( BlackMarketFrame.selectedButton and BlackMarketFrame.selectedButton ~= self ) then
-		BlackMarketFrame.selectedButton:GetHighlightTexture():SetAlpha(1);
-		BlackMarketFrame.selectedButton:UnlockHighlight();
-	end
-	BlackMarketFrame.selectedButton = self;
+	BlackMarketScrollFrame_Update();
 	if ( self.auctionCompleate or self.youHaveHighBid or (GetMoney() < self.minNextBid) ) then
 		BlackMarketFrame.BidButton:Disable();
 	else
