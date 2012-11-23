@@ -4008,8 +4008,14 @@ function ChatEdit_UpdateHeader(editBox)
 	elseif ( type == "BN_CONVERSATION" ) then
 		local conversationID = editBox:GetAttribute("channelTarget");
 		header:SetFormattedText(CHAT_BN_CONVERSATION_SEND, conversationID + MAX_WOW_CHAT_CHANNELS);
-	elseif ( (type == "PARTY" or type == "RAID") and
+	elseif ( (type == "PARTY") and
 		 (not IsInGroup(LE_PARTY_CATEGORY_HOME) and IsInGroup(LE_PARTY_CATEGORY_INSTANCE)) ) then
+		 --Smartly switch to instance chat
+		editBox:SetAttribute("chatType", "INSTANCE_CHAT");
+		ChatEdit_UpdateHeader(editBox);
+		return;
+	elseif ( (type == "RAID") and
+		 (not IsInRaid(LE_PARTY_CATEGORY_HOME) and IsInRaid(LE_PARTY_CATEGORY_INSTANCE)) ) then
 		 --Smartly switch to instance chat
 		editBox:SetAttribute("chatType", "INSTANCE_CHAT");
 		ChatEdit_UpdateHeader(editBox);
@@ -4027,7 +4033,7 @@ function ChatEdit_UpdateHeader(editBox)
 		header:SetText(_G["CHAT_"..type.."_SEND"]);
 	end
 	
-	local headerWidth = header:GetRight() - header:GetLeft();
+	local headerWidth = (header:GetRight() or 0) - (header:GetLeft() or 0);
 	local editBoxWidth = editBox:GetRight() - editBox:GetLeft();
 	
 	if ( headerWidth > editBoxWidth / 2 ) then

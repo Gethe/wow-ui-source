@@ -63,6 +63,9 @@ local WARGAMES_TEXTURELIST = {
 	 [30] = "Interface\\LFGFrame\\LFGIcon-IsleOfConquest",
 	[108] = "Interface\\LFGFrame\\LFGIcon-TwinPeaksBG",
 	[120] = "Interface\\LFGFrame\\LFGIcon-TheBattleforGilneas",
+	[699] = "Interface\\LFGFrame\\LFGIcon-TempleofKotmogu",
+	[708] = "Interface\\LFGFrame\\LFGIcon-SilvershardMines",
+	[719] = "Interface\\LFGFrame\\LFGIcon-TolvirArena",
 }
 
 local PVPWORLD_TEXTURELIST = {};
@@ -570,20 +573,20 @@ function PVPHonor_UpdateBattlegrounds()
 	for i=1,numTypes do
 		frame = _G["PVPHonorFrameBgButton"..currentFrameNum];
 		
-		if  i <=  numBgs then
+		if  i <=  numWorldPvP then
 			pvpID = i;
-			localizedName, canEnter, isHoliday, isRandom ,_,_, BGMapID = GetBattlegroundInfo(i);
-			isActive = false;
-			canQueue = true;
-			startTime = -1;
-			isWorldPVP = false
-		else
-			pvpID = i-numBgs;
-			_, localizedName, isActive, canQueue, startTime, canEnter = GetWorldPVPAreaInfo(i-numBgs);
+			_, localizedName, isActive, canQueue, startTime, canEnter = GetWorldPVPAreaInfo(pvpID);
 			isWorldPVP = true;
 			isRandom = false;
 			BGMapID = -1;
 			isHoliday = false;
+		else
+			pvpID = i - numWorldPvP;
+			localizedName, canEnter, isHoliday, isRandom ,_,_, BGMapID = GetBattlegroundInfo(pvpID);
+			isActive = false;
+			canQueue = true;
+			startTime = -1;
+			isWorldPVP = false
 		end
 		
 		if ( localizedName and canEnter ) then
@@ -611,7 +614,7 @@ function PVPHonor_UpdateBattlegrounds()
 				if isWorldPVP then
 					frame:SetScript("OnUpdate", PVPHonor_UpdateWorldPVPTimer);
 					frame.timeStep = 0;
-					frame.worldIndex = i-numBgs;
+					frame.worldIndex = pvpID;
 				else
 					frame:SetScript("OnUpdate", nil);
 				end

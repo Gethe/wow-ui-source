@@ -2142,20 +2142,22 @@ function FramePositionDelegate:UIParentManageFramePositions()
 		anchorY = min(anchorY, buffsAnchorY);
 	end
 	local numArenaOpponents = GetNumArenaOpponents();
-	if ( not WatchFrame:IsUserPlaced() and ArenaEnemyFrames and ArenaEnemyFrames:IsShown() and (numArenaOpponents > 0) ) then
-		WatchFrame:ClearAllPoints();
-		WatchFrame:SetPoint("TOPRIGHT", "ArenaEnemyFrame"..numArenaOpponents, "BOTTOMRIGHT", 2, -35);
-	elseif (  not WatchFrame:IsUserPlaced() and ArenaPrepFrames and ArenaPrepFrames:IsShown() and (numArenaOpponents > 0) ) then
-		WatchFrame:ClearAllPoints();
-		WatchFrame:SetPoint("TOPRIGHT", "ArenaPrepFrame"..numArenaOpponents, "BOTTOMRIGHT", 2, -35);
-	elseif ( not WatchFrame:IsUserPlaced() ) then -- We're using Simple Quest Tracking, automagically size and position!
-		WatchFrame:ClearAllPoints();
-		-- move up if only the minimap cluster is above, move down a little otherwise
-		WatchFrame:SetPoint("TOPRIGHT", "MinimapCluster", "BOTTOMRIGHT", -CONTAINER_OFFSET_X, anchorY);
-		-- OnSizeChanged for WatchFrame handles its redraw
+	if ( not WatchFrame:IsUserPlaced() ) then
+		if ( ArenaEnemyFrames and ArenaEnemyFrames:IsShown() and (numArenaOpponents > 0) ) then
+			WatchFrame:ClearAllPoints();
+			WatchFrame:SetPoint("TOPRIGHT", "ArenaEnemyFrame"..numArenaOpponents, "BOTTOMRIGHT", 2, -35);
+		elseif ( ArenaPrepFrames and ArenaPrepFrames:IsShown() and (numArenaOpponents > 0) ) then
+			WatchFrame:ClearAllPoints();
+			WatchFrame:SetPoint("TOPRIGHT", "ArenaPrepFrame"..numArenaOpponents, "BOTTOMRIGHT", 2, -35);
+		else
+			-- We're using Simple Quest Tracking, automagically size and position!
+			WatchFrame:ClearAllPoints();
+			-- move up if only the minimap cluster is above, move down a little otherwise
+			WatchFrame:SetPoint("TOPRIGHT", "MinimapCluster", "BOTTOMRIGHT", -CONTAINER_OFFSET_X, anchorY);
+			-- OnSizeChanged for WatchFrame handles its redraw
+		end
+		WatchFrame:SetPoint("BOTTOMRIGHT", "UIParent", "BOTTOMRIGHT", -CONTAINER_OFFSET_X, CONTAINER_OFFSET_Y);
 	end
-	
-	WatchFrame:SetPoint("BOTTOMRIGHT", "UIParent", "BOTTOMRIGHT", -CONTAINER_OFFSET_X, CONTAINER_OFFSET_Y);
 	
 	-- Update chat dock since the dock could have moved
 	FCF_DockUpdate();

@@ -915,7 +915,7 @@ function PetJournalPetLoadoutDragButton_OnClick(self, button)
 end
 
 function PetJournalDragButton_OnDragStart(self)
-	if (not self:GetParent().petID or self:GetParent().petID == 0) then
+	if (not self:GetParent().petID) then
 		return;
 	end
 
@@ -1585,7 +1585,7 @@ end
 
 function PetJournal_GetPetAbilityHyperlink(abilityID, petID)
 	local maxHealth, power, speed, _;
-	if ( petID and petID > 0 ) then
+	if ( petID ) then
 		_, maxHealth, power, speed, _ = C_PetJournal.GetPetStats(petID);
 	else
 		maxHealth, power, speed = 100, 0, 0;

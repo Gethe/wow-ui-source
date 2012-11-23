@@ -1187,7 +1187,7 @@ function PetBattleUnitTooltip_UpdateForUnit(self, petOwner, petIndex)
 	self.AttackAmount:SetText(attack);
 	self.SpeedAmount:SetText(speed);
 	
-	if (petOwner == LE_BATTLE_PET_ENEMY) then
+	if (petOwner == LE_BATTLE_PET_ENEMY and C_PetBattles.IsWildBattle()) then
 		local speciesID = C_PetBattles.GetPetSpeciesID(LE_BATTLE_PET_ENEMY, petIndex);
 		local numOwned, maxAllowed = C_PetJournal.GetNumCollectedInfo(speciesID);
 		if (numOwned < maxAllowed) then

@@ -225,6 +225,8 @@
 				self.zoneID = MAELSTROM_ZONES_ID[zoneName];
 				self.minLevel = MAELSTROM_ZONES_LEVELS[zoneName].minLevel;
 				self.maxLevel = MAELSTROM_ZONES_LEVELS[zoneName].maxLevel;
+				self.petMinLevel = MAELSTROM_ZONES_LEVELS[zoneName].petMinLevel;
+				self.petMaxLevel = MAELSTROM_ZONES_LEVELS[zoneName].petMaxLevel;
 			</OnLoad>
 			<OnClick>
 				if ( button == "LeftButton" ) then
@@ -237,11 +239,15 @@
 				WorldMapFrame.maelstromZoneText = GetMapNameByID(self.zoneID);
 				WorldMapFrame.minLevel = self.minLevel;
 				WorldMapFrame.maxLevel = self.maxLevel;
+				WorldMapFrame.petMinLevel = self.petMinLevel;
+				WorldMapFrame.petMaxLevel = self.petMaxLevel;
 			</OnEnter>
 			<OnLeave>
 				WorldMapFrame.maelstromZoneText = nil;
 				WorldMapFrame.minLevel = nil;
 				WorldMapFrame.maxLevel = nil;
+				WorldMapFrame.petMinLevel = nil;
+				WorldMapFrame.petMaxLevel = nil;
 			</OnLeave>
 		</Scripts>
 	</Button>

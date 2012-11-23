@@ -13,7 +13,7 @@ WORLDMAP_MAELSTROM_ID = 5;
 MAELSTROM_ZONES_ID = { TheMaelstrom = 737, Deepholm = 640, Kezan = 605, TheLostIsles = 544 };
 MAELSTROM_ZONES_LEVELS = { 
 				TheMaelstrom = {minLevel = 0, maxLevel = 0}, 
-				Deepholm = {minLevel = 82, maxLevel = 83}, 
+				Deepholm = {minLevel = 82, maxLevel = 83, petMinLevel= 22, petMaxLevel = 23}, 
 				Kezan = {minLevel = 1, maxLevel = 5}, 
 				TheLostIsles = {minLevel = 5, maxLevel = 12} };
 WORLDMAP_WINTERGRASP_ID = 501;
@@ -235,7 +235,7 @@ function WorldMapFrame_OnShow(self)
 		SetupFullscreenScale(self);
 		WorldMap_LoadTextures();
 		-- pet battle level size adjustment
-		WorldMapFrameAreaPetLevels:SetFontObject("PVPInfoTextFont")
+		WorldMapFrameAreaPetLevels:SetFontObject("TextStatusBarTextLarge")
 		if ( not WatchFrame.showObjectives and WORLDMAP_SETTINGS.size ~= WORLDMAP_FULLMAP_SIZE ) then
 			WorldMapFrame_SetFullMapView();
 		end
@@ -1193,6 +1193,8 @@ function WorldMapButton_OnUpdate(self, elapsed)
 			name = WorldMapFrame.maelstromZoneText;
 			minLevel = WorldMapFrame.minLevel;
 			maxLevel = WorldMapFrame.maxLevel;
+			petMinLevel = WorldMapFrame.petMinLevel;
+			petMaxLevel = WorldMapFrame.petMaxLevel;
 		else
 			WorldMapFrameAreaLabel:SetText(name);
 		end
@@ -1234,7 +1236,7 @@ function WorldMapButton_OnUpdate(self, elapsed)
 					color = QuestDifficultyColors["header"];
 				end
 				color = ConvertRGBtoColorString(color);
-				if (minLevel ~= maxLevel) then
+				if (petMinLevel ~= petMaxLevel) then
 					WorldMapFrameAreaPetLevels:SetText(WORLD_MAP_WILDBATTLEPET_LEVEL..color.."("..petMinLevel.."-"..petMaxLevel..")");
 				else
 					WorldMapFrameAreaPetLevels:SetText(WORLD_MAP_WILDBATTLEPET_LEVEL..color.."("..petMaxLevel..")");

@@ -1810,7 +1810,7 @@ function WatchFrameScenario_DisplayScenario(lineFrame, nextAnchor, maxHeight, fr
 			initialCriteriaOffset = 0;
 		else
 			local line = WatchFrame_GetScenarioLine();
-			WatchFrame_SetLine(line, _, WATCHFRAMELINES_FONTSPACING - 6, IS_HEADER, stageName, DASH_NONE);
+			WatchFrame_SetLine(line, nil, WATCHFRAMELINES_FONTSPACING - 6, IS_HEADER, stageName, DASH_NONE);
 			line:SetPoint("RIGHT", lineFrame, "RIGHT", 0, 0);
 			line:SetPoint("LEFT", lineFrame, "LEFT", 0, 0);
 			if (nextAnchor) then
