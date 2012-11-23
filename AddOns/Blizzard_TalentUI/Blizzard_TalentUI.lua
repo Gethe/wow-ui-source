@@ -560,7 +560,7 @@ function PlayerTalentFrame_Refresh()
 		PlayerTalentFrame_HideGlyphFrame();
 		PlayerTalentFrame_HideSpecsTab();
 		PlayerTalentFrameTalents.talentGroup = PlayerTalentFrame.talentGroup;
-		TalentFrame_Update(PlayerTalentFrameTalents);
+		TalentFrame_Update(PlayerTalentFrameTalents, "player");
 		PlayerTalentFrame_ShowTalentTab();
 		PlayerTalentFrame_HidePetSpecTab();
 		PlayerTalentFrame_RefreshClearInfo();
@@ -710,7 +710,7 @@ function PlayerTalentFrame_SelectTalent(id)
 	else
 		talentRow.selectionId = id;
 	end
-	TalentFrame_Update(PlayerTalentFrameTalents);
+	TalentFrame_Update(PlayerTalentFrameTalents, "player");
 end
 
 function PlayerTalentFrame_ClearTalentSelections()

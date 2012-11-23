@@ -36,7 +36,8 @@
 						<Anchor point="CENTER"/>
 					</Anchors>
 				</Texture>
-				<Texture name="$parentFlash" file="" alphaMode="ADD">
+				<Texture name="$parentFlash" alphaMode="ADD"> 
+				<!-- this needs to be here so the generic unit frame code will work right --> 
 					<Size x="256" y="64"/>
 					<Anchors>
 						<Anchor point="TOP" x="0" y="28"/>

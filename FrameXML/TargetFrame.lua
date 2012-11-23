@@ -830,7 +830,6 @@ function TargetFrameDropDown_Initialize (self)
 		id = UnitInRaid("target");
 		if ( id ) then
 			menu = "RAID_PLAYER";
-			name = GetRaidRosterInfo(id);
 		elseif ( UnitInParty("target") ) then
 			menu = "PARTY";
 		else

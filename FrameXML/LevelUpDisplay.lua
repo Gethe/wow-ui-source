@@ -296,35 +296,35 @@ function LevelUpDisplay_OnEvent(self, event, ...)
 		local level = ...
 		self.level = level;
 		self.type = LEVEL_UP_TYPE_CHARACTER;
-		self:Show();
+		LevelUpDisplay_Show(self);
 		LevelUpDisplaySide:Hide();
 	elseif event == "UNIT_GUILD_LEVEL" then
 		local unit, level = ...;
 		if ( unit == "player" ) then
 			self.level = level;
 			self.type = LEVEL_UP_TYPE_GUILD;
-			self:Show();
+			LevelUpDisplay_Show(self);
 			LevelUpDisplaySide:Hide();
 		end
 	elseif event == "UNIT_LEVEL" and arg1 == "pet" then
 		if (UnitName("pet") ~= UNKNOWNOBJECT) then
 			self.level = UnitLevel("pet");
 			self.type = LEVEL_UP_TYPE_PET;
-			self:Show();
+			LevelUpDisplay_Show(self);
 			LevelUpDisplaySide:Hide();
 		end
 	elseif ( event == "SCENARIO_UPDATE" ) then
 		if ( arg1 and not C_Scenario.IsChallengeMode() ) then
 			self.type = LEVEL_UP_TYPE_SCENARIO;
-			self:Show();
+			LevelUpDisplay_Show(self);
 		end
 	elseif ( event == "ZONE_CHANGED_NEW_AREA" ) then
 		self:UnregisterEvent("ZONE_CHANGED_NEW_AREA");
-		LevelUpDisplay_OnShow(self);
+		LevelUpDisplay_Show(self);
 	elseif ( event == "PET_BATTLE_FINAL_ROUND" ) then
 		self.type = TOAST_PET_BATTLE_WINNER;
 		self.winner = arg1;
-		self:Show();
+		LevelUpDisplay_Show(self);
 	elseif ( event == "PET_JOURNAL_TRAP_LEVEL_SET" ) then
 		local trapLevel = ...;
 		if (trapLevel >= 1 and trapLevel <= #LEVEL_UP_TRAP_LEVELS) then
@@ -349,14 +349,14 @@ function LevelUpDisplay_OnEvent(self, event, ...)
 		self.bossText = format(str, name, name);
 		self.time = displayTime;
 		self.sound = warningSound;
-		self:Show();
+		LevelUpDisplay_Show(self);
 	elseif ( event == "CHALLENGE_MODE_NEW_RECORD" ) then
 		local mapID, recordTime, medal = ...;
 		self.type = TOAST_CHALLENGE_MODE_RECORD;
 		self.mapID = mapID;
 		self.recordTime = recordTime;
 		self.medal = medal;
-		self:Show();
+		LevelUpDisplay_Show(self);
 		PlaySoundKitID(33338);
 	end
 end
@@ -532,7 +532,7 @@ function LevelUpDisplay_AddBattlePetLevelUpEvent(self, activePlayer, activePetSl
 
 	if (self.currSpell == 0) then
 		self.type = TOAST_PET_BATTLE_LEVELUP;
-		self:Show();
+		LevelUpDisplay_Show(self);
 	end
 
 	local petID = C_PetJournal.GetPetLoadOutInfo(activePetSlot);
@@ -575,7 +575,7 @@ function LevelUpDisplay_CreateOrAppendItem(self, createType, info)
 		unlockList = self.queuedItems;
 	elseif ( self.currSpell == 0 ) then --If we're currently hidden
 		self.type = createType;
-		self:Show();
+		LevelUpDisplay_Show(self);
 		unlockList = self.unlockList;
 	else --We're in the middle of showing something, just append it.
 		unlockList = self.unlockList;
@@ -624,12 +624,18 @@ function LevelUpDisplay_AddBattlePetLootReward(self, typeIdentifier, itemLink, q
 	end
 end
 
-function LevelUpDisplay_OnShow(self)
+function LevelUpDisplay_Show(self)
+	if ( self:IsShown() ) then
+		return;
+	end
+
 	if ( not IsPlayerInWorld() ) then
 		-- this is pretty much the zoning-into-a-scenario case
 		self:RegisterEvent("ZONE_CHANGED_NEW_AREA");
 		return;
 	end
+
+	self:Show();
 	
 	local playAnim;
 	if  self.currSpell == 0 then
@@ -841,7 +847,7 @@ function LevelUpDisplay_AnimOutFinished(anim)
 	parent:Hide();
 	--In case we had to queue something up while fading
 	if ( parent.queuedType ) then
-		parent:Show();
+		LevelUpDisplay_Show(parent);
 	end
 end
 

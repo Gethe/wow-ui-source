@@ -898,7 +898,6 @@ function CompactUnitFrameDropDown_Initialize(self)
 		id = UnitInRaid(unit);
 		if ( id ) then
 			menu = "RAID_PLAYER";
-			name = GetRaidRosterInfo(id);
 		elseif ( UnitInParty(unit) ) then
 			menu = "PARTY";
 		else

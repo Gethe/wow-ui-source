@@ -41,7 +41,7 @@ function TalentFrame_Clear(TalentFrame)
 	end
 end
 
-function TalentFrame_Update(TalentFrame)
+function TalentFrame_Update(TalentFrame, talentUnit)
 	if ( not TalentFrame ) then
 		return;
 	end
@@ -66,7 +66,7 @@ function TalentFrame_Update(TalentFrame)
 	
 	local classDisplayName, class, classID;
 	if( TalentFrame.inspect ) then
-		 classDisplayName, class, classID = UnitClass(INSPECTED_UNIT); 
+		 classDisplayName, class, classID = UnitClass(talentUnit); 
 	end
 	
 	local rowAvailable = true;
@@ -74,7 +74,7 @@ function TalentFrame_Update(TalentFrame)
 	for i=1, MAX_NUM_TALENTS do
 		if ( i <= numTalents ) then
 			-- Set the button info
-			local name, iconTexture, tier, column, selected, available = GetTalentInfo(i, TalentFrame.inspect, TalentFrame.talentGroup, INSPECTED_UNIT, classID);
+			local name, iconTexture, tier, column, selected, available = GetTalentInfo(i, TalentFrame.inspect, TalentFrame.talentGroup, talentUnit, classID);
 			local button = TalentFrame["tier"..tier]["talent"..column];
 			local talentRow = TalentFrame["tier"..tier];
 			

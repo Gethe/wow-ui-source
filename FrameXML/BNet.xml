@@ -8,7 +8,7 @@
 		</Scripts>
 	</Frame>
 	
-	<Frame name="BNToastFrame" parent="UIParent" hidden="true" frameStrata="DIALOG">
+	<Frame name="BNToastFrame" parent="UIParent" hidden="true" frameStrata="LOW">
 		<Animations>
 			<AnimationGroup name="$parentAnimIn" parentKey="animIn">
 				<Alpha change="-1" duration="0" order="1"/>

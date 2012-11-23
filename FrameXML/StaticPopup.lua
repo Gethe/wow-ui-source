@@ -1859,6 +1859,57 @@ StaticPopupDialogs["DELETE_GOOD_ITEM"] = {
 		ClearCursor();
 	end
 };
+StaticPopupDialogs["DELETE_GOOD_QUEST_ITEM"] = {
+	text = DELETE_GOOD_QUEST_ITEM,
+	button1 = YES,
+	button2 = NO,
+	OnAccept = function(self)
+		DeleteCursorItem();
+	end,
+	OnCancel = function (self)
+		ClearCursor();
+	end,
+	OnUpdate = function (self)
+		if ( not CursorHasItem() ) then
+			self:Hide();
+		end
+	end,
+	timeout = 0,
+	whileDead = 1,
+	exclusive = 1,
+	showAlert = 1,
+	hideOnEscape = 1,
+	hasEditBox = 1,
+	maxLetters = 32,
+	OnShow = function(self)
+		self.button1:Disable();
+		self.button2:Enable();
+		self.editBox:SetFocus();
+	end,
+	OnHide = function(self)
+		ChatEdit_FocusActiveWindow();
+		self.editBox:SetText("");
+		MerchantFrame_ResetRefundItem();
+	end,
+	EditBoxOnEnterPressed = function(self)
+		if ( self:GetParent().button1:IsEnabled() ) then
+			DeleteCursorItem();
+			self:GetParent():Hide();
+		end
+	end,
+	EditBoxOnTextChanged = function (self)
+		local parent = self:GetParent();
+		if ( strupper(parent.editBox:GetText()) ==  DELETE_ITEM_CONFIRM_STRING ) then
+			parent.button1:Enable();
+		else
+			parent.button1:Disable();
+		end
+	end,
+	EditBoxOnEscapePressed = function(self)
+		self:GetParent():Hide();
+		ClearCursor();
+	end
+};
 StaticPopupDialogs["QUEST_ACCEPT"] = {
 	text = QUEST_ACCEPT,
 	button1 = YES,

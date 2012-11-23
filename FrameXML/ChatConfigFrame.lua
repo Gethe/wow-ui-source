@@ -85,14 +85,14 @@ CHAT_CONFIG_CHAT_LEFT = {
 		func = function (self, checked) ToggleChatMessageGroup(checked, "RAID_WARNING"); end;
 	},
 	[15] = {
-		type = "BATTLEGROUND",
-		checked = function () return IsListeningForMessageType("BATTLEGROUND"); end;
-		func = function (self, checked) ToggleChatMessageGroup(checked, "BATTLEGROUND"); end;
+		type = "INSTANCE_CHAT",
+		checked = function () return IsListeningForMessageType("INSTANCE_CHAT"); end;
+		func = function (self, checked) ToggleChatMessageGroup(checked, "INSTANCE_CHAT"); end;
 	},
 	[16] = {
-		type = "BATTLEGROUND_LEADER",
-		checked = function () return IsListeningForMessageType("BATTLEGROUND_LEADER"); end;
-		func = function (self, checked) ToggleChatMessageGroup(checked, "BATTLEGROUND_LEADER"); end;
+		type = "INSTANCE_CHAT_LEADER",
+		checked = function () return IsListeningForMessageType("INSTANCE_CHAT_LEADER"); end;
+		func = function (self, checked) ToggleChatMessageGroup(checked, "INSTANCE_CHAT_LEADER"); end;
 	},
 	[17] = {
 		type = "BN_CONVERSATION",

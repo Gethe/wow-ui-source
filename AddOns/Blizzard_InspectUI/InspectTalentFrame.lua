@@ -210,7 +210,7 @@ function InspectTalentFrameTalents_OnLoad(self)
 end
 
 function InspectTalentFrameTalents_OnShow(self)
-	TalentFrame_Update(self);
+	TalentFrame_Update(self, INSPECTED_UNIT);
 end
 
 function InspectTalentFrameTalent_OnEnter(self)

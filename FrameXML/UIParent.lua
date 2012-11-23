@@ -797,7 +797,11 @@ function UIParent_OnEvent(self, event, ...)
 	elseif ( event == "DELETE_ITEM_CONFIRM" ) then
 		-- Check quality
 		if ( arg2 >= 3 ) then
-			StaticPopup_Show("DELETE_GOOD_ITEM", arg1);
+			if (arg3 == 4) then -- quest item?
+				StaticPopup_Show("DELETE_GOOD_QUEST_ITEM", arg1);
+			else
+				StaticPopup_Show("DELETE_GOOD_ITEM", arg1);
+			end
 		else
 			if (arg3 == 4) then -- quest item?
 				StaticPopup_Show("DELETE_QUEST_ITEM", arg1);

@@ -1002,10 +1002,12 @@
 				</Layers>
 				<Scripts>
 					<OnClick>
+						PlaySound("igMainMenuOptionCheckBoxOn");
 						local talentGroup = PlayerTalentFrame and PlayerTalentFrame.talentGroup or 1;
 						if ( talentGroup == GetActiveSpecGroup() ) then
-							LearnTalents(PlayerTalentFrame_GetTalentSelections());
-							PlayerTalentFrame_ClearTalentSelections();
+							if (LearnTalents(PlayerTalentFrame_GetTalentSelections())) then
+								PlayerTalentFrame_ClearTalentSelections();
+							end
 						end
 					</OnClick>
 				</Scripts>

@@ -106,6 +106,7 @@
 					StaticPopup_Hide("DELETE_ITEM");
 					StaticPopup_Hide("DELETE_QUEST_ITEM");
 					StaticPopup_Hide("DELETE_GOOD_ITEM");
+					StaticPopup_Hide("DELETE_GOOD_QUEST_ITEM");
 					ClickSocketButton(self:GetID());
 				end
 			</OnClick>
@@ -113,12 +114,14 @@
 				StaticPopup_Hide("DELETE_ITEM");
 				StaticPopup_Hide("DELETE_QUEST_ITEM");
 				StaticPopup_Hide("DELETE_GOOD_ITEM");
+				StaticPopup_Hide("DELETE_GOOD_QUEST_ITEM");
 				ClickSocketButton(self:GetID());
 			</OnReceiveDrag>
 			<OnDragStart>
 				StaticPopup_Hide("DELETE_ITEM");
 				StaticPopup_Hide("DELETE_QUEST_ITEM");
 				StaticPopup_Hide("DELETE_GOOD_ITEM");
+				StaticPopup_Hide("DELETE_GOOD_QUEST_ITEM");
 				ClickSocketButton(self:GetID());
 			</OnDragStart>
 			<OnEnter>

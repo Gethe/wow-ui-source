@@ -886,7 +886,7 @@ function CRF_CountStuff()
 	if ( IsInRaid() ) then
 		for i=1, GetNumGroupMembers() do
 			local name, rank, subgroup, level, class, fileName, zone, online, isDead, role, isML, assignedRole = GetRaidRosterInfo(i);	--Weird that we have 2 role return values, but... oh well
-			if ( name ) then
+			if ( rank ) then
 				CRF_AddToCount(isDead, assignedRole);
 			end
 		end

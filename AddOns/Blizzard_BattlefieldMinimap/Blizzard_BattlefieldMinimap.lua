@@ -271,6 +271,17 @@ function BattlefieldMinimap_CreatePOI(index)
 end
 
 function BattlefieldMinimap_OnUpdate(self, elapsed)
+	-- tick mouse hover time for tab
+	if ( BattlefieldMinimap.hover ) then
+		local xPos, yPos = GetCursorPosition();
+		if ( (BattlefieldMinimap.oldX == xPos and BattlefieldMinimap.oldy == yPos) ) then
+			BattlefieldMinimap.hoverTime = BattlefieldMinimap.hoverTime + elapsed;
+		else
+			BattlefieldMinimap.hoverTime = 0;
+			BattlefieldMinimap.oldX = xPos;
+			BattlefieldMinimap.oldy = yPos;
+		end
+	end
 	-- Throttle updates
 	if ( BattlefieldMinimap.updateTimer < 0 ) then
 		BattlefieldMinimap.updateTimer = BATTLEFIELD_MINIMAP_UPDATE_RATE;
@@ -431,16 +442,8 @@ function BattlefieldMinimap_OnUpdate(self, elapsed)
 
 	-- Fadein tab if mouse is over
 	if ( BattlefieldMinimap:IsMouseOver(45, -10, -5, 5) ) then
-		local xPos, yPos = GetCursorPosition();
 		-- If mouse is hovering don't show the tab until the elapsed time reaches the tab show delay
 		if ( BattlefieldMinimap.hover ) then
-			if ( (BattlefieldMinimap.oldX == xPos and BattlefieldMinimap.oldy == yPos) ) then
-				BattlefieldMinimap.hoverTime = BattlefieldMinimap.hoverTime + elapsed;
-			else
-				BattlefieldMinimap.hoverTime = 0;
-				BattlefieldMinimap.oldX = xPos;
-				BattlefieldMinimap.oldy = yPos;
-			end
 			if ( BattlefieldMinimap.hoverTime > BATTLEFIELD_TAB_SHOW_DELAY ) then
 				-- If the battlefieldtab's alpha is less than the current default, then fade it in 
 				if ( not BattlefieldMinimap.hasBeenFaded and (BattlefieldMinimap.oldAlpha and BattlefieldMinimap.oldAlpha < DEFAULT_BATTLEFIELD_TAB_ALPHA) ) then

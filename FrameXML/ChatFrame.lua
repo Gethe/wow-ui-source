@@ -80,8 +80,8 @@ ChatTypeInfo["RAID_BOSS_WHISPER"]						= { sticky = 0, flashTab = false, flashTa
 ChatTypeInfo["RAID_BOSS_EMOTE"]							= { sticky = 0, flashTab = false, flashTabOnGeneral = false };
 ChatTypeInfo["QUEST_BOSS_EMOTE"]						= { sticky = 0, flashTab = false, flashTabOnGeneral = false };
 ChatTypeInfo["FILTERED"]								= { sticky = 0, flashTab = false, flashTabOnGeneral = false };
-ChatTypeInfo["BATTLEGROUND"]                            = { sticky = 1, flashTab = false, flashTabOnGeneral = false };
-ChatTypeInfo["BATTLEGROUND_LEADER"]                     = { sticky = 0, flashTab = false, flashTabOnGeneral = false };
+ChatTypeInfo["INSTANCE_CHAT"]                            = { sticky = 1, flashTab = false, flashTabOnGeneral = false };
+ChatTypeInfo["INSTANCE_CHAT_LEADER"]                     = { sticky = 0, flashTab = false, flashTabOnGeneral = false };
 ChatTypeInfo["RESTRICTED"] 			                    = { sticky = 0, flashTab = false, flashTabOnGeneral = false };
 ChatTypeInfo["CHANNEL1"]								= { sticky = 1, flashTab = false, flashTabOnGeneral = false };
 ChatTypeInfo["CHANNEL2"]								= { sticky = 1, flashTab = false, flashTabOnGeneral = false };
@@ -156,11 +156,11 @@ ChatTypeGroup["RAID_LEADER"] = {
 ChatTypeGroup["RAID_WARNING"] = {
 	"CHAT_MSG_RAID_WARNING",
 };
-ChatTypeGroup["BATTLEGROUND"] = {
-	"CHAT_MSG_BATTLEGROUND",
+ChatTypeGroup["INSTANCE_CHAT"] = {
+	"CHAT_MSG_INSTANCE_CHAT",
 };
-ChatTypeGroup["BATTLEGROUND_LEADER"] = {
-	"CHAT_MSG_BATTLEGROUND_LEADER",
+ChatTypeGroup["INSTANCE_CHAT_LEADER"] = {
+	"CHAT_MSG_INSTANCE_CHAT_LEADER",
 };
 ChatTypeGroup["GUILD"] = {
 	"CHAT_MSG_GUILD",
@@ -299,7 +299,7 @@ CHAT_CATEGORY_LIST = {
 	GUILD = { "GUILD_ACHIEVEMENT" },
 	WHISPER = { "WHISPER_INFORM", "AFK", "DND" },
 	CHANNEL = { "CHANNEL_JOIN", "CHANNEL_LEAVE", "CHANNEL_NOTICE", "CHANNEL_USER" },
-	BATTLEGROUND = { "BATTLEGROUND_LEADER" },
+	INSTANCE_CHAT = { "INSTANCE_CHAT_LEADER" },
 	BN_WHISPER = { "BN_WHISPER_INFORM" },
 	BN_CONVERSATION = { "BN_CONVERSATION_NOTICE", "BN_CONVERSATION_LIST" },
 };
@@ -3212,7 +3212,7 @@ function ChatFrame_MessageEventHandler(self, event, ...)
 					local groupList = "[";
 					for i=1, GetNumGroupMembers() do
 						local name, rank, subgroup, level, class, classFileName = GetRaidRosterInfo(i);
-						if ( subgroup == groupIndex ) then
+						if ( name and subgroup == groupIndex ) then
 							local classColorTable = RAID_CLASS_COLORS[classFileName];
 							if ( classColorTable ) then
 								name = string.format("\124cff%.2x%.2x%.2x%s\124r", classColorTable.r*255, classColorTable.g*255, classColorTable.b*255, name);
@@ -3401,9 +3401,9 @@ function ChatFrame_OpenChat(text, chatFrame)
 	editBox.text = text;
 
 	if ( editBox:GetAttribute("chatType") == editBox:GetAttribute("stickyType") ) then
-		if ( (editBox:GetAttribute("stickyType") == "PARTY") and (not IsInGroup()) or
-		(editBox:GetAttribute("stickyType") == "RAID") and (not IsInRaid()) or
-		(editBox:GetAttribute("stickyType") == "BATTLEGROUND") and (not IsInRaid())) then
+		if ( (editBox:GetAttribute("stickyType") == "PARTY") and (not IsInGroup(LE_PARTY_CATEGORY_HOME)) or
+		(editBox:GetAttribute("stickyType") == "RAID") and (not IsInRaid(LE_PARTY_CATEGORY_HOME)) or
+		(editBox:GetAttribute("stickyType") == "INSTANCE_CHAT") and (not IsInGroup(LE_PARTY_CATEGORY_INSTANCE))) then
 			editBox:SetAttribute("chatType", "SAY");
 		end
 	end
@@ -3703,16 +3703,16 @@ function ChatEdit_OnShow(self)
 end
 
 function ChatEdit_ResetChatType(self)
-	if ( self:GetAttribute("chatType") == "PARTY" and UnitName("party1") == "" ) then
+	if ( self:GetAttribute("chatType") == "PARTY" and (not IsInGroup(LE_PARTY_CATEGORY_HOME)) ) then
 		self:SetAttribute("chatType", "SAY");
 	end
-	if ( self:GetAttribute("chatType") == "RAID" and (not IsInRaid()) ) then
+	if ( self:GetAttribute("chatType") == "RAID" and (not IsInRaid(LE_PARTY_CATEGORY_HOME)) ) then
 		self:SetAttribute("chatType", "SAY");
 	end
 	if ( (self:GetAttribute("chatType") == "GUILD" or self:GetAttribute("chatType") == "OFFICER") and not IsInGuild() ) then
 		self:SetAttribute("chatType", "SAY");
 	end
-	if ( self:GetAttribute("chatType") == "BATTLEGROUND" and (not IsInRaid()) ) then
+	if ( self:GetAttribute("chatType") == "INSTANCE_CHAT" and (not IsInGroup(LE_PARTY_CATEGORY_INSTANCE)) ) then
 		self:SetAttribute("chatType", "SAY");
 	end
 	self.lastTabComplete = nil;
@@ -4012,6 +4012,21 @@ function ChatEdit_UpdateHeader(editBox)
 	elseif ( type == "BN_CONVERSATION" ) then
 		local conversationID = editBox:GetAttribute("channelTarget");
 		header:SetFormattedText(CHAT_BN_CONVERSATION_SEND, conversationID + MAX_WOW_CHAT_CHANNELS);
+	elseif ( (type == "PARTY" or type == "RAID") and
+		 (not IsInGroup(LE_PARTY_CATEGORY_HOME) and IsInGroup(LE_PARTY_CATEGORY_INSTANCE)) ) then
+		 --Smartly switch to instance chat
+		editBox:SetAttribute("chatType", "INSTANCE_CHAT");
+		ChatEdit_UpdateHeader(editBox);
+		return;
+	elseif ( (type == "INSTANCE_CHAT") and
+		(IsInGroup(LE_PARTY_CATEGORY_HOME) and not IsInGroup(LE_PARTY_CATEGORY_INSTANCE)) )then
+		if ( IsInRaid(LE_PARTY_CATEGORY_HOME) ) then
+			editBox:SetAttribute("chatType", "RAID");
+		else
+			editBox:SetAttribute("chatType", "PARTY");
+		end
+		ChatEdit_UpdateHeader(editBox);
+		return;
 	else
 		header:SetText(_G["CHAT_"..type.."_SEND"]);
 	end
@@ -4510,8 +4525,8 @@ function ChatMenu_Raid(self)
 	ChatMenu_SetChatType(self:GetParent().chatFrame, "RAID");
 end
 
-function ChatMenu_Battleground(self)
-	ChatMenu_SetChatType(self:GetParent().chatFrame, "BATTLEGROUND");
+function ChatMenu_InstanceChat(self)
+	ChatMenu_SetChatType(self:GetParent().chatFrame, "INSTANCE_CHAT");
 end
 
 function ChatMenu_Guild(self)
@@ -4546,7 +4561,7 @@ function ChatMenu_OnLoad(self)
 	UIMenu_AddButton(self, SAY_MESSAGE, SLASH_SAY1, ChatMenu_Say);
 	UIMenu_AddButton(self, PARTY_MESSAGE, SLASH_PARTY1, ChatMenu_Party);
 	UIMenu_AddButton(self, RAID_MESSAGE, SLASH_RAID1, ChatMenu_Raid);
-	UIMenu_AddButton(self, BATTLEGROUND_MESSAGE, SLASH_BATTLEGROUND1, ChatMenu_Battleground);
+	UIMenu_AddButton(self, INSTANCE_CHAT_MESSAGE, SLASH_INSTANCE_CHAT1, ChatMenu_InstanceChat);
 	UIMenu_AddButton(self, GUILD_MESSAGE, SLASH_GUILD1, ChatMenu_Guild);
 	UIMenu_AddButton(self, YELL_MESSAGE, SLASH_YELL1, ChatMenu_Yell);
 	UIMenu_AddButton(self, WHISPER_MESSAGE, SLASH_SMART_WHISPER1, ChatMenu_Whisper);

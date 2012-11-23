@@ -494,7 +494,6 @@
 		<Scripts>
 			<OnLoad function="LevelUpDisplay_OnLoad"/>
 			<OnEvent function="LevelUpDisplay_OnEvent"/>
-			<OnShow function="LevelUpDisplay_OnShow"/>
 		</Scripts>
 	</Frame>
 	

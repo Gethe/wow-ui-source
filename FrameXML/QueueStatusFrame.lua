@@ -526,18 +526,18 @@ function QueueStatusDropDown_AddBattlefieldButtons(info, idx)
 		end
 	elseif ( status == "active" ) then
 		local inArena = IsActiveBattlefieldArena();
-		
-		if ( not inArena ) then
-			info.text = TOGGLE_BATTLEFIELD_MAP;
-			info.func = wrapFunc(ToggleBattlefieldMinimap);
-			info.arg1 = nil;
-			info.arg2 = nil;
-			UIDropDownMenu_AddButton(info);
-		end
 
 		if ( not inArena or GetBattlefieldWinner() ) then
 			info.text = TOGGLE_SCOREBOARD;
 			info.func = wrapFunc(ToggleWorldStateScoreFrame);
+			info.arg1 = nil;
+			info.arg2 = nil;
+			UIDropDownMenu_AddButton(info);
+		end
+		
+		if ( not inArena ) then
+			info.text = TOGGLE_BATTLEFIELD_MAP;
+			info.func = wrapFunc(ToggleBattlefieldMinimap);
 			info.arg1 = nil;
 			info.arg2 = nil;
 			UIDropDownMenu_AddButton(info);

@@ -126,7 +126,7 @@ function RaidWarningFrame_OnEvent(self, event, message)
 				local groupList = "[";
 				for i=1, GetNumGroupMembers() do
 					local name, rank, subgroup, level, class, classFileName = GetRaidRosterInfo(i);
-					if ( subgroup == groupIndex ) then
+					if ( name and subgroup == groupIndex ) then
 						local classColorTable = RAID_CLASS_COLORS[classFileName];
 						if ( classColorTable ) then
 							name = string.format("\124cff%.2x%.2x%.2x%s\124r", classColorTable.r*255, classColorTable.g*255, classColorTable.b*255, name);
