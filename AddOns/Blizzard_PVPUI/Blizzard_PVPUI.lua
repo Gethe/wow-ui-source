@@ -8,10 +8,6 @@ ALLIANCE_TEX_COORDS = {left=0.00195313, right=0.63867188, top=0.31054688, bottom
 WARGAME_HEADER_HEIGHT = 16;
 BATTLEGROUND_BUTTON_HEIGHT = 40;
 
-BATTLEFIELD_TIMER_DELAY = 3;
-BATTLEFIELD_TIMER_THRESHOLDS = {600, 300, 60, 15};
-BATTLEFIELD_TIMER_THRESHOLD_INDEX = 1;
-
 local MAX_SHOWN_BATTLEGROUNDS = 8;
 
 StaticPopupDialogs["CONFIRM_JOIN_SOLO"] = {
@@ -78,10 +74,14 @@ function PVPUIFrame_OnLoad(self)
 															ALLIANCE_TEX_COORDS.top, ALLIANCE_TEX_COORDS.bottom)
 	end
 	
-	-- TEMP to get rewards for random/holiday
-	RequestBattlegroundInstanceInfo(1);
+	RequestRandomBattlegroundInstanceInfo();
 	
 	self:RegisterEvent("BATTLEFIELDS_CLOSED");
+
+	if ( UnitLevel("player") < SHOW_CONQUEST_LEVEL ) then
+		PanelTemplates_DisableTab(PVPUIFrame, 2);
+		self:RegisterEvent("PLAYER_LEVEL_UP");
+	end
 end
 
 function PVPUIFrame_OnShow(self)
@@ -104,6 +104,12 @@ function PVPUIFrame_OnEvent(self, event, ...)
 	if (event == "BATTLEFIELDS_CLOSED") then
 		if (self:IsShown()) then
 			self:Hide();
+		end
+	elseif (event == "PLAYER_LEVEL_UP") then
+		local level = ...;
+		if ( level >= SHOW_CONQUEST_LEVEL ) then
+			PanelTemplates_EnableTab(PVPUIFrame, 2);
+			PVPUIFrame:UnregisterEvent("PLAYER_LEVEL_UP");
 		end
 	end
 end
@@ -200,15 +206,9 @@ function PVPQueueFrame_OnLoad(self)
 	self.CategoryButton3.Name:SetText(WARGAMES);
 	
 	-- disable unusable side buttons
-	if ( UnitLevel("player") < SCENARIOS_SHOW_LEVEL ) then
-		PVPQueueFrame_SetCategoryButtonState(self.CategoryButton3, false);
-		self.CategoryButton3.tooltip = format(FEATURE_BECOMES_AVAILABLE_AT_LEVEL, SCENARIOS_SHOW_LEVEL);
-		PVPQueueFrame:SetScript("OnEvent", PVPQueueFrame_OnEvent);
-		PVPQueueFrame:RegisterEvent("PLAYER_LEVEL_UP");
-	end
-	if ( UnitLevel("player") < RAID_FINDER_SHOW_LEVEL ) then
+	if ( UnitLevel("player") < SHOW_CONQUEST_LEVEL ) then
 		PVPQueueFrame_SetCategoryButtonState(self.CategoryButton2, false);
-		self.CategoryButton2.tooltip = format(FEATURE_BECOMES_AVAILABLE_AT_LEVEL, RAID_FINDER_SHOW_LEVEL);
+		self.CategoryButton2.tooltip = format(PVP_CONQUEST_LOWLEVEL, PVP_TAB_CONQUEST);
 		PVPQueueFrame:SetScript("OnEvent", PVPQueueFrame_OnEvent);
 		PVPQueueFrame:RegisterEvent("PLAYER_LEVEL_UP");
 	end
@@ -222,13 +222,6 @@ function PVPQueueFrame_OnLoad(self)
 	self:RegisterEvent("UPDATE_BATTLEFIELD_STATUS");
 	self:RegisterEvent("ZONE_CHANGED");
 	self:RegisterEvent("ZONE_CHANGED_NEW_AREA");
-	self:RegisterEvent("BATTLEFIELD_MGR_QUEUE_REQUEST_RESPONSE");
-	self:RegisterEvent("BATTLEFIELD_MGR_QUEUE_INVITE");
-	self:RegisterEvent("BATTLEFIELD_MGR_ENTRY_INVITE");
-	self:RegisterEvent("BATTLEFIELD_MGR_EJECT_PENDING");
-	self:RegisterEvent("BATTLEFIELD_MGR_EJECTED");
-	self:RegisterEvent("BATTLEFIELD_MGR_ENTERED");
-	self:RegisterEvent("WARGAME_REQUESTED");
 	self:RegisterEvent("PVP_RATED_STATS_UPDATE");
 	self:RegisterEvent("PVP_REWARDS_UPDATE");
 	self:RegisterEvent("BATTLEFIELDS_SHOW");
@@ -238,24 +231,10 @@ end
 function PVPQueueFrame_OnEvent(self, event, ...)
 	if (event == "PLAYER_LEVEL_UP") then
 		local level = ...;
-		local allAvailable = true;
-
-		if ( level >= SCENARIOS_SHOW_LEVEL ) then
-			PVPQueueFrame_SetCategoryButtonState(self.CategoryButton3, true);
-			self.CategoryButton3.tooltip = nil;
-		else
-			allAvailable = false;
-		end
-
-		if ( level >= RAID_FINDER_SHOW_LEVEL ) then
+		if ( level >= SHOW_CONQUEST_LEVEL ) then
 			PVPQueueFrame_SetCategoryButtonState(self.CategoryButton2, true);
 			self.CategoryButton2.tooltip = nil;
-		else
-			allAvailable = false;
-		end
-
-		if ( allAvailable ) then
-			PVPQueueFrame:UnregisterEvent("PLAYER_LEVEL_UP");		
+			PVPQueueFrame:UnregisterEvent("PLAYER_LEVEL_UP");
 		end
 	elseif(event == "CURRENCY_DISPLAY_UPDATE") then
 		PVPQueueFrame_UpdateCurrencies(self)
@@ -265,65 +244,6 @@ function PVPQueueFrame_OnEvent(self, event, ...)
 	elseif ( event == "UPDATE_BATTLEFIELD_STATUS" or event == "ZONE_CHANGED_NEW_AREA" or event == "ZONE_CHANGED") then
 		local arg1 = ...
 		PVP_UpdateStatus(false, arg1);
-	elseif ( event == "BATTLEFIELD_MGR_QUEUE_REQUEST_RESPONSE" ) then
-		local battleID, accepted, warmup, inArea, loggingIn, areaName = ...;
-		if(not loggingIn) then
-			if(accepted) then
-				if(warmup) then
-					StaticPopup_Show("BFMGR_CONFIRM_WORLD_PVP_QUEUED_WARMUP", areaName, nil, arg1);
-				elseif (inArea) then
-					StaticPopup_Show("BFMGR_EJECT_PENDING", areaName, nil, arg1);
-				else
-					StaticPopup_Show("BFMGR_CONFIRM_WORLD_PVP_QUEUED", areaName, nil, arg1);
-				end
-			else
-				StaticPopup_Show("BFMGR_DENY_WORLD_PVP_QUEUED", areaName, nil, arg1);
-			end
-		end
-		PVP_UpdateStatus(false);
-	elseif ( event == "BATTLEFIELD_MGR_QUEUE_INVITE" ) then
-		local battleID, warmup, areaName = ...;
-		if(warmup) then
-			local dialog = StaticPopup_Show("BFMGR_INVITED_TO_QUEUE_WARMUP", areaName, nil, battleID);
-		else
-			local dialog = StaticPopup_Show("BFMGR_INVITED_TO_QUEUE", areaName, nil, battleID);
-		end
-		StaticPopup_Hide("BFMGR_EJECT_PENDING");
-		PVP_UpdateStatus(false);
-	elseif ( event == "BATTLEFIELD_MGR_ENTRY_INVITE" ) then
-		local battleID, areaName = ...;
-		local dialog = StaticPopup_Show("BFMGR_INVITED_TO_ENTER", areaName, nil, battleID);
-		StaticPopup_Hide("BFMGR_EJECT_PENDING");
-		PVP_UpdateStatus(false);
-	elseif ( event == "BATTLEFIELD_MGR_EJECT_PENDING" ) then
-		local battleID, remote, areaName = ...;
-		if(remote) then
-			StaticPopup_Show("BFMGR_EJECT_PENDING_REMOTE", areaName, nil, arg1);
-		else
-		StaticPopup_Show("BFMGR_EJECT_PENDING", areaName, nil, arg1);
-		end
-		PVP_UpdateStatus(false);
-	elseif ( event == "BATTLEFIELD_MGR_EJECTED" ) then
-		local battleID, playerExited, relocated, battleActive, lowLevel, areaName = ...;
-		StaticPopup_Hide("BFMGR_INVITED_TO_QUEUE");
-		StaticPopup_Hide("BFMGR_INVITED_TO_QUEUE_WARMUP");
-		StaticPopup_Hide("BFMGR_INVITED_TO_ENTER");
-		StaticPopup_Hide("BFMGR_EJECT_PENDING");
-		if(lowLevel) then
-			StaticPopup_Show("BFMGR_PLAYER_LOW_LEVEL", areaName, nil, arg1);
-		elseif (playerExited and battleActive and not relocated) then
-			StaticPopup_Show("BFMGR_PLAYER_EXITED_BATTLE", areaName, nil, arg1);
-		end
-		PVP_UpdateStatus(false);
-	elseif ( event == "BATTLEFIELD_MGR_ENTERED" ) then
-		StaticPopup_Hide("BFMGR_INVITED_TO_QUEUE");
-		StaticPopup_Hide("BFMGR_INVITED_TO_QUEUE_WARMUP");
-		StaticPopup_Hide("BFMGR_INVITED_TO_ENTER");
-		StaticPopup_Hide("BFMGR_EJECT_PENDING");
-		PVP_UpdateStatus(false);
-	elseif ( event == "WARGAME_REQUESTED" ) then
-		local challengerName, bgName, timeout = ...;
-		PVPFramePopup_SetupPopUp(event, challengerName, bgName, timeout);
 	elseif ( event == "PVP_RATED_STATS_UPDATE" ) then
 		PVPQueueFrame_UpdateCurrencies(self);
 	elseif ( event == "PVP_REWARDS_UPDATE" ) then
@@ -709,6 +629,7 @@ end
 function HonorFrameBonusFrame_OnShow(self)
 	self.updateTime = 0;
 	HonorFrameBonusFrame_Update();
+	RequestRandomBattlegroundInstanceInfo();
 end
 
 function HonorFrameBonusFrame_OnUpdate(self, elapsed)

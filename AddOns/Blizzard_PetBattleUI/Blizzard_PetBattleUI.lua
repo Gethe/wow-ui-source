@@ -39,6 +39,18 @@ StaticPopupDialogs["PET_BATTLE_FORFEIT"] = {
 	hideOnEscape = 1
 };
 
+StaticPopupDialogs["PET_BATTLE_FORFEIT_NO_PENALTY"] = {
+	text = PET_BATTLE_FORFEIT_CONFIRMATION_NO_PENALTY,
+	button1 = OKAY,
+	button2 = CANCEL,
+	maxLetters = 30,
+	OnAccept = function(self)
+		C_PetBattles.ForfeitGame();
+	end,
+	timeout = 0,
+	exclusive = 1,
+	hideOnEscape = 1
+};
 --------------------------------------------
 -------------Pet Battle Frame---------------
 --------------------------------------------
@@ -103,6 +115,7 @@ function PetBattleFrame_OnEvent(self, event, ...)
 	elseif ( event == "PET_BATTLE_CLOSE" ) then
 		PetBattleFrame_Remove(self);
 		StaticPopup_Hide("PET_BATTLE_FORFEIT");
+		StaticPopup_Hide("PET_BATTLE_FORFEIT_NO_PENALTY");
 	elseif ( event == "UPDATE_BINDINGS" ) then
 		PetBattleFrame_UpdateAbilityButtonHotKeys(self);
 	elseif ( event == "PET_BATTLE_XP_CHANGED" ) then
@@ -344,7 +357,8 @@ function PetBattleFrame_ButtonDown(id)
 		return;
 	end
 
-	StaticPopup_Hide("PET_BATTLE_FORFEIT",nil);
+	StaticPopup_Hide("PET_BATTLE_FORFEIT", nil);
+	StaticPopup_Hide("PET_BATTLE_FORFEIT_NO_PENALTY", nil);
 	if ( button:GetButtonState() == "NORMAL" ) then
 		button:SetButtonState("PUSHED");
 	end
@@ -379,6 +393,7 @@ function PetBattleAbilityButton_OnClick(self)
 		HandleModifiedItemClick(GetBattlePetAbilityHyperlink(abilityID, maxHealth, power, speed));
 	else
 		StaticPopup_Hide("PET_BATTLE_FORFEIT",nil);
+		StaticPopup_Hide("PET_BATTLE_FORFEIT_NO_PENALTY", nil);
 		C_PetBattles.UseAbility(self:GetID());
 	end
 end
@@ -478,11 +493,20 @@ end
 
 function PetBattleForfeitButton_OnClick(self)
 	local forfeitPenalty = C_PetBattles.GetForfeitPenalty();
-	StaticPopup_Show("PET_BATTLE_FORFEIT", forfeitPenalty, nil, nil)
+	if(forfeitPenalty == 0) then
+		StaticPopup_Show("PET_BATTLE_FORFEIT_NO_PENALTY", nil, nil, nil)
+	else
+		StaticPopup_Show("PET_BATTLE_FORFEIT", forfeitPenalty, nil, nil)
+	end
 end
 
 function PetBattleCatchButton_OnClick(self)
-	StaticPopup_Hide("PET_BATTLE_FORFEIT",nil);
+	local forfeitPenalty = C_PetBattles.GetForfeitPenalty();
+	if(forfeitPenalty == 0) then
+		StaticPopup_Hide("PET_BATTLE_FORFEIT_NO_PENALTY",nil);
+	else
+		StaticPopup_Hide("PET_BATTLE_FORFEIT",nil);
+	end
 	C_PetBattles.UseTrap();
 end
 

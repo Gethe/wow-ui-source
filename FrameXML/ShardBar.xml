@@ -341,14 +341,17 @@
 				</Layers>
 				<Scripts>
 					<OnEnter>
-						self.powerText:Show();
+						self.lockShow = 1;
+						local power = UnitPower("player", SPELL_POWER_DEMONIC_FURY);
+						TextStatusBar_UpdateTextStringWithValues(self, self.powerText, power, 1, self.maxPower);
 						GameTooltip_SetDefaultAnchor(GameTooltip, self);
 						GameTooltip:SetText(DEMONIC_FURY, 1, 1, 1);
 						GameTooltip:AddLine(DEMONIC_FURY_TOOLTIP, nil, nil, nil, true);
 						GameTooltip:Show();
 					</OnEnter>
 					<OnLeave>
-						if not self.lockShow then
+						if ( not self.showText ) then
+							self.lockShow = 0;
 							self.powerText:Hide();
 						end
 						GameTooltip:Hide();

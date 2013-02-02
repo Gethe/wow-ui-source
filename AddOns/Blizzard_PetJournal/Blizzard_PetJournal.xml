@@ -1217,7 +1217,7 @@ size=64,128
 							<Button parentKey="RotateLeftButton">
 								<Size x="35" y="35"/>
 								<Anchors>
-									<Anchor point="TOPRIGHT" relativeKey="$parent" relativePoint="BOTTOM" x="-5" y="-100"/>
+									<Anchor point="TOPRIGHT" relativeKey="$parent" relativePoint="BOTTOM" x="-5" y="-50"/>
 								</Anchors>
 								<Scripts>
 									<OnLoad>
@@ -1236,7 +1236,7 @@ size=64,128
 									<AbsDimension x="35" y="35"/>
 								</Size>
 								<Anchors>
-									<Anchor point="TOPLEFT" relativeKey="$parent" relativePoint="BOTTOM" x="5" y="-100"/>
+									<Anchor point="TOPLEFT" relativeKey="$parent" relativePoint="BOTTOM" x="5" y="-50"/>
 								</Anchors>
 								<Scripts>
 									<OnLoad>
@@ -1264,7 +1264,7 @@ size=64,128
 				<Frames>
 					<Slider name="$parentScrollBar" inherits="HybridScrollBarTrimTemplate" parentKey="scrollBar">
 						<Anchors>
-							<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" x="4" y="-11"/>
+							<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" x="4" y="20"/>
 							<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMRIGHT" x="4" y="11"/>
 						</Anchors>
 						<Scripts>

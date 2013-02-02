@@ -788,7 +788,7 @@ function WatchFrame_DisplayTrackedAchievements (lineFrame, nextAnchor, maxHeight
 								criteriaDisplayed = criteriaDisplayed + 1;
 								WatchFrameLines_AddUpdateFunction(WatchFrame_UpdateTimedAchievements);
 							end
-							if ( bit.band(flags, EVALUATION_TREE_FLAG_PROGRESS_BAR) == EVALUATION_TREE_FLAG_PROGRESS_BAR ) then
+							if ( description and bit.band(flags, EVALUATION_TREE_FLAG_PROGRESS_BAR) == EVALUATION_TREE_FLAG_PROGRESS_BAR ) then
 								-- progress bar
 								if ( string.find(strlower(quantityString), "interface\\moneyframe") ) then	-- no easy way of telling it's a money progress bar
 									criteriaString = quantityString.."\n"..description;

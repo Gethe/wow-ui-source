@@ -811,15 +811,15 @@ function WorldMap_ThunderIslePOI_OnEnter(self, poiInfo)
 	local tag = "THUNDER_ISLE";
 	local phase = poiInfo.phase;
 
-	local title = _G["MAP_BAR_"..tag.."_TITLE"..phase];
+	local title = MapBarFrame_GetString("TITLE", tag, phase);
 	if ( poiInfo.active ) then
-		local tooltipText = _G["MAP_BAR_"..tag.."_TOOLTIP"..phase];
+		local tooltipText = MapBarFrame_GetString("TOOLTIP", tag, phase);
 		local percentage = math.floor(100 * C_MapBar.GetCurrentValue() / C_MapBar.GetMaxValue());
 		WorldMapTooltip:SetText(format(MAP_BAR_TOOLTIP_TITLE, title, percentage), 1, 1, 1);
 		WorldMapTooltip:AddLine(tooltipText, nil, nil, nil, true);
 		WorldMapTooltip:Show();
 	else
-		local disabledText = _G["MAP_BAR_"..tag.."_LOCKED"..phase];
+		local disabledText = MapBarFrame_GetString("LOCKED", tag, phase);
 		WorldMapTooltip:SetText(title, 1, 1, 1);
 		WorldMapTooltip:AddLine(disabledText, nil, nil, nil, true);
 		WorldMapTooltip:Show();
@@ -843,21 +843,32 @@ function WorldMap_HandleThunderIslePOI(poiFrame, poiInfo)
 end
 
 SPECIAL_POI_INFO = {
-	[2927] = {	--For debug, use 2837 (valor/justice vendor in Pandaria)
-		handleFunc = WorldMap_HandleThunderIslePOI,
-		onEnter = WorldMap_ThunderIslePOI_OnEnter,
-		onLeave = WorldMap_ThunderIslePOI_OnLeave,
-		phase = 0,
-		active = false,
-	},
-	[2925] = {
-		handleFunc = WorldMap_HandleThunderIslePOI,
-		onEnter = WorldMap_ThunderIslePOI_OnEnter,
-		onLeave = WorldMap_ThunderIslePOI_OnLeave,
-		phase = 0,
-		active = true,
-	},
+	[2943] = { phase = 0, active = true },
+	[2944] = { phase = 0, active = true },
+	[2925] = { phase = 1, active = true },
+	[2927] = { phase = 1, active = false },
+	[2945] = { phase = 1, active = true },
+	[2949] = { phase = 1, active = false },
+	[2937] = { phase = 2, active = true },
+	[2938] = { phase = 2, active = false },
+	[2946] = { phase = 2, active = true },
+	[2950] = { phase = 2, active = false },
+	[2939] = { phase = 3, active = true },
+	[2940] = { phase = 3, active = false },
+	[2947] = { phase = 3, active = true },
+	[2951] = { phase = 3, active = false },
+	[2941] = { phase = 4, active = true },
+	[2942] = { phase = 4, active = false },
+	[2948] = { phase = 4, active = true },
+	[2952] = { phase = 4, active = false },
+	--If you add another special POI, make sure to change the setup below
 };
+
+for k, v in pairs(SPECIAL_POI_INFO) do
+	v.handleFunc = WorldMap_HandleThunderIslePOI;
+	v.onEnter = WorldMap_ThunderIslePOI_OnEnter;
+	v.onLeave = WorldMap_ThunderIslePOI_OnLeave;
+end
 
 function WorldMap_IsSpecialPOI(poiID)
 	if ( SPECIAL_POI_INFO[poiID] ) then
@@ -872,6 +883,7 @@ function WorldMap_HandleSpecialPOI(poiFrame, poiID)
 	poiFrame.specialPOIInfo = poiInfo;
 	if ( poiInfo and poiInfo.handleFunc ) then
 		poiInfo.handleFunc(poiFrame, poiInfo)
+		poiFrame:Show();
 	else
 		poiFrame:Hide();
 	end

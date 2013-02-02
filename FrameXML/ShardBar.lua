@@ -270,13 +270,7 @@ function DemonicFuryBar_SetPower(self, power)
 		texData = WARLOCK_POWER_FILLBAR["Demonology"];
 	end
 	WarlockPowerFrame_UpdateFill(self.fill, texData, power, self.maxPower);
-	if ( (self.maxPower <= 0) or (self.textDisplay == "NUMERIC") ) then
-		self.powerText:SetText(floor(abs(power)));
-	elseif ( self.textDisplay == "PERCENT" ) then
-		self.powerText:SetText(floor(abs(power/self.maxPower*100)).."%");
-	else
-		self.powerText:SetText("("..floor(abs(power/self.maxPower*100)).."%) "..floor(abs(power)).." / "..floor(abs(maxPower)));
-	end
+	TextStatusBar_UpdateTextStringWithValues(self, self.powerText, power, 1, self.maxPower);
 end
 
 function DemonicFuryBar_CheckAndSetState()
@@ -308,11 +302,11 @@ end
 function DemonicFuryBar_CheckStatusCVars(self)
 	self.textDisplay = GetCVar("statusTextDisplay");
 	if ( GetCVarBool("playerStatusText") ) then
-		self.powerText:Show();
-		self.lockShow = true;
+		self.showText = true;
+		self.lockShow = 1;
 	else
-		self.powerText:Hide();
-		self.lockShow = false;
+		self.showText = false;
+		self.lockShow = 0;
 	end
 end
 

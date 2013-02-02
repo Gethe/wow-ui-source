@@ -651,13 +651,20 @@ function LFGDungeonReadyPopup_Update()
 	
 	LFGDungeonReadyPopup.dungeonID = id;
 	
+	local leaveText = LEAVE_QUEUE;
 	if ( subtypeID == LFG_SUBTYPEID_RAID ) then
 		LFGDungeonReadyDialog.enterButton:SetText(ENTER_RAID);
 	elseif ( subtypeID == LFG_SUBTYPEID_SCENARIO ) then
-		LFGDungeonReadyDialog.enterButton:SetText(ENTER_SCENARIO);
+		if ( numMembers > 1 ) then
+			LFGDungeonReadyDialog.enterButton:SetText(ENTER_SCENARIO);
+		else
+			LFGDungeonReadyDialog.enterButton:SetText(ACCEPT);
+			leaveText = CANCEL;
+		end
 	else
 		LFGDungeonReadyDialog.enterButton:SetText(ENTER_DUNGEON);
 	end
+	LFGDungeonReadyDialog.leaveButton:SetText(leaveText);
 
 	if ( hasResponded ) then
 		if ( subtypeID == LFG_SUBTYPEID_RAID ) then
@@ -754,7 +761,11 @@ function LFGDungeonReadyPopup_Update()
 				LFGDungeonReadyDialog.background:SetTexture("Interface\\LFGFrame\\UI-LFG-BACKGROUND-Deadmines");	--DEBUG FIXME Default probably shouldn't be Deadmines
 			end
 			
-			LFGDungeonReadyDialog.label:SetText(SPECIFIC_DUNGEON_IS_READY);
+			if ( numMembers > 1 ) then
+				LFGDungeonReadyDialog.label:SetText(SPECIFIC_DUNGEON_IS_READY);
+			else
+				LFGDungeonReadyDialog.label:SetText(SPECIFIC_INSTANCE_IS_READY);
+			end
 			LFGDungeonReadyDialog_UpdateInstanceInfo(name, completedEncounters, totalEncounters);
 			LFGDungeonReadyDialog.instanceInfo:Show();
 		end
@@ -1199,6 +1210,7 @@ function LFGRewardsFrame_OnLoad(self)
 	self.pugDescription:SetTextColor(1, 1, 1);
 	self.moneyLabel:SetTextColor(1, 1, 1);
 	self.xpLabel:SetTextColor(1, 1, 1);
+	self.BonusValor.BonusText:SetTextColor(1, 1, 1);
 end
 
 function LFGRewardsFrame_UpdateFrame(parentFrame, dungeonID, background)
@@ -1247,6 +1259,7 @@ function LFGRewardsFrame_UpdateFrame(parentFrame, dungeonID, background)
 		background:SetTexture(backgroundTexture);
 	end
 
+	parentFrame.BonusValor:Hide();
 	local lastFrame = parentFrame.rewardsLabel;
 	if ( isHoliday ) then
 		if ( doneToday ) then
@@ -1276,12 +1289,19 @@ function LFGRewardsFrame_UpdateFrame(parentFrame, dungeonID, background)
 		if ( isScenario ) then
 			parentFrame.title:SetText(LFG_TYPE_RANDOM_SCENARIO);
 			parentFrame.description:SetText(SCENARIO_RANDOM_EXPLANATION);
+			parentFrame.BonusValor.BonusText:SetText(SCENARIO_BONUS_VALOR);
 		else
 			parentFrame.title:SetText(LFG_TYPE_RANDOM_DUNGEON);
 			parentFrame.description:SetText(LFD_RANDOM_EXPLANATION);
+			parentFrame.BonusValor.BonusText:SetText(DUNGEON_BONUS_VALOR);
+		end
+		if (UnitLevel("player") == GetMaxPlayerLevel()) then
+			parentFrame.BonusValor:Show();
+		else
+			parentFrame.BonusValor:Hide();
 		end
 	end
-		
+
 	local itemButtonIndex = 1;
 	for i=1, numRewards do
 		local name, texture, numItems = GetLFGDungeonRewardInfo(dungeonID, i);
@@ -1319,7 +1339,7 @@ function LFGRewardsFrame_UpdateFrame(parentFrame, dungeonID, background)
 		lastFrame = _G[parentName.."Item"..(totalRewards - mod(totalRewards+1, 2))];
 	end
 	
-	if ( bonusRepAmount > 0 ) then
+	if ( bonusRepAmount > 0 and not doneToday ) then
 		parentFrame.bonusRepFrame.bonusRep = bonusRepAmount;
 		parentFrame.bonusRepFrame:SetPoint("TOPLEFT", lastFrame, "BOTTOMLEFT", 0, -8);
 		LFGRewardsFrameBonusRep_Update(parentFrame.bonusRepFrame);
@@ -1367,6 +1387,11 @@ function LFGRewardsFrame_UpdateFrame(parentFrame, dungeonID, background)
 	else
 		parentFrame.xpLabel:Hide();
 		parentFrame.xpAmount:Hide();
+	end
+	
+	if (parentFrame.BonusValor:IsShown()) then
+		parentFrame.BonusValor:SetPoint("TOPLEFT", lastFrame, "BOTTOMLEFT", -5, -4);
+		lastFrame = parentFrame.BonusValor;
 	end
 	
 	if ( typeID == TYPEID_RANDOM_DUNGEON ) then

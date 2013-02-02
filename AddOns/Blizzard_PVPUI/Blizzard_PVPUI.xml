@@ -609,6 +609,12 @@
 				</Anchors>
 				<Scripts>
 					<OnClick function="PVPUIFrame_TabOnClick"/>
+					<OnEnter>
+						if ( not self:IsEnabled() ) then
+							GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+							GameTooltip:SetText(string.format(PVP_CONQUEST_LOWLEVEL, ARENA_TEAMS), nil, nil, nil, 1, 1);
+						end
+					</OnEnter>
 				</Scripts>
 			</Button>			
 			<Frame name="PVPQueueFrame" useParentLevel="true" setAllPoints="true">
