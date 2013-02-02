@@ -952,9 +952,10 @@ end
 local function _CalendarFrame_InviteToRaid(maxInviteCount)
 	local inviteCount = 0;
 	local i = 1;
+	local playerName = UnitName("player");
 	while ( inviteCount < maxInviteCount and i <= CalendarEventGetNumInvites() ) do
 		local name, level, className, classFilename, inviteStatus = CalendarEventGetInvite(i);
-		if ( not UnitInParty(name) and not UnitInRaid(name) and
+		if ( name ~= playerName and not UnitInParty(name) and not UnitInRaid(name) and
 			 (inviteStatus == CALENDAR_INVITESTATUS_ACCEPTED or
 			 inviteStatus == CALENDAR_INVITESTATUS_CONFIRMED or
 			 inviteStatus == CALENDAR_INVITESTATUS_SIGNEDUP) ) then
@@ -2154,7 +2155,7 @@ function CalendarDayContextMenu_Initialize(self, flags, dayButton, eventButton)
 							end
 							UIMenu_AddButton(self, CALENDAR_REMOVE_SIGNUP, nil, CalendarDayContextMenu_RemoveInvite);
 						end
-					else
+					elseif ( modStatus ~= "CREATOR" ) then
 						if ( needSpacer ) then
 							UIMenu_AddButton(self, "");
 						end

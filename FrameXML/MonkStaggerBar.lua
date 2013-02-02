@@ -14,21 +14,20 @@ function MonkStaggerBar_OnLoad(self)
 	self.cvar = "playerStatusText";
 	self.cvarLabel = "STATUS_TEXT_PLAYER";
 	self.capNumericDisplay = true;
-	MonkStaggerBar_Initialize(self);
-	TextStatusBar_Initialize(self);
-end
-
-function MonkStaggerBar_Initialize(self)
 	if ( not self.powerName ) then
 		self.powerName = BREWMASTER_POWER_BAR_NAME;
 	end
-	
-	self:RegisterEvent("PLAYER_ENTERING_WORLD");
-	self:RegisterEvent("UNIT_DISPLAYPOWER");
-	self:RegisterEvent("UPDATE_VEHICLE_ACTIONBAR");
-	
-	SetTextStatusBarText(self, _G[self:GetName().."Text"])
-	
+	local _, class = UnitClass("player")
+	self.class = class
+	if (class == "MONK") then
+		self:RegisterEvent("PLAYER_ENTERING_WORLD");
+		self:RegisterEvent("UNIT_DISPLAYPOWER");
+		self:RegisterEvent("UPDATE_VEHICLE_ACTIONBAR");
+		
+		SetTextStatusBarText(self, _G[self:GetName().."Text"])
+	end
+	MonkStaggerBar_UpdatePowerType(self)
+	TextStatusBar_Initialize(self);
 end
 
 function MonkStaggerBar_OnEvent(self, event, arg1)
@@ -41,12 +40,9 @@ function MonkStaggerBar_OnEvent(self, event, arg1)
 			MonkStaggerBar_UpdatePowerType(self);
 		end
 	elseif ( event=="PLAYER_ENTERING_WORLD" ) then
-		local _, class = UnitClass("player");
-		if ( class == "MONK" ) then
-			self.specRestriction = SPEC_MONK_BREWMASTER;
-			self:RegisterEvent("PLAYER_SPECIALIZATION_CHANGED");
-			AlternatePowerBar_SetLook(self);
-		end
+		self.specRestriction = SPEC_MONK_BREWMASTER;
+		self:RegisterEvent("PLAYER_SPECIALIZATION_CHANGED");
+		AlternatePowerBar_SetLook(self);
 		MonkStaggerBar_UpdateMaxValues(self);
 		MonkStaggerBar_UpdatePowerType(self);
 	end
@@ -58,6 +54,9 @@ end
 
 function MonkStaggerBar_UpdateValue(self)
 	local currstagger = UnitStagger(self:GetParent().unit);
+	if (not currstagger) then
+		return;
+	end
 	self:SetValue(currstagger);
 	self.value = currstagger
 	MonkStaggerBar_UpdateMaxValues(self)
@@ -86,7 +85,8 @@ function MonkStaggerBar_UpdateMaxValues(self)
 end
 
 function MonkStaggerBar_UpdatePowerType(self)
-	if ( self.specRestriction == GetSpecialization() and not UnitHasVehiclePlayerFrameUI("player") ) then
+	if (self.class == "MONK" and self.specRestriction == GetSpecialization() 
+			and not UnitHasVehiclePlayerFrameUI("player") ) then
 		self.pauseUpdates = false;
 		MonkStaggerBar_UpdateValue(self);
 		self:Show();

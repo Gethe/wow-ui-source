@@ -4,12 +4,6 @@ SCENARIOS_CURRENT_FILTER = LFGList_DefaultFilterFunction;
 
 function ScenarioFinderFrame_OnLoad(self)
 	self:RegisterEvent("LFG_UPDATE_RANDOM_INFO");
-
-	-- set scenario overrides for inherited template
-	local rewardsFrame = ScenarioQueueFrame.Random.ScrollFrame.Child;
-	rewardsFrame.title:SetText(LFG_TYPE_RANDOM_SCENARIO);
-	rewardsFrame.description:SetText(SCENARIO_RANDOM_EXPLANATION);
-	rewardsFrame.randomList:SetScript("OnEnter", ScenarioQueueFrameRandomRandomList_OnEnter);
 end
 
 function ScenarioFinderFrame_OnEvent(self, event, ...)
@@ -147,7 +141,7 @@ function ScenarioQueueFrameRandom_UpdateFrame()
 	if ( type(dungeonID) ~= "number" ) then	--We haven't gotten info on available dungeons yet.
 		return;
 	end
-	LFGRewardsFrame_UpdateFrame(ScenarioQueueFrame.Random.ScrollFrame.Child, dungeonID, nil, true);
+	LFGRewardsFrame_UpdateFrame(ScenarioQueueFrame.Random.ScrollFrame.Child, dungeonID, nil);
 end
 
 function ScenarioQueueFrameRandomRandomList_OnEnter(self)

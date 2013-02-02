@@ -18,6 +18,57 @@
 				</FontString>
 			</Layer>
 		</Layers>
+		<Frames>
+			<Frame parentKey="CloseDialog">
+				<Size x="320" y="84"/>
+				<Anchors>
+					<Anchor point="CENTER"/>
+				</Anchors>
+				<Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background" edgeFile="Interface\DialogFrame\UI-DialogBox-Border" tile="true">
+					<BackgroundInsets>
+						<AbsInset left="11" right="12" top="12" bottom="11"/>
+					</BackgroundInsets>
+					<TileSize>
+						<AbsValue val="32"/>
+					</TileSize>
+					<EdgeSize>
+						<AbsValue val="32"/>
+					</EdgeSize>
+				</Backdrop>
+				<Layers>
+					<Layer level="ARTWORK">
+						<FontString inherits="GameFontHighlight" text="CONFIRM_CLOSE_CINEMATIC">
+							<Size x="290" y="0"/>
+							<Anchors>
+								<Anchor point="TOP" x="0" y="-16"/>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+				<Frames>
+					<Button parentKey="ConfirmButton" inherits="CinematicDialogButtonTemplate" text="YES">
+						<Anchors>
+							<Anchor point="BOTTOMRIGHT" relativePoint="BOTTOM" x="-6" y="16"/>
+						</Anchors>
+						<Scripts>
+							<OnClick>
+								MovieFrame:StopMovie();
+							</OnClick>
+						</Scripts>
+					</Button>
+					<Button parentKey="ResumeButton" inherits="CinematicDialogButtonTemplate" text="NO">
+						<Anchors>
+							<Anchor point="LEFT" relativeKey="$parent.ConfirmButton" relativePoint="RIGHT" x="13" y="0"/>
+						</Anchors>
+						<Scripts>
+							<OnClick>
+								self:GetParent():Hide();
+							</OnClick>
+						</Scripts>
+					</Button>
+				</Frames>
+			</Frame>
+		</Frames>
 		<Scripts>
 			<OnLoad function="MovieFrame_OnLoad"/>
 			<OnShow function="MovieFrame_OnShow"/>

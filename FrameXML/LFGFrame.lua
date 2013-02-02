@@ -35,6 +35,9 @@ LFG_RETURN_VALUES = {
 	texture = 11,
 	difficulty = 12,
 	maxPlayers = 13,
+	description = 14,
+	isHoliday = 15,
+	bonusRepAmount = 16,
 }
 
 LFG_INSTANCE_INVALID_RAID_LOCKED = 6;
@@ -1188,7 +1191,17 @@ end
 
 
 --Reward frame functions
-function LFGRewardsFrame_UpdateFrame(parentFrame, dungeonID, background, isScenario)
+function LFGRewardsFrame_OnLoad(self)
+	local myName = self:GetName();
+	self.numRewardFrames = 1;
+	self.description:SetTextColor(1, 1, 1);
+	self.rewardsDescription:SetTextColor(1, 1, 1);
+	self.pugDescription:SetTextColor(1, 1, 1);
+	self.moneyLabel:SetTextColor(1, 1, 1);
+	self.xpLabel:SetTextColor(1, 1, 1);
+end
+
+function LFGRewardsFrame_UpdateFrame(parentFrame, dungeonID, background)
 	local parentName = parentFrame:GetName();
 	
 	if ( not dungeonID ) then
@@ -1201,8 +1214,9 @@ function LFGRewardsFrame_UpdateFrame(parentFrame, dungeonID, background, isScena
 	local difficulty;
 	local dungeonDescription;
 	local textureFilename;
-	local dungeonName, typeID, subtypeID,_,_,_,_,_,_,_,textureFilename,difficulty,_,dungeonDescription, isHoliday = GetLFGDungeonInfo(dungeonID);
+	local dungeonName, typeID, subtypeID,_,_,_,_,_,_,_,textureFilename,difficulty,_,dungeonDescription, isHoliday, bonusRepAmount = GetLFGDungeonInfo(dungeonID);
 	local isHeroic = difficulty > 0;
+	local isScenario = (subtypeID == LFG_SUBTYPEID_SCENARIO);
 	local doneToday, moneyBase, moneyVar, experienceBase, experienceVar, numRewards = GetLFGDungeonRewards(dungeonID);
 	local numRandoms = 4 - GetNumSubgroupMembers();
 	local moneyAmount = moneyBase + moneyVar * numRandoms;
@@ -1259,7 +1273,10 @@ function LFGRewardsFrame_UpdateFrame(parentFrame, dungeonID, background, isScena
 		else
 			parentFrame.rewardsDescription:SetText(format(LFD_REWARD_DESCRIPTION_DAILY, numCompletions));
 		end
-		if ( not isScenario ) then
+		if ( isScenario ) then
+			parentFrame.title:SetText(LFG_TYPE_RANDOM_SCENARIO);
+			parentFrame.description:SetText(SCENARIO_RANDOM_EXPLANATION);
+		else
 			parentFrame.title:SetText(LFG_TYPE_RANDOM_DUNGEON);
 			parentFrame.description:SetText(LFD_RANDOM_EXPLANATION);
 		end
@@ -1302,6 +1319,16 @@ function LFGRewardsFrame_UpdateFrame(parentFrame, dungeonID, background, isScena
 		lastFrame = _G[parentName.."Item"..(totalRewards - mod(totalRewards+1, 2))];
 	end
 	
+	if ( bonusRepAmount > 0 ) then
+		parentFrame.bonusRepFrame.bonusRep = bonusRepAmount;
+		parentFrame.bonusRepFrame:SetPoint("TOPLEFT", lastFrame, "BOTTOMLEFT", 0, -8);
+		LFGRewardsFrameBonusRep_Update(parentFrame.bonusRepFrame);
+		parentFrame.bonusRepFrame:Show();
+		lastFrame = parentFrame.bonusRepFrame;
+	else
+		parentFrame.bonusRepFrame:Hide();
+	end
+
 	if ( moneyVar > 0 or experienceVar > 0 ) then
 		parentFrame.pugDescription:SetPoint("TOPLEFT", lastFrame, "BOTTOMLEFT", 0, -5);
 		parentFrame.pugDescription:Show();
@@ -1343,6 +1370,7 @@ function LFGRewardsFrame_UpdateFrame(parentFrame, dungeonID, background, isScena
 	end
 	
 	if ( typeID == TYPEID_RANDOM_DUNGEON ) then
+		parentFrame.randomList.randomID = dungeonID;
 		parentFrame.randomList:Show();
 		parentFrame.encounterList:SetPoint("LEFT", parentFrame.randomList, "RIGHT", 5, 0);
 	else
@@ -1458,6 +1486,41 @@ function LFGRewardsFrameEncounterList_OnEnter(self)
 		end
 		GameTooltip:Show();
 	end
+end
+
+function LFGRewardsFrameBonusRep_OnLoad(self)
+	self:RegisterEvent("LFG_BONUS_FACTION_ID_UPDATED")
+end
+
+function LFGRewardsFrameBonusRep_OnEvent(self, event, ...)
+	if ( event == "LFG_BONUS_FACTION_ID_UPDATED" ) then
+		LFGRewardsFrameBonusRep_Update(self);
+	end
+end
+
+function LFGRewardsFrameBonusRep_Update(self)
+	if ( not self.bonusRep ) then
+		return;
+	end
+
+	local bonusID = GetLFGBonusFactionID();
+	if ( bonusID ) then
+		local name, description, standingID, barMin, barMax, barValue, atWarWith, canToggleAtWar, isHeader, isCollapsed, hasRep, isWatched, isChild, factionID, hasBonusRepGain, canBeLFGBonus = GetFactionInfoByID(bonusID);
+		if ( name ) then
+			local bonusRep = self.bonusRep;
+			if ( hasBonusRepGain ) then
+				bonusRep = bonusRep * 2;
+			end
+			self.ChosenFaction:SetFormattedText(LFG_BONUS_REPUTATION_FACTION, name, bonusRep);
+			self.ChosenFaction:Show();
+			self.ChooseButton:Hide();
+			return;
+		end
+	end
+
+	--Found no bonus reputation
+	self.ChooseButton:Show();
+	self.ChosenFaction:Hide();
 end
 
 --
@@ -1951,3 +2014,44 @@ function LFG_IsRandomDungeonDisplayable(id)
 	local myLevel = UnitLevel("player");
 	return myLevel >= minLevel and myLevel <= maxLevel and EXPANSION_LEVEL >= expansionLevel;
 end
+
+function LFGRandomList_OnEnter(self)
+	local randomID = self.randomID;
+	local subtypeID = select(LFG_RETURN_VALUES.subtypeID, GetLFGDungeonInfo(randomID));
+
+	local titleText, emptyText, subText = INCLUDED_DUNGEONS, INCLUDED_DUNGEONS_EMPTY, INCLUDED_DUNGEONS_SUBTEXT;
+	if ( subtypeID == LFG_SUBTYPEID_SCENARIO ) then
+		titleText, emptyText, subText = INCLUDED_SCENARIOS, INCLUDED_SCENARIOS_EMPTY, INCLUDED_SCENARIOS_SUBTEXT;
+	end
+	GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+	GameTooltip:SetText(titleText, 1, 1, 1);
+	
+	local numDungeons = GetNumDungeonForRandomSlot(randomID);
+	
+	if ( numDungeons == 0 ) then
+		GameTooltip:AddLine(emptyText, RED_FONT_COLOR.r, RED_FONT_COLOR.g, RED_FONT_COLOR.b, true);
+	else
+		GameTooltip:AddLine(subText, nil, nil, nil, true);
+		GameTooltip:AddLine(" ");
+		for i=1, numDungeons do
+			local dungeonID = GetDungeonForRandomSlot(randomID, i);
+			local name, typeID, subtypeID, minLevel, maxLevel, recLevel, minRecLevel, maxRecLevel, expansionLevel, groupID, textureFilename, difficulty, maxPlayers, description, isHoliday = GetLFGDungeonInfo(dungeonID);
+			local rangeText;
+			if ( minLevel == maxLevel ) then
+				rangeText = format(LFD_LEVEL_FORMAT_SINGLE, minLevel);
+			else
+				rangeText = format(LFD_LEVEL_FORMAT_RANGE, minLevel, maxLevel);
+			end
+			local difficultyColor = GetQuestDifficultyColor(recLevel);
+			
+			local displayName = name;
+			if ( LFGLockList[dungeonID] ) then
+				displayName = "|TInterface\\LFGFrame\\UI-LFG-ICON-LOCK:14:14:0:0:32:32:0:28:0:28|t"..displayName;
+			end
+			GameTooltip:AddDoubleLine(displayName, rangeText, difficultyColor.r, difficultyColor.g, difficultyColor.b, difficultyColor.r, difficultyColor.g, difficultyColor.b);
+		end
+	end
+		
+	GameTooltip:Show();
+end
+

@@ -16,6 +16,7 @@ end
 
 function MovieFrame_PlayMovie(self, movieID)
 	self:Show();
+	self.CloseDialog:Hide();
 	local playSuccess, errorCode = self:StartMovie(movieID);
 	if ( not playSuccess ) then
 		StaticPopup_Show("ERROR_CINEMATIC");
@@ -57,10 +58,8 @@ function MovieFrame_OnUpdate(self, elapsed)
 end
 
 function MovieFrame_OnKeyUp(self, key)
-	if ( GetBindingFromClick(key) == "TOGGLEGAMEMENU" ) then
-		self:Hide();
-	elseif ( key == "SPACE" or key == "ENTER" ) then
-		self:StopMovie();
+	if ( GetBindingFromClick(key) == "TOGGLEGAMEMENU" or key == "SPACE" or key == "ENTER" ) then
+		self.CloseDialog:Show();
 	end
 end
 

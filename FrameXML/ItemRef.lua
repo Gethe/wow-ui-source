@@ -179,7 +179,7 @@ function SetItemRef(link, text, button, chatFrame)
 		LevelUpDisplay_ShowSideDisplay(tonumber(level), _G[levelUpType], arg1);
 		return;
 	elseif ( strsub(link, 1, 6) == "pvpbgs" ) then
-		TogglePVPFrame();
+		TogglePVPUI();
 		return;
 	elseif ( strsub(link, 1, 3) == "lfd" ) then
 		ToggleLFDParentFrame();

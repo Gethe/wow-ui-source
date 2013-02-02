@@ -339,40 +339,6 @@ function LFDQueueFrameRandom_UpdateFrame()
 	LFDQueueFrame_UpdateRoleIncentives();
 end
 
-function LFDQueueFrameRandomRandomList_OnEnter(self)
-	local randomID = LFDQueueFrame.type;
-	GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
-	GameTooltip:SetText(INCLUDED_DUNGEONS, 1, 1, 1);
-	
-	local numDungeons = GetNumDungeonForRandomSlot(randomID);
-	
-	if ( numDungeons == 0 ) then
-		GameTooltip:AddLine(INCLUDED_DUNGEONS_EMPTY, RED_FONT_COLOR.r, RED_FONT_COLOR.g, RED_FONT_COLOR.b, true);
-	else
-		GameTooltip:AddLine(INCLUDED_DUNGEONS_SUBTEXT, nil, nil, nil, true);
-		GameTooltip:AddLine(" ");
-		for i=1, numDungeons do
-			local dungeonID = GetDungeonForRandomSlot(randomID, i);
-			local name, typeID, subtypeID, minLevel, maxLevel, recLevel, minRecLevel, maxRecLevel, expansionLevel, groupID, textureFilename, difficulty, maxPlayers, description, isHoliday = GetLFGDungeonInfo(dungeonID);
-			local rangeText;
-			if ( minLevel == maxLevel ) then
-				rangeText = format(LFD_LEVEL_FORMAT_SINGLE, minLevel);
-			else
-				rangeText = format(LFD_LEVEL_FORMAT_RANGE, minLevel, maxLevel);
-			end
-			local difficultyColor = GetQuestDifficultyColor(recLevel);
-			
-			local displayName = name;
-			if ( LFGLockList[dungeonID] ) then
-				displayName = "|TInterface\\LFGFrame\\UI-LFG-ICON-LOCK:14:14:0:0:32:32:0:28:0:28|t"..displayName;
-			end
-			GameTooltip:AddDoubleLine(displayName, rangeText, difficultyColor.r, difficultyColor.g, difficultyColor.b, difficultyColor.r, difficultyColor.g, difficultyColor.b);
-		end
-	end
-		
-	GameTooltip:Show();
-end
-
 function LFDQueueFrameRandomCooldownFrame_OnLoad(self)
 	self:SetFrameLevel(LFDQueueFrame:GetFrameLevel() + 9);	--This value also needs to be set when SetParent is called in LFDQueueFrameRandomCooldownFrame_Update.
 	

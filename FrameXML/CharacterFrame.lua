@@ -2,21 +2,23 @@ CHARACTERFRAME_SUBFRAMES = { "PaperDollFrame", "PetPaperDollFrame", "ReputationF
 CHARACTERFRAME_EXPANDED_WIDTH = 540;
 
 local NUM_CHARACTERFRAME_TABS = 4;
-function ToggleCharacter (tab)
+function ToggleCharacter (tab, onlyShow)
 	local subFrame = _G[tab];
 	if ( subFrame ) then
 		if (not subFrame.hidden) then
 			PanelTemplates_SetTab(CharacterFrame, subFrame:GetID());
 			if ( CharacterFrame:IsShown() ) then
 				if ( subFrame:IsShown() ) then
-					HideUIPanel(CharacterFrame);	
+					if ( not onlyShow ) then
+						HideUIPanel(CharacterFrame);	
+					end
 				else
 					PlaySound("igCharacterInfoTab");
 					CharacterFrame_ShowSubFrame(tab);
 				end
 			else
-				ShowUIPanel(CharacterFrame);
 				CharacterFrame_ShowSubFrame(tab);
+				ShowUIPanel(CharacterFrame);
 			end
 		end
 	end

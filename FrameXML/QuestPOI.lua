@@ -136,13 +136,11 @@ function QuestPOI_SelectButton(poiButton)
 			poiButton.pushedTexture:SetTexCoord(0.375, 0.500, 0.375, 0.5);
 			poiButton.highlightTexture:SetTexCoord(0.625, 0.750, 0.375, 0.5);
 			QuestPOI_SetTextColor(poiButton, QUEST_POI_COLOR_BLACK);
-		elseif ( poiButton.type == QUEST_POI_COMPLETE_IN ) then
+		elseif ( poiButton.type == QUEST_POI_COMPLETE_IN or poiButton.type == QUEST_POI_COMPLETE_OUT ) then
 			poiButton.selectionGlow:Show();
 			poiButton.normalTexture:SetTexCoord(0.500, 0.625, 0.375, 0.5);
 			poiButton.pushedTexture:SetTexCoord(0.375, 0.500, 0.375, 0.5);
 			poiButton.highlightTexture:SetTexCoord(0.625, 0.750, 0.375, 0.5);		
-		elseif ( poiButton.type == QUEST_POI_COMPLETE_OUT ) then
-			-- has no selected mode, should switch to QUEST_POI_COMPLETE_IN type upon being selected
 		elseif ( poiButton.type == QUEST_POI_COMPLETE_SWAP ) then
 			local swapButton = QUEST_POI_SWAP_BUTTONS[parentName];
 			swapButton:ClearAllPoints();
@@ -175,7 +173,9 @@ function QuestPOI_DeselectButton(poiButton)
 			poiButton.pushedTexture:SetTexCoord(0.750, 0.875, 0.875, 1);
 			poiButton.highlightTexture:SetTexCoord(0.625, 0.750, 0.875, 1);
 		elseif ( poiButton.type == QUEST_POI_COMPLETE_OUT ) then
-			-- has no selected mode
+			poiButton.normalTexture:SetTexCoord(0.500, 0.625, 0.875, 1.0);
+			poiButton.pushedTexture:SetTexCoord(0.375, 0.500, 0.875, 1.0);
+			poiButton.highlightTexture:SetTexCoord(0.625, 0.750, 0.375, 0.5);
 		elseif ( poiButton.type == QUEST_POI_COMPLETE_SWAP ) then
 			poiButton:Show();
 			QUEST_POI_SWAP_BUTTONS[poiButton.parentName]:Hide();

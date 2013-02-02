@@ -36,12 +36,16 @@ function WarlockPowerFrame_OnEvent(self, event, arg1, arg2)
 	if ( event == "UNIT_AURA" and (arg1 == WarlockPowerFrame:GetParent().unit) ) then
 		DemonicFuryBar_CheckAndSetState();
 	elseif ( event == "SPELLS_CHANGED" ) then
-		if ( IsPlayerSpell(self.reqSpellID) ) then
-			self:UnregisterEvent("SPELLS_CHANGED");
-			self.reqSpellID = nil;
-			-- clear spec to force reevaluation
-			self.spec = nil;
-			WarlockPowerFrame_SetUpCurrentPower(self, true);
+		if ( self.reqSpellID ) then
+			if ( IsPlayerSpell(self.reqSpellID) ) then
+				self:UnregisterEvent("SPELLS_CHANGED");
+				self.reqSpellID = nil;
+				-- clear spec to force reevaluation
+				self.spec = nil;
+				WarlockPowerFrame_SetUpCurrentPower(self, true);
+			end
+		elseif ( self.spec == SPEC_WARLOCK_DESTRUCTION ) then
+			BurningEmbersBar_SetColorTextures();
 		end
 	elseif ( self.activeBar and event == "CVAR_UPDATE" and ( arg1 == "STATUS_TEXT_PLAYER" or arg1 == "STATUS_TEXT_DISPLAY" ) ) then
 		DemonicFuryBar_CheckStatusCVars(self.activeBar);
@@ -92,7 +96,6 @@ function WarlockPowerFrame_SetUpCurrentPower(self, shouldAnim)
 			self:UnregisterEvent("UNIT_AURA");
 			self:UnregisterEvent("CVAR_UPDATE");
 			ShardBarFrame:Hide();
-			self:UnregisterEvent("SPELLS_CHANGED");
 			-- set up Destruction
 			-- only show if burning embers is known
 			if ( IsPlayerSpell(WARLOCK_BURNING_EMBERS) ) then
@@ -104,12 +107,15 @@ function WarlockPowerFrame_SetUpCurrentPower(self, shouldAnim)
 				if ( shouldAnim ) then
 					doAnim = true;
 				end
+				BurningEmbersBar_SetColorTextures();
+				self.reqSpellID = nil;
 			else
 				self.activeBar = nil;
 				self:SetScript("OnUpdate", nil);
-				self:RegisterEvent("SPELLS_CHANGED");
 				self.reqSpellID = WARLOCK_BURNING_EMBERS;
 			end
+			-- always register for this, need to check for green fire
+			self:RegisterEvent("SPELLS_CHANGED");
 		end
 		doShow = true;
 	elseif ( spec == SPEC_WARLOCK_DEMONOLOGY ) then
@@ -375,5 +381,32 @@ function BurningEmbersBar_SetPower(self, power)
 		
 		-- leftover for the other embers
 		power = power - MAX_POWER_PER_EMBER;
+	end
+end
+
+function BurningEmbersBar_SetColorTextures()
+	local frame = BurningEmbersBarFrame;
+	local textureFile;
+	if ( IsSpellKnown(WARLOCK_GREEN_FIRE) ) then
+		if ( not frame.hasGreenFire ) then
+			frame.hasGreenFire = true;
+			textureFile = "Interface\\PlayerFrame\\Warlock-DestructionUI-Green";
+		end
+	else
+		if ( frame.hasGreenFire ) then
+			frame.hasGreenFire = nil;
+			textureFile = "Interface\\PlayerFrame\\Warlock-DestructionUI";
+		end
+	end
+	if ( textureFile ) then
+		frame.background:SetTexture(textureFile);
+		for i = 1, 4 do
+			local ember = frame["ember"..i];
+			ember.border:SetTexture(textureFile); 
+			ember.fill:SetTexture(textureFile);
+			ember.fire:SetTexture(textureFile);
+			ember.glow:SetTexture(textureFile);
+			ember.glow2:SetTexture(textureFile);
+		end
 	end
 end

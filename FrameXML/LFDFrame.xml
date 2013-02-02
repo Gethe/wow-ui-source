@@ -318,12 +318,12 @@
 						<Frames>
 							<ScrollFrame name="$parentScrollFrame" inherits="UIPanelScrollFrameTemplate">
 								<Size>
-									<AbsDimension x="303" y="253"/>
+									<AbsDimension x="303" y="239"/>
 								</Size>
 								<Anchors>
 									<Anchor point="BOTTOMRIGHT">
 										<Offset>
-											<AbsDimension x="-29" y="28"/>
+											<AbsDimension x="-29" y="35"/>
 										</Offset>
 									</Anchor>
 								</Anchors>
@@ -333,12 +333,12 @@
 											<Anchors>
 												<Anchor point="TOPLEFT" relativePoint="TOPRIGHT">
 													<Offset>
-														<AbsDimension x="-4" y="0"/>
+														<AbsDimension x="-4" y="7"/>
 													</Offset>
 												</Anchor>
 												<Anchor point="BOTTOMRIGHT" relativePoint="BOTTOMRIGHT">
 													<Offset>
-														<AbsDimension x="24" y="-2"/>
+														<AbsDimension x="24" y="-9"/>
 													</Offset>
 												</Anchor>
 											</Anchors>
@@ -353,7 +353,7 @@
 											<Anchors>
 												<Anchor point="TOPLEFT" relativePoint="TOPRIGHT">
 													<Offset>
-														<AbsDimension x="-5" y="5"/>
+														<AbsDimension x="-5" y="12"/>
 													</Offset>
 												</Anchor>
 											</Anchors>
@@ -366,7 +366,7 @@
 											<Anchors>
 												<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMRIGHT">
 													<Offset>
-														<AbsDimension x="-5" y="-4"/>
+														<AbsDimension x="-5" y="-11"/>
 													</Offset>
 												</Anchor>
 											</Anchors>
@@ -383,8 +383,8 @@
 										
 										local scrollBar = _G[myName.."ScrollBar"];
 										scrollBar:ClearAllPoints();
-										scrollBar:SetPoint("BOTTOMLEFT", self, "BOTTOMRIGHT", 3, 14);
-										scrollBar:SetPoint("TOPLEFT", self, "TOPRIGHT", 3, -16);
+										scrollBar:SetPoint("BOTTOMLEFT", self, "BOTTOMRIGHT", 3, 7);
+										scrollBar:SetPoint("TOPLEFT", self, "TOPRIGHT", 3, -9);
 										
 										self.scrollBarHideable = true;
 										ScrollFrame_OnLoad(self);
@@ -393,6 +393,11 @@
 								<ScrollChild>
 									<Frame name="$parentChildFrame" inherits="LFGRewardFrameTemplate">
 										<Scripts>
+											<OnLoad>
+												--Move the title to deal with an offset so scrolling doesn't look as bad with the LFD border.
+												self.title:SetPoint("TOPLEFT", 10, -8);
+												LFGRewardsFrame_OnLoad(self);
+											</OnLoad>
 											<OnShow>
 												LFDQueueFrameRandom_UpdateFrame();
 											</OnShow>

@@ -172,7 +172,7 @@ function LootHistoryFrame_ResetHighlights(self)
 end
 
 function LootHistoryFrame_UpdateItemFrame(self, itemFrame)
-	local rollID, itemLink, numPlayers, isDone, winnerIdx, isMasterLoot = C_LootHistory.GetItem(itemFrame.itemIdx);
+	local rollID, itemLink, numPlayers, isDone, winnerIdx, isMasterLoot, isCurrency = C_LootHistory.GetItem(itemFrame.itemIdx);
 	local expanded = self.expandedRolls[rollID];
 
 	if ( expanded ) then
@@ -190,6 +190,13 @@ function LootHistoryFrame_UpdateItemFrame(self, itemFrame)
 		itemFrame.IconBorder:SetVertexColor(RED_FONT_COLOR.r, RED_FONT_COLOR.g, RED_FONT_COLOR.b);
 		itemFrame.ItemName:SetText(RETRIEVING_DATA);
 		itemFrame.ItemName:SetVertexColor(RED_FONT_COLOR.r, RED_FONT_COLOR.g, RED_FONT_COLOR.b);
+	elseif ( isCurrency ) then
+		local currencyName, _, currencyTexture, currencyQuality = GetCurrencyInfo(itemLink);
+		itemFrame.Icon:SetTexture(currencyTexture);
+		local colorInfo = ITEM_QUALITY_COLORS[currencyQuality];
+		itemFrame.IconBorder:SetVertexColor(colorInfo.r, colorInfo.g, colorInfo.b);
+		itemFrame.ItemName:SetText(currencyName);
+		itemFrame.ItemName:SetVertexColor(colorInfo.r, colorInfo.g, colorInfo.b);
 	else
 		local itemName, itemLink, itemRarity, itemLevel, itemMinLevel, itemType, itemSubType, itemStackCount, itemEquipLoc, itemTexture = GetItemInfo(itemLink);
 		itemFrame.Icon:SetTexture(itemTexture);

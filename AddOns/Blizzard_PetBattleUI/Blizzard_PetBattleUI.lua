@@ -64,6 +64,7 @@ function PetBattleFrame_OnLoad(self)
 	self:RegisterEvent("PET_BATTLE_PET_ROUND_PLAYBACK_COMPLETE");
 	self:RegisterEvent("PET_BATTLE_PET_CHANGED");
 	self:RegisterEvent("PET_BATTLE_XP_CHANGED");
+	self:RegisterEvent("PET_BATTLE_ACTION_SELECTED");
 
 	-- Transitioning out of battle event
 	self:RegisterEvent("PET_BATTLE_OVER");
@@ -91,6 +92,7 @@ function PetBattleFrame_OnEvent(self, event, ...)
 		PetBattleFrame_UpdatePetSelectionFrame(self);
 		PetBattleFrame_UpdateSpeedIndicators(self);
 		PetBattleFrame_UpdateInstructions(self);
+		self.BottomFrame.TurnTimer.SkipButton:Enable();
 	elseif ( event == "PET_BATTLE_PET_CHANGED" ) then
 		PetBattleFrame_UpdateAssignedUnitFrames(self);
 		PetBattleFrame_UpdateAllActionButtons(self);
@@ -105,6 +107,8 @@ function PetBattleFrame_OnEvent(self, event, ...)
 		PetBattleFrame_UpdateAbilityButtonHotKeys(self);
 	elseif ( event == "PET_BATTLE_XP_CHANGED" ) then
 		PetBattleFrame_UpdateXpBar(self);
+	elseif ( event == "PET_BATTLE_ACTION_SELECTED" ) then
+		self.BottomFrame.TurnTimer.SkipButton:Disable();
 	end
 end
 

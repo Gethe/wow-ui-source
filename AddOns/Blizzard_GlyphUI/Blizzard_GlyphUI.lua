@@ -42,7 +42,8 @@ function GlyphFrame_OnLoad (self)
 	self:RegisterEvent("GLYPH_UPDATED");
 	self:RegisterEvent("USE_GLYPH");
 	self:RegisterEvent("PLAYER_LEVEL_UP");
-	
+	self:RegisterEvent("PLAYER_TALENT_UPDATE");
+
 	self.scrollFrame.update = GlyphFrame_UpdateGlyphList;
 	self.scrollFrame.stepSize = 12;
 	self.scrollFrame.scrollBar.doNotHide = true;
@@ -84,7 +85,7 @@ function GlyphFrame_OnEvent (self, event, ...)
 			self:SetPoint("TOPLEFT", "PlayerTalentFrameInset", 3, -3);
 			self:SetPoint("BOTTOMRIGHT", "PlayerTalentFrameInset", -3, 3);
 		end
-	elseif ( event == "USE_GLYPH") then
+	elseif ((event == "USE_GLYPH") or (event == "PLAYER_TALENT_UPDATE")) then
 		GlyphFrame_UpdateGlyphList();
 		GlyphFrame_Update(self);
 	elseif ( event == "PLAYER_LEVEL_UP" ) then

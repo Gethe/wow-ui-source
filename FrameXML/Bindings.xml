@@ -570,7 +570,7 @@
 		ToggleTalentFrame();
 	</Binding>
 	<Binding name="TOGGLECHARACTER4">
-		TogglePVPFrame();
+		TogglePVPUI();
 	</Binding>
 	<Binding name="TOGGLECHARACTER3">
 		ToggleCharacter("PetPaperDollFrame");

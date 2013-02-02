@@ -354,7 +354,7 @@
 				if ( self:IsEnabled() ~= 0 ) then
 					if ( self.down ) then
 						self.down = nil;
-						TogglePVPFrame();
+						TogglePVPUI();
 						return;
 					end
 					PVPMicroButton_SetPushed();
@@ -366,7 +366,7 @@
 					if ( self.down ) then
 						self.down = nil;
 						if ( self:IsMouseOver() ) then
-							TogglePVPFrame();
+							TogglePVPUI();
 						end
 						UpdateMicroButtons();
 						return;

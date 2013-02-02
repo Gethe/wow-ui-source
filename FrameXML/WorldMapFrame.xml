@@ -3,13 +3,13 @@
 	<Script file="WorldMapFrame.lua"/>
 	<Include file="WorldMapFrameTemplates.xml"/>
 	<Frame name="WorldMapPlayerTemplate" virtual="true">
-		<Size x="48" y="48"/>
+		<Size x="28" y="28"/>
 		<Anchors>
 			<Anchor point="CENTER"/>
 		</Anchors>
 		<Layers>
 			<Layer level="ARTWORK">
-				<Texture name="$parentIcon" file="Interface\Minimap\MinimapArrow" setAllPoints="true" parentKey="icon"/>
+				<Texture name="$parentIcon" file="Interface\WorldMap\WorldMapArrow" setAllPoints="true" parentKey="icon"/>
 			</Layer>
 		</Layers>
 		<Scripts>
@@ -581,27 +581,27 @@
 							</OnEnter>
 						</Scripts>
 					</Frame>
-					<Frame name="WorldMapPing" framestrata="MEDIUM" hidden="true">
-						<Size x="48" y="48"/>
+					<Frame name="WorldMapPing" framestrata="FULLSCREEN" hidden="true">
+						<Size x="64" y="64"/>
 						<Anchors>
 							<Anchor point="CENTER" relativeTo="WorldMapFrame"/>
 						</Anchors>
 						<Layers>
 							<Layer level="OVERLAY">
 								<Texture parentKey="centerRing" file="Interface\minimap\UI-Minimap-Ping-Center">
-									<Size x="24" y="24"/>
+									<Size x="32" y="32"/>
 									<Anchors>
 										<Anchor point="CENTER"/>
 									</Anchors>
 								</Texture>
 								<Texture parentKey="rotatingRing" file="Interface\minimap\UI-Minimap-Ping-Rotate">
-									<Size x="36" y="36"/>
+									<Size x="48" y="48"/>
 									<Anchors>
 										<Anchor point="CENTER"/>
 									</Anchors>
 								</Texture>
 								<Texture parentKey="expandingRing" file="Interface\minimap\UI-Minimap-Ping-Expand">
-									<Size x="24" y="24"/>
+									<Size x="32" y="32"/>
 									<Anchors>
 										<Anchor point="CENTER"/>
 									</Anchors>

@@ -5,7 +5,47 @@
 		<Size>
 			<AbsDimension x="295" y="20"/>
 		</Size>
+		<Layers>
+			<Layer level="ARTWORK">
+				<Texture name="$parentBackground" file="Interface\PaperDollInfoFrame\UI-Character-ReputationBar">
+					<Size>
+						<AbsDimension x="0" y="21"/>
+					</Size>
+					<Anchors>
+						<Anchor point="LEFT">
+							<Offset x="0" y="0"/>
+						</Anchor>
+					</Anchors>
+					<TexCoords left="0.0" right="0.7578125" top="0.0" bottom="0.328125"/>
+				</Texture>
+			</Layer>
+			<Layer level="OVERLAY">
+				<FontString name="$parentFactionName" inherits="GameFontHighlightSmall" justifyH="LEFT">
+					<Size x="135" y="10"/>
+				</FontString>
+			</Layer>
+		</Layers>
 		<Frames>
+			<CheckButton parentKey="LFGBonusRepButton">
+				<Size x="16" y="16"/>
+				<Anchors>
+					<Anchor point="RIGHT" relativeTo="$parentBackground" relativePoint="LEFT" x="-2" y="0"/>
+				</Anchors>
+				<NormalTexture file="Interface\Common\ReputationStar">
+					<TexCoords left="0.5" right="1" top="0" bottom="0.5"/>
+				</NormalTexture>
+				<HighlightTexture file="Interface\Common\ReputationStar">
+					<TexCoords left="0" right="0.5" top="0.5" bottom="1"/>
+				</HighlightTexture>
+				<CheckedTexture file="Interface\Common\ReputationStar">
+					<TexCoords left="0" right="0.5" top="0" bottom="0.5"/>
+				</CheckedTexture>
+				<Scripts>
+					<OnClick>
+						SetLFGBonusFactionID(self.factionID);
+					</OnClick>
+				</Scripts>
+			</CheckButton>
 			<Button name="$parentExpandOrCollapseButton">
 				<Size>
 					<AbsDimension x="13" y="13"/>
@@ -150,52 +190,34 @@
 						</Texture>
 					</Layer>
 				</Layers>
+				<Frames>
+					<Frame parentKey="BonusIcon" hidden="true">
+						<Size x="16" y="16"/>
+						<Anchors>
+							<Anchor point="CENTER" relativeKey="$parent" relativePoint="LEFT" x="4" y="0"/>
+						</Anchors>
+						<Layers>
+							<Layer level="ARTWORK">
+								<Texture parentKey="Texture" file="Interface\Common\ReputationStar" setAllPoints="true">
+									<TexCoords left="0.5" right="1" top="0.5" bottom="1"/>
+								</Texture>
+							</Layer>
+						</Layers>
+						<Scripts>
+							<OnEnter>
+								GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+								GameTooltip:SetText(BONUS_REPUTATION_TITLE, 1, 1, 1);
+								GameTooltip:AddLine(BONUS_REPUTATION_TOOLTIP, nil, nil, nil, true);
+								GameTooltip:Show();
+							</OnEnter>
+							<OnLeave function="GameTooltip_Hide"/>
+						</Scripts>
+					</Frame>
+				</Frames>
 				<BarTexture file="Interface\PaperDollInfoFrame\UI-Character-Skills-Bar"/>
 				<BarColor r=".25" g=".25" b=".75"/>
 			</StatusBar>
 		</Frames>
-		<Layers>
-			<Layer level="ARTWORK">
-				<Texture name="$parentBackground" file="Interface\PaperDollInfoFrame\UI-Character-ReputationBar">
-					<Size>
-						<AbsDimension x="0" y="21"/>
-					</Size>
-					<Anchors>
-						<Anchor point="LEFT">
-							<Offset x="0" y="0"/>
-						</Anchor>
-					</Anchors>
-					<TexCoords left="0.0" right="0.7578125" top="0.0" bottom="0.328125"/>
-				</Texture>
-			</Layer>
-			<Layer level="OVERLAY">
-				<Texture name="$parentLeftLine" file="Interface\PaperDollInfoFrame\UI-Character-ReputationLines" hidden="true">
-					<Size>
-						<AbsDimension x="0" y="2"/>
-					</Size>
-					<Anchors>
-						<Anchor point="RIGHT">
-							<Offset x="0" y="0"/>
-						</Anchor>
-					</Anchors>
-					<TexCoords left="0" right="2" top="0" bottom="2"/>
-				</Texture>
-				<Texture name="$parentBottomLine" file="Interface\PaperDollInfoFrame\UI-Character-ReputationLines" hidden="true">
-					<Size>
-						<AbsDimension x="2" y="0"/>
-					</Size>
-					<Anchors>
-						<Anchor point="TOP">
-							<Offset x="0" y="0"/>
-						</Anchor>
-					</Anchors>
-					<TexCoords left="0" right="2" top="0" bottom="2"/>
-				</Texture>
-				<FontString name="$parentFactionName" inherits="GameFontHighlightSmall" justifyH="LEFT">
-					<Size x="135" y="10"/>
-				</FontString>
-			</Layer>
-		</Layers>
 		<Scripts>
 			<OnLoad>
 				_G[self:GetName().."ReputationBarHighlight1"]:SetPoint("TOPLEFT",self,"TOPLEFT",-2, 4);
@@ -205,9 +227,6 @@
 				_G[self:GetName().."ReputationBarAtWarHighlight1"]:SetAlpha(0.2);
 				_G[self:GetName().."ReputationBarAtWarHighlight2"]:SetAlpha(0.2);
 				_G[self:GetName().."Background"]:SetPoint("TOPRIGHT", self:GetName().."ReputationBarLeftTexture", "TOPLEFT", 0, 0);
-				_G[self:GetName().."LeftLine"]:SetWidth(0);
-				_G[self:GetName().."BottomLine"]:SetHeight(0);
-				_G[self:GetName().."BottomLine"]:SetPoint("TOP", self:GetName().."ExpandOrCollapseButton", "CENTER", 5, 0);
 			</OnLoad>
 			<OnClick>
 				ReputationBar_OnClick(self, button, down);
@@ -249,30 +268,6 @@
 						<Anchor point="TOPLEFT" x="215" y="-42"/>
 					</Anchors>
 				</FontString>
-			</Layer>
-			<Layer level="OVERLAY">
-				<Texture name="ReputationFrameTopTreeTexture" file="Interface\PaperDollInfoFrame\UI-Character-ReputationLines" hidden="true">
-					<Size>
-						<AbsDimension x="2" y="4"/>
-					</Size>
-					<Anchors>
-						<Anchor point="TOP" relativeTo="ReputationFrame" relativePoint="TOPLEFT">
-							<Offset x="35" y="-76"/>
-						</Anchor>
-					</Anchors>
-					<TexCoords left="0" right="2" top="0" bottom="2"/>
-				</Texture>
-				<Texture name="ReputationFrameTopTreeTexture2" file="Interface\PaperDollInfoFrame\UI-Character-ReputationLines" hidden="true">
-					<Size>
-						<AbsDimension x="2" y="4"/>
-					</Size>
-					<Anchors>
-						<Anchor point="TOP" relativeTo="ReputationFrame" relativePoint="TOPLEFT">
-							<Offset x="53" y="-76"/>
-						</Anchor>
-					</Anchors>
-					<TexCoords left="0" right="2" top="0" bottom="2"/>
-				</Texture>
 			</Layer>
 		</Layers>
 		<Frames>

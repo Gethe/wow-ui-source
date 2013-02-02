@@ -199,7 +199,7 @@
 		</Animations>
 		<Layers>
 			<Layer level="BORDER">
-				<Texture file="Interface\PlayerFrame\Warlock-DestructionUI" setAllPoints="true">
+				<Texture parentKey="border" file="Interface\PlayerFrame\Warlock-DestructionUI" setAllPoints="true">
 					<TexCoords left="0.15234375" right="0.29296875" top="0.32812500" bottom="0.93750000"/>
 				</Texture>
 			</Layer>
@@ -365,7 +365,7 @@
 				</HitRectInsets>
 				<Layers>
 					<Layer level="BACKGROUND">
-						<Texture file="Interface\PlayerFrame\Warlock-DestructionUI" setAllPoints="true">
+						<Texture parentKey="background" file="Interface\PlayerFrame\Warlock-DestructionUI" setAllPoints="true">
 							<Size x="148" y="18"/>	
 							<TexCoords left="0.00390625" right="0.58203125" top="0.01562500" bottom="0.29687500"/>
 						</Texture>

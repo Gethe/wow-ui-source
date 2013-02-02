@@ -111,10 +111,10 @@ function UpdateMicroButtons()
 		MainMenuMicroButton_SetNormal();
 	end
 
-	if ( PVPFrame and PVPFrame:IsShown() ) then
+	if ( PVPUIFrame and PVPUIFrame:IsShown() ) then
 		PVPMicroButton:SetButtonState("PUSHED", 1);
 		PVPMicroButton_SetPushed();
-	elseif ( PVPFrame ) then
+	else
 		if ( playerLevel < PVPMicroButton.minLevel or factionGroup == "Neutral" ) then
 			PVPMicroButton:Disable();
 		else
@@ -122,9 +122,6 @@ function UpdateMicroButtons()
 			PVPMicroButton:SetButtonState("NORMAL");
 			PVPMicroButton_SetNormal();
 		end
-	else
-		PVPMicroButton:Enable();
-		PVPMicroButton:SetButtonState("NORMAL");
 	end
 
 	GuildMicroButton_UpdateTabard();
@@ -198,6 +195,16 @@ end
 
 function MicroButtonPulseStop(self)
 	UIFrameFlashStop(self.Flash);
+end
+
+function PVPMicroButton_SetPushed()
+	PVPMicroButtonTexture:SetPoint("TOP", PVPMicroButton, "TOP", 5, -31);
+	PVPMicroButtonTexture:SetAlpha(0.5);
+end
+
+function PVPMicroButton_SetNormal()
+	PVPMicroButtonTexture:SetPoint("TOP", PVPMicroButton, "TOP", 6, -30);
+	PVPMicroButtonTexture:SetAlpha(1.0);
 end
 
 function AchievementMicroButton_OnEvent(self, event, ...)

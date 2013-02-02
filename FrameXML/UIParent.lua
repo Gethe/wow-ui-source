@@ -26,7 +26,7 @@ UIPanelWindows["HelpFrame"] =					{ area = "center",		pushable = 0,	whileDead = 
 UIPanelWindows["CharacterFrame"] =				{ area = "left",			pushable = 3,	whileDead = 1};
 UIPanelWindows["SpellBookFrame"] =				{ area = "left",			pushable = 1,	whileDead = 1, width = 575, height = 545 };
 UIPanelWindows["TaxiFrame"] =					{ area = "left",			pushable = 0, 	width = 605, height = 580 };
-UIPanelWindows["PVPFrame"] =					{ area = "left",			pushable = 1,	whileDead = 1};
+UIPanelWindows["PVPUIFrame"] =					{ area = "left",			pushable = 0,	whileDead = 1, width = 563};
 UIPanelWindows["PVPBannerFrame"] =				{ area = "left",			pushable = 1};
 UIPanelWindows["PetStableFrame"] =				{ area = "left",			pushable = 0};
 UIPanelWindows["PVEFrame"] =					{ area = "left",			pushable = 0, 	whileDead = 1, width = 563};
@@ -438,6 +438,10 @@ function ItemUpgrade_LoadUI()
 	UIParentLoadAddOn("Blizzard_ItemUpgradeUI");
 end
 
+function PVP_LoadUI()
+	UIParentLoadAddOn("Blizzard_PVPUI");
+end
+
 --[[
 function MovePad_LoadUI()
 	UIParentLoadAddOn("Blizzard_MovePad");
@@ -635,6 +639,18 @@ function TogglePetJournal(whichFrame)
 	end
 	if (whichFrame and PetJournalParent:IsShown()) then
 		PetJournalParent_SetTab(PetJournalParent, whichFrame);
+	end
+end
+
+function TogglePVPUI()
+	if (IsBlizzCon()) then
+		return;
+	end
+	if (not PVPUIFrame) then
+		PVP_LoadUI();
+	end
+	if ( UnitLevel("player") >= SHOW_PVP_LEVEL and not IsPlayerNeutral()) then
+		PVPUIFrame_ToggleFrame()
 	end
 end
 

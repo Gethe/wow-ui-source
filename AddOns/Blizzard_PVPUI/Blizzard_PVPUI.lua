@@ -1,5 +1,33 @@
 MAX_ARENA_TEAMS = 3;
 MAX_ARENA_TEAM_MEMBERS = 10;
+MAX_BLACKLIST_BATTLEGROUNDS = 2;
+
+HORDE_TEX_COORDS = {left=0.00195313, right=0.63867188, top=0.56445313, bottom=0.68945313}
+ALLIANCE_TEX_COORDS = {left=0.00195313, right=0.63867188, top=0.31054688, bottom=0.43554688}
+
+WARGAME_HEADER_HEIGHT = 16;
+BATTLEGROUND_BUTTON_HEIGHT = 40;
+
+BATTLEFIELD_TIMER_DELAY = 3;
+BATTLEFIELD_TIMER_THRESHOLDS = {600, 300, 60, 15};
+BATTLEFIELD_TIMER_THRESHOLD_INDEX = 1;
+
+local MAX_SHOWN_BATTLEGROUNDS = 8;
+
+StaticPopupDialogs["CONFIRM_JOIN_SOLO"] = {
+	text = CONFIRM_JOIN_SOLO,
+	button1 = YES,
+	button2 = NO,
+	OnAccept = function (self)
+		HonorFrame_Queue(false, true);
+	end,
+	OnShow = function(self)
+	end,
+	OnCancel = function (self)
+	end,
+	hideOnEscape = 1,
+	timeout = 0,
+}
 
 ---------------------------------------------------------------
 -- PVP FRAME
@@ -30,7 +58,7 @@ local INSTANCE_TEXTURELIST = {
 }
 
 function PVPUI_GetSelectedArenaTeam()
-	if PVPUIFrame:IsVisible() and ArenaTeamFrame.selectedTeam then
+	if PVPUIFrame:IsVisible() then
 		return ArenaTeamFrame.selectedTeam;
 	end
 	return nil;
@@ -39,10 +67,45 @@ end
 function PVPUIFrame_OnLoad(self)
 	RaiseFrameLevel(self.Shadows);
 	PanelTemplates_SetNumTabs(self, 2);
-	PVPFrame_TabClicked(PVPUIFrame.Tab1);
-
+	
+	if (UnitFactionGroup("player") == PLAYER_FACTION_GROUP[0]) then
+		SetPortraitToTexture(self.portrait, "Interface\\Icons\\INV_BannerPVP_01");
+		HonorFrame.BonusFrame.BattlegroundTexture:SetTexCoord(HORDE_TEX_COORDS.left, HORDE_TEX_COORDS.right,
+															HORDE_TEX_COORDS.top, HORDE_TEX_COORDS.bottom)
+	else
+		SetPortraitToTexture(self.portrait, "Interface\\Icons\\INV_BannerPVP_02");
+		HonorFrame.BonusFrame.BattlegroundTexture:SetTexCoord(ALLIANCE_TEX_COORDS.left, ALLIANCE_TEX_COORDS.right,
+															ALLIANCE_TEX_COORDS.top, ALLIANCE_TEX_COORDS.bottom)
+	end
+	
 	-- TEMP to get rewards for random/holiday
 	RequestBattlegroundInstanceInfo(1);
+	
+	self:RegisterEvent("BATTLEFIELDS_CLOSED");
+end
+
+function PVPUIFrame_OnShow(self)
+	if (UnitLevel("player") < SHOW_PVP_LEVEL or IsBlizzCon()) then
+		self:Hide();
+		return;
+	end
+	UpdateMicroButtons();
+	PlaySound("igCharacterInfoOpen");
+	PVPUIFrame_TabOnClick(PVPUIFrame.Tab1);
+end
+
+function PVPUIFrame_OnHide(self)
+	UpdateMicroButtons();
+	PlaySound("igCharacterInfoClose");
+	ClearBattlemaster();
+end
+
+function PVPUIFrame_OnEvent(self, event, ...)
+	if (event == "BATTLEFIELDS_CLOSED") then
+		if (self:IsShown()) then
+			self:Hide();
+		end
+	end
 end
 
 function PVPUIFrame_ToggleFrame(sidePanelName, selection)
@@ -53,7 +116,7 @@ function PVPUIFrame_ToggleFrame(sidePanelName, selection)
 			if ( sidePanel and sidePanel:IsShown() and sidePanel:getSelection() == selection ) then
 				HideUIPanel(self);
 			else
-				PVEFrame_ShowFrame(sidePanelName, selection);
+				PVPUIFrame_ShowFrame(sidePanelName, selection);
 			end
 		else
 			HideUIPanel(self);
@@ -121,13 +184,22 @@ end
 local pvpFrames = { "HonorFrame", "ConquestFrame", "WarGamesFrame" }
 
 function PVPQueueFrame_OnLoad(self)
-	SetPortraitToTexture(self.CategoryButton1.Icon, "Interface\\Icons\\INV_Helmet_08");
+	--set up side buttons
+	local englishFaction = UnitFactionGroup("player");	
+	SetPortraitToTexture(self.CategoryButton1.Icon, "Interface\\Icons\\achievement_bg_winwsg");
 	self.CategoryButton1.Name:SetText(PVP_TAB_HONOR);
-	SetPortraitToTexture(self.CategoryButton2.Icon, "Interface\\LFGFrame\\UI-LFR-PORTRAIT");
+	self.CategoryButton1.CurrencyIcon:SetTexture("Interface\\PVPFrame\\PVPCurrency-Honor-"..englishFaction);
+	local _, currencyAmount = GetCurrencyInfo(HONOR_CURRENCY);
+	self.CategoryButton1.CurrencyAmount:SetText(currencyAmount);
+	SetPortraitToTexture(self.CategoryButton2.Icon, "Interface\\Icons\\achievement_bg_killxenemies_generalsroom");
 	self.CategoryButton2.Name:SetText(PVP_TAB_CONQUEST);
-	SetPortraitToTexture(self.CategoryButton3.Icon, "Interface\\Icons\\Icon_Scenarios");
+	self.CategoryButton2.CurrencyIcon:SetTexture("Interface\\PVPFrame\\PVPCurrency-Conquest-"..englishFaction);
+	_, currencyAmount = GetCurrencyInfo(CONQUEST_CURRENCY);
+	self.CategoryButton2.CurrencyAmount:SetText(currencyAmount);
+	SetPortraitToTexture(self.CategoryButton3.Icon, "Interface\\Icons\\ability_warrior_offensivestance");
 	self.CategoryButton3.Name:SetText(WARGAMES);
-	-- disable
+	
+	-- disable unusable side buttons
 	if ( UnitLevel("player") < SCENARIOS_SHOW_LEVEL ) then
 		PVPQueueFrame_SetCategoryButtonState(self.CategoryButton3, false);
 		self.CategoryButton3.tooltip = format(FEATURE_BECOMES_AVAILABLE_AT_LEVEL, SCENARIOS_SHOW_LEVEL);
@@ -140,9 +212,134 @@ function PVPQueueFrame_OnLoad(self)
 		PVPQueueFrame:SetScript("OnEvent", PVPQueueFrame_OnEvent);
 		PVPQueueFrame:RegisterEvent("PLAYER_LEVEL_UP");
 	end
+	
 	-- set up accessors
 	self.getSelection = PVPQueueFrame_GetSelection;
 	self.update = PVPQueueFrame_Update;
+	
+	--register for events
+	self:RegisterEvent("CURRENCY_DISPLAY_UPDATE");
+	self:RegisterEvent("UPDATE_BATTLEFIELD_STATUS");
+	self:RegisterEvent("ZONE_CHANGED");
+	self:RegisterEvent("ZONE_CHANGED_NEW_AREA");
+	self:RegisterEvent("BATTLEFIELD_MGR_QUEUE_REQUEST_RESPONSE");
+	self:RegisterEvent("BATTLEFIELD_MGR_QUEUE_INVITE");
+	self:RegisterEvent("BATTLEFIELD_MGR_ENTRY_INVITE");
+	self:RegisterEvent("BATTLEFIELD_MGR_EJECT_PENDING");
+	self:RegisterEvent("BATTLEFIELD_MGR_EJECTED");
+	self:RegisterEvent("BATTLEFIELD_MGR_ENTERED");
+	self:RegisterEvent("WARGAME_REQUESTED");
+	self:RegisterEvent("PVP_RATED_STATS_UPDATE");
+	self:RegisterEvent("PVP_REWARDS_UPDATE");
+	self:RegisterEvent("BATTLEFIELDS_SHOW");
+	self:RegisterEvent("VARIABLES_LOADED");
+end
+
+function PVPQueueFrame_OnEvent(self, event, ...)
+	if (event == "PLAYER_LEVEL_UP") then
+		local level = ...;
+		local allAvailable = true;
+
+		if ( level >= SCENARIOS_SHOW_LEVEL ) then
+			PVPQueueFrame_SetCategoryButtonState(self.CategoryButton3, true);
+			self.CategoryButton3.tooltip = nil;
+		else
+			allAvailable = false;
+		end
+
+		if ( level >= RAID_FINDER_SHOW_LEVEL ) then
+			PVPQueueFrame_SetCategoryButtonState(self.CategoryButton2, true);
+			self.CategoryButton2.tooltip = nil;
+		else
+			allAvailable = false;
+		end
+
+		if ( allAvailable ) then
+			PVPQueueFrame:UnregisterEvent("PLAYER_LEVEL_UP");		
+		end
+	elseif(event == "CURRENCY_DISPLAY_UPDATE") then
+		PVPQueueFrame_UpdateCurrencies(self)
+		if ( self:IsShown() ) then
+			RequestPVPRewards();
+		end
+	elseif ( event == "UPDATE_BATTLEFIELD_STATUS" or event == "ZONE_CHANGED_NEW_AREA" or event == "ZONE_CHANGED") then
+		local arg1 = ...
+		PVP_UpdateStatus(false, arg1);
+	elseif ( event == "BATTLEFIELD_MGR_QUEUE_REQUEST_RESPONSE" ) then
+		local battleID, accepted, warmup, inArea, loggingIn, areaName = ...;
+		if(not loggingIn) then
+			if(accepted) then
+				if(warmup) then
+					StaticPopup_Show("BFMGR_CONFIRM_WORLD_PVP_QUEUED_WARMUP", areaName, nil, arg1);
+				elseif (inArea) then
+					StaticPopup_Show("BFMGR_EJECT_PENDING", areaName, nil, arg1);
+				else
+					StaticPopup_Show("BFMGR_CONFIRM_WORLD_PVP_QUEUED", areaName, nil, arg1);
+				end
+			else
+				StaticPopup_Show("BFMGR_DENY_WORLD_PVP_QUEUED", areaName, nil, arg1);
+			end
+		end
+		PVP_UpdateStatus(false);
+	elseif ( event == "BATTLEFIELD_MGR_QUEUE_INVITE" ) then
+		local battleID, warmup, areaName = ...;
+		if(warmup) then
+			local dialog = StaticPopup_Show("BFMGR_INVITED_TO_QUEUE_WARMUP", areaName, nil, battleID);
+		else
+			local dialog = StaticPopup_Show("BFMGR_INVITED_TO_QUEUE", areaName, nil, battleID);
+		end
+		StaticPopup_Hide("BFMGR_EJECT_PENDING");
+		PVP_UpdateStatus(false);
+	elseif ( event == "BATTLEFIELD_MGR_ENTRY_INVITE" ) then
+		local battleID, areaName = ...;
+		local dialog = StaticPopup_Show("BFMGR_INVITED_TO_ENTER", areaName, nil, battleID);
+		StaticPopup_Hide("BFMGR_EJECT_PENDING");
+		PVP_UpdateStatus(false);
+	elseif ( event == "BATTLEFIELD_MGR_EJECT_PENDING" ) then
+		local battleID, remote, areaName = ...;
+		if(remote) then
+			StaticPopup_Show("BFMGR_EJECT_PENDING_REMOTE", areaName, nil, arg1);
+		else
+		StaticPopup_Show("BFMGR_EJECT_PENDING", areaName, nil, arg1);
+		end
+		PVP_UpdateStatus(false);
+	elseif ( event == "BATTLEFIELD_MGR_EJECTED" ) then
+		local battleID, playerExited, relocated, battleActive, lowLevel, areaName = ...;
+		StaticPopup_Hide("BFMGR_INVITED_TO_QUEUE");
+		StaticPopup_Hide("BFMGR_INVITED_TO_QUEUE_WARMUP");
+		StaticPopup_Hide("BFMGR_INVITED_TO_ENTER");
+		StaticPopup_Hide("BFMGR_EJECT_PENDING");
+		if(lowLevel) then
+			StaticPopup_Show("BFMGR_PLAYER_LOW_LEVEL", areaName, nil, arg1);
+		elseif (playerExited and battleActive and not relocated) then
+			StaticPopup_Show("BFMGR_PLAYER_EXITED_BATTLE", areaName, nil, arg1);
+		end
+		PVP_UpdateStatus(false);
+	elseif ( event == "BATTLEFIELD_MGR_ENTERED" ) then
+		StaticPopup_Hide("BFMGR_INVITED_TO_QUEUE");
+		StaticPopup_Hide("BFMGR_INVITED_TO_QUEUE_WARMUP");
+		StaticPopup_Hide("BFMGR_INVITED_TO_ENTER");
+		StaticPopup_Hide("BFMGR_EJECT_PENDING");
+		PVP_UpdateStatus(false);
+	elseif ( event == "WARGAME_REQUESTED" ) then
+		local challengerName, bgName, timeout = ...;
+		PVPFramePopup_SetupPopUp(event, challengerName, bgName, timeout);
+	elseif ( event == "PVP_RATED_STATS_UPDATE" ) then
+		PVPQueueFrame_UpdateCurrencies(self);
+	elseif ( event == "PVP_REWARDS_UPDATE" ) then
+		PVPQueueFrame_UpdateCurrencies(self);
+	elseif ( event == "BATTLEFIELDS_SHOW" ) then
+		local isArena, bgID = ...;
+		if (isArena) then
+			PVPUIFrame_ShowFrame("PVPQueueFrame", ConquestFrame);
+		else
+			PVPUIFrame_ShowFrame("PVPQueueFrame", HonorFrame);
+			HonorFrame_SetType("specific");
+			HonorFrameSpecificList_FindAndSelectBattleground(bgID);
+		end
+	elseif ( event == "VARIABLES_LOADED" ) then
+		HonorFrameBonusFrame_UpdateExcludedBattlegrounds();
+	end
 end
 
 function PVPQueueFrame_SetCategoryButtonState(button, enabled)
@@ -158,30 +355,6 @@ function PVPQueueFrame_SetCategoryButtonState(button, enabled)
 	button:SetEnabled(enabled);
 end
 
-function PVPQueueFrame_OnEvent(self, event, ...)
-	local level = ...;
-	local allAvailable = true;
-
-	if ( level >= SCENARIOS_SHOW_LEVEL ) then
-		PVPQueueFrame_SetCategoryButtonState(self.CategoryButton3, true);
-		self.CategoryButton3.tooltip = nil;
-	else
-		allAvailable = false;
-	end
-
-	if ( level >= RAID_FINDER_SHOW_LEVEL ) then
-		PVPQueueFrame_SetCategoryButtonState(self.CategoryButton2, true);
-		self.CategoryButton2.tooltip = nil;
-	else
-		allAvailable = false;
-	end
-
-	if ( allAvailable ) then
-		PVPQueueFrame:SetScript("OnEvent", nil);
-		PVPQueueFrame:UnregisterEvent("PLAYER_LEVEL_UP");		
-	end
-end
-
 function PVPQueueFrame_GetSelection(self)
 	return self.selection;
 end
@@ -190,9 +363,19 @@ function PVPQueueFrame_Update(self, frame)
 	PVPQueueFrame_ShowFrame(frame);
 end
 
+
+function PVPQueueFrame_UpdateCurrencies(self)
+	ConquestFrame_UpdateConquestBar(ConquestFrame)
+	local _, ratedBGreward = GetPersonalRatedBGInfo();
+	ConquestFrame.RatedBGReward:SetText(ratedBGreward);
+	local _, currencyAmount = GetCurrencyInfo(HONOR_CURRENCY);
+	self.CategoryButton1.CurrencyAmount:SetText(currencyAmount);
+	_, currencyAmount = GetCurrencyInfo(CONQUEST_CURRENCY);
+	self.CategoryButton2.CurrencyAmount:SetText(currencyAmount);
+end
+
 function PVPQueueFrame_OnShow(self)
-	SetPortraitToTexture(PVPUIFrame.portrait, "Interface\\LFGFrame\\UI-LFG-PORTRAIT");
-	PVPUIFrame.TitleText:SetText(GROUP_FINDER);
+	PVPUIFrame.TitleText:SetText(PLAYER_V_PLAYER);
 	PVPUIFrame.TopTileStreaks:Show()
 end
 
@@ -249,7 +432,27 @@ function HonorFrame_OnLoad(self)
 			BlacklistIDs[mapID] = true;
 		end
 	end
+	
+	self:RegisterEvent("PLAYER_ENTERING_WORLD");
+	self:RegisterEvent("PVPQUEUE_ANYWHERE_SHOW");
+	self:RegisterEvent("PVPQUEUE_ANYWHERE_UPDATE_AVAILABLE");
+	self:RegisterEvent("PVP_RATED_STATS_UPDATE");
+	self:RegisterEvent("GROUP_ROSTER_UPDATE");
 end
+
+function HonorFrame_OnEvent(self, event, ...)
+	if (event == "PLAYER_ENTERING_WORLD") then
+		HonorFrameSpecificList_Update();
+		HonorFrameBonusFrame_Update();
+		PVP_UpdateStatus(false, nil);
+	elseif ( event == "PVPQUEUE_ANYWHERE_SHOW" or event ==  "PVPQUEUE_ANYWHERE_UPDATE_AVAILABLE"
+			or event == "PVP_RATED_STATS_UPDATE") then
+		HonorFrameSpecificList_Update();
+		HonorFrameBonusFrame_Update();
+	elseif ( event == "GROUP_ROSTER_UPDATE" ) then
+		HonorFrame_UpdateQueueButtons();
+	end
+end	
 
 function HonorFrameTypeDropDown_Initialize()
 	local info = UIDropDownMenu_CreateInfo();
@@ -310,7 +513,11 @@ function HonorFrame_UpdateQueueButtons()
 	end
 end
 
-function HonorFrame_Queue(isParty)
+function HonorFrame_Queue(isParty, forceSolo)
+	if (not isParty and not forceSolo and GetNumGroupMembers() > 1) then
+		StaticPopup_Show("CONFIRM_JOIN_SOLO");
+		return;
+	end
 	local HonorFrame = HonorFrame;
 	if ( HonorFrame.type == "specific" and HonorFrame.SpecificFrame.selectionID ) then
 		JoinBattlefield(HonorFrame.SpecificFrame.selectionID, isParty);
@@ -364,14 +571,55 @@ function HonorFrameSpecificList_Update()
 			end
 		end
 	end
+	buttonCount = max(buttonCount, 0);	-- safety check
 	for i = buttonCount + 1, numButtons do
 		buttons[i]:Hide();
 	end
 
-	local totalHeight = (buttonCount + offset) * WARGAME_BUTTON_HEIGHT;
+	local totalHeight = (buttonCount + offset) * BATTLEGROUND_BUTTON_HEIGHT;
 	HybridScrollFrame_Update(scrollFrame, totalHeight, numButtons * scrollFrame.buttonHeight);
 	
 	HonorFrame_UpdateQueueButtons();
+end
+
+function HonorFrameSpecificList_FindAndSelectBattleground(bgID)
+	local numBattlegrounds = GetNumBattlegroundTypes();
+	local buttonCount = 0;
+	local bgButtonIndex = 0;
+
+	for i = 1, numBattlegrounds do
+		local localizedName, canEnter, isHoliday, isRandom, battleGroundID = GetBattlegroundInfo(i);
+		if ( localizedName and canEnter and not isRandom ) then
+			buttonCount = buttonCount + 1;
+			if ( battleGroundID == bgID ) then
+				bgButtonIndex = buttonCount;
+			end
+		end
+	end
+
+	if ( bgButtonIndex == 0 ) then
+		-- didn't find the bg
+		return;
+	end
+
+	HonorFrame.SpecificFrame.selectionID = bgID;
+	-- scroll the list if necessary
+	if ( numBattlegrounds > MAX_SHOWN_BATTLEGROUNDS ) then
+		local offset;
+		if ( bgButtonIndex <= MAX_SHOWN_BATTLEGROUNDS ) then
+			-- if the bg is on the first page, scroll to the top
+			offset = 0;
+		elseif ( bgButtonIndex > ( numBattlegrounds - MAX_SHOWN_BATTLEGROUNDS ) ) then
+			-- if the bg is on the last page, scroll to the bottom
+			offset = ( numBattlegrounds - MAX_SHOWN_BATTLEGROUNDS ) * BATTLEGROUND_BUTTON_HEIGHT;
+		else
+			-- otherwise scroll to put that bg to the top
+			offset = ( bgButtonIndex - 1 ) * BATTLEGROUND_BUTTON_HEIGHT;
+		end
+		HonorFrame.SpecificFrame.scrollBar:SetValue(offset);
+	end
+
+	HonorFrameSpecificList_Update();
 end
 
 function HonorFrameSpecificBattlegroundButton_OnClick(self)
@@ -632,6 +880,14 @@ function ConquestFrame_OnLoad(self)
 	local color = RAID_CLASS_COLORS[class].colorStr;
 	self.RatedBG.TeamNameText:SetText("|c"..color..name..FONT_COLOR_CODE_CLOSE);
 	
+	self:RegisterEvent("GROUP_ROSTER_UPDATE");
+	self:RegisterEvent("ARENA_TEAM_UPDATE");
+	self:RegisterEvent("ARENA_TEAM_ROSTER_UPDATE");
+	self:RegisterEvent("PVP_RATED_STATS_UPDATE");
+end
+
+function ConquestFrame_OnEvent(self, event, ...)
+	ConquestFrame_OnUpdate(self);
 end
 
 function ConquestFrame_OnShow(self)
@@ -674,10 +930,12 @@ function ConquestFrame_UpdateArenas(self)
 		local teamName, teamSize, teamRating, teamPlayed, teamWins,  seasonTeamPlayed, 
 		seasonTeamWins, playerPlayed, seasonPlayerPlayed, teamRank, playerRating = GetArenaTeam(i);
 		if (teamName) then
+			arenaButton.hasTeam = true;
 			arenaButton.TeamNameText:SetText(teamName);
 			arenaButton.RatingText:SetText(teamRating);
 			arenaButton.RatingLabel:Show();
 		else
+			arenaButton.hasTeam = nil;
 			arenaButton.TeamNameText:SetFormattedText(NO_ARENA_TEAM, CONQUEST_SIZE_STRINGS[i]);
 			arenaButton.RatingText:SetText("");
 			arenaButton.RatingLabel:Hide();
@@ -707,13 +965,32 @@ function ConquestFrame_UpdateJoinButton()
 	button:Disable();
 end
 
-function ConquestFrame_SelectButton(button)
+function ConquestFrameButton_OnClick(self, button)
+	CloseDropDownMenus();
 	if ( ConquestFrame.selectedButton ) then
 		ConquestFrame.selectedButton.SelectedTexture:Hide();
 	end
-	button.SelectedTexture:Show();
-	ConquestFrame.selectedButton = button;
+	self.SelectedTexture:Show();
+	ConquestFrame.selectedButton = self;
 	ConquestFrame_UpdateJoinButton();
+	
+	if (button == "RightButton") then
+		local team = {};
+		local numMembers = GetNumArenaTeamMembers(self.id, 1);
+		if (numMembers == 0) then
+			return;
+		end
+		local index = 1;
+		for i=1, numMembers do
+			local name, _, _, class, online = GetArenaTeamRosterInfo(self.id, i);
+			if (name ~= UnitName("player")) then
+				team[index] = {["class"] = class, ["name"] = name, ["online"] = online};
+				index = index + 1;
+			end
+		end
+		UIDropDownMenu_Initialize(ConquestFrame.ArenaInviteMenu, ArenaInviteMenu_Init, "MENU", nil, team);
+		ToggleDropDownMenu(1, nil, ConquestFrame.ArenaInviteMenu, self, 150, 30, team);
+	end
 end
 
 function ConquestFrameJoinButton_OnClick(self)
@@ -724,8 +1001,60 @@ function ConquestFrameJoinButton_OnClick(self)
 	end
 end
 
-
---------- Conquest Bar Tooltips ----------
+local INVITE_DROPDOWN = 1;
+function ArenaInviteMenu_Init(self, level, team)
+	local info = UIDropDownMenu_CreateInfo();
+	info.notCheckable = true;
+	info.value = nil;
+	
+	if (level == 1 and (not team or not team[1])) then
+		info.text = INVITE_TEAM_MEMBERS;
+		info.disabled = true;
+		info.func =  nil;
+		info.hasArrow = true;
+		info.value = INVITE_DROPDOWN;
+		UIDropDownMenu_AddButton(info, level)
+		
+		info.text = CANCEL
+		info.disabled = nil;
+		info.hasArrow = nil;
+		info.value = nil;
+		info.func = nil
+		UIDropDownMenu_AddButton(info, level)
+		return;
+	end
+	
+	if (UIDROPDOWNMENU_MENU_VALUE == INVITE_DROPDOWN) then
+		for i=1, #team do
+			if (team[i].online) then
+				local color = RAID_CLASS_COLORS[team[i].class].colorStr
+				info.text = "|c"..color..team[i].name..FONT_COLOR_CODE_CLOSE;
+				info.func = function (menu, name) InviteToGroup(name); end
+				info.arg1 = team[i].name;
+				info.disabled = nil;
+			else
+				info.disabled = true;
+				info.text = team[i].name;
+			end
+			UIDropDownMenu_AddButton(info, level)
+		end
+	end
+	
+	if (level == 1) then
+		info.text = INVITE_TEAM_MEMBERS;
+		info.func =  nil;
+		info.hasArrow = true;
+		info.value = INVITE_DROPDOWN;
+		info.menuList = team;
+		UIDropDownMenu_AddButton(info, level)
+		info.text = CANCEL
+		info.value = nil;
+		info.hasArrow = nil;
+		info.menuList = nil;
+		UIDropDownMenu_AddButton(info, level)
+	end
+end
+--------- Conquest Tooltips ----------
 
 function PVPFrameConquestBar_OnEnter(self)
 	local currencyName = GetCurrencyInfo(CONQUEST_CURRENCY);
@@ -767,6 +1096,35 @@ function PVPFrameConquestBar_OnEnter(self)
 	GameTooltip:AddDoubleLine(" -"..FROM_RANDOMBG, format(CURRENCY_WEEKLY_CAP_FRACTION, randomPointsThisWeek, maxRandomPointsThisWeek), r, g, b, r, g, b);
 
 	GameTooltip:Show();
+end
+
+function ConquestFrameButton_OnEnter(self)
+	if (self.hasTeam or self.id == 4) then --if this is an arena button and the team exists, or if it's the rated BGs
+		GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+		if (self.id < #CONQUEST_SIZES) then --if this an arena, not the rated BG
+			local teamName, _, teamRating, teamPlayed, teamWins = GetArenaTeam(self.id);
+			local _, _, _, _, _, _, bestRating = GetPersonalRatedArenaInfo(self.id);
+			GameTooltip:SetText(CONQUEST_SIZE_STRINGS[self.id].." "..teamName);
+			GameTooltip:AddLine(ARENA_WEEKLY_STATS, 1, 1, 1);
+			GameTooltip:AddLine(" ");
+			
+			GameTooltip:AddLine(NORMAL_FONT_COLOR_CODE..PVP_CURRENT_RATING..FONT_COLOR_CODE_CLOSE.." "..teamRating, 1, 1, 1);
+			local losses = teamPlayed - teamWins;
+			GameTooltip:AddLine(NORMAL_FONT_COLOR_CODE..PVP_RECORD..FONT_COLOR_CODE_CLOSE.." "..teamWins.."-"..losses, 1, 1, 1);
+			GameTooltip:AddLine(" ");
+			
+			GameTooltip:AddLine(PVP_INVITE_TEAM_TOOLTIP, 1, 1, 1);
+		else
+			GameTooltip:SetText(self.TeamNameText:GetText());
+			GameTooltip:AddLine(ARENA_WEEKLY_STATS, 1, 1, 1);
+			GameTooltip:AddLine(" ");
+			
+			local rating, _, _, _, _, _, bestRating = GetPersonalRatedBGInfo()
+			GameTooltip:AddLine(NORMAL_FONT_COLOR_CODE..PVP_CURRENT_RATING..FONT_COLOR_CODE_CLOSE.." "..rating, 1, 1, 1);
+			GameTooltip:AddLine(NORMAL_FONT_COLOR_CODE..PVP_BEST_RATING..FONT_COLOR_CODE_CLOSE.." "..bestRating, 1, 1, 1);
+		end
+		GameTooltip:Show();
+	end
 end
 
 ---------------------------------------------------------------
@@ -820,7 +1178,7 @@ function WarGamesFrame_GetTopButton(offset)
 		if ( i == 1 or i == otherHeaderIndex ) then
 			buttonHeight =	WARGAME_HEADER_HEIGHT;
 		else
-			buttonHeight = WARGAME_BUTTON_HEIGHT;
+			buttonHeight = BATTLEGROUND_BUTTON_HEIGHT;
 		end
 		if ( heightLeft - buttonHeight <= 0 ) then
 			return i - 1, heightLeft;
@@ -860,7 +1218,7 @@ function WarGamesFrame_Update()
 					button.Header:SetNormalTexture("Interface\\Buttons\\UI-MinusButton-Up"); 
 				end
 			else
-				button:SetHeight(WARGAME_BUTTON_HEIGHT);
+				button:SetHeight(BATTLEGROUND_BUTTON_HEIGHT);
 				button.Header:Hide();
 				local warGame = button.Entry;
 				warGame:Show();
@@ -901,7 +1259,7 @@ function WarGamesFrame_Update()
 		numHeaders = numHeaders + 1;
 	end
 	
-	local totalHeight = numHeaders * WARGAME_HEADER_HEIGHT + (numWarGames - numHeaders) * WARGAME_BUTTON_HEIGHT;
+	local totalHeight = numHeaders * WARGAME_HEADER_HEIGHT + (numWarGames - numHeaders) * BATTLEGROUND_BUTTON_HEIGHT;
 	HybridScrollFrame_Update(scrollFrame, totalHeight, 208);
 	
 	WarGameStartButton_Update();
@@ -991,20 +1349,38 @@ end
 -- ARENA TEAM MANAGEMENT
 ---------------------------------------------------------------
 
+function PVPArenaTeamsFrame_OnLoad(self)
+	self:RegisterEvent("ARENA_TEAM_UPDATE");
+	self:RegisterEvent("ARENA_TEAM_ROSTER_UPDATE");
+end
+
+function PVPArenaTeamsFrame_OnEvent(self, event, ...)
+	if (event == "ARENA_TEAM_UPDATE") then
+		PVPArenaTeamsFrame_UpdateTeams(self);
+		PVPArenaTeamsFrame_ShowTeam(self);
+	elseif (event == "ARENA_TEAM_ROSTER_UPDATE") then
+		PVPArenaTeamsFrame_ShowTeam(self);
+	end
+end
+
 function PVPArenaTeamsFrame_OnShow(self)
 	ArenaTeamFrame:Show();
 	PVPArenaTeamsFrame_UpdateTeams(self);
 	PVPArenaTeamsFrame_ShowTeam(self);
 	PVPUIFrame.TopTileStreaks:Hide();
+	PVPUIFrame.TitleText:SetText(ARENA_TEAMS);
 end
 
 function PVPArenaTeamsFrame_ShowTeam(self, teamIndex)
+	local frame = ArenaTeamFrame;
 	if (not teamIndex or teamIndex > 3) then
 		teamIndex = ArenaTeamFrame.selectedTeam or self.defaultTeam;
 	end
 	if (not teamIndex) then
-		--TODO, no arena team overlay
+		frame.NoTeams:Show()
 		return;
+	else
+		frame.NoTeams:Hide()
 	end
 	
 	PVPArenaTeamsFrame_SelectButton(teamIndex);
@@ -1018,7 +1394,6 @@ function PVPArenaTeamsFrame_ShowTeam(self, teamIndex)
 	emblem, emblemColor.r, emblemColor.g, emblemColor.b, 
 	border, borderColor.r, borderColor.g, borderColor.b 		= GetArenaTeam(teamIndex);
 	
-	frame = ArenaTeamFrame;
 	frame.Flag.Banner:SetVertexColor(background.r, background.g, background.b);
 	frame.Flag.Emblem:SetVertexColor( emblemColor.r, emblemColor.g, emblemColor.b);
 	frame.Flag.Emblem:SetTexture("Interface\\PVPFrame\\Icons\\PVP-Banner-Emblem-"..emblem);
@@ -1117,6 +1492,7 @@ end
 function PVPArenaTeamsFrame_UpdateTeams(self)
 	
 	self.defaultTeam = nil;
+	ArenaTeamFrame.selectedTeam = nil;
 	local bannerName = "";
 	
 	local teamName, teamSize, teamRating, emblem, border, _, teamButton;
