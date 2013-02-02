@@ -90,7 +90,6 @@ CharacterFrame.xml
 PaperDollFrame.xml
 PetPaperDollFrame.xml
 ReputationFrame.xml
-HonorFrame.xml
 QuestFrame.xml
 QuestPOI.xml
 WatchFrame.xml

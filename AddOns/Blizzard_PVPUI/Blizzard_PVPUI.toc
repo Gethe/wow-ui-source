@@ -1,0 +1,9 @@
+## Interface: 50200
+## Title: Blizzard PVP UI
+## Notes:  MegaQueue
+## Secure: 1
+## Author: Blizzard Entertainment
+## Version: 1.0
+## LoadOnDemand: 1
+Blizzard_PVPUI.xml
+Localization.lua

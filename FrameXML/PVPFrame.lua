@@ -145,7 +145,7 @@ end
 
 
 function PVPFrame_OnLoad(self)
-	PanelTemplates_SetNumTabs(self, 4)
+	PanelTemplates_SetNumTabs(self, 3)
 	PVPFrame_TabClicked(PVPFrameTab1);
 	SetPortraitToTexture(PVPFramePortrait,"Interface\\BattlefieldFrame\\UI-Battlefield-Icon");
 	
@@ -462,8 +462,7 @@ function PVPFrame_TabClicked(self)
 	PVPFrame.panel1:Hide();	
 	PVPFrame.panel2:Hide();	
 	PVPFrame.panel3:Hide();
-	PVPFrame.panel4:Hide();
-	
+
 	PVPFrame.lowLevelFrame:Hide();
 	PVPFrameLeftButton:Show();
 	
@@ -1382,7 +1381,7 @@ function PVPTeamManagementFrame_UpdateTeamInfo(self, flagbutton)
 			--classText = _G[TeammateButtonName..i.."ClassText"];  ADD class color and Icon
 			playedText = _G[TeammateButtonName..i.."PlayedText"]
 			winLossText = _G[TeammateButtonName..i.."WinLossText"];
-			ratingText = _G[TeammateButtonName..i.."RatingText"];			
+			ratingText = _G[TeammateButtonName..i.."RatingText"];
 			if class then
 				_G[TeammateButtonName..i.."ClassIcon"]:SetTexCoord(unpack(CLASS_ICON_TCOORDS[strupper(class)]));
 				_G[TeammateButtonName..i.."ClassIcon"]:Show();
@@ -1463,83 +1462,83 @@ end
 
 function PVPTeamManagementFrame_UpdateTeams(self)
 		
-		self.defaultTeam = nil;
-		local bannerName = "";
-		local flagsList = {};
-		flagsList[2] = false;
-		flagsList[3] = false;
-		flagsList[5] = false;	
-		
-		local teamName, teamSize, teamRating, emblem, border, _;
-		local background = {}; 
-		local emblemColor = {} ;
-		local borderColor = {}; 		
-
-		for i=1, MAX_ARENA_TEAMS do
-			--the ammount of parameter this returns is absurd
-			teamName, teamSize, teamRating, _,  _,  _, _, _, _, _, _, 
-			background.r, background.g, background.b, 
-			emblem, emblemColor.r, emblemColor.g, emblemColor.b, 
-			border, borderColor.r, borderColor.g, borderColor.b 												= GetArenaTeam(i);			
-
-			if teamName then
-				flagsList[teamSize] = true;			
-				bannerName = self["flag"..teamSize]:GetName();
-				_G[bannerName]:Enable();
-				_G[bannerName]:SetID(i);
-				_G[bannerName.."Banner"]:SetVertexColor(background.r, background.g, background.b);
-				_G[bannerName.."Emblem"]:Show();
-				_G[bannerName.."Emblem"]:SetVertexColor( emblemColor.r, emblemColor.g, emblemColor.b);
-				_G[bannerName.."Emblem"]:SetTexture("Interface\\PVPFrame\\Icons\\PVP-Banner-Emblem-"..emblem);
-				_G[bannerName.."Border"]:Show();
-				_G[bannerName.."Border"]:SetVertexColor( borderColor.r, borderColor.g, borderColor.b );				
-				_G[bannerName.."Border"]:SetTexture("Interface\\PVPFrame\\PVP-Banner-2-Border-"..border);
-				_G[bannerName.."Title"]:SetText(_G["ARENA_"..teamSize.."V"..teamSize].."\n"..PVP_RATING.."  "..teamRating);
-				_G[bannerName.."Title"]:SetFontObject(ARENABANNER_SMALLFONT);
-				_G[bannerName.."Title"]:SetTextColor(HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b);
-				
-				if not self.defaultTeam then
-					self.defaultTeam =  _G[bannerName];	
-				end
-			end
-		end	
+	self.defaultTeam = nil;
+	local bannerName = "";
+	local flagsList = {};
+	flagsList[2] = false;
+	flagsList[3] = false;
+	flagsList[5] = false;	
 	
-		for size, value in pairs(flagsList) do 
-			if  not value then 
-				local bannerName = self["flag"..size]:GetName();
-				_G[bannerName]:SetID(-size);
-				_G[bannerName.."Banner"]:SetVertexColor(1, 1, 1);
-				_G[bannerName.."Emblem"]:Hide();
-				_G[bannerName.."Border"]:Hide();
-				_G[bannerName.."Title"]:SetText(_G["ARENA_"..size.."V"..size]);
-				_G[bannerName.."Title"]:SetFontObject("GameFontHighlight");
-				_G[bannerName.."HeaderSelected"]:Hide();
-				_G[bannerName.."Header"]:Show();
-				_G[bannerName.."GlowBG"]:Hide();
-				if  self.selectedTeam == self["flag"..size] then
-					self.selectedTeam = nil;
-				end
+	local teamName, teamSize, teamRating, emblem, border, _;
+	local background = {}; 
+	local emblemColor = {} ;
+	local borderColor = {}; 		
+
+	for i=1, MAX_ARENA_TEAMS do
+		--the ammount of parameter this returns is absurd
+		teamName, teamSize, teamRating, _,  _,  _, _, _, _, _, _, 
+		background.r, background.g, background.b, 
+		emblem, emblemColor.r, emblemColor.g, emblemColor.b, 
+		border, borderColor.r, borderColor.g, borderColor.b 		= GetArenaTeam(i);			
+
+		if teamName then
+			flagsList[teamSize] = true;			
+			bannerName = self["flag"..teamSize]:GetName();
+			_G[bannerName]:Enable();
+			_G[bannerName]:SetID(i);
+			_G[bannerName.."Banner"]:SetVertexColor(background.r, background.g, background.b);
+			_G[bannerName.."Emblem"]:Show();
+			_G[bannerName.."Emblem"]:SetVertexColor( emblemColor.r, emblemColor.g, emblemColor.b);
+			_G[bannerName.."Emblem"]:SetTexture("Interface\\PVPFrame\\Icons\\PVP-Banner-Emblem-"..emblem);
+			_G[bannerName.."Border"]:Show();
+			_G[bannerName.."Border"]:SetVertexColor( borderColor.r, borderColor.g, borderColor.b );				
+			_G[bannerName.."Border"]:SetTexture("Interface\\PVPFrame\\PVP-Banner-2-Border-"..border);
+			_G[bannerName.."Title"]:SetText(_G["ARENA_"..teamSize.."V"..teamSize].."\n"..PVP_RATING.."  "..teamRating);
+			_G[bannerName.."Title"]:SetFontObject(ARENABANNER_SMALLFONT);
+			_G[bannerName.."Title"]:SetTextColor(HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b);
+			
+			if not self.defaultTeam then
+				self.defaultTeam =  _G[bannerName];	
 			end
 		end
+	end	
 
-		self.noTeams:Hide();
-		self.weeklyToggleLeft:Enable();
-		self.weeklyToggleRight:Enable();
-		PVPFrameLeftButton:Enable();
-		if  self.selectedTeam then 
-			PVPTeamManagementFrame_UpdateTeamInfo(self, self.selectedTeam)
-		elseif  self.defaultTeam then 
-			PVPTeamManagementFrame_UpdateTeamInfo(self, self.defaultTeam)
-		else
-			--We have no arena teams
-			self.noTeams:Show();
-			PVPFrameLeftButton:Disable();
-			self.weeklyToggleLeft:Disable();
-			self.weeklyToggleRight:Disable();
-			self.invalidTeam:Hide();
-			self.noTeams:SetFrameLevel(self:GetFrameLevel() + 2);
-			FauxScrollFrame_Update(self.teamMemberScrollFrame, 0, MAX_ARENA_TEAM_MEMBERS_SHOWN, 18);
-		end	
+	for size, value in pairs(flagsList) do 
+		if  not value then 
+			local bannerName = self["flag"..size]:GetName();
+			_G[bannerName]:SetID(-size);
+			_G[bannerName.."Banner"]:SetVertexColor(1, 1, 1);
+			_G[bannerName.."Emblem"]:Hide();
+			_G[bannerName.."Border"]:Hide();
+			_G[bannerName.."Title"]:SetText(_G["ARENA_"..size.."V"..size]);
+			_G[bannerName.."Title"]:SetFontObject("GameFontHighlight");
+			_G[bannerName.."HeaderSelected"]:Hide();
+			_G[bannerName.."Header"]:Show();
+			_G[bannerName.."GlowBG"]:Hide();
+			if  self.selectedTeam == self["flag"..size] then
+				self.selectedTeam = nil;
+			end
+		end
+	end
+
+	self.noTeams:Hide();
+	self.weeklyToggleLeft:Enable();
+	self.weeklyToggleRight:Enable();
+	PVPFrameLeftButton:Enable();
+	if  self.selectedTeam then 
+		PVPTeamManagementFrame_UpdateTeamInfo(self, self.selectedTeam)
+	elseif  self.defaultTeam then 
+		PVPTeamManagementFrame_UpdateTeamInfo(self, self.defaultTeam)
+	else
+		--We have no arena teams
+		self.noTeams:Show();
+		PVPFrameLeftButton:Disable();
+		self.weeklyToggleLeft:Disable();
+		self.weeklyToggleRight:Disable();
+		self.invalidTeam:Hide();
+		self.noTeams:SetFrameLevel(self:GetFrameLevel() + 2);
+		FauxScrollFrame_Update(self.teamMemberScrollFrame, 0, MAX_ARENA_TEAM_MEMBERS_SHOWN, 18);
+	end	
 end
 
 
@@ -1831,223 +1830,5 @@ function PVP_UpdateStatus(tooltipOnly, mapIndex)
 				-- Should never happen haha
 			end
 		end
-	end
-end
-
---
--- WARGAMES
---
-
-function WarGamesFrame_OnLoad(self)
-	self.scrollFrame.scrollBar.doNotHide = true;
-	self:RegisterEvent("GROUP_ROSTER_UPDATE");
-	self:RegisterEvent("PLAYER_TARGET_CHANGED");
-	self:RegisterEvent("PLAYER_FLAGS_CHANGED");		-- for leadership changes
-	self.scrollFrame.update = WarGamesFrame_Update;
-	self.scrollFrame.dynamic =  WarGamesFrame_GetTopButton;
-	HybridScrollFrame_CreateButtons(self.scrollFrame, "WarGameButtonTemplate", 0, -1);
-end
-
-function WarGamesFrame_OnEvent(self, event, ...)
-	if ( self:IsShown() ) then
-		WarGameStartButton_Update();
-	end
-end
-
-function WarGamesFrame_OnShow(self)
-	if ( not self.dataLevel or UnitLevel("player") > self.dataLevel ) then
-		WarGamesFrame.otherHeaderIndex = nil;
-		self.dataLevel = UnitLevel("player");
-		UpdateWarGamesList();
-	end
-	WarGamesFrame_Update();
-end
-
-function  WarGamesFrame_GetTopButton(offset)
-	local heightLeft = offset;
-	local buttonHeight;
-	local numWarGames = GetNumWarGameTypes();
-
-	-- find the other header's position if needed (assuming collapsing and expanding headers are a rare occurence for a list this small)
-	if ( not WarGamesFrame.otherHeaderIndex ) then
-		WarGamesFrame.otherHeaderIndex = 0;
-		for i = 2, numWarGames do
-			local name = GetWarGameTypeInfo(i);
-			if ( name == "header" ) then
-				WarGamesFrame.otherHeaderIndex = i;
-				break;
-			end
-		end
-	end
-	-- determine top button
-	local otherHeaderIndex = WarGamesFrame.otherHeaderIndex;
-	for i = 1, numWarGames do
-		if ( i == 1 or i == otherHeaderIndex ) then
-			buttonHeight =	WARGAME_HEADER_HEIGHT;
-		else
-			buttonHeight = WARGAME_BUTTON_HEIGHT;
-		end
-		if ( heightLeft - buttonHeight <= 0 ) then
-			return i - 1, heightLeft;
-		else
-			heightLeft = heightLeft - buttonHeight;
-		end
-	end
-end
-
-function WarGamesFrame_Update()
-	local scrollFrame = WarGamesFrame.scrollFrame;
-	local offset = HybridScrollFrame_GetOffset(scrollFrame);
-	local buttons = scrollFrame.buttons;
-	local numButtons = #buttons;
-	local numWarGames = GetNumWarGameTypes();
-	local selectedIndex = GetSelectedWarGameType();
-	
-	for i = 1, numButtons do
-		local button = buttons[i];
-		local index = offset + i;
-		if index <= numWarGames  then
-			local name, pvpType, collapsed, id, minPlayers, maxPlayers, isRandom = GetWarGameTypeInfo(index);
-			if ( name == "header" ) then
-				button:SetHeight(WARGAME_HEADER_HEIGHT);
-				button.header:Show();
-				button.warGame:Hide();
-				if ( pvpType == INSTANCE_TYPE_BG ) then
-					button.header.name:SetText(BATTLEGROUND);
-				elseif ( pvpType == INSTANCE_TYPE_ARENA ) then
-					button.header.name:SetText(ARENA);
-				else
-					button.header.name:SetText(UNKNOWN);
-				end
-				if ( collapsed ) then
-					button.header:SetNormalTexture("Interface\\Buttons\\UI-PlusButton-Up");
-				else
-					button.header:SetNormalTexture("Interface\\Buttons\\UI-MinusButton-Up"); 
-				end
-			else
-				button:SetHeight(WARGAME_BUTTON_HEIGHT);
-				button.header:Hide();
-				local warGame = button.warGame;
-				warGame:Show();
-				warGame.name:SetText(name);
-				-- arena?
-				if ( pvpType == INSTANCE_TYPE_ARENA ) then
-					minPlayers = 2;
-					warGame.size:SetText(WARGAME_ARENA_SIZES);
-				else
-					warGame.size:SetFormattedText(PVP_TEAMTYPE, maxPlayers, maxPlayers);
-				end
-				warGame.minSize:SetFormattedText(WARGAME_MINIMUM, minPlayers, minPlayers);
-				if ( WARGAMES_TEXTURELIST[id] ) then
-					warGame.icon:SetTexture(WARGAMES_TEXTURELIST[id]);
-				else
-					warGame.icon:SetTexture(WARGAMES_TEXTURELIST[0]);
-				end
-				if ( selectedIndex == index ) then
-					warGame.selectedTex:Show();
-					warGame.name:SetTextColor(HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b);
-					warGame.size:SetTextColor(HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b);
-				else
-					warGame.selectedTex:Hide();
-					warGame.name:SetTextColor(NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b);
-					warGame.size:SetTextColor(NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b);
-				end
-			end
-			button:Show();
-			button.index = index;
-		else
-			button:Hide();
-		end
-	end
-
-	-- keeping it somewhat easy to expand past 2 headers if needed
-	local numHeaders = 1;
-	if ( WarGamesFrame.otherHeaderIndex and WarGamesFrame.otherHeaderIndex > 0 ) then
-		numHeaders = numHeaders + 1;
-	end
-	
-	local totalHeight = numHeaders * WARGAME_HEADER_HEIGHT + (numWarGames - numHeaders) * WARGAME_BUTTON_HEIGHT;
-	HybridScrollFrame_Update(scrollFrame, totalHeight, 208);
-	
-	WarGameStartButton_Update();
-end
-
-function WarGameButtonHeader_OnClick(self)
-	local index = self:GetParent().index;
-	local name, pvpType, collapsed = GetWarGameTypeInfo(index);
-	if ( collapsed ) then
-		ExpandWarGameHeader(index);
-	else
-		CollapseWarGameHeader(index);
-	end
-	WarGamesFrame.otherHeaderIndex = nil;	-- header location probably changed;
-	WarGamesFrame_Update();
-	PlaySound("igMainMenuOptionCheckBoxOn");
-end
-
-function WarGameButton_OnEnter(self)
-	self.name:SetTextColor(HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b);
-	self.size:SetTextColor(HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b);
-end
-
-function WarGameButton_OnLeave(self)
-	if ( self:GetParent().index ~= GetSelectedWarGameType() ) then
-		self.name:SetTextColor(NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b);
-		self.size:SetTextColor(NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b);
-	end
-end
-
-function WarGameButton_OnClick(self)
-	local index = self:GetParent().index;
-	SetSelectedWarGameType(index);
-	WarGamesFrame_Update();
-	PlaySound("igMainMenuOptionCheckBoxOn");
-end
-
-function WarGameStartButton_Update()
-	local selectedIndex = GetSelectedWarGameType();
-	if ( selectedIndex > 0 and not WarGameStartButton_GetErrorTooltip() ) then
-		WarGameStartButton:Enable();
-	else
-		WarGameStartButton:Disable();
-	end
-end
-
-function WarGameStartButton_OnEnter(self)
-	local tooltip = WarGameStartButton_GetErrorTooltip();
-	if ( tooltip ) then
-		GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
-		GameTooltip:SetText(tooltip, RED_FONT_COLOR.r, RED_FONT_COLOR.g, RED_FONT_COLOR.b, 1, 1);
-	end
-end
-
-function WarGameStartButton_GetErrorTooltip()
-	local name, pvpType, collapsed, id, minPlayers, maxPlayers = GetWarGameTypeInfo(GetSelectedWarGameType());
-	if ( name ) then
-		if ( not UnitIsGroupLeader("player") ) then
-			return WARGAME_REQ_LEADER;
-		end	
-		if ( not UnitLeadsAnyGroup("target") or UnitIsUnit("player", "target") ) then
-			return WARGAME_REQ_TARGET;
-		end
-		local groupSize = GetNumGroupMembers();
-		-- how about a nice game of arena?
-		if ( pvpType == INSTANCE_TYPE_ARENA ) then
-			if ( groupSize ~= 2 and groupSize ~= 3 and groupSize ~= 5 ) then
-				return string.format(WARGAME_REQ_ARENA, name, RED_FONT_COLOR_CODE);
-			end
-		else
-			if ( groupSize < minPlayers or groupSize > maxPlayers ) then
-				return string.format(WARGAME_REQ, name, RED_FONT_COLOR_CODE, minPlayers, maxPlayers);
-			end
-		end
-	end
-	return nil;
-end
-
-function WarGameStartButton_OnClick(self)
-	local name = GetWarGameTypeInfo(GetSelectedWarGameType());
-	if ( name ) then
-		StartWarGame(UnitName("target"), name);
 	end
 end

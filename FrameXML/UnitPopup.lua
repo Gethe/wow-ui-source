@@ -613,6 +613,8 @@ function UnitPopup_HideButtons ()
 				end
 			elseif ( (dropdownMenu == PVPTeamManagementFrameTeamDropDown) and not PVPTeamManagementFrameTeamDropDown.online ) then
 				UnitPopupShown[UIDROPDOWNMENU_MENU_LEVEL][index] = 0;
+			elseif ( (dropdownMenu == ArenaTeamMemberDropDown) and not ArenaTeamMemberDropDown.online ) then
+				UnitPopupShown[UIDROPDOWNMENU_MENU_LEVEL][index] = 0;
 			elseif ( (dropdownMenu == ChannelRosterDropDown) ) then
 				if ( UnitInRaid(dropdownMenu.name) ~= nil ) then
 					UnitPopupShown[UIDROPDOWNMENU_MENU_LEVEL][index] = 0;
@@ -646,6 +648,8 @@ function UnitPopup_HideButtons ()
 					UnitPopupShown[UIDROPDOWNMENU_MENU_LEVEL][index] = 0;
 				end
 			elseif ( (dropdownMenu == PVPTeamManagementFrameTeamDropDown) and not PVPTeamManagementFrameTeamDropDown.online ) then
+				UnitPopupShown[UIDROPDOWNMENU_MENU_LEVEL][index] = 0;
+			elseif ( (dropdownMenu == ArenaTeamMemberDropDown) and not ArenaTeamMemberDropDown.online ) then
 				UnitPopupShown[UIDROPDOWNMENU_MENU_LEVEL][index] = 0;
 			end
 		elseif ( value == "CREATE_CONVERSATION_WITH" ) then
@@ -731,6 +735,8 @@ function UnitPopup_HideButtons ()
 				UnitPopupShown[UIDROPDOWNMENU_MENU_LEVEL][index] = 0;
 			elseif ( (dropdownMenu == PVPTeamManagementFrameTeamDropDown) and not PVPTeamManagementFrameTeamDropDown.online ) then
 				UnitPopupShown[UIDROPDOWNMENU_MENU_LEVEL][index] = 0;
+			elseif ( (dropdownMenu == ArenaTeamMemberDropDown) and not ArenaTeamMemberDropDown.online ) then
+				UnitPopupShown[UIDROPDOWNMENU_MENU_LEVEL][index] = 0;
 			elseif ( dropdownMenu.isMobile ) then
 				UnitPopupShown[UIDROPDOWNMENU_MENU_LEVEL][index] = 0;
 			end
@@ -756,23 +762,23 @@ function UnitPopup_HideButtons ()
 				UnitPopupShown[UIDROPDOWNMENU_MENU_LEVEL][index] = 0;
 			end
 		elseif ( value == "TEAM_PROMOTE" ) then
-			if ( dropdownMenu.name == UnitName("player") or not PVP_ArenaTeamFrame():IsShown() ) then
+			if ( dropdownMenu.name == UnitName("player") or not ArenaTeamFrame:IsShown() ) then
 				UnitPopupShown[UIDROPDOWNMENU_MENU_LEVEL][index] = 0;
-			elseif ( PVP_ArenaTeamFrame():IsShown() and not IsArenaTeamCaptain(PVP_GetSelectedArenaTeam()) ) then
+			elseif ( ArenaTeamFrame:IsShown() and not IsArenaTeamCaptain(PVPUI_GetSelectedArenaTeam()) ) then
 				UnitPopupShown[UIDROPDOWNMENU_MENU_LEVEL][index] = 0;
 			end
 		elseif ( value == "TEAM_KICK" ) then
-			if ( dropdownMenu.name == UnitName("player") or not PVP_ArenaTeamFrame():IsShown() ) then
+			if ( dropdownMenu.name == UnitName("player") or not ArenaTeamFrame:IsShown() ) then
 				UnitPopupShown[UIDROPDOWNMENU_MENU_LEVEL][index] = 0;
-			elseif ( PVP_ArenaTeamFrame():IsShown() and not IsArenaTeamCaptain(PVP_GetSelectedArenaTeam()) ) then
+			elseif ( ArenaTeamFrame:IsShown() and not IsArenaTeamCaptain(PVPUI_GetSelectedArenaTeam()) ) then
 				UnitPopupShown[UIDROPDOWNMENU_MENU_LEVEL][index] = 0;
 			end
 		elseif ( value == "TEAM_LEAVE" ) then
-			if ( dropdownMenu.name ~= UnitName("player") or not PVP_ArenaTeamFrame():IsShown() or IsArenaTeamCaptain(PVP_GetSelectedArenaTeam()) ) then
+			if ( dropdownMenu.name ~= UnitName("player") or not ArenaTeamFrame:IsShown() or IsArenaTeamCaptain(PVPUI_GetSelectedArenaTeam()) ) then
 				UnitPopupShown[UIDROPDOWNMENU_MENU_LEVEL][index] = 0;
 			end
 		elseif ( value == "TEAM_DISBAND" ) then
-			if ( dropdownMenu.name ~= UnitName("player") or not PVP_ArenaTeamFrame():IsShown() or not IsArenaTeamCaptain(PVP_GetSelectedArenaTeam()) ) then
+			if ( dropdownMenu.name ~= UnitName("player") or not ArenaTeamFrame:IsShown() or not IsArenaTeamCaptain(PVPUI_GetSelectedArenaTeam()) ) then
 				UnitPopupShown[UIDROPDOWNMENU_MENU_LEVEL][index] = 0;
 			end
 		elseif ( value == "UNINVITE" ) then

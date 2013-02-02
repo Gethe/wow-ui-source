@@ -1153,7 +1153,7 @@ function HelpPlateBox_OnLoad(self)
 	end
 end
 
-HELP_PLATE_CURRENT_PLATE = nil;
+local HELP_PLATE_CURRENT_PLATE = nil;
 function HelpPlate_Show( self, parent, mainHelpButton, userToggled )
 	if ( HELP_PLATE_CURRENT_PLATE ) then
 		HelpPlate_Hide();
