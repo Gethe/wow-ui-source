@@ -179,9 +179,7 @@ function WorldMapFrame_OnLoad(self)
 	self:SetClampRectInsets(0, 0, 0, -60);				-- don't overlap the xp/rep bars
 	self.poiHighlight = nil;
 	self.areaName = nil;
-	CreateWorldMapArrowFrame(WorldMapFrame);
 	WorldMapFrameTexture18:SetVertexColor(0, 0, 0);		-- this texture just needs to be a black line
-	InitWorldMapPing(WorldMapFrame);
 	WorldMapFrame_Update();
 
 	--[[ Hide the world behind the map when we're in widescreen mode
@@ -202,9 +200,6 @@ function WorldMapFrame_OnLoad(self)
 	UIDropDownMenu_SetWidth(WorldMapZoneMinimapDropDown, 150);
 	WorldMapZoneMinimapDropDown_Update();
 	WorldMapLevelDropDown_Update();
-
-	-- PlayerArrowEffectFrame is created in code: CWorldMap::CreateArrowFrame()
-	PlayerArrowEffectFrame:SetAlpha(0.65);
 
 	-- font stuff for objectives text
 	local refFrame = WorldMapFrame_GetQuestFrame(0);
@@ -1263,42 +1258,22 @@ function WorldMapButton_OnUpdate(self, elapsed)
 		WorldMapHighlight:Hide();
 	end
 	--Position player
-	UpdateWorldMapArrowFrames();
 	local playerX, playerY = GetPlayerMapPosition("player");
 	if ( (playerX == 0 and playerY == 0) ) then
-		ShowWorldMapArrowFrame(nil);
-		WorldMapPing:Hide();
-		WorldMapPlayer:Hide();
+		WorldMapPlayerLower:Hide();
+		WorldMapPlayerUpper:Hide();
 	else
 		playerX = playerX * WorldMapDetailFrame:GetWidth();
 		playerY = -playerY * WorldMapDetailFrame:GetHeight();
-		PositionWorldMapArrowFrame("CENTER", "WorldMapDetailFrame", "TOPLEFT", playerX * WORLDMAP_SETTINGS.size, playerY * WORLDMAP_SETTINGS.size);
-		ShowWorldMapArrowFrame(1);
 
 		-- Position clear button to detect mouseovers
-		WorldMapPlayer:Show();
-		WorldMapPlayer:SetPoint("CENTER", "WorldMapDetailFrame", "TOPLEFT", playerX, playerY);
-
-		-- Position player ping if its shown
-		if ( WorldMapPing:IsShown() ) then
-			WorldMapPing:SetPoint("CENTER", "WorldMapDetailFrame", "TOPLEFT", playerX, playerY);
-			-- If ping has a timer greater than 0 count it down, otherwise fade it out
-			if ( WorldMapPing.timer > 0 ) then
-				WorldMapPing.timer = WorldMapPing.timer - elapsed;
-				if ( WorldMapPing.timer <= 0 ) then
-					WorldMapPing.fadeOut = 1;
-					WorldMapPing.fadeOutTimer = MINIMAPPING_FADE_TIMER;
-				end
-			elseif ( WorldMapPing.fadeOut ) then
-				WorldMapPing.fadeOutTimer = WorldMapPing.fadeOutTimer - elapsed;
-				if ( WorldMapPing.fadeOutTimer > 0 ) then
-					WorldMapPing:SetAlpha(255 * (WorldMapPing.fadeOutTimer/MINIMAPPING_FADE_TIMER))
-				else
-					WorldMapPing.fadeOut = nil;
-					WorldMapPing:Hide();
-				end
-			end
-		end
+		WorldMapPlayerLower:Show();
+		WorldMapPlayerUpper:Show();
+		WorldMapPlayerLower:SetPoint("CENTER", "WorldMapDetailFrame", "TOPLEFT", playerX, playerY);
+		WorldMapPlayerUpper:SetPoint("CENTER", "WorldMapDetailFrame", "TOPLEFT", playerX, playerY);
+		UpdateWorldMapArrow(WorldMapPlayerLower.icon);
+		UpdateWorldMapArrow(WorldMapPlayerUpper.icon);
+		WorldMapPing:SetPoint("CENTER", "WorldMapDetailFrame", "TOPLEFT", playerX, playerY);
 	end
 
 	--Position groupmates
@@ -1457,10 +1432,20 @@ function WorldMapButton_OnUpdate(self, elapsed)
 end
 
 function WorldMapFrame_PingPlayerPosition()
-	WorldMapPing:SetAlpha(255);
+	WorldMapPing.Ping:Play();
+end
+
+function WorldMapPing_OnPlay(self)
 	WorldMapPing:Show();
-	--PlaySound("MapPing");
-	WorldMapPing.timer = 1;
+	self.loopCount = 0;
+end
+
+function WorldMapPing_OnLoop(self, loopState)
+	self.loopCount = self.loopCount + 1;
+	if ( self.loopCount >= 3 ) then
+		self:Stop();
+		WorldMapPing:Hide();
+	end
 end
 
 function WorldMap_GetVehicleTexture(vehicleType, isPossessed)
@@ -1595,11 +1580,11 @@ function WorldMapUnit_OnEnter(self, motion)
 	local tooltipText = "";
 
 	-- Check player
-	if ( WorldMapPlayer:IsMouseOver() ) then
-		if ( PlayerIsPVPInactive(WorldMapPlayer.unit) ) then
-			tooltipText = format(PLAYER_IS_PVP_AFK, UnitName(WorldMapPlayer.unit));
+	if ( WorldMapPlayerUpper:IsMouseOver() ) then
+		if ( PlayerIsPVPInactive(WorldMapPlayerUpper.unit) ) then
+			tooltipText = format(PLAYER_IS_PVP_AFK, UnitName(WorldMapPlayerUpper.unit));
 		else
-			tooltipText = UnitName(WorldMapPlayer.unit);
+			tooltipText = UnitName(WorldMapPlayerUpper.unit);
 		end
 		newLineString = "\n";
 	end
@@ -1920,8 +1905,6 @@ function WorldMapFrame_ResetFrameLevels()
 	WorldMapBlobFrame:SetFrameLevel(WORLDMAP_POI_FRAMELEVEL - 11);
 	WorldMapButton:SetFrameLevel(WORLDMAP_POI_FRAMELEVEL - 10);
 	WorldMapPOIFrame:SetFrameLevel(WORLDMAP_POI_FRAMELEVEL);
-	-- PlayerArrowEffectFrame is created in code: CWorldMap::CreateArrowFrame()
-	PlayerArrowEffectFrame:SetFrameLevel(WORLDMAP_POI_FRAMELEVEL + 100);
     for i=1, MAX_PARTY_MEMBERS do
         _G["WorldMapParty"..i]:SetFrameLevel(WORLDMAP_POI_FRAMELEVEL + 100 - 1);
     end

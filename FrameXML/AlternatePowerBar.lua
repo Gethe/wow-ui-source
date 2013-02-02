@@ -84,7 +84,7 @@ end
 
 function AlternatePowerBar_SetLook(self)
 	local _, class = UnitClass("player");
-	if ( class == "MONK" and GetSpecialization() == SPEC_MONK_MISTWEAVER ) then
+	if ( class == "MONK" and (GetSpecialization() == SPEC_MONK_MISTWEAVER or GetSpecialization() == SPEC_MONK_BREWMASTER)) then
 		self:SetWidth(94);
 		self:SetPoint("BOTTOMLEFT", 118, 4);
 		self.DefaultBackground:Hide();

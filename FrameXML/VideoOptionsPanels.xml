@@ -398,6 +398,7 @@
 				</Layers>
 				<Scripts>
 					<OnValueChanged>
+						CloseDropDownMenus()
 						if(self.onvaluechanged) then
 							BlizzardOptionsPanel_Slider_OnValueChanged(self, value);
 						end

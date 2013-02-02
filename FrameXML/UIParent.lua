@@ -58,8 +58,6 @@ UIPanelWindows["CinematicFrame"] =				{ area = "full",			pushable = 0, 		xoffset
 UIPanelWindows["ChatConfigFrame"] =				{ area = "center",			pushable = 0, 		xoffset = -16, 		yoffset = 12,	whileDead = 1 };
 UIPanelWindows["WorldStateScoreFrame"] =		{ area = "center",			pushable = 0, 		xoffset = -16, 		yoffset = 12,	whileDead = 1 };
 
-UIPanelWindows["MinigameFrame"] =				{ area = "left",			pushable = 0, 		xoffset = -16, 		yoffset = 12 };
-
 local function GetUIPanelWindowInfo(frame, name)
 	if ( not frame:GetAttribute("UIPanelLayout-defined") ) then
 	    local info = UIPanelWindows[frame:GetName()];
@@ -862,6 +860,9 @@ function UIParent_OnEvent(self, event, ...)
 			GhostFrame:Show();
 		else
 			GhostFrame:Hide();
+		end
+		if ( GetReleaseTimeRemaining() > 0 or GetReleaseTimeRemaining() == -1 ) then
+			StaticPopup_Show("DEATH");
 		end
 	elseif ( event == "GROUP_ROSTER_UPDATE" ) then
 		-- Hide/Show party member frames

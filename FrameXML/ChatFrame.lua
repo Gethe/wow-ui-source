@@ -2914,7 +2914,7 @@ function GetColoredName(event, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, a
 	end
 	local info = ChatTypeInfo[chatType];
 	
-	if ( info and info.colorNameByClass and arg12 ~= "" ) then
+	if ( info and info.colorNameByClass and arg12 ) then
 		local localizedClass, englishClass, localizedRace, englishRace, sex = GetPlayerInfoByGUID(arg12)
 		
 		if ( englishClass ) then
@@ -3276,7 +3276,7 @@ function ChatFrame_MessageEventHandler(self, event, ...)
 			end
 			
 			local accessID = ChatHistory_GetAccessID(chatGroup, chatTarget);
-			local typeID = ChatHistory_GetAccessID(infoType, chatTarget, arg12 == "" and arg13 or arg12);
+			local typeID = ChatHistory_GetAccessID(infoType, chatTarget, arg12 or arg13);
 			self:AddMessage(body, info.r, info.g, info.b, info.id, false, accessID, typeID);
 		end
  

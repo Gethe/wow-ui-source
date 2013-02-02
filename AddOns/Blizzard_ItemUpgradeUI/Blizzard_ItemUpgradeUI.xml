@@ -251,19 +251,6 @@
 							</Anchors>
 							<Color r="0.5" g="0.5" b="0.5" a="0.5"/>
 						</FontString>
-						<FontString parentKey="CurrencyAmount" inherits="GameFontNormal" justifyH="RIGHT">
-							<Size x="0" y="12"/>
-							<Anchors>
-								<Anchor point="BOTTOMRIGHT" relativeKey="$parent.TextFrame" relativePoint="BOTTOMRIGHT" x="-18" y="18"/>
-							</Anchors>
-							<Color r="1" g="1" b="1" a="1"/>
-						</FontString>
-						<Texture parentKey="CurrencyIcon" file="Interface\Icons\PVECurrency-Valor" hidden="true">
-							<Size x="12" y="12"/> 
-							<Anchors>
-								<Anchor point="RIGHT" relativeKey="$parent.CurrencyAmount" relativePoint="LEFT" x="-2" y="-1"/>
-							</Anchors>
-						</Texture>
 					</Layer>
 					<Layer level="OVERLAY">
 						<Texture parentKey="Frame" file="Interface\Reforging\Reforge-Texture">
@@ -275,7 +262,43 @@
 						</Texture>
 					</Layer>
 				</Layers>
-			
+				<Frames>
+					<Frame parentKey="Cost" enableMouse="true">
+						<Size x="32" y="13"/> 
+						<Anchors>
+							<Anchor point="BOTTOMRIGHT" relativeKey="$parent.TextFrame" relativePoint="BOTTOMRIGHT" x="-19" y="17"/>
+						</Anchors>
+						<Layers>
+							<Layer level="ARTWORK">
+								<Texture parentKey="Icon" hidden="true">
+									<Size x="13" y="13"/> 
+									<Anchors>
+										<Anchor point="RIGHT"/>
+									</Anchors>
+								</Texture>
+								<FontString parentKey="Amount" inherits="GameFontNormal" justifyH="RIGHT">
+									<Size x="0" y="12"/>
+									<Anchors>
+										<Anchor point="RIGHT" relativeKey="$parent.Icon" relativePoint="LEFT" x="-2" y=""/>
+									</Anchors>
+									<Color r="1" g="1" b="1" a="1"/>
+								</FontString>
+							</Layer>
+						</Layers>
+						<Scripts>
+							<OnEnter>
+								local icon, name, quality, bound, numCurrUpgrades, numMaxUpgrades, cost, currencyID = GetItemUpgradeItemInfo();
+								if ( currencyID ) then
+									GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+									GameTooltip:SetCurrencyByID(currencyID);
+								end
+							</OnEnter>
+							<OnLeave>
+								GameTooltip:Hide();
+							</OnLeave>
+						</Scripts>
+					</Frame>
+				</Frames>
 				<Scripts>
 					<OnLoad>
 						self:RegisterForDrag("LeftButton");

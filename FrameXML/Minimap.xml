@@ -109,7 +109,7 @@
 					<OnLeave function="GameTooltip_Hide"/>
 				</Scripts>
 			</Button>
-			<Minimap name="Minimap" enableMouse="true" minimapPlayerModel="Interface\Minimap\MinimapArrow.mdx" minimapArrowModel="Interface\Minimap\Rotating-MinimapArrow.mdl">
+			<Minimap name="Minimap" enableMouse="true">
 				<Size>
 					<AbsDimension x="140" y="140"/>
 				</Size>

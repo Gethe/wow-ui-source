@@ -4,7 +4,7 @@
 	<!--IMPORTANT
 		If you change anything in this file, be sure to change the equivalent data in PlayerFrame.lua, function PlayerFrame_ToPlayerArt
 		IMPORTANT-->
-	<Button name="PlayerFrame" frameStrata="BACKGROUND" toplevel="true" movable="true" inherits="SecureUnitButtonTemplate" parent="UIParent">
+	<Button name="PlayerFrame" frameStrata="LOW" toplevel="true" movable="true" inherits="SecureUnitButtonTemplate" parent="UIParent">
 		<Size>
 			<AbsDimension x="232" y="100"/>
 		</Size>

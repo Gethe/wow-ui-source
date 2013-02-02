@@ -91,21 +91,21 @@
 		<Layers>
 			<Layer level="BACKGROUND">
 				<Texture parentKey="Left" file="Interface\AuctionFrame\UI-AuctionItemNameFrame">
-					<Size x="10" y="32"/>
+					<Size x="10" y="35"/>
 					<Anchors>
 						<Anchor point="LEFT" x="34" y="2"/>
 					</Anchors>
 					<TexCoords left="0" right="0.078125" top="0" bottom="1.0"/>
 				</Texture>
 				<Texture parentKey="Right" file="Interface\AuctionFrame\UI-AuctionItemNameFrame">
-					<Size x="10" y="32"/>
+					<Size x="10" y="35"/>
 					<Anchors>
 						<Anchor point="RIGHT" x="0" y="2"/>
 					</Anchors>
 					<TexCoords left="0.75" right="0.828125" top="0" bottom="1.0"/>
 				</Texture>
 				<Texture file="Interface\AuctionFrame\UI-AuctionItemNameFrame">
-					<Size x="10" y="32"/>
+					<Size x="10" y="35"/>
 					<Anchors>
 						<Anchor point="LEFT" relativeKey="$parent.Left" relativePoint="RIGHT" x="0" y="0"/>
 						<Anchor point="RIGHT" relativeKey="$parent.Right" relativePoint="LEFT" x="0" y="0"/>
@@ -121,25 +121,25 @@
 				<FontString parentKey="Level" inherits="GameFontHighlightSmall">
 					<Size x="32" y="32"/>
 					<Anchors>
-						<Anchor point="TOPLEFT" x="200" y="0"/>
+						<Anchor point="TOPLEFT" x="200" y="-2"/>
 					</Anchors>
 				</FontString>
 				<FontString parentKey="Type" inherits="GameFontHighlightSmall">
 					<Size x="75" y="32"/>
 					<Anchors>
-						<Anchor point="TOPLEFT" x="238" y="0"/>
+						<Anchor point="TOPLEFT" x="238" y="-2"/>
 					</Anchors>
 				</FontString>
 				<FontString parentKey="Seller" inherits="GameFontHighlightSmall">
 					<Size x="75" y="32"/>
 					<Anchors>
-						<Anchor point="TOPLEFT" x="410" y="0"/>
+						<Anchor point="TOPLEFT" x="410" y="-2"/>
 					</Anchors>
 				</FontString>
 				<FontString parentKey="YourBid" inherits="GameFontNormalSmall" justifyH="RIGHT" hidden="true" text="BLACK_MARKET_YOUR_BID">
 					<Size x="75" y="0"/>
 					<Anchors>
-						<Anchor point="TOPRIGHT" x="-6" y="0"/>
+						<Anchor point="TOPRIGHT" x="-6" y="-1"/>
 					</Anchors>
 				</FontString>
 			</Layer>
@@ -247,7 +247,7 @@
 			</Button>
 			<Frame parentkey="CurrentBid" name="$parentCurrentBidMoneyFrame" inherits="SmallMoneyFrameTemplate">
 				<Anchors>
-					<Anchor point="RIGHT" x="6" y="-2"/>
+					<Anchor point="RIGHT" x="6" y="-3"/>
 				</Anchors>
 				<Scripts>
 					<OnLoad>
@@ -726,30 +726,32 @@
 							</OnLeave>
 						</Scripts>
 					</Frame>
-					<Button parentKey="BidButton" inherits="UIPanelButtonTemplate" text="BID">
-						<Size x="80" y="22"/>
+					<Frame parentkey="BlackMarketHotItemBidPrice" name="HotItemCurrentBidMoneyFrame" inherits="SmallMoneyFrameTemplate">
 						<Anchors>
-							<Anchor point="BOTTOMLEFT" relativeKey="$parent.TimeLeft" relativePoint="BOTTOM" x="0" y="-20"/>
+							<Anchor point="TOPLEFT" relativeKey="$parent.TimeLeft" relativePoint="BOTTOM" x="0" y="-5"/>
 						</Anchors>
 						<Layers>
 							<Layer level="BACKGROUND">
+								<FontString parentKey="CurrentBid" inherits="GameFontHighlightSmall" justifyH="RIGHT" text="BLACK_MARKET_HOT_ITEM_CURRENT_BID">
+									<Size x="75" y="0"/>
+									<Anchors>
+										<Anchor point="RIGHT" relativeKey="$parent" relativePoint="LEFT" x="-3" y="0"/>
+									</Anchors>
+								</FontString>
 								<FontString parentKey="YourBid" inherits="GameFontNormalSmall" justifyH="CENTER" hidden="true" text="BLACK_MARKET_YOUR_BID">
 									<Size x="75" y="0"/>
 									<Anchors>
-										<Anchor point="TOP" relativePoint="BOTTOMLEFT" x="0" y="-5"/>
+										<Anchor point="TOP" relativeKey="$parent.$parent.TimeLeft" relativePoint="BOTTOM" x="0" y="-20"/>
 									</Anchors>
 								</FontString>
 							</Layer>
 						</Layers>
 						<Scripts>
-							<OnClick function="BlackMarketHotItemBid_OnClick"/>
+							<OnLoad>
+								SmallMoneyFrame_OnLoad(self);
+								MoneyFrame_SetType(self, "BLACKMARKET");
+							</OnLoad>
 						</Scripts>
-					</Button>
-					<Frame name="BlackMarketHotItemBidPrice" inherits="MoneyInputFrameTemplate">
-						<Size x="80" y="22"/>
-						<Anchors>
-							<Anchor point="BOTTOMRIGHT" relativeKey="$parent.BidButton" relativePoint="BOTTOMLEFT" x="0" y="0"/>
-						</Anchors>
 					</Frame>
 				</Frames>
 			</Frame>

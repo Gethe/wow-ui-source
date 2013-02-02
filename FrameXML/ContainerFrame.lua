@@ -816,6 +816,10 @@ function ContainerFrameItemButton_OnEnter(self)
 	if(speciesID and speciesID > 0) then
 		BattlePetToolTip_Show(speciesID, level, breedQuality, maxHealth, power, speed, name);
 		return;
+	else
+		if (BattlePetTooltip) then
+			BattlePetTooltip:Hide();
+		end
 	end
 
 	if ( InRepairMode() and (repairCost and repairCost > 0) ) then

@@ -5,5 +5,5 @@ Dir["/Users/tekkub/Downloads/*.diff"].each do |f|
   puts "\n~~~~~~~~~~~~~~ Applying build #{after} ~~~~~~~~~~~~~~"
   puts `git apply "#{f}"`
   puts `git add .`
-  puts `git commit -m 'Build #{after}'`
+  puts `git commit -a -m 'Build #{after}'`
 end

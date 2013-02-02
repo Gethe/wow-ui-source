@@ -67,9 +67,9 @@ function ItemUpgradeFrame_Update(self)
 		ItemUpgradeFrame.ItemButton.ItemName:SetText("|c"..hex..name.."|r");
 		ItemUpgradeFrame.ItemButton.BoundStatus:SetText(bound);
 		ItemUpgradeFrame.ItemButton.MissingText:Hide();	
-		ItemUpgradeFrame.ItemButton.CurrencyAmount:SetText(cost);
+		ItemUpgradeFrame.ItemButton.Cost.Amount:SetText(cost);
 		local _, _, currencyTexture = GetCurrencyInfo(currencyType);
-		ItemUpgradeFrame.ItemButton.CurrencyIcon:SetTexture("Interface\\Icons\\"..currencyTexture);
+		ItemUpgradeFrame.ItemButton.Cost.Icon:SetTexture("Interface\\Icons\\"..currencyTexture);
 		ItemUpgradeFrame.MissingDescription:Hide();
 		ItemUpgradeFrame.MissingFadeOut:Hide();
 		ItemUpgradeFrame.TitleTextLeft:Show();
@@ -89,12 +89,12 @@ function ItemUpgradeFrame_Update(self)
 			ItemUpgradeFrameUpgradeButton:SetEnabled(numCurrUpgrades < numMaxUpgrades);
 		end
 		if ( canUpgradeItem ) then
-			ItemUpgradeFrame.ItemButton.CurrencyAmount:Show();
-			ItemUpgradeFrame.ItemButton.CurrencyIcon:Show();
+			ItemUpgradeFrame.ItemButton.Cost.Amount:Show();
+			ItemUpgradeFrame.ItemButton.Cost.Icon:Show();
 			ItemUpgradeFrame.NoMoreUpgrades:Hide();
 		else
-			ItemUpgradeFrame.ItemButton.CurrencyIcon:Hide();
-			ItemUpgradeFrame.ItemButton.CurrencyAmount:Hide();
+			ItemUpgradeFrame.ItemButton.Cost.Icon:Hide();
+			ItemUpgradeFrame.ItemButton.Cost.Amount:Hide();
 			ItemUpgradeFrame.NoMoreUpgrades:Show();
 		end
 		
@@ -105,8 +105,8 @@ function ItemUpgradeFrame_Update(self)
 		ItemUpgradeFrame.ItemButton.ItemName:SetText("");
 		ItemUpgradeFrame.ItemButton.BoundStatus:SetText("");
 		ItemUpgradeFrame.ItemButton.MissingText:Show();	
-		ItemUpgradeFrame.ItemButton.CurrencyIcon:Hide();
-		ItemUpgradeFrame.ItemButton.CurrencyAmount:Hide();
+		ItemUpgradeFrame.ItemButton.Cost.Icon:Hide();
+		ItemUpgradeFrame.ItemButton.Cost.Amount:Hide();
 		ItemUpgradeFrame.MissingDescription:Show();
 		ItemUpgradeFrame.MissingFadeOut:Show();
 		ItemUpgradeFrame.TitleTextLeft:Hide();

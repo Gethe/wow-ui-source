@@ -277,6 +277,9 @@ size=64,128
 						</Texture>
 					</Layer>
 				</Layers>
+				<Frames>
+					<Cooldown parentKey="Cooldown" inherits="CooldownFrameTemplate"/>
+				</Frames>
 				<HighlightTexture name="$parentHighlight" file="Interface\Buttons\ButtonHilight-Square" alphaMode="ADD"/>
 				<Scripts>
 					<OnClick function="PetJournalDragButton_OnClick"/>	
@@ -284,6 +287,13 @@ size=64,128
 						self:RegisterForDrag("LeftButton");
 						self:RegisterForClicks("LeftButtonUp", "RightButtonUp");
 					</OnLoad>
+					<OnShow>
+						self:RegisterEvent("SPELL_UPDATE_COOLDOWN");
+					</OnShow>
+					<OnHide>
+						self:UnregisterEvent("SPELL_UPDATE_COOLDOWN");
+					</OnHide>
+					<OnEvent function="PetJournalDragButton_OnEvent"/>
 					<OnDragStart function="PetJournalDragButton_OnDragStart"/>
 				</Scripts>
 			</Button>
@@ -1201,7 +1211,7 @@ size=64,128
 					<PlayerModel parentKey="ModelFrame" useParentLevel="true" inherits="ModelWithZoomTemplate">
 						<Anchors>
 							<Anchor point="TOPLEFT" relativeKey="$parent" relativePoint="TOPLEFT" x="0" y="0"/>
-							<Anchor point="BOTTOMRIGHT" relativeKey="$parent" x="0" y="150"/>
+							<Anchor point="BOTTOMRIGHT" relativeKey="$parent" x="0" y="100"/>
 						</Anchors>
 						<Frames>
 							<Button parentKey="RotateLeftButton">

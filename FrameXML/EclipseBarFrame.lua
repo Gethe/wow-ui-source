@@ -36,7 +36,7 @@ function EclipseBar_UpdateShown(self)
 	
 	if  class == "DRUID" and (form == MOONKIN_FORM or not form) then
 		if GetSpecialization() == 1 then
-			self.showPercent = GetCVarBool("statusTextPercentage");	
+			self.textDisplay = GetCVar("statusTextDisplay");	
 			if GetCVarBool("playerStatusText") then
 				self.powerText:Show();
 				self.lockShow = true;
@@ -61,7 +61,9 @@ function EclipseBar_Update(self)
 		return;--catch divide by zero
 	end
 	
-	if self.showPercent then 
+	if (self.textDisplay == "BOTH") then
+		self.powerText:SetText("("..abs(power/maxPower*100).."%) "..abs(power).." / "..abs(maxPower));
+	elseif (self.textDisplay == "PERCENT") then
 		self.powerText:SetText(abs(power/maxPower*100).."%");
 	else
 		self.powerText:SetText(abs(power));

@@ -121,7 +121,7 @@ function QueueStatusFrame_Update(self)
 
 	--Try all PvP queues
 	for i=1, GetMaxBattlefieldID() do
-		local status, mapName, teamSize, registeredMatch = GetBattlefieldStatus(i);
+		local status, mapName, teamSize, registeredMatch, suspend = GetBattlefieldStatus(i);
 		if ( status and status ~= "none" ) then
 			local entry = QueueStatusFrame_GetEntry(self, nextEntry);
 			QueueStatusEntry_SetUpBattlefield(entry, i);
@@ -130,7 +130,7 @@ function QueueStatusFrame_Update(self)
 			nextEntry = nextEntry + 1;
 
 			showMinimapButton = true;
-			if ( status == "queued" ) then
+			if ( status == "queued" and not suspend ) then
 				animateEye = true;
 			end
 		end

@@ -244,27 +244,6 @@ function ReforgingFrame_GetStatRow(index, tryAdd)
 	end
 	return leftStat, rightStat;
 end
-function BLAHBLAH(index,tryAdd)
-	local leftStat, rightStat;
-	leftStat = _G["ReforgingFrameLeftStat"..index];
-	rightStat = _G["ReforgingFrameRightStat"..index];
-	if tryAdd and not leftStat then
-		if index > REFORGE_MAX_STATS_SHOWN  then
-			return;
-		end
-		leftStat = CreateFrame("CHECKBUTTON", "ReforgingFrameLeftStat"..index, ReforgingFrame, "ReforgingStatTemplate");
-		leftStat:SetPoint("TOP",  _G["ReforgingFrameLeftStat"..(index-1)], "BOTTOM", 0, -1);
-		rightStat = CreateFrame("CHECKBUTTON", "ReforgingFrameRightStat"..index, ReforgingFrame, "ReforgingStatTemplate");
-		rightStat:SetPoint("TOP",  _G["ReforgingFrameRightStat"..(index-1)], "BOTTOM", 0, -1);
-		if mod(index, 2) == 0 then
-			leftStat.BG:Show();
-			rightStat.BG:Show();
-		end
-		leftStat:Hide();
-		rightStat:Hide();
-	end
-	return leftStat, rightStat;
-end
 
 -----------------------------------------------------------
 ------------- Stat Changing Goodness ----------------------

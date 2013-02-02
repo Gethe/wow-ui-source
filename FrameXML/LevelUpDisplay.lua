@@ -487,7 +487,7 @@ function LevelUpDisplay_BuildPetBattleWinnerList(self)
 	self.winnerString = PET_BATTLE_RESULT_LOSE;
 	if(C_PetBattles.IsWildBattle()) then
 		self.winnerSoundKitID = 34090; --UI_PetBattle_PVE_Defeat
-	elseif(C_PetBattles.IsPlayerNPC()) then
+	elseif(C_PetBattles.IsPlayerNPC(LE_BATTLE_PET_ENEMY)) then
 		self.winnerSoundKitID = 34094; --UI_PetBattle_Special_Defeat
 	else
 		self.winnerSoundKitID = 34092; --UI_PetBattle_PVP_Defeat
@@ -497,7 +497,7 @@ function LevelUpDisplay_BuildPetBattleWinnerList(self)
 		self.winnerString = PET_BATTLE_RESULT_WIN;
 		if(C_PetBattles.IsWildBattle()) then
 			self.winnerSoundKitID = 34089; --UI_PetBattle_PVE_Victory
-		elseif(C_PetBattles.IsPlayerNPC()) then
+		elseif(C_PetBattles.IsPlayerNPC(LE_BATTLE_PET_ENEMY)) then
 			self.winnerSoundKitID = 34093; --UI_PetBattle_Special_Victory
 		else
 			self.winnerSoundKitID = 34091; --UI_PetBattle_PVP_Victory

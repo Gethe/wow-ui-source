@@ -313,7 +313,7 @@ function PartyMemberFrame_UpdateNotPresentIcon(self)
 		self.notPresentIcon.Border:Show();
 		self.notPresentIcon.tooltip = PARTY_IN_PUBLIC_GROUP_MESSAGE;
 		self.notPresentIcon:Show();
-	elseif ( not inPhase and UnitExists(partyID) ) then
+	elseif ( not inPhase and UnitIsConnected(partyID) ) then
 		self:SetAlpha(0.6);
 		self.notPresentIcon.texture:SetTexture("Interface\\TargetingFrame\\UI-PhasingIcon");
 		self.notPresentIcon.texture:SetTexCoord(0.15625, 0.84375, 0.15625, 0.84375);

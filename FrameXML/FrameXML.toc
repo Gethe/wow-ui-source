@@ -1,5 +1,5 @@
 # Do not delete the following line!
-## Interface: 50100
+## Interface: 50200
 GlobalStrings.lua
 Constants.lua
 Fonts.xml
@@ -147,6 +147,7 @@ EasyMenu.lua
 ChatConfigFrame.xml
 MovieFrame.xml
 AlternatePowerBar.xml
+MonkStaggerBar.xml
 LevelUpDisplay.xml
 AnimationSystem.lua
 EquipmentManager.lua

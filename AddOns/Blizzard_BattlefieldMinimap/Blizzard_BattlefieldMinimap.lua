@@ -45,12 +45,7 @@ function BattlefieldMinimap_OnLoad (self)
 	self:RegisterEvent("GROUP_ROSTER_UPDATE");
 	self:RegisterEvent("NEW_WMO_CHUNK");
 
-	CreateMiniWorldMapArrowFrame(BattlefieldMinimap);
-
 	BattlefieldMinimap.updateTimer = 0;
-	-- PlayerMiniArrowEffectFrame is created in code: CWorldMap::CreateMiniPlayerArrowFrame()
-	PlayerMiniArrowEffectFrame:SetFrameLevel(WorldMapParty1:GetFrameLevel() + 1);
-	PlayerMiniArrowEffectFrame:SetAlpha(0.65);
 end
 
 function BattlefieldMinimap_OnShow(self)
@@ -291,15 +286,16 @@ function BattlefieldMinimap_OnUpdate(self, elapsed)
 	end
 	
 	--Position player
-	UpdateWorldMapArrowFrames();
 	local playerX, playerY = GetPlayerMapPosition("player");
 	if ( playerX == 0 and playerY == 0 ) then
-		ShowMiniWorldMapArrowFrame(nil);
+		BattlefieldMinimapPlayer:Hide();
 	else
 		playerX = playerX * BattlefieldMinimap:GetWidth();
 		playerY = -playerY * BattlefieldMinimap:GetHeight();
-		PositionMiniWorldMapArrowFrame("CENTER", "BattlefieldMinimap", "TOPLEFT", playerX, playerY);
-		ShowMiniWorldMapArrowFrame(1);
+		BattlefieldMinimapPlayer:SetPoint("CENTER", "BattlefieldMinimap", "TOPLEFT", playerX, playerY);
+		UpdateWorldMapArrow(BattlefieldMinimapPlayer.icon);
+		UpdateWorldMapArrow(BattlefieldMinimapPlayer.iconHighlight);
+		BattlefieldMinimapPlayer:Show();
 	end
 	
 	-- If resizing the frame then scale everything accordingly

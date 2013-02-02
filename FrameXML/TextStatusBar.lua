@@ -23,7 +23,7 @@ function TextStatusBar_OnEvent(self, event, ...)
 				end
 			end
 			TextStatusBar_UpdateTextString(self);
-		elseif ( cvar == "STATUS_TEXT_PERCENT" ) then
+		elseif ( cvar == "STATUS_TEXT_DISPLAY" ) then
 			TextStatusBar_UpdateTextString(self);
 		end
 	end
@@ -51,18 +51,34 @@ function TextStatusBar_UpdateTextStringWithValues(statusFrame, textString, value
 			return;
 		end
 
-		if ( value and valueMax > 0 and ( GetCVarBool("statusTextPercentage") or statusFrame.showPercentage ) and not statusFrame.showNumeric) then
+		local valueDisplay = value;
+		local valueMaxDisplay = valueMax;
+		if ( statusFrame.capNumericDisplay ) then
+			valueDisplay = AbbreviateLargeNumbers(value);
+			valueMaxDisplay = AbbreviateLargeNumbers(valueMax);
+		else
+			valueDisplay = BreakUpLargeNumbers(value);
+			valueMaxDisplay = BreakUpLargeNumbers(valueMax);
+		end
+
+		local textDisplay = GetCVar("statusTextDisplay");
+		if ( value and valueMax > 0 and ( textDisplay ~= "NUMERIC" or statusFrame.showPercentage ) and not statusFrame.showNumeric) then
 			if ( value == 0 and statusFrame.zeroText ) then
 				textString:SetText(statusFrame.zeroText);
 				statusFrame.isZero = 1;
 				textString:Show();
 				return;
 			end
-			value = BreakUpLargeNumbers(math.ceil((value / valueMax) * 100)) .. "%";
-			if ( statusFrame.prefix and (statusFrame.alwaysPrefix or not (statusFrame.cvar and GetCVar(statusFrame.cvar) == "1" and statusFrame.textLockable) ) ) then
-				textString:SetText(statusFrame.prefix .. " " .. value);
+			if ( textDisplay == "BOTH" ) then
+				valueDisplay = "(" .. math.ceil((value / valueMax) * 100) .. "%) " .. valueDisplay .. " / " .. valueMaxDisplay;
+				textString:SetText(valueDisplay);
 			else
-				textString:SetText(value);
+				valueDisplay = math.ceil((value / valueMax) * 100) .. "%";
+				if ( statusFrame.prefix and (statusFrame.alwaysPrefix or not (statusFrame.cvar and GetCVar(statusFrame.cvar) == "1" and statusFrame.textLockable) ) ) then
+					textString:SetText(statusFrame.prefix .. " " .. valueDisplay);
+				else
+					textString:SetText(valueDisplay);
+				end
 			end
 		elseif ( value == 0 and statusFrame.zeroText ) then
 			textString:SetText(statusFrame.zeroText);
@@ -71,17 +87,10 @@ function TextStatusBar_UpdateTextStringWithValues(statusFrame, textString, value
 			return;
 		else
 			statusFrame.isZero = nil;
-			if ( statusFrame.capNumericDisplay ) then
-				value = AbbreviateLargeNumbers(value);
-				valueMax = AbbreviateLargeNumbers(valueMax);
-			else
-				value = BreakUpLargeNumbers(value);
-				valueMax = BreakUpLargeNumbers(valueMax);
-			end
 			if ( statusFrame.prefix and (statusFrame.alwaysPrefix or not (statusFrame.cvar and GetCVar(statusFrame.cvar) == "1" and statusFrame.textLockable) ) ) then
-				textString:SetText(statusFrame.prefix.." "..value.." / "..valueMax);
+				textString:SetText(statusFrame.prefix.." "..valueDisplay.." / "..valueMaxDisplay);
 			else
-				textString:SetText(value.." / "..valueMax);
+				textString:SetText(valueDisplay.." / "..valueMaxDisplay);
 			end
 		end
 	else

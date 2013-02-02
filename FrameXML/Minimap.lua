@@ -15,8 +15,6 @@ LFG_EYE_TEXTURES["unknown"] = { file = "Interface\\LFGFrame\\WaitAnim", width = 
 
 function Minimap_OnLoad(self)
 	self.fadeOut = nil;
-	Minimap:SetPlayerTextureHeight(40);
-	Minimap:SetPlayerTextureWidth(40);
 	self:RegisterEvent("MINIMAP_PING");
 	self:RegisterEvent("MINIMAP_UPDATE_ZOOM");
 	self:RegisterEvent("PLAYER_TARGET_CHANGED");
@@ -359,8 +357,6 @@ end
 -- Dungeon Difficulty
 --
 						
-local selectedRaidDifficulty;
-local allowedRaidDifficulty;
 local IS_GUILD_GROUP;
 
 function MiniMapInstanceDifficulty_OnEvent(self, event, ...)
@@ -391,107 +387,75 @@ end
 
 function MiniMapInstanceDifficulty_Update()
 	local _, instanceType, difficulty, _, maxPlayers, playerDifficulty, isDynamicInstance = GetInstanceInfo();
-	local isChallengeMode = (difficulty == DIFFICULTY_DUNGEON_CHALLENGE);
-	if ( not IS_GUILD_GROUP and instanceType == "party" and isChallengeMode ) then
+	local _, _, isHeroic, isChallengeMode = GetDifficultyInfo(difficulty);
+
+	if ( IS_GUILD_GROUP ) then
+		if ( maxPlayers == 0 ) then
+			GuildInstanceDifficultyText:SetText("");
+			GuildInstanceDifficultyDarkBackground:SetAlpha(0);
+			GuildInstanceDifficulty.emblem:SetPoint("TOPLEFT", 12, -16);
+		else
+			GuildInstanceDifficultyText:SetText(maxPlayers);
+			GuildInstanceDifficultyDarkBackground:SetAlpha(0.7);
+			GuildInstanceDifficulty.emblem:SetPoint("TOPLEFT", 12, -10);
+		end
+		GuildInstanceDifficultyText:ClearAllPoints();
+		if ( isHeroic or isChallengeMode ) then
+			local symbolTexture;
+			if ( isChallengeMode ) then
+				symbolTexture = GuildInstanceDifficultyChallengeModeTexture;
+				GuildInstanceDifficultyHeroicTexture:Hide();
+			else
+				symbolTexture = GuildInstanceDifficultyHeroicTexture;
+				GuildInstanceDifficultyChallengeModeTexture:Hide();
+			end
+			-- the 1 looks a little off when text is centered
+			if ( maxPlayers < 10 ) then
+				symbolTexture:SetPoint("BOTTOMLEFT", 11, 7);
+				GuildInstanceDifficultyText:SetPoint("BOTTOMLEFT", 23, 8);
+			elseif ( maxPlayers > 19 ) then
+				symbolTexture:SetPoint("BOTTOMLEFT", 8, 7);
+				GuildInstanceDifficultyText:SetPoint("BOTTOMLEFT", 20, 8);
+			else
+				symbolTexture:SetPoint("BOTTOMLEFT", 8, 7);
+				GuildInstanceDifficultyText:SetPoint("BOTTOMLEFT", 19, 8);
+			end
+			symbolTexture:Show();
+		else
+			GuildInstanceDifficultyHeroicTexture:Hide();
+			GuildInstanceDifficultyChallengeModeTexture:Hide();
+			GuildInstanceDifficultyText:SetPoint("BOTTOM", 2, 8);
+		end
+		MiniMapInstanceDifficulty:Hide();
+		SetSmallGuildTabardTextures("player", GuildInstanceDifficulty.emblem, GuildInstanceDifficulty.background, GuildInstanceDifficulty.border);
+		GuildInstanceDifficulty:Show();
+		MiniMapChallengeMode:Hide();
+	elseif ( isChallengeMode ) then
 		MiniMapChallengeMode:Show();
 		MiniMapInstanceDifficulty:Hide();
-		GuildInstanceDifficulty:Hide();	
-	elseif ( IS_GUILD_GROUP or ((instanceType == "party" or instanceType == "raid") and not (difficulty == 1 and maxPlayers == 5)) ) then
-		local isHeroic = false;
-		if ( instanceType == "party" and difficulty == 2 ) then
-			isHeroic = true;
-		elseif ( instanceType == "raid" ) then
-			difficulty = difficulty - 2;	-- need to fix this later
-			if ( isDynamicInstance ) then
-				selectedRaidDifficulty = difficulty;
-				if ( selectedRaidDifficulty >= 3 ) then
-					isHeroic = true;
-				end
-				-- if modified difficulty is normal then you are allowed to select heroic, and vice-versa
-				if ( selectedRaidDifficulty == 1 ) then
-					allowedRaidDifficulty = 3;
-				elseif ( selectedRaidDifficulty == 2 ) then
-					allowedRaidDifficulty = 4;
-				elseif ( selectedRaidDifficulty == 3 ) then
-					allowedRaidDifficulty = 1;
-				elseif ( selectedRaidDifficulty == 4 ) then
-					allowedRaidDifficulty = 2;
-				elseif (selectedRaidDifficulty == 5 ) then -- Temporary fix. 5 here means LFR and we don't want to allow any other raid difficulty in that case. It's also not heroic (it's a 25 normal). -Should fix in 5.1.0 cleanup.
-					allowedRaidDifficulty = nil;
-					isHeroic = false;
-				end
-				if (allowedRaidDifficulty) then 
-					allowedRaidDifficulty = "RAID_DIFFICULTY"..(allowedRaidDifficulty);
-				end
-			end
+		GuildInstanceDifficulty:Hide();
+	elseif ( instanceType == "raid" or ( instanceType == "party" and isHeroic ) ) then
+		MiniMapInstanceDifficultyText:SetText(maxPlayers);
+		-- the 1 looks a little off when text is centered
+		local xOffset = 0;
+		if ( maxPlayers >= 10 and maxPlayers <= 19 ) then
+			xOffset = -1;
 		end
-		if ( IS_GUILD_GROUP ) then
-			if ( maxPlayers == 0 ) then
-				GuildInstanceDifficultyText:SetText("");
-				GuildInstanceDifficultyDarkBackground:SetAlpha(0);
-				GuildInstanceDifficulty.emblem:SetPoint("TOPLEFT", 12, -16);
-			else
-				GuildInstanceDifficultyText:SetText(maxPlayers);
-				GuildInstanceDifficultyDarkBackground:SetAlpha(0.7);
-				GuildInstanceDifficulty.emblem:SetPoint("TOPLEFT", 12, -10);
-			end
-			GuildInstanceDifficultyText:ClearAllPoints();
-			if ( isHeroic or isChallengeMode ) then
-				local symbolTexture;
-				if ( isChallengeMode ) then
-					symbolTexture = GuildInstanceDifficultyChallengeModeTexture;
-					GuildInstanceDifficultyHeroicTexture:Hide();
-				else
-					symbolTexture = GuildInstanceDifficultyHeroicTexture;
-					GuildInstanceDifficultyChallengeModeTexture:Hide();
-				end
-				if ( maxPlayers < 10 ) then
-					symbolTexture:SetPoint("BOTTOMLEFT", 11, 7);
-					GuildInstanceDifficultyText:SetPoint("BOTTOMLEFT", 23, 8);
-				elseif ( maxPlayers > 19 ) then
-					symbolTexture:SetPoint("BOTTOMLEFT", 8, 7);
-					GuildInstanceDifficultyText:SetPoint("BOTTOMLEFT", 20, 8);
-				else
-					symbolTexture:SetPoint("BOTTOMLEFT", 8, 7);
-					GuildInstanceDifficultyText:SetPoint("BOTTOMLEFT", 19, 8);
-				end
-				symbolTexture:Show();
-			else
-				GuildInstanceDifficultyHeroicTexture:Hide();
-				GuildInstanceDifficultyChallengeModeTexture:Hide();
-				GuildInstanceDifficultyText:SetPoint("BOTTOM", 2, 8);
-			end
-			MiniMapInstanceDifficulty:Hide();
-			SetSmallGuildTabardTextures("player", GuildInstanceDifficulty.emblem, GuildInstanceDifficulty.background, GuildInstanceDifficulty.border);
-			GuildInstanceDifficulty:Show();
-			MiniMapChallengeMode:Hide();
+		if ( isHeroic ) then
+			MiniMapInstanceDifficultyTexture:SetTexCoord(0, 0.25, 0.0703125, 0.4140625);
+			MiniMapInstanceDifficultyText:SetPoint("CENTER", xOffset, -9);
 		else
-			MiniMapInstanceDifficultyText:SetText(maxPlayers);
-			-- the 1 looks a little off when text is centered
-			local xOffset = 0;
-			if ( maxPlayers >= 10 and maxPlayers <= 19 ) then
-				xOffset = -1;
-			end
-			if ( isHeroic ) then
-				MiniMapInstanceDifficultyTexture:SetTexCoord(0, 0.25, 0.0703125, 0.4140625);
-				MiniMapInstanceDifficultyText:SetPoint("CENTER", xOffset, -9);
-			else
-				MiniMapInstanceDifficultyTexture:SetTexCoord(0, 0.25, 0.5703125, 0.9140625);
-				MiniMapInstanceDifficultyText:SetPoint("CENTER", xOffset, 5);
-			end
-			MiniMapInstanceDifficulty:Show();
-			GuildInstanceDifficulty:Hide();
-			MiniMapChallengeMode:Hide();
+			MiniMapInstanceDifficultyTexture:SetTexCoord(0, 0.25, 0.5703125, 0.9140625);
+			MiniMapInstanceDifficultyText:SetPoint("CENTER", xOffset, 5);
 		end
+		MiniMapInstanceDifficulty:Show();
+		GuildInstanceDifficulty:Hide();
+		MiniMapChallengeMode:Hide();
 	else
 		MiniMapInstanceDifficulty:Hide();
 		GuildInstanceDifficulty:Hide();
 		MiniMapChallengeMode:Hide();
 	end
-end
-
-function _GetPlayerDifficultyMenuOptions()
-	return selectedRaidDifficulty, allowedRaidDifficulty;
 end
 
 function GuildInstanceDifficulty_OnEnter(self)

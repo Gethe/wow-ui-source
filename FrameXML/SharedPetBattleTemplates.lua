@@ -19,7 +19,7 @@ abilityInfo should be defined with the following functions:
 
 	Values for target are:
 	For abilities: self(default), enemy(affected)
-	For auras: auracaster(default), aurawearer(affected)
+	For auras: auracaster(default), aurawearer(affected), auraenemy(the enemy of aurawearer)
 }
 --]]
 DEFAULT_PET_BATTLE_ABILITY_INFO = {};
@@ -222,6 +222,7 @@ do
 		ENEMY = "enemy",
 		AURAWEARER = "aurawearer",
 		AURACASTER = "auracaster",
+		AURAENEMY = "auraenemy",
 		AFFECTED = "affected",
 
 		--Proc types (for use in getProcIndex)
@@ -461,9 +462,13 @@ do
 		local turnIndex, effectIndex, abilityID = ...;
 		return parserEnv.FormatDamage(parserEnv.SimpleDamage(...), abilityID);
 	end;
-	parserEnv.FormatDamage = function(baseDamage, abilityID)
+	parserEnv.FormatDamage = function(baseDamage, abilityID, affected)
+		if ( not affected ) then
+			affected = parserEnv.AFFECTED;
+		end
+
 		if ( parserEnv.isInBattle() and parserEnv.abilityHasHints(abilityID) ) then
-			return FormatDamageHelper(baseDamage, parserEnv.abilityPetType(abilityID), parserEnv.unitPetType(parserEnv.AFFECTED));
+			return FormatDamageHelper(baseDamage, parserEnv.abilityPetType(abilityID), parserEnv.unitPetType(affected));
 		else
 			return parserEnv.floor(baseDamage);
 		end

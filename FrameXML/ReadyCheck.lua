@@ -16,14 +16,19 @@ function ShowReadyCheck(initiator, timeLeft)
 			ReadyCheckListenerFrame:Hide();
 		else
 			SetPortraitTexture(ReadyCheckPortrait, initiator);
-			if (UnitInRaid("player")) then
-				local difficulty;
-				if ( IsPartyLFG() ) then
-					difficulty = 2;		-- 25 normal for Raid Finder
+			local _, _, difficultyID = GetInstanceInfo();
+			if ( not difficultyID or difficultyID == 0 ) then
+				-- not in an instance, go by current difficulty setting
+				if (UnitInRaid("player")) then
+					difficultyID = GetRaidDifficultyID();
 				else
-					difficulty = GetRaidDifficulty();
+					difficultyID = GetDungeonDifficultyID();
 				end
-				ReadyCheckFrameText:SetFormattedText(READY_CHECK_MESSAGE.."\n"..RAID_DIFFICULTY..": ".._G["RAID_DIFFICULTY"..difficulty], initiator);
+			end
+			local difficultyName, _, _, _, toggleDifficultyID = GetDifficultyInfo(difficultyID);
+			if ( toggleDifficultyID and toggleDifficultyID > 0 ) then
+				-- the current difficulty might change while inside an instance so show the difficulty on the ready check
+				ReadyCheckFrameText:SetFormattedText(READY_CHECK_MESSAGE.."\n"..RAID_DIFFICULTY..": "..difficultyName, initiator);
 			else
 				ReadyCheckFrameText:SetFormattedText(READY_CHECK_MESSAGE, initiator);
 			end

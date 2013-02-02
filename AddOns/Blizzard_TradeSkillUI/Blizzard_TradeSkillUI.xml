@@ -91,14 +91,6 @@
 				</Layers>
 				<BarTexture file="Interface\PaperDollInfoFrame\UI-Character-Skills-Bar"/>
 				<BarColor r=".25" g=".25" b=".75"/>
-				<Scripts>
-					<OnValueChanged>
-						local _, max = self:GetMinMaxValues();
-						if (max) then 
-							self.Rank:SetText(self:GetValue().."/"..max);
-						end
-					</OnValueChanged>
-				</Scripts>
 			</StatusBar>
 		</Frames>
 		<Scripts>
@@ -958,7 +950,34 @@
 						end
 					</OnClick>
 				</Scripts>
-			</Button>			
+			</Button>
+			<Frame parentKey="RetrievingFrame" hidden="true">
+				<Size x="292" y="124"/>
+				<Anchors>
+					<Anchor point="TOPLEFT" x="10" y="-86"/>
+				</Anchors>
+				<Layers>
+					<Layer level="ARTWORK">
+						<FontString parentKey="Text" inherits="GameFontNormal" text="RETRIEVING_TRADESKILL_INFO">
+							<Anchors>
+								<Anchor point="CENTER"/>
+							</Anchors>
+						</FontString>
+						<FontString  parentKey="Dots" inherits="GameFontNormal" text="">
+							<Anchors>
+								<Anchor point="LEFT" relativeKey="$parent.Text" relativePoint="RIGHT"/>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnShow>
+						self.Dots:SetText("");
+						self.dotCount = 0;
+					</OnShow>
+					<OnUpdate function="TradeSkillRetrievingFrame_OnUpdate"/>
+				</Scripts>
+			</Frame>
 		</Frames>
 		<Scripts>
 			<OnLoad>			
@@ -982,7 +1001,7 @@
 				CloseTradeSkill();
 				PlaySound("igCharacterInfoClose");
 			</OnHide>
-			<OnUpdate function="TradeSkillFrame_PlaytimeUpdate"/>
+			<OnUpdate function="TradeSkillFrame_OnUpdate"/>
 		</Scripts>
 	</Frame>
 	<Frame name="TradeSkillGuildFrame" toplevel="true" frameStrata="DIALOG" hidden="true" parent="TradeSkillFrame" inherits="TranslucentFrameTemplate">

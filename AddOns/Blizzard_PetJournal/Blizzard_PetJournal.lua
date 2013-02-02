@@ -134,7 +134,6 @@ function PetJournal_OnLoad(self)
 	self.listScroll.scrollBar.doNotHide = true;
 	HybridScrollFrame_CreateButtons(self.listScroll, "CompanionListButtonTemplate", 44, 0);
 	
-	PetJournal.isWild = false;
 	UIDropDownMenu_Initialize(self.petOptionsMenu, PetOptionsMenu_Init, "MENU");
 
 	PetJournal_ShowPetCard(1);
@@ -211,10 +210,10 @@ function PetJournal_OnEvent(self, event, ...)
 end
 
 function PetJournal_SelectSpecies(self, targetSpeciesID)
-	local numPets = C_PetJournal.GetNumPets(PetJournal.isWild);
+	local numPets = C_PetJournal.GetNumPets();
 	local petIndex = nil;
 	for i = 1,numPets do
-		local petID, speciesID, owned = C_PetJournal.GetPetInfoByIndex(i, isWild);
+		local petID, speciesID, owned = C_PetJournal.GetPetInfoByIndex(i);
 		if (speciesID == targetSpeciesID) then
 			petIndex = i;
 			break;
@@ -228,10 +227,10 @@ function PetJournal_SelectSpecies(self, targetSpeciesID)
 end
 
 function PetJournal_SelectPet(self, targetPetID)
-	local numPets = C_PetJournal.GetNumPets(PetJournal.isWild);
+	local numPets = C_PetJournal.GetNumPets();
 	local petIndex = nil;
 	for i = 1,numPets do
-		local petID, speciesID, owned = C_PetJournal.GetPetInfoByIndex(i, isWild);
+		local petID, speciesID, owned = C_PetJournal.GetPetInfoByIndex(i);
 		if (petID == targetPetID) then
 			petIndex = i;
 			break;
@@ -354,18 +353,6 @@ function PetJournalHealPetButton_OnEnter(self)
 		GameTooltip:Show();
 	end
 	self.UpdateTooltip = PetJournalHealPetButton_OnEnter;
-end
-
-function PetJournal_OnTabClick(isWild)
-	PetJournal.isWild = isWild;
-	if isWild then
-		PanelTemplates_DeselectTab(PetJournalTab1);
-		PanelTemplates_SelectTab(PetJournalTab2);
-	else
-		PanelTemplates_DeselectTab(PetJournalTab2);
-		PanelTemplates_SelectTab(PetJournalTab1);
-	end
-	PetJournal_UpdatePetList();
 end
 
 function PetJournalLoadout_GetRequiredLevel(loadoutPlate, abilityID)
@@ -635,7 +622,10 @@ function PetJournal_UpdatePetLoadOut()
 				
 			loadoutPlate.xpBar:SetMinMaxValues(0, maxXp);
 			loadoutPlate.xpBar:SetValue(xp);
-			if (GetCVarBool("statusTextPercentage")) then
+			local display = GetCVar("statusTextDisplay")
+			if (display == "3") then
+				loadoutPlate.xpBar.rankText:SetFormattedText(PET_BATTLE_CURRENT_XP_FORMAT_BOTH, xp, maxXp, xp/maxXp*100);
+			elseif (display == "2") then
 				loadoutPlate.xpBar.rankText:SetFormattedText(PET_BATTLE_CURRENT_XP_FORMAT_PERCENT, xp/maxXp*100);
 			else
 				loadoutPlate.xpBar.rankText:SetFormattedText(PET_BATTLE_CURRENT_XP_FORMAT_VERBOSE, xp, maxXp);
@@ -735,9 +725,7 @@ function PetJournal_UpdatePetList()
 	local petButtons = scrollFrame.buttons;
 	local pet, index;
 	
-	local isWild = PetJournal.isWild;
-	
-	local numPets, numOwned = C_PetJournal.GetNumPets(isWild);
+	local numPets, numOwned = C_PetJournal.GetNumPets();
 	PetJournal.PetCount.Count:SetText(numOwned);
 	
 	local summonedPetID = C_PetJournal.GetSummonedPetGUID();
@@ -746,7 +734,7 @@ function PetJournal_UpdatePetList()
 		pet = petButtons[i];
 		index = offset + i;
 		if index <= numPets then
-			local petID, speciesID, isOwned, customName, level, favorite, isRevoked, name, icon, petType, creatureID, sourceText, description, isWildPet, canBattle = C_PetJournal.GetPetInfoByIndex(index, isWild);
+			local petID, speciesID, isOwned, customName, level, favorite, isRevoked, name, icon, petType, creatureID, sourceText, description, isWildPet, canBattle = C_PetJournal.GetPetInfoByIndex(index);
 
 			if customName then
 				pet.name:SetText(customName);
@@ -826,6 +814,14 @@ function PetJournal_UpdatePetList()
 				pet.selected = false;
 				pet.selectedTexture:Hide()
 			end
+			
+			if ( petID ) then
+				local start, duration, enable = C_PetJournal.GetPetCooldownByGUID(pet.petID);
+				if (start) then
+					CooldownFrame_SetTimer(pet.dragButton.Cooldown, start, duration, enable);
+					pet.dragButton.Cooldown:SetBlingDuration(0);
+				end
+			end
 		else
 			pet:Hide();
 		end
@@ -896,7 +892,7 @@ function PetJournalDragButton_OnClick(self, button)
 end
 
 function PetJournalPetLoadoutDragButton_OnClick(self, button)
-	loadout = self:GetParent();
+	local loadout = self:GetParent();
 	if (button == "RightButton" and loadout.petID) then
 		PetJournal_ShowPetDropdown(nil, self, 0, 0, loadout.petID);
 		return;
@@ -920,7 +916,7 @@ function PetJournalDragButton_OnDragStart(self)
 	end
 
 	PetJournal_HidePetDropdown();
-	C_PetJournal.PickupPet(self:GetParent().petID, PetJournal.isWild);
+	C_PetJournal.PickupPet(self:GetParent().petID);
 
 	for i=1,MAX_ACTIVE_PETS do
 		local loadoutPlate = PetJournal.Loadout["Pet"..i];
@@ -929,6 +925,15 @@ function PetJournalDragButton_OnDragStart(self)
 			PetJournal.Loadout["Pet"..i].setButton:Hide();
 		else
 			PetJournal.Loadout["Pet"..i].setButton:Show();
+		end
+	end
+end
+
+function PetJournalDragButton_OnEvent(self, event, ...)
+	if ( event == "SPELL_UPDATE_COOLDOWN" and self:GetParent().petID) then
+		local start, duration, enable = C_PetJournal.GetPetCooldownByGUID(self:GetParent().petID);
+		if (start) then
+			CooldownFrame_SetTimer(self.Cooldown, start, duration, enable);
 		end
 	end
 end
@@ -988,7 +993,7 @@ function PetJournal_ShowPetCard(index)
 	PetJournal_HidePetDropdown();
 	PetJournalPetCard.petIndex = index;
 	local owned;
-	PetJournalPetCard.petID, PetJournalPetCard.speciesID, owned = C_PetJournal.GetPetInfoByIndex(index, PetJournal.isWild);		
+	PetJournalPetCard.petID, PetJournalPetCard.speciesID, owned = C_PetJournal.GetPetInfoByIndex(index);		
 	if ( not owned ) then
 		PetJournalPetCard.petID = nil;
 	end
@@ -999,9 +1004,9 @@ end
 
 function PetJournal_FindPetCardIndex()
 	PetJournalPetCard.petIndex = nil;
-	local numPets = C_PetJournal.GetNumPets(PetJournal.isWild);
+	local numPets = C_PetJournal.GetNumPets();
 	for i = 1,numPets do
-		local petID, speciesID, owned = C_PetJournal.GetPetInfoByIndex(i, isWild);
+		local petID, speciesID, owned = C_PetJournal.GetPetInfoByIndex(i);
 		if (owned and petID == PetJournalPetCard.petID) or
 			(not owned and speciesID == PetJournalPetCard.speciesID)  then
 			PetJournalPetCard.petIndex = i;
@@ -1081,7 +1086,10 @@ function PetJournal_UpdatePetCard(self)
 		if (level < MAX_PET_LEVEL) then
 			self.xpBar:SetMinMaxValues(0, maxXp);
 			self.xpBar:SetValue(xp);
-			if (GetCVarBool("statusTextPercentage")) then
+			local display = GetCVar("statusTextDisplay")
+			if (display == "BOTH") then
+				self.xpBar.rankText:SetFormattedText(PET_BATTLE_CURRENT_XP_FORMAT_BOTH, xp, maxXp, xp/maxXp*100);
+			elseif(display == "PERCENT") then
 				self.xpBar.rankText:SetFormattedText(PET_BATTLE_CURRENT_XP_FORMAT_PERCENT, xp/maxXp*100);
 			else
 				self.xpBar.rankText:SetFormattedText(PET_BATTLE_CURRENT_XP_FORMAT_VERBOSE, xp, maxXp);

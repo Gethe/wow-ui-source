@@ -43,7 +43,7 @@ function WarlockPowerFrame_OnEvent(self, event, arg1, arg2)
 			self.spec = nil;
 			WarlockPowerFrame_SetUpCurrentPower(self, true);
 		end
-	elseif ( self.activeBar and event == "CVAR_UPDATE" and ( arg1 == "STATUS_TEXT_PLAYER" or arg1 == "STATUS_TEXT_PERCENT" ) ) then
+	elseif ( self.activeBar and event == "CVAR_UPDATE" and ( arg1 == "STATUS_TEXT_PLAYER" or arg1 == "STATUS_TEXT_DISPLAY" ) ) then
 		DemonicFuryBar_CheckStatusCVars(self.activeBar);
 		self.activeBar:OnEvent(nil, true);
 	-- power may have changed
@@ -264,10 +264,12 @@ function DemonicFuryBar_SetPower(self, power)
 		texData = WARLOCK_POWER_FILLBAR["Demonology"];
 	end
 	WarlockPowerFrame_UpdateFill(self.fill, texData, power, self.maxPower);
-	if ( self.showPercent and self.maxPower > 0 ) then
+	if ( (self.maxPower <= 0) or (self.textDisplay == "NUMERIC") ) then
+		self.powerText:SetText(floor(abs(power)));
+	elseif ( self.textDisplay == "PERCENT" ) then
 		self.powerText:SetText(floor(abs(power/self.maxPower*100)).."%");
 	else
-		self.powerText:SetText(floor(abs(power)));
+		self.powerText:SetText("("..floor(abs(power/self.maxPower*100)).."%) "..floor(abs(power)).." / "..floor(abs(maxPower)));
 	end
 end
 
@@ -298,7 +300,7 @@ function DemonicFuryBar_CheckAndSetState()
 end
 
 function DemonicFuryBar_CheckStatusCVars(self)
-	self.showPercent = GetCVarBool("statusTextPercentage");
+	self.textDisplay = GetCVar("statusTextDisplay");
 	if ( GetCVarBool("playerStatusText") ) then
 		self.powerText:Show();
 		self.lockShow = true;

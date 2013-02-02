@@ -39,7 +39,6 @@ function BlackMarketFrame_OnLoad(self)
 	self:RegisterEvent("BLACK_MARKET_BID_RESULT");
 	self:RegisterEvent("BLACK_MARKET_OUTBID");
 	MoneyInputFrame_SetGoldOnly(BlackMarketBidPrice, true);
-	MoneyInputFrame_SetGoldOnly(BlackMarketHotItemBidPrice, true);
 end
 
 function BlackMarketFrame_OnEvent(self, event, ...)
@@ -97,32 +96,16 @@ function BlackMarketFrame_UpdateHotItem(self)
 		end
 		
 		local bidAmount = currBid;
-		local minNextBid = currBid + minIncrement;
 		if ( currBid == 0 ) then
 			bidAmount = minBid;
-			minNextBid = minBid;
 		end
-		self.HotDeal.minNextBid = minNextBid;
-		self.HotDeal.youHaveHighBid = youHaveHighBid;
+		MoneyFrame_Update(HotItemCurrentBidMoneyFrame, bidAmount);
 
-		if ( youHaveHighBid ) then
-			MoneyInputFrame_SetCopper(BlackMarketHotItemBidPrice, currBid);
-		else
-			MoneyInputFrame_SetCopper(BlackMarketHotItemBidPrice, self.HotDeal.minNextBid);
-		end
-		
 		self.HotDeal.TimeLeft.Text:SetText(format(BLACK_MARKET_HOT_ITEM_TIME_LEFT, _G["AUCTION_TIME_LEFT"..timeLeft]));
 		self.HotDeal.TimeLeft.tooltip = _G["AUCTION_TIME_LEFT"..timeLeft.."_DETAIL"];
-
 		self.HotDeal.itemLink = link;
 		self.HotDeal.selectedMarketID = marketID;
-		if ( not youHaveHighBid and GetMoney() >= self.HotDeal.minNextBid ) then
-			self.HotDeal.BidButton:Enable();
-		else
-			self.HotDeal.BidButton:Disable();
-		end
-		self.HotDeal.BidButton.YourBid:SetShown(youHaveHighBid);
-
+		self.HotDeal.BlackMarketHotItemBidPrice.YourBid:SetShown(youHaveHighBid);
 		self.HotDeal:Show();
 	end
 end

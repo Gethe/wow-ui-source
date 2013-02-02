@@ -933,10 +933,7 @@ function PaperDollFrame_SetPvpPower(statFrame, unit)
 			format("%.2F%%", pvpDamage).." ("..DAMAGE..")"..FONT_COLOR_CODE_CLOSE;
 		statFrame.tooltip2 = PVP_POWER_TOOLTIP .. format(PVP_POWER_DAMAGE_TOOLTIP, pvpPower, pvpDamage, pvpHealing);
 	end
-	
-	local pvpPowerBonus = GetCombatRatingBonus(CR_PVP_POWER);
-	
-	
+
 	statFrame:Show();
 end
 

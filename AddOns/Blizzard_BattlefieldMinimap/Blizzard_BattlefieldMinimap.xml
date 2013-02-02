@@ -2,9 +2,7 @@
 ..\..\FrameXML\UI.xsd">
 <Script file="Blizzard_BattlefieldMinimap.lua"/>
 <Frame name="BattlefieldMinimapUnitTemplate" inherits="WorldMapUnitTemplate" enableMouse="true" virtual="true" hidden="true">
-	<Size>
-		<AbsDimension x="12" y="12"/>
-	</Size>
+	<Size x="12" y="12"/>
 	<Scripts>
 		<OnEnter>
 			BattlefieldMinimapUnit_OnEnter(self, motion);
@@ -15,6 +13,21 @@
 		<OnMouseUp>
 			WorldMapUnit_OnMouseUp(self, button, "BattlefieldMinimapRaid", "BattlefieldMinimapParty");
 		</OnMouseUp>
+	</Scripts>
+</Frame>
+<Frame name="BattlefieldMinimapPlayerUnitTemplate" inherits="BattlefieldMinimapUnitTemplate" virtual="true">
+	<Size x="24" y="24"/>
+		<Layers>
+			<Layer level="HIGHLIGHT">
+				<Texture name="$parentIconHighlight" file="Interface\Minimap\MinimapArrow" setAllPoints="true" parentKey="iconHighlight"/>
+			</Layer>
+		</Layers>
+	<Scripts>
+		<OnLoad>
+			WorldMapUnit_OnLoad(self);
+			self.unit = "player";
+			self.icon:SetTexture("Interface\\Minimap\\MinimapArrow");
+		</OnLoad>
 	</Scripts>
 </Frame>
 <Frame name="BattlefieldMinimapPartyUnitTemplate" inherits="BattlefieldMinimapUnitTemplate" virtual="true">
@@ -36,33 +49,25 @@
 	</Scripts>
 </Frame>
 <Button name="BattlefieldMinimapTab" hidden="true" frameStrata="LOW" parent="UIParent" movable="true">
-	<Size>
-		<AbsDimension x="64" y="32"/>
-	</Size>
+	<Size x="64" y="32"/>
 	<Layers>
 		<Layer level="BACKGROUND">
 			<Texture name="$parentLeft" file="Interface\ChatFrame\ChatFrameTab">
-				<Size>
-					<AbsDimension x="16" y="32"/>
-				</Size>
+				<Size x="16" y="32"/>
 				<Anchors>
 					<Anchor point="TOPLEFT"/>
 				</Anchors>
 				<TexCoords left="0.0" right="0.25" top="0.0" bottom="1.0"/>
 			</Texture>
 			<Texture name="$parentMiddle" file="Interface\ChatFrame\ChatFrameTab">
-				<Size>
-					<AbsDimension x="44" y="32"/>
-				</Size>
+				<Size x="44" y="32"/>
 				<Anchors>
 					<Anchor point="LEFT" relativeTo="$parentLeft" relativePoint="RIGHT"/>
 				</Anchors>
 				<TexCoords left="0.25" right="0.75" top="0.0" bottom="1.0"/>
 			</Texture>
 			<Texture name="$parentRight" file="Interface\ChatFrame\ChatFrameTab">
-				<Size>
-					<AbsDimension x="16" y="32"/>
-				</Size>
+				<Size x="16" y="32"/>
 				<Anchors>
 					<Anchor point="LEFT" relativeTo="$parentMiddle" relativePoint="RIGHT"/>
 				</Anchors>
@@ -72,20 +77,10 @@
 	</Layers>
 	<Frames>
 		<Frame name="$parentFlash" hidden="true">
-			<Size>
-				<AbsDimension x="5" y="32"/>
-			</Size>
+			<Size x="5" y="32"/>
 			<Anchors>
-				<Anchor point="LEFT" relativeTo="$parentLeft">
-					<Offset>
-						<AbsDimension x="0" y="-7"/>
-					</Offset>
-				</Anchor>
-				<Anchor point="RIGHT" relativeTo="$parentRight">
-					<Offset>
-						<AbsDimension x="0" y="-7"/>
-					</Offset>
-				</Anchor>
+				<Anchor point="LEFT" relativeTo="$parentLeft" x="0" y="-7"/>
+				<Anchor point="RIGHT" relativeTo="$parentRight" x="0" y="-7"/>
 			</Anchors>
 			<Layers>
 				<Layer level="BACKGROUND">
@@ -95,11 +90,7 @@
 		</Frame>
 		<Frame name="$parentDropDown" inherits="UIDropDownMenuTemplate" id="1" hidden="true">
 			<Anchors>
-				<Anchor point="TOP">
-					<Offset>
-						<AbsDimension x="-80" y="-35"/>
-					</Offset>
-				</Anchor>
+				<Anchor point="TOP" x="-80" y="-35"/>
 			</Anchors>
 		</Frame>
 	</Frames>
@@ -131,216 +122,112 @@
 		</OnDragStop>
 	</Scripts>
 	<ButtonText name="$parentText" text="BATTLEFIELD_MINIMAP">
-		<Size>
-			<AbsDimension x="0" y="8"/>
-		</Size>
+		<Size x="0" y="8"/>
 		<Anchors>
-			<Anchor point="LEFT" relativeTo="$parentLeft" relativePoint="RIGHT">
-				<Offset>
-					<AbsDimension x="0" y="-5"/>
-				</Offset>
-			</Anchor>
+			<Anchor point="LEFT" relativeTo="$parentLeft" relativePoint="RIGHT" x="0" y="-5"/>
 		</Anchors>
 	</ButtonText>
 	<NormalFont style="GameFontNormalSmall"/>
 	<HighlightTexture file="Interface\PaperDollInfoFrame\UI-Character-Tab-Highlight" alphaMode="ADD">
 		<Anchors>
-			<Anchor point="LEFT" relativeTo="$parentLeft">
-				<Offset>
-					<AbsDimension x="0" y="-7"/>
-				</Offset>
-			</Anchor>
-			<Anchor point="RIGHT" relativeTo="$parentRight">
-				<Offset>
-					<AbsDimension x="0" y="-7"/>
-				</Offset>
-			</Anchor>
+			<Anchor point="LEFT" relativeTo="$parentLeft" x="0" y="-7"/>
+			<Anchor point="RIGHT" relativeTo="$parentRight" x="0" y="-7"/>
 		</Anchors>
 	</HighlightTexture>
 </Button>
 <Frame name="BattlefieldMinimap" parent="UIParent" frameStrata="BACKGROUND" frameLevel="10" hidden="true">
-	<Size>
-		<AbsDimension x="225" y="150"/>
-	</Size>
+	<Size x="225" y="150"/>
 	<Anchors>
-		<Anchor point="TOPLEFT" relativeTo="BattlefieldMinimapTab" relativePoint="BOTTOMLEFT">
-			<Offset>
-				<AbsDimension x="0" y="-5"/>
-			</Offset>
-		</Anchor>
+		<Anchor point="TOPLEFT" relativeTo="BattlefieldMinimapTab" relativePoint="BOTTOMLEFT" x="0" y="-5"/>
 	</Anchors>
 	<Layers>
 		<Layer level="BACKGROUND">
 			<Texture name="BattlefieldMinimap1">
-				<Size>
-					<AbsDimension x="56" y="56"/>
-				</Size>
+				<Size x="56" y="56"/>
 				<Anchors>
-					<Anchor point="TOPLEFT">
-						<Offset>
-							<AbsDimension x="0" y="0"/>
-						</Offset>
-					</Anchor>
+					<Anchor point="TOPLEFT" x="0" y="0"/>
 				</Anchors>
 			</Texture>
 			<Texture name="BattlefieldMinimap2">
-				<Size>
-					<AbsDimension x="56" y="56"/>
-				</Size>
+				<Size x="56" y="56"/>
 				<Anchors>
-					<Anchor point="TOPLEFT" relativeTo="BattlefieldMinimap1" relativePoint="TOPRIGHT">
-						<Offset>
-							<AbsDimension x="0" y="0"/>
-						</Offset>
-					</Anchor>
+					<Anchor point="TOPLEFT" relativeTo="BattlefieldMinimap1" relativePoint="TOPRIGHT" x="0" y="0"/>
 				</Anchors>
 			</Texture>
 			<Texture name="BattlefieldMinimap3">
-				<Size>
-					<AbsDimension x="56" y="56"/>
-				</Size>
+				<Size x="56" y="56"/>
 				<Anchors>
-					<Anchor point="TOPLEFT" relativeTo="BattlefieldMinimap2" relativePoint="TOPRIGHT">
-						<Offset>
-							<AbsDimension x="0" y="0"/>
-						</Offset>
-					</Anchor>
+					<Anchor point="TOPLEFT" relativeTo="BattlefieldMinimap2" relativePoint="TOPRIGHT" x="0" y="0"/>
 				</Anchors>
 			</Texture>
 			<Texture name="BattlefieldMinimap4">
-				<Size>
-					<AbsDimension x="56" y="56"/>
-				</Size>
+				<Size x="56" y="56"/>
 				<Anchors>
-					<Anchor point="TOPLEFT" relativeTo="BattlefieldMinimap3" relativePoint="TOPRIGHT">
-						<Offset>
-							<AbsDimension x="0" y="0"/>
-						</Offset>
-					</Anchor>
+					<Anchor point="TOPLEFT" relativeTo="BattlefieldMinimap3" relativePoint="TOPRIGHT" x="0" y="0"/>
 				</Anchors>
 			</Texture>
 			<Texture name="BattlefieldMinimap5">
-				<Size>
-					<AbsDimension x="56" y="56"/>
-				</Size>
+				<Size x="56" y="56"/>
 				<Anchors>
-					<Anchor point="TOPLEFT" relativeTo="BattlefieldMinimap1" relativePoint="BOTTOMLEFT">
-						<Offset>
-							<AbsDimension x="0" y="0"/>
-						</Offset>
-					</Anchor>
+					<Anchor point="TOPLEFT" relativeTo="BattlefieldMinimap1" relativePoint="BOTTOMLEFT" x="0" y="0"/>
 				</Anchors>
 			</Texture>
 			<Texture name="BattlefieldMinimap6">
-				<Size>
-					<AbsDimension x="56" y="56"/>
-				</Size>
+				<Size x="56" y="56"/>
 				<Anchors>
-					<Anchor point="TOPLEFT" relativeTo="BattlefieldMinimap5" relativePoint="TOPRIGHT">
-						<Offset>
-							<AbsDimension x="0" y="0"/>
-						</Offset>
-					</Anchor>
+					<Anchor point="TOPLEFT" relativeTo="BattlefieldMinimap5" relativePoint="TOPRIGHT" x="0" y="0"/>
 				</Anchors>
 			</Texture>
 			<Texture name="BattlefieldMinimap7">
-				<Size>
-					<AbsDimension x="56" y="56"/>
-				</Size>
+				<Size x="56" y="56"/>
 				<Anchors>
-					<Anchor point="TOPLEFT" relativeTo="BattlefieldMinimap6" relativePoint="TOPRIGHT">
-						<Offset>
-							<AbsDimension x="0" y="0"/>
-						</Offset>
-					</Anchor>
+					<Anchor point="TOPLEFT" relativeTo="BattlefieldMinimap6" relativePoint="TOPRIGHT" x="0" y="0"/>
 				</Anchors>
 			</Texture>
 			<Texture name="BattlefieldMinimap8">
-				<Size>
-					<AbsDimension x="56" y="56"/>
-				</Size>
+				<Size x="56" y="56"/>
 				<Anchors>
-					<Anchor point="TOPLEFT" relativeTo="BattlefieldMinimap7" relativePoint="TOPRIGHT">
-						<Offset>
-							<AbsDimension x="0" y="0"/>
-						</Offset>
-					</Anchor>
+					<Anchor point="TOPLEFT" relativeTo="BattlefieldMinimap7" relativePoint="TOPRIGHT" x="0" y="0"/>
 				</Anchors>
 			</Texture>
 			<Texture name="BattlefieldMinimap9">
-				<Size>
-					<AbsDimension x="56" y="56"/>
-				</Size>
+				<Size x="56" y="56"/>
 				<Anchors>
-					<Anchor point="TOPLEFT" relativeTo="BattlefieldMinimap5" relativePoint="BOTTOMLEFT">
-						<Offset>
-							<AbsDimension x="0" y="0"/>
-						</Offset>
-					</Anchor>
+					<Anchor point="TOPLEFT" relativeTo="BattlefieldMinimap5" relativePoint="BOTTOMLEFT" x="0" y="0"/>
 				</Anchors>
 			</Texture>
 			<Texture name="BattlefieldMinimap10">
-				<Size>
-					<AbsDimension x="56" y="56"/>
-				</Size>
+				<Size x="56" y="56"/>
 				<Anchors>
-					<Anchor point="TOPLEFT" relativeTo="BattlefieldMinimap9" relativePoint="TOPRIGHT">
-						<Offset>
-							<AbsDimension x="0" y="0"/>
-						</Offset>
-					</Anchor>
+					<Anchor point="TOPLEFT" relativeTo="BattlefieldMinimap9" relativePoint="TOPRIGHT" x="0" y="0"/>
 				</Anchors>
 			</Texture>
 			<Texture name="BattlefieldMinimap11">
-				<Size>
-					<AbsDimension x="56" y="56"/>
-				</Size>
+				<Size x="56" y="56"/>
 				<Anchors>
-					<Anchor point="TOPLEFT" relativeTo="BattlefieldMinimap10" relativePoint="TOPRIGHT">
-						<Offset>
-							<AbsDimension x="0" y="0"/>
-						</Offset>
-					</Anchor>
+					<Anchor point="TOPLEFT" relativeTo="BattlefieldMinimap10" relativePoint="TOPRIGHT" x="0" y="0"/>
 				</Anchors>
 			</Texture>
 			<Texture name="BattlefieldMinimap12">
-				<Size>
-					<AbsDimension x="56" y="56"/>
-				</Size>
+				<Size x="56" y="56"/>
 				<Anchors>
-					<Anchor point="TOPLEFT" relativeTo="BattlefieldMinimap11" relativePoint="TOPRIGHT">
-						<Offset>
-							<AbsDimension x="0" y="0"/>
-						</Offset>
-					</Anchor>
+					<Anchor point="TOPLEFT" relativeTo="BattlefieldMinimap11" relativePoint="TOPRIGHT" x="0" y="0"/>
 				</Anchors>
 			</Texture>
 		</Layer>
 		<Layer level="BORDER">
 			<Texture name="BattlefieldMinimapCorner" file="Interface\DialogFrame\UI-DialogBox-Corner">
-				<Size>
-					<AbsDimension x="32" y="32"/>
-				</Size>
+				<Size x="32" y="32"/>
 				<Anchors>
-					<Anchor point="TOPRIGHT">
-						<Offset>
-							<AbsDimension x="-2" y="3"/>
-						</Offset>
-					</Anchor>
+					<Anchor point="TOPRIGHT" x="-2" y="3"/>
 				</Anchors>
 			</Texture>
 		</Layer>
 		<Layer level="OVERLAY">
 			<Texture name="BattlefieldMinimapBackground" file="Interface\BattlefieldFrame\UI-BattlefieldMinimap-Border">
-				<Size>
-					<AbsDimension x="256" y="256"/>
-				</Size>
+				<Size x="256" y="256"/>
 				<Anchors>
-					<Anchor point="TOPLEFT">
-						<Offset>
-							<AbsDimension x="-12" y="12"/>
-						</Offset>
-					</Anchor>
+					<Anchor point="TOPLEFT" x="-12" y="12"/>
 				</Anchors>
 			</Texture>
 		</Layer>
@@ -348,11 +235,7 @@
 	<Frames>
 		<Button name="BattlefieldMinimapCloseButton" inherits="UIPanelCloseButton">
 			<Anchors>
-				<Anchor point="TOPRIGHT">
-					<Offset>
-						<AbsDimension x="2" y="7"/>
-					</Offset>
-				</Anchor>
+				<Anchor point="TOPRIGHT" x="2" y="7"/>
 			</Anchors>
 			<Scripts>
 				<OnClick>
@@ -363,6 +246,7 @@
 			</Scripts>
 		</Button>
 
+		<Frame name="BattlefieldMinimapPlayer" inherits="BattlefieldMinimapPlayerUnitTemplate"/>
 		<Frame name="BattlefieldMinimapParty1" inherits="BattlefieldMinimapPartyUnitTemplate" id="1"/>
 		<Frame name="BattlefieldMinimapParty2" inherits="BattlefieldMinimapPartyUnitTemplate" id="2"/>
 		<Frame name="BattlefieldMinimapParty3" inherits="BattlefieldMinimapPartyUnitTemplate" id="3"/>
@@ -409,24 +293,16 @@
 		<Frame name="BattlefieldMinimapRaid40" inherits="BattlefieldMinimapRaidUnitTemplate" id="40"/>
 		<Frame name="BattlefieldMinimapCorpse" inherits="WorldMapCorpseTemplate"/>
 		<Frame name="BattlefieldMinimapFlag1" inherits="WorldMapFlagTemplate" id="1">
-			<Size>
-				<AbsDimension x="18" y="18"/>
-			</Size>
+			<Size x="18" y="18"/>
 		</Frame>
 		<Frame name="BattlefieldMinimapFlag2" inherits="WorldMapFlagTemplate" id="2">
-			<Size>
-				<AbsDimension x="18" y="18"/>
-			</Size>
+			<Size x="18" y="18"/>
 		</Frame>
 		<Frame name="BattlefieldMinimapFlag3" inherits="WorldMapFlagTemplate" id="3">
-			<Size>
-				<AbsDimension x="18" y="18"/>
-			</Size>
+			<Size x="18" y="18"/>
 		</Frame>
 		<Frame name="BattlefieldMinimapFlag4" inherits="WorldMapFlagTemplate" id="4">
-			<Size>
-				<AbsDimension x="18" y="18"/>
-			</Size>
+			<Size x="18" y="18"/>
 		</Frame>
 	</Frames>
 	<Scripts>

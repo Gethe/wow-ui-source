@@ -11,6 +11,15 @@ local ceil = math.ceil;
 local min = math.min;
 local max = math.max;
 local abs = math.abs;
+local pairs = pairs;
+local ipairs = ipairs;
+local strtrim = string.trim;
+local unpack = unpack;
+local wipe = table.wipe;
+local tinsert = table.insert;
+local CallRestrictedClosure = CallRestrictedClosure;
+local GetManagedEnvironment = GetManagedEnvironment;
+local GetFrameHandle = GetFrameHandle;
 
 --[[
 List of the various configuration attributes
@@ -21,7 +30,12 @@ showPlayer = [BOOLEAN] -- true if the header should show the player when not in 
 showSolo = [BOOLEAN] -- true if the header should be shown while not in a group (implies showPlayer)
 nameList = [STRING] -- a comma separated list of player names (not used if 'groupFilter' is set)
 groupFilter = [1-8, STRING] -- a comma seperated list of raid group numbers and/or uppercase class names and/or uppercase roles
-strictFiltering = [BOOLEAN] - if true, then characters must match both a group and a class from the groupFilter list
+roleFilter = [STRING] -- a comma seperated list of MT/MA/Tank/Healer/DPS role strings
+strictFiltering = [BOOLEAN] 
+-- if true, then 
+---- if only groupFilter is specified then characters must match both a group and a class from the groupFilter list
+---- if only roleFilter is specified then characters must match at least one of the specified roles
+---- if both groupFilter and roleFilters are specified then characters must match a group and a class from the groupFilter list and a role from the roleFilter list
 point = [STRING] -- a valid XML anchoring point (Default: "TOP")
 xOffset = [NUMBER] -- the x-Offset to use when anchoring the unit buttons (Default: 0)
 yOffset = [NUMBER] -- the y-Offset to use when anchoring the unit buttons (Default: 0)
@@ -29,7 +43,7 @@ sortMethod = ["INDEX", "NAME", "NAMELIST"] -- defines how the group is sorted (D
 sortDir = ["ASC", "DESC"] -- defines the sort order (Default: "ASC")
 template = [STRING] -- the XML template to use for the unit buttons
 templateType = [STRING] - specifies the frame type of the managed subframes (Default: "Button")
-groupBy = [nil, "GROUP", "CLASS", "ROLE"] - specifies a "grouping" type to apply before regular sorting (Default: nil)
+groupBy = [nil, "GROUP", "CLASS", "ROLE", "ASSIGNEDROLE"] - specifies a "grouping" type to apply before regular sorting (Default: nil)
 groupingOrder = [STRING] - specifies the order of the groupings (ie. "1,2,3,4,5,6,7,8")
 maxColumns = [NUMBER] - maximum number of columns the header will create (Default: 1)
 unitsPerColumn = [NUMBER or nil] - maximum units that will be displayed in a singe column, nil is infinite (Default: nil)
@@ -92,12 +106,6 @@ local function setAttributesWithoutResponse(self, ...)
 	end
 	self:SetAttribute("_ignore", oldIgnore);
 end
-
-local CallRestrictedClosure = CallRestrictedClosure;
-local GetManagedEnvironment = GetManagedEnvironment;
-local GetFrameHandle = GetFrameHandle;
-local wipe = table.wipe;
-local tinsert = table.insert;
 
 local function SetupUnitButtonConfiguration( header, newChild, defaultConfigFunction )
 	local configCode = header:GetAttribute("initialConfigFunction") or defaultConfigFunction;
@@ -271,10 +279,10 @@ local function GetGroupHeaderType(self)
 end
 
 local function GetGroupRosterInfo(kind, index)
-	local _, unit, name, subgroup, className, role, server;
+	local _, unit, name, subgroup, className, role, server, assignedRole;
 	if ( kind == "RAID" ) then
 		unit = "raid"..index;
-		name, _, subgroup, _, _, className, _, _, _, role = GetRaidRosterInfo(index);
+		name, _, subgroup, _, _, className, _, _, _, role, _, assignedRole = GetRaidRosterInfo(index);
 	else
 		if ( index > 0 ) then
 			unit = "party"..index;
@@ -292,15 +300,12 @@ local function GetGroupRosterInfo(kind, index)
 			elseif ( GetPartyAssignment("MAINASSIST", unit) ) then
 				role = "MAINASSIST";
 			end
+			assignedRole = UnitGroupRolesAssigned(unit)
 		end
 		subgroup = 1;
 	end
-	return unit, name, subgroup, className, role;
+	return unit, name, subgroup, className, role, assignedRole;
 end
-
-local pairs = pairs;
-local ipairs = ipairs;
-local strtrim = string.trim;
 
 -- empties tbl and assigns the value true to each key passed as part of ...
 local function fillTable( tbl, ... )
@@ -382,6 +387,7 @@ end
 function SecureGroupHeader_Update(self)
 	local nameList = self:GetAttribute("nameList");
 	local groupFilter = self:GetAttribute("groupFilter");
+	local roleFilter = self:GetAttribute("roleFilter");
 	local sortMethod = self:GetAttribute("sortMethod");
 	local groupBy = self:GetAttribute("groupBy");
 
@@ -394,21 +400,42 @@ function SecureGroupHeader_Update(self)
 		return;
 	end
 
-	if ( not groupFilter and not nameList ) then
+	if ( not groupFilter and not roleFilter and not nameList ) then
 		groupFilter = "1,2,3,4,5,6,7,8";
 	end
 
-	if ( groupFilter ) then
-		-- filtering by a list of group numbers and/or classes
-		fillTable(wipe(tokenTable), strsplit(",", groupFilter));
+	if ( groupFilter or roleFilter ) then
 		local strictFiltering = self:GetAttribute("strictFiltering"); -- non-strict by default
+		wipe(tokenTable)
+		if ( groupFilter and not roleFilter ) then
+			-- filtering by a list of group numbers and/or classes
+			fillTable(tokenTable, strsplit(",", groupFilter));
+			if ( strictFiltering ) then
+				fillTable(tokenTable, "MAINTANK", "MAINASSIST", "TANK", "HEALER", "DAMAGER", "NONE")
+			end
+		
+		elseif ( roleFilter and not groupFilter ) then
+			-- filtering by role (of either type)
+			fillTable(tokenTable, strsplit(",", roleFilter));
+			if ( strictFiltering ) then
+				fillTable(tokenTable, 1, 2, 3, 4, 5, 6, 7, 8, unpack(CLASS_SORT_ORDER))
+			end
+		
+		else
+			-- filtering by group, class and/or role
+			fillTable(tokenTable, strsplit(",", groupFilter));
+			fillTable(tokenTable, strsplit(",", roleFilter));
+		
+		end
+
 		for i = start, stop, 1 do
-			local unit, name, subgroup, className, role = GetGroupRosterInfo(kind, i);
+			local unit, name, subgroup, className, role, assignedRole = GetGroupRosterInfo(kind, i);
+			
 			if ( name and
 				((not strictFiltering) and
-					(tokenTable[subgroup] or tokenTable[className] or (role and tokenTable[role])) -- non-strict filtering
+					( tokenTable[subgroup] or tokenTable[className] or (role and tokenTable[role]) or tokenTable[assignedRole] ) -- non-strict filtering
 				) or
-					(tokenTable[subgroup] and tokenTable[className]) -- strict filtering
+					( tokenTable[subgroup] and tokenTable[className] and ((role and tokenTable[role]) or tokenTable[assignedRole]) ) -- strict filtering
 			) then
 				tinsert(sortingTable, unit);
 				sortingTable[unit] = name;
@@ -420,7 +447,10 @@ function SecureGroupHeader_Update(self)
 
 				elseif ( groupBy == "ROLE" ) then
 					groupingTable[unit] = role;
-
+				
+				elseif ( groupBy == "ASSIGNEDROLE" ) then
+					groupingTable[unit] = assignedRole;
+				
 				end
 			end
 		end

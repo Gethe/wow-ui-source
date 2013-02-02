@@ -2,6 +2,31 @@
 ..\FrameXML\UI.xsd">
 	<Script file="WorldMapFrame.lua"/>
 	<Include file="WorldMapFrameTemplates.xml"/>
+	<Frame name="WorldMapPlayerTemplate" virtual="true">
+		<Size x="64" y="64"/>
+		<Anchors>
+			<Anchor point="CENTER"/>
+		</Anchors>
+		<Layers>
+			<Layer level="ARTWORK">
+				<Texture name="$parentIcon" file="Interface\Minimap\MinimapArrow" setAllPoints="true" parentKey="icon"/>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnLoad>
+				self.unit = "player";
+			</OnLoad>
+			<OnEnter>
+				WorldMapUnit_OnEnter(self, motion);
+			</OnEnter>
+			<OnLeave>
+				WorldMapUnit_OnLeave(self, motion);
+			</OnLeave>
+			<OnMouseUp>
+				WorldMapUnit_OnMouseUp(self, button, "WorldMapRaid", "WorldMapParty");
+			</OnMouseUp>
+		</Scripts>
+	</Frame>
 	<Frame name="WorldMapFrame" setAllPoints="true" hidden="true" enableKeyboard="true" enableMouse="true" clampedToScreen="true">
 		<Layers>
 			<Layer level="BACKGROUND">
@@ -487,27 +512,8 @@
 					<Anchor point="TOPLEFT" relativeTo="WorldMapDetailFrame" x="0" y="0"/>
 				</Anchors>
 				<Frames>
-					<Frame name="WorldMapPlayer" id="0">
-						<Size x="16" y="16"/>
-						<Anchors>
-							<Anchor point="CENTER"/>
-						</Anchors>
-						<Scripts>
-							<OnLoad>
-								self.unit = "player";
-								self:SetFrameLevel(self:GetFrameLevel()+1);
-							</OnLoad>
-							<OnEnter>
-								WorldMapUnit_OnEnter(self, motion);
-							</OnEnter>
-							<OnLeave>
-								WorldMapUnit_OnLeave(self, motion);
-							</OnLeave>
-							<OnMouseUp>
-								WorldMapUnit_OnMouseUp(self, button, "WorldMapRaid", "WorldMapParty");
-							</OnMouseUp>
-						</Scripts>
-					</Frame>
+					<Frame name="WorldMapPlayerLower" inherits="WorldMapPlayerTemplate" framestrata="MEDIUM" hidden="true"/>
+					<Frame name="WorldMapPlayerUpper" inherits="WorldMapPlayerTemplate" framestrata="FULLSCREEN" alpha="0.7" hidden="true"/>
 
 					<Frame name="WorldMapUnitDropDown" inherits="UIDropDownMenuTemplate" clampedToScreen="true" id="1" hidden="true"/>
 
@@ -575,18 +581,44 @@
 							</OnEnter>
 						</Scripts>
 					</Frame>
-					<Model name="WorldMapPing" file="Interface\MiniMap\Ping\MinimapPing.mdx" scale="0.4" hidden="true">
-						<Size x="50" y="50"/>
+					<Frame name="WorldMapPing" framestrata="FULLSCREEN" hidden="true">
+						<Size x="64" y="64"/>
 						<Anchors>
 							<Anchor point="CENTER" relativeTo="WorldMapFrame"/>
 						</Anchors>
-						<Scripts>
-							<OnLoad>
-								self.fadeOut = nil;
-								self:SetSequence(0);
-							</OnLoad>
-						</Scripts>
-					</Model>
+						<Layers>
+							<Layer level="OVERLAY">
+								<Texture parentKey="centerRing" file="Interface\minimap\UI-Minimap-Ping-Center">
+									<Size x="32" y="32"/>
+									<Anchors>
+										<Anchor point="CENTER"/>
+									</Anchors>
+								</Texture>
+								<Texture parentKey="rotatingRing" file="Interface\minimap\UI-Minimap-Ping-Rotate">
+									<Size x="48" y="48"/>
+									<Anchors>
+										<Anchor point="CENTER"/>
+									</Anchors>
+								</Texture>
+								<Texture parentKey="expandingRing" file="Interface\minimap\UI-Minimap-Ping-Expand">
+									<Size x="32" y="32"/>
+									<Anchors>
+										<Anchor point="CENTER"/>
+									</Anchors>
+								</Texture>
+							</Layer>
+						</Layers>
+						<Animations>
+							<AnimationGroup parentKey="Ping" looping="REPEAT">
+								<Rotation targetKey="$parent.$parent.rotatingRing" degrees="-180" duration="0.75" order="1"/>
+								<Scale targetKey="$parent.$parent.expandingRing" scaleX="1.75" scaleY="1.75" duration="0.75" order="1"/>
+								<Scripts>
+									<OnPlay function="WorldMapPing_OnPlay"/>
+									<OnLoop function="WorldMapPing_OnLoop"/>
+								</Scripts>
+							</AnimationGroup>
+						</Animations>
+					</Frame>
 					<Frame name="WorldMapFrameAreaFrame">
 						<Size x="400" y="128"/>
 						<Anchors>

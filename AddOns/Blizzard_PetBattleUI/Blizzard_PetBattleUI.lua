@@ -592,8 +592,9 @@ function PetBattleActionButton_UpdateState(self)
 
 		--If we exist, check whether we're usable and what the cooldown is.
 		if ( name ) then
-			local isUsable, currentCooldown = C_PetBattles.GetAbilityState(LE_BATTLE_PET_ALLY, C_PetBattles.GetActivePet(LE_BATTLE_PET_ALLY), actionIndex);
-			usable, cooldown = isUsable, currentCooldown;
+			local isUsable, currentCooldown, currentLockdown = C_PetBattles.GetAbilityState(LE_BATTLE_PET_ALLY, C_PetBattles.GetActivePet(LE_BATTLE_PET_ALLY), actionIndex);
+			usable = isUsable;
+			cooldown = max(currentCooldown, currentLockdown);
 		else
 			isLocked = true;
 		end
@@ -1737,6 +1738,9 @@ function PET_BATTLE_AURA_INFO:GetUnitFromToken(target)
 	elseif ( target == "auracaster" ) then
 		local _, _, _, _, casterOwner, casterIndex = C_PetBattles.GetAuraInfo(self.petOwner, self.petIndex, self.auraIndex);
 		return casterOwner, casterIndex;
+	elseif ( target == "auraenemy" ) then
+		local petOwner = PetBattleUtil_GetOtherPlayer(self.petOwner);
+		return petOwner, C_PetBattles.GetActivePet(petOwner);
 	else
 		error("Unsupported token: "..tostring(target));
 	end
@@ -1824,6 +1828,9 @@ function PET_BATTLE_AURA_ID_INFO:GetUnitFromToken(target)
 		return petOwner, petIndex;
 	elseif ( target == "auracaster" ) then
 		return self.petOwner, self.petIndex;	--Setting by ID should only occur for auras that aren't actually on the target (such as passives). These can be considered as cast by this pet.
+	elseif ( target == "auraenemy" ) then
+		local petOwner = PetBattleUtil_GetOtherPlayer(self.petOwner);
+		return petOwner, C_PetBattles.GetActivePet(petOwner);
 	else
 		error("Unsupported token: "..tostring(target));
 	end

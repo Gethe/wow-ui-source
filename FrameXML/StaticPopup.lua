@@ -1549,10 +1549,6 @@ StaticPopupDialogs["CHAT_CHANNEL_INVITE"] = {
 	EditBoxOnEscapePressed = function(self, data)
 		self:GetParent():Hide();
 	end,
-	OnHide = function(self, data)
-		local name = data;
-		DeclineInvite(name);
-	end,
 	timeout = STATICPOPUP_TIMEOUT,
 	whileDead = 1,
 	hideOnEscape = 1

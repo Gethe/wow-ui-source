@@ -1544,8 +1544,84 @@ StatusTextPanelOptions = {
 	partyStatusText = { text = "STATUS_TEXT_PARTY" },
 	targetStatusText = { text = "STATUS_TEXT_TARGET" },
 	alternateResourceText = { text = "ALTERNATE_RESOURCE_TEXT" },
-	statusTextPercentage = { text = "STATUS_TEXT_PERCENT" },
 }
+
+function InterfaceOptionsStatusTextDisplayDropDown_OnEvent (self, event, ...)
+	if ( event == "PLAYER_ENTERING_WORLD" ) then
+		self.cvar = "statusTextDisplay";
+
+		local value = GetCVar(self.cvar);
+		self.defaultValue = GetCVarDefault(self.cvar);
+		self.oldValue = value;
+		self.value = value;
+		self.tooltip = OPTION_TOOLTIP_STATUS_TEXT_DISPLAY;
+
+		UIDropDownMenu_SetWidth(self, 110);
+		UIDropDownMenu_Initialize(self, InterfaceOptionsStatusTextDisplayDropDown_Initialize);
+		UIDropDownMenu_SetSelectedValue(self, value);
+
+		self.SetValue = 
+			function (self, value) 
+				self.value = value;
+				SetCVar(self.cvar, value, self.event);
+				UIDropDownMenu_SetSelectedValue(self, value);
+			end;	
+		self.GetValue =
+			function (self)
+				return UIDropDownMenu_GetSelectedValue(self);
+			end
+		self.RefreshValue =
+			function (self)
+				UIDropDownMenu_Initialize(self, InterfaceOptionsStatusTextDisplayDropDown_Initialize);
+				UIDropDownMenu_SetSelectedValue(self, self.value);
+			end
+	end
+end
+
+function InterfaceOptionsStatusTextDisplayDropDown_OnClick(self)
+	InterfaceOptionsStatusTextPanelDisplayDropDown:SetValue(self.value);
+end
+
+function InterfaceOptionsStatusTextDisplayDropDown_Initialize(self)
+	local selectedValue = UIDropDownMenu_GetSelectedValue(self);
+	local info = UIDropDownMenu_CreateInfo();
+
+	info.text = STATUS_TEXT_VALUE;
+	info.func = InterfaceOptionsStatusTextDisplayDropDown_OnClick;
+	info.value = "NUMERIC";
+	if ( info.value == selectedValue ) then
+		info.checked = 1;
+	else
+		info.checked = nil;
+	end
+	info.tooltipTitle = STATUS_TEXT_VALUE;
+	info.tooltipText = OPTION_TOOLTIP_STATUS_TEXT_DISPLAY;
+	UIDropDownMenu_AddButton(info);
+
+	info.text = STATUS_TEXT_PERCENT;
+	info.func = InterfaceOptionsStatusTextDisplayDropDown_OnClick;
+	info.value = "PERCENT";
+	if ( info.value == selectedValue ) then
+		info.checked = 1;
+	else
+		info.checked = nil;
+	end
+	info.tooltipTitle = STATUS_TEXT_PERCENT;
+	info.tooltipText = OPTION_TOOLTIP_STATUS_TEXT_DISPLAY;
+	UIDropDownMenu_AddButton(info);
+
+	info.text = STATUS_TEXT_BOTH;
+	info.func = InterfaceOptionsStatusTextDisplayDropDown_OnClick;
+	info.value = "BOTH";
+	if ( info.value == selectedValue ) then
+		info.checked = 1;
+	else
+		info.checked = nil;
+	end
+	info.tooltipTitle = STATUS_TEXT_BOTH;
+	info.tooltipText = OPTION_TOOLTIP_STATUS_TEXT_DISPLAY;
+	UIDropDownMenu_AddButton(info);
+end
 
 -- [[ UnitFrame Options Panel ]] --
 

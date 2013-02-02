@@ -124,10 +124,11 @@ function BattlePetTooltipJournalClick_OnClick(self)
 		ShowUIPanel(PetJournalParent);
 	end
 	PetJournalParent_SetTab(PetJournalParent, 2);
-	if (self:GetParent().battlePetID and self:GetParent().battlePetID > 0 ) then 
-		local speciesID = C_PetJournal.GetPetInfoByPetID(self:GetParent().battlePetID);
+	local battlePetID = self:GetParent().battlePetID;
+	if ( battlePetID ) then
+		local speciesID = C_PetJournal.GetPetInfoByPetID(battlePetID);
 		if ( speciesID and speciesID == self:GetParent().speciesID ) then
-			PetJournal_SelectPet(PetJournal, self:GetParent().battlePetID);
+			PetJournal_SelectPet(PetJournal, battlePetID);
 			return;
 		end
 	end

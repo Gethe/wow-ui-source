@@ -1005,7 +1005,7 @@
 						PlaySound("igMainMenuOptionCheckBoxOn");
 						local talentGroup = PlayerTalentFrame and PlayerTalentFrame.talentGroup or 1;
 						if ( talentGroup == GetActiveSpecGroup() ) then
-							if (LearnTalents(PlayerTalentFrame_GetTalentSelections())) then
+							if ( PlayerTalentFrame_GetTalentSelections() and LearnTalents(PlayerTalentFrame_GetTalentSelections()) ) then
 								PlayerTalentFrame_ClearTalentSelections();
 							end
 						end
