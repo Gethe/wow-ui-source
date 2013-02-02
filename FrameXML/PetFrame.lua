@@ -8,7 +8,8 @@ function PetFrame_OnLoad (self)
 						 PetFrameHealthBar, PetFrameHealthBarText, 
 						 PetFrameManaBar, PetFrameManaBarText,
 						 PetFrameFlash, nil, nil,
-						 PetFrameMyHealPredictionBar, PetFrameOtherHealPredictionBar);
+						 PetFrameMyHealPredictionBar, PetFrameOtherHealPredictionBar,
+						 PetFrameTotalAbsorbBar, PetFrameTotalAbsorbBarOverlay, PetFrameOverAbsorbGlow);
 
 	self.attackModeCounter = 0;
 	self.attackModeSign = -1;

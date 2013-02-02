@@ -238,6 +238,14 @@
 					</Anchors>
 				</Texture>
 			</Layer>
+			<Layer level="ARTWORK">
+				<Texture name="$parentMyHealPredictionBar" inherits="MyHealPredictionBarTemplate"/>
+				<Texture name="$parentOtherHealPredictionBar" inherits="OtherHealPredictionBarTemplate"/>
+				<Texture name="$parentTotalAbsorbBar" inherits="TotalAbsorbBarTemplate"/>
+			</Layer>
+			<Layer level="ARTWORK" textureSubLevel="1">
+				<Texture name="$parentTotalAbsorbBarOverlay" inherits="TotalAbsorbBarOverlayTemplate"/>
+			</Layer>
 		</Layers>
 		<Frames>
 			<Frame name="$parentTextureFrame" parentKey="textureFrame" setAllPoints="true">
@@ -356,6 +364,7 @@
 								<Anchor point="CENTER" relativePoint="RIGHT" x="-44" y="10"/>
 							</Anchors>
 						</Texture>
+						<Texture name="$parentOverAbsorbGlow" inherits="OverAbsorbGlowTemplate"/>
 					</Layer>
 				</Layers>
 			</Frame>
@@ -400,8 +409,6 @@
 				</Scripts>
 				<BarTexture file="Interface\TargetingFrame\UI-StatusBar"/>
 			</StatusBar>
-			<StatusBar name="$parentMyHealPredictionBar" inherits="MyHealPredictionBarTemplate" useParentLevel="true"/>
-			<StatusBar name="$parentOtherHealPredictionBar" inherits="OtherHealPredictionBarTemplate" useParentLevel="true"/>
 			<StatusBar name="$parentManaBar" inherits="TextStatusBar" useParentLevel="true">
 				<Size>
 					<AbsDimension x="119" y="12"/>

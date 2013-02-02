@@ -5,7 +5,8 @@ function PlayerFrame_OnLoad(self)
 						 PlayerFrameHealthBar, PlayerFrameHealthBarText, 
 						 PlayerFrameManaBar, PlayerFrameManaBarText,
 						 PlayerFrameFlash, nil, nil,
-						 PlayerFrameMyHealPredictionBar, PlayerFrameOtherHealPredictionBar);
+						 PlayerFrameMyHealPredictionBar, PlayerFrameOtherHealPredictionBar,
+						 PlayerFrameTotalAbsorbBar, PlayerFrameTotalAbsorbBarOverlay, PlayerFrameOverAbsorbGlow);
 						 
 	self.statusCounter = 0;
 	self.statusSign = -1;

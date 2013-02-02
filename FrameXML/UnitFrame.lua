@@ -39,7 +39,7 @@ PowerBarColor[9] = PowerBarColor["HOLY_POWER"];
 ]]--
 
 function UnitFrame_Initialize (self, unit, name, portrait, healthbar, healthtext, manabar, manatext, threatIndicator, threatFeedbackUnit, threatNumericIndicator,
-											myHealPredictionBar, otherHealPredictionBar)
+		myHealPredictionBar, otherHealPredictionBar, totalAbsorbBar, totalAbsorbBarOverlay, overAbsorbGlow)
 	self.unit = unit;
 	self.name = name;
 	self.portrait = portrait;
@@ -49,6 +49,28 @@ function UnitFrame_Initialize (self, unit, name, portrait, healthbar, healthtext
 	self.threatNumericIndicator = threatNumericIndicator;
 	self.myHealPredictionBar = myHealPredictionBar;
 	self.otherHealPredictionBar = otherHealPredictionBar
+	self.totalAbsorbBar = totalAbsorbBar;
+	self.totalAbsorbBarOverlay = totalAbsorbBarOverlay;
+	self.overAbsorbGlow = overAbsorbGlow;
+	if ( self.myHealPredictionBar ) then
+		self.myHealPredictionBar:ClearAllPoints();
+	end
+	if ( self.otherHealPredictionBar ) then
+		self.otherHealPredictionBar:ClearAllPoints();
+	end
+	if ( self.totalAbsorbBar ) then
+		self.totalAbsorbBar:ClearAllPoints();
+	end
+	if ( self.totalAbsorbBarOverlay ) then
+		self.totalAbsorbBar.overlay = self.totalAbsorbBarOverlay;
+		self.totalAbsorbBarOverlay:SetAllPoints(self.totalAbsorbBar);
+		self.totalAbsorbBarOverlay.tileSize = 32;
+	end
+	if ( self.overAbsorbGlow ) then
+		self.overAbsorbGlow:ClearAllPoints();
+		self.overAbsorbGlow:SetPoint("TOPLEFT", self.healthbar, "TOPRIGHT", -7, 0);
+		self.overAbsorbGlow:SetPoint("BOTTOMLEFT", self.healthbar, "BOTTOMRIGHT", -7, 0);
+	end
 	if (self.healthbar) then
 		self.healthbar.capNumericDisplay = true;
 	end
@@ -67,6 +89,9 @@ function UnitFrame_Initialize (self, unit, name, portrait, healthbar, healthtext
 		self:RegisterUnitEvent("UNIT_MAXHEALTH", unit);
 		self:RegisterUnitEvent("UNIT_HEAL_PREDICTION", unit);
 	end
+	if ( self.totalAbsorbBar ) then
+		self:RegisterUnitEvent("UNIT_ABSORB_AMOUNT_CHANGED", unit);
+	end
 end
 
 function UnitFrame_SetUnit (self, unit, healthbar, manabar)
@@ -75,6 +100,9 @@ function UnitFrame_SetUnit (self, unit, healthbar, manabar)
 		if ( self.myHealPredictionBar ) then
 			self:RegisterUnitEvent("UNIT_MAXHEALTH", unit);
 			self:RegisterUnitEvent("UNIT_HEAL_PREDICTION", unit);
+		end
+		if ( self.totalAbsorbBar ) then
+			self:RegisterUnitEvent("UNIT_ABSORB_AMOUNT_CHANGED", unit);
 		end
 		if ( not healthbar.frequentUpdates ) then
 			healthbar:RegisterUnitEvent("UNIT_HEALTH", unit);
@@ -135,6 +163,8 @@ function UnitFrame_OnEvent(self, event, ...)
 			UnitFrameHealPredictionBars_Update(self);
 		elseif ( event == "UNIT_HEAL_PREDICTION" ) then
 			UnitFrameHealPredictionBars_Update(self);
+		elseif ( event == "UNIT_ABSORB_AMOUNT_CHANGED" ) then
+			UnitFrameHealPredictionBars_Update(self);
 		end
 	elseif ( not arg1 and event == "UNIT_PORTRAIT_UPDATE" ) then
 		-- this is an update all portraits signal
@@ -143,13 +173,11 @@ function UnitFrame_OnEvent(self, event, ...)
 end
 
 function UnitFrameHealPredictionBars_UpdateMax(self)
-	if ( not self.myHealPredictionBar or not self.otherHealPredictionBar ) then
+	if ( not self.myHealPredictionBar ) then
 		return;
 	end
 	
-	local maxHealth = UnitHealthMax(self.unit);
-	self.myHealPredictionBar:SetMinMaxValues(0, maxHealth);
-	self.otherHealPredictionBar:SetMinMaxValues(0, maxHealth);
+	UnitFrameHealPredictionBars_Update(self);
 end
 
 function UnitFrameHealPredictionBars_UpdateSize(self)
@@ -157,34 +185,36 @@ function UnitFrameHealPredictionBars_UpdateSize(self)
 		return;
 	end
 	
-	local healthBarWidth, healthBarHeight = self.healthbar:GetSize();
-	self.myHealPredictionBar:SetSize(healthBarWidth, healthBarHeight);
-	self.otherHealPredictionBar:SetSize(healthBarWidth, healthBarHeight);
+	UnitFrameHealPredictionBars_Update(self);
 end
 
 local MAX_INCOMING_HEAL_OVERFLOW = 1.0;
 function UnitFrameHealPredictionBars_Update(self)
-	if ( not self.myHealPredictionBar or not self.otherHealPredictionBar ) then
+	if ( not self.myHealPredictionBar ) then
 		return;
 	end
 	if ( not GetCVarBool("raidFramesDisplayIncomingHeals") ) then
-		self.myHealPredictionBar:SetValue(0);
-		self.otherHealPredictionBar:SetValue(0);
+		self.myHealPredictionBar:Hide();
+		self.otherHealPredictionBar:Hide();
+		self.totalAbsorbBar:Hide();
+		self.totalAbsorbBarOverlay:Hide();
+		self.overAbsorbGlow:Hide();
 		return;
 	end
 	
 	local myIncomingHeal = UnitGetIncomingHeals(self.unit, "player") or 0;
 	local allIncomingHeal = UnitGetIncomingHeals(self.unit) or 0;
+	local totalAbsorb = UnitGetTotalAbsorbs(self.unit) or 0;
 	
 	--Make sure we don't go too far out of the frame.
 	local health = self.healthbar:GetValue();
-	local _, maxHealth = self.myHealPredictionBar:GetMinMaxValues();
+	local _, maxHealth = self.healthbar:GetMinMaxValues();
 	
 	--See how far we're going over.
 	if ( health + allIncomingHeal > maxHealth * MAX_INCOMING_HEAL_OVERFLOW ) then
 		allIncomingHeal = maxHealth * MAX_INCOMING_HEAL_OVERFLOW - health;
 	end
-	
+
 	--Transfer my incoming heals out of the allIncomingHeal
 	if ( allIncomingHeal < myIncomingHeal ) then
 		myIncomingHeal = allIncomingHeal;
@@ -192,9 +222,51 @@ function UnitFrameHealPredictionBars_Update(self)
 	else
 		allIncomingHeal = allIncomingHeal - myIncomingHeal;
 	end
-		
-	self.myHealPredictionBar:SetValue(myIncomingHeal);
-	self.otherHealPredictionBar:SetValue(allIncomingHeal);
+
+	local overAbsorb = false;
+	--We don't overfill the absorb bar
+	if ( health + myIncomingHeal + allIncomingHeal + totalAbsorb >= maxHealth ) then
+		if ( totalAbsorb > 0 ) then
+			overAbsorb = true;
+		end
+		totalAbsorb = max(0,maxHealth - (health + myIncomingHeal + allIncomingHeal));
+	end
+	if ( overAbsorb ) then
+		self.overAbsorbGlow:Show();
+	else
+		self.overAbsorbGlow:Hide();
+	end
+
+	local previousTexture = self.healthbar:GetStatusBarTexture();
+
+	previousTexture = UnitFrameUtil_UpdateFillBar(self, previousTexture, self.myHealPredictionBar, myIncomingHeal);
+	previousTexture = UnitFrameUtil_UpdateFillBar(self, previousTexture, self.otherHealPredictionBar, allIncomingHeal);
+	previousTexture = UnitFrameUtil_UpdateFillBar(self, previousTexture, self.totalAbsorbBar, totalAbsorb);
+end
+
+function UnitFrameUtil_UpdateFillBar(frame, previousTexture, bar, amount)
+	if ( amount == 0 ) then
+		bar:Hide();
+		if ( bar.overlay ) then
+			bar.overlay:Hide();
+		end
+		return previousTexture;
+	end
+
+	bar:SetPoint("TOPLEFT", previousTexture, "TOPRIGHT", 0, 0);
+	bar:SetPoint("BOTTOMLEFT", previousTexture, "BOTTOMRIGHT", 0, 0);
+
+	local totalWidth, totalHeight = frame.healthbar:GetSize();
+	local _, totalMax = frame.healthbar:GetMinMaxValues();
+
+	local barSize = (amount / totalMax) * totalWidth
+	bar:SetWidth(barSize);
+	bar:Show();
+	if ( bar.overlay ) then
+		bar.overlay:SetTexCoord(0, barSize / bar.overlay.tileSize, 0, totalHeight / bar.overlay.tileSize);
+		bar.overlay:Show();
+	end
+	return bar;
 end
 
 function UnitFrame_OnEnter (self)

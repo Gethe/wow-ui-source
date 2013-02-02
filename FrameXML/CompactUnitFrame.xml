@@ -144,6 +144,14 @@
 			<Layer level="BACKGROUND">
 				<Texture name="$parentBackground" parentKey="background" setAllPoints="true" forceAlpha="true"/>
 			</Layer>
+			<Layer level="BORDER" textureSubLevel="5">
+				<Texture name="$parentMyHealPrediction" parentKey="myHealPrediction"/>
+				<Texture name="$parentOtherHealPrediction" parentKey="otherHealPrediction"/>
+				<Texture name="$parentTotalAbsorb" parentKey="totalAbsorb"/>
+			</Layer>
+			<Layer level="BORDER" textureSubLevel="6">
+				<Texture name="$parentTotalAbsorbOverlay" parentKey="totalAbsorbOverlay"/>
+			</Layer>
 			<Layer level="BORDER">
 				<Texture name="$parentHorizDivider" parentKey="horizDivider" horizTile="true" forceAlpha="true"/>
 				<Texture name="$parentHorizTopBorder" parentKey="horizTopBorder" horizTile="true" forceAlpha="true"/>
@@ -156,6 +164,9 @@
 				<FontString name="$parentStatusText" inherits="GameFontDisable" parentKey="statusText"/>
 				<Texture name="$parentRoleIcon" hidden="true" parentKey="roleIcon"/>
 				<Texture name="$parentAggroHighlight" parentKey="aggroHighlight"/>
+			</Layer>
+			<Layer level="ARTWORK" textureSubLevel="1">
+				<Texture name="$parentOverAbsorbGlow" parentKey="overAbsorbGlow"/>
 			</Layer>
 			<Layer level="OVERLAY">
 				<Texture name="$parentSelectionHighlight" parentKey="selectionHighlight" forceAlpha="true"/>
@@ -177,8 +188,6 @@
 					</Layer>
 				</Layers>
 			</StatusBar>
-			<StatusBar name="$parentMyHealPredictionBar" parentKey="myHealPredictionBar" useParentLevel="true"/>
-			<StatusBar name="$parentOtherHealPredictionBar" parentKey="otherHealPredictionBar" useParentLevel="true"/>
 			<Button name="$parentBuff1" inherits="CompactBuffTemplate"/>
 			<Button name="$parentBuff2" inherits="CompactBuffTemplate"/>
 			<Button name="$parentBuff3" inherits="CompactBuffTemplate"/>

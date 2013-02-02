@@ -473,7 +473,8 @@ function PetBattleFrameTurnTimer_UpdateValues(self)
 end
 
 function PetBattleForfeitButton_OnClick(self)
-	StaticPopup_Show("PET_BATTLE_FORFEIT", nil, nil, nil)
+	local forfeitPenalty = C_PetBattles.GetForfeitPenalty();
+	StaticPopup_Show("PET_BATTLE_FORFEIT", forfeitPenalty, nil, nil)
 end
 
 function PetBattleCatchButton_OnClick(self)

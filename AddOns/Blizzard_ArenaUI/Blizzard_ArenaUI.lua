@@ -209,42 +209,46 @@ function ArenaEnemyFrame_SetMysteryPlayer(self)
 end
 
 function ArenaEnemyFrame_OnEvent(self, event, arg1, arg2)
-	if ( event == "ARENA_OPPONENT_UPDATE" and arg1 == self.unit ) then
-		if ( arg2 == "seen" or arg2 == "destroyed") then
-			ArenaEnemyFrame_Unlock(self);
-			ArenaEnemyFrame_UpdatePlayer(self);
-			
-			if ( self.healthbar.frequentUpdates and GetCVarBool("predictedHealth") ) then
-				self.healthbar:SetScript("OnUpdate", UnitFrameHealthBar_OnUpdate);
-				self.healthbar:UnregisterEvent("UNIT_HEALTH");
+	if ( arg1 == self.unit ) then
+		if ( event == "ARENA_OPPONENT_UPDATE" ) then
+			if ( arg2 == "seen" or arg2 == "destroyed") then
+				ArenaEnemyFrame_Unlock(self);
+				ArenaEnemyFrame_UpdatePlayer(self);
+				
+				if ( self.healthbar.frequentUpdates and GetCVarBool("predictedHealth") ) then
+					self.healthbar:SetScript("OnUpdate", UnitFrameHealthBar_OnUpdate);
+					self.healthbar:UnregisterEvent("UNIT_HEALTH");
+				end
+				if ( self.manabar.frequentUpdates and GetCVarBool("predictedPower") ) then
+					self.manabar:SetScript("OnUpdate", UnitFrameManaBar_OnUpdate);
+					UnitFrameManaBar_UnregisterDefaultEvents(self.manabar);
+				end
+				ArenaEnemyFrame_UpdatePet(self);
+				UpdateArenaEnemyBackground();
+				UIParent_ManageFramePositions();
+			elseif ( arg2 == "unseen" ) then
+				ArenaEnemyFrame_Lock(self);
+				
+				self.healthbar:RegisterEvent("UNIT_HEALTH");
+				self.healthbar:SetScript("OnUpdate", nil);
+				UnitFrameManaBar_RegisterDefaultEvents(self.manabar);
+				self.manabar:SetScript("OnUpdate", nil);
+			elseif ( arg2 == "cleared" ) then
+				ArenaEnemyFrame_Unlock(self);
+				self:Hide();
+				ArenaEnemyFrames_UpdateVisible();
+				local _, instanceType = IsInInstance();
+				if (instanceType ~= "arena") then
+					ArenaPrepFrames:Hide()
+				end
 			end
-			if ( self.manabar.frequentUpdates and GetCVarBool("predictedPower") ) then
-				self.manabar:SetScript("OnUpdate", UnitFrameManaBar_OnUpdate);
-				UnitFrameManaBar_UnregisterDefaultEvents(self.manabar);
-			end
+		elseif ( event == "UNIT_PET" ) then
 			ArenaEnemyFrame_UpdatePet(self);
-			UpdateArenaEnemyBackground();
-			UIParent_ManageFramePositions();
-		elseif ( arg2 == "unseen" ) then
-			ArenaEnemyFrame_Lock(self);
-			
-			self.healthbar:RegisterEvent("UNIT_HEALTH");
-			self.healthbar:SetScript("OnUpdate", nil);
-			UnitFrameManaBar_RegisterDefaultEvents(self.manabar);
-			self.manabar:SetScript("OnUpdate", nil);
-		elseif ( arg2 == "cleared" ) then
-			ArenaEnemyFrame_Unlock(self);
-			self:Hide();
-			ArenaEnemyFrames_UpdateVisible();
-			local _, instanceType = IsInInstance();
-			if (instanceType ~= "arena") then
-				ArenaPrepFrames:Hide()
-			end
+		elseif ( event == "UNIT_NAME_UPDATE" ) then
+			ArenaEnemyFrame_UpdatePlayer(self);
+		elseif ( event == "UNIT_MAXHEALTH" or event == "UNIT_HEAL_PREDICTION" or event == "UNIT_ABSORB_AMOUNT_CHANGED" ) then
+			UnitFrameHealPredictionBars_Update(self);
 		end
-	elseif ( event == "UNIT_PET" and arg1 == self.unit ) then
-		ArenaEnemyFrame_UpdatePet(self);
-	elseif ( event == "UNIT_NAME_UPDATE" and arg1 == self.unit ) then
-		ArenaEnemyFrame_UpdatePlayer(self);
 	end
 end
 

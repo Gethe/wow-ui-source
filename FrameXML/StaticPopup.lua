@@ -3687,7 +3687,7 @@ end
 function StaticPopup_Hide(which, data)
 	for index = 1, STATICPOPUP_NUMDIALOGS, 1 do
 		local dialog = _G["StaticPopup"..index];
-		if ( (dialog.which == which) and (not data or (data == dialog.data)) ) then
+		if ( dialog:IsShown() and (dialog.which == which) and (not data or (data == dialog.data)) ) then
 			dialog:Hide();
 		end
 	end

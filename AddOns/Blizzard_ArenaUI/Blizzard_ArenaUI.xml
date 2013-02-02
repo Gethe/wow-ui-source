@@ -177,6 +177,14 @@
 					<Color r="0" g="0" b="0" a="0.5"/>
 				</Texture>
 			</Layer>
+			<Layer level="ARTWORK">
+				<Texture name="$parentMyHealPredictionBar" inherits="MyHealPredictionBarTemplate"/>
+				<Texture name="$parentOtherHealPredictionBar" inherits="OtherHealPredictionBarTemplate"/>
+				<Texture name="$parentTotalAbsorbBar" inherits="TotalAbsorbBarTemplate"/>
+			</Layer>
+			<Layer level="ARTWORK" textureSubLevel="1">
+				<Texture name="$parentTotalAbsorbBarOverlay" inherits="TotalAbsorbBarOverlayTemplate"/>
+			</Layer>
 		</Layers>
 		<Frames>
 			<Frame name="$parentDropDown" inherits="UIDropDownMenuTemplate" id="1" hidden="true" parentKey="DropDown">
@@ -232,6 +240,7 @@
 										<Anchor point="TOPLEFT" relativeTo="$parentClassPortrait" relativePoint="CENTER" x="0" y="4"/>
 									</Anchors>
 								</Texture>
+								<Texture name="$parentOverAbsorbGlow" inherits="OverAbsorbGlowTemplate"/>
 							</Layer>
 							<Layer level="OVERLAY">
 								<Texture name="$parentDisconnect" file="Interface\CharacterFrame\Disconnect-Icon" hidden="true">
@@ -315,8 +324,10 @@
 				self.noTextPrefix = 1;
 				local prefix = "ArenaEnemyFrame"..id;
 				UnitFrame_Initialize(self, "arena"..id,  _G[prefix.."Name"], nil,
-					   _G[prefix.."HealthBar"], _G[prefix.."HealthBarText"], 
-					   _G[prefix.."ManaBar"], _G[prefix.."ManaBarText"]);
+						_G[prefix.."HealthBar"], _G[prefix.."HealthBarText"], 
+						_G[prefix.."ManaBar"], _G[prefix.."ManaBarText"], nil, nil, nil,
+						_G[prefix.."MyHealPredictionBar"], _G[prefix.."OtherHealPredictionBar"],
+						_G[prefix.."TotalAbsorbBar"], _G[prefix.."TotalAbsorbBarOverlay"], _G[prefix.."OverAbsorbGlow"]);
 				SetTextStatusBarTextZeroText(_G[prefix.."HealthBar"], DEAD);
 				ArenaEnemyFrame_OnLoad(self);
 			</OnLoad>

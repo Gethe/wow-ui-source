@@ -60,6 +60,12 @@
 						</Anchor>
 					</Anchors>
 				</Texture>
+				<Texture name="PlayerFrameMyHealPredictionBar" inherits="MyHealPredictionBarTemplate"/>
+				<Texture name="PlayerFrameOtherHealPredictionBar" inherits="OtherHealPredictionBarTemplate"/>
+				<Texture name="$parentTotalAbsorbBar" inherits="TotalAbsorbBarTemplate"/>
+			</Layer>
+			<Layer level="ARTWORK" textureSubLevel="1">
+				<Texture name="$parentTotalAbsorbBarOverlay" inherits="TotalAbsorbBarOverlayTemplate"/>
 			</Layer>
 		</Layers>
 		<Frames>
@@ -170,6 +176,7 @@
 										</Anchor>
 									</Anchors>
 								</Texture>
+								<Texture name="$parentOverAbsorbGlow" inherits="OverAbsorbGlowTemplate"/>
 							</Layer>
 							<Layer level="OVERLAY">
 								<FontString name="PlayerHitIndicator" hidden="true" inherits="NumberFontNormalHuge">
@@ -438,8 +445,6 @@
 				</Scripts>
 				<BarTexture file="Interface\TargetingFrame\UI-StatusBar"/>
 			</StatusBar>
-			<StatusBar name="PlayerFrameMyHealPredictionBar" inherits="MyHealPredictionBarTemplate"/>
-			<StatusBar name="PlayerFrameOtherHealPredictionBar" inherits="OtherHealPredictionBarTemplate"/>
 			<StatusBar name="PlayerFrameManaBar" inherits="TextStatusBar">
 				<Size>
 					<AbsDimension x="119" y="12"/>

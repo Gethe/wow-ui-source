@@ -1849,7 +1849,7 @@ local function CombatLog_String_SchoolString(school)
 		return STRING_SCHOOL_UNKNOWN;
 	end
 
-	local schoolString = SchoolStringTable[school];
+	local schoolString = GetSchoolString(school);
 	return schoolString or STRING_SCHOOL_UNKNOWN
 end
 _G.CombatLog_String_SchoolString = CombatLog_String_SchoolString
