@@ -71,7 +71,7 @@
 				<Texture parentKey="FillBG" inherits="mapbar-fillbg-mogu" setAllPoints="true"/>
 			</Layer>
 		</Layers>
-		<BarTexture parentKey="BarTexture" file="Interface\WorldMap\mapbar-fill-mogu"/>
+		<BarTexture parentKey="BarTexture" file="Interface\WorldMap\MapProgress\mapbar-fill-mogu"/>
 		<Scripts>
 			<OnLoad function="MapBarFrame_OnLoad"/>
 			<OnEvent function="MapBarFrame_OnEvent"/>

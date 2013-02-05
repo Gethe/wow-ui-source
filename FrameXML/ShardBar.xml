@@ -259,20 +259,20 @@
 				<Frames>
 					<Frame name="$parentShard1" inherits="ShardTemplate" parentKey="shard1">
 						<Anchors>
-							<Anchor point="TOPLEFT"/>
+							<Anchor point="TOPLEFT" x="-10" y="0"/>
 						</Anchors>
 					</Frame>	
 					<Frame name="$parentShard2" inherits="ShardTemplate" parentKey="shard2">
 						<Anchors>
-							<Anchor point="TOPLEFT" relativeTo="$parentShard1" relativePoint="TOPLEFT" x="35"/>
+							<Anchor point="TOPLEFT" relativeTo="$parentShard1" relativePoint="TOPLEFT" x="30"/>
 						</Anchors>
 					</Frame>
 					<Frame name="$parentShard3" inherits="ShardTemplate" parentKey="shard3">
 						<Anchors>
-							<Anchor point="TOPLEFT" relativeTo="$parentShard2" relativePoint="TOPLEFT" x="35"/>
+							<Anchor point="TOPLEFT" relativeTo="$parentShard2" relativePoint="TOPLEFT" x="30"/>
 						</Anchors>
 					</Frame>
-					<Frame name="$parentShard4" inherits="ShardTemplate" parentKey="shard4" hidden="true">
+					<Frame name="$parentShard4" inherits="ShardTemplate" parentKey="shard4">
 						<Anchors>
 							<Anchor point="TOPLEFT" relativeTo="$parentShard3" relativePoint="TOPLEFT" x="30"/>
 						</Anchors>
@@ -377,20 +377,20 @@
 				<Frames>
 					<Frame name="$parentEmber1" inherits="BurningEmberTemplate" parentKey="ember1">
 						<Anchors>
-							<Anchor point="TOPLEFT" x="17" y="7"/>
+							<Anchor point="TOPLEFT" x="16" y="7"/>
 						</Anchors>
 					</Frame>
 					<Frame name="$parentEmber2" inherits="BurningEmberTemplate" parentKey="ember2">
 						<Anchors>
-							<Anchor point="LEFT" relativeTo="$parentEmber1" x="40" y="0"/>
+							<Anchor point="LEFT" relativeTo="$parentEmber1" x="26" y="0"/>
 						</Anchors>
 					</Frame>
 					<Frame name="$parentEmber3" inherits="BurningEmberTemplate" parentKey="ember3">
 						<Anchors>
-							<Anchor point="LEFT" relativeTo="$parentEmber2" x="40" y="0"/>
+							<Anchor point="LEFT" relativeTo="$parentEmber2" x="26" y="0"/>
 						</Anchors>
 					</Frame>
-					<Frame name="$parentEmber4" inherits="BurningEmberTemplate" parentKey="ember4" hidden="true">
+					<Frame name="$parentEmber4" inherits="BurningEmberTemplate" parentKey="ember4">
 						<Anchors>
 							<Anchor point="LEFT" relativeTo="$parentEmber3" x="26" y="0"/>
 						</Anchors>

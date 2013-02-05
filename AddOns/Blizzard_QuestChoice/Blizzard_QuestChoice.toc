@@ -1,0 +1,6 @@
+## Interface: 50200
+## Title: Blizzard Quest Choice UI
+## Secure: 1
+## LoadOnDemand: 1
+Blizzard_QuestChoice.xml
+Localization.lua

@@ -615,6 +615,7 @@
 								<Scripts>
 									<OnPlay function="WorldMapPing_OnPlay"/>
 									<OnLoop function="WorldMapPing_OnLoop"/>
+									<OnStop function="WorldMapPing_OnStop"/>
 								</Scripts>
 							</AnimationGroup>
 						</Animations>

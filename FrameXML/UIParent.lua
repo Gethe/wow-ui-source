@@ -57,6 +57,7 @@ UIPanelWindows["WorldMapFrame"] =				{ area = "full",			pushable = 0, 		xoffset 
 UIPanelWindows["CinematicFrame"] =				{ area = "full",			pushable = 0, 		xoffset = -16, 		yoffset = 12,	whileDead = 1 };
 UIPanelWindows["ChatConfigFrame"] =				{ area = "center",			pushable = 0, 		xoffset = -16, 		yoffset = 12,	whileDead = 1 };
 UIPanelWindows["WorldStateScoreFrame"] =		{ area = "center",			pushable = 0, 		xoffset = -16, 		yoffset = 12,	whileDead = 1 };
+UIPanelWindows["QuestChoiceFrame"] =			{ area = "center",			pushable = 0, 		xoffset = -16, 		yoffset = 12,	whileDead = 0 };
 
 local function GetUIPanelWindowInfo(frame, name)
 	if ( not frame:GetAttribute("UIPanelLayout-defined") ) then
@@ -286,6 +287,9 @@ function UIParent_OnLoad(self)
 
 	-- Events for Pet Jornal
 	self:RegisterEvent("PET_JOURNAL_NEW_BATTLE_SLOT");
+	
+	-- Events for Quest Choice
+	self:RegisterEvent("QUEST_CHOICE_UPDATE");
 end
 
 
@@ -440,6 +444,10 @@ end
 
 function PVP_LoadUI()
 	UIParentLoadAddOn("Blizzard_PVPUI");
+end
+
+function QuestChoice_LoadUI()
+	UIParentLoadAddOn("Blizzard_QuestChoice");
 end
 
 --[[
@@ -653,7 +661,6 @@ function TogglePVPUI()
 		PVPUIFrame_ToggleFrame()
 	end
 end
-
 
 function InspectUnit(unit)
 	if (IsBlizzCon()) then
@@ -1322,6 +1329,14 @@ function UIParent_OnEvent(self, event, ...)
 	elseif ( event == "PET_JOURNAL_NEW_BATTLE_SLOT" ) then
 		CompanionsMicroButtonAlert:Show();
 		MicroButtonPulse(CompanionsMicroButton);
+	
+	-- Quest Choice trigger event
+	
+	elseif (event == "QUEST_CHOICE_UPDATE") then
+		QuestChoice_LoadUI();
+		if ( QuestChoiceFrame_Show) then
+			QuestChoiceFrame_Show();
+		end
 	end
 end
 

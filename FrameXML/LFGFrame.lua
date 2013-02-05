@@ -38,6 +38,7 @@ LFG_RETURN_VALUES = {
 	description = 14,
 	isHoliday = 15,
 	bonusRepAmount = 16,
+	forceHide = 17,
 }
 
 LFG_INSTANCE_INVALID_RAID_LOCKED = 6;
@@ -1720,11 +1721,16 @@ function LFGDungeonListButton_SetDungeon(button, dungeonID, enabled, checkedList
 end
 
 function LFGList_DefaultFilterFunction(dungeonID, maxLevelDiff)
-	local name, typeID, subtypeID, minLevel, maxLevel, recLevel, minRecLevel, maxRecLevel, expansionLevel, groupID, textureFilename, difficulty, maxPlayers, description, isHoliday = GetLFGDungeonInfo(dungeonID);
+	local name, typeID, subtypeID, minLevel, maxLevel, recLevel, minRecLevel, maxRecLevel, expansionLevel, groupID, textureFilename, difficulty, maxPlayers, description, isHoliday, repAmount, forceHide = GetLFGDungeonInfo(dungeonID);
 	local level = UnitLevel("player");
 
 	--Check whether we're initialized yet
 	if ( not LFGLockList ) then
+		return false;
+	end
+
+	--Sometimes we want to force hide even if the server thinks we can join (e.g. there are certain dungeons where you can only join from the NPCs, so we don't want to show them in the UI)
+	if ( forceHide ) then
 		return false;
 	end
 

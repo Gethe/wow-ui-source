@@ -576,6 +576,7 @@ SHOW_SEARCH_BAR_NUM_FRIENDS = 12;
 
 -- faction
 PLAYER_FACTION_GROUP = { [0] = "Horde", [1] = "Alliance" };
+PLAYER_FACTION_COLORS = { [0] = {r=0.90, g=0.05, b=0.07}, [1]={r=0.29, g=0.33, b=0.91}}
 
 -- Panel Positions
 PANEL_INSET_LEFT_OFFSET = 4;

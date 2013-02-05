@@ -1635,10 +1635,10 @@ function CalendarFrame_UpdateDayTextures(dayButton, numEvents, firstEventButton,
 		eventBackground:Show();
 
 		-- set day texture
-		local title, hour, minute, calendarType, sequenceType, eventType, texture =
-			CalendarGetDayEvent(monthOffset, day, firstEventButton.eventIndex);
+		local title, hour, minute, calendarType, sequenceType, eventType, texture,
+			_, _, _, _, _, _, numSequenceDays = CalendarGetDayEvent(monthOffset, day, firstEventButton.eventIndex);
 		eventTex:SetTexture();
-		if ( CALENDAR_USE_SEQUENCE_FOR_EVENT_TEXTURE ) then
+		if ( CALENDAR_USE_SEQUENCE_FOR_EVENT_TEXTURE and numSequenceDays ~= 2) then
 			texturePath, tcoords = _CalendarFrame_GetTextureFile(texture, calendarType, sequenceType, eventType);
 		else
 			texturePath, tcoords = _CalendarFrame_GetTextureFile(texture, calendarType, "", eventType);

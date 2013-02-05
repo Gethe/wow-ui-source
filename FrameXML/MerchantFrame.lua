@@ -647,7 +647,7 @@ function MerchantFrame_UpdateCurrencies()
 				else
 					tokenButton.count:SetText("*");
 				end
-				tokenButton.icon:SetTexture("Interface\\Icons\\"..icon);
+				tokenButton.icon:SetTexture(icon);
 				tokenButton.currencyID = currencies[index];
 				tokenButton:Show();
 			else

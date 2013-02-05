@@ -61,6 +61,13 @@ local PendingInvitesNew = { };
 local playerRealmName;
 local playerFactionGroup;
 
+local ONE_MINUTE = 60;
+local ONE_HOUR = 60 * ONE_MINUTE;
+local ONE_DAY = 24 * ONE_HOUR;
+local ONE_MONTH = 30 * ONE_DAY;
+local ONE_YEAR = 12 * ONE_MONTH;
+-- local ONE_MILLENIUM = 1000 * ONE_YEAR; 	for the future
+
 WHOFRAME_DROPDOWN_LIST = {
 	{name = ZONE, sortType = "zone"},
 	{name = GUILD, sortType = "guild"},
@@ -717,7 +724,7 @@ function PendingList_Scroll(offset)
 				button.message:SetText("");
 				button.message:SetHeight(0);
 			end
-			if ( timeSent and timeSent ~= 0 ) then
+			if ( timeSent and timeSent ~= 0 and time() - timeSent < ONE_YEAR ) then
 				button.sent:SetFormattedText(BNET_INVITE_SENT_TIME, FriendsFrame_GetLastOnline(timeSent));
 			else
 				button.sent:SetText("");
@@ -1225,12 +1232,6 @@ function FriendsFrame_GetLastOnline(timeDifference, isAbsolute)
 		timeDifference = time() - timeDifference;
 	end
 	local year, month, day, hour, minute;
-	local ONE_MINUTE = 60;
-	local ONE_HOUR = 60 * ONE_MINUTE;
-	local ONE_DAY = 24 * ONE_HOUR;
-	local ONE_MONTH = 30 * ONE_DAY;
-	local ONE_YEAR = 12 * ONE_MONTH;
-	-- local ONE_MILLENIUM = 1000 * ONE_YEAR; 	for the future
 
 	if ( timeDifference < ONE_MINUTE ) then
 		return LASTONLINE_SECS;
@@ -1408,7 +1409,7 @@ function FriendsFrame_UpdateFriends()
 					button.status:SetTexture(FRIENDS_TEXTURE_OFFLINE);
 					nameColor = FRIENDS_GRAY_COLOR;
 					button.gameIcon:Hide();
-					if ( lastOnline == 0 ) then
+					if ( not lastOnline or lastOnline == 0 or time() - lastOnline >= ONE_YEAR ) then
 						infoText = FRIENDS_LIST_OFFLINE;
 					else
 						infoText = string.format(BNET_LAST_ONLINE_TIME, FriendsFrame_GetLastOnline(lastOnline));
@@ -1681,7 +1682,9 @@ function FriendsFrameTooltip_Show(self)
 		-- broadcast
 		if ( broadcastText and broadcastText ~= "" ) then
 			FriendsTooltipBroadcastIcon:Show();
-			broadcastText = broadcastText.."|n"..FRIENDS_BROADCAST_TIME_COLOR_CODE..string.format(BNET_BROADCAST_SENT_TIME, FriendsFrame_GetLastOnline(broadcastTime));
+			if ( time() - broadcastTime < ONE_YEAR ) then
+				broadcastText = broadcastText.."|n"..FRIENDS_BROADCAST_TIME_COLOR_CODE..string.format(BNET_BROADCAST_SENT_TIME, FriendsFrame_GetLastOnline(broadcastTime));
+			end
 			anchor = FriendsFrameTooltip_SetLine(FriendsTooltipBroadcastText, anchor, broadcastText, -8);
 		else
 			FriendsTooltipBroadcastIcon:Hide();
@@ -1693,7 +1696,7 @@ function FriendsFrameTooltip_Show(self)
 			numToons = BNGetNumFriendToons(self.id);
 		else
 			FriendsTooltipHeader:SetTextColor(FRIENDS_GRAY_COLOR.r, FRIENDS_GRAY_COLOR.g, FRIENDS_GRAY_COLOR.b);
-			if ( lastOnline == 0 ) then
+			if ( not lastOnline or lastOnline == 0 or time() - lastOnline >= ONE_YEAR ) then
 				text = FRIENDS_LIST_OFFLINE;
 			else
 				text = string.format(BNET_LAST_ONLINE_TIME, FriendsFrame_GetLastOnline(lastOnline));

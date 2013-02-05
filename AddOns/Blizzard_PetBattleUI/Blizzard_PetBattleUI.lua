@@ -11,7 +11,7 @@ local MAX_PET_LEVEL = 25;
 BATTLE_PET_DISPLAY_ROTATION = 3 * math.pi / 8;
 
 PET_BATTLE_WEATHER_TEXTURES = {
-	--[54] = "Interface\\PetBattles\\Weather-ArcaneStorm",
+	[590] = "Interface\\PetBattles\\Weather-ArcaneStorm",
 	[205] = "Interface\\PetBattles\\Weather-Blizzard",
 	[171] = "Interface\\PetBattles\\Weather-BurntEarth",
 	[257] = "Interface\\PetBattles\\Weather-Darkness",
@@ -104,7 +104,11 @@ function PetBattleFrame_OnEvent(self, event, ...)
 		PetBattleFrame_UpdatePetSelectionFrame(self);
 		PetBattleFrame_UpdateSpeedIndicators(self);
 		PetBattleFrame_UpdateInstructions(self);
-		self.BottomFrame.TurnTimer.SkipButton:Enable();
+		if (C_PetBattles.IsSkipAvailable()) then
+			self.BottomFrame.TurnTimer.SkipButton:Enable();
+		else
+			self.BottomFrame.TurnTimer.SkipButton:Disable();
+		end
 	elseif ( event == "PET_BATTLE_PET_CHANGED" ) then
 		PetBattleFrame_UpdateAssignedUnitFrames(self);
 		PetBattleFrame_UpdateAllActionButtons(self);
@@ -1217,8 +1221,15 @@ function PetBattleUnitTooltip_UpdateForUnit(self, petOwner, petIndex)
 	self.AttackAmount:SetText(attack);
 	self.SpeedAmount:SetText(speed);
 	
-	if (petOwner == LE_BATTLE_PET_ENEMY and C_PetBattles.IsWildBattle()) then
-		local speciesID = C_PetBattles.GetPetSpeciesID(LE_BATTLE_PET_ENEMY, petIndex);
+	local displayCollected = false;
+	local speciesID = C_PetBattles.GetPetSpeciesID(LE_BATTLE_PET_ENEMY, petIndex);
+	if ( speciesID ) then
+		local _, _, _, _, _, _, _, _, _, _, obtainable = C_PetJournal.GetPetInfoBySpeciesID(speciesID);
+		if ( obtainable and petOwner == LE_BATTLE_PET_ENEMY and C_PetBattles.IsWildBattle() ) then
+			displayCollected = true;
+		end
+	end
+	if ( displayCollected ) then
 		local numOwned, maxAllowed = C_PetJournal.GetNumCollectedInfo(speciesID);
 		if (numOwned < maxAllowed) then
 			self.CollectedText:SetText(GREEN_FONT_COLOR_CODE..format(ITEM_PET_KNOWN, numOwned, maxAllowed)..FONT_COLOR_CODE_CLOSE);

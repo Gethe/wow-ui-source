@@ -33,6 +33,7 @@ FRAMELOCK_STATES = {
 		MultiBarRight		= "hidden",
 		FocusFrame			= "hidden",
 		TemporaryEnchantFrame = "hidden",
+		WorldStateAlwaysUpFrame = "hidden",
 	},
 };
 

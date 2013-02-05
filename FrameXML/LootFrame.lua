@@ -494,7 +494,6 @@ function BonusRollFrame_StartBonusRoll(spellID, text, duration)
 	frame.endTime = time() + duration;
 	frame.remaining = duration;
 
-	icon = "Interface\\Icons\\"..icon;
 	local numRequired = 1;
 	frame.PromptFrame.InfoFrame.Cost:SetFormattedText(BONUS_ROLL_COST, numRequired, icon);
 	frame.CurrentCountFrame.Text:SetFormattedText(BONUS_ROLL_CURRENT_COUNT, count, icon);

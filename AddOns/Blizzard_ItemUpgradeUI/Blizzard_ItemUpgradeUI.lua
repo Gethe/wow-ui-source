@@ -69,7 +69,7 @@ function ItemUpgradeFrame_Update(self)
 		ItemUpgradeFrame.ItemButton.MissingText:Hide();	
 		ItemUpgradeFrame.ItemButton.Cost.Amount:SetText(cost);
 		local _, _, currencyTexture = GetCurrencyInfo(currencyType);
-		ItemUpgradeFrame.ItemButton.Cost.Icon:SetTexture("Interface\\Icons\\"..currencyTexture);
+		ItemUpgradeFrame.ItemButton.Cost.Icon:SetTexture(currencyTexture);
 		ItemUpgradeFrame.MissingDescription:Hide();
 		ItemUpgradeFrame.MissingFadeOut:Hide();
 		ItemUpgradeFrame.TitleTextLeft:Show();
@@ -128,7 +128,7 @@ function ItemUpgradeFrame_Update(self)
 	if ( cost and cost > 0 ) then
 		local _, amount, currencyTexture = GetCurrencyInfo(currencyType);
 		ItemUpgradeFrameMoneyFrame.Currency.currencyID = currencyType;
-		ItemUpgradeFrameMoneyFrame.Currency.icon:SetTexture("Interface\\Icons\\"..currencyTexture);
+		ItemUpgradeFrameMoneyFrame.Currency.icon:SetTexture(currencyTexture);
 		ItemUpgradeFrameMoneyFrame.Currency.count:SetText(amount);
 		ItemUpgradeFrameMoneyFrame.Currency:Show();
 		if ( cost > amount ) then

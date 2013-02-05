@@ -254,10 +254,6 @@ function WorldMapFrame_OnShow(self)
 	end
 	PlaySound("igQuestLogOpen");
 	CloseDropDownMenus();
-	local playerX, playerY = GetPlayerMapPosition("player");
-	if ( playerX ~= 0 or playerY ~= 0 ) then
-		WorldMapFrame_PingPlayerPosition();
-	end
 	WorldMapFrame_UpdateUnits("WorldMapRaid", "WorldMapParty");
 	DoEmote("READ", nil, true);
 end
@@ -307,6 +303,13 @@ function WorldMapFrame_OnEvent(self, event, ...)
 				end
 			end
 			WorldMapFrame_UpdateMap();
+		end
+		if ( event == "WORLD_MAP_UPDATE" ) then
+			WorldMapPing.Ping:Stop();
+			local playerX, playerY = GetPlayerMapPosition("player");
+			if ( playerX ~= 0 or playerY ~= 0 ) then
+				WorldMapPing.Ping:Play();
+			end
 		end
 	elseif ( event == "ARTIFACT_DIG_SITE_UPDATED" ) then
 		if ( self:IsShown() ) then
@@ -1543,10 +1546,6 @@ function WorldMapButton_OnUpdate(self, elapsed)
 	end	
 end
 
-function WorldMapFrame_PingPlayerPosition()
-	WorldMapPing.Ping:Play();
-end
-
 function WorldMapPing_OnPlay(self)
 	WorldMapPing:Show();
 	self.loopCount = 0;
@@ -1556,8 +1555,11 @@ function WorldMapPing_OnLoop(self, loopState)
 	self.loopCount = self.loopCount + 1;
 	if ( self.loopCount >= 3 ) then
 		self:Stop();
-		WorldMapPing:Hide();
 	end
+end
+
+function WorldMapPing_OnStop(self)
+	WorldMapPing:Hide();
 end
 
 function WorldMap_GetVehicleTexture(vehicleType, isPossessed)

@@ -208,12 +208,12 @@
 		<Size x="280" y="15"/>
 		<Layers>
 			<Layer level="BACKGROUND">
-				<FontString name="$parentFaction" inherits="QuestFont">
+				<FontString name="$parentFaction" inherits="QuestFont" parentKey="Faction">
 					<Anchors>
 						<Anchor point="LEFT" x="0" y="0"/>
 					</Anchors>
 				</FontString>
-				<FontString name="$parentAmount" inherits="NumberFontNormalLarge" justifyH="LEFT">
+				<FontString name="$parentAmount" inherits="NumberFontNormalLarge" justifyH="LEFT" parentKey="Amount">
 					<Anchors>
 						<Anchor point="LEFT" relativeTo="$parentFaction" relativePoint="RIGHT" x="15" y="0"/>
 					</Anchors>

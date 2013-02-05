@@ -39,7 +39,7 @@ function MonkStaggerBar_OnEvent(self, event, arg1)
 			AlternatePowerBar_SetLook(self);
 			MonkStaggerBar_UpdatePowerType(self);
 		end
-	elseif ( event=="PLAYER_ENTERING_WORLD" ) then
+	elseif ( event == "PLAYER_ENTERING_WORLD" ) then
 		self.specRestriction = SPEC_MONK_BREWMASTER;
 		self:RegisterEvent("PLAYER_SPECIALIZATION_CHANGED");
 		AlternatePowerBar_SetLook(self);
@@ -78,10 +78,10 @@ function MonkStaggerBar_UpdateValue(self)
 	end
 end
 
-
 function MonkStaggerBar_UpdateMaxValues(self)
 	local maxhealth = UnitHealthMax(self:GetParent().unit);
 	self:SetMinMaxValues(0, maxhealth);
+	TextStatusBar_UpdateTextString(self);
 end
 
 function MonkStaggerBar_UpdatePowerType(self)

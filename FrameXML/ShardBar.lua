@@ -13,8 +13,6 @@ function WarlockPowerFrame_OnLoad(self)
 		self:RegisterUnitEvent("UNIT_POWER_FREQUENT", "player", "vehicle");	
 		self:RegisterEvent("PLAYER_TALENT_UPDATE");
 		--self:RegisterEvent("ACTIVE_TALENT_GROUP_CHANGED");
-		ShardBarFrame.shardCount = 3;
-		BurningEmbersBarFrame.emberCount = 3;
 		BurningEmbersBarFrame.displayedPower = 0;
 		DemonicFuryBarFrame.displayedPower = 0;
 		WarlockPowerFrame_SetUpCurrentPower(self);
@@ -225,21 +223,6 @@ function ShardBar_Update(self, powerType)
 
 	local numShards = UnitPower( WarlockPowerFrame:GetParent().unit, SPELL_POWER_SOUL_SHARDS );
 	local maxShards = UnitPowerMax( WarlockPowerFrame:GetParent().unit, SPELL_POWER_SOUL_SHARDS );
-	-- if max shards changed, show/hide the 4th and update anchors 
-	if ( self.shardCount ~= maxShards ) then
-		if ( maxShards == 3 ) then
-			self.shard1:SetPoint("TOPLEFT", 0, 0);
-			self.shard2:SetPoint("TOPLEFT", self.shard1, "TOPLEFT", 35, 0);
-			self.shard3:SetPoint("TOPLEFT", self.shard2, "TOPLEFT", 35, 0);
-			self.shard4:Hide();
-		else
-			self.shard1:SetPoint("TOPLEFT", -10, 0);
-			self.shard2:SetPoint("TOPLEFT", self.shard1, "TOPLEFT", 30, 0);
-			self.shard3:SetPoint("TOPLEFT", self.shard2, "TOPLEFT", 30, 0);
-			self.shard4:Show();
-		end
-		self.shardCount = maxShards;
-	end
 	-- update individual shard display
 	for i = 1, maxShards do
 		local shard = _G["ShardBarFrameShard"..i];
@@ -320,23 +303,7 @@ function BurningEmbersBar_Update(self, powerType, forceUpdate)
 	local maxPower = UnitPowerMax("player", SPELL_POWER_BURNING_EMBERS, true);
 	local power = UnitPower("player", SPELL_POWER_BURNING_EMBERS, true);
 	local numEmbers = floor(maxPower / MAX_POWER_PER_EMBER);
-
-	if ( self.emberCount ~= numEmbers ) then
-		if ( numEmbers == 3 ) then
-			self.ember1:SetPoint("TOPLEFT", 17, 7);
-			self.ember2:SetPoint("LEFT", self.ember1, 40, 0);
-			self.ember3:SetPoint("LEFT", self.ember2, 40, 0);
-			self.ember4.fire:Hide();
-			self.ember4.active = false;
-			self.ember4:Hide();
-		else
-			self.ember1:SetPoint("TOPLEFT", 16, 7);
-			self.ember2:SetPoint("LEFT", self.ember1, 26, 0);
-			self.ember3:SetPoint("LEFT", self.ember2, 26, 0);
-			self.ember4:Show();
-		end
-		self.emberCount = numEmbers;
-	end
+	self.emberCount = numEmbers;
 	self.power = power;
 	self.maxPower = maxPower;
 	if ( forceUpdate ) then
