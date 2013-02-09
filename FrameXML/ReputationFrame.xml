@@ -41,9 +41,7 @@
 					<TexCoords left="0" right="0.5" top="0" bottom="0.5"/>
 				</CheckedTexture>
 				<Scripts>
-					<OnClick>
-						SetLFGBonusFactionID(self.factionID);
-					</OnClick>
+					<OnClick function="ReputationBarLFGBonusRepButton_OnClick"/>
 				</Scripts>
 			</CheckButton>
 			<Button name="$parentExpandOrCollapseButton">

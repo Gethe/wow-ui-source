@@ -67,6 +67,14 @@
 						</Scripts>
 					</Button>
 				</Frames>
+				<Scripts>
+					<OnShow>
+						MouseOverrideCinematicDisable(true);
+					</OnShow>
+					<OnHide>
+						MouseOverrideCinematicDisable(false);
+					</OnHide>
+				</Scripts>
 			</Frame>
 		</Frames>
 		<Scripts>

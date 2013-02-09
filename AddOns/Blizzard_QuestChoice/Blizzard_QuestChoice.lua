@@ -37,10 +37,10 @@ function QuestChoiceFrame_Update(self)
 		
 	end
 	
-	QuestInfo_ShowRewards()
+	QuestChoiceFrame_ShowRewards()
 end
 
-function QuestInfo_ShowRewards()
+function QuestChoiceFrame_ShowRewards()
 	local rewardFrame;
 	local title, skillID, skillPoints, money, xp, numItems, numCurrencies, numChoices, numReps;
 	local name, texture, quantity, itemFrame;

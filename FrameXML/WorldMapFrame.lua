@@ -286,6 +286,7 @@ function WorldMapFrame_OnHide(self)
 		QuestPOI_SelectButtonByQuestId("WatchFrameLines", WORLDMAP_SETTINGS.superTrackedQuestID, true);
 		WORLDMAP_SETTINGS.superTrackedQuestID = 0;
 	end
+	self.mapID = nil;
 end
 
 function WorldMapFrame_OnEvent(self, event, ...)
@@ -305,10 +306,14 @@ function WorldMapFrame_OnEvent(self, event, ...)
 			WorldMapFrame_UpdateMap();
 		end
 		if ( event == "WORLD_MAP_UPDATE" ) then
-			WorldMapPing.Ping:Stop();
-			local playerX, playerY = GetPlayerMapPosition("player");
-			if ( playerX ~= 0 or playerY ~= 0 ) then
-				WorldMapPing.Ping:Play();
+			local mapID = GetCurrentMapAreaID();
+			if ( mapID ~= self.mapID) then
+				self.mapID = mapID;
+				WorldMapPing.Ping:Stop();
+				local playerX, playerY = GetPlayerMapPosition("player");
+				if ( playerX ~= 0 or playerY ~= 0 ) then
+					WorldMapPing.Ping:Play();
+				end
 			end
 		end
 	elseif ( event == "ARTIFACT_DIG_SITE_UPDATED" ) then

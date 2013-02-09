@@ -468,7 +468,7 @@ function SpellButton_OnModifiedClick(self, button)
 		return;
 	end
 	if ( IsModifiedClick("CHATLINK") ) then
-		if ( MacroFrame and MacroFrame:IsShown() ) then
+		if ( MacroFrameText and MacroFrameText:HasFocus() ) then
 			local spellName, subSpellName = GetSpellBookItemName(slot, SpellBookFrame.bookType);
 			if ( spellName and not IsPassiveSpell(slot, SpellBookFrame.bookType) ) then
 				if ( subSpellName and (strlen(subSpellName) > 0) ) then

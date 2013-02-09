@@ -411,7 +411,6 @@ function GroupLootFrame_DisableLootButton(button)
 end
 
 function GroupLootFrame_OnShow(self)
-	AlertFrame_FixAnchors();
 	local texture, name, count, quality, bindOnPickUp, canNeed, canGreed, canDisenchant, reasonNeed, reasonGreed, reasonDisenchant, deSkillRequired = GetLootRollItemInfo(self.rollID);
 	if (name == nil) then
 		GroupLootContainer_RemoveFrame(GroupLootContainer, self);
@@ -456,10 +455,6 @@ function GroupLootFrame_OnShow(self)
 	self.Timer:SetFrameLevel(self:GetFrameLevel() - 1);
 end
 
-function GroupLootFrame_OnHide (self)
-	AlertFrame_FixAnchors();
-end
-
 function GroupLootFrame_OnEvent(self, event, ...)
 	if ( event == "CANCEL_LOOT_ROLL" ) then
 		local arg1 = ...;
@@ -479,9 +474,14 @@ function GroupLootFrame_OnUpdate(self, elapsed)
 	self:SetValue(left);
 end
 
-function BonusRollFrame_StartBonusRoll(spellID, text, duration)
+function BonusRollFrame_StartBonusRoll(spellID, text, duration, currencyID)
 	local frame = BonusRollFrame;
-	local _, count, icon = GetCurrencyInfo(BONUS_ROLL_REQUIRED_CURRENCY);
+
+	if ( not currencyID ) then
+		currencyID = BONUS_ROLL_REQUIRED_CURRENCY;
+	end
+
+	local _, count, icon = GetCurrencyInfo(currencyID);
 	if ( count == 0 ) then
 		return;
 	end
@@ -493,6 +493,7 @@ function BonusRollFrame_StartBonusRoll(spellID, text, duration)
 	frame.spellID = spellID;
 	frame.endTime = time() + duration;
 	frame.remaining = duration;
+	frame.currencyID = currencyID;
 
 	local numRequired = 1;
 	frame.PromptFrame.InfoFrame.Cost:SetFormattedText(BONUS_ROLL_COST, numRequired, icon);

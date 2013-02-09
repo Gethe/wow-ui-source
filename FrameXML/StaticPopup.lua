@@ -1549,9 +1549,13 @@ StaticPopupDialogs["CHAT_CHANNEL_INVITE"] = {
 	EditBoxOnEscapePressed = function(self, data)
 		self:GetParent():Hide();
 	end,
-	timeout = STATICPOPUP_TIMEOUT,
+	OnCancel = function(self, data)
+		local chanName = data;
+		DeclineChannelInvite(chanName);
+	end,
+	timeout = CHANNEL_INVITE_TIMEOUT,
 	whileDead = 1,
-	hideOnEscape = 1
+	hideOnEscape = 1,
 };
 
 StaticPopupDialogs["LEVEL_GRANT_PROPOSED"] = {

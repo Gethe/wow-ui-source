@@ -326,8 +326,8 @@ function TradeSkillFrame_Update()
 				_G["TradeSkillSkill"..buttonIndex.."Highlight"]:SetTexture("");
 				if ( numAvailable <= 0 ) then
 					skillButton:SetText(skillNamePrefix..skillName);
-					skillButtonText:SetWidth(textWidth);
 					skillButtonCount:SetText("");
+					textWidth = textWidth - usedWidth;
 				else
 					skillName = skillNamePrefix..skillName;
 					skillButtonCount:SetText("["..numAvailable.."]");
@@ -336,12 +336,12 @@ function TradeSkillFrame_Update()
 					countWidth = skillButtonCount:GetWidth();
 					skillButtonText:SetText(skillName);
 					if ( nameWidth + 2 + countWidth > textWidth - usedWidth ) then
-						skillButtonText:SetWidth(textWidth - 2 - countWidth - usedWidth);
+						textWidth = textWidth - 2 - countWidth - usedWidth;
 					else
-						skillButtonText:SetWidth(0);
+						textWidth = 0;
 					end
 				end
-				
+				skillButtonText:SetWidth(textWidth);
 				-- Place the highlight and lock the highlight state
 				if ( GetTradeSkillSelectionIndex() == skillIndex ) then
 					TradeSkillHighlightFrame:SetPoint("TOPLEFT", "TradeSkillSkill"..buttonIndex, "TOPLEFT", 0, 0);

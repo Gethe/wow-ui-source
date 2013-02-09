@@ -3870,7 +3870,7 @@ function ChatEdit_InsertLink(text)
 			return true;
 		end
 	end
-	if ( MacroFrameText and MacroFrameText:IsVisible() ) then
+	if ( MacroFrameText and MacroFrameText:HasFocus() ) then
 		local item;
 		if ( strfind(text, "item:", 1, true) ) then
 			item = GetItemInfo(text);

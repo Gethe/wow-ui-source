@@ -402,7 +402,7 @@
 				<Scripts>
 					<OnEnter>
 						GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
-						GameTooltip:SetCurrencyByID(BONUS_ROLL_REQUIRED_CURRENCY);
+						GameTooltip:SetCurrencyByID(self:GetParent().currencyID);
 						GameTooltip:Show();
 					</OnEnter>
 					<OnLeave function="GameTooltip_Hide"/>
@@ -581,9 +581,6 @@
 			</OnLoad>
 			<OnShow function="GroupLootFrame_OnShow"/>
 			<OnEvent function="GroupLootFrame_OnEvent"/>
-			<OnHide>
-				GroupLootFrame_OnHide(self);
-			</OnHide>
 		</Scripts>
 	</Frame>
 	<Frame name="GroupLootContainer" parent="UIParent" hidden="true">
@@ -592,6 +589,12 @@
 			<Anchor point="BOTTOM" x="0" y="60"/>
 		</Anchors>
 		<Scripts>
+			<OnShow>
+				AlertFrame_FixAnchors();
+			</OnShow>
+			<OnHide>
+				AlertFrame_FixAnchors();
+			</OnHide>
 			<OnLoad function="GroupLootContainer_OnLoad"/>
 		</Scripts>
 	</Frame>

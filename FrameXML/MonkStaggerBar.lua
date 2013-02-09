@@ -10,6 +10,7 @@ local YELLOW_INDEX = 2;
 local RED_INDEX = 3;
 
 function MonkStaggerBar_OnLoad(self)
+	self.specRestriction = SPEC_MONK_BREWMASTER;
 	self.textLockable = 1;
 	self.cvar = "playerStatusText";
 	self.cvarLabel = "STATUS_TEXT_PLAYER";
@@ -20,13 +21,15 @@ function MonkStaggerBar_OnLoad(self)
 	local _, class = UnitClass("player")
 	self.class = class
 	if (class == "MONK") then
-		self:RegisterEvent("PLAYER_ENTERING_WORLD");
-		self:RegisterEvent("UNIT_DISPLAYPOWER");
-		self:RegisterEvent("UPDATE_VEHICLE_ACTIONBAR");
-		
-		SetTextStatusBarText(self, _G[self:GetName().."Text"])
+		if (self.specRestriction == GetSpecialization()) then
+			self:RegisterEvent("PLAYER_ENTERING_WORLD");
+			self:RegisterEvent("UNIT_DISPLAYPOWER");
+			self:RegisterEvent("UPDATE_VEHICLE_ACTIONBAR");	
+		end
+		self:RegisterEvent("PLAYER_SPECIALIZATION_CHANGED");
 	end
 	MonkStaggerBar_UpdatePowerType(self)
+	SetTextStatusBarText(self, _G[self:GetName().."Text"])
 	TextStatusBar_Initialize(self);
 end
 
@@ -35,13 +38,16 @@ function MonkStaggerBar_OnEvent(self, event, arg1)
 	if ( event == "UNIT_DISPLAYPOWER" or event == "UPDATE_VEHICLE_ACTIONBAR" ) then
 		MonkStaggerBar_UpdatePowerType(self);
 	elseif ( event == "PLAYER_SPECIALIZATION_CHANGED" ) then
-		if ( arg1 == parent.unit ) then
+		if ( arg1 == parent.unit) then
 			AlternatePowerBar_SetLook(self);
 			MonkStaggerBar_UpdatePowerType(self);
+			if (self.specRestriction == GetSpecialization()) then
+				self:RegisterEvent("PLAYER_ENTERING_WORLD");
+				self:RegisterEvent("UNIT_DISPLAYPOWER");
+				self:RegisterEvent("UPDATE_VEHICLE_ACTIONBAR");	
+			end
 		end
 	elseif ( event == "PLAYER_ENTERING_WORLD" ) then
-		self.specRestriction = SPEC_MONK_BREWMASTER;
-		self:RegisterEvent("PLAYER_SPECIALIZATION_CHANGED");
 		AlternatePowerBar_SetLook(self);
 		MonkStaggerBar_UpdateMaxValues(self);
 		MonkStaggerBar_UpdatePowerType(self);
@@ -68,14 +74,12 @@ function MonkStaggerBar_UpdateValue(self)
 	
 	if (percent > STAGGER_YELLOW_TRANSITION and percent < STAGGER_RED_TRANSITION) then
 		info = info[YELLOW_INDEX];
-		self:SetStatusBarColor(info.r, info.g, info.b);
 	elseif (percent > STAGGER_RED_TRANSITION) then
 		info = info[RED_INDEX];
-		self:SetStatusBarColor(info.r, info.g, info.b);
 	else
 		info = info[GREEN_INDEX];
-		self:SetStatusBarColor(info.r, info.g, info.b);
 	end
+	self:SetStatusBarColor(info.r, info.g, info.b);
 end
 
 function MonkStaggerBar_UpdateMaxValues(self)

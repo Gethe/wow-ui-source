@@ -147,7 +147,7 @@
 		<Layers>	
 			<Layer level="OVERLAY">
 				<Texture parentKey="SelectedTexture" file="Interface\PVPFrame\PvPMegaQueue" alphaMode="ADD" hidden="true">
-					<Size x="246" y="46"/>
+					<Size x="306" y="46"/>
 					<Anchors>
 						<Anchor point="CENTER"/>
 					</Anchors>
@@ -162,14 +162,17 @@
 			<TexCoords left="0.00195313" right="0.58789063" top="0.92968750" bottom="0.98437500"/>
 		</PushedTexture>
 		<HighlightTexture parentKey="HighlightTexture" file="Interface\PVPFrame\PvPMegaQueue" alphaMode="ADD">
-			<Size x="246" y="46"/>
+			<Size x="306" y="46"/>
 			<Anchors>
 				<Anchor point="CENTER"/>
 			</Anchors>
 			<TexCoords left="0.00195313" right="0.63867188" top="0.70703125" bottom="0.76757813"/>
 		</HighlightTexture>
 		<Scripts>
-			<OnClick function="HonorFrameBonusFrame_SelectButton"/>
+			<OnClick>
+				PlaySound("igMainMenuOptionCheckBoxOn");
+				HonorFrameBonusFrame_SelectButton(self)
+			</OnClick>
 			<OnMouseDown>
 				if ( self:IsEnabled() ) then
 					self.Contents:SetPoint("TOPLEFT", -1, -1);
@@ -259,7 +262,7 @@
 		<Layers>	
 			<Layer level="OVERLAY">
 				<Texture parentKey="SelectedTexture" file="Interface\PVPFrame\PvPMegaQueue" alphaMode="ADD" hidden="true">
-					<Size x="246" y="46"/>
+					<Size x="306" y="46"/>
 					<Anchors>
 						<Anchor point="CENTER"/>
 					</Anchors>
@@ -272,7 +275,8 @@
 						<Anchor point="CENTER" relativePoint="LEFT" x="38" y="0"/>
 					</Anchors>
 				</FontString>
-				<FontString parentKey="TeamNameText" inherits="GameFontHighlightMedium">
+				<FontString parentKey="TeamNameText" inherits="GameFontHighlightMedium" nonspacewrap="true" justifyH="LEFT">
+					<Size x="150" y="40"/>
 					<Anchors>
 						<Anchor point="LEFT" relativeKey="$parent.TeamSizeText" relativePoint="RIGHT" x="20" y="0"/>
 					</Anchors>
@@ -297,7 +301,7 @@
 			<TexCoords left="0.00195313" right="0.58789063" top="0.92968750" bottom="0.98437500"/>
 		</PushedTexture>
 		<HighlightTexture parentKey="HighlightTexture" file="Interface\PVPFrame\PvPMegaQueue" alphaMode="ADD">
-			<Size x="246" y="46"/>
+			<Size x="306" y="46"/>
 			<Anchors>
 				<Anchor point="CENTER"/>
 			</Anchors>
@@ -387,8 +391,8 @@
 						<Anchor point="BOTTOMLEFT" relativeKey="$parent.RatingLabel" relativePoint="BOTTOMRIGHT" x="-1" />
 					</Anchors>
 				</FontString>
-				<FontString parentKey="TeamName" inherits="GameFontHighlightMedium" justifyH="LEFT">
-					<Size x="140" y="0"/>
+				<FontString parentKey="TeamName" inherits="GameFontHighlightMedium" justifyH="LEFT" justifyV="BOTTOM" nonspacewrap="true">
+					<Size x="140" y="40"/>
 					<Anchors>
 						<Anchor point="BOTTOMLEFT" relativeKey="$parent.TeamSize" relativePoint="TOPLEFT" y="10" />
 					</Anchors>
@@ -881,6 +885,7 @@
 												self.DiceTexture:SetPoint("CENTER", 0, -2);
 											</OnMouseUp>
 											<OnClick>
+												PlaySound("igMainMenuOptionCheckBoxOn");
 												IncludedBattlegroundsDropDown_Toggle();
 											</OnClick>
 										</Scripts>
@@ -957,7 +962,7 @@
 													<Layer level="ARTWORK">
 														<FontString parentKey="Title" inherits="GameFontHighlightLarge">
 															<Anchors>
-																<Anchor point="TOPLEFT" x="14" y="-23"/>
+																<Anchor point="TOPLEFT" x="14" y="-21"/>
 															</Anchors>
 														</FontString>
 														<FontString parentKey="InProgressText" inherits="GameFontNormalMed3" text="WINTERGRASP_IN_PROGRESS" hidden="true">
@@ -993,7 +998,7 @@
 													<Layer level="ARTWORK">
 														<FontString parentKey="Title" inherits="GameFontHighlightLarge">
 															<Anchors>
-																<Anchor point="TOPLEFT" x="14" y="-23"/>
+																<Anchor point="TOPLEFT" x="14" y="-21"/>
 															</Anchors>
 														</FontString>
 														<FontString parentKey="InProgressText" inherits="GameFontNormalMed3" text="WINTERGRASP_IN_PROGRESS">
@@ -1450,12 +1455,12 @@
 								<FontString parentKey="TeamName" inherits="GameFontNormalLarge" justifyH="LEFT">
 									<Size x="230" y="0"/>
 									<Anchors>
-										<Anchor point="TOPLEFT" relativeKey="$parent.TeamNameHeader" x="80" y="-15"/>
+										<Anchor point="LEFT" relativeKey="$parent.TeamNameHeader" relativePoint="LEFT" x="80" y="12"/>
 									</Anchors>
 								</FontString>
 								<FontString parentKey="TeamSize" inherits="GameFontHighlightLarge" justifyH="LEFT">
 									<Anchors>
-										<Anchor point="TOPLEFT" relativeKey="$parent.TeamName" relativePoint="BOTTOMLEFT" x="0" y="-20"/>
+										<Anchor point="TOPLEFT" relativeKey="$parent.TeamNameHeader" relativePoint="BOTTOMLEFT" x="80" y="14"/>
 									</Anchors>
 								</FontString>
 								<FontString parentKey="RatingLabel" inherits="GameFontHighlightMedium" justifyH="RIGHT" text="ARENA_TEAM_RATING">
@@ -1471,7 +1476,7 @@
 								</FontString>
 								<FontString parentKey="GamesLabel" inherits="GameFontNormal" justifyH="CENTER" text="GAMES">
 									<Anchors>
-										<Anchor point="TOP" relativeKey="$parent.TeamName" relativePoint="BOTTOMLEFT" x="27" y="-50"/>
+										<Anchor point="TOP" relativeKey="$parent.TeamNameHeader" relativePoint="BOTTOMLEFT" x="106" y="-16"/>
 									</Anchors>
 								</FontString>
 								<FontString parentKey="Games" inherits="GameFontHighlightMedium" justifyH="CENTER">
@@ -1703,7 +1708,7 @@
 								<Scripts>
 									<OnClick>
 										PlaySound("igMainMenuOptionCheckBoxOn");
-										StaticPopup_Show("ADD_TEAMMEMBER", nil, nil, ArenaTeamFrame.selectedTeam);
+										StaticPopup_Show("ADD_TEAMMEMBER", nil, nil, ArenaTeamFrame.teamIndex);
 									</OnClick>
 								</Scripts>
 							</Button>

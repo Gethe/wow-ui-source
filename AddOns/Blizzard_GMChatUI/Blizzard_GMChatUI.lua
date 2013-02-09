@@ -135,11 +135,11 @@ function GMChatFrame_OnShow(self)
 	for _,gmName in ipairs(self.lastGM) do
 		ChatEdit_SetLastTellTarget(gmName, "WHISPER");
 	end
-	GMChatFrameEditBox:SetAttribute("tellTarget", ChatEdit_GetLastTellTarget());
-	GMChatFrameEditBox:SetAttribute("chatType", "WHISPER");
 	table.wipe(self.lastGM);
 	if ( self.lastGMForCVar ) then
 		SetCVar("lastTalkedToGM", self.lastGMForCVar);
+		GMChatFrameEditBox:SetAttribute("tellTarget", self.lastGMForCVar);
+		GMChatFrameEditBox:SetAttribute("chatType", "WHISPER");
 	end
 	
 	MicroButtonPulseStop(HelpMicroButton);	--Stop the buttons from pulsing.

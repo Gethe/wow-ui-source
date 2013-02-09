@@ -157,6 +157,18 @@ function PetBattleFrame_Display(self)
 	PetBattleWeatherFrame_Update(self.WeatherFrame);
 end
 
+function PetBattleFrame_PetSelectionFrameUpdateVisible(showFrame) 
+	local selectionFrame = PetBattleFrame.BottomFrame.PetSelectionFrame;
+	local battleState = C_PetBattles.GetBattleState();
+	local selectedActionType = C_PetBattles.GetSelectedAction();
+	local mustSwap = ( ( not selectedActionType ) or ( selectedActionType == BATTLE_PET_ACTION_NONE ) ) and ( battleState == LE_PET_BATTLE_STATE_WAITING_PRE_BATTLE ) or ( battleState == LE_PET_BATTLE_STATE_WAITING_FOR_FRONT_PETS );
+	if ( selectionFrame:IsShown() and ( not mustSwap ) ) then
+		PetBattlePetSelectionFrame_Hide(selectionFrame);
+	elseif (showFrame) then
+		PetBattlePetSelectionFrame_Show(selectionFrame);
+	end
+end
+
 function PetBattleFrame_UpdatePetSelectionFrame(self)
 	local battleState = C_PetBattles.GetBattleState();
 	if ((C_PetBattles.ShouldShowPetSelect() == true) and
@@ -399,6 +411,7 @@ function PetBattleAbilityButton_OnClick(self)
 		StaticPopup_Hide("PET_BATTLE_FORFEIT",nil);
 		StaticPopup_Hide("PET_BATTLE_FORFEIT_NO_PENALTY", nil);
 		C_PetBattles.UseAbility(self:GetID());
+		PetBattleFrame_PetSelectionFrameUpdateVisible();
 	end
 end
 
@@ -1201,6 +1214,7 @@ function PetBattleUnitTooltip_UpdateForUnit(self, petOwner, petIndex)
 	local height = 198;
 	local attack = C_PetBattles.GetPower(petOwner, petIndex);
 	local speed = C_PetBattles.GetSpeed(petOwner, petIndex);
+	local level = C_PetBattles.GetLevel(petOwner, petIndex);
 	local opponentSpeed = 0;
 	if ( petOwner == LE_BATTLE_PET_ALLY ) then
 		opponentSpeed = C_PetBattles.GetSpeed(LE_BATTLE_PET_ENEMY, C_PetBattles.GetActivePet(LE_BATTLE_PET_ENEMY));
@@ -1244,8 +1258,7 @@ function PetBattleUnitTooltip_UpdateForUnit(self, petOwner, petIndex)
 		self.HealthBorder:SetPoint("TOPLEFT", self.Icon, "BOTTOMLEFT", -1, -6);
 	end
 	
-
-	if ( petOwner == LE_BATTLE_PET_ALLY ) then
+	if ( petOwner == LE_BATTLE_PET_ALLY and level < MAX_PET_LEVEL ) then
 		--Add the XP bar
 		self.XPBar:Show();
 		self.XPBG:Show();

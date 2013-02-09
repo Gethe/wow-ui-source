@@ -69,7 +69,7 @@ function TextStatusBar_UpdateTextStringWithValues(statusFrame, textString, value
 				textString:Show();
 				return;
 			end
-			if ( textDisplay == "BOTH" ) then
+			if ( textDisplay == "BOTH" and not statusFrame.showPercentage) then
 				valueDisplay = "(" .. math.ceil((value / valueMax) * 100) .. "%) " .. valueDisplay .. " / " .. valueMaxDisplay;
 				textString:SetText(valueDisplay);
 			else

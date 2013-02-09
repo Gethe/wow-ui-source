@@ -223,7 +223,7 @@ size=512,512
 						local parent = self:GetParent();
 						if (parent.optID) then
 							SendQuestChoiceResponse(parent.optID);
-							QuestChoiceFrame:Hide();
+							HideUIPanel(QuestChoiceFrame);
 						end
 					</OnClick>
 				</Scripts>

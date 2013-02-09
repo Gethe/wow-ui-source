@@ -263,6 +263,20 @@ function ReputationBar_OnClick(self)
 	end
 end
 
+function ReputationBarLFGBonusRepButton_OnClick(self)
+	SetLFGBonusFactionID(self.factionID);
+	self:Disable();
+	for i=1, NUM_FACTIONS_DISPLAYED, 1 do
+		local factionRow = _G["ReputationBar"..i];
+		local button = factionRow.LFGBonusRepButton;
+		if ( button ~= self ) then
+			--It feels really weird when the client waits to update until it receives a response from the server.
+			--Instead, we'll fake it. Hopefully we don't end up lying to people
+			button:SetChecked(false);
+		end
+	end
+end
+
 function ReputationWatchBar_Update(newLevel)
 	local name, reaction, min, max, value, factionID = GetWatchedFactionInfo();
 	local visibilityChanged = nil;

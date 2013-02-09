@@ -329,6 +329,7 @@ end
 
 function PVPQueueFrameButton_OnClick(self)
 	local frameName = pvpFrames[self:GetID()];
+	PlaySound("igCharacterInfoOpen");
 	PVPQueueFrame_ShowFrame(_G[frameName]);
 end
 
@@ -337,16 +338,27 @@ end
 ---------------------------------------------------------------
 
 local BlacklistIDs = { };
+local MIN_BONUS_HONOR_LEVEL;
 
 function HonorFrame_OnLoad(self)
 	self.SpecificFrame.scrollBar.doNotHide = true;
 	self.SpecificFrame.update = HonorFrameSpecificList_Update;
 	HybridScrollFrame_CreateButtons(self.SpecificFrame, "PVPSpecificBattlegroundButtonTemplate", -2, -1);
 
+	-- min level for bonus frame
+	local _, minLevel;
+	_, _, _, _, _, _, _, MIN_BONUS_HONOR_LEVEL = GetRandomBGInfo();
+	_, _, _, _, _, _, _, _, minLevel = GetHolidayBGInfo();
+	MIN_BONUS_HONOR_LEVEL = min(MIN_BONUS_HONOR_LEVEL, minLevel);
+
 	UIDropDownMenu_SetWidth(HonorFrameTypeDropDown, 160);
 	UIDropDownMenu_Initialize(HonorFrameTypeDropDown, HonorFrameTypeDropDown_Initialize);
-	HonorFrame_SetType("bonus");
-	
+	if ( UnitLevel("player") < MIN_BONUS_HONOR_LEVEL ) then
+		HonorFrame_SetType("specific");
+	else
+		HonorFrame_SetType("bonus");
+	end
+
 	for i = 1, MAX_BLACKLIST_BATTLEGROUNDS do
 		local mapID = GetBlacklistMap(i);
 		if ( mapID > 0 ) then
@@ -381,13 +393,21 @@ function HonorFrameTypeDropDown_Initialize()
 	info.text = BONUS_BATTLEGROUNDS;
 	info.value = "bonus";
 	info.func = HonorFrameTypeDropDown_OnClick;
-	info.checked = HonorFrame.type == info.value;	
+	info.checked = HonorFrame.type == info.value;
+	if ( UnitLevel("player") < MIN_BONUS_HONOR_LEVEL ) then
+		info.disabled = 1;
+		info.tooltipWhileDisabled = 1;
+		info.tooltipTitle = UNAVAILABLE;
+		info.tooltipText = string.format(FEATURE_BECOMES_AVAILABLE_AT_LEVEL, MIN_BONUS_HONOR_LEVEL);
+		info.tooltipOnButton = 1;
+	end
 	UIDropDownMenu_AddButton(info);
 
 	info.text = SPECIFIC_BATTLEGROUNDS;
 	info.value = "specific";
 	info.func = HonorFrameTypeDropDown_OnClick;
 	info.checked = HonorFrame.type == info.value;	
+	info.disabled = nil;
 	UIDropDownMenu_AddButton(info);
 end
 
@@ -982,6 +1002,10 @@ end
 
 function ConquestFrameButton_OnClick(self, button)
 	CloseDropDownMenus();
+	if ( button == "LeftButton" or self.teamIndex ) then
+		ConquestFrame_SelectButton(self);
+		PlaySound("igMainMenuOptionCheckBoxOn");
+	end
 	if (button == "RightButton") then
 		local team = {};
 		local numMembers = GetNumArenaTeamMembers(self.teamIndex, 1);
@@ -998,8 +1022,6 @@ function ConquestFrameButton_OnClick(self, button)
 		end
 		UIDropDownMenu_Initialize(ConquestFrame.ArenaInviteMenu, ArenaInviteMenu_Init, "MENU", nil, team);
 		ToggleDropDownMenu(1, nil, ConquestFrame.ArenaInviteMenu, "cursor", 0, 0, team);
-	else
-		ConquestFrame_SelectButton(self);
 	end
 end
 
@@ -1352,6 +1374,7 @@ function WarGameStartButton_GetErrorTooltip()
 end
 
 function WarGameStartButton_OnClick(self)
+	PlaySound("igMainMenuOptionCheckBoxOn");
 	local name = GetWarGameTypeInfo(GetSelectedWarGameType());
 	if ( name ) then
 		StartWarGame(UnitName("target"), name);
@@ -1478,6 +1501,7 @@ end
 
 function PVPArenaTeamsTeamButton_OnClick(self)
 	if (self.hasTeam) then
+		PlaySound("igMainMenuOptionCheckBoxOn");
 		PVPArenaTeamsFrame_SelectButton(self);
 		PVPArenaTeamsFrame_ShowTeam(PVPArenaTeamsFrame);
 	else

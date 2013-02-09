@@ -41,8 +41,8 @@ function LossOfControlFrame_OnEvent(self, event, ...)
 		local eventIndex = ...;
 		local locType, spellID, text, iconTexture, startTime, timeRemaining, duration, lockoutSchool, priority, displayType = C_LossOfControl.GetEventInfo(eventIndex);
 		if ( displayType == DISPLAY_TYPE_ALERT ) then
-			-- only display an alert type if there's nothing up or it has higher priority or longer time remaining if same priority
-			if ( not self:IsShown() or priority > self.priority or ( priority == self.priority and timeRemaining > self.TimeLeft.timeRemaining ) ) then
+			-- only display an alert type if there's nothing up or it has higher priority. If same priority, it needs to have longer time remaining
+			if ( not self:IsShown() or priority > self.priority or ( priority == self.priority and timeRemaining and ( not self.TimeLeft.timeRemaining or timeRemaining > self.TimeLeft.timeRemaining ) ) ) then
 				LossOfControlFrame_SetUpDisplay(self, true, locType, spellID, text, iconTexture, startTime, timeRemaining, duration, lockoutSchool, priority, displayType);
 			end
 			return;
