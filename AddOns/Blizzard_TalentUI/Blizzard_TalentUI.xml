@@ -584,7 +584,7 @@
 				</Anchors>
 				<Layers>
 					<Layer level="OVERLAY">
-						<Texture name="bb" file="Interface\Buttons\UI-Panel-Button-Glow" alphaMode="ADD" parentKey="Flash" hidden="true">
+						<Texture name="$parentFlash" file="Interface\Buttons\UI-Panel-Button-Glow" alphaMode="ADD" parentKey="Flash" hidden="true">
 							<Size x="150" y="60"/>
 							<Anchors>
 								<Anchor point="TOPLEFT" x="-7" y="7"/>
@@ -597,6 +597,11 @@
 						StaticPopup_Show("CONFIRM_LEARN_SPEC", nil, nil, self:GetParent());
 					</OnClick>
 				</Scripts>
+				<Animations>
+					<AnimationGroup parentKey="FlashAnim" looping="BOUNCE">
+						<Alpha targetkey="$parent.Flash" change="-0.75" duration="1.0" smoothing="IN_OUT" order="1"/>
+					</AnimationGroup>
+				</Animations>
 			</Button>
 			<Button name="$parentSpecButton1" inherits="PlayerSpecButtonTemplate" id="1" parentKey="specButton1">
 				<Anchors>

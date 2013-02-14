@@ -1341,7 +1341,7 @@ function LFGRewardsFrame_UpdateFrame(parentFrame, dungeonID, background)
 	end
 	
 	local bonusID, numKnownFactionsWithLFGBonus = GetLFGBonusFactionID();
-	if ( bonusRepAmount > 0 and not doneToday and numKnownFactionsWithLFGBonus > 0 ) then
+	if ( bonusRepAmount and bonusRepAmount > 0 and not doneToday and numKnownFactionsWithLFGBonus > 0 ) then
 		parentFrame.bonusRepFrame.bonusRep = bonusRepAmount;
 		parentFrame.bonusRepFrame:SetPoint("TOPLEFT", lastFrame, "BOTTOMLEFT", 0, -8);
 		LFGRewardsFrameBonusRep_Update(parentFrame.bonusRepFrame);

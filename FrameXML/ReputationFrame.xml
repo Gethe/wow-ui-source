@@ -41,6 +41,12 @@
 					<TexCoords left="0" right="0.5" top="0" bottom="0.5"/>
 				</CheckedTexture>
 				<Scripts>
+					<OnEnter>
+						GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+						GameTooltip:SetText(LFG_BONUS_REPUTATION_TOOLTIP, nil, nil, nil, nil, true);
+						GameTooltip:Show();
+					</OnEnter>
+					<OnLeave function="GameTooltip_Hide"/>
 					<OnClick function="ReputationBarLFGBonusRepButton_OnClick"/>
 				</Scripts>
 			</CheckButton>

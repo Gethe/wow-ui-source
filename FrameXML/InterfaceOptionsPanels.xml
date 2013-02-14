@@ -2839,12 +2839,20 @@
 					</OnLoad>
 				</Scripts>
 			</CheckButton>
+			
 			<Frame name="$parentDisplayDropDown" inherits="UIDropDownMenuTemplate" enableMouse="true">
 				<Anchors>
-					<Anchor point="TOPLEFT" relativeTo="$parentXP" relativePoint="BOTTOMLEFT">
-						<Offset x="-8" y="-16"/>
-					</Anchor>
+					<Anchor point="TOPLEFT" relativeTo="$parentXP" relativePoint="BOTTOMLEFT" x="-8" y="-16"/>
 				</Anchors>
+				<Layers>
+					<Layer level="OVERLAY">
+						<Texture name="$parentNew" file="Interface\OptionsFrame\UI-OptionsFrame-NewFeatureIcon">
+							<Anchors>
+								<Anchor point="LEFT" relativeTo="$parent" relativePoint="RIGHT" x="-10" y="2"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
 				<Scripts>
 					<OnLoad>
 						self.type = CONTROLTYPE_DROPDOWN;

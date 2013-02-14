@@ -1416,13 +1416,16 @@ function PlayerTalentFrame_UpdateSpecFrame(self, spec)
 	-- disable Learn button
 	if ( self.isPet and disable ) then
 		self.learnButton:Enable();
-		UIFrameFlash(self.learnButton.Flash, 0.7, 0.7, -1);
+		self.learnButton.Flash:Show();
+		self.learnButton.FlashAnim:Play();
 	elseif ( playerTalentSpec or disable or UnitLevel("player") < SHOW_SPEC_LEVEL ) then
 		self.learnButton:Disable();
-		UIFrameFlashStop(self.learnButton.Flash);
+		self.learnButton.Flash:Hide();
+		self.learnButton.FlashAnim:Stop();
 	else
 		self.learnButton:Enable();
-		UIFrameFlash(self.learnButton.Flash, 0.7, 0.7, -1);
+		self.learnButton.Flash:Show();
+		self.learnButton.FlashAnim:Play();
 	end	
 	
 	if ( self.playLearnAnim ) then

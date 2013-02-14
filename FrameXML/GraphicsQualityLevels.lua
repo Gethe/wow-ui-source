@@ -398,15 +398,26 @@ VideoData["Graphics_MultiSampleDropDown"]={
 			for key, cvar in pairs(self.cvarCaps) do
 				local dropDown = _G[key];
 				if ( dropDown ) then
-					local cvarValue = ControlGetCurrentCvarValue(dropDown, cvar);
+					local cvarValue, cvarIndex = ControlGetCurrentCvarValue(dropDown, cvar);
+					if ( cvarIndex ) then
+						-- this not a custom setting
+						local activeCVarValue, activeCVarIndex = ControlGetActiveCvarValue(dropDown, cvar);
+						if ( activeCVarIndex and activeCVarIndex > cvarIndex ) then
+							-- the active setting is higher, work with that
+							cvarValue = activeCVarValue;
+							cvarIndex = activeCVarIndex;
+						end
+					end
+
 					local capValue = GetMaxMultisampleFormatOnCvar(cvar, cvarValue);
 					capMaxValue = min(capMaxValue, capValue);
 					if ( capValue < self.maxValue ) then
 						local setting;
+						local dropDownValue = cvarIndex or dropDown:GetValue();
 						if ( dropDown.data ) then
-							setting = dropDown.data[dropDown:GetValue()].text;
+							setting = dropDown.data[dropDownValue].text;
 						elseif ( dropDown.table ) then
-							setting = dropDown.table[dropDown:GetValue()];
+							setting = dropDown.table[dropDownValue];
 						else
 							setting = cvarValue;
 						end
@@ -735,7 +746,8 @@ VideoData["Graphics_SSAODropDown"]={
 	},
 	capTargets = {
 		"Graphics_MultiSampleDropDown",
-	}
+	},
+	multisampleDependent = true;
 }
 
 -------------------------------------------------------------------------------------------------------
@@ -954,7 +966,8 @@ VideoData["Graphics_LiquidDetailDropDown"]={
 	},
 	capTargets = {
 		"Graphics_MultiSampleDropDown",
-	}
+	},
+	multisampleDependent = true;
 }
 
 -------------------------------------------------------------------------------------------------------
@@ -990,7 +1003,8 @@ VideoData["Graphics_SunshaftsDropDown"]={
 	},
 	capTargets = {
 		"Graphics_MultiSampleDropDown",
-	}
+	},
+	multisampleDependent = true;
 }
 
 -------------------------------------------------------------------------------------------------------

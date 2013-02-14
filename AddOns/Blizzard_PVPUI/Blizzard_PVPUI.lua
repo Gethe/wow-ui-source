@@ -563,6 +563,7 @@ function HonorFrameSpecificList_FindAndSelectBattleground(bgID)
 end
 
 function HonorFrameSpecificBattlegroundButton_OnClick(self)
+	PlaySound("igMainMenuOptionCheckBoxOn");
 	HonorFrame.SpecificFrame.selectionID = self.bgID;
 	HonorFrameSpecificList_Update();
 end

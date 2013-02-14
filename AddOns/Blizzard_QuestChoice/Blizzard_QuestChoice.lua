@@ -2,10 +2,13 @@ MAX_NUM_OPTIONS = 2;
 CURRENCY_SPACING = 5;
 CURRENCY_HEIGHT = 20;
 MAX_CURRENCIES = 3;
+REWARDS_WIDTH = 200;
 
 function QuestChoiceFrame_OnEvent(self, event) 
 	if (event == "QUEST_CHOICE_UPDATE") then
 		QuestChoiceFrame_Update(self)
+	elseif (event == "PLAYER_DEAD" or event == "PLAYER_ENTERING_WORLD") then
+		HideUIPanel(self);
 	end
 end
 
@@ -54,7 +57,7 @@ function QuestChoiceFrame_ShowRewards()
 			itemID, name, texture, quantity = GetQuestChoiceRewardItem(i, 1); --for now there is only ever 1 item by design
 			rewardFrame.Item.itemID = itemID;
 			rewardFrame.Item:Show();
-			rewardFrame.Item.name:SetText(name)
+			rewardFrame.Item.Name:SetText(name)
 			SetItemButtonCount(rewardFrame.Item, quantity);
 			SetItemButtonTexture(rewardFrame.Item, texture);
 		else
@@ -105,10 +108,24 @@ function QuestChoiceFrame_ShowRewards()
 		
 		
 		if (numReps ~= 0) then
+			local repFrame = rewardFrame.ReputationsFrame.Reputation1;
+			local factionFrame = repFrame.Faction;
+			local amountFrame = repFrame.Amount;
+			local dummyString = QuestChoiceFrame.DummyString;
 			factionID, quantity = GetQuestChoiceRewardFaction(i, 1); --there should only be one reputation reward
-			factionName = GetFactionInfoByID(factionID);
-			rewardFrame.ReputationsFrame.Reputation1.Faction:SetText(format(REWARD_REPUTATION, factionName));
-			rewardFrame.ReputationsFrame.Reputation1.Amount:SetText(quantity);
+			factionName = format(REWARD_REPUTATION, GetFactionInfoByID(factionID));
+			dummyString:SetText(factionName);
+			factionFrame:SetText(factionName);
+			amountFrame:SetText(quantity);
+			local amountWidth = amountFrame:GetWidth();
+			local factionWidth = dummyString:GetWidth();
+			if ((amountWidth + factionWidth) > REWARDS_WIDTH) then
+				factionFrame:SetWidth(REWARDS_WIDTH - amountWidth - 5);
+				repFrame.tooltip = factionName;
+			else
+				factionFrame:SetWidth(factionWidth); 
+				repFrame.tooltip = nil
+			end
 			rewardFrame.ReputationsFrame:Show();
 		else
 			rewardFrame.ReputationsFrame:Hide();
