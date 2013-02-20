@@ -285,6 +285,8 @@ function LevelUpDisplay_OnLoad(self)
 	self:RegisterEvent("PET_BATTLE_LEVEL_CHANGED");
 	self:RegisterEvent("PET_BATTLE_CAPTURED");
 	self:RegisterEvent("PET_BATTLE_LOOT_RECEIVED");
+	self:RegisterEvent("LOADING_SCREEN_ENABLED");
+	self:RegisterEvent("LOADING_SCREEN_DISABLED");
 	self.currSpell = 0;
 end
 
@@ -292,7 +294,15 @@ end
 
 function LevelUpDisplay_OnEvent(self, event, ...)
 	local arg1 = ...;
-	if event ==  "PLAYER_LEVEL_UP" then
+	if event == "LOADING_SCREEN_ENABLED" then
+		LevelUpDisplay_StopAllAnims(self);
+		self:Hide();	--We'll restart this toast on PLAYER_ENTERING_WORLD
+		self.currSpell = 0;
+	elseif event == "LOADING_SCREEN_DISABLED" then
+		if ( self.type ) then
+			LevelUpDisplay_Start(self, self.unlockList);
+		end
+	elseif event ==  "PLAYER_LEVEL_UP" then
 		local level = ...
 		self.level = level;
 		self.type = LEVEL_UP_TYPE_CHARACTER;
@@ -359,6 +369,16 @@ function LevelUpDisplay_OnEvent(self, event, ...)
 		LevelUpDisplay_Show(self);
 		PlaySoundKitID(33338);
 	end
+end
+
+function LevelUpDisplay_StopAllAnims(self)
+	self.fastHideAnim:Stop();
+	self.hideAnim:Stop();
+	self.spellFrame.showAnim:Stop();
+	self.scenarioFrame.newStage:Stop();
+	self.challengeModeFrame.challengeComplete:Stop();
+	self.levelFrame.levelUp:Stop();
+	self.levelFrame.fastReveal:Stop();
 end
 
 function LevelUpDisplay_BuildCharacterList(self)
@@ -617,6 +637,15 @@ function LevelUpDisplay_AddBattlePetLootReward(self, typeIdentifier, itemLink, q
 			icon = itemTexture, --Item icon
 			quality = rarity, --Item quality
 		};
+	elseif ( typeIdentifier == "currency" ) then
+		local name, quantity, icon, earnedThisWeek, weeklyMax, maxQuantity, discovered, rarity = GetCurrencyInfo(itemLink);
+		info = {
+			entryType = "petbattleloot",
+			text = BATTLE_PET_LOOT_RECEIVED,
+			subText = name,
+			icon = icon,
+			quality = rarity,
+		};
 	end
 
 	if ( info ) then
@@ -625,6 +654,10 @@ function LevelUpDisplay_AddBattlePetLootReward(self, typeIdentifier, itemLink, q
 end
 
 function LevelUpDisplay_Show(self)
+	LevelUpDisplay_Start(self, nil);
+end
+
+function LevelUpDisplay_Start(self, beginUnlockList)
 	if ( self:IsShown() ) then
 		return;
 	end
@@ -636,10 +669,12 @@ function LevelUpDisplay_Show(self)
 	end
 
 	self:Show();
+	ZoneTextFrame:Hide();	--LevelUpDisplay is more important than zoning text
+	SubZoneTextFrame:Hide();
 	
 	local playAnim;
 	if  self.currSpell == 0 then
-		local unlockList = nil;
+		local unlockList = beginUnlockList;
 		if ( not self.type ) then
 			self.type = self.queuedType;
 			unlockList = self.queuedItems;

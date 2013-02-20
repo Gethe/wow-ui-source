@@ -26,7 +26,7 @@
 			</Layer>
 		</Layers>
 		<Frames>
-			<CheckButton parentKey="LFGBonusRepButton">
+			<CheckButton parentKey="LFGBonusRepButton" motionScriptsWhileDisabled="true">
 				<Size x="16" y="16"/>
 				<Anchors>
 					<Anchor point="RIGHT" relativeTo="$parentBackground" relativePoint="LEFT" x="-2" y="0"/>

@@ -617,11 +617,13 @@ function QueueStatusDropDown_AddLFGButtons(info, category)
 
 	if ( IsLFGModeActive(category) and IsPartyLFG() ) then
 		if ( IsInLFGDungeon() ) then
-			info.text = TELEPORT_OUT_OF_DUNGEON;
-			info.func = wrapFunc(LFGTeleport);
-			info.arg1 = true;
-			info.disabled = false;
-			UIDropDownMenu_AddButton(info);
+			if ( IsAllowedToTeleportOut() ) then
+				info.text = TELEPORT_OUT_OF_DUNGEON;
+				info.func = wrapFunc(LFGTeleport);
+				info.arg1 = true;
+				info.disabled = false;
+				UIDropDownMenu_AddButton(info);
+			end
 		else
 			info.text = TELEPORT_TO_DUNGEON;
 			info.func = wrapFunc(LFGTeleport);

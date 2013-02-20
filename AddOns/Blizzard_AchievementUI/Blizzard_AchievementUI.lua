@@ -1917,7 +1917,7 @@ end
 -- [[ StatsFrames ]]--
 
 function AchievementFrameStats_OnEvent (self, event, ...)
-	if ( event == "CRITERIA_UPDATE" and self:IsShown() ) then
+	if ( event == "CRITERIA_UPDATE" and self:IsVisible() ) then
 		AchievementFrameStats_Update();
 	end
 end
@@ -2023,6 +2023,10 @@ function AchievementFrameStats_SetStat(button, category, index, colorIndex, isSu
 	else
 		-- This is on the summary page
 		id, name, points, completed, month, day, year, description, flags, icon = GetAchievementInfoFromCriteria(category);
+	end
+
+	if (not id) then
+		return;
 	end
 
 	button.id = id;

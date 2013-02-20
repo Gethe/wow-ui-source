@@ -226,7 +226,7 @@ size=512,512
 				</Frames>
 			</Frame>
 			<Frame parentKey="ReputationsFrame" hidden="true">					
-				<Size x="210" y="50"/>
+				<Size x="210" y="15"/>
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeKey="$parent.Currencies" relativePoint="BOTTOMLEFT" y="-8"/>
 				</Anchors>
@@ -241,29 +241,24 @@ size=512,512
 		</Frames>
 	</Frame>
 	<Button name="QuestChoiceOptionTemplate" virtual="true">
-		<Size x="210" y="245"/>
+		<Size x="210" y="268"/>
 		<Layers>
 			<Layer level="OVERLAY">
 				<Texture parentKey="Artwork">
-					<Size x="256" y="128"/>
+					<Size x="256" y="128"/> <!-- Actual art should always be 200x100, centered in 256x128-->
 					<Anchors>
-						<Anchor point="TOP" y="35"/>
+						<Anchor point="TOP" y="14"/>
 					</Anchors>
 				</Texture>
 				<FontString parentKey="OptionText" inherits="GameFontBlack" justifyH="LEFT" justifyV="TOP">
 					<Size x="200" y="0"/>
 					<Anchors>
-						<Anchor point="TOP" y="-83"/>
+						<Anchor point="TOP" y="-103"/>
 					</Anchors>
 				</FontString>
 			</Layer>
 		</Layers>
 		<Frames>
-			<Frame parentKey="Rewards" inherits="QuestChoiceRewardsTemplate">
-				<Anchors>
-					<Anchor point="TOPLEFT" relativeKey="$parent.OptionText" relativePoint="BOTTOMLEFT" y="-3"/>
-				</Anchors>
-			</Frame>
 			<Button parentKey="OptionButton" inherits="UIPanelButtonTemplate">
 				<Size x="175" y="22"/>
 				<Anchors>
@@ -280,6 +275,11 @@ size=512,512
 					</OnClick>
 				</Scripts>
 			</Button>
+			<Frame parentKey="Rewards" inherits="QuestChoiceRewardsTemplate">
+				<Anchors>
+					<Anchor point="BOTTOM" relativeKey="$parent.OptionButton" relativePoint="TOP" y="5"/>
+				</Anchors>
+			</Frame>
 		</Frames>
 	</Button>
 	
@@ -435,7 +435,7 @@ size=512,512
 		<Frames>
 			<Frame name="$parentOption1" parentKey="Option1" inherits="QuestChoiceOptionTemplate">
 				<Anchors>
-					<Anchor point="TOPLEFT" relativeKey="$parent.QuestionFrameLeft" relativePoint="BOTTOMLEFT" x="4" y="-22" />
+					<Anchor point="TOPLEFT" relativeKey="$parent.QuestionFrameLeft" relativePoint="BOTTOMLEFT" x="4" y="0" />
 				</Anchors>
 			</Frame>
 			<Frame name="$parentOption2" parentKey="Option2" inherits="QuestChoiceOptionTemplate">

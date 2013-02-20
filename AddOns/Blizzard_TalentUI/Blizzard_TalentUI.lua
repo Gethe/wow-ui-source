@@ -447,15 +447,19 @@ function PlayerTalentFrame_OnHide()
 	end
 	wipe(talentTabWidthCache);
 	
+	local selection = PlayerTalentFrame_GetTalentSelections();
 	if ( not GetSpecialization() ) then
 		TalentMicroButtonAlert.Text:SetText(TALENT_MICRO_BUTTON_NO_SPEC);
 		TalentMicroButtonAlert:SetHeight(TalentMicroButtonAlert.Text:GetHeight()+42);
 		TalentMicroButtonAlert:Show();
 		StaticPopup_Hide("CONFIRM_LEARN_SPEC");
-	elseif ( PlayerTalentFrame_GetTalentSelections() ) then
-		TalentMicroButtonAlert.Text:SetText(TALENT_MICRO_BUTTON_UNSAVED_CHANGES);
-		TalentMicroButtonAlert:SetHeight(TalentMicroButtonAlert.Text:GetHeight()+42);
-		TalentMicroButtonAlert:Show();
+	elseif ( selection ) then
+		local name, iconTexture, tier, column, selected, available = GetTalentInfo(selection);
+		if (available) then
+			TalentMicroButtonAlert.Text:SetText(TALENT_MICRO_BUTTON_UNSAVED_CHANGES);
+			TalentMicroButtonAlert:SetHeight(TalentMicroButtonAlert.Text:GetHeight()+42);
+			TalentMicroButtonAlert:Show();
+		end
 	elseif ( GetNumUnspentTalents() > 0 ) then
 		TalentMicroButtonAlert.Text:SetText(TALENT_MICRO_BUTTON_UNSPENT_TALENTS);
 		TalentMicroButtonAlert:SetHeight(TalentMicroButtonAlert.Text:GetHeight()+42);

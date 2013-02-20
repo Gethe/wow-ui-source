@@ -1263,6 +1263,15 @@ function UnitPopup_OnUpdate (elapsed)
 						if ( not currentDropDown.presenceID or not CanGroupWithAccount(currentDropDown.presenceID) ) then
 							enable = 0;
 						end
+					elseif ( value == "BN_TARGET" ) then
+						if ( not currentDropDown.presenceID) then
+							enable = 0;
+						else
+							local _, _, _, _, _, _, client = BNGetFriendInfoByID(currentDropDown.presenceID);
+							if (client ~= BNET_CLIENT_WOW) then
+								enable = 0;
+							end
+						end
 					elseif ( value == "VOTE_TO_KICK" ) then
 						if ( inParty == 0 or not HasLFGRestrictions() ) then
 							enable = 0;

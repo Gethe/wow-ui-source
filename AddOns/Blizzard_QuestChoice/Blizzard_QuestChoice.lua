@@ -3,6 +3,10 @@ CURRENCY_SPACING = 5;
 CURRENCY_HEIGHT = 20;
 MAX_CURRENCIES = 3;
 REWARDS_WIDTH = 200;
+INIT_REWARDS_HEIGHT = 18; --basically total vertical padding between rewards
+INIT_OPTION_HEIGHT = 268;
+INIT_WINDOW_HEIGHT = 440;
+OPTION_STATIC_HEIGHT = 136; --height of artwork, button, and minimum padding
 
 function QuestChoiceFrame_OnEvent(self, event) 
 	if (event == "QUEST_CHOICE_UPDATE") then
@@ -37,20 +41,38 @@ function QuestChoiceFrame_Update(self)
 		option.OptionButton:SetText(buttonText);
 		option.OptionText:SetText(description);
 		option.Artwork:SetTexture(artFile);
-		
 	end
 	
 	QuestChoiceFrame_ShowRewards()
+	
+	--make window taller if there is too much stuff
+	local maxHeight = INIT_OPTION_HEIGHT;
+	local currHeight;
+	for i=1, numOptions do
+		local option = QuestChoiceFrame["Option"..i];
+		currHeight = OPTION_STATIC_HEIGHT;
+		currHeight = currHeight + option.OptionText:GetHeight();
+		currHeight = currHeight + option.Rewards:GetHeight();
+		maxHeight = max(currHeight, maxHeight);
+	end
+	for i=1, numOptions do
+		local option = QuestChoiceFrame["Option"..i];
+		option:SetHeight(maxHeight);
+	end
+	local heightDiff = maxHeight - INIT_OPTION_HEIGHT;
+	heightDiff = max(heightDiff, 0);
+	QuestChoiceFrame:SetHeight(INIT_WINDOW_HEIGHT + heightDiff);
 end
 
 function QuestChoiceFrame_ShowRewards()
-	local rewardFrame;
+	local rewardFrame, height;
 	local title, skillID, skillPoints, money, xp, numItems, numCurrencies, numChoices, numReps;
 	local name, texture, quantity, itemFrame;
 	local currID, factionID;
 	
 	for i=1, MAX_NUM_OPTIONS do
 		rewardFrame = QuestChoiceFrame["Option"..i].Rewards;
+		height = INIT_REWARDS_HEIGHT;
 		title, skillID, skillPoints, money, xp, numItems, numCurrencies, numChoices, numReps = GetQuestChoiceRewardInfo(i)
 		
 		if (numItems ~= 0) then
@@ -60,6 +82,7 @@ function QuestChoiceFrame_ShowRewards()
 			rewardFrame.Item.Name:SetText(name)
 			SetItemButtonCount(rewardFrame.Item, quantity);
 			SetItemButtonTexture(rewardFrame.Item, texture);
+			height = height + rewardFrame.Item:GetHeight()
 		else
 			rewardFrame.Item:Hide();
 		end
@@ -102,6 +125,7 @@ function QuestChoiceFrame_ShowRewards()
 			else
 				rewardFrame.Currencies:SetPoint("TOPLEFT", rewardFrame.Item, "BOTTOMLEFT", -30, -5);
 			end
+			height =  height + rewardFrame.Currencies:GetHeight();
 		else
 			rewardFrame.Currencies:Hide();
 		end
@@ -127,8 +151,10 @@ function QuestChoiceFrame_ShowRewards()
 				repFrame.tooltip = nil
 			end
 			rewardFrame.ReputationsFrame:Show();
+			height = height + rewardFrame.ReputationsFrame:GetHeight()
 		else
 			rewardFrame.ReputationsFrame:Hide();
 		end
+		rewardFrame:SetHeight(height);
 	end
 end

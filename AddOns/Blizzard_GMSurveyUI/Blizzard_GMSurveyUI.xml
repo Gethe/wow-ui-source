@@ -848,6 +848,7 @@
 			</OnShow>
 			<OnHide>
 				PlaySound("igCharacterInfoClose");
+				HelpOpenTicketButton_Update();
 			</OnHide>
 		</Scripts>
 	</Frame>

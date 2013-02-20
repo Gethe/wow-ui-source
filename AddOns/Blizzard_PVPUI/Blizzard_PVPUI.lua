@@ -10,6 +10,7 @@ BATTLEGROUND_BUTTON_HEIGHT = 40;
 
 local MAX_SHOWN_BATTLEGROUNDS = 8;
 local NUM_BLACKLIST_INFO_LINES = 2;
+local NO_ARENA_SEASON = 0;
 
 StaticPopupDialogs["CONFIRM_JOIN_SOLO"] = {
 	text = CONFIRM_JOIN_SOLO,
@@ -93,6 +94,9 @@ function PVPUIFrame_OnShow(self)
 	UpdateMicroButtons();
 	PlaySound("igCharacterInfoOpen");
 	PVPUIFrame_TabOnClick(PVPUIFrame.Tab1);
+	for teamIndex = 1, MAX_ARENA_TEAMS do
+		ArenaTeamRoster(teamIndex);
+	end
 end
 
 function PVPUIFrame_OnHide(self)
@@ -859,22 +863,27 @@ function ConquestFrame_OnShow(self)
 end
 
 function ConquestFrame_Update(self)
-	ConquestFrame_UpdateConquestBar(self);
-	ConquestFrame_UpdateArenas(self);
-	ConquestFrame_UpdateRatedBG(self);
-	-- select a button if one isn't selected
-	if ( not ConquestFrame.selectedButton ) then
-		local selectButton;
-		for i = 1, 3 do
-			if ( ARENA_BUTTONS[i]:IsEnabled() ) then
-				selectButton = ARENA_BUTTONS[i];
-				break;
-			end
-		end
-		-- rated BG button is always going to be enabled
-		ConquestFrame_SelectButton(selectButton or ConquestFrame.RatedBG);
+	if ( GetCurrentArenaSeason() == NO_ARENA_SEASON ) then
+		ConquestFrame.NoSeason:Show();
 	else
-		ConquestFrame_UpdateJoinButton();
+		ConquestFrame.NoSeason:Hide();
+		ConquestFrame_UpdateConquestBar(self);
+		ConquestFrame_UpdateArenas(self);
+		ConquestFrame_UpdateRatedBG(self);
+		-- select a button if one isn't selected
+		if ( not ConquestFrame.selectedButton ) then
+			local selectButton;
+			for i = 1, 3 do
+				if ( ARENA_BUTTONS[i]:IsEnabled() ) then
+					selectButton = ARENA_BUTTONS[i];
+					break;
+				end
+			end
+			-- rated BG button is always going to be enabled
+			ConquestFrame_SelectButton(selectButton or ConquestFrame.RatedBG);
+		else
+			ConquestFrame_UpdateJoinButton();
+		end
 	end
 end
 
@@ -898,7 +907,6 @@ function ConquestFrame_UpdateArenas(self)
 		local arenaButton = ARENA_BUTTONS[i];
 		local teamIndex = GetArenaTeamIndexBySize(CONQUEST_SIZES[i]);
 		if ( teamIndex ) then
-			ArenaTeamRoster(teamIndex);
 			local teamName, teamSize, teamRating, teamPlayed, teamWins,  seasonTeamPlayed, 
 			seasonTeamWins, playerPlayed, seasonPlayerPlayed, teamRank, playerRating = GetArenaTeam(teamIndex);
 			arenaButton:Enable();
@@ -1396,6 +1404,10 @@ function PVPArenaTeamsFrame_OnEvent(self, event, ...)
 		PVPArenaTeamsFrame_UpdateTeams(self);
 		PVPArenaTeamsFrame_ShowTeam(self);
 	elseif (event == "ARENA_TEAM_ROSTER_UPDATE") then
+		local teamIndex = ...;
+		if ( teamIndex ) then
+			ArenaTeamRoster(teamIndex);
+		end
 		PVPArenaTeamsFrame_ShowTeam(self);
 	end
 end
@@ -1411,10 +1423,7 @@ end
 function PVPArenaTeamsFrame_ShowTeam(self)
 	local frame = ArenaTeamFrame;
 	if (not self.selectedButton) then
-		frame.NoTeams:Show()
 		return;
-	else
-		frame.NoTeams:Hide()
 	end
 	
 	local teamIndex = self.selectedButton.teamIndex;
@@ -1526,6 +1535,21 @@ function PVPArenaTeamsFrame_SelectButton(button)
 	end
 end
 
+function PVPArenaTeamsFrameButton_SetEnabled(button, enabled)
+	if ( enabled ) then
+		button.Background:SetTexCoord(0.00390625, 0.87890625, 0.75195313, 0.83007813);
+		button.TeamName:SetFontObject("GameFontNormalMed3");
+		button.TeamSize:SetFontObject("GameFontHighlightMedium");
+		button.Rating:SetFontObject("GameFontHighlight");
+	else
+		button.Background:SetTexCoord(0.00390625, 0.87890625, 0.67187500, 0.75000000);
+		button.TeamName:SetFontObject("GameFontDisableMed3");
+		button.TeamSize:SetFontObject("GameFontDisableMed3");
+		button.Rating:SetFontObject("GameFontDisable");
+	end
+	button:SetEnabled(enabled);
+end
+
 function PVPArenaTeamsFrame_UpdateTeams(self)
 	
 	local defaultButton = nil;
@@ -1535,12 +1559,12 @@ function PVPArenaTeamsFrame_UpdateTeams(self)
 	local background = {}; 
 	local emblemColor = {} ;
 	local borderColor = {}; 		
+	local inSeason = (GetCurrentArenaSeason() ~= NO_ARENA_SEASON);
 
 	for i=1, MAX_ARENA_TEAMS do
 		teamButton = self["Team"..i];
 		teamIndex = GetArenaTeamIndexBySize(CONQUEST_SIZES[i]);	
 		if (teamIndex) then
-			ArenaTeamRoster(teamIndex);
 			--the ammount of parameter this returns is absurd
 			teamName, teamSize, teamRating, _,  _,  _, _, _, _, _, _, 
 			background.r, background.g, background.b, 
@@ -1595,10 +1619,26 @@ function PVPArenaTeamsFrame_UpdateTeams(self)
 				teamButton.RatingLabel:SetPoint("BOTTOMRIGHT", teamButton, "BOTTOMRIGHT", -40, 10);
 			end
 		end
+		PVPArenaTeamsFrameButton_SetEnabled(teamButton, inSeason);
 	end
 	
-	if (not self.selectedButton and defaultButton) then
-		PVPArenaTeamsFrame_SelectButton(defaultButton);
+	if ( inSeason ) then
+		if ( not defaultButton ) then
+			-- no teams to select
+			ArenaTeamFrame.NoTeams:Show();
+			ArenaTeamFrame.NoTeams.Error:Show();
+			ArenaTeamFrame.NoTeams.Info:SetText(ARENA_INFO);
+		else
+			ArenaTeamFrame.NoTeams:Hide();
+			if (not self.selectedButton and defaultButton) then
+				PVPArenaTeamsFrame_SelectButton(defaultButton);
+			end
+		end
+	else
+		self.selectedButton = nil;
+		ArenaTeamFrame.NoTeams:Show();
+		ArenaTeamFrame.NoTeams.Error:Hide();
+		ArenaTeamFrame.NoTeams.Info:SetText(ARENA_MASTER_NO_SEASON_TEXT);
 	end
 end
 

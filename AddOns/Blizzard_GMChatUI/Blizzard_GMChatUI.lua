@@ -18,7 +18,7 @@ function GMChatFrame_OnLoad(self)
 		else
 			--error("Unhandled object type");
 		end
-		object:SetAlpha(0.4);
+		object:SetAlpha(0.6);
 	end
 	
 	self:RegisterEvent("CHAT_MSG_WHISPER");

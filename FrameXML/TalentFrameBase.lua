@@ -144,10 +144,12 @@ function TalentFrame_Update(TalentFrame, talentUnit)
 	if(TalentFrame.learnButton ~= nil) then
 		if ( numTalentSelections > 0 ) then
 			TalentFrame.learnButton:Enable();
-			UIFrameFlash(TalentFrame.learnButton.Flash, 0.7, 0.7, -1);
+			TalentFrame.learnButton.Flash:Show();
+			TalentFrame.learnButton.FlashAnim:Play();
 		else
 			TalentFrame.learnButton:Disable();
-			UIFrameFlashStop(TalentFrame.learnButton.Flash);
+			TalentFrame.learnButton.Flash:Hide();
+			TalentFrame.learnButton.FlashAnim:Stop();
 		end
 	end
 	if(TalentFrame.unspentText ~= nil) then

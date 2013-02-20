@@ -391,12 +391,11 @@
 						<Anchor point="BOTTOMLEFT" relativeKey="$parent.RatingLabel" relativePoint="BOTTOMRIGHT" x="-1" />
 					</Anchors>
 				</FontString>
-				<FontString parentKey="TeamName" inherits="GameFontHighlightMedium" justifyH="LEFT" justifyV="BOTTOM" nonspacewrap="true">
+				<FontString parentKey="TeamName" inherits="GameFontNormalMed3" justifyH="LEFT" justifyV="BOTTOM" nonspacewrap="true">
 					<Size x="140" y="40"/>
 					<Anchors>
 						<Anchor point="BOTTOMLEFT" relativeKey="$parent.TeamSize" relativePoint="TOPLEFT" y="10" />
 					</Anchors>
-					<Color r="1.0" g="0.82" b="0"/>
 				</FontString>
 			</Layer>
 		</Layers>
@@ -663,7 +662,7 @@
 				<Scripts>
 					<OnClick function="PVPUIFrame_TabOnClick"/>
 					<OnEnter>
-						if ( not self:IsEnabled() ) then
+						if ( not self:IsEnabled() and PanelTemplates_GetSelectedTab(PVPUIFrame) ~= self:GetID() ) then
 							GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
 							GameTooltip:SetText(string.format(PVP_CONQUEST_LOWLEVEL, ARENA_TEAMS), nil, nil, nil, 1, 1);
 						end
@@ -1228,6 +1227,28 @@
 									</OnLeave>
 								</Scripts>
 							</Button>
+							<Frame parentKey="NoSeason" inherits="GlowBoxTemplate" hidden="true" frameLevel="100" enableMouse="true">
+								<Anchors>
+									<Anchor point="TOPLEFT" x="2" y="-2"/>
+									<Anchor point="BOTTOMRIGHT" x="-2" y="4"/>
+								</Anchors>
+								<Layers>
+									<Layer level="OVERLAY" >
+										<FontString parentKey="Title" inherits="QuestTitleFontBlackShadow" text="PVP_TAB_CONQUEST"  justifyH="CENTER">
+											<Size x="280" y="0"/>
+											<Anchors>
+												<Anchor point="TOP" x="0" y="-125"/>
+											</Anchors>
+										</FontString>
+										<FontString parentKey="Info"  inherits="GameFontHighlight" text="ARENA_MASTER_NO_SEASON_TEXT"  justifyH="CENTER" justifyV="TOP">
+											<Size x="280" y="180"/>
+											<Anchors>
+												<Anchor point="TOP" relativeKey="$parent.Title" relativePoint="BOTTOM" x="0" y="-33"/>
+											</Anchors>
+										</FontString>
+									</Layer>
+								</Layers>
+							</Frame>
 							<Frame parentKey="ArenaInviteMenu" name="$parentArenaInviteMenu" inherits="UIDropDownMenuTemplate" enableMouse="true" />
 						</Frames>
 						<Scripts>
@@ -1789,14 +1810,6 @@
 			<OnShow function="PVPUIFrame_OnShow"/>
 			<OnHide function="PVPUIFrame_OnHide"/>
 			<OnEvent function="PVPUIFrame_OnEvent"/>
-			<OnShow>
-				UpdateMicroButtons();
-				PlaySound("igCharacterInfoOpen");
-			</OnShow>
-			<OnHide>
-				UpdateMicroButtons();
-				PlaySound("igCharacterInfoClose");
-			</OnHide>
 		</Scripts>
 	</Frame>
 	

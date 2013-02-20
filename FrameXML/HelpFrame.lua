@@ -651,6 +651,15 @@ function HelpOpenTicketButton_OnEvent(self, event, ...)
 	end
 end
 
+function HelpOpenTicketButton_Update()
+	local self = HelpOpenTicketButton;
+	if ( self.haveTicket or TicketStatusFrame.hasGMSurvey ) then
+		self:Show();
+	else
+		self:Hide();
+	end
+end
+
 --
 -- TicketStatusFrame
 --

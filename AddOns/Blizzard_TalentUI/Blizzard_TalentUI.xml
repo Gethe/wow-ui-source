@@ -599,7 +599,7 @@
 				</Scripts>
 				<Animations>
 					<AnimationGroup parentKey="FlashAnim" looping="BOUNCE">
-						<Alpha targetkey="$parent.Flash" change="-0.75" duration="1.0" smoothing="IN_OUT" order="1"/>
+						<Alpha targetkey="$parent.$parent.Flash" change="-0.75" duration="1.0" smoothing="IN_OUT" order="1"/>
 					</AnimationGroup>
 				</Animations>
 			</Button>
@@ -997,7 +997,7 @@
 				</Anchors>
 				<Layers>
 					<Layer level="OVERLAY">
-						<Texture name="bb" file="Interface\Buttons\UI-Panel-Button-Glow" alphaMode="ADD" parentKey="Flash" hidden="true">
+						<Texture name="$parentFlash" file="Interface\Buttons\UI-Panel-Button-Glow" alphaMode="ADD" parentKey="Flash" hidden="true">
 							<Size x="150" y="60"/>
 							<Anchors>
 								<Anchor point="TOPLEFT" x="-7" y="7"/>
@@ -1016,6 +1016,11 @@
 						end
 					</OnClick>
 				</Scripts>
+				<Animations>
+					<AnimationGroup parentKey="FlashAnim" looping="BOUNCE">
+						<Alpha targetkey="$parent.$parent.Flash" change="-0.75" duration="1.0" smoothing="IN_OUT" order="1"/>
+					</AnimationGroup>
+				</Animations>
 			</Button>
 			<Button name="$parentClearInfoFrame" parentKey="clearInfo">
 				<Size x="20" y="20"/> 
