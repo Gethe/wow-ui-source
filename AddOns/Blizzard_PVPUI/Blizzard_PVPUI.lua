@@ -353,6 +353,7 @@ function HonorFrame_OnLoad(self)
 	local _, minLevel;
 	_, _, _, _, _, _, _, MIN_BONUS_HONOR_LEVEL = GetRandomBGInfo();
 	_, _, _, _, _, _, _, _, minLevel = GetHolidayBGInfo();
+	minLevel = minLevel and minLevel or MIN_BONUS_HONOR_LEVEL;
 	MIN_BONUS_HONOR_LEVEL = min(MIN_BONUS_HONOR_LEVEL, minLevel);
 
 	UIDropDownMenu_SetWidth(HonorFrameTypeDropDown, 160);
