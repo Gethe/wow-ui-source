@@ -60,6 +60,7 @@ function MonkHarmonyBar_OnLoad (self)
 	self:RegisterEvent("PLAYER_ENTERING_WORLD");
 	self:RegisterEvent("UNIT_DISPLAYPOWER");
 	self:RegisterUnitEvent("UNIT_POWER_FREQUENT", "player");
+	self:RegisterUnitEvent("UNIT_MAXPOWER", "player");
 end
 
 
