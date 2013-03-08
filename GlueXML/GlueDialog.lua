@@ -517,7 +517,7 @@ GlueDialogTypes["REALM_TOURNAMENT_WARNING"] = {
 	end,
 }
 
-function GlueDialog_Show(which, text, data)
+function GlueDialog_Show(which, text, data, errorNumber)
 	local dialogInfo = GlueDialogTypes[which];
 	-- Pick a free dialog to use
 	if ( GlueDialog:IsShown() ) then
@@ -549,6 +549,20 @@ function GlueDialog_Show(which, text, data)
 		glueText:SetText(dialogInfo.text);
 	end
 
+	-- set the optional title
+	local showTitle = false;
+	if ( errorNumber and errorNumber > 0 ) then
+		showTitle = true;
+		GlueDialogTitle:SetFormattedText(BNET_ERROR_CODE_TITLE, errorNumber);
+		GlueDialogTitle:Show();
+		glueText:ClearAllPoints();
+		glueText:SetPoint("TOP", GlueDialogTitle, "BOTTOM", 0, -16);
+	else
+		GlueDialogTitle:Hide();
+		glueText:ClearAllPoints();
+		glueText:SetPoint("TOP", 0, -16);
+	end
+	
 	-- Set the buttons of the dialog
 	if ( dialogInfo.button3 ) then
 		GlueDialogButton1:ClearAllPoints();
@@ -636,6 +650,10 @@ function GlueDialog_Show(which, text, data)
 	else
 		textHeight = GlueDialogText:GetHeight();
 	end
+	
+	if ( showTitle ) then
+		textHeight = textHeight + GlueDialogTitle:GetHeight() + 16;
+	end
 
 	-- now size the dialog box height
 	if ( dialogInfo.hasEditBox ) then
@@ -690,9 +708,9 @@ function GlueDialog_OnUpdate(self, elapsed)
 	end
 end
 
-function GlueDialog_OnEvent(self, event, arg1, arg2, arg3)
+function GlueDialog_OnEvent(self, event, arg1, arg2, arg3, arg4)
 	if ( event == "OPEN_STATUS_DIALOG" ) then
-		GlueDialog_Show(arg1, arg2, arg3);
+		GlueDialog_Show(arg1, arg2, arg3, arg4);
 	elseif ( event == "UPDATE_STATUS_DIALOG" and arg1 and (strlen(arg1) > 0) ) then
 		GlueDialogText:SetText(arg1);
 		local buttonText = nil;

@@ -590,7 +590,7 @@ function CharacterCreate_Finish()
 	else
 		-- if using templates, pandaren must pick a faction
 		local _, faction = GetFactionForRace(CharacterCreate.selectedRace);
-		if ( IsUsingCharacterTemplate() and ( faction ~= "Alliance" and faction ~= "Horde" ) ) then
+		if ( ( IsUsingCharacterTemplate() or IsForcingCharacterTemplate() ) and ( faction ~= "Alliance" and faction ~= "Horde" ) ) then
 			CharacterTemplateConfirmDialog:Show();
 		else
 			CreateCharacter(CharacterCreateNameEdit:GetText());
@@ -985,18 +985,17 @@ function CharCreate_PrepPreviewModels(reloadModels)
 	displayFrame.rebuildPreviews = nil;
 
 	-- need to reload models class was swapped to or from DK
-	local classSwap = false;
 	local _, class = GetSelectedClass();
 	if ( class == "DEATHKNIGHT" or displayFrame.lastClass == "DEATHKNIGHT" ) and ( class ~= displayFrame.lastClass ) then 
-		classSwap = true;
+		reloadModels = true;
 	end
 	displayFrame.lastClass = class;
 
 	-- always clear the featureType
 	for index, previewFrame in pairs(displayFrame.previews) do
 		previewFrame.featureType = 0;
-		-- force model reload if class changed
-		if ( reloadModels or classSwap ) then
+		-- force model reload in some cases
+		if ( reloadModels or rebuildPreviews ) then
 			previewFrame.race = nil;
 			previewFrame.gender = nil;
 		end
@@ -1249,7 +1248,7 @@ function PandarenFactionButtons_Show()
 	-- set the texture
 	PandarenFactionButtons_SetTextures();
 	-- set selected button
-	local faction = PaidChange_GetCurrentFaction();
+	local _, faction = PaidChange_GetCurrentFaction();
 	-- deselect first in case of multiple pandaren faction changes
 	PandarenFactionButtons_ClearSelection();
 	frame[faction.."Button"]:SetChecked(1);

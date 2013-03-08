@@ -172,4 +172,72 @@
 			</OnMouseWheel>
 		</Scripts>
 	</ScrollFrame>
+	<Frame name="SoftBlackBGTemplate" virtual="true">
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="TopLeftBG" file="Interface\Glues\Login\login-bg-corner">
+					<Size x="32" y="32"/>
+					<Anchors>
+						<Anchor point="TOPLEFT"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="TopRightBG" file="Interface\Glues\Login\login-bg-corner">
+					<Size x="32" y="32"/>
+					<Anchors>
+						<Anchor point="TOPRIGHT"/>
+					</Anchors>
+					<TexCoords left="1" right="0" top="0" bottom="1"/>
+				</Texture>
+				<Texture parentKey="BottomLeftBG" file="Interface\Glues\Login\login-bg-corner">
+					<Size x="32" y="32"/>
+					<Anchors>
+						<Anchor point="BOTTOMLEFT"/>
+					</Anchors>
+					<TexCoords left="0" right="1" top="1" bottom="0"/>
+				</Texture>
+				<Texture parentKey="BottomRightBG" file="Interface\Glues\Login\login-bg-corner">
+					<Size x="32" y="32"/>
+					<Anchors>
+						<Anchor point="BOTTOMRIGHT"/>
+					</Anchors>
+					<TexCoords left="1" right="0" top="1" bottom="0"/>
+				</Texture>
+				<Texture parentKey="TopBG" file="Interface\Glues\Login\login-bg-corner">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.TopLeftBG" relativePoint="TOPRIGHT"/>
+						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.TopRightBG" relativePoint="BOTTOMLEFT"/>
+					</Anchors>
+					<TexCoords left="0.5" right="1" top="0" bottom="1"/>
+				</Texture>
+				<Texture parentKey="BottomBG" file="Interface\Glues\Login\login-bg-corner">
+					<Anchors>
+						<Anchor point="BOTTOMLEFT" relativeKey="$parent.BottomLeftBG" relativePoint="BOTTOMRIGHT"/>
+						<Anchor point="TOPRIGHT" relativeKey="$parent.BottomRightBG" relativePoint="TOPLEFT"/>
+					</Anchors>
+					<TexCoords left="0.5" right="1" top="1" bottom="0"/>
+				</Texture>
+				<Texture parentKey="LeftBG" file="Interface\Glues\Login\login-bg-corner">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.TopLeftBG" relativePoint="BOTTOMLEFT"/>
+						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.BottomLeftBG" relativePoint="TOPRIGHT"/>
+					</Anchors>
+					<TexCoords left="0" right="1" top="0.5" bottom="1"/>
+				</Texture>
+				<Texture parentKey="RightBG" file="Interface\Glues\Login\login-bg-corner">
+					<Anchors>
+						<Anchor point="TOPRIGHT" relativeKey="$parent.TopRightBG" relativePoint="BOTTOMRIGHT"/>
+						<Anchor point="BOTTOMLEFT" relativeKey="$parent.BottomRightBG" relativePoint="TOPLEFT"/>
+					</Anchors>
+					<TexCoords left="1" right="0" top="0.5" bottom="1"/>
+				</Texture>
+				<Texture parentKey="CenterBG" file="Interface\Glues\Login\login-bg-corner">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.TopLeftBG" relativePoint="BOTTOMRIGHT"/>
+						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.BottomRightBG" relativePoint="TOPLEFT"/>
+					</Anchors>
+					<TexCoords left="0.5" right="1" top="0.5" bottom="1"/>
+				</Texture>
+			</Layer>
+		</Layers>
+	</Frame>
 </Ui>
