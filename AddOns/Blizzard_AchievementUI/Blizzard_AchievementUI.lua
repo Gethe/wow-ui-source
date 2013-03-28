@@ -1992,19 +1992,28 @@ function AchievementFrameStats_Update ()
 	
 	local totalHeight = statCount * statHeight;
 	local displayedHeight = numButtons * statHeight;
+	local buttonIndex = 1;
 	for i = 1, numButtons do
-		button = buttons[i];
+		button = buttons[buttonIndex];
 		statIndex = offset + i;
+		local skip = false;
 		if ( statIndex <= statCount ) then
 			stat = displayStatCategories[statIndex];
 			if ( stat.header ) then
 				AchievementFrameStats_SetHeader(button, stat.id);
 			else
-				AchievementFrameStats_SetStat(button, stat.id, nil, statIndex);
+				skip = AchievementFrameStats_SetStat(button, stat.id, nil, statIndex)
 			end
-			button:Show();
+			if ( skip ) then
+				button:Hide();
+			else
+				button:Show();
+			end
 		else
 			button:Hide();
+		end
+		if ( not skip ) then
+			buttonIndex = buttonIndex + 1;
 		end
 	end
 	HybridScrollFrame_Update(scrollFrame, totalHeight, displayedHeight);
@@ -2060,7 +2069,10 @@ function AchievementFrameStats_SetStat(button, category, index, colorIndex, isSu
 	-- Just show the first criteria for now
 	local criteriaString, criteriaType, completed, quantityNumber, reqQuantity, charName, flags, assetID, quantity;
 	if ( not isSummary ) then
-		quantity = GetStatistic(id);
+		quantity, skip = GetStatistic(id);
+		if ( skip ) then
+			return true;
+		end
 	else
 		criteriaString, criteriaType, completed, quantityNumber, reqQuantity, charName, flags, assetID, quantity = GetAchievementCriteriaInfo(category);
 	end

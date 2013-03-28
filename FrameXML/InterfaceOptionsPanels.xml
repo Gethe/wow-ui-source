@@ -505,7 +505,7 @@
 			</CheckButton>
 			<Frame name="$parentEnemyCastBars">
 				<Size>
-					<AbsDimension x="100" y="75"/>
+					<AbsDimension x="100" y="120"/>
 				</Size>
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeTo="$parentAttackOnAssist" relativePoint="TOPRIGHT">
@@ -561,6 +561,40 @@
 							</OnLoad>
 						</Scripts>
 					</CheckButton>						
+					<CheckButton name="$parentOnOnlyTargetNameplates" inherits="InterfaceOptionsSmallCheckButtonTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="$parentOnNameplates" relativePoint="BOTTOMLEFT">
+								<Offset>
+									<AbsDimension x="16" y="-2"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnLoad>
+								self.type = CONTROLTYPE_CHECKBOX;
+								self.cvar = "showVKeyCastbarOnlyOnTarget";
+								BlizzardOptionsPanel_RegisterControl(self, self:GetParent():GetParent());
+								BlizzardOptionsPanel_SetupDependentControl(_G[self:GetParent():GetName().."OnNameplates"], self);
+							</OnLoad>
+						</Scripts>
+					</CheckButton>
+					<CheckButton name="$parentNameplateSpellNames" inherits="InterfaceOptionsSmallCheckButtonTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="$parentOnOnlyTargetNameplates" relativePoint="BOTTOMLEFT">
+								<Offset>
+									<AbsDimension x="0" y="-2"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnLoad>
+								self.type = CONTROLTYPE_CHECKBOX;
+								self.cvar = "showVKeyCastbarSpellName";
+								BlizzardOptionsPanel_RegisterControl(self, self:GetParent():GetParent());
+								BlizzardOptionsPanel_SetupDependentControl(_G[self:GetParent():GetName().."OnNameplates"], self);
+							</OnLoad>
+						</Scripts>
+					</CheckButton>
 				</Frames>
 			</Frame>
 			<Frame name="$parentFocusCastKeyDropDown" inherits="UIDropDownMenuTemplate" enableMouse="true">

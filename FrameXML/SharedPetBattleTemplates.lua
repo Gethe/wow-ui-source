@@ -33,6 +33,7 @@ function DEFAULT_PET_BATTLE_ABILITY_INFO:GetAttackStat(target) return 0 end
 function DEFAULT_PET_BATTLE_ABILITY_INFO:GetSpeedStat(target) return 0 end
 function DEFAULT_PET_BATTLE_ABILITY_INFO:GetState(stateID, target) return 0 end
 function DEFAULT_PET_BATTLE_ABILITY_INFO:GetWeatherState(stateID) return 0 end
+function DEFAULT_PET_BATTLE_ABILITY_INFO:GetPadState(stateID) return 0 end
 function DEFAULT_PET_BATTLE_ABILITY_INFO:GetPetOwner(taget) return LE_BATTLE_PET_ALLY end
 function DEFAULT_PET_BATTLE_ABILITY_INFO:HasAura(auraID, target) return false end
 function DEFAULT_PET_BATTLE_ABILITY_INFO:GetPetType(target) if ( self:IsInBattle() ) then error("UI: Unimplemented Function"); else return nil end end
@@ -400,13 +401,13 @@ do
 
 		if ( multi > 1 ) then 
 			output = GREEN_FONT_COLOR_CODE..math.floor(baseDamage * multi)..FONT_COLOR_CODE_CLOSE;
-			if (ENABLE_COLORBLIND_MODE == "1") then
+			if ( ENABLE_COLORBLIND_MODE == "1" ) then
 				output = output.."|Tinterface\\petbattles\\battlebar-abilitybadge-strong-small:0|t";
 			end
 			return output;
 		elseif ( multi < 1 ) then 
 			output = RED_FONT_COLOR_CODE..math.floor(baseDamage * multi)..FONT_COLOR_CODE_CLOSE;
-			if (ENABLE_COLORBLIND_MODE == "1") then
+			if ( ENABLE_COLORBLIND_MODE == "1" ) then
 				output = output.."|Tinterface\\petbattles\\battlebar-abilitybadge-weak-small:0|t";
 			end
 			return output;
@@ -453,6 +454,26 @@ do
 			return parserEnv.unitState(stateID, target) + parserEnv.padState(stateID, target) + parserEnv.weatherState(stateID);
 		end
 	end;
+	parserEnv.AccuracyBonus = function(...) return parserEnv.SumStates(parserEnv.STATE_Stat_Accuracy) end
+	parserEnv.SimpleAccuracy = function(...) return parserEnv.accuracy(...) + parserEnv.AccuracyBonus() end
+	parserEnv.StandardAccuracy = function(...)
+		local accuracyBonus = parserEnv.AccuracyBonus(...);
+		local output = string.format("%d%%", math.floor(parserEnv.SimpleAccuracy(...)));
+		if ( accuracyBonus > 0 ) then
+			if ( ENABLE_COLORBLIND_MODE == "1" ) then
+				output = output.."(+)";
+			end
+			output = GREEN_FONT_COLOR_CODE..output..FONT_COLOR_CODE_CLOSE;
+		elseif ( accuracyBonus < 0 ) then
+			if ( ENABLE_COLORBLIND_MODE == "1" ) then
+				output = output.."(-)";
+			end
+			output = RED_FONT_COLOR_CODE..output..FONT_COLOR_CODE_CLOSE;
+		else
+			output = HIGHLIGHT_FONT_COLOR_CODE..output..FONT_COLOR_CODE_CLOSE;
+		end
+		return output;
+	end
 
 
 	--Attack aliases

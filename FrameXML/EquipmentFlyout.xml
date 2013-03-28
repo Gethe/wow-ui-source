@@ -69,6 +69,67 @@
 					</OnLoad>
 				</Scripts>
 			</Frame>
+			<Frame parentKey="NavigationFrame" frameStrata="HIGH">
+				<Size x="214" y="41"/>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.buttonFrame" relativePoint="BOTTOMLEFT" x="-5" y="0"/>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<Texture name="Test2" file="Interface\PaperDollInfoFrame\UI-GearManager-Flyout" setAllPoints="true">
+							<TexCoords left="0" right="0.8359375" top="0.7890625" bottom="0.94921875"/>
+						</Texture>
+					</Layer>
+					<Layer level="ARTWORK">
+						<FontString inherits="GameFontHighlightSmall" text="PREVIOUS">
+							<Anchors>
+								<Anchor point="LEFT" x="36" y="1"/>
+							</Anchors>
+						</FontString>
+						<FontString inherits="GameFontHighlightSmall" text="NEXT">
+							<Anchors>
+								<Anchor point="RIGHT" x="-33" y="1"/>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+				<Frames>
+					<Button parentKey="PrevButton">
+						<Size>
+							<AbsDimension x="32" y="32"/>
+						</Size>
+						<Anchors>
+							<Anchor point="LEFT" x="6" y="1"/>
+						</Anchors>
+						<Scripts>
+							<OnClick>
+								EquipmentFlyout_ChangePage(-1);
+							</OnClick>
+						</Scripts>
+						<NormalTexture file="Interface\Buttons\UI-SpellbookIcon-PrevPage-Up"/>
+						<PushedTexture file="Interface\Buttons\UI-SpellbookIcon-PrevPage-Down"/>
+						<DisabledTexture file="Interface\Buttons\UI-SpellbookIcon-PrevPage-Disabled"/>
+						<HighlightTexture file="Interface\Buttons\UI-Common-MouseHilight" alphaMode="ADD"/>
+					</Button>
+					<Button parentKey="NextButton">
+						<Size>
+							<AbsDimension x="32" y="32"/>
+						</Size>
+						<Anchors>
+							<Anchor point="RIGHT" x="-3" y="1"/>
+						</Anchors>
+						<Scripts>
+							<OnClick>
+								EquipmentFlyout_ChangePage(1);
+							</OnClick>
+						</Scripts>
+						<NormalTexture file="Interface\Buttons\UI-SpellbookIcon-NextPage-Up"/>
+						<PushedTexture file="Interface\Buttons\UI-SpellbookIcon-NextPage-Down"/>
+						<DisabledTexture file="Interface\Buttons\UI-SpellbookIcon-NextPage-Disabled"/>
+						<HighlightTexture file="Interface\Buttons\UI-Common-MouseHilight" alphaMode="ADD"/>
+					</Button>
+				</Frames>
+			</Frame>
 		</Frames>
 		<Scripts>
 			<OnLoad function="EquipmentFlyout_OnLoad"/>

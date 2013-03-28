@@ -185,6 +185,8 @@ function CharacterSelect_OnShow()
 	
 	-- character templates
 	CharacterTemplatesFrame_Update();
+	
+	PlayersOnServer_Update();
 
 	PromotionFrame_AwaitingPromotion();
 end
@@ -272,7 +274,11 @@ end
 
 function CharacterSelect_OnKeyDown(self,key)
 	if ( key == "ESCAPE" ) then
-		CharacterSelect_Exit();
+		if ( IsLauncherLogin() ) then
+			GlueMenuFrame:SetShown(not GlueMenuFrame:IsShown());
+		else
+			CharacterSelect_Exit();
+		end
 	elseif ( key == "ENTER" ) then
 		CharacterSelect_EnterWorld();
 	elseif ( key == "PRINTSCREEN" ) then
@@ -996,4 +1002,33 @@ end
 
 function CharacterTemplatesFrameDropDown_OnClick(button)
 	GlueDropDownMenu_SetSelectedID(CharacterTemplatesFrameDropDown, button:GetID());
+end
+
+function PlayersOnServer_Update()
+	local self = PlayersOnServer;
+	local connected = IsConnectedToServer();
+	if (not connected) then
+		self:Hide();
+		return;
+	end
+	
+	local showPlayers, numHorde, numAlliance = GetPlayersOnServer();
+	if showPlayers then
+		if not self:IsShown() then
+			self:Show();
+		end
+		self.HordeCount:SetText(numHorde);
+		self.AllianceCount:SetText(numAlliance);
+		self.HordeStar:SetShown(numHorde < numAlliance);
+		self.AllianceStar:SetShown(numAlliance < numHorde);
+	else
+		self:Hide();
+	end
+end
+
+function CharacterSelect_ActivateFactionChange()
+	if IsConnectedToServer() then
+		EnableChangeFaction();
+		GetCharacterListUpdate();
+	end
 end

@@ -102,6 +102,7 @@ function NavBar_AddButton(self, buttonData)
 	
 	navButton.myclick = buttonData.OnClick;
 	navButton.listFunc = buttonData.listFunc;
+	navButton.id = buttonData.id;
 	navButton.data = buttonData;
 	
 	navButton:Show();
@@ -119,6 +120,22 @@ function NavBar_ClearTrailingButtons(list, freeList, button)
 		list[index] = nil;
 	end
 	NavBar_CheckLength(button:GetParent());
+end
+
+function NavBar_OpenTo(self, id)
+	local button;
+	local found = false;
+	for i=1, #self.navList do
+		button = self.navList[i];
+		if (button.id and button.id == id) then
+			found = true;
+			break;
+		end
+	end
+	
+	if (found) then
+		NavBar_ClearTrailingButtons(self.navList, self.freeButtons, button)
+	end
 end
 
 function NavBar_ButtonOnClick(self, button)

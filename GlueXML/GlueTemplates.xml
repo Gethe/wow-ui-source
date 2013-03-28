@@ -240,4 +240,21 @@
 			</Layer>
 		</Layers>
 	</Frame>
+	<Frame name="GlueModalFrameTemplate" virtual="true">
+		<Frames>
+			<Frame parentKey="ModalBackground" useParentLevel="true" enableMouse="true">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="GlueParent"/>
+					<Anchor point="BOTTOMRIGHT" relativeTo="GlueParent"/>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND" textureSubLevel="-10">
+						<Texture setAllPoints="true">
+							<Color a="0.75" r="0" g="0" b="0"/>
+						</Texture>
+					</Layer>
+				</Layers>
+			</Frame>
+		</Frames>
+	</Frame>
 </Ui>

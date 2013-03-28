@@ -141,7 +141,7 @@ function ScenarioQueueFrameRandom_UpdateFrame()
 	if ( type(dungeonID) ~= "number" ) then	--We haven't gotten info on available dungeons yet.
 		return;
 	end
-	LFGRewardsFrame_UpdateFrame(ScenarioQueueFrame.Random.ScrollFrame.Child, dungeonID, nil);
+	LFGRewardsFrame_UpdateFrame(ScenarioQueueFrame.Random.ScrollFrame.Child, dungeonID, ScenarioQueueFrame.Bg);
 end
 
 function ScenarioQueueFrameRandomRandomList_OnEnter(self)
@@ -295,7 +295,6 @@ end
 
 function ScenarioQueueFrame_SetTypeRandom()
 	local queueFrame = ScenarioQueueFrame;
-	queueFrame.Bg:SetTexture("Interface\\LFGFrame\\UI-LFG-SCENARIO-Random");
 	queueFrame.Bg:SetHeight(512);
 	queueFrame.Specific:Hide();
 	queueFrame.Random:Show();

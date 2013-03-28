@@ -102,11 +102,15 @@ end
 
 function AccountLogin_OnKeyDown(key)
 	if ( key == "ESCAPE" ) then
-		if ( ConnectionHelpFrame:IsShown() ) then
+		if ( IsLauncherLogin() and GlueMenuFrame:IsShown() ) then
+			GlueMenuFrame_Hide();
+		elseif ( ConnectionHelpFrame:IsShown() ) then
 			ConnectionHelpFrame:Hide();
 			AccountLoginUI:Show();
 		elseif ( SurveyNotificationFrame:IsShown() ) then
 			-- do nothing
+		elseif ( IsLauncherLogin() and not GlueMenuFrame:IsShown() ) then
+			GlueMenuFrame_Show();
 		else
 			AccountLogin_Exit();
 		end
@@ -150,6 +154,7 @@ function AccountLogin_OnEvent(event, arg1, arg2, arg3)
 		if ( arg1 == "OK" ) then
 			GlueDialog:Hide();
 			AccountLoginUI:Show();
+			AccountLogin_CheckAutoLogin();
 		else
 			AccountLogin.hackURL = _G["SCANDLL_URL_"..arg1];
 			AccountLogin.hackName = arg2;
@@ -168,6 +173,13 @@ function AccountLogin_OnEvent(event, arg1, arg2, arg3)
 		end
 	elseif ( event == "LAUNCHER_LOGIN_STATUS_CHANGED" ) then
 		AccountLogin_UpdateLoginType();
+	end
+end
+
+function AccountLogin_CheckAutoLogin()
+	if ( CanLogIn() and not SHOW_KOREAN_RATINGS and IsLauncherLogin() and not IsLauncherLoginAutoAttempted() ) then
+		SetLauncherLoginAutoAttempted();
+		AttemptFastLogin();
 	end
 end
 
@@ -211,7 +223,7 @@ function AccountLogin_Credits()
 	CreditsFrame.creditsType = GetClientDisplayExpansionLevel() + 1;	--Expansion levels are off by one from credits indices.
 	CreditsFrame.maxCreditsType = GetClientDisplayExpansionLevel() + 1;
 	PlaySound("gsTitleCredits");
-	SetGlueScreen("credits");
+	CreditsFrame_Show(CreditsFrame, GetCurrentGlueScreenName());
 	CinematicsFrame:Hide();
 end
 
@@ -221,8 +233,9 @@ function AccountLogin_Cinematics()
 		if ( CinematicsFrame.numMovies > 1 ) then
 			CinematicsFrame:Show();
 		else
+			--Probably never called anymore, but...
 			MovieFrame.version = 1;
-			SetGlueScreen("movie");
+			MovieFrame_Show(MovieFrame, GetCurrentGlueScreenName());
 		end
 	end
 end
@@ -360,7 +373,7 @@ function AccountLogin_UpdateAcceptButton(scrollFrame, isAcceptedFunc, noticeType
 			TOSAccept:Disable();
 		end
 	end
-end																
+end
 
 function AccountLogin_UpdateLoginType()
 	if ( IsLauncherLogin() ) then
@@ -376,9 +389,27 @@ function AccountLogin_UpdateLoginType()
 			AccountLoginLauncherPlayButton:SetPoint("BOTTOM", AccountLoginLauncherLogoutButton, "TOP", 0, 10);
 			AccountLoginLauncherLogoutButton:SetPoint("BOTTOM", AccountLoginLauncherLoginFrame, "BOTTOM", 0, 170);
 		end
+
+		AccountLoginTOSButton:Hide();
+		AccountLoginCreditsButton:Hide();
+		AccountLoginCinematicsButton:Hide();
+		AccountLoginCreateAccountButton:Hide();
+		AccountLoginManageAccountButton:Hide();
+		AccountLoginCommunityButton:Hide();
+		OptionsButton:Hide();
+		GlueMenuButton:Show();
 	else
 		AccountLoginNormalLoginFrame:Show();
 		AccountLoginLauncherLoginFrame:Hide();
+
+		AccountLoginTOSButton:Show();
+		AccountLoginCreditsButton:Show();
+		AccountLoginCinematicsButton:Show();
+		AccountLoginCreateAccountButton:Show();
+		AccountLoginManageAccountButton:Show();
+		AccountLoginCommunityButton:Show();
+		OptionsButton:Show();
+		GlueMenuButton:Hide();
 	end
 end
 
@@ -923,7 +954,7 @@ function CinematicsButton_OnClick(self)
 		PlaySound("gsTitleOptionOK");
 		MovieFrame.version = self:GetID();
 		MovieFrame.showError = true;
-		SetGlueScreen("movie");
+		MovieFrame_Show(MovieFrame, GetCurrentGlueScreenName());
 	else
 		local inProgress, downloaded, total = CinematicsFrame_GetMovieDownloadProgress(self:GetID());
 		if (inProgress) then
@@ -974,20 +1005,17 @@ function KoreanRatings_OnShow(self)
 	AccountLoginUI:Hide();
 	KOREAN_RATINGS_TIMER = 3 + LOGIN_FADE_IN;
 	self.locked = true;
-	KoreanRatingsOK:Disable();
 	KoreanRatingsText:SetTextHeight(10); -- this is just dumb ... sort out this bug later.
 	KoreanRatingsText:SetTextHeight(50);
 end
 function KoreanRatings_OnUpdate(self, elapsed)
 	KOREAN_RATINGS_TIMER = KOREAN_RATINGS_TIMER - elapsed;
 	if ( KOREAN_RATINGS_TIMER <= 0 ) then
-		self.locked = false;
-			KoreanRatingsOK:Enable();
+		KoreanRatings_Close(self);
 	end	
 end
-function KoreanRatings_UserInput(self)
-	if ( not self.locked ) then
-		SHOW_KOREAN_RATINGS = false;
-		AccountLogin_ShowUserAgreements();
-	end
+function KoreanRatings_Close(self)
+	SHOW_KOREAN_RATINGS = false;
+	AccountLogin_CheckAutoLogin();
+	AccountLogin_ShowUserAgreements();
 end

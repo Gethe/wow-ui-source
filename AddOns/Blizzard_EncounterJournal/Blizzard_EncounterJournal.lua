@@ -79,7 +79,6 @@ function EncounterJournal_OnLoad(self)
 	EncounterJournalTitleText:SetText(ENCOUNTER_JOURNAL);
 	SetPortraitToTexture(EncounterJournalPortrait,"Interface\\EncounterJournal\\UI-EJ-PortraitIcon");
 	self:RegisterEvent("EJ_LOOT_DATA_RECIEVED");
-	self:RegisterEvent("UNIT_PORTRAIT_UPDATE");
 	self:RegisterEvent("EJ_DIFFICULTY_UPDATE");
 	
 	self.encounter.freeHeaders = {};
@@ -87,6 +86,9 @@ function EncounterJournal_OnLoad(self)
 	
 	self.encounter.infoFrame = self.encounter.info.detailsScroll.child;
 	self.encounter.info.detailsScroll.ScrollBar.scrollStep = 30;	
+	
+	self.encounter.bossesFrame = self.encounter.info.bossesScroll.child;
+	self.encounter.info.bossesScroll.ScrollBar.scrollStep = 30;	
 	
 	self.encounter.info.bossTab:Click();
 	
@@ -159,10 +161,6 @@ function EncounterJournal_OnShow(self)
 			end	
 		end
 		EJ_SetDifficulty(difficultyIndex or EJ_DIFF_5MAN);
-	elseif ( EncounterJournal.queuedPortraitUpdate ) then
-		-- fixes portraits when switching between fullscreen and windowed mode
-		EncounterJournal_UpdatePortraits();
-		EncounterJournal.queuedPortraitUpdate = false;
 	end
 
 	local tierData = EJ_TIER_DATA[EJ_GetCurrentTier()];
@@ -206,38 +204,10 @@ function EncounterJournal_OnEvent(self, event, ...)
 				break;
 			end
 		end
-	elseif event == "UNIT_PORTRAIT_UPDATE" then
-		local unit = ...;
-		if not unit then
-			EncounterJournal_UpdatePortraits();
-		end
 	end
 end
 
-
-function EncounterJournal_UpdatePortraits()
-	if ( EncounterJournal:IsShown() ) then
-		local self = EncounterJournal.encounter;
-		for i = 1, MAX_CREATURES_PER_ENCOUNTER do
-			local button = self["creatureButton"..i];
-			if ( button and button:IsShown() ) then
-				SetPortraitTexture(button.creature, button.displayInfo);
-			else
-				break;
-			end
-		end
-		local usedHeaders = EncounterJournal.encounter.usedHeaders;
-		for _, header in pairs(usedHeaders) do
-			if ( header.button.portrait.displayInfo ) then
-				SetPortraitTexture(header.button.portrait.icon, header.button.portrait.displayInfo);
-			end
-		end
-	else
-		EncounterJournal.queuedPortraitUpdate = true;
-	end
-end
-
-local infinateLoopPolice = false; --design migh make a tier that has no instances at all sigh
+local infiniteLoopPolice = false; --design migh make a tier that has no instances at all sigh
 function EncounterJournal_ListInstances()
 	local tierName = EJ_GetTierInfo(EJ_GetCurrentTier());
 	EncounterJournal.instanceSelect.tier:SetText(tierName);
@@ -253,16 +223,16 @@ function EncounterJournal_ListInstances()
 	local instanceButton;
 	
 	--No instances in this tab
-	if not instanceID and not infinateLoopPolice then
+	if not instanceID and not infiniteLoopPolice then
 		--disable this tab and select the other one.
 		local nextTab = mod(EncounterJournal.instanceSelect.currTab, 2) + 1;
 		EncounterJournal.instanceSelect.tabs[EncounterJournal.instanceSelect.currTab].grayBox:Show();
 		EncounterJournal.instanceSelect.tabs[nextTab]:Click();
-		infinateLoopPolice = true;
+		infiniteLoopPolice = true;
 		EncounterJournal_ListInstances()
 		return;
 	end
-	infinateLoopPolice = false;
+	infiniteLoopPolice = false;
 	
 	while instanceID do
 		instanceButton = self["instance"..index];
@@ -313,7 +283,6 @@ end
 
 function EncounterJournal_DisplayInstance(instanceID, noButton)
 	local self = EncounterJournal.encounter;
-	EncounterJournal.encounter.model:Hide();
 	EncounterJournal.instanceSelect:Hide();
 	EncounterJournal.encounter:Show();
 	EncounterJournal.ceatureDisplayID = 0;
@@ -327,7 +296,7 @@ function EncounterJournal_DisplayInstance(instanceID, noButton)
 	local iname, description, bgImage, _, loreImage = EJ_GetInstanceInfo();
 	self.instance.title:SetText(iname);
 	self.instance.loreBG:SetTexture(loreImage);
-	self.info.encounterTitle:SetText(iname);
+	self.info.instanceTitle:SetText(iname);
 	
 	self.instance.loreScroll.child.lore:SetText(description);
 	local loreHeight = self.instance.loreScroll.child.lore:GetHeight();
@@ -338,8 +307,75 @@ function EncounterJournal_DisplayInstance(instanceID, noButton)
 		self.instance.loreScroll.ScrollBar:Show();
 	end
 	
-	self.info.dungeonBG:SetTexture(bgImage);
-	self.info.dungeonBG:Hide();
+	local bossIndex = 1;
+	local name, description, bossID, _, link = EJ_GetEncounterInfoByIndex(bossIndex);
+	local bossButton;
+	while bossID do
+		bossButton = _G["EncounterJournalBossButton"..bossIndex];
+		if not bossButton then -- create a new header;
+			bossButton = CreateFrame("BUTTON", "EncounterJournalBossButton"..bossIndex, EncounterJournal.encounter.bossesFrame, "EncounterBossButtonTemplate");
+			if bossIndex > 1 then
+				bossButton:SetPoint("TOPLEFT", _G["EncounterJournalBossButton"..(bossIndex-1)], "BOTTOMLEFT", 0, -15);
+			else
+				bossButton:SetPoint("TOPLEFT", EncounterJournal.encounter.bossesFrame, "TOPLEFT", 0, -10);
+			end
+		end
+		
+		bossButton.link = link;
+		bossButton:SetText(name);
+		bossButton:Show();
+		bossButton.encounterID = bossID;
+		--Use the boss' first creature as the button icon
+		local _, _, _, _, bossImage = EJ_GetCreatureInfo(1, bossID);
+		bossImage = bossImage or "Interface\\EncounterJournal\\UI-EJ-BOSS-Default";
+		bossButton.creature:SetTexture(bossImage);
+		bossButton:UnlockHighlight();
+		
+		bossIndex = bossIndex + 1;
+		name, description, bossID, _, link = EJ_GetEncounterInfoByIndex(bossIndex);
+	end
+	
+	--handle typeHeader
+	
+	self.instance:Show();
+	self.info.detailsScroll:Hide();
+	
+	if not noButton then
+		local buttonData = {
+			id = instanceID,
+			name = iname,
+			OnClick = EJNAV_RefreshInstance,
+			listFunc = EJNAV_ListEncounter
+		}
+		NavBar_AddButton(EncounterJournal.navBar, buttonData);
+	end
+end
+
+
+function EncounterJournal_DisplayEncounter(encounterID, noButton)
+	local self = EncounterJournal.encounter;
+	
+	local ename, description, _, rootSectionID = EJ_GetEncounterInfo(encounterID);
+	if (EncounterJournal.encounterID == encounterID) then
+		--navbar is already set to the right button, don't add another
+		noButton = true;
+	elseif (EncounterJournal.encounterID) then
+		--make sure the previous navbar button is the instance button
+		NavBar_OpenTo(EncounterJournal.navBar, EncounterJournal.instanceID);
+	end
+	EncounterJournal.encounterID = encounterID;
+	EJ_SelectEncounter(encounterID);
+	EncounterJournal_LootUpdate();
+	EncounterJournal_ClearDetails();
+	
+	self.info.encounterTitle:SetText(ename);
+	
+	self.info.detailsScroll:Show();
+	self.infoFrame.description:SetText(description);
+	self.infoFrame.description:SetWidth(self.infoFrame:GetWidth() -5);
+	self.infoFrame.encounterID = encounterID;
+	self.infoFrame.rootSectionID = rootSectionID;
+	self.infoFrame.expanded = false;
 	
 	local bossIndex = 1;
 	local name, description, bossID, _, link = EJ_GetEncounterInfoByIndex(bossIndex);
@@ -347,11 +383,11 @@ function EncounterJournal_DisplayInstance(instanceID, noButton)
 	while bossID do
 		bossButton = _G["EncounterJournalBossButton"..bossIndex];
 		if not bossButton then -- create a new header;
-			bossButton = CreateFrame("BUTTON", "EncounterJournalBossButton"..bossIndex, EncounterJournal.encounter.infoFrame, "EncounterBossButtonTemplate");
+			bossButton = CreateFrame("BUTTON", "EncounterJournalBossButton"..bossIndex, EncounterJournal.encounter.bossesFrame, "EncounterBossButtonTemplate");
 			if bossIndex > 1 then
 				bossButton:SetPoint("TOPLEFT", _G["EncounterJournalBossButton"..(bossIndex-1)], "BOTTOMLEFT", 0, -15);
 			else
-				bossButton:SetPoint("TOPLEFT", EncounterJournal.encounter.infoFrame, "TOPLEFT", 0, -10);
+				bossButton:SetPoint("TOPLEFT", EncounterJournal.encounter.bossesFrame, "TOPLEFT", 0, -10);
 			end
 		end
 		
@@ -364,63 +400,14 @@ function EncounterJournal_DisplayInstance(instanceID, noButton)
 		bossImage = bossImage or "Interface\\EncounterJournal\\UI-EJ-BOSS-Default";
 		bossButton.creature:SetTexture(bossImage);
 		
+		if (encounterID == bossID) then
+			bossButton:LockHighlight();
+		else
+			bossButton:UnlockHighlight();
+		end
+		
 		bossIndex = bossIndex + 1;
 		name, description, bossID, _, link = EJ_GetEncounterInfoByIndex(bossIndex);
-	end
-	
-	--handle typeHeader
-	
-	self.instance:Show();
-	
-	if not noButton then
-		local buttonData = {
-			name = iname,
-			OnClick = EJNAV_RefreshInstance,
-			listFunc = EJNAV_ListEncounter
-		}
-		NavBar_AddButton(EncounterJournal.navBar, buttonData);
-	end
-end
-
-
-function EncounterJournal_DisplayEncounter(encounterID, noButton)
-	local self = EncounterJournal.encounter;
-	EncounterJournal.encounter.model:Show();
-	
-	local ename, description, _, rootSectionID = EJ_GetEncounterInfo(encounterID);
-	EncounterJournal.encounterID = encounterID;
-	EJ_SelectEncounter(encounterID);
-	EncounterJournal_LootUpdate();
-	EncounterJournal_ClearDetails();
-	
-	self.info.encounterTitle:SetText(ename);
-		
-	self.infoFrame.description:SetText(description);
-	self.infoFrame.description:SetWidth(self.infoFrame:GetWidth() -5);
-	self.infoFrame.encounterID = encounterID;
-	self.infoFrame.rootSectionID = rootSectionID;
-	self.infoFrame.expanded = false;
-	
-	self.info.dungeonBG:Show();
-	
-	-- Setup Creatures
-	local id, name, displayInfo, iconImage;
-	for i=1,MAX_CREATURES_PER_ENCOUNTER do 
-		id, name, description, displayInfo, iconImage = EJ_GetCreatureInfo(i);
-		
-		local button = self["creatureButton"..i];
-		if id then
-			SetPortraitTexture(button.creature, displayInfo);
-			button.name = name;
-			button.id = id;
-			button.description = description;
-			button.displayInfo = displayInfo;
-			button:Show();
-		end
-		
-		if i == 1 then
-			EncounterJournal_DisplayCreature(button);
-		end
 	end
 	
 	EncounterJournal_ToggleHeaders(self.infoFrame)
@@ -428,29 +415,12 @@ function EncounterJournal_DisplayEncounter(encounterID, noButton)
 	
 	if not noButton then
 		local buttonData = {
+			id = encounterID,
 			name = ename,
 			OnClick = EJNAV_RefreshEncounter,
 		}
 		NavBar_AddButton(EncounterJournal.navBar, buttonData);
 	end
-end
-
-
-function EncounterJournal_DisplayCreature(self)
-	if EncounterJournal.encounter.shownCreatureButton then
-		EncounterJournal.encounter.shownCreatureButton:Enable();
-	end
-	
-	if EncounterJournal.ceatureDisplayID == self.displayInfo then
-		--Don't refresh the same model
-	elseif self.displayInfo then
-		EncounterJournal.encounter.model:SetDisplayInfo(self.displayInfo);
-		EncounterJournal.ceatureDisplayID = self.displayInfo;
-	end
-		
-	EncounterJournal.encounter.model.imageTitle:SetText(self.name);
-	self:Disable();
-	EncounterJournal.encounter.shownCreatureButton = self;
 end
 
 
@@ -788,10 +758,6 @@ function EncounterJournal_ClearDetails()
 		used:Hide();
 		usedHeaders[key] = nil;
 		freeHeaders[#freeHeaders+1] = used;
-	end
-	
-	for i=1,MAX_CREATURES_PER_ENCOUNTER do 
-		EncounterJournal.encounter["creatureButton"..i]:Hide();
 	end
 	
 	local bossIndex = 1
@@ -1179,15 +1145,6 @@ function EncounterJournal_OpenJournal(difficulty, instanceID, encounterID, secti
 				EncounterJournal.encounter.info.lootTab:Click();
 			end
 			
-			
-			if creatureID then
-				for i=1,MAX_CREATURES_PER_ENCOUNTER do
-					local button = EncounterJournal.encounter["creatureButton"..i];
-					if button and button:IsShown() and button.id == creatureID then
-						EncounterJournal_DisplayCreature(button);
-					end
-				end
-			end
 		end
 	elseif tierIndex then
 		EncounterJournal_TierDropDown_Select(EncounterJournal, tierIndex+1);

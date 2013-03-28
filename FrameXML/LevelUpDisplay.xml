@@ -347,14 +347,14 @@
 							<Anchors>
 								<Anchor point="BOTTOM" relativePoint="TOP" x="0" y="-6"/>
 							</Anchors>
-							<TexCoords left="0.12304688" right="0.60937500" top="0.07617188" bottom="0.13671875"/>
+							<TexCoords left="0.00195313" right="0.48828125" top="0.41796875" bottom="0.47851563"/>
 						</Texture>
 						<Texture file="Interface\Scenarios\ScenariosParts" alphaMode="ADD" alpha="0.3">
 							<Size x="249" y="31"/>
 							<Anchors>
 								<Anchor point="TOP" relativePoint="BOTTOM" x="0" y="0"/>
 							</Anchors>
-							<TexCoords left="0.12304688" right="0.60937500" bottom="0.07617188" top="0.13671875"/>
+							<TexCoords left="0.00195313" right="0.48828125" bottom="0.41796875" top="0.47851563"/>
 						</Texture>
 					</Layer>
 					<Layer level="BORDER">
@@ -363,14 +363,14 @@
 							<Anchors>
 								<Anchor point="BOTTOM" relativePoint="TOP" x="0" y="-6"/>
 							</Anchors>
-							<TexCoords left="0.12304688" right="0.86914063" top="0.27929688" bottom="0.34765625"/>
+							<TexCoords left="0.00195313" right="0.74804688" top="0.00195313" bottom="0.07031250"/>							
 						</Texture>
 						<Texture file="Interface\Scenarios\ScenariosParts">
 							<Size x="480" y="35"/>
 							<Anchors>
 								<Anchor point="TOP" relativePoint="BOTTOM" x="0" y="0"/>
 							</Anchors>
-							<TexCoords left="0.12304688" right="0.86914063" top="0.34765625" bottom="0.27929688"/>
+							<TexCoords left="0.00195313" right="0.74804688" bottom="0.00195313" top="0.07031250"/>
 						</Texture>
 					</Layer>
 				</Layers>
@@ -383,14 +383,14 @@
 							<Anchors>
 								<Anchor point="TOP" x="0" y="4"/>
 							</Anchors>
-							<TexCoords left="0.08007813" right="0.19921875" top="0.02148438" bottom="0.05859375"/>
+							<TexCoords left="0.75195313" right="0.87109375" top="0.00195313" bottom="0.03906250"/>
 						</Texture>
 						<Texture file="Interface\Scenarios\ScenariosParts">
 							<Size x="61" y="19"/>
 							<Anchors>
 								<Anchor point="BOTTOM" x="0" y="-10"/>
 							</Anchors>
-							<TexCoords left="0.08007813" right="0.19921875" top="0.05859375" bottom="0.02148438"/>
+							<TexCoords left="0.75195313" right="0.87109375" bottom="0.00195313" top="0.03906250"/>
 						</Texture>
 					</Layer>
 				</Layers>
@@ -458,14 +458,14 @@
 							<Anchors>
 								<Anchor point="BOTTOM" relativePoint="TOP" x="0" y="-6"/>
 							</Anchors>
-							<TexCoords left="0.12304688" right="0.86914063" top="0.27929688" bottom="0.34765625"/>
+							<TexCoords left="0.00195313" right="0.74804688" top="0.00195313" bottom="0.07031250"/>
 						</Texture>
 						<Texture file="Interface\Scenarios\ScenariosParts">
 							<Size x="480" y="35"/>
 							<Anchors>
 								<Anchor point="TOP" relativePoint="BOTTOM" x="0" y="0"/>
 							</Anchors>
-							<TexCoords left="0.12304688" right="0.86914063" top="0.34765625" bottom="0.27929688"/>
+							<TexCoords left="0.00195313" right="0.74804688" bottom="0.00195313" top="0.07031250"/>
 						</Texture>
 					</Layer>
 					<Layer level="OVERLAY">
@@ -474,7 +474,7 @@
 							<Anchors>
 								<Anchor point="BOTTOM" x="0" y="-10"/>
 							</Anchors>
-							<TexCoords left="0.08007813" right="0.19921875" top="0.05859375" bottom="0.02148438"/>
+							<TexCoords left="0.75195313" right="0.87109375" bottom="0.00195313" top="0.03906250"/>
 						</Texture>
 						<Texture parentKey="MedalIcon">
 							<Size x="102" y="102"/>

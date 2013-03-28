@@ -4,7 +4,7 @@
 
 	<Script file="VideoOptionsFrame.lua"/>
 
-	<Frame name="VideoOptionsFrame" inherits="OptionsFrameTemplate">
+	<Frame name="VideoOptionsFrame" frameLevel="7" inherits="OptionsFrameTemplate">
 		<Frames>
 			<Button name="$parentApply" inherits="GlueButtonSmallTemplateBlue" text="APPLY">
 				<Size>

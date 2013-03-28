@@ -854,7 +854,7 @@
 								</Scripts>
 							</AnimationGroup>
 						</Animations>
-						<TexCoords left="0.12304688" right="0.76171875" top="0.66210938" bottom="0.84570313"/>
+						<TexCoords left="0.00195313" right="0.64062500" top="0.07421875" bottom="0.25781250"/>
 					</Texture>
 				</Layer>
 			</Layers>
@@ -900,7 +900,7 @@
 				<Anchors>
 					<Anchor point="LEFT" x="15" y="0"/>
 				</Anchors>
-				<TexCoords left="0.02539063" right="0.11718750" top="0.17187500" bottom="0.27343750"/>
+				<TexCoords left="0.00195313" right="0.09375000" top="0.70703125" bottom="0.80859375"/>
 			</Texture>
 		</Layer>
 		<Layer level="BACKGROUND">
@@ -913,7 +913,7 @@
 		</Layer>
 		<Layer level="BORDER">
 			<Texture file="Interface\Scenarios\ScenariosParts" setAllPoints="true">
-				<TexCoords left="0.12304688" right="0.73046875" top="0.50585938" bottom="0.65820313"/>
+				<TexCoords left="0.00195313" right="0.60937500" top="0.26171875" bottom="0.41406250"/>
 			</Texture>
 		</Layer>
 		<Layer level="ARTWORK">
@@ -982,7 +982,7 @@
 								</Scripts>
 							</AnimationGroup>
 						</Animations>
-						<TexCoords left="0.12304688" right="0.76171875" top="0.66210938" bottom="0.84570313"/>
+						<TexCoords left="0.00195313" right="0.64062500" top="0.07421875" bottom="0.25781250"/>
 					</Texture>
 				</Layer>
 			</Layers>

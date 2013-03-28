@@ -1,0 +1,107 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\FrameXML\UI.xsd">
+	<Script file="GlueMenuFrame.lua"/>
+	<Button name="GlueMenuFrameButtonTemplate" inherits="GlueButtonSmallTemplateBlue" virtual="true">
+		<HitRectInsets>
+			<AbsInset left="0" right="0" top="5" bottom="5"/>
+		</HitRectInsets>
+	</Button>
+	<Frame name="GlueMenuFrame" inherits="GlueModalFrameTemplate" toplevel="true" frameStrata="DIALOG" frameLevel="7" enableMouse="true" hidden="true" parent="GlueParent">
+		<Size x="195" y="255"/>
+		<Anchors>
+			<Anchor point="CENTER"/>
+		</Anchors>
+		<Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background" edgeFile="Interface\DialogFrame\UI-DialogBox-Border" tile="true">
+			<BackgroundInsets>
+				<AbsInset left="11" right="12" top="12" bottom="11"/>
+			</BackgroundInsets>
+			<TileSize>
+				<AbsValue val="32"/>
+			</TileSize>
+			<EdgeSize>
+				<AbsValue val="32"/>
+			</EdgeSize>
+		</Backdrop>
+		<Layers>
+			<Layer level="ARTWORK">
+				<Texture name="GameMenuFrameHeader" file="Interface\DialogFrame\UI-DialogBox-Header">
+					<Size x="256" y="64"/>
+					<Anchors>
+						<Anchor point="TOP" x="0" y="12"/>
+					</Anchors>
+				</Texture>
+				<FontString inherits="GlueFontNormal" text="MAINMENU_BUTTON">
+					<Anchors>
+						<Anchor point="TOP" relativeTo="GameMenuFrameHeader" x="0" y="-14"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Button parentKey="OptionsButton" inherits="GlueMenuFrameButtonTemplate" text="SYSTEMOPTIONS_MENU">
+				<Anchors>
+					<Anchor point="CENTER" relativePoint="TOP" x="0" y="-42"/>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						GlueMenuFrame_Hide();
+						AccountLogin_Options();
+					</OnClick>
+				</Scripts>
+			</Button>
+			<Button parentKey="CreditsButton" inherits="GlueMenuFrameButtonTemplate" text="CREDITS">
+				<Anchors>
+					<Anchor point="TOP" relativeKey="$parent.OptionsButton" relativePoint="BOTTOM" x="0" y="10"/>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						GlueMenuFrame_Hide();
+						AccountLogin_Credits();
+					</OnClick>
+				</Scripts>
+			</Button>
+			<Button parentKey="CinematicsButton" inherits="GlueMenuFrameButtonTemplate" text="CINEMATICS">
+				<Anchors>
+					<Anchor point="TOP" relativeKey="$parent.CreditsButton" relativePoint="BOTTOM" x="0" y="10"/>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						GlueMenuFrame_Hide();
+						AccountLogin_Cinematics();
+					</OnClick>
+				</Scripts>
+			</Button>
+			<Button parentKey="TOSButton" inherits="GlueMenuFrameButtonTemplate" text="TOS_FRAME_TITLE">
+				<Anchors>
+					<Anchor point="TOP" relativeKey="$parent.CinematicsButton" relativePoint="BOTTOM" x="0" y="10"/>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						GlueMenuFrame_Hide();
+						AccountLogin_TOS();
+					</OnClick>
+				</Scripts>
+			</Button>
+			<Button parentKey="ExitGameButton" inherits="GlueMenuFrameButtonTemplate" text="EXIT_GAME">
+				<Anchors>
+					<Anchor point="TOP" relativeKey="$parent.TOSButton" relativePoint="BOTTOM" x="0" y="10"/>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						QuitGame();
+					</OnClick>
+				</Scripts>
+			</Button>
+			<Button parentKey="CloseButton" inherits="GlueMenuFrameButtonTemplate" text="CLOSE">
+				<Anchors>
+					<Anchor point="CENTER" relativePoint="BOTTOM" x="0" y="25"/>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						GlueMenuFrame_Hide();
+					</OnClick>
+				</Scripts>
+			</Button>
+		</Frames>
+	</Frame>
+</Ui>

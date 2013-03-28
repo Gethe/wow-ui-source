@@ -64,6 +64,7 @@ function TimerTracker_OnEvent(self, event, ...)
 			-- don't interupt the final count down
 			if not timer.startNumbers:IsPlaying() then
 				timer.time = timeSeconds;
+				timer.endTime = GetTime() + timeSeconds;
 			end
 		else
 			for a,b in pairs(self.timerList) do

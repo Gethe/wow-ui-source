@@ -35,6 +35,7 @@ AudioOptionsFrame.xml
 AudioOptionsPanels.xml
 StarterEditionPopUp.xml
 PromotionFrame.xml
+GlueMenuFrame.xml
 
 ## This Always Runs Last, Add New Items above it.
 GlueLocalizationPost.xml

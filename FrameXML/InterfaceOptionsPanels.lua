@@ -256,6 +256,8 @@ CombatPanelOptions = {
 	showTargetOfTarget = { text = "SHOW_TARGET_OF_TARGET_TEXT" },
 	showTargetCastbar = { text = "SHOW_TARGET_CASTBAR" },
 	showVKeyCastbar = { text = "SHOW_TARGET_CASTBAR_IN_V_KEY" },
+	showVKeyCastbarOnlyOnTarget = { text = "SHOW_TARGET_CASTBAR_IN_V_KEY_ONLY_ON_TARGET" },
+	showVKeyCastbarSpellName = { text = "SHOW_TARGET_CASTBAR_IN_V_KEY_SPELL_NAME" },
 	displaySpellActivationOverlays = { text = "DISPLAY_SPELL_ALERTS" },
 	spellActivationOverlayOpacity = { text = "SPELL_ALERT_OPACITY", minValue = 0.1, maxValue = 1.0, valueStep = 0.05 },
 	reducedLagTolerance = { text = "REDUCED_LAG_TOLERANCE" },

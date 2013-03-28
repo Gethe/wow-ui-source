@@ -5,7 +5,6 @@ DEFAULT_BATTLEFIELD_TAB_ALPHA = 0.75;
 DEFAULT_POI_ICON_SIZE = 12;
 BATTLEFIELD_MINIMAP_UPDATE_RATE = 0.1;
 NUM_BATTLEFIELDMAP_POIS = 0;
-NUM_BATTLEFIELDMAP_OVERLAYS = 0;
 
 local BattlefieldMinimapDefaults = {
 	opacity = 0.7,
@@ -36,6 +35,7 @@ function BattlefieldMinimap_Toggle()
 end
 
 function BattlefieldMinimap_OnLoad (self)
+	BattlefieldMinimap:SetAttribute("NUM_BATTLEFIELDMAP_OVERLAYS",0);
 	self:RegisterEvent("ADDON_LOADED");
 	self:RegisterEvent("PLAYER_ENTERING_WORLD");
 	self:RegisterEvent("ZONE_CHANGED");
@@ -192,11 +192,12 @@ function BattlefieldMinimap_Update()
 			local numTexturesWide = ceil(textureWidth/256);
 			local numTexturesTall = ceil(textureHeight/256);
 			local neededTextures = textureCount + (numTexturesWide * numTexturesTall);
-			if ( neededTextures > NUM_BATTLEFIELDMAP_OVERLAYS ) then
-				for j=NUM_BATTLEFIELDMAP_OVERLAYS+1, neededTextures do
+			local numBattlefieldMapOverlays = BattlefieldMinimap:GetAttribute("NUM_BATTLEFIELDMAP_OVERLAYS");
+			if ( neededTextures > numBattlefieldMapOverlays ) then
+				for j=numBattlefieldMapOverlays+1, neededTextures do
 					BattlefieldMinimap:CreateTexture("BattlefieldMinimapOverlay"..j, "ARTWORK");
 				end
-				NUM_BATTLEFIELDMAP_OVERLAYS = neededTextures;
+				BattlefieldMinimap:SetAttribute("NUM_BATTLEFIELDMAP_OVERLAYS", neededTextures);
 			end
 			local texturePixelWidth, textureFileWidth, texturePixelHeight, textureFileHeight;
 			for j=1, numTexturesTall do
@@ -240,13 +241,13 @@ function BattlefieldMinimap_Update()
 			end
 		end
 	end
-	for i=textureCount+1, NUM_BATTLEFIELDMAP_OVERLAYS do
+	for i=textureCount+1, BattlefieldMinimap:GetAttribute("NUM_BATTLEFIELDMAP_OVERLAYS") do
 		_G["BattlefieldMinimapOverlay"..i]:Hide();
 	end
 end
 
 function BattlefieldMinimap_ClearTextures()
-	for i=1, NUM_BATTLEFIELDMAP_OVERLAYS do
+	for i=1, BattlefieldMinimap:GetAttribute("NUM_BATTLEFIELDMAP_OVERLAYS") do
 		_G["BattlefieldMinimapOverlay"..i]:SetTexture(nil);
 	end
 	local numDetailTiles = GetNumberOfDetailTiles();
@@ -549,7 +550,7 @@ function BattlefieldMinimap_UpdateOpacity(opacity)
 	if ( alpha >= 0.15 ) then
 		alpha = alpha - 0.15;
 	end
-	for i=1, NUM_BATTLEFIELDMAP_OVERLAYS do
+	for i=1, BattlefieldMinimap:GetAttribute("NUM_BATTLEFIELDMAP_OVERLAYS") do
 		_G["BattlefieldMinimapOverlay"..i]:SetAlpha(alpha);
 	end
 	BattlefieldMinimapCloseButton:SetAlpha(alpha);
