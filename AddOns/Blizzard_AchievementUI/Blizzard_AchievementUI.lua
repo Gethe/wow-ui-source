@@ -1570,7 +1570,7 @@ function AchievementObjectives_DisplayProgressiveAchievement (objectivesFrame, i
 	local i = 0;
 	for index, achievementID in ipairs(achievementList) do
 		local _, achievementName, points, completed, month, day, year, description, flags, iconpath = GetAchievementInfo(achievementID);
-		
+		flags = flags or 0;		-- bug 360115 
 		local miniAchievement = AchievementButton_GetMiniAchievement(index);
 		
 		miniAchievement:Show();

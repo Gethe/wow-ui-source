@@ -148,6 +148,18 @@ VEHICLE_TEXTURES["Hammer Gold 3"] = {
 	width=32,
 	height=32,
 };
+VEHICLE_TEXTURES["Cart Horde"] = {
+	"Interface\\Minimap\\Vehicle-HordeCart",
+	"Interface\\Minimap\\Vehicle-HordeCart",
+	width=32,
+	height=32,
+};
+VEHICLE_TEXTURES["Cart Alliance"] = {
+	"Interface\\Minimap\\Vehicle-AllianceCart",
+	"Interface\\Minimap\\Vehicle-AllianceCart",
+	width=32,
+	height=32,
+};
 
 WORLDMAP_DEBUG_ICON_INFO = {};
 WORLDMAP_DEBUG_ICON_INFO[1] = { size =  6, r = 0.0, g = 1.0, b = 0.0 };
@@ -218,7 +230,7 @@ function WorldMapFrame_OnLoad(self)
 	WorldMapQuestDetailScrollChildFrame:SetScale(0.9);
 	WorldMapQuestRewardScrollChildFrame:SetScale(0.9);
 	WorldMapFrame.numQuests = 0;
-	WatchFrame.showObjectives = WorldMapQuestShowObjectives:GetChecked();
+	WatchFrame.showObjectives = GetCVarBool("questPOI");
 	WorldMapPOIFrame.allowBlobTooltip = true;
 	-- scrollframes
 	WorldMapQuestDetailScrollFrame.scrollBarHideable = true;
@@ -265,8 +277,6 @@ function WorldMapFrame_OnHide(self)
 		OpacityFrame:Hide();
 	end
 	
-	self.fromJournal = false;
-	
 	UpdateMicroButtons();
 	CloseDropDownMenus();
 	PlaySound("igQuestLogClose");
@@ -278,6 +288,8 @@ function WorldMapFrame_OnHide(self)
 	end
 	-- forces WatchFrame event via the WORLD_MAP_UPDATE event, needed to restore the POIs in the tracker to the current zone
 	if (not WorldMapFrame.toggling) then
+		WorldMapFrame.fromJournal = false;
+		WorldMapFrame.hasBosses = false;
 		SetMapToCurrentZone();
 	end
 	CancelEmote();
@@ -332,14 +344,11 @@ function WorldMapFrame_OnEvent(self, event, ...)
 			WorldMapBlobFrame:SetScale(WORLDMAP_QUESTLIST_SIZE);
 			ScenarioPOIFrame:SetScale(WORLDMAP_FULLMAP_SIZE);	--If we ever need to add objectives on the map itself we should adjust this value
 		end
-		WorldMapQuestShowObjectives:SetChecked(GetCVarBool("questPOI"));
-		WorldMapQuestShowObjectives_Toggle();
 	elseif ( event == "GROUP_ROSTER_UPDATE" ) then
 		if ( self:IsShown() ) then
 			WorldMapFrame_UpdateUnits("WorldMapRaid", "WorldMapParty");
 		end
 	elseif ( event == "DISPLAY_SIZE_CHANGED" ) then
-		WorldMapQuestShowObjectives_AdjustPosition();
 		if ( WatchFrame.showObjectives and self:IsShown() ) then
 			WorldMapFrame_UpdateQuests();
 		end
@@ -347,19 +356,7 @@ function WorldMapFrame_OnEvent(self, event, ...)
 		WorldMapFrame_DisplayQuests();
 		WorldMapQuestFrame_UpdateMouseOver();
 	elseif  ( event == "SKILL_LINES_CHANGED" ) then
-		local _, _, arch = GetProfessions();
-		if arch then
-			WorldMapShowDigSites:Show();
-			local showDig = GetCVarBool("digSites");
-			WorldMapShowDigSites:SetChecked(showDig);
-			if showDig then
-				WorldMapArchaeologyDigSites:Show();
-			else
-				WorldMapArchaeologyDigSites:Hide();
-			end
-		else
-			WorldMapShowDigSites:Hide();
-		end
+		WorldMapShowDropDown_OnLoad(WorldMapShowDropDown);
 	elseif ( event == "UNIT_PORTRAIT_UPDATE" ) then
 		EncounterJournal_UpdateMapButtonPortraits();
 	end
@@ -1951,8 +1948,7 @@ function WorldMap_ToggleSizeUp()
 	
 	WorldMapFrame_SetOpacity(0);
 	WorldMapFrame_SetPOIMaxBounds();
-	WorldMapQuestShowObjectives_AdjustPosition();
-	if ( WorldMapQuestShowObjectives:GetChecked() ) then
+	if (GetCVarBool("questPOI")) then
 		WorldMapPlayerLower:SetSize(PLAYER_ARROW_SIZE_FULL_WITH_QUESTS,PLAYER_ARROW_SIZE_FULL_WITH_QUESTS);
 		WorldMapPlayerUpper:SetSize(PLAYER_ARROW_SIZE_FULL_WITH_QUESTS,PLAYER_ARROW_SIZE_FULL_WITH_QUESTS);
 	else
@@ -2023,7 +2019,6 @@ function WorldMap_ToggleSizeDown()
 	
 	WorldMapFrame_SetOpacity(WORLDMAP_SETTINGS.opacity);
 	WorldMapFrame_SetPOIMaxBounds();
-	WorldMapQuestShowObjectives_AdjustPosition();
 	WorldMapPlayerLower:SetSize(PLAYER_ARROW_SIZE_WINDOW,PLAYER_ARROW_SIZE_WINDOW);
 	WorldMapPlayerUpper:SetSize(PLAYER_ARROW_SIZE_WINDOW,PLAYER_ARROW_SIZE_WINDOW);
 	MapBarFrame_UpdateLayout(MapBarFrame);
@@ -2040,26 +2035,6 @@ function WorldMapFrame_ResetFrameLevels()
     end
 end
 
-function WorldMapQuestShowObjectives_Toggle()
-	if ( WorldMapQuestShowObjectives:GetChecked() ) then
-		WatchFrame.showObjectives = true;
-		QuestLogFrameShowMapButton:Show();		
-	else
-		WatchFrame.showObjectives = nil;
-		WatchFrame_Update();
-		QuestLogFrameShowMapButton:Hide();	
-	end
-	WorldMapFrame_Update();
-end
-
-function WorldMapQuestShowObjectives_AdjustPosition()
-	if ( WORLDMAP_SETTINGS.size == WORLDMAP_WINDOWED_SIZE ) then
-		WorldMapQuestShowObjectives:SetPoint("BOTTOMRIGHT", WorldMapDetailFrame, "BOTTOMRIGHT", -3 - WorldMapQuestShowObjectivesText:GetWidth(), -26);
-	else
-		WorldMapQuestShowObjectives:SetPoint("BOTTOMRIGHT", WorldMapPositioningGuide, "BOTTOMRIGHT", -15 - WorldMapQuestShowObjectivesText:GetWidth(), 4);
-	end
-end
-
 function WorldMapFrame_DisplayQuests(selectQuestId)
 	if ( WorldMapFrame_UpdateQuests() > 0 ) then
 		-- if a quest id wasn't passed in, try to select either current supertracked quest or original supertracked (saved when map was opened)
@@ -2070,7 +2045,7 @@ function WorldMapFrame_DisplayQuests(selectQuestId)
 				WorldMapFrame_SelectQuestFrame(WorldMapQuestFrame1);
 			end
 		end
-		if ( WORLDMAP_SETTINGS.size == WORLDMAP_FULLMAP_SIZE ) then
+		if ( WORLDMAP_SETTINGS.size ~= WORLDMAP_WINDOWED_SIZE ) then
 			WorldMapFrame_SetQuestMapView();
 		end
 		WorldMapBlobFrame:Show();
@@ -2851,13 +2826,8 @@ function EncounterJournal_AddMapButtons()
 		x, y, instanceID, name, description, encounterID = EJ_GetMapEncounter(index, WorldMapFrame.fromJournal);
 	end
 	
-	if (index == 1) then --not looking at dungeon map
-		WorldMapQuestShowObjectives:Show();
-		WorldMapShowDropDown:Hide();
-	else
-		WorldMapQuestShowObjectives:Hide();
-		WorldMapShowDropDown:Show();
-	end
+	WorldMapFrame.hasBosses = index ~= 1;
+	
 	if (not GetCVarBool("showBosses")) then
 		index = 1;
 	end
@@ -2946,30 +2916,99 @@ function WorldMapShowDropDown_Initialize()
 	info.func = WorldMapShowDropDown_OnClick;
 	info.checked = GetCVarBool("questPOI");
 	info.isNotRadio = true;
-	info.keepShownOnClick = 1;
+	info.keepShownOnClick = 1
+	info.tooltipText = OPTION_TOOLTIP_SHOW_QUEST_OBJECTIVES_ON_MAP;
+	info.tooltipOnButton = OPTION_TOOLTIP_SHOW_QUEST_OBJECTIVES_ON_MAP;
 	UIDropDownMenu_AddButton(info);
 
-	-- Show bosses button
-	info.text = SHOW_BOSSES_ON_MAP_TEXT;
-	info.value = "bosses";
-	info.func = WorldMapShowDropDown_OnClick;
-	info.checked = GetCVarBool("showBosses");
-	info.isNotRadio = true;
-	info.keepShownOnClick = 1;
-	UIDropDownMenu_AddButton(info);
+	if (WorldMapFrame.hasBosses) then
+		-- Show bosses button
+		info.text = SHOW_BOSSES_ON_MAP_TEXT;
+		info.value = "bosses";
+		info.func = WorldMapShowDropDown_OnClick;
+		info.checked = GetCVarBool("showBosses");
+		info.isNotRadio = true;
+		info.keepShownOnClick = 1;
+		info.tooltipText = OPTION_TOOLTIP_SHOW_BOSSES_ON_MAP;
+		info.tooltipOnButton = OPTION_TOOLTIP_SHOW_BOSSES_ON_MAP;
+		UIDropDownMenu_AddButton(info);
+	else
+		local _, _, arch = GetProfessions();
+		if arch then
+			local showDig = GetCVarBool("digSites");
+
+			-- Show bosses button
+			info.text = ARCHAEOLOGY_SHOW_DIG_SITES;
+			info.value = "digsites";
+			info.func = WorldMapShowDropDown_OnClick;
+			info.checked = showDig;
+			info.isNotRadio = true;
+			info.keepShownOnClick = 1;
+			info.tooltipText = OPTION_TOOLTIP_SHOW_DIG_SITES_ON_MAP;
+			info.tooltipOnButton = OPTION_TOOLTIP_SHOW_DIG_SITES_ON_MAP;
+			UIDropDownMenu_AddButton(info);
+			if showDig then
+				WorldMapArchaeologyDigSites:Show();
+			else
+				WorldMapArchaeologyDigSites:Hide();
+			end
+		end
+		
+		local showTamers = GetCVarBool("showTamers");
+		
+		-- Show tamers button
+		if (CanTrackBattlePets()) then
+			info.text = SHOW_BATTLE_PET_TAMERS_ON_MAP_TEXT;
+			info.value = "tamers";
+			info.func = WorldMapShowDropDown_OnClick;
+			info.checked = showTamers;
+			info.isNotRadio = true;
+			info.keepShownOnClick = 1;
+			info.tooltipText = OPTION_TOOLTIP_SHOW_BATTLE_PET_TAMERS_ON_MAP;
+			info.tooltipOnButton = OPTION_TOOLTIP_SHOW_BATTLE_PET_TAMERS_ON_MAP;
+			UIDropDownMenu_AddButton(info);
+		end
+	end
 end
 
-
 function WorldMapShowDropDown_OnClick(self)
-	if (self.value == "quests") then
-		WorldMapQuestShowObjectives:Click()
+	local checked = self.checked;
+	local value = self.value;
+	
+	if (checked) then
+		PlaySound("igMainMenuOptionCheckBoxOn");
+	else
+		PlaySound("igMainMenuOptionCheckBoxOff");
 	end
-	if (self.value == "bosses") then
-		if (self.checked) then
-			SetCVar("showBosses", "1");
-		else
-			SetCVar("showBosses", "0");
+	
+	if (value == "quests") then
+		SetCVar("questPOI", checked and "1" or "0");
+		if ( WORLDMAP_SETTINGS.size == WORLDMAP_WINDOWED_SIZE ) then
+			WatchFrame_GetCurrentMapQuests();
+			WatchFrame_Update();
 		end
+		WatchFrame.showObjectives = checked;
+		if (checked) then
+			QuestLogFrameShowMapButton:Show();
+		else
+			QuestLogFrameShowMapButton:Hide();
+			WatchFrame_Update();
+		end
+		WorldMapFrame_DisplayQuests();
+		WorldMapFrame_Update();
+	elseif (value == "bosses") then
+		SetCVar("showBosses", checked and "1" or "0");
+		WorldMapFrame_Update();
+	elseif (value == "digsites") then
+		if (checked) then
+			WorldMapArchaeologyDigSites:Show();
+		else
+			WorldMapArchaeologyDigSites:Hide();
+		end
+		SetCVar("digSites", checked and "1" or "0");
+		WorldMapFrame_Update();
+	elseif (value == "tamers") then
+		SetCVar("showTamers", checked and "1" or "0");
 		WorldMapFrame_Update();
 	end
 end

@@ -773,6 +773,13 @@ function PendingListFrame_ReportPlayer(self)
 	ToggleDropDownMenu(1, self:GetParent().index, PendingListFrameDropDown, "cursor", 3, -3)
 end
 
+function PendingListFrame_CloseDropDownAndDialogs()
+	CloseDropDownMenus();
+	StaticPopup_Hide("CONFIRM_BLOCK_INVITES");
+	StaticPopup_Hide("CONFIRM_BNET_REPORT");
+	StaticPopupSpecial_Hide(BNetReportFrame);
+end
+
 function PendingListFrameDropDown_OnLoad(self)
 	UIDropDownMenu_Initialize(self, PendingListFrameDropDown_Initialize, "MENU");
 end

@@ -4113,7 +4113,7 @@ function BreakUpLargeNumbers(value)
 	return retString;
 end
 
-function GetTimeStringFromSeconds(timeAmount, hasMS)
+function GetTimeStringFromSeconds(timeAmount, hasMS, dropZeroHours)
 	local seconds, ms;
 	-- milliseconds
 	if ( hasMS ) then
@@ -4129,7 +4129,11 @@ function GetTimeStringFromSeconds(timeAmount, hasMS)
 --	if ( hasMS ) then
 --		return format(HOURS_MINUTES_SECONDS_MILLISECONDS, hours, minutes, seconds, ms);
 --	else
+	if ( dropZeroHours and hours == 0 ) then
+		return format(MINUTES_SECONDS, minutes, seconds);
+	else
 		return format(HOURS_MINUTES_SECONDS, hours, minutes, seconds);
+	end
 --	end
 end
 

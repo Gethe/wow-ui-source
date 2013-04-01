@@ -409,6 +409,14 @@ function ScenarioAlertFrame_ShowAlert()
 	--For now we only have 1 scenario alert frame
 	local name, typeID, subtypeID, textureFilename, moneyBase, moneyVar, experienceBase, experienceVar, numStrangers, numRewards = GetLFGCompletionReward();
 	
+	-- bonus?
+	local _, _, _, _, hasBonusStep, isBonusStepComplete = C_Scenario.GetInfo();
+	if ( hasBonusStep and isBonusStepComplete ) then
+		frame.BonusStar:Show();
+	else
+		frame.BonusStar:Hide();
+	end
+
 	--Set up the rewards
 	local moneyAmount = moneyBase + moneyVar * numStrangers;
 	local experienceGained = experienceBase + experienceVar * numStrangers;
@@ -451,6 +459,11 @@ function ScenarioAlertFrame_ShowAlert()
 	--Set up the text and icon
 	frame.dungeonName:SetText(name);
 	frame.dungeonTexture:SetTexture("Interface\\LFGFrame\\LFGIcon-"..textureFilename);
+
+	-- bonus objectives?
+	local _, _, _, _, hasBonusStep, isBonusStepComplete = C_Scenario.GetInfo();
+	if ( hasBonusStep and isBonusStepComplete ) then
+	end
 
 	AlertFrame_AnimateIn(frame)
 	AlertFrame_FixAnchors();

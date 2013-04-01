@@ -710,6 +710,11 @@
 						<Anchor point="TOPLEFT" x="40" y="-11"/>
 					</Anchors>
 				</FontString>
+				<FontString parentKey="TimeLeft" inherits="GameFontHighlightMedium">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="138" y="-10"/>
+					</Anchors>
+				</FontString>
 			</Layer>
 		</Layers>
 		<Scripts>
@@ -717,6 +722,9 @@
 			<OnLeave>
 				GameTooltip:Hide();
 			</OnLeave>
+			<OnShow>
+				self.updateTime = true;
+			</OnShow>
 		</Scripts>
 	</Frame>
 	

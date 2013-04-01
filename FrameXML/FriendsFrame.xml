@@ -456,6 +456,7 @@ TRAVEL PASS
 				</Anchors>
 				<Scripts>
 					<OnClick>
+						PendingListFrame_CloseDropDownAndDialogs();
 						BNAcceptFriendInvite(self:GetParent().inviteID);
 						PlaySound("igMainMenuOptionCheckBoxOn");
 					</OnClick>
@@ -468,6 +469,7 @@ TRAVEL PASS
 				</Anchors>
 				<Scripts>
 					<OnClick>
+						PendingListFrame_CloseDropDownAndDialogs();
 						BNDeclineFriendInvite(self:GetParent().inviteID);
 						PlaySound("igMainMenuOptionCheckBoxOn");
 					</OnClick>

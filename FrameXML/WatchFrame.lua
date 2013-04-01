@@ -1843,9 +1843,15 @@ function WatchFrameScenario_UpdateScenario(newStage)
 		local bonusName, bonusDescription, numBonusCriteria = C_Scenario.GetBonusStepInfo();
 		nextAnchor = bonusHeader;
 		local isFirstLine = true;
+		bonusHeader.timedCriteriaIndex = nil;
+		local bonusStepFailed;
 		for i = 1, numBonusCriteria do
 			numCriteria = numCriteria + 1;
-			local criteriaString, criteriaType, criteriaCompleted, quantity, totalQuantity, flags, assetID, quantityString, criteriaID = C_Scenario.GetBonusCriteriaInfo(i);
+			local criteriaString, criteriaType, criteriaCompleted, quantity, totalQuantity, flags, assetID, quantityString, criteriaID, timeLeft, criteriaFailed = C_Scenario.GetBonusCriteriaInfo(i);
+			-- there should only be 1 timer event...
+			if ( timeLeft and timeLeft > 0 and not criteriaCompleted and not criteriaFailed ) then
+				bonusHeader.timedCriteriaIndex = i;
+			end
 			criteriaString = string.format("%d/%d %s", quantity, totalQuantity, criteriaString);
 			local line = WatchFrameScenario_GetCriteriaLine(numCriteria, bonusHeader);
 			WatchFrameScenario_SetLine(line, criteriaString, criteriaID, nextAnchor, inChallengeMode, isFirstLine, true);
@@ -1853,13 +1859,23 @@ function WatchFrameScenario_UpdateScenario(newStage)
 			if ( criteriaCompleted ) then
 				line.text:SetTextColor(0.6, 0.6, 0.6);
 				line.icon:SetTexture("Interface\\Scenarios\\ScenarioIcon-Check");
-			elseif ( isBonusStepComplete ) then
-				line.icon:SetTexture("Interface\\Scenarios\\ScenarioIcon-Combat");
+			elseif ( criteriaFailed ) then
+				line.icon:SetTexture("Interface\\Scenarios\\ScenarioIcon-Fail");
 				line.text:SetTextColor(DIM_RED_FONT_COLOR.r, DIM_RED_FONT_COLOR.g, DIM_RED_FONT_COLOR.b);
+				-- if a criteria fails the entire bonus fails
+				bonusStepFailed = true;
 			else
 				line.icon:SetTexture("Interface\\Scenarios\\ScenarioIcon-Combat");
 			end
 			nextAnchor = line;
+		end
+		-- timer
+		if ( bonusHeader.timedCriteriaIndex ) then
+			bonusHeader:SetScript("OnUpdate", WatchFrameScenarioBonusHeader_OnUpdate);
+			bonusHeader.updateTime = true;
+		else
+			bonusHeader:SetScript("OnUpdate", nil);
+			bonusHeader.TimeLeft:SetText("");
 		end
 		-- text and glow
 		if ( isBonusStepComplete ) then
@@ -1868,8 +1884,8 @@ function WatchFrameScenario_UpdateScenario(newStage)
 			bonusHeader.Label:SetTextColor(1, 0.831, 0.380);
 			bonusHeader.SuccessGlow:Show();
 			bonusHeader.FailureGlow:Hide();
-		elseif ( finalBonusDisplay ) then
-			-- scenario has ended and the bonus objectives have not been completed
+		elseif ( bonusStepFailed ) then
+			-- at least one bonus objective has failed
 			bonusHeader.Label:SetText(SCENARIO_BONUS_FAILURE);
 			bonusHeader.Label:SetTextColor(1, 0.1, 0.1);
 			bonusHeader.SuccessGlow:Hide();
@@ -1964,6 +1980,7 @@ function WatchFrameScenario_DisplayScenario(lineFrame, nextAnchor, maxHeight, fr
 		else
 			scenarioFrame:SetPoint("TOPLEFT", lineFrame, "TOPLEFT", 0, -WATCHFRAME_INITIAL_OFFSET + 4);
 		end
+		WatchFrameScenarioBonusHeader.updateTime = true;
 		-- returning anchor, width, numObjectives, numPopups
 		return scenarioFrame.bottomAnchor, 0, 1, scenarioFrame.numPopups;
 	else
@@ -2106,6 +2123,19 @@ function WatchFrameScenarioBonusHeader_OnEnter(self)
 		end
 	end
 	GameTooltip:Show();
+end
+
+function WatchFrameScenarioBonusHeader_OnUpdate(self, elapsed)
+	if ( self.updateTime ) then
+		self.timeLeft = select(10, C_Scenario.GetBonusCriteriaInfo(self.timedCriteriaIndex));
+		self.updateTime = nil;
+	end
+	self.timeLeft = self.timeLeft - elapsed;
+	if ( self.timeLeft >= 0 ) then
+		self.TimeLeft:SetText(GetTimeStringFromSeconds(self.timeLeft, nil, true));	-- only show hours if nonzero
+	else
+		WatchFrameScenario_UpdateScenario();
+	end
 end
 
 --------------------------------------------------------------------------------------------

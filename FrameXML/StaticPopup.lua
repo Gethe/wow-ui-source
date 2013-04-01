@@ -1316,10 +1316,17 @@ StaticPopupDialogs["DEATH"] = {
 			return;
 		end
 
-		if ( IsEncounterInProgress() ) then
-			self.button1:Disable();
-		else
-			self.button1:Enable();
+		local b1_enabled = self.button1:IsEnabled();
+--		self.button1:SetEnabled(not IsEncounterInProgress());
+		self.button1:SetEnabled(not TOM_VAR);
+		if ( b1_enabled ~= self.button1:IsEnabled() ) then
+			if ( b1_enabled ) then
+				self.text:SetText(CAN_NOT_RELEASE_IN_COMBAT);
+			else
+				self.text:SetText("");
+				StaticPopupDialogs[self.which].OnShow(self);
+			end
+			StaticPopup_Resize(dialog, which);
 		end
 
 		if( HasSoulstone() and CanUseSoulstone() ) then
@@ -1327,7 +1334,6 @@ StaticPopupDialogs["DEATH"] = {
 		else
 			self.button2:Disable();
 		end
-
 	end,
 	DisplayButton2 = function(self)
 		return HasSoulstone();

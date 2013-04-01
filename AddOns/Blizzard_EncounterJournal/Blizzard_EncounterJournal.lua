@@ -26,6 +26,7 @@ local EJ_MAX_SECTION_MOVE = 320;
 local EJ_Tabs = {};
 EJ_Tabs[1] = {frame="detailsScroll", button="bossTab"};
 EJ_Tabs[2] = {frame="lootScroll", button="lootTab"};
+EJ_Tabs[3] = {frame="model", button="modelTab"};
 
 
 local EJ_section_openTable = {};
@@ -80,6 +81,7 @@ function EncounterJournal_OnLoad(self)
 	SetPortraitToTexture(EncounterJournalPortrait,"Interface\\EncounterJournal\\UI-EJ-PortraitIcon");
 	self:RegisterEvent("EJ_LOOT_DATA_RECIEVED");
 	self:RegisterEvent("EJ_DIFFICULTY_UPDATE");
+	self:RegisterEvent("UNIT_PORTRAIT_UPDATE");
 	
 	self.encounter.freeHeaders = {};
 	self.encounter.usedHeaders = {};
@@ -161,6 +163,10 @@ function EncounterJournal_OnShow(self)
 			end	
 		end
 		EJ_SetDifficulty(difficultyIndex or EJ_DIFF_5MAN);
+	elseif ( EncounterJournal.queuedPortraitUpdate ) then
+		-- fixes portraits when switching between fullscreen and windowed mode
+		EncounterJournal_UpdatePortraits();
+		EncounterJournal.queuedPortraitUpdate = false;
 	end
 
 	local tierData = EJ_TIER_DATA[EJ_GetCurrentTier()];
@@ -204,6 +210,33 @@ function EncounterJournal_OnEvent(self, event, ...)
 				break;
 			end
 		end
+	elseif event == "UNIT_PORTRAIT_UPDATE" then
+		local unit = ...;
+		if not unit then
+			EncounterJournal_UpdatePortraits();
+		end
+	end
+end
+
+function EncounterJournal_UpdatePortraits()
+	if ( EncounterJournal:IsShown() ) then
+		local self = EncounterJournal.encounter.info;
+		for i = 1, MAX_CREATURES_PER_ENCOUNTER do
+			local button = self["creatureButton"..i];
+			if ( button and button:IsShown() ) then
+				SetPortraitTexture(button.creature, button.displayInfo);
+			else
+				break;
+			end
+		end
+		local usedHeaders = EncounterJournal.encounter.usedHeaders;
+		for _, header in pairs(usedHeaders) do
+			if ( header.button.portrait.displayInfo ) then
+				SetPortraitTexture(header.button.portrait.icon, header.button.portrait.displayInfo);
+			end
+		end
+	else
+		EncounterJournal.queuedPortraitUpdate = true;
 	end
 end
 
@@ -307,6 +340,8 @@ function EncounterJournal_DisplayInstance(instanceID, noButton)
 		self.instance.loreScroll.ScrollBar:Show();
 	end
 	
+	self.info.model.dungeonBG:SetTexture(bgImage);
+	
 	local bossIndex = 1;
 	local name, description, bossID, _, link = EJ_GetEncounterInfoByIndex(bossIndex);
 	local bossButton;
@@ -335,10 +370,16 @@ function EncounterJournal_DisplayInstance(instanceID, noButton)
 		name, description, bossID, _, link = EJ_GetEncounterInfoByIndex(bossIndex);
 	end
 	
-	--handle typeHeader
+	--disable model tab, no boss selected
+	EncounterJournal.encounter.info.modelTab:Disable();
+	EncounterJournal.encounter.info.modelTab:GetDisabledTexture():SetDesaturated(true);
+	EncounterJournal.encounter.info.modelTab.unselected:SetDesaturated(true);
 	
 	self.instance:Show();
 	self.info.detailsScroll:Hide();
+	self.info.lootScroll:Hide();
+	self.info.rightShadow:Hide();
+	self.info.bossTab:Click();
 	
 	if not noButton then
 		local buttonData = {
@@ -410,8 +451,31 @@ function EncounterJournal_DisplayEncounter(encounterID, noButton)
 		name, description, bossID, _, link = EJ_GetEncounterInfoByIndex(bossIndex);
 	end
 	
+	-- Setup Creatures
+	local id, name, displayInfo, iconImage;
+	for i=1,MAX_CREATURES_PER_ENCOUNTER do 
+		id, name, description, displayInfo, iconImage = EJ_GetCreatureInfo(i);
+		
+		local button = self.info["creatureButton"..i];
+		if id then
+			SetPortraitTexture(button.creature, displayInfo);
+			button.name = name;
+			button.id = id;
+			button.description = description;
+			button.displayInfo = displayInfo;
+		end
+	end
+	
+	--enable model tab
+	EncounterJournal.encounter.info.modelTab:Enable();
+	EncounterJournal.encounter.info.modelTab:GetDisabledTexture():SetDesaturated(false);
+	EncounterJournal.encounter.info.modelTab.unselected:SetDesaturated(false);
+	
 	EncounterJournal_ToggleHeaders(self.infoFrame)
 	self:Show();
+	
+	--make sure we stay on the tab we were on
+	self.info[EJ_Tabs[self.info.tab].button]:Click()
 	
 	if not noButton then
 		local buttonData = {
@@ -423,6 +487,42 @@ function EncounterJournal_DisplayEncounter(encounterID, noButton)
 	end
 end
 
+function EncounterJournal_DisplayCreature(self)
+	if EncounterJournal.encounter.info.shownCreatureButton then
+		EncounterJournal.encounter.info.shownCreatureButton:Enable();
+	end
+	
+	if EncounterJournal.ceatureDisplayID == self.displayInfo then
+		--Don't refresh the same model
+	elseif self.displayInfo then
+		EncounterJournal.encounter.info.model:SetDisplayInfo(self.displayInfo);
+		EncounterJournal.ceatureDisplayID = self.displayInfo;
+	end
+		
+	EncounterJournal.encounter.info.model.imageTitle:SetText(self.name);
+	self:Disable();
+	EncounterJournal.encounter.info.shownCreatureButton = self;
+end
+
+function EncounterHournal_ShowCreatures()
+	local button;
+	for i=1,MAX_CREATURES_PER_ENCOUNTER do 
+		button = EncounterJournal.encounter.info["creatureButton"..i]
+		if (button.displayInfo) then
+			button:Show();
+			if (i==1) then
+				EncounterJournal_DisplayCreature(button)
+			end
+		end
+	end
+end
+
+function EncounterHournal_HideCreatures()
+	local button;
+	for i=1,MAX_CREATURES_PER_ENCOUNTER do 
+		EncounterJournal.encounter.info["creatureButton"..i]:Hide()
+	end
+end
 
 local toggleTempList = {};
 local headerCount = 0;
@@ -750,6 +850,7 @@ function EncounterJournal_ClearDetails()
 	
 	EncounterJournal.encounter.info.lootScroll.scrollBar:SetValue(0);
 	EncounterJournal.encounter.info.detailsScroll.ScrollBar:SetValue(0);
+	EncounterJournal.encounter.info.bossesScroll.ScrollBar:SetValue(0);
 	
 	local freeHeaders = EncounterJournal.encounter.freeHeaders;
 	local usedHeaders = EncounterJournal.encounter.usedHeaders;
@@ -758,6 +859,11 @@ function EncounterJournal_ClearDetails()
 		used:Hide();
 		usedHeaders[key] = nil;
 		freeHeaders[#freeHeaders+1] = used;
+	end
+	
+	for i=1,MAX_CREATURES_PER_ENCOUNTER do 
+		EncounterJournal.encounter.info["creatureButton"..i]:Hide();
+		EncounterJournal.encounter.info["creatureButton"..i].displayInfo = nil;
 	end
 	
 	local bossIndex = 1
@@ -781,10 +887,14 @@ function EncounterJournal_TabClicked(self, button)
 	for key, data in pairs(EJ_Tabs) do 
 		if key == tabType then
 			info[data.frame]:Show();
-			info[data.button]:Disable();
+			info[data.button].selected:Show();
+			info[data.button].unselected:Hide();
+			info[data.button]:LockHighlight();
 		else
 			info[data.frame]:Hide();
-			info[data.button]:Enable();
+			info[data.button].selected:Hide();
+			info[data.button].unselected:Show();
+			info[data.button]:UnlockHighlight();
 		end
 	end
 	PlaySound("igAbiliityPageTurn");

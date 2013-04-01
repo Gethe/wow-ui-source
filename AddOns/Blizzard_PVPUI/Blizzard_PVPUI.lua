@@ -80,6 +80,10 @@ function PVPUIFrame_OnLoad(self)
 	
 	self:RegisterEvent("BATTLEFIELDS_CLOSED");
 
+	self:RegisterEvent("VARIABLES_LOADED");
+	self:RegisterEvent("PVP_ROLE_UPDATE");
+	self:RegisterEvent("UPDATE_BATTLEFIELD_STATUS");
+
 	if ( UnitLevel("player") < SHOW_CONQUEST_LEVEL ) then
 		PanelTemplates_DisableTab(PVPUIFrame, 2);
 		self:RegisterEvent("PLAYER_LEVEL_UP");
@@ -97,6 +101,9 @@ function PVPUIFrame_OnShow(self)
 	for teamIndex = 1, MAX_ARENA_TEAMS do
 		ArenaTeamRoster(teamIndex);
 	end
+
+	PVPUIFrame_UpdateSelectedRoles();
+	PVPUIFrame_UpdateRolesChangeable();
 end
 
 function PVPUIFrame_OnHide(self)
@@ -116,6 +123,11 @@ function PVPUIFrame_OnEvent(self, event, ...)
 			PanelTemplates_EnableTab(PVPUIFrame, 2);
 			PVPUIFrame:UnregisterEvent("PLAYER_LEVEL_UP");
 		end
+	elseif ( event == "VARIABLES_LOADED" or event == "PVP_ROLE_UPDATE" ) then
+		PVPUIFrame_UpdateSelectedRoles();
+		PVPUIFrame_UpdateRolesChangeable();
+	elseif ( event == "UPDATE_BATTLEFIELD_STATUS" ) then
+		PVPUIFrame_UpdateRolesChangeable();
 	end
 end
 
@@ -188,6 +200,37 @@ function PVPUIFrame_TabOnClick(self)
 	PVPUIFrame_ShowFrame(panels[self:GetID()].name);
 end
 
+function PVPUIFrame_RoleButtonClicked(self)
+	PVPUIFrame_SetRoles();
+end
+
+function PVPUIFrame_SetRoles()
+	SetPVPRoles(HonorFrame.RoleInset.TankIcon.checkButton:GetChecked(),
+		HonorFrame.RoleInset.HealerIcon.checkButton:GetChecked(),
+		HonorFrame.RoleInset.DPSIcon.checkButton:GetChecked());
+end
+
+function PVPUIFrame_UpdateRolesChangeable()
+	if ( PVPHelper_CanChangeRoles() ) then
+		PVPUIFrame_UpdateAvailableRoles(HonorFrame.RoleInset.TankIcon, HonorFrame.RoleInset.HealerIcon, HonorFrame.RoleInset.DPSIcon);
+	else
+		LFG_DisableRoleButton(HonorFrame.RoleInset.TankIcon);
+		LFG_DisableRoleButton(HonorFrame.RoleInset.HealerIcon);
+		LFG_DisableRoleButton(HonorFrame.RoleInset.DPSIcon);
+	end
+end
+
+function PVPUIFrame_UpdateAvailableRoles(tankButton, healButton, dpsButton)
+	return LFG_UpdateAvailableRoles(tankButton, healButton, dpsButton);
+end
+
+function PVPUIFrame_UpdateSelectedRoles()
+	local tank, healer, dps = GetPVPRoles();
+	HonorFrame.RoleInset.TankIcon.checkButton:SetChecked(tank);
+	HonorFrame.RoleInset.HealerIcon.checkButton:SetChecked(healer);
+	HonorFrame.RoleInset.DPSIcon.checkButton:SetChecked(dps);
+end
+
 ---------------------------------------------------------------
 -- CATEGORY FRAME
 ---------------------------------------------------------------
@@ -248,7 +291,7 @@ function PVPQueueFrame_OnEvent(self, event, ...)
 		end
 	elseif ( event == "UPDATE_BATTLEFIELD_STATUS" or event == "ZONE_CHANGED_NEW_AREA" or event == "ZONE_CHANGED") then
 		local arg1 = ...
-		PVP_UpdateStatus(false, arg1);
+		PVP_UpdateStatus();
 	elseif ( event == "PVP_RATED_STATS_UPDATE" ) then
 		PVPQueueFrame_UpdateCurrencies(self);
 	elseif ( event == "PVP_REWARDS_UPDATE" ) then
@@ -1151,9 +1194,11 @@ function ConquestFrameButton_OnEnter(self)
 			GameTooltip:AddLine(ARENA_WEEKLY_STATS, 1, 1, 1);
 			GameTooltip:AddLine(" ");
 			
-			local rating, _, _, _, _, _, bestRating = GetPersonalRatedBGInfo()
+			local rating, _, _, _, _, _, bestRating, weekWins, weekPlayed = GetPersonalRatedBGInfo()
 			GameTooltip:AddLine(NORMAL_FONT_COLOR_CODE..PVP_CURRENT_RATING..FONT_COLOR_CODE_CLOSE.." "..rating, 1, 1, 1);
 			GameTooltip:AddLine(NORMAL_FONT_COLOR_CODE..PVP_BEST_RATING..FONT_COLOR_CODE_CLOSE.." "..bestRating, 1, 1, 1);
+			local losses = weekPlayed - weekWins;
+			GameTooltip:AddLine(NORMAL_FONT_COLOR_CODE..PVP_RECORD..FONT_COLOR_CODE_CLOSE.." "..weekWins.."-"..losses, 1, 1, 1);
 		else
 			local teamName, _, teamRating, teamPlayed, teamWins = GetArenaTeam(self.teamIndex);
 			local _, _, _, _, _, _, bestRating = GetPersonalRatedArenaInfo(self.teamIndex);
