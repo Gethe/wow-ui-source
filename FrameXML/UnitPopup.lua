@@ -187,7 +187,7 @@ UnitPopupButtons["CHAT_BAN"] = { text = CHAT_BAN, dist = 0 };
 
 -- First level menus
 UnitPopupMenus = { };
-UnitPopupMenus["SELF"] = { "SET_FOCUS", "PVP_FLAG", "LOOT_METHOD", "LOOT_THRESHOLD", "SELECT_LOOT_SPECIALIZATION", "OPT_OUT_LOOT_TITLE", "LOOT_PROMOTE", "CONVERT_TO_RAID", "CONVERT_TO_PARTY", "DUNGEON_DIFFICULTY", "RAID_DIFFICULTY", "RESET_INSTANCES", "RESET_CHALLENGE_MODE", "RAID_TARGET_ICON", "SELECT_ROLE", "INSTANCE_LEAVE", "LEAVE", "MOVE_PLAYER_FRAME", "MOVE_TARGET_FRAME", "CANCEL"};
+UnitPopupMenus["SELF"] = { "SET_FOCUS", "PVP_FLAG", "LOOT_METHOD", "LOOT_THRESHOLD", "OPT_OUT_LOOT_TITLE", "LOOT_PROMOTE", "SELECT_LOOT_SPECIALIZATION", "CONVERT_TO_RAID", "CONVERT_TO_PARTY", "DUNGEON_DIFFICULTY", "RAID_DIFFICULTY", "RESET_INSTANCES", "RESET_CHALLENGE_MODE", "RAID_TARGET_ICON", "SELECT_ROLE", "INSTANCE_LEAVE", "LEAVE", "MOVE_PLAYER_FRAME", "MOVE_TARGET_FRAME", "CANCEL"};
 UnitPopupMenus["PET"] = { "SET_FOCUS", "PET_PAPERDOLL", "PET_RENAME", "PET_DISMISS", "PET_ABANDON", "MOVE_PLAYER_FRAME", "MOVE_TARGET_FRAME", "CANCEL" };
 UnitPopupMenus["OTHERPET"] = { "SET_FOCUS", "RAID_TARGET_ICON", "MOVE_PLAYER_FRAME", "MOVE_TARGET_FRAME",  "REPORT_PET", "CANCEL" };
 UnitPopupMenus["BATTLEPET"] = { "SET_FOCUS", "RAID_TARGET_ICON", "MOVE_PLAYER_FRAME", "MOVE_TARGET_FRAME",  "PET_SHOW_IN_JOURNAL", "CANCEL" };
@@ -844,24 +844,40 @@ function UnitPopup_HideButtons ()
 			if ( dropdownMenu ~= PlayerFrameDropDown ) then
 				UnitPopupShown[UIDROPDOWNMENU_MENU_LEVEL][index] = 0;
 			end
+		elseif ( value == "LOCK_PLAYER_FRAME" ) then
+			if ( dropdownMenu ~= PlayerFrameDropDown and not PLAYER_FRAME_UNLOCKED ) then
+				UnitPopupShown[UIDROPDOWNMENU_MENU_LEVEL][index] = 0;
+			end
+		elseif ( value == "UNLOCK_PLAYER_FRAME" ) then
+			if ( dropdownMenu ~= PlayerFrameDropDown and PLAYER_FRAME_UNLOCKED ) then
+				UnitPopupShown[UIDROPDOWNMENU_MENU_LEVEL][index] = 0;
+			end
 		elseif ( value == "MOVE_TARGET_FRAME" ) then
 			if ( dropdownMenu ~= TargetFrameDropDown ) then
 				UnitPopupShown[UIDROPDOWNMENU_MENU_LEVEL][index] = 0;
 			end
-		elseif ( value == "LOCK_PLAYER_FRAME" ) then
-			if (  not PLAYER_FRAME_UNLOCKED ) then
-				UnitPopupShown[UIDROPDOWNMENU_MENU_LEVEL][index] = 0;
-			end
 		elseif ( value == "LOCK_TARGET_FRAME" ) then
-			if (  not TARGET_FRAME_UNLOCKED ) then
-				UnitPopupShown[UIDROPDOWNMENU_MENU_LEVEL][index] = 0;
-			end
-		elseif ( value == "UNLOCK_PLAYER_FRAME" ) then
-			if (  PLAYER_FRAME_UNLOCKED ) then
+			if ( dropdownMenu ~= TargetFrameDropDown and not TARGET_FRAME_UNLOCKED ) then
 				UnitPopupShown[UIDROPDOWNMENU_MENU_LEVEL][index] = 0;
 			end
 		elseif ( value == "UNLOCK_TARGET_FRAME" ) then
-			if (  TARGET_FRAME_UNLOCKED ) then
+			if ( dropdownMenu ~= TargetFrameDropDown and TARGET_FRAME_UNLOCKED ) then
+				UnitPopupShown[UIDROPDOWNMENU_MENU_LEVEL][index] = 0;
+			end
+	   elseif ( value == "LARGE_FOCUS" ) then
+			if ( dropdownMenu ~= FocusFrameDropDown ) then
+				UnitPopupShown[UIDROPDOWNMENU_MENU_LEVEL][index] = 0;
+			end
+	   elseif ( value == "MOVE_FOCUS_FRAME" ) then
+			if ( dropdownMenu ~= FocusFrameDropDown ) then
+				UnitPopupShown[UIDROPDOWNMENU_MENU_LEVEL][index] = 0;
+			end
+		elseif ( value == "LOCK_FOCUS_FRAME" ) then
+			if ( dropdownMenu ~= FocusFrameDropDown and FocusFrame_IsLocked() ) then
+				UnitPopupShown[UIDROPDOWNMENU_MENU_LEVEL][index] = 0;
+			end
+		elseif ( value == "UNLOCK_FOCUS_FRAME" ) then
+			if ( dropdownMenu ~= FocusFrameDropDown and not FocusFrame_IsLocked() ) then
 				UnitPopupShown[UIDROPDOWNMENU_MENU_LEVEL][index] = 0;
 			end
 		elseif ( value == "OPT_OUT_LOOT_TITLE" ) then
@@ -970,14 +986,12 @@ function UnitPopup_HideButtons ()
 			end
 		elseif ( value == "RAID_MAINTANK" ) then
 			-- We don't want to show a menu option that will end up being blocked
-			local name, rank, subgroup, level, class, fileName, zone, online, isDead, role = GetRaidRosterInfo(dropdownMenu.userData);
-			if ( not issecure() or (isLeader == 0 and isAssistant == 0) or (role == "MAINTANK") or not dropdownMenu.name ) then
+            if ( not issecure() or (isLeader == 0 and isAssistant == 0) or GetPartyAssignment("MAINTANK", dropdownMenu.unit) ) then
 				UnitPopupShown[UIDROPDOWNMENU_MENU_LEVEL][index] = 0;
 			end
 		elseif ( value == "RAID_MAINASSIST" ) then
 			-- We don't want to show a menu option that will end up being blocked
-			local name, rank, subgroup, level, class, fileName, zone, online, isDead, role = GetRaidRosterInfo(dropdownMenu.userData);
-			if ( not issecure() or (isLeader == 0 and isAssistant == 0) or (role == "MAINASSIST") or not dropdownMenu.name ) then
+            if ( not issecure() or (isLeader == 0 and isAssistant == 0) or GetPartyAssignment("MAINASSIST", dropdownMenu.unit) ) then
 				UnitPopupShown[UIDROPDOWNMENU_MENU_LEVEL][index] = 0;
 			end
 		elseif ( value == "RAID_REMOVE" ) then
@@ -1196,14 +1210,6 @@ function UnitPopup_HideButtons ()
 			end
 		elseif ( value == "VEHICLE_LEAVE" ) then
 			if ( not CanExitVehicle() ) then
-				UnitPopupShown[UIDROPDOWNMENU_MENU_LEVEL][index] = 0;
-			end
-		elseif ( value == "LOCK_FOCUS_FRAME" ) then
-			if ( FocusFrame_IsLocked() ) then
-				UnitPopupShown[UIDROPDOWNMENU_MENU_LEVEL][index] = 0;
-			end
-		elseif ( value == "UNLOCK_FOCUS_FRAME" ) then
-			if ( not FocusFrame_IsLocked() ) then
 				UnitPopupShown[UIDROPDOWNMENU_MENU_LEVEL][index] = 0;
 			end
 		elseif ( value == "SELECT_ROLE" ) then

@@ -1126,6 +1126,21 @@
 				</Anchors>
 			</FontString>
 		</Layer>
+		<Layer level="ARTWORK" textureSubLevel="1">
+			<Texture parentKey="SpecIcon">
+				<Size x="24" y="24"/>
+				<Anchors>
+					<Anchor point="TOPLEFT" x="8" y="-7"/>
+				</Anchors>
+			</Texture>
+		</Layer>
+		<Layer level="ARTWORK" textureSubLevel="2">
+			<Texture parentKey="SpecRing" file="Interface/Minimap/MiniMap-TrackingBorder">
+				<Anchors>
+					<Anchor point="TOPLEFT" x="0" y="0"/>
+				</Anchors>
+			</Texture>
+		</Layer>
 		<Layer level="OVERLAY">
 			<!--LootWin-Glow-->
 			<Texture name="$parentGlow" file="Interface\LootFrame\LootToast" alphaMode="ADD" hidden="true" parentKey="glow">

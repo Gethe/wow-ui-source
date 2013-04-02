@@ -293,10 +293,12 @@ function WatchFrame_OnEvent (self, event, ...)
 			WatchFrame_Update();
 		end
 	elseif ( event == "SCENARIO_CRITERIA_UPDATE" ) then
-		WatchFrameScenario_UpdateScenario();
+		local id = ...;
+		WatchFrameScenario_UpdateScenario(nil, id);
 		WatchFrame_Update();
 	elseif ( event == "CRITERIA_COMPLETE" ) then
-		WatchFrameScenario_UpdateScenario();
+		local id = ...;
+		WatchFrameScenario_UpdateScenario(nil, id);
 		WatchFrame_Update();
 		if ( not self.collapsed and self:IsShown() ) then
 			WatchFrameScenario_PlayCriteriaAnimation(...);
@@ -634,7 +636,7 @@ function WatchFrame_UpdateTimedAchievements (elapsed)
 	end
 end
 
-function WatchFrame_SetLine(line, anchor, verticalOffset, isHeader, text, dash, hasItem, isComplete, eligible, usedWidth)
+function WatchFrame_SetLine(line, anchor, verticalOffset, isHeader, text, dash, hasItem, fullHeight, eligible, usedWidth)
 	-- anchor
 	if ( anchor ) then
 		line:SetPoint("RIGHT", anchor, "RIGHT", 0, 0);
@@ -675,7 +677,7 @@ function WatchFrame_SetLine(line, anchor, verticalOffset, isHeader, text, dash, 
 	end
 	line.text:SetWidth(WATCHFRAME_MAXLINEWIDTH - usedWidth);
 	if ( line.text:GetHeight() > WATCHFRAME_LINEHEIGHT ) then
-		if ( isComplete ) then
+		if ( fullHeight ) then
 			line:SetHeight(line.text:GetHeight() + 4);
 		else
 			line:SetHeight(WATCHFRAME_MULTIPLE_LINEHEIGHT);
@@ -1740,7 +1742,7 @@ local SCENARIO_BONUS_OFFSET = 8;
 local SCENARIO_CRITERIA_LINES = { };
 
 -- Sets up all the scenario info in response to events and not doing this on every WatchFrame_Update
-function WatchFrameScenario_UpdateScenario(newStage)
+function WatchFrameScenario_UpdateScenario(newStage, updateCriteriaID)
 	local scenarioFrame = WatchFrameScenarioFrame;
 
 	local name, currentStage, numStages, flags, hasBonusStep, isBonusStepComplete = C_Scenario.GetInfo();
@@ -1839,12 +1841,12 @@ function WatchFrameScenario_UpdateScenario(newStage)
 
 	-- bonus objectives	
 	local bonusHeader = WatchFrameScenarioBonusHeader;
+	local bonusHeaderAnim;
 	if ( hasBonusStep ) then
-		local bonusName, bonusDescription, numBonusCriteria = C_Scenario.GetBonusStepInfo();
+		local bonusName, bonusDescription, numBonusCriteria, bonusStepFailed = C_Scenario.GetBonusStepInfo();
 		nextAnchor = bonusHeader;
 		local isFirstLine = true;
 		bonusHeader.timedCriteriaIndex = nil;
-		local bonusStepFailed;
 		for i = 1, numBonusCriteria do
 			numCriteria = numCriteria + 1;
 			local criteriaString, criteriaType, criteriaCompleted, quantity, totalQuantity, flags, assetID, quantityString, criteriaID, timeLeft, criteriaFailed = C_Scenario.GetBonusCriteriaInfo(i);
@@ -1854,18 +1856,36 @@ function WatchFrameScenario_UpdateScenario(newStage)
 			end
 			criteriaString = string.format("%d/%d %s", quantity, totalQuantity, criteriaString);
 			local line = WatchFrameScenario_GetCriteriaLine(numCriteria, bonusHeader);
+			if ( bonusStepFailed and not criteriaFailed ) then
+				line.text:SetFontObject("GameFontBlack");
+			else
+				line.text:SetFontObject("GameFontNormal");
+			end
 			WatchFrameScenario_SetLine(line, criteriaString, criteriaID, nextAnchor, inChallengeMode, isFirstLine, true);
 			isFirstLine = false;
 			if ( criteriaCompleted ) then
-				line.text:SetTextColor(0.6, 0.6, 0.6);
+				if ( not bonusStepFailed ) then
+					line.text:SetTextColor(0.6, 0.6, 0.6);
+				end
 				line.icon:SetTexture("Interface\\Scenarios\\ScenarioIcon-Check");
 			elseif ( criteriaFailed ) then
 				line.icon:SetTexture("Interface\\Scenarios\\ScenarioIcon-Fail");
 				line.text:SetTextColor(DIM_RED_FONT_COLOR.r, DIM_RED_FONT_COLOR.g, DIM_RED_FONT_COLOR.b);
-				-- if a criteria fails the entire bonus fails
-				bonusStepFailed = true;
 			else
 				line.icon:SetTexture("Interface\\Scenarios\\ScenarioIcon-Combat");
+			end
+			-- darken criteria lines if bonus step has failed
+			if ( bonusStepFailed and not criteriaFailed ) then
+				line.text:SetTextColor(0.2, 0.2, 0.2);
+				line.icon:SetDesaturated(true);
+			else
+				line.icon:SetDesaturated(false);
+			end
+			-- animation? 
+			if ( criteriaID == updateCriteriaID and isBonusStepComplete and bonusHeader.state ~= "success" ) then
+				bonusHeaderAnim = bonusHeader.AnimSuccess;
+			elseif ( criteriaID == updateCriteriaID and criteriaFailed and bonusStepFailed and bonusHeader.state ~= "failure" ) then
+				bonusHeaderAnim = bonusHeader.AnimFailure;
 			end
 			nextAnchor = line;
 		end
@@ -1882,20 +1902,33 @@ function WatchFrameScenario_UpdateScenario(newStage)
 			-- bonus objectives have been completed
 			bonusHeader.Label:SetText(SCENARIO_BONUS_SUCCESS);
 			bonusHeader.Label:SetTextColor(1, 0.831, 0.380);
-			bonusHeader.SuccessGlow:Show();
-			bonusHeader.FailureGlow:Hide();
+			bonusHeader.Background:SetDesaturated(false);
+			bonusHeader.Background:SetVertexColor(1, 1, 1);
+			bonusHeader.Flag:SetDesaturated(false);
+			bonusHeader.Flag:SetVertexColor(1, 1, 1);
+			bonusHeader.state = "success";
 		elseif ( bonusStepFailed ) then
 			-- at least one bonus objective has failed
-			bonusHeader.Label:SetText(SCENARIO_BONUS_FAILURE);
-			bonusHeader.Label:SetTextColor(1, 0.1, 0.1);
-			bonusHeader.SuccessGlow:Hide();
-			bonusHeader.FailureGlow:Show();
+			bonusHeader.Label:SetText(SCENARIO_BONUS_LABEL);
+			bonusHeader.Label:SetTextColor(0.5, 0.5, 0.5);
+			bonusHeader.Background:SetDesaturated(true);
+			bonusHeader.Background:SetVertexColor(0.5, 0.5, 0.5);
+			bonusHeader.Flag:SetDesaturated(true);
+			bonusHeader.Flag:SetVertexColor(0.5, 0.5, 0.5);
+			bonusHeader.state = "failure";
 		else
 			-- scenario in progress
 			bonusHeader.Label:SetText(SCENARIO_BONUS_LABEL);
 			bonusHeader.Label:SetTextColor(1, 0.831, 0.380);
-			bonusHeader.SuccessGlow:Hide();
-			bonusHeader.FailureGlow:Hide();
+			bonusHeader.Background:SetDesaturated(false);
+			bonusHeader.Background:SetVertexColor(1, 1, 1);
+			bonusHeader.Flag:SetDesaturated(false);
+			bonusHeader.Flag:SetVertexColor(1, 1, 1);
+			bonusHeader.state = "ongoing";
+		end
+		-- animation
+		if ( bonusHeaderAnim ) then
+			bonusHeaderAnim:Play();
 		end
 		bonusHeader:Show();
 		scenarioFrame.bottomAnchor = nextAnchor;
@@ -1960,7 +1993,7 @@ function WatchFrameScenario_SetLine(line, text, criteriaID, anchor, inChallengeM
 	else
 		offset = SCENARIO_LINE_OFFSET;
 	end
-	WatchFrame_SetLine(line, anchor, WATCHFRAMELINES_FONTSPACING - offset, nil, text, DASH_ICON);
+	WatchFrame_SetLine(line, anchor, WATCHFRAMELINES_FONTSPACING - offset, nil, text, DASH_ICON, nil, true);
 	line.criteriaID = criteriaID;
 	line:Show();
 end

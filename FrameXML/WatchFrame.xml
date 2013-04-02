@@ -682,14 +682,14 @@
 				</Texture>
 			</Layer>
 			<Layer level="OVERLAY">
-				<Texture parentKey="FailureGlow" file="Interface\Scenarios\ScenariosParts" hidden="true">
+				<Texture parentKey="FailureGlow" file="Interface\Scenarios\ScenariosParts" alpha="0">
 					<Size x="177" y="16"/>
 					<Anchors>
 						<Anchor point="BOTTOM" x="0" y="4"/>
 					</Anchors>
 					<TexCoords left="0.64453125" right="0.99023438" top="0.07421875" bottom="0.10546875"/>
 				</Texture>
-				<Texture parentKey="SuccessGlow" file="Interface\Scenarios\ScenariosParts" hidden="true">
+				<Texture parentKey="SuccessGlow" file="Interface\Scenarios\ScenariosParts" alpha="0">
 					<Size x="177" y="16"/>
 					<Anchors>
 						<Anchor point="BOTTOM" x="0" y="4"/>
@@ -717,6 +717,16 @@
 				</FontString>
 			</Layer>
 		</Layers>
+		<Animations>
+			<AnimationGroup parentKey="AnimSuccess">
+				<Alpha targetKey="$parent.$parent.SuccessGlow" change="1" duration="0.5" endDelay="0.5" order="1"/>
+				<Alpha targetKey="$parent.$parent.SuccessGlow" change="-1" duration="1" order="2"/>
+			</AnimationGroup>
+			<AnimationGroup parentKey="AnimFailure">
+				<Alpha targetKey="$parent.$parent.FailureGlow" change="1" duration="0.5" endDelay="0.5" order="1"/>
+				<Alpha targetKey="$parent.$parent.FailureGlow" change="-1" duration="1" order="2"/>
+			</AnimationGroup>
+		</Animations>
 		<Scripts>
 			<OnEnter function="WatchFrameScenarioBonusHeader_OnEnter"/>
 			<OnLeave>

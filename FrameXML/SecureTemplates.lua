@@ -294,6 +294,7 @@ SECURE_ACTIONS.togglemenu = function(self, unit, button)
 		secureDropdown = CreateFrame("Frame", "SecureTemplatesDropdown", nil, "UIDropDownMenuTemplate");
 		secureDropdown:SetID(1);
 
+		table.insert(UnitPopupFrames, secureDropdown:GetName());
 		UIDropDownMenu_Initialize(secureDropdown, InitializeSecureMenu, "MENU");
 	end
 

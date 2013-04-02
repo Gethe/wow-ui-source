@@ -222,7 +222,7 @@
 					<TexCoords left="0.23828125" right="0.27929688" top="0.74218750" bottom="0.90625000"/>	
 				</Texture>
 			</Layer>
-			<Layer level="OVERLAY">
+			<Layer level="OVERLAY" textureSubLevel="1">
 				<!--ItemBorder-Gold-->
 				<Texture parentKey="IconBorder" file="Interface\LootFrame\LootToast">
 					<Size x="42" y="42"/>
@@ -232,7 +232,22 @@
 					<TexCoords left="0.73242188" right="0.78906250" top="0.57421875" bottom="0.80078125"/>	
 				</Texture>
 			</Layer>
-			<Layer level="OVERLAY" textureSubLevel="1">
+			<Layer level="OVERLAY" textureSubLevel="2">
+				<Texture parentKey="SpecIcon">
+					<Size x="24" y="24"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" x="-2" y="3"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="OVERLAY" textureSubLevel="3">
+				<Texture parentKey="SpecRing" file="Interface/Minimap/MiniMap-TrackingBorder">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="-10" y="10"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="OVERLAY" textureSubLevel="4">
 				<Texture parentKey="WhiteFade" blendMode="ADD" alpha="0">
 					<Anchors>
 						<Anchor point="TOPLEFT" x="3" y="-3"/>
@@ -244,8 +259,6 @@
 		</Layers>
 		<Frames>
 			<Frame parentKey="RollingFrame" useParentLevel="true" setAllPoints="true" hidden="true">
-				<Animations>
-				</Animations>
 				<Layers>
 					<Layer level="ARTWORK">
 						<FontString parentKey="Label" inherits="GameFontNormalLarge" text="BONUS_ROLL_ROLLING" justifyH="CENTER" justifyV="MIDDLE">

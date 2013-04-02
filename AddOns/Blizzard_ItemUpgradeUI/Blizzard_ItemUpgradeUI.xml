@@ -67,6 +67,46 @@
 		</Layers>
 	</Frame>
 	
+	<Frame name="ItemUpgradeEffectRowTemplate" virtual="true">
+		<Size x="382" y="100"/>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="LeftBg" hidden="true">
+					<Size x="165" y="0"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" x="0" y="0"/>
+						<Anchor point="BOTTOM"/>
+					</Anchors>
+					<Color r="1" g="1" b="1" a="0.15"/>
+				</Texture>
+				<Texture parentKey="RightBg" hidden="true">
+					<Size x="207" y="0"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" x="175" y="0"/>
+						<Anchor point="BOTTOM"/>
+					</Anchors>
+					<Color r="1" g="1" b="1" a="0.15"/>
+				</Texture>
+			</Layer>
+			<Layer level="ARTWORK">
+				<FontString parentKey="LeftText" inherits="GameFontNormal" justifyH="LEFT">
+					<Size x="150" y="0"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" x="8" y="-2"/>
+					</Anchors>
+					<Color r="1" g="1" b="1" a="1"/>
+				</FontString>
+				<FontString parentKey="RightText" inherits="GameFontNormal" justifyH="LEFT">
+					<Size x="192" y="0"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" x="183" y="-2"/>
+					</Anchors>
+					<Color r="1" g="1" b="1" a="1"/>
+				</FontString>
+			</Layer>
+		</Layers>
+	</Frame>
+
 	<Frame name="ItemUpgradeFrame" inherits="EtherealFrameTemplate" toplevel="true" movable="true" parent="UIParent" enableMouse="true" hidden="true">
 		<Size x="428" y="434"/>
 
@@ -194,6 +234,11 @@
 				</Anchors>
 			</Frame>
 			<Frame parentArray="RightStat" inherits="ItemUpgradeStatTemplateRight">
+				<Anchors>
+					<Anchor point="TOPRIGHT" relativeKey="$parent.HorzBar" x="0" y="-38" />
+				</Anchors>
+			</Frame>
+			<Frame parentArray="EffectRow" inherits="ItemUpgradeEffectRowTemplate">
 				<Anchors>
 					<Anchor point="TOPRIGHT" relativeKey="$parent.HorzBar" x="0" y="-38" />
 				</Anchors>

@@ -122,6 +122,9 @@ function ItemUpgradeFrame_Update(self)
 		for _, item in pairs(self.RightStat) do
 			item:Hide();
 		end
+		for _, item in pairs(self.EffectRow) do
+			item:Hide();
+		end
 	end
 	
 	-- update player's currency
@@ -174,6 +177,7 @@ function ItemUpgradeFrame_UpdateStats(setStatsRight)
 	local statsRight	= {GetItemUpgradeStats(true)};
 	local index = 1;
 
+	local statAnchor;
 	for i = 1, #statsLeft, 2 do
 		local leftStat, rightStat = ItemUpgradeFrame_GetStatRow(index, true);
 		-- Update the left stat text field.
@@ -195,13 +199,70 @@ function ItemUpgradeFrame_UpdateStats(setStatsRight)
 		end
 		
 		index = index + 1;
+		statAnchor = leftStat;
 	end
+
 	for i = index, #ItemUpgradeFrame.LeftStat do
 		ItemUpgradeFrame.LeftStat[i]:Hide();
 	end
 	for i = index, #ItemUpgradeFrame.RightStat do
 		ItemUpgradeFrame.RightStat[i]:Hide();
-	end	
+	end
+
+	-- effects
+	local effectIndex = 1;
+	for i = 1, GetNumItemUpgradeEffects() do
+		local row = ItemUpgradeFrame_GetEffectRow(i, index + effectIndex);
+		if ( effectIndex == 1 ) then
+			row:ClearAllPoints();
+			if ( index == 1 ) then
+				row:SetPoint("TOPRIGHT", ItemUpgradeFrame.HorzBar, 0, -38);
+			else
+				row:SetPoint("TOPLEFT", statAnchor, "BOTTOMLEFT", 0, -1);
+			end
+		end
+		local leftText, rightText = GetItemUpgradeEffect(i);
+		row.LeftText:SetText(leftText);
+		row.RightText:SetText(ItemUpgradeFrame_GetUpgradedEffectString(leftText, rightText));
+		local height = max(row.LeftText:GetHeight(), row.RightText:GetHeight());
+		row:SetHeight(height + 3);
+		row:Show();
+		effectIndex = effectIndex + 1;
+	end
+	for i = effectIndex, #ItemUpgradeFrame.EffectRow do
+		ItemUpgradeFrame.EffectRow[i]:Hide();
+	end
+end
+
+-- compare 2 strings finding numeric differences
+-- return the text of the 2nd string with (+x) in front of each number that is higher than in the 1st string
+function ItemUpgradeFrame_GetUpgradedEffectString(string1, string2)
+	local output = "";
+	local index2 = 1;	-- where we're at in string2
+
+	local start1, end1, substring1 = string.find(string1, "([%d,%.]+)");
+	local start2, end2, substring2 = string.find(string2, "([%d,%.]+)");
+	while start1 and start2 do
+		output = output .. string.sub(string2, index2, start2 - 1);
+		if ( substring1 ~= substring2 ) then
+			-- need to remove , and . because of locale
+			local temp1 = gsub(substring1, "[,%.]", "");
+			local temp2 = gsub(substring2, "[,%.]", "");
+			local number1 = tonumber(temp1);
+			local number2 = tonumber(temp2);
+			if ( number1 and number2 and number2 > number1 ) then		-- if 2nd number isn't larger then something is wrong
+				local diff = number2 - number1;
+				output = output..GREEN_FONT_COLOR_CODE..string.format(ITEM_UPGRADE_BONUS_FORMAT, diff)..FONT_COLOR_CODE_CLOSE;
+			end
+		end
+		output = output..substring2;
+		index2 = end2 + 1;
+
+		start1, end1, substring1 = string.find(string1, "([%d,%.]+)", end1 + 1);
+		start2, end2, substring2 = string.find(string2, "([%d,%.]+)", end2 + 1);
+	end
+	output = output .. string.sub(string2, index2, string.len(string2));
+	return output;
 end
 
 function ItemUpgradeFrame_GetStatRow(index, tryAdd)
@@ -228,6 +289,22 @@ function ItemUpgradeFrame_GetStatRow(index, tryAdd)
 	end
 	
 	return leftStat, rightStat;
+end
+
+function ItemUpgradeFrame_GetEffectRow(index, colorIndex)
+	local row = ItemUpgradeFrame.EffectRow[index];
+	if ( not row ) then
+		row = CreateFrame("FRAME", nil, ItemUpgradeFrame, "ItemUpgradeEffectRowTemplate");
+		if ( index > 1 ) then
+			row:SetPoint("TOP", ItemUpgradeFrame.EffectRow[index - 1], "BOTTOM", 0, -1);
+		end
+		ItemUpgradeFrame.EffectRow[index] = row;
+	end
+	if(mod(colorIndex, 2) == 0) then
+		row.LeftBg:Show();
+		row.RightBg:Show();
+	end
+	return row;
 end
 
 function HideStatsLeft()
