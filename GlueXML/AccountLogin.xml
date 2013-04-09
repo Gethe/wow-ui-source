@@ -2863,12 +2863,9 @@
 			</Layer>
 		</Layers>
 		<Scripts>
-			<OnShow>
-				KoreanRatings_OnShow(self);
-			</OnShow>
-			<OnUpdate>
-				KoreanRatings_OnUpdate(self, elapsed);
-			</OnUpdate>
+			<OnLoad function="KoreanRatings_OnLoad"/>
+			<OnEvent function="KoreanRatings_OnEvent"/>
+			<OnShow function="KoreanRatings_OnShow"/>
 		</Scripts>
 	</Button>
 </Ui>

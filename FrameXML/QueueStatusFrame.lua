@@ -35,11 +35,6 @@ function QueueStatusMinimapButton_OnShow(self)
 	self.Eye:SetFrameLevel(self:GetFrameLevel() - 1);
 end
 
-
-function QueueStatusMinimapButton_OnShow(self)
-	self.Eye:SetFrameLevel(self:GetFrameLevel() - 1);
-end
-
 ----------------------------------------------
 ------------QueueStatusFrame------------------
 ----------------------------------------------
@@ -56,6 +51,9 @@ function QueueStatusFrame_OnLoad(self)
 	self:RegisterEvent("LFG_PROPOSAL_SUCCEEDED");
 	self:RegisterEvent("LFG_PROPOSAL_SHOW");
 	self:RegisterEvent("LFG_QUEUE_STATUS_UPDATE");
+
+	--For PvP Role Checks
+	self:RegisterEvent("PVP_ROLE_CHECK_UPDATED");
 
 	--For PvP
 	self:RegisterEvent("UPDATE_BATTLEFIELD_STATUS");
@@ -117,6 +115,16 @@ function QueueStatusFrame_Update(self)
 				animateEye = true;
 			end
 		end
+	end
+
+	--Try PvP Role Check
+	if ( GetPVPRoleCheckInfo() ) then
+		local entry = QueueStatusFrame_GetEntry(self, nextEntry);
+		QueueStatusEntry_SetUpPVPRoleCheck(entry);
+		entry:Show();
+		totalHeight = totalHeight + entry:GetHeight();
+		nextEntry = nextEntry + 1;
+		showMinimapButton = true;
 	end
 
 	--Try all PvP queues
@@ -245,6 +253,11 @@ function QueueStatusEntry_SetUpBattlefield(entry, idx)
 	else
 		QueueStatusEntry_SetMinimalDisplay(entry, mapName, QUEUED_STATUS_UNKNOWN);
 	end
+end
+
+function QueueStatusEntry_SetUpPVPRoleCheck(entry)
+	local active, queueName = GetPVPRoleCheckInfo();
+	QueueStatusEntry_SetMinimalDisplay(entry, queueName, QUEUED_STATUS_ROLE_CHECK_IN_PROGRESS);
 end
 
 function QueueStatusEntry_SetUpWorldPvP(entry, idx)
@@ -417,6 +430,10 @@ function QueueStatusDropDown_Update()
 		end
 	end
 
+	if ( GetPVPRoleCheckInfo() ) then
+		QueueStatusDropDown_AddPVPRoleCheckButtons(info);
+	end
+
 	for i=1, GetMaxBattlefieldID() do
 		local status, mapName, teamSize, registeredMatch = GetBattlefieldStatus(i);
 		if ( status and status ~= "none" ) then
@@ -482,6 +499,25 @@ function QueueStatusDropDown_AddWorldPvPButtons(info, idx)
 		info.func = wrapFunc(BattlefieldMgrExitRequest);
 		info.arg1 = queueID;
 		info.arg2 = nil;
+		UIDropDownMenu_AddButton(info);
+	end
+end
+
+function QueueStatusDropDown_AddPVPRoleCheckButtons(info)
+	wipe(info);
+	local active, queueName = GetPVPRoleCheckInfo();
+	
+	if ( active ) then
+		info.text = queueName;
+		info.isTitle = 1;
+		info.notCheckable = 1;
+		UIDropDownMenu_AddButton(info);
+
+		info.text = QUEUED_STATUS_ROLE_CHECK_IN_PROGRESS;
+		info.isTitle = nil;
+		info.leftPadding = 10;
+		info.func = nil;
+		info.disabled = true;
 		UIDropDownMenu_AddButton(info);
 	end
 end

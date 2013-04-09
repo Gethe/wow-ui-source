@@ -2123,7 +2123,10 @@ function WatchFrameScenario_OnBeginSlideOut()
 end
 
 function WatchFrameScenarioBonusHeader_OnEnter(self)
-	local bonusName, bonusDescription, numBonusCriteria = C_Scenario.GetBonusStepInfo();
+	local bonusName, bonusDescription, numBonusCriteria, bonusStepFailed = C_Scenario.GetBonusStepInfo();
+	if ( bonusStepFailed ) then
+		return;
+	end
 	if ( not bonusName or bonusName == "" ) then
 		bonusName = SCENARIO_BONUS_OBJECTIVES;
 	end

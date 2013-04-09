@@ -239,15 +239,7 @@ LEVEL_UP_CLASS_HACKS = {
 							},
 	["HUNTER"] 		= {
 							--  Level  = {unlock}
-								[4] = {"TrackBeast"},
-								[12] = {"TrackHumanoid"},
-								[18] = {"TrackUndead"},
-								[26] = {"TrackHidden"},
-								[34] = {"TrackElemental"},
-								[36] = {"TrackDemons"},
 								[40] = {"Mail"},
-								[46] = {"TrackGiants"},
-								[52] = {"TrackDragonkin"},
 							},
 	["WARRIOR"] 		= {
 							--  Level  = {unlock}

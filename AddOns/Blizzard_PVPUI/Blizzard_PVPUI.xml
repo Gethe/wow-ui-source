@@ -234,6 +234,13 @@
 						</FontString>
 					</Layer>
 				</Layers>
+				<Scripts>
+					<OnLoad>
+						self.MinLevelText:SetFontObject("GameFontNormal");
+						self.MinLevelText:SetPoint("TOP", 90, -18);
+						self.UnlockText:SetPoint("BOTTOM", self.MinLevelText, "TOP", 0, 1);
+					</OnLoad>
+				</Scripts>
 			</Frame>
 		</Frames>
 	</Button>
@@ -1077,6 +1084,31 @@
 											<Anchor point="RIGHT" relativeKey="$parent.BattlegroundHeader" x="-34" y="5"/>
 										</Anchors>
 									</Frame>
+									<Frame parentKey="NoBattlegroundReward" hidden="true" enableMouse="true">
+										<Size x="10" y="10"/>
+										<Anchors>
+											<Anchor point="RIGHT" relativeKey="$parent.BattlegroundHeader" x="-40" y="7"/>
+										</Anchors>
+										<Layers>
+											<Layer level="ARTWORK">
+												<FontString parentKey="Text" inherits="GameFontRed" text="CAPPED">
+													<Anchors>
+														<Anchor point="RIGHT"/>
+													</Anchors>
+												</FontString>
+											</Layer>
+										</Layers>
+										<Scripts>
+											<OnLoad>
+												self:SetHeight(self.Text:GetHeight() + 4);
+												self:SetWidth(self.Text:GetWidth() + 4);
+											</OnLoad>
+											<OnEnter function="ConquestFrame_ShowMaximumRewardsTooltip"/>
+											<OnLeave>
+												GameTooltip:Hide();
+											</OnLeave>
+										</Scripts>
+									</Frame>
 									<Frame parentKey="BattlegroundReward2" inherits="PVPCurrencyRewardTemplate">
 										<Anchors>
 											<Anchor point="RIGHT" relativeKey="$parent.BattlegroundReward1.Amount" relativePoint="LEFT" x="-4" y="0"/>
@@ -1217,7 +1249,7 @@
 										CapProgressBar_SetNotches(self, 5);
 										self.progress:SetVertexColor(1, 0, 0)
 									</OnLoad>
-									<OnEnter function="PVPFrameConquestBar_OnEnter"/>
+									<OnEnter function="ConquestFrame_ShowMaximumRewardsTooltip"/>
 									<OnLeave function="GameTooltip_Hide"/>
 								</Scripts>
 							</Frame>

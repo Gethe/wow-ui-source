@@ -1,6 +1,7 @@
 FADE_IN_TIME = 2;
 DEFAULT_TOOLTIP_COLOR = {0.8, 0.8, 0.8, 0.09, 0.09, 0.09};
 MAX_PIN_LENGTH = 10;
+IS_LOGGING_IN = false;
 
 function AccountLogin_OnLoad(self)
 	TOSFrame.noticeType = "EULA";
@@ -12,6 +13,9 @@ function AccountLogin_OnLoad(self)
 	self:RegisterEvent("SCANDLL_ERROR");
 	self:RegisterEvent("SCANDLL_FINISHED");
 	self:RegisterEvent("LAUNCHER_LOGIN_STATUS_CHANGED");
+	self:RegisterEvent("LOGIN_STARTED");
+	self:RegisterEvent("LOGIN_STOPPED");
+	self:RegisterEvent("SCREEN_FIRST_DISPLAYED");
 
 	local versionType, buildType, version, internalVersion, date = GetBuildInfo();
 	AccountLoginVersion:SetFormattedText(VERSION_TEMPLATE, versionType, version, internalVersion, buildType, date);
@@ -109,6 +113,8 @@ function AccountLogin_OnKeyDown(key)
 			AccountLoginUI:Show();
 		elseif ( SurveyNotificationFrame:IsShown() ) then
 			-- do nothing
+		elseif ( TOSFrame:IsShown() or ConnectionHelpFrame:IsShown() ) then
+			return;
 		elseif ( IsLauncherLogin() and not GlueMenuFrame:IsShown() ) then
 			GlueMenuFrame_Show();
 		else
@@ -122,7 +128,11 @@ function AccountLogin_OnKeyDown(key)
 		elseif ( SurveyNotificationFrame:IsShown() ) then
 			AccountLogin_SurveyNotificationDone(1);
 		end
-		AccountLogin_Login();
+		if ( IsLauncherLogin() ) then
+			AttemptFastLogin();
+		else
+			AccountLogin_Login();
+		end
 	elseif ( key == "PRINTSCREEN" ) then
 		Screenshot();
 	end
@@ -131,7 +141,9 @@ end
 function AccountLogin_OnEvent(event, arg1, arg2, arg3)
 	if ( event == "SHOW_SERVER_ALERT" ) then
 		ServerAlertText:SetText(arg1);
+		ServerAlertFrame.shown = true;
 		ServerAlertFrame:Show();
+		AccountLogin_UpdateLoginType();	--In case it needs to hide the ServerAlertFrame.
 	elseif ( event == "SHOW_SURVEY_NOTIFICATION" ) then
 		AccountLogin_ShowSurveyNotification();
 	elseif ( event == "CLIENT_ACCOUNT_MISMATCH" ) then
@@ -173,13 +185,49 @@ function AccountLogin_OnEvent(event, arg1, arg2, arg3)
 		end
 	elseif ( event == "LAUNCHER_LOGIN_STATUS_CHANGED" ) then
 		AccountLogin_UpdateLoginType();
+	elseif ( event == "LOGIN_STARTED" ) then
+		IS_LOGGING_IN = true;
+		AccountLogin_UpdateLoginType();
+	elseif ( event == "LOGIN_STOPPED" ) then
+		IS_LOGGING_IN = false;
+		AccountLogin_UpdateLoginType();
+	elseif ( event == "SCREEN_FIRST_DISPLAYED" ) then
+		if ( AccountLogin_CanAutoLogin() ) then
+			AccountLogin_StartAutoLoginTimer()
+		end
 	end
 end
 
+--Delay login by 1 second to make sure Copyright/Version have time to display
+local AUTO_LOGIN_TIMER = 1 + LOGIN_FADE_IN;
+local AUTO_LOGIN_TIMER_STARTED = false;
+function AccountLogin_StartAutoLoginTimer()
+	AccountLogin:SetScript("OnUpdate", AccountLogin_OnUpdate);
+end
+
+function AccountLogin_CanAutoLogin()
+	return CanLogIn() and not SHOW_KOREAN_RATINGS and IsLauncherLogin() and not IsLauncherLoginAutoAttempted();
+end
 function AccountLogin_CheckAutoLogin()
-	if ( CanLogIn() and not SHOW_KOREAN_RATINGS and IsLauncherLogin() and not IsLauncherLoginAutoAttempted() ) then
-		SetLauncherLoginAutoAttempted();
-		AttemptFastLogin();
+	if ( AccountLogin_CanAutoLogin() ) then
+		if ( AUTO_LOGIN_TIMER <= 0 ) then
+			SetLauncherLoginAutoAttempted();
+			AttemptFastLogin();
+		elseif ( not AUTO_LOGIN_TIMER_STARTED ) then
+			AUTO_LOGIN_TIMER_STARTED = true;
+			GlueDialog_Show("CANCEL", LOGIN_STATE_CONNECTING);
+			if ( WasScreenFirstDisplayed() ) then
+				AccountLogin_StartAutoLoginTimer();
+			end
+		end
+	end
+end
+
+function AccountLogin_OnUpdate(self, elapsed)
+	AUTO_LOGIN_TIMER = AUTO_LOGIN_TIMER - elapsed;
+	if ( AUTO_LOGIN_TIMER <= 0 ) then
+		AccountLogin_CheckAutoLogin();
+		self:SetScript("OnUpdate", nil);
 	end
 end
 
@@ -200,6 +248,7 @@ function AccountLogin_TOS()
 	if ( not GlueDialog:IsShown() ) then
 		PlaySound("gsLoginNewAccount");
 		AccountLoginUI:Hide();
+		AccountLogin_HideAllUserAgreements();
 		TOSFrame:Show();
 		TOSScrollFrameScrollBar:SetValue(0);		
 		TOSScrollFrame:Show();
@@ -267,7 +316,7 @@ function AccountLogin_SurveyNotificationDone(accepted)
 	AccountLoginUI:Show();
 end
 
-function AccountLogin_ShowUserAgreements()
+function AccountLogin_HideAllUserAgreements()
 	TOSScrollFrame:Hide();
 	EULAScrollFrame:Hide();
 	TerminationScrollFrame:Hide();
@@ -277,6 +326,10 @@ function AccountLogin_ShowUserAgreements()
 	EULAText:Hide();
 	TerminationText:Hide();
 	ScanningText:Hide();
+end
+
+function AccountLogin_ShowUserAgreements()
+	AccountLogin_HideAllUserAgreements();
 	KoreanRatings:Hide();
 	if ( not EULAAccepted() ) then
 		if ( ShowEULANotice() ) then
@@ -377,27 +430,42 @@ end
 
 function AccountLogin_UpdateLoginType()
 	if ( IsLauncherLogin() ) then
-		AccountLoginNormalLoginFrame:Hide();
-		AccountLoginLauncherLoginFrame:Show();
-
-		if ( GetSavedAccountListSSO() ~= "" ) then
-			AccountLoginLauncherChangeAccountButton:Show();
-			AccountLoginLauncherPlayButton:SetPoint("BOTTOM", AccountLoginLauncherChangeAccountButton, "TOP", 0, 10);
-			AccountLoginLauncherLogoutButton:SetPoint("BOTTOM", AccountLoginLauncherLoginFrame, "BOTTOM", 0, 115);
+		if ( IS_LOGGING_IN or AUTO_LOGIN_TIMER >= 0 ) then
+			AccountLoginNormalLoginFrame:Hide();
+			AccountLoginLauncherLoginFrame:Hide();
+			AccountLoginTOSButton:Hide();
+			AccountLoginCreditsButton:Hide();
+			AccountLoginCinematicsButton:Hide();
+			AccountLoginCreateAccountButton:Hide();
+			AccountLoginManageAccountButton:Hide();
+			AccountLoginCommunityButton:Hide();
+			OptionsButton:Hide();
+			GlueMenuButton:Hide();
+			ServerAlertFrame:Hide();
 		else
-			AccountLoginLauncherChangeAccountButton:Hide();
-			AccountLoginLauncherPlayButton:SetPoint("BOTTOM", AccountLoginLauncherLogoutButton, "TOP", 0, 10);
-			AccountLoginLauncherLogoutButton:SetPoint("BOTTOM", AccountLoginLauncherLoginFrame, "BOTTOM", 0, 170);
-		end
+			AccountLoginNormalLoginFrame:Hide();
+			AccountLoginLauncherLoginFrame:Show();
 
-		AccountLoginTOSButton:Hide();
-		AccountLoginCreditsButton:Hide();
-		AccountLoginCinematicsButton:Hide();
-		AccountLoginCreateAccountButton:Hide();
-		AccountLoginManageAccountButton:Hide();
-		AccountLoginCommunityButton:Hide();
-		OptionsButton:Hide();
-		GlueMenuButton:Show();
+			if ( GetSavedAccountListSSO() ~= "" ) then
+				AccountLoginLauncherChangeAccountButton:Show();
+				AccountLoginLauncherPlayButton:SetPoint("BOTTOM", AccountLoginLauncherChangeAccountButton, "TOP", 0, 10);
+				AccountLoginLauncherLogoutButton:SetPoint("BOTTOM", AccountLoginLauncherLoginFrame, "BOTTOM", 0, 115);
+			else
+				AccountLoginLauncherChangeAccountButton:Hide();
+				AccountLoginLauncherPlayButton:SetPoint("BOTTOM", AccountLoginLauncherLogoutButton, "TOP", 0, 10);
+				AccountLoginLauncherLogoutButton:SetPoint("BOTTOM", AccountLoginLauncherLoginFrame, "BOTTOM", 0, 170);
+			end
+
+			AccountLoginTOSButton:Hide();
+			AccountLoginCreditsButton:Hide();
+			AccountLoginCinematicsButton:Hide();
+			AccountLoginCreateAccountButton:Hide();
+			AccountLoginManageAccountButton:Hide();
+			AccountLoginCommunityButton:Hide();
+			OptionsButton:Hide();
+			GlueMenuButton:Show();
+			ServerAlertFrame:Hide();
+		end
 	else
 		AccountLoginNormalLoginFrame:Show();
 		AccountLoginLauncherLoginFrame:Hide();
@@ -410,6 +478,12 @@ function AccountLogin_UpdateLoginType()
 		AccountLoginCommunityButton:Show();
 		OptionsButton:Show();
 		GlueMenuButton:Hide();
+
+		if ( ServerAlertFrame.shown ) then
+			ServerAlertFrame:Show();
+		else
+			ServerAlertFrame:Hide();
+		end
 	end
 end
 
@@ -1000,20 +1074,41 @@ function CinematicsButton_OnEnter(self)
 	end
 end
 
-KOREAN_RATINGS_TIMER = 3; -- seconds it needs to display
+local KOREAN_RATINGS_AUTO_CLOSE_TIMER; -- seconds until automatically closing
+function KoreanRatings_OnLoad(self)
+	if ( WasScreenFirstDisplayed() ) then
+		KoreanRatings_ScreenDisplayed(self);
+	else
+		self:RegisterEvent("SCREEN_FIRST_DISPLAYED");
+	end
+end
+
+function KoreanRatings_OnEvent(self, event, ...)
+	if ( event == "SCREEN_FIRST_DISPLAYED" ) then
+		KoreanRatings_ScreenDisplayed(self);
+		self:UnregisterEvent("SCREEN_FIRST_DISPLAYED");
+	end
+end
+
+function KoreanRatings_ScreenDisplayed(self)
+	self:SetScript("OnUpdate", KoreanRatings_OnUpdate);
+end
+
 function KoreanRatings_OnShow(self)
 	AccountLoginUI:Hide();
-	KOREAN_RATINGS_TIMER = 3 + LOGIN_FADE_IN;
 	self.locked = true;
+	KOREAN_RATINGS_AUTO_CLOSE_TIMER = 3;
 	KoreanRatingsText:SetTextHeight(10); -- this is just dumb ... sort out this bug later.
 	KoreanRatingsText:SetTextHeight(50);
 end
+
 function KoreanRatings_OnUpdate(self, elapsed)
-	KOREAN_RATINGS_TIMER = KOREAN_RATINGS_TIMER - elapsed;
-	if ( KOREAN_RATINGS_TIMER <= 0 ) then
+	KOREAN_RATINGS_AUTO_CLOSE_TIMER = KOREAN_RATINGS_AUTO_CLOSE_TIMER - elapsed;
+	if ( KOREAN_RATINGS_AUTO_CLOSE_TIMER <= 0 ) then
 		KoreanRatings_Close(self);
 	end	
 end
+
 function KoreanRatings_Close(self)
 	SHOW_KOREAN_RATINGS = false;
 	AccountLogin_CheckAutoLogin();

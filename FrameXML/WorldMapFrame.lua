@@ -230,7 +230,13 @@ function WorldMapFrame_OnLoad(self)
 	WorldMapQuestDetailScrollChildFrame:SetScale(0.9);
 	WorldMapQuestRewardScrollChildFrame:SetScale(0.9);
 	WorldMapFrame.numQuests = 0;
-	WatchFrame.showObjectives = GetCVarBool("questPOI");
+		
+	if (GetCVarBool("questPOI") > 0) then
+		WatchFrame.showObjectives = true;
+	else
+		WatchFrame.showObjectives = false;
+	end
+	
 	WorldMapPOIFrame.allowBlobTooltip = true;
 	-- scrollframes
 	WorldMapQuestDetailScrollFrame.scrollBarHideable = true;

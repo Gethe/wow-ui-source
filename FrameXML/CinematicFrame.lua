@@ -81,14 +81,15 @@ function CinematicFrame_AddSubtitle(chatType, body)
 end
 
 function CinematicFrame_OnKeyDown(self, key)
-	if ( GetBindingFromClick(key) == "TOGGLEGAMEMENU" ) then
+	local keybind = GetBindingFromClick(key);
+	if ( keybind == "TOGGLEGAMEMENU" ) then
 		if ( self.isRealCinematic and IsGMClient() ) then
 			StopCinematic();
 		elseif ( self.isRealCinematic or CanExitVehicle() or CanCancelScene() ) then	--If it's not a real cinematic, we can cancel it by leaving the vehicle.
 			self.closeDialog:Show();
 		end
-	elseif ( GetBindingFromClick(key) == "SCREENSHOT" ) then
-		RunBinding("SCREENSHOT");
+	elseif ( keybind == "SCREENSHOT" or keybind == "TOGGLEMUSIC" or keybind == "TOGGLESOUND" ) then
+		RunBinding(keybind);
 	end
 end
 

@@ -274,7 +274,9 @@ end
 
 function CharacterSelect_OnKeyDown(self,key)
 	if ( key == "ESCAPE" ) then
-		if ( IsLauncherLogin() ) then
+		if ( TOSFrame:IsShown() or ConnectionHelpFrame:IsShown() ) then
+			return;
+		elseif ( IsLauncherLogin() ) then
 			GlueMenuFrame:SetShown(not GlueMenuFrame:IsShown());
 		else
 			CharacterSelect_Exit();

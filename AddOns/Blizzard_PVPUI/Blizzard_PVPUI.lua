@@ -419,19 +419,22 @@ function HonorFrame_OnLoad(self)
 	self:RegisterEvent("PVPQUEUE_ANYWHERE_UPDATE_AVAILABLE");
 	self:RegisterEvent("PVP_RATED_STATS_UPDATE");
 	self:RegisterEvent("GROUP_ROSTER_UPDATE");
+	self:RegisterEvent("PVP_REWARDS_UPDATE");
 end
 
 function HonorFrame_OnEvent(self, event, ...)
 	if (event == "PLAYER_ENTERING_WORLD") then
 		HonorFrameSpecificList_Update();
 		HonorFrameBonusFrame_Update();
-		PVP_UpdateStatus(false, nil);
+		PVP_UpdateStatus();
 	elseif ( event == "PVPQUEUE_ANYWHERE_SHOW" or event ==  "PVPQUEUE_ANYWHERE_UPDATE_AVAILABLE"
 			or event == "PVP_RATED_STATS_UPDATE") then
 		HonorFrameSpecificList_Update();
 		HonorFrameBonusFrame_Update();
 	elseif ( event == "GROUP_ROSTER_UPDATE" ) then
 		HonorFrame_UpdateQueueButtons();
+	elseif ( event == "PVP_REWARDS_UPDATE" and self:IsShown() ) then
+		RequestRandomBattlegroundInstanceInfo();
 	end
 end	
 
@@ -532,7 +535,7 @@ function HonorFrameSpecificList_Update()
 	local buttonCount = -offset;
 
 	for i = 1, numBattlegrounds do
-		local localizedName, canEnter, isHoliday, isRandom, battleGroundID, mapDescription, BGMapID, maxPlayers = GetBattlegroundInfo(i);
+		local localizedName, canEnter, isHoliday, isRandom, battleGroundID, mapDescription, BGMapID, maxPlayers, gameType = GetBattlegroundInfo(i);
 		if ( localizedName and canEnter and not isRandom ) then
 			buttonCount = buttonCount + 1;
 			if ( buttonCount > 0 and buttonCount <= numButtons ) then
@@ -540,6 +543,7 @@ function HonorFrameSpecificList_Update()
 				button:Show();
 				button.NameText:SetText(localizedName);
 				button.SizeText:SetFormattedText(PVP_TEAMTYPE, maxPlayers, maxPlayers);
+				button.InfoText:SetText(gameType);
 				if ( INSTANCE_TEXTURELIST[battleGroundID] ) then
 					button.Icon:SetTexture(INSTANCE_TEXTURELIST[battleGroundID]);
 				else
@@ -769,6 +773,12 @@ function HonorFrameBonusFrame_Update()
 	for i = rewardIndex + 1, 2 do
 		HonorFrame.BonusFrame["BattlegroundReward"..i]:Hide();
 	end
+	if ( rewardIndex == 0 ) then
+		-- we don't have any rewards
+		HonorFrame.BonusFrame.NoBattlegroundReward:Show();
+	else
+		HonorFrame.BonusFrame.NoBattlegroundReward:Hide();
+	end
 	-- world pvp
 	for i = 1, 2 do
 		button = HonorFrame.BonusFrame["WorldPVP"..i.."Button"];
@@ -890,10 +900,16 @@ function ConquestFrame_OnLoad(self)
 	self:RegisterEvent("ARENA_TEAM_UPDATE");
 	self:RegisterEvent("ARENA_TEAM_ROSTER_UPDATE");
 	self:RegisterEvent("PVP_RATED_STATS_UPDATE");
+	self:RegisterEvent("PVP_REWARDS_UPDATE");
 end
 
 function ConquestFrame_OnEvent(self, event, ...)
-	ConquestFrame_Update(self);
+	if ( event == "PVP_REWARDS_UPDATE" and self:IsShown() ) then
+		RequestRatedArenaInfo(1);	-- querying any arena team will return award per win
+		RequestRatedBattlegroundInfo();
+	else
+		ConquestFrame_Update(self);
+	end
 end
 
 function ConquestFrame_OnShow(self)
@@ -1144,7 +1160,7 @@ function ArenaInviteMenu_Init(self, level, team)
 end
 --------- Conquest Tooltips ----------
 
-function PVPFrameConquestBar_OnEnter(self)
+function ConquestFrame_ShowMaximumRewardsTooltip(self)
 	local currencyName = GetCurrencyInfo(CONQUEST_CURRENCY);
 	
 	GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
@@ -1486,10 +1502,18 @@ function PVPArenaTeamsFrame_ShowTeam(self)
 	
 	frame.Flag.Banner:SetVertexColor(background.r, background.g, background.b);
 	frame.Flag.Emblem:SetVertexColor( emblemColor.r, emblemColor.g, emblemColor.b);
-	frame.Flag.Emblem:SetTexture("Interface\\PVPFrame\\Icons\\PVP-Banner-Emblem-"..emblem);
-	frame.Flag.Border:SetVertexColor( borderColor.r, borderColor.g, borderColor.b );				
-	frame.Flag.Border:SetTexture("Interface\\PVPFrame\\PVP-Banner-2-Border-"..border);
-	
+	if ( emblem == -1 ) then
+		frame.Flag.Emblem:SetTexture(nil);
+	else
+		frame.Flag.Emblem:SetTexture("Interface\\PVPFrame\\Icons\\PVP-Banner-Emblem-"..emblem);
+	end
+	frame.Flag.Border:SetVertexColor( borderColor.r, borderColor.g, borderColor.b );
+	if ( border == -1 ) then
+		frame.Flag.Border:SetTexture(nil);
+	else
+		frame.Flag.Border:SetTexture("Interface\\PVPFrame\\PVP-Banner-2-Border-"..border);
+	end
+
 	local played, wins;
 	if ( frame.seasonStats ) then
 		played = seasonPlayed;
@@ -1583,7 +1607,11 @@ end
 
 function PVPArenaTeamsFrameButton_SetEnabled(button, enabled)
 	if ( enabled ) then
-		button.Background:SetTexCoord(0.00390625, 0.87890625, 0.75195313, 0.83007813);
+		if ( PVPArenaTeamsFrame.selectedButton == button ) then
+			button.Background:SetTexCoord(0.00390625, 0.87890625, 0.59179688, 0.66992188);
+		else
+			button.Background:SetTexCoord(0.00390625, 0.87890625, 0.75195313, 0.83007813);
+		end
 		button.TeamName:SetFontObject("GameFontNormalMed3");
 		button.TeamSize:SetFontObject("GameFontHighlightMedium");
 		button.Rating:SetFontObject("GameFontHighlight");
@@ -1622,11 +1650,19 @@ function PVPArenaTeamsFrame_UpdateTeams(self)
 			teamButton.Flag.Banner:SetVertexColor(background.r, background.g, background.b);
 			teamButton.Flag.Emblem:Show();
 			teamButton.Flag.Emblem:SetVertexColor( emblemColor.r, emblemColor.g, emblemColor.b);
-			teamButton.Flag.Emblem:SetTexture("Interface\\PVPFrame\\Icons\\PVP-Banner-Emblem-"..emblem);
+			if ( emblem == -1 ) then
+				teamButton.Flag.Emblem:SetTexture(nil);
+			else
+				teamButton.Flag.Emblem:SetTexture("Interface\\PVPFrame\\Icons\\PVP-Banner-Emblem-"..emblem);
+			end
 			teamButton.Flag.Border:Show();
-			teamButton.Flag.Border:SetVertexColor( borderColor.r, borderColor.g, borderColor.b );				
-			teamButton.Flag.Border:SetTexture("Interface\\PVPFrame\\PVP-Banner-2-Border-"..border);
-			
+			teamButton.Flag.Border:SetVertexColor( borderColor.r, borderColor.g, borderColor.b );
+			if ( border == -1 ) then
+				teamButton.Flag.Border:SetTexture(nil);
+			else
+				teamButton.Flag.Border:SetTexture("Interface\\PVPFrame\\PVP-Banner-2-Border-"..border);
+			end
+
 			teamButton.TeamSize:Show();
 			teamButton.TeamSize:SetText(CONQUEST_SIZE_STRINGS[i])
 			teamButton.RatingLabel:Show();

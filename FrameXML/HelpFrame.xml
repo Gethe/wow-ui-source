@@ -180,26 +180,27 @@
 	
 	
 	<Button name="HelpFrameButtonTemplate" virtual="true">
-		<Size x="199" y="54"/>
+		<Size x="174" y="54"/>
 		<Layers>
 			<Layer level="OVERLAY">
 				<Texture name="$parentIcon" file="Interface\Icons\Ability_ThunderClap" parentKey="icon">
-					<Size x="57" y="57"/>
+					<Size x="50" y="50"/>
 					<Anchors>
-						<Anchor point="LEFT" x="3" y="0"/>
+						<Anchor point="LEFT" x="0" y="0"/>
 					</Anchors>
 				</Texture>
 				<Texture name="$parentSelected" file="Interface\HelpFrame\HelpButtons" parentKey="selected" hidden="true">
-					<Size x="199" y="54"/>
+					<Size x="174" y="54"/>
 					<Anchors>
 						<Anchor point="CENTER" x="0" y="0"/>
 					</Anchors>
-					<TexCoords left="0.00390625" right="0.78125000" top="0.66015625" bottom="0.87109375"/>
+					<TexCoords left="0.00390625" right="0.68359375" top="0.66015625" bottom="0.87109375"/>
 				</Texture>
 			</Layer>
 		</Layers>
 		<Scripts>
 			<OnLoad>
+				
 				local data = HelpFrameNavTbl[self:GetID()];
 				if data.icon  then
 					self.icon:SetTexture(data.icon);
@@ -215,7 +216,7 @@
 			</OnLoad>
 			<OnMouseDown>
 				if self:IsEnabled() then
-					self.icon:SetPoint("LEFT", 4, -1);
+					self.icon:SetPoint("LEFT", 4, -1);	
 				end
 			</OnMouseDown>
 			<OnMouseUp>
@@ -231,15 +232,15 @@
 			</OnClick>
 		</Scripts>
 		<NormalTexture file="Interface\HelpFrame\HelpButtons">
-			<TexCoords left="0.00390625" right="0.78125000" top="0.44140625" bottom="0.65234375"/>	
+			<TexCoords left="0.00390625" right="0.68359375" top="0.44140625" bottom="0.65234375"/>	
 		</NormalTexture>		
 		<PushedTexture file="Interface\HelpFrame\HelpButtons">
-			<TexCoords left="0.00390625" right="0.78125000" top="0.22265625" bottom="0.43359375"/>
+			<TexCoords left="0.00390625" right="0.68359375" top="0.22265625" bottom="0.43359375"/>
 		</PushedTexture>
 		<HighlightTexture file="Interface\HelpFrame\HelpButtons" alphaMode="ADD">
-			<TexCoords left="0.00390625" right="0.78125000" top="0.00390625" bottom="0.21484375"/>
+			<TexCoords left="0.00390625" right="0.68359375" top="0.00390625" bottom="0.21484375"/>
 		</HighlightTexture>
-		<ButtonText name="$parentText" inherits="GameFontNormalMed3" justifyH="LEFT" parentKey="text">
+		<ButtonText name="$parentText" inherits="GameFontNormalMed2" justifyH="LEFT" parentKey="text">
 			<Size x="130" y="30"/>
 			<Anchors>
 				<Anchor point="LEFT" relativeTo="$parentIcon" relativePoint="RIGHT" x="0" y="-1"/>
@@ -336,10 +337,39 @@
 		</HighlightTexture>
 	</Button>
 
+	<Button name="BrowserButtonTemplate" virtual="true">
+		<Size x="32" y="32"/>
+		<NormalTexture file="Interface\Buttons\UI-SquareButton-Up"/>
+		<PushedTexture file="Interface\Buttons\UI-SquareButton-Down"/>
+		<DisabledTexture file="Interface\Buttons\UI-SquareButton-Disabled"/>
+		<HighlightTexture file="Interface\Buttons\UI-Common-MouseHilight" alphaMode="ADD"/>
+		<Scripts>
+			<OnMouseDown>
+				local point, relativeTo, relativePoint, x, y = self.Icon:GetPoint(1);
+				self.origX = x;
+				self.origY = y;
+				self.Icon:SetPoint(point, relativeTo, relativePoint, x-1, y-1);
+			</OnMouseDown>
+			<OnMouseUp>
+				local point, relativeTo, relativePoint = self.Icon:GetPoint(1);
+				self.Icon:SetPoint(point, relativeTo, relativePoint, self.origX, self.origY);
+			</OnMouseUp>
+			<OnHide>
+				local point, relativeTo, relativePoint = self.Icon:GetPoint(1);
+				self.Icon:SetPoint(point, relativeTo, relativePoint, self.origX, self.origY);
+			</OnHide>
+			<OnEnter>
+				if (self.tooltip) then
+					GameTooltip:SetOwner(self, "ANCHOR_CURSOR_RIGHT");
+					GameTooltip:SetText(self.tooltip, HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b);
+				end
+			</OnEnter>
+			<OnLeave function="GameTooltip_Hide" />
+		</Scripts>
+	</Button>
+	
 	<Frame name="HelpFrame" toplevel="true" parent="UIParent" inherits="TranslucentFrameTemplate" hidden="true" enableMouse="true" >
-		<Size>
-			<AbsDimension x="760" y="520"/>
-		</Size>
+		<Size x="974" y="524"/>
 		<Anchors>
 			<Anchor point="CENTER" x="0" y="0"/>
 		</Anchors>
@@ -378,8 +408,8 @@
 			</Button>
 			<Frame name="$parentLeftInset" useParentLevel="true" inherits="InsetFrameTemplate" parentKey="leftInset">
 				<Anchors>
-					<Anchor point="TOPLEFT" x="18" y="-38" />
-					<Anchor point="BOTTOMRIGHT" relativePoint="BOTTOMLEFT" x="248" y="18"/>
+					<Anchor point="TOPLEFT" x="10" y="-10" />
+					<Anchor point="BOTTOMRIGHT" relativePoint="BOTTOMLEFT" x="207" y="10"/>
 				</Anchors>
 				<Layers>
 					<Layer level="BACKGROUND">
@@ -416,8 +446,8 @@
 			</Frame>
 			<Frame name="$parentMainInset" useParentLevel="true" inherits="InsetFrameTemplate" parentKey="mainInset">
 				<Anchors>
-					<Anchor point="TOPLEFT" relativeTo="$parentLeftInset" relativePoint="TOPRIGHT" x="6" y="0" />
-					<Anchor point="BOTTOMRIGHT" x="-18" y="18"/>
+					<Anchor point="TOPLEFT" relativeTo="$parentLeftInset" relativePoint="TOPRIGHT" x="3" y="-32" />
+					<Anchor point="BOTTOMRIGHT" x="-10" y="10"/>
 				</Anchors>
 			</Frame>
 			<Button name="$parentButton1" inherits="HelpFrameButtonTemplate" parentKey="button1" id="1">
@@ -427,27 +457,27 @@
 			</Button>
 			<Button name="$parentButton2" inherits="HelpFrameButtonTemplate" parentKey="button2" id="2">
 				<Anchors>
-					<Anchor point="TOP" relativeTo="$parentButton1" relativePoint="BOTTOM" x="0" y="-5"/>
+					<Anchor point="TOP" relativeTo="$parentButton1" relativePoint="BOTTOM" x="0" y="-12"/>
 				</Anchors>
 			</Button>
 			<Button name="$parentButton5" inherits="HelpFrameButtonTemplate" parentKey="button5" id="5">
 				<Anchors>
-					<Anchor point="TOP" relativeTo="$parentButton2" relativePoint="BOTTOM" x="0" y="-5"/>
+					<Anchor point="TOP" relativeTo="$parentButton2" relativePoint="BOTTOM" x="0" y="-12"/>
 				</Anchors>
 			</Button>
 			<Button name="$parentButton3" inherits="HelpFrameButtonTemplate" parentKey="button3" id="3">
 				<Anchors>
-					<Anchor point="TOP" relativeTo="$parentButton5" relativePoint="BOTTOM" x="0" y="-25"/>
+					<Anchor point="TOP" relativeTo="$parentButton5" relativePoint="BOTTOM" x="0" y="-29"/>
 				</Anchors>
 			</Button>
 			<Button name="$parentButton4" inherits="HelpFrameButtonTemplate" parentKey="button4" id="4">
 				<Anchors>
-					<Anchor point="TOP" relativeTo="$parentButton3" relativePoint="BOTTOM" x="0" y="-5"/>
+					<Anchor point="TOP" relativeTo="$parentButton3" relativePoint="BOTTOM" x="0" y="-12"/>
 				</Anchors>
 			</Button>
 			<Button name="$parentButton16" inherits="HelpFrameButtonTemplate" parentKey="button16" id="16">
 				<Anchors>
-					<Anchor point="TOP" relativeTo="$parentButton4" relativePoint="BOTTOM" x="0" y="-5"/>
+					<Anchor point="TOP" relativeTo="$parentButton4" relativePoint="BOTTOM" x="0" y="-12"/>
 				</Anchors>
 			</Button>
 			<Button name="$parentButton6" inherits="HelpFrameButtonTemplate" parentKey="button6" id="6">
@@ -463,7 +493,7 @@
 				<Layers>
 					<Layer level="ARTWORK">
 						<FontString name="$parentTitle" inherits="GameFontNormalLarge" text="HELPFRAME_ACCOUNTSECURITY_TITLE" justifyH="LEFT">
-							<Size x="450" y="0"/>
+							<Size x="710" y="0"/>
 							<Anchors>
 								<Anchor point="TOPLEFT">
 									<Offset>
@@ -473,46 +503,46 @@
 							</Anchors>
 						</FontString>
 						<FontString name="$parentText1Header" inherits="GameFontNormal" text="HELPFRAME_ACCOUNTSECURITY_TEXT1_HEADER" justifyH="LEFT">
-							<Size x="450" y="0"/>
+							<Size x="710" y="0"/>
 							<Anchors>
 								<Anchor point="TOPLEFT" relativeTo="$parentTitle" relativePoint="BOTTOMLEFT" x="0" y="-25"/>
 							</Anchors>
 						</FontString>
 						<FontString name="$parentText1" inherits="GameFontHighlight" text="HELPFRAME_ACCOUNTSECURITY_TEXT1" justifyH="LEFT">
-							<Size x="450" y="0"/>
+							<Size x="710" y="0"/>
 							<Anchors>
 								<Anchor point="TOPLEFT" relativeTo="$parentText1Header" relativePoint="BOTTOMLEFT" x="0" y="-3"/>
 							</Anchors>
 						</FontString>
 						
 						<FontString name="$parentText2Header" inherits="GameFontNormal" text="HELPFRAME_ACCOUNTSECURITY_TEXT2_HEADER" justifyH="LEFT">
-							<Size x="450" y="0"/>
+							<Size x="710" y="0"/>
 							<Anchors>
 								<Anchor point="TOPLEFT" relativeTo="$parentText1" relativePoint="BOTTOMLEFT" x="0" y="-25"/>
 							</Anchors>
 						</FontString>
 						<FontString name="$parentText2" inherits="GameFontHighlight" text="HELPFRAME_ACCOUNTSECURITY_TEXT2" justifyH="LEFT">
-							<Size x="450" y="0"/>
+							<Size x="710" y="0"/>
 							<Anchors>
 								<Anchor point="TOPLEFT" relativeTo="$parentText2Header" relativePoint="BOTTOMLEFT" x="0" y="-3"/>
 							</Anchors>
 						</FontString>
 						
 						<FontString name="$parentText3Header" inherits="GameFontNormal" text="HELPFRAME_ACCOUNTSECURITY_TEXT3_HEADER" justifyH="LEFT">
-							<Size x="450" y="0"/>
+							<Size x="710" y="0"/>
 							<Anchors>
 								<Anchor point="TOPLEFT" relativeTo="$parentText2" relativePoint="BOTTOMLEFT" x="0" y="-25"/>
 							</Anchors>
 						</FontString>
 						<FontString name="$parentText3" inherits="GameFontHighlight" text="HELPFRAME_ACCOUNTSECURITY_TEXT3" justifyH="LEFT">
-							<Size x="450" y="0"/>
+							<Size x="710" y="0"/>
 							<Anchors>
 								<Anchor point="TOPLEFT" relativeTo="$parentText3Header" relativePoint="BOTTOMLEFT" x="0" y="-3"/>
 							</Anchors>
 						</FontString>
 						
 						<FontString name="$parentFooter" inherits="GameFontHighlight" text="HELPFRAME_ACCOUNTSECURITY_FOOTER" justifyH="LEFT">
-							<Size x="450" y="0"/>
+							<Size x="710" y="0"/>
 							<Anchors>
 								<Anchor point="TOPLEFT" relativeTo="$parentText3" relativePoint="BOTTOMLEFT" x="0" y="-25"/>
 							</Anchors>
@@ -546,31 +576,31 @@
 							</Anchors>
 						</FontString>
 						<FontString name="$parentText1" inherits="GameFontHighlight" text="HELPFRAME_STUCK_TEXT1" justifyH="LEFT">
-							<Size x="450" y="0"/>
+							<Size x="710" y="0"/>
 							<Anchors>
 								<Anchor point="TOPLEFT" relativeTo="$parentTitle" relativePoint="BOTTOMLEFT" x="0" y="-3"/>
 							</Anchors>
 						</FontString>
 						<FontString name="$parentText2Header" inherits="GameFontNormal" text="HELPFRAME_STUCK_HEARTHSTONE_HEADER" justifyH="LEFT">
-							<Size x="450" y="0"/>
+							<Size x="710" y="0"/>
 							<Anchors>
 								<Anchor point="TOPLEFT" relativeTo="$parentText1" relativePoint="BOTTOMLEFT" x="0" y="-28"/>
 							</Anchors>
 						</FontString>
 						<FontString name="$parentText2" inherits="GameFontHighlight" text="HELPFRAME_STUCK_HEARTHSTONE" justifyH="LEFT">
-							<Size x="450" y="0"/>
+							<Size x="710" y="0"/>
 							<Anchors>
 								<Anchor point="TOPLEFT" relativeTo="$parentText2Header" relativePoint="BOTTOMLEFT" x="0" y="-3"/>
 							</Anchors>
 						</FontString>
 						<FontString name="$parentText3Header" inherits="GameFontNormal" text="HELPFRAME_STUCK_GRAVEYARD_HEADER" justifyH="LEFT">
-							<Size x="450" y="0"/>
+							<Size x="710" y="0"/>
 							<Anchors>
 								<Anchor point="TOPLEFT" relativeTo="$parentText2" relativePoint="BOTTOMLEFT" x="0" y="-144"/>
 							</Anchors>
 						</FontString>
 						<FontString name="$parentText3" inherits="GameFontHighlight" text="HELPFRAME_STUCK_GRAVEYARD" justifyH="LEFT">
-							<Size x="450" y="0"/>
+							<Size x="710" y="0"/>
 							<Anchors>
 								<Anchor point="TOPLEFT" relativeTo="$parentText3Header" relativePoint="BOTTOMLEFT" x="0" y="-3"/>
 							</Anchors>
@@ -666,7 +696,7 @@
 							</Anchors>
 						</FontString>
 						<FontString name="$parentText1" inherits="GameFontHighlight" text="HELPFRAME_REPORT_BUG_TEXT1" justifyH="LEFT">
-							<Size x="450" y="0"/>
+							<Size x="710" y="0"/>
 							<Anchors>
 								<Anchor point="TOPLEFT" relativeTo="$parentTitle" relativePoint="BOTTOMLEFT" x="0" y="-20"/>
 							</Anchors>
@@ -780,13 +810,13 @@
 							</Anchors>
 						</FontString>
 						<FontString name="$parentText1" inherits="GameFontHighlight" text="HELPFRAME_SUBMIT_SUGGESTION_TEXT1" justifyH="LEFT">
-							<Size x="450" y="0"/>
+							<Size x="710" y="0"/>
 							<Anchors>
 								<Anchor point="TOPLEFT" relativeTo="$parentTitle" relativePoint="BOTTOMLEFT" x="0" y="-20"/>
 							</Anchors>
 						</FontString>
 						<FontString name="$parentLegalDisclaimer" inherits="GameFontHighlight" text="HELPFRAME_SUBMIT_SUGGESTION_LEGAL" justifyH="LEFT" justifyV="BOTTOM">
-							<Size x="450" y="0"/>
+							<Size x="710" y="0"/>
 							<Anchors>
 								<Anchor point="BOTTOM" x="0" y="60"/>
 							</Anchors>
@@ -894,25 +924,25 @@
 				<Layers>
 					<Layer level="ARTWORK">
 						<FontString name="$parentTitle" inherits="GameFontNormalLarge" text="HELPFRAME_OPENTICKETINSTRUCTIONS_TITLE" justifyH="LEFT">
-							<Size x="450" y="0"/>
+							<Size x="710" y="0"/>
 							<Anchors>
 								<Anchor point="TOPLEFT" x="15" y="-15"/>
 							</Anchors>
 						</FontString>
 						<FontString name="$parentText1" inherits="GameFontHighlight" text="HELPFRAME_OPENTICKETINSTRUCTIONS_TEXT1" justifyH="LEFT">
-							<Size x="450" y="0"/>
+							<Size x="710" y="0"/>
 							<Anchors>
 								<Anchor point="TOPLEFT" relativeTo="$parentTitle" relativePoint="BOTTOMLEFT" x="0" y="-25"/>
 							</Anchors>
 						</FontString>
 						<FontString name="$parentText2" inherits="GameFontHighlight" text="HELPFRAME_OPENTICKETINSTRUCTIONS_TEXT2" justifyH="LEFT">
-							<Size x="450" y="0"/>
+							<Size x="710" y="0"/>
 							<Anchors>
 								<Anchor point="TOPLEFT" relativeTo="$parentText1" relativePoint="BOTTOMLEFT" x="0" y="-25"/>
 							</Anchors>
 						</FontString>
 						<FontString name="$parentText3" inherits="GameFontHighlight" text="HELPFRAME_OPENTICKETINSTRUCTIONS_TEXT3" justifyH="LEFT">
-							<Size x="450" y="0"/>
+							<Size x="710" y="0"/>
 							<Anchors>
 								<Anchor point="TOPLEFT" relativeTo="$parentText2" relativePoint="BOTTOMLEFT" x="0" y="-25"/>
 							</Anchors>
@@ -972,7 +1002,7 @@
 							</Anchors>
 						</FontString>
 						<FontString name="$parentText1" inherits="GameFontHighlight" text="HELPFRAME_OPENTICKET_TEXT" justifyH="LEFT">
-							<Size x="450" y="0"/>
+							<Size x="710" y="0"/>
 							<Anchors>
 								<Anchor point="TOPLEFT" relativeTo="$parentTitle" relativePoint="BOTTOMLEFT" x="0" y="-20"/>
 							</Anchors>
@@ -999,7 +1029,7 @@
 						</Scripts>
 					</Button>
 					<ScrollFrame name="$parentScrollFrame" inherits="UIPanelScrollFrameCodeTemplate">
-						<Size x="435" y="220"/>
+						<Size x="695" y="220"/>
 						<Anchors>
 							<Anchor point="BOTTOM" x="0" y="70"/>
 						</Anchors>
@@ -1095,7 +1125,7 @@
 							</Anchors>
 						</FontString>
 						<FontString name="$parentText1" inherits="GameFontHighlight" text="HELPFRAME_REPORT_PLAYER_TEXT1" justifyH="LEFT">
-							<Size x="450" y="0"/>
+							<Size x="710" y="0"/>
 							<Anchors>
 								<Anchor point="TOPLEFT" relativeTo="$parentTitle" relativePoint="BOTTOMLEFT" x="0" y="-30"/>
 							</Anchors>
@@ -1173,6 +1203,225 @@
 					</Layer>
 				</Layers>
 				<Frames>
+					<Button name="$parentBrowserSettings" inherits="BrowserButtonTemplate">
+						<Anchors>
+							<Anchor point="TOPRIGHT" relativeTo="HelpFrameCloseButton" relativePoint="TOPLEFT" x="-3" y="-5"/>
+						</Anchors>
+						<Layers>
+							<Layer level="ARTWORK" textureSubLevel="5">
+								<Texture parentKey="Icon" file="Interface\Buttons\UI-OptionsButton">
+									<Size x="16" y="16"/>
+									<Anchors>
+										<Anchor point="CENTER" />
+									</Anchors>
+								</Texture>
+							</Layer>
+						</Layers>
+						<Scripts>
+							<OnLoad>
+								self.tooltip = BROWSER_SETTINGS_BUTTON_TOOLTIP;
+							</OnLoad>
+							<OnClick function="HelpBrowser_ToggleTooltip"/>
+						</Scripts>
+					</Button>
+					<Browser name="HelpBrowser" frameStrata="HIGH">
+						<Anchors>
+							<Anchor point="TOPLEFT" x="2" y="-2"/>
+							<Anchor point="BOTTOMRIGHT" x="-1" y="1"/>
+						</Anchors>
+						<Scripts>
+							<OnExternalLink>
+								StaticPopup_Show("EXTERNAL_LINK", url, nil, {url=url});
+							</OnExternalLink>
+							<OnEditFocusGained>
+								if (USE_IME) then
+									HelpBrowserIMEBox.EditBox:SetFocus()
+								end
+							</OnEditFocusGained>
+							<OnEscapePressed>
+								self:ClearFocus();
+							</OnEscapePressed>
+						</Scripts>
+					</Browser>
+					<Button name="$parentNavHome" inherits="BrowserButtonTemplate">
+						<Anchors>
+							<Anchor point="BOTTOMLEFT" relativePoint="TOPLEFT" x="2" y="-2"/>
+						</Anchors>
+						<Layers>
+							<Layer level="ARTWORK" textureSubLevel="5">
+								<Texture parentKey="Icon" file="Interface\Buttons\UI-HomeButton">
+									<Size x="16" y="16"/>
+									<Anchors>
+										<Anchor point="CENTER" />
+									</Anchors>
+								</Texture>
+							</Layer>
+						</Layers>
+						<Scripts>
+							<OnLoad>
+								self.tooltip = BROWSER_HOME_TOOLTIP;
+							</OnLoad>
+							<OnClick>
+								PlaySound("igMainMenuOptionCheckBoxOn");
+								HelpBrowser:NavigateHome("KnowledgeBase");
+							</OnClick>
+						</Scripts>
+					</Button>
+					<Button name="$parentNavBack" >
+						<Size x="32" y="32"/>
+						<Anchors>
+							<Anchor point="LEFT" relativeTo="$parentNavHome" relativePoint="RIGHT" x="3"/>
+						</Anchors>
+						<Scripts>
+							<OnLoad>
+								self:Disable();
+							</OnLoad>
+							<OnClick>
+								PlaySound("igMainMenuOptionCheckBoxOn");
+								HelpBrowser:NavigateBack();
+							</OnClick>
+							<OnEnter>
+								GameTooltip:SetOwner(self, "ANCHOR_CURSOR_RIGHT");
+								GameTooltip:SetText(BROWSER_BACK_TOOLTIP, HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b);
+							</OnEnter>
+							<OnLeave function="GameTooltip_Hide" />
+						</Scripts>
+						<NormalTexture file="Interface\Buttons\UI-SpellbookIcon-PrevPage-Up"/>
+						<PushedTexture file="Interface\Buttons\UI-SpellbookIcon-PrevPage-Down"/>
+						<DisabledTexture file="Interface\Buttons\UI-SpellbookIcon-PrevPage-Disabled"/>
+						<HighlightTexture file="Interface\Buttons\UI-Common-MouseHilight" alphaMode="ADD"/>
+					</Button>
+					<Button name="$parentNavForward">
+						<Size x="32" y="32"/>
+						<Anchors>
+							<Anchor point="LEFT" relativeTo="$parentNavBack" relativePoint="RIGHT" x="3"/>
+						</Anchors>
+						<Scripts>
+							<OnLoad>
+								self:Disable();
+							</OnLoad>
+							<OnClick>
+								PlaySound("igMainMenuOptionCheckBoxOn");
+								HelpBrowser:NavigateForward();
+							</OnClick>
+							<OnEnter>
+								GameTooltip:SetOwner(self, "ANCHOR_CURSOR_RIGHT");
+								GameTooltip:SetText(BROWSER_FORWARD_TOOLTIP, HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b);
+							</OnEnter>
+							<OnLeave function="GameTooltip_Hide" />
+						</Scripts>
+						<NormalTexture file="Interface\Buttons\UI-SpellbookIcon-NextPage-Up"/>
+						<PushedTexture file="Interface\Buttons\UI-SpellbookIcon-NextPage-Down"/>
+						<DisabledTexture file="Interface\Buttons\UI-SpellbookIcon-NextPage-Disabled"/>
+						<HighlightTexture file="Interface\Buttons\UI-Common-MouseHilight" alphaMode="ADD"/>
+					</Button>
+					<Button name="$parentNavReload" inherits="BrowserButtonTemplate">
+						<Anchors>
+							<Anchor point="LEFT" relativeTo="$parentNavForward" relativePoint="RIGHT" x="3"/>
+						</Anchors>
+						<Layers>
+							<Layer level="ARTWORK" textureSubLevel="5">
+								<Texture parentKey="Icon" file="Interface\Buttons\UI-RefreshButton">
+									<Size x="16" y="16"/>
+									<Anchors>
+										<Anchor point="CENTER" />
+									</Anchors>
+								</Texture>
+							</Layer>
+						</Layers>
+						<Scripts>
+							<OnLoad>
+								self.tooltip = BROWSER_RELOAD_TOOLTIP;
+							</OnLoad>
+							<OnClick>
+								PlaySound("igMainMenuOptionCheckBoxOn");
+								HelpBrowser:NavigateReload();
+							</OnClick>
+						</Scripts>
+					</Button>
+					<Button name="$parentNavStop" inherits="BrowserButtonTemplate" hidden="true">
+						<Anchors>
+							<Anchor point="LEFT" relativeTo="$parentNavForward" relativePoint="RIGHT" x="3"/>
+						</Anchors>
+						<Layers>
+							<Layer level="ARTWORK" textureSubLevel="5">
+								<Texture parentKey="Icon" file="Interface\Buttons\UI-StopButton">
+									<Size x="16" y="16"/>
+									<Anchors>
+										<Anchor point="CENTER" />
+									</Anchors>
+								</Texture>
+							</Layer>
+						</Layers>
+						<Scripts>
+							<OnLoad>
+								self.tooltip = BROWSER_STOP_TOOLTIP;
+							</OnLoad>
+							<OnClick>
+								PlaySound("igMainMenuOptionCheckBoxOn");
+								HelpBrowser:NavigateStop();
+							</OnClick>
+						</Scripts>
+					</Button>
+					<Frame name="LoadingIcon" toplevel="true" hidden="true">
+						<Animations>
+							<AnimationGroup parentKey="Loop" looping="REPEAT" >
+								<Rotation target="LoadingIconSpin" order="1" duration="8" degrees="-360" />
+							</AnimationGroup>
+						</Animations>
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="$parentNavStop" relativePoint="TOPRIGHT"  x="0" y="4"/>
+						</Anchors>
+						<Size x="40" y="40"/>
+						<Frames>
+							<Frame name="$parentFrame" setAllPoints="true" >
+								<Layers>
+									<Layer level="BACKGROUND">
+										<Texture file="Interface\COMMON\StreamBackground" name="$parentBackground" setAllPoints="true" >
+											<Color r="1" g="0.82" b="0" a="1"/>
+										</Texture>
+									</Layer>
+									<Layer level="ARTWORK">
+										<Texture file="Interface\COMMON\StreamFrame" name="$parentAlpha" setAllPoints="true" />
+									</Layer>
+								</Layers>
+							</Frame>
+							<Frame name="$parentSpin" setAllPoints="true" >
+								<Layers>
+									<Layer level="BACKGROUND">
+										<Texture file="Interface\COMMON\StreamCircle" name="$parentSpinner" setAllPoints="true" >
+											<Color r="1" g="0.82" b="0"/>
+										</Texture>
+									</Layer>
+									<Layer level="OVERLAY" >
+										<Texture file="Interface\COMMON\StreamSpark" setAllPoints="true" />
+									</Layer>
+								</Layers>
+							</Frame>
+						</Frames>
+					</Frame>
+					<ScrollFrame name="HelpBrowserIMEBox" inherits="InputScrollFrameTemplate" multiLine="true" frameStrata="HIGH">
+						<Size x="735" y="40"/>
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="$parentNavHome" relativePoint="BOTTOMLEFT" x="8" y="-5"/>
+						</Anchors>
+						<Scripts>
+							<OnLoad>
+								if (not USE_IME) then
+									self:Hide();
+								else
+									self.EditBox.PromptText:SetFontObject("GameFontHighlight");
+									self.EditBox.PromptText:SetText(WEB_BROWSER_IME_ENTRY_TEXT);
+									self.EditBox:SetScript("OnEnterPressed", HelpBrowserIMEBox_OnEnterPressed);
+									self.EditBox:SetFontObject("GameFontHighlight");
+									self.EditBox:SetMaxLetters(0);
+									self.CharCount:Hide();
+									InputScrollFrame_OnLoad(self);
+									HelpBrowser:SetPoint("TOPLEFT", 2, -54);
+								end
+							</OnLoad>
+						</Scripts>
+					</ScrollFrame>
 					<EditBox name="$parentSearchBox" parentKey="searchBox" autoFocus="false">
 						<Size x="320" y="20"/>
 						<Anchors>
@@ -1624,9 +1873,25 @@
 				<Texture file="Interface\HelpFrame\CS_HelpTextures">
 					<Size x="229" y="45"/>
 					<Anchors>
-						<Anchor point="TOP" relativeTo="$parentButton5" relativePoint="BOTTOM" x="0" y="10"/>
+						<Anchor point="TOP" relativeTo="$parentButton5" relativePoint="BOTTOM" x="0" y="8"/>
 					</Anchors>
 					<TexCoords left="0.00195313" right="0.44921875" top="0.00781250" bottom="0.35937500"/>
+				</Texture>
+				<Texture name="$parentVertDivTop" inherits="Dialog-BorderTopLeft">
+					<Anchors>
+						<Anchor point="TOP" relativePoint="TOPLEFT" x="216"/>
+					</Anchors>
+				</Texture>
+				<Texture name="$parentVertDivBottom" inherits="Dialog-BorderBottomLeft">
+					<Anchors>
+						<Anchor point="BOTTOM" relativePoint="BOTTOMLEFT" x="216"/>
+					</Anchors>
+				</Texture>
+				<Texture name="$parentVertDivMiddle" inherits="Dialog-BorderLeft">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="$parentVertDivTop" relativePoint="BOTTOMLEFT" x="1" y="0"/>
+						<Anchor point="BOTTOMLEFT" relativeTo="$parentVertDivBottom" relativePoint="TOPLEFT" x="1" y="0"/>
+					</Anchors>
 				</Texture>
 			</Layer>
 		</Layers>
@@ -1636,6 +1901,58 @@
 			<OnEvent function="HelpFrame_OnEvent"/>
 			<OnHide function="HelpFrame_OnHide"/>
 		</Scripts>
+	</Frame>
+	
+	<Frame name="HelpBrowserSettingsTooltip" inherits="TooltipBorderedFrameTemplate" frameStrata="FULLSCREEN_DIALOG" hidden="true" parent="HelpFrameKnowledgebaseBrowserSettings">
+		<Size x="250" y="100"/>
+		<Anchors>
+			<Anchor point="TOPRIGHT" relativePoint="TOPLEFT" x="-5"/>
+		</Anchors>
+		<Layers>
+			<Layer level="ARTWORK">
+				<FontString parentKey="Title" inherits="GameFontHighlight" text="BROWSER_SETTINGS_TOOLTIP">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="10" y="-12" />
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Button parentKey="CacheButton" inherits="UIPanelButtonTemplate" text="BROWSER_CLEAR_CACHE">
+				<Size x="150" y="22"/>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.Title" relativePoint="BOTTOMLEFT" y="-10"/>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						PlaySound("igMainMenuOptionCheckBoxOn");
+						HelpBrowser:ClearCache();
+					</OnClick>
+					<OnEnter>
+						GameTooltip:SetOwner(self, "ANCHOR_CURSOR_RIGHT");
+						GameTooltip:SetText(BROWSER_CLEAR_CACHE_TOOLTIP, HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b);
+					</OnEnter>
+					<OnLeave function="GameTooltip_Hide" />
+				</Scripts>
+			</Button>
+			<Button parentKey="CookiesButton" inherits="UIPanelButtonTemplate" text="BROWSER_DELETE_COOKIES">
+				<Size x="150" y="22"/>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.CacheButton" relativePoint="BOTTOMLEFT" y="-10"/>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						PlaySound("igMainMenuOptionCheckBoxOn");
+						HelpBrowser:DeleteCookies();
+					</OnClick>
+					<OnEnter>
+						GameTooltip:SetOwner(self, "ANCHOR_CURSOR_RIGHT");
+						GameTooltip:SetText(BROWSER_DELETE_COOKIES_TOOLTIP, HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b);
+					</OnEnter>
+					<OnLeave function="GameTooltip_Hide" />
+				</Scripts>
+			</Button>
+		</Frames>
 	</Frame>
 
 	<Button name="HelpOpenTicketButton" parent="HelpMicroButton" hidden="true">

@@ -1,4 +1,23 @@
 
+StaticPopupDialogs["EXTERNAL_LINK"] = {
+	text = BROWSER_EXTERNAL_LINK_DIALOG,
+	button1 = OKAY,
+	button3 = BROWSER_COPY_LINK,
+	button2 = CANCEL,
+	OnAccept = function(self, data)
+		HelpBrowser:OpenExternalLink();
+	end,
+	OnAlt = function(self)
+		HelpBrowser:CopyExternalLink();
+	end,
+	OnShow = function(self)
+		
+	end,
+	showAlert = 1,
+	timeout = 0,
+	hideOnEscape = 1
+};
+
 --Store all possible windows the HelpFrame will open.
 HelpFrameWindows = {}
 
@@ -113,6 +132,10 @@ local needMoreHelp = false;
 
 local kbsetupLoaded = false;
 
+
+-- Browser data
+local BROWSER_TOOLTIP_BUTTON_WIDTH = 150;
+
 --
 -- HelpFrame
 --
@@ -127,6 +150,10 @@ function HelpFrame_OnLoad(self)
 	self:RegisterEvent("QUICK_TICKET_SYSTEM_STATUS");
 	self:RegisterEvent("ITEM_RESTORATION_BUTTON_STATUS");
 	self:RegisterEvent("QUICK_TICKET_THROTTLE_CHANGED");
+	self:RegisterEvent("SIMPLE_BROWSER_WEB_PROXY_FAILED");
+	self:RegisterEvent("SIMPLE_BROWSER_WEB_ERROR");
+	self:RegisterEvent("SIMPLE_BROWSER_BUTTON_UPDATE");
+	
 	
 	
 	self.leftInset.Bg:SetTexture("Interface\\HelpFrame\\Tileable-Parchment", true, true);
@@ -235,6 +262,13 @@ function HelpFrame_OnEvent(self, event, ...)
 		HelpFrame_UpdateQuickTicketSystemStatus();
 	elseif ( event == "ITEM_RESTORATION_BUTTON_STATUS" ) then
 		HelpFrame_UpdateItemRestorationButtonStatus();
+	elseif ( event == "SIMPLE_BROWSER_WEB_PROXY_FAILED" ) then
+		StaticPopup_Show("WEB_PROXY_FAILED");
+	elseif ( event == "SIMPLE_BROWSER_WEB_ERROR" ) then
+		local errorNumber = tonumber(...);
+		StaticPopup_Show("WEB_ERROR", errorNumber);
+	elseif ( event == "SIMPLE_BROWSER_BUTTON_UPDATE") then
+		HelpBrowser_UpdateButtons(...);
 	end
 end
 
@@ -732,7 +766,6 @@ function HelpReportLag(kind)
 	StaticPopup_Show("LAG_SUCCESS");
 end
 
-
 -------------- Knowledgebase Functions ------------------
 -------------- Knowledgebase Functions ------------------
 -------------- Knowledgebase Functions ------------------
@@ -769,6 +802,12 @@ end
 function KnowledgeBase_OnShow(self)
 	if ( not kbsetupLoaded ) then
 		KnowledgeBase_GotoTopIssues();
+	end
+	
+	if (HelpBrowser:HasConnection()) then
+		HelpBrowser:Show();
+	else
+		HelpBrowser:Hide();
 	end
 end
 
@@ -1114,6 +1153,7 @@ function KnowledgeBase_SnapToTopIssues()
 end
 
 function KnowledgeBase_GotoTopIssues()
+	HelpBrowser:NavigateHome("KnowledgeBase");
 	NavBar_Reset(HelpFrame.kbase.navBar);
 	KnowledgeBase_Clearlist();
 	local buttonData = {
@@ -1180,3 +1220,57 @@ function KnowledgeBase_ClearSearch(self)
 	HelpFrame.kbase.hasSearch = false;
 end
 
+
+local hasResized = false;
+function HelpBrowser_ToggleTooltip()
+	if (HelpBrowserSettingsTooltip:IsShown()) then
+		HelpBrowserSettingsTooltip:Hide();
+	else
+		PlaySound("igMainMenuOptionCheckBoxOn");
+		HelpBrowserSettingsTooltip:Show();
+	end
+	
+	--resize the tooltip for different languages. Make sure buttons are the same width so they don't look weird
+	if (not hasResized) then
+		local tooltip = HelpBrowserSettingsTooltip;
+		local maxWidth = tooltip.Title:GetWidth()
+		local buttonWidth = max(tooltip.CacheButton:GetTextWidth(), tooltip.CookiesButton:GetTextWidth()); 
+		buttonWidth = buttonWidth + 20; --add button padding
+		buttonWidth = max(buttonWidth, BROWSER_TOOLTIP_BUTTON_WIDTH);
+		maxWidth = max(buttonWidth, maxWidth);
+		maxWidth = maxWidth + 20; --add tooltip padding
+		tooltip.CacheButton:SetWidth(buttonWidth);
+		tooltip.CookiesButton:SetWidth(buttonWidth);
+		tooltip:SetWidth(maxWidth);
+		hasResized = true;
+	end
+end
+
+function HelpBrowser_UpdateButtons(action)
+	if (action == "enableback") then
+		HelpFrameKnowledgebaseNavBack:Enable();
+	elseif (action == "disableback") then
+		HelpFrameKnowledgebaseNavBack:Disable();
+	elseif (action == "enableback") then
+		HelpFrameKnowledgebaseNavForward:Enable();
+	elseif (action == "disableback") then
+		HelpFrameKnowledgebaseNavForward:Disable();
+	elseif (action == "startloading") then
+		HelpFrameKnowledgebaseNavStop:Show();
+		HelpFrameKnowledgebaseNavReload:Hide();
+		LoadingIcon:Show();
+		LoadingIcon.Loop:Play();
+	elseif (action == "doneloading") then
+		HelpFrameKnowledgebaseNavStop:Hide();
+		HelpFrameKnowledgebaseNavReload:Show();
+		LoadingIcon.Loop:Stop();
+		LoadingIcon:Hide();
+	end
+	
+end
+
+function HelpBrowserIMEBox_OnEnterPressed(self)
+	local text = self:GetText();
+	HelpBrowser:SendIME(text);
+	self:SetText("");
+end

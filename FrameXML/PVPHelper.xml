@@ -256,7 +256,7 @@
 					</Anchors>
 					<TexCoords left="0.0" right="0.5605" top="0.0" bottom="0.5625"/>
 				</Texture>
-				<FontString name="$parentYourRoleDescription" inherits="GameFontHighlightExtraSmall" text="YOUR_ROLE">
+				<FontString name="$parentYourRoleDescription" parentKey="roleDescription" inherits="GameFontHighlightExtraSmall" text="YOUR_ROLE">
 					<Anchors>
 						<Anchor point="BOTTOMRIGHT" relativePoint="BOTTOMLEFT" x="108" y="93"/>
 					</Anchors>
@@ -330,7 +330,7 @@
 			<Frame name="$parentInstanceInfoFrame" parentKey="instanceInfo">
 				<Size x="170" y="50"/>
 				<Anchors>
-					<Anchor point="BOTTOM" relativeTo="$parentRoleIcon" relativePoint="TOP" x="0" y="10"/>
+					<Anchor point="TOP" relativeKey="$parent" relativePoint="TOP" x="0" y="-30"/>
 				</Anchors>
 				<Layers>
 					<Layer level="BACKGROUND">

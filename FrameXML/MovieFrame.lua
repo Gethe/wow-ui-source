@@ -58,8 +58,11 @@ function MovieFrame_OnUpdate(self, elapsed)
 end
 
 function MovieFrame_OnKeyUp(self, key)
-	if ( GetBindingFromClick(key) == "TOGGLEGAMEMENU" or key == "SPACE" or key == "ENTER" ) then
+	local keybind = GetBindingFromClick(key);
+	if ( keybind == "TOGGLEGAMEMENU" or key == "SPACE" or key == "ENTER" ) then
 		self.CloseDialog:Show();
+	elseif ( keybind == "TOGGLEMUSIC" or keybind == "TOGGLESOUND" ) then
+		RunBinding(keybind);
 	end
 end
 

@@ -108,14 +108,18 @@ function InspectPVPTeam_Update()
 			_G[data.."PlayedLabel"]:SetText(RATING);
 
 			-- Set TeamSize Banner
-			_G[standard.."Banner"]:SetTexture("Interface\\PVPFrame\\PVP-Banner-"..teamSize);
+			_G[standard.."Banner"]:SetTexture("Interface\\PVPFrame\\PVP-Banner-2");
 			_G[standard.."Banner"]:SetVertexColor(background.r, background.g, background.b);
 			_G[standard.."Border"]:SetVertexColor(borderColor.r, borderColor.g, borderColor.b);
 			_G[standard.."Emblem"]:SetVertexColor(emblemColor.r, emblemColor.g, emblemColor.b);
-			if ( border ~= -1 ) then
-				_G[standard.."Border"]:SetTexture("Interface\\PVPFrame\\PVP-Banner-"..teamSize.."-Border-"..border);
+			if ( border == -1 ) then
+				_G[standard.."Border"]:SetTexture(nil);
+			else
+				_G[standard.."Border"]:SetTexture("Interface\\PVPFrame\\PVP-Banner-2-Border-"..border);
 			end
-			if ( emblem ~= -1 ) then
+			if ( emblem == -1 ) then
+				_G[standard.."Emblem"]:SetTexture(nil);
+			else
 				_G[standard.."Emblem"]:SetTexture("Interface\\PVPFrame\\Icons\\PVP-Banner-Emblem-"..emblem);
 			end
 

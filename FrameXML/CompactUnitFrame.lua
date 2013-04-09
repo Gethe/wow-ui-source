@@ -103,6 +103,8 @@ function CompactUnitFrame_OnEvent(self, event, ...)
 			CompactUnitFrame_UpdateCenterStatusIcon(self);
 		elseif ( event == "UNIT_ABSORB_AMOUNT_CHANGED" ) then
 			CompactUnitFrame_UpdateHealPrediction(self);
+		elseif ( event == "PLAYER_FLAGS_CHANGED" ) then
+			CompactUnitFrame_UpdateStatusText(self);
 		end
 	end
 end
@@ -186,6 +188,7 @@ function CompactUnitFrame_UpdateUnitEvents(frame)
 	frame:RegisterUnitEvent("UNIT_AURA", unit, displayedUnit);
 	frame:RegisterUnitEvent("UNIT_THREAT_SITUATION_UPDATE", unit, displayedUnit);
 	frame:RegisterUnitEvent("UNIT_HEAL_PREDICTION", unit, displayedUnit);
+	frame:RegisterUnitEvent("PLAYER_FLAGS_CHANGED", unit, displayedUnit);
 end
 
 function CompactUnitFrame_UnregisterEvents(frame)

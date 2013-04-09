@@ -219,6 +219,28 @@ StaticPopupDialogs["CONFIRM_PURCHASE_TOKEN_ITEM"] = {
 	hasItemFrame = 1,
 }
 
+StaticPopupDialogs["CONFIRM_UPGRADE_ITEM"] = {
+	text = CONFIRM_UPGRADE_ITEM,
+	button1 = YES,
+	button2 = NO,
+	OnAccept = function()
+		UpgradeItem();
+		PlaySoundKitID(23291);
+	end,
+	OnCancel = function()
+	
+	end,
+	OnShow = function()
+	
+	end,
+	OnHide = function()
+	
+	end,
+	timeout = 0,
+	hideOnEscape = 1,
+	hasItemFrame = 1,
+}
+
 StaticPopupDialogs["CONFIRM_REFUND_TOKEN_ITEM"] = {
 	text = CONFIRM_REFUND_TOKEN_ITEM,
 	button1 = YES,
@@ -3113,6 +3135,22 @@ StaticPopupDialogs["CONFIRM_BLOCK_INVITES"] = {
 
 StaticPopupDialogs["BATTLENET_UNAVAILABLE"] = {
 	text = BATTLENET_UNAVAILABLE_ALERT,
+	button1 = OKAY,
+	timeout = 0,
+	showAlertGear = 1,
+	hideOnEscape = 1
+};
+
+StaticPopupDialogs["WEB_PROXY_FAILED"] = {
+	text = WEB_PROXY_FAILED,
+	button1 = OKAY,
+	timeout = 0,
+	showAlertGear = 1,
+	hideOnEscape = 1
+};
+
+StaticPopupDialogs["WEB_ERROR"] = {
+	text = WEB_ERROR,
 	button1 = OKAY,
 	timeout = 0,
 	showAlertGear = 1,

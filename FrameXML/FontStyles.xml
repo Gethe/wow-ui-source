@@ -34,6 +34,9 @@
 	<Font name="GameFontNormalLeftRed" inherits="GameFontNormalLeft" virtual="true">
 		<Color r="0.9" g="0.0" b="0.0"/>
 	</Font>
+	<Font name="GameFontNormalMed2" inherits="SystemFont_Shadow_Med2" virtual="true">
+		<Color r="1.0" g="0.82" b="0"/>
+	</Font>
 	<Font name="GameFontNormalMed3" inherits="SystemFont_Shadow_Med3" virtual="true">
 		<Color r="1.0" g="0.82" b="0"/>
 	</Font>

@@ -215,6 +215,10 @@ function WorldStateAlwaysUpFrame_Update()
 		end
 	end
 	
+	--[[
+	Disabling this for now
+	Long-term we'd like the battleground objectives to work more like this, but it's not working for 5.3
+	
 	local hordePoints, hordeMaxPoints = GetBattlegroundPoints(TEAM_HORDE);
 	local alliancePoints, allianceMaxPoints = GetBattlegroundPoints(TEAM_ALLIANCE);
 	
@@ -236,6 +240,7 @@ function WorldStateAlwaysUpFrame_Update()
 		alwaysUpShown = alwaysUpShown + 1;
 		alwaysUpHeight = alwaysUpHeight + frame:GetHeight();
 	end
+	]]--
 	
 	for i=alwaysUpShown, NUM_ALWAYS_UP_UI_FRAMES do
 		frame = _G["AlwaysUpFrame"..i];

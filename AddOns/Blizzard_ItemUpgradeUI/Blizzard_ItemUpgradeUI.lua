@@ -147,8 +147,13 @@ end
 
 function ItemUpgradeFrame_UpgradeClick(self)
 	ItemUpgradeFrameUpgradeButton:Disable();
-	UpgradeItem();
-	PlaySoundKitID(23291);
+	
+	local icon, name, quality, _, _, _, cost, currencyType = GetItemUpgradeItemInfo();
+	local r, g, b = GetItemQualityColor(quality); 
+	local currencyName, _, currencyTexture = GetCurrencyInfo(currencyType);
+	local itemsString = " |T"..currencyTexture..":0:0:0:-1|t "..format(CURRENCY_QUANTITY_TEMPLATE, cost, currencyName);
+	StaticPopup_Show("CONFIRM_UPGRADE_ITEM", itemsString, "", {["texture"] = icon, ["name"] = name, 
+															["color"] = {r, g, b, 1}, ["link"] = nil});
 end
 
 function ItemUpgradeFrame_AddItemClick(self, button)

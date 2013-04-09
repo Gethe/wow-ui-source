@@ -231,16 +231,44 @@ function PVPRoleCheckPopup_OnLoad(self)
 	self:RegisterEvent("PVP_ROLE_CHECK_INITIATED");
 	self:RegisterEvent("PVP_ROLE_UPDATE");
 	self:RegisterEvent("UPDATE_BATTLEFIELD_STATUS");
+	self:RegisterEvent("PVP_ROLE_CHECK_ROLE_CHOSEN");
 end
 
 function PVPRoleCheckPopup_OnEvent(self, event, ...)
 	if ( event == "PVP_ROLE_CHECK_INITIATED" ) then
-		local queueName = ...;
-		PVPRoleCheckPopup_Display(self, queueName);
+		local active, queueName = GetPVPRoleCheckInfo();
+		if ( active ) then
+			PVPRoleCheckPopup_Display(self, queueName);
+		end
 	elseif ( event == "PVP_ROLE_UPDATE" ) then
 		PVPRoleCheckPopup_UpdateSelectedRoles(self);
 	elseif ( event == "UPDATE_BATTLEFIELD_STATUS" ) then
 		PVPRoleCheckPopup_UpdateRolesChangeable(self);
+	elseif ( event == "PVP_ROLE_CHECK_ROLE_CHOSEN" ) then
+		local player, isTank, isHealer, isDamage = ...;
+
+		--Yes, consecutive string concatenation == bad for garbage collection. But the alternative is either extremely unslightly or localization unfriendly. (Also, this happens fairly rarely)
+		local roleList;
+		
+		if ( isTank ) then
+			roleList = INLINE_TANK_ICON.." "..TANK;
+		end
+		if ( isHealer ) then
+			if ( roleList ) then
+				roleList = roleList..PLAYER_LIST_DELIMITER.." "..INLINE_HEALER_ICON.." "..HEALER;
+			else
+				roleList = INLINE_HEALER_ICON.." "..HEALER;
+			end
+		end
+		if ( isDamage ) then
+			if ( roleList ) then
+				roleList = roleList..PLAYER_LIST_DELIMITER.." "..INLINE_DAMAGER_ICON.." "..DAMAGER;
+			else
+				roleList = INLINE_DAMAGER_ICON.." "..DAMAGER;
+			end
+		end
+		assert(roleList);
+		ChatFrame_DisplaySystemMessageInPrimary(string.format(LFG_ROLE_CHECK_ROLE_CHOSEN, player, roleList));
 	end
 end
 
@@ -317,10 +345,10 @@ end
 function PVPReadyDialog_OnEvent(self, event, ...)
 	if ( event == "UPDATE_BATTLEFIELD_STATUS" ) then
 		local i = ...;
-		local status, mapName, teamSize, registeredMatch, suspendedQueue, gameType = GetBattlefieldStatus(i);
+		local status, mapName, teamSize, registeredMatch, suspendedQueue, queueType, gameType, role = GetBattlefieldStatus(i);
 		if ( status == "confirm" ) then
 			if ( not PVPReadyDialog_Showing(i) ) then
-				PVPReadyDialog_Display(self, i, mapName, gameType, "HEALER");
+				PVPReadyDialog_Display(self, i, mapName, registeredMatch, queueType, gameType, role);
 			end
 		else
 			if ( PVPReadyDialog_Showing(i) ) then
@@ -335,17 +363,64 @@ function PVPReadyDialog_Showing(index)
 	return PVPReadyDialog:IsShown() and PVPReadyDialog.activeIndex == index;
 end
 
-function PVPReadyDialog_Display(self, index, displayName, gameType, role)
+function PVPReadyDialog_Display(self, index, displayName, isRated, queueType, gameType, role)
 	PVPReadyDialog.activeIndex = index;
 
 	local factionGroup = UnitFactionGroup("player");
-	self.background:SetTexture("Interface\\LFGFrame\\UI-PVP-BACKGROUND-"..(factionGroup or "Alliance"));
 
-	self.label:SetText(BATTLEGROUND_IS_READY);
+	local height = 150;
+	if ( PVPHelper_QueueNeedsRoles(queueType, isRated) ) then
+		height = height + 20;
+		self.bottomArt:SetTexCoord(0.0, 0.5605, 0.0, 0.5625);
+
+		self.roleDescription:Show();
+		self.roleLabel:Show();
+		self.roleIcon:Show();
+		self.roleIcon.texture:SetTexCoord(GetTexCoordsForRole(role));
+		self.roleLabel:SetText(_G[role]);
+	else
+		self.bottomArt:SetTexCoord(0.0, 0.18, 0.0, 0.5625);
+
+		self.roleDescription:Hide();
+		self.roleLabel:Hide();
+		self.roleIcon:Hide();
+	end
+
+	local showTitle = true;
+	if ( queueType == "BATTLEGROUND" ) then
+		if ( isRated ) then
+			self.background:SetTexCoord(0, 1, 0, 102/128);
+			self.background:SetTexture("Interface\\PVPFrame\\PvpBg-AlteracValley-ToastBG");
+			self.label:SetText(RATED_BATTLEGROUND_IS_READY);
+		else
+			self.background:SetTexCoord(0, 1, 0, 1);
+			self.background:SetTexture("Interface\\LFGFrame\\UI-PVP-BACKGROUND-"..(factionGroup or "Alliance"));
+			self.label:SetText(BATTLEGROUND_IS_READY);
+		end
+	elseif ( queueType == "ARENA" ) then
+		self.background:SetTexCoord(0, 1, 25/128, 91/128);
+		self.background:SetTexture("Interface\\PVPFrame\\PvpBg-NagrandArena-ToastBG");
+		showTitle = false;
+		self.label:SetText(ARENA_IS_READY);
+	elseif ( queueType == "WARGAME" ) then
+		self.background:SetTexCoord(0, 1, 0, 102/128);
+		self.background:SetTexture("Interface\\PVPFrame\\PvpBg-AlteracValley-ToastBG");
+		self.label:SetText(WARGAME_IS_READY);
+	else
+		self.label:SetText(BATTLEGROUND_IS_READY);
+	end
+
+	if ( showTitle ) then
+		self.instanceInfo:Show();
+		height = height + 40;
+	else
+		self.instanceInfo:Hide();
+	end
+
 	self.instanceInfo.name:SetText(displayName);
 	self.instanceInfo.statusText:SetText(gameType);
-	self.roleIcon.texture:SetTexCoord(GetTexCoordsForRole(role));
-	self.roleLabel:SetText(_G[role]);
+
+	self:SetHeight(height);
 
 	PlaySound("PVPTHROUGHQUEUE");
 	StaticPopupSpecial_Show(self);
@@ -355,6 +430,15 @@ end
 ---- PVP Helper Functions
 ---------------------------------------------------------------------------
 function PVPHelper_CanChangeRoles()
-	--TODO
+	for i=1, GetMaxBattlefieldID() do
+		local status, mapName, teamSize, registeredMatch, suspendedQueue, queueType, gameType, role = GetBattlefieldStatus(i);
+		if ( status ~= "none" and status ~= "active" and PVPHelper_QueueNeedsRoles(queueType, registeredMatch) ) then
+			return false;
+		end
+	end
 	return true;
+end
+
+function PVPHelper_QueueNeedsRoles(queueType, isRated)
+	return queueType == "BATTLEGROUND" and not isRated;
 end
