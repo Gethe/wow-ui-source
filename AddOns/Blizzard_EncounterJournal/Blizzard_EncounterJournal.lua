@@ -319,7 +319,7 @@ function EncounterJournal_DisplayInstance(instanceID, noButton)
 	EncounterJournal.instanceSelect:Hide();
 	EncounterJournal.encounter:Show();
 	EncounterJournal.ceatureDisplayID = 0;
-
+	
 	EncounterJournal.instanceID = instanceID;
 	EncounterJournal.encounterID = nil;
 	EJ_SelectInstance(instanceID);
@@ -379,7 +379,11 @@ function EncounterJournal_DisplayInstance(instanceID, noButton)
 	self.info.detailsScroll:Hide();
 	self.info.lootScroll:Hide();
 	self.info.rightShadow:Hide();
-	self.info.bossTab:Click();
+	if (self.info.tab < 3) then
+		self.info[EJ_Tabs[self.info.tab].button]:Click()
+	else
+		self.info.bossTab:Click();
+	end
 	
 	if not noButton then
 		local buttonData = {
@@ -407,11 +411,13 @@ function EncounterJournal_DisplayEncounter(encounterID, noButton)
 	EncounterJournal.encounterID = encounterID;
 	EJ_SelectEncounter(encounterID);
 	EncounterJournal_LootUpdate();
+	--need to clear details, but don't want to scroll to top of bosses list
+	local bossListScrollValue = self.info.bossesScroll.ScrollBar:GetValue()
 	EncounterJournal_ClearDetails();
+	EncounterJournal.encounter.info.bossesScroll.ScrollBar:SetValue(bossListScrollValue)
 	
 	self.info.encounterTitle:SetText(ename);
 	
-	self.info.detailsScroll:Show();
 	self.infoFrame.description:SetText(description);
 	self.infoFrame.description:SetWidth(self.infoFrame:GetWidth() -5);
 	self.infoFrame.encounterID = encounterID;
@@ -847,6 +853,7 @@ end
 function EncounterJournal_ClearDetails()
 	EncounterJournal.encounter.instance:Hide();
 	EncounterJournal.encounter.infoFrame.description:SetText("");
+	EncounterJournal.encounter.info.encounterTitle:SetText("");
 	
 	EncounterJournal.encounter.info.lootScroll.scrollBar:SetValue(0);
 	EncounterJournal.encounter.info.detailsScroll.ScrollBar:SetValue(0);
@@ -1379,7 +1386,7 @@ function EncounterJournal_UpdateFilterString()
 		EncounterJournal.encounter.info.lootScroll:SetHeight(360);
 	else
 		EncounterJournal.encounter.info.lootScroll.classClearFilter:Hide();
-		EncounterJournal.encounter.info.lootScroll:SetHeight(384);
+		EncounterJournal.encounter.info.lootScroll:SetHeight(382);
 	end
 end
 

@@ -149,7 +149,7 @@ function LFDRoleCheckPopup_Update()
 	
 	LFG_UpdateAllRoleCheckboxes();
 	
-	local inProgress, slots, members = GetLFGRoleUpdate();
+	local inProgress, slots, members, details, bgQueue = GetLFGRoleUpdate();
 	
 	local displayName;
 	if ( slots == 1 ) then
@@ -159,6 +159,8 @@ function LFDRoleCheckPopup_Update()
 		else
 			displayName = select(LFG_RETURN_VALUES.name, GetLFGDungeonInfo(dungeonID));
 		end
+	elseif ( bgQueue == true ) then
+		displayName = GetLFGBattlegroundName();
 	else
 		displayName = MULTIPLE_DUNGEONS;
 	end

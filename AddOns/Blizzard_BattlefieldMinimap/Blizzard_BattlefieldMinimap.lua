@@ -407,6 +407,7 @@ function BattlefieldMinimap_OnUpdate(self, elapsed)
 		-- position vehicles
 		local numVehicles = GetNumBattlefieldVehicles();
 		local totalVehicles = #BG_VEHICLES;
+		local playerBlipFrameLevel = BattlefieldMinimapRaid1:GetFrameLevel();
 		local index = 0;
 		for i=1, numVehicles do
 			if (i > totalVehicles) then
@@ -424,6 +425,11 @@ function BattlefieldMinimap_OnUpdate(self, elapsed)
 				BG_VEHICLES[i].texture:SetTexture(WorldMap_GetVehicleTexture(vehicleType, isPossessed));
 				BG_VEHICLES[i].texture:SetRotation( orientation );
 				BG_VEHICLES[i]:SetPoint("CENTER", "BattlefieldMinimap", "TOPLEFT", vehicleX, vehicleY);
+				if ( VEHICLE_TEXTURES[vehicleType].belowPlayerBlips ) then
+					BG_VEHICLES[i]:SetFrameLevel(playerBlipFrameLevel - 1);
+				else
+					BG_VEHICLES[i]:SetFrameLevel(playerBlipFrameLevel + 1);
+				end
 				BG_VEHICLES[i]:Show();
 				index = i;	-- save for later
 			else

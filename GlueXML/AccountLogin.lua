@@ -6,7 +6,6 @@ IS_LOGGING_IN = false;
 function AccountLogin_OnLoad(self)
 	TOSFrame.noticeType = "EULA";
 
-	self:RegisterEvent("SHOW_SERVER_ALERT");
 	self:RegisterEvent("SHOW_SURVEY_NOTIFICATION");
 	self:RegisterEvent("CLIENT_ACCOUNT_MISMATCH");
 	self:RegisterEvent("CLIENT_TRIAL");
@@ -139,12 +138,7 @@ function AccountLogin_OnKeyDown(key)
 end
 
 function AccountLogin_OnEvent(event, arg1, arg2, arg3)
-	if ( event == "SHOW_SERVER_ALERT" ) then
-		ServerAlertText:SetText(arg1);
-		ServerAlertFrame.shown = true;
-		ServerAlertFrame:Show();
-		AccountLogin_UpdateLoginType();	--In case it needs to hide the ServerAlertFrame.
-	elseif ( event == "SHOW_SURVEY_NOTIFICATION" ) then
+	if ( event == "SHOW_SURVEY_NOTIFICATION" ) then
 		AccountLogin_ShowSurveyNotification();
 	elseif ( event == "CLIENT_ACCOUNT_MISMATCH" ) then
 		local accountExpansionLevel = arg1;
@@ -430,7 +424,7 @@ end
 
 function AccountLogin_UpdateLoginType()
 	if ( IsLauncherLogin() ) then
-		if ( IS_LOGGING_IN or AUTO_LOGIN_TIMER >= 0 ) then
+		if ( IS_LOGGING_IN or (AUTO_LOGIN_TIMER >= 0 and not IsLauncherLoginAutoAttempted()) ) then
 			AccountLoginNormalLoginFrame:Hide();
 			AccountLoginLauncherLoginFrame:Hide();
 			AccountLoginTOSButton:Hide();

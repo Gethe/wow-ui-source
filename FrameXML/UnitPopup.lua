@@ -91,7 +91,7 @@ UnitPopupButtons["ITEM_QUALITY3_DESC"] = { text = ITEM_QUALITY3_DESC, dist = 0, 
 UnitPopupButtons["ITEM_QUALITY4_DESC"] = { text = ITEM_QUALITY4_DESC, dist = 0, color = ITEM_QUALITY_COLORS[4], checkable = 1 };
 
 UnitPopupButtons["SELECT_LOOT_SPECIALIZATION"] = { text = SELECT_LOOT_SPECIALIZATION, dist = 0, nested = 1, tooltipText = SELECT_LOOT_SPECIALIZATION_TOOLTIP };
-UnitPopupButtons["LOOT_SPECIALIZATION_DEFAULT"] = { text = DEFAULT, dist = 0, checkable = 1, specializationID = 0 };
+UnitPopupButtons["LOOT_SPECIALIZATION_DEFAULT"] = { text = LOOT_SPECIALIZATION_DEFAULT, dist = 0, checkable = 1, specializationID = 0 };
 UnitPopupButtons["LOOT_SPECIALIZATION_SPEC1"] = { text = "spec1", dist = 0, checkable = 1, specializationID = 0 };
 UnitPopupButtons["LOOT_SPECIALIZATION_SPEC2"] = { text = "spec2", dist = 0, checkable = 1, specializationID = 0 };
 UnitPopupButtons["LOOT_SPECIALIZATION_SPEC3"] = { text = "spec3", dist = 0, checkable = 1, specializationID = 0 };
@@ -324,8 +324,18 @@ function UnitPopup_ShowMenu (dropdownMenu, which, unit, name, userData)
 		end
 	end
 	
+	-- setup default Loot Specialization
+	local specPopupButton = UnitPopupButtons["LOOT_SPECIALIZATION_DEFAULT"];
+	local specIndex = GetSpecialization();
+	if ( specIndex) then
+		local specID, specName = GetSpecializationInfo(specIndex);
+		if ( specName ) then
+			specPopupButton.text = format(LOOT_SPECIALIZATION_DEFAULT, specName);
+		end
+	end
+	-- setup specialization coices for Loot Specialization
 	for index = 1, 4 do
-		local specPopupButton = UnitPopupButtons["LOOT_SPECIALIZATION_SPEC"..index];
+		specPopupButton = UnitPopupButtons["LOOT_SPECIALIZATION_SPEC"..index];
 		if ( specPopupButton ) then
 			local id, name = GetSpecializationInfo(index);
 			if ( id ) then

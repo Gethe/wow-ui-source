@@ -241,7 +241,7 @@
 			<TexCoords left="0.00390625" right="0.68359375" top="0.00390625" bottom="0.21484375"/>
 		</HighlightTexture>
 		<ButtonText name="$parentText" inherits="GameFontNormalMed2" justifyH="LEFT" parentKey="text">
-			<Size x="130" y="30"/>
+			<Size x="120" y="30"/>
 			<Anchors>
 				<Anchor point="LEFT" relativeTo="$parentIcon" relativePoint="RIGHT" x="0" y="-1"/>
 			</Anchors>
@@ -1226,23 +1226,24 @@
 					</Button>
 					<Browser name="HelpBrowser" frameStrata="HIGH">
 						<Anchors>
-							<Anchor point="TOPLEFT" x="2" y="-2"/>
-							<Anchor point="BOTTOMRIGHT" x="-1" y="1"/>
+							<Anchor point="TOPLEFT" x="4" y="-2"/>
+							<Anchor point="BOTTOMRIGHT" x="-3" y="1"/>
 						</Anchors>
 						<Scripts>
 							<OnExternalLink>
 								StaticPopup_Show("EXTERNAL_LINK", url, nil, {url=url});
 							</OnExternalLink>
-							<OnEditFocusGained>
-								if (USE_IME) then
-									HelpBrowserIMEBox.EditBox:SetFocus()
-								end
-							</OnEditFocusGained>
 							<OnEscapePressed>
 								self:ClearFocus();
 							</OnEscapePressed>
 						</Scripts>
 					</Browser>
+					<Frame parentKey="BrowserInset" inherits="InsetFrameTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="HelpBrowser" x="-3" y="3"/>
+							<Anchor point="BOTTOMRIGHT" relativeTo="HelpBrowser" x="3" y="-1"/>
+						</Anchors>
+					</Frame>
 					<Button name="$parentNavHome" inherits="BrowserButtonTemplate">
 						<Anchors>
 							<Anchor point="BOTTOMLEFT" relativePoint="TOPLEFT" x="2" y="-2"/>
@@ -1400,28 +1401,6 @@
 							</Frame>
 						</Frames>
 					</Frame>
-					<ScrollFrame name="HelpBrowserIMEBox" inherits="InputScrollFrameTemplate" multiLine="true" frameStrata="HIGH">
-						<Size x="735" y="40"/>
-						<Anchors>
-							<Anchor point="TOPLEFT" relativeTo="$parentNavHome" relativePoint="BOTTOMLEFT" x="8" y="-5"/>
-						</Anchors>
-						<Scripts>
-							<OnLoad>
-								if (not USE_IME) then
-									self:Hide();
-								else
-									self.EditBox.PromptText:SetFontObject("GameFontHighlight");
-									self.EditBox.PromptText:SetText(WEB_BROWSER_IME_ENTRY_TEXT);
-									self.EditBox:SetScript("OnEnterPressed", HelpBrowserIMEBox_OnEnterPressed);
-									self.EditBox:SetFontObject("GameFontHighlight");
-									self.EditBox:SetMaxLetters(0);
-									self.CharCount:Hide();
-									InputScrollFrame_OnLoad(self);
-									HelpBrowser:SetPoint("TOPLEFT", 2, -54);
-								end
-							</OnLoad>
-						</Scripts>
-					</ScrollFrame>
 					<EditBox name="$parentSearchBox" parentKey="searchBox" autoFocus="false">
 						<Size x="320" y="20"/>
 						<Anchors>
@@ -1931,6 +1910,7 @@
 					<OnEnter>
 						GameTooltip:SetOwner(self, "ANCHOR_CURSOR_RIGHT");
 						GameTooltip:SetText(BROWSER_CLEAR_CACHE_TOOLTIP, HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b);
+						self:GetParent().isCounting = nil;
 					</OnEnter>
 					<OnLeave function="GameTooltip_Hide" />
 				</Scripts>
@@ -1948,11 +1928,38 @@
 					<OnEnter>
 						GameTooltip:SetOwner(self, "ANCHOR_CURSOR_RIGHT");
 						GameTooltip:SetText(BROWSER_DELETE_COOKIES_TOOLTIP, HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b);
+						self:GetParent().isCounting = nil;
 					</OnEnter>
 					<OnLeave function="GameTooltip_Hide" />
 				</Scripts>
 			</Button>
 		</Frames>
+		<Scripts>
+			<OnShow>
+				self.showTimer = 2;
+				self.isCounting = true;
+			</OnShow>
+			<OnHide>
+				self.showTimer = nil;
+				self.isCounting = nil;
+			</OnHide>
+			<OnUpdate>
+				if (self.showTimer and self.isCounting) then
+					if (not (self.showTimer >= 0)) then --no less thans!
+						self:Hide();
+					else
+						self.showTimer = self.showTimer - elapsed;
+					end
+				end
+			</OnUpdate>
+			<OnEnter>
+				self.isCounting = nil;
+			</OnEnter>
+			<OnLeave>
+				self.isCounting = true;
+				self.showTimer = 2;
+			</OnLeave>
+		</Scripts>
 	</Frame>
 
 	<Button name="HelpOpenTicketButton" parent="HelpMicroButton" hidden="true">

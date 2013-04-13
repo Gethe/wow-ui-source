@@ -896,6 +896,10 @@
 						</Layers>
 						<Scripts>
 							<OnClick>
+								if self.displayInfo then
+									EncounterJournal.encounter.info.modelTab:Click();
+									EncounterJournal_DisplayCreature(self);
+								end
 								self:Enable();
 								PlaySound("igMainMenuOptionCheckBoxOn");
 							</OnClick>
@@ -1850,9 +1854,9 @@
 								</Scripts>
 							</Button>
 							<ScrollFrame name="$parentBossesScrollFrame" parentKey="bossesScroll" inherits="UIPanelScrollFrameCodeTemplate">
-								<Size x="350" y="383"/>
+								<Size x="363" y="382"/>
 								<Anchors>
-									<Anchor point="BOTTOMLEFT" x="38" y="1"/>
+									<Anchor point="BOTTOMLEFT" x="25" y="1"/>
 								</Anchors>
 								<Frames>
 									<Slider name="$parentScrollBar" inherits="MinimalScrollBarTemplate" parentKey="ScrollBar">
@@ -1887,7 +1891,7 @@
 									</Frame>
 								</ScrollChild>
 							</ScrollFrame>
-							<Button name="$parentDifficulty" parentKey="difficulty" text="Normal (10)">
+							<Button name="$parentDifficulty" parentKey="difficulty" text="Normal (10)" >
 								<Size x="75" y="26"/>
 								<Anchors>
 									<Anchor point="TOPRIGHT" x="-19" y="-13"/>
@@ -2075,6 +2079,7 @@
 										EncounterJournal.encounter.info.reset:Show()
 										EncounterJournal.encounter.info.lootScroll:Hide()
 										EncounterJournal.encounter.info.rightShadow:Show()
+										EncounterJournal.encounter.info.encounterTitle:Show();
 									</OnShow>
 									<OnHide>
 										EncounterJournal.encounter.info.reset:Hide()
@@ -2082,7 +2087,7 @@
 								</Scripts>
 							</ScrollFrame>
 							<ScrollFrame name="$parentLootScrollFrame" parentKey="lootScroll" inherits="HybridScrollFrameTemplate">
-								<Size x="345" y="383"/>
+								<Size x="345" y="382"/>
 								<Anchors>
 									<Anchor point="BOTTOMRIGHT" x="-5" y="1"/>
 								</Anchors>
@@ -2236,12 +2241,6 @@
 												l, t, _, b, r = self.highRight:GetTexCoord();
 												self.highRight:SetTexCoord(l + (r-l)/2, r, t, b);
 											</OnLoad>
-											<OnShow>
-												self:GetParent():GetParent().encounterTitle:Hide();
-											</OnShow>
-											<OnHide>
-												self:GetParent():GetParent().encounterTitle:Show();
-											</OnHide>
 											<OnMouseDown>
 												self.upLeft:Hide();
 												self.upRight:Hide();
@@ -2282,10 +2281,11 @@
 										EncounterJournal.encounter.instance:Hide();
 										EncounterJournal.encounter.info.rightShadow:Show()
 										EncounterJournal_LootUpdate();
+										EncounterJournal.encounter.info.encounterTitle:Hide();
 									</OnShow>
 								</Scripts>
 							</ScrollFrame>
-							<PlayerModel name="$parentModelFrame" parentKey="model" inherits="ModelTemplate">
+							<PlayerModel name="$parentModelFrame" parentKey="model" inherits="ModelTemplate" >
 								<Size x="390" y="425"/>
 								<Anchors>
 									<Anchor point="BOTTOMRIGHT" x="-5" y="1"/>
@@ -2297,7 +2297,16 @@
 											<Anchors>
 												<Anchor point="BOTTOMLEFT" x="0" y="0"/>
 											</Anchors>
-											<TexCoords left="0" right="0.76953125" top="0" bottom="0.830078125"/>
+											<TexCoords left="0.76953125" right="0" top="0" bottom="0.830078125"/>
+										</Texture>
+									</Layer>
+									<Layer level="OVERLAY">
+										<Texture name="$parentShadow" file="Interface\EncounterJournal\UI-EJ-BossModelPaperFrame">
+											<Size x="393" y="424"/>
+											<Anchors>
+												<Anchor point="TOPLEFT" x="0" y="0"/>
+											</Anchors>
+											<TexCoords left="0.767578125" right="0" top="0" bottom="0.828125"/>
 										</Texture>
 									</Layer>
 									<Layer level="OVERLAY" textureSubLevel="1">
@@ -2320,7 +2329,11 @@
 									<OnShow>
 										EncounterJournal.encounter.info.encounterTitle:Hide();
 										EncounterJournal.encounter.info.rightShadow:Hide();
+										EncounterJournal.encounter.info.difficulty:Hide();
 									</OnShow>
+									<OnHide>
+										EncounterJournal.encounter.info.difficulty:Show();
+									</OnHide>
 									<OnLoad>
 										Model_OnLoad(self);
 										self:SetCamDistanceScale(1.0);

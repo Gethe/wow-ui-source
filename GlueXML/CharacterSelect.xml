@@ -380,13 +380,7 @@
 							</OnLoad>
 							<OnEvent>
 								if ( event == "ACCOUNT_DATA_INITIALIZED" ) then
-									if ( IsTrialAccount() ) then
-										self.isExpanded = true;
-										self.expandCollapseButton:Disable();
-									else
-										self.expandCollapseButton:Enable();
-									end
-									AccountUpgradePanel_Update(self.isExpanded);
+									AccountUpgradePanel_UpdateExpandState();
 								end
 							</OnEvent>
 							<OnClick>
@@ -932,7 +926,7 @@
 					<Frame name="CharacterTemplatesFrame" hidden="true">
 						<Size x="220" y="150"/>
 						<Anchors>
-							<Anchor point="BOTTOMLEFT" x="32" y="86"/>
+							<Anchor point="TOPLEFT" relativeTo="CharacterSelectLogo" relativePoint="TOPRIGHT" x="5" y="0"/>
 						</Anchors>
 						<Backdrop bgFile="Interface\Glues\Common\Glue-Tooltip-Background" edgeFile="Interface\Glues\Common\Glue-Tooltip-Border" tile="true">
 							<BackgroundInsets>
@@ -986,7 +980,7 @@
 					<Frame name="PlayersOnServer" hidden="true">
 						<Size x="220" y="88"/>
 						<Anchors>
-							<Anchor point="BOTTOMLEFT" relativePoint="TOPLEFT" relativeTo="CharacterTemplatesFrame" x="0" y="5"/>
+							<Anchor point="TOPRIGHT" relativeTo="CharacterSelectCharacterFrame" relativePoint="TOPLEFT" x="5" y="10"/>
 						</Anchors>
 						<Backdrop bgFile="Interface\Glues\Common\Glue-Tooltip-Background" edgeFile="Interface\Glues\Common\Glue-Tooltip-Border" tile="true">
 							<BackgroundInsets>
@@ -1080,6 +1074,20 @@
 							</Button>
 						</Frames>
 					</Frame>
+					<Frame name="CharacterSelectServerAlertFrame" hidden="true" inherits="ServerAlertTemplate">
+						<Size>
+							<AbsDimension x="250" y="280"/>
+						</Size>
+						<Anchors>
+							<Anchor point="TOP" relativeTo="CharacterSelectLogo" relativePoint="BOTTOM" x="0" y="-5"/>
+							<Anchor point="BOTTOMRIGHT" relativeKey="$parent" relativePoint="TOPLEFT" x="260" y="-610"/>
+						</Anchors>
+						<Scripts>
+							<OnShow>
+								AccountUpgradePanel_UpdateExpandState();
+							</OnShow>
+						</Scripts>
+					</Frame>
 				</Frames>
 				<Scripts>
 					<OnMouseDown>
@@ -1120,7 +1128,7 @@
 			<Frame name="GameRoomBillingFrame" hidden="true">
 				<Size x="255" y="60"/>
 				<Anchors>
-					<Anchor point="TOP" relativeTo="CharacterSelectLogo" relativePoint="BOTTOM" x="0" y="-50"/>
+					<Anchor point="TOP" relativeTo="CharacterSelectServerAlertFrame" relativePoint="BOTTOM" x="0" y="-10"/>
 				</Anchors>
 				<Layers>
 					<Layer level="BACKGROUND">

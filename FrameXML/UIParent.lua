@@ -157,6 +157,7 @@ function UIParent_OnLoad(self)
 	self:RegisterEvent("CURSOR_UPDATE");
 	self:RegisterEvent("LOCALPLAYER_PET_RENAMED");
 	self:RegisterEvent("PLAYER_ENTERING_WORLD");
+	self:RegisterEvent("PLAYER_SPECIALIZATION_CHANGED");
 	self:RegisterEvent("MIRROR_TIMER_START");
 	self:RegisterEvent("DUEL_REQUESTED");
 	self:RegisterEvent("DUEL_OUTOFBOUNDS");
@@ -820,13 +821,13 @@ function UIParent_OnEvent(self, event, ...)
 	elseif ( event == "DELETE_ITEM_CONFIRM" ) then
 		-- Check quality
 		if ( arg2 >= 3 ) then
-			if (arg3 == 4) then -- quest item?
+			if (arg4 == 1) then -- quest item?
 				StaticPopup_Show("DELETE_GOOD_QUEST_ITEM", arg1);
 			else
 				StaticPopup_Show("DELETE_GOOD_ITEM", arg1);
 			end
 		else
-			if (arg3 == 4) then -- quest item?
+			if (arg4 == 1) then -- quest item?
 				StaticPopup_Show("DELETE_QUEST_ITEM", arg1);
 			else
 				StaticPopup_Show("DELETE_ITEM", arg1);
@@ -888,6 +889,15 @@ function UIParent_OnEvent(self, event, ...)
 		end
 		if ( GetReleaseTimeRemaining() > 0 or GetReleaseTimeRemaining() == -1 ) then
 			StaticPopup_Show("DEATH");
+		end
+
+		-- display loot specialization setting
+		PrintLootSpecialization();
+	elseif ( event == "PLAYER_SPECIALIZATION_CHANGED" ) then
+		local unit = ...;
+		if ( unit == "player" ) then
+			-- display loot specialization setting
+			PrintLootSpecialization();
 		end
 	elseif ( event == "GROUP_ROSTER_UPDATE" ) then
 		-- Hide/Show party member frames
@@ -4154,5 +4164,26 @@ function ConfirmOrLeaveBattlefield()
 		LeaveBattlefield();
 	else
 		StaticPopup_Show("CONFIRM_LEAVE_BATTLEFIELD");
+	end
+end
+
+function PrintLootSpecialization()
+	local specID = GetLootSpecialization();
+	local lootSpecChoice;
+	if ( specID and specID > 0 ) then
+		local id, name = GetSpecializationInfoByID(specID);
+		lootSpecChoice = format(ERR_LOOT_SPEC_CHANGED_S, name);
+	else
+		local specIndex = GetSpecialization();
+		if ( specIndex) then
+			local specID, specName = GetSpecializationInfo(specIndex);
+			if ( specName ) then
+				lootSpecChoice = format(ERR_LOOT_SPEC_CHANGED_S, format(LOOT_SPECIALIZATION_DEFAULT, specName));
+			end
+		end
+	end
+	if ( lootSpecChoice ) then
+		local info = ChatTypeInfo["SYSTEM"];
+		DEFAULT_CHAT_FRAME:AddMessage(lootSpecChoice, info.r, info.g, info.b, info.id);
 	end
 end

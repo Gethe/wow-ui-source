@@ -87,18 +87,21 @@ VEHICLE_TEXTURES["Minecart"] = {
 	"Interface\\Minimap\\Vehicle-SilvershardMines-MineCart",
 	width=64,
 	height=64,
+	belowPlayerBlips = true,
 };
 VEHICLE_TEXTURES["Minecart Red"] = {
 	"Interface\\Minimap\\Vehicle-SilvershardMines-MineCartRed",
 	"Interface\\Minimap\\Vehicle-SilvershardMines-MineCartRed",
 	width=64,
 	height=64,
+	belowPlayerBlips = true,
 };
 VEHICLE_TEXTURES["Minecart Blue"] = {
 	"Interface\\Minimap\\Vehicle-SilvershardMines-MineCartBlue",
 	"Interface\\Minimap\\Vehicle-SilvershardMines-MineCartBlue",
 	width=64,
 	height=64,
+	belowPlayerBlips = true,
 };
 VEHICLE_TEXTURES["Arrow"] = {
 	"Interface\\Minimap\\Vehicle-SilvershardMines-Arrow",
@@ -153,12 +156,14 @@ VEHICLE_TEXTURES["Cart Horde"] = {
 	"Interface\\Minimap\\Vehicle-HordeCart",
 	width=32,
 	height=32,
+	belowPlayerBlips = true,
 };
 VEHICLE_TEXTURES["Cart Alliance"] = {
 	"Interface\\Minimap\\Vehicle-AllianceCart",
 	"Interface\\Minimap\\Vehicle-AllianceCart",
 	width=32,
 	height=32,
+	belowPlayerBlips = true,
 };
 
 WORLDMAP_DEBUG_ICON_INFO = {};
@@ -1522,6 +1527,7 @@ function WorldMapButton_OnUpdate(self, elapsed)
 		numVehicles = GetNumBattlefieldVehicles();
 	end
 	local totalVehicles = #MAP_VEHICLES;
+	local playerBlipFrameLevel = WorldMapRaid1:GetFrameLevel();
 	local index = 0;
 	for i=1, numVehicles do
 		if (i > totalVehicles) then
@@ -1540,6 +1546,11 @@ function WorldMapButton_OnUpdate(self, elapsed)
 			mapVehicleFrame:SetWidth(VEHICLE_TEXTURES[vehicleType].width);
 			mapVehicleFrame:SetHeight(VEHICLE_TEXTURES[vehicleType].height);
 			mapVehicleFrame.name = unitName;
+			if ( VEHICLE_TEXTURES[vehicleType].belowPlayerBlips ) then
+				mapVehicleFrame:SetFrameLevel(playerBlipFrameLevel - 1);
+			else
+				mapVehicleFrame:SetFrameLevel(playerBlipFrameLevel + 1);
+			end
 			mapVehicleFrame:Show();
 			index = i;	-- save for later
 		else

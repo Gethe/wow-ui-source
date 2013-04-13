@@ -228,19 +228,20 @@ end
 ---- PVP Role Check Functions
 ---------------------------------------------------------------------------
 function PVPRoleCheckPopup_OnLoad(self)
-	self:RegisterEvent("PVP_ROLE_CHECK_INITIATED");
+--	self:RegisterEvent("PVP_ROLE_CHECK_INITIATED");
 	self:RegisterEvent("PVP_ROLE_UPDATE");
 	self:RegisterEvent("UPDATE_BATTLEFIELD_STATUS");
 	self:RegisterEvent("PVP_ROLE_CHECK_ROLE_CHOSEN");
 end
 
 function PVPRoleCheckPopup_OnEvent(self, event, ...)
-	if ( event == "PVP_ROLE_CHECK_INITIATED" ) then
+--[[	if ( event == "PVP_ROLE_CHECK_INITIATED" ) then
 		local active, queueName = GetPVPRoleCheckInfo();
 		if ( active ) then
 			PVPRoleCheckPopup_Display(self, queueName);
 		end
-	elseif ( event == "PVP_ROLE_UPDATE" ) then
+	else]]
+	if ( event == "PVP_ROLE_UPDATE" ) then
 		PVPRoleCheckPopup_UpdateSelectedRoles(self);
 	elseif ( event == "UPDATE_BATTLEFIELD_STATUS" ) then
 		PVPRoleCheckPopup_UpdateRolesChangeable(self);
@@ -324,15 +325,15 @@ function PVPRoleCheckPopupAccept_OnClick()
 	SetPVPRoles(PVPRoleCheckPopupRoleButtonTank.checkButton:GetChecked(),
 		PVPRoleCheckPopupRoleButtonHealer.checkButton:GetChecked(),
 		PVPRoleCheckPopupRoleButtonDPS.checkButton:GetChecked());
-	if ( CompletePVPRoleCheck(true) ) then
-		StaticPopupSpecial_Hide(PVPRoleCheckPopup);
-	end
+--	if ( CompletePVPRoleCheck(true) ) then
+--		StaticPopupSpecial_Hide(PVPRoleCheckPopup);
+--	end
 end
 
 function PVPRoleCheckPopupDecline_OnClick()
 	PlaySound("igCharacterInfoTab");
 	StaticPopupSpecial_Hide(PVPRoleCheckPopup);
-	CompletePVPRoleCheck(false);
+--	CompletePVPRoleCheck(false);
 end
 
 -------------------------------------------------------------------------

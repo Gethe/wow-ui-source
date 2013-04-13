@@ -1317,7 +1317,7 @@
 							</OnClick>
 						</Scripts>
 					</Button>
-					<Frame name="ServerAlertFrame" hidden="true">
+					<Frame name="ServerAlertFrame" hidden="true" inherits="ServerAlertTemplate">
 						<Size>
 							<AbsDimension x="352" y="400"/>
 						</Size>
@@ -1328,71 +1328,11 @@
 								</Offset>
 							</Anchor>
 						</Anchors>
-						<Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background" edgeFile="Interface\DialogFrame\UI-DialogBox-Border" tile="true">
-							<BackgroundInsets>
-								<AbsInset left="11" right="11" top="11" bottom="11"/>
-							</BackgroundInsets>
-							<TileSize>
-								<AbsValue val="32"/>
-							</TileSize>
-							<EdgeSize>
-								<AbsValue val="32"/>
-							</EdgeSize>
-						</Backdrop>
-						<Layers>
-							<Layer level="ARTWORK">
-								<FontString name="ServerAlertTitle" inherits="GlueFontNormalLarge" text="SERVER_ALERT_TITLE">
-									<Anchors>
-										<Anchor point="TOP">
-											<Offset>
-												<AbsDimension x="0" y="-20"/>
-											</Offset>
-										</Anchor>
-									</Anchors>
-								</FontString>
-							</Layer>
-						</Layers>
-						<Frames>
-							<ScrollFrame name="ServerAlertScrollFrame" inherits="GlueScrollFrameTemplate">
-								<Size>
-									<AbsDimension x="300" y="340"/>
-								</Size>
-								<Anchors>
-									<Anchor point="TOPLEFT">
-										<Offset>
-											<AbsDimension x="15" y="-46"/>
-										</Offset>
-									</Anchor>
-								</Anchors>
-								<Scripts>
-									<OnLoad>
-										self.scrollBarHideable = 1;
-										GlueScrollFrame_OnScrollRangeChanged(self);
-									</OnLoad>
-									<OnScrollRangeChanged>
-										GlueScrollFrame_OnScrollRangeChanged(self, yrange);
-										if (floor(ServerAlertScrollFrame:GetVerticalScrollRange()) > 0) then
-											self.updated = 1;
-										end
-									</OnScrollRangeChanged>
-								</Scripts>
-								<ScrollChild>
-									<SimpleHTML name="ServerAlertText" hyperlinkFormat="|cff06ff07|H%s|h[%s]|h|r">
-										<Size>
-											<AbsDimension x="300" y="400"/>
-										</Size>
-										<Scripts>
-											<OnHyperlinkClick>
-												LaunchURL(link);
-											</OnHyperlinkClick>
-										</Scripts>
-										<FontString inherits="GlueFontHighlightSmall" spacing="2"/>
-										<FontStringHeader1 inherits="GlueFontNormalLarge" spacing="4"/>
-										<FontStringHeader2 inherits="GlueFontHighlight" spacing="4"/>
-									</SimpleHTML>
-								</ScrollChild>
-							</ScrollFrame>
-						</Frames>
+						<Scripts>
+							<OnShow>
+								AccountLogin_UpdateLoginType(); --In case it needs to hide the ServerAlertFrame.
+							</OnShow>
+						</Scripts>
 					</Frame>
 					<Frame name="VirtualKeypadFrame" hidden="true" frameStrata="DIALOG" enableMouse="true">
 						<Size>

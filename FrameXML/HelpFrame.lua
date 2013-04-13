@@ -806,11 +806,32 @@ function KnowledgeBase_OnShow(self)
 	
 	if (HelpBrowser:HasConnection()) then
 		HelpBrowser:Show();
+		HideKnowledgeBase();
 	else
 		HelpBrowser:Hide();
+		ShowKnowledgeBase();
 	end
 end
 
+function HideKnowledgeBase()
+	HelpFrameKnowledgebaseStoneTex:Hide();
+	HelpFrameKnowledgebaseTopTileStreaks:Hide();
+	HelpFrameKnowledgebaseSearchBox:Hide();
+	HelpFrameKnowledgebaseSearchButton:Hide();
+	HelpFrameKnowledgebaseNavBar:Hide();
+	HelpFrameKnowledgebaseScrollFrame:Hide();
+	HelpFrameKnowledgebaseScrollFrame2:Hide();
+end
+
+function ShowKnowledgeBase()
+	HelpFrameKnowledgebaseStoneTex:Show();
+	HelpFrameKnowledgebaseTopTileStreaks:Show();
+	HelpFrameKnowledgebaseSearchBox:Show();
+	HelpFrameKnowledgebaseSearchButton:Show();
+	HelpFrameKnowledgebaseNavBar:Show();
+	HelpFrameKnowledgebaseScrollFrame:Show();
+	HelpFrameKnowledgebaseScrollFrame2:Show();
+end
 
 function KnowledgeBase_OnEvent(self, event, ...)
 	if ( event ==  "KNOWLEDGE_BASE_SETUP_LOAD_SUCCESS") then
@@ -1251,9 +1272,9 @@ function HelpBrowser_UpdateButtons(action)
 		HelpFrameKnowledgebaseNavBack:Enable();
 	elseif (action == "disableback") then
 		HelpFrameKnowledgebaseNavBack:Disable();
-	elseif (action == "enableback") then
+	elseif (action == "enableforward") then
 		HelpFrameKnowledgebaseNavForward:Enable();
-	elseif (action == "disableback") then
+	elseif (action == "disableforward") then
 		HelpFrameKnowledgebaseNavForward:Disable();
 	elseif (action == "startloading") then
 		HelpFrameKnowledgebaseNavStop:Show();
@@ -1267,10 +1288,4 @@ function HelpBrowser_UpdateButtons(action)
 		LoadingIcon:Hide();
 	end
 	
-end
-
-function HelpBrowserIMEBox_OnEnterPressed(self)
-	local text = self:GetText();
-	HelpBrowser:SendIME(text);
-	self:SetText("");
 end

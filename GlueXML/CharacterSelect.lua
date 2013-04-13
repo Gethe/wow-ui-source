@@ -915,9 +915,9 @@ function AccountUpgradePanel_Update(isExpanded)
 		CharSelectAccountUpgradePanel:Hide();
 		CharSelectAccountUpgradeButton:Hide();
 		CharSelectAccountUpgradeMiniPanel:Hide();
-		GameRoomBillingFrame:SetPoint("TOP", CharacterSelectLogo, "BOTTOM", 0, -50);
+		CharacterSelectServerAlertFrame:SetPoint("TOP", CharacterSelectLogo, "BOTTOM", 0, -5);
 	else
-		GameRoomBillingFrame:SetPoint("TOP", CharSelectAccountUpgradePanel, "BOTTOM", 0, -10);
+		CharacterSelectServerAlertFrame:SetPoint("TOP", CharSelectAccountUpgradeMiniPanel, "BOTTOM", 0, -25);
 		local featureTable = ACCOUNT_UPGRADE_FEATURES[tag];
 		CharSelectAccountUpgradeButton:Show();
 		if ( isExpanded ) then
@@ -963,6 +963,21 @@ end
 
 function AccountUpgradePanel_ToggleExpandState()
 	AccountUpgradePanel_Update(not CharSelectAccountUpgradeButton.isExpanded);
+end
+
+function AccountUpgradePanel_UpdateExpandState()
+	if ( CharacterSelectServerAlertFrame.shown ) then
+		CharSelectAccountUpgradeButton.isExpanded = false;
+		CharSelectAccountUpgradeButton.expandCollapseButton:Hide();
+	elseif ( IsTrialAccount() ) then
+		CharSelectAccountUpgradeButton.isExpanded = true;
+		CharSelectAccountUpgradeButton.expandCollapseButton:Show();
+		CharSelectAccountUpgradeButton.expandCollapseButton:Disable();
+	else
+		CharSelectAccountUpgradeButton.expandCollapseButton:Show();
+		CharSelectAccountUpgradeButton.expandCollapseButton:Enable();
+	end
+	AccountUpgradePanel_Update(CharSelectAccountUpgradeButton.isExpanded);
 end
 
 function CharacterSelect_ScrollList(self, value)
