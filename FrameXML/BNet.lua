@@ -17,7 +17,6 @@ BN_TOAST_BOTTOM_OFFSET = -12;
 BN_TOAST_RIGHT_OFFSET = -1;
 BN_TOAST_LEFT_OFFSET = 1;
 BN_TOAST_TOP_BUFFER = 20;	-- the minimum distance in pixels from the toast to the top edge of the screen
-BN_TOAST_MAX_LINE_WIDTH = 196;
 
 BNET_CLIENT_WOW = "WoW";
 BNET_CLIENT_SC2 = "S2";
@@ -87,6 +86,21 @@ function BNToastFrame_OnEvent(self, event, arg1)
 		if ( GetCVarBool("showToastWindow") ) then
 			BNet_EnableToasts();
 		end
+	end
+end
+
+function BNToastFrame_OnEnter()
+	AlertFrame_StopOutAnimation(BNToastFrame);
+	if ( BNToastFrame.toastType == BN_TOAST_TYPE_BROADCAST and BNToastFrameBottomLine:IsTruncated() ) then
+		BNToastFrame.TooltipFrame.Text:SetText(BNToastFrameBottomLine:GetText());
+		BNToastFrame.TooltipFrame:Show();
+	end
+end
+
+function BNToastFrame_OnLeave()
+	AlertFrame_ResumeOutAnimation(BNToastFrame);
+	if ( BNToastFrame.toastType == BN_TOAST_TYPE_BROADCAST ) then
+		BNToastFrame.TooltipFrame:Hide();
 	end
 end
 
@@ -209,12 +223,7 @@ function BNToastFrame_Show()
 		topLine:SetText(presenceName);
 		topLine:SetTextColor(FRIENDS_BNET_NAME_COLOR.r, FRIENDS_BNET_NAME_COLOR.g, FRIENDS_BNET_NAME_COLOR.b);
 		bottomLine:Show();
-		bottomLine:SetWidth(0);
 		bottomLine:SetText(messageText);
-		if ( bottomLine:GetWidth() > BN_TOAST_MAX_LINE_WIDTH ) then
-			bottomLine:SetWidth(BN_TOAST_MAX_LINE_WIDTH);
-			BNToastFrame.tooltip = messageText;
-		end
 		bottomLine:SetTextColor(FRIENDS_GRAY_COLOR.r, FRIENDS_GRAY_COLOR.g, FRIENDS_GRAY_COLOR.b);
 		BNToastFrameDoubleLine:Hide();
 		middleLine:Hide();
@@ -247,8 +256,8 @@ function BNToastFrame_Show()
 end
 
 function BNToastFrame_Close()
-	BNToastFrame.tooltip = nil;
 	BNToastFrame:Hide();
+	BNToastFrame.TooltipFrame:Hide();
 end
 
 function BNToastFrame_OnUpdate()
@@ -309,10 +318,6 @@ function BNToastFrame_UpdateAnchor(forceAnchor)
 end
 
 function BNToastFrame_OnClick(self)	
-	-- hide the tooltip if necessary
-	if ( BNToastFrame.tooltip and GameTooltip:GetOwner() == BNToastFrame ) then
-		GameTooltip:Hide();
-	end
 	BNToastFrame_Close();
 	local toastType = BNToastFrame.toastType;
 	local toastData = BNToastFrame.toastData;

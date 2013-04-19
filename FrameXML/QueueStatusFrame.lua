@@ -116,9 +116,10 @@ function QueueStatusFrame_Update(self)
 			end
 		end
 	end
---[[
+
+	local inProgress, _, _, _, isBattleground = GetLFGRoleUpdate();
 	--Try PvP Role Check
-	if ( GetPVPRoleCheckInfo() ) then
+	if ( inProgress and isBattleground ) then
 		local entry = QueueStatusFrame_GetEntry(self, nextEntry);
 		QueueStatusEntry_SetUpPVPRoleCheck(entry);
 		entry:Show();
@@ -126,7 +127,7 @@ function QueueStatusFrame_Update(self)
 		nextEntry = nextEntry + 1;
 		showMinimapButton = true;
 	end
-]]
+
 	--Try all PvP queues
 	for i=1, GetMaxBattlefieldID() do
 		local status, mapName, teamSize, registeredMatch, suspend = GetBattlefieldStatus(i);
@@ -254,12 +255,12 @@ function QueueStatusEntry_SetUpBattlefield(entry, idx)
 		QueueStatusEntry_SetMinimalDisplay(entry, mapName, QUEUED_STATUS_UNKNOWN);
 	end
 end
---[[
+
 function QueueStatusEntry_SetUpPVPRoleCheck(entry)
-	local active, queueName = GetPVPRoleCheckInfo();
+	local queueName = GetLFGRoleUpdateBattlegroundInfo();
 	QueueStatusEntry_SetMinimalDisplay(entry, queueName, QUEUED_STATUS_ROLE_CHECK_IN_PROGRESS);
 end
-]]
+
 function QueueStatusEntry_SetUpWorldPvP(entry, idx)
 	local status, mapName, queueID = GetWorldPVPQueueStatus(idx);
 	if ( status == "queued" ) then
@@ -312,7 +313,7 @@ function QueueStatusEntry_SetMinimalDisplay(entry, title, description)
 
 	entry:SetScript("OnUpdate", nil);
 
-	entry:SetHeight(30);
+	entry:SetHeight(entry.Title:GetHeight() + 14);
 end
 
 function QueueStatusEntry_SetFullDisplay(entry, title, queuedTime, myWait, isTank, isHealer, isDPS, totalTanks, totalHealers, totalDPS, tankNeeds, healerNeeds, dpsNeeds)
@@ -430,9 +431,10 @@ function QueueStatusDropDown_Update()
 		end
 	end
 
---	if ( GetPVPRoleCheckInfo() ) then
---		QueueStatusDropDown_AddPVPRoleCheckButtons(info);
---	end
+	local inProgress, _, _, _, isBattleground = GetLFGRoleUpdate();
+	if ( inProgress and isBattleground ) then
+		QueueStatusDropDown_AddPVPRoleCheckButtons(info);
+	end
 
 	for i=1, GetMaxBattlefieldID() do
 		local status, mapName, teamSize, registeredMatch = GetBattlefieldStatus(i);
@@ -503,12 +505,13 @@ function QueueStatusDropDown_AddWorldPvPButtons(info, idx)
 	end
 end
 
---[[function QueueStatusDropDown_AddPVPRoleCheckButtons(info)
+function QueueStatusDropDown_AddPVPRoleCheckButtons(info)
 	wipe(info);
-	local active, queueName = GetPVPRoleCheckInfo();
+	local inProgress, _, _, _, isBattleground = GetLFGRoleUpdate();
 	
-	if ( active ) then
-		info.text = queueName;
+	if ( inProgress and isBattleground ) then
+		local name = GetLFGRoleUpdateBattlegroundInfo();
+		info.text = name;
 		info.isTitle = 1;
 		info.notCheckable = 1;
 		UIDropDownMenu_AddButton(info);
@@ -521,7 +524,6 @@ end
 		UIDropDownMenu_AddButton(info);
 	end
 end
-]]
 
 function QueueStatusDropDown_AddBattlefieldButtons(info, idx)
 	wipe(info);

@@ -145,6 +145,7 @@ function HelpFrame_OnLoad(self)
 	self:RegisterEvent("PLAYER_ENTERING_WORLD");
 	self:RegisterEvent("UPDATE_GM_STATUS");
 	self:RegisterEvent("UPDATE_TICKET");
+	self:RegisterEvent("UPDATE_WEB_TICKET");
 	self:RegisterEvent("GMSURVEY_DISPLAY");
 	self:RegisterEvent("GMRESPONSE_RECEIVED");
 	self:RegisterEvent("QUICK_TICKET_SYSTEM_STATUS");
@@ -235,6 +236,8 @@ function HelpFrame_OnEvent(self, event, ...)
 			end
 		end
 		HelpFrame_SetTicketEntry();
+	elseif ( event == "UPDATE_WEB_TICKET" ) then
+		haveTicket = ...;
 	elseif ( event == "GMRESPONSE_RECEIVED" ) then
 		local ticketDescription, response = ...;
 
@@ -267,8 +270,6 @@ function HelpFrame_OnEvent(self, event, ...)
 	elseif ( event == "SIMPLE_BROWSER_WEB_ERROR" ) then
 		local errorNumber = tonumber(...);
 		StaticPopup_Show("WEB_ERROR", errorNumber);
-	elseif ( event == "SIMPLE_BROWSER_BUTTON_UPDATE") then
-		HelpBrowser_UpdateButtons(...);
 	end
 end
 
@@ -345,6 +346,7 @@ function HelpFrame_GMResponse_Acknowledge(markRead)
 end
 
 function HelpFrame_SetFrameByKey(key)
+	HelpBrowser:Hide();
 	-- if we're trying to open any ticket window and we have a GM response, override
 	if ( haveResponse and ( key == HELPFRAME_OPEN_TICKET or key == HELPFRAME_SUBMIT_TICKET ) ) then
 		key = HELPFRAME_GM_RESPONSE;
@@ -595,6 +597,7 @@ function HelpOpenTicketButton_OnUpdate(self, elapsed)
 			if ( self.refreshTime <= 0 ) then
 				self.refreshTime = GMTICKET_CHECK_INTERVAL;
 				GetGMTicket();
+				
 			end
 		end
 		
@@ -682,6 +685,8 @@ function HelpOpenTicketButton_OnEvent(self, event, ...)
 				self:Hide();
 			end
 		end
+	elseif ( event == "UPDATE_WEB_TICKET" ) then
+		self.haveTicket = ...;
 	end
 end
 
@@ -1243,17 +1248,19 @@ end
 
 
 local hasResized = false;
-function HelpBrowser_ToggleTooltip()
-	if (HelpBrowserSettingsTooltip:IsShown()) then
-		HelpBrowserSettingsTooltip:Hide();
+function HelpBrowser_ToggleTooltip(browser)
+	if (BrowserSettingsTooltip:IsShown()) then
+		BrowserSettingsTooltip:Hide();
+		BrowserSettingsTooltip.browser = nil;
 	else
 		PlaySound("igMainMenuOptionCheckBoxOn");
-		HelpBrowserSettingsTooltip:Show();
+		BrowserSettingsTooltip:Show();
+		BrowserSettingsTooltip.browser = browser;
 	end
 	
 	--resize the tooltip for different languages. Make sure buttons are the same width so they don't look weird
 	if (not hasResized) then
-		local tooltip = HelpBrowserSettingsTooltip;
+		local tooltip = BrowserSettingsTooltip;
 		local maxWidth = tooltip.Title:GetWidth()
 		local buttonWidth = max(tooltip.CacheButton:GetTextWidth(), tooltip.CookiesButton:GetTextWidth()); 
 		buttonWidth = buttonWidth + 20; --add button padding
@@ -1267,25 +1274,24 @@ function HelpBrowser_ToggleTooltip()
 	end
 end
 
-function HelpBrowser_UpdateButtons(action)
+function Browser_UpdateButtons(self, action)
 	if (action == "enableback") then
-		HelpFrameKnowledgebaseNavBack:Enable();
+		self.back:Enable();
 	elseif (action == "disableback") then
-		HelpFrameKnowledgebaseNavBack:Disable();
+		self.back:Disable();
 	elseif (action == "enableforward") then
-		HelpFrameKnowledgebaseNavForward:Enable();
+		self.forward:Enable();
 	elseif (action == "disableforward") then
-		HelpFrameKnowledgebaseNavForward:Disable();
+		self.forward:Disable();
 	elseif (action == "startloading") then
-		HelpFrameKnowledgebaseNavStop:Show();
-		HelpFrameKnowledgebaseNavReload:Hide();
-		LoadingIcon:Show();
-		LoadingIcon.Loop:Play();
+		self.stop:Show();
+		self.reload:Hide();
+		self.loading:Show();
+		self.loading.Loop:Play();
 	elseif (action == "doneloading") then
-		HelpFrameKnowledgebaseNavStop:Hide();
-		HelpFrameKnowledgebaseNavReload:Show();
-		LoadingIcon.Loop:Stop();
-		LoadingIcon:Hide();
+		self.stop:Hide();
+		self.reload:Show();
+		self.loading.Loop:Stop();
+		self.loading:Hide();
 	end
-	
 end

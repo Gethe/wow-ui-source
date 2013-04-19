@@ -61,10 +61,10 @@
 				self.hideOnEscape = 1;
 			</OnLoad>
 			<OnUpdate>
-				if ( IsFalling() or UnitAffectingCombat("player") ) then
-					self.AcceptButton:Disable();
+				if ( C_PetBattles.CanAcceptQueuedPVPMatch() == true ) then
+				  self.AcceptButton:Enable();
 				else
-					self.AcceptButton:Enable();
+				  self.AcceptButton:Disable();
 				end
 			</OnUpdate>
 		</Scripts>

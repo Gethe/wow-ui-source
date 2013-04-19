@@ -214,7 +214,7 @@
 								<Anchor point="TOPLEFT" x="14" y="-10"/>
 							</Anchors>
 						</FontString>
-						<FontString parentKey="InProgressText" inherits="GameFontNormal" text="WINTERGRASP_IN_PROGRESS">
+						<FontString parentKey="InProgressText" inherits="GameFontNormal" text="WINTERGRASP_IN_PROGRESS" hidden="true">
 							<Anchors>
 								<Anchor point="TOPRIGHT" x="-14" y="-11"/>
 							</Anchors>
@@ -222,13 +222,13 @@
 						</FontString>
 						<FontString parentKey="TimeText" inherits="GameFontNormal" hidden="true">
 							<Anchors>
-								<Anchor point="TOPRIGHT" x="-14" y="-11"/>
+								<Anchor point="TOP" x="90" y="-17"/>
 							</Anchors>
 							<Color r="1" g="1" b="1"/>
 						</FontString>
-						<FontString parentKey="NextBattleText" inherits="GameFontDisableTiny" text="NEXT_BATTLE_LABEL" hidden="true">
+						<FontString parentKey="NextBattleText" inherits="GameFontWhiteSmall" text="NEXT_BATTLE_LABEL" hidden="true">
 							<Anchors>
-								<Anchor point="RIGHT" relativeKey="$parent.TimeText" relativePoint="LEFT" x="-4" y="0"/>
+								<Anchor point="BOTTOM" relativeKey="$parent.TimeText" relativePoint="TOP" x="0" y="1"/>
 							</Anchors>	
 							<Color r="0.7" g="0.7" b="0.7"/>
 						</FontString>
@@ -953,9 +953,9 @@
 												<Anchor point="TOPLEFT" relativeKey="$parent.WorldPVPHeader" x="7" y="-10"/>
 											</Anchors>
 										</FontString>
-										<FontString inherits="GameFontHighlightSmall" text="REWARD_FOR_PVP_WIN">
+										<FontString inherits="GameFontWhiteSmall" text="REWARD_FOR_PVP_WIN">
 											<Anchors>
-												<Anchor point="BOTTOMRIGHT" relativeKey="$parent.BattlegroundHeader" x="-40" y="44"/>
+												<Anchor point="BOTTOMRIGHT" relativeKey="$parent.BattlegroundHeader" x="-40" y="41"/>
 											</Anchors>
 										</FontString>
 									</Layer>
@@ -1081,7 +1081,7 @@
 									</Button>
 									<Frame parentKey="BattlegroundReward1" inherits="PVPCurrencyRewardTemplate">
 										<Anchors>
-											<Anchor point="RIGHT" relativeKey="$parent.BattlegroundHeader" x="-34" y="5"/>
+											<Anchor point="RIGHT" relativeKey="$parent.BattlegroundHeader" x="-34" y="4"/>
 										</Anchors>
 									</Frame>
 									<Frame parentKey="NoBattlegroundReward" hidden="true" enableMouse="true">
@@ -1216,12 +1216,12 @@
 										<Anchor point="TOPLEFT" relativeKey="$parent.RatedBGHeader" x="7" y="-17"/>
 									</Anchors>
 								</FontString>	
-								<FontString inherits="GameFontHighlightSmall" text="REWARD_FOR_PVP_WIN">
+								<FontString inherits="GameFontWhiteSmall" text="REWARD_FOR_PVP_WIN">
 									<Anchors>
 										<Anchor point="BOTTOMRIGHT" relativeKey="$parent.ArenaHeader" x="-8" y="48"/>
 									</Anchors>
 								</FontString>
-								<FontString inherits="GameFontHighlightSmall" text="REWARD_FOR_PVP_WIN">
+								<FontString inherits="GameFontWhiteSmall" text="REWARD_FOR_PVP_WIN">
 									<Anchors>
 										<Anchor point="BOTTOMRIGHT" relativeKey="$parent.RatedBGHeader" x="-8" y="48"/>
 									</Anchors>

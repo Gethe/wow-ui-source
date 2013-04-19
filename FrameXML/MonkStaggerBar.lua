@@ -38,7 +38,7 @@ function MonkStaggerBar_OnEvent(self, event, arg1)
 	if ( event == "UNIT_DISPLAYPOWER" or event == "UPDATE_VEHICLE_ACTIONBAR" ) then
 		MonkStaggerBar_UpdatePowerType(self);
 	elseif ( event == "PLAYER_SPECIALIZATION_CHANGED" ) then
-		if ( arg1 == parent.unit) then
+		if ( arg1 == nil or arg1 == parent.unit) then
 			AlternatePowerBar_SetLook(self);
 			MonkStaggerBar_UpdatePowerType(self);
 			if (self.specRestriction == GetSpecialization()) then

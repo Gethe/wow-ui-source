@@ -161,6 +161,17 @@
 			<AbsValue val="14"/>
 		</FontHeight>
 	</Font>
+	<Font name="FriendsFont_UserTextKO" font="Fonts\2002.TTF" alternateTo="FriendsFont_UserText" alternateAlphabetID = "0" virtual="true">
+		<Shadow>
+			<Offset>
+				<AbsDimension x="1" y="-1"/>
+			</Offset>
+			<Color r="0" g="0" b="0"/>
+		</Shadow>
+		<FontHeight>
+			<AbsValue val="11"/>
+		</FontHeight>
+	</Font>
 	
 	<Font name="FriendsFont_NormalZH" font="Fonts\ARKai_T.ttf" alternateTo="FriendsFont_Normal" alternateAlphabetID = "1" virtual="true">
 		<Shadow>
@@ -195,7 +206,18 @@
 			<AbsValue val="17"/>
 		</FontHeight>
 	</Font>
-	
+	<Font name="FriendsFont_UserTextZH" font="Fonts\ARHei.ttf" alternateTo="FriendsFont_UserText" alternateAlphabetID = "1" virtual="true">
+		<Shadow>
+			<Offset>
+				<AbsDimension x="1" y="-1"/>
+			</Offset>
+			<Color r="0" g="0" b="0"/>
+		</Shadow>
+		<FontHeight>
+			<AbsValue val="11"/>
+		</FontHeight>
+	</Font>
+
 	<Font name="FriendsFont_NormalRU" font="Fonts\FRIZQT___CYR.TTF" alternateTo="FriendsFont_Normal" alternateAlphabetID = "2" virtual="true">
 		<Shadow>
 			<Offset>
@@ -229,6 +251,19 @@
 			<AbsValue val="14"/>
 		</FontHeight>
 	</Font>
+	<!-- this is already the same font
+	<Font name="FriendsFont_UserTextRU" font="Fonts\ARIALN.ttf" alternateTo="FriendsFont_UserText" alternateAlphabetID = "2" virtual="true">
+		<Shadow>
+			<Offset>
+				<AbsDimension x="1" y="-1"/>
+			</Offset>
+			<Color r="0" g="0" b="0"/>
+		</Shadow>
+		<FontHeight>
+			<AbsValue val="11"/>
+		</FontHeight>
+	</Font>
+	-->
 
 	<Font name="ChatBubbleFont_KO" font="Fonts\2002.TTF" alternateTo="ChatBubbleFont" alternateAlphabetID = "0" virtual="true">
 		<FontHeight>

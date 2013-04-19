@@ -966,7 +966,7 @@ function AccountUpgradePanel_ToggleExpandState()
 end
 
 function AccountUpgradePanel_UpdateExpandState()
-	if ( CharacterSelectServerAlertFrame.shown ) then
+	if ( CharacterSelectServerAlertFrame:IsShown() ) then
 		CharSelectAccountUpgradeButton.isExpanded = false;
 		CharSelectAccountUpgradeButton.expandCollapseButton:Hide();
 	elseif ( IsTrialAccount() ) then

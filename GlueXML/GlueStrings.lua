@@ -963,6 +963,7 @@ TEXT_4XANISOTROPIC = "4x Anisotropic";
 TEXT_8XANISOTROPIC = "8x Anisotropic";
 TIME_UNIT_DELIMITER = " ";
 TOS_ACCEPT = "Accept";
+TOS_DECLINE = "Reject";
 TOS_FRAME_TITLE = "Terms of Use";
 TOS_NOTICE = "The Terms of Use have changed. Please scroll down and review the changes before accepting the agreement.";
 TRIAL_LOADING_MESSAGE = "|cffffd100Note:|r Since this is your first time playing this race, please wait while starting data is downloaded to your system. This may take a few minutes.";

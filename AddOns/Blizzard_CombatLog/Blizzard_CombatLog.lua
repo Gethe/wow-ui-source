@@ -2288,7 +2288,7 @@ function CombatLog_OnEvent(filterSettings, timestamp, event, hideCaster, sourceG
 				
 				-- Result String
 				if ( missType == "ABSORB" ) then
-					resultStr = CombatLog_String_DamageResultString( resisted, blocked, select(5,...), critical, glancing, crushing, overhealing, textMode, spellId, overkill );
+					resultStr = CombatLog_String_DamageResultString( resisted, blocked, select(6,...), critical, glancing, crushing, overhealing, textMode, spellId, overkill );
 				else
 					resultStr = _G["ACTION_SPELL_PERIODIC_MISSED_"..missType];
 				end

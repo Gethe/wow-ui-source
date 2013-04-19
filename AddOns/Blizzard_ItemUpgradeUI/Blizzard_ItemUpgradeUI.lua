@@ -29,13 +29,14 @@ end
 
 function ItemUpgradeFrame_OnShow(self)
 	PlaySound("UI_EtherealWindow_Open");
-	ItemUpgradeFrame_Update(self);
+	ItemUpgradeFrame_Update();
 	
 	ItemUpgradeFrameMoneyFrame:Show();
 end
 
 function ItemUpgradeFrame_OnHide(self)
 	PlaySound("UI_EtherealWindow_Close");
+	StaticPopup_Hide("CONFIRM_UPGRADE_ITEM");
 	CloseItemUpgrade();
 
 	ClearItemUpgrade();
@@ -47,14 +48,14 @@ end
 
 function ItemUpgradeFrame_OnEvent(self, event, ...)
 	if ( event == "ITEM_UPGRADE_MASTER_SET_ITEM" ) then
-		ItemUpgradeFrame_Update(self);
+		ItemUpgradeFrame_Update();
 	elseif ( event == "ITEM_UPGRADE_MASTER_UPDATE" ) then
-		ItemUpgradeFrame_Update(self);
+		ItemUpgradeFrame_Update();
 		self.FinishedGlow.FinishedAnim:Play();
 	end
 end
 
-function ItemUpgradeFrame_Update(self)
+function ItemUpgradeFrame_Update()
 	local icon, name, quality, bound, numCurrUpgrades, numMaxUpgrades, cost, currencyType = GetItemUpgradeItemInfo();
 
 	ItemUpgradeFrameUpgradeButton:Disable();
@@ -116,13 +117,13 @@ function ItemUpgradeFrame_Update(self)
 		ItemUpgradeFrame.LeftItemLevel:Hide();
 		ItemUpgradeFrame.RightItemLevel:Hide();
 		ItemUpgradeFrame.NoMoreUpgrades:Hide();
-		for _, item in pairs(self.LeftStat) do
+		for _, item in pairs(ItemUpgradeFrame.LeftStat) do
 			item:Hide();
 		end
-		for _, item in pairs(self.RightStat) do
+		for _, item in pairs(ItemUpgradeFrame.RightStat) do
 			item:Hide();
 		end
-		for _, item in pairs(self.EffectRow) do
+		for _, item in pairs(ItemUpgradeFrame.EffectRow) do
 			item:Hide();
 		end
 	end

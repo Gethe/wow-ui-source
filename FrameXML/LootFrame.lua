@@ -500,6 +500,7 @@ function BonusRollFrame_StartBonusRoll(spellID, text, duration, currencyID)
 	frame.CurrentCountFrame.Text:SetFormattedText(BONUS_ROLL_CURRENT_COUNT, count, icon);
 	frame.PromptFrame.Timer:SetMinMaxValues(0, duration);
 	frame.PromptFrame.Timer:SetValue(duration);
+	frame.PromptFrame.RollButton:Enable();
 	frame.PromptFrame:Show();
 	frame.RollingFrame:Hide();
 	
@@ -529,6 +530,8 @@ function BonusRollFrame_OnLoad(self)
 	self:RegisterEvent("BONUS_ROLL_FAILED");
 	self:RegisterEvent("BONUS_ROLL_RESULT");
 	self:RegisterEvent("PLAYER_LOOT_SPEC_UPDATED");
+	self:RegisterEvent("BONUS_ROLL_DEACTIVATE");
+	self:RegisterEvent("BONUS_ROLL_ACTIVATE");
 end
 
 function BonusRollFrame_OnEvent(self, event, ...)
@@ -573,6 +576,12 @@ function BonusRollFrame_OnEvent(self, event, ...)
 		else
 			self.SpecIcon:Hide();
 			self.SpecRing:Hide();
+		end
+	elseif ( event == "BONUS_ROLL_DEACTIVATE" ) then
+		self.PromptFrame.RollButton:Disable();
+	elseif ( event == "BONUS_ROLL_ACTIVATE" ) then
+		if ( self.state == "prompt" ) then
+			self.PromptFrame.RollButton:Enable();
 		end
 	end
 end
@@ -646,7 +655,7 @@ end
 function BonusRollFrame_FinishedFading(self)
 	if ( self.rewardType == "item" ) then
 		GroupLootContainer_ReplaceFrame(GroupLootContainer, self, BonusRollLootWonFrame);
-		LootWonAlertFrame_SetUp(BonusRollLootWonFrame, self.rewardLink, self.rewardQuantity, self.rewardSpecID);
+		LootWonAlertFrame_SetUp(BonusRollLootWonFrame, self.rewardLink, self.rewardQuantity, nil, nil, self.rewardSpecID);
 		AlertFrame_AnimateIn(BonusRollLootWonFrame);
 	elseif ( self.rewardType == "money" ) then
 		GroupLootContainer_ReplaceFrame(GroupLootContainer, self, BonusRollMoneyWonFrame);

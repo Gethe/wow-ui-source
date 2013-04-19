@@ -20,8 +20,6 @@ LFG_SUBTYPEID_HEROIC = 2;
 LFG_SUBTYPEID_RAID = 3;
 LFG_SUBTYPEID_SCENARIO = 4;
 
-LFG_DUNGEONID_HEROIC_SCENARIO = 641;
-
 LFG_ID_TO_ROLES = { "DAMAGER", "TANK", "HEALER" };
 LFG_RETURN_VALUES = {
 	name = 1,
@@ -215,7 +213,14 @@ function LFGEventFrame_OnEvent(self, event, ...)
 end
 
 function LFG_IsHeroicScenario(dungeonID)
-	return dungeonID == LFG_DUNGEONID_HEROIC_SCENARIO;
+	if ( dungeonID ) then
+		local difficulty = select(LFG_RETURN_VALUES.difficulty, GetLFGDungeonInfo(dungeonID));
+		if ( difficulty ) then
+			local _, _, isHeroic = GetDifficultyInfo(difficulty);
+			return isHeroic;
+		end
+	end
+	return false;
 end
 
 function LFG_DisplayGroupLeaderWarning(eventFrame)
@@ -752,7 +757,9 @@ function LFGDungeonReadyPopup_Update()
 			if ( subtypeID == LFG_SUBTYPEID_SCENARIO ) then
 				if ( LFG_IsHeroicScenario(id) ) then
 					texture = "Interface\\LFGFrame\\UI-LFG-BACKGROUND-HeroicScenario";
-					name = RANDOM_HEROIC_SCENARIO;
+					if ( typeID == TYPEID_RANDOM_DUNGEON ) then
+						name = RANDOM_SCENARIO;
+					end
 				else
 					texture = "Interface\\LFGFrame\\UI-LFG-BACKGROUND-RandomScenario";
 					-- change name for random

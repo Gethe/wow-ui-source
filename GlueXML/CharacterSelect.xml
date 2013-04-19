@@ -1083,9 +1083,30 @@
 							<Anchor point="BOTTOMRIGHT" relativeKey="$parent" relativePoint="TOPLEFT" x="260" y="-610"/>
 						</Anchors>
 						<Scripts>
+							<OnLoad>
+								ServerAlert_OnLoad(self);
+								self:RegisterEvent("LAUNCHER_LOGIN_STATUS_CHANGED");
+								if ( not IsLauncherLogin() ) then
+									ServerAlert_Disable(self);
+								end
+							</OnLoad>
+							<OnEvent>
+								if ( event == "LAUNCHER_LOGIN_STATUS_CHANGED" ) then
+									if ( IsLauncherLogin() ) then
+										ServerAlert_Enable(self);
+									else
+										ServerAlert_Disable(self);
+									end
+								else
+									ServerAlert_OnEvent(self, event, ...);
+								end
+							</OnEvent>
 							<OnShow>
 								AccountUpgradePanel_UpdateExpandState();
 							</OnShow>
+							<OnHide>
+								AccountUpgradePanel_UpdateExpandState();
+							</OnHide>
 						</Scripts>
 					</Frame>
 				</Frames>

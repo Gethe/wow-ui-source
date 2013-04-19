@@ -1884,6 +1884,7 @@ function WatchFrameScenario_UpdateScenario(newStage, updateCriteriaID)
 			-- animation? 
 			if ( criteriaID == updateCriteriaID and isBonusStepComplete and bonusHeader.state ~= "success" ) then
 				bonusHeaderAnim = bonusHeader.AnimSuccess;
+				PlaySound("UI_Scenario_BonusObjective_Success");
 			elseif ( criteriaID == updateCriteriaID and criteriaFailed and bonusStepFailed and bonusHeader.state ~= "failure" ) then
 				bonusHeaderAnim = bonusHeader.AnimFailure;
 			end

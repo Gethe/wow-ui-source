@@ -221,7 +221,7 @@
 							</OnClick>
 						</Scripts>
 					</CheckButton>
-					<EditBox name="$parentStackBox" autoFocus="false" historyLines="1" inherits="InputBoxTemplate" numeric="true"  id="5" parentKey="editBox">
+					<EditBox name="$parentStackBox" autoFocus="false" letters="6" historyLines="1" inherits="InputBoxTemplate" numeric="true"  id="5" parentKey="editBox">
 						<Size x="80" y="20"/>
 						<Anchors>
 							<Anchor point="BOTTOMLEFT" x="15" y="3"/>

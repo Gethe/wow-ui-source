@@ -435,7 +435,7 @@ function AccountLogin_UpdateLoginType()
 			AccountLoginCommunityButton:Hide();
 			OptionsButton:Hide();
 			GlueMenuButton:Hide();
-			ServerAlertFrame:Hide();
+			ServerAlert_Disable(ServerAlertFrame);
 		else
 			AccountLoginNormalLoginFrame:Hide();
 			AccountLoginLauncherLoginFrame:Show();
@@ -458,7 +458,7 @@ function AccountLogin_UpdateLoginType()
 			AccountLoginCommunityButton:Hide();
 			OptionsButton:Hide();
 			GlueMenuButton:Show();
-			ServerAlertFrame:Hide();
+			ServerAlert_Disable(ServerAlertFrame);
 		end
 	else
 		AccountLoginNormalLoginFrame:Show();
@@ -473,11 +473,7 @@ function AccountLogin_UpdateLoginType()
 		OptionsButton:Show();
 		GlueMenuButton:Hide();
 
-		if ( ServerAlertFrame.shown ) then
-			ServerAlertFrame:Show();
-		else
-			ServerAlertFrame:Hide();
-		end
+		ServerAlert_Enable(ServerAlertFrame);
 	end
 end
 

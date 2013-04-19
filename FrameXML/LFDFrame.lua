@@ -152,15 +152,15 @@ function LFDRoleCheckPopup_Update()
 	local inProgress, slots, members, details, bgQueue = GetLFGRoleUpdate();
 	
 	local displayName;
-	if ( slots == 1 ) then
+	if ( bgQueue ) then
+		displayName = GetLFGRoleUpdateBattlegroundInfo();
+	elseif ( slots == 1 ) then
 		local dungeonID, dungeonType, dungeonSubType = GetLFGRoleUpdateSlot(1);
 		if ( dungeonSubType == LFG_SUBTYPEID_HEROIC ) then
 			displayName = format(HEROIC_PREFIX, select(LFG_RETURN_VALUES.name, GetLFGDungeonInfo(dungeonID)));
 		else
 			displayName = select(LFG_RETURN_VALUES.name, GetLFGDungeonInfo(dungeonID));
 		end
-	elseif ( bgQueue == true ) then
-		displayName = GetLFGBattlegroundName();
 	else
 		displayName = MULTIPLE_DUNGEONS;
 	end

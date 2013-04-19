@@ -855,11 +855,11 @@ function UnitPopup_HideButtons ()
 				UnitPopupShown[UIDROPDOWNMENU_MENU_LEVEL][index] = 0;
 			end
 		elseif ( value == "LOCK_PLAYER_FRAME" ) then
-			if ( dropdownMenu ~= PlayerFrameDropDown and not PLAYER_FRAME_UNLOCKED ) then
+			if ( not PLAYER_FRAME_UNLOCKED ) then
 				UnitPopupShown[UIDROPDOWNMENU_MENU_LEVEL][index] = 0;
 			end
 		elseif ( value == "UNLOCK_PLAYER_FRAME" ) then
-			if ( dropdownMenu ~= PlayerFrameDropDown and PLAYER_FRAME_UNLOCKED ) then
+			if ( PLAYER_FRAME_UNLOCKED ) then
 				UnitPopupShown[UIDROPDOWNMENU_MENU_LEVEL][index] = 0;
 			end
 		elseif ( value == "MOVE_TARGET_FRAME" ) then
@@ -867,11 +867,11 @@ function UnitPopup_HideButtons ()
 				UnitPopupShown[UIDROPDOWNMENU_MENU_LEVEL][index] = 0;
 			end
 		elseif ( value == "LOCK_TARGET_FRAME" ) then
-			if ( dropdownMenu ~= TargetFrameDropDown and not TARGET_FRAME_UNLOCKED ) then
+			if ( not TARGET_FRAME_UNLOCKED ) then
 				UnitPopupShown[UIDROPDOWNMENU_MENU_LEVEL][index] = 0;
 			end
 		elseif ( value == "UNLOCK_TARGET_FRAME" ) then
-			if ( dropdownMenu ~= TargetFrameDropDown and TARGET_FRAME_UNLOCKED ) then
+			if ( TARGET_FRAME_UNLOCKED ) then
 				UnitPopupShown[UIDROPDOWNMENU_MENU_LEVEL][index] = 0;
 			end
 	   elseif ( value == "LARGE_FOCUS" ) then
@@ -883,11 +883,11 @@ function UnitPopup_HideButtons ()
 				UnitPopupShown[UIDROPDOWNMENU_MENU_LEVEL][index] = 0;
 			end
 		elseif ( value == "LOCK_FOCUS_FRAME" ) then
-			if ( dropdownMenu ~= FocusFrameDropDown and FocusFrame_IsLocked() ) then
+			if ( FocusFrame_IsLocked() ) then
 				UnitPopupShown[UIDROPDOWNMENU_MENU_LEVEL][index] = 0;
 			end
 		elseif ( value == "UNLOCK_FOCUS_FRAME" ) then
-			if ( dropdownMenu ~= FocusFrameDropDown and not FocusFrame_IsLocked() ) then
+			if ( not FocusFrame_IsLocked() ) then
 				UnitPopupShown[UIDROPDOWNMENU_MENU_LEVEL][index] = 0;
 			end
 		elseif ( value == "OPT_OUT_LOOT_TITLE" ) then

@@ -228,7 +228,7 @@ StaticPopupDialogs["CONFIRM_UPGRADE_ITEM"] = {
 		PlaySoundKitID(23291);
 	end,
 	OnCancel = function()
-	
+		ItemUpgradeFrame_Update();
 	end,
 	OnShow = function()
 	
@@ -1339,8 +1339,8 @@ StaticPopupDialogs["DEATH"] = {
 		end
 
 		local b1_enabled = self.button1:IsEnabled();
---		self.button1:SetEnabled(not IsEncounterInProgress());
-		self.button1:SetEnabled(not TOM_VAR);
+		self.button1:SetEnabled(not IsEncounterInProgress());
+
 		if ( b1_enabled ~= self.button1:IsEnabled() ) then
 			if ( b1_enabled ) then
 				self.text:SetText(CAN_NOT_RELEASE_IN_COMBAT);
@@ -3768,10 +3768,6 @@ function StaticPopup_OnUpdate(dialog, elapsed)
 			 (which == "AREA_SPIRIT_HEAL") or
 			 (which == "SPELL_CONFIRMATION_PROMPT")) then
 			local text = _G[dialog:GetName().."Text"];
-			local hasText = nil;
-			if ( text:GetText() ~= " " ) then
-				hasText = 1;
-			end
 			timeleft = ceil(timeleft);
 			if ( which == "INSTANCE_BOOT" ) then
 				if ( timeleft < 60 ) then
@@ -3806,9 +3802,7 @@ function StaticPopup_OnUpdate(dialog, elapsed)
 					text:SetFormattedText(StaticPopupDialogs[which].text, ceil(timeleft / 60), MINUTES);
 				end
 			end
-			if ( not hasText ) then
-				StaticPopup_Resize(dialog, which);
-			end
+			StaticPopup_Resize(dialog, which);
 		end
 	end
 	if ( dialog.startDelay ) then
@@ -3827,10 +3821,6 @@ function StaticPopup_OnUpdate(dialog, elapsed)
 
 		if ( which == "RECOVER_CORPSE" or (which == "RESURRECT") or (which == "RESURRECT_NO_SICKNESS") ) then
 			local text = _G[dialog:GetName().."Text"];
-			local hasText = nil;
-			if ( text:GetText() ~= " " ) then
-				hasText = 1;
-			end
 			timeleft = ceil(timeleft);
 			if ( (which == "RESURRECT") or (which == "RESURRECT_NO_SICKNESS") ) then
 				if ( timeleft < 60 ) then
@@ -3845,9 +3835,7 @@ function StaticPopup_OnUpdate(dialog, elapsed)
 					text:SetFormattedText(StaticPopupDialogs[which].delayText, ceil(timeleft / 60), MINUTES);
 				end
 			end
-			if ( not hasText ) then
-				StaticPopup_Resize(dialog, which);
-			end
+			StaticPopup_Resize(dialog, which);
 		end
 	end
 

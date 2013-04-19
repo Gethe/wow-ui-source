@@ -336,7 +336,7 @@
 			<TexCoords left="0.13085938" right="0.63085938" top="0.00781250" bottom="0.20312500"/>
 		</HighlightTexture>
 	</Button>
-
+	
 	<Button name="BrowserButtonTemplate" virtual="true">
 		<Size x="32" y="32"/>
 		<NormalTexture file="Interface\Buttons\UI-SquareButton-Up"/>
@@ -367,6 +367,207 @@
 			<OnLeave function="GameTooltip_Hide" />
 		</Scripts>
 	</Button>
+	
+	<Browser name="BrowserTemplate" frameStrata="HIGH" IMEFont="ChatFontNormal" virtual="true">
+		<Frames>
+			<Frame parentKey="BrowserInset" inherits="InsetFrameTemplate" frameStrata="MEDIUM">
+				<Anchors>
+					<Anchor point="TOPLEFT" x="-3" y="3"/>
+					<Anchor point="BOTTOMRIGHT" x="3" y="-1"/>
+				</Anchors>
+			</Frame>
+			<Button name="$parentBrowserSettings" inherits="BrowserButtonTemplate" parentKey="settings">
+				<Anchors>
+					<Anchor point="TOPRIGHT" relativeTo="HelpFrameCloseButton" relativePoint="TOPLEFT" x="-3" y="-5"/>
+				</Anchors>
+				<Layers>
+					<Layer level="ARTWORK" textureSubLevel="5">
+						<Texture parentKey="Icon" file="Interface\Buttons\UI-OptionsButton">
+							<Size x="16" y="16"/>
+							<Anchors>
+								<Anchor point="CENTER" />
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnLoad>
+						self.tooltip = BROWSER_SETTINGS_BUTTON_TOOLTIP;
+					</OnLoad>
+					<OnClick>
+						HelpBrowser_ToggleTooltip(self:GetParent());
+					</OnClick>
+				</Scripts>
+			</Button>
+			<Button name="$parentNavHome" inherits="BrowserButtonTemplate" parentKey="home">
+				<Anchors>
+					<Anchor point="BOTTOMLEFT" relativePoint="TOPLEFT" x="2" y="-2"/>
+				</Anchors>
+				<Layers>
+					<Layer level="ARTWORK" textureSubLevel="5">
+						<Texture parentKey="Icon" file="Interface\Buttons\UI-HomeButton">
+							<Size x="16" y="16"/>
+							<Anchors>
+								<Anchor point="CENTER" />
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnLoad>
+						self.tooltip = BROWSER_HOME_TOOLTIP;
+					</OnLoad>
+					<OnClick>
+						PlaySound("igMainMenuOptionCheckBoxOn");
+						self:GetParent():NavigateHome("KnowledgeBase");
+					</OnClick>
+				</Scripts>
+			</Button>
+			<Button name="$parentNavBack" parentKey="back">
+				<Size x="32" y="32"/>
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="$parentNavHome" relativePoint="RIGHT" x="3"/>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						self:Disable();
+					</OnLoad>
+					<OnClick>
+						PlaySound("igMainMenuOptionCheckBoxOn");
+						self:GetParent():NavigateBack();
+					</OnClick>
+					<OnEnter>
+						GameTooltip:SetOwner(self, "ANCHOR_CURSOR_RIGHT");
+						GameTooltip:SetText(BROWSER_BACK_TOOLTIP, HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b);
+					</OnEnter>
+					<OnLeave function="GameTooltip_Hide" />
+				</Scripts>
+				<NormalTexture file="Interface\Buttons\UI-SpellbookIcon-PrevPage-Up"/>
+				<PushedTexture file="Interface\Buttons\UI-SpellbookIcon-PrevPage-Down"/>
+				<DisabledTexture file="Interface\Buttons\UI-SpellbookIcon-PrevPage-Disabled"/>
+				<HighlightTexture file="Interface\Buttons\UI-Common-MouseHilight" alphaMode="ADD"/>
+			</Button>
+			<Button name="$parentNavForward" parentKey="forward">
+				<Size x="32" y="32"/>
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="$parentNavBack" relativePoint="RIGHT" x="3"/>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						self:Disable();
+					</OnLoad>
+					<OnClick>
+						PlaySound("igMainMenuOptionCheckBoxOn");
+						self:GetParent():NavigateForward();
+					</OnClick>
+					<OnEnter>
+						GameTooltip:SetOwner(self, "ANCHOR_CURSOR_RIGHT");
+						GameTooltip:SetText(BROWSER_FORWARD_TOOLTIP, HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b);
+					</OnEnter>
+					<OnLeave function="GameTooltip_Hide" />
+				</Scripts>
+				<NormalTexture file="Interface\Buttons\UI-SpellbookIcon-NextPage-Up"/>
+				<PushedTexture file="Interface\Buttons\UI-SpellbookIcon-NextPage-Down"/>
+				<DisabledTexture file="Interface\Buttons\UI-SpellbookIcon-NextPage-Disabled"/>
+				<HighlightTexture file="Interface\Buttons\UI-Common-MouseHilight" alphaMode="ADD"/>
+			</Button>
+			<Button name="$parentNavReload" inherits="BrowserButtonTemplate" parentKey="reload">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="$parentNavForward" relativePoint="RIGHT" x="3"/>
+				</Anchors>
+				<Layers>
+					<Layer level="ARTWORK" textureSubLevel="5">
+						<Texture parentKey="Icon" file="Interface\Buttons\UI-RefreshButton">
+							<Size x="16" y="16"/>
+							<Anchors>
+								<Anchor point="CENTER" />
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnLoad>
+						self.tooltip = BROWSER_RELOAD_TOOLTIP;
+					</OnLoad>
+					<OnClick>
+						PlaySound("igMainMenuOptionCheckBoxOn");
+						self:GetParent():NavigateReload();
+					</OnClick>
+				</Scripts>
+			</Button>
+			<Button name="$parentNavStop" inherits="BrowserButtonTemplate" hidden="true" parentKey="stop">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="$parentNavForward" relativePoint="RIGHT" x="3"/>
+				</Anchors>
+				<Layers>
+					<Layer level="ARTWORK" textureSubLevel="5">
+						<Texture parentKey="Icon" file="Interface\Buttons\UI-StopButton">
+							<Size x="16" y="16"/>
+							<Anchors>
+								<Anchor point="CENTER" />
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnLoad>
+						self.tooltip = BROWSER_STOP_TOOLTIP;
+					</OnLoad>
+					<OnClick>
+						PlaySound("igMainMenuOptionCheckBoxOn");
+						self:GetParent():NavigateStop();
+					</OnClick>
+				</Scripts>
+			</Button>
+			<Frame name="LoadingIcon" toplevel="true" hidden="true" parentKey="loading">
+				<Animations>
+					<AnimationGroup parentKey="Loop" looping="REPEAT" >
+						<Rotation target="LoadingIconSpin" order="1" duration="8" degrees="-360" />
+					</AnimationGroup>
+				</Animations>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentNavStop" relativePoint="TOPRIGHT"  x="0" y="4"/>
+				</Anchors>
+				<Size x="40" y="40"/>
+				<Frames>
+					<Frame name="$parentFrame" setAllPoints="true" >
+						<Layers>
+							<Layer level="BACKGROUND">
+								<Texture file="Interface\COMMON\StreamBackground" name="$parentBackground" setAllPoints="true" >
+									<Color r="1" g="0.82" b="0" a="1"/>
+								</Texture>
+							</Layer>
+							<Layer level="ARTWORK">
+								<Texture file="Interface\COMMON\StreamFrame" name="$parentAlpha" setAllPoints="true" />
+							</Layer>
+						</Layers>
+					</Frame>
+					<Frame name="$parentSpin" setAllPoints="true" >
+						<Layers>
+							<Layer level="BACKGROUND">
+								<Texture file="Interface\COMMON\StreamCircle" name="$parentSpinner" setAllPoints="true" >
+									<Color r="1" g="0.82" b="0"/>
+								</Texture>
+							</Layer>
+							<Layer level="OVERLAY" >
+								<Texture file="Interface\COMMON\StreamSpark" setAllPoints="true" />
+							</Layer>
+						</Layers>
+					</Frame>
+				</Frames>
+			</Frame>
+		</Frames>
+		<Scripts>
+			<OnExternalLink>
+				StaticPopup_Show("EXTERNAL_LINK", url, nil, {url=url});
+			</OnExternalLink>
+			<OnEscapePressed>
+				self:ClearFocus();
+			</OnEscapePressed>
+			<OnButtonUpdate function="Browser_UpdateButtons"/>
+		</Scripts>
+	</Browser>
+			
 	
 	<Frame name="HelpFrame" toplevel="true" parent="UIParent" inherits="TranslucentFrameTemplate" hidden="true" enableMouse="true" >
 		<Size x="974" y="524"/>
@@ -986,6 +1187,12 @@
 					<OnLoad>
 						tinsert(HelpFrameWindows, self);
 					</OnLoad>
+					<OnShow>
+						if (TicketBrowser:HasConnection()) then
+							TicketBrowser:Show();
+							self:Hide();
+						end
+					</OnShow>
 				</Scripts>
 			</Frame>
 			<Frame name="$parentTicket" hidden="true" parentKey="ticket">
@@ -1108,9 +1315,30 @@
 						else
 							self.submitButton:Disable();
 						end
+						if (TicketBrowser:HasConnection()) then
+							TicketBrowser:Show();
+							self:Hide();
+						end
 					</OnShow>
 				</Scripts>
 			</Frame>
+			<Browser name="HelpBrowser" inherits="BrowserTemplate" >
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentMainInset" x="4" y="-2"/>
+					<Anchor point="BOTTOMRIGHT" relativeTo="$parentMainInset" x="-3" y="1"/>
+				</Anchors>
+			</Browser>
+			<Browser name="TicketBrowser" hidden="true" inherits="BrowserTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentMainInset" x="4" y="-2"/>
+					<Anchor point="BOTTOMRIGHT" relativeTo="$parentMainInset" x="-3" y="1"/>
+				</Anchors>
+				<Scripts>
+					<OnShow>
+						self:NavigateHome("GMTicket");
+					</OnShow>
+				</Scripts>
+			</Browser>
 			<Frame name="$parentReportPlayer" hidden="true" parentKey="report">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeTo="$parentMainInset" x="5" y="-5"/>
@@ -1186,7 +1414,7 @@
 				</Anchors>
 				<Layers>
 					<Layer level="BACKGROUND">
-						<Texture name="$parentStoneTex" file="Interface\HelpFrame\DarkSandstone-Tile" vertTile="true" horizTile="true">
+						<Texture name="$parentStoneTex" file="Interface\HelpFrame\DarkSandstone-Tile" vertTile="true" horizTile="true" hidden="true">
 							<Anchors>
 								<Anchor point="TOPLEFT" x="0" y="0"/>
 								<Anchor point="BOTTOMRIGHT" relativePoint="TOPRIGHT" x="0" y="-40"/>
@@ -1194,7 +1422,7 @@
 						</Texture>
 					</Layer>
 					<Layer level="BACKGROUND" textureSubLevel="1">
-						<Texture name="$parentTopTileStreaks" inherits="_UI-Frame-TopTileStreaks" parentKey="TopTileStreaks">
+						<Texture name="$parentTopTileStreaks" inherits="_UI-Frame-TopTileStreaks" parentKey="TopTileStreaks" hidden="true">
 							<Anchors>
 								<Anchor point="TOPLEFT" relativeTo="$parentStoneTex" x="0" y="0"/>
 								<Anchor point="BOTTOMRIGHT" relativeTo="$parentStoneTex" x="0" y="-35"/>
@@ -1203,205 +1431,7 @@
 					</Layer>
 				</Layers>
 				<Frames>
-					<Button name="$parentBrowserSettings" inherits="BrowserButtonTemplate">
-						<Anchors>
-							<Anchor point="TOPRIGHT" relativeTo="HelpFrameCloseButton" relativePoint="TOPLEFT" x="-3" y="-5"/>
-						</Anchors>
-						<Layers>
-							<Layer level="ARTWORK" textureSubLevel="5">
-								<Texture parentKey="Icon" file="Interface\Buttons\UI-OptionsButton">
-									<Size x="16" y="16"/>
-									<Anchors>
-										<Anchor point="CENTER" />
-									</Anchors>
-								</Texture>
-							</Layer>
-						</Layers>
-						<Scripts>
-							<OnLoad>
-								self.tooltip = BROWSER_SETTINGS_BUTTON_TOOLTIP;
-							</OnLoad>
-							<OnClick function="HelpBrowser_ToggleTooltip"/>
-						</Scripts>
-					</Button>
-					<Browser name="HelpBrowser" frameStrata="HIGH">
-						<Anchors>
-							<Anchor point="TOPLEFT" x="4" y="-2"/>
-							<Anchor point="BOTTOMRIGHT" x="-3" y="1"/>
-						</Anchors>
-						<Scripts>
-							<OnExternalLink>
-								StaticPopup_Show("EXTERNAL_LINK", url, nil, {url=url});
-							</OnExternalLink>
-							<OnEscapePressed>
-								self:ClearFocus();
-							</OnEscapePressed>
-						</Scripts>
-					</Browser>
-					<Frame parentKey="BrowserInset" inherits="InsetFrameTemplate">
-						<Anchors>
-							<Anchor point="TOPLEFT" relativeTo="HelpBrowser" x="-3" y="3"/>
-							<Anchor point="BOTTOMRIGHT" relativeTo="HelpBrowser" x="3" y="-1"/>
-						</Anchors>
-					</Frame>
-					<Button name="$parentNavHome" inherits="BrowserButtonTemplate">
-						<Anchors>
-							<Anchor point="BOTTOMLEFT" relativePoint="TOPLEFT" x="2" y="-2"/>
-						</Anchors>
-						<Layers>
-							<Layer level="ARTWORK" textureSubLevel="5">
-								<Texture parentKey="Icon" file="Interface\Buttons\UI-HomeButton">
-									<Size x="16" y="16"/>
-									<Anchors>
-										<Anchor point="CENTER" />
-									</Anchors>
-								</Texture>
-							</Layer>
-						</Layers>
-						<Scripts>
-							<OnLoad>
-								self.tooltip = BROWSER_HOME_TOOLTIP;
-							</OnLoad>
-							<OnClick>
-								PlaySound("igMainMenuOptionCheckBoxOn");
-								HelpBrowser:NavigateHome("KnowledgeBase");
-							</OnClick>
-						</Scripts>
-					</Button>
-					<Button name="$parentNavBack" >
-						<Size x="32" y="32"/>
-						<Anchors>
-							<Anchor point="LEFT" relativeTo="$parentNavHome" relativePoint="RIGHT" x="3"/>
-						</Anchors>
-						<Scripts>
-							<OnLoad>
-								self:Disable();
-							</OnLoad>
-							<OnClick>
-								PlaySound("igMainMenuOptionCheckBoxOn");
-								HelpBrowser:NavigateBack();
-							</OnClick>
-							<OnEnter>
-								GameTooltip:SetOwner(self, "ANCHOR_CURSOR_RIGHT");
-								GameTooltip:SetText(BROWSER_BACK_TOOLTIP, HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b);
-							</OnEnter>
-							<OnLeave function="GameTooltip_Hide" />
-						</Scripts>
-						<NormalTexture file="Interface\Buttons\UI-SpellbookIcon-PrevPage-Up"/>
-						<PushedTexture file="Interface\Buttons\UI-SpellbookIcon-PrevPage-Down"/>
-						<DisabledTexture file="Interface\Buttons\UI-SpellbookIcon-PrevPage-Disabled"/>
-						<HighlightTexture file="Interface\Buttons\UI-Common-MouseHilight" alphaMode="ADD"/>
-					</Button>
-					<Button name="$parentNavForward">
-						<Size x="32" y="32"/>
-						<Anchors>
-							<Anchor point="LEFT" relativeTo="$parentNavBack" relativePoint="RIGHT" x="3"/>
-						</Anchors>
-						<Scripts>
-							<OnLoad>
-								self:Disable();
-							</OnLoad>
-							<OnClick>
-								PlaySound("igMainMenuOptionCheckBoxOn");
-								HelpBrowser:NavigateForward();
-							</OnClick>
-							<OnEnter>
-								GameTooltip:SetOwner(self, "ANCHOR_CURSOR_RIGHT");
-								GameTooltip:SetText(BROWSER_FORWARD_TOOLTIP, HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b);
-							</OnEnter>
-							<OnLeave function="GameTooltip_Hide" />
-						</Scripts>
-						<NormalTexture file="Interface\Buttons\UI-SpellbookIcon-NextPage-Up"/>
-						<PushedTexture file="Interface\Buttons\UI-SpellbookIcon-NextPage-Down"/>
-						<DisabledTexture file="Interface\Buttons\UI-SpellbookIcon-NextPage-Disabled"/>
-						<HighlightTexture file="Interface\Buttons\UI-Common-MouseHilight" alphaMode="ADD"/>
-					</Button>
-					<Button name="$parentNavReload" inherits="BrowserButtonTemplate">
-						<Anchors>
-							<Anchor point="LEFT" relativeTo="$parentNavForward" relativePoint="RIGHT" x="3"/>
-						</Anchors>
-						<Layers>
-							<Layer level="ARTWORK" textureSubLevel="5">
-								<Texture parentKey="Icon" file="Interface\Buttons\UI-RefreshButton">
-									<Size x="16" y="16"/>
-									<Anchors>
-										<Anchor point="CENTER" />
-									</Anchors>
-								</Texture>
-							</Layer>
-						</Layers>
-						<Scripts>
-							<OnLoad>
-								self.tooltip = BROWSER_RELOAD_TOOLTIP;
-							</OnLoad>
-							<OnClick>
-								PlaySound("igMainMenuOptionCheckBoxOn");
-								HelpBrowser:NavigateReload();
-							</OnClick>
-						</Scripts>
-					</Button>
-					<Button name="$parentNavStop" inherits="BrowserButtonTemplate" hidden="true">
-						<Anchors>
-							<Anchor point="LEFT" relativeTo="$parentNavForward" relativePoint="RIGHT" x="3"/>
-						</Anchors>
-						<Layers>
-							<Layer level="ARTWORK" textureSubLevel="5">
-								<Texture parentKey="Icon" file="Interface\Buttons\UI-StopButton">
-									<Size x="16" y="16"/>
-									<Anchors>
-										<Anchor point="CENTER" />
-									</Anchors>
-								</Texture>
-							</Layer>
-						</Layers>
-						<Scripts>
-							<OnLoad>
-								self.tooltip = BROWSER_STOP_TOOLTIP;
-							</OnLoad>
-							<OnClick>
-								PlaySound("igMainMenuOptionCheckBoxOn");
-								HelpBrowser:NavigateStop();
-							</OnClick>
-						</Scripts>
-					</Button>
-					<Frame name="LoadingIcon" toplevel="true" hidden="true">
-						<Animations>
-							<AnimationGroup parentKey="Loop" looping="REPEAT" >
-								<Rotation target="LoadingIconSpin" order="1" duration="8" degrees="-360" />
-							</AnimationGroup>
-						</Animations>
-						<Anchors>
-							<Anchor point="TOPLEFT" relativeTo="$parentNavStop" relativePoint="TOPRIGHT"  x="0" y="4"/>
-						</Anchors>
-						<Size x="40" y="40"/>
-						<Frames>
-							<Frame name="$parentFrame" setAllPoints="true" >
-								<Layers>
-									<Layer level="BACKGROUND">
-										<Texture file="Interface\COMMON\StreamBackground" name="$parentBackground" setAllPoints="true" >
-											<Color r="1" g="0.82" b="0" a="1"/>
-										</Texture>
-									</Layer>
-									<Layer level="ARTWORK">
-										<Texture file="Interface\COMMON\StreamFrame" name="$parentAlpha" setAllPoints="true" />
-									</Layer>
-								</Layers>
-							</Frame>
-							<Frame name="$parentSpin" setAllPoints="true" >
-								<Layers>
-									<Layer level="BACKGROUND">
-										<Texture file="Interface\COMMON\StreamCircle" name="$parentSpinner" setAllPoints="true" >
-											<Color r="1" g="0.82" b="0"/>
-										</Texture>
-									</Layer>
-									<Layer level="OVERLAY" >
-										<Texture file="Interface\COMMON\StreamSpark" setAllPoints="true" />
-									</Layer>
-								</Layers>
-							</Frame>
-						</Frames>
-					</Frame>
-					<EditBox name="$parentSearchBox" parentKey="searchBox" autoFocus="false">
+					<EditBox name="$parentSearchBox" parentKey="searchBox" autoFocus="false" hidden="true">
 						<Size x="320" y="20"/>
 						<Anchors>
 							<Anchor point="TOPLEFT" x="15" y="-12"/>
@@ -1533,7 +1563,7 @@
 						</Frames>
 						<FontString inherits="ChatFontSmall"/>
 					</EditBox>
-					<Button name="$parentSearchButton" parentKey="searchButton" inherits="GameMenuButtonTemplate" text="SEARCH">
+					<Button name="$parentSearchButton" parentKey="searchButton" inherits="GameMenuButtonTemplate" text="SEARCH" hidden="true">
 						<Size x="85" y="21"/>
 						<Anchors>
 							<Anchor point="LEFT" relativeTo="$parentSearchBox" relativePoint="RIGHT" x="30" y="0"/>
@@ -1545,13 +1575,13 @@
 							</OnClick>
 						</Scripts>
 					</Button>
-					<Frame name="$parentNavBar" inherits="NavBarTemplate" parentKey="navBar">
+					<Frame name="$parentNavBar" inherits="NavBarTemplate" parentKey="navBar" hidden="true">
 						<Anchors>
 							<Anchor point="TOPLEFT" relativeTo="$parentStoneTex" relativePoint="BOTTOMLEFT" x="3" y="0"/>
 							<Anchor point="TOPRIGHT" relativeTo="$parentStoneTex" relativePoint="TOPRIGHT" x="-4" y=""/>
 						</Anchors>
 					</Frame>
-					<ScrollFrame name="$parentScrollFrame" inherits="HybridScrollFrameTemplate" parentKey="scrollFrame">
+					<ScrollFrame name="$parentScrollFrame" inherits="HybridScrollFrameTemplate" parentKey="scrollFrame" hidden="true">
 						<Anchors>
 							<Anchor point="TOPLEFT" relativeTo="$parentNavBar" relativePoint="BOTTOMLEFT" x="0" y="0"/>
 							<Anchor point="BOTTOMRIGHT" x="-22" y="3"/>
@@ -1882,7 +1912,7 @@
 		</Scripts>
 	</Frame>
 	
-	<Frame name="HelpBrowserSettingsTooltip" inherits="TooltipBorderedFrameTemplate" frameStrata="FULLSCREEN_DIALOG" hidden="true" parent="HelpFrameKnowledgebaseBrowserSettings">
+	<Frame name="BrowserSettingsTooltip" inherits="TooltipBorderedFrameTemplate" frameStrata="FULLSCREEN_DIALOG" hidden="true" >
 		<Size x="250" y="100"/>
 		<Anchors>
 			<Anchor point="TOPRIGHT" relativePoint="TOPLEFT" x="-5"/>
@@ -1905,7 +1935,10 @@
 				<Scripts>
 					<OnClick>
 						PlaySound("igMainMenuOptionCheckBoxOn");
-						HelpBrowser:ClearCache();
+						local browser = BrowserSettingsTooltip.browser
+						if (browser) then
+							browser:ClearCache();
+						end
 					</OnClick>
 					<OnEnter>
 						GameTooltip:SetOwner(self, "ANCHOR_CURSOR_RIGHT");
@@ -1923,7 +1956,10 @@
 				<Scripts>
 					<OnClick>
 						PlaySound("igMainMenuOptionCheckBoxOn");
-						HelpBrowser:DeleteCookies();
+						local browser = BrowserSettingsTooltip.browser
+						if (browser) then
+							browser:DeleteCookies();
+						end
 					</OnClick>
 					<OnEnter>
 						GameTooltip:SetOwner(self, "ANCHOR_CURSOR_RIGHT");
@@ -2012,6 +2048,7 @@
 			<OnLoad>
 				self.refreshTime = 0;
 				self:RegisterEvent("UPDATE_TICKET");
+				self:RegisterEvent("UPDATE_WEB_TICKET");
 			</OnLoad>
 			<OnClick>
 				HelpOpenTicketButtonTutorial:Hide();

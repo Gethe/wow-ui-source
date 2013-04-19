@@ -636,6 +636,11 @@
 		<HighlightTexture inherits="UI-EJ-Tab-Highlight" alphaMode="ADD"/>
 		<Scripts>
 			<OnClick function="EncounterJournal_TabClicked"/>
+			<OnEnter>
+				GameTooltip:SetOwner(self, "ANCHOR_CURSOR_RIGHT");
+				GameTooltip:SetText(self.tooltip, nil, nil, nil, nil, 1);
+			</OnEnter>
+			<OnLeave function="GameTooltip_Hide"/>
 		</Scripts>
 	</Button>
 	
@@ -1801,6 +1806,9 @@
 									</Layer>
 								</Layers>
 								<Scripts>
+									<OnLoad>
+										self.tooltip = ABILITIES;
+									</OnLoad>
 									<OnClick>
 										EncounterJournal_TabClicked(self, button);
 										if (not EncounterJournal.encounterID and EncounterJournal.instanceID) then
@@ -1827,6 +1835,11 @@
 										</Texture>
 									</Layer>
 								</Layers>
+								<Scripts>
+									<OnLoad>
+										self.tooltip = LOOT;
+									</OnLoad>
+								</Scripts>
 							</Button>
 							<Button name="$parentModelTab" inherits="EncounterTabTemplate" useParentLevel="true" parentKey="modelTab" id="3">
 								<Anchors>
@@ -1847,6 +1860,9 @@
 									</Layer>
 								</Layers>
 								<Scripts>
+									<OnLoad>
+										self.tooltip = MODEL;
+									</OnLoad>
 									<OnClick>
 										EncounterJournal_TabClicked(self, button)
 										EncounterHournal_ShowCreatures()
@@ -2288,14 +2304,14 @@
 							<PlayerModel name="$parentModelFrame" parentKey="model" inherits="ModelTemplate" >
 								<Size x="390" y="425"/>
 								<Anchors>
-									<Anchor point="BOTTOMRIGHT" x="-5" y="1"/>
+									<Anchor point="BOTTOMRIGHT" x="-3" y="1"/>
 								</Anchors>
 								<Layers>
 									<Layer level="BACKGROUND" textureSubLevel="1">
 										<Texture name="$parentDungeonBG" file="Interface\EncounterJournal\UI-EJ-BACKGROUND-Default" parentKey="dungeonBG">
 											<Size x="394" y="425"/>
 											<Anchors>
-												<Anchor point="BOTTOMLEFT" x="0" y="0"/>
+												<Anchor point="BOTTOMLEFT" x="0" y="-2"/>
 											</Anchors>
 											<TexCoords left="0.76953125" right="0" top="0" bottom="0.830078125"/>
 										</Texture>
@@ -2304,7 +2320,7 @@
 										<Texture name="$parentShadow" file="Interface\EncounterJournal\UI-EJ-BossModelPaperFrame">
 											<Size x="393" y="424"/>
 											<Anchors>
-												<Anchor point="TOPLEFT" x="0" y="0"/>
+												<Anchor point="TOPLEFT" x="0" y="-2"/>
 											</Anchors>
 											<TexCoords left="0.767578125" right="0" top="0" bottom="0.828125"/>
 										</Texture>
@@ -2312,7 +2328,7 @@
 									<Layer level="OVERLAY" textureSubLevel="1">
 										<Texture name="$parentTitleBG" inherits="UI-EJ-BossNameShadow">
 											<Anchors>
-												<Anchor point="BOTTOM" x="0" y="0"/>
+												<Anchor point="BOTTOM" x="0" y="-2"/>
 											</Anchors>
 										</Texture>
 									</Layer>
@@ -2320,7 +2336,7 @@
 										<FontString name="$parentImageTile" inherits="QuestTitleFontBlackShadow" justifyH="CENTER" parentKey="imageTitle">
 											<Size x="380" y="10"/>
 											<Anchors>
-												<Anchor point="BOTTOM" x="0" y="8"/>
+												<Anchor point="BOTTOM" x="0" y="6"/>
 											</Anchors>
 										</FontString>
 									</Layer>

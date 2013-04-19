@@ -35,25 +35,7 @@ local panels = {
 	[2] = { name = "PVPArenaTeamsFrame", addon = "Blizzard_ChallengesUI" },
 }
 
-local INSTANCE_TEXTURELIST = {
-	  [0] = "Interface\\PVPFrame\\RandomPVPIcon",
-	  [1] = "Interface\\LFGFrame\\LFGIcon-Battleground",
-	  [2] = "Interface\\LFGFrame\\LFGIcon-WarsongGulch",
-	  [3] = "Interface\\LFGFrame\\LFGIcon-ArathiBasin",
-	  [4] = "Interface\\LFGFrame\\LFGIcon-NagrandArena",
-	  [5] = "Interface\\LFGFrame\\LFGIcon-BladesEdgeArena",
-	  [7] = "Interface\\LFGFrame\\LFGIcon-NetherBattlegrounds",
-	  [8] = "Interface\\LFGFrame\\LFGIcon-RuinsofLordaeron",
-	  [9] = "Interface\\LFGFrame\\LFGIcon-StrandoftheAncients",
-	 [10] = "Interface\\LFGFrame\\LFGIcon-DalaranSewers",
-	 [11] = "Interface\\LFGFrame\\LFGIcon-RingofValor",
-	 [30] = "Interface\\LFGFrame\\LFGIcon-IsleOfConquest",
-	[108] = "Interface\\LFGFrame\\LFGIcon-TwinPeaksBG",
-	[120] = "Interface\\LFGFrame\\LFGIcon-TheBattleforGilneas",
-	[699] = "Interface\\LFGFrame\\LFGIcon-TempleofKotmogu",
-	[708] = "Interface\\LFGFrame\\LFGIcon-SilvershardMines",
-	[719] = "Interface\\LFGFrame\\LFGIcon-TolvirArena",
-}
+local DEFAULT_BG_TEXTURE = "Interface\\PVPFrame\\RandomPVPIcon";
 
 function PVPUI_GetSelectedArenaTeam()
 	if PVPUIFrame:IsVisible() then
@@ -482,19 +464,23 @@ end
 function HonorFrame_UpdateQueueButtons()
 	local HonorFrame = HonorFrame;
 	local canQueue;
+	local isWorldPVP;
 	if ( HonorFrame.type == "specific" ) then
 		if ( HonorFrame.SpecificFrame.selectionID ) then
 			canQueue = true;
 		end
 	elseif ( HonorFrame.type == "bonus" ) then
-		if ( HonorFrame.BonusFrame.selectedButton ) and ( HonorFrame.BonusFrame.selectedButton.canQueue ) then
-			canQueue = true;
+		if ( HonorFrame.BonusFrame.selectedButton ) then
+			if ( HonorFrame.BonusFrame.selectedButton.canQueue ) then
+				canQueue = true;
+			end
+			isWorldPVP = HonorFrame.BonusFrame.selectedButton.worldID;
 		end
 	end
 
 	if ( canQueue ) then
 		HonorFrame.SoloQueueButton:Enable();
-		if ( IsInGroup() and UnitIsGroupLeader("player") ) then
+		if ( not isWorldPVP and IsInGroup() and UnitIsGroupLeader("player") ) then
 			HonorFrame.GroupQueueButton:Enable();
 		else
 			HonorFrame.GroupQueueButton:Disable();
@@ -535,7 +521,7 @@ function HonorFrameSpecificList_Update()
 	local buttonCount = -offset;
 
 	for i = 1, numBattlegrounds do
-		local localizedName, canEnter, isHoliday, isRandom, battleGroundID, mapDescription, BGMapID, maxPlayers, gameType = GetBattlegroundInfo(i);
+		local localizedName, canEnter, isHoliday, isRandom, battleGroundID, mapDescription, BGMapID, maxPlayers, gameType, iconTexture = GetBattlegroundInfo(i);
 		if ( localizedName and canEnter and not isRandom ) then
 			buttonCount = buttonCount + 1;
 			if ( buttonCount > 0 and buttonCount <= numButtons ) then
@@ -544,11 +530,7 @@ function HonorFrameSpecificList_Update()
 				button.NameText:SetText(localizedName);
 				button.SizeText:SetFormattedText(PVP_TEAMTYPE, maxPlayers, maxPlayers);
 				button.InfoText:SetText(gameType);
-				if ( INSTANCE_TEXTURELIST[battleGroundID] ) then
-					button.Icon:SetTexture(INSTANCE_TEXTURELIST[battleGroundID]);
-				else
-					button.Icon:SetTexture(INSTANCE_TEXTURELIST[0]);
-				end
+				button.Icon:SetTexture(iconTexture or DEFAULT_BG_TEXTURE);
 				if ( selectionID == battleGroundID ) then
 					button.SelectedTexture:Show();
 					button.NameText:SetTextColor(HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b);
@@ -1306,7 +1288,7 @@ function WarGamesFrame_Update()
 		local button = buttons[i];
 		local index = offset + i;
 		if index <= numWarGames  then
-			local name, pvpType, collapsed, id, minPlayers, maxPlayers, isRandom = GetWarGameTypeInfo(index);
+			local name, pvpType, collapsed, id, minPlayers, maxPlayers, isRandom, iconTexture = GetWarGameTypeInfo(index);
 			if ( name == "header" ) then
 				button:SetHeight(WARGAME_HEADER_HEIGHT);
 				button.Header:Show();
@@ -1337,11 +1319,7 @@ function WarGamesFrame_Update()
 					warGame.SizeText:SetFormattedText(PVP_TEAMTYPE, maxPlayers, maxPlayers);
 				end
 				warGame.InfoText:SetFormattedText(WARGAME_MINIMUM, minPlayers, minPlayers);
-				if ( INSTANCE_TEXTURELIST[id] ) then
-					warGame.Icon:SetTexture(INSTANCE_TEXTURELIST[id]);
-				else
-					warGame.Icon:SetTexture(INSTANCE_TEXTURELIST[0]);
-				end
+				warGame.Icon:SetTexture(iconTexture or DEFAULT_BG_TEXTURE);
 				if ( selectedIndex == index ) then
 					warGame.SelectedTexture:Show();
 					warGame.NameText:SetTextColor(HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b);

@@ -644,10 +644,17 @@ function TogglePetJournal(whichFrame)
 		PetJournal_LoadUI();
 	end
 	if ( PetJournalParent ) then
-		ToggleFrame(PetJournalParent);
-	end
-	if (whichFrame and PetJournalParent:IsShown()) then
-		PetJournalParent_SetTab(PetJournalParent, whichFrame);
+		if ( whichFrame ) then
+			-- if the request tab is being shown, close window
+			if ( PetJournalParent:IsShown() and whichFrame == PanelTemplates_GetSelectedTab(PetJournalParent) ) then
+				HideUIPanel(PetJournalParent);
+			else
+				ShowUIPanel(PetJournalParent);
+				PetJournalParent_SetTab(PetJournalParent, whichFrame);
+			end
+		else
+			ToggleFrame(PetJournalParent);
+		end
 	end
 end
 
@@ -893,12 +900,6 @@ function UIParent_OnEvent(self, event, ...)
 
 		-- display loot specialization setting
 		PrintLootSpecialization();
-	elseif ( event == "PLAYER_SPECIALIZATION_CHANGED" ) then
-		local unit = ...;
-		if ( unit == "player" ) then
-			-- display loot specialization setting
-			PrintLootSpecialization();
-		end
 	elseif ( event == "GROUP_ROSTER_UPDATE" ) then
 		-- Hide/Show party member frames
 		RaidOptionsFrame_UpdatePartyFrames();
@@ -4173,14 +4174,14 @@ function PrintLootSpecialization()
 	if ( specID and specID > 0 ) then
 		local id, name = GetSpecializationInfoByID(specID);
 		lootSpecChoice = format(ERR_LOOT_SPEC_CHANGED_S, name);
-	else
+--[[	else
 		local specIndex = GetSpecialization();
 		if ( specIndex) then
 			local specID, specName = GetSpecializationInfo(specIndex);
 			if ( specName ) then
 				lootSpecChoice = format(ERR_LOOT_SPEC_CHANGED_S, format(LOOT_SPECIALIZATION_DEFAULT, specName));
 			end
-		end
+		end]]
 	end
 	if ( lootSpecChoice ) then
 		local info = ChatTypeInfo["SYSTEM"];

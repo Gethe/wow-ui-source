@@ -1080,8 +1080,6 @@ function TargetFrame_ResetUserPlacedPosition()
 	TargetFrame:SetPoint("TOPLEFT", UIParent, "TOPLEFT", 250, -4);
 	TargetFrame:SetUserPlaced(false);
 	TargetFrame:SetClampedToScreen(false);
-	TARGET_FRAME_BUFFS_ON_TOP = false;
-	TargetFrame_UpdateBuffsOnTop();
 	TargetFrame_SetLocked(true);
 end
 

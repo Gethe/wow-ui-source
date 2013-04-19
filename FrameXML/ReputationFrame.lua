@@ -278,6 +278,7 @@ function ReputationBar_OnClick(self)
 end
 
 function ReputationBarLFGBonusRepButton_OnClick(self)
+	PlaySound("igMainMenuOptionCheckBoxOn");
 	ReputationBar_SetLFBonus(self.factionID);
 end
 

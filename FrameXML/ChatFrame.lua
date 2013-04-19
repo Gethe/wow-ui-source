@@ -1010,7 +1010,7 @@ local function ExecuteCastRandom(actions)
 		CastRandomTable[actions] = entry;
 	end
 	if ( not entry.value ) then
-		entry.value = strtrim(GetRandomArgument(strsplit(",", actions)));
+		entry.value = entry.spellNames[random(#entry.spellNames)];
 	end
 	entry.pending = true;
 	return entry.value;
