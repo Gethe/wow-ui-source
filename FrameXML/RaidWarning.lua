@@ -168,7 +168,11 @@ function RaidBossEmoteFrame_OnEvent(self, event, ...)
 		RaidNotice_AddMessage( self, body, info, displayTime );
 --		RaidNotice_AddMessage( RaidBossEmoteFrame, "This is a TEST of the MESSAGE!", ChatTypeInfo["RAID_BOSS_EMOTE"] );
 		if ( playSound ) then
-			PlaySound("RaidBossEmoteWarning");
+			if ( event == "RAID_BOSS_WHISPER" ) then
+				PlaySound("UI_RaidBossWhisperWarning");
+			else
+				PlaySound("RaidBossEmoteWarning");
+			end
 		end
 	elseif ( event == "CLEAR_BOSS_EMOTES" ) then
 		RaidNotice_Clear(self);

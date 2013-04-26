@@ -295,6 +295,7 @@ function QueueStatusEntry_SetUpPetBattlePvP(entry)
 end
 
 function QueueStatusEntry_SetMinimalDisplay(entry, title, description)
+	entry.Title:SetWidth(168);
 	entry.Title:SetText(title);
 
 	entry.Status:SetText(description);
@@ -319,6 +320,7 @@ end
 function QueueStatusEntry_SetFullDisplay(entry, title, queuedTime, myWait, isTank, isHealer, isDPS, totalTanks, totalHealers, totalDPS, tankNeeds, healerNeeds, dpsNeeds)
 	local height = 55;
 	
+	entry.Title:SetWidth(0);
 	entry.Title:SetText(title);
 
 	entry.Status:Hide();
@@ -389,7 +391,7 @@ function QueueStatusEntry_SetFullDisplay(entry, title, queuedTime, myWait, isTan
 		entry.HealersFound:Hide();
 		entry.DamagersFound:Hide();
 	end
-
+print(height);
 	entry:SetHeight(height);
 end
 

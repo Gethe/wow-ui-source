@@ -395,7 +395,7 @@
 						self.tooltip = BROWSER_SETTINGS_BUTTON_TOOLTIP;
 					</OnLoad>
 					<OnClick>
-						HelpBrowser_ToggleTooltip(self:GetParent());
+						HelpBrowser_ToggleTooltip(self, self:GetParent());
 					</OnClick>
 				</Scripts>
 			</Button>
@@ -419,7 +419,8 @@
 					</OnLoad>
 					<OnClick>
 						PlaySound("igMainMenuOptionCheckBoxOn");
-						self:GetParent():NavigateHome("KnowledgeBase");
+						local parent = self:GetParent()
+						parent:NavigateHome(parent.homepage);
 					</OnClick>
 				</Scripts>
 			</Button>
@@ -1188,8 +1189,10 @@
 						tinsert(HelpFrameWindows, self);
 					</OnLoad>
 					<OnShow>
-						if (TicketBrowser:HasConnection()) then
-							TicketBrowser:Show();
+						if (HelpBrowser:HasConnection()) then
+							HelpBrowser:Show();
+							HelpBrowser:NavigateHome("GMTicket");
+							HelpBrowser.homepage = "GMTicket";
 							self:Hide();
 						end
 					</OnShow>
@@ -1315,8 +1318,10 @@
 						else
 							self.submitButton:Disable();
 						end
-						if (TicketBrowser:HasConnection()) then
-							TicketBrowser:Show();
+						if (HelpBrowser:HasConnection()) then
+							HelpBrowser:Show();
+							HelpBrowser:NavigateHome("GMTicket");
+							HelpBrowser.homepage = "GMTicket";
 							self:Hide();
 						end
 					</OnShow>
@@ -1327,16 +1332,10 @@
 					<Anchor point="TOPLEFT" relativeTo="$parentMainInset" x="4" y="-2"/>
 					<Anchor point="BOTTOMRIGHT" relativeTo="$parentMainInset" x="-3" y="1"/>
 				</Anchors>
-			</Browser>
-			<Browser name="TicketBrowser" hidden="true" inherits="BrowserTemplate">
-				<Anchors>
-					<Anchor point="TOPLEFT" relativeTo="$parentMainInset" x="4" y="-2"/>
-					<Anchor point="BOTTOMRIGHT" relativeTo="$parentMainInset" x="-3" y="1"/>
-				</Anchors>
 				<Scripts>
-					<OnShow>
-						self:NavigateHome("GMTicket");
-					</OnShow>
+					<OnLoad>
+						self.homepage = "KnowledgeBase";
+					</OnLoad>
 				</Scripts>
 			</Browser>
 			<Frame name="$parentReportPlayer" hidden="true" parentKey="report">
@@ -1912,11 +1911,8 @@
 		</Scripts>
 	</Frame>
 	
-	<Frame name="BrowserSettingsTooltip" inherits="TooltipBorderedFrameTemplate" frameStrata="FULLSCREEN_DIALOG" hidden="true" >
+	<Frame name="BrowserSettingsTooltip" inherits="TooltipBorderedFrameTemplate" paernt="UIParent" frameStrata="FULLSCREEN_DIALOG" hidden="true" >
 		<Size x="250" y="100"/>
-		<Anchors>
-			<Anchor point="TOPRIGHT" relativePoint="TOPLEFT" x="-5"/>
-		</Anchors>
 		<Layers>
 			<Layer level="ARTWORK">
 				<FontString parentKey="Title" inherits="GameFontHighlight" text="BROWSER_SETTINGS_TOOLTIP">
@@ -2048,7 +2044,6 @@
 			<OnLoad>
 				self.refreshTime = 0;
 				self:RegisterEvent("UPDATE_TICKET");
-				self:RegisterEvent("UPDATE_WEB_TICKET");
 			</OnLoad>
 			<OnClick>
 				HelpOpenTicketButtonTutorial:Hide();
@@ -2083,6 +2078,49 @@
 		</HighlightTexture>
 	</Button>
 	
+	<Button name="HelpOpenWebTicketButton" parent="HelpMicroButton" hidden="true">
+		<Size x="34" y="35"/>
+		<Anchors>
+			<Anchor point="CENTER" relativeTo="HelpMicroButton" relativePoint="TOPRIGHT" x="-3" y="-26"/>
+		</Anchors>
+		<Scripts>
+			<OnLoad>
+				self.refreshTime = 0;
+				if (HelpBrowser:HasConnection()) then
+					self:RegisterEvent("UPDATE_WEB_TICKET");
+				end
+			</OnLoad>
+			<OnShow>
+				HelpOpenTicketButton:Hide();
+			</OnShow>
+			<OnClick>
+				HelpFrame_ShowFrame(HELPFRAME_SUBMIT_TICKET)
+				if (self.caseIndex) then
+					HelpBrowser:OpenTicket(self.caseIndex)
+				end
+			</OnClick>
+			<OnEvent function="HelpOpenWebTicketButton_OnEvent"/>
+			<OnEnter>
+				self:SetScript("OnUpdate", HelpOpenWebTicketButton_OnUpdate);
+			</OnEnter>
+			<OnLeave>
+				self:SetScript("OnUpdate", nil);
+				GameTooltip:Hide();
+			</OnLeave>
+		</Scripts>
+		<HitRectInsets>
+			<AbsInset left="4" right="4" top="4" bottom="4"/>
+		</HitRectInsets>
+		<NormalTexture file="Interface\HelpFrame\CS_HelpTextures">
+			<TexCoords left="0.70703125" right="0.77343750" top="0.58593750" bottom="0.85937500"/>	
+		</NormalTexture>
+		<PushedTexture file="Interface\HelpFrame\CS_HelpTextures">
+			<TexCoords left="0.88867188" right="0.95507813" top="0.00781250" bottom="0.28125000"/>
+		</PushedTexture>
+		<HighlightTexture file="Interface\HelpFrame\CS_HelpTextures">
+			<TexCoords left="0.80664063" right="0.87304688" top="0.58593750" bottom="0.85937500"/>
+		</HighlightTexture>
+	</Button>
 	
 	<!-- Ticket Status -->
 	<!-- It might be a good idea to put this in a separate file and convert the HelpFrame stuff into an addon -->
