@@ -1941,7 +1941,10 @@
 						GameTooltip:SetText(BROWSER_CLEAR_CACHE_TOOLTIP, HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b);
 						self:GetParent().isCounting = nil;
 					</OnEnter>
-					<OnLeave function="GameTooltip_Hide" />
+					<OnLeave>
+						self:GetParent().isCounting = true;
+						GameTooltip_Hide()
+					</OnLeave>
 				</Scripts>
 			</Button>
 			<Button parentKey="CookiesButton" inherits="UIPanelButtonTemplate" text="BROWSER_DELETE_COOKIES">
@@ -1962,7 +1965,10 @@
 						GameTooltip:SetText(BROWSER_DELETE_COOKIES_TOOLTIP, HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b);
 						self:GetParent().isCounting = nil;
 					</OnEnter>
-					<OnLeave function="GameTooltip_Hide" />
+					<OnLeave>
+						self:GetParent().isCounting = true;
+						GameTooltip_Hide()
+					</OnLeave>
 				</Scripts>
 			</Button>
 		</Frames>

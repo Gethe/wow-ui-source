@@ -391,7 +391,6 @@ function QueueStatusEntry_SetFullDisplay(entry, title, queuedTime, myWait, isTan
 		entry.HealersFound:Hide();
 		entry.DamagersFound:Hide();
 	end
-print(height);
 	entry:SetHeight(height);
 end
 

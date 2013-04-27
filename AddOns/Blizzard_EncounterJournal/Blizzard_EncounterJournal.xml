@@ -1837,7 +1837,7 @@
 								</Layers>
 								<Scripts>
 									<OnLoad>
-										self.tooltip = LOOT;
+										self.tooltip = LOOT_NOUN;
 									</OnLoad>
 								</Scripts>
 							</Button>

@@ -765,9 +765,13 @@ function UIParent_OnEvent(self, event, ...)
 	elseif ( event == "TRADE_REQUEST" ) then
 		StaticPopup_Show("TRADE", arg1);
 	elseif ( event == "CHANNEL_INVITE_REQUEST" ) then
-		local dialog = StaticPopup_Show("CHAT_CHANNEL_INVITE", arg1, arg2);
-		if ( dialog ) then
-			dialog.data = arg1;
+		if ( GetCVarBool("blockChannelInvites") ) then
+			DeclineChannelInvite(arg1);
+		else
+			local dialog = StaticPopup_Show("CHAT_CHANNEL_INVITE", arg1, arg2);
+			if ( dialog ) then
+				dialog.data = arg1;
+			end
 		end
 	elseif ( event == "CHANNEL_PASSWORD_REQUEST" ) then
 		local dialog = StaticPopup_Show("CHAT_CHANNEL_PASSWORD", arg1);

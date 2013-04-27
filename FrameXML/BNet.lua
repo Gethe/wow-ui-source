@@ -21,6 +21,7 @@ BN_TOAST_TOP_BUFFER = 20;	-- the minimum distance in pixels from the toast to th
 BNET_CLIENT_WOW = "WoW";
 BNET_CLIENT_SC2 = "S2";
 BNET_CLIENT_D3 = "D3";
+BNET_CLIENT_WTCG = "WTCG";
 
 function BNet_OnLoad(self)
 	self:RegisterEvent("BN_CONNECTED");
@@ -506,6 +507,8 @@ function BNet_GetClientEmbeddedTexture(client, width, height, xOffset, yOffset)
 		textureString = "SC2";
 	elseif ( client == BNET_CLIENT_D3 ) then
 		textureString = "D3";
+	elseif ( client == BNET_CLIENT_WTCG ) then
+		textureString = "WTCG";
 	else
 		textureString = "Battlenet";
 	end
@@ -519,6 +522,8 @@ function BNet_GetClientTexture(client)
 		return "Interface\\FriendsFrame\\Battlenet-Sc2icon";
 	elseif ( client == BNET_CLIENT_D3 ) then
 		return "Interface\\FriendsFrame\\Battlenet-D3icon";
+	elseif ( client == BNET_CLIENT_WTCG ) then
+		return "Interface\\FriendsFrame\\Battlenet-WTCGicon";
 	else
 		return "Interface\\FriendsFrame\\Battlenet-Battleneticon";
 	end
