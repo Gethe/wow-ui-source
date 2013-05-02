@@ -750,13 +750,13 @@ function HelpOpenWebTicketButton_OnEvent(self, event, ...)
 				self.haveResponse = true;
 				
 			end
-			
 			self.statusText = statusText;
-
+			self:Show();
 		else
 			-- the player does not have a ticket
 			self.haveResponse = false;
 			self.haveTicket = false;
+			self:Hide();
 		end
 	end
 end

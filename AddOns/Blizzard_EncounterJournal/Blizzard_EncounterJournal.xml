@@ -434,9 +434,9 @@
 		</HighlightTexture>
 		<Scripts>
 			<OnEnter>
-				if self.itemID then
+				if self.link then
 					GameTooltip:SetOwner(self, "ANCHOR_LEFT");
-					GameTooltip:SetItemByID(self.itemID);
+					GameTooltip:SetHyperlink(self.link);
 					self.showingTooltip = true;
 				end
 			</OnEnter>
@@ -502,11 +502,11 @@
 		</HighlightTexture>
 		<Scripts>
 			<OnEnter>
-				if self.itemID then
+				if self.link then
 					GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
-					GameTooltip:SetItemByID(self.itemID);
+					GameTooltip:SetHyperlink(self.link);
+					self.showingTooltip = true;
 				end
-				self.showingTooltip = true;
 			</OnEnter>
 			<OnLeave>
 				GameTooltip:Hide();
@@ -1092,7 +1092,7 @@
 			</OnClick>
 			<OnEnter>
 				GameTooltip:SetOwner(self, "ANCHOR_LEFT");
-				GameTooltip:SetItemByID(self.itemID);
+				GameTooltip:SetHyperlink(self.link);
 				self.showingTooltip = true;
 				self:SetScript("OnUpdate", EncounterJournal_Loot_OnUpdate);
 			</OnEnter>

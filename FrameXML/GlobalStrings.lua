@@ -1811,6 +1811,7 @@ CHAT_MSG_BATTLEGROUND_LEADER = "Battleground Leader";
 CHAT_MSG_BG_SYSTEM_ALLIANCE = "Alliance zone message";
 CHAT_MSG_BG_SYSTEM_HORDE = "Horde zone message";
 CHAT_MSG_BG_SYSTEM_NEUTRAL = "Neutral zone message";
+CHAT_MSG_BLOCK_CHAT_CHANNEL_INVITE = "You have blocked chat channel invites.";
 CHAT_MSG_BN_CONVERSATION = "Real ID Conversation";
 CHAT_MSG_BN_WHISPER = "Real ID Whisper";
 CHAT_MSG_CHANNEL_LIST = "Channel List";

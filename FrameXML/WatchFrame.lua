@@ -2032,6 +2032,13 @@ function WatchFrameScenario_GetCriteriaLine(index, parent)
 		tinsert(SCENARIO_CRITERIA_LINES, line);
 	else
 		line:SetParent(parent);
+		if ( line.isAnimating ) then
+			line.Glow.ScaleAnim:Stop();
+			line.Glow.AlphaAnim:Stop();
+			line.Sheen.Anim:Stop();
+			line.Check.Anim:Stop();
+			line.isAnimating = nil;
+		end
 	end
 	line:SetHeight(WATCHFRAME_LINEHEIGHT);
 	line.text:SetHeight(0);

@@ -913,12 +913,13 @@ function EncounterJournal_LootCallback(itemID)
 	
 	for i,item in pairs(scrollFrame.buttons) do
 		if item.itemID == itemID then
-			local name, icon, slot, armorType, itemID, _, encounterID = EJ_GetLootInfoByIndex(item.index);
+			local name, icon, slot, armorType, itemID, link, encounterID = EJ_GetLootInfoByIndex(item.index);
 			item.name:SetText(name);
 			item.icon:SetTexture(icon);
 			item.slot:SetText(slot);
 			item.boss:SetFormattedText(BOSS_INFO_STRING, EJ_GetEncounterInfo(encounterID));
 			item.armorType:SetText(armorType);
+			item.link = link;
 		end
 	end
 end
@@ -963,7 +964,7 @@ function EncounterJournal_LootUpdate()
 			item:Show();
 			
 			if item.showingTooltip then
-				GameTooltip:SetItemByID(itemID);
+				GameTooltip:SetHyperlink(link);
 			end
 		else
 			item:Hide();
@@ -1042,7 +1043,7 @@ end
 
 function EncounterJournal_GetSearchDisplay(index)
 	local name, icon, path, typeText, displayInfo, itemID, _;
-	local id, stype, _, instanceID, encounterID  = EJ_GetSearchResult(index);
+	local id, stype, _, instanceID, encounterID, itemLink = EJ_GetSearchResult(index);
 	if stype == EJ_STYPE_INSTANCE then
 		name, _, _, icon = EJ_GetInstanceInfo(id);
 		typeText = ENCOUNTER_JOURNAL_INSTANCE;
@@ -1079,7 +1080,7 @@ function EncounterJournal_GetSearchDisplay(index)
 		typeText = ENCOUNTER_JOURNAL_ENCOUNTER
 		path = EJ_GetInstanceInfo(instanceID).." | "..EJ_GetEncounterInfo(encounterID);
 	end
-	return name, icon, path, typeText, displayInfo, itemID, stype;
+	return name, icon, path, typeText, displayInfo, itemID, stype, itemLink;
 end
 
 
@@ -1114,7 +1115,7 @@ function EncounterJournal_SearchUpdate()
 		result = results[i];
 		index = offset + i;
 		if index <= numResults then
-			local name, icon, path, typeText, displayInfo, itemID, stype = EncounterJournal_GetSearchDisplay(index);
+			local name, icon, path, typeText, displayInfo, itemID, stype, itemLink = EncounterJournal_GetSearchDisplay(index);
 			if stype == EJ_STYPE_INSTANCE then
 				result.icon:SetTexCoord(0.16796875, 0.51171875, 0.03125, 0.71875);
 			else
@@ -1125,7 +1126,7 @@ function EncounterJournal_SearchUpdate()
 			result.resultType:SetText(typeText);
 			result.path:SetText(path);
 			result.icon:SetTexture(icon);
-			result.itemID = itemID;
+			result.link = itemLink;
 			if displayInfo and displayInfo > 0 then
 				SetPortraitTexture(result.icon, displayInfo);
 			end
@@ -1133,9 +1134,9 @@ function EncounterJournal_SearchUpdate()
 			result:Show();
 			
 			if result.showingTooltip then
-				if itemID then
+				if itemLink then
 					GameTooltip:SetOwner(result, "ANCHOR_RIGHT");
-					GameTooltip:SetItemByID(itemID);
+					GameTooltip:SetHyperlink(itemLink);
 				else
 					GameTooltip:Hide();
 				end
@@ -1207,10 +1208,10 @@ function EncounterJournal_OnSearchTextChanged(self)
 		while index <= numResults do
 			button = EncounterJournal.searchBox["sbutton"..index];
 			if button then
-				local name, icon, path, typeText, displayInfo, itemID = EncounterJournal_GetSearchDisplay(index);
+				local name, icon, path, typeText, displayInfo, itemID, stype, itemLink = EncounterJournal_GetSearchDisplay(index);
 				button.name:SetText(name);
 				button.icon:SetTexture(icon);
-				button.itemID = itemID;
+				button.link = itemLink;
 				if displayInfo and displayInfo > 0 then
 					SetPortraitTexture(button.icon, displayInfo);
 				end
