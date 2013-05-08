@@ -152,9 +152,7 @@ function HelpFrame_OnLoad(self)
 	self:RegisterEvent("QUICK_TICKET_THROTTLE_CHANGED");
 	self:RegisterEvent("SIMPLE_BROWSER_WEB_PROXY_FAILED");
 	self:RegisterEvent("SIMPLE_BROWSER_WEB_ERROR");
-	self:RegisterEvent("SIMPLE_BROWSER_BUTTON_UPDATE");
-	
-	
+
 	
 	self.leftInset.Bg:SetTexture("Interface\\HelpFrame\\Tileable-Parchment", true, true);
 	
@@ -594,7 +592,6 @@ function HelpOpenTicketButton_OnUpdate(self, elapsed)
 			if ( self.refreshTime <= 0 ) then
 				self.refreshTime = GMTICKET_CHECK_INTERVAL;
 				GetGMTicket();
-				
 			end
 		end
 		
@@ -697,39 +694,42 @@ end
 --
 -- HelpOpenWebTicketButton
 --
-function HelpOpenWebTicketButton_OnUpdate(self, elapsed)
+
+function HelpOpenWebTicketButton_OnEnter(self, elapsed)
 	if ( self.haveTicket ) then
-		-- Every so often, query the server for our ticket status
-		if ( self.refreshTime ) then
-			self.refreshTime = self.refreshTime - elapsed;
-			if ( self.refreshTime <= 0 ) then
-				self.refreshTime = GMTICKET_CHECK_INTERVAL;
-				GetGMTicket();
-				
+		if ( self.haveResponse ) then
+			GameTooltip:SetOwner(self, "ANCHOR_TOP");
+			GameTooltip:SetText(GM_RESPONSE_ALERT, nil, nil, nil, nil, 1);
+		elseif ( self.hasGMSurvey ) then
+			GameTooltip:SetOwner(self, "ANCHOR_TOP");
+			GameTooltip:SetText(CHOSEN_FOR_GMSURVEY, nil, nil, nil, nil, 1);
+		else
+			GameTooltip:SetOwner(self, "ANCHOR_TOP");
+			GameTooltip:AddLine(self.titleText, HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b, 1);
+			if (self.statusText) then
+				GameTooltip:AddLine(self.statusText);
 			end
 		end
-		
-		GameTooltip:SetOwner(self, "ANCHOR_TOP");
-		GameTooltip:AddLine(self.titleText, HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b, 1);
-		if (self.statusText) then
-			GameTooltip:AddLine(self.statusText);
-		end
-		
 		GameTooltip:AddLine(" ");
 		GameTooltip:AddLine(HELPFRAME_TICKET_CLICK_HELP, GRAY_FONT_COLOR.r, GRAY_FONT_COLOR.g, GRAY_FONT_COLOR.b, 1);
 		GameTooltip:Show();
-	elseif ( self.haveResponse ) then
-		GameTooltip:SetOwner(self, "ANCHOR_TOP");
-		GameTooltip:SetText(GM_RESPONSE_ALERT, nil, nil, nil, nil, 1);
-	elseif ( self.hasGMSurvey ) then
-		GameTooltip:SetOwner(self, "ANCHOR_TOP");
-		GameTooltip:SetText(CHOSEN_FOR_GMSURVEY, nil, nil, nil, nil, 1);
+	end
+end
+
+function HelpOpenWebTicketButton_OnUpdate(self, elapsed)
+	-- Every so often, query the server for our ticket status
+	if ( self.refreshTime ) then
+		self.refreshTime = self.refreshTime - elapsed;
+		if ( self.refreshTime <= 0 ) then
+			self.refreshTime = GMTICKET_CHECK_INTERVAL;
+			GetWebTicket();
+		end
 	end
 end
 
 function HelpOpenWebTicketButton_OnEvent(self, event, ...)
 	if ( event == "UPDATE_WEB_TICKET" ) then
-		local hasTicket, isOpen, caseIndex = ...;
+		local hasTicket, numTickets, ticketStatus, caseIndex = ...;
 		self.titleText = nil;
 		self.statusText = nil;
 		self.caseIndex = nil;
@@ -738,20 +738,20 @@ function HelpOpenWebTicketButton_OnEvent(self, event, ...)
 			self.haveTicket = true;
 			self.haveResponse = false;
 			self.titleText = TICKET_STATUS;
-			if (isOpen and caseIndex) then --need more info
+			if (ticketStatus == LE_TICKET_STATUS_NMI) then --need more info
 				self.statusText = TICKET_STATUS_NMI;
 				self.caseIndex = caseIndex;
-			elseif (isOpen and not caseIndex) then --ticket hasn't been seen yet
-				--do nothing?
-			elseif (not isOpen and caseIndex) then --survey is ready
-				self.hasGMSurvey = true;
-				self.caseIndex = caseIndex;
-			else --ticket has been responded to
+			elseif (ticketStatus == LE_TICKET_STATUS_RESPONSE) then --ticket has been responded to
 				self.haveResponse = true;
-				
+				self.caseIndex = caseIndex;
 			end
-			self.statusText = statusText;
-			self:Show();
+			
+			if (ticketStatus == LE_TICKET_STATUS_SURVEY and numTickets == 1) then
+				-- the player just has a survey, don't show this icon
+				self:Hide();
+			else
+				self:Show();
+			end
 		else
 			-- the player does not have a ticket
 			self.haveResponse = false;
@@ -768,6 +768,7 @@ end
 
 function TicketStatusFrame_OnLoad(self)
 	self:RegisterEvent("GMRESPONSE_RECEIVED");
+	self:RegisterEvent("UPDATE_WEB_TICKET");
 end
 
 function TicketStatusFrame_OnEvent(self, event, ...)
@@ -775,6 +776,29 @@ function TicketStatusFrame_OnEvent(self, event, ...)
 		if ( not GMChatStatusFrame or not GMChatStatusFrame:IsShown() ) then
 			self:Show();
 		else
+			self:Hide();
+		end
+	elseif (event == "UPDATE_WEB_TICKET") then
+		local hasTicket, numTickets, ticketStatus, caseIndex = ...;
+		self.haveWebSurvey = false;
+		TicketStatusTime:SetText("");
+		TicketStatusTime:Hide();
+		if (hasTicket and ticketStatus ~= LE_TICKET_STATUS_OPEN) then
+			self.hasWebTicket = true;
+			if (ticketStatus == LE_TICKET_STATUS_NMI) then --need more info
+				TicketStatusTitleText:SetText(TICKET_STATUS_NMI);
+			elseif (ticketStatus == LE_TICKET_STATUS_SURVEY) then --survey is ready
+				TicketStatusTitleText:SetText(CHOSEN_FOR_GMSURVEY);
+				self:SetHeight(TicketStatusTitleText:GetHeight() + 20);
+				self.haveWebSurvey = true;
+			elseif (ticketStatus == LE_TICKET_STATUS_RESPONSE) then --ticket has been responded to
+				TicketStatusTitleText:SetText(GM_RESPONSE_ALERT);
+				self.haveResponse = true;
+			end
+			self.caseIndex = caseIndex;
+			self:Show();
+		else
+			self.hasWebTicket = false;
 			self:Hide();
 		end
 	end
@@ -805,6 +829,15 @@ function TicketStatusFrameButton_OnLoad(self)
 end
 
 function TicketStatusFrameButton_OnClick(self)
+	if (TicketStatusFrame.hasWebTicket and TicketStatusFrame.caseIndex) then
+		HelpFrame_ShowFrame(HELPFRAME_SUBMIT_TICKET)
+		HelpBrowser:OpenTicket(TicketStatusFrame.caseIndex)
+		if (TicketStatusFrame.haveWebSurvey) then
+			AcknowledgeSurvey(TicketStatusFrame.caseIndex);
+		end
+		TicketStatusFrame:Hide()
+		return;
+	end
 	if ( TicketStatusFrame.hasGMSurvey ) then
 		GMSurveyFrame_LoadUI();
 		ShowUIPanel(GMSurveyFrame);

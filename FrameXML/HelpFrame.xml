@@ -1336,6 +1336,9 @@
 					<OnLoad>
 						self.homepage = "KnowledgeBase";
 					</OnLoad>
+					<OnHide>
+						GetWebTicket();
+					</OnHide>
 				</Scripts>
 			</Browser>
 			<Frame name="$parentReportPlayer" hidden="true" parentKey="report">
@@ -2103,14 +2106,13 @@
 				HelpFrame_ShowFrame(HELPFRAME_SUBMIT_TICKET)
 				if (self.caseIndex) then
 					HelpBrowser:OpenTicket(self.caseIndex)
-				end
+				else
+					HelpBrowser:NavigateHome("GMTicketStatus")
+				end	
 			</OnClick>
 			<OnEvent function="HelpOpenWebTicketButton_OnEvent"/>
-			<OnEnter>
-				self:SetScript("OnUpdate", HelpOpenWebTicketButton_OnUpdate);
-			</OnEnter>
+			<OnEnter function="HelpOpenWebTicketButton_OnEnter"/>
 			<OnLeave>
-				self:SetScript("OnUpdate", nil);
 				GameTooltip:Hide();
 			</OnLeave>
 		</Scripts>
