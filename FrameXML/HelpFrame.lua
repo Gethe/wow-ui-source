@@ -1373,6 +1373,9 @@ function HelpBrowser_ToggleTooltip(button, browser)
 	end
 end
 
+--for race conditions with the spinner
+local loading = nil; 
+local logging = nil;
 function Browser_UpdateButtons(self, action)
 	if (action == "enableback") then
 		self.back:Enable();
@@ -1385,11 +1388,21 @@ function Browser_UpdateButtons(self, action)
 	elseif (action == "startloading") then
 		self.stop:Show();
 		self.reload:Hide();
-		self.loading:Show();
-		self.loading.Loop:Play();
+		loading = true;
 	elseif (action == "doneloading") then
 		self.stop:Hide();
 		self.reload:Show();
+		loading = nil;
+	elseif (action == "loggingin") then
+		logging = true;
+	elseif (action == "notloggingin") then
+		logging = nil;
+	end
+	
+	if (loading or logging) then
+		self.loading:Show();
+		self.loading.Loop:Play();
+	else
 		self.loading.Loop:Stop();
 		self.loading:Hide();
 	end
