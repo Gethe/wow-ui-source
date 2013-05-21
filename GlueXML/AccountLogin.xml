@@ -90,6 +90,624 @@
 		</Layers>
 	</Frame>
 
+	<Frame name="TOSFrame" inherits="GlueModalFrameTemplate" frameStrata="DIALOG" hidden="true">
+		<Size>
+			<AbsDimension x="640" y="512"/>
+		</Size>
+		<Anchors>
+			<Anchor point="CENTER">
+				<Offset>
+					<AbsDimension x="0" y="0"/>
+				</Offset>
+			</Anchor>
+		</Anchors>
+		<HitRectInsets>
+			<AbsInset left="0" right="44" top="0" bottom="13"/>
+		</HitRectInsets>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture file="Interface\HelpFrame\HelpFrame-TopLeft">
+					<Size>
+						<AbsDimension x="256" y="256"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT"/>
+					</Anchors>
+				</Texture>
+				<Texture file="Interface\HelpFrame\HelpFrame-Top">
+					<Size>
+						<AbsDimension x="256" y="256"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset>
+								<AbsDimension x="256" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</Texture>
+				<Texture file="Interface\Glues\Login\Glues-TOS-TopRight">
+					<Size>
+						<AbsDimension x="128" y="256"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPRIGHT"/>
+					</Anchors>
+				</Texture>
+				<Texture file="Interface\HelpFrame\HelpFrame-BotLeft">
+					<Size>
+						<AbsDimension x="256" y="256"/>
+					</Size>
+					<Anchors>
+						<Anchor point="BOTTOMLEFT"/>
+					</Anchors>
+				</Texture>
+				<Texture file="Interface\HelpFrame\HelpFrame-Bottom">
+					<Size>
+						<AbsDimension x="256" y="256"/>
+					</Size>
+					<Anchors>
+						<Anchor point="BOTTOMLEFT">
+							<Offset>
+								<AbsDimension x="256" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</Texture>
+				<Texture file="Interface\HelpFrame\HelpFrame-BotRight">
+					<Size>
+						<AbsDimension x="128" y="256"/>
+					</Size>
+					<Anchors>
+						<Anchor point="BOTTOMRIGHT"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="ARTWORK">
+				<Texture name="TOSFrameHeader" file="Interface\DialogFrame\UI-DialogBox-Header">
+					<Size>
+						<AbsDimension x="300" y="38"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOP" relativeTo="TOSFrame">
+							<Offset>
+								<AbsDimension x="-12" y="12"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+					<TexCoords left="0.3" right="0.7" top="0.015625" bottom="0.609375"/>
+				</Texture>
+				<Texture file="Interface\DialogFrame\UI-DialogBox-Header">
+					<Size>
+						<AbsDimension x="15" y="38"/>
+					</Size>
+					<Anchors>
+						<Anchor point="RIGHT" relativeTo="TOSFrameHeader" relativePoint="LEFT">
+							<Offset>
+								<AbsDimension x="0" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+					<TexCoords left="0.23046875" right="0.28515625" top="0.015625" bottom="0.609375"/>
+				</Texture>
+				<Texture file="Interface\DialogFrame\UI-DialogBox-Header">
+					<Size>
+						<AbsDimension x="15" y="38"/>
+					</Size>
+					<Anchors>
+						<Anchor point="LEFT" relativeTo="TOSFrameHeader" relativePoint="RIGHT">
+							<Offset>
+								<AbsDimension x="0" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+					<TexCoords left="0.7109375" right="0.76953125" top="0.015625" bottom="0.609375"/>
+				</Texture>
+				<FontString name="TOSFrameTitle" inherits="GlueFontNormal" text="TOS_FRAME_TITLE">
+					<Anchors>
+						<Anchor point="TOP" relativeTo="TOSFrameHeader">
+							<Offset>
+								<AbsDimension x="0" y="-12"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="TOSNotice" inherits="GlueFontHighlight" text="TOS_NOTICE" hidden="true">
+					<Size>
+						<AbsDimension x="550" y="0"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOP">
+							<Offset>
+								<AbsDimension x="0" y="75"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Frames>
+			<ScrollFrame name="TOSScrollFrame" inherits="GlueScrollFrameTemplate">
+				<Size>
+					<AbsDimension x="540" y="407"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT">
+						<Offset>
+							<AbsDimension x="20" y="-56"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Layers>
+					<Layer level="ARTWORK">
+						<Texture name="TOSScrollBarTop" file="Interface\PaperDollInfoFrame\UI-Character-ScrollBar">
+							<Size>
+								<AbsDimension x="31" y="256"/>
+							</Size>
+							<Anchors>
+								<Anchor point="TOPLEFT" relativePoint="TOPRIGHT">
+									<Offset>
+										<AbsDimension x="-2" y="5"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+							<TexCoords left="0" right="0.484375" top="0" bottom="1.0"/>
+						</Texture>
+						<Texture name="TOSScrollBarBottom" file="Interface\PaperDollInfoFrame\UI-Character-ScrollBar">
+							<Size>
+								<AbsDimension x="31" y="106"/>
+							</Size>
+							<Anchors>
+								<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMRIGHT">
+									<Offset>
+										<AbsDimension x="-2" y="-2"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+							<TexCoords left="0.515625" right="1.0" top="0" bottom="0.4140625"/>
+						</Texture>
+						<Texture name="TOSScrollBarMiddle" file="Interface\PaperDollInfoFrame\UI-Character-ScrollBar">
+							<Size>
+								<AbsDimension x="31" y="60"/>
+							</Size>
+							<Anchors>
+								<Anchor point="TOP" relativeTo="TOSScrollBarTop" relativePoint="BOTTOM">
+									<Offset>
+										<AbsDimension x="0" y="0"/>
+									</Offset>
+								</Anchor>
+								<Anchor point="BOTTOM" relativeTo="TOSScrollBarBottom" relativePoint="TOP">
+									<Offset>
+										<AbsDimension x="0" y="0"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+							<TexCoords left="0" right="0.484375" top=".75" bottom="1.0"/>
+						</Texture>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnShow>
+						AccountLogin_UpdateAcceptButton(self, TOSAccepted, "TOS");
+					</OnShow>
+					<OnScrollRangeChanged>
+						GlueScrollFrame_OnScrollRangeChanged(self, yrange);
+						if ( not TOSScrollFrame.loaded ) then
+							TOSAccept:Disable();
+							TOSScrollFrame.loaded = true;
+						end
+						AccountLogin_UpdateAcceptButton(self, TOSAccepted, "TOS");
+					</OnScrollRangeChanged>
+					<OnVerticalScroll>
+						GlueScrollFrame_OnVerticalScroll(self, offset);
+						AccountLogin_UpdateAcceptButton(self, TOSAccepted, "TOS");
+					</OnVerticalScroll>
+				</Scripts>
+				<ScrollChild>
+					<SimpleHTML name="TOSText" file="tos.html">
+						<Size>
+							<AbsDimension x="530" y="407"/>
+						</Size>
+						<FontString inherits="TOSFont"/>
+						<FontStringHeader1 inherits="GlueFontNormal"/>
+						<FontStringHeader2 inherits="GlueFontNormalSmall"/>
+					</SimpleHTML>
+				</ScrollChild>
+			</ScrollFrame>
+			<ScrollFrame name="EULAScrollFrame" inherits="GlueScrollFrameTemplate">
+				<Size>
+					<AbsDimension x="540" y="407"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT">
+						<Offset>
+							<AbsDimension x="20" y="-56"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Layers>
+					<Layer level="ARTWORK">
+						<Texture name="EULAScrollBarTop" file="Interface\PaperDollInfoFrame\UI-Character-ScrollBar">
+							<Size>
+								<AbsDimension x="31" y="256"/>
+							</Size>
+							<Anchors>
+								<Anchor point="TOPLEFT" relativePoint="TOPRIGHT">
+									<Offset>
+										<AbsDimension x="-2" y="5"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+							<TexCoords left="0" right="0.484375" top="0" bottom="1.0"/>
+						</Texture>
+						<Texture name="EULAScrollBarBottom" file="Interface\PaperDollInfoFrame\UI-Character-ScrollBar">
+							<Size>
+								<AbsDimension x="31" y="106"/>
+							</Size>
+							<Anchors>
+								<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMRIGHT">
+									<Offset>
+										<AbsDimension x="-2" y="-2"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+							<TexCoords left="0.515625" right="1.0" top="0" bottom="0.4140625"/>
+						</Texture>
+						<Texture name="EULAScrollBarMiddle" file="Interface\PaperDollInfoFrame\UI-Character-ScrollBar">
+							<Size>
+								<AbsDimension x="31" y="60"/>
+							</Size>
+							<Anchors>
+								<Anchor point="TOP" relativeTo="EULAScrollBarTop" relativePoint="BOTTOM">
+									<Offset>
+										<AbsDimension x="0" y="0"/>
+									</Offset>
+								</Anchor>
+								<Anchor point="BOTTOM" relativeTo="EULAScrollBarBottom" relativePoint="TOP">
+									<Offset>
+										<AbsDimension x="0" y="0"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+							<TexCoords left="0" right="0.484375" top=".75" bottom="1.0"/>
+						</Texture>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnShow>
+						AccountLogin_UpdateAcceptButton(self, EULAAccepted, "EULA");
+					</OnShow>
+					<OnScrollRangeChanged>
+						GlueScrollFrame_OnScrollRangeChanged(self, yrange);
+						AccountLogin_UpdateAcceptButton(self, EULAAccepted, "EULA");
+					</OnScrollRangeChanged>
+					<OnVerticalScroll>
+						GlueScrollFrame_OnVerticalScroll(self, offset);
+						AccountLogin_UpdateAcceptButton(self, EULAAccepted, "EULA");
+					</OnVerticalScroll>
+				</Scripts>
+				<ScrollChild>
+					<SimpleHTML name="EULAText" file="eula.html">
+						<Size>
+							<AbsDimension x="530" y="407"/>
+						</Size>
+						<FontString inherits="TOSFont"/>
+						<FontStringHeader1 inherits="GlueFontNormal"/>
+						<FontStringHeader2 inherits="GlueFontNormalSmall"/>
+					</SimpleHTML>
+				</ScrollChild>
+			</ScrollFrame>
+			<ScrollFrame name="TerminationScrollFrame" inherits="GlueScrollFrameTemplate">
+				<Size>
+					<AbsDimension x="540" y="407"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT">
+						<Offset>
+							<AbsDimension x="20" y="-56"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Layers>
+					<Layer level="ARTWORK">
+						<Texture name="TerminationScrollBarTop" file="Interface\PaperDollInfoFrame\UI-Character-ScrollBar">
+							<Size>
+								<AbsDimension x="31" y="256"/>
+							</Size>
+							<Anchors>
+								<Anchor point="TOPLEFT" relativePoint="TOPRIGHT">
+									<Offset>
+										<AbsDimension x="-2" y="5"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+							<TexCoords left="0" right="0.484375" top="0" bottom="1.0"/>
+						</Texture>
+						<Texture name="TerminationScrollBarBottom" file="Interface\PaperDollInfoFrame\UI-Character-ScrollBar">
+							<Size>
+								<AbsDimension x="31" y="106"/>
+							</Size>
+							<Anchors>
+								<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMRIGHT">
+									<Offset>
+										<AbsDimension x="-2" y="-2"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+							<TexCoords left="0.515625" right="1.0" top="0" bottom="0.4140625"/>
+						</Texture>
+						<Texture name="TerminationScrollBarMiddle" file="Interface\PaperDollInfoFrame\UI-Character-ScrollBar">
+							<Size>
+								<AbsDimension x="31" y="60"/>
+							</Size>
+							<Anchors>
+								<Anchor point="TOP" relativeTo="TerminationScrollBarTop" relativePoint="BOTTOM">
+									<Offset>
+										<AbsDimension x="0" y="0"/>
+									</Offset>
+								</Anchor>
+								<Anchor point="BOTTOM" relativeTo="TerminationScrollBarBottom" relativePoint="TOP">
+									<Offset>
+										<AbsDimension x="0" y="0"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+							<TexCoords left="0" right="0.484375" top=".75" bottom="1.0"/>
+						</Texture>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnShow>
+						AccountLogin_UpdateAcceptButton(self, TerminationWithoutNoticeAccepted, "TERMINATION");
+					</OnShow>
+					<OnScrollRangeChanged>
+						GlueScrollFrame_OnScrollRangeChanged(self, yrange);
+						AccountLogin_UpdateAcceptButton(self, TerminationWithoutNoticeAccepted, "TERMINATION");
+					</OnScrollRangeChanged>
+					<OnVerticalScroll>
+						GlueScrollFrame_OnVerticalScroll(self, offset);
+						AccountLogin_UpdateAcceptButton(self, TerminationWithoutNoticeAccepted, "TERMINATION");
+					</OnVerticalScroll>
+				</Scripts>
+				<ScrollChild>
+					<SimpleHTML name="TerminationText" file="termination.html">
+						<Size>
+							<AbsDimension x="530" y="407"/>
+						</Size>
+						<FontString inherits="TOSFont"/>
+						<FontStringHeader1 inherits="GlueFontNormal"/>
+						<FontStringHeader2 inherits="GlueFontNormalSmall"/>
+					</SimpleHTML>
+				</ScrollChild>
+			</ScrollFrame>
+			<ScrollFrame name="ScanningScrollFrame" inherits="GlueScrollFrameTemplate">
+				<Size>
+					<AbsDimension x="540" y="407"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT">
+						<Offset>
+							<AbsDimension x="20" y="-56"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Layers>
+					<Layer level="ARTWORK">
+						<Texture name="ScanningScrollBarTop" file="Interface\PaperDollInfoFrame\UI-Character-ScrollBar">
+							<Size>
+								<AbsDimension x="31" y="256"/>
+							</Size>
+							<Anchors>
+								<Anchor point="TOPLEFT" relativePoint="TOPRIGHT">
+									<Offset>
+										<AbsDimension x="-2" y="5"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+							<TexCoords left="0" right="0.484375" top="0" bottom="1.0"/>
+						</Texture>
+						<Texture name="ScanningScrollBarBottom" file="Interface\PaperDollInfoFrame\UI-Character-ScrollBar">
+							<Size>
+								<AbsDimension x="31" y="106"/>
+							</Size>
+							<Anchors>
+								<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMRIGHT">
+									<Offset>
+										<AbsDimension x="-2" y="-2"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+							<TexCoords left="0.515625" right="1.0" top="0" bottom="0.4140625"/>
+						</Texture>
+						<Texture name="ScanningScrollBarMiddle" file="Interface\PaperDollInfoFrame\UI-Character-ScrollBar">
+							<Size>
+								<AbsDimension x="31" y="60"/>
+							</Size>
+							<Anchors>
+								<Anchor point="TOP" relativeTo="ScanningScrollBarTop" relativePoint="BOTTOM">
+									<Offset>
+										<AbsDimension x="0" y="0"/>
+									</Offset>
+								</Anchor>
+								<Anchor point="BOTTOM" relativeTo="ScanningScrollBarBottom" relativePoint="TOP">
+									<Offset>
+										<AbsDimension x="0" y="0"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+							<TexCoords left="0" right="0.484375" top=".75" bottom="1.0"/>
+						</Texture>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnShow>
+						AccountLogin_UpdateAcceptButton(self, ScanningAccepted, "SCAN");
+					</OnShow>
+					<OnScrollRangeChanged>
+						GlueScrollFrame_OnScrollRangeChanged(self, yrange);
+						AccountLogin_UpdateAcceptButton(self, ScanningAccepted, "SCAN");
+					</OnScrollRangeChanged>
+					<OnVerticalScroll>
+						GlueScrollFrame_OnVerticalScroll(self, offset);
+						AccountLogin_UpdateAcceptButton(self, ScanningAccepted, "SCAN");
+					</OnVerticalScroll>
+				</Scripts>
+				<ScrollChild>
+					<SimpleHTML name="ScanningText" file="scan.html">
+						<Size>
+							<AbsDimension x="530" y="407"/>
+						</Size>
+						<FontString inherits="TOSFont"/>
+						<FontStringHeader1 inherits="GlueFontNormal"/>
+						<FontStringHeader2 inherits="GlueFontNormalSmall"/>
+					</SimpleHTML>
+				</ScrollChild>
+			</ScrollFrame>
+			<ScrollFrame name="ContestScrollFrame" inherits="GlueScrollFrameTemplate">
+				<Size>
+					<AbsDimension x="540" y="407"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT">
+						<Offset>
+							<AbsDimension x="20" y="-56"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Layers>
+					<Layer level="ARTWORK">
+						<Texture name="ContestScrollBarTop" file="Interface\PaperDollInfoFrame\UI-Character-ScrollBar">
+							<Size>
+								<AbsDimension x="31" y="256"/>
+							</Size>
+							<Anchors>
+								<Anchor point="TOPLEFT" relativePoint="TOPRIGHT">
+									<Offset>
+										<AbsDimension x="-2" y="5"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+							<TexCoords left="0" right="0.484375" top="0" bottom="1.0"/>
+						</Texture>
+						<Texture name="ContestScrollBarBottom" file="Interface\PaperDollInfoFrame\UI-Character-ScrollBar">
+							<Size>
+								<AbsDimension x="31" y="106"/>
+							</Size>
+							<Anchors>
+								<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMRIGHT">
+									<Offset>
+										<AbsDimension x="-2" y="-2"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+							<TexCoords left="0.515625" right="1.0" top="0" bottom="0.4140625"/>
+						</Texture>
+						<Texture name="ContestScrollBarMiddle" file="Interface\PaperDollInfoFrame\UI-Character-ScrollBar">
+							<Size>
+								<AbsDimension x="31" y="60"/>
+							</Size>
+							<Anchors>
+								<Anchor point="TOP" relativeTo="ContestScrollBarTop" relativePoint="BOTTOM">
+									<Offset>
+										<AbsDimension x="0" y="0"/>
+									</Offset>
+								</Anchor>
+								<Anchor point="BOTTOM" relativeTo="ContestScrollBarBottom" relativePoint="TOP">
+									<Offset>
+										<AbsDimension x="0" y="0"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+							<TexCoords left="0" right="0.484375" top=".75" bottom="1.0"/>
+						</Texture>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnShow>
+						AccountLogin_UpdateAcceptButton(self, ContestAccepted, "CONTEST");
+					</OnShow>
+					<OnScrollRangeChanged>
+						GlueScrollFrame_OnScrollRangeChanged(self, yrange);
+						AccountLogin_UpdateAcceptButton(self, ContestAccepted, "CONTEST");
+					</OnScrollRangeChanged>
+					<OnVerticalScroll>
+						GlueScrollFrame_OnVerticalScroll(self, offset);
+						AccountLogin_UpdateAcceptButton(self, ContestAccepted, "CONTEST");
+					</OnVerticalScroll>
+				</Scripts>
+				<ScrollChild>
+					<SimpleHTML name="ContestText" file="contest.html">
+						<Size>
+							<AbsDimension x="530" y="407"/>
+						</Size>
+						<FontString inherits="TOSFont"/>
+						<FontStringHeader1 inherits="GlueFontNormal"/>
+						<FontStringHeader2 inherits="GlueFontNormalSmall"/>
+					</SimpleHTML>
+				</ScrollChild>
+			</ScrollFrame>
+			<Button name="TOSDecline" inherits="GlueButtonTemplateBlue" text="TOS_DECLINE">
+				<Size>
+					<AbsDimension x="128" y="34"/>
+				</Size>
+				<Anchors>
+					<Anchor point="BOTTOMRIGHT">
+						<Offset>
+							<AbsDimension x="-53" y="13"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						AccountLogin_Exit();
+					</OnClick>
+				</Scripts>
+			</Button>
+			<Button name="TOSAccept" inherits="GlueButtonTemplateBlue" text="TOS_ACCEPT">
+				<Size>
+					<AbsDimension x="128" y="34"/>
+				</Size>
+				<Anchors>
+					<Anchor point="RIGHT" relativeTo="TOSDecline" relativePoint="LEFT">
+						<Offset>
+							<AbsDimension x="0" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						self:Disable();
+					</OnLoad>
+					<OnClick>
+						if ( TOSFrame.noticeType == "TOS" ) then
+							AcceptTOS();
+						elseif ( TOSFrame.noticeType == "EULA" ) then
+							AcceptEULA();
+						elseif ( TOSFrame.noticeType == "TERMINATION" ) then
+							AcceptTerminationWithoutNotice();
+						elseif ( TOSFrame.noticeType == "SCAN" ) then
+							AcceptScanning();
+						elseif ( TOSFrame.noticeType == "CONTEST" ) then
+							AcceptContest();
+						end
+						self:GetParent():Hide();
+						TOSNotice:Hide();
+						TOSAccept:Disable();
+						AccountLogin_ShowUserAgreements();
+						AccountLogin_CheckAutoLogin();
+					</OnClick>
+				</Scripts>
+			</Button>
+		</Frames>
+		<Scripts>
+			<OnShow>
+				PlaySound("igMainMenuOpen");
+			</OnShow>
+			<OnHide>
+				PlaySound("igMainMenuClose");
+			</OnHide>
+		</Scripts>
+	</Frame>
 	<ModelFFX name="AccountLogin" toplevel="true" parent="GlueParent" setAllPoints="true" enableKeyboard="true" hidden="true" fogNear="0" fogFar="1200" glow="0.08">
 		<Frames>
 			<Frame name="AccountLoginUI" setAllPoints="true">
@@ -616,6 +1234,20 @@
 							</OnClick>
 						</Scripts>
 					</Button>
+					<Button name="GlueMenuButton" inherits="GlueButtonSmallTemplateBlue" text="MAINMENU">
+						<Anchors>
+							<Anchor point="BOTTOM" relativeTo="AccountLoginExitButton" relativePoint="TOP">
+								<Offset>
+									<AbsDimension x="0" y="2"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnClick>
+								GlueMenuFrame_Show();
+							</OnClick>
+						</Scripts>
+					</Button>
 					<Button name="AccountLoginCommunityButton" inherits="GlueButtonSmallTemplateBlue" text="COMMUNITY_SITE">
 						<Anchors>
 							<Anchor point="BOTTOMLEFT">
@@ -685,7 +1317,7 @@
 							</OnClick>
 						</Scripts>
 					</Button>
-					<Frame name="ServerAlertFrame" hidden="true">
+					<Frame name="ServerAlertFrame" hidden="true" inherits="ServerAlertTemplate">
 						<Size>
 							<AbsDimension x="352" y="400"/>
 						</Size>
@@ -696,71 +1328,11 @@
 								</Offset>
 							</Anchor>
 						</Anchors>
-						<Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background" edgeFile="Interface\DialogFrame\UI-DialogBox-Border" tile="true">
-							<BackgroundInsets>
-								<AbsInset left="11" right="11" top="11" bottom="11"/>
-							</BackgroundInsets>
-							<TileSize>
-								<AbsValue val="32"/>
-							</TileSize>
-							<EdgeSize>
-								<AbsValue val="32"/>
-							</EdgeSize>
-						</Backdrop>
-						<Layers>
-							<Layer level="ARTWORK">
-								<FontString name="ServerAlertTitle" inherits="GlueFontNormalLarge" text="SERVER_ALERT_TITLE">
-									<Anchors>
-										<Anchor point="TOP">
-											<Offset>
-												<AbsDimension x="0" y="-20"/>
-											</Offset>
-										</Anchor>
-									</Anchors>
-								</FontString>
-							</Layer>
-						</Layers>
-						<Frames>
-							<ScrollFrame name="ServerAlertScrollFrame" inherits="GlueScrollFrameTemplate">
-								<Size>
-									<AbsDimension x="300" y="340"/>
-								</Size>
-								<Anchors>
-									<Anchor point="TOPLEFT">
-										<Offset>
-											<AbsDimension x="15" y="-46"/>
-										</Offset>
-									</Anchor>
-								</Anchors>
-								<Scripts>
-									<OnLoad>
-										self.scrollBarHideable = 1;
-										GlueScrollFrame_OnScrollRangeChanged(self);
-									</OnLoad>
-									<OnScrollRangeChanged>
-										GlueScrollFrame_OnScrollRangeChanged(self, yrange);
-										if (floor(ServerAlertScrollFrame:GetVerticalScrollRange()) > 0) then
-											self.updated = 1;
-										end
-									</OnScrollRangeChanged>
-								</Scripts>
-								<ScrollChild>
-									<SimpleHTML name="ServerAlertText" hyperlinkFormat="|cff06ff07|H%s|h[%s]|h|r">
-										<Size>
-											<AbsDimension x="300" y="400"/>
-										</Size>
-										<Scripts>
-											<OnHyperlinkClick>
-												LaunchURL(link);
-											</OnHyperlinkClick>
-										</Scripts>
-										<FontString inherits="GlueFontHighlightSmall" spacing="2"/>
-										<FontStringHeader1 inherits="GlueFontNormalLarge" spacing="4"/>
-										<FontStringHeader2 inherits="GlueFontHighlight" spacing="4"/>
-									</SimpleHTML>
-								</ScrollChild>
-							</ScrollFrame>
-						</Frames>
+						<Scripts>
+							<OnShow>
+								AccountLogin_UpdateLoginType(); --In case it needs to hide the ServerAlertFrame.
+							</OnShow>
+						</Scripts>
 					</Frame>
 					<Frame name="VirtualKeypadFrame" hidden="true" frameStrata="DIALOG" enableMouse="true">
 						<Size>
@@ -1531,623 +2103,6 @@
 					</OnShow>
 				</Scripts>
 			</Frame>
-			<Frame name="TOSFrame" hidden="true">
-				<Size>
-					<AbsDimension x="640" y="512"/>
-				</Size>
-				<Anchors>
-					<Anchor point="CENTER">
-						<Offset>
-							<AbsDimension x="0" y="0"/>
-						</Offset>
-					</Anchor>
-				</Anchors>
-				<HitRectInsets>
-					<AbsInset left="0" right="44" top="0" bottom="13"/>
-				</HitRectInsets>
-				<Layers>
-					<Layer level="BACKGROUND">
-						<Texture file="Interface\HelpFrame\HelpFrame-TopLeft">
-							<Size>
-								<AbsDimension x="256" y="256"/>
-							</Size>
-							<Anchors>
-								<Anchor point="TOPLEFT"/>
-							</Anchors>
-						</Texture>
-						<Texture file="Interface\HelpFrame\HelpFrame-Top">
-							<Size>
-								<AbsDimension x="256" y="256"/>
-							</Size>
-							<Anchors>
-								<Anchor point="TOPLEFT">
-									<Offset>
-										<AbsDimension x="256" y="0"/>
-									</Offset>
-								</Anchor>
-							</Anchors>
-						</Texture>
-						<Texture file="Interface\Glues\Login\Glues-TOS-TopRight">
-							<Size>
-								<AbsDimension x="128" y="256"/>
-							</Size>
-							<Anchors>
-								<Anchor point="TOPRIGHT"/>
-							</Anchors>
-						</Texture>
-						<Texture file="Interface\HelpFrame\HelpFrame-BotLeft">
-							<Size>
-								<AbsDimension x="256" y="256"/>
-							</Size>
-							<Anchors>
-								<Anchor point="BOTTOMLEFT"/>
-							</Anchors>
-						</Texture>
-						<Texture file="Interface\HelpFrame\HelpFrame-Bottom">
-							<Size>
-								<AbsDimension x="256" y="256"/>
-							</Size>
-							<Anchors>
-								<Anchor point="BOTTOMLEFT">
-									<Offset>
-										<AbsDimension x="256" y="0"/>
-									</Offset>
-								</Anchor>
-							</Anchors>
-						</Texture>
-						<Texture file="Interface\HelpFrame\HelpFrame-BotRight">
-							<Size>
-								<AbsDimension x="128" y="256"/>
-							</Size>
-							<Anchors>
-								<Anchor point="BOTTOMRIGHT"/>
-							</Anchors>
-						</Texture>
-					</Layer>
-					<Layer level="ARTWORK">
-						<Texture name="TOSFrameHeader" file="Interface\DialogFrame\UI-DialogBox-Header">
-							<Size>
-								<AbsDimension x="300" y="38"/>
-							</Size>
-							<Anchors>
-								<Anchor point="TOP" relativeTo="TOSFrame">
-									<Offset>
-										<AbsDimension x="-12" y="12"/>
-									</Offset>
-								</Anchor>
-							</Anchors>
-							<TexCoords left="0.3" right="0.7" top="0.015625" bottom="0.609375"/>
-						</Texture>
-						<Texture file="Interface\DialogFrame\UI-DialogBox-Header">
-							<Size>
-								<AbsDimension x="15" y="38"/>
-							</Size>
-							<Anchors>
-								<Anchor point="RIGHT" relativeTo="TOSFrameHeader" relativePoint="LEFT">
-									<Offset>
-										<AbsDimension x="0" y="0"/>
-									</Offset>
-								</Anchor>
-							</Anchors>
-							<TexCoords left="0.23046875" right="0.28515625" top="0.015625" bottom="0.609375"/>
-						</Texture>
-						<Texture file="Interface\DialogFrame\UI-DialogBox-Header">
-							<Size>
-								<AbsDimension x="15" y="38"/>
-							</Size>
-							<Anchors>
-								<Anchor point="LEFT" relativeTo="TOSFrameHeader" relativePoint="RIGHT">
-									<Offset>
-										<AbsDimension x="0" y="0"/>
-									</Offset>
-								</Anchor>
-							</Anchors>
-							<TexCoords left="0.7109375" right="0.76953125" top="0.015625" bottom="0.609375"/>
-						</Texture>
-						<FontString name="TOSFrameTitle" inherits="GlueFontNormal" text="TOS_FRAME_TITLE">
-							<Anchors>
-								<Anchor point="TOP" relativeTo="TOSFrameHeader">
-									<Offset>
-										<AbsDimension x="0" y="-12"/>
-									</Offset>
-								</Anchor>
-							</Anchors>
-						</FontString>
-						<FontString name="TOSNotice" inherits="GlueFontHighlight" text="TOS_NOTICE" hidden="true">
-							<Size>
-								<AbsDimension x="550" y="0"/>
-							</Size>
-							<Anchors>
-								<Anchor point="TOP">
-									<Offset>
-										<AbsDimension x="0" y="75"/>
-									</Offset>
-								</Anchor>
-							</Anchors>
-						</FontString>
-					</Layer>
-				</Layers>
-				<Frames>
-					<ScrollFrame name="TOSScrollFrame" inherits="GlueScrollFrameTemplate">
-						<Size>
-							<AbsDimension x="540" y="407"/>
-						</Size>
-						<Anchors>
-							<Anchor point="TOPLEFT">
-								<Offset>
-									<AbsDimension x="20" y="-56"/>
-								</Offset>
-							</Anchor>
-						</Anchors>
-						<Layers>
-							<Layer level="ARTWORK">
-								<Texture name="TOSScrollBarTop" file="Interface\PaperDollInfoFrame\UI-Character-ScrollBar">
-									<Size>
-										<AbsDimension x="31" y="256"/>
-									</Size>
-									<Anchors>
-										<Anchor point="TOPLEFT" relativePoint="TOPRIGHT">
-											<Offset>
-												<AbsDimension x="-2" y="5"/>
-											</Offset>
-										</Anchor>
-									</Anchors>
-									<TexCoords left="0" right="0.484375" top="0" bottom="1.0"/>
-								</Texture>
-								<Texture name="TOSScrollBarBottom" file="Interface\PaperDollInfoFrame\UI-Character-ScrollBar">
-									<Size>
-										<AbsDimension x="31" y="106"/>
-									</Size>
-									<Anchors>
-										<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMRIGHT">
-											<Offset>
-												<AbsDimension x="-2" y="-2"/>
-											</Offset>
-										</Anchor>
-									</Anchors>
-									<TexCoords left="0.515625" right="1.0" top="0" bottom="0.4140625"/>
-								</Texture>
-								<Texture name="TOSScrollBarMiddle" file="Interface\PaperDollInfoFrame\UI-Character-ScrollBar">
-									<Size>
-										<AbsDimension x="31" y="60"/>
-									</Size>
-									<Anchors>
-										<Anchor point="TOP" relativeTo="TOSScrollBarTop" relativePoint="BOTTOM">
-											<Offset>
-												<AbsDimension x="0" y="0"/>
-											</Offset>
-										</Anchor>
-										<Anchor point="BOTTOM" relativeTo="TOSScrollBarBottom" relativePoint="TOP">
-											<Offset>
-												<AbsDimension x="0" y="0"/>
-											</Offset>
-										</Anchor>
-									</Anchors>
-									<TexCoords left="0" right="0.484375" top=".75" bottom="1.0"/>
-								</Texture>
-							</Layer>
-						</Layers>
-						<Scripts>
-							<OnShow>
-								AccountLogin_UpdateAcceptButton(self, TOSAccepted, "TOS");
-							</OnShow>
-							<OnScrollRangeChanged>
-								GlueScrollFrame_OnScrollRangeChanged(self, yrange);
-								if ( not TOSScrollFrame.loaded ) then
-									TOSAccept:Disable();
-									TOSScrollFrame.loaded = true;
-								end
-								AccountLogin_UpdateAcceptButton(self, TOSAccepted, "TOS");
-							</OnScrollRangeChanged>
-							<OnVerticalScroll>
-								GlueScrollFrame_OnVerticalScroll(self, offset);
-								AccountLogin_UpdateAcceptButton(self, TOSAccepted, "TOS");
-							</OnVerticalScroll>
-						</Scripts>
-						<ScrollChild>
-							<SimpleHTML name="TOSText" file="tos.html">
-								<Size>
-									<AbsDimension x="530" y="407"/>
-								</Size>
-								<FontString inherits="TOSFont"/>
-								<FontStringHeader1 inherits="GlueFontNormal"/>
-								<FontStringHeader2 inherits="GlueFontNormalSmall"/>
-							</SimpleHTML>
-						</ScrollChild>
-					</ScrollFrame>
-					<ScrollFrame name="EULAScrollFrame" inherits="GlueScrollFrameTemplate">
-						<Size>
-							<AbsDimension x="540" y="407"/>
-						</Size>
-						<Anchors>
-							<Anchor point="TOPLEFT">
-								<Offset>
-									<AbsDimension x="20" y="-56"/>
-								</Offset>
-							</Anchor>
-						</Anchors>
-						<Layers>
-							<Layer level="ARTWORK">
-								<Texture name="EULAScrollBarTop" file="Interface\PaperDollInfoFrame\UI-Character-ScrollBar">
-									<Size>
-										<AbsDimension x="31" y="256"/>
-									</Size>
-									<Anchors>
-										<Anchor point="TOPLEFT" relativePoint="TOPRIGHT">
-											<Offset>
-												<AbsDimension x="-2" y="5"/>
-											</Offset>
-										</Anchor>
-									</Anchors>
-									<TexCoords left="0" right="0.484375" top="0" bottom="1.0"/>
-								</Texture>
-								<Texture name="EULAScrollBarBottom" file="Interface\PaperDollInfoFrame\UI-Character-ScrollBar">
-									<Size>
-										<AbsDimension x="31" y="106"/>
-									</Size>
-									<Anchors>
-										<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMRIGHT">
-											<Offset>
-												<AbsDimension x="-2" y="-2"/>
-											</Offset>
-										</Anchor>
-									</Anchors>
-									<TexCoords left="0.515625" right="1.0" top="0" bottom="0.4140625"/>
-								</Texture>
-								<Texture name="EULAScrollBarMiddle" file="Interface\PaperDollInfoFrame\UI-Character-ScrollBar">
-									<Size>
-										<AbsDimension x="31" y="60"/>
-									</Size>
-									<Anchors>
-										<Anchor point="TOP" relativeTo="EULAScrollBarTop" relativePoint="BOTTOM">
-											<Offset>
-												<AbsDimension x="0" y="0"/>
-											</Offset>
-										</Anchor>
-										<Anchor point="BOTTOM" relativeTo="EULAScrollBarBottom" relativePoint="TOP">
-											<Offset>
-												<AbsDimension x="0" y="0"/>
-											</Offset>
-										</Anchor>
-									</Anchors>
-									<TexCoords left="0" right="0.484375" top=".75" bottom="1.0"/>
-								</Texture>
-							</Layer>
-						</Layers>
-						<Scripts>
-							<OnShow>
-								AccountLogin_UpdateAcceptButton(self, EULAAccepted, "EULA");
-							</OnShow>
-							<OnScrollRangeChanged>
-								GlueScrollFrame_OnScrollRangeChanged(self, yrange);
-								AccountLogin_UpdateAcceptButton(self, EULAAccepted, "EULA");
-							</OnScrollRangeChanged>
-							<OnVerticalScroll>
-								GlueScrollFrame_OnVerticalScroll(self, offset);
-								AccountLogin_UpdateAcceptButton(self, EULAAccepted, "EULA");
-							</OnVerticalScroll>
-						</Scripts>
-						<ScrollChild>
-							<SimpleHTML name="EULAText" file="eula.html">
-								<Size>
-									<AbsDimension x="530" y="407"/>
-								</Size>
-								<FontString inherits="TOSFont"/>
-								<FontStringHeader1 inherits="GlueFontNormal"/>
-								<FontStringHeader2 inherits="GlueFontNormalSmall"/>
-							</SimpleHTML>
-						</ScrollChild>
-					</ScrollFrame>
-					<ScrollFrame name="TerminationScrollFrame" inherits="GlueScrollFrameTemplate">
-						<Size>
-							<AbsDimension x="540" y="407"/>
-						</Size>
-						<Anchors>
-							<Anchor point="TOPLEFT">
-								<Offset>
-									<AbsDimension x="20" y="-56"/>
-								</Offset>
-							</Anchor>
-						</Anchors>
-						<Layers>
-							<Layer level="ARTWORK">
-								<Texture name="TerminationScrollBarTop" file="Interface\PaperDollInfoFrame\UI-Character-ScrollBar">
-									<Size>
-										<AbsDimension x="31" y="256"/>
-									</Size>
-									<Anchors>
-										<Anchor point="TOPLEFT" relativePoint="TOPRIGHT">
-											<Offset>
-												<AbsDimension x="-2" y="5"/>
-											</Offset>
-										</Anchor>
-									</Anchors>
-									<TexCoords left="0" right="0.484375" top="0" bottom="1.0"/>
-								</Texture>
-								<Texture name="TerminationScrollBarBottom" file="Interface\PaperDollInfoFrame\UI-Character-ScrollBar">
-									<Size>
-										<AbsDimension x="31" y="106"/>
-									</Size>
-									<Anchors>
-										<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMRIGHT">
-											<Offset>
-												<AbsDimension x="-2" y="-2"/>
-											</Offset>
-										</Anchor>
-									</Anchors>
-									<TexCoords left="0.515625" right="1.0" top="0" bottom="0.4140625"/>
-								</Texture>
-								<Texture name="TerminationScrollBarMiddle" file="Interface\PaperDollInfoFrame\UI-Character-ScrollBar">
-									<Size>
-										<AbsDimension x="31" y="60"/>
-									</Size>
-									<Anchors>
-										<Anchor point="TOP" relativeTo="TerminationScrollBarTop" relativePoint="BOTTOM">
-											<Offset>
-												<AbsDimension x="0" y="0"/>
-											</Offset>
-										</Anchor>
-										<Anchor point="BOTTOM" relativeTo="TerminationScrollBarBottom" relativePoint="TOP">
-											<Offset>
-												<AbsDimension x="0" y="0"/>
-											</Offset>
-										</Anchor>
-									</Anchors>
-									<TexCoords left="0" right="0.484375" top=".75" bottom="1.0"/>
-								</Texture>
-							</Layer>
-						</Layers>
-						<Scripts>
-							<OnShow>
-								AccountLogin_UpdateAcceptButton(self, TerminationWithoutNoticeAccepted, "TERMINATION");
-							</OnShow>
-							<OnScrollRangeChanged>
-								GlueScrollFrame_OnScrollRangeChanged(self, yrange);
-								AccountLogin_UpdateAcceptButton(self, TerminationWithoutNoticeAccepted, "TERMINATION");
-							</OnScrollRangeChanged>
-							<OnVerticalScroll>
-								GlueScrollFrame_OnVerticalScroll(self, offset);
-								AccountLogin_UpdateAcceptButton(self, TerminationWithoutNoticeAccepted, "TERMINATION");
-							</OnVerticalScroll>
-						</Scripts>
-						<ScrollChild>
-							<SimpleHTML name="TerminationText" file="termination.html">
-								<Size>
-									<AbsDimension x="530" y="407"/>
-								</Size>
-								<FontString inherits="TOSFont"/>
-								<FontStringHeader1 inherits="GlueFontNormal"/>
-								<FontStringHeader2 inherits="GlueFontNormalSmall"/>
-							</SimpleHTML>
-						</ScrollChild>
-					</ScrollFrame>
-					<ScrollFrame name="ScanningScrollFrame" inherits="GlueScrollFrameTemplate">
-						<Size>
-							<AbsDimension x="540" y="407"/>
-						</Size>
-						<Anchors>
-							<Anchor point="TOPLEFT">
-								<Offset>
-									<AbsDimension x="20" y="-56"/>
-								</Offset>
-							</Anchor>
-						</Anchors>
-						<Layers>
-							<Layer level="ARTWORK">
-								<Texture name="ScanningScrollBarTop" file="Interface\PaperDollInfoFrame\UI-Character-ScrollBar">
-									<Size>
-										<AbsDimension x="31" y="256"/>
-									</Size>
-									<Anchors>
-										<Anchor point="TOPLEFT" relativePoint="TOPRIGHT">
-											<Offset>
-												<AbsDimension x="-2" y="5"/>
-											</Offset>
-										</Anchor>
-									</Anchors>
-									<TexCoords left="0" right="0.484375" top="0" bottom="1.0"/>
-								</Texture>
-								<Texture name="ScanningScrollBarBottom" file="Interface\PaperDollInfoFrame\UI-Character-ScrollBar">
-									<Size>
-										<AbsDimension x="31" y="106"/>
-									</Size>
-									<Anchors>
-										<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMRIGHT">
-											<Offset>
-												<AbsDimension x="-2" y="-2"/>
-											</Offset>
-										</Anchor>
-									</Anchors>
-									<TexCoords left="0.515625" right="1.0" top="0" bottom="0.4140625"/>
-								</Texture>
-								<Texture name="ScanningScrollBarMiddle" file="Interface\PaperDollInfoFrame\UI-Character-ScrollBar">
-									<Size>
-										<AbsDimension x="31" y="60"/>
-									</Size>
-									<Anchors>
-										<Anchor point="TOP" relativeTo="ScanningScrollBarTop" relativePoint="BOTTOM">
-											<Offset>
-												<AbsDimension x="0" y="0"/>
-											</Offset>
-										</Anchor>
-										<Anchor point="BOTTOM" relativeTo="ScanningScrollBarBottom" relativePoint="TOP">
-											<Offset>
-												<AbsDimension x="0" y="0"/>
-											</Offset>
-										</Anchor>
-									</Anchors>
-									<TexCoords left="0" right="0.484375" top=".75" bottom="1.0"/>
-								</Texture>
-							</Layer>
-						</Layers>
-						<Scripts>
-							<OnShow>
-								AccountLogin_UpdateAcceptButton(self, ScanningAccepted, "SCAN");
-							</OnShow>
-							<OnScrollRangeChanged>
-								GlueScrollFrame_OnScrollRangeChanged(self, yrange);
-								AccountLogin_UpdateAcceptButton(self, ScanningAccepted, "SCAN");
-							</OnScrollRangeChanged>
-							<OnVerticalScroll>
-								GlueScrollFrame_OnVerticalScroll(self, offset);
-								AccountLogin_UpdateAcceptButton(self, ScanningAccepted, "SCAN");
-							</OnVerticalScroll>
-						</Scripts>
-						<ScrollChild>
-							<SimpleHTML name="ScanningText" file="scan.html">
-								<Size>
-									<AbsDimension x="530" y="407"/>
-								</Size>
-								<FontString inherits="TOSFont"/>
-								<FontStringHeader1 inherits="GlueFontNormal"/>
-								<FontStringHeader2 inherits="GlueFontNormalSmall"/>
-							</SimpleHTML>
-						</ScrollChild>
-					</ScrollFrame>
-					<ScrollFrame name="ContestScrollFrame" inherits="GlueScrollFrameTemplate">
-						<Size>
-							<AbsDimension x="540" y="407"/>
-						</Size>
-						<Anchors>
-							<Anchor point="TOPLEFT">
-								<Offset>
-									<AbsDimension x="20" y="-56"/>
-								</Offset>
-							</Anchor>
-						</Anchors>
-						<Layers>
-							<Layer level="ARTWORK">
-								<Texture name="ContestScrollBarTop" file="Interface\PaperDollInfoFrame\UI-Character-ScrollBar">
-									<Size>
-										<AbsDimension x="31" y="256"/>
-									</Size>
-									<Anchors>
-										<Anchor point="TOPLEFT" relativePoint="TOPRIGHT">
-											<Offset>
-												<AbsDimension x="-2" y="5"/>
-											</Offset>
-										</Anchor>
-									</Anchors>
-									<TexCoords left="0" right="0.484375" top="0" bottom="1.0"/>
-								</Texture>
-								<Texture name="ContestScrollBarBottom" file="Interface\PaperDollInfoFrame\UI-Character-ScrollBar">
-									<Size>
-										<AbsDimension x="31" y="106"/>
-									</Size>
-									<Anchors>
-										<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMRIGHT">
-											<Offset>
-												<AbsDimension x="-2" y="-2"/>
-											</Offset>
-										</Anchor>
-									</Anchors>
-									<TexCoords left="0.515625" right="1.0" top="0" bottom="0.4140625"/>
-								</Texture>
-								<Texture name="ContestScrollBarMiddle" file="Interface\PaperDollInfoFrame\UI-Character-ScrollBar">
-									<Size>
-										<AbsDimension x="31" y="60"/>
-									</Size>
-									<Anchors>
-										<Anchor point="TOP" relativeTo="ContestScrollBarTop" relativePoint="BOTTOM">
-											<Offset>
-												<AbsDimension x="0" y="0"/>
-											</Offset>
-										</Anchor>
-										<Anchor point="BOTTOM" relativeTo="ContestScrollBarBottom" relativePoint="TOP">
-											<Offset>
-												<AbsDimension x="0" y="0"/>
-											</Offset>
-										</Anchor>
-									</Anchors>
-									<TexCoords left="0" right="0.484375" top=".75" bottom="1.0"/>
-								</Texture>
-							</Layer>
-						</Layers>
-						<Scripts>
-							<OnShow>
-								AccountLogin_UpdateAcceptButton(self, ContestAccepted, "CONTEST");
-							</OnShow>
-							<OnScrollRangeChanged>
-								GlueScrollFrame_OnScrollRangeChanged(self, yrange);
-								AccountLogin_UpdateAcceptButton(self, ContestAccepted, "CONTEST");
-							</OnScrollRangeChanged>
-							<OnVerticalScroll>
-								GlueScrollFrame_OnVerticalScroll(self, offset);
-								AccountLogin_UpdateAcceptButton(self, ContestAccepted, "CONTEST");
-							</OnVerticalScroll>
-						</Scripts>
-						<ScrollChild>
-							<SimpleHTML name="ContestText" file="contest.html">
-								<Size>
-									<AbsDimension x="530" y="407"/>
-								</Size>
-								<FontString inherits="TOSFont"/>
-								<FontStringHeader1 inherits="GlueFontNormal"/>
-								<FontStringHeader2 inherits="GlueFontNormalSmall"/>
-							</SimpleHTML>
-						</ScrollChild>
-					</ScrollFrame>
-					<Button name="TOSDecline" inherits="GlueButtonTemplateBlue" text="DECLINE">
-						<Size>
-							<AbsDimension x="128" y="34"/>
-						</Size>
-						<Anchors>
-							<Anchor point="BOTTOMRIGHT">
-								<Offset>
-									<AbsDimension x="-53" y="13"/>
-								</Offset>
-							</Anchor>
-						</Anchors>
-						<Scripts>
-							<OnClick>
-								AccountLogin_Exit();
-							</OnClick>
-						</Scripts>
-					</Button>
-					<Button name="TOSAccept" inherits="GlueButtonTemplateBlue" text="TOS_ACCEPT">
-						<Size>
-							<AbsDimension x="128" y="34"/>
-						</Size>
-						<Anchors>
-							<Anchor point="RIGHT" relativeTo="TOSDecline" relativePoint="LEFT">
-								<Offset>
-									<AbsDimension x="0" y="0"/>
-								</Offset>
-							</Anchor>
-						</Anchors>
-						<Scripts>
-							<OnLoad>
-								self:Disable();
-							</OnLoad>
-							<OnClick>
-								if ( TOSFrame.noticeType == "TOS" ) then
-									AcceptTOS();
-								elseif ( TOSFrame.noticeType == "EULA" ) then
-									AcceptEULA();
-								elseif ( TOSFrame.noticeType == "TERMINATION" ) then
-									AcceptTerminationWithoutNotice();
-								elseif ( TOSFrame.noticeType == "SCAN" ) then
-									AcceptScanning();
-								elseif ( TOSFrame.noticeType == "CONTEST" ) then
-									AcceptContest();
-								end
-								self:GetParent():Hide();
-								TOSNotice:Hide();
-								TOSAccept:Disable();
-								AccountLogin_ShowUserAgreements();
-							</OnClick>
-						</Scripts>
-					</Button>
-				</Frames>
-				<Scripts>
-					<OnShow>
-						PlaySound("igMainMenuOpen");
-					</OnShow>
-					<OnHide>
-						PlaySound("igMainMenuClose");
-					</OnHide>
-				</Scripts>
-			</Frame>
 <!-- SURVEY NOTIFICATION FRAME BEGIN -->			
 			<Frame name="SurveyNotificationFrame" hidden="true">
 				<Size>
@@ -2661,7 +2616,7 @@
 		<PushedTextOffset x="-3" y="-3"/> 
 	</Button>
 
-	<Frame name="CinematicsFrame" toplevel="true" parent="GlueParent" setAllPoints="true" enableMouse="true" enableKeyboard="true" frameStrata="DIALOG" hidden="true">
+	<Frame name="CinematicsFrame" inherits="GlueModalFrameTemplate" toplevel="true" parent="GlueParent" setAllPoints="true" enableMouse="true" enableKeyboard="true" frameStrata="DIALOG" hidden="true">
 		<Size x="262" y="512"/>
 		<Anchors>
 			<Anchor point="CENTER"/>
@@ -2847,25 +2802,10 @@
 				</FontString>
 			</Layer>
 		</Layers>
-		<Frames>
-			<Button name="KoreanRatingsOK" inherits="GlueMenuButtonTemplate" text="OKAY">
-				<Anchors>
-					<Anchor point="BOTTOM" x="0" y="50"/>
-				</Anchors>
-				<Scripts>
-					<OnClick>
-						KoreanRatings_UserInput(KoreanRatings);
-					</OnClick>
-				</Scripts>
-			</Button>
-		</Frames>
 		<Scripts>
-			<OnShow>
-				KoreanRatings_OnShow(self);
-			</OnShow>
-			<OnUpdate>
-				KoreanRatings_OnUpdate(self, elapsed);
-			</OnUpdate>
+			<OnLoad function="KoreanRatings_OnLoad"/>
+			<OnEvent function="KoreanRatings_OnEvent"/>
+			<OnShow function="KoreanRatings_OnShow"/>
 		</Scripts>
 	</Button>
 </Ui>

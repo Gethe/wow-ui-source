@@ -1,4 +1,23 @@
 
+StaticPopupDialogs["EXTERNAL_LINK"] = {
+	text = BROWSER_EXTERNAL_LINK_DIALOG,
+	button1 = OKAY,
+	button3 = BROWSER_COPY_LINK,
+	button2 = CANCEL,
+	OnAccept = function(self, data)
+		HelpBrowser:OpenExternalLink();
+	end,
+	OnAlt = function(self)
+		HelpBrowser:CopyExternalLink();
+	end,
+	OnShow = function(self)
+		
+	end,
+	showAlert = 1,
+	timeout = 0,
+	hideOnEscape = 1
+};
+
 --Store all possible windows the HelpFrame will open.
 HelpFrameWindows = {}
 
@@ -113,6 +132,10 @@ local needMoreHelp = false;
 
 local kbsetupLoaded = false;
 
+
+-- Browser data
+local BROWSER_TOOLTIP_BUTTON_WIDTH = 150;
+
 --
 -- HelpFrame
 --
@@ -127,7 +150,9 @@ function HelpFrame_OnLoad(self)
 	self:RegisterEvent("QUICK_TICKET_SYSTEM_STATUS");
 	self:RegisterEvent("ITEM_RESTORATION_BUTTON_STATUS");
 	self:RegisterEvent("QUICK_TICKET_THROTTLE_CHANGED");
-	
+	self:RegisterEvent("SIMPLE_BROWSER_WEB_PROXY_FAILED");
+	self:RegisterEvent("SIMPLE_BROWSER_WEB_ERROR");
+
 	
 	self.leftInset.Bg:SetTexture("Interface\\HelpFrame\\Tileable-Parchment", true, true);
 	
@@ -235,6 +260,11 @@ function HelpFrame_OnEvent(self, event, ...)
 		HelpFrame_UpdateQuickTicketSystemStatus();
 	elseif ( event == "ITEM_RESTORATION_BUTTON_STATUS" ) then
 		HelpFrame_UpdateItemRestorationButtonStatus();
+	elseif ( event == "SIMPLE_BROWSER_WEB_PROXY_FAILED" ) then
+		StaticPopup_Show("WEB_PROXY_FAILED");
+	elseif ( event == "SIMPLE_BROWSER_WEB_ERROR" ) then
+		local errorNumber = tonumber(...);
+		StaticPopup_Show("WEB_ERROR", errorNumber);
 	end
 end
 
@@ -311,6 +341,7 @@ function HelpFrame_GMResponse_Acknowledge(markRead)
 end
 
 function HelpFrame_SetFrameByKey(key)
+	HelpBrowser:Hide();
 	-- if we're trying to open any ticket window and we have a GM response, override
 	if ( haveResponse and ( key == HELPFRAME_OPEN_TICKET or key == HELPFRAME_SUBMIT_TICKET ) ) then
 		key = HELPFRAME_GM_RESPONSE;
@@ -661,12 +692,93 @@ function HelpOpenTicketButton_Update()
 end
 
 --
+-- HelpOpenWebTicketButton
+--
+
+function HelpOpenWebTicketButton_OnEnter(self, elapsed)
+	if ( self.haveTicket ) then
+		if ( self.haveResponse ) then
+			GameTooltip:SetOwner(self, "ANCHOR_TOP");
+			GameTooltip:SetText(GM_RESPONSE_ALERT, nil, nil, nil, nil, 1);
+		elseif ( self.hasGMSurvey ) then
+			GameTooltip:SetOwner(self, "ANCHOR_TOP");
+			GameTooltip:SetText(CHOSEN_FOR_GMSURVEY, nil, nil, nil, nil, 1);
+		else
+			GameTooltip:SetOwner(self, "ANCHOR_TOP");
+			GameTooltip:AddLine(self.titleText, HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b, 1);
+			if (self.statusText) then
+				GameTooltip:AddLine(self.statusText);
+			end
+		end
+		GameTooltip:AddLine(" ");
+		GameTooltip:AddLine(HELPFRAME_TICKET_CLICK_HELP, GRAY_FONT_COLOR.r, GRAY_FONT_COLOR.g, GRAY_FONT_COLOR.b, 1);
+		GameTooltip:Show();
+	end
+end
+
+function HelpOpenWebTicketButton_OnUpdate(self, elapsed)
+	-- Every so often, query the server for our ticket status
+	if ( self.refreshTime ) then
+		self.refreshTime = self.refreshTime - elapsed;
+		if ( self.refreshTime <= 0 ) then
+			self.refreshTime = GMTICKET_CHECK_INTERVAL;
+			GetWebTicket();
+		end
+	end
+end
+
+function HelpOpenWebTicketButton_OnEvent(self, event, ...)
+	if ( event == "UPDATE_WEB_TICKET" ) then
+		local hasTicket, numTickets, ticketStatus, caseIndex, waitTime, waitMsg = ...;
+		self.titleText = nil;
+		self.statusText = nil;
+		self.caseIndex = nil;
+		self.hasGMSurvey = false;
+		if (hasTicket) then
+			self.haveTicket = true;
+			self.haveResponse = false;
+			self.titleText = TICKET_STATUS;
+			if (ticketStatus == LE_TICKET_STATUS_NMI) then --need more info
+				self.statusText = TICKET_STATUS_NMI;
+				self.caseIndex = caseIndex;
+			elseif (ticketStatus == LE_TICKET_STATUS_RESPONSE) then --ticket has been responded to
+				self.haveResponse = true;
+				self.caseIndex = caseIndex;
+			elseif (ticketStatus == LE_TICKET_STATUS_OPEN) then
+				if (waitMsg and waitTime > 0) then
+					self.statusText = format(waitMsg, SecondsToTime(waitTime*60))
+				elseif (waitMsg) then
+					self.statusText = waitMsg;
+				elseif (waitTime > 120) then
+					self.statusText = GM_TICKET_HIGH_VOLUME;
+				elseif (waitTime > 0) then
+					self.statusText = format(GM_TICKET_WAIT_TIME, SecondsToTime(waitTime*60));
+				else
+					self.statusText = GM_TICKET_UNAVAILABLE;
+				end
+			elseif (ticketStatus == LE_TICKET_STATUS_SURVEY and numTickets == 1) then
+				-- the player just has a survey, don't show this icon
+				self:Hide();
+				return;
+			end
+			self:Show();
+		else
+			-- the player does not have a ticket
+			self.haveResponse = false;
+			self.haveTicket = false;
+			self:Hide();
+		end
+	end
+end
+
+--
 -- TicketStatusFrame
 --
 
 
 function TicketStatusFrame_OnLoad(self)
 	self:RegisterEvent("GMRESPONSE_RECEIVED");
+	self:RegisterEvent("UPDATE_WEB_TICKET");
 end
 
 function TicketStatusFrame_OnEvent(self, event, ...)
@@ -674,6 +786,29 @@ function TicketStatusFrame_OnEvent(self, event, ...)
 		if ( not GMChatStatusFrame or not GMChatStatusFrame:IsShown() ) then
 			self:Show();
 		else
+			self:Hide();
+		end
+	elseif (event == "UPDATE_WEB_TICKET") then
+		local hasTicket, numTickets, ticketStatus, caseIndex = ...;
+		self.haveWebSurvey = false;
+		TicketStatusTime:SetText("");
+		TicketStatusTime:Hide();
+		if (hasTicket and ticketStatus ~= LE_TICKET_STATUS_OPEN) then
+			self.hasWebTicket = true;
+			if (ticketStatus == LE_TICKET_STATUS_NMI) then --need more info
+				TicketStatusTitleText:SetText(TICKET_STATUS_NMI);
+			elseif (ticketStatus == LE_TICKET_STATUS_SURVEY) then --survey is ready
+				TicketStatusTitleText:SetText(CHOSEN_FOR_GMSURVEY);
+				self:SetHeight(TicketStatusTitleText:GetHeight() + 20);
+				self.haveWebSurvey = true;
+			elseif (ticketStatus == LE_TICKET_STATUS_RESPONSE) then --ticket has been responded to
+				TicketStatusTitleText:SetText(GM_RESPONSE_ALERT);
+				self.haveResponse = true;
+			end
+			self.caseIndex = caseIndex;
+			self:Show();
+		else
+			self.hasWebTicket = false;
 			self:Hide();
 		end
 	end
@@ -704,6 +839,15 @@ function TicketStatusFrameButton_OnLoad(self)
 end
 
 function TicketStatusFrameButton_OnClick(self)
+	if (TicketStatusFrame.hasWebTicket and TicketStatusFrame.caseIndex) then
+		HelpFrame_ShowFrame(HELPFRAME_SUBMIT_TICKET)
+		HelpBrowser:OpenTicket(TicketStatusFrame.caseIndex)
+		if (TicketStatusFrame.haveWebSurvey) then
+			AcknowledgeSurvey(TicketStatusFrame.caseIndex);
+		end
+		TicketStatusFrame:Hide()
+		return;
+	end
 	if ( TicketStatusFrame.hasGMSurvey ) then
 		GMSurveyFrame_LoadUI();
 		ShowUIPanel(GMSurveyFrame);
@@ -731,7 +875,6 @@ function HelpReportLag(kind)
 	GMReportLag(STATIC_CONSTANTS[kind]);
 	StaticPopup_Show("LAG_SUCCESS");
 end
-
 
 -------------- Knowledgebase Functions ------------------
 -------------- Knowledgebase Functions ------------------
@@ -770,8 +913,37 @@ function KnowledgeBase_OnShow(self)
 	if ( not kbsetupLoaded ) then
 		KnowledgeBase_GotoTopIssues();
 	end
+	
+	if (HelpBrowser:HasConnection()) then
+		HelpBrowser:Show();
+		HelpBrowser:NavigateHome("KnowledgeBase");
+		HelpBrowser.homepage = "KnowledgeBase"
+		HideKnowledgeBase();
+	else
+		HelpBrowser:Hide();
+		ShowKnowledgeBase();
+	end
 end
 
+function HideKnowledgeBase()
+	HelpFrameKnowledgebaseStoneTex:Hide();
+	HelpFrameKnowledgebaseTopTileStreaks:Hide();
+	HelpFrameKnowledgebaseSearchBox:Hide();
+	HelpFrameKnowledgebaseSearchButton:Hide();
+	HelpFrameKnowledgebaseNavBar:Hide();
+	HelpFrameKnowledgebaseScrollFrame:Hide();
+	HelpFrameKnowledgebaseScrollFrame2:Hide();
+end
+
+function ShowKnowledgeBase()
+	HelpFrameKnowledgebaseStoneTex:Show();
+	HelpFrameKnowledgebaseTopTileStreaks:Show();
+	HelpFrameKnowledgebaseSearchBox:Show();
+	HelpFrameKnowledgebaseSearchButton:Show();
+	HelpFrameKnowledgebaseNavBar:Show();
+	HelpFrameKnowledgebaseScrollFrame:Show();
+	HelpFrameKnowledgebaseScrollFrame2:Show();
+end
 
 function KnowledgeBase_OnEvent(self, event, ...)
 	if ( event ==  "KNOWLEDGE_BASE_SETUP_LOAD_SUCCESS") then
@@ -1114,6 +1286,7 @@ function KnowledgeBase_SnapToTopIssues()
 end
 
 function KnowledgeBase_GotoTopIssues()
+	HelpBrowser:NavigateHome("KnowledgeBase");
 	NavBar_Reset(HelpFrame.kbase.navBar);
 	KnowledgeBase_Clearlist();
 	local buttonData = {
@@ -1180,3 +1353,67 @@ function KnowledgeBase_ClearSearch(self)
 	HelpFrame.kbase.hasSearch = false;
 end
 
+
+local hasResized = false;
+function HelpBrowser_ToggleTooltip(button, browser)
+	PlaySound("igMainMenuOptionCheckBoxOn");
+	if (BrowserSettingsTooltip:IsShown()) then
+		BrowserSettingsTooltip:Hide();
+		BrowserSettingsTooltip.browser = nil;
+	else
+		BrowserSettingsTooltip:SetParent(button)
+		BrowserSettingsTooltip:SetPoint("TOPRIGHT", button, "TOPLEFT", -5, 0);
+		BrowserSettingsTooltip:Show();
+		BrowserSettingsTooltip.browser = browser;
+	end
+	
+	--resize the tooltip for different languages. Make sure buttons are the same width so they don't look weird
+	if (not hasResized) then
+		local tooltip = BrowserSettingsTooltip;
+		local maxWidth = tooltip.Title:GetWidth()
+		local buttonWidth = max(tooltip.CacheButton:GetTextWidth(), tooltip.CookiesButton:GetTextWidth()); 
+		buttonWidth = buttonWidth + 20; --add button padding
+		buttonWidth = max(buttonWidth, BROWSER_TOOLTIP_BUTTON_WIDTH);
+		maxWidth = max(buttonWidth, maxWidth);
+		maxWidth = maxWidth + 20; --add tooltip padding
+		tooltip.CacheButton:SetWidth(buttonWidth);
+		tooltip.CookiesButton:SetWidth(buttonWidth);
+		tooltip:SetWidth(maxWidth);
+		hasResized = true;
+	end
+end
+
+--for race conditions with the spinner
+local loading = nil; 
+local logging = nil;
+function Browser_UpdateButtons(self, action)
+	if (action == "enableback") then
+		self.back:Enable();
+	elseif (action == "disableback") then
+		self.back:Disable();
+	elseif (action == "enableforward") then
+		self.forward:Enable();
+	elseif (action == "disableforward") then
+		self.forward:Disable();
+	elseif (action == "startloading") then
+		self.stop:Show();
+		self.reload:Hide();
+		loading = true;
+	elseif (action == "doneloading") then
+		self.stop:Hide();
+		self.reload:Show();
+		loading = nil;
+	elseif (action == "loggingin") then
+		logging = true;
+	elseif (action == "notloggingin") then
+		logging = nil;
+	end
+	
+	if (loading or logging) then
+		self.loading:Show();
+		self.loading.Loop:Play();
+	else
+		self.loading.Loop:Stop();
+		self.loading:Hide();
+	end
+end

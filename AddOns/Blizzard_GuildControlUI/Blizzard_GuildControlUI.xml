@@ -221,7 +221,7 @@
 							</OnClick>
 						</Scripts>
 					</CheckButton>
-					<EditBox name="$parentStackBox" autoFocus="false" historyLines="1" inherits="InputBoxTemplate" numeric="true"  id="5" parentKey="editBox">
+					<EditBox name="$parentStackBox" autoFocus="false" letters="6" historyLines="1" inherits="InputBoxTemplate" numeric="true"  id="5" parentKey="editBox">
 						<Size x="80" y="20"/>
 						<Anchors>
 							<Anchor point="BOTTOMLEFT" x="15" y="3"/>
@@ -652,7 +652,7 @@
 							<Anchor point="TOPLEFT" relativeTo="$parentCheckbox15" relativePoint="BOTTOMLEFT" x="0" y="1"/>
 						</Anchors>
 					</CheckButton>
-					<EditBox name="$parentGoldBox" autoFocus="false" historyLines="1" inherits="InputBoxTemplate" numeric="true" parentKey="goldBox">
+					<EditBox name="$parentGoldBox" autoFocus="false" historyLines="1" inherits="InputBoxTemplate" numeric="true" letters="6" parentKey="goldBox">
 						<Size x="60" y="28"/>
 						<Anchors>
 							<Anchor point="LEFT" relativeTo="$parentCheckbox16" relativePoint="RIGHT" x="120" y="0"/>

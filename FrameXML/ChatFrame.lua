@@ -1010,7 +1010,7 @@ local function ExecuteCastRandom(actions)
 		CastRandomTable[actions] = entry;
 	end
 	if ( not entry.value ) then
-		entry.value = strtrim(GetRandomArgument(strsplit(",", actions)));
+		entry.value = entry.spellNames[random(#entry.spellNames)];
 	end
 	entry.pending = true;
 	return entry.value;
@@ -3093,6 +3093,9 @@ function ChatFrame_MessageEventHandler(self, event, ...)
 				self:AddMessage(format(globalstring, arg4, arg2), info.r, info.g, info.b, info.id);
 			else
 				self:AddMessage(format(globalstring, arg8, arg4, arg2), info.r, info.g, info.b, info.id);
+			end
+			if ( arg1 == "INVITE" and GetCVarBool("blockChannelInvites") ) then
+				self:AddMessage(CHAT_MSG_BLOCK_CHAT_CHANNEL_INVITE, info.r, info.g, info.b, info.id);
 			end
 		elseif (type == "CHANNEL_NOTICE") then
 			local globalstring = _G["CHAT_"..arg1.."_NOTICE_BN"];

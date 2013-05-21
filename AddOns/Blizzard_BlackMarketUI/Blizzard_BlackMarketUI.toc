@@ -1,4 +1,4 @@
-## Interface: 50200
+## Interface: 50300
 ## Title: Black Market UI
 ## Secure: 1
 ## LoadOnDemand: 1

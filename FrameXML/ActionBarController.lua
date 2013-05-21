@@ -73,14 +73,7 @@ function ActionBarController_OnEvent(self, event, ...)
 	
 	--Extra Action Bar
 	if ( event == "UPDATE_EXTRA_ACTIONBAR" ) then
-		if ( HasExtraActionBar() ) then
-			ExtraActionBarFrame:Show();
-			ExtraActionBarFrame.outro:Stop();
-			ExtraActionBarFrame.intro:Play();
-		elseif( ExtraActionBarFrame:IsShown() ) then
-			ExtraActionBarFrame.intro:Stop();
-			ExtraActionBarFrame.outro:Play();
-		end
+		ExtraActionBar_Update();
 	end
 end
 

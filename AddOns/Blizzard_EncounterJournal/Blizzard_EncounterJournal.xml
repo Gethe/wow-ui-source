@@ -318,7 +318,22 @@
 		<Size x="63" y="57"/>	
 		<TexCoords left="0.25585938" right="0.37890625" top="0.90332031" bottom="0.95898438"/>	
 	</Texture>
-
+	<Texture name="UI-EJ-Tab-ModelIcon-Selected" file="Interface\EncounterJournal\UI-EncounterJournalTextures" virtual="true" >
+		<Size x="48" y="43"/>	
+		<TexCoords left="0.8046875" right="0.900390625" top="0.662109375" bottom="0.705078125"/>	
+	</Texture>
+	<Texture name="UI-EJ-Tab-ModelIcon-UnSelected" file="Interface\EncounterJournal\UI-EncounterJournalTextures" virtual="true" >
+		<Size x="48" y="43"/>	
+		<TexCoords left="0.90234375" right="1" top="0.662109375" bottom="0.705078125"/>	
+	</Texture>
+	<Texture name="UI-EJ-LeftPageHeader" file="Interface\EncounterJournal\UI-EncounterJournalTextures" virtual="true" >
+		<Size x="386" y="39"/>	
+		<TexCoords left="0.00000000" right="0.755859375" top="0.9599609375" bottom="1"/>	
+	</Texture>
+	<Texture name="UI-EJ-RightPageHeader" file="Interface\EncounterJournal\UI-EncounterJournalTextures" virtual="true" >
+		<Size x="386" y="39"/>	
+		<TexCoords left="0.755859375" right="0.00000000" top="0.9599609375" bottom="1"/>	
+	</Texture>
 	
 	<Button name="EncounterInstanceButtonTemplate" virtual="true">
 		<Size x="174" y="96"/>
@@ -419,9 +434,9 @@
 		</HighlightTexture>
 		<Scripts>
 			<OnEnter>
-				if self.itemID then
+				if self.link then
 					GameTooltip:SetOwner(self, "ANCHOR_LEFT");
-					GameTooltip:SetItemByID(self.itemID);
+					GameTooltip:SetHyperlink(self.link);
 					self.showingTooltip = true;
 				end
 			</OnEnter>
@@ -487,11 +502,11 @@
 		</HighlightTexture>
 		<Scripts>
 			<OnEnter>
-				if self.itemID then
+				if self.link then
 					GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
-					GameTooltip:SetItemByID(self.itemID);
+					GameTooltip:SetHyperlink(self.link);
+					self.showingTooltip = true;
 				end
-				self.showingTooltip = true;
 			</OnEnter>
 			<OnLeave>
 				GameTooltip:Hide();
@@ -588,15 +603,16 @@
 		<ButtonText name="$parentText" parentKey="text" justifyH="LEFT"  justifyV="MIDDLE">
 			<Size x="160" y="40"/>
 			<Anchors>
-				<Anchor point="LEFT">
-					<Offset>
-						<AbsDimension x="105" y="-3"/>
-					</Offset>
-				</Anchor>
+				<Anchor point="LEFT" x="105" y="-3"/>
 			</Anchors>
 			<Color r="0.827" g="0.659" b="0.463"/>
 		</ButtonText>
-		<NormalFont style="GameFontNormalMed3"/>
+		<NormalFont style="GameFontNormalMed3">
+			<Color r="0.827" g="0.659" b="0.463"/>
+		</NormalFont>
+		<HighlightFont style="GameFontNormalMed3">
+			<Color r="0.973" g="0.902" b="0.581"/>
+		</HighlightFont>
 		<DisabledFont style="GameFontHighlightMedium"/>
 		<Scripts>
 			<OnClick>
@@ -609,12 +625,6 @@
 				EncounterJournal_DisplayEncounter(self.encounterID);
 				PlaySound("igAbiliityPageTurn");
 			</OnClick>
-			<OnEnter>
-				self.text:SetTextColor(0.973, 0.902, 0.581);
-			</OnEnter>
-			<OnLeave>
-				self.text:SetTextColor(0.827, 0.659, 0.463);
-			</OnLeave>
 		</Scripts>
 	</Button>
 	
@@ -622,20 +632,15 @@
 		<Size x="63" y="57"/>	
 		<NormalTexture inherits="UI-EJ-Tab-UnSelected"/>
 		<PushedTexture inherits="UI-EJ-Tab-Selected"/>
-		<DisabledTexture inherits="UI-EJ-Tab-Selected"/>
+		<DisabledTexture inherits="UI-EJ-Tab-UnSelected"/>
 		<HighlightTexture inherits="UI-EJ-Tab-Highlight" alphaMode="ADD"/>
 		<Scripts>
 			<OnClick function="EncounterJournal_TabClicked"/>
-			<OnDisable>
-				self.selected:Show();
-				self.unselected:Hide();
-				--self:SetFrameLevel(self:GetParent():GetFrameLevel()+3);
-			</OnDisable>
-			<OnEnable>
-				self.unselected:Show();
-				self.selected:Hide();
-				--self:SetFrameLevel(self:GetParent():GetFrameLevel()+1);
-			</OnEnable>
+			<OnEnter>
+				GameTooltip:SetOwner(self, "ANCHOR_CURSOR_RIGHT");
+				GameTooltip:SetText(self.tooltip, nil, nil, nil, nil, 1);
+			</OnEnter>
+			<OnLeave function="GameTooltip_Hide"/>
 		</Scripts>
 	</Button>
 	
@@ -897,6 +902,7 @@
 						<Scripts>
 							<OnClick>
 								if self.displayInfo then
+									EncounterJournal.encounter.info.modelTab:Click();
 									EncounterJournal_DisplayCreature(self);
 								end
 								self:Enable();
@@ -1086,7 +1092,7 @@
 			</OnClick>
 			<OnEnter>
 				GameTooltip:SetOwner(self, "ANCHOR_LEFT");
-				GameTooltip:SetItemByID(self.itemID);
+				GameTooltip:SetHyperlink(self.link);
 				self.showingTooltip = true;
 				self:SetScript("OnUpdate", EncounterJournal_Loot_OnUpdate);
 			</OnEnter>
@@ -1611,14 +1617,14 @@
 					<Frame name="$parentInstanceFrame" parentKey="instance">
 						<Size x="390" y="425"/>
 						<Anchors>
-							<Anchor point="TOPLEFT" x="0" y="0"/>
+							<Anchor point="BOTTOMRIGHT" x="-1" y="2"/>
 						</Anchors>
 						<Layers>
 							<Layer level="BACKGROUND">
 								<Texture name="$parentBG" file="Interface\EncounterJournal\UI-EJ-LOREBG-Default" parentKey="loreBG">
 									<Size x="390" y="336"/>
 									<Anchors>
-										<Anchor point="TOP" x="3" y="-4"/>
+										<Anchor point="TOP" x="3" y="-9"/>
 									</Anchors>
 									<TexCoords left="0" right="0.7617187" top="0" bottom="0.65625"/>
 								</Texture>
@@ -1627,7 +1633,7 @@
 								<FontString name="$parentTitle" inherits="QuestFont_Super_Huge" justifyH="CENTER" justifyV="BOTTOM" parentKey="title">
 									<Size x="0" y="10"/>
 									<Anchors>
-										<Anchor point="TOP" x="0" y="-67"/>
+										<Anchor point="TOP" x="0" y="-72"/>
 									</Anchors>
 								</FontString>
 							</Layer>
@@ -1736,79 +1742,10 @@
 							</ScrollFrame>
 						</Frames>
 					</Frame>
-					<PlayerModel name="$parentModelFrame" parentKey="model" inherits="ModelTemplate">
-						<Size x="390" y="425"/>
-						<Anchors>
-							<Anchor point="TOPLEFT" x="3" y="-4"/>
-						</Anchors>
-						<Layers>
-							<Layer level="OVERLAY">
-								<Texture name="$parentShadow" file="Interface\EncounterJournal\UI-EJ-BossModelPaperFrame">
-									<Size x="393" y="424"/>
-									<Anchors>
-										<Anchor point="TOPLEFT" x="0" y="0"/>
-									</Anchors>
-									<TexCoords left="0" right="0.767578125" top="0" bottom="0.828125"/>
-								</Texture>
-							</Layer>
-							<Layer level="OVERLAY" textureSubLevel="1">
-								<Texture name="$parentTitleBG" inherits="UI-EJ-BossNameShadow">
-									<Anchors>
-										<Anchor point="BOTTOM" x="0" y="0"/>
-									</Anchors>
-								</Texture>
-							</Layer>
-							<Layer level="OVERLAY" textureSubLevel="2">
-								<FontString name="$parentImageTile" inherits="QuestTitleFontBlackShadow" justifyH="CENTER" parentKey="imageTitle">
-									<Size x="380" y="10"/>
-									<Anchors>
-										<Anchor point="BOTTOM" x="0" y="8"/>
-									</Anchors>
-								</FontString>
-							</Layer>
-						</Layers>
-						<Scripts>
-							<OnLoad>
-								Model_OnLoad(self);
-								self:SetCamDistanceScale(1.0);
-								self:GetParent().imageTitle = self.imageTitle;
-							</OnLoad>
-						</Scripts>
-					</PlayerModel>
-					<Button name="$parentCreatureButton1" inherits="EncounterCreatureButtonTemplate" parentKey="creatureButton1">
-						<Anchors>
-							<Anchor point="TOPLEFT" x="3" y="-35"/>
-						</Anchors>
-					</Button>
-					<Button name="$parentCreatureButton2" inherits="EncounterCreatureButtonTemplate" parentKey="creatureButton2">
-						<Anchors>
-							<Anchor point="TOPLEFT" relativeTo="$parentCreatureButton1" relativePoint="BOTTOMLEFT" x="0" y="0"/>
-						</Anchors>
-					</Button>
-					<Button name="$parentCreatureButton3" inherits="EncounterCreatureButtonTemplate" parentKey="creatureButton3">
-						<Anchors>
-							<Anchor point="TOPLEFT" relativeTo="$parentCreatureButton2" relativePoint="BOTTOMLEFT" x="0" y="0"/>
-						</Anchors>
-					</Button>
-					<Button name="$parentCreatureButton4" inherits="EncounterCreatureButtonTemplate" parentKey="creatureButton4">
-						<Anchors>
-							<Anchor point="TOPLEFT" relativeTo="$parentCreatureButton3" relativePoint="BOTTOMLEFT" x="0" y="0"/>
-						</Anchors>
-					</Button>
-					<Button name="$parentCreatureButton5" inherits="EncounterCreatureButtonTemplate" parentKey="creatureButton5">
-						<Anchors>
-							<Anchor point="TOPLEFT" relativeTo="$parentCreatureButton4" relativePoint="BOTTOMLEFT" x="0" y="0"/>
-						</Anchors>
-					</Button>
-					<Button name="$parentCreatureButton6" inherits="EncounterCreatureButtonTemplate" parentKey="creatureButton6">
-						<Anchors>
-							<Anchor point="TOPLEFT" relativeTo="$parentCreatureButton5" relativePoint="BOTTOMLEFT" x="0" y="0"/>
-						</Anchors>
-					</Button>
 					<Frame name="$parentInfo" parentKey="info" useParentLevel="true">
 						<Size x="785" y="425"/>
 						<Anchors>
-							<Anchor point="BOTTOMRIGHT" x="-1`" y="2"/>
+							<Anchor point="BOTTOMRIGHT" x="-1" y="2"/>
 						</Anchors>
 						<Layers>
 							<Layer level="BACKGROUND">
@@ -1820,13 +1757,16 @@
 									<TexCoords left="0" right="0.766601562" top="0" bottom="0.830078125"/>
 								</Texture>
 							</Layer>
-							<Layer level="BACKGROUND" textureSubLevel="1">
-								<Texture name="$parentDungeonBG" file="Interface\EncounterJournal\UI-EJ-BACKGROUND-Default" parentKey="dungeonBG">
-									<Size x="394" y="425"/>
+							<Layer level="BACKGROUND" textureSubLevel="3">
+								<Texture name="$parentLeftHeaderShadow" inherits="UI-EJ-LeftPageHeader" parentKey="leftShadow">
 									<Anchors>
-										<Anchor point="BOTTOMLEFT" x="0" y="0"/>
+										<Anchor point="TOPLEFT" x="0" y="-11"/>
 									</Anchors>
-									<TexCoords left="0" right="0.76953125" top="0" bottom="0.830078125"/>
+								</Texture>
+								<Texture name="$parentRightHeaderShadow" inherits="UI-EJ-RightPageHeader" parentKey="rightShadow" hidden="true">
+									<Anchors>
+										<Anchor point="TOPRIGHT" x="0" y="-11"/>
+									</Anchors>
 								</Texture>
 							</Layer>
 							<Layer level="OVERLAY">
@@ -1834,6 +1774,13 @@
 									<Size x="227" y="12"/>
 									<Anchors>
 										<Anchor point="BOTTOMLEFT" relativePoint="TOPRIGHT" x="-350" y="-36"/>
+									</Anchors>
+									<Color r="0.902" g="0.788" b="0.671"/>
+								</FontString>
+								<FontString name="$parentInstanceTitle" inherits="GameFontNormalLarge" justifyH="LEFT" parentKey="instanceTitle">
+									<Size x="227" y="12"/>
+									<Anchors>
+										<Anchor point="TOPLEFT" x="20" y="-20"/>
 									</Anchors>
 									<Color r="0.902" g="0.788" b="0.671"/>
 								</FontString>
@@ -1858,6 +1805,17 @@
 										</Texture>
 									</Layer>
 								</Layers>
+								<Scripts>
+									<OnLoad>
+										self.tooltip = ABILITIES;
+									</OnLoad>
+									<OnClick>
+										EncounterJournal_TabClicked(self, button);
+										if (not EncounterJournal.encounterID and EncounterJournal.instanceID) then
+											EncounterJournal_DisplayInstance(EncounterJournal.instanceID, true);
+										end
+									</OnClick>
+								</Scripts>
 							</Button>
 							<Button name="$parentLootTab" inherits="EncounterTabTemplate" useParentLevel="true" parentKey="lootTab" id="2">
 								<Anchors>
@@ -1877,8 +1835,79 @@
 										</Texture>
 									</Layer>
 								</Layers>
+								<Scripts>
+									<OnLoad>
+										self.tooltip = LOOT_NOUN;
+									</OnLoad>
+								</Scripts>
 							</Button>
-							<Button name="$parentDifficulty" parentKey="difficulty" text="Normal (10)">
+							<Button name="$parentModelTab" inherits="EncounterTabTemplate" useParentLevel="true" parentKey="modelTab" id="3">
+								<Anchors>
+									<Anchor point="TOP" relativeTo="$parentLootTab" relativePoint="BOTTOM" x="0" y="2"/>
+								</Anchors>
+								<Layers>
+									<Layer level="OVERLAY">
+										<Texture name="$parentUnselect" inherits="UI-EJ-Tab-ModelIcon-UnSelected" parentKey="unselected">
+											<Anchors>
+												<Anchor point="RIGHT" x="-6" y="0"/>
+											</Anchors>
+										</Texture>
+										<Texture name="$parentSelect" inherits="UI-EJ-Tab-ModelIcon-Selected" parentKey="selected">
+											<Anchors>
+												<Anchor point="CENTER" relativeTo="$parentUnselect" x="0" y="0"/>
+											</Anchors>
+										</Texture>
+									</Layer>
+								</Layers>
+								<Scripts>
+									<OnLoad>
+										self.tooltip = MODEL;
+									</OnLoad>
+									<OnClick>
+										EncounterJournal_TabClicked(self, button)
+										EncounterHournal_ShowCreatures()
+									</OnClick>
+								</Scripts>
+							</Button>
+							<ScrollFrame name="$parentBossesScrollFrame" parentKey="bossesScroll" inherits="UIPanelScrollFrameCodeTemplate">
+								<Size x="363" y="382"/>
+								<Anchors>
+									<Anchor point="BOTTOMLEFT" x="25" y="1"/>
+								</Anchors>
+								<Frames>
+									<Slider name="$parentScrollBar" inherits="MinimalScrollBarTemplate" parentKey="ScrollBar">
+										<Anchors>
+											<Anchor point="TOPRIGHT" x="0" y="-17"/>
+											<Anchor point="BOTTOMRIGHT" x="0" y="17"/>
+										</Anchors>
+										<Scripts>
+											<OnLoad>
+												self.trackBG:SetVertexColor(0.2, 0.13, 0.08, 0.25);
+											</OnLoad>
+										</Scripts>
+									</Slider>
+								</Frames>
+								<ScrollChild>
+									<Frame name="$parentScrollChild" parentKey="child">
+										<Size x="320" y="372"/>
+										<Anchors>
+											<Anchor point="TOPLEFT" x="0" y="0"/>
+										</Anchors>
+										<Layers>
+											<Layer level="ARTWORK">
+												<FontString name="$parentDescription" inherits="GameFontBlack" justifyH="LEFT" parentKey="description">
+													<Size x="0" y="0"/>
+													<Anchors>
+														<Anchor point="TOPLEFT" x="2" y="-8"/>
+													</Anchors>
+													<Color r="0.25" g="0.1484375" b=".02" a="1"/>
+												</FontString>
+											</Layer>
+										</Layers>
+									</Frame>
+								</ScrollChild>
+							</ScrollFrame>
+							<Button name="$parentDifficulty" parentKey="difficulty" text="Normal (10)" >
 								<Size x="75" y="26"/>
 								<Anchors>
 									<Anchor point="TOPRIGHT" x="-19" y="-13"/>
@@ -1887,7 +1916,7 @@
 									<AbsInset left="-13" right="-13" top="0" bottom="0"/>
 								</HitRectInsets>
 								<Layers>
-									<Layer level="BACKGROUND">
+									<Layer level="BACKGROUND" textureSubLevel="2">
 										<Texture name="$parentUpLeft" inherits="UI-EJ-FilterButtonUp" parentKey="upLeft">
 											<Size x="13" y="26"/>
 											<Anchors>
@@ -1989,7 +2018,7 @@
 									</OnLoad>
 								</Scripts>
 							</Frame>
-							<Button name="$parentResetButton">
+							<Button name="$parentResetButton" parentKey="reset" hidden="true">
 								<Size x="26" y="26"/>
 								<Anchors>
 									<Anchor point="RIGHT" relativeTo="$parentDifficulty" relativePoint="LEFT" x="-10" y="0"/>
@@ -2060,9 +2089,21 @@
 										</Layers>
 									</Frame>
 								</ScrollChild>
+								<Scripts>
+									<OnShow>
+										EncounterHournal_HideCreatures();
+										EncounterJournal.encounter.info.reset:Show()
+										EncounterJournal.encounter.info.lootScroll:Hide()
+										EncounterJournal.encounter.info.rightShadow:Show()
+										EncounterJournal.encounter.info.encounterTitle:Show();
+									</OnShow>
+									<OnHide>
+										EncounterJournal.encounter.info.reset:Hide()
+									</OnHide>
+								</Scripts>
 							</ScrollFrame>
 							<ScrollFrame name="$parentLootScrollFrame" parentKey="lootScroll" inherits="HybridScrollFrameTemplate">
-								<Size x="345" y="383"/>
+								<Size x="345" y="382"/>
 								<Anchors>
 									<Anchor point="BOTTOMRIGHT" x="-5" y="1"/>
 								</Anchors>
@@ -2216,12 +2257,6 @@
 												l, t, _, b, r = self.highRight:GetTexCoord();
 												self.highRight:SetTexCoord(l + (r-l)/2, r, t, b);
 											</OnLoad>
-											<OnShow>
-												self:GetParent():GetParent().encounterTitle:Hide();
-											</OnShow>
-											<OnHide>
-												self:GetParent():GetParent().encounterTitle:Show();
-											</OnHide>
 											<OnMouseDown>
 												self.upLeft:Hide();
 												self.upRight:Hide();
@@ -2258,10 +2293,100 @@
 								</Frames>
 								<Scripts>
 									<OnShow>
+										EncounterHournal_HideCreatures();
+										EncounterJournal.encounter.instance:Hide();
+										EncounterJournal.encounter.info.rightShadow:Show()
 										EncounterJournal_LootUpdate();
+										EncounterJournal.encounter.info.encounterTitle:Hide();
 									</OnShow>
 								</Scripts>
 							</ScrollFrame>
+							<PlayerModel name="$parentModelFrame" parentKey="model" inherits="ModelTemplate" >
+								<Size x="390" y="425"/>
+								<Anchors>
+									<Anchor point="BOTTOMRIGHT" x="-3" y="1"/>
+								</Anchors>
+								<Layers>
+									<Layer level="BACKGROUND" textureSubLevel="1">
+										<Texture name="$parentDungeonBG" file="Interface\EncounterJournal\UI-EJ-BACKGROUND-Default" parentKey="dungeonBG">
+											<Size x="394" y="425"/>
+											<Anchors>
+												<Anchor point="BOTTOMLEFT" x="0" y="-2"/>
+											</Anchors>
+											<TexCoords left="0.76953125" right="0" top="0" bottom="0.830078125"/>
+										</Texture>
+									</Layer>
+									<Layer level="OVERLAY">
+										<Texture name="$parentShadow" file="Interface\EncounterJournal\UI-EJ-BossModelPaperFrame">
+											<Size x="393" y="424"/>
+											<Anchors>
+												<Anchor point="TOPLEFT" x="0" y="-2"/>
+											</Anchors>
+											<TexCoords left="0.767578125" right="0" top="0" bottom="0.828125"/>
+										</Texture>
+									</Layer>
+									<Layer level="OVERLAY" textureSubLevel="1">
+										<Texture name="$parentTitleBG" inherits="UI-EJ-BossNameShadow">
+											<Anchors>
+												<Anchor point="BOTTOM" x="0" y="-2"/>
+											</Anchors>
+										</Texture>
+									</Layer>
+									<Layer level="OVERLAY" textureSubLevel="2">
+										<FontString name="$parentImageTile" inherits="QuestTitleFontBlackShadow" justifyH="CENTER" parentKey="imageTitle">
+											<Size x="380" y="10"/>
+											<Anchors>
+												<Anchor point="BOTTOM" x="0" y="6"/>
+											</Anchors>
+										</FontString>
+									</Layer>
+								</Layers>
+								<Scripts>
+									<OnShow>
+										EncounterJournal.encounter.info.encounterTitle:Hide();
+										EncounterJournal.encounter.info.rightShadow:Hide();
+										EncounterJournal.encounter.info.difficulty:Hide();
+									</OnShow>
+									<OnHide>
+										EncounterJournal.encounter.info.difficulty:Show();
+									</OnHide>
+									<OnLoad>
+										Model_OnLoad(self);
+										self:SetCamDistanceScale(1.0);
+										self:GetParent().imageTitle = self.imageTitle;
+									</OnLoad>
+								</Scripts>
+							</PlayerModel>
+							<Button name="$parentCreatureButton1" inherits="EncounterCreatureButtonTemplate" parentKey="creatureButton1">
+								<Anchors>
+									<Anchor point="TOPLEFT" relativeTo="$parentModelFrame" x="3" y="-35"/>
+								</Anchors>
+							</Button>
+							<Button name="$parentCreatureButton2" inherits="EncounterCreatureButtonTemplate" parentKey="creatureButton2">
+								<Anchors>
+									<Anchor point="TOPLEFT" relativeTo="$parentCreatureButton1" relativePoint="BOTTOMLEFT" x="0" y="0"/>
+								</Anchors>
+							</Button>
+							<Button name="$parentCreatureButton3" inherits="EncounterCreatureButtonTemplate" parentKey="creatureButton3">
+								<Anchors>
+									<Anchor point="TOPLEFT" relativeTo="$parentCreatureButton2" relativePoint="BOTTOMLEFT" x="0" y="0"/>
+								</Anchors>
+							</Button>
+							<Button name="$parentCreatureButton4" inherits="EncounterCreatureButtonTemplate" parentKey="creatureButton4">
+								<Anchors>
+									<Anchor point="TOPLEFT" relativeTo="$parentCreatureButton3" relativePoint="BOTTOMLEFT" x="0" y="0"/>
+								</Anchors>
+							</Button>
+							<Button name="$parentCreatureButton5" inherits="EncounterCreatureButtonTemplate" parentKey="creatureButton5">
+								<Anchors>
+									<Anchor point="TOPLEFT" relativeTo="$parentCreatureButton4" relativePoint="BOTTOMLEFT" x="0" y="0"/>
+								</Anchors>
+							</Button>
+							<Button name="$parentCreatureButton6" inherits="EncounterCreatureButtonTemplate" parentKey="creatureButton6">
+								<Anchors>
+									<Anchor point="TOPLEFT" relativeTo="$parentCreatureButton5" relativePoint="BOTTOMLEFT" x="0" y="0"/>
+								</Anchors>
+							</Button>
 						</Frames>
 					</Frame>
 				</Frames>

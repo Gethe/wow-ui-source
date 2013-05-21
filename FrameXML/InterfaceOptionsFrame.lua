@@ -626,7 +626,6 @@ function InterfaceOptions_AddCategory (frame, addOn, position)
 						categories[i].hasChildren = true;
 						categories[i].collapsed = true;
 						tinsert(categories, i + 1, frame);
-						InterfaceAddOnsList_Update();
 						return;						
 					end
 
@@ -639,7 +638,6 @@ function InterfaceOptions_AddCategory (frame, addOn, position)
 					end
 
 					tinsert(categories, j, frame);
-					InterfaceAddOnsList_Update();
 					return;
 				end
 			end
@@ -648,7 +646,6 @@ function InterfaceOptions_AddCategory (frame, addOn, position)
 		for i = 1, #categories do
 			if ( ( not categories[i].parent ) and ( name < strlower(categories[i].name) ) ) then
 				tinsert(categories, i, frame);
-				InterfaceAddOnsList_Update();
 				return;
 			end
 		end
@@ -658,6 +655,5 @@ function InterfaceOptions_AddCategory (frame, addOn, position)
 		else
 			tinsert(categories, frame);
 		end
-		InterfaceAddOnsList_Update();
 	end
 end

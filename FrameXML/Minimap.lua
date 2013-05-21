@@ -434,7 +434,7 @@ function MiniMapInstanceDifficulty_Update()
 		MiniMapChallengeMode:Show();
 		MiniMapInstanceDifficulty:Hide();
 		GuildInstanceDifficulty:Hide();
-	elseif ( instanceType == "raid" or ( instanceType == "party" and isHeroic ) ) then
+	elseif ( instanceType == "raid" or isHeroic ) then
 		MiniMapInstanceDifficultyText:SetText(maxPlayers);
 		-- the 1 looks a little off when text is centered
 		local xOffset = 0;

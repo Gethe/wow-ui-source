@@ -132,6 +132,7 @@ ControlsPanelOptions = {
 	autoDismountFlying = { text = "AUTO_DISMOUNT_FLYING_TEXT" },
 	autoClearAFK = { text = "CLEAR_AFK" },
 	blockTrades = { text = "BLOCK_TRADES" },
+	blockChannelInvites = { text = "BLOCK_CHAT_CHANNEL_INVITE" },
 	lootUnderMouse = { text = "LOOT_UNDER_MOUSE_TEXT" },
 	autoLootDefault = { text = "AUTO_LOOT_DEFAULT_TEXT" }, -- When this gets changed, the function SetAutoLootDefault needs to get run with its value.
 	autoLootKey = { text = "AUTO_LOOT_KEY_TEXT", default = "NONE" },
@@ -256,6 +257,8 @@ CombatPanelOptions = {
 	showTargetOfTarget = { text = "SHOW_TARGET_OF_TARGET_TEXT" },
 	showTargetCastbar = { text = "SHOW_TARGET_CASTBAR" },
 	showVKeyCastbar = { text = "SHOW_TARGET_CASTBAR_IN_V_KEY" },
+	showVKeyCastbarOnlyOnTarget = { text = "SHOW_TARGET_CASTBAR_IN_V_KEY_ONLY_ON_TARGET" },
+	showVKeyCastbarSpellName = { text = "SHOW_TARGET_CASTBAR_IN_V_KEY_SPELL_NAME" },
 	displaySpellActivationOverlays = { text = "DISPLAY_SPELL_ALERTS" },
 	spellActivationOverlayOpacity = { text = "SPELL_ALERT_OPACITY", minValue = 0.1, maxValue = 1.0, valueStep = 0.05 },
 	reducedLagTolerance = { text = "REDUCED_LAG_TOLERANCE" },
@@ -980,7 +983,7 @@ function InterfaceOptionsSocialPanelTimestamps_Initialize()
 	info.value = "none";
 	info.text = TIMESTAMP_FORMAT_NONE;
 	info.checked = info.value == selectedValue;
-	UIDropDownMenu_AddButton(info, UIDROPDOWNMENU_MENU_LEVEL);
+	UIDropDownMenu_AddButton(info);
 	
 	InterfaceOptionsSocialPanelTimestamps_AddTimestampFormat(TIMESTAMP_FORMAT_HHMM, info, selectedValue);
 	InterfaceOptionsSocialPanelTimestamps_AddTimestampFormat(TIMESTAMP_FORMAT_HHMMSS, info, selectedValue);
@@ -1005,7 +1008,7 @@ function InterfaceOptionsSocialPanelTimestamps_AddTimestampFormat(timestampForma
 	infoTable.value = timestampFormat;
 	infoTable.text = BetterDate(timestampFormat, time(exampleTime));
 	infoTable.checked = (selectedValue == timestampFormat);
-	UIDropDownMenu_AddButton(infoTable, UIDROPDOWNMENU_MENU_LEVEL);
+	UIDropDownMenu_AddButton(infoTable);
 end
 
 function InterfaceOptionsSocialPanelTimestamps_OnClick(self)

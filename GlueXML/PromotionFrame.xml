@@ -29,7 +29,7 @@
 			<Button parentKey="UpgradeButton">
 				<Size x="256" y="64"/>
 				<Anchors>
-					<Anchor point="CENTER" relativeKey="$parent.Artwork" relativePoint="BOTTOMLEFT" x="350" y="80"/>
+					<Anchor point="CENTER" relativeKey="$parent.Artwork" relativePoint="BOTTOMLEFT" x="350" y="95"/>
 				</Anchors>
 				<NormalTexture>
 					<Size x="256" y="64"/>
@@ -52,7 +52,7 @@
 			<Button parentKey="PlayButton">
 				<Size x="256" y="64"/>
 				<Anchors>
-					<Anchor point="CENTER" relativeKey="$parent.Artwork" relativePoint="BOTTOMRIGHT" x="-320" y="80"/>
+					<Anchor point="CENTER" relativeKey="$parent.Artwork" relativePoint="BOTTOMRIGHT" x="-320" y="95"/>
 				</Anchors>
 				<NormalTexture>
 					<Size x="256" y="64"/>

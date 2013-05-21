@@ -121,7 +121,8 @@
 						</Layers>
 						<Scripts>
 							<OnLoad function="MacOptionsFrameResolutionDropDown_OnLoad"/>
-							<OnShow function="MacOptionsFrameResolutionDropDown_OnLoad"/>
+							<OnShow function="MacOptionsFrameResolutionDropDown_OnShow"/>
+							<OnEvent function="MacOptionsFrameResolutionDropDown_OnEvent"/>
 							<OnEnter>
 								if(UIDropDownMenu_IsEnabled(MacOptionsFrameResolutionDropDown)) then
 									GameTooltip:SetOwner(self, "ANCHOR_TOPRIGHT");

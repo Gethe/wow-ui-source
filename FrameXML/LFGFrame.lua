@@ -212,6 +212,17 @@ function LFGEventFrame_OnEvent(self, event, ...)
 	LFGBackfillCover_Update(ScenarioQueueFrame.PartyBackfill);
 end
 
+function LFG_IsHeroicScenario(dungeonID)
+	if ( dungeonID ) then
+		local difficulty = select(LFG_RETURN_VALUES.difficulty, GetLFGDungeonInfo(dungeonID));
+		if ( difficulty ) then
+			local _, _, isHeroic = GetDifficultyInfo(difficulty);
+			return isHeroic;
+		end
+	end
+	return false;
+end
+
 function LFG_DisplayGroupLeaderWarning(eventFrame)
 	local numRaidMembers = GetNumGroupMembers();
 	if ( not HasLFGRestrictions() or not IsInGroup() ) then
@@ -744,14 +755,21 @@ function LFGDungeonReadyPopup_Update()
 			LFGDungeonReadyPopup:SetHeight(223);
 			LFGDungeonReadyDialog.background:SetTexCoord(0, 1, 0, 1);
 			if ( subtypeID == LFG_SUBTYPEID_SCENARIO ) then
-				texture = "Interface\\LFGFrame\\UI-LFG-BACKGROUND-RandomScenario";
+				if ( LFG_IsHeroicScenario(id) ) then
+					texture = "Interface\\LFGFrame\\UI-LFG-BACKGROUND-HeroicScenario";
+					if ( typeID == TYPEID_RANDOM_DUNGEON ) then
+						name = RANDOM_SCENARIO;
+					end
+				else
+					texture = "Interface\\LFGFrame\\UI-LFG-BACKGROUND-RandomScenario";
+					-- change name for random
+					if ( typeID == TYPEID_RANDOM_DUNGEON ) then
+						name = RANDOM_SCENARIO;
+					end
+				end
 				LFGDungeonReadyDialog.background:SetDrawLayer("BORDER");
 				LFGDungeonReadyDialog.background:SetWidth(290);
 				LFGDungeonReadyDialog.instanceInfo.underline:Hide();
-				-- change name for random
-				if ( typeID == TYPEID_RANDOM_DUNGEON ) then
-					name = RANDOM_SCENARIO;
-				end
 			else
 				texture = "Interface\\LFGFrame\\UI-LFG-BACKGROUND-"..texture;
 				LFGDungeonReadyDialog.background:SetDrawLayer("BACKGROUND");
@@ -845,16 +863,19 @@ function LFGDungeonReadyDialog_UpdateRewards(dungeonID, role)
 	end
 	
 	for i = 1, numRewards do
-		local frame = _G["LFGDungeonReadyDialogRewardsFrameReward"..frameID];
-		if ( not frame ) then
-			frame = CreateFrame("FRAME", "LFGDungeonReadyDialogRewardsFrameReward"..frameID, LFGDungeonReadyDialogRewardsFrame, "LFGDungeonReadyRewardTemplate");
-			frame:SetID(frameID);
-			LFD_MAX_REWARDS = frameID;
+		local _, _, _, isBonusReward = GetLFGDungeonRewardInfo(dungeonID, i);
+		if ( not isBonusReward ) then
+			local frame = _G["LFGDungeonReadyDialogRewardsFrameReward"..frameID];
+			if ( not frame ) then
+				frame = CreateFrame("FRAME", "LFGDungeonReadyDialogRewardsFrameReward"..frameID, LFGDungeonReadyDialogRewardsFrame, "LFGDungeonReadyRewardTemplate");
+				frame:SetID(frameID);
+				LFD_MAX_REWARDS = frameID;
+			end
+			LFGDungeonReadyDialogReward_SetReward(frame, dungeonID, i, "reward")
+			frameID = frameID + 1;
 		end
-		LFGDungeonReadyDialogReward_SetReward(frame, dungeonID, i, "reward")
-		frameID = frameID + 1;
 	end
-	
+
 	for shortageIndex = 1, LFG_ROLE_NUM_SHORTAGE_TYPES do
 		local eligible, forTank, forHealer, forDamage, itemCount = GetLFGRoleShortageRewards(dungeonID, shortageIndex);
 		if ( eligible and ((role == "TANK" and forTank) or (role == "HEALER" and forHealer) or (role == "DAMAGER" and forDamage)) ) then
@@ -1241,7 +1262,13 @@ function LFGRewardsFrame_UpdateFrame(parentFrame, dungeonID, background)
 	local leaderChecked, tankChecked, healerChecked, damageChecked = LFDQueueFrame_GetRoles();
 	
 	--HACK
-	if ( not isScenario ) then
+	if ( isScenario ) then
+		if ( LFG_IsHeroicScenario(dungeonID) ) then
+			backgroundTexture = "Interface\\LFGFrame\\UI-LFG-SCENARIO-Heroic";
+		else
+			backgroundTexture = "Interface\\LFGFrame\\UI-LFG-SCENARIO-Random";
+		end
+	else
 		if ( dungeonID == 341 ) then	--Trollpocalypse Heroic
 			backgroundTexture = "Interface\\LFGFrame\\UI-LFG-BACKGROUND-TROLLPOCALYPSE";
 		elseif ( dungeonID == 434 ) then	--Hour of Twilight Heroic
@@ -1257,6 +1284,8 @@ function LFGRewardsFrame_UpdateFrame(parentFrame, dungeonID, background)
 		else
 			backgroundTexture = "Interface\\LFGFrame\\UI-LFG-BACKGROUND-QUESTPAPER";
 		end
+	end
+	if ( backgroundTexture ) then
 		background:SetTexture(backgroundTexture);
 	end
 
@@ -1288,9 +1317,28 @@ function LFGRewardsFrame_UpdateFrame(parentFrame, dungeonID, background)
 			parentFrame.rewardsDescription:SetText(format(LFD_REWARD_DESCRIPTION_DAILY, numCompletions));
 		end
 		if ( isScenario ) then
-			parentFrame.title:SetText(LFG_TYPE_RANDOM_SCENARIO);
-			parentFrame.description:SetText(SCENARIO_RANDOM_EXPLANATION);
-			parentFrame.BonusValor.BonusText:SetText(SCENARIO_BONUS_VALOR);
+			if ( LFG_IsHeroicScenario(dungeonID) ) then
+				parentFrame.title:SetText(LFG_TYPE_RANDOM_HEROIC_SCENARIO);
+				parentFrame.description:SetText(SCENARIO_RANDOM_HEROIC_EXPLANATION);
+				local numValor = 0;
+				local numRewards = select(6, GetLFGDungeonRewards(dungeonID));
+				-- there should only be 1 bonus reward, and it should give valor...
+				for i = 1, numRewards do
+					local name, texturePath, quantity, isBonusCurrency = GetLFGDungeonRewardInfo(dungeonID, i);
+					if ( isBonusCurrency ) then
+						numValor = quantity;
+					end
+				end
+				if ( numValor > 0 ) then
+					parentFrame.BonusValor.BonusText:SetFormattedText(HEROIC_SCENARIO_BONUS_VALOR_SPECIFIC, numValor);
+				else
+					parentFrame.BonusValor.BonusText:SetText(HEROIC_SCENARIO_BONUS_VALOR);
+				end
+			else
+				parentFrame.title:SetText(LFG_TYPE_RANDOM_SCENARIO);
+				parentFrame.description:SetText(SCENARIO_RANDOM_EXPLANATION);
+				parentFrame.BonusValor.BonusText:SetText(SCENARIO_BONUS_VALOR);
+			end
 		else
 			parentFrame.title:SetText(LFG_TYPE_RANDOM_DUNGEON);
 			parentFrame.description:SetText(LFD_RANDOM_EXPLANATION);
@@ -1305,9 +1353,11 @@ function LFGRewardsFrame_UpdateFrame(parentFrame, dungeonID, background)
 
 	local itemButtonIndex = 1;
 	for i=1, numRewards do
-		local name, texture, numItems = GetLFGDungeonRewardInfo(dungeonID, i);
-		lastFrame = LFGRewardsFrame_SetItemButton(parentFrame, dungeonID, itemButtonIndex, i, name, texture, numItems, nil);
-		itemButtonIndex = itemButtonIndex + 1;
+		local name, texture, numItems, isBonusReward = GetLFGDungeonRewardInfo(dungeonID, i);
+		if ( not isBonusReward ) then
+			lastFrame = LFGRewardsFrame_SetItemButton(parentFrame, dungeonID, itemButtonIndex, i, name, texture, numItems, nil);
+			itemButtonIndex = itemButtonIndex + 1;
+		end
 	end
 	
 	for shortageIndex=1, LFG_ROLE_NUM_SHORTAGE_TYPES do
@@ -1777,6 +1827,13 @@ function LFG_QueueForInstanceIfEnabled(category, queueID)
 end
 
 function LFG_JoinDungeon(category, joinType, dungeonList, hiddenByCollapseList)
+	-- check min group size
+	local hasReqGroupSize, requiredGroupSize = LFG_HasRequiredGroupSize(category, joinType, dungeonList, hiddenByCollapseList);
+	if ( not hasReqGroupSize ) then
+		UIErrorsFrame:AddMessage(format(ERR_LFG_MEMBERS_REQUIRED, requiredGroupSize), 1.0, 0.1, 0.1, 1.0);
+		return;
+	end
+
 	if ( joinType == "specific" ) then	--Random queue
 		ClearAllLFGDungeons(category);
 		for _, queueID in pairs(dungeonList) do
@@ -1791,6 +1848,39 @@ function LFG_JoinDungeon(category, joinType, dungeonList, hiddenByCollapseList)
 		SetLFGDungeon(category, joinType);
 		JoinLFG(category);
 	end
+end
+
+function LFG_HasRequiredGroupSize(category, joinType, dungeonList, hiddenByCollapseList)
+	local numGroupMembers, numRequiredPlayers;
+	if ( IsInGroup() ) then
+		numGroupMembers = GetNumGroupMembers();
+	else
+		numGroupMembers = 1;
+	end
+	if ( joinType == "specific" ) then	--Random queue
+		for _, queueID in pairs(dungeonList) do
+			if ( not LFGIsIDHeader(queueID) and LFGEnabledList[queueID] and not LFGLockList[queueID] ) then
+				numRequiredPlayers = select(18, GetLFGDungeonInfo(queueID));
+				if ( numRequiredPlayers and numRequiredPlayers ~= numGroupMembers ) then
+					return false, numRequiredPlayers;
+				end
+			end
+		end
+		for _, queueID in pairs(hiddenByCollapseList) do
+			if ( not LFGIsIDHeader(queueID) and LFGEnabledList[queueID] and not LFGLockList[queueID] ) then
+				numRequiredPlayers = select(18, GetLFGDungeonInfo(queueID));
+				if ( numRequiredPlayers and numRequiredPlayers ~= numGroupMembers ) then
+					return false, numRequiredPlayers;
+				end
+			end
+		end
+	else
+		numRequiredPlayers = select(18, GetLFGDungeonInfo(joinType));
+		if ( numRequiredPlayers and numRequiredPlayers ~= numGroupMembers ) then
+			return false, numRequiredPlayers;
+		end	
+	end
+	return true;
 end
 
 function LFGDungeonList_SetHeaderCollapsed(button, dungeonList, hiddenByCollapseList)

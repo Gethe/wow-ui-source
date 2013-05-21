@@ -62,8 +62,13 @@ end
 function MovieFrame_OnHide(self)
 	MovieFrameSubtitleString:Hide();
 	self:StopMovie();
-	SetGlueScreen("login");
+	SetGlueScreen(self.returnTo or "login");	--If this is the cinematic automatically played when starting up, we have no returnTo
 	ShowCursor();
+end
+
+function MovieFrame_Show(self, returnTo)
+	self.returnTo = returnTo;
+	SetGlueScreen("movie");
 end
 
 function MovieFrame_OnUpdate(self, elapsed)

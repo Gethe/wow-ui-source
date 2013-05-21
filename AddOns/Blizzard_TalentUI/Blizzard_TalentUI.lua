@@ -765,9 +765,21 @@ end
 -- PlayerTalentFrameTalents
 function PlayerTalentFrameTalent_OnClick(self, button)
 	if ( IsModifiedClick("CHATLINK") ) then
-		local link = GetTalentLink(self:GetID(), PlayerTalentFrame.inspect, PlayerTalentFrame.talentGroup);
-		if ( link ) then
-			ChatEdit_InsertLink(link);
+		if ( MacroFrameText and MacroFrameText:HasFocus() ) then
+			local talentName = GetTalentInfo(self:GetID());
+			local spellName, subSpellName = GetSpellInfo(talentName);
+			if ( spellName and not IsPassiveSpell(spellName) ) then
+				if ( subSpellName and (strlen(subSpellName) > 0) ) then
+					ChatEdit_InsertLink(spellName.."("..subSpellName..")");
+				else
+					ChatEdit_InsertLink(spellName);
+				end
+			end
+		else
+			local link = GetTalentLink(self:GetID(), PlayerTalentFrame.inspect, PlayerTalentFrame.talentGroup);
+			if ( link ) then
+				ChatEdit_InsertLink(link);
+			end
 		end
 	elseif ( selectedSpec and (activeSpec == selectedSpec)) then
 		local _, _, _, _, selected, available = GetTalentInfo(self:GetID());

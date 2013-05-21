@@ -157,6 +157,7 @@ function UIParent_OnLoad(self)
 	self:RegisterEvent("CURSOR_UPDATE");
 	self:RegisterEvent("LOCALPLAYER_PET_RENAMED");
 	self:RegisterEvent("PLAYER_ENTERING_WORLD");
+	self:RegisterEvent("PLAYER_SPECIALIZATION_CHANGED");
 	self:RegisterEvent("MIRROR_TIMER_START");
 	self:RegisterEvent("DUEL_REQUESTED");
 	self:RegisterEvent("DUEL_OUTOFBOUNDS");
@@ -643,10 +644,17 @@ function TogglePetJournal(whichFrame)
 		PetJournal_LoadUI();
 	end
 	if ( PetJournalParent ) then
-		ToggleFrame(PetJournalParent);
-	end
-	if (whichFrame and PetJournalParent:IsShown()) then
-		PetJournalParent_SetTab(PetJournalParent, whichFrame);
+		if ( whichFrame ) then
+			-- if the request tab is being shown, close window
+			if ( PetJournalParent:IsShown() and whichFrame == PanelTemplates_GetSelectedTab(PetJournalParent) ) then
+				HideUIPanel(PetJournalParent);
+			else
+				ShowUIPanel(PetJournalParent);
+				PetJournalParent_SetTab(PetJournalParent, whichFrame);
+			end
+		else
+			ToggleFrame(PetJournalParent);
+		end
 	end
 end
 
@@ -757,9 +765,13 @@ function UIParent_OnEvent(self, event, ...)
 	elseif ( event == "TRADE_REQUEST" ) then
 		StaticPopup_Show("TRADE", arg1);
 	elseif ( event == "CHANNEL_INVITE_REQUEST" ) then
-		local dialog = StaticPopup_Show("CHAT_CHANNEL_INVITE", arg1, arg2);
-		if ( dialog ) then
-			dialog.data = arg1;
+		if ( GetCVarBool("blockChannelInvites") ) then
+			DeclineChannelInvite(arg1);
+		else
+			local dialog = StaticPopup_Show("CHAT_CHANNEL_INVITE", arg1, arg2);
+			if ( dialog ) then
+				dialog.data = arg1;
+			end
 		end
 	elseif ( event == "CHANNEL_PASSWORD_REQUEST" ) then
 		local dialog = StaticPopup_Show("CHAT_CHANNEL_PASSWORD", arg1);
@@ -820,13 +832,13 @@ function UIParent_OnEvent(self, event, ...)
 	elseif ( event == "DELETE_ITEM_CONFIRM" ) then
 		-- Check quality
 		if ( arg2 >= 3 ) then
-			if (arg3 == 4) then -- quest item?
+			if (arg4 == 1) then -- quest item?
 				StaticPopup_Show("DELETE_GOOD_QUEST_ITEM", arg1);
 			else
 				StaticPopup_Show("DELETE_GOOD_ITEM", arg1);
 			end
 		else
-			if (arg3 == 4) then -- quest item?
+			if (arg4 == 1) then -- quest item?
 				StaticPopup_Show("DELETE_QUEST_ITEM", arg1);
 			else
 				StaticPopup_Show("DELETE_ITEM", arg1);
@@ -889,6 +901,9 @@ function UIParent_OnEvent(self, event, ...)
 		if ( GetReleaseTimeRemaining() > 0 or GetReleaseTimeRemaining() == -1 ) then
 			StaticPopup_Show("DEATH");
 		end
+
+		-- display loot specialization setting
+		PrintLootSpecialization();
 	elseif ( event == "GROUP_ROSTER_UPDATE" ) then
 		-- Hide/Show party member frames
 		RaidOptionsFrame_UpdatePartyFrames();
@@ -4113,7 +4128,7 @@ function BreakUpLargeNumbers(value)
 	return retString;
 end
 
-function GetTimeStringFromSeconds(timeAmount, hasMS)
+function GetTimeStringFromSeconds(timeAmount, hasMS, dropZeroHours)
 	local seconds, ms;
 	-- milliseconds
 	if ( hasMS ) then
@@ -4129,7 +4144,11 @@ function GetTimeStringFromSeconds(timeAmount, hasMS)
 --	if ( hasMS ) then
 --		return format(HOURS_MINUTES_SECONDS_MILLISECONDS, hours, minutes, seconds, ms);
 --	else
+	if ( dropZeroHours and hours == 0 ) then
+		return format(MINUTES_SECONDS, minutes, seconds);
+	else
 		return format(HOURS_MINUTES_SECONDS, hours, minutes, seconds);
+	end
 --	end
 end
 
@@ -4150,5 +4169,26 @@ function ConfirmOrLeaveBattlefield()
 		LeaveBattlefield();
 	else
 		StaticPopup_Show("CONFIRM_LEAVE_BATTLEFIELD");
+	end
+end
+
+function PrintLootSpecialization()
+	local specID = GetLootSpecialization();
+	local lootSpecChoice;
+	if ( specID and specID > 0 ) then
+		local id, name = GetSpecializationInfoByID(specID);
+		lootSpecChoice = format(ERR_LOOT_SPEC_CHANGED_S, name);
+--[[	else
+		local specIndex = GetSpecialization();
+		if ( specIndex) then
+			local specID, specName = GetSpecializationInfo(specIndex);
+			if ( specName ) then
+				lootSpecChoice = format(ERR_LOOT_SPEC_CHANGED_S, format(LOOT_SPECIALIZATION_DEFAULT, specName));
+			end
+		end]]
+	end
+	if ( lootSpecChoice ) then
+		local info = ChatTypeInfo["SYSTEM"];
+		DEFAULT_CHAT_FRAME:AddMessage(lootSpecChoice, info.r, info.g, info.b, info.id);
 	end
 end

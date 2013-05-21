@@ -141,7 +141,7 @@ function ScenarioQueueFrameRandom_UpdateFrame()
 	if ( type(dungeonID) ~= "number" ) then	--We haven't gotten info on available dungeons yet.
 		return;
 	end
-	LFGRewardsFrame_UpdateFrame(ScenarioQueueFrame.Random.ScrollFrame.Child, dungeonID, nil);
+	LFGRewardsFrame_UpdateFrame(ScenarioQueueFrame.Random.ScrollFrame.Child, dungeonID, ScenarioQueueFrame.Bg);
 end
 
 function ScenarioQueueFrameRandomRandomList_OnEnter(self)
@@ -188,8 +188,19 @@ function ScenarioQueueFrameFindGroupButton_Update()
 	if ( mode == "queued" or mode == "rolecheck" or mode == "proposal" or mode == "suspended" ) then
 		ScenarioQueueFrameFindGroupButton:SetText(LEAVE_QUEUE);
 	else
-		if ( IsInGroup() and GetNumGroupMembers() > 1 ) then
-			ScenarioQueueFrameFindGroupButton:SetText(JOIN_AS_PARTY);
+		-- see if it's heroic 
+		local activeType = ScenarioQueueFrame.type;
+		local isHeroic;
+		if ( activeType and activeType ~= "specific" ) then
+			local difficultyID = select(LFG_RETURN_VALUES.difficulty, GetLFGDungeonInfo(activeType));
+			if ( difficultyID ) then
+				local _;
+				_, _, isHeroic = GetDifficultyInfo(difficultyID);
+			end
+		end
+		
+		if ( (IsInGroup() and GetNumGroupMembers() > 1) or isHeroic ) then
+			ScenarioQueueFrameFindGroupButton:SetText(JOIN_AS_GROUP);
 		else
 			ScenarioQueueFrameFindGroupButton:SetText(FIND_A_GROUP);
 		end
@@ -291,11 +302,11 @@ function ScenarioQueueFrame_SetType(value)	--"specific" for the list or the reco
 		ScenarioQueueFrame_SetTypeRandom();
 		ScenarioQueueFrameRandom_UpdateFrame();
 	end
+	ScenarioQueueFrameFindGroupButton_Update();
 end
 
 function ScenarioQueueFrame_SetTypeRandom()
 	local queueFrame = ScenarioQueueFrame;
-	queueFrame.Bg:SetTexture("Interface\\LFGFrame\\UI-LFG-SCENARIO-Random");
 	queueFrame.Bg:SetHeight(512);
 	queueFrame.Specific:Hide();
 	queueFrame.Random:Show();

@@ -112,4 +112,255 @@
 		</Scripts>
 	</Frame>
 	
+	<Frame name="PVPRoleCheckPopup" parent="UIParent" frameStrata="DIALOG" hidden="true" enableMouse="true">
+		<Size x="306" y="180"/>
+		<Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background" edgeFile="Interface\DialogFrame\UI-DialogBox-Border" tile="true">
+			<BackgroundInsets>
+				<AbsInset left="11" right="12" top="12" bottom="11"/>
+			</BackgroundInsets>
+			<TileSize>
+				<AbsValue val="32"/>
+			</TileSize>
+			<EdgeSize>
+				<AbsValue val="32"/>
+			</EdgeSize>
+		</Backdrop>
+		<Layers>
+			<Layer level="ARTWORK">
+				<FontString inherits="GameFontHighlight" justifyH="CENTER" text="CONFIRM_YOUR_ROLE">
+					<Anchors>
+						<Anchor point="TOP" x="0" y="-15"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Button parentKey="TankIcon" name="$parentRoleButtonTank" inherits="LFGRoleButtonTemplate" id="2">
+				<Size x="70" y="70"/>
+				<Anchors>
+					<Anchor point="TOPLEFT" x="35" y="-35"/>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						self:GetNormalTexture():SetTexCoord(GetTexCoordsForRole("TANK"));
+						self.checkButton.onClick = PVPRoleCheckPopup_RoleButtonClicked;
+					</OnLoad>
+				</Scripts>
+			</Button>
+			<Button parentKey="HealerIcon" name="$parentRoleButtonHealer" inherits="LFGRoleButtonTemplate" id="3">
+				<Size x="70" y="70"/>
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="$parentRoleButtonTank" relativePoint="RIGHT" x="15" y="0"/>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						self:GetNormalTexture():SetTexCoord(GetTexCoordsForRole("HEALER"));
+						self.checkButton.onClick = PVPRoleCheckPopup_RoleButtonClicked;
+					</OnLoad>
+				</Scripts>
+			</Button>
+			<Button parentKey="DPSIcon" name="$parentRoleButtonDPS" inherits="LFGRoleButtonTemplate" id="1">
+				<Size x="70" y="70"/>
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="$parentRoleButtonHealer" relativePoint="RIGHT" x="15" y="0"/>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						self:GetNormalTexture():SetTexCoord(GetTexCoordsForRole("DAMAGER"));
+						self.checkButton.onClick = PVPRoleCheckPopup_RoleButtonClicked;
+					</OnLoad>
+				</Scripts>
+			</Button>
+			<Button name="$parentAcceptButton" inherits="UIPanelButtonTemplate" text="ACCEPT">
+				<Size x="115" y="22"/>
+				<Anchors>
+					<Anchor point="BOTTOMRIGHT" relativeTo="$parent" relativePoint="BOTTOM" x="-3" y="15"/>
+				</Anchors>
+				<Scripts>
+					<OnClick function="PVPRoleCheckPopupAccept_OnClick"/>
+				</Scripts>
+			</Button>
+			<Button name="$parentDeclineButton" inherits="UIPanelButtonTemplate" text="DECLINE">
+				<Size x="115" y="22"/>
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="$parentAcceptButton" relativePoint="RIGHT" x="6" y="0"/>
+				</Anchors>
+				<Scripts>
+					<OnClick function="PVPRoleCheckPopupDecline_OnClick"/>
+				</Scripts>
+			</Button>
+			<Frame parentKey="Description" name="$parentDescription">
+				<Size x="1" y="16"/>
+				<Anchors>
+					<Anchor point="CENTER" relativeTo="$parent" relativePoint="BOTTOM" x="0" y="57"/>
+				</Anchors>
+				<Layers>
+					<Layer level="ARTWORK">
+						<FontString parentKey="Text" name="$parentText" justifyH="CENTER" inherits="GameFontHighlight">
+							<Size x="280" y="25"/>
+							<Anchors>
+								<Anchor point="CENTER"/>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+			</Frame>
+		</Frames>
+		<Scripts>
+			<OnLoad function="PVPRoleCheckPopup_OnLoad"/>
+			<OnEvent function="PVPRoleCheckPopup_OnEvent"/>
+			<OnShow function="PVPRoleCheckPopup_OnShow"/>
+		</Scripts>
+	</Frame>
+	<Frame name="PVPReadyDialog" parent="UIParent" frameStrata="DIALOG" toplevel="true" enableMouse="true">
+		<Size x="306" y="210"/>
+		<Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background" edgeFile="Interface\DialogFrame\UI-DialogBox-Border" tile="true">
+			<BackgroundInsets>
+				<AbsInset left="11" right="12" top="12" bottom="11"/>
+			</BackgroundInsets>
+			<TileSize>
+				<AbsValue val="32"/>
+			</TileSize>
+			<EdgeSize>
+				<AbsValue val="32"/>
+			</EdgeSize>
+		</Backdrop>
+		<Layers>
+			<Layer level="BACKGROUND" textureSubLevel="2">
+				<Texture name="$parentBackground" parentKey="background" file="Interface\LFGFrame\UI-LFG-BACKGROUND-RANDOMDUNGEON">
+					<Size x="294" y="118"/>
+					<Anchors>
+						<Anchor point="TOP" x="0" y="-11"/>
+						<Anchor point="BOTTOM" x="0" y="64"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="OVERLAY">
+				<FontString name="$parentLabel" parentKey="label" inherits="GameFontHighlight" justifyH="CENTER">
+					<Size x="200" y="0"/>
+					<Anchors>
+						<Anchor point="TOP" x="0" y="-15"/>
+					</Anchors>
+				</FontString>
+				<Texture name="$parentFiligree" file="Interface\LFGFrame\UI-LFG-FILIGREE" parentKey="filigree">
+					<Size x="292" y="54"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" x="7" y="-3"/>
+					</Anchors>
+					<TexCoords left="0.02734" right="0.59765" top="0.578125" bottom="1.0"/>
+				</Texture>
+				<Texture name="$parentBottomArt" file="Interface\LFGFrame\UI-LFG-FILIGREE" parentKey="bottomArt">
+					<Size x="287" y="72"/>
+					<Anchors>
+						<Anchor point="BOTTOM" x="0" y="55"/>
+					</Anchors>
+					<TexCoords left="0.0" right="0.5605" top="0.0" bottom="0.5625"/>
+				</Texture>
+				<FontString name="$parentYourRoleDescription" parentKey="roleDescription" inherits="GameFontHighlightExtraSmall" text="YOUR_ROLE">
+					<Anchors>
+						<Anchor point="BOTTOMRIGHT" relativePoint="BOTTOMLEFT" x="108" y="93"/>
+					</Anchors>
+				</FontString>
+				<FontString name="$parentRoleLabel" parentKey="roleLabel" inherits="GameFontNormalLarge" text="HEALER">
+					<Anchors>
+						<Anchor point="TOPRIGHT" relativeTo="$parentYourRoleDescription" relativePoint="BOTTOMRIGHT" x="0" y="0"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Button name="$parentCloseButton">
+				<Size x="32" y="32"/>
+				<Anchors>
+					<Anchor point="TOPRIGHT" x="-2" y="-2"/>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						PlaySound("igCharacterInfoTab");
+						StaticPopupSpecial_Hide(PVPReadyDialog);
+					</OnClick>
+				</Scripts>
+				<NormalTexture file="Interface\Buttons\UI-Panel-HideButton-Up"/>
+				<PushedTexture file="Interface\Buttons\UI-Panel-HideButton-Down"/>
+				<HighlightTexture file="Interface\Buttons\UI-Panel-MinimizeButton-Highlight" alphaMode="ADD"/>
+			</Button>
+			<Button name="$parentEnterBattleButton" inherits="UIPanelButtonTemplate" text="BATTLEFIELD_JOIN" parentKey="enterButton">
+				<Size x="115" y="22"/>
+				<Anchors>
+					<Anchor point="BOTTOMRIGHT" relativePoint="BOTTOM" x="-7" y="25"/>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						if ( AcceptBattlefieldPort(self:GetParent().activeIndex, 1) ) then
+							if( StaticPopup_Visible( "DEATH" ) ) then
+								StaticPopup_Hide( "DEATH" );
+							end
+							StaticPopupSpecial_Hide(self:GetParent());
+						end
+						PlaySound("igCharacterInfoTab");
+					</OnClick>
+				</Scripts>
+			</Button>
+			<Button name="$parentLeaveQueueButton" inherits="UIPanelButtonTemplate" text="LEAVE_QUEUE" parentKey="leaveButton">
+				<Size x="115" y="22"/>
+				<Anchors>
+					<Anchor point="BOTTOMLEFT" relativePoint="BOTTOM" x="7" y="25"/>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						if ( AcceptBattlefieldPort(self:GetParent().activeIndex, 0) ) then
+							StaticPopupSpecial_Hide(self:GetParent());
+						end
+						PlaySound("igCharacterInfoTab");
+					</OnClick>
+				</Scripts>
+			</Button>
+			<!--This is a frame instead of a texture so that we can add a mouseover.-->
+			<Frame name="$parentRoleIcon" parentKey="roleIcon">
+				<Size x="67" y="67"/>
+				<Anchors>
+					<Anchor point="BOTTOM" x="-1" y="54"/>
+				</Anchors>
+				<Layers>
+					<Layer level="ARTWORK">
+						<Texture name="$parentTexture" parentKey="texture" file="Interface\LFGFrame\UI-LFG-ICON-ROLES" setAllPoints="true"/>
+					</Layer>
+				</Layers>
+			</Frame>
+			<Frame name="$parentInstanceInfoFrame" parentKey="instanceInfo">
+				<Size x="170" y="50"/>
+				<Anchors>
+					<Anchor point="TOP" relativeKey="$parent" relativePoint="TOP" x="0" y="-30"/>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<Texture file="Interface\LFGFrame\UI-LFG-SEPARATOR" parentKey="underline">
+							<Size x="170" y="40"/>
+							<Anchors>
+								<Anchor point="TOP" x="0" y="0"/>
+							</Anchors>
+							<TexCoords left="0" right="0.6640625" top="0" bottom="0.3125"/>
+						</Texture>
+					</Layer>
+					<Layer level="ARTWORK">
+						<FontString name="$parentName" inherits="GameFontNormalLarge" justifyH="CENTER" parentKey="name">
+							<Size x="300" y="20"/>
+							<Anchors>
+								<Anchor point="TOP" x="0" y="-13"/>
+							</Anchors>
+						</FontString>
+						<FontString name="$parentStatusText" inherits="GameFontNormal" justifyH="CENTER" parentKey="statusText">
+							<Anchors>
+								<Anchor point="BOTTOM"/>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+			</Frame>
+		</Frames>
+		<Scripts>
+			<OnLoad function="PVPReadyDialog_OnLoad"/>
+			<OnEvent function="PVPReadyDialog_OnEvent"/>
+		</Scripts>
+	</Frame>
 </Ui>

@@ -35,11 +35,6 @@ function QueueStatusMinimapButton_OnShow(self)
 	self.Eye:SetFrameLevel(self:GetFrameLevel() - 1);
 end
 
-
-function QueueStatusMinimapButton_OnShow(self)
-	self.Eye:SetFrameLevel(self:GetFrameLevel() - 1);
-end
-
 ----------------------------------------------
 ------------QueueStatusFrame------------------
 ----------------------------------------------
@@ -56,6 +51,9 @@ function QueueStatusFrame_OnLoad(self)
 	self:RegisterEvent("LFG_PROPOSAL_SUCCEEDED");
 	self:RegisterEvent("LFG_PROPOSAL_SHOW");
 	self:RegisterEvent("LFG_QUEUE_STATUS_UPDATE");
+
+	--For PvP Role Checks
+	self:RegisterEvent("PVP_ROLE_CHECK_UPDATED");
 
 	--For PvP
 	self:RegisterEvent("UPDATE_BATTLEFIELD_STATUS");
@@ -117,6 +115,17 @@ function QueueStatusFrame_Update(self)
 				animateEye = true;
 			end
 		end
+	end
+
+	local inProgress, _, _, _, isBattleground = GetLFGRoleUpdate();
+	--Try PvP Role Check
+	if ( inProgress and isBattleground ) then
+		local entry = QueueStatusFrame_GetEntry(self, nextEntry);
+		QueueStatusEntry_SetUpPVPRoleCheck(entry);
+		entry:Show();
+		totalHeight = totalHeight + entry:GetHeight();
+		nextEntry = nextEntry + 1;
+		showMinimapButton = true;
 	end
 
 	--Try all PvP queues
@@ -247,6 +256,11 @@ function QueueStatusEntry_SetUpBattlefield(entry, idx)
 	end
 end
 
+function QueueStatusEntry_SetUpPVPRoleCheck(entry)
+	local queueName = GetLFGRoleUpdateBattlegroundInfo();
+	QueueStatusEntry_SetMinimalDisplay(entry, queueName, QUEUED_STATUS_ROLE_CHECK_IN_PROGRESS);
+end
+
 function QueueStatusEntry_SetUpWorldPvP(entry, idx)
 	local status, mapName, queueID = GetWorldPVPQueueStatus(idx);
 	if ( status == "queued" ) then
@@ -281,6 +295,7 @@ function QueueStatusEntry_SetUpPetBattlePvP(entry)
 end
 
 function QueueStatusEntry_SetMinimalDisplay(entry, title, description)
+	entry.Title:SetWidth(168);
 	entry.Title:SetText(title);
 
 	entry.Status:SetText(description);
@@ -299,12 +314,13 @@ function QueueStatusEntry_SetMinimalDisplay(entry, title, description)
 
 	entry:SetScript("OnUpdate", nil);
 
-	entry:SetHeight(30);
+	entry:SetHeight(entry.Title:GetHeight() + 14);
 end
 
 function QueueStatusEntry_SetFullDisplay(entry, title, queuedTime, myWait, isTank, isHealer, isDPS, totalTanks, totalHealers, totalDPS, tankNeeds, healerNeeds, dpsNeeds)
 	local height = 55;
 	
+	entry.Title:SetWidth(0);
 	entry.Title:SetText(title);
 
 	entry.Status:Hide();
@@ -375,7 +391,6 @@ function QueueStatusEntry_SetFullDisplay(entry, title, queuedTime, myWait, isTan
 		entry.HealersFound:Hide();
 		entry.DamagersFound:Hide();
 	end
-
 	entry:SetHeight(height);
 end
 
@@ -415,6 +430,11 @@ function QueueStatusDropDown_Update()
 		if ( mode ) then
 			QueueStatusDropDown_AddLFGButtons(info, i);
 		end
+	end
+
+	local inProgress, _, _, _, isBattleground = GetLFGRoleUpdate();
+	if ( inProgress and isBattleground ) then
+		QueueStatusDropDown_AddPVPRoleCheckButtons(info);
 	end
 
 	for i=1, GetMaxBattlefieldID() do
@@ -482,6 +502,26 @@ function QueueStatusDropDown_AddWorldPvPButtons(info, idx)
 		info.func = wrapFunc(BattlefieldMgrExitRequest);
 		info.arg1 = queueID;
 		info.arg2 = nil;
+		UIDropDownMenu_AddButton(info);
+	end
+end
+
+function QueueStatusDropDown_AddPVPRoleCheckButtons(info)
+	wipe(info);
+	local inProgress, _, _, _, isBattleground = GetLFGRoleUpdate();
+	
+	if ( inProgress and isBattleground ) then
+		local name = GetLFGRoleUpdateBattlegroundInfo();
+		info.text = name;
+		info.isTitle = 1;
+		info.notCheckable = 1;
+		UIDropDownMenu_AddButton(info);
+
+		info.text = QUEUED_STATUS_ROLE_CHECK_IN_PROGRESS;
+		info.isTitle = nil;
+		info.leftPadding = 10;
+		info.func = nil;
+		info.disabled = true;
 		UIDropDownMenu_AddButton(info);
 	end
 end

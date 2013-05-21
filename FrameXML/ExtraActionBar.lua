@@ -8,20 +8,20 @@ function ExtraActionBar_OnLoad (self)
 end
 
 function ExtraActionBar_Update()
+	local bar = ExtraActionBarFrame;
 	if ( HasExtraActionBar() ) then
-		ExtraActionBarFrame:Show();
-		ActionButton_UpdateUsable(self.button);
+		bar:Show();
+		local texture = GetOverrideBarSkin() or DefaultExtraActionStyle;
+		bar.button.style:SetTexture(texture);
+		ActionButton_UpdateUsable(bar.button);
+		UIParent_ManageFramePositions();
+		bar.outro:Stop();
+		bar.intro:Play();
+	elseif( bar:IsShown() ) then
+		bar.intro:Stop();
+		bar.outro:Play();
 	end
 end
-
-
-function ExtraActionBar_OnShow (self)
-	local texture = GetOverrideBarSkin() or DefaultExtraActionStyle;
-	self.button.style:SetTexture(texture);
-	ActionButton_UpdateUsable(self.button);
-	UIParent_ManageFramePositions();
-end
-
 
 function ExtraActionBar_OnHide (self)
 	UIParent_ManageFramePositions();

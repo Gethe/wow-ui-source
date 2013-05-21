@@ -56,7 +56,6 @@
 				self.isExtra = true;
 				self.buttonType = "EXTRAACTIONBUTTON";
 				ActionButton_OnLoad(self);
-				self:RegisterEvent("UPDATE_EXTRA_ACTIONBAR");
 			</OnLoad>
 		</Scripts>
 	</CheckButton>
@@ -95,7 +94,6 @@
 		</Frames>
 		<Scripts>
 			<OnLoad function="ExtraActionBar_OnLoad"/>
-			<OnShow function="ExtraActionBar_OnShow"/>
 			<OnHide function="ExtraActionBar_OnHide"/>
 		</Scripts>
 	</Frame>	

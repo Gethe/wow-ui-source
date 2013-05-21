@@ -26,6 +26,7 @@
 		<Layers>
 			<Layer level="ARTWORK">
 				<FontString parentKey="Title" inherits="GameFontNormalLarge" justifyH="LEFT" justifyV="TOP">
+					<Size x="0" y="0"/>
 					<Anchors>
 						<Anchor point="TOPLEFT" x="10" y="-10"/>
 					</Anchors>

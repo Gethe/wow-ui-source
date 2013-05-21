@@ -370,6 +370,11 @@ function CreditsFrame_Switch(self, buttonID)
 	SetGlueScreen("credits");	
 end
 
+function CreditsFrame_Show(self, returnTo)
+	self.returnTo = returnTo;
+	SetGlueScreen("credits");
+end
+
 function CreditsFrame_SetArtTextures(self,textureName, index, alpha)
 	local info = CreditsArtInfo[self.creditsType][index];
 	if ( not info ) then
@@ -541,7 +546,7 @@ function CreditsFrame_OnUpdate(self, elapsed)
 	CreditsScrollFrame.scroll = max(CreditsScrollFrame.scroll, 1);
 	
 	if ( CreditsScrollFrame.scroll >= CreditsScrollFrame.scrollMax ) then
-		SetGlueScreen("login");
+		SetGlueScreen(self.returnTo);
 		return;
 	end
 
@@ -558,7 +563,7 @@ end
 
 function CreditsFrame_OnKeyDown(key)
 	if ( key == "ESCAPE" ) then
-		SetGlueScreen("login");
+		SetGlueScreen(CreditsFrame.returnTo);
 	elseif ( key == "PRINTSCREEN" ) then
 		Screenshot();
 	end

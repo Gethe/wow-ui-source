@@ -456,6 +456,7 @@ TRAVEL PASS
 				</Anchors>
 				<Scripts>
 					<OnClick>
+						PendingListFrame_CloseDropDownAndDialogs();
 						BNAcceptFriendInvite(self:GetParent().inviteID);
 						PlaySound("igMainMenuOptionCheckBoxOn");
 					</OnClick>
@@ -468,6 +469,7 @@ TRAVEL PASS
 				</Anchors>
 				<Scripts>
 					<OnClick>
+						PendingListFrame_CloseDropDownAndDialogs();
 						BNDeclineFriendInvite(self:GetParent().inviteID);
 						PlaySound("igMainMenuOptionCheckBoxOn");
 					</OnClick>
@@ -1979,7 +1981,7 @@ TRAVEL PASS
 							</Anchors>
 							<Color r="1.0" g="0.82" b="0"/>
 						</Texture>
-						<FontString name="$parentBroadcastText" inherits="FriendsFont_UserText" justifyH="LEFT" justifyV="TOP">
+						<FontString name="$parentBroadcastText" inherits="FriendsFont_UserText" justifyH="LEFT" justifyV="TOP" nonspacewrap="true">
 							<Size x="158" y="0"/>
 							<Anchors>
 								<Anchor point="LEFT" x="30" y="0"/>
@@ -2077,6 +2079,14 @@ TRAVEL PASS
 						</FontString>
 					</Layer>
 				</Layers>
+				<Scripts>
+					<OnUpdate>
+						-- need to update in case of alternate alphabet
+						if ( self.hasBroadcast ) then
+							FriendsFrameTooltip_Show(self.button);
+						end
+					</OnUpdate>
+				</Scripts>
 			</Frame>
 		</Frames>
 		<Scripts>

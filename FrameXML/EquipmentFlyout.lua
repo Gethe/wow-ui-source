@@ -1,4 +1,4 @@
-EQUIPMENTFLYOUT_MAXITEMS = 23;
+EQUIPMENTFLYOUT_MAXROWS = 4;
 
 EQUIPMENTFLYOUT_ONESLOT_LEFT_COORDS = { 0, 0.09765625, 0.5546875, 0.77734375 }
 EQUIPMENTFLYOUT_ONESLOT_RIGHT_COORDS = { 0.41796875, 0.51171875, 0.5546875, 0.77734375 }
@@ -35,6 +35,7 @@ EQUIPMENTFLYOUT_UNIGNORESLOT_LOCATION = 0xFFFFFFFD;
 EQUIPMENTFLYOUT_FIRST_SPECIAL_LOCATION = EQUIPMENTFLYOUT_UNIGNORESLOT_LOCATION
 
 EQUIPMENTFLYOUT_ITEMS_PER_ROW = 5;
+EQUIPMENTFLYOUT_ITEMS_PER_PAGE = EQUIPMENTFLYOUT_MAXROWS * EQUIPMENTFLYOUT_ITEMS_PER_ROW;
 EQUIPMENTFLYOUT_BORDERWIDTH = 3;
 EQUIPMENTFLYOUT_WIDTH = 43;
 EQUIPMENTFLYOUT_HEIGHT = 43;
@@ -92,6 +93,7 @@ end
 function EquipmentFlyout_OnShow(self)
 	self:RegisterEvent("BAG_UPDATE");
 	self:RegisterEvent("UNIT_INVENTORY_CHANGED");
+	self:RegisterEvent("VOID_STORAGE_UPDATE");
 end
 
 function EquipmentFlyout_OnHide(self)
@@ -103,6 +105,7 @@ function EquipmentFlyout_OnHide(self)
 	self.button = nil;
 	self:UnregisterEvent("BAG_UPDATE");
 	self:UnregisterEvent("UNIT_INVENTORY_CHANGED");
+	self:UnregisterEvent("VOID_STORAGE_UPDATE");
 end
 
 function EquipmentFlyout_OnEvent (self, event, ...)
@@ -114,6 +117,8 @@ function EquipmentFlyout_OnEvent (self, event, ...)
 		if ( arg1 == "player" ) then
 			EquipmentFlyout_Show(self.button);
 		end
+	elseif ( event == "VOID_STORAGE_UPDATE" ) then
+		EquipmentFlyout_Show(self.button);
 	end
 end
 
@@ -131,8 +136,11 @@ function EquipmentFlyout_Show(itemButton)
 
 	local flyout = EquipmentFlyoutFrame;
 	local buttons = flyout.buttons;
-	local buttonAnchor = flyout.buttonFrame;
 	
+	if ( flyout.button ~= itemButton ) then
+		flyout.currentPage = nil;
+	end
+
 	if ( flyout.button and flyout.button ~= itemButton ) then
 		local popoutButton = flyout.button.popoutButton;
 		if ( popoutButton and popoutButton.flyoutLocked ) then
@@ -140,6 +148,7 @@ function EquipmentFlyout_Show(itemButton)
 			EquipmentFlyoutPopoutButton_SetReversed(popoutButton, false);
 		end
 	end
+	flyout.button = itemButton;
 	
 	wipe(itemDisplayTable);
 	wipe(itemTable);
@@ -157,31 +166,80 @@ function EquipmentFlyout_Show(itemButton)
 
 	table.sort(itemDisplayTable); -- Sort by location. This ends up as: inventory, backpack, bags, bank, and bank bags.
 	
-	local numItems = #itemDisplayTable;
-	
-	for i = EQUIPMENTFLYOUT_MAXITEMS + 1, numItems do
-		itemDisplayTable[i] = nil;
-	end
-	
-	numItems = min(numItems, EQUIPMENTFLYOUT_MAXITEMS);
+	local numTotalItems = #itemDisplayTable;
 
 	if ( flyoutSettings.postGetItemsFunc ) then
-		numItems = flyoutSettings.postGetItemsFunc(itemButton, itemDisplayTable, numItems);
+		numTotalItems = flyoutSettings.postGetItemsFunc(itemButton, itemDisplayTable, numTotalItems);
 	end
 
-	while #buttons < numItems do -- Create any buttons we need.
+	local numPageItems = min(numTotalItems, EQUIPMENTFLYOUT_ITEMS_PER_PAGE);
+	while #buttons < numPageItems do -- Create any buttons we need.
 		EquipmentFlyout_CreateButton();
 	end
 	
-	if ( numItems == 0 ) then
+	if ( numPageItems == 0 ) then
 		flyout:Hide();
 		return;
 	end
 
+	flyout.totalItems = numTotalItems;
+	EquipmentFlyout_UpdateItems();
+	flyout:Show();
+end
+
+function EquipmentFlyout_ChangePage(delta)
+	EquipmentFlyoutFrame.currentPage = EquipmentFlyoutFrame.currentPage + delta;
+	EquipmentFlyout_UpdateItems();
+end
+
+-- Displays the items on the current page using the items in itemDisplayTable
+-- That table is updated in EquipmentFlyout_Show
+function EquipmentFlyout_UpdateItems()
+	local flyout = EquipmentFlyoutFrame;
+	local buttons = flyout.buttons;
+	local buttonAnchor = flyout.buttonFrame;
+	local itemButton = flyout.button;
+	local id = itemButton.id or itemButton:GetID();	
+	local flyoutSettings = itemButton:GetParent().flyoutSettings;
+
+	local totalItems = flyout.totalItems;
+	local currentPage = flyout.currentPage or 1;
+	local maxPage = ceil(totalItems / EQUIPMENTFLYOUT_ITEMS_PER_PAGE);
+	-- bounds between 1 and maxPage
+	currentPage = max(currentPage, 1);
+	currentPage = min(currentPage, maxPage);
+	flyout.currentPage = currentPage;
+
+	local itemOffset = (currentPage - 1) * EQUIPMENTFLYOUT_ITEMS_PER_PAGE;
+	local numPageItems;
+	if ( currentPage == maxPage ) then
+		numPageItems = totalItems - itemOffset;
+	else
+		numPageItems = EQUIPMENTFLYOUT_ITEMS_PER_PAGE;
+	end
+
+	-- navigation frame
+	local navFrame = flyout.NavigationFrame;
+	if ( maxPage == 1 ) then
+		navFrame:Hide();
+	else
+		navFrame:Show();
+		if ( currentPage <= 1 ) then
+			navFrame.PrevButton:Disable();
+		else
+			navFrame.PrevButton:Enable();
+		end
+		if ( currentPage >= maxPage ) then
+			navFrame.NextButton:Disable();
+		else
+			navFrame.NextButton:Enable();
+		end
+	end
+
 	for i, button in ipairs(buttons) do
-		if ( i <= numItems ) then
+		if ( i <= numPageItems ) then
 			button.id = id;
-			button.location = itemDisplayTable[i];
+			button.location = itemDisplayTable[itemOffset + i];
 			button:Show();
 			
 			EquipmentFlyout_DisplayButton(button, itemButton);
@@ -190,13 +248,20 @@ function EquipmentFlyout_Show(itemButton)
 		end
 	end
 
+	-- past the first page we want full pages because of the navigation bar
+	local numItemButtons;
+	if ( currentPage == 1 ) then
+		numItemButtons = numPageItems;
+	else
+		numItemButtons = EQUIPMENTFLYOUT_ITEMS_PER_PAGE;
+	end
+	
 	flyout:SetParent(flyoutSettings.parent);
 	flyout:SetFrameStrata("HIGH");
 	flyout:ClearAllPoints();
 	flyout:SetFrameLevel(itemButton:GetFrameLevel() - 1);
-	flyout.button = itemButton;
 	flyout:SetPoint("TOPLEFT", itemButton, "TOPLEFT", -EQUIPMENTFLYOUT_BORDERWIDTH, EQUIPMENTFLYOUT_BORDERWIDTH);
-	local horizontalItems = min(numItems, EQUIPMENTFLYOUT_ITEMS_PER_ROW);
+	local horizontalItems = min(numItemButtons, EQUIPMENTFLYOUT_ITEMS_PER_ROW);
 	local relativeAnchor = itemButton.popoutButton or itemButton;
 	if ( itemButton.verticalFlyout ) then
 		buttonAnchor:SetPoint("TOPLEFT", relativeAnchor, "BOTTOMLEFT", flyoutSettings.verticalAnchorX, flyoutSettings.verticalAnchorY);
@@ -204,11 +269,11 @@ function EquipmentFlyout_Show(itemButton)
 		buttonAnchor:SetPoint("TOPLEFT", relativeAnchor, "TOPRIGHT", flyoutSettings.anchorX, flyoutSettings.anchorY);
 	end
 	buttonAnchor:SetWidth((horizontalItems * EFITEM_WIDTH) + ((horizontalItems - 1) * EFITEM_XOFFSET) + EQUIPMENTFLYOUT_BORDERWIDTH);
-	buttonAnchor:SetHeight(EQUIPMENTFLYOUT_HEIGHT + (math.floor((numItems - 1)/EQUIPMENTFLYOUT_ITEMS_PER_ROW) * (EFITEM_HEIGHT - EFITEM_YOFFSET)));
+	buttonAnchor:SetHeight(EQUIPMENTFLYOUT_HEIGHT + (math.floor((numItemButtons - 1)/EQUIPMENTFLYOUT_ITEMS_PER_ROW) * (EFITEM_HEIGHT - EFITEM_YOFFSET)));
 
-	if ( flyout.numItems ~= numItems ) then
+	if ( flyout.numItemButtons ~= numItemButtons ) then
 		local texturesUsed = 0;
-		if ( numItems == 1 ) then
+		if ( numItemButtons == 1 ) then
 			local bgTex, lastBGTex;
 			bgTex = buttonAnchor.bg1;
 			bgTex:ClearAllPoints();
@@ -229,7 +294,7 @@ function EquipmentFlyout_Show(itemButton)
 			bgTex:Show();
 			texturesUsed = texturesUsed + 1;
 			lastBGTex = bgTex;
-		elseif ( numItems <= EQUIPMENTFLYOUT_ITEMS_PER_ROW ) then
+		elseif ( numItemButtons <= EQUIPMENTFLYOUT_ITEMS_PER_ROW ) then
 			local bgTex, lastBGTex;
 			bgTex = buttonAnchor.bg1;
 			bgTex:ClearAllPoints();
@@ -240,7 +305,7 @@ function EquipmentFlyout_Show(itemButton)
 			bgTex:Show();
 			texturesUsed = texturesUsed + 1;
 			lastBGTex = bgTex;
-			for i = texturesUsed + 1, numItems - 1 do
+			for i = texturesUsed + 1, numItemButtons - 1 do
 				bgTex = buttonAnchor["bg"..i] or _createFlyoutBG(buttonAnchor);
 				bgTex:ClearAllPoints();
 				bgTex:SetTexCoord(unpack(EQUIPMENTFLYOUT_ONEROW_CENTER_COORDS));
@@ -252,7 +317,7 @@ function EquipmentFlyout_Show(itemButton)
 				lastBGTex = bgTex;
 			end
 
-			bgTex = buttonAnchor["bg"..numItems] or _createFlyoutBG(buttonAnchor);
+			bgTex = buttonAnchor["bg"..numItemButtons] or _createFlyoutBG(buttonAnchor);
 			bgTex:ClearAllPoints();
 			bgTex:SetTexCoord(unpack(EQUIPMENTFLYOUT_ONEROW_RIGHT_COORDS));
 			bgTex:SetWidth(EQUIPMENTFLYOUT_ONEROW_RIGHT_WIDTH);
@@ -260,8 +325,8 @@ function EquipmentFlyout_Show(itemButton)
 			bgTex:SetPoint("TOPLEFT", lastBGTex, "TOPRIGHT");
 			bgTex:Show();
 			texturesUsed = texturesUsed + 1;
-		elseif ( numItems > EQUIPMENTFLYOUT_ITEMS_PER_ROW ) then
-			local numRows = math.ceil(numItems/EQUIPMENTFLYOUT_ITEMS_PER_ROW);
+		elseif ( numItemButtons > EQUIPMENTFLYOUT_ITEMS_PER_ROW ) then
+			local numRows = math.ceil(numItemButtons/EQUIPMENTFLYOUT_ITEMS_PER_ROW);
 			local bgTex, lastBGTex;
 			bgTex = buttonAnchor.bg1;
 			bgTex:ClearAllPoints();
@@ -298,10 +363,8 @@ function EquipmentFlyout_Show(itemButton)
 		for i = texturesUsed + 1, buttonAnchor["numBGs"] do
 			buttonAnchor["bg" .. i]:Hide();
 		end
-		flyout.numItems = numItems;
+		flyout.numItemButtons = numItemButtons;
 	end
-
-	flyout:Show();
 end
 
 function EquipmentFlyout_DisplayButton(button, paperDollItemSlot)
@@ -409,7 +472,7 @@ function EquipmentFlyoutButton_OnClick(self)
 	if ( flyoutSettings.onClickFunc ) then
 		flyoutSettings.onClickFunc(self);
 	end
-	if ( EquipmentFlyoutFrame.button.popoutButton and EquipmentFlyoutFrame.button.popoutButton.flyoutLocked ) then
+	if ( EquipmentFlyoutFrame.button.popoutButton and EquipmentFlyoutFrame.button.popoutButton.flyoutLocked and not flyoutSettings.keepShownOnClick ) then
 		EquipmentFlyoutFrame:Hide();
 	end
 end

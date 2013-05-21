@@ -219,6 +219,28 @@ StaticPopupDialogs["CONFIRM_PURCHASE_TOKEN_ITEM"] = {
 	hasItemFrame = 1,
 }
 
+StaticPopupDialogs["CONFIRM_UPGRADE_ITEM"] = {
+	text = CONFIRM_UPGRADE_ITEM,
+	button1 = YES,
+	button2 = NO,
+	OnAccept = function()
+		UpgradeItem();
+		PlaySoundKitID(23291);
+	end,
+	OnCancel = function()
+		ItemUpgradeFrame_Update();
+	end,
+	OnShow = function()
+	
+	end,
+	OnHide = function()
+	
+	end,
+	timeout = 0,
+	hideOnEscape = 1,
+	hasItemFrame = 1,
+}
+
 StaticPopupDialogs["CONFIRM_REFUND_TOKEN_ITEM"] = {
 	text = CONFIRM_REFUND_TOKEN_ITEM,
 	button1 = YES,
@@ -1316,10 +1338,17 @@ StaticPopupDialogs["DEATH"] = {
 			return;
 		end
 
-		if ( IsEncounterInProgress() ) then
-			self.button1:Disable();
-		else
-			self.button1:Enable();
+		local b1_enabled = self.button1:IsEnabled();
+		self.button1:SetEnabled(not IsEncounterInProgress());
+
+		if ( b1_enabled ~= self.button1:IsEnabled() ) then
+			if ( b1_enabled ) then
+				self.text:SetText(CAN_NOT_RELEASE_IN_COMBAT);
+			else
+				self.text:SetText("");
+				StaticPopupDialogs[self.which].OnShow(self);
+			end
+			StaticPopup_Resize(dialog, which);
 		end
 
 		if( HasSoulstone() and CanUseSoulstone() ) then
@@ -1327,7 +1356,6 @@ StaticPopupDialogs["DEATH"] = {
 		else
 			self.button2:Disable();
 		end
-
 	end,
 	DisplayButton2 = function(self)
 		return HasSoulstone();
@@ -3113,6 +3141,22 @@ StaticPopupDialogs["BATTLENET_UNAVAILABLE"] = {
 	hideOnEscape = 1
 };
 
+StaticPopupDialogs["WEB_PROXY_FAILED"] = {
+	text = WEB_PROXY_FAILED,
+	button1 = OKAY,
+	timeout = 0,
+	showAlertGear = 1,
+	hideOnEscape = 1
+};
+
+StaticPopupDialogs["WEB_ERROR"] = {
+	text = WEB_ERROR,
+	button1 = OKAY,
+	timeout = 0,
+	showAlertGear = 1,
+	hideOnEscape = 1
+};
+
 StaticPopupDialogs["CONFIRM_BNET_REPORT"] = {
 	text = "%s",
 	button1 = ACCEPT,
@@ -3724,10 +3768,6 @@ function StaticPopup_OnUpdate(dialog, elapsed)
 			 (which == "AREA_SPIRIT_HEAL") or
 			 (which == "SPELL_CONFIRMATION_PROMPT")) then
 			local text = _G[dialog:GetName().."Text"];
-			local hasText = nil;
-			if ( text:GetText() ~= " " ) then
-				hasText = 1;
-			end
 			timeleft = ceil(timeleft);
 			if ( which == "INSTANCE_BOOT" ) then
 				if ( timeleft < 60 ) then
@@ -3762,9 +3802,7 @@ function StaticPopup_OnUpdate(dialog, elapsed)
 					text:SetFormattedText(StaticPopupDialogs[which].text, ceil(timeleft / 60), MINUTES);
 				end
 			end
-			if ( not hasText ) then
-				StaticPopup_Resize(dialog, which);
-			end
+			StaticPopup_Resize(dialog, which);
 		end
 	end
 	if ( dialog.startDelay ) then
@@ -3783,10 +3821,6 @@ function StaticPopup_OnUpdate(dialog, elapsed)
 
 		if ( which == "RECOVER_CORPSE" or (which == "RESURRECT") or (which == "RESURRECT_NO_SICKNESS") ) then
 			local text = _G[dialog:GetName().."Text"];
-			local hasText = nil;
-			if ( text:GetText() ~= " " ) then
-				hasText = 1;
-			end
 			timeleft = ceil(timeleft);
 			if ( (which == "RESURRECT") or (which == "RESURRECT_NO_SICKNESS") ) then
 				if ( timeleft < 60 ) then
@@ -3801,9 +3835,7 @@ function StaticPopup_OnUpdate(dialog, elapsed)
 					text:SetFormattedText(StaticPopupDialogs[which].delayText, ceil(timeleft / 60), MINUTES);
 				end
 			end
-			if ( not hasText ) then
-				StaticPopup_Resize(dialog, which);
-			end
+			StaticPopup_Resize(dialog, which);
 		end
 	end
 

@@ -254,15 +254,30 @@
 				</Texture>
 			</Layer>
 		</Layers>
+		<Frames>
+			<Button name="$parentPopoutButton" parentKey="popoutButton" inherits="EquipmentFlyoutPopoutButtonTemplate" frameLevel="10">
+				<Scripts>
+					<OnLoad>
+						-- overwriting template OnLoad
+					</OnLoad>
+					<OnUpdate function="TransmogrifySlotFlyoutButton_OnUpdate"/>
+					<OnEnter>
+						self.persistTime = nil;
+					</OnEnter>
+					<OnLeave>
+						self.persistTime = 0;
+					</OnLeave>
+				</Scripts>
+			</Button>
+		</Frames>
 		<Scripts>
 			<OnLoad function="TransmogrifySlotButton_OnLoad"/>
 			<OnEvent function="TransmogrifySlotButton_OnEvent"/>
 			<OnClick function="TransmogrifySlotButton_OnClick"/>
 			<OnEnter function="TransmogrifySlotButton_OnEnter"/>
 			<OnLeave function="TransmogrifySlotButton_OnLeave"/>
-			<OnDragStart>
-				TransmogrifySlotButton_OnClick(self, "LeftButton");
-			</OnDragStart>
+			<OnDragStart function="TransmogrifySlotButton_OnClick"/>
+			<OnReceiveDrag function="TransmogrifySlotButton_OnClick"/>
 		</Scripts>
 	</Button>
 	<Button name="TransmogrifyLeftSlotButtonTemplate" inherits="TransmogrifySlotButtonTemplate" virtual="true">
@@ -404,6 +419,7 @@
 						<Scripts>
 							<OnClick>
 								PlaySound("UI_Transmogrify_Apply");
+								TransmogrifyFrame_CloseFlyout();
 								ApplyTransmogrifications();
 							</OnClick>
 						</Scripts>

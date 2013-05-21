@@ -24,7 +24,7 @@ function PVPHelperFrame_OnEvent(self, event, ...)
 	if ( event == "UPDATE_BATTLEFIELD_STATUS" or event == "ZONE_CHANGED_NEW_AREA" 
 			or event == "ZONE_CHANGED" or event == "PLAYER_ENTERING_WORLD") then
 		local arg1 = ...
-		PVP_UpdateStatus(false, arg1);
+		PVP_UpdateStatus();
 	elseif ( event == "BATTLEFIELD_MGR_QUEUE_REQUEST_RESPONSE" ) then
 		local battleID, accepted, warmup, inArea, loggingIn, areaName = ...;
 		if(not loggingIn) then
@@ -40,7 +40,7 @@ function PVPHelperFrame_OnEvent(self, event, ...)
 				StaticPopup_Show("BFMGR_DENY_WORLD_PVP_QUEUED", areaName, nil, arg1);
 			end
 		end
-		PVP_UpdateStatus(false);
+		PVP_UpdateStatus();
 	elseif ( event == "BATTLEFIELD_MGR_QUEUE_INVITE" ) then
 		local battleID, warmup, areaName = ...;
 		if(warmup) then
@@ -49,12 +49,12 @@ function PVPHelperFrame_OnEvent(self, event, ...)
 			StaticPopup_Show("BFMGR_INVITED_TO_QUEUE", areaName, nil, battleID);
 		end
 		StaticPopup_Hide("BFMGR_EJECT_PENDING");
-		PVP_UpdateStatus(false);
+		PVP_UpdateStatus();
 	elseif ( event == "BATTLEFIELD_MGR_ENTRY_INVITE" ) then
 		local battleID, areaName = ...;
 		StaticPopup_Show("BFMGR_INVITED_TO_ENTER", areaName, nil, battleID);
 		StaticPopup_Hide("BFMGR_EJECT_PENDING");
-		PVP_UpdateStatus(false);
+		PVP_UpdateStatus();
 	elseif ( event == "BATTLEFIELD_MGR_EJECT_PENDING" ) then
 		local battleID, remote, areaName = ...;
 		if(remote) then
@@ -62,7 +62,7 @@ function PVPHelperFrame_OnEvent(self, event, ...)
 		else
 		StaticPopup_Show("BFMGR_EJECT_PENDING", areaName, nil, arg1);
 		end
-		PVP_UpdateStatus(false);
+		PVP_UpdateStatus();
 	elseif ( event == "BATTLEFIELD_MGR_EJECTED" ) then
 		local battleID, playerExited, relocated, battleActive, lowLevel, areaName = ...;
 		StaticPopup_Hide("BFMGR_INVITED_TO_QUEUE");
@@ -74,13 +74,13 @@ function PVPHelperFrame_OnEvent(self, event, ...)
 		elseif (playerExited and battleActive and not relocated) then
 			StaticPopup_Show("BFMGR_PLAYER_EXITED_BATTLE", areaName, nil, arg1);
 		end
-		PVP_UpdateStatus(false);
+		PVP_UpdateStatus();
 	elseif ( event == "BATTLEFIELD_MGR_ENTERED" ) then
 		StaticPopup_Hide("BFMGR_INVITED_TO_QUEUE");
 		StaticPopup_Hide("BFMGR_INVITED_TO_QUEUE_WARMUP");
 		StaticPopup_Hide("BFMGR_INVITED_TO_ENTER");
 		StaticPopup_Hide("BFMGR_EJECT_PENDING");
-		PVP_UpdateStatus(false);
+		PVP_UpdateStatus();
 	elseif ( event == "WARGAME_REQUESTED" ) then
 		local challengerName, bgName, timeout = ...;
 		PVPFramePopup_SetupPopUp(event, challengerName, bgName, timeout);
@@ -97,50 +97,19 @@ end
 -- Update PVP Queue status
 -------------------------------------------------------------------
 
-function PVP_UpdateStatus(tooltipOnly, mapIndex)
-	local numberQueues = 0;
-	local timeInQueue;
-	local tooltip;
-	local showRightClickText;
+function PVP_UpdateStatus()
 	BATTLEFIELD_SHUTDOWN_TIMER = 0;
 
 	for i=1, GetMaxBattlefieldID() do
 		local status, mapName, teamSize, registeredMatch = GetBattlefieldStatus(i);
-		if ( mapName ) then
-			if ( teamSize ~= 0 ) then
-				if ( registeredMatch ) then
-					mapName = ARENA_RATED_MATCH.." "..format(PVP_TEAMSIZE, teamSize, teamSize);
-				else
-					mapName = ARENA_CASUAL.." "..format(PVP_TEAMSIZE, teamSize, teamSize);
-				end
-			end
-		end
-		tooltip = nil;
-		if ( not tooltipOnly and (status ~= "confirm") ) then
-			StaticPopup_Hide("CONFIRM_BATTLEFIELD_ENTRY", i);
-		end
-
-		if ( status ~= "none" ) then
-			numberQueues = numberQueues+1;
-			if ( status == "confirm" ) then
-				-- Have been accepted show enter battleground dialog
-				if ( (i==mapIndex) and (not tooltipOnly) ) then
-					StaticPopup_Show("CONFIRM_BATTLEFIELD_ENTRY", mapName, nil, i);
-					PlaySound("PVPTHROUGHQUEUE");
-				end
+		if ( status == "active" ) then
+			-- In the battleground
+			BATTLEFIELD_SHUTDOWN_TIMER = GetBattlefieldInstanceExpiration()/1000;
+			if ( BATTLEFIELD_SHUTDOWN_TIMER > 0 and not PVPTimerFrame.updating ) then
 				PVPTimerFrame:SetScript("OnUpdate", PVPTimerFrame_OnUpdate);
 				PVPTimerFrame.updating = true;
-			elseif ( status == "active" ) then
-				-- In the battleground
-				BATTLEFIELD_SHUTDOWN_TIMER = GetBattlefieldInstanceExpiration()/1000;
-				if ( BATTLEFIELD_SHUTDOWN_TIMER > 0 and not PVPTimerFrame.updating ) then
-					PVPTimerFrame:SetScript("OnUpdate", PVPTimerFrame_OnUpdate);
-					PVPTimerFrame.updating = true;
-					BATTLEFIELD_TIMER_THRESHOLD_INDEX = 1;
-					PREVIOUS_BATTLEFIELD_MOD = 0;
-				end
-			elseif ( status == "error" ) then
-				-- Should never happen haha
+				BATTLEFIELD_TIMER_THRESHOLD_INDEX = 1;
+				PREVIOUS_BATTLEFIELD_MOD = 0;
 			end
 		end
 	end
@@ -201,12 +170,6 @@ function PVPTimerFrame_OnUpdate(self, elapsed)
 	local keepUpdating = false;
 	if ( BATTLEFIELD_SHUTDOWN_TIMER > 0 ) then
 		keepUpdating = true;
-	else
-		for i = 1, GetMaxBattlefieldID() do
-			if ( GetBattlefieldPortExpiration(i) > 0 ) then
-				keepUpdating = true;
-			end
-		end
 	end
 	
 	if ( not keepUpdating ) then
@@ -259,4 +222,224 @@ function PVPTimerFrame_OnUpdate(self, elapsed)
 	else
 		BATTLEFIELD_SHUTDOWN_TIMER = 0;
 	end
+end
+
+-------------------------------------------------------------------------
+---- PVP Role Check Functions
+---------------------------------------------------------------------------
+function PVPRoleCheckPopup_OnLoad(self)
+--	self:RegisterEvent("PVP_ROLE_CHECK_INITIATED");
+	self:RegisterEvent("PVP_ROLE_UPDATE");
+	self:RegisterEvent("UPDATE_BATTLEFIELD_STATUS");
+	self:RegisterEvent("PVP_ROLE_CHECK_ROLE_CHOSEN");
+end
+
+function PVPRoleCheckPopup_OnEvent(self, event, ...)
+--[[	if ( event == "PVP_ROLE_CHECK_INITIATED" ) then
+		local active, queueName = GetPVPRoleCheckInfo();
+		if ( active ) then
+			PVPRoleCheckPopup_Display(self, queueName);
+		end
+	else]]
+	if ( event == "PVP_ROLE_UPDATE" ) then
+		PVPRoleCheckPopup_UpdateSelectedRoles(self);
+	elseif ( event == "UPDATE_BATTLEFIELD_STATUS" ) then
+		PVPRoleCheckPopup_UpdateRolesChangeable(self);
+	elseif ( event == "PVP_ROLE_CHECK_ROLE_CHOSEN" ) then
+		local player, isTank, isHealer, isDamage = ...;
+
+		--Yes, consecutive string concatenation == bad for garbage collection. But the alternative is either extremely unslightly or localization unfriendly. (Also, this happens fairly rarely)
+		local roleList;
+		
+		if ( isTank ) then
+			roleList = INLINE_TANK_ICON.." "..TANK;
+		end
+		if ( isHealer ) then
+			if ( roleList ) then
+				roleList = roleList..PLAYER_LIST_DELIMITER.." "..INLINE_HEALER_ICON.." "..HEALER;
+			else
+				roleList = INLINE_HEALER_ICON.." "..HEALER;
+			end
+		end
+		if ( isDamage ) then
+			if ( roleList ) then
+				roleList = roleList..PLAYER_LIST_DELIMITER.." "..INLINE_DAMAGER_ICON.." "..DAMAGER;
+			else
+				roleList = INLINE_DAMAGER_ICON.." "..DAMAGER;
+			end
+		end
+		assert(roleList);
+		ChatFrame_DisplaySystemMessageInPrimary(string.format(LFG_ROLE_CHECK_ROLE_CHOSEN, player, roleList));
+	end
+end
+
+function PVPRoleCheckPopup_OnShow(self)
+	PlaySound("ReadyCheck");
+	PVPRoleCheckPopup_UpdateSelectedRoles(self);
+	PVPRoleCheckPopup_UpdateRolesChangeable(self);
+end
+
+function PVPRoleCheckPopup_UpdateAvailableRoles(tankButton, healButton, dpsButton)
+	return LFG_UpdateAvailableRoles(tankButton, healButton, dpsButton);
+end
+
+function PVPRoleCheckPopup_UpdateRolesChangeable(self)
+	if ( PVPHelper_CanChangeRoles() ) then
+		PVPRoleCheckPopup_UpdateAvailableRoles(self.TankIcon, self.HealerIcon, self.DPSIcon);
+	else
+		LFG_DisableRoleButton(self.TankIcon);
+		LFG_DisableRoleButton(self.HealerIcon);
+		LFG_DisableRoleButton(self.DPSIcon);
+	end
+end
+
+function PVPRoleCheckPopup_UpdateSelectedRoles(self)
+	local tank, healer, dps = GetPVPRoles();
+	self.TankIcon.checkButton:SetChecked(tank);
+	self.HealerIcon.checkButton:SetChecked(healer);
+	self.DPSIcon.checkButton:SetChecked(dps);
+end
+
+function PVPRoleCheckPopup_Display(self, queueName)
+	PVPRoleCheckPopup_UpdateRolesChangeable(self);
+	PVPRoleCheckPopup_UpdateSelectedRoles(self);
+
+	self.Description.Text:SetFormattedText(QUEUED_FOR, NORMAL_FONT_COLOR_CODE..queueName..FONT_COLOR_CODE_CLOSE);
+	self.Description:SetWidth(self.Description.Text:GetWidth() + 10);
+	self.Description:SetHeight(self.Description.Text:GetHeight());
+	StaticPopupSpecial_Show(self);
+end
+
+function PVPRoleCheckPopup_RoleButtonClicked(self)
+	PVPRoleCheckPopup_SetRoles();
+end
+
+function PVPRoleCheckPopup_SetRoles()
+	SetPVPRoles(PVPRoleCheckPopup.TankIcon.checkButton:GetChecked(),
+		PVPRoleCheckPopup.HealerIcon.checkButton:GetChecked(),
+		PVPRoleCheckPopup.DPSIcon.checkButton:GetChecked());
+end
+
+function PVPRoleCheckPopupAccept_OnClick()
+	PlaySound("igCharacterInfoTab");
+	SetPVPRoles(PVPRoleCheckPopupRoleButtonTank.checkButton:GetChecked(),
+		PVPRoleCheckPopupRoleButtonHealer.checkButton:GetChecked(),
+		PVPRoleCheckPopupRoleButtonDPS.checkButton:GetChecked());
+--	if ( CompletePVPRoleCheck(true) ) then
+--		StaticPopupSpecial_Hide(PVPRoleCheckPopup);
+--	end
+end
+
+function PVPRoleCheckPopupDecline_OnClick()
+	PlaySound("igCharacterInfoTab");
+	StaticPopupSpecial_Hide(PVPRoleCheckPopup);
+--	CompletePVPRoleCheck(false);
+end
+
+-------------------------------------------------------------------------
+---- PVP Ready Dialog
+---------------------------------------------------------------------------
+function PVPReadyDialog_OnLoad(self)
+	self:RegisterEvent("UPDATE_BATTLEFIELD_STATUS");
+end
+
+function PVPReadyDialog_OnEvent(self, event, ...)
+	if ( event == "UPDATE_BATTLEFIELD_STATUS" ) then
+		local i = ...;
+		local status, mapName, teamSize, registeredMatch, suspendedQueue, queueType, gameType, role = GetBattlefieldStatus(i);
+		if ( status == "confirm" ) then
+			if ( not PVPReadyDialog_Showing(i) ) then
+				PVPReadyDialog_Display(self, i, mapName, registeredMatch, queueType, gameType, role);
+			end
+		else
+			if ( PVPReadyDialog_Showing(i) ) then
+				StaticPopupSpecial_Hide(self);
+			end
+		end
+	end
+end
+
+
+function PVPReadyDialog_Showing(index)
+	return PVPReadyDialog:IsShown() and PVPReadyDialog.activeIndex == index;
+end
+
+function PVPReadyDialog_Display(self, index, displayName, isRated, queueType, gameType, role)
+	PVPReadyDialog.activeIndex = index;
+
+	local factionGroup = UnitFactionGroup("player");
+
+	local height = 150;
+	if ( PVPHelper_QueueNeedsRoles(queueType, isRated) ) then
+		height = height + 20;
+		self.bottomArt:SetTexCoord(0.0, 0.5605, 0.0, 0.5625);
+
+		self.roleDescription:Show();
+		self.roleLabel:Show();
+		self.roleIcon:Show();
+		self.roleIcon.texture:SetTexCoord(GetTexCoordsForRole(role));
+		self.roleLabel:SetText(_G[role]);
+	else
+		self.bottomArt:SetTexCoord(0.0, 0.18, 0.0, 0.5625);
+
+		self.roleDescription:Hide();
+		self.roleLabel:Hide();
+		self.roleIcon:Hide();
+	end
+
+	local showTitle = true;
+	if ( queueType == "BATTLEGROUND" ) then
+		if ( isRated ) then
+			self.background:SetTexCoord(0, 1, 0, 102/128);
+			self.background:SetTexture("Interface\\PVPFrame\\PvpBg-AlteracValley-ToastBG");
+			self.label:SetText(RATED_BATTLEGROUND_IS_READY);
+		else
+			self.background:SetTexCoord(0, 1, 0, 1);
+			self.background:SetTexture("Interface\\LFGFrame\\UI-PVP-BACKGROUND-"..(factionGroup or "Alliance"));
+			self.label:SetText(BATTLEGROUND_IS_READY);
+		end
+	elseif ( queueType == "ARENA" ) then
+		self.background:SetTexCoord(0, 1, 25/128, 91/128);
+		self.background:SetTexture("Interface\\PVPFrame\\PvpBg-NagrandArena-ToastBG");
+		showTitle = false;
+		self.label:SetText(ARENA_IS_READY);
+	elseif ( queueType == "WARGAME" ) then
+		self.background:SetTexCoord(0, 1, 0, 102/128);
+		self.background:SetTexture("Interface\\PVPFrame\\PvpBg-AlteracValley-ToastBG");
+		self.label:SetText(WARGAME_IS_READY);
+	else
+		self.label:SetText(BATTLEGROUND_IS_READY);
+	end
+
+	if ( showTitle ) then
+		self.instanceInfo:Show();
+		height = height + 40;
+	else
+		self.instanceInfo:Hide();
+	end
+
+	self.instanceInfo.name:SetText(displayName);
+	self.instanceInfo.statusText:SetText(gameType);
+
+	self:SetHeight(height);
+
+	PlaySound("PVPTHROUGHQUEUE");
+	StaticPopupSpecial_Show(self);
+end
+
+-------------------------------------------------------------------------
+---- PVP Helper Functions
+---------------------------------------------------------------------------
+function PVPHelper_CanChangeRoles()
+	for i=1, GetMaxBattlefieldID() do
+		local status, mapName, teamSize, registeredMatch, suspendedQueue, queueType, gameType, role = GetBattlefieldStatus(i);
+		if ( status ~= "none" and status ~= "active" and PVPHelper_QueueNeedsRoles(queueType, registeredMatch) ) then
+			return false;
+		end
+	end
+	return true;
+end
+
+function PVPHelper_QueueNeedsRoles(queueType, isRated)
+	return queueType == "BATTLEGROUND" and not isRated;
 end

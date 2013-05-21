@@ -773,6 +773,13 @@ function PendingListFrame_ReportPlayer(self)
 	ToggleDropDownMenu(1, self:GetParent().index, PendingListFrameDropDown, "cursor", 3, -3)
 end
 
+function PendingListFrame_CloseDropDownAndDialogs()
+	CloseDropDownMenus();
+	StaticPopup_Hide("CONFIRM_BLOCK_INVITES");
+	StaticPopup_Hide("CONFIRM_BNET_REPORT");
+	StaticPopupSpecial_Hide(BNetReportFrame);
+end
+
 function PendingListFrameDropDown_OnLoad(self)
 	UIDropDownMenu_Initialize(self, PendingListFrameDropDown_Initialize, "MENU");
 end
@@ -1686,9 +1693,11 @@ function FriendsFrameTooltip_Show(self)
 				broadcastText = broadcastText.."|n"..FRIENDS_BROADCAST_TIME_COLOR_CODE..string.format(BNET_BROADCAST_SENT_TIME, FriendsFrame_GetLastOnline(broadcastTime));
 			end
 			anchor = FriendsFrameTooltip_SetLine(FriendsTooltipBroadcastText, anchor, broadcastText, -8);
+			FriendsTooltip.hasBroadcast = true;
 		else
 			FriendsTooltipBroadcastIcon:Hide();
 			FriendsTooltipBroadcastText:Hide();
+			FriendsTooltip.hasBroadcast = nil;
 		end
 		if ( isOnline ) then
 			FriendsTooltipHeader:SetTextColor(FRIENDS_BNET_NAME_COLOR.r, FRIENDS_BNET_NAME_COLOR.g, FRIENDS_BNET_NAME_COLOR.b);
@@ -2134,6 +2143,21 @@ function FriendsFrame_BattlenetInvite(button, presenceID)
 	if ( index ) then
 		local numToons = BNGetNumFriendToons(index);
 		if ( numToons > 1 ) then
+			-- see if there is exactly one toon we could invite
+			local numValidToons = 0;
+			local lastToonID;
+			for i = 1, numToons do
+				local _, _, client, _, realmID, faction, race, class, _, _, level, _, _, _, _, toonID = BNGetFriendToonInfo(index, i);
+				if ( client == BNET_CLIENT_WOW and faction == playerFactionGroup and realmID ~= 0 ) then
+					numValidToons = numValidToons + 1;
+					lastToonID = toonID;
+				end
+			end
+			if ( numValidToons == 1 ) then
+				BNInviteFriend(lastToonID);
+				return;
+			end
+
 			-- if no button, now find the physical friend button to anchor the dropdown
 			-- it might not exist if the list was scrolled
 			if ( not button ) then

@@ -239,15 +239,7 @@ LEVEL_UP_CLASS_HACKS = {
 							},
 	["HUNTER"] 		= {
 							--  Level  = {unlock}
-								[4] = {"TrackBeast"},
-								[12] = {"TrackHumanoid"},
-								[18] = {"TrackUndead"},
-								[26] = {"TrackHidden"},
-								[34] = {"TrackElemental"},
-								[36] = {"TrackDemons"},
 								[40] = {"Mail"},
-								[46] = {"TrackGiants"},
-								[52] = {"TrackDragonkin"},
 							},
 	["WARRIOR"] 		= {
 							--  Level  = {unlock}
@@ -276,7 +268,7 @@ function LevelUpDisplay_OnLoad(self)
 	self:RegisterEvent("PLAYER_LEVEL_UP");
 	self:RegisterEvent("UNIT_GUILD_LEVEL");
 	self:RegisterEvent("UNIT_LEVEL");
-	self:RegisterEvent("SCENARIO_UPDATE");
+	--self:RegisterEvent("SCENARIO_UPDATE");	this is now handled from the WatchFrame
 	self:RegisterEvent("PET_BATTLE_FINAL_ROUND"); -- display winner, start listening for additional results
 	self:RegisterEvent("PET_BATTLE_CLOSE");        -- stop listening for additional results
 	self:RegisterEvent("QUEST_BOSS_EMOTE");
@@ -322,11 +314,6 @@ function LevelUpDisplay_OnEvent(self, event, ...)
 			self.type = LEVEL_UP_TYPE_PET;
 			LevelUpDisplay_Show(self);
 			LevelUpDisplaySide:Hide();
-		end
-	elseif ( event == "SCENARIO_UPDATE" ) then
-		if ( arg1 and not C_Scenario.IsChallengeMode() ) then
-			self.type = LEVEL_UP_TYPE_SCENARIO;
-			LevelUpDisplay_Show(self);
 		end
 	elseif ( event == "ZONE_CHANGED_NEW_AREA" ) then
 		self:UnregisterEvent("ZONE_CHANGED_NEW_AREA");
@@ -379,6 +366,11 @@ function LevelUpDisplay_StopAllAnims(self)
 	self.challengeModeFrame.challengeComplete:Stop();
 	self.levelFrame.levelUp:Stop();
 	self.levelFrame.fastReveal:Stop();
+end
+
+function LevelUpDisplay_PlayScenario()
+	LevelUpDisplay.type = LEVEL_UP_TYPE_SCENARIO;
+	LevelUpDisplay_Show(LevelUpDisplay);
 end
 
 function LevelUpDisplay_BuildCharacterList(self)

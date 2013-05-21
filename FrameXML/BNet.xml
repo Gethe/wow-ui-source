@@ -78,7 +78,7 @@
 				</FontString>
 				<FontString name="$parentBottomLine" inherits="FriendsFont_Normal" justifyH="LEFT" justifyV="MIDDLE">
 					<Size>
-						<AbsDimension x="0" y="10"/>
+						<AbsDimension x="196" y="10"/>
 					</Size>
 					<Anchors>
 						<Anchor point="TOPLEFT" relativeTo="$parentMiddleLine" relativePoint="BOTTOMLEFT">
@@ -101,20 +101,8 @@
 		<Frames>
 			<Button name="$parentClickFrame" setAllPoints="true">
 				<Scripts>
-					<OnEnter>
-						AlertFrame_StopOutAnimation(BNToastFrame);
-						if ( BNToastFrame.tooltip ) then
-							GameTooltip:SetOwner(BNToastFrame, "ANCHOR_RIGHT");
-							GameTooltip:SetText(BNToastFrame.tooltip, FRIENDS_GRAY_COLOR.r, FRIENDS_GRAY_COLOR.g, FRIENDS_GRAY_COLOR.b, 1, 1);
-							GameTooltip:Show();
-						end
-					</OnEnter>
-					<OnLeave>
-						AlertFrame_ResumeOutAnimation(BNToastFrame);
-						if ( BNToastFrame.tooltip ) then
-							GameTooltip:Hide();
-						end
-					</OnLeave>
+					<OnEnter function="BNToastFrame_OnEnter"/>
+					<OnLeave function="BNToastFrame_OnLeave"/>
 					<OnClick function="BNToastFrame_OnClick"/>
 				</Scripts>
 			</Button>
@@ -168,6 +156,44 @@
 				<PushedTexture file="Interface\FriendsFrame\UI-Toast-CloseButton-Down"/>
 				<HighlightTexture file="Interface\FriendsFrame\UI-Toast-CloseButton-Highlight" alphaMode="ADD"/>
 			</Button>
+			<Frame parentKey="TooltipFrame" frameStrata="TOOLTIP" clampedToScreen="true" hidden="true">
+				<Size x="250" y="60"/>
+				<Anchors>
+					<Anchor point="BOTTOMLEFT" relativePoint="TOPRIGHT"/>
+				</Anchors>
+				<Backdrop bgFile="Interface\Tooltips\UI-Tooltip-Background" edgeFile="Interface\Tooltips\UI-Tooltip-Border" tile="true">
+					<EdgeSize>
+						<AbsValue val="16"/>
+					</EdgeSize>
+					<TileSize>
+						<AbsValue val="16"/>
+					</TileSize>
+					<BackgroundInsets>
+						<AbsInset left="5" right="5" top="5" bottom="5"/>
+					</BackgroundInsets>
+				</Backdrop>
+				<Layers>
+					<Layer level="ARTWORK">
+						<FontString parentKey="Text" inherits="FriendsFont_Small" justifyV="TOP" justifyH="LEFT" nonspacewrap="true">
+							<Size x="230" y="0"/>
+							<Anchors>
+								<Anchor point="TOPLEFT" x="10" y="-10"/>
+							</Anchors>
+							<Color r="0.486" g="0.518" b="0.541"/>
+						</FontString>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnLoad>
+						self:SetBackdropBorderColor(TOOLTIP_DEFAULT_COLOR.r, TOOLTIP_DEFAULT_COLOR.g, TOOLTIP_DEFAULT_COLOR.b);
+						self:SetBackdropColor(TOOLTIP_DEFAULT_BACKGROUND_COLOR.r, TOOLTIP_DEFAULT_BACKGROUND_COLOR.g, TOOLTIP_DEFAULT_BACKGROUND_COLOR.b);
+					</OnLoad>
+					<OnUpdate>
+						-- need to update in case of alternate alphabet
+						self:SetHeight(self.Text:GetHeight() + 20);
+					</OnUpdate>
+				</Scripts>
+			</Frame>
 		</Frames>
 		<Scripts>
 			<OnLoad>

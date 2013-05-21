@@ -111,12 +111,12 @@
   </Button>
 	
 	<!--If you change anything about RuneFrame (specifically anchors), make sure to change the relevant information in UnitFrame_SetUnit -->
-  <Frame name="RuneFrame" parent="UIParent" frameStrata="LOW" toplevel="true" hidden="false">
+  <Frame name="RuneFrame" parent="PlayerFrame" frameStrata="LOW" toplevel="true" hidden="false">
     <Size>
       <AbsDimension x="130" y="18"/>
     </Size>
     <Anchors>
-      <Anchor point="TOP" relativeTo="PlayerFrame" relativePoint="BOTTOM">
+      <Anchor point="TOP" relativePoint="BOTTOM">
         <Offset>
           <AbsDimension x="54" y="34"/>
         </Offset>

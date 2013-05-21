@@ -14,6 +14,7 @@ GlueDialog.xml
 GlueDropDownMenu.xml
 GlueTooltip.xml
 GlueSplash.xml
+ServerAlert.xml
 RealmList.xml
 AddonList.xml
 AccountLogin.xml
@@ -35,6 +36,7 @@ AudioOptionsFrame.xml
 AudioOptionsPanels.xml
 StarterEditionPopUp.xml
 PromotionFrame.xml
+GlueMenuFrame.xml
 
 ## This Always Runs Last, Add New Items above it.
 GlueLocalizationPost.xml

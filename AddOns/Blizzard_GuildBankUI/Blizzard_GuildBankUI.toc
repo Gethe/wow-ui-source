@@ -1,4 +1,4 @@
-## Interface: 50200
+## Interface: 50300
 ## Title: Blizzard Guild Bank UI
 ## Secure: 1
 ## LoadOnDemand: 1

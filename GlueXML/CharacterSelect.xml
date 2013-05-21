@@ -380,13 +380,7 @@
 							</OnLoad>
 							<OnEvent>
 								if ( event == "ACCOUNT_DATA_INITIALIZED" ) then
-									if ( IsTrialAccount() ) then
-										self.isExpanded = true;
-										self.expandCollapseButton:Disable();
-									else
-										self.expandCollapseButton:Enable();
-									end
-									AccountUpgradePanel_Update(self.isExpanded);
+									AccountUpgradePanel_UpdateExpandState();
 								end
 							</OnEvent>
 							<OnClick>
@@ -591,6 +585,35 @@
 							</OnUpdate>
 						</Scripts>
 					</Button>
+					<Button name="CharacterSelectMenuButton" inherits="GlueButtonSmallTemplate" text="MAINMENU">
+						<Size x="150" y="35"/>
+						<Anchors>
+							<Anchor point="TOP" relativeTo="CharacterSelectAddonsButton" relativePoint="BOTTOM" x="0" y="8"/>
+						</Anchors>
+						<Layers>
+							<Layer level="OVERLAY">
+								<Texture name="$parentGlow" file="Interface\Glues\Common\Glue-Panel-Button-Glow" hidden="true" alphaMode="ADD">
+									<TexCoords left="0" right="0.578125" top="0" bottom="0.75"/>
+								</Texture>
+							</Layer>
+						</Layers>
+						<Scripts>
+							<OnLoad>
+								self:SetShown(IsLauncherLogin());
+								self:RegisterEvent("LAUNCHER_LOGIN_STATUS_CHANGED");
+							</OnLoad>
+							<OnEvent>
+								self:SetShown(IsLauncherLogin());
+							</OnEvent>
+							<OnClick>
+								GlueMenuFrame_Show();
+							</OnClick>
+							<OnUpdate>
+								GlueButtonMaster_OnUpdate(self, elapsed);
+								CharacterSelect_DeathKnightSwap(self);
+							</OnUpdate>
+						</Scripts>
+					</Button>
 					<Button name="CharacterSelectRealmSplitButton" inherits="GlueButtonTemplate" hidden="true" text="SERVER_SPLIT_BUTTON">
 						<Size x="150" y="55"/>
 						<Anchors>
@@ -659,7 +682,7 @@
 							</Layer>
 						</Layers>
 						<Frames>
-							<Slider name="$parentScrollBar" frameStrata="DIALOG" parentKey="scrollBar" inherits="GlueScrollBarTemplate" hidden="true">
+							<Slider name="$parentScrollBar" parentKey="scrollBar" inherits="GlueScrollBarTemplate" hidden="true">
 								<Anchors>
 									<Anchor point="TOPRIGHT" x="-6" y="-20"/>
 									<Anchor point="BOTTOMRIGHT" x="-6" y="24"/>
@@ -903,7 +926,7 @@
 					<Frame name="CharacterTemplatesFrame" hidden="true">
 						<Size x="220" y="150"/>
 						<Anchors>
-							<Anchor point="BOTTOMLEFT" x="32" y="86"/>
+							<Anchor point="TOPLEFT" relativeTo="CharacterSelectLogo" relativePoint="TOPRIGHT" x="5" y="0"/>
 						</Anchors>
 						<Backdrop bgFile="Interface\Glues\Common\Glue-Tooltip-Background" edgeFile="Interface\Glues\Common\Glue-Tooltip-Border" tile="true">
 							<BackgroundInsets>
@@ -954,6 +977,138 @@
 							</Button>
 						</Frames>
 					</Frame>
+					<Frame name="PlayersOnServer" hidden="true">
+						<Size x="220" y="88"/>
+						<Anchors>
+							<Anchor point="TOPRIGHT" relativeTo="CharacterSelectCharacterFrame" relativePoint="TOPLEFT" x="5" y="10"/>
+						</Anchors>
+						<Backdrop bgFile="Interface\Glues\Common\Glue-Tooltip-Background" edgeFile="Interface\Glues\Common\Glue-Tooltip-Border" tile="true">
+							<BackgroundInsets>
+								<AbsInset left="10" right="5" top="4" bottom="9"/>
+							</BackgroundInsets>
+							<TileSize>
+								<AbsValue val="16"/>
+							</TileSize>
+							<EdgeSize>
+								<AbsValue val="16"/>
+							</EdgeSize>
+						</Backdrop>
+						<Layers>
+							<Layer level="ARTWORK">
+								<FontString inherits="GlueFontNormal" text="PLAYERS_ON_SERVER">
+									<Anchors>
+										<Anchor point="TOP" x="0" y="-12"/>
+									</Anchors>	
+								</FontString>
+								<FontString inherits="GlueFontNormal" text="HORDE" parentKey="HordeText">	
+									<Anchors>
+										<Anchor point="BOTTOMLEFT" x="70" y="38"/>
+									</Anchors>
+									<Color r="0.90" g="0.05" b="0.07"/>
+								</FontString>
+								<FontString inherits="GlueFontNormal" text="ALLIANCE" parentKey="AllianceText">	
+									<Anchors>
+										<Anchor point="BOTTOMLEFT" x="70" y="15"/>
+									</Anchors>
+									<Color r="0.29" g="0.33" b="0.91"/>
+								</FontString>
+								<FontString inherits="GlueFontNormal" text="0" justifyH="right" parentKey="HordeCount">	
+									<Anchors>
+										<Anchor point="BOTTOMRIGHT" x="-24" y="38"/>
+									</Anchors>
+									<Color r="0.90" g="0.05" b="0.07"/>
+								</FontString>
+								<FontString inherits="GlueFontNormal" text="0" justifyH="right" parentKey="AllianceCount">	
+									<Anchors>
+										<Anchor point="BOTTOMRIGHT" x="-24" y="15"/>
+									</Anchors>
+									<Color r="0.29" g="0.33" b="0.91"/>
+								</FontString>
+								<Texture file="Interface\Glues\CharacterSelect\Glues-AddOn-Icons" parentKey="HordeStar">
+									<Size x="16" y="16"/>
+									<TexCoords left=".75" right="1" top="0" bottom="1"/>
+									<Anchors>
+										<Anchor point="BOTTOMRIGHT" x="-8" y="38"/>
+									</Anchors>
+								</Texture>
+								<Texture file="Interface\Glues\CharacterSelect\Glues-AddOn-Icons" parentKey="AllianceStar">
+									<Size x="16" y="16"/>
+									<TexCoords left=".75" right="1" top="0" bottom="1"/>
+									<Anchors>
+										<Anchor point="BOTTOMRIGHT" x="-8" y="15"/>
+									</Anchors>
+								</Texture>
+							</Layer>
+						</Layers>
+						<Frames>
+							<Button name="ActivateFactionChange">
+								<Size x="48" y="48"/>
+								<Anchors>
+									<Anchor point="BOTTOMLEFT" x="16" y="10"/>
+								</Anchors>
+								<Scripts>
+									<OnClick>
+										CharacterSelect_ActivateFactionChange();
+									</OnClick>
+									<OnEnter>
+										GlueTooltip:SetOwner(self);
+										if ( self:IsEnabled() ) then
+											GlueTooltip:SetText(PAID_FACTION_CHANGE_TOOLTIP, 1.0, 1.0, 1.0);
+										else
+											GlueTooltip:SetText(nil, 1.0, 1.0, 1.0);
+										end
+									</OnEnter>
+									<OnLeave>
+										GlueTooltip:Hide();
+									</OnLeave>
+								</Scripts>
+								<NormalTexture file="Interface\Buttons\UI-PaidCharacterCustomization-Button" parentKey="texture">
+									<TexCoords left="0" right=".5" top=".5" bottom="1"/>
+								</NormalTexture>
+								<HighlightTexture file="Interface\Buttons\ButtonHilight-Square" alphaMode="ADD">
+									<Size x="35" y="35"/>
+									<Anchors>
+										<Anchor point="CENTER"/>
+									</Anchors>
+								</HighlightTexture>
+							</Button>
+						</Frames>
+					</Frame>
+					<Frame name="CharacterSelectServerAlertFrame" hidden="true" inherits="ServerAlertTemplate">
+						<Size>
+							<AbsDimension x="250" y="280"/>
+						</Size>
+						<Anchors>
+							<Anchor point="TOP" relativeTo="CharacterSelectLogo" relativePoint="BOTTOM" x="0" y="-5"/>
+							<Anchor point="BOTTOMRIGHT" relativeKey="$parent" relativePoint="TOPLEFT" x="260" y="-610"/>
+						</Anchors>
+						<Scripts>
+							<OnLoad>
+								ServerAlert_OnLoad(self);
+								self:RegisterEvent("LAUNCHER_LOGIN_STATUS_CHANGED");
+								if ( not IsLauncherLogin() ) then
+									ServerAlert_Disable(self);
+								end
+							</OnLoad>
+							<OnEvent>
+								if ( event == "LAUNCHER_LOGIN_STATUS_CHANGED" ) then
+									if ( IsLauncherLogin() ) then
+										ServerAlert_Enable(self);
+									else
+										ServerAlert_Disable(self);
+									end
+								else
+									ServerAlert_OnEvent(self, event, ...);
+								end
+							</OnEvent>
+							<OnShow>
+								AccountUpgradePanel_UpdateExpandState();
+							</OnShow>
+							<OnHide>
+								AccountUpgradePanel_UpdateExpandState();
+							</OnHide>
+						</Scripts>
+					</Frame>
 				</Frames>
 				<Scripts>
 					<OnMouseDown>
@@ -994,7 +1149,7 @@
 			<Frame name="GameRoomBillingFrame" hidden="true">
 				<Size x="255" y="60"/>
 				<Anchors>
-					<Anchor point="TOP" relativeTo="CharacterSelectLogo" relativePoint="BOTTOM" x="0" y="-50"/>
+					<Anchor point="TOP" relativeTo="CharacterSelectServerAlertFrame" relativePoint="BOTTOM" x="0" y="-10"/>
 				</Anchors>
 				<Layers>
 					<Layer level="BACKGROUND">

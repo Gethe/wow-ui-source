@@ -48,9 +48,9 @@ function AlertFrame_OnEvent (self, event, ...)
 		local itemLink, quantity, rollType, roll = ...;
 		LootWonAlertFrame_ShowAlert(itemLink, quantity, rollType, roll);
 	elseif ( event == "SHOW_LOOT_TOAST" ) then
-		local typeIdentifier, itemLink, quantity = ...;
+		local typeIdentifier, itemLink, quantity, specID = ...;
 		if ( typeIdentifier == "item" ) then
-			LootWonAlertFrame_ShowAlert(itemLink, quantity);
+			LootWonAlertFrame_ShowAlert(itemLink, quantity, nil, nil, specID);
 		elseif ( typeIdentifier == "money" ) then
 			MoneyWonAlertFrame_ShowAlert(quantity);
 		end
@@ -409,6 +409,14 @@ function ScenarioAlertFrame_ShowAlert()
 	--For now we only have 1 scenario alert frame
 	local name, typeID, subtypeID, textureFilename, moneyBase, moneyVar, experienceBase, experienceVar, numStrangers, numRewards = GetLFGCompletionReward();
 	
+	-- bonus?
+	local _, _, _, _, hasBonusStep, isBonusStepComplete = C_Scenario.GetInfo();
+	if ( hasBonusStep and isBonusStepComplete ) then
+		frame.BonusStar:Show();
+	else
+		frame.BonusStar:Hide();
+	end
+
 	--Set up the rewards
 	local moneyAmount = moneyBase + moneyVar * numStrangers;
 	local experienceGained = experienceBase + experienceVar * numStrangers;
@@ -451,6 +459,11 @@ function ScenarioAlertFrame_ShowAlert()
 	--Set up the text and icon
 	frame.dungeonName:SetText(name);
 	frame.dungeonTexture:SetTexture("Interface\\LFGFrame\\LFGIcon-"..textureFilename);
+
+	-- bonus objectives?
+	local _, _, _, _, hasBonusStep, isBonusStepComplete = C_Scenario.GetInfo();
+	if ( hasBonusStep and isBonusStepComplete ) then
+	end
 
 	AlertFrame_AnimateIn(frame)
 	AlertFrame_FixAnchors();
@@ -737,7 +750,7 @@ end
 
 -- [[ LootWonAlertFrameTemplate ]] --
 
-function LootWonAlertFrame_ShowAlert(itemLink, quantity, rollType, roll)
+function LootWonAlertFrame_ShowAlert(itemLink, quantity, rollType, roll, specID)
 	local frame;
 	for i=1, #LOOT_WON_ALERT_FRAMES do
 		local lootWon = LOOT_WON_ALERT_FRAMES[i];
@@ -752,20 +765,30 @@ function LootWonAlertFrame_ShowAlert(itemLink, quantity, rollType, roll)
 		table.insert(LOOT_WON_ALERT_FRAMES, frame);
 	end
 
-	LootWonAlertFrame_SetUp(frame, itemLink, quantity, rollType, roll);
+	LootWonAlertFrame_SetUp(frame, itemLink, quantity, rollType, roll, specID);
 	AlertFrame_AnimateIn(frame);
 	AlertFrame_FixAnchors();
 end
 
 -- NOTE - This may also be called for an externally created frame. (E.g. bonus roll has its own frame)
-function LootWonAlertFrame_SetUp(self, itemLink, quantity, rollType, roll)
+function LootWonAlertFrame_SetUp(self, itemLink, quantity, rollType, roll, specID)
 	local itemName, itemLink, itemRarity, itemLevel, itemMinLevel, itemType, itemSubType, itemStackCount, itemEquipLoc, itemTexture = GetItemInfo(itemLink);
 	self.Icon:SetTexture(itemTexture);
 	self.ItemName:SetText(itemName);
 	local color = ITEM_QUALITY_COLORS[itemRarity];
 	self.ItemName:SetVertexColor(color.r, color.g, color.b);
 	self.IconBorder:SetTexCoord(unpack(LOOT_BORDER_QUALITY_COORDS[itemRarity] or LOOT_BORDER_QUALITY_COORDS[ITEM_QUALITY_UNCOMMON]));
-
+	
+	if ( specID and specID > 0 ) then
+		local id, name, description, texture, background, role, class = GetSpecializationInfoByID(specID);
+		self.SpecIcon:SetTexture(texture);
+		self.SpecIcon:Show();
+		self.SpecRing:Show();
+	else
+		self.SpecIcon:Hide();
+		self.SpecRing:Hide();
+	end
+	
 	if ( rollType == LOOT_ROLL_TYPE_NEED ) then
 		self.RollTypeIcon:SetTexture("Interface\\Buttons\\UI-GroupLoot-Dice-Up");
 		self.RollValue:SetText(roll);

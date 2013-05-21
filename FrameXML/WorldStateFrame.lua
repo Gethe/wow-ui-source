@@ -17,6 +17,9 @@ WORLDSTATEALWAYSUPFRAME_SUSPENDEDCHATFRAMES = {};
 
 local inBattleground = false;
 
+local TEAM_HORDE = 0;
+local TEAM_ALLIANCE = 1;
+
 --
 FILTERED_BG_CHAT_ADD_GLOBALS = { "ERR_RAID_MEMBER_ADDED_S", "ERR_BG_PLAYER_JOINED_SS" };
 FILTERED_BG_CHAT_SUBTRACT_GLOBALS = { "ERR_RAID_MEMBER_REMOVED_S", "ERR_BG_PLAYER_LEFT_S" };
@@ -64,6 +67,8 @@ function WorldStateAlwaysUpFrame_OnLoad(self)
 
 	self:RegisterEvent("WORLD_STATE_TIMER_START");
 	self:RegisterEvent("WORLD_STATE_TIMER_STOP");
+	
+	self:RegisterEvent("BATTLEGROUND_POINTS_UPDATE");
 
 	FILTERED_BG_CHAT_ADD = {};
 	FILTERED_BG_CHAT_SUBTRACT = {};
@@ -121,11 +126,58 @@ function WorldStateAlwaysUpFrame_OnEvent(self, event, ...)
 	end
 end
 
+function WorldStateAlwaysUpFrame_AddFrame(alwaysUpShown, text, icon, dynamicIcon, dynamicTooltip, state)
+	local name = "AlwaysUpFrame"..alwaysUpShown;
+	local frame;
+	if ( alwaysUpShown > NUM_ALWAYS_UP_UI_FRAMES ) then
+		frame = CreateFrame("Frame", name, WorldStateAlwaysUpFrame, "WorldStateAlwaysUpTemplate");
+		NUM_ALWAYS_UP_UI_FRAMES = alwaysUpShown;
+	else
+		frame = _G[name];
+	end
+	if ( alwaysUpShown == 1 ) then
+		frame:SetPoint("TOP", WorldStateAlwaysUpFrame, -23 , -20);
+	else
+		local relative = _G["AlwaysUpFrame"..(alwaysUpShown - 1)];
+		frame:SetPoint("TOP", relative, "BOTTOM");
+	end
+	local frameText = _G[name.."Text"];
+	local frameIcon = _G[name.."Icon"];
+	local frameDynamicIcon = _G[name.."DynamicIconButtonIcon"];
+	local frameFlash = _G[name.."Flash"];
+	local flashTexture = _G[name.."FlashTexture"];
+	local frameDynamicButton = _G[name.."DynamicIconButton"];
+
+	frameText:SetText(text);
+	frameIcon:SetTexture(icon);
+	frameDynamicIcon:SetTexture(dynamicIcon);
+	local flash = nil;
+	if ( dynamicIcon ~= "" ) then
+		flash = dynamicIcon.."Flash"
+	end
+	flashTexture:SetTexture(flash);
+	frameDynamicButton.tooltip = dynamicTooltip;
+	if ( state == 2 ) then
+		UIFrameFlash(frameFlash, 0.5, 0.5, -1);
+		frameDynamicButton:Show();
+	elseif ( state == 3 ) then
+		UIFrameFlashStop(frameFlash);
+		frameDynamicButton:Show();
+	else
+		UIFrameFlashStop(frameFlash);
+		frameDynamicButton:Hide();
+	end
+	
+	frame:Show();
+	
+	return frame;
+end
+
 function WorldStateAlwaysUpFrame_Update()
 	local numUI = GetNumWorldStateUI();
-	local name, frame, frameText, frameDynamicIcon, frameIcon, frameFlash, flashTexture, frameDynamicButton;
+	local frame;
 	local extendedUI, extendedUIState1, extendedUIState2, extendedUIState3, uiInfo; 
-	local uiType, text, icon, state, hidden, dynamicIcon, tooltip, dynamicTooltip, flash, relative;
+	local uiType, text, icon, state, hidden, dynamicIcon, tooltip, dynamicTooltip;
 	local inInstance, instanceType = IsInInstance();
 	local alwaysUpShown = 1;
 	local extendedUIShown = 1;
@@ -138,7 +190,7 @@ function WorldStateAlwaysUpFrame_Update()
 				if ( extendedUI ~= "" ) then
 					-- extendedUI
 					uiInfo = ExtendedUI[extendedUI]
-					name = uiInfo.name..extendedUIShown;
+					local name = uiInfo.name..extendedUIShown;
 					if ( extendedUIShown > NUM_EXTENDED_UI_FRAMES ) then
 						frame = uiInfo.create(extendedUIShown);
 						NUM_EXTENDED_UI_FRAMES = extendedUIShown;
@@ -150,45 +202,7 @@ function WorldStateAlwaysUpFrame_Update()
 					extendedUIShown = extendedUIShown + 1;
 				else
 					-- Always Up
-					name = "AlwaysUpFrame"..alwaysUpShown;
-					if ( alwaysUpShown > NUM_ALWAYS_UP_UI_FRAMES ) then
-						frame = CreateFrame("Frame", name, WorldStateAlwaysUpFrame, "WorldStateAlwaysUpTemplate");
-						NUM_ALWAYS_UP_UI_FRAMES = alwaysUpShown;
-					else
-						frame = _G[name];
-					end
-					if ( alwaysUpShown == 1 ) then
-						frame:SetPoint("TOP", WorldStateAlwaysUpFrame, -23 , -20);
-					else
-						relative = _G["AlwaysUpFrame"..(alwaysUpShown - 1)];
-						frame:SetPoint("TOP", relative, "BOTTOM");
-					end
-					frameText = _G[name.."Text"];
-					frameIcon = _G[name.."Icon"];
-					frameDynamicIcon = _G[name.."DynamicIconButtonIcon"];
-					frameFlash = _G[name.."Flash"];
-					flashTexture = _G[name.."FlashTexture"];
-					frameDynamicButton = _G[name.."DynamicIconButton"];
-
-					frameText:SetText(text);
-					frameIcon:SetTexture(icon);
-					frameDynamicIcon:SetTexture(dynamicIcon);
-					flash = nil;
-					if ( dynamicIcon ~= "" ) then
-						flash = dynamicIcon.."Flash"
-					end
-					flashTexture:SetTexture(flash);
-					frameDynamicButton.tooltip = dynamicTooltip;
-					if ( state == 2 ) then
-						UIFrameFlash(frameFlash, 0.5, 0.5, -1);
-						frameDynamicButton:Show();
-					elseif ( state == 3 ) then
-						UIFrameFlashStop(frameFlash);
-						frameDynamicButton:Show();
-					else
-						UIFrameFlashStop(frameFlash);
-						frameDynamicButton:Hide();
-					end
+					frame = WorldStateAlwaysUpFrame_AddFrame(alwaysUpShown, text, icon, dynamicIcon, dynamicTooltip, state);
 					alwaysUpShown = alwaysUpShown + 1;
 					alwaysUpHeight = alwaysUpHeight + frame:GetHeight();
 				end	
@@ -197,10 +211,37 @@ function WorldStateAlwaysUpFrame_Update()
 				else
 					frame.tooltip = nil;
 				end
-				frame:Show();
 			end
 		end
 	end
+	
+	--[[
+	Disabling this for now
+	Long-term we'd like the battleground objectives to work more like this, but it's not working for 5.3
+	
+	local hordePoints, hordeMaxPoints = GetBattlegroundPoints(TEAM_HORDE);
+	local alliancePoints, allianceMaxPoints = GetBattlegroundPoints(TEAM_ALLIANCE);
+	
+	local scoreString = BATTLEGROUND_SCORE_VICTORY_POINTS;
+	if(GetAreaID() == 1105) then  -- Gold Rush BG
+		scoreString = BATTLEGROUND_SCORE_GOLD;
+	end
+	
+	if(allianceMaxPoints > 0) then
+		local text = format(scoreString, alliancePoints, allianceMaxPoints);
+		frame = WorldStateAlwaysUpFrame_AddFrame(alwaysUpShown, text, "Interface\\TargetingFrame\\UI-PVP-Alliance", "", 0, 1);
+		alwaysUpShown = alwaysUpShown + 1;
+		alwaysUpHeight = alwaysUpHeight + frame:GetHeight();
+	end
+	
+	if(hordeMaxPoints > 0) then
+		local text = format(scoreString, hordePoints, hordeMaxPoints);
+		frame = WorldStateAlwaysUpFrame_AddFrame(alwaysUpShown, text, "Interface\\TargetingFrame\\UI-PVP-Horde", "", 0, 1);
+		alwaysUpShown = alwaysUpShown + 1;
+		alwaysUpHeight = alwaysUpHeight + frame:GetHeight();
+	end
+	]]--
+	
 	for i=alwaysUpShown, NUM_ALWAYS_UP_UI_FRAMES do
 		frame = _G["AlwaysUpFrame"..i];
 		frame:Hide();

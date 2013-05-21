@@ -36,11 +36,7 @@
 					<AbsDimension x="32" y="32"/>
 				</Size>
 				<Anchors>
-					<Anchor point="RIGHT">
-						<Offset>
-							<AbsDimension x="40" y="9"/>
-						</Offset>
-					</Anchor>
+					<Anchor point="LEFT" relativeTo="$parentText" relativePoint="RIGHT" x="0" y="0"/>
 				</Anchors>
 				<Layers>
 					<Layer level="BACKGROUND">

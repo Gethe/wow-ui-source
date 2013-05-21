@@ -1,5 +1,5 @@
 # Do not delete the following line!
-## Interface: 50200
+## Interface: 50300
 GlobalStrings.lua
 Constants.lua
 Fonts.xml

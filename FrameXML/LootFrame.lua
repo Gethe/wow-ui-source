@@ -500,8 +500,21 @@ function BonusRollFrame_StartBonusRoll(spellID, text, duration, currencyID)
 	frame.CurrentCountFrame.Text:SetFormattedText(BONUS_ROLL_CURRENT_COUNT, count, icon);
 	frame.PromptFrame.Timer:SetMinMaxValues(0, duration);
 	frame.PromptFrame.Timer:SetValue(duration);
+	frame.PromptFrame.RollButton:Enable();
 	frame.PromptFrame:Show();
 	frame.RollingFrame:Hide();
+	
+	local specID = GetLootSpecialization();
+	if ( specID and specID > 0 ) then
+		local id, name, description, texture, background, role, class = GetSpecializationInfoByID(specID);
+		frame.SpecIcon:SetTexture(texture);
+		frame.SpecIcon:Show();
+		frame.SpecRing:Show();
+	else
+		frame.SpecIcon:Hide();
+		frame.SpecRing:Hide();
+	end
+
 	GroupLootContainer_AddFrame(GroupLootContainer, frame);
 end
 
@@ -516,6 +529,9 @@ function BonusRollFrame_OnLoad(self)
 	self:RegisterEvent("BONUS_ROLL_STARTED");
 	self:RegisterEvent("BONUS_ROLL_FAILED");
 	self:RegisterEvent("BONUS_ROLL_RESULT");
+	self:RegisterEvent("PLAYER_LOOT_SPEC_UPDATED");
+	self:RegisterEvent("BONUS_ROLL_DEACTIVATE");
+	self:RegisterEvent("BONUS_ROLL_ACTIVATE");
 end
 
 function BonusRollFrame_OnEvent(self, event, ...)
@@ -524,6 +540,7 @@ function BonusRollFrame_OnEvent(self, event, ...)
 		self.rewardType = nil;
 		self.rewardLink = nil;
 		self.rewardQuantity = nil;
+		self.rewardSpecID = nil;
 		self.RollingFrame.LootSpinner:Hide();
 		self.RollingFrame.LootSpinnerFinal:Hide();
 		self.FinishRollAnim:Play();
@@ -542,12 +559,30 @@ function BonusRollFrame_OnEvent(self, event, ...)
 		self.RollingFrame.LootSpinnerFinal:Hide();
 		self.StartRollAnim:Play();
 	elseif ( event == "BONUS_ROLL_RESULT" ) then
-		local rewardType, rewardLink, rewardQuantity = ...;
+		local rewardType, rewardLink, rewardQuantity, rewardSpecID = ...;
 		self.state = "slowing";
 		self.rewardType = rewardType;
 		self.rewardLink = rewardLink;
 		self.rewardQuantity = rewardQuantity;
+		self.rewardSpecID = rewardSpecID;
 		self.StartRollAnim:Finish();
+	elseif ( event == "PLAYER_LOOT_SPEC_UPDATED" ) then
+		local specID = GetLootSpecialization();
+		if ( specID and specID > 0 ) then
+			local id, name, description, texture, background, role, class = GetSpecializationInfoByID(specID);
+			self.SpecIcon:SetTexture(texture);
+			self.SpecIcon:Show();
+			self.SpecRing:Show();
+		else
+			self.SpecIcon:Hide();
+			self.SpecRing:Hide();
+		end
+	elseif ( event == "BONUS_ROLL_DEACTIVATE" ) then
+		self.PromptFrame.RollButton:Disable();
+	elseif ( event == "BONUS_ROLL_ACTIVATE" ) then
+		if ( self.state == "prompt" ) then
+			self.PromptFrame.RollButton:Enable();
+		end
 	end
 end
 
@@ -620,7 +655,7 @@ end
 function BonusRollFrame_FinishedFading(self)
 	if ( self.rewardType == "item" ) then
 		GroupLootContainer_ReplaceFrame(GroupLootContainer, self, BonusRollLootWonFrame);
-		LootWonAlertFrame_SetUp(BonusRollLootWonFrame, self.rewardLink, self.rewardQuantity);
+		LootWonAlertFrame_SetUp(BonusRollLootWonFrame, self.rewardLink, self.rewardQuantity, nil, nil, self.rewardSpecID);
 		AlertFrame_AnimateIn(BonusRollLootWonFrame);
 	elseif ( self.rewardType == "money" ) then
 		GroupLootContainer_ReplaceFrame(GroupLootContainer, self, BonusRollMoneyWonFrame);

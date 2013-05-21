@@ -1,6 +1,6 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\FrameXML\UI.xsd">
-	<Frame name="GameMenuFrame" toplevel="true" frameStrata="DIALOG" movable="true" enableMouse="true" hidden="true" parent="UIParent">
+	<Frame name="GameMenuFrame" toplevel="true" frameStrata="DIALOG" enableMouse="true" hidden="true" parent="UIParent">
 		<Size x="195" y="255"/>
 		<Anchors>
 			<Anchor point="CENTER"/>

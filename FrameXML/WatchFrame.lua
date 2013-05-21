@@ -1,9 +1,9 @@
 -- Who watches the WatchFrame...?
 
 WATCHFRAME_COLLAPSEDWIDTH = 0;		-- set in WatchFrame_OnLoad
-WATCHFRAME_EXPANDEDWIDTH = 204;
+WATCHFRAME_EXPANDEDWIDTH = 204;		-- changed in WatchFrame_SetWidth
+WATCHFRAME_MAXLINEWIDTH = 192;		-- changed in WatchFrame_SetWidth
 WATCHFRAME_LINEHEIGHT = 16;
-WATCHFRAME_MAXLINEWIDTH = 0;		-- set in WatchFrame_SetWidth
 WATCHFRAME_MULTIPLE_LINEHEIGHT = 0;	-- set in WatchFrame_SetWidth
 WATCHFRAME_ITEM_WIDTH = 33;
 
@@ -12,13 +12,12 @@ local DASH_SHOW = 1;
 local DASH_HIDE = 2;
 local DASH_ICON = 3;
 local DASH_WIDTH;
-DASH_ICON_WIDTH = 20;
+local DASH_ICON_WIDTH = 20;
 local IS_HEADER = true;
 
 WATCHFRAME_INITIAL_OFFSET = 0;
 WATCHFRAME_TYPE_OFFSET = 10;
 WATCHFRAME_QUEST_OFFSET = 10;
-WATCHFRAME_SCENARIO_LINE_OFFSET = 10;
 
 WATCHFRAMELINES_FONTSPACING = 0;
 WATCHFRAMELINES_FONTHEIGHT = 0;
@@ -37,9 +36,8 @@ WATCHFRAME_TIMERLINES = {};
 WATCHFRAME_ACHIEVEMENTLINES = {};
 WATCHFRAME_QUESTLINES = {};
 WATCHFRAME_LINKBUTTONS = {};
-WATCHFRAME_SCENARIOLINES = {};
 local WATCHFRAME_SETLINES = { };			-- buffer to hold lines for a quest/achievement that will be displayed only if there is room
-local WATCHFRAME_SETLINES_NUMLINES;		-- the number of visual lines to be rendered for the buffered data - used just for item wrapping right now
+local WATCHFRAME_SETLINES_NUMLINES = 0;		-- the number of visual lines to be rendered for the buffered data - used just for item wrapping right now
 
 CURRENT_MAP_QUESTS = { };
 LOCAL_MAP_QUESTS = { };
@@ -210,39 +208,6 @@ local function WatchFrame_ReleaseUnusedQuestLines ()
 	end
 end
 
-local scenarioLineIndex = 1;
-local function WatchFrame_GetScenarioLine(newParent)
-	local line = WATCHFRAME_SCENARIOLINES[scenarioLineIndex];
-	if ( not line ) then
-		WATCHFRAME_SCENARIOLINES[scenarioLineIndex] = WatchFrame.lineCache:GetFrame();
-		line = WATCHFRAME_SCENARIOLINES[scenarioLineIndex];
-	end
-
-	line:Reset();
-	if (newParent ) then
-		line:SetParent(newParent);
-	end
-	scenarioLineIndex = scenarioLineIndex + 1;
-	return line;
-end
-
-local function WatchFrame_ResetScenarioLines()
-	scenarioLineIndex = 1;
-end
-
-local function WatchFrame_ReleaseUnusedScenarioLines()
-	local line
-	for i = scenarioLineIndex, #WATCHFRAME_SCENARIOLINES do
-		line = WATCHFRAME_SCENARIOLINES[i];
-		line:Hide();
-		line.icon:Hide();
-		line.dash:SetWidth(0);
-		line:SetParent(WatchFrameLines);
-		line.frameCache:ReleaseFrame(line);
-		WATCHFRAME_SCENARIOLINES[i] = nil;
-	end
-end
-
 function WatchFrame_OnLoad (self)
 	self:RegisterEvent("PLAYER_ENTERING_WORLD");
 	self:RegisterEvent("QUEST_LOG_UPDATE");
@@ -320,17 +285,24 @@ function WatchFrame_OnEvent (self, event, ...)
 	elseif ( event == "SCENARIO_UPDATE" ) then
 		local newStep = ...;
 		if ( newStep ) then
+			WatchFrameScenario_UpdateScenario(true);
+			-- expand will do an update
 			WatchFrame_Expand(self);
 		else
+			WatchFrameScenario_UpdateScenario();
 			WatchFrame_Update();
 		end
 	elseif ( event == "SCENARIO_CRITERIA_UPDATE" ) then
+		local id = ...;
+		WatchFrameScenario_UpdateScenario(nil, id);
 		WatchFrame_Update();
 	elseif ( event == "CRITERIA_COMPLETE" ) then
-		if ( not self.collapsed and self:IsShown() ) then
-			WatchFrameScenario_ReadyCriteriaAnimation(...);
-		end
+		local id = ...;
+		WatchFrameScenario_UpdateScenario(nil, id);
 		WatchFrame_Update();
+		if ( not self.collapsed and self:IsShown() ) then
+			WatchFrameScenario_PlayCriteriaAnimation(...);
+		end
 	elseif ( event == "ZONE_CHANGED_NEW_AREA" or event == "NEW_WMO_CHUNK" ) then
 		if ( not WorldMapFrame:IsShown() and WatchFrame.showObjectives ) then
 			SetMapToCurrentZone();			-- update the zone to get the right POI numbers for the tracker
@@ -378,7 +350,7 @@ function WatchFrame_Collapse (self)
 	texture:SetTexCoord(0, 0.5, 0, 0.5);
 	texture = button:GetPushedTexture();	
 	texture:SetTexCoord(0.5, 1, 0, 0.5);
-	WatchFrameScenario_StopCriteriaAnimation();
+	WatchFrameScenario_StopCriteriaAnimations();
 end
 
 function WatchFrame_Expand (self)
@@ -664,7 +636,7 @@ function WatchFrame_UpdateTimedAchievements (elapsed)
 	end
 end
 
-function WatchFrame_SetLine(line, anchor, verticalOffset, isHeader, text, dash, hasItem, isComplete, eligible)
+function WatchFrame_SetLine(line, anchor, verticalOffset, isHeader, text, dash, hasItem, fullHeight, eligible, usedWidth)
 	-- anchor
 	if ( anchor ) then
 		line:SetPoint("RIGHT", anchor, "RIGHT", 0, 0);
@@ -687,7 +659,7 @@ function WatchFrame_SetLine(line, anchor, verticalOffset, isHeader, text, dash, 
 		end
 	end
 	-- dash
-	local usedWidth = 0;
+	local usedWidth = usedWidth or 0;
 	if ( dash == DASH_SHOW ) then
 		line.dash:SetText(QUEST_DASH);
 		usedWidth = DASH_WIDTH;
@@ -705,7 +677,7 @@ function WatchFrame_SetLine(line, anchor, verticalOffset, isHeader, text, dash, 
 	end
 	line.text:SetWidth(WATCHFRAME_MAXLINEWIDTH - usedWidth);
 	if ( line.text:GetHeight() > WATCHFRAME_LINEHEIGHT ) then
-		if ( isComplete ) then
+		if ( fullHeight ) then
 			line:SetHeight(line.text:GetHeight() + 4);
 		else
 			line:SetHeight(WATCHFRAME_MULTIPLE_LINEHEIGHT);
@@ -1488,7 +1460,8 @@ function WatchFrame_SetWidth(width)
 		WATCHFRAME_EXPANDEDWIDTH = 306;
 		WATCHFRAME_MAXLINEWIDTH = 294;
 	end
-	WatchFrameScenarioPopUpFrame:SetWidth(WATCHFRAME_EXPANDEDWIDTH);
+	WatchFrameScenarioFrame:SetWidth(WATCHFRAME_EXPANDEDWIDTH);
+	WatchFrameScenarioFrame.dirty = true;
 	if ( WatchFrame:IsShown() and not WatchFrame.collapsed ) then
 		WatchFrame:SetWidth(WATCHFRAME_EXPANDEDWIDTH);
 		WatchFrame_Update();
@@ -1763,159 +1736,449 @@ end
 -- Scenario
 --------------------------------------------------------------------------------------------
 local SCENARIO_POPUP_BASE_HEIGHT = 83;
+local SCENARIO_TEXT_HEADER_HEIGHT = 0;		-- determined after setting the text
+local SCENARIO_LINE_OFFSET = 10;
+local SCENARIO_BONUS_OFFSET = 8;
+local SCENARIO_CRITERIA_LINES = { };
 
-function WatchFrameScenario_DisplayScenario(lineFrame, nextAnchor, maxHeight, frameWidth)
-	WatchFrame_ResetScenarioLines();
-	-- for return values
-	local width = 0;
-	local numObjectives = 0;
-	local numPopups = 0;
+-- Sets up all the scenario info in response to events and not doing this on every WatchFrame_Update
+function WatchFrameScenario_UpdateScenario(newStage, updateCriteriaID)
+	local scenarioFrame = WatchFrameScenarioFrame;
 
-	local animationCriteriaID = ScenarioCriteriaAnimationLine.criteriaID;
-	local popupFrame = WatchFrameScenarioPopUpFrame;
-	local name, currentStage, numStages = C_Scenario.GetInfo();
-	if ( currentStage > 0 and currentStage <= numStages ) then
-		local initialCriteriaOffset;
-		local stageName, stageDescription, numCriteria = C_Scenario.GetStepInfo();
-		local inChallengeMode = C_Scenario.IsChallengeMode();
-		local linesParent;		-- if using the scenario header, lines need to be parented to WatchFrameScenarioPopUpFrame
-		if ( not inChallengeMode ) then
-			popupFrame:SetParent(lineFrame);
-			popupFrame:ClearAllPoints();
-			if (nextAnchor) then
-				popupFrame:SetPoint("TOPLEFT", nextAnchor, "BOTTOMLEFT", 0, -WATCHFRAME_TYPE_OFFSET);
-			else
-				popupFrame:SetPoint("TOPLEFT", lineFrame, "TOPLEFT", 0, -WATCHFRAME_INITIAL_OFFSET + 4)
-			end
-			local frame = WatchFrameScenarioFrame;
-			linesParent = WatchFrameScenarioFrame;
-			nextAnchor = frame;
-			-- step info
-			if ( currentStage == numStages ) then
-				frame.stageLevel:SetText(SCENARIO_STAGE_FINAL);
-				frame.finalBg:Show();
-			else
-				frame.stageLevel:SetFormattedText(SCENARIO_STAGE, currentStage);
-				frame.finalBg:Hide();
-			end
-			frame.stageName:SetText(stageName);
-			if ( frame.stageName:GetStringWidth() > frame.stageName:GetWrappedWidth() ) then
-				frame.stageLevel:SetPoint("TOPLEFT", 15, -10);
-			else
-				frame.stageLevel:SetPoint("TOPLEFT", 15, -18);
-			end
-			
-			WATCHFRAME_SETLINES_NUMLINES = 0;	-- have to manually reset this since we're not using a normal header
-			popupFrame:Show();
-			initialCriteriaOffset = 0;
+	local name, currentStage, numStages, flags, hasBonusStep, isBonusStepComplete = C_Scenario.GetInfo();
+	-- bonus stage is set up as an extra stage at the end of the normal stages
+	-- we want to display bonus objectives even after a scenario ends
+	local finalBonusDisplay = hasBonusStep and currentStage > numStages;
+	if ( currentStage < 1 or (currentStage > numStages and not hasBonusStep) ) then
+		-- this scenario has ended
+		scenarioFrame:Hide();
+		scenarioFrame.stage = nil;
+		scenarioFrame.name = nil;
+		scenarioFrame.contentHeight = 0;
+		scenarioFrame.dirty = nil;
+		WatchFrameScenarioBonusHeader:Hide();
+		return;
+	end
+	
+	local headerFrame, nextAnchor;
+	local stageName, stageDescription, numCriteria = C_Scenario.GetStepInfo();
+	local inChallengeMode = C_Scenario.IsChallengeMode();
+
+	-- in challenge modes we use a regular text header instead of the art header
+	if ( inChallengeMode ) then
+		headerFrame = scenarioFrame.ScrollChild.TextHeader;
+	else
+		headerFrame = scenarioFrame.ScrollChild.BlockHeader;
+	end
+
+	-- is it a new scenario?
+	if ( scenarioFrame.name ~= name ) then
+		scenarioFrame.name = name;
+		scenarioFrame:Show();
+		-- hide the other header
+		if ( inChallengeMode ) then
+			scenarioFrame.ScrollChild.BlockHeader:Hide();
 		else
-			local line = WatchFrame_GetScenarioLine();
-			WatchFrame_SetLine(line, nil, WATCHFRAMELINES_FONTSPACING - 6, IS_HEADER, stageName, DASH_NONE);
-			line:SetPoint("RIGHT", lineFrame, "RIGHT", 0, 0);
-			line:SetPoint("LEFT", lineFrame, "LEFT", 0, 0);
-			if (nextAnchor) then
-				line:SetPoint("TOP", nextAnchor, "BOTTOM", 0, -WATCHFRAME_TYPE_OFFSET);
-			else
-				line:SetPoint("TOP", lineFrame, "TOP", 0, -WATCHFRAME_INITIAL_OFFSET);
-			end
-			line:Show();
-			nextAnchor = line;
-			popupFrame:Hide();
-			initialCriteriaOffset = WATCHFRAME_SCENARIO_LINE_OFFSET;
+			scenarioFrame.ScrollChild.TextHeader:Hide();
 		end
-		-- criteria info
-		local contentHeight = SCENARIO_POPUP_BASE_HEIGHT;
-		local firstLine = true;
-		for i = 1, numCriteria do
-			local criteriaString, criteriaType, criteriaCompleted, quantity, totalQuantity, flags, assetID, quantityString, criteriaID = C_Scenario.GetCriteriaInfo(i);
-			criteriaString = string.format("%d/%d %s", quantity, totalQuantity, criteriaString);
-			local line = WatchFrame_GetScenarioLine(linesParent);
-			if ( firstLine ) then
-				WatchFrame_SetLine(line, nextAnchor, WATCHFRAMELINES_FONTSPACING - initialCriteriaOffset, not IS_HEADER, criteriaString, DASH_ICON);
-				line:SetPoint("RIGHT", lineFrame, "RIGHT", 0, 0);
-				line:SetPoint("LEFT", lineFrame, "LEFT", 0, 0);
-				firstLine = false;
+		-- make sure we have rewards for bonus objectives
+		if ( hasBonusStep ) then
+			RequestLFDPlayerLockInfo();
+		end
+	end
+
+	nextAnchor = headerFrame;
+
+	-- set up the stage
+	if ( scenarioFrame.stage ~= currentStage ) then
+		if ( inChallengeMode ) then
+			headerFrame:Show();
+			headerFrame:SetHeight(WATCHFRAME_LINEHEIGHT);
+			headerFrame.text:SetHeight(0);
+			WatchFrame_SetLine(headerFrame, nil, 0, IS_HEADER, stageName, DASH_NONE);
+			SCENARIO_TEXT_HEADER_HEIGHT = headerFrame:GetHeight() + 4;
+		else
+			headerFrame:Show();
+			if ( currentStage == numStages ) then
+				headerFrame.stageLevel:SetText(SCENARIO_STAGE_FINAL);
+				headerFrame.finalBg:Show();
 			else
-				WatchFrame_SetLine(line, nextAnchor, WATCHFRAMELINES_FONTSPACING - WATCHFRAME_SCENARIO_LINE_OFFSET, not IS_HEADER, criteriaString, DASH_ICON);
+				headerFrame.stageLevel:SetFormattedText(SCENARIO_STAGE, currentStage);
+				headerFrame.finalBg:Hide();
 			end
+			headerFrame.stageName:SetText(stageName);
+			if ( headerFrame.stageName:GetStringWidth() > headerFrame.stageName:GetWrappedWidth() ) then
+				headerFrame.stageLevel:SetPoint("TOPLEFT", 15, -10);
+			else
+				headerFrame.stageLevel:SetPoint("TOPLEFT", 15, -18);
+			end
+		end
+		WatchFrameScenario_StopCriteriaAnimations();
+		scenarioFrame.stage = currentStage;
+	end
+
+	-- don't do the criteria if stage just changed or the frame is sliding out or we're displaying bonus at end of scenario
+	if ( (newStage and currentStage > 1) or scenarioFrame.slidingAction == "out" or finalBonusDisplay ) then
+		numCriteria = 0;
+	end
+	local contentHeight = 0;
+	local isFirstLine = true;
+	for i = 1, numCriteria do
+		local criteriaString, criteriaType, criteriaCompleted, quantity, totalQuantity, flags, assetID, quantityString, criteriaID = C_Scenario.GetCriteriaInfo(i);
+		criteriaString = string.format("%d/%d %s", quantity, totalQuantity, criteriaString);
+		local line = WatchFrameScenario_GetCriteriaLine(i, scenarioFrame.ScrollChild);
+		WatchFrameScenario_SetLine(line, criteriaString, criteriaID, nextAnchor, inChallengeMode, isFirstLine, false);
+		isFirstLine = false;
+		if ( criteriaCompleted ) then
+			line.text:SetTextColor(0.6, 0.6, 0.6);
+			line.icon:SetTexture("Interface\\Scenarios\\ScenarioIcon-Check");
+		else
+			line.icon:SetTexture("Interface\\Scenarios\\ScenarioIcon-Combat");
+		end
+		nextAnchor = line;
+		contentHeight = contentHeight + line:GetHeight() - WATCHFRAMELINES_FONTSPACING + SCENARIO_LINE_OFFSET;
+	end
+
+	-- bonus objectives	
+	local bonusHeader = WatchFrameScenarioBonusHeader;
+	local bonusHeaderAnim;
+	if ( hasBonusStep ) then
+		local bonusName, bonusDescription, numBonusCriteria, bonusStepFailed = C_Scenario.GetBonusStepInfo();
+		nextAnchor = bonusHeader;
+		local isFirstLine = true;
+		bonusHeader.timedCriteriaIndex = nil;
+		for i = 1, numBonusCriteria do
+			numCriteria = numCriteria + 1;
+			local criteriaString, criteriaType, criteriaCompleted, quantity, totalQuantity, flags, assetID, quantityString, criteriaID, timeLeft, criteriaFailed = C_Scenario.GetBonusCriteriaInfo(i);
+			-- there should only be 1 timer event...
+			if ( timeLeft and timeLeft > 0 and not criteriaCompleted and not criteriaFailed ) then
+				bonusHeader.timedCriteriaIndex = i;
+			end
+			criteriaString = string.format("%d/%d %s", quantity, totalQuantity, criteriaString);
+			local line = WatchFrameScenario_GetCriteriaLine(numCriteria, bonusHeader);
+			if ( bonusStepFailed and not criteriaFailed ) then
+				line.text:SetFontObject("GameFontBlack");
+			else
+				line.text:SetFontObject("GameFontNormal");
+			end
+			WatchFrameScenario_SetLine(line, criteriaString, criteriaID, nextAnchor, inChallengeMode, isFirstLine, true);
+			isFirstLine = false;
 			if ( criteriaCompleted ) then
-				line.text:SetTextColor(0.6, 0.6, 0.6);
+				if ( not bonusStepFailed ) then
+					line.text:SetTextColor(0.6, 0.6, 0.6);
+				end
 				line.icon:SetTexture("Interface\\Scenarios\\ScenarioIcon-Check");
+			elseif ( criteriaFailed ) then
+				line.icon:SetTexture("Interface\\Scenarios\\ScenarioIcon-Fail");
+				line.text:SetTextColor(DIM_RED_FONT_COLOR.r, DIM_RED_FONT_COLOR.g, DIM_RED_FONT_COLOR.b);
 			else
 				line.icon:SetTexture("Interface\\Scenarios\\ScenarioIcon-Combat");
 			end
-			-- animation
-			if ( criteriaID == animationCriteriaID and criteriaCompleted ) then
-				WatchFrameScenario_PlayCriteriaAnimation(line);
-			end
-
-			nextAnchor = line;
-			line.icon:Show();
-			line:Show();
-			contentHeight = contentHeight + line:GetHeight() - WATCHFRAMELINES_FONTSPACING + WATCHFRAME_SCENARIO_LINE_OFFSET;
-		end
-		
-		if ( not inChallengeMode ) then
-			WATCHFRAME_SLIDEIN_ANIMATIONS["SCENARIO"].height = contentHeight;
-			WATCHFRAME_SLIDEIN_ANIMATIONS["SCENARIO"].scrollStart = contentHeight;
-			-- slide in only if new stage
-			if ( popupFrame.stage == currentStage ) then
-				popupFrame:SetHeight(contentHeight);
+			-- darken criteria lines if bonus step has failed
+			if ( bonusStepFailed and not criteriaFailed ) then
+				line.text:SetTextColor(0.2, 0.2, 0.2);
+				line.icon:SetDesaturated(true);
 			else
-				WatchFrame_SlideInFrame(popupFrame, "SCENARIO");
-				if ( popupFrame.stage ) then
-					PlaySound("UI_Scenario_Stage_End");
-				end
+				line.icon:SetDesaturated(false);
 			end
-			popupFrame.stage = currentStage;
-			-- set up return values
-			width = WatchFrameScenarioFrame:GetWidth();
-			numPopups = 1;
-			nextAnchor = popupFrame;
+			-- animation? 
+			if ( criteriaID == updateCriteriaID and isBonusStepComplete and bonusHeader.state ~= "success" ) then
+				bonusHeaderAnim = bonusHeader.AnimSuccess;
+				PlaySound("UI_Scenario_BonusObjective_Success");
+			elseif ( criteriaID == updateCriteriaID and criteriaFailed and bonusStepFailed and bonusHeader.state ~= "failure" ) then
+				bonusHeaderAnim = bonusHeader.AnimFailure;
+			end
+			nextAnchor = line;
 		end
-		numObjectives = 1;
+		-- timer
+		if ( bonusHeader.timedCriteriaIndex ) then
+			bonusHeader:SetScript("OnUpdate", WatchFrameScenarioBonusHeader_OnUpdate);
+			bonusHeader.updateTime = true;
+		else
+			bonusHeader:SetScript("OnUpdate", nil);
+			bonusHeader.TimeLeft:SetText("");
+		end
+		-- text and glow
+		if ( isBonusStepComplete ) then
+			-- bonus objectives have been completed
+			bonusHeader.Label:SetText(SCENARIO_BONUS_SUCCESS);
+			bonusHeader.Label:SetTextColor(1, 0.831, 0.380);
+			bonusHeader.Background:SetDesaturated(false);
+			bonusHeader.Background:SetVertexColor(1, 1, 1);
+			bonusHeader.Flag:SetDesaturated(false);
+			bonusHeader.Flag:SetVertexColor(1, 1, 1);
+			bonusHeader.state = "success";
+		elseif ( bonusStepFailed ) then
+			-- at least one bonus objective has failed
+			bonusHeader.Label:SetText(SCENARIO_BONUS_LABEL);
+			bonusHeader.Label:SetTextColor(0.5, 0.5, 0.5);
+			bonusHeader.Background:SetDesaturated(true);
+			bonusHeader.Background:SetVertexColor(0.5, 0.5, 0.5);
+			bonusHeader.Flag:SetDesaturated(true);
+			bonusHeader.Flag:SetVertexColor(0.5, 0.5, 0.5);
+			bonusHeader.state = "failure";
+		else
+			-- scenario in progress
+			bonusHeader.Label:SetText(SCENARIO_BONUS_LABEL);
+			bonusHeader.Label:SetTextColor(1, 0.831, 0.380);
+			bonusHeader.Background:SetDesaturated(false);
+			bonusHeader.Background:SetVertexColor(1, 1, 1);
+			bonusHeader.Flag:SetDesaturated(false);
+			bonusHeader.Flag:SetVertexColor(1, 1, 1);
+			bonusHeader.state = "ongoing";
+		end
+		-- animation
+		if ( bonusHeaderAnim ) then
+			bonusHeaderAnim:Play();
+		end
+		bonusHeader:Show();
+		scenarioFrame.bottomAnchor = nextAnchor;
 	else
-		popupFrame:Hide();
-		popupFrame.stage = nil;
+		bonusHeader:Hide();
+		scenarioFrame.bottomAnchor = scenarioFrame;
 	end
 
-	WatchFrame_ReleaseUnusedScenarioLines();
-	return nextAnchor, width, numObjectives, numPopups;
-end
-
-function WatchFrameScenario_ReadyCriteriaAnimation(criteriaID)
-	local animationLine = ScenarioCriteriaAnimationLine;
-	if ( animationLine.playState == "playing" ) then
-		WatchFrameScenario_StopCriteriaAnimation();
+	-- hide unused lines
+	for i = numCriteria + 1, #SCENARIO_CRITERIA_LINES do
+		SCENARIO_CRITERIA_LINES[i]:Hide();
 	end
-	animationLine.playState = "ready";
-	animationLine.criteriaID = criteriaID;
+	
+	if ( finalBonusDisplay ) then
+		contentHeight = 1;
+		scenarioFrame.numPopups = 1;	-- treat this as a popup so shadow frame is displayed
+	elseif ( inChallengeMode ) then
+		contentHeight = contentHeight + SCENARIO_TEXT_HEADER_HEIGHT;
+		scenarioFrame.numPopups = 0;
+	else
+		contentHeight = contentHeight + SCENARIO_POPUP_BASE_HEIGHT;
+		scenarioFrame.numPopups = 1;	-- treat this as a popup so shadow frame is displayed
+	end
+
+	-- during a sliding animation the height is being controlled by WatchFrameSlideInFrame_OnUpdate
+	if ( not scenarioFrame.slidingAction ) then
+		scenarioFrame:SetHeight(contentHeight);
+	end
+	scenarioFrame.contentHeight = contentHeight;
+
+	if ( newStage and not inChallengeMode ) then
+		if ( WatchFrame:IsVisible() ) then
+			if ( currentStage == 1 ) then
+				WatchFrameScenario_SlideIn();
+				LevelUpDisplay_PlayScenario();
+			else
+				WatchFrameScenario_SlideOut();
+			end
+		else
+			LevelUpDisplay_PlayScenario();
+		end
+		-- play sound if not the first stage
+		if ( currentStage > 1 and currentStage <= numStages ) then
+			PlaySound("UI_Scenario_Stage_End");
+		end
+	end
+
+	scenarioFrame.dirty = nil;
 end
 
-function WatchFrameScenario_PlayCriteriaAnimation(targetLine)
-	local animationLine = ScenarioCriteriaAnimationLine;
-	-- always reparent in case lines got shuffled
-	animationLine:SetParent(targetLine);
-	animationLine:SetAllPoints(targetLine);
-	-- start animations if in the ready state
-	if ( animationLine.playState == "ready" ) then
-		animationLine.playState = "playing";
-		animationLine.Glow.ScaleAnim:Play();
-		animationLine.Glow.AlphaAnim:Play();
-		animationLine.Sheen.Anim:Play();
-		animationLine.Check.Anim:Play();
+function WatchFrameScenario_SetLine(line, text, criteriaID, anchor, inChallengeMode, isFirstLine, isBonus)
+	line.criteriaID = criteriaID;
+	local offset;
+	if ( isFirstLine ) then
+		offset = 0;
+		if ( inChallengeMode ) then
+			offset = SCENARIO_LINE_OFFSET;
+		end
+		if ( isBonus ) then
+			offset = offset + SCENARIO_BONUS_OFFSET;
+		end
+	else
+		offset = SCENARIO_LINE_OFFSET;
+	end
+	WatchFrame_SetLine(line, anchor, WATCHFRAMELINES_FONTSPACING - offset, nil, text, DASH_ICON, nil, true);
+	line.criteriaID = criteriaID;
+	line:Show();
+end
+
+-- This is called from the WatchFrame_Update handler
+function WatchFrameScenario_DisplayScenario(lineFrame, nextAnchor, maxHeight, frameWidth)
+	local scenarioFrame = WatchFrameScenarioFrame;
+	-- this will happen after a reloadui
+	if ( C_Scenario.IsInScenario() and (not scenarioFrame.name or scenarioFrame.dirty) ) then
+		WatchFrameScenario_UpdateScenario();
+	end
+
+	if ( scenarioFrame.name ) then
+		scenarioFrame:ClearAllPoints();
+		if ( nextAnchor ) then
+			scenarioFrame:SetPoint("TOPLEFT", nextAnchor, "BOTTOMLEFT", 0, -WATCHFRAME_TYPE_OFFSET);
+		else
+			scenarioFrame:SetPoint("TOPLEFT", lineFrame, "TOPLEFT", 0, -WATCHFRAME_INITIAL_OFFSET + 4);
+		end
+		WatchFrameScenarioBonusHeader.updateTime = true;
+		-- returning anchor, width, numObjectives, numPopups
+		return scenarioFrame.bottomAnchor, 0, 1, scenarioFrame.numPopups;
+	else
+		scenarioFrame:Hide();
+		WatchFrameScenarioBonusHeader:Hide();
+		-- returning anchor, width, numObjectives, numPopups
+		return nextAnchor, 0, 0, 0;
 	end
 end
 
-function WatchFrameScenario_StopCriteriaAnimation()
-	local animationLine = ScenarioCriteriaAnimationLine;
-	if ( animationLine.playState ) then
-		animationLine.Glow.ScaleAnim:Stop();
-		animationLine.Glow.AlphaAnim:Stop();
-		animationLine.Sheen.Anim:Stop();
-		animationLine.Check.Anim:Stop();
-		animationLine.playState = nil;
-		animationLine.criteriaID = nil;
+function WatchFrameScenario_GetCriteriaLine(index, parent)
+	local line = SCENARIO_CRITERIA_LINES[index];
+	if ( not line ) then
+		line = CreateFrame("FRAME", "WatchFrameScenarioLine"..index, parent, "WatchFrameScenarioLineTemplate");
+		tinsert(SCENARIO_CRITERIA_LINES, line);
+	else
+		line:SetParent(parent);
+		if ( line.isAnimating ) then
+			line.Glow.ScaleAnim:Stop();
+			line.Glow.AlphaAnim:Stop();
+			line.Sheen.Anim:Stop();
+			line.Check.Anim:Stop();
+			line.isAnimating = nil;
+		end
+	end
+	line:SetHeight(WATCHFRAME_LINEHEIGHT);
+	line.text:SetHeight(0);
+	return line;
+end
+
+function WatchFrameScenario_PlayCriteriaAnimation(criteriaID)
+	for i = 1, #SCENARIO_CRITERIA_LINES do
+		local line = SCENARIO_CRITERIA_LINES[i];
+		if ( line.criteriaID == criteriaID ) then
+			line.Glow.ScaleAnim:Play();
+			line.Glow.AlphaAnim:Play();
+			line.Sheen.Anim:Play();
+			line.Check.Anim:Play();
+			line.isAnimating = true;
+			return;
+		end
+	end
+end
+
+function WatchFrameScenario_StopCriteriaAnimations()
+	for i = 1, #SCENARIO_CRITERIA_LINES do
+		local line = SCENARIO_CRITERIA_LINES[i];
+		if ( line.isAnimating ) then
+			line.Glow.ScaleAnim:Stop();
+			line.Glow.AlphaAnim:Stop();
+			line.Sheen.Anim:Stop();
+			line.Check.Anim:Stop();
+			line.isAnimating = nil;
+		end
+	end
+end
+
+function WatchFrameScenario_StopAllAnimations()
+	local frame = WatchFrameScenarioFrame;
+	if ( frame.slidingAction ) then
+		frame:SetScript("OnUpdate", nil);
+		frame:SetVerticalScroll(0);
+		frame.slidingAction = nil;
+		frame.ScrollChild.BlockHeader.stageComplete:Hide();
+		frame.ScrollChild.BlockHeader.stageLevel:Show();
+		frame.ScrollChild.BlockHeader.stageName:Show();
+		WatchFrameScenario_UpdateScenario();	-- to turn criteria lines back on and update the height
+	end
+	WatchFrameScenario_StopCriteriaAnimations();
+end
+
+function WatchFrameScenario_SlideIn()
+	local frame = WatchFrameScenarioFrame;
+	frame.slidingAction = "in";
+	local headerFrame = frame.ScrollChild.BlockHeader;
+	headerFrame.stageLevel:Show();
+	headerFrame.stageName:Show();
+	WATCHFRAME_SLIDEIN_ANIMATIONS["SCENARIO_IN"].height = frame.contentHeight;
+	WATCHFRAME_SLIDEIN_ANIMATIONS["SCENARIO_IN"].scrollStart = frame.contentHeight;
+	WatchFrame_SlideInFrame(frame, "SCENARIO_IN");
+end
+
+function WatchFrameScenario_OnFinishSlideIn()
+	WatchFrameScenarioFrame.slidingAction = nil;
+end
+
+function WatchFrameScenario_SlideOut()
+	local headerFrame = WatchFrameScenarioFrame.ScrollChild.BlockHeader;
+	headerFrame.stageLevel:Hide();
+	headerFrame.stageName:Hide();
+	headerFrame.stageComplete:Show();
+	headerFrame.bgAnim.AlphaAnim:Play();
+	WatchFrameScenarioFrame.slidingAction = "out";
+	WATCHFRAME_SLIDEIN_ANIMATIONS["SCENARIO_OUT"].height = SCENARIO_POPUP_BASE_HEIGHT;
+	WATCHFRAME_SLIDEIN_ANIMATIONS["SCENARIO_OUT"].scrollEnd = WATCHFRAME_SLIDEIN_ANIMATIONS["SCENARIO_OUT"].scrollStart;
+	WatchFrame_SlideInFrame(WatchFrameScenarioFrame, "SCENARIO_OUT");
+end
+
+function WatchFrameScenario_OnFinishSlideOut()
+	WatchFrameScenarioFrame.slidingAction = nil;
+	WatchFrameScenarioFrame.ScrollChild.BlockHeader.stageComplete:Hide();
+	WatchFrameScenarioFrame.dirty = true;
+	WatchFrame_Update();
+	local name, currentStage, numStages = C_Scenario.GetInfo();
+	if ( currentStage and currentStage <= numStages ) then
+		WatchFrameScenario_SlideIn();
+	end
+end
+
+function WatchFrameScenario_OnBeginSlideOut()
+	-- it's a little hacky to have this function but we want to play this animation
+	-- when the header actually begins sliding out
+	LevelUpDisplay_PlayScenario();
+end
+
+function WatchFrameScenarioBonusHeader_OnEnter(self)
+	local bonusName, bonusDescription, numBonusCriteria, bonusStepFailed = C_Scenario.GetBonusStepInfo();
+	if ( bonusStepFailed ) then
+		return;
+	end
+	if ( not bonusName or bonusName == "" ) then
+		bonusName = SCENARIO_BONUS_OBJECTIVES;
+	end
+	if ( not bonusDescription or bonusDescription == "" ) then
+		bonusName = SCENARIO_BONUS_OBJECTIVES_DESCRIPTION;
+	end	
+	GameTooltip:SetOwner(self, "ANCHOR_BOTTOMLEFT", 0, 36);
+	GameTooltip:SetText(bonusName, 1, 0.831, 0.380);
+	GameTooltip:AddLine(bonusDescription, 1, 1, 1, 1);
+	-- bonus rewards
+	local dungeonID, randomID = GetPartyLFGID();
+	if ( randomID ) then
+		-- random takes precedence for determing rewards
+		dungeonID = randomID;
+	end
+	if ( dungeonID ) then
+		local firstReward = true;
+		local numRewards = select(6, GetLFGDungeonRewards(dungeonID));
+		for i = 1, numRewards do
+			local name, texturePath, quantity, isBonusCurrency = GetLFGDungeonRewardInfo(dungeonID, i);
+			if ( isBonusCurrency ) then
+				if ( firstReward ) then
+					GameTooltip:AddLine(" ");
+					GameTooltip:AddLine(SCENARIO_BONUS_REWARD, 1, 0.831, 0.380);
+					firstReward = false;
+				end
+				GameTooltip:AddLine(format(SCENARIO_BONUS_CURRENCY_FORMAT, quantity, name), 1, 1, 1);
+				GameTooltip:AddTexture(texturePath);
+			end
+		end
+	end
+	GameTooltip:Show();
+end
+
+function WatchFrameScenarioBonusHeader_OnUpdate(self, elapsed)
+	if ( self.updateTime ) then
+		self.timeLeft = select(10, C_Scenario.GetBonusCriteriaInfo(self.timedCriteriaIndex));
+		self.updateTime = nil;
+	end
+	self.timeLeft = self.timeLeft - elapsed;
+	if ( self.timeLeft >= 0 ) then
+		self.TimeLeft:SetText(GetTimeStringFromSeconds(self.timeLeft, nil, true));	-- only show hours if nonzero
+	else
+		WatchFrameScenario_UpdateScenario();
 	end
 end
 
@@ -1924,7 +2187,11 @@ end
 --------------------------------------------------------------------------------------------
 WATCHFRAME_SLIDEIN_ANIMATIONS = {
 	["AUTOQUEST"] = { height = 72, scrollStart = 65, scrollEnd = -9, slideInTime = 0.4, onFinishFunc = WatchFrameAutoQuest_OnFinishSlideIn },
-	["SCENARIO"] = { height = nil, scrollStart = nil, scrollEnd = 0, slideInTime = 0.4 },	-- various content heights, nil values must be set
+	["SCENARIO_IN"]  = { height = nil, scrollStart = nil, scrollEnd = 0, slideInTime = 0.4,
+						 onFinishFunc = WatchFrameScenario_OnFinishSlideIn },										-- various content heights, nil values must be set
+	["SCENARIO_OUT"] = { height = nil, scrollStart = 0, scrollEnd = nil, slideInTime = 0.4, reverse = true,
+						 afterStartDelayFunc = WatchFrameScenario_OnBeginSlideOut,
+						 onFinishFunc = WatchFrameScenario_OnFinishSlideOut, startDelay = 0.8, endDelay = 0.6 },	-- various content heights, nil values must be set
 };
 
 function WatchFrame_SlideInFrame(frame, animType)
@@ -1932,6 +2199,12 @@ function WatchFrame_SlideInFrame(frame, animType)
 	frame.animData = WATCHFRAME_SLIDEIN_ANIMATIONS[animType];
 	frame.slideInTime = frame.animData.slideInTime;
 	frame:SetHeight(1);
+	if ( frame.animData.reverse ) then
+		frame:SetHeight(frame.animData["height"]);
+	else
+		frame:SetHeight(1);
+	end
+	frame.startDelay = frame.animData.startDelay;
 	frame:SetScript("OnUpdate", WatchFrameSlideInFrame_OnUpdate);
 end
 
@@ -1940,10 +2213,23 @@ function WatchFrameSlideInFrame_OnUpdate(frame, timestep)
 	local height = animData.height;
 	local scrollStart = animData.scrollStart;
 	local scrollEnd = animData.scrollEnd;
+	local endTime = animData.slideInTime + (animData.endDelay or 0);
 
 	-- Pause animation while the lineframe shadow is animating
 	if (WatchFrameLinesShadow.FadeIn:IsPlaying()) then
 		return;
+	end
+
+	if (frame.startDelay) then
+		frame.startDelay = frame.startDelay - timestep;
+		if (frame.startDelay <= 0) then
+			frame.startDelay = nil;
+			if ( animData.afterStartDelayFunc ) then
+				animData.afterStartDelayFunc();
+			end
+		else
+			return;
+		end
 	end
 
 	-- The first pop-up needs to include the WATCHFRAME_TYPE_OFFSET in the animation
@@ -1953,8 +2239,8 @@ function WatchFrameSlideInFrame_OnUpdate(frame, timestep)
 	end
 
 	frame.totalTime = frame.totalTime+timestep;
-	if (frame.totalTime > animData.slideInTime) then
-		frame.totalTime = animData.slideInTime;
+	if (frame.totalTime > endTime) then
+		frame.totalTime = endTime;
 	end
 
 	local scrollPos = scrollEnd;
@@ -1962,11 +2248,14 @@ function WatchFrameSlideInFrame_OnUpdate(frame, timestep)
 		height = height*(frame.totalTime/animData.slideInTime);
 		scrollPos = scrollStart + (scrollEnd-scrollStart)*(frame.totalTime/animData.slideInTime);
 	end
+	if ( animData.reverse ) then
+		height = max(animData.height - height, 1);
+	end
 	frame:SetHeight(height);
 	frame:UpdateScrollChildRect();
 	frame:SetVerticalScroll(floor(scrollPos+0.5));
 
-	if (frame.totalTime >= animData.slideInTime) then
+	if (frame.totalTime >= endTime) then
 		frame:SetScript("OnUpdate", nil);
 		WatchFrame_Update();
 		if ( animData.onFinishFunc ) then

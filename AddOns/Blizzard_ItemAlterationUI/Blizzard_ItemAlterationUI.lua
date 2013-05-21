@@ -5,6 +5,8 @@
 
 UIPanelWindows["TransmogrifyFrame"] =	{ area = "left", pushable = 0 };
 
+local FLYOUT_BUTTON_HIDE_DELAY_TIME = 0.1;
+
 local BUTTONS = { };
 
 function TransmogrifyFrame_Show()
@@ -39,10 +41,11 @@ function TransmogrifyFrame_OnLoad(self)
 		getItemsFunc =  TransmogrifyItemFlyout_GetItems,
 		hasPopouts = false,
 		parent = TransmogrifyFrame,
-		anchorX = 7,
-		anchorY = 3,
-		verticalAnchorX = -2,
-		verticalAnchorY = -6,
+		anchorX = 0,
+		anchorY = -3,
+		verticalAnchorX = 0,
+		verticalAnchorY = 0,
+		keepShownOnClick = true,
 	};
 end
 
@@ -124,6 +127,9 @@ end
 function TransmogrifyFrame_OnHide(self)
 	PlaySound("UI_EtherealWindow_Close");
 	StaticPopupSpecial_Hide(TransmogrifyConfirmationPopup);
+	for _, button in pairs(BUTTONS) do
+		button.popoutButton:Hide();
+	end
 	self:UnregisterEvent("PLAYER_EQUIPMENT_CHANGED");
 	self:UnregisterEvent("BAG_UPDATE");
 	self:UnregisterEvent("UNIT_MODEL_CHANGED");
@@ -198,6 +204,27 @@ function TransmogrifySlotButton_OnLoad(self)
 	self.verticalFlyout = VERTICAL_FLYOUTS[id];
 	BUTTONS[id] = self;
 	RaiseFrameLevelByTwo(self);
+
+	local popoutButton = self.popoutButton;
+	if ( popoutButton ) then
+		if ( self.verticalFlyout ) then
+			popoutButton:SetHeight(16);
+			popoutButton:SetWidth(38);
+			
+			popoutButton:GetNormalTexture():SetTexCoord(0.15625, 0.84375, 0.5, 0);
+			popoutButton:GetHighlightTexture():SetTexCoord(0.15625, 0.84375, 1, 0.5);
+			popoutButton:ClearAllPoints();
+			popoutButton:SetPoint("TOP", self, "BOTTOM", 0, 0);
+		else
+			popoutButton:SetHeight(38);
+			popoutButton:SetWidth(16);
+			
+			popoutButton:GetNormalTexture():SetTexCoord(0.15625, 0.5, 0.84375, 0.5, 0.15625, 0, 0.84375, 0);
+			popoutButton:GetHighlightTexture():SetTexCoord(0.15625, 1, 0.84375, 1, 0.15625, 0.5, 0.84375, 0.5);
+			popoutButton:ClearAllPoints();
+			popoutButton:SetPoint("LEFT", self, "RIGHT", 0, 0);
+		end
+	end
 end
 
 function TransmogrifySlotButton_OnEvent(self, event, ...)
@@ -212,10 +239,10 @@ function TransmogrifySlotButton_OnClick(self, button)
 	local isTransmogrified, canTransmogrify, cannotTransmogrifyReason, hasPending, hasUndo = GetTransmogrifySlotInfo(self.id);
 	-- save for sound to play on TRANSMOGRIFY_UPDATE event
 	self.hadUndo = hasUndo;
-	if ( button == "LeftButton" ) then
-		ClickTransmogrifySlot(self.id);
-	elseif ( button == "RightButton" ) then
+	if ( button == "RightButton" ) then
 		ClearTransmogrifySlot(self.id);
+	else
+		ClickTransmogrifySlot(self.id);
 	end
 	self.undoIcon:Hide();
 	TransmogrifySlotButton_OnEnter(self);
@@ -231,7 +258,7 @@ function TransmogrifySlotButton_OnEnter(self)
 	self:RegisterEvent("MODIFIER_STATE_CHANGED");
 	EquipmentFlyout_UpdateFlyout(self);
 	if ( not EquipmentFlyout_SetTooltipAnchor(self) ) then
-		GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+		GameTooltip:SetOwner(self, "ANCHOR_RIGHT", 14, 0);
 	end
 	if ( hasPending or hasUndo ) then
 		GameTooltip:SetTransmogrifyItem(self.id);
@@ -246,7 +273,10 @@ function TransmogrifySlotButton_OnEnter(self)
 	else
 		local hasItem = GameTooltip:SetInventoryItem("player", self.id);
 	end
-
+	if ( canTransmogrify ) then
+		self.popoutButton:Show();
+		self.popoutButton.persistTime = nil;
+	end
 	TransmogrifyModelFrame.controlFrame:Show();
 end
 
@@ -254,6 +284,7 @@ function TransmogrifySlotButton_OnLeave(self)
 	self:UnregisterEvent("MODIFIER_STATE_CHANGED");
 	TransmogrifyModelFrame.controlFrame:Hide();
 	self.undoIcon:Hide();
+	self.popoutButton.persistTime = 0;
 	GameTooltip:Hide();
 end
 
@@ -372,8 +403,10 @@ end
 
 function TransmogrifyItemFlyoutButton_OnClick(self)
 	if ( self.location ) then
-		local player, bank, bags, slot, bag = EquipmentManager_UnpackLocation(self.location);
-		if ( bag ) then
+		local player, bank, bags, voidStorage, slot, bag = EquipmentManager_UnpackLocation(self.location);
+		if ( voidStorage ) then
+			UseVoidItemForTransmogrify(slot, EquipmentFlyoutFrame.button.id);
+		elseif ( bag ) then
 			UseItemForTransmogrify(bag, slot, EquipmentFlyoutFrame.button.id);
 		else
 			UseItemForTransmogrify(nil, slot, EquipmentFlyoutFrame.button.id);
@@ -418,4 +451,25 @@ function TransmogrifyConfirmationPopup_SetItem(itemFrame, itemLink)
 	itemFrame.icon:SetTexture(texture);
 	itemFrame:Show();
 	itemFrame.link = itemLink;
+end
+
+function TransmogrifyFrame_CloseFlyout()
+	local flyout = EquipmentFlyoutFrame;
+	if ( flyout:IsShown() ) then
+		local flyoutSettings = flyout.button:GetParent().flyoutSettings;
+		if ( flyoutSettings and flyoutSettings.parent == TransmogrifyFrame ) then
+			EquipmentFlyoutFrame:Hide();
+		end
+	end
+end
+
+function TransmogrifySlotFlyoutButton_OnUpdate(self, elapsed)
+	if ( self.persistTime and not self.flyoutLocked ) then
+		if ( not EquipmentFlyoutFrame:IsShown() or EquipmentFlyoutFrame.button ~= self:GetParent() ) then
+			self.persistTime = self.persistTime + elapsed;
+			if ( self.persistTime >= FLYOUT_BUTTON_HIDE_DELAY_TIME ) then
+				self:Hide();
+			end
+		end
+	end
 end

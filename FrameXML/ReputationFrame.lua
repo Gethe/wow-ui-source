@@ -21,6 +21,8 @@ MAX_PLAYER_LEVEL_TABLE[4] = 90;
 MAX_PLAYER_LEVEL = 0;
 REPUTATIONFRAME_ROWSPACING = 23;
 
+SHOWED_LFG_PULSE = false;
+
 function ReputationFrame_OnLoad(self)
 	self:RegisterEvent("UPDATE_FACTION");
 	self:RegisterEvent("LFG_BONUS_FACTION_ID_UPDATED");
@@ -33,7 +35,8 @@ end
 
 function ReputationFrame_OnShow()
 	CharacterFrameTitleText:SetText(UnitPVPName("player"));
-	ReputationFrame_Update();
+	ReputationFrame_Update(true);
+	SHOWED_LFG_PULSE = true;
 end
 
 function ReputationFrame_OnEvent(self, event, ...)
@@ -110,7 +113,7 @@ function ReputationFrame_SetRowType(factionRow, isChild, isHeader, hasRep)	--row
 	end
 end
 
-function ReputationFrame_Update()
+function ReputationFrame_Update(showLFGPulse)
 	local numFactions = GetNumFactions();
 
 	-- Update scroll frame
@@ -187,6 +190,13 @@ function ReputationFrame_Update()
 			factionRow.LFGBonusRepButton:SetShown(canBeLFGBonus);
 			factionRow.LFGBonusRepButton:SetChecked(lfgBonusFactionID == factionID);
 			factionRow.LFGBonusRepButton:SetEnabled(lfgBonusFactionID ~= factionID);
+			if ( showLFGPulse and not SHOWED_LFG_PULSE and not lfgBonusFactionID ) then
+				factionRow.LFGBonusRepButton.Glow:Show();
+				factionRow.LFGBonusRepButton.GlowAnim:Play();
+			else
+				factionRow.LFGBonusRepButton.Glow:Hide();
+				factionRow.LFGBonusRepButton.GlowAnim:Stop();
+			end
 
 			ReputationFrame_SetRowType(factionRow, isChild, isHeader, hasRep);
 			
@@ -233,6 +243,10 @@ function ReputationFrame_Update()
 					else
 						ReputationDetailMainScreenCheckBox:SetChecked(nil);
 					end
+					ReputationDetailFrame:SetHeight(canBeLFGBonus and 225 or 203);
+					ReputationDetailLFGBonusReputationCheckBox:SetShown(canBeLFGBonus);
+					ReputationDetailLFGBonusReputationCheckBox:SetChecked(lfgBonusFactionID == factionID);
+					ReputationDetailLFGBonusReputationCheckBox.factionID = factionID;
 					_G["ReputationBar"..i.."ReputationBarHighlight1"]:Show();
 					_G["ReputationBar"..i.."ReputationBarHighlight2"]:Show();
 				end
@@ -264,15 +278,31 @@ function ReputationBar_OnClick(self)
 end
 
 function ReputationBarLFGBonusRepButton_OnClick(self)
-	SetLFGBonusFactionID(self.factionID);
-	self:Disable();
+	PlaySound("igMainMenuOptionCheckBoxOn");
+	ReputationBar_SetLFBonus(self.factionID);
+end
+
+function ReputationBar_SetLFBonus(factionID)
+	SetLFGBonusFactionID(factionID);
+	--It feels really weird when the client waits to update until it receives a response from the server.
+	--Instead, we'll fake it. Hopefully we don't end up lying to people
 	for i=1, NUM_FACTIONS_DISPLAYED, 1 do
 		local factionRow = _G["ReputationBar"..i];
 		local button = factionRow.LFGBonusRepButton;
-		if ( button ~= self ) then
-			--It feels really weird when the client waits to update until it receives a response from the server.
-			--Instead, we'll fake it. Hopefully we don't end up lying to people
+		if ( factionID == 0 ) then
 			button:SetChecked(false);
+			button:Enable();
+			--button.GlowAnim:Play();
+			--button.Glow:Show();
+		elseif ( button.factionID == factionID ) then
+			button:SetChecked(true);
+			button:Disable();
+			--button.GlowAnim:Stop();
+			--button.Glow:Hide();
+		else
+			button:SetChecked(false);
+			--button.GlowAnim:Stop();
+			--button.Glow:Hide();
 		end
 	end
 end
