@@ -729,7 +729,7 @@ end
 
 function HelpOpenWebTicketButton_OnEvent(self, event, ...)
 	if ( event == "UPDATE_WEB_TICKET" ) then
-		local hasTicket, numTickets, ticketStatus, caseIndex = ...;
+		local hasTicket, numTickets, ticketStatus, caseIndex, waitTime, waitMsg = ...;
 		self.titleText = nil;
 		self.statusText = nil;
 		self.caseIndex = nil;
@@ -744,14 +744,24 @@ function HelpOpenWebTicketButton_OnEvent(self, event, ...)
 			elseif (ticketStatus == LE_TICKET_STATUS_RESPONSE) then --ticket has been responded to
 				self.haveResponse = true;
 				self.caseIndex = caseIndex;
-			end
-			
-			if (ticketStatus == LE_TICKET_STATUS_SURVEY and numTickets == 1) then
+			elseif (ticketStatus == LE_TICKET_STATUS_OPEN) then
+				if (waitMsg and waitTime > 0) then
+					self.statusText = format(waitMsg, SecondsToTime(waitTime*60))
+				elseif (waitMsg) then
+					self.statusText = waitMsg;
+				elseif (waitTime > 120) then
+					self.statusText = GM_TICKET_HIGH_VOLUME;
+				elseif (waitTime > 0) then
+					self.statusText = format(GM_TICKET_WAIT_TIME, SecondsToTime(waitTime*60));
+				else
+					self.statusText = GM_TICKET_UNAVAILABLE;
+				end
+			elseif (ticketStatus == LE_TICKET_STATUS_SURVEY and numTickets == 1) then
 				-- the player just has a survey, don't show this icon
 				self:Hide();
-			else
-				self:Show();
+				return;
 			end
+			self:Show();
 		else
 			-- the player does not have a ticket
 			self.haveResponse = false;

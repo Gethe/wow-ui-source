@@ -2095,9 +2095,7 @@
 		<Scripts>
 			<OnLoad>
 				self.refreshTime = 0;
-				if (HelpBrowser:HasConnection()) then
-					self:RegisterEvent("UPDATE_WEB_TICKET");
-				end
+				self:RegisterEvent("UPDATE_WEB_TICKET")
 			</OnLoad>
 			<OnShow>
 				HelpOpenTicketButton:Hide();
