@@ -588,7 +588,7 @@
 							</Frame>
 						</ScrollChild>
 					</ScrollFrame>
-					<EditBox name="SendMailNameEditBox" letters="12" historyLines="0" autoFocus="false" inherits="AutoCompleteEditBoxTemplate">
+					<EditBox name="SendMailNameEditBox" letters="77" historyLines="0" autoFocus="false" inherits="AutoCompleteEditBoxTemplate">
 						<Size x="109" y="25"/>
 						<Anchors>
 							<Anchor point="TOPLEFT" x="90" y="-30"/>

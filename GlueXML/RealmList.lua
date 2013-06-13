@@ -1,5 +1,5 @@
 local REALM_BUTTON_HEIGHT = 16;
-local MAX_REALMS_DISPLAYED = 18;
+local MAX_REALMS_DISPLAYED = 20;
 local MAX_REALM_CATEGORY_TABS = 8;
 
 function RealmList_OnLoad(self)

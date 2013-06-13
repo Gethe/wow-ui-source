@@ -78,6 +78,7 @@ COMBAT_TEXT_TYPE_INFO["RUNE"] = {r = 0.1, g = 0.1, b = 1, var = "COMBAT_TEXT_SHO
 COMBAT_TEXT_TYPE_INFO["PERIODIC_HEAL_ABSORB"] = {r = 0.1, g = 1, b = 0.1, show = 1};
 COMBAT_TEXT_TYPE_INFO["HEAL_CRIT_ABSORB"] = {r = 0.1, g = 1, b = 0.1, show = 1};
 COMBAT_TEXT_TYPE_INFO["HEAL_ABSORB"] = {r = 0.1, g = 1, b = 0.1, show = 1};
+COMBAT_TEXT_TYPE_INFO["ABSORB_ADDED"] = {r = 0.1, g = 1, b = 0.1, show = 1};
 
 COMBAT_TEXT_RUNE = {};
 COMBAT_TEXT_RUNE[1] = COMBAT_TEXT_RUNE_BLOOD;
@@ -351,6 +352,8 @@ function CombatText_OnEvent(self, event, ...)
 		else
 			message = nil;
 		end
+	elseif (messageType == "ABSORB_ADDED") then
+		message = "+"..BreakUpLargeNumbers(data).."("..COMBAT_TEXT_ABSORB..")";
 	else 
 		message = _G["COMBAT_TEXT_"..messageType];
 		if ( not message ) then

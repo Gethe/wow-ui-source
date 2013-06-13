@@ -149,18 +149,6 @@
 						</Anchor>
 					</Anchors>
 				</FontString>
-				<FontString name="$parentHighBidder" inherits="GameFontHighlightSmall">
-					<Size>
-						<AbsDimension x="78" y="32"/>
-					</Size>
-					<Anchors>
-						<Anchor point="TOPLEFT">
-							<Offset>
-								<AbsDimension x="345" y="0"/>
-							</Offset>
-						</Anchor>
-					</Anchors>
-				</FontString>
 				<Texture name="$parentLeft" file="Interface\AuctionFrame\UI-AuctionItemNameFrame">
 					<Size>
 						<AbsDimension x="10" y="32"/>
@@ -327,6 +315,26 @@
 						end
 						GameTooltip:Hide();
 					</OnLeave>
+				</Scripts>
+			</Frame>
+			<Frame name="$parentHighBidder">
+				<Size x="78" y="32"/>
+				<Anchors>
+					<Anchor point="TOPLEFT" x="345" y="0"/>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<FontString name="$parentName" parentKey="Name" inherits="GameFontHighlightSmall" setAllPoints="true"/>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnEnter>
+						if (self.fullName) then
+							GameTooltip:SetOwner(self);
+							GameTooltip:SetText(self.fullName);
+						end
+					</OnEnter>
+					<OnLeave function="GameTooltip_Hide"/>
 				</Scripts>
 			</Frame>
 			<Frame name="$parentMoneyFrame" inherits="SmallMoneyFrameTemplate">
@@ -718,18 +726,6 @@
 						</Anchor>
 					</Anchors>
 				</FontString>
-				<FontString name="$parentHighBidder" inherits="GameFontHighlightSmall">
-					<Size>
-						<AbsDimension x="104" y="28"/>
-					</Size>
-					<Anchors>
-						<Anchor point="TOPLEFT">
-							<Offset>
-								<AbsDimension x="279" y="0"/>
-							</Offset>
-						</Anchor>
-					</Anchors>					
-				</FontString>
 				<Texture name="$parentLeft" file="Interface\AuctionFrame\UI-AuctionItemNameFrame">
 					<Size>
 						<AbsDimension x="10" y="32"/>
@@ -896,6 +892,26 @@
 						end
 						GameTooltip:Hide();
 					</OnLeave>
+				</Scripts>
+			</Frame>
+			<Frame name="$parentHighBidder">
+				<Size x="104" y="28"/>
+				<Anchors>
+					<Anchor point="TOPLEFT" x="279" y="0"/>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<FontString name="$parentName" parentKey="Name" inherits="GameFontHighlightSmall" setAllPoints="true"/>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnEnter>
+						if (self.fullName) then
+							GameTooltip:SetOwner(self);
+							GameTooltip:SetText(self.fullName);
+						end
+					</OnEnter>
+					<OnLeave function="GameTooltip_Hide"/>
 				</Scripts>
 			</Frame>
 			<Frame name="$parentMoneyFrame" inherits="SmallMoneyFrameTemplate">

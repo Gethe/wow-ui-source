@@ -674,15 +674,21 @@ function LevelUpDisplay_Start(self, beginUnlockList)
 			self.queuedItems = nil;
 		end
 		if ( self.type == LEVEL_UP_TYPE_SCENARIO ) then
-			local name, currentStage, numStages = C_Scenario.GetInfo();
+			local name, currentStage, numStages, flags = C_Scenario.GetInfo();
 			if ( currentStage > 0 and currentStage <= numStages ) then
 				local stageName, stageDescription = C_Scenario.GetStepInfo();
-				if ( currentStage == numStages ) then
-					self.scenarioFrame.level:SetText(SCENARIO_STAGE_FINAL);
+				if( bit.band(flags, SCENARIO_FLAG_SUPRESS_STAGE_TEXT) == SCENARIO_FLAG_SUPRESS_STAGE_TEXT) then
+					-- Bypass the Stage name portion...
+					self.scenarioFrame.level:SetText(stageName);
+					self.scenarioFrame.name:SetText("");
 				else
-					self.scenarioFrame.level:SetFormattedText(SCENARIO_STAGE, currentStage);
+					if ( currentStage == numStages ) then
+						self.scenarioFrame.level:SetText(SCENARIO_STAGE_FINAL);
+					else
+						self.scenarioFrame.level:SetFormattedText(SCENARIO_STAGE, currentStage);
+					end
+					self.scenarioFrame.name:SetText(stageName);
 				end
-				self.scenarioFrame.name:SetText(stageName);
 				self.scenarioFrame.description:SetText(stageDescription);
 				LevelUpDisplay:SetPoint("TOP", 0, -250);
 				playAnim = self.scenarioFrame.newStage;

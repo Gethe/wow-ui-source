@@ -150,6 +150,9 @@ function VehicleSeatIndicatorButton_OnEnter(self)
 	end
 	
 	local controlType, occupantName, serverName, ejectable, canSwitchSeats = UnitVehicleSeatInfo("player", self.virtualID);
+	if (serverName and serverName ~= "") then
+		occupantName = format(FULL_PLAYER_NAME, occupantName, serverName);
+	end
 	local highlight = _G[self:GetName().."Highlight"]
 	
 	if ( not UnitUsingVehicle("player") ) then	--UnitUsingVehicle also returns true when we are transitioning between seats in a vehicle.

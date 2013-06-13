@@ -624,6 +624,13 @@ TRAVEL PASS
 				FriendsFrameWhoButton_OnClick(self, button);
 				PlaySound("igMainMenuOptionCheckBoxOn");
 			</OnClick>
+			<OnEnter>
+				if (self.tooltip) then
+					GameTooltip:SetOwner(self, "ANCHOR_LEFT");
+					GameTooltip:SetText(self.tooltip);
+				end
+			</OnEnter>
+			<OnLeave function="GameTooltip_Hide"/>
 		</Scripts>
 		<HighlightTexture file="Interface\QuestFrame\UI-QuestTitleHighlight" alphaMode="ADD">
 			<Size x="298" y="16"/>

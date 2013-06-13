@@ -366,7 +366,7 @@ function MiniMapInstanceDifficulty_OnEvent(self, event, ...)
 			IS_GUILD_GROUP = isGuildGroup;
 			MiniMapInstanceDifficulty_Update();
 		end
-	elseif ( event == "PLAYER_DIFFICULTY_CHANGED" ) then
+	elseif ( event == "PLAYER_DIFFICULTY_CHANGED" or event == "INSTANCE_GROUP_SIZE_CHANGED") then
 		MiniMapInstanceDifficulty_Update();
 	elseif ( event == "UPDATE_INSTANCE_INFO" ) then
 		RequestGuildPartyState();
@@ -386,16 +386,16 @@ function MiniMapInstanceDifficulty_OnEvent(self, event, ...)
 end
 
 function MiniMapInstanceDifficulty_Update()
-	local _, instanceType, difficulty, _, maxPlayers, playerDifficulty, isDynamicInstance = GetInstanceInfo();
+	local _, instanceType, difficulty, _, maxPlayers, playerDifficulty, isDynamicInstance, _, instanceGroupSize = GetInstanceInfo();
 	local _, _, isHeroic, isChallengeMode = GetDifficultyInfo(difficulty);
 
 	if ( IS_GUILD_GROUP ) then
-		if ( maxPlayers == 0 ) then
+		if ( instanceGroupSize == 0 ) then
 			GuildInstanceDifficultyText:SetText("");
 			GuildInstanceDifficultyDarkBackground:SetAlpha(0);
 			GuildInstanceDifficulty.emblem:SetPoint("TOPLEFT", 12, -16);
 		else
-			GuildInstanceDifficultyText:SetText(maxPlayers);
+			GuildInstanceDifficultyText:SetText(instanceGroupSize);
 			GuildInstanceDifficultyDarkBackground:SetAlpha(0.7);
 			GuildInstanceDifficulty.emblem:SetPoint("TOPLEFT", 12, -10);
 		end
@@ -410,10 +410,10 @@ function MiniMapInstanceDifficulty_Update()
 				GuildInstanceDifficultyChallengeModeTexture:Hide();
 			end
 			-- the 1 looks a little off when text is centered
-			if ( maxPlayers < 10 ) then
+			if ( instanceGroupSize < 10 ) then
 				symbolTexture:SetPoint("BOTTOMLEFT", 11, 7);
 				GuildInstanceDifficultyText:SetPoint("BOTTOMLEFT", 23, 8);
-			elseif ( maxPlayers > 19 ) then
+			elseif ( instanceGroupSize > 19 ) then
 				symbolTexture:SetPoint("BOTTOMLEFT", 8, 7);
 				GuildInstanceDifficultyText:SetPoint("BOTTOMLEFT", 20, 8);
 			else
@@ -435,10 +435,10 @@ function MiniMapInstanceDifficulty_Update()
 		MiniMapInstanceDifficulty:Hide();
 		GuildInstanceDifficulty:Hide();
 	elseif ( instanceType == "raid" or isHeroic ) then
-		MiniMapInstanceDifficultyText:SetText(maxPlayers);
+		MiniMapInstanceDifficultyText:SetText(instanceGroupSize);
 		-- the 1 looks a little off when text is centered
 		local xOffset = 0;
-		if ( maxPlayers >= 10 and maxPlayers <= 19 ) then
+		if ( instanceGroupSize >= 10 and instanceGroupSize <= 19 ) then
 			xOffset = -1;
 		end
 		if ( isHeroic ) then

@@ -1050,9 +1050,9 @@ VISITABLE_URL1 = "http://enUS.nydus.battle.net/WOW/enUS/client/in_game_mail_link
 VISITABLE_URL2 = "http://enUS.nydus.battle.net/WOW/enUS/client/trial_restriction_error_1?region=US&accountName=%s";
 VISITABLE_URL3 = "http://enus.nydus.battle.net/wow/enUS/client/item-restoration";
 VISITABLE_URL4 = "http://enUS.nydus.battle.net/wow/enUS/client/challenge/%d/%d";
-VISITABLE_URL5 = "https://us.battle.net/support/en/games/wow";
-VISITABLE_URL6 = "https://us.battle.net/support/en/ticket/submit";
-VISITABLE_URL7 = "https://us.battle.net/support/en/ticket/status";
+VISITABLE_URL5 = "https://us.battle.net/support/en/games/wow?loc";
+VISITABLE_URL6 = "https://us.battle.net/support/en/ticket/submit?loc";
+VISITABLE_URL7 = "https://us.battle.net/support/en/ticket/status?loc";
 VISITABLE_URL_GENERIC = "http://enUS.nydus.battle.net/WOW/enUS/client/in_game_mail_link_%d";
 VOLUME = "Volume";
 VRN_CPUMEM_2GB = "Requires 2GB or more of CPU memory";

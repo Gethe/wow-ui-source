@@ -10,7 +10,7 @@ MAX_WOW_CHAT_CHANNELS = 10;
 CHAT_TIMESTAMP_FORMAT = nil;		-- gets set from Interface Options
 CHAT_SHOW_IME = false;
 
-MAX_CHARACTER_NAME_BYTES = 48;
+MAX_CHARACTER_NAME_BYTES = 305;
 
 --DEBUG FIXME FOR TESTING
 CHAT_OPTIONS = {
@@ -1616,7 +1616,7 @@ end
 
 SlashCmdList["INVITE"] = function(msg)
 	if(msg == "") then
-		msg = UnitName("target");
+		msg = GetUnitName("target", true)
 	end
 	if( msg and (strlen(msg) > MAX_CHARACTER_NAME_BYTES) ) then
 		ChatFrame_DisplayUsageError(ERR_NAME_TOO_LONG2);
@@ -2018,7 +2018,7 @@ end
 
 SlashCmdList["GUILD_INVITE"] = function(msg)
 	if(msg == "") then
-		msg = UnitName("target");
+		msg = GetUnitName("target", true);
 	end
 	if( msg and (strlen(msg) > MAX_CHARACTER_NAME_BYTES) ) then
 		ChatFrame_DisplayUsageError(ERR_NAME_TOO_LONG2);

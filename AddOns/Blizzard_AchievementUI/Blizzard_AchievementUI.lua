@@ -2811,7 +2811,7 @@ function AchievementFrameComparison_SetUnit (unit)
 	SetAchievementComparisonUnit(unit);
 	
 	AchievementFrameComparisonHeaderPoints:SetText(GetComparisonAchievementPoints());
-	AchievementFrameComparisonHeaderName:SetText(UnitName(unit));
+	AchievementFrameComparisonHeaderName:SetText(GetUnitName(unit));
 	SetAchievementComparisonPortrait(AchievementFrameComparisonHeaderPortrait);
 	AchievementFrameComparisonHeaderPortrait.unit = unit;
 	AchievementFrameComparisonHeaderPortrait.race = UnitRace(unit);

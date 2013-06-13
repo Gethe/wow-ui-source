@@ -838,6 +838,12 @@ function WhoList_Update()
 		end
 		buttonText = _G["WhoFrameButton"..i.."Name"];
 		buttonText:SetText(name);
+		if (buttonText:IsTruncated()) then
+			button.tooltip = name;
+		else
+			button.tooltip = nil;
+		end
+		
 		buttonText = _G["WhoFrameButton"..i.."Level"];
 		buttonText:SetText(level);
 		buttonText = _G["WhoFrameButton"..i.."Class"];

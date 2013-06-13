@@ -460,6 +460,22 @@
 	<Binding name="TARGETLASTTARGET">
 		TargetLastTarget();
 	</Binding>
+	<Binding name="TARGETARENA1">
+		TargetUnit("arena1");
+	</Binding>
+	<Binding name="TARGETARENA2">
+		TargetUnit("arena2");
+	</Binding>
+	<Binding name="TARGETARENA3">
+		TargetUnit("arena3");
+	</Binding>
+	<Binding name="TARGETARENA4">
+		TargetUnit("arena4");
+	</Binding>
+	<Binding name="TARGETARENA5">
+		TargetUnit("arena5");
+	</Binding>
+	
 	<Binding name="NAMEPLATES">
 		local SHOW_ENEMIES = GetCVarBool("nameplateShowEnemies");
 		local SHOW_FRIENDS = GetCVarBool("nameplateShowFriends");

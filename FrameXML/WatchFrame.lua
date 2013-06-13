@@ -1799,18 +1799,25 @@ function WatchFrameScenario_UpdateScenario(newStage, updateCriteriaID)
 			SCENARIO_TEXT_HEADER_HEIGHT = headerFrame:GetHeight() + 4;
 		else
 			headerFrame:Show();
-			if ( currentStage == numStages ) then
-				headerFrame.stageLevel:SetText(SCENARIO_STAGE_FINAL);
-				headerFrame.finalBg:Show();
-			else
-				headerFrame.stageLevel:SetFormattedText(SCENARIO_STAGE, currentStage);
+			if( bit.band(flags, SCENARIO_FLAG_SUPRESS_STAGE_TEXT) == SCENARIO_FLAG_SUPRESS_STAGE_TEXT) then
+				headerFrame.stageLevel:SetText(stageName);
 				headerFrame.finalBg:Hide();
-			end
-			headerFrame.stageName:SetText(stageName);
-			if ( headerFrame.stageName:GetStringWidth() > headerFrame.stageName:GetWrappedWidth() ) then
-				headerFrame.stageLevel:SetPoint("TOPLEFT", 15, -10);
-			else
+				headerFrame.stageName:SetText("");
 				headerFrame.stageLevel:SetPoint("TOPLEFT", 15, -18);
+			else
+				if ( currentStage == numStages ) then
+					headerFrame.stageLevel:SetText(SCENARIO_STAGE_FINAL);
+					headerFrame.finalBg:Show();
+				else
+					headerFrame.stageLevel:SetFormattedText(SCENARIO_STAGE, currentStage);
+					headerFrame.finalBg:Hide();
+				end
+				headerFrame.stageName:SetText(stageName);
+				if ( headerFrame.stageName:GetStringWidth() > headerFrame.stageName:GetWrappedWidth() ) then
+					headerFrame.stageLevel:SetPoint("TOPLEFT", 15, -10);
+				else
+					headerFrame.stageLevel:SetPoint("TOPLEFT", 15, -18);
+				end
 			end
 		end
 		WatchFrameScenario_StopCriteriaAnimations();

@@ -412,6 +412,7 @@ GlueDialogTypes["SCANDLL_HACKFOUND_CONFIRM"] = {
 		GlueDialog:Hide();
 		ScanDLLContinueAnyway();
 		AccountLoginUI:Show();
+		AccountLogin_CheckAutoLogin();
 	end,
 	OnCancel = function()
 		AccountLogin_Exit();

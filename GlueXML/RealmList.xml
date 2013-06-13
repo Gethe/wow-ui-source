@@ -659,6 +659,24 @@
 									</Anchor>
 								</Anchors>
 							</Button>
+							<Button name="RealmListRealmButton19" inherits="RealmListRealmButtonTemplate" id="19">
+								<Anchors>
+									<Anchor point="TOP" relativeTo="RealmListRealmButton18" relativePoint="BOTTOM">
+										<Offset>
+											<AbsDimension x="0" y="-4"/>
+										</Offset>
+									</Anchor>
+								</Anchors>
+							</Button>
+							<Button name="RealmListRealmButton20" inherits="RealmListRealmButtonTemplate" id="20">
+								<Anchors>
+									<Anchor point="TOP" relativeTo="RealmListRealmButton19" relativePoint="BOTTOM">
+										<Offset>
+											<AbsDimension x="0" y="-4"/>
+										</Offset>
+									</Anchor>
+								</Anchors>
+							</Button>
 							<ScrollFrame name="RealmListScrollFrame" inherits="GlueScrollFrameTemplate">
 								<Size>
 									<AbsDimension x="510" y="410"/>

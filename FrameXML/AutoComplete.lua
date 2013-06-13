@@ -130,8 +130,31 @@ function AutoComplete_Update(parent, text, cursorPosition)
 		
 		self.parent = parent;
 		--We ask for one more result than we need so that we know whether or not results are continued
-		AutoComplete_UpdateResults(self,
-			GetAutoCompleteResults(text, parent.autoCompleteParams.include, parent.autoCompleteParams.exclude, AUTOCOMPLETE_MAX_BUTTONS+1, cursorPosition));
+		possibilities = {GetAutoCompleteResults(text, parent.autoCompleteParams.include, parent.autoCompleteParams.exclude, AUTOCOMPLETE_MAX_BUTTONS+1, cursorPosition)};
+		if (not possibilities) then
+			possibilities = {};
+		end
+		local realmStart = text:find("-"); 
+		if (realmStart) then
+			local realms = {};
+			GetAutoCompleteRealms(realms);
+			local realm, subStart, subEnd;
+			realmStart = text:sub(realmStart + 1) --get text after hyphen
+			local index = #possibilities + 1;
+			for i=1, #realms do
+				realm = realms[i];
+				subStart, subEnd = realm:find(realmStart) 
+				if (subStart and subStart == 1) then
+					if (subEnd > 0) then
+						--if they started typing a known realm name, just append the rest of it
+						realm = realm:sub(subEnd + 1); 
+					end
+					possibilities[index] = text..realm;
+					index = index + 1
+				end;
+			end
+		end
+		AutoComplete_UpdateResults(self, possibilities);
 	else
 		AutoComplete_HideIfAttachedTo(parent);
 	end
@@ -162,13 +185,13 @@ function AutoComplete_GetNumResults(self)
 	return self.numResults;
 end
 
-function AutoComplete_UpdateResults(self, ...)
-	local totalReturns = select("#", ...);
+function AutoComplete_UpdateResults(self, results)
+	local totalReturns = #results;
 	local numReturns = min(totalReturns, AUTOCOMPLETE_MAX_BUTTONS);
 	local maxWidth = 120;
 	for i=1, numReturns do
 		local button = _G["AutoCompleteButton"..i]
-		button:SetText(select(i, ...));
+		button:SetText(results[i]);
 		maxWidth = max(maxWidth, button:GetFontString():GetWidth()+30);
 		button:Enable();
 		button:Show();

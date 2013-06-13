@@ -1392,6 +1392,8 @@ FCTPanelOptions = {
 	CombatLogPeriodicSpells = { text = "LOG_PERIODIC_EFFECTS" },
 	PetMeleeDamage = { text = "SHOW_PET_MELEE_DAMAGE" },
 	CombatHealing = { text = "SHOW_COMBAT_HEALING" },
+	CombatHealingAbsorbTarget = { text = "SHOW_COMBAT_HEALING_ABSORB_TARGET" },
+	CombatHealingAbsorbSelf = { text = "SHOW_COMBAT_HEALING_ABSORB_SELF" },
 	fctSpellMechanics = { text = "SHOW_TARGET_EFFECTS" },
 	fctSpellMechanicsOther = { text = "SHOW_OTHER_TARGET_EFFECTS" },
 }

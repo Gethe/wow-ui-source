@@ -3,21 +3,12 @@
 	<Texture name="HybridScrollBarButton" virtual="true">
 		<TexCoords left="0.25" right="0.75" top="0.25" bottom="0.75"/>
 	</Texture>
-	<Slider name="HybridScrollBarTemplate" virtual="true">
-		<Size>
-			<AbsDimension x="20" y="0"/>
-		</Size>
+	
+	<Slider name="HybridScrollBarTemplate" parentKey="scrollBar" virtual="true">
+		<Size x="20" y="0"/>
 		<Anchors>
-			<Anchor point="TOPLEFT" relativePoint="TOPRIGHT">
-				<Offset>
-					<AbsDimension x="0" y="-18"/>
-				</Offset>
-			</Anchor>
-			<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMRIGHT">
-				<Offset>
-					<AbsDimension x="0" y="16"/>
-				</Offset>
-			</Anchor>
+			<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" x="0" y="-18"/>
+			<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMRIGHT" x="0" y="16"/>
 		</Anchors>
 		<Layers>
 			<Layer level="BACKGROUND">
@@ -27,28 +18,16 @@
 			</Layer>
 			<Layer level="ARTWORK">
 				<Texture name="$parentTop" file="Interface\PaperDollInfoFrame\UI-Character-ScrollBar">
-					<Size>
-						<AbsDimension x="27" y="48"/>
-					</Size>
+					<Size x="27" y="48"/>
 					<Anchors>
-						<Anchor point="TOPLEFT">
-							<Offset>
-								<AbsDimension x="-4" y="17"/>
-							</Offset>
-						</Anchor>
+						<Anchor point="TOPLEFT" x="-4" y="17"/>
 					</Anchors>
 					<TexCoords left="0" right="0.484375" top="0" bottom=".20"/>
 				</Texture>
 				<Texture name="$parentBottom" file="Interface\PaperDollInfoFrame\UI-Character-ScrollBar">
-					<Size>
-						<AbsDimension x="27" y="64"/>
-					</Size>
+					<Size x="27" y="64"/>
 					<Anchors>
-						<Anchor point="BOTTOMLEFT">
-							<Offset>
-								<AbsDimension x="-4" y="-15"/>
-							</Offset>
-						</Anchor>
+						<Anchor point="BOTTOMLEFT" x="-4" y="-15"/>
 					</Anchors>
 					<TexCoords left="0.515625" right="1.0" top="0.1440625" bottom="0.4140625"/>
 				</Texture>
@@ -64,64 +43,34 @@
 		<Frames>
 			<Button name="$parentScrollUpButton" inherits="UIPanelScrollUpButtonTemplate">
 				<Anchors>
-					<Anchor point="BOTTOM" relativePoint="TOP">
-						<Offset>
-							<AbsDimension x="0" y="-2"/>
-						</Offset>
-					</Anchor>
+					<Anchor point="BOTTOM" relativePoint="TOP" x="0" y="-2"/>
 				</Anchors>
 				<Scripts>
-					<OnLoad>
-						self:GetParent():GetParent().scrollUp = self;
-						self:Disable();
-						self:RegisterForClicks("LeftButtonUp", "LeftButtonDown");
-						self.direction = 1;
-					</OnLoad>
-					<OnClick>
-						HybridScrollFrameScrollButton_OnClick(self, button, down);
-					</OnClick>
+					<OnLoad function="HybridScrollFrameScrollUp_OnLoad"/>
+					<OnClick function ="HybridScrollFrameScrollButton_OnClick"/>
 				</Scripts>
 			</Button>
 			<Button name="$parentScrollDownButton" inherits="UIPanelScrollDownButtonTemplate">
 				<Anchors>
-					<Anchor point="TOP" relativePoint="BOTTOM">
-						<Offset>
-							<AbsDimension x="0" y="2"/>
-						</Offset>
-					</Anchor>
+					<Anchor point="TOP" relativePoint="BOTTOM" x="0" y="2"/>
 				</Anchors>
 				<Scripts>
-					<OnLoad>
-						self:GetParent():GetParent().scrollDown = self;
-						self:Disable();
-						self:RegisterForClicks("LeftButtonUp", "LeftButtonDown");
-						self.direction = -1;
-					</OnLoad>
-					<OnClick>
-						HybridScrollFrameScrollButton_OnClick(self, button, down);
-					</OnClick>
+					<OnLoad function="HybridScrollFrameScrollDown_OnLoad"/>
+					<OnClick function="HybridScrollFrameScrollButton_OnClick"/>
 				</Scripts>
 			</Button>
 		</Frames>
 		<Scripts>
-			<OnLoad>
-				self:GetParent().scrollBar = self;
-			</OnLoad>
-			<OnValueChanged> 
-				HybridScrollFrame_OnValueChanged(self:GetParent(), value);
-			</OnValueChanged>
+			<OnValueChanged function="HybridScrollFrame_OnValueChanged"/>
 		</Scripts>
 		<ThumbTexture name="$parentThumbTexture" inherits="HybridScrollBarButton" file="Interface\Buttons\UI-ScrollBar-Knob" parentKey="thumbTexture">
-			<Size>
-				<AbsDimension x="18" y="24"/>
-			</Size>
+			<Size x="18" y="24"/>
 			<TexCoords left="0.20" right="0.80" top="0.125" bottom="0.875"/>
 		</ThumbTexture>		
 	</Slider>
-	<Slider name="HybridScrollBarTrimTemplate" virtual="true">
-		<Size>
-			<AbsDimension x="20" y="0"/>
-		</Size>
+
+	<Slider name="HybridScrollBarTrimTemplate" parentKey="scrollBar" virtual="true">
+		<Size x="20" y="0"/>
 		<Layers>
 			<Layer level="BACKGROUND">
 				<Texture name="$parentBG" setAllPoints="true" hidden="true" parentKey="trackBG">
@@ -130,28 +79,16 @@
 			</Layer>
 			<Layer level="ARTWORK">
 				<Texture name="$parentTop" file="Interface\PaperDollInfoFrame\UI-Character-ScrollBar">
-					<Size>
-						<AbsDimension x="24" y="48"/>
-					</Size>
+					<Size x="24" y="48"/>
 					<Anchors>
-						<Anchor point="TOPLEFT">
-							<Offset>
-								<AbsDimension x="-4" y="17"/>
-							</Offset>
-						</Anchor>
+						<Anchor point="TOPLEFT" x="-4" y="17"/>
 					</Anchors>
 					<TexCoords left="0" right="0.45" top="0" bottom=".20"/>
 				</Texture>
 				<Texture name="$parentBottom" file="Interface\PaperDollInfoFrame\UI-Character-ScrollBar">
-					<Size>
-						<AbsDimension x="24" y="64"/>
-					</Size>
+					<Size x="24" y="64"/>
 					<Anchors>
-						<Anchor point="BOTTOMLEFT">
-							<Offset>
-								<AbsDimension x="-4" y="-15"/>
-							</Offset>
-						</Anchor>
+						<Anchor point="BOTTOMLEFT" x="-4" y="-15"/>
 					</Anchors>
 					<TexCoords left="0.515625" right="0.97" top="0.1440625" bottom="0.4140625"/>
 				</Texture>
@@ -167,65 +104,34 @@
 		<Frames>
 			<Button name="$parentScrollUpButton" inherits="UIPanelScrollUpButtonTemplate">
 				<Anchors>
-					<Anchor point="BOTTOM" relativePoint="TOP">
-						<Offset>
-							<AbsDimension x="0" y="-2"/>
-						</Offset>
-					</Anchor>
+					<Anchor point="BOTTOM" relativePoint="TOP" x="0" y="-2"/>
 				</Anchors>
 				<Scripts>
-					<OnLoad>
-						self:GetParent():GetParent().scrollUp = self;
-						self:Disable();
-						self:RegisterForClicks("LeftButtonUp", "LeftButtonDown");
-						self.direction = 1;
-					</OnLoad>
-					<OnClick>
-						HybridScrollFrameScrollButton_OnClick(self, button, down);
-					</OnClick>
+					<OnLoad function="HybridScrollFrameScrollUp_OnLoad"/>
+					<OnClick  function="HybridScrollFrameScrollButton_OnClick"/>
 				</Scripts>
 			</Button>
 			<Button name="$parentScrollDownButton" inherits="UIPanelScrollDownButtonTemplate">
 				<Anchors>
-					<Anchor point="TOP" relativePoint="BOTTOM">
-						<Offset>
-							<AbsDimension x="0" y="2"/>
-						</Offset>
-					</Anchor>
+					<Anchor point="TOP" relativePoint="BOTTOM" x="0" y="2"/>
 				</Anchors>
 				<Scripts>
-					<OnLoad>
-						self:GetParent():GetParent().scrollDown = self;
-						self:Disable();
-						self:RegisterForClicks("LeftButtonUp", "LeftButtonDown");
-						self.direction = -1;
-					</OnLoad>
-					<OnClick>
-						HybridScrollFrameScrollButton_OnClick(self, button, down);
-					</OnClick>
+					<OnLoad function="HybridScrollFrameScrollDown_OnLoad"/>
+					<OnClick function="HybridScrollFrameScrollButton_OnClick"/>
 				</Scripts>
 			</Button>
 		</Frames>
 		<Scripts>
-			<OnLoad>
-				self:GetParent().scrollBar = self;
-			</OnLoad>
-			<OnValueChanged> 
-				HybridScrollFrame_OnValueChanged(self:GetParent(), value);
-			</OnValueChanged>
+			<OnValueChanged function="HybridScrollFrame_OnValueChanged"/>
 		</Scripts>
 		<ThumbTexture name="$parentThumbTexture" inherits="HybridScrollBarButton" file="Interface\Buttons\UI-ScrollBar-Knob" parentKey="thumbTexture">
-			<Size>
-				<AbsDimension x="18" y="24"/>
-			</Size>
+			<Size x="18" y="24"/>
 			<TexCoords left="0.20" right="0.80" top="0.125" bottom="0.875"/>
 		</ThumbTexture>		
 	</Slider>
 
-	<Slider name="MinimalHybridScrollBarTemplate" virtual="true">
-		<Size>
-			<AbsDimension x="22" y="0"/>
-		</Size>
+	<Slider name="MinimalHybridScrollBarTemplate" parentKey="scrollBar" virtual="true">
+		<Size x="22" y="0"/>
 		<Layers>
 			<Layer level="BACKGROUND">
 				<Texture name="$parentTrack" parentKey="trackBG">
@@ -243,15 +149,8 @@
 					<Anchor point="TOP" x="0" y="15"/>
 				</Anchors>
 				<Scripts>
-					<OnLoad>
-						self:GetParent():GetParent().scrollUp = self;
-						self:Disable();
-						self:RegisterForClicks("LeftButtonUp", "LeftButtonDown");
-						self.direction = 1;
-					</OnLoad>
-					<OnClick>
-						HybridScrollFrameScrollButton_OnClick(self, button, down);
-					</OnClick>
+					<OnLoad function="HybridScrollFrameScrollUp_OnLoad"/>
+					<OnClick function="HybridScrollFrameScrollButton_OnClick"/>
 				</Scripts>
 			</Button>
 			<Button name="$parentScrollDownButton" inherits="UIPanelScrollDownButtonTemplate">
@@ -259,49 +158,29 @@
 					<Anchor point="BOTTOM" x="0" y="-15"/>
 				</Anchors>
 				<Scripts>
-					<OnLoad>
-						self:GetParent():GetParent().scrollDown = self;
-						self:Disable();
-						self:RegisterForClicks("LeftButtonUp", "LeftButtonDown");
-						self.direction = -1;
-					</OnLoad>
-					<OnClick>
-						HybridScrollFrameScrollButton_OnClick(self, button, down);
-					</OnClick>
+					<OnLoad function="HybridScrollFrameScrollDown_OnLoad"/>
+					<OnClick function="HybridScrollFrameScrollButton_OnClick"/>
 				</Scripts>
 			</Button>
 		</Frames>
 		<Scripts>
-			<OnLoad>
-				self:GetParent().scrollBar = self;
-			</OnLoad>
-			<OnValueChanged> 
-				HybridScrollFrame_OnValueChanged(self:GetParent(), value);
-			</OnValueChanged>
+			<OnValueChanged function="HybridScrollFrame_OnValueChanged"/>
 		</Scripts>
 		<ThumbTexture name="$parentThumbTexture" inherits="HybridScrollBarButton" file="Interface\Buttons\UI-ScrollBar-Knob" parentKey="thumbTexture">
-			<Size>
-				<AbsDimension x="18" y="24"/>
-			</Size>
+			<Size x="18" y="24"/>
 			<TexCoords left="0.20" right="0.80" top="0.125" bottom="0.875"/>
 		</ThumbTexture>
 	</Slider>
 	
 	<ScrollFrame name="HybridScrollFrameTemplate" virtual="true">			
 		<Scripts>
-			<OnLoad>
-				HybridScrollFrame_OnLoad(self);
-			</OnLoad>
-			<OnMouseWheel>
-				HybridScrollFrame_OnMouseWheel(self, delta);
-			</OnMouseWheel>
+			<OnLoad function="HybridScrollFrame_OnLoad"/>
+			<OnMouseWheel function="HybridScrollFrame_OnMouseWheel"/>
 		</Scripts>
 		<ScrollChild>
 			<Frame name="$parentScrollChild">
 				<Scripts>
-					<OnLoad>
-						HybridScrollFrameScrollChild_OnLoad(self);
-					</OnLoad>
+					<OnLoad function="HybridScrollFrameScrollChild_OnLoad"/>
 				</Scripts>
 			</Frame>
 		</ScrollChild>

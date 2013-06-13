@@ -53,7 +53,7 @@ function ItemSocketingFrame_Update()
 	ItemSocketingFrame.itemIsBoundTradeable = nil;
 	if(GetSocketItemRefundable()) then
 		ItemSocketingFrame.itemIsRefundable = true;
-	elseif(GetSocketItemBoundTradeable()) then
+	elseif(GetSocketItemBoundTradeable() or HasBoundGemProposed()) then
 		ItemSocketingFrame.itemIsBoundTradeable = true;
 	end
 

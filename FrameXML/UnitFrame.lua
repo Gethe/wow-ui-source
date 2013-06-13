@@ -617,11 +617,16 @@ end
 
 function GetUnitName(unit, showServerName)
 	local name, server = UnitName(unit);
+	local relationship = UnitRealmRelationship(unit);
 	if ( server and server ~= "" ) then
 		if ( showServerName ) then
-			return name.." - "..server;
+			return name.."-"..server;
 		else
-			return name..FOREIGN_SERVER_LABEL;
+			if (relationship == LE_REALM_RELATION_VIRTUAL) then
+				return name..INTERACTIVE_SERVER_LABEL;
+			else
+				return name..FOREIGN_SERVER_LABEL;
+			end
 		end
 	else
 		return name;

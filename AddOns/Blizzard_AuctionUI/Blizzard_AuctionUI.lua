@@ -798,7 +798,7 @@ function AuctionFrameBrowse_Update()
 			button:Show();
 
 			buttonName = "BrowseButton"..i;
-			name, texture, count, quality, canUse, level, levelColHeader, minBid, minIncrement, buyoutPrice, bidAmount, highBidder, owner, saleStatus, itemId, hasAllInfo =  GetAuctionItemInfo("list", offset + i);
+			name, texture, count, quality, canUse, level, levelColHeader, minBid, minIncrement, buyoutPrice, bidAmount, highBidder, bidderFullName, owner, ownerFullName, saleStatus, itemId, hasAllInfo =  GetAuctionItemInfo("list", offset + i);
 			if ( not hasAllInfo ) then	--Bug  145328
 				button:Hide();
 				-- If the last button is empty then set isLastSlotEmpty var
@@ -887,8 +887,10 @@ function AuctionFrameBrowse_Update()
 			--if ( not highBidder ) then
 			--	highBidder = RED_FONT_COLOR_CODE..NO_BIDS..FONT_COLOR_CODE_CLOSE;
 			--end
-			_G[buttonName.."HighBidder"]:SetText(owner);
-
+			local highBidderFrame = _G[buttonName.."HighBidder"]
+			highBidderFrame.fullName = ownerFullName;
+			highBidderFrame.Name:SetText(owner);
+			
 			button.bidAmount = displayedPrice;
 			button.buyoutPrice = buyoutPrice;
 			button.itemCount = count;
@@ -999,7 +1001,7 @@ function AuctionFrameBid_Update()
 		else
 			button:Show();
 			buttonName = "BidButton"..i;
-			name, texture, count, quality, canUse, level, levelColHeader, minBid, minIncrement, buyoutPrice, bidAmount, highBidder, owner =  GetAuctionItemInfo("bidder", index);
+			name, texture, count, quality, canUse, level, levelColHeader, minBid, minIncrement, buyoutPrice, bidAmount, highBidder, bidderFullName, owner, ownerFullName =  GetAuctionItemInfo("bidder", index);
 			duration = GetAuctionItemTimeLeft("bidder", offset + i);
 
 			-- Resize button if there isn't a scrollbar
@@ -1223,7 +1225,8 @@ function AuctionFrameAuctions_Update()
 		else
 			auction:Show();
 			
-			name, texture, count, quality, canUse, level, levelColHeader, minBid, minIncrement, buyoutPrice, bidAmount, highBidder, owner, saleStatus = GetAuctionItemInfo("owner", offset + i);
+			name, texture, count, quality, canUse, level, levelColHeader, minBid, minIncrement, buyoutPrice, bidAmount, highBidder, bidderFullName, owner, ownerFullName, saleStatus = GetAuctionItemInfo("owner", offset + i);
+			
 			duration = GetAuctionItemTimeLeft("owner", offset + i);
 
 			buttonName = "AuctionsButton"..i;
@@ -1265,9 +1268,10 @@ function AuctionFrameAuctions_Update()
 				itemName:SetFormattedText(AUCTION_ITEM_SOLD, name);
 				itemName:SetVertexColor(GRAY_FONT_COLOR.r, GRAY_FONT_COLOR.g, GRAY_FONT_COLOR.b);
 
+				highBidderFrame.fullName = bidderFullName;
 				if ( highBidder ) then
 					highBidder = GREEN_FONT_COLOR_CODE..highBidder..FONT_COLOR_CODE_CLOSE;
-					highBidderFrame:SetText(highBidder);
+					highBidderFrame.Name:SetText(highBidder);
 				end
 
 				closingTimeText:SetFormattedText(AUCTION_ITEM_TIME_UNTIL_DELIVERY, SecondsToTime(max(duration, 1)));
@@ -1288,11 +1292,12 @@ function AuctionFrameAuctions_Update()
 				-- Normal item
 				itemName:SetText(name);
 				itemName:SetVertexColor(color.r, color.g, color.b);
-
+				
+				highBidderFrame.fullName = bidderFullName;
 				if ( not highBidder ) then
 					highBidder = RED_FONT_COLOR_CODE..NO_BIDS..FONT_COLOR_CODE_CLOSE;
 				end
-				highBidderFrame:SetText(highBidder);
+				highBidderFrame.Name:SetText(highBidder);
 
 				closingTimeText:SetText(AuctionFrame_GetTimeLeftText(duration));
 				closingTimeFrame.tooltip = AuctionFrame_GetTimeLeftTooltipText(duration);

@@ -578,7 +578,7 @@ function WorldMapFrame_Update()
 		local worldMapPOIName = "WorldMapFramePOI"..i;
 		local worldMapPOI = _G[worldMapPOIName];
 		if ( i <= numPOIs ) then
-			local name, description, textureIndex, x, y, mapLinkID, inBattleMap, graveyardID, areaID, poiID = GetMapLandmarkInfo(i);
+			local name, description, textureIndex, x, y, mapLinkID, inBattleMap, graveyardID, areaID, poiID, isObjectIcon = GetMapLandmarkInfo(i);
 			if( (GetCurrentMapAreaID() ~= WORLDMAP_WINTERGRASP_ID) and (areaID == WORLDMAP_WINTERGRASP_POI_AREAID) ) then
 				worldMapPOI:Hide();
 			else
@@ -588,9 +588,15 @@ function WorldMapFrame_Update()
 				if ( WorldMap_IsSpecialPOI(poiID) ) then	--We have special handling for Isle of the Thunder King
 					WorldMap_HandleSpecialPOI(worldMapPOI, poiID);
 				else
-					WorldMap_ResetPOI(worldMapPOI);
+					WorldMap_ResetPOI(worldMapPOI, isObjectIcon);
 
-					local x1, x2, y1, y2 = GetPOITextureCoords(textureIndex);
+					local x1, x2, y1, y2
+					if (isObjectIcon == true) then
+						x1, x2, y1, y2 = GetObjectIconTextureCoords(textureIndex);
+					else
+						x1, x2, y1, y2 = GetPOITextureCoords(textureIndex);
+					end
+
 					_G[worldMapPOIName.."Texture"]:SetTexCoord(x1, x2, y1, y2);
 					worldMapPOI.name = name;
 					worldMapPOI.description = description;
@@ -950,7 +956,7 @@ function WorldMapPOI_OnClick(self, button)
 	end
 end
 
-function WorldMap_CreatePOI(index)
+function WorldMap_CreatePOI(index, isObjectIcon)
 	local button = CreateFrame("Button", "WorldMapFramePOI"..index, WorldMapButton);
 	button:RegisterForClicks("LeftButtonUp", "RightButtonUp");
 	button:SetScript("OnEnter", WorldMapPOI_OnEnter);
@@ -959,16 +965,25 @@ function WorldMap_CreatePOI(index)
 
 	button.Texture = button:CreateTexture(button:GetName().."Texture", "BACKGROUND");
 
-	WorldMap_ResetPOI(button);
+	WorldMap_ResetPOI(button, isObjectIcon);
 end
 
-function WorldMap_ResetPOI(button)
-	button:SetWidth(32);
-	button:SetHeight(32);
-	button.Texture:SetWidth(16);
-	button.Texture:SetHeight(16);
-	button.Texture:SetPoint("CENTER", 0, 0);
-	button.Texture:SetTexture("Interface\\Minimap\\POIIcons");
+function WorldMap_ResetPOI(button, isObjectIcon)
+	if (isObjectIcon == true) then
+		button:SetWidth(32);
+		button:SetHeight(32);
+		button.Texture:SetWidth(28);
+		button.Texture:SetHeight(28);
+		button.Texture:SetPoint("CENTER", 0, 0);
+		button.Texture:SetTexture("Interface\\Minimap\\ObjectIcons");
+	else
+		button:SetWidth(32);
+		button:SetHeight(32);
+		button.Texture:SetWidth(16);
+		button.Texture:SetHeight(16);
+		button.Texture:SetPoint("CENTER", 0, 0);
+		button.Texture:SetTexture("Interface\\Minimap\\POIIcons");
+	end
 
 	button.specialPOIInfo = nil;
 end
@@ -1340,7 +1355,7 @@ function WorldMapButton_OnUpdate(self, elapsed)
 			end
 		end
 		local _, _, _, _, locked = C_PetJournal.GetPetLoadOutInfo(1);
-		if (not locked) then --don't show pet levels for people who haven't unlocked battle petting
+		if (not locked and IsTrackingBattlePets()) then --don't show pet levels for people who haven't unlocked battle petting
 			if (petMinLevel and petMaxLevel and petMinLevel > 0 and petMaxLevel > 0) then 
 				local teamLevel = C_PetJournal.GetPetTeamAverageLevel();
 				local color
