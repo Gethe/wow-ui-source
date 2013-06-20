@@ -213,6 +213,7 @@ function UIParent_OnLoad(self)
 	self:RegisterEvent("MISSING_OUT_ON_LOOT");
 	self:RegisterEvent("SPELL_CONFIRMATION_PROMPT");
 	self:RegisterEvent("SPELL_CONFIRMATION_TIMEOUT");
+	self:RegisterEvent("SAVED_VARIABLES_TOO_LARGE");
 	
 	-- Events for auction UI handling
 	self:RegisterEvent("AUCTION_HOUSE_SHOW");
@@ -1051,6 +1052,9 @@ function UIParent_OnEvent(self, event, ...)
 		else
 			StaticPopup_Hide("SPELL_CONFIRMATION_PROMPT", spellID);
 		end
+	elseif ( event == "SAVED_VARIABLES_TOO_LARGE" ) then
+		local addonName = ...;
+		StaticPopup_Show("SAVED_VARIABLES_TOO_LARGE", addonName);
 	elseif ( event == "CONFIRM_DISENCHANT_ROLL" ) then
 		local texture, name, count, quality, bindOnPickUp = GetLootRollItemInfo(arg1);
 		local dialog = StaticPopup_Show("CONFIRM_LOOT_ROLL", ITEM_QUALITY_COLORS[quality].hex..name.."|r");

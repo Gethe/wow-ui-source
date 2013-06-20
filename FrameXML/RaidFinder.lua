@@ -1,11 +1,5 @@
 MAX_RAID_FINDER_COOLDOWN_NAMES = 8;
 
-local function isRaidFinderDungeonDisplayable(id)
-	local name, typeID, subtypeID, minLevel, maxLevel, _, _, _, expansionLevel = GetLFGDungeonInfo(id);
-	local myLevel = UnitLevel("player");
-	return myLevel >= minLevel and myLevel <= maxLevel and EXPANSION_LEVEL >= expansionLevel;
-end
-
 function RaidFinderFrame_OnLoad(self)
 	self:RegisterEvent("LFG_LOCK_INFO_RECEIVED");
 end
@@ -226,6 +220,7 @@ function RaidFinderQueueFrame_Join()
 		ClearAllLFGDungeons(LE_LFG_CATEGORY_RF);
 		SetLFGDungeon(LE_LFG_CATEGORY_RF, RaidFinderQueueFrame.raid);
 		JoinLFG(LE_LFG_CATEGORY_RF);
+--		JoinSingleLFG(LE_LFG_CATEGORY_RF, RaidFinderQueueFrame.raid); Jacob: use this line instead of the above 3 for testing
 	end
 end
 

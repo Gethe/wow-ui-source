@@ -19,6 +19,7 @@ LFG_SUBTYPEID_DUNGEON = 1;
 LFG_SUBTYPEID_HEROIC = 2;
 LFG_SUBTYPEID_RAID = 3;
 LFG_SUBTYPEID_SCENARIO = 4;
+LFG_SUBTYPEID_FLEXRAID = 5;
 
 LFG_ID_TO_ROLES = { "DAMAGER", "TANK", "HEALER" };
 LFG_RETURN_VALUES = {
@@ -2175,5 +2176,11 @@ function LFGRandomList_OnEnter(self)
 	end
 		
 	GameTooltip:Show();
+end
+
+function isRaidFinderDungeonDisplayable(id)
+	local name, typeID, subtypeID, minLevel, maxLevel, _, _, _, expansionLevel = GetLFGDungeonInfo(id);
+	local myLevel = UnitLevel("player");
+	return myLevel >= minLevel and myLevel <= maxLevel and EXPANSION_LEVEL >= expansionLevel;
 end
 

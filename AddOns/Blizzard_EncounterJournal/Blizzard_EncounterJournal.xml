@@ -1865,7 +1865,7 @@
 									</OnLoad>
 									<OnClick>
 										EncounterJournal_TabClicked(self, button)
-										EncounterHournal_ShowCreatures()
+										EncounterJournal_ShowCreatures()
 									</OnClick>
 								</Scripts>
 							</Button>
@@ -2091,7 +2091,7 @@
 								</ScrollChild>
 								<Scripts>
 									<OnShow>
-										EncounterHournal_HideCreatures();
+										EncounterJournal_HideCreatures();
 										EncounterJournal.encounter.info.reset:Show()
 										EncounterJournal.encounter.info.lootScroll:Hide()
 										EncounterJournal.encounter.info.rightShadow:Show()
@@ -2293,7 +2293,7 @@
 								</Frames>
 								<Scripts>
 									<OnShow>
-										EncounterHournal_HideCreatures();
+										EncounterJournal_HideCreatures();
 										EncounterJournal.encounter.instance:Hide();
 										EncounterJournal.encounter.info.rightShadow:Show()
 										EncounterJournal_LootUpdate();
@@ -2302,7 +2302,7 @@
 								</Scripts>
 							</ScrollFrame>
 							<PlayerModel name="$parentModelFrame" parentKey="model" inherits="ModelTemplate" >
-								<Size x="390" y="425"/>
+								<Size x="390" y="423"/>
 								<Anchors>
 									<Anchor point="BOTTOMRIGHT" x="-3" y="1"/>
 								</Anchors>
@@ -2320,7 +2320,7 @@
 										<Texture name="$parentShadow" file="Interface\EncounterJournal\UI-EJ-BossModelPaperFrame">
 											<Size x="393" y="424"/>
 											<Anchors>
-												<Anchor point="TOPLEFT" x="0" y="-2"/>
+												<Anchor point="BOTTOMRIGHT" x="3" y="0"/>
 											</Anchors>
 											<TexCoords left="0.767578125" right="0" top="0" bottom="0.828125"/>
 										</Texture>
@@ -2357,34 +2357,9 @@
 									</OnLoad>
 								</Scripts>
 							</PlayerModel>
-							<Button name="$parentCreatureButton1" inherits="EncounterCreatureButtonTemplate" parentKey="creatureButton1">
+							<Button name="$parentCreatureButton1" inherits="EncounterCreatureButtonTemplate" parentArray="creatureButtons">
 								<Anchors>
 									<Anchor point="TOPLEFT" relativeTo="$parentModelFrame" x="3" y="-35"/>
-								</Anchors>
-							</Button>
-							<Button name="$parentCreatureButton2" inherits="EncounterCreatureButtonTemplate" parentKey="creatureButton2">
-								<Anchors>
-									<Anchor point="TOPLEFT" relativeTo="$parentCreatureButton1" relativePoint="BOTTOMLEFT" x="0" y="0"/>
-								</Anchors>
-							</Button>
-							<Button name="$parentCreatureButton3" inherits="EncounterCreatureButtonTemplate" parentKey="creatureButton3">
-								<Anchors>
-									<Anchor point="TOPLEFT" relativeTo="$parentCreatureButton2" relativePoint="BOTTOMLEFT" x="0" y="0"/>
-								</Anchors>
-							</Button>
-							<Button name="$parentCreatureButton4" inherits="EncounterCreatureButtonTemplate" parentKey="creatureButton4">
-								<Anchors>
-									<Anchor point="TOPLEFT" relativeTo="$parentCreatureButton3" relativePoint="BOTTOMLEFT" x="0" y="0"/>
-								</Anchors>
-							</Button>
-							<Button name="$parentCreatureButton5" inherits="EncounterCreatureButtonTemplate" parentKey="creatureButton5">
-								<Anchors>
-									<Anchor point="TOPLEFT" relativeTo="$parentCreatureButton4" relativePoint="BOTTOMLEFT" x="0" y="0"/>
-								</Anchors>
-							</Button>
-							<Button name="$parentCreatureButton6" inherits="EncounterCreatureButtonTemplate" parentKey="creatureButton6">
-								<Anchors>
-									<Anchor point="TOPLEFT" relativeTo="$parentCreatureButton5" relativePoint="BOTTOMLEFT" x="0" y="0"/>
 								</Anchors>
 							</Button>
 						</Frames>

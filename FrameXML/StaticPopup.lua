@@ -3341,6 +3341,14 @@ StaticPopupDialogs["CONFIRM_LEAVE_BATTLEFIELD"] = {
 	showAlert = 1,
 }
 
+StaticPopupDialogs["SAVED_VARIABLES_TOO_LARGE"] = {
+	text = SAVED_VARIABLES_TOO_LARGE,
+	button1 = OKAY,
+	timeout = 0,
+	showAlertGear = 1,
+	hideOnEscape = 1
+}
+
 function StaticPopup_FindVisible(which, data)
 	local info = StaticPopupDialogs[which];
 	if ( not info ) then

@@ -4,7 +4,7 @@ EJ_MIN_CHARACTER_SEARCH = 3;
 
 --FILE CONSTANTS
 local HEADER_INDENT = 15;
-local MAX_CREATURES_PER_ENCOUNTER = 6;
+local MAX_CREATURES_PER_ENCOUNTER = 9;
 
 local SECTION_BUTTON_OFFSET = 6;
 local SECTION_DESCRIPTION_OFFSET = 27;
@@ -218,11 +218,26 @@ function EncounterJournal_OnEvent(self, event, ...)
 	end
 end
 
+function EncounterJournal_GetCreatureButton(index)
+	if index > MAX_CREATURES_PER_ENCOUNTER then
+		return nil;
+	end
+	
+	local self = EncounterJournal.encounter.info;
+	local button = self.creatureButtons[index]
+	if (not button) then
+		button = CreateFrame("BUTTON", nil, self, "EncounterCreatureButtonTemplate");
+		button:SetPoint("TOPLEFT", self.creatureButtons[index-1], "BOTTOMLEFT", 0, 8);
+		self.creatureButtons[index] = button;
+	end
+	return button;
+end
+
 function EncounterJournal_UpdatePortraits()
 	if ( EncounterJournal:IsShown() ) then
-		local self = EncounterJournal.encounter.info;
-		for i = 1, MAX_CREATURES_PER_ENCOUNTER do
-			local button = self["creatureButton"..i];
+		local creatures = EncounterJournal.encounter.info.creatureButtons;
+		for i = 1, #creatures do
+			local button = creatures[i];
 			if ( button and button:IsShown() ) then
 				SetPortraitTexture(button.creature, button.displayInfo);
 			else
@@ -462,8 +477,8 @@ function EncounterJournal_DisplayEncounter(encounterID, noButton)
 	for i=1,MAX_CREATURES_PER_ENCOUNTER do 
 		id, name, description, displayInfo, iconImage = EJ_GetCreatureInfo(i);
 		
-		local button = self.info["creatureButton"..i];
 		if id then
+			local button = EncounterJournal_GetCreatureButton(i);
 			SetPortraitTexture(button.creature, displayInfo);
 			button.name = name;
 			button.id = id;
@@ -510,10 +525,11 @@ function EncounterJournal_DisplayCreature(self)
 	EncounterJournal.encounter.info.shownCreatureButton = self;
 end
 
-function EncounterHournal_ShowCreatures()
+function EncounterJournal_ShowCreatures()
 	local button;
-	for i=1,MAX_CREATURES_PER_ENCOUNTER do 
-		button = EncounterJournal.encounter.info["creatureButton"..i]
+	local creatures = EncounterJournal.encounter.info.creatureButtons;
+	for i=1, #creatures do 
+		button = creatures[i];
 		if (button.displayInfo) then
 			button:Show();
 			if (i==1) then
@@ -523,10 +539,11 @@ function EncounterHournal_ShowCreatures()
 	end
 end
 
-function EncounterHournal_HideCreatures()
+function EncounterJournal_HideCreatures()
 	local button;
-	for i=1,MAX_CREATURES_PER_ENCOUNTER do 
-		EncounterJournal.encounter.info["creatureButton"..i]:Hide()
+	local creatures = EncounterJournal.encounter.info.creatureButtons;
+	for i=1, #creatures do 
+		creatures[i]:Hide()
 	end
 end
 
@@ -868,9 +885,10 @@ function EncounterJournal_ClearDetails()
 		freeHeaders[#freeHeaders+1] = used;
 	end
 	
-	for i=1,MAX_CREATURES_PER_ENCOUNTER do 
-		EncounterJournal.encounter.info["creatureButton"..i]:Hide();
-		EncounterJournal.encounter.info["creatureButton"..i].displayInfo = nil;
+	local creatures = EncounterJournal.encounter.info.creatureButtons;
+	for i=1, #creatures do 
+		creatures[i]:Hide();
+		creatures[i].displayInfo = nil;
 	end
 	
 	local bossIndex = 1

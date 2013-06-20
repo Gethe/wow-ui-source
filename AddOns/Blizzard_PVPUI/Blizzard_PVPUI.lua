@@ -30,10 +30,6 @@ StaticPopupDialogs["CONFIRM_JOIN_SOLO"] = {
 ---------------------------------------------------------------
 -- PVP FRAME
 ---------------------------------------------------------------
-local panels = {
-	[1] = { name = "PVPQueueFrame", addon = nil },
-	[2] = { name = "PVPArenaTeamsFrame", addon = "Blizzard_ChallengesUI" },
-}
 
 local DEFAULT_BG_TEXTURE = "Interface\\PVPFrame\\RandomPVPIcon";
 
@@ -79,7 +75,6 @@ function PVPUIFrame_OnShow(self)
 	end
 	UpdateMicroButtons();
 	PlaySound("igCharacterInfoOpen");
-	PVPUIFrame_TabOnClick(PVPUIFrame.Tab1);
 	for teamIndex = 1, MAX_ARENA_TEAMS do
 		ArenaTeamRoster(teamIndex);
 	end
@@ -116,70 +111,10 @@ end
 function PVPUIFrame_ToggleFrame(sidePanelName, selection)
 	local self = PVPUIFrame;
 	if ( self:IsShown() ) then
-		if ( sidePanelName ) then
-			local sidePanel = _G[sidePanelName];
-			if ( sidePanel and sidePanel:IsShown() and sidePanel:getSelection() == selection ) then
-				HideUIPanel(self);
-			else
-				PVPUIFrame_ShowFrame(sidePanelName, selection);
-			end
-		else
-			HideUIPanel(self);
-		end
+		HideUIPanel(self);
 	else
-		PVPUIFrame_ShowFrame(sidePanelName, selection);
+		ShowUIPanel(self);
 	end
-end
-
-function PVPUIFrame_ShowFrame(sidePanelName, selection)
-	local self = PVPUIFrame;
-	-- find side panel
-	local tabIndex;
-	if ( sidePanelName ) then
-		for index, data in pairs(panels) do
-			if ( data.name == sidePanelName ) then
-				tabIndex = index;
-				break;
-			end
-		end
-	else
-		-- no side panel specified, check current panel
-		if ( self.activeTabIndex ) then
-			tabIndex = self.activeTabIndex;
-		else
-			-- no current panel, go to the first panel
-			tabIndex = 1;
-		end
-	end	
-	if ( not tabIndex ) then
-		return;
-	end
-
-	-- load addon if needed
-	if ( panels[tabIndex].addon ) then
-		UIParentLoadAddOn(panels[tabIndex].addon);
-		panels[tabIndex].addon = nil;
-	end
-	-- show it
-	ShowUIPanel(self);
-	self.activeTabIndex = tabIndex;	
-	PanelTemplates_SetTab(self, tabIndex);
-	for index, data in pairs(panels) do
-		local panel = _G[data.name];
-		if ( index == tabIndex ) then
-			panel:Show();
-			if ( panel.update ) then
-				panel:update(selection);
-			end
-		elseif ( panel ) then
-			panel:Hide();
-		end
-	end
-end
-
-function PVPUIFrame_TabOnClick(self)
-	PlaySound("igCharacterInfoTab");
-	PVPUIFrame_ShowFrame(panels[self:GetID()].name);
 end
 
 function PVPUIFrame_RoleButtonClicked(self)
@@ -281,9 +216,9 @@ function PVPQueueFrame_OnEvent(self, event, ...)
 	elseif ( event == "BATTLEFIELDS_SHOW" ) then
 		local isArena, bgID = ...;
 		if (isArena) then
-			PVPUIFrame_ShowFrame("PVPQueueFrame", ConquestFrame);
+			PVPQueueFrame_ShowFrame(ConquestFrame);
 		else
-			PVPUIFrame_ShowFrame("PVPQueueFrame", HonorFrame);
+			PVPQueueFrame_ShowFrame(HonorFrame);
 			HonorFrame_SetType("specific");
 			HonorFrameSpecificList_FindAndSelectBattleground(bgID);
 		end
@@ -873,11 +808,6 @@ function ConquestFrame_OnLoad(self)
 	local _, ratedBGreward = GetPersonalRatedBGInfo();
 	self.RatedBGReward.Amount:SetText(ratedBGreward);
 	
-	local name = UnitName("player");
-	local _, class = UnitClass("player");
-	local color = RAID_CLASS_COLORS[class].colorStr;
-	self.RatedBG.TeamNameText:SetText("|c"..color..name..FONT_COLOR_CODE_CLOSE);
-	
 	self:RegisterEvent("GROUP_ROSTER_UPDATE");
 	self:RegisterEvent("ARENA_TEAM_UPDATE");
 	self:RegisterEvent("ARENA_TEAM_ROSTER_UPDATE");
@@ -951,28 +881,20 @@ function ConquestFrame_UpdateArenas(self)
 		if ( teamIndex ) then
 			local teamName, teamSize, teamRating, teamPlayed, teamWins,  seasonTeamPlayed, 
 			seasonTeamWins, playerPlayed, seasonPlayerPlayed, teamRank, playerRating = GetArenaTeam(teamIndex);
-			arenaButton:Enable();
 			arenaButton.NormalTexture:SetAlpha(1);
 			arenaButton.hasTeam = true;
-			arenaButton.TeamNameText:SetText(teamName);
-			arenaButton.RatingText:SetText(teamRating);
-			arenaButton.RatingLabel:Show();
-			arenaButton.TeamNameText:SetVertexColor(HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b);
-			arenaButton.TeamSizeText:SetVertexColor(NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b);
+			--arenaButton.RatingText:SetText(teamRating);
+			--arenaButton.RatingLabel:Show();
 			arenaButton.teamIndex = teamIndex;
 		else
 			if ( ConquestFrame.selectedButton == arenaButton ) then
 				arenaButton.SelectedTexture:Hide();
 				ConquestFrame.selectedButton = nil;
 			end
-			arenaButton:Disable();
 			arenaButton.NormalTexture:SetAlpha(0.5);
 			arenaButton.hasTeam = nil;
-			arenaButton.TeamNameText:SetFormattedText(NO_ARENA_TEAM, CONQUEST_SIZE_STRINGS[i]);
-			arenaButton.RatingText:SetText("");
-			arenaButton.RatingLabel:Hide();
-			arenaButton.TeamNameText:SetVertexColor(GRAY_FONT_COLOR.r, GRAY_FONT_COLOR.g, GRAY_FONT_COLOR.b);
-			arenaButton.TeamSizeText:SetVertexColor(GRAY_FONT_COLOR.r, GRAY_FONT_COLOR.g, GRAY_FONT_COLOR.b);
+			--arenaButton.RatingText:SetText("");
+			--arenaButton.RatingLabel:Hide();
 			arenaButton.teamIndex = nil;
 		end
 	end
@@ -981,9 +903,10 @@ end
 
 function ConquestFrame_UpdateRatedBG(self)
 	
-	local personalBGRating, ratedBGreward, _, _, _, _, weeklyWins, weeklyPlayed = GetPersonalRatedBGInfo();
-	self.RatedBG.RatingText:SetText(personalBGRating);
-	
+	local currentRating, _, _, _, _, _, bestRating, _, _, seasonWins = GetPersonalRatedBGInfo();
+	self.RatedBG.Wins:SetText(seasonWins);
+	self.RatedBG.BestRating:SetText(bestRating);
+	self.RatedBG.CurrentRating:SetText(currentRating);
 end
 
 function ConquestFrame_UpdateJoinButton()
@@ -1188,7 +1111,7 @@ function ConquestFrameButton_OnEnter(self)
 	if (self.hasTeam or self.id == RATED_BG_ID) then --if this is an arena button and the team exists, or if it's the rated BGs
 		GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
 		if (self.id == RATED_BG_ID) then
-			GameTooltip:SetText(self.TeamNameText:GetText());
+			--GameTooltip:SetText(self.TeamNameText:GetText());
 			GameTooltip:AddLine(ARENA_WEEKLY_STATS, 1, 1, 1);
 			GameTooltip:AddLine(" ");
 			
@@ -1205,6 +1128,7 @@ function ConquestFrameButton_OnEnter(self)
 			GameTooltip:AddLine(" ");
 			
 			GameTooltip:AddLine(NORMAL_FONT_COLOR_CODE..PVP_CURRENT_RATING..FONT_COLOR_CODE_CLOSE.." "..teamRating, 1, 1, 1);
+			GameTooltip:AddLine(NORMAL_FONT_COLOR_CODE..PVP_BEST_RATING..FONT_COLOR_CODE_CLOSE.." "..bestRating, 1, 1, 1);
 			local losses = teamPlayed - teamWins;
 			GameTooltip:AddLine(NORMAL_FONT_COLOR_CODE..PVP_RECORD..FONT_COLOR_CODE_CLOSE.." "..teamWins.."-"..losses, 1, 1, 1);
 			GameTooltip:AddLine(" ");
@@ -1522,7 +1446,7 @@ function PVPArenaTeamsFrame_ShowTeam(self)
 			button.NameText:SetText("");
 			button.PlayedText:SetText("");
 			button.WinLossText:SetText("");
-			button.RatingText:SetText("");
+			--button.RatingText:SetText("");
 			button.CaptainIcon:Hide();
 		else
 			button:Enable();
@@ -1542,7 +1466,7 @@ function PVPArenaTeamsFrame_ShowTeam(self)
 				loss = played - win;
 				button.WinLossText:SetText(win.."-"..loss);
 			end
-			button.RatingText:SetText(rating);
+			--button.RatingText:SetText(rating);
 			if (rank > 0) then
 				button.CaptainIcon:Hide();
 			else

@@ -278,7 +278,7 @@ function ScrollFrameTemplate_OnMouseWheel(self, value, scrollBar)
 end
 
 -- Function to handle the update of manually calculated scrollframes.  Used mostly for listings with an indeterminate number of items
-function FauxScrollFrame_Update(frame, numItems, numToDisplay, valueStep, button, smallWidth, bigWidth, highlightFrame, smallHighlightWidth, bigHighlightWidth, alwaysShowScrollBar )
+function FauxScrollFrame_Update(frame, numItems, numToDisplay, buttonHeight, button, smallWidth, bigWidth, highlightFrame, smallHighlightWidth, bigHighlightWidth, alwaysShowScrollBar )
 	-- If more than one screen full of skills then show the scrollbar
 	local frameName = frame:GetName();
 	local scrollBar = _G[ frameName.."ScrollBar" ];
@@ -298,8 +298,8 @@ function FauxScrollFrame_Update(frame, numItems, numToDisplay, valueStep, button
 		local scrollChildHeight = 0;
 
 		if ( numItems > 0 ) then
-			scrollFrameHeight = (numItems - numToDisplay) * valueStep;
-			scrollChildHeight = numItems * valueStep;
+			scrollFrameHeight = (numItems - numToDisplay) * buttonHeight;
+			scrollChildHeight = numItems * buttonHeight;
 			if ( scrollFrameHeight < 0 ) then
 				scrollFrameHeight = 0;
 			end
@@ -307,8 +307,13 @@ function FauxScrollFrame_Update(frame, numItems, numToDisplay, valueStep, button
 		else
 			scrollChildFrame:Hide();
 		end
-		scrollBar:SetMinMaxValues(0, scrollFrameHeight); 
-		scrollBar:SetValueStep(valueStep);
+		local maxRange = (numItems - numToDisplay) * buttonHeight;
+		if (maxRange < 0) then
+			maxRange = 0;
+		end
+		scrollBar:SetMinMaxValues(0, maxRange); 
+		scrollBar:SetValueStep(buttonHeight);
+		scrollBar:SetStepsPerPage(numToDisplay-1);
 		scrollChildFrame:SetHeight(scrollChildHeight);
 		
 		-- Arrow button handling

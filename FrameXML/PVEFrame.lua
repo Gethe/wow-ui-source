@@ -97,15 +97,17 @@ end
 SCENARIOS_SHOW_LEVEL = 85;
 RAID_FINDER_SHOW_LEVEL = 85;
 
-local groupFrames = { "LFDParentFrame", "RaidFinderFrame", "ScenarioFinderFrame" }
+local groupFrames = { "LFDParentFrame", "RaidFinderFrame", "FlexRaidFrame", "ScenarioFinderFrame" }
 
 function GroupFinderFrame_OnLoad(self)
 	SetPortraitToTexture(self.groupButton1.icon, "Interface\\Icons\\INV_Helmet_08");
 	self.groupButton1.name:SetText(LOOKING_FOR_DUNGEON_PVEFRAME);
 	SetPortraitToTexture(self.groupButton2.icon, "Interface\\LFGFrame\\UI-LFR-PORTRAIT");
 	self.groupButton2.name:SetText(RAID_FINDER_PVEFRAME);
-	SetPortraitToTexture(self.groupButton3.icon, "Interface\\Icons\\Icon_Scenarios");
-	self.groupButton3.name:SetText(SCENARIOS_PVEFRAME);
+	SetPortraitToTexture(self.groupButton3.icon, "Interface\\Icons\\Achievement_General_StayClassy");
+	self.groupButton3.name:SetText(FLEX_RAID);
+	SetPortraitToTexture(self.groupButton4.icon, "Interface\\Icons\\Icon_Scenarios");
+	self.groupButton4.name:SetText(SCENARIOS_PVEFRAME);
 	-- disable
 	if ( UnitLevel("player") < SCENARIOS_SHOW_LEVEL ) then
 		GroupFinderFrameButton_SetEnabled(self.groupButton3, false);

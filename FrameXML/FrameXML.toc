@@ -132,6 +132,7 @@ LFDFrame.xml
 LFRFrame.xml
 RaidFinder.xml
 ScenarioFinder.xml
+FlexRaidFrame.xml
 MovieRecordingProgress.xml
 MacOptionsFrame.xml
 RatingMenuFrame.xml

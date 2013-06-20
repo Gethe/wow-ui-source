@@ -748,7 +748,6 @@ CHANNELPULLOUT_FADEFRAMES = { "ChannelPulloutBackground", "ChannelPulloutCloseBu
 function ChannelPullout_OnLoad (self)
 	self:RegisterEvent("VARIABLES_LOADED");
 	self:SetScript("OnEvent", ChannelPullout_OnEvent);
-	RegisterForSave("CHANNELPULLOUT_OPTIONS");
 end
 
 function ChannelPullout_OnEvent (self)
