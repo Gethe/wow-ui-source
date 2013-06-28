@@ -34,7 +34,12 @@ function GuildFrame_OnLoad(self)
 	GuildFrame_UpdateXP();
 	GuildFrame_UpdateFaction();
 	local guildName, _, _, realm = GetGuildInfo("player");
-	local fullName = string.format(FULL_PLAYER_NAME, guildName, realm);
+	local fullName;
+	if (realm) then
+		fullName = string.format(FULL_PLAYER_NAME, guildName, realm);
+	else
+		fullName = guildName
+	end
 	GuildFrameTitleText:SetText(fullName);
 	local totalMembers, onlineMembers, onlineAndMobileMembers = GetNumGuildMembers();
 	GuildFrameMembersCount:SetText(onlineAndMobileMembers.." / "..totalMembers);

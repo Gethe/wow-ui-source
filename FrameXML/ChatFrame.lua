@@ -1010,7 +1010,7 @@ local function ExecuteCastRandom(actions)
 		CastRandomTable[actions] = entry;
 	end
 	if ( not entry.value ) then
-		entry.value = entry.spellNames[random(#entry.spellNames)];
+		entry.value = entry.spellNames[securerandom(#entry.spellNames)];
 	end
 	entry.pending = true;
 	return entry.value;
@@ -2243,7 +2243,7 @@ end
 
 SlashCmdList["RAID_INFO"] = function(msg)
 	RaidFrame.slashCommand = 1;
-	if ( ( GetNumSavedInstances() > 0 ) and not RaidInfoFrame:IsVisible() ) then
+	if ( ( GetNumSavedInstances() + GetNumSavedWorldBosses() > 0 ) and not RaidInfoFrame:IsVisible() ) then
 		ToggleRaidFrame();
 		RaidInfoFrame:Show();
 	elseif ( not RaidFrame:IsVisible() ) then
@@ -2861,7 +2861,7 @@ function ChatFrame_SystemEventHandler(self, event, ...)
 	elseif ( event == "UPDATE_INSTANCE_INFO" ) then
 		if ( RaidFrame.hasRaidInfo ) then
 			local info = ChatTypeInfo["SYSTEM"];
-			if ( RaidFrame.slashCommand and GetNumSavedInstances() == 0 and self == DEFAULT_CHAT_FRAME) then
+			if ( RaidFrame.slashCommand and GetNumSavedInstances() + GetNumSavedWorldBosses() == 0 and self == DEFAULT_CHAT_FRAME) then
 				self:AddMessage(NO_RAID_INSTANCES_SAVED, info.r, info.g, info.b, info.id);
 				RaidFrame.slashCommand = nil;
 			end

@@ -919,44 +919,25 @@ function ConquestFrame_UpdateJoinButton()
 			button.tooltip = PVP_NOT_LEADER;
 		else
 			local neededSize = CONQUEST_SIZES[ConquestFrame.selectedButton.id];
-			if ( ConquestFrame.selectedButton.id == RATED_BG_ID ) then
-				-- rated bg
-				if (neededSize == groupSize) then
+			if ( neededSize == groupSize ) then
+				local validGroup = true;
+				local teamIndex = ConquestFrame.selectedButton.teamIndex;
+				for i = 1, groupSize - 1 do
+					if ( not UnitIsConnected("party"..i) ) then
+						validGroup = false;
+						button.tooltip = PVP_NO_QUEUE_DISCONNECTED_GROUP
+						break;
+					end
+				end
+				if ( validGroup ) then
 					button.tooltip = nil;
 					button:Enable();
 					return;
 				end
-				if ( neededSize > groupSize ) then
-					button.tooltip = string.format(PVP_RATEDBG_NEED_MORE, neededSize - groupSize);
-				else
-					button.tooltip = string.format(PVP_RATEDBG_NEED_LESS, groupSize -  neededSize);
-				end
+			elseif ( neededSize > groupSize ) then
+				button.tooltip = string.format(PVP_RATEDBG_NEED_MORE, neededSize - groupSize);
 			else
-				-- arena
-				if ( neededSize == groupSize ) then
-					local validGroup = true;
-					local teamIndex = ConquestFrame.selectedButton.teamIndex;
-					for i = 1, groupSize - 1 do
-						local name = UnitName("party"..i)
-						local found = false;
-						for j = 1, groupSize * 2 do
-							if ( name == GetArenaTeamRosterInfo(teamIndex, j) ) then
-								found = true;
-								break;
-							end
-						end
-						if ( not found or not UnitIsConnected("party"..i) ) then
-							validGroup = false;
-							break;
-						end
-					end
-					if ( validGroup ) then
-						button.tooltip = nil;
-						button:Enable();
-						return;
-					end
-				end
-				button.tooltip = PVP_NO_QUEUE_GROUP;
+				button.tooltip = string.format(PVP_RATEDBG_NEED_LESS, groupSize -  neededSize);
 			end
 		end
 	else

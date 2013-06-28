@@ -1,3 +1,30 @@
+
+function FlexRaidFrame_OnLoad(self)
+	self:RegisterEvent("LFG_LOCK_INFO_RECEIVED");
+	self:RegisterEvent("GROUP_ROSTER_UPDATE");
+end
+
+function FlexRaidFrame_OnEvent(self, event, ...)
+	if ( event == "LFG_LOCK_INFO_RECEIVED" ) then
+		FlexRaidFrame_ShowBest() 
+		FlexRaidFrame_UpdateAvailability();
+	elseif ( event == 	"GROUP_ROSTER_UPDATE" ) then
+		FlexRaidFrame_UpdateButton()
+	end
+end
+
+function FlexRaidFrame_OnShow(self)
+	FlexRaidFrame_UpdateAvailability();
+	FlexRaidFrame_ShowBest();
+	FlexRaidFrame_UpdateButton();
+end
+
+function FlexRaidFrame_ShowBest()
+	if ( not FlexRaidFrame.raid or not IsLFGDungeonJoinable(FlexRaidFrame.raid) ) then
+		FlexRaidFrame_SetRaid(GetBestFlexRaidChoice());
+	end
+end
+
 function FlexRaidFrame_Update(dungeonID)
 	local frame = FlexRaidFrame.ScrollFrame.Child
 	local dungeonName, typeID, subtypeID, _,_,_,_,_,_,_, textureFilename,
@@ -19,6 +46,57 @@ function FlexRaidFrame_Update(dungeonID)
 	frame.RaidDescription:SetText(dungeonDescription);
 end
 
+function FlexRaidFrame_UpdateAvailability()
+	--Update the cover panel for when flex raids are available to you, but you're between raid levels
+	local available = false;
+	local nextLevel = nil;
+	local level = UnitLevel("player");
+	for i=1, GetNumFlexRaidDungeons() do
+		local id, name, typeID, subtype, minLevel, maxLevel = GetFlexRaidDungeonInfo(i);
+		if ( level >= minLevel and level <= maxLevel ) then
+			available = true;
+			nextLevel = nil;
+			break;
+		elseif ( level < minLevel and (not nextLevel or minLevel < nextLevel ) ) then
+			nextLevel = minLevel;
+		end
+	end
+	if ( available ) then
+		FlexRaidFrame.NoRaidsCover:Hide();
+	else
+		FlexRaidFrame.NoRaidsCover:Show();
+		if ( nextLevel ) then
+			FlexRaidFrame.NoRaidsCover.Label:SetFormattedText(NO_RF_AVAILABLE_WITH_NEXT_LEVEL, nextLevel);
+		else
+			FlexRaidFrame.NoRaidsCover.Label:SetText(NO_RF_AVAILABLE);
+		end
+	end
+end
+
+function FlexRaidFrame_UpdateButton()
+	local button = FlexRaidFrame.StartButton;
+	button:Disable();
+	button.tooltip = nil;
+	
+	local minPlayers, maxPlayers;
+	if(FlexRaidFrame.raid) then
+		_, _, _, _, _, _, _, _, _, _, _, _, maxPlayers, _, _, _, _, minPlayers = GetLFGDungeonInfo(FlexRaidFrame.raid);
+	end
+	
+	local groupSize = GetNumGroupMembers();
+	if (groupSize == 0 or not FlexRaidFrame.raid) then
+		button.tooltip = PVP_NO_QUEUE_GROUP;
+	elseif (groupSize >= minPlayers and groupSize <= maxPlayers) then
+		button:Enable();
+	else
+		if (groupSize < minPlayers) then
+			button.tooltip = format(FLEX_RAID_NEED_MORE, minPlayers - groupSize);
+		else
+			button.tooltip = format(FLEX_RAID_NEED_LESS, groupSize - maxPlayers);
+		end
+	end
+end
+
 function FlexRaidFrameSelectionDropDown_SetUp(self)
 	UIDropDownMenu_SetWidth(self, 180);
 	UIDropDownMenu_Initialize(self, FlexRaidFrameSelectionDropDown_Initialize);
@@ -32,11 +110,8 @@ end
 function FlexRaidFrameSelectionDropDown_Initialize(self)
 	local info = UIDropDownMenu_CreateInfo();
 	
-	-- If we ever change this logic, we also need to change the logic in RaidFinderFrame_UpdateAvailability
-	--for i=1, GetNumFlexRaidDungeons() do
-	for i=1, GetNumRFDungeons() do
-		--local id, name = GetFlexRaidDungeonInfo(i);
-		local id, name = GetRFDungeonInfo(i);
+	for i=1, GetNumFlexRaidDungeons() do
+		local id, name = GetFlexRaidDungeonInfo(i);
 		local isAvailable, isAvailableToPlayer = IsLFGDungeonJoinable(id);
 		if ( isAvailable or isAvailableToPlayer or isRaidFinderDungeonDisplayable(id) ) then
 			if ( isAvailable ) then
@@ -81,5 +156,14 @@ function FlexRaidFrame_SetRaid(value)
 		FlexRaidFrame_Update(value)
 	else
 		UIDropDownMenu_SetText(FlexRaidFrameSelectionDropDown, "");
+	end
+	FlexRaidFrame_UpdateButton();
+end
+
+function FlexRaidFrame_Join()
+	if ( FlexRaidFrame.raid ) then
+		ClearAllLFGDungeons(LE_LFG_CATEGORY_FLEXRAID);
+		SetLFGDungeon(LE_LFG_CATEGORY_FLEXRAID, FlexRaidFrame.raid);
+		JoinLFG(LE_LFG_CATEGORY_FLEXRAID);
 	end
 end

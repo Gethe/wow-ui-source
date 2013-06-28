@@ -1384,7 +1384,7 @@ TRAVEL PASS
 								self:SetFrameLevel( self:GetFrameLevel() + 3 );
 							</OnLoad>
 							<OnClick>
-								if ( UnitCanCooperate("player", "target") ) then
+								if ( UnitCanCooperate("player", "target") and UnitIsPlayer("target") ) then
 									local name, server = UnitName("target");
 									local fullname = name;
 									if ( server and not UnitIsSameServer("player", "target") ) then
@@ -1428,8 +1428,13 @@ TRAVEL PASS
 								self:SetFrameLevel( self:GetFrameLevel() + 3 );
 							</OnLoad>
 							<OnClick>
-								if ( UnitCanCooperate("player", "target") ) then
-									AddMute(UnitName("target"));
+								if ( UnitCanCooperate("player", "target") and UnitIsPlayer("target") ) then
+									local name, server = UnitName("target");
+									local fullname = name;
+									if ( server and not UnitIsSameServer("player", "target") ) then
+										fullname = name.."-"..server;
+									end
+									AddMute(fullname);
 									PlaySound("UChatScrollButton");
 								else
 									StaticPopup_Show("ADD_MUTE");

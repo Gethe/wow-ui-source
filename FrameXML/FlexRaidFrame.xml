@@ -14,6 +14,27 @@
 			</Layer>
 		</Layers>
 		<Frames>
+			<Frame parentKey="NoRaidsCover" enableMouse="true" hidden="true" topLevel="true">
+				<Anchors>
+					<Anchor point="TOPRIGHT" x="-6" y="-25"/>
+					<Anchor point="BOTTOMLEFT" x="3" y="4"/>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<Texture>
+							<Color r="0" g="0" b="0" a="0.8"/>
+						</Texture>
+					</Layer>
+					<Layer level="ARTWORK">
+						<FontString parentKey="Label" inherits="GameFontNormalLarge" justifyH="CENTER" justifyV="MIDDLE">
+							<Size x="320" y="0"/>
+							<Anchors>
+								<Anchor point="CENTER"/>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+			</Frame>
 			<Frame name="$parentBottomInset" useParentLevel="true" inherits="InsetFrameTemplate" >
 				<Size x="215" y="496"/>
 				<Anchors>
@@ -164,36 +185,32 @@
 								</FontString>
 							</Layer>
 						</Layers>
-						<Scripts>
-							<OnLoad>
-								--self.RaidDescription:SetTextColor(1, 1, 1);
-								--self.FlexSizeLabel:SetTextColor(1, .82, 0);
-								--self.FlexSizeText:SetTextColor(1, 1, 1);
-								--self.FlexLootLabel:SetTextColor(1, .82, 0);
-								--self.FlexLootText:SetTextColor(1, 1, 1);
-								--self.FlexLockoutLabel:SetTextColor(1, .82, 0);
-								--self.FlexLockoutText:SetTextColor(1, 1, 1);
-							</OnLoad>
-						</Scripts>
 					</Frame>
 				</ScrollChild>
 			</ScrollFrame>
-			<Button name="$parentStartRaidButton" inherits="MagicButtonTemplate" text="START_RAID">
+			<Button name="$parentStartRaidButton" parentKey="StartButton" inherits="MagicButtonTemplate" text="START_RAID" motionScriptsWhileDisabled="true">
 				<Size x="135" y="22"/>
 				<Anchors>
 					<Anchor point="BOTTOM" x="0" y="4"/>
 				</Anchors>
 				<Scripts>
 					<OnClick>
-						--local mode, subMode = GetLFGMode(LE_LFG_CATEGORY_RF);
-						--if ( mode == "queued" or mode == "listed" or mode == "rolecheck" or mode == "suspended" ) then
-						--	LeaveLFG(LE_LFG_CATEGORY_RF);
-						--else
-						--	RaidFinderQueueFrame_Join();
-						--end
+						FlexRaidFrame_Join();
 					</OnClick>
+					<OnEnter>
+						if ( self.tooltip ) then
+							GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+							GameTooltip:SetText(self.tooltip, NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b, 1, 1);
+						end
+					</OnEnter>
+					<OnLeave function="GameTooltip_Hide"/>
 				</Scripts>
 			</Button>
 		</Frames>
+		<Scripts>
+			<OnLoad function="FlexRaidFrame_OnLoad"/>
+			<OnEvent function="FlexRaidFrame_OnEvent"/>
+			<OnShow function="FlexRaidFrame_OnShow"/>
+		</Scripts>
 	</Frame>
 </Ui>

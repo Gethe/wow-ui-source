@@ -109,21 +109,6 @@ function UnitPowerBarAlt_SetUpdateAllEvent(self, event)
 	self:RegisterEvent(event);
 end
 
-local maxPerSecond = 0.7;
-local minPerSecond = 0.3;
-function GetSmoothProgressChange(value, displayedValue, range, elapsed)
-	local minPerSecond = max(minPerSecond, 1/range);	--Make sure we're moving at least 1 unit/second (will only matter if our maximum power is 3 or less);
-	
-	local diff = displayedValue - value;
-	local diffRatio = diff / range;
-	local change = range * ((minPerSecond/abs(diffRatio) + maxPerSecond - minPerSecond) * diffRatio) * elapsed;
-	if ( abs(change) > abs(diff) or abs(diffRatio) < 0.01 ) then
-		return value;
-	else
-		return displayedValue - change;
-	end
-end
-
 function UnitPowerBarAlt_OnUpdate(self, elapsed)
 	if ( self.smooth and  self.value and self.displayedValue and self.value ~= self.displayedValue ) then
 		UnitPowerBarAlt_SetDisplayedPower(self, GetSmoothProgressChange(self.value, self.displayedValue, self.range, elapsed));
