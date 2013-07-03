@@ -1,6 +1,8 @@
+local arenaFrames;
 
 function InspectPVPFrame_OnLoad(self)
 	self:RegisterEvent("INSPECT_HONOR_UPDATE");
+	arenaFrames = {InspectPVPFrame.Arena2v2, InspectPVPFrame.Arena3v3, InspectPVPFrame.Arena5v5};
 end
 
 function InspectPVPFrame_OnEvent(self, event, ...)
@@ -23,4 +25,11 @@ function InspectPVPFrame_Update()
 	local rating, played, won = GetInspectRatedBGData();
 	InspectPVPFrame.RatedBG.Rating:SetText(rating);
 	InspectPVPFrame.RatedBG.Record:SetText(won.."-"..(played-won));
+	
+	for i=1, MAX_ARENA_TEAMS do
+		local arenarating, seasonPlayed, seasonWon, weeklyPlayed, weeklyWon = GetInspectArenaData(i);
+		local frame = arenaFrames[i];
+		--frame.Rating:SetText(arenarating);
+		frame.Record:SetText(seasonWon.."-"..(seasonPlayed - seasonWon));
+	end
 end

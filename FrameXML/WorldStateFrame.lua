@@ -533,19 +533,12 @@ function WorldStateScoreFrame_Update()
 
 		-- Reanchor some columns.
 		WorldStateScoreFrameDamageDone:SetPoint("LEFT", WorldStateScoreFrameKB, "RIGHT", -5, 0);
-		if ( isRegistered ) then
-			WorldStateScoreFrameTeam:Show();
-			WorldStateScoreFrameKB:SetPoint("LEFT", WorldStateScoreFrameTeam, "RIGHT", -10, 0);
-			WorldStateScoreFrameMatchmakingRating:Hide();
-			WorldStateScoreFrameRatingChange:Show();
-			WorldStateScoreFrameRatingChange:SetPoint("LEFT", WorldStateScoreFrameHealingDone, "RIGHT", 0, 0);
-			WorldStateScoreFrameRatingChange.sortType = "bgratingChange";
-		else
-			WorldStateScoreFrameMatchmakingRating:Hide();
-			WorldStateScoreFrameRatingChange:Hide();
-			WorldStateScoreFrameTeam:Hide();
-			WorldStateScoreFrameKB:SetPoint("LEFT", WorldStateScoreFrameName, "RIGHT", 4, 0);
-		end
+		WorldStateScoreFrameTeam:Hide();
+		WorldStateScoreFrameRatingChange:Show();
+		WorldStateScoreFrameRatingChange:SetPoint("LEFT", WorldStateScoreFrameHealingDone, "RIGHT", 0, 0);
+		WorldStateScoreFrameRatingChange.sortType = "bgratingChange";
+		WorldStateScoreFrameMatchmakingRating:Hide();
+		WorldStateScoreFrameKB:SetPoint("LEFT", WorldStateScoreFrameName, "RIGHT", 4, 0);
 	else
 		-- Show Tabs
 		WorldStateScoreFrameTab1:Show();
@@ -1103,8 +1096,8 @@ end
 function WorldStateChallengeMode_CheckTimers(...)
 	for i = 1, select("#", ...) do
 		local timerID = select(i, ...);
-		local _, elapsedTime, isChallengeModeTimer = GetWorldElapsedTime(timerID);
-		if ( isChallengeModeTimer ) then
+		local _, elapsedTime, type = GetWorldElapsedTime(timerID);
+		if ( type == LE_WORLD_ELAPSED_TIMER_TYPE_CHALLENGE_MODE ) then
 			local _, _, _, _, _, _, _, mapID = GetInstanceInfo();
 			if ( mapID ) then
 				WorldStateChallengeMode_ShowTimer(timerID, elapsedTime, GetChallengeModeMapTimes(mapID));

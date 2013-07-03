@@ -244,7 +244,7 @@ end
 
 function RaidInfoInstance_OnClick(self)
 	if ( IsModifiedClick("CHATLINK") ) then
-		if (self.selectedRaidID) then
+		if (self.instanceID) then
 			ChatEdit_InsertLink(GetSavedInstanceChatLink(self:GetID()));
 		else
 			-- No chat links for World Boss locks yet
@@ -257,7 +257,7 @@ function RaidInfoInstance_OnClick(self)
 end
 
 function RaidInfoInstance_OnEnter(self)
-	if (self.selectedRaidID) then
+	if (self.instanceID) then
 		GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
 		GameTooltip:SetInstanceLockEncountersComplete(self:GetID());
 		GameTooltip:Show();

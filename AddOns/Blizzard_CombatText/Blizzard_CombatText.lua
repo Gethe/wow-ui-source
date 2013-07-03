@@ -353,7 +353,11 @@ function CombatText_OnEvent(self, event, ...)
 			message = nil;
 		end
 	elseif (messageType == "ABSORB_ADDED") then
-		message = "+"..BreakUpLargeNumbers(data).."("..COMBAT_TEXT_ABSORB..")";
+		if ( COMBAT_TEXT_SHOW_FRIENDLY_NAMES == "1" and UnitName(self.unit) ~= data ) then
+			message = "+"..BreakUpLargeNumbers(arg3).."("..COMBAT_TEXT_ABSORB..")".." ["..data.."]";
+		else
+			message = "+"..BreakUpLargeNumbers(arg3).."("..COMBAT_TEXT_ABSORB..")";
+		end
 	else 
 		message = _G["COMBAT_TEXT_"..messageType];
 		if ( not message ) then

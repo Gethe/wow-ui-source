@@ -1230,7 +1230,7 @@
 <Button name="DigsiteCompleteToastFrame" parent="UIParent" hidden="true" frameStrata="DIALOG" inherits="AlertFrameTemplate">
 	<Size x="241" y="81"/>
 	<Anchors>
-		<Anchor point="BOTTOM" x="0" y="256"/>
+		<Anchor point="BOTTOM" x="0" y="170"/>
 	</Anchors>
 	<FontString inherits="GameFontLarge" text="Digsite Completed.">
 		<Size x="200" y="30"/>
@@ -1327,6 +1327,11 @@
 			</Texture>
 		</Layer>
 	</Layers>
+	<Scripts>
+		<OnEnter>
+			--Overiding the alertFrame onEnter so the DigsiteCompleteToastFrame animates out even if the player hovers their mouse over it.
+		</OnEnter>
+	</Scripts>
 </Button>
 
 <Frame name="AlertFrame" parent="UIParent" hidden="true">

@@ -266,6 +266,7 @@ function UIParent_OnLoad(self)
 	
 	-- Events for Archaeology
 	self:RegisterEvent("ARCHAEOLOGY_TOGGLE");
+	self:RegisterEvent("ARCHAEOLOGY_SURVEY_CAST");
 	
 	-- Events for transmogrify
 	self:RegisterEvent("TRANSMOGRIFY_OPEN");
@@ -1293,6 +1294,10 @@ function UIParent_OnEvent(self, event, ...)
 		elseif ( ArchaeologyFrame_Hide ) then
 			ArchaeologyFrame_Hide();
 		end
+	elseif ( event == "ARCHAEOLOGY_SURVEY_CAST" ) then
+		ArchaeologyFrame_LoadUI();
+		ArcheologyDigsiteProgressBar_OnEvent(ArcheologyDigsiteProgressBar, event, ...);
+		self:UnregisterEvent("ARCHAEOLOGY_SURVEY_CAST");
 		
 	-- Events for Transmogrify UI handling
 	elseif ( event == "TRANSMOGRIFY_OPEN" ) then

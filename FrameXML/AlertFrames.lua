@@ -15,7 +15,6 @@ function AlertFrame_OnLoad (self)
 	self:RegisterEvent("LOOT_ITEM_ROLL_WON");
 	self:RegisterEvent("SHOW_LOOT_TOAST");
 	self:RegisterEvent("PET_BATTLE_CLOSE");
-	self:RegisterEvent("ARTIFACT_DIGSITE_COMPLETE");
 end
 
 function AlertFrame_OnEvent (self, event, ...)
@@ -57,9 +56,6 @@ function AlertFrame_OnEvent (self, event, ...)
 		end
 	elseif ( event == "PET_BATTLE_CLOSE" ) then
 		AchievementAlertFrame_FireDelayedAlerts();
-	elseif ( event == "ARTIFACT_DIGSITE_COMPLETE" ) then
-		local researchBranchID = ...;
-		DigSiteToastFrame_ShowAlert(researchBranchID);
 	end
 end
 
@@ -843,7 +839,7 @@ function DigSiteToastFrame_ShowAlert(researchBranchID)
 	local RaceName, RaceTexture	= GetArchaeologyRaceInfo(researchBranchID);
 	DigsiteCompleteToastFrame.DigsiteType:SetText(RaceName);
 	DigsiteCompleteToastFrame.DigsiteTypeTexture:SetTexture(RaceTexture);
-	--Todo:: Add sound.
+	PlaySound("UI_DigsiteCompletion_Toast");
 	AlertFrame_AnimateIn(DigsiteCompleteToastFrame);
 	AlertFrame_FixAnchors();
 end
