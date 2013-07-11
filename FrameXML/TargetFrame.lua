@@ -61,7 +61,9 @@ function TargetFrame_OnLoad(self, unit, menuFunc)
 						 _G[thisName.."ManaBar"], _G[thisName.."TextureFrameManaBarText"],
 	                     threatFrame, "player", _G[thisName.."NumericalThreat"],
 						 _G[thisName.."MyHealPredictionBar"], _G[thisName.."OtherHealPredictionBar"],
-						 _G[thisName.."TotalAbsorbBar"], _G[thisName.."TotalAbsorbBarOverlay"], _G[thisName.."TextureFrameOverAbsorbGlow"]);
+						 _G[thisName.."TotalAbsorbBar"], _G[thisName.."TotalAbsorbBarOverlay"], _G[thisName.."TextureFrameOverAbsorbGlow"],
+						 _G[thisName.."TextureFrameOverHealAbsorbGlow"], _G[thisName.."HealAbsorbBar"], 
+						 _G[thisName.."HealAbsorbBarLeftShadow"], _G[thisName.."HealAbsorbBarRightShadow"]);
 						
 	TargetFrame_Update(self);
 	self:RegisterEvent("PLAYER_ENTERING_WORLD");

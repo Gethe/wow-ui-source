@@ -137,6 +137,12 @@
 	<Font name="GameFontNormalHuge" inherits="SystemFont_Shadow_Huge1" virtual="true">
 		<Color r="1.0" g="0.82" b="0"/>
 	</Font>
+	<Font name="GameFontNormalHugeOutline" inherits="SystemFont_Shadow_Huge1" virtual="true">
+		<Color r="1.0" g="0.82" b="0"/>
+	</Font>
+	<Font name="GameFontNormalHugeOutline2" inherits="SystemFont_Shadow_Outline_Huge2" virtual="true">
+		<Color r="1.0" g="0.82" b="0"/>
+	</Font>
 	<Font name="GameFontNormalHugeBlack" inherits="SystemFont_Huge1" virtual="true">
 		<Color r="0" g="0" b="0"/>
 	</Font>
@@ -297,7 +303,7 @@
 	<Font name="CombatTextFont" inherits="SystemFont_Shadow_Huge3" virtual="true">
 		<Color r="1.0" g="0.82" b="0"/>
 	</Font>
-	<Font name="MovieSubtitleFont" inherits="SystemFont_Shadow_Outline_Huge2" virtual="true">
+	<Font name="MovieSubtitleFont" inherits="GameFontNormalHugeOutline2" virtual="true">
 		<Color r="1.0" g="0.78" b="0"/>
 	</Font>
 	

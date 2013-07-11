@@ -84,6 +84,8 @@ function FlexRaidFrame_UpdateButton()
 	end
 	
 	local groupSize = GetNumGroupMembers();
+	maxPlayers = maxPlayers or 0;
+	minPlayers = minPlayers or 0;
 	if (groupSize == 0 or not FlexRaidFrame.raid) then
 		button.tooltip = PVP_NO_QUEUE_GROUP;
 	elseif (groupSize >= minPlayers and groupSize <= maxPlayers) then

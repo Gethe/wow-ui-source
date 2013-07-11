@@ -174,5 +174,8 @@ LossOfControlFrame.xml
 PVPHelper.xml
 MapBar.xml
 
+#Save off whatever we need available unmodified.
+SecureCapsule.lua
+
 ## add new modules above here
 LocalizationPost.xml

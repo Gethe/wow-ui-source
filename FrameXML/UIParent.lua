@@ -453,6 +453,10 @@ function QuestChoice_LoadUI()
 	UIParentLoadAddOn("Blizzard_QuestChoice");
 end
 
+function Store_LoadUI()
+	UIParentLoadAddOn("Blizzard_StoreUI");
+end
+
 --[[
 function MovePad_LoadUI()
 	UIParentLoadAddOn("Blizzard_MovePad");

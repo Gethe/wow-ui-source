@@ -29,7 +29,7 @@ function InspectPVPFrame_Update()
 	for i=1, MAX_ARENA_TEAMS do
 		local arenarating, seasonPlayed, seasonWon, weeklyPlayed, weeklyWon = GetInspectArenaData(i);
 		local frame = arenaFrames[i];
-		--frame.Rating:SetText(arenarating);
+		frame.Rating:SetText(arenarating);
 		frame.Record:SetText(seasonWon.."-"..(seasonPlayed - seasonWon));
 	end
 end

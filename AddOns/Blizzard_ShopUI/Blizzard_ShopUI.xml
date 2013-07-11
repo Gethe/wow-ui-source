@@ -1,0 +1,339 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\FrameXML\UI.xsd">
+	<Include file="Blizzard_ShopUIPatchwerk.xml"/>
+	<Script file="Blizzard_ShopUIStubs.lua"/>
+	<Script file="Blizzard_ShopUISecure.lua"/>
+	<ScopedModifier forbidden="true" scriptsUseGivenEnv="true">
+		<Button name="ShopButtonTemplate" virtual="true">
+			<Size x="40" y="22"/>
+			<Layers>
+				<Layer level="BACKGROUND">
+					<Texture parentKey="Left" file="Interface\Buttons\UI-Panel-Button-Up">
+						<Size x="12" y="22"/>
+						<Anchors>
+							<Anchor point="TOPLEFT"/>
+							<Anchor point="BOTTOMLEFT"/>
+						</Anchors>
+						<TexCoords left="0" right="0.09375" top="0" bottom="0.6875"/>
+					</Texture>
+					<Texture parentKey="Right" file="Interface\Buttons\UI-Panel-Button-Up">
+						<Size x="12" y="22"/>
+						<Anchors>
+							<Anchor point="TOPRIGHT"/>
+							<Anchor point="BOTTOMRIGHT"/>
+						</Anchors>
+						<TexCoords left="0.53125" right="0.625" top="0" bottom="0.6875"/>
+					</Texture>
+					<Texture parentKey="Middle" file="Interface\Buttons\UI-Panel-Button-Up">
+						<Size x="12" y="22"/>
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeKey="$parent.Left" relativePoint="TOPRIGHT"/>
+							<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Right" relativePoint="BOTTOMLEFT"/>
+						</Anchors>
+						<TexCoords left="0.09375" right="0.53125" top="0" bottom="0.6875"/>
+					</Texture>
+				</Layer>
+			</Layers>
+			<Scripts>
+				<OnLoad>
+					if ( not self:IsEnabled() ) then
+						self.Left:SetTexture("Interface\\Buttons\\UI-Panel-Button-Disabled");
+						self.Middle:SetTexture("Interface\\Buttons\\UI-Panel-Button-Disabled");
+						self.Right:SetTexture("Interface\\Buttons\\UI-Panel-Button-Disabled");
+					end
+				</OnLoad>
+				<OnMouseDown>
+					if ( self:IsEnabled() ) then
+						self.Left:SetTexture("Interface\\Buttons\\UI-Panel-Button-Down");
+						self.Middle:SetTexture("Interface\\Buttons\\UI-Panel-Button-Down");
+						self.Right:SetTexture("Interface\\Buttons\\UI-Panel-Button-Down");
+					end
+				</OnMouseDown>
+				<OnMouseUp>
+					if ( self:IsEnabled() ) then
+						self.Left:SetTexture("Interface\\Buttons\\UI-Panel-Button-Up");
+						self.Middle:SetTexture("Interface\\Buttons\\UI-Panel-Button-Up");
+						self.Right:SetTexture("Interface\\Buttons\\UI-Panel-Button-Up");
+					end
+				</OnMouseUp>
+				<OnShow>
+					if ( self:IsEnabled() ) then
+						-- we need to reset our textures just in case we were hidden before a mouse up fired
+						self.Left:SetTexture("Interface\\Buttons\\UI-Panel-Button-Up");
+						self.Middle:SetTexture("Interface\\Buttons\\UI-Panel-Button-Up");
+						self.Right:SetTexture("Interface\\Buttons\\UI-Panel-Button-Up");
+					end
+				</OnShow>
+				<OnDisable>
+					self.Left:SetTexture("Interface\\Buttons\\UI-Panel-Button-Disabled");
+					self.Middle:SetTexture("Interface\\Buttons\\UI-Panel-Button-Disabled");
+					self.Right:SetTexture("Interface\\Buttons\\UI-Panel-Button-Disabled");
+				</OnDisable>
+				<OnEnable>
+					self.Left:SetTexture("Interface\\Buttons\\UI-Panel-Button-Up");
+					self.Middle:SetTexture("Interface\\Buttons\\UI-Panel-Button-Up");
+					self.Right:SetTexture("Interface\\Buttons\\UI-Panel-Button-Up");
+				</OnEnable>
+			</Scripts>
+			<ButtonText parentKey="Text"/>
+			<NormalFont style="GameFontNormal"/>
+			<HighlightFont style="GameFontHighlight"/>
+			<DisabledFont style="GameFontDisable"/>
+			<HighlightTexture inherits="UIPanelButtonHighlightTexture"/>
+		</Button>
+		<CheckButton name="ShopQuantitySelectionTemplate" virtual="true">
+			<Size x="14" y="14"/>
+			<HitRectInsets>
+				<AbsInset left="0" right="-130" top="0" bottom="0"/>
+			</HitRectInsets>
+			<Layers>
+				<Layer level="ARTWORK">
+					<FontString parentKey="Title" inherits="GameFontHighlight" justifyH="LEFT">
+						<Size x="70" y="14"/>
+						<Anchors>
+							<Anchor point="LEFT" relativeKey="$parent" relativePoint="RIGHT" x="5" y="0"/>
+						</Anchors>
+					</FontString>
+					<FontString parentKey="Price" inherits="GameFontHighlight" justifyH="LEFT">
+						<Size x="55" y="14"/>
+						<Anchors>
+							<Anchor point="LEFT" relativeKey="$parent.Title" relativePoint="RIGHT" x="5" y="0"/>
+						</Anchors>
+						<Color r="0.5098" g="0.8549" b="1.0"/>
+					</FontString>
+				</Layer>
+			</Layers>
+			<Scripts>
+				<OnClick function="ShopFrameBrowseQuantitySelectButton_OnClick"/>
+			</Scripts>
+			<NormalTexture file="Interface\Buttons\UI-RadioButton">
+				<TexCoords left="0" right="0.25" top="0" bottom="1"/>
+			</NormalTexture>
+			<HighlightTexture file="Interface\Buttons\UI-RadioButton" alphaMode="ADD">
+				<TexCoords left="0.5" right="0.75" top="0" bottom="1"/>
+			</HighlightTexture>
+			<CheckedTexture file="Interface\Buttons\UI-RadioButton">
+				<TexCoords left="0.25" right="0.5" top="0" bottom="1"/>
+			</CheckedTexture>
+		</CheckButton>
+		<Frame name="ShopFrame" frameStrata="FULLSCREEN_DIALOG" parent="UIParent">
+			<Size x="542" y="385"/>
+			<Anchors>
+				<Anchor point="CENTER"/>
+			</Anchors>
+			<Layers>
+				<Layer level="BACKGROUND">
+					<Texture parentKey="Background" inherits="shop-main-frame" setAllPoints="true"/>
+				</Layer>
+				<Layer level="ARTWORK">
+					<FontString parentKey="Title" inherits="GameFontHighlightHuge" justifyH="LEFT">
+						<Anchors>
+							<Anchor point="LEFT" relativeKey="$parent" relativePoint="TOPLEFT" x="70" y="-52"/>
+						</Anchors>
+					</FontString>
+				</Layer>
+			</Layers>
+			<Frames>
+				<Button parentKey="CloseButton">
+					<Size x="32" y="32"/>
+					<Anchors>
+						<Anchor point="TOPRIGHT" x="-14" y="-15"/>
+					</Anchors>
+					<Scripts>
+						<OnClick function="ShopFrameCloseButton_OnClick"/>
+					</Scripts>
+					<DisabledTexture file="Interface\Buttons\UI-Panel-MinimizeButton-Disabled"/>
+					<NormalTexture file="Interface\Buttons\UI-Panel-MinimizeButton-Up"/>
+					<PushedTexture file="Interface\Buttons\UI-Panel-MinimizeButton-Down"/>
+					<HighlightTexture file="Interface\Buttons\UI-Panel-MinimizeButton-Highlight" alphaMode="ADD"/>
+				</Button>
+				<Frame parentKey="Browse" setAllPoints="true">
+					<Layers>
+						<Layer level="ARTWORK">
+							<Texture parentKey="Icon">
+								<Size x="64" y="64"/>
+								<Anchors>
+									<Anchor point="CENTER" relativeKey="$parent" relativePoint="TOPLEFT" x="135" y="-140"/>
+								</Anchors>
+							</Texture>
+							<FontString parentKey="ProductName" inherits="GameFontNormalLarge" justifyH="CENTER">
+								<Size x="275" y="40"/>
+								<Anchors>
+									<Anchor point="LEFT" relativeKey="$parent.Icon" relativePoint="RIGHT" x="5" y="0"/>
+								</Anchors>
+							</FontString>
+							<FontString parentKey="ProductDescription" inherits="GameFontHighlight" justifyH="CENTER" justifyV="MIDDLE">
+								<Size x="300" y="0"/>
+								<Anchors>
+									<Anchor point="TOP" relativeKey="$parent" relativePoint="CENTER" x="0" y="12"/>
+								</Anchors>
+							</FontString>
+							<FontString parentKey="PlusTax" inherits="GameFontNormalSmall">
+								<Anchors>
+									<Anchor point="BOTTOMLEFT" x="90" y="80"/>
+								</Anchors>
+								<Color r="0.263" g="0.455" b="0.557"/>
+							</FontString>
+							<FontString parentKey="ProductIndex" inherits="GameFontDisableSmall">
+								<Anchors>
+									<Anchor point="BOTTOMRIGHT" x="-38" y="34"/>
+								</Anchors>
+							</FontString>
+						</Layer>
+					</Layers>
+					<Frames>
+						<Button parentKey="BuyButton" inherits="ShopButtonTemplate">
+							<Size x="95" y="20"/>
+							<Anchors>
+								<Anchor point="BOTTOM" x="-2" y="36"/>
+							</Anchors>
+							<Scripts>
+								<OnClick function="ShopFrameBuyButton_OnClick"/>
+							</Scripts>
+						</Button>
+						<Button parentKey="NextItem">
+							<Size x="32" y="32"/>
+							<Anchors>
+								<Anchor point="RIGHT" x="-23" y="0"/>
+							</Anchors>
+							<Scripts>
+								<OnClick function="ShopFrameBrowseNextItem_OnClick"/>
+							</Scripts>
+							<NormalTexture file="Interface\Buttons\UI-SpellbookIcon-NextPage-Up"/>
+							<PushedTexture file="Interface\Buttons\UI-SpellbookIcon-NextPage-Down"/>
+							<DisabledTexture file="Interface\Buttons\UI-SpellbookIcon-NextPage-Disabled"/>
+							<HighlightTexture file="Interface\Buttons\UI-Common-MouseHilight" alphaMode="ADD"/>
+						</Button>
+						<Button parentKey="PrevItem">
+							<Size x="32" y="32"/>
+							<Anchors>
+								<Anchor point="LEFT" x="23" y="0"/>
+							</Anchors>
+							<Scripts>
+								<OnClick function="ShopFrameBrowsePrevItem_OnClick"/>
+							</Scripts>
+							<NormalTexture file="Interface\Buttons\UI-SpellbookIcon-PrevPage-Up"/>
+							<PushedTexture file="Interface\Buttons\UI-SpellbookIcon-PrevPage-Down"/>
+							<DisabledTexture file="Interface\Buttons\UI-SpellbookIcon-PrevPage-Disabled"/>
+							<HighlightTexture file="Interface\Buttons\UI-Common-MouseHilight" alphaMode="ADD"/>
+						</Button>
+						<Frame parentKey="QuantitySelection">
+							<Size x="310" y="0"/>
+							<Anchors>
+								<Anchor point="BOTTOM" x="0" y="130"/>
+							</Anchors>
+							<Layers>
+								<Layer level="BORDER">
+									<Texture parentKey="TopBorder">
+										<Size x="1" y="1"/>
+										<Anchors>
+											<Anchor point="TOPLEFT"/>
+											<Anchor point="TOPRIGHT"/>
+										</Anchors>
+										<Color r="0.5" g="0.5" b="0.5" a="0.3"/>
+									</Texture>
+									<Texture parentKey="BottomBorder">
+										<Size x="1" y="1"/>
+										<Anchors>
+											<Anchor point="BOTTOMLEFT"/>
+											<Anchor point="BOTTOMRIGHT"/>
+										</Anchors>
+										<Color r="0.5" g="0.5" b="0.5" a="0.3"/>
+									</Texture>
+									<Texture parentKey="LeftBorder">
+										<Size x="1" y="1"/>
+										<Anchors>
+											<Anchor point="TOPLEFT" x="0" y="-1"/>
+											<Anchor point="BOTTOMLEFT" x="0" y="1"/>
+										</Anchors>
+										<Color r="0.5" g="0.5" b="0.5" a="0.3"/>
+									</Texture>
+									<Texture parentKey="RightBorder">
+										<Size x="1" y="1"/>
+										<Anchors>
+											<Anchor point="TOPRIGHT" x="0" y="-1"/>
+											<Anchor point="BOTTOMRIGHT" x="0" y="1"/>
+										</Anchors>
+										<Color r="0.5" g="0.5" b="0.5" a="0.3"/>
+									</Texture>
+								</Layer>
+							</Layers>
+							<Frames>
+								<CheckButton inherits="ShopQuantitySelectionTemplate" parentArray="buttons">
+									<Anchors>
+										<Anchor point="TOPLEFT" x="5" y="-5"/>
+									</Anchors>
+								</CheckButton>
+							</Frames>
+						</Frame>
+						<Frame parentKey="SaleFrame" hidden="true">
+							<Size x="391" y="233"/>
+							<Anchors>
+								<Anchor point="CENTER" x="2" y="-13"/>
+							</Anchors>
+							<Layers>
+								<Layer level="ARTWORK">
+									<Texture parentKey="Border" inherits="shop-sale-border" setAllPoints="true"/>
+									<Texture parentKey="Ribbon" inherits="shop-sale-ribbon">
+										<Anchors>
+											<Anchor point="CENTER" relativeKey="$parent.$parent.Icon" relativePoint="BOTTOM" x="0" y="2"/>
+										</Anchors>
+									</Texture>
+									<FontString parentKey="SalePrice" inherits="GameFontNormalHugeOutline2" justifyH="CENTER">
+										<Anchors>
+											<Anchor point="BOTTOM" x="0" y="18"/>
+										</Anchors>
+										<Color r="0.5098" g="0.8549" b="1.0"/>
+									</FontString>
+									<FontString parentKey="NormalPrice" inherits="GameFontNormalOutline" justifyH="CENTER">
+										<Anchors>
+											<Anchor point="BOTTOM" relativeKey="$parent.SalePrice" relativePoint="TOP" x="0" y="5"/>
+										</Anchors>
+										<Color r="0.5098" g="0.8549" b="1.0"/>
+									</FontString>
+								</Layer>
+								<Layer level="OVERLAY">
+									<FontString parentKey="SaleText" inherits="GameFontHighlightOutline">
+										<Anchors>
+											<Anchor point="CENTER" relativeKey="$parent.Ribbon" relativePoint="CENTER" x="0" y="0"/>
+										</Anchors>
+									</FontString>
+									<Texture parentKey="NormalSlash" inherits="shop-sale-slash">
+										<Anchors>
+											<Anchor point="CENTER" relativeKey="$parent.NormalPrice" relativePoint="CENTER" x="0" y="0"/>
+										</Anchors>
+									</Texture>
+								</Layer>
+							</Layers>
+							<Scripts>
+								<OnLoad>
+									self.SaleText:SetText(BLIZZARD_STORE_ON_SALE);
+								</OnLoad>
+							</Scripts>
+						</Frame>
+						<Frame parentKey="NormalPriceFrame">
+							<Size x="391" y="233"/>
+							<Anchors>
+								<Anchor point="CENTER" x="2" y="-13"/>
+							</Anchors>
+							<Layers>
+								<Layer level="ARTWORK">
+									<FontString parentKey="Price" inherits="GameFontNormalHugeOutline2" justifyH="CENTER">
+										<Anchors>
+											<Anchor point="BOTTOM" x="0" y="18"/>
+										</Anchors>
+										<Color r="0.5098" g="0.8549" b="1.0"/>
+									</FontString>
+								</Layer>
+							</Layers>
+						</Frame>
+					</Frames>
+				</Frame>
+			</Frames>
+			<Scripts>
+				<OnLoad function="ShopFrame_OnLoad"/>
+				<OnEvent function="ShopFrame_OnEvent"/>
+			</Scripts>
+		</Frame>
+	</ScopedModifier>
+</Ui>

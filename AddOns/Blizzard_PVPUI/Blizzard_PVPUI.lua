@@ -815,12 +815,7 @@ function ConquestFrame_OnLoad(self)
 end
 
 function ConquestFrame_OnEvent(self, event, ...)
-	if ( event == "PVP_REWARDS_UPDATE" and self:IsShown() ) then
-		RequestRatedInfo();	
-		RequestPVPRewards();
-	else
-		ConquestFrame_Update(self);
-	end
+	ConquestFrame_Update(self);
 end
 
 function ConquestFrame_OnShow(self)

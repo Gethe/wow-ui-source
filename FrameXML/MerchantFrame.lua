@@ -511,19 +511,19 @@ function MerchantFrame_ConfirmExtendedItemCost(itemButton, numToPurchase)
 	local itemQuality = 1;
 	local _;
 	local r, g, b = 1, 1, 1;
+	local specs = {};
 	if(itemButton.link) then
 		itemName, _, itemQuality = GetItemInfo(itemButton.link);
 		r, g, b = GetItemQualityColor(itemQuality); 
+		specs = GetItemSpecInfo(itemButton.link, specs);
 	elseif(itemName) then		-- This is the case for a currency, which don't support links yet
 		itemName = itemButton.name;
 		r, g, b = GetItemQualityColor(1); 
 	end
 	
-	local specs = {};
-	specs = GetItemSpecInfo(itemButton.link, specs);
 	local specText;
-	local specName, specIcon;
 	if (specs and #specs > 0) then
+		local specName, specIcon;
 		specText = "\n\n";
 		for i=1, #specs do
 			_, specName, _, specIcon = GetSpecializationInfoByID(specs[i]);

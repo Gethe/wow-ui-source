@@ -239,11 +239,14 @@
 				</Texture>
 			</Layer>
 			<Layer level="ARTWORK">
-				<Texture name="$parentMyHealPredictionBar" inherits="MyHealPredictionBarTemplate"/>
-				<Texture name="$parentOtherHealPredictionBar" inherits="OtherHealPredictionBarTemplate"/>
 				<Texture name="$parentTotalAbsorbBar" inherits="TotalAbsorbBarTemplate"/>
 			</Layer>
 			<Layer level="ARTWORK" textureSubLevel="1">
+				<Texture name="$parentMyHealPredictionBar" inherits="MyHealPredictionBarTemplate"/>
+				<Texture name="$parentOtherHealPredictionBar" inherits="OtherHealPredictionBarTemplate"/>
+				<Texture name="$parentHealAbsorbBar" inherits="HealAbsorbBarTemplate"/>
+				<Texture name="$parentHealAbsorbBarLeftShadow" inherits="HealAbsorbBarLeftShadowTemplate"/>
+				<Texture name="$parentHealAbsorbBarRightShadow" inherits="HealAbsorbBarRightShadowTemplate"/>
 				<Texture name="$parentTotalAbsorbBarOverlay" inherits="TotalAbsorbBarOverlayTemplate"/>
 			</Layer>
 		</Layers>
@@ -364,7 +367,10 @@
 								<Anchor point="CENTER" relativePoint="RIGHT" x="-44" y="10"/>
 							</Anchors>
 						</Texture>
+					</Layer>
+					<Layer level="ARTWORK" textureSubLevel="1">
 						<Texture name="$parentOverAbsorbGlow" inherits="OverAbsorbGlowTemplate"/>
+						<Texture name="$parentOverHealAbsorbGlow" inherits="OverHealAbsorbGlowTemplate"/>
 					</Layer>
 				</Layers>
 			</Frame>

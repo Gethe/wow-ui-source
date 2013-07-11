@@ -699,16 +699,19 @@ CHALLENGE_MEDAL_NONE = 0;
 CHALLENGE_MEDAL_BRONZE = 1;
 CHALLENGE_MEDAL_SILVER = 2;
 CHALLENGE_MEDAL_GOLD = 3;
+CHALLENGE_MEDAL_PLAT = 4; --as of 7/2/2013 only used for endless proving grounds
 NUM_CHALLENGE_MEDALS = 3;
 CHALLENGE_MEDAL_TEXTURES = {
 	[CHALLENGE_MEDAL_BRONZE] = "Interface\\Challenges\\challenges-bronze",
 	[CHALLENGE_MEDAL_SILVER] = "Interface\\Challenges\\challenges-silver",
 	[CHALLENGE_MEDAL_GOLD]   = "Interface\\Challenges\\challenges-gold",
+	[CHALLENGE_MEDAL_PLAT]   = "Interface\\Challenges\\challenges-plat",
 }
 CHALLENGE_MEDAL_TEXTURES_SMALL = {
 	[CHALLENGE_MEDAL_BRONZE] = "Interface\\Challenges\\challenges-bronze-sm",
 	[CHALLENGE_MEDAL_SILVER] = "Interface\\Challenges\\challenges-silver-sm",
 	[CHALLENGE_MEDAL_GOLD]   = "Interface\\Challenges\\challenges-gold-sm",
+	[CHALLENGE_MEDAL_PLAT]   = "Interface\\Challenges\\challenges-plat-sm",
 }
 
 -- Player Reporting

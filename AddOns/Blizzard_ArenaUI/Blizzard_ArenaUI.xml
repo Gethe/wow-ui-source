@@ -305,9 +305,7 @@
 	</Button>
 	<Button name="ArenaEnemyFrameTemplate" frameStrata="LOW" toplevel="true" movable="true" hidden="true" inherits="ArenaPrepFrameTemplate" virtual="true">
 		<Layers>
-			<Layer level="ARTWORK">
-				<Texture name="$parentMyHealPredictionBar" inherits="MyHealPredictionBarTemplate"/>
-				<Texture name="$parentOtherHealPredictionBar" inherits="OtherHealPredictionBarTemplate"/>
+			<Layer level="BACKGROUND">
 				<Texture name="$parentTotalAbsorbBar" inherits="TotalAbsorbBarTemplate"/>
 			</Layer>
 			<Layer level="ARTWORK" textureSubLevel="1">
@@ -319,8 +317,16 @@
 				<Frames>
 					<Frame setAllPoints="true">
 						<Layers>
-							<Layer level="OVERLAY">
+							<Layer level="BACKGROUND" textureSubLevel="-1">
+								<Texture name="$parentMyHealPredictionBar" inherits="MyHealPredictionBarTemplate"/>
+								<Texture name="$parentOtherHealPredictionBar" inherits="OtherHealPredictionBarTemplate"/>
+								<Texture name="$parentHealAbsorbBar" inherits="HealAbsorbBarTemplate"/>
+								<Texture name="$parentHealAbsorbBarLeftShadow" inherits="HealAbsorbBarLeftShadowTemplate"/>
+								<Texture name="$parentHealAbsorbBarRightShadow" inherits="HealAbsorbBarRightShadowTemplate"/>
+							</Layer>
+							<Layer level="OVERLAY" textureSubLevel="1">
 								<Texture name="$parentOverAbsorbGlow" inherits="OverAbsorbGlowTemplate"/>
+								<Texture name="$parentOverHealAbsorbGlow" inherits="OverHealAbsorbGlowTemplate"/>
 							</Layer>
 						</Layers>
 					</Frame>
@@ -339,7 +345,9 @@
 						_G[prefix.."HealthBar"], _G[prefix.."HealthBarText"], 
 						_G[prefix.."ManaBar"], _G[prefix.."ManaBarText"], nil, nil, nil,
 						_G[prefix.."MyHealPredictionBar"], _G[prefix.."OtherHealPredictionBar"],
-						_G[prefix.."TotalAbsorbBar"], _G[prefix.."TotalAbsorbBarOverlay"], _G[prefix.."OverAbsorbGlow"]);
+						_G[prefix.."TotalAbsorbBar"], _G[prefix.."TotalAbsorbBarOverlay"], _G[prefix.."OverAbsorbGlow"],
+						_G[prefix.."OverHealAbsorbGlow"], _G[prefix.."HealAbsorbBar"], _G[prefix.."HealAbsorbBarLeftShadow"],
+						_G[prefix.."HealAbsorbBarRightShadow"]);
 				SetTextStatusBarTextZeroText(_G[prefix.."HealthBar"], DEAD);
 				ArenaEnemyFrame_OnLoad(self);
 			</OnLoad>

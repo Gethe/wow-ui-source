@@ -425,7 +425,7 @@ function BattlefieldMinimap_OnUpdate(self, elapsed)
 				BG_VEHICLES[i].texture:SetTexture(WorldMap_GetVehicleTexture(vehicleType, isPossessed));
 				BG_VEHICLES[i].texture:SetRotation( orientation );
 				BG_VEHICLES[i]:SetPoint("CENTER", "BattlefieldMinimap", "TOPLEFT", vehicleX, vehicleY);
-				if ( VEHICLE_TEXTURES[vehicleType].belowPlayerBlips ) then
+				if ( VEHICLE_TEXTURES[vehicleType] and VEHICLE_TEXTURES[vehicleType].belowPlayerBlips ) then
 					BG_VEHICLES[i]:SetFrameLevel(playerBlipFrameLevel - 1);
 				else
 					BG_VEHICLES[i]:SetFrameLevel(playerBlipFrameLevel + 1);

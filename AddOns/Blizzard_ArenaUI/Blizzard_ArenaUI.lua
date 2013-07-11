@@ -246,7 +246,7 @@ function ArenaEnemyFrame_OnEvent(self, event, arg1, arg2)
 			ArenaEnemyFrame_UpdatePet(self);
 		elseif ( event == "UNIT_NAME_UPDATE" ) then
 			ArenaEnemyFrame_UpdatePlayer(self);
-		elseif ( event == "UNIT_MAXHEALTH" or event == "UNIT_HEAL_PREDICTION" or event == "UNIT_ABSORB_AMOUNT_CHANGED" ) then
+		elseif ( event == "UNIT_MAXHEALTH" or event == "UNIT_HEAL_PREDICTION" or event == "UNIT_ABSORB_AMOUNT_CHANGED" or event == "UNIT_HEAL_ABSORB_AMOUNT_CHANGED" ) then
 			UnitFrameHealPredictionBars_Update(self);
 		end
 	end
