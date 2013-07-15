@@ -134,7 +134,7 @@ function AutoComplete_Update(parent, text, cursorPosition)
 		if (not possibilities) then
 			possibilities = {};
 		end
-		local realmStart = text:find("-", 1, false); 
+		local realmStart = text:find("-", 1, true); 
 		if (realmStart) then
 			local realms = {};
 			GetAutoCompleteRealms(realms);
@@ -143,7 +143,7 @@ function AutoComplete_Update(parent, text, cursorPosition)
 			local index = #possibilities + 1;
 			for i=1, #realms do
 				realm = realms[i];
-				subStart, subEnd = realm:find(realmStart, 1, false) 
+				subStart, subEnd = realm:find(realmStart, 1, true) 
 				if (subStart and subStart == 1) then
 					if (subEnd > 0) then
 						--if they started typing a known realm name, just append the rest of it

@@ -287,6 +287,15 @@
 								</Anchor>
 							</Anchors>
 						</FontString>
+						<FontString name="$parentUnconsciousText" inherits="GameFontNormalSmall" text="UNCONSCIOUS">
+							<Anchors>
+								<Anchor point="CENTER">
+									<Offset>
+										<AbsDimension x="-50" y="3"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
 						<FontString name="$parentHealthBarText" inherits="TextStatusBarText">
 							<Anchors>
 								<Anchor point="CENTER">
@@ -583,9 +592,18 @@
 						</FontString>
 						<FontString name="$parentDeadText" inherits="GameFontNormalSmall" text="DEAD">
 							<Anchors>
-								<Anchor point="CENTER">
+								<Anchor point="LEFT">
 									<Offset>
-										<AbsDimension x="15" y="1"/>
+										<AbsDimension x="48" y="1"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+						<FontString name="$parentUnconsciousText" inherits="GameFontNormalSmall" justifyH="LEFT" text="UNCONSCIOUS">
+							<Anchors>
+								<Anchor point="LEFT">
+									<Offset>
+										<AbsDimension x="48" y="1"/>
 									</Offset>
 								</Anchor>
 							</Anchors>

@@ -149,7 +149,7 @@ function LFDRoleCheckPopup_Update()
 	
 	LFG_UpdateAllRoleCheckboxes();
 	
-	local inProgress, slots, members, details, bgQueue = GetLFGRoleUpdate();
+	local inProgress, slots, members, category, lfgID, bgQueue = GetLFGRoleUpdate();
 	
 	local displayName;
 	if ( bgQueue ) then

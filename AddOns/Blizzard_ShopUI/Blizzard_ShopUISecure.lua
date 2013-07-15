@@ -10,19 +10,19 @@ tbl.CreateForbiddenFrame = CreateFrame;
 setfenv(1, tbl);
 ----------------
 
---Future locals
-local CurrentGroupIndex = 1;
 local CurrentGroupID = nil;
 local CurrentProductID = nil;
-local ShopFrame;
+local StoreFrame;
+local StoreConfirmationFrame
 
 local function Import(name)
 	tbl[name] = SecureCapsuleGet(name);
 end
 
 --Imports
---Import("C_PurchaseAPI");
+Import("C_PurchaseAPI");
 Import("math");
+Import("pairs");
 
 --GlobalStrings
 Import("BLIZZARD_STORE");
@@ -30,11 +30,26 @@ Import("BLIZZARD_STORE_ON_SALE");
 Import("BLIZZARD_STORE_BUY");
 Import("BLIZZARD_STORE_PLUS_TAX");
 Import("BLIZZARD_STORE_PRODUCT_INDEX");
+Import("BLIZZARD_STORE_CANCEL_PURCHASE");
+Import("BLIZZARD_STORE_FINAL_BUY");
+Import("BLIZZARD_STORE_CONFIRMATION_TITLE");
+Import("BLIZZARD_STORE_CONFIRMATION_INSTRUCTION");
+Import("BLIZZARD_STORE_FINAL_PRICE_LABEL");
+Import("BLIZZARD_STORE_PAYMENT_METHOD");
+Import("BLIZZARD_STORE_PAYMENT_METHOD_EXTRA");
 
 --Code
-function ShopFrame_OnLoad(self)
-	ShopFrame = self;	--Save off a reference for us
-	self:RegisterEvent("SHOP_PRODUCTS_UPDATED");
+local function getIndex(tbl, value)
+	for k, v in pairs(tbl) do
+		if ( v == value ) then
+			return k;
+		end
+	end
+end
+
+function StoreFrame_OnLoad(self)
+	StoreFrame = self;	--Save off a reference for us
+	self:RegisterEvent("STORE_PRODUCTS_UPDATED");
 	C_PurchaseAPI.GetProductList();
 
 	self.Title:SetText(BLIZZARD_STORE);
@@ -43,12 +58,13 @@ function ShopFrame_OnLoad(self)
 	self.Browse.PlusTax:SetText(BLIZZARD_STORE_PLUS_TAX);
 end
 
-function ShopFrame_OnEvent(self, event, ...)
-	if ( event == "SHOP_PRODUCTS_UPDATED" ) then
-		local numGroups = C_PurchaseAPI.GetNumProductGroups();
+function StoreFrame_OnEvent(self, event, ...)
+	if ( event == "STORE_PRODUCTS_UPDATED" ) then
+		local groups = C_PurchaseAPI.GetProductGroups();
+		local numGroups = #groups;
 		if ( numGroups > 0 ) then
-			ShopFrameBrowse_InferCurrentIndex(self.Browse);
-			ShopFrameBrowse_Update(self.Browse);
+			StoreFrameBrowse_Advance(self.Browse, 0); --Advancing by 0 will just make sure that we have a valid group selected.
+			StoreFrameBrowse_Update(self.Browse);
 			self.Browse:Show();
 		else
 			--Display something about us not having products
@@ -56,58 +72,59 @@ function ShopFrame_OnEvent(self, event, ...)
 	end
 end
 
-function ShopFrameBrowseNextItem_OnClick(self)
-	ShopFrameBrowse_Advance(self:GetParent(), 1);
-end
-
-function ShopFrameBrowsePrevItem_OnClick(self)
-	ShopFrameBrowse_Advance(self:GetParent(), -1);
-end
-
-function ShopFrameBrowse_InferCurrentIndex(self)
-	for i=1, C_PurchaseAPI.GetNumProductGroups() do
-		local id, name, description, icon, normalPrice, currentPrice = C_PurchaseAPI.GetProductGroupInfo(CurrentGroupIndex);
-		if ( id == CurrentGroupID ) then
-			CurrentGroupIndex = i;
-			return;
+function StoreFrame_OnAttributeChanged(self, name, value)
+	--Note - Setting attributes is how the external UI should communicate with this frame. That way, their taint won't be spread to this code.
+	if ( name == "action" ) then
+		if ( value == "Show" ) then
+			self:Show();
+		elseif ( value == "Hide" ) then
+			self:Hide();
 		end
 	end
-
-	--Didn't find anything matching our ID, so just make sure we're in range.
-	ShopFrameBrowse_Advance(self, 0);
 end
 
-function ShopFrameBrowse_Advance(self, amount)
-	local numItems = C_PurchaseAPI.GetNumProductGroups();
+function StoreFrameBrowseNextItem_OnClick(self)
+	StoreFrameBrowse_Advance(self:GetParent(), 1);
+end
 
-	CurrentGroupIndex = CurrentGroupIndex + amount;
-	if ( CurrentGroupIndex > numItems ) then
-		CurrentGroupIndex = 1;
-	elseif ( CurrentGroupIndex < 1 ) then
-		CurrentGroupIndex = numItems;
+function StoreFrameBrowsePrevItem_OnClick(self)
+	StoreFrameBrowse_Advance(self:GetParent(), -1);
+end
+
+function StoreFrameBrowse_Advance(self, amount)
+	local groups = C_PurchaseAPI.GetProductGroups();
+
+	local nextIndex = getIndex(groups, CurrentGroupID);
+	if ( nextIndex ) then
+		nextIndex = nextIndex + amount;
+	else
+		nextIndex = 1;
 	end
 
+	if ( nextIndex > #groups ) then
+		nextIndex = 1;
+	elseif ( nextIndex < 1 ) then
+		nextIndex = #groups;
+	end
+
+	CurrentGroupID = groups[nextIndex];
 	CurrentProductID = nil;	--Update fills out the product ID with the first value in the group
 
-	ShopFrameBrowse_Update(self)
+	StoreFrameBrowse_Update(self)
 
-	self.ProductIndex:SetFormattedText(BLIZZARD_STORE_PRODUCT_INDEX, CurrentGroupIndex, numItems);
+	self.ProductIndex:SetFormattedText(BLIZZARD_STORE_PRODUCT_INDEX, nextIndex, #groups);
 end
 
-function ShopFrameBrowse_Update(self)
-	local id, name, description, icon = C_PurchaseAPI.GetProductGroupInfo(CurrentGroupIndex);
-	CurrentGroupID = id;
+function StoreFrameBrowse_Update(self)
+	local id, name, description, icon = C_PurchaseAPI.GetProductGroupInfo(CurrentGroupID);
 	self.ProductName:SetText(name);
 	self.ProductDescription:SetText(description);
 	self.Icon:SetTexture(icon);
 
-	if ( not CurrentProductID ) then
-		CurrentProductID = C_PurchaseAPI.GetProductInfo(id, 1);
-	end
-	ShopFrameBrowse_UpdateQuantitySelection(self);
+	StoreFrameBrowse_UpdateQuantitySelection(self);
 end
 
-function ShopFrameBrowse_SetSale(self, normalPrice, currentPrice)
+function StoreFrameBrowse_SetSale(self, normalPrice, currentPrice)
 	self.NormalPriceFrame:Hide();
 	
 	self.SaleFrame.SalePrice:SetText(currentPrice.."*");
@@ -116,7 +133,7 @@ function ShopFrameBrowse_SetSale(self, normalPrice, currentPrice)
 	self.SaleFrame:Show();
 end
 
-function ShopFrameBrowse_SetNormalPrice(self, price)
+function StoreFrameBrowse_SetNormalPrice(self, price)
 	self.SaleFrame:Hide();
 
 	self.NormalPriceFrame.Price:SetText(price.."*");
@@ -124,16 +141,20 @@ function ShopFrameBrowse_SetNormalPrice(self, price)
 	self.NormalPriceFrame:Show();
 end
 
-function ShopFrameBrowse_UpdateQuantitySelection(self)
-	local numProducts = C_PurchaseAPI.GetNumProducts(CurrentGroupID);
+function StoreFrameBrowse_UpdateQuantitySelection(self)
+	local products = C_PurchaseAPI.GetProducts(CurrentGroupID);
 	local quant = self.QuantitySelection;
 
-	for i=1, numProducts do
+	if ( not CurrentProductID or not getIndex(products, CurrentProductID) ) then
+		CurrentProductID = products[1];
+	end
+
+	for i=1, #products do
 		local button = quant.buttons[i];
 		if ( not button ) then
-			quant.buttons[i] = CreateForbiddenFrame("CheckButton", nil, quant, "ShopQuantitySelectionTemplate");
+			quant.buttons[i] = CreateForbiddenFrame("CheckButton", nil, quant, "StoreQuantitySelectionTemplate");
 			button = quant.buttons[i];
-			button:SetScript("OnClick", ShopFrameBrowseQuantitySelectButton_OnClick);
+			button:SetScript("OnClick", StoreFrameBrowseQuantitySelectButton_OnClick);
 
 			if ( i % 2 == 0 ) then
 				button:SetPoint("LEFT", quant.buttons[i-1], "RIGHT", 140, 0);
@@ -142,7 +163,7 @@ function ShopFrameBrowse_UpdateQuantitySelection(self)
 			end
 		end
 
-		local id, title, normalPrice, currentPrice = C_PurchaseAPI.GetProductInfo(CurrentGroupID, i);
+		local id, title, normalPrice, currentPrice = C_PurchaseAPI.GetProductInfo(products[i]);
 		button:SetID(id);
 		button.Title:SetText(title);
 		button.Price:SetText(currentPrice);
@@ -152,36 +173,90 @@ function ShopFrameBrowse_UpdateQuantitySelection(self)
 
 		if ( id == CurrentProductID ) then
 			if ( normalPrice == currentPrice ) then
-				ShopFrameBrowse_SetNormalPrice(self, currentPrice);
+				StoreFrameBrowse_SetNormalPrice(self, currentPrice);
 			else
-				ShopFrameBrowse_SetSale(self, normalPrice, currentPrice);
+				StoreFrameBrowse_SetSale(self, normalPrice, currentPrice);
 			end
 		end
 	end
 
-	for i=numProducts + 1, #quant.buttons do
+	for i=#products + 1, #quant.buttons do
 		quant.buttons[i]:Hide();
 	end
 
-	if ( numProducts == 1 ) then
+	if ( #products == 1 ) then
 		quant:SetHeight(1);
 		quant:Hide();
 	else
-		quant:SetHeight(20 * math.ceil(numProducts / 2) + 5);
+		quant:SetHeight(20 * math.ceil(#products / 2) + 5);
 		quant:Show();
 	end
 end
 
-function ShopFrameBrowseQuantitySelectButton_OnClick(self)
+function StoreFrameBrowseQuantitySelectButton_OnClick(self)
 	CurrentProductID = self:GetID();
-	ShopFrameBrowse_UpdateQuantitySelection(ShopFrame.Browse);
+	StoreFrameBrowse_UpdateQuantitySelection(StoreFrame.Browse);
 end
 
-function ShopFrameCloseButton_OnClick(self)
-	ShopFrame:Hide();
+function StoreFrameCloseButton_OnClick(self)
+	StoreFrame:Hide();
 end
 
-function ShopFrameBuyButton_OnClick(self)
-	ShopFrame_BeginPurchase(CurrentGroupID, CurrentProductID);
+function StoreFrameBuyButton_OnClick(self)
+	StoreFrame_BeginPurchase(CurrentProductID);
 end
 
+function StoreFrame_BeginPurchase(productID)
+	C_PurchaseAPI.PurchaseProduct(productID);
+end
+
+------------------------------------------
+function StoreConfirmationFrame_OnLoad(self)
+	StoreConfirmationFrame = self;
+
+	self:RegisterEvent("STORE_CONFIRM_PURCHASE");
+
+	self.Title:SetText(BLIZZARD_STORE_CONFIRMATION_TITLE);
+	self.Instruction:SetText(BLIZZARD_STORE_CONFIRMATION_INSTRUCTION);
+	self.CancelButton:SetText(BLIZZARD_STORE_CANCEL_PURCHASE);
+	self.FinalBuyButton:SetText(BLIZZARD_STORE_FINAL_BUY);
+	self.FinalPriceLabel:SetText(BLIZZARD_STORE_FINAL_PRICE_LABEL);
+	self.PaymentMethod:SetText(BLIZZARD_STORE_PAYMENT_METHOD);
+	self.PaymentMethodExtra:SetText(BLIZZARD_STORE_PAYMENT_METHOD_EXTRA);
+end
+
+function StoreConfirmationFrame_OnEvent(self, event, ...)
+	if ( event == "STORE_CONFIRM_PURCHASE" ) then
+		StoreConfirmationFrame_Update(self);
+		self:Show();
+	end
+end
+
+function StoreConfirmationFrame_Update(self)
+	local productID = C_PurchaseAPI.GetConfirmationInfo();
+	if ( not productID ) then
+		self:Hide(); --May want to show an error message
+		return;
+	end
+
+	local id, title, normalPrice, currentPrice, groupID = C_PurchaseAPI.GetProductInfo(productID);
+	if ( not groupID ) then
+		self:Hide(); --Should never happen, but may want to handle and throw an error message.
+		return;
+	end
+
+	local id, name, description, icon = C_PurchaseAPI.GetProductGroupInfo(groupID);
+	self.Icon:SetTexture(icon);
+	self.GroupName:SetText(name);
+	self.FinalPrice:SetText(currentPrice);
+end
+
+function StoreConfirmationCancel_OnClick(self)
+	--Cancel the purchase
+	StoreConfirmationFrame:Hide();
+end
+
+function StoreConfirmationFinalBuy_OnClick(self)
+	C_PurchaseAPI.PurchaseProductConfirm();
+	StoreConfirmationFrame:Hide();
+end

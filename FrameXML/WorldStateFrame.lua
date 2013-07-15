@@ -1256,6 +1256,7 @@ function WorldStateProvingGrounds_DisplayTimers(lineFrame, nextAnchor, maxHeight
 		WorldStateProvingGroundsTimer.timeSinceBase = 0;
 		WorldStateProvingGroundsTimer.frame = self;
 		self:Show();
+		WatchFrameScenario_UpdateScenario();
 		return self, 198, 0, 1;
 	else
 		-- handler should have been removed before this...
@@ -1268,7 +1269,7 @@ function WorldStateProvingGrounds_CheckTimers(...)
 	for i = 1, select("#", ...) do
 		local timerID = select(i, ...);
 		local _, elapsedTime, type = GetWorldElapsedTime(timerID);
-		if ( type == LE_WORLD_ELAPSED_TIMER_TYPE_CHALLENGE_MODE) then
+		if ( type == LE_WORLD_ELAPSED_TIMER_TYPE_PROVING_GROUND) then
 			local diffID, currWave, maxWave, duration = C_Scenario.GetProvingGroundsInfo()
 			if (duration > 0) then
 				WorldStateProvingGrounds_ShowTimer(timerID, elapsedTime, duration, diffID, currWave, maxWave);
@@ -1352,6 +1353,9 @@ function WorldStateProvingGroundsFrame_UpdateValues(self, elapsedTime)
 			else
 				anim:Play();
 			end
+		elseif (anim.timeLeft ~= nil) then
+			-- the time left never reaches 0 if there's another wave, but the animation always needs to get to 0
+			anim.timeLeft = 0; 
 		end
 	end
 end
@@ -1373,6 +1377,7 @@ function WorldStateProvingGroundsAnim_OnFinished(self)
 		self:Play();
 	elseif (self.timeLeft == 0) then
 		WorldStateProvingGroundsFrame.FinishAnim:Play();
+		self.timeLeft = nil;
 	else
 		self.timeLeft = nil;
 	end

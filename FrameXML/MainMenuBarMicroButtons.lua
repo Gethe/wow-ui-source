@@ -1,3 +1,4 @@
+PERFORMANCEBAR_UPDATE_INTERVAL = 1;
 MICRO_BUTTONS = {
 	"CharacterMicroButton",
 	"SpellbookMicroButton",
@@ -11,6 +12,7 @@ MICRO_BUTTONS = {
 	"CompanionsMicroButton",
 	"MainMenuMicroButton",
 	"HelpMicroButton",
+	"StoreMicroButton",
 	}
 
 
@@ -34,7 +36,24 @@ function MicroButtonTooltipText(text, action)
 	
 end
 
-
+function MicroButton_OnEnter(self)
+	if ( self:IsEnabled() or self.minLevel or self.disabledTooltip or self.factionGroup) then
+		GameTooltip_AddNewbieTip(self, self.tooltipText, 1.0, 1.0, 1.0, self.newbieText);
+		GameTooltip:AddLine(" ");
+		if ( not self:IsEnabled() ) then
+			if ( self.factionGroup == "Neutral" ) then
+				GameTooltip:AddLine(FEATURE_NOT_AVAILBLE_PANDAREN, RED_FONT_COLOR.r, RED_FONT_COLOR.g, RED_FONT_COLOR.b, true);
+				GameTooltip:Show();
+			elseif ( self.minLevel ) then
+				GameTooltip:AddLine(format(FEATURE_BECOMES_AVAILABLE_AT_LEVEL, self.minLevel), RED_FONT_COLOR.r, RED_FONT_COLOR.g, RED_FONT_COLOR.b, true);
+				GameTooltip:Show();
+			elseif ( self.disabledTooltip ) then
+				GameTooltip:AddLine(self.disabledTooltip, RED_FONT_COLOR.r, RED_FONT_COLOR.g, RED_FONT_COLOR.b, true);
+				GameTooltip:Show();
+			end
+		end
+	end
+end
 
 function UpdateMicroButtonsParent(parent)
 	for i=1, #MICRO_BUTTONS do
@@ -186,6 +205,22 @@ function UpdateMicroButtons()
 	else
 		CompanionsMicroButton:Enable();
 		CompanionsMicroButton:SetButtonState("NORMAL");
+	end
+
+	if ( StoreFrame and StoreFrame_IsShown() ) then
+		StoreMicroButton:Enable();
+		StoreMicroButton:SetButtonState("PUSHED", 1);
+	else
+		StoreMicroButton:Enable();
+		StoreMicroButton:SetButtonState("NORMAL");
+	end
+
+	if ( C_StorePublic.IsEnabled() ) then
+		MainMenuMicroButton:Hide();
+		StoreMicroButton:Show();
+	else
+		MainMenuMicroButton:Show();
+		StoreMicroButton:Hide();
 	end
 end
 

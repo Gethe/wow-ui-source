@@ -104,6 +104,9 @@
 	<Font name="GameFontDarkGraySmall" inherits="GameFontNormalSmall" virtual="true">
 		<Color r="0.35" g="0.35" b="0.35"/>
 	</Font>
+	<Font name="GameFontNormalGraySmall" inherits="GameFontNormalSmall" virtual="true">
+		<Color r="0.50" g="0.50" b="0.50"/>
+	</Font>
 	<Font name="GameFontGreenSmall" inherits="GameFontNormalSmall" virtual="true">
 		<Color r="0.1" g="1.0" b="0.1"/>
 	</Font>

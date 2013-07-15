@@ -1741,6 +1741,14 @@ local SCENARIO_LINE_OFFSET = 10;
 local SCENARIO_BONUS_OFFSET = 8;
 local SCENARIO_CRITERIA_LINES = { };
 
+function IsInProvingGround()
+	if (WorldStateProvingGroundsFrame) then
+		return WorldStateProvingGroundsFrame:IsVisible()
+	else
+		return nil;
+	end
+end
+
 -- Sets up all the scenario info in response to events and not doing this on every WatchFrame_Update
 function WatchFrameScenario_UpdateScenario(newStage, updateCriteriaID)
 	local scenarioFrame = WatchFrameScenarioFrame;
@@ -1749,8 +1757,8 @@ function WatchFrameScenario_UpdateScenario(newStage, updateCriteriaID)
 	-- bonus stage is set up as an extra stage at the end of the normal stages
 	-- we want to display bonus objectives even after a scenario ends
 	local finalBonusDisplay = hasBonusStep and currentStage > numStages;
-	if ( currentStage < 1 or (currentStage > numStages and not hasBonusStep) ) then
-		-- this scenario has ended
+	if ( currentStage < 1 or (currentStage > numStages and not hasBonusStep)  or IsInProvingGround()) then
+		-- this scenario has ended or we're in the middle of a proving ground
 		scenarioFrame:Hide();
 		scenarioFrame.stage = nil;
 		scenarioFrame.name = nil;

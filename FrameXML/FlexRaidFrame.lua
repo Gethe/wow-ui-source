@@ -80,6 +80,7 @@ function FlexRaidFrame_UpdateButton()
 	
 	local minPlayers, maxPlayers;
 	if(FlexRaidFrame.raid) then
+		local _
 		_, _, _, _, _, _, _, _, _, _, _, _, maxPlayers, _, _, _, _, minPlayers = GetLFGDungeonInfo(FlexRaidFrame.raid);
 	end
 	

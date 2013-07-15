@@ -33,13 +33,6 @@ StaticPopupDialogs["CONFIRM_JOIN_SOLO"] = {
 
 local DEFAULT_BG_TEXTURE = "Interface\\PVPFrame\\RandomPVPIcon";
 
-function PVPUI_GetSelectedArenaTeam()
-	if PVPUIFrame:IsVisible() then
-		return ArenaTeamFrame.teamIndex;
-	end
-	return nil;
-end
-
 function PVPUIFrame_OnLoad(self)
 	RaiseFrameLevel(self.Shadows);
 	PanelTemplates_SetNumTabs(self, 2);
@@ -61,11 +54,6 @@ function PVPUIFrame_OnLoad(self)
 	self:RegisterEvent("VARIABLES_LOADED");
 	self:RegisterEvent("PVP_ROLE_UPDATE");
 	self:RegisterEvent("UPDATE_BATTLEFIELD_STATUS");
-
-	if ( UnitLevel("player") < SHOW_CONQUEST_LEVEL ) then
-		PanelTemplates_DisableTab(PVPUIFrame, 2);
-		self:RegisterEvent("PLAYER_LEVEL_UP");
-	end
 end
 
 function PVPUIFrame_OnShow(self)
@@ -93,12 +81,6 @@ function PVPUIFrame_OnEvent(self, event, ...)
 	if (event == "BATTLEFIELDS_CLOSED") then
 		if (self:IsShown()) then
 			self:Hide();
-		end
-	elseif (event == "PLAYER_LEVEL_UP") then
-		local level = ...;
-		if ( level >= SHOW_CONQUEST_LEVEL ) then
-			PanelTemplates_EnableTab(PVPUIFrame, 2);
-			PVPUIFrame:UnregisterEvent("PLAYER_LEVEL_UP");
 		end
 	elseif ( event == "VARIABLES_LOADED" or event == "PVP_ROLE_UPDATE" ) then
 		PVPUIFrame_UpdateSelectedRoles();
@@ -830,7 +812,7 @@ function ConquestFrame_Update(self)
 		ConquestFrame.NoSeason:Show();
 	else
 		ConquestFrame.NoSeason:Hide();
-		local _, _, ratedBGReward, _, arenaReward = GetPVPRewards();
+		local _, _, _, _, _, _, _, _, arenaReward, ratedBGReward = GetPVPRewards();
 		if (arenaReward == 0) then
 			RequestPVPRewards();
 		end
@@ -857,7 +839,7 @@ end
 
 function ConquestFrame_UpdateConquestBar(self)
 	currencyName, currencyAmount = GetCurrencyInfo(CONQUEST_CURRENCY);
-	local pointsThisWeek, maxPointsThisWeek, tier2Quantity, tier2Limit, tier1Quantity, tier1Limit, randomPointsThisWeek, maxRandomPointsThisWeek = GetPVPRewards();
+	local pointsThisWeek, maxPointsThisWeek, tier2Quantity, tier2Limit, tier1Quantity, tier1Limit, randomPointsThisWeek, maxRandomPointsThisWeek, arenaReward, ratedBGReward = GetPVPRewards();
 	-- just want a plain bar
 	CapProgressBar_Update(self.ConquestBar, 0, 0, nil, nil, pointsThisWeek, maxPointsThisWeek);
 	self.ConquestBar.label:SetFormattedText(CURRENCY_THIS_WEEK, currencyName);
@@ -1008,7 +990,7 @@ function ConquestFrame_ShowMaximumRewardsTooltip(self)
 	GameTooltip:AddLine(format(CURRENCY_RECEIVED_THIS_WEEK, currencyName), 1, 1, 1, true);
 	GameTooltip:AddLine(" ");
 
-	local pointsThisWeek, maxPointsThisWeek, tier2Quantity, tier2Limit, tier1Quantity, tier1Limit, randomPointsThisWeek, maxRandomPointsThisWeek = GetPVPRewards();
+	local pointsThisWeek, maxPointsThisWeek, tier2Quantity, tier2Limit, tier1Quantity, tier1Limit, randomPointsThisWeek, maxRandomPointsThisWeek, arenaReward, ratedBGReward = GetPVPRewards();
 
 	local r, g, b = 1, 1, 1;
 	local capped;

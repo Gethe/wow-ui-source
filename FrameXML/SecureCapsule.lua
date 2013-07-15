@@ -1,4 +1,6 @@
 local contents = {};
+local issecure = issecure;
+
 function SecureCapsuleGet(name)
 	if ( not issecure() ) then
 		return;
@@ -32,12 +34,24 @@ end
 -------------------------------
 
 --For store
-take("C_PurchaseAPI");
+if ( IsGMClient() ) then
+	retain("C_PurchaseAPI");
+else
+	take("C_PurchaseAPI");
+end
 retain("math");
+retain("pairs");
 
 --GlobalStrings
-take("BLIZZARD_STORE");
+retain("BLIZZARD_STORE");
 take("BLIZZARD_STORE_ON_SALE");
 take("BLIZZARD_STORE_BUY");
 take("BLIZZARD_STORE_PLUS_TAX");
 take("BLIZZARD_STORE_PRODUCT_INDEX");
+take("BLIZZARD_STORE_CANCEL_PURCHASE");
+take("BLIZZARD_STORE_FINAL_BUY");
+take("BLIZZARD_STORE_CONFIRMATION_TITLE");
+take("BLIZZARD_STORE_CONFIRMATION_INSTRUCTION");
+take("BLIZZARD_STORE_FINAL_PRICE_LABEL");
+take("BLIZZARD_STORE_PAYMENT_METHOD");
+take("BLIZZARD_STORE_PAYMENT_METHOD_EXTRA");

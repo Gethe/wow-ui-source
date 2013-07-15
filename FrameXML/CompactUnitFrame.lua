@@ -464,6 +464,13 @@ end
 --If you are making changes here, it is possible you may want to make changes there as well.
 local MAX_INCOMING_HEAL_OVERFLOW = 1.05;
 function CompactUnitFrame_UpdateHealPrediction(frame)
+	local _, maxHealth = frame.healthBar:GetMinMaxValues();
+	local health = frame.healthBar:GetValue();
+	
+	if ( maxHealth <= 0 ) then
+		return;
+	end
+	
 	if ( not frame.optionTable.displayHealPrediction ) then
 		frame.myHealPrediction:Hide();
 		frame.otherHealPrediction:Hide();
@@ -480,9 +487,6 @@ function CompactUnitFrame_UpdateHealPrediction(frame)
 	local myIncomingHeal = UnitGetIncomingHeals(frame.displayedUnit, "player") or 0;
 	local allIncomingHeal = UnitGetIncomingHeals(frame.displayedUnit) or 0;
 	local totalAbsorb = UnitGetTotalAbsorbs(frame.displayedUnit) or 0;
-	
-	local health = frame.healthBar:GetValue();
-	local _, maxHealth = frame.healthBar:GetMinMaxValues();
 	
 	--We don't fill outside the health bar with healAbsorbs.  Instead, an overHealAbsorbGlow is shown.
 	local myCurrentHealAbsorb = UnitGetTotalHealAbsorbs(frame.displayedUnit) or 0;

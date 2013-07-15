@@ -221,6 +221,12 @@ function UnitFrameHealPredictionBars_Update(frame)
 		return;
 	end
 	
+	local _, maxHealth = frame.healthbar:GetMinMaxValues();
+	local health = frame.healthbar:GetValue();
+	if ( maxHealth <= 0 ) then
+		return;
+	end
+	
 	if ( not GetCVarBool("raidFramesDisplayIncomingHeals") ) then
 		frame.myHealPredictionBar:Hide();
 		frame.otherHealPrediction:Hide();
@@ -240,9 +246,6 @@ function UnitFrameHealPredictionBars_Update(frame)
 	local myIncomingHeal = UnitGetIncomingHeals(frame.unit, "player") or 0;
 	local allIncomingHeal = UnitGetIncomingHeals(frame.unit) or 0;
 	local totalAbsorb = UnitGetTotalAbsorbs(frame.unit) or 0;
-	
-	local health = frame.healthbar:GetValue();
-	local _, maxHealth = frame.healthbar:GetMinMaxValues();
 	
 	local myCurrentHealAbsorb = 0;
 	if ( frame.healAbsorbBar ) then

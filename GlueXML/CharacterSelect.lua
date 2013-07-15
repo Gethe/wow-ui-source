@@ -59,6 +59,7 @@ function CharacterSelect_OnLoad(self)
 end
 
 function CharacterSelect_OnShow()
+	DebugLog("Select_OnShow");
 	CHARACTER_LIST_OFFSET = 0;
 	-- request account data times from the server (so we know if we should refresh keybindings, etc...)
 	ReadyForAccountDataTimes()
@@ -392,7 +393,7 @@ function UpdateCharacterList(skipSelect)
 		CharacterSelect.selectedIndex = numChars;
 		CharacterSelect.selectLast = 0;
 	end
-
+	local debugText = numChars..": ";
 	for i=1, numChars, 1 do
 		local name, race, class, level, zone, sex, ghost, PCC, PRC, PFC, PRCDisabled = GetCharacterInfo(GetCharIDFromIndex(i+CHARACTER_LIST_OFFSET));
 		local button = _G["CharSelectCharacterButton"..index];
@@ -434,6 +435,7 @@ function UpdateCharacterList(skipSelect)
 			paidServiceButton.disabledTooltip = nil;
 		end
 		if ( serviceType ) then
+			debugText = debugText.." "..(GetCharIDFromIndex(i+CHARACTER_LIST_OFFSET));
 			paidServiceButton:Show();
 			paidServiceButton.serviceType = serviceType;
 			if ( disableService ) then
@@ -467,7 +469,7 @@ function UpdateCharacterList(skipSelect)
 			break;
 		end
 	end
-
+	DebugLog(debugText);
 	if ( numChars == 0 ) then
 		CharacterSelectDeleteButton:Disable();
 		CharSelectEnterWorldButton:Disable();

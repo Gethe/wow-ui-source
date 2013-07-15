@@ -36,10 +36,6 @@ UnitPopupButtons["PROMOTE"] = { text = PARTY_PROMOTE, dist = 0 };
 UnitPopupButtons["PROMOTE_GUIDE"] = { text = PARTY_PROMOTE_GUIDE, dist = 0 };
 UnitPopupButtons["GUILD_PROMOTE"] = { text = GUILD_PROMOTE, dist = 0 };
 UnitPopupButtons["GUILD_LEAVE"] = { text = GUILD_LEAVE, dist = 0 };
-UnitPopupButtons["TEAM_PROMOTE"] = { text = TEAM_PROMOTE, dist = 0 };
-UnitPopupButtons["TEAM_KICK"] = { text = TEAM_KICK, dist = 0 };
-UnitPopupButtons["TEAM_LEAVE"] = { text = TEAM_LEAVE, dist = 0 };
-UnitPopupButtons["TEAM_DISBAND"] = { text = TEAM_DISBAND, dist = 0 };
 UnitPopupButtons["LEAVE"] = { text = PARTY_LEAVE, dist = 0 };
 UnitPopupButtons["INSTANCE_LEAVE"] = { text = INSTANCE_PARTY_LEAVE, dist = 0 };
 UnitPopupButtons["FOLLOW"] = { text = FOLLOW, dist = 4 };
@@ -202,7 +198,6 @@ UnitPopupMenus["BN_FRIEND"] = { "WHISPER", "POP_OUT_CHAT", "CREATE_CONVERSATION_
 UnitPopupMenus["BN_FRIEND_OFFLINE"] = { "BN_SET_NOTE", "BN_VIEW_FRIENDS", "BN_REPORT", "BN_REMOVE_FRIEND", "CANCEL" };
 UnitPopupMenus["GUILD"] = { "GUILD_BATTLETAG_FRIEND", "WHISPER", "INVITE", "TARGET", "IGNORE", "GUILD_PROMOTE", "GUILD_LEAVE", "CANCEL" };
 UnitPopupMenus["GUILD_OFFLINE"] = { "GUILD_BATTLETAG_FRIEND", "IGNORE", "GUILD_PROMOTE", "GUILD_LEAVE", "CANCEL" };
-UnitPopupMenus["TEAM"] = { "WHISPER", "INVITE", "TARGET", "TEAM_PROMOTE", "TEAM_KICK", "TEAM_LEAVE", "TEAM_DISBAND", "CANCEL" };
 UnitPopupMenus["RAID_TARGET_ICON"] = { "RAID_TARGET_1", "RAID_TARGET_2", "RAID_TARGET_3", "RAID_TARGET_4", "RAID_TARGET_5", "RAID_TARGET_6", "RAID_TARGET_7", "RAID_TARGET_8", "RAID_TARGET_NONE" };
 UnitPopupMenus["SELECT_ROLE"] = { "SET_ROLE_TANK", "SET_ROLE_HEALER", "SET_ROLE_DAMAGER", "SET_ROLE_NONE" };
 UnitPopupMenus["CHAT_ROSTER"] = { "WHISPER", "TARGET", "MUTE", "UNMUTE", "CHAT_SILENCE", "CHAT_UNSILENCE", "CHAT_PROMOTE", "CHAT_DEMOTE", "CHAT_OWNER", "CANCEL"  };
@@ -790,26 +785,6 @@ function UnitPopup_HideButtons ()
 			if ( dropdownMenu.name ~= UnitName("player") ) then
 				UnitPopupShown[UIDROPDOWNMENU_MENU_LEVEL][index] = 0;
 			end
-		elseif ( value == "TEAM_PROMOTE" ) then
-			if ( dropdownMenu.name == UnitName("player") or not ArenaTeamFrame:IsShown() ) then
-				UnitPopupShown[UIDROPDOWNMENU_MENU_LEVEL][index] = 0;
-			elseif ( ArenaTeamFrame:IsShown() and not IsArenaTeamCaptain(PVPUI_GetSelectedArenaTeam()) ) then
-				UnitPopupShown[UIDROPDOWNMENU_MENU_LEVEL][index] = 0;
-			end
-		elseif ( value == "TEAM_KICK" ) then
-			if ( dropdownMenu.name == UnitName("player") or not ArenaTeamFrame:IsShown() ) then
-				UnitPopupShown[UIDROPDOWNMENU_MENU_LEVEL][index] = 0;
-			elseif ( ArenaTeamFrame:IsShown() and not IsArenaTeamCaptain(PVPUI_GetSelectedArenaTeam()) ) then
-				UnitPopupShown[UIDROPDOWNMENU_MENU_LEVEL][index] = 0;
-			end
-		elseif ( value == "TEAM_LEAVE" ) then
-			if ( dropdownMenu.name ~= UnitName("player") or not ArenaTeamFrame:IsShown() or IsArenaTeamCaptain(PVPUI_GetSelectedArenaTeam()) ) then
-				UnitPopupShown[UIDROPDOWNMENU_MENU_LEVEL][index] = 0;
-			end
-		elseif ( value == "TEAM_DISBAND" ) then
-			if ( dropdownMenu.name ~= UnitName("player") or not ArenaTeamFrame:IsShown() or not IsArenaTeamCaptain(PVPUI_GetSelectedArenaTeam()) ) then
-				UnitPopupShown[UIDROPDOWNMENU_MENU_LEVEL][index] = 0;
-			end
 		elseif ( value == "UNINVITE" ) then
 			if ( (inParty == 0) or (isLeader == 0) or (instanceType == "pvp") or (instanceType == "arena") or HasLFGRestrictions() ) then
 				UnitPopupShown[UIDROPDOWNMENU_MENU_LEVEL][index] = 0;
@@ -1251,11 +1226,6 @@ function UnitPopup_OnUpdate (elapsed)
 		inParty = 1;
 	end
 
-	local isCaptain
-	if ( PVPUIFrame and PVPUI_GetSelectedArenaTeam() and IsArenaTeamCaptain(PVPUI_GetSelectedArenaTeam()) ) then
-		isCaptain = 1;
-	end
-
 	local isLeader = 0;
 	if ( UnitIsGroupLeader("player") ) then
 		isLeader = 1;
@@ -1592,28 +1562,6 @@ function UnitPopup_OnClick (self)
 		dialog.data = fullname;
 	elseif ( button == "GUILD_LEAVE" ) then
 		StaticPopup_Show("CONFIRM_GUILD_LEAVE", GetGuildInfo("player"));
-	elseif ( button == "TEAM_PROMOTE" ) then
-		local dialog = StaticPopup_Show("CONFIRM_TEAM_PROMOTE", fullname, GetArenaTeam(PVPUI_GetSelectedArenaTeam()));
-		if ( dialog ) then
-			dialog.data = PVPUI_GetSelectedArenaTeam();
-			dialog.data2 = fullname;
-		end
-	elseif ( button == "TEAM_KICK" ) then
-		local dialog = StaticPopup_Show("CONFIRM_TEAM_KICK", fullname, GetArenaTeam(PVPUI_GetSelectedArenaTeam()) );
-		if ( dialog ) then
-			dialog.data = PVPUI_GetSelectedArenaTeam();
-			dialog.data2 = fullname;
-		end
-	elseif ( button == "TEAM_LEAVE" ) then
-		local dialog = StaticPopup_Show("CONFIRM_TEAM_LEAVE", GetArenaTeam(PVPUI_GetSelectedArenaTeam()) );
-		if ( dialog ) then
-			dialog.data = PVPUI_GetSelectedArenaTeam();
-		end
-	elseif ( button == "TEAM_DISBAND" ) then
-		local dialog = StaticPopup_Show("CONFIRM_TEAM_DISBAND", GetArenaTeam(PVPUI_GetSelectedArenaTeam()) );
-		if ( dialog ) then
-			dialog.data = PVPUI_GetSelectedArenaTeam();
-		end
 	elseif ( button == "LEAVE" ) then
 		LeaveParty();
 	elseif ( button == "INSTANCE_LEAVE" ) then

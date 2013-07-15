@@ -827,42 +827,6 @@ StaticPopupDialogs["RENAME_ARENA_TEAM"] = {
 	hideOnEscape = 1
 };
 
-StaticPopupDialogs["CONFIRM_TEAM_LEAVE"] = {
-	text = CONFIRM_TEAM_LEAVE,
-	button1 = ACCEPT,
-	button2 = CANCEL,
-	OnAccept = function(self, team)
-		ArenaTeamLeave(team);
-	end,
-	timeout = 0,
-	whileDead = 1,
-	hideOnEscape = 1
-};
-
-StaticPopupDialogs["CONFIRM_TEAM_PROMOTE"] = {
-	text = CONFIRM_TEAM_PROMOTE,
-	button1 = ACCEPT,
-	button2 = CANCEL,
-	OnAccept = function(self, team, name)
-		ArenaTeamSetLeaderByName(team, name);
-	end,
-	timeout = 0,
-	whileDead = 1,
-	hideOnEscape = 1
-};
-
-StaticPopupDialogs["CONFIRM_TEAM_KICK"] = {
-	text = CONFIRM_TEAM_KICK,
-	button1 = ACCEPT,
-	button2 = CANCEL,
-	OnAccept = function(self, team, name)
-		ArenaTeamUninviteByName(team, name);
-	end,
-	timeout = 0,
-	whileDead = 1,
-	hideOnEscape = 1
-};
-
 StaticPopupDialogs["HELP_TICKET_QUEUE_DISABLED"] = {
 	text = HELP_TICKET_QUEUE_DISABLED,
 	button1 = OKAY,

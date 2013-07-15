@@ -454,7 +454,7 @@ function QuestChoice_LoadUI()
 end
 
 function Store_LoadUI()
-	UIParentLoadAddOn("Blizzard_StoreUI");
+	UIParentLoadAddOn("Blizzard_ShopUI");
 end
 
 --[[
@@ -674,6 +674,12 @@ function TogglePVPUI()
 	if ( UnitLevel("player") >= SHOW_PVP_LEVEL and not IsPlayerNeutral()) then
 		PVPUIFrame_ToggleFrame()
 	end
+end
+
+function ToggleStoreUI()
+	Store_LoadUI();
+
+	StoreFrame_SetShown(not StoreFrame_IsShown());
 end
 
 function InspectUnit(unit)
@@ -3907,7 +3913,7 @@ function GetLFGMode(category, lfgID)
 
 	local proposalExists, id, typeID, subtypeID, name, texture, role, hasResponded, totalEncounters, completedEncounters, numMembers, isLeader, isHoliday, proposalCategory = GetLFGProposal();
 	local inParty, joined, queued, noPartialClear, achievements, lfgComment, slotCount = GetLFGInfoServer(category, lfgID);
-	local roleCheckInProgress, slots, members, roleUpdateCategory = GetLFGRoleUpdate();
+	local roleCheckInProgress, slots, members, roleUpdateCategory, roleUpdateID = GetLFGRoleUpdate();
 
 	local partyCategory = nil;
 	local partySlot = GetPartyLFGID();
@@ -3926,7 +3932,7 @@ function GetLFGMode(category, lfgID)
 		return "proposal", "accepted";
 	elseif ( queued ) then
 		return "queued", (empoweredFunc() and "empowered" or "unempowered");
-	elseif ( roleCheckInProgress and roleUpdateCategory == category ) then
+	elseif ( roleCheckInProgress and roleUpdateCategory == category and (not lfgID or lfgID == roleUpdateID) ) then
 		return "rolecheck";
 	elseif ( category == LE_LFG_CATEGORY_LFR and joined ) then
 		return "listed", (empoweredFunc() and "empowered" or "unempowered");

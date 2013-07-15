@@ -52,6 +52,8 @@ function ItemUpgradeFrame_OnEvent(self, event, ...)
 	elseif ( event == "ITEM_UPGRADE_MASTER_UPDATE" ) then
 		ItemUpgradeFrame_Update();
 		self.FinishedGlow.FinishedAnim:Play();
+		self.ItemUpgradedNotification:Show();
+		self.ItemUpgradedNotification.FinishedAnim:Play();
 	end
 end
 

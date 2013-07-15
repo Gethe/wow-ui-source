@@ -31,6 +31,12 @@
 						<Anchor point="TOPLEFT" x="10" y="-10"/>
 					</Anchors>
 				</FontString>
+				<FontString parentKey="SubTitle" inherits="GameFontNormal" justifyH="LEFT" justifyV="TOP">
+					<Size x="0" y="0"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.Title" relativePoint="BOTTOMLEFT" x="0" y="-5"/>
+					</Anchors>
+				</FontString>
 				<FontString parentKey="Status" inherits="GameFontHighlight" justifyH="RIGHT" justifyV="TOP">
 					<Anchors>
 						<Anchor point="TOPRIGHT" x="-10" y="-11"/>
@@ -56,12 +62,18 @@
 				</Texture>
 				<FontString parentKey="TimeInQueue" inherits="GameFontNormal" justifyH="LEFT">
 					<Anchors>
-						<Anchor point="BOTTOMLEFT" x="10" y="10"/>
+						<Anchor point="TOPLEFT" x="0" y="0"/> <!--Anchored in Lua-->
 					</Anchors>
 				</FontString>
 				<FontString parentKey="AverageWait" inherits="GameFontNormal" justifyH="LEFT">
 					<Anchors>
-						<Anchor point="BOTTOMLEFT" relativeKey="$parent.TimeInQueue" relativePoint="TOPLEFT" x="0" y="2"/>
+						<Anchor point="TOPLEFT" relativeKey="$parent" relativePoint="TOPLEFT" x="0" y="0"/> <!--Anchored in Lua-->
+					</Anchors>
+				</FontString>
+				<FontString parentKey="ExtraText" inherits="GameFontNormalGraySmall" justifyH="LEFT">
+					<Size x="250" y="0"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent" relativePoint="TOPLEFT" x="0" y="0"/> <!--Anchored in Lua-->
 					</Anchors>
 				</FontString>
 				<Texture parentKey="EntrySeparator"> <!--Hidden on the first entry-->
@@ -77,7 +89,7 @@
 		<Frames>
 			<Frame parentKey="HealersFound" inherits="QueueStatusRoleCountTemplate">
 				<Anchors>
-					<Anchor point="TOP" x="0" y="-35"/>
+					<Anchor point="TOP" x="0" y="0"/> <!--Anchored in Lua-->
 				</Anchors>
 				<Scripts>
 					<OnLoad>

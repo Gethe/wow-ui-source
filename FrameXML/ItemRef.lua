@@ -58,7 +58,7 @@ function SetItemRef(link, text, button, chatFrame)
 				elseif ( HelpFrameOpenTicketEditBox:IsVisible() ) then
 					HelpFrameOpenTicketEditBox:Insert(name);
 				else
-					SendWho(WHO_TAG_NAME..name);					
+					SendWho(WHO_TAG_EXACT..name);
 				end
 				
 			elseif ( button == "RightButton" and (not isGMLink) ) then
