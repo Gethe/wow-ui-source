@@ -10,10 +10,15 @@ tbl.CreateForbiddenFrame = CreateFrame;
 setfenv(1, tbl);
 ----------------
 
-local CurrentGroupID = nil;
-local CurrentProductID = nil;
+--Local references to frames
 local StoreFrame;
 local StoreConfirmationFrame
+
+--Local variables (here instead of as members on frames for now)
+local CurrentGroupID = nil;
+local CurrentProductID = nil;
+local JustOrderedProduct = false;
+local WaitingOnConfirmation = false;
 
 local function Import(name)
 	tbl[name] = SecureCapsuleGet(name);
@@ -37,6 +42,12 @@ Import("BLIZZARD_STORE_CONFIRMATION_INSTRUCTION");
 Import("BLIZZARD_STORE_FINAL_PRICE_LABEL");
 Import("BLIZZARD_STORE_PAYMENT_METHOD");
 Import("BLIZZARD_STORE_PAYMENT_METHOD_EXTRA");
+Import("BLIZZARD_STORE_LOADING");
+Import("BLIZZARD_STORE_PLEASE_WAIT");
+Import("BLIZZARD_STORE_NO_ITEMS");
+Import("BLIZZARD_STORE_CHECK_BACK_LATER");
+Import("BLIZZARD_STORE_TRANSACTION_IN_PROGRESS");
+Import("BLIZZARD_STORE_CONNECTING");
 
 --Code
 local function getIndex(tbl, value)
@@ -50,26 +61,35 @@ end
 function StoreFrame_OnLoad(self)
 	StoreFrame = self;	--Save off a reference for us
 	self:RegisterEvent("STORE_PRODUCTS_UPDATED");
+	self:RegisterEvent("STORE_PURCHASE_LIST_UPDATED");
 	C_PurchaseAPI.GetProductList();
+	C_PurchaseAPI.GetPurchaseList();
+	C_PurchaseAPI.GetDistributionList();
 
 	self.Title:SetText(BLIZZARD_STORE);
 	self.Browse.ProductDescription:SetPoint("BOTTOM", self.Browse.QuantitySelection, "TOP", 0, 5);
 	self.Browse.BuyButton:SetText(BLIZZARD_STORE_BUY);
 	self.Browse.PlusTax:SetText(BLIZZARD_STORE_PLUS_TAX);
+	self.Notice.NopButton:SetText(BLIZZARD_STORE_BUY);
+	self.Notice.NopButton:Disable();
+
+	self:SetPoint("CENTER", nil, "CENTER", 0, 77); --Intentionally not anchored to UIParent.
+
+	StoreFrame_UpdateActivePanel(self);
 end
 
 function StoreFrame_OnEvent(self, event, ...)
 	if ( event == "STORE_PRODUCTS_UPDATED" ) then
-		local groups = C_PurchaseAPI.GetProductGroups();
-		local numGroups = #groups;
-		if ( numGroups > 0 ) then
-			StoreFrameBrowse_Advance(self.Browse, 0); --Advancing by 0 will just make sure that we have a valid group selected.
-			StoreFrameBrowse_Update(self.Browse);
-			self.Browse:Show();
-		else
-			--Display something about us not having products
-		end
+		StoreFrame_UpdateActivePanel(self);
+	elseif ( event == "STORE_PURCHASE_LIST_UPDATED" ) then
+		JustOrderedProduct = false;
+		StoreFrame_UpdateActivePanel(self);
 	end
+end
+
+function StoreFrame_OnShow(self)
+	WaitingOnConfirmation = false;
+	StoreFrame_UpdateActivePanel(self);
 end
 
 function StoreFrame_OnAttributeChanged(self, name, value)
@@ -81,6 +101,36 @@ function StoreFrame_OnAttributeChanged(self, name, value)
 			self:Hide();
 		end
 	end
+end
+
+function StoreFrame_UpdateActivePanel(self)
+	if ( WaitingOnConfirmation ) then
+		StoreFrame_SetAlert(self, BLIZZARD_STORE_CONNECTING, BLIZZARD_STORE_PLEASE_WAIT);
+	elseif ( JustOrderedProduct ) then
+		StoreFrame_SetAlert(self, BLIZZARD_STORE_TRANSACTION_IN_PROGRESS, BLIZZARD_STORE_CHECK_BACK_LATER);
+	elseif ( C_PurchaseAPI.HasPurchaseInProgress() ) then --Even if we don't have every list, if we know we have something in progress, we can display that.
+		StoreFrame_SetAlert(self, BLIZZARD_STORE_TRANSACTION_IN_PROGRESS, BLIZZARD_STORE_CHECK_BACK_LATER);
+	elseif ( not C_PurchaseAPI.HasPurchaseList() or not C_PurchaseAPI.HasProductList() or not C_PurchaseAPI.HasDistributionList() ) then
+		StoreFrame_SetAlert(self, BLIZZARD_STORE_LOADING, BLIZZARD_STORE_PLEASE_WAIT);
+	elseif ( #C_PurchaseAPI.GetProductGroups() == 0 ) then
+		StoreFrame_SetAlert(self, BLIZZARD_STORE_NO_ITEMS, BLIZZARD_STORE_CHECK_BACK_LATER);
+	else
+		StoreFrame_SetBrowse(self);
+	end
+end
+
+function StoreFrame_SetBrowse(self)
+	self.Notice:Hide();
+	StoreFrameBrowse_Advance(self.Browse, 0); --Advancing by 0 will just make sure that we have a valid group selected.
+	StoreFrameBrowse_Update(self.Browse);
+	self.Browse:Show();
+end
+
+function StoreFrame_SetAlert(self, title, desc)
+	self.Browse:Hide();
+	self.Notice.Title:SetText(title);
+	self.Notice.Description:SetText(desc);
+	self.Notice:Show();
 end
 
 function StoreFrameBrowseNextItem_OnClick(self)
@@ -207,6 +257,8 @@ function StoreFrameBuyButton_OnClick(self)
 end
 
 function StoreFrame_BeginPurchase(productID)
+	WaitingOnConfirmation = true;
+	StoreFrame_UpdateActivePanel(StoreFrame);
 	C_PurchaseAPI.PurchaseProduct(productID);
 end
 
@@ -227,9 +279,24 @@ end
 
 function StoreConfirmationFrame_OnEvent(self, event, ...)
 	if ( event == "STORE_CONFIRM_PURCHASE" ) then
-		StoreConfirmationFrame_Update(self);
-		self:Show();
+		WaitingOnConfirmation = false;
+		StoreFrame_UpdateActivePanel(StoreFrame);
+		if ( StoreFrame:IsShown() ) then
+			StoreConfirmationFrame_Update(self);
+			self:Show();
+		else
+			C_PurchaseAPI.PurchaseProductConfirm(false);
+		end
 	end
+end
+
+function StoreConfirmationFrame_OnShow(self)
+	StoreFrame.Cover:Show();
+	self:Raise();
+end
+
+function StoreConfirmationFrame_OnHide(self)
+	StoreFrame.Cover:Hide();
 end
 
 function StoreConfirmationFrame_Update(self)
@@ -252,11 +319,13 @@ function StoreConfirmationFrame_Update(self)
 end
 
 function StoreConfirmationCancel_OnClick(self)
-	--Cancel the purchase
+	C_PurchaseAPI.PurchaseProductConfirm(false);
 	StoreConfirmationFrame:Hide();
 end
 
 function StoreConfirmationFinalBuy_OnClick(self)
-	C_PurchaseAPI.PurchaseProductConfirm();
+	JustOrderedProduct = true;
+	C_PurchaseAPI.PurchaseProductConfirm(true);
+	StoreFrame_UpdateActivePanel(StoreFrame);
 	StoreConfirmationFrame:Hide();
 end

@@ -1387,7 +1387,7 @@ TRAVEL PASS
 								if ( UnitCanCooperate("player", "target") and UnitIsPlayer("target") ) then
 									local name, server = UnitName("target");
 									local fullname = name;
-									if ( server and not UnitIsSameServer("player", "target") ) then
+									if ( server and not UnitIsSameServer("target") ) then
 										fullname = name.."-"..server;
 									end
 									AddIgnore(fullname);
@@ -1431,7 +1431,7 @@ TRAVEL PASS
 								if ( UnitCanCooperate("player", "target") and UnitIsPlayer("target") ) then
 									local name, server = UnitName("target");
 									local fullname = name;
-									if ( server and not UnitIsSameServer("player", "target") ) then
+									if ( server and not UnitIsSameServer("target") ) then
 										fullname = name.."-"..server;
 									end
 									AddMute(fullname);

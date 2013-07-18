@@ -200,8 +200,7 @@
 					<OnClick>
 						if ( PetitionFrame.petitionType == "guild" ) then
 							StaticPopup_Show("RENAME_GUILD");
-						elseif ( PetitionFrame.petitionType == "arena" ) then
-							StaticPopup_Show("RENAME_ARENA_TEAM");
+
 						end
 					</OnClick>
 				</Scripts>

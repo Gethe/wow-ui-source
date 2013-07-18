@@ -125,7 +125,6 @@ PetStable.xml
 VehicleSeatIndicator.xml
 DurabilityFrame.xml
 WorldStateFrame.xml
-ArenaRegistrarFrame.xml
 PVEFrame.xml
 LFGFrame.xml
 LFDFrame.xml

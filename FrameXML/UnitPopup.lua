@@ -625,7 +625,7 @@ function UnitPopup_HideButtons ()
 				UnitPopupShown[UIDROPDOWNMENU_MENU_LEVEL][index] = 0;
 			end
 		elseif ( value == "ADD_FRIEND" ) then
-			if ( haveBattleTag or canCoop == 0 or not UnitIsPlayer(dropdownMenu.unit) or not UnitIsSameServer("player", dropdownMenu.unit) or GetFriendInfo(UnitName(dropdownMenu.unit)) ) then
+			if ( haveBattleTag or canCoop == 0 or not UnitIsPlayer(dropdownMenu.unit) or not UnitIsSameServer(dropdownMenu.unit) or GetFriendInfo(UnitName(dropdownMenu.unit)) ) then
 				UnitPopupShown[UIDROPDOWNMENU_MENU_LEVEL][index] = 0;
 			end
 		elseif ( value == "ADD_FRIEND_MENU" ) then
@@ -641,8 +641,6 @@ function UnitPopup_HideButtons ()
 				if ( canCoop == 0  or UnitIsUnit("player", dropdownMenu.unit) ) then
 					UnitPopupShown[UIDROPDOWNMENU_MENU_LEVEL][index] = 0;
 				end
-			elseif ( (dropdownMenu == ArenaTeamMemberDropDown) and not ArenaTeamMemberDropDown.online ) then
-				UnitPopupShown[UIDROPDOWNMENU_MENU_LEVEL][index] = 0;
 			elseif ( (dropdownMenu == ChannelRosterDropDown) ) then
 				if ( UnitInRaid(dropdownMenu.name) ~= nil ) then
 					UnitPopupShown[UIDROPDOWNMENU_MENU_LEVEL][index] = 0;
@@ -675,8 +673,6 @@ function UnitPopup_HideButtons ()
 				if ( canCoop == 0  or (dropdownMenu.name == playerName and dropdownMenu.server == playerServer) ) then
 					UnitPopupShown[UIDROPDOWNMENU_MENU_LEVEL][index] = 0;
 				end
-			elseif ( (dropdownMenu == ArenaTeamMemberDropDown) and not ArenaTeamMemberDropDown.online ) then
-				UnitPopupShown[UIDROPDOWNMENU_MENU_LEVEL][index] = 0;
 			end
 		elseif ( value == "CREATE_CONVERSATION_WITH" ) then
 			if ( not dropdownMenu.presenceID or not BNFeaturesEnabledAndConnected()) then
@@ -758,8 +754,6 @@ function UnitPopup_HideButtons ()
 		elseif ( value == "TARGET" ) then
 			-- We don't want to show a menu option that will end up being blocked
 			if ( InCombatLockdown() or not issecure() ) then
-				UnitPopupShown[UIDROPDOWNMENU_MENU_LEVEL][index] = 0;
-			elseif ( (dropdownMenu == ArenaTeamMemberDropDown) and not ArenaTeamMemberDropDown.online ) then
 				UnitPopupShown[UIDROPDOWNMENU_MENU_LEVEL][index] = 0;
 			elseif ( dropdownMenu.isMobile ) then
 				UnitPopupShown[UIDROPDOWNMENU_MENU_LEVEL][index] = 0;
@@ -1406,7 +1400,7 @@ function UnitPopup_OnUpdate (elapsed)
 							enable = 0;
 						else
 							-- disable if player is from another realm or already on friends list
-							if ( not UnitIsSameServer("player", UIDROPDOWNMENU_INIT_MENU.unit) or GetFriendInfo(UnitName(UIDROPDOWNMENU_INIT_MENU.unit)) ) then
+							if ( not UnitIsSameServer(UIDROPDOWNMENU_INIT_MENU.unit) or GetFriendInfo(UnitName(UIDROPDOWNMENU_INIT_MENU.unit)) ) then
 								enable = 0;
 							end
 						end
@@ -1437,10 +1431,10 @@ function UnitPopup_OnClick (self)
 	local server = dropdownFrame.server;
 	local fullname = name;
 	
-	if ( server and (not unit or not UnitIsSameServer("player", unit)) ) then
+	if ( server and (not unit or UnitRealmRelationship(unit) ~= LE_REALM_RELATION_SAME) ) then
 		fullname = name.."-"..server;
 	end
-
+	
 	local inParty = 0;
 	if ( IsInGroup() ) then
 		inParty = 1;

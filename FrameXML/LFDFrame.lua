@@ -128,11 +128,21 @@ end
 --Role-check popup functions
 function LFDRoleCheckPopupAccept_OnClick()
 	PlaySound("igCharacterInfoTab");
-	local oldLeader = GetLFGRoles();
-	SetLFGRoles(oldLeader, 
-		LFDRoleCheckPopupRoleButtonTank.checkButton:GetChecked(),
-		LFDRoleCheckPopupRoleButtonHealer.checkButton:GetChecked(),
-		LFDRoleCheckPopupRoleButtonDPS.checkButton:GetChecked());
+
+	--Check if the role check is for a BG or not.
+	local _, _, _, _, _, isBGRoleCheck = GetLFGRoleUpdate();
+	if ( isBGRoleCheck ) then
+		SetPVPRoles(LFDRoleCheckPopupRoleButtonTank.checkButton:GetChecked(),
+					LFDRoleCheckPopupRoleButtonHealer.checkButton:GetChecked(),
+					LFDRoleCheckPopupRoleButtonDPS.checkButton:GetChecked());
+	else
+		local oldLeader = GetLFGRoles();
+		SetLFGRoles(oldLeader, 
+			LFDRoleCheckPopupRoleButtonTank.checkButton:GetChecked(),
+			LFDRoleCheckPopupRoleButtonHealer.checkButton:GetChecked(),
+			LFDRoleCheckPopupRoleButtonDPS.checkButton:GetChecked());
+	end
+	
 	if ( CompleteLFGRoleCheck(true) ) then
 		StaticPopupSpecial_Hide(LFDRoleCheckPopup);
 	end

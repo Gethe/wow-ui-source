@@ -159,6 +159,7 @@ function ArenaEnemyFrame_UpdatePlayer(self, useCVars)--At some points, we need t
 		self.specBorder:Show();
 		SetPortraitToTexture(self.specPortrait, specIcon);
 	else
+		self.specPortrait:SetTexture(nil);
 		self.specBorder:Hide();
 	end
 	

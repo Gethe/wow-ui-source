@@ -141,7 +141,6 @@ function UIParent_OnLoad(self)
 	self:RegisterEvent("PARTY_INVITE_CANCEL");
 	self:RegisterEvent("GUILD_INVITE_REQUEST");
 	self:RegisterEvent("GUILD_INVITE_CANCEL");
-	self:RegisterEvent("ARENA_TEAM_INVITE_REQUEST");
 	self:RegisterEvent("PLAYER_CAMPING");
 	self:RegisterEvent("PLAYER_QUITING");
 	self:RegisterEvent("LOGOUT_CANCEL");
@@ -454,7 +453,7 @@ function QuestChoice_LoadUI()
 end
 
 function Store_LoadUI()
-	UIParentLoadAddOn("Blizzard_ShopUI");
+	UIParentLoadAddOn("Blizzard_StoreUI");
 end
 
 --[[
@@ -808,10 +807,6 @@ function UIParent_OnEvent(self, event, ...)
 		StaticPopup_Show("GUILD_INVITE", arg1, arg2);
 	elseif ( event == "GUILD_INVITE_CANCEL" ) then
 		StaticPopup_Hide("GUILD_INVITE");
-	elseif ( event == "ARENA_TEAM_INVITE_REQUEST" ) then
-		StaticPopup_Show("ARENA_TEAM_INVITE", arg1, arg2);
-	elseif ( event == "ARENA_TEAM_INVITE_CANCEL" ) then
-		StaticPopup_Hide("ARENA_TEAM_INVITE");
 	elseif ( event == "PLAYER_CAMPING" ) then
 		StaticPopup_Show("CAMP");
 	elseif ( event == "PLAYER_QUITING" ) then
@@ -887,11 +882,6 @@ function UIParent_OnEvent(self, event, ...)
 
 		-- Close any windows that were previously open
 		CloseAllWindows(1);
-
-		-- Until PVPFrame is checked in, this is placed here.
-		for i=1, MAX_ARENA_TEAMS do
-			GetArenaTeam(i);
-		end
 
 		VoiceChat_Toggle();
 

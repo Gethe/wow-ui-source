@@ -63,9 +63,6 @@ function PVPUIFrame_OnShow(self)
 	end
 	UpdateMicroButtons();
 	PlaySound("igCharacterInfoOpen");
-	for teamIndex = 1, MAX_ARENA_TEAMS do
-		ArenaTeamRoster(teamIndex);
-	end
 
 	PVPUIFrame_UpdateSelectedRoles();
 	PVPUIFrame_UpdateRolesChangeable();
@@ -790,8 +787,6 @@ function ConquestFrame_OnLoad(self)
 	RequestPVPOptionsEnabled();
 	
 	self:RegisterEvent("GROUP_ROSTER_UPDATE");
-	self:RegisterEvent("ARENA_TEAM_UPDATE");
-	self:RegisterEvent("ARENA_TEAM_ROSTER_UPDATE");
 	self:RegisterEvent("PVP_RATED_STATS_UPDATE");
 	self:RegisterEvent("PVP_REWARDS_UPDATE");
 end
@@ -855,11 +850,19 @@ function ConquestFrame_UpdateJoinButton()
 			button.tooltip = PVP_NOT_LEADER;
 		else
 			local neededSize = CONQUEST_SIZES[ConquestFrame.selectedButton.id];
+			local token, loopMax;
+			if (groupSize > (MAX_PARTY_MEMBERS + 1)) then
+				token = "raid";
+				loopMax = groupSize;
+			else
+				token = "party";
+				loopMax = groupSize - 1; -- player not included in party tokens, just raid tokens
+			end
 			if ( neededSize == groupSize ) then
 				local validGroup = true;
 				local teamIndex = ConquestFrame.selectedButton.teamIndex;
-				for i = 1, groupSize - 1 do
-					if ( not UnitIsConnected("party"..i) ) then
+				for i = 1, loopMax do
+					if ( not UnitIsConnected(token..i) ) then
 						validGroup = false;
 						button.tooltip = PVP_NO_QUEUE_DISCONNECTED_GROUP
 						break;
@@ -897,23 +900,6 @@ function ConquestFrameButton_OnClick(self, button)
 		ConquestFrame_SelectButton(self);
 		PlaySound("igMainMenuOptionCheckBoxOn");
 	end
-	if (button == "RightButton") then
-		local team = {};
-		local numMembers = GetNumArenaTeamMembers(self.teamIndex, 1);
-		if (numMembers == 0) then
-			return;
-		end
-		local index = 1;
-		for i=1, numMembers do
-			local name, _, _, class, online = GetArenaTeamRosterInfo(self.teamIndex, i);
-			if (name ~= UnitName("player")) then
-				team[index] = {["class"] = class, ["name"] = name, ["online"] = online};
-				index = index + 1;
-			end
-		end
-		UIDropDownMenu_Initialize(ConquestFrame.ArenaInviteMenu, ArenaInviteMenu_Init, "MENU", nil, team);
-		ToggleDropDownMenu(1, nil, ConquestFrame.ArenaInviteMenu, "cursor", 0, 0, team);
-	end
 end
 
 function ConquestFrameJoinButton_OnClick(self)
@@ -924,62 +910,6 @@ function ConquestFrameJoinButton_OnClick(self)
 	end
 end
 
-local INVITE_DROPDOWN = 1;
-function ArenaInviteMenu_Init(self, level, team)
-	local info = UIDropDownMenu_CreateInfo();
-	info.notCheckable = true;
-	info.value = nil;
-
-	if (level == 1 and (not team or not team[1])) then
-		info.text = INVITE_TEAM_MEMBERS;
-		info.disabled = true;
-		info.func =  nil;
-		info.hasArrow = true;
-		info.value = INVITE_DROPDOWN;
-		UIDropDownMenu_AddButton(info, level)
-
-		info.text = CANCEL
-		info.disabled = nil;
-		info.hasArrow = nil;
-		info.value = nil;
-		info.func = nil
-		UIDropDownMenu_AddButton(info, level)
-		return;
-	end
-
-	if (UIDROPDOWNMENU_MENU_VALUE == INVITE_DROPDOWN) then
-		if (not team) then
-			return
-		end
-		for i=1, #team do
-			if (team[i].online) then
-				local color = RAID_CLASS_COLORS[team[i].class].colorStr
-				info.text = "|c"..color..team[i].name..FONT_COLOR_CODE_CLOSE;
-				info.func = function (menu, name) InviteToGroup(name); end
-				info.arg1 = team[i].name;
-				info.disabled = nil;
-			else
-				info.disabled = true;
-				info.text = team[i].name;
-			end
-			UIDropDownMenu_AddButton(info, level)
-		end
-	end
-
-	if (level == 1) then
-		info.text = INVITE_TEAM_MEMBERS;
-		info.func =  nil;
-		info.hasArrow = true;
-		info.value = INVITE_DROPDOWN;
-		info.menuList = team;
-		UIDropDownMenu_AddButton(info, level)
-		info.text = CANCEL
-		info.value = nil;
-		info.hasArrow = nil;
-		info.menuList = nil;
-		UIDropDownMenu_AddButton(info, level)
-	end
-end
 --------- Conquest Tooltips ----------
 
 function ConquestFrame_ShowMaximumRewardsTooltip(self)
@@ -1265,298 +1195,3 @@ function WarGameStartButton_OnClick(self)
 	end
 end
 
----------------------------------------------------------------
--- ARENA TEAM MANAGEMENT
----------------------------------------------------------------
-
-function PVPArenaTeamsFrame_OnLoad(self)
-	self:RegisterEvent("ARENA_TEAM_UPDATE");
-	self:RegisterEvent("ARENA_TEAM_ROSTER_UPDATE");
-end
-
-function PVPArenaTeamsFrame_OnEvent(self, event, ...)
-	if (event == "ARENA_TEAM_UPDATE") then
-		PVPArenaTeamsFrame_UpdateTeams(self);
-		PVPArenaTeamsFrame_ShowTeam(self);
-	elseif (event == "ARENA_TEAM_ROSTER_UPDATE") then
-		local teamIndex = ...;
-		if ( teamIndex ) then
-			ArenaTeamRoster(teamIndex);
-		end
-		PVPArenaTeamsFrame_ShowTeam(self);
-	end
-end
-
-function PVPArenaTeamsFrame_OnShow(self)
-	ArenaTeamFrame:Show();
-	PVPArenaTeamsFrame_UpdateTeams(self);
-	PVPArenaTeamsFrame_ShowTeam(self);
-	PVPUIFrame.TopTileStreaks:Hide();
-	PVPUIFrame.TitleText:SetText(ARENA_TEAMS);
-end
-
-function PVPArenaTeamsFrame_ShowTeam(self)
-	local frame = ArenaTeamFrame;
-	if (not self.selectedButton) then
-		return;
-	end
-
-	local teamIndex = self.selectedButton.teamIndex;
-	frame.teamIndex = teamIndex;
-
-	local teamName, teamSize, teamRating, gamesPlayed, gamesWon, seasonPlayed, seasonWon, playerPlayed, seasonPlayerPlayed, emblem, border, _, teamButton;
-	local background = {};
-	local emblemColor = {} ;
-	local borderColor = {};
-	teamName, teamSize, teamRating, gamesPlayed,  gamesWon,  seasonPlayed, seasonWon, weeklyPlayerPlayed, seasonPlayerPlayed, _, _,
-	background.r, background.g, background.b,
-	emblem, emblemColor.r, emblemColor.g, emblemColor.b,
-	border, borderColor.r, borderColor.g, borderColor.b 		= GetArenaTeam(teamIndex);
-
-	frame.Flag.Banner:SetVertexColor(background.r, background.g, background.b);
-	frame.Flag.Emblem:SetVertexColor( emblemColor.r, emblemColor.g, emblemColor.b);
-	if ( emblem == -1 ) then
-		frame.Flag.Emblem:SetTexture(nil);
-	else
-		frame.Flag.Emblem:SetTexture("Interface\\PVPFrame\\Icons\\PVP-Banner-Emblem-"..emblem);
-	end
-	frame.Flag.Border:SetVertexColor( borderColor.r, borderColor.g, borderColor.b );
-	if ( border == -1 ) then
-		frame.Flag.Border:SetTexture(nil);
-	else
-		frame.Flag.Border:SetTexture("Interface\\PVPFrame\\PVP-Banner-2-Border-"..border);
-	end
-
-	local played, wins;
-	if ( frame.seasonStats ) then
-		played = seasonPlayed;
-		wins = seasonWon;
-		playerPlayed = seasonPlayerPlayed;
-		frame.WeeklyDisplay.WeeklyText:SetText(ARENA_SEASON_STATS);
-	else
-		played = gamesPlayed;
-		wins = gamesWon;
-		playerPlayed = weeklyPlayerPlayed;
-		frame.WeeklyDisplay.WeeklyText:SetText(ARENA_WEEKLY_STATS);
-	end
-
-	frame.TeamSize:SetText(_G["ARENA_"..teamSize.."V"..teamSize]);
-	frame.Rating:SetText(teamRating);
-	frame.TeamName:SetText(teamName);
-	frame.Games:SetText(played);
-	local gamesLost = played - wins;
-	frame.Wins:SetText(wins.." - "..gamesLost);
-	frame.Played:SetText(playerPlayed);
-
-	local numMembers = GetNumArenaTeamMembers(teamIndex, 1);
-	local button, name, rank, level, class, online, played, win, seasonPlayed, seasonWin, rating, loss;
-	for i=1, MAX_ARENA_TEAM_MEMBERS do
-		button = frame["TeamMember"..i];
-		if (i > numMembers) then
-			button:Disable();
-			button.NameText:SetText("");
-			button.PlayedText:SetText("");
-			button.WinLossText:SetText("");
-			--button.RatingText:SetText("");
-			button.CaptainIcon:Hide();
-		else
-			button:Enable();
-			name, rank, level, class, online, played, win, seasonPlayed, seasonWin, rating = GetArenaTeamRosterInfo(teamIndex, i);
-			local color = RAID_CLASS_COLORS[class].colorStr;
-			if (online) then
-				button.NameText:SetText("|c"..color..name..FONT_COLOR_CODE_CLOSE);
-			else
-				button.NameText:SetText(GRAY_FONT_COLOR_CODE..name..FONT_COLOR_CODE_CLOSE);
-			end
-			if (frame.seasonStats) then
-				button.PlayedText:SetText(seasonPlayed);
-				loss = seasonPlayed - seasonWin;
-				button.WinLossText:SetText(seasonWin.."-"..loss);
-			else
-				button.PlayedText:SetText(played);
-				loss = played - win;
-				button.WinLossText:SetText(win.."-"..loss);
-			end
-			--button.RatingText:SetText(rating);
-			if (rank > 0) then
-				button.CaptainIcon:Hide();
-			else
-				button.CaptainIcon:Show();
-			end
-		end
-	end
-end
-
-function ArenaTeamsFrameWeeklyToggle_OnClick(self)
-	ArenaTeamFrame.seasonStats = not ArenaTeamFrame.seasonStats;
-	PVPArenaTeamsFrame_ShowTeam(PVPArenaTeamsFrame);
-end
-
-function PVPArenaTeamsTeamButton_OnClick(self)
-	if (self.hasTeam) then
-		PlaySound("igMainMenuOptionCheckBoxOn");
-		PVPArenaTeamsFrame_SelectButton(self);
-		PVPArenaTeamsFrame_ShowTeam(PVPArenaTeamsFrame);
-	else
-		local teamSize = CONQUEST_SIZES[self:GetID()];
-		PVPBannerFrame.teamSize = teamSize;
-		ShowUIPanel(PVPBannerFrame);
-		PVPBannerFrameTitleText:SetText(_G["ARENA_"..teamSize.."V"..teamSize]);
-	end
-end
-
-function PVPArenaTeamsFrame_SelectButton(button)
-	PVPArenaTeamsFrame.selectedButton = button;
-	local self = PVPArenaTeamsFrame;
-	for i = 1, MAX_ARENA_TEAMS do
-		local teamButton = self["Team"..i];
-		if ( teamButton == button ) then
-			teamButton.Background:SetTexCoord(0.00390625, 0.87890625, 0.59179688, 0.66992188);
-		else
-			teamButton.Background:SetTexCoord(0.00390625, 0.87890625, 0.75195313, 0.83007813);
-		end
-	end
-end
-
-function PVPArenaTeamsFrameButton_SetEnabled(button, enabled)
-	if ( enabled ) then
-		if ( PVPArenaTeamsFrame.selectedButton == button ) then
-			button.Background:SetTexCoord(0.00390625, 0.87890625, 0.59179688, 0.66992188);
-		else
-			button.Background:SetTexCoord(0.00390625, 0.87890625, 0.75195313, 0.83007813);
-		end
-		button.TeamName:SetFontObject("GameFontNormalMed3");
-		button.TeamSize:SetFontObject("GameFontHighlightMedium");
-		button.Rating:SetFontObject("GameFontHighlight");
-	else
-		button.Background:SetTexCoord(0.00390625, 0.87890625, 0.67187500, 0.75000000);
-		button.TeamName:SetFontObject("GameFontDisableMed3");
-		button.TeamSize:SetFontObject("GameFontDisableMed3");
-		button.Rating:SetFontObject("GameFontDisable");
-	end
-	button:SetEnabled(enabled);
-end
-
-function PVPArenaTeamsFrame_UpdateTeams(self)
-
-	local defaultButton = nil;
-	local bannerName = "";
-
-	local teamName, teamSize, teamRating, emblem, border, _, teamButton, teamIndex;
-	local background = {};
-	local emblemColor = {} ;
-	local borderColor = {};
-	local inSeason = (GetCurrentArenaSeason() ~= NO_ARENA_SEASON);
-
-	for i=1, MAX_ARENA_TEAMS do
-		teamButton = self["Team"..i];
-		teamIndex = GetArenaTeamIndexBySize(CONQUEST_SIZES[i]);
-		if (teamIndex) then
-			--the ammount of parameter this returns is absurd
-			teamName, teamSize, teamRating, _,  _,  _, _, _, _, _, _,
-			background.r, background.g, background.b,
-			emblem, emblemColor.r, emblemColor.g, emblemColor.b,
-			border, borderColor.r, borderColor.g, borderColor.b 		= GetArenaTeam(teamIndex);
-
-			teamButton.hasTeam = true;
-			teamButton.teamIndex = teamIndex;
-			teamButton.Flag.Banner:SetVertexColor(background.r, background.g, background.b);
-			teamButton.Flag.Emblem:Show();
-			teamButton.Flag.Emblem:SetVertexColor( emblemColor.r, emblemColor.g, emblemColor.b);
-			if ( emblem == -1 ) then
-				teamButton.Flag.Emblem:SetTexture(nil);
-			else
-				teamButton.Flag.Emblem:SetTexture("Interface\\PVPFrame\\Icons\\PVP-Banner-Emblem-"..emblem);
-			end
-			teamButton.Flag.Border:Show();
-			teamButton.Flag.Border:SetVertexColor( borderColor.r, borderColor.g, borderColor.b );
-			if ( border == -1 ) then
-				teamButton.Flag.Border:SetTexture(nil);
-			else
-				teamButton.Flag.Border:SetTexture("Interface\\PVPFrame\\PVP-Banner-2-Border-"..border);
-			end
-
-			teamButton.TeamSize:Show();
-			teamButton.TeamSize:SetText(CONQUEST_SIZE_STRINGS[i])
-			teamButton.RatingLabel:Show();
-			teamButton.Rating:Show();
-			teamButton.Rating:SetText(teamRating);
-			teamButton.TeamName:SetText(teamName);
-
-			if (not defaultButton) then
-				defaultButton = teamButton;
-			end
-		else
-			teamButton.hasTeam = nil;
-			teamButton.teamIndex = nil;
-			teamButton.Flag.Banner:SetVertexColor(1, 1, 1);
-			teamButton.Flag.Emblem:Hide();
-			teamButton.Flag.Border:Hide();
-			teamButton.TeamSize:Hide();
-			teamButton.RatingLabel:Hide();
-			teamButton.Rating:Hide();
-			teamButton.TeamName:SetFormattedText(CREATE_NEW_ARENA_TEAM, CONQUEST_SIZE_STRINGS[i])
-			teamButton.TeamName:SetPoint("LEFT", teamButton, "LEFT", 55, 0);
-			if (self.selectedButton == teamButton) then
-				-- clear the button selection
-				PVPArenaTeamsFrame_SelectButton(nil);
-			end
-		end
-		if (teamButton.hasTeam) then
-			local _, height = teamButton.TeamName:GetFont();
-			if (floor(teamButton.TeamName:GetHeight()) > height) then
-				teamButton.TeamSize:SetPoint("BOTTOMLEFT", teamButton, "BOTTOMLEFT", 55, 5);
-				teamButton.TeamName:SetPoint("BOTTOMLEFT", teamButton.TeamSize, "TOPLEFT", 0, 5);
-				teamButton.RatingLabel:SetPoint("BOTTOMRIGHT", teamButton, "BOTTOMRIGHT", -40, 5);
-			else
-				teamButton.TeamSize:SetPoint("BOTTOMLEFT", teamButton, "BOTTOMLEFT", 55, 10);
-				teamButton.TeamName:SetPoint("BOTTOMLEFT", teamButton.TeamSize, "TOPLEFT", 0, 10);
-				teamButton.RatingLabel:SetPoint("BOTTOMRIGHT", teamButton, "BOTTOMRIGHT", -40, 10);
-			end
-		end
-		PVPArenaTeamsFrameButton_SetEnabled(teamButton, inSeason);
-	end
-
-	if ( inSeason ) then
-		if ( not defaultButton ) then
-			-- no teams to select
-			ArenaTeamFrame.NoTeams:Show();
-			ArenaTeamFrame.NoTeams.Error:Show();
-			ArenaTeamFrame.NoTeams.Info:SetText(ARENA_INFO);
-		else
-			ArenaTeamFrame.NoTeams:Hide();
-			if (not self.selectedButton and defaultButton) then
-				PVPArenaTeamsFrame_SelectButton(defaultButton);
-			end
-		end
-	else
-		self.selectedButton = nil;
-		ArenaTeamFrame.NoTeams:Show();
-		ArenaTeamFrame.NoTeams.Error:Hide();
-		ArenaTeamFrame.NoTeams.Info:SetText(ARENA_MASTER_NO_SEASON_TEXT);
-	end
-end
-
-function ArenaTeamMember_DropDown_Initialize()
-	UnitPopup_ShowMenu(UIDROPDOWNMENU_OPEN_MENU, "TEAM", nil, ArenaTeamMemberDropDown.name);
-end
-
-function ArenaTeamMember_ShowDropdown(name, online)
-	HideDropDownMenu(1);
-	local dropdown = ArenaTeamMemberDropDown;
-	if ( not IsArenaTeamCaptain(ArenaTeamFrame.teamIndex) ) then
-		if ( online ) then
-			dropdown.initialize = ArenaTeamMember_DropDown_Initialize;
-			dropdown.displayMode = "MENU";
-			dropdown.name = name;
-			dropdown.online = online;
-			ToggleDropDownMenu(1, nil, dropdown, "cursor");
-		end
-	else
-		dropdown.initialize = ArenaTeamMember_DropDown_Initialize;
-		dropdown.displayMode = "MENU";
-		dropdown.name = name;
-		dropdown.online = online;
-		ToggleDropDownMenu(1, nil, dropdown, "cursor");
-	end
-end

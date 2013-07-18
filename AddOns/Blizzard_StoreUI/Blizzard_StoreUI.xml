@@ -1,9 +1,9 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\..\FrameXML\UI.xsd">
-	<Include file="Blizzard_ShopUIPatchwerk.xml"/>
-	<Script file="Blizzard_ShopUIInbound.lua"/>
-	<Script file="Blizzard_ShopUIOutbound.lua"/>
-	<Script file="Blizzard_ShopUISecure.lua"/>
+	<Include file="Blizzard_StoreUIPatchwerk.xml"/>
+	<Script file="Blizzard_StoreUIInbound.lua"/>
+	<Script file="Blizzard_StoreUIOutbound.lua"/>
+	<Script file="Blizzard_StoreUISecure.lua"/>
 	<ScopedModifier forbidden="true" scriptsUseGivenEnv="true">
 		<Button name="StoreButtonTemplate" virtual="true">
 			<Size x="40" y="22"/>
@@ -117,11 +117,9 @@
 				<TexCoords left="0.25" right="0.5" top="0" bottom="1"/>
 			</CheckedTexture>
 		</CheckButton>
-		<Frame name="StoreFrame" frameStrata="FULLSCREEN_DIALOG" parent="UIParent" hidden="true">
+		<Frame name="StoreFrame" frameStrata="FULLSCREEN_DIALOG" parent="UIParent" enableMouse="true" hidden="true">
 			<Size x="542" y="385"/>
-			<Anchors>
-				<Anchor point="CENTER" x="-33" y="27"/>
-			</Anchors>
+			<!--Anchored to the screen as a whole in Lua-->
 			<Layers>
 				<Layer level="BACKGROUND">
 					<Texture parentKey="Background" inherits="store-main-frame" setAllPoints="true"/>
@@ -148,7 +146,63 @@
 					<PushedTexture file="Interface\Buttons\UI-Panel-MinimizeButton-Down"/>
 					<HighlightTexture file="Interface\Buttons\UI-Panel-MinimizeButton-Highlight" alphaMode="ADD"/>
 				</Button>
-				<Frame parentKey="Browse" setAllPoints="true">
+				<Frame parentKey="Cover" setAllPoints="true" enableMouse="true" hidden="true">
+					<Layers>
+						<Layer level="ARTWORK">
+							<Texture parentKey="Texture" setAllPoints="true">
+								<Anchors>
+									<Anchor point="TOPLEFT" x="12" y="-12"/>
+									<Anchor point="BOTTOMRIGHT" x="-12" y="12"/>
+								</Anchors>
+								<Color r="0" g="0" b="0" a="0.5"/>
+							</Texture>
+						</Layer>
+					</Layers>
+					<Scripts>
+						<OnShow>
+							self:SetFrameLevel(self:GetParent():GetFrameLevel()+3);
+						</OnShow>
+					</Scripts>
+				</Frame>
+				<Frame parentKey="Notice" setAllPoints="true">
+					<Layers>
+						<Layer level="BACKGROUND">
+							<Texture parentKey="Background" inherits="store-in-progress">
+								<Anchors>
+									<Anchor point="CENTER" x="0" y="-10"/>
+								</Anchors>
+							</Texture>
+						</Layer>
+						<Layer level="ARTWORK">
+							<FontString parentKey="Title" inherits="GameFontNormalHuge" justifyH="CENTER">
+								<Anchors>
+									<Anchor point="TOP" relativeKey="$parent" relativePoint="CENTER" x="0" y="-25"/>
+								</Anchors>
+							</FontString>
+							<Texture parentKey="Divider">
+								<Size x="245" y="1"/>
+								<Anchors>
+									<Anchor point="TOP" relativeKey="$parent.Title" relativePoint="BOTTOM" x="0" y="-5"/>
+								</Anchors>
+								<Color r="0.25" g="0.25" b="0.25"/>
+							</Texture>
+							<FontString parentKey="Description" inherits="GameFontHighlight" justifyH="CENTER">
+								<Anchors>
+									<Anchor point="TOP" relativeKey="$parent.Divider" relativePoint="BOTTOM" x="0" y="-5"/>
+								</Anchors>
+							</FontString>
+						</Layer>
+					</Layers>
+					<Frames>
+						<Button parentKey="NopButton" inherits="StoreButtonTemplate">
+							<Size x="95" y="20"/>
+							<Anchors>
+								<Anchor point="BOTTOM" x="-2" y="36"/>
+							</Anchors>
+						</Button>
+					</Frames>
+				</Frame>
+				<Frame parentKey="Browse" setAllPoints="true" hidden="true">
 					<Layers>
 						<Layer level="ARTWORK">
 							<Texture parentKey="Icon">
@@ -173,7 +227,7 @@
 								<Anchors>
 									<Anchor point="BOTTOMLEFT" x="90" y="80"/>
 								</Anchors>
-								<Color r="0.263" g="0.455" b="0.557"/>
+								<Color r="0.5098" g="0.8549" b="1.0"/>
 							</FontString>
 							<FontString parentKey="ProductIndex" inherits="GameFontDisableSmall">
 								<Anchors>
@@ -345,7 +399,7 @@
 				<OnAttributeChanged function="StoreFrame_OnAttributeChanged"/>
 			</Scripts>
 		</Frame>
-		<Frame name="StoreConfirmationFrame" frameStrata="FULLSCREEN_DIALOG" topLevel="true" parent="UIParent" hidden="true">
+		<Frame name="StoreConfirmationFrame" frameStrata="FULLSCREEN_DIALOG" topLevel="true" parent="StoreFrame" enableMouse="true" hidden="true">
 			<Size x="409" y="504"/>
 			<Anchors>
 				<Anchor point="CENTER" relativeTo="StoreFrame" relativePoint="CENTER" x="0" y="0"/>
@@ -442,9 +496,8 @@
 			<Scripts>
 				<OnLoad function="StoreConfirmationFrame_OnLoad"/>
 				<OnEvent function="StoreConfirmationFrame_OnEvent"/>
-				<OnShow>
-					self:Raise();
-				</OnShow>
+				<OnShow function="StoreConfirmationFrame_OnShow"/>
+				<OnHide function="StoreConfirmationFrame_OnHide"/>
 			</Scripts>
 		</Frame>
 	</ScopedModifier>

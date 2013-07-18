@@ -409,7 +409,17 @@ end
 
 function LFG_UpdateAllRoleCheckboxes()
 	LFG_UpdateRoleCheckboxes(LE_LFG_CATEGORY_LFD, nil, LFDQueueFrameRoleButtonTank, LFDQueueFrameRoleButtonHealer, LFDQueueFrameRoleButtonDPS, LFDQueueFrameRoleButtonLeader);
-	LFG_UpdateRoleCheckboxes(LE_LFG_CATEGORY_LFD, nil, LFDRoleCheckPopupRoleButtonTank, LFDRoleCheckPopupRoleButtonHealer, LFDRoleCheckPopupRoleButtonDPS, nil);
+	
+	local _, _, _, _, _, isBGRoleCheck = GetLFGRoleUpdate();
+	if ( isBGRoleCheck ) then
+		local tank, healer, dps = GetPVPRoles();
+		LFDRoleCheckPopupRoleButtonTank.checkButton:SetChecked(tank);
+		LFDRoleCheckPopupRoleButtonHealer.checkButton:SetChecked(healer);
+		LFDRoleCheckPopupRoleButtonDPS.checkButton:SetChecked(dps);
+	else
+		LFG_UpdateRoleCheckboxes(LE_LFG_CATEGORY_LFD, nil, LFDRoleCheckPopupRoleButtonTank, LFDRoleCheckPopupRoleButtonHealer, LFDRoleCheckPopupRoleButtonDPS, nil);
+	end
+	
 	LFG_UpdateRoleCheckboxes(LE_LFG_CATEGORY_LFR, nil, LFRQueueFrameRoleButtonTank, LFRQueueFrameRoleButtonHealer, LFRQueueFrameRoleButtonDPS, nil);
 	LFG_UpdateRoleCheckboxes(LE_LFG_CATEGORY_RF, RaidFinderQueueFrame.raid, RaidFinderQueueFrameRoleButtonTank, RaidFinderQueueFrameRoleButtonHealer, RaidFinderQueueFrameRoleButtonDPS, RaidFinderQueueFrameRoleButtonLeader);
 end

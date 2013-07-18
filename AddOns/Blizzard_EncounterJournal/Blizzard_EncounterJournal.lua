@@ -116,6 +116,7 @@ function EncounterJournal_OnLoad(self)
 	UIDropDownMenu_Initialize(self.encounter.info.lootScroll.lootFilter, EncounterJournal_InitLootFilter, "MENU");
 end
 
+local worldBossInstanceIDs = { 322 }
 
 function EncounterJournal_OnShow(self)
 	UpdateMicroButtons();
@@ -131,7 +132,11 @@ function EncounterJournal_OnShow(self)
 		EncounterJournal.lastInstance = instanceID;
 		EncounterJournal.difficultyID = difficultyID;
 		if ( difficultyID == 0 ) then
-			difficultyID = EJ_DIFFICULTIES[1].difficultyID; 	-- default to 5-man normal
+			if tContains( worldBossInstanceIDs, instanceID ) then
+				difficultyID = EJ_DIFFICULTIES[6].difficultyID;     -- default to 25-man normal for world bosses
+			else
+				difficultyID = EJ_DIFFICULTIES[1].difficultyID; 	-- default to 5-man normal
+			end
 		end
 		EJ_SetDifficulty(difficultyID);
 	elseif ( EncounterJournal.queuedPortraitUpdate ) then

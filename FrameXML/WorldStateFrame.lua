@@ -606,8 +606,13 @@ function WorldStateScoreFrame_Update()
 		-- Show winner
 		if ( isArena ) then
 			if ( isRegistered ) then
-				local teamName = GetBattlefieldTeamInfo(battlefieldWinner);
-				if ( teamName ) then
+				if ( GetBattlefieldTeamInfo(battlefieldWinner) ) then
+					local teamName
+					if ( battlefieldWinner == 0) then
+						teamName = ARENA_TEAM_NAME_GREEN
+					else
+						teamName = ARENA_TEAM_NAME_GOLD
+					end
 					WorldStateScoreWinnerFrameText:SetFormattedText(VICTORY_TEXT_ARENA_WINS, teamName);			
 				else
 					WorldStateScoreWinnerFrameText:SetText(VICTORY_TEXT_ARENA_DRAW);							
@@ -1317,6 +1322,7 @@ function WorldStateProvingGrounds_ShowTimer(timerID, elapsedTime, duration, meda
 	
 	self:RegisterEvent("PROVING_GROUNDS_SCORE_UPDATE");
 	WorldStateProvingGroundsFrame_UpdateValues(self, elapsedTime);
+	self.CountdownAnim.timeLeft = nil;
 	WatchFrame_ClearDisplay();
 	WatchFrame_Expand(WatchFrame);	-- will automatically do a watchframe update
 	WorldStateProvingGroundsTimer:Show();
@@ -1339,7 +1345,7 @@ function WorldStateProvingGrounds_HideTimer(timerID)
 end
 
 function WorldStateProvingGroundsFrame_UpdateValues(self, elapsedTime)
-
+	WatchFrameHeader:Show()
 	local statusBar = self.statusBar;
 	if ( elapsedTime < statusBar.duration ) then
 		statusBar:SetValue(statusBar.duration - elapsedTime);
@@ -1375,9 +1381,6 @@ end
 function WorldStateProvingGroundsAnim_OnFinished(self)
 	if (self.timeLeft and self.timeLeft > 0 and self.timeLeft < 5) then
 		self:Play();
-	elseif (self.timeLeft == 0) then
-		WorldStateProvingGroundsFrame.FinishAnim:Play();
-		self.timeLeft = nil;
 	else
 		self.timeLeft = nil;
 	end

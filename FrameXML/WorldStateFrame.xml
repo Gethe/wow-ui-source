@@ -1292,15 +1292,11 @@
 				<Alpha targetKey="$parent.$parent.BGAnim" endDelay="0.45" change="-1" duration="0.3" order="2"/>
 				<Alpha targetKey="$parent.$parent.BorderAnim" change="1" duration="0.25" order="1"/>
 				<Alpha targetKey="$parent.$parent.BorderAnim" endDelay="0.45" change="-1" duration="0.3" order="2"/>
+				<Alpha targetKey="$parent.$parent.Glow" change=".5" duration="0.25" order="1"/>
+				<Alpha targetKey="$parent.$parent.Glow" endDelay="0.45" change="-.5" duration="0.3" order="2"/>
 				<Scripts>
 					<OnFinished function="WorldStateProvingGroundsAnim_OnFinished"/>
 				</Scripts>
-			</AnimationGroup>
-			<AnimationGroup parentKey="FinishAnim">
-				<Alpha targetKey="$parent.$parent.BGAnim" change="1" duration="0.25" endDelay="0.2" order="1"/>
-				<Alpha targetKey="$parent.$parent.BGAnim" endDelay="0.25" change="-1" duration="0.3" order="2"/>
-				<Alpha targetKey="$parent.$parent.BorderAnim" change="1" duration="0.25" endDelay="0.2" order="1"/>
-				<Alpha targetKey="$parent.$parent.BorderAnim" endDelay="0.25" change="-1" duration="0.3" order="2"/>
 			</AnimationGroup>
 		</Animations>
 		<Layers>
@@ -1315,20 +1311,6 @@
 			</Layer>
 			<Layer level="BORDER">
 				<Texture file="Interface\Scenarios\ScenariosParts" parentKey="GoldCurlies">
-					<Size x="193" y="69"/>
-					<Anchors>
-						<Anchor point="TOP" x="0" y="-4"/>
-					</Anchors>
-					<TexCoords left="0.61328125" right="0.99023438" top="0.26171875" bottom="0.39648438"/>
-				</Texture>	
-				<Texture file="Interface\Scenarios\ScenariosParts" parentKey="BGAnim" alpha="0" alphaMode="ADD">
-					<Size x="201" y="77"/>
-					<Anchors>
-						<Anchor point="TOP" x="0" y="0"/>
-					</Anchors>
-					<TexCoords left="0.00195313" right="0.39453125" top="0.48242188" bottom="0.63281250"/>
-				</Texture>
-				<Texture file="Interface\Scenarios\ScenariosParts" parentKey="BorderAnim" alpha="0" alphaMode="ADD">
 					<Size x="193" y="69"/>
 					<Anchors>
 						<Anchor point="TOP" x="0" y="-4"/>
@@ -1373,10 +1355,33 @@
 						<Anchor point="BOTTOMLEFT" relativeKey="$parent.ScoreLabel" relativePoint="BOTTOMRIGHT" x="4" y="-1"/>
 					</Anchors>
 				</FontString>
-			</Layer>		
+			</Layer>
+			<Layer level="OVERLAY">
+				<Texture file="Interface\Scenarios\ScenariosParts" parentKey="BGAnim" alpha="0" alphaMode="ADD">
+					<Size x="201" y="77"/>
+					<Anchors>
+						<Anchor point="TOP" x="0" y="0"/>
+					</Anchors>
+					<TexCoords left="0.00195313" right="0.39453125" top="0.48242188" bottom="0.63281250"/>
+				</Texture>
+				<Texture file="Interface\Scenarios\ScenariosParts" parentKey="BorderAnim" alpha="0" alphaMode="ADD">
+					<Size x="193" y="69"/>
+					<Anchors>
+						<Anchor point="TOP" x="0" y="-4"/>
+					</Anchors>
+					<TexCoords left="0.61328125" right="0.99023438" top="0.26171875" bottom="0.39648438"/>
+				</Texture>
+				<Texture file="Interface\AchievementFrame\UI-Achievement-Alert-Glow" parentKey="Glow" alpha="0" alphaMode="ADD">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.BGAnim" x="-36" y="73"/>
+						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.BGAnim" x="36" y="-73"/>
+					</Anchors>
+					<TexCoords left="0" right="0.78125" top="0" bottom="0.66796875"/>
+				</Texture>
+			</Layer>
 		</Layers>
 		<Frames>
-			<StatusBar parentKey="statusBar">
+			<StatusBar parentKey="statusBar" useParentLevel="true">
 				<Size x="133" y="15"/>
 				<Anchors>
 					<Anchor point="CENTER" x="22" y="-8"/>

@@ -799,34 +799,6 @@ StaticPopupDialogs["RENAME_GUILD"] = {
 	hideOnEscape = 1
 };
 
-StaticPopupDialogs["RENAME_ARENA_TEAM"] = {
-	text = RENAME_ARENA_TEAM_LABEL,
-	button1 = ACCEPT,
-	button2 = CANCEL,
-	hasEditBox = 1,
-	maxLetters = 24,
-	OnAccept = function(self)
-		local text = self.editBox:GetText();
-		RenamePetition(text);
-	end,
-	EditBoxOnEnterPressed = function(self)
-		local text = self:GetText();
-		RenamePetition(text);
-		self:GetParent():Hide();
-	end,
-	OnShow = function(self)
-		self.editBox:SetFocus();
-	end,
-	OnHide = function(self)
-		ChatEdit_FocusActiveWindow();
-		self.editBox:SetText("");
-	end,
-	timeout = 0,
-	exclusive = 1,
-	whileDead = 1,
-	hideOnEscape = 1
-};
-
 StaticPopupDialogs["HELP_TICKET_QUEUE_DISABLED"] = {
 	text = HELP_TICKET_QUEUE_DISABLED,
 	button1 = OKAY,
@@ -1627,22 +1599,6 @@ StaticPopupDialogs["CHAT_CHANNEL_PASSWORD"] = {
 	hideOnEscape = 1
 };
 
-StaticPopupDialogs["ARENA_TEAM_INVITE"] = {
-	text = ARENA_TEAM_INVITATION,
-	button1 = ACCEPT,
-	button2 = DECLINE,
-	OnAccept = function(self)
-		AcceptArenaTeam();
-	end,
-	OnCancel = function(self)
-		DeclineArenaTeam();
-	end,
-	timeout = STATICPOPUP_TIMEOUT,
-	whileDead = 1,
-	hideOnEscape = 1
-};
-
-
 StaticPopupDialogs["CAMP"] = {
 	text = CAMP_TIMER,
 	button1 = CANCEL,
@@ -2122,36 +2078,6 @@ StaticPopupDialogs["ADD_MUTE"] = {
 	EditBoxOnEnterPressed = function(self)
 		local parent = self:GetParent();
 		AddMute(parent.editBox:GetText());
-		parent:Hide();
-	end,
-	EditBoxOnEscapePressed = function(self)
-		self:GetParent():Hide();
-	end,
-	timeout = 0,
-	exclusive = 1,
-	whileDead = 1,
-	hideOnEscape = 1
-};
-StaticPopupDialogs["ADD_TEAMMEMBER"] = {
-	text = ADD_TEAMMEMBER_LABEL,
-	button1 = INVITE,
-	button2 = CANCEL,
-	hasEditBox = 1,
-	autoCompleteParams = AUTOCOMPLETE_LIST.TEAM_INVITE,
-	maxLetters = 77,
-	OnAccept = function(self, teamIndex)
-		ArenaTeamInviteByName(teamIndex, self.editBox:GetText());
-	end,
-	OnShow = function(self)
-		self.editBox:SetFocus();
-	end,
-	OnHide = function(self)
-		ChatEdit_FocusActiveWindow();
-		self.editBox:SetText("");
-	end,
-	EditBoxOnEnterPressed = function(self, teamIndex)
-		local parent = self:GetParent();
-		ArenaTeamInviteByName(teamIndex, parent.editBox:GetText());
 		parent:Hide();
 	end,
 	EditBoxOnEscapePressed = function(self)
@@ -2956,20 +2882,6 @@ StaticPopupDialogs["WOW_MOUSE_NOT_FOUND"] = {
 	whileDead = 1,
 	showAlert = 1,
 	hideOnEscape = 1
-};
-
-StaticPopupDialogs["CONFIRM_TEAM_DISBAND"] = {
-	text = CONFIRM_TEAM_DISBAND,
-	button1 = YES,
-	button2 = NO,
-	OnAccept = function (self)
-		ArenaTeamDisband(self.data);
-	end,
-	OnCancel = function (self)
-	end,
-	hideOnEscape = 1,
-	timeout = 0,
-	whileDead = 1,
 };
 
 StaticPopupDialogs["CONFIRM_BUY_STABLE_SLOT"] = {

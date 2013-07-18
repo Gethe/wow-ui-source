@@ -2272,22 +2272,6 @@
 					</OnClick>
 				</Scripts>
 			</CheckButton>
-			<CheckButton name="$parentArenaTeamNameCheckButton" inherits="UIRadioButtonTemplate" id="3" parentKey="arenaNameCheckButton">
-				<Anchors>
-					<Anchor point="TOPLEFT" relativeTo="$parentGuildNameCheckButton" relativePoint="BOTTOMLEFT" x="0" y="-3"/>
-				</Anchors>
-				<Scripts>
-					<OnLoad>
-						self.reportType = PLAYER_REPORT_TYPE_BAD_ARENA_TEAM_NAME;
-						self.text:SetFontObject(GameFontHighlight);
-						self.text:SetText(BAD_ARENA_TEAM_NAME);
-					</OnLoad>
-					<OnClick>
-						PlaySound("igMainMenuOptionCheckBoxOn");
-						HelpFrame_SetReportPlayerNameSelection(self.reportType);
-					</OnClick>
-				</Scripts>
-			</CheckButton>
 			<Frame name="$parentCommentFrame" parentKey="CommentFrame">
 				<Size x="300" y="100"/>
 				<Anchors>

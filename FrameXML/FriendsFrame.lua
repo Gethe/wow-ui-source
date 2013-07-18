@@ -1036,7 +1036,7 @@ end
 function FriendsFrameAddFriendButton_OnClick(self)
 	if ( UnitIsPlayer("target") and UnitCanCooperate("player", "target") and not GetFriendInfo(UnitName("target")) ) then
 		local name, server = UnitName("target");
-		if ( server and (not UnitIsSameServer("player", "target")) ) then
+		if ( server and (not UnitIsSameServer("target")) ) then
 			name = name.."-"..server;
 		end
 		AddFriend(name);

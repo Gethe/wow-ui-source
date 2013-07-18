@@ -442,7 +442,6 @@ function HelpFrame_UpdateReportPlayerNameDialog()
 	local frame = ReportPlayerNameDialog;
 	frame.playerNameCheckButton:SetChecked(frame.reportType == PLAYER_REPORT_TYPE_BAD_PLAYER_NAME);
 	frame.guildNameCheckButton:SetChecked(frame.reportType == PLAYER_REPORT_TYPE_BAD_GUILD_NAME);
-	frame.arenaNameCheckButton:SetChecked(frame.reportType == PLAYER_REPORT_TYPE_BAD_ARENA_TEAM_NAME);
 
 	if ( frame.reportType ) then
 		frame.reportButton:Enable();

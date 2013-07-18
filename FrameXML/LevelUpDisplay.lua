@@ -317,7 +317,9 @@ function LevelUpDisplay_OnEvent(self, event, ...)
 		end
 	elseif ( event == "ZONE_CHANGED_NEW_AREA" ) then
 		self:UnregisterEvent("ZONE_CHANGED_NEW_AREA");
-		LevelUpDisplay_Show(self);
+		if ( self.type or self.queuedType ) then
+			LevelUpDisplay_Show(self);
+		end
 	elseif ( event == "PET_BATTLE_FINAL_ROUND" ) then
 		self.type = TOAST_PET_BATTLE_WINNER;
 		self.winner = arg1;

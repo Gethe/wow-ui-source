@@ -24,7 +24,7 @@
 			<Alpha startDelay="1.3" change="-1" duration="0.2" order="1"/>
 			<Scripts>
 				<OnFinished>
-					DigSiteToastFrame_ShowAlert(self:GetParent().researchFieldID);
+					DigsiteCompleteToastFrame_ShowAlert(self:GetParent().researchFieldID);
 					self:GetParent():Hide();
 				</OnFinished>
 			</Scripts>
@@ -59,7 +59,7 @@
 					<Anchor point="CENTER"/>
 				</Anchors>
 			</Texture>
-			<FontString parentKey="BarTitle" inherits="GameFontWhiteSmall" text="Digsite Progress">
+			<FontString parentKey="BarTitle" inherits="GameFontWhiteSmall" text="ARCHAEOLOGY_DIGSITE_PROGRESS_BAR_TITLE">
 				<Anchors>
 					<Anchor point="CENTER" x="0" y="12"/>
 				</Anchors>

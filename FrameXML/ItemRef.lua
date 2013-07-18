@@ -36,12 +36,6 @@ function SetItemRef(link, text, button, chatFrame)
 					_G[staticPopup.."EditBox"]:SetText(name);
 					return;
 				end
-				staticPopup = StaticPopup_Visible("ADD_TEAMMEMBER");
-				if ( staticPopup ) then
-					-- If add ignore dialog is up then enter the name into the editbox
-					_G[staticPopup.."EditBox"]:SetText(name);
-					return;
-				end
 				staticPopup = StaticPopup_Visible("ADD_RAIDMEMBER");
 				if ( staticPopup ) then
 					-- If add ignore dialog is up then enter the name into the editbox
@@ -97,12 +91,6 @@ function SetItemRef(link, text, button, chatFrame)
 					return;
 				end
 				staticPopup = StaticPopup_Visible("ADD_GUILDMEMBER");
-				if ( staticPopup ) then
-					-- If add ignore dialog is up then enter the name into the editbox
-					_G[staticPopup.."EditBox"]:SetText(name);
-					return;
-				end
-				staticPopup = StaticPopup_Visible("ADD_TEAMMEMBER");
 				if ( staticPopup ) then
 					-- If add ignore dialog is up then enter the name into the editbox
 					_G[staticPopup.."EditBox"]:SetText(name);
