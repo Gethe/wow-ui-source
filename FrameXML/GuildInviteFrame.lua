@@ -1,9 +1,11 @@
 function GuildInviteFrame_OnEvent(self, event, ...)
 	if ( event == "GUILD_INVITE_REQUEST" ) then
-		local inviter, guildName, guildLevel, oldGuildName, isNewGuild = ...;
+		local inviterName, guildName, guildLevel, oldGuildName, isNewGuild = ...;
 		local emblem = { select(6, ...) };
-
-		GuildInviteFrameInviteText:SetFormattedText(GUILD_INVITATION, inviter);
+		
+		GuildInviteFrame.inviter = inviterName;
+		
+		GuildInviteFrameInviterName:SetText(inviterName);
 		GuildInviteFrameGuildName:SetText(guildName);
 		GuildInviteFrameLevelNumber:SetText(guildLevel);
 		SetLargeGuildTabardTextures(nil, GuildInviteFrameTabardEmblem, GuildInviteFrameTabardBackground, GuildInviteFrameTabardBorder, emblem);
@@ -34,4 +36,15 @@ function GuildInviteFrame_OnEvent(self, event, ...)
 	elseif ( event == "GUILD_INVITE_CANCEL" ) then
 		self:Hide();
 	end
+end
+
+function GuildInviteFrame_OnEnter()
+	if ( GuildInviteFrameInviterName:IsTruncated() ) then
+		GameTooltip:SetOwner(GuildInviteFrame, "ANCHOR_CURSOR_RIGHT");
+		GameTooltip:SetText(GuildInviteFrame.inviter, 1, 1, 1, 1, 1);
+	end
+end
+
+function GuildInviteFrame_OnLeave()
+	GameTooltip:Hide();
 end

@@ -18,7 +18,7 @@
 		</Scripts>
 		<FontString inherits="ChatFontNormal" justifyH="LEFT" indented="true" nonspacewrap="true"/>
 	</ScrollingMessageFrame>
-	<EditBox name="ChatFrameEditBoxTemplate" autoFocus="false" ignoreArrows="true" frameStrata="DIALOG" toplevel="true" historyLines="32" letters="255" hidden="true" virtual="true">
+	<EditBox name="ChatFrameEditBoxTemplate" inherits="AutoCompleteEditBoxTemplate" autoFocus="false" ignoreArrows="true" frameStrata="DIALOG" toplevel="true" historyLines="32" letters="255" hidden="true" virtual="true">
 		<Layers>
 			<Layer level="BACKGROUND">
 				<Texture name="$parentLeft" file="Interface\ChatFrame\UI-ChatInputBorder-Left2">
@@ -134,6 +134,9 @@
 			<OnInputLanguageChanged>
 				ChatEdit_OnInputLanguageChanged(self, language);
 			</OnInputLanguageChanged>
+			<OnChar>
+				ChatEdit_OnChar(self)
+			</OnChar>
 		</Scripts>
 		<FontString inherits="ChatFontNormal" bytes="256"/>
 	</EditBox>

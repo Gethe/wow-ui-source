@@ -625,9 +625,11 @@ TRAVEL PASS
 				PlaySound("igMainMenuOptionCheckBoxOn");
 			</OnClick>
 			<OnEnter>
-				if (self.tooltip) then
+				if (self.tooltip1 and self.tooltip2) then
 					GameTooltip:SetOwner(self, "ANCHOR_LEFT");
-					GameTooltip:SetText(self.tooltip);
+					GameTooltip:SetText(self.tooltip1);
+					GameTooltip:AddLine(self.tooltip2, 1, 1, 1);
+					GameTooltip:Show();
 				end
 			</OnEnter>
 			<OnLeave function="GameTooltip_Hide"/>

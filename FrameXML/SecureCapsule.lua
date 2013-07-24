@@ -1,12 +1,32 @@
 local contents = {};
 local issecure = issecure;
+local type = type;
+local pairs = pairs;
+
+--Create a local version of this function just so we don't have to worry about changes
+local function copyTable(tab)
+	local copy = {};
+	for k, v in pairs(tab) do
+		if ( type(v) == "table" ) then
+			copy[k] = copyTable(v);
+		else
+			copy[k] = v;
+		end
+	end
+	return copy;
+end
 
 function SecureCapsuleGet(name)
 	if ( not issecure() ) then
 		return;
 	end
 
-	return contents[name];
+	if ( type(contents[name]) == "table" ) then
+		--Segment the users
+		return copyTable(contents[name]);
+	else
+		return contents[name];
+	end
 end
 
 -------------------------------
@@ -16,7 +36,7 @@ end
 --Retains a copy of name
 local function retain(name)
 	if ( type(_G[name]) == "table" ) then
-		contents[name] = CopyTable(_G[name]);
+		contents[name] = copyTable(_G[name]);
 	else
 		contents[name] = _G[name];
 	end
@@ -33,6 +53,8 @@ end
 --Things we actually want to save
 -------------------------------
 
+--If storing off Lua functions, be careful that they don't in turn call any other Lua functions that may have been swapped out.
+
 --For store
 if ( IsGMClient() ) then
 	retain("C_PurchaseAPI");
@@ -41,6 +63,11 @@ else
 end
 retain("math");
 retain("pairs");
+retain("tostring");
+retain("LoadURLIndex");
+retain("GetContainerNumFreeSlots");
+retain("BACKPACK_CONTAINER");
+retain("NUM_BAG_SLOTS");
 
 --GlobalStrings
 retain("BLIZZARD_STORE");
@@ -61,3 +88,25 @@ take("BLIZZARD_STORE_NO_ITEMS");
 take("BLIZZARD_STORE_CHECK_BACK_LATER");
 take("BLIZZARD_STORE_TRANSACTION_IN_PROGRESS");
 take("BLIZZARD_STORE_CONNECTING");
+take("BLIZZARD_STORE_VISIT_WEBSITE");
+take("BLIZZARD_STORE_VISIT_WEBSITE_WARNING");
+take("BLIZZARD_STORE_BAG_FULL");
+take("BLIZZARD_STORE_BAG_FULL_DESC");
+take("BLIZZARD_STORE_CONFIRMATION_GENERIC");
+take("BLIZZARD_STORE_CONFIRMATION_TEST");
+take("BLIZZARD_STORE_BROWSE_TEST_CURRENCY");
+take("BLIZZARD_STORE_CURRENCY_FORMAT_USD");
+take("BLIZZARD_STORE_CURRENCY_FORMAT_KRW_LONG");
+take("BLIZZARD_STORE_CURRENCY_FORMAT_CPT_LONG");
+take("BLIZZARD_STORE_CURRENCY_FORMAT_TPT");
+take("BLIZZARD_STORE_CURRENCY_RAW_ASTERISK");
+take("BLIZZARD_STORE_CURRENCY_BETA");
+take("BLIZZARD_STORE_BROWSE_BATTLE_COINS_KR");
+take("BLIZZARD_STORE_BROWSE_BATTLE_COINS_CN");
+take("BLIZZARD_STORE_ASTERISK");
+take("BLIZZARD_STORE_INTERNAL_ERROR");
+take("BLIZZARD_STORE_INTERNAL_ERROR_SUBTEXT");
+
+retain("OKAY");
+retain("LARGE_NUMBER_SEPERATOR");
+retain("DECIMAL_SEPERATOR");

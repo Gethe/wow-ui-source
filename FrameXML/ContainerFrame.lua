@@ -207,6 +207,7 @@ function CloseBag(id)
 	for i=1, NUM_CONTAINER_FRAMES, 1 do
 		local containerFrame = _G["ContainerFrame"..i];
 		if ( containerFrame:IsShown() and (containerFrame:GetID() == id) ) then
+			UpdateNewItemList(containerFrame);
 			containerFrame:Hide();
 			return;
 		end
@@ -252,9 +253,21 @@ function CloseBackpack()
 	for i=1, NUM_CONTAINER_FRAMES, 1 do
 		local containerFrame = _G["ContainerFrame"..i];
 		if ( containerFrame:IsShown() and (containerFrame:GetID() == 0) and (ContainerFrame1.backpackWasOpen == nil) ) then
+			UpdateNewItemList(containerFrame);
 			containerFrame:Hide();
 			return;
 		end
+	end
+end
+
+function UpdateNewItemList(containerFrame)
+	local id = containerFrame:GetID()
+	local name = containerFrame:GetName()
+	
+	for i=1, containerFrame.size, 1 do
+		itemButton = _G[name.."Item"..i];
+		
+		C_NewItems.RemoveNewItem(id, itemButton:GetID());
 	end
 end
 
@@ -278,6 +291,7 @@ function ContainerFrame_Update(frame)
 	local itemButton;
 	local texture, itemCount, locked, quality, readable, _, isFiltered;
 	local isQuestItem, questId, isActive, questTexture;
+	local isNewItem, isBattlePayItem, newItemTexture;
 	local tooltipOwner = GameTooltip:GetOwner();
 	
 	--Update Searchbox
@@ -313,6 +327,15 @@ function ContainerFrame_Update(frame)
 			questTexture:Hide();
 		end
 		
+		isNewItem = C_NewItems.IsNewItem(id, itemButton:GetID());
+		isBattlePayItem = IsBattlePayItem(id, itemButton:GetID());
+		newItemTexture = _G[name.."Item"..i.."NewItemTexture"];
+		if ( isNewItem and isBattlePayItem ) then
+			newItemTexture:Show();
+		else
+			newItemTexture:Hide();
+		end
+				
 		if ( texture ) then
 			ContainerFrame_UpdateCooldown(id, itemButton);
 			itemButton.hasItem = 1;
@@ -811,6 +834,13 @@ function ContainerFrameItemButton_OnEnter(self)
 		return;
 	end
 
+	C_NewItems.RemoveNewItem(self:GetParent():GetID(), self:GetID());
+
+	newItemTexture = _G[self:GetName().."NewItemTexture"];
+	if newItemTexture then
+		newItemTexture:Hide();
+	end
+	
 	local showSell = nil;
 	local hasCooldown, repairCost, speciesID, level, breedQuality, maxHealth, power, speed, name = GameTooltip:SetBagItem(self:GetParent():GetID(), self:GetID());
 	if(speciesID and speciesID > 0) then

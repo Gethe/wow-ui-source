@@ -1567,6 +1567,11 @@ function FramePositionDelegate:ShowUIPanel(frame, force)
 		return;
 	end
 
+	-- If the store-frame is open, we don't let people open up any other panels (just as if it were full-screened)
+	if ( StoreFrame_IsShown and StoreFrame_IsShown() ) then
+		return;
+	end
+
 	-- If we have a full-screen frame open, ignore other non-fullscreen open requests
 	if ( self:GetUIPanel("fullscreen") and (frameArea ~= "full") ) then
 		if ( force ) then
@@ -3145,6 +3150,7 @@ function ToggleGameMenu()
 	if ( not UIParent:IsShown() ) then
 		UIParent:Show();
 		SetUIVisibility(true);
+	elseif ( StoreFrame_EscapePressed and StoreFrame_EscapePressed() ) then
 	elseif ( securecall("StaticPopup_EscapePressed") ) then
 	elseif ( GameMenuFrame:IsShown() ) then
 		PlaySound("igMainMenuQuit");

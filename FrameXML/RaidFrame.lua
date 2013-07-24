@@ -222,7 +222,7 @@ function RaidInfoFrame_Update(scrollToSelected)
 			frame:Hide();
 		end	
 	end
-	HybridScrollFrame_Update(scrollFrame, savedInstances * buttonHeight, scrollFrame:GetHeight());
+	HybridScrollFrame_Update(scrollFrame, (savedInstances + savedWorldBosses) * buttonHeight, scrollFrame:GetHeight());
 end
 
 function RaidInfoScrollFrame_OnLoad(self)

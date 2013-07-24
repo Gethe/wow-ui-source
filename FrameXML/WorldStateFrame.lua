@@ -518,6 +518,7 @@ end
 function WorldStateScoreFrame_Update()
 	local isArena, isRegistered = IsActiveBattlefieldArena();
 	local isRatedBG = IsRatedBattleground();
+	local isWargame = IsWargame();
 	local battlefieldWinner = GetBattlefieldWinner(); 
 	
 	local firstFrameAfterCustomStats = WorldStateScoreFrameHonorGained;
@@ -534,12 +535,19 @@ function WorldStateScoreFrame_Update()
 		WorldStateScoreFrameHonorGained:Hide();
 		WorldStateScoreFrameBgRating:Hide();
 
+		if ( isWargame ) then
+			WorldStateScoreFrameRatingChange:Hide()
+		end
+		WorldStateScoreFrameName:SetWidth(325)
+		
 		-- Reanchor some columns.
 		WorldStateScoreFrameDamageDone:SetPoint("LEFT", WorldStateScoreFrameKB, "RIGHT", -5, 0);
 		WorldStateScoreFrameTeam:Hide();
-		WorldStateScoreFrameRatingChange:Show();
-		WorldStateScoreFrameRatingChange:SetPoint("LEFT", WorldStateScoreFrameHealingDone, "RIGHT", 0, 0);
-		WorldStateScoreFrameRatingChange.sortType = "bgratingChange";
+		if ( not isWargame ) then
+			WorldStateScoreFrameRatingChange:Show();
+			WorldStateScoreFrameRatingChange:SetPoint("LEFT", WorldStateScoreFrameHealingDone, "RIGHT", 0, 0);
+			WorldStateScoreFrameRatingChange.sortType = "bgratingChange";
+		end
 		WorldStateScoreFrameMatchmakingRating:Hide();
 		WorldStateScoreFrameKB:SetPoint("LEFT", WorldStateScoreFrameName, "RIGHT", 4, 0);
 	else
@@ -551,6 +559,8 @@ function WorldStateScoreFrame_Update()
 		WorldStateScoreFrameTeam:Hide();
 		WorldStateScoreFrameDeaths:Show();
 
+		WorldStateScoreFrameName:SetWidth(175)
+		
 		-- Reanchor some columns.
 		WorldStateScoreFrameKB:SetPoint("LEFT", WorldStateScoreFrameName, "RIGHT", 4, 0);
 		

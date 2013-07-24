@@ -3552,6 +3552,7 @@ function ChatEdit_OnLoad(self)
 	self:RegisterEvent("UPDATE_CHAT_COLOR");
 	
 	self.addSpaceToAutoComplete = true;
+	self.addHighlightedText = true;
 	
 	if ( CHAT_OPTIONS.ONE_EDIT_AT_A_TIME == "many" ) then
 		self:Show();
@@ -3961,7 +3962,7 @@ end
 
 function ChatEdit_SendText(editBox, addHistory)
 	ChatEdit_ParseText(editBox, 1);
-
+	
 	local type = editBox:GetAttribute("chatType");
 	local text = editBox:GetText();
 	if ( strfind(text, "%s*[^%s]+") ) then
@@ -3999,6 +4000,13 @@ function ChatEdit_OnEnterPressed(self)
 	if(AutoCompleteEditBox_OnEnterPressed(self)) then
 		return;
 	end
+	if (self.autoCompleted) then
+		local text = self:GetText().." "
+		self:SetText(text);
+		self:SetCursorPosition(strlen(text));
+		self.autoCompleted = nil;
+		return;
+	end
 	ChatEdit_SendText(self, 1);
 
 	local type = self:GetAttribute("chatType");
@@ -4013,18 +4021,22 @@ function ChatEdit_OnEnterPressed(self)
 		self:SetAttribute("stickyType", type);
 	end
 	
-	ChatEdit_OnEscapePressed(self);
+	ChatEdit_ClearChat(self);
+end
+
+function ChatEdit_ClearChat(editBox)
+	ChatEdit_ResetChatTypeToSticky(editBox);
+	if ( not editBox.isGM and (GetCVar("chatStyle") ~= "im" or editBox == MacroEditBox) ) then
+		editBox:SetText("");
+		editBox:Hide();
+	else
+		ChatEdit_DeactivateChat(editBox);
+	end
 end
 
 function ChatEdit_OnEscapePressed(editBox)
 	if ( not AutoCompleteEditBox_OnEscapePressed(editBox) ) then
-		ChatEdit_ResetChatTypeToSticky(editBox);
-		if ( not editBox.isGM and (GetCVar("chatStyle") ~= "im" or editBox == MacroEditBox) ) then
-			editBox:SetText("");
-			editBox:Hide();
-		else
-			ChatEdit_DeactivateChat(editBox);
-		end
+		ChatEdit_ClearChat(editBox);
 	end
 end
 
@@ -4106,7 +4118,7 @@ function ChatEdit_OnTextChanged(self, userInput)
 		self.tabCompleteTableIndex = 1;
 	end
 	self.ignoreTextChange = nil;
-	local regex = "^((/[^%s]+)%s+)(.+)"
+	local regex = "^((/[^%s]+)%s+(.+))"
 	local full, command, target = strmatch(self:GetText(), regex);
 	if ( not target or (strsub(target, 1, 1) == "|") ) then
 		AutoComplete_HideIfAttachedTo(self);
@@ -4114,10 +4126,48 @@ function ChatEdit_OnTextChanged(self, userInput)
 	end
 	
 	if ( userInput ) then
-		self.autoCompleteRegex = regex;
-		self.autoCompleteFormatRegex = "%2$s%1$s"
 		self.autoCompleteXOffset = 35;
-		AutoComplete_Update(self, target, self:GetUTF8CursorPosition() - strlenutf8(command) - 1);
+		AutoComplete_Update(self, target, self:GetUTF8CursorPosition() - strlenutf8(command) - 1);		
+	end
+end
+
+local symbols = {"%%", "%*", "%+", "%-", "%?", "%(", "%)", "%[", "%]", "%$", "%^"} --% has to be escaped first or everything is ruined
+local replacements = {"%%%%", "%%%*", "%%%+", "%%%-", "%%%?", "%%%(", "%%%)", "%%%[", "%%%]", "%%%$", "%%%^"}
+function escapePatternSymbols(text)
+	for i=1, #symbols do
+		text = text:gsub(symbols[i], replacements[i])
+	end
+	return text
+end
+
+function ChatEdit_OnChar(self)
+	local regex = "^((/[^%s]+)%s+(.+))$"
+	self.autoCompleted = nil;
+	local text, command, target = strmatch(self:GetText(), regex);
+	if (command) then
+		self.command = command
+	else
+		self.command = nil;
+	end
+	if (command and target and self.autoCompleteParams) then --if they typed a command with a autocompletable target
+		local utf8Position = self:GetUTF8CursorPosition();
+		local nameToShow = GetAutoCompleteResults(target, self.autoCompleteParams.include, self.autoCompleteParams.exclude, 1, utf8Position);
+		if (nameToShow) then
+			--We're going to be setting the text programatically which will clear the userInput flag on the editBox. 
+			--So we want to manually update the dropdown before we change the text.
+			AutoComplete_Update(self, target, utf8Position - strlenutf8(command) - 1);
+			target = escapePatternSymbols(target)
+			local highlightRegex = "^"..target.."(.*)";
+			local nameEnding = nameToShow:match(highlightRegex)
+			if (not nameEnding) then
+				return;
+			end
+			local newText = text..nameEnding;
+			self:SetText(newText);
+			self:HighlightText(strlen(text), strlen(newText));	
+			self:SetCursorPosition(strlen(text));
+			self.autoCompleted = true;
+		end
 	end
 end
 
@@ -4147,7 +4197,7 @@ local function processChatType(editBox, msg, index, send)
 				editBox:SetText(parsedMsg);
 				ChatEdit_UpdateHeader(editBox);
 			elseif ( send == 1 ) then
-				ChatEdit_OnEscapePressed(editBox);
+				ChatEdit_ClearChat(editBox);
 			end	
 		elseif ( index == "REPLY" ) then
 			local lastTell, lastTellType = ChatEdit_GetLastTellTarget();
@@ -4159,7 +4209,7 @@ local function processChatType(editBox, msg, index, send)
 				ChatEdit_UpdateHeader(editBox);
 			else
 				if ( send == 1 ) then
-					ChatEdit_OnEscapePressed(editBox);
+					ChatEdit_ClearChat(editBox);
 				end
 			end
 		elseif (index == "CHANNEL") then
@@ -4178,7 +4228,7 @@ end
 
 function ChatEdit_HandleChatType(editBox, msg, command, send)
 	local channel = strmatch(command, "/([0-9]+)");
-
+	
 	if( channel ) then
 		local chanNum = tonumber(channel);
 		if ( chanNum > 0 and chanNum <= MAX_WOW_CHAT_CHANNELS ) then
@@ -4218,7 +4268,7 @@ function ChatEdit_ParseText(editBox, send, parseIfNoSpaces)
 	if ( strlen(text) <= 0 ) then
 		return;
 	end
-
+	
 	if ( strsub(text, 1, 1) ~= "/" ) then
 		return;
 	end
@@ -4231,7 +4281,6 @@ function ChatEdit_ParseText(editBox, send, parseIfNoSpaces)
 	-- If the string is in the format "/cmd blah", command will be "/cmd"
 	local command = strmatch(text, "^(/[^%s]+)") or "";
 	local msg = "";
-
 
 	if ( command ~= text ) then
 		msg = strsub(text, strlen(command) + 2);
@@ -4248,7 +4297,7 @@ function ChatEdit_ParseText(editBox, send, parseIfNoSpaces)
 	if ( send == 1 and hash_SecureCmdList[command] ) then
 		hash_SecureCmdList[command](strtrim(msg));
 		editBox:AddHistoryLine(text);
-		ChatEdit_OnEscapePressed(editBox);
+		ChatEdit_ClearChat(editBox);
 		return;
 	end
 
@@ -4268,13 +4317,13 @@ function ChatEdit_ParseText(editBox, send, parseIfNoSpaces)
 		-- if the code in here changes - change the corresponding code below
 		hash_SlashCmdList[command](strtrim(msg), editBox);
 		editBox:AddHistoryLine(text);
-		ChatEdit_OnEscapePressed(editBox);
+		ChatEdit_ClearChat(editBox);
 		return;
 	elseif ( hash_EmoteTokenList[command] ) then
 		-- if the code in here changes - change the corresponding code below
 		DoEmote(hash_EmoteTokenList[command], msg);
 		editBox:AddHistoryLine(text);
-		ChatEdit_OnEscapePressed(editBox);
+		ChatEdit_ClearChat(editBox);
 		return;
 	end
 
@@ -4285,7 +4334,7 @@ function ChatEdit_ParseText(editBox, send, parseIfNoSpaces)
 	end
 	
 	-- Reset the chat type and clear the edit box's contents
-	ChatEdit_OnEscapePressed(editBox);
+	ChatEdit_ClearChat(editBox);
 	return;
 end
 

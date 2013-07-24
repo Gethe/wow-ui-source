@@ -34,14 +34,21 @@
 						<Anchor point="CENTER" relativeTo="$parentTabardBackground" x="0" y="0"/>
 					</Anchors>
 				</Texture>
-				<FontString	name="$parentInviteText" inherits="GameFontHighlightSmall">
+				<FontString	name="$parentInviterName" inherits="GameFontHighlightSmall">
+					<Size x="230" y="10"/>
 					<Anchors>
 						<Anchor point="TOP" x="0" y="-28"/>
 					</Anchors>
 				</FontString>
+				<FontString	name="$parentInviteText" inherits="GameFontHighlightSmall" text="GUILD_INVITATION">
+					<Size x="230" y="10"/>
+					<Anchors>
+						<Anchor point="TOP" relativeTo="$parentInviterName" x="0" y="-10"/>
+					</Anchors>
+				</FontString>
 				<FontString	name="$parentGuildName" inherits="GameFontNormal">
 					<Anchors>
-						<Anchor point="TOP" x="0" y="-46"/>
+						<Anchor point="TOP" relativeTo="$parentInviteText" x="0" y="-12"/>
 					</Anchors>
 				</FontString>
 				<FontString	name="$parentWarningText" inherits="GameFontHighlight">
@@ -155,6 +162,12 @@
 				PlaySound("igMainMenuClose");
 				StaticPopupSpecial_Hide(GuildInviteFrame);
 			</OnHide>
+			<OnEnter>
+				GuildInviteFrame_OnEnter();
+			</OnEnter>
+			<OnLeave>
+				GuildInviteFrame_OnLeave();
+			</OnLeave>
 		</Scripts>
 	</Frame>
 </Ui>

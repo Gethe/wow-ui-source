@@ -3598,8 +3598,6 @@ function StaticPopup_Show(which, text_arg1, text_arg2, data)
 	end
 
 	editBox.autoCompleteParams = info.autoCompleteParams;
-	editBox.autoCompleteRegex = info.autoCompleteRegex;
-	editBox.autoCompleteFormatRegex = info.autoCompleteFormatRegex;
 
 	editBox.addHighlightedText = true;
 

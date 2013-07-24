@@ -24,11 +24,11 @@ end
 function InspectPVPFrame_Update()
 	local rating, played, won = GetInspectRatedBGData();
 	InspectPVPFrame.RatedBG.Rating:SetText(rating);
-	InspectPVPFrame.RatedBG.Record:SetText(won.."-"..(played-won));
+	InspectPVPFrame.RatedBG.Wins:SetText(won);
 	for i=1, MAX_ARENA_TEAMS do
 		local arenarating, seasonPlayed, seasonWon, weeklyPlayed, weeklyWon = GetInspectArenaData(i);
 		local frame = arenaFrames[i];
 		frame.Rating:SetText(arenarating);
-		frame.Record:SetText(seasonWon.."-"..(seasonPlayed - seasonWon));
+		frame.Wins:SetText(seasonWon);
 	end
 end

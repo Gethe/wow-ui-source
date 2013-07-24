@@ -747,8 +747,12 @@ function HonorFrameBonusFrame_SetButtonState(button, enable, minLevel)
 		button.NormalTexture:SetAlpha(0.5);
 		button:Disable();
 		button.Contents.UnlockText:Show();
-		button.Contents.MinLevelText:Show();
-		button.Contents.MinLevelText:SetFormattedText(UNIT_LEVEL_TEMPLATE, minLevel);
+		if ( minLevel ) then
+			button.Contents.MinLevelText:Show();
+			button.Contents.MinLevelText:SetFormattedText(UNIT_LEVEL_TEMPLATE, minLevel);
+		else
+			button.Contents.MinLevelText:Hide();
+		end
 	end
 end
 

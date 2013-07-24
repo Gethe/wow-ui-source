@@ -6,3 +6,8 @@ end
 function StoreFrame_IsShown()
 	return StoreFrame:GetAttribute("IsShown");
 end
+
+function StoreFrame_EscapePressed()
+	StoreFrame:SetAttribute("action", "EscapePressed");
+	return StoreFrame:GetAttribute("EscapeResult");
+end

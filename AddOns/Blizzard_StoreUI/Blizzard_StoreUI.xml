@@ -5,6 +5,30 @@
 	<Script file="Blizzard_StoreUIOutbound.lua"/>
 	<Script file="Blizzard_StoreUISecure.lua"/>
 	<ScopedModifier forbidden="true" scriptsUseGivenEnv="true">
+		<Button name="StoreDialogTemplate" virtual="true">
+			<Backdrop edgeFile="Interface\DialogFrame\UI-DialogBox-Border" tile="true">
+				<BackgroundInsets>
+					<AbsInset left="11" right="12" top="12" bottom="11"/>
+				</BackgroundInsets>
+				<TileSize>
+					<AbsValue val="32"/>
+				</TileSize>
+				<EdgeSize>
+					<AbsValue val="32"/>
+				</EdgeSize>
+			</Backdrop>
+			<Layers>
+				<Layer level="BACKGROUND">
+					<Texture parentKey="Background">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeKey="$parent" relativePoint="TOPLEFT" x="11" y="-12"/>
+							<Anchor point="BOTTOMRIGHT" relativeKey="$parent" relativePoint="BOTTOMRIGHT" x="-12" y="11"/>
+						</Anchors>
+						<Color r="0" g="0" b="0" a="0.8"/>
+					</Texture>
+				</Layer>
+			</Layers>
+		</Button>
 		<Button name="StoreButtonTemplate" virtual="true">
 			<Size x="40" y="22"/>
 			<Layers>
@@ -85,7 +109,7 @@
 		<CheckButton name="StoreQuantitySelectionTemplate" virtual="true">
 			<Size x="14" y="14"/>
 			<HitRectInsets>
-				<AbsInset left="0" right="-130" top="0" bottom="0"/>
+				<AbsInset left="0" right="-145" top="0" bottom="0"/>
 			</HitRectInsets>
 			<Layers>
 				<Layer level="ARTWORK">
@@ -96,7 +120,7 @@
 						</Anchors>
 					</FontString>
 					<FontString parentKey="Price" inherits="GameFontHighlight" justifyH="LEFT">
-						<Size x="55" y="14"/>
+						<Size x="70" y="14"/>
 						<Anchors>
 							<Anchor point="LEFT" relativeKey="$parent.Title" relativePoint="RIGHT" x="5" y="0"/>
 						</Anchors>
@@ -149,7 +173,7 @@
 				<Frame parentKey="Cover" setAllPoints="true" enableMouse="true" hidden="true">
 					<Layers>
 						<Layer level="ARTWORK">
-							<Texture parentKey="Texture" setAllPoints="true">
+							<Texture parentKey="Texture">
 								<Anchors>
 									<Anchor point="TOPLEFT" x="12" y="-12"/>
 									<Anchor point="BOTTOMRIGHT" x="-12" y="12"/>
@@ -158,6 +182,68 @@
 							</Texture>
 						</Layer>
 					</Layers>
+					<Scripts>
+						<OnShow>
+							self:SetFrameLevel(self:GetParent():GetFrameLevel()+3);
+						</OnShow>
+					</Scripts>
+				</Frame>
+				<Frame parentKey="ErrorFrame" setAllPoints="true" enableMouse="true" hidden="true">
+					<Layers>
+						<Layer level="Background">
+							<Texture parentKey="Texture">
+								<Anchors>
+									<Anchor point="TOPLEFT" x="12" y="-12"/>
+									<Anchor point="BOTTOMRIGHT" x="-12" y="12"/>
+								</Anchors>
+								<Color r="0" g="0" b="0" a="0.5"/>
+							</Texture>
+						</Layer>
+					</Layers>
+					<Frames>
+						<Frame parentKey="Error" inherits="StoreDialogTemplate">
+							<Size x="315" y="175"/>
+							<Anchors>
+								<Anchor point="CENTER"/>
+							</Anchors>
+							<Layers>
+								<Layer level="ARTWORK">
+									<FontString parentKey="Title" inherits="GameFontNormal" justifyH="CENTER">
+										<Size x="270" y="0"/>
+										<Anchors>
+											<Anchor point="TOP" relativeKey="$parent" relativePoint="TOP" x="0" y="-20"/>
+										</Anchors>
+									</FontString>
+									<FontString parentKey="Description" inherits="GameFontHighlight" justifyH="CENTER">
+										<Size x="270" y="0"/>
+										<Anchors>
+											<Anchor point="TOP" relativeKey="$parent.Title" relativePoint="BOTTOM" x="0" y="-20"/>
+										</Anchors>
+									</FontString>
+									<FontString parentKey="WebsiteWarning" inherits="GameFontNormalSmall" justifyH="CENTER">
+										<Size x="270" y="0"/>
+										<Anchors>
+											<Anchor point="BOTTOM" relativeKey="$parent" relativePoint="BOTTOM" x="0" y="55"/>
+										</Anchors>
+									</FontString>
+								</Layer>
+							</Layers>
+							<Frames>
+								<Button parentKey="AcceptButton" inherits="StoreButtonTemplate">
+									<Size x="82" y="22"/>
+									<Scripts>
+										<OnClick function="StoreFrameErrorAcceptButton_OnClick"/>
+									</Scripts>
+								</Button>
+								<Button parentKey="WebsiteButton" inherits="StoreButtonTemplate">
+									<Size x="82" y="22"/>
+									<Scripts>
+										<OnClick function="StoreFrameErrorWebsiteButton_OnClick"/>
+									</Scripts>
+								</Button>
+							</Frames>
+						</Frame>
+					</Frames>
 					<Scripts>
 						<OnShow>
 							self:SetFrameLevel(self:GetParent():GetFrameLevel()+3);
@@ -187,6 +273,7 @@
 								<Color r="0.25" g="0.25" b="0.25"/>
 							</Texture>
 							<FontString parentKey="Description" inherits="GameFontHighlight" justifyH="CENTER">
+								<Size x="270" y="0"/>
 								<Anchors>
 									<Anchor point="TOP" relativeKey="$parent.Divider" relativePoint="BOTTOM" x="0" y="-5"/>
 								</Anchors>
@@ -223,9 +310,10 @@
 									<Anchor point="TOP" relativeKey="$parent" relativePoint="CENTER" x="0" y="12"/>
 								</Anchors>
 							</FontString>
-							<FontString parentKey="PlusTax" inherits="GameFontNormalSmall">
+							<FontString parentKey="PlusTax" inherits="GameFontNormalSmall" justifyH="LEFT" justifyV="BOTTOM">
 								<Anchors>
-									<Anchor point="BOTTOMLEFT" x="90" y="80"/>
+									<Anchor point="TOPLEFT" relativeKey="$parent" relativePoint="BOTTOMLEFT" x="90" y="125"/>
+									<!--BOTTOMRIGHT anchored in StoreFrameBrowse_SetSale and StoreFrameBrowse_SetNormalPrice-->
 								</Anchors>
 								<Color r="0.5098" g="0.8549" b="1.0"/>
 							</FontString>
@@ -273,9 +361,9 @@
 							<HighlightTexture file="Interface\Buttons\UI-Common-MouseHilight" alphaMode="ADD"/>
 						</Button>
 						<Frame parentKey="QuantitySelection">
-							<Size x="310" y="0"/>
+							<Size x="340" y="0"/>
 							<Anchors>
-								<Anchor point="BOTTOM" x="0" y="130"/>
+								<Anchor point="BOTTOM" x="2" y="130"/>
 							</Anchors>
 							<Layers>
 								<Layer level="BORDER">
@@ -388,10 +476,7 @@
 			<Scripts>
 				<OnLoad function="StoreFrame_OnLoad"/>
 				<OnEvent function="StoreFrame_OnEvent"/>
-				<OnShow>
-					self:SetAttribute("IsShown", true);
-					Outbound.UpdateMicroButtons();
-				</OnShow>
+				<OnShow function="StoreFrame_OnShow"/>
 				<OnHide>
 					self:SetAttribute("IsShown", false);
 					Outbound.UpdateMicroButtons();
@@ -446,6 +531,12 @@
 					<FontString parentKey="FinalPriceLabel" inherits="QuestFontHighlight" justifyH="RIGHT">
 						<Anchors>
 							<Anchor point="BOTTOMRIGHT" relativeKey="$parent.FinalPrice" relativePoint="BOTTOMLEFT" x="-5" y="0"/>
+						</Anchors>
+					</FontString>
+					<FontString parentKey="Notice" inherits="QuestFontHighlight" justifyH="CENTER" justifyV="MIDDLE">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeKey="$parent.Icon" relativePoint="BOTTOMLEFT" x="0" y="-10"/>
+							<Anchor point="BOTTOMRIGHT" relativeKey="$parent.FinalPrice" relativePoint="TOPRIGHT" x="0" y="10"/>
 						</Anchors>
 					</FontString>
 					<FontString parentKey="PaymentMethod" inherits="GameFontHighlight" justifyH="CENTER">
