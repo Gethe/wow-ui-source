@@ -61,11 +61,13 @@ if ( IsGMClient() ) then
 else
 	take("C_PurchaseAPI");
 end
+take("CreateForbiddenFrame");
 retain("math");
 retain("pairs");
 retain("tostring");
 retain("LoadURLIndex");
 retain("GetContainerNumFreeSlots");
+retain("PlaySound");
 retain("BACKPACK_CONTAINER");
 retain("NUM_BAG_SLOTS");
 
@@ -106,7 +108,13 @@ take("BLIZZARD_STORE_BROWSE_BATTLE_COINS_CN");
 take("BLIZZARD_STORE_ASTERISK");
 take("BLIZZARD_STORE_INTERNAL_ERROR");
 take("BLIZZARD_STORE_INTERNAL_ERROR_SUBTEXT");
+take("BLIZZARD_STORE_ERROR_TITLE_OTHER");
+take("BLIZZARD_STORE_ERROR_MESSAGE_OTHER");
 
 retain("OKAY");
 retain("LARGE_NUMBER_SEPERATOR");
 retain("DECIMAL_SEPERATOR");
+
+--Lua enums
+take("LE_STORE_ERROR_OTHER");
+

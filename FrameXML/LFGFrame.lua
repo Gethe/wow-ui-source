@@ -1968,7 +1968,6 @@ function LFGCooldownCover_SetUp(self, backfillFrame)
 	self:RegisterEvent("UNIT_AURA");	--The cooldown is still technically a debuff
 	self:RegisterEvent("GROUP_ROSTER_UPDATE");
 
-	assert(backfillFrame);
 	self.backfillFrame = backfillFrame;
 end
 
@@ -2090,7 +2089,7 @@ function LFGCooldownCover_Update(self)
 		self:SetScript("OnUpdate", nil);
 	end
 	
-	if ( shouldShow and not self.backfillFrame:IsShown() ) then
+	if ( shouldShow and ( not self.backfill or not self.backfillFrame:IsShown() ) ) then
 		self:Show();
 	else
 		self:Hide();

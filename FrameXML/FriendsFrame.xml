@@ -1461,7 +1461,7 @@ TRAVEL PASS
 					<ScrollFrame name="FriendsFrameIgnoreScrollFrame" inherits="FauxScrollFrameTemplate">
 						<Size x="298" y="309"/>
 						<Anchors>
-							<Anchor point="TOPRIGHT" relativeTo="FriendsFrame" x="-65" y="-99"/>
+							<Anchor point="TOPRIGHT" relativeTo="FriendsFrame" x="-32" y="-87"/>
 						</Anchors>
 						<Scripts>
 							<OnVerticalScroll>

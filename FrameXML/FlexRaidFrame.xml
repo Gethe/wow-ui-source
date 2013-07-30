@@ -185,9 +185,46 @@
 								</FontString>
 							</Layer>
 						</Layers>
+						<Frames>
+							<Frame name="$parentLockouts" parentKey="Lockouts">
+								<Size x="18" y="18"/>
+								<Layers>
+									<Layer level="ARTWORK">
+										<Texture name="$parentTexture" file="Interface\DialogFrame\UI-Dialog-Icon-AlertNew">
+											<Size x="18" y="18"/>
+											<Anchors>
+												<Anchor point="LEFT" relativeKey="$parent.$parent.RaidTitle" relativePoint="RIGHT" x="5"/>
+											</Anchors>
+										</Texture>
+									</Layer>
+								</Layers>
+								<Scripts>
+									<OnEnter function="LFGRewardsFrameEncounterList_OnEnter"/>
+									<OnLeave function="GameTooltip_Hide"/>
+								</Scripts>
+							</Frame>
+						</Frames>
 					</Frame>
 				</ScrollChild>
 			</ScrollFrame>
+			<Frame name="$parentCooldownFrame" parentKey="CooldownFrame" inherits="LFGCooldownCoverTemplate">
+				<Size x="330" y="333"/>
+				<Anchors>
+					<Anchor point="BOTTOMRIGHT" x="-6" y="27"/>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						LFGCooldownCover_SetUp(self);
+						LFGCooldownCover_ChangeSettings(self, false, false);
+					</OnLoad>
+					<OnShow>
+						FlexRaidFrame_UpdateButton();
+					</OnShow>
+					<OnHide>
+						FlexRaidFrame_UpdateButton();
+					</OnHide>
+				</Scripts>
+			</Frame>
 			<Button name="$parentStartRaidButton" parentKey="StartButton" inherits="MagicButtonTemplate" text="START_RAID" motionScriptsWhileDisabled="true">
 				<Size x="135" y="22"/>
 				<Anchors>

@@ -1498,7 +1498,7 @@ SecureCmdList["CLICK"] = function(msg)
 			name = action;
 		end
 		local button = GetClickFrame(name);
-		if ( button and button:IsObjectType("Button") ) then
+		if ( button and button:IsObjectType("Button") and not button:IsForbidden() ) then
 			button:Click(mouseButton, down);
 		end
 	end
@@ -1614,7 +1614,7 @@ end
 
 SlashCmdList["UNINVITE"] = function(msg)
 	if(msg == "") then
-		msg = UnitName("target");
+		msg = GetUnitName("target", true);
 	end
 	UninviteUnit(msg);
 end

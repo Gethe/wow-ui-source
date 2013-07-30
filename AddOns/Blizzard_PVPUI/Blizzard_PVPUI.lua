@@ -618,6 +618,7 @@ function HonorFrameBonusFrame_Update()
 	local playerLevel = UnitLevel("player");
 	local englishFaction = UnitFactionGroup("player");
 	local selectButton = nil;
+	local _, _, _, _, _, _, _, _, arenaReward, ratedBGReward = GetPVPRewards();
 	-- random bg
 	local button = HonorFrame.BonusFrame.RandomBGButton;
 	local canQueue, battleGroundID, hasWon, winHonorAmount, winConquestAmount, lossHonorAmount, lossConquestAmount, minLevel, maxLevel = GetRandomBGInfo();
@@ -636,6 +637,12 @@ function HonorFrameBonusFrame_Update()
 	-- call to arms
 	button = HonorFrame.BonusFrame.CallToArmsButton;
 	local canQueue, bgName, battleGroundID, hasWon, winHonorAmount, winConquestAmount, lossHonorAmount, lossConquestAmount, minLevel, maxLevel = GetHolidayBGInfo();
+	-- cap conquest to total earnable
+	if ( arenaReward < winConquestAmount ) then
+		winConquestAmount = arenaReward
+	elseif ( ratedBGReward < winConquestAmount ) then
+		winConquestAmount = ratedBGReward
+	end
 	HonorFrameBonusFrame_SetButtonState(button, canQueue, minLevel);
 	button.Contents.BattlegroundName:SetText(bgName);
 	if ( canQueue ) then

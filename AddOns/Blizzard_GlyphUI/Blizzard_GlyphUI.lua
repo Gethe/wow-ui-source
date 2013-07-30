@@ -45,7 +45,6 @@ function GlyphFrame_OnLoad (self)
 	self:RegisterEvent("PLAYER_TALENT_UPDATE");
 
 	self.scrollFrame.update = GlyphFrame_UpdateGlyphList;
-	self.scrollFrame.stepSize = 12;
 	self.scrollFrame.scrollBar.doNotHide = true;
 	self.scrollFrame.dynamic = GlyphFrame_CalculateScroll;
 	HybridScrollFrame_CreateButtons(self.scrollFrame, "GlyphSpellButtonTemplate", 0, -1, "TOPLEFT", "TOPLEFT", 0, -GLYPH_BUTTON_OFFSET, "TOP", "BOTTOM");

@@ -774,7 +774,7 @@ function WorldStateScoreFrame_Update()
 			end
 
 			if ( isArena ) then
-				scoreButton.name.text:SetWidth(150);
+				scoreButton.name.text:SetWidth(350);
 				if ( isRegistered ) then
 					scoreButton.team:SetText(teamName);
 					scoreButton.team:Show();

@@ -4,9 +4,6 @@
 local _, tbl = ...;
 
 tbl.SecureCapsuleGet = SecureCapsuleGet;
---Debug
-tbl.CreateForbiddenFrame = CreateFrame;
---End debug
 setfenv(1, tbl);
 ----------------
 
@@ -26,11 +23,13 @@ end
 
 --Imports
 Import("C_PurchaseAPI");
+Import("CreateForbiddenFrame");
 Import("math");
 Import("pairs");
 Import("tostring");
 Import("LoadURLIndex");
 Import("GetContainerNumFreeSlots");
+Import("PlaySound");
 Import("BACKPACK_CONTAINER");
 Import("NUM_BAG_SLOTS");
 
@@ -71,10 +70,15 @@ Import("BLIZZARD_STORE_BROWSE_BATTLE_COINS_CN");
 Import("BLIZZARD_STORE_ASTERISK");
 Import("BLIZZARD_STORE_INTERNAL_ERROR");
 Import("BLIZZARD_STORE_INTERNAL_ERROR_SUBTEXT");
+Import("BLIZZARD_STORE_ERROR_TITLE_OTHER");
+Import("BLIZZARD_STORE_ERROR_MESSAGE_OTHER");
 
 Import("OKAY");
 Import("LARGE_NUMBER_SEPERATOR");
 Import("DECIMAL_SEPERATOR");
+
+--Lua enums
+Import("LE_STORE_ERROR_OTHER");
 
 --Data
 CURRENCY_UNKNOWN = 0;
@@ -186,6 +190,15 @@ local function currencyInfo()
 	return info;
 end
 
+--Error message data
+local errorData = {
+	[LE_STORE_ERROR_OTHER] = {
+		title = "Store Error",	--Probably want to format in the error code
+		msg = "There was a problem with your order. Please try again.",
+		--link = 1,
+	}
+};
+
 --Code
 local function getIndex(tbl, value)
 	for k, v in pairs(tbl) do
@@ -200,6 +213,7 @@ function StoreFrame_OnLoad(self)
 	self:RegisterEvent("STORE_PRODUCTS_UPDATED");
 	self:RegisterEvent("STORE_PURCHASE_LIST_UPDATED");
 	self:RegisterEvent("BAG_UPDATE_DELAYED"); --Used for showing the panel when all bags are full
+	self:RegisterEvent("STORE_PURCHASE_ERROR");
 	C_PurchaseAPI.GetProductList();
 	C_PurchaseAPI.GetPurchaseList();
 	C_PurchaseAPI.GetDistributionList();
@@ -213,6 +227,12 @@ function StoreFrame_OnLoad(self)
 	self:SetPoint("CENTER", nil, "CENTER", 0, 77); --Intentionally not anchored to UIParent.
 
 	StoreFrame_UpdateActivePanel(self);
+
+	--Check whether we already have an error waiting for us.
+	local errorID = C_PurchaseAPI.GetFailureInfo();
+	if ( errorID ) then
+		StoreFrame_OnError(self, errorID, true);
+	end
 end
 
 function StoreFrame_OnEvent(self, event, ...)
@@ -223,6 +243,8 @@ function StoreFrame_OnEvent(self, event, ...)
 		StoreFrame_UpdateActivePanel(self);
 	elseif ( self:IsShown() and event == "BAG_UPDATE_DELAYED" ) then
 		StoreFrame_UpdateActivePanel(self);
+	elseif ( event == "STORE_PURCHASE_ERROR" ) then
+		StoreFrame_OnError(self, C_PurchaseAPI.GetFailureInfo(), true);
 	end
 end
 
@@ -231,6 +253,8 @@ function StoreFrame_OnShow(self)
 	WaitingOnConfirmation = false;
 	StoreFrame_UpdateActivePanel(self);
 	Outbound.UpdateMicroButtons();
+
+	PlaySound("UI_igStore_WindowOpen_Button");
 end
 
 function StoreFrame_OnAttributeChanged(self, name, value)
@@ -243,7 +267,7 @@ function StoreFrame_OnAttributeChanged(self, name, value)
 		elseif ( value == "EscapePressed" ) then
 			local handled = false;
 			if ( self:IsShown() ) then
-				if ( StoreConfirmationFrame:IsShown() ) then
+				if ( self.ErrorFrame:IsShown() or StoreConfirmationFrame:IsShown() ) then
 					--We eat the click, but don't close anything. Make them explicitly press "Cancel".
 					handled = true;
 				else
@@ -254,6 +278,14 @@ function StoreFrame_OnAttributeChanged(self, name, value)
 			self:SetAttribute("EscapeResult", handled);
 		end
 	end
+end
+
+function StoreFrame_OnError(self, errorID, needsAck)
+	local info = errorData[errorID];
+	if ( not info ) then
+		info = errorData[LE_STORE_ERROR_OTHER];
+	end
+	StoreFrame_ShowError(self, info.title, info.msg, info.link, needsAck);
 end
 
 function StoreFrame_UpdateActivePanel(self)
@@ -288,10 +320,15 @@ function StoreFrame_SetAlert(self, title, desc)
 	self.Notice.Title:SetText(title);
 	self.Notice.Description:SetText(desc);
 	self.Notice:Show();
+
+	if ( StoreConfirmationFrame ) then
+		StoreConfirmationFrame:Raise(); --Make sure the confirmation is above this alert frame.
+	end
 end
 
 local ActiveURLIndex = nil;
-function StoreFrame_ShowError(self, title, desc, urlIndex)
+local ErrorNeedsAck = nil;
+function StoreFrame_ShowError(self, title, desc, urlIndex, needsAck)
 	local height = 110;
 	self.ErrorFrame.Error.Title:SetText(title);
 	self.ErrorFrame.Error.Description:SetText(desc);
@@ -316,11 +353,20 @@ function StoreFrame_ShowError(self, title, desc, urlIndex)
 		self.ErrorFrame.Error.WebsiteWarning:Hide();
 		ActiveURLIndex = nil;
 	end
+	ErrorNeedsAck = needsAck;
+
 	self.ErrorFrame:Show();
 	self.ErrorFrame.Error:SetHeight(height);
+
+	if ( StoreConfirmationFrame ) then
+		StoreConfirmationFrame:Raise(); --Make sure the confirmation is above this error frame.
+	end
 end
 
 function StoreFrameErrorAcceptButton_OnClick(self)
+	if ( ErrorNeedsAck ) then
+		C_PurchaseAPI.AckFailure();
+	end
 	StoreFrame.ErrorFrame:Hide();
 end
 
@@ -330,10 +376,14 @@ end
 
 function StoreFrameBrowseNextItem_OnClick(self)
 	StoreFrameBrowse_Advance(self:GetParent(), 1);
+
+	PlaySound("UI_igStore_PageNav_Button");
 end
 
 function StoreFrameBrowsePrevItem_OnClick(self)
 	StoreFrameBrowse_Advance(self:GetParent(), -1);
+
+	PlaySound("UI_igStore_PageNav_Button");
 end
 
 function StoreFrameBrowse_Advance(self, amount)
@@ -447,6 +497,7 @@ end
 function StoreFrameBrowseQuantitySelectButton_OnClick(self)
 	CurrentProductID = self:GetID();
 	StoreFrameBrowse_UpdateQuantitySelection(StoreFrame.Browse);
+	PlaySound("igMainMenuOptionCheckBoxOn");
 end
 
 function StoreFrameCloseButton_OnClick(self)
@@ -455,6 +506,8 @@ end
 
 function StoreFrameBuyButton_OnClick(self)
 	StoreFrame_BeginPurchase(CurrentProductID);
+
+	PlaySound("UI_igStore_Buy_Button");
 end
 
 function StoreFrame_BeginPurchase(productID)
@@ -537,11 +590,18 @@ end
 function StoreConfirmationCancel_OnClick(self)
 	C_PurchaseAPI.PurchaseProductConfirm(false);
 	StoreConfirmationFrame:Hide();
+
+	PlaySound("UI_igStore_Cancel_Button");
 end
 
 function StoreConfirmationFinalBuy_OnClick(self)
-	JustOrderedProduct = true;
-	C_PurchaseAPI.PurchaseProductConfirm(true, FinalPrice);
+	if ( C_PurchaseAPI.PurchaseProductConfirm(true, FinalPrice) ) then
+		JustOrderedProduct = true;
+		PlaySound("UI_igStore_ConfirmPurchase_Button");
+	else
+		StoreFrame_OnError(StoreFrame, LE_STORE_ERROR_OTHER, false);
+		PlaySound("UI_igStore_Cancel_Button");
+	end
 	StoreFrame_UpdateActivePanel(StoreFrame);
 	StoreConfirmationFrame:Hide();
 end

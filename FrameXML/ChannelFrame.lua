@@ -546,6 +546,7 @@ function ChannelList_ShowDropdown(id)
 	ChannelListDropDown.voiceActive = voiceActive;
 	ChannelListDropDown.active = active;
 	ChannelListDropDown.channelName = name;
+	ChannelListDropDown.onHide = function() ChannelListDropDown.clicked = nil; end;
 	ToggleDropDownMenu(1, nil, ChannelListDropDown, "cursor");
 end
 

@@ -226,18 +226,11 @@
 				
 				self:SetScale(0.85);
 			</OnLoad>
-			<OnEnter>
-				self.mousedOver = true;
-			</OnEnter>
 			<OnUpdate>
-				if ( self.mousedOver and not ConsolidatedBuffs.mousedOver and not self:IsMouseOver() ) then
-					self.mousedOver = nil;
+				if ( not ConsolidatedBuffs.mousedOver and not self:IsMouseOver() ) then
 					self:Hide();
 				end
 			</OnUpdate>
-			<OnHide>
-				self.mousedOver = nil;
-			</OnHide>
 		</Scripts>
 	</Frame>
 

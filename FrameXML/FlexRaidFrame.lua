@@ -14,6 +14,7 @@ function FlexRaidFrame_OnEvent(self, event, ...)
 end
 
 function FlexRaidFrame_OnShow(self)
+	PlaySound("igCharacterInfoOpen");
 	FlexRaidFrame_UpdateAvailability();
 	FlexRaidFrame_ShowBest();
 	FlexRaidFrame_UpdateButton();
@@ -44,6 +45,14 @@ function FlexRaidFrame_Update(dungeonID)
 	FlexRaidFrame.ScrollFrame.Background:SetTexture(backgroundTexture)
 	frame.RaidTitle:SetText(dungeonName)
 	frame.RaidDescription:SetText(dungeonDescription);
+	
+	frame.Lockouts.dungeonID = dungeonID;
+	local numEncounters, numCompleted = GetLFGDungeonNumEncounters(dungeonID);
+	if ( numCompleted > 0 ) then
+		frame.Lockouts:Show();
+	else
+		frame.Lockouts:Hide();
+	end
 end
 
 function FlexRaidFrame_UpdateAvailability()
@@ -77,6 +86,10 @@ function FlexRaidFrame_UpdateButton()
 	local button = FlexRaidFrame.StartButton;
 	button:Disable();
 	button.tooltip = nil;
+	
+	if (FlexRaidFrame.CooldownFrame:IsShown() or not LFD_IsEmpowered()) then
+		return;
+	end
 	
 	local minPlayers, maxPlayers;
 	if(FlexRaidFrame.raid) then

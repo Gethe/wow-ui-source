@@ -59,7 +59,6 @@ function ClassTrainerFrame_OnLoad(self)
 	self.BG:SetPoint("TOPLEFT", self.scrollFrame, "TOPLEFT", -3, 4);
 	self.BG:SetPoint("BOTTOMRIGHT", self.scrollFrame, "BOTTOMRIGHT", 3, -4);
 	self.scrollFrame.update = ClassTrainerFrame_Update;
-	self.scrollFrame.stepSize = 12;
 	HybridScrollFrame_CreateButtons(self.scrollFrame, "ClassTrainerSkillButtonTemplate", 1, -1, "TOPLEFT", "TOPLEFT", 0, 0, "TOP", "BOTTOM");
 
 	ClassTrainerScrollFrameScrollBar.Show = 

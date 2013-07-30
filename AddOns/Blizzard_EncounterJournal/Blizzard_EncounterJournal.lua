@@ -314,6 +314,7 @@ function EncounterJournal_DisplayInstance(instanceID, noButton)
 	
 	local iname, description, bgImage, _, loreImage = EJ_GetInstanceInfo();
 	self.instance.title:SetText(iname);
+	self.instance.titleBG:SetWidth(self.instance.title:GetStringWidth() + 80);
 	self.instance.loreBG:SetTexture(loreImage);
 	self.info.instanceTitle:SetText(iname);
 	

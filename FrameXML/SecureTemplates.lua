@@ -539,7 +539,7 @@ SECURE_ACTIONS.click =
     function (self, unit, button)
         local delegate =
             SecureButton_GetModifiedAttribute(self, "clickbutton", button);
-        if ( delegate ) then
+        if ( delegate and not delegate:IsForbidden() ) then
             delegate:Click(button);
         end
     end;

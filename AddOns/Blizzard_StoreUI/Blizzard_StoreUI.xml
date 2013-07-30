@@ -480,6 +480,8 @@
 				<OnHide>
 					self:SetAttribute("IsShown", false);
 					Outbound.UpdateMicroButtons();
+
+					PlaySound("UI_igStore_WindowClose_Button");
 				</OnHide>
 				<OnAttributeChanged function="StoreFrame_OnAttributeChanged"/>
 			</Scripts>

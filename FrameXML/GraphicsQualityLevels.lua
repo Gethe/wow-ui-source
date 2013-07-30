@@ -161,6 +161,7 @@ VideoData["Graphics_Quality"]={
 		end,
 	onvaluechanged = 
 		function(self, value)
+			value = floor(value + 0.5);
 			self.savevalue = value;
 			if(not self.noclick) then
 				VideoOptions_OnClick(self, value);

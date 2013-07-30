@@ -873,4 +873,5 @@ function StorePurchaseAlertFrame_ShowAlert(icon)
 	StorePurchaseAlertFrame.Icon:SetTexture(icon);
 	AlertFrame_AnimateIn(StorePurchaseAlertFrame);
 	AlertFrame_FixAnchors();
+	PlaySound("UI_igStore_PurchaseDelivered_Toast_01");
 end

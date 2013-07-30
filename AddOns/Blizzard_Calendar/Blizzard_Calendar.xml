@@ -1234,7 +1234,7 @@
 							</Anchor>
 						</Anchors>
 					</Frame>
-					<EditBox name="CalendarCreateEventInviteEdit" letters="32" inherits="InputBoxTemplate" autoFocus="false">
+					<EditBox name="CalendarCreateEventInviteEdit" letters="32" inherits="InputBoxTemplate,AutoCompleteEditBoxTemplate" autoFocus="false">
 						<Size x="192" y="20"/>
 						<Anchors>
 							<Anchor point="TOPLEFT" relativeTo="CalendarCreateEventInviteList" relativePoint="BOTTOMLEFT">

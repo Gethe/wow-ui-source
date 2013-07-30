@@ -1,5 +1,5 @@
-GUILD_DETAIL_NORM_HEIGHT = 187;
-GUILD_DETAIL_OFFICER_HEIGHT = 240;
+GUILD_DETAIL_NORM_HEIGHT = 175;
+GUILD_DETAIL_OFFICER_HEIGHT = 228;
 local GUILD_ROSTER_MAX_COLUMNS = 5;
 local GUILD_ROSTER_MAX_STRINGS = 4;
 local GUILD_ROSTER_BAR_MAX = 239;
@@ -211,11 +211,11 @@ function GuildRoster_Update()
 			-- Resize detail frame
 			GuildMemberDetailOfficerNoteLabel:Show();
 			GuildMemberOfficerNoteBackground:Show();
-			GuildMemberDetailFrame:SetHeight(GUILD_DETAIL_OFFICER_HEIGHT + GuildMemberDetailRankLabel:GetHeight());
+			GuildMemberDetailFrame:SetHeight(GUILD_DETAIL_OFFICER_HEIGHT + GuildMemberDetailName:GetHeight() + GuildMemberDetailRankLabel:GetHeight());
 		else
 			GuildMemberDetailOfficerNoteLabel:Hide();
 			GuildMemberOfficerNoteBackground:Hide();
-			GuildMemberDetailFrame:SetHeight(GUILD_DETAIL_NORM_HEIGHT + GuildMemberDetailRankLabel:GetHeight());
+			GuildMemberDetailFrame:SetHeight(GUILD_DETAIL_NORM_HEIGHT + GuildMemberDetailName:GetHeight() + GuildMemberDetailRankLabel:GetHeight());
 		end
 
 		if ( CanGuildRemove() and ( rankIndex >= 1 ) and ( rankIndex > guildRankIndex ) ) then

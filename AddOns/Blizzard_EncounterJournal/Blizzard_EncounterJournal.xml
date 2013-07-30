@@ -1631,18 +1631,16 @@
 							</Layer>
 							<Layer level="OVERLAY">
 								<FontString name="$parentTitle" inherits="QuestFont_Super_Huge" justifyH="CENTER" justifyV="BOTTOM" parentKey="title">
-									<Size x="0" y="10"/>
+									<Size x="320" y="10"/>
 									<Anchors>
 										<Anchor point="TOP" x="0" y="-72"/>
 									</Anchors>
 								</FontString>
 							</Layer>
 							<Layer level="ARTWORK">
-								<Texture name="$parentTitleBG" inherits="UI-EJ-DungeonNameBg">
+								<Texture inherits="UI-EJ-DungeonNameBg" parentKey="titleBG">
 									<Anchors>
 										<Anchor point="TOP" relativeTo="$parentBG" x="0" y="-38"/>
-										<Anchor point="LEFT" relativeTo="$parentTitle" relativePoint="LEFT" x="-40" y="0"/>
-										<Anchor point="RIGHT" relativeTo="$parentTitle" relativePoint="RIGHT" x="40" y="0"/>
 									</Anchors>
 								</Texture>
 							</Layer>
@@ -1778,7 +1776,7 @@
 									<Color r="0.902" g="0.788" b="0.671"/>
 								</FontString>
 								<FontString name="$parentInstanceTitle" inherits="GameFontNormalLarge" justifyH="LEFT" parentKey="instanceTitle">
-									<Size x="227" y="12"/>
+									<Size x="340" y="12"/>
 									<Anchors>
 										<Anchor point="TOPLEFT" x="20" y="-20"/>
 									</Anchors>
