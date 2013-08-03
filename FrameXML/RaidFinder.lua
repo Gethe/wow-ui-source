@@ -227,8 +227,33 @@ function RaidFinderQueueFrame_Join()
 	end
 end
 
+function RaidFinderQueueFrame_UpdateRoleIncentives()
+	local dungeonID = LFDQueueFrame.type;
+	LFG_SetRoleIconIncentive(RaidFinderQueueFrameRoleButtonTank, nil);
+	LFG_SetRoleIconIncentive(RaidFinderQueueFrameRoleButtonHealer, nil);
+	LFG_SetRoleIconIncentive(RaidFinderQueueFrameRoleButtonDPS, nil);
+	
+	if ( type(dungeonID) == "number" ) then
+		for i=1, LFG_ROLE_NUM_SHORTAGE_TYPES do
+			local eligible, forTank, forHealer, forDamage, itemCount, money, xp = GetLFGRoleShortageRewards(dungeonID, i);
+			if ( eligible and (itemCount ~= 0 or money ~= 0 or xp ~= 0) ) then	--Only show the icon if there is actually a reward.
+				if ( forTank ) then
+					LFG_SetRoleIconIncentive(RaidFinderQueueFrameRoleButtonTank, i);
+				end
+				if ( forHealer ) then
+					LFG_SetRoleIconIncentive(RaidFinderQueueFrameRoleButtonHealer, i);
+				end
+				if ( forDamage ) then
+					LFG_SetRoleIconIncentive(RaidFinderQueueFrameRoleButtonDPS, i);
+				end
+			end
+		end
+	end
+end
+
 function RaidFinderFrameRoleCheckButton_OnClick(self)
 	RaidFinderQueueFrame_SetRoles();
+	RaidFinderQueueFrame_UpdateRoleIncentives();
 end
 
 function RaidFinderQueueFrame_SetRoles()
@@ -240,6 +265,7 @@ end
 
 function RaidFinderQueueFrameRewards_UpdateFrame()
 	LFGRewardsFrame_UpdateFrame(RaidFinderQueueFrameScrollFrameChildFrame, RaidFinderQueueFrame.raid, RaidFinderQueueFrameBackground);
+	RaidFinderQueueFrame_UpdateRoleIncentives();
 end
 
 function RaidFinderFrameFindRaidButton_Update()

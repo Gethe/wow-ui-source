@@ -3829,6 +3829,7 @@ function CalendarCreateEventHourDropDown_Initialize(self)
 		if ( hour == CalendarCreateEventFrame.selectedHour ) then
 			info.checked = 1;
 			UIDropDownMenu_SetText(self, info.text);
+			UIDropDownMenu_JustifyText(CalendarCreateEventHourDropDown, "CENTER");
 		else
 			info.checked = nil;
 		end
@@ -3854,6 +3855,7 @@ function CalendarCreateEventMinuteDropDown_Initialize(self)
 		if ( minute == CalendarCreateEventFrame.selectedMinute ) then
 			info.checked = 1;
 			UIDropDownMenu_SetText(self, info.text);
+			UIDropDownMenu_JustifyText(CalendarCreateEventMinuteDropDown, "CENTER");
 		else
 			info.checked = nil;
 		end

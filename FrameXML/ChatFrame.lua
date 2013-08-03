@@ -2302,11 +2302,9 @@ end
 
 
 SlashCmdList["WARGAME"] = function(msg)
-	local target, area = strmatch(msg, "%s*([^%s]+)%s*(.*)");
-	if ( target and target ~= "" ) then
-		if area and area == "" then area = nil end 
-		StartWarGame(target, area );
-	end
+	local area = msg;
+	if area and area == "" then area = nil end 
+	StartWarGame("target", area );
 end
 
 SlashCmdList["GUILDFINDER"] = function(msg)

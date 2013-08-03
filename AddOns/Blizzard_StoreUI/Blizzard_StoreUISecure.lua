@@ -72,12 +72,22 @@ Import("BLIZZARD_STORE_INTERNAL_ERROR");
 Import("BLIZZARD_STORE_INTERNAL_ERROR_SUBTEXT");
 Import("BLIZZARD_STORE_ERROR_TITLE_OTHER");
 Import("BLIZZARD_STORE_ERROR_MESSAGE_OTHER");
+Import("BLIZZARD_STORE_NOT_AVAILABLE");
+Import("BLIZZARD_STORE_NOT_AVAILABLE_SUBTEXT");
+Import("BLIZZARD_STORE_ERROR_TITLE_PAYMENT");
+Import("BLIZZARD_STORE_ERROR_MESSAGE_PAYMENT");
+Import("BLIZZARD_STORE_ERROR_TITLE_BATTLEPAY_DISABLED");
+Import("BLIZZARD_STORE_ERROR_MESSAGE_BATTLEPAY_DISABLED");
 
 Import("OKAY");
 Import("LARGE_NUMBER_SEPERATOR");
 Import("DECIMAL_SEPERATOR");
 
 --Lua enums
+Import("LE_STORE_ERROR_INVALID_PAYMENT_METHOD");
+Import("LE_STORE_ERROR_PAYMENT_FAILED");
+Import("LE_STORE_ERROR_WRONG_CURRENCY");
+Import("LE_STORE_ERROR_BATTLEPAY_DISABLED");
 Import("LE_STORE_ERROR_OTHER");
 
 --Data
@@ -192,9 +202,30 @@ end
 
 --Error message data
 local errorData = {
+	[LE_STORE_ERROR_INVALID_PAYMENT_METHOD] = {
+		title = BLIZZARD_STORE_ERROR_TITLE_PAYMENT,
+		msg = BLIZZARD_STORE_ERROR_MESSAGE_PAYMENT,
+		--link = 1,
+	},
+	[LE_STORE_ERROR_PAYMENT_FAILED] = {
+		title = BLIZZARD_STORE_ERROR_TITLE_PAYMENT,
+		msg = BLIZZARD_STORE_ERROR_MESSAGE_PAYMENT,
+		--link = 1,
+	},
+	[LE_STORE_ERROR_WRONG_CURRENCY] = {
+		title = BLIZZARD_STORE_ERROR_TITLE_PAYMENT,
+		msg = BLIZZARD_STORE_ERROR_MESSAGE_PAYMENT,
+		--link = 1,
+	},
+	[LE_STORE_ERROR_BATTLEPAY_DISABLED] = {
+		title = BLIZZARD_STORE_ERROR_TITLE_BATTLEPAY_DISABLED,
+		msg = BLIZZARD_STORE_ERROR_MESSAGE_BATTLEPAY_DISABLED,
+		--link = 1,
+	},
+
 	[LE_STORE_ERROR_OTHER] = {
-		title = "Store Error",	--Probably want to format in the error code
-		msg = "There was a problem with your order. Please try again.",
+		title = BLIZZARD_STORE_ERROR_TITLE_OTHER,	--Probably want to format in the error code
+		msg = BLIZZARD_STORE_ERROR_MESSAGE_OTHER,
 		--link = 1,
 	}
 };
@@ -295,6 +326,8 @@ function StoreFrame_UpdateActivePanel(self)
 		StoreFrame_SetAlert(self, BLIZZARD_STORE_TRANSACTION_IN_PROGRESS, BLIZZARD_STORE_CHECK_BACK_LATER);
 	elseif ( C_PurchaseAPI.HasPurchaseInProgress() ) then --Even if we don't have every list, if we know we have something in progress, we can display that.
 		StoreFrame_SetAlert(self, BLIZZARD_STORE_TRANSACTION_IN_PROGRESS, BLIZZARD_STORE_CHECK_BACK_LATER);
+	elseif ( not C_PurchaseAPI.IsAvailable() ) then
+		StoreFrame_SetAlert(self, BLIZZARD_STORE_NOT_AVAILABLE, BLIZZARD_STORE_NOT_AVAILABLE_SUBTEXT);
 	elseif ( not C_PurchaseAPI.HasPurchaseList() or not C_PurchaseAPI.HasProductList() or not C_PurchaseAPI.HasDistributionList() ) then
 		StoreFrame_SetAlert(self, BLIZZARD_STORE_LOADING, BLIZZARD_STORE_PLEASE_WAIT);
 	elseif ( #C_PurchaseAPI.GetProductGroups() == 0 ) then
@@ -571,7 +604,7 @@ function StoreConfirmationFrame_Update(self)
 		return;
 	end
 
-	local id, title, normalPrice, currentPrice, groupID = C_PurchaseAPI.GetProductInfo(productID);
+	local id, title, normalPrice, currentPrice, groupID, fullName = C_PurchaseAPI.GetProductInfo(productID);
 	if ( not groupID ) then
 		self:Hide(); --Should never happen, but may want to handle and throw an error message.
 		return;
@@ -579,7 +612,7 @@ function StoreConfirmationFrame_Update(self)
 
 	local id, name, description, icon = C_PurchaseAPI.GetProductGroupInfo(groupID);
 	self.Icon:SetTexture(icon);
-	self.GroupName:SetText(name);
+	self.FullName:SetText(fullName);
 	self.Notice:SetText(currencyInfo().confirmationNotice);
 	self.FinalPrice:SetText(currencyInfo().formatLong(currentPrice));
 	self.PaymentMethod:SetText(currencyInfo().paymentMethodText);

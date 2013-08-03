@@ -519,8 +519,8 @@
 							<Anchor point="TOPLEFT" relativeKey="$parent.Parchment" relativePoint="TOPLEFT" x="40" y="-35"/>
 						</Anchors>
 					</Texture>
-					<FontString parentKey="GroupName" inherits="QuestFontHighlight" justifyH="LEFT" justifyV="MIDDLE">
-						<Size x="185" y="60"/>
+					<FontString parentKey="FullName" inherits="QuestFontHighlight" justifyH="LEFT" justifyV="MIDDLE">
+						<Size x="210" y="60"/>
 						<Anchors>
 							<Anchor point="LEFT" relativeKey="$parent.Icon" relativePoint="RIGHT" x="20" y="0"/>
 						</Anchors>

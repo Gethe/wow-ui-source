@@ -1969,7 +1969,10 @@ function AchievementFrameStats_Update ()
 		
 		tinsert(displayStatCategories, {id = category, header = true});
 		for i=1, numStats do
-			tinsert(displayStatCategories, {id = GetAchievementInfo(category, i)});
+			local quantity, skip, id = GetStatistic(category, i);
+			if ( not skip ) then
+				tinsert(displayStatCategories, {id = id});
+			end
 		end
 		-- add all the subcategories and their stat id's
 		for i, cat in next, categories do
@@ -1977,7 +1980,10 @@ function AchievementFrameStats_Update ()
 				tinsert(displayStatCategories, {id = cat.id, header = true});
 				numStats = GetCategoryNumAchievements(cat.id);
 				for k=1, numStats do
-					tinsert(displayStatCategories, {id = GetAchievementInfo(cat.id, k)});
+					local quantity, skip, id = GetStatistic(cat.id, k);
+					if ( not skip ) then
+						tinsert(displayStatCategories, {id = id});
+					end
 				end
 			end
 		end
@@ -1992,28 +1998,19 @@ function AchievementFrameStats_Update ()
 	
 	local totalHeight = statCount * statHeight;
 	local displayedHeight = numButtons * statHeight;
-	local buttonIndex = 1;
 	for i = 1, numButtons do
-		button = buttons[buttonIndex];
+		button = buttons[i];
 		statIndex = offset + i;
-		local skip = false;
 		if ( statIndex <= statCount ) then
 			stat = displayStatCategories[statIndex];
 			if ( stat.header ) then
 				AchievementFrameStats_SetHeader(button, stat.id);
 			else
-				skip = AchievementFrameStats_SetStat(button, stat.id, nil, statIndex)
+				AchievementFrameStats_SetStat(button, stat.id, nil, statIndex)
 			end
-			if ( skip ) then
-				button:Hide();
-			else
-				button:Show();
-			end
+			button:Show();
 		else
 			button:Hide();
-		end
-		if ( not skip ) then
-			buttonIndex = buttonIndex + 1;
 		end
 	end
 	HybridScrollFrame_Update(scrollFrame, totalHeight, displayedHeight);
@@ -2069,10 +2066,7 @@ function AchievementFrameStats_SetStat(button, category, index, colorIndex, isSu
 	-- Just show the first criteria for now
 	local criteriaString, criteriaType, completed, quantityNumber, reqQuantity, charName, flags, assetID, quantity;
 	if ( not isSummary ) then
-		quantity, skip = GetStatistic(id);
-		if ( skip ) then
-			return true;
-		end
+		quantity = GetStatistic(id);
 	else
 		criteriaString, criteriaType, completed, quantityNumber, reqQuantity, charName, flags, assetID, quantity = GetAchievementCriteriaInfo(category);
 	end

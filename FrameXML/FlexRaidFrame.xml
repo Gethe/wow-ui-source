@@ -125,6 +125,9 @@
 				<ScrollChild>
 					<Frame name="$parentChildFrame" parentKey="Child">
 						<Size x="298" y="1"/>
+						<Anchors>
+							<Anchor point="TOPLEFT"/>
+						</Anchors>
 						<Layers>
 							<Layer level="ARTWORK">
 								<FontString parentKey="RaidTitle" inherits="QuestTitleFontBlackShadow" justifyH="LEFT">
@@ -188,14 +191,12 @@
 						<Frames>
 							<Frame name="$parentLockouts" parentKey="Lockouts">
 								<Size x="18" y="18"/>
+								<Anchors>
+									<Anchor point="LEFT" relativeKey="$parent.RaidTitle" relativePoint="RIGHT" x="5"/>
+								</Anchors>
 								<Layers>
 									<Layer level="ARTWORK">
-										<Texture name="$parentTexture" file="Interface\DialogFrame\UI-Dialog-Icon-AlertNew">
-											<Size x="18" y="18"/>
-											<Anchors>
-												<Anchor point="LEFT" relativeKey="$parent.$parent.RaidTitle" relativePoint="RIGHT" x="5"/>
-											</Anchors>
-										</Texture>
+										<Texture name="$parentTexture" file="Interface\DialogFrame\UI-Dialog-Icon-AlertNew" setAllPoints="true"/>
 									</Layer>
 								</Layers>
 								<Scripts>
@@ -204,6 +205,13 @@
 								</Scripts>
 							</Frame>
 						</Frames>
+						<Scripts>
+							<OnShow>
+								if (FlexRaidFrame.raid) then
+									FlexRaidFrame_Update(FlexRaidFrame.raid);
+								end
+							</OnShow>
+						</Scripts>
 					</Frame>
 				</ScrollChild>
 			</ScrollFrame>

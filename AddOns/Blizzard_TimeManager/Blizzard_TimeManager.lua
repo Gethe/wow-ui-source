@@ -193,6 +193,7 @@ function TimeManagerAlarmHourDropDown_Initialize()
 		if ( hour == alarmHour ) then
 			info.checked = 1;
 			UIDropDownMenu_SetText(TimeManagerAlarmHourDropDown, info.text);
+			UIDropDownMenu_JustifyText(TimeManagerAlarmHourDropDown, "CENTER");
 		else
 			info.checked = nil;
 		end
@@ -211,6 +212,7 @@ function TimeManagerAlarmMinuteDropDown_Initialize()
 		if ( minute == alarmMinute ) then
 			info.checked = 1;
 			UIDropDownMenu_SetText(TimeManagerAlarmMinuteDropDown, info.text);
+			UIDropDownMenu_JustifyText(TimeManagerAlarmMinuteDropDown, "CENTER");
 		else
 			info.checked = nil;
 		end

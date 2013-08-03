@@ -260,10 +260,10 @@ function CombatText_OnEvent(self, event, ...)
 			or arg3 == "ENERGY"
 			or arg3 == "RUNIC_POWER"
 			or arg3 == "SOUL_SHARDS"
-			or arg3 == "CHI") then
+			or arg3 == "CHI" ) then
 			message = data.." ".._G[arg3];
 			info = PowerBarColor[arg3];
-		elseif ( arg3 == "HOLY_POWER" and PaladinPowerBar:IsShown() and PaladinPowerBar:GetAlpha() > 0.5 ) then
+		elseif ( arg3 == "HOLY_POWER" ) then
 			local numHolyPower = UnitPower( PaladinPowerBar:GetParent().unit, SPELL_POWER_HOLY_POWER );
 			message = "<"..numHolyPower.." ".._G[arg3]..">";
 			info = PowerBarColor[arg3];

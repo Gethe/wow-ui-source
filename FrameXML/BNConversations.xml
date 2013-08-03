@@ -40,7 +40,7 @@
 			</Layer>
 		</Layers>
 		<Frames>
-			<CheckButton inherits="UICheckButtonTemplate" parentKey="checkButton">
+			<CheckButton inherits="UICheckButtonTemplate" parentKey="checkButton" motionScriptsWhileDisabled="true">
 				<Size x="22" y="22"/>
 				<Anchors>
 					<Anchor point="LEFT"/>
@@ -49,6 +49,15 @@
 					<OnClick>
 						BNConversationInviteListCheckButton_OnClick(self, button);
 					</OnClick>
+					<OnEnter>
+						if ( self.tooltipText ) then
+							GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+							GameTooltip:SetText(self.tooltipText, RED_FONT_COLOR.r, RED_FONT_COLOR.g, RED_FONT_COLOR.b, 1, 1);
+						end
+					</OnEnter>
+					<OnLeave>
+						GameTooltip:Hide();
+					</OnLeave>
 				</Scripts>
 			</CheckButton>
 		</Frames>

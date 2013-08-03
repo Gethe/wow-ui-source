@@ -97,7 +97,7 @@
 					</Layer>
 				</Layers>
 				<Frames>
-					<Button name="$parentRoleButtonTank" inherits="LFGRoleButtonWithBackgroundTemplate" id="2">
+					<Button name="$parentRoleButtonTank" inherits="LFGRoleButtonWithBackgroundAndRewardTemplate" id="2">
 						<Anchors>
 							<Anchor point="BOTTOMLEFT">
 								<Offset>
@@ -114,7 +114,7 @@
 							</OnLoad>
 						</Scripts>
 					</Button>
-					<Button name="$parentRoleButtonHealer" inherits="LFGRoleButtonWithBackgroundTemplate" id="3">
+					<Button name="$parentRoleButtonHealer" inherits="LFGRoleButtonWithBackgroundAndRewardTemplate" id="3">
 						<Anchors>
 							<Anchor point="LEFT" relativeTo="$parentRoleButtonTank" relativePoint="RIGHT">
 								<Offset>
@@ -131,7 +131,7 @@
 							</OnLoad>
 						</Scripts>
 					</Button>
-					<Button name="$parentRoleButtonDPS" inherits="LFGRoleButtonWithBackgroundTemplate" id="1">
+					<Button name="$parentRoleButtonDPS" inherits="LFGRoleButtonWithBackgroundAndRewardTemplate" id="1">
 						<Anchors>
 							<Anchor point="LEFT" relativeTo="$parentRoleButtonHealer" relativePoint="RIGHT">
 								<Offset>

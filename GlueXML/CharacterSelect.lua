@@ -376,9 +376,11 @@ function UpdateCharacterSelection(self)
 	local index = self.selectedIndex - CHARACTER_LIST_OFFSET;
 	if ( (index > 0) and (index <= MAX_CHARACTERS_DISPLAYED) ) then
 		button = _G["CharSelectCharacterButton"..index];
-		button.selection:Show();
-		if ( button:IsMouseOver() ) then
-			CharacterSelectButton_ShowMoveButtons(button);
+		if ( button ) then
+			button.selection:Show();
+			if ( button:IsMouseOver() ) then
+				CharacterSelectButton_ShowMoveButtons(button);
+			end
 		end
 	end
 end
@@ -397,9 +399,7 @@ function UpdateCharacterList(skipSelect)
 	for i=1, numChars, 1 do
 		local name, race, class, level, zone, sex, ghost, PCC, PRC, PFC, PRCDisabled = GetCharacterInfo(GetCharIDFromIndex(i+CHARACTER_LIST_OFFSET));
 		local button = _G["CharSelectCharacterButton"..index];
-		if ( not name ) then
-			button:SetText("ERROR - too many characters");
-		else
+		if ( name ) then
 			if ( not zone ) then
 				zone = "";
 			end

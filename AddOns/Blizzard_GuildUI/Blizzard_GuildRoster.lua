@@ -251,7 +251,7 @@ function GuildRoster_Update()
 		if ( name and index <= visibleMembers ) then
 			button.guildIndex = index;
 			local displayedName = name;
-			if ( isMobile ) then
+			if ( isMobile and not online ) then
 				if (isAway == 2) then
 					displayedName = MOBILE_BUSY_ICON..displayedName;
 				elseif (isAway == 1) then
