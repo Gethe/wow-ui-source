@@ -240,39 +240,31 @@ end
 
 function QueueStatusEntry_SetUpLFG(entry, category)
 	--Figure out which one we're going to have as primary
-	local activeID = nil;
 	local activeIndex = nil;
-	local lowestQueueTime = nil;
-	local activeFinal = false;
 	local allNames = {};
 
 	QueueStatus_GetAllRelevantLFG(category, queuedList);
 
+	
+	local activeID = select(18, GetLFGQueueStats(category));
 	for queueID in pairs(queuedList) do
 		local mode, submode = GetLFGMode(category, queueID);
 		if ( mode ) then
-			local myWait = select(16, GetLFGQueueStats(category, queueID));
-			--See if this is the one we want to display as primary
-			local isNewActive, done;
-			if ( mode ~= "queued" and mode ~= "listed" and mode ~= "suspended" ) then
-				activeFinal = true;
-				isNewActive = true;
-			elseif ( not activeFinal and (not lowestQueueTime or (myWait and myWait > 0 and myWait < lowestQueueTime)) ) then
-				isNewActive = true;
-			end
-
 			--Save off the name (we'll remove the active one later)
 			allNames[#allNames + 1] = select(LFG_RETURN_VALUES.name, GetLFGDungeonInfo(queueID));
-			if ( isNewActive ) then
+			if ( mode ~= "queued" and mode ~= "listed" and mode ~= "suspended" ) then
 				activeID = queueID;
-				lowestQueueTime = myWait;
+				activeIndex = #allNames;
+			elseif ( not activeID ) then
+				activeID = queueID;
 				activeIndex = #allNames;
 			end
+			
 		end
 	end
 
 	if ( not activeID ) then
-		GMError(format("Thought we had an active queue, but we don't.: activeIdx - %d, final - %s", activeID, activeFinal and "true" or "false"));
+		GMError(format("Thought we had an active queue, but we don't.: activeIdx - %d", activeID));
 	end
 
 	local subTitle;

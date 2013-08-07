@@ -106,6 +106,16 @@
 			<DisabledFont style="GameFontDisable"/>
 			<HighlightTexture inherits="UIPanelButtonHighlightTexture"/>
 		</Button>
+		<CheckButton name="StoreCheckButtonTemplate" virtual="true">
+			<Size>
+				<AbsDimension x="32" y="32"/>
+			</Size>
+			<NormalTexture file="Interface\Buttons\UI-CheckBox-Up"/>
+			<PushedTexture file="Interface\Buttons\UI-CheckBox-Down"/>
+			<HighlightTexture file="Interface\Buttons\UI-CheckBox-Highlight" alphaMode="ADD"/>
+			<CheckedTexture file="Interface\Buttons\UI-CheckBox-Check"/>
+			<DisabledCheckedTexture file="Interface\Buttons\UI-CheckBox-Check-Disabled"/>
+		</CheckButton>
 		<CheckButton name="StoreQuantitySelectionTemplate" virtual="true">
 			<Size x="14" y="14"/>
 			<HitRectInsets>
@@ -291,7 +301,20 @@
 				</Frame>
 				<Frame parentKey="Browse" setAllPoints="true" hidden="true">
 					<Layers>
+						<Layer level="BACKGROUND">
+							<Texture parentKey="WarningBackground" inherits="store-caution-stripes">
+								<Anchors>
+									<Anchor point="TOPRIGHT" x="-15" y="-15"/>
+								</Anchors>
+							</Texture>
+						</Layer>
 						<Layer level="ARTWORK">
+							<FontString parentKey="WarningLabel" inherits="GameFontWhiteTiny" justifyH="LEFT" justifyV="MIDDLE" text="TEST">
+								<Anchors>
+									<Anchor point="TOPLEFT" relativeKey="$parent.WarningBackground" relativePoint="TOPLEFT" x="0" y="0"/>
+									<Anchor point="BOTTOMRIGHT" relativeKey="$parent.WarningBackground" relativePoint="BOTTOMRIGHT" x="-30" y="0"/>
+								</Anchors>
+							</FontString>
 							<Texture parentKey="Icon">
 								<Size x="64" y="64"/>
 								<Anchors>
@@ -535,10 +558,10 @@
 							<Anchor point="BOTTOMRIGHT" relativeKey="$parent.FinalPrice" relativePoint="BOTTOMLEFT" x="-5" y="0"/>
 						</Anchors>
 					</FontString>
-					<FontString parentKey="Notice" inherits="QuestFontHighlight" justifyH="CENTER" justifyV="MIDDLE">
+					<FontString parentKey="Notice" inherits="QuestFontHighlight" justifyH="LEFT" justifyV="MIDDLE">
 						<Anchors>
 							<Anchor point="TOPLEFT" relativeKey="$parent.Icon" relativePoint="BOTTOMLEFT" x="0" y="-10"/>
-							<Anchor point="BOTTOMRIGHT" relativeKey="$parent.FinalPrice" relativePoint="TOPRIGHT" x="0" y="10"/>
+							<Anchor point="BOTTOMRIGHT" relativeKey="$parent.FinalPrice" relativePoint="TOPRIGHT" x="30" y="10"/>
 						</Anchors>
 					</FontString>
 					<FontString parentKey="PaymentMethod" inherits="GameFontHighlight" justifyH="CENTER">
@@ -553,15 +576,41 @@
 							<Anchor point="BOTTOM" relativeKey="$parent" relativePoint="BOTTOM" x="0" y="60"/>
 							<Anchor point="TOP" relativeKey="$parent.PaymentMethod" relativePoint="BOTTOM" x="0" y="-12"/>
 						</Anchors>
-						<Color r="0.263" g="0.455" b="0.557"/>
+						<Color r="0.41" g="0.6" b="0.69"/>
 					</FontString>
 				</Layer>
 			</Layers>
 			<Frames>
+				<SimpleHTML parentKey="LicenseAcceptText">
+					<Size x="300" y="20"/>
+					<Anchors>
+						<Anchor point="TOP" relativeKey="$parent.Parchment" relativePoint="BOTTOM" x="0" y="-10"/>
+						<Anchor point="BOTTOM" relativeKey="$parent" relativePoint="BOTTOM" x="0" y="60"/>
+					</Anchors>
+					<Scripts>
+						<OnHyperlinkClick>
+							local linkType, index = (":"):split(link);
+							if ( linkType == "urlIndex" ) then
+								LoadURLIndex(tonumber(index));
+							end
+						</OnHyperlinkClick>
+					</Scripts>
+					<FontString inherits="GameFontHighlight"/>
+				</SimpleHTML>
+				<CheckButton parentKey="LicenseAcceptButton" inherits="StoreCheckButtonTemplate">
+					<Anchors>
+						<Anchor point="TOPRIGHT" relativeKey="$parent.LicenseAcceptText" relativePoint="TOPLEFT" x="-3" y="7"/>
+					</Anchors>
+					<Scripts>
+						<OnClick>
+							self:GetParent().FinalBuyButton:SetEnabled(self:GetChecked());
+						</OnClick>
+					</Scripts>
+				</CheckButton>
 				<Button parentKey="CancelButton" inherits="StoreButtonTemplate">
 					<Size x="90" y="22"/>
 					<Anchors>
-						<Anchor point="CENTER" relativeKey="$parent" relativePoint="BOTTOMLEFT" x="77" y="40"/>
+						<Anchor point="CENTER" relativeKey="$parent" relativePoint="BOTTOMRIGHT" x="-77" y="40"/>
 					</Anchors>
 					<Scripts>
 						<OnClick function="StoreConfirmationCancel_OnClick"/>
@@ -570,7 +619,7 @@
 				<Button parentKey="FinalBuyButton" inherits="StoreButtonTemplate">
 					<Size x="180" y="22"/>
 					<Anchors>
-						<Anchor point="CENTER" relativeKey="$parent" relativePoint="BOTTOMRIGHT" x="-158" y="40"/>
+						<Anchor point="CENTER" relativeKey="$parent" relativePoint="BOTTOMLEFT" x="158" y="40"/>
 					</Anchors>
 					<Layers>
 						<Layer level="BACKGROUND" textureSubLevel="-1">

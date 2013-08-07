@@ -1828,18 +1828,24 @@ function AchievementObjectives_DisplayCriteria (objectivesFrame, id)
 			end
 			
 			local stringWidth = 0;
+			local maxCriteriaContentWidth;
 			if ( completed ) then
+				maxCriteriaContentWidth = ACHIEVEMENTUI_MAXCONTENTWIDTH - ACHIEVEMENTUI_CRITERIACHECKWIDTH;
 				criteria.check:SetPoint("LEFT", 18, -3);
 				criteria.name:SetPoint("LEFT", criteria.check, "RIGHT", 0, 2);
 				criteria.check:Show();
 				criteria.name:SetText(criteriaString);
-				stringWidth = criteria.name:GetStringWidth();
+				stringWidth = min(criteria.name:GetStringWidth(),maxCriteriaContentWidth);
 			else
+				maxCriteriaContentWidth = ACHIEVEMENTUI_MAXCONTENTWIDTH - objectivesFrame.textCheckWidth;
 				criteria.check:SetPoint("LEFT", 0, -3);
 				criteria.name:SetPoint("LEFT", criteria.check, "RIGHT", 5, 2);
 				criteria.check:Hide();
 				criteria.name:SetText("- "..criteriaString);
-				stringWidth = criteria.name:GetStringWidth() - objectivesFrame.textCheckWidth;	-- don't want the "- " to be included in the width
+				stringWidth = min(criteria.name:GetStringWidth() - objectivesFrame.textCheckWidth,maxCriteriaContentWidth);	-- don't want the "- " to be included in the width
+			end
+			if ( criteria.name:GetWidth() > maxCriteriaContentWidth ) then
+				criteria.name:SetWidth(maxCriteriaContentWidth);
 			end
 			criteria:SetParent(objectivesFrame);
 			criteria:Show();

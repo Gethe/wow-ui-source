@@ -1352,14 +1352,14 @@
 						<Anchor point="TOPLEFT" relativeKey="$parent.WeeklyLabel" relativePoint="BOTTOMLEFT" x="0" y="-2"/>
 					</Anchors>
 				</FontString>
-				<FontString parentKey="WeeklyRecord" inherits="GameFontHighlightSmall" text="">
+				<FontString parentKey="WeeklyGamesPlayed" inherits="GameFontHighlightSmall" text="">
 					<Anchors>
 						<Anchor point="TOPLEFT" relativeKey="$parent.WeeklyBest" relativePoint="BOTTOMLEFT" x="0" y="-1"/>
 					</Anchors>
 				</FontString>
 				<FontString parentKey="SeasonLabel" inherits="GameFontNormal" text="ARENA_SEASON_STATS">
 					<Anchors>
-						<Anchor point="TOPLEFT" relativeKey="$parent.WeeklyRecord" relativePoint="BOTTOMLEFT" x="0" y="-15"/>
+						<Anchor point="TOPLEFT" relativeKey="$parent.WeeklyGamesPlayed" relativePoint="BOTTOMLEFT" x="0" y="-15"/>
 					</Anchors>
 				</FontString>
 				<FontString parentKey="SeasonBest" inherits="GameFontHighlightSmall" text="">
@@ -1367,14 +1367,14 @@
 						<Anchor point="TOPLEFT" relativeKey="$parent.SeasonLabel" relativePoint="BOTTOMLEFT" x="0" y="-2"/>
 					</Anchors>
 				</FontString>
-				<FontString parentKey="SeasonRecord" inherits="GameFontHighlightSmall" text="">
+				<FontString parentKey="SeasonGamesPlayed" inherits="GameFontHighlightSmall" text="">
 					<Anchors>
 						<Anchor point="TOPLEFT" relativeKey="$parent.SeasonBest" relativePoint="BOTTOMLEFT" x="0" y="-1"/>
 					</Anchors>
 				</FontString>
 				<FontString parentKey="ProjectedCapLabel" inherits="GameFontNormal" text="PROJECTED_CONQUEST_CAP">
 					<Anchors>
-						<Anchor point="TOPLEFT" relativeKey="$parent.SeasonRecord" relativePoint="BOTTOMLEFT" x="0" y="-15"/>
+						<Anchor point="TOPLEFT" relativeKey="$parent.SeasonGamesPlayed" relativePoint="BOTTOMLEFT" x="0" y="-15"/>
 					</Anchors>
 				</FontString>
 				<FontString parentKey="ProjectedCap" inherits="GameFontHighlightSmall" text="">

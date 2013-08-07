@@ -27,6 +27,7 @@ Import("CreateForbiddenFrame");
 Import("math");
 Import("pairs");
 Import("tostring");
+Import("tonumber");
 Import("LoadURLIndex");
 Import("GetContainerNumFreeSlots");
 Import("PlaySound");
@@ -78,6 +79,8 @@ Import("BLIZZARD_STORE_ERROR_TITLE_PAYMENT");
 Import("BLIZZARD_STORE_ERROR_MESSAGE_PAYMENT");
 Import("BLIZZARD_STORE_ERROR_TITLE_BATTLEPAY_DISABLED");
 Import("BLIZZARD_STORE_ERROR_MESSAGE_BATTLEPAY_DISABLED");
+Import("BLIZZARD_STORE_SECOND_CHANCE_KR");
+Import("BLIZZARD_STORE_LICENSE_ACK_TEXT");
 
 Import("OKAY");
 Import("LARGE_NUMBER_SEPERATOR");
@@ -98,7 +101,7 @@ CURRENCY_CPT = 14;
 CURRENCY_TPT = 15;
 CURRENCY_BETA = 16;
 
-local currencyMult = 1; --10000;
+local currencyMult = 100;
 
 local function formatLargeNumber(amount)
 	amount = tostring(amount);
@@ -117,6 +120,14 @@ local function largeAmount(num)
 	return formatLargeNumber(math.floor(num / currencyMult));
 end
 
+local function formatCurrency(dollars, cents, alwaysShowCents)
+	if ( alwaysShowCents or cents ~= 0 ) then
+		return ("%s%s%02d"):format(formatLargeNumber(dollars), DECIMAL_SEPERATOR, cents);
+	else
+		return formatLargeNumber(dollars);
+	end
+end
+
 --Currency functions
 --[[ For testing
 BLIZZARD_STORE_CURRENCY_FORMAT_USD = "$%s%s%02d";
@@ -125,26 +136,38 @@ local function currencyFormatUSD(amount)
 end
 --]]
 
-local function currencyFormatKRWLong(amount)
-	return BLIZZARD_STORE_CURRENCY_FORMAT_KRW_LONG:format(largeAmount(amount));
+local function currencyFormatKRWLong(dollars, cents)
+	return BLIZZARD_STORE_CURRENCY_FORMAT_KRW_LONG:format(formatCurrency(dollars, cents, false));
 end
 
-local function currencyFormatCPTLong(amount)
-	return BLIZZARD_STORE_CURRENCY_FORMAT_CPT_LONG:format(largeAmount(amount));
+local function currencyFormatCPTLong(dollars, cents)
+	return BLIZZARD_STORE_CURRENCY_FORMAT_CPT_LONG:format(formatCurrency(dollars, cents, false));
 end
 
-local function currencyFormatTPT(amount)
-	return BLIZZARD_STORE_CURRENCY_FORMAT_TPT:format(largeAmount(amount));
+local function currencyFormatTPT(dollars, cents)
+	return BLIZZARD_STORE_CURRENCY_FORMAT_TPT:format(formatCurrency(dollars, cents, false));
 end
 
-local function currencyFormatRawStar(amount)
-	return BLIZZARD_STORE_CURRENCY_RAW_ASTERISK:format(largeAmount(amount));
+local function currencyFormatRawStar(dollars, cents)
+	return BLIZZARD_STORE_CURRENCY_RAW_ASTERISK:format(formatCurrency(dollars, cents, false));
 end
 
-local function currencyFormatBeta(amount)
-	return BLIZZARD_STORE_CURRENCY_BETA:format(largeAmount(amount));
+local function currencyFormatBeta(dollars, cents)
+	return BLIZZARD_STORE_CURRENCY_BETA:format(formatCurrency(dollars, cents, true));
 end
 
+----------
+--Values
+---
+--formatShort - The format function for currency on the browse window next to quantity display
+--formatLong - The format function for currency in areas where we want the full display (e.g. bottom of the browse window and the confirmation frame)
+--browseNotice - The notice in the bottom left corner of the browse frame
+--confirmationNotice - The notice in the middle of the confirmation frame (between the icon/name and the price
+--paymentMethodText - The header displayed on the confirmation frame below the parchment
+--paymentMethodSubtext - The smaller text displayed on the confirmation frame below the parchment (and below the paymentMethodText)
+--licenseAcceptText - The text (HTML) displayed right above the purchase button on the confirmation window. Can include links.
+--requireLicenseAccept - Boolean indicating whether people are required to click a checkbox next to the licenseAcceptText before purchasing the item.
+----------
 local currencySpecific = {
 	--[[
 	[CURRENCY_USD] = {
@@ -160,9 +183,12 @@ local currencySpecific = {
 		formatShort = currencyFormatRawStar,
 		formatLong = currencyFormatKRWLong,
 		browseNotice = BLIZZARD_STORE_BROWSE_BATTLE_COINS_KR,
-		confirmationNotice = BLIZZARD_STORE_CONFIRMATION_GENERIC,
+		confirmationNotice = BLIZZARD_STORE_SECOND_CHANCE_KR,
+		browseWarning = BLIZZARD_STORE_SECOND_CHANCE_KR,
 		paymentMethodText = "",
 		paymentMethodSubtext = "",
+		licenseAcceptText = BLIZZARD_STORE_LICENSE_ACK_TEXT;
+		requireLicenseAccept = true;
 		browseHasStar = false,
 	},
 	[CURRENCY_CPT] = {
@@ -245,6 +271,7 @@ function StoreFrame_OnLoad(self)
 	self:RegisterEvent("STORE_PURCHASE_LIST_UPDATED");
 	self:RegisterEvent("BAG_UPDATE_DELAYED"); --Used for showing the panel when all bags are full
 	self:RegisterEvent("STORE_PURCHASE_ERROR");
+	self:RegisterEvent("STORE_ORDER_INITIATION_FAILED");
 	C_PurchaseAPI.GetProductList();
 	C_PurchaseAPI.GetPurchaseList();
 	C_PurchaseAPI.GetDistributionList();
@@ -276,12 +303,16 @@ function StoreFrame_OnEvent(self, event, ...)
 		StoreFrame_UpdateActivePanel(self);
 	elseif ( event == "STORE_PURCHASE_ERROR" ) then
 		StoreFrame_OnError(self, C_PurchaseAPI.GetFailureInfo(), true);
+	elseif ( event == "STORE_ORDER_INITIATION_FAILED" ) then
+		local err = ...;
+		WaitingOnConfirmation = false;
+		StoreFrame_OnError(self, err, false);
+		StoreFrame_UpdateActivePanel(self);
 	end
 end
 
 function StoreFrame_OnShow(self)
 	self:SetAttribute("IsShown", true);
-	WaitingOnConfirmation = false;
 	StoreFrame_UpdateActivePanel(self);
 	Outbound.UpdateMicroButtons();
 
@@ -453,23 +484,33 @@ function StoreFrameBrowse_Update(self)
 	self.Icon:SetTexture(icon);
 	self.PlusTax:SetText(currencyInfo().browseNotice);
 
+	local warningText = currencyInfo().browseWarning;
+	if ( warningText and warningText ~= "" ) then
+		self.WarningBackground:Show();
+		self.WarningLabel:SetText(warningText);
+	else
+		self.WarningBackground:Hide();
+		self.WarningLabel:SetText("");
+	end
+
+
 	StoreFrameBrowse_UpdateQuantitySelection(self);
 end
 
-function StoreFrameBrowse_SetSale(self, normalPrice, currentPrice)
+function StoreFrameBrowse_SetSale(self, normalDollars, normalCents, currentDollars, currentCents)
 	self.NormalPriceFrame:Hide();
 	
-	self.SaleFrame.SalePrice:SetText(currencyInfo().formatLong(currentPrice)..(currencyInfo().browseHasStar and BLIZZARD_STORE_ASTERISK or ""));
-	self.SaleFrame.NormalPrice:SetText(currencyInfo().formatLong(normalPrice));
+	self.SaleFrame.SalePrice:SetText(currencyInfo().formatLong(currentDollars, currentCents)..(currencyInfo().browseHasStar and BLIZZARD_STORE_ASTERISK or ""));
+	self.SaleFrame.NormalPrice:SetText(currencyInfo().formatLong(normalDollars, normalCents));
 	self.PlusTax:SetPoint("BOTTOMRIGHT", self.SaleFrame.SalePrice, "BOTTOMLEFT", -5, 0);
 
 	self.SaleFrame:Show();
 end
 
-function StoreFrameBrowse_SetNormalPrice(self, price)
+function StoreFrameBrowse_SetNormalPrice(self, currentDollars, currentCents)
 	self.SaleFrame:Hide();
 
-	self.NormalPriceFrame.Price:SetText(currencyInfo().formatLong(price)..(currencyInfo().browseHasStar and BLIZZARD_STORE_ASTERISK or ""));
+	self.NormalPriceFrame.Price:SetText(currencyInfo().formatLong(currentDollars, currentCents)..(currencyInfo().browseHasStar and BLIZZARD_STORE_ASTERISK or ""));
 	self.PlusTax:SetPoint("BOTTOMRIGHT", self.NormalPriceFrame.Price, "BOTTOMLEFT", -5, 0);
 
 	self.NormalPriceFrame:Show();
@@ -497,19 +538,19 @@ function StoreFrameBrowse_UpdateQuantitySelection(self)
 			end
 		end
 
-		local id, title, normalPrice, currentPrice = C_PurchaseAPI.GetProductInfo(products[i]);
+		local id, groupID, title, fullName, normalDollars, normalCents, currentDollars, currentCents = C_PurchaseAPI.GetProductInfo(products[i]);
 		button:SetID(id);
 		button.Title:SetText(title);
-		button.Price:SetText(currencyInfo().formatShort(currentPrice));
+		button.Price:SetText(currencyInfo().formatShort(currentDollars, currentCents));
 		button:SetChecked(id == CurrentProductID);
 		button:SetEnabled(id ~= CurrentProductID);
 		button:Show();
 
 		if ( id == CurrentProductID ) then
-			if ( normalPrice == currentPrice ) then
-				StoreFrameBrowse_SetNormalPrice(self, currentPrice);
+			if ( normalDollars == currentDollars and normalCents == currentCents ) then
+				StoreFrameBrowse_SetNormalPrice(self, currentDollars, currentCents);
 			else
-				StoreFrameBrowse_SetSale(self, normalPrice, currentPrice);
+				StoreFrameBrowse_SetSale(self, normalDollars, normalCents, currentDollars, currentCents);
 			end
 		end
 	end
@@ -596,7 +637,8 @@ function StoreConfirmationFrame_OnHide(self)
 	StoreFrame.Cover:Hide();
 end
 
-local FinalPrice;
+local FinalPriceDollars;
+local FinalPriceCents;
 function StoreConfirmationFrame_Update(self)
 	local productID = C_PurchaseAPI.GetConfirmationInfo();
 	if ( not productID ) then
@@ -604,20 +646,39 @@ function StoreConfirmationFrame_Update(self)
 		return;
 	end
 
-	local id, title, normalPrice, currentPrice, groupID, fullName = C_PurchaseAPI.GetProductInfo(productID);
+	local id, groupID, title, fullName, normalDollars, normalCents, currentDollars, currentCents = C_PurchaseAPI.GetProductInfo(productID);
 	if ( not groupID ) then
 		self:Hide(); --Should never happen, but may want to handle and throw an error message.
 		return;
 	end
 
+	local info = currencyInfo();
 	local id, name, description, icon = C_PurchaseAPI.GetProductGroupInfo(groupID);
 	self.Icon:SetTexture(icon);
 	self.FullName:SetText(fullName);
-	self.Notice:SetText(currencyInfo().confirmationNotice);
-	self.FinalPrice:SetText(currencyInfo().formatLong(currentPrice));
-	self.PaymentMethod:SetText(currencyInfo().paymentMethodText);
-	self.PaymentMethodExtra:SetText(currencyInfo().paymentMethodSubtext);
-	FinalPrice = currentPrice;
+	self.Notice:SetText(info.confirmationNotice);
+	self.FinalPrice:SetText(info.formatLong(currentDollars, currentCents));
+	self.PaymentMethod:SetText(info.paymentMethodText);
+	self.PaymentMethodExtra:SetText(info.paymentMethodSubtext);
+
+	if ( info.licenseAcceptText and info.licenseAcceptText ~= "" ) then
+		self.LicenseAcceptText:SetText(info.licenseAcceptText, true);
+		self.LicenseAcceptText:Show();
+		if ( info.requireLicenseAccept ) then
+			self.LicenseAcceptButton:Show();
+			self.LicenseAcceptButton:SetChecked(false);
+			self.FinalBuyButton:Disable();
+		else
+			self.LicenseAcceptButton:Hide();
+			self.FinalBuyButton:Enable();
+		end
+	else
+		self.LicenseAcceptText:Hide();
+		self.LicenseAcceptButton:Hide();
+		self.FinalBuyButton:Enable();
+	end
+	FinalPriceDollars = currentDollars;
+	FinalPriceCents = currentCents;
 end
 
 function StoreConfirmationCancel_OnClick(self)
@@ -628,7 +689,7 @@ function StoreConfirmationCancel_OnClick(self)
 end
 
 function StoreConfirmationFinalBuy_OnClick(self)
-	if ( C_PurchaseAPI.PurchaseProductConfirm(true, FinalPrice) ) then
+	if ( C_PurchaseAPI.PurchaseProductConfirm(true, FinalPriceDollars, FinalPriceCents) ) then
 		JustOrderedProduct = true;
 		PlaySound("UI_igStore_ConfirmPurchase_Button");
 	else

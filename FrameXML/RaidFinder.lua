@@ -228,7 +228,7 @@ function RaidFinderQueueFrame_Join()
 end
 
 function RaidFinderQueueFrame_UpdateRoleIncentives()
-	local dungeonID = LFDQueueFrame.type;
+	local dungeonID = RaidFinderQueueFrame.raid;
 	LFG_SetRoleIconIncentive(RaidFinderQueueFrameRoleButtonTank, nil);
 	LFG_SetRoleIconIncentive(RaidFinderQueueFrameRoleButtonHealer, nil);
 	LFG_SetRoleIconIncentive(RaidFinderQueueFrameRoleButtonDPS, nil);

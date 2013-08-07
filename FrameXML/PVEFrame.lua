@@ -12,6 +12,9 @@ function PVEFrame_OnLoad(self)
 end
 
 function PVEFrame_ToggleFrame(sidePanelName, selection)
+	if ( UnitLevel("player") < SHOW_LFD_LEVEL ) then
+		return;
+	end
 	local self = PVEFrame;
 	if ( self:IsShown() ) then
 		if ( sidePanelName ) then

@@ -65,6 +65,7 @@ take("CreateForbiddenFrame");
 retain("math");
 retain("pairs");
 retain("tostring");
+retain("tonumber");
 retain("LoadURLIndex");
 retain("GetContainerNumFreeSlots");
 retain("PlaySound");
@@ -116,6 +117,8 @@ take("BLIZZARD_STORE_ERROR_TITLE_PAYMENT");
 take("BLIZZARD_STORE_ERROR_MESSAGE_PAYMENT");
 take("BLIZZARD_STORE_ERROR_TITLE_BATTLEPAY_DISABLED");
 take("BLIZZARD_STORE_ERROR_MESSAGE_BATTLEPAY_DISABLED");
+take("BLIZZARD_STORE_SECOND_CHANCE_KR");
+take("BLIZZARD_STORE_LICENSE_ACK_TEXT");
 
 retain("OKAY");
 retain("LARGE_NUMBER_SEPERATOR");

@@ -196,7 +196,7 @@ function BNConversationInvite_Update()
 			frame.checkButton:Disable();
 			frame.checkButton.tooltipText = nil;			
 			frame.name:SetFontObject("GameFontDisable");
-		elseif ( not BNIsFriendConversationValid(index) ) then
+		elseif ( index <= numBNetOnline and not BNIsFriendConversationValid(index) ) then
 			frame.checkButton:Disable();
 			frame.checkButton.tooltipText = CONVERSATION_INCOMPATIBLE_CLIENT;
 			frame.name:SetFontObject("GameFontDisable");
