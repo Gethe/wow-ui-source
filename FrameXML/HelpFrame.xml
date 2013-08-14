@@ -2053,6 +2053,8 @@
 			<OnLoad>
 				self.refreshTime = 0;
 				self:RegisterEvent("UPDATE_TICKET");
+				self:RegisterEvent("STORE_STATUS_CHANGED");
+				HelpOpenTicketButton_Move();
 			</OnLoad>
 			<OnClick>
 				HelpOpenTicketButtonTutorial:Hide();

@@ -678,7 +678,12 @@ end
 function ToggleStoreUI()
 	Store_LoadUI();
 
-	StoreFrame_SetShown(not StoreFrame_IsShown());
+	local wasShown = StoreFrame_IsShown();
+	if ( not wasShown ) then
+		--We weren't showing, now we are. We should hide all other panels.
+		securecall("CloseAllWindows");
+	end
+	StoreFrame_SetShown(not wasShown);
 end
 
 function InspectUnit(unit)

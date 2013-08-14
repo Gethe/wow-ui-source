@@ -632,7 +632,6 @@
 					self.down = 1;
 				end
 			</OnMouseUp>
-			
 			<OnEnter>
 				self.hover = 1;
 				self.updateInterval = 0;
@@ -657,29 +656,6 @@
 				self.tooltipText = HELP_BUTTON;
 				self.newbieText = NEWBIE_TOOLTIP_HELP;
 			</OnLoad>
-			<OnEnter>
-				if ( C_StorePublic.IsEnabled() ) then
-					self.hover = true;
-					self.updateInterval = 0;
-					MainMenuBarPerformanceBarFrame_OnEnter(self);
-				else
-					MicroButton_OnEnter(self);
-				end
-			</OnEnter>
-			<OnLeave>
-				self.hover = false;
-				GameTooltip:Hide();
-			</OnLeave>
-			<OnUpdate>
-				if ( self.hover ) then
-					if ( self.updateInterval > 0 ) then
-						self.updateInterval = self.updateInterval - elapsed;
-					else
-						self.updateInterval = PERFORMANCEBAR_UPDATE_INTERVAL;
-						MainMenuBarPerformanceBarFrame_OnEnter(self);
-					end
-				end
-			</OnUpdate>
 			<OnClick function="ToggleHelpFrame"/>
 		</Scripts>
 	</Button>

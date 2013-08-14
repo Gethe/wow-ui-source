@@ -2051,7 +2051,7 @@ function LFGCooldownCover_Update(self)
 			
 			local _, classFilename = UnitClass(unit);
 			local classColor = classFilename and RAID_CLASS_COLORS[classFilename] or NORMAL_FONT_COLOR;
-			nameLabel:SetFormattedText("|cff%.2x%.2x%.2x%s|r", classColor.r * 255, classColor.g * 255, classColor.b * 255, UnitName(unit));
+			nameLabel:SetFormattedText("|cff%.2x%.2x%.2x%s|r", classColor.r * 255, classColor.g * 255, classColor.b * 255, GetUnitName(unit, true));
 		end
 	end
 	for i = nextIndex, #self.Names do

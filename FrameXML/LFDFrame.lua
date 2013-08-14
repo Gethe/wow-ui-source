@@ -391,7 +391,7 @@ function LFDQueueFrameRandomCooldownFrame_Update()
 		
 		local _, classFilename = UnitClass("party"..i);
 		local classColor = classFilename and RAID_CLASS_COLORS[classFilename] or NORMAL_FONT_COLOR;
-		nameLabel:SetFormattedText("|cff%.2x%.2x%.2x%s|r", classColor.r * 255, classColor.g * 255, classColor.b * 255, UnitName("party"..i));
+		nameLabel:SetFormattedText("|cff%.2x%.2x%.2x%s|r", classColor.r * 255, classColor.g * 255, classColor.b * 255, GetUnitName("party"..i, true));
 		
 		local gender = UnitSex("party"..i);
 		

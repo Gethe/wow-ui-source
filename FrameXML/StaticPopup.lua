@@ -1315,8 +1315,12 @@ StaticPopupDialogs["RESURRECT"] = {
 	OnAccept = function(self)
 		AcceptResurrect();
 	end,
-	OnCancel = function(self)
-		DeclineResurrect();
+	OnCancel = function(self, data, reason)
+		if ( reason == "timeout" ) then
+			TimeoutResurrect();
+		else
+			DeclineResurrect();
+		end
 		if ( UnitIsDead("player") and not UnitIsControlling("player") ) then
 			StaticPopup_Show("DEATH");
 		end
@@ -1341,8 +1345,12 @@ StaticPopupDialogs["RESURRECT_NO_SICKNESS"] = {
 	OnAccept = function(self)
 		AcceptResurrect();
 	end,
-	OnCancel = function(self)
-		DeclineResurrect();
+	OnCancel = function(self, data, reason)
+		if ( reason == "timeout" ) then
+			TimeoutResurrect();
+		else
+			DeclineResurrect();
+		end
 		if ( UnitIsDead("player") and not UnitIsControlling("player") ) then
 			StaticPopup_Show("DEATH");
 		end
@@ -1365,8 +1373,12 @@ StaticPopupDialogs["RESURRECT_NO_TIMER"] = {
 	OnAccept = function(self)
 		AcceptResurrect();
 	end,
-	OnCancel = function(self)
-		DeclineResurrect();
+	OnCancel = function(self, data, reason)
+		if ( reason == "timeout" ) then
+			TimeoutResurrect();
+		else
+			DeclineResurrect();
+		end
 		if ( UnitIsDead("player") and not UnitIsControlling("player") ) then
 			StaticPopup_Show("DEATH");
 		end

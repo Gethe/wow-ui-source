@@ -189,7 +189,7 @@
 							</Layer>
 						</Layers>
 						<Frames>
-							<Frame name="$parentLockouts" parentKey="Lockouts">
+							<Frame name="$parentLockouts" parentKey="Lockouts" hidden="true">
 								<Size x="18" y="18"/>
 								<Anchors>
 									<Anchor point="LEFT" relativeKey="$parent.RaidTitle" relativePoint="RIGHT" x="5"/>

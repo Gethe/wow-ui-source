@@ -1037,11 +1037,8 @@ function FriendsFrame_SelectSquelched(ignoreType, index)
 end
 
 function FriendsFrameAddFriendButton_OnClick(self)
-	if ( UnitIsPlayer("target") and UnitCanCooperate("player", "target") and not GetFriendInfo(UnitName("target")) ) then
-		local name, server = UnitName("target");
-		if ( server and (not UnitIsSameServer("target")) ) then
-			name = name.."-"..server;
-		end
+	local name = GetUnitName("target", true);
+	if ( UnitIsPlayer("target") and UnitCanCooperate("player", "target") and not GetFriendInfo(name) ) then
 		AddFriend(name);
 		PlaySound("UChatScrollButton");
 	else

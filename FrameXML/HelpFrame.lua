@@ -619,6 +619,16 @@ function HelpOpenTicketButton_OnUpdate(self, elapsed)
 	end
 end
 
+function HelpOpenTicketButton_Move()
+	if ( C_StorePublic.IsEnabled() ) then
+		HelpOpenTicketButton:SetParent(MainMenuMicroButton);
+		HelpOpenTicketButton:SetPoint("CENTER", MainMenuMicroButton, "TOPRIGHT", -3, -26);
+	else
+		HelpOpenTicketButton:SetParent(HelpMicroButton);
+		HelpOpenTicketButton:SetPoint("CENTER", HelpMicroButton, "TOPRIGHT", -3, -26);
+	end
+end
+
 function HelpOpenTicketButton_OnEvent(self, event, ...)
 	if ( event == "UPDATE_TICKET" ) then
 		local category, ticketDescription, ticketOpenTime, oldestTicketTime, updateTime, assignedToGM, openedByGM, waitTimeOverrideMessage, waitTimeOverrideMinutes = ...;
@@ -678,6 +688,8 @@ function HelpOpenTicketButton_OnEvent(self, event, ...)
 				self:Hide();
 			end
 		end
+	elseif ( event == "STORE_STATUS_CHANGED" ) then
+		HelpOpenTicketButton_Move();
 	end
 end
 

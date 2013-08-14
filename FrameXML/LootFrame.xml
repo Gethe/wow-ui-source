@@ -803,9 +803,14 @@
 		<Scripts>
 			<OnEnter>
 				self.Highlight:Show();
+				if (self.tooltip) then
+					GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+					GameTooltip:SetText(self.tooltip, HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b);
+				end
 			</OnEnter>
 			<OnLeave>
 				self.Highlight:Hide();
+				GameTooltip_Hide();
 			</OnLeave>
 			<OnMouseDown>
 				self.Name:SetPoint("LEFT", 11, -1);

@@ -81,6 +81,8 @@ Import("BLIZZARD_STORE_ERROR_TITLE_BATTLEPAY_DISABLED");
 Import("BLIZZARD_STORE_ERROR_MESSAGE_BATTLEPAY_DISABLED");
 Import("BLIZZARD_STORE_SECOND_CHANCE_KR");
 Import("BLIZZARD_STORE_LICENSE_ACK_TEXT");
+Import("BLIZZARD_STORE_LICENSE_ACK_TEXT_CN");
+Import("BLIZZARD_STORE_LICENSE_ACK_TEXT_TW");
 
 Import("OKAY");
 Import("LARGE_NUMBER_SEPERATOR");
@@ -196,6 +198,7 @@ local currencySpecific = {
 		formatLong = currencyFormatCPTLong,
 		browseNotice = BLIZZARD_STORE_BROWSE_BATTLE_COINS_CN,
 		confirmationNotice = BLIZZARD_STORE_CONFIRMATION_GENERIC,
+		licenseAcceptText = BLIZZARD_STORE_LICENSE_ACK_TEXT_CN,
 		paymentMethodText = "",
 		paymentMethodSubtext = "",
 		browseHasStar = false,
@@ -205,6 +208,7 @@ local currencySpecific = {
 		formatLong = currencyFormatTPT,
 		browseNotice = "",
 		confirmationNotice = BLIZZARD_STORE_CONFIRMATION_GENERIC,
+		licenseAcceptText = BLIZZARD_STORE_LICENSE_ACK_TEXT_TW,
 		paymentMethodText = "",
 		paymentMethodSubtext = "",
 		browseHasStar = false,
@@ -231,28 +235,26 @@ local errorData = {
 	[LE_STORE_ERROR_INVALID_PAYMENT_METHOD] = {
 		title = BLIZZARD_STORE_ERROR_TITLE_PAYMENT,
 		msg = BLIZZARD_STORE_ERROR_MESSAGE_PAYMENT,
-		--link = 1,
+		link = 11,
 	},
 	[LE_STORE_ERROR_PAYMENT_FAILED] = {
 		title = BLIZZARD_STORE_ERROR_TITLE_PAYMENT,
 		msg = BLIZZARD_STORE_ERROR_MESSAGE_PAYMENT,
-		--link = 1,
+		link = 11,
 	},
 	[LE_STORE_ERROR_WRONG_CURRENCY] = {
 		title = BLIZZARD_STORE_ERROR_TITLE_PAYMENT,
 		msg = BLIZZARD_STORE_ERROR_MESSAGE_PAYMENT,
-		--link = 1,
+		link = 11,
 	},
 	[LE_STORE_ERROR_BATTLEPAY_DISABLED] = {
 		title = BLIZZARD_STORE_ERROR_TITLE_BATTLEPAY_DISABLED,
 		msg = BLIZZARD_STORE_ERROR_MESSAGE_BATTLEPAY_DISABLED,
-		--link = 1,
 	},
 
 	[LE_STORE_ERROR_OTHER] = {
 		title = BLIZZARD_STORE_ERROR_TITLE_OTHER,	--Probably want to format in the error code
 		msg = BLIZZARD_STORE_ERROR_MESSAGE_OTHER,
-		--link = 1,
 	}
 };
 

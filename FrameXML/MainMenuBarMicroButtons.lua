@@ -216,10 +216,12 @@ function UpdateMicroButtons()
 	end
 
 	if ( C_StorePublic.IsEnabled() ) then
-		MainMenuMicroButton:Hide();
+		MainMenuMicroButton:SetPoint("BOTTOMLEFT", StoreMicroButton, "BOTTOMRIGHT", -3, 0);
+		HelpMicroButton:Hide();
 		StoreMicroButton:Show();
 	else
-		MainMenuMicroButton:Show();
+		MainMenuMicroButton:SetPoint("BOTTOMLEFT", EJMicroButton, "BOTTOMRIGHT", -3, 0);
+		HelpMicroButton:Show();
 		StoreMicroButton:Hide();
 	end
 end

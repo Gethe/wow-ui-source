@@ -1047,6 +1047,8 @@ VIDEO_QUALITY_SUBTEXT6 = "Allows you to customize individual draw distances, det
 VIEW_ALL_REALMS = "View Realm List";
 VIRTUAL_KEYPAD_OKAY = "Okay";
 VISITABLE_URL1 = "http://enUS.nydus.battle.net/WOW/enUS/client/in_game_mail_link_1?r=US&l=%s&sr=%u&c=%x%x";
+VISITABLE_URL10 = "http://tw.blizzard.com/zh-tw/company/about/currencyuse.html";
+VISITABLE_URL11 = "https://nydus.battle.net/WoW/enUS/client/add-payment?targetRegion=US";
 VISITABLE_URL2 = "http://enUS.nydus.battle.net/WOW/enUS/client/trial_restriction_error_1?region=US&accountName=%s";
 VISITABLE_URL3 = "http://enus.nydus.battle.net/wow/enUS/client/item-restoration";
 VISITABLE_URL4 = "http://enUS.nydus.battle.net/wow/enUS/client/challenge/%d/%d";

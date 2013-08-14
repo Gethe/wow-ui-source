@@ -993,7 +993,7 @@ end
 function CharacterTemplatesFrame_Update()
 	local self = CharacterTemplatesFrame;
 	local numTemplates = GetNumCharacterTemplates();
-	if ( numTemplates > 0 ) then
+	if ( numTemplates > 0 and IsConnectedToServer() ) then
 		if ( not self:IsShown() ) then
 			-- set it up
 			self:Show();
