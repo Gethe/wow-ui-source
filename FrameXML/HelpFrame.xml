@@ -2098,6 +2098,7 @@
 			<OnLoad>
 				self.refreshTime = 0;
 				self:RegisterEvent("UPDATE_WEB_TICKET")
+				HelpOpenTicketButton_Move();
 			</OnLoad>
 			<OnShow>
 				HelpOpenTicketButton:Hide();

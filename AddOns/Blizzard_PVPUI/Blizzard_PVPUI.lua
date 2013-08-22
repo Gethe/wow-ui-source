@@ -196,8 +196,10 @@ function PVPQueueFrame_OnEvent(self, event, ...)
 		local isArena, bgID = ...;
 		if (isArena) then
 			PVPQueueFrame_ShowFrame(ConquestFrame);
+			ShowUIPanel(PVPUIFrame);
 		else
 			PVPQueueFrame_ShowFrame(HonorFrame);
+			ShowUIPanel(PVPUIFrame);
 			HonorFrame_SetType("specific");
 			HonorFrameSpecificList_FindAndSelectBattleground(bgID);
 		end
@@ -1198,6 +1200,9 @@ end
 
 function WarGameStartButton_OnClick(self)
 	PlaySound("igMainMenuOptionCheckBoxOn");
-	StartWarGame("target", name);
+	local name = GetWarGameTypeInfo(GetSelectedWarGameType());
+	if ( name ) then
+		StartWarGame("target", name);
+	end
 end
 

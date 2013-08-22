@@ -208,10 +208,8 @@ function UpdateMicroButtons()
 	end
 
 	if ( StoreFrame and StoreFrame_IsShown() ) then
-		StoreMicroButton:Enable();
 		StoreMicroButton:SetButtonState("PUSHED", 1);
 	else
-		StoreMicroButton:Enable();
 		StoreMicroButton:SetButtonState("NORMAL");
 	end
 
@@ -223,6 +221,14 @@ function UpdateMicroButtons()
 		MainMenuMicroButton:SetPoint("BOTTOMLEFT", EJMicroButton, "BOTTOMRIGHT", -3, 0);
 		HelpMicroButton:Show();
 		StoreMicroButton:Hide();
+	end
+
+	if ( IsTrialAccount() ) then
+		StoreMicroButton.disabledTooltip = ERR_GUILD_TRIAL_ACCOUNT;
+		StoreMicroButton:Disable();
+	else
+		StoreMicroButton.disabledTooltip = nil;
+		StoreMicroButton:Enable();
 	end
 end
 

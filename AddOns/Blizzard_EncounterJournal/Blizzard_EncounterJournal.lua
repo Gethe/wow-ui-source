@@ -777,7 +777,9 @@ function EncounterJournal_FocusSection(sectionID)
 			section.cbCount = 0;
 			section.flashAnim:Play();
 			section:SetScript("OnUpdate", EncounterJournal_FocusSectionCallback);
-			return;
+		else
+			section.flashAnim:Stop();
+			section:SetScript("OnUpdate", nil);
 		end
 	end
 end

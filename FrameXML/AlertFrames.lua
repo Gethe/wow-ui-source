@@ -860,7 +860,7 @@ end
 
 -- [[ DigsiteCompleteToastFrame ]] --
 function DigsiteCompleteToastFrame_ShowAlert(researchBranchID)
-	local RaceName, RaceTexture	= GetArchaeologyRaceInfo(researchBranchID);
+	local RaceName, RaceTexture	= GetArchaeologyRaceInfoByID(researchBranchID);
 	DigsiteCompleteToastFrame.DigsiteType:SetText(RaceName);
 	DigsiteCompleteToastFrame.DigsiteTypeTexture:SetTexture(RaceTexture);
 	PlaySound("UI_DigsiteCompletion_Toast");

@@ -620,12 +620,19 @@ function HelpOpenTicketButton_OnUpdate(self, elapsed)
 end
 
 function HelpOpenTicketButton_Move()
+	local anchor = HelpMicroButton;
 	if ( C_StorePublic.IsEnabled() ) then
-		HelpOpenTicketButton:SetParent(MainMenuMicroButton);
-		HelpOpenTicketButton:SetPoint("CENTER", MainMenuMicroButton, "TOPRIGHT", -3, -26);
-	else
-		HelpOpenTicketButton:SetParent(HelpMicroButton);
-		HelpOpenTicketButton:SetPoint("CENTER", HelpMicroButton, "TOPRIGHT", -3, -26);
+		anchor = MainMenuMicroButton;
+	end
+
+	if ( HelpOpenTicketButton ) then
+		HelpOpenTicketButton:SetParent(anchor);
+		HelpOpenTicketButton:SetPoint("CENTER", anchor, "TOPRIGHT", -3, -26);
+	end
+
+	if ( HelpOpenWebTicketButton ) then
+		HelpOpenWebTicketButton:SetParent(anchor);
+		HelpOpenWebTicketButton:SetPoint("CENTER", anchor, "TOPRIGHT", -3, -26);
 	end
 end
 
