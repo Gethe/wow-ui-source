@@ -266,6 +266,8 @@ function QueueStatusEntry_SetUpLFG(entry, category)
 	if ( not activeID ) then
 		GMError(format("Thought we had an active queue, but we don't.: activeIdx - %d", activeID));
 	end
+	
+	local mode, submode = GetLFGMode(category, activeID);
 
 	local subTitle;
 	local extraText;
@@ -274,12 +276,27 @@ function QueueStatusEntry_SetUpLFG(entry, category)
 		--We're queued for more than one thing
 		subTitle = table.remove(allNames, activeIndex);
 		extraText = string.format(ALSO_QUEUED_FOR, table.concat(allNames, PLAYER_LIST_DELIMITER));
+	elseif ( mode == "suspended" ) then 
+		local suspendedPlayers = GetLFGSuspendedPlayers(category);
+		if ( #suspendedPlayers > 0 ) then
+			extraText = "";
+			for i = 1, 3 do
+				if (suspendedPlayers[i]) then
+					if ( i > 1 ) then
+						extraText = extraText .. "\n";
+					end
+					extraText = extraText .. string.format(RAID_MEMBER_NOT_READY, suspendedPlayers[i]);
+				end
+			end
+		end
 	end
 
 	--Set up the actual display
-	local mode, submode = GetLFGMode(category, activeID);
 	if ( mode == "queued" ) then
 		local inParty, joined, queued, noPartialClear, achievements, lfgComment, slotCount, category, leader, tank, healer, dps = GetLFGInfoServer(category, activeID);
+		if (not category) then --hack fix
+			return
+		end
 		local hasData,  leaderNeeds, tankNeeds, healerNeeds, dpsNeeds, totalTanks, totalHealers, totalDPS, instanceType, instanceSubType, instanceName, averageWait, tankWait, healerWait, damageWait, myWait, queuedTime = GetLFGQueueStats(category, activeID);
 		if ( category == LE_LFG_CATEGORY_SCENARIO ) then --Hide roles for scenarios
 			tank, healer, dps = nil, nil, nil;
@@ -398,7 +415,7 @@ function QueueStatusEntry_SetMinimalDisplay(entry, title, description, subTitle,
 
 	entry:SetScript("OnUpdate", nil);
 
-	entry:SetHeight(height + 4);
+	entry:SetHeight(height + 6);
 end
 
 function QueueStatusEntry_SetFullDisplay(entry, title, queuedTime, myWait, isTank, isHealer, isDPS, totalTanks, totalHealers, totalDPS, tankNeeds, healerNeeds, dpsNeeds, subTitle, extraText)

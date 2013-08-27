@@ -24,6 +24,7 @@ end
 --Imports
 Import("C_PurchaseAPI");
 Import("CreateForbiddenFrame");
+Import("IsGMClient");
 Import("math");
 Import("pairs");
 Import("tostring");
@@ -83,6 +84,10 @@ Import("BLIZZARD_STORE_SECOND_CHANCE_KR");
 Import("BLIZZARD_STORE_LICENSE_ACK_TEXT");
 Import("BLIZZARD_STORE_LICENSE_ACK_TEXT_CN");
 Import("BLIZZARD_STORE_LICENSE_ACK_TEXT_TW");
+Import("BLIZZARD_STORE_REGION_LOCKED");
+Import("BLIZZARD_STORE_REGION_LOCKED_SUBTEXT");
+Import("BLIZZARD_STORE_ERROR_TITLE_INSUFFICIENT_BALANCE");
+Import("BLIZZARD_STORE_ERROR_MESSAGE_INSUFFICIENT_BALANCE");
 
 Import("OKAY");
 Import("LARGE_NUMBER_SEPERATOR");
@@ -93,6 +98,7 @@ Import("LE_STORE_ERROR_INVALID_PAYMENT_METHOD");
 Import("LE_STORE_ERROR_PAYMENT_FAILED");
 Import("LE_STORE_ERROR_WRONG_CURRENCY");
 Import("LE_STORE_ERROR_BATTLEPAY_DISABLED");
+Import("LE_STORE_ERROR_INSUFFICIENT_BALANCE");
 Import("LE_STORE_ERROR_OTHER");
 
 --Data
@@ -251,6 +257,11 @@ local errorData = {
 		title = BLIZZARD_STORE_ERROR_TITLE_BATTLEPAY_DISABLED,
 		msg = BLIZZARD_STORE_ERROR_MESSAGE_BATTLEPAY_DISABLED,
 	},
+	[LE_STORE_ERROR_INSUFFICIENT_BALANCE] = {
+		title = BLIZZARD_STORE_ERROR_TITLE_INSUFFICIENT_BALANCE,
+		msg = BLIZZARD_STORE_ERROR_MESSAGE_INSUFFICIENT_BALANCE,
+		link = 11,
+	},
 
 	[LE_STORE_ERROR_OTHER] = {
 		title = BLIZZARD_STORE_ERROR_TITLE_OTHER,	--Probably want to format in the error code
@@ -289,9 +300,9 @@ function StoreFrame_OnLoad(self)
 	StoreFrame_UpdateActivePanel(self);
 
 	--Check whether we already have an error waiting for us.
-	local errorID = C_PurchaseAPI.GetFailureInfo();
+	local errorID, internalErr = C_PurchaseAPI.GetFailureInfo();
 	if ( errorID ) then
-		StoreFrame_OnError(self, errorID, true);
+		StoreFrame_OnError(self, errorID, true, internalErr);
 	end
 end
 
@@ -304,11 +315,12 @@ function StoreFrame_OnEvent(self, event, ...)
 	elseif ( self:IsShown() and event == "BAG_UPDATE_DELAYED" ) then
 		StoreFrame_UpdateActivePanel(self);
 	elseif ( event == "STORE_PURCHASE_ERROR" ) then
-		StoreFrame_OnError(self, C_PurchaseAPI.GetFailureInfo(), true);
+		local err, internalErr = C_PurchaseAPI.GetFailureInfo();
+		StoreFrame_OnError(self, err, true, internalErr);
 	elseif ( event == "STORE_ORDER_INITIATION_FAILED" ) then
-		local err = ...;
+		local err, internalErr = ...;
 		WaitingOnConfirmation = false;
-		StoreFrame_OnError(self, err, false);
+		StoreFrame_OnError(self, err, false, internalErr);
 		StoreFrame_UpdateActivePanel(self);
 	end
 end
@@ -344,12 +356,16 @@ function StoreFrame_OnAttributeChanged(self, name, value)
 	end
 end
 
-function StoreFrame_OnError(self, errorID, needsAck)
+function StoreFrame_OnError(self, errorID, needsAck, internalErr)
 	local info = errorData[errorID];
 	if ( not info ) then
 		info = errorData[LE_STORE_ERROR_OTHER];
 	end
-	StoreFrame_ShowError(self, info.title, info.msg, info.link, needsAck);
+	if ( IsGMClient() ) then
+		StoreFrame_ShowError(self, info.title.." ("..internalErr..")", info.msg, info.link, needsAck);
+	else
+		StoreFrame_ShowError(self, info.title, info.msg, info.link, needsAck);
+	end
 end
 
 function StoreFrame_UpdateActivePanel(self)
@@ -361,6 +377,8 @@ function StoreFrame_UpdateActivePanel(self)
 		StoreFrame_SetAlert(self, BLIZZARD_STORE_TRANSACTION_IN_PROGRESS, BLIZZARD_STORE_CHECK_BACK_LATER);
 	elseif ( not C_PurchaseAPI.IsAvailable() ) then
 		StoreFrame_SetAlert(self, BLIZZARD_STORE_NOT_AVAILABLE, BLIZZARD_STORE_NOT_AVAILABLE_SUBTEXT);
+	elseif ( C_PurchaseAPI.IsRegionLocked() ) then
+		StoreFrame_SetAlert(self, BLIZZARD_STORE_REGION_LOCKED, BLIZZARD_STORE_REGION_LOCKED_SUBTEXT);
 	elseif ( not C_PurchaseAPI.HasPurchaseList() or not C_PurchaseAPI.HasProductList() or not C_PurchaseAPI.HasDistributionList() ) then
 		StoreFrame_SetAlert(self, BLIZZARD_STORE_LOADING, BLIZZARD_STORE_PLEASE_WAIT);
 	elseif ( #C_PurchaseAPI.GetProductGroups() == 0 ) then
@@ -695,7 +713,7 @@ function StoreConfirmationFinalBuy_OnClick(self)
 		JustOrderedProduct = true;
 		PlaySound("UI_igStore_ConfirmPurchase_Button");
 	else
-		StoreFrame_OnError(StoreFrame, LE_STORE_ERROR_OTHER, false);
+		StoreFrame_OnError(StoreFrame, LE_STORE_ERROR_OTHER, false, "Fake");
 		PlaySound("UI_igStore_Cancel_Button");
 	end
 	StoreFrame_UpdateActivePanel(StoreFrame);
