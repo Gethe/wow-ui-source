@@ -427,6 +427,21 @@
 			</Layer>
 		</Layers>
 		<Frames>
+			<Frame parentKey="TitleMouseover">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentTitleText"/>
+					<Anchor point="BOTTOMRIGHT" relativeTo="$parentTitleText"/>
+				</Anchors>
+				<Scripts>
+					<OnEnter>
+						if (self.tooltip) then
+							GameTooltip:SetOwner(self, "ANCHOR_CURSOR_RIGHT");
+							GameTooltip:SetText(self.tooltip, HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b);
+						end
+					</OnEnter>
+					<OnLeave function="GameTooltip_Hide"/>
+				</Scripts>
+			</Frame>
 			<Button name="$parentTab1" inherits="GuildFrameTabButtonTemplate" id="1" text="GUILD_TAB_GUILD_ABBR">
 				<Anchors>
 					<!--This position is changed in some Localization files.-->

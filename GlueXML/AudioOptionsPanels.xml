@@ -309,7 +309,7 @@
 				</Scripts>	
 			</Slider>
 			<Frame name="$parentHardware" inherits="OptionsBoxTemplate">
-				<Size x="186" y="136"/>
+				<Size x="186" y="108"/>
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeTo="$parentPlayback" relativePoint="TOPRIGHT">
 						<Offset x="8" y="0"/>
@@ -335,7 +335,7 @@
 							<Anchors>
 								<Anchor point="BOTTOM" relativePoint="TOP">
 									<Offset>
-										<AbsDimension x="0" y="5"/>
+										<AbsDimension x="0" y="2"/>
 									</Offset>
 								</Anchor>
 							</Anchors>
@@ -369,7 +369,7 @@
 							<Anchors>
 								<Anchor point="BOTTOM" relativePoint="TOP">
 									<Offset>
-										<AbsDimension x="0" y="5"/>
+										<AbsDimension x="0" y="2"/>
 									</Offset>
 								</Anchor>
 							</Anchors>
@@ -391,7 +391,7 @@
 					</OnLeave>
 				</Scripts>
 			</Frame>		
-			<CheckButton name="$parentUseHardware" inherits="AudioOptionsSmallCheckButtonTemplate">
+			<!--<CheckButton name="$parentUseHardware" inherits="AudioOptionsSmallCheckButtonTemplate">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeTo="$parentSoundChannelsDropDown" relativePoint="BOTTOMLEFT">
 						<Offset x="22" y="0"/>
@@ -405,7 +405,7 @@
 						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
 					</OnLoad>
 				</Scripts>
-			</CheckButton>
+			</CheckButton>-->
 			<Frame name="$parentVolume" inherits="OptionsBoxTemplate">
 				<Size x="186" y="144"/>
 				<Anchors>

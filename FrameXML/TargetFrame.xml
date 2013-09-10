@@ -239,11 +239,14 @@
 				</Texture>
 			</Layer>
 			<Layer level="ARTWORK">
-				<Texture name="$parentMyHealPredictionBar" inherits="MyHealPredictionBarTemplate"/>
-				<Texture name="$parentOtherHealPredictionBar" inherits="OtherHealPredictionBarTemplate"/>
 				<Texture name="$parentTotalAbsorbBar" inherits="TotalAbsorbBarTemplate"/>
 			</Layer>
 			<Layer level="ARTWORK" textureSubLevel="1">
+				<Texture name="$parentMyHealPredictionBar" inherits="MyHealPredictionBarTemplate"/>
+				<Texture name="$parentOtherHealPredictionBar" inherits="OtherHealPredictionBarTemplate"/>
+				<Texture name="$parentHealAbsorbBar" inherits="HealAbsorbBarTemplate"/>
+				<Texture name="$parentHealAbsorbBarLeftShadow" inherits="HealAbsorbBarLeftShadowTemplate"/>
+				<Texture name="$parentHealAbsorbBarRightShadow" inherits="HealAbsorbBarRightShadowTemplate"/>
 				<Texture name="$parentTotalAbsorbBarOverlay" inherits="TotalAbsorbBarOverlayTemplate"/>
 			</Layer>
 		</Layers>
@@ -276,6 +279,15 @@
 							</Anchors>
 						</FontString>
 						<FontString name="$parentDeadText" inherits="GameFontNormalSmall" text="DEAD">
+							<Anchors>
+								<Anchor point="CENTER">
+									<Offset>
+										<AbsDimension x="-50" y="3"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+						<FontString name="$parentUnconsciousText" inherits="GameFontNormalSmall" text="UNCONSCIOUS">
 							<Anchors>
 								<Anchor point="CENTER">
 									<Offset>
@@ -364,7 +376,10 @@
 								<Anchor point="CENTER" relativePoint="RIGHT" x="-44" y="10"/>
 							</Anchors>
 						</Texture>
+					</Layer>
+					<Layer level="ARTWORK" textureSubLevel="1">
 						<Texture name="$parentOverAbsorbGlow" inherits="OverAbsorbGlowTemplate"/>
+						<Texture name="$parentOverHealAbsorbGlow" inherits="OverHealAbsorbGlowTemplate"/>
 					</Layer>
 				</Layers>
 			</Frame>
@@ -577,9 +592,18 @@
 						</FontString>
 						<FontString name="$parentDeadText" inherits="GameFontNormalSmall" text="DEAD">
 							<Anchors>
-								<Anchor point="CENTER">
+								<Anchor point="LEFT">
 									<Offset>
-										<AbsDimension x="15" y="1"/>
+										<AbsDimension x="48" y="1"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+						<FontString name="$parentUnconsciousText" inherits="GameFontNormalSmall" justifyH="LEFT" text="UNCONSCIOUS">
+							<Anchors>
+								<Anchor point="LEFT">
+									<Offset>
+										<AbsDimension x="48" y="1"/>
 									</Offset>
 								</Anchor>
 							</Anchors>

@@ -1227,6 +1227,199 @@
 	</Scripts>
 </Button>
 
+<Button name="DigsiteCompleteToastFrame" parent="UIParent" hidden="true" frameStrata="DIALOG" inherits="AlertFrameTemplate">
+	<Size x="241" y="81"/>
+	<Anchors>
+		<Anchor point="BOTTOM" x="0" y="170"/>
+	</Anchors>
+	<Animations>
+		<AnimationGroup name="$parentAnimIn" parentKey="animIn">
+			<Alpha change="-1" duration="0" order="1"/>
+			<Alpha change="1" duration="0.2" order="2"/>
+		</AnimationGroup>
+		<AnimationGroup name="$parentWaitAndAnimOut" parentKey="waitAndAnimOut">
+			<Alpha startDelay="4.05" change="-1" duration="1.5" parentKey="animOut">
+				<Scripts>
+					<OnFinished>
+						self:GetRegionParent():Hide();
+					</OnFinished>
+				</Scripts>
+			</Alpha>
+		</AnimationGroup>
+	</Animations>
+	<Layers>
+		<Layer level="BACKGROUND">
+			<Texture file="Interface\Archeology\ArcheologyToast">
+				<Size x="241" y="81"/>	
+				<Anchors>
+					<Anchor point="LEFT"/>
+				</Anchors>
+				<TexCoords left="0.00390625" right="0.94531250" top="0.37500000" bottom="0.69140625"/>
+			</Texture>
+		</Layer>
+		<Layer level="ARTWORK">
+			<FontString parentKey="DigsiteType" inherits="GameFontWhite">
+				<Anchors>
+					<Anchor point="CENTER" x="28" y="-8"/>
+				</Anchors>
+			</FontString>
+			<FontString parentKey="Title" inherits="GameFontWhiteSmall" text="ARCHAEOLOGY_DIGSITE_COMPLETE_TOAST_FRAME_TITLE">
+				<Anchors>
+					<Anchor point="CENTER" x="28" y="13"/>
+				</Anchors>
+			</FontString>
+			<Texture parentKey="DigsiteTypeTexture">
+				<Size x="90" y="90"/>
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="DigsiteCompleteToastFrame" x="13" y="-14"/>
+				</Anchors>
+			</Texture>
+		</Layer>
+		<Layer level="OVERLAY">
+			<Texture name="$parentGlow" file="Interface\AchievementFrame\UI-Achievement-Alert-Glow" alphaMode="ADD" hidden="true" parentKey="glow">
+				<Size>
+					<AbsDimension x="300" y="162"/>
+				</Size>
+				<Anchors>
+					<Anchor point="CENTER">
+						<Offset x="0" y="0"/>
+					</Anchor>
+				</Anchors>
+				<Animations>
+					<AnimationGroup name="$parentAnimIn" parentKey="animIn">
+						<Alpha change="1" duration="0.2" order="1"/>
+						<Alpha change="-1" duration="0.5" order="2"/>
+						<Scripts>
+							<OnFinished>
+								self:GetParent():Hide();
+							</OnFinished>
+						</Scripts>
+					</AnimationGroup>
+				</Animations>
+				<TexCoords left="0" right="0.78125" top="0" bottom="0.66796875"/>
+			</Texture>
+			<Texture name="$parentShine" file="Interface\AchievementFrame\UI-Achievement-Alert-Glow" alphaMode="ADD" hidden="true" parentKey="shine">
+				<Size x="67" y="80"/>
+				<Anchors>
+					<Anchor point="BOTTOMLEFT">
+						<Offset x="0" y="0"/>
+					</Anchor>
+				</Anchors>
+				<Animations>
+					<AnimationGroup name="$parentAnimIn" parentKey="animIn">
+						<Alpha change="1" duration="0.2" order="1"/>
+						<Translation offsetX="200" offsetY="0" duration="0.71" order="2"/>
+						<Alpha startDelay="0.35" change="-1" duration="0.5" order="2"/>
+						<Scripts>
+							<OnFinished>
+								self:GetParent():Hide();
+							</OnFinished>
+						</Scripts>
+					</AnimationGroup>
+				</Animations>
+				<TexCoords left="0.78125" right="0.912109375" top="0" bottom="0.28125"/>
+			</Texture>
+		</Layer>
+	</Layers>
+	<Scripts>
+		<OnEnter>
+			--Overiding the alertFrame onEnter so the DigsiteCompleteToastFrame animates out even if the player hovers their mouse over it.
+		</OnEnter>
+	</Scripts>
+</Button>
+
+<Button name="StorePurchaseAlertFrame" parent="UIParent" hidden="true" frameStrata="DIALOG" inherits="AlertFrameTemplate">
+	<Size x="294" y="84"/>
+	<Animations>
+		<AnimationGroup name="$parentAnimIn" parentKey="animIn">
+			<Alpha change="-1" duration="0" order="1"/>
+			<Alpha change="1" duration="0.2" order="2"/>
+		</AnimationGroup>
+		<AnimationGroup name="$parentWaitAndAnimOut" parentKey="waitAndAnimOut">
+			<Alpha startDelay="4.05" change="-1" duration="1.5" parentKey="animOut">
+				<Scripts>
+					<OnFinished>
+						self:GetRegionParent():Hide();
+					</OnFinished>
+				</Scripts>
+			</Alpha>
+		</AnimationGroup>
+	</Animations>
+	<Layers>
+		<Layer level="BACKGROUND">
+			<!--inherits="store-toast"-->
+			<Texture parentKey="Background" file="Interface\Store\Store-Main">
+				<TexCoords left="0.00097656" right="0.28808594" top="0.81347656" bottom="0.89550781"/>	
+			</Texture>
+		</Layer>
+		<Layer level="ARTWORK">
+			<Texture parentKey="Icon">
+				<Size x="44" y="44"/>
+				<Anchors>
+					<Anchor point="LEFT" relativeKey="$parent" relativePoint="LEFT" x="21" y="0"/>
+				</Anchors>
+			</Texture>
+			<FontString parentKey="Title" inherits="GameFontNormalLarge" text="BLIZZARD_STORE_PURCHASE_COMPLETE">
+				<Anchors>
+					<Anchor point="TOP" relativeKey="$parent" relativePoint="TOP" x="30" y="-23"/>
+				</Anchors>
+			</FontString>
+			<FontString parentKey="Description" inherits="GameFontHighlight" text="BLIZZARD_STORE_PURCHASE_COMPLETE_DESC">
+				<Anchors>
+					<Anchor point="BOTTOM" relativeKey="$parent" relativePoint="BOTTOM" x="30" y="23"/>
+				</Anchors>
+			</FontString>
+		</Layer>
+		<Layer level="OVERLAY">
+			<Texture name="$parentGlow" file="Interface\AchievementFrame\UI-Achievement-Alert-Glow" alphaMode="ADD" hidden="true" parentKey="glow">
+				<Size>
+					<AbsDimension x="375" y="175"/>
+				</Size>
+				<Anchors>
+					<Anchor point="CENTER">
+						<Offset x="0" y="0"/>
+					</Anchor>
+				</Anchors>
+				<Animations>
+					<AnimationGroup name="$parentAnimIn" parentKey="animIn">
+						<Alpha change="1" duration="0.2" order="1"/>
+						<Alpha change="-1" duration="0.5" order="2"/>
+						<Scripts>
+							<OnFinished>
+								self:GetParent():Hide();
+							</OnFinished>
+						</Scripts>
+					</AnimationGroup>
+				</Animations>
+				<TexCoords left="0" right="0.78125" top="0" bottom="0.66796875"/>
+			</Texture>
+			<Texture name="$parentShine" file="Interface\AchievementFrame\UI-Achievement-Alert-Glow" alphaMode="ADD" hidden="true" parentKey="shine">
+				<Size>
+					<AbsDimension x="67" y="85"/>
+				</Size>
+				<Anchors>
+					<Anchor point="BOTTOMLEFT">
+						<Offset x="0" y="0"/>
+					</Anchor>
+				</Anchors>
+				<Animations>
+					<AnimationGroup name="$parentAnimIn" parentKey="animIn">
+						<Alpha change="1" duration="0.2" order="1"/>
+						<Translation offsetX="200" offsetY="0" duration="0.71" order="2"/>
+						<Alpha startDelay="0.35" change="-1" duration="0.5" order="2"/>
+						<Scripts>
+							<OnFinished>
+								self:GetParent():Hide();
+							</OnFinished>
+						</Scripts>
+					</AnimationGroup>
+				</Animations>
+				<TexCoords left="0.78125" right="0.912109375" top="0" bottom="0.28125"/>
+			</Texture>
+		</Layer>
+	</Layers>
+</Button>
+
 <Frame name="AlertFrame" parent="UIParent" hidden="true">
 	<Size x="10" y="10"/>
 	<Anchors>

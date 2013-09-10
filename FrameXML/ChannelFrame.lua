@@ -546,6 +546,7 @@ function ChannelList_ShowDropdown(id)
 	ChannelListDropDown.voiceActive = voiceActive;
 	ChannelListDropDown.active = active;
 	ChannelListDropDown.channelName = name;
+	ChannelListDropDown.onHide = function() ChannelListDropDown.clicked = nil; end;
 	ToggleDropDownMenu(1, nil, ChannelListDropDown, "cursor");
 end
 
@@ -748,7 +749,6 @@ CHANNELPULLOUT_FADEFRAMES = { "ChannelPulloutBackground", "ChannelPulloutCloseBu
 function ChannelPullout_OnLoad (self)
 	self:RegisterEvent("VARIABLES_LOADED");
 	self:SetScript("OnEvent", ChannelPullout_OnEvent);
-	RegisterForSave("CHANNELPULLOUT_OPTIONS");
 end
 
 function ChannelPullout_OnEvent (self)

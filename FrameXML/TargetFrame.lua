@@ -38,6 +38,7 @@ function TargetFrame_OnLoad(self, unit, menuFunc)
 	self.questIcon = _G[thisName.."TextureFrameQuestIcon"];
 	self.levelText = _G[thisName.."TextureFrameLevelText"];
 	self.deadText = _G[thisName.."TextureFrameDeadText"];
+	self.unconsciousText = _G[thisName.."TextureFrameUnconsciousText"];
 	self.petBattleIcon = _G[thisName.."TextureFramePetBattleIcon"];
 	self.TOT_AURA_ROW_WIDTH = TOT_AURA_ROW_WIDTH;
 	-- set simple frame
@@ -61,7 +62,9 @@ function TargetFrame_OnLoad(self, unit, menuFunc)
 						 _G[thisName.."ManaBar"], _G[thisName.."TextureFrameManaBarText"],
 	                     threatFrame, "player", _G[thisName.."NumericalThreat"],
 						 _G[thisName.."MyHealPredictionBar"], _G[thisName.."OtherHealPredictionBar"],
-						 _G[thisName.."TotalAbsorbBar"], _G[thisName.."TotalAbsorbBarOverlay"], _G[thisName.."TextureFrameOverAbsorbGlow"]);
+						 _G[thisName.."TotalAbsorbBar"], _G[thisName.."TotalAbsorbBarOverlay"], _G[thisName.."TextureFrameOverAbsorbGlow"],
+						 _G[thisName.."TextureFrameOverHealAbsorbGlow"], _G[thisName.."HealAbsorbBar"], 
+						 _G[thisName.."HealAbsorbBarLeftShadow"], _G[thisName.."HealAbsorbBarRightShadow"]);
 						
 	TargetFrame_Update(self);
 	self:RegisterEvent("PLAYER_ENTERING_WORLD");
@@ -394,9 +397,16 @@ end
 
 function TargetFrame_CheckDead (self)
 	if ( (UnitHealth(self.unit) <= 0) and UnitIsConnected(self.unit) ) then
-		self.deadText:Show();
+		if ( UnitIsUnconscious(self.unit) ) then
+			self.unconsciousText:Show();
+			self.deadText:Hide();
+		else
+			self.unconsciousText:Hide();
+			self.deadText:Show();
+		end
 	else
 		self.deadText:Hide();
+		self.unconsciousText:Hide();
 	end
 end
 
@@ -888,6 +898,7 @@ function TargetFrame_CreateTargetofTarget(self, unit)
 						 _G[thisName.."ManaBar"], _G[thisName.."TextureFrameManaBarText"]);
 	SetTextStatusBarTextZeroText(frame.healthbar, DEAD);
 	frame.deadText = _G[thisName.."TextureFrameDeadText"];
+	frame.unconsciousText = _G[thisName.."TextureFrameUnconsciousText"];
 	SecureUnitButton_OnLoad(frame, unit);
 end
 
@@ -934,10 +945,17 @@ end
 function TargetofTarget_CheckDead(self)
 	if ( (UnitHealth(self.unit) <= 0) and UnitIsConnected(self.unit) ) then
 		self.background:SetAlpha(0.9);
-		self.deadText:Show();
+		if ( UnitIsUnconscious(self.unit) ) then
+			self.unconsciousText:Show();
+			self.deadText:Hide();
+		else
+			self.unconsciousText:Hide();
+			self.deadText:Show();
+		end
 	else
 		self.background:SetAlpha(1);
 		self.deadText:Hide();
+		self.unconsciousText:Hide();
 	end
 end
 

@@ -94,6 +94,18 @@
 		</FontHeight>
 	</Font>
 	
+	<Font name="GameFontNormalSmall_RU" font="Fonts\FRIZQT___CYR.TTF" alternateTo="GameFontNormalSmall" alternateAlphabetID= "2" virtual="true">
+		<Shadow>
+			<Offset>
+				<AbsDimension x="1" y="-1"/>
+			</Offset>
+			<Color r="0" g="0" b="0"/>
+		</Shadow>
+		<FontHeight>
+			<AbsValue val="10"/>
+		</FontHeight>
+	</Font>
+	
 	<Font name="GameFontNormalSmallLeft_KO" font="Fonts\2002.TTF" alternateTo="GameFontNormalSmallLeft" alternateAlphabetID = "0" virtual="true">
 		<Shadow>
 			<Offset>
@@ -278,6 +290,34 @@
 	<Font name="ChatBubbleFont_RU" font="Fonts\FRIZQT___CYR.TTF" alternateTo="ChatBubbleFont" alternateAlphabetID = "2" virtual="true">
 		<FontHeight>
 			<AbsValue val="14"/>
+		</FontHeight>
+	</Font>
+	
+	<Font name="GameTooltipHeaderText_RU" font="Fonts\FRIZQT___CYR.TTF" alternateTo="GameTooltipHeaderText" alternateAlphabetID= "2" virtual="true">
+		<FontHeight>
+			<AbsValue val="14"/>
+		</FontHeight>
+	</Font>
+	<Font name="GameTooltipText_RU" font="Fonts\FRIZQT___CYR.TTF" alternateTo="GameTooltipText" alternateAlphabetID= "2" virtual="true">
+		<FontHeight>
+			<AbsValue val="12"/>
+		</FontHeight>
+	</Font>
+	<Font name="GameTooltipTextSmall_RU" font="Fonts\FRIZQT___CYR.TTF" alternateTo="GameTooltipTextSmall" alternateAlphabetID= "2" virtual="true">
+		<FontHeight>
+			<AbsValue val="10"/>
+		</FontHeight>
+	</Font>
+	
+	<Font name="MailTextFontNormal_RU" font="Fonts\MORPHEUS_CYR.TTF" alternateTo="MailTextFontNormal" alternateAlphabetID= "2" virtual="true">
+		<FontHeight>
+			<AbsValue val="15"/>
+		</FontHeight>
+	</Font>
+		
+	<Font name="QuestFont_RU" font="Fonts\FRIZQT___CYR.TTF" alternateTo="QuestFont" alternateAlphabetID= "2" virtual="true">
+		<FontHeight>
+			<AbsValue val="13"/>
 		</FontHeight>
 	</Font>
 </Ui>

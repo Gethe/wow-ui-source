@@ -185,17 +185,22 @@
 				<Frames>
 					<Button name="$parentGroupButton1" inherits="GroupFinderGroupButtonTemplate" parentKey="groupButton1" id="1">
 						<Anchors>
-							<Anchor point="TOPLEFT" x="10" y="-101" />
+							<Anchor point="TOPLEFT" x="10" y="-70" />
 						</Anchors>
 					</Button>
 					<Button name="$parentGroupButton2" inherits="GroupFinderGroupButtonTemplate" parentKey="groupButton2" id="2">
 						<Anchors>
-							<Anchor point="TOP" relativeTo="$parentGroupButton1" relativePoint="BOTTOM" x="0" y="-30" />
+							<Anchor point="TOP" relativeTo="$parentGroupButton1" relativePoint="BOTTOM" x="0" y="-23" />
 						</Anchors>
 					</Button>
 					<Button name="$parentGroupButton3" inherits="GroupFinderGroupButtonTemplate" parentKey="groupButton3" id="3">
 						<Anchors>
-							<Anchor point="TOP" relativeTo="$parentGroupButton2" relativePoint="BOTTOM" x="0" y="-30" />
+							<Anchor point="TOP" relativeTo="$parentGroupButton2" relativePoint="BOTTOM" x="0" y="-23" />
+						</Anchors>
+					</Button>
+					<Button name="$parentGroupButton4" inherits="GroupFinderGroupButtonTemplate" parentKey="groupButton4" id="4">
+						<Anchors>
+							<Anchor point="TOP" relativeTo="$parentGroupButton3" relativePoint="BOTTOM" x="0" y="-23" />
 						</Anchors>
 					</Button>
 				</Frames>

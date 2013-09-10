@@ -2148,7 +2148,10 @@ function CombatLog_OnEvent(filterSettings, timestamp, event, hideCaster, sourceG
 	local message; -- Used for server spell messages
 	local originalEvent = event; -- Used for spell links
 	local remainingPoints;	--Used for absorbs with the correct flag set (like Power Word: Shield)
-
+	
+	--Extra data for PARTY_KILL, SPELL_INSTAKILL and UNIT_DIED
+	local unconsciousOnDeath = 0;
+	
 	-- Generic disabling stuff
 	if ( not sourceName or CombatLog_Object_IsA(sourceFlags, COMBATLOG_OBJECT_NONE) ) then
 		sourceEnabled = false;
@@ -2503,6 +2506,8 @@ function CombatLog_OnEvent(filterSettings, timestamp, event, hideCaster, sourceG
 			resultEnabled = false;
 			valueEnabled = false;
 			schoolEnabled = false;
+			
+			unconsciousOnDeath = select(4, ...);
 		elseif ( event == "SPELL_DURABILITY_DAMAGE" ) then
 			-- Disable appropriate sections
 			resultEnabled = false;
@@ -2697,6 +2702,8 @@ function CombatLog_OnEvent(filterSettings, timestamp, event, hideCaster, sourceG
 		resultEnabled = false;
 		valueEnabled = false;
 		spellEnabled = false;
+		
+		unconsciousOnDeath = ...;
 	elseif ( event == "ENCHANT_APPLIED" ) then	
 		-- Get the enchant name, item id and item name
 		spellName, itemId, itemName = ...;
@@ -2729,6 +2736,8 @@ function CombatLog_OnEvent(filterSettings, timestamp, event, hideCaster, sourceG
 		destEnabled = false;
 		spellEnabled = false;
 		valueEnabled = false;
+		
+		unconsciousOnDeath = ...;
 	elseif ( event == "ENVIRONMENTAL_DAMAGE" ) then
 		--Environemental Type, Damage standard
 		environmentalType, amount, overkill, school, resisted, blocked, absorbed, critical, glancing, crushing = ...
@@ -2822,6 +2831,44 @@ function CombatLog_OnEvent(filterSettings, timestamp, event, hideCaster, sourceG
 	local extraSpellNameStr = extraSpellName;
 	local itemNameStr = itemName;
 	local actionEvent = "ACTION_"..event;
+	
+	--This is to get PARTY_KILL COMBAT_LOG_EVENTs on UnconsciousOnDeath units to display properly without new CombatLog events.
+	if ( event == "PARTY_KILL" ) then
+		if ( unconsciousOnDeath == 1 ) then
+			actionEvent = "ACTION_PARTY_KILL_UNCONSCIOUS";
+			
+			if ( settings.fullText ) then
+				formatString = _G["ACTION_PARTY_KILL_UNCONSCIOUS_FULL_TEXT"];
+			end
+		end	
+	end
+	
+	--This is to get SPELL_INSTAKILL COMBAT_LOG_EVENTs on UnconsciousOnDeath units to display properly without new CombatLog events.
+	if ( event == "SPELL_INSTAKILL" ) then
+		if ( unconsciousOnDeath == 1 ) then
+			actionEvent = "ACTION_SPELL_INSTAKILL_UNCONSCIOUS";
+			
+			if ( settings.fullText ) then
+				if ( not sourceEnabled ) then
+					formatString = _G["ACTION_SPELL_INSTAKILL_UNCONSCIOUS_FULL_TEXT_NO_SOURCE"];
+				else
+					formatString = _G["ACTION_SPELL_INSTAKILL_UNCONSCIOUS_FULL_TEXT"];
+				end
+			end
+		end	
+	end
+	
+	--This is to get the UNIT_DIED COMBAT_LOG_EVENTs for UnconsciousOnDeath units to display properly without new CombatLog events.
+	if ( event == "UNIT_DIED" ) then
+		if ( unconsciousOnDeath == 1 ) then
+			actionEvent = "ACTION_UNIT_BECCOMES_UNCONSCIOUS";
+			
+			if ( settings.fullText ) then
+				formatString = _G["ACTION_UNIT_BECOMES_UNCONSCIOUS_FULL_TEXT"];
+			end
+		end	
+	end
+	
 	local actionStr = _G[actionEvent];
 	local timestampStr = timestamp;
 	local powerTypeString = "";

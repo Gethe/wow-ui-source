@@ -542,6 +542,7 @@
 				<Scripts>
 					<OnLoad>
 						self:RegisterEvent("PLAYER_DIFFICULTY_CHANGED");
+						self:RegisterEvent("INSTANCE_GROUP_SIZE_CHANGED");
 						self:RegisterEvent("UPDATE_INSTANCE_INFO");
 						self:RegisterEvent("GROUP_ROSTER_UPDATE");
 						self:RegisterEvent("PLAYER_GUILD_UPDATE");

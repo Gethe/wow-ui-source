@@ -56,7 +56,7 @@ function InspectFrame_OnEvent(self, event, unit, ...)
 	elseif ( event == "UNIT_NAME_UPDATE" ) then
 		local arg1 = ...;
 		if ( arg1 == self.unit ) then
-			InspectFrameTitleText:SetText(UnitName(arg1));
+			InspectFrameTitleText:SetText(GetUnitName(self.unit, true));
 		end
 		return;
 	elseif ( event == "UNIT_PORTRAIT_UPDATE" ) then
@@ -73,7 +73,7 @@ function InspectFrame_UnitChanged(self)
 	NotifyInspect(unit);
 	InspectPaperDollFrame_OnShow(self);
 	SetPortraitTexture(InspectFramePortrait, unit);
-	InspectFrameTitleText:SetText(UnitName(unit));
+	InspectFrameTitleText:SetText(GetUnitName(unit, true));
 	InspectFrame_UpdateTabs();
 	if ( InspectPVPFrame:IsShown() ) then
 		InspectPVPFrame_OnShow();
@@ -86,7 +86,7 @@ function InspectFrame_OnShow(self)
 	end
 	PlaySound("igCharacterInfoOpen");	
 	SetPortraitTexture(InspectFramePortrait, self.unit);
-	InspectFrameTitleText:SetText(UnitName(self.unit));
+	InspectFrameTitleText:SetText(GetUnitName(self.unit, true));
 end
 
 function InspectFrame_OnHide(self)

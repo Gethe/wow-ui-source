@@ -15,6 +15,7 @@ function AlertFrame_OnLoad (self)
 	self:RegisterEvent("LOOT_ITEM_ROLL_WON");
 	self:RegisterEvent("SHOW_LOOT_TOAST");
 	self:RegisterEvent("PET_BATTLE_CLOSE");
+	self:RegisterEvent("STORE_PRODUCT_DELIVERED");
 end
 
 function AlertFrame_OnEvent (self, event, ...)
@@ -56,6 +57,9 @@ function AlertFrame_OnEvent (self, event, ...)
 		end
 	elseif ( event == "PET_BATTLE_CLOSE" ) then
 		AchievementAlertFrame_FireDelayedAlerts();
+	elseif ( event == "STORE_PRODUCT_DELIVERED" ) then
+		local icon = ...;
+		StorePurchaseAlertFrame_ShowAlert(icon);
 	end
 end
 
@@ -91,7 +95,8 @@ end
 -- [[ Anchoring ]] --
 function AlertFrame_FixAnchors()
 	local alertAnchor = AlertFrame;
-	alertAnchor = AlertFrame_SetLootAnchors(alertAnchor);
+	alertAnchor = AlertFrame_SetLootAnchors(alertAnchor); --This needs to be first as it doesn't actually anchor anything.
+	alertAnchor = AlertFrame_SetStorePurchaseAnchors(alertAnchor);
 	alertAnchor = AlertFrame_SetLootWonAnchors(alertAnchor);
 	alertAnchor = AlertFrame_SetMoneyWonAnchors(alertAnchor);
 	alertAnchor = AlertFrame_SetAchievementAnchors(alertAnchor);
@@ -100,6 +105,7 @@ function AlertFrame_FixAnchors()
 	alertAnchor = AlertFrame_SetDungeonCompletionAnchors(alertAnchor);
 	alertAnchor = AlertFrame_SetScenarioAnchors(alertAnchor);
 	alertAnchor = AlertFrame_SetGuildChallengeAnchors(alertAnchor);
+	alertAnchor = AlertFrame_SetDigsiteCompleteToastFrameAnchors(alertAnchor);
 end
 
 function AlertFrame_SetLootAnchors(alertAnchor)
@@ -115,6 +121,15 @@ function AlertFrame_SetLootAnchors(alertAnchor)
 		return frame;
 	end
 
+	return alertAnchor;
+end
+
+function AlertFrame_SetStorePurchaseAnchors(alertAnchor)
+	local frame = StorePurchaseAlertFrame;
+	if ( frame:IsShown() ) then
+		frame:SetPoint("BOTTOM", alertAnchor, "TOP", 0, 10);
+		return frame;
+	end
 	return alertAnchor;
 end
 
@@ -200,6 +215,14 @@ function AlertFrame_SetGuildChallengeAnchors(alertAnchor)
 	if ( frame:IsShown() ) then
 		frame:SetPoint("BOTTOM", alertAnchor, "TOP", 0, 10);
 		alertAnchor = frame;
+	end
+	return alertAnchor;
+end
+
+function AlertFrame_SetDigsiteCompleteToastFrameAnchors(alertAnchor)
+	if ( DigsiteCompleteToastFrame and DigsiteCompleteToastFrame:IsShown() ) then
+		DigsiteCompleteToastFrame:SetPoint("BOTTOM", alertAnchor, "TOP", 0, 10);
+		alertAnchor = DigsiteCompleteToastFrame;
 	end
 	return alertAnchor;
 end
@@ -835,3 +858,20 @@ function MoneyWonAlertFrame_SetUp(self, amount)
 	PlaySoundKitID(31578);	--UI_EpicLoot_Toast
 end
 
+-- [[ DigsiteCompleteToastFrame ]] --
+function DigsiteCompleteToastFrame_ShowAlert(researchBranchID)
+	local RaceName, RaceTexture	= GetArchaeologyRaceInfoByID(researchBranchID);
+	DigsiteCompleteToastFrame.DigsiteType:SetText(RaceName);
+	DigsiteCompleteToastFrame.DigsiteTypeTexture:SetTexture(RaceTexture);
+	PlaySound("UI_DigsiteCompletion_Toast");
+	AlertFrame_AnimateIn(DigsiteCompleteToastFrame);
+	AlertFrame_FixAnchors();
+end
+
+-- [[ StorePurchaseAlertFrame ]] --
+function StorePurchaseAlertFrame_ShowAlert(icon)
+	StorePurchaseAlertFrame.Icon:SetTexture(icon);
+	AlertFrame_AnimateIn(StorePurchaseAlertFrame);
+	AlertFrame_FixAnchors();
+	PlaySound("UI_igStore_PurchaseDelivered_Toast_01");
+end

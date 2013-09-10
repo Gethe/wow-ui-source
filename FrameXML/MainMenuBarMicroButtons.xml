@@ -20,22 +20,7 @@
 		</Layers>
 		<Scripts>
 			<OnEnter>
-				if ( self:IsEnabled() or self.minLevel or self.disabledTooltip or self.factionGroup) then
-					GameTooltip_AddNewbieTip(self, self.tooltipText, 1.0, 1.0, 1.0, self.newbieText);
-					GameTooltip:AddLine(" ");
-					if ( not self:IsEnabled() ) then
-						if ( self.factionGroup == "Neutral" ) then
-							GameTooltip:AddLine(FEATURE_NOT_AVAILBLE_PANDAREN, RED_FONT_COLOR.r, RED_FONT_COLOR.g, RED_FONT_COLOR.b, true);
-							GameTooltip:Show();
-						elseif ( self.minLevel ) then
-							GameTooltip:AddLine(format(FEATURE_BECOMES_AVAILABLE_AT_LEVEL, self.minLevel), RED_FONT_COLOR.r, RED_FONT_COLOR.g, RED_FONT_COLOR.b, true);
-							GameTooltip:Show();
-						elseif ( self.disabledTooltip ) then
-							GameTooltip:AddLine(self.disabledTooltip, RED_FONT_COLOR.r, RED_FONT_COLOR.g, RED_FONT_COLOR.b, true);
-							GameTooltip:Show();
-						end
-					end
-				end
+				MicroButton_OnEnter(self);
 			</OnEnter>
 			<OnEnable>
 				self:SetAlpha(1);
@@ -479,6 +464,26 @@
 			</OnClick>
 		</Scripts>
 	</Button>
+	<Button name="StoreMicroButton" inherits="MainMenuBarMicroButton" parent="UIParent" hidden="true">
+		<Anchors>
+			<Anchor point="BOTTOMLEFT" relativeTo="EJMicroButton" relativePoint="BOTTOMRIGHT">
+				<Offset>
+					<AbsDimension x="-3" y="0"/>
+				</Offset>
+			</Anchor>
+		</Anchors>
+		<Scripts>
+			<OnLoad>
+				LoadMicroButtonTextures(self, "BStore");
+				self.tooltipText = BLIZZARD_STORE;
+				self:RegisterEvent("STORE_STATUS_CHANGED");
+			</OnLoad>
+			<OnEvent>
+				UpdateMicroButtons();
+			</OnEvent>
+			<OnClick function="ToggleStoreUI"/>
+		</Scripts>
+	</Button>
 	<Button name="MainMenuMicroButton" inherits="MainMenuBarMicroButton" parent="UIParent">
 		<Anchors>
 			<Anchor point="BOTTOMLEFT" relativeTo="EJMicroButton" relativePoint="BOTTOMRIGHT">
@@ -519,7 +524,6 @@
 
 				PERFORMANCEBAR_LOW_LATENCY = 300;
 				PERFORMANCEBAR_MEDIUM_LATENCY = 600;
-				PERFORMANCEBAR_UPDATE_INTERVAL = 1;
 				self.hover = nil;
 				self.updateInterval = 0;
 				self:RegisterForClicks("LeftButtonDown", "RightButtonDown", "LeftButtonUp", "RightButtonUp");
@@ -628,7 +632,6 @@
 					self.down = 1;
 				end
 			</OnMouseUp>
-			
 			<OnEnter>
 				self.hover = 1;
 				self.updateInterval = 0;

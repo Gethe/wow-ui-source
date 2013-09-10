@@ -511,15 +511,34 @@ function MerchantFrame_ConfirmExtendedItemCost(itemButton, numToPurchase)
 	local itemQuality = 1;
 	local _;
 	local r, g, b = 1, 1, 1;
+	local specs = {};
 	if(itemButton.link) then
 		itemName, _, itemQuality = GetItemInfo(itemButton.link);
 		r, g, b = GetItemQualityColor(itemQuality); 
+		specs = GetItemSpecInfo(itemButton.link, specs);
 	elseif(itemName) then		-- This is the case for a currency, which don't support links yet
 		itemName = itemButton.name;
 		r, g, b = GetItemQualityColor(1); 
 	end
 	
-	StaticPopup_Show("CONFIRM_PURCHASE_TOKEN_ITEM", itemsString, "", {["texture"] = itemButton.texture, ["name"] = itemName, ["color"] = {r, g, b, 1}, ["link"] = itemButton.link, ["index"] = index, ["count"] = numToPurchase});
+	local specText;
+	if (specs and #specs > 0) then
+		local specName, specIcon;
+		specText = "\n\n";
+		for i=1, #specs do
+			_, specName, _, specIcon = GetSpecializationInfoByID(specs[i]);
+			specText = specText.." |T"..specIcon..":0:0:0:-1|t "..NORMAL_FONT_COLOR_CODE..specName..FONT_COLOR_CODE_CLOSE;
+			if (i < #specs) then
+				specText = specText..PLAYER_LIST_DELIMITER
+			end
+		end
+	else
+		specText = "";
+	end
+	
+	StaticPopup_Show("CONFIRM_PURCHASE_TOKEN_ITEM", itemsString, specText, 
+						{["texture"] = itemButton.texture, ["name"] = itemName, ["color"] = {r, g, b, 1}, 
+						["link"] = itemButton.link, ["index"] = index, ["count"] = numToPurchase});
 end
 
 function MerchantFrame_ResetRefundItem()

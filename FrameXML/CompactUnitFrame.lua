@@ -30,6 +30,7 @@ function CompactUnitFrame_OnLoad(self)
 	self:RegisterEvent("INCOMING_RESURRECT_CHANGED");
 	self:RegisterEvent("UNIT_OTHER_PARTY_CHANGED");
 	self:RegisterEvent("UNIT_ABSORB_AMOUNT_CHANGED");
+	self:RegisterEvent("UNIT_HEAL_ABSORB_AMOUNT_CHANGED");
 	-- also see CompactUnitFrame_UpdateUnitEvents for more events
 	
 	self.maxBuffs = 0;
@@ -102,6 +103,8 @@ function CompactUnitFrame_OnEvent(self, event, ...)
 		elseif ( event == "UNIT_OTHER_PARTY_CHANGED" ) then
 			CompactUnitFrame_UpdateCenterStatusIcon(self);
 		elseif ( event == "UNIT_ABSORB_AMOUNT_CHANGED" ) then
+			CompactUnitFrame_UpdateHealPrediction(self);
+		elseif ( event == "UNIT_HEAL_ABSORB_AMOUNT_CHANGED" ) then
 			CompactUnitFrame_UpdateHealPrediction(self);
 		elseif ( event == "PLAYER_FLAGS_CHANGED" ) then
 			CompactUnitFrame_UpdateStatusText(self);
@@ -457,14 +460,27 @@ function CompactUnitFrame_UpdateStatusText(frame)
 	end
 end
 
+--WARNING: This function is very similar to the function UnitFrameHealPredictionBars_Update in UnitFrame.lua.
+--If you are making changes here, it is possible you may want to make changes there as well.
 local MAX_INCOMING_HEAL_OVERFLOW = 1.05;
 function CompactUnitFrame_UpdateHealPrediction(frame)
+	local _, maxHealth = frame.healthBar:GetMinMaxValues();
+	local health = frame.healthBar:GetValue();
+	
+	if ( maxHealth <= 0 ) then
+		return;
+	end
+	
 	if ( not frame.optionTable.displayHealPrediction ) then
 		frame.myHealPrediction:Hide();
 		frame.otherHealPrediction:Hide();
 		frame.totalAbsorb:Hide();
 		frame.totalAbsorbOverlay:Hide();
 		frame.overAbsorbGlow:Hide();
+		frame.myHealAbsorb:Hide();
+		frame.myHealAbsorbLeftShadow:Hide();
+		frame.myHealAbsorbRightShadow:Hide();
+		frame.overHealAbsorbGlow:Hide();
 		return;
 	end
 
@@ -472,45 +488,105 @@ function CompactUnitFrame_UpdateHealPrediction(frame)
 	local allIncomingHeal = UnitGetIncomingHeals(frame.displayedUnit) or 0;
 	local totalAbsorb = UnitGetTotalAbsorbs(frame.displayedUnit) or 0;
 	
-	--Make sure we don't go too far out of the frame.
-	local health = frame.healthBar:GetValue();
-	local _, maxHealth = frame.healthBar:GetMinMaxValues();
-	
-	--See how far we're going over.
-	if ( health + allIncomingHeal > maxHealth * MAX_INCOMING_HEAL_OVERFLOW ) then
-		allIncomingHeal = maxHealth * MAX_INCOMING_HEAL_OVERFLOW - health;
+	--We don't fill outside the health bar with healAbsorbs.  Instead, an overHealAbsorbGlow is shown.
+	local myCurrentHealAbsorb = UnitGetTotalHealAbsorbs(frame.displayedUnit) or 0;
+	if ( health < myCurrentHealAbsorb ) then
+		frame.overHealAbsorbGlow:Show();
+		myCurrentHealAbsorb = health;
+	else
+		frame.overHealAbsorbGlow:Hide();
 	end
 	
-	--Transfer my incoming heals out of the allIncomingHeal
-	if ( allIncomingHeal < myIncomingHeal ) then
-		myIncomingHeal = allIncomingHeal;
-		allIncomingHeal = 0;
+	--See how far we're going over the health bar and make sure we don't go too far out of the frame.
+	if ( health - myCurrentHealAbsorb + allIncomingHeal > maxHealth * MAX_INCOMING_HEAL_OVERFLOW ) then
+		allIncomingHeal = maxHealth * MAX_INCOMING_HEAL_OVERFLOW - health + myCurrentHealAbsorb;
+	end
+	
+	local otherIncomingHeal = 0;
+	
+	--Split up incoming heals.
+	if ( allIncomingHeal >= myIncomingHeal ) then
+		otherIncomingHeal = allIncomingHeal - myIncomingHeal;
 	else
-		allIncomingHeal = allIncomingHeal - myIncomingHeal;
+		myIncomingHeal = allIncomingHeal;
 	end
 
 	local overAbsorb = false;
-	--We don't overfill the absorb bar
-	if ( health + myIncomingHeal + allIncomingHeal + totalAbsorb >= maxHealth ) then
+	--We don't fill outside the the health bar with absorbs.  Instead, an overAbsorbGlow is shown.
+	if ( health - myCurrentHealAbsorb + allIncomingHeal + totalAbsorb >= maxHealth or health + totalAbsorb >= maxHealth ) then
 		if ( totalAbsorb > 0 ) then
 			overAbsorb = true;
 		end
-		totalAbsorb = max(0,maxHealth - (health + myIncomingHeal + allIncomingHeal));
+		
+		if ( allIncomingHeal > myCurrentHealAbsorb ) then
+			totalAbsorb = max(0,maxHealth - (health - myCurrentHealAbsorb + allIncomingHeal));
+		else
+			totalAbsorb = max(0,maxHealth - health);
+		end
 	end
 	if ( overAbsorb ) then
 		frame.overAbsorbGlow:Show();
 	else
 		frame.overAbsorbGlow:Hide();
 	end
-
-	local previousTexture = frame.healthBar:GetStatusBarTexture();
-
-	previousTexture = CompactUnitFrameUtil_UpdateFillBar(frame, previousTexture, frame.myHealPrediction, myIncomingHeal);
-	previousTexture = CompactUnitFrameUtil_UpdateFillBar(frame, previousTexture, frame.otherHealPrediction, allIncomingHeal);
-	previousTexture = CompactUnitFrameUtil_UpdateFillBar(frame, previousTexture, frame.totalAbsorb, totalAbsorb);
+	
+	local healthTexture = frame.healthBar:GetStatusBarTexture();
+	
+	local myCurrentHealAbsorbPercent = myCurrentHealAbsorb / maxHealth;
+	
+	local healAbsorbTexture = nil;
+	
+	--If allIncomingHeal is greater than myCurrentHealAbsorb, then the current
+	--heal absorb will be completely overlayed by the incoming heals so we don't show it.
+	if ( myCurrentHealAbsorb > allIncomingHeal ) then
+		local shownHealAbsorb = myCurrentHealAbsorb - allIncomingHeal;
+		local shownHealAbsorbPercent = shownHealAbsorb / maxHealth;
+		healAbsorbTexture = CompactUnitFrameUtil_UpdateFillBar(frame, healthTexture, frame.myHealAbsorb, shownHealAbsorb, -shownHealAbsorbPercent);
+		
+		--If there are incoming heals the left shadow would be overlayed by the incoming heals
+		--so it isn't shown.
+		if ( allIncomingHeal > 0 ) then
+			frame.myHealAbsorbLeftShadow:Hide();
+		else
+			frame.myHealAbsorbLeftShadow:SetPoint("TOPLEFT", healAbsorbTexture, "TOPLEFT", 0, 0);
+			frame.myHealAbsorbLeftShadow:SetPoint("BOTTOMLEFT", healAbsorbTexture, "BOTTOMLEFT", 0, 0);
+			frame.myHealAbsorbLeftShadow:Show();
+		end
+		
+		-- The right shadow is only shown if there are absorbs on the health bar.
+		if ( totalAbsorb > 0 ) then
+			frame.myHealAbsorbRightShadow:SetPoint("TOPLEFT", healAbsorbTexture, "TOPRIGHT", -8, 0);
+			frame.myHealAbsorbRightShadow:SetPoint("BOTTOMLEFT", healAbsorbTexture, "BOTTOMRIGHT", -8, 0);
+			frame.myHealAbsorbRightShadow:Show();
+		else
+			frame.myHealAbsorbRightShadow:Hide();
+		end
+	else
+		frame.myHealAbsorb:Hide();
+		frame.myHealAbsorbRightShadow:Hide();
+		frame.myHealAbsorbLeftShadow:Hide();
+	end
+	
+	--Show myIncomingHeal on the health bar.
+	local incomingHealsTexture = CompactUnitFrameUtil_UpdateFillBar(frame, healthTexture, frame.myHealPrediction, myIncomingHeal, -myCurrentHealAbsorbPercent);
+	--Append otherIncomingHeal on the health bar.
+	incomingHealsTexture = CompactUnitFrameUtil_UpdateFillBar(frame, incomingHealsTexture, frame.otherHealPrediction, otherIncomingHeal);
+	
+	--Appen absorbs to the correct section of the health bar.
+	local appendTexture = nil;
+	if ( healAbsorbTexture ) then
+		--If there is a healAbsorb part shown, append the absorb to the end of that.
+		appendTexture = healAbsorbTexture;
+	else
+		--Otherwise, append the absorb to the end of the the incomingHeals part;
+		appendTexture = incomingHealsTexture;
+	end
+	CompactUnitFrameUtil_UpdateFillBar(frame, appendTexture, frame.totalAbsorb, totalAbsorb)
 end
 
-function CompactUnitFrameUtil_UpdateFillBar(frame, previousTexture, bar, amount)
+--WARNING: This function is very similar to the function UnitFrameUtil_UpdateFillBar in UnitFrame.lua.
+--If you are making changes here, it is possible you may want to make changes there as well.
+function CompactUnitFrameUtil_UpdateFillBar(frame, previousTexture, bar, amount, barOffsetXPercent)
 	if ( amount == 0 ) then
 		bar:Hide();
 		if ( bar.overlay ) then
@@ -518,9 +594,15 @@ function CompactUnitFrameUtil_UpdateFillBar(frame, previousTexture, bar, amount)
 		end
 		return previousTexture;
 	end
+	
+	local barOffsetX = 0;
+	if ( barOffsetXPercent ) then
+		local healthBarSizeX = frame.healthBar:GetWidth();
+		barOffsetX = healthBarSizeX * barOffsetXPercent;
+	end
 
-	bar:SetPoint("TOPLEFT", previousTexture, "TOPRIGHT", 0, 0);
-	bar:SetPoint("BOTTOMLEFT", previousTexture, "BOTTOMRIGHT", 0, 0);
+	bar:SetPoint("TOPLEFT", previousTexture, "TOPRIGHT", barOffsetX, 0);
+	bar:SetPoint("BOTTOMLEFT", previousTexture, "BOTTOMRIGHT", barOffsetX, 0);
 
 	local totalWidth, totalHeight = frame.healthBar:GetSize();
 	local _, totalMax = frame.healthBar:GetMinMaxValues();
@@ -1030,6 +1112,10 @@ function DefaultCompactUnitFrameSetup(frame)
 	frame.myHealPrediction:ClearAllPoints();
 	frame.myHealPrediction:SetTexture(1,1,1);
 	frame.myHealPrediction:SetGradient("VERTICAL", 8/255, 93/255, 72/255, 11/255, 136/255, 105/255);
+	frame.myHealAbsorb:ClearAllPoints();
+	frame.myHealAbsorb:SetTexture("Interface\\RaidFrame\\Absorb-Fill", true, true);
+	frame.myHealAbsorbLeftShadow:ClearAllPoints();
+	frame.myHealAbsorbRightShadow:ClearAllPoints();
 	frame.otherHealPrediction:ClearAllPoints();
 	frame.otherHealPrediction:SetTexture(1,1,1);
 	frame.otherHealPrediction:SetGradient("VERTICAL", 11/255, 53/255, 43/255, 21/255, 89/255, 72/255);
@@ -1045,6 +1131,12 @@ function DefaultCompactUnitFrameSetup(frame)
 	frame.overAbsorbGlow:SetPoint("BOTTOMLEFT", frame.healthBar, "BOTTOMRIGHT", -7, 0);
 	frame.overAbsorbGlow:SetPoint("TOPLEFT", frame.healthBar, "TOPRIGHT", -7, 0);
 	frame.overAbsorbGlow:SetWidth(16);
+	frame.overHealAbsorbGlow:ClearAllPoints();
+	frame.overHealAbsorbGlow:SetTexture("Interface\\RaidFrame\\Absorb-Overabsorb");
+	frame.overHealAbsorbGlow:SetBlendMode("ADD");
+	frame.overHealAbsorbGlow:SetPoint("BOTTOMRIGHT", frame.healthBar, "BOTTOMLEFT", 7, 0);
+	frame.overHealAbsorbGlow:SetPoint("TOPRIGHT", frame.healthBar, "TOPLEFT", 7, 0);
+	frame.overHealAbsorbGlow:SetWidth(16);
 
 	frame.roleIcon:ClearAllPoints();
 	frame.roleIcon:SetPoint("TOPLEFT", 3, -2);
@@ -1202,7 +1294,11 @@ function DefaultCompactMiniFrameSetup(frame)
 	
 	frame.myHealPrediction:ClearAllPoints();
 	frame.myHealPrediction:SetTexture(1,1,1);
-	frame.myHealPrediction:SetGradient("VERTICAL", 0, 139/255, 20/255, 10/255, 202/255, 29/255);
+	frame.myHealPrediction:SetGradient("VERTICAL", 8/255, 93/255, 72/255, 11/255, 136/255, 105/255);
+	frame.myHealAbsorb:ClearAllPoints();
+	frame.myHealAbsorb:SetTexture("Interface\\RaidFrame\\Absorb-Fill", true, true);
+	frame.myHealAbsorbLeftShadow:ClearAllPoints();
+	frame.myHealAbsorbRightShadow:ClearAllPoints();
 	frame.otherHealPrediction:ClearAllPoints();
 	frame.otherHealPrediction:SetTexture(1,1,1);
 	frame.otherHealPrediction:SetGradient("VERTICAL", 3/255, 72/255, 5/255, 2/255, 101/255, 18/255);
@@ -1218,6 +1314,12 @@ function DefaultCompactMiniFrameSetup(frame)
 	frame.overAbsorbGlow:SetPoint("BOTTOMLEFT", frame.healthBar, "BOTTOMRIGHT", -7, 0);
 	frame.overAbsorbGlow:SetPoint("TOPLEFT", frame.healthBar, "TOPRIGHT", -7, 0);
 	frame.overAbsorbGlow:SetWidth(16);
+	frame.overHealAbsorbGlow:ClearAllPoints();
+	frame.overHealAbsorbGlow:SetTexture("Interface\\RaidFrame\\Absorb-Overabsorb");
+	frame.overHealAbsorbGlow:SetBlendMode("ADD");
+	frame.overHealAbsorbGlow:SetPoint("BOTTOMRIGHT", frame.healthBar, "BOTTOMLEFT", 7, 0);
+	frame.overHealAbsorbGlow:SetPoint("TOPRIGHT", frame.healthBar, "TOPLEFT", 7, 0);
+	frame.overHealAbsorbGlow:SetWidth(16);
 
 	frame.name:SetPoint("LEFT", 5, 1);
 	frame.name:SetPoint("RIGHT", -3, 1);

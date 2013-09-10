@@ -195,6 +195,23 @@ GlueDialogTypes["CANCEL"] = {
 	end,
 }
 
+GlueDialogTypes["REALM_LIST_CANCEL"] = {
+	text = "",
+	button1 = CANCEL,
+	button2 = nil,
+	OnAccept = function()
+		StatusDialogClick();
+		local serverName, isPVP, isRP, isDown = GetServerName();
+		if ( not isDown and IsConnectedToServer() ) then
+			SetGlueScreen("charselect");
+		else
+			SetGlueScreen("login");
+		end
+	end,
+	OnCancel = function()
+	end,
+}
+
 GlueDialogTypes["QUEUED_WITH_FCM"] = {
 	text = "",
 	button1 = CANCEL,
@@ -412,6 +429,7 @@ GlueDialogTypes["SCANDLL_HACKFOUND_CONFIRM"] = {
 		GlueDialog:Hide();
 		ScanDLLContinueAnyway();
 		AccountLoginUI:Show();
+		AccountLogin_CheckAutoLogin();
 	end,
 	OnCancel = function()
 		AccountLogin_Exit();

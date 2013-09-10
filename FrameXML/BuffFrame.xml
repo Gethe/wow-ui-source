@@ -167,7 +167,7 @@
 				if self.index then
 					GameTooltip:SetOwner(self, "ANCHOR_BOTTOMLEFT");
 					GameTooltip:SetFrameLevel(self:GetFrameLevel() + 2);
-					GameTooltip:SetUnitBuff(PlayerFrame.unit, self.name);
+					GameTooltip:SetUnitConsolidatedBuff(PlayerFrame.unit, self.id);
 				end
 			</OnEnter>
 			<OnLeave>
@@ -209,6 +209,7 @@
 			
 				self["Buff1"].labelString = RAID_BUFF_1;
 				self["Buff1"].label:SetText(RAID_BUFF_1);
+				self["Buff1"].id = 1;
 				local anchorNextTo = true;
 				for i=2,NUM_LE_RAID_BUFF_TYPES do
 					self["Buff"..i] = CreateFrame("BUTTON", "ConsolidatedBuffsTooltipBuff"..i, self, "ConsolidatedBuffTemplate");
@@ -219,23 +220,17 @@
 					else
 						self["Buff"..i]:SetPoint("TOP", self["Buff"..(i-2)], "BOTTOM", 0, -5);
 					end
+					self["Buff"..i].id = i;
 					anchorNextTo = not anchorNextTo;
 				end
 				
 				self:SetScale(0.85);
 			</OnLoad>
-			<OnEnter>
-				self.mousedOver = true;
-			</OnEnter>
 			<OnUpdate>
-				if ( self.mousedOver and not ConsolidatedBuffs.mousedOver and not self:IsMouseOver() ) then
-					self.mousedOver = nil;
+				if ( not ConsolidatedBuffs.mousedOver and not self:IsMouseOver() ) then
 					self:Hide();
 				end
 			</OnUpdate>
-			<OnHide>
-				self.mousedOver = nil;
-			</OnHide>
 		</Scripts>
 	</Frame>
 

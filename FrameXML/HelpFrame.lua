@@ -442,7 +442,6 @@ function HelpFrame_UpdateReportPlayerNameDialog()
 	local frame = ReportPlayerNameDialog;
 	frame.playerNameCheckButton:SetChecked(frame.reportType == PLAYER_REPORT_TYPE_BAD_PLAYER_NAME);
 	frame.guildNameCheckButton:SetChecked(frame.reportType == PLAYER_REPORT_TYPE_BAD_GUILD_NAME);
-	frame.arenaNameCheckButton:SetChecked(frame.reportType == PLAYER_REPORT_TYPE_BAD_ARENA_TEAM_NAME);
 
 	if ( frame.reportType ) then
 		frame.reportButton:Enable();
@@ -620,6 +619,23 @@ function HelpOpenTicketButton_OnUpdate(self, elapsed)
 	end
 end
 
+function HelpOpenTicketButton_Move()
+	local anchor = HelpMicroButton;
+	if ( C_StorePublic.IsEnabled() ) then
+		anchor = MainMenuMicroButton;
+	end
+
+	if ( HelpOpenTicketButton ) then
+		HelpOpenTicketButton:SetParent(anchor);
+		HelpOpenTicketButton:SetPoint("CENTER", anchor, "TOPRIGHT", -3, -26);
+	end
+
+	if ( HelpOpenWebTicketButton ) then
+		HelpOpenWebTicketButton:SetParent(anchor);
+		HelpOpenWebTicketButton:SetPoint("CENTER", anchor, "TOPRIGHT", -3, -26);
+	end
+end
+
 function HelpOpenTicketButton_OnEvent(self, event, ...)
 	if ( event == "UPDATE_TICKET" ) then
 		local category, ticketDescription, ticketOpenTime, oldestTicketTime, updateTime, assignedToGM, openedByGM, waitTimeOverrideMessage, waitTimeOverrideMinutes = ...;
@@ -679,6 +695,8 @@ function HelpOpenTicketButton_OnEvent(self, event, ...)
 				self:Hide();
 			end
 		end
+	elseif ( event == "STORE_STATUS_CHANGED" ) then
+		HelpOpenTicketButton_Move();
 	end
 end
 

@@ -751,9 +751,10 @@ function MasterLooterFrame_Show()
 	itemFrame.IconBorder:SetVertexColor(colorInfo.r, colorInfo.g, colorInfo.b);
 	itemFrame.ItemName:SetVertexColor(colorInfo.r, colorInfo.g, colorInfo.b);
 	
+	MasterLooterFrame:Show();
 	MasterLooterFrame_UpdatePlayers();
 	MasterLooterFrame:SetPoint("TOPLEFT", DropDownList1, 0, 0);
-	MasterLooterFrame:Show();
+	
 	CloseDropDownMenus();
 end
 
@@ -810,6 +811,11 @@ function MasterLooterFrame_UpdatePlayers()
 				buttonsToHide[playerFrame] = nil;
 			end
 			shownButtons[playerFrame] = 1;
+			if (playerFrame.Name:IsTruncated()) then
+				playerFrame.tooltip = playerInfo[i].name;
+			else
+				playerFrame.tooltip = nil;
+			end
 		else
 			break;
 		end

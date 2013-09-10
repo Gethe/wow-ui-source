@@ -1,5 +1,5 @@
-GUILD_DETAIL_NORM_HEIGHT = 187;
-GUILD_DETAIL_OFFICER_HEIGHT = 240;
+GUILD_DETAIL_NORM_HEIGHT = 175;
+GUILD_DETAIL_OFFICER_HEIGHT = 228;
 local GUILD_ROSTER_MAX_COLUMNS = 5;
 local GUILD_ROSTER_MAX_STRINGS = 4;
 local GUILD_ROSTER_BAR_MAX = 239;
@@ -211,11 +211,11 @@ function GuildRoster_Update()
 			-- Resize detail frame
 			GuildMemberDetailOfficerNoteLabel:Show();
 			GuildMemberOfficerNoteBackground:Show();
-			GuildMemberDetailFrame:SetHeight(GUILD_DETAIL_OFFICER_HEIGHT + GuildMemberDetailRankLabel:GetHeight());
+			GuildMemberDetailFrame:SetHeight(GUILD_DETAIL_OFFICER_HEIGHT + GuildMemberDetailName:GetHeight() + GuildMemberDetailRankLabel:GetHeight());
 		else
 			GuildMemberDetailOfficerNoteLabel:Hide();
 			GuildMemberOfficerNoteBackground:Hide();
-			GuildMemberDetailFrame:SetHeight(GUILD_DETAIL_NORM_HEIGHT + GuildMemberDetailRankLabel:GetHeight());
+			GuildMemberDetailFrame:SetHeight(GUILD_DETAIL_NORM_HEIGHT + GuildMemberDetailName:GetHeight() + GuildMemberDetailRankLabel:GetHeight());
 		end
 
 		if ( CanGuildRemove() and ( rankIndex >= 1 ) and ( rankIndex > guildRankIndex ) ) then
@@ -251,7 +251,7 @@ function GuildRoster_Update()
 		if ( name and index <= visibleMembers ) then
 			button.guildIndex = index;
 			local displayedName = name;
-			if ( isMobile ) then
+			if ( isMobile and not online ) then
 				if (isAway == 2) then
 					displayedName = MOBILE_BUSY_ICON..displayedName;
 				elseif (isAway == 1) then
@@ -311,13 +311,6 @@ function GuildRoster_Update()
 				GuildRosterButton_SetStringText(button.string2, displayedName, onlineOrMobile, classFileName);
 				GuildRosterButton_SetStringText(button.string3, valor, onlineOrMobile);
 				GuildRosterButton_SetStringText(button.string4, hero, onlineOrMobile);
-			elseif ( currentGuildView == "pvp" ) then
-				local bgRating, arenaRating, arenaTeam = GetGuildRosterPVPRatings(index);
-				GuildRosterButton_SetStringText(button.string1, level, onlineOrMobile);
-				button.icon:SetTexCoord(unpack(CLASS_ICON_TCOORDS[classFileName]));
-				GuildRosterButton_SetStringText(button.string2, displayedName, onlineOrMobile, classFileName);
-				GuildRosterButton_SetStringText(button.string3, bgRating, onlineOrMobile);
-				GuildRosterButton_SetStringText(button.string4, string.format(GUILD_ROSTER_ARENA_RATING, arenaRating, arenaTeam, arenaTeam), onlineOrMobile);
 			elseif ( currentGuildView == "achievement" ) then
 				GuildRosterButton_SetStringText(button.string1, level, onlineOrMobile);
 				button.icon:SetTexCoord(unpack(CLASS_ICON_TCOORDS[classFileName]));

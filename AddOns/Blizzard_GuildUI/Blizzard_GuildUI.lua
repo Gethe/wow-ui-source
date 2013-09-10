@@ -33,8 +33,14 @@ function GuildFrame_OnLoad(self)
 	GuildFrame_UpdateLevel();
 	GuildFrame_UpdateXP();
 	GuildFrame_UpdateFaction();
-	local guildName = GetGuildInfo("player");
-	GuildFrameTitleText:SetText(guildName);
+	local guildName, _, _, realm = GetGuildInfo("player");
+	local fullName;
+	if (realm) then
+		fullName = string.format(FULL_PLAYER_NAME, guildName, realm);
+	else
+		fullName = guildName
+	end
+	GuildFrameTitleText:SetText(fullName);
 	local totalMembers, onlineMembers, onlineAndMobileMembers = GetNumGuildMembers();
 	GuildFrameMembersCount:SetText(onlineAndMobileMembers.." / "..totalMembers);
 end
@@ -67,6 +73,12 @@ function GuildFrame_OnShow(self)
 	GuildNameChangeAlertFrame.topAnchored = true;
 	GuildFrame.hasForcedNameChange = GetGuildRenameRequired();
 	GuildFrame_CheckName();
+	
+	if (GuildFrameTitleText:IsTruncated()) then
+		GuildFrame.TitleMouseover.tooltip = GuildFrameTitleText:GetText();
+	else
+		GuildFrame.TitleMouseover.tooltip = nil;
+	end
 end
 
 function GuildFrame_OnHide(self)

@@ -117,7 +117,7 @@ function QueueStatusFrame_Update(self)
 		end
 	end
 
-	local inProgress, _, _, _, isBattleground = GetLFGRoleUpdate();
+	local inProgress, _, _, _, _, isBattleground = GetLFGRoleUpdate();
 	--Try PvP Role Check
 	if ( inProgress and isBattleground ) then
 		local entry = QueueStatusFrame_GetEntry(self, nextEntry);
@@ -212,28 +212,109 @@ end
 ----------------------------------------------
 ------------QueueStatusEntry------------------
 ----------------------------------------------
+local queuedList = {};
+local function QueueStatus_GetAllRelevantLFG(category, queuedList)
+	--Get the list of everything we're queued for
+	queuedList = GetLFGQueuedList(category, queuedList);
+
+	--Add queues currently in the proposal stage to the list
+	local proposalExists, id, typeID, subtypeID, name, texture, role, hasResponded, totalEncounters, completedEncounters, numMembers, isLeader, isHoliday, proposalCategory = GetLFGProposal();
+	if ( proposalCategory == category ) then
+		queuedList[id] = true;
+	end
+
+	--Add queues currently in the role update stage to the list
+	local roleCheckInProgress, slots, members, roleUpdateCategory, roleUpdateID = GetLFGRoleUpdate();
+	if ( roleUpdateCategory == category ) then
+		queuedList[roleUpdateID] = true;
+	end
+
+	--Add instances you are currently in a party for
+	local partySlot = GetPartyLFGID();
+	if ( partySlot and GetLFGCategoryForID(partySlot) == category ) then
+		queuedList[partySlot] = true;
+	end
+
+	return queuedList;
+end
+
 function QueueStatusEntry_SetUpLFG(entry, category)
-	local mode, submode = GetLFGMode(category);
+	--Figure out which one we're going to have as primary
+	local activeIndex = nil;
+	local allNames = {};
+
+	QueueStatus_GetAllRelevantLFG(category, queuedList);
+
+	
+	local activeID = select(18, GetLFGQueueStats(category));
+	for queueID in pairs(queuedList) do
+		local mode, submode = GetLFGMode(category, queueID);
+		if ( mode ) then
+			--Save off the name (we'll remove the active one later)
+			allNames[#allNames + 1] = select(LFG_RETURN_VALUES.name, GetLFGDungeonInfo(queueID));
+			if ( mode ~= "queued" and mode ~= "listed" and mode ~= "suspended" ) then
+				activeID = queueID;
+				activeIndex = #allNames;
+			elseif ( not activeID ) then
+				activeID = queueID;
+				activeIndex = #allNames;
+			end
+			
+		end
+	end
+
+	if ( not activeID ) then
+		GMError(format("Thought we had an active queue, but we don't.: activeIdx - %d", activeID));
+	end
+	
+	local mode, submode = GetLFGMode(category, activeID);
+
+	local subTitle;
+	local extraText;
+
+	if ( category == LE_LFG_CATEGORY_RF and #allNames > 1 ) then --HACK - For now, RF works differently.
+		--We're queued for more than one thing
+		subTitle = table.remove(allNames, activeIndex);
+		extraText = string.format(ALSO_QUEUED_FOR, table.concat(allNames, PLAYER_LIST_DELIMITER));
+	elseif ( mode == "suspended" ) then 
+		local suspendedPlayers = GetLFGSuspendedPlayers(category);
+		if ( #suspendedPlayers > 0 ) then
+			extraText = "";
+			for i = 1, 3 do
+				if (suspendedPlayers[i]) then
+					if ( i > 1 ) then
+						extraText = extraText .. "\n";
+					end
+					extraText = extraText .. string.format(RAID_MEMBER_NOT_READY, suspendedPlayers[i]);
+				end
+			end
+		end
+	end
+
+	--Set up the actual display
 	if ( mode == "queued" ) then
-		local inParty, joined, queued, noPartialClear, achievements, lfgComment, slotCount, category, leader, tank, healer, dps = GetLFGInfoServer(category);
-		local hasData,  leaderNeeds, tankNeeds, healerNeeds, dpsNeeds, totalTanks, totalHealers, totalDPS, instanceType, instanceSubType, instanceName, averageWait, tankWait, healerWait, damageWait, myWait, queuedTime = GetLFGQueueStats(category);
+		local inParty, joined, queued, noPartialClear, achievements, lfgComment, slotCount, category, leader, tank, healer, dps = GetLFGInfoServer(category, activeID);
+		if (not category) then --hack fix
+			return
+		end
+		local hasData,  leaderNeeds, tankNeeds, healerNeeds, dpsNeeds, totalTanks, totalHealers, totalDPS, instanceType, instanceSubType, instanceName, averageWait, tankWait, healerWait, damageWait, myWait, queuedTime = GetLFGQueueStats(category, activeID);
 		if ( category == LE_LFG_CATEGORY_SCENARIO ) then --Hide roles for scenarios
 			tank, healer, dps = nil, nil, nil;
 			totalTanks, totalHealers, totalDPS, tankNeeds, healerNeeds, dpsNeeds = nil, nil, nil, nil, nil, nil;
 		end
-		QueueStatusEntry_SetFullDisplay(entry, LFG_CATEGORY_NAMES[category], queuedTime, myWait, tank, healer, dps, totalTanks, totalHealers, totalDPS, tankNeeds, healerNeeds, dpsNeeds);
+		QueueStatusEntry_SetFullDisplay(entry, LFG_CATEGORY_NAMES[category], queuedTime, myWait, tank, healer, dps, totalTanks, totalHealers, totalDPS, tankNeeds, healerNeeds, dpsNeeds, subTitle, extraText);
 	elseif ( mode == "proposal" ) then
-		QueueStatusEntry_SetMinimalDisplay(entry, LFG_CATEGORY_NAMES[category], QUEUED_STATUS_PROPOSAL);
+		QueueStatusEntry_SetMinimalDisplay(entry, LFG_CATEGORY_NAMES[category], QUEUED_STATUS_PROPOSAL, subTitle, extraText);
 	elseif ( mode == "listed" ) then
-		QueueStatusEntry_SetMinimalDisplay(entry, LFG_CATEGORY_NAMES[category], QUEUED_STATUS_LISTED);
+		QueueStatusEntry_SetMinimalDisplay(entry, LFG_CATEGORY_NAMES[category], QUEUED_STATUS_LISTED, subTitle, extraText);
 	elseif ( mode == "suspended" ) then
-		QueueStatusEntry_SetMinimalDisplay(entry, LFG_CATEGORY_NAMES[category], QUEUED_STATUS_SUSPENDED);
+		QueueStatusEntry_SetMinimalDisplay(entry, LFG_CATEGORY_NAMES[category], QUEUED_STATUS_SUSPENDED, subTitle, extraText);
 	elseif ( mode == "rolecheck" ) then
-		QueueStatusEntry_SetMinimalDisplay(entry, LFG_CATEGORY_NAMES[category], QUEUED_STATUS_ROLE_CHECK_IN_PROGRESS);
+		QueueStatusEntry_SetMinimalDisplay(entry, LFG_CATEGORY_NAMES[category], QUEUED_STATUS_ROLE_CHECK_IN_PROGRESS, subTitle, extraText);
 	elseif ( mode == "lfgparty" or mode == "abandonedInDungeon" ) then
-		QueueStatusEntry_SetMinimalDisplay(entry, LFG_CATEGORY_NAMES[category], QUEUED_STATUS_IN_PROGRESS);
+		QueueStatusEntry_SetMinimalDisplay(entry, LFG_CATEGORY_NAMES[category], QUEUED_STATUS_IN_PROGRESS, subTitle, extraText);
 	else
-		QueueStatusEntry_SetMinimalDisplay(entry, LFG_CATEGORY_NAMES[category], QUEUED_STATUS_UNKNOWN);
+		QueueStatusEntry_SetMinimalDisplay(entry, LFG_CATEGORY_NAMES[category], QUEUED_STATUS_UNKNOWN, subTitle, extraText);
 	end
 end
 
@@ -294,12 +375,32 @@ function QueueStatusEntry_SetUpPetBattlePvP(entry)
 	end
 end
 
-function QueueStatusEntry_SetMinimalDisplay(entry, title, description)
+function QueueStatusEntry_SetMinimalDisplay(entry, title, description, subTitle, extraText)
+	local height = 10;
+
 	entry.Title:SetWidth(168);
 	entry.Title:SetText(title);
+	height = height + entry.Title:GetHeight();
 
 	entry.Status:SetText(description);
 	entry.Status:Show();
+
+	if ( subTitle ) then
+		entry.SubTitle:SetText(subTitle);
+		entry.SubTitle:Show();
+		height = height + entry.SubTitle:GetHeight() + 5;
+	else
+		entry.SubTitle:Hide();
+	end
+
+	if ( extraText ) then
+		entry.ExtraText:SetText(extraText);
+		entry.ExtraText:Show();
+		entry.ExtraText:SetPoint("TOPLEFT", entry, "TOPLEFT", 10, -(height + 5));
+		height = height + entry.ExtraText:GetHeight() + 5;
+	else
+		entry.ExtraText:Hide();
+	end
 
 	entry.TimeInQueue:Hide();
 	entry.AverageWait:Hide();
@@ -314,34 +415,24 @@ function QueueStatusEntry_SetMinimalDisplay(entry, title, description)
 
 	entry:SetScript("OnUpdate", nil);
 
-	entry:SetHeight(entry.Title:GetHeight() + 14);
+	entry:SetHeight(height + 6);
 end
 
-function QueueStatusEntry_SetFullDisplay(entry, title, queuedTime, myWait, isTank, isHealer, isDPS, totalTanks, totalHealers, totalDPS, tankNeeds, healerNeeds, dpsNeeds)
-	local height = 55;
+function QueueStatusEntry_SetFullDisplay(entry, title, queuedTime, myWait, isTank, isHealer, isDPS, totalTanks, totalHealers, totalDPS, tankNeeds, healerNeeds, dpsNeeds, subTitle, extraText)
+	local height = 14;
 	
 	entry.Title:SetWidth(0);
 	entry.Title:SetText(title);
+	height = height + entry.Title:GetHeight();
 
 	entry.Status:Hide();
 
-	if ( queuedTime ) then
-		entry.queuedTime = queuedTime;
-		local elapsed = GetTime() - queuedTime;
-		entry.TimeInQueue:SetFormattedText(TIME_IN_QUEUE, (elapsed >= 60) and SecondsToTime(elapsed) or LESS_THAN_ONE_MINUTE);
-		entry:SetScript("OnUpdate", QueueStatusEntry_OnUpdate);
+	if ( subTitle ) then
+		entry.SubTitle:SetText(subTitle);
+		entry.SubTitle:Show();
+		height = height + entry.SubTitle:GetHeight() + 5;
 	else
-		entry.TimeInQueue:SetFormattedText(TIME_IN_QUEUE, LESS_THAN_ONE_MINUTE);
-		entry:SetScript("OnUpdate", nil);
-	end
-	entry.TimeInQueue:Show();
-
-	if ( not myWait or myWait <= 0 ) then
-		entry.AverageWait:Hide();
-	else
-		entry.AverageWait:SetFormattedText(LFG_STATISTIC_AVERAGE_WAIT, SecondsToTime(myWait, false, false, 1));
-		entry.AverageWait:Show();
-		height = height + 14;
+		entry.SubTitle:Hide();
 	end
 
 	--Update your role icons
@@ -371,6 +462,7 @@ function QueueStatusEntry_SetFullDisplay(entry, title, queuedTime, myWait, isTan
 
 	--Update the role needs
 	if ( totalTanks and totalHealers and totalDPS ) then
+		entry.HealersFound:SetPoint("TOP", entry, "TOP", 0, -(height + 5));
 		entry.TanksFound.Count:SetFormattedText(PLAYERS_FOUND_OUT_OF_MAX, totalTanks - tankNeeds, totalTanks);
 		entry.HealersFound.Count:SetFormattedText(PLAYERS_FOUND_OUT_OF_MAX, totalHealers - healerNeeds, totalHealers);
 		entry.DamagersFound.Count:SetFormattedText(PLAYERS_FOUND_OUT_OF_MAX, totalDPS - dpsNeeds, totalDPS);
@@ -385,13 +477,45 @@ function QueueStatusEntry_SetFullDisplay(entry, title, queuedTime, myWait, isTan
 		entry.TanksFound:Show();
 		entry.HealersFound:Show();
 		entry.DamagersFound:Show();
-		height = height + 70;
+		height = height + 68;
 	else
 		entry.TanksFound:Hide();
 		entry.HealersFound:Hide();
 		entry.DamagersFound:Hide();
 	end
-	entry:SetHeight(height);
+
+	if ( not myWait or myWait <= 0 ) then
+		entry.AverageWait:Hide();
+	else
+		entry.AverageWait:SetPoint("TOPLEFT", entry, "TOPLEFT", 10, -(height + 5));
+		entry.AverageWait:SetFormattedText(LFG_STATISTIC_AVERAGE_WAIT, SecondsToTime(myWait, false, false, 1));
+		entry.AverageWait:Show();
+		height = height + entry.AverageWait:GetHeight();
+	end
+
+	if ( queuedTime ) then
+		entry.queuedTime = queuedTime;
+		local elapsed = GetTime() - queuedTime;
+		entry.TimeInQueue:SetFormattedText(TIME_IN_QUEUE, (elapsed >= 60) and SecondsToTime(elapsed) or LESS_THAN_ONE_MINUTE);
+		entry:SetScript("OnUpdate", QueueStatusEntry_OnUpdate);
+	else
+		entry.TimeInQueue:SetFormattedText(TIME_IN_QUEUE, LESS_THAN_ONE_MINUTE);
+		entry:SetScript("OnUpdate", nil);
+	end
+	entry.TimeInQueue:SetPoint("TOPLEFT", entry, "TOPLEFT", 10, -(height + 5));
+	entry.TimeInQueue:Show();
+	height = height + entry.TimeInQueue:GetHeight();
+
+	if ( extraText ) then
+		entry.ExtraText:SetText(extraText);
+		entry.ExtraText:Show();
+		entry.ExtraText:SetPoint("TOPLEFT", entry, "TOPLEFT", 10, -(height + 10));
+		height = height + entry.ExtraText:GetHeight() + 10;
+	else
+		entry.ExtraText:Hide();
+	end
+
+	entry:SetHeight(height + 14);
 end
 
 function QueueStatusEntry_OnUpdate(self, elapsed)
@@ -432,7 +556,7 @@ function QueueStatusDropDown_Update()
 		end
 	end
 
-	local inProgress, _, _, _, isBattleground = GetLFGRoleUpdate();
+	local inProgress, _, _, _, _, isBattleground = GetLFGRoleUpdate();
 	if ( inProgress and isBattleground ) then
 		QueueStatusDropDown_AddPVPRoleCheckButtons(info);
 	end
@@ -508,7 +632,7 @@ end
 
 function QueueStatusDropDown_AddPVPRoleCheckButtons(info)
 	wipe(info);
-	local inProgress, _, _, _, isBattleground = GetLFGRoleUpdate();
+	local inProgress, _, _, _, _, isBattleground = GetLFGRoleUpdate();
 	
 	if ( inProgress and isBattleground ) then
 		local name = GetLFGRoleUpdateBattlegroundInfo();
@@ -598,7 +722,16 @@ end
 function QueueStatusDropDown_AddLFGButtons(info, category)
 	wipe(info);
 
-	local mode, submode = GetLFGMode(category);
+	QueueStatus_GetAllRelevantLFG(category, queuedList);
+	local statuses = {};
+	for queueID in pairs(queuedList) do
+		local mode, submode = GetLFGMode(category, queueID);
+		if ( mode ) then
+			statuses[mode] = (statuses[mode] or 0) + 1;
+			local hack = mode.."."..(submode or ""); --eww
+			statuses[hack] = (statuses[hack] or 0) + 1;
+		end
+	end
 
 	local name = LFG_CATEGORY_NAMES[category];
 	if ( IsLFGModeActive(category) ) then
@@ -612,48 +745,6 @@ function QueueStatusDropDown_AddLFGButtons(info, category)
 	info.disabled = false;
 	info.isTitle = nil;
 	info.leftPadding = 10;
-
-	if ( mode == "queued" or mode == "suspended" ) then
-		info.text = LEAVE_QUEUE;
-		info.func = wrapFunc(LeaveLFG);
-		info.arg1 = category;
-		info.disabled = (submode == "unempowered");
-		UIDropDownMenu_AddButton(info);
-	elseif ( mode == "listed" ) then
-		if ( IsInGroup() ) then
-			info.text = UNLIST_MY_GROUP;
-		else
-			info.text = UNLIST_ME;
-		end
-		info.func = wrapFunc(LeaveLFG);
-		info.arg1 = category;
-		info.disabled = (submode == "unempowered");
-		UIDropDownMenu_AddButton(info);
-	elseif ( mode == "proposal" ) then
-		if ( submode == "accepted" ) then
-			info.text = QUEUED_STATUS_PROPOSAL;
-			info.func = nil;
-			info.disabled = true;
-			UIDropDownMenu_AddButton(info);
-		elseif ( submode == "unaccepted" ) then
-			info.text = ENTER_DUNGEON;
-			info.func = wrapFunc(AcceptProposal);
-			info.arg1 = nil;
-			info.disabled = false;
-			UIDropDownMenu_AddButton(info);
-
-			info.text = LEAVE_QUEUE;
-			info.func = wrapFunc(RejectProposal);
-			info.arg1 = category;
-			info.disabled = (submode == "unempowered");
-			UIDropDownMenu_AddButton(info);
-		end
-	elseif ( mode == "rolecheck" ) then
-		info.text = QUEUED_STATUS_ROLE_CHECK_IN_PROGRESS;
-		info.func = nil;
-		info.disabled = true;
-		UIDropDownMenu_AddButton(info);
-	end
 
 	if ( IsLFGModeActive(category) and IsPartyLFG() ) then
 		if ( IsAllowedToUserTeleport() ) then
@@ -676,6 +767,52 @@ function QueueStatusDropDown_AddLFGButtons(info, category)
 		info.arg1 = nil;
 		info.disabled = false;
 		UIDropDownMenu_AddButton(info);
+	end
+
+	if ( statuses.rolecheck ) then
+		info.text = QUEUED_STATUS_ROLE_CHECK_IN_PROGRESS;
+		info.func = nil;
+		info.disabled = true;
+		UIDropDownMenu_AddButton(info);
+	end
+	if ( statuses.queued or statuses.suspended ) then
+		local manyQueues = (category == LE_LFG_CATEGORY_RF) and (statuses.queued or 0) + (statuses.suspended or 0) > 1;
+		info.text = manyQueues and LEAVE_ALL_QUEUES or LEAVE_QUEUE;
+		info.func = wrapFunc(LeaveLFG);
+		info.arg1 = category;
+		info.disabled = not (statuses["queued.empowered"] or statuses["suspended.empowered"]);
+		UIDropDownMenu_AddButton(info);
+	end
+	if ( statuses.listed ) then
+		if ( IsInGroup() ) then
+			info.text = UNLIST_MY_GROUP;
+		else
+			info.text = UNLIST_ME;
+		end
+		info.func = wrapFunc(LeaveLFG);
+		info.arg1 = category;
+		info.disabled = not statuses["listed.empowered"];
+		UIDropDownMenu_AddButton(info);
+	end
+	if ( statuses.proposal ) then
+		if ( statuses["proposal.accepted"] ) then
+			info.text = QUEUED_STATUS_PROPOSAL;
+			info.func = nil;
+			info.disabled = true;
+			UIDropDownMenu_AddButton(info);
+		elseif ( statuses["proposal.unaccepted"] ) then
+			info.text = ENTER_DUNGEON;
+			info.func = wrapFunc(AcceptProposal);
+			info.arg1 = nil;
+			info.disabled = false;
+			UIDropDownMenu_AddButton(info);
+
+			info.text = LEAVE_QUEUE;
+			info.func = wrapFunc(RejectProposal);
+			info.arg1 = category;
+			info.disabled = (submode == "unempowered");
+			UIDropDownMenu_AddButton(info);
+		end
 	end
 end
 

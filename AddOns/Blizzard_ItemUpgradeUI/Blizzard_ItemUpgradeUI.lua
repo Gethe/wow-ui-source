@@ -52,6 +52,8 @@ function ItemUpgradeFrame_OnEvent(self, event, ...)
 	elseif ( event == "ITEM_UPGRADE_MASTER_UPDATE" ) then
 		ItemUpgradeFrame_Update();
 		self.FinishedGlow.FinishedAnim:Play();
+		self.ItemUpgradedNotification:Show();
+		self.ItemUpgradedNotification.FinishedAnim:Play();
 	end
 end
 
@@ -229,7 +231,14 @@ function ItemUpgradeFrame_UpdateStats(setStatsRight)
 		end
 		local leftText, rightText = GetItemUpgradeEffect(i);
 		row.LeftText:SetText(leftText);
-		row.RightText:SetText(ItemUpgradeFrame_GetUpgradedEffectString(leftText, rightText));
+		
+		if ( setStatsRight ) then
+			row.RightText:SetText(ItemUpgradeFrame_GetUpgradedEffectString(leftText, rightText));
+			row.RightText:Show();
+		else
+			row.RightText:Hide();
+		end
+		
 		local height = max(row.LeftText:GetHeight(), row.RightText:GetHeight());
 		row:SetHeight(height + 3);
 		row:Show();

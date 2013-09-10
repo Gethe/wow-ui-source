@@ -828,6 +828,8 @@ function WhoList_Update()
 		whoIndex = whoOffset + i;
 		button = _G["WhoFrameButton"..i];
 		button.whoIndex = whoIndex;
+		button.tooltip1 = nil;
+		button.tooltip2 = nil;
 		name, guild, level, race, class, zone, classFileName = GetWhoInfo(whoIndex);
 		columnTable = { zone, guild, race };
 
@@ -838,6 +840,8 @@ function WhoList_Update()
 		end
 		buttonText = _G["WhoFrameButton"..i.."Name"];
 		buttonText:SetText(name);
+		local nameTruncated = buttonText:IsTruncated()
+		
 		buttonText = _G["WhoFrameButton"..i.."Level"];
 		buttonText:SetText(level);
 		buttonText = _G["WhoFrameButton"..i.."Class"];
@@ -845,6 +849,11 @@ function WhoList_Update()
 		buttonText:SetTextColor(classTextColor.r, classTextColor.g, classTextColor.b);
 		local variableText = _G["WhoFrameButton"..i.."Variable"];
 		variableText:SetText(columnTable[UIDropDownMenu_GetSelectedID(WhoFrameDropDown)]);
+		
+		if (variableText:IsTruncated() or nameTruncated) then
+			button.tooltip1 = name;
+			button.tooltip2 = columnTable[UIDropDownMenu_GetSelectedID(WhoFrameDropDown)];
+		end
 		
 		-- If need scrollbar resize columns
 		if ( showScrollBar ) then
@@ -1028,11 +1037,8 @@ function FriendsFrame_SelectSquelched(ignoreType, index)
 end
 
 function FriendsFrameAddFriendButton_OnClick(self)
-	if ( UnitIsPlayer("target") and UnitCanCooperate("player", "target") and not GetFriendInfo(UnitName("target")) ) then
-		local name, server = UnitName("target");
-		if ( server and (not UnitIsSameServer("player", "target")) ) then
-			name = name.."-"..server;
-		end
+	local name = GetUnitName("target", true);
+	if ( UnitIsPlayer("target") and UnitCanCooperate("player", "target") and not GetFriendInfo(name) ) then
 		AddFriend(name);
 		PlaySound("UChatScrollButton");
 	else

@@ -2655,8 +2655,8 @@ function PaperDollFrame_GetArmorReduction(armor, attackerLevel)
 	local temp = 0.1*armor/(8.5*levelModifier + 40);
 	temp = temp/(1+temp);
 
-	if ( temp > 0.75 ) then
-		return 75;
+	if ( temp > 0.85 ) then
+		return 85;
 	end
 
 	if ( temp < 0 ) then

@@ -364,7 +364,7 @@ end
 
 function GuildFinderRequestMembershipFrame_SendRequest()
 	StaticPopupSpecial_Hide(GuildFinderRequestMembershipFrame);
-	RequestGuildMembership(GuildFinderRequestMembershipFrameGuildName:GetText(), GuildFinderRequestMembershipEditBox:GetText());
+	RequestGuildMembership(GuildFinderRequestMembershipFrameGuildName:GetText(), GuildFinderRequestMembershipEditBox:GetText():gsub("\n",""));
 	SetRecruitingGuildSelection(nil);
 	LookingForGuild_Update();
 end

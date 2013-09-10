@@ -19,6 +19,7 @@ LFG_SUBTYPEID_DUNGEON = 1;
 LFG_SUBTYPEID_HEROIC = 2;
 LFG_SUBTYPEID_RAID = 3;
 LFG_SUBTYPEID_SCENARIO = 4;
+LFG_SUBTYPEID_FLEXRAID = 5;
 
 LFG_ID_TO_ROLES = { "DAMAGER", "TANK", "HEALER" };
 LFG_RETURN_VALUES = {
@@ -58,6 +59,10 @@ LFG_INSTANCE_INVALID_CODES = { --Any other codes are unspecified conditions (e.g
 	[1002] = "LEVEL_TOO_HIGH",
 	[1022] = "QUEST_NOT_COMPLETED",
 	[1025] = "MISSING_ITEM",
+	-- These are handled separately in LFGConstructDeclinedMessage
+	-- [1029] WRONG_TIME_RANGE
+	-- [1030] WRONG_TIME
+	-- [1031] WRONG_WORLD_STATE_EXPRESSION
 	[1034] = "ACHIEVEMENT_NOT_COMPLETED",
 	[10000] = "TEMPORARILY_DISABLED",
 }
@@ -108,7 +113,7 @@ function LFGEventFrame_OnEvent(self, event, ...)
 		local slot = GetPartyLFGID();
 		if ( slot ) then
 			local category = GetLFGCategoryForID(slot);
-			local mode, subMode = GetLFGMode(category);
+			local mode, subMode = GetLFGMode(category, slot);
 			if ( mode == "queued" ) then --We're now queued, remove the backfill popup.
 				self.queuedContinueName = nil;
 				StaticPopup_Hide("LFG_OFFER_CONTINUE");
@@ -403,15 +408,25 @@ function LFG_UpdateAvailableRoles(tankButton, healButton, dpsButton, leaderButto
 end
 
 function LFG_UpdateAllRoleCheckboxes()
-	LFG_UpdateRoleCheckboxes(LE_LFG_CATEGORY_LFD, LFDQueueFrameRoleButtonTank, LFDQueueFrameRoleButtonHealer, LFDQueueFrameRoleButtonDPS, LFDQueueFrameRoleButtonLeader);
-	LFG_UpdateRoleCheckboxes(LE_LFG_CATEGORY_LFD, LFDRoleCheckPopupRoleButtonTank, LFDRoleCheckPopupRoleButtonHealer, LFDRoleCheckPopupRoleButtonDPS, nil);
-	LFG_UpdateRoleCheckboxes(LE_LFG_CATEGORY_LFR, LFRQueueFrameRoleButtonTank, LFRQueueFrameRoleButtonHealer, LFRQueueFrameRoleButtonDPS, nil);
-	LFG_UpdateRoleCheckboxes(LE_LFG_CATEGORY_RF, RaidFinderQueueFrameRoleButtonTank, RaidFinderQueueFrameRoleButtonHealer, RaidFinderQueueFrameRoleButtonDPS, RaidFinderQueueFrameRoleButtonLeader);
+	LFG_UpdateRoleCheckboxes(LE_LFG_CATEGORY_LFD, nil, LFDQueueFrameRoleButtonTank, LFDQueueFrameRoleButtonHealer, LFDQueueFrameRoleButtonDPS, LFDQueueFrameRoleButtonLeader);
+	
+	local _, _, _, _, _, isBGRoleCheck = GetLFGRoleUpdate();
+	if ( isBGRoleCheck ) then
+		local tank, healer, dps = GetPVPRoles();
+		LFDRoleCheckPopupRoleButtonTank.checkButton:SetChecked(tank);
+		LFDRoleCheckPopupRoleButtonHealer.checkButton:SetChecked(healer);
+		LFDRoleCheckPopupRoleButtonDPS.checkButton:SetChecked(dps);
+	else
+		LFG_UpdateRoleCheckboxes(LE_LFG_CATEGORY_LFD, nil, LFDRoleCheckPopupRoleButtonTank, LFDRoleCheckPopupRoleButtonHealer, LFDRoleCheckPopupRoleButtonDPS, nil);
+	end
+	
+	LFG_UpdateRoleCheckboxes(LE_LFG_CATEGORY_LFR, nil, LFRQueueFrameRoleButtonTank, LFRQueueFrameRoleButtonHealer, LFRQueueFrameRoleButtonDPS, nil);
+	LFG_UpdateRoleCheckboxes(LE_LFG_CATEGORY_RF, RaidFinderQueueFrame.raid, RaidFinderQueueFrameRoleButtonTank, RaidFinderQueueFrameRoleButtonHealer, RaidFinderQueueFrameRoleButtonDPS, RaidFinderQueueFrameRoleButtonLeader);
 end
 
-function LFG_UpdateRoleCheckboxes(category, tankButton, healButton, dpsButton, leaderButton)
-	local mode, submode = GetLFGMode(category);
-	local inParty, joined, queued, noPartialClear, achievements, lfgComment, slotCount, category, leader, tank, healer, dps = GetLFGInfoServer(category);
+function LFG_UpdateRoleCheckboxes(category, lfgID, tankButton, healButton, dpsButton, leaderButton)
+	local mode, submode = GetLFGMode(category, lfgID);
+	local inParty, joined, queued, noPartialClear, achievements, lfgComment, slotCount, category, leader, tank, healer, dps = GetLFGInfoServer(category, lfgID);
 	if ( mode ~= "queued" and mode ~= "listed" and mode ~= "suspended" ) then
 		leader, tank, healer, dps = GetLFGRoles();
 	end
@@ -445,7 +460,7 @@ function LFG_UpdateRolesChangeable()
 		LFG_UpdateAvailableRoles(LFRQueueFrameRoleButtonTank, LFRQueueFrameRoleButtonHealer, LFRQueueFrameRoleButtonDPS, nil);
 	end
 
-	mode, subMode = GetLFGMode(LE_LFG_CATEGORY_RF);
+	mode, subMode = GetLFGMode(LE_LFG_CATEGORY_RF, RaidFinderQueueFrame.raid);
 	if ( mode == "queued" or mode == "listed" or mode == "rolecheck" or mode == "proposal" or mode == "suspended" ) then
 		LFG_DisableRoleButton(RaidFinderQueueFrameRoleButtonTank, true);
 		LFG_DisableRoleButton(RaidFinderQueueFrameRoleButtonHealer, true);
@@ -592,7 +607,7 @@ function LFGConstructDeclinedMessage(dungeonID)
 	local hasTimeRestriction = false;
 	for i=1, GetLFDLockPlayerCount() do
 		local playerName, lockedReason, subReason1, subReason2 = GetLFDLockInfo(dungeonID, i);
-		if ( lockedReason == 1029 or lockedReason == 1030 ) then --WRONG_TIME_RANGE or WRONG_TIME
+		if ( lockedReason == 1029 or lockedReason == 1030 or lockedReason == 1031 ) then --WRONG_TIME_RANGE, WRONG_TIME, WRONG_WORLD_STATE_EXPRESSION
 			hasTimeRestriction = true;
 		elseif ( lockedReason ~= 0 ) then
 			local who;
@@ -664,7 +679,7 @@ function LFGDungeonReadyPopup_Update()
 	LFGDungeonReadyPopup.dungeonID = id;
 	
 	local leaveText = LEAVE_QUEUE;
-	if ( subtypeID == LFG_SUBTYPEID_RAID ) then
+	if ( subtypeID == LFG_SUBTYPEID_RAID or subtypeID == LFG_SUBTYPEID_FLEXRAID ) then
 		LFGDungeonReadyDialog.enterButton:SetText(ENTER_RAID);
 	elseif ( subtypeID == LFG_SUBTYPEID_SCENARIO ) then
 		if ( numMembers > 1 ) then
@@ -693,7 +708,7 @@ function LFGDungeonReadyPopup_Update()
 			if ( not LFGDungeonReadyPopup:IsShown() or StaticPopup_IsLastDisplayedFrame(LFGDungeonReadyPopup) ) then
 				LFGDungeonReadyPopup:SetHeight(LFGDungeonReadyStatus:GetHeight());
 			end
-		elseif ( subtypeID == LFG_SUBTYPEID_SCENARIO ) then
+		elseif ( subtypeID == LFG_SUBTYPEID_SCENARIO or subtypeID == LFG_SUBTYPEID_FLEXRAID ) then
 			LFGDungeonReadyDialog:Hide();
 			-- there may be solo scenarios
 			if ( numMembers > 1 ) then
@@ -805,7 +820,7 @@ function LFGDungeonReadyPopup_Update()
 			LFGDungeonReadyDialog.filigree:SetSize(292, 54);
 			LFGDungeonReadyDialog.filigree:SetPoint("TOPLEFT", 7, -3);
 			LFGDungeonReadyDialog.bottomArt:SetTexture("Interface\\LFGFrame\\UI-LFG-FILIGREE");
-			if ( subtypeID == LFG_SUBTYPEID_SCENARIO ) then
+			if ( subtypeID == LFG_SUBTYPEID_SCENARIO or subtypeID == LFG_SUBTYPEID_FLEXRAID ) then
 				showRole = false;
 				LFGDungeonReadyDialog.bottomArt:SetTexCoord(0.0, 0.18, 0.0, 0.5625);
 			else
@@ -834,7 +849,7 @@ function LFGDungeonReadyPopup_Update()
 
 		LFGDungeonReadyDialog_UpdateRewards(id, role);
 		LFGDungeonReadyDialogRewardsFrame:ClearAllPoints();
-		if ( subtypeID == LFG_SUBTYPEID_SCENARIO ) then
+		if ( subtypeID == LFG_SUBTYPEID_SCENARIO or subtypeID == LFG_SUBTYPEID_FLEXRAID ) then
 			LFGDungeonReadyDialogRewardsFrame:SetPoint("BOTTOM", LFGDungeonReadyDialogRoleIcon, "BOTTOM", 0, 15);
 		else
 			LFGDungeonReadyDialogRewardsFrame:SetPoint("BOTTOMLEFT", LFGDungeonReadyDialogRoleIcon, "BOTTOMRIGHT", 19, 15);
@@ -1953,7 +1968,6 @@ function LFGCooldownCover_SetUp(self, backfillFrame)
 	self:RegisterEvent("UNIT_AURA");	--The cooldown is still technically a debuff
 	self:RegisterEvent("GROUP_ROSTER_UPDATE");
 
-	assert(backfillFrame);
 	self.backfillFrame = backfillFrame;
 end
 
@@ -2037,7 +2051,7 @@ function LFGCooldownCover_Update(self)
 			
 			local _, classFilename = UnitClass(unit);
 			local classColor = classFilename and RAID_CLASS_COLORS[classFilename] or NORMAL_FONT_COLOR;
-			nameLabel:SetFormattedText("|cff%.2x%.2x%.2x%s|r", classColor.r * 255, classColor.g * 255, classColor.b * 255, UnitName(unit));
+			nameLabel:SetFormattedText("|cff%.2x%.2x%.2x%s|r", classColor.r * 255, classColor.g * 255, classColor.b * 255, GetUnitName(unit, true));
 		end
 	end
 	for i = nextIndex, #self.Names do
@@ -2075,7 +2089,7 @@ function LFGCooldownCover_Update(self)
 		self:SetScript("OnUpdate", nil);
 	end
 	
-	if ( shouldShow and not self.backfillFrame:IsShown() ) then
+	if ( shouldShow and ( not self.backfill or not self.backfillFrame:IsShown() ) ) then
 		self:Show();
 	else
 		self:Hide();
@@ -2175,5 +2189,11 @@ function LFGRandomList_OnEnter(self)
 	end
 		
 	GameTooltip:Show();
+end
+
+function isRaidFinderDungeonDisplayable(id)
+	local name, typeID, subtypeID, minLevel, maxLevel, _, _, _, expansionLevel = GetLFGDungeonInfo(id);
+	local myLevel = UnitLevel("player");
+	return myLevel >= minLevel and myLevel <= maxLevel and EXPANSION_LEVEL >= expansionLevel;
 end
 

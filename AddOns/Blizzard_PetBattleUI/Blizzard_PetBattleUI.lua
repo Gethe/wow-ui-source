@@ -77,7 +77,8 @@ function PetBattleFrame_OnLoad(self)
 	self:RegisterEvent("PET_BATTLE_PET_CHANGED");
 	self:RegisterEvent("PET_BATTLE_XP_CHANGED");
 	self:RegisterEvent("PET_BATTLE_ACTION_SELECTED");
-
+	self:RegisterEvent("PET_BATTLE_PET_TYPE_CHANGED");
+	
 	-- Transitioning out of battle event
 	self:RegisterEvent("PET_BATTLE_OVER");
 
@@ -126,6 +127,8 @@ function PetBattleFrame_OnEvent(self, event, ...)
 		PetBattleFrame_UpdateXpBar(self);
 	elseif ( event == "PET_BATTLE_ACTION_SELECTED" ) then
 		self.BottomFrame.TurnTimer.SkipButton:Disable();
+	elseif ( event == "PET_BATTLE_PET_TYPE_CHANGED" ) then
+		PetBattleFrame_UpdateAllActionButtons(self);
 	end
 end
 
@@ -725,7 +728,7 @@ function PetBattleActionButton_UpdateState(self)
 		if ( self.AdditionalIcon ) then
 			self.AdditionalIcon:SetVertexColor(0.5, 0.5, 0.5);
 		end
-	elseif ( not usable or (hasSelected and not isSelected) ) then
+	elseif ( (not usable or hasSelected) and not isSelected ) then
 		--Set the frame up to look unusable.
 		if ( self.Icon ) then
 			self.Icon:SetVertexColor(0.5, 0.5, 0.5);
@@ -754,7 +757,8 @@ function PetBattleActionButton_UpdateState(self)
 			self.Icon:SetVertexColor(1, 1, 1);
 			self.Icon:SetDesaturated(false);
 		end
-		self:Enable();
+		self:SetButtonState("NORMAL");
+		self:Disable();
 		self:SetAlpha(1);
 		if ( self.SelectedHighlight ) then
 			self.SelectedHighlight:Show();
@@ -928,6 +932,7 @@ function PetBattleUnitFrame_OnLoad(self)
 	self:RegisterEvent("PET_BATTLE_AURA_APPLIED");
 	self:RegisterEvent("PET_BATTLE_AURA_CANCELED");
 	self:RegisterEvent("PET_BATTLE_AURA_CHANGED");
+	self:RegisterEvent("PET_BATTLE_PET_TYPE_CHANGED");
 end
 
 function PetBattleUnitFrame_OnClick(self, button)
@@ -958,7 +963,8 @@ function PetBattleUnitFrame_OnEvent(self, event, ...)
 		PetBattleUnitFrame_UpdateDisplay(self);
 	elseif ( event == "PET_BATTLE_AURA_APPLIED" or
 		event == "PET_BATTLE_AURA_CANCELED" or
-		event == "PET_BATTLE_AURA_CHANGED" ) then
+		event == "PET_BATTLE_AURA_CHANGED" or 
+		event == "PET_BATTLE_PET_TYPE_CHANGED" ) then
 		local petOwner, petIndex = ...;
 		if ( petOwner == self.petOwner and petIndex == self.petIndex ) then
 			PetBattleUnitFrame_UpdatePetType(self);

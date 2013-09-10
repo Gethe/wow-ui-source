@@ -24,6 +24,13 @@
 					</Anchors>
 				</Texture>
 			</Layer>
+			<Layer level="OVERLAY" textureSubLevel="1">
+				<Texture name="$parentNewItemTexture" file="Interface\Store\store-item-highlight">
+					<Anchors>
+						<Anchor point="CENTER" x="0" y="0"/>
+					</Anchors>
+				</Texture>
+			</Layer>
 		</Layers>
 		<Frames>
 			<Cooldown name="$parentCooldown" inherits="CooldownFrameTemplate"/>

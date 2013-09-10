@@ -648,13 +648,19 @@
 								GameTooltip:SetOwner(self, "ANCHOR_NONE");
 								GameTooltip:ClearAllPoints();
 								GameTooltip:SetPoint("RIGHT", self, "LEFT", 0, 0);
-								local _, currentStage, numStages = C_Scenario.GetInfo();
+								local _, currentStage, numStages, flags = C_Scenario.GetInfo();
 								local name, description = C_Scenario.GetStepInfo();
-								GameTooltip:SetText(string.format(SCENARIO_STAGE_STATUS, currentStage, numStages), 1, 0.914, 0.682, 1);
-								GameTooltip:AddLine(name, 1, 0.831, 0.380, 1);
-								GameTooltip:AddLine(" ");
-								GameTooltip:AddLine(description, 1, 1, 1, 1);
-								GameTooltip:Show();
+								if(bit.band(flags, SCENARIO_FLAG_SUPRESS_STAGE_TEXT) == SCENARIO_FLAG_SUPRESS_STAGE_TEXT) then
+								  GameTooltip:SetText(name, 1, 0.914, 0.682, 1);
+								  GameTooltip:AddLine(description, 1, 1, 1, 1);
+								  GameTooltip:Show();
+								else
+								  GameTooltip:SetText(string.format(SCENARIO_STAGE_STATUS, currentStage, numStages), 1, 0.914, 0.682, 1);
+								  GameTooltip:AddLine(name, 1, 0.831, 0.380, 1);
+								  GameTooltip:AddLine(" ");
+								  GameTooltip:AddLine(description, 1, 1, 1, 1);
+								  GameTooltip:Show();
+								end
 							</OnEnter>
 							<OnLeave>
 								GameTooltip:Hide();

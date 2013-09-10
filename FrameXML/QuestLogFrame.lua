@@ -583,7 +583,7 @@ function QuestLog_UpdatePartyInfoTooltip(questLogTitle)
 				GameTooltip:AddLine(HIGHLIGHT_FONT_COLOR_CODE..PARTY_QUEST_STATUS_ON..FONT_COLOR_CODE_CLOSE);
 				partyMemberOnQuest = true;
 			end
-			GameTooltip:AddLine(LIGHTYELLOW_FONT_COLOR_CODE..UnitName("party"..i)..FONT_COLOR_CODE_CLOSE);
+			GameTooltip:AddLine(LIGHTYELLOW_FONT_COLOR_CODE..GetUnitName("party"..i, true)..FONT_COLOR_CODE_CLOSE);
 		end
 	end
 	if ( not partyMemberOnQuest ) then

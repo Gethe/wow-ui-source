@@ -57,8 +57,8 @@ end
 function TradeFrame_Update()
 	SetPortraitTexture(TradeFramePlayerPortrait, "player");
 	SetPortraitTexture(TradeFrameRecipientPortrait, "NPC");
-	TradeFramePlayerNameText:SetText(UnitName("player"));
-	TradeFrameRecipientNameText:SetText(UnitName("NPC"));
+	TradeFramePlayerNameText:SetText(GetUnitName("player"));
+	TradeFrameRecipientNameText:SetText(GetUnitName("NPC"));
 	for i=1, MAX_TRADE_ITEMS, 1 do
 		TradeFrame_UpdateTargetItem(i);
 		TradeFrame_UpdatePlayerItem(i);

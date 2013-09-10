@@ -146,36 +146,6 @@ function RaidBuffTray_Update()
 	ConsolidatedBuffsCount:SetText(numBufs.."/"..max(numBufs,buffcount));
 end
 
-function RaidTray_Buff_OnUpdate(self)
-	local index = self:GetID();
-	if ( self.timeLeft < BUFF_WARNING_TIME ) then
-		self:SetAlpha(BuffFrame.BuffAlphaValue);
-	else
-		self:SetAlpha(1.0);
-	end
-
-	-- Update duration
-	RaidTray_Buff_UpdateDuration(self, self.timeLeft)
-	self.timeLeft = max(self.expirationTime - GetTime(), 0);
-
-	if ( GameTooltip:IsOwned(self) ) then
-		GameTooltip:SetUnitBuff(PlayerFrame.unit, self.index);
-	end
-end
-
-function RaidTray_Buff_UpdateDuration(auraButton, timeLeft)
-	local duration = auraButton.duration;
-	if ( SHOW_BUFF_DURATIONS == "1" and timeLeft ) then
-		local durationText = string.format(SecondsToTimeAbbrev(timeLeft));
-		if ( timeLeft < BUFF_DURATION_WARNING_TIME ) then
-			durationText = HIGHLIGHT_FONT_COLOR_CODE..durationText.."|r"
-		end
-		auraButton.label:SetText(durationText.."  "..auraButton.labelString);
-	else
-		auraButton.label:SetText(auraButton.labelString);
-	end
-end
-
 function BuffFrame_UpdatePositions()
 	if ( SHOW_BUFF_DURATIONS == "1" ) then
 		BUFF_ROW_SPACING = 15;

@@ -141,7 +141,6 @@ function UIParent_OnLoad(self)
 	self:RegisterEvent("PARTY_INVITE_CANCEL");
 	self:RegisterEvent("GUILD_INVITE_REQUEST");
 	self:RegisterEvent("GUILD_INVITE_CANCEL");
-	self:RegisterEvent("ARENA_TEAM_INVITE_REQUEST");
 	self:RegisterEvent("PLAYER_CAMPING");
 	self:RegisterEvent("PLAYER_QUITING");
 	self:RegisterEvent("LOGOUT_CANCEL");
@@ -213,6 +212,7 @@ function UIParent_OnLoad(self)
 	self:RegisterEvent("MISSING_OUT_ON_LOOT");
 	self:RegisterEvent("SPELL_CONFIRMATION_PROMPT");
 	self:RegisterEvent("SPELL_CONFIRMATION_TIMEOUT");
+	self:RegisterEvent("SAVED_VARIABLES_TOO_LARGE");
 	
 	-- Events for auction UI handling
 	self:RegisterEvent("AUCTION_HOUSE_SHOW");
@@ -265,6 +265,7 @@ function UIParent_OnLoad(self)
 	
 	-- Events for Archaeology
 	self:RegisterEvent("ARCHAEOLOGY_TOGGLE");
+	self:RegisterEvent("ARCHAEOLOGY_SURVEY_CAST");
 	
 	-- Events for transmogrify
 	self:RegisterEvent("TRANSMOGRIFY_OPEN");
@@ -449,6 +450,10 @@ end
 
 function QuestChoice_LoadUI()
 	UIParentLoadAddOn("Blizzard_QuestChoice");
+end
+
+function Store_LoadUI()
+	UIParentLoadAddOn("Blizzard_StoreUI");
 end
 
 --[[
@@ -670,6 +675,17 @@ function TogglePVPUI()
 	end
 end
 
+function ToggleStoreUI()
+	Store_LoadUI();
+
+	local wasShown = StoreFrame_IsShown();
+	if ( not wasShown ) then
+		--We weren't showing, now we are. We should hide all other panels.
+		securecall("CloseAllWindows");
+	end
+	StoreFrame_SetShown(not wasShown);
+end
+
 function InspectUnit(unit)
 	if (IsBlizzCon()) then
 		return;
@@ -796,10 +812,6 @@ function UIParent_OnEvent(self, event, ...)
 		StaticPopup_Show("GUILD_INVITE", arg1, arg2);
 	elseif ( event == "GUILD_INVITE_CANCEL" ) then
 		StaticPopup_Hide("GUILD_INVITE");
-	elseif ( event == "ARENA_TEAM_INVITE_REQUEST" ) then
-		StaticPopup_Show("ARENA_TEAM_INVITE", arg1, arg2);
-	elseif ( event == "ARENA_TEAM_INVITE_CANCEL" ) then
-		StaticPopup_Hide("ARENA_TEAM_INVITE");
 	elseif ( event == "PLAYER_CAMPING" ) then
 		StaticPopup_Show("CAMP");
 	elseif ( event == "PLAYER_QUITING" ) then
@@ -875,11 +887,6 @@ function UIParent_OnEvent(self, event, ...)
 
 		-- Close any windows that were previously open
 		CloseAllWindows(1);
-
-		-- Until PVPFrame is checked in, this is placed here.
-		for i=1, MAX_ARENA_TEAMS do
-			GetArenaTeam(i);
-		end
 
 		VoiceChat_Toggle();
 
@@ -1051,6 +1058,9 @@ function UIParent_OnEvent(self, event, ...)
 		else
 			StaticPopup_Hide("SPELL_CONFIRMATION_PROMPT", spellID);
 		end
+	elseif ( event == "SAVED_VARIABLES_TOO_LARGE" ) then
+		local addonName = ...;
+		StaticPopup_Show("SAVED_VARIABLES_TOO_LARGE", addonName);
 	elseif ( event == "CONFIRM_DISENCHANT_ROLL" ) then
 		local texture, name, count, quality, bindOnPickUp = GetLootRollItemInfo(arg1);
 		local dialog = StaticPopup_Show("CONFIRM_LOOT_ROLL", ITEM_QUALITY_COLORS[quality].hex..name.."|r");
@@ -1289,6 +1299,10 @@ function UIParent_OnEvent(self, event, ...)
 		elseif ( ArchaeologyFrame_Hide ) then
 			ArchaeologyFrame_Hide();
 		end
+	elseif ( event == "ARCHAEOLOGY_SURVEY_CAST" ) then
+		ArchaeologyFrame_LoadUI();
+		ArcheologyDigsiteProgressBar_OnEvent(ArcheologyDigsiteProgressBar, event, ...);
+		self:UnregisterEvent("ARCHAEOLOGY_SURVEY_CAST");
 		
 	-- Events for Transmogrify UI handling
 	elseif ( event == "TRANSMOGRIFY_OPEN" ) then
@@ -1555,6 +1569,11 @@ function FramePositionDelegate:ShowUIPanel(frame, force)
 
 	if ( UnitIsDead("player") and not GetUIPanelWindowInfo(frame, "whileDead") ) then
 		NotWhileDeadError();
+		return;
+	end
+
+	-- If the store-frame is open, we don't let people open up any other panels (just as if it were full-screened)
+	if ( StoreFrame_IsShown and StoreFrame_IsShown() ) then
 		return;
 	end
 
@@ -3136,6 +3155,7 @@ function ToggleGameMenu()
 	if ( not UIParent:IsShown() ) then
 		UIParent:Show();
 		SetUIVisibility(true);
+	elseif ( StoreFrame_EscapePressed and StoreFrame_EscapePressed() ) then
 	elseif ( securecall("StaticPopup_EscapePressed") ) then
 	elseif ( GameMenuFrame:IsShown() ) then
 		PlaySound("igMainMenuQuit");
@@ -3887,10 +3907,14 @@ function RaidBrowser_IsEmpowered()
 	return (not IsInGroup()) or UnitIsGroupLeader("player");
 end
 
-function GetLFGMode(category)
+function GetLFGMode(category, lfgID)
+	if ( category ~= LE_LFG_CATEGORY_RF ) then
+		lfgID = nil; --HACK - RF works differently from everything else. You can queue for multiple RF slots with different ride tickets.
+	end
+
 	local proposalExists, id, typeID, subtypeID, name, texture, role, hasResponded, totalEncounters, completedEncounters, numMembers, isLeader, isHoliday, proposalCategory = GetLFGProposal();
-	local inParty, joined, queued, noPartialClear, achievements, lfgComment, slotCount = GetLFGInfoServer(category);
-	local roleCheckInProgress, slots, members, roleUpdateCategory = GetLFGRoleUpdate();
+	local inParty, joined, queued, noPartialClear, achievements, lfgComment, slotCount = GetLFGInfoServer(category, lfgID);
+	local roleCheckInProgress, slots, members, roleUpdateCategory, roleUpdateID = GetLFGRoleUpdate();
 
 	local partyCategory = nil;
 	local partySlot = GetPartyLFGID();
@@ -3903,21 +3927,21 @@ function GetLFGMode(category)
 	if ( category == LE_LFG_CATEGORY_LFR ) then
 		empoweredFunc = RaidBrowser_IsEmpowered;
 	end
-	if ( proposalExists and not hasResponded and proposalCategory == category ) then
+	if ( proposalExists and not hasResponded and proposalCategory == category and (not lfgID or lfgID == id) ) then
 		return "proposal", "unaccepted";
-	elseif ( proposalExists and proposalCategory == category ) then
+	elseif ( proposalExists and proposalCategory == category and (not lfgID or lfgID == id) ) then
 		return "proposal", "accepted";
 	elseif ( queued ) then
 		return "queued", (empoweredFunc() and "empowered" or "unempowered");
-	elseif ( roleCheckInProgress and roleUpdateCategory == category ) then
+	elseif ( roleCheckInProgress and roleUpdateCategory == category and (not lfgID or lfgID == roleUpdateID) ) then
 		return "rolecheck";
 	elseif ( category == LE_LFG_CATEGORY_LFR and joined ) then
 		return "listed", (empoweredFunc() and "empowered" or "unempowered");
 	elseif ( joined ) then
 		return "suspended", (empoweredFunc() and "empowered" or "unempowered");	--We are "joined" to LFG, but not actually queued right now.
-	elseif ( IsInGroup() and IsPartyLFG() and partyCategory == category ) then
+	elseif ( IsInGroup() and IsPartyLFG() and partyCategory == category and (not lfgID or lfgID == partySlot) ) then
 		return "lfgparty";
-	elseif ( IsPartyLFG() and IsInLFGDungeon() and partyCategory == category ) then
+	elseif ( IsPartyLFG() and IsInLFGDungeon() and partyCategory == category and (not lfgID or lfgID == partySlot) ) then
 		return "abandonedInDungeon";
 	end
 end
@@ -4190,5 +4214,20 @@ function PrintLootSpecialization()
 	if ( lootSpecChoice ) then
 		local info = ChatTypeInfo["SYSTEM"];
 		DEFAULT_CHAT_FRAME:AddMessage(lootSpecChoice, info.r, info.g, info.b, info.id);
+	end
+end
+
+function GetSmoothProgressChange(value, displayedValue, range, elapsed, minPerSecond, maxPerSecond)
+	maxPerSecond = maxPerSecond or 0.7;
+	minPerSecond = minPerSecond or 0.3;
+	minPerSecond = max(minPerSecond, 1/range);	--Make sure we're moving at least 1 unit/second (will only matter if our maximum power is 3 or less);
+	
+	local diff = displayedValue - value;
+	local diffRatio = diff / range;
+	local change = range * ((minPerSecond/abs(diffRatio) + maxPerSecond - minPerSecond) * diffRatio) * elapsed;
+	if ( abs(change) > abs(diff) or abs(diffRatio) < 0.01 ) then
+		return value;
+	else
+		return displayedValue - change;
 	end
 end

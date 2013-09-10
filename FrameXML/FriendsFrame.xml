@@ -624,6 +624,15 @@ TRAVEL PASS
 				FriendsFrameWhoButton_OnClick(self, button);
 				PlaySound("igMainMenuOptionCheckBoxOn");
 			</OnClick>
+			<OnEnter>
+				if (self.tooltip1 and self.tooltip2) then
+					GameTooltip:SetOwner(self, "ANCHOR_LEFT");
+					GameTooltip:SetText(self.tooltip1);
+					GameTooltip:AddLine(self.tooltip2, 1, 1, 1);
+					GameTooltip:Show();
+				end
+			</OnEnter>
+			<OnLeave function="GameTooltip_Hide"/>
 		</Scripts>
 		<HighlightTexture file="Interface\QuestFrame\UI-QuestTitleHighlight" alphaMode="ADD">
 			<Size x="298" y="16"/>
@@ -1377,10 +1386,10 @@ TRAVEL PASS
 								self:SetFrameLevel( self:GetFrameLevel() + 3 );
 							</OnLoad>
 							<OnClick>
-								if ( UnitCanCooperate("player", "target") ) then
+								if ( UnitCanCooperate("player", "target") and UnitIsPlayer("target") ) then
 									local name, server = UnitName("target");
 									local fullname = name;
-									if ( server and not UnitIsSameServer("player", "target") ) then
+									if ( server and UnitRealmRelationship("target") ~= LE_REALM_RELATION_SAME ) then
 										fullname = name.."-"..server;
 									end
 									AddIgnore(fullname);
@@ -1421,8 +1430,13 @@ TRAVEL PASS
 								self:SetFrameLevel( self:GetFrameLevel() + 3 );
 							</OnLoad>
 							<OnClick>
-								if ( UnitCanCooperate("player", "target") ) then
-									AddMute(UnitName("target"));
+								if ( UnitCanCooperate("player", "target") and UnitIsPlayer("target") ) then
+									local name, server = UnitName("target");
+									local fullname = name;
+									if ( server and not UnitIsSameServer("target") ) then
+										fullname = name.."-"..server;
+									end
+									AddMute(fullname);
 									PlaySound("UChatScrollButton");
 								else
 									StaticPopup_Show("ADD_MUTE");
@@ -1447,7 +1461,7 @@ TRAVEL PASS
 					<ScrollFrame name="FriendsFrameIgnoreScrollFrame" inherits="FauxScrollFrameTemplate">
 						<Size x="298" y="309"/>
 						<Anchors>
-							<Anchor point="TOPRIGHT" relativeTo="FriendsFrame" x="-65" y="-99"/>
+							<Anchor point="TOPRIGHT" relativeTo="FriendsFrame" x="-32" y="-87"/>
 						</Anchors>
 						<Scripts>
 							<OnVerticalScroll>

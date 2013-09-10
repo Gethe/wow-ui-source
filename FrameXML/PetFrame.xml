@@ -44,8 +44,6 @@
 				</Texture>
 			</Layer>
 			<Layer level="ARTWORK">
-				<Texture name="$parentMyHealPredictionBar" inherits="MyHealPredictionBarTemplate"/>
-				<Texture name="$parentOtherHealPredictionBar" inherits="OtherHealPredictionBarTemplate"/>
 				<Texture name="$parentTotalAbsorbBar" inherits="TotalAbsorbBarTemplate"/>
 			</Layer>
 			<Layer level="ARTWORK" textureSubLevel="1">
@@ -73,6 +71,13 @@
 					<Frame setAllPoints="true">
 						<Layers>
 							<Layer level="BACKGROUND">
+								<Texture name="$parentMyHealPredictionBar" inherits="MyHealPredictionBarTemplate"/>
+								<Texture name="$parentOtherHealPredictionBar" inherits="OtherHealPredictionBarTemplate"/>
+								<Texture name="$parentHealAbsorbBar" inherits="HealAbsorbBarTemplate"/>
+								<Texture name="$parentHealAbsorbBarLeftShadow" inherits="HealAbsorbBarLeftShadowTemplate"/>
+								<Texture name="$parentHealAbsorbBarRightShadow" inherits="HealAbsorbBarRightShadowTemplate"/>
+							</Layer>
+							<Layer level="BORDER">
 								<Texture name="PetFrameTexture" file="Interface\TargetingFrame\UI-SmallTargetingFrame">
 									<Size>
 										<AbsDimension x="128" y="64"/>
@@ -137,6 +142,7 @@
 									<TexCoords left="0.703125" right="1.0" top="0" bottom="1.0"/>
 								</Texture>
 								<Texture name="$parentOverAbsorbGlow" inherits="OverAbsorbGlowTemplate"/>
+								<Texture name="$parentOverHealAbsorbGlow" inherits="OverHealAbsorbGlowTemplate"/>
 							</Layer>
 						</Layers>
 					</Frame>

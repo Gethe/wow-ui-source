@@ -156,21 +156,32 @@ function AccountLogin_OnEvent(event, arg1, arg2, arg3)
 		GlueDialog:Hide();
 		ScanDLLContinueAnyway();
 		AccountLoginUI:Show();
+		AccountLogin_CheckAutoLogin();
 	elseif ( event == "SCANDLL_FINISHED" ) then
-		if ( arg1 == "OK" ) then
+		local hackType, hackName, blocking = arg1, arg2, arg3;
+		if ( hackType == "OK" ) then
 			GlueDialog:Hide();
 			AccountLoginUI:Show();
 			AccountLogin_CheckAutoLogin();
+		elseif ( not hackType ) then
+			--We failed, but we don't know why.
+			GlueDialog:Hide();
+			AccountLoginUI:Show();
+			if ( not blocking ) then
+				AccountLogin_CheckAutoLogin();
+			else
+				CancelLauncherLogin();
+			end
 		else
-			AccountLogin.hackURL = _G["SCANDLL_URL_"..arg1];
-			AccountLogin.hackName = arg2;
-			AccountLogin.hackType = arg1;
-			local formatString = _G["SCANDLL_MESSAGE_"..arg1];
-			if ( arg3 == 1 ) then
+			AccountLogin.hackURL = _G["SCANDLL_URL_"..hackType];
+			AccountLogin.hackName = hackName;
+			AccountLogin.hackType = hackType;
+			local formatString = _G["SCANDLL_MESSAGE_"..hackType];
+			if ( blocking ) then
 				formatString = _G["SCANDLL_MESSAGE_HACKNOCONTINUE"];
 			end
 			local msg = format(formatString, AccountLogin.hackName, AccountLogin.hackURL);
-			if ( arg3 == 1 ) then
+			if ( blocking ) then
 				GlueDialog_Show("SCANDLL_HACKFOUND_NOCONTINUE", msg);
 			else
 				GlueDialog_Show("SCANDLL_HACKFOUND", msg);

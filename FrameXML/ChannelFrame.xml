@@ -87,7 +87,8 @@
 			<Frame setAllPoints="true">
 				<Layers>
 					<Layer level="BORDER">
-						<FontString name="$parentName" inherits="GameFontHighlightSmall" text="Player Name">
+						<FontString name="$parentName" justifyH="LEFT"  inherits="GameFontHighlightSmall" text="Player Name">
+							<Size x="145" y="15"/>
 							<Anchors>
 								<Anchor point="TOPLEFT" x="13" y="-1"/>
 							</Anchors>
@@ -145,6 +146,13 @@
 			<OnClick>
 				ChannelRoster_OnClick(self, button, down);
 			</OnClick>
+			<OnEnter>
+				if (_G[self:GetName().."Name"]:IsTruncated() and self.name ) then
+					GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+					GameTooltip:SetText(self.name, HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b);
+				end
+			</OnEnter>
+			<OnLeave function="GameTooltip_Hide"/>
 		</Scripts>
 		<HighlightTexture file="Interface\QuestFrame\UI-QuestTitleHighlight" alphaMode="ADD"/>
 	</Button>

@@ -148,6 +148,22 @@
 					</Anchors>
 					<Color r="1" g="1" b="1" a="0.5"/>
 				</FontString>
+				<FontString parentKey="ItemUpgradedNotification" inherits="GameFontNormalLarge" justifyH="CENTER" text="ITEM_UPGRADE_ITEM_UPGRADED_NOTIFICATION" hidden="true">
+					<Animations>
+						<AnimationGroup parentKey="FinishedAnim">
+							<Alpha change="1" duration="0.1" order="1" />
+							<Alpha startDelay="2" change="-1" duration="0.5" order="2" />
+							<Scripts>
+								<OnFinished>
+									self:GetParent():Hide();
+								</OnFinished>
+							</Scripts>
+						</AnimationGroup>
+					</Animations>
+					<Anchors>
+						<Anchor point="CENTER" x="0" y="-80"/>
+					</Anchors>
+				</FontString>
 				<FontString parentKey="NoMoreUpgrades" text="ITEM_UPGRADE_NO_MORE_UPGRADES" inherits="GameFontNormalMed3" hidden="true">
 					<Size x="167" y="0"/>
 					<Anchors>
@@ -290,7 +306,7 @@
 							<Color r="1" g="1" b="1" a="1"/>
 						</FontString>
 						<FontString parentKey="MissingText" inherits="GameFontNormalMed3" justifyH="LEFT" text="UPGRADE_MISSING_ITEM">
-							<Size x="250" y="12"/>
+							<Size x="250" y="30"/>
 							<Anchors>
 								<Anchor point="LEFT" relativePoint="RIGHT" x="50" y="0"/>
 							</Anchors>

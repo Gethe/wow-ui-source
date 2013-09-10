@@ -12,6 +12,9 @@ function PVEFrame_OnLoad(self)
 end
 
 function PVEFrame_ToggleFrame(sidePanelName, selection)
+	if ( UnitLevel("player") < SHOW_LFD_LEVEL ) then
+		return;
+	end
 	local self = PVEFrame;
 	if ( self:IsShown() ) then
 		if ( sidePanelName ) then
@@ -96,26 +99,35 @@ end
 
 SCENARIOS_SHOW_LEVEL = 85;
 RAID_FINDER_SHOW_LEVEL = 85;
+FLEX_RAID_SHOW_LEVEL = 90;
 
-local groupFrames = { "LFDParentFrame", "RaidFinderFrame", "ScenarioFinderFrame" }
+local groupFrames = { "LFDParentFrame", "ScenarioFinderFrame", "RaidFinderFrame", "FlexRaidFrame" }
 
 function GroupFinderFrame_OnLoad(self)
 	SetPortraitToTexture(self.groupButton1.icon, "Interface\\Icons\\INV_Helmet_08");
 	self.groupButton1.name:SetText(LOOKING_FOR_DUNGEON_PVEFRAME);
-	SetPortraitToTexture(self.groupButton2.icon, "Interface\\LFGFrame\\UI-LFR-PORTRAIT");
-	self.groupButton2.name:SetText(RAID_FINDER_PVEFRAME);
-	SetPortraitToTexture(self.groupButton3.icon, "Interface\\Icons\\Icon_Scenarios");
-	self.groupButton3.name:SetText(SCENARIOS_PVEFRAME);
+	SetPortraitToTexture(self.groupButton3.icon, "Interface\\LFGFrame\\UI-LFR-PORTRAIT");
+	self.groupButton3.name:SetText(RAID_FINDER_PVEFRAME);
+	SetPortraitToTexture(self.groupButton4.icon, "Interface\\Icons\\Achievement_General_StayClassy");
+	self.groupButton4.name:SetText(FLEX_RAID);
+	SetPortraitToTexture(self.groupButton2.icon, "Interface\\Icons\\Icon_Scenarios");
+	self.groupButton2.name:SetText(SCENARIOS_PVEFRAME);
 	-- disable
 	if ( UnitLevel("player") < SCENARIOS_SHOW_LEVEL ) then
-		GroupFinderFrameButton_SetEnabled(self.groupButton3, false);
-		self.groupButton3.tooltip = format(FEATURE_BECOMES_AVAILABLE_AT_LEVEL, SCENARIOS_SHOW_LEVEL);
+		GroupFinderFrameButton_SetEnabled(self.groupButton2, false);
+		self.groupButton2.tooltip = format(FEATURE_BECOMES_AVAILABLE_AT_LEVEL, SCENARIOS_SHOW_LEVEL);
 		GroupFinderFrame:SetScript("OnEvent", GroupFinderFrame_OnEvent);
 		GroupFinderFrame:RegisterEvent("PLAYER_LEVEL_UP");
 	end
 	if ( UnitLevel("player") < RAID_FINDER_SHOW_LEVEL ) then
-		GroupFinderFrameButton_SetEnabled(self.groupButton2, false);
-		self.groupButton2.tooltip = format(FEATURE_BECOMES_AVAILABLE_AT_LEVEL, RAID_FINDER_SHOW_LEVEL);
+		GroupFinderFrameButton_SetEnabled(self.groupButton3, false);
+		self.groupButton3.tooltip = format(FEATURE_BECOMES_AVAILABLE_AT_LEVEL, RAID_FINDER_SHOW_LEVEL);
+		GroupFinderFrame:SetScript("OnEvent", GroupFinderFrame_OnEvent);
+		GroupFinderFrame:RegisterEvent("PLAYER_LEVEL_UP");
+	end
+	if ( UnitLevel("player") < FLEX_RAID_SHOW_LEVEL ) then
+		GroupFinderFrameButton_SetEnabled(self.groupButton4, false);
+		self.groupButton4.tooltip = format(FEATURE_BECOMES_AVAILABLE_AT_LEVEL, FLEX_RAID_SHOW_LEVEL);
 		GroupFinderFrame:SetScript("OnEvent", GroupFinderFrame_OnEvent);
 		GroupFinderFrame:RegisterEvent("PLAYER_LEVEL_UP");
 	end
@@ -142,19 +154,27 @@ function GroupFinderFrame_OnEvent(self, event, ...)
 	local allAvailable = true;
 
 	if ( level >= SCENARIOS_SHOW_LEVEL ) then
-		GroupFinderFrameButton_SetEnabled(self.groupButton3, true);
-		self.groupButton3.tooltip = nil;
-	else
-		allAvailable = false;
-	end
-
-	if ( level >= RAID_FINDER_SHOW_LEVEL ) then
 		GroupFinderFrameButton_SetEnabled(self.groupButton2, true);
 		self.groupButton2.tooltip = nil;
 	else
 		allAvailable = false;
 	end
 
+	if ( level >= RAID_FINDER_SHOW_LEVEL ) then
+		GroupFinderFrameButton_SetEnabled(self.groupButton3, true);
+		self.groupButton3.tooltip = nil;
+	else
+		allAvailable = false;
+	end
+
+	if ( level >= FLEX_RAID_SHOW_LEVEL ) then
+		GroupFinderFrameButton_SetEnabled(self.groupButton4, true);
+		self.groupButton4.tooltip = nil;
+		RequestLFDPlayerLockInfo();
+	else
+		allAvailable = false;
+	end
+	
 	if ( allAvailable ) then
 		GroupFinderFrame:SetScript("OnEvent", nil);
 		GroupFinderFrame:UnregisterEvent("PLAYER_LEVEL_UP");		

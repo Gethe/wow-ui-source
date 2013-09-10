@@ -2056,7 +2056,6 @@ function CalendarContextMenu_OnHide(self)
 	CalendarDayContextMenu_UnlockHighlights();
 	CalendarInviteContextMenu_UnlockHighlights();
 	-- fail safe: always hide nested menus
-	CalendarArenaTeamContextMenu:Hide();
 	CalendarInviteStatusContextMenu:Hide();
 end
 
@@ -2097,12 +2096,7 @@ function CalendarDayContextMenu_Initialize(self, flags, dayButton, eventButton)
 			UIMenu_AddButton(self, CALENDAR_CREATE_GUILD_EVENT, nil, CalendarDayContextMenu_CreateGuildEvent);
 			UIMenu_AddButton(self, CALENDAR_CREATE_GUILD_ANNOUNCEMENT, nil, CalendarDayContextMenu_CreateGuildAnnouncement);
 		end
---[[
-		-- add arena team selection if the player has an arena team
-		if ( IsInArenaTeam() ) then
-			--UIMenu_AddButton(self, CALENDAR_CREATE_ARENATEAM_EVENT, nil, nil, "CalendarArenaTeamContextMenu");
-		end
---]]
+
 		needSpacer = true;
 	end
 
@@ -2333,59 +2327,6 @@ end
 
 function CalendarDayContextMenu_SignUp()
 	CalendarContextEventSignUp();
-end
-
-function CalendarArenaTeamContextMenu_OnLoad(self)
-	self:SetBackdropBorderColor(TOOLTIP_DEFAULT_COLOR.r, TOOLTIP_DEFAULT_COLOR.g, TOOLTIP_DEFAULT_COLOR.b);
-	self:SetBackdropColor(TOOLTIP_DEFAULT_BACKGROUND_COLOR.r, TOOLTIP_DEFAULT_BACKGROUND_COLOR.g, TOOLTIP_DEFAULT_BACKGROUND_COLOR.b);
-	-- get updated arena team info for the context menu
-	self:RegisterEvent("ARENA_TEAM_ROSTER_UPDATE");
-	for i = 1, MAX_ARENA_TEAMS do
-		ArenaTeamRoster(i);
-	end
-	self.parentMenu = "CalendarContextMenu";
-	self.onlyAutoHideSelf = true;
-end
-
-function CalendarArenaTeamContextMenu_OnShow(self)
-	CalendarArenaTeamContextMenu_Initialize(self);
-end
-
-function CalendarArenaTeamContextMenu_OnEvent(self, event, ...)
-	if ( event == "ARENA_TEAM_ROSTER_UPDATE" ) then
-		CalendarArenaTeamContextMenu_Initialize(self);
-	end
-end
-
-function CalendarArenaTeamContextMenu_Initialize(self)
-	UIMenu_Initialize(self);
-	local teamName, teamSize;
-	for i = 1, MAX_ARENA_TEAMS do
-		teamName, teamSize = GetArenaTeam(i);
-		if ( teamName ) then
-			UIMenu_AddButton(
-				CalendarArenaTeamContextMenu,								-- menu
-				format(PVP_TEAMSIZE, teamSize, teamSize),					-- text
-				nil,														-- shortcut
-				CalendarArenaTeamContextMenuButton_OnClick_CreateArenaTeamEvent,	-- func
-				nil,														-- nested
-				i);															-- value
-		end
-	end
-	return UIMenu_FinishInitializing(self);
-end
-
-function CalendarArenaTeamContextMenuButton_OnClick_CreateArenaTeamEvent(self)
-	-- hide parent menu
-	CalendarContextMenu_Hide(CalendarDayContextMenu_Initialize);
-	CalendarCloseEvent();
-	CalendarFrame_HideEventFrame();
-	CalendarDayButton_Click(CalendarContextMenu.dayButton)
-
-	CalendarNewArenaTeamEvent(self.value);
-	CalendarCreateEventFrame.mode = "create";
-	CalendarCreateEventFrame.dayButton = CalendarContextMenu.dayButton;
-	CalendarFrame_ShowEventFrame(CalendarCreateEventFrame);
 end
 
 
@@ -3888,6 +3829,7 @@ function CalendarCreateEventHourDropDown_Initialize(self)
 		if ( hour == CalendarCreateEventFrame.selectedHour ) then
 			info.checked = 1;
 			UIDropDownMenu_SetText(self, info.text);
+			UIDropDownMenu_JustifyText(CalendarCreateEventHourDropDown, "CENTER");
 		else
 			info.checked = nil;
 		end
@@ -3913,6 +3855,7 @@ function CalendarCreateEventMinuteDropDown_Initialize(self)
 		if ( minute == CalendarCreateEventFrame.selectedMinute ) then
 			info.checked = 1;
 			UIDropDownMenu_SetText(self, info.text);
+			UIDropDownMenu_JustifyText(CalendarCreateEventMinuteDropDown, "CENTER");
 		else
 			info.checked = nil;
 		end
@@ -4416,7 +4359,7 @@ function CalendarCreateEventMassInviteButton_OnUpdate(self)
 end
 
 function CalendarCreateEventMassInviteButton_Update()
-	if ( CalendarCanSendInvite() and (CanEditGuildEvent() or IsInArenaTeam()) ) then
+	if ( CalendarCanSendInvite() and CanEditGuildEvent() ) then
 		CalendarCreateEventMassInviteButton:Enable();
 	else
 		CalendarCreateEventMassInviteButton:Disable();
@@ -4544,7 +4487,6 @@ function CalendarMassInviteFrame_OnLoad(self)
 	self:RegisterEvent("CALENDAR_ACTION_PENDING");
 	self:RegisterEvent("GUILD_ROSTER_UPDATE");
 	self:RegisterEvent("PLAYER_GUILD_UPDATE");
-	self:RegisterEvent("ARENA_TEAM_UPDATE");
 
 	local minLevel, maxLevel = CalendarDefaultGuildFilter();
 	CalendarMassInviteGuildMinLevelEdit:SetNumber(minLevel);
@@ -4555,18 +4497,11 @@ function CalendarMassInviteFrame_OnLoad(self)
 	if ( IsInGuild() and GetNumGuildMembers() == 0 ) then
 		GuildRoster();
 	end
-	-- do the same for arena teams
-	for i = 1, MAX_ARENA_TEAMS do
-		ArenaTeamRoster(i);
-	end
-	-- update the arena team section in order to fill initial data
-	CalendarMassInviteArena_Update();
 end
 
 function CalendarMassInviteFrame_OnShow(self)
 	CalendarFrame_PushModal(self);
 	CalendarMassInviteGuild_Update();
-	CalendarMassInviteArena_Update();
 end
 
 function CalendarMassInviteFrame_OnEvent(self, event, ...)
@@ -4577,18 +4512,15 @@ function CalendarMassInviteFrame_OnEvent(self, event, ...)
 		end
 	end
 	if ( self:IsShown() ) then
-		if ( not CanEditGuildEvent() and not IsInArenaTeam() ) then
-			-- if we are no longer in a guild OR an arena team, we can't mass invite
+		if ( not CanEditGuildEvent() ) then
+			-- if we are no longer in a guild, we can't mass invite
 			CalendarMassInviteFrame:Hide();
 			CalendarCreateEventMassInviteButton_Update();
 		else
 			if ( event == "CALENDAR_ACTION_PENDING" ) then
 				CalendarMassInviteGuild_Update();
-				CalendarMassInviteArena_Update();
 			elseif ( event == "GUILD_ROSTER_UPDATE" or event == "PLAYER_GUILD_UPDATE" ) then
 				CalendarMassInviteGuild_Update();
-			elseif ( event == "ARENA_TEAM_UPDATE" ) then
-				CalendarMassInviteArena_Update();
 			end
 		end
 	end
@@ -4596,7 +4528,6 @@ end
 
 function CalendarMassInviteFrame_OnUpdate(self)
 	CalendarMassInviteGuild_Update();
-	CalendarMassInviteArena_Update();
 end
 
 function CalendarMassInviteGuild_Update()
@@ -4656,51 +4587,6 @@ function CalendarMassInviteGuildAcceptButton_OnClick(self)
 	CalendarMassInviteGuild(minLevel, maxLevel, CalendarMassInviteFrame.selectedRank);
 	CalendarMassInviteFrame:Hide();
 end
-
-local ARENA_TEAMS = {2, 3, 5};
-function CalendarMassInviteArena_Update()
-	-- initialize the teams
-	local teamName, teamSize;
-	local button;
-	for i = 1, MAX_ARENA_TEAMS do
-		button = _G["CalendarMassInviteArenaButton"..ARENA_TEAMS[i]];
-		button.teamName = nil;
-		button:Disable();
-	end
-
-	-- set the teams
-	local canSendInvite = CalendarCanSendInvite();
-	for i = 1, MAX_ARENA_TEAMS do
-		teamName, teamSize = GetArenaTeam(i);
-		if ( canSendInvite and teamName ) then
-			button = _G["CalendarMassInviteArenaButton"..teamSize];
-			button:SetFormattedText(PVP_TEAMTYPE, teamSize, teamSize);
-			button.teamName = teamName;
-			button:SetID(i);
-			button:Enable();
-		end
-	end
-
-	-- optimization note: using two separate init and set loops yields less redundancy and less branches than two nested loops
-end
-
-function CalendarMassInviteArenaButton_OnLoad(self)
-	local teamSize = ARENA_TEAMS[self:GetID()];
-	self:SetFormattedText(PVP_TEAMTYPE, teamSize, teamSize);
-end
-
-function CalendarMassInviteArenaButton_OnClick(self)
-	CalendarMassInviteArenaTeam(self:GetID());
-	CalendarMassInviteFrame:Hide();
-end
-
-function CalendarMassInviteArenaButton_OnEnter(self)
-	if ( self.teamName ) then
-		GameTooltip:SetOwner(self, "ANCHOR_TOPRIGHT");
-		GameTooltip:SetText(self.teamName);
-	end
-end
-
 
 -- CalendarEventPickerFrame
 

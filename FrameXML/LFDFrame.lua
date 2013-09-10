@@ -128,11 +128,21 @@ end
 --Role-check popup functions
 function LFDRoleCheckPopupAccept_OnClick()
 	PlaySound("igCharacterInfoTab");
-	local oldLeader = GetLFGRoles();
-	SetLFGRoles(oldLeader, 
-		LFDRoleCheckPopupRoleButtonTank.checkButton:GetChecked(),
-		LFDRoleCheckPopupRoleButtonHealer.checkButton:GetChecked(),
-		LFDRoleCheckPopupRoleButtonDPS.checkButton:GetChecked());
+
+	--Check if the role check is for a BG or not.
+	local _, _, _, _, _, isBGRoleCheck = GetLFGRoleUpdate();
+	if ( isBGRoleCheck ) then
+		SetPVPRoles(LFDRoleCheckPopupRoleButtonTank.checkButton:GetChecked(),
+					LFDRoleCheckPopupRoleButtonHealer.checkButton:GetChecked(),
+					LFDRoleCheckPopupRoleButtonDPS.checkButton:GetChecked());
+	else
+		local oldLeader = GetLFGRoles();
+		SetLFGRoles(oldLeader, 
+			LFDRoleCheckPopupRoleButtonTank.checkButton:GetChecked(),
+			LFDRoleCheckPopupRoleButtonHealer.checkButton:GetChecked(),
+			LFDRoleCheckPopupRoleButtonDPS.checkButton:GetChecked());
+	end
+	
 	if ( CompleteLFGRoleCheck(true) ) then
 		StaticPopupSpecial_Hide(LFDRoleCheckPopup);
 	end
@@ -149,7 +159,7 @@ function LFDRoleCheckPopup_Update()
 	
 	LFG_UpdateAllRoleCheckboxes();
 	
-	local inProgress, slots, members, details, bgQueue = GetLFGRoleUpdate();
+	local inProgress, slots, members, category, lfgID, bgQueue = GetLFGRoleUpdate();
 	
 	local displayName;
 	if ( bgQueue ) then
@@ -381,7 +391,7 @@ function LFDQueueFrameRandomCooldownFrame_Update()
 		
 		local _, classFilename = UnitClass("party"..i);
 		local classColor = classFilename and RAID_CLASS_COLORS[classFilename] or NORMAL_FONT_COLOR;
-		nameLabel:SetFormattedText("|cff%.2x%.2x%.2x%s|r", classColor.r * 255, classColor.g * 255, classColor.b * 255, UnitName("party"..i));
+		nameLabel:SetFormattedText("|cff%.2x%.2x%.2x%s|r", classColor.r * 255, classColor.g * 255, classColor.b * 255, GetUnitName("party"..i, true));
 		
 		local gender = UnitSex("party"..i);
 		

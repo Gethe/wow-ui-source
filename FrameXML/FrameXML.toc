@@ -1,5 +1,5 @@
 # Do not delete the following line!
-## Interface: 50300
+## Interface: 50400
 GlobalStrings.lua
 Constants.lua
 Fonts.xml
@@ -125,13 +125,13 @@ PetStable.xml
 VehicleSeatIndicator.xml
 DurabilityFrame.xml
 WorldStateFrame.xml
-ArenaRegistrarFrame.xml
 PVEFrame.xml
 LFGFrame.xml
 LFDFrame.xml
 LFRFrame.xml
 RaidFinder.xml
 ScenarioFinder.xml
+FlexRaidFrame.xml
 MovieRecordingProgress.xml
 MacOptionsFrame.xml
 RatingMenuFrame.xml
@@ -172,6 +172,9 @@ StaticPopupSpecial.xml
 LossOfControlFrame.xml
 PVPHelper.xml
 MapBar.xml
+
+#Save off whatever we need available unmodified.
+SecureCapsule.lua
 
 ## add new modules above here
 LocalizationPost.xml

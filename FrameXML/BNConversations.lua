@@ -194,9 +194,15 @@ function BNConversationInvite_Update()
 				(#BNConversationInviteDialog.inviteTargets >= BNConversationInviteDialog.maxInvites and --Disable everything if we've checked the max amount
 				not frame.checkButton:GetChecked()  ) ) then	--Never disable a button that is already checked) then 
 			frame.checkButton:Disable();
+			frame.checkButton.tooltipText = nil;			
+			frame.name:SetFontObject("GameFontDisable");
+		elseif ( index <= numBNetOnline and not BNIsFriendConversationValid(index) ) then
+			frame.checkButton:Disable();
+			frame.checkButton.tooltipText = CONVERSATION_INCOMPATIBLE_CLIENT;
 			frame.name:SetFontObject("GameFontDisable");
 		else
 			frame.checkButton:Enable();
+			frame.checkButton.tooltipText = nil;			
 			frame.name:SetFontObject("GameFontHighlight");
 		end
 		

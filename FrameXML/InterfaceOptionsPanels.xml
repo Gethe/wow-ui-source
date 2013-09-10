@@ -2448,6 +2448,23 @@
 					</OnLoad>
 				</Scripts>
 			</CheckButton>	
+			<CheckButton name="$parentHealingAbsorbTarget" inherits="InterfaceOptionsSmallCheckButtonTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentHealing" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="10" y="-2"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						self.type = CONTROLTYPE_CHECKBOX;
+						self.cvar = "CombatHealingAbsorbTarget";
+						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
+						BlizzardOptionsPanel_SetupDependentControl(InterfaceOptionsCombatTextPanelHealing, self);
+					</OnLoad>
+				</Scripts>
+			</CheckButton>	
 			<CheckButton name="$parentTargetEffects" inherits="InterfaceOptionsCheckButtonTemplate">
 				<Anchors>				
 					<Anchor point="TOPLEFT" relativeTo="$parentTargetDamage" relativePoint="TOPRIGHT">
@@ -2483,9 +2500,9 @@
 			</CheckButton>
 			<CheckButton name="$parentEnableFCT" inherits="InterfaceOptionsCheckButtonTemplate">
 				<Anchors>
-					<Anchor point="TOPLEFT" relativeTo="$parentHealing" relativePoint="BOTTOMLEFT">
+					<Anchor point="TOPLEFT" relativeTo="$parentHealingAbsorbTarget" relativePoint="BOTTOMLEFT">
 						<Offset>
-							<AbsDimension x="0" y="-32"/>
+							<AbsDimension x="-10" y="-32"/>
 						</Offset>
 					</Anchor>
 				</Anchors>
@@ -2642,6 +2659,21 @@
 					</OnLoad>
 				</Scripts>
 			</CheckButton>
+			<CheckButton name="$parentHealingAbsorbSelf" inherits="InterfaceOptionsSmallCheckButtonTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentCombatState" relativePoint="BOTTOMLEFT">
+						<Offset x="0" y="4"/>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						self.type = CONTROLTYPE_CHECKBOX;
+						self.cvar = "CombatHealingAbsorbSelf";
+						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
+						BlizzardOptionsPanel_SetupDependentControl(InterfaceOptionsCombatTextPanelEnableFCT, self);
+					</OnLoad>
+				</Scripts>
+			</CheckButton>	
 			<CheckButton name="$parentComboPoints" inherits="InterfaceOptionsSmallCheckButtonTemplate">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeTo="$parentDodgeParryMiss" relativePoint="TOPRIGHT">

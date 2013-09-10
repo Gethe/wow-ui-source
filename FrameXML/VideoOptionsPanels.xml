@@ -333,7 +333,7 @@
 
 			<!-- Display -->
 			<!-- Column A -->
-			<Slider name="$parentQuality" inherits="VideoOptionsSliderTemplate" minValue="1" maxValue="5" valueStep="1" >
+			<Slider name="$parentQuality" inherits="VideoOptionsSliderTemplate" minValue="1" maxValue="5" valueStep="1" stepsPerPage="1" >
 				<Size x="10" y="22"/>
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeTo="$parentGraphicsHeaderUnderline" relativePoint="BOTTOMLEFT">

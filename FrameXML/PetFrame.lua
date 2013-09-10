@@ -9,8 +9,9 @@ function PetFrame_OnLoad (self)
 						 PetFrameManaBar, PetFrameManaBarText,
 						 PetFrameFlash, nil, nil,
 						 PetFrameMyHealPredictionBar, PetFrameOtherHealPredictionBar,
-						 PetFrameTotalAbsorbBar, PetFrameTotalAbsorbBarOverlay, PetFrameOverAbsorbGlow);
-
+						 PetFrameTotalAbsorbBar, PetFrameTotalAbsorbBarOverlay, 
+						 PetFrameOverAbsorbGlow, PetFrameOverHealAbsorbGlow, PetFrameHealAbsorbBar,
+						 PetFrameHealAbsorbBarLeftShadow, PetFrameHealAbsorbBarRightShadow);
 	self.attackModeCounter = 0;
 	self.attackModeSign = -1;
 	--self.flashState = 1;

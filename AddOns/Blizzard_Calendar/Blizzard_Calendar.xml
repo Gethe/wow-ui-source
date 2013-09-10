@@ -438,13 +438,6 @@
 					<OnHide function="CalendarContextMenu_OnHide"/>
 				</Scripts>
 			</Frame>
-			<Frame name="CalendarArenaTeamContextMenu" inherits="UIMenuTemplate" frameStrata="FULLSCREEN" enableMouse="true" hidden="true" parent="CalendarContextMenu">
-				<Scripts>
-					<OnLoad function="CalendarArenaTeamContextMenu_OnLoad"/>
-					<OnShow function="CalendarArenaTeamContextMenu_OnShow"/>
-					<OnEvent function="CalendarArenaTeamContextMenu_OnEvent"/>
-				</Scripts>
-			</Frame>
 			<Frame name="CalendarInviteStatusContextMenu" inherits="UIMenuTemplate" frameStrata="FULLSCREEN" enableMouse="true" hidden="true" parent="CalendarContextMenu">
 				<Scripts>
 					<OnLoad function="CalendarInviteStatusContextMenu_OnLoad"/>
@@ -1241,7 +1234,7 @@
 							</Anchor>
 						</Anchors>
 					</Frame>
-					<EditBox name="CalendarCreateEventInviteEdit" letters="32" inherits="InputBoxTemplate" autoFocus="false">
+					<EditBox name="CalendarCreateEventInviteEdit" letters="32" inherits="InputBoxTemplate,AutoCompleteEditBoxTemplate" autoFocus="false">
 						<Size x="192" y="20"/>
 						<Anchors>
 							<Anchor point="TOPLEFT" relativeTo="CalendarCreateEventInviteList" relativePoint="BOTTOMLEFT">
@@ -1491,14 +1484,6 @@
 						</Anchor>
 					</Anchors>
 				</FontString>
-				<FontString inherits="GameFontHighlightSmall" text="CALENDAR_MASSINVITE_ARENA_HELP" justifyH="CENTER">
-					<Size x="280" y="0"/>
-					<Anchors>
-						<Anchor point="TOP">
-							<Offset x="0" y="-160"/>
-						</Anchor>
-					</Anchors>
-				</FontString>
 			</Layer>
 		</Layers>
 		<Frames>
@@ -1560,27 +1545,6 @@
 				<Scripts>
 					<OnClick function="CalendarMassInviteGuildAcceptButton_OnClick"/>
 				</Scripts>
-			</Button>
-			<Button name="CalendarMassInviteArenaButton2" inherits="CalendarMassInviteArenaButtonTemplate" id="1">
-				<Anchors>
-					<Anchor point="TOPLEFT">
-						<Offset x="14" y="-190"/>
-					</Anchor>
-				</Anchors>
-			</Button>
-			<Button name="CalendarMassInviteArenaButton3" inherits="CalendarMassInviteArenaButtonTemplate" id="2">
-				<Anchors>
-					<Anchor point="TOP">
-						<Offset x="0" y="-190"/>
-					</Anchor>
-				</Anchors>
-			</Button>
-			<Button name="CalendarMassInviteArenaButton5" inherits="CalendarMassInviteArenaButtonTemplate" id="3">
-				<Anchors>
-					<Anchor point="TOPRIGHT">
-						<Offset x="-14" y="-190"/>
-					</Anchor>
-				</Anchors>
 			</Button>
 			<Button name="CalendarMassInviteCloseButton" inherits="CalendarCloseButtonTemplate">
 				<Scripts>

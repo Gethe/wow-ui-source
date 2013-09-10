@@ -143,6 +143,7 @@
 					</Anchors>
 				</Texture>
 				<FontString name="$parentName" inherits="GameFontNormal" justifyH="LEFT" parentKey="name">
+					<Size x="170" y="12"/>
 					<Anchors>
 						<Anchor point="TOPLEFT" x="66" y="-10"/>
 					</Anchors>

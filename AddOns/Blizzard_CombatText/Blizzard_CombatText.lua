@@ -78,6 +78,7 @@ COMBAT_TEXT_TYPE_INFO["RUNE"] = {r = 0.1, g = 0.1, b = 1, var = "COMBAT_TEXT_SHO
 COMBAT_TEXT_TYPE_INFO["PERIODIC_HEAL_ABSORB"] = {r = 0.1, g = 1, b = 0.1, show = 1};
 COMBAT_TEXT_TYPE_INFO["HEAL_CRIT_ABSORB"] = {r = 0.1, g = 1, b = 0.1, show = 1};
 COMBAT_TEXT_TYPE_INFO["HEAL_ABSORB"] = {r = 0.1, g = 1, b = 0.1, show = 1};
+COMBAT_TEXT_TYPE_INFO["ABSORB_ADDED"] = {r = 0.1, g = 1, b = 0.1, show = 1};
 
 COMBAT_TEXT_RUNE = {};
 COMBAT_TEXT_RUNE[1] = COMBAT_TEXT_RUNE_BLOOD;
@@ -259,10 +260,10 @@ function CombatText_OnEvent(self, event, ...)
 			or arg3 == "ENERGY"
 			or arg3 == "RUNIC_POWER"
 			or arg3 == "SOUL_SHARDS"
-			or arg3 == "CHI") then
+			or arg3 == "CHI" ) then
 			message = data.." ".._G[arg3];
 			info = PowerBarColor[arg3];
-		elseif ( arg3 == "HOLY_POWER" and PaladinPowerBar:IsShown() and PaladinPowerBar:GetAlpha() > 0.5 ) then
+		elseif ( arg3 == "HOLY_POWER" ) then
 			local numHolyPower = UnitPower( PaladinPowerBar:GetParent().unit, SPELL_POWER_HOLY_POWER );
 			message = "<"..numHolyPower.." ".._G[arg3]..">";
 			info = PowerBarColor[arg3];
@@ -350,6 +351,12 @@ function CombatText_OnEvent(self, event, ...)
 			end
 		else
 			message = nil;
+		end
+	elseif (messageType == "ABSORB_ADDED") then
+		if ( COMBAT_TEXT_SHOW_FRIENDLY_NAMES == "1" and UnitName(self.unit) ~= data ) then
+			message = "+"..BreakUpLargeNumbers(arg3).."("..COMBAT_TEXT_ABSORB..")".." ["..data.."]";
+		else
+			message = "+"..BreakUpLargeNumbers(arg3).."("..COMBAT_TEXT_ABSORB..")";
 		end
 	else 
 		message = _G["COMBAT_TEXT_"..messageType];

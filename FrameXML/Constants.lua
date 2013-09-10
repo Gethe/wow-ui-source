@@ -699,16 +699,19 @@ CHALLENGE_MEDAL_NONE = 0;
 CHALLENGE_MEDAL_BRONZE = 1;
 CHALLENGE_MEDAL_SILVER = 2;
 CHALLENGE_MEDAL_GOLD = 3;
+CHALLENGE_MEDAL_PLAT = 4; --as of 7/2/2013 only used for endless proving grounds
 NUM_CHALLENGE_MEDALS = 3;
 CHALLENGE_MEDAL_TEXTURES = {
 	[CHALLENGE_MEDAL_BRONZE] = "Interface\\Challenges\\challenges-bronze",
 	[CHALLENGE_MEDAL_SILVER] = "Interface\\Challenges\\challenges-silver",
 	[CHALLENGE_MEDAL_GOLD]   = "Interface\\Challenges\\challenges-gold",
+	[CHALLENGE_MEDAL_PLAT]   = "Interface\\Challenges\\challenges-plat",
 }
 CHALLENGE_MEDAL_TEXTURES_SMALL = {
 	[CHALLENGE_MEDAL_BRONZE] = "Interface\\Challenges\\challenges-bronze-sm",
 	[CHALLENGE_MEDAL_SILVER] = "Interface\\Challenges\\challenges-silver-sm",
 	[CHALLENGE_MEDAL_GOLD]   = "Interface\\Challenges\\challenges-gold-sm",
+	[CHALLENGE_MEDAL_PLAT]   = "Interface\\Challenges\\challenges-plat-sm",
 }
 
 -- Player Reporting
@@ -716,7 +719,6 @@ PLAYER_REPORT_TYPE_SPAM = "spam";
 PLAYER_REPORT_TYPE_LANGUAGE = "language";
 PLAYER_REPORT_TYPE_BAD_PLAYER_NAME = "badplayername";
 PLAYER_REPORT_TYPE_BAD_GUILD_NAME = "badguildname";
-PLAYER_REPORT_TYPE_BAD_ARENA_TEAM_NAME = "badarenaname";
 PLAYER_REPORT_TYPE_CHEATING = "cheater";
 PLAYER_REPORT_TYPE_BAD_BATTLEPET_NAME = "badbattlepetname";
 PLAYER_REPORT_TYPE_BAD_PET_NAME = "badpetname";
@@ -734,6 +736,7 @@ LFG_CATEGORY_NAMES = {
 	[LE_LFG_CATEGORY_RF] = RAID_FINDER,
 	[LE_LFG_CATEGORY_SCENARIO] = SCENARIOS,
 	[LE_LFG_CATEGORY_LFR] = LOOKING_FOR_RAID,
+	[LE_LFG_CATEGORY_FLEXRAID] = FLEX_RAID,
 }
 
 -- Instance Difficulty
@@ -753,3 +756,6 @@ MAX_WORLD_PVP_QUEUES = 2;
 
 -- Chat
 CHANNEL_INVITE_TIMEOUT = 60;
+
+-- Scenarios
+SCENARIO_FLAG_SUPRESS_STAGE_TEXT	= 0x00000002;

@@ -264,7 +264,7 @@ end
 
 function GuildRecruitmentComment_SaveText(self)
 	self = self or GuildRecruitmentCommentEditBox;
-	SetGuildRecruitmentComment(self:GetText());
+	SetGuildRecruitmentComment(self:GetText():gsub("\n",""));
 	self:ClearFocus();
 end
 

@@ -12,12 +12,26 @@ function HybridScrollFrame_OnLoad (self)
 	self:EnableMouse(true);
 end
 
+function HybridScrollFrameScrollUp_OnLoad (self)
+	self:GetParent():GetParent().scrollUp = self;
+	self:Disable();
+	self:RegisterForClicks("LeftButtonUp", "LeftButtonDown");
+	self.direction = 1;
+end
+
+function HybridScrollFrameScrollDown_OnLoad (self)
+	self:GetParent():GetParent().scrollDown = self;
+	self:Disable();
+	self:RegisterForClicks("LeftButtonUp", "LeftButtonDown");
+	self.direction = -1;
+end
+
 function HybridScrollFrame_OnValueChanged (self, value)
-	HybridScrollFrame_SetOffset(self, value);
-	HybridScrollFrame_UpdateButtonStates(self, value);
+	HybridScrollFrame_SetOffset(self:GetParent(), value);
+	HybridScrollFrame_UpdateButtonStates(self:GetParent(), value);
 end
 	
-function HybridScrollFrame_UpdateButtonStates(self, currValue)
+function HybridScrollFrame_UpdateButtonStates (self, currValue)
 	if ( not currValue ) then
 		currValue = self.scrollBar:GetValue();
 	end
@@ -223,6 +237,9 @@ function HybridScrollFrame_CreateButtons (self, buttonTemplate, initialOffsetX, 
 	self.buttons = buttons;
 	local scrollBar = self.scrollBar;	
 	scrollBar:SetMinMaxValues(0, numButtons * buttonHeight)
-	scrollBar:SetValueStep(.005);
+	scrollBar.buttonHeight = buttonHeight;
+	scrollBar:SetValueStep(buttonHeight);
+	scrollBar:SetStepsPerPage(numButtons - 2); -- one additional button was added above. Need to remove that, and one more to make the current bottom the new top (and vice versa)
 	scrollBar:SetValue(0);
+
 end

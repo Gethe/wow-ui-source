@@ -280,8 +280,6 @@
 				</Texture>
 			</Layer>
 			<Layer level="ARTWORK">
-				<Texture name="$parentMyHealPredictionBar" inherits="MyHealPredictionBarTemplate"/>
-				<Texture name="$parentOtherHealPredictionBar" inherits="OtherHealPredictionBarTemplate"/>
 				<Texture name="$parentTotalAbsorbBar" inherits="TotalAbsorbBarTemplate"/>
 			</Layer>
 			<Layer level="ARTWORK" textureSubLevel="1">
@@ -321,6 +319,13 @@
 					<Frame setAllPoints="true">
 						<Layers>
 							<Layer level="BACKGROUND">
+								<Texture name="$parentMyHealPredictionBar" inherits="MyHealPredictionBarTemplate"/>
+								<Texture name="$parentOtherHealPredictionBar" inherits="OtherHealPredictionBarTemplate"/>
+								<Texture name="$parentHealAbsorbBar" inherits="HealAbsorbBarTemplate"/>
+								<Texture name="$parentHealAbsorbBarLeftShadow" inherits="HealAbsorbBarLeftShadowTemplate"/>
+								<Texture name="$parentHealAbsorbBarRightShadow" inherits="HealAbsorbBarRightShadowTemplate"/>
+							</Layer>
+							<Layer level="BORDER">
 								<Texture name="$parentTexture" file="Interface\TargetingFrame\UI-PartyFrame">
 									<Size>
 										<AbsDimension x="128" y="64"/>
@@ -388,6 +393,7 @@
 									<TexCoords left="0" right="0.2734375" top="0" bottom="0.5625"/>
 								</Texture>
 								<Texture name="$parentOverAbsorbGlow" inherits="OverAbsorbGlowTemplate"/>
+								<Texture name="$parentOverHealAbsorbGlow" inherits="OverHealAbsorbGlowTemplate"/>
 							</Layer>
 							<Layer level="OVERLAY">
 								<Texture name="$parentLeaderIcon" file="Interface\GroupFrame\UI-Group-LeaderIcon" hidden="true">
@@ -634,7 +640,10 @@
 				UnitFrame_Initialize(self, "party"..id,  _G[prefix.."Name"], _G[prefix.."Portrait"],
 					   _G[prefix.."HealthBar"], _G[prefix.."HealthBarText"], 
 					   _G[prefix.."ManaBar"], _G[prefix.."ManaBarText"],
-				       _G[prefix.."Flash"], nil, nil, _G[prefix.."MyHealPredictionBar"], _G[prefix.."OtherHealPredictionBar"], _G[prefix.."TotalAbsorbBar"], _G[prefix.."TotalAbsorbBarOverlay"], _G[prefix.."OverAbsorbGlow"]);
+				       _G[prefix.."Flash"], nil, nil, _G[prefix.."MyHealPredictionBar"], _G[prefix.."OtherHealPredictionBar"], 
+					   _G[prefix.."TotalAbsorbBar"], _G[prefix.."TotalAbsorbBarOverlay"], _G[prefix.."OverAbsorbGlow"],
+					   _G[prefix.."OverHealAbsorbGlow"], _G[prefix.."HealAbsorbBar"], _G[prefix.."HealAbsorbBarLeftShadow"],
+					   _G[prefix.."HealAbsorbBarRightShadow"]);
 				SetTextStatusBarTextZeroText(_G[prefix.."HealthBar"], DEAD);
 				PartyMemberFrame_OnLoad(self);
 			</OnLoad>

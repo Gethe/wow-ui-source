@@ -2053,6 +2053,8 @@
 			<OnLoad>
 				self.refreshTime = 0;
 				self:RegisterEvent("UPDATE_TICKET");
+				self:RegisterEvent("STORE_STATUS_CHANGED");
+				HelpOpenTicketButton_Move();
 			</OnLoad>
 			<OnClick>
 				HelpOpenTicketButtonTutorial:Hide();
@@ -2096,6 +2098,7 @@
 			<OnLoad>
 				self.refreshTime = 0;
 				self:RegisterEvent("UPDATE_WEB_TICKET")
+				HelpOpenTicketButton_Move();
 			</OnLoad>
 			<OnShow>
 				HelpOpenTicketButton:Hide();
@@ -2265,22 +2268,6 @@
 						self.reportType = PLAYER_REPORT_TYPE_BAD_GUILD_NAME;
 						self.text:SetFontObject(GameFontHighlight);
 						self.text:SetText(BAD_GUILD_NAME);
-					</OnLoad>
-					<OnClick>
-						PlaySound("igMainMenuOptionCheckBoxOn");
-						HelpFrame_SetReportPlayerNameSelection(self.reportType);
-					</OnClick>
-				</Scripts>
-			</CheckButton>
-			<CheckButton name="$parentArenaTeamNameCheckButton" inherits="UIRadioButtonTemplate" id="3" parentKey="arenaNameCheckButton">
-				<Anchors>
-					<Anchor point="TOPLEFT" relativeTo="$parentGuildNameCheckButton" relativePoint="BOTTOMLEFT" x="0" y="-3"/>
-				</Anchors>
-				<Scripts>
-					<OnLoad>
-						self.reportType = PLAYER_REPORT_TYPE_BAD_ARENA_TEAM_NAME;
-						self.text:SetFontObject(GameFontHighlight);
-						self.text:SetText(BAD_ARENA_TEAM_NAME);
 					</OnLoad>
 					<OnClick>
 						PlaySound("igMainMenuOptionCheckBoxOn");

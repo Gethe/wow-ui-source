@@ -1,0 +1,51 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\FrameXML\UI.xsd">
+	<Texture name="store-caution-stripes" file="Interface\Store\Store-Main" virtual="true" >
+		<Size x="245" y="70"/>	
+		<TexCoords left="0.00097656" right="0.24023438" top="0.00390625" bottom="0.07226563"/>	
+	</Texture>
+	<Texture name="store-final-buy-btn" file="Interface\Store\Store-Main" virtual="true" >
+		<Size x="244" y="47"/>	
+		<TexCoords left="0.24218750" right="0.48046875" top="0.00390625" bottom="0.04980469"/>	
+	</Texture>
+	<Texture name="store-sale-slash" file="Interface\Store\Store-Main" virtual="true" >
+		<Size x="66" y="15"/>	
+		<TexCoords left="0.24218750" right="0.30664063" top="0.05175781" bottom="0.06640625"/>	
+	</Texture>
+	<Texture name="store-minimap-delivery-highlight" file="Interface\Store\Store-Main" virtual="true" >
+		<Size x="24" y="23"/>	
+		<TexCoords left="0.48242188" right="0.50585938" top="0.00390625" bottom="0.02636719"/>	
+	</Texture>
+	<Texture name="store-sale-ribbon" file="Interface\Store\Store-Main" virtual="true" >
+		<Size x="76" y="27"/>	
+		<TexCoords left="0.50781250" right="0.58203125" top="0.00390625" bottom="0.03027344"/>	
+	</Texture>
+	<Texture name="store-item-highlight" file="Interface\Store\Store-Main" virtual="true" >
+		<Size x="39" y="39"/>	
+		<TexCoords left="0.50781250" right="0.54589844" top="0.03222656" bottom="0.07031250"/>	
+	</Texture>
+	<Texture name="store-dialog" file="Interface\Store\Store-Main" virtual="true" >
+		<Size x="409" y="504"/>	
+		<TexCoords left="0.00097656" right="0.40039063" top="0.07421875" bottom="0.56640625"/>	
+	</Texture>
+	<Texture name="store-in-progress" file="Interface\Store\Store-Main" virtual="true" >
+		<Size x="409" y="249"/>	
+		<TexCoords left="0.00097656" right="0.40039063" top="0.56835938" bottom="0.81152344"/>	
+	</Texture>
+	<Texture name="store-toast" file="Interface\Store\Store-Main" virtual="true" >
+		<Size x="294" y="84"/>	
+		<TexCoords left="0.00097656" right="0.28808594" top="0.81347656" bottom="0.89550781"/>	
+	</Texture>
+	<Texture name="store-main-frame" file="Interface\Store\Store-Main" virtual="true" >
+		<Size x="542" y="385"/>	
+		<TexCoords left="0.40234375" right="0.93164063" top="0.07421875" bottom="0.45019531"/>	
+	</Texture>
+	<Texture name="store-paper" file="Interface\Store\Store-Main" virtual="true" >
+		<Size x="370" y="256"/>	
+		<TexCoords left="0.40234375" right="0.76367188" top="0.45214844" bottom="0.70214844"/>	
+	</Texture>
+	<Texture name="store-sale-border" file="Interface\Store\Store-Main" virtual="true" >
+		<Size x="391" y="233"/>	
+		<TexCoords left="0.40234375" right="0.78417969" top="0.70410156" bottom="0.93164063"/>	
+	</Texture>
+</Ui>

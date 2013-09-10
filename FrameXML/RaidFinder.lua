@@ -1,11 +1,5 @@
 MAX_RAID_FINDER_COOLDOWN_NAMES = 8;
 
-local function isRaidFinderDungeonDisplayable(id)
-	local name, typeID, subtypeID, minLevel, maxLevel, _, _, _, expansionLevel = GetLFGDungeonInfo(id);
-	local myLevel = UnitLevel("player");
-	return myLevel >= minLevel and myLevel <= maxLevel and EXPANSION_LEVEL >= expansionLevel;
-end
-
 function RaidFinderFrame_OnLoad(self)
 	self:RegisterEvent("LFG_LOCK_INFO_RECEIVED");
 end
@@ -219,18 +213,47 @@ function RaidFinderQueueFrame_SetRaid(value)
 		UIDropDownMenu_SetText(RaidFinderQueueFrameSelectionDropDown, "");
 	end
 	RaidFinderQueueFrameRewards_UpdateFrame();
+	LFG_UpdateAllRoleCheckboxes();
+	LFG_UpdateFindGroupButtons();
+	LFG_UpdateRolesChangeable();
 end
 
 function RaidFinderQueueFrame_Join()
 	if ( RaidFinderQueueFrame.raid ) then
 		ClearAllLFGDungeons(LE_LFG_CATEGORY_RF);
 		SetLFGDungeon(LE_LFG_CATEGORY_RF, RaidFinderQueueFrame.raid);
-		JoinLFG(LE_LFG_CATEGORY_RF);
+		--JoinLFG(LE_LFG_CATEGORY_RF);
+		JoinSingleLFG(LE_LFG_CATEGORY_RF, RaidFinderQueueFrame.raid);
+	end
+end
+
+function RaidFinderQueueFrame_UpdateRoleIncentives()
+	local dungeonID = RaidFinderQueueFrame.raid;
+	LFG_SetRoleIconIncentive(RaidFinderQueueFrameRoleButtonTank, nil);
+	LFG_SetRoleIconIncentive(RaidFinderQueueFrameRoleButtonHealer, nil);
+	LFG_SetRoleIconIncentive(RaidFinderQueueFrameRoleButtonDPS, nil);
+	
+	if ( type(dungeonID) == "number" ) then
+		for i=1, LFG_ROLE_NUM_SHORTAGE_TYPES do
+			local eligible, forTank, forHealer, forDamage, itemCount, money, xp = GetLFGRoleShortageRewards(dungeonID, i);
+			if ( eligible and (itemCount ~= 0 or money ~= 0 or xp ~= 0) ) then	--Only show the icon if there is actually a reward.
+				if ( forTank ) then
+					LFG_SetRoleIconIncentive(RaidFinderQueueFrameRoleButtonTank, i);
+				end
+				if ( forHealer ) then
+					LFG_SetRoleIconIncentive(RaidFinderQueueFrameRoleButtonHealer, i);
+				end
+				if ( forDamage ) then
+					LFG_SetRoleIconIncentive(RaidFinderQueueFrameRoleButtonDPS, i);
+				end
+			end
+		end
 	end
 end
 
 function RaidFinderFrameRoleCheckButton_OnClick(self)
 	RaidFinderQueueFrame_SetRoles();
+	RaidFinderQueueFrame_UpdateRoleIncentives();
 end
 
 function RaidFinderQueueFrame_SetRoles()
@@ -242,10 +265,11 @@ end
 
 function RaidFinderQueueFrameRewards_UpdateFrame()
 	LFGRewardsFrame_UpdateFrame(RaidFinderQueueFrameScrollFrameChildFrame, RaidFinderQueueFrame.raid, RaidFinderQueueFrameBackground);
+	RaidFinderQueueFrame_UpdateRoleIncentives();
 end
 
 function RaidFinderFrameFindRaidButton_Update()
-	local mode, subMode = GetLFGMode(LE_LFG_CATEGORY_RF);
+	local mode, subMode = GetLFGMode(LE_LFG_CATEGORY_RF, RaidFinderQueueFrame.raid);
 	if ( mode == "queued" or mode == "rolecheck" or mode == "proposal" or mode == "suspended" ) then
 		RaidFinderFrameFindRaidButton:SetText(LEAVE_QUEUE);
 	else

@@ -36,10 +36,6 @@ UnitPopupButtons["PROMOTE"] = { text = PARTY_PROMOTE, dist = 0 };
 UnitPopupButtons["PROMOTE_GUIDE"] = { text = PARTY_PROMOTE_GUIDE, dist = 0 };
 UnitPopupButtons["GUILD_PROMOTE"] = { text = GUILD_PROMOTE, dist = 0 };
 UnitPopupButtons["GUILD_LEAVE"] = { text = GUILD_LEAVE, dist = 0 };
-UnitPopupButtons["TEAM_PROMOTE"] = { text = TEAM_PROMOTE, dist = 0 };
-UnitPopupButtons["TEAM_KICK"] = { text = TEAM_KICK, dist = 0 };
-UnitPopupButtons["TEAM_LEAVE"] = { text = TEAM_LEAVE, dist = 0 };
-UnitPopupButtons["TEAM_DISBAND"] = { text = TEAM_DISBAND, dist = 0 };
 UnitPopupButtons["LEAVE"] = { text = PARTY_LEAVE, dist = 0 };
 UnitPopupButtons["INSTANCE_LEAVE"] = { text = INSTANCE_PARTY_LEAVE, dist = 0 };
 UnitPopupButtons["FOLLOW"] = { text = FOLLOW, dist = 4 };
@@ -202,7 +198,6 @@ UnitPopupMenus["BN_FRIEND"] = { "WHISPER", "POP_OUT_CHAT", "CREATE_CONVERSATION_
 UnitPopupMenus["BN_FRIEND_OFFLINE"] = { "BN_SET_NOTE", "BN_VIEW_FRIENDS", "BN_REPORT", "BN_REMOVE_FRIEND", "CANCEL" };
 UnitPopupMenus["GUILD"] = { "GUILD_BATTLETAG_FRIEND", "WHISPER", "INVITE", "TARGET", "IGNORE", "GUILD_PROMOTE", "GUILD_LEAVE", "CANCEL" };
 UnitPopupMenus["GUILD_OFFLINE"] = { "GUILD_BATTLETAG_FRIEND", "IGNORE", "GUILD_PROMOTE", "GUILD_LEAVE", "CANCEL" };
-UnitPopupMenus["TEAM"] = { "WHISPER", "INVITE", "TARGET", "TEAM_PROMOTE", "TEAM_KICK", "TEAM_LEAVE", "TEAM_DISBAND", "CANCEL" };
 UnitPopupMenus["RAID_TARGET_ICON"] = { "RAID_TARGET_1", "RAID_TARGET_2", "RAID_TARGET_3", "RAID_TARGET_4", "RAID_TARGET_5", "RAID_TARGET_6", "RAID_TARGET_7", "RAID_TARGET_8", "RAID_TARGET_NONE" };
 UnitPopupMenus["SELECT_ROLE"] = { "SET_ROLE_TANK", "SET_ROLE_HEALER", "SET_ROLE_DAMAGER", "SET_ROLE_NONE" };
 UnitPopupMenus["CHAT_ROSTER"] = { "WHISPER", "TARGET", "MUTE", "UNMUTE", "CHAT_SILENCE", "CHAT_UNSILENCE", "CHAT_PROMOTE", "CHAT_DEMOTE", "CHAT_OWNER", "CANCEL"  };
@@ -630,7 +625,7 @@ function UnitPopup_HideButtons ()
 				UnitPopupShown[UIDROPDOWNMENU_MENU_LEVEL][index] = 0;
 			end
 		elseif ( value == "ADD_FRIEND" ) then
-			if ( haveBattleTag or canCoop == 0 or not UnitIsPlayer(dropdownMenu.unit) or not UnitIsSameServer("player", dropdownMenu.unit) or GetFriendInfo(UnitName(dropdownMenu.unit)) ) then
+			if ( haveBattleTag or canCoop == 0 or not UnitIsPlayer(dropdownMenu.unit) or not UnitIsSameServer(dropdownMenu.unit) or GetFriendInfo(UnitName(dropdownMenu.unit)) ) then
 				UnitPopupShown[UIDROPDOWNMENU_MENU_LEVEL][index] = 0;
 			end
 		elseif ( value == "ADD_FRIEND_MENU" ) then
@@ -646,8 +641,6 @@ function UnitPopup_HideButtons ()
 				if ( canCoop == 0  or UnitIsUnit("player", dropdownMenu.unit) ) then
 					UnitPopupShown[UIDROPDOWNMENU_MENU_LEVEL][index] = 0;
 				end
-			elseif ( (dropdownMenu == ArenaTeamMemberDropDown) and not ArenaTeamMemberDropDown.online ) then
-				UnitPopupShown[UIDROPDOWNMENU_MENU_LEVEL][index] = 0;
 			elseif ( (dropdownMenu == ChannelRosterDropDown) ) then
 				if ( UnitInRaid(dropdownMenu.name) ~= nil ) then
 					UnitPopupShown[UIDROPDOWNMENU_MENU_LEVEL][index] = 0;
@@ -680,8 +673,6 @@ function UnitPopup_HideButtons ()
 				if ( canCoop == 0  or (dropdownMenu.name == playerName and dropdownMenu.server == playerServer) ) then
 					UnitPopupShown[UIDROPDOWNMENU_MENU_LEVEL][index] = 0;
 				end
-			elseif ( (dropdownMenu == ArenaTeamMemberDropDown) and not ArenaTeamMemberDropDown.online ) then
-				UnitPopupShown[UIDROPDOWNMENU_MENU_LEVEL][index] = 0;
 			end
 		elseif ( value == "CREATE_CONVERSATION_WITH" ) then
 			if ( not dropdownMenu.presenceID or not BNFeaturesEnabledAndConnected()) then
@@ -764,8 +755,6 @@ function UnitPopup_HideButtons ()
 			-- We don't want to show a menu option that will end up being blocked
 			if ( InCombatLockdown() or not issecure() ) then
 				UnitPopupShown[UIDROPDOWNMENU_MENU_LEVEL][index] = 0;
-			elseif ( (dropdownMenu == ArenaTeamMemberDropDown) and not ArenaTeamMemberDropDown.online ) then
-				UnitPopupShown[UIDROPDOWNMENU_MENU_LEVEL][index] = 0;
 			elseif ( dropdownMenu.isMobile ) then
 				UnitPopupShown[UIDROPDOWNMENU_MENU_LEVEL][index] = 0;
 			end
@@ -788,26 +777,6 @@ function UnitPopup_HideButtons ()
 			end
 		elseif ( value == "GUILD_LEAVE" ) then
 			if ( dropdownMenu.name ~= UnitName("player") ) then
-				UnitPopupShown[UIDROPDOWNMENU_MENU_LEVEL][index] = 0;
-			end
-		elseif ( value == "TEAM_PROMOTE" ) then
-			if ( dropdownMenu.name == UnitName("player") or not ArenaTeamFrame:IsShown() ) then
-				UnitPopupShown[UIDROPDOWNMENU_MENU_LEVEL][index] = 0;
-			elseif ( ArenaTeamFrame:IsShown() and not IsArenaTeamCaptain(PVPUI_GetSelectedArenaTeam()) ) then
-				UnitPopupShown[UIDROPDOWNMENU_MENU_LEVEL][index] = 0;
-			end
-		elseif ( value == "TEAM_KICK" ) then
-			if ( dropdownMenu.name == UnitName("player") or not ArenaTeamFrame:IsShown() ) then
-				UnitPopupShown[UIDROPDOWNMENU_MENU_LEVEL][index] = 0;
-			elseif ( ArenaTeamFrame:IsShown() and not IsArenaTeamCaptain(PVPUI_GetSelectedArenaTeam()) ) then
-				UnitPopupShown[UIDROPDOWNMENU_MENU_LEVEL][index] = 0;
-			end
-		elseif ( value == "TEAM_LEAVE" ) then
-			if ( dropdownMenu.name ~= UnitName("player") or not ArenaTeamFrame:IsShown() or IsArenaTeamCaptain(PVPUI_GetSelectedArenaTeam()) ) then
-				UnitPopupShown[UIDROPDOWNMENU_MENU_LEVEL][index] = 0;
-			end
-		elseif ( value == "TEAM_DISBAND" ) then
-			if ( dropdownMenu.name ~= UnitName("player") or not ArenaTeamFrame:IsShown() or not IsArenaTeamCaptain(PVPUI_GetSelectedArenaTeam()) ) then
 				UnitPopupShown[UIDROPDOWNMENU_MENU_LEVEL][index] = 0;
 			end
 		elseif ( value == "UNINVITE" ) then
@@ -1251,11 +1220,6 @@ function UnitPopup_OnUpdate (elapsed)
 		inParty = 1;
 	end
 
-	local isCaptain
-	if ( PVPUIFrame and PVPUI_GetSelectedArenaTeam() and IsArenaTeamCaptain(PVPUI_GetSelectedArenaTeam()) ) then
-		isCaptain = 1;
-	end
-
 	local isLeader = 0;
 	if ( UnitIsGroupLeader("player") ) then
 		isLeader = 1;
@@ -1436,7 +1400,7 @@ function UnitPopup_OnUpdate (elapsed)
 							enable = 0;
 						else
 							-- disable if player is from another realm or already on friends list
-							if ( not UnitIsSameServer("player", UIDROPDOWNMENU_INIT_MENU.unit) or GetFriendInfo(UnitName(UIDROPDOWNMENU_INIT_MENU.unit)) ) then
+							if ( not UnitIsSameServer(UIDROPDOWNMENU_INIT_MENU.unit) or GetFriendInfo(UnitName(UIDROPDOWNMENU_INIT_MENU.unit)) ) then
 								enable = 0;
 							end
 						end
@@ -1466,11 +1430,11 @@ function UnitPopup_OnClick (self)
 	local name = dropdownFrame.name;
 	local server = dropdownFrame.server;
 	local fullname = name;
-
-	if ( server and (not unit or not UnitIsSameServer("player", unit)) ) then
+	
+	if ( server and (not unit or UnitRealmRelationship(unit) ~= LE_REALM_RELATION_SAME) ) then
 		fullname = name.."-"..server;
 	end
-
+	
 	local inParty = 0;
 	if ( IsInGroup() ) then
 		inParty = 1;
@@ -1504,12 +1468,12 @@ function UnitPopup_OnClick (self)
 	elseif ( button == "IGNORE" ) then
 		AddOrDelIgnore(fullname);
 	elseif ( button == "REPORT_SPAM" ) then
-		local dialog = StaticPopup_Show("CONFIRM_REPORT_SPAM_CHAT", name);
+		local dialog = StaticPopup_Show("CONFIRM_REPORT_SPAM_CHAT", fullname);
 		if ( dialog ) then
 			dialog.data = dropdownFrame.unit or tonumber(dropdownFrame.lineID);
 		end
 	elseif ( button == "REPORT_BAD_LANGUAGE" ) then
-		local dialog = StaticPopup_Show("CONFIRM_REPORT_BAD_LANGUAGE_CHAT", name);
+		local dialog = StaticPopup_Show("CONFIRM_REPORT_BAD_LANGUAGE_CHAT", fullname);
 		if ( dialog ) then
 			dialog.data = dropdownFrame.unit or tonumber(dropdownFrame.lineID);
 		end
@@ -1527,10 +1491,10 @@ function UnitPopup_OnClick (self)
 		end
 	elseif ( button == "REPORT_PET" ) then
 		SetPendingReportPetTarget(unit);
-		StaticPopup_Show("CONFIRM_REPORT_PET_NAME", name);
+		StaticPopup_Show("CONFIRM_REPORT_PET_NAME", fullname);
 	elseif ( button == "REPORT_BATTLE_PET" ) then
 		C_PetBattles.SetPendingReportTargetFromUnit(unit);
-		StaticPopup_Show("CONFIRM_REPORT_BATTLEPET_NAME", name);
+		StaticPopup_Show("CONFIRM_REPORT_BATTLEPET_NAME", fullname);
 	elseif ( button == "REPORT_CHEATING" ) then
 		if ( GMQuickTicketSystemEnabled() and not GMQuickTicketSystemThrottled() ) then
 			HelpFrame_ShowReportCheatingDialog(dropdownFrame.unit or tonumber(dropdownFrame.lineID));
@@ -1554,10 +1518,10 @@ function UnitPopup_OnClick (self)
 	elseif ( button == "UNINVITE" or button == "VOTE_TO_KICK" ) then
 		UninviteUnit(fullname, nil, 1);
 	elseif ( button == "REMOVE_FRIEND" ) then
-		RemoveFriend(name);
+		RemoveFriend(fullname);
 	elseif ( button == "SET_NOTE" ) then
-		FriendsFrame.NotesID = name;
-		StaticPopup_Show("SET_FRIENDNOTE", name);
+		FriendsFrame.NotesID = fullname;
+		StaticPopup_Show("SET_FRIENDNOTE", fullname);
 		PlaySound("igCharacterInfoClose");
 	elseif ( button == "BN_REMOVE_FRIEND" ) then
 		local presenceID, presenceName, _, isBattleTagPresence = BNGetFriendInfoByID(dropdownFrame.presenceID);
@@ -1572,7 +1536,7 @@ function UnitPopup_OnClick (self)
 		end
 	elseif ( button == "BN_SET_NOTE" ) then
 		FriendsFrame.NotesID = dropdownFrame.presenceID;
-		StaticPopup_Show("SET_BNFRIENDNOTE", name);
+		StaticPopup_Show("SET_BNFRIENDNOTE", fullname);
 		PlaySound("igCharacterInfoClose");
 	elseif ( button == "BN_VIEW_FRIENDS" ) then
 		FriendsFriendsFrame_Show(dropdownFrame.presenceID);
@@ -1588,32 +1552,10 @@ function UnitPopup_OnClick (self)
 	elseif ( button == "PROMOTE" or button == "PROMOTE_GUIDE" ) then
 		PromoteToLeader(unit, 1);
 	elseif ( button == "GUILD_PROMOTE" ) then
-		local dialog = StaticPopup_Show("CONFIRM_GUILD_PROMOTE", name);
-		dialog.data = name;
+		local dialog = StaticPopup_Show("CONFIRM_GUILD_PROMOTE", fullname);
+		dialog.data = fullname;
 	elseif ( button == "GUILD_LEAVE" ) then
 		StaticPopup_Show("CONFIRM_GUILD_LEAVE", GetGuildInfo("player"));
-	elseif ( button == "TEAM_PROMOTE" ) then
-		local dialog = StaticPopup_Show("CONFIRM_TEAM_PROMOTE", name, GetArenaTeam(PVPUI_GetSelectedArenaTeam()));
-		if ( dialog ) then
-			dialog.data = PVPUI_GetSelectedArenaTeam();
-			dialog.data2 = name;
-		end
-	elseif ( button == "TEAM_KICK" ) then
-		local dialog = StaticPopup_Show("CONFIRM_TEAM_KICK", name, GetArenaTeam(PVPUI_GetSelectedArenaTeam()) );
-		if ( dialog ) then
-			dialog.data = PVPUI_GetSelectedArenaTeam();
-			dialog.data2 = name;
-		end
-	elseif ( button == "TEAM_LEAVE" ) then
-		local dialog = StaticPopup_Show("CONFIRM_TEAM_LEAVE", GetArenaTeam(PVPUI_GetSelectedArenaTeam()) );
-		if ( dialog ) then
-			dialog.data = PVPUI_GetSelectedArenaTeam();
-		end
-	elseif ( button == "TEAM_DISBAND" ) then
-		local dialog = StaticPopup_Show("CONFIRM_TEAM_DISBAND", GetArenaTeam(PVPUI_GetSelectedArenaTeam()) );
-		if ( dialog ) then
-			dialog.data = PVPUI_GetSelectedArenaTeam();
-		end
 	elseif ( button == "LEAVE" ) then
 		LeaveParty();
 	elseif ( button == "INSTANCE_LEAVE" ) then
@@ -1789,7 +1731,7 @@ function UnitPopup_OnClick (self)
 	elseif ( strsub(button, 1, 9) == "SET_ROLE_" ) then
 		UnitSetRole(dropdownFrame.unit, strsub(button, 10));
 	elseif ( button == "ADD_FRIEND" or button == "CHARACTER_FRIEND" ) then
-		AddFriend(name);
+		AddFriend(fullname);
 	elseif ( button == "BATTLETAG_FRIEND" ) then
 		local _, battleTag = BNGetInfo();
 		if ( not battleTag ) then
@@ -1803,7 +1745,7 @@ function UnitPopup_OnClick (self)
 		if ( not battleTag ) then
 			StaticPopupSpecial_Show(CreateBattleTagFrame);
 		else
-			BNCheckBattleTagInviteToGuildMember(name);
+			BNCheckBattleTagInviteToGuildMember(fullname);
 		end
 		CloseDropDownMenus();
 	end

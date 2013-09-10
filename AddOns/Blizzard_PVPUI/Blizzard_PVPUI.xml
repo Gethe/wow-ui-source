@@ -333,25 +333,38 @@
 			<Layer level="ARTWORK">
 				<FontString parentKey="TeamSizeText" inherits="GameFontNormalHuge">
 					<Anchors>
-						<Anchor point="CENTER" relativePoint="LEFT" x="38" y="0"/>
+						<Anchor point="CENTER" relativePoint="LEFT" x="40" y="0"/>
 					</Anchors>
 				</FontString>
-				<FontString parentKey="TeamNameText" inherits="GameFontHighlightMedium" nonspacewrap="true" justifyH="LEFT">
-					<Size x="150" y="40"/>
+				<FontString parentKey="WinsLabel" inherits="GameFontDisable" text="WINS">
 					<Anchors>
-						<Anchor point="LEFT" relativeKey="$parent.TeamSizeText" relativePoint="RIGHT" x="20" y="0"/>
+						<Anchor point="TOP" x="-40" y="-14"/>
 					</Anchors>
 				</FontString>
-				<FontString parentKey="RatingText" inherits="GameFontHighlightMedium">
+				<FontString parentKey="Wins" inherits="GameFontHighlight" text="0">
 					<Anchors>
-						<Anchor point="CENTER" relativePoint="RIGHT" x="-43" y="-7"/>
+						<Anchor point="TOP" relativeKey="$parent.WinsLabel" relativePoint="BOTTOM" x="0" y="-2"/>
 					</Anchors>
 				</FontString>
-				<FontString parentKey="RatingLabel" inherits="GameFontDisableSmall" text="RATING">
+				<FontString parentKey="BestLabel" inherits="GameFontDisable" text="BEST">
 					<Anchors>
-						<Anchor point="BOTTOM" relativeKey="$parent.RatingText" relativePoint="TOP" x="0" y="5"/>
-					</Anchors>	
-					<Color r="0.8" g="0.8" b="0.8"/>
+						<Anchor point="TOP" x="28" y="-14"/>
+					</Anchors>
+				</FontString>
+				<FontString parentKey="BestRating" inherits="GameFontHighlight" text="0">
+					<Anchors>
+						<Anchor point="TOP" relativeKey="$parent.BestLabel" relativePoint="BOTTOM" x="0" y="-2"/>
+					</Anchors>
+				</FontString>
+				<FontString parentKey="CurrentLabel" inherits="GameFontDisable" text="REFORGE_CURRENT">
+					<Anchors>
+						<Anchor point="TOP" x="100" y="-13"/>
+					</Anchors>
+				</FontString>
+				<FontString parentKey="CurrentRating" inherits="GameFontNormalLarge" text="0">
+					<Anchors>
+						<Anchor point="TOP" relativeKey="$parent.CurrentLabel" relativePoint="BOTTOM" x="0" y="-3"/>
+					</Anchors>
 				</FontString>
 			</Layer>
 		</Layers>		
@@ -372,236 +385,27 @@
 			<OnLoad>
 				self.id = self:GetID();
 				self.TeamSizeText:SetText(CONQUEST_SIZE_STRINGS[self.id]);
-				self:RegisterForClicks("LeftButtonUp", "RightButtonUp");
 			</OnLoad>
 			<OnClick function="ConquestFrameButton_OnClick"/>
 			<OnEnter function="ConquestFrameButton_OnEnter"/>
 			<OnMouseDown>
 				if ( self:IsEnabled() ) then
-					self.TeamSizeText:SetPoint("CENTER", self, "LEFT", 37, -1);
-					self.RatingText:SetPoint("CENTER", self, "RIGHT", -44, -8);
+					self.TeamSizeText:SetPoint("CENTER", self, "LEFT", 39, -1);
+					self.WinsLabel:SetPoint("TOP", self, "TOP", -41, -15);
+					self.BestLabel:SetPoint("TOP", self, "TOP", 27, -15);
+					self.CurrentLabel:SetPoint("TOP", self, "TOP", 99, -14);
 				end
 			</OnMouseDown>
 			<OnMouseUp>
-				self.TeamSizeText:SetPoint("CENTER", self, "LEFT", 38, 0);
-				self.RatingText:SetPoint("CENTER", self, "RIGHT", -43, -7);
+				self.TeamSizeText:SetPoint("CENTER", self, "LEFT", 40, 0);
+				self.WinsLabel:SetPoint("TOP", self, "TOP", -40, -14);
+				self.BestLabel:SetPoint("TOP", self, "TOP", 28, -14);
+				self.CurrentLabel:SetPoint("TOP", self, "TOP", 100, -13);
 			</OnMouseUp>
-			<OnLeave function="GameTooltip_Hide"/>
+			<OnLeave>
+				ConquestTooltip:Hide();
+			</OnLeave>
 		</Scripts>
-	</Button>
-	
-	<Button name="PVPArenaTeamFlagTemplate2" virtual="true">
-		<Size x="49" y="98"/>	
-		<Layers>
-			<Layer level="BACKGROUND">
-				<Texture parentKey="Banner" file="Interface\PVPFrame\PVP-Banner-2">
-					<Size x="49" y="98"/>
-					<Anchors>
-						<Anchor point="TOP" />
-					</Anchors>
-				</Texture>
-			</Layer>
-			<Layer level="ARTWORK">
-				<Texture parentKey="Border">
-					<Size x="49" y="98"/>
-					<Anchors>
-						<Anchor point="CENTER" relativeKey="$parent.Banner" relativePoint="CENTER"/>
-					</Anchors>
-				</Texture>
-			</Layer>
-			<Layer level="ARTWORK" textureSubLevel="2">
-				<Texture parentKey="Emblem" >
-					<Size x="26" y="26"/>
-					<Anchors>
-						<Anchor point="CENTER" relativeKey="$parent.Border" x="-5" y="17"/>
-					</Anchors>
-				</Texture>
-			</Layer>
-		</Layers>
-		<HitRectInsets>
-			<AbsInset left="30" right="40" top="29" bottom="6"/>
-		</HitRectInsets>
-	</Button>
-	
-	<Button name="ArenaTeamsTeamButtonTemplate" motionScriptsWhileDisabled="true" virtual="true">
-		<Size x="203" y="60"/>
-		<Layers>
-			<Layer level="BACKGROUND">
-				<Texture parentKey="Background" file="Interface\Common\bluemenu-main">
-					<Size x="224" y="80"/>
-					<TexCoords left="0.00390625" right="0.87890625" top="0.75195313" bottom="0.83007813"/>
-					<Anchors>
-						<Anchor point="CENTER"/>
-					</Anchors>
-				</Texture>
-			</Layer>
-			<Layer level="ARTWORK">
-				<FontString parentKey="TeamSize" inherits="GameFontHighlightMedium" justifyH="LEFT">
-					<Anchors>
-						<Anchor point="BOTTOMLEFT" x="55" y="10" />
-					</Anchors>
-				</FontString>
-				<FontString parentKey="RatingLabel" inherits="GameFontHighlight" text="PVP_RATING">
-					<Anchors>
-						<Anchor point="BOTTOMRIGHT" x="-40" y="10" />
-					</Anchors>
-					<Color r="0.7" g="0.7" b="0.7"/>
-				</FontString>
-				<FontString parentKey="Rating" inherits="GameFontHighlight" >
-					<Anchors>
-						<Anchor point="BOTTOMLEFT" relativeKey="$parent.RatingLabel" relativePoint="BOTTOMRIGHT" x="-1" />
-					</Anchors>
-				</FontString>
-				<FontString parentKey="TeamName" inherits="GameFontNormalMed3" justifyH="LEFT" justifyV="BOTTOM" nonspacewrap="true">
-					<Size x="140" y="40"/>
-					<Anchors>
-						<Anchor point="BOTTOMLEFT" relativeKey="$parent.TeamSize" relativePoint="TOPLEFT" y="10" />
-					</Anchors>
-				</FontString>
-			</Layer>
-		</Layers>
-		<Frames>
-			<Button parentKey="Flag" inherits="PVPArenaTeamFlagTemplate2">
-				<Anchors>
-					<Anchor point="TOPLEFT" x="10" y="0"/>
-				</Anchors>
-				<Layers>
-					<Layer level="OVERLAY">
-						<Texture parentKey="FlagGrabber" file="Interface\PvPFrame\PvPMegaQueue">
-							<Size x="51" y="12"/>	
-							<Anchors>
-								<Anchor point="TOP" x="-2" y="5"/>
-							</Anchors>	
-							<TexCoords left="0.64257813" right="0.74218750" top="0.00097656" bottom="0.01269531"/>	
-						</Texture>
-					</Layer>
-				</Layers>
-			</Button>
-		</Frames>
-		<HighlightTexture file="Interface\Common\bluemenu-main" alphaMode="ADD" alpha="0.8">
-			<Size x="224" y="80"/>
-			<TexCoords left="0.00390625" right="0.87890625" top="0.75195313" bottom="0.83007813"/>
-			<Anchors>
-				<Anchor point="CENTER"/>
-			</Anchors>
-		</HighlightTexture>
-		<Scripts>
-			<OnClick function="PVPArenaTeamsTeamButton_OnClick"/>
-		</Scripts>
-	</Button>
-
-	<Button name="ArenaTeamsFrameColumnHeaderTemplate" virtual="true">
-		<Size x="10" y="19"/>
-		<Layers>
-			<Layer level="BACKGROUND">
-				<Texture name="$parentLeft" file="Interface\FriendsFrame\WhoFrame-ColumnTabs">
-					<Size x="5" y="19"/>
-					<Anchors>
-						<Anchor point="TOPLEFT"/>
-					</Anchors>
-					<TexCoords left="0" right="0.078125" top="0" bottom="0.75"/>
-				</Texture>
-				<Texture name="$parentMiddle" file="Interface\FriendsFrame\WhoFrame-ColumnTabs">
-					<Size x="53" y="19"/>
-					<Anchors>
-						<Anchor point="LEFT" relativeTo="$parentLeft" relativePoint="RIGHT"/>
-					</Anchors>
-					<TexCoords left="0.078125" right="0.90625" top="0" bottom="0.75"/>
-				</Texture>
-				<Texture name="$parentRight" file="Interface\FriendsFrame\WhoFrame-ColumnTabs">
-					<Size x="4" y="19"/>
-					<Anchors>
-						<Anchor point="LEFT" relativeTo="$parentMiddle" relativePoint="RIGHT"/>
-					</Anchors>
-					<TexCoords left="0.90625" right="0.96875" top="0" bottom="0.75"/>
-				</Texture>
-			</Layer>
-		</Layers>
-		<Scripts>
-			<OnClick>
-				if ( self.sortType ) then
-					SortArenaTeamRoster(self.sortType);
-				end
-				PlaySound("igMainMenuOptionCheckBoxOn");
-			</OnClick>
-		</Scripts>
-		<ButtonText>
-			<Anchors>
-				<Anchor point="CENTER" relativeTo="$parentMiddle" x="0" y="0"/>
-			</Anchors>
-		</ButtonText>
-		<NormalFont style="GameFontHighlightSmall"/>
-		<HighlightTexture name="$parentHighlightTexture" file="Interface\PaperDollInfoFrame\UI-Character-Tab-Highlight" alphaMode="ADD">
-			<Anchors>
-				<Anchor point="TOPLEFT" relativeTo="$parentLeft" x="-2" y="5"/>
-				<Anchor point="BOTTOMRIGHT" relativeTo="$parentRight" x="2" y="-7"/>
-			</Anchors>
-		</HighlightTexture>
-	</Button>	
-	
-	<Button name="ArenaTeamMemberButtonTemplate" virtual="true">
-		<Size x="326" y="18"/>
-		<Layers> 		
-			<Layer level="BACKGROUND">
-				<Texture file="Interface\Buttons\UI-Listbox-Highlight2" alphaMode="ADD" hidden="true" parentKey="BG">
-					<Color r="1" g="1" b="1" a="0.08"/>
-				</Texture>
-			</Layer>
-			<Layer level="BORDER">
-				<FontString parentKey="NameText" inherits="GameFontHighlight" justifyH="LEFT">
-					<Size x="112" y="14"/>
-					<Anchors>
-						<Anchor point="LEFT" x="8" y="-1"/>
-					</Anchors>
-				</FontString>
-				<FontString parentKey="PlayedText" inherits="GameFontHighlight" justifyH="CENTER">
-					<Size x="45" y="14"/>
-					<Anchors>
-						<Anchor point="LEFT" relativeKey="$parent.NameText" relativePoint="RIGHT" x="24" y="0"/>
-					</Anchors>
-				</FontString>
-				<FontString parentKey="WinLossText" inherits="GameFontHighlight" justifyH="CENTER">
-					<Size x="72" y="14"/>
-					<Anchors>
-						<Anchor point="LEFT" relativeKey="$parent.PlayedText" relativePoint="RIGHT" x="4" y="0"/>
-					</Anchors>
-				</FontString>
-				<FontString parentKey="RatingText" inherits="GameFontHighlight" justifyH="CENTER">
-					<Size x="54" y="14"/>
-					<Anchors>
-						<Anchor point="LEFT" relativeKey="$parent.WinLossText" relativePoint="RIGHT" x="4" y="0"/>
-					</Anchors>
-				</FontString>
-			</Layer>
-			<Layer level="OVERLAY">
-				<Texture parentKey="CaptainIcon" file="Interface\GroupFrame\UI-Group-LeaderIcon" hidden="true" >
-					<Size x="16" y="16"/>
-					<Anchors>
-						<Anchor point="LEFT" relativeKey="$parent.NameText"  relativePoint="RIGHT" x="0" y="0"/>
-					</Anchors>
-					<Color r="1" g="1" b="1"/>
-				</Texture>
-			</Layer>
-		</Layers>
-		<Scripts>
-			<OnLoad>
-				self:RegisterForClicks("RightButtonUp");
-				if (self:GetID() % 2 == 0) then
-					self.BG:Show();
-				else
-					self.BG:Hide();
-				end
-			</OnLoad>
-			<OnClick>			
-				local parent = self:GetParent()
-				if ( button == "RightButton" ) then
-					local name, rank, level, class, online = GetArenaTeamRosterInfo(parent.teamIndex, self:GetID());
-					ArenaTeamMember_ShowDropdown(name, online);
-				end
-				PlaySound("igMainMenuOptionCheckBoxOn");
-			</OnClick>
-		</Scripts>
-		<HighlightTexture file="Interface\QuestFrame\UI-QuestTitleHighlight" alphaMode="ADD"/>
 	</Button>
 	
 	<Frame name="PVPUIFrame" inherits="PortraitFrameTemplate" enableMouse="true" parent="UIParent" hidden="true" toplevel="true">
@@ -701,35 +505,7 @@
 					<Anchor point="TOPLEFT" x="4" y="-24" />
 					<Anchor point="BOTTOMLEFT" x="4" y="4" />
 				</Anchors>
-			</Frame>	
-			<Button name="$parentTab1" inherits="CharacterFrameTabButtonTemplate" text="PLAYER_V_PLAYER" id="1" parentKey="Tab1">
-				<Anchors>
-					<Anchor point="BOTTOMLEFT" relativeTo="$parent" relativePoint="BOTTOMLEFT">
-						<Offset x="19" y="-30"/>
-					</Anchor>
-				</Anchors>
-				<Scripts>
-					<OnClick function="PVPUIFrame_TabOnClick"/>
-				</Scripts>
-			</Button>
-			<Button name="$parentTab2" inherits="CharacterFrameTabButtonTemplate" text="ARENA_TEAMS" id="2" parentKey="Tab2">
-				<Anchors>
-					<Anchor point="LEFT" relativeTo="$parentTab1" relativePoint="RIGHT">
-						<Offset>
-							<AbsDimension x="-16" y="0"/>
-						</Offset>
-					</Anchor>
-				</Anchors>
-				<Scripts>
-					<OnClick function="PVPUIFrame_TabOnClick"/>
-					<OnEnter>
-						if ( not self:IsEnabled() and PanelTemplates_GetSelectedTab(PVPUIFrame) ~= self:GetID() ) then
-							GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
-							GameTooltip:SetText(string.format(PVP_CONQUEST_LOWLEVEL, ARENA_TEAMS), nil, nil, nil, 1, 1);
-						end
-					</OnEnter>
-				</Scripts>
-			</Button>			
+			</Frame>		
 			<Frame name="PVPQueueFrame" useParentLevel="true" setAllPoints="true">
 				<Frames>
 					<Button name="$parentCategoryButton1" inherits="PVPQueueFrameButtonTemplate" parentKey="CategoryButton1" id="1">
@@ -802,7 +578,7 @@
 						</Layers>
 					</Button>
 					<!-- Honor  -->
-					<Frame name="HonorFrame" toplevel="true" hidden="true" useParentLevel="true" >
+					<Frame name="HonorFrame" toplevel="true" useParentLevel="true" >
 						<Size x="339" y="403"/>
 						<Anchors>
 							<Anchor point="TOPLEFT" x="220" y="-22"/>
@@ -1274,17 +1050,10 @@
 									<Anchor point="TOP" relativeKey="$parent.Arena3v3" relativePoint="BOTTOM" y="0"/>
 								</Anchors>
 							</Button>
-							<Button parentKey="RatedBG" inherits="PVPConquestButtonTemplate">
+							<Button parentKey="RatedBG" inherits="PVPConquestButtonTemplate" id="4">
 								<Anchors>
 									<Anchor point="TOP" relativeKey="$parent.RatedBGHeader" relativePoint="BOTTOM" y="20"/>
 								</Anchors>
-								<Scripts>
-									<OnLoad>
-										self.id = 4;
-										self.TeamSizeText:SetText(CONQUEST_SIZE_STRINGS[self.id]);
-										self.TeamSizeText:SetFontObject(GameFontNormalLarge);
-									</OnLoad>
-								</Scripts>
 							</Button>
 							<Frame parentKey="ShadowOverlay" inherits="ShadowOverlaySmallTemplate" useParentLevel="true">
 								<Size x="326" y="336"/>
@@ -1515,348 +1284,6 @@
 					<OnEvent function="PVPQueueFrame_OnEvent"/>
 				</Scripts>
 			</Frame>
-			<!-- Arena Team Management -->
-			<Frame name="PVPArenaTeamsFrame" useParentLevel="true" setAllPoints="true" hidden="true">
-				<Frames>
-					<Button name="$parentTeam1" parentKey="Team1" inherits="ArenaTeamsTeamButtonTemplate" id="1">
-						<Anchors>
-							<Anchor point="TOPLEFT" x="10" y="-100" />
-						</Anchors>
-					</Button>
-					<Button name="$parentTeam2" parentKey="Team2" inherits="ArenaTeamsTeamButtonTemplate" id="2">
-						<Anchors>
-							<Anchor point="TOPLEFT" relativeKey="$parent.Team1" relativePoint="BOTTOMLEFT" y="-40"/>
-						</Anchors>
-					</Button>
-					<Button name="$parentTeam3" parentKey="Team3" inherits="ArenaTeamsTeamButtonTemplate" id="3">
-						<Anchors>
-							<Anchor point="TOPLEFT" relativeKey="$parent.Team2" relativePoint="BOTTOMLEFT" y="-40"/>
-						</Anchors>
-					</Button>
-					<!-- Arena Team  -->
-					<Frame name="ArenaTeamFrame" toplevel="true" hidden="true" useParentLevel="true" >
-						<Size x="339" y="407"/>
-						<Anchors>
-							<Anchor point="TOPLEFT" x="220" y="-22"/>
-						</Anchors>
-						<Layers>
-							<Layer level="BORDER">
-								<Texture parentKey="TeamNameHeader" file="Interface\PVPFrame\PvPMegaQueue">
-									<Size x="326" y="65"/>
-									<Anchors>
-										<Anchor point="TOP" x="2" y="-5"/>
-									</Anchors>									
-									<TexCoords left="0.00195313" right="0.63867188" top="0.57714844" bottom="0.64062500"/>
-								</Texture>
-							</Layer>
-							<Layer level="BACKGROUND">
-								<Texture parentKey="ArenaTexture" file="Interface\PVPFrame\PvPMegaQueue">
-									<Size x="326" y="100"/>
-									<Anchors>
-										<Anchor point="TOP" x="0" y="-40"/>
-									</Anchors>
-									<TexCoords left="0.00195313" right="0.63867188" top="0.09082031" bottom="0.18847656"/>		
-								</Texture>
-							</Layer>
-							<Layer level="ARTWORK">
-								<FontString parentKey="TeamName" inherits="GameFontNormalLarge" justifyH="LEFT">
-									<Size x="230" y="0"/>
-									<Anchors>
-										<Anchor point="LEFT" relativeKey="$parent.TeamNameHeader" relativePoint="LEFT" x="80" y="12"/>
-									</Anchors>
-								</FontString>
-								<FontString parentKey="TeamSize" inherits="GameFontHighlightLarge" justifyH="LEFT">
-									<Anchors>
-										<Anchor point="TOPLEFT" relativeKey="$parent.TeamNameHeader" relativePoint="BOTTOMLEFT" x="80" y="14"/>
-									</Anchors>
-								</FontString>
-								<FontString parentKey="RatingLabel" inherits="GameFontHighlightMedium" justifyH="RIGHT" text="ARENA_TEAM_RATING">
-									<Anchors>
-										<Anchor point="BOTTOMRIGHT" relativeKey="$parent.TeamNameHeader" relativePoint="BOTTOMRIGHT" x="-52" y="-2"/>
-									</Anchors>
-									<Color r="1.0" g="0.82" b="0"/>
-								</FontString>
-								<FontString parentKey="Rating" inherits="GameFontHighlightMedium" justifyH="LEFT">
-									<Anchors>
-										<Anchor point="BOTTOMLEFT" relativeKey="$parent.RatingLabel" relativePoint="BOTTOMRIGHT"/>
-									</Anchors>
-								</FontString>
-								<FontString parentKey="GamesLabel" inherits="GameFontNormal" justifyH="CENTER" text="GAMES">
-									<Anchors>
-										<Anchor point="TOP" relativeKey="$parent.TeamNameHeader" relativePoint="BOTTOMLEFT" x="106" y="-16"/>
-									</Anchors>
-								</FontString>
-								<FontString parentKey="Games" inherits="GameFontHighlightMedium" justifyH="CENTER">
-									<Anchors>
-										<Anchor point="TOP" relativeKey="$parent.GamesLabel" relativePoint="BOTTOM" y="-13"/>
-									</Anchors>
-								</FontString>
-								<FontString parentKey="WinsLabel" inherits="GameFontNormal" justifyH="CENTER" text="WIN_LOSS">
-									<Anchors>
-										<Anchor point="TOP" relativeKey="$parent.GamesLabel" relativePoint="TOP" x="90" />
-									</Anchors>
-								</FontString>
-								<FontString parentKey="Wins" inherits="GameFontHighlightMedium" justifyH="CENTER">
-									<Anchors>
-										<Anchor point="TOP" relativeKey="$parent.WinsLabel" relativePoint="BOTTOM" y="-13"/>
-									</Anchors>
-								</FontString>
-								<FontString parentKey="PlayedLabel" inherits="GameFontNormal" justifyH="CENTER" text="PLAYED">
-									<Anchors>
-										<Anchor point="TOP" relativeKey="$parent.WinsLabel" relativePoint="TOP" x="90" />
-									</Anchors>
-								</FontString>
-								<FontString parentKey="Played" inherits="GameFontHighlightMedium" justifyH="CENTER">
-									<Anchors>
-										<Anchor point="TOP" relativeKey="$parent.PlayedLabel" relativePoint="BOTTOM" y="-13"/>
-									</Anchors>
-								</FontString>
-							</Layer>
-						</Layers>
-						<Frames>
-							<Frame parentKey="TopInset" useParentLevel="true" inherits="InsetFrameTemplate">
-								<Size x="332" y="140"/>
-								<Anchors>
-									<Anchor point="TOPLEFT" x="5" y="-2"/>
-								</Anchors>
-							</Frame>
-							<Frame parentKey="Flag">
-								<Size x="66" y="130"/>
-								<Anchors>
-									<Anchor point="TOPLEFT" x="25" y="-7"/>
-								</Anchors>
-								<Layers>
-									<Layer level="BACKGROUND">
-										<Texture parentKey="Banner" file="Interface\PVPFrame\PVP-Banner-2">
-											<Size x="66" y="130"/>
-											<Anchors>
-												<Anchor point="TOP" />
-											</Anchors>
-										</Texture>
-									</Layer>
-									<Layer level="ARTWORK">
-										<Texture parentKey="Border">
-											<Size x="66" y="130"/>
-											<Anchors>
-												<Anchor point="CENTER" relativeKey="$parent.Banner" relativePoint="CENTER"/>
-											</Anchors>
-										</Texture>
-									</Layer>
-									<Layer level="ARTWORK" textureSubLevel="2">
-										<Texture parentKey="Emblem" >
-											<Size x="35" y="35"/>
-											<Anchors>
-												<Anchor point="CENTER" relativeKey="$parent.Border" x="-8" y="25"/>
-											</Anchors>
-										</Texture>
-									</Layer>
-								</Layers>
-							</Frame>
-							<Frame parentKey="TopShadowOverlay" inherits="ShadowOverlaySmallTemplate">
-								<Size x="326" y="134"/>
-								<Anchors>
-									<Anchor point="TOPLEFT" relativeKey="$parent.TeamNameHeader" y="0" />
-								</Anchors>
-							</Frame>
-							<Frame parentKey="WeeklyDisplay" inherits="InsetFrameTemplate">
-								<Size x="200" y="28"/>
-								<Anchors>
-									<Anchor point="TOP" relativeKey="$parent.TopInset" relativePoint="BOTTOM"  x="0" y="-3"/>
-								</Anchors>
-								<Layers>
-									<Layer level="ARTWORK">
-										<FontString parentKey="WeeklyText" inherits="GameFontHighlight">
-											<Anchors>
-												<Anchor point="CENTER" />
-											</Anchors>
-										</FontString>
-									</Layer>
-								</Layers>
-							</Frame>
-							<Button name="$parentWeeklyToggleRight" parentKey="weeklyToggleRight">
-								<Size x="32" y="32"/>
-								<Anchors>
-									<Anchor point="RIGHT" relativeKey="$parent.WeeklyDisplay" relativePoint="RIGHT" x="1" y="-1"/>
-								</Anchors>
-								<Scripts>
-									<OnClick>
-										PlaySound("igMainMenuOptionCheckBoxOn");
-										ArenaTeamsFrameWeeklyToggle_OnClick(self)
-									</OnClick>
-								</Scripts>
-								<NormalTexture file="Interface\Buttons\UI-SpellbookIcon-NextPage-Up"/>
-								<PushedTexture file="Interface\Buttons\UI-SpellbookIcon-NextPage-Down"/>
-								<DisabledTexture file="Interface\Buttons\UI-SpellbookIcon-NextPage-Disabled"/>
-								<HighlightTexture file="Interface\Buttons\UI-Common-MouseHilight" alphaMode="ADD"/>
-							</Button>
-							<Button name="$parentWeeklyToggleLeft" parentKey="weeklyToggleLeft">
-								<Size x="32" y="32"/>
-								<Anchors>
-									<Anchor point="LEFT" relativeKey="$parent.WeeklyDisplay" relativePoint="LEFT" x="-1" y="-1"/>
-								</Anchors>
-								<Scripts>
-									<OnClick>
-										PlaySound("igMainMenuOptionCheckBoxOn");
-										ArenaTeamsFrameWeeklyToggle_OnClick(self)
-									</OnClick>
-								</Scripts>
-								<NormalTexture file="Interface\Buttons\UI-SpellbookIcon-PrevPage-Up"/>
-								<PushedTexture file="Interface\Buttons\UI-SpellbookIcon-PrevPage-Down"/>
-								<DisabledTexture file="Interface\Buttons\UI-SpellbookIcon-PrevPage-Disabled"/>
-								<HighlightTexture file="Interface\Buttons\UI-Common-MouseHilight" alphaMode="ADD"/>
-							</Button>
-							<Button parentKey="Header1" name="$parentHeader1" inherits="ArenaTeamsFrameColumnHeaderTemplate" text="NAME">
-								<Anchors>
-									<Anchor point="TOPLEFT" relativeKey="$parent.TopInset" relativePoint="BOTTOMLEFT" x="2" y="-35"/>
-								</Anchors>
-								<Scripts>
-									<OnLoad>
-										WhoFrameColumn_SetWidth(self, 140);
-										self.sortType = "name";
-									</OnLoad>
-								</Scripts>
-							</Button>
-							<Button parentKey="Header2" name="$parentHeader2" inherits="ArenaTeamsFrameColumnHeaderTemplate" text="PLAYED">
-								<Anchors>
-									<Anchor point="LEFT" relativeKey="$parent.Header1" relativePoint="RIGHT" x="-2" y="0"/>
-								</Anchors>
-								<Scripts>
-									<OnLoad>
-										WhoFrameColumn_SetWidth(self, 55);
-										self.sortType = "played";
-									</OnLoad>
-								</Scripts>
-							</Button>
-							<Button parentKey="Header3" name="$parentHeader3" inherits="ArenaTeamsFrameColumnHeaderTemplate" text="WIN_LOSS">
-								<Anchors>
-									<Anchor point="LEFT" relativeKey="$parent.Header2" relativePoint="RIGHT" x="-2" y="0"/>
-								</Anchors>
-								<Scripts>
-									<OnLoad>
-										WhoFrameColumn_SetWidth(self, 75);
-										self:GetFontString():SetWidth(75);	--Deal with a problem of size in Russian client
-										self.sortType = "won";
-									</OnLoad>
-								</Scripts>
-							</Button>
-							<Button parentKey="Header4" name="$parentHeader4" inherits="ArenaTeamsFrameColumnHeaderTemplate" text="RATING">
-								<Anchors>
-									<Anchor point="LEFT" relativeKey="$parent.Header3" relativePoint="RIGHT" x="-2" y="0"/>
-								</Anchors>
-								<Scripts>
-									<OnLoad>
-										WhoFrameColumn_SetWidth(self, 60);
-										self.sortType = "rating";
-									</OnLoad>
-								</Scripts>
-							</Button>
-							<Frame parentKey="BottomInset" useParentLevel="true" inherits="InsetFrameTemplate">
-								<Size x="332" y="185"/>
-								<Anchors>
-									<Anchor point="TOPLEFT" relativeKey="$parent.Header1" relativePoint="BOTTOMLEFT" x="-3" y="0"/>
-								</Anchors>
-							</Frame>
-							<Button parentKey="TeamMember1" inherits="ArenaTeamMemberButtonTemplate" id="1">
-								<Anchors>
-									<Anchor point="TOPLEFT" relativeKey="$parent.BottomInset" x="3" y="-3"/>
-								</Anchors>
-							</Button>
-							<Button parentKey="TeamMember2" inherits="ArenaTeamMemberButtonTemplate" id="2">
-								<Anchors>
-									<Anchor point="TOPLEFT" relativeKey="$parent.TeamMember1" relativePoint="BOTTOMLEFT" y="0"/>
-								</Anchors>
-							</Button>
-							<Button parentKey="TeamMember3" inherits="ArenaTeamMemberButtonTemplate" id="3">
-								<Anchors>
-									<Anchor point="TOPLEFT" relativeKey="$parent.TeamMember2" relativePoint="BOTTOMLEFT" y="0"/>
-								</Anchors>
-							</Button>
-							<Button parentKey="TeamMember4" inherits="ArenaTeamMemberButtonTemplate" id="4">
-								<Anchors>
-									<Anchor point="TOPLEFT" relativeKey="$parent.TeamMember3" relativePoint="BOTTOMLEFT" y="0"/>
-								</Anchors>
-							</Button>
-							<Button parentKey="TeamMember5" inherits="ArenaTeamMemberButtonTemplate" id="5">
-								<Anchors>
-									<Anchor point="TOPLEFT" relativeKey="$parent.TeamMember4" relativePoint="BOTTOMLEFT" y="0"/>
-								</Anchors>
-							</Button>
-							<Button parentKey="TeamMember6" inherits="ArenaTeamMemberButtonTemplate" id="6">
-								<Anchors>
-									<Anchor point="TOPLEFT" relativeKey="$parent.TeamMember5" relativePoint="BOTTOMLEFT" y="0"/>
-								</Anchors>
-							</Button>
-							<Button parentKey="TeamMember7" inherits="ArenaTeamMemberButtonTemplate" id="7">
-								<Anchors>
-									<Anchor point="TOPLEFT" relativeKey="$parent.TeamMember6" relativePoint="BOTTOMLEFT" y="0"/>
-								</Anchors>
-							</Button>
-							<Button parentKey="TeamMember8" inherits="ArenaTeamMemberButtonTemplate" id="8">
-								<Anchors>
-									<Anchor point="TOPLEFT" relativeKey="$parent.TeamMember7" relativePoint="BOTTOMLEFT" y="0"/>
-								</Anchors>
-							</Button>
-							<Button parentKey="TeamMember9" inherits="ArenaTeamMemberButtonTemplate" id="9">
-								<Anchors>
-									<Anchor point="TOPLEFT" relativeKey="$parent.TeamMember8" relativePoint="BOTTOMLEFT" y="0"/>
-								</Anchors>
-							</Button>
-							<Button parentKey="TeamMember10" inherits="ArenaTeamMemberButtonTemplate" id="10">
-								<Anchors>
-									<Anchor point="TOPLEFT" relativeKey="$parent.TeamMember9" relativePoint="BOTTOMLEFT" y="0"/>
-								</Anchors>
-							</Button>
-							<Frame name="ArenaTeamMemberDropDown" inherits="UIDropDownMenuTemplate" hidden="true"/>
-							<Button parentKey="AddMemberButton" name="ConquestJoinButton" inherits="MagicButtonTemplate" text="ADDMEMBER_TEAM">
-								<Size x="116" y="22"/>
-								<Anchors>
-									<Anchor point="BOTTOM" y="0"/>
-								</Anchors>
-								<Scripts>
-									<OnClick>
-										PlaySound("igMainMenuOptionCheckBoxOn");
-										StaticPopup_Show("ADD_TEAMMEMBER", nil, nil, ArenaTeamFrame.teamIndex);
-									</OnClick>
-								</Scripts>
-							</Button>
-							<Frame parentKey="NoTeams" inherits="GlowBoxTemplate" hidden="true" frameLevel="3">
-								<Anchors>
-									<Anchor point="TOPLEFT" x="2" y="-2"/>
-									<Anchor point="BOTTOMRIGHT" x="-2" y="4"/>
-								</Anchors>
-								<Layers>
-									<Layer level="OVERLAY" >
-										<FontString parentKey="Title" inherits="QuestTitleFontBlackShadow" text="ARENA_TEAMS"  justifyH="CENTER">
-											<Size x="280" y="0"/>
-											<Anchors>
-												<Anchor point="TOP" x="0" y="-125"/>
-											</Anchors>
-										</FontString>
-										<FontString parentKey="Error" inherits="GameFontRed" text="ARENA_TEAMS_INVALID_WARNING"  justifyH="CENTER">
-											<Size x="280" y="0"/>
-											<Anchors>
-												<Anchor point="TOP"  relativeKey="$parent.Title" relativePoint="BOTTOM" x="0" y="-6"/>
-											</Anchors>
-										</FontString>
-										<FontString parentKey="Info"  inherits="GameFontHighlight" text="ARENA_INFO"  justifyH="CENTER" justifyV="TOP">
-											<Size x="280" y="180"/>
-											<Anchors>
-												<Anchor point="TOP" relativeKey="$parent.Error" relativePoint="BOTTOM" x="0" y="-15"/>
-											</Anchors>
-										</FontString>
-									</Layer>
-								</Layers>
-							</Frame>
-						</Frames>
-					</Frame>
-					<!-- end frames -->
-				</Frames>
-				<Scripts>
-					<OnLoad function="PVPArenaTeamsFrame_OnLoad"/>
-					<OnEvent function="PVPArenaTeamsFrame_OnEvent"/>
-					<OnShow function="PVPArenaTeamsFrame_OnShow" />
-				</Scripts>
-			</Frame>			
 			<!-- raised frame for shadows to be on top of the buttons -->
 			<Frame parentKey="Shadows">
 				<Size x="227" y="399"/>
@@ -1899,5 +1326,63 @@
 		</Scripts>
 	</Frame>
 	
-	
+	<Frame name="ConquestTooltip" frameStrata="TOOLTIP" hidden="true" clampedToScreen="true">
+		<Size x="200" y="155"/>
+		<Backdrop bgFile="Interface\Tooltips\UI-Tooltip-Background" edgeFile="Interface\Tooltips\UI-Tooltip-Border" tile="true">
+			<Color r="0" b="0" g="0"/>
+			<EdgeSize>
+				<AbsValue val="16"/>
+			</EdgeSize>
+			<TileSize>
+				<AbsValue val="16"/>
+			</TileSize>
+			<BackgroundInsets>
+				<AbsInset left="4" right="4" top="4" bottom="4"/>
+			</BackgroundInsets>
+		</Backdrop>
+		<Layers>
+			<Layer level="ARTWORK">
+				<FontString parentKey="WeeklyLabel" inherits="GameFontNormal" text="ARENA_WEEKLY_STATS">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="15" y="-15"/>
+					</Anchors>
+				</FontString>
+				<FontString parentKey="WeeklyBest" inherits="GameFontHighlightSmall" text="">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.WeeklyLabel" relativePoint="BOTTOMLEFT" x="0" y="-2"/>
+					</Anchors>
+				</FontString>
+				<FontString parentKey="WeeklyGamesPlayed" inherits="GameFontHighlightSmall" text="">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.WeeklyBest" relativePoint="BOTTOMLEFT" x="0" y="-1"/>
+					</Anchors>
+				</FontString>
+				<FontString parentKey="SeasonLabel" inherits="GameFontNormal" text="ARENA_SEASON_STATS">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.WeeklyGamesPlayed" relativePoint="BOTTOMLEFT" x="0" y="-15"/>
+					</Anchors>
+				</FontString>
+				<FontString parentKey="SeasonBest" inherits="GameFontHighlightSmall" text="">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.SeasonLabel" relativePoint="BOTTOMLEFT" x="0" y="-2"/>
+					</Anchors>
+				</FontString>
+				<FontString parentKey="SeasonGamesPlayed" inherits="GameFontHighlightSmall" text="">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.SeasonBest" relativePoint="BOTTOMLEFT" x="0" y="-1"/>
+					</Anchors>
+				</FontString>
+				<FontString parentKey="ProjectedCapLabel" inherits="GameFontNormal" text="PROJECTED_CONQUEST_CAP">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.SeasonGamesPlayed" relativePoint="BOTTOMLEFT" x="0" y="-15"/>
+					</Anchors>
+				</FontString>
+				<FontString parentKey="ProjectedCap" inherits="GameFontHighlightSmall" text="">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.ProjectedCapLabel" relativePoint="BOTTOMLEFT" x="0" y="-2"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+	</Frame>
 </Ui>

@@ -60,8 +60,6 @@
 						</Anchor>
 					</Anchors>
 				</Texture>
-				<Texture name="PlayerFrameMyHealPredictionBar" inherits="MyHealPredictionBarTemplate"/>
-				<Texture name="PlayerFrameOtherHealPredictionBar" inherits="OtherHealPredictionBarTemplate"/>
 				<Texture name="$parentTotalAbsorbBar" inherits="TotalAbsorbBarTemplate"/>
 			</Layer>
 			<Layer level="ARTWORK" textureSubLevel="1">
@@ -74,6 +72,13 @@
 					<Frame setAllPoints="true">
 						<Layers>
 							<Layer level="BACKGROUND">
+								<Texture name="PlayerFrameMyHealPredictionBar" inherits="MyHealPredictionBarTemplate"/>
+								<Texture name="PlayerFrameOtherHealPredictionBar" inherits="OtherHealPredictionBarTemplate"/>
+								<Texture name="$parentHealAbsorbBar" inherits="HealAbsorbBarTemplate"/>
+								<Texture name="$parentHealAbsorbBarLeftShadow" inherits="HealAbsorbBarLeftShadowTemplate"/>
+								<Texture name="$parentHealAbsorbBarRightShadow" inherits="HealAbsorbBarRightShadowTemplate"/>
+							</Layer>
+							<Layer level="BORDER">
 								<Texture name="PlayerFrameTexture" file="Interface\TargetingFrame\UI-TargetingFrame">
 									<TexCoords left="1.0" right="0.09375" top="0" bottom="0.78125"/>
 								</Texture>
@@ -176,7 +181,10 @@
 										</Anchor>
 									</Anchors>
 								</Texture>
+							</Layer>
+							<Layer level="ARTWORK" textureSubLevel="1">
 								<Texture name="$parentOverAbsorbGlow" inherits="OverAbsorbGlowTemplate"/>
+								<Texture name="$parentOverHealAbsorbGlow" inherits="OverHealAbsorbGlowTemplate"/>
 							</Layer>
 							<Layer level="OVERLAY">
 								<FontString name="PlayerHitIndicator" hidden="true" inherits="NumberFontNormalHuge">

@@ -495,7 +495,7 @@
 			<OnHide function="TransmogrifyFrame_OnHide"/>
 		</Scripts>
 	</Frame>
-	<Frame name="TransmogrifyConfirmationPopup" toplevel="true" frameStrata="DIALOG" hidden="true">
+	<Frame name="TransmogrifyConfirmationPopup" parent="UIParent" toplevel="true" frameStrata="DIALOG" hidden="true">
 		<Size x="320" y="72"/>
 		<Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background" edgeFile="Interface\DialogFrame\UI-DialogBox-Border" tile="true">
 			<BackgroundInsets>

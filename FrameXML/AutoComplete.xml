@@ -9,6 +9,7 @@
 			<OnChar function="AutoCompleteEditBox_OnChar"/>
 			<OnEditFocusLost function="AutoCompleteEditBox_OnEditFocusLost"/>
 			<OnEscapePressed function="AutoCompleteEditBox_OnEscapePressed"/>
+			<OnArrowPressed function="AutoCompleteEditBox_OnArrowPressed"/>
 		</Scripts>
 	</EditBox>
 	<Button name="AutoCompleteButtonTemplate" virtual="true">

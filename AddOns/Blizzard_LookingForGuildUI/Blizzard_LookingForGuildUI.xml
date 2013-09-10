@@ -154,6 +154,7 @@
 					</Anchors>
 				</Texture>
 				<FontString name="$parentGuildName" inherits="GameFontNormal" justifyH="LEFT" parentKey="name">
+					<Size x="165" y="12"/>
 					<Anchors>
 						<Anchor point="TOPLEFT" x="66" y="-10"/>
 					</Anchors>
@@ -292,6 +293,7 @@
 		<Layers>
 			<Layer level="ARTWORK">
 				<FontString name="$parentGuildName" inherits="GameFontNormal" justifyH="LEFT" parentKey="name">
+					<Size x="200" y="12"/>
 					<Anchors>
 						<Anchor point="LEFT" x="12" y="0"/>
 					</Anchors>
@@ -1004,6 +1006,7 @@
 					</Anchors>
 				</FontString>
 				<FontString name="$parentGuildName" inherits="GameFontNormal">
+					<Size x="300" y="12"/>
 					<Anchors>
 						<Anchor point="TOP" relativeTo="$parentTitle" relativePoint="BOTTOM" x="0" y="-12"/>
 					</Anchors>

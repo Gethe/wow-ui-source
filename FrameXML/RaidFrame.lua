@@ -37,7 +37,15 @@ function RaidFrame_OnShow(self)
 	self:GetParent().TitleText:SetText(RAID);
 	
 	RaidFrame_Update();
+	
+	if ( GetNumSavedInstances() + GetNumSavedWorldBosses() > 0 ) then
+		RaidFrameRaidInfoButton:Enable();
+	else
+		RaidFrameRaidInfoButton:Disable();
+	end
+	
 	RequestRaidInfo();
+	
 	UpdateMicroButtons();
 end
 
@@ -68,7 +76,7 @@ function RaidFrame_OnEvent(self, event, ...)
 			RaidFrame.hasRaidInfo = 1;
 			return;
 		end
-		if ( GetNumSavedInstances() > 0 ) then
+		if ( GetNumSavedInstances() + GetNumSavedWorldBosses() > 0 ) then
 			RaidFrameRaidInfoButton:Enable();
 		else
 			RaidFrameRaidInfoButton:Disable();
@@ -137,6 +145,7 @@ function RaidInfoFrame_Update(scrollToSelected)
 	
 	local scrollFrame = RaidInfoScrollFrame;
 	local savedInstances = GetNumSavedInstances();
+	local savedWorldBosses = GetNumSavedWorldBosses();
 	local instanceName, instanceID, instanceReset, instanceDifficulty, locked, extended, instanceIDMostSig, isRaid, maxPlayers, difficultyName;
 	local frameName, frameNameText, frameID, frameReset, width;
 	local offset = HybridScrollFrame_GetOffset(scrollFrame);
@@ -164,14 +173,25 @@ function RaidInfoFrame_Update(scrollToSelected)
 		local frame = buttons[i];
 		local index = i + offset;
 
-		if ( index <=  savedInstances) then
-			instanceName, instanceID, instanceReset, instanceDifficulty, locked, extended, instanceIDMostSig, isRaid, maxPlayers, difficultyName = GetSavedInstanceInfo(index);
-
-			frame.instanceID = instanceID;
-			frame.longInstanceID = string.format("%x%x", instanceIDMostSig, instanceID);
+		if ( index <= savedInstances + savedWorldBosses) then
+			if (index <= savedInstances) then
+				instanceName, instanceID, instanceReset, instanceDifficulty, locked, extended, instanceIDMostSig, isRaid, maxPlayers, difficultyName = GetSavedInstanceInfo(index);
+				frame.worldBossID = nil;
+				frame.instanceID = instanceID;
+				frame.longInstanceID = string.format("%x%x", instanceIDMostSig, instanceID);
+			else
+				instanceName, instanceID, instanceReset = GetSavedWorldBossInfo(index - savedInstances);
+				locked = true;
+				extended = false;
+				difficultyName = RAID_INFO_WORLD_BOSS;
+				frame.worldBossID = instanceID;
+				frame.instanceID = nil;
+				frame.longInstanceID = nil;
+			end
+			
 			frame:SetID(index);
 
-			if ( RaidInfoFrame.selectedRaidID == frame.longInstanceID ) then
+			if ( RaidInfoFrame.selectedIndex == index ) then
 				frame:LockHighlight();
 			else
 				frame:UnlockHighlight();
@@ -202,7 +222,7 @@ function RaidInfoFrame_Update(scrollToSelected)
 			frame:Hide();
 		end	
 	end
-	HybridScrollFrame_Update(scrollFrame, savedInstances * buttonHeight, scrollFrame:GetHeight());
+	HybridScrollFrame_Update(scrollFrame, (savedInstances + savedWorldBosses) * buttonHeight, scrollFrame:GetHeight());
 end
 
 function RaidInfoScrollFrame_OnLoad(self)
@@ -224,38 +244,60 @@ end
 
 function RaidInfoInstance_OnClick(self)
 	if ( IsModifiedClick("CHATLINK") ) then
-		ChatEdit_InsertLink(GetSavedInstanceChatLink(self:GetID()));
+		if (self.instanceID) then
+			ChatEdit_InsertLink(GetSavedInstanceChatLink(self:GetID()));
+		else
+			-- No chat links for World Boss locks yet
+		end
 	else
 		RaidInfoFrame.selectedRaidID = self.longInstanceID;
+		RaidInfoFrame.selectedWorldBossID = self.worldBossID;
 		RaidInfoFrame_Update();
 	end
 end
 
 function RaidInfoInstance_OnEnter(self)
-	GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
-	GameTooltip:SetInstanceLockEncountersComplete(self:GetID());
-	GameTooltip:Show();
+	if (self.instanceID) then
+		GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+		GameTooltip:SetInstanceLockEncountersComplete(self:GetID());
+		GameTooltip:Show();
+	else
+		-- No tooltip for World Boss locks yet
+	end
 end
 
 function RaidInfoFrame_UpdateSelectedIndex()
-	local savedInstances = GetNumSavedInstances();
-	for index=1, savedInstances do
-		local instanceName, instanceID, instanceReset, instanceDifficulty, locked, extended, instanceIDMostSig = GetSavedInstanceInfo(index);
-		if ( format("%x%x", instanceIDMostSig, instanceID) == RaidInfoFrame.selectedRaidID ) then
-			RaidInfoFrame.selectedIndex = index;
-			RaidInfoExtendButton:Enable();
-			if ( extended ) then
-				RaidInfoExtendButton.doExtend = false;
-				RaidInfoExtendButton:SetText(UNEXTEND_RAID_LOCK);
-			else
-				RaidInfoExtendButton.doExtend = true;
-				if ( locked ) then
-					RaidInfoExtendButton:SetText(EXTEND_RAID_LOCK);
+	if (RaidInfoFrame.selectedRaidID) then
+		local savedInstances = GetNumSavedInstances();
+		for index=1, savedInstances do
+			local instanceName, instanceID, instanceReset, instanceDifficulty, locked, extended, instanceIDMostSig = GetSavedInstanceInfo(index);
+			if ( format("%x%x", instanceIDMostSig, instanceID) == RaidInfoFrame.selectedRaidID ) then
+				RaidInfoFrame.selectedIndex = index;
+				RaidInfoExtendButton:Enable();
+				if ( extended ) then
+					RaidInfoExtendButton.doExtend = false;
+					RaidInfoExtendButton:SetText(UNEXTEND_RAID_LOCK);
 				else
-					RaidInfoExtendButton:SetText(REACTIVATE_RAID_LOCK);
+					RaidInfoExtendButton.doExtend = true;
+					if ( locked ) then
+						RaidInfoExtendButton:SetText(EXTEND_RAID_LOCK);
+					else
+						RaidInfoExtendButton:SetText(REACTIVATE_RAID_LOCK);
+					end
 				end
+				return;
 			end
-			return;
+		end
+	elseif (RaidInfoFrame.selectedWorldBossID) then
+		local savedInstances = GetNumSavedWorldBosses();
+		for index=1, savedInstances do
+			local _, worldBossID, _ = GetSavedWorldBossInfo(index);
+			if (worldBossID == RaidInfoFrame.selectedWorldBossID) then
+				RaidInfoExtendButton:SetText(EXTEND_RAID_LOCK);
+				RaidInfoExtendButton:Disable();
+				RaidInfoFrame.selectedIndex = index + GetNumSavedInstances();
+				return;
+			end
 		end
 	end
 	RaidInfoFrame.selectedIndex = nil;
@@ -263,9 +305,11 @@ function RaidInfoFrame_UpdateSelectedIndex()
 end
 
 function RaidInfoExtendButton_OnClick(self)
-	SetSavedInstanceExtend(RaidInfoFrame.selectedIndex, self.doExtend);
-	RequestRaidInfo();
-	RaidInfoFrame_Update();
+	if(RaidInfoFrame.selectedIndex <= GetNumSavedInstances()) then
+		SetSavedInstanceExtend(RaidInfoFrame.selectedIndex, self.doExtend);
+		RequestRaidInfo();
+		RaidInfoFrame_Update();
+	end
 end
 
 function RaidFrameAllAssistCheckButton_UpdateAvailable(self)
