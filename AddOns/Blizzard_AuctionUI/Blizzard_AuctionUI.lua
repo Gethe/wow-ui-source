@@ -891,6 +891,14 @@ function AuctionFrameBrowse_Update()
 			highBidderFrame.fullName = ownerFullName;
 			highBidderFrame.Name:SetText(owner);
 			
+			-- this is for comparing to the player name to see if they are the owner of this auction
+			local ownerName;
+			if (not ownerFullName) then
+				ownerName = owner;
+			else
+				ownerName = ownerFullName
+			end
+			
 			button.bidAmount = displayedPrice;
 			button.buyoutPrice = buyoutPrice;
 			button.itemCount = count;
@@ -906,7 +914,7 @@ function AuctionFrameBrowse_Update()
 							canBuyout = nil;
 						end
 					end
-					if ( canBuyout and (owner ~= UnitName("player")) ) then
+					if ( canBuyout and (ownerName ~= UnitName("player")) ) then
 						BrowseBuyoutButton:Enable();
 						AuctionFrame.buyoutPrice = buyoutPrice;
 					end
@@ -916,7 +924,7 @@ function AuctionFrameBrowse_Update()
 				-- Set bid
 				MoneyInputFrame_SetCopper(BrowseBidPrice, requiredBid);
 
-				if ( not highBidder and owner ~= UnitName("player") and GetMoney() >= MoneyInputFrame_GetCopper(BrowseBidPrice) and MoneyInputFrame_GetCopper(BrowseBidPrice) <= MAXIMUM_BID_PRICE ) then
+				if ( not highBidder and ownerName ~= UnitName("player") and GetMoney() >= MoneyInputFrame_GetCopper(BrowseBidPrice) and MoneyInputFrame_GetCopper(BrowseBidPrice) <= MAXIMUM_BID_PRICE ) then
 					BrowseBidButton:Enable();
 				end
 			else
