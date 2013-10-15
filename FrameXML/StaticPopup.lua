@@ -3234,7 +3234,16 @@ StaticPopupDialogs["SAVED_VARIABLES_TOO_LARGE"] = {
 	button1 = OKAY,
 	timeout = 0,
 	showAlertGear = 1,
-	hideOnEscape = 1
+	hideOnEscape = 1,
+	whileDead = 1,
+}
+
+StaticPopupDialogs["PRODUCT_ASSIGN_TO_TARGET_FAILED"] = {
+	text = PRODUCT_CLAIMING_FAILED,
+	button1 = OKAY,
+	timeout = 0,
+	showAlertGear = 1,
+	whileDead = 1,
 }
 
 function StaticPopup_FindVisible(which, data)
@@ -3905,13 +3914,17 @@ end
 
 function StaticPopup_SetUpPosition(dialog)
 	if ( not tContains(StaticPopup_DisplayedFrames, dialog) ) then
-		local lastFrame = StaticPopup_DisplayedFrames[#StaticPopup_DisplayedFrames];
-		if ( lastFrame ) then
-			dialog:SetPoint("TOP", lastFrame, "BOTTOM", 0, 0);
-		else
-			dialog:SetPoint("TOP", UIParent, "TOP", 0, -135);
-		end
+		StaticPopup_SetUpAnchor(dialog, #StaticPopup_DisplayedFrames + 1);
 		tinsert(StaticPopup_DisplayedFrames, dialog);
+	end
+end
+
+function StaticPopup_SetUpAnchor(dialog, idx)
+	local lastFrame = StaticPopup_DisplayedFrames[idx - 1];
+	if ( lastFrame ) then
+		dialog:SetPoint("TOP", lastFrame, "BOTTOM", 0, 0);
+	else
+		dialog:SetPoint("TOP", UIParent, "TOP", 0, -135);
 	end
 end
 
@@ -3935,6 +3948,28 @@ end
 function StaticPopupSpecial_Hide(frame)
 	frame:Hide();
 	StaticPopup_CollapseTable();
+end
+
+--Note that things will look sub-fantastic if toActivate is bigger than toReplace
+function StaticPopupSpecial_Replace(toActivate, toReplace)
+	local idx = nil;
+	for i=1, #StaticPopup_DisplayedFrames do
+		if ( StaticPopup_DisplayedFrames[i] == toReplace ) then
+			idx = i;
+			break;
+		end
+	end
+
+	if ( idx ) then
+		StaticPopup_DisplayedFrames[idx] = toActivate;
+		StaticPopup_SetUpAnchor(toActivate, idx);
+
+		toReplace:Hide();
+		toActivate:Show();
+		return true;
+	end
+
+	return false;
 end
 
 --Used to figure out if we can resize a frame

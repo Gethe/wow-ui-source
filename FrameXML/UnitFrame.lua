@@ -227,22 +227,6 @@ function UnitFrameHealPredictionBars_Update(frame)
 		return;
 	end
 	
-	if ( not GetCVarBool("raidFramesDisplayIncomingHeals") ) then
-		frame.myHealPredictionBar:Hide();
-		frame.otherHealPrediction:Hide();
-		frame.totalAbsorb:Hide();
-		frame.totalAbsorbOverlay:Hide();
-		frame.overAbsorbGlow:Hide();
-		
-		if ( frame.healAbsorbBar ) then
-			frame.healAbsorbBar:Hide();
-			frame.healAbsorbBarLeftShadow:Hide();
-			frame.healAbsorbBarRightShadow:Hide();
-			frame.overHealAbsorbGlow:Hide();
-		end
-		return;
-	end
-	
 	local myIncomingHeal = UnitGetIncomingHeals(frame.unit, "player") or 0;
 	local allIncomingHeal = UnitGetIncomingHeals(frame.unit) or 0;
 	local totalAbsorb = UnitGetTotalAbsorbs(frame.unit) or 0;

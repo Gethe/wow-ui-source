@@ -860,9 +860,6 @@ function TicketStatusFrameButton_OnClick(self)
 	if (TicketStatusFrame.hasWebTicket and TicketStatusFrame.caseIndex) then
 		HelpFrame_ShowFrame(HELPFRAME_SUBMIT_TICKET)
 		HelpBrowser:OpenTicket(TicketStatusFrame.caseIndex)
-		if (TicketStatusFrame.haveWebSurvey) then
-			AcknowledgeSurvey(TicketStatusFrame.caseIndex);
-		end
 		TicketStatusFrame:Hide()
 		return;
 	end

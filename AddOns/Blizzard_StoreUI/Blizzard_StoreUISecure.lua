@@ -287,7 +287,6 @@ function StoreFrame_OnLoad(self)
 	self:RegisterEvent("STORE_ORDER_INITIATION_FAILED");
 	C_PurchaseAPI.GetProductList();
 	C_PurchaseAPI.GetPurchaseList();
-	C_PurchaseAPI.GetDistributionList();
 
 	self.Title:SetText(BLIZZARD_STORE);
 	self.Browse.ProductDescription:SetPoint("BOTTOM", self.Browse.QuantitySelection, "TOP", 0, 5);

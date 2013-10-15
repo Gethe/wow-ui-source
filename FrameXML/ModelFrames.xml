@@ -52,15 +52,20 @@
 			</OnLeave>
 		</Scripts>
 	</Button>
-	<PlayerModel name="ModelTemplate" virtual="true">
+	<PlayerModel name="MouseDisabledModelTemplate" virtual="true">
 		<Scripts>
 			<OnLoad function="Model_OnLoad"/>
 			<OnEvent function="Model_OnEvent"/>
 			<OnUpdate function="Model_OnUpdate"/>
+		</Scripts>
+	</PlayerModel>
+	<PlayerModel name="ModelTemplate" inherits="MouseDisabledModelTemplate" virtual="true">
+		<Scripts>
 			<OnMouseUp function="Model_OnMouseUp"/>
 			<OnMouseDown function="Model_OnMouseDown"/>
 		</Scripts>
 	</PlayerModel>
+
 	<PlayerModel name="ModelWithZoomTemplate" inherits="ModelTemplate" virtual="true">
 		<Scripts>
 			<OnMouseWheel function="Model_OnMouseWheel"/>

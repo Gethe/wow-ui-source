@@ -5,7 +5,7 @@
 <Frame name="ArcheologyDigsiteProgressBar" parent="UIParent" hidden="true">
 	<Size x="240" y="24"/>
 	<Anchors>
-		<Anchor point="BOTTOM" x="0" y="180"/>
+		<Anchor point="BOTTOM" relativeTo="CastingBarFrame" relativePoint="Top" x="0" y="10"/>
 	</Anchors>
 	<Animations>
 		<AnimationGroup parentKey="AnimIn">

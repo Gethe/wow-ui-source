@@ -19,6 +19,9 @@ PREVIEW_FRAME_HEIGHT = 130;
 PREVIEW_FRAME_X_OFFSET = 19;
 PREVIEW_FRAME_Y_OFFSET = -7;
 
+local FACTION_GROUP_HORDE = 0;
+local FACTION_GROUP_ALLIANCE = 1;
+
 FACTION_BACKDROP_COLOR_TABLE = {
 	["Alliance"] = {0.5, 0.5, 0.5, 0.09, 0.09, 0.19, 0, 0, 0.2, 0.29, 0.33, 0.91},
 	["Horde"] = {0.5, 0.2, 0.2, 0.19, 0.05, 0.05, 0.2, 0, 0, 0.90, 0.05, 0.07},
@@ -199,6 +202,8 @@ function CharacterCreate_OnShow()
 	CharacterChangeFixup();
 
 	SetFaceCustomizeCamera(false);
+
+	CharacterCreateFrame_UpdateRecruitInfo(self);
 	
 	if( IsBlizzCon() ) then
 		BLIZZCON_IS_A_GO = false;
@@ -313,6 +318,35 @@ function CharacterCreateFrame_OnUpdate(self, elapsed)
 		CharCreate_RotatePreviews();
 	end
 	CharacterCreateWhileMouseDown_Update(elapsed);
+end
+
+local function ShowGlowyDialog(dialog, text, showOKButton)
+	dialog.Text:SetText(text);
+	dialog.OkayButton:SetShown(showOKButton);
+	dialog:Show();
+end
+
+function CharacterCreateFrame_UpdateRecruitInfo(self)
+	local active, faction = C_RecruitAFriend.GetRecruitInfo();
+	if ( active and not PAID_SERVICE_TYPE ) then
+		if ( faction == FACTION_GROUP_HORDE ) then
+			RecruitAFriendFactionHighlight:SetPoint("TOPLEFT", CharCreateRaceButton7, "TOPLEFT", -17, 35);
+			RecruitAFriendFactionHighlight:SetPoint("BOTTOMRIGHT", CharCreateRaceButton11, "BOTTOMRIGHT", 17, -29);
+			ShowGlowyDialog(RecruitAFriendFactionNotice, RECRUIT_A_FRIEND_FACTION_SUGGESTION_HORDE, true);
+			RecruitAFriendFactionNotice:SetPoint("LEFT", CharCreateRaceButton8, "RIGHT", 40, 0);
+		else
+			RecruitAFriendFactionHighlight:SetPoint("TOPLEFT", CharCreateRaceButton1, "TOPLEFT", -17, 35);
+			RecruitAFriendFactionHighlight:SetPoint("BOTTOMRIGHT", CharCreateRaceButton6, "BOTTOMRIGHT", 17, -29);
+			ShowGlowyDialog(RecruitAFriendFactionNotice, RECRUIT_A_FRIEND_FACTION_SUGGESTION_ALLIANCE, true);
+			RecruitAFriendFactionNotice:SetPoint("LEFT", CharCreateRaceButton2, "RIGHT", 40, 0);
+		end
+		RecruitAFriendFactionHighlight:Show();
+		RecruitAFriendPandaHighlight:Show();
+	else
+		RecruitAFriendFactionHighlight:Hide();
+		RecruitAFriendPandaHighlight:Hide();
+		RecruitAFriendFactionNotice:Hide();
+	end
 end
 
 function CharacterCreateEnumerateRaces(...)

@@ -137,6 +137,235 @@
 -->
 
 	<Script file="CharacterCreate.lua"/>
+	<Frame name="GlowyBorderFrame" virtual="true">
+		<Layers>
+			<Layer level="BACKGROUND" textureSubLevel="-1">
+				<Texture name="$parentGlowTopLeft" file="Interface\Common\HelpBox" parentKey="GlowTopLeft" alphaMode="ADD">
+					<Size x="11" y="11"/>	
+					<Anchors>
+						<Anchor point="TOPLEFT" x="-6" y="6"/>
+					</Anchors>
+					<TexCoords left="0.10937500" right="0.19531250" top="0.00781250" bottom="0.09375000"/>	
+				</Texture>
+				<Texture name="$parentGlowTopRight" file="Interface\Common\HelpBox" parentKey="GlowTopRight" alphaMode="ADD">
+					<Size x="11" y="11"/>	
+					<Anchors>
+						<Anchor point="TOPRIGHT" x="6" y="6"/>
+					</Anchors>
+					<TexCoords left="0.10937500" right="0.19531250" top="0.00781250" bottom="0.09375000"/>	
+				</Texture>
+				
+				<Texture name="$parentGlowBottomLeft" file="Interface\Common\HelpBox" parentKey="GlowBottomLeft" alphaMode="ADD">
+					<Size x="11" y="11"/>	
+					<Anchors>
+						<Anchor point="BOTTOMLEFT" x="-6" y="-6"/>
+					</Anchors>
+					<TexCoords left="0.10937500" right="0.19531250" top="0.00781250" bottom="0.09375000"/>	
+				</Texture>
+				
+				<Texture name="$parentGlowBottomRight" file="Interface\Common\HelpBox" parentKey="GlowBottomRight" alphaMode="ADD">
+					<Size x="11" y="11"/>	
+					<Anchors>
+						<Anchor point="BOTTOMRIGHT" x="6" y="-6"/>
+					</Anchors>
+					<TexCoords left="0.10937500" right="0.19531250" top="0.00781250" bottom="0.09375000"/>	
+				</Texture>
+
+				<Texture name="$parentGlowTop" file="Interface\Common\HelpBox"  parentKey="GlowTop" alphaMode="ADD">
+					<Size x="32" y="11"/>	
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="$parentGlowTopLeft" relativePoint="TOPRIGHT"/>
+						<Anchor point="TOPRIGHT" relativeTo="$parentGlowTopRight" relativePoint="TOPLEFT"/>
+					</Anchors>
+					<TexCoords left="0.00781250" right="0.09375000" top="0.00781250" bottom="0.09375000"/>	
+				</Texture>
+				<Texture name="$parentGlowBottom" file="Interface\Common\HelpBox" parentKey="GlowBottom" alphaMode="ADD">
+					<Size x="32" y="11"/>	
+					<Anchors>
+						<Anchor point="BOTTOMLEFT" relativeTo="$parentGlowBottomLeft" relativePoint="BOTTOMRIGHT"/>
+						<Anchor point="BOTTOMRIGHT" relativeTo="$parentGlowBottomRight" relativePoint="BOTTOMLEFT"/>
+					</Anchors>
+					<TexCoords left="0.00781250" right="0.09375000" top="0.09375000" bottom="0.00781250"/>	
+				</Texture>
+				<Texture name="$parentGlowLeft" file="Interface\Common\HelpBox" parentKey="GlowLeft" alphaMode="ADD">
+					<Size x="11" y="32"/>	
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="$parentGlowTopLeft" relativePoint="BOTTOMLEFT"/>
+						<Anchor point="BOTTOMLEFT" relativeTo="$parentGlowBottomLeft" relativePoint="TOPLEFT"/>
+					</Anchors>
+					<TexCoords left="0.21093750" right="0.29687500" top="0.00781250" bottom="0.09375000"/>	
+				</Texture>
+				<Texture name="$parentGlowRight" file="Interface\Common\HelpBox" parentKey="GlowRight" alphaMode="ADD">
+					<Size x="11" y="32"/>	
+					<Anchors>
+						<Anchor point="TOPRIGHT" relativeTo="$parentGlowTopRight" relativePoint="BOTTOMRIGHT"/>
+						<Anchor point="BOTTOMRIGHT" relativeTo="$parentGlowBottomRight" relativePoint="TOPRIGHT"/>
+					</Anchors>
+					<TexCoords left="0.29687500" right="0.21093750" top="0.00781250" bottom="0.09375000"/>	
+				</Texture>	
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnLoad>
+				SetClampedTextureRotation(self.GlowTopRight, 90);
+				SetClampedTextureRotation(self.GlowBottomRight, 180);
+				SetClampedTextureRotation(self.GlowBottomLeft, 270);
+			</OnLoad>
+		</Scripts>
+	</Frame>
+	<Frame name="GlowyNoticeFrame" inherits="GlowyBorderFrame" virtual="true">
+		<Size x="220" y="100"/>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture name="$parentBg" parentKey="BG">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="1" y="-1"/>
+						<Anchor point="BOTTOMRIGHT" x="-1" y="1"/>
+					</Anchors>
+					<Color r="1" g="1" b="1"/>
+					<Gradient orientation="VERTICAL">
+						<MinColor r="0.23" g="0.19" b="0"/>
+						<MaxColor r="0" g="0" b="0"/>
+					</Gradient>
+				</Texture>
+			</Layer>
+			<Layer level="BACKGROUND" textureSubLevel="-2">
+				<Texture name="$parentShadowTopLeft" file="Interface\Common\HelpBox" parentKey="ShadowTopLeft" >
+					<Size x="25" y="25"/>	
+					<Anchors>
+						<Anchor point="TOPLEFT" x="-16" y="16"/>
+					</Anchors>
+					<TexCoords left="0.00781250" right="0.20312500" top="0.46093750" bottom="0.65625000"/>	
+				</Texture>
+				<Texture name="$parentShadowTopRight" file="Interface\Common\HelpBox" parentKey="ShadowTopRight" >
+					<Size x="25" y="25"/>	
+					<Anchors>
+						<Anchor point="TOPRIGHT" x="16" y="16"/>
+					</Anchors>
+					<TexCoords left="0.00781250" right="0.20312500" top="0.46093750" bottom="0.65625000"/>	
+				</Texture>
+				
+				<Texture name="$parentShadowBottomLeft" file="Interface\Common\HelpBox" parentKey="ShadowBottomLeft" >
+					<Size x="25" y="25"/>	
+					<Anchors>
+						<Anchor point="BOTTOMLEFT" x="-16" y="-16"/>
+					</Anchors>
+					<TexCoords left="0.00781250" right="0.20312500" top="0.46093750" bottom="0.65625000"/>	
+				</Texture>
+				
+				<Texture name="$parentShadowBottomRight" file="Interface\Common\HelpBox" parentKey="ShadowBottomRight" >
+					<Size x="25" y="25"/>	
+					<Anchors>
+						<Anchor point="BOTTOMRIGHT" x="16" y="-16"/>
+					</Anchors>
+					<TexCoords left="0.00781250" right="0.20312500" top="0.46093750" bottom="0.65625000"/>	
+				</Texture>
+
+				<Texture name="$parentShadowTop" file="Interface\Common\HelpBox" parentKey="ShadowTop" >
+					<Size x="32" y="25"/>	
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="$parentShadowTopLeft" relativePoint="TOPRIGHT"/>
+						<Anchor point="TOPRIGHT" relativeTo="$parentShadowTopRight" relativePoint="TOPLEFT"/>
+					</Anchors>
+					<TexCoords left="0.00781250" right="0.13281250" top="0.25000000" bottom="0.44531250"/>	
+				</Texture>
+				<Texture name="$parentShadowBottom" file="Interface\Common\HelpBox" parentKey="ShadowBottom" >
+					<Size x="32" y="25"/>	
+					<Anchors>
+						<Anchor point="BOTTOMLEFT" relativeTo="$parentShadowBottomLeft" relativePoint="BOTTOMRIGHT"/>
+						<Anchor point="BOTTOMRIGHT" relativeTo="$parentShadowBottomRight" relativePoint="BOTTOMLEFT"/>
+					</Anchors>
+					<TexCoords left="0.00781250" right="0.13281250" top="0.44531250" bottom="0.25000000"/>	
+				</Texture>
+				<Texture name="$parentShadowLeft" file="Interface\Common\HelpBox" parentKey="ShadowLeft" >
+					<Size x="25" y="32"/>	
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="$parentShadowTopLeft" relativePoint="BOTTOMLEFT"/>
+						<Anchor point="BOTTOMLEFT" relativeTo="$parentShadowBottomLeft" relativePoint="TOPLEFT"/>
+					</Anchors>
+					<TexCoords left="0.00781250" right="0.20312500" top="0.10937500" bottom="0.23437500"/>	
+				</Texture>
+				<Texture name="$parentShadowRight" file="Interface\Common\HelpBox" parentKey="ShadowRight" >
+					<Size x="25" y="32"/>	
+					<Anchors>
+						<Anchor point="TOPRIGHT" relativeTo="$parentShadowTopRight" relativePoint="BOTTOMRIGHT"/>
+						<Anchor point="BOTTOMRIGHT" relativeTo="$parentShadowBottomRight" relativePoint="TOPRIGHT"/>
+					</Anchors>
+					<TexCoords left="0.20312500" right="0.00781250" top="0.10937500" bottom="0.23437500"/>	
+				</Texture>	
+			</Layer>
+			<Layer level="OVERLAY">
+				<FontString parentKey="Text" inherits="GlueFontHighlightSmall" justifyH="LEFT">
+					<Size x="200" y="0"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" x="15" y="-15"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+			<Layer level="BACKGROUND" textureSubLevel="-3">
+				<Texture parentKey="ArrowShadow" file="Interface\Common\HelpBox" hidden="false">
+					<Size x="86" y="35"/>	
+					<Anchors>
+						<Anchor point="RIGHT" relativePoint="LEFT" x="3" y="0"/>
+					</Anchors>
+					<TexCoords left="0.21875000" right="0.89062500" top="0.52343750" bottom="0.79687500"/>	
+				</Texture>
+			</Layer>
+			<Layer level="ARTWORK">
+				<Texture parentKey="Arrow" file="Interface\Common\HelpBox" hidden="false">
+					<Size x="53" y="21"/>	
+					<Anchors>
+						<Anchor point="RIGHT" relativePoint="LEFT" x="3" y="0"/>
+					</Anchors>
+					<TexCoords left="0.21875000" right="0.63281250" top="0.10937500" bottom="0.27343750"/>	
+				</Texture>
+			</Layer>
+			<Layer level="BORDER">
+				<Texture parentKey="ArrowGlow" file="Interface\Common\HelpBox" hidden="false" alphaMode="ADD" alpha="0.5">
+					<Size x="65" y="28"/>
+					<Anchors>
+						<Anchor point="RIGHT" relativePoint="LEFT" x="3" y="0"/>
+					</Anchors>
+					<TexCoords left="0.21875000" right="0.72656250" top="0.28906250" bottom="0.50781250"/>	
+				</Texture>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Button parentKey="OkayButton" inherits="GlueButtonTemplateBlue" text="OKAY">
+				<Size x="150" y="42"/>
+				<Anchors>
+					<Anchor point="BOTTOM" relativeKey="$parent" relativePoint="BOTTOM" x="0" y="15"/>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						self:GetParent():Hide();
+					</OnClick>
+				</Scripts>
+			</Button>
+		</Frames>
+		<Scripts>
+			<OnLoad>
+				self.Text:SetSpacing(4);
+				SetClampedTextureRotation(self.GlowTopRight, 90);
+				SetClampedTextureRotation(self.GlowBottomRight, 180);
+				SetClampedTextureRotation(self.GlowBottomLeft, 270);
+				SetClampedTextureRotation(self.ShadowTopRight, 90);
+				SetClampedTextureRotation(self.ShadowBottomRight, 180);
+				SetClampedTextureRotation(self.ShadowBottomLeft, 270);
+
+				SetClampedTextureRotation(self.ArrowShadow, 90);
+				SetClampedTextureRotation(self.Arrow, 90);
+				SetClampedTextureRotation(self.ArrowGlow, 90);
+			</OnLoad>
+			<OnShow>
+				local height = self.Text:GetHeight()+30;
+				if ( self.OkayButton:IsShown() ) then
+					height = height + 60;
+				end
+				self:SetHeight(height);
+			</OnShow>
+		</Scripts>
+	</Frame>
 	<Frame name="CharacterCreateTooltip" frameStrata="TOOLTIP" hidden="true" parent="GlueParent" inherits="GlueTooltipTemplate">
 		<Scripts>
 			<OnLoad>
@@ -1186,6 +1415,14 @@
 											<Anchor point="TOPLEFT" relativeTo="CharCreateRaceButton12" relativePoint="BOTTOMLEFT" x="0" y="-20"/>
 										</Anchors>
 									</CheckButton>
+									<Frame name="RecruitAFriendFactionHighlight" hidden="true" inherits="GlowyBorderFrame"/>
+									<Frame name="RecruitAFriendPandaHighlight" hidden="true" inherits="GlowyBorderFrame">
+										<Anchors>
+											<Anchor point="TOPLEFT" relativeTo="CharCreateRaceButton13" relativePoint="TOPLEFT" x="-17" y="10"/>
+											<Anchor point="BOTTOMRIGHT" relativeTo="CharCreateRaceButton13" relativePoint="BOTTOMRIGHT" x="17" y="-23"/>
+										</Anchors>
+									</Frame>
+									<Frame name="RecruitAFriendFactionNotice" enableMouse="true" frameStrata="HIGH" hidden="true" inherits="GlowyNoticeFrame"/>
 								</Frames>
 							</Frame>
 							<Frame name="CharCreatePandarenFactionFrame" enableMouse="true" hidden="true">

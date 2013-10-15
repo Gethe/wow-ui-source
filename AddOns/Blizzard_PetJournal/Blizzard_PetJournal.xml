@@ -2104,10 +2104,6 @@ size=64,128
 						<Anchors>
 							<Anchor point="TOPLEFT" x="45" y="-21"/>
 						</Anchors>
-						<Scripts>
-							<OnLoad function="Model_OnLoad"/>
-							<OnEvent function="Model_OnEvent"/>
-						</Scripts>
 					</PlayerModel>
 				</Frames>
 			</Frame> <!-- PetCard -->

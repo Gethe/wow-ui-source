@@ -1326,8 +1326,8 @@
 		</Scripts>
 	</Frame>
 	
-	<Frame name="ConquestTooltip" frameStrata="TOOLTIP" hidden="true" clampedToScreen="true">
-		<Size x="200" y="155"/>
+	<Frame name="ConquestTooltip" parent="UIParent" frameStrata="TOOLTIP" hidden="true" clampedToScreen="true">
+		<Size x="200" y="170"/>
 		<Backdrop bgFile="Interface\Tooltips\UI-Tooltip-Background" edgeFile="Interface\Tooltips\UI-Tooltip-Border" tile="true">
 			<Color r="0" b="0" g="0"/>
 			<EdgeSize>
@@ -1342,42 +1342,42 @@
 		</Backdrop>
 		<Layers>
 			<Layer level="ARTWORK">
-				<FontString parentKey="WeeklyLabel" inherits="GameFontNormal" text="ARENA_WEEKLY_STATS">
+				<FontString parentKey="WeeklyLabel" inherits="GameFontNormalMed3" text="ARENA_WEEKLY_STATS">
 					<Anchors>
 						<Anchor point="TOPLEFT" x="15" y="-15"/>
 					</Anchors>
 				</FontString>
-				<FontString parentKey="WeeklyBest" inherits="GameFontHighlightSmall" text="">
+				<FontString parentKey="WeeklyBest" inherits="GameFontHighlight" text="">
 					<Anchors>
 						<Anchor point="TOPLEFT" relativeKey="$parent.WeeklyLabel" relativePoint="BOTTOMLEFT" x="0" y="-2"/>
 					</Anchors>
 				</FontString>
-				<FontString parentKey="WeeklyGamesPlayed" inherits="GameFontHighlightSmall" text="">
+				<FontString parentKey="WeeklyGamesPlayed" inherits="GameFontHighlight" text="">
 					<Anchors>
-						<Anchor point="TOPLEFT" relativeKey="$parent.WeeklyBest" relativePoint="BOTTOMLEFT" x="0" y="-1"/>
+						<Anchor point="TOPLEFT" relativeKey="$parent.WeeklyBest" relativePoint="BOTTOMLEFT" x="0" y="-2"/>
 					</Anchors>
 				</FontString>
-				<FontString parentKey="SeasonLabel" inherits="GameFontNormal" text="ARENA_SEASON_STATS">
+				<FontString parentKey="SeasonLabel" inherits="GameFontNormalMed3" text="ARENA_SEASON_STATS">
 					<Anchors>
-						<Anchor point="TOPLEFT" relativeKey="$parent.WeeklyGamesPlayed" relativePoint="BOTTOMLEFT" x="0" y="-15"/>
+						<Anchor point="TOPLEFT" relativeKey="$parent.WeeklyGamesPlayed" relativePoint="BOTTOMLEFT" x="0" y="-13"/>
 					</Anchors>
 				</FontString>
-				<FontString parentKey="SeasonBest" inherits="GameFontHighlightSmall" text="">
+				<FontString parentKey="SeasonBest" inherits="GameFontHighlight" text="">
 					<Anchors>
 						<Anchor point="TOPLEFT" relativeKey="$parent.SeasonLabel" relativePoint="BOTTOMLEFT" x="0" y="-2"/>
 					</Anchors>
 				</FontString>
-				<FontString parentKey="SeasonGamesPlayed" inherits="GameFontHighlightSmall" text="">
+				<FontString parentKey="SeasonGamesPlayed" inherits="GameFontHighlight" text="">
 					<Anchors>
-						<Anchor point="TOPLEFT" relativeKey="$parent.SeasonBest" relativePoint="BOTTOMLEFT" x="0" y="-1"/>
+						<Anchor point="TOPLEFT" relativeKey="$parent.SeasonBest" relativePoint="BOTTOMLEFT" x="0" y="-2"/>
 					</Anchors>
 				</FontString>
-				<FontString parentKey="ProjectedCapLabel" inherits="GameFontNormal" text="PROJECTED_CONQUEST_CAP">
+				<FontString parentKey="ProjectedCapLabel" inherits="GameFontNormalMed3" text="PROJECTED_CONQUEST_CAP">
 					<Anchors>
-						<Anchor point="TOPLEFT" relativeKey="$parent.SeasonGamesPlayed" relativePoint="BOTTOMLEFT" x="0" y="-15"/>
+						<Anchor point="TOPLEFT" relativeKey="$parent.SeasonGamesPlayed" relativePoint="BOTTOMLEFT" x="0" y="-13"/>
 					</Anchors>
 				</FontString>
-				<FontString parentKey="ProjectedCap" inherits="GameFontHighlightSmall" text="">
+				<FontString parentKey="ProjectedCap" inherits="GameFontHighlight" text="">
 					<Anchors>
 						<Anchor point="TOPLEFT" relativeKey="$parent.ProjectedCapLabel" relativePoint="BOTTOMLEFT" x="0" y="-2"/>
 					</Anchors>

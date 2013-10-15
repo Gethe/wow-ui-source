@@ -1,0 +1,272 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\FrameXML\UI.xsd">
+	<Script file="ProductChoice.lua"/>
+	<!--
+		 Patchwerks
+	 -->
+	<Texture name="productchoice-icon-checkmark" file="Interface\FriendsFrame\Raf_Textures" virtual="true" >
+		<Size x="27" y="27"/>	
+		<TexCoords left="0.00195313" right="0.05468750" top="0.00195313" bottom="0.05468750"/>	
+	</Texture>
+	<Texture name="productchoice-icon-magnifyingglass" file="Interface\FriendsFrame\Raf_Textures" virtual="true" >
+		<Size x="29" y="33"/>	
+		<TexCoords left="0.00195313" right="0.05859375" top="0.05859375" bottom="0.12304688"/>	
+	</Texture>
+	<Texture name="productchoice-itemicon-border" file="Interface\FriendsFrame\Raf_Textures" virtual="true" >
+		<Size x="78" y="78"/>	
+		<TexCoords left="0.06250000" right="0.21484375" top="0.05859375" bottom="0.21093750"/>	
+	</Texture>
+	<Texture name="productchoice-card-petshadow" file="Interface\FriendsFrame\Raf_Textures" virtual="true" >
+		<Size x="138" y="72"/>	
+		<TexCoords left="0.21875000" right="0.48828125" top="0.05859375" bottom="0.19921875"/>	
+	</Texture>
+	<Texture name="productchoice-toast" file="Interface\FriendsFrame\Raf_Textures" virtual="true" >
+		<Size x="294" y="84"/>	
+		<TexCoords left="0.06250000" right="0.63671875" top="0.21484375" bottom="0.37890625"/>	
+	</Texture>
+	<Texture name="productchoice-card-hover" file="Interface\FriendsFrame\Raf_Textures" virtual="true" >
+		<Size x="138" y="201"/>	
+		<TexCoords left="0.06250000" right="0.33203125" top="0.38281250" bottom="0.77539063"/>	
+	</Texture>
+	<Texture name="productchoice-card-selected" file="Interface\FriendsFrame\Raf_Textures" virtual="true" >
+		<Size x="138" y="201"/>	
+		<TexCoords left="0.33593750" right="0.60546875" top="0.38281250" bottom="0.77539063"/>	
+	</Texture>
+	<Texture name="productchoice-card" file="Interface\FriendsFrame\Raf_Textures" virtual="true" >
+		<Size x="146" y="209"/>	
+		<TexCoords left="0.60937500" right="0.89453125" top="0.38281250" bottom="0.79101563"/>	
+	</Texture>
+	<!--
+		End Patchwerks
+	-->
+
+	<Frame name="ProductChoiceItemDisplayTemplate" virtual="true">
+		<Size x="146" y="209"/>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="Background" inherits="productchoice-card" setAllPoints="true"/>
+			</Layer>
+			<Layer level="ARTWORK" textureSubLevel="1">
+				<FontString parentKey="Name" inherits="GameFontHighlight" justifyH="CENTER" justifyV="TOP">
+					<Size x="110" y="34"/>
+					<Anchors>
+						<Anchor point="BOTTOM" x="0" y="35"/>
+					</Anchors>
+				</FontString>
+				<FontString parentKey="SubTitle" inherits="GameFontNormalSmall" justifyH="CENTER" justifyV="TOP">
+					<Size x="110" y="17"/>
+					<Anchors>
+						<Anchor point="BOTTOM" x="0" y="20"/>
+					</Anchors>
+				</FontString>
+				<Texture parentKey="Shadow" inherits="productchoice-card-petshadow">
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="Icon">
+					<Size x="63" y="63"/>
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent.Icon" relativePoint="CENTER" x="0" y="15"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="OVERLAY">
+				<Texture parentKey="IconBorder" inherits="productchoice-itemicon-border">
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent.Icon" relativePoint="CENTER" x="0" y="-5"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Frames>
+			<PlayerModel parentKey="Model" inherits="MouseDisabledModelTemplate">
+				<Size x="130" y="125"/>
+				<Anchors>
+					<Anchor point="TOP" x="0" y="-20"/>
+				</Anchors>
+				<Frames>
+					<Button parentKey="PreviewButton" hidden="true">
+						<Size x="29" y="33"/>
+						<Anchors>
+							<Anchor point="TOPLEFT" x="0" y="10"/>
+						</Anchors>
+						<NormalTexture inherits="productchoice-icon-magnifyingglass"/>
+						<HighlightTexture inherits="productchoice-icon-magnifyingglass" alphaMode="ADD"/>
+						<Scripts>
+							<OnClick>
+								ModelPreviewFrame_ShowModel(self:GetParent():GetParent().data.modelDisplayID);
+							</OnClick>
+						</Scripts>
+					</Button>
+				</Frames>
+			</PlayerModel>
+			<Frame parentKey="Covers" setAllPoints="true">
+				<Layers>
+					<Layer level="OVERLAY">
+						<Texture parentKey="CheckMark" inherits="productchoice-icon-checkmark">
+							<Anchors>
+								<Anchor point="TOPRIGHT" x="-10" y="-12"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+					<Layer level="ARTWORK">
+						<Texture parentKey="Disabled" setAllPoints="true">
+							<Color r="0" g="0" b="0" a="0.5"/>
+						</Texture>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnShow>
+						self:SetFrameLevel(self:GetParent().Model:GetFrameLevel() + 1);
+					</OnShow>
+				</Scripts>
+			</Frame>
+		</Frames>
+	</Frame>
+	<CheckButton name="ProductChoiceItemTemplate" inherits="ProductChoiceItemDisplayTemplate" virtual="true">
+		<Scripts>
+			<OnLoad>
+				self:RegisterForDrag("LeftButton");
+			</OnLoad>
+			<OnDragStart>
+				ProductChoiceFrame_StartRotating(ProductChoiceFrame, self.id);
+				Model_OnMouseDown(self.Model, button);
+			</OnDragStart>
+			<OnDragStop>
+				Model_OnMouseUp(self.Model, button);
+				ProductChoiceFrame_StopRotating(ProductChoiceFrame);
+			</OnDragStop>
+			<OnClick function="ProductChoiceItem_OnClick"/>
+		</Scripts>
+		<HighlightTexture inherits="productchoice-card-hover" alphaMode="ADD">
+			<Anchors>
+				<Anchor point="CENTER"/>
+			</Anchors>
+		</HighlightTexture>
+		<CheckedTexture inherits="productchoice-card-selected" alphaMode="ADD">
+			<Anchors>
+				<Anchor point="CENTER"/>
+			</Anchors>
+		</CheckedTexture>
+	</CheckButton>
+	<Frame name="ProductChoiceFrame" hidden="true" frameStrata="HIGH" inherits="PortraitFrameTemplate" parent="UIParent">
+		<Size x="645" y="572"/>
+		<Anchors>
+			<Anchor point="CENTER" x="-5" y="25"/>
+		</Anchors>
+		<Layers>
+			<Layer level="ARTWORK">
+				<FontString parentKey="Instruction" inherits="GameFontNormalHuge3" text="CHOOSE_ONE_REWARD">
+					<Anchors>
+						<Anchor point="TOP" relativeKey="$parent" relativePoint="TOP" x="0" y="-35"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Frame parentKey="Inset" inherits="InsetFrameTemplate">
+				<Anchors>
+					<Anchor point="BOTTOMRIGHT" relativeKey="$parent" relativePoint="BOTTOMRIGHT" x="-8" y="3"/>
+					<Anchor point="TOPLEFT" relativeKey="$parent" relativePoint="TOPLEFT" x="3" y="-68"/>
+				</Anchors>
+				<Frames>
+					<Frame parentKey="NoTakeBacksies" toplevel="true" enableMouse="true" hidden="true" setAllPoints="true">
+						<Layers>
+							<Layer level="BACKGROUND">
+								<Texture parentKey="Cover">
+									<Color r="0" g="0" b="0" a="0.75"/>
+								</Texture>
+							</Layer>
+						</Layers>
+						<Frames>
+							<Frame parentKey="Dialog">
+								<Size x="330" y="350"/>
+								<Anchors>
+									<Anchor point="CENTER"/>
+								</Anchors>
+								<Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background" edgeFile="Interface\DialogFrame\UI-DialogBox-Border" tile="true">
+									<BackgroundInsets>
+										<AbsInset left="11" right="12" top="12" bottom="11"/>
+									</BackgroundInsets>
+									<TileSize>
+										<AbsValue val="32"/>
+									</TileSize>
+									<EdgeSize>
+										<AbsValue val="32"/>
+									</EdgeSize>
+								</Backdrop>
+								<Layers>
+									<Layer level="ARTWORK">
+										<FontString parentKey="Text" inherits="GameFontHighlight" text="PRODUCT_CHOICE_NO_TAKE_BACKSIES">
+											<Size x="300" y="0"/>
+											<Anchors>
+												<Anchor point="TOP" x="0" y="-25"/>
+											</Anchors>
+										</FontString>
+									</Layer>
+								</Layers>
+								<Frames>
+									<Frame parentKey="ItemPreview" inherits="ProductChoiceItemDisplayTemplate">
+										<Anchors>
+											<Anchor point="BOTTOM" x="0" y="60"/>
+										</Anchors>
+									</Frame>
+									<Button parentKey="AcceptButton" inherits="UIPanelButtonTemplate" text="YES">
+										<Size x="100" y="22"/>
+										<Anchors>
+											<Anchor point="BOTTOMRIGHT" relativeKey="$parent" relativePoint="BOTTOM" x="-5" y="15"/>
+										</Anchors>
+										<Scripts>
+											<OnClick>
+												PlaySound("igMainMenuOptionCheckBoxOn");
+												ProductChoiceFrame_ClaimItem();
+											</OnClick>
+										</Scripts>
+									</Button>
+									<Button parentKey="DeclineButton" inherits="UIPanelButtonTemplate" text="NO">
+										<Size x="100" y="22"/>
+										<Anchors>
+											<Anchor point="BOTTOMLEFT" relativeKey="$parent" relativePoint="BOTTOM" x="5" y="15"/>
+										</Anchors>
+										<Scripts>
+											<OnClick>
+												PlaySound("igMainMenuOptionCheckBoxOn");
+												ProductChoiceFrame.Inset.NoTakeBacksies:Hide();
+											</OnClick>
+										</Scripts>
+									</Button>
+								</Frames>
+							</Frame>
+						</Frames>
+					</Frame>
+					<CheckButton parentArray="Buttons" inherits="ProductChoiceItemTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeKey="$parent" relativePoint="TOPLEFT" x="10" y="-10"/>
+						</Anchors>
+					</CheckButton>
+					<Button parentKey="ClaimButton" inherits="UIPanelButtonTemplate" text="CLAIM_REWARD">
+						<Size x="155" y="29"/>
+						<Anchors>
+							<Anchor point="BOTTOM" relativeKey="$parent" relativePoint="BOTTOM" x="0" y="18"/>
+						</Anchors>
+						<Scripts>
+							<OnClick function="ProductChoiceFrameInsetClaimButton_OnClick"/>
+						</Scripts>
+						<NormalFont style="GameFontNormalLarge"/>
+						<HighlightFont style="GameFontHighlightLarge"/>
+						<DisabledFont style="GameFontDisableLarge"/>
+					</Button>
+				</Frames>
+			</Frame>
+		</Frames>
+		<Scripts>
+			<OnLoad function="ProductChoiceFrame_OnLoad"/>
+			<OnEvent function="ProductChoiceFrame_OnEvent"/>
+			<OnShow function="ProductChoiceFrame_OnShow"/>
+			<OnHide>
+				PlaySound("igCharacterInfoClose");
+			</OnHide>
+		</Scripts>
+	</Frame>
+</Ui>
