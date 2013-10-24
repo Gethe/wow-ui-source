@@ -5,7 +5,7 @@ function RecruitAFriend_OnLoad(self)
 	self.hideOnEscape = true;
 	self:RegisterEvent("RECRUIT_A_FRIEND_INVITER_FRIEND_ADDED");
 	self:RegisterEvent("RECRUIT_A_FRIEND_INVITATION_FAILED");
-	self:RegisterEvent("VARIABLES_LOADED");
+	--self:RegisterEvent("VARIABLES_LOADED");
 end
 
 function RecruitAFriend_OnEvent(self, event, ...)
@@ -21,6 +21,7 @@ function RecruitAFriend_OnEvent(self, event, ...)
 			RecruitAFriendSentFrame.Description:SetText(RED_FONT_COLOR_CODE..ERR_RECRUIT_A_FRIEND_FAILED..FONT_COLOR_CODE_CLOSE);
 		end]]
 	elseif ( event == "VARIABLES_LOADED" ) then
+		--[[
 		local active = C_RecruitAFriend.GetRecruitInfo();
 		if ( active ) then
 			if ( not GetCVarBool("displayedRAFFriendInfo") ) then
@@ -40,6 +41,7 @@ function RecruitAFriend_OnEvent(self, event, ...)
 			--Reset it to the default so that we don't use extra server storage indefinitely
 			SetCVar("displayedRAFFriendInfo", GetCVarDefault("displayedRAFFriendInfo"));
 		end
+		]]
 	end
 end
 
@@ -53,7 +55,7 @@ function RecruitAFriend_OnShow(self)
 	PlaySound("igCharacterInfoOpen");
 
 	local factionGroup, factionName = UnitFactionGroup("player");
-	self.CharacterInfo.Text:SetFormattedText(RAF_REALM_INFO, factionName, CurrentRealmName());
+	self.CharacterInfo.Text:SetFormattedText(RAF_REALM_INFO, factionName, SelectedRealmName());
 
 	RecruitAFriendNameEditBox:SetText("");
 	RecruitAFriendNoteEditBox:SetText("");
