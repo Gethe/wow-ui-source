@@ -1266,6 +1266,56 @@ TRAVEL PASS
 						<PushedTexture file="Interface\Buttons\UI-Quickslot-Depress"/>
 						<HighlightTexture alphaMode="ADD" file="Interface\Buttons\ButtonHilight-Square" parentKey="highlight"/>
 					</Button>
+					<Button name="$parentRecruitAFriendButton" motionScriptsWhileDisabled="true" parentKey="RaFButton" hidden="true">
+						<Size x="26" y="26"/>
+						<Anchors>
+							<Anchor point="RIGHT" relativeKey="$parent.soRButton" relativePoint="LEFT" x="-4" y="0"/>
+						</Anchors>
+						<Layers>
+							<Layer level="BACKGROUND">
+								<Texture name="$parentIcon" parentKey="Icon"/>
+							</Layer>
+						</Layers>
+						<Scripts>
+							<OnLoad>
+								self:RegisterEvent("RECRUIT_A_FRIEND_SYSTEM_STATUS");
+								self:RegisterEvent("PLAYER_ENTERING_WORLD");
+								self:RegisterEvent("PRODUCT_CHOICE_UPDATE");
+								RAFButton_Update(self);
+							</OnLoad>
+							<OnClick>
+								if ( #C_ProductChoice.GetChoices() > 0 ) then
+									ProductChoiceFrame_SetUp(ProductChoiceFrame);
+									ProductChoiceFrame:Show();
+								else
+									StaticPopupSpecial_Show(RecruitAFriendFrame);
+								end
+							</OnClick>
+							<OnEnter>
+								GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+								if ( self.rewards ) then
+									GameTooltip:SetText(RAF_BUTTON_REWARD_TOOLTIP_TITLE);
+									GameTooltip:AddLine(RAF_BUTTON_REWARD_TOOLTIP_DESCRIPTION, 1, 1, 1, 1);
+								else
+									GameTooltip:SetText(RAF_BUTTON_TOOLTIP_TITLE);
+									GameTooltip:AddLine(RAF_BUTTON_TOOLTIP_DESCRIPTION, 1, 1, 1, 1);
+									if ( not self:IsEnabled() ) then
+										local color = RED_FONT_COLOR;
+										GameTooltip:AddLine(RAF_BUTTON_DISABLED_FACTION, color.r, color.g, color.b, 1);
+									end
+								end
+								GameTooltip:Show();
+							</OnEnter>
+							<OnLeave>
+								GameTooltip:Hide();
+							</OnLeave>
+							<OnEvent>
+								RAFButton_Update(self);
+							</OnEvent>
+						</Scripts>
+						<PushedTexture file="Interface\Buttons\UI-Quickslot-Depress"/>
+						<HighlightTexture alphaMode="ADD" file="Interface\Buttons\ButtonHilight-Square" parentKey="highlight"/>
+					</Button>
 				</Frames>
 				<Scripts>
 					<OnLoad>
@@ -1347,6 +1397,9 @@ TRAVEL PASS
 						</Frames>
 					</ScrollFrame>
 				</Frames>
+				<Scripts>
+					<OnShow function="FriendsListFrame_OnShow"/>
+				</Scripts>
 			</Frame>
 			<Frame name="IgnoreListFrame" hidden="true" setAllPoints="true">
 				<Layers>

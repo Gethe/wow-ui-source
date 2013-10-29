@@ -87,7 +87,7 @@ function FlexRaidFrame_UpdateButton()
 	button:Disable();
 	button.tooltip = nil;
 	
-	if (FlexRaidFrame.CooldownFrame:IsShown() or not LFD_IsEmpowered()) then
+	if (not LFD_IsEmpowered()) then
 		return;
 	end
 	

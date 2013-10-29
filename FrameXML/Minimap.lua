@@ -366,9 +366,9 @@ function MiniMapInstanceDifficulty_OnEvent(self, event, ...)
 			IS_GUILD_GROUP = isGuildGroup;
 			MiniMapInstanceDifficulty_Update();
 		end
-	elseif ( event == "PLAYER_DIFFICULTY_CHANGED" or event == "INSTANCE_GROUP_SIZE_CHANGED") then
+	elseif ( event == "PLAYER_DIFFICULTY_CHANGED") then
 		MiniMapInstanceDifficulty_Update();
-	elseif ( event == "UPDATE_INSTANCE_INFO" ) then
+	elseif ( event == "UPDATE_INSTANCE_INFO" or event == "INSTANCE_GROUP_SIZE_CHANGED" ) then
 		RequestGuildPartyState();
 		MiniMapInstanceDifficulty_Update();
 	elseif ( event == "PLAYER_GUILD_UPDATE" ) then

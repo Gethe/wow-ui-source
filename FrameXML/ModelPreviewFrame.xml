@@ -1,0 +1,100 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\FrameXML\UI.xsd">
+	<Script file="ModelPreviewFrame.lua"/>
+	<Frame name="ModelPreviewFrame" frameStrata="FULLSCREEN_DIALOG" frameLevel="5" inherits="ButtonFrameTemplate" parent="UIParent" hidden="true">
+		<Size x="415" y="565"/>
+		<Anchors>
+			<Anchor point="CENTER" relativePoint="CENTER" x="0" y="80"/>
+		</Anchors>
+		<Frames>
+			<Frame parentKey="Display">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.Inset" relativePoint="TOPLEFT" x="3" y="-3"/>
+					<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Inset" relativePoint="BOTTOMRIGHT" x="-3" y="3"/>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<Texture parentKey="YesMountsTex" file="Interface\PetBattles\MountJournal-BG" setAllPoints="true">
+							<TexCoords left="0" right="0.78515625" top="0" bottom="1"/>	
+						</Texture>
+					</Layer>
+					<Layer level="OVERLAY">
+						<FontString parentKey="Name" inherits="GameFontHighlightLarge">
+							<Size x="280" y="0"/>
+							<Anchors>
+								<Anchor point="BOTTOM" x="0" y="60"/>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+				<Frames>
+					<Frame parentKey="ShadowOverlay" inherits="ShadowOverlayTemplate" useParentLevel="true" setAllPoints="true"/>
+					<PlayerModel parentKey="Model" useParentLevel="true" inherits="ModelWithZoomTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeKey="$parent" relativePoint="TOPLEFT" x="0" y="0"/>
+							<Anchor point="BOTTOMRIGHT" relativeKey="$parent" x="0" y="50"/>
+						</Anchors>
+						<Frames>
+							<Button parentKey="RotateLeftButton">
+								<Size x="35" y="35"/>
+								<Anchors>
+									<Anchor point="TOPRIGHT" relativeKey="$parent" relativePoint="BOTTOM" x="-5" y="0"/>
+								</Anchors>
+								<Scripts>
+									<OnLoad>
+										self:RegisterForClicks("LeftButtonDown", "LeftButtonUp");
+									</OnLoad>
+									<OnClick>
+										Model_RotateLeft(self:GetParent());
+									</OnClick>
+								</Scripts>
+								<NormalTexture file="Interface\Buttons\UI-RotationLeft-Button-Up"/>
+								<PushedTexture file="Interface\Buttons\UI-RotationLeft-Button-Down"/>
+								<HighlightTexture file="Interface\Buttons\ButtonHilight-Round" alphaMode="ADD"/>
+							</Button>
+							<Button parentKey="RotateRightButton">
+								<Size>
+									<AbsDimension x="35" y="35"/>
+								</Size>
+								<Anchors>
+									<Anchor point="TOPLEFT" relativeKey="$parent" relativePoint="BOTTOM" x="5" y="0"/>
+								</Anchors>
+								<Scripts>
+									<OnLoad>
+										self:RegisterForClicks("LeftButtonDown", "LeftButtonUp");
+									</OnLoad>
+									<OnClick>
+										Model_RotateRight(self:GetParent());
+									</OnClick>
+								</Scripts>
+								<NormalTexture file="Interface\Buttons\UI-RotationRight-Button-Up"/>
+								<PushedTexture file="Interface\Buttons\UI-RotationRight-Button-Down"/>
+								<HighlightTexture file="Interface\Buttons\ButtonHilight-Round" alphaMode="ADD"/>
+							</Button>
+						</Frames>
+					</PlayerModel>
+				</Frames>
+			</Frame>
+			<Button name="$parentCloseButton" inherits="MagicButtonTemplate" parentKey="CloseButton" text="CLOSE">
+				<Size x="80" y="22"/>
+				<Anchors>
+					<Anchor point="BOTTOMRIGHT" x="0" y="0"/>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						self:GetParent():Hide();
+					</OnClick>
+				</Scripts>
+			</Button>
+		</Frames>
+		<Scripts>
+			<OnLoad function="ModelPreviewFrame_OnLoad"/>
+			<OnShow>
+				PlaySound("igCharacterInfoOpen");
+			</OnShow>
+			<OnHide>
+				PlaySound("igCharacterInfoClose");
+			</OnHide>
+		</Scripts>
+	</Frame>
+</Ui>

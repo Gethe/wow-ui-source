@@ -140,6 +140,9 @@
 	<Font name="GameFontNormalHuge" inherits="SystemFont_Shadow_Huge1" virtual="true">
 		<Color r="1.0" g="0.82" b="0"/>
 	</Font>
+	<Font name="GameFontNormalHuge3" inherits="SystemFont_Shadow_Huge3" virtual="true">
+		<Color r="1.0" g="0.82" b="0"/>
+	</Font>
 	<Font name="GameFontNormalHugeOutline" inherits="SystemFont_Shadow_Huge1" virtual="true">
 		<Color r="1.0" g="0.82" b="0"/>
 	</Font>

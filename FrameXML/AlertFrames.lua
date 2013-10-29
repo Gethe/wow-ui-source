@@ -49,11 +49,14 @@ function AlertFrame_OnEvent (self, event, ...)
 		local itemLink, quantity, rollType, roll = ...;
 		LootWonAlertFrame_ShowAlert(itemLink, quantity, rollType, roll);
 	elseif ( event == "SHOW_LOOT_TOAST" ) then
-		local typeIdentifier, itemLink, quantity, specID = ...;
+		local typeIdentifier, itemLink, quantity, specID, isPersonal = ...;
 		if ( typeIdentifier == "item" ) then
 			LootWonAlertFrame_ShowAlert(itemLink, quantity, nil, nil, specID);
 		elseif ( typeIdentifier == "money" ) then
 			MoneyWonAlertFrame_ShowAlert(quantity);
+		elseif ( (isPersonal == true) and (typeIdentifier == "currency") ) then
+			-- only toast currency for personal loot
+			LootWonAlertFrame_ShowAlert(itemLink, quantity, nil, nil, specID, true);
 		end
 	elseif ( event == "PET_BATTLE_CLOSE" ) then
 		AchievementAlertFrame_FireDelayedAlerts();
@@ -773,7 +776,7 @@ end
 
 -- [[ LootWonAlertFrameTemplate ]] --
 
-function LootWonAlertFrame_ShowAlert(itemLink, quantity, rollType, roll, specID)
+function LootWonAlertFrame_ShowAlert(itemLink, quantity, rollType, roll, specID, isCurrency)
 	local frame;
 	for i=1, #LOOT_WON_ALERT_FRAMES do
 		local lootWon = LOOT_WON_ALERT_FRAMES[i];
@@ -788,14 +791,22 @@ function LootWonAlertFrame_ShowAlert(itemLink, quantity, rollType, roll, specID)
 		table.insert(LOOT_WON_ALERT_FRAMES, frame);
 	end
 
-	LootWonAlertFrame_SetUp(frame, itemLink, quantity, rollType, roll, specID);
+	LootWonAlertFrame_SetUp(frame, itemLink, quantity, rollType, roll, specID, isCurrency);
 	AlertFrame_AnimateIn(frame);
 	AlertFrame_FixAnchors();
 end
 
 -- NOTE - This may also be called for an externally created frame. (E.g. bonus roll has its own frame)
-function LootWonAlertFrame_SetUp(self, itemLink, quantity, rollType, roll, specID)
-	local itemName, itemLink, itemRarity, itemLevel, itemMinLevel, itemType, itemSubType, itemStackCount, itemEquipLoc, itemTexture = GetItemInfo(itemLink);
+function LootWonAlertFrame_SetUp(self, itemLink, quantity, rollType, roll, specID, isCurrency)
+	local itemName, itemHyperLink, itemRarity, itemTexture;
+	if (isCurrency == true) then
+		itemName, _, itemTexture, _, _, _, _, itemRarity = GetCurrencyInfo(itemLink);
+		itemName = format(CURRENCY_QUANTITY_TEMPLATE, quantity, itemName);
+		itemHyperLink = itemLink;
+	else
+		itemName, itemHyperLink, itemRarity, _, _, _, _, _, _, itemTexture = GetItemInfo(itemLink);
+	end
+
 	self.Icon:SetTexture(itemTexture);
 	self.ItemName:SetText(itemName);
 	local color = ITEM_QUALITY_COLORS[itemRarity];
@@ -827,7 +838,7 @@ function LootWonAlertFrame_SetUp(self, itemLink, quantity, rollType, roll, specI
 		self.RollValue:Hide();
 	end
 
-	self.hyperlink = itemLink;
+	self.hyperlink = itemHyperLink;
 	PlaySoundKitID(31578);	--UI_EpicLoot_Toast
 end
 

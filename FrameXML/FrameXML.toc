@@ -172,6 +172,9 @@ StaticPopupSpecial.xml
 LossOfControlFrame.xml
 PVPHelper.xml
 MapBar.xml
+RecruitAFriendFrame.xml
+ProductChoice.xml
+ModelPreviewFrame.xml
 
 #Save off whatever we need available unmodified.
 SecureCapsule.lua

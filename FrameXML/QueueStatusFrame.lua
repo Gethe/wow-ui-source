@@ -332,6 +332,8 @@ function QueueStatusEntry_SetUpBattlefield(entry, idx)
 		QueueStatusEntry_SetMinimalDisplay(entry, mapName, QUEUED_STATUS_PROPOSAL);
 	elseif ( status == "active" ) then
 		QueueStatusEntry_SetMinimalDisplay(entry, mapName, QUEUED_STATUS_IN_PROGRESS);
+	elseif ( status == "locked" ) then
+		QueueStatusEntry_SetMinimalDisplay(entry, mapName, QUEUED_STATUS_LOCKED, QUEUED_STATUS_LOCKED_EXPLANATION);
 	else
 		QueueStatusEntry_SetMinimalDisplay(entry, mapName, QUEUED_STATUS_UNKNOWN);
 	end
@@ -673,6 +675,10 @@ function QueueStatusDropDown_AddBattlefieldButtons(info, idx)
 		info.arg1 = idx;
 		info.arg2 = false;
 		info.disabled = registeredMatch and IsInGroup() and not UnitIsGroupLeader("player");
+		UIDropDownMenu_AddButton(info);
+	elseif ( status == "locked" ) then
+		info.text = LEAVE_BATTLEGROUND;
+		info.disabled = true;
 		UIDropDownMenu_AddButton(info);
 	elseif ( status == "confirm" ) then
 		info.text = ENTER_BATTLE;

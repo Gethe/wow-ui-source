@@ -215,24 +215,6 @@
 					</Frame>
 				</ScrollChild>
 			</ScrollFrame>
-			<Frame name="$parentCooldownFrame" parentKey="CooldownFrame" inherits="LFGCooldownCoverTemplate">
-				<Size x="330" y="333"/>
-				<Anchors>
-					<Anchor point="BOTTOMRIGHT" x="-6" y="27"/>
-				</Anchors>
-				<Scripts>
-					<OnLoad>
-						LFGCooldownCover_SetUp(self);
-						LFGCooldownCover_ChangeSettings(self, false, false);
-					</OnLoad>
-					<OnShow>
-						FlexRaidFrame_UpdateButton();
-					</OnShow>
-					<OnHide>
-						FlexRaidFrame_UpdateButton();
-					</OnHide>
-				</Scripts>
-			</Frame>
 			<Button name="$parentStartRaidButton" parentKey="StartButton" inherits="MagicButtonTemplate" text="START_RAID" motionScriptsWhileDisabled="true">
 				<Size x="135" y="22"/>
 				<Anchors>

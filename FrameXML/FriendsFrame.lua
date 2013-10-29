@@ -357,6 +357,11 @@ function FriendsTabHeader_ResizeTabs()
 	end
 end
 
+function FriendsListFrame_OnShow(self)
+	RecruitAFriend_OnFriendsListShown();
+	ProductChoiceFrame_OnFriendsListShown();
+end
+
 function FriendsList_Update()
 	local numBNetTotal, numBNetOnline = BNGetNumFriends();
 	local numBNetOffline = numBNetTotal - numBNetOnline;
@@ -2343,5 +2348,29 @@ function BattleTagInviteFrame_Show(name)
 	BattleTagInviteFrame.NoteFrame.EditBox:SetText("");
 	if ( not BattleTagInviteFrame:IsShown() ) then
 		StaticPopupSpecial_Show(BattleTagInviteFrame);
+	end
+end
+
+function RAFButton_Update(self)
+	if ( #C_ProductChoice.GetChoices() > 0 ) then
+		self.Icon:SetTexture("Interface\\Icons\\achievement_guildperk_mobilebanking");
+		self.rewards = true;
+		self:Show();
+		self:Enable();
+		self.Icon:SetDesaturated(false);
+	elseif ( C_RecruitAFriend.IsSendingEnabled() ) then
+		self.rewards = false;
+		self.Icon:SetTexture("Interface\\Icons\\Raf-Icon");
+		local faction = UnitFactionGroup("player");
+		if ( faction ~= "Alliance" and faction ~= "Horde" ) then
+			self:Disable();
+			self.Icon:SetDesaturated(true);
+		else
+			self:Enable();
+			self.Icon:SetDesaturated(false);
+		end
+		self:Show();
+	else
+		self:Hide();
 	end
 end

@@ -1338,6 +1338,10 @@
 					</OnLoad>
 					<OnHide>
 						GetWebTicket();
+						if (TicketStatusFrame.haveWebSurvey) then
+							AcknowledgeSurvey(TicketStatusFrame.caseIndex);
+							TicketStatusFrame.haveWebSurvey = nil;
+						end
 					</OnHide>
 				</Scripts>
 			</Browser>

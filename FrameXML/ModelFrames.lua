@@ -83,14 +83,14 @@ function Model_RotateRight(model, rotationIncrement)
 end
 
 function Model_OnMouseDown(model, button)
-	if ( button == "LeftButton" ) then
+	if ( not button or button == "LeftButton" ) then
 		model.mouseDown = true;
 		model.rotationCursorStart = GetCursorPosition();
 	end
 end
 
 function Model_OnMouseUp(model, button)
-	if ( button == "LeftButton" ) then
+	if ( not button or button == "LeftButton" ) then
 		model.mouseDown = false;
 	end
 end
@@ -171,8 +171,8 @@ function Model_OnUpdate(self, elapsedTime, rotationsPerSecond)
 		leftButton = self.controlFrame.rotateLeftButton;
 		rightButton = self.controlFrame.rotateRightButton;
 	else
-		leftButton = self.RotateLeftButton or _G[self:GetName().."RotateLeftButton"];
-		rightButton = self.RotateRightButton or _G[self:GetName().."RotateRightButton"];
+		leftButton = self.RotateLeftButton or (self:GetName() and _G[self:GetName().."RotateLeftButton"]);
+		rightButton = self.RotateRightButton or (self:GetName() and _G[self:GetName().."RotateRightButton"]);
 	end
 
 	if ( leftButton and leftButton:GetButtonState() == "PUSHED" ) then
