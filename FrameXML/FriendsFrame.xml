@@ -1299,6 +1299,11 @@ TRAVEL PASS
 								else
 									GameTooltip:SetText(RAF_BUTTON_TOOLTIP_TITLE);
 									GameTooltip:AddLine(RAF_BUTTON_TOOLTIP_DESCRIPTION, 1, 1, 1, 1);
+									if ( self.suppressedRewards and self.suppressedRewards > 0 ) then
+										local color = RED_FONT_COLOR;
+										local text = string.format(RAF_REWARD_SUPPRESSED, self.suppressedRewards);
+										GameTooltip:AddLine(text, color.r, color.g, color.b, 1);
+									end
 									if ( not self:IsEnabled() ) then
 										local color = RED_FONT_COLOR;
 										GameTooltip:AddLine(RAF_BUTTON_DISABLED_FACTION, color.r, color.g, color.b, 1);

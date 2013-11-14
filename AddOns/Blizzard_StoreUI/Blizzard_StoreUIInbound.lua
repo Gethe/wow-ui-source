@@ -4,10 +4,14 @@ function StoreFrame_SetShown(shown)
 end
 
 function StoreFrame_IsShown()
-	return StoreFrame:GetAttribute("IsShown");
+	return StoreFrame:GetAttribute("isshown");
 end
 
 function StoreFrame_EscapePressed()
 	StoreFrame:SetAttribute("action", "EscapePressed");
-	return StoreFrame:GetAttribute("EscapeResult");
+	return StoreFrame:GetAttribute("escaperesult");
+end
+
+function StoreFrame_PreviewFrameIsShown(isShown)
+	StoreFrame:SetAttribute("previewframeshown", isShown);
 end

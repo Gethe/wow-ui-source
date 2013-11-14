@@ -209,6 +209,8 @@ function GlueParent_OnLoad(self)
 	self:RegisterEvent("ACCOUNT_MESSAGES_AVAILABLE");
 	self:RegisterEvent("ACCOUNT_MESSAGES_HEADERS_LOADED");
 	self:RegisterEvent("ACCOUNT_MESSAGES_BODY_LOADED");
+	-- TODO: actually rename GlueParent to UIParent
+	UIParent = self;
 end
 
 function GlueParent_OnEvent(event, arg1, arg2, arg3)
@@ -500,4 +502,8 @@ function SetLoginScreenModel(model)
 	local background = GetLoginScreenBackground(highResBG, lowResBG);
 							
 	model:SetModel(background, 1);	
+end
+
+function SecureCapsuleGet(name)
+	return _G[name];
 end

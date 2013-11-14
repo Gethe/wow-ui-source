@@ -321,8 +321,12 @@ function UnitFrameHealPredictionBars_Update(frame)
 	--Show myIncomingHeal on the health bar.
 	local incomingHealTexture = UnitFrameUtil_UpdateFillBar(frame, healthTexture, frame.myHealPredictionBar, myIncomingHeal, -myCurrentHealAbsorbPercent);
 	
-	--Append otherIncomingHeal on the health bar.
-	incomingHealTexture = UnitFrameUtil_UpdateFillBar(frame, incomingHealTexture, frame.otherHealPredictionBar, otherIncomingHeal);
+	--Append otherIncomingHeal on the health bar
+	if (myIncomingHeal > 0) then
+		incomingHealTexture = UnitFrameUtil_UpdateFillBar(frame, incomingHealTexture, frame.otherHealPredictionBar, otherIncomingHeal);
+	else
+		incomingHealTexture = UnitFrameUtil_UpdateFillBar(frame, healthTexture, frame.otherHealPredictionBar, otherIncomingHeal, -myCurrentHealAbsorbPercent);
+	end
 	
 	--Append absorbs to the correct section of the health bar.
 	local appendTexture = nil;

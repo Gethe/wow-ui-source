@@ -1,0 +1,68 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\FrameXML\UI.xsd">
+	<Font name="GameFontNormal" inherits="SystemFont_Shadow_Med1" virtual="true">
+		<Color r="1.0" g="0.82" b="0"/>
+	</Font>
+	<Font name="GameFontDisable" inherits="GameFontNormal" virtual="true">
+		<Color r="0.5" g="0.5" b="0.5"/>
+	</Font>
+	<Font name="GameFontHighlight" inherits="GameFontNormal" virtual="true">
+		<Color r="1.0" g="1.0" b="1.0"/>
+	</Font>	
+	<Font name="GameFontNormalHuge" inherits="SystemFont_Shadow_Huge1" virtual="true">
+		<Color r="1.0" g="0.82" b="0"/>
+	</Font>
+	<Font name="GameFontHighlightHuge" inherits="GameFontNormalHuge" virtual="true">
+		<Color r="1.0" g="1.0" b="1.0"/>
+	</Font>	
+	<Font name="GameFontNormalSmall" inherits="SystemFont_Shadow_Small" virtual="true">
+		<Color r="1.0" g="0.82" b="0"/>
+	</Font>
+	<Font name="GameFontWhiteTiny" inherits="SystemFont_Tiny" virtual="true">
+		<Color r="1.0" g="1.0" b="1.0"/>
+	</Font>
+	<Font name="GameFontNormalLarge" inherits="SystemFont_Shadow_Large" virtual="true">
+		<Color r="1.0" g="0.82" b="0"/>
+	</Font>
+	<Font name="GameFontDisableSmall" inherits="GameFontNormalSmall" virtual="true">
+		<Color r="0.5" g="0.5" b="0.5"/>
+	</Font>
+	<Font name="GameFontNormalHugeOutline2" inherits="SystemFont_Shadow_Outline_Huge2" virtual="true">
+		<Color r="1.0" g="0.82" b="0"/>
+	</Font>
+	<Font name="GameFontNormalOutline" inherits="SystemFont_Shadow_Med1_Outline" virtual="true">
+		<Color r="1.0" g="0.82" b="0"/>
+	</Font>
+	<Font name="GameFontHighlightOutline" inherits="GameFontNormalOutline" virtual="true">
+		<Color r="1.0" g="1.0" b="1.0"/>
+	</Font>
+	<Font name="QuestFontHighlight" inherits="SystemFont_Large" virtual="true">
+		<Color r="0" g="0" b="0"/>
+	</Font>
+	<Font name="GameFontHighlightMedium" inherits="SystemFont_Shadow_Med3" virtual="true">
+		<Color r="1.0" g="1.0" b="1.0"/>
+	</Font>
+	<Font name="GameFontBlackMedium" inherits="SystemFont_Med3" virtual="true">
+		<Color r="0" g="0" b="0"/>
+	</Font>	
+	<Font name="GameFontBlack" inherits="SystemFont_Med1" virtual="true">
+		<Color r="0" g="0" b="0"/>
+	</Font>
+	<Font name="GameFontHighlightLarge" inherits="GameFontNormalLarge" virtual="true">
+		<Color r="1.0" g="1.0" b="1.0"/>
+	</Font>
+	<Font name="GameFontNormalMed3" inherits="SystemFont_Shadow_Med3" virtual="true">
+		<Color r="1.0" g="0.82" b="0"/>
+	</Font>
+	<Font name="GameFontNormalMed2" inherits="SystemFont_Shadow_Med2" virtual="true">
+		<Color r="1.0" g="0.82" b="0"/>
+	</Font>
+	<Font name="GameFontDisableLarge" inherits="GameFontNormalLarge" virtual="true">
+		<Color r="0.5" g="0.5" b="0.5"/>
+	</Font>	
+	<Font name="GameFontHighlightSmall" inherits="GameFontNormalSmall" virtual="true">
+		<Color r="1.0" g="1.0" b="1.0"/>
+	</Font>
+	<Font name="GameFontHighlightSmallLeft" inherits="GameFontHighlightSmall" justifyH="LEFT" virtual="true"/>	
+	<Font name="GameFontDisableSmallLeft" inherits="GameFontDisableSmall" justifyH="LEFT" virtual="true"/>	
+</Ui>	

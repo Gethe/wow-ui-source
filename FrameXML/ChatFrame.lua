@@ -997,7 +997,7 @@ local function ExecuteCastRandom(actions)
 		CastRandomTable[actions] = entry;
 	end
 	if ( not entry.value ) then
-		entry.value = entry.spellNames[securerandom(#entry.spellNames)];
+		entry.value = entry.spellNames[random(#entry.spellNames)];
 	end
 	entry.pending = true;
 	return entry.value;
@@ -2790,6 +2790,11 @@ function GetColoredName(event, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, a
 	end
 	local info = ChatTypeInfo[chatType];
 	
+	--ambiguate guild chat names
+	if (chatType == "GUILD") then
+		arg2 = Ambiguate(arg2, "guild")
+	end
+	
 	if ( info and info.colorNameByClass and arg12 ) then
 		local localizedClass, englishClass, localizedRace, englishRace, sex = GetPlayerInfoByGUID(arg12)
 		
@@ -2827,7 +2832,7 @@ function ChatFrame_MessageEventHandler(self, event, ...)
 		local arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10, arg11, arg12, arg13, arg14 = ...;
 		local type = strsub(event, 10);
 		local info = ChatTypeInfo[type];
-
+		
 		local filter = false;
 		if ( chatFilters[event] ) then
 			local newarg1, newarg2, newarg3, newarg4, newarg5, newarg6, newarg7, newarg8, newarg9, newarg10, newarg11, newarg12, newarg13, newarg14;
@@ -3998,13 +4003,6 @@ function ChatEdit_OnEnterPressed(self)
 	if(AutoCompleteEditBox_OnEnterPressed(self)) then
 		return;
 	end
-	if (self.autoCompleted) then
-		local text = self:GetText().." "
-		self:SetText(text);
-		self:SetCursorPosition(strlen(text));
-		self.autoCompleted = nil;
-		return;
-	end
 	ChatEdit_SendText(self, 1);
 
 	local type = self:GetAttribute("chatType");
@@ -4140,7 +4138,6 @@ end
 
 function ChatEdit_OnChar(self)
 	local regex = "^((/[^%s]+)%s+(.+))$"
-	self.autoCompleted = nil;
 	local text, command, target = strmatch(self:GetText(), regex);
 	if (command) then
 		self.command = command
@@ -4149,14 +4146,15 @@ function ChatEdit_OnChar(self)
 	end
 	if (command and target and self.autoCompleteParams) then --if they typed a command with a autocompletable target
 		local utf8Position = self:GetUTF8CursorPosition();
-		local nameToShow = GetAutoCompleteResults(target, self.autoCompleteParams.include, self.autoCompleteParams.exclude, 1, utf8Position);
-		if (nameToShow) then
+		local nameToShow = GetAutoCompleteResults(target, self.autoCompleteParams.include, self.autoCompleteParams.exclude, 1, utf8Position)[1];
+		if (nameToShow and nameToShow.name) then
+			local name = Ambiguate(nameToShow.name, "all");
 			--We're going to be setting the text programatically which will clear the userInput flag on the editBox. 
 			--So we want to manually update the dropdown before we change the text.
 			AutoComplete_Update(self, target, utf8Position - strlenutf8(command) - 1);
 			target = escapePatternSymbols(target)
 			local highlightRegex = "^"..target.."(.*)";
-			local nameEnding = nameToShow:match(highlightRegex)
+			local nameEnding = name:match(highlightRegex)
 			if (not nameEnding) then
 				return;
 			end
@@ -4164,7 +4162,6 @@ function ChatEdit_OnChar(self)
 			self:SetText(newText);
 			self:HighlightText(strlen(text), strlen(newText));	
 			self:SetCursorPosition(strlen(text));
-			self.autoCompleted = true;
 		end
 	end
 end
@@ -4367,7 +4364,7 @@ function ChatEdit_ExtractTellTarget(editBox, msg, chatType)
 		return false;
 	end
 
-	if ( GetAutoCompleteResults(target, tellTargetExtractionAutoComplete.include, tellTargetExtractionAutoComplete.exclude, 1, nil, true) ) then
+	if ( #GetAutoCompleteResults(target, tellTargetExtractionAutoComplete.include, tellTargetExtractionAutoComplete.exclude, 1, nil, true) > 0 ) then
 		--Even if there's a space, we still want to let the person keep typing -- they may be trying to type whatever is in AutoComplete.
 		return false;
 	end
@@ -4383,7 +4380,7 @@ function ChatEdit_ExtractTellTarget(editBox, msg, chatType)
 		while ( strfind(target, "%s") ) do
 			--Pull off everything after the last space.
 			target = strmatch(target, "(.+)%s+[^%s]*");
-			if ( GetAutoCompleteResults(target, tellTargetExtractionAutoComplete.include, tellTargetExtractionAutoComplete.exclude, 1, nil, true) ) then
+			if ( #GetAutoCompleteResults(target, tellTargetExtractionAutoComplete.include, tellTargetExtractionAutoComplete.exclude, 1, nil, true) > 0 ) then
 				break;
 			end
 		end

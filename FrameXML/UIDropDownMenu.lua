@@ -73,7 +73,10 @@ function UIDropDownMenu_Initialize(frame, initFunction, displayMode, level, menu
 	if(level == nil) then
 		level = 1;
 	end
-	_G["DropDownList"..level].dropdown = frame;
+	
+	local dropDownList = _G["DropDownList"..level]
+	dropDownList.dropdown = frame;
+	dropDownList.shouldRefresh = true;
 
 	-- Change appearance based on the displayMode
 	if ( displayMode == "MENU" ) then
@@ -85,9 +88,11 @@ function UIDropDownMenu_Initialize(frame, initFunction, displayMode, level, menu
 		_G[name.."ButtonDisabledTexture"]:SetTexture("");
 		_G[name.."ButtonPushedTexture"]:SetTexture("");
 		_G[name.."ButtonHighlightTexture"]:SetTexture("");
-		_G[name.."Button"]:ClearAllPoints();
-		_G[name.."Button"]:SetPoint("LEFT", name.."Text", "LEFT", -9, 0);
-		_G[name.."Button"]:SetPoint("RIGHT", name.."Text", "RIGHT", 6, 0);
+		
+		local button = _G[name.."Button"]
+		button:ClearAllPoints();
+		button:SetPoint("LEFT", name.."Text", "LEFT", -9, 0);
+		button:SetPoint("RIGHT", name.."Text", "RIGHT", 6, 0);
 		frame.displayMode = "MENU";
 	end
 
@@ -95,6 +100,12 @@ end
 
 -- If dropdown is visible then see if its timer has expired, if so hide the frame
 function UIDropDownMenu_OnUpdate(self, elapsed)
+	if ( self.shouldRefresh ) then
+		self.maxWidth = UIDropDownMenu_GetMaxButtonWidth(self);
+		self:SetWidth(self.maxWidth + 25);
+		self.shouldRefresh = false;
+	end
+	
 	if ( not self.showTimer or not self.isCounting ) then
 		return;
 	elseif ( self.showTimer < 0 ) then
@@ -278,15 +289,7 @@ function UIDropDownMenu_AddButton(info, level)
 		else
 			button:SetText(info.text);
 		end
-		-- Determine the width of the button
-		width = normalText:GetWidth() + 40;
-		-- Add padding if has and expand arrow or color swatch
-		if ( info.hasArrow or info.hasColorSwatch ) then
-			width = width + 10;
-		end
-		if ( info.notCheckable ) then
-			width = width - 30;
-		end
+		
 		-- Set icon
 		if ( info.icon ) then
 			icon:SetSize(16,16);
@@ -300,19 +303,10 @@ function UIDropDownMenu_AddButton(info, level)
 				icon:SetTexCoord(0, 1, 0, 1);
 			end
 			icon:Show();
-			-- Add padding for the icon
-			width = width + 10;
 		else
 			icon:Hide();
 		end
-		if ( info.padding ) then
-			width = width + info.padding;
-		end
-		width = max(width, info.minWidth or 0);
-		-- Set maximum button width
-		if ( width > listFrame.maxWidth ) then
-			listFrame.maxWidth = width;
-		end
+
 		-- Check to see if there is a replacement font
 		if ( info.fontObject ) then
 			button:SetNormalFontObject(info.fontObject);
@@ -337,17 +331,6 @@ function UIDropDownMenu_AddButton(info, level)
 		UIDropDownMenu_SetIconImage(icon, info.icon, info.iconInfo);
 		icon:ClearAllPoints();
 		icon:SetPoint("LEFT");
-
-		width = icon:GetWidth();
-		if ( info.hasArrow or info.hasColorSwatch ) then
-			width = width + 50 - 30;
-		end
-		if ( info.notCheckable ) then
-			width = width - 30;
-		end
-		if ( width > listFrame.maxWidth ) then
-			listFrame.maxWidth = width;
-		end
 	end
 
 	-- Pass through attributes
@@ -487,10 +470,63 @@ function UIDropDownMenu_AddButton(info, level)
 		colorSwatch:Hide();
 	end
 
+	width = max(UIDropDownMenu_GetButtonWidth(button), info.minWidth or 0);
+	--Set maximum button width
+	if ( width > listFrame.maxWidth ) then
+		listFrame.maxWidth = width;
+	end
+
 	-- Set the height of the listframe
 	listFrame:SetHeight((index * UIDROPDOWNMENU_BUTTON_HEIGHT) + (UIDROPDOWNMENU_BORDER_HEIGHT * 2));
 
 	button:Show();
+end
+
+function UIDropDownMenu_GetMaxButtonWidth(self)
+	local maxWidth = 0;
+	for i=1, self.numButtons do
+		local button = _G[self:GetName().."Button"..i];
+		if ( button:IsShown() ) then
+			local width = UIDropDownMenu_GetButtonWidth(button);
+			if ( width > maxWidth ) then
+				maxWidth = width;
+			end
+		end
+	end
+	return maxWidth;
+end
+
+function UIDropDownMenu_GetButtonWidth(button)
+	local width;
+	local buttonName = button:GetName();
+	local icon = _G[buttonName.."Icon"];
+	local normalText = _G[buttonName.."NormalText"];
+	
+	if ( button.iconOnly and icon ) then
+		width = icon:GetWidth();
+	elseif ( normalText and normalText:GetText() ) then
+		width = normalText:GetWidth() + 40;
+		
+		if ( button.icon ) then
+			-- Add padding for the icon
+			width = width + 10;
+		end
+	else
+		return 0;
+	end
+	
+	-- Add padding if has and expand arrow or color swatch
+	if ( button.hasArrow or button.hasColorSwatch ) then
+		width = width + 10;
+	end
+	if ( button.notCheckable ) then
+		width = width - 30;
+	end
+	if ( button.padding ) then
+		width = width + button.padding;
+	end
+	
+	return width;
 end
 
 function UIDropDownMenu_Refresh(frame, useValue, dropdownLevel)
@@ -555,23 +591,7 @@ function UIDropDownMenu_Refresh(frame, useValue, dropdownLevel)
 		end
 
 		if ( button:IsShown() ) then
-			if ( button.iconOnly ) then
-				local icon = _G[frame:GetName().."Icon"];
-				width = icon:GetWidth();
-			else
-				normalText = _G[button:GetName().."NormalText"];
-				width = normalText:GetWidth() + 40;
-			end
-			-- Add padding if has and expand arrow or color swatch
-			if ( button.hasArrow or button.hasColorSwatch ) then
-				width = width + 10;
-			end
-			if ( button.notCheckable ) then
-				width = width - 30;
-			end
-			if ( button.padding ) then
-				width = width + button.padding;
-			end
+			width = UIDropDownMenu_GetButtonWidth(button);
 			if ( width > maxWidth ) then
 				maxWidth = width;
 			end

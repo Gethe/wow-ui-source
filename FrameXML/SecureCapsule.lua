@@ -63,15 +63,28 @@ else
 end
 take("CreateForbiddenFrame");
 retain("IsGMClient");
+retain("IsOnGlueScreen");
 retain("math");
 retain("pairs");
+retain("select");
+retain("unpack");
 retain("tostring");
 retain("tonumber");
 retain("LoadURLIndex");
 retain("GetContainerNumFreeSlots");
+retain("GetCursorPosition");
+retain("GetRealmName");
 retain("PlaySound");
+retain("SetPortraitToTexture");
 retain("BACKPACK_CONTAINER");
 retain("NUM_BAG_SLOTS");
+retain("RAID_CLASS_COLORS");
+retain("C_PetJournal");
+
+--For auth challenge
+take("C_AuthChallenge");
+retain("IsShiftKeyDown");
+retain("GetBindingFromClick");
 
 --GlobalStrings
 retain("BLIZZARD_STORE");
@@ -103,6 +116,14 @@ take("BLIZZARD_STORE_CURRENCY_FORMAT_USD");
 take("BLIZZARD_STORE_CURRENCY_FORMAT_KRW_LONG");
 take("BLIZZARD_STORE_CURRENCY_FORMAT_CPT_LONG");
 take("BLIZZARD_STORE_CURRENCY_FORMAT_TPT");
+take("BLIZZARD_STORE_CURRENCY_FORMAT_GBP");
+take("BLIZZARD_STORE_CURRENCY_FORMAT_EURO");
+take("BLIZZARD_STORE_CURRENCY_FORMAT_RUB");
+take("BLIZZARD_STORE_CURRENCY_FORMAT_MXN");
+take("BLIZZARD_STORE_CURRENCY_FORMAT_BRL");
+take("BLIZZARD_STORE_CURRENCY_FORMAT_ARS");
+take("BLIZZARD_STORE_CURRENCY_FORMAT_CLP");
+take("BLIZZARD_STORE_CURRENCY_FORMAT_AUD");
 take("BLIZZARD_STORE_CURRENCY_RAW_ASTERISK");
 take("BLIZZARD_STORE_CURRENCY_BETA");
 take("BLIZZARD_STORE_BROWSE_BATTLE_COINS_KR");
@@ -126,10 +147,16 @@ take("BLIZZARD_STORE_REGION_LOCKED");
 take("BLIZZARD_STORE_REGION_LOCKED_SUBTEXT");
 take("BLIZZARD_STORE_ERROR_TITLE_INSUFFICIENT_BALANCE");
 take("BLIZZARD_STORE_ERROR_MESSAGE_INSUFFICIENT_BALANCE");
+take("BLIZZARD_STORE_DISCOUNT_TEXT_FORMAT");
+take("BLIZZARD_STORE_PAGE_NUMBER");
 
 retain("OKAY");
 retain("LARGE_NUMBER_SEPERATOR");
 retain("DECIMAL_SEPERATOR");
+
+take("BLIZZARD_CHALLENGE_SUBMIT");
+take("BLIZZARD_CHALLENGE_CANCEL");
+take("BLIZZARD_CHALLENGE_CONNECTING");
 
 --Lua enums
 take("LE_STORE_ERROR_INVALID_PAYMENT_METHOD");
@@ -138,4 +165,3 @@ take("LE_STORE_ERROR_WRONG_CURRENCY");
 take("LE_STORE_ERROR_BATTLEPAY_DISABLED");
 take("LE_STORE_ERROR_INSUFFICIENT_BALANCE");
 take("LE_STORE_ERROR_OTHER");
-

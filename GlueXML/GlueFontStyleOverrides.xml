@@ -1,0 +1,68 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\FrameXML\UI.xsd">
+
+	<Font name="GlueFontNormalHuge_KO" font="Fonts\2002.TTF" outline="NORMAL" alternateTo="GlueFontNormalHuge" alternateAlphabetID = "0" virtual="true">
+		<Shadow x="2" y="-2">
+			<Color r="0" g="0" b="0"/>
+		</Shadow>
+		<FontHeight>
+			<AbsValue val="22"/>
+		</FontHeight>
+	</Font>
+	
+	<Font name="GlueFontNormalHuge_ZH" font="Fonts\ARKai_T.ttf" outline="NORMAL" alternateTo="GlueFontNormalHuge" alternateAlphabetID = "1" virtual="true">
+		<Shadow x="2" y="-2">
+			<Color r="0" g="0" b="0"/>
+		</Shadow>
+		<FontHeight>
+			<AbsValue val="22"/>
+		</FontHeight>
+	</Font>
+	
+	<Font name="GlueFontNormalHuge_RU" font="Fonts\FRIZQT___CYR.TTF" outline="NORMAL" alternateTo="GlueFontNormalHuge" alternateAlphabetID = "2" virtual="true">
+		<Shadow x="2" y="-2">
+			<Color r="0" g="0" b="0"/>
+		</Shadow>
+		<FontHeight>
+			<AbsValue val="22"/>
+		</FontHeight>
+	</Font>
+	
+	
+	<Font name="GlueFontNormal_KO" font="Fonts\2002.TTF" outline="NORMAL" alternateTo="GlueFontNormal" alternateAlphabetID = "0" virtual="true">
+		<FontHeight>
+			<AbsValue val="16"/>
+		</FontHeight>
+	</Font>
+	
+	<Font name="GlueFontNormal_ZH" font="Fonts\ARKai_T.ttf" outline="THICK" alternateTo="GlueFontNormal" alternateAlphabetID = "1" virtual="true">
+		<FontHeight>
+			<AbsValue val="16"/>
+		</FontHeight>
+	</Font>
+	
+	<Font name="GlueFontNormal_RU" font="Fonts\FRIZQT___CYR.TTF" outline="NORMAL" alternateTo="GlueFontNormal" alternateAlphabetID = "2" virtual="true">
+		<FontHeight>
+			<AbsValue val="15"/>
+		</FontHeight>
+	</Font>
+
+	
+	<Font name="GlueEditBoxFont_KO" font="Fonts\2002.TTF" outline="NORMAL" alternateTo="GlueEditBoxFont" alternateAlphabetID = "0" virtual="true">
+		<FontHeight>
+			<AbsValue val="16"/>
+		</FontHeight>
+	</Font>
+	
+	<Font name="GlueEditBoxFont_ZH" font="Fonts\ARKai_T.ttf" outline="NORMAL" alternateTo="GlueEditBoxFont" alternateAlphabetID = "1" virtual="true">
+		<FontHeight>
+			<AbsValue val="16"/>
+		</FontHeight>
+	</Font>
+	
+	<Font name="GlueEditBoxFont_RU" font="Fonts\ARIALN.TTF" outline="NORMAL" alternateTo="GlueEditBoxFont" alternateAlphabetID = "2" virtual="true">
+		<FontHeight>
+			<AbsValue val="15"/>
+		</FontHeight>
+	</Font>
+</Ui>

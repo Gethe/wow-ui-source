@@ -142,8 +142,8 @@ function GuildRoster_Update()
 	local guildName, guildRankName, guildRankIndex = GetGuildInfo("player");
 	local maxRankIndex = GuildControlGetNumRanks() - 1;	
 	-- Get selected guild member info
-	local name, rank, rankIndex, level, class, zone, note, officernote, online, isAway, classFileName, achievementPoints, achievementRank, isMobile = GetGuildRosterInfo(selectedGuildMember);
-	GuildFrame.selectedName = name;
+	local fullName, rank, rankIndex, level, class, zone, note, officernote, online, isAway, classFileName, achievementPoints, achievementRank, isMobile = GetGuildRosterInfo(selectedGuildMember);
+	GuildFrame.selectedName = fullName;
 	-- If there's a selected guildmember
 	if ( selectedGuildMember > 0 ) then
 		-- Update the guild member details frame
@@ -223,7 +223,7 @@ function GuildRoster_Update()
 		else
 			GuildMemberRemoveButton:Disable();
 		end
-		if ( (UnitName("player") == name) or (not online) or isMobile ) then
+		if ( (UnitFullName("player") == fullName) or (not online) or isMobile ) then
 			GuildMemberGroupInviteButton:Disable();
 		else
 			GuildMemberGroupInviteButton:Enable();
@@ -244,13 +244,13 @@ function GuildRoster_Update()
 	for i = 1, numButtons do
 		button = buttons[i];		
 		index = offset + i;
-		local name, rank, rankIndex, level, class, zone, note, officernote, online, isAway, classFileName, achievementPoints, achievementRank, isMobile, canSoR, repStanding = GetGuildRosterInfo(index);
+		local fullName, rank, rankIndex, level, class, zone, note, officernote, online, isAway, classFileName, achievementPoints, achievementRank, isMobile, canSoR, repStanding = GetGuildRosterInfo(index);
 		
 		local onlineOrMobile = online or isMobile;
 
-		if ( name and index <= visibleMembers ) then
+		if ( fullName and index <= visibleMembers ) then
 			button.guildIndex = index;
-			local displayedName = name;
+			local displayedName = Ambiguate(fullName, "guild");
 			if ( isMobile and not online ) then
 				if (isAway == 2) then
 					displayedName = MOBILE_BUSY_ICON..displayedName;
@@ -357,13 +357,13 @@ end
 function GuildRosterButton_OnClick(self, button)
 	if ( currentGuildView == "tradeskill" ) then
 		local skillID, isCollapsed, iconTexture, headerName, numOnline, numVisible, numPlayers,
-			playerName, class, online, zone, skill, classFileName, isMobile = GetGuildTradeSkillInfo(self.guildIndex);
+			playerDisplayName, playerFullName, class, online, zone, skill, classFileName, isMobile = GetGuildTradeSkillInfo(self.guildIndex);
 		if ( button == "LeftButton" ) then
 			if ( CanViewGuildRecipes(skillID) ) then
-				GetGuildMemberRecipes(playerName, skillID);
+				GetGuildMemberRecipes(playerFullName, skillID);
 			end
 		else
-			GuildRoster_ShowMemberDropDown(playerName, online, isMobile);
+			GuildRoster_ShowMemberDropDown(playerFullName, online, isMobile);
 		end
 	else
 		if ( button == "LeftButton" ) then
@@ -381,8 +381,8 @@ function GuildRosterButton_OnClick(self, button)
 			end
 			GuildRoster_Update();
 		else
-			local name, rank, rankIndex, level, class, zone, note, officernote, online, isAway, classFileName, achievementPoints, achievementRank, isMobile = GetGuildRosterInfo(self.guildIndex);
-			GuildRoster_ShowMemberDropDown(name, online, isMobile);
+			local fullName, rank, rankIndex, level, class, zone, note, officernote, online, isAway, classFileName, achievementPoints, achievementRank, isMobile = GetGuildRosterInfo(self.guildIndex);
+			GuildRoster_ShowMemberDropDown(fullName, online, isMobile);
 		end
 	end
 end
@@ -420,7 +420,7 @@ function GuildRoster_UpdateTradeSkills()
 		index = offset + i;
 		if ( index <= numTradeSkill ) then
 			button.guildIndex = index;
-			local skillID, isCollapsed, iconTexture, headerName, numOnline, numVisible, numPlayers, playerName, class, online, zone, skill, classFileName, isMobile, isAway = GetGuildTradeSkillInfo(index);
+			local skillID, isCollapsed, iconTexture, headerName, numOnline, numVisible, numPlayers, playerDisplayName, playerFullName, class, online, zone, skill, classFileName, isMobile, isAway = GetGuildTradeSkillInfo(index);
 			button.online = online;
 			if ( headerName ) then
 				GuildRosterButton_SetStringText(button.string1, headerName, 1);
@@ -467,19 +467,19 @@ function GuildRoster_UpdateTradeSkills()
 				end
 				button.header.skillID = skillID;
 				button:Show();
-			elseif ( playerName ) then
+			elseif ( playerDisplayName ) then
 				if ( isMobile ) then
 					if (isAway == 2) then
-						playerName = MOBILE_BUSY_ICON..playerName;
+						playerDisplayName = MOBILE_BUSY_ICON..playerDisplayName;
 					elseif (isAway == 1) then
-						playerName = MOBILE_AWAY_ICON..playerName;
+						playerDisplayName = MOBILE_AWAY_ICON..playerDisplayName;
 					else
-						playerName = ChatFrame_GetMobileEmbeddedTexture(73/255, 177/255, 73/255)..playerName;
+						playerDisplayName = ChatFrame_GetMobileEmbeddedTexture(73/255, 177/255, 73/255)..playerDisplayName;
 					end
 				end
 				local zoneText = zone;
 				if(isMobile and not online) then zoneText = REMOTE_CHAT; end;
-				GuildRosterButton_SetStringText(button.string1, playerName, online, classFileName);
+				GuildRosterButton_SetStringText(button.string1, playerDisplayName, online, classFileName);
 				GuildRosterButton_SetStringText(button.string2, zoneText, online);
 				GuildRosterButton_SetStringText(button.string3, "["..skill.."]", online);
 				button.header:Hide();
@@ -640,14 +640,14 @@ end
 
 function GuildFrameDemoteButton_OnClick(self)
 	local memberIndex = GetGuildRosterSelection();
-	local name, rank, rankIndex = GetGuildRosterInfo(memberIndex);
+	local fullName, rank, rankIndex = GetGuildRosterInfo(memberIndex);
 	local targetRank = rankIndex + 1;	-- demoting increases rank index
 	local validRank = GetDemotionRank(memberIndex);
 	if ( validRank > targetRank ) then
 		local badRankName = GuildControlGetRankName(targetRank + 1);		-- GuildControlGetRankName uses 1-based index
 		local goodRankName = GuildControlGetRankName(validRank + 1);		-- GuildControlGetRankName uses 1-based index
-		local dialog = StaticPopup_Show("GUILD_DEMOTE_CONFIRM", string.format(AUTHENTICATOR_CONFIRM_GUILD_DEMOTE, name, badRankName, goodRankName));
-		dialog.data = name;
+		local dialog = StaticPopup_Show("GUILD_DEMOTE_CONFIRM", string.format(AUTHENTICATOR_CONFIRM_GUILD_DEMOTE, Ambiguate(fullName, "guild"), badRankName, goodRankName));
+		dialog.data = fullName;
 	else
 		GuildDemote(GuildFrame.selectedName);
 		PlaySound("UChatScrollButton");
@@ -657,14 +657,14 @@ end
 
 function GuildFramePromoteButton_OnClick(self)
 	local memberIndex = GetGuildRosterSelection();
-	local name, rank, rankIndex = GetGuildRosterInfo(memberIndex);
+	local fullName, rank, rankIndex = GetGuildRosterInfo(memberIndex);
 	local targetRank = rankIndex - 1;	-- promoting decreases rank index
 	local validRank = GetPromotionRank(memberIndex);
 	if ( validRank < targetRank ) then
 		local badRankName = GuildControlGetRankName(targetRank + 1);		-- GuildControlGetRankName uses 1-based index
 		local goodRankName = GuildControlGetRankName(validRank + 1);		-- GuildControlGetRankName uses 1-based index
-		local dialog = StaticPopup_Show("GUILD_PROMOTE_CONFIRM", string.format(AUTHENTICATOR_CONFIRM_GUILD_PROMOTE, name, badRankName, goodRankName));
-		dialog.data = name;
+		local dialog = StaticPopup_Show("GUILD_PROMOTE_CONFIRM", string.format(AUTHENTICATOR_CONFIRM_GUILD_PROMOTE, Ambiguate(fullName, "guild"), badRankName, goodRankName));
+		dialog.data = fullName;
 	else
 		GuildPromote(GuildFrame.selectedName);
 		PlaySound("UChatScrollButton");
@@ -718,7 +718,7 @@ function GuildMemberRankDropdown_Initialize(self)
 end
 
 function GuildMemberRankDropdown_OnClick(self, newRankIndex)
-	local name, rank, rankIndex = GetGuildRosterInfo(GetGuildRosterSelection());
+	local fullName, rank, rankIndex = GetGuildRosterInfo(GetGuildRosterSelection());
 	rankIndex = rankIndex + 1;
 	if ( rankIndex ~= newRankIndex ) then
 		SetGuildMemberRank(GetGuildRosterSelection(), newRankIndex);

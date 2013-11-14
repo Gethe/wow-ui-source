@@ -627,6 +627,7 @@
 							<OnLoad>
 								self.autoCompleteParams = AUTOCOMPLETE_LIST.MAIL;
 								self.addHighlightedText = true;
+								self.autoCompleteContext = "mail";
 							</OnLoad>
 							<OnTabPressed>
 								if ( not AutoCompleteEditBox_OnTabPressed(self) ) then

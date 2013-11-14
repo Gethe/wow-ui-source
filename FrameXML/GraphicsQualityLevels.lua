@@ -533,46 +533,46 @@ VideoData["Graphics_ViewDistanceDropDown"]={
 		[1] = {
 			text = VIDEO_OPTIONS_LOW,
 			cvars =	{
-				farClip = 200,
-				wmoLodDist = 100,
-				terrainLodDist = 200,
-				terrainTextureLod = 1,
+				farClip = GetDefaultVideoQualityOption("farClip", 0),
+				wmoLodDist =  GetDefaultVideoQualityOption("wmoLodDist", 0),
+				terrainLodDist = GetDefaultVideoQualityOption("terrainLodDist", 0),
+				terrainTextureLod = GetDefaultVideoQualityOption("terrainTextureLod", 0),
 			},
 		},
 		[2] = {
 			text = VIDEO_OPTIONS_FAIR,
 			cvars =	{
-				farClip = 600,
-				wmoLodDist = 300,
-				terrainLodDist = 300,
-				terrainTextureLod = 1,
+				farClip = GetDefaultVideoQualityOption("farClip", 1, 600),
+				wmoLodDist =  GetDefaultVideoQualityOption("wmoLodDist", 1, 300),
+				terrainLodDist = GetDefaultVideoQualityOption("terrainLodDist", 1, 300),
+				terrainTextureLod = GetDefaultVideoQualityOption("terrainTextureLod", 1, 1),
 			},
 		},
 		[3] = {
 			text = VIDEO_OPTIONS_MEDIUM,
 			cvars =	{
-				farClip = 800,
-				wmoLodDist = 400,
-				terrainLodDist = 450,
-				terrainTextureLod = 1,
+				farClip =  GetDefaultVideoQualityOption("farClip", 2, 800),
+				wmoLodDist = GetDefaultVideoQualityOption("wmoLodDist", 2, 400),
+				terrainLodDist = GetDefaultVideoQualityOption("terrainLodDist", 2, 450),
+				terrainTextureLod = GetDefaultVideoQualityOption("terrainTextureLod", 2, 1),
 			},
 		},
 		[4] = {
 			text = VIDEO_OPTIONS_HIGH,
 			cvars =	{
-				farClip = 1000,
-				wmoLodDist = 500,
-				terrainLodDist = 500,
-				terrainTextureLod = 0,
+				farClip = GetDefaultVideoQualityOption("farClip", 3, 1000),
+				wmoLodDist = GetDefaultVideoQualityOption("wmoLodDist", 3, 500),
+				terrainLodDist = GetDefaultVideoQualityOption("terrainLodDist", 3, 500),
+				terrainTextureLod = GetDefaultVideoQualityOption("terrainTextureLod", 3, 0),
 			},
 		},
 		[5] = {
 			text = VIDEO_OPTIONS_ULTRA,
 			cvars =	{
-				farClip = 1300,
-				wmoLodDist = 650,
-				terrainLodDist = 650,
-				terrainTextureLod = 0,
+				farClip = GetDefaultVideoQualityOption("farClip", 4, 1300),
+				wmoLodDist = GetDefaultVideoQualityOption("wmoLodDist", 4, 650),
+				terrainLodDist = GetDefaultVideoQualityOption("terrainLodDist", 4, 650),
+				terrainTextureLod = GetDefaultVideoQualityOption("terrainTextureLod", 4, 0),
 			},
 		},
 	},
@@ -590,36 +590,36 @@ VideoData["Graphics_GroundClutterDropDown"]={
 		[1] = {
 			text = VIDEO_OPTIONS_LOW,
 			cvars =	{
-				groundEffectDist = 70,
-				groundEffectDensity = 16,
+				groundEffectDist =  GetDefaultVideoQualityOption("groundEffectDist", 0, 70),
+				groundEffectDensity = GetDefaultVideoQualityOption("groundEffectDensity", 0, 16),
 			},
 		},
 		[2] = {
 			text = VIDEO_OPTIONS_FAIR,
 			cvars =	{
-				groundEffectDist = 110,
-				groundEffectDensity = 40,
+				groundEffectDist =  GetDefaultVideoQualityOption("groundEffectDist", 1, 110),
+				groundEffectDensity = GetDefaultVideoQualityOption("groundEffectDensity", 1, 40),
 			},
 		},
 		[3] = {
 			text = VIDEO_OPTIONS_MEDIUM,
 			cvars =	{
-				groundEffectDist = 160,
-				groundEffectDensity = 64,
+				groundEffectDist =  GetDefaultVideoQualityOption("groundEffectDist", 2, 160),
+				groundEffectDensity = GetDefaultVideoQualityOption("groundEffectDensity", 2, 64),
 			},
 		},
 		[4] = {
 			text = VIDEO_OPTIONS_HIGH,
 			cvars =	{
-				groundEffectDist = 200,
-				groundEffectDensity = 80,
+				groundEffectDist =  GetDefaultVideoQualityOption("groundEffectDist", 3, 200),
+				groundEffectDensity = GetDefaultVideoQualityOption("groundEffectDensity", 3, 80),
 			},
 		},
 		[5] = {
 			text = VIDEO_OPTIONS_ULTRA,
 			cvars =	{
-				groundEffectDist = 260,
-				groundEffectDensity = 128,
+				groundEffectDist =  GetDefaultVideoQualityOption("groundEffectDist", 4, 260),
+				groundEffectDensity = GetDefaultVideoQualityOption("groundEffectDensity", 4, 128),
 			},
 		},
 	},
@@ -637,31 +637,31 @@ VideoData["Graphics_EnvironmentalDetailDropDown"]={
 		[1] = {
 			text = VIDEO_OPTIONS_LOW,
 			cvars =	{
-				environmentDetail = 50,
+				environmentDetail = GetDefaultVideoQualityOption("environmentDetail", 0, 50),
 			},
 		},
 		[2] = {
 			text = VIDEO_OPTIONS_FAIR,
 			cvars =	{
-				environmentDetail = 75,
+				environmentDetail = GetDefaultVideoQualityOption("environmentDetail", 1, 75),
 			},
 		},
 		[3] = {
 			text = VIDEO_OPTIONS_MEDIUM,
 			cvars =	{
-				environmentDetail = 100,
+				environmentDetail = GetDefaultVideoQualityOption("environmentDetail", 2, 100),
 			},
 		},
 		[4] = {
 			text = VIDEO_OPTIONS_HIGH,
 			cvars =	{
-				environmentDetail = 125,
+				environmentDetail = GetDefaultVideoQualityOption("environmentDetail", 3, 125),
 			},
 		},
 		[5] = {
 			text = VIDEO_OPTIONS_ULTRA,
 			cvars =	{
-				environmentDetail = 150,
+				environmentDetail = GetDefaultVideoQualityOption("environmentDetail", 4, 150),
 			},
 		},
 	},
@@ -679,36 +679,36 @@ VideoData["Graphics_ParticleDensityDropDown"]={
 		[1] = {
 			text = VIDEO_OPTIONS_LOW,
 			cvars =	{
-				particleDensity = 10,
-				weatherDensity = 0,
+				particleDensity = GetDefaultVideoQualityOption("particleDensity", 0, 10),
+				weatherDensity = GetDefaultVideoQualityOption("weatherDensity", 0, 0),
 			},
 		},
 		[2] = {
 			text = VIDEO_OPTIONS_FAIR,
 			cvars =	{
-				particleDensity = 40,
-				weatherDensity = 1,
+				particleDensity = GetDefaultVideoQualityOption("particleDensity", 1, 40),
+				weatherDensity = GetDefaultVideoQualityOption("weatherDensity", 1, 1),
 			},
 		},
 		[3] = {
 			text = VIDEO_OPTIONS_MEDIUM,
 			cvars =	{
-				particleDensity = 60,
-				weatherDensity = 1,
+				particleDensity = GetDefaultVideoQualityOption("particleDensity", 2, 60),
+				weatherDensity = GetDefaultVideoQualityOption("weatherDensity", 2, 1),
 			},
 		},
 		[4] = {
 			text = VIDEO_OPTIONS_HIGH,
 			cvars =	{
-				particleDensity = 80,
-				weatherDensity = 2,
+				particleDensity = GetDefaultVideoQualityOption("particleDensity", 3, 80),
+				weatherDensity = GetDefaultVideoQualityOption("weatherDensity", 3, 2),
 			},
 		},
 		[5] = {
 			text = VIDEO_OPTIONS_ULTRA,
 			cvars =	{
-				particleDensity = 100,
-				weatherDensity = 3,
+				particleDensity = GetDefaultVideoQualityOption("particleDensity", 4, 100),
+				weatherDensity = GetDefaultVideoQualityOption("weatherDensity", 4, 3),
 			},
 		},
 	},
@@ -760,39 +760,39 @@ VideoData["Graphics_ShadowsDropDown"]={
 		[1] = {
 			text = VIDEO_OPTIONS_LOW,
 			cvars =	{
-				shadowMode = 0,
+				shadowMode = GetDefaultVideoQualityOption("shadowMode", 0, 0),
 			},
 			tooltip = VIDEO_OPTIONS_SHADOW_QUALITY_LOW;
 		},
 		[2] = {
 			text = VIDEO_OPTIONS_FAIR,
 			cvars =	{
-				shadowMode = 1,
-				shadowTextureSize = 1024,
+				shadowMode = GetDefaultVideoQualityOption("shadowMode", 1, 1),
+				shadowTextureSize = GetDefaultVideoQualityOption("shadowTextureSize", 1, 1024),
 			},
 			tooltip = VIDEO_OPTIONS_SHADOW_QUALITY_FAIR;
 		},
 		[3] = {
 			text = VIDEO_OPTIONS_MEDIUM,
 			cvars =	{
-				shadowMode = 1,
-				shadowTextureSize = 2048,
+				shadowMode = GetDefaultVideoQualityOption("shadowMode", 2, 1),
+				shadowTextureSize = GetDefaultVideoQualityOption("shadowTextureSize", 2, 2048),
 			},
 			tooltip = VIDEO_OPTIONS_SHADOW_QUALITY_MEDIUM;
 		},
 		[4] = {
 			text = VIDEO_OPTIONS_HIGH,
 			cvars =	{
-				shadowMode = 2,
-				shadowTextureSize = 2048,
+				shadowMode = GetDefaultVideoQualityOption("shadowMode", 3, 2),
+				shadowTextureSize = GetDefaultVideoQualityOption("shadowTextureSize", 3, 2048),
 			},
 			tooltip = VIDEO_OPTIONS_SHADOW_QUALITY_HIGH;
 		},
 		[5] = {
 			text = VIDEO_OPTIONS_ULTRA,
 			cvars =	{
-				shadowMode = 3,
-				shadowTextureSize = 2048,
+				shadowMode = GetDefaultVideoQualityOption("shadowMode", 4, 3),
+				shadowTextureSize = GetDefaultVideoQualityOption("shadowTextureSize", 4, 2048),
 			},
 			tooltip = VIDEO_OPTIONS_SHADOW_QUALITY_ULTRA;
 		},
@@ -811,36 +811,36 @@ VideoData["Graphics_TextureResolutionDropDown"]={
 		[1] = {
 			text = VIDEO_OPTIONS_LOW,
 			cvars =	{
-				terrainMipLevel = 1,
-				componentTextureLevel = 1,
-				worldBaseMip = 2,
+				terrainMipLevel = GetDefaultVideoQualityOption("terrainMipLevel", 0, 1),
+				componentTextureLevel = GetDefaultVideoQualityOption("componentTextureLevel", 0, 1),
+				worldBaseMip = GetDefaultVideoQualityOption("worldBaseMip", 0, 2),
 			},
 			tooltip = VIDEO_OPTIONS_TEXTURE_DETAIL_LOW,
 		},
 		[2] = {
 			text = VIDEO_OPTIONS_FAIR,
 			cvars =	{
-				terrainMipLevel = 1,
-				componentTextureLevel = 1,
-				worldBaseMip = 1,
+				terrainMipLevel = GetDefaultVideoQualityOption("terrainMipLevel", 1, 1),
+				componentTextureLevel = GetDefaultVideoQualityOption("componentTextureLevel", 1, 1),
+				worldBaseMip = GetDefaultVideoQualityOption("worldBaseMip", 1, 1),
 			},
 			tooltip = VIDEO_OPTIONS_TEXTURE_DETAIL_FAIR,
 		},
 		[3] = {
 			text = VIDEO_OPTIONS_MEDIUM,
 			cvars =	{
-				terrainMipLevel = 0,
-				componentTextureLevel = 0,
-				worldBaseMip = 1,
+				terrainMipLevel = GetDefaultVideoQualityOption("terrainMipLevel", 2, 0),
+				componentTextureLevel = GetDefaultVideoQualityOption("componentTextureLevel", 2, 0),
+				worldBaseMip = GetDefaultVideoQualityOption("worldBaseMip", 2, 1),
 			},
 			tooltip = VIDEO_OPTIONS_TEXTURE_DETAIL_HIGH,
 		},
 		[4] = {
 			text = VIDEO_OPTIONS_HIGH,
 			cvars =	{
-				terrainMipLevel = 0,
-				componentTextureLevel = 0,
-				worldBaseMip = 0,
+				terrainMipLevel = GetDefaultVideoQualityOption("terrainMipLevel", 3, 0),
+				componentTextureLevel = GetDefaultVideoQualityOption("componentTextureLevel", 3, 0),
+				worldBaseMip = GetDefaultVideoQualityOption("worldBaseMip", 3, 0),
 			},
 			tooltip = VIDEO_OPTIONS_TEXTURE_DETAIL_HIGH,
 		},
@@ -931,33 +931,33 @@ VideoData["Graphics_LiquidDetailDropDown"]={
 		[1] = {
 			text = VIDEO_OPTIONS_LOW,
 			cvars =	{
-				waterDetail = 0,
+				waterDetail = GetDefaultVideoQualityOption("waterDetail", 0, 0),
 			},
 			tooltip = VIDEO_OPTIONS_LIQUID_DETAIL_LOW,
 		},
 		[2] = {
 			text = VIDEO_OPTIONS_FAIR,
 			cvars =	{
-				waterDetail = 1,
-				reflectionMode = 0,
+				waterDetail = GetDefaultVideoQualityOption("waterDetail", 1, 1),
+				reflectionMode = GetDefaultVideoQualityOption("reflectionMode", 1, 0),
 			},
 			tooltip = VIDEO_OPTIONS_LIQUID_DETAIL_FAIR,
 		},
 		[3] = {
 			text = VIDEO_OPTIONS_MEDIUM,
 			cvars =	{
-				waterDetail = 2,
-				rippleDetail = 1,
-				reflectionMode = 0,
+				waterDetail = GetDefaultVideoQualityOption("waterDetail", 2, 2),
+				reflectionMode = GetDefaultVideoQualityOption("reflectionMode", 2, 1),
+				rippleDetail = GetDefaultVideoQualityOption("rippleDetail", 2, 0),
 			},
 			tooltip = VIDEO_OPTIONS_LIQUID_DETAIL_MEDIUM,
 		},
 		[4] = {
 			text = VIDEO_OPTIONS_ULTRA,
 			cvars =	{
-				waterDetail = 3,
-				rippleDetail = 2,
-				reflectionMode = 3,
+				waterDetail = GetDefaultVideoQualityOption("waterDetail", 4, 3),
+				reflectionMode = GetDefaultVideoQualityOption("reflectionMode", 4, 2),
+				rippleDetail = GetDefaultVideoQualityOption("rippleDetail", 4, 3),
 			},
 			tooltip = VIDEO_OPTIONS_LIQUID_DETAIL_ULTRA,
 		},
@@ -987,14 +987,14 @@ VideoData["Graphics_SunshaftsDropDown"]={
 		[2] = {
 			text = VIDEO_OPTIONS_LOW,
 			cvars =	{
-				sunshafts = 1,
+				sunshafts = GetDefaultVideoQualityOption("sunshafts", 2, 1),
 			},
 			tooltip = VIDEO_OPTIONS_SUNSHAFTS_LOW,
 		},
 		[3] = {
 			text = VIDEO_OPTIONS_HIGH,
 			cvars =	{
-				sunshafts = 2,
+				sunshafts = GetDefaultVideoQualityOption("sunshafts", 3, 2),
 			},
 			tooltip = VIDEO_OPTIONS_SUNSHAFTS_HIGH,
 		},

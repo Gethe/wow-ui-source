@@ -1,5 +1,7 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\FrameXML\UI.xsd">
+	<Include file="..\SharedXML\SharedFontStyles.xml"/>
+
 	<Script>
 		NORMAL_FONT_COLOR = {r=1.0, g=0.82, b=0};
 		HIGHLIGHT_FONT_COLOR = {r=1.0, g=1.0, b=1.0};
@@ -62,7 +64,7 @@
 	<Font name="GlueFontWhite" inherits="SystemFont_Shadow_Med1" virtual="true">
 		<Color r="1.0" g="1.0" b="1.0"/>
 	</Font>
-	<Font name="GlueFontNormalSmall" inherits="SystemFont_Shadow_Outline_Med1" virtual="true">
+	<Font name="GlueFontNormalSmall" inherits="SystemFont_Shadow_Med1_Outline" virtual="true">
 		<Color r="1.0" g="0.78" b="0"/>
 	</Font>
 	<Font name="GlueFontNormalSmallLeft" inherits="GlueFontNormalSmall" justifyH="LEFT" virtual="true"/>
@@ -102,7 +104,7 @@
 	</Font>
 	<Font name="GlueFontNormalLargeLeft" inherits="GlueFontNormalLarge" justifyH="LEFT" virtual="true"/>
 	<Font name="GlueFontNormalLargeLeftTop" inherits="GlueFontNormalLargeLeft" justifyV="TOP" virtual="true"/>
-	<Font name="GlueFontNormalHuge" inherits="SystemFont_Shadow_Outline_Huge" virtual="true">
+	<Font name="GlueFontNormalHuge" inherits="SystemFont_Shadow_Outline_Huge2" virtual="true">
 		<Color r="1.0" g="0.78" b="0"/>
 	</Font>
 	<Font name="GlueFontNormalGigantor" inherits="SystemFont_Shadow_Outline_Gigantor" virtual="true">
@@ -142,11 +144,11 @@
 	<Font name="NumberFontNormalSmallGray" inherits="NumberFontNormalSmall" outline="THICK" virtual="true">
 		<Color r="0.6" g="0.6" b="0.6"/>
 	</Font>
-	<Font name="NumberFontNormalLarge" inherits="NumberFont_Outline_Med3" virtual="true">
+	<Font name="NumberFontNormalLarge" inherits="NumberFont_Outline_Large" virtual="true">
 		<Color r="1.0" g="1.0" b="1.0"/>
 	</Font>
 	
-	<Font name="DialogButtonNormalText" inherits="SystemFont_Med3" virtual="true">
+	<Font name="DialogButtonNormalText" inherits="SystemFont_Large" virtual="true">
 		<Color r="1.0" g="0.82" b="0.0"/>
 	</Font>
 	<Font name="DialogButtonHighlightText" inherits="DialogButtonNormalText" virtual="true">

@@ -25,12 +25,14 @@ MoneyInputFrame.xml
 GameTooltip.xml
 UIMenu.xml
 UIDropDownMenu.xml
+..\SharedXML\SharedUIPanelTemplates.xml
 UIPanelTemplates.lua
 UIPanelTemplates.xml
 SecureTemplates.xml
 SecureHandlerTemplates.xml
 SecureGroupHeaders.xml
-ModelFrames.xml
+..\SharedXML\ModelFrames.xml
+DressUpFrames.xml
 ItemButtonTemplate.xml
 NavigationBar.xml
 SparkleFrame.xml
@@ -161,6 +163,7 @@ StreamingFrame.xml
 IconIntroAnimation.xml
 Timer.xml
 MonkHarmonyBar.xml
+RecruitAFriendFrame.xml
 DestinyFrame.xml
 PriestBar.xml
 SharedPetBattleTemplates.xml
@@ -172,9 +175,8 @@ StaticPopupSpecial.xml
 LossOfControlFrame.xml
 PVPHelper.xml
 MapBar.xml
-RecruitAFriendFrame.xml
 ProductChoice.xml
-ModelPreviewFrame.xml
+..\SharedXML\ModelPreviewFrame.xml
 
 #Save off whatever we need available unmodified.
 SecureCapsule.lua

@@ -866,6 +866,7 @@ end
 NetworkPanelOptions = {
 	disableServerNagle = { text = "OPTIMIZE_NETWORK_SPEED" },
 	useIPv6 = { text = "USEIPV6" },
+	advancedCombatLogging = { text = "ADVANCED_COMBAT_LOGGING" },
 }
 
 function NetworkOptionsPanel_OnLoad(self)

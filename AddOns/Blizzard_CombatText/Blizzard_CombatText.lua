@@ -483,7 +483,7 @@ function CombatText_AddMessage(message, scrollFunction, r, g, b, displayType, is
 	-- Stagger the text if flagged
 	local staggerAmount = 0;
 	if ( isStaggered ) then
-		staggerAmount = random(0, COMBAT_TEXT_STAGGER_RANGE) - COMBAT_TEXT_STAGGER_RANGE/2;
+		staggerAmount = fastrandom(0, COMBAT_TEXT_STAGGER_RANGE) - COMBAT_TEXT_STAGGER_RANGE/2;
 	end
 
 	-- Alternate x direction

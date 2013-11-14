@@ -150,7 +150,7 @@
 			</Anchors>
 		</CheckedTexture>
 	</CheckButton>
-	<Frame name="ProductChoiceFrame" hidden="true" frameStrata="HIGH" inherits="PortraitFrameTemplate" parent="UIParent">
+	<Frame name="ProductChoiceFrame" hidden="true" frameStrata="DIALOG" inherits="PortraitFrameTemplate" parent="UIParent">
 		<Size x="645" y="572"/>
 		<Anchors>
 			<Anchor point="CENTER" x="-5" y="25"/>

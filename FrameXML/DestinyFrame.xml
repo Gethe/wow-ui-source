@@ -100,6 +100,7 @@ size=1024,1024
 					</OnClick>
 				</Scripts>
 			</Button>
+			<Frame parentKey="RecruitAFriendSuggestion" frameStrata="FULLSCREEN" inherits="RecruitInfoDialogTemplate"/>
 		</Frames>
 		<Layers>
 			<Layer level="BACKGROUND">

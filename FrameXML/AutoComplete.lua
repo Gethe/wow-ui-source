@@ -87,13 +87,24 @@ local AUTOCOMPLETE_LIST = AUTOCOMPLETE_LIST;
 	AUTOCOMPLETE_LIST.GUILD_DEMOTE		= AUTOCOMPLETE_LIST_TEMPLATES.IN_GUILD;
 	AUTOCOMPLETE_LIST.GUILD_LEADER		= AUTOCOMPLETE_LIST_TEMPLATES.IN_GUILD;
 	AUTOCOMPLETE_LIST.ADDFRIEND			= AUTOCOMPLETE_LIST_TEMPLATES.NOT_FRIEND;
+	AUTOCOMPLETE_LIST.FRIENDS			= AUTOCOMPLETE_LIST_TEMPLATES.NOT_FRIEND;
 	AUTOCOMPLETE_LIST.REMOVEFRIEND		= AUTOCOMPLETE_LIST_TEMPLATES.FRIEND;
 	AUTOCOMPLETE_LIST.CHANINVITE		= AUTOCOMPLETE_LIST_TEMPLATES.ONLINE_NOT_BNET;
 	AUTOCOMPLETE_LIST.MAIL				= AUTOCOMPLETE_LIST_TEMPLATES.ALL_CHARS;
 	AUTOCOMPLETE_LIST.CALENDARGUILDEVENT= AUTOCOMPLETE_LIST_TEMPLATES.KNOWN_NOT_GUILD;
 	AUTOCOMPLETE_LIST.CALENDAREVENT		= AUTOCOMPLETE_LIST_TEMPLATES.KNOWN;
 	AUTOCOMPLETE_LIST.IGNORE			= AUTOCOMPLETE_LIST_TEMPLATES.NOT_FRIEND;
+	AUTOCOMPLETE_LIST.LOOT_MASTER		= AUTOCOMPLETE_LIST_TEMPLATES.IN_GROUP;
 
+AUTOCOMPLETE_COLOR_KEYS = 
+{
+[LE_AUTOCOMPLETE_PRIORITY_OTHER]  		= {key=NORMAL_FONT_COLOR_CODE, text="" },
+[LE_AUTOCOMPLETE_PRIORITY_INTERACTED] 	= {key="WHISPER", text=AUTOCOMPLETE_LABEL_INTERACTED },
+[LE_AUTOCOMPLETE_PRIORITY_IN_GROUP] 	= {key="PARTY", text=AUTOCOMPLETE_LABEL_GROUP },
+[LE_AUTOCOMPLETE_PRIORITY_GUILD]		= {key="GUILD", text=AUTOCOMPLETE_LABEL_GUILD },
+[LE_AUTOCOMPLETE_PRIORITY_FRIEND] 		= {key="BN_WHISPER", text=AUTOCOMPLETE_LABEL_FRIEND },
+}
+	
 AUTOCOMPLETE_SIMPLE_REGEX = "(.+)";
 AUTOCOMPLETE_SIMPLE_FORMAT_REGEX = "%1$s";
 
@@ -143,7 +154,8 @@ function AutoComplete_Update(parent, text, cursorPosition)
 		
 		self.parent = parent;
 		--We ask for one more result than we need so that we know whether or not results are continued
-		possibilities = {GetAutoCompleteResults(text, parent.autoCompleteParams.include, parent.autoCompleteParams.exclude, AUTOCOMPLETE_MAX_BUTTONS+1, cursorPosition)};
+		possibilities = GetAutoCompleteResults(text, parent.autoCompleteParams.include, parent.autoCompleteParams.exclude, AUTOCOMPLETE_MAX_BUTTONS+1, cursorPosition);
+
 		if (not possibilities) then
 			possibilities = {};
 		end
@@ -164,13 +176,13 @@ function AutoComplete_Update(parent, text, cursorPosition)
 					end
 					local entry = text..realm;
 					if (not tContains(possibilities, entry)) then
-						possibilities[index] = entry;
+						possibilities[index] = {name=entry, priority=LE_AUTOCOMPLETE_PRIORITY_OTHER};
 					end
 					index = index + 1
 				end;
 			end
 		end
-		AutoComplete_UpdateResults(self, possibilities);
+		AutoComplete_UpdateResults(self, possibilities, parent.autoCompleteContext);
 	else
 		AutoComplete_HideIfAttachedTo(parent);
 	end
@@ -206,13 +218,28 @@ function AutoComplete_GetNumResults(self)
 	return self.numResults;
 end
 
-function AutoComplete_UpdateResults(self, results)
+function AutoComplete_UpdateResults(self, results, context)
 	local totalReturns = #results;
 	local numReturns = min(totalReturns, AUTOCOMPLETE_MAX_BUTTONS);
 	local maxWidth = 120;
 	for i=1, numReturns do
 		local button = _G["AutoCompleteButton"..i]
-		button:SetText(results[i]);
+		button.name = Ambiguate(results[i].name, "none");
+		local displayName = Ambiguate(results[i].name, context or "all");
+		local displayText;
+		local displayInfo = AUTOCOMPLETE_COLOR_KEYS[results[i].priority]
+		if ( ENABLE_COLORBLIND_MODE == "1" ) then
+			displayText = displayName.." "..displayInfo.text;
+		else
+			local colorCode;
+			if (ChatTypeInfo[displayInfo.key]) then
+				colorCode = RGBTableToColorCode(ChatTypeInfo[displayInfo.key])
+			else
+				colorCode = displayInfo.key;
+			end
+			displayText = colorCode..displayName..FONT_COLOR_CODE_CLOSE
+		end
+		button:SetText(displayText);
 		maxWidth = max(maxWidth, button:GetFontString():GetWidth()+30);
 		button:Enable();
 		button:Show();
@@ -220,17 +247,17 @@ function AutoComplete_UpdateResults(self, results)
 	for i = numReturns+1, AUTOCOMPLETE_MAX_BUTTONS do
 		_G["AutoCompleteButton"..i]:Hide();
 	end
+	
 	if ( numReturns > 0 ) then
-		if ( not self:IsShown() ) then
-			AutoComplete_SetSelectedIndex(self, 0);
-		end
 		maxWidth = max(maxWidth, AutoCompleteInstructions:GetStringWidth()+30);
 		self:SetHeight(numReturns*AutoCompleteButton1:GetHeight()+35);
 		self:SetWidth(maxWidth);
 		self:Show();
+		AutoComplete_SetSelectedIndex(self, 1);
 	else
 		self:Hide();
 	end
+		
 	if ( totalReturns > AUTOCOMPLETE_MAX_BUTTONS )  then
 		local button = _G["AutoCompleteButton"..AUTOCOMPLETE_MAX_BUTTONS];
 		button:SetText(CONTINUED);
@@ -300,13 +327,14 @@ function AutoCompleteEditBox_AddHighlightedText(editBox, text)
 	end
 	local editBoxText = editBox:GetText();
 	local utf8Position = editBox:GetUTF8CursorPosition();
-	local nameToShow = GetAutoCompleteResults(text, editBox.autoCompleteParams.include, editBox.autoCompleteParams.exclude, 1, utf8Position);
-	if ( nameToShow ) then
+	local nameInfo = GetAutoCompleteResults(text, editBox.autoCompleteParams.include, editBox.autoCompleteParams.exclude, 1, utf8Position)[1]; --just want first name
+	
+	if ( nameInfo and nameInfo.name ) then
 		--We're going to be setting the text programatically which will clear the userInput flag on the editBox. So we want to manually update the dropdown before we change the text.
 		AutoComplete_Update(editBox, editBoxText, utf8Position);
-		
+		local name = Ambiguate(nameInfo.name, editBox.autoCompleteContext or "all")
 		local newText = string.gsub(editBoxText, AUTOCOMPLETE_SIMPLE_REGEX,
-							string.format(AUTOCOMPLETE_SIMPLE_FORMAT_REGEX, nameToShow,
+							string.format(AUTOCOMPLETE_SIMPLE_FORMAT_REGEX, name,
 								string.match(editBoxText, AUTOCOMPLETE_SIMPLE_REGEX)),
 								1)
 		editBox:SetText(newText);
@@ -341,10 +369,10 @@ function AutoCompleteButton_OnClick(self)
 	local newText;
 	
 	if (editBox.command) then
-		newText = editBox.command.." "..self:GetText();
+		newText = editBox.command.." "..self.name;
 	else
 		newText = string.gsub(editBoxText, AUTOCOMPLETE_SIMPLE_REGEX,
-			string.format(AUTOCOMPLETE_SIMPLE_FORMAT_REGEX, self:GetText(),
+			string.format(AUTOCOMPLETE_SIMPLE_FORMAT_REGEX, self.name,
 				string.match(editBoxText, AUTOCOMPLETE_SIMPLE_REGEX)),
 				1);
 	end

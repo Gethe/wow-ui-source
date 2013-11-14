@@ -2047,6 +2047,7 @@ StaticPopupDialogs["ADD_IGNORE"] = {
 	button1 = ACCEPT,
 	button2 = CANCEL,
 	hasEditBox = 1,
+	autoCompleteParams = AUTOCOMPLETE_LIST.IGNORE,
 	maxLetters = 12 + 1 + 64, --name space realm (77 max)
 	OnAccept = function(self)
 		AddIgnore(self.editBox:GetText());
@@ -2231,8 +2232,7 @@ StaticPopupDialogs["SET_GUILDOFFICERNOTE"] = {
 		GuildRosterSetOfficerNote(GetGuildRosterSelection(), self.editBox:GetText());
 	end,
 	OnShow = function(self)
-		local name, rank, rankIndex, level, class, zone, note, officernote, online;
-		name, rank, rankIndex, level, class, zone, note, officernote, online = GetGuildRosterInfo(GetGuildRosterSelection());
+		local fullName, rank, rankIndex, level, class, zone, note, officernote, online = GetGuildRosterInfo(GetGuildRosterSelection());
 
 		self.editBox:SetText(select(8, GetGuildRosterInfo(GetGuildRosterSelection())));
 		self.editBox:SetFocus();

@@ -613,7 +613,7 @@
 								CharacterSelect_DeathKnightSwap(self);
 							</OnUpdate>
 						</Scripts>
-					</Button>
+					</Button>		
 					<Button name="CharacterSelectRealmSplitButton" inherits="GlueButtonTemplate" hidden="true" text="SERVER_SPLIT_BUTTON">
 						<Size x="150" y="55"/>
 						<Anchors>
@@ -922,7 +922,7 @@
 								CharacterSelect_DeathKnightSwap(self);
 							</OnUpdate>
 						</Scripts>
-					</Button>
+					</Button>					
 					<Frame name="CharacterTemplatesFrame" hidden="true">
 						<Size x="220" y="150"/>
 						<Anchors>
