@@ -213,7 +213,8 @@ function UIParent_OnLoad(self)
 	self:RegisterEvent("SPELL_CONFIRMATION_PROMPT");
 	self:RegisterEvent("SPELL_CONFIRMATION_TIMEOUT");
 	self:RegisterEvent("SAVED_VARIABLES_TOO_LARGE");
-	
+	self:RegisterEvent("AUTH_CHALLENGE_UI_INVALID");
+
 	-- Events for auction UI handling
 	self:RegisterEvent("AUCTION_HOUSE_SHOW");
 	self:RegisterEvent("AUCTION_HOUSE_CLOSED");
@@ -1282,7 +1283,9 @@ function UIParent_OnEvent(self, event, ...)
 		else
 			StaticPopup_Show("TALENTS_INVOLUNTARILY_RESET");
 		end
-	
+	elseif( event == "AUTH_CHALLENGE_UI_INVALID" ) then
+		StaticPopup_Show("ERR_AUTH_CHALLENGE_UI_INVALID");
+		
 	-- Events for Reforging UI handling
 	elseif ( event == "FORGE_MASTER_OPENED" ) then
 		Reforging_LoadUI();

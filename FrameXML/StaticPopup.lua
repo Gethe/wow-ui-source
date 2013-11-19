@@ -60,6 +60,21 @@ StaticPopupDialogs["ERR_SOR_STARTING_EXPERIENCE_INCOMPLETE"] = {
 	showAlert = 1,
 }
 
+StaticPopupDialogs["ERR_AUTH_CHALLENGE_UI_INVALID"] = {
+	text = ERR_AUTH_CHALLENGE_UI_INVALID,
+	button1 = OKAY,
+	button2 = nil,
+	timeout = 0,
+	OnAccept = function()
+	end,
+	OnCancel = function()
+	end,
+	whileDead = 1,
+	hideOnEscape = 1,
+	showAlert = 1,
+	exclusive = 1,
+}
+
 StaticPopupDialogs["CONFIRM_DELETE_EQUIPMENT_SET"] = {
 	text = CONFIRM_DELETE_EQUIPMENT_SET,
 	button1 = YES,
@@ -189,6 +204,13 @@ StaticPopupDialogs["MAC_OPEN_UNIVERSAL_ACCESS"] = {
 	end,
 	OnCancel = function()
 		ShowUIPanel(MacOptionsFrame);
+	end,
+	OnShow = function(self)
+		if (MacOptions_HasNewStyleUniversalAccess() and MAC_OPEN_UNIVERSAL_ACCESS1090 ~= nil) then
+			self.text:SetFormattedText(MAC_OPEN_UNIVERSAL_ACCESS1090, MacOptions_GetGameBundleName());
+		else
+			self.text:SetText(MAC_OPEN_UNIVERSAL_ACCESS);
+		end
 	end,
 	showAlert = 1,
 	timeout = 0,

@@ -235,6 +235,124 @@
 						</Button>						
 					</Frames>
 				</Frame>
+				<Frame parentKey="DeniedFrame" hidden="true">
+					<Size x="320" y="216"/>
+					<Anchors>
+						<Anchor point="CENTER" x="0" y="0"/>
+					</Anchors>
+					<Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background" edgeFile="Interface\DialogFrame\UI-DialogBox-Border" tile="true">
+						<BackgroundInsets>
+							<AbsInset left="11" right="12" top="12" bottom="11"/>
+						</BackgroundInsets>
+						<TileSize>
+							<AbsValue val="32"/>
+						</TileSize>
+						<EdgeSize>
+							<AbsValue val="32"/>
+						</EdgeSize>
+					</Backdrop>
+					<Layers>
+						<Layer level="BORDER">
+							<Texture parentKey="Background" file="Interface\Store\Store-Main">
+								<Size x="188" y="185"/>
+								<TexCoords left="0.18457031" right="0.36816406" top="0.46289063" bottom="0.64355469"/>								
+								<Anchors>
+									<Anchor point="CENTER" x="0" y="50"/>
+								</Anchors>
+							</Texture>
+						</Layer>
+						<Layer level="ARTWORK">
+							<Texture parentKey="Line" file="Interface\Store\Store-Main">
+								<Size x="298" y="2"/>
+								<TexCoords left="0.50878906" right="0.79980469" top="0.63085938" bottom="0.63281250"/>
+								<Anchors>
+									<Anchor point="CENTER" x="0" y="-20"/>
+								</Anchors>
+							</Texture>
+							<FontString inherits="GameFontNormalLarge" text="BLIZZARD_CHALLENGE_DENIED_TITLE">
+								<Anchors>
+									<Anchor point="BOTTOM" relativeKey="$parent.Line" relativePoint="TOP" x="0" y="6"/>
+								</Anchors>
+							</FontString>
+							<FontString inherits="GameFontHighlight" justifyV="TOP" text="BLIZZARD_CHALLENGE_DENIED_DESCRIPTION">
+								<Size x="250" y="0"/>
+								<Anchors>
+									<Anchor point="TOP" relativeKey="$parent.Line" relativePoint="BOTTOM" x="0" y="-6"/>
+								</Anchors>
+							</FontString>
+						</Layer>
+					</Layers>
+					<Frames>
+						<Button inherits="AuthChallengeButtonTemplate" text="BLIZZARD_CHALLENGE_OKAY">
+							<Size x="120" y="22"/>
+							<Anchors>
+								<Anchor point="BOTTOM" x="0" y="18"/>
+							</Anchors>
+							<Scripts>
+								<OnClick function="AuthChallengeUI_Cancel"/>
+							</Scripts>
+						</Button>
+					</Frames>
+				</Frame>
+				<Frame parentKey="ErrorFrame" hidden="true">
+					<Size x="320" y="216"/>
+					<Anchors>
+						<Anchor point="CENTER" x="0" y="0"/>
+					</Anchors>
+					<Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background" edgeFile="Interface\DialogFrame\UI-DialogBox-Border" tile="true">
+						<BackgroundInsets>
+							<AbsInset left="11" right="12" top="12" bottom="11"/>
+						</BackgroundInsets>
+						<TileSize>
+							<AbsValue val="32"/>
+						</TileSize>
+						<EdgeSize>
+							<AbsValue val="32"/>
+						</EdgeSize>
+					</Backdrop>
+					<Layers>
+						<Layer level="BORDER">
+							<Texture parentKey="Background" file="Interface\Store\Store-Main">
+								<Size x="188" y="185"/>
+								<TexCoords left="0.18457031" right="0.36816406" top="0.46289063" bottom="0.64355469"/>								
+								<Anchors>
+									<Anchor point="CENTER" x="0" y="50"/>
+								</Anchors>
+							</Texture>
+						</Layer>
+						<Layer level="ARTWORK">
+							<Texture parentKey="Line" file="Interface\Store\Store-Main">
+								<Size x="298" y="2"/>
+								<TexCoords left="0.50878906" right="0.79980469" top="0.63085938" bottom="0.63281250"/>
+								<Anchors>
+									<Anchor point="CENTER" x="0" y="-20"/>
+								</Anchors>
+							</Texture>
+							<FontString inherits="GameFontNormalLarge" text="BLIZZARD_CHALLENGE_ERROR_TITLE">
+								<Anchors>
+									<Anchor point="BOTTOM" relativeKey="$parent.Line" relativePoint="TOP" x="0" y="6"/>
+								</Anchors>
+							</FontString>
+							<FontString inherits="GameFontHighlight" justifyV="TOP" text="BLIZZARD_CHALLENGE_ERROR_DESCRIPTION">
+								<Size x="250" y="0"/>
+								<Anchors>
+									<Anchor point="TOP" relativeKey="$parent.Line" relativePoint="BOTTOM" x="0" y="-6"/>
+								</Anchors>
+							</FontString>
+						</Layer>
+					</Layers>
+					<Frames>
+						<Button inherits="AuthChallengeButtonTemplate" text="BLIZZARD_CHALLENGE_OKAY">
+							<Size x="120" y="22"/>
+							<Anchors>
+								<Anchor point="BOTTOM" x="0" y="18"/>
+							</Anchors>
+							<Scripts>
+								<OnClick function="AuthChallengeUI_Cancel"/>
+							</Scripts>
+						</Button>
+					</Frames>
+				</Frame>				
 			</Frames>
 			<Scripts>
 				<OnLoad function="AuthChallengeUI_OnLoad"/>
