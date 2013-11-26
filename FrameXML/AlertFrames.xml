@@ -1328,7 +1328,7 @@
 	</Scripts>
 </Button>
 
-<Button name="StorePurchaseAlertFrame" parent="UIParent" hidden="true" frameStrata="DIALOG" inherits="AlertFrameTemplate">
+<Button name="StorePurchaseAlertFrame" parent="UIParent" hidden="true" frameStrata="FULLSCREEN_DIALOG" frameLevel="63" inherits="AlertFrameTemplate">
 	<Size x="294" y="84"/>
 	<Animations>
 		<AnimationGroup name="$parentAnimIn" parentKey="animIn">

@@ -56,7 +56,6 @@
 				</Layer>
 			</Layers>
 			<Scripts>
-				<OnEscapePressed function="AuthChallengeUI_Cancel"/>
 				<OnEnterPressed function="AuthChallengeUI_Submit"/>
 				<OnTabPressed function="AuthChallengeUI_OnTabPressed"/>
 			</Scripts>
@@ -78,13 +77,6 @@
 		</Button>
 		
 		<Frame name="AuthChallengeFrame" setAllPoints="true" hidden="true" frameStrata="BLIZZARD" enableKeyboard="true" enableMouse="true">
-			<Layers>
-				<Layer level="BACKGROUND">
-					<Texture setAllPoints="true">
-						<Color r="0" g="0" b="1" a="0.25"/>
-					</Texture>			
-				</Layer>
-			</Layers>
 			<Frames>
 				<Frame parentKey="WaitFrame" hidden="true">
 					<Size x="320" y="148"/>
@@ -185,19 +177,26 @@
 								</Anchors>
 								<Color r="1" g="0.82" b="0"/>
 							</FontString>
-							<FontString parentKey="Error" inherits="GameFontNormal">
-								<Size x="460" y="0"/>
+							<FontString parentKey="Info" inherits="GameFontNormal" text="BLIZZARD_CHALLENGE_SCREEN_EXPLANATION">
+								<Size x="400" y="0"/>
 								<Anchors>
 									<Anchor point="TOP" relativeKey="$parent.Prompt" relativePoint="BOTTOM" x="0" y="-18"/>
 								</Anchors>
+								<Color r="0.510" g="0.773" b="1.0"/>
+							</FontString>							
+							<FontString parentKey="Error" inherits="GameFontNormal">
+								<Size x="460" y="0"/>
+								<Anchors>
+									<Anchor point="TOP" relativeKey="$parent.Info" relativePoint="BOTTOM" x="0" y="-18"/>
+								</Anchors>
 								<Color r="1" g="0.1" b="0.1"/>
-							</FontString>	
+							</FontString>
 						</Layer>
 					</Layers>					
 					<Frames>
 						<EditBox parentKey="Input1" inherits="AuthChallengeEditBoxTemplate" autoFocus="true">
 							<Anchors>
-								<Anchor point="TOP" relativeKey="$parent.Prompt" relativePoint="BOTTOM" x="0" y="-38"/>
+								<Anchor point="TOP" relativeKey="$parent.Info" relativePoint="BOTTOM" x="0" y="-38"/>
 							</Anchors>
 						</EditBox>
 						<EditBox parentKey="Input2" inherits="AuthChallengeEditBoxTemplate">

@@ -211,36 +211,45 @@
 		<Size x="298" y="2" />
 		<TexCoords left="0.50878906" right="0.79980469" top="0.63085938" bottom="0.63281250" />
 	</Texture>
-	<Texture name="store-card-splash3-large" file="Interface\Store\Store-Splash" virtual="true">
-		<Size x="576" y="266" />
-		<TexCoords left="0.00097656" right="0.56347656" top="0.00097656" bottom="0.26074219" />
+
+	<Texture name="store-card-splash3-large" file="Interface\Store\Store-Splash" virtual="true" >
+		<Size x="576" y="266"/>	
+		<TexCoords left="0.00097656" right="0.56347656" top="0.00097656" bottom="0.26074219"/>	
 	</Texture>
-	<Texture name="store-itemicon-border-splash1" file="Interface\Store\Store-Splash" virtual="true">
-		<Size x="242" y="260" />
-		<TexCoords left="0.56542969" right="0.80175781" top="0.00097656" bottom="0.25488281" />
+	<Texture name="store-itemicon-border-glowspin" file="Interface\Store\Store-Splash" virtual="true" >
+		<Size x="253" y="256"/>	
+		<TexCoords left="0.56542969" right="0.81250000" top="0.00097656" bottom="0.25097656"/>	
 	</Texture>
-	<Texture name="store-card-splash3-large-selected" file="Interface\Store\Store-Splash" virtual="true">
-		<Size x="570" y="260" />
-		<TexCoords left="0.00097656" right="0.55761719" top="0.26269531" bottom="0.51660156" />
+	<Texture name="store-itemicon-border-glowpulse" file="Interface\Store\Store-Splash" virtual="true" >
+		<Size x="145" y="138"/>	
+		<TexCoords left="0.81445313" right="0.95605469" top="0.00097656" bottom="0.13574219"/>	
 	</Texture>
-	<Texture name="store-itemicon-border-splash3" file="Interface\Store\Store-Splash" virtual="true">
-		<Size x="242" y="244" />
-		<TexCoords left="0.55957031" right="0.79589844" top="0.26269531" bottom="0.50097656" />
+	<Texture name="store-card-splash3-large-hover" file="Interface\Store\Store-Splash" virtual="true" >
+		<Size x="570" y="260"/>	
+		<TexCoords left="0.00097656" right="0.55761719" top="0.26269531" bottom="0.51660156"/>	
 	</Texture>
-	<Texture name="store-card-splash3-large-hover" file="Interface\Store\Store-Splash" virtual="true">
-		<Size x="570" y="260" />
-		<TexCoords left="0.00097656" right="0.55761719" top="0.51855469" bottom="0.77246094" />
+	<Texture name="store-itemicon-border-splash1" file="Interface\Store\Store-Splash" virtual="true" >
+		<Size x="242" y="260"/>	
+		<TexCoords left="0.55957031" right="0.79589844" top="0.26269531" bottom="0.51660156"/>	
 	</Texture>
-	<Texture name="store-card-splash3-small" file="Interface\Store\Store-Splash" virtual="true">
-		<Size x="286" y="146" />
-		<TexCoords left="0.00097656" right="0.28027344" top="0.77441406" bottom="0.91699219" />
+	<Texture name="store-card-splash3-large-selected" file="Interface\Store\Store-Splash" virtual="true" >
+		<Size x="570" y="260"/>	
+		<TexCoords left="0.00097656" right="0.55761719" top="0.51855469" bottom="0.77246094"/>	
 	</Texture>
-	<Texture name="store-card-splash3-small-hover" file="Interface\Store\Store-Splash" virtual="true">
-		<Size x="280" y="140" />
-		<TexCoords left="0.28222656" right="0.55566406" top="0.77441406" bottom="0.91113281" />
+	<Texture name="store-card-splash3-small" file="Interface\Store\Store-Splash" virtual="true" >
+		<Size x="286" y="146"/>	
+		<TexCoords left="0.00097656" right="0.28027344" top="0.77441406" bottom="0.91699219"/>	
 	</Texture>
-	<Texture name="store-card-splash3-small-selected" file="Interface\Store\Store-Splash" virtual="true">
-		<Size x="280" y="140" />
-		<TexCoords left="0.55957031" right="0.83300781" top="0.51855469" bottom="0.65527344" />
+	<Texture name="store-card-splash3-small-selected" file="Interface\Store\Store-Splash" virtual="true" >
+		<Size x="280" y="140"/>	
+		<TexCoords left="0.28222656" right="0.55566406" top="0.77441406" bottom="0.91113281"/>	
+	</Texture>
+	<Texture name="store-itemicon-border-splash3" file="Interface\Store\Store-Splash" virtual="true" >
+		<Size x="242" y="244"/>	
+		<TexCoords left="0.55957031" right="0.79589844" top="0.51855469" bottom="0.75683594"/>	
+	</Texture>
+	<Texture name="store-card-splash3-small-hover" file="Interface\Store\Store-Splash" virtual="true" >
+		<Size x="280" y="140"/>	
+		<TexCoords left="0.55957031" right="0.83300781" top="0.75878906" bottom="0.89550781"/>	
 	</Texture>
 </Ui>

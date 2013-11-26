@@ -22,6 +22,7 @@ Import("BLIZZARD_CHALLENGE_DENIED_TITLE");
 Import("BLIZZARD_CHALLENGE_DENIED_DESCRIPTION");
 Import("BLIZZARD_CHALLENGE_ERROR_TITLE");
 Import("BLIZZARD_CHALLENGE_ERROR_DESCRIPTION");
+Import("BLIZZARD_CHALLENGE_SCREEN_EXPLANATION");
 
 function AuthChallengeUI_OnLoad(self)
 	C_AuthChallenge.SetFrame(self);
@@ -40,7 +41,5 @@ function AuthChallengeUI_OnTabPressed(self)
 end
 
 function AuthChallengeUI_OnKeyDown(self, key)
-	if ( GetBindingFromClick(key) == "TOGGLEGAMEMENU" ) then
-		C_AuthChallenge.Cancel();
-	end
+	-- empty function to trap keystrokes
 end

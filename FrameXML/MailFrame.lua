@@ -464,7 +464,7 @@ function OpenMail_Update()
 	end
 	-- Save sender name to pass to a potential spam report
 	InboxFrame.openMailSender = sender;
-	OpenMailSender:SetText(sender);
+	OpenMailSender.Name:SetText(sender);
 	OpenMailSubject:SetText(subject);
 	-- Set Text
 	local bodyText, texture, isTakeable, isInvoice = GetInboxText(InboxFrame.openMailID);
@@ -720,7 +720,7 @@ end
 
 function OpenMail_Reply()
 	MailFrameTab_OnClick(nil, 2);
-	SendMailNameEditBox:SetText(OpenMailSender:GetText())
+	SendMailNameEditBox:SetText(OpenMailSender.Name:GetText())
 	local subject = OpenMailSubject:GetText();
 	local prefix = MAIL_REPLY_PREFIX.." ";
 	if ( strsub(subject, 1, strlen(prefix)) ~= prefix ) then
