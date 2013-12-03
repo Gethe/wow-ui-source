@@ -14,9 +14,6 @@ if ( tbl.IsOnGlueScreen() ) then
 	tbl._G = _G;	--Allow us to explicitly access the global environment at the glue screens
 end
 
--- REMOVE BEFORE SHIP
-tbl.print = print;
-tbl.setmetatable = setmetatable;
 setfenv(1, tbl);
 ----------------
 
@@ -73,6 +70,7 @@ Import("BLIZZARD_STORE_BAG_FULL");
 Import("BLIZZARD_STORE_BAG_FULL_DESC");
 Import("BLIZZARD_STORE_CONFIRMATION_GENERIC");
 Import("BLIZZARD_STORE_CONFIRMATION_TEST");
+Import("BLIZZARD_STORE_CONFIRMATION_EUR");
 Import("BLIZZARD_STORE_BROWSE_TEST_CURRENCY");
 Import("BLIZZARD_STORE_CURRENCY_FORMAT_USD");
 Import("BLIZZARD_STORE_CURRENCY_FORMAT_KRW_LONG");
@@ -126,6 +124,7 @@ Import("BLIZZARD_STORE_PAGE_NUMBER");
 Import("BLIZZARD_STORE_SPLASH_BANNER_DISCOUNT_FORMAT");
 Import("BLIZZARD_STORE_SPLASH_BANNER_FEATURED");
 Import("BLIZZARD_STORE_SPLASH_BANNER_NEW");
+Import("BLIZZARD_STORE_WALLET_INFO");
 Import("TOOLTIP_DEFAULT_COLOR");
 Import("TOOLTIP_DEFAULT_BACKGROUND_COLOR");
 
@@ -287,7 +286,7 @@ local currencySpecific = {
 		formatShort = currencyFormatGBP,
 		formatLong = currencyFormatGBP,
 		browseNotice = BLIZZARD_STORE_BROWSE_EUR,
-		confirmationNotice = BLIZZARD_STORE_CONFIRMATION_GENERIC,
+		confirmationNotice = BLIZZARD_STORE_CONFIRMATION_EUR,
 		licenseAcceptText = BLIZZARD_STORE_LICENSE_ACK_TEXT_GBP,
 		paymentMethodText = BLIZZARD_STORE_PAYMENT_METHOD,
 		paymentMethodSubtext = BLIZZARD_STORE_PAYMENT_METHOD_EXTRA,
@@ -312,7 +311,7 @@ local currencySpecific = {
 		formatShort = currencyFormatEuro,
 		formatLong = currencyFormatEuro,
 		browseNotice = BLIZZARD_STORE_BROWSE_EUR,
-		confirmationNotice = BLIZZARD_STORE_CONFIRMATION_GENERIC,
+		confirmationNotice = BLIZZARD_STORE_CONFIRMATION_EUR,
 		licenseAcceptText = BLIZZARD_STORE_LICENSE_ACK_TEXT_EUR,
 		paymentMethodText = BLIZZARD_STORE_PAYMENT_METHOD,
 		paymentMethodSubtext = BLIZZARD_STORE_PAYMENT_METHOD_EXTRA,
@@ -324,8 +323,8 @@ local currencySpecific = {
 	[CURRENCY_RUB] = {
 		formatShort = currencyFormatRUB,
 		formatLong = currencyFormatRUB,
-		browseNotice = BLIZZARD_STORE_PLUS_TAX,
-		confirmationNotice = BLIZZARD_STORE_CONFIRMATION_GENERIC,
+		browseNotice = BLIZZARD_STORE_BROWSE_EUR,
+		confirmationNotice = BLIZZARD_STORE_CONFIRMATION_EUR,
 		licenseAcceptText = BLIZZARD_STORE_LICENSE_ACK_TEXT_RUB,
 		paymentMethodText = BLIZZARD_STORE_PAYMENT_METHOD,
 		paymentMethodSubtext = BLIZZARD_STORE_PAYMENT_METHOD_EXTRA,
@@ -1029,7 +1028,7 @@ function StoreFrame_ShowError(self, title, desc, urlIndex, needsAck)
 		self.ErrorFrame.WebsiteButton:SetText(BLIZZARD_STORE_VISIT_WEBSITE);
 		self.ErrorFrame.WebsiteWarning:Show();
 		self.ErrorFrame.WebsiteWarning:SetText(BLIZZARD_STORE_VISIT_WEBSITE_WARNING);
-		height = height + self.ErrorFrame.WebsiteWarning:GetHeight() + 5;
+		height = height + self.ErrorFrame.WebsiteWarning:GetHeight() + 8;
 		ActiveURLIndex = urlIndex;
 	else
 		self.ErrorFrame.AcceptButton:ClearAllPoints();
@@ -1136,7 +1135,7 @@ function StoreConfirmationFrame_OnLoad(self)
 	self:RegisterEvent("STORE_CONFIRM_PURCHASE");
 end
 
-function StoreConfirmationFrame_SetNotice(self, icon, name, dollars, cents)
+function StoreConfirmationFrame_SetNotice(self, icon, name, dollars, cents, walletName)
 	self:SetHeight(ConfirmationFrameHeight);
 	self.ParchmentMiddle:SetHeight(ConfirmationFrameMiddleHeight);
 	SetPortraitToTexture(self.Icon, icon);
@@ -1146,7 +1145,11 @@ function StoreConfirmationFrame_SetNotice(self, icon, name, dollars, cents)
 	self.NoticeFrame.Notice:SetPoint("TOP", 0, 100);
 	local info = currencyInfo();
 	local format = info.formatLong;
-	self.NoticeFrame.Notice:SetText(info.confirmationNotice);
+	local notice = info.confirmationNotice;
+	if (walletName and walletName ~= "") then
+		notice = notice .. "\n" .. BLIZZARD_STORE_WALLET_INFO:format(walletName);
+	end
+	self.NoticeFrame.Notice:SetText(notice);
 	self.NoticeFrame:Show();
 	self.Price:SetText(format(dollars, cents));
 
@@ -1182,7 +1185,7 @@ end
 local FinalPriceDollars;
 local FinalPriceCents;
 function StoreConfirmationFrame_Update(self)
-	local productID = C_PurchaseAPI.GetConfirmationInfo();
+	local productID, walletName = C_PurchaseAPI.GetConfirmationInfo();
 	if ( not productID ) then
 		self:Hide(); --May want to show an error message
 		return;
@@ -1193,7 +1196,7 @@ function StoreConfirmationFrame_Update(self)
 	if ( not finalIcon ) then
 		finalIcon = "Interface\\Icons\\INV_Misc_Note_02";
 	end
-	StoreConfirmationFrame_SetNotice(self, finalIcon, name, currentDollars, currentCents);
+	StoreConfirmationFrame_SetNotice(self, finalIcon, name, currentDollars, currentCents, walletName);
 
 	local info = currencyInfo();
 	self.BrowseNotice:SetText(info.browseNotice);

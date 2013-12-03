@@ -1359,9 +1359,10 @@
 					<Anchor point="LEFT" relativeKey="$parent" relativePoint="LEFT" x="21" y="0"/>
 				</Anchors>
 			</Texture>
-			<FontString parentKey="Title" inherits="GameFontNormalLarge" text="BLIZZARD_STORE_PURCHASE_COMPLETE">
+			<FontString parentKey="Title" inherits="GameFontNormalLarge" text="BLIZZARD_STORE_PURCHASE_COMPLETE" justifyV="MIDDLE">
+				<Size x="200" y="24"/>
 				<Anchors>
-					<Anchor point="TOP" relativeKey="$parent" relativePoint="TOP" x="30" y="-23"/>
+					<Anchor point="TOP" relativeKey="$parent" relativePoint="TOP" x="30" y="-15"/>
 				</Anchors>
 			</FontString>
 			<FontString parentKey="Description" inherits="GameFontHighlight" text="BLIZZARD_STORE_PURCHASE_COMPLETE_DESC">

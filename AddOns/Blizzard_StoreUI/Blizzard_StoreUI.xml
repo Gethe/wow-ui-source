@@ -1042,7 +1042,7 @@
 					</Texture>
 				</Layer>
 				<Layer level="OVERLAY">
-					<Texture parentKey="Icon" inherits="icon-category-services">
+					<Texture parentKey="Icon" inherits="store-icon-category-services">
 						<Size x="64" y="64"/>
 						<Anchors>
 							<Anchor point="CENTER" relativeKey="$parent" relativePoint="LEFT" x="15" y="2"/>
@@ -1123,12 +1123,6 @@
 			<Size x="800" y="537" />
 			<!--Anchored to the screen as a whole in Lua-->
 			<Layers>
-				<Layer level="BACKGROUND">
-					<Texture parentKey="Services" inherits="icon-category-services" hidden="true" />
-					<Texture parentKey="Mounts" inherits="icon-category-mounts" hidden="true" />
-					<Texture parentKey="Pets" inherits="icon-category-pets" hidden="true" />
-					<Texture parentKey="Consumables" inherits="icon-category-consumables" hidden="true" />
-				</Layer>
 				<Layer layer="ARTWORK">
 					<FontString parentKey="PageText" inherits="GameFontHighlight" justifyH="RIGHT">
 						<Anchors>
@@ -1296,7 +1290,7 @@
 								</Anchors>
 							</FontString>
 							<FontString parentKey="Description" inherits="GameFontHighlight" justifyV="TOP">
-								<Size x="250" y="40" />
+								<Size x="250" y="0" />
 								<Anchors>
 									<Anchor point="TOP" relativeKey="$parent.Line" relativePoint="BOTTOM" x="0" y="-6" />
 								</Anchors>
@@ -1345,15 +1339,19 @@
 					<Layers>
 						<Layer level="OVERLAY" textureSubLevel="1">
 							<Texture parentKey="Flash" file="Interface\Buttons\UI-Panel-Button-Glow" alphaMode="ADD" alpha="0">
-								<Size x="220" y="75"/>
+								<Size x="165" y="41"/>
 								<Anchors>
-									<Anchor point="TOPLEFT" x="-12" y="7"/>
+									<Anchor point="CENTER"/>
 								</Anchors>
+								<TexCoords left="0.0" right="0.75" top="0.0" bottom="0.609375"/>
 							</Texture>
 						</Layer>
 					</Layers>
 					<Scripts>
 						<OnClick function="StoreFrameBuyButton_OnClick" />
+						<OnSizeChanged>
+							self.Flash:SetSize(self:GetWidth()*1.17857, self:GetHeight()*1.3);
+						</OnSizeChanged>
 					</Scripts>
 				</Button>
 				<Button parentKey="PrevPageButton">
