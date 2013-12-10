@@ -887,9 +887,17 @@ function ConquestFrame_UpdateJoinButton()
 					return;
 				end
 			elseif ( neededSize > groupSize ) then
-				button.tooltip = string.format(PVP_RATEDBG_NEED_MORE, neededSize - groupSize);
+				if ( ConquestFrame.selectedButton.id == RATED_BG_ID ) then
+					button.tooltip = string.format(PVP_RATEDBG_NEED_MORE, neededSize - groupSize);
+				else
+					button.tooltip = string.format(PVP_ARENA_NEED_MORE, neededSize - groupSize);
+				end
 			else
-				button.tooltip = string.format(PVP_RATEDBG_NEED_LESS, groupSize -  neededSize);
+				if ( ConquestFrame.selectedButton.id == RATED_BG_ID ) then
+					button.tooltip = string.format(PVP_RATEDBG_NEED_LESS, groupSize -  neededSize);
+				else
+					button.tooltip = string.format(PVP_ARENA_NEED_LESS, groupSize -  neededSize);
+				end
 			end
 		end
 	else

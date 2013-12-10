@@ -1,6 +1,7 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\FrameXML\UI.xsd">
 	<!-- This GlueFonts.xml is loaded before GlueFontStyles.xml Set up Font objects to be localized in GlueFonts.xml not GlueFontStyles.xml -->
+	<Include file="..\SharedXML\SharedFonts.xml"/>
 
 	<Font name="SystemFont_Shadow_Outline_Small" font="Fonts\FRIZQT__.TTF" outline="NORMAL" virtual="true">
 		<Shadow>
@@ -18,28 +19,6 @@
 			<AbsValue val="12"/>
 		</FontHeight>
 	</Font>
-	<Font name="SystemFont_Shadow_Med1" font="Fonts\FRIZQT__.TTF" virtual="true">
-		<Shadow>
-			<Offset>
-				<AbsDimension x="1" y="-1"/>
-			</Offset>
-			<Color r="0" g="0" b="0"/>
-		</Shadow>
-		<FontHeight>
-			<AbsValue val="12"/>
-		</FontHeight>
-	</Font>
-	<Font name="SystemFont_Shadow_Outline_Med1" font="Fonts\FRIZQT__.TTF" outline="NORMAL" virtual="true">
-		<Shadow>
-			<Offset>
-				<AbsDimension x="1" y="-1"/>
-			</Offset>
-			<Color r="0" g="0" b="0"/>
-		</Shadow>
-		<FontHeight>
-			<AbsValue val="12"/>
-		</FontHeight>
-	</Font>
 	<Font name="SystemFont_Outline_Med2" font="Fonts\FRIZQT__.TTF" outline="NORMAL" virtual="true">
 		<FontHeight>
 			<AbsValue val="15"/>
@@ -49,7 +28,18 @@
 		<FontHeight>
 			<AbsValue val="16"/>
 		</FontHeight>
-	</Font>
+	</Font>	
+	<Font name="SystemFont_Shadow_Med3" font="Fonts\FRIZQT__.TTF" virtual="true">
+		<Shadow>
+			<Offset>
+				<AbsDimension x="1" y="-1"/>
+			</Offset>
+			<Color r="0" g="0" b="0"/>
+		</Shadow>
+		<FontHeight>
+			<AbsValue val="14"/>
+		</FontHeight>
+	</Font>	
 	<Font name="SystemFont_Shadow_Outline_Large" font="Fonts\FRIZQT__.TTF" outline="NORMAL" virtual="true">
 		<Shadow>
 			<Offset>
@@ -59,17 +49,6 @@
 		</Shadow>
 		<FontHeight>
 			<AbsValue val="18"/>
-		</FontHeight>
-	</Font>
-	<Font name="SystemFont_Shadow_Outline_Huge" font="Fonts\FRIZQT__.TTF" outline="NORMAL" virtual="true">
-		<Shadow>
-			<Offset>
-				<AbsDimension x="2" y="-2"/>
-			</Offset>
-			<Color r="0" g="0" b="0"/>
-		</Shadow>
-		<FontHeight>
-			<AbsValue val="22"/>
 		</FontHeight>
 	</Font>
 	<Font name="SystemFont_Shadow_Outline_Gigantor" font="Fonts\FRIZQT__.TTF" outline="NORMAL" virtual="true">
@@ -100,7 +79,7 @@
 			<AbsValue val="14"/>
 		</FontHeight>
 	</Font>
-	<Font name="NumberFont_Outline_Med3" font="Fonts\ARIALN.TTF" outline="NORMAL" virtual="true">
+	<Font name="NumberFont_Outline_Large" font="Fonts\ARIALN.TTF" outline="NORMAL" virtual="true">
 		<FontHeight>
 			<AbsValue val="16"/>
 		</FontHeight>
@@ -188,11 +167,6 @@
 		<Color r="1.0" g="1.0" b="1.0"/>
 		<FontHeight>
 			<AbsValue val="18"/>
-		</FontHeight>
-	</Font>
-	<Font name="QuestFont_Large" font="Fonts\MORPHEUS.ttf" virtual="true">
-		<FontHeight>
-			<AbsValue val="15"/>
 		</FontHeight>
 	</Font>
 	<Font name="QuestFont_Huge" font="Fonts\MORPHEUS.ttf" virtual="true">

@@ -1082,10 +1082,10 @@ end
 
 function TradeSkillGuildFrame_OnShow()
 	TradeSkillGuildCraftersFrameScrollBar:SetValue(0);
-	TradeSkillGuilCraftersFrame_Update();
+	TradeSkillGuildCraftersFrame_Update();
 end
 
-function TradeSkillGuilCraftersFrame_Update()
+function TradeSkillGuildCraftersFrame_Update()
 	local skillLineID, recipeID, numMembers = GetGuildRecipeInfoPostQuery();
 	local offset = FauxScrollFrame_GetOffset(TradeSkillGuildCraftersFrame);
 	local index, button, name, classFileName, online;
@@ -1096,8 +1096,8 @@ function TradeSkillGuilCraftersFrame_Update()
 		if ( index > numMembers ) then
 			button:Hide();
 		else
-			name, classFileName, online = GetGuildRecipeMember(index);
-			button:SetText(name);
+			displayName, fullName, classFileName, online = GetGuildRecipeMember(index);
+			button:SetText(displayName);
 			if ( online ) then
 				button:Enable();
 				if ( classFileName ) then
@@ -1108,7 +1108,7 @@ function TradeSkillGuilCraftersFrame_Update()
 				button:Disable();
 			end
 			button:Show();
-			button.name = name;
+			button.name = fullName;
 		end
 	end
 	FauxScrollFrame_Update(TradeSkillGuildCraftersFrame, numMembers, TRADE_SKILL_GUILD_CRAFTERS_DISPLAYED, TRADE_SKILL_HEIGHT);

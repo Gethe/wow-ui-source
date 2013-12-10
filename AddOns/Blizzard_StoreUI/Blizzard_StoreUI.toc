@@ -3,4 +3,5 @@
 ## Secure: 1
 ## LoadOnDemand: 1
 Blizzard_StoreUI.xml
+Blizzard_StoreUIInsecure.xml
 Localization.lua

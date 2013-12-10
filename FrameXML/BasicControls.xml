@@ -28,7 +28,7 @@
 				end
 			elseif ( loaded ) then
 				local HIDE_ERROR_FRAME = true;
-				ScriptErrorsFrame_OnError(message, HIDE_ERROR_FRAME);
+				ScriptErrorsFrame_OnError(message, false, HIDE_ERROR_FRAME);
 			end
 			
 			-- Show a warning if there are too many errors

@@ -1086,8 +1086,7 @@ end
 function FriendsFrameUnsquelchButton_OnClick(self)
 	local selectedSquelchType = FriendsFrame.selectedSquelchType;
 	if ( selectedSquelchType == SQUELCH_TYPE_IGNORE ) then
-		local name = GetIgnoreName(GetSelectedIgnore());
-		DelIgnore(name);
+		DelIgnore(GetSelectedIgnore());
 	elseif ( selectedSquelchType == SQUELCH_TYPE_BLOCK_INVITE ) then
 		local blockID = BNGetBlockedInfo(BNGetSelectedBlock());
 		BNSetBlocked(blockID, false);
@@ -2352,6 +2351,7 @@ function BattleTagInviteFrame_Show(name)
 end
 
 function RAFButton_Update(self)
+	self.suppressedRewards = C_ProductChoice.GetNumSuppressed();
 	if ( #C_ProductChoice.GetChoices() > 0 ) then
 		self.Icon:SetTexture("Interface\\Icons\\achievement_guildperk_mobilebanking");
 		self.rewards = true;

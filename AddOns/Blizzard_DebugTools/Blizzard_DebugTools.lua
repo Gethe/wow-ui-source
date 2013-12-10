@@ -494,6 +494,12 @@ local ERROR_FORMAT = [[|cffffd200Message:|cffffffff %s
 |cffffd200Stack:|cffffffff %s
 |cffffd200Locals:|cffffffff %s]];
 
+local WARNING_AS_ERROR_FORMAT = [[|cffffd200Message:|r|cffffffff %s|r
+|cffffd200Time:|r|cffffffff %s|r
+|cffffd200Count:|r|cffffffff %s|r]];
+
+local WARNING_FORMAT = "Lua Warning:\n"..WARNING_AS_ERROR_FORMAT;
+
 local INDEX_ORDER_FORMAT = "%d / %d"
 
 local _ScriptErrorsFrame;
@@ -507,6 +513,7 @@ function ScriptErrorsFrame_OnLoad (self)
 	self.messages = {};
 	self.times = {};
 	self.locals = {};
+	self.warnType = {};
 	_ScriptErrorsFrame = self;
 end
 
@@ -514,7 +521,7 @@ function ScriptErrorsFrame_OnShow (self)
 	ScriptErrorsFrame_Update();
 end
 
-function ScriptErrorsFrame_OnError (message, keepHidden)
+function ScriptErrorsFrame_OnError (message, warnType, keepHidden)
 	local stack = debugstack(DEBUGLOCALS_LEVEL);
 	
 	local messageStack = message..stack; -- Fix me later
@@ -534,6 +541,7 @@ function ScriptErrorsFrame_OnError (message, keepHidden)
 			_ScriptErrorsFrame.times[index] = date();
 			_ScriptErrorsFrame.seen[messageStack] = index;
 			_ScriptErrorsFrame.locals[index] = debuglocals(DEBUGLOCALS_LEVEL);
+			_ScriptErrorsFrame.warnType[index] = (warnType or false); --Use false instead of nil
 		end
 		
 		if ( not _ScriptErrorsFrame:IsShown() and not keepHidden ) then
@@ -559,14 +567,31 @@ function ScriptErrorsFrame_Update ()
 		return;
 	end
 	
-	local text = string.format(
-		ERROR_FORMAT, 
-		_ScriptErrorsFrame.messages[index], 
-		_ScriptErrorsFrame.times[index], 
-		_ScriptErrorsFrame.count[index], 
-		_ScriptErrorsFrame.order[index],
-		_ScriptErrorsFrame.locals[index] or "<none>"
+	local warnType = _ScriptErrorsFrame.warnType[index];
+
+	local text;
+	if ( warnType ) then
+		local warnFormat = WARNING_FORMAT;
+		if ( warnType == LUA_WARNING_TREAT_AS_ERROR ) then
+			warnFormat = WARNING_AS_ERROR_FORMAT;
+		end
+
+		text = string.format(
+			warnFormat,
+			_ScriptErrorsFrame.messages[index],
+			_ScriptErrorsFrame.times[index],
+			_ScriptErrorsFrame.count[index]
 		);
+	else
+		text = string.format(
+			ERROR_FORMAT, 
+			_ScriptErrorsFrame.messages[index], 
+			_ScriptErrorsFrame.times[index], 
+			_ScriptErrorsFrame.count[index], 
+			_ScriptErrorsFrame.order[index],
+			_ScriptErrorsFrame.locals[index] or "<none>"
+		);
+	end
 
 	local parent = editBox:GetParent();
 	local prevText = editBox.text;
@@ -615,6 +640,7 @@ function ScriptErrorsFrame_DeleteError (index)
 		tremove(_ScriptErrorsFrame.messages, index);
 		tremove(_ScriptErrorsFrame.times, index);
 		tremove(_ScriptErrorsFrame.count, index);
+		tremove(_ScriptErrorsFrame.warnType, index);
 	end
 end
 

@@ -701,7 +701,7 @@
 					</Layer>
 				</Layers>
 			</Frame>
-			<Slider name="$parentUIScaleSlider" inherits="VideoOptionsSliderTemplate" minValue="0.65" maxValue="1.15" valueStep=".05" >
+			<Slider name="$parentUIScaleSlider" inherits="VideoOptionsSliderTemplate" minValue="0.65" maxValue="1.15" valueStep=".05" obeyStepOnDrag="true">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeTo="$parentGraphicsAPIDropDown" relativePoint="BOTTOMLEFT">
 						<Offset x="-90" y="-20"/>
@@ -794,7 +794,7 @@
 			</CheckButton>
 			<!-- column B -->
 
-			<Slider name="$parentMaxFPSSlider" inherits="VideoOptionsSliderTemplate" minValue="8" maxValue="200" valueStep="5" >
+			<Slider name="$parentMaxFPSSlider" inherits="VideoOptionsSliderTemplate" minValue="8" maxValue="200" valueStep="5" obeyStepOnDrag="true">
 				<Size x="10" y="17"/>
 				<Anchors>
 					<Anchor point="LEFT" relativeTo="$parentBufferingDropDown" relativePoint="RIGHT">
@@ -864,7 +864,7 @@
 					</OnClick>
 				</Scripts>
 			</CheckButton>
-			<Slider name="$parentMaxFPSBKSlider" inherits="VideoOptionsSliderTemplate" minValue="8" maxValue="200" valueStep="5">
+			<Slider name="$parentMaxFPSBKSlider" inherits="VideoOptionsSliderTemplate" minValue="8" maxValue="200" valueStep="5" obeyStepOnDrag="true">
 				<Size x="10" y="17"/>
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeTo="$parentMaxFPSSlider" relativePoint="BOTTOMLEFT">
@@ -1164,6 +1164,21 @@
 					<OnLoad>
 						self.type = CONTROLTYPE_CHECKBOX;
 						self.cvar = "useIPv6";
+						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
+					</OnLoad>
+					<OnClick function="NetworkOptionsPanel_CheckButton_OnClick"/>
+				</Scripts>
+			</CheckButton>
+			<CheckButton name="$parentAdvancedCombatLogging" inherits="OptionsCheckButtonTemplate" motionScriptsWhileDisabled="true">
+				<Anchors>
+					<Anchor point="TOP" relativeTo="$parentUseIPv6" relativePoint="BOTTOM">
+						<Offset x="0" y="-8"/>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						self.type = CONTROLTYPE_CHECKBOX;
+						self.cvar = "advancedCombatLogging";
 						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
 					</OnLoad>
 					<OnClick function="NetworkOptionsPanel_CheckButton_OnClick"/>

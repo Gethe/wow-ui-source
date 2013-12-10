@@ -1,0 +1,100 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\FrameXML\UI.xsd">
+	<Font name="SystemFont_Tiny" font="Fonts\FRIZQT__.TTF" virtual="true">
+		<FontHeight>
+			<AbsValue val="9"/>
+		</FontHeight>
+	</Font>
+	<Font name="SystemFont_Shadow_Small" font="Fonts\FRIZQT__.TTF" virtual="true">
+		<Shadow>
+			<Offset>
+				<AbsDimension x="1" y="-1"/>
+			</Offset>
+			<Color r="0" g="0" b="0"/>
+		</Shadow>
+		<FontHeight>
+			<AbsValue val="10"/>
+		</FontHeight>
+	</Font>
+	<Font name="SystemFont_Shadow_Med1_Outline" font="Fonts\FRIZQT__.TTF" outline="NORMAL" virtual="true">
+		<Shadow>
+			<Offset>
+				<AbsDimension x="1" y="-1"/>
+			</Offset>
+			<Color r="0" g="0" b="0"/>
+		</Shadow>
+		<FontHeight>
+			<AbsValue val="12"/>
+		</FontHeight>
+	</Font>
+	<Font name="SystemFont_Shadow_Med1" font="Fonts\FRIZQT__.TTF" virtual="true">
+		<Shadow>
+			<Offset>
+				<AbsDimension x="1" y="-1"/>
+			</Offset>
+			<Color r="0" g="0" b="0"/>
+		</Shadow>
+		<FontHeight>
+			<AbsValue val="12"/>
+		</FontHeight>
+	</Font>
+	<Font name="QuestFont_Large" font="Fonts\MORPHEUS.ttf" virtual="true">
+		<FontHeight>
+			<AbsValue val="15"/>
+		</FontHeight>
+	</Font>
+	<Font name="SystemFont_Large" font="Fonts\FRIZQT__.TTF" virtual="true">
+		<FontHeight>
+			<AbsValue val="16"/>
+		</FontHeight>
+	</Font>
+	<Font name="SystemFont_Shadow_Large" font="Fonts\FRIZQT__.TTF" virtual="true">
+		<Shadow>
+			<Offset>
+				<AbsDimension x="1" y="-1"/>
+			</Offset>
+			<Color r="0" g="0" b="0"/>
+		</Shadow>
+		<FontHeight>
+			<AbsValue val="16"/>
+		</FontHeight>
+	</Font>
+	<Font name="SystemFont_Shadow_Huge1" font="Fonts\FRIZQT__.TTF" virtual="true">
+		<Shadow>
+			<Offset>
+				<AbsDimension x="1" y="-1"/>
+			</Offset>
+			<Color r="0" g="0" b="0"/>
+		</Shadow>
+		<FontHeight>
+			<AbsValue val="20"/>
+		</FontHeight>
+	</Font>	
+	<Font name="SystemFont_Shadow_Outline_Huge2" font="Fonts\FRIZQT__.TTF" outline="NORMAL" virtual="true">
+		<Shadow>
+			<Offset>
+				<AbsDimension x="2" y="-2"/>
+			</Offset>
+			<Color r="0" g="0" b="0"/>
+		</Shadow>
+		<FontHeight>
+			<AbsValue val="22"/>
+		</FontHeight>
+	</Font>	
+	<Font name="SystemFont_Med1" font="Fonts\FRIZQT__.TTF" virtual="true">
+		<FontHeight>
+			<AbsValue val="12"/>
+		</FontHeight>
+	</Font>
+	<Font name="SystemFont_Shadow_Med2" font="Fonts\FRIZQT__.TTF" virtual="true">
+		<Shadow>
+			<Offset>
+				<AbsDimension x="1" y="-1"/>
+			</Offset>
+			<Color r="0" g="0" b="0"/>
+		</Shadow>
+		<FontHeight>
+			<AbsValue val="13"/>
+		</FontHeight>
+	</Font>
+</Ui>

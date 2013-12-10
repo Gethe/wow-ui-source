@@ -45,7 +45,7 @@ function PartyMemberFrame_ToPlayerArt(self)
 	UnitFrame_SetUnit(_G[prefix.."PetFrame"], "partypet"..self:GetID(), _G[prefix.."PetFrameHealthBar"], nil);
 	PartyMemberFrame_UpdateMember(self);
 	
-	UnitFrame_Update(self)
+	UnitFrame_Update(self, true)
 end
 
 function PartyMemberFrame_ToVehicleArt(self, vehicleType)
@@ -70,7 +70,7 @@ function PartyMemberFrame_ToVehicleArt(self, vehicleType)
 	UnitFrame_SetUnit(_G[prefix.."PetFrame"], "party"..self:GetID(), _G[prefix.."PetFrameHealthBar"], nil);
 	PartyMemberFrame_UpdateMember(self);
 	
-	UnitFrame_Update(self)
+	UnitFrame_Update(self, true)
 end
 
 function PartyMemberFrame_OnLoad (self)
@@ -121,7 +121,7 @@ function PartyMemberFrame_UpdateMember (self)
 	if ( UnitExists("party"..id) ) then
 		self:Show();
 
-		UnitFrame_Update(self);
+		UnitFrame_Update(self, true);
 
 		local masterIcon = _G[self:GetName().."MasterIcon"];
 		local lootMethod;

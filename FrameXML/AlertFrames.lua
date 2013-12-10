@@ -61,8 +61,8 @@ function AlertFrame_OnEvent (self, event, ...)
 	elseif ( event == "PET_BATTLE_CLOSE" ) then
 		AchievementAlertFrame_FireDelayedAlerts();
 	elseif ( event == "STORE_PRODUCT_DELIVERED" ) then
-		local icon = ...;
-		StorePurchaseAlertFrame_ShowAlert(icon);
+		local icon, name = ...;
+		StorePurchaseAlertFrame_ShowAlert(icon, name);
 	end
 end
 
@@ -880,8 +880,13 @@ function DigsiteCompleteToastFrame_ShowAlert(researchBranchID)
 end
 
 -- [[ StorePurchaseAlertFrame ]] --
-function StorePurchaseAlertFrame_ShowAlert(icon)
+function StorePurchaseAlertFrame_ShowAlert(icon, name)
 	StorePurchaseAlertFrame.Icon:SetTexture(icon);
+	StorePurchaseAlertFrame.Title:SetFontObject(GameFontNormalLarge);
+	StorePurchaseAlertFrame.Title:SetText(name);
+	if ( StorePurchaseAlertFrame.Title:IsTruncated() ) then
+		StorePurchaseAlertFrame.Title:SetFontObject(GameFontNormal);
+	end
 	AlertFrame_AnimateIn(StorePurchaseAlertFrame);
 	AlertFrame_FixAnchors();
 	PlaySound("UI_igStore_PurchaseDelivered_Toast_01");

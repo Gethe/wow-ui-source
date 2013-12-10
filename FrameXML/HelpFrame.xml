@@ -566,6 +566,10 @@
 				self:ClearFocus();
 			</OnEscapePressed>
 			<OnButtonUpdate function="Browser_UpdateButtons"/>
+			<OnError>
+				local info = ChatTypeInfo["SYSTEM"];
+				DEFAULT_CHAT_FRAME:AddMessage(msg, info.r, info.g, info.b, info.id);
+			</OnError>
 		</Scripts>
 	</Browser>
 			

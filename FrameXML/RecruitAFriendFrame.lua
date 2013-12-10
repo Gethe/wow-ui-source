@@ -92,3 +92,28 @@ function RecruitAFriend_ShowInfoDialog(dialog, text, showOKButton)
 	dialog.OkayButton:SetShown(showOKButton);
 	dialog:Show();
 end
+
+--Currently only supports "left" and "right"
+function RecruitAFriend_SetInfoDialogDirection(dialog, direction)
+	local orientation, offset, point, relativePoint;
+	if ( direction == "left" ) then
+		orientation = 90;
+		offset = 3;
+		point = "RIGHT";
+		relativePoint = "LEFT";
+	elseif ( direction == "right" ) then
+		orientation = 270;
+		offset = -3;
+		point = "LEFT";
+		relativePoint = "RIGHT";
+	end
+	SetClampedTextureRotation(dialog.ArrowShadow, orientation);
+	SetClampedTextureRotation(dialog.Arrow, orientation);
+	SetClampedTextureRotation(dialog.ArrowGlow, orientation);
+	dialog.ArrowShadow:ClearAllPoints()
+	dialog.Arrow:ClearAllPoints()
+	dialog.ArrowGlow:ClearAllPoints()
+	dialog.ArrowShadow:SetPoint(point, dialog, relativePoint, offset, 0);
+	dialog.Arrow:SetPoint(point, dialog, relativePoint, offset, 0);
+	dialog.ArrowGlow:SetPoint(point, dialog, relativePoint, offset, 0);
+end

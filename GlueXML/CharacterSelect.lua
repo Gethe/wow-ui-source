@@ -173,7 +173,6 @@ function CharacterSelect_OnShow()
 	GlueFrameFadeIn(CharacterSelectUI, CHARACTER_SELECT_FADE_IN)
 
 	RealmSplitCurrentChoice:Hide();
-	RequestRealmSplitInfo();
 
 	--Clear out the addons selected item
 	GlueDropDownMenu_SetSelectedValue(AddonCharacterDropDown, ALL);
@@ -397,7 +396,7 @@ function UpdateCharacterList(skipSelect)
 	end
 	local debugText = numChars..": ";
 	for i=1, numChars, 1 do
-		local name, race, class, level, zone, sex, ghost, PCC, PRC, PFC, PRCDisabled = GetCharacterInfo(GetCharIDFromIndex(i+CHARACTER_LIST_OFFSET));
+		local name, race, class, classFileName, classID, level, zone, sex, ghost, PCC, PRC, PFC, PRCDisabled = GetCharacterInfo(GetCharIDFromIndex(i+CHARACTER_LIST_OFFSET));
 		local button = _G["CharSelectCharacterButton"..index];
 		if ( name ) then
 			if ( not zone ) then
@@ -604,7 +603,7 @@ function CharacterSelect_SelectCharacter(index, noCreate)
 end
 
 function CharacterDeleteDialog_OnShow()
-	local name, race, class, level = GetCharacterInfo(GetCharIDFromIndex(CharacterSelect.selectedIndex));
+	local name, race, class, classFileName, classID, level = GetCharacterInfo(GetCharIDFromIndex(CharacterSelect.selectedIndex));
 	CharacterDeleteText1:SetFormattedText(CONFIRM_CHAR_DELETE, name, level, class);
 	CharacterDeleteBackground:SetHeight(16 + CharacterDeleteText1:GetHeight() + CharacterDeleteText2:GetHeight() + 23 + CharacterDeleteEditBox:GetHeight() + 8 + CharacterDeleteButton1:GetHeight() + 16);
 	CharacterDeleteButton1:Disable();
@@ -1051,3 +1050,4 @@ function CharacterSelect_ActivateFactionChange()
 		GetCharacterListUpdate();
 	end
 end
+

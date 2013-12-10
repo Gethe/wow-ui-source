@@ -60,6 +60,21 @@ StaticPopupDialogs["ERR_SOR_STARTING_EXPERIENCE_INCOMPLETE"] = {
 	showAlert = 1,
 }
 
+StaticPopupDialogs["ERR_AUTH_CHALLENGE_UI_INVALID"] = {
+	text = ERR_AUTH_CHALLENGE_UI_INVALID,
+	button1 = OKAY,
+	button2 = nil,
+	timeout = 0,
+	OnAccept = function()
+	end,
+	OnCancel = function()
+	end,
+	whileDead = 1,
+	hideOnEscape = 1,
+	showAlert = 1,
+	exclusive = 1,
+}
+
 StaticPopupDialogs["CONFIRM_DELETE_EQUIPMENT_SET"] = {
 	text = CONFIRM_DELETE_EQUIPMENT_SET,
 	button1 = YES,
@@ -189,6 +204,13 @@ StaticPopupDialogs["MAC_OPEN_UNIVERSAL_ACCESS"] = {
 	end,
 	OnCancel = function()
 		ShowUIPanel(MacOptionsFrame);
+	end,
+	OnShow = function(self)
+		if (MacOptions_HasNewStyleUniversalAccess() and MAC_OPEN_UNIVERSAL_ACCESS1090 ~= nil) then
+			self.text:SetFormattedText(MAC_OPEN_UNIVERSAL_ACCESS1090, MacOptions_GetGameBundleName());
+		else
+			self.text:SetText(MAC_OPEN_UNIVERSAL_ACCESS);
+		end
 	end,
 	showAlert = 1,
 	timeout = 0,
@@ -2047,6 +2069,7 @@ StaticPopupDialogs["ADD_IGNORE"] = {
 	button1 = ACCEPT,
 	button2 = CANCEL,
 	hasEditBox = 1,
+	autoCompleteParams = AUTOCOMPLETE_LIST.IGNORE,
 	maxLetters = 12 + 1 + 64, --name space realm (77 max)
 	OnAccept = function(self)
 		AddIgnore(self.editBox:GetText());
@@ -2231,8 +2254,7 @@ StaticPopupDialogs["SET_GUILDOFFICERNOTE"] = {
 		GuildRosterSetOfficerNote(GetGuildRosterSelection(), self.editBox:GetText());
 	end,
 	OnShow = function(self)
-		local name, rank, rankIndex, level, class, zone, note, officernote, online;
-		name, rank, rankIndex, level, class, zone, note, officernote, online = GetGuildRosterInfo(GetGuildRosterSelection());
+		local fullName, rank, rankIndex, level, class, zone, note, officernote, online = GetGuildRosterInfo(GetGuildRosterSelection());
 
 		self.editBox:SetText(select(8, GetGuildRosterInfo(GetGuildRosterSelection())));
 		self.editBox:SetFocus();

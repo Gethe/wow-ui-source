@@ -213,7 +213,8 @@ function UIParent_OnLoad(self)
 	self:RegisterEvent("SPELL_CONFIRMATION_PROMPT");
 	self:RegisterEvent("SPELL_CONFIRMATION_TIMEOUT");
 	self:RegisterEvent("SAVED_VARIABLES_TOO_LARGE");
-	
+	self:RegisterEvent("AUTH_CHALLENGE_UI_INVALID");
+
 	-- Events for auction UI handling
 	self:RegisterEvent("AUCTION_HOUSE_SHOW");
 	self:RegisterEvent("AUCTION_HOUSE_CLOSED");
@@ -292,6 +293,9 @@ function UIParent_OnLoad(self)
 	
 	-- Events for Quest Choice
 	self:RegisterEvent("QUEST_CHOICE_UPDATE");
+
+	-- Lua warnings
+	self:RegisterEvent("LUA_WARNING");
 end
 
 
@@ -1279,7 +1283,9 @@ function UIParent_OnEvent(self, event, ...)
 		else
 			StaticPopup_Show("TALENTS_INVOLUNTARILY_RESET");
 		end
-	
+	elseif( event == "AUTH_CHALLENGE_UI_INVALID" ) then
+		StaticPopup_Show("ERR_AUTH_CHALLENGE_UI_INVALID");
+		
 	-- Events for Reforging UI handling
 	elseif ( event == "FORGE_MASTER_OPENED" ) then
 		Reforging_LoadUI();
@@ -1361,13 +1367,32 @@ function UIParent_OnEvent(self, event, ...)
 	elseif ( event == "PET_JOURNAL_NEW_BATTLE_SLOT" ) then
 		CompanionsMicroButtonAlert:Show();
 		MicroButtonPulse(CompanionsMicroButton);
-	
+		
 	-- Quest Choice trigger event
 	
-	elseif (event == "QUEST_CHOICE_UPDATE") then
+	elseif ( event == "QUEST_CHOICE_UPDATE" ) then
 		QuestChoice_LoadUI();
 		if ( QuestChoiceFrame_Show) then
 			QuestChoiceFrame_Show();
+		end
+	elseif ( event == "LUA_WARNING" ) then
+		local warnType, message = ...;
+		debuginfo();
+		LoadAddOn("Blizzard_DebugTools");
+		local loaded = IsAddOnLoaded("Blizzard_DebugTools");
+		
+		local cvarName = "scriptWarnings";
+		if ( warnType == LUA_WARNING_TREAT_AS_ERROR ) then
+			cvarName = "scriptErrors";
+		end
+
+		if ( GetCVarBool(cvarName) ) then
+			if ( loaded ) then
+				ScriptErrorsFrame_OnError(message, warnType);
+			end
+		elseif ( loaded ) then
+			local HIDE_ERROR_FRAME = true;
+			ScriptErrorsFrame_OnError(message, warnType, HIDE_ERROR_FRAME);
 		end
 	end
 end
@@ -3155,6 +3180,8 @@ function ToggleGameMenu()
 	if ( not UIParent:IsShown() ) then
 		UIParent:Show();
 		SetUIVisibility(true);
+	elseif ( ModelPreviewFrame:IsShown() ) then
+		ModelPreviewFrame:Hide();
 	elseif ( StoreFrame_EscapePressed and StoreFrame_EscapePressed() ) then
 	elseif ( securecall("StaticPopup_EscapePressed") ) then
 	elseif ( GameMenuFrame:IsShown() ) then
@@ -4230,4 +4257,12 @@ function GetSmoothProgressChange(value, displayedValue, range, elapsed, minPerSe
 	else
 		return displayedValue - change;
 	end
+end
+
+function RGBToColorCode(r, g, b)
+	return format("|cff%02x%02x%02x", r*255, g*255, b*255);
+end
+
+function RGBTableToColorCode(rgbTable)
+	return RGBToColorCode(rgbTable.r, rgbTable.g, rgbTable.b);
 end

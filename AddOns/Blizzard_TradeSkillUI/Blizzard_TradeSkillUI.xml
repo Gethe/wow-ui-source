@@ -1065,7 +1065,7 @@
 						</Layers>
 						<Scripts>
 							<OnVerticalScroll>
-								FauxScrollFrame_OnVerticalScroll(self, offset, TRADE_SKILL_HEIGHT, TradeSkillGuilCraftersFrame_Update);
+								FauxScrollFrame_OnVerticalScroll(self, offset, TRADE_SKILL_HEIGHT, TradeSkillGuildCraftersFrame_Update);
 							</OnVerticalScroll>
 						</Scripts>
 					</ScrollFrame>

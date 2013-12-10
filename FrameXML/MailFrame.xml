@@ -627,6 +627,7 @@
 							<OnLoad>
 								self.autoCompleteParams = AUTOCOMPLETE_LIST.MAIL;
 								self.addHighlightedText = true;
+								self.autoCompleteContext = "mail";
 							</OnLoad>
 							<OnTabPressed>
 								if ( not AutoCompleteEditBox_OnTabPressed(self) ) then
@@ -1068,12 +1069,6 @@
 						<Anchor point="TOPRIGHT" relativePoint="TOPLEFT" x="105" y="-33"/>
 					</Anchors>
 				</FontString>
-				<FontString name="OpenMailSender" inherits="GameFontNormal" justifyH="LEFT">
-					<Size x="225" y="0"/>
-					<Anchors>
-						<Anchor point="LEFT" relativeTo="OpenMailSenderLabel" relativePoint="RIGHT" x="5" y="0"/>
-					</Anchors>
-				</FontString>
 				<FontString name="OpenMailSubjectLabel" inherits="GameFontHighlight" text="MAIL_SUBJECT_LABEL">
 					<Size x="0" y="16"/>
 					<Anchors>
@@ -1112,6 +1107,32 @@
 					<OnClick function="OpenMail_ReportSpam"/>
 				</Scripts>
 			</Button>
+			<Frame name="OpenMailSender">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="OpenMailSenderLabel" relativePoint="TOPRIGHT" x="5" y="0"/>
+					<Anchor point="BOTTOMRIGHT" relativeTo="OpenMailReportSpamButton" relativePoint="BOTTOMLEFT" x="-5" y="0"/>
+				</Anchors>
+				<Layers>
+					<Layer level="ARTWORK">
+						<FontString parentKey="Name" inherits="GameFontNormal" justifyH="LEFT">
+							<Anchors>
+								<Anchor point="LEFT" />
+								<Anchor point="RIGHT" />
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnEnter>
+						if ( self.Name:IsTruncated() ) then
+							GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+							GameTooltip:SetText(self.Name:GetText());
+							GameTooltip:Show();
+						end
+					</OnEnter>
+					<OnLeave function="GameTooltip_Hide"/>
+				</Scripts>
+			</Frame>
 			<ScrollFrame name="OpenMailScrollFrame" inherits="UIPanelScrollFrameTemplate">
 				<Size x="296" y="257"/>
 				<Anchors>

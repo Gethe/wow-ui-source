@@ -7,3 +7,11 @@ tbl = nil;	--This file shouldn't be calling back into secure code.
 function Outbound.UpdateMicroButtons()
 	securecall("UpdateMicroButtons");
 end
+
+function Outbound.ShowPreview(name, modelID)
+	securecall("StoreShowPreview", name, modelID);
+end
+
+function Outbound.HidePreviewFrame()
+	securecall("HidePreviewFrame");
+end

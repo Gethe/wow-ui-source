@@ -2089,7 +2089,7 @@ function LFGCooldownCover_Update(self)
 		self:SetScript("OnUpdate", nil);
 	end
 	
-	if ( shouldShow and ( not self.backfill or not self.backfillFrame:IsShown() ) ) then
+	if ( shouldShow and ( not self.backfillFrame or not self.backfillFrame:IsShown() ) ) then
 		self:Show();
 	else
 		self:Hide();

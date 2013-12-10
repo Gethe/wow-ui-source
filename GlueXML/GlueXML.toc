@@ -2,9 +2,11 @@
 GlueStrings.lua
 GlueFonts.xml
 GlueFontStyles.xml
+GlueFontStyleOverrides.xml
 GlueLocalization.xml
 ## add new files after here
 
+..\SharedXML\SharedUIPanelTemplates.xml
 ..\FrameXML\Util.lua
 GlueBasicControls.xml
 GlueParent.xml
@@ -37,6 +39,8 @@ AudioOptionsPanels.xml
 StarterEditionPopUp.xml
 PromotionFrame.xml
 GlueMenuFrame.xml
+..\SharedXML\ModelFrames.xml
+..\SharedXML\ModelPreviewFrame.xml
 
 ## This Always Runs Last, Add New Items above it.
 GlueLocalizationPost.xml

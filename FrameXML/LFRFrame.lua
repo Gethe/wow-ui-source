@@ -43,6 +43,7 @@ function LFRFrame_OnEvent(self, event, ...)
 			LFRBrowseFrameList_Update();
 		end
 	elseif ( event == "LFG_UPDATE" or event == "GROUP_ROSTER_UPDATE" ) then
+--		local inParty, joined, queued, noPartialClear, achievements, lfgComment, slotCount, category, requestedLeader, requestedTank, requestedHealer, requestedDamage, needTank, needHealer, needDamage = GetLFGInfoServer(LE_LFG_CATEGORY_LFR);
 		local inParty, joined, queued, noPartialClear, achievements, lfgComment, slotCount = GetLFGInfoServer(LE_LFG_CATEGORY_LFR);
 		local inGroup = IsInGroup();
 		if ( inGroup ~= self.lastInGroup ) then
@@ -495,6 +496,7 @@ function LFRBrowseFrameList_Update()
 end
 
 function LFRBrowseFrameListButton_SetData(button, index)
+--	local name, level, areaName, className, comment, partyMembers, status, class, encountersTotal, encountersComplete, isIneligible, isLeader, isTank, isHealer, isDamage, bossKills, specID, isGroupLeader, armor, spellDamage, plusHealing, CritMelee, CritRanged, critSpell, mp5, mp5Combat, attackPower, agility, maxHealth, maxMana, gearRating, avgILevel, defenseRating, dodgeRating, BlockRating, ParryRating, HasteRating, expertise = SearchLFGGetResults(self.index);
 	local name, level, areaName, className, comment, partyMembers, status, class, encountersTotal, encountersComplete, isIneligible, isLeader, isTank, isHealer, isDamage = SearchLFGGetResults(index);
 	
 	button.index = index;
@@ -572,6 +574,7 @@ function LFRBrowseFrameListButton_SetData(button, index)
 end
 
 function LFRBrowseButton_OnEnter(self)
+--	local name, level, areaName, className, comment, partyMembers, status, class, encountersTotal, encountersComplete, isIneligible, isLeader, isTank, isHealer, isDamage, bossKills, specID, isGroupLeader, armor, spellDamage, plusHealing, CritMelee, CritRanged, critSpell, mp5, mp5Combat, attackPower, agility, maxHealth, maxMana, gearRating, avgILevel, defenseRating, dodgeRating, BlockRating, ParryRating, HasteRating, expertise = SearchLFGGetResults(self.index);
 	local name, level, areaName, className, comment, partyMembers, status, class, encountersTotal, encountersComplete, isIneligible, isLeader, isTank, isHealer, isDamage = SearchLFGGetResults(self.index);
 	GameTooltip:SetOwner(self, "ANCHOR_RIGHT", 27, -37);
 	
@@ -588,6 +591,7 @@ function LFRBrowseButton_OnEnter(self)
 		--Display ignored party members and friend party members. (You probably won't care about the rest. Though guildys would be nice at some point...)
 		local displayedMembersLabel = false;
 		for i=1, partyMembers do
+--			local name, level, relationship, className, areaName, comment, isLeader, isTank, isHealer, isDamage, bossKills, specID, isGroupLeader, armor, spellDamage, plusHealing, CritMelee, CritRanged, critSpell, mp5, mp5Combat, attackPower, agility, maxHealth, maxMana, gearRating, avgILevel, defenseRating, dodgeRating, BlockRating, ParryRating, HasteRating, expertise = SearchLFGGetPartyResults(self.index, i);
 			local name, level, relationship, className, areaName, comment = SearchLFGGetPartyResults(self.index, i);
 			if ( relationship ) then
 				if ( not displayedMembersLabel ) then

@@ -204,9 +204,9 @@ function ScrollOfResurrectionSelection_RebuildEligibleList()
 
 	--Now, add guild members:
 	for i=1, GetNumGuildMembers() do
-		local name, rank, rankIndex, level, class, zone, note, officernote, online, isAway, classFileName, achievementPoints, achievementRank, isMobile, canSoR = GetGuildRosterInfo(i);
+		local fullName, rank, rankIndex, level, class, zone, note, officernote, online, isAway, classFileName, achievementPoints, achievementRank, isMobile, canSoR = GetGuildRosterInfo(i);
 		if ( canSoR ) then
-			tinsert(SOR_AVAILABLE_LIST, name);
+			tinsert(SOR_AVAILABLE_LIST, Ambiguate(fullName, "guild"));
 			tinsert(SOR_AVAILABLE_LIST, i);
 			tinsert(SOR_AVAILABLE_LIST, "guild");
 		end

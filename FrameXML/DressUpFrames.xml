@@ -1,0 +1,335 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\FrameXML\UI.xsd">
+	<Script file="DressUpFrames.lua"/>
+	<Frame name="SideDressUpFrame" toplevel="true" parent="UIParent" enableMouse="true" hidden="true">
+		<Size>
+			<AbsDimension x="187" y="389"/>
+		</Size>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture name="$parentTop" file="Interface\AuctionFrame\AuctionHouseDressUpFrame-Top">
+					<Size>
+						<AbsDimension x="256" y="256"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT"/>
+					</Anchors>
+				</Texture>
+				<Texture file="Interface\AuctionFrame\AuctionHouseDressUpFrame-Bottom">
+					<Size>
+						<AbsDimension x="256" y="256"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="$parentTop" relativePoint="BOTTOMLEFT"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="ARTWORK">
+				<Texture parentKey="BGTopLeft" name="$parentBackgroundTop">
+					<Size>
+						<AbsDimension x="171" y="282"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset>
+								<AbsDimension x="5" y="-14"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+					<TexCoords left="0" right="0.61" top="0" bottom="1.0"/>
+				</Texture>
+				<Texture parentKey="BGBottomLeft" name="$parentBackgroundBot">
+					<Size>
+						<AbsDimension x="171" y="83"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="$parentBackgroundTop" relativePoint="BOTTOMLEFT"/>
+					</Anchors>
+					<TexCoords left="0" right="0.61" top="0" bottom="0.588"/>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Frames>
+			<DressUpModel name="SideDressUpModel" scale="1.0" inherits="ModelWithControlsTemplate">
+				<Size>
+					<AbsDimension x="172" y="400"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" x="5" y="-13"/>
+					<Anchor point="BOTTOMRIGHT" x="-11" y="11"/>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						Model_OnLoad(self, MODELFRAME_MAX_PLAYER_ZOOM);
+					</OnLoad>
+				</Scripts>
+				<Frames>
+					<Button parentKey="ResetButton" name="$parentResetButton" inherits="UIPanelButtonTemplate" text="RESET">
+						<Size>
+							<AbsDimension x="80" y="22"/>
+						</Size>
+						<Anchors>
+							<Anchor point="BOTTOM">
+								<Offset>
+									<AbsDimension x="0" y="40"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnClick>
+								SideDressUpModel:Dress();
+								PlaySound("gsTitleOptionOK");
+							</OnClick>
+						</Scripts>
+					</Button>
+					<Button name="$parentCloseButton" inherits="UIPanelCloseButton">
+						<Anchors>
+							<Anchor point="CENTER" relativeTo="SideDressUpFrame" relativePoint="TOPRIGHT">
+								<Offset>
+									<AbsDimension x="-15" y="-16"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Layers>
+							<Layer level="BACKGROUND">
+								<Texture file="Interface\AuctionFrame\AuctionHouseDressUpFrame-Corner">
+									<Size>
+										<AbsDimension x="32" y="32"/>
+									</Size>
+									<Anchors>
+										<Anchor point="TOPRIGHT" relativeTo="SideDressUpFrame">
+											<Offset>
+												<AbsDimension x="-5" y="-5"/>
+											</Offset>
+										</Anchor>
+									</Anchors>
+								</Texture>
+							</Layer>
+						</Layers>
+						<Scripts>
+							<OnClick>
+								HideUIPanel(self:GetParent():GetParent());
+							</OnClick>
+						</Scripts>
+					</Button>
+				</Frames>
+			</DressUpModel>
+		</Frames>
+		<Scripts>
+			<OnLoad>
+				self.ResetButton = SideDressUpModel.ResetButton;
+			</OnLoad>
+			<OnShow function="SideDressUpFrame_OnShow"/>
+			<OnHide function="SideDressUpFrame_OnHide"/>
+		</Scripts>
+	</Frame> 
+	<Frame name="DressUpFrame" toplevel="true" enableMouse="true" parent="UIParent" hidden="true">
+		<Size>
+			<AbsDimension x="384" y="512"/>
+		</Size>
+		<Anchors>
+			<Anchor point="TOPLEFT">
+				<Offset>
+					<AbsDimension x="512" y="-104"/>
+				</Offset>
+			</Anchor>
+		</Anchors>
+		<HitRectInsets>
+			<AbsInset left="0" right="30" top="0" bottom="45"/>
+		</HitRectInsets>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture name="DressUpFramePortrait">
+					<Size>
+						<AbsDimension x="60" y="60"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset>
+								<AbsDimension x="7" y="-6"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="ARTWORK">
+				<Texture file="Interface\PaperDollInfoFrame\UI-Character-General-TopLeft">
+					<Size>
+						<AbsDimension x="256" y="256"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT"/>
+					</Anchors>
+				</Texture>
+				<Texture file="Interface\PaperDollInfoFrame\UI-Character-General-TopRight">
+					<Size>
+						<AbsDimension x="128" y="256"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset>
+								<AbsDimension x="256" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</Texture>
+				<Texture file="Interface\PaperDollInfoFrame\SkillFrame-BotLeft">
+					<Size>
+						<AbsDimension x="256" y="256"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset>
+								<AbsDimension x="0" y="-256"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</Texture>
+				<Texture file="Interface\PaperDollInfoFrame\SkillFrame-BotRight">
+					<Size>
+						<AbsDimension x="128" y="256"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset>
+								<AbsDimension x="256" y="-256"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</Texture>
+				<FontString name="DressUpFrameTitleText" inherits="GameFontHighlight" text="DRESSUP_FRAME">
+					<Size>
+						<AbsDimension x="300" y="14"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOP" relativePoint="TOP">
+							<Offset>
+								<AbsDimension x="0" y="-16"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="DressUpFrameDescriptionText" inherits="GameFontNormalSmall" text="DRESSUP_FRAME_INSTRUCTIONS">
+					<Size>
+						<AbsDimension x="260" y="36"/>
+					</Size>
+					<Anchors>
+						<Anchor point="CENTER" relativeTo="DressUpFrameTitleText" relativePoint="BOTTOM">
+							<Offset>
+								<AbsDimension x="10" y="-22"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+			</Layer>
+			<Layer level="OVERLAY">
+				<Texture parentKey="BGTopLeft" name="DressUpBackgroundTopLeft">
+					<Size>
+						<AbsDimension x="256" y="255"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset>
+								<AbsDimension x="22" y="-76"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="BGTopRight" name="DressUpBackgroundTopRight">
+					<Size>
+						<AbsDimension x="62" y="255"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="DressUpBackgroundTopLeft" relativePoint="TOPRIGHT"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="BGBottomLeft" name="DressUpBackgroundBotLeft">
+					<Size>
+						<AbsDimension x="256" y="128"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="DressUpBackgroundTopLeft" relativePoint="BOTTOMLEFT"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="BGBottomRight" name="DressUpBackgroundBotRight">
+					<Size>
+						<AbsDimension x="62" y="128"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="DressUpBackgroundTopLeft" relativePoint="BOTTOMRIGHT"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Button name="DressUpFrameCloseButton" inherits="UIPanelCloseButton">
+				<Anchors>
+					<Anchor point="CENTER" relativePoint="TOPRIGHT">
+						<Offset>
+							<AbsDimension x="-46" y="-25"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
+			<Button name="DressUpFrameCancelButton" inherits="UIPanelButtonTemplate" text="CLOSE">
+				<Size>
+					<AbsDimension x="80" y="22"/>
+				</Size>
+				<Anchors>
+					<Anchor point="CENTER" relativePoint="TOPLEFT">
+						<Offset>
+							<AbsDimension x="305" y="-422"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick function="HideParentPanel"/>
+				</Scripts>
+			</Button>
+			<Button parentKey="ResetButton" name="DressUpFrameResetButton" inherits="UIPanelButtonTemplate" text="RESET">
+				<Size>
+					<AbsDimension x="80" y="22"/>
+				</Size>
+				<Anchors>
+					<Anchor point="RIGHT" relativeTo="DressUpFrameCancelButton" relativePoint="LEFT">
+						<Offset>
+							<AbsDimension x="0" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						DressUpModel:Dress();
+						PlaySound("gsTitleOptionOK");
+					</OnClick>
+				</Scripts>
+			</Button>
+			<DressUpModel name="DressUpModel" scale="2.0" inherits="ModelWithControlsTemplate">
+				<Size>
+					<AbsDimension x="316" y="331"/>
+				</Size>
+				<Anchors>
+					<Anchor point="BOTTOM">
+						<Offset>
+							<AbsDimension x="-11" y="105"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						Model_OnLoad(self, MODELFRAME_MAX_PLAYER_ZOOM);
+					</OnLoad>
+				</Scripts>
+			</DressUpModel>
+		</Frames>
+		<Scripts>
+			<OnShow>
+				SetPortraitTexture(DressUpFramePortrait, "player");
+				PlaySound("igCharacterInfoOpen");
+			</OnShow>
+			<OnHide>
+				PlaySound("igCharacterInfoClose");
+			</OnHide>
+		</Scripts>
+	</Frame>
+</Ui>

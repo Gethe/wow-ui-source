@@ -622,7 +622,7 @@
 							</OnClick>
 						</Scripts>
 					</Button>
-					<Frame name="$parentPartyBackfill" inherits="LFGBackfillCoverTemplate">
+					<Frame name="$parentPartyBackfill" parentKey="PartyBackfill" inherits="LFGBackfillCoverTemplate">
 						<Size>
 							<AbsDimension x="330" y="257"/>
 						</Size>

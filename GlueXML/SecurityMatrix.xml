@@ -2,7 +2,7 @@
 	<Script file="SecurityMatrix.lua"></Script> <!--My XML editor doesn't like <Script .../>.-->
 	
 	<!--Template for the matrix elements-->
-	<Font name="GlueFontNormalGargantuan" inherits="SystemFont_Shadow_Outline_Huge" virtual="true">
+	<Font name="GlueFontNormalGargantuan" inherits="SystemFont_Shadow_Outline_Huge2" virtual="true">
 		<!--12 is good for 32x32 buttons and 22 is good for 64x64 buttons-->
 		<Color r="1.0" g="0.82" b="0"/>
 	</Font>

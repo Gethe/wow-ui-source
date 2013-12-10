@@ -12,14 +12,11 @@
 	<Texture name="UIPanelButtonDisabledDownTexture" file="Interface\Buttons\UI-Panel-Button-Disabled-Down" virtual="true">
 		<TexCoords left="0" right="0.625" top="0" bottom="0.6875"/>
 	</Texture>
-	<Texture name="UIPanelButtonHighlightTexture" file="Interface\Buttons\UI-Panel-Button-Highlight" alphaMode="ADD" virtual="true">
-		<TexCoords left="0" right="0.625" top="0" bottom="0.6875"/>
-	</Texture>
-	<Button name="UIPanelButtonTemplate" virtual="true">
+	<Button name="UIPanelGoldButtonTemplate" virtual="true">
 		<Size x="40" y="22"/>
 		<Layers>
 			<Layer level="BACKGROUND">
-				<Texture parentKey="Left" file="Interface\Buttons\UI-Panel-Button-Up">
+				<Texture parentKey="Left" file="UI-DialogBox-Button-Gold-Up">
 					<Size x="12" y="22"/>
 					<Anchors>
 						<Anchor point="TOPLEFT"/>
@@ -27,15 +24,15 @@
 					</Anchors>
 					<TexCoords left="0" right="0.09375" top="0" bottom="0.6875"/>
 				</Texture>
-				<Texture parentKey="Right" file="Interface\Buttons\UI-Panel-Button-Up">
+				<Texture parentKey="Right" file="UI-DialogBox-Button-Gold-Up">
 					<Size x="12" y="22"/>
 					<Anchors>
 						<Anchor point="TOPRIGHT"/>
 						<Anchor point="BOTTOMRIGHT"/>
 					</Anchors>
-					<TexCoords left="0.53125" right="0.625" top="0" bottom="0.6875"/>
+					<TexCoords left="0.90625" right="1.0" top="0" bottom="0.6875"/>
 				</Texture>
-				<Texture parentKey="Middle" file="Interface\Buttons\UI-Panel-Button-Up">
+				<Texture parentKey="Middle" file="UI-DialogBox-Button-Gold-Up">
 					<Size x="12" y="22"/>
 					<Anchors>
 						<Anchor point="TOPLEFT" relativeKey="$parent.Left" relativePoint="TOPRIGHT"/>
@@ -48,42 +45,42 @@
 		<Scripts>
 			<OnLoad>
 				if ( not self:IsEnabled() ) then
-					self.Left:SetTexture("Interface\\Buttons\\UI-Panel-Button-Disabled");
-					self.Middle:SetTexture("Interface\\Buttons\\UI-Panel-Button-Disabled");
-					self.Right:SetTexture("Interface\\Buttons\\UI-Panel-Button-Disabled");
+					self.Left:SetTexture("UI-DialogBox-Button-Gold-Disabled");
+					self.Middle:SetTexture("UI-DialogBox-Button-Gold-Disabled");
+					self.Right:SetTexture("UI-DialogBox-Button-Gold-Disabled");
 				end
 			</OnLoad>
 			<OnMouseDown>
 				if ( self:IsEnabled() ) then
-					self.Left:SetTexture("Interface\\Buttons\\UI-Panel-Button-Down");
-					self.Middle:SetTexture("Interface\\Buttons\\UI-Panel-Button-Down");
-					self.Right:SetTexture("Interface\\Buttons\\UI-Panel-Button-Down");
+					self.Left:SetTexture("UI-DialogBox-Button-Gold-Down");
+					self.Middle:SetTexture("UI-DialogBox-Button-Gold-Down");
+					self.Right:SetTexture("UI-DialogBox-Button-Gold-Down");
 				end
 			</OnMouseDown>
 			<OnMouseUp>
 				if ( self:IsEnabled() ) then
-					self.Left:SetTexture("Interface\\Buttons\\UI-Panel-Button-Up");
-					self.Middle:SetTexture("Interface\\Buttons\\UI-Panel-Button-Up");
-					self.Right:SetTexture("Interface\\Buttons\\UI-Panel-Button-Up");
+					self.Left:SetTexture("UI-DialogBox-Button-Gold-Up");
+					self.Middle:SetTexture("UI-DialogBox-Button-Gold-Up");
+					self.Right:SetTexture("UI-DialogBox-Button-Gold-Up");
 				end
 			</OnMouseUp>
 			<OnShow>
 				if ( self:IsEnabled() ) then
 					-- we need to reset our textures just in case we were hidden before a mouse up fired
-					self.Left:SetTexture("Interface\\Buttons\\UI-Panel-Button-Up");
-					self.Middle:SetTexture("Interface\\Buttons\\UI-Panel-Button-Up");
-					self.Right:SetTexture("Interface\\Buttons\\UI-Panel-Button-Up");
+					self.Left:SetTexture("UI-DialogBox-Button-Gold-Up");
+					self.Middle:SetTexture("UI-DialogBox-Button-Gold-Up");
+					self.Right:SetTexture("UI-DialogBox-Button-Gold-Up");
 				end
 			</OnShow>
 			<OnDisable>
-				self.Left:SetTexture("Interface\\Buttons\\UI-Panel-Button-Disabled");
-				self.Middle:SetTexture("Interface\\Buttons\\UI-Panel-Button-Disabled");
-				self.Right:SetTexture("Interface\\Buttons\\UI-Panel-Button-Disabled");
+				self.Left:SetTexture("UI-DialogBox-Button-Gold-Disabled");
+				self.Middle:SetTexture("UI-DialogBox-Button-Gold-Disabled");
+				self.Right:SetTexture("UI-DialogBox-Button-Gold-Disabled");
 			</OnDisable>
 			<OnEnable>
-				self.Left:SetTexture("Interface\\Buttons\\UI-Panel-Button-Up");
-				self.Middle:SetTexture("Interface\\Buttons\\UI-Panel-Button-Up");
-				self.Right:SetTexture("Interface\\Buttons\\UI-Panel-Button-Up");
+				self.Left:SetTexture("UI-DialogBox-Button-Gold-Up");
+				self.Middle:SetTexture("UI-DialogBox-Button-Gold-Up");
+				self.Right:SetTexture("UI-DialogBox-Button-Gold-Up");
 			</OnEnable>
 			<OnEnter>
 				if(self.tooltipText ~= nil) then
@@ -270,20 +267,6 @@
 		<PushedTexture inherits="UIPanelButtonDisabledDownTexture"/>
 		<DisabledTexture inherits="UIPanelButtonDisabledTexture"/>
 		<HighlightTexture inherits="UIPanelButtonHighlightTexture"/>
-	</Button>
-	<Button name="UIPanelCloseButton" virtual="true">
-		<Size>
-			<AbsDimension x="32" y="32"/>
-		</Size>
-		<Scripts>
-			<OnClick>
-				HideParentPanel(self);
-			</OnClick>
-		</Scripts>
-		<DisabledTexture file="Interface\Buttons\UI-Panel-MinimizeButton-Disabled"/>
-		<NormalTexture file="Interface\Buttons\UI-Panel-MinimizeButton-Up"/>
-		<PushedTexture file="Interface\Buttons\UI-Panel-MinimizeButton-Down"/>
-		<HighlightTexture file="Interface\Buttons\UI-Panel-MinimizeButton-Highlight" alphaMode="ADD"/>
 	</Button>
 	<Texture name="UIPanelScrollBarButton" virtual="true">
 		<TexCoords left="0.20" right="0.80" top="0.25" bottom="0.75"/>
@@ -1678,85 +1661,6 @@
 		</Scripts>
 	</Button>
 	
-<!--
-*******************************************************************************
-    Texture templates for frame border pieces
-*******************************************************************************
--->
-
-	<Texture name="UI-Frame-Portrait" file="Interface\FrameGeneral\UI-Frame" virtual="true">
-		<Size x="78" y="78"/>	
-		<TexCoords left="0.00781250" right="0.61718750" top="0.00781250" bottom="0.61718750"/>	
-	</Texture>
-	<Texture name="UI-Frame-TopCornerRight" file="Interface\FrameGeneral\UI-Frame" virtual="true">
-		<Size x="33" y="33"/>	
-		<TexCoords left="0.63281250" right="0.89062500" top="0.00781250" bottom="0.26562500"/>	
-	</Texture>
-	<Texture name="UI-Frame-BtnDivRight" file="Interface\FrameGeneral\UI-Frame" virtual="true">
-		<Size x="11" y="25"/>	
-		<TexCoords left="0.90625000" right="0.99218750" top="0.00781250" bottom="0.20312500"/>	
-	</Texture>
-	<Texture name="UI-Frame-InnerTopRight" file="Interface\FrameGeneral\UI-Frame" virtual="true">
-		<Size x="6" y="6"/>	
-		<TexCoords left="0.90625000" right="0.95312500" top="0.21875000" bottom="0.26562500"/>	
-	</Texture>
-	<Texture name="UI-Frame-TopLeftCorner" file="Interface\FrameGeneral\UI-Frame" virtual="true">
-		<Size x="32" y="32"/>	
-		<TexCoords left="0.63281250" right="0.88281250" top="0.28125000" bottom="0.53125000"/>	
-	</Texture>
-	<Texture name="UI-Frame-InnerTopLeft" file="Interface\FrameGeneral\UI-Frame" virtual="true">
-		<Size x="6" y="6"/>	
-		<TexCoords left="0.63281250" right="0.67968750" top="0.54687500" bottom="0.59375000"/>	
-	</Texture>
-	<Texture name="UI-Frame-InnerBotLeftCorner" file="Interface\FrameGeneral\UI-Frame" virtual="true">
-		<Size x="6" y="6"/>	
-		<TexCoords left="0.69531250" right="0.74218750" top="0.54687500" bottom="0.59375000"/>	
-	</Texture>
-	<Texture name="UI-Frame-InnerBotRight" file="Interface\FrameGeneral\UI-Frame" virtual="true">
-		<Size x="6" y="6"/>	
-		<TexCoords left="0.75781250" right="0.80468750" top="0.54687500" bottom="0.59375000"/>	
-	</Texture>
-	<Texture name="UI-Frame-BtnCornerLeft" file="Interface\FrameGeneral\UI-Frame" virtual="true">
-		<Size x="12" y="32"/>	
-		<TexCoords left="0.89843750" right="0.99218750" top="0.28125000" bottom="0.53125000"/>	
-	</Texture>
-	<Texture name="UI-Frame-BotCornerLeft" file="Interface\FrameGeneral\UI-Frame" virtual="true">
-		<Size x="14" y="14"/>	
-		<TexCoords left="0.00781250" right="0.11718750" top="0.63281250" bottom="0.74218750"/>	
-	</Texture>
-	<Texture name="UI-Frame-TopCornerLeft" file="Interface\FrameGeneral\UI-Frame" virtual="true">
-		<Size x="14" y="14"/>	
-		<TexCoords left="0.00781250" right="0.11718750" top="0.74218750" bottom="0.63281250"/>
-	</Texture>
-	<Texture name="UI-Frame-BtnDivMiddle" file="Interface\FrameGeneral\UI-Frame" virtual="true">
-		<Size x="13" y="25"/>	
-		<TexCoords left="0.00781250" right="0.10937500" top="0.75781250" bottom="0.95312500"/>	
-	</Texture>
-	<Texture name="UI-Frame-BtnCornerRight" file="Interface\FrameGeneral\UI-Frame" virtual="true">
-		<Size x="12" y="32"/>	
-		<TexCoords left="0.13281250" right="0.22656250" top="0.63281250" bottom="0.88281250"/>	
-	</Texture>
-	<Texture name="UI-Frame-BotCornerRight" file="Interface\FrameGeneral\UI-Frame" virtual="true">
-		<Size x="11" y="11"/>	
-		<TexCoords left="0.13281250" right="0.21875000" top="0.89843750" bottom="0.98437500"/>	
-	</Texture>
-	<Texture name="UI-Frame-TopCornerRightSimple" file="Interface\FrameGeneral\UI-Frame" virtual="true">
-		<Size x="11" y="11"/>	
-		<TexCoords left="0.13281250" right="0.21875000" top="0.98437500" bottom="0.89843750"/>
-	</Texture>
-	<Texture name="UI-Frame-BtnDivLeft" file="Interface\FrameGeneral\UI-Frame" virtual="true">
-		<Size x="11" y="25"/>	
-		<TexCoords left="0.24218750" right="0.32812500" top="0.63281250" bottom="0.82812500"/>	
-	</Texture>
-	<Texture name="UI-Frame-InnerSplitLeft" file="Interface\FrameGeneral\UI-Frame" virtual="true">
-		<Size x="9" y="14"/>	
-		<TexCoords left="0.24218750" right="0.31250000" top="0.84375000" bottom="0.95312500"/>	
-	</Texture>
-	<Texture name="UI-Frame-InnerSplitRight" file="Interface\FrameGeneral\UI-Frame" virtual="true">
-		<Size x="9" y="14"/>	
-		<TexCoords left="0.34375000" right="0.41406250" top="0.63281250" bottom="0.74218750"/>	
-	</Texture>
-	
 	<!-- Talent Frame -->
 	
 	<Texture name="Talent-RingGlow" file="Interface\TalentFrame\TalentFrame-Parts" virtual="true" >
@@ -2000,23 +1904,6 @@
 	
 	
 <!-- Vertically tiling pieces -->
-	<Texture name="!UI-Frame-InnerRightTile" file="Interface\FrameGeneral\!UI-Frame" virtual="true" vertTile="true" >
-		<Size x="3" y="256"/>	
-		<TexCoords left="0.01562500" right="0.06250000" top="0.00000000" bottom="1.00000000"/>	
-	</Texture>
-	<Texture name="!UI-Frame-InnerLeftTile" file="Interface\FrameGeneral\!UI-Frame" virtual="true" vertTile="true" >
-		<Size x="3" y="256"/>	
-		<TexCoords left="0.09375000" right="0.14062500" top="0.00000000" bottom="1.00000000"/>	
-	</Texture>
-	<Texture name="!UI-Frame-RightTile" file="Interface\FrameGeneral\!UI-Frame" virtual="true" vertTile="true" >
-		<Size x="10" y="256"/>	
-		<TexCoords left="0.17187500" right="0.32812500" top="0.00000000" bottom="1.00000000"/>	
-	</Texture>
-	<Texture name="!UI-Frame-LeftTile" file="Interface\FrameGeneral\!UI-Frame" virtual="true" vertTile="true" >
-		<Size x="16" y="256"/>	
-		<TexCoords left="0.35937500" right="0.60937500" top="0.00000000" bottom="1.00000000"/>	
-	</Texture>
-	
 	<Texture name="!Talent-Inner-RightTile" file="Interface\TalentFrame\TalentFrame-Vertical" virtual="true" vertTile="true" >
 		<Size x="7" y="256"/>	
 		<TexCoords left="0.15625000" right="0.26562500" top="0.00000000" bottom="1.00000000"/>	
@@ -2077,42 +1964,13 @@
 	</Texture>
 	
 <!-- Horizontally tiling pieces -->
-	<Texture name="_UI-Frame-InnerBotTile" file="Interface\FrameGeneral\_UI-Frame" virtual="true" horizTile="true" >
-		<Size x="256" y="3"/>	
-		<TexCoords left="0.00000000" right="1.00000000" top="0.00781250" bottom="0.03125000"/>	
-	</Texture>
-	<Texture name="_UI-Frame-BtnBotTile" file="Interface\FrameGeneral\_UI-Frame" virtual="true" horizTile="true" >
-		<Size x="256" y="3"/>	
-		<TexCoords left="0.00000000" right="1.00000000" top="0.04687500" bottom="0.07031250"/>	
-	</Texture>
-	<Texture name="_UI-Frame-InnerTopTile" file="Interface\FrameGeneral\_UI-Frame" virtual="true" horizTile="true" >
-		<Size x="256" y="3"/>	
-		<TexCoords left="0.00000000" right="1.00000000" top="0.08593750" bottom="0.10937500"/>	
-	</Texture>
 	<Texture name="_UI-Frame-InnerSplitTile" file="Interface\FrameGeneral\_UI-Frame" virtual="true" horizTile="true" >
 		<Size x="256" y="8"/>	
 		<TexCoords left="0.00000000" right="1.00000000" top="0.12500000" bottom="0.18750000"/>	
 	</Texture>
-	<Texture name="_UI-Frame-Bot" file="Interface\FrameGeneral\_UI-Frame" virtual="true" horizTile="true" >
-		<Size x="256" y="9"/>	
-		<TexCoords left="0.00000000" right="1.00000000" top="0.20312500" bottom="0.27343750"/>	
-	</Texture>
 	<Texture name="_UI-Frame-Top" file="Interface\FrameGeneral\_UI-Frame" virtual="true" horizTile="true" >
 		<Size x="256" y="9"/>	
 		<TexCoords left="0.00000000" right="1.00000000" top="0.27343750" bottom="0.20312500"/>
-	</Texture>
-	
-	<Texture name="_UI-Frame-TitleTileBg" file="Interface\FrameGeneral\_UI-Frame" virtual="true" horizTile="true" >
-		<Size x="256" y="17"/>	
-		<TexCoords left="0.00000000" right="1.00000000" top="0.28906250" bottom="0.42187500"/>	
-	</Texture>
-	<Texture name="_UI-Frame-TitleTile" file="Interface\FrameGeneral\_UI-Frame" virtual="true" horizTile="true" >
-		<Size x="256" y="28"/>	
-		<TexCoords left="0.00000000" right="1.00000000" top="0.43750000" bottom="0.65625000"/>	
-	</Texture>
-	<Texture name="_UI-Frame-TopTileStreaks" file="Interface\FrameGeneral\_UI-Frame" virtual="true" horizTile="true" >
-		<Size x="256" y="37"/>	
-		<TexCoords left="0.00000000" right="1.00000000" top="0.67187500" bottom="0.96093750"/>	
 	</Texture>
 
 	<Texture name="_Talent-Inner-TopTile" file="Interface\TalentFrame\TalentFrame-Horizontal" virtual="true" horizTile="true" >
@@ -2639,186 +2497,12 @@
 	
 <!--
 *******************************************************************************
-    PortraitFrameTemplate
-	This is an empty frame with space for a portrait/icon in the top left corner.
-*******************************************************************************
--->
-	<Frame name="PortraitFrameTemplate" virtual="true">
-		<Size x="338" y="424"/>
-		<Layers>
-			<Layer level="BACKGROUND" textureSubLevel="-6">
-				<Texture name="$parentBg" file="Interface\FrameGeneral\UI-Background-Rock" horizTile="true" vertTile="true">
-					<Anchors>
-						<Anchor point="TOPLEFT" x="2" y="-21"/>
-						<Anchor point="BOTTOMRIGHT" x="-2" y="2"/>
-					</Anchors>
-				</Texture>
-				<Texture name="$parentTitleBg" inherits="_UI-Frame-TitleTileBG">
-					<Anchors>
-						<Anchor point="TOPLEFT" x="2" y="-3"/>
-						<Anchor point="TOPRIGHT" x="-25" y="-3"/>
-					</Anchors>
-				</Texture>
-			</Layer>
-			<Layer level="OVERLAY" textureSubLevel="-1">
-				<Texture name="$parentPortrait" parentKey="portrait">
-					<Size x="60" y="60"/>
-					<Anchors>
-						<Anchor point="TOPLEFT" x="-6" y="7" />
-					</Anchors>
-				</Texture>
-			</Layer>
-			<Layer level="OVERLAY">
-				<Texture name="$parentPortraitFrame" inherits="UI-Frame-Portrait" parentKey="portraitFrame">
-					<Anchors>
-						<Anchor point="TOPLEFT" x="-14" y="11"/>
-					</Anchors>
-				</Texture>
-				<Texture name="$parentTopRightCorner" inherits="UI-Frame-TopCornerRight">
-					<Anchors>
-						<Anchor point="TOPRIGHT" x="0" y="1"/>
-					</Anchors>
-				</Texture>
-				<Texture name="$parentTopLeftCorner" inherits="UI-Frame-TopLeftCorner" hidden="true" parentKey="topLeftCorner">
-					<Anchors>
-						<Anchor point="TOPLEFT" x="-6" y="1"/>
-					</Anchors>
-				</Texture>
-				<Texture name="$parentTopBorder" inherits="_UI-Frame-TitleTile" parentKey="topBorderBar">
-					<Anchors>
-						<Anchor point="TOPLEFT" relativeTo="$parentPortraitFrame" relativePoint="TOPRIGHT" x="0" y="-10" />
-						<Anchor point="TOPRIGHT" relativeTo="$parentTopRightCorner" relativePoint="TOPLEFT"/>
-					</Anchors>
-				</Texture>
-				<FontString name="$parentTitleText" inherits="GameFontNormal" text="" parentKey="TitleText">
-					<Anchors>
-						<Anchor point="TOP" x="0" y="-4"/>
-						<Anchor point="LEFT" x="60"/>
-						<Anchor point="RIGHT" x="-60"/>
-					</Anchors>
-				</FontString>
-			</Layer>
-			<Layer level="BORDER">
-				<Texture name="$parentTopTileStreaks" inherits="_UI-Frame-TopTileStreaks" parentKey="TopTileStreaks">
-					<Anchors>
-						<Anchor point="TOPLEFT" x="0" y="-21"/>
-						<Anchor point="TOPRIGHT" x="-2" y="-21"/>
-					</Anchors>
-				</Texture>
-				<Texture name="$parentBotLeftCorner" inherits="UI-Frame-BotCornerLeft">
-					<Anchors>
-						<Anchor point="BOTTOMLEFT" x="-6" y="-5"/>
-					</Anchors>
-				</Texture>
-				<Texture name="$parentBotRightCorner" inherits="UI-Frame-BotCornerRight">
-					<Anchors>
-						<Anchor point="BOTTOMRIGHT" x="0" y="-5"/>
-					</Anchors>
-				</Texture>
-				<Texture name="$parentBottomBorder" inherits="_UI-Frame-Bot">
-					<Anchors>
-						<Anchor point="BOTTOMLEFT" relativeTo="$parentBotLeftCorner" relativePoint="BOTTOMRIGHT" y="0"/>
-						<Anchor point="BOTTOMRIGHT" relativeTo="$parentBotRightCorner" relativePoint="BOTTOMLEFT" y="0"/>
-					</Anchors>
-				</Texture>
-				<Texture name="$parentLeftBorder" inherits="!UI-Frame-LeftTile" parentKey="leftBorderBar">
-					<Anchors>
-						<Anchor point="TOPLEFT" relativeTo="$parentPortraitFrame" relativePoint="BOTTOMLEFT" x="8" y="0" />
-						<Anchor point="BOTTOMLEFT" relativeTo="$parentBotLeftCorner" relativePoint="TOPLEFT"/>
-					</Anchors>
-				</Texture>
-				<Texture name="$parentRightBorder" inherits="!UI-Frame-RightTile">
-					<Anchors>
-						<Anchor point="TOPRIGHT" relativeTo="$parentTopRightCorner" relativePoint="BOTTOMRIGHT" x="1"/>
-						<Anchor point="BOTTOMRIGHT" relativeTo="$parentBotRightCorner" relativePoint="TOPRIGHT"/>
-					</Anchors>
-				</Texture>
-			</Layer>
-		</Layers>
-		<Frames>
-			<Button name="$parentCloseButton" inherits="UIPanelCloseButton">
-				<Anchors>
-					<Anchor point="TOPRIGHT" relativePoint="TOPRIGHT">
-						<Offset x="4" y="5"/>
-					</Anchor>
-				</Anchors>
-				<Scripts>
-					<OnClick function="PortraitFrameCloseButton_OnClick" />
-				</Scripts>
-			</Button>
-		</Frames>
-	</Frame>
-	
-<!--
-*******************************************************************************
     InsetFrameTemplate
 
 	This is the inner frame used by ButtonFrameTemplate
+	InsetFrameTemplate is shared
 *******************************************************************************
 -->
-	<Frame name="InsetFrameTemplate" virtual="true">
-		<Size x="64" y="64"/>
-		<Layers>
-			<Layer level="BACKGROUND" textureSubLevel="-5">
-				<Texture name="$parentBg" file="Interface\FrameGeneral\UI-Background-Marble" horizTile="true" vertTile="true" parentKey="Bg">
-					<Anchors>
-						<Anchor point="TOPLEFT"/>
-						<Anchor point="BOTTOMRIGHT"/>
-					</Anchors>
-				</Texture>
-			</Layer>
-			<Layer level="BORDER" textureSubLevel="-5">
-				<Texture name="$parentInsetTopLeftCorner" inherits="UI-Frame-InnerTopLeft" parentKey="InsetBorderTopLeft">
-					<Anchors>
-						<Anchor point="TOPLEFT" relativeKey="$parent.Bg"/>
-					</Anchors>
-				</Texture>
-				<Texture name="$parentInsetTopRightCorner" inherits="UI-Frame-InnerTopRight" parentKey="InsetBorderTopRight">
-					<Anchors>
-						<Anchor point="TOPRIGHT" relativeKey="$parent.Bg"/>
-					</Anchors>
-				</Texture>
-				
-				<Texture name="$parentInsetBotLeftCorner" inherits="UI-Frame-InnerBotLeftCorner" parentKey="InsetBorderBottomLeft">
-					<Anchors>
-						<Anchor point="BOTTOMLEFT" relativeKey="$parent.Bg" y="-1"/>
-					</Anchors>
-				</Texture>
-				
-				<Texture name="$parentInsetBotRightCorner" inherits="UI-Frame-InnerBotRight" parentKey="InsetBorderBottomRight">
-					<Anchors>
-						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Bg" y="-1"/>
-					</Anchors>
-				</Texture>
-
-				<Texture name="$parentInsetTopBorder" inherits="_UI-Frame-InnerTopTile" parentKey="InsetBorderTop">
-					<Anchors>
-						<Anchor point="TOPLEFT" relativeKey="$parent.InsetBorderTopLeft" relativePoint="TOPRIGHT"/>
-						<Anchor point="TOPRIGHT" relativeKey="$parent.InsetBorderTopRight" relativePoint="TOPLEFT"/>
-					</Anchors>
-				</Texture>
-				<Texture name="$parentInsetBottomBorder" inherits="_UI-Frame-InnerBotTile" parentKey="InsetBorderBottom">
-					<Anchors>
-						<Anchor point="BOTTOMLEFT" relativeKey="$parent.InsetBorderBottomLeft" relativePoint="BOTTOMRIGHT"/>
-						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.InsetBorderBottomRight" relativePoint="BOTTOMLEFT"/>
-					</Anchors>
-				</Texture>
-				<Texture name="$parentInsetLeftBorder" inherits="!UI-Frame-InnerLeftTile" parentKey="InsetBorderLeft">
-					<Anchors>
-						<Anchor point="TOPLEFT" relativeKey="$parent.InsetBorderTopLeft" relativePoint="BOTTOMLEFT" x="0" y="0" />
-						<Anchor point="BOTTOMLEFT" relativeKey="$parent.InsetBorderBottomLeft" relativePoint="TOPLEFT"/>
-					</Anchors>
-				</Texture>
-				<Texture name="$parentInsetRightBorder" inherits="!UI-Frame-InnerRightTile" parentKey="InsetBorderRight">
-					<Anchors>
-						<Anchor point="TOPRIGHT" relativeKey="$parent.InsetBorderTopRight" relativePoint="BOTTOMRIGHT"/>
-						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.InsetBorderBottomRight" relativePoint="TOPRIGHT"/>
-					</Anchors>
-				</Texture>	
-			</Layer>
-		</Layers>
-	</Frame>
-	
 	<Frame name="InsetFrameTemplate2" virtual="true">
 		<Layers>
 			<Layer level="BORDER">
@@ -2946,49 +2630,6 @@
 			</Layer>
 		</Layers>
 	</Frame>
-	
-<!--
-*******************************************************************************
-    ButtonFrameTemplate
-	This is a Portrait Frame that also has space for buttons along the bottom 
-	edge, and includes an inset content area.
-	
-	Show/hide the Button bar using:
-	ButtonFrameTemplate_HideButtonBar(self)
-	ButtonFrameTemplate_ShowButtonBar(self)
-*******************************************************************************
--->
-	<Frame name="ButtonFrameTemplate" inherits="PortraitFrameTemplate" virtual="true">
-		<Layers>
-			<Layer level="BORDER" textureSubLevel="1">
-				<Texture name="$parentBtnCornerLeft" inherits="UI-Frame-BtnCornerLeft">
-					<Anchors>
-						<Anchor point="BOTTOMLEFT" x="-2" y="-1"/>
-					</Anchors>
-				</Texture>
-				<Texture name="$parentBtnCornerRight" inherits="UI-Frame-BtnCornerRight">
-					<Anchors>
-						<Anchor point="BOTTOMRIGHT" x="0" y="-1"/>
-					</Anchors>
-				</Texture>
-				<Texture name="$parentButtonBottomBorder" inherits="_UI-Frame-BtnBotTile">
-					<Anchors>
-						<Anchor point="BOTTOMLEFT" relativeTo="$parentBtnCornerLeft" relativePoint="BOTTOMRIGHT" y="3"/>
-						<Anchor point="BOTTOMRIGHT" relativeTo="$parentBtnCornerRight" relativePoint="BOTTOMLEFT"/>
-					</Anchors>
-				</Texture>
-			</Layer>
-		</Layers>
-		<Frames>
-			<Frame name="$parentInset" useParentLevel="true" inherits="InsetFrameTemplate" parentKey="Inset">
-				<Anchors>
-					<Anchor point="TOPLEFT" x="4" y="-60" />
-					<Anchor point="BOTTOMRIGHT" x="-6" y="26" />
-				</Anchors>
-			</Frame>
-		</Frames>
-	</Frame>
-	
 
 <!--
 *******************************************************************************
@@ -3099,27 +2740,6 @@
 		</Scripts>
 	</Button>
 	
-<!--
-*******************************************************************************
-    MagicButtonTemplate
-	This is a template for buttons that can be used with ButtonFrameTemplate.
-	Anchor either bottom corner to a ButtonFrameTemplate, or anchor either top
-	corner to another MagicButton.  The buttons will automatically be positioned
-	correctly and will be given the correct	border art.
-	
-	NOTE: If you override the OnLoad script for a Magic Button, make sure to call
-	"MagicButton_OnLoad" from within your script.
-*******************************************************************************
--->
-	<Button name="MagicButtonTemplate" inherits="UIPanelButtonTemplate" virtual="true">
-		<Size x="80" y="22"/>
-		<Scripts>
-			<OnLoad function="MagicButton_OnLoad" />
-		</Scripts>
-	</Button>
-
-	
-	
 	<Frame name="HorizontalBarTemplate" virtual="true">
 		<Size x="300" y="6"/>
 		<Layers>
@@ -3226,64 +2846,7 @@
 			</Layer>
 		</Layers>
 	</Frame>
-	
-	<Frame name="ShadowOverlayTemplate" virtual="true">
-		<Layers>
-			<Layer level="OVERLAY">
-				<Texture name="$parentTopLeft" file="Interface\Common\ShadowOverlay-Corner" parentKey="TopLeft">
-					<Anchors>
-						<Anchor point="TOPLEFT"/>
-					</Anchors>
-				</Texture>
-				<Texture name="$parentTopRight" file="Interface\Common\ShadowOverlay-Corner" parentKey="TopRight">
-					<Anchors>
-						<Anchor point="TOPRIGHT"/>
-					</Anchors>
-				</Texture>
-				<Texture name="$parentBottomLeft" file="Interface\Common\ShadowOverlay-Corner" parentKey="BottomLeft">
-					<Anchors>
-						<Anchor point="BOTTOMLEFT"/>
-					</Anchors>
-				</Texture>
-				<Texture name="$parentBottomRight" file="Interface\Common\ShadowOverlay-Corner" parentKey="BottomRight">
-					<Anchors>
-						<Anchor point="BOTTOMRIGHT"/>
-					</Anchors>
-				</Texture>
-				<Texture name="$parentTop" file="Interface\Common\ShadowOverlay-Top">
-					<Anchors>
-						<Anchor point="TOPLEFT" relativeTo="$parentTopLeft" relativePoint="TOPRIGHT"/>
-						<Anchor point="TOPRIGHT" relativeTo="$parentTopRight" relativePoint="TOPLEFT"/>
-					</Anchors>
-				</Texture>
-				<Texture name="$parentBottom" file="Interface\Common\ShadowOverlay-Bottom">
-					<Anchors>
-						<Anchor point="BOTTOMLEFT" relativeTo="$parentBottomLeft" relativePoint="BOTTOMRIGHT"/>
-						<Anchor point="BOTTOMRIGHT" relativeTo="$parentBottomRight" relativePoint="BOTTOMLEFT"/>
-					</Anchors>
-				</Texture>
-				<Texture name="$parentLeft" file="Interface\Common\ShadowOverlay-Left">
-					<Anchors>
-						<Anchor point="TOPLEFT" relativeTo="$parentTopLeft" relativePoint="BOTTOMLEFT"/>
-						<Anchor point="BOTTOMLEFT" relativeTo="$parentBottomLeft" relativePoint="TOPLEFT"/>
-					</Anchors>
-				</Texture>
-				<Texture name="$parentRight" file="Interface\Common\ShadowOverlay-Right">
-					<Anchors>
-						<Anchor point="TOPRIGHT" relativeTo="$parentTopRight" relativePoint="BOTTOMRIGHT"/>
-						<Anchor point="BOTTOMRIGHT" relativeTo="$parentBottomRight" relativePoint="TOPRIGHT"/>
-					</Anchors>
-				</Texture>
-			</Layer>
-		</Layers>
-		<Scripts>
-			<OnLoad>
-				self.TopRight:SetTexCoord(0, 1, 1, 1, 0, 0, 1, 0);
-				self.BottomRight:SetTexCoord(1, 1, 1, 0, 0, 1, 0, 0);
-				self.BottomLeft:SetTexCoord(1, 0, 0, 0, 1, 1, 0, 1);
-			</OnLoad>
-		</Scripts>
-	</Frame>
+
 	<Frame name="ShadowOverlaySmallTemplate" virtual="true">
 		<Layers>
 			<Layer level="OVERLAY">

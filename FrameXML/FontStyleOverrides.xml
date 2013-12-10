@@ -94,11 +94,26 @@
 		</FontHeight>
 	</Font>
 	
+	<Font name="GameFontNormalSmall_KO" font="Fonts\2002.TTF" alternateTo="GameFontNormalSmall" alternateAlphabetID= "0" virtual="true">
+		<Shadow x="1" y="-1">
+			<Color r="0" g="0" b="0"/>
+		</Shadow>
+		<FontHeight>
+			<AbsValue val="11"/>
+		</FontHeight>
+	</Font>
+	
+	<Font name="GameFontNormalSmall_ZH" font="Fonts\ARKai_T.ttf" alternateTo="GameFontNormalSmall" alternateAlphabetID= "1" virtual="true">
+		<Shadow x="1" y="-1">
+			<Color r="0" g="0" b="0"/>
+		</Shadow>
+		<FontHeight>
+			<AbsValue val="15"/>
+		</FontHeight>
+	</Font>
+	
 	<Font name="GameFontNormalSmall_RU" font="Fonts\FRIZQT___CYR.TTF" alternateTo="GameFontNormalSmall" alternateAlphabetID= "2" virtual="true">
-		<Shadow>
-			<Offset>
-				<AbsDimension x="1" y="-1"/>
-			</Offset>
+		<Shadow x="1" y="-1">
 			<Color r="0" g="0" b="0"/>
 		</Shadow>
 		<FontHeight>
@@ -293,12 +308,44 @@
 		</FontHeight>
 	</Font>
 	
+	<Font name="GameTooltipHeaderText_KO" font="Fonts\2002.TTF" alternateTo="GameTooltipHeaderText" alternateAlphabetID= "0" virtual="true">
+		<FontHeight>
+			<AbsValue val="12"/>
+		</FontHeight>
+	</Font>
+	<Font name="GameTooltipHeaderText_ZH" font="Fonts\ARKai_T.ttf" alternateTo="GameTooltipHeaderText" alternateAlphabetID= "1" virtual="true">
+		<FontHeight>
+			<AbsValue val="16"/>
+		</FontHeight>
+	</Font>
 	<Font name="GameTooltipHeaderText_RU" font="Fonts\FRIZQT___CYR.TTF" alternateTo="GameTooltipHeaderText" alternateAlphabetID= "2" virtual="true">
 		<FontHeight>
 			<AbsValue val="14"/>
 		</FontHeight>
 	</Font>
+	
+	<Font name="GameTooltipText_KO" font="Fonts\2002.TTF" alternateTo="GameTooltipText" alternateAlphabetID= "0" virtual="true">
+		<FontHeight>
+			<AbsValue val="13"/>
+		</FontHeight>
+	</Font>
+	<Font name="GameTooltipText_ZH" font="Fonts\ARHei.ttf" alternateTo="GameTooltipText" alternateAlphabetID= "1" virtual="true">
+		<FontHeight>
+			<AbsValue val="13"/>
+		</FontHeight>
+	</Font>
 	<Font name="GameTooltipText_RU" font="Fonts\FRIZQT___CYR.TTF" alternateTo="GameTooltipText" alternateAlphabetID= "2" virtual="true">
+		<FontHeight>
+			<AbsValue val="12"/>
+		</FontHeight>
+	</Font>
+	
+	<Font name="GameTooltipTextSmall_KO" font="Fonts\2002.TTF" alternateTo="GameTooltipTextSmall" alternateAlphabetID= "0" virtual="true">
+		<FontHeight>
+			<AbsValue val="13"/>
+		</FontHeight>
+	</Font>
+	<Font name="GameTooltipTextSmall_ZH" font="Fonts\ARHei.ttf" alternateTo="GameTooltipTextSmall" alternateAlphabetID= "1" virtual="true">
 		<FontHeight>
 			<AbsValue val="12"/>
 		</FontHeight>
@@ -309,15 +356,76 @@
 		</FontHeight>
 	</Font>
 	
+	<Font name="MailTextFontNormal_KO" font="Fonts\2002.ttf" alternateTo="MailTextFontNormal" spacing="7" alternateAlphabetID= "0" virtual="true">
+		<FontHeight>
+			<AbsValue val="14"/>
+		</FontHeight>
+	</Font>
+	<Font name="MailTextFontNormal_CH" font="Fonts\ARKai_T.ttf" alternateTo="MailTextFontNormal" alternateAlphabetID= "1" virtual="true">
+		<FontHeight>
+			<AbsValue val="15"/>
+		</FontHeight>
+	</Font>
 	<Font name="MailTextFontNormal_RU" font="Fonts\MORPHEUS_CYR.TTF" alternateTo="MailTextFontNormal" alternateAlphabetID= "2" virtual="true">
 		<FontHeight>
 			<AbsValue val="15"/>
 		</FontHeight>
 	</Font>
 		
+	<Font name="QuestFont_KO" font="Fonts\2002.TTF" spacing="3" alternateTo="QuestFont" alternateAlphabetID= "0" virtual="true">
+		<FontHeight>
+			<AbsValue val="13"/>
+		</FontHeight>
+	</Font>
+	<Font name="QuestFont_ZH" font="Fonts\ARKai_T.ttf" alternateTo="QuestFont" alternateAlphabetID= "1" virtual="true">
+		<FontHeight>
+			<AbsValue val="14"/>
+		</FontHeight>
+	</Font>
 	<Font name="QuestFont_RU" font="Fonts\FRIZQT___CYR.TTF" alternateTo="QuestFont" alternateAlphabetID= "2" virtual="true">
 		<FontHeight>
 			<AbsValue val="13"/>
+		</FontHeight>
+	</Font>
+	
+	<Font name="GameFontWhite_KO" font="Fonts\2002.TTF" alternateTo="GameFontWhite" alternateAlphabetID="0" virtual="true">
+		<FontHeight>
+			<AbsValue val="13"/>
+		</FontHeight>
+	</Font>
+	<Font name="GameFontWhite_ZH" font="Fonts\ARKai_T.ttf" alternateTo="GameFontWhite" alternateAlphabetID="1" virtual="true">
+		<FontHeight>
+			<AbsValue val="13"/>
+		</FontHeight>
+	</Font>
+	<Font name="GameFontWhite_RU" font="Fonts\FRIZQT___CYR.TTF" alternateTo="GameFontWhite" alternateAlphabetID="2" virtual="true">
+		<FontHeight>
+			<AbsValue val="12"/>
+		</FontHeight>
+	</Font>
+	
+	<Font name="GameFontNormalHuge_KO" font="Fonts\2002.TTF" alternateTo="GameFontNormalHuge" alternateAlphabetID="0" virtual="true">
+		<Shadow x="1" y="-1">
+			<Color r="0" g="0" b="0"/>
+		</Shadow>
+		<FontHeight>
+			<AbsValue val="20"/>
+		</FontHeight>
+	</Font>
+	<Font name="GameFontNormalHuge_ZH" font="Fonts\ARKai_T.ttf" alternateTo="GameFontNormalHuge" alternateAlphabetID="1" virtual="true">
+		<Shadow x="1" y="-1">
+			<Color r="0" g="0" b="0"/>
+		</Shadow>
+		<FontHeight>
+			<AbsValue val="20"/>
+		</FontHeight>
+	</Font>
+	<Font name="GameFontNormalHuge_RU" font="Fonts\FRIZQT___CYR.TTF" alternateTo="GameFontNormalHuge" alternateAlphabetID="2" virtual="true">
+		<Shadow x="1" y="-1">
+			<Color r="0" g="0" b="0"/>
+		</Shadow>
+		<FontHeight>
+			<AbsValue val="20"/>
 		</FontHeight>
 	</Font>
 </Ui>
