@@ -1,5 +1,6 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\FrameXML\UI.xsd">
+	<Script file="GameMenuFrame.lua"/>
 	<Frame name="GameMenuFrame" toplevel="true" frameStrata="DIALOG" enableMouse="true" hidden="true" parent="UIParent">
 		<Size x="195" y="270"/>
 		<Anchors>
@@ -40,6 +41,31 @@
 					<OnClick>
 						PlaySound("igMainMenuOption");
 						ToggleHelpFrame()
+					</OnClick>
+				</Scripts>
+			</Button>
+			<Button name="GameMenuButtonStore" inherits="GameMenuButtonTemplate" text="BLIZZARD_STORE" motionScriptsWhileDisabled="true">
+				<Anchors>
+					<Anchor point="TOP" relativeTo="GameMenuButtonHelp" relativePoint="BOTTOM" x="0" y="-1"/>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						self:RegisterEvent("STORE_STATUS_CHANGED");
+						GameMenuFrame_UpdateStoreButtonState(self);
+					</OnLoad>
+					<OnEvent function="GameMenuFrame_UpdateStoreButtonState"/>
+					<OnEnter>
+						if ( self.disabledTooltip ) then
+							GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+							GameTooltip:SetText(self:GetText());
+							GameTooltip:AddLine(self.disabledTooltip, RED_FONT_COLOR.r, RED_FONT_COLOR.g, RED_FONT_COLOR.b, true);
+							GameTooltip:Show();
+						end
+					</OnEnter>
+					<OnLeave function="GameTooltip_Hide"/>
+					<OnClick>
+						PlaySound("igMainMenuOption");
+						ToggleStoreUI()
 					</OnClick>
 				</Scripts>
 			</Button>
@@ -88,16 +114,6 @@
 						HideUIPanel(GameMenuFrame);
 						ShowUIPanel(MacOptionsFrame);
 					</OnClick>
-					<OnLoad>
-						if(not IsMacClient()) then
-							GameMenuButtonMacOptions:Hide();
-							GameMenuButtonUIOptions:SetPoint("TOP", GameMenuButtonOptions, "BOTTOM", 0, -1);
-						else
-							GameMenuFrame:SetHeight(GameMenuFrame:GetHeight() + 20);
-							GameMenuButtonMacOptions:Show();
-							GameMenuButtonUIOptions:SetPoint("TOP", GameMenuButtonMacOptions, "BOTTOM", 0, -1);
-						end
-					</OnLoad>
 				</Scripts>
 			</Button>
 			<Button name="GameMenuButtonKeybindings" inherits="GameMenuButtonTemplate" text="KEY_BINDINGS">
@@ -143,9 +159,6 @@
 				</Anchors>
 				<Scripts>
 					<OnShow>
-						if (GameMenuButtonRatings:IsShown()) then
-							self:SetPoint("TOP", GameMenuButtonRatings, "BOTTOM", 0, -1);
-						end;
 						if ( not StaticPopup_Visible("CAMP") and not StaticPopup_Visible("QUIT") ) then
 							self:Enable();
 						else
@@ -191,11 +204,7 @@
 			</Button>
 		</Frames>
 		<Scripts>
-			<OnShow>
-				UpdateMicroButtons();
-				Disable_BagButtons();
-				VoiceChat_Toggle();
-			</OnShow>
+			<OnShow function="GameMenuFrame_OnShow"/>
 			<OnHide>
 				UpdateMicroButtons();
 				Enable_BagButtons();
