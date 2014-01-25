@@ -17,25 +17,9 @@
 			<AbsValue val="10"/>
 		</FontHeight>
 	</Font>
-	<Font name="SystemFont_Small2" font="Fonts\FRIZQT__.TTF" virtual="true">
-		<FontHeight>
-			<AbsValue val="11"/>
-		</FontHeight>
-	</Font>
 	<Font name="SystemFont_Outline_Small" font="Fonts\FRIZQT__.TTF" outline="NORMAL" virtual="true">
 		<FontHeight>
 			<AbsValue val="10"/>
-		</FontHeight>
-	</Font>
-	<Font name="SystemFont_Shadow_Small2" font="Fonts\FRIZQT__.TTF" virtual="true">
-		<Shadow>
-			<Offset>
-				<AbsDimension x="1" y="-1"/>
-			</Offset>
-			<Color r="0" g="0" b="0"/>
-		</Shadow>
-		<FontHeight>
-			<AbsValue val="11"/>
 		</FontHeight>
 	</Font>
 	<Font name="SystemFont_Outline" font="Fonts\FRIZQT__.TTF" outline="NORMAL" virtual="true">
@@ -86,17 +70,6 @@
 			<AbsValue val="16"/>
 		</FontHeight>
 	</Font>
-	<Font name="SystemFont_Shadow_Large2" font="Fonts\FRIZQT__.TTF" virtual="true">
-		<Shadow>
-			<Offset>
-				<AbsDimension x="1" y="-1"/>
-			</Offset>
-			<Color r="0" g="0" b="0"/>
-		</Shadow>
-		<FontHeight>
-			<AbsValue val="18"/>
-		</FontHeight>
-	</Font>
 	<Font name="SystemFont_Huge1" font="Fonts\FRIZQT__.TTF" virtual="true">
 		<FontHeight>
 			<AbsValue val="20"/>
@@ -107,28 +80,6 @@
 			<AbsValue val="22"/>
 		</FontHeight>
 	</Font>
-	<Font name="SystemFont_Shadow_Huge2" font="Fonts\FRIZQT__.TTF" outline="NORMAL" virtual="true">
-		<Shadow>
-			<Offset>
-				<AbsDimension x="1" y="-1"/>
-			</Offset>
-			<Color r="0" g="0" b="0"/>
-		</Shadow>
-		<FontHeight>
-			<AbsValue val="24"/>
-		</FontHeight>
-	</Font>
-	<Font name="SystemFont_Shadow_Huge3" font="Fonts\FRIZQT__.TTF" virtual="true">
-		<Shadow>
-			<Offset>
-				<AbsDimension x="1" y="-1"/>
-			</Offset>
-			<Color r="0" g="0" b="0"/>
-		</Shadow>
-		<FontHeight>
-			<AbsValue val="25"/>
-		</FontHeight>
-	</Font>
 	<Font name="SystemFont_OutlineThick_Huge4" font="Fonts\FRIZQT__.TTF" outline="THICK" virtual="true">
 		<FontHeight>
 			<AbsValue val="26"/>
@@ -137,11 +88,6 @@
 	<Font name="SystemFont_OutlineThick_WTF" font="Fonts\FRIZQT__.TTF" outline="THICK" virtual="true">
 		<FontHeight>
 			<AbsValue val="32"/>
-		</FontHeight>
-	</Font>
-	<Font name="SystemFont_OutlineThick_WTF2" font="Fonts\FRIZQT__.TTF" virtual="true">
-		<FontHeight>
-			<AbsValue val="36"/>
 		</FontHeight>
 	</Font>
 
@@ -235,12 +181,6 @@
 			</Offset>
 			<Color r="0.49" g="0.35" b="0.05"/>
 		</Shadow>
-		<FontHeight>
-			<AbsValue val="14"/>
-		</FontHeight>
-	</Font>
-	
-	<Font name="GameTooltipHeader" font="Fonts\FRIZQT__.TTF" virtual="true">
 		<FontHeight>
 			<AbsValue val="14"/>
 		</FontHeight>

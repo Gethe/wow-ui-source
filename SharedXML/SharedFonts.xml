@@ -16,6 +16,22 @@
 			<AbsValue val="10"/>
 		</FontHeight>
 	</Font>
+	<Font name="SystemFont_Small2" font="Fonts\FRIZQT__.TTF" virtual="true">
+		<FontHeight>
+			<AbsValue val="11"/>
+		</FontHeight>
+	</Font>
+	<Font name="SystemFont_Shadow_Small2" font="Fonts\FRIZQT__.TTF" virtual="true">
+		<Shadow>
+			<Offset>
+				<AbsDimension x="1" y="-1"/>
+			</Offset>
+			<Color r="0" g="0" b="0"/>
+		</Shadow>
+		<FontHeight>
+			<AbsValue val="11"/>
+		</FontHeight>
+	</Font>	
 	<Font name="SystemFont_Shadow_Med1_Outline" font="Fonts\FRIZQT__.TTF" outline="NORMAL" virtual="true">
 		<Shadow>
 			<Offset>
@@ -59,6 +75,17 @@
 			<AbsValue val="16"/>
 		</FontHeight>
 	</Font>
+	<Font name="SystemFont_Shadow_Large2" font="Fonts\FRIZQT__.TTF" virtual="true">
+		<Shadow>
+			<Offset>
+				<AbsDimension x="1" y="-1"/>
+			</Offset>
+			<Color r="0" g="0" b="0"/>
+		</Shadow>
+		<FontHeight>
+			<AbsValue val="18"/>
+		</FontHeight>
+	</Font>	
 	<Font name="SystemFont_Shadow_Huge1" font="Fonts\FRIZQT__.TTF" virtual="true">
 		<Shadow>
 			<Offset>
@@ -68,6 +95,28 @@
 		</Shadow>
 		<FontHeight>
 			<AbsValue val="20"/>
+		</FontHeight>
+	</Font>	
+	<Font name="SystemFont_Shadow_Huge2" font="Fonts\FRIZQT__.TTF" outline="NORMAL" virtual="true">
+		<Shadow>
+			<Offset>
+				<AbsDimension x="1" y="-1"/>
+			</Offset>
+			<Color r="0" g="0" b="0"/>
+		</Shadow>
+		<FontHeight>
+			<AbsValue val="24"/>
+		</FontHeight>
+	</Font>	
+	<Font name="SystemFont_Shadow_Huge3" font="Fonts\FRIZQT__.TTF" virtual="true">
+		<Shadow>
+			<Offset>
+				<AbsDimension x="1" y="-1"/>
+			</Offset>
+			<Color r="0" g="0" b="0"/>
+		</Shadow>
+		<FontHeight>
+			<AbsValue val="25"/>
 		</FontHeight>
 	</Font>	
 	<Font name="SystemFont_Shadow_Outline_Huge2" font="Fonts\FRIZQT__.TTF" outline="NORMAL" virtual="true">
@@ -97,4 +146,14 @@
 			<AbsValue val="13"/>
 		</FontHeight>
 	</Font>
+	<Font name="SystemFont_OutlineThick_WTF2" font="Fonts\FRIZQT__.TTF" virtual="true">
+		<FontHeight>
+			<AbsValue val="36"/>
+		</FontHeight>
+	</Font>	
+	<Font name="GameTooltipHeader" font="Fonts\FRIZQT__.TTF" virtual="true">
+		<FontHeight>
+			<AbsValue val="14"/>
+		</FontHeight>
+	</Font>	
 </Ui>

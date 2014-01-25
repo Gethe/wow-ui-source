@@ -59,6 +59,15 @@ function BNConversationInvite_SelectPlayers(conversationID)
 end
 
 function BNConversationInvite_NewConversation(selected1, selected2)
+	if ( selected1 and not BNIsFriendConversationValid(selected1) ) then
+		UIErrorsFrame:AddMessage(CONVERSATION_INCOMPATIBLE_CLIENT, 1.0, 0.1, 0.1, 1.0);		
+		return;
+	end
+	if ( selected2 and not BNIsFriendConversationValid(selected2) ) then
+		UIErrorsFrame:AddMessage(CONVERSATION_INCOMPATIBLE_CLIENT, 1.0, 0.1, 0.1, 1.0);		
+		return;
+	end
+
 	BNConversationInvite_SetMode("create");
 	
 	BNConversationInvite_Reset();
@@ -196,7 +205,7 @@ function BNConversationInvite_Update()
 			frame.checkButton:Disable();
 			frame.checkButton.tooltipText = nil;			
 			frame.name:SetFontObject("GameFontDisable");
-		elseif ( index <= numBNetOnline and not BNIsFriendConversationValid(index) ) then
+		elseif ( frame.id and not BNIsFriendConversationValid(frame.id) ) then
 			frame.checkButton:Disable();
 			frame.checkButton.tooltipText = CONVERSATION_INCOMPATIBLE_CLIENT;
 			frame.name:SetFontObject("GameFontDisable");

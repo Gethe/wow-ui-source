@@ -495,13 +495,9 @@
 		<Layers>
 			<Layer level="OVERLAY">
 				<Texture name="MainMenuBarPerformanceBar" file="Interface\MainMenuBar\UI-MainMenuBar-PerformanceBar">
-					<Size>
-						<AbsDimension x="14" y="7"/>
-					</Size>
+					<Size x="28" y="58"/>
 					<Anchors>
-						<Anchor point="TOPLEFT" relativeTo="MainMenuMicroButton" relativePoint="TOPLEFT">
-							<Offset x="10" y="-34"/>
-						</Anchor>
+						<Anchor point="CENTER" x="0" y="0"/>
 					</Anchors>
 				</Texture>
 				<Texture name="MainMenuBarDownload" file="Interface\BUTTONS\UI-MicroStream-Yellow" hidden="true">
@@ -539,21 +535,10 @@
 					end
 					if(status == 0) then
 						MainMenuBarDownload:Hide();
-						MainMenuBarPerformanceBar:Show();
 						self:SetNormalTexture("Interface\\Buttons\\UI-MicroButton-MainMenu-Up");
 						self:SetPushedTexture("Interface\\Buttons\\UI-MicroButton-MainMenu-Down");
 						self:SetDisabledTexture("Interface\\Buttons\\UI-MicroButton-MainMenu-Disabled");
-						local bandwidthIn, bandwidthOut, latencyHome, latencyWorld = GetNetStats();
-						local latency = latencyHome > latencyWorld and latencyHome or latencyWorld;
-						if (latency > PERFORMANCEBAR_MEDIUM_LATENCY) then
-							MainMenuBarPerformanceBar:SetVertexColor(1, 0, 0);									
-						elseif (latency > PERFORMANCEBAR_LOW_LATENCY) then
-							MainMenuBarPerformanceBar:SetVertexColor(1, 1, 0);
-						else
-							MainMenuBarPerformanceBar:SetVertexColor(0, 1, 0);
-						end
 					else
-						MainMenuBarPerformanceBar:Hide();
 						self:SetNormalTexture("Interface\\Buttons\\UI-MicroButtonStreamDL-Up");
 						self:SetPushedTexture("Interface\\Buttons\\UI-MicroButtonStreamDL-Down");
 						self:SetDisabledTexture("Interface\\Buttons\\UI-MicroButtonStreamDL-Up");
@@ -565,6 +550,15 @@
 							MainMenuBarDownload:SetTexture("Interface\\BUTTONS\\UI-MicroStream-Red");
 						end
 						MainMenuBarDownload:Show();
+					end
+					local bandwidthIn, bandwidthOut, latencyHome, latencyWorld = GetNetStats();
+					local latency = latencyHome > latencyWorld and latencyHome or latencyWorld;
+					if (latency > PERFORMANCEBAR_MEDIUM_LATENCY) then
+						MainMenuBarPerformanceBar:SetVertexColor(1, 0, 0);									
+					elseif (latency > PERFORMANCEBAR_LOW_LATENCY) then
+						MainMenuBarPerformanceBar:SetVertexColor(1, 1, 0);
+					else
+						MainMenuBarPerformanceBar:SetVertexColor(0, 1, 0);
 					end
 					if (self.hover) then
 						MainMenuBarPerformanceBarFrame_OnEnter(self);

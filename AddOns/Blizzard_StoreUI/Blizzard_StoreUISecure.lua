@@ -21,10 +21,13 @@ setfenv(1, tbl);
 local JustOrderedProduct = false;
 local WaitingOnConfirmation = false;
 local WaitingOnConfirmationTime = 0;
+local ProcessAnimPlayed = false;
+local NumUpgradeDistributions = 0;
 
 --Imports
 Import("C_PurchaseAPI");
 Import("C_PetJournal");
+Import("C_SharedCharacterServices");
 Import("CreateForbiddenFrame");
 Import("IsGMClient");
 Import("math");
@@ -42,6 +45,7 @@ Import("BACKPACK_CONTAINER");
 Import("NUM_BAG_SLOTS");
 Import("IsModifiedClick");
 Import("GetTime");
+Import("UnitAffectingCombat");
 
 --GlobalStrings
 Import("BLIZZARD_STORE");
@@ -72,6 +76,7 @@ Import("BLIZZARD_STORE_CONFIRMATION_GENERIC");
 Import("BLIZZARD_STORE_CONFIRMATION_TEST");
 Import("BLIZZARD_STORE_CONFIRMATION_EUR");
 Import("BLIZZARD_STORE_BROWSE_TEST_CURRENCY");
+Import("BLIZZARD_STORE_BATTLE_NET_BALANCE");
 Import("BLIZZARD_STORE_CURRENCY_FORMAT_USD");
 Import("BLIZZARD_STORE_CURRENCY_FORMAT_KRW_LONG");
 Import("BLIZZARD_STORE_CURRENCY_FORMAT_CPT_LONG");
@@ -119,14 +124,25 @@ Import("BLIZZARD_STORE_ERROR_TITLE_INSUFFICIENT_BALANCE");
 Import("BLIZZARD_STORE_ERROR_MESSAGE_INSUFFICIENT_BALANCE");
 Import("BLIZZARD_STORE_ERROR_TITLE_ALREADY_OWNED");
 Import("BLIZZARD_STORE_ERROR_MESSAGE_ALREADY_OWNED");
+Import("BLIZZARD_STORE_ERROR_TITLE_PARENTAL_CONTROLS");
+Import("BLIZZARD_STORE_ERROR_MESSAGE_PARENTAL_CONTROLS");
+Import("BLIZZARD_STORE_ERROR_TITLE_PURCHASE_DENIED");
+Import("BLIZZARD_STORE_ERROR_MESSAGE_PURCHASE_DENIED");
 Import("BLIZZARD_STORE_DISCOUNT_TEXT_FORMAT");
 Import("BLIZZARD_STORE_PAGE_NUMBER");
 Import("BLIZZARD_STORE_SPLASH_BANNER_DISCOUNT_FORMAT");
 Import("BLIZZARD_STORE_SPLASH_BANNER_FEATURED");
 Import("BLIZZARD_STORE_SPLASH_BANNER_NEW");
 Import("BLIZZARD_STORE_WALLET_INFO");
+Import("BLIZZARD_STORE_PROCESSING");
+Import("BLIZZARD_STORE_BEING_PROCESSED_CHECK_BACK_LATER");
+Import("BLIZZARD_STORE_YOU_ALREADY_OWN_THIS");
 Import("TOOLTIP_DEFAULT_COLOR");
 Import("TOOLTIP_DEFAULT_BACKGROUND_COLOR");
+Import("CHARACTER_UPGRADE_LOG_OUT_NOW");
+Import("CHARACTER_UPGRADE_POPUP_LATER");
+Import("CHARACTER_UPGRADE_READY");
+Import("CHARACTER_UPGRADE_READY_DESCRIPTION");
 
 Import("OKAY");
 Import("LARGE_NUMBER_SEPERATOR");
@@ -140,6 +156,8 @@ Import("LE_STORE_ERROR_BATTLEPAY_DISABLED");
 Import("LE_STORE_ERROR_INSUFFICIENT_BALANCE");
 Import("LE_STORE_ERROR_OTHER");
 Import("LE_STORE_ERROR_ALREADY_OWNED");
+Import("LE_STORE_ERROR_PARENTAL_CONTROLS_NO_PURCHASE");
+Import("LE_STORE_ERROR_PURCHASE_DENIED");
 
 --Data
 local CURRENCY_UNKNOWN = 0;
@@ -305,6 +323,7 @@ local currencySpecific = {
 		paymentMethodSubtext = "",
 		licenseAcceptText = BLIZZARD_STORE_LICENSE_ACK_TEXT,
 		requireLicenseAccept = true,
+		hideConfirmationBrowseNotice = true,
 		browseHasStar = false,
 	},
 	[CURRENCY_EUR] = {
@@ -367,7 +386,7 @@ local currencySpecific = {
 		formatShort = currencyFormatBRL,
 		formatLong = currencyFormatBRL,
 		browseNotice = BLIZZARD_STORE_PLUS_TAX,
-		confirmationNotice = BLIZZARD_STORE_CONFIRMATION_GENERIC_BRL,
+		confirmationNotice = BLIZZARD_STORE_CONFIRMATION_GENERIC,
 		licenseAcceptText = BLIZZARD_STORE_LICENSE_ACK_TEXT_BRL,
 		paymentMethodText = BLIZZARD_STORE_PAYMENT_METHOD,
 		paymentMethodSubtext = BLIZZARD_STORE_PAYMENT_METHOD_EXTRA,
@@ -391,6 +410,7 @@ local currencySpecific = {
 		licenseAcceptText = BLIZZARD_STORE_LICENSE_ACK_TEXT_CN,
 		paymentMethodText = "",
 		paymentMethodSubtext = "",
+		hideConfirmationBrowseNotice = true,
 		browseHasStar = false,
 	},
 	[CURRENCY_TPT] = {
@@ -453,7 +473,15 @@ local errorData = {
 	[LE_STORE_ERROR_ALREADY_OWNED] = {
 		title = BLIZZARD_STORE_ERROR_TITLE_ALREADY_OWNED,
 		msg = BLIZZARD_STORE_ERROR_MESSAGE_ALREADY_OWNED,
-	}
+	},
+	[LE_STORE_ERROR_PARENTAL_CONTROLS_NO_PURCHASE] = {
+		title = BLIZZARD_STORE_ERROR_TITLE_PARENTAL_CONTROLS,
+		msg = BLIZZARD_STORE_ERROR_MESSAGE_PARENTAL_CONTROLS,
+	},
+	[LE_STORE_ERROR_PURCHASE_DENIED] = {
+		title = BLIZZARD_STORE_ERROR_TITLE_PURCHASE_DENIED,
+		msg = BLIZZARD_STORE_ERROR_MESSAGE_PURCHASE_DENIED,
+	}	
 };
 
 local tooltipSides = {};
@@ -469,7 +497,7 @@ end
 
 function StoreFrame_UpdateCard(card,entryID,discountReset)
 	local productID, _, bannerType, alreadyOwned, normalDollars, normalCents, currentDollars, currentCents, buyableHere, name, description, displayID, texture = C_PurchaseAPI.GetEntryInfo(entryID);
-	StoreProductCard_ResetCard(card);
+	StoreProductCard_ResetCornerPieces(card);
 
 	local info = currencyInfo();
 
@@ -479,7 +507,7 @@ function StoreFrame_UpdateCard(card,entryID,discountReset)
 	end
 
 	local currencyFormat;
-	if (card == StoreFrame.SplashSingle or card == StoreFrame.SplashPrimary) then
+	if (StoreProductCard_IsSplashPage(card)) then
 		currencyFormat = info.formatLong;
 	else
 		currencyFormat = info.formatShort;
@@ -545,18 +573,13 @@ function StoreFrame_UpdateCard(card,entryID,discountReset)
 	end
 
 	if ( displayID ) then
-		StoreProductCard_SetModel(card, displayID, owned);
+			StoreProductCard_SetModel(card, displayID, owned);
 	else
 		local icon = texture;
 		if (not icon) then
 			icon = "Interface\\Icons\\INV_Misc_Note_02";
-		end	
+		end
 		StoreProductCard_ShowIcon(card, icon);
-	end
-
-	if (card.BannerFadeIn) then
-		card.BannerFadeIn.FadeAnim:Play();
-		card.BannerFadeIn:Show();
 	end
 
 	if (discount) then
@@ -570,8 +593,13 @@ function StoreFrame_UpdateCard(card,entryID,discountReset)
 	end
 
 	card:SetID(entryID);
-	StoreProductCard_UpdateHighlight(card);
+	StoreProductCard_UpdateState(card);
 
+	if (card.BannerFadeIn and not card:IsShown()) then
+		card.BannerFadeIn.FadeAnim:Play();
+		card.BannerFadeIn:Show();
+	end
+	
 	card:Show();
 end
 
@@ -608,11 +636,6 @@ function StoreFrame_SetSplashCategory()
 	if ( not info ) then
 		return;
 	end
-
-	self.SplashSingle:Hide();
-	self.SplashPrimary:Hide();
-	self.SplashSecondary1:Hide();
-	self.SplashSecondary2:Hide();
 	
 	for i = 1, NUM_STORE_PRODUCT_CARDS do
 		local card = self.ProductCards[i];
@@ -629,16 +652,16 @@ function StoreFrame_SetSplashCategory()
 	StoreFrame_CheckAndUpdateEntryID(true, isThreeSplash);
 
 	if (isThreeSplash) then
+		self.SplashSingle:Hide();
 		StoreFrame_UpdateCard(self.SplashPrimary, products[1]);
 		StoreFrame_UpdateCard(self.SplashSecondary1, products[2]);
 		StoreFrame_UpdateCard(self.SplashSecondary2, products[3]);
-		self.SplashPrimary:Show();
-		self.SplashSecondary1:Show();
-		self.SplashSecondary2:Show();
 	else
+		self.SplashPrimary:Hide();
+		self.SplashSecondary1:Hide();
+		self.SplashSecondary2:Hide();
 		selectedEntryID = products[1]; -- This is the only card here so just auto select it so the buy button works
 		StoreFrame_UpdateCard(self.SplashSingle, products[1]);
-		self.SplashSingle:Show();
 	end
 
 	StoreFrame_UpdateBuyButton();
@@ -677,8 +700,6 @@ function StoreFrame_SetNormalCategory()
 		if ( not entryID ) then
 			card:Hide();
 		else
-			card:Show();
-
 			StoreFrame_UpdateCard(card, entryID);
 		end
 	end
@@ -776,9 +797,11 @@ end
 function StoreFrame_OnLoad(self)
 	self:RegisterEvent("STORE_PRODUCTS_UPDATED");
 	self:RegisterEvent("STORE_PURCHASE_LIST_UPDATED");
+	self:RegisterEvent("PRODUCT_DISTRIBUTIONS_UPDATED");
 	self:RegisterEvent("BAG_UPDATE_DELAYED"); --Used for showing the panel when all bags are full
 	self:RegisterEvent("STORE_PURCHASE_ERROR");
 	self:RegisterEvent("STORE_ORDER_INITIATION_FAILED");
+	self:RegisterEvent("AUTH_CHALLENGE_FINISHED");
 	C_PurchaseAPI.GetPurchaseList();
 
 	self.TitleText:SetText(BLIZZARD_STORE);
@@ -821,12 +844,16 @@ function StoreFrame_OnLoad(self)
 	StoreFrame.SplashSecondary1:Hide();
 	StoreFrame.SplashSecondary2:Hide();
 	
+	-- Single and primary are only used for the checkmark tooltip
+	tooltipSides[StoreFrame.SplashSingle] = "RIGHT";
+	tooltipSides[StoreFrame.SplashPrimary] = "RIGHT";
 	tooltipSides[StoreFrame.SplashSecondary1] = "RIGHT";
 	tooltipSides[StoreFrame.SplashSecondary2] = "LEFT";
 
 	StoreFrame.SplashSingle.SplashBannerText:SetShadowColor(0, 0, 0, 0);
 	StoreFrame.SplashPrimary.SplashBannerText:SetShadowColor(0, 0, 0, 0);
 	StoreFrame.SplashPrimary.Description:SetSpacing(5);
+	StoreFrame.Notice.Description:SetSpacing(5);
 	StoreFrame_UpdateActivePanel(self);
 
 	--Check whether we already have an error waiting for us.
@@ -868,6 +895,21 @@ function StoreFrame_OnEvent(self, event, ...)
 		WaitingOnConfirmation = false;
 		StoreFrame_OnError(self, err, false, internalErr);
 		StoreFrame_UpdateActivePanel(self);
+	elseif ( event == "PRODUCT_DISTRIBUTIONS_UPDATED" ) then
+		if (C_SharedCharacterServices.IsPurchaseIDPendingUpgrade() and self:IsShown() and StoreStateDriverFrame.NoticeTextTimer:IsPlaying()) then
+			if (IsOnGlueScreen()) then
+				self:Hide();
+				_G.CharSelectServicesFlowFrame:Show();
+				_G.CharacterServicesMaster_SetFlow(_G.CharacterServicesMaster, _G.CharacterUpgradeFlow);
+			else
+				self:Hide();
+				ServicesLogoutPopup.Background.Title:SetText(CHARACTER_UPGRADE_READY);
+				ServicesLogoutPopup.Background.Description:SetText(CHARACTER_UPGRADE_READY_DESCRIPTION);
+				ServicesLogoutPopup:Show();
+			end
+		end
+	elseif ( event == "AUTH_CHALLENGE_FINISHED" ) then
+		StoreStateDriverFrame.NoticeTextTimer:Play();
 	end
 end
 
@@ -948,6 +990,9 @@ function StoreFrame_OnAttributeChanged(self, name, value)
 					self:Hide();
 					handled = true;
 				end
+			elseif (ServicesLogoutPopup:IsShown()) then
+				ServicesLogoutPopup:Hide();
+				handled = true;
 			end
 			self:SetAttribute("escaperesult", handled);
 		end
@@ -973,10 +1018,14 @@ function StoreFrame_UpdateActivePanel(self)
 		StoreFrame_HideAlert(self);
 	elseif ( WaitingOnConfirmation ) then
 		StoreFrame_SetAlert(self, BLIZZARD_STORE_CONNECTING, BLIZZARD_STORE_PLEASE_WAIT);
-	elseif ( JustOrderedProduct ) then
-		StoreFrame_SetAlert(self, BLIZZARD_STORE_TRANSACTION_IN_PROGRESS, BLIZZARD_STORE_CHECK_BACK_LATER);
-	elseif ( C_PurchaseAPI.HasPurchaseInProgress() ) then --Even if we don't have every list, if we know we have something in progress, we can display that.
-		StoreFrame_SetAlert(self, BLIZZARD_STORE_TRANSACTION_IN_PROGRESS, BLIZZARD_STORE_CHECK_BACK_LATER);
+	elseif ( JustOrderedProduct or C_PurchaseAPI.HasPurchaseInProgress() ) then
+		local progressText;
+		if (StoreStateDriverFrame.NoticeTextTimer:IsPlaying()) then --Even if we don't have every list, if we know we have something in progress, we can display that.
+			progressText = BLIZZARD_STORE_PROCESSING
+		else
+			progressText = BLIZZARD_STORE_CHECK_BACK_LATER
+		end
+		StoreFrame_SetAlert(self, BLIZZARD_STORE_TRANSACTION_IN_PROGRESS, progressText);
 	elseif ( not C_PurchaseAPI.IsAvailable() ) then
 		StoreFrame_SetAlert(self, BLIZZARD_STORE_NOT_AVAILABLE, BLIZZARD_STORE_NOT_AVAILABLE_SUBTEXT);
 	elseif ( C_PurchaseAPI.IsRegionLocked() ) then
@@ -1101,6 +1150,11 @@ function StoreFrame_HasFreeBagSlots()
 	return false;
 end
 
+function StoreFrame_ShowPreview(name, modelID)
+	Outbound.ShowPreview(name, modelID);
+	StoreProductCard_UpdateAllStates();
+end
+
 function StoreFramePrevPageButton_OnClick(self)
 	selectedPageNum = selectedPageNum - 1;
 	selectedEntryID = nil;
@@ -1146,8 +1200,11 @@ function StoreConfirmationFrame_SetNotice(self, icon, name, dollars, cents, wall
 	local info = currencyInfo();
 	local format = info.formatLong;
 	local notice = info.confirmationNotice;
-	if (walletName and walletName ~= "") then
-		notice = notice .. "\n" .. BLIZZARD_STORE_WALLET_INFO:format(walletName);
+	if (not walletName or walletName == "") then
+		walletName = BLIZZARD_STORE_BATTLE_NET_BALANCE;
+	end
+	if (walletName) then
+		notice = notice .. "\n\n" .. BLIZZARD_STORE_WALLET_INFO:format(walletName);
 	end
 	self.NoticeFrame.Notice:SetText(notice);
 	self.NoticeFrame:Show();
@@ -1200,16 +1257,18 @@ function StoreConfirmationFrame_Update(self)
 
 	local info = currencyInfo();
 	self.BrowseNotice:SetText(info.browseNotice);
+	self.BrowseNotice:SetShown(not info.hideConfirmationBrowseNotice);
+
 	if ( info.licenseAcceptText and info.licenseAcceptText ~= "" ) then
 		self.LicenseAcceptText:SetText(info.licenseAcceptText, true);
 		self.LicenseAcceptText:Show();
 		if ( info.requireLicenseAccept ) then
-			self.LicenseAcceptText:SetPoint("BOTTOM", 20, 70);
+			self.LicenseAcceptText:SetPoint("BOTTOM", 20, 60);
 			self.LicenseAcceptButton:Show();
 			self.LicenseAcceptButton:SetChecked(false);
 			self.BuyButton:Disable();
 		else
-			self.LicenseAcceptText:SetPoint("BOTTOM", 0, 70);
+			self.LicenseAcceptText:SetPoint("BOTTOM", 0, 60);
 			self.LicenseAcceptButton:Hide();
 			self.BuyButton:Enable();
 		end
@@ -1252,6 +1311,7 @@ function StoreConfirmationFinalBuy_OnClick(self)
 	
 	if ( C_PurchaseAPI.PurchaseProductConfirm(true, FinalPriceDollars, FinalPriceCents) ) then
 		JustOrderedProduct = true;
+		StoreStateDriverFrame.NoticeTextTimer:Play();
 		PlaySound("UI_igStore_ConfirmPurchase_Button");
 	else
 		StoreFrame_OnError(StoreFrame, LE_STORE_ERROR_OTHER, false, "Fake");
@@ -1264,10 +1324,35 @@ end
 -------------------------------
 local isRotating = false;
 
-function StoreProductCard_UpdateHighlight(card)
+function StoreProductCard_UpdateState(card)
+	-- No product associated with this card
+	if (card:GetID() == 0 or not card:IsShown()) then return end;
+
 	if (card.HighlightTexture) then
 		local enableHighlight = card:GetID() ~= selectedEntryID and not isRotating;
 		card.HighlightTexture:SetAlpha(enableHighlight and 1 or 0);
+		if (not card.Description and card:IsMouseOver()) then
+			if (isRotating or forceHide) then
+				StoreTooltip:Hide()
+			else
+				local point, rpoint, xoffset;
+				if (tooltipSides[card] == "LEFT") then
+					point = "BOTTOMRIGHT";
+					rpoint = "TOPLEFT";
+					xoffset = 4;
+				else
+					point = "BOTTOMLEFT";
+					rpoint ="TOPRIGHT";
+					xoffset = -4;
+				end
+				local entryID = card:GetID();
+				local name, description = select(10,C_PurchaseAPI.GetEntryInfo(entryID));
+				
+				StoreTooltip:ClearAllPoints();
+				StoreTooltip:SetPoint(point, card, rpoint, xoffset, 0);
+				StoreTooltip_Show(name, description);
+			end
+		end
 	end
 	if (card.Magnifier and card ~= StoreFrame.SplashSingle) then
 		local enableMagnifier = not isRotating;
@@ -1278,49 +1363,32 @@ function StoreProductCard_UpdateHighlight(card)
 	end
 end
 
-function StoreProductCard_UpdateAllHighlights()
+function StoreProductCard_UpdateAllStates()
 	for i = 1, NUM_STORE_PRODUCT_CARDS do
 		local card = StoreFrame.ProductCards[i];
-		StoreProductCard_UpdateHighlight(card);
+		StoreProductCard_UpdateState(card);
 	end
 
-	StoreProductCard_UpdateHighlight(StoreFrame.SplashSingle);
-	StoreProductCard_UpdateHighlight(StoreFrame.SplashPrimary);
-	StoreProductCard_UpdateHighlight(StoreFrame.SplashSecondary1);
-	StoreProductCard_UpdateHighlight(StoreFrame.SplashSecondary2);
+	StoreProductCard_UpdateState(StoreFrame.SplashSingle);
+	StoreProductCard_UpdateState(StoreFrame.SplashPrimary);
+	StoreProductCard_UpdateState(StoreFrame.SplashSecondary1);
+	StoreProductCard_UpdateState(StoreFrame.SplashSecondary2);
 end
 
 function StoreProductCard_OnEnter(self)
-	self.HighlightTexture:SetShown(selectedEntryID ~= self:GetID());
+	if (self.HighlightTexture) then
+		self.HighlightTexture:SetShown(selectedEntryID ~= self:GetID());
+	end
 	if (self.Magnifier and self.Model:IsShown() and self ~= StoreFrame.SplashSingle) then
 		self.Magnifier:Show();
 	end
-	if (not self.Description) then
-		local point, rpoint, xoffset;
-		if (tooltipSides[self] == "LEFT") then
-			point = "TOPRIGHT";
-			rpoint = "TOPLEFT";
-			xoffset = -4;
-		else
-			point = "TOPLEFT";
-			rpoint ="TOPRIGHT";
-			xoffset = 4;
-		end
-		local entryID = self:GetID();
-		local name, description = select(10,C_PurchaseAPI.GetEntryInfo(entryID));
-		StoreTooltip:ClearAllPoints();
-		StoreTooltip:SetPoint(point, self, rpoint, xoffset, 0);
-		StoreTooltip_Show(name, description);
-	end
-	StoreProductCard_UpdateHighlight(self);
+	StoreProductCard_UpdateState(self);
 end
 
-function StoreProductCard_OnLeave(self)
-	if (self.Magnifier and self.Magnifier:IsMouseOver()) then
-		return;
+function StoreProductCard_OnLeave(self)	
+	if (self.HighlightTexture) then
+		self.HighlightTexture:Hide();
 	end
-	
-	self.HighlightTexture:Hide();
 	if (self.Magnifier and self ~= StoreFrame.SplashSingle) then
 		self.Magnifier:Hide();
 	end
@@ -1332,14 +1400,20 @@ local function updateSelected(self, card)
 end
 
 function StoreProductCard_OnClick(self,button,down)
-	if ( IsModifiedClick("DRESSUP") ) then
+	local showPreview;
+	if ( IsOnGlueScreen() ) then
+		showPreview = _G.IsControlKeyDown();
+	else
+		showPreview = IsModifiedClick("DRESSUP");
+	end
+	if ( showPreview ) then
 		local name, _, modelID = select(10,C_PurchaseAPI.GetEntryInfo(self:GetID()));
 		if ( modelID ) then
-			Outbound.ShowPreview(name, modelID);
+			StoreFrame_ShowPreview(name, modelID);
 		end
 	else
 		selectedEntryID = self:GetID();
-		StoreProductCard_UpdateAllHighlights();
+		StoreProductCard_UpdateAllStates();
 
 		StoreFrame_UpdateBuyButton();
 		PlaySound("UI_igStore_PageNav_Button");
@@ -1370,6 +1444,7 @@ function StoreProductCard_OnLoad(self)
 		self.Description:SetSpacing(2);
 	end
 
+	self.CurrentPrice:SetTextColor(1.0, 0.82, 0);
 	basePoints[self] = { self.NormalPrice:GetPoint() };
 
 	self:RegisterForDrag("LeftButton");
@@ -1422,7 +1497,7 @@ function StoreProductCard_OnDragStart(self)
 	model.rotationCursorStart = GetCursorPosition();
 	local card = model:GetParent();
 	isRotating = true;
-	StoreProductCard_UpdateAllHighlights();
+	StoreProductCard_UpdateAllStates();
 end
 
 function StoreProductCard_OnDragStop(self)
@@ -1430,28 +1505,42 @@ function StoreProductCard_OnDragStop(self)
 	model.mouseDown = false;
 	local card = model:GetParent();
 	isRotating = false;
-	StoreProductCard_UpdateAllHighlights();
-end
-
-function StoreProductCard_ResetModel(self)
-	self.Model.rotation = self.Model.defaultRotation;
-	self.Model:SetRotation(self.Model.rotation);
-	self.Model:SetPosition(0, 0, 0);
-	self.Model.zoomLevel = self.Model.minZoom;
-	self.Model:SetPortraitZoom(self.Model.zoomLevel);
+	StoreProductCard_UpdateAllStates();
 end
 
 function StoreProductCard_ModelOnEvent(self, event, ...)
 	self:RefreshCamera();
 end
 
+local cardModels = {}
+
 function StoreProductCard_SetModel(self, modelID, owned)
+	self.IconBorder:Hide();
+	self.Icon:Hide();
+
+	if (self.GlowSpin) then
+		self.GlowSpin:Hide();
+		self.GlowSpin.SpinAnim:Stop();
+	end
+
+	if (self.GlowPulse) then
+		self.GlowPulse:Hide();
+		self.GlowPulse.PulseAnim:Stop();
+	end
+
 	self.Model:Show();
 	self.Shadows:Show();
-	self.Model:SetDisplayInfo(modelID);
-	self.Model:SetDoBlend(false);
-	self.Model:SetAnimation(0,-1);
-	self.modelID = modelID;
+	if (cardModels[self] ~= modelID) then
+		self.Model:SetDisplayInfo(modelID);
+		self.Model:SetDoBlend(false);
+		self.Model:SetAnimation(0,-1);
+		self.Model.rotation = self.Model.defaultRotation;
+		self.Model:SetRotation(self.Model.rotation);
+		self.Model:SetPosition(0, 0, 0);
+		self.Model.zoomLevel = self.Model.minZoom;
+		self.Model:SetPortraitZoom(self.Model.zoomLevel);
+		cardModels[self] = modelID;
+	end
 	if ( owned ) then
 		self.Checkmark:Show();
 	end
@@ -1461,6 +1550,13 @@ function StoreProductCard_SetModel(self, modelID, owned)
 end
 
 function StoreProductCard_ShowIcon(self, icon)
+	self.Model:Hide();
+	self.Shadows:Hide();
+	
+	if (self.Magnifier) then
+		self.Magnifier:Hide();
+	end
+
 	self.IconBorder:Show();
 	self.Icon:Show();
 
@@ -1507,6 +1603,16 @@ function StoreProductCard_ShowDiscount(card, discountText)
 			card.SalePrice:SetJustifyH("LEFT");
 			card.SalePrice:SetPoint("BOTTOMLEFT", card.NormalPrice, "BOTTOMRIGHT", 4, 0);
 		end
+	elseif (card ~= StoreFrame.SplashSingle and card ~= StoreFrame.SplashPrimary) then
+		local width = card.NormalPrice:GetStringWidth() + card.SalePrice:GetStringWidth();
+		
+		if ((width + 120 + (card:GetWidth()/8)) > card:GetWidth()) then
+			card.SalePrice:ClearAllPoints();
+			card.SalePrice:SetPoint("TOPLEFT", card.NormalPrice, "BOTTOMLEFT", 0, -4);
+		else
+			card.SalePrice:ClearAllPoints();
+			card.SalePrice:SetPoint("BOTTOMLEFT", card.NormalPrice, "BOTTOMRIGHT", 4, 0);
+		end
 	end
 		
 	card.CurrentPrice:Hide();
@@ -1521,19 +1627,43 @@ function StoreProductCardMagnifyingGlass_OnEnter(self)
 end
 
 function StoreProductCardMagnifyingGlass_OnLeave(self)
-	if ( not self:GetParent():IsMouseOver() ) then
 	StoreProductCard_OnLeave(self:GetParent());
-end
 end
 
 function StoreProductCardMagnifyingGlass_OnClick(self, button, down)
 	local card = self:GetParent();
 	local entryID = card:GetID();
 	local name, _, modelID = select(10,C_PurchaseAPI.GetEntryInfo(entryID));
-	Outbound.ShowPreview(name, modelID);
+	StoreFrame_ShowPreview(name, modelID);
 end
 
-function StoreProductCard_ResetCard(card)
+function StoreProductCardCheckmark_OnEnter(self)
+	StoreProductCard_OnEnter(self:GetParent());
+	if ( not isRotating ) then
+		local point, rpoint, xoffset;
+		if (tooltipSides[self:GetParent()] == "LEFT") then
+			point = "BOTTOMRIGHT";
+			rpoint = "TOPLEFT";
+			xoffset = 4;
+		else
+			point = "BOTTOMLEFT";
+			rpoint ="TOPRIGHT";
+			xoffset = -4;
+		end
+		StoreTooltip:ClearAllPoints();
+		StoreTooltip:SetPoint(point, self, rpoint, xoffset, 0);
+		StoreTooltip_Show(BLIZZARD_STORE_YOU_ALREADY_OWN_THIS);
+	end
+end
+
+function StoreProductCardCheckmark_OnLeave(self)
+	if ( not self:GetParent():IsMouseOver() ) then
+		StoreProductCard_OnLeave(self:GetParent());
+	end
+	StoreTooltip:Hide();
+end
+
+function StoreProductCard_ResetCornerPieces(card)
 	if (card.NewTexture) then
 		card.NewTexture:Hide();
 	end
@@ -1552,35 +1682,6 @@ function StoreProductCard_ResetCard(card)
 	if (card.Checkmark) then
 		card.Checkmark:Hide();
 	end
-
-	card.Model:Hide();
-	card.Shadows:Hide();
-	card.IconBorder:Hide();
-	card.Icon:Hide();
-
-	if (card.Magnifier) then
-		card.Magnifier:Hide();
-	end
-
-	if (card.SelectedTexture) then
-		card.SelectedTexture:Hide();
-	end
-
-	card.CurrentPrice:Show();
-	card.NormalPrice:Hide();
-	card.SalePrice:Hide();
-	card.Strikethrough:Hide();
-
-	if (card.GlowSpin) then
-		card.GlowSpin:Hide();
-		card.GlowSpin.SpinAnim:Stop();
-	end
-	
-	if (card.GlowPulse) then
-		card.GlowPulse:Hide();
-		card.GlowPulse.PulseAnim:Stop();
-	end
-	StoreProductCard_ResetModel(card);
 end
 
 ------------------------------
@@ -1603,7 +1704,7 @@ function StoreCategory_OnClick(self,button,down)
 	selectedPageNum = 1;
 	StoreFrame_SetCategory(self:GetID());
 
-	StoreProductCard_UpdateAllHighlights();
+	StoreProductCard_UpdateAllStates();
 	PlaySound("UI_igStore_PageNav_Button");
 end
 
@@ -1623,14 +1724,23 @@ function StoreTooltip_Show(name, description)
 	local nheight, dheight = self.ProductName:GetHeight(), self.Description:GetHeight();
 	local buffer = 10;
 
+	local bufferCount = 3;
+	if (not description or description == "") then
+		bufferCount = 2;
+		dheight = 0;
+	end
+
 	local width = math.max(self.ProductName:GetStringWidth(), self.Description:GetStringWidth());
 	if ((width + 20) < STORETOOLTIP_MAX_WIDTH) then
 		self:SetWidth(width + 20);
 	else
 		self:SetWidth(STORETOOLTIP_MAX_WIDTH);
 	end
-	self:SetHeight(buffer*3 + nheight + dheight);
-	self:SetFrameLevel(self:GetParent():GetFrameLevel()+3);
+	self:SetHeight(buffer*bufferCount + nheight + dheight);
+	local parent = self:GetParent();
+	local card = parent.ProductCards[1];
+	local modelFrameLevel = card.Model:GetFrameLevel();
+	self:SetFrameLevel(modelFrameLevel+2);
 end
 
 ----------------------------------
@@ -1662,4 +1772,22 @@ function StoreGoldButton_OnShow(self)
 	end
 	self.Text:ClearAllPoints();
 	self.Text:SetPoint("CENTER", 0, 3);
+end
+
+------------------------------------
+function ServicesLogoutPopup_OnLoad(self)
+	self.ConfirmButton:SetText(CHARACTER_UPGRADE_LOG_OUT_NOW);
+	self.CancelButton:SetText(CHARACTER_UPGRADE_POPUP_LATER);
+end
+
+function ServicesLogoutPopupConfirmButton_OnClick(self)
+	C_SharedCharacterServices.SetStartAutomatically(true);
+	PlaySound("igMainMenuLogout");
+	Outbound.Logout();
+	ServicesLogoutPopup:Hide();
+end
+
+function ServicesLogoutPopupCancelButton_OnClick(self)
+	PlaySound("igMainMenuOptionCheckBoxOn");
+	ServicesLogoutPopup:Hide();
 end

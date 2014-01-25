@@ -59,7 +59,7 @@
 				<OnEnterPressed function="AuthChallengeUI_Submit"/>
 				<OnTabPressed function="AuthChallengeUI_OnTabPressed"/>
 			</Scripts>
-			<FontString inherits="ChatFontNormal"/>
+			<FontString inherits="GameFontHighlightOutline"/>
 		</EditBox>	
 		<Button name="AuthChallengeButtonTemplate" virtual="true">
 			<Size x="120" y="22"/>

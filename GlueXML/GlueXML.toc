@@ -23,6 +23,8 @@ AccountLogin.xml
 DesignerMenu.xml
 OptionsFrameTemplates.xml
 OptionsPanelTemplates.xml
+CharacterServicesPatchwerk.xml
+CharacterServices.xml
 CharacterSelect.xml
 CharacterCreate.xml
 PatchDownload.xml

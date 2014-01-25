@@ -33,25 +33,25 @@
 		</Scripts>
 	</Button>
 	<Button name="LFRBrowseButtonTemplate" hidden="true" registerForClicks="LeftButtonUp,RightButtonUp" motionScriptsWhileDisabled="true" virtual="true">
-		<Size x="298" y="16"/>
+		<Size x="300" y="16"/>
 		<Layers>
 			<Layer level="ARTWORK">
 				<FontString name="$parentName" inherits="GameFontNormalSmall" justifyH="LEFT" parentKey="name">
-					<Size x="88" y="14"/>
+					<Size x="90" y="14"/>
 					<Anchors>
-						<Anchor point="TOPLEFT" x="10" y="-3"/>
+						<Anchor point="TOPLEFT" x="0" y="-3"/>
 					</Anchors>
 				</FontString>
 				<FontString name="$parentLevel" inherits="GameFontHighlightSmall" justifyH="CENTER" parentKey="level">
-					<Size x="20" y="14"/>
+					<Size x="40" y="14"/>
 					<Anchors>
-						<Anchor point="LEFT" relativeTo="$parentName" relativePoint="RIGHT" x="9" y="0"/>
+						<Anchor point="LEFT" relativeTo="$parentName" relativePoint="RIGHT" x="5" y="0"/>
 					</Anchors>
 				</FontString>
 				<FontString name="$parentClass" inherits="GameFontHighlightSmall" justifyH="LEFT" parentKey="class">
-					<Size x="72" y="8"/>
+					<Size x="72" y="14"/>
 					<Anchors>
-						<Anchor point="LEFT" relativeTo="$parentLevel" relativePoint="RIGHT" x="12" y="0"/>
+						<Anchor point="LEFT" relativeTo="$parentLevel" relativePoint="RIGHT" x="5" y="0"/>
 					</Anchors>
 				</FontString>
 				<Texture name="$parentRoleTankIcon" file="Interface\LFGFrame\LFGRole" hidden="false" parentKey="tankIcon">
@@ -97,6 +97,7 @@
 		</HighlightTexture>
 	</Button>
 	<Frame name="LFRFrameDungeonChoiceTemplate" inherits="LFGSpecificChoiceTemplate" virtual="true">
+		<Size x="340" y="16"/>
 		<Scripts>
 			<OnLoad>
 				self.enableButton:SetScript("OnClick", LFRQueueFrameDungeonChoiceEnableButton_OnClick);
@@ -316,14 +317,14 @@
 								<Frames>
 									<Frame name="$parentListButton1" inherits="LFRFrameDungeonChoiceTemplate" id="1">
 										<Anchors>
-											<Anchor point="TOPLEFT" x="10" y="-118"/>
+											<Anchor point="TOPLEFT" x="10" y="-116"/>
 										</Anchors>
 									</Frame>
 									<!-- Other 13 ListButtons are made in LFRFrame_OnLoad -->
 									<ScrollFrame name="$parentListScrollFrame" inherits="FauxScrollFrameTemplate">
-										<Size x="295" y="230"/>
+										<Size x="308" y="254"/>
 										<Anchors>
-											<Anchor point="TOPLEFT" relativeTo="$parentListButton1" relativePoint="TOPLEFT" x="0" y="2"/>
+											<Anchor point="TOPLEFT" relativeTo="$parentListButton1" relativePoint="TOPLEFT" x="0" y="0"/>
 										</Anchors>
 										<Layers>
 											<Layer level="BACKGROUND">
@@ -570,14 +571,14 @@
 							</Button>
 							<Button name="$parentListButton1" inherits="LFRBrowseButtonTemplate" id="1">
 								<Anchors>
-									<Anchor point="TOPLEFT" x="3" y="-86"/>
+									<Anchor point="TOPLEFT" x="13" y="-83"/>
 								</Anchors>
 							</Button>
 							<!-- Other 18 ListButtons are made in LFRFrame_OnLoad -->
 							<ScrollFrame name="$parentListScrollFrame" inherits="FauxScrollFrameTemplate">
-								<Size x="295" y="308"/>
+								<Size x="304" y="336"/>
 								<Anchors>
-									<Anchor point="TOPLEFT" x="12" y="-87"/>
+									<Anchor point="TOPLEFT" x="15" y="-86"/>
 								</Anchors>
 								<Layers>
 									<Layer level="BACKGROUND">

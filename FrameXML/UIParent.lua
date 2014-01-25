@@ -1,5 +1,4 @@
 TOOLTIP_UPDATE_TIME = 0.2;
-ROTATIONS_PER_SECOND = .5;
 BOSS_FRAME_CASTBAR_HEIGHT = 16;
 
 -- Alpha animation stuff
@@ -3111,40 +3110,6 @@ function BuildMultilineTooltip(globalStringName, tooltip, r, g, b)
 		i = i + 1;
 		string = _G[globalStringName..i];
 	end
-end
-
-function tDeleteItem(table, item)
-	local index = 1;
-	while table[index] do
-		if ( item == table[index] ) then
-			tremove(table, index);
-		else
-			index = index + 1;
-		end
-	end
-end
-
-function tContains(table, item)
-	local index = 1;
-	while table[index] do
-		if ( item == table[index] ) then
-			return 1;
-		end
-		index = index + 1;
-	end
-	return nil;
-end
-
-function CopyTable(settings)
-	local copy = {};
-	for k, v in pairs(settings) do
-		if ( type(v) == "table" ) then
-			copy[k] = CopyTable(v);
-		else
-			copy[k] = v;
-		end
-	end
-	return copy;
 end
 
 function MouseIsOver(region, topOffset, bottomOffset, leftOffset, rightOffset)

@@ -1,8 +1,3 @@
--- The default tooltip border color
---TOOLTIP_DEFAULT_COLOR = { r = 0.5, g = 0.5, b = 0.5 };
-TOOLTIP_DEFAULT_COLOR = { r = 1, g = 1, b = 1 };
-TOOLTIP_DEFAULT_BACKGROUND_COLOR = { r = 0.09, g = 0.09, b = 0.19 };
-DEFAULT_TOOLTIP_POSITION = -13;
 
 function GameTooltip_UnitColor(unit)
 	local r, g, b;

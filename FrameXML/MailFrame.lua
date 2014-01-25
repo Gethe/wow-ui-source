@@ -454,7 +454,7 @@ function OpenMail_Update()
 	-- Setup mail item
 	local packageIcon, stationeryIcon, sender, subject, money, CODAmount, daysLeft, itemCount, wasRead, wasReturned, textCreated, canReply = GetInboxHeaderInfo(InboxFrame.openMailID);
 	-- Set sender and subject
-	if ( not sender or not canReply ) then
+	if ( not sender or not canReply or sender == UnitName("player") ) then
 		OpenMailReplyButton:Disable();
 	else
 		OpenMailReplyButton:Enable();

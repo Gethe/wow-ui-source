@@ -1904,6 +1904,7 @@ function AddFriendNameEditBox_OnTextChanged(self, userInput)
 end
 
 function AddFriendEntryFrame_Expand()
+--[[
 	AddFriendEntryFrame:SetHeight(ADDFRIENDFRAME_BNETHEIGHT);
 	AddFriendFrame:SetHeight(ADDFRIENDFRAME_BNETHEIGHT);
 	AddFriendNoteFrame:Show();
@@ -1914,6 +1915,7 @@ function AddFriendEntryFrame_Expand()
 	AddFriendEntryFrameRightFriend:SetVertexColor(.4, .4, .4);
 	AddFriendEntryFrameLeftIcon:SetAlpha(1);
 	AddFriendEntryFrameOrLabel:SetVertexColor(.3, .3, .3);
+--]]
 end
 
 function AddFriendEntryFrame_Collapse(clearText)

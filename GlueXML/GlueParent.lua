@@ -391,7 +391,7 @@ function SetBackgroundModel(model, path)
 	if ( GlueAmbienceTracks[nameupper] ) then
 		PlayGlueAmbience(GlueAmbienceTracks[nameupper], 4.0);
 	end
-	if ( ( model == CharacterSelect ) and ( string.find(model:GetModel(), 'lowres') == nil ) ) then
+	if ( ( model == CharacterSelectModel ) and ( string.find(model:GetModel(), 'lowres') == nil ) ) then
 		SetLighting(model, nameupper)
 	else
 		SetLighting(model, "DEFAULT")
@@ -506,4 +506,10 @@ end
 
 function SecureCapsuleGet(name)
 	return _G[name];
+end
+
+function GetTexCoordsByGrid(xOffset, yOffset, textureWidth, textureHeight, gridWidth, gridHeight)
+	local widthPerGrid = gridWidth/textureWidth;
+	local heightPerGrid = gridHeight/textureHeight;
+	return (xOffset-1)*widthPerGrid, (xOffset)*widthPerGrid, (yOffset-1)*heightPerGrid, (yOffset)*heightPerGrid;
 end
