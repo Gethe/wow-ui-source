@@ -1114,7 +1114,7 @@ function CheckSystemRequirements( previousCheck )
 	
 	if ( not previousCheck or previousCheck == "SSE" ) then
 		if ( not IsShaderModelSupported() ) then
-			GlueDialog_Show("SHADERMODEL_UNSUPPORTED");
+			GlueDialog_Show("FIXEDFUNCTION_UNSUPPORTED");
 			return;
 		end
 		previousCheck = nil;

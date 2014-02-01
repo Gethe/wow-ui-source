@@ -123,6 +123,10 @@
 		<Size x="158" y="20" />
 		<TexCoords left="0.00097656" right="0.15527344" top="0.97363281" bottom="0.99316406" />
 	</Texture>
+	<Texture name="icon-upgradearrow" file="Interface\Store\Store-Main" virtual="true" >
+		<Size x="26" y="26"/>	
+		<TexCoords left="0.15722656" right="0.18261719" top="0.97363281" bottom="0.99902344"/>	
+	</Texture>
 	<Texture name="store-error-icon" file="Interface\Store\Store-Main" virtual="true">
 		<Size x="188" y="185" />
 		<TexCoords left="0.18457031" right="0.36816406" top="0.46289063" bottom="0.64355469" />

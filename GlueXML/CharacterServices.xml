@@ -98,6 +98,18 @@
 				PlaySound("igMainMenuOptionCheckBoxOn");
 				CharacterUpgradeSelectSpecRadioButton_OnClick(self, button, down);
 			</OnClick>
+			<OnEnter>
+				if (self.tooltip) then
+					GlueTooltip:SetOwner(self, "ANCHOR_TOP");
+					GlueTooltip:AddLine(self.tooltip, NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b, 1, true);
+					GlueTooltip:Show();
+				end
+			</OnEnter>
+			<OnLeave>
+				if (self.tooltip) then
+					GlueTooltip:Hide();
+				end
+			</OnLeave>
 		</Scripts>
 	</CheckButton>
 	<CheckButton name="CharacterUpgradeSelectFactionRadioButtonTemplate" inherits="UIRadioButtonTemplate" virtual="true">
@@ -347,6 +359,16 @@
 						</FontString>
 					</Layer>
 				</Layers>
+				<Scripts>
+					<OnEnter>
+						GlueTooltip:SetOwner(self, -60);
+						GlueTooltip:AddLine(CHARACTER_UPGRADE_PROFESSION_BOOST, 1, 1, 1, 1, true);
+						GlueTooltip:Show();
+					</OnEnter>
+					<OnLeave>
+						GlueTooltip:Hide();
+					</OnLeave>
+				</Scripts>
 			</Frame>
 		</Frames>
 	</Frame>

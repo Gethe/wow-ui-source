@@ -3,12 +3,12 @@
 --
 -- Flows must have the following functions:
 --  :Initialize(controller):  This sets up the flow and any associated blocks.
---  :SetUpBlock(controller): This sets up the current block for the given step.
 --  :Advance(controller):  Advances the flow one step.
 --  :Finish(controller):  Finishes the flow and does whatever it needs to process the data.  Should return true if completed sucessfully or false if it failed.
 --
 -- The methods are provided by a base class for all flows but may be overridden if necessary:
---  :Rewind(controller): Backs the flow up one step.
+--  :SetUpBlock(controller): This sets up the current block for the given step.
+--  :Rewind(controller): Backs the flow up to the next available step.
 --  :HideBlock():  Hides the current block.
 --  :Restart(controller):  Hide all blocks and restart the flow at step 1.
 --  :OnHide():  Check each block for a :OnHide method and call it if it exists.
@@ -29,16 +29,23 @@
 --  :FormatResult() - Formats the result for display with the result label.  If absent, :GetResult() will be used instead.
 --  :OnHide() - This function is called when a block needs to handle any resetting when the flow is hidden.
 --  :OnAdvance() - This function is called in response to the flow:Advance call if the block needs to handle any logic here.
+--  :SkipIf() - Skip this block if a certain result is present
+--  :OnSkip() - If you have a SkipIf() then OnSkip() will perform any actions you need if you are skipped.
 --
 -- The following members must be present on a block:
 --  .Back - Show the back button on the flow frame.
 --  .Next - Show the next button on the flow frame.  Conflicts with .Finish
 --  .Finish - Show the finish button on the flow frame.  Conflicts with .Next
+
+-- The following must be on all blocks not marked as HiddenStep:
 --  .ActiveLabel - The label to show when the block is active above the controls.
 --  .ResultsLabel - The label to show when the block is finished above the results themselves.
 --
 -- The following members may be present on a block:
 --  .AutoAdvance - If true the flow will automatically advance when the block is finished and will not wait for user input.
+--  .HiddenStep - This is only valid for the end step of any flow.  This says that this block has no meaningful controls or results for the user and should instead just
+--    cause the master to change the flow controls.
+--  .SkipOnRewind - This tells the flow to ignore the :IsFinished() result when deciding where to rewind and instead skip this block.
 --
 -- However a block uses controls to gather data, once it has data and is finished it should call
 -- CharacterServicesMaster_Update() to advance the flow and button states.
@@ -91,13 +98,13 @@ local factionLabels = {
 };
 
 local factionIds = {
-	[FACTION_HORDE] = 1,
-	[FACTION_ALLIANCE] = 2,
+	["Horde"] = 1,
+	["Alliance"] = 2,
 };
 
 local factionColors = { 
-	[factionIds[FACTION_HORDE]] = "ffe50d12", 
-	[factionIds[FACTION_ALLIANCE]] = "ff4a54e8"
+	[factionIds["Horde"]] = "ffe50d12", 
+	[factionIds["Alliance"]] = "ff4a54e8"
 };
 
 local stepTextures = {
@@ -148,7 +155,8 @@ local defaultProfessions = {
 
 local CharacterUpgradeCharacterSelectBlock = { Back = false, Next = false, Finish = false, AutoAdvance = true, ActiveLabel = SELECT_CHARACTER_ACTIVE_LABEL, ResultsLabel = SELECT_CHARACTER_RESULTS_LABEL };
 local CharacterUpgradeSpecSelectBlock = { Back = true, Next = true, Finish = false, ActiveLabel = SELECT_SPEC_ACTIVE_LABEL, ResultsLabel = SELECT_SPEC_RESULTS_LABEL };
-local CharacterUpgradeFactionSelectBlock = { Back = true, Next = false, Finish = true, ActiveLabel = SELECT_FACTION_ACTIVE_LABEL, ResultsLabel = SELECT_FACTION_RESULTS_LABEL };
+local CharacterUpgradeFactionSelectBlock = { Back = true, Next = true, Finish = false, ActiveLabel = SELECT_FACTION_ACTIVE_LABEL, ResultsLabel = SELECT_FACTION_RESULTS_LABEL };
+local CharacterUpgradeEndStep = { Back = true, Next = false, Finish = true, HiddenStep = true, SkipOnRewind = true };
 
 local CharacterServicesFlowPrototype = {};
 
@@ -157,8 +165,9 @@ CharacterUpgradeFlow.Steps = {
 	[1] = CharacterUpgradeCharacterSelectBlock,
 	[2] = CharacterUpgradeSpecSelectBlock,
 	[3] = CharacterUpgradeFactionSelectBlock,
+	[4] = CharacterUpgradeEndStep,
 }
-CharacterUpgradeFlow.numSteps = 3;
+CharacterUpgradeFlow.numSteps = 4;
 
 function CharacterServicesMaster_UpdateServiceButton()
 	local frame;
@@ -188,6 +197,8 @@ function CharacterServicesMaster_UpdateServiceButton()
 			frame.NumberBackground:Hide();
 			frame.Number:Hide();
 		end
+	else
+		CharacterServicesTokenNormal:Hide();
 	end
 
 	if (hasFree) then
@@ -212,6 +223,8 @@ function CharacterServicesMaster_UpdateServiceButton()
 			end
 			frame:SetPoint("TOPRIGHT", CharacterServicesTokenNormal, "TOPLEFT", offset, -2);
 		end
+	else
+		CharacterServicesTokenWoDFree:Hide();
 	end
 end
 
@@ -279,23 +292,30 @@ function CharacterServicesMaster_SetFlow(self, flow)
 	self:GetParent().FinishButton:SetText(flow.FinishLabel);
 	for i = 1, #flow.Steps do
 		local block = flow.Steps[i];
-		block.frame:SetFrameLevel(CharacterServicesMaster:GetFrameLevel()+2);
-		block.frame:SetParent(self);
-		if (i == 1) then
-			block.frame:SetPoint("TOP", CharacterServicesMaster, "TOP", -30, 0);
-		else
-			block.frame:SetPoint("TOP", flow.Steps[i-1].frame, "TOP", 0, -60);
+		if (not block.HiddenStep) then
+			block.frame:SetFrameLevel(CharacterServicesMaster:GetFrameLevel()+2);
+			block.frame:SetParent(self);
+			if (i == 1) then
+				block.frame:SetPoint("TOP", CharacterServicesMaster, "TOP", -30, 0);
+			else
+				block.frame:SetPoint("TOP", flow.Steps[i-1].frame, "TOP", 0, -60);
+			end
 		end
 	end
 end
 
 function CharacterServicesMaster_SetCurrentBlock(self, block)
 	local parent = self:GetParent();
-	CharacterServicesMaster_SetBlockActiveState(block);
+	if (not block.HiddenStep) then
+		CharacterServicesMaster_SetBlockActiveState(block);
+	end
 	self.currentBlock = block;
 	parent.BackButton:SetShown(block.Back);
 	parent.NextButton:SetShown(block.Next);
 	parent.FinishButton:SetShown(block.Finish);
+	if (block.Finish) then
+		self.FinishTime = GetTime();
+	end
 	parent.NextButton:SetEnabled(block:IsFinished());
 	parent.FinishButton:SetEnabled(block:IsFinished());
 end
@@ -305,7 +325,9 @@ function CharacterServicesMaster_Update()
 	local parent = self:GetParent();
 	local block = self.currentBlock;
 	if (block and block:IsFinished()) then
-		CharacterServicesMaster_SetBlockFinishedState(block);
+		if (not block.HiddenStep) then
+			CharacterServicesMaster_SetBlockFinishedState(block);
+		end
 		if (block.AutoAdvance) then
 			self.flow:Advance(self);
 		else
@@ -371,6 +393,10 @@ function CharacterServicesMasterNextButton_OnClick(self)
 end
 
 function CharacterServicesMasterFinishButton_OnClick(self)
+	-- wait a bit after button is shown so no one accidentally upgrades the wrong character
+	if ( GetTime() - CharacterServicesMaster.FinishTime < 0.5 ) then
+		return;
+	end
 	local master = CharacterServicesMaster;
 	local parent = master:GetParent();
 	local success = master.flow:Finish(master);
@@ -395,7 +421,7 @@ end
 function CharacterServicesFlowPrototype:Rewind(controller)
 	local block = self.Steps[self.step];
 	local results;
-	if (block:IsFinished()) then
+	if (block:IsFinished() and not block.SkipOnRewind) then
 		if (self.step ~= 1) then
 			results = self:BuildResults(self.step - 1);
 		end
@@ -403,6 +429,10 @@ function CharacterServicesFlowPrototype:Rewind(controller)
 	else	
 		self:HideBlock(self.step);
 		self.step = self.step - 1;
+		while ( self.Steps[self.step].SkipOnRewind ) do
+			self:HideBlock(self.step);
+			self.step = self.step - 1;
+		end
 		if (self.step ~= 1) then
 			results = self:BuildResults(self.step - 1);
 		end
@@ -418,6 +448,24 @@ function CharacterServicesFlowPrototype:Restart(controller)
 	self:SetUpBlock(controller);
 end
 
+function CharacterServicesFlowPrototype:SetUpBlock(controller, results)
+	local block = self.Steps[self.step];
+	CharacterServicesMaster_SetCurrentBlock(controller, block);
+	if (not block.HiddenStep) then
+		block.frame.StepNumber:SetTexCoord(unpack(stepTextures[self.step]));
+		block.frame:Show();
+	end
+	block:Initialize(results);
+	CharacterServicesMaster_Update();
+end
+
+function CharacterServicesFlowPrototype:HideBlock(step)
+	local block = self.Steps[step];
+	if (not block.HiddenStep) then
+		block.frame:Hide();
+	end
+end
+
 function CharacterServicesFlowPrototype:OnHide()
 	for i = 1, #self.Steps do
 		local block = self.Steps[i];
@@ -426,7 +474,6 @@ function CharacterServicesFlowPrototype:OnHide()
 		end
 	end
 end
-
 
 local warningAccepted = false;
 
@@ -444,20 +491,6 @@ function CharacterUpgradeFlow:Initialize(controller)
 	self:Restart(controller);
 end
 
-function CharacterUpgradeFlow:SetUpBlock(controller, results)
-	local block = self.Steps[self.step];
-	CharacterServicesMaster_SetCurrentBlock(controller, block);
-	block.frame.StepNumber:SetTexCoord(unpack(stepTextures[self.step]));
-	block.frame:Show();
-	block:Initialize(results);
-	CharacterServicesMaster_Update();
-end
-
-function CharacterUpgradeFlow:HideBlock(step)
-	local block = self.Steps[step];
-	block.frame:Hide();
-end
-
 function CharacterUpgradeFlow:Advance(controller)
 	if (self.step == self.numSteps) then
 		self:Finish(controller);
@@ -469,24 +502,27 @@ function CharacterUpgradeFlow:Advance(controller)
 
 		local results = self:BuildResults(self.step);
 		if (self.step == 1) then
-			local factionGroup = C_CharacterServices.GetFactionGroupByIndex(results.charid);
 			local level = select(6, GetCharacterInfo(results.charid));
 			if (level >= UPGRADE_BONUS_LEVEL) then
 				self.Steps[2].frame:SetPoint("TOP", self.Steps[1].frame, "TOP", 0, -120);
 			else
 				self.Steps[2].frame:SetPoint("TOP", self.Steps[1].frame, "TOP", 0, -60);
 			end
+			local factionGroup = C_CharacterServices.GetFactionGroupByIndex(results.charid);
+			
 			if ( factionGroup ~= "Neutral" ) then
-				self.numSteps = 2;
-				self.Steps[2].Next = false;
-				self.Steps[2].Finish = true;
+				self.Steps[3].SkipOnRewind = true;
 			else
-				self.numSteps = 3;
-				self.Steps[2].Next = true;
-				self.Steps[2].Finish = false;
+				self.Steps[3].SkipOnRewind = false;
 			end
 		end
 		self.step = self.step + 1;
+		while (self.Steps[self.step].SkipIf and self.Steps[self.step]:SkipIf(results)) do
+			if (self.Steps[self.step].OnSkip) then
+				self.Steps[self.step]:OnSkip();
+			end
+			self.step = self.step + 1;
+		end
 		self:SetUpBlock(controller, results);
 	end
 end
@@ -736,6 +772,16 @@ function CharacterUpgradeCreateCharacter_OnClick(self)
 	CharacterSelect_SelectCharacter(self:GetID());
 end
 
+local function formatDescription(description,results)
+	if (not strfind(description, "%$")) then
+		return description;
+	end
+
+	-- This is a very simple parser that will only handle $G/$g tokens
+	local sex = select(17, GetCharacterInfo(results.charid));
+	return gsub(description, "$[Gg](%w+):(%w+);", "%"..sex);
+end
+
 function CharacterUpgradeSpecSelectBlock:Initialize(results)
 	self.selected = nil;
 
@@ -751,7 +797,7 @@ function CharacterUpgradeSpecSelectBlock:Initialize(results)
 		end
 		local button = self.frame.ControlsFrame.SpecButtons[i];
 		if (i <= numSpecs ) then
-			local specID, name, icon, role = GetSpecializationInfoForClassID(classID, i);
+			local specID, name, icon, role, description = GetSpecializationInfoForClassID(classID, i);
 			button:SetID(specID);
 			button.SpecIcon:SetTexture(icon);
 			button.SpecName:SetText(name);
@@ -759,6 +805,7 @@ function CharacterUpgradeSpecSelectBlock:Initialize(results)
 			button.RoleName:SetText(_G[role]);
 			button:SetChecked(false);
 			button:Show();
+			button.tooltip = formatDescription(description, results);
 		else
 			button:Hide();
 		end
@@ -829,6 +876,14 @@ function CharacterUpgradeFactionSelectBlock:FormatResult()
 	return SELECT_FACTION_RESULTS_FORMAT:format(factionColors[self.selected], factionLabels[self.selected]);
 end
 
+function CharacterUpgradeFactionSelectBlock:SkipIf(results)
+	return C_CharacterServices.GetFactionGroupByIndex(results.charid) ~= "Neutral";
+end
+
+function CharacterUpgradeFactionSelectBlock:OnSkip()
+	self.selected = nil;
+end
+
 function CharacterUpgradeSelectFactionRadioButton_OnClick(self, button, down)
 	local owner = CharacterUpgradeFactionSelectBlock;
 	local con = owner.ContinueButton;
@@ -849,6 +904,18 @@ function CharacterUpgradeSelectFactionRadioButton_OnClick(self, button, down)
 	end
 
 	CharacterServicesMaster_Update();
+end
+
+function CharacterUpgradeEndStep:Initialize(results)
+	CharacterServicesMaster_Update();
+end
+
+function CharacterUpgradeEndStep:IsFinished()
+	return true;
+end
+
+function CharacterUpgradeEndStep:GetResult()
+	return {};
 end
 
 function CharacterUpgradeSecondChanceWarningFrameConfirmButton_OnClick(self)

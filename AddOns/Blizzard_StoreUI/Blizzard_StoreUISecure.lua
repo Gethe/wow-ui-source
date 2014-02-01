@@ -75,6 +75,9 @@ Import("BLIZZARD_STORE_BAG_FULL_DESC");
 Import("BLIZZARD_STORE_CONFIRMATION_GENERIC");
 Import("BLIZZARD_STORE_CONFIRMATION_TEST");
 Import("BLIZZARD_STORE_CONFIRMATION_EUR");
+Import("BLIZZARD_STORE_CONFIRMATION_SERVICES");
+Import("BLIZZARD_STORE_CONFIRMATION_SERVICES_TEST");
+Import("BLIZZARD_STORE_CONFIRMATION_SERVICES_EUR");
 Import("BLIZZARD_STORE_BROWSE_TEST_CURRENCY");
 Import("BLIZZARD_STORE_BATTLE_NET_BALANCE");
 Import("BLIZZARD_STORE_CURRENCY_FORMAT_USD");
@@ -295,6 +298,7 @@ local currencySpecific = {
 		formatLong = currencyFormatUSD,
 		browseNotice = BLIZZARD_STORE_PLUS_TAX,
 		confirmationNotice = BLIZZARD_STORE_CONFIRMATION_GENERIC,
+		servicesConfirmationNotice = BLIZZARD_STORE_CONFIRMATION_SERVICES,
 		licenseAcceptText = BLIZZARD_STORE_LICENSE_ACK_TEXT_USD,
 		paymentMethodText = BLIZZARD_STORE_PAYMENT_METHOD,
 		paymentMethodSubtext = BLIZZARD_STORE_PAYMENT_METHOD_EXTRA,
@@ -305,6 +309,7 @@ local currencySpecific = {
 		formatLong = currencyFormatGBP,
 		browseNotice = BLIZZARD_STORE_BROWSE_EUR,
 		confirmationNotice = BLIZZARD_STORE_CONFIRMATION_EUR,
+		servicesConfirmationNotice = BLIZZARD_STORE_CONFIRMATION_SERVICES_EUR,
 		licenseAcceptText = BLIZZARD_STORE_LICENSE_ACK_TEXT_GBP,
 		paymentMethodText = BLIZZARD_STORE_PAYMENT_METHOD,
 		paymentMethodSubtext = BLIZZARD_STORE_PAYMENT_METHOD_EXTRA,
@@ -318,6 +323,7 @@ local currencySpecific = {
 		formatLong = currencyFormatKRWLong,
 		browseNotice = BLIZZARD_STORE_BROWSE_BATTLE_COINS_KR,
 		confirmationNotice = BLIZZARD_STORE_SECOND_CHANCE_KR,
+		servicesConfirmationNotice = BLIZZARD_STORE_SECOND_CHANCE_KR,
 		browseWarning = BLIZZARD_STORE_SECOND_CHANCE_KR,
 		paymentMethodText = "",
 		paymentMethodSubtext = "",
@@ -331,6 +337,7 @@ local currencySpecific = {
 		formatLong = currencyFormatEuro,
 		browseNotice = BLIZZARD_STORE_BROWSE_EUR,
 		confirmationNotice = BLIZZARD_STORE_CONFIRMATION_EUR,
+		servicesConfirmationNotice = BLIZZARD_STORE_CONFIRMATION_SERVICES_EUR,
 		licenseAcceptText = BLIZZARD_STORE_LICENSE_ACK_TEXT_EUR,
 		paymentMethodText = BLIZZARD_STORE_PAYMENT_METHOD,
 		paymentMethodSubtext = BLIZZARD_STORE_PAYMENT_METHOD_EXTRA,
@@ -344,6 +351,7 @@ local currencySpecific = {
 		formatLong = currencyFormatRUB,
 		browseNotice = BLIZZARD_STORE_BROWSE_EUR,
 		confirmationNotice = BLIZZARD_STORE_CONFIRMATION_EUR,
+		servicesConfirmationNotice = BLIZZARD_STORE_CONFIRMATION_SERVICES_EUR,
 		licenseAcceptText = BLIZZARD_STORE_LICENSE_ACK_TEXT_RUB,
 		paymentMethodText = BLIZZARD_STORE_PAYMENT_METHOD,
 		paymentMethodSubtext = BLIZZARD_STORE_PAYMENT_METHOD_EXTRA,
@@ -357,6 +365,7 @@ local currencySpecific = {
 		formatLong = currencyFormatARS,
 		browseNotice = BLIZZARD_STORE_PLUS_TAX,
 		confirmationNotice = BLIZZARD_STORE_CONFIRMATION_GENERIC,
+		servicesConfirmationNotice = BLIZZARD_STORE_CONFIRMATION_SERVICES,
 		licenseAcceptText = BLIZZARD_STORE_LICENSE_ACK_TEXT_ARS,
 		paymentMethodText = BLIZZARD_STORE_PAYMENT_METHOD,
 		paymentMethodSubtext = BLIZZARD_STORE_PAYMENT_METHOD_EXTRA,
@@ -367,6 +376,7 @@ local currencySpecific = {
 		formatLong = currencyFormatCLP,
 		browseNotice = BLIZZARD_STORE_PLUS_TAX,
 		confirmationNotice = BLIZZARD_STORE_CONFIRMATION_GENERIC,
+		servicesConfirmationNotice = BLIZZARD_STORE_CONFIRMATION_SERVICES,
 		licenseAcceptText = BLIZZARD_STORE_LICENSE_ACK_TEXT_CLP,
 		paymentMethodText = BLIZZARD_STORE_PAYMENT_METHOD,
 		paymentMethodSubtext = BLIZZARD_STORE_PAYMENT_METHOD_EXTRA,
@@ -377,6 +387,7 @@ local currencySpecific = {
 		formatLong = currencyFormatMXN,
 		browseNotice = BLIZZARD_STORE_PLUS_TAX,
 		confirmationNotice = BLIZZARD_STORE_CONFIRMATION_GENERIC,
+		servicesConfirmationNotice = BLIZZARD_STORE_CONFIRMATION_SERVICES,
 		licenseAcceptText = BLIZZARD_STORE_LICENSE_ACK_TEXT_MXN,
 		paymentMethodText = BLIZZARD_STORE_PAYMENT_METHOD,
 		paymentMethodSubtext = BLIZZARD_STORE_PAYMENT_METHOD_EXTRA,
@@ -387,6 +398,7 @@ local currencySpecific = {
 		formatLong = currencyFormatBRL,
 		browseNotice = BLIZZARD_STORE_PLUS_TAX,
 		confirmationNotice = BLIZZARD_STORE_CONFIRMATION_GENERIC,
+		servicesConfirmationNotice = BLIZZARD_STORE_CONFIRMATION_SERVICES,
 		licenseAcceptText = BLIZZARD_STORE_LICENSE_ACK_TEXT_BRL,
 		paymentMethodText = BLIZZARD_STORE_PAYMENT_METHOD,
 		paymentMethodSubtext = BLIZZARD_STORE_PAYMENT_METHOD_EXTRA,
@@ -397,6 +409,7 @@ local currencySpecific = {
 		formatLong = currencyFormatAUD,
 		browseNotice = BLIZZARD_STORE_PLUS_TAX,
 		confirmationNotice = BLIZZARD_STORE_CONFIRMATION_GENERIC,
+		servicesConfirmationNotice = BLIZZARD_STORE_CONFIRMATION_SERVICES,
 		licenseAcceptText = BLIZZARD_STORE_LICENSE_ACK_TEXT_AUD,
 		paymentMethodText = BLIZZARD_STORE_PAYMENT_METHOD,
 		paymentMethodSubtext = BLIZZARD_STORE_PAYMENT_METHOD_EXTRA,
@@ -407,6 +420,7 @@ local currencySpecific = {
 		formatLong = currencyFormatCPTLong,
 		browseNotice = BLIZZARD_STORE_BROWSE_BATTLE_COINS_CN,
 		confirmationNotice = BLIZZARD_STORE_CONFIRMATION_GENERIC,
+		servicesConfirmationNotice = BLIZZARD_STORE_CONFIRMATION_SERVICES,
 		licenseAcceptText = BLIZZARD_STORE_LICENSE_ACK_TEXT_CN,
 		paymentMethodText = "",
 		paymentMethodSubtext = "",
@@ -418,6 +432,7 @@ local currencySpecific = {
 		formatLong = currencyFormatTPT,
 		browseNotice = "",
 		confirmationNotice = BLIZZARD_STORE_CONFIRMATION_GENERIC,
+		servicesConfirmationNotice = BLIZZARD_STORE_CONFIRMATION_SERVICES,
 		licenseAcceptText = BLIZZARD_STORE_LICENSE_ACK_TEXT_TW,
 		paymentMethodText = "",
 		paymentMethodSubtext = "",
@@ -428,6 +443,7 @@ local currencySpecific = {
 		formatLong = currencyFormatBeta,
 		browseNotice = BLIZZARD_STORE_BROWSE_TEST_CURRENCY,
 		confirmationNotice = BLIZZARD_STORE_CONFIRMATION_TEST,
+		servicesConfirmationNotice = BLIZZARD_STORE_CONFIRMATION_SERVICES_TEST,
 		paymentMethodText = BLIZZARD_STORE_CONFIRMATION_TEST,
 		paymentMethodSubtext = "",
 		browseHasStar = true,
@@ -496,7 +512,7 @@ local function getIndex(tbl, value)
 end
 
 function StoreFrame_UpdateCard(card,entryID,discountReset)
-	local productID, _, bannerType, alreadyOwned, normalDollars, normalCents, currentDollars, currentCents, buyableHere, name, description, displayID, texture = C_PurchaseAPI.GetEntryInfo(entryID);
+	local productID, _, bannerType, alreadyOwned, normalDollars, normalCents, currentDollars, currentCents, buyableHere, name, description, displayID, texture, upgrade = C_PurchaseAPI.GetEntryInfo(entryID);
 	StoreProductCard_ResetCornerPieces(card);
 
 	local info = currencyInfo();
@@ -524,6 +540,22 @@ function StoreFrame_UpdateCard(card,entryID,discountReset)
 		discount = true;
 	end
 
+	card.Checkmark:Hide();
+	if (card.NewTexture) then
+		card.NewTexture:Hide();
+	end
+
+	if (card.HotTexture) then
+		card.HotTexture:Hide();
+	end
+
+	if (card.DiscountMiddle) then
+		card.DiscountLeft:Hide();
+		card.DiscountMiddle:Hide();
+		card.DiscountRight:Hide();
+		card.DiscountText:Hide();
+	end
+
 	if ( alreadyOwned ) then
 		card.Checkmark:Show();
 	elseif ( card.NewTexture and new ) then
@@ -539,6 +571,12 @@ function StoreFrame_UpdateCard(card,entryID,discountReset)
 		card.DiscountLeft:Show();
 		card.DiscountRight:Show();
 		card.DiscountText:Show();
+	end
+
+	if (upgrade) then
+		card.UpgradeArrow:Show();
+	else
+		card.UpgradeArrow:Hide();
 	end
 
 	if (card.BuyButton) then
@@ -584,6 +622,11 @@ function StoreFrame_UpdateCard(card,entryID,discountReset)
 
 	if (discount) then
 		StoreProductCard_ShowDiscount(card, currencyFormat(currentDollars, currentCents), discountReset);
+	else
+		card.NormalPrice:Hide();
+		card.SalePrice:Hide();
+		card.Strikethrough:Hide();
+		card.CurrentPrice:Show();
 	end
 
 	if (card.BuyButton) then
@@ -1189,7 +1232,7 @@ function StoreConfirmationFrame_OnLoad(self)
 	self:RegisterEvent("STORE_CONFIRM_PURCHASE");
 end
 
-function StoreConfirmationFrame_SetNotice(self, icon, name, dollars, cents, walletName)
+function StoreConfirmationFrame_SetNotice(self, icon, name, dollars, cents, walletName, upgrade)
 	self:SetHeight(ConfirmationFrameHeight);
 	self.ParchmentMiddle:SetHeight(ConfirmationFrameMiddleHeight);
 	SetPortraitToTexture(self.Icon, icon);
@@ -1199,12 +1242,24 @@ function StoreConfirmationFrame_SetNotice(self, icon, name, dollars, cents, wall
 	self.NoticeFrame.Notice:SetPoint("TOP", 0, 100);
 	local info = currencyInfo();
 	local format = info.formatLong;
-	local notice = info.confirmationNotice;
+	local notice;
+	
+	if (upgrade) then
+		notice = info.servicesConfirmationNotice;
+	else
+		notice = info.confirmationNotice;
+	end
+
 	if (not walletName or walletName == "") then
 		walletName = BLIZZARD_STORE_BATTLE_NET_BALANCE;
 	end
 	if (walletName) then
 		notice = notice .. "\n\n" .. BLIZZARD_STORE_WALLET_INFO:format(walletName);
+	end
+	if (upgrade) then
+		self.UpgradeArrow:Show();
+	else
+		self.UpgradeArrow:Hide();
 	end
 	self.NoticeFrame.Notice:SetText(notice);
 	self.NoticeFrame:Show();
@@ -1247,13 +1302,13 @@ function StoreConfirmationFrame_Update(self)
 		self:Hide(); --May want to show an error message
 		return;
 	end
-	local _, _, _, currentDollars, currentCents, _, name, _, displayID, texture = C_PurchaseAPI.GetProductInfo(productID);
+	local _, _, _, currentDollars, currentCents, _, name, _, displayID, texture, upgrade = C_PurchaseAPI.GetProductInfo(productID);
 
 	local finalIcon = texture;
 	if ( not finalIcon ) then
 		finalIcon = "Interface\\Icons\\INV_Misc_Note_02";
 	end
-	StoreConfirmationFrame_SetNotice(self, finalIcon, name, currentDollars, currentCents, walletName);
+	StoreConfirmationFrame_SetNotice(self, finalIcon, name, currentDollars, currentCents, walletName, upgrade);
 
 	local info = currencyInfo();
 	self.BrowseNotice:SetText(info.browseNotice);

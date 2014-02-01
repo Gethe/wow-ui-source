@@ -420,6 +420,11 @@
 							<Anchor point="CENTER" relativePoint="CENTER" x="0" y="0" />
 						</Anchors>
 					</Texture>
+					<Texture parentKey="UpgradeArrow" inherits="icon-upgradearrow" hidden="true">
+						<Anchors>
+							<Anchor point="BOTTOMRIGHT" relativeKey="$parent.IconBorder" relativePoint="BOTTOMRIGHT" x="-3" y="4"/>
+						</Anchors>
+					</Texture>
 				</Layer>
 				<Layer level="ARTWORK" textureSubLevel="2">
 					<Texture parentKey="HighlightTexture" inherits="store-card-hover" hidden="true" alphaMode="ADD">
@@ -554,6 +559,11 @@
 					</Texture>
 				</Layer>
 				<Layer level="ARTWORK">
+					<Texture parentKey="UpgradeArrow" inherits="icon-upgradearrow" hidden="true">
+						<Anchors>
+							<Anchor point="BOTTOMRIGHT" relativeKey="$parent.IconBorder" relativePoint="BOTTOMRIGHT" x="-3" y="4"/>
+						</Anchors>
+					</Texture>
 					<FontString parentKey="ProductName" inherits="GameFontNormalWTF2" justifyH="LEFT" justifyV="TOP">
 						<Size x="300" y="0" />
 						<Anchors>
@@ -806,6 +816,11 @@
 							<Anchor point="CENTER" relativePoint="CENTER" x="0" y="0" />
 						</Anchors>
 					</Texture>
+					<Texture parentKey="UpgradeArrow" inherits="icon-upgradearrow" hidden="true">
+						<Anchors>
+							<Anchor point="BOTTOMRIGHT" relativeKey="$parent.IconBorder" relativePoint="BOTTOMRIGHT" x="-3" y="4"/>
+						</Anchors>
+					</Texture>
 				</Layer>
 				<Layer level="ARTWORK" textureSubLevel="2">
 					<Texture parentKey="HighlightTexture" inherits="store-card-splash3-large-hover" hidden="true" alphaMode="ADD">
@@ -1006,6 +1021,11 @@
 					<Texture parentKey="SelectedTexture" inherits="store-card-splash3-small-selected" hidden="true" alphaMode="ADD">
 						<Anchors>
 							<Anchor point="CENTER" relativePoint="CENTER" x="0" y="0" />
+						</Anchors>
+					</Texture>
+					<Texture parentKey="UpgradeArrow" inherits="icon-upgradearrow" hidden="true">
+						<Anchors>
+							<Anchor point="BOTTOMRIGHT" relativeKey="$parent.IconBorder" relativePoint="BOTTOMRIGHT" x="-3" y="4"/>
 						</Anchors>
 					</Texture>
 				</Layer>
@@ -1698,6 +1718,11 @@
 					</Texture>
 				</Layer>
 				<Layer level="ARTWORK" textureSubLevel="3">
+					<Texture parentKey="UpgradeArrow" inherits="icon-upgradearrow" hidden="true">
+						<Anchors>
+							<Anchor point="BOTTOMRIGHT" relativeKey="$parent.IconBorder" relativePoint="BOTTOMRIGHT" x="-3" y="4"/>
+						</Anchors>
+					</Texture>
 					<FontString parentKey="ProductName" inherits="GameFontNormalLarge2" wordwrap="true" justifyH="LEFT">
 						<Size x="200" y="60" />
 						<Anchors>

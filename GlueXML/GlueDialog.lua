@@ -24,8 +24,8 @@ GlueDialogTypes["DEVICE_BLACKLISTED"] = {
 	end
 }
 
-GlueDialogTypes["SHADERMODEL_UNSUPPORTED"] = {
-	text = SHADERMODEL_UNSUPPORTED,
+GlueDialogTypes["FIXEDFUNCTION_UNSUPPORTED"] = {
+	text = FIXEDFUNCTION_UNSUPPORTED,
 	button1 = OKAY,
 	html = 1,
 	showAlert = 1,

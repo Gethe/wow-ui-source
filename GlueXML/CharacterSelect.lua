@@ -300,8 +300,14 @@ function CharacterSelect_OnKeyDown(self,key)
 	elseif ( key == "PRINTSCREEN" ) then
 		Screenshot();
 	elseif ( key == "UP" or key == "LEFT" ) then
+		if (CharSelectServicesFlowFrame:IsShown()) then
+			return;
+		end
 		CharacterSelectScrollUp_OnClick();
 	elseif ( key == "DOWN" or key == "RIGHT" ) then
+		if (CharSelectServicesFlowFrame:IsShown()) then
+			return;
+		end
 		CharacterSelectScrollDown_OnClick();
 	end
 end

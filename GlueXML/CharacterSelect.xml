@@ -957,7 +957,7 @@
 
 							<Button name="CharacterServicesProcessingIcon1" inherits="CharacterServicesProcessingIconTemplate" id="1" hidden="true">
 								<Anchors>
-									<Anchor point="RIGHT" relativeTo="CharSelectCharacterButton1" relativePoint="LEFT" x="-26" y="4"/>
+									<Anchor point="RIGHT" relativeTo="CharSelectCharacterButton1" relativePoint="LEFT" x="-10" y="4"/>
 								</Anchors>
 							</Button>
 							<Button name="CharacterServicesProcessingIcon2" inherits="CharacterServicesProcessingIconTemplate" id="2" hidden="true">
@@ -967,47 +967,47 @@
 							</Button>
 							<Button name="CharacterServicesProcessingIcon3" inherits="CharacterServicesProcessingIconTemplate" id="3" hidden="true">
 								<Anchors>
-									<Anchor point="RIGHT" relativeTo="CharSelectCharacterButton3" relativePoint="LEFT" x="-26" y="4"/>
+									<Anchor point="RIGHT" relativeTo="CharSelectCharacterButton3" relativePoint="LEFT" x="-10" y="4"/>
 								</Anchors>
 							</Button>
 							<Button name="CharacterServicesProcessingIcon4" inherits="CharacterServicesProcessingIconTemplate" id="4" hidden="true">
 								<Anchors>
-									<Anchor point="RIGHT" relativeTo="CharSelectCharacterButton4" relativePoint="LEFT" x="-26" y="4"/>
+									<Anchor point="RIGHT" relativeTo="CharSelectCharacterButton4" relativePoint="LEFT" x="-10" y="4"/>
 								</Anchors>
 							</Button>
 							<Button name="CharacterServicesProcessingIcon5" inherits="CharacterServicesProcessingIconTemplate" id="5" hidden="true">
 								<Anchors>
-									<Anchor point="RIGHT" relativeTo="CharSelectCharacterButton5" relativePoint="LEFT" x="-26" y="4"/>
+									<Anchor point="RIGHT" relativeTo="CharSelectCharacterButton5" relativePoint="LEFT" x="-10" y="4"/>
 								</Anchors>
 							</Button>
 							<Button name="CharacterServicesProcessingIcon6" inherits="CharacterServicesProcessingIconTemplate" id="6" hidden="true">
 								<Anchors>
-									<Anchor point="RIGHT" relativeTo="CharSelectCharacterButton6" relativePoint="LEFT" x="-26" y="4"/>
+									<Anchor point="RIGHT" relativeTo="CharSelectCharacterButton6" relativePoint="LEFT" x="-10" y="4"/>
 								</Anchors>
 							</Button>
 							<Button name="CharacterServicesProcessingIcon7" inherits="CharacterServicesProcessingIconTemplate" id="7" hidden="true">
 								<Anchors>
-									<Anchor point="RIGHT" relativeTo="CharSelectCharacterButton7" relativePoint="LEFT" x="-26" y="4"/>
+									<Anchor point="RIGHT" relativeTo="CharSelectCharacterButton7" relativePoint="LEFT" x="-10" y="4"/>
 								</Anchors>
 							</Button>
 							<Button name="CharacterServicesProcessingIcon8" inherits="CharacterServicesProcessingIconTemplate" id="8" hidden="true">
 								<Anchors>
-									<Anchor point="RIGHT" relativeTo="CharSelectCharacterButton8" relativePoint="LEFT" x="-26" y="4"/>
+									<Anchor point="RIGHT" relativeTo="CharSelectCharacterButton8" relativePoint="LEFT" x="-10" y="4"/>
 								</Anchors>
 							</Button>
 							<Button name="CharacterServicesProcessingIcon9" inherits="CharacterServicesProcessingIconTemplate" id="9" hidden="true">
 								<Anchors>
-									<Anchor point="RIGHT" relativeTo="CharSelectCharacterButton9" relativePoint="LEFT" x="-26" y="4"/>
+									<Anchor point="RIGHT" relativeTo="CharSelectCharacterButton9" relativePoint="LEFT" x="-10" y="4"/>
 								</Anchors>
 							</Button>
 							<Button name="CharacterServicesProcessingIcon10" inherits="CharacterServicesProcessingIconTemplate" id="10" hidden="true">
 								<Anchors>
-									<Anchor point="RIGHT" relativeTo="CharSelectCharacterButton10" relativePoint="LEFT" x="-26" y="4"/>
+									<Anchor point="RIGHT" relativeTo="CharSelectCharacterButton10" relativePoint="LEFT" x="-10" y="4"/>
 								</Anchors>
 							</Button>
 							<Button name="CharacterServicesProcessingIcon11" inherits="CharacterServicesProcessingIconTemplate" id="11" hidden="true">
 								<Anchors>
-									<Anchor point="RIGHT" relativeTo="CharSelectCharacterButton11" relativePoint="LEFT" x="-26" y="4"/>
+									<Anchor point="RIGHT" relativeTo="CharSelectCharacterButton11" relativePoint="LEFT" x="-10" y="4"/>
 								</Anchors>
 							</Button>
 						</Frames>
@@ -1762,7 +1762,7 @@
 			<Frame name="GameRoomBillingFrame" hidden="true">
 				<Size x="255" y="60"/>
 				<Anchors>
-					<Anchor point="TOP" relativeTo="CharacterSelectServerAlertFrame" relativePoint="BOTTOM" x="0" y="-10"/>
+					<Anchor point="TOP" relativeTo="CharacterSelectServerAlertFrame" relativePoint="BOTTOM" x="0" y="20"/>
 				</Anchors>
 				<Layers>
 					<Layer level="BACKGROUND">

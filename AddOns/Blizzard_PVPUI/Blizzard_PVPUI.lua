@@ -291,7 +291,7 @@ function HonorFrame_OnLoad(self)
 	-- min level for bonus frame
 	local _, minLevel;
 	_, _, _, _, _, _, _, MIN_BONUS_HONOR_LEVEL = GetRandomBGInfo();
-	_, _, _, _, _, _, _, _, minLevel = GetHolidayBGInfo();
+	_, _, _, _, _, _, _, _, _, minLevel = GetHolidayBGInfo();
 	minLevel = minLevel and minLevel or MIN_BONUS_HONOR_LEVEL;
 	MIN_BONUS_HONOR_LEVEL = min(MIN_BONUS_HONOR_LEVEL, minLevel);
 
@@ -638,49 +638,59 @@ function HonorFrameBonusFrame_Update()
 	button.bgID = battleGroundID;
 	-- call to arms
 	button = HonorFrame.BonusFrame.CallToArmsButton;
-	local canQueue, bgName, battleGroundID, hasWon, winHonorAmount, winConquestAmount, lossHonorAmount, lossConquestAmount, minLevel, maxLevel = GetHolidayBGInfo();
-	-- cap conquest to total earnable
-	if ( arenaReward < winConquestAmount ) then
-		winConquestAmount = arenaReward
-	elseif ( ratedBGReward < winConquestAmount ) then
-		winConquestAmount = ratedBGReward
-	end
-	HonorFrameBonusFrame_SetButtonState(button, canQueue, minLevel);
-	button.Contents.BattlegroundName:SetText(bgName);
-	if ( canQueue ) then
-		button.Contents.BattlegroundName:SetTextColor(0.7, 0.7, 0.7);
-		if ( not selectButton ) then
-			selectButton = button;
+	local hasData, canQueue, bgName, battleGroundID, hasWon, winHonorAmount, winConquestAmount, lossHonorAmount, lossConquestAmount, minLevel, maxLevel = GetHolidayBGInfo();
+	if ( hasData ) then
+		-- cap conquest to total earnable
+		if ( arenaReward < winConquestAmount ) then
+			winConquestAmount = arenaReward
+		elseif ( ratedBGReward < winConquestAmount ) then
+			winConquestAmount = ratedBGReward
+		end
+		HonorFrameBonusFrame_SetButtonState(button, canQueue, minLevel);
+		button.Contents.BattlegroundName:SetText(bgName);
+		if ( canQueue ) then
+			button.Contents.BattlegroundName:SetTextColor(0.7, 0.7, 0.7);
+			if ( not selectButton ) then
+				selectButton = button;
+			end
+		else
+			button.Contents.BattlegroundName:SetTextColor(0.4, 0.4, 0.4);
+		end
+		button.canQueue = canQueue;
+		button.bgID = battleGroundID;
+		-- rewards for battlegrounds
+		local rewardIndex = 0;
+		if ( winConquestAmount and winConquestAmount > 0 ) then
+			rewardIndex = rewardIndex + 1;
+			local frame = HonorFrame.BonusFrame["BattlegroundReward"..rewardIndex];
+			frame:Show();
+			frame.Icon:SetTexture("Interface\\PVPFrame\\PVPCurrency-Conquest-"..englishFaction);
+			frame.Amount:SetText(winConquestAmount);
+		end
+		if ( winHonorAmount and winHonorAmount > 0 ) then
+			rewardIndex = rewardIndex + 1;
+			local frame = HonorFrame.BonusFrame["BattlegroundReward"..rewardIndex];
+			frame:Show();
+			frame.Icon:SetTexture("Interface\\PVPFrame\\PVPCurrency-Honor-"..englishFaction);
+			frame.Amount:SetText(winHonorAmount);
+		end
+		for i = rewardIndex + 1, 2 do
+			HonorFrame.BonusFrame["BattlegroundReward"..i]:Hide();
+		end
+		if ( rewardIndex == 0 ) then
+			-- we don't have any rewards
+			HonorFrame.BonusFrame.NoBattlegroundReward:Show();
+		else
+			HonorFrame.BonusFrame.NoBattlegroundReward:Hide();
 		end
 	else
-		button.Contents.BattlegroundName:SetTextColor(0.4, 0.4, 0.4);
-	end
-	button.canQueue = canQueue;
-	button.bgID = battleGroundID;
-	-- rewards for battlegrounds
-	local rewardIndex = 0;
-	if ( winConquestAmount and winConquestAmount > 0 ) then
-		rewardIndex = rewardIndex + 1;
-		local frame = HonorFrame.BonusFrame["BattlegroundReward"..rewardIndex];
-		frame:Show();
-		frame.Icon:SetTexture("Interface\\PVPFrame\\PVPCurrency-Conquest-"..englishFaction);
-		frame.Amount:SetText(winConquestAmount);
-	end
-	if ( winHonorAmount and winHonorAmount > 0 ) then
-		rewardIndex = rewardIndex + 1;
-		local frame = HonorFrame.BonusFrame["BattlegroundReward"..rewardIndex];
-		frame:Show();
-		frame.Icon:SetTexture("Interface\\PVPFrame\\PVPCurrency-Honor-"..englishFaction);
-		frame.Amount:SetText(winHonorAmount);
-	end
-	for i = rewardIndex + 1, 2 do
-		HonorFrame.BonusFrame["BattlegroundReward"..i]:Hide();
-	end
-	if ( rewardIndex == 0 ) then
-		-- we don't have any rewards
+		HonorFrameBonusFrame_SetButtonState(button, false, nil);
+		button.Contents.BattlegroundName:SetText("");
+		button.canQueue = false;
+		button.bgID = nil;
+		HonorFrame.BonusFrame.BattlegroundReward1:Hide();
+		HonorFrame.BonusFrame.BattlegroundReward2:Hide();
 		HonorFrame.BonusFrame.NoBattlegroundReward:Show();
-	else
-		HonorFrame.BonusFrame.NoBattlegroundReward:Hide();
 	end
 	-- world pvp
 	for i = 1, 2 do
@@ -755,12 +765,13 @@ function HonorFrameBonusFrame_SetButtonState(button, enable, minLevel)
 		button.Contents.Title:SetTextColor(0.4, 0.4, 0.4);
 		button.NormalTexture:SetAlpha(0.5);
 		button:Disable();
-		button.Contents.UnlockText:Show();
 		if ( minLevel ) then
 			button.Contents.MinLevelText:Show();
 			button.Contents.MinLevelText:SetFormattedText(UNIT_LEVEL_TEMPLATE, minLevel);
+			button.Contents.UnlockText:Show();
 		else
 			button.Contents.MinLevelText:Hide();
+			button.Contents.UnlockText:Hide();
 		end
 	end
 end
