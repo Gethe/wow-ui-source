@@ -1429,6 +1429,7 @@ BLIZZARD_STORE_PROCESSING = "Processing...";
 BLIZZARD_STORE_PRODUCT_INDEX = "Product |cffffffff%d|r of |cffffffff%d|r";
 BLIZZARD_STORE_PURCHASE_COMPLETE = "Product Delivered!";
 BLIZZARD_STORE_PURCHASE_COMPLETE_DESC = "Your item has been delivered.";
+BLIZZARD_STORE_PURCHASE_SENT = "Purchase Sent!";
 BLIZZARD_STORE_REGION_LOCKED = "Error";
 BLIZZARD_STORE_REGION_LOCKED_SUBTEXT = "There is a problem with your account configuration. Please contact Customer Service.";
 BLIZZARD_STORE_SECOND_CHANCE_KR = "Duration of service: Until the termination of item or until consumption.|nThis item CANNOT be refundable when even partially consumed or after 7 days from purchase.";

@@ -169,17 +169,6 @@
 			<DisabledFont style="GameFontDisable" />
 			<HighlightTexture inherits="UIPanelButtonHighlightTexture" />
 		</Button>
-		<!--
-			up-left: 0.26464844, 0.31542969, 0.88476563, 0.91601563
-			up-middle: 0.73925781, 0.81152344, 0.41992188, 0.45117188
-			up-right: 0.98242188, 0.99902344, 0.15917969, 0.19042969
-			down-left: 0.31738281, 0.36816406, 0.85156250, 0.88281250
-			down-middle: 0.92382813, 0.99609375, 0.40527344, 0.43652344
-			down-right: 0.98046875, 0.99707031, 0.33300781, 0.36425781
-			disabled-left: 0.26464844, 0.31542969, 0.85156250, 0.88281250
-			disabled-middle: 0.92382813, 0.99609375, 0.37207031, 0.40332031
-			disabled-right: 0.98046875, 0.99707031, 0.29980469, 0.33105469
-		-->
 		<Button name="StoreGoldButtonTemplate" virtual="true">
 			<Size x="40" y="22" />
 			<Layers>
@@ -207,33 +196,33 @@
 			<Scripts>
 				<OnLoad>
 					if ( not self:IsEnabled() ) then
-						self.Left:SetTexCoord(0.26464844, 0.31542969, 0.85156250, 0.88281250);
-						self.Middle:SetTexCoord(0.92382813, 0.99609375, 0.37207031, 0.40332031);
+						self.Left:SetTexCoord(0.26464844, 0.31542969, 0.89160156, 0.92285156);
+						self.Middle:SetTexCoord(0.18457031, 0.25683594, 0.96484375, 0.99609375);
 						self.Right:SetTexCoord(0.98046875, 0.99707031, 0.29980469, 0.33105469);
 					end
 				</OnLoad>
 				<OnMouseDown>
 					if ( self:IsEnabled() ) then
-						self.Left:SetTexCoord(0.31738281, 0.36816406, 0.85156250, 0.88281250);
-						self.Middle:SetTexCoord(0.92382813, 0.99609375, 0.40527344, 0.43652344);
+						self.Left:SetTexCoord(0.31738281, 0.36816406, 0.89160156, 0.92285156);
+						self.Middle:SetTexCoord(0.18457031, 0.25683594, 0.93164063, 0.96289063);
 						self.Right:SetTexCoord(0.98046875, 0.99707031, 0.33300781, 0.36425781);
 					end
 				</OnMouseDown>
 				<OnMouseUp>
 					if ( self:IsEnabled() ) then
-						self.Left:SetTexCoord(0.26464844, 0.31542969, 0.88476563, 0.91601563);
+						self.Left:SetTexCoord(0.30859375, 0.35937500, 0.85156250, 0.88281250);
 						self.Middle:SetTexCoord(0.73925781, 0.81152344, 0.41992188, 0.45117188);
 						self.Right:SetTexCoord(0.98242188, 0.99902344, 0.15917969, 0.19042969);
 					end
 				</OnMouseUp>
 				<OnShow function="StoreGoldButton_OnShow" />
 				<OnDisable>
-					self.Left:SetTexCoord(0.26464844, 0.31542969, 0.85156250, 0.88281250);
-					self.Middle:SetTexCoord(0.92382813, 0.99609375, 0.37207031, 0.40332031);
+					self.Left:SetTexCoord(0.26464844, 0.31542969, 0.89160156, 0.92285156);
+					self.Middle:SetTexCoord(0.18457031, 0.25683594, 0.96484375, 0.99609375);
 					self.Right:SetTexCoord(0.98046875, 0.99707031, 0.29980469, 0.33105469);
 				</OnDisable>
 				<OnEnable>
-					self.Left:SetTexCoord(0.26464844, 0.31542969, 0.88476563, 0.91601563);
+					self.Left:SetTexCoord(0.30859375, 0.35937500, 0.85156250, 0.88281250);
 					self.Middle:SetTexCoord(0.73925781, 0.81152344, 0.41992188, 0.45117188);
 					self.Right:SetTexCoord(0.98242188, 0.99902344, 0.15917969, 0.19042969);
 				</OnEnable>
@@ -420,7 +409,7 @@
 							<Anchor point="CENTER" relativePoint="CENTER" x="0" y="0" />
 						</Anchors>
 					</Texture>
-					<Texture parentKey="UpgradeArrow" inherits="icon-upgradearrow" hidden="true">
+					<Texture parentKey="UpgradeArrow" inherits="store-icon-upgradearrow" hidden="true">
 						<Anchors>
 							<Anchor point="BOTTOMRIGHT" relativeKey="$parent.IconBorder" relativePoint="BOTTOMRIGHT" x="-3" y="4"/>
 						</Anchors>
@@ -559,7 +548,7 @@
 					</Texture>
 				</Layer>
 				<Layer level="ARTWORK">
-					<Texture parentKey="UpgradeArrow" inherits="icon-upgradearrow" hidden="true">
+					<Texture parentKey="UpgradeArrow" inherits="store-icon-upgradearrow" hidden="true">
 						<Anchors>
 							<Anchor point="BOTTOMRIGHT" relativeKey="$parent.IconBorder" relativePoint="BOTTOMRIGHT" x="-3" y="4"/>
 						</Anchors>
@@ -816,7 +805,7 @@
 							<Anchor point="CENTER" relativePoint="CENTER" x="0" y="0" />
 						</Anchors>
 					</Texture>
-					<Texture parentKey="UpgradeArrow" inherits="icon-upgradearrow" hidden="true">
+					<Texture parentKey="UpgradeArrow" inherits="store-icon-upgradearrow" hidden="true">
 						<Anchors>
 							<Anchor point="BOTTOMRIGHT" relativeKey="$parent.IconBorder" relativePoint="BOTTOMRIGHT" x="-3" y="4"/>
 						</Anchors>
@@ -1023,7 +1012,7 @@
 							<Anchor point="CENTER" relativePoint="CENTER" x="0" y="0" />
 						</Anchors>
 					</Texture>
-					<Texture parentKey="UpgradeArrow" inherits="icon-upgradearrow" hidden="true">
+					<Texture parentKey="UpgradeArrow" inherits="store-icon-upgradearrow" hidden="true">
 						<Anchors>
 							<Anchor point="BOTTOMRIGHT" relativeKey="$parent.IconBorder" relativePoint="BOTTOMRIGHT" x="-3" y="4"/>
 						</Anchors>
@@ -1455,6 +1444,63 @@
 						<OnHide function="StoreFrame_UpdateCoverState" />
 					</Scripts>
 				</Frame>
+				<Frame parentKey="PurchaseSentFrame" enableMouse="false" hidden="true">
+					<Size x="320" y="210" />
+					<Anchors>
+						<Anchor point="CENTER" x="0" y="20" />
+					</Anchors>
+					<Backdrop edgeFile="Interface\DialogFrame\UI-DialogBox-Border" tile="true">
+						<TileSize>
+							<AbsValue val="32" />
+						</TileSize>
+						<EdgeSize>
+							<AbsValue val="32" />
+						</EdgeSize>
+					</Backdrop>
+					<Layers>
+						<Layer level="BACKGROUND">
+							<Texture>
+								<Anchors>
+									<Anchor point="TOPLEFT" x="5" y="-5" />
+									<Anchor point="BOTTOMRIGHT" x="-5" y="5" />
+								</Anchors>
+								<Color r="0" g="0" b="0" a="1" />
+							</Texture>
+						</Layer>
+						<Layer level="BORDER">
+							<Texture parentKey="Icon" inherits="store-icon-purchasesent">
+								<Anchors>
+									<Anchor point="CENTER" x="0" y="30" />
+								</Anchors>
+							</Texture>
+						</Layer>
+						<Layer level="ARTWORK">
+							<FontString parentKey="Title" inherits="GameFontNormalLarge2">
+								<Anchors>
+									<Anchor point="BOTTOM" x="0" y="70" />
+								</Anchors>
+							</FontString>
+						</Layer>
+					</Layers>
+					<Frames>
+						<Button parentKey="OkayButton" inherits="StoreButtonTemplate">
+							<Size x="120" y="22" />
+							<Anchors>
+								<Anchor point="BOTTOM" x="0" y="20" />
+							</Anchors>
+							<Scripts>
+								<OnClick function="StoreFramePurchaseSentOkayButton_OnClick" />
+							</Scripts>
+						</Button>
+					</Frames>
+					<Scripts>
+						<OnShow>
+							StoreFrame_UpdateCoverState();
+							self:SetFrameLevel(self:GetParent():GetFrameLevel()+4);
+						</OnShow>
+						<OnHide function="StoreFrame_UpdateCoverState" />
+					</Scripts>
+				</Frame>
 				<Frame parentKey="ErrorFrame" enableMouse="false" hidden="true">
 					<Size x="320" y="250" />
 					<Anchors>
@@ -1718,7 +1764,7 @@
 					</Texture>
 				</Layer>
 				<Layer level="ARTWORK" textureSubLevel="3">
-					<Texture parentKey="UpgradeArrow" inherits="icon-upgradearrow" hidden="true">
+					<Texture parentKey="UpgradeArrow" inherits="store-icon-upgradearrow" hidden="true">
 						<Anchors>
 							<Anchor point="BOTTOMRIGHT" relativeKey="$parent.IconBorder" relativePoint="BOTTOMRIGHT" x="-3" y="4"/>
 						</Anchors>
@@ -1761,7 +1807,7 @@
 					</Anchors>
 					<Frames>
 						<SimpleHTML parentKey="Notice">
-							<Size x="260" y="300"/>
+							<Size x="260" y="240"/>
 							<Anchors>
 								<Anchor point="TOP"/>
 							</Anchors>

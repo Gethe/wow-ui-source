@@ -19,21 +19,9 @@
 		<Size x="32" y="32"/>	
 		<TexCoords left="0.00097656" right="0.03222656" top="0.10156250" bottom="0.13281250"/>	
 	</Texture>
-	<Texture name="services-ring-wod-left" file="Interface\Store\Services" virtual="true" >
-		<Size x="17" y="25"/>	
-		<TexCoords left="0.00097656" right="0.01757813" top="0.13476563" bottom="0.15917969"/>	
-	</Texture>
-	<Texture name="services-ring-wod-middle" file="Interface\Store\Services" virtual="true" >
-		<Size x="14" y="25"/>	
-		<TexCoords left="0.01953125" right="0.03320313" top="0.13476563" bottom="0.15917969"/>	
-	</Texture>
-	<Texture name="services-ring-wod-right" file="Interface\Store\Services" virtual="true" >
-		<Size x="17" y="25"/>	
-		<TexCoords left="0.00097656" right="0.01757813" top="0.16113281" bottom="0.18554688"/>	
-	</Texture>
 	<Texture name="services-yellowarrow" file="Interface\Store\Services" virtual="true" >
 		<Size x="18" y="32"/>	
-		<TexCoords left="0.00097656" right="0.01855469" top="0.18750000" bottom="0.21875000"/>	
+		<TexCoords left="0.00097656" right="0.01855469" top="0.13476563" bottom="0.16601563"/>	
 	</Texture>
 	<Texture name="services-cover-ring" file="Interface\Store\Services" virtual="true" >
 		<Size x="80" y="82"/>	
@@ -116,12 +104,12 @@
 		<TexCoords left="0.23828125" right="0.37988281" top="0.85253906" bottom="0.98730469"/>	
 	</Texture>
 	<Texture name="services-ring-wod" file="Interface\Store\Services" virtual="true" >
-		<Size x="72" y="60"/>	
-		<TexCoords left="0.38183594" right="0.45214844" top="0.85253906" bottom="0.91113281"/>	
+		<Size x="72" y="68"/>	
+		<TexCoords left="0.38183594" right="0.45214844" top="0.85253906" bottom="0.91894531"/>	
 	</Texture>
 	<Texture name="services-ring" file="Interface\Store\Services" virtual="true" >
 		<Size x="59" y="60"/>	
-		<TexCoords left="0.38183594" right="0.43945313" top="0.91308594" bottom="0.97167969"/>	
+		<TexCoords left="0.38183594" right="0.43945313" top="0.92089844" bottom="0.97949219"/>	
 	</Texture>
 	<Texture name="services-ring-large-glow" file="Interface\Store\Services" virtual="true" >
 		<Size x="253" y="256"/>	

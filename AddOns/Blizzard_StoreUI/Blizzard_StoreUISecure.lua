@@ -139,6 +139,7 @@ Import("BLIZZARD_STORE_SPLASH_BANNER_NEW");
 Import("BLIZZARD_STORE_WALLET_INFO");
 Import("BLIZZARD_STORE_PROCESSING");
 Import("BLIZZARD_STORE_BEING_PROCESSED_CHECK_BACK_LATER");
+Import("BLIZZARD_STORE_PURCHASE_SENT");
 Import("BLIZZARD_STORE_YOU_ALREADY_OWN_THIS");
 Import("TOOLTIP_DEFAULT_COLOR");
 Import("TOOLTIP_DEFAULT_BACKGROUND_COLOR");
@@ -611,7 +612,7 @@ function StoreFrame_UpdateCard(card,entryID,discountReset)
 	end
 
 	if ( displayID ) then
-			StoreProductCard_SetModel(card, displayID, owned);
+		StoreProductCard_SetModel(card, displayID, alreadyOwned);
 	else
 		local icon = texture;
 		if (not icon) then
@@ -845,8 +846,14 @@ function StoreFrame_OnLoad(self)
 	self:RegisterEvent("STORE_PURCHASE_ERROR");
 	self:RegisterEvent("STORE_ORDER_INITIATION_FAILED");
 	self:RegisterEvent("AUTH_CHALLENGE_FINISHED");
-	C_PurchaseAPI.GetPurchaseList();
 
+	-- We have to call this from CharacterSelect on the glue screen because the addon engine will load
+	-- the store addon more than once if we try to make it ondemand, forcing us to load it before we
+	-- have a connection.
+	if (not IsOnGlueScreen()) then
+		C_PurchaseAPI.GetPurchaseList();
+	end
+	
 	self.TitleText:SetText(BLIZZARD_STORE);
 	
 	SetPortraitToTexture(self.portrait, "Interface\\Icons\\WoW_Store");
@@ -906,6 +913,8 @@ function StoreFrame_OnLoad(self)
 	end
 end
 
+local JustFinishedOrdering = false;
+
 function StoreFrame_OnEvent(self, event, ...)
 	if ( event == "STORE_PRODUCTS_UPDATED" ) then
 		local productGroups = C_PurchaseAPI.GetProductGroups();
@@ -926,6 +935,9 @@ function StoreFrame_OnEvent(self, event, ...)
 		end
 		StoreFrame_UpdateActivePanel(self);
 	elseif ( event == "STORE_PURCHASE_LIST_UPDATED" ) then
+		if (JustOrderedProduct) then
+			JustFinishedOrdering = true;
+		end
 		JustOrderedProduct = false;
 		StoreFrame_UpdateActivePanel(self);
 	elseif ( self:IsShown() and event == "BAG_UPDATE_DELAYED" ) then
@@ -1007,6 +1019,8 @@ function StoreFrame_UpdateCoverState()
 		self.Cover:Show();
 	elseif (self.Notice:IsShown()) then
 		self.Cover:Show();
+	elseif (self.PurchaseSentFrame:IsShown()) then
+		self.Cover:Show();
 	elseif (self.ErrorFrame:IsShown()) then
 		self.Cover:Show();
 	elseif (self:GetAttribute("previewframeshown")) then
@@ -1059,6 +1073,7 @@ end
 function StoreFrame_UpdateActivePanel(self)
 	if (StoreFrame.ErrorFrame:IsShown()) then
 		StoreFrame_HideAlert(self);
+		StoreFrame_HidePurchaseSent(self);
 	elseif ( WaitingOnConfirmation ) then
 		StoreFrame_SetAlert(self, BLIZZARD_STORE_CONNECTING, BLIZZARD_STORE_PLEASE_WAIT);
 	elseif ( JustOrderedProduct or C_PurchaseAPI.HasPurchaseInProgress() ) then
@@ -1069,6 +1084,10 @@ function StoreFrame_UpdateActivePanel(self)
 			progressText = BLIZZARD_STORE_CHECK_BACK_LATER
 		end
 		StoreFrame_SetAlert(self, BLIZZARD_STORE_TRANSACTION_IN_PROGRESS, progressText);
+	elseif ( JustFinishedOrdering ) then
+		JustFinishedOrdering = false;
+		StoreFrame_HideAlert(self);
+		StoreFrame_ShowPurchaseSent(self);
 	elseif ( not C_PurchaseAPI.IsAvailable() ) then
 		StoreFrame_SetAlert(self, BLIZZARD_STORE_NOT_AVAILABLE, BLIZZARD_STORE_NOT_AVAILABLE_SUBTEXT);
 	elseif ( C_PurchaseAPI.IsRegionLocked() ) then
@@ -1100,6 +1119,25 @@ end
 
 function StoreFrame_HideAlert(self)
 	self.Notice:Hide();
+end
+
+function StoreFrame_ShowPurchaseSent(self)
+	self.PurchaseSentFrame.Title:SetText(BLIZZARD_STORE_PURCHASE_SENT);
+	self.PurchaseSentFrame.OkayButton:SetText(OKAY);
+
+	self.PurchaseSentFrame:Show();
+
+	if ( StoreConfirmationFrame ) then
+		StoreConfirmationFrame:Raise();
+	end
+end
+
+function StoreFrame_HidePurchaseSent(self)
+	self.PurchaseSentFrame:Hide();
+end
+
+function StoreFramePurchaseSentOkayButton_OnClick(self)
+	StoreFrame_HidePurchaseSent(StoreFrame);
 end
 
 local ActiveURLIndex = nil;
@@ -1216,6 +1254,8 @@ end
 
 local ConfirmationFrameHeight = 556;
 local ConfirmationFrameMiddleHeight = 200;
+local ConfirmationFrameHeightEur = 596;
+local ConfirmationFrameMiddleHeightEur = 240;
 
 ------------------------------------------
 function StoreConfirmationFrame_OnLoad(self)
@@ -1233,8 +1273,21 @@ function StoreConfirmationFrame_OnLoad(self)
 end
 
 function StoreConfirmationFrame_SetNotice(self, icon, name, dollars, cents, walletName, upgrade)
-	self:SetHeight(ConfirmationFrameHeight);
-	self.ParchmentMiddle:SetHeight(ConfirmationFrameMiddleHeight);
+	local currency = C_PurchaseAPI.GetCurrencyID();
+	local middleHeight = ConfirmationFrameMiddleHeight;
+	local frameHeight = ConfirmationFrameHeight;
+
+	if (currency == CURRENCY_EUR or currency == CURRENCY_RUB or currency == CURRENCY_GBP) then
+		middleHeight = ConfirmationFrameMiddleHeightEur;
+		frameHeight = ConfirmationFrameHeightEur;
+	else
+		middleHeight = ConfirmationFrameMiddleHeight;
+		frameHeight = ConfirmationFrameHeight;
+	end
+
+	self:SetHeight(frameHeight);
+
+	self.ParchmentMiddle:SetHeight(middleHeight);
 	SetPortraitToTexture(self.Icon, icon);
 
 	self.ProductName:SetText(name);
@@ -1816,7 +1869,7 @@ end
 function StoreGoldButton_OnShow(self)
 	if ( self:IsEnabled() ) then
 		-- we need to reset our textures just in case we were hidden before a mouse up fired
-		self.Left:SetTexCoord(0.26464844, 0.31542969, 0.88476563, 0.91601563);
+		self.Left:SetTexCoord(0.30859375, 0.35937500, 0.85156250, 0.88281250);
 		self.Middle:SetTexCoord(0.73925781, 0.81152344, 0.41992188, 0.45117188);
 		self.Right:SetTexCoord(0.98242188, 0.99902344, 0.15917969, 0.19042969);
 	end

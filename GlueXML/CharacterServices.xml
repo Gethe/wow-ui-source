@@ -6,39 +6,39 @@
 		<Size x="250" y="200"/>
 		<Layers>
 			<Layer level="ARTWORK">
-				<FontString parentKey="StepLabel" inherits="GameFontNormalSmall" text="SERVICES_STEP">
+				<FontString parentKey="StepLabel" inherits="GameFontNormalSmall2" text="SERVICES_STEP">
 					<Anchors>
-						<Anchor point="TOPLEFT" x="6" y="0"/>
+						<Anchor point="TOPLEFT" x="25" y="5"/>
 					</Anchors>
 				</FontString>
 				<Texture parentKey="StepNumber" inherits="services-number-1">
 					<Anchors>
-						<Anchor point="TOP" relativeKey="$parent.StepLabel" relativePoint="BOTTOM" x="0" y="20"/>
+						<Anchor point="TOP" relativeKey="$parent.StepLabel" relativePoint="BOTTOM" x="0" y="18"/>
 					</Anchors>
 				</Texture>
 				<Texture parentKey="Checkmark" inherits="services-checkmark" hidden="true" >
 					<Anchors>
-						<Anchor point="TOPLEFT" x="0" y="0"/>
+						<Anchor point="TOPLEFT" x="19" y="5"/>
 					</Anchors>
 				</Texture>
 				<FontString parentKey="StepActiveLabel" inherits="QuestFontHighlight" justifyH="LEFT">
 					<Size x="260" y="0"/>
 					<Anchors>
-						<Anchor point="LEFT" relativeKey="$parent.StepNumber" relativePoint="RIGHT" x="0" y="0"/>
+						<Anchor point="LEFT" relativeKey="$parent.StepNumber" relativePoint="RIGHT" x="9" y="3"/>
 					</Anchors>
 					<Color r="1" g="1" b="1"/>
 				</FontString>
 				<FontString parentKey="StepFinishedLabel" inherits="GameFontNormalMed3" justifyH="LEFT" hidden="true" >
 					<Size x="260" y="20"/>
 					<Anchors>
-						<Anchor point="LEFT" relativeKey="$parent.Checkmark" relativePoint="RIGHT" x="24" y="8"/>
+						<Anchor point="LEFT" relativeKey="$parent.Checkmark" relativePoint="RIGHT" x="25" y="8"/>
 					</Anchors>
 					<Color r="0.5" g="0.5" b="0.5"/>
 				</FontString>
 				<FontString parentKey="ResultsLabel" inherits="GameFontNormalMed3" justifyH="LEFT" hidden="true" >
 					<Size x="260" y="20"/>
 					<Anchors>
-						<Anchor point="LEFT" relativeKey="$parent.Checkmark" relativePoint="RIGHT" x="24" y="-8"/>
+						<Anchor point="TOPLEFT" relativeKey="$parent.StepFinishedLabel" relativePoint="BOTTOMLEFT" x="0" y="0"/>
 					</Anchors>
 					<Color r="1" g="1" b="1"/>
 				</FontString>
@@ -215,7 +215,7 @@
 					<Layer level="ARTWORK">
 						<FontString parentKey="OrLabel" inherits="GameFontNormalMed3" text="SERVICES_CONJUNCTION_OR" hidden="true">
 							<Anchors>
-								<Anchor point="TOPLEFT" x="48" y="-64"/>
+								<Anchor point="TOPLEFT" x="84" y="-69"/>
 							</Anchors>
 							<Color r="0.5" g="0.5" b="0.5"/>
 						</FontString>
@@ -323,13 +323,13 @@
 							<Layer level="ARTWORK">
 								<Texture parentKey="BonusIcon" inherits="services-icon-bonus-large">
 									<Anchors>
-										<Anchor point="LEFT"/>
+										<Anchor point="LEFT" x="0" y="4"/>
 									</Anchors>
 								</Texture>
-								<FontString inherits="GameFontNormal" text="CHARACTER_UPGRADE_PROFESSION_BOOST" justifyH="LEFT">
-									<Size x="300" y="40"/>
+								<FontString parentKey="BonusText" inherits="GameFontNormal" text="CHARACTER_UPGRADE_PROFESSION_BOOST" spacing="4" justifyV="TOP" justifyH="LEFT">
+									<Size x="300" y="0"/>
 									<Anchors>
-										<Anchor point="LEFT" relativeKey="$parent.BonusIcon" relativePoint="RIGHT" x="10" y="2"/>
+										<Anchor point="TOPLEFT" relativeKey="$parent.BonusIcon" relativePoint="TOPRIGHT" x="8" y="-3"/>
 									</Anchors>
 								</FontString>
 							</Layer>
@@ -405,7 +405,7 @@
 				<Frames>
 					<CheckButton parentArray="SpecButtons" inherits="CharacterUpgradeSelectSpecRadioButtonTemplate">
 						<Anchors>
-							<Anchor point="TOPLEFT" x="52" y="-64"/>
+							<Anchor point="TOPLEFT" x="83" y="-73"/>
 						</Anchors>
 					</CheckButton>
 				</Frames>
@@ -419,7 +419,7 @@
 				<Frames>
 					<CheckButton parentArray="FactionButtons" inherits="CharacterUpgradeSelectFactionRadioButtonTemplate" id="1">
 						<Anchors>
-							<Anchor point="TOPLEFT" x="52" y="-64"/>
+							<Anchor point="TOPLEFT" x="83" y="-73"/>
 						</Anchors>
 					</CheckButton>
 				</Frames>

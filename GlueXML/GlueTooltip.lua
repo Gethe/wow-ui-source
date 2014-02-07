@@ -83,7 +83,7 @@ function GlueTooltip_AddLine(self, text, r, g, b, a, wrap)
 	freeLine:SetWidth(0);
 
 	local wrapWidth = 230;
-	if (wrap and freeLine:GetWidth() > wrapWidth and self:GetWidth() < wrapWidth+GLUETOOLTIP_HPADDING) then
+	if (wrap and freeLine:GetWidth() > wrapWidth) then
 	
 		-- Trim the right edge so that there isn't extra space after wrapping
 		freeLine:SetWidth(wrapWidth);

@@ -96,6 +96,7 @@ EXPANSION_LOGOS = {
 	[2] = "Interface\\Glues\\Common\\Glues-WoW-WotLKLogo",
 	[3] = "Interface\\Glues\\Common\\Glues-WoW-CCLogo",
 	[4] = "Interface\\Glues\\Common\\Glues-WoW-MPLogo",
+	[5] = "Interface\\Glues\\Common\\Glues-WoW-MPLogo",
 	--When adding entries to here, make sure to update the zhTW and zhCN localization files.
 };
 
@@ -106,6 +107,7 @@ EXPANSION_GLUE_MUSIC = {
 	[2] = "GS_Cataclysm",
 	[3] = "GS_Cataclysm",
 	[4] = "MUS_50_HeartofPandaria_MainTitle",
+	[5] = "MUS_50_HeartofPandaria_MainTitle",
 }
 
 --Backgrounds
@@ -115,6 +117,7 @@ EXPANSION_HIGH_RES_BG = {
 	[2] = "Interface\\Glues\\Models\\UI_MainMenu_Cataclysm\\UI_MainMenu_Cataclysm.m2",
 	[3] = "Interface\\Glues\\Models\\UI_MainMenu_Cataclysm\\UI_MainMenu_Cataclysm.m2",
 	[4] = "Interface\\Glues\\Models\\UI_MainMenu_Pandaria\\UI_MainMenu_Pandaria.m2",
+	[5] = "Interface\\Glues\\Models\\UI_MainMenu_Pandaria\\UI_MainMenu_Pandaria.m2",
 }
 
 EXPANSION_LOW_RES_BG = {
@@ -123,6 +126,7 @@ EXPANSION_LOW_RES_BG = {
 	[2] =  "Interface\\Glues\\Models\\UI_MainMenu_Cata_LowBandwidth\\UI_MainMenu_Cata_LowBandwidth.m2",
 	[3] =  "Interface\\Glues\\Models\\UI_MainMenu_Cata_LowBandwidth\\UI_MainMenu_Cata_LowBandwidth.m2",
 	[4] =  "Interface\\Glues\\Models\\UI_MainMenu_LowBandwidth\\UI_MainMenu_LowBandwidth.m2",
+	[5] =  "Interface\\Glues\\Models\\UI_MainMenu_LowBandwidth\\UI_MainMenu_LowBandwidth.m2",
 }
 
 --Credits titles

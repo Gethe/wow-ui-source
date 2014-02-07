@@ -46,6 +46,7 @@
 --  .HiddenStep - This is only valid for the end step of any flow.  This says that this block has no meaningful controls or results for the user and should instead just
 --    cause the master to change the flow controls.
 --  .SkipOnRewind - This tells the flow to ignore the :IsFinished() result when deciding where to rewind and instead skip this block.
+--  .ExtraOffset - May be set on a block by the flow for the master to add extra vertical offset to a block based on previous results.
 --
 -- However a block uses controls to gather data, once it has data and is finished it should call
 -- CharacterServicesMaster_Update() to advance the flow and button states.
@@ -206,22 +207,30 @@ function CharacterServicesMaster_UpdateServiceButton()
 		frame:SetShown(not CharSelectServicesFlowFrame:IsShown());
 		if (showPopup) then
 			frame.Glow:Show();
+			frame.GlowSpin.SpinAnim:Play();
+			frame.GlowPulse.PulseAnim:Play();
+	 		frame.GlowSpin:Show();
+	 		frame.GlowPulse:Show();
 			frame.PopupFrame:Show();
 		else
 			frame.Glow:Hide();
+			frame.GlowSpin:Hide();
+			frame.GlowPulse:Hide();
+	 		frame.GlowSpin.SpinAnim:Stop();
+	 		frame.GlowPulse.PulseAnim:Stop();
 			frame.PopupFrame:Hide();
 		end
 		
 		if (not hasPaid) then
-			frame:SetPoint("TOPRIGHT", CharacterSelectCharacterFrame, "TOPLEFT", 4, 6);
+			frame:SetPoint("TOPRIGHT", CharacterSelectCharacterFrame, "TOPLEFT", -18, -4);
 		else
 			local offset;
 			if (showPopup) then
-				offset = -28;
+				offset = -3;
 			else
-				offset = -6;
+				offset = -3;
 			end
-			frame:SetPoint("TOPRIGHT", CharacterServicesTokenNormal, "TOPLEFT", offset, -2);
+			frame:SetPoint("TOPRIGHT", CharacterServicesTokenNormal, "TOPLEFT", offset, 0);
 		end
 	else
 		CharacterServicesTokenWoDFree:Hide();
@@ -295,11 +304,6 @@ function CharacterServicesMaster_SetFlow(self, flow)
 		if (not block.HiddenStep) then
 			block.frame:SetFrameLevel(CharacterServicesMaster:GetFrameLevel()+2);
 			block.frame:SetParent(self);
-			if (i == 1) then
-				block.frame:SetPoint("TOP", CharacterServicesMaster, "TOP", -30, 0);
-			else
-				block.frame:SetPoint("TOP", flow.Steps[i-1].frame, "TOP", 0, -60);
-			end
 		end
 	end
 end
@@ -310,6 +314,7 @@ function CharacterServicesMaster_SetCurrentBlock(self, block)
 		CharacterServicesMaster_SetBlockActiveState(block);
 	end
 	self.currentBlock = block;
+	self.blockComplete = false;
 	parent.BackButton:SetShown(block.Back);
 	parent.NextButton:SetShown(block.Next);
 	parent.FinishButton:SetShown(block.Finish);
@@ -325,14 +330,19 @@ function CharacterServicesMaster_Update()
 	local parent = self:GetParent();
 	local block = self.currentBlock;
 	if (block and block:IsFinished()) then
-		if (not block.HiddenStep) then
+		if (not block.HiddenStep and (block.AutoAdvance or self.blockComplete)) then
 			CharacterServicesMaster_SetBlockFinishedState(block);
 		end
 		if (block.AutoAdvance) then
 			self.flow:Advance(self);
 		else
 			if (block.Next) then
-				parent.NextButton:SetEnabled(true);
+				if (not parent.NextButton:IsEnabled()) then
+					parent.NextButton:SetEnabled(true);
+					if ( parent.NextButton:IsVisible() ) then
+						parent.NextButton.PulseAnim:Play();
+					end
+				end
 			elseif (block.Finish) then
 				parent.FinishButton:SetEnabled(true);
 			end
@@ -389,6 +399,8 @@ end
 function CharacterServicesMasterNextButton_OnClick(self)
 	PlaySound("igMainMenuOptionCheckBoxOn");
 	local master = CharacterServicesMaster;
+	master.blockComplete = true;
+	CharacterServicesMaster_Update();
 	master.flow:Advance(master);
 end
 
@@ -409,13 +421,16 @@ function CharacterServicesMasterFinishButton_OnClick(self)
 end
 
 function CharacterServicesFlowPrototype:BuildResults(steps)
-	local results = {};
+	if (not self.results) then
+		self.results = {};
+	end
+	wipe(self.results);
 	for i = 1, steps do
 		for k,v in pairs(self.Steps[i]:GetResult()) do
-			results[k] = v;
+			self.results[k] = v;
 		end
 	end
-	return results;
+	return self.results;
 end
 
 function CharacterServicesFlowPrototype:Rewind(controller)
@@ -448,10 +463,26 @@ function CharacterServicesFlowPrototype:Restart(controller)
 	self:SetUpBlock(controller);
 end
 
+local function moveBlock(self, block, offset)
+	local extraOffset = block.ExtraOffset or 0;
+	local lastNonHiddenStep = self.step - 1;
+	while (self.Steps[lastNonHiddenStep].HiddenStep and lastNonHiddenStep >= 1) do
+		lastNonHiddenStep = lastNonHiddenStep - 1;
+	end
+	if (lastNonHiddenStep >= 1) then
+		block.frame:SetPoint("TOP", self.Steps[lastNonHiddenStep].frame, "TOP", 0, offset - extraOffset);
+	end
+end
+
 function CharacterServicesFlowPrototype:SetUpBlock(controller, results)
 	local block = self.Steps[self.step];
 	CharacterServicesMaster_SetCurrentBlock(controller, block);
 	if (not block.HiddenStep) then
+		if (self.step == 1) then
+			block.frame:SetPoint("TOP", CharacterServicesMaster, "TOP", -30, 0);
+		else
+			moveBlock(self, block, -105);
+		end
 		block.frame.StepNumber:SetTexCoord(unpack(stepTextures[self.step]));
 		block.frame:Show();
 	end
@@ -491,6 +522,18 @@ function CharacterUpgradeFlow:Initialize(controller)
 	self:Restart(controller);
 end
 
+function CharacterUpgradeFlow:OnAdvance()
+	local block = self.Steps[self.step];
+	if (self.step == 1) then return end;
+	if (not block.HiddenStep) then
+		local extraOffset = 0;
+		if (self.step == 2) then
+			extraOffset = 15;
+		end
+		moveBlock(self, block, -60 - extraOffset);
+	end
+end
+
 function CharacterUpgradeFlow:Advance(controller)
 	if (self.step == self.numSteps) then
 		self:Finish(controller);
@@ -500,13 +543,15 @@ function CharacterUpgradeFlow:Advance(controller)
 			block:OnAdvance();
 		end
 
+		self:OnAdvance();
+
 		local results = self:BuildResults(self.step);
 		if (self.step == 1) then
 			local level = select(6, GetCharacterInfo(results.charid));
 			if (level >= UPGRADE_BONUS_LEVEL) then
-				self.Steps[2].frame:SetPoint("TOP", self.Steps[1].frame, "TOP", 0, -120);
+				self.Steps[2].ExtraOffset = 45;
 			else
-				self.Steps[2].frame:SetPoint("TOP", self.Steps[1].frame, "TOP", 0, -60);
+				self.Steps[2].ExtraOffset = 0;
 			end
 			local factionGroup = C_CharacterServices.GetFactionGroupByIndex(results.charid);
 			
@@ -604,14 +649,15 @@ function CharacterUpgradeCharacterSelectBlock:Initialize(results)
 			CharacterSelect.selectedIndex = num;
 			UpdateCharacterSelection(CharacterSelect);
 			self.index = CharacterSelect.selectedIndex;
-			self.charid = CharacterSelect.selectedIndex + CHARACTER_LIST_OFFSET;
-			self.playerguid = select(14, GetCharacterInfo(CharacterSelect.selectedIndex + CHARACTER_LIST_OFFSET));
+			self.charid = GetCharIDFromIndex(CharacterSelect.selectedIndex + CHARACTER_LIST_OFFSET);
+			self.playerguid = select(14, GetCharacterInfo(self.charid));
 			CharacterServicesMaster_Update();
 			return;
 		end
 	end
 
-	self.frame.ControlsFrame.BonusLabel:SetPoint("BOTTOM", CharSelectServicesFlowFrame, "BOTTOM", 0, 60);
+	self.frame.ControlsFrame.BonusLabel:SetHeight(self.frame.ControlsFrame.BonusLabel.BonusText:GetHeight());
+	self.frame.ControlsFrame.BonusLabel:SetPoint("BOTTOM", CharSelectServicesFlowFrame, "BOTTOM", 10, 60);
 	
 	-- Set up the GlowBox around the show characters
 	self.frame.ControlsFrame.GlowBox:SetPoint("TOP", CharacterSelectCharacterFrame, 2, -60);
@@ -625,8 +671,8 @@ function CharacterUpgradeCharacterSelectBlock:Initialize(results)
 		end
 		local arrow = self.frame.ControlsFrame.Arrows[i];
 		local bonusIcon = self.frame.ControlsFrame.BonusIcons[i];
-		arrow:SetPoint("RIGHT", _G["CharSelectCharacterButton"..i], "LEFT", -8, 4);
-		bonusIcon:SetPoint("LEFT", _G["CharSelectCharacterButton"..i.."ButtonTextName"], "RIGHT", 0, 0);
+		arrow:SetPoint("RIGHT", _G["CharSelectCharacterButton"..i], "LEFT", -8, 8);
+		bonusIcon:SetPoint("LEFT", _G["CharSelectCharacterButton"..i.."ButtonTextName"], "RIGHT", -1, 0);
 		arrow:Hide();
 		bonusIcon:Hide();
 	end
@@ -642,7 +688,9 @@ function CharacterUpgradeCharacterSelectBlock:Initialize(results)
 		_G["CharSelectPaidService"..i]:Hide();
 		local _, _, _, _, _, level, _, _, _, _, _, _, _, guid = GetCharacterInfo(GetCharIDFromIndex(i+CHARACTER_LIST_OFFSET));
 		if (level >= UPGRADE_MAX_LEVEL or tContains(upgradesInProgress, guid)) then
-			button.buttonText.name:SetTextColor(0.376, 0.376, 0.376);
+			button.buttonText.name:SetTextColor(0.25, 0.25, 0.25);
+			button.buttonText.Info:SetTextColor(0.25, 0.25, 0.25);
+			button.buttonText.Location:SetTextColor(0.25, 0.25, 0.25);
 			button:SetEnabled(false);
 			self.hasVeteran = true;
 		else
@@ -653,11 +701,13 @@ function CharacterUpgradeCharacterSelectBlock:Initialize(results)
 			end
 			replaceScripts(button);
 			button.buttonText.name:SetTextColor(1.0, 0.82, 0);
+			button.buttonText.Info:SetTextColor(1, 1, 1);
+			button.buttonText.Location:SetTextColor(0.5, 0.5, 0.5);
 			button:SetEnabled(true);
 			button:SetScript("OnClick", function(button)
 				self.index = button:GetID();
-				self.charid = button:GetID() + CHARACTER_LIST_OFFSET;
-				self.playerguid = select(14, GetCharacterInfo(button:GetID() + CHARACTER_LIST_OFFSET));
+				self.charid = GetCharIDFromIndex(self.index + CHARACTER_LIST_OFFSET);
+				self.playerguid = select(14, GetCharacterInfo(self.charid));
 				CharacterSelectButton_OnClick(button);
 				button.selection:Show();
 				CharacterServicesMaster_Update();
@@ -739,6 +789,8 @@ function CharacterUpgradeCharacterSelectBlock:OnHide()
 		resetScripts(button);
 		button:SetEnabled(true);
 		button.buttonText.name:SetTextColor(1.0, 0.82, 0);
+		button.buttonText.Info:SetTextColor(1, 1, 1);
+		button.buttonText.Location:SetTextColor(0.5, 0.5, 0.5);
 	end
 
 	UpdateCharacterList(true);
@@ -761,7 +813,9 @@ function CharacterUpgradeCharacterSelectBlock:OnAdvance()
 		if (i ~= index) then
 			local button = _G["CharSelectCharacterButton"..i];
 			button:SetEnabled(false);
-			button.buttonText.name:SetTextColor(0.376, 0.376, 0.376);
+			button.buttonText.name:SetTextColor(0.25, 0.25, 0.25);
+			button.buttonText.Info:SetTextColor(0.25, 0.25, 0.25);
+			button.buttonText.Location:SetTextColor(0.25, 0.25, 0.25);
 		end
 	end
 end
@@ -779,7 +833,7 @@ local function formatDescription(description,results)
 
 	-- This is a very simple parser that will only handle $G/$g tokens
 	local sex = select(17, GetCharacterInfo(results.charid));
-	return gsub(description, "$[Gg](%w+):(%w+);", "%"..sex);
+	return gsub(description, "$[Gg]([^:]+):([^;]+);", "%"..sex);
 end
 
 function CharacterUpgradeSpecSelectBlock:Initialize(results)
@@ -797,7 +851,7 @@ function CharacterUpgradeSpecSelectBlock:Initialize(results)
 		end
 		local button = self.frame.ControlsFrame.SpecButtons[i];
 		if (i <= numSpecs ) then
-			local specID, name, icon, role, description = GetSpecializationInfoForClassID(classID, i);
+			local specID, name, description, icon, _, role  = GetSpecializationInfoForClassID(classID, i);
 			button:SetID(specID);
 			button.SpecIcon:SetTexture(icon);
 			button.SpecName:SetText(name);
@@ -822,7 +876,7 @@ function CharacterUpgradeSpecSelectBlock:GetResult()
 end
 
 function CharacterUpgradeSpecSelectBlock:FormatResult()
-	return GetSpecializationInfoForSpecID(self.selected);
+	return GetSpecializationNameForSpecID(self.selected);
 end
 
 function CharacterUpgradeSelectSpecRadioButton_OnClick(self, button, down)

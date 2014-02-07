@@ -287,8 +287,8 @@
 			</OnLeave>
 		</Scripts>
 		<ButtonText parentKey="Text"/>
-		<NormalFont style="GameFontNormal"/>
-		<HighlightFont style="GameFontHighlight"/>
+		<NormalFont style="GameFontNormalOutline"/>
+		<HighlightFont style="GameFontHighlightOutline"/>
 		<DisabledFont style="GameFontDisable"/>
 		<HighlightTexture inherits="UIPanelButtonHighlightTexture">
 			<Anchors>

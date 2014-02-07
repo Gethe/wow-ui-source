@@ -21,6 +21,9 @@ local translationTable = { };	-- for character reordering: key = button index, v
 BLIZZCON_IS_A_GO = false;
 
 function CharacterSelect_OnLoad(self)
+	LoadAddOn("Blizzard_AuthChallengeUI");
+	LoadAddOn("Blizzard_StoreUI");
+	
 	CharacterSelectModel:SetSequence(0);
 	CharacterSelectModel:SetCamera(0);
 
@@ -57,10 +60,6 @@ function CharacterSelect_OnLoad(self)
 	if (not IsGMClient()) then
 		MAX_CHARACTERS_PER_REALM = 11;
 	end
-
-	if ( C_StorePublic.IsEnabled() ) then
-		StoreButton:Show();
-	end	
 end
 
 function CharacterSelect_OnShow()
@@ -194,6 +193,10 @@ function CharacterSelect_OnShow()
 	PlayersOnServer_Update();
 
 	PromotionFrame_AwaitingPromotion();
+	
+	CharacterSelect_UpdateStoreButton();
+
+	C_PurchaseAPI.GetPurchaseList();
 end
 
 function CharacterSelect_OnHide(self)
@@ -377,11 +380,7 @@ function CharacterSelect_OnEvent(self, event, ...)
 		CharacterRenameDialog:Show();
 		CharacterRenameText1:SetText(_G[message]);
 	elseif ( event == "STORE_STATUS_CHANGED" ) then
-		if ( C_StorePublic.IsEnabled() ) then
-			StoreButton:Show();
-		else
-			StoreButton:Hide();
-		end		
+		CharacterSelect_UpdateStoreButton();		
 	end
 end
 
@@ -396,6 +395,9 @@ function UpdateCharacterSelectEnterWorldDeleteButtons()
 	local inProgress = tContains(upgradesInProgress,guid);
 	CharSelectEnterWorldButton:SetEnabled(not inProgress);
 	CharacterSelectDeleteButton:SetEnabled(not inProgress);
+	
+	-- now check for the services flow (ie character upgrade)
+	CharacterSelect_UpdateButtonState();
 end
 
 function UpdateCharacterSelection(self)
@@ -525,6 +527,8 @@ function UpdateCharacterList(skipSelect)
 		UpdateCharacterSelectEnterWorldDeleteButtons();
 	end
 
+	CharacterSelect_UpdateStoreButton();
+
 	CharacterSelect.createIndex = 0;
 	CharSelectCreateCharacterButton:Hide();	
 	
@@ -541,6 +545,7 @@ function UpdateCharacterList(skipSelect)
 			end
 		end
 		_G["CharSelectPaidService"..index]:Hide();
+		_G["CharacterServicesProcessingIcon"..index]:Hide();
 		button:Hide();
 		index = index + 1;
 	end
@@ -1067,8 +1072,6 @@ function CharacterTemplatesFrameDropDown_Initialize()
 end
 
 function ToggleStoreUI()
-	LoadAddOn("Blizzard_AuthChallengeUI");
-	LoadAddOn("Blizzard_StoreUI");
 	local wasShown = StoreFrame_IsShown();
 	if ( not wasShown ) then
 		--We weren't showing, now we are. We should hide all other panels.
@@ -1106,6 +1109,14 @@ function CharacterSelect_ActivateFactionChange()
 	if IsConnectedToServer() then
 		EnableChangeFaction();
 		GetCharacterListUpdate();
+	end
+end
+
+function CharacterSelect_UpdateStoreButton()
+	if ( C_StorePublic.IsEnabled() and not C_StorePublic.IsDisabledByParentalControls() and GetNumCharacters() > 0 ) then
+		StoreButton:Show();
+	else
+		StoreButton:Hide();
 	end
 end
 

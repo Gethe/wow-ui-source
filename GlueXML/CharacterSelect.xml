@@ -51,13 +51,13 @@
 								<Anchor point="TOPLEFT" x="0" y="-5"/>
 							</Anchors>
 						</FontString>
-						<FontString name="$parentInfo" inherits="GlueFontHighlightSmall" justifyH="LEFT">
+						<FontString name="$parentInfo" inherits="GlueFontHighlightSmall" justifyH="LEFT" parentKey="Info">
 							<Size x="217" y="12"/>
 							<Anchors>
 								<Anchor point="TOPLEFT" relativeTo="$parentName" relativePoint="BOTTOMLEFT" x="0" y="-1"/>
 							</Anchors>
 						</FontString>
-						<FontString name="$parentLocation" inherits="GlueFontDisableSmall" justifyH="LEFT">
+						<FontString name="$parentLocation" inherits="GlueFontDisableSmall" justifyH="LEFT" parentKey="Location">
 							<Size x="217" y="16"/>
 							<Anchors>
 								<Anchor point="TOPLEFT" relativeTo="$parentInfo" relativePoint="BOTTOMLEFT" x="0" y="-1"/>
@@ -625,35 +625,13 @@
 							</OnUpdate>
 						</Scripts>
 					</Button>
-					<Button name="StoreButton" inherits="GlueButtonTemplate" hidden="true" text="BLIZZARD_STORE">
-						<Size x="135" y="45"/>
+					<Button name="StoreButton" inherits="UIPanelGoldButtonTemplate" hidden="true" text="BLIZZARD_STORE">
+						<Size x="164" y="32"/>
 						<Anchors>
-							<Anchor point="BOTTOM" relativeTo="CharacterSelectAddonsButton" relativePoint="TOP" x="0" y="2"/>
+							<Anchor point="BOTTOM" relativeTo="CharacterSelectAddonsButton" relativePoint="TOP" x="1" y="2"/>
 						</Anchors>
 						<Layers>
 							<Layer level="OVERLAY">
-								<Texture parentKey="LeftTex" file="Interface\Store\Store-Main">
-									<Size x="62" y="39"/>
-									<Anchors>
-										<Anchor point="LEFT"/>
-									</Anchors>
-									<TexCoords left="0.93457031" right="0.99511719" top="0.06542969" bottom="0.10351563"/>
-								</Texture>
-								<Texture parentKey="RightTex" file="Interface\Store\Store-Main">
-									<Size x="43" y="39"/>
-									<Anchors>
-										<Anchor point="RIGHT" x="-1" y="0"/>
-									</Anchors>	
-									<TexCoords left="0.18457031" right="0.22656250" top="0.93164063" bottom="0.96972656"/>
-								</Texture>	
-								<Texture parentKey="MiddleTex" file="Interface\Store\Store-Main" tile="true">
-									<Size x="47" y="39"/>
-									<Anchors>
-										<Anchor point="LEFT" relativeKey="$parent.LeftTex" relativePoint="RIGHT"/>
-										<Anchor point="RIGHT" relativeKey="$parent.RightTex" relativePoint="LEFT"/>
-									</Anchors>
-									<TexCoords left="0.93457031" right="0.98046875" top="0.15917969" bottom="0.19726563"/>
-								</Texture>
 								<Texture parentKey="Logo" file="Interface\Store\Store-Main">
 									<Size x="21" y="20"/>									
 									<TexCoords left="0.97460938" right="0.99511719" top="0.27148438" bottom="0.29101563"/>
@@ -663,21 +641,18 @@
 						<Scripts>
 							<OnLoad>
 								local fontString = self:GetFontString();
-								fontString:SetPoint("CENTER", 11, 2);
+								fontString:SetPoint("CENTER", 8, 2);
 								self.Logo:ClearAllPoints();
-								self.Logo:SetPoint("RIGHT", fontString, "LEFT", 0, -1);
+								self.Logo:SetPoint("RIGHT", fontString, "LEFT", -2, 0);
 							</OnLoad>
 							<OnClick function="ToggleStoreUI"/>
-							<OnUpdate>
-								CharacterSelect_DeathKnightSwap(self);
-							</OnUpdate>
 							<OnMouseDown>
 								local fontString = self:GetFontString();
-								self.Logo:SetPoint("RIGHT", fontString, "LEFT", 1, -2);
+								self.Logo:SetPoint("RIGHT", fontString, "LEFT", -1, -2);
 							</OnMouseDown>
 							<OnMouseUp>
 								local fontString = self:GetFontString();
-								self.Logo:SetPoint("RIGHT", fontString, "LEFT", 0, -1);
+								self.Logo:SetPoint("RIGHT", fontString, "LEFT", -2, 0);
 							</OnMouseUp>							
 						</Scripts>
 					</Button>					
@@ -1041,7 +1016,7 @@
 						</Layers>
 					</Frame>
 					<Button name="CharacterServicesTokenWoDFree" hidden="true">
-						<Size x="72" y="60"/>
+						<Size x="72" y="68"/>
 						<Anchors>
 							<Anchor point="TOPRIGHT" relativeTo="CharacterSelectCharacterFrame" relativePoint="TOPLEFT" x="-25" y="-20"/>
 						</Anchors>
@@ -1062,38 +1037,50 @@
 								</Texture>
 							</Layer>
 							<Layer level="BORDER" textureSubLevel="2">
-								<Texture parentKey="Glow" inherits="services-ring-large-glow">
+								<Texture parentKey="Glow" inherits="services-ring-large-glow" alpha="0.8">
 									<Size x="196" y="193"/>	
 									<Anchors>
-										<Anchor point="CENTER" relativeKey="$parent.IconBorder" x="0" y="2"/>
+										<Anchor point="CENTER" relativeKey="$parent.IconBorder" x="2" y="4"/>
 									</Anchors>
 								</Texture>
-							</Layer>
-							<Layer level="OVERLAY">
-								<Texture parentKey="Middle" inherits="services-ring-wod-middle">
-									<Anchors>
-										<Anchor point="TOP" relativeKey="$parent.IconBorder" relativePoint="BOTTOM" x="0" y="20"/>
-									</Anchors>
-								</Texture>
-								<Texture parentKey="Left" inherits="services-ring-wod-left">
-									<Anchors>
-										<Anchor point="RIGHT" relativeKey="$parent.Middle" relativePoint="LEFT"/>
-									</Anchors>
-								</Texture>
-								<Texture parentKey="Right" inherits="services-ring-wod-right">
-									<Anchors>
-										<Anchor point="LEFT" relativeKey="$parent.Middle" relativePoint="RIGHT"/>
-									</Anchors>
-								</Texture>
-								<FontString parentKey="Text" inherits="GameFontNormalSmall" text="CHARACTER_UPGRADE_TOKEN_LABEL_FREE">
-									<Anchors>
-										<Anchor point="TOP" relativeKey="$parent.IconBorder" relativePoint="BOTTOM" x="0" y="12"/>
-									</Anchors>
-									<Color r="1" g="0.49" b="0"/>
-								</FontString>
 							</Layer>
 						</Layers>
 						<Frames>
+							<Frame parentKey="GlowSpin" hidden="true">
+								<Size x="253" y="256"/>
+								<Anchors>
+									<Anchor point="CENTER" relativeKey="$parent.IconBorder" x="2" y="4"/>
+								</Anchors>
+								<Layers>
+									<Layer level="OVERLAY">
+										<Texture inherits="services-ring-large-glowspin" setAllPoints="true" alpha="0.09" alphaMode="ADD" />
+									</Layer>
+								</Layers>
+								<Animations>
+									<AnimationGroup parentKey="SpinAnim" looping="REPEAT">
+										<Rotation order="1" duration="15" degrees="-360" x="2" y="4"/>
+									</AnimationGroup>
+								</Animations>
+							</Frame>
+							<Frame parentKey="GlowPulse" hidden="true">
+								<Size x="145" y="138"/>
+								<Anchors>
+									<Anchor point="CENTER" relativeKey="$parent.IconBorder"/>
+								</Anchors>
+								<Layers>
+									<Layer level="OVERLAY">
+										<Texture inherits="services-ring-large-glowpulse" setAllPoints="true" alpha=".75" alphaMode="ADD" />
+									</Layer>
+									<Layer level="OVERLAY" textureSubLevel="1">
+										<Texture inherits="services-ring-large-glowpulse" setAllPoints="true" alpha=".5" alphaMode="ADD" />
+									</Layer>
+								</Layers>
+								<Animations>
+									<AnimationGroup parentKey="PulseAnim" looping="BOUNCE">
+										<Alpha change="-1" duration="1.5" order="1"/>
+									</AnimationGroup>
+								</Animations>
+							</Frame>
 							<Frame parentKey="Highlight" hidden="true">
 								<Size x="72" y="60"/>
 								<Anchors>
@@ -1112,23 +1099,6 @@
 										<Texture parentKey="IconBorder" inherits="services-ring-wod" alpha="0.15" alphaMode="ADD">
 											<Anchors>
 												<Anchor point="TOP" />
-											</Anchors>
-										</Texture>
-									</Layer>
-									<Layer level="OVERLAY">
-										<Texture parentKey="Middle" inherits="services-ring-wod-middle" alpha="0.15" alphaMode="ADD">
-											<Anchors>
-												<Anchor point="TOP" relativeKey="$parent.IconBorder" relativePoint="BOTTOM" x="0" y="20"/>
-											</Anchors>
-										</Texture>
-										<Texture parentKey="Left" inherits="services-ring-wod-left" alpha="0.15" alphaMode="ADD">
-											<Anchors>
-												<Anchor point="RIGHT" relativeKey="$parent.Middle" relativePoint="LEFT"/>
-											</Anchors>
-										</Texture>
-										<Texture parentKey="Right" inherits="services-ring-wod-right" alpha="0.15" alphaMode="ADD">
-											<Anchors>
-												<Anchor point="LEFT" relativeKey="$parent.Middle" relativePoint="RIGHT"/>
 											</Anchors>
 										</Texture>
 									</Layer>
@@ -1250,9 +1220,6 @@
 							</Frame>
 						</Frames>
 						<Scripts>
-							<OnLoad>
-								self.Middle:SetWidth(self.Text:GetStringWidth() - 12);
-							</OnLoad>
 							<OnClick>
 								CharacterUpgradeFlow:SetTarget(true);
 								CharSelectServicesFlowFrame:Show();
@@ -1260,16 +1227,21 @@
 							</OnClick>
 							<OnEnter>
 								self.Highlight:Show();
+				  				GlueTooltip:SetOwner(self, "ANCHOR_LEFT");
+				   				GlueTooltip:AddLine(CHARACTER_UPGRADE_WOD_TOKEN_TITLE, 1.0, 1.0, 1.0);
+				   				GlueTooltip:AddLine(CHARACTER_UPGRADE_WOD_TOKEN_DESCRIPTION, nil, nil, nil, 1, 1);
+				  				GlueTooltip:Show();
 							</OnEnter>
 							<OnLeave>
 								self.Highlight:Hide();
+								GlueTooltip:Hide();
 							</OnLeave>
 						</Scripts>
 					</Button>
 					<Button name="CharacterServicesTokenNormal" hidden="true">
 						<Size x="59" y="60"/>
 						<Anchors>
-							<Anchor point="TOPRIGHT" relativeTo="CharacterSelectCharacterFrame" relativePoint="TOPLEFT" x="4" y="8"/>
+							<Anchor point="TOPRIGHT" relativeTo="CharacterSelectCharacterFrame" relativePoint="TOPLEFT" x="-18" y="-2"/>
 						</Anchors>
 						<Layers>
 							<Layer level="BORDER">
@@ -1305,6 +1277,7 @@
 									<Anchors>
 										<Anchor point="CENTER" relativeKey="$parent.Ring" relativePoint="CENTER" x="0" y="0"/>
 									</Anchors>
+									<Color r="1.0" g="0.82" b="0"/>
 								</FontString>
 							</Layer>
 							<Layer level="OVERLAY">
@@ -1353,16 +1326,21 @@
 							</OnShow>
 							<OnEnter>
 								self.Highlight:Show();
+				  				GlueTooltip:SetOwner(self, "ANCHOR_LEFT");
+				   				GlueTooltip:AddLine(CHARACTER_UPGRADE_TOKEN_TITLE, 1.0, 1.0, 1.0);
+				   				GlueTooltip:AddLine(CHARACTER_UPGRADE_TOKEN_DESCRIPTION, nil, nil, nil, 1, 1);
+				  				GlueTooltip:Show();
 							</OnEnter>
 							<OnLeave>
 								self.Highlight:Hide();
+								GlueTooltip:Hide();
 							</OnLeave>
 						</Scripts>
 					</Button>
 					<Frame name="CharSelectServicesFlowFrame" frameStrata="DIALOG" enableMouse="true" hidden="true">
 						<Size x="421" y="724"/>
 						<Anchors>
-							<Anchor point="LEFT" x="15" y="10"/>
+							<Anchor point="LEFT" x="8" y="16"/>
 						</Anchors>
 						<Layers>
 							<Layer level="BACKGROUND">
@@ -1372,7 +1350,7 @@
 								<Texture parentKey="Icon">
 									<Size x="64" y="64" />
 									<Anchors>
-										<Anchor point="TOPLEFT" x="38" y="-38" />
+										<Anchor point="TOPLEFT" x="36" y="-36" />
 									</Anchors>
 								</Texture>
 							</Layer>
@@ -1385,7 +1363,7 @@
 								<FontString parentKey="TitleText" inherits="GlueFontNormalLarge" justifyH="LEFT">
 									<Size x="260" y="0"/>
 									<Anchors>
-										<Anchor point="TOPLEFT" relativeKey="$parent.IconBorder" relativePoint="RIGHT" x="0" y="24"/>
+										<Anchor point="TOPLEFT" relativeKey="$parent.IconBorder" relativePoint="RIGHT" x="5" y="21"/>
 									</Anchors>
 								</FontString>
 							</Layer>
@@ -1413,27 +1391,47 @@
 								</Scripts>
 							</Frame>
 							<Button parentKey="BackButton" inherits="GlueButtonSmallTemplate" text="BACK">
-								<Size x="100" y="34"/>
+								<Size x="100" y="38"/>
 								<Anchors>
-									<Anchor point="BOTTOMLEFT" x="50" y="60"/>
+									<Anchor point="BOTTOMLEFT" x="40" y="52"/>
 								</Anchors>
 								<Scripts>
 									<OnClick function="CharacterServicesMasterBackButton_OnClick"/>
 								</Scripts>
 							</Button>
 							<Button parentKey="NextButton" inherits="GlueButtonSmallTemplate" text="NEXT" hidden="true">
-								<Size x="140" y="36"/>
+								<Size x="140" y="38"/>
+								<Animations>
+									<AnimationGroup parentKey="PulseAnim">
+										<Alpha targetKey="$parent.$parent.Flash" change="1.0" duration="0.5" order="1"/>
+										<Alpha targetKey="$parent.$parent.Flash" change="-1.0" duration="0.5" order="2"/>
+									</AnimationGroup>
+								</Animations>
 								<Anchors>
-									<Anchor point="BOTTOMRIGHT" x="-40" y="58"/>
+									<Anchor point="BOTTOMRIGHT" x="-35" y="50"/>
 								</Anchors>
+								<Layers>
+									<Layer level="OVERLAY" textureSubLevel="1">
+										<Texture parentKey="Flash" file="Interface\Buttons\UI-Panel-Button-Glow" alphaMode="ADD" alpha="0">
+											<Size x="1140" y="38"/>
+											<Anchors>
+												<Anchor point="CENTER"/>
+											</Anchors>
+											<TexCoords left="0.0" right="0.75" top="0.0" bottom="0.609375"/>
+										</Texture>
+									</Layer>
+								</Layers>
 								<Scripts>
 									<OnClick function="CharacterServicesMasterNextButton_OnClick"/>
+									<OnSizeChanged>
+										self.Flash:SetSize(self:GetWidth()*1.06, self:GetHeight()*1.15);
+									</OnSizeChanged>
 								</Scripts>
 							</Button>
 							<Button parentKey="FinishButton" inherits="UIPanelGoldButtonTemplate" enabled="true">
-								<Size x="135" y="30"/>
+								<Size x="164" y="32"/>
 								<Anchors>
-									<Anchor point="BOTTOMRIGHT" x="-40" y="64"/>
+									<Anchor point="BOTTOMRIGHT" x="-28" y="53"/>
 								</Anchors>
 								<Scripts>
 									<OnClick function="CharacterServicesMasterFinishButton_OnClick"/>
