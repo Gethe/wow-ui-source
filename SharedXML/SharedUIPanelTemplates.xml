@@ -226,7 +226,7 @@
 						<Anchor point="BOTTOMRIGHT"/>
 					</Anchors>	
 				</Texture>
-				<Texture parentKey="Middle" file="Interface\Buttons\UI-DialogBox-goldbutton-up-">
+				<Texture parentKey="Middle" file="Interface\Buttons\UI-DialogBox-goldbutton-up-middle">
 					<Anchors>
 						<Anchor point="TOPLEFT" relativeKey="$parent.Left" relativePoint="TOPRIGHT"/>
 						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Right" relativePoint="BOTTOMLEFT"/>

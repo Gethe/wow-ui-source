@@ -20,10 +20,9 @@ local translationTable = { };	-- for character reordering: key = button index, v
 
 BLIZZCON_IS_A_GO = false;
 
+local STORE_IS_LOADED = false;
+
 function CharacterSelect_OnLoad(self)
-	LoadAddOn("Blizzard_AuthChallengeUI");
-	LoadAddOn("Blizzard_StoreUI");
-	
 	CharacterSelectModel:SetSequence(0);
 	CharacterSelectModel:SetCamera(0);
 
@@ -63,6 +62,12 @@ function CharacterSelect_OnLoad(self)
 end
 
 function CharacterSelect_OnShow()
+	if (not STORE_IS_LOADED) then
+		LoadAddOn("Blizzard_AuthChallengeUI");
+		LoadAddOn("Blizzard_StoreUI");
+		STORE_IS_LOADED = true;
+	end
+
 	DebugLog("Select_OnShow");
 	CHARACTER_LIST_OFFSET = 0;
 	-- request account data times from the server (so we know if we should refresh keybindings, etc...)
@@ -195,6 +200,8 @@ function CharacterSelect_OnShow()
 	PromotionFrame_AwaitingPromotion();
 	
 	CharacterSelect_UpdateStoreButton();
+
+	CharacterServicesMaster_UpdateServiceButton();
 
 	C_PurchaseAPI.GetPurchaseList();
 end
@@ -390,11 +397,9 @@ function CharacterSelect_UpdateModel(self)
 end
 
 function UpdateCharacterSelectEnterWorldDeleteButtons()
-	local guid = select(14,GetCharacterInfo(GetCharIDFromIndex(CharacterSelect.selectedIndex+CHARACTER_LIST_OFFSET)));
-	local upgradesInProgress = C_CharacterServices.GetUpgradesInProgress();
-	local inProgress = tContains(upgradesInProgress,guid);
-	CharSelectEnterWorldButton:SetEnabled(not inProgress);
-	CharacterSelectDeleteButton:SetEnabled(not inProgress);
+	local guid, _, _, _, boostInProgress = select(14,GetCharacterInfo(GetCharIDFromIndex(CharacterSelect.selectedIndex+CHARACTER_LIST_OFFSET)));
+	CharSelectEnterWorldButton:SetEnabled(not boostInProgress);
+	CharacterSelectDeleteButton:SetEnabled(not boostInProgress);
 	
 	-- now check for the services flow (ie character upgrade)
 	CharacterSelect_UpdateButtonState();
@@ -433,17 +438,15 @@ function UpdateCharacterList(skipSelect)
 		CharacterSelect.selectLast = 0;
 	end
 	local debugText = numChars..": ";
-	local upgradeGuids = C_CharacterServices.GetUpgradesInProgress();
 	for i=1, numChars, 1 do
-		local name, race, class, classFileName, classID, level, zone, sex, ghost, PCC, PRC, PFC, PRCDisabled, guid = GetCharacterInfo(GetCharIDFromIndex(i+CHARACTER_LIST_OFFSET));
+		local name, race, class, classFileName, classID, level, zone, sex, ghost, PCC, PRC, PFC, PRCDisabled, guid, _, _, _, boostInProgress = GetCharacterInfo(GetCharIDFromIndex(i+CHARACTER_LIST_OFFSET));
 		local button = _G["CharSelectCharacterButton"..index];
-		local upgradeInProgress = tContains(upgradeGuids, guid);
 		if ( name ) then
 			if ( not zone ) then
 				zone = "";
 			end
 			_G["CharSelectCharacterButton"..index.."ButtonTextName"]:SetText(name);
-			if (upgradeInProgress) then
+			if (boostInProgress) then
 				_G["CharSelectCharacterButton"..index.."ButtonTextInfo"]:SetText(CHARACTER_UPGRADE_PROCESSING);
 				_G["CharSelectCharacterButton"..index.."ButtonTextLocation"]:SetFontObject("GlueFontHighlightSmall");
 				_G["CharSelectCharacterButton"..index.."ButtonTextLocation"]:SetText(CHARACTER_UPGRADE_CHARACTER_LIST_LABEL);
@@ -465,7 +468,7 @@ function UpdateCharacterList(skipSelect)
 		local upgradeIcon = _G["CharacterServicesProcessingIcon"..index];
 		upgradeIcon:Hide();
 		local serviceType, disableService;
-		if (upgradeInProgress) then
+		if (boostInProgress) then
 			upgradeIcon:Show();
 		elseif ( PFC ) then
 			serviceType = PAID_FACTION_CHANGE;
@@ -1113,7 +1116,7 @@ function CharacterSelect_ActivateFactionChange()
 end
 
 function CharacterSelect_UpdateStoreButton()
-	if ( C_StorePublic.IsEnabled() and not C_StorePublic.IsDisabledByParentalControls() and GetNumCharacters() > 0 ) then
+	if ( C_StorePublic.IsEnabled() and not C_StorePublic.IsDisabledByParentalControls() and GetNumCharacters() > 0 and not IsTrialAccount()) then
 		StoreButton:Show();
 	else
 		StoreButton:Hide();

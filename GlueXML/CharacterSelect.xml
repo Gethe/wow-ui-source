@@ -1015,7 +1015,7 @@
 							</Layer>
 						</Layers>
 					</Frame>
-					<Button name="CharacterServicesTokenWoDFree" hidden="true">
+					<Button name="CharacterServicesTokenWoDFree" frameLevel="3" hidden="true">
 						<Size x="72" y="68"/>
 						<Anchors>
 							<Anchor point="TOPRIGHT" relativeTo="CharacterSelectCharacterFrame" relativePoint="TOPLEFT" x="-25" y="-20"/>
@@ -1238,7 +1238,7 @@
 							</OnLeave>
 						</Scripts>
 					</Button>
-					<Button name="CharacterServicesTokenNormal" hidden="true">
+					<Button name="CharacterServicesTokenNormal" frameLevel="3" hidden="true">
 						<Size x="59" y="60"/>
 						<Anchors>
 							<Anchor point="TOPRIGHT" relativeTo="CharacterSelectCharacterFrame" relativePoint="TOPLEFT" x="-18" y="-2"/>
@@ -1258,13 +1258,6 @@
 										<Anchor point="TOP" />
 									</Anchors>
 								</Texture>
-								<FontString parentKey="WarningText" inherits="GameFontNormalMed2" text="CHARACTER_UPGRADE_KRW_STATIC_WARNING" hidden="true" justifyV="TOP">
-									<Size x="400" y="0"/>
-									<Anchors>
-										<Anchor point="TOPRIGHT" relativeKey="$parent.IconBorder" relativePoint="TOPLEFT" x="-6" y="0"/>
-									</Anchors>
-									<Color r="1" g="1" b="1"/>
-								</FontString>
 							</Layer>
 							<Layer level="OVERLAY" textureSubLevel="1">
 								<Texture parentKey="Ring" file="Interface\Common\RingBorder" hidden="true">
@@ -1291,6 +1284,26 @@
 							</Layer>
 						</Layers>
 						<Frames>
+							<Frame parentKey="WarningText" frameLevel="2" hidden="true">
+								<Size x="340" y="20"/>
+								<Anchors>
+									<Anchor point="TOP" relativeTo="CharacterSelectUI" relativePoint="TOP" x="-70" y="-20"/>
+								</Anchors>
+								<Layers>
+									<Layer level="ARTWORK">
+										<FontString parentKey="WarningString" inherits="GameFontNormalMed2" text="CHARACTER_UPGRADE_KRW_STATIC_WARNING" justifyV="TOP">
+											<Size x="340" y="0"/>
+											<Anchor point="TOP"/>
+											<Color r="1" g="1" b="1"/>
+										</FontString>
+									</Layer>
+								</Layers>
+								<Scripts>
+									<OnShow>
+										self:SetHeight(self.WarningString:GetHeight());
+									</OnShow>
+								</Scripts>
+							</Frame>
 							<Frame parentKey="Highlight" hidden="true">
 								<Size x="59" y="60"/>
 								<Anchors>

@@ -28,6 +28,7 @@ local NumUpgradeDistributions = 0;
 Import("C_PurchaseAPI");
 Import("C_PetJournal");
 Import("C_SharedCharacterServices");
+Import("C_AuthChallenge");
 Import("CreateForbiddenFrame");
 Import("IsGMClient");
 Import("math");
@@ -954,6 +955,7 @@ function StoreFrame_OnEvent(self, event, ...)
 		if (C_SharedCharacterServices.IsPurchaseIDPendingUpgrade() and self:IsShown() and StoreStateDriverFrame.NoticeTextTimer:IsPlaying()) then
 			if (IsOnGlueScreen()) then
 				self:Hide();
+				_G.CharacterUpgradeFlow:SetTarget(false);
 				_G.CharSelectServicesFlowFrame:Show();
 				_G.CharacterServicesMaster_SetFlow(_G.CharacterServicesMaster, _G.CharacterUpgradeFlow);
 			else
@@ -964,11 +966,16 @@ function StoreFrame_OnEvent(self, event, ...)
 			end
 		end
 	elseif ( event == "AUTH_CHALLENGE_FINISHED" ) then
-		StoreStateDriverFrame.NoticeTextTimer:Play();
+		if (not C_AuthChallenge.DidChallengeSucceed()) then
+			JustOrderedProduct = false;
+		else
+			StoreStateDriverFrame.NoticeTextTimer:Play();
+		end
 	end
 end
 
 function StoreFrame_OnShow(self)
+	JustFinishedOrdering = false;
 	C_PurchaseAPI.GetProductList();
 	self:SetAttribute("isshown", true);
 	StoreFrame_UpdateActivePanel(self);
@@ -1102,6 +1109,7 @@ function StoreFrame_UpdateActivePanel(self)
 		StoreFrame_SetAlert(self, BLIZZARD_STORE_INTERNAL_ERROR, BLIZZARD_STORE_INTERNAL_ERROR_SUBTEXT);
 	else
 		StoreFrame_HideAlert(self);
+		StoreFrame_HidePurchaseSent(self);
 		local info = currencyInfo();
 		self.BrowseNotice:SetText(info.browseNotice);
 	end
@@ -1277,7 +1285,7 @@ function StoreConfirmationFrame_SetNotice(self, icon, name, dollars, cents, wall
 	local middleHeight = ConfirmationFrameMiddleHeight;
 	local frameHeight = ConfirmationFrameHeight;
 
-	if (currency == CURRENCY_EUR or currency == CURRENCY_RUB or currency == CURRENCY_GBP) then
+	if (currency == CURRENCY_EUR or currency == CURRENCY_RUB or currency == CURRENCY_GBP or currency == CURRENCY_BRL) then
 		middleHeight = ConfirmationFrameMiddleHeightEur;
 		frameHeight = ConfirmationFrameHeightEur;
 	else

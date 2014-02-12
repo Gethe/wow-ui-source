@@ -170,7 +170,15 @@ CharacterUpgradeFlow.Steps = {
 }
 CharacterUpgradeFlow.numSteps = 4;
 
+local EXPANSION_LEVEL_MOP = 4
+
 function CharacterServicesMaster_UpdateServiceButton()
+	if (GetAccountExpansionLevel() < EXPANSION_LEVEL_MOP) then -- You do not have MoP or above so you cannot consume the boost distributions.
+		CharacterServicesTokenNormal:Hide();
+		CharacterServicesTokenWoDFree:Hide();
+		return;
+	end
+
 	local frame;
 	local showPopup = false;
 	local hasFree = false;
@@ -519,6 +527,8 @@ function CharacterUpgradeFlow:Initialize(controller)
 	CharacterUpgradeSpecSelectBlock.frame = CharacterUpgradeSelectSpecFrame;
 	CharacterUpgradeFactionSelectBlock.frame = CharacterUpgradeSelectFactionFrame;
 
+	CharacterUpgradeSecondChanceWarningFrame:Hide();
+
 	self:Restart(controller);
 end
 
@@ -656,9 +666,6 @@ function CharacterUpgradeCharacterSelectBlock:Initialize(results)
 		end
 	end
 
-	self.frame.ControlsFrame.BonusLabel:SetHeight(self.frame.ControlsFrame.BonusLabel.BonusText:GetHeight());
-	self.frame.ControlsFrame.BonusLabel:SetPoint("BOTTOM", CharSelectServicesFlowFrame, "BOTTOM", 10, 60);
-	
 	-- Set up the GlowBox around the show characters
 	self.frame.ControlsFrame.GlowBox:SetPoint("TOP", CharacterSelectCharacterFrame, 2, -60);
 	self.frame.ControlsFrame.GlowBox:SetHeight(58 * GetNumCharacters());
@@ -680,19 +687,17 @@ function CharacterUpgradeCharacterSelectBlock:Initialize(results)
 	CharacterSelect.selectedIndex = -1;
 	UpdateCharacterSelection(CharacterSelect);
 
-	local upgradesInProgress = C_CharacterServices.GetUpgradesInProgress();
 	local numEligible = 0;
 	self.hasVeteran = false;
 	for i = 1, num do
 		local button = _G["CharSelectCharacterButton"..i];
 		_G["CharSelectPaidService"..i]:Hide();
-		local _, _, _, _, _, level, _, _, _, _, _, _, _, guid = GetCharacterInfo(GetCharIDFromIndex(i+CHARACTER_LIST_OFFSET));
-		if (level >= UPGRADE_MAX_LEVEL or tContains(upgradesInProgress, guid)) then
+		local _, _, _, _, _, level, _, _, _, _, _, _, _, _, _, _, _, boostInProgress = GetCharacterInfo(GetCharIDFromIndex(i+CHARACTER_LIST_OFFSET));
+		if (level >= UPGRADE_MAX_LEVEL or boostInProgress) then
 			button.buttonText.name:SetTextColor(0.25, 0.25, 0.25);
 			button.buttonText.Info:SetTextColor(0.25, 0.25, 0.25);
 			button.buttonText.Location:SetTextColor(0.25, 0.25, 0.25);
 			button:SetEnabled(false);
-			self.hasVeteran = true;
 		else
 			self.frame.ControlsFrame.Arrows[i]:Show();
 			if (level >= UPGRADE_BONUS_LEVEL) then
@@ -715,6 +720,10 @@ function CharacterUpgradeCharacterSelectBlock:Initialize(results)
 			numEligible = numEligible + 1;
 		end
 	end
+
+	self.frame.ControlsFrame.BonusLabel:SetHeight(self.frame.ControlsFrame.BonusLabel.BonusText:GetHeight());
+	self.frame.ControlsFrame.BonusLabel:SetPoint("BOTTOM", CharSelectServicesFlowFrame, "BOTTOM", 10, 60);
+	self.frame.ControlsFrame.BonusLabel:SetShown(self.hasVeteran);
 
 	local errorFrame = CharacterUpgradeMaxCharactersFrame;
 	errorFrame:Hide();
