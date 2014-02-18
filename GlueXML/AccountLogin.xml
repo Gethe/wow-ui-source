@@ -563,89 +563,6 @@
 					</SimpleHTML>
 				</ScrollChild>
 			</ScrollFrame>
-			<ScrollFrame name="ContestScrollFrame" inherits="GlueScrollFrameTemplate">
-				<Size>
-					<AbsDimension x="540" y="407"/>
-				</Size>
-				<Anchors>
-					<Anchor point="TOPLEFT">
-						<Offset>
-							<AbsDimension x="20" y="-56"/>
-						</Offset>
-					</Anchor>
-				</Anchors>
-				<Layers>
-					<Layer level="ARTWORK">
-						<Texture name="ContestScrollBarTop" file="Interface\PaperDollInfoFrame\UI-Character-ScrollBar">
-							<Size>
-								<AbsDimension x="31" y="256"/>
-							</Size>
-							<Anchors>
-								<Anchor point="TOPLEFT" relativePoint="TOPRIGHT">
-									<Offset>
-										<AbsDimension x="-2" y="5"/>
-									</Offset>
-								</Anchor>
-							</Anchors>
-							<TexCoords left="0" right="0.484375" top="0" bottom="1.0"/>
-						</Texture>
-						<Texture name="ContestScrollBarBottom" file="Interface\PaperDollInfoFrame\UI-Character-ScrollBar">
-							<Size>
-								<AbsDimension x="31" y="106"/>
-							</Size>
-							<Anchors>
-								<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMRIGHT">
-									<Offset>
-										<AbsDimension x="-2" y="-2"/>
-									</Offset>
-								</Anchor>
-							</Anchors>
-							<TexCoords left="0.515625" right="1.0" top="0" bottom="0.4140625"/>
-						</Texture>
-						<Texture name="ContestScrollBarMiddle" file="Interface\PaperDollInfoFrame\UI-Character-ScrollBar">
-							<Size>
-								<AbsDimension x="31" y="60"/>
-							</Size>
-							<Anchors>
-								<Anchor point="TOP" relativeTo="ContestScrollBarTop" relativePoint="BOTTOM">
-									<Offset>
-										<AbsDimension x="0" y="0"/>
-									</Offset>
-								</Anchor>
-								<Anchor point="BOTTOM" relativeTo="ContestScrollBarBottom" relativePoint="TOP">
-									<Offset>
-										<AbsDimension x="0" y="0"/>
-									</Offset>
-								</Anchor>
-							</Anchors>
-							<TexCoords left="0" right="0.484375" top=".75" bottom="1.0"/>
-						</Texture>
-					</Layer>
-				</Layers>
-				<Scripts>
-					<OnShow>
-						AccountLogin_UpdateAcceptButton(self, ContestAccepted, "CONTEST");
-					</OnShow>
-					<OnScrollRangeChanged>
-						GlueScrollFrame_OnScrollRangeChanged(self, yrange);
-						AccountLogin_UpdateAcceptButton(self, ContestAccepted, "CONTEST");
-					</OnScrollRangeChanged>
-					<OnVerticalScroll>
-						GlueScrollFrame_OnVerticalScroll(self, offset);
-						AccountLogin_UpdateAcceptButton(self, ContestAccepted, "CONTEST");
-					</OnVerticalScroll>
-				</Scripts>
-				<ScrollChild>
-					<SimpleHTML name="ContestText" file="contest.html">
-						<Size>
-							<AbsDimension x="530" y="407"/>
-						</Size>
-						<FontString inherits="TOSFont"/>
-						<FontStringHeader1 inherits="GlueFontNormal"/>
-						<FontStringHeader2 inherits="GlueFontNormalSmall"/>
-					</SimpleHTML>
-				</ScrollChild>
-			</ScrollFrame>
 			<Button name="TOSDecline" inherits="GlueButtonTemplateBlue" text="TOS_DECLINE">
 				<Size>
 					<AbsDimension x="128" y="34"/>
@@ -2096,10 +2013,7 @@
 						else
 							AccountLogin_FocusPassword();
 						end
-	
-						if ( not IsSystemSupported() ) then
-							GlueDialog_Show("SYSTEM_INCOMPATIBLE_SSE");
-						end
+						CheckSystemRequirements();
 					</OnShow>
 				</Scripts>
 			</Frame>

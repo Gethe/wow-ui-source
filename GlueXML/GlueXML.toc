@@ -23,6 +23,10 @@ AccountLogin.xml
 DesignerMenu.xml
 OptionsFrameTemplates.xml
 OptionsPanelTemplates.xml
+..\SharedXML\ModelFrames.xml
+..\SharedXML\ModelPreviewFrame.xml
+CharacterServicesPatchwerk.xml
+CharacterServices.xml
 CharacterSelect.xml
 CharacterCreate.xml
 PatchDownload.xml
@@ -39,8 +43,6 @@ AudioOptionsPanels.xml
 StarterEditionPopUp.xml
 PromotionFrame.xml
 GlueMenuFrame.xml
-..\SharedXML\ModelFrames.xml
-..\SharedXML\ModelPreviewFrame.xml
 
 ## This Always Runs Last, Add New Items above it.
 GlueLocalizationPost.xml

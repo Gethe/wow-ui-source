@@ -9,19 +9,58 @@ GlueDialogTypes["SYSTEM_INCOMPATIBLE_SSE"] = {
 	showAlert = 1,
 	escapeHides = true,
 	OnAccept = function ()
-	end,
-	OnCancel = function()
-	end,
+		CheckSystemRequirements("SSE");
+	end
+}
+
+GlueDialogTypes["DEVICE_BLACKLISTED"] = {
+	text = DEVICE_BLACKLISTED,
+	button1 = OKAY,
+	html = 1,
+	showAlert = 1,
+	escapeHides = true,
+	OnAccept = function ()
+		CheckSystemRequirements("DEVICE");
+	end
+}
+
+GlueDialogTypes["FIXEDFUNCTION_UNSUPPORTED"] = {
+	text = FIXEDFUNCTION_UNSUPPORTED,
+	button1 = OKAY,
+	html = 1,
+	showAlert = 1,
+	escapeHides = true,
+	OnAccept = function ()
+		CheckSystemRequirements("SHADERMODEL");
+	end
+}
+
+GlueDialogTypes["DRIVER_BLACKLISTED"] = {
+	text = DRIVER_BLACKLISTED,
+	button1 = OKAY,
+	html = 1,
+	showAlert = 1,
+	escapeHides = true,
+	OnAccept = function ()
+		CheckSystemRequirements("DRIVER");
+	end
+}
+
+GlueDialogTypes["DRIVER_OUTOFDATE"] = {
+	text = DRIVER_OUTOFDATE,
+	button1 = OKAY,
+	html = 1,
+	showAlert = 1,
+	escapeHides = true,
+	OnAccept = function ()
+		CheckSystemRequirements("DRIVER_OOD");
+	end
 }
 
 GlueDialogTypes["ERROR_CINEMATIC"] = {
 	text = ERROR_CINEMATIC,
 	button1 = OKAY,
 	button2 = nil,
-	OnAccept = function()
-	end,
-	OnCancel = function()
-	end,
 }
 
 GlueDialogTypes["CANCEL_RESET_SETTINGS"] = {
@@ -35,8 +74,6 @@ GlueDialogTypes["CANCEL_RESET_SETTINGS"] = {
 		VideoOptionsFrameReset:SetText(RESET_SETTINGS);
 		VideoOptionsFrameReset:SetScript("OnClick", VideoOptionsFrameReset_OnClick_Reset);
 		SetClearConfigData(false);
-	end,
-	OnCancel = function()
 	end,
 }
 
@@ -52,8 +89,6 @@ GlueDialogTypes["RESET_SERVER_SETTINGS"] = {
 		VideoOptionsFrameReset:SetScript("OnClick", VideoOptionsFrameReset_OnClick_Cancel);
 		SetClearConfigData(true);
 	end,
-	OnCancel = function ()
-	end,
 }
 
 GlueDialogTypes["CONFIRM_RESET_VIDEO_SETTINGS"] = { 
@@ -68,7 +103,6 @@ GlueDialogTypes["CONFIRM_RESET_VIDEO_SETTINGS"] = {
 	OnCancel = function ()
 		VideoOptionsFrame_SetCurrentToDefaults();
 	end,
-	OnAlt = function() end,
 	escapeHides = true,
 }
 
@@ -84,7 +118,6 @@ GlueDialogTypes["CONFIRM_RESET_AUDIO_SETTINGS"] = {
 	OnCancel = function ()
 		AudioOptionsFrame_SetCurrentToDefaults();
 	end,
-	OnAlt = function() end,
 	escapeHides = true,
 }
 
@@ -134,10 +167,6 @@ GlueDialogTypes["DISCONNECTED"] = {
 		SecurityMatrixLoginFrame:Hide();
 		StatusDialogClick();
 	end,
-	OnAccept = function()
-	end,
-	OnCancel = function()
-	end,
 }
 
 GlueDialogTypes["PARENTAL_CONTROL"] = {
@@ -178,10 +207,6 @@ GlueDialogTypes["INVALID_NAME"] = {
 	text = CHAR_CREATE_INVALID_NAME,
 	button1 = OKAY,
 	button2 = nil,
-	OnAccept = function()
-	end,
-	OnCancel = function()
-	end,
 }
 
 GlueDialogTypes["CANCEL"] = {
@@ -190,8 +215,6 @@ GlueDialogTypes["CANCEL"] = {
 	button2 = nil,
 	OnAccept = function()
 		StatusDialogClick();
-	end,
-	OnCancel = function()
 	end,
 }
 
@@ -207,8 +230,6 @@ GlueDialogTypes["REALM_LIST_CANCEL"] = {
 		else
 			SetGlueScreen("login");
 		end
-	end,
-	OnCancel = function()
 	end,
 }
 
@@ -237,8 +258,6 @@ GlueDialogTypes["OKAY"] = {
 	OnAccept = function()
 		StatusDialogClick();
 	end,
-	OnCancel = function()
-	end,
 }
 
 GlueDialogTypes["OKAY_HTML"] = {
@@ -254,8 +273,6 @@ GlueDialogTypes["OKAY_HTML"] = {
 	end,
 	OnAccept = function()
 		StatusDialogClick();
-	end,
-	OnCancel = function()
 	end,
 }
 
@@ -287,8 +304,6 @@ GlueDialogTypes["CONFIRM_PAID_SERVICE"] = {
 		-- this will be nil in any other case
 		CreateCharacter(CharacterCreateNameEdit:GetText(), PandarenFactionButtons_GetSelectedFaction());
 	end,
-	OnCancel = function()
-	end,
 }
 
 GlueDialogTypes["OKAY_WITH_URL"] = {
@@ -315,8 +330,6 @@ GlueDialogTypes["CONNECTION_HELP"] = {
 		AccountLoginUI:Hide();
 		ConnectionHelpFrame:Show();
 	end,
-	OnCancel = function()
-	end,
 }
 
 GlueDialogTypes["CONNECTION_HELP_HTML"] = {
@@ -331,8 +344,6 @@ GlueDialogTypes["CONNECTION_HELP_HTML"] = {
 	OnAccept = function()
 		AccountLoginUI:Hide();
 		ConnectionHelpFrame:Show();
-	end,
-	OnCancel = function()
 	end,
 }
 
@@ -370,8 +381,6 @@ GlueDialogTypes["SCANDLL_DOWNLOAD"] = {
 	button2 = nil,
 	OnAccept = function()
 		AccountLogin_Exit();
-	end,
-	OnCancel = function()
 	end,
 }
 
@@ -511,28 +520,18 @@ GlueDialogTypes["DECLINE_FAILED"] = {
 	OnAccept = function()
 		DeclensionFrame:Show();
 	end,
-	OnCancel = function()
-	end,
 }
 
 GlueDialogTypes["REALM_LOCALE_WARNING"] = {
 	text = REALM_TYPE_LOCALE_WARNING,
 	button1 = OKAY,
 	button2 = nil,
-	OnAccept = function()
-	end,
-	OnCancel = function()
-	end,
 }
 
 GlueDialogTypes["REALM_TOURNAMENT_WARNING"] = {
 	text = REALM_TYPE_TOURNAMENT_WARNING,
 	button1 = OKAY,
 	button2 = nil,
-	OnAccept = function()
-	end,
-	OnCancel = function()
-	end,
 }
 
 function GlueDialog_Show(which, text, data, errorNumber)

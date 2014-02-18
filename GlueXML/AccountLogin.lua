@@ -326,7 +326,6 @@ function AccountLogin_HideAllUserAgreements()
 	EULAScrollFrame:Hide();
 	TerminationScrollFrame:Hide();
 	ScanningScrollFrame:Hide();
-	ContestScrollFrame:Hide();
 	TOSText:Hide();
 	EULAText:Hide();
 	TerminationText:Hide();
@@ -383,18 +382,6 @@ function AccountLogin_ShowUserAgreements()
 		TOSFrameHeader:SetWidth(TOSFrameTitle:GetWidth());
 		ScanningScrollFrame:Show();
 		ScanningText:Show();
-		TOSFrame:Show();
-	elseif ( not ContestAccepted() and SHOW_CONTEST_AGREEMENT ) then
-		if ( ShowContestNotice() ) then
-			TOSNotice:SetText(CONTEST_NOTICE);
-			TOSNotice:Show();
-		end
-		AccountLoginUI:Hide();
-		TOSFrame.noticeType = "CONTEST";
-		TOSFrameTitle:SetText(CONTEST_FRAME_TITLE);
-		TOSFrameHeader:SetWidth(TOSFrameTitle:GetWidth());
-		ContestScrollFrame:Show();
-		ContestText:Show();
 		TOSFrame:Show();
 	elseif (SHOW_KOREAN_RATINGS) then
 		AccountLoginUI:Hide();
@@ -1114,4 +1101,46 @@ function KoreanRatings_Close(self)
 	SHOW_KOREAN_RATINGS = false;
 	AccountLogin_CheckAutoLogin();
 	AccountLogin_ShowUserAgreements();
+end
+
+function CheckSystemRequirements( previousCheck )
+	if ( not previousCheck  ) then
+		if ( not IsCPUSupported() ) then
+			GlueDialog_Show("SYSTEM_INCOMPATIBLE_SSE");
+			return;
+		end
+		previousCheck = nil;
+	end
+	
+	if ( not previousCheck or previousCheck == "SSE" ) then
+		if ( not IsShaderModelSupported() ) then
+			GlueDialog_Show("FIXEDFUNCTION_UNSUPPORTED");
+			return;
+		end
+		previousCheck = nil;
+	end
+	
+	if ( not previousCheck or previousCheck == "SHADERMODEL" ) then
+		if ( VideoDeviceState() == 1 ) then
+			GlueDialog_Show("DEVICE_BLACKLISTED");
+			return;
+		end
+		previousCheck = nil;
+	end
+	
+	if ( not previousCheck or previousCheck == "DEVICE" ) then
+		if ( VideoDriverState() == 2 ) then
+			GlueDialog_Show("DRIVER_OUTOFDATE");
+			return;
+		end
+		previousCheck = nil;
+	end
+	
+	if ( not previousCheck or previousCheck == "DRIVER_OOD" ) then
+		if ( VideoDriverState() == 1 ) then
+			GlueDialog_Show("DRIVER_BLACKLISTED");
+			return;
+		end
+		previousCheck = nil;
+	end
 end

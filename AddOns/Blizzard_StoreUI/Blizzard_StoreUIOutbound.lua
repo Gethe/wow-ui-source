@@ -15,3 +15,7 @@ end
 function Outbound.HidePreviewFrame()
 	securecall("HidePreviewFrame");
 end
+
+function Outbound.Logout()
+	securecall("Logout");
+end

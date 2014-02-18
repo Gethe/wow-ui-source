@@ -2045,7 +2045,7 @@ SlashCmdList["LOOT_ROUNDROBIN"] = function(msg)
 end
 
 SlashCmdList["LOOT_MASTER"] = function(msg)
-	SetLootMethod("master", msg);
+	SetLootMethod("master", msg, 1);
 end
 
 SlashCmdList["LOOT_GROUP"] = function(msg)
@@ -2793,6 +2793,8 @@ function GetColoredName(event, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, a
 	--ambiguate guild chat names
 	if (chatType == "GUILD") then
 		arg2 = Ambiguate(arg2, "guild")
+	else
+		arg2 = Ambiguate(arg2, "none")
 	end
 	
 	if ( info and info.colorNameByClass and arg12 ) then

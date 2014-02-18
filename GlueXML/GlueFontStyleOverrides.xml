@@ -1,5 +1,6 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\FrameXML\UI.xsd">
+	<Include file="..\SharedXML\SharedFontStyleOverrides.xml"/>
 
 	<Font name="GlueFontNormalHuge_KO" font="Fonts\2002.TTF" outline="NORMAL" alternateTo="GlueFontNormalHuge" alternateAlphabetID = "0" virtual="true">
 		<Shadow x="2" y="-2">
@@ -65,4 +66,5 @@
 			<AbsValue val="15"/>
 		</FontHeight>
 	</Font>
+
 </Ui>

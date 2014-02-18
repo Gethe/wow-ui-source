@@ -1,0 +1,429 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\FrameXML\UI.xsd">
+	<Script file="CharacterServices.lua"/>
+	
+	<Frame name="CharacterServicesBlockTemplate" virtual="true">
+		<Size x="250" y="200"/>
+		<Layers>
+			<Layer level="ARTWORK">
+				<FontString parentKey="StepLabel" inherits="GameFontNormalSmall2" text="SERVICES_STEP">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="25" y="5"/>
+					</Anchors>
+				</FontString>
+				<Texture parentKey="StepNumber" inherits="services-number-1">
+					<Anchors>
+						<Anchor point="TOP" relativeKey="$parent.StepLabel" relativePoint="BOTTOM" x="0" y="18"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="Checkmark" inherits="services-checkmark" hidden="true" >
+					<Anchors>
+						<Anchor point="TOPLEFT" x="19" y="5"/>
+					</Anchors>
+				</Texture>
+				<FontString parentKey="StepActiveLabel" inherits="QuestFontHighlight" justifyH="LEFT">
+					<Size x="260" y="0"/>
+					<Anchors>
+						<Anchor point="LEFT" relativeKey="$parent.StepNumber" relativePoint="RIGHT" x="9" y="3"/>
+					</Anchors>
+					<Color r="1" g="1" b="1"/>
+				</FontString>
+				<FontString parentKey="StepFinishedLabel" inherits="GameFontNormalMed3" justifyH="LEFT" hidden="true" >
+					<Size x="260" y="20"/>
+					<Anchors>
+						<Anchor point="LEFT" relativeKey="$parent.Checkmark" relativePoint="RIGHT" x="25" y="8"/>
+					</Anchors>
+					<Color r="0.5" g="0.5" b="0.5"/>
+				</FontString>
+				<FontString parentKey="ResultsLabel" inherits="GameFontNormalMed3" justifyH="LEFT" hidden="true" >
+					<Size x="260" y="20"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.StepFinishedLabel" relativePoint="BOTTOMLEFT" x="0" y="0"/>
+					</Anchors>
+					<Color r="1" g="1" b="1"/>
+				</FontString>
+			</Layer>
+		</Layers>
+	</Frame>
+	<CheckButton name="CharacterUpgradeSelectSpecRadioButtonTemplate" inherits="UIRadioButtonTemplate" virtual="true">
+		<Layers>
+			<Layer level="OVERLAY">
+				<Texture name="$parentRoleIcon" file="Interface\LFGFrame\UI-LFG-ICON-ROLES"	parentKey="RoleIcon">
+					<Size x="20" y="20"/>
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent.Frame" relativePoint="CENTER" x="48" y="-10" />
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="ARTWORK">
+				<Texture name="$parentSpecOverlay" file="Interface\AchievementFrame\UI-Achievement-IconFrame" parentKey="Frame">
+					<Anchors>
+						<Anchor point="LEFT" relativePoint="RIGHT" x="5" y="0"/>
+					</Anchors>
+					<Size x="46" y="46"/>
+					<TexCoords left="0" right="0.5625" top="0" bottom="0.5625"/>
+				</Texture>
+			</Layer>
+			<Layer level="BACKGROUND">
+				<Texture name="$parentSpecIcon" parentKey="SpecIcon">
+					<Size x="38" y="38"/>
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent.Frame" relativePoint="CENTER" x="0" y="0"/>
+					</Anchors>
+				</Texture>
+				<FontString parentKey="SpecName" inherits="GameFontNormalLarge" justifyH="LEFT">
+					<Size>
+						<AbsDimension x="150" y="0"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.Frame" relativePoint="TOPRIGHT" x="6" y="-8"/>
+					</Anchors>
+				</FontString>
+				<FontString parentKey="RoleName" inherits="GameFontNormal" justifyH="LEFT">
+					<Size>
+						<AbsDimension x="75" y="0"/>
+					</Size>
+					<Anchors>
+						<Anchor point="BOTTOMLEFT" relativeKey="$parent.Frame" relativePoint="BOTTOMRIGHT" x="6" y="6"/>
+					</Anchors>
+					<Color r="0.5" g="0.5" b="0.5"/>
+				</FontString>
+			</Layer>
+		</Layers>
+		<HitRectInsets>
+			<AbsInset left="0" right="-220" top="-20" bottom="-20"/>
+		</HitRectInsets>
+		<Scripts>
+			<OnClick>
+				PlaySound("igMainMenuOptionCheckBoxOn");
+				CharacterUpgradeSelectSpecRadioButton_OnClick(self, button, down);
+			</OnClick>
+			<OnEnter>
+				if (self.tooltip) then
+					GlueTooltip:SetOwner(self, "ANCHOR_TOP");
+					GlueTooltip:AddLine(self.tooltip, NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b, 1, true);
+					GlueTooltip:Show();
+				end
+			</OnEnter>
+			<OnLeave>
+				if (self.tooltip) then
+					GlueTooltip:Hide();
+				end
+			</OnLeave>
+		</Scripts>
+	</CheckButton>
+	<CheckButton name="CharacterUpgradeSelectFactionRadioButtonTemplate" inherits="UIRadioButtonTemplate" virtual="true">
+		<Layers>
+			<Layer level="ARTWORK">
+				<Texture name="$parentFactionOverlay" file="Interface\AchievementFrame\UI-Achievement-IconFrame" parentKey="Frame">
+					<Anchors>
+						<Anchor point="LEFT" relativePoint="RIGHT" x="5" y="0"/>
+					</Anchors>
+					<Size x="46" y="46"/>
+					<TexCoords left="0" right="0.5625" top="0" bottom="0.5625"/>
+				</Texture>
+			</Layer>
+			<Layer level="BACKGROUND">
+				<Texture name="$parentFactionIcon" parentKey="FactionIcon">
+					<Size x="38" y="38"/>
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent.Frame" relativePoint="CENTER" x="0" y="0"/>
+					</Anchors>
+				</Texture>
+				<FontString name="$parentFactionName" inherits="GameFontNormalLarge" justifyH="LEFT" parentKey="FactionName">
+					<Size>
+						<AbsDimension x="150" y="0"/>
+					</Size>
+					<Anchors>
+						<Anchor point="LEFT" relativeKey="$parent.Frame" relativePoint="RIGHT" x="6" y="0"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<HitRectInsets>
+			<AbsInset left="0" right="-220" top="-20" bottom="-20"/>
+		</HitRectInsets>
+		<Scripts>
+			<OnClick>
+				PlaySound("igMainMenuOptionCheckBoxOn");
+				CharacterUpgradeSelectFactionRadioButton_OnClick(self, button, down);
+			</OnClick>
+		</Scripts>
+	</CheckButton>
+	<Frame name="CharacterServicesArrowTemplate" virtual="true">
+		<Size x="18" y="32"/>
+		<Layers>
+			<Layer level="ARTWORK">
+				<Texture parentKey="Arrow" inherits="services-yellowarrow">
+					<Anchors>
+						<Anchor point="RIGHT" relativePoint="LEFT" x="3" y="0"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+	</Frame>
+	<Frame name="CharacterServicesBonusIconTemplate" virtual="true">
+		<Size x="19" y="19"/>
+		<Layers>
+			<Layer level="ARTWORK">
+				<Texture parentKey="Icon" inherits="services-icon-bonus" setAllPoints="true"/>
+			</Layer>
+		</Layers>
+	</Frame>
+	<Frame name="CharacterServicesBonusResultTemplate" virtual="true">
+		<Size x="200" y="20"/>
+		<Layers>
+			<Layer level="ARTWORK">
+				<Texture parentKey="Icon" inherits="services-icon-bonus">
+					<Anchors>
+						<Anchor point="LEFT"/>
+					</Anchors>
+				</Texture>
+				<FontString parentKey="Label" inherits="GameFontNormal" justifyH="LEFT">
+					<Size x="200" y="0"/>
+					<Anchors>
+						<Anchor point="LEFT" relativeKey="$parent.Icon" relativePoint="RIGHT" x="4" y="0"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+	</Frame>
+	<Frame name="CharacterServicesProcessingIconTemplate" virtual="true">
+		<Size x="42" y="37"/>
+		<Layers>
+			<Layer level="ARTWORK">
+				<Texture parentKey="Icon" inherits="services-icon-processing" setAllPoints="true"/>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnEnter>
+				GlueTooltip:SetOwner(self, -260);
+				GlueTooltip:AddLine(CHARACTER_UPGRADE_PROCESSING, 1.0, 1.0, 1.0);
+				GlueTooltip:AddLine(CHARACTER_SERVICES_PLEASE_WAIT, nil, nil, nil, 1, 1);
+				GlueTooltip:Show();
+			</OnEnter>
+			<OnLeave>
+				GlueTooltip:Hide();
+			</OnLeave>
+		</Scripts>
+	</Frame>
+	<Frame name="CharacterUpgradeSelectCharacterFrame" inherits="CharacterServicesBlockTemplate" hidden="true" frameStrata="DIALOG">
+		<Size x="300" y="250"/>
+		<Frames>
+			<Frame parentKey="ControlsFrame" setAllPoints="true">
+				<Layers>
+					<Layer level="ARTWORK">
+						<FontString parentKey="OrLabel" inherits="GameFontNormalMed3" text="SERVICES_CONJUNCTION_OR" hidden="true">
+							<Anchors>
+								<Anchor point="TOPLEFT" x="84" y="-69"/>
+							</Anchors>
+							<Color r="0.5" g="0.5" b="0.5"/>
+						</FontString>
+					</Layer>
+				</Layers>
+				<Frames>
+					<Button parentKey="CreateCharacterButton" inherits="GlueButtonSmallTemplate" text="CREATE_NEW_CHARACTER" hidden="true">
+						<Size x="200" y="45"/>
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeKey="$parent.OrLabel" relativePoint="BOTTOMLEFT" x="-12" y="0"/>
+						</Anchors>
+						<Scripts>
+							<OnLoad>
+								self:SetWidth(self:GetTextWidth() + 50);
+							</OnLoad>
+							<OnClick function="CharacterUpgradeCreateCharacter_OnClick"/>
+							<OnUpdate>
+								CharacterSelect_DeathKnightSwap(self);
+							</OnUpdate>
+						</Scripts>
+					</Button>
+					<Frame parentKey="GlowBox">
+						<Size x="244" y="180"/>
+						<Layers>
+							<Layer level="ARTWORK" textureSubLevel="-1">
+								<Texture name="$parentGlowTopLeft" file="Interface\Common\HelpBox" parentKey="GlowTopLeft" alphaMode="ADD">
+									<Size x="4" y="4"/>	
+									<Anchors>
+										<Anchor point="TOPLEFT" x="-6" y="6"/>
+									</Anchors>
+									<TexCoords left="0.10937500" right="0.19531250" top="0.00781250" bottom="0.09375000"/>	
+								</Texture>
+								<Texture name="$parentGlowTopRight" file="Interface\Common\HelpBox" parentKey="GlowTopRight" alphaMode="ADD">
+									<Size x="4" y="4"/>	
+									<Anchors>
+										<Anchor point="TOPRIGHT" x="6" y="6"/>
+									</Anchors>
+									<TexCoords left="0.10937500" right="0.19531250" top="0.00781250" bottom="0.09375000"/>	
+								</Texture>
+								
+								<Texture name="$parentGlowBottomLeft" file="Interface\Common\HelpBox" parentKey="GlowBottomLeft" alphaMode="ADD">
+									<Size x="4" y="4"/>	
+									<Anchors>
+										<Anchor point="BOTTOMLEFT" x="-6" y="-6"/>
+									</Anchors>
+									<TexCoords left="0.10937500" right="0.19531250" top="0.00781250" bottom="0.09375000"/>	
+								</Texture>
+								
+								<Texture name="$parentGlowBottomRight" file="Interface\Common\HelpBox" parentKey="GlowBottomRight" alphaMode="ADD">
+									<Size x="4" y="4"/>	
+									<Anchors>
+										<Anchor point="BOTTOMRIGHT" x="6" y="-6"/>
+									</Anchors>
+									<TexCoords left="0.10937500" right="0.19531250" top="0.00781250" bottom="0.09375000"/>	
+								</Texture>
+
+								<Texture name="$parentGlowTop" file="Interface\Common\HelpBox"  parentKey="GlowTop" alphaMode="ADD">
+									<Size x="4" y="4"/>	
+									<Anchors>
+										<Anchor point="TOPLEFT" relativeTo="$parentGlowTopLeft" relativePoint="TOPRIGHT"/>
+										<Anchor point="TOPRIGHT" relativeTo="$parentGlowTopRight" relativePoint="TOPLEFT"/>
+									</Anchors>
+									<TexCoords left="0.00781250" right="0.09375000" top="0.00781250" bottom="0.09375000"/>	
+								</Texture>
+								<Texture name="$parentGlowBottom" file="Interface\Common\HelpBox" parentKey="GlowBottom" alphaMode="ADD">
+									<Size x="4" y="4"/>	
+									<Anchors>
+										<Anchor point="BOTTOMLEFT" relativeTo="$parentGlowBottomLeft" relativePoint="BOTTOMRIGHT"/>
+										<Anchor point="BOTTOMRIGHT" relativeTo="$parentGlowBottomRight" relativePoint="BOTTOMLEFT"/>
+									</Anchors>
+									<TexCoords left="0.00781250" right="0.09375000" top="0.09375000" bottom="0.00781250"/>	
+								</Texture>
+								<Texture name="$parentGlowLeft" file="Interface\Common\HelpBox" parentKey="GlowLeft" alphaMode="ADD">
+									<Size x="4" y="4"/>	
+									<Anchors>
+										<Anchor point="TOPLEFT" relativeTo="$parentGlowTopLeft" relativePoint="BOTTOMLEFT"/>
+										<Anchor point="BOTTOMLEFT" relativeTo="$parentGlowBottomLeft" relativePoint="TOPLEFT"/>
+									</Anchors>
+									<TexCoords left="0.21093750" right="0.29687500" top="0.00781250" bottom="0.09375000"/>	
+								</Texture>
+								<Texture name="$parentGlowRight" file="Interface\Common\HelpBox" parentKey="GlowRight" alphaMode="ADD">
+									<Size x="4" y="4"/>	
+									<Anchors>
+										<Anchor point="TOPRIGHT" relativeTo="$parentGlowTopRight" relativePoint="BOTTOMRIGHT"/>
+										<Anchor point="BOTTOMRIGHT" relativeTo="$parentGlowBottomRight" relativePoint="TOPRIGHT"/>
+									</Anchors>
+									<TexCoords left="0.29687500" right="0.21093750" top="0.00781250" bottom="0.09375000"/>	
+								</Texture>	
+							</Layer>
+						</Layers>
+						<Scripts>
+							<OnLoad>
+								SetClampedTextureRotation(self.GlowTopRight, 90);
+								SetClampedTextureRotation(self.GlowBottomRight, 180);
+								SetClampedTextureRotation(self.GlowBottomLeft, 270);
+							</OnLoad>
+						</Scripts>
+					</Frame>
+					<Frame parentArray="Arrows" inherits="CharacterServicesArrowTemplate"/>
+					<Frame parentArray="BonusIcons" inherits="CharacterServicesBonusIconTemplate"/>
+					<Frame parentKey="BonusLabel">
+						<Size x="340" y="40"/>
+						<!-- Set in lua because flow frame is not available here yet -->
+						<Layers>
+							<Layer level="ARTWORK">
+								<Texture parentKey="BonusIcon" inherits="services-icon-bonus-large">
+									<Anchors>
+										<Anchor point="LEFT" x="0" y="4"/>
+									</Anchors>
+								</Texture>
+								<FontString parentKey="BonusText" inherits="GameFontNormal" text="CHARACTER_UPGRADE_PROFESSION_BOOST" spacing="4" justifyV="TOP" justifyH="LEFT">
+									<Size x="300" y="0"/>
+									<Anchors>
+										<Anchor point="TOPLEFT" relativeKey="$parent.BonusIcon" relativePoint="TOPRIGHT" x="8" y="-3"/>
+									</Anchors>
+								</FontString>
+							</Layer>
+						</Layers>
+					</Frame>
+				</Frames>
+			</Frame>
+			<Frame parentArray="BonusResults" inherits="CharacterServicesBonusResultTemplate"/>
+			<Frame parentKey="NoBonusResult" hidden="true">
+				<Size x="200" y="20"/>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.ResultsLabel" relativePoint="BOTTOMLEFT" x="0" y="-2"/>
+				</Anchors>
+				<Layers>
+					<Layer level="ARTWORK">
+						<Texture parentKey="Icon" inherits="services-icon-bonus-red">
+							<Anchors>
+								<Anchor point="LEFT"/>
+							</Anchors>
+						</Texture>
+						<FontString parentKey="Label" inherits="GameFontNormal" justifyH="LEFT" text="CHARACTER_UPGRADE_NO_VETERAN_BONUS">
+							<Size x="200" y="0"/>
+							<Anchors>
+								<Anchor point="LEFT" relativeKey="$parent.Icon" relativePoint="RIGHT" x="4" y="0"/>
+							</Anchors>
+							<Color r="1" g="0" b="0"/>
+						</FontString>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnEnter>
+						GlueTooltip:SetOwner(self, -60);
+						GlueTooltip:AddLine(CHARACTER_UPGRADE_PROFESSION_BOOST, 1, 1, 1, 1, true);
+						GlueTooltip:Show();
+					</OnEnter>
+					<OnLeave>
+						GlueTooltip:Hide();
+					</OnLeave>
+				</Scripts>
+			</Frame>
+		</Frames>
+	</Frame>
+	<Frame name="CharacterUpgradeMaxCharactersFrame" hidden="true" frameStrata="DIALOG">
+		<Size x="400" y="250"/>
+		<Layers>
+			<Layer level="ARTWORK">
+				<FontString parentKey="Label" inherits="GameFontHighlightLarge" justifyV="TOP" text="CHARACTER_SERVICES_NO_ELIGIBLE_CHARACTERS">
+					<Size x="320" y="0"/>
+					<Anchors>
+						<Anchor point="TOP" x="30" y="0"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Button parentKey="CloseButton" inherits="GlueButtonSmallTemplate" text="CLOSE">
+				<Size x="140" y="34"/>
+				<Anchors>
+					<Anchor point="TOP" relativeKey="$parent.Label" relativePoint="BOTTOM" x="0" y="-40"/>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						CharSelectServicesFlowFrame:Hide();
+					</OnClick>
+				</Scripts>
+			</Button>
+		</Frames>
+	</Frame>
+	<Frame name="CharacterUpgradeSelectSpecFrame" inherits="CharacterServicesBlockTemplate" hidden="true" frameStrata="DIALOG">
+		<Size x="300" y="250"/>
+		<Frames>
+			<Frame parentKey="ControlsFrame" setAllPoints="true">
+				<Frames>
+					<CheckButton parentArray="SpecButtons" inherits="CharacterUpgradeSelectSpecRadioButtonTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT" x="83" y="-73"/>
+						</Anchors>
+					</CheckButton>
+				</Frames>
+			</Frame>
+		</Frames>
+	</Frame>
+	<Frame name="CharacterUpgradeSelectFactionFrame" inherits="CharacterServicesBlockTemplate" hidden="true" frameStrata="DIALOG">
+		<Size x="300" y="150"/>
+		<Frames>
+			<Frame parentKey="ControlsFrame" setAllPoints="true">
+				<Frames>
+					<CheckButton parentArray="FactionButtons" inherits="CharacterUpgradeSelectFactionRadioButtonTemplate" id="1">
+						<Anchors>
+							<Anchor point="TOPLEFT" x="83" y="-73"/>
+						</Anchors>
+					</CheckButton>
+				</Frames>
+			</Frame>
+		</Frames>
+	</Frame>
+</Ui>

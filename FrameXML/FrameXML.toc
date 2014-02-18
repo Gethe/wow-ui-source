@@ -22,10 +22,10 @@ MoneyFrame.lua
 MoneyFrame.xml
 MoneyInputFrame.lua
 MoneyInputFrame.xml
+..\SharedXML\SharedUIPanelTemplates.xml
 GameTooltip.xml
 UIMenu.xml
 UIDropDownMenu.xml
-..\SharedXML\SharedUIPanelTemplates.xml
 UIPanelTemplates.lua
 UIPanelTemplates.xml
 SecureTemplates.xml

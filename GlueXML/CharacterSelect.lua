@@ -20,9 +20,11 @@ local translationTable = { };	-- for character reordering: key = button index, v
 
 BLIZZCON_IS_A_GO = false;
 
+local STORE_IS_LOADED = false;
+
 function CharacterSelect_OnLoad(self)
-	self:SetSequence(0);
-	self:SetCamera(0);
+	CharacterSelectModel:SetSequence(0);
+	CharacterSelectModel:SetCamera(0);
 
 	self.createIndex = 0;
 	self.selectedIndex = 0;
@@ -35,6 +37,7 @@ function CharacterSelect_OnLoad(self)
 	self:RegisterEvent("SELECT_FIRST_CHARACTER");
 	self:RegisterEvent("SUGGEST_REALM");
 	self:RegisterEvent("FORCE_RENAME_CHARACTER");
+	self:RegisterEvent("STORE_STATUS_CHANGED");
 
 	-- CharacterSelect:SetModel("Interface\\Glues\\Models\\UI_Orc\\UI_Orc.m2");
 
@@ -43,7 +46,7 @@ function CharacterSelect_OnLoad(self)
 	-- CharacterSelect:SetFogNear(0);
 	-- CharacterSelect:SetFogFar(fogInfo.far);
 
-	SetCharSelectModelFrame("CharacterSelect");
+	SetCharSelectModelFrame("CharacterSelectModel");
 
 	-- Color edit box backdrops
 	local backdropColor = DEFAULT_TOOLTIP_COLOR;
@@ -59,6 +62,12 @@ function CharacterSelect_OnLoad(self)
 end
 
 function CharacterSelect_OnShow()
+	if (not STORE_IS_LOADED) then
+		LoadAddOn("Blizzard_AuthChallengeUI");
+		LoadAddOn("Blizzard_StoreUI");
+		STORE_IS_LOADED = true;
+	end
+
 	DebugLog("Select_OnShow");
 	CHARACTER_LIST_OFFSET = 0;
 	-- request account data times from the server (so we know if we should refresh keybindings, etc...)
@@ -189,6 +198,12 @@ function CharacterSelect_OnShow()
 	PlayersOnServer_Update();
 
 	PromotionFrame_AwaitingPromotion();
+	
+	CharacterSelect_UpdateStoreButton();
+
+	CharacterServicesMaster_UpdateServiceButton();
+
+	C_PurchaseAPI.GetPurchaseList();
 end
 
 function CharacterSelect_OnHide(self)
@@ -206,6 +221,10 @@ function CharacterSelect_OnHide(self)
 	SERVER_SPLIT_STATE_PENDING = -1;
 	
 	PromotionFrame_Hide();
+	C_AuthChallenge.Cancel();
+	if ( StoreFrame ) then
+		StoreFrame:Hide();
+	end
 end
 
 function CharacterSelect_SaveCharacterOrder()
@@ -278,16 +297,27 @@ function CharacterSelect_OnKeyDown(self,key)
 			return;
 		elseif ( IsLauncherLogin() ) then
 			GlueMenuFrame:SetShown(not GlueMenuFrame:IsShown());
+		elseif (CharSelectServicesFlowFrame:IsShown()) then
+			CharSelectServicesFlowFrame:Hide();
 		else
 			CharacterSelect_Exit();
 		end
 	elseif ( key == "ENTER" ) then
+		if (CharSelectServicesFlowFrame:IsShown()) then
+			return;
+		end
 		CharacterSelect_EnterWorld();
 	elseif ( key == "PRINTSCREEN" ) then
 		Screenshot();
 	elseif ( key == "UP" or key == "LEFT" ) then
+		if (CharSelectServicesFlowFrame:IsShown()) then
+			return;
+		end
 		CharacterSelectScrollUp_OnClick();
 	elseif ( key == "DOWN" or key == "RIGHT" ) then
+		if (CharSelectServicesFlowFrame:IsShown()) then
+			return;
+		end
 		CharacterSelectScrollDown_OnClick();
 	end
 end
@@ -320,6 +350,7 @@ function CharacterSelect_OnEvent(self, event, ...)
 				SetGlueScreen("charcreate");
 			end
 		end
+		CharacterServicesMaster_OnCharacterListUpdate();
 	elseif ( event == "UPDATE_SELECTED_CHARACTER" ) then
 		local charID = ...;
 		if ( charID == 0 ) then
@@ -355,12 +386,23 @@ function CharacterSelect_OnEvent(self, event, ...)
 		local message = ...;
 		CharacterRenameDialog:Show();
 		CharacterRenameText1:SetText(_G[message]);
+	elseif ( event == "STORE_STATUS_CHANGED" ) then
+		CharacterSelect_UpdateStoreButton();		
 	end
 end
 
 function CharacterSelect_UpdateModel(self)
 	UpdateSelectionCustomizationScene();
 	self:AdvanceTime();
+end
+
+function UpdateCharacterSelectEnterWorldDeleteButtons()
+	local guid, _, _, _, boostInProgress = select(14,GetCharacterInfo(GetCharIDFromIndex(CharacterSelect.selectedIndex+CHARACTER_LIST_OFFSET)));
+	CharSelectEnterWorldButton:SetEnabled(not boostInProgress);
+	CharacterSelectDeleteButton:SetEnabled(not boostInProgress);
+	
+	-- now check for the services flow (ie character upgrade)
+	CharacterSelect_UpdateButtonState();
 end
 
 function UpdateCharacterSelection(self)
@@ -380,6 +422,7 @@ function UpdateCharacterSelection(self)
 			if ( button:IsMouseOver() ) then
 				CharacterSelectButton_ShowMoveButtons(button);
 			end
+			UpdateCharacterSelectEnterWorldDeleteButtons();
 		end
 	end
 end
@@ -396,27 +439,38 @@ function UpdateCharacterList(skipSelect)
 	end
 	local debugText = numChars..": ";
 	for i=1, numChars, 1 do
-		local name, race, class, classFileName, classID, level, zone, sex, ghost, PCC, PRC, PFC, PRCDisabled = GetCharacterInfo(GetCharIDFromIndex(i+CHARACTER_LIST_OFFSET));
+		local name, race, class, classFileName, classID, level, zone, sex, ghost, PCC, PRC, PFC, PRCDisabled, guid, _, _, _, boostInProgress = GetCharacterInfo(GetCharIDFromIndex(i+CHARACTER_LIST_OFFSET));
 		local button = _G["CharSelectCharacterButton"..index];
 		if ( name ) then
 			if ( not zone ) then
 				zone = "";
 			end
 			_G["CharSelectCharacterButton"..index.."ButtonTextName"]:SetText(name);
-			if( ghost ) then
-				_G["CharSelectCharacterButton"..index.."ButtonTextInfo"]:SetFormattedText(CHARACTER_SELECT_INFO_GHOST, level, class);
+			if (boostInProgress) then
+				_G["CharSelectCharacterButton"..index.."ButtonTextInfo"]:SetText(CHARACTER_UPGRADE_PROCESSING);
+				_G["CharSelectCharacterButton"..index.."ButtonTextLocation"]:SetFontObject("GlueFontHighlightSmall");
+				_G["CharSelectCharacterButton"..index.."ButtonTextLocation"]:SetText(CHARACTER_UPGRADE_CHARACTER_LIST_LABEL);
 			else
-				_G["CharSelectCharacterButton"..index.."ButtonTextInfo"]:SetFormattedText(CHARACTER_SELECT_INFO, level, class);
+				if( ghost ) then
+					_G["CharSelectCharacterButton"..index.."ButtonTextInfo"]:SetFormattedText(CHARACTER_SELECT_INFO_GHOST, level, class);
+				else
+					_G["CharSelectCharacterButton"..index.."ButtonTextInfo"]:SetFormattedText(CHARACTER_SELECT_INFO, level, class);
+				end
+				_G["CharSelectCharacterButton"..index.."ButtonTextLocation"]:SetFontObject("GlueFontDisableSmall");
+				_G["CharSelectCharacterButton"..index.."ButtonTextLocation"]:SetText(zone);
 			end
-			_G["CharSelectCharacterButton"..index.."ButtonTextLocation"]:SetText(zone);
 		end
 		button:Show();
 		button.index = i + CHARACTER_LIST_OFFSET;
 
 		-- setup paid service button
 		local paidServiceButton = _G["CharSelectPaidService"..index];
+		local upgradeIcon = _G["CharacterServicesProcessingIcon"..index];
+		upgradeIcon:Hide();
 		local serviceType, disableService;
-		if ( PFC ) then
+		if (boostInProgress) then
+			upgradeIcon:Show();
+		elseif ( PFC ) then
 			serviceType = PAID_FACTION_CHANGE;
 			paidServiceButton.texture:SetTexCoord(0, 0.5, 0.5, 1);
 			paidServiceButton.tooltip = PAID_FACTION_CHANGE_TOOLTIP;
@@ -473,9 +527,10 @@ function UpdateCharacterList(skipSelect)
 		CharacterSelectDeleteButton:Disable();
 		CharSelectEnterWorldButton:Disable();
 	else
-		CharacterSelectDeleteButton:Enable();
-		CharSelectEnterWorldButton:Enable();
+		UpdateCharacterSelectEnterWorldDeleteButtons();
 	end
+
+	CharacterSelect_UpdateStoreButton();
 
 	CharacterSelect.createIndex = 0;
 	CharSelectCreateCharacterButton:Hide();	
@@ -493,6 +548,7 @@ function UpdateCharacterList(skipSelect)
 			end
 		end
 		_G["CharSelectPaidService"..index]:Hide();
+		_G["CharacterServicesProcessingIcon"..index]:Hide();
 		button:Hide();
 		index = index + 1;
 	end
@@ -598,7 +654,7 @@ function CharacterSelect_SelectCharacter(index, noCreate)
 		SelectCharacter(charID);
 
 		local backgroundFileName = GetSelectBackgroundModel(charID);
-		CharacterSelect.currentBGTag = SetBackgroundModel(CharacterSelect, backgroundFileName);
+		CharacterSelect.currentBGTag = SetBackgroundModel(CharacterSelectModel, backgroundFileName);
 	end
 end
 
@@ -764,7 +820,7 @@ end
 
 function CharacterSelectButton_OnDragUpdate(self)
 	-- shouldn't be doing this without an index...
-	if ( not CharacterSelect.draggedIndex ) then
+	if ( not CharacterSelect.draggedIndex) then
 		CharacterSelectButton_OnDragStop(self);
 		return;
 	end
@@ -1018,6 +1074,14 @@ function CharacterTemplatesFrameDropDown_Initialize()
 	end
 end
 
+function ToggleStoreUI()
+	local wasShown = StoreFrame_IsShown();
+	if ( not wasShown ) then
+		--We weren't showing, now we are. We should hide all other panels.
+			-- not sure if anything is needed here at the gluescreen
+	end
+	StoreFrame_SetShown(not wasShown);
+end
 function CharacterTemplatesFrameDropDown_OnClick(button)
 	GlueDropDownMenu_SetSelectedID(CharacterTemplatesFrameDropDown, button:GetID());
 end
@@ -1051,3 +1115,23 @@ function CharacterSelect_ActivateFactionChange()
 	end
 end
 
+function CharacterSelect_UpdateStoreButton()
+	if ( C_StorePublic.IsEnabled() and not C_StorePublic.IsDisabledByParentalControls() and GetNumCharacters() > 0 and not IsTrialAccount()) then
+		StoreButton:Show();
+	else
+		StoreButton:Hide();
+	end
+end
+
+function CharacterSelect_UpdateButtonState()
+	local isEnabled = not CharSelectServicesFlowFrame:IsShown();
+
+	CharSelectEnterWorldButton:SetEnabled(isEnabled);
+	CharacterSelectBackButton:SetEnabled(isEnabled);
+	CharacterSelectAddonsButton:SetEnabled(isEnabled);
+	CharacterSelectMenuButton:SetEnabled(isEnabled);
+	CharacterSelectDeleteButton:SetEnabled(isEnabled);
+	CharSelectChangeRealmButton:SetEnabled(isEnabled);
+	CharSelectCreateCharacterButton:SetEnabled(isEnabled);
+	CharacterSelectDeleteButton:SetEnabled(isEnabled);
+end

@@ -65,4 +65,28 @@
 	</Font>
 	<Font name="GameFontHighlightSmallLeft" inherits="GameFontHighlightSmall" justifyH="LEFT" virtual="true"/>	
 	<Font name="GameFontDisableSmallLeft" inherits="GameFontDisableSmall" justifyH="LEFT" virtual="true"/>	
+	<Font name="GameFontHighlightSmall2" inherits="SystemFont_Small2" virtual="true">
+		<Color r="1.0" g="1.0" b="1.0"/>
+	</Font>
+	<Font name="GameFontNormalSmall2" inherits="SystemFont_Shadow_Small2" virtual="true">
+		<Color r="1.0" g="0.82" b="0"/>
+	</Font>
+	<Font name="GameFontNormalLarge2" inherits="SystemFont_Shadow_Large2" virtual="true">
+		<Color r="1.0" g="0.82" b="0"/>
+	</Font>
+	<Font name="GameFontNormalWTF2" inherits="SystemFont_OutlineThick_WTF2" virtual="true">
+		<Color r="1.0" g="0.82" b="0"/>
+	</Font>
+	<Font name="GameFontNormalShadowHuge2" inherits="SystemFont_Shadow_Huge2" virtual="true">
+		<Color r="1.0" g="0.82" b="0"/>
+	</Font>	
+	<Font name="GameFontNormalHugeOutline" inherits="SystemFont_Shadow_Huge1" virtual="true">
+		<Color r="1.0" g="0.82" b="0"/>
+	</Font>	
+	<Font name="GameFontNormalHuge3" inherits="SystemFont_Shadow_Huge3" virtual="true">
+		<Color r="1.0" g="0.82" b="0"/>
+	</Font>
+	<Font name="GameTooltipHeaderText" inherits="GameTooltipHeader" justifyH="LEFT" virtual="true">
+		<Color r="1.0" g="1.0" b="1.0"/>
+	</Font>	
 </Ui>	

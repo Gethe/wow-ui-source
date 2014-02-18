@@ -1,0 +1,31 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\FrameXML\UI.xsd">
+
+	<Font name="GameFontNormalMed3_KO" font="Fonts\2002.TTF" alternateTo="GameFontNormalMed3" alternateAlphabetID = "0" virtual="true">
+		<Shadow x="1" y="-1">
+			<Color r="0" g="0" b="0"/>
+		</Shadow>
+		<FontHeight>
+			<AbsValue val="14"/>
+		</FontHeight>
+	</Font>
+	
+	<Font name="GameFontNormalMed3_ZH" font="Fonts\ARKai_T.ttf" alternateTo="GameFontNormalMed3" alternateAlphabetID = "1" virtual="true">
+		<Shadow x="1" y="-1">
+			<Color r="0" g="0" b="0"/>
+		</Shadow>
+		<FontHeight>
+			<AbsValue val="14"/>
+		</FontHeight>
+	</Font>
+	
+	<Font name="GameFontNormalMed3_RU" font="Fonts\FRIZQT___CYR.TTF" alternateTo="GameFontNormalMed3" alternateAlphabetID = "2" virtual="true">
+		<Shadow x="1" y="-1">
+			<Color r="0" g="0" b="0"/>
+		</Shadow>
+		<FontHeight>
+			<AbsValue val="14"/>
+		</FontHeight>
+	</Font>
+
+</Ui>

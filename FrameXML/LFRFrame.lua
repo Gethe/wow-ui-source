@@ -8,9 +8,9 @@
 
 LFR_MAX_SHOWN_LEVEL_DIFF = 15;
 
-NUM_LFR_CHOICE_BUTTONS = 14;
+NUM_LFR_CHOICE_BUTTONS = 16;
 
-NUM_LFR_LIST_BUTTONS = 19;
+NUM_LFR_LIST_BUTTONS = 21;
 
 LFR_BROWSE_AUTO_REFRESH_TIME = 20;
 
@@ -26,11 +26,11 @@ function LFRFrame_OnLoad(self)
 	
 	self.lastInGroup = IsInGroup();
 	
-	for i = 2, 19 do
+	for i = 2, NUM_LFR_LIST_BUTTONS do
 		local button = CreateFrame("Button", "LFRBrowseFrameListButton"..i, LFRBrowseFrame, "LFRBrowseButtonTemplate");
 		button:SetPoint("TOPLEFT", _G["LFRBrowseFrameListButton"..(i-1)], "BOTTOMLEFT");
 	end
-	for i = 2, 14 do
+	for i = 2, NUM_LFR_CHOICE_BUTTONS do
 		local button = CreateFrame("Button", "LFRQueueFrameSpecificListButton"..i, LFRQueueFrameSpecific, "LFRFrameDungeonChoiceTemplate");
 		button:SetID(i);
 		button:SetPoint("TOPLEFT", _G["LFRQueueFrameSpecificListButton"..(i-1)], "BOTTOMLEFT");
@@ -245,8 +245,6 @@ function LFRQueueFrameSpecificList_Update()
 	
 	local offset = FauxScrollFrame_GetOffset(LFRQueueFrameSpecificListScrollFrame);
 	
-	local areButtonsBig = not LFRQueueFrameSpecificListScrollFrame:IsShown();
-	
 	local mode, subMode = GetLFGMode(LE_LFG_CATEGORY_LFR);
 	
 	for i = 1, NUM_LFR_CHOICE_BUTTONS do
@@ -254,11 +252,6 @@ function LFRQueueFrameSpecificList_Update()
 		local dungeonID = LFRRaidList[i+offset];
 		if ( dungeonID ) then
 			button:Show();
-			if ( areButtonsBig ) then
-				button:SetWidth(315);
-			else
-				button:SetWidth(295);
-			end
 			LFRQueueFrameSpecificListButton_SetDungeon(button, dungeonID, mode, subMode);
 		else
 			button:Hide();
@@ -496,8 +489,7 @@ function LFRBrowseFrameList_Update()
 end
 
 function LFRBrowseFrameListButton_SetData(button, index)
---	local name, level, areaName, className, comment, partyMembers, status, class, encountersTotal, encountersComplete, isIneligible, isLeader, isTank, isHealer, isDamage, bossKills, specID, isGroupLeader, armor, spellDamage, plusHealing, CritMelee, CritRanged, critSpell, mp5, mp5Combat, attackPower, agility, maxHealth, maxMana, gearRating, avgILevel, defenseRating, dodgeRating, BlockRating, ParryRating, HasteRating, expertise = SearchLFGGetResults(self.index);
-	local name, level, areaName, className, comment, partyMembers, status, class, encountersTotal, encountersComplete, isIneligible, isLeader, isTank, isHealer, isDamage = SearchLFGGetResults(index);
+	local name, level, areaName, className, comment, partyMembers, status, class, encountersTotal, encountersComplete, isIneligible, isLeader, isTank, isHealer, isDamage, bossKills, specID, isGroupLeader, armor, spellDamage, plusHealing, CritMelee, CritRanged, critSpell, mp5, mp5Combat, attackPower, agility, maxHealth, maxMana, gearRating, avgILevel, defenseRating, dodgeRating, BlockRating, ParryRating, HasteRating, expertise = SearchLFGGetResults(index);
 	
 	button.index = index;
 	button.unitName = name;
@@ -574,8 +566,7 @@ function LFRBrowseFrameListButton_SetData(button, index)
 end
 
 function LFRBrowseButton_OnEnter(self)
---	local name, level, areaName, className, comment, partyMembers, status, class, encountersTotal, encountersComplete, isIneligible, isLeader, isTank, isHealer, isDamage, bossKills, specID, isGroupLeader, armor, spellDamage, plusHealing, CritMelee, CritRanged, critSpell, mp5, mp5Combat, attackPower, agility, maxHealth, maxMana, gearRating, avgILevel, defenseRating, dodgeRating, BlockRating, ParryRating, HasteRating, expertise = SearchLFGGetResults(self.index);
-	local name, level, areaName, className, comment, partyMembers, status, class, encountersTotal, encountersComplete, isIneligible, isLeader, isTank, isHealer, isDamage = SearchLFGGetResults(self.index);
+	local name, level, areaName, className, comment, partyMembers, status, class, encountersTotal, encountersComplete, isIneligible, isLeader, isTank, isHealer, isDamage, bossKills, specID, isGroupLeader, armor, spellDamage, plusHealing, CritMelee, CritRanged, critSpell, mp5, mp5Combat, attackPower, agility, maxHealth, maxMana, gearRating, avgILevel, defenseRating, dodgeRating, BlockRating, ParryRating, HasteRating, expertise = SearchLFGGetResults(self.index);
 	GameTooltip:SetOwner(self, "ANCHOR_RIGHT", 27, -37);
 	
 	if ( partyMembers > 0 ) then
@@ -608,6 +599,7 @@ function LFRBrowseButton_OnEnter(self)
 	else
 		GameTooltip:AddLine(name);
 		GameTooltip:AddLine(format(FRIENDS_LEVEL_TEMPLATE, level, className));
+		GameTooltip:AddLine(format(ITEM_LEVEL, avgILevel));
 	end
 	
 	if ( comment and comment ~= "" ) then

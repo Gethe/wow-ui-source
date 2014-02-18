@@ -1,3 +1,14 @@
+TOOLTIP_DEFAULT_COLOR = { r = 1, g = 1, b = 1 };
+TOOLTIP_DEFAULT_BACKGROUND_COLOR = { r = 0.09, g = 0.09, b = 0.19 };
+
+-- Panel Positions
+PANEL_INSET_LEFT_OFFSET = 4;
+PANEL_INSET_RIGHT_OFFSET = -6;
+PANEL_INSET_BOTTOM_OFFSET = 4;
+PANEL_INSET_BOTTOM_BUTTON_OFFSET = 26;
+PANEL_INSET_TOP_OFFSET = -24;
+PANEL_INSET_ATTIC_OFFSET = -60;
+
 -- Magic Button code
 function MagicButton_OnLoad(self)
 	local leftHandled = false;
