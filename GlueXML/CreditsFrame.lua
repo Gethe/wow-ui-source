@@ -310,14 +310,18 @@ CreditsArtInfo[5][67] = { file="trip_turtle_city", w=1024, h=512, offsetx=0, off
 CreditsArtInfo[5][68] = { file="waterdragon_01", w=1024, h=512, offsetx=0, offsety=0, maxAlpha=0.7 };
 CreditsArtInfo[5][69] = { file="Pandaria", w=1024, h=512, offsetx=0, offsety=0, maxAlpha=0.7 };
 CreditsArtInfo[5][70] = { file="YaunkaConcept1", w=1024, h=512, offsetx=0, offsety=0, maxAlpha=0.7 };
-
+CreditsArtInfo[6] = { };
+CreditsArtInfo[6][1] = { file="Orc", w=256, h=512, offsetx=192, offsety=0, maxAlpha=0.7 };
+CreditsArtInfo[6][2] = { file="Orccamp", w=768, h=512, offsetx=0, offsety=0, maxAlpha=0.7 };
+CreditsArtInfo[6][3] = { file="OrcShield", w=512, h=512, offsetx=128, offsety=0, maxAlpha=0.5 };
+CreditsArtInfo[6][4] = { file="MilitaryOrcBoss", w=1024, h=512, offsetx=0, offsety=0, maxAlpha=0.7 };
 
 function CreditsFrame_OnShow(self)
 	CreditsFrame_Update(self);
 end
 
 function CreditsFrame_Update(self)
-	CreditsLogo:SetTexture(EXPANSION_LOGOS[GetClientDisplayExpansionLevel()]);
+	CreditsLogo:SetTexture(EXPANSION_LOGOS[CreditsFrame.creditsType-1]);
 
 	CreditsFrame_SetSpeed(CREDITS_SCROLL_RATE_PLAY);
 	CreditsScrollFrame:SetVerticalScroll(0);

@@ -21,6 +21,7 @@ local translationTable = { };	-- for character reordering: key = button index, v
 BLIZZCON_IS_A_GO = false;
 
 local STORE_IS_LOADED = false;
+local ADDON_LIST_RECEIVED = false;
 
 function CharacterSelect_OnLoad(self)
 	CharacterSelectModel:SetSequence(0);
@@ -62,12 +63,6 @@ function CharacterSelect_OnLoad(self)
 end
 
 function CharacterSelect_OnShow()
-	if (not STORE_IS_LOADED) then
-		LoadAddOn("Blizzard_AuthChallengeUI");
-		LoadAddOn("Blizzard_StoreUI");
-		STORE_IS_LOADED = true;
-	end
-
 	DebugLog("Select_OnShow");
 	CHARACTER_LIST_OFFSET = 0;
 	-- request account data times from the server (so we know if we should refresh keybindings, etc...)
@@ -204,6 +199,12 @@ function CharacterSelect_OnShow()
 	CharacterServicesMaster_UpdateServiceButton();
 
 	C_PurchaseAPI.GetPurchaseList();
+
+	local loaded = LoadAddOn("Blizzard_StoreUI")
+	if (loaded) then
+		LoadAddOn("Blizzard_AuthChallengeUI");
+		STORE_IS_LOADED = true;
+	end
 end
 
 function CharacterSelect_OnHide(self)
@@ -225,6 +226,7 @@ function CharacterSelect_OnHide(self)
 	if ( StoreFrame ) then
 		StoreFrame:Hide();
 	end
+	CopyCharacterFrame:Hide();
 end
 
 function CharacterSelect_SaveCharacterOrder()
@@ -299,6 +301,8 @@ function CharacterSelect_OnKeyDown(self,key)
 			GlueMenuFrame:SetShown(not GlueMenuFrame:IsShown());
 		elseif (CharSelectServicesFlowFrame:IsShown()) then
 			CharSelectServicesFlowFrame:Hide();
+		elseif ( CopyCharacterFrame:IsShown() ) then
+			CopyCharacterFrame:Hide();
 		else
 			CharacterSelect_Exit();
 		end
@@ -324,6 +328,13 @@ end
 
 function CharacterSelect_OnEvent(self, event, ...)
 	if ( event == "ADDON_LIST_UPDATE" ) then
+		ADDON_LIST_RECEIVED = true;
+		if (not STORE_IS_LOADED) then
+			LoadAddOn("Blizzard_AuthChallengeUI");
+			LoadAddOn("Blizzard_StoreUI");
+			CharacterSelect_UpdateStoreButton();
+			STORE_IS_LOADED = true;
+		end
 		UpdateAddonButton();
 	elseif ( event == "CHARACTER_LIST_UPDATE" ) then
 		local listSize = ...;
@@ -387,7 +398,9 @@ function CharacterSelect_OnEvent(self, event, ...)
 		CharacterRenameDialog:Show();
 		CharacterRenameText1:SetText(_G[message]);
 	elseif ( event == "STORE_STATUS_CHANGED" ) then
-		CharacterSelect_UpdateStoreButton();		
+		if (ADDON_LIST_RECEIVED) then
+			CharacterSelect_UpdateStoreButton();
+		end
 	end
 end
 
@@ -493,9 +506,9 @@ function UpdateCharacterList(skipSelect)
 			paidServiceButton.serviceType = serviceType;
 			if ( disableService ) then
 				paidServiceButton:Disable();
-				paidServiceButton.texture:SetDesaturated(1);
+				paidServiceButton.texture:SetDesaturated(true);
 			elseif ( not paidServiceButton:IsEnabled() ) then
-				paidServiceButton.texture:SetDesaturated(0);
+				paidServiceButton.texture:SetDesaturated(false);
 				paidServiceButton:Enable();
 			end
 		else
@@ -699,7 +712,7 @@ end
 function CharacterSelect_ChangeRealm()
 	PlaySound("gsCharacterSelectionDelCharacter");
 	CharacterSelect_SaveCharacterOrder();
-	RequestRealmList(1);
+	RequestRealmList(true);
 end
 
 function CharacterSelectFrame_OnMouseDown(button)
@@ -1039,19 +1052,27 @@ end
 
 function CharacterSelect_ScrollList(self, value)
 	if ( not self.blockUpdates ) then
-		CHARACTER_LIST_OFFSET = value;
+		CHARACTER_LIST_OFFSET = floor(value);
 		UpdateCharacterList(true);	-- skip selecting
 		UpdateCharacterSelection(CharacterSelect);	-- for button selection
+		if (CharSelectServicesFlowFrame:IsShown()) then
+			CharacterServicesMaster_Restart();
+		end
 	end
 end
 
 function CharacterTemplatesFrame_Update()
+	if (IsGMClient() and HideGMOnly()) then
+		return;
+	end
+
 	local self = CharacterTemplatesFrame;
 	local numTemplates = GetNumCharacterTemplates();
 	if ( numTemplates > 0 and IsConnectedToServer() ) then
 		if ( not self:IsShown() ) then
 			-- set it up
 			self:Show();
+			GlueDropDownMenu_SetAnchor(self.dropDown, -100, 54, "TOP", self, "TOP");
 			GlueDropDownMenu_SetWidth(self.dropDown, 160);
 			GlueDropDownMenu_Initialize(self.dropDown, CharacterTemplatesFrameDropDown_Initialize);
 			GlueDropDownMenu_SetSelectedID(self.dropDown, 1);
@@ -1087,6 +1108,10 @@ function CharacterTemplatesFrameDropDown_OnClick(button)
 end
 
 function PlayersOnServer_Update()
+	if (IsGMClient() and HideGMOnly()) then
+		return;
+	end
+	
 	local self = PlayersOnServer;
 	local connected = IsConnectedToServer();
 	if (not connected) then
@@ -1134,4 +1159,255 @@ function CharacterSelect_UpdateButtonState()
 	CharSelectChangeRealmButton:SetEnabled(isEnabled);
 	CharSelectCreateCharacterButton:SetEnabled(isEnabled);
 	CharacterSelectDeleteButton:SetEnabled(isEnabled);
+end
+
+-- COPY CHARACTER
+
+MAX_COPY_CHARACTER_BUTTONS = 19;
+COPY_CHARACTER_BUTTON_HEIGHT = 16;
+
+GlueDialogTypes["COPY_CHARACTER"] = {
+	text = "",
+	button1 = OKAY,
+	button2 = CANCEL,
+	escapeHides = true,
+	OnAccept = function ()
+		CopyCharacterFromLive();
+	end,
+}
+
+GlueDialogTypes["COPY_ACCOUNT_DATA"] = {
+	text = "Are you sure you want to copy your LIVE account data to this TEST account?",
+	button1 = OKAY,
+	button2 = CANCEL,
+	escapeHides = true,
+	OnAccept = function ()
+		CopyCharacter_AccountDataFromLive();
+	end,
+}
+
+GlueDialogTypes["COPY_IN_PROGRESS"] = {
+	text = "Please wait ... Copy in progress.",
+	button1 = nil,
+	button2 = nil,
+}
+
+function CopyCharacterFromLive()
+	CopyAccountCharacterFromLive(CopyCharacterFrame.SelectedIndex);
+	GlueDialog_Show("COPY_IN_PROGRESS");
+end
+
+function CopyCharacter_AccountDataFromLive()
+	allowed = CopyAccountCharactersAllowed();
+	if ( allowed >= 2 ) then
+		CopyAccountDataFromLive();
+	elseif ( allowed == 1 ) then
+		local regionID = nil;
+		if ( CopyCharacterFrame.RegionID:GetText() ~= "" ) then
+			regionID = CopyCharacterFrame.RegionID:GetNumber();
+		end
+		CopyAccountDataFromLive(CopyCharacterFrame.RealmName:GetText(), CopyCharacterFrame.CharacterName:GetText(), regionID);
+	end
+	GlueDialog_Show("COPY_IN_PROGRESS");
+end
+
+function CopyCharacterButton_OnLoad(self)
+	if (IsGMClient() and HideGMOnly()) then
+		return;
+	end
+	self:SetShown( CopyAccountCharactersAllowed() > 0 );
+end
+	
+function CopyCharacterButton_OnClick(self)
+	CopyCharacterFrame:SetShown( not CopyCharacterFrame:IsShown() );
+end
+
+function CopyCharacterSearch_OnClick(self)
+	local regionID = nil;
+	if ( CopyCharacterFrame.RegionID:GetText() ~= "" ) then
+		regionID = CopyCharacterFrame.RegionID:GetNumber();
+	end
+
+	ClearAccountCharacters();
+	CopyCharacterFrame_Update(CopyCharacterFrame.scrollFrame);
+	RequestAccountCharacters(CopyCharacterFrame.RealmName:GetText(), CopyCharacterFrame.CharacterName:GetText(), regionID);
+	self:Disable();
+end
+
+function CopyCharacterCopy_OnClick(self)
+	if ( CopyCharacterFrame.SelectedIndex and not GlueDialog:IsShown() ) then
+		local name, realm = GetAccountCharacterInfo(CopyCharacterFrame.SelectedIndex);
+		GlueDialog_Show("COPY_CHARACTER", format("Are you sure you want to copy %s from %s?", name, realm));
+	end
+end
+
+function CopyAccountData_OnClick(self)
+	if ( not GlueDialog:IsShown() ) then
+		GlueDialog_Show("COPY_ACCOUNT_DATA");
+	end
+end
+
+function CopyCharacterEntry_OnClick(self)
+	if ( CopyCharacterFrame.SelectedButton ) then
+		CopyCharacterFrame.SelectedButton:UnlockHighlight();
+		if ( not CopyCharacterFrame.SelectedButton.mouseOver ) then
+			CopyCharacterEntry_Unhighlight( CopyCharacterFrame.SelectedButton );
+		end
+	end
+	
+	self:LockHighlight();
+	CopyCharacterFrame.SelectedButton = self;
+	CopyCharacterFrame.SelectedIndex = self:GetID() + FauxScrollFrame_GetOffset(CopyCharacterFrame.scrollFrame);
+	CopyCharacterFrame.CopyButton:SetEnabled(true);
+end
+
+function CopyCharacterEntry_Highlight(self)
+	self.Name:SetFontObject("GameFontHighlight");
+	self.Server:SetFontObject("GameFontHighlight");
+	self.Class:SetFontObject("GameFontHighlight");
+	self.Level:SetFontObject("GameFontHighlight");
+end
+
+function CopyCharacterEntry_OnEnter(self)
+	CopyCharacterEntry_Highlight(self);
+	self.mouseOver = true;
+end
+
+function CopyCharacterEntry_Unhighlight(self)
+	self.Name:SetFontObject("GameFontNormalSmall");
+	self.Server:SetFontObject("GameFontNormalSmall");
+	self.Class:SetFontObject("GameFontNormalSmall");
+	self.Level:SetFontObject("GameFontNormalSmall");
+end
+
+function CopyCharacterEntry_OnLeave(self)
+	if ( CopyCharacterFrame.SelectedButton ~= self) then
+		CopyCharacterEntry_Unhighlight(self);
+	end
+	self.mouseOver = false;
+end
+
+function CopyCharacterFrame_OnLoad(self)
+	FauxScrollFrame_SetOffset(self.scrollFrame, 0);
+	self.scrollFrame.ScrollBar.scrollStep = COPY_CHARACTER_BUTTON_HEIGHT;
+	ButtonFrameTemplate_HidePortrait(self);
+	self:RegisterEvent("ACCOUNT_CHARACTER_LIST_RECIEVED");
+	self:RegisterEvent("CHAR_RESTORE_COMPLETE");
+	self:RegisterEvent("ACCOUNT_DATA_RESTORED");
+	for i=2, MAX_COPY_CHARACTER_BUTTONS do
+		local newButton = CreateFrame("BUTTON", nil, CopyCharacterFrame, "CopyCharacterEntryTemplate");
+		newButton:SetPoint("TOP", self.CharacterEntries[i-1], "BOTTOM", 0, -4);
+		newButton:SetID(i);
+		self.CharacterEntries[i] = newButton;
+	end
+end
+
+function CopyCharacterFrame_OnShow(self)
+	if ( self.SelectedButton ) then
+		self.SelectedButton:UnlockHighlight();
+		CopyCharacterEntry_Unhighlight(self.SelectedButton);
+	end
+	self.SelectedButton = nil;
+	self.SelectedIndex = nil;
+	self.CopyButton:SetEnabled(false);
+	if ( CopyAccountCharactersAllowed() >= 2 ) then
+		RequestAccountCharacters();
+		self.RegionID:Hide();
+		self.RealmName:Hide();
+		self.CharacterName:Hide();
+		self.SearchButton:Hide();
+	elseif ( CopyAccountCharactersAllowed() == 1) then
+		self.RegionID:Show();
+		self.RealmName:Show();
+		self.CharacterName:Show();
+		self.SearchButton:Show();
+	end
+	ClearAccountCharacters();
+	CopyCharacterFrame_Update(self.scrollFrame);
+end
+
+function CopyCharacterFrame_OnEvent(self, event, ...)
+	if ( event == "ACCOUNT_CHARACTER_LIST_RECIEVED" ) then
+		CopyCharacterFrame_Update(self.scrollFrame);
+		self.SearchButton:Enable();
+	elseif ( event == "CHAR_RESTORE_COMPLETE" or event == "ACCOUNT_DATA_RESTORED") then
+		local success, token = ...;
+		GlueDialog:Hide();
+		self:Hide();
+		if (not success) then
+			GlueDialog_Show("OKAY", COPY_FAILED);
+		end
+	end
+end
+
+function CopyCharacterFrame_Update(self)
+	local offset = FauxScrollFrame_GetOffset(self) or 0;
+	local count = GetNumAccountCharacters();
+	-- turn off the selected button, we'll see if it moved
+	if (CopyCharacterFrame.SelectedButton) then
+		CopyCharacterFrame.SelectedButton:UnlockHighlight();
+		if (not CopyCharacterFrame.SelectedButton.mouseOver) then
+			CopyCharacterEntry_Unhighlight(CopyCharacterFrame.SelectedButton);
+		end
+	end
+	
+	for i=1, MAX_COPY_CHARACTER_BUTTONS do
+		local characterIndex = offset + i;
+		local button = CopyCharacterFrame.CharacterEntries[i];
+		if ( characterIndex <= count ) then
+			local name, realm, class, level = GetAccountCharacterInfo(characterIndex);
+			button.Name:SetText(name);
+			button.Server:SetText(realm);
+			button.Class:SetText(class);
+			button.Level:SetText(level);
+			-- The list moved, so we need to shuffle the selected button
+			if ( CopyCharacterFrame.SelectedIndex == characterIndex ) then
+				button:LockHighlight();
+				CopyCharacterEntry_Highlight(button);
+				CopyCharacterFrame.SelectedButton = button;
+			end
+			button:Enable();
+			button:Show();
+		else
+			button:Disable();
+			button:Hide();
+		end
+	end
+	FauxScrollFrame_Update(CopyCharacterFrameScrollFrame, count, MAX_COPY_CHARACTER_BUTTONS, COPY_CHARACTER_BUTTON_HEIGHT );
+end
+
+function CopyCharacterScrollFrame_OnVerticalScroll(self, offset)
+	FauxScrollFrame_OnVerticalScroll(self, offset, COPY_CHARACTER_BUTTON_HEIGHT, CopyCharacterFrame_Update)
+end
+
+function CopyCharacterEditBox_OnLoad(self)
+	self.parent = self:GetParent();
+end
+
+function CopyCharacterEditBox_OnShow(self)
+	self:SetText("");
+end
+
+function RegionIDEditBox_OnTabPressed(self)
+	if ( not IsShiftKeyDown() ) then
+		self.parent.RealmName:SetFocus();
+	else
+		self.parent.CharacterName:SetFocus();
+	end
+end
+
+function RealmNameEditBox_OnTabPressed(self)
+	if ( not IsShiftKeyDown() ) then
+		self.parent.CharacterName:SetFocus();
+	else
+		self.parent.RegionID:SetFocus();
+	end
+end
+
+function CharacterNameEditBox_OnTabPressed(self)
+	if ( not IsShiftKeyDown() ) then
+		self.parent.RegionID:SetFocus();
+	else
+		self.parent.RealmName:SetFocus();
+	end
 end

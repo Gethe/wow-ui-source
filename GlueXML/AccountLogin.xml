@@ -763,7 +763,7 @@
 										local accountName = GetSavedAccountName();
 										if ( accountName ~= "" and accountName ~= self:GetText() ) then
 											SetSavedAccountName("");
-											AccountLoginSaveAccountName:SetChecked(0);
+											AccountLoginSaveAccountName:SetChecked(false);
 										end
 										if ( self:GetText() ~= "" ) then
 											AccountLoginAccountEditFill:Hide();
@@ -981,9 +981,9 @@
 								<Scripts>
 									<OnLoad>
 										if ( GetSavedAccountName() ~= "" ) then
-											self:SetChecked(1);
+											self:SetChecked(true);
 										else
-											self:SetChecked(0);
+											self:SetChecked(false);
 										end
 									</OnLoad>
 									<OnClick>
@@ -1967,9 +1967,9 @@
 										<Scripts>
 											<OnLoad>
 												if ( GetSavedAccountListSSO() ~= "" ) then
-													self:SetChecked(1);
+													self:SetChecked(true);
 												else
-													self:SetChecked(0);
+													self:SetChecked(false);
 												end
 											</OnLoad>
 											<OnClick>
@@ -2154,7 +2154,7 @@
 						</Anchors>
 						<Scripts>
 							<OnClick>
-								AccountLogin_SurveyNotificationDone(0);
+								AccountLogin_SurveyNotificationDone(false);
 								self:GetParent():Hide();
 							</OnClick>
 							<OnLoad>
@@ -2175,7 +2175,7 @@
 								self:SetWidth(200);
 							</OnLoad>
 							<OnClick>
-								AccountLogin_SurveyNotificationDone(1);
+								AccountLogin_SurveyNotificationDone(true);
 								self:GetParent():Hide();
 							</OnClick>
 						</Scripts>

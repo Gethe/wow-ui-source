@@ -39,8 +39,7 @@ function AccountLogin_OnShow(self)
 
 	-- special code for BlizzCon
 	if (IsBlizzCon()) then
-		local account = GetCVar("accountName");
-		DefaultServerLogin(account, "blizzcon11");
+		DefaultServerLogin(GetCVar("accountName"), GetCVar("password"));
 		AccountLoginUI:Hide();
 		return;
 	end
@@ -125,7 +124,7 @@ function AccountLogin_OnKeyDown(key)
 		elseif ( TOSFrame:IsShown() or ConnectionHelpFrame:IsShown() ) then
 			return;
 		elseif ( SurveyNotificationFrame:IsShown() ) then
-			AccountLogin_SurveyNotificationDone(1);
+			AccountLogin_SurveyNotificationDone(true);
 		end
 		if ( IsLauncherLogin() ) then
 			AttemptFastLogin();
@@ -927,8 +926,8 @@ end
 function CinematicsButton_Update(self)
 	local movieId = self:GetID();
 	if (CinematicsFrame_IsMovieListLocal(movieId)) then
-		self:GetNormalTexture():SetDesaturated(nil);
-		self:GetPushedTexture():SetDesaturated(nil);
+		self:GetNormalTexture():SetDesaturated(false);
+		self:GetPushedTexture():SetDesaturated(false);
 		self.PlayButton:Show();
 		self.DownloadIcon:Hide();
 		self.StreamingIcon:Hide();
@@ -958,16 +957,16 @@ function CinematicsButton_Update(self)
 		end
 
 		if (isPlayable and inProgress) then
-			self:GetNormalTexture():SetDesaturated(nil);
-			self:GetPushedTexture():SetDesaturated(nil);
+			self:GetNormalTexture():SetDesaturated(false);
+			self:GetPushedTexture():SetDesaturated(false);
 			self.PlayButton:Show();
 			self.DownloadIcon:Hide();
 			self.StreamingIcon:Hide();
 			self.StatusBar:SetStatusBarColor(0, 0.8, 0);
 			self:SetScript("OnUpdate", CinematicsButton_Update);
 		elseif (inProgress) then
-			self:GetNormalTexture():SetDesaturated(1);
-			self:GetPushedTexture():SetDesaturated(1);
+			self:GetNormalTexture():SetDesaturated(true);
+			self:GetPushedTexture():SetDesaturated(true);
 			self.PlayButton:Hide();
 			self.DownloadIcon:Hide();
 			self.StreamingIcon:Show();
@@ -975,8 +974,8 @@ function CinematicsButton_Update(self)
 			self.StatusBar:SetStatusBarColor(0, 0.8, 0);
 			self:SetScript("OnUpdate", CinematicsButton_Update);
 		else
-			self:GetNormalTexture():SetDesaturated(1);
-			self:GetPushedTexture():SetDesaturated(1);
+			self:GetNormalTexture():SetDesaturated(true);
+			self:GetPushedTexture():SetDesaturated(true);
 			self.PlayButton:Hide();
 			self.DownloadIcon:Show();
 			self.StreamingIcon:Hide();

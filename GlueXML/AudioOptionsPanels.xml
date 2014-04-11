@@ -350,7 +350,7 @@
 					</OnLoad>
 					<OnEnter>
 						GlueTooltip:SetOwner(self);
-						GlueTooltip:SetText(OPTION_TOOLTIP_SOUND_OUTPUT, nil, nil, nil, nil, 1);
+						GlueTooltip:SetText(OPTION_TOOLTIP_SOUND_OUTPUT, nil, nil, nil, nil, true);
 					</OnEnter>
 					<OnLeave>
 						GlueTooltip:Hide();
@@ -384,7 +384,7 @@
 					</OnLoad>
 					<OnEnter>
 						GlueTooltip:SetOwner(self);
-						GlueTooltip:SetText(OPTION_TOOLTIP_SOUND_CHANNELS, nil, nil, nil, nil, 1);
+						GlueTooltip:SetText(OPTION_TOOLTIP_SOUND_CHANNELS, nil, nil, nil, nil, true);
 					</OnEnter>
 					<OnLeave>
 						GlueTooltip:Hide();
@@ -467,10 +467,10 @@
 						if ( self:IsEnabled() ) then
 							if ( self.tooltipText ) then
 								GlueTooltip:SetOwner(self);
-								GlueTooltip:SetText(self.tooltipText, nil, nil, nil, nil, 1);
+								GlueTooltip:SetText(self.tooltipText, nil, nil, nil, nil, true);
 							end
 							if (not AudioOptionsSoundPanelEnableSound:GetChecked()) then
-								GlueTooltip:AddLine(MUTED, 1.0, 0.0, 0.0, 1.0, 1);
+								GlueTooltip:AddLine(MUTED, 1.0, 0.0, 0.0, 1.0, true);
 								GlueTooltip:Show();
 							end
 						end
@@ -528,10 +528,10 @@
 						if ( self:IsEnabled() ) then
 							if ( self.tooltipText ) then
 								GlueTooltip:SetOwner(self);
-								GlueTooltip:SetText(self.tooltipText, nil, nil, nil, nil, 1);
+								GlueTooltip:SetText(self.tooltipText, nil, nil, nil, nil, true);
 							end
 							if (not AudioOptionsSoundPanelSoundEffects:GetChecked()) then
-								GlueTooltip:AddLine(MUTED, 1.0, 0.0, 0.0, 1.0, 1);
+								GlueTooltip:AddLine(MUTED, 1.0, 0.0, 0.0, 1.0, true);
 								GlueTooltip:Show();
 							end	
 						end
@@ -582,10 +582,10 @@
 						if ( self:IsEnabled() ) then
 							if ( self.tooltipText ) then
 								GlueTooltip:SetOwner(self);
-								GlueTooltip:SetText(self.tooltipText, nil, nil, nil, nil, 1);
+								GlueTooltip:SetText(self.tooltipText, nil, nil, nil, nil, true);
 							end
 							if (not AudioOptionsSoundPanelMusic:GetChecked()) then
-								GlueTooltip:AddLine(MUTED, 1.0, 0.0, 0.0, 1.0, 1);
+								GlueTooltip:AddLine(MUTED, 1.0, 0.0, 0.0, 1.0, true);
 								GlueTooltip:Show();
 							end	
 						end
@@ -636,10 +636,10 @@
 						if ( self:IsEnabled() ) then
 							if ( self.tooltipText ) then
 								GlueTooltip:SetOwner(self);
-								GlueTooltip:SetText(self.tooltipText, nil, nil, nil, nil, 1);
+								GlueTooltip:SetText(self.tooltipText, nil, nil, nil, nil, true);
 							end
 							if (not AudioOptionsSoundPanelAmbientSounds:GetChecked()) then
-								GlueTooltip:AddLine(MUTED, 1.0, 0.0, 0.0, 1.0, 1);
+								GlueTooltip:AddLine(MUTED, 1.0, 0.0, 0.0, 1.0, true);
 								GlueTooltip:Show();
 							end
 						end

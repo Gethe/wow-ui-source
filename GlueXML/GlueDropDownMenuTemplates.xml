@@ -142,7 +142,7 @@
 				if ( self.tooltipTitle ) then
 					GlueTooltip:SetOwner(self, "ANCHOR_RIGHT");
 					GlueTooltip:AddLine(self.tooltipTitle, 1.0, 1.0, 1.0);
-					GlueTooltip:AddLine(self.tooltipText, nil, nil, nil, 1, 1);
+					GlueTooltip:AddLine(self.tooltipText, nil, nil, nil, 1.0, true);
 					GlueTooltip:Show();
 				end
 			</OnEnter>

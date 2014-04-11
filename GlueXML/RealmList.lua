@@ -175,7 +175,7 @@ function RealmListUpdate()
 						button:UnlockHighlight();
 					end
 				else
-					if ( currentRealm == 1 ) then
+					if ( currentRealm ) then
 						RealmList.currentRealm = realmIndex;
 						button:LockHighlight();
 						RealmListHighlight:SetPoint("TOPLEFT", button, "TOPLEFT", 0, 0);

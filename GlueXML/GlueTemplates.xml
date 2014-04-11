@@ -93,7 +93,7 @@
 			<AbsDimension x="16" y="0"/>
 		</Size>
 		<Frames>
-			<Button name="$parentScrollUpButton" inherits="GlueScrollUpButtonTemplate">
+			<Button name="$parentScrollUpButton" parentKey="ScrollUpButton" inherits="GlueScrollUpButtonTemplate">
 				<Anchors>
 					<Anchor point="BOTTOM" relativePoint="TOP"/>
 				</Anchors>
@@ -105,7 +105,7 @@
 					</OnClick>
 				</Scripts>
 			</Button>
-			<Button name="$parentScrollDownButton" inherits="GlueScrollDownButtonTemplate">
+			<Button name="$parentScrollDownButton" parentKey="ScrollDownButton" inherits="GlueScrollDownButtonTemplate">
 				<Anchors>
 					<Anchor point="TOP" relativePoint="BOTTOM"/>
 				</Anchors>

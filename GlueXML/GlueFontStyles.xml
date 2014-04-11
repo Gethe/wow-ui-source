@@ -158,6 +158,10 @@
 		<Color r="1.0" g="1.0" b="1.0"/>
 	</Font>
 
+	<Font name="CharCopyEditBoxFont" inherits="SystemFont_Outline_Med1" virtual="true">
+		<Color r="1.0" g="1.0" b="1.0"/>
+	</Font>
+
 	<Font name="OptionsFontLeft" inherits="OptionsFont" justifyH="LEFT" virtual="true"/>
 	<Font name="OptionsFontSmallLeft" inherits="OptionsFontSmall" justifyH="LEFT" virtual="true"/>
 	<Font name="OptionsFontHighlightSmallLeft" inherits="OptionsFontHighlightSmall" justifyH="LEFT" virtual="true"/>

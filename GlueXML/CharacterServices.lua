@@ -249,11 +249,6 @@ function CharacterServicesMaster_OnLoad(self)
 	self.flows = {};
 	CharacterUpgradeSelectCharacterFrame:SetFrameLevel(self:GetFrameLevel()+2);
 	
-	SetPortraitToTexture(CharacterServicesTokenNormal.Icon, "Interface\\Icons\\achievement_level_90");
-	SetPortraitToTexture(CharacterServicesTokenNormal.Highlight.Icon, "Interface\\Icons\\achievement_level_90");
-	SetPortraitToTexture(CharacterServicesTokenWoDFree.Icon, "Interface\\Icons\\achievement_level_90");
-	SetPortraitToTexture(CharacterServicesTokenWoDFree.Highlight.Icon, "Interface\\Icons\\achievement_level_90");
-
 	self:RegisterEvent("PRODUCT_DISTRIBUTIONS_UPDATED");
 	self:RegisterEvent("CHARACTER_UPGRADE_STARTED");
 	self:RegisterEvent("CHARACTER_UPGRADE_COMPLETE");
@@ -331,6 +326,14 @@ function CharacterServicesMaster_SetCurrentBlock(self, block)
 	end
 	parent.NextButton:SetEnabled(block:IsFinished());
 	parent.FinishButton:SetEnabled(block:IsFinished());
+end
+
+function CharacterServicesMaster_Restart()
+	local self = CharacterServicesMaster;
+
+	if (self.flow) then
+		self.flow:Restart(self);
+	end
 end
 
 function CharacterServicesMaster_Update()
@@ -639,6 +642,18 @@ local function resetScripts(button)
 	button:SetScript("OnMouseUp", CharacterSelectButton_OnDragStop);
 end
 
+local function disableScroll(scrollBar)
+	scrollBar.ScrollUpButton:SetEnabled(false);
+	scrollBar.ScrollDownButton:SetEnabled(false);
+	scrollBar:GetParent():EnableMouseWheel(false);
+end
+
+local function enableScroll(scrollBar)
+	scrollBar.ScrollUpButton:SetEnabled(true);
+	scrollBar.ScrollDownButton:SetEnabled(true);
+	scrollBar:GetParent():EnableMouseWheel(true);
+end
+
 function CharacterUpgradeCharacterSelectBlock:Initialize(results)
 	for i = 1, 3 do
 		if (self.frame.BonusResults[i]) then
@@ -646,7 +661,8 @@ function CharacterUpgradeCharacterSelectBlock:Initialize(results)
 		end
 	end
 	self.frame.NoBonusResult:Hide();
-	
+	enableScroll(CharacterSelectCharacterFrame.scrollBar);
+
 	self.charid = nil;
 	self.lastSelectedIndex = CharacterSelect.selectedIndex;
 
@@ -667,8 +683,14 @@ function CharacterUpgradeCharacterSelectBlock:Initialize(results)
 	end
 
 	-- Set up the GlowBox around the show characters
-	self.frame.ControlsFrame.GlowBox:SetPoint("TOP", CharacterSelectCharacterFrame, 2, -60);
-	self.frame.ControlsFrame.GlowBox:SetHeight(58 * GetNumCharacters());
+	self.frame.ControlsFrame.GlowBox:SetHeight(58 * num);
+	if (CharacterSelectCharacterFrame.scrollBar:IsShown()) then
+		self.frame.ControlsFrame.GlowBox:SetPoint("TOP", CharacterSelectCharacterFrame, -8, -60);
+		self.frame.ControlsFrame.GlowBox:SetWidth(238);
+	else
+		self.frame.ControlsFrame.GlowBox:SetPoint("TOP", CharacterSelectCharacterFrame, 2, -60);
+		self.frame.ControlsFrame.GlowBox:SetWidth(244);
+	end
 	for i = 1, MAX_CHARACTERS_DISPLAYED do
 		if (not self.frame.ControlsFrame.Arrows[i]) then
 			self.frame.ControlsFrame.Arrows[i] = CreateFrame("Frame", nil, self.frame.ControlsFrame, "CharacterServicesArrowTemplate");
@@ -791,6 +813,8 @@ function CharacterUpgradeCharacterSelectBlock:FormatResult()
 end
 
 function CharacterUpgradeCharacterSelectBlock:OnHide()
+	enableScroll(CharacterSelectCharacterFrame.scrollBar);
+
 	local num = math.min(GetNumCharacters(), MAX_CHARACTERS_DISPLAYED);
 
 	for i = 1, num do
@@ -815,6 +839,8 @@ function CharacterUpgradeCharacterSelectBlock:OnHide()
 end
 
 function CharacterUpgradeCharacterSelectBlock:OnAdvance()
+	disableScroll(CharacterSelectCharacterFrame.scrollBar);
+
 	local index = self.index;
 
 	local num = math.min(GetNumCharacters(), MAX_CHARACTERS_DISPLAYED);

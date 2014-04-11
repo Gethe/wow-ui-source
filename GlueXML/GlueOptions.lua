@@ -11,7 +11,4 @@ VideoOptionsDropDownMenu_SetText = GlueDropDownMenu_SetText
 VideoOptionsDropDownMenu_DisableDropDown = GlueDropDownMenu_DisableDropDown;
 VideoOptionsDropDownMenu_EnableDropDown = GlueDropDownMenu_EnableDropDown;
 
-function InGlue()
-	return true;
-end
 
