@@ -82,8 +82,8 @@ function PVPHelperFrame_OnEvent(self, event, ...)
 		StaticPopup_Hide("BFMGR_EJECT_PENDING");
 		PVP_UpdateStatus();
 	elseif ( event == "WARGAME_REQUESTED" ) then
-		local challengerName, bgName, timeout = ...;
-		PVPFramePopup_SetupPopUp(event, challengerName, bgName, timeout);
+		local challengerName, bgName, timeout, tournamentRules = ...;
+		PVPFramePopup_SetupPopUp(event, challengerName, bgName, timeout, tournamentRules);
 	elseif ( event == "BATTLEFIELDS_SHOW" ) then
 		if ( not PVPUIFrame) then
 			PVP_LoadUI();
@@ -143,7 +143,7 @@ function PVPFramePopup_OnUpdate(self, elasped)
 end
 
 
-function PVPFramePopup_SetupPopUp(event, challengerName, bgName, timeout)
+function PVPFramePopup_SetupPopUp(event, challengerName, bgName, timeout, tournamentRules)
 	PVPFramePopup.title:SetFormattedText(WARGAME_CHALLENGED, challengerName, bgName);
 	PVPFramePopup.type = event;
 	PVPFramePopup.timeout = timeout  - 3;  -- add a 3 second buffer
@@ -386,13 +386,15 @@ function PVPReadyDialog_Display(self, index, displayName, isRated, queueType, ga
 		self.roleLabel:Hide();
 		self.roleIcon:Hide();
 	end
-
+	
 	local showTitle = true;
+	self.leaveButton:Show()
 	if ( queueType == "BATTLEGROUND" ) then
 		if ( isRated ) then
 			self.background:SetTexCoord(0, 1, 0, 102/128);
 			self.background:SetTexture("Interface\\PVPFrame\\PvpBg-AlteracValley-ToastBG");
 			self.label:SetText(RATED_BATTLEGROUND_IS_READY);
+			self.leaveButton:Hide();
 		else
 			self.background:SetTexCoord(0, 1, 0, 1);
 			self.background:SetTexture("Interface\\LFGFrame\\UI-PVP-BACKGROUND-"..(factionGroup or "Alliance"));
@@ -403,12 +405,20 @@ function PVPReadyDialog_Display(self, index, displayName, isRated, queueType, ga
 		self.background:SetTexture("Interface\\PVPFrame\\PvpBg-NagrandArena-ToastBG");
 		showTitle = false;
 		self.label:SetText(ARENA_IS_READY);
+		self.leaveButton:Hide();
 	elseif ( queueType == "WARGAME" ) then
 		self.background:SetTexCoord(0, 1, 0, 102/128);
 		self.background:SetTexture("Interface\\PVPFrame\\PvpBg-AlteracValley-ToastBG");
 		self.label:SetText(WARGAME_IS_READY);
 	else
 		self.label:SetText(BATTLEGROUND_IS_READY);
+	end
+	
+	self.enterButton:ClearAllPoints();
+	if (self.leaveButton:IsShown()) then
+		self.enterButton:SetPoint("BOTTOMRIGHT", self, "BOTTOM", -7, 25)
+	else
+		self.enterButton:SetPoint("BOTTOM", self, "BOTTOM", 0, 25)
 	end
 
 	if ( showTitle ) then

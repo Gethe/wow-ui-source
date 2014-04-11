@@ -169,14 +169,6 @@ MoneyTypeInfo["TOOLTIP"] = {
 	truncateSmallCoins = nil,
 };
 
-MoneyTypeInfo["REFORGE"] = {
-	UpdateFunc = function(self)
-		return self.staticMoney;
-	end,
-	collapse = 1,
-	showSmallerCoins = "Backpack",
-};
-
 MoneyTypeInfo["GUILDBANKCASHFLOW"] = {
 	OnloadFunc = function(self)
 		self:RegisterEvent("GUILDBANKLOG_UPDATE");

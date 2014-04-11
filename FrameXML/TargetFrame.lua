@@ -501,7 +501,6 @@ function TargetFrame_UpdateAuras (self)
 	local color;
 	local frameBorder;
 	local numDebuffs = 0;
-	local isEnemy = UnitCanAttack("player", self.unit);
 	
 	if ( SHOW_DISPELLABLE_DEBUFFS == "1" and canAssist ) then
 		filter = "RAID";

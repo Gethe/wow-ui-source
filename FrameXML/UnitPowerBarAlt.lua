@@ -54,7 +54,7 @@ function UnitPowerBarAlt_OnEnter(self)
 	end
 	GameTooltip_SetDefaultAnchor(GameTooltip, self);
 	GameTooltip:SetText(self.powerName, 1, 1, 1);
-	GameTooltip:AddLine(self.powerTooltip, nil, nil, nil, 1);
+	GameTooltip:AddLine(self.powerTooltip, nil, nil, nil, true);
 	GameTooltip:Show();
 end
 

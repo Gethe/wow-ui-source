@@ -130,10 +130,10 @@ function PetActionBar_Update (self)
 				PetActionButton_StopFlash(petActionButton);
 				petActionButton:GetCheckedTexture():SetAlpha(1.0);
 			end
-			petActionButton:SetChecked(1);
+			petActionButton:SetChecked(true);
 		else
 			PetActionButton_StopFlash(petActionButton);
-			petActionButton:SetChecked(0);
+			petActionButton:SetChecked(false);
 		end
 		if ( autoCastAllowed ) then
 			petAutoCastableTexture:Show();
@@ -314,7 +314,7 @@ end
 
 function PetActionButton_OnDragStart (self)
 	if ( LOCK_ACTIONBAR ~= "1" or IsModifiedClick("PICKUPACTION")) then
-		self:SetChecked(0);
+		self:SetChecked(false);
 		PickupPetAction(self:GetID());
 		PetActionBar_Update();
 	end
@@ -323,7 +323,7 @@ end
 function PetActionButton_OnReceiveDrag (self)
 	local cursorType = GetCursorInfo();
 	if (cursorType == "petaction") then
-		self:SetChecked(0);
+		self:SetChecked(false);
 		PickupPetAction(self:GetID());
 		PetActionBar_Update();
 	end
@@ -343,7 +343,7 @@ function PetActionButton_OnEnter (self)
 			GameTooltip:SetText(self.tooltipName, 1.0, 1.0, 1.0);
 		end
 		if ( self.tooltipSubtext ) then
-			GameTooltip:AddLine(self.tooltipSubtext, "", 0.5, 0.5, 0.5);
+			GameTooltip:AddLine(self.tooltipSubtext, 0.5, 0.5, 0.5, true);
 		end
 		GameTooltip:Show();
 		self.UpdateTooltip = nil;

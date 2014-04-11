@@ -43,6 +43,8 @@ function ContainerFrame_OnEvent(self, event, ...)
 		end
 	elseif ( event == "BAG_UPDATE_COOLDOWN" ) then
 		ContainerFrame_UpdateCooldowns(self);
+	elseif ( event == "BAG_NEW_ITEMS_UPDATED") then
+		ContainerFrame_Update(self);
 	elseif ( event == "QUEST_ACCEPTED" or (event == "UNIT_QUEST_LOG_CHANGED" and arg1 == "player") ) then
 		if (self:IsShown()) then
 			ContainerFrame_Update(self);
@@ -107,13 +109,14 @@ function ContainerFrame_OnHide(self)
 	self:UnregisterEvent("BAG_UPDATE_COOLDOWN");
 	self:UnregisterEvent("DISPLAY_SIZE_CHANGED");
 	self:UnregisterEvent("INVENTORY_SEARCH_UPDATE");
+	self:UnregisterEvent("BAG_NEW_ITEMS_UPDATED");
 
 	if ( self:GetID() == 0 ) then
-		MainMenuBarBackpackButton:SetChecked(0);
+		MainMenuBarBackpackButton:SetChecked(false);
 	else
 		local bagButton = _G["CharacterBag"..(self:GetID() - 1).."Slot"];
 		if ( bagButton ) then
-			bagButton:SetChecked(0);
+			bagButton:SetChecked(false);
 		else
 			-- If its a bank bag then update its highlight
 			
@@ -153,13 +156,14 @@ function ContainerFrame_OnShow(self)
 	self:RegisterEvent("BAG_UPDATE_COOLDOWN");
 	self:RegisterEvent("DISPLAY_SIZE_CHANGED");
 	self:RegisterEvent("INVENTORY_SEARCH_UPDATE");
+	self:RegisterEvent("BAG_NEW_ITEMS_UPDATED");
 
 	if ( self:GetID() == 0 ) then
-		MainMenuBarBackpackButton:SetChecked(1);
+		MainMenuBarBackpackButton:SetChecked(true);
 	elseif ( self:GetID() <= NUM_BAG_SLOTS ) then 
 		local button = _G["CharacterBag"..(self:GetID() - 1).."Slot"];
 		if ( button ) then
-			button:SetChecked(1);
+			button:SetChecked(true);
 		end
 	else
 		UpdateBagButtonHighlight(self:GetID());
@@ -291,7 +295,7 @@ function ContainerFrame_Update(frame)
 	local itemButton;
 	local texture, itemCount, locked, quality, readable, _, isFiltered;
 	local isQuestItem, questId, isActive, questTexture;
-	local isNewItem, isBattlePayItem, newItemTexture;
+	local isNewItem, isBattlePayItem, newItemTexture, shine;
 	local tooltipOwner = GameTooltip:GetOwner();
 	
 	--Update Searchbox
@@ -329,11 +333,38 @@ function ContainerFrame_Update(frame)
 		
 		isNewItem = C_NewItems.IsNewItem(id, itemButton:GetID());
 		isBattlePayItem = IsBattlePayItem(id, itemButton:GetID());
-		newItemTexture = _G[name.."Item"..i.."NewItemTexture"];
-		if ( isNewItem and isBattlePayItem ) then
-			newItemTexture:Show();
+		battlepayItemTexture = _G[name.."Item"..i].BattlepayItemTexture;
+		newItemTexture = _G[name.."Item"..i].NewItemTexture;
+		shine = _G[name.."Item"..i].Shine;
+		if ( isNewItem ) then
+			if (isBattlePayItem) then
+				newItemTexture:Hide();
+				battlepayItemTexture:Show();
+			else
+				battlepayItemTexture:Hide();
+				newItemTexture:Show();
+			end
+			if (not shine:IsPlaying()) then
+				shine:Play();
+			end
 		else
+			battlepayItemTexture:Hide();
 			newItemTexture:Hide();
+			if (shine:IsPlaying()) then
+				shine:Stop();
+			end
+		end
+		
+		itemButton.JunkIcon:Hide();
+		if (quality) then
+			if (quality > ITEM_QUALITY_COMMON and BAG_ITEM_QUALITY_COLORS[quality]) then
+				itemButton.IconBorder:Show();
+				itemButton.IconBorder:SetVertexColor(BAG_ITEM_QUALITY_COLORS[quality].r, BAG_ITEM_QUALITY_COLORS[quality].g, BAG_ITEM_QUALITY_COLORS[quality].b);
+			elseif (quality == 0) then
+				itemButton.JunkIcon:Show();
+			end
+		else
+			itemButton.IconBorder:Hide();
 		end
 				
 		if ( texture ) then
@@ -836,9 +867,15 @@ function ContainerFrameItemButton_OnEnter(self)
 
 	C_NewItems.RemoveNewItem(self:GetParent():GetID(), self:GetID());
 
-	newItemTexture = _G[self:GetName().."NewItemTexture"];
-	if newItemTexture then
-		newItemTexture:Hide();
+	local newItemTexture = self.NewItemTexture;
+	local battlepayItemTexture = self.BattlepayItemTexture;
+	local shine = self.Shine;
+	
+	newItemTexture:Hide();
+	battlepayItemTexture:Hide();
+	
+	if (shine:IsPlaying()) then
+		shine:Stop();
 	end
 	
 	local showSell = nil;
@@ -853,7 +890,7 @@ function ContainerFrameItemButton_OnEnter(self)
 	end
 
 	if ( InRepairMode() and (repairCost and repairCost > 0) ) then
-		GameTooltip:AddLine(REPAIR_COST, "", 1, 1, 1);
+		GameTooltip:AddLine(REPAIR_COST, nil, nil, nil, true);
 		SetTooltipMoney(GameTooltip, repairCost);
 		GameTooltip:Show();
 	elseif ( MerchantFrame:IsShown() and MerchantFrame.selectedTab == 1 ) then
@@ -964,69 +1001,6 @@ function CloseAllBags()
 	for i=1, NUM_CONTAINER_FRAMES, 1 do
 		CloseBag(i);
 	end
-end
-
-
---KeyRing functions
-
-function PutKeyInKeyRing()
-	local texture;
-	local emptyKeyRingSlot;
-	for i=1, GetKeyRingSize() do
-		texture = GetContainerItemInfo(KEYRING_CONTAINER, i);
-		if ( not texture ) then
-			emptyKeyRingSlot = i;
-			break;
-		end
-	end
-	if ( emptyKeyRingSlot ) then
-		PickupContainerItem(KEYRING_CONTAINER, emptyKeyRingSlot);
-	else
-		UIErrorsFrame:AddMessage(NO_EMPTY_KEYRING_SLOTS, 1.0, 0.1, 0.1, 1.0);
-	end
-end
-
-function ToggleKeyRing()
-	if ( IsOptionFrameOpen() ) then
-		return;
-	end
-	
-	local shownContainerID = IsBagOpen(KEYRING_CONTAINER);
-	if ( shownContainerID ) then
-		_G["ContainerFrame"..shownContainerID]:Hide();
-	else
-		ContainerFrame_GenerateFrame(ContainerFrame_GetOpenFrame(), GetKeyRingSize(), KEYRING_CONTAINER);
-	end
-end
-
-function GetKeyRingSize()
-	local numKeyringSlots = GetContainerNumSlots(KEYRING_CONTAINER);
-	local maxSlotNumberFilled = 0;
-	local numItems = 0;
-	for i=1, numKeyringSlots do
-		local texture = GetContainerItemInfo(KEYRING_CONTAINER, i);
-		-- Update max slot
-		if ( texture and i > maxSlotNumberFilled) then
-			maxSlotNumberFilled = i;
-		end
-		-- Count how many items you have
-		if ( texture ) then
-			numItems = numItems + 1;
-		end
-	end
-
-	-- Round to the nearest 4 rows that will hold the keys
-	local modulo = maxSlotNumberFilled % 4;
-	local size;
-	if ( (modulo == 0) and (numItems < maxSlotNumberFilled) ) then
-		size = maxSlotNumberFilled;
-	else
-		-- Only expand if the number of keys in the keyring exceed or equal the max slot filled
-		size = maxSlotNumberFilled + (4 - modulo);
-	end	
-	size = min(size, numKeyringSlots);
-
-	return size;
 end
 
 function GetBackpackFrame()

@@ -41,7 +41,7 @@ end
 function GuildInviteFrame_OnEnter()
 	if ( GuildInviteFrameInviterName:IsTruncated() ) then
 		GameTooltip:SetOwner(GuildInviteFrame, "ANCHOR_CURSOR_RIGHT");
-		GameTooltip:SetText(GuildInviteFrame.inviter, 1, 1, 1, 1, 1);
+		GameTooltip:SetText(GuildInviteFrame.inviter, 1, 1, 1, 1, true);
 	end
 end
 

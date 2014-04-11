@@ -115,14 +115,9 @@ function ActionBarButtonEventsFrame_OnLoad(self)
 end
 
 function ActionBarButtonEventsFrame_OnEvent(self, event, ...)
-	if ( event == "ACTIONBAR_UPDATE_COOLDOWN" ) then
-		if ( self.tooltipOwner and GameTooltip:GetOwner() == self.tooltipOwner ) then
-			ActionButton_SetTooltip(self.tooltipOwner);
-		end
-	else
-		for k, frame in pairs(self.frames) do
-			ActionButton_OnEvent(frame, event, ...);
-		end
+	-- pass event down to the buttons
+	for k, frame in pairs(self.frames) do
+		ActionButton_OnEvent(frame, event, ...);
 	end
 end
 
@@ -207,7 +202,7 @@ function ActionButton_UpdateHotkeys (self, actionButtonType)
 		end
     end
 
-    local hotkey = _G[self:GetName().."HotKey"];
+    local hotkey = self.HotKey;
     local key = GetBindingKey(actionButtonType..id) or
                 GetBindingKey("CLICK "..self:GetName()..":LeftButton");
 
@@ -251,8 +246,6 @@ function ActionButton_UpdateAction (self)
 end
 
 function ActionButton_Update (self)
-	local name = self:GetName();
-
 	local action = self.action;
 	local icon = self.icon;
 	local buttonCooldown = self.cooldown;
@@ -286,7 +279,7 @@ function ActionButton_Update (self)
 	end
 
 	-- Add a green border if button is an equipped item
-	local border = _G[name.."Border"];
+	local border = self.Border;
 	if border then
 		if ( IsEquippedAction(action) ) then
 			border:SetVertexColor(0, 1.0, 0, 0.35);
@@ -297,7 +290,7 @@ function ActionButton_Update (self)
 	end
 
 	-- Update Action Text
-	local actionName = _G[name.."Name"];
+	local actionName = self.Name;
 	if actionName then
 		if ( not IsConsumableAction(action) and not IsStackableAction(action) and (IsItemAction(action) or GetActionCount(action) == 0) ) then
 			actionName:SetText(GetActionText(action));
@@ -313,11 +306,11 @@ function ActionButton_Update (self)
 		self.rangeTimer = -1;
 		ActionButton_UpdateCount(self);	
 	else
-		_G[self:GetName().."Count"]:SetText("");
+		self.Count:SetText("");
 		icon:Hide();
 		buttonCooldown:Hide();
 		self.rangeTimer = nil;
-		local hotkey = _G[name.."HotKey"];
+		local hotkey = self.HotKey;
         if ( hotkey:GetText() == RANGE_INDICATOR ) then
 			hotkey:Hide();
 		else
@@ -345,8 +338,8 @@ function ActionButton_ShowGrid (button)
 		button:SetAttribute("showgrid", button:GetAttribute("showgrid") + 1);
 	end
 
-	if ( _G[button:GetName().."NormalTexture"] ) then
-		_G[button:GetName().."NormalTexture"]:SetVertexColor(1.0, 1.0, 1.0, 0.5);
+	if ( button.NormalTexture ) then
+		button.NormalTexture:SetVertexColor(1.0, 1.0, 1.0, 0.5);
 	end
 	
 	if ( button:GetAttribute("showgrid") >= 1 and not button:GetAttribute("statehidden") ) then
@@ -375,16 +368,15 @@ function ActionButton_UpdateState (button)
 	
 	local action = button.action;
 	if ( IsCurrentAction(action) or IsAutoRepeatAction(action) ) then
-		button:SetChecked(1);
+		button:SetChecked(true);
 	else
-		button:SetChecked(0);
+		button:SetChecked(false);
 	end
 end
 
 function ActionButton_UpdateUsable (self)
-	local name = self:GetName();
-	local icon = _G[name.."Icon"];
-	local normalTexture = _G[name.."NormalTexture"];
+	local icon = self.icon;
+	local normalTexture = self.NormalTexture;
 	if ( not normalTexture ) then
 		return;
 	end
@@ -403,7 +395,7 @@ function ActionButton_UpdateUsable (self)
 end
 
 function ActionButton_UpdateCount (self)
-	local text = _G[self:GetName().."Count"];
+	local text = self.Count;
 	local action = self.action;
 	if ( IsConsumableAction(action) or IsStackableAction(action) or (not IsItemAction(action) and GetActionCount(action) > 0) ) then
 		local count = GetActionCount(action);
@@ -429,7 +421,7 @@ end
 
 function ActionButton_UpdateLossOfControlCooldown (self)
 	local start, duration = GetActionLossOfControlCooldown(self.action);
-	self.cooldown:SetLossOfControlCooldown(start, duration);
+	self.cooldown:SetCooldown(start, duration);
 end
 
 --Overlay stuff
@@ -551,13 +543,13 @@ function ActionButton_OnEvent (self, event, ...)
 		ActionButton_UpdateState(self);
 	elseif ( event == "ACTIONBAR_UPDATE_USABLE" ) then
 		ActionButton_UpdateUsable(self);
-	elseif ( event == "ACTIONBAR_UPDATE_COOLDOWN" ) then	--Not actually registered for default action bars. Cooldowns are changed in C-code.
+	elseif ( event == "ACTIONBAR_UPDATE_COOLDOWN" ) then
 		ActionButton_UpdateCooldown(self);
 		-- Update tooltip
 		if ( GameTooltip:GetOwner() == self ) then
 			ActionButton_SetTooltip(self);
 		end
-	elseif ( event == "LOSS_OF_CONTROL_UPDATE" ) then	--Not actually registered for default action bars. Cooldowns are changed in C-code.
+	elseif ( event == "LOSS_OF_CONTROL_UPDATE" ) then
 		ActionButton_UpdateLossOfControlCooldown(self);
 	elseif ( event == "TRADE_SKILL_SHOW" or event == "TRADE_SKILL_CLOSE"  or event == "ARCHAEOLOGY_CLOSED" ) then
 		ActionButton_UpdateState(self);
@@ -647,7 +639,7 @@ function ActionButton_OnUpdate (self, elapsed)
 			end
 			flashtime = ATTACK_BUTTON_FLASH_TIME - overtime;
 
-			local flashTexture = _G[self:GetName().."Flash"];
+			local flashTexture = self.Flash;
 			if ( flashTexture:IsShown() ) then
 				flashTexture:Hide();
 			else
@@ -664,20 +656,20 @@ function ActionButton_OnUpdate (self, elapsed)
 		rangeTimer = rangeTimer - elapsed;
 
 		if ( rangeTimer <= 0 ) then
-			local count = _G[self:GetName().."HotKey"];
+			local count = self.HotKey;
 			local valid = IsActionInRange(self.action);
 			if ( count:GetText() == RANGE_INDICATOR ) then
-				if ( valid == 0 ) then
+				if ( valid == false ) then
 					count:Show();
 					count:SetVertexColor(1.0, 0.1, 0.1);
-				elseif ( valid == 1 ) then
+				elseif ( valid ) then
 					count:Show();
 					count:SetVertexColor(0.6, 0.6, 0.6);
 				else
 					count:Hide();
 				end
 			else
-				if ( valid == 0 ) then
+				if ( valid == false ) then
 					count:SetVertexColor(1.0, 0.1, 0.1);
 				else
 					count:SetVertexColor(0.6, 0.6, 0.6);
@@ -711,7 +703,7 @@ end
 
 function ActionButton_StopFlash (self)
 	self.flashing = 0;
-	_G[self:GetName().."Flash"]:Hide();
+	self.Flash:Hide();
 	ActionButton_UpdateState (self);
 end
 

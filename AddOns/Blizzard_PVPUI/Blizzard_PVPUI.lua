@@ -534,7 +534,7 @@ function IncludedBattlegroundsDropDown_Initialize()
 			break;
 		end
 		-- only 1 line is going to have a "%d" but which line it is might differ by language
-		info.text = RED_FONT_COLOR_CODE..string.format(text, MAX_BLACKLIST_BATTLEGROUNDS);
+		info.text = RED_FONT_COLOR_CODE..string.format(text, MAX_BLACKLIST_BATTLEGROUNDS)..FONT_COLOR_CODE_CLOSE;
 		info.isTitle = nil;
 		info.disabled = 1;
 		info.notCheckable = 1;
@@ -1206,11 +1206,11 @@ function WarGameStartButton_GetErrorTooltip()
 		-- how about a nice game of arena?
 		if ( pvpType == INSTANCE_TYPE_ARENA ) then
 			if ( groupSize ~= 2 and groupSize ~= 3 and groupSize ~= 5 ) then
-				return string.format(WARGAME_REQ_ARENA, name, RED_FONT_COLOR_CODE);
+				return string.format(WARGAME_REQ_ARENA, name, RED_FONT_COLOR_CODE)..FONT_COLOR_CODE_CLOSE;
 			end
 		else
 			if ( groupSize < minPlayers or groupSize > maxPlayers ) then
-				return string.format(WARGAME_REQ, name, RED_FONT_COLOR_CODE, minPlayers, maxPlayers);
+				return string.format(WARGAME_REQ, name, RED_FONT_COLOR_CODE, minPlayers, maxPlayers)..FONT_COLOR_CODE_CLOSE;
 			end
 		end
 	end
@@ -1221,7 +1221,7 @@ function WarGameStartButton_OnClick(self)
 	PlaySound("igMainMenuOptionCheckBoxOn");
 	local name = GetWarGameTypeInfo(GetSelectedWarGameType());
 	if ( name ) then
-		StartWarGame("target", name);
+		StartWarGame("target", name, WarGameTournamentModeCheckButton:GetChecked());
 	end
 end
 

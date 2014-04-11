@@ -61,7 +61,17 @@ function BNet_ReopenClosedConversations()
 end
 
 function BNet_GetPresenceID(name)
-	return GetAutoCompletePresenceID(name);
+	local id = GetAutoCompletePresenceID(name);
+	if (id) then
+		return id;
+	end
+	local _, numBNetOnline = BNGetNumFriends();
+	for i=1, numBNetOnline do
+		local presenceID, _, _, _, toonName, toonID = BNGetFriendInfo(i);
+		if (strlower(name) == strlower(toonName)) then
+			return presenceID;
+		end
+	end	
 end
 
 -- BNET toast

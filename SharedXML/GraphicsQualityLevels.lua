@@ -87,7 +87,7 @@ VideoData["Graphics_Quality"]={
 				Graphics_LiquidDetailDropDown = VIDEO_OPTIONS_ULTRA,
 				Graphics_SunshaftsDropDown = VIDEO_OPTIONS_HIGH,
 				Graphics_ProjectedTexturesDropDown = VIDEO_OPTIONS_ENABLED,
-				Graphics_SSAODropDown = VIDEO_OPTIONS_HIGH,
+				Graphics_SSAODropDown = VIDEO_OPTIONS_ULTRA,
 			},
 		},
 	},
@@ -352,6 +352,14 @@ VideoData["Graphics_ResolutionDropDown"]={
 	dependent = {
 		"Graphics_RefreshDropDown"
 	},
+	onrefresh =
+	function(self)
+		if(Graphics_DisplayModeDropDown:windowedmode() and Graphics_DisplayModeDropDown:fullscreenmode()) then
+			VideoOptions_Disable(self);
+		else
+			VideoOptions_Enable(self);
+		end
+	end,
 	lookup = Graphics_TableLookupSafe,
 	restart = true,
 	capTargets = {
@@ -741,6 +749,12 @@ VideoData["Graphics_SSAODropDown"]={
 				ssao = 1,
 			},
 		},
+		[4] = {
+			text = VIDEO_OPTIONS_ULTRA,
+			cvars =	{
+				ssao = 3,
+			},
+		},
 	},
 	dependent = {
 		"Graphics_Quality",
@@ -1091,10 +1105,10 @@ VideoData["Advanced_MaxFPSSlider"]={
 		function(self)
 			local value = self:GetCurrentValue();
 			if(value == 0) then
-				_G["Advanced_MaxFPSCheckBox"]:SetChecked(0);
+				_G["Advanced_MaxFPSCheckBox"]:SetChecked(false);
 				VideoOptions_Disable(self);
 			else
-				_G["Advanced_MaxFPSCheckBox"]:SetChecked(1);
+				_G["Advanced_MaxFPSCheckBox"]:SetChecked(true);
 				VideoOptions_Enable(self);
 			end
 		end,
@@ -1106,10 +1120,10 @@ VideoData["Advanced_MaxFPSBKSlider"]={
 		function(self)
 			local value = self:GetCurrentValue();
 			if(value == 0) then
-				_G["Advanced_MaxFPSBKCheckBox"]:SetChecked(0);
+				_G["Advanced_MaxFPSBKCheckBox"]:SetChecked(false);
 				VideoOptions_Disable(self);
 			else
-				_G["Advanced_MaxFPSBKCheckBox"]:SetChecked(1);
+				_G["Advanced_MaxFPSBKCheckBox"]:SetChecked(true);
 				VideoOptions_Enable(self);
 			end
 		end,
@@ -1161,7 +1175,7 @@ VideoData["Advanced_DesktopGamma"]={
 	SetValue = 
 		function (self, value)
 			BlizzardOptionsPanel_SetCVarSafe(self.cvar, value);
-			self:SetChecked(value);
+			self:SetChecked(value and value ~= 0);
 			Advanced_GammaSlider:onrefresh();
 		end,
 	SetDisplayValue =
@@ -1170,7 +1184,7 @@ VideoData["Advanced_DesktopGamma"]={
 		end,
 	onload =
 		function(self)
-			self:SetChecked(self:GetValue());
+			self:SetChecked(self:GetValue() and self:GetValue() ~= 0);
 		end,
 	onclick = 
 		function(self)

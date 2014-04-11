@@ -224,10 +224,8 @@ function LFRQueueFrameSpecificListButton_SetDungeon(button, dungeonID, mode, sub
 			button.enableButton:SetCheckedTexture("Interface\\Buttons\\UI-CheckBox-Check");
 			button.enableButton:SetDisabledCheckedTexture("Interface\\Buttons\\UI-CheckBox-Check-Disabled");
 		end
-		button.enableButton:SetChecked(enableState and enableState ~= 0);
-	else
-		button.enableButton:SetChecked(enableState);
 	end
+	button.enableButton:SetChecked(enableState and enableState ~= 0);
 	
 	if ( mode == "rolecheck" or mode == "queued" or mode == "listed" or mode == "suspended" or not RaidBrowser_IsEmpowered() ) then
 		button.enableButton:Disable();
@@ -603,7 +601,7 @@ function LFRBrowseButton_OnEnter(self)
 	end
 	
 	if ( comment and comment ~= "" ) then
-		GameTooltip:AddLine("\n"..comment, HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b, 1);
+		GameTooltip:AddLine("\n"..comment, HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b, true);
 	end
 	
 	if ( partyMembers == 0 ) then

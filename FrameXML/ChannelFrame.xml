@@ -109,9 +109,9 @@
 						if ( rank ) then
 							GameTooltip:SetOwner(self, "ANCHOR_LEFT");
 							if ( rank == 2 ) then
-								GameTooltip:SetText(RAID_LEADER, nil, nil, nil, nil, 1);
+								GameTooltip:SetText(RAID_LEADER, nil, nil, nil, nil, true);
 							elseif ( rank == 1 ) then
-								GameTooltip:SetText(RAID_ASSISTANT, nil, nil, nil, nil, 1);
+								GameTooltip:SetText(RAID_ASSISTANT, nil, nil, nil, nil, true);
 							end
 							if ( voice == 2 ) then
 								GameToolTip:AddLine("("..MUTED..")", HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b);
@@ -247,7 +247,7 @@
 							</OnLoad>
 							<OnEvent>
 								if ( event == "PLAYER_ENTERING_WORLD" ) then
-									self:SetChecked(GetCVar("autojoinBGVoice"));
+									self:SetChecked(GetCVarBool("autojoinBGVoice"));
 								end
 							</OnEvent>
 							<OnEnter>

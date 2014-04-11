@@ -296,7 +296,7 @@
 				<FontString name="$parentTrialError" inherits="GameFontNormal" text="TRIAL_RESTRICTED" parentKey="trialError" hidden="true">
 					<Size x="250" y="0"/>
 					<Anchors>
-						<Anchor point="TOP" x="20" y="-40"/>
+						<Anchor point="TOP" x="20" y="-30"/>
 					</Anchors>
 					<Color r="1.0" g="0.1" b="0.1" a="1"/>
 				</FontString>

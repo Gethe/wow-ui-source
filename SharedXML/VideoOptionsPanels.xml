@@ -1,8 +1,8 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\FrameXML\UI.xsd">
 	<!-- this code is shared between the Frame and Glue -->
-	<Script file="..\FrameXML\VideoOptionsPanels.lua"/>
-	<Script file="..\FrameXML\GraphicsQualityLevels.lua"/>
+	<Script file="..\SharedXML\VideoOptionsPanels.lua"/>
+	<Script file="..\SharedXML\GraphicsQualityLevels.lua"/>
 	<Frame name="VideoOptionsDropDownMenuTemplate" inherits="DropDownMenuTemplate" virtual="true">
 		<Frames>
 			<Frame name="$parentWarning" enableMouse="true" hidden="true" parentKey="warning">

@@ -11,18 +11,18 @@
 		</Anchors>
 		<Animations>
 			<AnimationGroup parentKey="Anim">
-				<Scale targetKey="$parent.$parent.RedLineTop" duration="0.01" scaleX="0.1" scaleY="1" order="1"/>
-				<Scale targetKey="$parent.$parent.RedLineBottom" duration="0.01" scaleX="0.1" scaleY="1" order="1"/>
+				<Scale childKey="RedLineTop" duration="0.01" scaleX="0.1" scaleY="1" order="1"/>
+				<Scale childKey="RedLineBottom" duration="0.01" scaleX="0.1" scaleY="1" order="1"/>
 				
-				<Scale targetKey="$parent.$parent.RedLineTop" duration="0.1" scaleX="14" scaleY="1" order="2"/>
-				<Scale targetKey="$parent.$parent.RedLineBottom" duration="0.1" scaleX="14" scaleY="1" order="2"/>
-				<Translation targetKey="$parent.$parent.Icon" offsetX="-20" offsetY="0" duration="0.1" order="2"/>
-				<Scale targetKey="$parent.$parent.Icon" scaleX="1.33" scaleY="1.33" duration="0.1" order="2"/>
+				<Scale childKey="RedLineTop" duration="0.1" scaleX="14" scaleY="1" order="2"/>
+				<Scale childKey="RedLineBottom" duration="0.1" scaleX="14" scaleY="1" order="2"/>
+				<Translation childKey="Icon" offsetX="-20" offsetY="0" duration="0.1" order="2"/>
+				<Scale childKey="Icon" scaleX="1.33" scaleY="1.33" duration="0.1" order="2"/>
 
-				<Scale targetKey="$parent.$parent.RedLineTop" duration="0.1" scaleX="0.71" scaleY="1" order="3"/>
-				<Scale targetKey="$parent.$parent.RedLineBottom" duration="0.1" scaleX="0.71" scaleY="1" order="3"/>
-				<Translation targetKey="$parent.$parent.Icon" offsetX="20" offsetY="0" duration="0.1" order="3"/>
-				<Scale targetKey="$parent.$parent.Icon" scaleX="0.75" scaleY="0.75" duration="0.1" order="3"/>
+				<Scale childKey="RedLineTop" duration="0.1" scaleX="0.71" scaleY="1" order="3"/>
+				<Scale childKey="RedLineBottom" duration="0.1" scaleX="0.71" scaleY="1" order="3"/>
+				<Translation childKey="Icon" offsetX="20" offsetY="0" duration="0.1" order="3"/>
+				<Scale childKey="Icon" scaleX="0.75" scaleY="0.75" duration="0.1" order="3"/>
 				<Scripts>
 					<OnFinished>
 						self:GetParent().Cooldown:Show();
@@ -69,11 +69,15 @@
 			</Layer>
 		</Layers>
 		<Frames>
-			<Cooldown parentKey="Cooldown" inherits="CooldownFrameTemplate">
+			<Cooldown parentKey="Cooldown" drawEdge="true" inherits="CooldownFrameTemplate">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeKey="$parent.Icon"/>
 					<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Icon"/>
 				</Anchors>
+				<SwipeTexture>
+					<Color r="0.17" g="0" b="0" a="0.8"/>
+				</SwipeTexture>
+				<EdgeTexture file="Interface\Cooldown\edge-LoC.blp"/>
 			</Cooldown>
 			<Frame parentKey="TimeLeft">
 				<Size x="200" y="20"/>

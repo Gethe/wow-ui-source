@@ -1582,8 +1582,8 @@
 					<Size x="140" y="30" />
 					<Animations>
 						<AnimationGroup parentKey="PulseAnim">
-							<Alpha targetKey="$parent.$parent.Flash" change="1.0" duration="0.5" order="1"/>
-							<Alpha targetKey="$parent.$parent.Flash" change="-1.0" duration="0.5" order="2"/>
+							<Alpha childKey="Flash" change="1.0" duration="0.5" order="1"/>
+							<Alpha childKey="Flash" change="-1.0" duration="0.5" order="2"/>
 						</AnimationGroup>
 					</Animations>
 					<Anchors>

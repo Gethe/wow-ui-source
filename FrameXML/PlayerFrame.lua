@@ -56,7 +56,13 @@ end
 
 function PlayerFrame_Update ()
 	if ( UnitExists("player") ) then
-		PlayerLevelText:SetText(UnitLevel(PlayerFrame.unit));
+		local level = UnitLevel(PlayerFrame.unit);
+		if ( level == 100 ) then
+			PlayerLevelText:SetPoint("CENTER", PlayerFrameTexture, "CENTER", -62, -17);
+		else
+			PlayerLevelText:SetPoint("CENTER", PlayerFrameTexture, "CENTER", -61, -17);
+		end
+		PlayerLevelText:SetText(level);
 		PlayerFrame_UpdatePartyLeader();
 		PlayerFrame_UpdatePvPStatus();
 		PlayerFrame_UpdateStatus();
@@ -130,7 +136,7 @@ function PlayerFrame_OnEvent(self, event, ...)
 	local arg1, arg2, arg3, arg4, arg5 = ...;
 	if ( event == "UNIT_LEVEL" ) then
 		if ( arg1 == "player" ) then
-			PlayerLevelText:SetText(UnitLevel(self.unit));
+			PlayerFrame_Update();
 		end
 	elseif ( event == "UNIT_COMBAT" ) then
 		if ( arg1 == self.unit ) then

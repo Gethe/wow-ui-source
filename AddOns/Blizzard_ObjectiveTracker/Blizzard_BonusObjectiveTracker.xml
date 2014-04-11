@@ -1,0 +1,71 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\FrameXML\UI.xsd">
+	
+	<Script file="Blizzard_BonusObjectiveTracker.lua"/>
+
+	<Frame name="BonusObjectiveTrackerLineTemplate" inherits="ObjectiveTrackerCheckLineTemplate" virtual="true">
+		<Animations>
+			<AnimationGroup parentKey="TranslationAnim">
+				<Translation childKey="Text" offsetX="-150" offsetY="0" duration="0.01" order="1"/>
+				<Translation childKey="Text" offsetX="150" offsetY="0" duration="3" order="2"/>
+			</AnimationGroup>
+		</Animations>
+	</Frame>
+	
+	<ScrollFrame name="BonusObjectiveTrackerBlockTemplate" hidden="true" virtual="true" alpha="0">
+		<Size x="212" y="10"/>
+		<ScrollChild>
+			<Frame parentKey="ScrollContents">
+				<Size x="10" y="10"/>
+			</Frame>
+		</ScrollChild>
+		<Animations>
+			<AnimationGroup parentKey="AnimIn">
+				<Translation parentKey="TransOut" childKey="ScrollContents" offsetX="0" offsetY="0" duration="0.01" endDelay="0" order="1"/>
+				<Alpha change="1" duration="0.1" order="2"/>
+				<Translation parentKey="TransIn" childKey="ScrollContents" offsetX="0" offsetY="0" duration="0" order="2"/>
+				<Scripts>
+					<OnFinished function="BonusObjectiveTracker_OnBlockAnimInFinished"/>
+				</Scripts>						
+			</AnimationGroup>
+			<AnimationGroup parentKey="AnimOut">
+				<Alpha change="-1.0" duration="0.5" startDelay="3.5" order="1"/>
+				<Scripts>
+					<OnFinished function="BonusObjectiveTracker_OnBlockAnimOutFinished"/>
+				</Scripts>
+			</AnimationGroup>
+		</Animations>
+	</ScrollFrame>
+
+	<Frame parent="ObjectiveTrackerBlocksFrame" inherits="ObjectiveTrackerHeaderTemplate" hidden="true">
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="TopShadow" atlas="OBJBonusBar-Top" useAtlasSize="true" alpha="0">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="-27" y="-24"/>
+					</Anchors>
+					<Color r="1" g="0" b="0"/>
+				</Texture>
+				<Texture parentKey="BottomShadow" atlas="OBJBonusBar-Top" useAtlasSize="true" alpha="0">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="-27" y="0"/>
+					</Anchors>
+					<TexCoords left="0" right="1" top="1" bottom="0"/>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Animations>
+			<AnimationGroup parentKey="ShadowAnim">
+				<Alpha childKey="TopShadow" change="1" duration="0.05" startDelay="0.05" order="1"/>
+				<Alpha childKey="BottomShadow" change="1" duration="0.05" order="2"/>
+				<Translation parentKey="TransAnim" childKey="BottomShadow" offsetX="0" offsetY="-100" duration="1" endDelay="1" order="3"/>
+				<Alpha childKey="TopShadow" change="-1" duration="0.2" order="4"/>
+				<Alpha childKey="BottomShadow" change="-1" duration="0.2" order="4"/>				
+			</AnimationGroup>
+		</Animations>
+		<Scripts>
+			<OnLoad function="BonusObjectiveTracker_OnHeaderLoad"/>
+		</Scripts>
+	</Frame>
+
+</Ui>

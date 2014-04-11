@@ -211,7 +211,7 @@ function GlyphFrame_UpdateGlyphList ()
 		local button = buttons[i];
 		local index = offset + i;
 		if index <= numGlyphs  then
-			local name, glyphType, isKnown, icon, glyphID, link, subText = GetGlyphInfo(index);
+			local name, glyphType, isKnown, icon, glyphID, link, subText, specMatches = GetGlyphInfo(index);
 			if name == "header" then
 				button:Hide();
 				header = _G["GlyphFrameHeader"..currentHeader];
@@ -248,9 +248,14 @@ function GlyphFrame_UpdateGlyphList ()
 					glyphSubText = "";
 				end
 				if isKnown then
-					button.icon:SetDesaturated(0);
+					button.icon:SetDesaturated(false);
 					button.name:SetText(name);
-					button.typeName:SetText(glyphSubText);
+					-- Task 68154: If a glyph has a required specialization that does not match our spec, display the spec requirement in red
+					if specMatches then
+						button.typeName:SetText(glyphSubText);
+					else
+						button.typeName:SetText(RED_FONT_COLOR_CODE..glyphSubText..FONT_COLOR_CODE_CLOSE);
+					end
 					button.disabledBG:Hide();
 					if selectedIndex and selectedIndex == index then
 						button.selectedTex:Show();
@@ -259,9 +264,9 @@ function GlyphFrame_UpdateGlyphList ()
 					end
 				else
 					button.selectedTex:Hide();
-					button.icon:SetDesaturated(1);
-					button.name:SetText(GRAY_FONT_COLOR_CODE..name);
-					button.typeName:SetText(GRAY_FONT_COLOR_CODE..glyphSubText);
+					button.icon:SetDesaturated(true);
+					button.name:SetText(GRAY_FONT_COLOR_CODE..name..FONT_COLOR_CODE_CLOSE);
+					button.typeName:SetText(GRAY_FONT_COLOR_CODE..glyphSubText..FONT_COLOR_CODE_CLOSE);
 					button.disabledBG:Show();
 				end
 				

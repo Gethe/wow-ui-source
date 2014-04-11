@@ -148,7 +148,7 @@ function Graphics_PrepareTooltip(self)
 				tooltip = tooltip .. "|n";
 			else
 				if(invalid) then
-					tooltip = tooltip .. "|n" .. "|cffffd200" .. value.text .. HEADER_COLON .. "|r " .. "|cff7f7f7f";
+					tooltip = tooltip .. "|n" .. "|cffffd200" .. value.text .. HEADER_COLON .. "|r ";
 				end
 			end
 			if(errorValue ~= nil) then

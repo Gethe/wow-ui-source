@@ -339,8 +339,8 @@
 						self:SetWidth(self.text:GetWidth() + self.texture:GetWidth());
 					</OnLoad>
 					<OnClick>
-						local questID = select(9, GetQuestLogTitle(QuestLogFrame.selectedIndex))
-						WorldMap_OpenToQuest(questID, self:GetParent());
+						local questID = select(8, GetQuestLogTitle(QuestLogFrame.selectedIndex))
+						QuestMapFrame_OpenToQuestDetails(questID);
 					</OnClick>
 					<OnEnter>
 						QuestLogFrameShowMapButtonHighlight:Show();

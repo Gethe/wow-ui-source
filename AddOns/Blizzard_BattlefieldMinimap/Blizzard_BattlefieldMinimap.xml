@@ -241,7 +241,6 @@
 				<OnClick>
 					SetCVar("showBattlefieldMinimap", "0");
 					HideUIPanel(self:GetParent());
-					WorldMapZoneMinimapDropDown_Update();
 				</OnClick>
 			</Scripts>
 		</Button>

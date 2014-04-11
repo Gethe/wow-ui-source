@@ -498,7 +498,7 @@ function LFGRoleIconIncentive_OnEnter(self)
 	local role = LFG_ID_TO_ROLES[self:GetParent():GetID()];
 	
 	GameTooltip:SetText(format(LFG_CALL_TO_ARMS, _G[role]), 1, 1, 1);
-	GameTooltip:AddLine(LFG_CALL_TO_ARMS_EXPLANATION, nil, nil, nil, 1);
+	GameTooltip:AddLine(LFG_CALL_TO_ARMS_EXPLANATION, nil, nil, nil, true);
 	GameTooltip:Show();
 end
 
@@ -580,7 +580,7 @@ function GetTexCoordsForRoleSmall(role)
 end
 
 function LFGFrameRoleCheckButton_OnEnter(self)
-	if ( self.checkButton:IsEnabled() == 1 ) then
+	if ( self.checkButton:IsEnabled() ) then
 		self.checkButton:LockHighlight();
 	end
 end
@@ -1900,7 +1900,7 @@ end
 
 function LFGDungeonList_SetDungeonEnabled(dungeonID, isEnabled)
 	SetLFGDungeonEnabled(dungeonID, isEnabled);
-	LFGEnabledList[dungeonID] = not not isEnabled; --Change to true/false.
+	LFGEnabledList[dungeonID] = isEnabled;
 end
 
 function LFGDungeonList_SetHeaderEnabled(category, headerID, isEnabled, dungeonList, hiddenByCollapseList)
@@ -1914,7 +1914,7 @@ function LFGDungeonList_SetHeaderEnabled(category, headerID, isEnabled, dungeonL
 			LFGDungeonList_SetDungeonEnabled(dungeonID, isEnabled);
 		end
 	end
-	LFGEnabledList[headerID] = not not isEnabled; --Change to true/false.
+	LFGEnabledList[headerID] = isEnabled;
 end
 
 function LFGDungeonListButton_OnEnter(button, tooltipTitle)

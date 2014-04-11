@@ -300,7 +300,7 @@
 			</Layer>
 		</Layers>
 		<Frames>
-			<Cooldown name="$parentCooldown" inherits="CooldownFrameTemplate"/>
+			<Cooldown name="$parentCooldown" parentKey="cooldown" inherits="CooldownFrameTemplate"/>
 			<Frame name="$textureTrainBook" hidden="true" parentKey="TrainBook" setAllPoints="true">
 				<Layers>
 					<Layer level="ARTWORK">
@@ -321,7 +321,7 @@
 				SpellButton_OnEvent(self, event, ...);
 			</OnEvent>
 			<PreClick>
-				self:SetChecked(0);
+				self:SetChecked(false);
 			</PreClick>
 			<OnClick>
 				if ( IsModifiedClick() ) then
@@ -453,7 +453,7 @@
 				SpellButton_OnEvent(self, event, ...);
 			</OnEvent>
 			<PreClick>
-				self:SetChecked(0);
+				self:SetChecked(false);
 			</PreClick>
 			<OnClick>
 				if ( IsModifiedClick() ) then

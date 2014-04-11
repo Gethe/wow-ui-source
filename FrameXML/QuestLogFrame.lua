@@ -1,9 +1,3 @@
--- global constants
-MAX_QUESTS = 25;
-MAX_OBJECTIVES = 10;
-MAX_QUESTLOG_QUESTS = 25;
-MAX_WATCHABLE_QUESTS = 25;
-MAX_QUEST_WATCH_TIME = 300;
 
 QuestDifficultyColors["impossible"].font = QuestDifficulty_Impossible;
 QuestDifficultyColors["verydifficult"].font = QuestDifficulty_VeryDifficult;
@@ -251,7 +245,7 @@ function QuestLog_OnEvent(self, event, ...)
 			QuestLog_UpdateQuestDetails(false);
 		end
 		if (not IsTutorialFlagged(55) and TUTORIAL_QUEST_TO_WATCH) then
-			local isComplete = select(7, GetQuestLogTitle(GetQuestLogIndexByID(TUTORIAL_QUEST_TO_WATCH)));
+			local isComplete = select(6, GetQuestLogTitle(GetQuestLogIndexByID(TUTORIAL_QUEST_TO_WATCH)));
 			if (isComplete) then
 				TriggerTutorial(55);
 			end
@@ -265,7 +259,7 @@ function QuestLog_OnEvent(self, event, ...)
 		end
 	elseif ( event == "QUEST_WATCH_UPDATE" ) then
 		if (not IsTutorialFlagged(11) and TUTORIAL_QUEST_TO_WATCH) then
-			local questID = select(9, GetQuestLogTitle(arg1));
+			local questID = select(8, GetQuestLogTitle(arg1));
 			if (questID == TUTORIAL_QUEST_TO_WATCH) then
 				TriggerTutorial(11);
 			end
@@ -337,14 +331,6 @@ function QuestLog_OnUpdate(self, elapsed)
 	end
 end
 
-function QuestLog_UpdateMapButton()
-	if ( WatchFrame.showObjectives and GetNumQuestLogEntries() ~= 0 ) then
-		QuestLogFrameShowMapButton:Show();
-	else
-		QuestLogFrameShowMapButton:Hide();
-	end
-end
-
 function QuestLog_Update()
 	if ( not QuestLogFrame:IsShown() ) then
 		return;
@@ -359,8 +345,6 @@ function QuestLog_Update()
 	else
 		EmptyQuestLogFrame:Hide();
 	end
-
-	QuestLog_UpdateMapButton();
 	
 	-- Update Quest Count
 	QuestLog_UpdateQuestCount(numQuests);
@@ -407,7 +391,7 @@ function QuestLog_Update()
 
 	local numPartyMembers = GetNumSubgroupMembers();
 	local questIndex, questLogTitle, questTitleTag, questNumGroupMates, questNormalText, questCheck;
-	local title, level, questTag, suggestedGroup, isHeader, isCollapsed, isComplete, isDaily, questID, startEvent, displayQuestID;
+	local title, level, suggestedGroup, isHeader, isCollapsed, isComplete, isDaily, questID, startEvent, displayQuestID;
 	local color;
 	local partyMembersOnQuest, tempWidth, textWidth;
 	for i=1, numButtons do
@@ -419,7 +403,7 @@ function QuestLog_Update()
 		questCheck = questLogTitle.check;
 		questNormalText = questLogTitle.normalText;
 		if ( questIndex <= numEntries ) then
-			title, level, questTag, suggestedGroup, isHeader, isCollapsed, isComplete, isDaily, questID, startEvent, displayQuestID = GetQuestLogTitle(questIndex);
+			title, level, suggestedGroup, isHeader, isCollapsed, isComplete, isDaily, questID, startEvent, displayQuestID = GetQuestLogTitle(questIndex);
 
 			if ( isHeader ) then
 				-- set the title
@@ -471,6 +455,7 @@ function QuestLog_Update()
 				end
 
 				-- figure out which tag to show, if any
+				local _, questTag = GetQuestTagInfo(questID);
 				if ( isComplete and isComplete < 0 ) then
 					questTag = FAILED;
 				elseif ( isComplete and isComplete > 0 ) then
@@ -537,7 +522,7 @@ function QuestLog_Update()
 	end
 	HybridScrollFrame_Update(QuestLogScrollFrame, numEntries * buttonHeight, displayedHeight);
 	
-	local selectedIsComplete = select(7, GetQuestLogTitle(questLogSelection));
+	local selectedIsComplete = select(6, GetQuestLogTitle(questLogSelection));
 	if (selectedIsComplete and GetQuestLogIsAutoComplete()) then
 		QuestLogFrameCompleteButton:Show();
 	else
@@ -626,7 +611,7 @@ function QuestLog_SetSelection(questIndex)
 		QuestLogDetailScrollChildFrame:Show();
 	end
 
-	local title, level, questTag, suggestedGroup, isHeader, isCollapsed, isComplete, isDaily, questID = GetQuestLogTitle(questIndex);
+	local title, level, suggestedGroup, isHeader, isCollapsed, isComplete, isDaily, questID = GetQuestLogTitle(questIndex);
 	if ( isHeader ) then
 		if ( isCollapsed ) then
 			ExpandQuestHeader(questIndex);
@@ -696,7 +681,7 @@ function QuestLog_GetFirstSelectableQuest()
 	local numEntries = GetNumQuestLogEntries();
 	local title, level, questTag, suggestedGroup, isHeader, isCollapsed;
 	for i=1, numEntries do
-		title, level, questTag, suggestedGroup, isHeader, isCollapsed = GetQuestLogTitle(i);
+		title, level, suggestedGroup, isHeader, isCollapsed = GetQuestLogTitle(i);
 		if ( title and not isHeader ) then
 			return i;
 		end
@@ -725,10 +710,10 @@ function QuestLog_SetNearestValidSelection()
 		questIndex = numEntries;
 	end
 
-	local title, level, questTag, suggestedGroup, isHeader, isCollapsed;
+	local title, level, suggestedGroup, isHeader, isCollapsed;
 
 	-- 1. try to select the quest that is currently under the selected index
-	title, level, questTag, suggestedGroup, isHeader, isCollapsed = GetQuestLogTitle(questIndex);
+	title, level, suggestedGroup, isHeader, isCollapsed = GetQuestLogTitle(questIndex);
 	if ( title and not isHeader ) then
 		QuestLog_SetSelection(questIndex);
 		QuestLogDetailScrollFrameScrollBar:SetValue(0);
@@ -736,7 +721,7 @@ function QuestLog_SetNearestValidSelection()
 	end
 
 	-- 2. try to select the previous quest
-	title, level, questTag, suggestedGroup, isHeader, isCollapsed = GetQuestLogTitle(questIndex - 1);
+	title, level, suggestedGroup, isHeader, isCollapsed = GetQuestLogTitle(questIndex - 1);
 	if ( title ) then
 		if ( not isHeader ) then
 			-- the previous quest is not a header, select it
@@ -885,7 +870,7 @@ function QuestLogControlPanel_UpdateState()
 		QuestLogFrameTrackButton:Disable();
 		QuestLogFramePushQuestButton:Disable();
 	else
-		local _, _, _, _, _, _, _, _, questID = GetQuestLogTitle(questLogSelection);
+		local _, _, _, _, _, _, _, questID = GetQuestLogTitle(questLogSelection);
 		if ( GetAbandonQuestName() and CanAbandonQuest(questID)) then
 			QuestLogFrameAbandonButton:Enable();
 		else

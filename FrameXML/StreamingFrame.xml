@@ -55,7 +55,7 @@
             <OnEnter>
                 if(self.tooltip ~= nil) then
 					GameTooltip:SetOwner(self, "ANCHOR_LEFT");
-                    GameTooltip:SetText(self.tooltip, nil, nil, nil, nil, 1);
+                    GameTooltip:SetText(self.tooltip, nil, nil, nil, nil, true);
                 end
             </OnEnter>
             <OnLeave function="GameTooltip_Hide"/>

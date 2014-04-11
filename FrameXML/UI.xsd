@@ -96,6 +96,16 @@
 		</xs:restriction>
 	</xs:simpleType>
 
+	<xs:simpleType name="KEYVALUETYPE">
+		<xs:restriction base="xs:NMTOKEN">
+			<xs:enumeration value="nil"/>
+			<xs:enumeration value="boolean"/>
+			<xs:enumeration value="number"/>
+			<xs:enumeration value="string"/>
+			<xs:enumeration value="global"/>
+		</xs:restriction>
+	</xs:simpleType>
+
 	<xs:element name="AbsValue">
 		<xs:complexType>
 			<xs:attribute name="val" type="xs:int" use="required"/>
@@ -199,6 +209,21 @@
 		<xs:attribute name="orientation" type="ORIENTATION" default="HORIZONTAL"/>
 	</xs:complexType>
 
+	<xs:complexType name="KeyValueType">
+		<xs:attribute name="key" type="xs:string" use="required"/>
+		<xs:attribute name="value" type="xs:string" use="required"/>
+		<xs:attribute name="keyType" type="KEYVALUETYPE" use="optional" default="string"/>
+		<xs:attribute name="type" type="KEYVALUETYPE" use="optional" default="string"/>
+	</xs:complexType>
+
+	<xs:complexType name="KeyValuesType">
+		<xs:sequence>
+			<xs:choice maxOccurs="unbounded">
+				<xs:element name="KeyValue" type="KeyValueType"/>
+			</xs:choice>
+		</xs:sequence>
+	</xs:complexType>
+
 	<xs:complexType name="AttributeType">
 		<xs:attribute name="name" type="xs:string" use="required"/>
 		<xs:attribute name="type" type="ATTRIBUTETYPE" use="optional" default="string"/>
@@ -283,6 +308,10 @@
 				<xs:element name="OnTooltipSetAchievement" type="ScriptType"/>
 				<xs:element name="OnEnable" type="ScriptType"/>
 				<xs:element name="OnDisable" type="ScriptType"/>
+				<xs:element name="OnArrowPressed" type="ScriptType"/>
+				<xs:element name="OnExternalLink" type="ScriptType"/>
+				<xs:element name="OnButtonUpdate" type="ScriptType"/>
+				<xs:element name="OnError" type="ScriptType"/>
 			</xs:choice>
 		</xs:sequence>
 	</xs:complexType>
@@ -344,6 +373,7 @@
 						</xs:sequence>
 					</xs:complexType>
 				</xs:element>
+				<xs:element name="KeyValues" type="KeyValuesType"/>
 				<xs:element name="Animations">
 					<xs:complexType>
 						<xs:sequence>
@@ -884,6 +914,15 @@
 		</xs:complexContent>
 	</xs:complexType>
 	<xs:element name="TabardModel" type="TabardModelType" substitutionGroup="ui:Frame"/>
+	
+	<xs:complexType name="CinematicModelType">
+		<xs:complexContent>
+			<xs:extension base="ModelType">
+				<xs:attribute name="facing" type="xs:boolean" default="false"/>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:element name="CinematicModel" type="CinematicModelType" substitutionGroup="ui:Frame"/>
 
 	<xs:complexType name="UnitButtonType">
 		<xs:complexContent>
@@ -897,6 +936,15 @@
 		</xs:complexContent>
 	</xs:complexType>
 	<xs:element name="TaxiRouteFrame" type="TaxiRouteFrameType" substitutionGroup="ui:Frame"/>
+
+	<xs:complexType name="BrowserType">
+		<xs:complexContent>
+			<xs:extension base="FrameType">
+				<xs:attribute name="imefont" type="xs:string"/>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:element name="Browser" type="BrowserType" substitutionGroup="ui:Frame"/>
 
 	<xs:simpleType name="ANIMLOOPTYPE">
 		<xs:restriction base="xs:NMTOKEN">

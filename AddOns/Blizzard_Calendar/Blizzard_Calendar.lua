@@ -1833,7 +1833,7 @@ function CalendarFilterDropDown_Initialize(self)
 end
 
 function CalendarFilterDropDown_OnClick(self)
-	SetCVar(CALENDAR_FILTER_CVARS[self:GetID()].cvar, UIDropDownMenuButton_GetChecked(self));
+	SetCVar(CALENDAR_FILTER_CVARS[self:GetID()].cvar, UIDropDownMenuButton_GetChecked(self) and "1" or "0");
 	CalendarFrame_Update();
 end
 
@@ -3083,9 +3083,9 @@ end
 function CalendarViewEventAcceptButton_OnEnter(self)
 	GameTooltip:SetOwner(self, "ANCHOR_LEFT");
 	if ( CalendarViewEventFrame.inviteType == CALENDAR_INVITETYPE_SIGNUP ) then
-		GameTooltip:SetText(CALENDAR_TOOLTIP_SIGNUPBUTTON, nil, nil, nil, nil, 1);
+		GameTooltip:SetText(CALENDAR_TOOLTIP_SIGNUPBUTTON, nil, nil, nil, nil, true);
 	else
-		GameTooltip:SetText(CALENDAR_TOOLTIP_AVAILABLEBUTTON, nil, nil, nil, nil, 1);
+		GameTooltip:SetText(CALENDAR_TOOLTIP_AVAILABLEBUTTON, nil, nil, nil, nil, true);
 	end
 	GameTooltip:Show();
 	--GameTooltip_AddNewbieTip(self, nil, 1.0, 1.0, 1.0, CALENDAR_TOOLTIP_AVAILABLEBUTTON, 1);
@@ -3101,7 +3101,7 @@ end
 
 function CalendarViewEventTentativeButton_OnEnter(self)
 	GameTooltip:SetOwner(self, "ANCHOR_LEFT");
-	GameTooltip:SetText(CALENDAR_TOOLTIP_TENTATIVEBUTTON, nil, nil, nil, nil, 1);
+	GameTooltip:SetText(CALENDAR_TOOLTIP_TENTATIVEBUTTON, nil, nil, nil, nil, true);
 	GameTooltip:Show();
 	--GameTooltip_AddNewbieTip(self, nil, 1.0, 1.0, 1.0, CALENDAR_TOOLTIP_TENTATIVEBUTTON, 1);
 end
@@ -3112,7 +3112,7 @@ end
 
 function CalendarViewEventDeclineButton_OnEnter(self)
 	GameTooltip:SetOwner(self, "ANCHOR_LEFT");
-	GameTooltip:SetText(CALENDAR_TOOLTIP_DECLINEBUTTON, nil, nil, nil, nil, 1);
+	GameTooltip:SetText(CALENDAR_TOOLTIP_DECLINEBUTTON, nil, nil, nil, nil, true);
 	GameTooltip:Show();
 	--GameTooltip_AddNewbieTip(self, nil, 1.0, 1.0, 1.0, CALENDAR_TOOLTIP_DECLINEBUTTON, 1);
 end
@@ -3124,9 +3124,9 @@ end
 function CalendarViewEventRemoveButton_OnEnter(self)
 	GameTooltip:SetOwner(self, "ANCHOR_LEFT");
 	if ( CalendarViewEventFrame.inviteType == CALENDAR_INVITETYPE_SIGNUP ) then
-		GameTooltip:SetText(CALENDAR_TOOLTIP_REMOVESIGNUPBUTTON, nil, nil, nil, nil, 1);
+		GameTooltip:SetText(CALENDAR_TOOLTIP_REMOVESIGNUPBUTTON, nil, nil, nil, nil, true);
 	else
-		GameTooltip:SetText(CALENDAR_TOOLTIP_REMOVEBUTTON, nil, nil, nil, nil, 1);
+		GameTooltip:SetText(CALENDAR_TOOLTIP_REMOVEBUTTON, nil, nil, nil, nil, true);
 	end
 	GameTooltip:Show();
 	--GameTooltip_AddNewbieTip(self, nil, 1.0, 1.0, 1.0, CALENDAR_TOOLTIP_REMOVEBUTTON, 1);
@@ -4421,9 +4421,9 @@ end
 function CalendarCreateEventRaidInviteButton_OnEnter(self)
 	GameTooltip:SetOwner(self, "ANCHOR_LEFT");
 	if ( IsInRaid(LE_PARTY_CATEGORY_HOME) or GetNumGroupMembers(LE_PARTY_CATEGORY_HOME) + self.inviteCount > MAX_PARTY_MEMBERS + 1) then
-		GameTooltip:SetText(CALENDAR_TOOLTIP_INVITEMEMBERS_BUTTON_RAID, nil, nil, nil, nil, 1);
+		GameTooltip:SetText(CALENDAR_TOOLTIP_INVITEMEMBERS_BUTTON_RAID, nil, nil, nil, nil, true);
 	else
-		GameTooltip:SetText(CALENDAR_TOOLTIP_INVITEMEMBERS_BUTTON_PARTY, nil, nil, nil, nil, 1);
+		GameTooltip:SetText(CALENDAR_TOOLTIP_INVITEMEMBERS_BUTTON_PARTY, nil, nil, nil, nil, true);
 	end
 	GameTooltip:Show();
 	--GameTooltip_AddNewbieTip(self, nil, 1.0, 1.0, 1.0, CALENDAR_TOOLTIP_INVITETORAID_BUTTON, 1);
@@ -5220,7 +5220,7 @@ function CalendarClassButton_OnEnter(self)
 	-- TODO: set detailed counts info
 	local classData = CalendarClassData[self.class];
 	GameTooltip:SetOwner(self, "ANCHOR_LEFT");
-	GameTooltip:SetText(classData.name, nil, nil, nil, nil, 1);
+	GameTooltip:SetText(classData.name, nil, nil, nil, nil, true);
 	GameTooltip:Show();
 end
 --[[
@@ -5267,16 +5267,16 @@ end
 
 function CalendarClassTotalsButtonOnEnterDummy_OnEnter(self)
 	GameTooltip:SetOwner(self, "ANCHOR_LEFT");
-	GameTooltip:SetText(CALENDAR_TOOLTIP_INVITE_TOTALS, nil, nil, nil, nil, 1);
+	GameTooltip:SetText(CALENDAR_TOOLTIP_INVITE_TOTALS, nil, nil, nil, nil, true);
 	GameTooltip:Show();
 end
 
 function CalendarClassTotalsButton_OnEnter(self)
 	GameTooltip:SetOwner(self, "ANCHOR_LEFT");
 	if ( CalendarEventGetNumInvites() > MAX_PARTY_MEMBERS + 1 ) then
-		GameTooltip:SetText(CALENDAR_TOOLTIP_INVITEMEMBERS_BUTTON_RAID, nil, nil, nil, nil, 1);
+		GameTooltip:SetText(CALENDAR_TOOLTIP_INVITEMEMBERS_BUTTON_RAID, nil, nil, nil, nil, true);
 	else
-		GameTooltip:SetText(CALENDAR_TOOLTIP_INVITEMEMBERS_BUTTON_PARTY, nil, nil, nil, nil, 1);
+		GameTooltip:SetText(CALENDAR_TOOLTIP_INVITEMEMBERS_BUTTON_PARTY, nil, nil, nil, nil, true);
 	end
 	GameTooltip:Show();
 end
@@ -5333,7 +5333,7 @@ end
 
 function CalendarClassTotalsButton_OnEnter(self)
 	GameTooltip:SetOwner(self, "ANCHOR_LEFT");
-	GameTooltip:SetText(CALENDAR_TOOLTIP_INVITE_TOTALS, nil, nil, nil, nil, 1);
+	GameTooltip:SetText(CALENDAR_TOOLTIP_INVITE_TOTALS, nil, nil, nil, nil, true);
 	GameTooltip:Show();
 end
 

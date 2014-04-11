@@ -40,17 +40,17 @@
 			<OnEnter>
 				<!--Warning: The Leader button overrides this.-->
 				GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
-				GameTooltip:SetText(_G["ROLE_DESCRIPTION"..self:GetID()], nil, nil, nil, nil, 1);
+				GameTooltip:SetText(_G["ROLE_DESCRIPTION"..self:GetID()], nil, nil, nil, nil, true);
 				if ( self.permDisabled ) then
-					GameTooltip:AddLine(YOUR_CLASS_MAY_NOT_PERFORM_ROLE, 1, 0, 0, 1);
+					GameTooltip:AddLine(YOUR_CLASS_MAY_NOT_PERFORM_ROLE, 1, 0, 0, true);
 				elseif ( self.disabledTooltip and not self:IsEnabled() ) then
-					GameTooltip:AddLine(self.disabledTooltip, 1, 0, 0, 1);
+					GameTooltip:AddLine(self.disabledTooltip, 1, 0, 0, true);
 				end
 				GameTooltip:Show();
 				LFGFrameRoleCheckButton_OnEnter(self);
 			</OnEnter>
 			<OnClick>
-				if ( self.checkButton:IsEnabled() == 1 ) then
+				if ( self.checkButton:IsEnabled() ) then
 					self.checkButton:Click();
 				end
 			</OnClick>
@@ -598,7 +598,7 @@
 			<OnEnter>
 				GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
 				GameTooltip:SetText(format(LFG_CALL_TO_ARMS, _G[self.role]), 1, 1, 1);
-				GameTooltip:AddLine(LFG_CALL_TO_ARMS_EXPLANATION, nil, nil, nil, 1);
+				GameTooltip:AddLine(LFG_CALL_TO_ARMS_EXPLANATION, nil, nil, nil, true);
 				GameTooltip:Show();
 			</OnEnter>
 			<OnLeave function="GameTooltip_Hide"/>
@@ -931,7 +931,7 @@
 					<OnEnter>
 						if ( not self:IsEnabled() ) then
 							GameTooltip:SetOwner(self, "ANCHOR_BOTTOMRIGHT");
-							GameTooltip:SetText(ERR_LFG_NO_ROLES_SELECTED, 1, 0, 0, 1, 1);
+							GameTooltip:SetText(ERR_LFG_NO_ROLES_SELECTED, 1, 0, 0, 1, true);
 						end
 					</OnEnter>
 					<OnLeave>

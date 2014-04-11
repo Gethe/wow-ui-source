@@ -98,10 +98,10 @@ function InspectPaperDollFrame_OnShow()
 	end
 	
 	SetPaperDollBackground(InspectModelFrame, InspectFrame.unit);
-	InspectModelFrameBackgroundTopLeft:SetDesaturated(1);
-	InspectModelFrameBackgroundTopRight:SetDesaturated(1);
-	InspectModelFrameBackgroundBotLeft:SetDesaturated(1);
-	InspectModelFrameBackgroundBotRight:SetDesaturated(1);
+	InspectModelFrameBackgroundTopLeft:SetDesaturated(true);
+	InspectModelFrameBackgroundTopRight:SetDesaturated(true);
+	InspectModelFrameBackgroundBotLeft:SetDesaturated(true);
+	InspectModelFrameBackgroundBotRight:SetDesaturated(true);
 end
 
 function InspectPaperDollItemSlotButton_OnLoad(self)

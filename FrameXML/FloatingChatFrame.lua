@@ -570,7 +570,7 @@ function FCF_OpenNewWindow(name)
 			FCF_SetWindowName(chatFrame, name);
 			FCF_SetWindowColor(chatFrame, DEFAULT_CHATFRAME_COLOR.r, DEFAULT_CHATFRAME_COLOR.g, DEFAULT_CHATFRAME_COLOR.b);
 			FCF_SetWindowAlpha(chatFrame, DEFAULT_CHATFRAME_ALPHA);
-			SetChatWindowLocked(i, nil);
+			SetChatWindowLocked(i, false);
 
 			-- clear stale messages
 			chatFrame:Clear();
@@ -596,7 +596,7 @@ function FCF_OpenNewWindow(name)
 			-- Show the frame and tab
 			chatFrame:Show();
 			chatTab:Show();
-			SetChatWindowShown(i, 1);
+			SetChatWindowShown(i, true);
 			
 			-- Dock the frame by default
 			FCF_DockFrame(chatFrame, (#FCFDock_GetChatFrames(GENERAL_CHAT_DOCK)+1), true);
@@ -987,9 +987,9 @@ function FCF_ToggleLock()
 			FCF_SetTabPosition(chatFrame, 0);
 			chatFrame:Show();
 		end
-		FCF_SetLocked(chatFrame, nil);
+		FCF_SetLocked(chatFrame, false);
 	else
-		FCF_SetLocked(chatFrame, 1);
+		FCF_SetLocked(chatFrame, true);
 	end
 end
 
@@ -1532,7 +1532,7 @@ function FCF_DockFrame(frame, index, selected)
 	end
 	
 	-- Lock frame
-	FCF_SetLocked(frame, 1);
+	FCF_SetLocked(frame, true);
 	
 	--If the frame that is being docked and the frame it is docking to have different interactable settings, make them both interactable.
 	if ( frame.isUninteractable ~= DEFAULT_CHAT_FRAME.isUninteractable ) then
@@ -1768,7 +1768,7 @@ end
 function FCF_Set_NormalChat()
 	ChatFrame2:StartMoving();
 	ChatFrame2:StopMovingOrSizing();
-	FCF_SetLocked(ChatFrame2, nil);
+	FCF_SetLocked(ChatFrame2, false);
 	-- to fix a bug with the combat log not repositioning its tab properly when coming out of
 	-- simple chat, we need to update now
 	FCF_DockUpdate();

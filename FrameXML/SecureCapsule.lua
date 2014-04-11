@@ -58,6 +58,7 @@ end
 --For store
 if ( IsGMClient() ) then
 	retain("C_PurchaseAPI");
+	retain("HideGMOnly");
 else
 	take("C_PurchaseAPI");
 end

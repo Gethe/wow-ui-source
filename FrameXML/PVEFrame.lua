@@ -99,9 +99,8 @@ end
 
 SCENARIOS_SHOW_LEVEL = 85;
 RAID_FINDER_SHOW_LEVEL = 85;
-FLEX_RAID_SHOW_LEVEL = 90;
 
-local groupFrames = { "LFDParentFrame", "ScenarioFinderFrame", "RaidFinderFrame", "FlexRaidFrame" }
+local groupFrames = { "LFDParentFrame", "ScenarioFinderFrame", "RaidFinderFrame", "LFGListFrame" }
 
 function GroupFinderFrame_OnLoad(self)
 	SetPortraitToTexture(self.groupButton1.icon, "Interface\\Icons\\INV_Helmet_08");
@@ -109,7 +108,7 @@ function GroupFinderFrame_OnLoad(self)
 	SetPortraitToTexture(self.groupButton3.icon, "Interface\\LFGFrame\\UI-LFR-PORTRAIT");
 	self.groupButton3.name:SetText(RAID_FINDER_PVEFRAME);
 	SetPortraitToTexture(self.groupButton4.icon, "Interface\\Icons\\Achievement_General_StayClassy");
-	self.groupButton4.name:SetText(FLEX_RAID);
+	self.groupButton4.name:SetText(LFGLIST_NAME);
 	SetPortraitToTexture(self.groupButton2.icon, "Interface\\Icons\\Icon_Scenarios");
 	self.groupButton2.name:SetText(SCENARIOS_PVEFRAME);
 	-- disable
@@ -125,12 +124,12 @@ function GroupFinderFrame_OnLoad(self)
 		GroupFinderFrame:SetScript("OnEvent", GroupFinderFrame_OnEvent);
 		GroupFinderFrame:RegisterEvent("PLAYER_LEVEL_UP");
 	end
-	if ( UnitLevel("player") < FLEX_RAID_SHOW_LEVEL ) then
+	--[[if ( UnitLevel("player") < FLEX_RAID_SHOW_LEVEL ) then
 		GroupFinderFrameButton_SetEnabled(self.groupButton4, false);
 		self.groupButton4.tooltip = format(FEATURE_BECOMES_AVAILABLE_AT_LEVEL, FLEX_RAID_SHOW_LEVEL);
 		GroupFinderFrame:SetScript("OnEvent", GroupFinderFrame_OnEvent);
 		GroupFinderFrame:RegisterEvent("PLAYER_LEVEL_UP");
-	end
+	end--]]
 	-- set up accessors
 	self.getSelection = GroupFinderFrame_GetSelection;
 	self.update = GroupFinderFrame_Update;
@@ -167,13 +166,13 @@ function GroupFinderFrame_OnEvent(self, event, ...)
 		allAvailable = false;
 	end
 
-	if ( level >= FLEX_RAID_SHOW_LEVEL ) then
+	--[[if ( level >= FLEX_RAID_SHOW_LEVEL ) then
 		GroupFinderFrameButton_SetEnabled(self.groupButton4, true);
 		self.groupButton4.tooltip = nil;
 		RequestLFDPlayerLockInfo();
 	else
 		allAvailable = false;
-	end
+	end--]]
 	
 	if ( allAvailable ) then
 		GroupFinderFrame:SetScript("OnEvent", nil);

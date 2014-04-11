@@ -163,7 +163,7 @@
 							</OnLoad>
 							<OnEnter>
 								GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
-								GameTooltip:SetText(GUIDE_TOOLTIP, nil, nil, nil, nil, 1);
+								GameTooltip:SetText(GUIDE_TOOLTIP, nil, nil, nil, nil, true);
 								LFGFrameRoleCheckButton_OnEnter(self);
 							</OnEnter>
 						</Scripts>

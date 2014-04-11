@@ -83,17 +83,17 @@ function MacroFrame_Update()
 				macroButton:Enable();
 				-- Highlight Selected Macro
 				if ( MacroFrame.selectedMacro and (i == (MacroFrame.selectedMacro - MacroFrame.macroBase)) ) then
-					macroButton:SetChecked(1);
+					macroButton:SetChecked(true);
 					MacroFrameSelectedMacroName:SetText(name);
 					MacroFrameText:SetText(body);
 					MacroFrameSelectedMacroButton:SetID(i);
 					MacroFrameSelectedMacroButtonIcon:SetTexture(texture);
 					MacroPopupFrame.selectedIconTexture = gsub( strupper(texture), "INTERFACE\\ICONS\\", "");
 				else
-					macroButton:SetChecked(0);
+					macroButton:SetChecked(false);
 				end
 			else
-				macroButton:SetChecked(0);
+				macroButton:SetChecked(false);
 				macroIcon:SetTexture("");
 				macroName:SetText("");
 				macroButton:Disable();
@@ -316,6 +316,8 @@ function RefreshPlayerSpellIconInfo()
 			end
 		end
 	end
+	GetLooseMacroIcons( MACRO_ICON_FILENAMES );
+	GetLooseMacroItemIcons( MACRO_ICON_FILENAMES );
 	GetMacroIcons( MACRO_ICON_FILENAMES );
 	GetMacroItemIcons( MACRO_ICON_FILENAMES );
 end
@@ -349,19 +351,24 @@ function MacroPopupFrame_Update(self)
 		macroPopupButton = _G["MacroPopupButton"..i];
 		index = (macroPopupOffset * NUM_ICONS_PER_ROW) + i;
 		texture = GetSpellorMacroIconInfo(index);
-		if ( index <= numMacroIcons and texture ) then
-			macroPopupIcon:SetTexture("INTERFACE\\ICONS\\"..texture);
+
+		if ( index <= numMacroIcons and texture ) then			
+			if(type(texture) == "number") then
+				macroPopupIcon:SetToFileData(texture);
+			else
+				macroPopupIcon:SetTexture("INTERFACE\\ICONS\\"..texture);
+			end		
 			macroPopupButton:Show();
 		else
 			macroPopupIcon:SetTexture("");
 			macroPopupButton:Hide();
 		end
 		if ( MacroPopupFrame.selectedIcon and (index == MacroPopupFrame.selectedIcon) ) then
-			macroPopupButton:SetChecked(1);
+			macroPopupButton:SetChecked(true);
 		elseif ( MacroPopupFrame.selectedIconTexture ==  texture ) then
-			macroPopupButton:SetChecked(1);
+			macroPopupButton:SetChecked(true);
 		else
-			macroPopupButton:SetChecked(nil);
+			macroPopupButton:SetChecked(false);
 		end
 	end
 	
@@ -392,7 +399,12 @@ function MacroPopupButton_SelectTexture(selectedIcon)
 	MacroPopupFrame.selectedIcon = selectedIcon;
 	-- Clear out selected texture
 	MacroPopupFrame.selectedIconTexture = nil;
-	MacroFrameSelectedMacroButtonIcon:SetTexture("INTERFACE\\ICONS\\"..GetSpellorMacroIconInfo(MacroPopupFrame.selectedIcon));
+	local curMacroInfo = GetSpellorMacroIconInfo(MacroPopupFrame.selectedIcon);
+	if(type(curMacroInfo) == "number") then
+		MacroFrameSelectedMacroButtonIcon:SetToFileData(curMacroInfo);
+	else
+		MacroFrameSelectedMacroButtonIcon:SetTexture("INTERFACE\\ICONS\\"..curMacroInfo);
+	end	
 	MacroPopupOkayButton_Update();
 	local mode = MacroPopupFrame.mode;
 	MacroPopupFrame.mode = nil;

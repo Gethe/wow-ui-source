@@ -166,7 +166,7 @@
 							</OnClick>
 							<OnShow>
 								if IsTrialAccount() then
-									self.tooltip = RED_FONT_COLOR_CODE..TRIAL_RESTRICTED;
+									self.tooltip = RED_FONT_COLOR_CODE..TRIAL_RESTRICTED..FONT_COLOR_CODE_CLOSE;
 									self:Disable();
 								else
 									self.tooltip = nil;
@@ -176,7 +176,7 @@
 							<OnEnter>
 								if (self.tooltip) then
 									GameTooltip:SetOwner(self, "ANCHOR_BOTTOMRIGHT");
-									GameTooltip:SetText(self.tooltip, nil, nil, nil, nil, 1);
+									GameTooltip:SetText(self.tooltip, nil, nil, nil, nil, true);
 								end
 							</OnEnter>
 							<OnLeave>

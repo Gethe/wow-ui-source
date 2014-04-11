@@ -44,7 +44,7 @@
 					</OnClick>
 					<OnEnter>
 						GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
-						GameTooltip:AddLine(string.format(SKILLUP_TOOLTIP, self.countText:GetText()), NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b, 1, 1);
+						GameTooltip:AddLine(string.format(SKILLUP_TOOLTIP, self.countText:GetText()), NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b, true);
 						GameTooltip:Show();
 						TradeSkillFrameButton_OnEnter(self:GetParent());
 					</OnEnter>
@@ -247,7 +247,7 @@
 							<OnEnter>
 								if (self.tooltip) then
 									GameTooltip:SetOwner(self, "ANCHOR_LEFT");
-									GameTooltip:SetText(self.tooltip, nil, nil, nil, nil, 1);
+									GameTooltip:SetText(self.tooltip, nil, nil, nil, nil, true);
 								end
 							</OnEnter>
 							<OnLeave function="GameTooltip_Hide"/>
@@ -284,7 +284,7 @@
 							<OnEnter>
 								if (self.tooltip) then
 									GameTooltip:SetOwner(self, "ANCHOR_LEFT");
-									GameTooltip:SetText(self.tooltip, nil, nil, nil, nil, 1);
+									GameTooltip:SetText(self.tooltip, nil, nil, nil, nil, true);
 								end
 							</OnEnter>
 							<OnLeave function="GameTooltip_Hide"/>
@@ -853,7 +853,6 @@
 						end
 					</OnEditFocusGained>
 				</Scripts>
-				<FontString inherits="ChatFontSmall"/>
 			</EditBox>
 			<Frame name="TradeSkillFilterFrame" >
 				<Size x="1" y="1"/>
@@ -919,7 +918,7 @@
 							</OnClick>
 							<OnEnter>
 								GameTooltip:SetOwner(self,"ANCHOR_TOPLEFT");
-								GameTooltip:SetText(LINK_TRADESKILL_TOOLTIP, nil, nil, nil, nil, 1);
+								GameTooltip:SetText(LINK_TRADESKILL_TOOLTIP, nil, nil, nil, nil, true);
 								GameTooltip:Show();
 							</OnEnter>
 							<OnLeave function="GameTooltip_Hide"/>

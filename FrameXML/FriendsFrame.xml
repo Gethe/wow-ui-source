@@ -166,12 +166,12 @@ TRAVEL PASS
 					</OnClick>
 					<OnEnter>
 						GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
-						GameTooltip:AddLine(RAF_SUMMON_LINKED, 1, 1, 1, 1);
+						GameTooltip:AddLine(RAF_SUMMON_LINKED, 1, 1, 1, true);
 						if ( self.duration ) then
-							GameTooltip:AddLine(COOLDOWN_REMAINING .. " " .. SecondsToTime(self.duration - (GetTime() - self.start)), 1, 1, 1, 1);
+							GameTooltip:AddLine(COOLDOWN_REMAINING .. " " .. SecondsToTime(self.duration - (GetTime() - self.start)), 1, 1, 1, true);
 						end
 						if ( SHOW_NEWBIE_TIPS == "1" ) then
-							GameTooltip:AddLine(NEWBIE_TOOLTIP_RAF_SUMMON_LINKED, NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b, 1)
+							GameTooltip:AddLine(NEWBIE_TOOLTIP_RAF_SUMMON_LINKED, NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b, true)
 						end
 						GameTooltip:Show();
 					</OnEnter>
@@ -298,12 +298,12 @@ TRAVEL PASS
 							</OnClick>
 							<OnEnter>
 								GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
-								GameTooltip:AddLine(RAF_SUMMON_LINKED, 1, 1, 1, 1);
+								GameTooltip:AddLine(RAF_SUMMON_LINKED, 1, 1, 1, true);
 								if ( self.duration ) then
-									GameTooltip:AddLine(COOLDOWN_REMAINING .. " " .. SecondsToTime(self.duration - (GetTime() - self.start)), 1, 1, 1, 1);
+									GameTooltip:AddLine(COOLDOWN_REMAINING .. " " .. SecondsToTime(self.duration - (GetTime() - self.start)), 1, 1, 1, true);
 								end
 								if ( SHOW_NEWBIE_TIPS == "1" ) then
-									GameTooltip:AddLine(NEWBIE_TOOLTIP_RAF_SUMMON_LINKED, NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b, 1)
+									GameTooltip:AddLine(NEWBIE_TOOLTIP_RAF_SUMMON_LINKED, NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b, true)
 								end
 								GameTooltip:Show();
 							</OnEnter>
@@ -495,7 +495,7 @@ TRAVEL PASS
 						self.texture:SetAlpha(1.0);
 						GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
 						GameTooltip:AddLine(BNET_REPORT_PLAYER, 1, 1, 1);
-						GameTooltip:AddLine(BNET_REPORT_PLAYER_TOOLTIP, nil, nil, nil, 1);
+						GameTooltip:AddLine(BNET_REPORT_PLAYER_TOOLTIP, nil, nil, nil, true);
 						GameTooltip:Show();
 					</OnEnter>
 					<OnLeave>
@@ -531,7 +531,7 @@ TRAVEL PASS
 						self.texture:SetAlpha(1.0);
 						GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
 						GameTooltip:AddLine(BLOCK_INVITES, 1, 1, 1);
-						GameTooltip:AddLine(BLOCK_INVITES_TOOLTIP, nil, nil, nil, 1);
+						GameTooltip:AddLine(BLOCK_INVITES_TOOLTIP, nil, nil, nil, true);
 						GameTooltip:Show();
 					</OnEnter>
 					<OnLeave>
@@ -1137,7 +1137,7 @@ TRAVEL PASS
 									</OnClick>
 									<OnEnter>
 										GameTooltip:SetOwner(FriendsFrameBroadcastInput, "ANCHOR_RIGHT");
-										GameTooltip:SetText(BN_BROADCAST_TOOLTIP, nil, nil, nil, nil, 1);
+										GameTooltip:SetText(BN_BROADCAST_TOOLTIP, nil, nil, nil, nil, true);
 									</OnEnter>
 									<OnLeave>
 										GameTooltip:Hide();
@@ -1249,7 +1249,7 @@ TRAVEL PASS
 							<OnEnter>
 								GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
 								GameTooltip:SetText(SEND_SCROLL_OF_RESURRECTION);
-								GameTooltip:AddLine(SCROLL_OF_RESURRECTION_TOOLTIP, 1, 1, 1, 1);
+								GameTooltip:AddLine(SCROLL_OF_RESURRECTION_TOOLTIP, 1, 1, 1, true);
 								GameTooltip:Show();
 							</OnEnter>
 							<OnLeave>
@@ -1923,13 +1923,13 @@ TRAVEL PASS
 				</Frames>
 				<Scripts>
 					<OnLoad>
-						SetWhoToUI(0);
+						SetWhoToUI(false);
 					</OnLoad>
 					<OnShow>
-						SetWhoToUI(1);
+						SetWhoToUI(true);
 					</OnShow>
 					<OnHide>
-						SetWhoToUI(0);
+						SetWhoToUI(false);
 					</OnHide>
 				</Scripts>
 			</Frame>
@@ -2921,10 +2921,13 @@ TRAVEL PASS
 				<Anchors>
 					<Anchor point="TOP" x="0" y="-59"/>
 				</Anchors>
+				<KeyValues>
+					<KeyValue key="maxLetters" value="127" type="number"/>
+					<KeyValue key="instructions" value="ENTER_INVITE_NOTE" type="global"/>
+				</KeyValues>
 				<Scripts>
 					<OnLoad>
-						self.EditBox.PromptText:SetFontObject("FriendsFont_Small");
-						self.EditBox.PromptText:SetText(ENTER_INVITE_NOTE);
+						self.EditBox.Instructions:SetFontObject("FriendsFont_Small");
 						self.EditBox:SetFontObject("FriendsFont_Small");
 						InputScrollFrame_OnLoad(self);
 					</OnLoad>

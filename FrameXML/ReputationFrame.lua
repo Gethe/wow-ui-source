@@ -18,6 +18,7 @@ MAX_PLAYER_LEVEL_TABLE[1] = 70;
 MAX_PLAYER_LEVEL_TABLE[2] = 80;
 MAX_PLAYER_LEVEL_TABLE[3] = 85;
 MAX_PLAYER_LEVEL_TABLE[4] = 90;
+MAX_PLAYER_LEVEL_TABLE[5] = 100;
 MAX_PLAYER_LEVEL = 0;
 REPUTATIONFRAME_ROWSPACING = 23;
 
@@ -62,10 +63,10 @@ function ReputationFrame_SetRowType(factionRow, isChild, isHeader, hasRep)	--row
 	if ( isHeader ) then
 		if ( isChild ) then
 			factionRow:SetPoint("LEFT", ReputationFrame, "LEFT", 29, 0);
-			factionTitle:SetWidth(135);
+			factionTitle:SetWidth(150);
 		else
 			factionRow:SetPoint("LEFT", ReputationFrame, "LEFT", 10, 0);
-			factionTitle:SetWidth(145);
+			factionTitle:SetWidth(160);
 		end
 
 		factionButton:SetPoint("LEFT", factionRow, "LEFT", 3, 0);
@@ -84,10 +85,10 @@ function ReputationFrame_SetRowType(factionRow, isChild, isHeader, hasRep)	--row
 	else
 		if ( isChild ) then
 			factionRow:SetPoint("LEFT", ReputationFrame, "LEFT", 52, 0);
-			factionTitle:SetWidth(150);
+			factionTitle:SetWidth(125);
 		else
 			factionRow:SetPoint("LEFT", ReputationFrame, "LEFT", 34, 0);
-			factionTitle:SetWidth(160);
+			factionTitle:SetWidth(143);
 		end
 
 		factionButton:Hide();
@@ -215,9 +216,9 @@ function ReputationFrame_Update(showLFGPulse)
 					ReputationDetailFactionName:SetText(name);
 					ReputationDetailFactionDescription:SetText(description);
 					if ( atWarWith ) then
-						ReputationDetailAtWarCheckBox:SetChecked(1);
+						ReputationDetailAtWarCheckBox:SetChecked(true);
 					else
-						ReputationDetailAtWarCheckBox:SetChecked(nil);
+						ReputationDetailAtWarCheckBox:SetChecked(false);
 					end
 					if ( canToggleAtWar and (not isHeader)) then
 						ReputationDetailAtWarCheckBox:Enable();
@@ -234,14 +235,14 @@ function ReputationFrame_Update(showLFGPulse)
 						ReputationDetailInactiveCheckBoxText:SetTextColor(GRAY_FONT_COLOR.r, GRAY_FONT_COLOR.g, GRAY_FONT_COLOR.b);
 					end
 					if ( IsFactionInactive(factionIndex) ) then
-						ReputationDetailInactiveCheckBox:SetChecked(1);
+						ReputationDetailInactiveCheckBox:SetChecked(true);
 					else
-						ReputationDetailInactiveCheckBox:SetChecked(nil);
+						ReputationDetailInactiveCheckBox:SetChecked(false);
 					end
 					if ( isWatched ) then
-						ReputationDetailMainScreenCheckBox:SetChecked(1);
+						ReputationDetailMainScreenCheckBox:SetChecked(true);
 					else
-						ReputationDetailMainScreenCheckBox:SetChecked(nil);
+						ReputationDetailMainScreenCheckBox:SetChecked(false);
 					end
 					ReputationDetailFrame:SetHeight(canBeLFGBonus and 225 or 203);
 					ReputationDetailLFGBonusReputationCheckBox:SetShown(canBeLFGBonus);

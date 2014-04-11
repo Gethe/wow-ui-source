@@ -94,7 +94,7 @@
 				</Anchors>
 				<Scripts>
 					<OnClick>
-						self:SetChecked(nil);
+						self:SetChecked(false);
 						PickupMacro(MacroFrame.selectedMacro);
 					</OnClick>
 				</Scripts>

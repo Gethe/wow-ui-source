@@ -238,7 +238,7 @@
 					</OnClick>
 					<OnEnter>
 						GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
-						GameTooltip:SetText(TOKEN_MOVE_TO_UNUSED, nil, nil, nil, nil, 1);
+						GameTooltip:SetText(TOKEN_MOVE_TO_UNUSED, nil, nil, nil, nil, true);
 					</OnEnter>
 					<OnLeave function="GameTooltip_Hide"/>
 				</Scripts>
@@ -276,7 +276,7 @@
 					</OnClick>
 					<OnEnter>
 						GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
-						GameTooltip:SetText(TOKEN_SHOW_ON_BACKPACK, nil, nil, nil, nil, 1);
+						GameTooltip:SetText(TOKEN_SHOW_ON_BACKPACK, nil, nil, nil, nil, true);
 					</OnEnter>
 					<OnLeave function="GameTooltip_Hide"/>
 				</Scripts>

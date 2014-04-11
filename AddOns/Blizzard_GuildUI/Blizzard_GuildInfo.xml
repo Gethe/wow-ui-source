@@ -94,12 +94,12 @@
 		<Scripts>
 			<OnEnter>
 				GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
-				GameTooltip:SetText(_G["GUILDRECRUITMENT_ROLE"..self:GetID()], nil, nil, nil, nil, 1);
+				GameTooltip:SetText(_G["GUILDRECRUITMENT_ROLE"..self:GetID()], nil, nil, nil, nil, true);
 				GameTooltip:Show();
 				LFGFrameRoleCheckButton_OnEnter(self);
 			</OnEnter>
 			<OnClick>
-				if ( self.checkButton:IsEnabled() == 1 ) then
+				if ( self.checkButton:IsEnabled()) then
 					self.checkButton:Click();
 				end
 			</OnClick>
@@ -270,17 +270,17 @@
 					GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
 					GameTooltip:SetText(_G["GUILD_CHALLENGE_LABEL"..index]);
 					GameTooltip:AddLine(" ")
-					GameTooltip:AddLine(_G["GUILD_CHALLENGE_TOOLTIP"..index], 1, 1, 1, 1, 1);
+					GameTooltip:AddLine(_G["GUILD_CHALLENGE_TOOLTIP"..index], 1, 1, 1, true);
 					GameTooltip:AddLine(" ")
 					local guildLevel, maxGuildLevel = GetGuildLevel();
 					if ( guildLevel == maxGuildLevel ) then
 						local goldString = GetMoneyString(maxGold * COPPER_PER_SILVER * SILVER_PER_GOLD);
-						GameTooltip:AddLine(string.format(GUILD_CHALLENGE_REWARD_GOLD, goldString), 1, 1, 1, 1, 1);
+						GameTooltip:AddLine(string.format(GUILD_CHALLENGE_REWARD_GOLD, goldString), 1, 1, 1, true);
 					else
-						GameTooltip:AddLine(string.format(GUILD_CHALLENGE_REWARD_XP, xp), 1, 1, 1, 1, 1);
+						GameTooltip:AddLine(string.format(GUILD_CHALLENGE_REWARD_XP, xp), 1, 1, 1, true);
 						if ( gold > 0 ) then
 							local goldString = GetMoneyString(gold * COPPER_PER_SILVER * SILVER_PER_GOLD);
-							GameTooltip:AddLine(goldString, 1, 1, 1, 1, 1);
+							GameTooltip:AddLine(goldString, 1, 1, 1, true);
 						end
 					end
 					GameTooltip:Show();

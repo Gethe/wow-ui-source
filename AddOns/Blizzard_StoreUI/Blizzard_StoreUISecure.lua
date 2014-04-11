@@ -23,6 +23,7 @@ local WaitingOnConfirmation = false;
 local WaitingOnConfirmationTime = 0;
 local ProcessAnimPlayed = false;
 local NumUpgradeDistributions = 0;
+local JustOrderedBoost = false;
 
 --Imports
 Import("C_PurchaseAPI");
@@ -31,6 +32,7 @@ Import("C_SharedCharacterServices");
 Import("C_AuthChallenge");
 Import("CreateForbiddenFrame");
 Import("IsGMClient");
+Import("HideGMOnly");
 Import("math");
 Import("pairs");
 Import("select");
@@ -952,7 +954,7 @@ function StoreFrame_OnEvent(self, event, ...)
 		StoreFrame_OnError(self, err, false, internalErr);
 		StoreFrame_UpdateActivePanel(self);
 	elseif ( event == "PRODUCT_DISTRIBUTIONS_UPDATED" ) then
-		if (C_SharedCharacterServices.IsPurchaseIDPendingUpgrade() and self:IsShown() and StoreStateDriverFrame.NoticeTextTimer:IsPlaying()) then
+		if (JustOrderedBoost) then
 			if (IsOnGlueScreen()) then
 				self:Hide();
 				_G.CharacterUpgradeFlow:SetTarget(false);
@@ -964,10 +966,12 @@ function StoreFrame_OnEvent(self, event, ...)
 				ServicesLogoutPopup.Background.Description:SetText(CHARACTER_UPGRADE_READY_DESCRIPTION);
 				ServicesLogoutPopup:Show();
 			end
+			JustOrderedBoost = false;
 		end
 	elseif ( event == "AUTH_CHALLENGE_FINISHED" ) then
 		if (not C_AuthChallenge.DidChallengeSucceed()) then
 			JustOrderedProduct = false;
+			JustOreredBoost = false;
 		else
 			StoreStateDriverFrame.NoticeTextTimer:Play();
 		end
@@ -1070,7 +1074,7 @@ function StoreFrame_OnError(self, errorID, needsAck, internalErr)
 	if ( not info ) then
 		info = errorData[LE_STORE_ERROR_OTHER];
 	end
-	if ( IsGMClient() ) then
+	if ( IsGMClient() and not HideGMOnly() ) then
 		StoreFrame_ShowError(self, info.title.." ("..internalErr..")", info.msg, info.link, needsAck);
 	else
 		StoreFrame_ShowError(self, info.title, info.msg, info.link, needsAck);
@@ -1357,6 +1361,8 @@ end
 
 local FinalPriceDollars;
 local FinalPriceCents;
+local IsUpgrade;
+
 function StoreConfirmationFrame_Update(self)
 	local productID, walletName = C_PurchaseAPI.GetConfirmationInfo();
 	if ( not productID ) then
@@ -1370,6 +1376,7 @@ function StoreConfirmationFrame_Update(self)
 		finalIcon = "Interface\\Icons\\INV_Misc_Note_02";
 	end
 	StoreConfirmationFrame_SetNotice(self, finalIcon, name, currentDollars, currentCents, walletName, upgrade);
+	IsUpgrade = upgrade;
 
 	local info = currencyInfo();
 	self.BrowseNotice:SetText(info.browseNotice);
@@ -1427,6 +1434,7 @@ function StoreConfirmationFinalBuy_OnClick(self)
 	
 	if ( C_PurchaseAPI.PurchaseProductConfirm(true, FinalPriceDollars, FinalPriceCents) ) then
 		JustOrderedProduct = true;
+		JustOrderedBoost = IsUpgrade;
 		StoreStateDriverFrame.NoticeTextTimer:Play();
 		PlaySound("UI_igStore_ConfirmPurchase_Button");
 	else

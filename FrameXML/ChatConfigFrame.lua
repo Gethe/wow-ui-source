@@ -1128,11 +1128,11 @@ function CombatConfig_Colorize_Update()
 		BlizzardOptionsPanel_CheckButton_Disable(CombatConfigColorsColorizeEntireLineByTarget);
 	end
 	if ( CHATCONFIG_SELECTED_FILTER.settings.lineColorPriority == 1 ) then
-		CombatConfigColorsColorizeEntireLineBySource:SetChecked(1);
-		CombatConfigColorsColorizeEntireLineByTarget:SetChecked(nil);
+		CombatConfigColorsColorizeEntireLineBySource:SetChecked(true);
+		CombatConfigColorsColorizeEntireLineByTarget:SetChecked(false);
 	else
-		CombatConfigColorsColorizeEntireLineBySource:SetChecked(nil);
-		CombatConfigColorsColorizeEntireLineByTarget:SetChecked(1);
+		CombatConfigColorsColorizeEntireLineBySource:SetChecked(false);
+		CombatConfigColorsColorizeEntireLineByTarget:SetChecked(true);
 	end
 
 	-- Line Highlighting

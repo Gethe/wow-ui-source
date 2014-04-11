@@ -513,7 +513,7 @@ function TradeSkillFrame_SetSelection(id)
 			end
 			count:SetText(playerReagentCount.." /"..reagentCount);
 			--fix text overflow when the reagent count is too high
-			if (math.floor(count:GetStringWidth()) > math.floor(reagent.icon:GetWidth() + .5)) then 
+			if (math.floor(count:GetStringWidth()) > math.floor(reagent.Icon:GetWidth() + .5)) then 
 			--round count width down because the leftmost number can overflow slightly without looking bad
 			--round icon width because it should always be an int, but sometimes it's a slightly off float
 				count:SetText(playerReagentCount.."\n/"..reagentCount);

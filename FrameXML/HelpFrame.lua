@@ -29,7 +29,9 @@ HelpFrameNavTbl[1] = {	text = KNOWLEDGE_BASE,
 					};
 HelpFrameNavTbl[2] = {	text = HELPFRAME_ACCOUNTSECURITY_TITLE, 
 						icon ="Interface\\HelpFrame\\HelpIcon-AccountSecurity",
-						frame = "asec"
+						frame = "asec",
+						disableOnTest = true,
+						disableTootip = DISABLED_ON_TEST_REALM
 					};
 HelpFrameNavTbl[3] = {	text = HELPFRAME_STUCK_TITLE, 
 						icon ="Interface\\HelpFrame\\HelpIcon-CharacterStuck",
@@ -41,11 +43,15 @@ HelpFrameNavTbl[4] = {	text = HELPFRAME_REPORT_BUG_TITLE,
 					};
 HelpFrameNavTbl[5] = {	text = HELPFRAME_REPORT_PLAYER_TITLE, 
 						icon="Interface\\HelpFrame\\HelpIcon-ReportAbuse",
-						frame = "report"
+						frame = "report",
+						disableOnTest = true,
+						disableTootip = DISABLED_ON_TEST_REALM
 					};
 HelpFrameNavTbl[6] = {	text = HELP_TICKET_OPEN, 
 						icon ="Interface\\HelpFrame\\HelpIcon-OpenTicket",
-						frame = "ticketHelp"
+						frame = "ticketHelp",
+						disableOnTest = true,
+						disableTootip = DISABLED_ON_TEST_REALM
 					};					
 
 --LAG REPORITNG BUTTONS					
@@ -292,7 +298,12 @@ function HelpFrame_UpdateItemRestorationButtonStatus()
 end
 
 function HelpFrame_ShowFrame(key)
-	key = key or HelpFrame.selectedId or HELPFRAME_START_PAGE;
+	local testEnabled = IsTestBuild() and GMQuickTicketSystemEnabled() and not GMQuickTicketSystemThrottled();
+	if ( testEnabled ) then
+		key = key or HelpFrame.selectedId or HELPFRAME_SUBMIT_BUG;
+	else
+		key = key or HelpFrame.selectedId or HELPFRAME_START_PAGE;
+	end
 	if HelpFrameNavTbl[key].button and HelpFrameNavTbl[key].button:IsEnabled() then
 		HelpFrameNavTbl[key].button:Click();
 	else
@@ -403,16 +414,27 @@ function HelpFrame_SetTicketEntry()
 end
 
 function HelpFrame_SetButtonEnabled(button, enabled)
+	local id = button:GetID();
+	if ( IsTestBuild() ) then
+		if ( id and HelpFrameNavTbl[id].disableOnTest ) then
+			enabled = false;
+		end
+		button.tooltip = HelpFrameNavTbl[id].disableTootip;
+		button.newbieText = nil;
+	else
+		button.tooltip = HelpFrameNavTbl[id].tooltipTex;
+		button.newbieText = HelpFrameNavTbl[id].newbieText;
+	end
 	if ( enabled ) then
 		button:Enable();
-		button:GetNormalTexture():SetDesaturated(0);
-		button.icon:SetDesaturated(0);
+		button:GetNormalTexture():SetDesaturated(false);
+		button.icon:SetDesaturated(false);
 		button.icon:SetVertexColor(1, 1, 1);
 		button.text:SetFontObject(GameFontNormalMed3);
 	else
 		button:Disable();
-		button:GetNormalTexture():SetDesaturated(1);
-		button.icon:SetDesaturated(1);
+		button:GetNormalTexture():SetDesaturated(true);
+		button.icon:SetDesaturated(true);
 		button.icon:SetVertexColor(0.5, 0.5, 0.5);
 		button.text:SetFontObject(GameFontDisableMed3);
 	end
@@ -601,21 +623,21 @@ function HelpOpenTicketButton_OnUpdate(self, elapsed)
 		end
 		
 		GameTooltip:SetOwner(self, "ANCHOR_TOP");
-		GameTooltip:AddLine(self.titleText, HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b, 1);
+		GameTooltip:AddLine(self.titleText, HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b, true);
 		GameTooltip:AddLine(self.statusText);
 		if (timeText) then
 			GameTooltip:AddLine(timeText);
 		end
 		
 		GameTooltip:AddLine(" ");
-		GameTooltip:AddLine(HELPFRAME_TICKET_CLICK_HELP, GRAY_FONT_COLOR.r, GRAY_FONT_COLOR.g, GRAY_FONT_COLOR.b, 1);
+		GameTooltip:AddLine(HELPFRAME_TICKET_CLICK_HELP, GRAY_FONT_COLOR.r, GRAY_FONT_COLOR.g, GRAY_FONT_COLOR.b, true);
 		GameTooltip:Show();
 	elseif ( haveResponse ) then
 		GameTooltip:SetOwner(self, "ANCHOR_TOP");
-		GameTooltip:SetText(GM_RESPONSE_ALERT, nil, nil, nil, nil, 1);
+		GameTooltip:SetText(GM_RESPONSE_ALERT, nil, nil, nil, nil, true);
 	elseif ( TicketStatusFrame.hasGMSurvey ) then
 		GameTooltip:SetOwner(self, "ANCHOR_TOP");
-		GameTooltip:SetText(CHOSEN_FOR_GMSURVEY, nil, nil, nil, nil, 1);
+		GameTooltip:SetText(CHOSEN_FOR_GMSURVEY, nil, nil, nil, nil, true);
 	end
 end
 
@@ -717,19 +739,19 @@ function HelpOpenWebTicketButton_OnEnter(self, elapsed)
 	if ( self.haveTicket ) then
 		if ( self.haveResponse ) then
 			GameTooltip:SetOwner(self, "ANCHOR_TOP");
-			GameTooltip:SetText(GM_RESPONSE_ALERT, nil, nil, nil, nil, 1);
+			GameTooltip:SetText(GM_RESPONSE_ALERT, nil, nil, nil, nil, true);
 		elseif ( self.hasGMSurvey ) then
 			GameTooltip:SetOwner(self, "ANCHOR_TOP");
-			GameTooltip:SetText(CHOSEN_FOR_GMSURVEY, nil, nil, nil, nil, 1);
+			GameTooltip:SetText(CHOSEN_FOR_GMSURVEY, nil, nil, nil, nil, true);
 		else
 			GameTooltip:SetOwner(self, "ANCHOR_TOP");
-			GameTooltip:AddLine(self.titleText, HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b, 1);
+			GameTooltip:AddLine(self.titleText, HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b, true);
 			if (self.statusText) then
 				GameTooltip:AddLine(self.statusText);
 			end
 		end
 		GameTooltip:AddLine(" ");
-		GameTooltip:AddLine(HELPFRAME_TICKET_CLICK_HELP, GRAY_FONT_COLOR.r, GRAY_FONT_COLOR.g, GRAY_FONT_COLOR.b, 1);
+		GameTooltip:AddLine(HELPFRAME_TICKET_CLICK_HELP, GRAY_FONT_COLOR.r, GRAY_FONT_COLOR.g, GRAY_FONT_COLOR.b, true);
 		GameTooltip:Show();
 	end
 end
@@ -910,6 +932,8 @@ function KnowledgeBase_OnLoad(self)
 		OnClick = KnowledgeBase_DisplayCategories,
 		listFunc = KnowledgeBase_ListCategory,
 	}
+	self.navBar.textMaxWidth = 117;
+	self.navBar.oldStyle = true;
 	NavBar_Initialize(self.navBar, "HelpFrameNavButtonTemplate", homeData, self.navBar.home, self.navBar.overflow);
 
 	--Scroll Frame

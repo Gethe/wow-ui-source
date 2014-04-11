@@ -267,7 +267,7 @@ function TransmogrifySlotButton_OnEnter(self)
 		GameTooltip:SetText(slotName);
 		local errorMsg = _G["TRANSMOGRIFY_INVALID_REASON"..cannotTransmogrifyReason];
 		if ( errorMsg ) then
-			GameTooltip:AddLine(errorMsg, RED_FONT_COLOR.r, RED_FONT_COLOR.g, RED_FONT_COLOR.b, 1, 1);
+			GameTooltip:AddLine(errorMsg, RED_FONT_COLOR.r, RED_FONT_COLOR.g, RED_FONT_COLOR.b, true);
 		end
 		GameTooltip:Show();
 	else
@@ -403,9 +403,9 @@ end
 
 function TransmogrifyItemFlyoutButton_OnClick(self)
 	if ( self.location ) then
-		local player, bank, bags, voidStorage, slot, bag = EquipmentManager_UnpackLocation(self.location);
+		local player, bank, bags, voidStorage, slot, bag, _, tab, voidSlot = EquipmentManager_UnpackLocation(self.location);
 		if ( voidStorage ) then
-			UseVoidItemForTransmogrify(slot, EquipmentFlyoutFrame.button.id);
+			UseVoidItemForTransmogrify(tab, voidSlot, EquipmentFlyoutFrame.button.id);
 		elseif ( bag ) then
 			UseItemForTransmogrify(bag, slot, EquipmentFlyoutFrame.button.id);
 		else

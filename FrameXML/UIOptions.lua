@@ -10,7 +10,5 @@ VideoOptionsDropDownMenu_SetText = UIDropDownMenu_SetText;
 VideoOptionsDropDownMenu_SetWidth = UIDropDownMenu_SetWidth;
 VideoOptionsDropDownMenu_CreateInfo = UIDropDownMenu_CreateInfo;
 VideoOptionsDropDownMenu_AddButton = UIDropDownMenu_AddButton;
-function InGlue()
-	return false;
-end
+
 

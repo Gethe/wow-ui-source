@@ -554,8 +554,8 @@ end
 
 function AchievementFrameCategory_StatusBarTooltip(self)
 	GameTooltip_SetDefaultAnchor(GameTooltip, self);
-	GameTooltip:SetMinimumWidth(128, 1);
-	GameTooltip:SetText(self.name, 1, 1, 1, nil, 1);
+	GameTooltip:SetMinimumWidth(128, true);
+	GameTooltip:SetText(self.name, 1, 1, 1, nil, true);
 	GameTooltip_ShowStatusBar(GameTooltip, 0, self.numAchievements, self.numCompleted, self.numCompletedText);
 	GameTooltip:Show();
 end
@@ -563,7 +563,7 @@ end
 function AchievementFrameCategory_FeatOfStrengthTooltip(self)
 	GameTooltip_SetDefaultAnchor(GameTooltip, self);
 	GameTooltip:SetText(self.name, 1, 1, 1);
-	GameTooltip:AddLine(self.text, nil, nil, nil, 1);
+	GameTooltip:AddLine(self.text, nil, nil, nil, true);
 	GameTooltip:Show();
 end
 
@@ -766,7 +766,7 @@ function AchievementFrameAchievements_OnEvent (self, event, ...)
 	if ( event == "ADDON_LOADED" ) then
 		self:RegisterEvent("ACHIEVEMENT_EARNED");
 		self:RegisterEvent("CRITERIA_UPDATE");
-		self:RegisterEvent("TRACKED_ACHIEVEMENT_UPDATE");
+		self:RegisterEvent("TRACKED_ACHIEVEMENT_LIST_CHANGED");
 		self:RegisterEvent("RECEIVED_ACHIEVEMENT_MEMBER_LIST");
 		
 		updateTrackedAchievements(GetTrackedAchievements());
@@ -794,11 +794,11 @@ function AchievementFrameAchievements_OnEvent (self, event, ...)
 		else
 			AchievementFrameAchievementsObjectives.id = nil; -- Force redraw
 		end
-	elseif ( event == "TRACKED_ACHIEVEMENT_UPDATE" ) then
+	elseif ( event == "TRACKED_ACHIEVEMENT_LIST_CHANGED" ) then
 		for k, v in next, trackedAchievements do
 			trackedAchievements[k] = nil;
 		end
-		
+
 		updateTrackedAchievements(GetTrackedAchievements());
 	elseif ( event == "RECEIVED_ACHIEVEMENT_MEMBER_LIST" ) then
 		local achievementID = ...;
@@ -1584,16 +1584,23 @@ function AchievementObjectives_DisplayProgressiveAchievement (objectivesFrame, i
 			miniAchievement:SetPoint("TOPLEFT", miniTable[index-1], "TOPRIGHT", 4, 0);
 		end
 		
-		miniAchievement.points:SetText(points);
+		if ( points > 0 ) then
+			miniAchievement.points:SetText(points);
+			miniAchievement.points:Show();
+			miniAchievement.shield:SetTexture([[Interface\AchievementFrame\UI-Achievement-Progressive-Shield]]);
+		else
+			miniAchievement.points:Hide();
+			miniAchievement.shield:SetTexture([[Interface\AchievementFrame\UI-Achievement-Progressive-Shield-NoPoints]]);
+		end
 		
 		miniAchievement.numCriteria = 0;
 		if ( not ( bit.band(flags, ACHIEVEMENT_FLAGS_HAS_PROGRESS_BAR) == ACHIEVEMENT_FLAGS_HAS_PROGRESS_BAR ) ) then
 			for i = 1, GetAchievementNumCriteria(achievementID) do
 				local criteriaString, criteriaType, completed = GetAchievementCriteriaInfo(achievementID, i);
 				if ( completed == false ) then
-					criteriaString = "|CFF808080 - " .. criteriaString;
+					criteriaString = "|CFF808080 - " .. criteriaString .. "|r";
 				else
-					criteriaString = "|CFF00FF00 - " .. criteriaString;
+					criteriaString = "|CFF00FF00 - " .. criteriaString .. "|r";
 				end
 				miniAchievement["criteria" .. i] = criteriaString;
 				miniAchievement.numCriteria = i;
@@ -2129,7 +2136,7 @@ end
 function AchievementStatButton_OnEnter(self)
 	if ( self.text:IsTruncated() ) then
 		GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
-		GameTooltip:SetText(self.text:GetText(), 1, 1, 1, 1, 1);
+		GameTooltip:SetText(self.text:GetText(), 1, 1, 1, 1, true);
 	end
 end
 
@@ -2370,7 +2377,7 @@ function AchievementFrameSummaryAchievement_OnEnter(self)
 	if ( self.tooltipTitle ) then
 		GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
 		GameTooltip:SetText(self.tooltipTitle,1,1,1);
-		GameTooltip:AddLine(self.tooltip, nil, nil, nil, 1);
+		GameTooltip:AddLine(self.tooltip, nil, nil, nil, true);
 		GameTooltip:Show();
 	end
 end
@@ -3360,7 +3367,7 @@ end
 function AchievementMeta_OnEnter(self)
 	if ( self.date ) then
 		GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
-		GameTooltip:AddLine(string.format(ACHIEVEMENT_META_COMPLETED_DATE, self.date), 1, 1, 1);
+		GameTooltip:AddLine(string.format(ACHIEVEMENT_META_COMPLETED_DATE, self.date), 1, 1, true);
 		AchievementFrameAchievements_CheckGuildMembersTooltip(self);
 		GameTooltip:Show();
 	end

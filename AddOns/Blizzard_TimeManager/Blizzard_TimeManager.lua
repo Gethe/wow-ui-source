@@ -541,7 +541,7 @@ function TimeManagerClockButton_UpdateTooltip()
 
 	if ( TimeManagerClockButton.alarmFiring ) then
 		if ( gsub(Settings.alarmMessage, "%s", "") ~= "" ) then
-			GameTooltip:AddLine(Settings.alarmMessage, HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b, 1);
+			GameTooltip:AddLine(Settings.alarmMessage, HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b, true);
 			GameTooltip:AddLine(" ");
 		end
 		GameTooltip:AddLine(TIMEMANAGER_ALARM_TOOLTIP_TURN_OFF);
@@ -685,14 +685,14 @@ function StopwatchFrame_OnUpdate(self)
 end
 
 function StopwatchFrame_OnShow(self)
-	TimeManagerStopwatchCheck:SetChecked(1);
+	TimeManagerStopwatchCheck:SetChecked(true);
 end
 
 function StopwatchFrame_OnHide(self)
 	UIFrameFadeRemoveFrame(StopwatchTabFrame);
 	StopwatchTabFrame:SetAlpha(0);
 	self.prevMouseIsOver = false;
-	TimeManagerStopwatchCheck:SetChecked(nil);
+	TimeManagerStopwatchCheck:SetChecked(false);
 end
 
 function StopwatchFrame_OnMouseDown(self)

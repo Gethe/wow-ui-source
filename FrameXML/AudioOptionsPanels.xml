@@ -349,7 +349,7 @@
 					</OnLoad>
 					<OnEnter>
 						GameTooltip:SetOwner(self, "ANCHOR_TOPRIGHT");
-						GameTooltip:SetText(OPTION_TOOLTIP_SOUND_OUTPUT, nil, nil, nil, nil, 1);
+						GameTooltip:SetText(OPTION_TOOLTIP_SOUND_OUTPUT, nil, nil, nil, nil, true);
 						GameTooltip:Show();
 					</OnEnter>
 					<OnLeave function="GameTooltip_Hide"/>
@@ -382,7 +382,7 @@
 					</OnLoad>
 					<OnEnter>
 						GameTooltip:SetOwner(self, "ANCHOR_TOPRIGHT");
-						GameTooltip:SetText(OPTION_TOOLTIP_SOUND_CHANNELS, nil, nil, nil, nil, 1);
+						GameTooltip:SetText(OPTION_TOOLTIP_SOUND_CHANNELS, nil, nil, nil, nil, true);
 						GameTooltip:Show();
 					</OnEnter>
 					<OnLeave function="GameTooltip_Hide"/>
@@ -464,10 +464,10 @@
 						if ( self:IsEnabled() ) then
 							if ( self.tooltipText ) then
 								GameTooltip:SetOwner(self, self.tooltipOwnerPoint or "ANCHOR_RIGHT");
-								GameTooltip:SetText(self.tooltipText, nil, nil, nil, nil, 1);
+								GameTooltip:SetText(self.tooltipText, nil, nil, nil, nil, true);
 							end
 							if (not AudioOptionsSoundPanelEnableSound:GetChecked()) then								
-								GameTooltip:AddLine(MUTED, 1.0, 0.0, 0.0, 1.0, 1);
+								GameTooltip:AddLine(MUTED, 1.0, 0.0, 0.0, true);
 								GameTooltip:Show();
 							end							
 						end
@@ -522,10 +522,10 @@
 						if ( self:IsEnabled() ) then
 							if ( self.tooltipText ) then
 								GameTooltip:SetOwner(self, self.tooltipOwnerPoint or "ANCHOR_RIGHT");
-								GameTooltip:SetText(self.tooltipText, nil, nil, nil, nil, 1);
+								GameTooltip:SetText(self.tooltipText, nil, nil, nil, nil, true);
 							end
 							if (not AudioOptionsSoundPanelSoundEffects:GetChecked()) then								
-								GameTooltip:AddLine(MUTED, 1.0, 0.0, 0.0, 1.0, 1);
+								GameTooltip:AddLine(MUTED, 1.0, 0.0, 0.0, true);
 								GameTooltip:Show();
 							end							
 						end
@@ -576,10 +576,10 @@
 						if ( self:IsEnabled() ) then
 							if ( self.tooltipText ) then
 								GameTooltip:SetOwner(self, self.tooltipOwnerPoint or "ANCHOR_RIGHT");
-								GameTooltip:SetText(self.tooltipText, nil, nil, nil, nil, 1);
+								GameTooltip:SetText(self.tooltipText, nil, nil, nil, nil, true);
 							end
 							if (not AudioOptionsSoundPanelMusic:GetChecked()) then								
-								GameTooltip:AddLine(MUTED, 1.0, 0.0, 0.0, 1.0, 1);
+								GameTooltip:AddLine(MUTED, 1.0, 0.0, 0.0, true);
 								GameTooltip:Show();
 							end							
 						end
@@ -630,10 +630,10 @@
 						if ( self:IsEnabled() ) then
 							if ( self.tooltipText ) then
 								GameTooltip:SetOwner(self, self.tooltipOwnerPoint or "ANCHOR_RIGHT");
-								GameTooltip:SetText(self.tooltipText, nil, nil, nil, nil, 1);
+								GameTooltip:SetText(self.tooltipText, nil, nil, nil, nil, true);
 							end
 							if (not AudioOptionsSoundPanelAmbientSounds:GetChecked()) then								
-								GameTooltip:AddLine(MUTED, 1.0, 0.0, 0.0, 1.0, 1);
+								GameTooltip:AddLine(MUTED, 1.0, 0.0, 0.0, true);
 								GameTooltip:Show();
 							end							
 						end
@@ -693,7 +693,7 @@
 						GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
 						local stringChoice;
 						stringChoice = VOICECHAT_DISABLED_TEXT;
-						GameTooltip:SetText(stringChoice, nil, nil, nil, nil, 1);
+						GameTooltip:SetText(stringChoice, nil, nil, nil, nil, true);
 					</OnEnter>
 					<OnLeave>
 						GameTooltip:Hide();
@@ -762,7 +762,7 @@
 					<OnEnter>
 						if ( UIDropDownMenu_IsEnabled(self) ) then
 							GameTooltip:SetOwner(self, "ANCHOR_TOPRIGHT");
-							GameTooltip:SetText(OPTION_TOOLTIP_VOICE_INPUT, nil, nil, nil, nil, 1);
+							GameTooltip:SetText(OPTION_TOOLTIP_VOICE_INPUT, nil, nil, nil, nil, true);
 							GameTooltip:Show();
 						end
 					</OnEnter>
@@ -862,7 +862,7 @@
 							</OnLoad>
 							<OnEnter>
 								GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
-								GameTooltip:SetText(VOICE_MIC_TEST_RECORD, nil, nil, nil, nil, 1);
+								GameTooltip:SetText(VOICE_MIC_TEST_RECORD, nil, nil, nil, nil, true);
 								_G[self:GetName().."Texture"]:SetVertexColor(1, 1, 1);
 							</OnEnter>
 							<OnClick>
@@ -907,7 +907,7 @@
 							</OnLoad>
 							<OnEnter>
 								GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
-								GameTooltip:SetText(VOICE_MIC_TEST_PLAY, nil, nil, nil, nil, 1);
+								GameTooltip:SetText(VOICE_MIC_TEST_PLAY, nil, nil, nil, nil, true);
 								_G[self:GetName().."Texture"]:SetVertexColor(1, 1, 1);
 							</OnEnter>
 							<OnClick>
@@ -993,7 +993,7 @@
 					<OnEnter>
 						if ( UIDropDownMenu_IsEnabled(self) and self.tooltip ) then
 							GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
-							GameTooltip:SetText(self.tooltip, nil, nil, nil, nil, 1);
+							GameTooltip:SetText(self.tooltip, nil, nil, nil, nil, true);
 							GameTooltip:Show();
 						end
 					</OnEnter>
@@ -1169,7 +1169,7 @@
 					<OnEnter>
 						if ( UIDropDownMenu_IsEnabled(self) ) then
 							GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
-							GameTooltip:SetText(OPTION_TOOLTIP_VOICE_OUTPUT, nil, nil, nil, nil, 1);
+							GameTooltip:SetText(OPTION_TOOLTIP_VOICE_OUTPUT, nil, nil, nil, nil, true);
 							GameTooltip:Show();
 						end
 					</OnEnter>

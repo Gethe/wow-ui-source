@@ -106,13 +106,9 @@
 										</Anchor>
 									</Anchors>
 								</FontString>
-								<FontString name="PlayerLevelText" inherits="GameFontNormalSmall">
+								<FontString name="PlayerLevelText" inherits="GameFontNormalSmall" justifyH="CENTER">
 									<Anchors>
-										<Anchor point="CENTER">
-											<Offset>
-												<AbsDimension x="-63" y="-16"/>
-											</Offset>
-										</Anchor>
+										<Anchor point="CENTER" x="-63" y="-17"/>
 									</Anchors>
 								</FontString>
 								<FontString name="PlayerPVPTimerText" inherits="GameFontNormalSmall">
@@ -381,7 +377,7 @@
 						<Scripts>
 							<OnEnter>
 								GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
-								GameTooltip:SetText(self.tooltip, nil, nil, nil, nil, 1);
+								GameTooltip:SetText(self.tooltip, nil, nil, nil, nil, true);
 							</OnEnter>						
 							<OnLeave function="GameTooltip_Hide"/>
 						</Scripts>

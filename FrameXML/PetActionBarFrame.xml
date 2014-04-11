@@ -43,7 +43,7 @@
 				PetActionButton_OnEvent(self, event, ...);
 			</OnEvent>
 			<PreClick>
-				self:SetChecked(0);
+				self:SetChecked(false);
 			</PreClick>
 			<OnClick>
 				if ( IsModifiedClick() ) then

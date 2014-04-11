@@ -57,17 +57,17 @@ function GuildRewards_Update()
 			if ( achievementID and achievementID > 0 ) then
 				local id, name = GetAchievementInfo(achievementID)
 				button.achievementID = achievementID;
-				button.subText:SetText(REQUIRES_LABEL..GUILD_REWARDS_ACHIEVEMENT_ICON..YELLOW_FONT_COLOR_CODE..name);
+				button.subText:SetText(REQUIRES_LABEL..GUILD_REWARDS_ACHIEVEMENT_ICON..YELLOW_FONT_COLOR_CODE..name..FONT_COLOR_CODE_CLOSE);
 				button.subText:Show();
 				button.disabledBG:Show();
 				button.icon:SetVertexColor(1, 1, 1);
-				button.icon:SetDesaturated(1);
+				button.icon:SetDesaturated(true);
 				button.name:SetFontObject(GameFontNormalLeftGrey);
 				button.lock:Show();
 			else
 				button.achievementID = nil;
 				button.disabledBG:Hide();
-				button.icon:SetDesaturated(0);
+				button.icon:SetDesaturated(false);
 				button.name:SetFontObject(GameFontNormal);
 				button.lock:Hide();
 				if ( repLevel > standingID ) then
@@ -106,17 +106,17 @@ function GuildRewardsButton_OnEnter(self)
 	GameTooltip:SetHyperlink("item:"..itemID);
 	if ( achievementID and achievementID > 0 ) then
 		local id, name, _, _, _, _, _, description = GetAchievementInfo(achievementID)
-		GameTooltip:AddLine(" ", 1, 0, 0, 1);
-		GameTooltip:AddLine(REQUIRES_GUILD_ACHIEVEMENT, 1, 0, 0, 1);
-		GameTooltip:AddLine(ACHIEVEMENT_COLOR_CODE..name);
-		GameTooltip:AddLine(description, 1, 1, 1, 1);
+		GameTooltip:AddLine(" ", 1, 0, 0, true);
+		GameTooltip:AddLine(REQUIRES_GUILD_ACHIEVEMENT, 1, 0, 0, true);
+		GameTooltip:AddLine(ACHIEVEMENT_COLOR_CODE..name..FONT_COLOR_CODE_CLOSE);
+		GameTooltip:AddLine(description, 1, 1, 1, true);
 	end
 	local _, _, standingID = GetGuildFactionInfo();
 	if ( repLevel > standingID ) then
 		local gender = UnitSex("player");
 		local factionStandingtext = GetText("FACTION_STANDING_LABEL"..repLevel, gender);
-		GameTooltip:AddLine(" ", 1, 0, 0, 1);
-		GameTooltip:AddLine(string.format(REQUIRES_GUILD_FACTION_TOOLTIP, factionStandingtext), 1, 0, 0, 1);
+		GameTooltip:AddLine(" ", 1, 0, 0, true);
+		GameTooltip:AddLine(string.format(REQUIRES_GUILD_FACTION_TOOLTIP, factionStandingtext), 1, 0, 0, true);
 	end
 	GameTooltip:Show();
 end

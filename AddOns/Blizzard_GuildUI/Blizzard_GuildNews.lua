@@ -108,6 +108,8 @@ function GuildNews_Update(frontPage, numButtons)
 				button.index = index;
 				button.newsType = newsType;
 				button.id = id;
+				-- Bug 356148: For NEWS_ITEM types, data2 has the item upgrade ID
+				button.data2 = data2;
 				if ( text2 and text2 ~= UNKNOWN ) then
 					if ( newsType == NEWS_ITEM_LOOTED or newsType == NEWS_ITEM_CRAFTED or newsType == NEWS_ITEM_PURCHASED ) then
 						local _, itemLink = GetItemInfo(id);
@@ -173,13 +175,14 @@ function GuildNewsButton_OnEnter(self)
 	local newsType = self.newsType;	
 	if ( newsType == NEWS_ITEM_LOOTED or newsType == NEWS_ITEM_CRAFTED or newsType == NEWS_ITEM_PURCHASED ) then
 		GuildNewsButton_AnchorTooltip(self);
-		GameTooltip:SetHyperlink("item:"..self.id);
+		-- Bug 356148: Send the item upgrade info down to the hyperlink as well, so it shows up correctly
+		GameTooltip:SetHyperlink("item:"..self.id..":0:0:0:0:0:0:0:0:0:"..self.data2);
 	elseif ( newsType == NEWS_PLAYER_ACHIEVEMENT or newsType == NEWS_GUILD_ACHIEVEMENT ) then
 		local achievementId = self.id;
 		local _, name, _, _, _, _, _, description = GetAchievementInfo(achievementId);
 		GuildNewsButton_AnchorTooltip(self);
-		GameTooltip:SetText(ACHIEVEMENT_COLOR_CODE..name);
-		GameTooltip:AddLine(description, 1, 1, 1, 1);
+		GameTooltip:SetText(ACHIEVEMENT_COLOR_CODE..name..FONT_COLOR_CODE_CLOSE);
+		GameTooltip:AddLine(description, 1, 1, 1, true);
 		local firstCriteria = true;
 		local leftCriteria;
 		for i = 1, GetAchievementNumCriteria(achievementId) do
@@ -224,7 +227,7 @@ function GuildNewsButton_OnEnter(self)
 		if ( self.text:IsTruncated() ) then
 			GuildNewsButton_AnchorTooltip(self);
 			GameTooltip:SetText(GUILD_MOTD_LABEL);
-			GameTooltip:AddLine(GetGuildRosterMOTD(), 1, 1, 1, 1);
+			GameTooltip:AddLine(GetGuildRosterMOTD(), 1, 1, 1, true);
 			GameTooltip:Show();
 		end
 	end

@@ -178,7 +178,7 @@
 					</Anchors>
 				</FontString>
 				<FontString inherits="GameFontNormal" text="ITEMSLOTTEXT">
-					<Anchors>`
+					<Anchors>
 						<Anchor point="CENTER" x="-3" y="145"/>
 					</Anchors>
 				</FontString>

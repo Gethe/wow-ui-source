@@ -26,10 +26,10 @@
 			<OnEnter>
 				if ( self.tooltipText ) then
 					GameTooltip:SetOwner(self, self.tooltipOwnerPoint or "ANCHOR_RIGHT");
-					GameTooltip:SetText(self.tooltipText, nil, nil, nil, nil, 1);
+					GameTooltip:SetText(self.tooltipText, nil, nil, nil, nil, true);
 				end
 				if ( self.tooltipRequirement ) then
-					GameTooltip:AddLine(self.tooltipRequirement, 1.0, 1.0, 1.0, 1.0);
+					GameTooltip:AddLine(self.tooltipRequirement, 1.0, 1.0, 1.0, true);
 					GameTooltip:Show();
 				end
 			</OnEnter>
@@ -123,10 +123,10 @@
 				if ( self:IsEnabled() ) then
 					if ( self.tooltipText ) then
 						GameTooltip:SetOwner(self, self.tooltipOwnerPoint or "ANCHOR_RIGHT");
-						GameTooltip:SetText(self.tooltipText, nil, nil, nil, nil, 1);
+						GameTooltip:SetText(self.tooltipText, nil, nil, nil, nil, true);
 					end
 					if ( self.tooltipRequirement ) then
-						GameTooltip:AddLine(self.tooltipRequirement, 1.0, 1.0, 1.0, 1.0);
+						GameTooltip:AddLine(self.tooltipRequirement, 1.0, 1.0, 1.0, true);
 						GameTooltip:Show();
 					end
 				end

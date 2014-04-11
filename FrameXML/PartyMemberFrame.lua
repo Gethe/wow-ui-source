@@ -638,13 +638,13 @@ function PartyMemberFrame_UpdateOnlineStatus(self)
 		
 		healthBar:SetValue(unitHPMax);
 		healthBar:SetStatusBarColor(0.5, 0.5, 0.5);
-		SetDesaturation(_G[selfName.."Portrait"], 1);
+		SetDesaturation(_G[selfName.."Portrait"], true);
 		_G[selfName.."Disconnect"]:Show();
 		_G[selfName.."PetFrame"]:Hide();
 		return;
 	else
 		local selfName = self:GetName();
-		SetDesaturation(_G[selfName.."Portrait"], nil);
+		SetDesaturation(_G[selfName.."Portrait"], false);
 		_G[selfName.."Disconnect"]:Hide();
 	end
 end

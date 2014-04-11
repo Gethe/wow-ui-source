@@ -52,7 +52,7 @@
 					<OnEnter>
 						if ( self.tooltipText ) then
 							GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
-							GameTooltip:SetText(self.tooltipText, RED_FONT_COLOR.r, RED_FONT_COLOR.g, RED_FONT_COLOR.b, 1, 1);
+							GameTooltip:SetText(self.tooltipText, RED_FONT_COLOR.r, RED_FONT_COLOR.g, RED_FONT_COLOR.b, 1, true);
 						end
 					</OnEnter>
 					<OnLeave>

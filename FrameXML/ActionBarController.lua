@@ -108,9 +108,8 @@ function ActionBarController_UpdateAll()
 			MainMenuBarArtFrame:SetAttribute("actionpage", GetActionBarPage());
 		end
 		
-		for i=1, NUM_ACTIONBAR_BUTTONS do
-			local button = _G["ActionButton"..i];
-			ActionButton_UpdateAction(button);
+		for k, frame in pairs(ActionBarButtonEventsFrame.frames) do
+			ActionButton_UpdateAction(frame);
 		end
 	else
 		-- Otherwise, display the normal action bar
@@ -124,9 +123,8 @@ end
 
 function ActionBarController_ResetToDefault()
 	MainMenuBarArtFrame:SetAttribute("actionpage", GetActionBarPage());
-	for i=1, NUM_ACTIONBAR_BUTTONS do
-		local button = _G["ActionButton"..i];
-		ActionButton_UpdateAction(button);
+	for k, frame in pairs(ActionBarButtonEventsFrame.frames) do
+		ActionButton_UpdateAction(frame);
 	end
 end
 

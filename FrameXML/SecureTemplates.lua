@@ -477,6 +477,11 @@ SECURE_ACTIONS.cancelaura =
         end
     end;
 
+SECURE_ACTIONS.destroytotem = 
+	function(self, unit, button)
+		DestroyTotem(SecureButton_GetModifiedAttribute(self, "totem-slot", button));
+	end;
+
 SECURE_ACTIONS.stop =
     function (self, unit, button)
         if ( SpellIsTargeting() ) then

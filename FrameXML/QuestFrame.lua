@@ -436,8 +436,7 @@ function QuestFrameDetailPanel_OnShow()
 	end		
 	local material = QuestFrame_GetMaterial();
 	QuestFrame_SetMaterial(QuestFrameDetailPanel, material);
-	QuestInfo_Display(QUEST_TEMPLATE_DETAIL1, QuestDetailScrollChildFrame, QuestFrameAcceptButton, material);
-	QuestInfo_Display(QUEST_TEMPLATE_DETAIL2, QuestInfoFadingFrame, QuestFrameAcceptButton, material);
+	QuestInfo_Display(QUEST_TEMPLATE_DETAIL, QuestDetailScrollChildFrame, QuestFrameAcceptButton, material);
 	QuestDetailScrollFrameScrollBar:SetValue(0);
 	local questPortrait, questPortraitText, questPortraitName = GetQuestPortraitGiver();
 	if (questPortrait ~= 0) then

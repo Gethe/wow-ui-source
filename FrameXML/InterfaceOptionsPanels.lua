@@ -541,6 +541,8 @@ DisplayPanelOptions = {
 	threatPlaySounds = { text = "PLAY_AGGRO_SOUNDS" },
 	SpellTooltip_DisplayAvgValues = { text = "SHOW_POINTS_AS_AVG" },
 	emphasizeMySpellEffects = { text = "EMPHASIZE_MY_SPELLS_TEXT" },
+	hdPlayerModels = { text = "SHOW_HD_MODELS_TEXT" },
+	countdownForCooldowns = { text = "COUNTDOWN_FOR_COOLDOWNS_TEXT" },
 }
 
 function InterfaceOptionsDisplayPanel_OnLoad (self)
@@ -1073,7 +1075,7 @@ function InterfaceOptions_UpdateMultiActionBars ()
 		LOCK_ACTIONBAR = nil;
 	end
 
-	SetActionBarToggles(SHOW_MULTI_ACTIONBAR_1, SHOW_MULTI_ACTIONBAR_2, SHOW_MULTI_ACTIONBAR_3, SHOW_MULTI_ACTIONBAR_4, ALWAYS_SHOW_MULTIBARS);
+	SetActionBarToggles(not not SHOW_MULTI_ACTIONBAR_1, not not SHOW_MULTI_ACTIONBAR_2, not not SHOW_MULTI_ACTIONBAR_3, not not SHOW_MULTI_ACTIONBAR_4, not not ALWAYS_SHOW_MULTIBARS);
 	MultiActionBar_Update();
 	UIParent_ManageFramePositions();
 end
@@ -1202,14 +1204,17 @@ NamePanelOptions = {
 function InterfaceOptionsNPCNamesDropDown_OnEvent (self, event, ...)
 	if ( event == "PLAYER_ENTERING_WORLD" ) then
 		local value = "2";
-		if ( GetCVar("UnitNameNPC") == "1" ) then
-			value = "2";
+		if ( GetCVarBool("UnitNameNPC") ) then
+			value = "3";
 			self.tooltip = NPC_NAMES_DROPDOWN_ALL_TOOLTIP;
-		elseif ( GetCVar("UnitNameFriendlySpecialNPCName") == "1" ) then
+		elseif ( GetCVarBool("UnitNameFriendlySpecialNPCName") and GetCVarBool("UnitNameHostleNPC") ) then
+			value = "2";
+			self.tooltip = NPC_NAMES_DROPDOWN_HOSTILE_TOOLTIP;
+		elseif ( GetCVarBool("UnitNameFriendlySpecialNPCName") ) then
 			value = "1";
 			self.tooltip = NPC_NAMES_DROPDOWN_TRACKED_TOOLTIP;
 		else
-			value = "3";
+			value = "4";
 			self.tooltip = NPC_NAMES_DROPDOWN_NONE_TOOLTIP;
 		end
 		self.defaultValue = "1";
@@ -1232,6 +1237,7 @@ function InterfaceOptionsNPCNamesDropDown_OnEvent (self, event, ...)
 				elseif ( value == "2" ) then
 					SetCVar("UnitNameFriendlySpecialNPCName", "1");
 					SetCVar("UnitNameHostleNPC", "1");
+					SetCVar("UnitNameNPC", "0");
 					self.tooltip = NPC_NAMES_DROPDOWN_HOSTILE_TOOLTIP;
 				elseif ( value == "3" ) then
 					SetCVar("UnitNameFriendlySpecialNPCName", "0");
@@ -1537,6 +1543,73 @@ function InterfaceOptionsCombatTextPanelFCTDropDown_Initialize(self)
 	end
 	info.tooltipTitle = COMBAT_TEXT_SCROLL_ARC;
 	info.tooltipText = OPTION_TOOLTIP_SCROLL_ARC;
+	UIDropDownMenu_AddButton(info);
+end
+
+function InterfaceOptionsCombatTextPanelTargetModeDropDown_OnEvent (self, event, ...)
+	if ( event == "PLAYER_ENTERING_WORLD" ) then
+		self.cvar = "CombatDamageStyle";
+
+		local value = GetCVar(self.cvar);
+		self.defaultValue = GetCVarDefault(self.cvar);
+		self.oldValue = value;
+		self.value = value;
+		self.tooltip = OPTION_TOOLTIP_COMBAT_TARGET_MODE;
+
+		UIDropDownMenu_SetWidth(self, 110);
+		UIDropDownMenu_Initialize(self, InterfaceOptionsCombatTextPanelTargetModeDropDown_Initialize);
+		UIDropDownMenu_SetSelectedValue(self, value);
+
+		self.SetValue = 
+			function (self, value) 
+				self.value = value;
+				SetCVar(self.cvar, value, self.event);
+				UIDropDownMenu_SetSelectedValue(self, value);
+			end;	
+		self.GetValue =
+			function (self)
+				return UIDropDownMenu_GetSelectedValue(self);
+			end
+		self.RefreshValue =
+			function (self)
+				UIDropDownMenu_Initialize(self, InterfaceOptionsCombatTextPanelTargetModeDropDown_Initialize);
+				UIDropDownMenu_SetSelectedValue(self, self.value);
+			end
+	end
+end
+
+function InterfaceOptionsCombatTextPanelTargetModeDropDown_OnClick(self)
+	InterfaceOptionsCombatTextPanelTargetModeDropDown:SetValue(self.value);
+end
+
+function InterfaceOptionsCombatTextPanelTargetModeDropDown_Initialize(self)
+	local selectedValue = UIDropDownMenu_GetSelectedValue(self);
+	local info = UIDropDownMenu_CreateInfo();
+
+	info.text = COMBAT_TARGET_MODE_NEW;
+	info.func = InterfaceOptionsCombatTextPanelTargetModeDropDown_OnClick;
+	info.value = "1";
+	if ( info.value == selectedValue ) then
+		info.checked = 1;
+	else
+		info.checked = nil;
+	end
+	info.tooltipTitle = COMBAT_TARGET_MODE_NEW;
+	info.tooltipText = OPTION_TOOLTIP_COMBAT_TARGET_MODE_NEW;
+	info.tooltipOnButton = true;
+	UIDropDownMenu_AddButton(info);
+
+	info.text = COMBAT_TARGET_MODE_OLD;
+	info.func = InterfaceOptionsCombatTextPanelTargetModeDropDown_OnClick;
+	info.value = "2";
+	if ( info.value == selectedValue ) then
+		info.checked = 1;
+	else
+		info.checked = nil;
+	end
+	info.tooltipTitle = COMBAT_TARGET_MODE_OLD;
+	info.tooltipText = OPTION_TOOLTIP_COMBAT_TARGET_MODE_OLD;
+	info.tooltipOnButton = true;
 	UIDropDownMenu_AddButton(info);
 end
 

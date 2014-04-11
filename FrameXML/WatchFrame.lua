@@ -190,6 +190,8 @@ local function WatchFrame_GetQuestLine ()
 	end
 
 	line:Reset();
+	line.objectiveIndex = 0;
+	line.questID = 0;
 	questLineIndex = questLineIndex + 1;
 	return line;
 end
@@ -211,8 +213,10 @@ end
 function WatchFrame_OnLoad (self)
 	self:RegisterEvent("PLAYER_ENTERING_WORLD");
 	self:RegisterEvent("QUEST_LOG_UPDATE");
+	self:RegisterEvent("QUEST_ACCEPTED");
 	self:RegisterEvent("TRACKED_ACHIEVEMENT_UPDATE");
 	self:RegisterEvent("ITEM_PUSH");
+	self:RegisterEvent("QUEST_WATCH_OBJECTIVES_CHANGED");
 	self:RegisterEvent("DISPLAY_SIZE_CHANGED");
 	self:RegisterEvent("ZONE_CHANGED_NEW_AREA");
 	self:RegisterEvent("WORLD_MAP_UPDATE");
@@ -224,6 +228,9 @@ function WatchFrame_OnLoad (self)
 	self:RegisterEvent("SCENARIO_CRITERIA_UPDATE");
 	self:RegisterEvent("CRITERIA_COMPLETE");
 	self:RegisterEvent("NEW_WMO_CHUNK");
+	self:RegisterEvent("SUPER_TRACKED_QUEST_CHANGED");
+	self:RegisterEvent("TASK_PROGRESS_UPDATE");
+	self:RegisterEvent("QUEST_REMOVED");
 	self:SetScript("OnSizeChanged", WatchFrame_OnSizeChanged); -- Has to be set here instead of in XML for now due to OnSizeChanged scripts getting run before OnLoad scripts.
 	self.lineCache = UIFrameCache:New("FRAME", "WatchFrameLine", WatchFrameLines, "WatchFrameLineTemplate");
 	self.buttonCache = UIFrameCache:New("BUTTON", "WatchFrameLinkButton", WatchFrameLines, "WatchFrameLinkButtonTemplate")
@@ -241,10 +248,14 @@ function WatchFrame_OnLoad (self)
 	WatchFrame_AddObjectiveHandler(WatchFrame_HandleDisplayQuestTimers);
 	WatchFrame_AddObjectiveHandler(WatchFrame_HandleDisplayTrackedAchievements);
 	WatchFrame_AddObjectiveHandler(WatchFrame_DisplayTrackedQuests);
+	WatchFrame_AddObjectiveHandler(WatchFrameTasks_DisplayTasks);
 	WatchFrame.updateTimer = WATCHFRAME_UPDATE_RATE;
+
+	QuestPOI_Initialize(WatchFrameLines, WatchFrame_InitPOIButton);
 end
 
 function WatchFrame_OnEvent (self, event, ...)
+	local showPOIs = GetCVarBool("questPOI");
 	if ( event == "PLAYER_MONEY" and self.watchMoney ) then
 		WatchFrame_Update(self);
 		if ( self.collapsed ) then
@@ -253,7 +264,7 @@ function WatchFrame_OnEvent (self, event, ...)
 	elseif ( event == "PLAYER_ENTERING_WORLD" ) then
 		SetMapToCurrentZone();		-- forces WatchFrame event via the WORLD_MAP_UPDATE event
 	elseif ( event == "QUEST_LOG_UPDATE" and not self.updating ) then -- May as well check here too and save some time
-		if ( WatchFrame.showObjectives ) then
+		if ( showPOIs ) then
 			WatchFrame_GetCurrentMapQuests();
 		end
 		WatchFrame_Update(self);
@@ -280,7 +291,7 @@ function WatchFrame_OnEvent (self, event, ...)
 		end
 		
 		WatchFrame_Update();
-	elseif ( event == "ITEM_PUSH" ) then
+	elseif ( event == "ITEM_PUSH" or event == "TRACK_PROGRESS_UPDATE" ) then
 		WatchFrame_Update();
 	elseif ( event == "SCENARIO_UPDATE" ) then
 		local newStep = ...;
@@ -304,10 +315,10 @@ function WatchFrame_OnEvent (self, event, ...)
 			WatchFrameScenario_PlayCriteriaAnimation(...);
 		end
 	elseif ( event == "ZONE_CHANGED_NEW_AREA" or event == "NEW_WMO_CHUNK" ) then
-		if ( not WorldMapFrame:IsShown() and WatchFrame.showObjectives ) then
+		if ( not WorldMapFrame:IsShown() and showPOIs ) then
 			SetMapToCurrentZone();			-- update the zone to get the right POI numbers for the tracker
 		end
-	elseif ( event == "WORLD_MAP_UPDATE" or event == "QUEST_POI_UPDATE" and WatchFrame.showObjectives ) then
+	elseif ( event == "WORLD_MAP_UPDATE" or event == "QUEST_POI_UPDATE" and showPOIs ) then
 		WatchFrame_GetCurrentMapQuests();
 		WatchFrame_Update();
 	elseif ( event == "DISPLAY_SIZE_CHANGED" ) then
@@ -316,10 +327,41 @@ function WatchFrame_OnEvent (self, event, ...)
 		WatchFrame_SetWidth(GetCVar("watchFrameWidth"));
 		WATCHFRAME_SORT_TYPE = tonumber(GetCVar("trackerSorting"));
 		WATCHFRAME_FILTER_TYPE = tonumber(GetCVar("trackerFilter"));
+		if ( showPOIs ) then
+			WatchFrame_Update();
+		end
 	elseif ( event == "QUEST_AUTOCOMPLETE" ) then
 		local questId = ...;
 		if (WatchFrameAutoQuest_AddPopUp(questId, "COMPLETE")) then
 			PlaySound("UI_AutoQuestComplete");
+		end
+	elseif ( event == "SUPER_TRACKED_QUEST_CHANGED" ) then
+		local questID = ...;
+		QuestPOI_SelectButtonByQuestID(WatchFrameLines, questID);
+	elseif ( event == "QUEST_ACCEPTED" ) then
+		local questLogIndex, questID = ...;
+		if ( IsQuestTask(questID) ) then
+			WatchFrameTasks_OnTaskAdded(questID);
+			if ( not WatchFrameTasksFrame:IsShown() ) then
+				WatchFrameTasksFrame.doSlideIn = true;
+			end
+		end
+	elseif ( event == "QUEST_WATCH_OBJECTIVES_CHANGED" ) then
+		WatchFrame_Update();
+		local questID, oldCount, newCount = ...;
+		for i = 1, questLineIndex do
+			local line = WATCHFRAME_QUESTLINES[i];
+			if ( line and line.questID == questID ) then
+				if ( line.objectiveIndex and line.objectiveIndex > oldCount ) then
+					line.Glow.Anim:Play();
+					line.Sheen.Anim:Play();
+				end
+			end
+		end
+	elseif ( event == "QUEST_REMOVED" ) then
+		local questID = ...;
+		if ( IsQuestTask(questID) ) then
+			WatchFrameTasks_OnTaskRemoved(questID);
 		end
 	end
 end
@@ -328,9 +370,7 @@ function WatchFrame_OnUpdate(self, elapsed)
 	if ( WATCHFRAME_SORT_TYPE == WATCHFRAME_SORT_PROXIMITY ) then
 		self.updateTimer = self.updateTimer - elapsed;
 		if ( self.updateTimer < 0 ) then
-			if ( SortQuestWatches() ) then
-				WatchFrame_Update();
-			end
+			SortQuestWatches();
 			self.updateTimer = WATCHFRAME_UPDATE_RATE;
 		end
 	end
@@ -394,7 +434,7 @@ function WatchFrame_ClearDisplay ()
 	for i = 1, WATCHFRAME_NUM_ITEMS do
 		_G["WatchFrameItem" .. i]:Hide();
 	end
-	QuestPOI_HideAllButtons("WatchFrameLines");
+	QuestPOI_HideAllButtons(WatchFrameLines);
 end
 
 function WatchFrame_Update (self)
@@ -441,6 +481,7 @@ function WatchFrame_Update (self)
 	if ( totalObjectives > 0 ) then
 		WatchFrameHeader:Show();
 		WatchFrameCollapseExpandButton:Show();
+		self.OptionsButton:Show();
 		WatchFrameTitle:SetText(OBJECTIVES_TRACKER_LABEL.." ("..totalObjectives..")");
 		WatchFrameHeader:SetWidth(WatchFrameTitle:GetWidth() + 4);
 		-- visible objectives?
@@ -458,6 +499,7 @@ function WatchFrame_Update (self)
 	else
 		WatchFrameHeader:Hide();
 		WatchFrameCollapseExpandButton:Hide();
+		WatchFrame.OptionsButton:Hide();
 	end
 	
 	WatchFrame_ReleaseUnusedLinkButtons();
@@ -547,7 +589,7 @@ function WatchFrame_DisplayQuestTimers (lineFrame, nextAnchor, maxHeight, frameW
 	local watchFrame = WatchFrame;
 	
 	local line = WatchFrame_GetTimerLine();
-	line.text:SetText(NORMAL_FONT_COLOR_CODE .. QUEST_TIMERS);
+	line.text:SetText(NORMAL_FONT_COLOR_CODE .. QUEST_TIMERS .. FONT_COLOR_CODE_CLOSE);
 	line:Show();
 	line:SetPoint("RIGHT", lineFrame, "RIGHT", 0, 0);
 	line:SetPoint("LEFT", lineFrame, "LEFT", 0, 0);
@@ -861,13 +903,12 @@ function WatchFrame_DisplayTrackedQuests (lineFrame, nextAnchor, maxHeight, fram
 	local numVisible = 0;
 	
 	local numPOINumeric = 0;
-	local numPOICompleteIn = 0;
-	local numPOICompleteOut = 0;
+	QuestPOI_ResetUsage(WatchFrameLines);
 
 	local text, finished, objectiveType;
 	local numQuestWatches = GetNumQuestWatches();
 	local numObjectives;
-	local title, level, questTag, suggestedGroup, isHeader, isCollapsed, isComplete, isDaily, questID, startEvent;
+	local title, level, suggestedGroup, isHeader, isCollapsed, isComplete, isDaily, questID, startEvent, isOnMap, hasLocalPOI;
 	local numValidQuests = 0;
 
 	local maxWidth = 0;
@@ -875,7 +916,8 @@ function WatchFrame_DisplayTrackedQuests (lineFrame, nextAnchor, maxHeight, fram
 	local topEdge = 0;
 
 	local playerMoney = GetMoney();
-	if ( not WorldMapFrame or not WorldMapFrame:IsShown() ) then
+	local showPOIs = GetCVarBool("questPOI");
+	if ( showPOIs and not WorldMapFrame or not WorldMapFrame:IsShown() ) then
 		-- For the filter REMOTE ZONES: when it's unchecked we need to display local POIs only. Unfortunately all the POI
 		-- code uses the current map so the tracker would not display the right quests if the world map was windowed and
 		-- open to a different zone.
@@ -885,14 +927,9 @@ function WatchFrame_DisplayTrackedQuests (lineFrame, nextAnchor, maxHeight, fram
 			LOCAL_MAP_QUESTS[id] = true;
 		end	
 	end
-	
+
 	table.wipe(VISIBLE_WATCHES);
 	WatchFrame_ResetQuestLines();
-
-	-- if supertracked quest is not in the quest log anymore, stop supertracking it
-	if ( GetQuestLogIndexByID(GetSuperTrackedQuestID()) == 0 ) then
-		SetSuperTrackedQuestID(0);
-	end
 	
 	local inScenario = C_Scenario.IsInScenario();
 
@@ -908,12 +945,8 @@ function WatchFrame_DisplayTrackedQuests (lineFrame, nextAnchor, maxHeight, fram
 		end
 		if ( validQuest ) then
 			numValidQuests = numValidQuests + 1;
-			title, level, questTag, suggestedGroup, isHeader, isCollapsed, isComplete, isDaily, questID, startEvent = GetQuestLogTitle(questIndex);
-			
-			if (GetSuperTrackedQuestID() == 0) then
-				SetSuperTrackedQuestID(questID);
-			end
-			
+			title, level, suggestedGroup, isHeader, isCollapsed, isComplete, isDaily, questID, startEvent, _, isOnMap, hasLocalPOI, isTask, isStory = GetQuestLogTitle(questIndex);
+
 			local questFailed = false;
 			local requiredMoney = GetQuestLogRequiredMoney(questIndex);			
 			numObjectives = GetNumQuestLeaderBoards(questIndex);
@@ -925,7 +958,9 @@ function WatchFrame_DisplayTrackedQuests (lineFrame, nextAnchor, maxHeight, fram
 			end
 			-- check filters
 			local filterOK = true;
-			if ( isComplete and bit.band(WATCHFRAME_FILTER_TYPE, WATCHFRAME_FILTER_COMPLETED_QUESTS) ~= WATCHFRAME_FILTER_COMPLETED_QUESTS ) then
+			if ( isTask ) then
+				filterOK = false;
+			elseif ( isComplete and bit.band(WATCHFRAME_FILTER_TYPE, WATCHFRAME_FILTER_COMPLETED_QUESTS) ~= WATCHFRAME_FILTER_COMPLETED_QUESTS ) then
 				filterOK = false;
 			elseif ( bit.band(WATCHFRAME_FILTER_TYPE, WATCHFRAME_FILTER_REMOTE_ZONES) ~= WATCHFRAME_FILTER_REMOTE_ZONES and not LOCAL_MAP_QUESTS[questID] ) then
 				filterOK = false;
@@ -974,6 +1009,8 @@ function WatchFrame_DisplayTrackedQuests (lineFrame, nextAnchor, maxHeight, fram
 						if ( not finished and text ) then
 							text = ReverseQuestObjective(text, objectiveType);
 							line = WatchFrame_GetQuestLine();
+							line.questID = questID;
+							line.objectiveIndex = j;
 							WatchFrame_SetLine(line, lastLine, WATCHFRAMELINES_FONTSPACING, not IS_HEADER, text, DASH_SHOW, item);
 							lastLine = line;
 						end
@@ -1035,22 +1072,20 @@ function WatchFrame_DisplayTrackedQuests (lineFrame, nextAnchor, maxHeight, fram
 				linkButton.isComplete = isComplete;
 				linkButton:Show();				
 				-- quest POI icon
-				if ( WatchFrame.showObjectives ) then
+				if ( showPOIs ) then
 					local poiButton;
-					if ( CURRENT_MAP_QUESTS[questID] ) then
+					if ( hasLocalPOI ) then
 						if ( isComplete ) then
-							numPOICompleteIn = numPOICompleteIn + 1;
-							poiButton = QuestPOI_DisplayButton("WatchFrameLines", QUEST_POI_COMPLETE_IN, numPOICompleteIn, questID);
+							poiButton = QuestPOI_GetButton(WatchFrameLines, questID, "normal", nil, isStory);
 						else
 							numPOINumeric = numPOINumeric + 1;
-							poiButton = QuestPOI_DisplayButton("WatchFrameLines", QUEST_POI_NUMERIC, numPOINumeric, questID);
+							poiButton = QuestPOI_GetButton(WatchFrameLines, questID, "numeric", numPOINumeric, isStory);
 						end
 					elseif ( isComplete ) then
-						numPOICompleteOut = numPOICompleteOut + 1;
-						poiButton = QuestPOI_DisplayButton("WatchFrameLines", QUEST_POI_COMPLETE_OUT, numPOICompleteOut, questID);
+						poiButton = QuestPOI_GetButton(WatchFrameLines, questID, "remote", nil, isStory);
 					end
 					if ( poiButton ) then
-						poiButton:SetPoint("TOPRIGHT", questTitle, "TOPLEFT", 0, 5);
+						poiButton:SetPoint("TOPRIGHT", questTitle, "TOPLEFT", -6, -1);
 					end				
 				end
 				
@@ -1061,17 +1096,24 @@ function WatchFrame_DisplayTrackedQuests (lineFrame, nextAnchor, maxHeight, fram
 	for i = watchItemIndex + 1, WATCHFRAME_NUM_ITEMS do
 		_G["WatchFrameItem" .. i]:Hide();
 	end
-	QuestPOI_HideButtons("WatchFrameLines", QUEST_POI_NUMERIC, numPOINumeric + 1);
-	QuestPOI_HideButtons("WatchFrameLines", QUEST_POI_COMPLETE_IN, numPOICompleteIn + 1);
-	QuestPOI_HideButtons("WatchFrameLines", QUEST_POI_COMPLETE_OUT, numPOICompleteOut + 1);
-	
-	WatchFrame_ReleaseUnusedQuestLines();
+	QuestPOI_HideUnusedButtons(WatchFrameLines);
 
 	local trackedQuestID = GetSuperTrackedQuestID();
-	if ( trackedQuestID ) then
+	-- if supertracked quest is not in the quest log anymore, stop supertracking it
+	if ( trackedQuestID == 0 or GetQuestLogIndexByID(trackedQuestID) == 0 ) then
+		-- pick the first tracked quest to supertrack		
+		local questIndex = GetQuestIndexForWatch(1);
+		if ( questIndex ) then
+			local questID = select(8, GetQuestLogTitle(questIndex));
+			SetSuperTrackedQuestID(questID);
+			QuestPOIUpdateIcons();
+		end
+	else
+		QuestPOI_SelectButtonByQuestID(WatchFrameLines, trackedQuestID);
 		QuestPOIUpdateIcons();
-		QuestPOI_SelectButtonByQuestId("WatchFrameLines", trackedQuestID, true);
 	end
+
+	WatchFrame_ReleaseUnusedQuestLines();
 	
 	return lastLine or nextAnchor, maxWidth, numValidQuests, 0;
 end
@@ -1150,8 +1192,8 @@ end
 
 function WatchFrame_OpenMapToQuest (button, arg1)
 	local index = GetQuestIndexForWatch(arg1);
-	local questID = select(9, GetQuestLogTitle(index));
-	WorldMap_OpenToQuest(questID);
+	local questID = select(8, GetQuestLogTitle(index));
+	QuestMapFrame_OpenToQuestDetails(questID);
 end
 
 function WatchFrame_OpenAchievementFrame (button, arg1, arg2, checked)
@@ -1225,14 +1267,14 @@ function WatchFrameDropDown_Initialize (self)
 			info.checked = false;
 			UIDropDownMenu_AddButton(info, UIDROPDOWN_MENU_LEVEL);
 		end
-		if ( WatchFrame.showObjectives ) then
-			info.text = OBJECTIVES_SHOW_QUEST_MAP;
-			info.func = WatchFrame_OpenMapToQuest;
-			info.arg1 = self.index;
-			info.checked = false;
-			info.noClickSound = 1;
-			UIDropDownMenu_AddButton(info, UIDROPDOWN_MENU_LEVEL);
-		end
+		
+		info.text = OBJECTIVES_SHOW_QUEST_MAP;
+		info.func = WatchFrame_OpenMapToQuest;
+		info.arg1 = self.index;
+		info.checked = false;
+		info.noClickSound = 1;
+		UIDropDownMenu_AddButton(info, UIDROPDOWN_MENU_LEVEL);
+
 		local numVisibleWatches = #VISIBLE_WATCHES;
 		if ( numVisibleWatches > 1 ) then
 			local visibleIndex = WatchFrame_GetVisibleIndex(questLogIndex);
@@ -1300,6 +1342,12 @@ function WatchFrame_CollapseExpandButton_OnClick (self)
 		WatchFrame.userCollapsed = true;
 		WatchFrame_Collapse(WatchFrame);
 		PlaySound("igMiniMapClose");
+	end
+end
+
+function WatchFrame_OptionsButton_OnClick (self, button)
+	if ( button == "LeftButton" ) then
+		ToggleDropDownMenu(1, nil, WatchFrameHeaderDropDown, "cursor", 3, -3);
 	end
 end
 
@@ -1443,15 +1491,10 @@ function WatchFrame_GetCurrentMapQuests()
 	end
 end
 
-function WatchFrameQuestPOI_OnClick(self, button)
-	QuestPOI_SelectButtonByQuestId("WatchFrameLines", self.questId, true);
-	if ( WorldMapFrame:IsShown() ) then
-		WorldMapFrame_SelectQuestById(self.questId);
-	end
-	SetSuperTrackedQuestID(self.questId);
-	PlaySound("igMainMenuOptionCheckBoxOn");
+function WatchFrame_InitPOIButton(poiButton)
+	poiButton:SetScale(0.9);
+	poiButton:RegisterForClicks("LeftButtonUp", "RightButtonUp");
 end
-
 function WatchFrame_SetWidth(width)
 	if ( width == "0" ) then
 		WATCHFRAME_EXPANDEDWIDTH = 204;
@@ -1632,7 +1675,7 @@ function WatchFrameAutoQuest_DisplayAutoQuestPopUps(lineFrame, nextAnchor, maxHe
 	local numAutoQuestPopUps = GetNumAutoQuestPopUps();
 	for i=1, numAutoQuestPopUps do
 		local questID, popUpType = GetAutoQuestPopUp(i);
-		local questTitle, level, questTag, suggestedGroup, isHeader, isCollapsed, isComplete, isDaily, _ = GetQuestLogTitle(GetQuestLogIndexByID(questID));
+		local questTitle, level, suggestedGroup, isHeader, isCollapsed, isComplete, isDaily, _ = GetQuestLogTitle(GetQuestLogIndexByID(questID));
 				
 		if ( isComplete and isComplete > 0 ) then
 			isComplete = true;
@@ -1655,10 +1698,18 @@ function WatchFrameAutoQuest_DisplayAutoQuestPopUps(lineFrame, nextAnchor, maxHe
 			if (isComplete and popUpType == "COMPLETE") then
 				frame.ScrollChild.QuestionMark:Show();
 				frame.ScrollChild.Exclamation:Hide();
-				frame.ScrollChild.TopText:SetText(QUEST_WATCH_POPUP_CLICK_TO_COMPLETE);
+				if (IsQuestTask(questID)) then
+					frame.ScrollChild.TopText:SetText(QUEST_WATCH_POPUP_CLICK_TO_COMPLETE_TASK);
+				else
+					frame.ScrollChild.TopText:SetText(QUEST_WATCH_POPUP_CLICK_TO_COMPLETE);
+				end
 				frame.ScrollChild.BottomText:Hide();
 				frame.ScrollChild.TopText:SetPoint("TOP", 0, -12);
-				frame.ScrollChild.QuestName:SetPoint("TOP", 0, -32);
+				if (frame.ScrollChild.QuestName:GetStringWidth() > frame.ScrollChild.QuestName:GetWidth()) then
+					frame.ScrollChild.QuestName:SetPoint("TOP", 0, -28);
+				else
+					frame.ScrollChild.QuestName:SetPoint("TOP", 0, -32);
+				end
 				if (frame.questId and frame.type=="OFFER") then
 					frame.ScrollChild.Flash:Show();
 				end
@@ -1728,7 +1779,7 @@ function WatchFrameAutoQuest_ClearPopUp(questId)
 end
 
 function WatchFrameAutoQuest_ClearPopUpByLogIndex(questIndex)
-	local questId = select(9, GetQuestLogTitle(questIndex));
+	local questId = select(8, GetQuestLogTitle(questIndex));
 	WatchFrameAutoQuest_ClearPopUp(questId);
 end
 
@@ -2048,8 +2099,7 @@ function WatchFrameScenario_GetCriteriaLine(index, parent)
 	else
 		line:SetParent(parent);
 		if ( line.isAnimating ) then
-			line.Glow.ScaleAnim:Stop();
-			line.Glow.AlphaAnim:Stop();
+			line.Glow.Anim:Stop();
 			line.Sheen.Anim:Stop();
 			line.Check.Anim:Stop();
 			line.isAnimating = nil;
@@ -2064,8 +2114,7 @@ function WatchFrameScenario_PlayCriteriaAnimation(criteriaID)
 	for i = 1, #SCENARIO_CRITERIA_LINES do
 		local line = SCENARIO_CRITERIA_LINES[i];
 		if ( line.criteriaID == criteriaID ) then
-			line.Glow.ScaleAnim:Play();
-			line.Glow.AlphaAnim:Play();
+			line.Glow.Anim:Play();
 			line.Sheen.Anim:Play();
 			line.Check.Anim:Play();
 			line.isAnimating = true;
@@ -2078,8 +2127,7 @@ function WatchFrameScenario_StopCriteriaAnimations()
 	for i = 1, #SCENARIO_CRITERIA_LINES do
 		local line = SCENARIO_CRITERIA_LINES[i];
 		if ( line.isAnimating ) then
-			line.Glow.ScaleAnim:Stop();
-			line.Glow.AlphaAnim:Stop();
+			line.Glow.Anim:Stop();
 			line.Sheen.Anim:Stop();
 			line.Check.Anim:Stop();
 			line.isAnimating = nil;
@@ -2158,7 +2206,7 @@ function WatchFrameScenarioBonusHeader_OnEnter(self)
 	end	
 	GameTooltip:SetOwner(self, "ANCHOR_BOTTOMLEFT", 0, 36);
 	GameTooltip:SetText(bonusName, 1, 0.831, 0.380);
-	GameTooltip:AddLine(bonusDescription, 1, 1, 1, 1);
+	GameTooltip:AddLine(bonusDescription, 1, 1, 1, true);
 	-- bonus rewards
 	local dungeonID, randomID = GetPartyLFGID();
 	if ( randomID ) then
@@ -2198,6 +2246,218 @@ function WatchFrameScenarioBonusHeader_OnUpdate(self, elapsed)
 end
 
 --------------------------------------------------------------------------------------------
+-- Tasks
+--------------------------------------------------------------------------------------------
+
+local OBJECTIVE_TASK_LINES = { };
+local FREE_TASK_LINES = { };
+local NUM_TASK_LINES = 0;
+local TASK_LINE_OFFSET = 6;
+local COMPLETED_TASK_OBJECTIVES = { };
+local TASK_DISPLAY_STATUS = { };
+local TASK_DISPLAY_STATUS_PENDING = 1;
+local TASK_DISPLAY_STATUS_ENTERED = 2;
+local TASK_DISPLAY_STATUS_LEFT = 3;
+
+function WatchFrameTasksFrame_OnLoad(self)
+	WatchFrame_SetLine(self.ScrollChild.Header, nil, -WATCHFRAME_QUEST_OFFSET, true, TASKS_BONUS_OBJECTIVES, DASH_NONE);
+	self.headerHeight = self.ScrollChild.Header:GetHeight();
+end
+
+-- This is called from the WatchFrame_Update handler
+function WatchFrameTasks_DisplayTasks(lineFrame, nextAnchor, maxHeight, frameWidth)
+	local tasksFrame = WatchFrameTasksFrame;
+	
+	for _, taskLine in pairs(OBJECTIVE_TASK_LINES) do
+		taskLine.used = nil;
+	end
+
+	WatchFrameTasks_UpdateTasks();
+
+	for objectiveID, taskLine in pairs(OBJECTIVE_TASK_LINES) do
+		if ( not taskLine.used ) then
+			tinsert(FREE_TASK_LINES, taskLine);
+			taskLine:Hide();
+			OBJECTIVE_TASK_LINES[objectiveID] = nil;
+		end
+	end
+
+	if ( tasksFrame.hasTasks ) then
+		tasksFrame:ClearAllPoints();
+		if ( nextAnchor ) then
+			tasksFrame:SetPoint("TOPLEFT", nextAnchor, "BOTTOMLEFT", 0, -WATCHFRAME_TYPE_OFFSET);
+		else
+			tasksFrame:SetPoint("TOPLEFT", lineFrame, "TOPLEFT", 0, -WATCHFRAME_INITIAL_OFFSET + 4);
+		end
+		-- slide-in?
+		if ( tasksFrame.doSlideIn ) then
+			tasksFrame.doSlideIn = nil;
+			tasksFrame.slidingOut = true;
+			WATCHFRAME_SLIDEIN_ANIMATIONS["TASKS_IN"].height = tasksFrame.contentHeight;
+			WATCHFRAME_SLIDEIN_ANIMATIONS["TASKS_IN"].scrollStart = tasksFrame.contentHeight;
+			WatchFrame_SlideInFrame(tasksFrame, "TASKS_IN");
+			tasksFrame.BurstTexture.AlphaAnim:Play();
+		elseif ( tasksFrame.slidingOut ) then
+			-- just update height
+			WATCHFRAME_SLIDEIN_ANIMATIONS["TASKS_IN"].height = tasksFrame.contentHeight;
+			WATCHFRAME_SLIDEIN_ANIMATIONS["TASKS_IN"].scrollStart = tasksFrame.contentHeight;
+		end
+		-- returning anchor, width, numObjectives, numPopups
+		return tasksFrame.bottomAnchor, 0, 1, 0;
+	else
+		tasksFrame:Hide();
+		WatchFrameTasksFrame.doSlideIn = nil;
+		-- returning anchor, width, numObjectives, numPopups
+		return nextAnchor, 0, 0, 0;
+	end
+end
+
+function WatchFrameTasks_UpdateTasks()
+	local tasksFrame = WatchFrameTasksFrame;
+	local nextAnchor = tasksFrame.ScrollChild.Header;
+	local contentHeight = tasksFrame.headerHeight;
+	local numTaskObjectives = 0;
+
+	local tasksTable = GetTasksTable();
+	local shouldPlaySound;
+	for _, questID in pairs(tasksTable) do
+		local isInArea, isOnMap, numObjectives = GetTaskInfo(questID);
+		if ( isInArea or ( isOnMap and TASK_DISPLAY_STATUS[questID] ) ) then
+			for i = 1, numObjectives do
+				local text, objectiveType, finished = GetQuestObjectiveInfo(questID, i);
+				if ( text ) then
+					local line, exists = WatchFrameTasks_GetLine(questID, i);
+					WatchFrame_SetLine(line, nextAnchor, WATCHFRAMELINES_FONTSPACING - TASK_LINE_OFFSET, nil,  ReverseQuestObjective(text, objectiveType), DASH_ICON, nil, true);
+					nextAnchor = line;
+					contentHeight = contentHeight + line:GetHeight() + TASK_LINE_OFFSET - WATCHFRAMELINES_FONTSPACING;
+					numTaskObjectives = numTaskObjectives + 1;
+					if ( finished ) then
+						line.text:SetTextColor(0.6, 0.6, 0.6);
+						line.icon:SetTexture("Interface\\Scenarios\\ScenarioIcon-Check");
+						local objectiveID = questID * MAX_OBJECTIVES + i;
+						if ( exists and not COMPLETED_TASK_OBJECTIVES[objectiveID] ) then
+							-- we've shown this objective before and now it's complete
+							line.Glow.Anim:Play();
+							line.Sheen.Anim:Play();							
+							line.Check.Anim:Play();
+						end
+						COMPLETED_TASK_OBJECTIVES[objectiveID] = true;
+					else
+						line.icon:SetTexture("Interface\\Scenarios\\ScenarioIcon-Combat");
+					end
+				end
+			end
+			if ( TASK_DISPLAY_STATUS[questID] == TASK_DISPLAY_STATUS_PENDING ) then
+				WatchFrameTasks_OnTaskAdded(questID);
+			end
+			-- this is the reloadui case
+			if ( not TASK_DISPLAY_STATUS[questID] ) then
+				TASK_DISPLAY_STATUS[questID] = TASK_DISPLAY_STATUS_ENTERED;
+			end
+		end
+	end
+	tasksFrame.contentHeight = contentHeight;
+	tasksFrame:SetHeight(contentHeight);
+	tasksFrame:Show();
+	tasksFrame.hasTasks = ( numTaskObjectives > 0 );
+	tasksFrame.bottomAnchor = nextAnchor;
+end
+
+function WatchFrameTasks_OnTaskAdded(questID)
+	-- check the 1st objective to see if we were already showing this
+	local objectiveID = questID * MAX_OBJECTIVES + 1;
+	if ( not OBJECTIVE_TASK_LINES[objectiveID] ) then
+		-- we don't have it yet, wait until next WatchFrame update
+		TASK_DISPLAY_STATUS[questID] = TASK_DISPLAY_STATUS_PENDING;
+		return;
+	end	
+	
+	local shouldPlaySound;
+	local reEntering = ( TASK_DISPLAY_STATUS[questID] == TASK_DISPLAY_STATUS_LEFT );
+	local isInArea, isOnMap, numObjectives = GetTaskInfo(questID);
+	if ( isInArea ) then
+		for i = 1, numObjectives do
+			local line = WatchFrameTasks_GetLine(questID, i);
+			line:SetAlpha(1);
+			if ( reEntering ) then
+				line.AlphaAnim:Stop();
+			else
+				line.Glow.Anim:Play();
+				line.Sheen.Anim:Play();
+				shouldPlaySound = true;
+			end
+		end
+		TASK_DISPLAY_STATUS[questID] = TASK_DISPLAY_STATUS_ENTERED;
+	else
+		TASK_DISPLAY_STATUS[questID] = nil;
+	end
+	if ( shouldPlaySound ) then
+		PlaySound("UI_Scenario_Stage_End");
+	end
+end
+
+function WatchFrameTasks_OnTaskRemoved(questID)
+	local isInArea, isOnMap, numObjectives = GetTaskInfo(questID);
+	-- do elapsing animation if nearby
+	if ( isOnMap and TASK_DISPLAY_STATUS[questID] == TASK_DISPLAY_STATUS_ENTERED ) then
+		for i = 1, numObjectives do
+			local line, exists = WatchFrameTasks_GetLine(questID, i);
+			if ( exists ) then
+				if ( not line.AlphaAnim:IsPlaying()	) then
+					line.Glow.Anim:Stop();
+					line.Sheen.Anim:Stop();
+					line.AlphaAnim:Play();
+				end
+			end
+		end
+		TASK_DISPLAY_STATUS[questID] = TASK_DISPLAY_STATUS_LEFT;
+	else
+		TASK_DISPLAY_STATUS[questID] = nil;
+	end
+end
+
+function WatchFrameTasks_OnFinishLineAnim(self)
+	TASK_DISPLAY_STATUS[self:GetParent().questID] = nil;
+	WatchFrame_Update();
+end
+
+function WatchFrameTasks_GetLine(questID, objectiveIndex)
+	local objectiveID = questID * MAX_OBJECTIVES + objectiveIndex;
+	local line = OBJECTIVE_TASK_LINES[objectiveID];
+	local exists = not not line;
+	-- if this objective doesn't already have a line then find a free one
+	if ( not line ) then
+		line = FREE_TASK_LINES[1];
+		if ( line ) then
+			tremove(FREE_TASK_LINES, 1);
+			OBJECTIVE_TASK_LINES[objectiveID] = line;
+			line:SetHeight(WATCHFRAME_LINEHEIGHT);
+			line.text:SetHeight(0);
+			-- kill any existing animations
+			line.Glow.Anim:Stop();
+			line.Sheen.Anim:Stop();
+			line.Check.Anim:Stop();
+		end
+	end
+	-- create a new one if still no line
+	if ( not line ) then
+		NUM_TASK_LINES = NUM_TASK_LINES + 1;
+		line = CreateFrame("BUTTON", "WatchFrameTasksLine"..NUM_TASK_LINES, WatchFrameTasksFrame.ScrollChild, "WatchFrameTaskLineTemplate");
+		OBJECTIVE_TASK_LINES[objectiveID] = line;
+	end
+	
+	line.icon:SetTexture("Interface\\Scenarios\\ScenarioIcon-Combat");
+	line.used = true;
+	line.questID = questID;
+	line:Show();
+	return line, exists;
+end
+
+function WatchFrameTasks_OnFinishedSlideOut(self)
+	self.slidingOut = nil;
+end
+
+--------------------------------------------------------------------------------------------
 -- Slide-in Animations
 --------------------------------------------------------------------------------------------
 WATCHFRAME_SLIDEIN_ANIMATIONS = {
@@ -2207,6 +2467,8 @@ WATCHFRAME_SLIDEIN_ANIMATIONS = {
 	["SCENARIO_OUT"] = { height = nil, scrollStart = 0, scrollEnd = nil, slideInTime = 0.4, reverse = true,
 						 afterStartDelayFunc = WatchFrameScenario_OnBeginSlideOut,
 						 onFinishFunc = WatchFrameScenario_OnFinishSlideOut, startDelay = 0.8, endDelay = 0.6 },	-- various content heights, nil values must be set
+	["TASKS_IN"]  = { height = nil, scrollStart = nil, scrollEnd = 0, slideInTime = 0.4,
+						 onFinishFunc = WatchFrameTasks_OnFinishedSlideOut },										-- various content heights, nil values must be set						 
 };
 
 function WatchFrame_SlideInFrame(frame, animType)

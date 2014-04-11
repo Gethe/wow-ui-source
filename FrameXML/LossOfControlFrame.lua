@@ -33,7 +33,7 @@ function LossOfControlFrame_OnLoad(self)
 	self.TimeLeft.baseNumberWidth = self.TimeLeft.NumberText:GetStringWidth() + LOSS_OF_CONTROL_TIME_OFFSET;
 	self.TimeLeft.secondsWidth = self.TimeLeft.SecondsText:GetStringWidth();
 end
-;
+
 function LossOfControlFrame_OnEvent(self, event, ...)
 	if ( event == "LOSS_OF_CONTROL_UPDATE" ) then
 		LossOfControlFrame_UpdateDisplay(self, false);
@@ -117,11 +117,11 @@ function LossOfControlFrame_SetUpDisplay(self, animate, locType, spellID, text, 
 		local timeLeftFrame = self.TimeLeft;
 		if ( displayType == DISPLAY_TYPE_ALERT ) then
 			timeRemaining = duration;
-			self.Cooldown:SetLossOfControlCooldown(0, 0);
+			self.Cooldown:SetCooldown(0, 0);
 		elseif ( not startTime ) then
-			self.Cooldown:SetLossOfControlCooldown(0, 0);
+			self.Cooldown:SetCooldown(0, 0);
 		else
-			self.Cooldown:SetLossOfControlCooldown(startTime, duration);
+			self.Cooldown:SetCooldown(startTime, duration);
 		end
 		LossOfControlTimeLeftFrame_SetTime(timeLeftFrame, timeRemaining);
 		-- align stuff
@@ -165,7 +165,7 @@ function LossOfControlFrame_UpdateDisplay(self)
 			LossOfControlFrame_SetUpDisplay(self, false, locType, spellID, text, iconTexture, startTime, timeRemaining, duration, lockoutSchool, priority, displayType);
 		end
 		if ( not self.Anim:IsPlaying() and startTime ) then
-			self.Cooldown:SetLossOfControlCooldown(startTime, duration);
+			self.Cooldown:SetCooldown(startTime, duration);
 		end
 		LossOfControlTimeLeftFrame_SetTime(self.TimeLeft, timeRemaining);
 	else
@@ -175,11 +175,7 @@ end
 
 function LossOfControlTimeLeftFrame_SetTime(self, timeRemaining)
 	if( timeRemaining ) then
-		if ( timeRemaining >= 10 ) then
-			self.NumberText:SetFormattedText("%d", timeRemaining);
-		else
-			self.NumberText:SetFormattedText("%.1f", timeRemaining);
-		end
+		self.NumberText:SetText(ConvertToDecimal(timeRemaining, 1));
 		self:Show();
 		self.timeRemaining = timeRemaining;
 		LossOfControlTimeLeftFrame_SetNumberWidth(self, timeRemaining);

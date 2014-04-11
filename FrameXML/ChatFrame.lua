@@ -1057,6 +1057,36 @@ function SecureCmdUseItem(name, bag, slot, target)
 	end
 end
 
+--These functions are terrible, but they support legacy slash commands.
+function ValueToBoolean(valueToCheck, defaultValue, defaultReturn)
+	if ( type(valueToCheck) == "nil" ) then
+		return false;
+	elseif ( type(valueToCheck) == "boolean" ) then
+		return valueToCheck;
+	elseif ( type(valueToCheck) == "number" ) then
+		return valueToCheck ~= 0;
+	elseif ( type(valueToCheck) == "string" ) then
+		return StringToBoolean(valueToCheck, defaultReturn);
+	else
+		return defaultReturn;
+	end
+end
+
+function StringToBoolean(stringToCheck, defaultReturn)
+	stringToCheck = string.lower(stringToCheck);
+	local firstChar = string.sub(stringToCheck, 1, 1);
+	
+	if ( firstChar == "0" or firstChar == "n" or firstChar == "f" or stringToCheck == "off" or stringToCheck == "disabled" ) then
+		return false;
+	elseif ( firstChar == "1" or firstChar == "2" or firstChar == "3" or firstChar == "4" or firstChar == "5" or
+				firstChar == "6" or firstChar == "7" or firstChar == "8" or firstChar == "9" or firstChar == "y" or
+				firstChar == "t" or stringToCheck == "on" or stringToCheck == "enabled" ) then
+		return true;
+	end
+	
+	return defaultReturn;
+end
+
 SecureCmdList["STARTATTACK"] = function(msg)
 	local action, target = SecureCmdOptionParse(msg);
 	if ( action ) then
@@ -1073,7 +1103,21 @@ SecureCmdList["STOPATTACK"] = function(msg)
 	end
 end
 
+-- We want to prefer spells for /cast and items for /use but we can use either
 SecureCmdList["CAST"] = function(msg)
+    local action, target = SecureCmdOptionParse(msg);
+    if ( action ) then
+    	local spell = GetSpellInfo(action)
+		local name, bag, slot = SecureCmdItemParse(action);
+		if ( spell ) then
+			CastSpellByName(action, target);
+		elseif ( slot or GetItemInfo(name) ) then
+			SecureCmdUseItem(name, bag, slot, target);
+		end
+    end
+end
+
+SecureCmdList["USE"] = function(msg)
     local action, target = SecureCmdOptionParse(msg);
     if ( action ) then
 		local name, bag, slot = SecureCmdItemParse(action);
@@ -1084,7 +1128,6 @@ SecureCmdList["CAST"] = function(msg)
 		end
     end
 end
-SecureCmdList["USE"] = SecureCmdList["CAST"];
 
 SecureCmdList["CASTRANDOM"] = function(msg)
     local actions, target = SecureCmdOptionParse(msg);
@@ -1238,49 +1281,49 @@ SecureCmdList["TARGET_EXACT"] = function(msg)
 		if ( not target or target == "target" ) then
 			target = action;
 		end
-		TargetUnit(target, 1);
+		TargetUnit(target, true);
 	end
 end
 
 SecureCmdList["TARGET_NEAREST_ENEMY"] = function(msg)
 	local action = SecureCmdOptionParse(msg);
 	if ( action ) then
-		TargetNearestEnemy(action);
+		TargetNearestEnemy(ValueToBoolean(action, false));
 	end
 end
 
 SecureCmdList["TARGET_NEAREST_ENEMY_PLAYER"] = function(msg)
 	local action = SecureCmdOptionParse(msg);
 	if ( action ) then
-		TargetNearestEnemyPlayer(action);
+		TargetNearestEnemyPlayer(ValueToBoolean(action, false));
 	end
 end
 
 SecureCmdList["TARGET_NEAREST_FRIEND"] = function(msg)
-	local action = SecureCmdOptionParse(msg);
+	local action = SecureCmdOptionParse(msg);	
 	if ( action ) then
-		TargetNearestFriend(action);
+		TargetNearestFriend(ValueToBoolean(action, false));
 	end
 end
 
 SecureCmdList["TARGET_NEAREST_FRIEND_PLAYER"] = function(msg)
 	local action = SecureCmdOptionParse(msg);
 	if ( action ) then
-		TargetNearestFriendPlayer(action);
+		TargetNearestFriendPlayer(ValueToBoolean(action, false));
 	end
 end
 
 SecureCmdList["TARGET_NEAREST_PARTY"] = function(msg)
 	local action = SecureCmdOptionParse(msg);
 	if ( action ) then
-		TargetNearestPartyMember(action);
+		TargetNearestPartyMember(ValueToBoolean(action, false));
 	end
 end
 
 SecureCmdList["TARGET_NEAREST_RAID"] = function(msg)
 	local action = SecureCmdOptionParse(msg);
 	if ( action ) then
-		TargetNearestRaidMember(action);
+		TargetNearestRaidMember(ValueToBoolean(action, false));
 	end
 end
 
@@ -2149,7 +2192,7 @@ SlashCmdList["RAIDBROWSER"] = function(msg)
 end
 
 SlashCmdList["BENCHMARK"] = function(msg)
-	SetTaxiBenchmarkMode(msg);
+	SetTaxiBenchmarkMode(ValueToBoolean(msg), true);
 end
 
 SlashCmdList["DISMOUNT"] = function(msg)
@@ -2302,9 +2345,20 @@ end
 
 
 SlashCmdList["WARGAME"] = function(msg)
-	local area = msg;
-	if area and area == "" then area = nil end 
-	StartWarGame("target", area );
+	local area, isTournamentMode = strmatch(msg, "^([^%s]+)%s*([^%s]*)");
+	if (area == "" or area == "nil" or area == "0") then area = nil end 
+	StartWarGame("target", area, ValueToBoolean(isTournamentMode) );
+end
+
+SlashCmdList["SPECTATOR_WARGAME"] = function(msg)
+	local target1, target2, size, area, isTournamentMode = strmatch(msg, "^([^%s]+)%s+([^%s]+)%s+([^%s]+)%s*([^%s]*)%s*([^%s]*)")
+	if (not target1 or not target2 or not size) then
+		return;
+	end
+	local presenceID1 = BNet_GetPresenceID(target1);
+	local presenceID2 = BNet_GetPresenceID(target2);
+	if (area == "" or area == "nil" or area == "0") then area = nil end 
+	StartSpectatorWarGame(presenceID1 or target1, presenceID2 or target2, size, area, ValueToBoolean(isTournamentMode));
 end
 
 SlashCmdList["GUILDFINDER"] = function(msg)
@@ -4793,7 +4847,7 @@ function Chat_GetColoredChatName(chatType, chatTarget)
 		local info = ChatTypeInfo["CHANNEL"..chatTarget];
 		local colorString = format("|cff%02x%02x%02x", info.r * 255, info.g * 255, info.b * 255);
 		local chanNum, channelName = GetChannelName(chatTarget);
-		return format("%s|Hchannel:channel:%d|h[%d. %s]|h", colorString, chanNum, chanNum, gsub(channelName, "%s%-%s.*", ""));	--The gsub removes zone-specific markings (e.g. "General - Ironforge" to "General")
+		return format("%s|Hchannel:channel:%d|h[%d. %s]|h|r", colorString, chanNum, chanNum, gsub(channelName, "%s%-%s.*", ""));	--The gsub removes zone-specific markings (e.g. "General - Ironforge" to "General")
 	elseif ( chatType == "WHISPER" ) then
 		local info = ChatTypeInfo["WHISPER"];
 		local colorString = format("|cff%02x%02x%02x", info.r * 255, info.g * 255, info.b * 255);

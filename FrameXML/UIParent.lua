@@ -57,6 +57,8 @@ UIPanelWindows["CinematicFrame"] =				{ area = "full",			pushable = 0, 		xoffset
 UIPanelWindows["ChatConfigFrame"] =				{ area = "center",			pushable = 0, 		xoffset = -16, 		yoffset = 12,	whileDead = 1 };
 UIPanelWindows["WorldStateScoreFrame"] =		{ area = "center",			pushable = 0, 		xoffset = -16, 		yoffset = 12,	whileDead = 1 };
 UIPanelWindows["QuestChoiceFrame"] =			{ area = "center",			pushable = 0, 		xoffset = -16, 		yoffset = 12,	whileDead = 0, allowOtherPanels = 1 };
+UIPanelWindows["GarrisonBuildingFrame"] =		{ area = "center",			pushable = 0,		whileDead = 1, 		width = 1002};
+UIPanelWindows["GarrisonMissionFrame"] =		{ area = "center",			pushable = 0,		whileDead = 1, 		width = 1002};
 
 local function GetUIPanelWindowInfo(frame, name)
 	if ( not frame:GetAttribute("UIPanelLayout-defined") ) then
@@ -258,11 +260,6 @@ function UIParent_OnLoad(self)
 	-- Events for talent wipes
 	self:RegisterEvent("TALENTS_INVOLUNTARILY_RESET");
 	
-	
-	-- Events for reforging
-	self:RegisterEvent("FORGE_MASTER_OPENED");
-	self:RegisterEvent("FORGE_MASTER_CLOSED");
-	
 	-- Events for Archaeology
 	self:RegisterEvent("ARCHAEOLOGY_TOGGLE");
 	self:RegisterEvent("ARCHAEOLOGY_SURVEY_CAST");
@@ -295,6 +292,12 @@ function UIParent_OnLoad(self)
 
 	-- Lua warnings
 	self:RegisterEvent("LUA_WARNING");
+
+	-- Garrison
+	self:RegisterEvent("GARRISON_ARCHITECT_OPENED");
+	self:RegisterEvent("GARRISON_ARCHITECT_CLOSED");
+	self:RegisterEvent("SHIPMENT_CRAFTER_OPENED");
+
 end
 
 
@@ -392,10 +395,6 @@ function Calendar_LoadUI()
 	UIParentLoadAddOn("Blizzard_Calendar");
 end
 
-function Reforging_LoadUI()
-	UIParentLoadAddOn("Blizzard_ReforgingUI");
-end
-
 function ItemAlteration_LoadUI()
 	UIParentLoadAddOn("Blizzard_ItemAlterationUI");
 end
@@ -459,6 +458,10 @@ function Store_LoadUI()
 	UIParentLoadAddOn("Blizzard_StoreUI");
 end
 
+function Garrison_LoadUI()
+	UIParentLoadAddOn("Blizzard_GarrisonUI");
+end
+
 --[[
 function MovePad_LoadUI()
 	UIParentLoadAddOn("Blizzard_MovePad");
@@ -482,6 +485,10 @@ function InspectAchievements (unit)
 end
 
 function ToggleAchievementFrame(stats)
+	if (IsBlizzCon()) then
+		return;
+	end
+
 	if ( ( HasCompletedAnyAchievement() or IsInGuild() ) and CanShowAchievementUI() ) then
 		AchievementFrame_LoadUI();
 		AchievementFrame_ToggleAchievementFrame(stats);
@@ -489,7 +496,7 @@ function ToggleAchievementFrame(stats)
 end
 
 function ToggleTalentFrame()
-	if (IsBlizzCon() or (UnitLevel("player") < SHOW_SPEC_LEVEL)) then
+	if (UnitLevel("player") < SHOW_SPEC_LEVEL) then
 		return;
 	end
 
@@ -500,11 +507,11 @@ function ToggleTalentFrame()
 end
 
 function ToggleGlyphFrame()
-	if (IsBlizzCon()) then
-		return;
-	end
+--	if (IsBlizzCon()) then
+--		return;
+--	end
 
-	if ( UnitLevel("player") < SHOW_INSCRIPTION_LEVEL ) then
+	if ( UnitLevel("player") < SHOW_INSCRIPTION_LEVEL or ShouldHideGlyphTab() ) then
 		return;
 	end
 
@@ -515,11 +522,11 @@ function ToggleGlyphFrame()
 end
 
 function OpenGlyphFrame()
-	if (IsBlizzCon()) then
-		return;
-	end
+--	if (IsBlizzCon()) then
+--		return;
+--	end
 
-	if ( UnitLevel("player") < SHOW_INSCRIPTION_LEVEL ) then
+	if ( UnitLevel("player") < SHOW_INSCRIPTION_LEVEL or ShouldHideGlyphTab() ) then
 		return;
 	end
 
@@ -555,8 +562,12 @@ function ToggleCalendar()
 end
 
 function ToggleGuildFrame()
+	if (IsBlizzCon()) then
+		return;
+	end
+
 	local factionGroup = UnitFactionGroup("player");
-	if (IsBlizzCon() or factionGroup == "Neutral") then
+	if (factionGroup == "Neutral") then
 		return;
 	end
 
@@ -575,8 +586,12 @@ function ToggleGuildFrame()
 end
 
 function ToggleGuildFinder()
+	if (IsBlizzCon()) then
+		return;
+	end
+
 	local factionGroup = UnitFactionGroup("player");
-	if (IsBlizzCon() or factionGroup == "Neutral") then
+	if (factionGroup == "Neutral") then
 		return;
 	end
 
@@ -587,8 +602,12 @@ function ToggleGuildFinder()
 end
 
 function ToggleLFDParentFrame()
+	if (IsBlizzCon()) then
+		return;
+	end
+
 	local factionGroup = UnitFactionGroup("player");
-	if (IsBlizzCon() or factionGroup == "Neutral") then
+	if (factionGroup == "Neutral") then
 		return;
 	end
 
@@ -598,6 +617,10 @@ function ToggleLFDParentFrame()
 end
 
 function ToggleHelpFrame()
+	if (IsBlizzCon()) then
+		return;
+	end
+
 	if ( HelpFrame:IsShown() ) then
 		HideUIPanel(HelpFrame);
 	else
@@ -611,8 +634,12 @@ function ToggleHelpFrame()
 end
 
 function ToggleRaidFrame()
+	if (IsBlizzCon()) then
+		return;
+	end
+	
 	local factionGroup = UnitFactionGroup("player");
-	if (IsBlizzCon() or factionGroup == "Neutral") then
+	if (factionGroup == "Neutral") then
 		return;
 	end
 
@@ -620,8 +647,12 @@ function ToggleRaidFrame()
 end
 
 function ToggleRaidBrowser()
+	if (IsBlizzCon()) then
+		return;
+	end
+
 	local factionGroup = UnitFactionGroup("player");
-	if (IsBlizzCon() or factionGroup == "Neutral") then
+	if (factionGroup == "Neutral") then
 		return;
 	end
 
@@ -670,6 +701,7 @@ function TogglePVPUI()
 	if (IsBlizzCon()) then
 		return;
 	end
+	
 	if (not PVPUIFrame) then
 		PVP_LoadUI();
 	end
@@ -679,6 +711,10 @@ function TogglePVPUI()
 end
 
 function ToggleStoreUI()
+	if (IsBlizzCon()) then
+		return;
+	end
+
 	Store_LoadUI();
 
 	local wasShown = StoreFrame_IsShown();
@@ -687,6 +723,20 @@ function ToggleStoreUI()
 		securecall("CloseAllWindows");
 	end
 	StoreFrame_SetShown(not wasShown);
+end
+
+function ToggleGarrisonBuildingUI()
+	if (not GarrisonBuildingFrame) then
+		Garrison_LoadUI();
+	end
+	GarrisonBuildingUI_ToggleFrame();
+end
+
+function ToggleGarrisonMissionUI()
+	if (not GarrisonMissionFrame) then
+		Garrison_LoadUI();
+	end
+	GarrisonMissionFrame_ToggleFrame();
 end
 
 function InspectUnit(unit)
@@ -1008,7 +1058,7 @@ function UIParent_OnEvent(self, event, ...)
 		
 		--[[
 		-- Disable all microbuttons except the main menu
-		SetDesaturation(MicroButtonPortrait, 1);
+		SetDesaturation(MicroButtonPortrait, true);
 		
 		Designers previously wanted these disabled when feared, they seem to have changed their minds
 		CharacterMicroButton:Disable();
@@ -1023,7 +1073,7 @@ function UIParent_OnEvent(self, event, ...)
 	elseif ( event == "PLAYER_CONTROL_GAINED" ) then
 		--[[
 		-- Enable all microbuttons
-		SetDesaturation(MicroButtonPortrait, nil);
+		SetDesaturation(MicroButtonPortrait, false);
 
 		CharacterMicroButton:Enable();
 		SpellbookMicroButton:Enable();
@@ -1284,17 +1334,6 @@ function UIParent_OnEvent(self, event, ...)
 		end
 	elseif( event == "AUTH_CHALLENGE_UI_INVALID" ) then
 		StaticPopup_Show("ERR_AUTH_CHALLENGE_UI_INVALID");
-		
-	-- Events for Reforging UI handling
-	elseif ( event == "FORGE_MASTER_OPENED" ) then
-		Reforging_LoadUI();
-		if ( ReforgingFrame_Show ) then
-			ReforgingFrame_Show();
-		end
-	elseif ( event == "FORGE_MASTER_CLOSED" ) then
-		if ( ReforgingFrame_Hide ) then
-			ReforgingFrame_Hide();
-		end
 	
 	-- Events for Archaeology
 	elseif ( event == "ARCHAEOLOGY_TOGGLE" ) then
@@ -1393,6 +1432,20 @@ function UIParent_OnEvent(self, event, ...)
 			local HIDE_ERROR_FRAME = true;
 			ScriptErrorsFrame_OnError(message, warnType, HIDE_ERROR_FRAME);
 		end
+	elseif ( event == "GARRISON_ARCHITECT_OPENED") then
+		if (not GarrisonBuildingFrame) then
+			Garrison_LoadUI();
+		end
+		GarrisonBuildingFrame:Show();
+	elseif ( event == "GARRISON_ARCHITECT_CLOSED" ) then
+		if ( GarrisonBuildingFrame ) then
+			GarrisonBuildingFrame:Hide();
+		end
+	elseif ( event == "SHIPMENT_CRAFTER_OPENED" ) then
+		if (not GarrisonCapacitiveDisplayFrame) then
+			Garrison_LoadUI();
+		end
+		C_Garrison.RequestShipmentInfo();
 	end
 end
 
@@ -2250,6 +2303,10 @@ function FramePositionDelegate:UIParentManageFramePositions()
 			-- OnSizeChanged for WatchFrame handles its redraw
 		end
 		WatchFrame:SetPoint("BOTTOMRIGHT", "UIParent", "BOTTOMRIGHT", -CONTAINER_OFFSET_X, CONTAINER_OFFSET_Y);
+		
+		if(ObjectiveTrackerFrame) then
+			ObjectiveTrackerFrame:SetHeight(WatchFrame:GetHeight());
+		end
 	end
 	
 	-- Update chat dock since the dock could have moved
@@ -2300,10 +2357,6 @@ function HideUIPanel(frame, skipSetPoint)
 	FramePositionDelegate:SetAttribute("panel-frame", frame);
 	FramePositionDelegate:SetAttribute("panel-skipSetPoint", skipSetPoint);
 	FramePositionDelegate:SetAttribute("panel-hide", true);
-end
-
-function HideParentPanel(self)	
-	HideUIPanel(self:GetParent());
 end
 
 function GetUIPanel(key)
@@ -3018,6 +3071,19 @@ function ButtonPulse_StopPulse(button)
 	end
 end
 
+local ctrlDown = false;
+function ControlKeyListener_OnUpdate(_, elapsed)
+	if ( IsControlKeyDown() ) then
+		if ( not ctrlDown ) then
+			ctrlDown = true;
+			GameTooltip_OnControlPressed(GameTooltip);
+			ItemRefTooltip_OnControlPressed(ItemRefTooltip);
+		end
+	else
+		ctrlDown = false;
+	end
+end
+
 function UIDoFramesIntersect(frame1, frame2)
 	if ( ( frame1:GetLeft() < frame2:GetRight() ) and ( frame1:GetRight() > frame2:GetLeft() ) and
 		( frame1:GetBottom() < frame2:GetTop() ) and ( frame1:GetTop() > frame2:GetBottom() ) ) then
@@ -3671,7 +3737,7 @@ function GetRelativeDifficultyColor(unitLevel, challengeLevel)
 		return QuestDifficultyColors["impossible"];
 	elseif ( levelDiff >= 3 ) then
 		return QuestDifficultyColors["verydifficult"];
-	elseif ( levelDiff >= -2 ) then
+	elseif ( levelDiff >= -4 ) then
 		return QuestDifficultyColors["difficult"];
 	elseif ( -levelDiff <= GetQuestGreenRange() ) then
 		return QuestDifficultyColors["standard"];
@@ -4115,17 +4181,29 @@ function AbbreviateLargeNumbers(value)
 	return retString;
 end
 
-function BreakUpLargeNumbers(value)
+function ConvertToDecimal(value, fractionalWidth)
 	local retString = "";
-	if ( value < 1000 ) then
+	fractionalWidth = fractionalWidth or 2;
+	
 		if ( (value - math.floor(value)) == 0) then
 			return value;
 		end
-		local decimal = (math.floor(value*100));
-		retString = string.sub(decimal, 1, -3);
+	
+	local decimal = value - (math.floor(value));
+	decimal = math.floor(decimal*(10^fractionalWidth));
+	
+	retString = ""..math.floor(value);
 		retString = retString..DECIMAL_SEPERATOR;
-		retString = retString..string.sub(decimal, -2);
-		return retString;
+	retString = retString..decimal;
+	
+	return retString
+end
+
+function BreakUpLargeNumbers(value, fractionalWidth)
+	local retString = "";
+	
+	if ( value < 1000 ) then
+		return ConvertToDecimal(value, fractionalWidth);
 	end
 
 	value = math.floor(value);
@@ -4222,6 +4300,10 @@ function GetSmoothProgressChange(value, displayedValue, range, elapsed, minPerSe
 	else
 		return displayedValue - change;
 	end
+end
+
+function InGlue()
+	return false;
 end
 
 function RGBToColorCode(r, g, b)

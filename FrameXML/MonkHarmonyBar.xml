@@ -1,36 +1,19 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\FrameXML\UI.xsd">
-  <Script file="MonkHarmonyBar.lua"/>
-
-	<Texture name="MonkUI-background-shadow" file="Interface\PlayerFrame\MonkUI" virtual="true" >
-		<Size x="136" y="43"/>
-		<TexCoords left="0.00390625" right="0.53515625" top="0.00781250" bottom="0.34375000"/>
-	</Texture>
-	<Texture name="MonkUI-background" file="Interface\PlayerFrame\MonkUI" virtual="true" >
-		<Size x="136" y="43"/>
-		<TexCoords left="0.00390625" right="0.53515625" top="0.35937500" bottom="0.69531250"/>
-	</Texture>
-	<Texture name="MonkUI-LightOrb" file="Interface\PlayerFrame\MonkUI" virtual="true" >
-		<Size x="21" y="21"/>
-		<TexCoords left="0.00390625" right="0.08593750" top="0.71093750" bottom="0.87500000"/>
-	</Texture>
-	<Texture name="MonkUI-OrbOff" file="Interface\PlayerFrame\MonkUI" virtual="true" >
-		<Size x="21" y="21"/>
-		<TexCoords left="0.09375000" right="0.17578125" top="0.71093750" bottom="0.87500000"/>
-	</Texture>
+  <Script file="MonkHarmonyBar.lua"/>		
  
-	<Frame name="MonkLightEnergyTemplate" virtual="true">
+	<Frame name="MonkLightEnergyTemplate" parentArray="LightEnergy" virtual="true">
 		<Size x="18" y="17"/>
 		<Layers>
 			<Layer level="BACKGROUND">
-				<Texture inherits="MonkUI-OrbOff">
+				<Texture parentKey="OrbOff" atlas="MonkUI-OrbOff" useAtlasSize="true">
 					<Anchors>
 						<Anchor point="CENTER" x="0" y="0"/>
 					</Anchors>
 				</Texture>
 			</Layer>
 			<Layer level="ARTWORK">
-				<Texture name="$parentGlow" inherits="MonkUI-LightOrb" alpha="0" parentKey="glow">
+				<Texture parentKey="Glow" atlas="MonkUI-LightOrb" useAtlasSize="true" alpha="0">
 					<Anchors>
 						<Anchor point="CENTER" x="0" y="0"/>
 					</Anchors>
@@ -38,21 +21,11 @@
 			</Layer>
 		</Layers>
 		<Animations>
-			<AnimationGroup parentKey="activate">
-				<Alpha target="$parentGlow" change="1" duration="0.2" order="1"/>
-				<Scripts>
-					<OnFinished>
-						self:GetParent().glow:SetAlpha(1);
-					</OnFinished>
-				</Scripts>
+			<AnimationGroup parentKey="activate" setToFinalAlpha="true">
+				<Alpha childKey="Glow" fromAlpha="0" toAlpha="1" duration="0.2" order="1"/>
 			</AnimationGroup>
-			<AnimationGroup parentKey="deactivate">
-				<Alpha target="$parentGlow" change="-1" duration="0.3" order="1"/>
-				<Scripts>
-					<OnFinished>
-						self:GetParent().glow:SetAlpha(0);
-					</OnFinished>
-				</Scripts>
+			<AnimationGroup parentKey="deactivate" setToFinalAlpha="true">
+				<Alpha childKey="Glow" fromAlpha="1" toAlpha="0" duration="0.3" order="1"/>
 			</AnimationGroup>
 			<AnimationGroup parentKey="spin">
 				<Rotation radians="6.28318531" duration="0.7" order="1">
@@ -82,8 +55,6 @@
 		</Scripts>
 	</Frame>
   
-  
-  
 	<Frame name="MonkHarmonyBar" parent="PlayerFrame">
 		<Size x="1" y="60"/>
 		<Anchors>
@@ -91,14 +62,14 @@
 		</Anchors>
 		<Layers>
 			<Layer level="BACKGROUND">
-				<Texture name="$parentGlow" inherits="MonkUI-background-shadow">
+				<Texture atlas="MonkUI-background-shadow" useAtlasSize="true">
 					<Anchors>
 						<Anchor point="CENTER" x="0" y="0"/>
 					</Anchors>
 				</Texture>
 			</Layer>
 			<Layer level="BORDER">
-				<Texture name="$parentGlow" inherits="MonkUI-background">
+				<Texture atlas="MonkUI-background" useAtlasSize="true">
 					<Anchors>
 						<Anchor point="CENTER" x="0" y="0"/>
 					</Anchors>
@@ -106,29 +77,9 @@
 			</Layer>
 		</Layers>
 		<Frames>
-			<Frame name="$parentLightEnergy1" inherits="MonkLightEnergyTemplate" parentKey="lightEnergy1">
+			<Frame inherits="MonkLightEnergyTemplate">
 				<Anchors>
 					<Anchor point="LEFT" x="-43" y="1"/>
-				</Anchors>
-			</Frame>
-			<Frame name="$parentLightEnergy2" inherits="MonkLightEnergyTemplate" parentKey="lightEnergy2">
-				<Anchors>
-					<Anchor point="LEFT" relativeTo="$parentLightEnergy1" relativePoint="RIGHT" x="5" y="0"/>
-				</Anchors>
-			</Frame>
-			<Frame name="$parentLightEnergy3" inherits="MonkLightEnergyTemplate" parentKey="lightEnergy3">
-				<Anchors>
-					<Anchor point="LEFT" relativeTo="$parentLightEnergy2" relativePoint="RIGHT" x="5" y="0"/>
-				</Anchors>
-			</Frame>
-			<Frame name="$parentLightEnergy4" inherits="MonkLightEnergyTemplate" parentKey="lightEnergy4">
-				<Anchors>
-					<Anchor point="LEFT" relativeTo="$parentLightEnergy3" relativePoint="RIGHT" x="5" y="0"/>
-				</Anchors>
-			</Frame>
-			<Frame name="$parentLightEnergy5" inherits="MonkLightEnergyTemplate" parentKey="lightEnergy5" hidden="true">
-				<Anchors>
-					<Anchor point="LEFT" relativeTo="$parentLightEnergy4" relativePoint="RIGHT" x="1" y="0"/>
 				</Anchors>
 			</Frame>
 		</Frames>

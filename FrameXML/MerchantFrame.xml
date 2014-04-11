@@ -230,13 +230,13 @@
 					<OnEvent>
 						local _, canRepair = GetRepairAllCost();
 						if ( not canRepair ) then
-							SetDesaturation(MerchantRepairAllIcon, 1);
-							SetDesaturation(MerchantGuildBankRepairButtonIcon, 1);
+							SetDesaturation(MerchantRepairAllIcon, true);
+							SetDesaturation(MerchantGuildBankRepairButtonIcon, true);
 							MerchantGuildBankRepairButton:Disable();
 							self:Disable();
 						else
-							SetDesaturation(MerchantRepairAllIcon, nil);
-							SetDesaturation(MerchantGuildBankRepairButtonIcon, nil);
+							SetDesaturation(MerchantRepairAllIcon, false);
+							SetDesaturation(MerchantGuildBankRepairButtonIcon, false);
 							self:Enable();
 							MerchantGuildBankRepairButton:Enable();
 						end
@@ -306,7 +306,7 @@
 							else
 								amount = min(amount, guildBankMoney);
 							end
-							GameTooltip:AddLine(GUILDBANK_REPAIR, nil, nil, nil, 1);
+							GameTooltip:AddLine(GUILDBANK_REPAIR, nil, nil, nil, true);
 							SetTooltipMoney(GameTooltip, amount, "GUILD_REPAIR");
 							GameTooltip:Show();
 						end
@@ -315,7 +315,7 @@
 					<OnClick>
 						--FIXME!!! Need actual amount of guild money left to withdraw
 						if(CanGuildBankRepair()) then
-							RepairAllItems(1);
+							RepairAllItems(true);
 							PlaySound("ITEM_REPAIR");
 						end
 						GameTooltip:Hide();
@@ -323,13 +323,13 @@
 					<OnEvent>
 						local _, canRepair = GetRepairAllCost();
 						if ( not canRepair ) then
-							SetDesaturation(MerchantRepairAllIcon, 1);
-							SetDesaturation(MerchantGuildBankRepairButtonIcon, 1);
+							SetDesaturation(MerchantRepairAllIcon, true);
+							SetDesaturation(MerchantGuildBankRepairButtonIcon, true);
 							MerchantGuildBankRepairButton:Disable();
 							MerchantRepairAllButton:Disable();
 						else
-							SetDesaturation(MerchantRepairAllIcon, nil);
-							SetDesaturation(MerchantGuildBankRepairButtonIcon, nil);
+							SetDesaturation(MerchantRepairAllIcon, false);
+							SetDesaturation(MerchantGuildBankRepairButtonIcon, false);
 							self:Enable();
 							MerchantRepairAllButton:Enable();
 						end

@@ -291,7 +291,7 @@
 				</Anchors>
 				<Scripts>
 					<OnClick>
-						if ( AcceptBattlefieldPort(self:GetParent().activeIndex, 1) ) then
+						if ( AcceptBattlefieldPort(self:GetParent().activeIndex, true) ) then
 							if( StaticPopup_Visible( "DEATH" ) ) then
 								StaticPopup_Hide( "DEATH" );
 							end
@@ -308,7 +308,7 @@
 				</Anchors>
 				<Scripts>
 					<OnClick>
-						if ( AcceptBattlefieldPort(self:GetParent().activeIndex, 0) ) then
+						if ( AcceptBattlefieldPort(self:GetParent().activeIndex, false) ) then
 							StaticPopupSpecial_Hide(self:GetParent());
 						end
 						PlaySound("igCharacterInfoTab");

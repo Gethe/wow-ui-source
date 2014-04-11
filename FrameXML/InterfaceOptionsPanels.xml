@@ -164,7 +164,7 @@
 						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
 
 						self.GetValue = function (self) return ( (GetAutoDeclineGuildInvites() and "1") or "0" ); end
-						self.SetValue = function (self, value) self.value = value; self:SetChecked(value); SetAutoDeclineGuildInvites(value); end
+						self.SetValue = function (self, value) self.value = value; self:SetChecked(value and value ~= "0"); SetAutoDeclineGuildInvites(value and value ~= "0"); end
 						self:RegisterEvent("PLAYER_FLAGS_CHANGED");
 					</OnLoad>
 					<OnClick>
@@ -264,7 +264,7 @@
 					<OnEnter>
 						if ( not self.isDisabled ) then
 							GameTooltip:SetOwner(self, "ANCHOR_TOPRIGHT");
-							GameTooltip:SetText(self.tooltip, nil, nil, nil, nil, 1);
+							GameTooltip:SetText(self.tooltip, nil, nil, nil, nil, true);
 						end
 					</OnEnter>
 					<OnEvent function="InterfaceOptionsControlsPanelAutoLootKeyDropDown_OnEvent"/>
@@ -643,7 +643,7 @@
 					<OnEnter>
 						if ( not self.isDisabled ) then
 							GameTooltip:SetOwner(self, "ANCHOR_TOPRIGHT");
-							GameTooltip:SetText(self.tooltip, nil, nil, nil, nil, 1);
+							GameTooltip:SetText(self.tooltip, nil, nil, nil, nil, true);
 						end
 					</OnEnter>
 					<OnEvent function="InterfaceOptionsCombatPanelFocusCastKeyDropDown_OnEvent"/>
@@ -680,7 +680,7 @@
 					<OnEnter>
 						if ( not self.isDisabled ) then
 							GameTooltip:SetOwner(self, "ANCHOR_TOPRIGHT");
-							GameTooltip:SetText(self.tooltip, nil, nil, nil, nil, 1);
+							GameTooltip:SetText(self.tooltip, nil, nil, nil, nil, true);
 						end
 					</OnEnter>
 					<OnEvent function="InterfaceOptionsCombatPanelSelfCastKeyDropDown_OnEvent"/>
@@ -747,14 +747,14 @@
 					<OnEnter>
 						if ( not self.isDisabled ) then
 							GameTooltip:SetOwner(self, "ANCHOR_TOPRIGHT");
-							GameTooltip:SetText(self.tooltip, nil, nil, nil, nil, 1);
+							GameTooltip:SetText(self.tooltip, nil, nil, nil, nil, true);
 						end
 					</OnEnter>
 					<OnLeave function="GameTooltip_Hide"/>
 				</Scripts>
 			</Frame>
 			<Frame name="$parentLossOfControlSilenceDropDown" inherits="UIDropDownMenuTemplate" enableMouse="true">
-				<Anchors>parentLossOfControlFullDropDown
+				<Anchors>
 					<Anchor point="TOPLEFT" relativeTo="$parentLossOfControlFullDropDown" relativePoint="BOTTOMLEFT">
 						<Offset>
 							<AbsDimension x="0" y="-6"/>
@@ -778,7 +778,7 @@
 					<OnEnter>
 						if ( not self.isDisabled ) then
 							GameTooltip:SetOwner(self, "ANCHOR_TOPRIGHT");
-							GameTooltip:SetText(self.tooltip, nil, nil, nil, nil, 1);
+							GameTooltip:SetText(self.tooltip, nil, nil, nil, nil, true);
 						end
 					</OnEnter>
 					<OnLeave function="GameTooltip_Hide"/>
@@ -809,7 +809,7 @@
 					<OnEnter>
 						if ( not self.isDisabled ) then
 							GameTooltip:SetOwner(self, "ANCHOR_TOPRIGHT");
-							GameTooltip:SetText(self.tooltip, nil, nil, nil, nil, 1);
+							GameTooltip:SetText(self.tooltip, nil, nil, nil, nil, true);
 						end
 					</OnEnter>
 					<OnLeave function="GameTooltip_Hide"/>
@@ -840,7 +840,7 @@
 					<OnEnter>
 						if ( not self.isDisabled ) then
 							GameTooltip:SetOwner(self, "ANCHOR_TOPRIGHT");
-							GameTooltip:SetText(self.tooltip, nil, nil, nil, nil, 1);
+							GameTooltip:SetText(self.tooltip, nil, nil, nil, nil, true);
 						end
 					</OnEnter>
 					<OnLeave function="GameTooltip_Hide"/>
@@ -871,7 +871,7 @@
 					<OnEnter>
 						if ( not self.isDisabled ) then
 							GameTooltip:SetOwner(self, "ANCHOR_TOPRIGHT");
-							GameTooltip:SetText(self.tooltip, nil, nil, nil, nil, 1);
+							GameTooltip:SetText(self.tooltip, nil, nil, nil, nil, true);
 						end
 					</OnEnter>
 					<OnLeave function="GameTooltip_Hide"/>
@@ -939,7 +939,7 @@
 						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
 
 						self.GetValue = function (self) return ( (ShowingCloak() and "1") or "0" ); end
-						self.SetValue = function (self, value) self.value = value; self:SetChecked(value); ShowCloak(value); end
+						self.SetValue = function (self, value) self.value = value; self:SetChecked(value and value ~= "0"); ShowCloak(value and value ~= "0"); end
 						self:RegisterEvent("PLAYER_FLAGS_CHANGED");
 					</OnLoad>
 					<OnClick>			
@@ -978,7 +978,7 @@
 						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
 
 						self.GetValue = function (self) return ( (ShowingHelm() and "1") or "0" ); end
-						self.SetValue = function (self, value) self.value = value; self:SetChecked(value); ShowHelm(value); end		
+						self.SetValue = function (self, value) self.value = value; self:SetChecked(value and value ~= "0"); ShowHelm(value and value ~= "0"); end		
 						self:RegisterEvent("PLAYER_FLAGS_CHANGED");						
 					</OnLoad>
 					<OnClick>
@@ -1115,7 +1115,7 @@
 						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
 
 						self.GetValue = function (self) return ( (AreAccountAchievementsHidden() and "1") or "0" ); end
-						self.SetValue = function (self, value) self.value = value; self:SetChecked(value); ShowAccountAchievements(value); end
+						self.SetValue = function (self, value) self.value = value; self:SetChecked(value and value ~= "0"); ShowAccountAchievements(value and value ~= "0"); end
 						self:RegisterEvent("PLAYER_FLAGS_CHANGED");
 					</OnLoad>
 					<OnClick>
@@ -1136,8 +1136,31 @@
 						end
 					</OnEvent>
 				</Scripts>
-</CheckButton>
-
+			</CheckButton>
+			<CheckButton name="$parentShowHDModels" inherits="InterfaceOptionsCheckButtonTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentShowAccountAchievments" relativePoint="BOTTOMLEFT" x="0" y="-8"/>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						self.type = CONTROLTYPE_CHECKBOX;
+						self.cvar = "hdPlayerModels";
+						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
+					</OnLoad>
+				</Scripts>
+			</CheckButton>
+			<CheckButton name="$parentCountdownCooldowns" inherits="InterfaceOptionsCheckButtonTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentShowHDModels" relativePoint="BOTTOMLEFT" x="0" y="-8"/>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						self.type = CONTROLTYPE_CHECKBOX;
+						self.cvar = "countdownForCooldowns";
+						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
+					</OnLoad>
+				</Scripts>
+			</CheckButton>
 		</Frames>
 		<Scripts>
 			<OnLoad function="InterfaceOptionsDisplayPanel_OnLoad"/>
@@ -1419,7 +1442,7 @@
 				<Scripts>
 					<OnEnter>
 						GameTooltip:SetOwner(self, "ANCHOR_TOPRIGHT");
-						GameTooltip:SetText(self.tooltip, nil, nil, nil, nil, 1);
+						GameTooltip:SetText(self.tooltip, nil, nil, nil, nil, true);
 					</OnEnter>
 					<OnLeave function="GameTooltip_Hide"/>
 					<OnLoad>
@@ -1470,7 +1493,7 @@
 				<Scripts>
 					<OnEnter>
 						GameTooltip:SetOwner(self, "ANCHOR_TOPRIGHT");
-						GameTooltip:SetText(self.tooltip, nil, nil, nil, nil, 1);
+						GameTooltip:SetText(self.tooltip, nil, nil, nil, nil, true);
 					</OnEnter>
 					<OnLeave function="GameTooltip_Hide"/>
 					<OnLoad>
@@ -1505,7 +1528,7 @@
 				<Scripts>
 					<OnEnter>
 						GameTooltip:SetOwner(self, "ANCHOR_TOPRIGHT");
-						GameTooltip:SetText(self.tooltip, nil, nil, nil, nil, 1);
+						GameTooltip:SetText(self.tooltip, nil, nil, nil, nil, true);
 					</OnEnter>
 					<OnLeave function="GameTooltip_Hide"/>
 					<OnLoad>
@@ -1540,7 +1563,7 @@
 				<Scripts>
 					<OnEnter>
 						GameTooltip:SetOwner(self, "ANCHOR_TOPRIGHT");
-						GameTooltip:SetText(self.tooltip, nil, nil, nil, nil, 1);
+						GameTooltip:SetText(self.tooltip, nil, nil, nil, nil, true);
 					</OnEnter>
 					<OnLeave function="GameTooltip_Hide"/>
 					<OnLoad>
@@ -1575,7 +1598,7 @@
 				<Scripts>
 					<OnEnter>
 						GameTooltip:SetOwner(self, "ANCHOR_TOPRIGHT");
-						GameTooltip:SetText(self.tooltip, nil, nil, nil, nil, 1);
+						GameTooltip:SetText(self.tooltip, nil, nil, nil, nil, true);
 					</OnEnter>
 					<OnLeave function="GameTooltip_Hide"/>
 					<OnLoad>
@@ -1753,7 +1776,7 @@
 					<OnEnter>
 						if ( not self.isDisabled ) then
 							GameTooltip:SetOwner(self, "ANCHOR_TOPRIGHT");
-							GameTooltip:SetText(self.tooltip, nil, nil, nil, nil, 1);
+							GameTooltip:SetText(self.tooltip, nil, nil, nil, nil, true);
 						end
 					</OnEnter>
 					<OnEvent function="InterfaceOptionsActionBarsPanelPickupActionKeyDropDown_OnEvent"/>
@@ -1881,7 +1904,7 @@
 					<OnEnter>
 						if ( not self.isDisabled ) then
 							GameTooltip:SetOwner(self, "ANCHOR_TOPRIGHT");
-							GameTooltip:SetText(self.tooltip, nil, nil, nil, nil, 1);
+							GameTooltip:SetText(self.tooltip, nil, nil, nil, nil, true);
 						end
 					</OnEnter>
 					<OnEvent function="InterfaceOptionsNPCNamesDropDown_OnEvent"/>
@@ -2315,7 +2338,7 @@
 							<OnEnter>
 								if ( not self.isDisabled ) then
 									GameTooltip:SetOwner(self, "ANCHOR_TOPRIGHT");
-									GameTooltip:SetText(self.tooltip, nil, nil, nil, nil, 1);
+									GameTooltip:SetText(self.tooltip, nil, nil, nil, nil, true);
 								end
 							</OnEnter>
 							<OnEvent function="InterfaceOptionsNameplateMotionDropDown_OnEvent"/>
@@ -2498,6 +2521,26 @@
 					</OnLoad>
 				</Scripts>
 			</CheckButton>
+			<Frame name="$parentTargetModeDropDown" inherits="UIDropDownMenuTemplate" enableMouse="true">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentOtherTargetEffects" relativePoint="BOTTOMLEFT">
+						<Offset x="-10" y="-10"/>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						self.type = CONTROLTYPE_DROPDOWN;
+						self:RegisterEvent("PLAYER_ENTERING_WORLD");
+						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
+					</OnLoad>
+					<OnEnter>
+						GameTooltip:SetOwner(self, "ANCHOR_TOPRIGHT");
+						GameTooltip:SetText(self.tooltip, nil, nil, nil, nil, true);
+					</OnEnter>
+					<OnEvent function="InterfaceOptionsCombatTextPanelTargetModeDropDown_OnEvent"/>
+					<OnLeave function="GameTooltip_Hide"/>
+				</Scripts>
+			</Frame>
 			<CheckButton name="$parentEnableFCT" inherits="InterfaceOptionsCheckButtonTemplate">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeTo="$parentHealingAbsorbTarget" relativePoint="BOTTOMLEFT">
@@ -2550,7 +2593,7 @@
 					<OnEnter>
 						if ( not self.isDisabled ) then
 							GameTooltip:SetOwner(self, "ANCHOR_TOPRIGHT");
-							GameTooltip:SetText(self.tooltip, nil, nil, nil, nil, 1);
+							GameTooltip:SetText(self.tooltip, nil, nil, nil, nil, true);
 						end
 					</OnEnter>
 					<OnEvent function="InterfaceOptionsCombatTextPanelFCTDropDown_OnEvent"/>
@@ -2935,7 +2978,7 @@
 					</OnLoad>
 					<OnEnter>
 						GameTooltip:SetOwner(self, "ANCHOR_TOPRIGHT");
-						GameTooltip:SetText(self.tooltip, nil, nil, nil, nil, 1);
+						GameTooltip:SetText(self.tooltip, nil, nil, nil, nil, true);
 					</OnEnter>
 					<OnEvent function="InterfaceOptionsStatusTextDisplayDropDown_OnEvent"/>
 					<OnLeave function="GameTooltip_Hide"/>
@@ -3579,7 +3622,7 @@
 					<OnEnter>
 						if ( not self.isDisabled ) then
 							GameTooltip:SetOwner(self, "ANCHOR_TOPRIGHT");
-							GameTooltip:SetText(self.tooltip, nil, nil, nil, nil, 1);
+							GameTooltip:SetText(self.tooltip, nil, nil, nil, nil, true);
 						end
 					</OnEnter>
 					<OnEvent function="InterfaceOptionsCameraPanelStyleDropDown_OnEvent"/>
@@ -3766,7 +3809,7 @@
 					<OnEnter>
 						if ( not self.isDisabled ) then
 							GameTooltip:SetOwner(self, "ANCHOR_TOPRIGHT");
-							GameTooltip:SetText(self.tooltip, nil, nil, nil, nil, 1);
+							GameTooltip:SetText(self.tooltip, nil, nil, nil, nil, true);
 						end
 					</OnEnter>
 					<OnEvent>

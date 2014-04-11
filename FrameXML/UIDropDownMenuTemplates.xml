@@ -131,7 +131,7 @@
 							if ( parent.tooltipOnButton ) then
 								GameTooltip:SetOwner(parent, "ANCHOR_RIGHT");
 								GameTooltip:AddLine(parent.tooltipTitle, 1.0, 1.0, 1.0);
-								GameTooltip:AddLine(parent.tooltipText, nil, nil, nil, 1);
+								GameTooltip:AddLine(parent.tooltipText, nil, nil, nil, true);
 								GameTooltip:Show();
 							else
 								GameTooltip_AddNewbieTip(parent, parent.tooltipTitle, 1.0, 1.0, 1.0, parent.tooltipText, 1);

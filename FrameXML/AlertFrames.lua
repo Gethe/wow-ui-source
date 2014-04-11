@@ -16,6 +16,7 @@ function AlertFrame_OnLoad (self)
 	self:RegisterEvent("SHOW_LOOT_TOAST");
 	self:RegisterEvent("PET_BATTLE_CLOSE");
 	self:RegisterEvent("STORE_PRODUCT_DELIVERED");
+	self:RegisterEvent("GARRISON_BUILDING_ACTIVATABLE");
 end
 
 function AlertFrame_OnEvent (self, event, ...)
@@ -63,6 +64,9 @@ function AlertFrame_OnEvent (self, event, ...)
 	elseif ( event == "STORE_PRODUCT_DELIVERED" ) then
 		local icon, name = ...;
 		StorePurchaseAlertFrame_ShowAlert(icon, name);
+	elseif ( event == "GARRISON_BUILDING_ACTIVATABLE" ) then
+		local name = ...;
+		GarrisonBuildingAlertFrame_ShowAlert(name);
 	end
 end
 
@@ -109,6 +113,7 @@ function AlertFrame_FixAnchors()
 	alertAnchor = AlertFrame_SetScenarioAnchors(alertAnchor);
 	alertAnchor = AlertFrame_SetGuildChallengeAnchors(alertAnchor);
 	alertAnchor = AlertFrame_SetDigsiteCompleteToastFrameAnchors(alertAnchor);
+	alertAnchor = AlertFrame_SetGarrisonBuildingAlertFrameAnchors(alertAnchor);
 end
 
 function AlertFrame_SetLootAnchors(alertAnchor)
@@ -226,6 +231,14 @@ function AlertFrame_SetDigsiteCompleteToastFrameAnchors(alertAnchor)
 	if ( DigsiteCompleteToastFrame and DigsiteCompleteToastFrame:IsShown() ) then
 		DigsiteCompleteToastFrame:SetPoint("BOTTOM", alertAnchor, "TOP", 0, 10);
 		alertAnchor = DigsiteCompleteToastFrame;
+	end
+	return alertAnchor;
+end
+
+function AlertFrame_SetGarrisonBuildingAlertFrameAnchors(alertAnchor)
+	if ( GarrisonBuildingAlertFrame and GarrisonBuildingAlertFrame:IsShown() ) then
+		GarrisonBuildingAlertFrame:SetPoint("BOTTOM", alertAnchor, "TOP", 0, 10);
+		alertAnchor = GarrisonBuildingAlertFrame;
 	end
 	return alertAnchor;
 end
@@ -890,4 +903,12 @@ function StorePurchaseAlertFrame_ShowAlert(icon, name)
 	AlertFrame_AnimateIn(StorePurchaseAlertFrame);
 	AlertFrame_FixAnchors();
 	PlaySound("UI_igStore_PurchaseDelivered_Toast_01");
+end
+
+-- [[ GarrisonBuildingAlertFrame ]] --
+function GarrisonBuildingAlertFrame_ShowAlert(name)
+	GarrisonBuildingAlertFrame.Name:SetFormattedText(GARRISON_BUILDING_COMPLETE_TOAST, name);
+	AlertFrame_AnimateIn(GarrisonBuildingAlertFrame);
+	AlertFrame_FixAnchors();
+	PlaySound("AuctionWindowOpen");
 end

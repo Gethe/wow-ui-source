@@ -46,6 +46,7 @@ PROFESSION_RANKS[5] = {375, MASTER};
 PROFESSION_RANKS[6] = {450, GRAND_MASTER};
 PROFESSION_RANKS[7] = {525, ILLUSTRIOUS};
 PROFESSION_RANKS[8] = {600, ZEN_MASTER};
+PROFESSION_RANKS[9] = {700, DRAENOR_MASTER};
 
 
 
@@ -300,8 +301,8 @@ function SpellBookFrame_UpdateSpells ()
 		SpellBookPage1:SetDesaturated(_G["SpellBookSkillLineTab"..SpellBookFrame.selectedSkillLine].isOffSpec);
 		SpellBookPage2:SetDesaturated(_G["SpellBookSkillLineTab"..SpellBookFrame.selectedSkillLine].isOffSpec);
 	else
-		SpellBookPage1:SetDesaturated(0);
-		SpellBookPage2:SetDesaturated(0);
+		SpellBookPage1:SetDesaturated(false);
+		SpellBookPage2:SetDesaturated(false);
 	end
 end
 
@@ -504,21 +505,21 @@ function SpellButton_OnDrag(self)
 	if (not slot or slot > MAX_SPELLS or not _G[self:GetName().."IconTexture"]:IsShown() or (slotType == "FUTURESPELL")) then
 		return;
 	end
-	self:SetChecked(0);
+	self:SetChecked(false);
 	PickupSpellBookItem(slot, SpellBookFrame.bookType);
 end
 
 function SpellButton_UpdateSelection(self)
 	local slot = SpellBook_GetSpellBookSlot(self);
 	if ( slot and IsSelectedSpellBookItem(slot, SpellBookFrame.bookType) ) then
-		self:SetChecked("true");
+		self:SetChecked(true);
 	else
-		self:SetChecked("false");
+		self:SetChecked(false);
 	end
 end
 
 function SpellButton_UpdateCooldown(self)
-	local cooldown = _G[self:GetName().."Cooldown"];
+	local cooldown = self.cooldown;
 	local slot, slotType = SpellBook_GetSpellBookSlot(self);
 	if (slot) then
 		local start, duration, enable = GetSpellCooldown(slot, SpellBookFrame.bookType);
@@ -577,7 +578,7 @@ function SpellButton_UpdateButton(self)
 		SpellBook_ReleaseAutoCastShine(self.shine);
 		self.shine = nil;
 		highlightTexture:SetTexture("Interface\\Buttons\\ButtonHilight-Square");
-		self:SetChecked(0);
+		self:SetChecked(false);
 		slotFrame:Hide();
 		self.IconTextureBg:Hide();
 		self.SeeTrainerString:Hide();
@@ -671,7 +672,7 @@ function SpellButton_UpdateButton(self)
 		self.TrainFrame:Hide();
 		self.IconTextureBg:Hide();
 		iconTexture:SetAlpha(1);
-		iconTexture:SetDesaturated(0);
+		iconTexture:SetDesaturated(false);
 		self.RequiredLevelString:Hide();
 		self.SeeTrainerString:Hide();
 		self.TrainTextBackground:Hide();
@@ -693,7 +694,7 @@ function SpellButton_UpdateButton(self)
 		slotFrame:Hide();
 		self.IconTextureBg:Show();
 		iconTexture:SetAlpha(0.5);
-		iconTexture:SetDesaturated(1);
+		iconTexture:SetDesaturated(true);
 		if (level and level > UnitLevel("player")) then
 			self.SeeTrainerString:Hide();
 			self.RequiredLevelString:Show();
@@ -742,7 +743,7 @@ function SpellButton_UpdateButton(self)
 		autoCastableTexture:Hide();
 		SpellBook_ReleaseAutoCastShine(self.shine);
 		self.shine = nil;
-		self:SetChecked("false");
+		self:SetChecked(false);
 	else
 		SpellButton_UpdateSelection(self);
 	end
@@ -781,7 +782,7 @@ function SpellBookSkillLineTab_OnClick(self)
 		SpellBookFrame.selectedSkillLine = id;
 		SpellBookFrame_Update();
 	else
-		self:SetChecked(1);
+		self:SetChecked(true);
 	end
 	
 	-- Stop tab flashing
@@ -871,44 +872,50 @@ function SpellBookFrame_UpdateSkillLineTabs()
 		local skillLineTab = _G["SpellBookSkillLineTab"..i];
 		local prevTab = _G["SpellBookSkillLineTab"..i-1];
 		if ( i <= numSkillLineTabs and SpellBookFrame.bookType == BOOKTYPE_SPELL ) then
-			local name, texture, _, _, isGuild, offSpecID = GetSpellTabInfo(i);
-			local isOffSpec = (offSpecID ~= 0);
-			skillLineTab:SetNormalTexture(texture);
-			skillLineTab.tooltip = name;
-			skillLineTab:Show();
-			skillLineTab.isOffSpec = isOffSpec;
-			if(texture) then
-				skillLineTab:GetNormalTexture():SetDesaturated(isOffSpec);
-			end
-
-			-- Guild tab gets additional space
-			if (prevTab) then
-				if (isGuild) then
-					skillLineTab:SetPoint("TOPLEFT", prevTab, "BOTTOMLEFT", 0, -46);
-				elseif (isOffSpec and not prevTab.isOffSpec) then
-					skillLineTab:SetPoint("TOPLEFT", prevTab, "BOTTOMLEFT", 0, -40);
-				else
-					skillLineTab:SetPoint("TOPLEFT", prevTab, "BOTTOMLEFT", 0, -17);
-				end
-			end
+			local name, texture, _, _, isGuild, offSpecID, shouldHide = GetSpellTabInfo(i);
 			
-			-- Guild tab must show the Guild Banner
-			if (isGuild) then
-				skillLineTab:SetNormalTexture("Interface\\SpellBook\\GuildSpellbooktabBG");
-				skillLineTab.TabardEmblem:Show();
-				skillLineTab.TabardIconFrame:Show();
-				SetLargeGuildTabardTextures("player", skillLineTab.TabardEmblem, skillLineTab:GetNormalTexture(), skillLineTab.TabardIconFrame);
+			if ( shouldHide ) then
+				_G["SpellBookSkillLineTab"..i.."Flash"]:Hide();
+				skillLineTab:Hide();
 			else
-				skillLineTab.TabardEmblem:Hide();
-				skillLineTab.TabardIconFrame:Hide();
-			end
+				local isOffSpec = (offSpecID ~= 0);
+				skillLineTab:SetNormalTexture(texture);
+				skillLineTab.tooltip = name;
+				skillLineTab:Show();
+				skillLineTab.isOffSpec = isOffSpec;
+				if(texture) then
+					skillLineTab:GetNormalTexture():SetDesaturated(isOffSpec);
+				end
 
-			-- Set the selected tab
-			if ( SpellBookFrame.selectedSkillLine == i ) then
-				skillLineTab:SetChecked(1);
-				--SpellBookSpellGroupText:SetText(name);
-			else
-				skillLineTab:SetChecked(nil);
+				-- Guild tab gets additional space
+				if (prevTab) then
+					if (isGuild) then
+						skillLineTab:SetPoint("TOPLEFT", prevTab, "BOTTOMLEFT", 0, -46);
+					elseif (isOffSpec and not prevTab.isOffSpec) then
+						skillLineTab:SetPoint("TOPLEFT", prevTab, "BOTTOMLEFT", 0, -40);
+					else
+						skillLineTab:SetPoint("TOPLEFT", prevTab, "BOTTOMLEFT", 0, -17);
+					end
+				end
+				
+				-- Guild tab must show the Guild Banner
+				if (isGuild) then
+					skillLineTab:SetNormalTexture("Interface\\SpellBook\\GuildSpellbooktabBG");
+					skillLineTab.TabardEmblem:Show();
+					skillLineTab.TabardIconFrame:Show();
+					SetLargeGuildTabardTextures("player", skillLineTab.TabardEmblem, skillLineTab:GetNormalTexture(), skillLineTab.TabardIconFrame);
+				else
+					skillLineTab.TabardEmblem:Hide();
+					skillLineTab.TabardIconFrame:Hide();
+				end
+
+				-- Set the selected tab
+				if ( SpellBookFrame.selectedSkillLine == i ) then
+					skillLineTab:SetChecked(true);
+					--SpellBookSpellGroupText:SetText(name);
+				else
+					skillLineTab:SetChecked(false);
+				end
 			end
 		else
 			_G["SpellBookSkillLineTab"..i.."Flash"]:Hide();
@@ -1007,7 +1014,7 @@ function FormatProfession(frame, index)
 			if rank >= profCap then
 				frame.statusBar.capped:Show();
 				frame.statusBar.rankText:SetTextColor(RED_FONT_COLOR.r, RED_FONT_COLOR.g, RED_FONT_COLOR.b);
-				frame.statusBar.tooltip = RED_FONT_COLOR_CODE..TRIAL_CAPPED;
+				frame.statusBar.tooltip = RED_FONT_COLOR_CODE..TRIAL_CAPPED..FONT_COLOR_CODE_CLOSE;
 			else
 				frame.statusBar.capped:Hide();
 				frame.statusBar.rankText:SetTextColor(HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b);

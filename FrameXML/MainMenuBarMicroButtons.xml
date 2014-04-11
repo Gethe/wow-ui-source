@@ -164,9 +164,7 @@
 				self:RegisterEvent("PLAYER_LEVEL_UP");
 				self:RegisterEvent("UPDATE_BINDINGS");
 				self:RegisterEvent("PLAYER_TALENT_UPDATE");
-				if (IsBlizzCon()) then
-					self:Disable();
-				end
+				self:RegisterEvent("PLAYER_SPECIALIZATION_CHANGED");
 			</OnLoad>
 			<OnClick function="ToggleTalentFrame"/>
 			<OnEvent function="TalentMicroButton_OnEvent"/>
@@ -189,6 +187,9 @@
 				self.tooltipText = MicroButtonTooltipText(ACHIEVEMENT_BUTTON, "TOGGLEACHIEVEMENT");
 				self.newbieText = NEWBIE_TOOLTIP_ACHIEVEMENT;
 				self.minLevel = 10;	--Just used for display. But we know that it will become available by level 10 due to the level 10 achievement.
+				if (IsBlizzCon()) then
+					self:Disable();
+				end
 			</OnLoad>
 			<OnEvent function="AchievementMicroButton_OnEvent"/>
 			<OnClick> 
@@ -214,7 +215,7 @@
 				self.tooltipText = MicroButtonTooltipText(QUESTLOG_BUTTON, "TOGGLEQUESTLOG");
 			</OnEvent>
 			<OnClick>
-				ToggleFrame(QuestLogFrame);
+				ToggleQuestLog();
 			</OnClick>
 		</Scripts>
 	</Button>
@@ -336,7 +337,7 @@
 				UpdateMicroButtons();
 			</OnEvent>
 			<OnMouseDown>
-				if ( self:IsEnabled() ~= 0 ) then
+				if ( self:IsEnabled() ) then
 					if ( self.down ) then
 						self.down = nil;
 						TogglePVPUI();
@@ -347,7 +348,7 @@
 				end
 			</OnMouseDown>
 			<OnMouseUp>
-				if ( self:IsEnabled() ~= 0 ) then
+				if ( self:IsEnabled() ) then
 					if ( self.down ) then
 						self.down = nil;
 						if ( self:IsMouseOver() ) then
@@ -477,9 +478,15 @@
 				LoadMicroButtonTextures(self, "BStore");
 				self.tooltipText = BLIZZARD_STORE;
 				self:RegisterEvent("STORE_STATUS_CHANGED");
+				if (IsBlizzCon()) then
+					self:Disable();
+				end
 			</OnLoad>
 			<OnEvent>
 				UpdateMicroButtons();
+				if (IsBlizzCon()) then
+					self:Disable();
+				end
 			</OnEvent>
 			<OnClick function="ToggleStoreUI"/>
 		</Scripts>
@@ -649,6 +656,9 @@
 				LoadMicroButtonTextures(self, "Help");
 				self.tooltipText = HELP_BUTTON;
 				self.newbieText = NEWBIE_TOOLTIP_HELP;
+				if (IsBlizzCon()) then
+					self:Disable();
+				end
 			</OnLoad>
 			<OnClick function="ToggleHelpFrame"/>
 		</Scripts>

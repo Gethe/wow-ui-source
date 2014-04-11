@@ -1380,12 +1380,12 @@ function FriendsFrame_UpdateFriends()
 				-- append toon
 				if ( characterName ) then
 					if ( client == BNET_CLIENT_WOW and CanCooperateWithToon(toonID, hasTravelPass) ) then
-						nameText = nameText.." "..FRIENDS_WOW_NAME_COLOR_CODE.."("..characterName..")";
+						nameText = nameText.." "..FRIENDS_WOW_NAME_COLOR_CODE.."("..characterName..")"..FONT_COLOR_CODE_CLOSE;
 					else
 						if ( ENABLE_COLORBLIND_MODE == "1" ) then
 							characterName = characterName..CANNOT_COOPERATE_LABEL;
 						end
-						nameText = nameText.." "..FRIENDS_OTHER_NAME_COLOR_CODE.."("..characterName..")";
+						nameText = nameText.." "..FRIENDS_OTHER_NAME_COLOR_CODE.."("..characterName..")"..FONT_COLOR_CODE_CLOSE;
 					end
 				end
 
@@ -1700,7 +1700,7 @@ function FriendsFrameTooltip_Show(self)
 		if ( broadcastText and broadcastText ~= "" ) then
 			FriendsTooltipBroadcastIcon:Show();
 			if ( time() - broadcastTime < ONE_YEAR ) then
-				broadcastText = broadcastText.."|n"..FRIENDS_BROADCAST_TIME_COLOR_CODE..string.format(BNET_BROADCAST_SENT_TIME, FriendsFrame_GetLastOnline(broadcastTime));
+				broadcastText = broadcastText.."|n"..FRIENDS_BROADCAST_TIME_COLOR_CODE..string.format(BNET_BROADCAST_SENT_TIME, FriendsFrame_GetLastOnline(broadcastTime)..FONT_COLOR_CODE_CLOSE);
 			end
 			anchor = FriendsFrameTooltip_SetLine(FriendsTooltipBroadcastText, anchor, broadcastText, -8);
 			FriendsTooltip.hasBroadcast = true;
@@ -2041,13 +2041,13 @@ function FriendsFriendsList_Update()
 			if ( isMutual ) then
 				friendsButton:Disable();
 				if ( view ~= FRIENDS_FRIENDS_MUTUAL ) then
-					friendsButton.name:SetText(presenceName.." "..HIGHLIGHT_FONT_COLOR_CODE..FRIENDS_FRIENDS_MUTUAL_TEXT);
+					friendsButton.name:SetText(presenceName.." "..HIGHLIGHT_FONT_COLOR_CODE..FRIENDS_FRIENDS_MUTUAL_TEXT..FONT_COLOR_CODE_CLOSE);
 				else
 					friendsButton.name:SetText(presenceName);
 				end
 				friendsButton.name:SetTextColor(GRAY_FONT_COLOR	.r, GRAY_FONT_COLOR	.g, GRAY_FONT_COLOR	.b);
 			elseif ( requested[friendID] ) then
-				friendsButton.name:SetText(presenceName.." "..HIGHLIGHT_FONT_COLOR_CODE..FRIENDS_FRIENDS_REQUESTED_TEXT);
+				friendsButton.name:SetText(presenceName.." "..HIGHLIGHT_FONT_COLOR_CODE..FRIENDS_FRIENDS_REQUESTED_TEXT..FONT_COLOR_CODE_CLOSE);
 				friendsButton:Disable();
 				friendsButton.name:SetTextColor(GRAY_FONT_COLOR	.r, GRAY_FONT_COLOR	.g, GRAY_FONT_COLOR	.b);
 			else
@@ -2131,7 +2131,7 @@ function FriendsFriendsFrame_Show(presenceID)
 	if ( not presenceID ) then
 		return;
 	end
-	FriendsFriendsFrameTitle:SetFormattedText(FRIENDS_FRIENDS_HEADER, FRIENDS_BNET_NAME_COLOR_CODE..presenceName);
+	FriendsFriendsFrameTitle:SetFormattedText(FRIENDS_FRIENDS_HEADER, FRIENDS_BNET_NAME_COLOR_CODE..presenceName..FONT_COLOR_CODE_CLOSE);
 	FriendsFriendsFrame.presenceID = presenceID;
 	UIDropDownMenu_DisableDropDown(FriendsFriendsFrameDropDown);
 	FriendsFriendsFrame_Reset();
@@ -2285,7 +2285,7 @@ function TravelPassButton_OnEnter(self)
 		GameTooltip:SetText(TRAVEL_PASS_INVITE, HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b, 1);
 	else
 		GameTooltip:SetText(TRAVEL_PASS_INVITE, GRAY_FONT_COLOR.r, GRAY_FONT_COLOR.g, GRAY_FONT_COLOR.b, 1);
-		GameTooltip:AddLine(FriendsFrame_GetInviteRestrictionText(restriction), RED_FONT_COLOR.r, RED_FONT_COLOR.g, RED_FONT_COLOR.b, 1);
+		GameTooltip:AddLine(FriendsFrame_GetInviteRestrictionText(restriction), RED_FONT_COLOR.r, RED_FONT_COLOR.g, RED_FONT_COLOR.b, true);
 		GameTooltip:Show();
 	end
 end

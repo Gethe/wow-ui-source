@@ -565,10 +565,10 @@ function MerchantFrame_UpdateCanRepairAll()
 	if ( MerchantRepairAllIcon ) then
 		local repairAllCost, canRepair = GetRepairAllCost();
 		if ( canRepair ) then
-			SetDesaturation(MerchantRepairAllIcon, nil);
+			SetDesaturation(MerchantRepairAllIcon, false);
 			MerchantRepairAllButton:Enable();
 		else
-			SetDesaturation(MerchantRepairAllIcon, 1);
+			SetDesaturation(MerchantRepairAllIcon, true);
 			MerchantRepairAllButton:Disable();
 		end	
 	end
@@ -577,10 +577,10 @@ end
 function MerchantFrame_UpdateGuildBankRepair()
 	local repairAllCost, canRepair = GetRepairAllCost();
 	if ( canRepair ) then
-		SetDesaturation(MerchantGuildBankRepairButtonIcon, nil);
+		SetDesaturation(MerchantGuildBankRepairButtonIcon, false);
 		MerchantGuildBankRepairButton:Enable();
 	else
-		SetDesaturation(MerchantGuildBankRepairButtonIcon, 1);
+		SetDesaturation(MerchantGuildBankRepairButtonIcon, true);
 		MerchantGuildBankRepairButton:Disable();
 	end	
 end

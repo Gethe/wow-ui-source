@@ -11,7 +11,7 @@ StaticPopupDialogs["CONFIRM_REMOVE_TALENT"] = {
 		end
 	end,
 	OnShow = function(self)
-		local name = GetTalentInfo(self.data.id);
+		local talentID, name = GetTalentInfoByID(self.data.id, selectedSpec);
 		local resourceName, count, _, _, cost = GetTalentClearInfo();
 		if cost == 0 then
 			self.text:SetFormattedText(CONFIRM_REMOVE_GLYPH_NO_COST, name);
@@ -37,12 +37,12 @@ StaticPopupDialogs["CONFIRM_UNLEARN_AND_SWITCH_TALENT"] = {
 		local talentGroup = PlayerTalentFrame and PlayerTalentFrame.talentGroup or 1;
 		if ( talentGroup == GetActiveSpecGroup() ) then
 			RemoveTalent(self.data.oldID);
-			PlayerTalentFrame_SelectTalent(self.data.id);
+			PlayerTalentFrame_SelectTalent(self.data.tier, self.data.id);
 		end
 	end,
 	OnShow = function(self)
-		local name = GetTalentInfo(self.data.id);
-		local oldName = GetTalentInfo(self.data.oldID);
+		local talentID, name = GetTalentInfoByID(self.data.id, selectedSpec);
+		local oldTalentID, oldName = GetTalentInfoByID(self.data.oldID, selectedSpec);
 		local resourceName, count, _, _, cost = GetTalentClearInfo();
 		if cost == 0 then
 			self.text:SetFormattedText(CONFIRM_UNLEARN_AND_SWITCH_TALENT_NO_COST, name, oldName);
@@ -454,13 +454,13 @@ function PlayerTalentFrame_OnHide()
 		TalentMicroButtonAlert:Show();
 		StaticPopup_Hide("CONFIRM_LEARN_SPEC");
 	elseif ( selection ) then
-		local name, iconTexture, tier, column, selected, available = GetTalentInfo(selection);
+		local id, name, iconTexture, selected, available = GetTalentInfoByID(selection, activeSpec);
 		if (available) then
 			TalentMicroButtonAlert.Text:SetText(TALENT_MICRO_BUTTON_UNSAVED_CHANGES);
 			TalentMicroButtonAlert:SetHeight(TalentMicroButtonAlert.Text:GetHeight()+42);
 			TalentMicroButtonAlert:Show();
 		end
-	elseif ( GetNumUnspentTalents() > 0 ) then
+	elseif ( GetNumUnspentTalents() > 0 and not ShouldHideTalentsTab() ) then
 		TalentMicroButtonAlert.Text:SetText(TALENT_MICRO_BUTTON_UNSPENT_TALENTS);
 		TalentMicroButtonAlert:SetHeight(TalentMicroButtonAlert.Text:GetHeight()+42);
 		TalentMicroButtonAlert:Show();
@@ -706,8 +706,7 @@ function PlayerTalentFrame_UpdateTitleText(numTalentGroups)
 	
 end
 
-function PlayerTalentFrame_SelectTalent(id)
-	local tier = floor((id - 1) / NUM_TALENT_COLUMNS) + 1;
+function PlayerTalentFrame_SelectTalent(tier, id)
 	local talentRow = PlayerTalentFrameTalents["tier"..tier];
 	if ( talentRow.selectionId == id ) then
 		talentRow.selectionId = nil;
@@ -718,7 +717,7 @@ function PlayerTalentFrame_SelectTalent(id)
 end
 
 function PlayerTalentFrame_ClearTalentSelections()
-	for tier = 1, MAX_NUM_TALENT_TIERS do
+	for tier = 1, MAX_TALENT_TIERS do
 		local talentRow = PlayerTalentFrameTalents["tier"..tier];
 		talentRow.selectionId = nil;
 	end
@@ -726,7 +725,7 @@ end
 
 function PlayerTalentFrame_GetTalentSelections()
 	local talents = { };
-	for tier = 1, MAX_NUM_TALENT_TIERS do
+	for tier = 1, MAX_TALENT_TIERS do
 		local talentRow = PlayerTalentFrameTalents["tier"..tier];
 		if ( talentRow.selectionId ) then
 			tinsert(talents, talentRow.selectionId);
@@ -766,7 +765,7 @@ end
 function PlayerTalentFrameTalent_OnClick(self, button)
 	if ( IsModifiedClick("CHATLINK") ) then
 		if ( MacroFrameText and MacroFrameText:HasFocus() ) then
-			local talentName = GetTalentInfo(self:GetID());
+			local _, talentName = GetTalentInfoByID(self:GetID(), selectedSpec);
 			local spellName, subSpellName = GetSpellInfo(talentName);
 			if ( spellName and not IsPassiveSpell(spellName) ) then
 				if ( subSpellName and (strlen(subSpellName) > 0) ) then
@@ -776,17 +775,17 @@ function PlayerTalentFrameTalent_OnClick(self, button)
 				end
 			end
 		else
-			local link = GetTalentLink(self:GetID(), PlayerTalentFrame.inspect, PlayerTalentFrame.talentGroup);
+			local link = GetTalentLink(self:GetID());
 			if ( link ) then
 				ChatEdit_InsertLink(link);
 			end
 		end
 	elseif ( selectedSpec and (activeSpec == selectedSpec)) then
-		local _, _, _, _, selected, available = GetTalentInfo(self:GetID());
+		local _, _, _, selected, available = GetTalentInfoByID(self:GetID(), selectedSpec);
 		if ( available ) then
 			-- only allow functionality if an active spec is selected
 			if ( button == "LeftButton" and not selected ) then
-				PlayerTalentFrame_SelectTalent(self:GetID());
+				PlayerTalentFrame_SelectTalent(self.tier, self:GetID());
 			elseif ( button == "RightButton" and selected ) then
 				if ( UnitIsDeadOrGhost("player") ) then
 					UIErrorsFrame:AddMessage(ERR_PLAYER_DEAD, 1.0, 0.1, 0.1, 1.0);
@@ -797,10 +796,9 @@ function PlayerTalentFrameTalent_OnClick(self, button)
 		else
 			-- if there is something else already learned for this tier, display a dialog about unlearning that one.
 			if ( button == "LeftButton" and not selected ) then
-				local tier = floor((self:GetID() - 1) / NUM_TALENT_COLUMNS) + 1;
-				local isRowFree, prevSelected = GetTalentRowSelectionInfo(tier);
+				local isRowFree, prevSelected = GetTalentRowSelectionInfo(self.tier);
 				if (not isRowFree) then					
-					StaticPopup_Show("CONFIRM_UNLEARN_AND_SWITCH_TALENT", nil, nil, {oldID = prevSelected, id = self:GetID()});					
+					StaticPopup_Show("CONFIRM_UNLEARN_AND_SWITCH_TALENT", nil, nil, {oldID = prevSelected, id = self:GetID(), tier = self.tier});					
 				end
 			end
 		end
@@ -924,7 +922,7 @@ function PlayerTalentFrame_UpdateTabs(playerLevel)
 	talentTabWidthCache[TALENTS_TAB] = 0;
 	tab = _G["PlayerTalentFrameTab"..TALENTS_TAB];
 	if ( tab ) then
-		if ( meetsTalentLevel ) then
+		if ( meetsTalentLevel and not ShouldHideTalentsTab() ) then
 			tab:Show();
 			firstShownTab = firstShownTab or tab;
 			PanelTemplates_TabResize(tab, 0);
@@ -940,7 +938,7 @@ function PlayerTalentFrame_UpdateTabs(playerLevel)
 	local meetsGlyphLevel = playerLevel >= SHOW_INSCRIPTION_LEVEL;
 	tab = _G["PlayerTalentFrameTab"..GLYPH_TAB];
 	if ( tab ) then
-		if ( meetsGlyphLevel ) then
+		if ( meetsGlyphLevel and not ShouldHideGlyphTab() ) then
 			tab:Show();
 			firstShownTab = firstShownTab or tab;
 			PanelTemplates_TabResize(tab, 0);
@@ -1253,11 +1251,11 @@ end
 function PlayerSpecTab_OnClick(self)
 	-- set all specs as unchecked initially
 	for _, frame in next, specTabs do
-		frame:SetChecked(nil);
+		frame:SetChecked(false);
 	end
 	
 	-- check ourselves (before we wreck ourselves)
-	self:SetChecked(1);
+	self:SetChecked(true);
 
 	-- update the selected to this spec
 	PlayerTalentFrame.selectedPlayerSpec = self.specIndex;
@@ -1311,7 +1309,7 @@ function SpecButton_OnEnter(self)
 end
 
 function SpecButton_OnLeave(self)
-	GameTooltip:SetMinimumWidth(0, 0);
+	GameTooltip:SetMinimumWidth(0, false);
 	GameTooltip:Hide();
 end
 
@@ -1513,7 +1511,7 @@ end
 function PlayerTalentFrameTalents_OnLoad(self)
 	local _, class = UnitClass("player");
 	local talentLevels = CLASS_TALENT_LEVELS[class] or CLASS_TALENT_LEVELS["DEFAULT"];
-	for i=1, MAX_NUM_TALENT_TIERS do
+	for i=1, MAX_TALENT_TIERS do
 		self["tier"..i].level:SetText(talentLevels[i]);
 	end
 end

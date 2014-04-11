@@ -113,19 +113,19 @@ end
 function LookingForGuildPlaystyleButton_OnClick(index, userClick)
 	local param;
 	if ( index == 1 ) then
-		LookingForGuildCasualButton:SetChecked(1);
-		LookingForGuildModerateButton:SetChecked(nil);
-		LookingForGuildHardcoreButton:SetChecked(nil);
+		LookingForGuildCasualButton:SetChecked(true);
+		LookingForGuildModerateButton:SetChecked(false);
+		LookingForGuildHardcoreButton:SetChecked(false);
 		param = LFGUILD_PARAM_CASUAL;
 	elseif ( index == 2 ) then
-		LookingForGuildCasualButton:SetChecked(nil);
-		LookingForGuildModerateButton:SetChecked(1);
-		LookingForGuildHardcoreButton:SetChecked(nil);
+		LookingForGuildCasualButton:SetChecked(false);
+		LookingForGuildModerateButton:SetChecked(true);
+		LookingForGuildHardcoreButton:SetChecked(false);
 		param = LFGUILD_PARAM_MODERATE;
 	else
-		LookingForGuildCasualButton:SetChecked(nil);
-		LookingForGuildModerateButton:SetChecked(nil);
-		LookingForGuildHardcoreButton:SetChecked(1);
+		LookingForGuildCasualButton:SetChecked(false);
+		LookingForGuildModerateButton:SetChecked(false);
+		LookingForGuildHardcoreButton:SetChecked(true);
 		param = LFGUILD_PARAM_HARDCORE;
 	end
 	if ( userClick ) then
@@ -198,7 +198,7 @@ function LookingForGuildCheckButton_OnEnter(self)
 	if ( interestType ) then
 		GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
 		GameTooltip:SetText(_G["GUILD_INTEREST_"..interestType]);
-		GameTooltip:AddLine(_G["GUILD_INTEREST_"..interestType.."_TOOLTIP"], 1, 1, 1, 1, 1);
+		GameTooltip:AddLine(_G["GUILD_INTEREST_"..interestType.."_TOOLTIP"], 1, 1, 1, true);
 		GameTooltip:Show();
 	end
 end
@@ -337,18 +337,18 @@ function LookingForGuildGuild_ShowTooltip(self)
 	if ( bRaid ) then buf = buf.."\n"..QUEST_DASH..GUILD_INTEREST_RAID; end
 	if ( bPvP ) then buf = buf.."\n"..QUEST_DASH..GUILD_INTEREST_PVP; end
 	if ( bRP ) then buf = buf.."\n"..QUEST_DASH..GUILD_INTEREST_RP; end	
-	GameTooltip:AddLine(GUILD_INTEREST..HIGHLIGHT_FONT_COLOR_CODE..buf);
+	GameTooltip:AddLine(GUILD_INTEREST..HIGHLIGHT_FONT_COLOR_CODE..buf..FONT_COLOR_CODE_CLOSE);
 	-- availability
 	buf = "";
 	if ( bWeekdays ) then buf = buf.."\n"..QUEST_DASH..GUILD_AVAILABILITY_WEEKDAYS; end
 	if ( bWeekends ) then buf = buf.."\n"..QUEST_DASH..GUILD_AVAILABILITY_WEEKENDS; end
-	GameTooltip:AddLine(GUILD_AVAILABILITY..HIGHLIGHT_FONT_COLOR_CODE..buf);
+	GameTooltip:AddLine(GUILD_AVAILABILITY..HIGHLIGHT_FONT_COLOR_CODE..buf..FONT_COLOR_CODE_CLOSE);
 	-- roles
 	buf = "";
 	if ( bTank ) then buf = buf.."\n"..QUEST_DASH..TANK; end
 	if ( bHealer ) then buf = buf.."\n"..QUEST_DASH..HEALER; end
 	if ( bDamage ) then buf = buf.."\n"..QUEST_DASH..DAMAGER; end
-	GameTooltip:AddLine(CLASS_ROLES..HIGHLIGHT_FONT_COLOR_CODE..buf);
+	GameTooltip:AddLine(CLASS_ROLES..HIGHLIGHT_FONT_COLOR_CODE..buf..FONT_COLOR_CODE_CLOSE);
 	
 	GameTooltip:Show();
 end
@@ -448,18 +448,18 @@ function LookingForGuildApp_ShowTooltip(self)
 	if ( bRaid ) then buf = buf.."\n"..QUEST_DASH..GUILD_INTEREST_RAID; end
 	if ( bPvP ) then buf = buf.."\n"..QUEST_DASH..GUILD_INTEREST_PVP; end
 	if ( bRP ) then buf = buf.."\n"..QUEST_DASH..GUILD_INTEREST_RP; end	
-	GameTooltip:AddLine(GUILD_INTEREST..HIGHLIGHT_FONT_COLOR_CODE..buf);
+	GameTooltip:AddLine(GUILD_INTEREST..HIGHLIGHT_FONT_COLOR_CODE..buf..FONT_COLOR_CODE_CLOSE);
 	-- availability
 	buf = "";
 	if ( bWeekdays ) then buf = buf.."\n"..QUEST_DASH..GUILD_AVAILABILITY_WEEKDAYS; end
 	if ( bWeekends ) then buf = buf.."\n"..QUEST_DASH..GUILD_AVAILABILITY_WEEKENDS; end
-	GameTooltip:AddLine(GUILD_AVAILABILITY..HIGHLIGHT_FONT_COLOR_CODE..buf);
+	GameTooltip:AddLine(GUILD_AVAILABILITY..HIGHLIGHT_FONT_COLOR_CODE..buf..FONT_COLOR_CODE_CLOSE);
 	-- roles
 	buf = "";
 	if ( bTank ) then buf = buf.."\n"..QUEST_DASH..TANK; end
 	if ( bHealer ) then buf = buf.."\n"..QUEST_DASH..HEALER; end
 	if ( bDamage ) then buf = buf.."\n"..QUEST_DASH..DAMAGER; end
-	GameTooltip:AddLine(CLASS_ROLES..HIGHLIGHT_FONT_COLOR_CODE..buf);
+	GameTooltip:AddLine(CLASS_ROLES..HIGHLIGHT_FONT_COLOR_CODE..buf..FONT_COLOR_CODE_CLOSE);
 	
 	GameTooltip:Show();
 end

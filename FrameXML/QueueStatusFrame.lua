@@ -694,7 +694,7 @@ function QueueStatusDropDown_AddBattlefieldButtons(info, idx)
 	elseif ( status == "active" ) then
 		local inArena = IsActiveBattlefieldArena();
 
-		if ( not inArena or GetBattlefieldWinner() ) then
+		if ( not inArena or GetBattlefieldWinner() or CommentatorGetMode() > 0) then
 			info.text = TOGGLE_SCOREBOARD;
 			info.func = wrapFunc(ToggleWorldStateScoreFrame);
 			info.arg1 = nil;

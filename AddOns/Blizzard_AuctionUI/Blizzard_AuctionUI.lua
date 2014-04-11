@@ -457,7 +457,7 @@ function AuctionFrameBrowse_Reset(self)
 	BrowseName:SetText("");
 	BrowseMinLevel:SetText("");
 	BrowseMaxLevel:SetText("");
-	IsUsableCheckButton:SetChecked(0);
+	IsUsableCheckButton:SetChecked(false);
 	UIDropDownMenu_SetSelectedValue(BrowseDropDown,-1);
 
 	-- reset the filters

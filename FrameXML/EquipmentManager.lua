@@ -145,6 +145,7 @@ function EquipmentManager_UnpackLocation (location) -- Use me, I'm here to be us
 	local bank = (bit.band(location, ITEM_INVENTORY_LOCATION_BANK) ~= 0);
 	local bags = (bit.band(location, ITEM_INVENTORY_LOCATION_BAGS) ~= 0);
 	local voidStorage = (bit.band(location, ITEM_INVENTORY_LOCATION_VOIDSTORAGE) ~= 0);
+	local tab, voidSlot;
 
 	if ( player ) then
 		location = location - ITEM_INVENTORY_LOCATION_PLAYER;
@@ -152,6 +153,8 @@ function EquipmentManager_UnpackLocation (location) -- Use me, I'm here to be us
 		location = location - ITEM_INVENTORY_LOCATION_BANK;
 	elseif ( voidStorage ) then
 		location = location - ITEM_INVENTORY_LOCATION_VOIDSTORAGE;
+		tab = bit.rshift(location, ITEM_INVENTORY_BAG_BIT_OFFSET);
+		voidSlot = location - bit.lshift(tab, ITEM_INVENTORY_BAG_BIT_OFFSET);
 	end
 	
 	if ( bags ) then
@@ -162,9 +165,9 @@ function EquipmentManager_UnpackLocation (location) -- Use me, I'm here to be us
 		if ( bank ) then
 			bag = bag + ITEM_INVENTORY_BANK_BAG_OFFSET;
 		end
-		return player, bank, bags, voidStorage, slot, bag
+		return player, bank, bags, voidStorage, slot, bag, tab, voidSlot
 	else
-		return player, bank, bags, voidStorage, location
+		return player, bank, bags, voidStorage, location, nil, tab, voidSlot
 	end
 end
 
@@ -271,15 +274,15 @@ function EquipmentManager_PutItemInInventory (action)
 end
 
 function EquipmentManager_GetItemInfoByLocation (location)
-	local player, bank, bags, voidStorage, slot, bag = EquipmentManager_UnpackLocation(location);
+	local player, bank, bags, voidStorage, slot, bag, tab, voidSlot = EquipmentManager_UnpackLocation(location);
 	if ( not player and not bank and not bags and not voidStorage ) then -- Invalid location
 		return;
 	end
 
 	local id, name, textureName, count, durability, maxDurability, invType, locked, start, duration, enable, setTooltip, gem1, gem2, gem3, _;
 	if ( voidStorage ) then
-		id, textureName = GetVoidItemInfo(slot);
-		setTooltip = function () GameTooltip:SetVoidItem(slot) end;
+		id, textureName = GetVoidItemInfo(tab, voidSlot);
+		setTooltip = function () GameTooltip:SetVoidItem(tab, voidSlot) end;
 	elseif ( not bags ) then -- and (player or bank) 
 		id = GetInventoryItemID("player", slot);
 		name, _, _, _, _, _, _, _, invType, textureName = GetItemInfo(id);

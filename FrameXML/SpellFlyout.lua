@@ -69,14 +69,14 @@ function SpellFlyoutButton_UpdateCooldown(self)
 	CooldownFrame_SetTimer(cooldown, start, duration, enable);
 	-- loss of control cooldown
 	start, duration = GetSpellLossOfControlCooldown(self.spellID);
-	self.cooldown:SetLossOfControlCooldown(start, duration);
+	self.cooldown:SetCooldown(start, duration);
 end
 
 function SpellFlyoutButton_UpdateState(self)
 	if ( IsCurrentSpell(self.spellID) ) then
-		self:SetChecked(1);
+		self:SetChecked(true);
 	else
-		self:SetChecked(nil);
+		self:SetChecked(false);
 	end
 end
 

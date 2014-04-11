@@ -164,10 +164,44 @@
 					</Anchors>
 				</FontString>
 			</Layer>
-
+			<Layer level="ARTWORK">
+				<Texture parentKey="Glow" file="Interface\Scenarios\Objective-Lineglow" alpha="0" alphaMode="ADD">
+					<Size x="80" y="0"/>
+					<Anchors>
+						<Anchor point="LEFT" relativeKey="$parent.text" x="-2" y="0"/>
+						<Anchor point="TOP" x="0" y="-3"/>
+						<Anchor point="BOTTOM" x="0" y="-3"/>
+					</Anchors>
+					<Animations>
+						<AnimationGroup parentKey="Anim">
+							<Scale parentKey="ScaleGlow" startDelay="0.067" scaleX="2" scaleY="1" duration="0.533" order="1"/>
+							<Alpha startDelay="0.067" change="1.0" duration="0.1" order="1"/>
+							<Alpha startDelay="0.467" change="-1.0" duration="0.267" order="1"/>
+						</AnimationGroup>
+					</Animations>
+				</Texture>
+			</Layer>
+			<Layer level="OVERLAY">
+				<Texture parentKey="Sheen" file="Interface\Scenarios\Objective-Sheen" alpha="0">
+					<Size x="32" y="0"/>
+					<Anchors>
+						<Anchor point="LEFT" relativeKey="$parent.Glow"/>
+						<Anchor point="TOP" x="0" y="2"/>
+						<Anchor point="BOTTOM" x="0" y="-14"/>
+					</Anchors>
+					<Animations>
+						<AnimationGroup parentKey="Anim">
+							<Translation startDelay="0.067" offsetX="155" offsetY="0" duration="0.467" order="1"/>
+							<Alpha startDelay="0.067" change="1.0" duration="0.133" order="1"/>
+							<Alpha startDelay="0.2" change="-1.0" duration="0.133" order="1" smoothing="IN"/>
+						</AnimationGroup>
+					</Animations>
+				</Texture>
+			</Layer>
 		</Layers>
 		<Scripts>
 			<OnLoad>
+				self.Glow.Anim.ScaleGlow:SetOrigin("LEFT", 0, 0);		
 				WatchFrameLineTemplate_OnLoad(self);
 			</OnLoad>
 		</Scripts>
@@ -224,6 +258,17 @@
 				</PushedTexture>
 				<HighlightTexture file="Interface\Buttons\UI-Panel-MinimizeButton-Highlight" alphaMode="ADD" />
 				<DisabledTexture file="Interface\Buttons\UI-Panel-QuestHideButton-disabled" />
+			</Button>
+			<Button parentKey="OptionsButton">
+				<Size x="16" y="16"/>
+				<Anchors>
+					<Anchor point="RIGHT" relativeTo="$parentCollapseExpandButton" relativePoint="LEFT" x="-3"/>
+				</Anchors>
+				<Scripts>
+					<OnClick function="WatchFrame_OptionsButton_OnClick"/>
+				</Scripts>
+				<NormalTexture file="Interface\GossipFrame\BinderGossipIcon"/>
+				<HighlightTexture file="Interface\Buttons\UI-Panel-MinimizeButton-Highlight" desaturated="TRUE" alphaMode="ADD" />
 			</Button>
 			<Frame name="WatchFrameLines" hidden="false">
 				<Anchors>
@@ -364,6 +409,7 @@
 					</Layer>
 					<Layer level="BORDER">
 						<FontString name="$parentQuestName" inherits="QuestFont_Large" parentKey="QuestName">
+							<Size x="158" y="30"/>
 							<Anchors>
 								<Anchor point="LEFT" relativeTo="$parentQuestIconBg" relativePoint="RIGHT" x="-6"/>
 								<Anchor point="RIGHT" x="-8"/>
@@ -498,12 +544,10 @@
 						<Anchor point="BOTTOM" x="0" y="-3"/>
 					</Anchors>
 					<Animations>
-						<AnimationGroup parentKey="ScaleAnim">
+						<AnimationGroup parentKey="Anim">
 							<Scale parentKey="ScaleGlow" startDelay="0.067" scaleX="2" scaleY="1" duration="0.533" order="1"/>
-						</AnimationGroup>
-						<AnimationGroup parentKey="AlphaAnim">
 							<Alpha startDelay="0.067" change="1.0" duration="0.1" order="1"/>
-							<Alpha startDelay="0.3" change="-1.0" duration="0.267" order="2"/>
+							<Alpha startDelay="0.467" change="-1.0" duration="0.267" order="1"/>
 						</AnimationGroup>
 					</Animations>
 				</Texture>
@@ -549,7 +593,7 @@
 		</Layers>
 		<Scripts>
 			<OnLoad>
-				self.Glow.ScaleAnim.ScaleGlow:SetOrigin("LEFT", 0, 0);
+				self.Glow.Anim.ScaleGlow:SetOrigin("LEFT", 0, 0);
 			</OnLoad>
 		</Scripts>
 	</Frame>
@@ -652,13 +696,13 @@
 								local name, description = C_Scenario.GetStepInfo();
 								if(bit.band(flags, SCENARIO_FLAG_SUPRESS_STAGE_TEXT) == SCENARIO_FLAG_SUPRESS_STAGE_TEXT) then
 								  GameTooltip:SetText(name, 1, 0.914, 0.682, 1);
-								  GameTooltip:AddLine(description, 1, 1, 1, 1);
+								  GameTooltip:AddLine(description, 1, 1, 1, true);
 								  GameTooltip:Show();
 								else
 								  GameTooltip:SetText(string.format(SCENARIO_STAGE_STATUS, currentStage, numStages), 1, 0.914, 0.682, 1);
-								  GameTooltip:AddLine(name, 1, 0.831, 0.380, 1);
+								  GameTooltip:AddLine(name, 1, 0.831, 0.380, true);
 								  GameTooltip:AddLine(" ");
-								  GameTooltip:AddLine(description, 1, 1, 1, 1);
+								  GameTooltip:AddLine(description, 1, 1, 1, true);
 								  GameTooltip:Show();
 								end
 							</OnEnter>
@@ -725,12 +769,12 @@
 		</Layers>
 		<Animations>
 			<AnimationGroup parentKey="AnimSuccess">
-				<Alpha targetKey="$parent.$parent.SuccessGlow" change="1" duration="0.5" endDelay="0.5" order="1"/>
-				<Alpha targetKey="$parent.$parent.SuccessGlow" change="-1" duration="1" order="2"/>
+				<Alpha childKey="SuccessGlow" change="1" duration="0.5" endDelay="0.5" order="1"/>
+				<Alpha childKey="SuccessGlow" change="-1" duration="1" order="2"/>
 			</AnimationGroup>
 			<AnimationGroup parentKey="AnimFailure">
-				<Alpha targetKey="$parent.$parent.FailureGlow" change="1" duration="0.5" endDelay="0.5" order="1"/>
-				<Alpha targetKey="$parent.$parent.FailureGlow" change="-1" duration="1" order="2"/>
+				<Alpha childKey="FailureGlow" change="1" duration="0.5" endDelay="0.5" order="1"/>
+				<Alpha childKey="FailureGlow" change="-1" duration="1" order="2"/>
 			</AnimationGroup>
 		</Animations>
 		<Scripts>
@@ -743,5 +787,78 @@
 			</OnShow>
 		</Scripts>
 	</Frame>
-	
+
+	<Frame name="WatchFrameTaskLineTemplate" inherits="WatchFrameScenarioLineTemplate" virtual="true">
+		<Animations>
+			<AnimationGroup parentKey="TranslationAnim">
+				<Translation target="$parent$parentText" offsetX="-150" offsetY="0" duration="0.01" order="1"/>
+				<Translation target="$parent$parentText" offsetX="150" offsetY="0" duration="3" order="2"/>
+			</AnimationGroup>
+			<AnimationGroup parentKey="AlphaAnim">
+				<Alpha change="-1.0" duration="1.5" startDelay="3.5" order="1"/>
+				<Scripts>
+					<OnFinished function="WatchFrameTasks_OnFinishLineAnim"/>
+				</Scripts>
+			</AnimationGroup>	
+		</Animations>
+	</Frame>
+	<ScrollFrame name="WatchFrameTasksFrame" hidden="true" parent="WatchFrameLines">
+		<Size x="204" y="83"/>
+		<Anchors>
+			<Anchor point="TOPLEFT"/>
+		</Anchors>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="TopBorder" atlas="Task-BonusBar-Top" useAtlasSize="true" hidden="true">
+					<Anchors>
+						<Anchor point="TOP" x="0" y="2"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="BottomBorder" atlas="Task-BonusBar-Top" useAtlasSize="true" hidden="true">
+					<Anchors>
+						<Anchor point="BOTTOM" x="0" y="-10"/>
+					</Anchors>
+					<TexCoords left="0" right="1" top="1" bottom="0"/>
+				</Texture>
+			</Layer>
+			<Layer level="ARTWORK">
+				<Texture parentKey="Icon" atlas="TaskPOI-Icon" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="TOPRIGHT" relativePoint="TOPLEFT" x="-5" y="1"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="BurstTexture" atlas="Task-StarBurst" useAtlasSize="true" alpha="0">
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent.Icon"/>
+					</Anchors>
+					<Animations>
+						<AnimationGroup parentKey="AlphaAnim">
+							<Alpha startDelay="0.067" change="1.0" duration="0.1" order="1"/>
+							<Alpha startDelay="0.3" change="-1.0" duration="0.267" order="2"/>
+						</AnimationGroup>
+					</Animations>
+				</Texture>
+			</Layer>
+		</Layers>
+		<ScrollChild>
+			<Frame parentKey="ScrollChild">
+				<Size x="201" y="83"/>
+				<Anchors>
+					<Anchor point="TOP"/>
+				</Anchors>
+				<Frames>
+					<Frame name="$parentHeader" parentKey="Header" inherits="WatchFrameLineTemplate">
+						<Anchors>
+							<Anchor point="TOP" x="0" y="0"/>
+							<Anchor point="LEFT" relativeTo="WatchFrameLines"/>
+							<Anchor point="RIGHT" relativeTo="WatchFrameLines"/>
+						</Anchors>
+					</Frame>
+				</Frames>
+			</Frame>
+		</ScrollChild>
+		<Scripts>
+			<OnLoad function="WatchFrameTasksFrame_OnLoad"/>
+		</Scripts>
+	</ScrollFrame>
 </Ui>

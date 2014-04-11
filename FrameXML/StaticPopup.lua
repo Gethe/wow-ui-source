@@ -433,7 +433,7 @@ StaticPopupDialogs["USE_GUILDBANK_REPAIR"] = {
 		PlaySound("ITEM_REPAIR");
 	end,
 	OnCancel = function ()
-		RepairAllItems(1);
+		RepairAllItems(true);
 		PlaySound("ITEM_REPAIR");
 	end,
 	timeout = 0,
@@ -637,7 +637,7 @@ StaticPopupDialogs["CONFIRM_BATTLEFIELD_ENTRY"] = {
 		end
 	end,
 	OnAccept = function(self, data)
-		if ( not AcceptBattlefieldPort(data, 1) ) then
+		if ( not AcceptBattlefieldPort(data, true) ) then
 			return 1;
 		end
 		if( StaticPopup_Visible( "DEATH" ) ) then
@@ -645,7 +645,7 @@ StaticPopupDialogs["CONFIRM_BATTLEFIELD_ENTRY"] = {
 		end
 	end,
 	OnCancel = function(self, data)
-		if ( not AcceptBattlefieldPort(data, 0) ) then	--Actually declines the battlefield port.
+		if ( not AcceptBattlefieldPort(data, false) ) then	--Actually declines the battlefield port.
 			return 1;
 		end
 	end,
@@ -725,10 +725,10 @@ StaticPopupDialogs["BFMGR_INVITED_TO_ENTER"] = {
 		end
 	end,
 	OnAccept = function(self, battleID)
-		BattlefieldMgrEntryInviteResponse(battleID,1);
+		BattlefieldMgrEntryInviteResponse(battleID, true);
 	end,
 	OnCancel = function(self, battleID)
-		BattlefieldMgrEntryInviteResponse(battleID,0);
+		BattlefieldMgrEntryInviteResponse(battleID, false);
 	end,
 	timeout = 0,
 	timeoutInformationalOnly = 1;

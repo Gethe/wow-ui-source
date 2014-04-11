@@ -116,6 +116,11 @@ function AutoComplete_OnLoad(self)
 	self.maxHeight = AUTOCOMPLETE_MAX_BUTTONS * AutoCompleteButton1:GetHeight();
 	
 	AutoCompleteInstructions:SetText("|cffbbbbbb"..PRESS_TAB.."|r");
+	C_Timer.After(5, function()
+		if ( IsInGuild() ) then
+			GuildRoster();
+		end
+	end);
 end
 
 function AutoComplete_Update(parent, text, cursorPosition)

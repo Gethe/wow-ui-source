@@ -1,48 +1,81 @@
-
 function MonkHarmonyBar_SetEnergy(self, active)
 	if ( active ) then
 		if (self.deactivate:IsPlaying()) then
 			self.deactivate:Stop();
 		end
 		
-		if (not self.activate:IsPlaying()) then
+		if (not self.active and not self.activate:IsPlaying()) then
 			self.activate:Play();
+			self.active = true;
 		end
 	else
 		if (self.activate:IsPlaying()) then
 			self.activate:Stop();
 		end
 		
-		if (not self.deactivate:IsPlaying()) then
+		if (self.active and not self.deactivate:IsPlaying()) then
 			self.deactivate:Play();
+			self.active = false;
 		end
+	end
+end
+
+function MonkHarmonyBar_UpdateMaxPower(self)
+	-- if max light changed, show/hide the 5th and update anchors 
+	local maxLight = UnitPowerMax("player", SPELL_POWER_CHI );
+	if ( self.maxLight ~= maxLight ) then
+		local startX, xOffset, orbOff, lightOrb;
+
+		if ( maxLight == 4 ) then
+			startX = -43;
+			xOffset = 5;
+			orbOff = "MonkUI-OrbOff";
+			lightOrb = "MonkUI-LightOrb";
+		elseif (maxLight == 5 ) then
+			startX = -46;
+			xOffset = 1;
+			orbOff = "MonkUI-OrbOff";
+			lightOrb = "MonkUI-LightOrb";
+		else
+			startX = -54;
+			xOffset = 0;
+			orbOff = "MonkUI-OrbOff-small";
+			lightOrb = "MonkUI-LightOrb-small";
+		end
+
+		for i = 1,maxLight do
+			local orb = self.LightEnergy[i];
+			if (not orb) then
+				orb = CreateFrame("Frame", nil, MonkHarmonyBar, "MonkLightEnergyTemplate");
+			end
+			orb:ClearAllPoints();
+			orb.Glow:SetAtlas(lightOrb, true);
+			orb.OrbOff:SetAtlas(orbOff, true);
+			if (i == 1) then
+				orb:SetPoint("LEFT", startX, 1);
+			else
+				local prev = self.LightEnergy[i - 1];
+				orb:SetPoint("LEFT", prev, "RIGHT", xOffset, 0);
+			end
+			orb:Show();
+		end
+		
+		for i = maxLight+1, #self.LightEnergy do
+			local orb = self.LightEnergy[i];
+			if (orb) then
+				orb:Hide();
+			end
+		end
+
+		self.maxLight = maxLight;
 	end
 end
 
 function MonkHarmonyBar_Update(self)
 	local light = UnitPower("player", SPELL_POWER_CHI );
-
-	-- if max light changed, show/hide the 5th and update anchors 
-	local maxLight = UnitPowerMax("player", SPELL_POWER_CHI );
-	if ( self.maxLight ~= maxLight ) then
-		if ( maxLight == 4 ) then
-			self.lightEnergy1:SetPoint("LEFT", -43, 1);
-			self.lightEnergy2:SetPoint("LEFT", self.lightEnergy1, "RIGHT", 5, 0);
-			self.lightEnergy3:SetPoint("LEFT", self.lightEnergy2, "RIGHT", 5, 0);
-			self.lightEnergy4:SetPoint("LEFT", self.lightEnergy3, "RIGHT", 5, 0);
-			self.lightEnergy5:Hide();
-		else
-			self.lightEnergy1:SetPoint("LEFT", -46, 1);
-			self.lightEnergy2:SetPoint("LEFT", self.lightEnergy1, "RIGHT", 1, 0);
-			self.lightEnergy3:SetPoint("LEFT", self.lightEnergy2, "RIGHT", 1, 0);
-			self.lightEnergy4:SetPoint("LEFT", self.lightEnergy3, "RIGHT", 1, 0);
-			self.lightEnergy5:Show();
-		end
-		self.maxLight = maxLight;
-	end
 	
 	for i = 1, self.maxLight do
-		MonkHarmonyBar_SetEnergy(self["lightEnergy"..i], i<=light);
+		MonkHarmonyBar_SetEnergy(self.LightEnergy[i], i<=light);
 	end
 end
 
@@ -55,7 +88,6 @@ function MonkHarmonyBar_OnLoad (self)
 		self:Hide();
 		return;
 	end
-	self.maxLight = 4;
 	self:SetFrameLevel(self:GetParent():GetFrameLevel() + 2);
 	self:RegisterEvent("PLAYER_ENTERING_WORLD");
 	self:RegisterEvent("UNIT_DISPLAYPOWER");
@@ -71,6 +103,7 @@ function MonkHarmonyBar_OnEvent (self, event, arg1, arg2)
 			MonkHarmonyBar_Update(self);
 		end
 	else
+		MonkHarmonyBar_UpdateMaxPower(self);
 		MonkHarmonyBar_Update(self);
 	end
 end

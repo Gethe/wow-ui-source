@@ -5,12 +5,11 @@
 	<Include file="GameTooltipTemplate.xml"/>
 	<GameTooltip name="ShoppingTooltip1" clampedToScreen="true" frameStrata="TOOLTIP" hidden="true" parent="UIParent" inherits="ShoppingTooltipTemplate"/>
 	<GameTooltip name="ShoppingTooltip2" clampedToScreen="true" frameStrata="TOOLTIP" hidden="true" parent="UIParent" inherits="ShoppingTooltipTemplate"/>
-	<GameTooltip name="ShoppingTooltip3" clampedToScreen="true" frameStrata="TOOLTIP" hidden="true" parent="UIParent" inherits="ShoppingTooltipTemplate"/>
 	<GameTooltip name="GameTooltip" frameStrata="TOOLTIP" hidden="true" parent="UIParent" inherits="GameTooltipTemplate">
 		<Scripts>
 			<OnLoad>
 				GameTooltip_OnLoad(self);
-				self.shoppingTooltips = { ShoppingTooltip1, ShoppingTooltip2, ShoppingTooltip3 };
+				self.shoppingTooltips = { ShoppingTooltip1, ShoppingTooltip2 };
 				if (BattlePetTooltip) then
 					BattlePetTooltip:Hide();
 				end
@@ -26,7 +25,11 @@
 			<OnTooltipSetItem>
 				if ( IsModifiedClick("COMPAREITEMS") or
 				     (GetCVarBool("alwaysCompareItems") and not self:IsEquippedItem()) ) then
-					GameTooltip_ShowCompareItem(self, 1);
+					GameTooltip_ShowCompareItem(self, true);
+				else
+					local shoppingTooltip1, shoppingTooltip2 = unpack(self.shoppingTooltips);
+					shoppingTooltip1:Hide();
+					shoppingTooltip2:Hide();
 				end
 				if (BattlePetTooltip) then
 					BattlePetTooltip:Hide();
@@ -36,7 +39,6 @@
 				GameTooltip_OnHide(self);
 				ShoppingTooltip1:Hide();
 				ShoppingTooltip2:Hide();
-				ShoppingTooltip3:Hide();
 				if (BattlePetTooltip) then
 					BattlePetTooltip:Hide();
 				end

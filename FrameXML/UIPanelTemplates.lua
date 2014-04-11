@@ -138,14 +138,16 @@ function PanelTemplates_GetTabWidth(tab)
 	local sideWidths = 2 * _G[tabName.."Left"]:GetWidth();
 	return tab:GetTextWidth() + sideWidths;
 end
-
+	
 function PanelTemplates_TabResize(tab, padding, absoluteSize, minWidth, maxWidth, absoluteTextSize)
 	local tabName = tab:GetName();
 	
-	local buttonMiddle = _G[tabName.."Middle"];
-	local buttonMiddleDisabled = _G[tabName.."MiddleDisabled"];
-	local sideWidths = 2 * _G[tabName.."Left"]:GetWidth();
-	local tabText = _G[tab:GetName().."Text"];
+	local buttonMiddle = tab.Middle or _G[tabName.."Middle"];
+	local buttonMiddleDisabled = tab.MiddleDisabled or _G[tabName.."MiddleDisabled"];
+	local sideWidths = tab.Left and 2 * tab.Left:GetWidth() or 2 * _G[tabName.."Left"]:GetWidth();
+	local tabText = tab.Text or _G[tab:GetName().."Text"];
+	local highlightTexture = tab.HighlightTexture or _G[tabName.."HighlightTexture"];
+	
 	local width, tabWidth;
 	local textWidth;
 	if ( absoluteTextSize ) then
@@ -196,7 +198,7 @@ function PanelTemplates_TabResize(tab, padding, absoluteSize, minWidth, maxWidth
 	end
 	
 	tab:SetWidth(tabWidth);
-	local highlightTexture = _G[tabName.."HighlightTexture"];
+	
 	if ( highlightTexture ) then
 		highlightTexture:SetWidth(tabWidth);
 	end
@@ -221,31 +223,47 @@ end
 
 function PanelTemplates_DeselectTab(tab)
 	local name = tab:GetName();
-	_G[name.."Left"]:Show();
-	_G[name.."Middle"]:Show();
-	_G[name.."Right"]:Show();
+	
+	local left = tab.Left or _G[name.."Left"];
+	local middle = tab.Middle or _G[name.."Middle"];
+	local right = tab.Right or _G[name.."Right"];
+	left:Show();
+	middle:Show();
+	right:Show();
 	--tab:UnlockHighlight();
 	tab:Enable();
-	_G[name.."Text"]:SetPoint("CENTER", tab, "CENTER", (tab.deselectedTextX or 0), (tab.deselectedTextY or 2));
-		
-	_G[name.."LeftDisabled"]:Hide();
-	_G[name.."MiddleDisabled"]:Hide();
-	_G[name.."RightDisabled"]:Hide();
+	local text = tab.Text or _G[name.."Text"];
+	text:SetPoint("CENTER", tab, "CENTER", (tab.deselectedTextX or 0), (tab.deselectedTextY or 2));
+	
+	local leftDisabled = tab.LeftDisabled or _G[name.."LeftDisabled"];
+	local middleDisabled = tab.MiddleDisabled or _G[name.."MiddleDisabled"];
+	local rightDisabled = tab.RightDisabled or _G[name.."RightDisabled"];
+	leftDisabled:Hide();
+	middleDisabled:Hide();
+	rightDisabled:Hide();
 end
 
 function PanelTemplates_SelectTab(tab)
 	local name = tab:GetName();
-	_G[name.."Left"]:Hide();
-	_G[name.."Middle"]:Hide();
-	_G[name.."Right"]:Hide();
+	
+	local left = tab.Left or _G[name.."Left"];
+	local middle = tab.Middle or _G[name.."Middle"];
+	local right = tab.Right or _G[name.."Right"];
+	left:Hide();
+	middle:Hide();
+	right:Hide();
 	--tab:LockHighlight();
 	tab:Disable();
 	tab:SetDisabledFontObject(GameFontHighlightSmall);
-	_G[name.."Text"]:SetPoint("CENTER", tab, "CENTER", (tab.selectedTextX or 0), (tab.selectedTextY or -3));
+	local text = tab.Text or _G[name.."Text"];
+	text:SetPoint("CENTER", tab, "CENTER", (tab.selectedTextX or 0), (tab.selectedTextY or -3));
 	
-	_G[name.."LeftDisabled"]:Show();
-	_G[name.."MiddleDisabled"]:Show();
-	_G[name.."RightDisabled"]:Show();
+	local leftDisabled = tab.LeftDisabled or _G[name.."LeftDisabled"];
+	local middleDisabled = tab.MiddleDisabled or _G[name.."MiddleDisabled"];
+	local rightDisabled = tab.RightDisabled or _G[name.."RightDisabled"];
+	leftDisabled:Show();
+	middleDisabled:Show();
+	rightDisabled:Show();
 	
 	if ( GameTooltip:IsOwned(tab) ) then
 		GameTooltip:Hide();
@@ -254,226 +272,23 @@ end
 
 function PanelTemplates_SetDisabledTabState(tab)
 	local name = tab:GetName();
-	_G[name.."Left"]:Show();
-	_G[name.."Middle"]:Show();
-	_G[name.."Right"]:Show();
+	local left = tab.Left or _G[name.."Left"];
+	local middle = tab.Middle or _G[name.."Middle"];
+	local right = tab.Right or _G[name.."Right"];
+	left:Show();
+	middle:Show();
+	right:Show();
 	--tab:UnlockHighlight();
 	tab:Disable();
 	tab.text = tab:GetText();
 	-- Gray out text
 	tab:SetDisabledFontObject(GameFontDisableSmall);
-	_G[name.."LeftDisabled"]:Hide();
-	_G[name.."MiddleDisabled"]:Hide();
-	_G[name.."RightDisabled"]:Hide();
-end
-
-function ScrollFrameTemplate_OnMouseWheel(self, value, scrollBar)
-	scrollBar = scrollBar or _G[self:GetName() .. "ScrollBar"];
-	local scrollStep = scrollBar.scrollStep or scrollBar:GetHeight() / 2
-	if ( value > 0 ) then
-		scrollBar:SetValue(scrollBar:GetValue() - scrollStep);
-	else
-		scrollBar:SetValue(scrollBar:GetValue() + scrollStep);
-	end
-end
-
--- Function to handle the update of manually calculated scrollframes.  Used mostly for listings with an indeterminate number of items
-function FauxScrollFrame_Update(frame, numItems, numToDisplay, buttonHeight, button, smallWidth, bigWidth, highlightFrame, smallHighlightWidth, bigHighlightWidth, alwaysShowScrollBar )
-	-- If more than one screen full of skills then show the scrollbar
-	local frameName = frame:GetName();
-	local scrollBar = _G[ frameName.."ScrollBar" ];
-	local showScrollBar;
-	if ( numItems > numToDisplay or alwaysShowScrollBar ) then
-		frame:Show();
-		showScrollBar = 1;
-	else
-		scrollBar:SetValue(0);
-		frame:Hide();
-	end
-	if ( frame:IsShown() ) then
-		local scrollChildFrame = _G[ frameName.."ScrollChildFrame" ];
-		local scrollUpButton = _G[ frameName.."ScrollBarScrollUpButton" ];
-		local scrollDownButton = _G[ frameName.."ScrollBarScrollDownButton" ];
-		local scrollFrameHeight = 0;
-		local scrollChildHeight = 0;
-
-		if ( numItems > 0 ) then
-			scrollFrameHeight = (numItems - numToDisplay) * buttonHeight;
-			scrollChildHeight = numItems * buttonHeight;
-			if ( scrollFrameHeight < 0 ) then
-				scrollFrameHeight = 0;
-			end
-			scrollChildFrame:Show();
-		else
-			scrollChildFrame:Hide();
-		end
-		local maxRange = (numItems - numToDisplay) * buttonHeight;
-		if (maxRange < 0) then
-			maxRange = 0;
-		end
-		scrollBar:SetMinMaxValues(0, maxRange); 
-		scrollBar:SetValueStep(buttonHeight);
-		scrollBar:SetStepsPerPage(numToDisplay-1);
-		scrollChildFrame:SetHeight(scrollChildHeight);
-		
-		-- Arrow button handling
-		if ( scrollBar:GetValue() == 0 ) then
-			scrollUpButton:Disable();
-		else
-			scrollUpButton:Enable();
-		end
-		if ((scrollBar:GetValue() - scrollFrameHeight) == 0) then
-			scrollDownButton:Disable();
-		else
-			scrollDownButton:Enable();
-		end
-		
-		-- Shrink because scrollbar is shown
-		if ( highlightFrame ) then
-			highlightFrame:SetWidth(smallHighlightWidth);
-		end
-		if ( button ) then
-			for i=1, numToDisplay do
-				_G[button..i]:SetWidth(smallWidth);
-			end
-		end
-	else
-		-- Widen because scrollbar is hidden
-		if ( highlightFrame ) then
-			highlightFrame:SetWidth(bigHighlightWidth);
-		end
-		if ( button ) then
-			for i=1, numToDisplay do
-				_G[button..i]:SetWidth(bigWidth);
-			end
-		end
-	end
-	return showScrollBar;
-end
-
-function FauxScrollFrame_OnVerticalScroll(self, value, itemHeight, updateFunction)
-	local scrollbar = _G[self:GetName().."ScrollBar"];
-	scrollbar:SetValue(value);
-	self.offset = floor((value / itemHeight) + 0.5);
-	if ( updateFunction ) then
-		updateFunction(self);
-	end
-end
-
-function FauxScrollFrame_GetOffset(frame)
-	return frame.offset;
-end
-
-function FauxScrollFrame_SetOffset(frame, offset)
-	frame.offset = offset;
-end
-
--- Scrollframe functions
-function ScrollFrame_OnLoad(self)
-	_G[self:GetName().."ScrollBarScrollDownButton"]:Disable();
-	_G[self:GetName().."ScrollBarScrollUpButton"]:Disable();
-
-	local scrollbar = _G[self:GetName().."ScrollBar"];
-	scrollbar:SetMinMaxValues(0, 0);
-	scrollbar:SetValue(0);
-	self.offset = 0;
-	
-	if ( self.scrollBarHideable ) then
-		_G[self:GetName().."ScrollBar"]:Hide();
-		_G[scrollbar:GetName().."ScrollDownButton"]:Hide();
-		_G[scrollbar:GetName().."ScrollUpButton"]:Hide();
-	else
-		_G[scrollbar:GetName().."ScrollDownButton"]:Disable();
-		_G[scrollbar:GetName().."ScrollUpButton"]:Disable();
-		_G[scrollbar:GetName().."ScrollDownButton"]:Show();
-		_G[scrollbar:GetName().."ScrollUpButton"]:Show();
-	end
-	if ( self.noScrollThumb ) then
-		_G[scrollbar:GetName().."ThumbTexture"]:Hide();
-	end
-end
-
-function ScrollFrame_OnScrollRangeChanged(self, xrange, yrange)
-	local scrollbar = self.ScrollBar or _G[self:GetName().."ScrollBar"];
-	if ( not yrange ) then
-		yrange = self:GetVerticalScrollRange();
-	end
-	local value = scrollbar:GetValue();
-	if ( value > yrange ) then
-		value = yrange;
-	end
-	scrollbar:SetMinMaxValues(0, yrange);
-	scrollbar:SetValue(value);
-	if ( floor(yrange) == 0 ) then
-		if ( self.scrollBarHideable ) then
-			_G[self:GetName().."ScrollBar"]:Hide();
-			_G[scrollbar:GetName().."ScrollDownButton"]:Hide();
-			_G[scrollbar:GetName().."ScrollUpButton"]:Hide();
-			_G[scrollbar:GetName().."ThumbTexture"]:Hide();
-		else
-			_G[scrollbar:GetName().."ScrollDownButton"]:Disable();
-			_G[scrollbar:GetName().."ScrollUpButton"]:Disable();
-			_G[scrollbar:GetName().."ScrollDownButton"]:Show();
-			_G[scrollbar:GetName().."ScrollUpButton"]:Show();
-			if ( not self.noScrollThumb ) then
-				_G[scrollbar:GetName().."ThumbTexture"]:Show();
-			end
-		end
-	else
-		_G[scrollbar:GetName().."ScrollDownButton"]:Show();
-		_G[scrollbar:GetName().."ScrollUpButton"]:Show();
-		_G[self:GetName().."ScrollBar"]:Show();
-		if ( not self.noScrollThumb ) then
-			_G[scrollbar:GetName().."ThumbTexture"]:Show();
-		end
-		-- The 0.005 is to account for precision errors
-		if ( yrange - value > 0.005 ) then
-			_G[scrollbar:GetName().."ScrollDownButton"]:Enable();
-		else
-			_G[scrollbar:GetName().."ScrollDownButton"]:Disable();
-		end
-	end
-	
-	-- Hide/show scrollframe borders
-	local top = _G[self:GetName().."Top"];
-	local bottom = _G[self:GetName().."Bottom"];
-	local middle = _G[self:GetName().."Middle"];
-	if ( top and bottom and self.scrollBarHideable ) then
-		if ( self:GetVerticalScrollRange() == 0 ) then
-			top:Hide();
-			bottom:Hide();
-		else
-			top:Show();
-			bottom:Show();
-		end
-	end
-	if ( middle and self.scrollBarHideable ) then
-		if ( self:GetVerticalScrollRange() == 0 ) then
-			middle:Hide();
-		else
-			middle:Show();
-		end
-	end
-end
-
-function ScrollBar_AdjustAnchors(scrollBar, topAdj, bottomAdj, xAdj)
-	-- assumes default anchoring of topleft-topright, bottomleft-bottomright
-	local topY = 0;
-	local bottomY = 0;
-	local point, parent, refPoint, x, y;
-	for i = 1, 2 do
-		point, parent, refPoint, x, y = scrollBar:GetPoint(i);
-		if ( point == "TOPLEFT" ) then
-			topY = y;
-		elseif ( point == "BOTTOMLEFT" ) then
-			bottomY = y;
-		end
-	end
-	xAdj = xAdj or 0;
-	topAdj = topAdj or 0;
-	bottomAdj = bottomAdj or 0;
-	scrollBar:SetPoint("TOPLEFT", parent, "TOPRIGHT", x + xAdj, topY + topAdj);
-	scrollBar:SetPoint("BOTTOMLEFT", parent, "BOTTOMRIGHT", x + xAdj, bottomY + bottomAdj);
+	local leftDisabled = tab.LeftDisabled or _G[name.."LeftDisabled"];
+	local middleDisabled = tab.MiddleDisabled or _G[name.."MiddleDisabled"];
+	local rightDisabled = tab.RightDisabled or _G[name.."RightDisabled"];
+	leftDisabled:Hide();
+	middleDisabled:Hide();
+	rightDisabled:Hide();
 end
 
 function ScrollingEdit_OnTextChanged(self, scrollFrame)
@@ -527,47 +342,6 @@ local height, range, scroll, size, cursorOffset;
 		
 		self.handleCursorChange = false;
 	end
-end
-
-function EditBox_HandleTabbing(self, tabList)
-	local editboxName = self:GetName();
-	local index;
-	for i=1, #tabList do
-		if ( editboxName == tabList[i] ) then
-			index = i;
-			break;
-		end
-	end
-	if ( IsShiftKeyDown() ) then
-		index = index - 1;
-	else
-		index = index + 1;
-	end
-
-	if ( index == 0 ) then
-		index = #tabList;
-	elseif ( index > #tabList ) then
-		index = 1;
-	end
-
-	local target = tabList[index];
-	_G[target]:SetFocus();
-end
-
-function EditBox_ClearFocus (self)
-	self:ClearFocus();
-end
-
-function EditBox_SetFocus (self)
-	self:SetFocus();
-end
-
-function EditBox_HighlightText (self)
-	self:HighlightText();
-end
-
-function EditBox_ClearHighlight (self)
-	self:HighlightText(0, 0);
 end
 
 UIFrameCache = CreateFrame("FRAME");
@@ -690,7 +464,7 @@ function CapProgressBar_Update(capBar, cap1Quantity, cap1Limit, cap2Quantity, ca
 		return;
 	end
 	
-	local barWidth = capBar:GetWidth();
+	local barWidth = capBar:GetWidth() - 4;
 	local sizePerPoint = barWidth / totalLimit;
 	local progressWidth = totalQuantity * sizePerPoint;
 	
@@ -716,7 +490,7 @@ function CapProgressBar_Update(capBar, cap1Quantity, cap1Limit, cap2Quantity, ca
 	
 	if ( progressWidth > 0 ) then
 		capBar.progress:Show();
-		capBar.progress:SetPoint("LEFT", lastFrame, lastRelativePoint, 0, 0);
+		capBar.progress:SetPoint("LEFT", lastFrame, lastRelativePoint, 2, 0);
 		lastFrame, lastRelativePoint = capBar.progress, "RIGHT";
 	else
 		capBar.progress:Hide();
@@ -750,11 +524,13 @@ function InputScrollFrame_OnLoad(self)
 	scrollBar:SetPoint("TOPLEFT", self, "TOPRIGHT", -13, -11);
 	scrollBar:SetPoint("BOTTOMLEFT", self, "BOTTOMRIGHT", -13, 9);
 	-- reposition the up and down buttons
-	_G[self:GetName().."ScrollBarScrollDownButton"]:SetPoint("TOP", scrollBar, "BOTTOM", 0, 4);
-	_G[self:GetName().."ScrollBarScrollUpButton"]:SetPoint("BOTTOM", scrollBar, "TOP", 0, -4);
+	self.ScrollBar.ScrollDownButton:SetPoint("TOP", scrollBar, "BOTTOM", 0, 4);
+	self.ScrollBar.ScrollUpButton:SetPoint("BOTTOM", scrollBar, "TOP", 0, -4);
 	-- make the scroll bar hideable and force it to start off hidden so positioning calculations can be done
 	-- as soon as it needs to be shown
 	self.scrollBarHideable = 1;
 	scrollBar:Hide();
 	self.EditBox:SetWidth(self:GetWidth() - 18);
+	self.EditBox:SetMaxLetters(self.maxLetters);
+	self.EditBox.Instructions:SetText(self.instructions);
 end

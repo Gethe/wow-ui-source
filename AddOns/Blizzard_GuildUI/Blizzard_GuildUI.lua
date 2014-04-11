@@ -422,7 +422,7 @@ function GuildXPBar_OnEnter(self)
 	local nextLevelXP = currentXP + remainingXP;
 	GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
 	GameTooltip:SetText(GUILD_EXPERIENCE);
-	GameTooltip:AddLine(GUILD_EXPERIENCE_TOOLTIP, 1, 1, 1, 1);
+	GameTooltip:AddLine(GUILD_EXPERIENCE_TOOLTIP, 1, 1, 1, true);
 	if nextLevelXP > 0 then
 		local percentTotal = tostring(math.ceil((currentXP / nextLevelXP) * 100));
 		GameTooltip:AddLine(string.format(GUILD_EXPERIENCE_CURRENT, BreakUpLargeNumbers(currentXP), BreakUpLargeNumbers(nextLevelXP), percentTotal));
@@ -441,7 +441,7 @@ function GuildFactionBar_OnEnter(self)
 	local name, description = GetGuildFactionInfo();
 	GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
 	GameTooltip:SetText(GUILD_REPUTATION);
-	GameTooltip:AddLine(description, 1, 1, 1, 1, 1);
+	GameTooltip:AddLine(description, 1, 1, 1, true);
 	local percentTotal = tostring(math.ceil((barValue / barMax) * 100));
 	GameTooltip:AddLine(string.format(GUILD_EXPERIENCE_CURRENT, BreakUpLargeNumbers(barValue), BreakUpLargeNumbers(barMax), percentTotal));
 	GameTooltip:Show();
@@ -714,7 +714,7 @@ function GuildMainFrame_UpdatePerks()
 	else
 		local name, spellID, iconTexture, nextPerkLevel = GetGuildPerkInfo(nextPerkIndex);
 		GuildNextPerkButtonIconTexture:SetTexture(iconTexture);
-		GuildNextPerkButtonIconTexture:SetDesaturated(1);
+		GuildNextPerkButtonIconTexture:SetDesaturated(true);
 		GuildNextPerkButtonName:SetText(name);
 		GuildNextPerkButtonLabel:SetFormattedText(GUILD_NEXT_PERK_LEVEL, nextPerkLevel);
 		GuildNextPerkButton.spellID = spellID;
@@ -745,14 +745,14 @@ function GuildPerks_Update()
 			if ( level > guildLevel ) then
 				button:EnableDrawLayer("BORDER");
 				button:DisableDrawLayer("BACKGROUND");
-				button.icon:SetDesaturated(1);
+				button.icon:SetDesaturated(true);
 				button.name:SetFontObject(GameFontNormalLeftGrey);
 				button.lock:Show();
 				button.level:SetTextColor(RED_FONT_COLOR.r, RED_FONT_COLOR.g, RED_FONT_COLOR.b);
 			else
 				button:EnableDrawLayer("BACKGROUND");
 				button:DisableDrawLayer("BORDER");
-				button.icon:SetDesaturated(0);
+				button.icon:SetDesaturated(false);
 				button.name:SetFontObject(GameFontHighlight);
 				button.lock:Hide();
 				button.level:SetTextColor(NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b);

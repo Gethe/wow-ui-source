@@ -216,9 +216,9 @@ function GuildBankFrame_Update()
 		else
 			local _, _, _, canDeposit, numWithdrawals = GetGuildBankTabInfo(tab);
 			if ( not canDeposit and numWithdrawals == 0 ) then
-				GuildBankFrame_DesaturateColumns(1);
+				GuildBankFrame_DesaturateColumns(true);
 			else
-				GuildBankFrame_DesaturateColumns(nil);
+				GuildBankFrame_DesaturateColumns(false);
 			end
 			GuildBankFrame_ShowColumns()
 			GuildBankFrameBuyInfo:Hide();
@@ -407,8 +407,8 @@ function GuildBankFrame_UpdateTabs()
 			tab:Show();
 			
 			if ( disableAll or GuildBankFrame.mode == "log" or GuildBankFrame.mode == "tabinfo" ) then
-				tabButton:SetChecked(nil);
-				SetDesaturation(iconTexture, 1);
+				tabButton:SetChecked(false);
+				SetDesaturation(iconTexture, true);
 				tabButton:SetButtonState("NORMAL");
 				tabButton:Disable();
 				if ( GuildBankFrame.mode == "log" and i == currentTab and numTabs > 0 ) then
@@ -417,14 +417,14 @@ function GuildBankFrame_UpdateTabs()
 				end
 			else
 				if ( i == currentTab ) then
-					tabButton:SetChecked(1);
+					tabButton:SetChecked(true);
 					tabButton:Disable();
-					SetDesaturation(iconTexture, nil);
+					SetDesaturation(iconTexture, false);
 					titleText = BUY_GUILDBANK_TAB;
 				else
-					tabButton:SetChecked(nil);
+					tabButton:SetChecked(false);
 					tabButton:Enable();
-					SetDesaturation(iconTexture, nil);
+					SetDesaturation(iconTexture, false);
 				end
 			end
 		elseif ( i > numTabs ) then
@@ -436,28 +436,28 @@ function GuildBankFrame_UpdateTabs()
 				tabButton.tooltip = name;
 				if ( i == currentTab ) then
 					if ( disableAll ) then
-						tabButton:SetChecked(nil);
+						tabButton:SetChecked(false);
 					else
-						tabButton:SetChecked(1);
+						tabButton:SetChecked(true);
 						tabButton:Enable();
 					end
 					withdrawalText = name;
 					titleText =  name;
 				else
-					tabButton:SetChecked(nil);
+					tabButton:SetChecked(false);
 					tabButton:Enable();
 				end
 				if ( disableAll ) then
 					tabButton:Disable();
-					SetDesaturation(iconTexture, 1);
+					SetDesaturation(iconTexture, true);
 				else
-					SetDesaturation(iconTexture, nil);
+					SetDesaturation(iconTexture, false);
 				end
 			else
 				unviewableCount = unviewableCount+1;
 				tabButton:Disable();
-				SetDesaturation(iconTexture, 1);
-				tabButton:SetChecked(nil);
+				SetDesaturation(iconTexture, true);
+				tabButton:SetChecked(false);
 			end
 			
 		end
@@ -671,7 +671,7 @@ function GuildBankFrame_UpdateLog()
 			msg = format(GUILDBANK_MOVE_FORMAT, name, itemLink, count, GetGuildBankTabInfo(tab1), GetGuildBankTabInfo(tab2));
 		end
 		if ( msg ) then
-			GuildBankMessageFrame:AddMessage( msg..GUILD_BANK_LOG_TIME_PREPEND..format(GUILD_BANK_LOG_TIME, RecentTimeDate(year, month, day, hour)) );
+			GuildBankMessageFrame:AddMessage( msg..GUILD_BANK_LOG_TIME_PREPEND..format(GUILD_BANK_LOG_TIME, RecentTimeDate(year, month, day, hour)).."|r" );
 		end
 	end
 	FauxScrollFrame_Update(GuildBankTransactionsScrollFrame, numTransactions, MAX_TRANSACTIONS_SHOWN, GUILDBANK_TRANSACTION_HEIGHT );
@@ -707,7 +707,7 @@ function GuildBankFrame_UpdateMoneyLog()
 		elseif ( type == "depositSummary" ) then
 			msg = format(GUILDBANK_AWARD_MONEY_SUMMARY_FORMAT, money);
 		end
-		GuildBankMessageFrame:AddMessage(msg..GUILD_BANK_LOG_TIME_PREPEND..format(GUILD_BANK_LOG_TIME, RecentTimeDate(year, month, day, hour)));
+		GuildBankMessageFrame:AddMessage(msg..GUILD_BANK_LOG_TIME_PREPEND..format(GUILD_BANK_LOG_TIME, RecentTimeDate(year, month, day, hour)).."|r" );
 	end
 	FauxScrollFrame_Update(GuildBankTransactionsScrollFrame, numTransactions, MAX_TRANSACTIONS_SHOWN, GUILDBANK_TRANSACTION_HEIGHT );
 end
@@ -805,6 +805,8 @@ function GuildBankPopupFrame_RefreshIconList ()
 	GB_ICON_FILENAMES = {};
 	GB_ICON_FILENAMES[1] = "INV_MISC_QUESTIONMARK";
 
+	GetLooseMacroItemIcons(GB_ICON_FILENAMES);
+	GetLooseMacroIcons(GB_ICON_FILENAMES);
 	GetMacroItemIcons(GB_ICON_FILENAMES);
 	GetMacroIcons(GB_ICON_FILENAMES);
 end
@@ -825,7 +827,12 @@ function GuildBankPopupFrame_Update(tab)
 		index = (guildBankPopupOffset * NUM_GUILDBANK_ICONS_PER_ROW) + i;
 		texture = GB_ICON_FILENAMES[index];
 		if ( index <= numguildBankIcons ) then
-			guildBankPopupIcon:SetTexture("INTERFACE\\ICONS\\"..texture);
+			if(type(texture) == "number") then
+				guildBankPopupIcon:SetToFileData(texture);
+			else
+				guildBankPopupIcon:SetTexture("INTERFACE\\ICONS\\"..texture);
+			end	
+	
 			guildBankPopupButton:Show();
 		else
 			guildBankPopupIcon:SetTexture("");
@@ -833,15 +840,15 @@ function GuildBankPopupFrame_Update(tab)
 		end
 		if ( GuildBankPopupFrame.selectedIcon ) then
 			if ( index == GuildBankPopupFrame.selectedIcon ) then
-				guildBankPopupButton:SetChecked(1);
+				guildBankPopupButton:SetChecked(true);
 			else
-				guildBankPopupButton:SetChecked(nil);
+				guildBankPopupButton:SetChecked(false);
 			end
 		elseif ( tabTexture == texture ) then
-			guildBankPopupButton:SetChecked(1);
+			guildBankPopupButton:SetChecked(true);
 			GuildBankPopupFrame.selectedIcon = index;
 		else
-			guildBankPopupButton:SetChecked(nil);
+			guildBankPopupButton:SetChecked(false);
 		end
 	end
 	--Only do this if the player hasn't clicked on an icon or the icon is not visible

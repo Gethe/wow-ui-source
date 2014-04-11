@@ -139,6 +139,11 @@
 		</FontHeight>
 	</Font>
 
+	<Font name="QuestFont_Huge" font="Fonts\MORPHEUS.ttf" virtual="true">
+		<FontHeight>
+			<AbsValue val="18"/>
+		</FontHeight>
+	</Font>	
 	<Font name="QuestFont_Shadow_Huge" font="Fonts\MORPHEUS.ttf" virtual="true">
 		<Shadow>
 			<Offset>

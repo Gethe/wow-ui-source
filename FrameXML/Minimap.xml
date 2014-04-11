@@ -357,7 +357,7 @@
 											<OnEnter>
 												GameTooltip:SetOwner(self, "ANCHOR_LEFT");
 												GameTooltip:SetText(TRACKING, 1, 1, 1);
-												GameTooltip:AddLine(MINIMAP_TRACKING_TOOLTIP_NONE, nil, nil, nil, 1);
+												GameTooltip:AddLine(MINIMAP_TRACKING_TOOLTIP_NONE, nil, nil, nil, true);
 												GameTooltip:Show();
 											</OnEnter>
 											<OnLeave>

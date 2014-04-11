@@ -119,12 +119,12 @@ end
 function BankFrameItemButton_UpdateLocked (button) 
 	local inventoryID = button:GetInventorySlot();
 	if ( IsInventoryItemLocked(inventoryID) ) then
-		SetItemButtonDesaturated(button, 1);
+		SetItemButtonDesaturated(button, true);
 	else 
 		if ( button.isBag and ((button:GetID() - 4) > GetNumBankSlots()) ) then
 			return;
 		end
-		SetItemButtonDesaturated(button, nil);
+		SetItemButtonDesaturated(button, false);
 	end
 end
 

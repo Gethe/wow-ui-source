@@ -149,6 +149,63 @@
 				</Texture>
 			</Layer>
 		</Layers>
+		<Frames>
+			<Button parentKey="MenuArrowButton" hidden="true">
+				<Size x="27" y="31"/>
+				<Anchors>
+					<Anchor point="RIGHT" relativePoint="TOPRIGHT" x="-2" y="-15"/>
+				</Anchors>
+				<Layers>
+					<Layer level="OVERLAY">
+						<Texture parentKey="Art" file="Interface\Buttons\SquareButtonTextures">
+							<Size x="12" y="12"/>
+							<Anchors>
+								<Anchor point="CENTER" x="0" y="-1"/>
+							</Anchors>
+							<TexCoords left="0.45312500" right="0.64062500" bottom="0.01562500" top="0.20312500"/>
+						</Texture>
+					</Layer>
+				</Layers>
+				<NormalTexture file="Interface\Buttons\UI-SquareButton-Up" parentKey="NormalTexture" alpha="0">
+					<Size x="32" y="32"/>
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</NormalTexture>
+				<PushedTexture file="Interface\Buttons\UI-SquareButton-Down" parentKey="PushedTexture" alpha="0">
+					<Size x="32" y="32"/>
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</PushedTexture>
+				<HighlightTexture file="Interface\Buttons\UI-Common-MouseHilight" alphaMode="ADD">
+					<Size x="32" y="32"/>
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</HighlightTexture>
+				<Scripts>
+					<OnMouseDown>
+						self.Art:SetPoint("CENTER", -1, -2);
+					</OnMouseDown>
+					<OnMouseUp>
+						self.Art:SetPoint("CENTER", 0, -1);
+					</OnMouseUp>
+					<OnEnter>
+						self.NormalTexture:SetAlpha(1);
+						self.PushedTexture:SetAlpha(1);
+					</OnEnter>
+					<OnLeave>
+						self.NormalTexture:SetAlpha(0);
+						self.PushedTexture:SetAlpha(0);
+					</OnLeave>
+					<OnClick>
+						PlaySound("igMainMenuOptionCheckBoxOn");
+						NavBar_ToggleMenu(self:GetParent());
+					</OnClick>
+				</Scripts>
+			</Button>
+		</Frames>
 		<Scripts>
 			<OnMouseDown>
 				if self:IsEnabled() then
@@ -182,10 +239,9 @@
 			<TexCoords left="0.00195313" right="0.25195313" top="0.65625000" bottom="0.92187500"/>
 		</HighlightTexture>
 		<ButtonText name="$parentText" inherits="GameFontNormal" justifyH="LEFT" parentKey="text">
-			<Size x="110" y="12"/>
+			<Size x="0" y="12"/>
 			<Anchors>
 				<Anchor point="LEFT" x="20" y="0"/>
-				<Anchor point="RIGHT" x="-2" y="0"/>
 			</Anchors>
 		</ButtonText>
 	</Button>

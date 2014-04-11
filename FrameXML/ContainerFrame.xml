@@ -9,6 +9,12 @@
 				</Offset>
 			</Anchor>
 		</Anchors>
+		<Animations>
+			<AnimationGroup parentKey="Shine" setToFinalAlpha="true">
+				<Alpha childKey="ShineTexture" fromAlpha="0.5" toAlpha="1" order="1" duration="0.07"/>
+				<Alpha childKey="ShineTexture" fromAlpha="1" toAlpha="0" order="2" duration="0.76"/>
+			</AnimationGroup>
+		</Animations>
 		<Layers>
 			<Layer level="ARTWORK" textureSubLevel="1">
 				<Texture name="$parentIconQuestTexture">
@@ -24,10 +30,33 @@
 					</Anchors>
 				</Texture>
 			</Layer>
-			<Layer level="OVERLAY" textureSubLevel="1">
-				<Texture name="$parentNewItemTexture" file="Interface\Store\store-item-highlight">
+			<Layer level="OVERLAY">
+				<Texture parentKey="ShineTexture" atlas="bags-innerglow" useAtlasSize="true" alpha="0">
 					<Anchors>
-						<Anchor point="CENTER" x="0" y="0"/>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="IconBorder" file="Interface\Common\WhiteIconFrame" hidden="true">
+					<Size x="37" y="37"/>
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="JunkIcon" atlas="bags-junkcoin" useAtlasSize="true" hidden="true">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="1" y="0"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="OVERLAY" textureSubLevel="1">
+				<Texture parentKey="NewItemTexture" atlas="bags-newitem" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="BattlepayItemTexture" file="Interface\Store\store-item-highlight">
+					<Anchors>
+						<Anchor point="CENTER"/>
 					</Anchors>
 				</Texture>
 			</Layer>
@@ -232,11 +261,6 @@
 							GameTooltip:SetText(BACKPACK_TOOLTIP, 1.0, 1.0, 1.0);
 							if (GetBindingKey("TOGGLEBACKPACK")) then
 								GameTooltip:AppendText(" "..NORMAL_FONT_COLOR_CODE.."("..GetBindingKey("TOGGLEBACKPACK")..")"..FONT_COLOR_CODE_CLOSE)
-							end
-						elseif ( self:GetID() == KEYRING_CONTAINER ) then
-							GameTooltip:SetText(KEYRING, 1.0, 1.0, 1.0);
-							if (GetBindingKey("TOGGLEKEYRING")) then
-								GameTooltip:AppendText(" "..NORMAL_FONT_COLOR_CODE.."("..GetBindingKey("TOGGLEKEYRING")..")"..FONT_COLOR_CODE_CLOSE)
 							end
 						elseif ( GameTooltip:SetInventoryItem("player", ContainerIDToInventoryID(self:GetID())) ) then
 							local binding = GetBindingKey("TOGGLEBAG"..(4 - self:GetID() + 1));

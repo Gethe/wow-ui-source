@@ -165,14 +165,14 @@
 			</OnClick>
 			<OnEnter>
 				GameTooltip:SetOwner(self, "ANCHOR_BOTTOMRIGHT");
-				GameTooltip:AddLine(self.artifactName:GetText(), HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b, 1);
-				GameTooltip:AddLine(self.spellDescription, NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b, 1);
+				GameTooltip:AddLine(self.artifactName:GetText(), HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b, true);
+				GameTooltip:AddLine(self.spellDescription, NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b, true);
 				
 				GameTooltip:AddLine(" ");
 				
 				local adate = date("*t", self.firstComletionTime);
 				GameTooltip:AddLine(ARCHAEOLOGY_TIMESTAMP.." |cffffffff"..string.format(SHORTDATE, adate.day, adate.month, adate.year).." "..
-												GameTime_GetFormattedTime(adate.hour, adate.min, true));
+												GameTime_GetFormattedTime(adate.hour, adate.min, true).."|r");
 				GameTooltip:AddLine(string.format(ARCHAEOLOGY_COMPLETION, self.completionCount));
 				GameTooltip:Show();
 			</OnEnter>
@@ -315,7 +315,7 @@
 				<Scripts>
 					<OnEnter>
 						GameTooltip:SetOwner(self, "ANCHOR_BOTTOMRIGHT");
-						GameTooltip:AddLine(ARCHAEOLOGY_RANK_TOOLTIP, HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b, 1);
+						GameTooltip:AddLine(ARCHAEOLOGY_RANK_TOOLTIP, HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b, true);
 						GameTooltip:Show();
 					</OnEnter>
 					<OnLeave>
@@ -830,7 +830,7 @@
 								<Scripts>
 									<OnEnter>
 										GameTooltip:SetOwner(self, "ANCHOR_BOTTOMRIGHT");
-										GameTooltip:AddLine(ARCHAEOLOGY_POJECTBAR_TOOLTIP, HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b, 1);
+										GameTooltip:AddLine(ARCHAEOLOGY_POJECTBAR_TOOLTIP, HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b, true);
 										GameTooltip:Show();
 									</OnEnter>
 									<OnLeave>

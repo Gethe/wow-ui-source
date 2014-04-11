@@ -278,12 +278,11 @@
 				</Texture>
 			</Layer>
 			<Layer level="ARTWORK" textureSubLevel="2">
-				<Texture parentKey="Ring" file="Interface\TalentFrame\talent-main">
+				<Texture parentKey="Ring" atlas="bluemenu-Ring">
 					<Size x="100" y="100"/>
 					<Anchors>
 						<Anchor point="LEFT" x="-14" y="-1" />
 					</Anchors>
-					<TexCoords left="0.50000000" right="0.91796875" top="0.00195313" bottom="0.21093750"/>
 				</Texture>
 			</Layer>
 			<Layer level="ARTWORK">
@@ -307,7 +306,7 @@
 			<OnEnter>
 				if ( self.tooltip ) then
 					GameTooltip:SetOwner(self, "ANCHOR_TOP");
-					GameTooltip:SetText(self.tooltip, nil, nil, nil, nil, 1);
+					GameTooltip:SetText(self.tooltip, nil, nil, nil, nil, true);
 				end
 			</OnEnter>
 			<OnLeave>
@@ -1074,7 +1073,7 @@
 									<OnEnter>
 										if ( self.tooltip ) then
 											GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
-											GameTooltip:SetText(self.tooltip, NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b, 1, 1);
+											GameTooltip:SetText(self.tooltip, NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b, 1, true);
 										end
 									</OnEnter>
 									<OnLeave>
@@ -1262,14 +1261,34 @@
 							<Button name="WarGameStartButton" inherits="MagicButtonTemplate" text="START_WARGAME" motionScriptsWhileDisabled="true">
 								<Size x="130" y="22"/>
 								<Anchors>
-									<Anchor point="BOTTOM" x="0" y="-1"/>
+									<Anchor point="BOTTOMRIGHT" x="0" y="-1"/>
 								</Anchors>
 								<Scripts>
 									<OnClick function="WarGameStartButton_OnClick"/>
 									<OnEnter function="WarGameStartButton_OnEnter"/>
 									<OnLeave function="GameTooltip_Hide"/>
 								</Scripts>
-							</Button>					
+							</Button>
+							<CheckButton name="WarGameTournamentModeCheckButton" inherits="UICheckButtonTemplate">
+								<Size x="24" y="24"/>
+								<Anchors>
+									<Anchor point="BOTTOMLEFT" x="6" y="-3"/>
+								</Anchors>
+								<Scripts>
+									<OnLoad>
+										self.text:SetText(TOURNAMENT_RULES);
+										self.text:SetFontObject(GameFontHighlightSmall);
+									</OnLoad>
+									<OnClick>
+										PlaySound("igMainMenuOptionCheckBoxOn");
+									</OnClick>
+									<OnEnter>
+										GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+										GameTooltip:SetText(TOURNAMENT_RULES_TOOLTIP, nil, nil, nil, nil, true);
+									</OnEnter>
+									<OnLeave function="GameTooltip_Hide"/>
+								</Scripts>
+							</CheckButton>
 						</Frames>
 						<Scripts>
 							<OnLoad  function="WarGamesFrame_OnLoad"/>

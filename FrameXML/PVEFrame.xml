@@ -15,12 +15,11 @@
 				</Texture>
 			</Layer>
 			<Layer level="ARTWORK" textureSubLevel="2">
-				<Texture name="$parentRing" file="Interface\TalentFrame\talent-main" parentKey="ring">
+				<Texture name="$parentRing" atlas="bluemenu-Ring" parentKey="ring">
 					<Size x="100" y="100"/>
 					<Anchors>
 						<Anchor point="LEFT" x="-14" y="-1" />
 					</Anchors>
-					<TexCoords left="0.50000000" right="0.91796875" top="0.00195313" bottom="0.21093750"/>
 				</Texture>
 			</Layer>
 			<Layer level="ARTWORK">
@@ -50,7 +49,7 @@
 			<OnEnter>
 				if ( self.tooltip ) then
 					GameTooltip:SetOwner(self, "ANCHOR_TOP");
-					GameTooltip:SetText(self.tooltip, nil, nil, nil, nil, 1);
+					GameTooltip:SetText(self.tooltip, nil, nil, nil, nil, true);
 				end
 			</OnEnter>
 			<OnLeave>
