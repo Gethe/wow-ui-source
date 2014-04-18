@@ -93,12 +93,6 @@ function ACHIEVEMENT_TRACKER_MODULE:Update()
 
 	ACHIEVEMENT_TRACKER_MODULE:BeginLayout();
 
-	if ( bit.band(OBJECTIVE_TRACKER_FILTER, OBJECTIVE_TRACKER_FILTER_ACHIEVEMENTS) ~= OBJECTIVE_TRACKER_FILTER_ACHIEVEMENTS ) then
-		-- achievements filtered out, just clean up
-		ACHIEVEMENT_TRACKER_MODULE:FreeUnusedBlocks();
-		return;
-	end
-
 	local _, instanceType = IsInInstance();
 	local displayOnlyArena = ArenaEnemyFrames and ArenaEnemyFrames:IsShown() and (instanceType == "arena");
 	local trackedAchievements = { GetTrackedAchievements() };

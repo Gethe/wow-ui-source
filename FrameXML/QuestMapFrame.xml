@@ -96,18 +96,18 @@
 		<Size x="220" y="16"/>
 		<Layers>
 			<Layer level="ARTWORK">
-				<FontString parentKey="Dash" inherits="WatchFontTemplate" justifyV="TOP" text="QUEST_DASH">
+				<FontString parentKey="Dash" inherits="ObjectiveFont" text="QUEST_DASH">
+					<Size x="0" y="16"/>
 					<Anchors>
 						<Anchor point="TOPLEFT" x="0" y="0"/>
 					</Anchors>
 				</FontString>				
-				<FontString parentKey="Text" inherits="WatchFontTemplate" justifyV="TOP">
+				<FontString parentKey="Text" inherits="ObjectiveFont">
 					<Size x="205" y="0"/>
 					<Anchors>
 						<Anchor point="TOPLEFT" relativeKey="$parent.Dash" relativePoint="TOPRIGHT"/>
 						<Anchor point="TOPRIGHT"/>
 					</Anchors>
-					<Color r="0.8" g="0.8" b="0.8"/>
 				</FontString>
 			</Layer>
 		</Layers>	

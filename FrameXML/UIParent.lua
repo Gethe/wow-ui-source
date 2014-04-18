@@ -296,6 +296,8 @@ function UIParent_OnLoad(self)
 	-- Garrison
 	self:RegisterEvent("GARRISON_ARCHITECT_OPENED");
 	self:RegisterEvent("GARRISON_ARCHITECT_CLOSED");
+	self:RegisterEvent("GARRISON_MISSION_NPC_OPENED");
+	self:RegisterEvent("GARRISON_MISSION_NPC_CLOSED");
 	self:RegisterEvent("SHIPMENT_CRAFTER_OPENED");
 
 end
@@ -1227,7 +1229,7 @@ function UIParent_OnEvent(self, event, ...)
 		end
 	elseif ( event == "BARBER_SHOP_CLOSE" ) then
 		if ( BarberShopFrame and BarberShopFrame:IsVisible() ) then
-			BarberShopFrame:Hide();
+			HideUIPanel(BarberShopFrame);
 		end
 	
 	-- Event for guildbank handling
@@ -1244,17 +1246,6 @@ function UIParent_OnEvent(self, event, ...)
 			HideUIPanel(GuildBankFrame);
 		end
 
-	-- Event for barbershop handling
-	elseif ( event == "BARBER_SHOP_OPEN" ) then
-		BarberShopFrame_LoadUI();
-		if ( BarberShopFrame ) then
-			ShowUIPanel(BarberShopFrame);
-		end
-	elseif ( event == "BARBER_SHOP_CLOSE" ) then
-		BarberShopFrame_LoadUI();
-		if ( BarberShopFrame ) then
-			HideUIPanel(BarberShopFrame);
-		end
 	
 	-- Events for achievement handling
 	elseif ( event == "ACHIEVEMENT_EARNED" ) then
@@ -1440,6 +1431,15 @@ function UIParent_OnEvent(self, event, ...)
 	elseif ( event == "GARRISON_ARCHITECT_CLOSED" ) then
 		if ( GarrisonBuildingFrame ) then
 			GarrisonBuildingFrame:Hide();
+		end
+	elseif ( event == "GARRISON_MISSION_NPC_OPENED") then
+		if (not GarrisonMissionFrame) then
+			Garrison_LoadUI();
+		end
+		GarrisonMissionFrame:Show();
+	elseif ( event == "GARRISON_MISSION_NPC_CLOSED" ) then
+		if ( GarrisonMissionFrame ) then
+			GarrisonMissionFrame:Hide();
 		end
 	elseif ( event == "SHIPMENT_CRAFTER_OPENED" ) then
 		if (not GarrisonCapacitiveDisplayFrame) then
@@ -2283,32 +2283,27 @@ function FramePositionDelegate:UIParentManageFramePositions()
 		ArenaPrepFrames:SetPoint("TOPRIGHT", MinimapCluster, "BOTTOMRIGHT", -CONTAINER_OFFSET_X, anchorY);
 	end
 
-	-- Watch frame - needs to move below buffs/debuffs if at least 1 right action bar is showing
+	-- ObjectiveTracker - needs to move below buffs/debuffs if at least 1 right action bar is showing
 	if ( rightActionBars > 0 ) then
 		anchorY = min(anchorY, buffsAnchorY);
 	end
-	local numArenaOpponents = GetNumArenaOpponents();
-	if ( not WatchFrame:IsUserPlaced() ) then
+	if ( ObjectiveTrackerFrame ) then
+		local numArenaOpponents = GetNumArenaOpponents();
 		if ( ArenaEnemyFrames and ArenaEnemyFrames:IsShown() and (numArenaOpponents > 0) ) then
-			WatchFrame:ClearAllPoints();
-			WatchFrame:SetPoint("TOPRIGHT", "ArenaEnemyFrame"..numArenaOpponents, "BOTTOMRIGHT", 2, -35);
+			ObjectiveTrackerFrame:ClearAllPoints();
+			ObjectiveTrackerFrame:SetPoint("TOPRIGHT", "ArenaEnemyFrame"..numArenaOpponents, "BOTTOMRIGHT", 2, -35);
 		elseif ( ArenaPrepFrames and ArenaPrepFrames:IsShown() and (numArenaOpponents > 0) ) then
-			WatchFrame:ClearAllPoints();
-			WatchFrame:SetPoint("TOPRIGHT", "ArenaPrepFrame"..numArenaOpponents, "BOTTOMRIGHT", 2, -35);
+			ObjectiveTrackerFrame:ClearAllPoints();
+			ObjectiveTrackerFrame:SetPoint("TOPRIGHT", "ArenaPrepFrame"..numArenaOpponents, "BOTTOMRIGHT", 2, -35);
 		else
 			-- We're using Simple Quest Tracking, automagically size and position!
-			WatchFrame:ClearAllPoints();
+			ObjectiveTrackerFrame:ClearAllPoints();
 			-- move up if only the minimap cluster is above, move down a little otherwise
-			WatchFrame:SetPoint("TOPRIGHT", "MinimapCluster", "BOTTOMRIGHT", -CONTAINER_OFFSET_X, anchorY);
-			-- OnSizeChanged for WatchFrame handles its redraw
+			ObjectiveTrackerFrame:SetPoint("TOPRIGHT", "MinimapCluster", "BOTTOMRIGHT", -CONTAINER_OFFSET_X, anchorY);
 		end
-		WatchFrame:SetPoint("BOTTOMRIGHT", "UIParent", "BOTTOMRIGHT", -CONTAINER_OFFSET_X, CONTAINER_OFFSET_Y);
-		
-		if(ObjectiveTrackerFrame) then
-			ObjectiveTrackerFrame:SetHeight(WatchFrame:GetHeight());
-		end
+		ObjectiveTrackerFrame:SetPoint("BOTTOMRIGHT", "UIParent", "BOTTOMRIGHT", -CONTAINER_OFFSET_X, CONTAINER_OFFSET_Y);
 	end
-	
+
 	-- Update chat dock since the dock could have moved
 	FCF_DockUpdate();
 	UpdateContainerFrameAnchors();
@@ -4137,18 +4132,6 @@ function GetDisplayedAllyFrames()
 		return "party";
 	else
 		return nil;
-	end
-end
-
-function ReverseQuestObjective(text, objectiveType)
-	if ( objectiveType == "spell" ) then
-		return text;
-	end
-	local _, _, arg1, arg2 = string.find(text, "(.*):%s(.*)");
-	if ( arg1 and arg2 ) then
-		return arg2.." "..arg1;
-	else
-		return text;
 	end
 end
 

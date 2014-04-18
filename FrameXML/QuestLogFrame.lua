@@ -94,14 +94,14 @@ end
 local function _QuestLog_ToggleQuestWatch(questIndex)
 	if ( IsQuestWatched(questIndex) ) then
 		RemoveQuestWatch(questIndex);
-		WatchFrame_Update();
+		--WatchFrame_Update();
 	else
 		if ( GetNumQuestWatches() >= MAX_WATCHABLE_QUESTS ) then -- Check this first though it's less likely, otherwise they could make the frame bigger and be disappointed
 			UIErrorsFrame:AddMessage(format(QUEST_WATCH_TOO_MANY, MAX_WATCHABLE_QUESTS), 1.0, 0.1, 0.1, 1.0);
 			return;
 		end
 		AddQuestWatch(questIndex);
-		WatchFrame_Update();
+		--WatchFrame_Update();
 	end
 end
 
@@ -267,7 +267,7 @@ function QuestLog_OnEvent(self, event, ...)
 		if ( AUTO_QUEST_WATCH == "1" and 
 			GetNumQuestLeaderBoards(arg1) > 0 and 
 			GetNumQuestWatches() < MAX_WATCHABLE_QUESTS ) then
-			AddQuestWatch(arg1,MAX_QUEST_WATCH_TIME);
+			AddQuestWatch(arg1);
 			QuestLog_Update();
 		end
 	elseif ( event == "GROUP_ROSTER_UPDATE" or event == "PARTY_MEMBER_ENABLE" or event == "PARTY_MEMBER_DISABLE" ) then

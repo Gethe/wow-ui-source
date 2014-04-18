@@ -29,7 +29,7 @@ function QuestFrame_OnEvent(self, event, ...)
 		QuestFrameGreetingPanel:Show();
 	elseif ( event == "QUEST_DETAIL" ) then
 		if ( QuestGetAutoAccept() and QuestIsFromAreaTrigger()) then
-			if (WatchFrameAutoQuest_AddPopUp(GetQuestID(), "OFFER")) then
+			if (AutoQuestPopupTracker_AddPopUp(GetQuestID(), "OFFER")) then
 				PlayAutoAcceptQuestSound();
 			end
 			CloseQuest();

@@ -295,7 +295,7 @@
 				<Scripts>
 					<OnClick>
 						ShowQuestComplete(GetQuestLogSelection());
-						WatchFrameAutoQuest_ClearPopUpByLogIndex(GetQuestLogSelection());
+						--WatchFrameAutoQuest_ClearPopUpByLogIndex(GetQuestLogSelection());
 					</OnClick>
 					<OnShow>
 						UIFrameFlash(self.Flash, 0.75, 0.75, -1, nil);

@@ -296,14 +296,14 @@
 					</Layer>
 				</Layers>
 			</Frame>
-
-			<Frame name="$parentMultiSampleDropDown" inherits="VideoOptionsDropDownMenuTemplate" id="4">
+<!--
+			<Frame name="$parentAntiAliasingDropDown" inherits="VideoOptionsDropDownMenuTemplate" id="4">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeTo="$parentPrimaryMonitorDropDown" relativePoint="BOTTOMLEFT"/>
 				</Anchors>
 				<Layers>
 					<Layer level="BACKGROUND">
-						<FontString name="$parentLabel" inherits="OptionsFontSmall" text="MULTISAMPLE">
+						<FontString name="$parentLabel" inherits="OptionsFontSmall" text="ANTIALIASING">
 							<Anchors>
 								<Anchor point="RIGHT" relativePoint="LEFT">
 									<Offset x="0" y="0"/>
@@ -313,10 +313,10 @@
 					</Layer>
 				</Layers>
 			</Frame>
-			
+-->			
 			<Frame name="$parentVerticalSyncDropDown" inherits="VideoOptionsDropDownMenuTemplate" id="10">
 				<Anchors>
-					<Anchor point="TOPLEFT" relativeTo="$parentMultiSampleDropDown" relativePoint="BOTTOMLEFT"/>
+					<Anchor point="TOPLEFT" relativeTo="$parentPrimaryMonitorDropDown" relativePoint="BOTTOMLEFT"/>
 				</Anchors>
 				<Layers>
 					<Layer level="BACKGROUND">

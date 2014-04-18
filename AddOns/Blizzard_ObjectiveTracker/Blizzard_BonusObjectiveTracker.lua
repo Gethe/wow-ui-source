@@ -64,9 +64,78 @@ function BonusObjectiveTracker_OnBlockAnimOutFinished(self)
 	ObjectiveTracker_Update(OBJECTIVE_TRACKER_UPDATE_MODULE_BONUS_OBJECTIVE);
 end
 
+function BonusObjectiveTracker_OnBlockEnter(block)
+	BONUS_OBJECTIVE_TRACKER_MODULE:OnBlockHeaderEnter(block);
+	BonusObjectiveTracker_ShowRewardsTooltip(block);
+end
+
+function BonusObjectiveTracker_OnBlockLeave(block)
+	BONUS_OBJECTIVE_TRACKER_MODULE:OnBlockHeaderLeave(block);
+	GameTooltip:Hide();
+	BONUS_OBJECTIVE_TRACKER_MODULE.tooltipBlock = nil;
+end
+
 -- *****************************************************************************************************
 -- ***** UPDATE FUNCTIONS
 -- *****************************************************************************************************
+
+function BonusObjectiveTracker_ShowRewardsTooltip(block)
+	local questID;
+	if ( block.id < 0 ) then
+		-- this is a scenario bonus objective
+		questID = C_Scenario.GetBonusStepRewardQuestID(-block.id);
+		if ( questID == 0 ) then
+			-- huh, no reward
+			return;
+		end
+	else
+		questID = block.id;
+	end
+
+	GameTooltip:ClearAllPoints();
+	GameTooltip:SetPoint("TOPRIGHT", block, "TOPLEFT", 0, 0);
+	GameTooltip:SetOwner(block, "ANCHOR_PRESERVE");
+	GameTooltip:SetText(QUEST_REWARDS, 1, 0.831, 0.380);
+
+	if ( not RequestQuestData(questID) ) then
+		GameTooltip:AddLine(RETRIEVING_DATA, RED_FONT_COLOR.r, RED_FONT_COLOR.g, RED_FONT_COLOR.b);
+	else	
+		GameTooltip:AddLine(BONUS_OBJECTIVE_TOOLTIP_DESCRIPTION, 1, 1, 1, 1);
+		GameTooltip:AddLine(" ");
+		-- items
+		local numQuestRewards = GetNumQuestLogRewards(questID);
+		for i = 1, numQuestRewards do
+			local name, texture, numItems, quality, isUsable = GetQuestLogRewardInfo(i, questID);
+			local text;
+			if ( numItems > 1 ) then
+				text = string.format(BONUS_OBJECTIVE_REWARD_WITH_COUNT_FORMAT, texture, numItems, name);
+			else
+				text = string.format(BONUS_OBJECTIVE_REWARD_FORMAT, texture, name);			
+			end
+			local color = ITEM_QUALITY_COLORS[quality];
+			GameTooltip:AddLine(text, color.r, color.g, color.b);
+		end
+		-- currency		
+		local numQuestCurrencies = GetNumQuestLogRewardCurrencies(questID);
+		for i = 1, numQuestCurrencies do
+			local name, texture, numItems = GetQuestLogRewardCurrencyInfo(i, questID);
+			local text = string.format(BONUS_OBJECTIVE_REWARD_WITH_COUNT_FORMAT, texture, numItems, name);
+			GameTooltip:AddLine(text, 1, 1, 1);			
+		end
+		-- xp
+		local xp = GetQuestLogRewardXP(questID);
+		if ( xp > 0 ) then
+			GameTooltip:AddLine(string.format(BONUS_OBJECTIVE_EXPERIENCE_FORMAT, xp), 1, 1, 1);
+		end
+		-- money
+		local money = GetQuestLogRewardMoney(questID);
+		if ( money > 0 ) then
+			SetTooltipMoney(GameTooltip, money, nil);
+		end
+	end
+	GameTooltip:Show();
+	BONUS_OBJECTIVE_TRACKER_MODULE.tooltipBlock = block;
+end
 
 local function UpdateScenarioBonusObjectives(BlocksFrame)
 	if ( C_Scenario.IsInScenario() ) then
@@ -76,7 +145,7 @@ local function UpdateScenarioBonusObjectives(BlocksFrame)
 			local bonusStepIndex = tblBonusSteps[i];
 			local name, description, numCriteria, stepFailed, isBonusStep, isForCurrentStepOnly = C_Scenario.GetStepInfo(bonusStepIndex);
 			local blockKey = -bonusStepIndex;	-- so it won't collide with quest IDs			
-			local existingBlock = BONUS_OBJECTIVE_TRACKER_MODULE.usedBlocks[blockKey];			
+			local existingBlock = BONUS_OBJECTIVE_TRACKER_MODULE.usedBlocks[blockKey];		
 			local block = BONUS_OBJECTIVE_TRACKER_MODULE:GetBlock(blockKey);			
 			local stepFinished = true;
 			for criteriaIndex = 1, numCriteria do
@@ -227,7 +296,10 @@ function BONUS_OBJECTIVE_TRACKER_MODULE:Update()
 
 	UpdateScenarioBonusObjectives(BlocksFrame);
 	UpdateQuestBonusObjectives(BlocksFrame);
-
+	if ( BONUS_OBJECTIVE_TRACKER_MODULE.tooltipBlock ) then
+		BonusObjectiveTracker_ShowRewardsTooltip(BONUS_OBJECTIVE_TRACKER_MODULE.tooltipBlock);
+	end
+	
 	if ( BONUS_OBJECTIVE_TRACKER_MODULE.firstBlock ) then
 		local shadowAnim = BONUS_OBJECTIVE_TRACKER_MODULE.Header.ShadowAnim;
 		if ( BONUS_OBJECTIVE_TRACKER_MODULE.Header.animating and not shadowAnim:IsPlaying() ) then

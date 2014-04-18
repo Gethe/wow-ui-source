@@ -268,7 +268,7 @@ function LevelUpDisplay_OnLoad(self)
 	self:RegisterEvent("PLAYER_LEVEL_UP");
 	self:RegisterEvent("UNIT_GUILD_LEVEL");
 	self:RegisterEvent("UNIT_LEVEL");
-	--self:RegisterEvent("SCENARIO_UPDATE");	this is now handled from the WatchFrame
+	--self:RegisterEvent("SCENARIO_UPDATE");	this is now handled from the ObjectiveTracker
 	self:RegisterEvent("PET_BATTLE_FINAL_ROUND"); -- display winner, start listening for additional results
 	self:RegisterEvent("PET_BATTLE_CLOSE");        -- stop listening for additional results
 	self:RegisterEvent("QUEST_BOSS_EMOTE");

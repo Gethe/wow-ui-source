@@ -18,6 +18,7 @@ function QuestMapFrame_OnLoad(self)
 	self:RegisterEvent("QUEST_WATCH_LIST_CHANGED");
 	self:RegisterEvent("SUPER_TRACKED_QUEST_CHANGED");
 	self:RegisterEvent("GROUP_ROSTER_UPDATE");
+	self:RegisterEvent("QUEST_POI_UPDATE");
 
 	QuestPOI_Initialize(QuestScrollFrame.Contents);
 	QuestMapQuestOptionsDropDown.questID = 0;		-- for QuestMapQuestOptionsDropDown_Initialize
@@ -42,6 +43,8 @@ function QuestMapFrame_OnEvent(self, event, ...)
 		QuestPOI_SelectButtonByQuestID(QuestScrollFrame.Contents, questID);
 	elseif ( event == "GROUP_ROSTER_UPDATE" and QuestMapFrame.DetailsFrame.questID ) then
 		QuestMapFrame_UpdateQuestDetailsButtons();
+	elseif ( event == "QUEST_POI_UPDATE" ) then
+		QuestMapFrame_UpdateAll();
 	end
 end
 
@@ -80,8 +83,10 @@ function QuestMapFrame_Hide()
 end
 
 function QuestMapFrame_UpdateAll()
+	local numPOIs = QuestMapUpdateAllQuests();
+	QuestPOIUpdateIcons();
+	QuestObjectiveTracker_UpdatePOIs();
 	if ( WorldMapFrame:IsShown() ) then	
-		local numPOIs = QuestMapUpdateAllQuests();
 		local poiTable = { };
 		if ( numPOIs > 0 and GetCVarBool("questPOI") ) then
 			WorldMapBlobFrame:Show();
@@ -100,22 +105,6 @@ function QuestMapFrame_UpdateAll()
 			QuestLogQuests_Update(poiTable);
 		end
 		WorldMapPOIFrame_Update(poiTable);
-		-- rep
-		local repBar = WorldMapFrame.UIElementsFrame.ReputationBar;
-		local factionID = Test_GetZoneFactionID();
-		if ( factionID ) then
-			local name, description, standingID, barMin, barMax, barValue = GetFactionInfoByID(factionID);
-			--Normalize Values
-			barMax = barMax - barMin;
-			barValue = barValue - barMin;
-			barMin = 0;
-			repBar:SetMinMaxValues(0, barMax);
-			repBar:SetValue(barValue);
-			repBar:Show();
-			repBar.Label:SetFormattedText(ZONE_REPUTATION, name, GetText("FACTION_STANDING_LABEL"..standingID, UnitSex("player")), barValue, barMax);
-		else
-			repBar:Hide();
-		end
 		QuestMapFrameViewAllButton_Update();
 	end
 end
@@ -312,7 +301,7 @@ end
 local OBJECTIVE_FRAMES = { };
 function QuestLog_GetObjectiveFrame(index)
 	if ( not OBJECTIVE_FRAMES[index] ) then
-		local frame = CreateFrame("FRAME", nil, QuestMapFrame.QuestsFrame.Contents, "QuestLogObjectiveTemplate");
+		local frame = CreateFrame("FRAME", "QLOF"..index, QuestMapFrame.QuestsFrame.Contents, "QuestLogObjectiveTemplate");
 		OBJECTIVE_FRAMES[index] = frame;
 	end
 	return OBJECTIVE_FRAMES[index];
@@ -488,7 +477,7 @@ function QuestLogQuests_Update(poiTable)
 							local objectiveFrame = QuestLog_GetObjectiveFrame(objectiveIndex);
 							objectiveFrame.questID = questID;
 							objectiveFrame:Show();
-							objectiveFrame.Text:SetText(ReverseQuestObjective(text, objectiveType));
+							objectiveFrame.Text:SetText(text);
 							local height = objectiveFrame.Text:GetStringHeight();
 							objectiveFrame:SetHeight(height);
 							if ( prevObjective ) then
@@ -655,7 +644,7 @@ function QuestLogTasks_UpdateZoneView(poiTable)
 					objectiveIndex = objectiveIndex + 1;
 					local objectiveFrame = QuestLog_GetObjectiveFrame(objectiveIndex);
 					objectiveFrame:Show();
-					objectiveFrame.Text:SetText(ReverseQuestObjective(text, objectiveType));
+					objectiveFrame.Text:SetText(text);
 					local height = objectiveFrame.Text:GetStringHeight();
 					objectiveFrame:SetHeight(height);
 					if ( prevObjective ) then
@@ -851,7 +840,7 @@ function QuestMapLogTitleButton_OnEnter(self)
 				if ( finished ) then
 					color = GRAY_FONT_COLOR;
 				end
-				GameTooltip:AddLine(QUEST_DASH..ReverseQuestObjective(text, objectiveType), color.r, color.g, color.b, true);
+				GameTooltip:AddLine(QUEST_DASH..text, color.r, color.g, color.b, true);
 			end
 		end
 		if ( requiredMoney > 0 ) then

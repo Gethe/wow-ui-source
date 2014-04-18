@@ -120,7 +120,6 @@ function QuestInfo_ShowObjectives(contentWidth)
 			if ( not text or strlen(text) == 0 ) then
 				text = type;
 			end
-			text = ReverseQuestObjective(text, objectiveType);
 			if ( finished ) then
 				objective:SetTextColor(0.2, 0.2, 0.2);
 				text = text.." ("..COMPLETE..")";

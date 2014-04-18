@@ -52,6 +52,9 @@ function QueueStatusFrame_OnLoad(self)
 	self:RegisterEvent("LFG_PROPOSAL_SHOW");
 	self:RegisterEvent("LFG_QUEUE_STATUS_UPDATE");
 
+	--For LFGList
+	self:RegisterEvent("LFG_LIST_ACTIVE_ENTRY_UPDATE");
+
 	--For PvP Role Checks
 	self:RegisterEvent("PVP_ROLE_CHECK_UPDATED");
 
@@ -115,6 +118,17 @@ function QueueStatusFrame_Update(self)
 				animateEye = true;
 			end
 		end
+	end
+
+	--Try LFGList entries
+	local isActive = C_LFGList.GetActiveEntryInfo();
+	if ( isActive ) then
+		local entry = QueueStatusFrame_GetEntry(self, nextEntry);
+		QueueStatusEntry_SetUpLFGListActiveEntry(entry);
+		entry:Show();
+		totalHeight = totalHeight + entry:GetHeight();
+		nextEntry = nextEntry + 1;
+		showMinimapButton = true;
 	end
 
 	local inProgress, _, _, _, _, isBattleground = GetLFGRoleUpdate();
@@ -313,6 +327,11 @@ function QueueStatusEntry_SetUpLFG(entry, category)
 	else
 		QueueStatusEntry_SetMinimalDisplay(entry, LFG_CATEGORY_NAMES[category], QUEUED_STATUS_UNKNOWN, subTitle, extraText);
 	end
+end
+
+function QueueStatusEntry_SetUpLFGListActiveEntry(entry)
+	local _, _, _, name = C_LFGList.GetActiveEntryInfo();
+	QueueStatusEntry_SetMinimalDisplay(entry, name, QUEUED_STATUS_LISTED);
 end
 
 function QueueStatusEntry_SetUpBattlefield(entry, idx)
@@ -555,6 +574,13 @@ function QueueStatusDropDown_Update()
 		end
 	end
 
+	--LFGList
+	local isActive = C_LFGList.GetActiveEntryInfo();
+	if ( isActive ) then
+		QueueStatusDropDown_AddLFGListButtons(info);
+	end
+
+	--PvP
 	local inProgress, _, _, _, _, isBattleground = GetLFGRoleUpdate();
 	if ( inProgress and isBattleground ) then
 		QueueStatusDropDown_AddPVPRoleCheckButtons(info);
@@ -567,6 +593,7 @@ function QueueStatusDropDown_Update()
 		end
 	end
 
+	--World PvP
 	for i=1, MAX_WORLD_PVP_QUEUES do
 		local status, mapName, queueID = GetWorldPVPQueueStatus(i);
 		if ( status and status ~= "none" ) then
@@ -589,6 +616,7 @@ function QueueStatusDropDown_Update()
 		UIDropDownMenu_AddButton(info);
 	end
 
+	--Pet Battles
 	if ( C_PetBattles.GetPVPMatchmakingInfo() ) then
 		QueueStatusDropDown_AddPetBattleButtons(info);
 	end
@@ -817,6 +845,22 @@ function QueueStatusDropDown_AddLFGButtons(info, category)
 			UIDropDownMenu_AddButton(info);
 		end
 	end
+end
+
+function QueueStatusDropDown_AddLFGListButtons(info)
+	wipe(info);
+	local _, _, _, name = C_LFGList.GetActiveEntryInfo();
+	info.text = name;
+	info.isTitle = 1;
+	info.notCheckable = 1;
+	UIDropDownMenu_AddButton(info);
+
+	info.text = UNLIST_MY_GROUP;
+	info.isTitle = nil;
+	info.leftPadding = 10;
+	info.func = wrapFunc(C_LFGList.RemoveListing);
+	info.disabled = not UnitIsGroupLeader("player");
+	UIDropDownMenu_AddButton(info);
 end
 
 function QueueStatusDropDown_AcceptQueuedPVPMatch()

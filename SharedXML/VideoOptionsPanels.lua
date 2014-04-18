@@ -121,16 +121,6 @@ function Graphics_PrepareTooltip(self)
 					errorValue = (errorValue or "") .. ErrorCodes[err] .. "|n";
 				end
 			end
-			if(not invalid and self.multisampleDependent) then
-				local multisampleValue = GetApplicableMultisampleSetting();
-				for cvar_name, cvar_value in pairs(value.cvars) do
-					local capValue = GetMaxMultisampleFormatOnCvar(cvar_name, cvar_value);
-					if ( capValue < multisampleValue ) then
-						invalid = true;
-						errorValue = VRN_NOMULTISAMPLE.."|n";
-					end
-				end
-			end
 			if(not invalid and recommended) then
 				recommendedValue = value.text;
 			end
@@ -181,7 +171,6 @@ end
 
 function VideoOptionsPanel_Refresh(self)
 	Graphics_Refresh(self);
-	Graphics_MultiSampleDropDown:onCapCheck();
 end
 
 function Graphics_Refresh (self)
@@ -264,17 +253,10 @@ local function FinishChanges(self)
 
 		Graphics_ResolutionDropDown.tablerefresh = true;
 		Graphics_PrimaryMonitorDropDown.tablerefresh = true;
-		Graphics_MultiSampleDropDown.tablerefresh = true;
 		Graphics_RefreshDropDown.tablerefresh = true;
 		Graphics_Refresh(Graphics_);
 	end
 	Graphics_Quality:commitslider();
-	-- multisample stuff
-	Graphics_MultiSampleDropDown:onCapCheck();
-	for dropdown in pairs(Graphics_MultiSampleDropDown.cvarCaps) do
-		dropdown = _G[dropdown];
-		Graphics_PrepareTooltip(dropdown);
-	end
 end
 
 local function CommitChange(self)
@@ -438,18 +420,6 @@ function Graphics_TableGetValue(self)
 	end
 	return 1+#self.data;
 end
--------------------------------------------------------------------------------------------------------
--- We want to return the highest setting between the UI selection and what's currently being used
--- because that will determine if we can switch some settings
-function GetApplicableMultisampleSetting()
-	local uiValue = VideoOptionsDropDownMenu_GetSelectedID(Graphics_MultiSampleDropDown);
-	local clientValue = GetCurrentMultisampleFormat(Graphics_PrimaryMonitorDropDown:GetValue());
-	if ( uiValue and clientValue ) then
-		return max(uiValue, clientValue);
-	else
-		return uiValue or clientValue;
-	end
-end
 
 -------------------------------------------------------------------------------------------------------
 -- OnClick handlers
@@ -483,15 +453,6 @@ function VideoOptions_OnClick(self, value)
 	end
 	if ( self.capTargets ) then
 		ControlCheckCapTargets(self);
-	end
-	-- multisample stuff
-	if ( self == Graphics_MultiSampleDropDown ) then
-		for key, cvar in pairs(self.cvarCaps) do
-			local dropDown = _G[key];
-			if ( dropDown ) then
-				Graphics_PrepareTooltip(dropDown);
-			end
-		end
 	end
 end
 
@@ -651,11 +612,6 @@ function VideoOptionsDropDown_OnLoad(self)
 				Graphics_PrepareTooltip(self);
 			end
 
-			local multisampleValue;
-			if ( self.multisampleDependent ) then
-				multisampleValue = GetApplicableMultisampleSetting();
-			end
-
 			local p = self:GetValue();
 			for mode, text in ipairs(self.table) do
 				local info = VideoOptionsDropDownMenu_CreateInfo();
@@ -671,13 +627,6 @@ function VideoOptionsDropDown_OnLoad(self)
 							if(self.validity[cvar_name][cvar_value] ~= 0) then
 								info.notClickable = true;
 								info.disablecolor = GREYCOLORCODE;
-							end
-							if(not info.notClickable and self.multisampleDependent) then
-								local capValue = GetMaxMultisampleFormatOnCvar(cvar_name, cvar_value);
-								if ( capValue < multisampleValue ) then
-									info.notClickable = true;
-									info.disablecolor = GREYCOLORCODE;
-								end
 							end
 							if(DefaultVideoOptions[cvar_name] ~= cvar_value) then
 								recommended = false;

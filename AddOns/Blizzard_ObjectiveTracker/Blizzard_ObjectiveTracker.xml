@@ -2,10 +2,6 @@
 ..\FrameXML\UI.xsd">
 	
 	<Script file="Blizzard_ObjectiveTracker.lua"/>
-
-	<FontString name="ObjectiveTrackerFontTemplate" inherits="GameFontHighlight" virtual="true" justifyH="LEFT" justifyV="TOP">
-		<Color r="0.8" g="0.8" b="0.8"/>
-	</FontString>
 	
 	<Frame name="ObjectiveTrackerBlockTemplate" hidden="true" virtual="true">
 		<Size x="192" y="10"/>
@@ -16,7 +12,7 @@
 				</Texture>
 			</Layer>
 			<Layer level="ARTWORK">
-				<FontString parentKey="HeaderText" inherits="ObjectiveTrackerFontTemplate">
+				<FontString parentKey="HeaderText" inherits="ObjectiveFont">
 					<Size x="192" y="0"/>
 					<Anchors>
 						<Anchor point="TOPLEFT"/>
@@ -153,12 +149,12 @@
 		<Size x="150" y="16"/>
 		<Layers>
 			<Layer level="ARTWORK">
-				<FontString parentKey="Dash" inherits="ObjectiveTrackerFontTemplate" text="QUEST_DASH">
+				<FontString parentKey="Dash" inherits="ObjectiveFont" text="QUEST_DASH">
 					<Anchors>
 						<Anchor point="TOPLEFT" x="0" y="1"/>
 					</Anchors>
 				</FontString>
-				<FontString parentKey="Text" inherits="ObjectiveTrackerFontTemplate">
+				<FontString parentKey="Text" inherits="ObjectiveFont">
 					<Anchors>
 						<Anchor point="TOP"/>
 						<Anchor point="LEFT" relativeKey="$parent.Dash" relativePoint="RIGHT"/>
@@ -186,7 +182,7 @@
 		<Size x="150" y="16"/>
 		<Layers>
 			<Layer level="ARTWORK">	
-				<FontString parentKey="Text" inherits="ObjectiveTrackerFontTemplate">
+				<FontString parentKey="Text" inherits="ObjectiveFont">
 					<Anchors>
 						<Anchor point="TOPLEFT" x="20" y="0"/>
 					</Anchors>
@@ -326,8 +322,7 @@
 	<Frame name="ObjectiveTrackerFrame" parent="UIParent" frameStrata="LOW">
 		<Size x="204" y="140"/>
 		<Anchors>
-			<Anchor point="TOPLEFT" relativeTo="WatchFrame"/>
-			<Anchor point="BOTTOMRIGHT" relativeTo="WatchFrame"/>
+			<Anchor point="TOPRIGHT" relativeTo="MinimapCluster" relativePoint="BOTTOMRIGHT"/>
 		</Anchors>
 		<Frames>
 			<Frame name="ObjectiveTrackerBlocksFrame" parentKey="BlocksFrame" hidden="false">
@@ -371,23 +366,12 @@
 						<HighlightTexture file="Interface\Buttons\UI-Panel-MinimizeButton-Highlight" alphaMode="ADD" />
 						<DisabledTexture file="Interface\Buttons\UI-Panel-QuestHideButton-disabled" />
 					</Button>
-					<Button parentKey="OptionsButton">
-						<Size x="16" y="16"/>
-						<Anchors>
-							<Anchor point="RIGHT" relativeKey="$parent.MinimizeButton" relativePoint="LEFT" x="-3"/>
-						</Anchors>
-						<Scripts>
-							<OnClick function="ObjectiveTracker_OptionsButton_OnClick"/>
-						</Scripts>
-						<NormalTexture file="Interface\GossipFrame\BinderGossipIcon"/>
-						<HighlightTexture file="Interface\Buttons\UI-Panel-MinimizeButton-Highlight" desaturated="TRUE" alphaMode="ADD" />
-					</Button>					
 				</Frames>
 				<Layers>
 					<Layer level="ARTWORK">
 						<FontString parentKey="Title" inherits="GameFontNormal" hidden="true" text="OBJECTIVES_TRACKER_LABEL">
 							<Anchors>
-								<Anchor point="RIGHT" relativeKey="$parent.OptionsButton" relativePoint="LEFT" x="-3" y="1"/>
+								<Anchor point="RIGHT" relativeKey="$parent.MinimizeButton" relativePoint="LEFT" x="-3" y="1"/>
 							</Anchors>
 						</FontString>
 					</Layer>
@@ -398,6 +382,7 @@
 		<Scripts>
 			<OnLoad function="ObjectiveTracker_OnLoad"/>
 			<OnEvent function="ObjectiveTracker_OnEvent"/>
+			<OnSizeChanged function="ObjectiveTracker_OnSizeChanged"/>
 		</Scripts>
 	</Frame>
 </Ui>	

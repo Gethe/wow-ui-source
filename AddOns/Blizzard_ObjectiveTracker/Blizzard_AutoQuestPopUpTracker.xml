@@ -3,6 +3,51 @@
 
 	<Script file="Blizzard_AutoQuestPopUpTracker.lua"/>
 
+	<Texture name="AutoQuest-QuestLogIcon" file="Interface\QuestFrame\AutoQuest-Parts" virtual="true">
+		<Size x="10" y="13"/>
+		<TexCoords left="0.00195313" right="0.02148438" top="0.01562500" bottom="0.21875000"/>
+	</Texture>
+	<Texture name="AutoQuestToastBorder-TopLeft" file="Interface\QuestFrame\AutoQuest-Parts" virtual="true">
+		<Size x="16" y="16"/>
+		<TexCoords left="0.02539063" right="0.05664063" top="0.01562500" bottom="0.26562500"/>
+	</Texture>
+	<Texture name="AutoQuestToastBorder-TopRight" file="Interface\QuestFrame\AutoQuest-Parts" virtual="true">
+		<Size x="16" y="16"/>
+		<TexCoords left="0.02539063" right="0.05664063" top="0.29687500" bottom="0.54687500"/>
+	</Texture>
+	<Texture name="AutoQuestToastBorder-BotLeft" file="Interface\QuestFrame\AutoQuest-Parts" virtual="true">
+		<Size x="16" y="16"/>
+		<TexCoords left="0.02539063" right="0.05664063" top="0.57812500" bottom="0.82812500"/>
+	</Texture>
+	<Texture name="AutoQuestToastBorder-BotRight" file="Interface\QuestFrame\AutoQuest-Parts" virtual="true">
+		<Size x="16" y="16"/>
+		<TexCoords left="0.06054688" right="0.09179688" top="0.01562500" bottom="0.26562500"/>
+	</Texture>
+	<Texture name="TrackerButton-AutoComplete-Up" file="Interface\QuestFrame\AutoQuest-Parts" virtual="true">
+		<Size x="18" y="19"/>
+		<TexCoords left="0.09570313" right="0.13085938" top="0.01562500" bottom="0.31250000"/>
+	</Texture>
+	<Texture name="TrackerButton-AutoComplete-Down" file="Interface\QuestFrame\AutoQuest-Parts" virtual="true">
+		<Size x="18" y="19"/>
+		<TexCoords left="0.09570313" right="0.13085938" top="0.34375000" bottom="0.64062500"/>
+	</Texture>
+	<Texture name="QuestIcon-Exclamation" file="Interface\QuestFrame\AutoQuest-Parts" virtual="true">
+		<Size x="19" y="33"/>
+		<TexCoords left="0.13476563" right="0.17187500" top="0.01562500" bottom="0.53125000"/>
+	</Texture>
+	<Texture name="QuestIcon-QuestionMark" file="Interface\QuestFrame\AutoQuest-Parts" virtual="true">
+		<Size x="19" y="33"/>
+		<TexCoords left="0.17578125" right="0.21289063" top="0.01562500" bottom="0.53125000"/>
+	</Texture>
+	<Texture name="QuestIcon-WhiteFlash" file="Interface\QuestFrame\AutoQuest-Parts" virtual="true">
+		<Size x="42" y="42"/>
+		<TexCoords left="0.21679688" right="0.29882813" top="0.01562500" bottom="0.67187500"/>
+	</Texture>
+	<Texture name="QuestIcon-Large" file="Interface\QuestFrame\AutoQuest-Parts" virtual="true">
+		<Size x="60" y="60"/>
+		<TexCoords left="0.30273438" right="0.41992188" top="0.01562500" bottom="0.95312500"/>
+	</Texture>
+
 	<ScrollFrame name="AutoQuestPopUpBlockTemplate" enableMouse="true" virtual="true" hidden="true">
 		<Size x="232" y="68"/>
 		<Scripts>

@@ -7,12 +7,31 @@
 			<OnClick function="LFGListCategorySelectionButton_OnClick"/>
 		</Scripts>
 	</Button>
+	<Frame name="LFGListVoiceChatIcon" virtual="true">
+		<Size x="16" y="14"/>
+		<Layers>
+			<Layer level="ARTWORK">
+				<Texture parentKey="Icon" atlas="groupfinder-icon-voice" setAllPoints="true"/>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnEnter>
+				if ( self.tooltip ) then
+					GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+					GameTooltip:SetText(self.tooltip, NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b, 1, true);
+					GameTooltip:Show();
+				end
+			</OnEnter>
+			<OnLeave function="GameTooltip_Hide"/>
+		</Scripts>
+	</Frame>
 	<Button name="LFGListMagicButtonTemplate" motionScriptsWhileDisabled="true" inherits="MagicButtonTemplate" virtual="true">
 		<Scripts>
 			<OnEnter>
 				if ( self.tooltip ) then
 					GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
 					GameTooltip:SetText(self.tooltip, NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b, 1, true);
+					GameTooltip:Show();
 				end
 			</OnEnter>
 			<OnLeave function="GameTooltip_Hide"/>
@@ -147,13 +166,13 @@
 					<Button parentKey="FindGroupButton" inherits="LFGListMagicButtonTemplate" text="FIND_A_GROUP">
 						<Size x="135" y="22"/>
 						<Anchors>
-							<Anchor point="BOTTOMRIGHT" relativePoint="BOTTOM" x="-1" y="4"/>
+							<Anchor point="BOTTOMRIGHT" x="-5" y="4"/>
 						</Anchors>
 					</Button>
 					<Button parentKey="StartGroupButton" inherits="LFGListMagicButtonTemplate" text="START_A_GROUP">
 						<Size x="135" y="22"/>
 						<Anchors>
-							<Anchor point="BOTTOMLEFT" relativePoint="BOTTOM" x="1" y="4"/>
+							<Anchor point="BOTTOMLEFT" x="-1" y="4"/>
 						</Anchors>
 						<Scripts>
 							<OnClick function="LFGListCategorySelectionStartGroupButton_OnClick"/>
@@ -163,6 +182,7 @@
 				<Scripts>
 					<OnLoad function="LFGListCategorySelection_OnLoad"/>
 					<OnEvent function="LFGListCategorySelection_OnEvent"/>
+					<OnShow function="LFGListCategorySelection_OnShow"/>
 				</Scripts>
 			</Frame>
 			<Frame parentKey="NothingAvailable" inherits="LFGListPanelTemplate">
@@ -177,7 +197,123 @@
 					</Layer>
 				</Layers>
 			</Frame>
+			<Frame parentKey="ApplicationViewer" inherits="LFGListPanelTemplate">
+				<Layers>
+					<Layer level="BACKGROUND">
+						<Texture parentKey="InfoBackground" file="Interface\LFGFrame\UI-LFG-BlueBG">
+							<Size x="512" y="128"/>
+							<Anchors>
+								<Anchor point="BOTTOMLEFT" x="2" y="275"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+					<Layer level="ARTWORK">
+						<FontString parentKey="EntryName" inherits="QuestFont_Huge" justifyH="LEFT">
+							<Size x="240" y="18"/>
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeKey="$parent.InfoBackground" relativePoint="TOPLEFT" x="10" y="-10"/>
+							</Anchors>
+							<Color r="1" g="0.82" b="0"/>
+						</FontString>
+						<FontString parentKey="ActivityName" inherits="GameFontHighlight" justifyH="LEFT">
+							<Size x="240" y="12"/>
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeKey="$parent.EntryName" relativePoint="BOTTOMLEFT" x="0" y="-5"/>
+							</Anchors>
+						</FontString>
+						<FontString parentKey="ItemLevel" inherits="GameFontNormal">
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeKey="$parent.ActivityName" relativePoint="BOTTOMLEFT" x="0" y="-5"/>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+				<Frames>
+					<Frame parentKey="DescriptionFrame">
+						<Size x="240" y="14"/> <!--Height changed in Lua-->
+						<Anchors>
+							<Anchor point="BOTTOMLEFT" relativeKey="$parent.InfoBackground" relativePoint="TOPLEFT" x="10" y="-77"/>
+						</Anchors>
+						<Layers>
+							<Layer level="ARTWORK">
+								<FontString parentKey="Text" inherits="GameFontDisableSmallLeft" setAllPoints="true"/>
+							</Layer>
+						</Layers>
+						<Scripts>
+							<OnEnter>
+								if ( self.Text:IsTruncated() ) then
+									GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+									GameTooltip:SetText(self.Text:GetText(), nil, nil, nil, nil, true);
+									GameTooltip:Show();
+								end
+							</OnEnter>
+							<OnLeave function="GameTooltip_Hide"/>
+						</Scripts>
+					</Frame>
+					<Frame parentKey="VoiceChatFrame" inherits="LFGListVoiceChatIcon">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeKey="$parent.ItemLevel" relativePoint="TOPRIGHT" x="20" y="0"/> <!--Anchor changed in Lua-->
+						</Anchors>
+					</Frame>
+					<Frame parentKey="Inset" useParentLevel="true" inherits="InsetFrameTemplate">
+						<Size x="215" y="496"/>
+						<Anchors>
+							<Anchor point="TOPLEFT" x="0" y="-150" />
+							<Anchor point="BOTTOMRIGHT" x="-5" y="26" />
+						</Anchors>
+					</Frame>
+					<Button parentKey="RemoveEntryButton" inherits="LFGListMagicButtonTemplate" text="UNLIST_MY_GROUP">
+						<Size x="135" y="22"/>
+						<Anchors>
+							<Anchor point="BOTTOMLEFT" x="-1" y="4"/>
+						</Anchors>
+						<Scripts>
+							<OnClick>
+								C_LFGList.RemoveListing();
+							</OnClick>
+						</Scripts>
+					</Button>
+					<Button parentKey="EditButton" inherits="LFGListMagicButtonTemplate" text="EDIT">
+						<Size x="135" y="22"/>
+						<Anchors>
+							<Anchor point="BOTTOMRIGHT" x="-5" y="4"/>
+						</Anchors>
+						<Scripts>
+							<OnClick function="LFGListApplicationViewerEditButton_OnClick"/>
+						</Scripts>
+					</Button>
+				</Frames>
+				<Scripts>
+					<OnEvent function="LFGListApplicationViewer_OnEvent"/>
+					<OnShow function="LFGListApplicationViewer_OnShow"/>
+				</Scripts>
+			</Frame>
 			<Frame parentKey="EntryCreation" inherits="LFGListPanelTemplate">
+				<Layers>
+					<Layer level="ARTWORK">
+						<FontString parentKey="NameLabel" inherits="GameFontNormalLeft" text="NAME">
+							<Size x="60" y="14"/>
+							<Anchors>
+								<Anchor point="LEFT" relativeKey="$parent" relativePoint="TOPLEFT" x="30" y="-100"/>
+							</Anchors>
+						</FontString>
+						<FontString parentKey="TypeLabel" inherits="GameFontNormalLeft" text="TYPE">
+							<Anchors>
+								<Anchor point="LEFT" relativeKey="$parent" relativePoint="TOPLEFT" x="30" y="-135"/>
+							</Anchors>
+						</FontString>
+						<FontString parentKey="RequirementLabel" inherits="GameFontNormalLeft" text="REQUIREMENTS">
+							<Anchors>
+								<Anchor point="LEFT" relativeKey="$parent" relativePoint="TOPLEFT" x="30" y="-240"/>
+							</Anchors>
+						</FontString>
+						<FontString parentKey="DescriptionLabel" inherits="GameFontNormalLeft" text="DESCRIPTION">
+							<Anchors>
+								<Anchor point="LEFT" relativeKey="$parent" relativePoint="TOPLEFT" x="30" y="-317"/>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
 				<Frames>
 					<Frame parentKey="Inset" useParentLevel="true" inherits="InsetFrameTemplate">
 						<Size x="215" y="496"/>
@@ -186,33 +322,66 @@
 							<Anchor point="BOTTOMRIGHT" x="-5" y="26" />
 						</Anchors>
 					</Frame>
-					<EditBox parentKey="Name" inherits="LFGListEditBoxTemplate">
-						<Size x="200" y="22"/>
+					<Frame parentKey="WorkingCover" hidden="true" frameLevel="14" enableMouse="true">
 						<Anchors>
-							<Anchor point="TOPLEFT" relativeKey="$parent.Inset" relativePoint="TOPLEFT" x="120" y="-20"/>
+							<Anchor point="TOPLEFT" x="-5" y="-24"/>
+							<Anchor point="BOTTOMRIGHT" x="-5" y="2"/>
+						</Anchors>
+						<Layers>
+							<Layer level="BACKGROUND">
+								<Texture parentKey="Background" setAllPoints="true">
+									<Color r="0" g="0" b="0" a="0.7"/>
+								</Texture>
+							</Layer>
+							<Layer level="ARTWORK">
+								<FontString parentKey="Label" inherits="GameFontNormalLarge" text="LFG_LIST_CREATING_ENTRY">
+									<Size x="300" y="0"/>
+									<Anchors>
+										<Anchor point="BOTTOM" relativeKey="$parent" relativePoint="CENTER" x="0" y="25"/>
+									</Anchors>
+								</FontString>
+							</Layer>
+						</Layers>
+						<Frames>
+							<Frame parentKey="Spinner" inherits="LoadingSpinnerTemplate">
+								<Anchors>
+									<Anchor point="CENTER"/>
+								</Anchors>
+								<Scripts>
+									<OnLoad>
+										self.Anim:Play();
+									</OnLoad>
+								</Scripts>
+							</Frame>
+						</Frames>
+					</Frame>
+					<EditBox parentKey="Name" inherits="LFGListEditBoxTemplate">
+						<Size x="220" y="22"/>
+						<Anchors>
+							<Anchor point="LEFT" relativeKey="$parent.NameLabel" relativePoint="RIGHT" x="10" y="0"/>
 						</Anchors>
 					</EditBox>
 					<Frame parentKey="CategoryDropDown" name="LFGListEntryCreationCategoryDropDown" inherits="UIDropDownMenuTemplate">
-						<Size x="290" y="32"/>
+						<Size x="320" y="32"/>
 						<Anchors>
 							<Anchor point="TOP" x="8" y="-150"/>
 						</Anchors>
 					</Frame>
 					<Frame parentKey="GroupDropDown" name="LFGListEntryCreationGroupDropDown" inherits="UIDropDownMenuTemplate">
-						<Size x="160" y="32"/>
+						<Size x="175" y="32"/>
 						<Anchors>
 							<Anchor point="TOPLEFT" relativeKey="$parent.CategoryDropDown" relativePoint="BOTTOMLEFT" x="0" y="0"/>
 						</Anchors>
 					</Frame>
 					<Frame parentKey="ActivityDropDown" name="LFGListEntryCreationActivityDropDown" inherits="UIDropDownMenuTemplate">
-						<Size x="160" y="32"/>
+						<Size x="175" y="32"/>
 						<Anchors>
 							<Anchor point="TOPRIGHT" relativeKey="$parent.CategoryDropDown" relativePoint="BOTTOMRIGHT" x="0" y="0"/>
 						</Anchors>
 					</Frame>
 					<Frame parentKey="ItemLevel" inherits="LFGListRequirementTemplate">
 						<Anchors>
-							<Anchor point="TOPLEFT" relativeKey="$parent.Inset" relativePoint="TOPLEFT" x="30" y="-200"/>
+							<Anchor point="TOPLEFT" relativeKey="$parent.Inset" relativePoint="TOPLEFT" x="30" y="-190"/>
 						</Anchors>
 						<KeyValues>
 							 <KeyValue key="label" value="LFG_LIST_ITEM_LEVEL_REQ" type="global"/>
@@ -243,17 +412,16 @@
 					<Button parentKey="ListGroupButton" inherits="LFGListMagicButtonTemplate" text="LIST_GROUP">
 						<Size x="135" y="22"/>
 						<Anchors>
-							<Anchor point="BOTTOMRIGHT" relativePoint="BOTTOM" x="-1" y="4"/>
+							<Anchor point="BOTTOMRIGHT" x="-5" y="4"/>
 						</Anchors>
 						<Scripts>
-							<OnClick>
-							</OnClick>
+							<OnClick function="LFGListEntryCreationListGroupButton_OnClick"/>
 						</Scripts>
 					</Button>
-					<Button parentKey="CancelButton" inherits="LFGListMagicButtonTemplate" text="CANCEL">
+					<Button parentKey="CancelButton" inherits="LFGListMagicButtonTemplate" text="BACK">
 						<Size x="135" y="22"/>
 						<Anchors>
-							<Anchor point="BOTTOMLEFT" relativePoint="BOTTOM" x="1" y="4"/>
+							<Anchor point="BOTTOMLEFT" x="-1" y="4"/>
 						</Anchors>
 						<Scripts>
 							<OnClick function="LFGListEntryCreationCancelButton_OnClick"/>

@@ -290,4 +290,7 @@
 			<AbsValue val="30"/>
 		</FontHeight>
 	</Font>	
+	<Font name="ObjectiveFont" inherits="GameFontHighlight" justifyH="LEFT" justifyV="TOP" virtual="true">
+		<Color r="0.8" g="0.8" b="0.8"/>
+	</Font>	
 </Ui>

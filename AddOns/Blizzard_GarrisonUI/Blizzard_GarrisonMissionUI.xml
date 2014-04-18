@@ -391,7 +391,7 @@
 						<Anchor point="LEFT" relativePoint="TOPLEFT" x="66" y="-28"/>
 					</Anchors>
 				</FontString>
-				<FontString parentKey="ILevel" inherits="GameFontHighlight" justifyH="LEFT">
+				<FontString parentKey="ILevel" inherits="GameFontHighlightSmall" justifyH="LEFT">
 					<Size x="190" y="0"/>
 					<Anchors>
 						<Anchor point="TOPLEFT" relativeKey="$parent.Name" relativePoint="BOTTOMLEFT" y="-4"/>
@@ -401,7 +401,7 @@
 				<Texture parentKey="XPBar">
 					<Size x="205" y="4"/>
 					<Anchors>
-						<Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" x="54" y="6"/>
+						<Anchor point="TOPLEFT" relativeKey="$parent.BG" relativePoint="BOTTOMLEFT" x="24" y="6"/>
 					</Anchors>
 					<Color r="0.212" g="0" b="0.337" a="1"/>
 				</Texture>
@@ -412,6 +412,12 @@
 					</Anchors>
 					<TexCoords left="0.45312500" right="0.64062500" bottom="0.20312500" top="0.01562500"/>
 				</Texture>
+				<FontString parentKey="Status" inherits="GameFontHighlightSmall" justifyH="LEFT">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.ILevel" relativePoint="BOTTOMLEFT" y="-3"/>
+					</Anchors>
+					<Color r="0.698" g="0.941" b="1" a="1"/>
+				</FontString>
 			</Layer>
 			<Layer level="HIGHLIGHT">
 				<Texture parentKey="DownArrow" file="Interface\Buttons\SquareButtonTextures">
@@ -436,7 +442,7 @@
 			</Frame>
 			<Frame parentArray="Abilities" inherits="GarrisonFollowerListButtonAbilityTemplate" hidden="true">
 				<Anchors>
-					<Anchor point="TOPRIGHT" relativeKey="$parent.AbilitiesBG" x="-2" y="-5"/>
+					<Anchor point="TOPLEFT" relativeKey="$parent.AbilitiesBG" x="2" y="-9"/>
 				</Anchors>
 			</Frame>
 		</Frames>
@@ -455,6 +461,36 @@
 		</Scripts>
 	</Button>
 	
+	<Frame name="GarrisonMissionAbilityCounterTemplate" virtual="true">
+		<Size x="32" y="32"/>
+		<Layers>
+			<Layer level="ARTWORK" textureSubLevel="-1">
+				<Texture parentKey="Icon">
+					<Size x="23" y="23"/>
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="ARTWORK">
+				<Texture atlas="GarrMission_EncounterAbilityBorder" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnEnter>
+				if (self.tooltip) then
+					GameTooltip:SetOwner(self, "ANCHOR_CURSOR_RIGHT");
+					GameTooltip:SetText(self.tooltip, HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b);
+				end
+			</OnEnter>
+			<OnLeave function="GameTooltip_Hide"/>
+		</Scripts>
+	</Frame>
+	
 	<Frame name="GarrisonFollowerPageAbilityTemplate" virtual="true">
 		<Size x="240" y="60"/>
 		<Layers>
@@ -471,13 +507,14 @@
 					</Anchors>
 				</FontString>
 				<FontString parentKey="Description" inherits="GameFontHighlight" justifyH="LEFT" text="A wide sweeping attack">
+					<Size x="220" y="0"/>
 					<Anchors>
 						<Anchor point="TOPLEFT" relativeKey="$parent.Name" relativePoint="BOTTOMLEFT" y="-3"/>
 					</Anchors>
 				</FontString>
-				<FontString parentKey="Counters" inherits="GameFontHighlight" justifyH="LEFT" text="Counters: Many Adds">
+				<FontString parentKey="CounterString" inherits="GameFontHighlight" justifyH="LEFT" text="GARRISON_ABILITY_COUNTERS">
 					<Anchors>
-						<Anchor point="TOPLEFT" relativeKey="$parent.Description" relativePoint="BOTTOMLEFT" y="-3"/>
+						<Anchor point="TOPLEFT" relativeKey="$parent.Description" relativePoint="BOTTOMLEFT" y="-6"/>
 					</Anchors>
 				</FontString>
 			</Layer>
@@ -490,6 +527,13 @@
 				</Texture>
 			</Layer>
 		</Layers>
+		<Frames>
+			<Frame parentArray="Counters" inherits="GarrisonMissionAbilityCounterTemplate" hidden="true">
+				<Anchors>
+					<Anchor point="LEFT" relativeKey="$parent.CounterString" relativePoint="RIGHT" y="-2"/>
+				</Anchors>
+			</Frame>
+		</Frames>
 	</Frame>
 	
 	<Button name="GarrisonMissionListButtonTemplate" virtual="true">
@@ -963,9 +1007,24 @@
 	</Frame>
 	
 	<Button name="GarrisonMissionRewardChestTemplate" virtual="true">
+		<!-- Available options
+			<KeyValues>
+				<KeyValue key="index" value="1" type="number"/>
+			</KeyValues>
+		-->
 		<Size x="172" y="122"/>
+		<Animations>
+			<AnimationGroup parentKey="FadeOutLock" setToFinalAlpha="true">
+				<Alpha childKey="Lock" fromAlpha="1" toAlpha="0" duration="0.5" order="1"/>
+				<Scripts>
+					<OnFinished>
+						self:GetParent().Chest:SetAnimation(0, 0);
+					</OnFinished>
+				</Scripts>
+			</AnimationGroup>
+		</Animations>
 		<Layers>
-			<Layer level="ARTWORK" textureSubLevel="2">
+			<Layer level="OVERLAY" textureSubLevel="2">
 				<FontString parentKey="Chance" inherits="RewardNumberFont2" justifyH="CENTER">
 					<Anchors>
 						<Anchor point="TOP" relativePoint="BOTTOM" y="26"/>
@@ -978,6 +1037,22 @@
 			<OnClick function="GarrisonMissionCompleteReward_OnClick"/>
 		</Scripts>
 	</Button>
+	
+	<CinematicModel name="GarrisonMissionRewardChestModelTemplate" useParentLevel="true" virtual="true">
+		<Size x="172" y="122"/>
+		<Anchors>
+			<Anchor point="CENTER"/>
+		</Anchors>
+		<Scripts>
+			<OnLoad>
+				self:SetTargetDistance(0);
+				self:SetHeightFactor(.25);
+				self:SetFacing(-.4);
+				self:InitializeCamera(.7);
+				self:SetCameraPosition(3.5, 0, 1);
+			</OnLoad>
+		</Scripts>
+	</CinematicModel>
 	
 	<Frame name="GarrisonMissionPartyBuffTemplate" virtual="true">
 		<Size x="32" y="32"/>
@@ -1028,35 +1103,6 @@
 				</Anchors>
 			</Frame>
 		</Frames>
-	</Frame>
-	
-	<Frame name="GarrisonMissionAbilityCounterTemplate" virtual="true">
-		<Size x="32" y="32"/>
-		<Layers>
-			<Layer level="ARTWORK" textureSubLevel="-1">
-				<Texture parentKey="Icon">
-					<Anchors>
-						<Anchor point="CENTER"/>
-					</Anchors>
-				</Texture>
-			</Layer>
-			<Layer level="ARTWORK">
-				<Texture atlas="GarrMission_EncounterAbilityBorder" useAtlasSize="true">
-					<Anchors>
-						<Anchor point="CENTER"/>
-					</Anchors>
-				</Texture>
-			</Layer>
-		</Layers>
-		<Scripts>
-			<OnEnter>
-				if (self.tooltip) then
-					GameTooltip:SetOwner(self, "ANCHOR_CURSOR_RIGHT");
-					GameTooltip:SetText(self.tooltip, HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b);
-				end
-			</OnEnter>
-			<OnLeave function="GameTooltip_Hide"/>
-		</Scripts>
 	</Frame>
 	
 	<Frame name="GarrisonMissionPartyFrameSmallTemplate" virtual="true">
@@ -1230,19 +1276,19 @@
 			</Layer>
 			<Layer level="ARTWORK" textureSubLevel="1">
 				<Texture parentKey="Type">
-					<Size x="23" y="23"/>
+					<Size x="16" y="16"/>
 					<Anchors>
-						<Anchor point="CENTER" relativeKey="$parent.TypeRing" y="-22"/>
+						<Anchor point="CENTER" relativeKey="$parent.TypeRing" y="0"/>
 					</Anchors>
 				</Texture>
 			</Layer>
-			<Layer level="ARTWORK" textureSubLevel="3">
+			<!--Layer level="ARTWORK" textureSubLevel="3">
 				<Texture parentKey="TypeCheck" atlas="GarrMission_CounterCheck" useAtlasSize="true" hidden="true">
 					<Anchors>
 						<Anchor point="BOTTOMLEFT" relativeKey="$parent.TypeRing" x="-5" y="-3"/>
 					</Anchors>
 				</Texture>
-			</Layer>
+			</Layer-->
 		</Layers>
 		<Scripts>
 			<OnLoad>
@@ -1265,12 +1311,12 @@
 			</Layer>
 		</Layers>
 		<Frames>
-			<Frame parentKey="Portrait" inherits="GarrisonEnemyPortraitTemplate">
+			<Frame parentKey="PortraitFrame" inherits="GarrisonEnemyPortraitTemplate">
 				<Anchors>
 					<Anchor point="TOP" y="-22"/>
 				</Anchors>
 			</Frame>
-			<Frame parentKey="Ability" inherits="GarrisonMissionAbilityCounterTemplate">
+			<Frame parentArray="Abilities" inherits="GarrisonMissionAbilityCounterTemplate">
 				<Anchors>
 					<Anchor point="BOTTOM"/>
 				</Anchors>
@@ -1313,7 +1359,7 @@
 					<Anchor point="LEFT" y="0"/>
 				</Anchors>
 			</Frame>
-			<Frame parentKey="Ability" inherits="GarrisonMissionAbilityCounterTemplate">
+			<Frame parentArray="Abilities" inherits="GarrisonMissionAbilityCounterTemplate">
 				<Anchors>
 					<Anchor point="BOTTOMLEFT" relativeKey="$parent.PortraitFrame" relativePoint="BOTTOMRIGHT" x="8" y="2"/>
 				</Anchors>
@@ -1420,7 +1466,7 @@
 				<Alpha fromAlpha="0" toAlpha="1" duration=".5" order="1"/>
 				<Scripts>
 					<OnFinished>
-						GarrisonMissionFrame.MissionComplete.BonusRewards.FadeOutLocks:Play();
+						GarrisonMissionFrame.MissionComplete.BonusRewards.Chest1.FadeOutLock:Play();
 						GarrisonMissionFrame.MissionComplete.BonusRewards.Saturated:Show();
 						GarrisonMissionFrame.MissionComplete.BonusRewards.Saturated.FadeIn:Play();
 					</OnFinished>
@@ -1442,6 +1488,14 @@
 				</Texture>
 			</Layer>
 		</Layers>
+		<Scripts>
+			<OnShow>
+				self:SetAlpha(0);
+			</OnShow>
+			<OnHide>
+				self:SetAlpha(0);
+			</OnHide>
+		</Scripts>
 	</Frame>
 	
 	<Frame name="GarrisonLargeFollowerXPFrameTemplate" virtual="true">
@@ -1598,10 +1652,7 @@
 									<Anchor point="TOPRIGHT" x="1" y="3"/>
 								</Anchors>
 								<Scripts>
-									<OnClick>
-										GarrisonMissionFrame.MissionTab.MissionPage:Hide();
-										GarrisonMissionFrame.MissionTab.MissionList:Show();
-									</OnClick>
+									<OnClick function="GarrisonMissionPageCloseButton_OnClick"/>
 								</Scripts>
 							</Button>
 							<Frame parentKey="Stage" inherits="GarrisonMissionStageTemplate">
@@ -1883,7 +1934,10 @@
 									</Frame>
 								</Frames>
 							</Frame>
-							<Frame parentKey="SmallParty" hidden="true" enableMouse="true" id="1">
+							<Frame parentKey="SmallParty" hidden="true" enableMouse="true">
+								<KeyValues>
+									<KeyValue key="partySize" value="1" type="number"/>
+								</KeyValues>
 								<Anchors>
 									<Anchor point="TOPLEFT" relativeKey="$parent.Stage" relativePoint="BOTTOMLEFT"/>
 									<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Rewards" relativePoint="TOPRIGHT" x="22"/>
@@ -1931,7 +1985,10 @@
 									<OnReceiveDrag function="GarrisonSingleParty_ReceiveDrag"/>
 								</Scripts>
 							</Frame>
-							<Frame parentKey="MediumParty" hidden="true" enableMouse="true" id="3">
+							<Frame parentKey="MediumParty" hidden="true" enableMouse="true">
+								<KeyValues>
+									<KeyValue key="partySize" value="3" type="number"/>
+								</KeyValues>
 								<Anchors>
 									<Anchor point="TOPLEFT" relativeKey="$parent.Stage" relativePoint="BOTTOMLEFT"/>
 									<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Rewards" relativePoint="TOPRIGHT" x="22"/>
@@ -1976,7 +2033,10 @@
 									<OnReceiveDrag function="GarrisonManyParty_ReceiveDrag"/>
 								</Scripts>
 							</Frame>
-							<Frame parentKey="LargeParty" enableMouse="true" id="5">
+							<Frame parentKey="LargeParty" enableMouse="true">
+								<KeyValues>
+									<KeyValue key="partySize" value="5" type="number"/>
+								</KeyValues>
 								<Anchors>
 									<Anchor point="TOPLEFT" relativeKey="$parent.Stage" relativePoint="BOTTOMLEFT"/>
 									<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Rewards" relativePoint="TOPRIGHT" x="22"/>
@@ -2085,14 +2145,19 @@
 								<Anchor point="TOPRIGHT" relativeKey="$parent.Class" relativePoint="TOPLEFT" x="-2" y="-12"/>
 							</Anchors>
 						</FontString>
-						<FontString inherits="GameFontHighlight" justifyH="RIGHT" text="GARRISON_FOLLOWER_XP_STRING">
+						<FontString parentKey="XPLabel" inherits="GameFontHighlight" justifyH="RIGHT" text="GARRISON_FOLLOWER_XP_STRING">
 							<Anchors>
 								<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Class" relativePoint="BOTTOMLEFT" y="6"/>
 							</Anchors>
 						</FontString>
+						<FontString parentKey="ItemLevel" inherits="GameFontHighlightLarge2" justifyH="RIGHT" hidden="true">
+							<Anchors>
+								<Anchor point="TOPRIGHT" relativeKey="$parent.XPText"/>
+							</Anchors>
+						</FontString>
 						<FontString parentKey="AbilitiesText" inherits="GameFontNormalLarge2" justifyH="LEFT" text="ABILITIES">
 							<Anchors>
-								<Anchor point="TOPLEFT" relativeKey="$parent.Class" relativePoint="TOPRIGHT" x="-270" y="-80"/>
+								<Anchor point="TOPLEFT" relativeKey="$parent.Class" relativePoint="TOPRIGHT" x="-280" y="-80"/>
 							</Anchors>
 						</FontString>
 						<FontString parentKey="TraitsText" inherits="GameFontNormalLarge2" justifyH="LEFT" text="GARRISON_TRAITS">
@@ -2103,7 +2168,7 @@
 					</Layer>
 				</Layers>
 				<Frames>
-					<Frame parentKey="Portrait" inherits="GarrisonFollowerPortraitTemplate">
+					<Frame parentKey="PortraitFrame" inherits="GarrisonFollowerPortraitTemplate">
 						<Anchors>
 							<Anchor point="TOPLEFT" x="13" y="-13"/>
 						</Anchors>
@@ -2111,7 +2176,7 @@
 					<StatusBar parentKey="XPBar" inherits="GarrisonFollowerXPBarTemplate">
 						<Size x="525" y="9"/>
 						<Anchors>
-							<Anchor point="BOTTOMLEFT" relativeKey="$parent.Portrait" relativePoint="BOTTOMRIGHT" x="7" y="5"/>
+							<Anchor point="BOTTOMLEFT" relativeKey="$parent.PortraitFrame" relativePoint="BOTTOMRIGHT" x="7" y="5"/>
 						</Anchors>
 					</StatusBar>
 					<CinematicModel parentKey="Model">
@@ -2119,10 +2184,30 @@
 						<Anchors>
 							<Anchor point="TOPLEFT" x="12" y="-78"/>
 						</Anchors>
+						<!--Layers>
+							<Layer level="BACKGROUND">
+								<Texture setAllPoints="true">
+									<Color r="1" g="0" b="0" a=".5"/>
+								</Texture>	
+							</Layer>
+						</Layers-->
+						<Scripts>
+							<OnShow>
+								self:SetTargetDistance(0);
+								self:SetFacing(.2);
+								self:SetHeightFactor(.65);
+								self:InitializeCamera(.55);
+							</OnShow>
+						</Scripts>
 					</CinematicModel>
-					<Frame parentKey="Ability1" inherits="GarrisonFollowerPageAbilityTemplate">
+					<Frame parentArray="Abilities" inherits="GarrisonFollowerPageAbilityTemplate">
 						<Anchors>
 							<Anchor point="TOPLEFT" relativeKey="$parent.AbilitiesText" relativePoint="BOTTOMLEFT" x="2" y="-12"/>
+						</Anchors>
+					</Frame>
+					<Frame parentArray="Traits" inherits="GarrisonFollowerPageAbilityTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeKey="$parent.TraitsText" relativePoint="BOTTOMLEFT" x="2" y="-12"/>
 						</Anchors>
 					</Frame>
 				</Frames>
@@ -2469,6 +2554,11 @@
 									<AnimationGroup parentKey="FadeIn" setToFinalAlpha="true">
 										<Alpha fromAlpha="0" toAlpha="1" duration=".5" order="1"/>
 										<Scripts>
+											<OnPlay>
+												self:GetParent().Follower1.XPGain:SetAlpha(0);
+												self:GetParent().Follower2.XPGain:SetAlpha(0);
+												self:GetParent().Follower3.XPGain:SetAlpha(0);
+											</OnPlay>
 											<OnFinished>
 												self:GetParent().Follower1.XPGain:Show();
 												self:GetParent().Follower1.XPGain.FadeIn:Play();
@@ -2512,6 +2602,13 @@
 									<AnimationGroup parentKey="FadeIn" setToFinalAlpha="true">
 										<Alpha fromAlpha="0" toAlpha="1" duration=".5" order="1"/>
 										<Scripts>
+											<OnPlay>
+												self:GetParent().Follower1.XPGain:SetAlpha(0);
+												self:GetParent().Follower2.XPGain:SetAlpha(0);
+												self:GetParent().Follower3.XPGain:SetAlpha(0);
+												self:GetParent().Follower4.XPGain:SetAlpha(0);
+												self:GetParent().Follower5.XPGain:SetAlpha(0);
+											</OnPlay>
 											<OnFinished>
 												self:GetParent().Follower1.XPGain:Show();
 												self:GetParent().Follower1.XPGain.FadeIn:Play();
@@ -2577,13 +2674,6 @@
 						<Anchors>
 							<Anchor point="BOTTOM" y="40"/>
 						</Anchors>
-						<Animations>
-							<AnimationGroup parentKey="FadeOutLocks" setToFinalAlpha="true">
-								<Alpha childKey="GoldChest.Lock" fromAlpha="1" toAlpha="0" duration="0.5" order="1"/>
-								<Alpha childKey="SilverChest.Lock" fromAlpha="1" toAlpha="0" duration="0.5" order="1"/>
-								<Alpha childKey="BronzeChest.Lock" fromAlpha="1" toAlpha="0" duration="0.5" order="1"/>
-							</AnimationGroup>
-						</Animations>
 						<Layers>
 							<Layer level="OVERLAY">
 								<FontString inherits="QuestFont_Huge" text="BONUS_REWARDS">
@@ -2595,71 +2685,90 @@
 							</Layer>
 						</Layers>
 						<Frames>
-							<Button parentKey="BronzeChest" inherits="GarrisonMissionRewardChestTemplate" id="1">
+							<Button parentKey="Chest1" parentArray="Chests" inherits="GarrisonMissionRewardChestTemplate" id="1">
+								<KeyValues>
+									<KeyValue key="index" value="1" type="number"/>
+								</KeyValues>
 								<Anchors>
 									<Anchor point="LEFT" x="25"/>
 								</Anchors>
 								<Layers>
-									<Layer level="ARTWORK">
-										<Texture parentKey="Chest" atlas="GarrMission_Chest-Bronze" desaturated="true">
-											<Size x="172" y="122"/>
+									<Layer level="OVERLAY" textureSubLevel="1">
+										<Texture parentKey="Lock" atlas="GarrMission_Lock-Bronze" useAtlasSize="true">
 											<Anchors>
 												<Anchor point="CENTER"/>
 											</Anchors>
 										</Texture>
 									</Layer>
-									<Layer level="ARTWORK" textureSubLevel="1">
-										<Texture parentKey="Lock" atlas="GarrMission_Lock-Bronze" useAtlasSize="true" desaturated="true">
-											<Anchors>
-												<Anchor point="CENTER" relativeKey="$parent.Chest" relativePoint="CENTER"/>
-											</Anchors>
-										</Texture>
-									</Layer>
 								</Layers>
+								<Frames>
+									<CinematicModel parentKey="Chest" inherits="GarrisonMissionRewardChestModelTemplate">
+										<Scripts>
+											<OnShow>
+												self:SetDisplayInfo(54910);
+												self:SetCameraPosition(3.5, 0, 1);
+											</OnShow>
+										</Scripts>
+									</CinematicModel>
+								</Frames>
 							</Button>
-							<Button parentKey="SilverChest" inherits="GarrisonMissionRewardChestTemplate" id="2">
+							<Button parentKey="Chest2" inherits="GarrisonMissionRewardChestTemplate" id="2">
+								<KeyValues>
+									<KeyValue key="index" value="2" type="number"/>
+								</KeyValues>
 								<Anchors>
-									<Anchor point="LEFT" relativeKey="$parent.BronzeChest" relativePoint="RIGHT" x="-23"/>
+									<Anchor point="LEFT" relativeKey="$parent.Chest1" relativePoint="RIGHT" x="-23"/>
 								</Anchors>
 								<Layers>
-									<Layer level="ARTWORK">
-										<Texture parentKey="Chest" atlas="GarrMission_Chest-Silver" desaturated="true">
-											<Size x="172" y="122"/>
-											<Anchors>
-												<Anchor point="CENTER"/>
-											</Anchors>
-										</Texture>
-									</Layer>
-									<Layer level="ARTWORK" textureSubLevel="1">
-										<Texture parentKey="Lock" atlas="GarrMission_Lock-Silver" useAtlasSize="true" desaturated="true">
+									<Layer level="OVERLAY" textureSubLevel="1">
+										<Texture parentKey="Lock" atlas="GarrMission_Lock-Silver" useAtlasSize="true">
 											<Anchors>
 												<Anchor point="CENTER" relativeKey="$parent.Chest" relativePoint="CENTER"/>
 											</Anchors>
 										</Texture>
 									</Layer>
 								</Layers>
+								<Frames>
+									<CinematicModel parentKey="Chest" inherits="GarrisonMissionRewardChestModelTemplate">
+										<Scripts>
+											<OnShow>
+												self:SetDisplayInfo(54911);
+												self:SetCameraPosition(3.5, 0, 1);
+											</OnShow>
+										</Scripts>
+									</CinematicModel>
+								</Frames>
 							</Button>
-							<Button parentKey="GoldChest" inherits="GarrisonMissionRewardChestTemplate" id="3">
+							<Button parentKey="Chest3" inherits="GarrisonMissionRewardChestTemplate" id="3">
+								<KeyValues>
+									<KeyValue key="index" value="3" type="number"/>
+								</KeyValues>
 								<Anchors>
-									<Anchor point="LEFT" relativeKey="$parent.SilverChest" relativePoint="RIGHT" x="-23"/>
+									<Anchor point="LEFT" relativeKey="$parent.Chest2" relativePoint="RIGHT" x="-23"/>
 								</Anchors>
 								<Layers>
-									<Layer level="ARTWORK">
-										<Texture parentKey="Chest" atlas="GarrMission_Chest-Gold" desaturated="true">
-											<Size x="172" y="122"/>
-											<Anchors>
-												<Anchor point="CENTER"/>
-											</Anchors>
-										</Texture>
-									</Layer>
-									<Layer level="ARTWORK" textureSubLevel="1">
-										<Texture parentKey="Lock" atlas="GarrMission_Lock-Gold" useAtlasSize="true" desaturated="true">
+									<Layer level="OVERLAY" textureSubLevel="1">
+										<Texture parentKey="Lock" atlas="GarrMission_Lock-Gold" useAtlasSize="true">
 											<Anchors>
 												<Anchor point="CENTER" relativeKey="$parent.Chest" relativePoint="CENTER"/>
 											</Anchors>
 										</Texture>
 									</Layer>
 								</Layers>
+								<Frames>
+									<CinematicModel parentKey="Chest" inherits="GarrisonMissionRewardChestModelTemplate">
+										<Scripts>
+											<OnShow>
+												if (UnitFactionGroup("player") == PLAYER_FACTION_GROUP[0]) then
+													self:SetDisplayInfo(54913);
+												else
+													self:SetDisplayInfo(54912);
+												end
+												self:SetCameraPosition(3.5, 0, 1);
+											</OnShow>
+										</Scripts>
+									</CinematicModel>
+								</Frames>
 							</Button>
 							<Frame parentKey="Saturated" useParentLevel="true" setAllPoints="true" hidden="true">
 								<Animations>
@@ -2667,9 +2776,7 @@
 										<Alpha fromAlpha="0" toAlpha="1" duration=".5" order="1"/>
 										<Scripts>
 											<OnFinished>
-												self:GetParent():GetParent().BronzeChest.Chest:SetDesaturated(nil);
-												self:GetParent():GetParent().SilverChest.Chest:SetDesaturated(nil);
-												self:GetParent():GetParent().GoldChest.Chest:SetDesaturated(nil);
+												self:GetParent():GetParent().Chest1.Chest:SetAnimation(0, 0);
 											</OnFinished>
 										</Scripts>
 									</AnimationGroup>
@@ -2757,6 +2864,10 @@
 						</Scripts>
 					</Button>
 				</Frames>
+				<Scripts>
+					<OnLoad function="GarrisonMissionComplete_OnLoad"/>
+					<OnEvent function="GarrisonMissionComplete_OnEvent"/>
+				</Scripts>
 			</Frame>
 		</Frames>
 		<Scripts>

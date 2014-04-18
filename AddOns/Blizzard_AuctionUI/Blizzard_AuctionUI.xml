@@ -723,7 +723,7 @@
 						<Anchors>
 							<Anchor point="TOPRIGHT">
 								<Offset>
-									<AbsDimension x="25" y="-39"/>
+									<AbsDimension x="-18" y="-35"/>
 								</Offset>
 							</Anchor>
 						</Anchors>
@@ -732,6 +732,18 @@
 								AuctionFrameBrowse_Search();
 							</OnClick>
 							<OnUpdate function="BrowseSearchButton_OnUpdate"/>
+						</Scripts>
+					</Button>
+					<Button name="BrowseResetButton" inherits="UIPanelButtonTemplate" text="RESET">
+						<Size>
+							<AbsDimension x="80" y="22"/>
+						</Size>
+						<Anchors>
+							<Anchor point="TOPRIGHT" x="67" y="-35"/>
+						</Anchors>
+						<Scripts>
+							<OnClick function="AuctionFrameBrowse_Reset"/>
+							<OnUpdate function="BrowseResetButton_OnUpdate"/>
 						</Scripts>
 					</Button>
 					<Button name="BrowsePrevPageButton">
@@ -883,22 +895,26 @@
 							</Layer>
 						</Layers>
 					</Frame>
-					<Button name="BrowseResetButton" inherits="UIPanelButtonTemplate" text="RESET">
-						<Size>
-							<AbsDimension x="80" y="22"/>
-						</Size>
+					<CheckButton name="ExactMatchCheckButton" inherits="UICheckButtonTemplate">
+						<Size x="24" y="24"/>
 						<Anchors>
-							<Anchor point="TOPLEFT">
-								<Offset>
-									<AbsDimension x="78" y="-75"/>
-								</Offset>
-							</Anchor>
+							<Anchor point="TOPLEFT" x="75" y="-75"/>
 						</Anchors>
 						<Scripts>
-							<OnClick function="AuctionFrameBrowse_Reset"/>
-							<OnUpdate function="BrowseResetButton_OnUpdate"/>
+							<OnLoad>
+								ExactMatchCheckButtonText:SetFontObject(GameFontHighlightSmall);
+								ExactMatchCheckButtonText:SetText(AH_EXACT_MATCH);
+							</OnLoad>
+							<OnClick>
+								PlaySound("igMainMenuOptionCheckBoxOn");
+							</OnClick>
+							<OnEnter>
+								GameTooltip:SetOwner(self, "ANCHOR_LEFT");
+								GameTooltip:SetText(AH_EXACT_MATCH_TOOLTIP, nil, nil, nil, nil, true);
+							</OnEnter>
+							<OnLeave function="GameTooltip_Hide"/>
 						</Scripts>
-					</Button>
+					</CheckButton>
 				</Frames>
 				<Scripts>
 					<OnLoad function="AuctionFrameBrowse_OnLoad"/>

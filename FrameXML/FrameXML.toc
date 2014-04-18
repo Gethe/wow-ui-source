@@ -99,7 +99,6 @@ PetPaperDollFrame.xml
 ReputationFrame.xml
 QuestFrame.xml
 QuestPOI.xml
-WatchFrame.xml
 QuestLogFrame.xml
 QuestInfo.xml
 MerchantFrame.xml
@@ -182,6 +181,7 @@ LossOfControlFrame.xml
 PVPHelper.xml
 MapBar.xml
 ProductChoice.xml
+DraenorZoneAbility.xml
 ..\SharedXML\ModelPreviewFrame.xml
 
 #Save off whatever we need available unmodified.

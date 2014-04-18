@@ -50,6 +50,7 @@ UnitPopupButtons["ROUND_ROBIN"] = { text = LOOT_ROUND_ROBIN, dist = 0 };
 UnitPopupButtons["MASTER_LOOTER"] = { text = LOOT_MASTER_LOOTER, dist = 0 };
 UnitPopupButtons["GROUP_LOOT"] = { text = LOOT_GROUP_LOOT, dist = 0 };
 UnitPopupButtons["NEED_BEFORE_GREED"] = { text = LOOT_NEED_BEFORE_GREED, dist = 0 };
+UnitPopupButtons["PUSH_LOOT"] = { text = LOOT_PUSH_LOOT, dist = 0 };
 UnitPopupButtons["RESET_INSTANCES"] = { text = RESET_INSTANCES, dist = 0 };
 UnitPopupButtons["RESET_CHALLENGE_MODE"] = { text = RESET_CHALLENGE_MODE, dist = 0 };
 UnitPopupButtons["CONVERT_TO_RAID"] = { text = CONVERT_TO_RAID, dist = 0 };
@@ -227,7 +228,7 @@ UnitPopupMenus["BOSS"] = { "RAID_TARGET_ICON", "SET_FOCUS", "OTHER_SUBSECTION_TI
 -- Second level menus
 UnitPopupMenus["ADD_FRIEND_MENU"] = { "BATTLETAG_FRIEND", "CHARACTER_FRIEND" };
 UnitPopupMenus["PVP_FLAG"] = { "PVP_ENABLE", "PVP_DISABLE"};
-UnitPopupMenus["LOOT_METHOD"] = { "FREE_FOR_ALL", "ROUND_ROBIN", "MASTER_LOOTER", "GROUP_LOOT", "NEED_BEFORE_GREED", "CANCEL" };
+UnitPopupMenus["LOOT_METHOD"] = { "FREE_FOR_ALL", "ROUND_ROBIN", "MASTER_LOOTER", "GROUP_LOOT", "NEED_BEFORE_GREED", "PUSH_LOOT", "CANCEL" };
 UnitPopupMenus["LOOT_THRESHOLD"] = { "ITEM_QUALITY2_DESC", "ITEM_QUALITY3_DESC", "ITEM_QUALITY4_DESC", "CANCEL" };
 UnitPopupMenus["SELECT_LOOT_SPECIALIZATION"] = { "LOOT_SPECIALIZATION_DEFAULT","LOOT_SPECIALIZATION_SPEC1", "LOOT_SPECIALIZATION_SPEC2", "LOOT_SPECIALIZATION_SPEC3", "LOOT_SPECIALIZATION_SPEC4"};
 UnitPopupMenus["OPT_OUT_LOOT_TITLE"] = { "OPT_OUT_LOOT_ENABLE", "OPT_OUT_LOOT_DISABLE"};
@@ -251,7 +252,7 @@ UnitLootMethod["roundrobin"] = { text = LOOT_ROUND_ROBIN, tooltipText = NEWBIE_T
 UnitLootMethod["master"] = { text = LOOT_MASTER_LOOTER, tooltipText = NEWBIE_TOOLTIP_UNIT_MASTER_LOOTER };
 UnitLootMethod["group"] = { text = LOOT_GROUP_LOOT, tooltipText = NEWBIE_TOOLTIP_UNIT_GROUP_LOOT };
 UnitLootMethod["needbeforegreed"] = { text = LOOT_NEED_BEFORE_GREED, tooltipText = NEWBIE_TOOLTIP_UNIT_NEED_BEFORE_GREED };
-
+UnitLootMethod["pushloot"] = { text = LOOT_PUSH_LOOT, tooltipText = NEWBIE_TOOLTIP_UNIT_PUSH };
 
 UnitPopupFrames = {
 	"PlayerFrameDropDown",
@@ -883,6 +884,10 @@ function UnitPopup_HideButtons ()
 			end
 		elseif ( value == "NEED_BEFORE_GREED" ) then
 			if ( (inParty == 0) or ((isLeader == 0) and (GetLootMethod() ~= "needbeforegreed")) ) then
+				UnitPopupShown[UIDROPDOWNMENU_MENU_LEVEL][index] = 0;
+			end
+		elseif ( value == "PUSH_LOOT" ) then
+			if ( (inParty == 0) or ((isLeader == 0) and (GetLootMethod() ~= "pushloot")) ) then
 				UnitPopupShown[UIDROPDOWNMENU_MENU_LEVEL][index] = 0;
 			end
 		elseif ( value == "LOOT_THRESHOLD" ) then
@@ -1689,6 +1694,10 @@ function UnitPopup_OnClick (self)
 		UIDropDownMenu_Refresh(dropdownFrame, nil, 1);
 	elseif ( button == "NEED_BEFORE_GREED" ) then
 		SetLootMethod("needbeforegreed");
+		UIDropDownMenu_SetButtonText(self:GetParent().parentLevel, self:GetParent().parentID, UnitPopupButtons[button].text);
+		UIDropDownMenu_Refresh(dropdownFrame, nil, 1);
+	elseif ( button == "PUSH_LOOT" ) then
+		SetLootMethod("pushloot");
 		UIDropDownMenu_SetButtonText(self:GetParent().parentLevel, self:GetParent().parentID, UnitPopupButtons[button].text);
 		UIDropDownMenu_Refresh(dropdownFrame, nil, 1);
 	elseif ( button == "OPT_OUT_LOOT_ENABLE" ) then

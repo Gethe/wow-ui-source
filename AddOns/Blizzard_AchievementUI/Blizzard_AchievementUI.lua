@@ -1201,14 +1201,13 @@ function AchievementButton_ToggleTracking (id)
 	if ( trackedAchievements[id] ) then
 		RemoveTrackedAchievement(id);
 		AchievementFrameAchievements_ForceUpdate();
-		WatchFrame_Update();
 		return;
 	end
 	
 	local count = GetNumTrackedAchievements();
 	
-	if ( count >= WATCHFRAME_MAXACHIEVEMENTS ) then
-		UIErrorsFrame:AddMessage(format(ACHIEVEMENT_WATCH_TOO_MANY, WATCHFRAME_MAXACHIEVEMENTS), 1.0, 0.1, 0.1, 1.0);
+	if ( count >= MAX_TRACKED_ACHIEVEMENTS ) then
+		UIErrorsFrame:AddMessage(format(ACHIEVEMENT_WATCH_TOO_MANY, MAX_TRACKED_ACHIEVEMENTS), 1.0, 0.1, 0.1, 1.0);
 		return;
 	end
 	
@@ -1220,7 +1219,6 @@ function AchievementButton_ToggleTracking (id)
 	
 	AddTrackedAchievement(id);
 	AchievementFrameAchievements_ForceUpdate();
-	WatchFrame_Update();
 	
 	return true;
 end

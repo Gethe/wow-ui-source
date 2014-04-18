@@ -35,6 +35,10 @@
 				</Scripts>
 			</AnimationGroup>
 		</Animations>
+		<Scripts>
+			<OnEnter function="BonusObjectiveTracker_OnBlockEnter"/>
+			<OnLeave function="BonusObjectiveTracker_OnBlockLeave"/>
+		</Scripts>
 	</ScrollFrame>
 
 	<Frame parent="ObjectiveTrackerBlocksFrame" inherits="ObjectiveTrackerHeaderTemplate" hidden="true">

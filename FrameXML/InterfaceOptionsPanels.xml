@@ -1245,7 +1245,7 @@
 						self.type = CONTROLTYPE_CHECKBOX;
 						self.cvar = "watchFrameWidth";
 						self.uvar = "WATCH_FRAME_WIDTH";
-						self.setFunc = function () WatchFrame_SetWidth(WATCH_FRAME_WIDTH); end;
+						self.setFunc = function () ObjectiveTracker_SetWidth(WATCH_FRAME_WIDTH); end;
 						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
 					</OnLoad>
 				</Scripts>
@@ -3955,7 +3955,7 @@
 						self.type = CONTROLTYPE_CHECKBOX;
 						self.cvar = "colorblindMode";
 						self.uvar = "ENABLE_COLORBLIND_MODE";
-						self.setFunc = function() WatchFrame_Update(); if ( IsAddOnLoaded("Blizzard_AchievementUI") ) then AchievementFrame_ForceUpdate(); end end;
+						self.setFunc = function() ObjectiveTracker_Update(); if ( IsAddOnLoaded("Blizzard_AchievementUI") ) then AchievementFrame_ForceUpdate(); end end;
 						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
 					</OnLoad>
 				</Scripts>

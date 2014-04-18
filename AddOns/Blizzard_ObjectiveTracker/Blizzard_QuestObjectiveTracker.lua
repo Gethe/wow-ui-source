@@ -3,8 +3,6 @@ QUEST_TRACKER_MODULE = ObjectiveTracker_GetModuleInfoTable();
 QUEST_TRACKER_MODULE.updateReasonModule = OBJECTIVE_TRACKER_UPDATE_MODULE_QUEST;
 QUEST_TRACKER_MODULE.updateReasonEvents = OBJECTIVE_TRACKER_UPDATE_QUEST + OBJECTIVE_TRACKER_UPDATE_QUEST_ADDED;
 QUEST_TRACKER_MODULE.usedBlocks = { };
-QUEST_TRACKER_MODULE.firstBlock = nil;	-- for move functions
-QUEST_TRACKER_MODULE.lastBlock = nil;	-- for move functions
 QUEST_TRACKER_MODULE.freeItemButtons = { };
 -- because this header is shared, on finishing its anim it has to update all the modules that use it
 QUEST_TRACKER_MODULE:SetHeader(ObjectiveTrackerFrame.BlocksFrame.QuestHeader, "Quests", OBJECTIVE_TRACKER_UPDATE_QUEST_ADDED, OBJECTIVE_TRACKER_UPDATE_MODULE_QUEST + OBJECTIVE_TRACKER_UPDATE_MODULE_AUTO_QUEST_POPUP);
@@ -255,78 +253,10 @@ function QuestObjectiveTracker_OnOpenDropDown(self)
 	info.checked = false;
 	info.noClickSound = 1;
 	UIDropDownMenu_AddButton(info, UIDROPDOWN_MENU_LEVEL);
-
-	if ( QUEST_TRACKER_MODULE.lastBlock ~= QUEST_TRACKER_MODULE.firstBlock ) then
-		if ( block ~= QUEST_TRACKER_MODULE.firstBlock ) then
-			info.text = TRACKER_SORT_MANUAL_UP;
-			info.func = QuestObjectiveTracker_MoveQuest;
-			info.arg1 = questLogIndex;
-			info.arg2 = "UP";
-			info.checked = false;
-			UIDropDownMenu_AddButton(info, UIDROPDOWN_MENU_LEVEL);
-			info.text = TRACKER_SORT_MANUAL_TOP;
-			info.func = QuestObjectiveTracker_MoveQuest;			
-			info.arg1 = questLogIndex;
-			info.arg2 = "TOP";
-			info.checked = false;
-			UIDropDownMenu_AddButton(info, UIDROPDOWN_MENU_LEVEL);
-		end
-		if ( block ~= QUEST_TRACKER_MODULE.lastBlock ) then
-			info.text = TRACKER_SORT_MANUAL_DOWN;
-			info.func = QuestObjectiveTracker_MoveQuest;
-			info.arg1 = questLogIndex;
-			info.arg2 = "DOWN";
-			info.checked = false;
-			UIDropDownMenu_AddButton(info, UIDROPDOWN_MENU_LEVEL);
-			info.text = TRACKER_SORT_MANUAL_BOTTOM;
-			info.func = QuestObjectiveTracker_MoveQuest;
-			info.arg1 = questLogIndex;
-			info.arg2 = "BOTTOM";
-			info.checked = false;
-			UIDropDownMenu_AddButton(info, UIDROPDOWN_MENU_LEVEL);
-		end			
-	end
 end
 
 function QuestObjectiveTracker_OpenQuestDetails(dropDownButton, questLogIndex)
 	QuestLog_OpenToQuest(questLogIndex);
-end
-
-function QuestObjectiveTracker_MoveQuest(dropDownButton, questLogIndex, moveType)
-	local sorting = GetCVar("trackerSorting") + 1;	-- lua_enum
-	if ( sorting ~= LE_TRACKER_SORTING_MANUAL ) then
-		ObjectiveTracker_SetSorting(nil, LE_TRACKER_SORTING_MANUAL);
-		UIErrorsFrame:AddMessage(TRACKER_SORT_MANUAL_WARNING, 1.0, 1.0, 0.0, 1.0);
-	end
-	
-	local otherQuestLogIndex;
-	if ( moveType == "TOP" ) then
-		otherQuestLogIndex = QUEST_TRACKER_MODULE.firstBlock.questLogIndex;
-	elseif ( moveType == "BOTTOM" ) then
-		otherQuestLogIndex = QUEST_TRACKER_MODULE.lastBlock.questLogIndex;
-	elseif ( moveType == "UP" ) then	
-		local _, block = ObjectiveTrackerBlockDropDown.activeFrame:GetPoint();
-		otherQuestLogIndex = block.questLogIndex;
-	elseif ( moveType == "DOWN" ) then
-		-- not worth optimizing for this case
-		-- go up from the bottom until we find active block, so that we can find the block right below it
-		local block = QUEST_TRACKER_MODULE.lastBlock;
-		local _, aboveBlock = block:GetPoint();
-		while ( aboveBlock ) do
-			if ( aboveBlock == ObjectiveTrackerBlockDropDown.activeFrame ) then
-				otherQuestLogIndex = block.questLogIndex;
-				break;
-			end
-			block = aboveBlock;
-			_, aboveBlock = block:GetPoint();
-		end
-	end
-	if ( otherQuestLogIndex ) then
-		ShiftQuestWatches(GetQuestWatchIndex(questLogIndex), GetQuestWatchIndex(otherQuestLogIndex));
-		if ( WorldMapFrame:IsShown() ) then
-			WorldMapFrame_UpdateMap();
-		end
-	end
 end
 
 function QuestObjectiveTracker_UntrackQuest(dropDownButton, questLogIndex)
@@ -347,40 +277,63 @@ end
 -- ***** UPDATE FUNCTIONS
 -- *****************************************************************************************************
 
+function QuestObjectiveTracker_SelectSuperTrackedQuest()
+	local trackedQuestID = GetSuperTrackedQuestID();
+	-- if supertracked quest is not in the quest log anymore, stop supertracking it
+	if ( trackedQuestID == 0 or GetQuestLogIndexByID(trackedQuestID) == 0 ) then
+		-- pick the first tracked quest to supertrack		
+		local questIndex = GetQuestIndexForWatch(1);
+		if ( questIndex ) then
+			local questID = select(8, GetQuestLogTitle(questIndex));
+			SetSuperTrackedQuestID(questID);
+			QuestPOIUpdateIcons();
+		end
+	else
+		QuestPOI_SelectButtonByQuestID(ObjectiveTrackerFrame.BlocksFrame, trackedQuestID);
+		QuestPOIUpdateIcons();
+	end	
+end
+
 function QuestObjectiveTracker_UpdatePOIs()
+	QuestPOI_ResetUsage(ObjectiveTrackerFrame.BlocksFrame);
+
 	local showPOIs = GetCVarBool("questPOI");
 	if ( not showPOIs ) then
+		QuestPOI_HideUnusedButtons(ObjectiveTrackerFrame.BlocksFrame);
 		return;
 	end
 
 	local playerMoney = GetMoney();
-	QuestPOI_ResetUsage(ObjectiveTrackerFrame.BlocksFrame);
 	local numPOINumeric = 0;
 	for i = 1, GetNumQuestWatches() do
 		local questID, title, questLogIndex, numObjectives, requiredMoney, isComplete, startEvent, isAutoComplete, failureTime, timeElapsed, questType, isTask, isStory, isOnMap, hasLocalPOI = GetQuestWatchInfo(i);
-		local block = QUEST_TRACKER_MODULE:GetBlock(questID);
-		if ( block ) then
-			if ( isComplete and isComplete < 0 ) then
-				isComplete = false;
-			elseif ( numObjectives == 0 and playerMoney >= requiredMoney and not startEvent ) then
-				isComplete = true;
-			end
-			local poiButton;			
-			if ( hasLocalPOI ) then
-				if ( isComplete ) then
-					poiButton = QuestPOI_GetButton(ObjectiveTrackerFrame.BlocksFrame, questID, "normal", nil, isStory);
-				else
-					numPOINumeric = numPOINumeric + 1;
-					poiButton = QuestPOI_GetButton(ObjectiveTrackerFrame.BlocksFrame, questID, "numeric", numPOINumeric, isStory);
+		if ( questID ) then
+			-- see if we already have a block for this quest
+			local block = QUEST_TRACKER_MODULE.usedBlocks[questID];
+			if ( block ) then
+				if ( isComplete and isComplete < 0 ) then
+					isComplete = false;
+				elseif ( numObjectives == 0 and playerMoney >= requiredMoney and not startEvent ) then
+					isComplete = true;
 				end
-			elseif ( isComplete ) then
-				poiButton = QuestPOI_GetButton(ObjectiveTrackerFrame.BlocksFrame, questID, "remote", nil, isStory);
-			end
-			if ( poiButton ) then
-				poiButton:SetPoint("TOPRIGHT", block.HeaderText, "TOPLEFT", -6, 2);
+				local poiButton;			
+				if ( hasLocalPOI ) then
+					if ( isComplete ) then
+						poiButton = QuestPOI_GetButton(ObjectiveTrackerFrame.BlocksFrame, questID, "normal", nil, isStory);
+					else
+						numPOINumeric = numPOINumeric + 1;
+						poiButton = QuestPOI_GetButton(ObjectiveTrackerFrame.BlocksFrame, questID, "numeric", numPOINumeric, isStory);
+					end
+				elseif ( isComplete ) then
+					poiButton = QuestPOI_GetButton(ObjectiveTrackerFrame.BlocksFrame, questID, "remote", nil, isStory);
+				end
+				if ( poiButton ) then
+					poiButton:SetPoint("TOPRIGHT", block.HeaderText, "TOPLEFT", -6, 2);
+				end
 			end
 		end
 	end
+	QuestObjectiveTracker_SelectSuperTrackedQuest();
 	QuestPOI_HideUnusedButtons(ObjectiveTrackerFrame.BlocksFrame);
 end
 
@@ -388,37 +341,26 @@ function QUEST_TRACKER_MODULE:Update()
 
 	QUEST_TRACKER_MODULE:BeginLayout();
 	QUEST_TRACKER_MODULE.lastBlock = nil;
-
+			
 	local numPOINumeric = 0;
 	QuestPOI_ResetUsage(ObjectiveTrackerFrame.BlocksFrame);
 
+	local _, instanceType = IsInInstance();
+	if ( instanceType == "arena" ) then
+		-- no quests in arena
+		QuestPOI_HideUnusedButtons(ObjectiveTrackerFrame.BlocksFrame);
+		QUEST_TRACKER_MODULE:EndLayout();
+		return;
+	end
+	
 	local playerMoney = GetMoney();
 	local inScenario = C_Scenario.IsInScenario();
 	local showPOIs = GetCVarBool("questPOI");
 
-	if ( showPOIs and not WorldMapFrame or not WorldMapFrame:IsShown() ) then
-		-- For the filter REMOTE ZONES: when it's unchecked we need to display local POIs only. Unfortunately all the POI
-		-- code uses the current map so the tracker would not display the right quests if the world map was windowed and
-		-- open to a different zone.
-		table.wipe(LOCAL_MAP_QUESTS);
-		LOCAL_MAP_QUESTS["zone"] = GetCurrentMapZone();
-		for id in pairs(CURRENT_MAP_QUESTS) do
-			LOCAL_MAP_QUESTS[id] = true;
-		end	
-	end
-	
 	for i = 1, GetNumQuestWatches() do
 		local questID, title, questLogIndex, numObjectives, requiredMoney, isComplete, startEvent, isAutoComplete, failureTime, timeElapsed, questType, isTask, isStory, isOnMap, hasLocalPOI = GetQuestWatchInfo(i);
 		if ( not questID ) then
 			break;
-		end
-		-- completion state
-		local questFailed = false;
-		if ( isComplete and isComplete < 0 ) then
-			isComplete = false;
-			questFailed = true;
-		elseif ( numObjectives == 0 and playerMoney >= requiredMoney and not startEvent ) then
-			isComplete = true;
 		end
 
 		-- check filters
@@ -427,15 +369,20 @@ function QUEST_TRACKER_MODULE:Update()
 			showQuest = false;
 		elseif ( isTask ) then
 			showQuest = false;
-		elseif ( isComplete and bit.band(OBJECTIVE_TRACKER_FILTER, OBJECTIVE_TRACKER_FILTER_COMPLETED_QUESTS) ~= OBJECTIVE_TRACKER_FILTER_COMPLETED_QUESTS ) then
-			showQuest = false;
-		elseif ( bit.band(OBJECTIVE_TRACKER_FILTER, OBJECTIVE_TRACKER_FILTER_REMOTE_ZONES) ~= OBJECTIVE_TRACKER_FILTER_REMOTE_ZONES and not LOCAL_MAP_QUESTS[questID] ) then
-			showQuest = false;
-		end			
+		end
 
 		if ( showQuest ) then
 			local block = QUEST_TRACKER_MODULE:GetBlock(questID);
 			QUEST_TRACKER_MODULE:SetBlockHeader(block, title, questLogIndex, isComplete);
+
+			-- completion state
+			local questFailed = false;
+			if ( isComplete and isComplete < 0 ) then
+				isComplete = false;
+				questFailed = true;
+			elseif ( numObjectives == 0 and playerMoney >= requiredMoney and not startEvent ) then
+				isComplete = true;
+			end
 
 			if ( isComplete ) then
 				if ( isAutoComplete ) then
@@ -454,7 +401,6 @@ function QUEST_TRACKER_MODULE:Update()
 					if ( text ) then
 						if ( not finished ) then
 							if ( not ( objectiveCompleting and block.numShownObjectives and objectiveIndex > block.numShownObjectives ) ) then
-								text = ReverseQuestObjective(text, objectiveType);
 								numShownObjectives = numShownObjectives + 1;
 								if ( block.numShownObjectives and objectiveIndex > block.numShownObjectives ) then
 									QUEST_TRACKER_MODULE:AddObjective(block, objectiveIndex, text, LINE_TYPE_ANIM);
@@ -472,7 +418,6 @@ function QUEST_TRACKER_MODULE:Update()
 						else
 							-- this objective is complete, but if we already have a line for it either animate it out or maintain it until it's done animating out
 							if ( block.lines[objectiveIndex] ) then
-								text = ReverseQuestObjective(text, objectiveType);
 								QUEST_TRACKER_MODULE:AddObjective(block, objectiveIndex, text, LINE_TYPE_ANIM, nil, true, OBJECTIVE_TRACKER_COLOR["Complete"]);
 								local line = block.currentLine;
 								if ( not line.activeAnim ) then
@@ -516,7 +461,6 @@ function QUEST_TRACKER_MODULE:Update()
 			if ( ObjectiveTracker_AddBlock(block) ) then
 				block:Show();
 				QUEST_TRACKER_MODULE:FreeUnusedLines(block);
-				QUEST_TRACKER_MODULE.lastBlock = block;
 				-- quest POI icon
 				if ( showPOIs ) then
 					local poiButton;
@@ -541,20 +485,7 @@ function QUEST_TRACKER_MODULE:Update()
 		end
 	end
 
-	local trackedQuestID = GetSuperTrackedQuestID();
-	-- if supertracked quest is not in the quest log anymore, stop supertracking it
-	if ( trackedQuestID == 0 or GetQuestLogIndexByID(trackedQuestID) == 0 ) then
-		-- pick the first tracked quest to supertrack		
-		local questIndex = GetQuestIndexForWatch(1);
-		if ( questIndex ) then
-			local questID = select(8, GetQuestLogTitle(questIndex));
-			SetSuperTrackedQuestID(questID);
-			QuestPOIUpdateIcons();
-		end
-	else
-		QuestPOI_SelectButtonByQuestID(ObjectiveTrackerFrame.BlocksFrame, trackedQuestID);
-		QuestPOIUpdateIcons();
-	end
+	QuestObjectiveTracker_SelectSuperTrackedQuest();
 	
 	QuestPOI_HideUnusedButtons(ObjectiveTrackerFrame.BlocksFrame);
 	QUEST_TRACKER_MODULE:EndLayout();

@@ -17,6 +17,7 @@ function AlertFrame_OnLoad (self)
 	self:RegisterEvent("PET_BATTLE_CLOSE");
 	self:RegisterEvent("STORE_PRODUCT_DELIVERED");
 	self:RegisterEvent("GARRISON_BUILDING_ACTIVATABLE");
+	self:RegisterEvent("GARRISON_MISSION_COMPLETED");
 end
 
 function AlertFrame_OnEvent (self, event, ...)
@@ -67,6 +68,9 @@ function AlertFrame_OnEvent (self, event, ...)
 	elseif ( event == "GARRISON_BUILDING_ACTIVATABLE" ) then
 		local name = ...;
 		GarrisonBuildingAlertFrame_ShowAlert(name);
+	elseif ( event == "GARRISON_MISSION_COMPLETED" ) then
+		local name = ...;
+		GarrisonMissionAlertFrame_ShowAlert(name);
 	end
 end
 
@@ -114,6 +118,7 @@ function AlertFrame_FixAnchors()
 	alertAnchor = AlertFrame_SetGuildChallengeAnchors(alertAnchor);
 	alertAnchor = AlertFrame_SetDigsiteCompleteToastFrameAnchors(alertAnchor);
 	alertAnchor = AlertFrame_SetGarrisonBuildingAlertFrameAnchors(alertAnchor);
+	alertAnchor = AlertFrame_SetGarrisonMissionAlertFrameAnchors(alertAnchor);
 end
 
 function AlertFrame_SetLootAnchors(alertAnchor)
@@ -239,6 +244,14 @@ function AlertFrame_SetGarrisonBuildingAlertFrameAnchors(alertAnchor)
 	if ( GarrisonBuildingAlertFrame and GarrisonBuildingAlertFrame:IsShown() ) then
 		GarrisonBuildingAlertFrame:SetPoint("BOTTOM", alertAnchor, "TOP", 0, 10);
 		alertAnchor = GarrisonBuildingAlertFrame;
+	end
+	return alertAnchor;
+end
+
+function AlertFrame_SetGarrisonMissionAlertFrameAnchors(alertAnchor)
+	if ( GarrisonMissionAlertFrame and GarrisonMissionAlertFrame:IsShown() ) then
+		GarrisonMissionAlertFrame:SetPoint("BOTTOM", alertAnchor, "TOP", 0, 10);
+		alertAnchor = GarrisonMissionAlertFrame;
 	end
 	return alertAnchor;
 end
@@ -909,6 +922,14 @@ end
 function GarrisonBuildingAlertFrame_ShowAlert(name)
 	GarrisonBuildingAlertFrame.Name:SetFormattedText(GARRISON_BUILDING_COMPLETE_TOAST, name);
 	AlertFrame_AnimateIn(GarrisonBuildingAlertFrame);
+	AlertFrame_FixAnchors();
+	PlaySound("AuctionWindowOpen");
+end
+
+-- [[ GarrisonMissionAlertFrame ]] --
+function GarrisonMissionAlertFrame_ShowAlert(name)
+	GarrisonMissionAlertFrame.Name:SetText(name);
+	AlertFrame_AnimateIn(GarrisonMissionAlertFrame);
 	AlertFrame_FixAnchors();
 	PlaySound("AuctionWindowOpen");
 end

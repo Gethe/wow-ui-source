@@ -458,6 +458,7 @@ function AuctionFrameBrowse_Reset(self)
 	BrowseMinLevel:SetText("");
 	BrowseMaxLevel:SetText("");
 	IsUsableCheckButton:SetChecked(false);
+	ExactMatchCheckButton:SetChecked(false);
 	UIDropDownMenu_SetSelectedValue(BrowseDropDown,-1);
 
 	-- reset the filters
@@ -476,7 +477,7 @@ end
 
 function BrowseResetButton_OnUpdate(self, elapsed)
 	if ( (BrowseName:GetText() == "") and (BrowseMinLevel:GetText() == "") and (BrowseMaxLevel:GetText() == "") and
-	     (not IsUsableCheckButton:GetChecked()) and (UIDropDownMenu_GetSelectedValue(BrowseDropDown) == -1) and
+	     (not IsUsableCheckButton:GetChecked()) and (not ExactMatchCheckButton:GetChecked()) and (UIDropDownMenu_GetSelectedValue(BrowseDropDown) == -1) and
 	     (not AuctionFrameBrowse.selectedClass) and (not AuctionFrameBrowse.selectedSubclass) and (not AuctionFrameBrowse.selectedInvtype) )
 	then
 		self:Disable();
@@ -522,7 +523,7 @@ end
 
 local prevBrowseParams;
 local function AuctionFrameBrowse_SearchHelper(...)
-	local text, minLevel, maxLevel, invType, class, subclass, page, usable, rarity = ...;
+	local text, minLevel, maxLevel, invType, class, subclass, page, usable, rarity, exactMatch = ...;
 
 	if ( not prevBrowseParams ) then
 		-- if we are doing a search for the first time then create the browse param cache
@@ -540,7 +541,7 @@ local function AuctionFrameBrowse_SearchHelper(...)
 		end
 	end
 
-	QueryAuctionItems(text, minLevel, maxLevel, invType, class, subclass, page, usable, rarity);
+	QueryAuctionItems(text, minLevel, maxLevel, invType, class, subclass, page, usable, rarity, false, exactMatch);
 
 	-- store this query's params so we can compare them with the next set of params we get
 	for i = 1, select('#', ...) do
@@ -557,7 +558,7 @@ function AuctionFrameBrowse_Search()
 		AuctionFrameBrowse.page = 0;
 	end
 
-	AuctionFrameBrowse_SearchHelper(BrowseName:GetText(), BrowseMinLevel:GetText(), BrowseMaxLevel:GetText(), AuctionFrameBrowse.selectedInvtypeIndex, AuctionFrameBrowse.selectedClassIndex, AuctionFrameBrowse.selectedSubclassIndex, AuctionFrameBrowse.page, IsUsableCheckButton:GetChecked(), UIDropDownMenu_GetSelectedValue(BrowseDropDown));
+	AuctionFrameBrowse_SearchHelper(BrowseName:GetText(), BrowseMinLevel:GetText(), BrowseMaxLevel:GetText(), AuctionFrameBrowse.selectedInvtypeIndex, AuctionFrameBrowse.selectedClassIndex, AuctionFrameBrowse.selectedSubclassIndex, AuctionFrameBrowse.page, IsUsableCheckButton:GetChecked(), UIDropDownMenu_GetSelectedValue(BrowseDropDown), ExactMatchCheckButton:GetChecked());
 
 	-- Start "searching" messaging
 	AuctionFrameBrowse.isSearching = 1;

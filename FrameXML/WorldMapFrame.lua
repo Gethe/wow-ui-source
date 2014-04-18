@@ -259,8 +259,10 @@ function WorldMapFrame_OnLoad(self)
 	WorldMapFrame.BorderFrame.portrait:SetTexture("Interface\\QuestFrame\\UI-QuestLog-BookIcon");
 	WorldMapFrame.BorderFrame.CloseButton:SetScript("OnClick", function() HideUIPanel(WorldMapFrame); end);
 	
-	WorldMapPOIFrame:SetFrameLevel(WorldMapDetailFrame:GetFrameLevel() + 1);
-	WorldMapFrame.UIElementsFrame:SetFrameLevel(WorldMapDetailFrame:GetFrameLevel() + 2);
+	local frameLevel = WorldMapDetailFrame:GetFrameLevel();
+	WorldMapPlayersFrame:SetFrameLevel(frameLevel + 1);
+	WorldMapPOIFrame:SetFrameLevel(frameLevel + 2);
+	WorldMapFrame.UIElementsFrame:SetFrameLevel(frameLevel + 3);
 	
 	QUEST_POI_FRAME_WIDTH = WorldMapDetailFrame:GetWidth() * WORLDMAP_FULLMAP_SIZE;
 	QUEST_POI_FRAME_HEIGHT = WorldMapDetailFrame:GetHeight() * WORLDMAP_FULLMAP_SIZE;
@@ -1358,23 +1360,27 @@ function WorldMapButton_OnUpdate(self, elapsed)
 	else
 		WorldMapHighlight:Hide();
 	end
+	
+	local playersFrameWidth = WorldMapPlayersFrame:GetWidth();
+	local playersFrameHeight = WorldMapPlayersFrame:GetHeight();
+
 	--Position player
 	local playerX, playerY = GetPlayerMapPosition("player");
 	if ( (playerX == 0 and playerY == 0) ) then
 		WorldMapPlayerLower:Hide();
 		WorldMapPlayerUpper:Hide();
 	else
-		playerX = playerX * WorldMapDetailFrame:GetWidth();
-		playerY = -playerY * WorldMapDetailFrame:GetHeight();
+		playerX = playerX * playersFrameWidth;
+		playerY = -playerY * playersFrameHeight;
 
 		-- Position clear button to detect mouseovers
 		WorldMapPlayerLower:Show();
 		WorldMapPlayerUpper:Show();
-		WorldMapPlayerLower:SetPoint("CENTER", "WorldMapDetailFrame", "TOPLEFT", playerX, playerY);
-		WorldMapPlayerUpper:SetPoint("CENTER", "WorldMapDetailFrame", "TOPLEFT", playerX, playerY);
+		WorldMapPlayerLower:SetPoint("CENTER", WorldMapPlayersFrame, "TOPLEFT", playerX, playerY);
+		WorldMapPlayerUpper:SetPoint("CENTER", WorldMapPlayersFrame, "TOPLEFT", playerX, playerY);
 		UpdateWorldMapArrow(WorldMapPlayerLower.icon);
 		UpdateWorldMapArrow(WorldMapPlayerUpper.icon);
-		WorldMapPing:SetPoint("CENTER", "WorldMapDetailFrame", "TOPLEFT", playerX, playerY);
+		WorldMapPing:SetPoint("CENTER", WorldMapPlayersFrame, "TOPLEFT", playerX, playerY);
 	end
 
 	--Position groupmates
@@ -1390,9 +1396,9 @@ function WorldMapButton_OnUpdate(self, elapsed)
 			if ( (partyX == 0 and partyY == 0) or UnitIsUnit(unit, "player") ) then
 				partyMemberFrame:Hide();
 			else
-				partyX = partyX * WorldMapDetailFrame:GetWidth();
-				partyY = -partyY * WorldMapDetailFrame:GetHeight();
-				partyMemberFrame:SetPoint("CENTER", "WorldMapDetailFrame", "TOPLEFT", partyX, partyY);
+				partyX = partyX * playersFrameWidth;
+				partyY = -partyY * playersFrameHeight;
+				partyMemberFrame:SetPoint("CENTER", WorldMapPlayersFrame, "TOPLEFT", partyX, partyY);
 				local class = select(2, UnitClass(unit));
 				if ( class ) then
 					if ( UnitInParty(unit) ) then
@@ -1428,9 +1434,9 @@ function WorldMapButton_OnUpdate(self, elapsed)
 			if ( partyX == 0 and partyY == 0 ) then
 				partyMemberFrame:Hide();
 			else
-				partyX = partyX * WorldMapDetailFrame:GetWidth();
-				partyY = -partyY * WorldMapDetailFrame:GetHeight();
-				partyMemberFrame:SetPoint("CENTER", "WorldMapDetailFrame", "TOPLEFT", partyX, partyY);
+				partyX = partyX * playersFrameWidth;
+				partyY = -partyY * playersFrameHeight;
+				partyMemberFrame:SetPoint("CENTER", WorldMapPlayersFrame, "TOPLEFT", partyX, partyY);
 				local class = select(2, UnitClass(unit));
 				if ( class ) then
 					partyMemberFrame.icon:SetTexCoord(
@@ -1821,6 +1827,7 @@ function WorldMap_ToggleSizeUp()
 	WorldMapDetailFrame:SetScale(WORLDMAP_FULLMAP_SIZE);
 	WorldMapFrame.BorderFrame:SetSize(1022, 766);	
 	WorldMapFrameAreaFrame:SetScale(WORLDMAP_FULLMAP_SIZE);
+	WorldMapPlayersFrame:SetScale(WORLDMAP_FULLMAP_SIZE);	
 	WorldMapBlobFrame.xRatio = nil;		-- force hit recalculations
 	QUEST_POI_FRAME_WIDTH = WorldMapDetailFrame:GetWidth() * WORLDMAP_FULLMAP_SIZE;
 	QUEST_POI_FRAME_HEIGHT = WorldMapDetailFrame:GetHeight() * WORLDMAP_FULLMAP_SIZE;
@@ -1866,6 +1873,7 @@ function WorldMap_ToggleSizeDown()
 	-- adjust map frames
 	WorldMapDetailFrame:SetScale(WORLDMAP_WINDOWED_SIZE);
 	WorldMapFrameAreaFrame:SetScale(WORLDMAP_WINDOWED_SIZE);
+	WorldMapPlayersFrame:SetScale(WORLDMAP_WINDOWED_SIZE);
 	WorldMapBlobFrame.xRatio = nil;		-- force hit recalculations
 	QUEST_POI_FRAME_WIDTH = WorldMapDetailFrame:GetWidth() * WORLDMAP_WINDOWED_SIZE;
 	QUEST_POI_FRAME_HEIGHT = WorldMapDetailFrame:GetHeight() * WORLDMAP_WINDOWED_SIZE;
@@ -1915,12 +1923,10 @@ function WorldMapFrame_DisplayQuests(selectQuestId)
 			end
 		end
 		WorldMapBlobFrame:Show();
-		WorldMapPOIFrame:Show();		
-		--WorldMapTrackQuest:Show();		
+		WorldMapPOIFrame:Show();
 	else
 		WorldMapBlobFrame:Hide();
 		--WorldMapPOIFrame:Hide();		
-		--WorldMapTrackQuest:Hide();
 	end
 end
 
@@ -2035,14 +2041,12 @@ function WorldMapFrame_UpdateQuests()
 				numPOINumeric = numPOINumeric + 1;
 				local questText = "";
 				local dashText = "";
-				local reversedText;
 				local numLines;
 				for j = 1, numObjectives do
 					local text, objectiveType, finished = GetQuestLogLeaderBoard(j, questLogIndex);
 					if ( text and not finished ) then
-						reversedText = ReverseQuestObjective(text, objectiveType);
-						questText = questText..reversedText.."|n";
-						refFrame.objectives:SetText(reversedText);
+						questText = questText..text.."|n";
+						refFrame.objectives:SetText(text);
 						-- need to add 1 spacing's worth to height because for n number of lines there are n-1 spacings
 						numLines = (refFrame.objectives:GetHeight() + refFrame.lineSpacing) / refFrame.lineHeight;
 						-- round numLines to the closest integer
@@ -2128,8 +2132,6 @@ function WorldMapFrame_SelectQuestFrame(questFrame, userAction)
 		-- need to select the appropriate poi in the objectives tracker
 		--QuestPOI_SelectButtonByQuestId("WatchFrameLines", questFrame.questId, true);
 	end	
-	-- track quest checkbark
-	WorldMapTrackQuest:SetChecked(IsQuestWatched(questFrame.questLogIndex));
 	-- quest blob
 	if ( questFrame.completed ) then
 		--WorldMapBlobFrame:DrawBlob(questFrame.questId, false);
@@ -2180,7 +2182,7 @@ function WorldMapQuestPOI_SetTooltip(poiButton, questLogIndex, numObjectives)
 			for i = 1, numItemDropTooltips do
 				text, objectiveType, finished = GetQuestLogItemDrop(i, questLogIndex);
 				if ( text and not finished ) then
-					WorldMapTooltip:AddLine("- "..ReverseQuestObjective(text, objectiveType), 1, 1, 1, true);
+					WorldMapTooltip:AddLine(QUEST_DASH..text, 1, 1, 1, true);
 				end
 			end
 		else
@@ -2194,7 +2196,7 @@ function WorldMapQuestPOI_SetTooltip(poiButton, questLogIndex, numObjectives)
 					text, objectiveType, finished = GetQuestLogLeaderBoard(i, questLogIndex);
 				end
 				if ( text and not finished ) then
-					WorldMapTooltip:AddLine("- "..ReverseQuestObjective(text, objectiveType), 1, 1, 1, true);
+					WorldMapTooltip:AddLine(QUEST_DASH..text, 1, 1, 1, true);
 				end
 			end		
 		end
@@ -2342,62 +2344,55 @@ function WorldMapTitleDropDown_ResetPosition()
 	WorldMapScreenAnchor:StopMovingOrSizing();
 end
 
-function WorldMapTrackQuest_Toggle(isChecked)
-	local questIndex = WORLDMAP_SETTINGS.selectedQuest.questLogIndex;
-	local questId = GetSuperTrackedQuestID();
-	if ( isChecked ) then
-		if ( GetNumQuestWatches() > MAX_WATCHABLE_QUESTS ) then
-			UIErrorsFrame:AddMessage(format(QUEST_WATCH_TOO_MANY, MAX_WATCHABLE_QUESTS), 1.0, 0.1, 0.1, 1.0);
-			WorldMapTrackQuest:SetChecked(false);
-			return;
-		end
-		if ( LOCAL_MAP_QUESTS["zone"] == GetCurrentMapZone() ) then
-			LOCAL_MAP_QUESTS[questId] = true;
-		end
-		AddQuestWatch(questIndex);	
-	else
-		LOCAL_MAP_QUESTS[questId] = nil;
-		RemoveQuestWatch(questIndex);
-	end
-	WatchFrame_Update();
-	--QuestLogQuests_Update();
-	--WorldMapFrame_DisplayQuests(questId);
-end
-
 -- *****************************************************************************************************
 -- ***** PAN AND ZOOM
 -- *****************************************************************************************************
 local MAX_ZOOM = 1.495;
 
 function WorldMapScrollFrame_OnMouseWheel(self, delta)
-	local scale = WorldMapDetailFrame:GetScale();
-	scale = scale + delta * 0.1;
-	scale = max(WORLDMAP_SETTINGS.size, scale);
-	scale = min(MAX_ZOOM, scale);
-	WorldMapDetailFrame:SetScale(scale);
-	QUEST_POI_FRAME_WIDTH = WorldMapDetailFrame:GetWidth() * scale;
-	QUEST_POI_FRAME_HEIGHT = WorldMapDetailFrame:GetHeight() * scale;
 	local scrollFrame = WorldMapScrollFrame;
+	local oldScrollH = scrollFrame:GetHorizontalScroll();
+	local oldScrollV = scrollFrame:GetVerticalScroll();
+
+	-- get the mouse position on the frame, with 0,0 at top left
+	local cursorX, cursorY = GetCursorPosition();
+	local relativeFrame;
+	if ( WorldMapFrame_InWindowedMode() ) then
+		relativeFrame = UIParent;
+	else
+		relativeFrame = WorldMapFrame;
+	end
+	local frameX = cursorX / relativeFrame:GetScale() - scrollFrame:GetLeft();
+	local frameY = scrollFrame:GetTop() - cursorY / relativeFrame:GetScale();
+
+	local oldScale = WorldMapDetailFrame:GetScale();
+	local newScale = oldScale + delta * 0.1;
+	newScale = max(WORLDMAP_SETTINGS.size, newScale);
+	newScale = min(MAX_ZOOM, newScale);
+	WorldMapDetailFrame:SetScale(newScale);
+	QUEST_POI_FRAME_WIDTH = WorldMapDetailFrame:GetWidth() * newScale;
+	QUEST_POI_FRAME_HEIGHT = WorldMapDetailFrame:GetHeight() * newScale;
+
 	scrollFrame.maxX = QUEST_POI_FRAME_WIDTH - 1002 * WORLDMAP_SETTINGS.size;
 	scrollFrame.maxY = QUEST_POI_FRAME_HEIGHT - 668 * WORLDMAP_SETTINGS.size;
 	scrollFrame.zoomedIn = abs(WorldMapDetailFrame:GetScale() - WORLDMAP_SETTINGS.size) > 0.05;
 	scrollFrame.continent = GetCurrentMapContinent();
 	scrollFrame.mapID = GetCurrentMapAreaID();
 
-	-- fix position if needed
-	local x = scrollFrame:GetHorizontalScroll();
-	if ( x < 0 ) then
-		scrollFrame:SetHorizontalScroll(0);
-	elseif ( x > scrollFrame.maxX ) then
-		scrollFrame:SetHorizontalScroll(scrollFrame.maxX);
-	end
-	local y = scrollFrame:GetVerticalScroll();
-	if ( y < 0 ) then
-		scrollFrame:SetVerticalScroll(0);
-	elseif ( y > scrollFrame.maxY ) then
-		scrollFrame:SetVerticalScroll(scrollFrame.maxY);
-	end
+	-- figure out new scroll values
+	local scaleChange = newScale / oldScale;
+	local newScrollH = scaleChange * ( frameX + oldScrollH ) - frameX;
+	local newScrollV = scaleChange * ( frameY + oldScrollV ) - frameY;
+	-- clamp scroll values
+	newScrollH = min(newScrollH, scrollFrame.maxX);
+	newScrollH = max(0, newScrollH);
+	newScrollV = min(newScrollV, scrollFrame.maxY);
+	newScrollV = max(0, newScrollV);
+	-- set scroll values
+	scrollFrame:SetHorizontalScroll(newScrollH);
+	scrollFrame:SetVerticalScroll(newScrollV);
 
+	WorldMapFrame_Update();
 	WorldMapScrollFrame_ReanchorQuestPOIs();
 	WorldMapBlobFrame_CalculateHitTranslations();
 	WorldMapBlobFrame_UpdateBlobs();
@@ -2411,6 +2406,7 @@ function WorldMapScrollFrame_ResetZoom()
 	WorldMapScrollFrame:SetHorizontalScroll(0);
 	WorldMapScrollFrame:SetVerticalScroll(0);
 	WorldMapScrollFrame.zoomedIn = false;
+	WorldMapFrame_Update();
 	WorldMapScrollFrame_ReanchorQuestPOIs();
 	WorldMapBlobFrame_CalculateHitTranslations();
 	WorldMapBlobFrame_UpdateBlobs();
@@ -2739,7 +2735,7 @@ function WorldMapTrackingOptionsDropDown_OnClick(self)
 	
 	if (value == "quests") then
 		SetCVar("questPOI", checked and "1" or "0");
-		WatchFrame_Update();
+		QuestObjectiveTracker_UpdatePOIs();
 		QuestMapFrame_UpdateAll();
 	elseif (value == "bosses") then
 		SetCVar("showBosses", checked and "1" or "0");

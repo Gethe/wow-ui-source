@@ -25,11 +25,6 @@ OBJECTIVE_TRACKER_COLOR = {
 	OBJECTIVE_TRACKER_COLOR["Header"].reverse = OBJECTIVE_TRACKER_COLOR["HeaderHighlight"];
 	OBJECTIVE_TRACKER_COLOR["HeaderHighlight"].reverse = OBJECTIVE_TRACKER_COLOR["Header"];
 
-OBJECTIVE_TRACKER_SORTING = 0;
-OBJECTIVE_TRACKER_FILTER = 0;
-OBJECTIVE_TRACKER_FILTER_ACHIEVEMENTS = 1;
-OBJECTIVE_TRACKER_FILTER_COMPLETED_QUESTS = 2;
-OBJECTIVE_TRACKER_FILTER_REMOTE_ZONES = 4;
 
 -- these are generally from events
 OBJECTIVE_TRACKER_UPDATE_QUEST						= 0x0001;
@@ -256,7 +251,7 @@ function DEFAULT_OBJECTIVE_TRACKER_MODULE:AddObjective(block, objectiveKey, text
 		line.hideDash = nil;
 	end
 	-- set the text
-	local height = self:SetStringText(line.Text, text, useFullHeight, colorStyle);
+	local height = self:SetStringText(line.Text, text, useFullHeight, colorStyle, block.isHighlighted);
 	line:SetHeight(height);
 	block.height = block.height + height + block.module.lineSpacing;
 	-- anchor the line
@@ -270,7 +265,7 @@ function DEFAULT_OBJECTIVE_TRACKER_MODULE:AddObjective(block, objectiveKey, text
 	return line;
 end
 
-function DEFAULT_OBJECTIVE_TRACKER_MODULE:SetStringText(fontString, text, useFullHeight, colorStyle)
+function DEFAULT_OBJECTIVE_TRACKER_MODULE:SetStringText(fontString, text, useFullHeight, colorStyle, useHighlight)
 	fontString:SetHeight(0);
 	fontString:SetText(text);
 	stringHeight = fontString:GetHeight();
@@ -279,6 +274,9 @@ function DEFAULT_OBJECTIVE_TRACKER_MODULE:SetStringText(fontString, text, useFul
 		stringHeight = OBJECTIVE_TRACKER_DOUBLE_LINE_HEIGHT;
 	end
 	colorStyle = colorStyle or OBJECTIVE_TRACKER_COLOR["Normal"];
+	if ( useHighlight ) then
+		colorStyle = colorStyle.reverse;
+	end
 	if ( fontString.colorStyle ~= colorStyle ) then
 		fontString:SetTextColor(colorStyle.r, colorStyle.g, colorStyle.b);
 		fontString.colorStyle = colorStyle;
@@ -289,7 +287,7 @@ end
 -- ***** BLOCK HEADER
 
 function DEFAULT_OBJECTIVE_TRACKER_MODULE:SetBlockHeader(block, text)
-	local height = self:SetStringText(block.HeaderText, text, nil, OBJECTIVE_TRACKER_COLOR["Header"]);
+	local height = self:SetStringText(block.HeaderText, text, nil, OBJECTIVE_TRACKER_COLOR["Header"], block.isHighlighted);
 	block.height = height;
 end
 
@@ -297,26 +295,36 @@ function DEFAULT_OBJECTIVE_TRACKER_MODULE:OnBlockHeaderClick(block, mouseButton)
 end
 
 function DEFAULT_OBJECTIVE_TRACKER_MODULE:OnBlockHeaderEnter(block)
-	local headerColorStyle = OBJECTIVE_TRACKER_COLOR["HeaderHighlight"];
-	block.HeaderText:SetTextColor(headerColorStyle.r, headerColorStyle.g, headerColorStyle.b);
-	block.HeaderText.colorStyle = headerColorStyle;
+	block.isHighlighted = true;
+	if ( block.HeaderText ) then
+		local headerColorStyle = OBJECTIVE_TRACKER_COLOR["HeaderHighlight"];
+		block.HeaderText:SetTextColor(headerColorStyle.r, headerColorStyle.g, headerColorStyle.b);
+		block.HeaderText.colorStyle = headerColorStyle;
+	end
 	for objectiveKey, line in pairs(block.lines) do
 		local colorStyle = line.Text.colorStyle.reverse;
 		line.Text:SetTextColor(colorStyle.r, colorStyle.g, colorStyle.b);
 		line.Text.colorStyle = colorStyle;
-		line.Dash:SetTextColor(OBJECTIVE_TRACKER_COLOR["NormalHighlight"].r, OBJECTIVE_TRACKER_COLOR["NormalHighlight"].g, OBJECTIVE_TRACKER_COLOR["NormalHighlight"].b);
+		if ( line.Dash ) then
+			line.Dash:SetTextColor(OBJECTIVE_TRACKER_COLOR["NormalHighlight"].r, OBJECTIVE_TRACKER_COLOR["NormalHighlight"].g, OBJECTIVE_TRACKER_COLOR["NormalHighlight"].b);
+		end
 	end
 end
 
 function DEFAULT_OBJECTIVE_TRACKER_MODULE:OnBlockHeaderLeave(block)
-	local headerColorStyle = OBJECTIVE_TRACKER_COLOR["Header"];
-	block.HeaderText:SetTextColor(headerColorStyle.r, headerColorStyle.g, headerColorStyle.b);
-	block.HeaderText.colorStyle = headerColorStyle;
+	block.isHighlighted = nil;
+	if ( block.HeaderText ) then
+		local headerColorStyle = OBJECTIVE_TRACKER_COLOR["Header"];
+		block.HeaderText:SetTextColor(headerColorStyle.r, headerColorStyle.g, headerColorStyle.b);
+		block.HeaderText.colorStyle = headerColorStyle;
+	end
 	for objectiveKey, line in pairs(block.lines) do
 		local colorStyle = line.Text.colorStyle.reverse;
 		line.Text:SetTextColor(colorStyle.r, colorStyle.g, colorStyle.b);
 		line.Text.colorStyle = colorStyle;
-		line.Dash:SetTextColor(OBJECTIVE_TRACKER_COLOR["Normal"].r, OBJECTIVE_TRACKER_COLOR["Normal"].g, OBJECTIVE_TRACKER_COLOR["Normal"].b);
+		if ( line.Dash ) then
+			line.Dash:SetTextColor(OBJECTIVE_TRACKER_COLOR["Normal"].r, OBJECTIVE_TRACKER_COLOR["Normal"].g, OBJECTIVE_TRACKER_COLOR["Normal"].b);
+		end
 	end	
 end
 
@@ -454,7 +462,6 @@ function ObjectiveTracker_OnLoad(self)
 	self.HeaderMenu:SetFrameLevel(frameLevel + 2);
 
 	self:RegisterEvent("PLAYER_ENTERING_WORLD");
-	self:RegisterEvent("VARIABLES_LOADED");
 
 	UIDropDownMenu_Initialize(self.BlockDropDown, nil, "MENU");
 	QuestPOI_Initialize(self.BlocksFrame, function(self) self:SetScale(0.9); self:RegisterForClicks("LeftButtonUp", "RightButtonUp"); end );
@@ -478,6 +485,7 @@ function ObjectiveTracker_Initialize(self)
 	self:RegisterEvent("SCENARIO_UPDATE");
 	self:RegisterEvent("SCENARIO_CRITERIA_UPDATE");
 	self:RegisterEvent("TRACKED_ACHIEVEMENT_UPDATE");
+	self:RegisterEvent("ZONE_CHANGED_NEW_AREA");
 	
 	self.initialized = true;
 end
@@ -525,17 +533,18 @@ function ObjectiveTracker_OnEvent(self, event, ...)
 		else
 			ObjectiveTracker_Update(OBJECTIVE_TRACKER_UPDATE_SCENARIO);
 		end
+	elseif ( event == "ZONE_CHANGED_NEW_AREA" ) then
+		SortQuestWatches();
 	elseif ( event == "PLAYER_ENTERING_WORLD" ) then
-		ObjectiveTrackerFrame:SetAlpha(1);
-		WatchFrame:SetAlpha(0);
 		if ( not self.initialized ) then
 			ObjectiveTracker_Initialize(self);
 		end
 		ObjectiveTracker_Update();
-	elseif ( event == "VARIABLES_LOADED" ) then
-		OBJECTIVE_TRACKER_FILTER = tonumber(GetCVar("trackerFilter"));
-		ObjectiveTracker_Update();
 	end
+end
+
+function ObjectiveTracker_OnSizeChanged(self)
+	ObjectiveTracker_Update();
 end
 
 function ObjectiveTrackerHeader_OnAnimFinished(self)
@@ -573,10 +582,6 @@ function ObjectiveTracker_Expand()
 	ObjectiveTrackerFrame.HeaderMenu.Title:Hide();
 end
 
-function ObjectiveTracker_OptionsButton_OnClick(self)
-	ObjectiveTracker_ToggleDropDown(ObjectiveTrackerFrame, ObjectiveTracker_OnOpenOptionsDropDown);
-end
-
 function ObjectiveTracker_ToggleDropDown(frame, handlerFunc)
 	local dropDown = ObjectiveTrackerBlockDropDown;
 	if ( dropDown.activeFrame ~= frame ) then
@@ -587,103 +592,8 @@ function ObjectiveTracker_ToggleDropDown(frame, handlerFunc)
 	ToggleDropDownMenu(1, nil, dropDown, "cursor", 3, -3);
 end
 
-function ObjectiveTracker_OnOpenOptionsDropDown (self)
-	local info = UIDropDownMenu_CreateInfo();
-	local sorting = GetCVar("trackerSorting") + 1;	-- lua_enum
-	-- sort label
-	info.text = TRACKER_SORT_LABEL;
-	info.isTitle = 1;
-	info.notCheckable = 1;
-	UIDropDownMenu_AddButton(info, UIDROPDOWN_MENU_LEVEL);
-	-- sort: proximity
-	info = UIDropDownMenu_CreateInfo();
-	info.checked = (sorting == LE_TRACKER_SORTING_PROXIMITY);
-	info.text = TRACKER_SORT_PROXIMITY;
-	info.tooltipTitle = TRACKER_SORT_PROXIMITY;
-	info.tooltipText = TOOLTIP_TRACKER_SORT_PROXIMITY;
-	info.arg1 = LE_TRACKER_SORTING_PROXIMITY;
-	info.func = ObjectiveTracker_SetSorting;
-	UIDropDownMenu_AddButton(info, UIDROPDOWN_MENU_LEVEL);
-	-- sort: difficulty high
-	info = UIDropDownMenu_CreateInfo();
-	info.checked = (sorting == LE_TRACKER_SORTING_DIFFICULTY_HIGH);	
-	info.text = TRACKER_SORT_DIFFICULTY_HIGH;
-	info.tooltipTitle = TRACKER_SORT_DIFFICULTY_HIGH;
-	info.tooltipText = TOOLTIP_TRACKER_SORT_DIFFICULTY_HIGH;
-	info.arg1 = LE_TRACKER_SORTING_DIFFICULTY_HIGH;
-	info.func = ObjectiveTracker_SetSorting;
-	UIDropDownMenu_AddButton(info, UIDROPDOWN_MENU_LEVEL);
-	-- sort: difficulty low
-	info = UIDropDownMenu_CreateInfo();
-	info.checked = (sorting == LE_TRACKER_SORTING_DIFFICULTY_LOW);
-	info.text = TRACKER_SORT_DIFFICULTY_LOW;
-	info.tooltipTitle = TRACKER_SORT_DIFFICULTY_LOW;
-	info.tooltipText = TOOLTIP_TRACKER_SORT_DIFFICULTY_LOW;
-	info.arg1 = LE_TRACKER_SORTING_DIFFICULTY_LOW;
-	info.func = ObjectiveTracker_SetSorting;
-	UIDropDownMenu_AddButton(info, UIDROPDOWN_MENU_LEVEL);
-	-- sort: manual	
-	info = UIDropDownMenu_CreateInfo();
-	info.checked = (sorting == LE_TRACKER_SORTING_MANUAL);
-	info.text = TRACKER_SORT_MANUAL;
-	info.tooltipTitle = TRACKER_SORT_MANUAL;
-	info.tooltipText = TOOLTIP_TRACKER_SORT_MANUAL;	
-	info.arg1 = LE_TRACKER_SORTING_MANUAL;
-	info.func = ObjectiveTracker_SetSorting;
-	UIDropDownMenu_AddButton(info, UIDROPDOWN_MENU_LEVEL);
-	-- filter label
-	info.text = TRACKER_FILTER_LABEL;
-	info.checked = false;
-	info.isTitle = 1;
-	info.notCheckable = 1;
-	UIDropDownMenu_AddButton(info, UIDROPDOWN_MENU_LEVEL);
-	-- filter: achievements
-	info = UIDropDownMenu_CreateInfo();
-	info.checked = (band(OBJECTIVE_TRACKER_FILTER, OBJECTIVE_TRACKER_FILTER_ACHIEVEMENTS) == OBJECTIVE_TRACKER_FILTER_ACHIEVEMENTS);
-	info.text = TRACKER_FILTER_ACHIEVEMENTS;
-	info.tooltipTitle = TRACKER_FILTER_ACHIEVEMENTS;
-	info.tooltipText = TOOLTIP_TRACKER_FILTER_ACHIEVEMENTS;
-	info.arg1 = OBJECTIVE_TRACKER_FILTER_ACHIEVEMENTS;
-	info.func = ObjectiveTracker_SetFilter;
-	info.isNotRadio = 1;
-	UIDropDownMenu_AddButton(info, UIDROPDOWN_MENU_LEVEL);
-	-- filter: completed quests
-	info = UIDropDownMenu_CreateInfo();
-	info.checked = (band(OBJECTIVE_TRACKER_FILTER, OBJECTIVE_TRACKER_FILTER_COMPLETED_QUESTS) == OBJECTIVE_TRACKER_FILTER_COMPLETED_QUESTS);
-	info.text = TRACKER_FILTER_COMPLETED_QUESTS;
-	info.tooltipTitle = TRACKER_FILTER_COMPLETED_QUESTS;
-	info.tooltipText = TOOLTIP_TRACKER_FILTER_COMPLETED_QUESTS;
-	info.arg1 = OBJECTIVE_TRACKER_FILTER_COMPLETED_QUESTS;
-	info.func = ObjectiveTracker_SetFilter;
-	info.isNotRadio = 1;
-	UIDropDownMenu_AddButton(info, UIDROPDOWN_MENU_LEVEL);	
-	-- filter: current zone
-	info = UIDropDownMenu_CreateInfo();
-	info.checked = (band(OBJECTIVE_TRACKER_FILTER, OBJECTIVE_TRACKER_FILTER_REMOTE_ZONES) == OBJECTIVE_TRACKER_FILTER_REMOTE_ZONES);
-	info.text = TRACKER_FILTER_REMOTE_ZONES;
-	info.tooltipTitle = TRACKER_FILTER_REMOTE_ZONES;
-	info.tooltipText = TOOLTIP_TRACKER_FILTER_REMOTE_ZONES;
-	info.arg1 = OBJECTIVE_TRACKER_FILTER_REMOTE_ZONES;
-	info.func = ObjectiveTracker_SetFilter;
-	info.isNotRadio = 1;
-	UIDropDownMenu_AddButton(info, UIDROPDOWN_MENU_LEVEL);	
-end
-
-function ObjectiveTracker_SetSorting(button, arg1)
-	SetCVar("trackerSorting", arg1 - 1);	-- lua_enum
-	if ( arg1 ~= LE_TRACKER_SORTING_MANUAL ) then
-		SortQuestWatches();
-	end
-end
-
-function ObjectiveTracker_SetFilter(button, arg1)
-	if ( band(OBJECTIVE_TRACKER_FILTER, arg1) == arg1 ) then
-		OBJECTIVE_TRACKER_FILTER = OBJECTIVE_TRACKER_FILTER - arg1;
-	else
-		OBJECTIVE_TRACKER_FILTER = OBJECTIVE_TRACKER_FILTER + arg1;
-	end
-	SetCVar("trackerFilter", OBJECTIVE_TRACKER_FILTER);
-	ObjectiveTracker_Update();
+function ObjectiveTracker_SetWidth(width)
+	-- TODO
 end
 
 -- *****************************************************************************************************

@@ -10,17 +10,23 @@ ACTIVITY_RETURN_VALUES = {
 ----------Base Frame
 -------------------------------------------------------
 function LFGListFrame_OnLoad(self)
+	self:RegisterEvent("PARTY_LEADER_CHANGED");
 	self:RegisterEvent("LFG_LIST_AVAILABILITY_UPDATE");
+	self:RegisterEvent("LFG_LIST_ACTIVE_ENTRY_UPDATE");
+	self:RegisterEvent("LFG_LIST_ENTRY_CREATION_FAILED");
 	LFGListFrame_SetActivePanel(self, self.NothingAvailable);
 end
 
 function LFGListFrame_OnEvent(self, event, ...)
 	if ( event == "LFG_LIST_AVAILABILITY_UPDATE" ) then
-		if ( #C_LFGList.GetAvailableCategories() == 0 ) then
-			LFGListFrame_SetActivePanel(self, self.NothingAvailable);
-		elseif ( self.activePanel == self.NothingAvailable ) then
-			LFGListFrame_SetActivePanel(self, self.CategorySelection);
+		LFGListFrame_FixPanelValid(self);
+	elseif ( event == "LFG_LIST_ACTIVE_ENTRY_UPDATE" ) then
+		LFGListFrame_FixPanelValid(self);	--If our current panel isn't valid, change it.
+		if ( C_LFGList.GetActiveEntryInfo() ) then
+			self.EntryCreation.WorkingCover:Hide();
 		end
+	elseif ( event == "LFG_LIST_ENTRY_CREATION_FAILED" ) then
+		self.EntryCreation.WorkingCover:Hide();
 	end
 	
 	--Dispatch the event to our currently active panel
@@ -43,6 +49,49 @@ function LFGListFrame_SetActivePanel(self, panel)
 	self.activePanel:Show();
 end
 
+function LFGListFrame_IsPanelValid(self, panel)
+	local listed = C_LFGList.GetActiveEntryInfo();
+
+	if ( listed and panel ~= self.ApplicationViewer and not (panel == self.EntryCreation and LFGListEntryCreation_IsEditMode(self.EntryCreation)) ) then
+		return false;
+	end
+
+	if ( not listed and (panel == self.ApplicationViewer or
+			(panel == self.EntryCreation and LFGListEntryCreation_IsEditMode(self.EntryCreation)) ) ) then
+		return false;
+	end
+
+	if ( #C_LFGList.GetAvailableCategories() == 0 ) then
+		if ( panel == self.CategorySelection ) then
+			return false;
+		end
+	else
+		if ( panel == self.NothingAvailable ) then
+			return false;
+		end
+	end
+
+	return true;
+end
+
+function LFGListFrame_GetBestPanel(self)
+	local listed = C_LFGList.GetActiveEntryInfo();
+
+	if ( listed ) then
+		return self.ApplicationViewer;
+	elseif ( #C_LFGList.GetAvailableCategories() == 0 ) then
+		return self.NothingAvailable;
+	else
+		return self.CategorySelection;
+	end
+end
+
+function LFGListFrame_FixPanelValid(self)
+	if ( not LFGListFrame_IsPanelValid(self, self.activePanel) ) then
+		LFGListFrame_SetActivePanel(self, LFGListFrame_GetBestPanel(self));
+	end
+end
+
 -------------------------------------------------------
 ----------Category selection
 -------------------------------------------------------
@@ -55,6 +104,10 @@ function LFGListCategorySelection_OnEvent(self, event, ...)
 	if ( event == "LFG_LIST_AVAILABILITY_UPDATE" ) then
 		LFGListCategorySelection_UpdateCategoryButtons(self);
 	end
+end
+
+function LFGListCategorySelection_OnShow(self)
+	LFGListCategorySelection_UpdateCategoryButtons(self);
 end
 
 function LFGListCategorySelection_UpdateCategoryButtons(self)
@@ -123,6 +176,7 @@ function LFGListCategorySelectionStartGroupButton_OnClick(self)
 
 	local entryCreation = panel:GetParent().EntryCreation;
 	LFGListEntryCreation_Clear(entryCreation);
+	LFGListEntryCreation_SetEditMode(entryCreation, false);
 	LFGListEntryCreation_Select(entryCreation, panel.selectedCategory);
 	LFGListFrame_SetActivePanel(panel:GetParent(), entryCreation);
 end
@@ -257,9 +311,124 @@ function LFGListEntryCreation_OnActivitySelected(self, activityID)
 	LFGListEntryCreation_Select(self, nil, nil, activityID);
 end
 
+function LFGListEntryCreation_ListGroup(self)
+	if ( LFGListEntryCreation_IsEditMode(self) ) then
+		C_LFGList.UpdateListing(self.selectedActivity, self.Name:GetText(), tonumber(self.ItemLevel.EditBox:GetText()) or 0, self.VoiceChat.EditBox:GetText(), self.Description.EditBox:GetText());
+		LFGListFrame_SetActivePanel(self:GetParent(), self:GetParent().ApplicationViewer);
+	else
+		C_LFGList.CreateListing(self.selectedActivity, self.Name:GetText(), tonumber(self.ItemLevel.EditBox:GetText()) or 0, self.VoiceChat.EditBox:GetText(), self.Description.EditBox:GetText());
+		self.WorkingCover:Show();
+	end
+end
+
+function LFGListEntryCreation_SetEditMode(self, editMode)
+	self.editMode = editMode;
+	if ( editMode ) then
+		local active, activityID, ilvl, name, comment, voiceChat = C_LFGList.GetActiveEntryInfo();
+		assert(active);
+
+		--Update the dropdowns
+		LFGListEntryCreation_Select(self, nil, nil, activityID);
+		UIDropDownMenu_DisableDropDown(self.CategoryDropDown);
+		UIDropDownMenu_DisableDropDown(self.GroupDropDown);
+		UIDropDownMenu_DisableDropDown(self.ActivityDropDown);
+
+		--Update edit boxes
+		self.Name:SetText(name);
+		self.ItemLevel.EditBox:SetText(ilvl == 0 and "" or ilvl);
+		self.VoiceChat.EditBox:SetText(voiceChat);
+		self.Description.EditBox:SetText(comment);
+
+		self.ListGroupButton:SetText(DONE_EDITING);
+	else
+		UIDropDownMenu_EnableDropDown(self.CategoryDropDown);
+		UIDropDownMenu_EnableDropDown(self.GroupDropDown);
+		UIDropDownMenu_EnableDropDown(self.ActivityDropDown);
+		self.ListGroupButton:SetText(LIST_GROUP);
+	end
+end
+
+function LFGListEntryCreation_IsEditMode(self)
+	return self.editMode;
+end
+
 function LFGListEntryCreationCancelButton_OnClick(self)
 	local panel = self:GetParent();
-	LFGListFrame_SetActivePanel(panel:GetParent(), panel:GetParent().CategorySelection);
+	if ( LFGListEntryCreation_IsEditMode(panel) ) then
+		LFGListFrame_SetActivePanel(panel:GetParent(), panel:GetParent().ApplicationViewer);
+	else
+		LFGListFrame_SetActivePanel(panel:GetParent(), panel:GetParent().CategorySelection);
+	end
+end
+
+function LFGListEntryCreationListGroupButton_OnClick(self)
+	LFGListEntryCreation_ListGroup(self:GetParent());
+end
+
+-------------------------------------------------------
+----------Application Viewing
+-------------------------------------------------------
+function LFGListApplicationViewer_OnEvent(self, event, ...)
+	if ( event == "LFG_LIST_ACTIVE_ENTRY_UPDATE" ) then
+		LFGListApplicationViewer_UpdateInfo(self);
+	elseif ( event == "PARTY_LEADER_CHANGED" ) then
+		LFGListApplicationViewer_UpdateAvailability(self);
+	end
+end
+
+function LFGListApplicationViewer_OnShow(self)
+	LFGListApplicationViewer_UpdateInfo(self);
+	LFGListApplicationViewer_UpdateAvailability(self);
+end
+
+function LFGListApplicationViewer_UpdateInfo(self)
+	local active, activityID, ilvl, name, comment, voiceChat = C_LFGList.GetActiveEntryInfo();
+	assert(active);
+	self.EntryName:SetText(name);
+	self.ActivityName:SetText(select(ACTIVITY_RETURN_VALUES.fullName, C_LFGList.GetActivityInfo(activityID)));
+	self.DescriptionFrame.Text:SetText(comment);
+
+	local hasRestrictions = false;
+	if ( ilvl == 0 ) then
+		self.ItemLevel:SetText("");
+		self.VoiceChatFrame:SetPoint("TOPLEFT", self.ItemLevel, "TOPRIGHT", 0, 0);
+	else
+		hasRestrictions = true;
+		self.ItemLevel:SetFormattedText(LFG_LIST_ITEM_LEVEL_CURRENT, ilvl);
+		self.VoiceChatFrame:SetPoint("TOPLEFT", self.ItemLevel, "TOPRIGHT", 20, 0);
+	end
+
+	if ( voiceChat == "" ) then
+		self.VoiceChatFrame.tooltip = nil;
+		self.VoiceChatFrame:Hide();
+	else
+		hasRestrictions = true;
+		self.VoiceChatFrame.tooltip = voiceChat;
+		self.VoiceChatFrame:Show();
+	end
+
+	if ( hasRestrictions ) then
+		self.DescriptionFrame:SetHeight(14);
+	else
+		self.DescriptionFrame:SetHeight(28);
+	end
+end
+
+function LFGListApplicationViewer_UpdateAvailability(self)
+	if ( UnitIsGroupLeader("player") ) then
+		self.RemoveEntryButton:Show();
+		self.EditButton:Show();
+	else
+		self.RemoveEntryButton:Hide();
+		self.EditButton:Hide();
+	end
+end
+
+function LFGListApplicationViewerEditButton_OnClick(self)
+	local panel = self:GetParent();
+	local entryCreation = panel:GetParent().EntryCreation;
+	LFGListEntryCreation_SetEditMode(entryCreation, true);
+	LFGListFrame_SetActivePanel(panel:GetParent(), entryCreation);
 end
 
 -------------------------------------------------------
