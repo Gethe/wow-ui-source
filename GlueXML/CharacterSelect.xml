@@ -858,7 +858,7 @@
 							<Button name="CharSelectCreateCharacterButton" inherits="GlueButtonSmallTemplate" hidden="true" text="CREATE_NEW_CHARACTER">
 								<Size x="200" y="45"/>
 								<Anchors>
-									<Anchor point="BOTTOM" x="0" y="15"/>
+									<Anchor point="BOTTOM" x="-18" y="15"/>
 								</Anchors>
 								<Scripts>
 									<OnLoad>
@@ -872,7 +872,83 @@
 									</OnUpdate>
 								</Scripts>
 							</Button>
-							
+							<Button name="CharSelectBackToActiveButton" inherits="GlueButtonSmallTemplate" hidden="true" text="BACK_TO_ACTIVE_CHARACTERS">
+								<Size x="200" y="45"/>
+								<Anchors>
+									<Anchor point="BOTTOM" x="0" y="15"/>
+								</Anchors>
+								<Scripts>
+									<OnLoad>
+										self:SetWidth(self:GetTextWidth() + 50);
+									</OnLoad>
+									<OnClick>
+										CharacterSelect_EndCharacterUndelete();
+									</OnClick>
+									<OnUpdate>
+										CharacterSelect_DeathKnightSwap(self);
+									</OnUpdate>
+								</Scripts>
+							</Button>
+							<Button name="CharSelectUndeleteCharacterButton" inherits="GluePanelButtonTemplate" hidden="true" motionScriptsWhileDisabled="true">
+								<Size x="52" y="45"/>
+								<Anchors>
+									<Anchor point="LEFT" relativeTo="CharSelectCreateCharacterButton" relativePoint="RIGHT" x="-18" y="0"/>
+								</Anchors>
+								<Layers>
+									<Layer level="OVERLAY">
+										<Texture atlas="characterundelete-RestoreButton" useAtlasSize="true">
+											<Anchors>
+												<Anchor point="CENTER" x="-2" y="2" />
+											</Anchors>
+										</Texture>
+									</Layer>
+								</Layers>
+								<Scripts>
+									<OnEnter>
+										GlueTooltip:SetOwner(self);
+										GlueTooltip:SetText(self.tooltip, 1.0, 1.0, 1.0);
+									</OnEnter>
+									<OnLeave>
+										GlueTooltip:Hide();
+									</OnLeave>
+									<OnClick>
+										CharacterSelect_StartCharacterUndelete();
+									</OnClick>
+									<OnLoad>
+										if ( not self:IsEnabled() ) then
+											CharacterSelectPanelButton_DeathKnightSwap(self, "Interface\\Glues\\Common\\Glue-Panel-Button-Disabled");
+										end
+									</OnLoad>
+									<OnMouseDown>
+										self.down = true;
+										if ( self:IsEnabled() ) then
+											CharacterSelectPanelButton_DeathKnightSwap(self, "Interface\\Glues\\Common\\Glue-Panel-Button-Down");
+										end
+									</OnMouseDown>
+									<OnMouseUp>
+										self.down = false;
+										if ( self:IsEnabled() ) then
+											CharacterSelectPanelButton_DeathKnightSwap(self, "Interface\\Glues\\Common\\Glue-Panel-Button-Up");
+										end
+									</OnMouseUp>
+									<OnShow>
+										self.down = false;
+										if ( self:IsEnabled() ) then
+											-- we need to reset our textures just in case we were hidden before a mouse up fired
+											CharacterSelectPanelButton_DeathKnightSwap(self, "Interface\\Glues\\Common\\Glue-Panel-Button-Up");
+										end
+									</OnShow>
+									<OnDisable>
+										CharacterSelectPanelButton_DeathKnightSwap(self, "Interface\\Glues\\Common\\Glue-Panel-Button-Disabled");
+									</OnDisable>
+									<OnEnable>
+										CharacterSelectPanelButton_DeathKnightSwap(self, "Interface\\Glues\\Common\\Glue-Panel-Button-Up");
+									</OnEnable>
+									<OnUpdate>
+										CharacterSelectPanelButton_DeathKnightSwap(self);
+									</OnUpdate>
+								</Scripts>
+							</Button>
 							<Button name="CharSelectPaidService1" inherits="CharSelectPaidServiceTemplate" id="1">
 								<Anchors>
 									<Anchor point="TOP" relativeTo="CharSelectCharacterButton1" relativePoint="TOP" x="0" y="6"/>
@@ -1545,6 +1621,7 @@
 							</OnHide>
 						</Scripts>
 					</Frame>
+
 					<Button name="CreateCharacterButtonSpecial" inherits="GlueButtonSmallTemplate" hidden="true" text="CREATE_NEW_CHARACTER">
 						<Size x="200" y="45"/>
 						<Anchors>

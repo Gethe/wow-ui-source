@@ -4,6 +4,9 @@ CHARACTER_SELECT_INITIAL_FACING = nil;
 CHARACTER_ROTATION_CONSTANT = 0.6;
 
 MAX_CHARACTERS_DISPLAYED = 11;
+MAX_CHARACTERS_DISPLAYED_BASE = MAX_CHARACTERS_DISPLAYED;
+UNDELETE_CHARACTER_RESULT_OK = 1;
+
 MAX_CHARACTERS_PER_REALM = 200; -- controled by the server now, so lets set it up high
 
 CHARACTER_LIST_OFFSET = 0;
@@ -39,6 +42,8 @@ function CharacterSelect_OnLoad(self)
 	self:RegisterEvent("SUGGEST_REALM");
 	self:RegisterEvent("FORCE_RENAME_CHARACTER");
 	self:RegisterEvent("STORE_STATUS_CHANGED");
+	self:RegisterEvent("CHARACTER_UNDELETE_STATUS_CHANGED");
+	self:RegisterEvent("CHARACTER_UNDELETE_FINISHED");
 
 	-- CharacterSelect:SetModel("Interface\\Glues\\Models\\UI_Orc\\UI_Orc.m2");
 
@@ -67,6 +72,7 @@ function CharacterSelect_OnShow()
 	CHARACTER_LIST_OFFSET = 0;
 	-- request account data times from the server (so we know if we should refresh keybindings, etc...)
 	ReadyForAccountDataTimes()
+	CheckCharacterUndeleteCooldown();
 	
 	local bgTag = CharacterSelect.currentBGTag;
 
@@ -285,6 +291,13 @@ function CharacterSelect_OnUpdate(self, elapsed)
 		end
 	end
 	
+	if ( self.undeleteFailed ) then
+		if (not GlueDialog:IsShown()) then
+			GlueDialog_Show("UNDELETE_FAILED");
+			self.undeleteFailed = false;
+		end
+	end
+
 	if ( self.pressDownButton ) then
 		self.pressDownTime = self.pressDownTime + elapsed;
 		if ( self.pressDownTime >= AUTO_DRAG_TIME ) then
@@ -401,6 +414,27 @@ function CharacterSelect_OnEvent(self, event, ...)
 		if (ADDON_LIST_RECEIVED) then
 			CharacterSelect_UpdateStoreButton();
 		end
+	elseif ( event == "CHARACTER_UNDELETE_STATUS_CHANGED") then
+		local enabled, onCooldown = GetCharacterUndeleteStatus();
+
+		CharSelectUndeleteCharacterButton:SetEnabled(enabled and not onCooldown);
+		if (not enabled) then
+			CharSelectUndeleteCharacterButton.tooltip = UNDELETE_TOOLTIP_DISABLED;
+		elseif (onCooldown) then
+			CharSelectUndeleteCharacterButton.tooltip = UNDELETE_TOOLTIP_COOLDOWN;
+		else
+			CharSelectUndeleteCharacterButton.tooltip = UNDELETE_TOOLTIP;
+		end
+	elseif ( event == "CHARACTER_UNDELETE_FINISHED" ) then
+		local result, guid = ...;
+
+		if ( result == UNDELETE_CHARACTER_RESULT_OK ) then
+			self.undeleteGuid = guid;
+			self.undeleteFailed = false;
+		else
+			self.undeleteGuid = nil;
+			self.undeleteFailed = true;
+		end
 	end
 end
 
@@ -419,22 +453,36 @@ function UpdateCharacterSelectEnterWorldDeleteButtons()
 end
 
 function UpdateCharacterSelection(self)
-	local button;
+	local button, paidServiceButton;
+
 	for i=1, MAX_CHARACTERS_DISPLAYED, 1 do
 		button = _G["CharSelectCharacterButton"..i];
+		paidServiceButton = _G["CharSelectPaidService"..i];
 		button.selection:Hide();
 		button.upButton:Hide();
 		button.downButton:Hide();
+		if (self.undeleting) then
+			paidServiceButton:Hide();
+		end
 	end
 
 	local index = self.selectedIndex - CHARACTER_LIST_OFFSET;
 	if ( (index > 0) and (index <= MAX_CHARACTERS_DISPLAYED) ) then
 		button = _G["CharSelectCharacterButton"..index];
+		paidServiceButton = _G["CharSelectPaidService"..index];
+
 		if ( button ) then
 			button.selection:Show();
 			if ( button:IsMouseOver() ) then
 				CharacterSelectButton_ShowMoveButtons(button);
 			end
+			if ( self.undeleting ) then
+				paidServiceButton.texture:SetTexCoord(.5, 1, .5, 1);
+				paidServiceButton.tooltip = UNDELETE_SERVICE_TOOLTIP;
+				paidServiceButton.disabledTooltip = nil;
+				paidServiceButton:Show();
+			end
+
 			UpdateCharacterSelectEnterWorldDeleteButtons();
 		end
 	end
@@ -445,12 +493,45 @@ function UpdateCharacterList(skipSelect)
 	local index = 1;
 	local coords;
 
+	if ( CharacterSelect.undeleteChanged ) then
+		CHARACTER_LIST_OFFSET = 0;
+		CharacterSelect.undeleteChanged = false;
+	end
+
+	if (numChars < MAX_CHARACTERS_PER_REALM or numChars > MAX_CHARACTERS_DISPLAYED_BASE) then
+		if (MAX_CHARACTERS_DISPLAYED == MAX_CHARACTERS_DISPLAYED_BASE) then
+			MAX_CHARACTERS_DISPLAYED = MAX_CHARACTERS_DISPLAYED_BASE - 1;
+		end
+	else
+		MAX_CHARACTERS_DISPLAYED = MAX_CHARACTERS_DISPLAYED_BASE;
+	end
+
 	if ( CharacterSelect.selectLast == 1 ) then
 		CHARACTER_LIST_OFFSET = max(numChars - MAX_CHARACTERS_DISPLAYED, 0);
 		CharacterSelect.selectedIndex = numChars;
 		CharacterSelect.selectLast = 0;
 	end
+
+	if ( CharacterSelect.undeleteGuid ) then
+		local found = false;
+		repeat
+			for i = 1, MAX_CHARACTERS_DISPLAYED, 1 do
+				local guid = select(14, GetCharacterInfo(GetCharIDFromIndex(i + CHARACTER_LIST_OFFSET)));
+				if ( guid == CharacterSelect.undeleteGuid ) then
+					CharacterSelect.selectedIndex = i + CHARACTER_LIST_OFFSET;
+					found = true;
+					break;
+				end
+			end
+			if (not found) then
+				CHARACTER_LIST_OFFSET = CHARACTER_LIST_OFFSET + 1;
+			end
+		until found;
+		CharacterSelect.undeleteGuid = nil;
+	end
+
 	local debugText = numChars..": ";
+	
 	for i=1, numChars, 1 do
 		local name, race, class, classFileName, classID, level, zone, sex, ghost, PCC, PRC, PFC, PRCDisabled, guid, _, _, _, boostInProgress = GetCharacterInfo(GetCharIDFromIndex(i+CHARACTER_LIST_OFFSET));
 		local button = _G["CharSelectCharacterButton"..index];
@@ -458,6 +539,7 @@ function UpdateCharacterList(skipSelect)
 			if ( not zone ) then
 				zone = "";
 			end
+
 			_G["CharSelectCharacterButton"..index.."ButtonTextName"]:SetText(name);
 			if (boostInProgress) then
 				_G["CharSelectCharacterButton"..index.."ButtonTextInfo"]:SetText(CHARACTER_UPGRADE_PROCESSING);
@@ -466,6 +548,8 @@ function UpdateCharacterList(skipSelect)
 			else
 				if( ghost ) then
 					_G["CharSelectCharacterButton"..index.."ButtonTextInfo"]:SetFormattedText(CHARACTER_SELECT_INFO_GHOST, level, class);
+				elseif ( CharacterSelect.undeleting ) then
+					_G["CharSelectCharacterButton"..index.."ButtonTextInfo"]:SetFormattedText(CHARACTER_SELECT_INFO_DELETED, level, class);
 				else
 					_G["CharSelectCharacterButton"..index.."ButtonTextInfo"]:SetFormattedText(CHARACTER_SELECT_INFO, level, class);
 				end
@@ -483,6 +567,8 @@ function UpdateCharacterList(skipSelect)
 		local serviceType, disableService;
 		if (boostInProgress) then
 			upgradeIcon:Show();
+		elseif ( CharacterSelect.undeleting ) then
+			paidServiceButton:Hide();
 		elseif ( PFC ) then
 			serviceType = PAID_FACTION_CHANGE;
 			paidServiceButton.texture:SetTexCoord(0, 0.5, 0.5, 1);
@@ -546,24 +632,36 @@ function UpdateCharacterList(skipSelect)
 	CharacterSelect_UpdateStoreButton();
 
 	CharacterSelect.createIndex = 0;
-	CharSelectCreateCharacterButton:Hide();	
+
+	CharSelectCreateCharacterButton:Hide();
+	CharSelectUndeleteCharacterButton:Hide();
 	
 	local connected = IsConnectedToServer();
-	for i=index, MAX_CHARACTERS_DISPLAYED, 1 do
-		local button = _G["CharSelectCharacterButton"..index];
-		if ( (CharacterSelect.createIndex == 0) and (numChars < MAX_CHARACTERS_DISPLAYED) ) then
-			CharacterSelect.createIndex = index;
-			if ( connected ) then
-				--If can create characters position and show the create button
-				CharSelectCreateCharacterButton:SetID(index);
-				--CharSelectCreateCharacterButton:SetPoint("TOP", button, "TOP", 0, -5);
-				CharSelectCreateCharacterButton:Show();	
-			end
+	if (numChars < MAX_CHARACTERS_PER_REALM and not CharacterSelect.undeleting) then
+		CharacterSelect.createIndex = numChars + 1;
+		if ( connected ) then
+			--If can create characters position and show the create button
+			CharSelectCreateCharacterButton:SetID(numChars + 1);
+			CharSelectCreateCharacterButton:Show();
+			CharSelectUndeleteCharacterButton:Show();
 		end
-		_G["CharSelectPaidService"..index]:Hide();
-		_G["CharacterServicesProcessingIcon"..index]:Hide();
-		button:Hide();
-		index = index + 1;
+	end
+
+	if (MAX_CHARACTERS_DISPLAYED < MAX_CHARACTERS_DISPLAYED_BASE) then
+		for i = MAX_CHARACTERS_DISPLAYED + 1, MAX_CHARACTERS_DISPLAYED_BASE, 1 do
+			_G["CharSelectCharacterButton"..i]:Hide();
+			_G["CharSelectPaidService"..i]:Hide();
+			_G["CharacterServicesProcessingIcon"..i]:Hide();
+		end
+	end
+
+	if (numChars < MAX_CHARACTERS_DISPLAYED) then
+		for i = numChars + 1, MAX_CHARACTERS_DISPLAYED, 1 do
+			_G["CharSelectCharacterButton"..i]:Hide();
+			_G["CharSelectPaidService"..i]:Hide();
+			_G["CharacterServicesProcessingIcon"..i]:Hide();
+			index = index + 1;
+		end
 	end
 
 	if ( numChars == 0 ) then
@@ -573,6 +671,8 @@ function UpdateCharacterList(skipSelect)
 	end
 
 	if ( numChars > MAX_CHARACTERS_DISPLAYED ) then
+		CharSelectCreateCharacterButton:SetPoint("BOTTOM", -26, 15);
+		CharSelectBackToActiveButton:SetPoint("BOTTOM", -8, 15);
 		CharacterSelectCharacterFrame:SetWidth(280);
 		CharacterSelectCharacterFrame.scrollBar:Show();
 		CharacterSelectCharacterFrame.scrollBar:SetMinMaxValues(0, numChars - MAX_CHARACTERS_DISPLAYED);
@@ -580,15 +680,11 @@ function UpdateCharacterList(skipSelect)
 		CharacterSelectCharacterFrame.scrollBar:SetValue(CHARACTER_LIST_OFFSET);
 		CharacterSelectCharacterFrame.scrollBar.blockUpdates = nil;
 	else
+		CharSelectCreateCharacterButton:SetPoint("BOTTOM", -18, 15);
+		CharSelectBackToActiveButton:SetPoint("BOTTOM", 0, 15);
 		CharacterSelectCharacterFrame.scrollBar.blockUpdates = true;	-- keep mousewheel from doing anything
 		CharacterSelectCharacterFrame:SetWidth(260);
 		CharacterSelectCharacterFrame.scrollBar:Hide();
-	end
-	
-	if (( numChars >= MAX_CHARACTERS_DISPLAYED ) and (numChars < MAX_CHARACTERS_PER_REALM)) then 
-		CreateCharacterButtonSpecial:Show();
-	else
-		CreateCharacterButtonSpecial:Hide();
 	end
 
 	if ( (CharacterSelect.selectedIndex == 0) or (CharacterSelect.selectedIndex > numChars) ) then
@@ -773,7 +869,14 @@ function CharacterSelect_PaidServiceOnClick(self, button, down, service)
 	PAID_SERVICE_CHARACTER_ID = GetCharIDFromIndex(self:GetID() + CHARACTER_LIST_OFFSET);
 	PAID_SERVICE_TYPE = service;
 	PlaySound("gsCharacterSelectionCreateNew");
-	SetGlueScreen("charcreate");
+	if (CharacterSelect.undeleting) then
+		local guid = select(14, GetCharacterInfo(PAID_SERVICE_CHARACTER_ID));
+		UndeleteCharacter(guid);
+		CharacterSelect.createIndex = 0;
+		CharacterSelect_EndCharacterUndelete();
+	else
+		SetGlueScreen("charcreate");
+	end
 end
 
 function CharacterSelect_DeathKnightSwap(self)
@@ -790,6 +893,47 @@ function CharacterSelect_DeathKnightSwap(self)
 			self.currentBGTag = nil;
 			self:SetNormalTexture("Interface\\Glues\\Common\\Glue-Panel-Button-Up");
 			self:SetPushedTexture("Interface\\Glues\\Common\\Glue-Panel-Button-Down");
+			self:SetHighlightTexture("Interface\\Glues\\Common\\Glue-Panel-Button-Highlight");
+		end
+	end
+end
+
+
+function CharacterSelectPanelButton_DeathKnightSwap(self, textureBase)
+	if (not textureBase) then
+		if ( not self:IsEnabled() ) then
+			textureBase = "Interface\\Glues\\Common\\Glue-Panel-Button-Disabled";
+		elseif ( self.down ) then
+			textureBase = "Interface\\Glues\\Common\\Glue-Panel-Button-Down";
+		else
+			textureBase = "Interface\\Glues\\Common\\Glue-Panel-Button-Up";
+		end
+	end
+		
+	local deathKnightTag = "DEATHKNIGHT";
+	if ( CharacterSelect.currentBGTag == deathKnightTag ) then
+		if (self.currentBGTag ~= deathKnightTag or self.texture ~= textureBase) then
+			self.currentBGTag = deathKnightTag;
+			self.texture = textureBase;
+			local suffix;
+			if ( self:IsEnabled() ) then
+				suffix = "-Blue";
+			else
+				suffix = "";
+			end
+
+			self.Left:SetTexture(textureBase..suffix);
+			self.Middle:SetTexture(textureBase..suffix);
+			self.Right:SetTexture(textureBase..suffix);
+			self:SetHighlightTexture("Interface\\Glues\\Common\\Glue-Panel-Button-Highlight-Blue");
+		end
+	else
+		if (self.currentBGTag == deathKnightTag or self.texture ~= textureBase) then
+			self.currentBGTag = nil;
+			self.texture = textureBase;
+			self.Left:SetTexture(textureBase);
+			self.Middle:SetTexture(textureBase);
+			self.Right:SetTexture(textureBase);
 			self:SetHighlightTexture("Interface\\Glues\\Common\\Glue-Panel-Button-Highlight");
 		end
 	end
@@ -1149,16 +1293,46 @@ function CharacterSelect_UpdateStoreButton()
 end
 
 function CharacterSelect_UpdateButtonState()
-	local isEnabled = not CharSelectServicesFlowFrame:IsShown();
+	local servicesEnabled = not CharSelectServicesFlowFrame:IsShown();
+	local undeleteEnabled = not CharacterSelect.undeleting;
+	
+	CharSelectEnterWorldButton:SetEnabled(servicesEnabled and undeleteEnabled);
+	CharacterSelectBackButton:SetEnabled(servicesEnabled and undeleteEnabled);
+	CharacterSelectDeleteButton:SetEnabled(servicesEnabled and undeleteEnabled);
+	CharSelectChangeRealmButton:SetEnabled(servicesEnabled and undeleteEnabled);
+	CharacterSelectAddonsButton:SetEnabled(servicesEnabled);
+	CharacterSelectMenuButton:SetEnabled(servicesEnabled);
+	CharSelectCreateCharacterButton:SetEnabled(servicesEnabled);
+end
 
-	CharSelectEnterWorldButton:SetEnabled(isEnabled);
-	CharacterSelectBackButton:SetEnabled(isEnabled);
-	CharacterSelectAddonsButton:SetEnabled(isEnabled);
-	CharacterSelectMenuButton:SetEnabled(isEnabled);
-	CharacterSelectDeleteButton:SetEnabled(isEnabled);
-	CharSelectChangeRealmButton:SetEnabled(isEnabled);
-	CharSelectCreateCharacterButton:SetEnabled(isEnabled);
-	CharacterSelectDeleteButton:SetEnabled(isEnabled);
+-- CHARACTER UNDELETE
+
+GlueDialogTypes["UNDELETE_FAILED"] = {
+	text = UNDELETE_FAILED_ERROR,
+	button1 = OKAY,
+	escapeHides = true,
+}
+
+function CharacterSelect_StartCharacterUndelete()
+	CharacterSelect.undeleting = true;
+	CharacterSelect.undeleteChanged = true;
+
+	CharSelectCreateCharacterButton:Hide();
+	CharSelectUndeleteCharacterButton:Hide();
+	CharSelectBackToActiveButton:Show();
+
+	StartCharacterUndelete();
+end
+
+function CharacterSelect_EndCharacterUndelete()
+	CharacterSelect.undeleting = false;
+	CharacterSelect.undeleteChanged = true;
+
+	CharSelectBackToActiveButton:Hide();
+	CharSelectCreateCharacterButton:Show();
+	CharSelectUndeleteCharacterButton:Show();
+
+	EndCharacterUndelete();
 end
 
 -- COPY CHARACTER

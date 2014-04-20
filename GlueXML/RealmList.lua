@@ -36,6 +36,35 @@ function RealmListUpdate()
 	local pvpText, loadText, isFull;
 	local major, minor, revision, build, type;
 
+	local found = false;
+
+	-- Just for the first time the frame is loaded
+	if ( not RealmList.selectedCategory ) then
+		RealmList.selectedCategory = 1;
+	end
+
+	if ( not RealmList.firstUpdate or numRealms ~= RealmList.numRealms ) then
+		RealmList.offset = 0;
+		
+		local index = 1;
+		repeat
+			for i = 1, MAX_REALMS_DISPLAYED, 1 do
+				local currentRealm = select(5,GetRealmInfo(RealmList.selectedCategory, i + RealmList.offset));
+				
+				if ( currentRealm ) then
+					RealmList.currentRealm = i + RealmList.offset;
+					found = true;
+					break;
+				end
+			end
+			if (not found) then
+				RealmList.offset = RealmList.offset + 1;
+			end
+		until found or RealmList.offset > numRealms;
+		RealmList.numRealms = numRealms;
+		RealmList.firstUpdate = true;
+	end
+
 	RealmListOkButton:Disable();
 	RealmListHighlight:Hide();
 	for i=1, MAX_REALMS_DISPLAYED, 1 do
@@ -205,8 +234,19 @@ function RealmListUpdate()
 		end
 	end
 
+	if ( RealmList.currentRealm and not RealmListOkButton:IsEnabled() ) then
+		local _, _, _, realmDown = GetRealmInfo(RealmList.selectedCategory, RealmList.currentRealm);
+		if ( not realmDown ) then
+			RealmListOkButton:Enable();
+		end
+	end
+
 	-- ScrollFrame stuff
 	GlueScrollFrame_Update(RealmListScrollFrame, numRealms, MAX_REALMS_DISPLAYED, REALM_BUTTON_HEIGHT, RealmListHighlight, 557,  587);
+
+	if (found) then
+		RealmListScrollFrameScrollBar:SetValue(RealmList.offset * REALM_BUTTON_HEIGHT);
+	end
 end
 
 function RealmList_UpdateTabs(...)
@@ -300,6 +340,7 @@ end
 function RealmListScrollFrame_OnVerticalScroll(self, offset)
 	RealmList.refreshTime = RealmListUpdateRate();
 	local scrollbar = _G[self:GetName().."ScrollBar"];
+	print(scrollbar:GetName());
 	scrollbar:SetValue(offset);
 	RealmList.offset = floor((offset / REALM_BUTTON_HEIGHT) + 0.5);
 	RealmListUpdate();
@@ -307,7 +348,7 @@ end
 
 function RealmList_OnShow(self)
 	RealmList.currentRealm = nil;
-	RealmListUpdate();
+
 	self.refreshTime = RealmListUpdateRate();
 	local selectedCategory = GetSelectedCategory();
 	if ( selectedCategory == 0 ) then
