@@ -145,7 +145,7 @@ local function UpdateScenarioBonusObjectives(BlocksFrame)
 			local bonusStepIndex = tblBonusSteps[i];
 			local name, description, numCriteria, stepFailed, isBonusStep, isForCurrentStepOnly = C_Scenario.GetStepInfo(bonusStepIndex);
 			local blockKey = -bonusStepIndex;	-- so it won't collide with quest IDs			
-			local existingBlock = BONUS_OBJECTIVE_TRACKER_MODULE.usedBlocks[blockKey];		
+			local existingBlock = BONUS_OBJECTIVE_TRACKER_MODULE:GetExistingBlock(blockKey);
 			local block = BONUS_OBJECTIVE_TRACKER_MODULE:GetBlock(blockKey);			
 			local stepFinished = true;
 			for criteriaIndex = 1, numCriteria do
@@ -222,7 +222,7 @@ local function UpdateQuestBonusObjectives(BlocksFrame)
 	for _, questID in pairs(tasksTable) do
 		local isInArea, isOnMap, numObjectives = GetTaskInfo(questID);
 		-- show task if we're in the area or on the same map and we were displaying it before
-		local existingTask = BONUS_OBJECTIVE_TRACKER_MODULE.usedBlocks[questID];
+		local existingTask = BONUS_OBJECTIVE_TRACKER_MODULE:GetExistingBlock(questID);
 		if ( isInArea or ( isOnMap and existingTask ) ) then
 			local block = BONUS_OBJECTIVE_TRACKER_MODULE:GetBlock(questID);
 			local taskFinished = true;

@@ -16,6 +16,7 @@ function QUEST_TRACKER_MODULE:OnFreeBlock(block)
 	end
 	block.numShownObjectives = nil;
 	block.timerLine	= nil;
+	block.questCompleted = nil;
 end
 
 function QUEST_TRACKER_MODULE:OnReleaseTypedLine(line)
@@ -277,23 +278,6 @@ end
 -- ***** UPDATE FUNCTIONS
 -- *****************************************************************************************************
 
-function QuestObjectiveTracker_SelectSuperTrackedQuest()
-	local trackedQuestID = GetSuperTrackedQuestID();
-	-- if supertracked quest is not in the quest log anymore, stop supertracking it
-	if ( trackedQuestID == 0 or GetQuestLogIndexByID(trackedQuestID) == 0 ) then
-		-- pick the first tracked quest to supertrack		
-		local questIndex = GetQuestIndexForWatch(1);
-		if ( questIndex ) then
-			local questID = select(8, GetQuestLogTitle(questIndex));
-			SetSuperTrackedQuestID(questID);
-			QuestPOIUpdateIcons();
-		end
-	else
-		QuestPOI_SelectButtonByQuestID(ObjectiveTrackerFrame.BlocksFrame, trackedQuestID);
-		QuestPOIUpdateIcons();
-	end	
-end
-
 function QuestObjectiveTracker_UpdatePOIs()
 	QuestPOI_ResetUsage(ObjectiveTrackerFrame.BlocksFrame);
 
@@ -309,7 +293,7 @@ function QuestObjectiveTracker_UpdatePOIs()
 		local questID, title, questLogIndex, numObjectives, requiredMoney, isComplete, startEvent, isAutoComplete, failureTime, timeElapsed, questType, isTask, isStory, isOnMap, hasLocalPOI = GetQuestWatchInfo(i);
 		if ( questID ) then
 			-- see if we already have a block for this quest
-			local block = QUEST_TRACKER_MODULE.usedBlocks[questID];
+			local block = QUEST_TRACKER_MODULE:GetExistingBlock(questID);
 			if ( block ) then
 				if ( isComplete and isComplete < 0 ) then
 					isComplete = false;
@@ -333,7 +317,7 @@ function QuestObjectiveTracker_UpdatePOIs()
 			end
 		end
 	end
-	QuestObjectiveTracker_SelectSuperTrackedQuest();
+	QuestPOI_SelectButtonByQuestID(ObjectiveTrackerFrame.BlocksFrame, GetSuperTrackedQuestID());
 	QuestPOI_HideUnusedButtons(ObjectiveTrackerFrame.BlocksFrame);
 end
 
@@ -372,6 +356,7 @@ function QUEST_TRACKER_MODULE:Update()
 		end
 
 		if ( showQuest ) then
+			local existingBlock = QUEST_TRACKER_MODULE:GetExistingBlock(questID);
 			local block = QUEST_TRACKER_MODULE:GetBlock(questID);
 			QUEST_TRACKER_MODULE:SetBlockHeader(block, title, questLogIndex, isComplete);
 
@@ -459,6 +444,10 @@ function QUEST_TRACKER_MODULE:Update()
 			block:SetHeight(block.height);
 			
 			if ( ObjectiveTracker_AddBlock(block) ) then
+				if ( existingBlock and isComplete and not block.questCompleted ) then
+					QuestSuperTracking_OnQuestCompleted();
+				end
+				block.questCompleted = isComplete;
 				block:Show();
 				QUEST_TRACKER_MODULE:FreeUnusedLines(block);
 				-- quest POI icon
@@ -485,8 +474,8 @@ function QUEST_TRACKER_MODULE:Update()
 		end
 	end
 
-	QuestObjectiveTracker_SelectSuperTrackedQuest();
-	
+	QuestSuperTracking_CheckSelection();
+	QuestPOI_SelectButtonByQuestID(ObjectiveTrackerFrame.BlocksFrame, GetSuperTrackedQuestID());
 	QuestPOI_HideUnusedButtons(ObjectiveTrackerFrame.BlocksFrame);
 	QUEST_TRACKER_MODULE:EndLayout();
 end

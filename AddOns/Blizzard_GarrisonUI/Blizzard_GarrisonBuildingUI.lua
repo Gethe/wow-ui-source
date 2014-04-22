@@ -11,8 +11,7 @@ function GarrisonBuildingUI_ToggleFrame()
 	if (not GarrisonBuildingFrame:IsShown()) then
 		ShowUIPanel(GarrisonBuildingFrame);
 	else
-		C_Garrison.CloseArchitect();
-		--HideUIPanel(GarrisonBuildingFrame);
+		HideUIPanel(GarrisonBuildingFrame);
 	end
 end
 

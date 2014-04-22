@@ -129,7 +129,7 @@
 		<Anchors>
 			<Anchor point="BOTTOMLEFT" relativeTo="CharacterMicroButton" relativePoint="BOTTOMRIGHT">
 				<Offset>
-					<AbsDimension x="-3" y="0"/>
+					<AbsDimension x="-2" y="0"/>
 				</Offset>
 			</Anchor>
 		</Anchors>
@@ -150,7 +150,7 @@
 		<Anchors>
 			<Anchor point="BOTTOMLEFT" relativeTo="SpellbookMicroButton" relativePoint="BOTTOMRIGHT">
 				<Offset>
-					<AbsDimension x="-3" y="0"/>
+					<AbsDimension x="-2" y="0"/>
 				</Offset>
 			</Anchor>
 		</Anchors>
@@ -174,7 +174,7 @@
 		<Anchors>
 			<Anchor point="BOTTOMLEFT" relativeTo="TalentMicroButton" relativePoint="BOTTOMRIGHT">
 				<Offset>
-					<AbsDimension x="-3" y="0"/>
+					<AbsDimension x="-2" y="0"/>
 				</Offset>
 			</Anchor>
 		</Anchors>
@@ -201,7 +201,7 @@
 		<Anchors>
 			<Anchor point="BOTTOMLEFT" relativeTo="AchievementMicroButton" relativePoint="BOTTOMRIGHT">
 				<Offset>
-					<AbsDimension x="-3" y="0"/>
+					<AbsDimension x="-2" y="0"/>
 				</Offset>
 			</Anchor>
 		</Anchors>
@@ -223,7 +223,7 @@
 		<Anchors>
 			<Anchor point="BOTTOMLEFT" relativeTo="QuestLogMicroButton" relativePoint="BOTTOMRIGHT">
 				<Offset>
-					<AbsDimension x="-3" y="0"/>
+					<AbsDimension x="-2" y="0"/>
 				</Offset>
 			</Anchor>
 		</Anchors>
@@ -280,107 +280,11 @@
 			</OnClick>
 		</Scripts>
 	</Button>
-	<Button name="PVPMicroButton" inherits="MainMenuBarMicroButton" parent="UIParent">
+	<Button name="LFDMicroButton" inherits="MainMenuBarMicroButton" parent="UIParent">
 		<Anchors>
 			<Anchor point="BOTTOMLEFT" relativeTo="GuildMicroButton" relativePoint="BOTTOMRIGHT">
 				<Offset>
-					<AbsDimension x="-3" y="0"/>
-				</Offset>
-			</Anchor>
-		</Anchors>
-		<Layers>
-			<Layer level="OVERLAY">
-                <Texture name="$parentTexture" parentKey="texture">
-                    <Size>
-                        <AbsDimension x="36" y="36"/>
-                    </Size>
-                    <Anchors>
-                        <Anchor point="TOP">
-                            <Offset>
-                                <AbsDimension x="6" y="-30"/>
-                            </Offset>
-                        </Anchor>
-                    </Anchors>
-                </Texture>
-            </Layer>
-		</Layers>
-		<Scripts>
-			<OnLoad>
-				self:RegisterEvent("UPDATE_BINDINGS");
-				self:RegisterEvent("NEUTRAL_FACTION_SELECT_RESULT");
-				
-				self:SetNormalTexture("Interface\\Buttons\\UI-MicroButtonCharacter-Up");
-				self:SetPushedTexture("Interface\\Buttons\\UI-MicroButtonCharacter-Down");
-				self:SetHighlightTexture("Interface\\Buttons\\UI-MicroButton-Hilight");
-				self.factionGroup = UnitFactionGroup("player");
-				if ( self.factionGroup and self.factionGroup ~= "Neutral" ) then
-					_G[self:GetName().."Texture"]:SetTexture("Interface\\TargetingFrame\\UI-PVP-"..self.factionGroup);
-				end
-				self.tooltipText = MicroButtonTooltipText(PLAYER_V_PLAYER, "TOGGLECHARACTER4");
-				self.newbieText = NEWBIE_TOOLTIP_PVP;
-				self.minLevel = SHOW_PVP_LEVEL;
-				if (IsBlizzCon()) then
-					self:Disable();
-				end
-			</OnLoad>
-			<OnEvent>
-				if (IsBlizzCon()) then
-					return;
-				end
-				self.tooltipText = MicroButtonTooltipText(PLAYER_V_PLAYER, "TOGGLECHARACTER4");
-				self.newbieText = NEWBIE_TOOLTIP_PVP;
-				self.factionGroup = nil;
-				self.factionGroup = UnitFactionGroup("player");
-				if ( self.factionGroup and self.factionGroup ~= "Neutral" ) then
-					_G[self:GetName().."Texture"]:SetTexture("Interface\\TargetingFrame\\UI-PVP-"..self.factionGroup);
-				end
-				UpdateMicroButtons();
-			</OnEvent>
-			<OnMouseDown>
-				if ( self:IsEnabled() ) then
-					if ( self.down ) then
-						self.down = nil;
-						TogglePVPUI();
-						return;
-					end
-					PVPMicroButton_SetPushed();
-					self.down = 1;
-				end
-			</OnMouseDown>
-			<OnMouseUp>
-				if ( self:IsEnabled() ) then
-					if ( self.down ) then
-						self.down = nil;
-						if ( self:IsMouseOver() ) then
-							TogglePVPUI();
-						end
-						UpdateMicroButtons();
-						return;
-					end
-					if ( self:GetButtonState() == "NORMAL" ) then
-						PVPMicroButton_SetPushed();
-						self.down = 1;
-					else
-						PVPMicroButton_SetNormal();
-						self.down = 1;
-					end
-				end
-			</OnMouseUp>
-			<OnEnable>
-				self:SetAlpha(1);
-				SetDesaturation(self.texture, false);
-			</OnEnable>
-			<OnDisable>
-				self:SetAlpha(0.5);
-				SetDesaturation(self.texture, true);
-			</OnDisable>
-		</Scripts>
-	</Button>
-	<Button name="LFDMicroButton" inherits="MainMenuBarMicroButton" parent="UIParent">
-		<Anchors>
-			<Anchor point="BOTTOMLEFT" relativeTo="PVPMicroButton" relativePoint="BOTTOMRIGHT">
-				<Offset>
-					<AbsDimension x="-3" y="0"/>
+					<AbsDimension x="-2" y="0"/>
 				</Offset>
 			</Anchor>
 		</Anchors>
@@ -412,7 +316,7 @@
 		<Anchors>
 			<Anchor point="BOTTOMLEFT" relativeTo="LFDMicroButton" relativePoint="BOTTOMRIGHT">
 				<Offset>
-					<AbsDimension x="-3" y="0"/>
+					<AbsDimension x="-2" y="0"/>
 				</Offset>
 			</Anchor>
 		</Anchors>
@@ -437,7 +341,7 @@
 		<Anchors>
 			<Anchor point="BOTTOMLEFT" relativeTo="CompanionsMicroButton" relativePoint="BOTTOMRIGHT">
 				<Offset>
-					<AbsDimension x="-3" y="0"/>
+					<AbsDimension x="-2" y="0"/>
 				</Offset>
 			</Anchor>
 		</Anchors>
@@ -469,7 +373,7 @@
 		<Anchors>
 			<Anchor point="BOTTOMLEFT" relativeTo="EJMicroButton" relativePoint="BOTTOMRIGHT">
 				<Offset>
-					<AbsDimension x="-3" y="0"/>
+					<AbsDimension x="-2" y="0"/>
 				</Offset>
 			</Anchor>
 		</Anchors>
@@ -495,7 +399,7 @@
 		<Anchors>
 			<Anchor point="BOTTOMLEFT" relativeTo="EJMicroButton" relativePoint="BOTTOMRIGHT">
 				<Offset>
-					<AbsDimension x="-3" y="0"/>
+					<AbsDimension x="-2" y="0"/>
 				</Offset>
 			</Anchor>
 		</Anchors>
@@ -647,7 +551,7 @@
 		<Anchors>
 			<Anchor point="BOTTOMLEFT" relativeTo="MainMenuMicroButton" relativePoint="BOTTOMRIGHT">
 				<Offset>
-					<AbsDimension x="-3" y="0"/>
+					<AbsDimension x="-2" y="0"/>
 				</Offset>
 			</Anchor>
 		</Anchors>

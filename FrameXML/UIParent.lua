@@ -448,10 +448,6 @@ function ItemUpgrade_LoadUI()
 	UIParentLoadAddOn("Blizzard_ItemUpgradeUI");
 end
 
-function PVP_LoadUI()
-	UIParentLoadAddOn("Blizzard_PVPUI");
-end
-
 function QuestChoice_LoadUI()
 	UIParentLoadAddOn("Blizzard_QuestChoice");
 end
@@ -704,11 +700,8 @@ function TogglePVPUI()
 		return;
 	end
 	
-	if (not PVPUIFrame) then
-		PVP_LoadUI();
-	end
-	if ( UnitLevel("player") >= SHOW_PVP_LEVEL and not IsPlayerNeutral()) then
-		PVPUIFrame_ToggleFrame()
+	if ( UnitLevel("player") >= SHOW_LFD_LEVEL ) then
+		PVEFrame_ToggleFrame("PVPUIFrame", nil);
 	end
 end
 

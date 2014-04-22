@@ -5,7 +5,6 @@ CHARACTER_ROTATION_CONSTANT = 0.6;
 
 MAX_CHARACTERS_DISPLAYED = 11;
 MAX_CHARACTERS_DISPLAYED_BASE = MAX_CHARACTERS_DISPLAYED;
-UNDELETE_CHARACTER_RESULT_OK = 1;
 
 MAX_CHARACTERS_PER_REALM = 200; -- controled by the server now, so lets set it up high
 
@@ -428,7 +427,7 @@ function CharacterSelect_OnEvent(self, event, ...)
 	elseif ( event == "CHARACTER_UNDELETE_FINISHED" ) then
 		local result, guid = ...;
 
-		if ( result == UNDELETE_CHARACTER_RESULT_OK ) then
+		if ( result == LE_CHARACTER_UNDELETE_RESULT_OK ) then
 			self.undeleteGuid = guid;
 			self.undeleteFailed = false;
 		else

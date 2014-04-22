@@ -270,7 +270,7 @@ function GarrisonFollowerPage_ShowFollower(followerInfo)
 	
 	local numAbilities = 0;
 	local numTraits = 0;
-	if (not followerInfo.abilites) then
+	if (not followerInfo.abilities) then
 		followerInfo.abilities = C_Garrison.GetFollowerAbilities(followerInfo.followerID);
 	end
 	for i=1, #followerInfo.abilities do
@@ -597,19 +597,23 @@ function GarrisonMissionPage_SetEnemies(enemies)
 			Frame.PortraitFrame.Type:Hide();
 			Frame.PortraitFrame.TypeRing:Hide();
 		end
-		for j=1, #enemy.mechanics do
-			if (not Frame.Abilities[j]) then
-				Frame.Abilities[j] = CreateFrame("Frame", nil, Frame, "GarrisonMissionAbilityCounterTemplate");
-				Frame.Abilities[j]:SetPoint("LEFT", Frame.Abilities[j-1], "RIGHT", 0, 0);
+		local numMechs = 1;
+		for id, mechanic in pairs(enemy.mechanics) do
+			if (not Frame.Mechanics[numMechs]) then
+				Frame.Mechanics[numMechs] = CreateFrame("Frame", nil, Frame, "GarrisonMissionEnemyMechanicTemplate");
+				Frame.Mechanics[numMechs]:SetPoint("LEFT", Frame.Mechanics[numMechs-1], "RIGHT", 0, 0);
 			end
-			local Ability = Frame.Abilities[j];
-			Ability.Icon:SetTexture(enemy.mechanics[j].icon);
-			Ability.Icon:SetMask("Interface\\CharacterFrame\\TempPortraitAlphaMask");
-			Ability.tooltip = enemy.mechanics[j].name;
-			Ability:Show();
+			local Mechanic = Frame.Mechanics[numMechs];
+			Mechanic.Icon:SetTexture(mechanic.icon);
+			Mechanic.Icon:SetMask("Interface\\CharacterFrame\\TempPortraitAlphaMask");
+			Mechanic.tooltip = mechanic.name;
+			Mechanic.mechanicID = id;
+			Mechanic:Show();
+			numMechs = numMechs + 1;
 		end
-		for j=(#enemy.mechanics + 1), #Frame.Abilities do
-			Frame.Abilities[j]:Hide();
+		for j=(numMechs + 1), #Frame.Mechanics do
+			Frame.Mechanics[j]:Hide();
+			Frame.Mechanics[j].mechanicID = nil;
 		end
 	end
 end
@@ -629,10 +633,13 @@ function GarrisonMissionPageFollowerFrame_SetFollower(frame, info)
 	frame.PortraitFrame.Level:SetText(info.level);
 	local missionPage = GarrisonMissionFrame.MissionTab.MissionPage;
 	C_Garrison.AddFollowerToMission(missionPage.mission, info.followerID);
+	--update bonus loot chances
 	local bronzeChance, silverChance, goldChance = C_Garrison.GetBonusRewardChances(missionPage.mission);
 	missionPage.Rewards.BronzeChance:SetFormattedText(PERCENTAGE_STRING, bronzeChance);
 	missionPage.Rewards.SilverChance:SetFormattedText(PERCENTAGE_STRING, silverChance);
 	missionPage.Rewards.GoldChance:SetFormattedText(PERCENTAGE_STRING, goldChance);
+	
+	GarrisonMissionPage_SetCounters();
 end
 
 function GarrisonMissionFollowerFrame_ClearFollower(frame)
@@ -646,11 +653,14 @@ function GarrisonMissionFollowerFrame_ClearFollower(frame)
 	local missionPage = GarrisonMissionFrame.MissionTab.MissionPage;
 	if (followerID) then
 		C_Garrison.RemoveFollowerFromMission(missionPage.mission, followerID);
+		--update bonus loot chances
 		local bronzeChance, silverChance, goldChance = C_Garrison.GetBonusRewardChances(missionPage.mission);
 		missionPage.Rewards.BronzeChance:SetFormattedText(PERCENTAGE_STRING, bronzeChance);
 		missionPage.Rewards.SilverChance:SetFormattedText(PERCENTAGE_STRING, silverChance);
 		missionPage.Rewards.GoldChance:SetFormattedText(PERCENTAGE_STRING, goldChance);
 	end
+	
+	GarrisonMissionPage_SetCounters();
 end
 
 function GarrisonMissionPageParty_IsEmpty(partyFrame)
@@ -677,6 +687,57 @@ function GarrisonMissionPageParty_Reset(partyFrame)
 		partyFrame.EmptyShadow:Show();
 	else
 		partyFrame.EmptyString:Show();
+	end
+end
+
+function GarrisonMissionPage_ClearCounters(enemiesFrame)
+	for i=1, enemiesFrame.numEnemies do
+		local frame = enemiesFrame["Enemy"..i];
+		for j=1, #frame.Mechanics do
+			frame.Mechanics[j].Check:Hide();
+		end
+	end
+end
+
+--this function puts check marks on the encounter mechanics countered by the slotted followers abilities
+function GarrisonMissionPage_SetCounters()
+	local missionPage = GarrisonMissionFrame.MissionTab.MissionPage;
+	local enemiesFrame, partyFrame;
+	if (missionPage.FewEnemies:IsShown()) then
+		enemiesFrame = missionPage.FewEnemies;
+	else
+		enemiesFrame = missionPage.ManyEnemies;
+	end
+	if (missionPage.SmallParty:IsShown()) then
+		partyFrame = missionPage.SmallParty;
+	elseif (missionPage.MediumParty:IsShown()) then
+		partyFrame = missionPage.MediumParty;
+	else
+		partyFrame = missionPage.LargeParty;
+	end
+	
+	GarrisonMissionPage_ClearCounters(enemiesFrame);
+	for f=1, partyFrame.partySize do
+		local follower = partyFrame["Follower"..f];
+		if (follower.info) then
+			if (not follower.info.abilities) then
+				follower.info.abilities = C_Garrison.GetFollowerAbilities(follower.info.followerID)
+			end
+			for a=1, #follower.info.abilities do
+				local ability = follower.info.abilities[a];
+				for counterID, counterInfo in pairs(ability.counters) do
+					for e=1, enemiesFrame.numEnemies do
+						local enemy = enemiesFrame["Enemy"..e];
+						for m=1, #enemy.Mechanics do
+							if (counterID == enemy.Mechanics[m].mechanicID) then
+								enemy.Mechanics[m].Check:Show();
+								
+							end
+						end
+					end
+				end
+			end
+		end
 	end
 end
 
@@ -1024,14 +1085,14 @@ function GarrisonMissionComplete_ShowNextAnimation()
 	self.Stage.ModelRight:Show();
 	self.Stage.ModelLeft:SetAlpha(0);
 	self.Stage.ModelRight:SetAlpha(0);
-	self.Stage.ModelLeft:SetDisplayInfo(currentAnim.displayID);
-	self.Stage.ModelRight:SetDisplayInfo(currentAnim.enemyDisplayID);
-	self.Stage.ModelLeft:InitializePanCamera(currentAnim.scale)
-	self.Stage.ModelRight:InitializePanCamera(currentAnim.enemyScale);
-	self.Stage.ModelLeft:SetHeightFactor(currentAnim.height);
-	self.Stage.ModelRight:SetHeightFactor(currentAnim.enemyHeight);
-	self.Stage.ModelRight:SetAnimOffset(currentAnim.impactDelay);
-	self.Stage.ModelLeft:StartPan(currentAnim.movementType, GARRISON_ANIMATION_LENGTH, true, currentAnim.castID);
+	self.Stage.ModelLeft:SetDisplayInfo(currentAnim.displayID or 0);
+	self.Stage.ModelRight:SetDisplayInfo(currentAnim.enemyDisplayID or 0);
+	self.Stage.ModelLeft:InitializePanCamera(currentAnim.scale or 1)
+	self.Stage.ModelRight:InitializePanCamera(currentAnim.enemyScale or 1);
+	self.Stage.ModelLeft:SetHeightFactor(currentAnim.height or 0.5);
+	self.Stage.ModelRight:SetHeightFactor(currentAnim.enemyHeight or 0.5);
+	self.Stage.ModelRight:SetAnimOffset(currentAnim.impactDelay  or 0);
+	self.Stage.ModelLeft:StartPan(currentAnim.movementType or LE_PAN_NONE, GARRISON_ANIMATION_LENGTH, true, currentAnim.castID);
 	self.Stage.ModelRight:StartPan(LE_PAN_NONE, GARRISON_ANIMATION_LENGTH, true, currentAnim.impactID);
 	
 	self.animIndex = self.animIndex + 1;

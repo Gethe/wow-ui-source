@@ -403,7 +403,7 @@ end
 
 function TransmogrifyItemFlyoutButton_OnClick(self)
 	if ( self.location ) then
-		local player, bank, bags, voidStorage, slot, bag, _, tab, voidSlot = EquipmentManager_UnpackLocation(self.location);
+		local player, bank, bags, voidStorage, slot, bag, tab, voidSlot = EquipmentManager_UnpackLocation(self.location);
 		if ( voidStorage ) then
 			UseVoidItemForTransmogrify(tab, voidSlot, EquipmentFlyoutFrame.button.id);
 		elseif ( bag ) then

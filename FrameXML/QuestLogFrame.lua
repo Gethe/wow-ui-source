@@ -252,11 +252,6 @@ function QuestLog_OnEvent(self, event, ...)
 		end
 	elseif ( event == "QUEST_ACCEPTED" ) then
 		TUTORIAL_QUEST_ACCEPTED = arg2;
-		QuestPOIUpdateIcons();
-		if ( AUTO_QUEST_WATCH == "1" and GetNumQuestWatches() < MAX_WATCHABLE_QUESTS ) then
-			AddQuestWatch(arg1);
-			QuestLog_Update();
-		end
 	elseif ( event == "QUEST_WATCH_UPDATE" ) then
 		if (not IsTutorialFlagged(11) and TUTORIAL_QUEST_TO_WATCH) then
 			local questID = select(8, GetQuestLogTitle(arg1));

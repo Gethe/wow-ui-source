@@ -306,9 +306,23 @@
 	</Frame>
 
 	<EditBox name="BankItemSearchBox" inherits="BagSearchBoxTemplate" parent="BankFrame" letters="15">
-		<Size x="130" y="20"/>
+		<Size x="110" y="20"/>
 		<Anchors>
-			<Anchor point="TOPRIGHT" x="-24" y="-33"/>
+			<Anchor point="TOPRIGHT" x="-44" y="-33"/>
 		</Anchors>
 	</EditBox>
+
+	<Button name="BankItemAutoSortButton" parent="BankFrame">
+		<Size x="22" y="22"/>
+		<Anchors>
+			<Anchor point="TOPRIGHT" x="-16" y="-33"/>
+		</Anchors>
+		<NormalTexture atlas="bags-button-autosort"/>
+		<HighlightTexture file="Interface\Buttons\ButtonHilight-Square" alphaMode="ADD"/>
+		<Scripts>
+			<OnClick>
+				SortBankBags();
+			</OnClick>
+		</Scripts>
+	</Button>
 </Ui>

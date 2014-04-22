@@ -38,11 +38,9 @@ function PVPUIFrame_OnLoad(self)
 	PanelTemplates_SetNumTabs(self, 2);
 
 	if (UnitFactionGroup("player") == PLAYER_FACTION_GROUP[0]) then
-		SetPortraitToTexture(self.portrait, "Interface\\Icons\\INV_BannerPVP_01");
 		HonorFrame.BonusFrame.BattlegroundTexture:SetTexCoord(HORDE_TEX_COORDS.left, HORDE_TEX_COORDS.right,
 															HORDE_TEX_COORDS.top, HORDE_TEX_COORDS.bottom)
 	else
-		SetPortraitToTexture(self.portrait, "Interface\\Icons\\INV_BannerPVP_02");
 		HonorFrame.BonusFrame.BattlegroundTexture:SetTexCoord(ALLIANCE_TEX_COORDS.left, ALLIANCE_TEX_COORDS.right,
 															ALLIANCE_TEX_COORDS.top, ALLIANCE_TEX_COORDS.bottom)
 	end
@@ -54,6 +52,8 @@ function PVPUIFrame_OnLoad(self)
 	self:RegisterEvent("VARIABLES_LOADED");
 	self:RegisterEvent("PVP_ROLE_UPDATE");
 	self:RegisterEvent("UPDATE_BATTLEFIELD_STATUS");
+		
+	PVPQueueFrame_ShowFrame(HonorFrame);
 end
 
 function PVPUIFrame_OnShow(self)
@@ -239,8 +239,13 @@ function PVPQueueFrame_UpdateCurrencies(self)
 end
 
 function PVPQueueFrame_OnShow(self)
-	PVPUIFrame.TitleText:SetText(PLAYER_V_PLAYER);
-	PVPUIFrame.TopTileStreaks:Show()
+	if (UnitFactionGroup("player") == PLAYER_FACTION_GROUP[0]) then
+		SetPortraitToTexture(PVEFrame.portrait, "Interface\\Icons\\INV_BannerPVP_01");
+	else
+		SetPortraitToTexture(PVEFrame.portrait, "Interface\\Icons\\INV_BannerPVP_02");
+	end
+	PVEFrame.TitleText:SetText(PLAYER_V_PLAYER);
+	PVEFrame.TopTileStreaks:Show()
 end
 
 function PVPQueueFrame_ShowFrame(frame)

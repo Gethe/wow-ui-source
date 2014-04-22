@@ -1297,6 +1297,18 @@
 		</Scripts>
 	</Frame>
 	
+	<Frame name="GarrisonMissionEnemyMechanicTemplate" inherits="GarrisonMissionAbilityCounterTemplate" virtual="true">
+		<Layers>
+			<Layer level="OVERLAY">
+				<Texture parentKey="Check" atlas="GarrMission_CounterCheck" useAtlasSize="true" hidden="true">
+					<Anchors>
+						<Anchor point="CENTER" x="-5" y="-4"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+	</Frame>
+	
 	<Frame name="GarrisonMissionEnemyFrameSmallTemplate" virtual="true">
 		<Size x="100" y="110"/>
 		<Layers>
@@ -1316,19 +1328,10 @@
 					<Anchor point="TOP" y="-22"/>
 				</Anchors>
 			</Frame>
-			<Frame parentArray="Abilities" inherits="GarrisonMissionAbilityCounterTemplate">
+			<Frame parentArray="Mechanics" inherits="GarrisonMissionEnemyMechanicTemplate">
 				<Anchors>
 					<Anchor point="BOTTOM"/>
 				</Anchors>
-				<Layers>
-					<Layer level="OVERLAY">
-						<Texture parentKey="Check" atlas="GarrMission_CounterCheck" useAtlasSize="true">
-							<Anchors>
-								<Anchor point="BOTTOMLEFT" relativeKey="$parent.TypeRing" x="-5" y="-3"/>
-							</Anchors>
-						</Texture>
-					</Layer>
-				</Layers>
 			</Frame>
 		</Frames>
 	</Frame>
@@ -1359,19 +1362,10 @@
 					<Anchor point="LEFT" y="0"/>
 				</Anchors>
 			</Frame>
-			<Frame parentArray="Abilities" inherits="GarrisonMissionAbilityCounterTemplate">
+			<Frame parentArray="Mechanics" inherits="GarrisonMissionEnemyMechanicTemplate">
 				<Anchors>
 					<Anchor point="BOTTOMLEFT" relativeKey="$parent.PortraitFrame" relativePoint="BOTTOMRIGHT" x="8" y="2"/>
 				</Anchors>
-				<Layers>
-					<Layer level="OVERLAY">
-						<Texture parentKey="Check" atlas="GarrMission_CounterCheck" useAtlasSize="true" hidden="true">
-							<Anchors>
-								<Anchor point="BOTTOMLEFT" relativeKey="$parent.TypeRing" x="-5" y="-3"/>
-							</Anchors>
-						</Texture>
-					</Layer>
-				</Layers>
 			</Frame>
 		</Frames>
 	</Frame>
@@ -1879,6 +1873,9 @@
 								</Scripts>
 							</Frame>
 							<Frame parentKey="FewEnemies" hidden="true">
+								<KeyValues>
+									<KeyValue key="numEnemies" value="3" type="number"/>
+								</KeyValues>
 								<Anchors>
 									<Anchor point="BOTTOMLEFT" relativeKey="$parent.Stage" y="-25"/>
 									<Anchor point="TOPRIGHT" relativeKey="$parent.Stage" relativePoint="TOPRIGHT" y="-125"/>
@@ -1902,6 +1899,9 @@
 								</Frames>
 							</Frame>
 							<Frame parentKey="ManyEnemies">
+								<KeyValues>
+									<KeyValue key="numEnemies" value="5" type="number"/>
+								</KeyValues>
 								<Anchors>
 									<Anchor point="BOTTOMLEFT" relativeKey="$parent.Stage" y="-25"/>
 									<Anchor point="TOPRIGHT" relativeKey="$parent.Stage" relativePoint="TOPRIGHT" y="-125"/>
@@ -2874,6 +2874,9 @@
 			<OnLoad function="GarrisonMissionFrame_OnLoad"/>
 			<OnEvent function="GarrisonMissionFrame_OnEvent"/>
 			<OnShow function="GarrisonMissionFrame_OnShow"/>
+			<OnHide>
+				C_Garrison.CloseMissionNPC();
+			</OnHide>
 		</Scripts>
 	</Frame>	
 	

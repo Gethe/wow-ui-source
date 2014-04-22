@@ -268,9 +268,15 @@ end
 
 function QuestPOIButton_OnClick(self)
 	PlaySound("igMainMenuOptionCheckBoxOn");
-	if ( IsShiftKeyDown() ) then
-		QuestMapQuestOptions_TrackQuest(_, self.questID);
+	local questID = self.questID;	
+	local questLogIndex = GetQuestLogIndexByID(questID);
+	if ( IsQuestWatched(questLogIndex) ) then
+		if ( IsShiftKeyDown() ) then
+			RemoveQuestWatch(questLogIndex);
+			return;
+		end
 	else
-		SetSuperTrackedQuestID(self.questID);
+		AddQuestWatch(questLogIndex);
 	end
+	SetSuperTrackedQuestID(questID);
 end

@@ -141,6 +141,10 @@ function DEFAULT_OBJECTIVE_TRACKER_MODULE:GetBlock(id)
 	return block;
 end
 
+function DEFAULT_OBJECTIVE_TRACKER_MODULE:GetExistingBlock(id)
+	return self.usedBlocks[id];
+end
+
 function DEFAULT_OBJECTIVE_TRACKER_MODULE:MarkBlocksUnused()
 	for _, block in pairs(self.usedBlocks) do
 		block.used = nil;
@@ -480,27 +484,31 @@ function ObjectiveTracker_Initialize(self)
 	self:RegisterEvent("QUEST_WATCH_LIST_CHANGED");
 	self:RegisterEvent("QUEST_AUTOCOMPLETE");
 	self:RegisterEvent("QUEST_ACCEPTED");	
-	self:RegisterEvent("WORLD_MAP_UPDATE");
 	self:RegisterEvent("SUPER_TRACKED_QUEST_CHANGED");
 	self:RegisterEvent("SCENARIO_UPDATE");
 	self:RegisterEvent("SCENARIO_CRITERIA_UPDATE");
 	self:RegisterEvent("TRACKED_ACHIEVEMENT_UPDATE");
 	self:RegisterEvent("ZONE_CHANGED_NEW_AREA");
-	
+	self:RegisterEvent("QUEST_POI_UPDATE");
+	self:RegisterEvent("VARIABLES_LOADED");
+
 	self.initialized = true;
 end
 
 function ObjectiveTracker_OnEvent(self, event, ...)
 	if ( event == "QUEST_LOG_UPDATE" ) then
 		ObjectiveTracker_Update(OBJECTIVE_TRACKER_UPDATE_QUEST);
-	elseif ( event == "WORLD_MAP_UPDATE" ) then
-		QuestObjectiveTracker_UpdatePOIs();
 	elseif ( event == "TRACKED_ACHIEVEMENT_UPDATE" ) then
 		AchievementObjectiveTracker_CheckTimedAchievement(...);
 	elseif ( event == "QUEST_ACCEPTED" ) then
 		local questLogIndex, questID = ...;
 		if ( IsQuestTask(questID) ) then
 			ObjectiveTracker_Update(OBJECTIVE_TRACKER_UPDATE_TASK_ADDED, questID);
+		else
+			if ( AUTO_QUEST_WATCH == "1" and GetNumQuestWatches() < MAX_WATCHABLE_QUESTS ) then
+				AddQuestWatch(questLogIndex);
+				QuestSuperTracking_OnQuestAccepted(questID);
+			end
 		end
 	elseif ( event == "TRACKED_ACHIEVEMENT_LIST_CHANGED" ) then
 		local achievementID, added = ...;
@@ -518,6 +526,12 @@ function ObjectiveTracker_OnEvent(self, event, ...)
 		else
 			ObjectiveTracker_Update(OBJECTIVE_TRACKER_UPDATE_QUEST);
 		end
+	elseif ( event == "QUEST_POI_UPDATE" ) then
+		QuestPOIUpdateIcons();
+		SortQuestWatches();
+		-- SortQuestWatches might not trigger a QUEST_WATCH_LIST_CHANGED due to unique signals, so force an update
+		ObjectiveTracker_Update(OBJECTIVE_TRACKER_UPDATE_MODULE_QUEST);
+		QuestSuperTracking_OnPOIUpdate();
 	elseif ( event == "SCENARIO_CRITERIA_UPDATE" ) then
 		ObjectiveTracker_Update(OBJECTIVE_TRACKER_UPDATE_SCENARIO);
 	elseif ( event == "SUPER_TRACKED_QUEST_CHANGED" ) then
@@ -539,6 +553,8 @@ function ObjectiveTracker_OnEvent(self, event, ...)
 		if ( not self.initialized ) then
 			ObjectiveTracker_Initialize(self);
 		end
+		ObjectiveTracker_Update();
+	elseif ( event == "VARIABLES_LOADED" ) then
 		ObjectiveTracker_Update();
 	end
 end

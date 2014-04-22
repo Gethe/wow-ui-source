@@ -6,7 +6,6 @@ MICRO_BUTTONS = {
 	"AchievementMicroButton",
 	"QuestLogMicroButton",
 	"GuildMicroButton",
-	"PVPMicroButton",
 	"LFDMicroButton",
 	"EJMicroButton",
 	"CompanionsMicroButton",
@@ -64,12 +63,6 @@ end
 function MoveMicroButtons(anchor, achorTo, relAnchor, x, y, isStacked)
 	CharacterMicroButton:ClearAllPoints();
 	CharacterMicroButton:SetPoint(anchor, achorTo, relAnchor, x, y);
-	PVPMicroButton:ClearAllPoints();
-	if ( isStacked ) then
-		PVPMicroButton:SetPoint("TOPLEFT", CharacterMicroButton, "BOTTOMLEFT", 0, 24);
-	else
-		PVPMicroButton:SetPoint("BOTTOMLEFT", GuildMicroButton, "BOTTOMRIGHT", -3, 0);
-	end
 	UpdateMicroButtons();
 end
 
@@ -78,11 +71,9 @@ function UpdateMicroButtons()
 	local factionGroup = UnitFactionGroup("player");
 
 	if ( factionGroup == "Neutral" ) then
-		PVPMicroButton.factionGroup = factionGroup;
 		GuildMicroButton.factionGroup = factionGroup;
 		LFDMicroButton.factionGroup = factionGroup;
 	else
-		PVPMicroButton.factionGroup = nil;
 		GuildMicroButton.factionGroup = nil;
 		LFDMicroButton.factionGroup = nil;
 	end
@@ -128,19 +119,6 @@ function UpdateMicroButtons()
 	else
 		MainMenuMicroButton:SetButtonState("NORMAL");
 		MainMenuMicroButton_SetNormal();
-	end
-
-	if ( PVPUIFrame and PVPUIFrame:IsShown() ) then
-		PVPMicroButton:SetButtonState("PUSHED", true);
-		PVPMicroButton_SetPushed();
-	else
-		if ( playerLevel < PVPMicroButton.minLevel or factionGroup == "Neutral" ) then
-			PVPMicroButton:Disable();
-		else
-			PVPMicroButton:Enable();
-			PVPMicroButton:SetButtonState("NORMAL");
-			PVPMicroButton_SetNormal();
-		end
 	end
 
 	GuildMicroButton_UpdateTabard();
@@ -241,16 +219,6 @@ end
 
 function MicroButtonPulseStop(self)
 	UIFrameFlashStop(self.Flash);
-end
-
-function PVPMicroButton_SetPushed()
-	PVPMicroButtonTexture:SetPoint("TOP", PVPMicroButton, "TOP", 5, -31);
-	PVPMicroButtonTexture:SetAlpha(0.5);
-end
-
-function PVPMicroButton_SetNormal()
-	PVPMicroButtonTexture:SetPoint("TOP", PVPMicroButton, "TOP", 6, -30);
-	PVPMicroButtonTexture:SetAlpha(1.0);
 end
 
 function AchievementMicroButton_OnEvent(self, event, ...)

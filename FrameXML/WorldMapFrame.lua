@@ -1984,9 +1984,9 @@ function WorldMapFrame_UpdateQuests()
 	local numPOINumeric = 0;
 	local numPOICompleteSwap = 0;
 	
-	local numEntries = QuestMapUpdateAllQuests();
-	WorldMapFrame_ClearQuestPOIs();
-	QuestPOIUpdateIcons();
+	--local numEntries = QuestMapUpdateAllQuests();
+	--WorldMapFrame_ClearQuestPOIs();
+	--QuestPOIUpdateIcons();
 
 	if ( WorldMapQuestScrollFrame.highlightedFrame ) then
 		WorldMapQuestScrollFrame.highlightedFrame.ownPOI:UnlockHighlight();
@@ -2735,7 +2735,6 @@ function WorldMapTrackingOptionsDropDown_OnClick(self)
 	
 	if (value == "quests") then
 		SetCVar("questPOI", checked and "1" or "0");
-		QuestObjectiveTracker_UpdatePOIs();
 		QuestMapFrame_UpdateAll();
 	elseif (value == "bosses") then
 		SetCVar("showBosses", checked and "1" or "0");

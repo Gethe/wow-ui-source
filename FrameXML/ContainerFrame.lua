@@ -298,18 +298,23 @@ function ContainerFrame_Update(frame)
 	local isNewItem, isBattlePayItem, newItemTexture, shine;
 	local tooltipOwner = GameTooltip:GetOwner();
 	
-	--Update Searchbox
+	--Update Searchbox and sort button
 	if ( id == 0 ) then
 		BagItemSearchBox:SetParent(frame);
-		BagItemSearchBox:SetPoint("TOPRIGHT", frame, "TOPRIGHT", -10, -26);
+		BagItemSearchBox:SetPoint("TOPLEFT", frame, "TOPLEFT", 50, -28);
 		BagItemSearchBox.anchorBag = frame;
 		BagItemSearchBox:Show();
+		BagItemAutoSortButton:SetParent(frame);
+		BagItemAutoSortButton:SetPoint("TOPRIGHT", frame, "TOPRIGHT", -10, -28);
+		BagItemAutoSortButton:Show();
 	elseif ( BagItemSearchBox.anchorBag == frame ) then
 		BagItemSearchBox:ClearAllPoints();
 		BagItemSearchBox:Hide();
 		BagItemSearchBox.anchorBag = nil;
+		BagItemAutoSortButton:ClearAllPoints();
+		BagItemAutoSortButton:Hide();
 	end
-	
+
 	for i=1, frame.size, 1 do
 		itemButton = _G[name.."Item"..i];
 		
@@ -1010,4 +1015,92 @@ function GetBackpackFrame()
 	else
 		return nil;
 	end
+end
+
+-- Filters
+function ContainerFrameFilterDropDown_OnLoad(self)
+	UIDropDownMenu_Initialize(self, ContainerFrameFilterDropDown_Initialize, "MENU");
+end
+
+function ContainerFrameFilterDropDown_Initialize(self, level)
+	local id = self:GetParent():GetID();
+
+	local info = UIDropDownMenu_CreateInfo();
+	info.keepShownOnClick = true;	
+
+	if (id > 0 and id <= NUM_BAG_SLOTS) then
+		info.text = BAG_FILTER_ASSIGN_TO;
+		info.isTitle = 1;
+		info.notCheckable = 1;
+		UIDropDownMenu_AddButton(info);
+
+		info.isTitle = nil;
+		info.notCheckable = nil;
+		info.isNotRadio = true;
+
+		info.text = BAG_FILTER_EQUIPMENT;
+		info.func = function(_, _, _, value)
+			SetBagSlotFlag(id, BAG_FLAG_EQUIPMENT, value);
+		end;
+		info.checked = GetBagSlotFlag(id, BAG_FLAG_EQUIPMENT);
+		info.disabled = IsBagSlotFlagEnabledOnOtherBags(id, BAG_FLAG_EQUIPMENT);
+		UIDropDownMenu_AddButton(info);
+
+		info.text = BAG_FILTER_CONSUMABLES;
+		info.func = function(_, _, _, value)
+			SetBagSlotFlag(id, BAG_FLAG_CONSUMABLES, value);
+		end;
+		info.checked = GetBagSlotFlag(id, BAG_FLAG_CONSUMABLES);
+		info.disabled = IsBagSlotFlagEnabledOnOtherBags(id, BAG_FLAG_CONSUMABLES);
+		UIDropDownMenu_AddButton(info);
+
+		info.text = BAG_FILTER_TRADE_GOODS;
+		info.func = function(_, _, _, value)
+			SetBagSlotFlag(id, BAG_FLAG_TRADE_GOODS, value);
+		end;
+		info.checked = GetBagSlotFlag(id, BAG_FLAG_TRADE_GOODS);
+		info.disabled = IsBagSlotFlagEnabledOnOtherBags(id, BAG_FLAG_TRADE_GOODS);
+		UIDropDownMenu_AddButton(info);
+
+		info.text = BAG_FILTER_JUNK;
+		info.func = function(_, _, _, value)
+			SetBagSlotFlag(id, BAG_FLAG_JUNK, value);
+		end;
+		info.checked = GetBagSlotFlag(id, BAG_FLAG_JUNK);
+		info.disabled = IsBagSlotFlagEnabledOnOtherBags(id, BAG_FLAG_JUNK);
+		UIDropDownMenu_AddButton(info);
+	end
+
+	info.text = BAG_FILTER_AUTO_SORT;
+	info.isTitle = 1;
+	info.notCheckable = 1;
+	UIDropDownMenu_AddButton(info);
+
+	info.isTitle = nil;
+	info.notCheckable = nil;
+	info.isNotRadio = true;
+	info.disabled = nil;
+
+	info.text = BAG_FILTER_IGNORE;
+	info.func = function(_, _, _, value)
+		if (id == -1) then
+			SetBankAutosortDisabled(value);
+		elseif (id == 0) then
+			SetBackpackAutosortDisabled(value);
+		elseif (id > NUM_BAG_SLOTS) then
+			SetBankBagSlotAutosortDisabled(id, value);
+		else
+			SetBagSlotFlag(id, BAG_FLAG_AUTOSORT_DISABLED, value);
+		end
+	end;
+	if (id == -1) then
+		info.checked = GetBankAutosortDisabled();
+	elseif (id == 0) then
+		info.checked = GetBackpackAutosortDisabled();
+	elseif (id > NUM_BAG_SLOTS) then
+		info.checked = GetBankBagSlotAutosortDisabled(id);
+	else
+		info.checked = GetBagSlotFlag(id, BAG_FLAG_AUTOSORT_DISABLED);
+	end
+	UIDropDownMenu_AddButton(info);
 end

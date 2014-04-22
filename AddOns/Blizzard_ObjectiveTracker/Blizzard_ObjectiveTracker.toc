@@ -3,6 +3,7 @@
 ## Secure: 1
 ## LoadOnDemand: 0
 Blizzard_ObjectiveTracker.xml
+Blizzard_QuestSuperTracking.lua
 Blizzard_QuestObjectiveTracker.xml
 Blizzard_AchievementObjectiveTracker.lua
 Blizzard_AutoQuestPopUpTracker.xml

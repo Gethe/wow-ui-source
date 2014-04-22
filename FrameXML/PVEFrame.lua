@@ -2,13 +2,16 @@
 -- PVE FRAME
 ---------------------------------------------------------------
 local panels = {
-	[1] = { name = "GroupFinderFrame", addon = nil },
-	[2] = { name = "ChallengesFrame", addon = "Blizzard_ChallengesUI" },
+	{ name = "GroupFinderFrame", addon = nil },
+	{ name = "PVPUIFrame", addon = "Blizzard_PVPUI" },
+	{ name = "ChallengesFrame", addon = "Blizzard_ChallengesUI" },
 }
 
 function PVEFrame_OnLoad(self)
 	RaiseFrameLevel(self.shadows);
-	PanelTemplates_SetNumTabs(self, 2);
+	PanelTemplates_SetNumTabs(self, #panels);
+	
+	self.maxTabWidth = (self:GetWidth() - 19) / #panels;
 end
 
 function PVEFrame_ToggleFrame(sidePanelName, selection)
@@ -19,7 +22,7 @@ function PVEFrame_ToggleFrame(sidePanelName, selection)
 	if ( self:IsShown() ) then
 		if ( sidePanelName ) then
 			local sidePanel = _G[sidePanelName];
-			if ( sidePanel and sidePanel:IsShown() and sidePanel:getSelection() == selection ) then
+			if ( sidePanel and sidePanel:IsShown() and  (not sidePanel.getSelection or sidePanel:getSelection() == selection) ) then
 				HideUIPanel(self);
 			else
 				PVEFrame_ShowFrame(sidePanelName, selection);
@@ -68,7 +71,9 @@ function PVEFrame_ShowFrame(sidePanelName, selection)
 		local panel = _G[data.name];
 		if ( index == tabIndex ) then
 			panel:Show();
-			panel:update(selection);			
+			if( panel.update ) then
+				panel:update(selection);
+			end
 		elseif ( panel ) then
 			panel:Hide();
 		end

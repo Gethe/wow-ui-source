@@ -288,6 +288,29 @@
 					</OnClick>
 				</Scripts>
 			</Button>
+			<Button parentKey="FiltersButton">
+				<Size x="16" y="16"/>
+				<Anchors>
+					<Anchor point="CENTER" relativeTo="$parentPortraitButton" relativePoint="BOTTOMRIGHT" x="-8" y="8"/>
+				</Anchors>
+				<Scripts>
+					<OnShow>
+						self:SetFrameLevel(self:GetParent():GetFrameLevel()+2);
+					</OnShow>
+					<OnClick>
+						local parent = self:GetParent();
+						PlaySound("igMainMenuOptionCheckBoxOn");
+						ToggleDropDownMenu(1, nil, parent.FilterDropDown, self, 0, 0);
+					</OnClick>
+				</Scripts>
+				<NormalTexture file="Interface\GossipFrame\BinderGossipIcon"/>
+				<HighlightTexture file="Interface\Buttons\UI-Panel-MinimizeButton-Highlight" desaturated="TRUE" alphaMode="ADD" />
+			</Button>
+			<Frame name="$parentFilterDropDown" parentKey="FilterDropDown" inherits="UIDropDownMenuTemplate">
+				<Scripts>
+					<OnLoad function="ContainerFrameFilterDropDown_OnLoad"/>
+				</Scripts>
+			</Frame>
 		</Frames>
 		<Scripts>
 			<OnEvent>
@@ -319,6 +342,17 @@
 	<Frame name="ContainerFrame13" inherits="ContainerFrameTemplate" parent="UIParent" id="100" hidden="true"/>
 
 	<EditBox name="BagItemSearchBox" inherits="BagSearchBoxTemplate" parent="ContainerFrame1" letters="15" hidden="true">
-		<Size x="130" y="20"/>
+		<Size x="110" y="18"/>
 	</EditBox>
+
+	<Button name="BagItemAutoSortButton" parent="ContainerFrame1" hidden="true">
+		<Size x="18" y="18"/>
+		<NormalTexture atlas="bags-button-autosort"/>
+		<HighlightTexture file="Interface\Buttons\ButtonHilight-Square" alphaMode="ADD"/>
+		<Scripts>
+			<OnClick>
+				SortBags();
+			</OnClick>
+		</Scripts>
+	</Button>
 </Ui>

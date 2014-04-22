@@ -38,15 +38,9 @@ function RealmListUpdate()
 
 	local found = false;
 
-	-- Just for the first time the frame is loaded
-	if ( not RealmList.selectedCategory ) then
-		RealmList.selectedCategory = 1;
-	end
-
-	if ( not RealmList.firstUpdate or numRealms ~= RealmList.numRealms ) then
+	if ( not RealmList.firstUpdate or RealmList.selectedCategory ~= RealmList.oldSelectedCategory or numRealms ~= RealmList.numRealms ) then
 		RealmList.offset = 0;
 		
-		local index = 1;
 		repeat
 			for i = 1, MAX_REALMS_DISPLAYED, 1 do
 				local currentRealm = select(5,GetRealmInfo(RealmList.selectedCategory, i + RealmList.offset));
@@ -61,7 +55,11 @@ function RealmListUpdate()
 				RealmList.offset = RealmList.offset + 1;
 			end
 		until found or RealmList.offset > numRealms;
+		if (RealmList.offset > numRealms) then
+			RealmList.offset = 0;
+		end
 		RealmList.numRealms = numRealms;
+		RealmList.oldSelectedCategory = RealmList.selectedCategory;
 		RealmList.firstUpdate = true;
 	end
 
@@ -340,7 +338,7 @@ end
 function RealmListScrollFrame_OnVerticalScroll(self, offset)
 	RealmList.refreshTime = RealmListUpdateRate();
 	local scrollbar = _G[self:GetName().."ScrollBar"];
-	print(scrollbar:GetName());
+
 	scrollbar:SetValue(offset);
 	RealmList.offset = floor((offset / REALM_BUTTON_HEIGHT) + 0.5);
 	RealmListUpdate();
@@ -349,6 +347,8 @@ end
 function RealmList_OnShow(self)
 	RealmList.currentRealm = nil;
 
+	RequestRealmList();
+	
 	self.refreshTime = RealmListUpdateRate();
 	local selectedCategory = GetSelectedCategory();
 	if ( selectedCategory == 0 ) then
