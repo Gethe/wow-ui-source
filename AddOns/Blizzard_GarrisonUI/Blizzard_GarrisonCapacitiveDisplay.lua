@@ -61,7 +61,7 @@ function GarrisonCapacitiveDisplayFrame_Update(self, success, maxShipments, plot
 
 			local firstActiveFound = false;
 
-			if (i <= numPending) then
+			if (numPending and i <= numPending) then
 				local _, texture, _, _, totalTime, timeRemaining = C_Garrison.GetPendingShipmentInfo(i);
 
 				workOrder.Icon:SetTexture(texture);
@@ -139,9 +139,12 @@ function GarrisonCapacitiveDisplayFrame_Update(self, success, maxShipments, plot
 
 	    local name, texture, quality, itemID, duration = C_Garrison.GetShipmentItemInfo();
 
-		-- If we don't have a name here the data is not set up correctly, but this prevents lua errors later.
 		if (not quality) then
 			quality = ITEM_QUALITY_COMMON;
+		end
+
+		if (not duration) then
+			duration = 0;
 		end
 
 		local prefix, pendingText = C_Garrison.GetShipmentContainerInfo();

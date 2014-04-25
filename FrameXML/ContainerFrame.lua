@@ -1018,6 +1018,13 @@ function GetBackpackFrame()
 end
 
 -- Filters
+BAG_FILTER_LABELS = {
+	[LE_BAG_FILTER_FLAG_EQUIPMENT] = BAG_FILTER_EQUIPMENT,
+	[LE_BAG_FILTER_FLAG_CONSUMABLES] = BAG_FILTER_CONSUMABLES,
+	[LE_BAG_FILTER_FLAG_TRADE_GOODS] = BAG_FILTER_TRADE_GOODS,
+	[LE_BAG_FILTER_FLAG_JUNK] = BAG_FILTER_JUNK,
+};
+
 function ContainerFrameFilterDropDown_OnLoad(self)
 	UIDropDownMenu_Initialize(self, ContainerFrameFilterDropDown_Initialize, "MENU");
 end
@@ -1037,41 +1044,26 @@ function ContainerFrameFilterDropDown_Initialize(self, level)
 		info.isTitle = nil;
 		info.notCheckable = nil;
 		info.isNotRadio = true;
+		info.tooltipWhileDisabled = 1;
+		info.tooltipOnButton = 1;
 
-		info.text = BAG_FILTER_EQUIPMENT;
-		info.func = function(_, _, _, value)
-			SetBagSlotFlag(id, BAG_FLAG_EQUIPMENT, value);
-		end;
-		info.checked = GetBagSlotFlag(id, BAG_FLAG_EQUIPMENT);
-		info.disabled = IsBagSlotFlagEnabledOnOtherBags(id, BAG_FLAG_EQUIPMENT);
-		UIDropDownMenu_AddButton(info);
-
-		info.text = BAG_FILTER_CONSUMABLES;
-		info.func = function(_, _, _, value)
-			SetBagSlotFlag(id, BAG_FLAG_CONSUMABLES, value);
-		end;
-		info.checked = GetBagSlotFlag(id, BAG_FLAG_CONSUMABLES);
-		info.disabled = IsBagSlotFlagEnabledOnOtherBags(id, BAG_FLAG_CONSUMABLES);
-		UIDropDownMenu_AddButton(info);
-
-		info.text = BAG_FILTER_TRADE_GOODS;
-		info.func = function(_, _, _, value)
-			SetBagSlotFlag(id, BAG_FLAG_TRADE_GOODS, value);
-		end;
-		info.checked = GetBagSlotFlag(id, BAG_FLAG_TRADE_GOODS);
-		info.disabled = IsBagSlotFlagEnabledOnOtherBags(id, BAG_FLAG_TRADE_GOODS);
-		UIDropDownMenu_AddButton(info);
-
-		info.text = BAG_FILTER_JUNK;
-		info.func = function(_, _, _, value)
-			SetBagSlotFlag(id, BAG_FLAG_JUNK, value);
-		end;
-		info.checked = GetBagSlotFlag(id, BAG_FLAG_JUNK);
-		info.disabled = IsBagSlotFlagEnabledOnOtherBags(id, BAG_FLAG_JUNK);
-		UIDropDownMenu_AddButton(info);
+		for i = LE_BAG_FILTER_FLAG_EQUIPMENT, NUM_LE_BAG_FILTER_FLAGS do
+			info.text = BAG_FILTER_LABELS[i];
+			info.func = function(_, _, _, value)
+				SetBagSlotFlag(id, i, value);
+			end;
+			info.checked = GetBagSlotFlag(id, i);
+			info.disabled = IsBagSlotFlagEnabledOnOtherBags(id, i);
+			if (info.disabled) then
+				info.tooltipTitle = BAG_FILTER_ALREADY_ASSIGNED;
+			else
+				info.tooltipTitle = nil;
+			end
+			UIDropDownMenu_AddButton(info);
+		end
 	end
 
-	info.text = BAG_FILTER_AUTO_SORT;
+	info.text = BAG_FILTER_CLEANUP;
 	info.isTitle = 1;
 	info.notCheckable = 1;
 	UIDropDownMenu_AddButton(info);
@@ -1090,7 +1082,7 @@ function ContainerFrameFilterDropDown_Initialize(self, level)
 		elseif (id > NUM_BAG_SLOTS) then
 			SetBankBagSlotAutosortDisabled(id, value);
 		else
-			SetBagSlotFlag(id, BAG_FLAG_AUTOSORT_DISABLED, value);
+			SetBagSlotFlag(id, LE_BAG_FILTER_FLAG_IGNORE_CLEANUP, value);
 		end
 	end;
 	if (id == -1) then
@@ -1100,7 +1092,7 @@ function ContainerFrameFilterDropDown_Initialize(self, level)
 	elseif (id > NUM_BAG_SLOTS) then
 		info.checked = GetBankBagSlotAutosortDisabled(id);
 	else
-		info.checked = GetBagSlotFlag(id, BAG_FLAG_AUTOSORT_DISABLED);
+		info.checked = GetBagSlotFlag(id, LE_BAG_FILTER_FLAG_IGNORE_CLEANUP);
 	end
 	UIDropDownMenu_AddButton(info);
 end

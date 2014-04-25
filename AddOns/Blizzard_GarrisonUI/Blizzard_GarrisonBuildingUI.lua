@@ -1,9 +1,10 @@
-local GARRISON_CURRENCY = 824;
-local NUM_BUILDING_SIZES = 3;
-local MAX_BUILDING_LEVEL = 3;
+GARRISON_CURRENCY = 824;
+GARRISON_NUM_BUILDING_SIZES = 3;
+GARRISON_MAX_BUILDING_LEVEL = 3;
 local EMPTY_PLOT_ATLAS = "GarrBuilding_EmptyPlot_1_A_Info";
 local CAN_UPGRADE_ATLAS = "Garr_LevelUpgradeArrow";
 local LOCKED_UPGRADE_ATLAS= "Garr_LevelUpgradeLocked";
+local BARRACKS_BUILDING_ID = 26;
 
 local BUILDING_TABS = {};
 
@@ -20,10 +21,10 @@ function GarrisonBuildingFrame_OnLoad(self)
 	
 	--set up tabs
 	local tabInfo = C_Garrison.GetBuildingSizes();
-	if (#tabInfo ~= NUM_BUILDING_SIZES) then
+	if (#tabInfo ~= GARRISON_NUM_BUILDING_SIZES) then
 		return;
 	end
-	for i=1, NUM_BUILDING_SIZES do
+	for i=1, GARRISON_NUM_BUILDING_SIZES do
 		local tab = list["Tab"..i];
 		tab.categoryID = tabInfo[i].id;
 		BUILDING_TABS[tabInfo[i].id] = tab;
@@ -48,7 +49,7 @@ function GarrisonBuildingFrame_OnLoad(self)
 	--get plots
 	GarrisonBuildingFrame_UpdatePlots();
 	
-	for i = 1, MAX_BUILDING_LEVEL do
+	for i = 1, GARRISON_MAX_BUILDING_LEVEL do
 		self.InfoBox.Tooltip["Rank"..i]:SetFormattedText(GARRISON_CURRENT_LEVEL, i);
 	end
 	
@@ -66,7 +67,13 @@ end
 
 function GarrisonBuildingFrame_OnShow(self)
 	GarrisonBuildingFrame_UpdateGarrisonInfo(self);
-	GarrisonBuildingFrame.BuildingList.Tab1:Click();
+	if (not IsTutorialFlagged(66)) then
+		GarrisonBuildingFrame.BuildingList.Tab3:Click();
+		GarrisonBuildingList_SelectBuilding(BARRACKS_BUILDING_ID);
+		GarrisonBarracksTutorialBox:Show();
+	else
+		GarrisonBuildingFrame.BuildingList.Tab1:Click();
+	end
 end
 
 function GarrisonBuildingFrame_OnEvent(self, event, ...)
@@ -114,7 +121,7 @@ function GarrisonBuildingFrame_OnEvent(self, event, ...)
 		local categoryID = ...;
 		local buildingID = nil;
 		local list = GarrisonBuildingFrame.BuildingList
-		for i=1, NUM_BUILDING_SIZES do
+		for i=1, GARRISON_NUM_BUILDING_SIZES do
 			local tab = list["Tab"..i];
 			if (tab.categoryID == categoryID) then
 				tab.buildings = C_Garrison.GetBuildingsForSize(tab.categoryID);
@@ -299,8 +306,9 @@ function GarrisonBuildingInfoBox_ShowBuilding(ID, owned)
 	else
 		infoBox.PlansNeeded:Hide();
 		infoBox.CostBar:Show();
-		infoBox.CostBar.Cost:SetText(currencyQty);
-		infoBox.CostBar.Time:SetText("Build Time: "..buildTime);
+		local _, _, currencyTexture = GetCurrencyInfo(currencyID);
+		infoBox.CostBar.Cost:SetText(currencyQty.."  |T"..currencyTexture..":0:0:0:-1|t ");
+		infoBox.CostBar.Time:SetText(buildTime);
 		infoBox.Building:SetDesaturated(false);
 	end
 	
@@ -409,7 +417,7 @@ end
 
 function GarrisonBuildingList_SelectTab(tab)
 	local list = GarrisonBuildingFrame.BuildingList;
-	for i=1, NUM_BUILDING_SIZES do
+	for i=1, GARRISON_NUM_BUILDING_SIZES do
 		local otherTab = list["Tab"..i];
 		if (i ~= tab:GetID()) then
 			otherTab:GetNormalTexture():SetAtlas("Garr_ListTab", true)
@@ -677,6 +685,9 @@ function GarrisonBuildingFrame_ConfirmBuild()
 	end
 	PlaySoundKitID(40999);
 	C_Garrison.PlaceBuilding(confirmation.plot.plotID, confirmation.buildingID);
+	if (confirmation.buildingID == BARRACKS_BUILDING_ID) then
+		TriggerTutorial(66);
+	end
 	GarrisonBuildingFrame_ClearConfirmation();
 end
 

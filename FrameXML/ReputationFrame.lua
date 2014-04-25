@@ -11,14 +11,6 @@ FACTION_BAR_COLORS = {
 	[7] = {r = 0, g = 0.6, b = 0.1},
 	[8] = {r = 0, g = 0.6, b = 0.1},
 };
--- Hard coded =(, will need to add entries for each expansion
-MAX_PLAYER_LEVEL_TABLE = {};
-MAX_PLAYER_LEVEL_TABLE[0] = 60;
-MAX_PLAYER_LEVEL_TABLE[1] = 70;
-MAX_PLAYER_LEVEL_TABLE[2] = 80;
-MAX_PLAYER_LEVEL_TABLE[3] = 85;
-MAX_PLAYER_LEVEL_TABLE[4] = 90;
-MAX_PLAYER_LEVEL_TABLE[5] = 100;
 MAX_PLAYER_LEVEL = 0;
 REPUTATIONFRAME_ROWSPACING = 23;
 

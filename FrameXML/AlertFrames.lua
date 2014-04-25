@@ -18,6 +18,7 @@ function AlertFrame_OnLoad (self)
 	self:RegisterEvent("STORE_PRODUCT_DELIVERED");
 	self:RegisterEvent("GARRISON_BUILDING_ACTIVATABLE");
 	self:RegisterEvent("GARRISON_MISSION_COMPLETED");
+	self:RegisterEvent("GARRISON_FOLLOWER_ADDED");
 end
 
 function AlertFrame_OnEvent (self, event, ...)
@@ -71,6 +72,9 @@ function AlertFrame_OnEvent (self, event, ...)
 	elseif ( event == "GARRISON_MISSION_COMPLETED" ) then
 		local name = ...;
 		GarrisonMissionAlertFrame_ShowAlert(name);
+	elseif ( event == "GARRISON_FOLLOWER_ADDED" ) then
+		local name, displayID, level, quality = ...;
+		GarrisonFollowerAlertFrame_ShowAlert(name, displayID, level, quality);
 	end
 end
 
@@ -119,6 +123,7 @@ function AlertFrame_FixAnchors()
 	alertAnchor = AlertFrame_SetDigsiteCompleteToastFrameAnchors(alertAnchor);
 	alertAnchor = AlertFrame_SetGarrisonBuildingAlertFrameAnchors(alertAnchor);
 	alertAnchor = AlertFrame_SetGarrisonMissionAlertFrameAnchors(alertAnchor);
+	alertAnchor = AlertFrame_SetGarrisonFollowerAlertFrameAnchors(alertAnchor);
 end
 
 function AlertFrame_SetLootAnchors(alertAnchor)
@@ -252,6 +257,14 @@ function AlertFrame_SetGarrisonMissionAlertFrameAnchors(alertAnchor)
 	if ( GarrisonMissionAlertFrame and GarrisonMissionAlertFrame:IsShown() ) then
 		GarrisonMissionAlertFrame:SetPoint("BOTTOM", alertAnchor, "TOP", 0, 10);
 		alertAnchor = GarrisonMissionAlertFrame;
+	end
+	return alertAnchor;
+end
+
+function AlertFrame_SetGarrisonFollowerAlertFrameAnchors(alertAnchor)
+	if ( GarrisonFollowerAlertFrame and GarrisonFollowerAlertFrame:IsShown() ) then
+		GarrisonFollowerAlertFrame:SetPoint("BOTTOM", alertAnchor, "TOP", 0, 10);
+		alertAnchor = GarrisonFollowerAlertFrame;
 	end
 	return alertAnchor;
 end
@@ -930,6 +943,34 @@ end
 function GarrisonMissionAlertFrame_ShowAlert(name)
 	GarrisonMissionAlertFrame.Name:SetText(name);
 	AlertFrame_AnimateIn(GarrisonMissionAlertFrame);
+	AlertFrame_FixAnchors();
+	PlaySound("AuctionWindowOpen");
+end
+
+-- [[ GarrisonFollowerAlertFrame ]] --
+GARRISON_FOLLOWER_QUALITY_TEXTURE_SUFFIXES = {
+	[ITEM_QUALITY_UNCOMMON] = "Uncommon",
+	[ITEM_QUALITY_EPIC] = "Epic",
+	[ITEM_QUALITY_RARE] = "Rare",
+}
+function GarrisonFollowerAlertFrame_ShowAlert(name, displayID, level, quality)
+	GarrisonFollowerAlertFrame.Name:SetText(name);
+	local texSuffix = GARRISON_FOLLOWER_QUALITY_TEXTURE_SUFFIXES[quality]
+	if (texSuffix) then
+		GarrisonFollowerAlertFrame.FollowerBG:SetAtlas("Garr_FollowerToast-"..texSuffix, true);
+		GarrisonFollowerAlertFrame.FollowerBG:Show();
+	else
+		GarrisonFollowerAlertFrame.FollowerBG:Hide();
+	end
+	SetPortraitTexture(GarrisonFollowerAlertFrame.PortraitFrame.Portrait, displayID);
+	GarrisonFollowerAlertFrame.PortraitFrame.Level:SetText(level);
+	local color = BAG_ITEM_QUALITY_COLORS[quality];
+	if (color) then
+		GarrisonFollowerAlertFrame.PortraitFrame.LevelBorder:SetVertexColor(color.r, color.g, color.b);
+	else
+		GarrisonFollowerAlertFrame.PortraitFrame.LevelBorder:SetVertexColor(1, 1, 1);
+	end
+	AlertFrame_AnimateIn(GarrisonFollowerAlertFrame);
 	AlertFrame_FixAnchors();
 	PlaySound("AuctionWindowOpen");
 end

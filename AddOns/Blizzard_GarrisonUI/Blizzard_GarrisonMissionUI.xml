@@ -1461,6 +1461,7 @@
 				<Scripts>
 					<OnFinished>
 						GarrisonMissionFrame.MissionComplete.BonusRewards.Chest1.FadeOutLock:Play();
+						GarrisonMissionFrame.MissionComplete.BonusRewards.Chest1:Enable();
 						GarrisonMissionFrame.MissionComplete.BonusRewards.Saturated:Show();
 						GarrisonMissionFrame.MissionComplete.BonusRewards.Saturated.FadeIn:Play();
 					</OnFinished>
@@ -1606,6 +1607,54 @@
 				<Anchors>
 					<Anchor point="BOTTOMLEFT" x="33" y="34"/>
 				</Anchors>
+				<Frames>
+					<Frame name="GarrisonMissionPageTutorialBox" inherits="GlowBoxTemplate" enableMouse="true" hidden="true" frameStrata="DIALOG" frameLevel="2" topLevel="true">
+						<Size x="220" y="100"/>
+						<Anchors>
+							<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" x="25" y="10"/>
+						</Anchors>
+						<Layers>
+							<Layer level="OVERLAY">
+								<FontString parentKey="Text" inherits="GameFontHighlightLeft" justifyV="TOP" text="Drag your follower onto the mission.">
+									<Size x="188" y="0"/>
+									<Anchors>
+										<Anchor point="TOPLEFT" x="16" y="-24"/>
+									</Anchors>
+								</FontString>
+							</Layer>
+							<Layer level="ARTWORK">
+								<Texture parentKey="Arrow" inherits="HelpPlateArrowDOWN">
+									<Size x="53" y="21"/>
+									<Anchors>
+										<Anchor point="RIGHT" relativePoint="LEFT" x="-3" y="0"/>
+									</Anchors>
+								</Texture>
+							</Layer>
+						</Layers>
+						<Frames>
+							<Button parentKey="CloseButton" inherits="UIPanelCloseButton">
+								<Anchors>
+									<Anchor point="TOPRIGHT" x="6" y="6"/>
+								</Anchors>
+								<Scripts>
+									<OnClick>
+										self:GetParent():Hide();
+										TriggerTutorial(67);
+									</OnClick>
+								</Scripts>
+							</Button>
+						</Frames>
+						<Scripts>
+							<OnLoad>
+								MicroButtonAlert_OnLoad(self);
+								SetClampedTextureRotation(self.Arrow, 90);--make arrow face left
+							</OnLoad>
+							<OnShow>
+								self:SetHeight(self.Text:GetHeight()+42);
+							</OnShow>
+						</Scripts>
+					</Frame>
+				</Frames>
 				<Scripts>
 					<OnShow function="GarrisonFollowerList_OnShow"/>
 					<OnHide function="GarrisonFollowerList_OnHide"/>
@@ -1630,6 +1679,102 @@
 								</FontString>
 							</Layer>
 						</Layers>
+						<Frames>
+							<Frame name="GarrisonMissionListTutorialBox" inherits="GlowBoxTemplate" enableMouse="true" hidden="true" frameStrata="DIALOG" frameLevel="2" topLevel="true">
+								<Size x="220" y="100"/>
+								<Anchors>
+									<Anchor point="BOTTOM" relativePoint="TOP" x="0" y="0"/>
+								</Anchors>
+								<Layers>
+									<Layer level="OVERLAY">
+										<FontString parentKey="Text" inherits="GameFontHighlightLeft" justifyV="TOP" text="View this mission.">
+											<Size x="188" y="0"/>
+											<Anchors>
+												<Anchor point="TOPLEFT" x="16" y="-24"/>
+											</Anchors>
+										</FontString>
+									</Layer>
+									<Layer level="ARTWORK">
+										<Texture parentKey="Arrow" inherits="HelpPlateArrowDOWN">
+											<Size x="53" y="21"/>
+											<Anchors>
+												<Anchor point="TOP" relativePoint="BOTTOM" x="-3" y="0"/>
+											</Anchors>
+										</Texture>
+									</Layer>
+								</Layers>
+								<Frames>
+									<Button parentKey="CloseButton" inherits="UIPanelCloseButton">
+										<Anchors>
+											<Anchor point="TOPRIGHT" x="6" y="6"/>
+										</Anchors>
+										<Scripts>
+											<OnClick>
+												self:GetParent():Hide();
+											</OnClick>
+										</Scripts>
+									</Button>
+								</Frames>
+								<Scripts>
+									<OnLoad function="MicroButtonAlert_OnLoad"/>
+									<OnShow>
+										self:SetHeight(self.Text:GetHeight()+42);
+									</OnShow>
+								</Scripts>
+							</Frame>
+							<Frame parentKey="MissionStartedToast" toplevel="true" hidden="true">
+								<Animations>
+									<AnimationGroup parentKey="hideAnim">
+										<Alpha startDelay=".8" change="-1" duration="1.0" order="1" />
+										<Scripts>
+											<OnFinished>
+												self:GetParent():Hide();
+											</OnFinished>
+										</Scripts>
+									</AnimationGroup>
+								</Animations>
+								<Size x="418" y="72"/>
+								<Anchors>
+									<Anchor point="CENTER" x="0" y="150"/>
+								</Anchors>
+								<Layers>
+									<Layer level="BACKGROUND">
+										<Texture file="Interface\LevelUp\LevelUpTex" parentKey="blackBg">
+											<Size x="326" y="103"/>
+											<Anchors>
+												<Anchor point="BOTTOM" x="0" y="0"/>
+											</Anchors>
+											<TexCoords left="0.00195313" right="0.63867188" top="0.03710938" bottom="0.23828125"/>
+											<Color r="1.0" g="1.0" b="1.0" a="0.6"/>
+										</Texture>
+									</Layer>
+									<Layer level="BACKGROUND" textureSubLevel="2">
+										<Texture file="Interface\LevelUp\LevelUpTex" parentKey="gLine2">
+											<Size x="418" y="7"/>
+											<Anchors>
+												<Anchor point="TOP" x="0" y="0"/>
+											</Anchors>
+											<TexCoords left="0.56054688" right="0.99609375" top="0.24218750" bottom="0.46679688"/>
+										</Texture>
+										<Texture file="Interface\LevelUp\LevelUpTex" parentKey="gLine">
+											<Size x="418" y="7"/>
+											<Anchors>
+												<Anchor point="BOTTOM" x="0" y="0"/>
+											</Anchors>
+											<TexCoords left="0.56054688" right="0.99609375" top="0.24218750" bottom="0.46679688"/>
+										</Texture>
+									</Layer>
+									<Layer level="ARTWORK">
+										<FontString inherits="GameFont_Gigantic" justifyH="CENTER" parentKey="levelText" text="Mission Started">
+											<Anchors>
+												<Anchor point="CENTER" x="0" y="-5"/>
+											</Anchors>
+											<Color r="1.0" g="0.82" b="0"/>
+										</FontString>
+									</Layer>	
+								</Layers>
+							</Frame>
+						</Frames>
 						<Scripts>
 							<OnShow function="GarrisonMissionList_OnShow"/>
 							<OnHide function="GarrisonMissionList_OnHide"/>

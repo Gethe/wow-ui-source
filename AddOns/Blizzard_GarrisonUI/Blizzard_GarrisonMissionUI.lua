@@ -28,7 +28,12 @@ end
 
 function GarrisonMissionFrame_OnEvent(self, event, ...)
 	if (event == "GARRISON_MISSION_LIST_UPDATE") then
+		showToast = ...;
 		GarrisonMissionList_UpdateMissions();
+		if (showToast) then
+			self.MissionTab.MissionList.MissionStartedToast:Show();
+			self.MissionTab.MissionList.MissionStartedToast.hideAnim:Play();
+		end
 	elseif (event == "GARRISON_FOLLOWER_LIST_UPDATE") then
 		GarrisonFollowerList_UpdateFollowers();
 	end
@@ -345,7 +350,10 @@ end
 ---------------------------------------------------------------------------------
 
 function GarrisonMissionList_OnShow(self)
-	GarrisonMissionList_UpdateMissions()
+	GarrisonMissionList_UpdateMissions();
+	if (not IsTutorialFlagged(67)) then
+		GarrisonMissionListTutorialBox:Show();
+	end
 end
 
 function GarrisonMissionList_OnHide(self)
@@ -451,6 +459,10 @@ function GarrisonMissionViewButton_OnClick(self)
 	GarrisonMissionFrame.MissionTab.MissionList:Hide();
 	GarrisonMissionFrame.MissionTab.MissionPage:Show();
 	GarrisonMissionPage_ShowMission(self:GetParent().info);
+	GarrisonMissionListTutorialBox:Hide();
+	if (not IsTutorialFlagged(67))then 
+		GarrisonMissionPageTutorialBox:Show();
+	end
 end
 
 ---------------------------------------------------------------------------------
@@ -766,6 +778,9 @@ function GarrisonSingleParty_ReceiveDrag(self)
 	
 	GarrisonFollowerPlacer:Hide();
 	GarrisonFollowerPlacerFrame:Hide();
+	
+	TriggerTutorial(67);
+	GarrisonMissionPageTutorialBox:Hide();
 end
 
 function GarrisonManyParty_ReceiveDrag(self)
@@ -832,6 +847,9 @@ function GarrisonMissionPageStartMissionButton_OnClick(self)
 	GarrisonMissionList_UpdateMissions();
 	GarrisonFollowerList_UpdateFollowers();
 	missionPage.CloseButton:Click();
+	if (not IsTutorialFlagged(68)) then
+		GarrisonLandingPageTutorialBox:Show();
+	end
 end
 
 ---------------------------------------------------------------------------------
@@ -910,6 +928,7 @@ function GarrisonMissionComplete_Initialize(missionList, index)
 		self.BonusRewards["Chest"..i].Chest:SetAnimation(148);
 		self.BonusRewards["Chest"..i].Chance:SetFormattedText(PERCENTAGE_STRING, mission.lootChances[i]);
 		self.BonusRewards["Chest"..i]:Show();
+		self.BonusRewards["Chest"..i]:Disable();
 	end
 	self.BonusRewards.Chest2:ClearAllPoints();
 	self.BonusRewards.Chest2:SetPoint("LEFT", self.BonusRewards.Chest1, "RIGHT", -23, 0);
@@ -974,12 +993,14 @@ function GarrisonMissionComplete_Initialize(missionList, index)
 			self.BonusRewards.Chest3:ClearAllPoints();
 			self.BonusRewards.Chest3:SetPoint("LEFT", self.BonusRewards.Chest2, "RIGHT", 126, 0);
 			self.BonusRewards.Chest2.FadeOutLock:Play();
+			self.BonusRewards.Chest2:Enable();
 		elseif (mission.state == 2) then
 			self.BonusRewards.Chest1:Hide();
 			self.BonusRewards.Chest2:Hide();
 			self.BonusRewards.Chest3:ClearAllPoints();
 			self.BonusRewards.Chest3:SetPoint("LEFT", self.BonusRewards.Chest2, "LEFT");
 			self.BonusRewards.Chest3.FadeOutLock:Play();
+			self.BonusRewards.Chest3:Enable();
 		end
 	else
 		self.Stage.ModelFarLeft:Hide();
@@ -987,6 +1008,7 @@ function GarrisonMissionComplete_Initialize(missionList, index)
 		self.Stage.ModelMiddle:Hide();
 		GarrisonMissionComplete_ShowNextAnimation();
 	end
+	GarrisonMissionFrame.MissionComplete.NextMissionButton:Disable();
 end
 
 function GarrisonMissionComplete_SetNumEncounters(size)
@@ -1039,18 +1061,20 @@ function GarrisonMissionCompleteReward_OnResult(missionID, chestIndex, result)
 	if (not chest) then
 		return;
 	end
-	if (result) then
+	if (result) then --got loot
 		chest.Chest:SetAnimation(154);
-	else
+	else --no got loot
 		chest.Chest:SetAnimation(153);
 	end
 	
 	local nextIndex = chestIndex + 1;
 	local nextChest = GarrisonMissionFrame.MissionComplete.BonusRewards["Chest"..nextIndex];
 	if (not nextChest) then
+		GarrisonMissionFrame.MissionComplete.NextMissionButton:Enable();
 		return;
 	end
 	nextChest.FadeOutLock:Play();
+	nextChest:Enable();
 end
 
 function GarrisonMissionCompleteNextButton_OnClick(self)

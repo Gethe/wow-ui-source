@@ -505,37 +505,10 @@ end
 function LFGSpecificChoiceEnableButton_SetIsRadio(button, isRadio)
 	if ( isRadio ) then
 		button:SetSize(17, 17)
-		button:SetNormalTexture("Interface\\Buttons\\UI-RadioButton");
-		button:GetNormalTexture():SetTexCoord(0, 0.25, 0, 1);
-		
-		button:SetHighlightTexture("Interface\\Buttons\\UI-RadioButton");
-		button:GetHighlightTexture():SetTexCoord(0.5, 0.75, 0, 1);
-		
-		button:SetCheckedTexture("Interface\\Buttons\\UI-RadioButton");
-		button:GetCheckedTexture():SetTexCoord(0.25, 0.5, 0, 1);
-		
-		button:SetPushedTexture("Interface\\Buttons\\UI-RadioButton");
-		button:GetPushedTexture():SetTexCoord(0, 0.25, 0, 1);
-		
-		button:SetDisabledCheckedTexture("Interface\\Buttons\\UI-RadioButton");
-		button:GetDisabledCheckedTexture():SetTexCoord(0.75, 1, 0, 1);
 	else
 		button:SetSize(20, 20);
-		button:SetNormalTexture("Interface\\Buttons\\UI-CheckBox-Up");
-		button:GetNormalTexture():SetTexCoord(0, 1, 0, 1);
-		
-		button:SetHighlightTexture("Interface\\Buttons\\UI-CheckBox-Highlight");
-		button:GetHighlightTexture():SetTexCoord(0, 1, 0, 1);
-		
-		button:SetCheckedTexture("Interface\\Buttons\\UI-CheckBox-Check");
-		button:GetCheckedTexture():SetTexCoord(0, 1, 0, 1);
-		
-		button:SetPushedTexture("Interface\\Buttons\\UI-CheckBox-Down");
-		button:GetPushedTexture():SetTexCoord(0, 1, 0, 1);
-		
-		button:SetDisabledCheckedTexture("Interface\\Buttons\\UI-CheckBox-Check-Disabled");
-		button:GetDisabledCheckedTexture():SetTexCoord(0, 1, 0, 1);
 	end	
+	SetCheckButtonIsRadio(button, isRadio);
 end
 
 --More functions
@@ -1609,6 +1582,20 @@ function LFGInvitePopup_UpdateAcceptButton()
 	end
 end
 
+function LFGInvitePopupCheckButton_OnClick(checkButton)
+	local popup = LFGInvitePopup;
+	if ( not popup.allowMultipleRoles ) then
+		for i=1, #popup.RoleButtons do
+			local cb = popup.RoleButtons[i].checkButton;
+			if ( cb ~= checkButton ) then
+				cb:SetChecked(false);
+			end
+		end
+	end
+
+	LFGInvitePopup_UpdateAcceptButton();
+end
+
 function LFGInvitePopupAccept_OnClick()
 	AcceptGroup(LFGInvitePopupRoleButtonTank.checkButton:GetChecked(), LFGInvitePopupRoleButtonHealer.checkButton:GetChecked(), LFGInvitePopupRoleButtonDPS.checkButton:GetChecked());
 	StaticPopupSpecial_Hide(LFGInvitePopup);
@@ -1619,7 +1606,7 @@ function LFGInvitePopupDecline_OnClick()
 	StaticPopupSpecial_Hide(LFGInvitePopup);
 end
 
-function LFGInvitePopup_Update(inviter, roleTankAvailable, roleHealerAvailable, roleDamagerAvailable)
+function LFGInvitePopup_Update(inviter, roleTankAvailable, roleHealerAvailable, roleDamagerAvailable, allowMultipleRoles)
 	local self = LFGInvitePopup;
 	local canBeTank, canBeHealer, canBeDamager = UnitGetAvailableRoles("player");
 	local tankButton = LFGInvitePopupRoleButtonTank;
@@ -1661,6 +1648,13 @@ function LFGInvitePopup_Update(inviter, roleTankAvailable, roleHealerAvailable, 
 		damagerButton.disabledTooltip = nil;
 		availableRolesField = availableRolesField + 8;
 	end	
+
+	-- update whether we can only have 1 role selected
+	SetCheckButtonIsRadio(tankButton.checkButton, not allowMultipleRoles);
+	SetCheckButtonIsRadio(healerButton.checkButton, not allowMultipleRoles);
+	SetCheckButtonIsRadio(damagerButton.checkButton, not allowMultipleRoles);
+	self.allowMultipleRoles = allowMultipleRoles;
+
 	-- if only 1 role is available, check it otherwise check none
 	tankButton.checkButton:SetChecked(availableRolesField == 2);
 	healerButton.checkButton:SetChecked(availableRolesField == 4);

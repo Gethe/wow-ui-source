@@ -485,6 +485,52 @@
 					<Anchor point="BOTTOMLEFT" x="30" y="34"/>
 				</Anchors>
 				<Frames>
+					<Frame name="GarrisonBarracksTutorialBox" inherits="GlowBoxTemplate" enableMouse="true" hidden="true" frameStrata="DIALOG" frameLevel="2" topLevel="true">
+						<Size x="220" y="100"/>
+						<Anchors>
+							<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" x="25" y="10"/>
+						</Anchors>
+						<Layers>
+							<Layer level="OVERLAY">
+								<FontString parentKey="Text" inherits="GameFontHighlightLeft" justifyV="TOP" text="Drag your barracks to the highlighted plot on the map to begin building.">
+									<Size x="188" y="0"/>
+									<Anchors>
+										<Anchor point="TOPLEFT" x="16" y="-24"/>
+									</Anchors>
+								</FontString>
+							</Layer>
+							<Layer level="ARTWORK">
+								<Texture parentKey="Arrow" inherits="HelpPlateArrowDOWN">
+									<Size x="53" y="21"/>
+									<Anchors>
+										<Anchor point="RIGHT" relativePoint="LEFT" x="-3" y="0"/>
+									</Anchors>
+								</Texture>
+							</Layer>
+						</Layers>
+						<Frames>
+							<Button parentKey="CloseButton" inherits="UIPanelCloseButton">
+								<Anchors>
+									<Anchor point="TOPRIGHT" x="6" y="6"/>
+								</Anchors>
+								<Scripts>
+									<OnClick>
+										self:GetParent():Hide();
+										TriggerTutorial(66);
+									</OnClick>
+								</Scripts>
+							</Button>
+						</Frames>
+						<Scripts>
+							<OnLoad>
+								MicroButtonAlert_OnLoad(self);
+								SetClampedTextureRotation(self.Arrow, 90);--make arrow face left
+							</OnLoad>
+							<OnShow>
+								self:SetHeight(self.Text:GetHeight()+42);
+							</OnShow>
+						</Scripts>
+					</Frame>
 					<Button parentKey="Tab1" inherits="GarrisonBuildingTabTemplate" id="1">
 						<Anchors>
 							<Anchor point="BOTTOMLEFT" relativePoint="TOPLEFT" x="8" y="-13"/>
@@ -602,38 +648,44 @@
 				</Layers>
 				<Frames>
 					<Frame parentKey="CostBar" hidden="true">
-						<Size x="175" y="44"/>
+						<Size x="158" y="57"/>
 						<Anchors>
 							<Anchor point="BOTTOMLEFT" x="35" y="10"/>
 						</Anchors>
 						<Layers>
-							<Layer level="BACKGROUND">
-								<Texture atlas="Garr_CostBar" useAtlasSize="true">
+							<Layer level="BACKGROUND" textureSubLevel="-1">
+								<Texture atlas="Garr_BuildingInfoShadow" useAtlasSize="true">
 									<Anchors>
 										<Anchor point="CENTER"/>
 									</Anchors>
 								</Texture>
 							</Layer>
-							<Layer level="ARTWORK">
-								<FontString parentKey="Label" inherits="GameFontNormal" text="GARRISON_BUILD_COLON">
+							<Layer level="BACKGROUND">
+								<Texture atlas="Garr_BuildIcon" useAtlasSize="true">
 									<Anchors>
-										<Anchor point="LEFT" x="50"/>
-									</Anchors>
-								</FontString>
-								<Texture parentKey="Currency" atlas="Garr_MaterialIcon">
-									<Size x="10" y="10"/>
-									<Anchors>
-										<Anchor point="LEFT" relativeKey="$parent.Label" relativePoint="RIGHT" />
+										<Anchor point="LEFT"/>
 									</Anchors>
 								</Texture>
-								<FontString parentKey="Cost" inherits="GameFontHighlight" text="400">
+							</Layer>
+							<Layer level="ARTWORK">
+								<FontString parentKey="CostLabel" inherits="GameFontNormal" text="COSTS_LABEL">
 									<Anchors>
-										<Anchor point="LEFT" relativeKey="$parent.Currency" relativePoint="RIGHT" x="2"/>
+										<Anchor point="TOPLEFT" x="50" y="-17"/>
 									</Anchors>
 								</FontString>
-								<FontString parentKey="Time" inherits="GameFontHighlight" text="Build Time: ">
+								<FontString parentKey="Cost" inherits="GameFontHighlight" text="400">
 									<Anchors>
-										<Anchor point="BOTTOM" relativeKey="$parent.Cost" relativePoint="TOP" x="0" y="3"/>
+										<Anchor point="LEFT" relativeKey="$parent.CostLabel" relativePoint="RIGHT" x="2"/>
+									</Anchors>
+								</FontString>
+								<FontString parentKey="TimeLabel" inherits="GameFontNormal" text="TIME_LABEL">
+									<Anchors>
+										<Anchor point="TOPLEFT" relativeKey="$parent.CostLabel" relativePoint="BOTTOMLEFT" y="-2"/>
+									</Anchors>
+								</FontString>
+								<FontString parentKey="Time" inherits="GameFontHighlight" text="5 minutes">
+									<Anchors>
+										<Anchor point="LEFT" relativeKey="$parent.TimeLabel" relativePoint="RIGHT" x="2"/>
 									</Anchors>
 								</FontString>
 							</Layer>
@@ -948,6 +1000,12 @@
 							</Layer>
 						</Layers>
 						<Scripts>
+							<OnLoad>
+								if (UnitFactionGroup("player") == PLAYER_FACTION_GROUP[0]) then
+									self:ClearAllPoints();
+									self:SetPoint("CENTER", self:GetParent(), "TOPLEFT", 380, -110);
+								end
+							</OnLoad>
 							<OnClick function="GarrisonTownHall_OnClick"/>
 						</Scripts>
 					</Button>

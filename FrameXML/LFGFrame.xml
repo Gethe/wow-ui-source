@@ -888,7 +888,7 @@
 			</Layer>
 		</Layers>
 		<Frames>
-			<Button name="$parentRoleButtonTank" inherits="LFGRoleButtonTemplate" id="2">
+			<Button name="$parentRoleButtonTank" inherits="LFGRoleButtonTemplate" parentArray="RoleButtons" id="2">
 				<Size x="70" y="70"/>
 				<Anchors>
 					<Anchor point="TOPLEFT" x="35" y="-55"/>
@@ -899,7 +899,7 @@
 					</OnLoad>
 				</Scripts>
 			</Button>
-			<Button name="$parentRoleButtonHealer" inherits="LFGRoleButtonTemplate" id="3">
+			<Button name="$parentRoleButtonHealer" inherits="LFGRoleButtonTemplate" parentArray="RoleButtons" id="3">
 				<Size x="70" y="70"/>
 				<Anchors>
 					<Anchor point="LEFT" relativeTo="$parentRoleButtonTank" relativePoint="RIGHT" x="15" y="0"/>
@@ -910,7 +910,7 @@
 					</OnLoad>
 				</Scripts>
 			</Button>
-			<Button name="$parentRoleButtonDPS" inherits="LFGRoleButtonTemplate" id="1">
+			<Button name="$parentRoleButtonDPS" inherits="LFGRoleButtonTemplate" parentArray="RoleButtons" id="1">
 				<Size x="70" y="70"/>
 				<Anchors>
 					<Anchor point="LEFT" relativeTo="$parentRoleButtonHealer" relativePoint="RIGHT" x="15" y="0"/>
@@ -951,9 +951,9 @@
 		</Frames>
 		<Scripts>
 			<OnLoad>
-				LFGInvitePopupRoleButtonTank.checkButton.onClick = LFGInvitePopup_UpdateAcceptButton;
-				LFGInvitePopupRoleButtonHealer.checkButton.onClick = LFGInvitePopup_UpdateAcceptButton;
-				LFGInvitePopupRoleButtonDPS.checkButton.onClick = LFGInvitePopup_UpdateAcceptButton;
+				LFGInvitePopupRoleButtonTank.checkButton.onClick = LFGInvitePopupCheckButton_OnClick;
+				LFGInvitePopupRoleButtonHealer.checkButton.onClick = LFGInvitePopupCheckButton_OnClick;
+				LFGInvitePopupRoleButtonDPS.checkButton.onClick = LFGInvitePopupCheckButton_OnClick;
 			</OnLoad>
 			<OnShow>
 				PlaySound("igPlayerInvite");

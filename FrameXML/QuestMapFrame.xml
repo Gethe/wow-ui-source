@@ -307,9 +307,6 @@
 					</Button>
 					<Frame parentKey="StoryTooltip" frameStrata="TOOLTIP" clampedToScreen="true" hidden="true">
 						<Size x="10" y="10"/>
-						<Anchors>
-							<Anchor point="TOPRIGHT" relativeKey="$parent.StoryHeader" relativePoint="TOPLEFT" x="-5" y="0"/>
-						</Anchors>
 						<Backdrop bgFile="Interface\Tooltips\UI-Tooltip-Background" edgeFile="Interface\Tooltips\UI-Tooltip-Border" tile="true">
 							<EdgeSize>
 								<AbsValue val="16"/>
@@ -473,7 +470,67 @@
 							</OnClick>								
 						</Scripts>						
 					</Button>
-					<Button name="$parentAbandonButton" parentKey="AbandonButton" inherits="UIPanelButtonTemplate" text="ABANDON_QUEST_ABBREV">
+					<Frame parentKey="CompleteQuestFrame">
+						<Size x="287" y="24"/>
+						<Anchors>
+							<Anchor point="TOP" relativeKey="$parent.RewardsFrame" relativePoint="BOTTOM"/>
+						</Anchors>
+						<Layers>
+							<Layer level="BACKGROUND">
+								<Texture file="Interface\FrameGeneral\UI-Background-Rock" horizTile="true" vertTile="true" setAllPoints="true"/>
+							</Layer>
+							<Layer level="ARTWORK">
+								<Texture inherits="_UI-Frame-BtnBotTile">
+									<Size x="288" y="3"/>
+									<Anchors>
+										<Anchor point="TOP" x="0" y="0"/>
+									</Anchors>
+								</Texture>
+							</Layer>					
+						</Layers>
+						<Frames>
+							<Button parentKey="CompleteButton" inherits="UIPanelButtonTemplate" text="COMPLETE_QUEST">
+								<Size x="160" y="22"/>
+								<Anchors>
+									<Anchor point="TOP" x="0" y="-1"/>
+								</Anchors>
+								<Layers>
+									<Layer level="BORDER">
+										<Texture file="Interface\FrameGeneral\UI-Frame">
+											<Size x="13" y="25"/>
+											<Anchors>
+												<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" x="-5" y="1"/>						
+											</Anchors>
+											<TexCoords left="0.00781250" right="0.10937500" top="0.75781250" bottom="0.95312500"/>
+										</Texture>
+										<Texture file="Interface\FrameGeneral\UI-Frame">
+											<Size x="13" y="25"/>
+											<Anchors>
+												<Anchor point="TOPRIGHT" relativePoint="TOPLEFT" x="5" y="1"/>						
+											</Anchors>
+											<TexCoords left="0.00781250" right="0.10937500" top="0.75781250" bottom="0.95312500"/>
+										</Texture>
+									</Layer>
+									<Layer level="OVERLAY">
+										<Texture parentKey="Flash" inherits="UIPanelButtonHighlightTexture"/>
+									</Layer>
+								</Layers>
+								<Scripts>
+									<OnClick>
+										ShowQuestComplete(GetQuestLogSelection());
+										AutoQuestPopupTracker_RemovePopUp(QuestMapFrame.DetailsFrame.questID);
+									</OnClick>
+									<OnShow>
+										UIFrameFlash(self.Flash, 0.75, 0.75, -1, nil);
+									</OnShow>
+									<OnHide>
+										UIFrameFlashStop(self.Flash);
+									</OnHide>
+								</Scripts>
+							</Button>
+						</Frames>
+					</Frame>
+					<Button parentKey="AbandonButton" inherits="UIPanelButtonTemplate" text="ABANDON_QUEST_ABBREV">
 						<Size x="98" y="22"/>
 						<Anchors>
 							<Anchor point="BOTTOMLEFT" x="-3" y="-2"/>
@@ -488,7 +545,7 @@
 							<OnLeave function="GameTooltip_Hide"/>
 						</Scripts>
 					</Button>
-					<Button name="$parentShareButton" parentKey="ShareButton" inherits="UIPanelButtonTemplate" text="SHARE_QUEST_ABBREV">
+					<Button parentKey="ShareButton" inherits="UIPanelButtonTemplate" text="SHARE_QUEST_ABBREV">
 						<Size x="96" y="22"/>
 						<Anchors>
 							<Anchor point="LEFT" relativeKey="$parent.AbandonButton" relativePoint="RIGHT"/>
@@ -517,7 +574,7 @@
 							<OnLeave function="GameTooltip_Hide"/>
 						</Scripts>
 					</Button>
-					<Button name="$parentTrackButton" parentKey="TrackButton" inherits="UIPanelButtonTemplate" text="TRACK_QUEST_ABBREV">
+					<Button parentKey="TrackButton" inherits="UIPanelButtonTemplate" text="TRACK_QUEST_ABBREV">
 						<Size x="98" y="22"/>
 						<Anchors>
 							<Anchor point="LEFT" relativeKey="$parent.ShareButton" relativePoint="RIGHT"/>
@@ -540,5 +597,4 @@
 			<OnEvent function="QuestMapFrame_OnEvent"/>
 		</Scripts>
 	</Frame>
-	
 </Ui>

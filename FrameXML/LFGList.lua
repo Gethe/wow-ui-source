@@ -113,34 +113,56 @@ end
 function LFGListCategorySelection_UpdateCategoryButtons(self)
 	local categories = C_LFGList.GetAvailableCategories();
 
+	local nextBtn = 1;
 	--Update category buttons
 	for i=1, #categories do
-		local button = self.CategoryButtons[i];
-		if ( not button ) then
-			self.CategoryButtons[i] = CreateFrame("BUTTON", nil, self, "LFGListCategoryTemplate");
-			self.CategoryButtons[i]:SetPoint("TOP", self.CategoryButtons[i - 1], "BOTTOM", 0, -5);
-			button = self.CategoryButtons[i];
-		end
-
 		local categoryID = categories[i];
-		local name = C_LFGList.GetCategoryInfo(categoryID);
-		button:SetText(name);
-		button.categoryID = categoryID;
-		if ( self.selectedCategory == categoryID ) then
-			button:LockHighlight();
+		local name, separateRecommended = C_LFGList.GetCategoryInfo(categoryID);
+
+		if ( separateRecommended ) then
+			nextBtn = LFGListCategorySelection_AddButton(self, nextBtn, categoryID, LE_LFG_LIST_FILTER_RECOMMENDED);
+			nextBtn = LFGListCategorySelection_AddButton(self, nextBtn, categoryID, LE_LFG_LIST_FILTER_NOT_RECOMMENDED);
 		else
-			button:UnlockHighlight();
+			nextBtn = LFGListCategorySelection_AddButton(self, nextBtn, categoryID, 0);
 		end
 	end
 
 	--Hide any extra buttons
-	for i=#categories + 1, #self.CategoryButtons do
+	for i=nextBtn, #self.CategoryButtons do
 		self.CategoryButtons[i]:Hide();
 	end
 end
 
-function LFGListCategorySelection_SelectCategory(self, categoryID)
+function LFGListCategorySelection_AddButton(self, btnIndex, categoryID, filters)
+	--Check that we have activities with this filter
+	if ( filters ~= 0 and #C_LFGList.GetAvailableActivities(categoryID, nil, filters) == 0) then
+		return btnIndex;
+	end
+
+	local name, separateRecommended = C_LFGList.GetCategoryInfo(categoryID);
+
+	local button = self.CategoryButtons[btnIndex];
+	if ( not button ) then
+		self.CategoryButtons[btnIndex] = CreateFrame("BUTTON", nil, self, "LFGListCategoryTemplate");
+		self.CategoryButtons[btnIndex]:SetPoint("TOP", self.CategoryButtons[btnIndex - 1], "BOTTOM", 0, -5);
+		button = self.CategoryButtons[btnIndex];
+	end
+
+	button:SetText(LFGListUtil_GetDecoratedCategoryName(name, filters, true));
+	button.categoryID = categoryID;
+	button.filters = filters;
+	if ( self.selectedCategory == categoryID and self.selectedFilters == filters ) then
+		button:LockHighlight();
+	else
+		button:UnlockHighlight();
+	end
+
+	return btnIndex + 1;
+end
+
+function LFGListCategorySelection_SelectCategory(self, categoryID, filters)
 	self.selectedCategory = categoryID;
+	self.selectedFilters = filters;
 	LFGListCategorySelection_UpdateCategoryButtons(self);
 	LFGListCategorySelection_UpdateNavButtons(self);
 end
@@ -177,14 +199,14 @@ function LFGListCategorySelectionStartGroupButton_OnClick(self)
 	local entryCreation = panel:GetParent().EntryCreation;
 	LFGListEntryCreation_Clear(entryCreation);
 	LFGListEntryCreation_SetEditMode(entryCreation, false);
-	LFGListEntryCreation_Select(entryCreation, panel.selectedCategory);
+	LFGListEntryCreation_Select(entryCreation, panel.selectedFilters, panel.selectedCategory);
 	LFGListFrame_SetActivePanel(panel:GetParent(), entryCreation);
 end
 
 --The individual category buttons
 function LFGListCategorySelectionButton_OnClick(self)
 	local panel = self:GetParent();
-	LFGListCategorySelection_SelectCategory(panel, self.categoryID);
+	LFGListCategorySelection_SelectCategory(panel, self.categoryID, self.filters);
 end
 
 -------------------------------------------------------
@@ -202,6 +224,7 @@ function LFGListEntryCreation_Clear(self)
 	self.selectedCategory = nil;
 	self.selectedGroup = nil;
 	self.selectedActivity = nil;
+	self.selectedFilters = nil;
 
 	--Reset widgets
 	self.Name:SetText("");
@@ -213,15 +236,16 @@ function LFGListEntryCreation_Clear(self)
 end
 
 --This function accepts any or all of categoryID, groupId, and activityID
-function LFGListEntryCreation_Select(self, categoryID, groupID, activityID)
-	categoryID, groupID, activityID = LFGListUtil_AugmentWithBest(categoryID, groupID, activityID);
+function LFGListEntryCreation_Select(self, filters, categoryID, groupID, activityID)
+	filters, categoryID, groupID, activityID = LFGListUtil_AugmentWithBest(filters, categoryID, groupID, activityID);
 	self.selectedCategory = categoryID;
 	self.selectedGroup = groupID;
 	self.selectedActivity = activityID;
+	self.selectedFilters = filters;
 
 	--Update the category dropdown
 	local categoryName = C_LFGList.GetCategoryInfo(categoryID);
-	UIDropDownMenu_SetText(self.CategoryDropDown, categoryName);
+	UIDropDownMenu_SetText(self.CategoryDropDown, LFGListUtil_GetDecoratedCategoryName(categoryName, filters, false));
 
 	--Update the activity dropdown
 	local shortName = select(ACTIVITY_RETURN_VALUES.shortName, C_LFGList.GetActivityInfo(activityID));
@@ -237,18 +261,31 @@ function LFGListEntryCreation_PopulateCategories(self, dropDown, info)
 	local categories = C_LFGList.GetAvailableCategories();
 	for i=1, #categories do
 		local categoryID = categories[i];
-		local name = C_LFGList.GetCategoryInfo(categoryID);
-
-		info.text = name;
-		info.value = categoryID;
-		info.checked = (self.selectedCategory == categoryID);
-		info.isRadio = true;
-		UIDropDownMenu_AddButton(info);
+		local name, separateRecommended = C_LFGList.GetCategoryInfo(categoryID);
+		if ( separateRecommended ) then
+			LFGListEntryCreation_AddCategoryEntry(self, info, categoryID, name, LE_LFG_LIST_FILTER_RECOMMENDED);
+			LFGListEntryCreation_AddCategoryEntry(self, info, categoryID, name, LE_LFG_LIST_FILTER_NOT_RECOMMENDED);
+		else
+			LFGListEntryCreation_AddCategoryEntry(self, info, categoryID, name, 0);
+		end
 	end
 end
 
-function LFGListEntryCreation_OnCategorySelected(self, categoryID)
-	LFGListEntryCreation_Select(self, categoryID, nil, nil);
+function LFGListEntryCreation_AddCategoryEntry(self, info, categoryID, name, filters)
+	if ( filters ~= 0 and #C_LFGList.GetAvailableActivities(categoryID, nil, filters) == 0 ) then
+		return;
+	end
+
+	info.text = LFGListUtil_GetDecoratedCategoryName(name, filters, false);
+	info.value = categoryID;
+	info.arg1 = filters;
+	info.checked = (self.selectedCategory == categoryID and self.selectedFilters == filters);
+	info.isRadio = true;
+	UIDropDownMenu_AddButton(info);
+end
+
+function LFGListEntryCreation_OnCategorySelected(self, categoryID, filters)
+	LFGListEntryCreation_Select(self, filters, categoryID, nil, nil);
 end
 
 function LFGListEntryCreation_PopulateGroups(self, dropDown, info)
@@ -257,7 +294,7 @@ function LFGListEntryCreation_PopulateGroups(self, dropDown, info)
 		return;
 	end
 
-	local groups = C_LFGList.GetAvailableActivityGroups(self.selectedCategory);
+	local groups = C_LFGList.GetAvailableActivityGroups(self.selectedCategory, self.selectedFilters);
 	for i=1, #groups do
 		local groupID = groups[i];
 		local name = C_LFGList.GetActivityGroupInfo(groupID);
@@ -271,7 +308,7 @@ function LFGListEntryCreation_PopulateGroups(self, dropDown, info)
 	end
 
 	--We also have in this dropdown any activities that have no parents
-	local activities = C_LFGList.GetAvailableActivities(self.selectedCategory, 0);
+	local activities = C_LFGList.GetAvailableActivities(self.selectedCategory, 0, self.selectedFilters);
 	for i=1, #activities do
 		local activityID = activities[i];
 		local name = select(ACTIVITY_RETURN_VALUES.shortName, C_LFGList.GetActivityInfo(activityID));
@@ -287,14 +324,14 @@ end
 
 function LFGListEntryCreation_OnGroupSelected(self, id, isActuallyActivity)
 	if ( isActuallyActivity ) then
-		LFGListEntryCreation_Select(self, nil, nil, id);
+		LFGListEntryCreation_Select(self, nil, nil, nil, id);
 	else
-		LFGListEntryCreation_Select(self, self.selectedCategory, id, nil);
+		LFGListEntryCreation_Select(self, self.selectedFilters, self.selectedCategory, id, nil);
 	end
 end
 
 function LFGListEntryCreation_PopulateActivities(self, dropDown, info)
-	local activities = C_LFGList.GetAvailableActivities(self.selectedCategory, self.selectedGroup);
+	local activities = C_LFGList.GetAvailableActivities(self.selectedCategory, self.selectedGroup, self.selectedFilters);
 	for i=1, #activities do
 		local activityID = activities[i];
 		local shortName = select(ACTIVITY_RETURN_VALUES.shortName, C_LFGList.GetActivityInfo(activityID));
@@ -308,7 +345,7 @@ function LFGListEntryCreation_PopulateActivities(self, dropDown, info)
 end
 
 function LFGListEntryCreation_OnActivitySelected(self, activityID)
-	LFGListEntryCreation_Select(self, nil, nil, activityID);
+	LFGListEntryCreation_Select(self, nil, nil, nil, activityID);
 end
 
 function LFGListEntryCreation_ListGroup(self)
@@ -328,7 +365,7 @@ function LFGListEntryCreation_SetEditMode(self, editMode)
 		assert(active);
 
 		--Update the dropdowns
-		LFGListEntryCreation_Select(self, nil, nil, activityID);
+		LFGListEntryCreation_Select(self, nil, nil, nil, activityID);
 		UIDropDownMenu_DisableDropDown(self.CategoryDropDown);
 		UIDropDownMenu_DisableDropDown(self.GroupDropDown);
 		UIDropDownMenu_DisableDropDown(self.ActivityDropDown);
@@ -434,10 +471,10 @@ end
 -------------------------------------------------------
 ----------Utility functions
 -------------------------------------------------------
-function LFGListUtil_AugmentWithBest(categoryID, groupID, activityID)
+function LFGListUtil_AugmentWithBest(filters, categoryID, groupID, activityID)
 	if ( not activityID ) then
 		--Find the best activity by iLevel
-		local activities = C_LFGList.GetAvailableActivities(categoryID, groupID);
+		local activities = C_LFGList.GetAvailableActivities(categoryID, groupID, filters);
 		local bestItemLevel;
 		for i=1, #activities do
 			local iLevel = select(ACTIVITY_RETURN_VALUES.itemLevel, C_LFGList.GetActivityInfo(activities[i]));
@@ -453,8 +490,21 @@ function LFGListUtil_AugmentWithBest(categoryID, groupID, activityID)
 	assert(activityID);
 
 	--Update the categoryID and groupID with what we get from the activity
-	categoryID, groupID = select(ACTIVITY_RETURN_VALUES.categoryID, C_LFGList.GetActivityInfo(activityID));
-	return categoryID, groupID, activityID;
+	categoryID, groupID, _, filters = select(ACTIVITY_RETURN_VALUES.categoryID, C_LFGList.GetActivityInfo(activityID));
+
+	--Update the filters if needed
+	local _, separateRecommended = C_LFGList.GetCategoryInfo(categoryID);
+	if ( separateRecommended ) then
+		if ( bit.band(filters, LE_LFG_LIST_FILTER_RECOMMENDED) == 0 ) then
+			filters = LE_LFG_LIST_FILTER_NOT_RECOMMENDED;
+		else
+			filters = LE_LFG_LIST_FILTER_RECOMMENDED;
+		end
+	else
+		filters = 0;
+	end
+
+	return filters, categoryID, groupID, activityID;
 end
 
 function LFGListUtil_SetUpDropDown(context, dropdown, populateFunc, onClickFunc)
@@ -478,4 +528,31 @@ function LFGListUtil_ValidateLevelReq(text)
 	if ( text ~= "" and tonumber(text) > GetAverageItemLevel() ) then
 		return LFG_LIST_ILVL_ABOVE_YOURS
 	end
+end
+
+function LFGListUtil_GetDecoratedCategoryName(categoryName, filter, useColors)
+	if ( filter == 0 ) then
+		return categoryName;
+	end
+
+	local colorStart = "";
+	local colorEnd = "";
+	if ( useColors ) then
+		colorStart = "|cffffffff";
+		colorEnd = "|r";
+	end
+
+	local extraName = "";
+	if ( filter == LE_LFG_LIST_FILTER_NOT_RECOMMENDED ) then
+		extraName = LFG_LIST_LEGACY;
+	elseif ( filter == LE_LFG_LIST_FILTER_RECOMMENDED ) then
+		for i=0, #MAX_PLAYER_LEVEL_TABLE do
+			if ( UnitLevel("player") <= MAX_PLAYER_LEVEL_TABLE[i] ) then
+				extraName = _G["EXPANSION_NAME"..i];
+				break;
+			end
+		end
+	end
+
+	return string.format(LFG_LIST_CATEGORY_FORMAT, categoryName, colorStart, extraName, colorEnd);
 end

@@ -110,10 +110,19 @@ function QuestMapFrame_UpdateAll()
 end
 
 function QuestMapFrame_ShowQuestDetails(questID)
-	SelectQuestLogEntry(GetQuestLogIndexByID(questID));
+	local questLogIndex = GetQuestLogIndexByID(questID);
+	SelectQuestLogEntry(questLogIndex);
 	QuestInfo_Display(QUEST_TEMPLATE_MAP_DETAILS, QuestMapFrame.DetailsFrame.ScrollFrame.Contents);
 	QuestInfo_Display(QUEST_TEMPLATE_MAP_REWARDS, QuestMapFrame.DetailsFrame.RewardsFrame, nil, nil, true);
 	QuestMapFrame.DetailsFrame.ScrollFrame.ScrollBar:SetValue(0);
+		
+	local questPortrait, questPortraitText, questPortraitName = GetQuestLogPortraitGiver();
+	if (questPortrait and questPortrait ~= 0 and QuestLogShouldShowPortrait() and (UIParent:GetRight() - WorldMapFrame:GetRight() > QuestNPCModel:GetWidth() + 6)) then
+		QuestFrame_ShowQuestPortrait(WorldMapFrame, questPortrait, questPortraitText, questPortraitName, -2, -43);
+		QuestNPCModel:SetFrameLevel(WorldMapFrame:GetFrameLevel() + 2);
+	else
+		QuestFrame_HideQuestPortrait();
+	end
 		
 	-- height
 	local height = MapQuestInfoRewardsFrame:GetHeight() + 49;
@@ -142,6 +151,14 @@ function QuestMapFrame_ShowQuestDetails(questID)
 	QuestMapFrame_UpdateQuestDetailsButtons();
 	QuestMapFrame.DetailsFrame.questMapID = GetCurrentMapAreaID();
 
+	if ( IsQuestComplete(questID) and GetQuestLogIsAutoComplete(questLogIndex) ) then
+		QuestMapFrame.DetailsFrame.CompleteQuestFrame:Show();
+		QuestMapFrame.DetailsFrame.RewardsFrame:SetPoint("BOTTOMLEFT", 0, 44);
+	else
+		QuestMapFrame.DetailsFrame.CompleteQuestFrame:Hide();
+		QuestMapFrame.DetailsFrame.RewardsFrame:SetPoint("BOTTOMLEFT", 0, 20);
+	end
+	
 	StaticPopup_Hide("ABANDON_QUEST");
 	StaticPopup_Hide("ABANDON_QUEST_WITH_ITEMS");
 end
@@ -152,7 +169,8 @@ function QuestMapFrame_CloseQuestDetails()
 	QuestMapFrame.DetailsFrame.questID = nil;
 	QuestMapFrame.DetailsFrame.questMapID = nil;
 	QuestMapFrame_UpdateAll();
-	
+	QuestFrame_HideQuestPortrait();
+
 	StaticPopup_Hide("ABANDON_QUEST");
 	StaticPopup_Hide("ABANDON_QUEST_WITH_ITEMS");	
 end
@@ -797,14 +815,18 @@ function QuestMapLogTitleButton_OnEnter(self)
 	end
 	
 	local title, level, suggestedGroup, isHeader, isCollapsed, isComplete, isDaily, questID, startEvent, displayQuestID, isOnMap, hasLocalPOI = GetQuestLogTitle(self.questLogIndex);
-	if ( hasLocalPOI ) then
-		return;
-	end
 
 	GameTooltip:ClearAllPoints();
-	GameTooltip:SetPoint("TOPRIGHT", self, "TOPLEFT", -6, 0);
+	GameTooltip:SetPoint("TOPLEFT", self, "TOPRIGHT", 34, 0);
 	GameTooltip:SetOwner(self, "ANCHOR_PRESERVE");
 	GameTooltip:SetText(title);
+	local tooltipWidth = 20 + max(231, GameTooltipTextLeft1:GetStringWidth());
+	if ( tooltipWidth > UIParent:GetRight() - WorldMapFrame:GetRight() ) then
+		GameTooltip:ClearAllPoints();
+		GameTooltip:SetPoint("TOPRIGHT", self, "TOPLEFT", -5, 0);
+		GameTooltip:SetOwner(self, "ANCHOR_PRESERVE");
+		GameTooltip:SetText(title);
+	end
 	
 	-- quest tag
 	local tagID, tagName = GetQuestTagInfo(questID);
@@ -957,7 +979,14 @@ function QuestMapLog_ShowStoryTooltip(self)
 	maxWidth = max(maxWidth, tooltip.ProgressLabel:GetWidth(), tooltip.ProgressCount:GetWidth());
 	totalHeight = totalHeight + tooltip.ProgressLabel:GetHeight() + tooltip.ProgressCount:GetHeight();
 
-	tooltip:SetSize(max(MIN_STORY_TOOLTIP_WIDTH, maxWidth + 20), totalHeight + 42);
+	tooltip:ClearAllPoints();
+	local tooltipWidth = max(MIN_STORY_TOOLTIP_WIDTH, maxWidth + 20);
+	if ( tooltipWidth > UIParent:GetRight() - WorldMapFrame:GetRight() ) then
+		tooltip:SetPoint("TOPRIGHT", self:GetParent().StoryHeader, "TOPLEFT", -5, 0);
+	else
+		tooltip:SetPoint("TOPLEFT", self:GetParent().StoryHeader, "TOPRIGHT", 27, 0);
+	end
+	tooltip:SetSize(tooltipWidth, totalHeight + 42);
 	tooltip:Show();
 end
 

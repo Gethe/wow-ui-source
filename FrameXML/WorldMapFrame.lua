@@ -11,6 +11,7 @@ NUM_WORLDMAP_OVERLAYS = 0;
 NUM_WORLDMAP_FLAGS = 4;
 NUM_WORLDMAP_DEBUG_ZONEMAP = 0;
 NUM_WORLDMAP_DEBUG_OBJECTS = 0;
+NUM_WORLDMAP_QUEST_SECONDARY_POIS = 0;
 WORLDMAP_COSMIC_ID = -1;
 WORLDMAP_AZEROTH_ID = 0;
 WORLDMAP_OUTLAND_ID = 3;
@@ -2173,7 +2174,7 @@ function WorldMapQuestPOI_SetTooltip(poiButton, questLogIndex, numObjectives)
 	local title = GetQuestLogTitle(questLogIndex);
 	WorldMapTooltip:SetOwner(poiButton or WorldMapBlobFrame, "ANCHOR_CURSOR_RIGHT", 5, 2);
 	WorldMapTooltip:SetText(title);
-	if ( poiButton and poiButton.style ~= "numeric" ) then
+	if ( poiButton and poiButton.style ~= "numeric" and not poiButton.isSecondary ) then
 		WorldMapTooltip:AddLine("- "..GetQuestLogCompletionText(questLogIndex), 1, 1, 1, true);
 	else
 		local text, finished, objectiveType;
@@ -2416,7 +2417,8 @@ function WorldMapScrollFrame_ReanchorQuestPOIs()
 	for _, poiType in pairs(WorldMapPOIFrame.poiTable) do
 		for _, poiButton in pairs(poiType) do
 			if ( poiButton.used ) then
-				WorldMapPOIFrame_AnchorPOI(poiButton);
+				local _, posX, posY = QuestPOIGetIconInfo(poiButton.questID);
+				WorldMapPOIFrame_AnchorPOI(poiButton, posX, posY);			
 			end
 		end
 	end
@@ -2463,8 +2465,7 @@ end
 -- ***** POI FRAME
 -- *****************************************************************************************************
 
-function WorldMapPOIFrame_AnchorPOI(poiButton)
-	local _, posX, posY, objective = QuestPOIGetIconInfo(poiButton.questID);
+function WorldMapPOIFrame_AnchorPOI(poiButton, posX, posY)
 	if ( posX and posY ) then
 		posX = posX * QUEST_POI_FRAME_WIDTH;
 		posY = posY * QUEST_POI_FRAME_HEIGHT;
@@ -2496,7 +2497,8 @@ function WorldMapPOIFrame_Update(poiTable)
 				-- if a quest is being viewed there is only going to be one POI and it's going to have number 1
 				poiButton = QuestPOI_GetButton(WorldMapPOIFrame, questID, "numeric", (detailQuestID and 1) or index, storyQuest);
 			end
-			WorldMapPOIFrame_AnchorPOI(poiButton);
+			local _, posX, posY = QuestPOIGetIconInfo(poiButton.questID);
+			WorldMapPOIFrame_AnchorPOI(poiButton, posX, posY);
 		end
 	end
 	WorldMapPOIFrame_SelectPOI(GetSuperTrackedQuestID());
@@ -2521,8 +2523,27 @@ function WorldMapBlobFrame_UpdateBlobs()
 	local questID = QuestMapFrame_GetDetailQuestID() or GetSuperTrackedQuestID();
 	-- see if there is a poiButton for it (no button == not on viewed map)
 	local poiButton = QuestPOI_FindButton(WorldMapPOIFrame, questID);
+	local numQuestSecondaryPOIs = 0;
 	if ( poiButton and not IsQuestComplete(questID) ) then
 		WorldMapBlobFrame:DrawBlob(questID, true);
+		-- secondary POIs
+		local POIs = QuestPOIGetSecondaryLocations(questID);
+		if ( POIs ) then
+			numQuestSecondaryPOIs = #POIs;
+			for i = 1, numQuestSecondaryPOIs do
+				local button = _G["WorldMapQuestSecondaryPOI"..i];
+				if ( not button ) then
+					button = CreateFrame("FRAME", "WorldMapQuestSecondaryPOI"..i, WorldMapPOIFrame, "WorldMapQuestSecondaryPOITemplate");
+					NUM_WORLDMAP_QUEST_SECONDARY_POIS = NUM_WORLDMAP_QUEST_SECONDARY_POIS + 1;
+				end
+				button:Show();
+				button.questID = questID;
+				WorldMapPOIFrame_AnchorPOI(button, POIs[i].x, POIs[i].y);
+			end
+		end
+	end
+	for i = numQuestSecondaryPOIs + 1, NUM_WORLDMAP_QUEST_SECONDARY_POIS do
+		_G["WorldMapQuestSecondaryPOI"..i]:Hide();
 	end
 end
 
@@ -2873,7 +2894,7 @@ function WorldMapNavBar_Update()
 	for i = #parentData, 1, -3 do
 		local id = parentData[i - 1];
 		-- might get self back as part of hierarchy in the case of dungeon maps - see Dalaran floor The Underbelly
-		if ( id ~= mapID ) then
+		if ( id and id ~= mapID ) then
 			local buttonData = {
 				name = parentData[i - 2],
 				id = parentData[i - 1],

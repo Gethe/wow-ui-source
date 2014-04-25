@@ -1381,13 +1381,6 @@
 				</Anchors>
 			</Texture>
 		</Layer>
-		<Layer level="BORDER">
-			<Texture parentKey="FollowerBG" atlas="Garr_FollowerToast-Epic" useAtlasSize="true" hidden="true">
-				<Anchors>
-					<Anchor point="BOTTOM" x="22" y="23"/>
-				</Anchors>
-			</Texture>
-		</Layer>
 		<Layer level="BORDER" textureSubLevel="2">
 			<Texture parentKey="IconBG" atlas="Garr_MissionToast-IconBG" useAtlasSize="true">
 				<Anchors>
@@ -1447,6 +1440,134 @@
 			</Texture>
 		</Layer>		
 	</Layers>
+</Button>
+
+<Button name="GarrisonFollowerAlertFrame" parent="UIParent" hidden="true" frameStrata="DIALOG" inherits="AlertFrameTemplate">
+	<Size x="317" y="82"/>
+	<Anchors>
+		<Anchor point="BOTTOM" x="0" y="170"/>
+	</Anchors>
+	<Animations>
+		<AnimationGroup name="$parentAnimIn" parentKey="animIn">
+			<Alpha change="-1" duration="0" order="1"/>
+			<Alpha change="1" duration="0.2" order="2"/>
+		</AnimationGroup>
+		<AnimationGroup name="$parentWaitAndAnimOut" parentKey="waitAndAnimOut">
+			<Alpha startDelay="4.05" change="-1" duration="1.5" parentKey="animOut">
+				<Scripts>
+					<OnFinished>
+						self:GetRegionParent():Hide();
+					</OnFinished>
+				</Scripts>
+			</Alpha>
+		</AnimationGroup>
+	</Animations>
+	<Layers>
+		<Layer level="BACKGROUND">
+			<Texture atlas="Garr_MissionToast" useAtlasSize="true">
+				<Anchors>
+					<Anchor point="CENTER"/>
+				</Anchors>
+			</Texture>
+		</Layer>
+		<Layer level="BORDER">
+			<Texture parentKey="FollowerBG" atlas="Garr_FollowerToast-Epic" useAtlasSize="true" hidden="true">
+				<Anchors>
+					<Anchor point="BOTTOM" x="22" y="23"/>
+				</Anchors>
+			</Texture>
+		</Layer>
+		<Layer level="ARTWORK">
+			<FontString parentKey="Title" inherits="GameFontNormalSmall" text="GARRISON_FOLLOWER_ADDED_TOAST">
+				<Anchors>
+					<Anchor point="TOP" x="20" y="-18"/>
+				</Anchors>
+			</FontString>
+			<FontString parentKey="Name" inherits="GameFontHighlight" text="Dangerous Excavation">
+				<Anchors>
+					<Anchor point="TOP" relativeKey="$parent.Title" relativePoint="BOTTOM" y="-10"/>
+				</Anchors>
+			</FontString>
+		</Layer>
+		<Layer level="OVERLAY">
+			<Texture name="$parentGlow" file="Interface\AchievementFrame\UI-Achievement-Alert-Glow" alphaMode="ADD" hidden="true" parentKey="glow">
+				<Size x="400" y="171"/>
+				<Anchors>
+					<Anchor point="CENTER" x="0" y="0"/>
+				</Anchors>
+				<Animations>
+					<AnimationGroup name="$parentAnimIn" parentKey="animIn">
+						<Alpha change="1" duration="0.2" order="1"/>
+						<Alpha change="-1" duration="0.5" order="2"/>
+						<Scripts>
+							<OnFinished>
+								self:GetParent():Hide();
+							</OnFinished>
+						</Scripts>
+					</AnimationGroup>
+				</Animations>
+				<TexCoords left="0" right="0.78125" top="0" bottom="0.66796875"/>
+			</Texture>
+			<Texture name="$parentShine" file="Interface\AchievementFrame\UI-Achievement-Alert-Glow" alphaMode="ADD" hidden="true" parentKey="shine">
+				<Size x="67" y="72"/>
+				<Anchors>
+					<Anchor point="BOTTOMLEFT" x="0" y="8"/>
+				</Anchors>
+				<Animations>
+					<AnimationGroup name="$parentAnimIn" parentKey="animIn">
+						<Alpha change="1" duration="0.2" order="1"/>
+						<Translation offsetX="200" offsetY="0" duration="0.85" order="2"/>
+						<Alpha startDelay="0.35" change="-1" duration="0.5" order="2"/>
+						<Scripts>
+							<OnFinished>
+								self:GetParent():Hide();
+							</OnFinished>
+						</Scripts>
+					</AnimationGroup>
+				</Animations>
+				<TexCoords left="0.78125" right="0.912109375" top="0" bottom="0.28125"/>
+			</Texture>
+		</Layer>		
+	</Layers>
+	<Frames>
+		<Frame parentKey="PortraitFrame">
+			<Size x="52" y="60"/>
+			<Anchors>
+				<Anchor point="LEFT" x="20" y="2"/>
+			</Anchors>
+			<Layers>
+				<Layer level="BORDER">
+					<Texture parentKey="PortraitRing" atlas="GarrMission_PortraitRing" useAtlasSize="true">
+						<Anchors>
+							<Anchor point="TOP"/>
+						</Anchors>
+					</Texture>
+				</Layer>
+				<Layer level="BORDER" textureSubLevel="-1">
+					<Texture parentKey="Portrait">
+						<Size x="44" y="44"/>
+						<Anchors>
+							<Anchor point="CENTER" relativeKey="$parent.PortraitRing" y="5"/>
+						</Anchors>
+					</Texture>
+				</Layer>
+				<Layer level="BORDER" textureSubLevel="1">
+					<Texture parentKey="LevelBorder" atlas="GarrMission_PortraitRing_LevelBorder" useAtlasSize="true">
+						<Anchors>
+							<Anchor point="BOTTOM" y="-3"/>
+						</Anchors>
+					</Texture>
+				</Layer>
+				<Layer level="ARTWORK">
+					<FontString parentKey="Level" inherits="GameFontHighlightSmall" justifyH="CENTER" text="95">
+						<Anchors>
+							<Anchor point="CENTER" relativeKey="$parent.LevelBorder"/>
+						</Anchors>
+					</FontString>
+				</Layer>
+			</Layers>
+		</Frame>
+	</Frames>
 </Button>
 
 <Frame name="AlertFrame" parent="UIParent" hidden="true">

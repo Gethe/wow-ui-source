@@ -129,6 +129,10 @@ function GroupFinderFrame_OnLoad(self)
 		GroupFinderFrame:SetScript("OnEvent", GroupFinderFrame_OnEvent);
 		GroupFinderFrame:RegisterEvent("PLAYER_LEVEL_UP");
 	end
+	if ( not IsGMClient() ) then
+		GroupFinderFrameButton_SetEnabled(self.groupButton4, false);
+		self.groupButton4.tooltip = "Under Construction";
+	end
 	--[[if ( UnitLevel("player") < FLEX_RAID_SHOW_LEVEL ) then
 		GroupFinderFrameButton_SetEnabled(self.groupButton4, false);
 		self.groupButton4.tooltip = format(FEATURE_BECOMES_AVAILABLE_AT_LEVEL, FLEX_RAID_SHOW_LEVEL);

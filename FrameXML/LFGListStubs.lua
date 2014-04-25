@@ -17,3 +17,5 @@ LFG_LIST_CREATING_ENTRY = "Zug zug...";
 DESCRIPTION = "Description";
 EDIT = "Edit";
 DONE_EDITING = "Done Editing";
+LFG_LIST_CATEGORY_FORMAT = "%s - %s%s%s";
+LFG_LIST_LEGACY = "Legacy";

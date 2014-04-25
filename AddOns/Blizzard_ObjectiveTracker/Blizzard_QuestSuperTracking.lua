@@ -35,7 +35,7 @@ function QuestSuperTracking_ChooseClosestQuest()
 	local closestQuestID;
 	for i = 1, GetNumQuestWatches() do
 		local questID, title, questLogIndex = GetQuestWatchInfo(i);
-		if ( QuestPOIGetIconInfo(questID) ) then
+		if ( questID and QuestPOIGetIconInfo(questID) ) then
 			local distSqr = GetDistanceSqToQuest(questLogIndex);
 			if ( distSqr <= minDistSqr ) then
 				minDistSqr = distSqr;

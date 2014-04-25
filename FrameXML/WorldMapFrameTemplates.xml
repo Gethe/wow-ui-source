@@ -185,6 +185,27 @@
 			</OnMouseUp>
 		</Scripts>
 	</Frame>
+	<Frame name="WorldMapQuestSecondaryPOITemplate" enableMouse="true" virtual="true"> 
+		<Size x="10" y="10"/>
+		<KeyValues>
+			 <KeyValue key="isSecondary" value="true" type="boolean"/>
+		</KeyValues>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="Texture" file="Interface\WorldMap\UI-QuestPoi-NumberIcons.tga">
+					<Size x="16" y="16"/>
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+					<TexCoords left="0.500" right="0.625" top="0.375" bottom="0.5"/>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnEnter function="WorldMapPOIButton_OnEnter"/>
+			<OnLeave function="WorldMapPOIButton_OnLeave"/>
+		</Scripts>
+	</Frame>
 	<Frame name="WorldMapQuestFrameTemplate" enableMouse="true" virtual="true">
 		<Size>
 			<AbsDimension x="281" y="100"/>

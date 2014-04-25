@@ -7,5 +7,6 @@
 Blizzard_GarrisonSharedTemplates.xml
 Blizzard_GarrisonBuildingUI.xml
 Blizzard_GarrisonMissionUI.xml
+Blizzard_GarrisonLandingPage.xml
 Blizzard_GarrisonCapacitiveDisplay.xml
 Localization.lua

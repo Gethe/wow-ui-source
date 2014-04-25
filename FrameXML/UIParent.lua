@@ -59,6 +59,7 @@ UIPanelWindows["WorldStateScoreFrame"] =		{ area = "center",			pushable = 0, 		x
 UIPanelWindows["QuestChoiceFrame"] =			{ area = "center",			pushable = 0, 		xoffset = -16, 		yoffset = 12,	whileDead = 0, allowOtherPanels = 1 };
 UIPanelWindows["GarrisonBuildingFrame"] =		{ area = "center",			pushable = 0,		whileDead = 1, 		width = 1002};
 UIPanelWindows["GarrisonMissionFrame"] =		{ area = "center",			pushable = 0,		whileDead = 1, 		width = 1002};
+UIPanelWindows["GarrisonLandingPage"] =			{ area = "center",			pushable = 0,		whileDead = 1, 		width = 800};
 
 local function GetUIPanelWindowInfo(frame, name)
 	if ( not frame:GetAttribute("UIPanelLayout-defined") ) then
@@ -846,7 +847,7 @@ function UIParent_OnEvent(self, event, ...)
 		-- if there's a role, it's an LFG invite
 		if ( arg2 or arg3 or arg4 ) then
 			StaticPopupSpecial_Show(LFGInvitePopup);
-			LFGInvitePopup_Update(arg1, arg2, arg3, arg4);
+			LFGInvitePopup_Update(arg1, arg2, arg3, arg4, arg6);
 		elseif ( arg5 ) then	--It's a X-realm invite
 			StaticPopup_Show("PARTY_INVITE_XREALM", arg1);
 		else

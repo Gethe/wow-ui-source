@@ -1,0 +1,163 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\FrameXML\UI.xsd">
+	<Script file="Blizzard_GarrisonLandingPage.lua"/>
+	
+	<Button name="GarrisonLandingPageMissionTemplate" virtual="true">
+		<Size x="558" y="64"/>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture atlas="GarrMission_MissionParchment" useAtlasSize="true" vertTile="true" horizTile="true">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="3"/>
+						<Anchor point="BOTTOMRIGHT" x="-3"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="BACKGROUND" textureSubLevel="3">
+				<Texture parentKey="IconBG" atlas="GarrMission_IconLevelBG" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="TOPLEFT" y="-1"/>
+					</Anchors>
+					<Color r="0" g="0" b="0" a="0.4"/>
+				</Texture>
+			</Layer>
+			<Layer level="ARTWORK">
+				<Texture parentKey="MissionType" atlas="GarrMission_MissionIcon-Combat" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="48" y="-0"/>
+					</Anchors>
+				</Texture>
+				<FontString parentKey="Title" inherits="GameFontHighlightLarge2" justifyH="LEFT" text="Master Blacksmithing Training">
+					<Size x="290" y="15"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" x="127" y="-12"/>
+					</Anchors>
+				</FontString>
+				<FontString parentKey="MissionType" inherits="GameFontNormal" justifyH="LEFT" text="Combat Mission">
+					<Size x="390" y="0"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.Title" relativePoint="BOTTOMLEFT" x="0" y="-9"/>
+					</Anchors>
+					<Color r="0.792" g="0.690" b="0.529" a="1"/>
+				</FontString>
+				<FontString parentKey="TimeLeft" inherits="GameFontNormalLarge2" justifyH="RIGHT" text="3 hr">
+					<Anchors>
+						<Anchor point="RIGHT" x="-15"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+	</Button>
+	
+	<Frame name="GarrisonLandingPage" inherits="BasicFrameTemplate" parent="UIParent" enableMouse="true" hidden="true">
+		<Size x="800" y="600"/>
+		<Anchors>
+			<Anchor point="CENTER"/>
+		</Anchors>
+		<Frames>
+			<Frame parentKey="MissionList" inherits="GarrisonMissionFrameListTemplate" name="$parentMissions">
+				<Size x="610" y="500"/>
+				<Anchors>
+					<Anchor point="BOTTOMLEFT" x="18" y="20"/>
+				</Anchors>
+				<Layers>
+					<Layer level="ARTWORK">
+						<FontString inherits="QuestFont_Super_Huge" text="GARRISON_MISSIONS">
+							<Shadow>
+								<Offset x="-1" y="-2"/>
+							</Shadow>
+							<Anchors>
+								<Anchor point="LEFT" relativeKey="$parent.HeaderLeft" x="18" y="0"/>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnShow function="GarrisonLandingPageMissionList_OnShow"/>
+					<OnHide function="GarrisonLandingPageMissionList_OnHide"/>
+				</Scripts>
+			</Frame>
+		</Frames>
+		<Scripts>
+			<OnLoad function="GarrisonMissionFrame_OnLoad"/>
+		</Scripts>
+	</Frame>
+	
+	<Button name="GarrisonLandingPageMinimapButton" parent="MinimapBackdrop" inherits="MiniMapButtonTemplate">
+		<Size x="33" y="33"/>
+		<Anchors>
+			<Anchor point="TOPLEFT" x="50" y="-125"/>
+		</Anchors>
+		<Layers>
+			<Layer level="OVERLAY">
+				<Texture name="$parentBorder" file="Interface\Minimap\MiniMap-TrackingBorder">
+					<Size x="52" y="52"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" x="1" y="-1"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="ARTWORK">
+				<Texture name="$parentIcon" file="Interface\Icons\inv_scroll_11">
+					<Size x="20" y="20"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" x="6" y="-6"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Frame name="GarrisonLandingPageTutorialBox" inherits="GlowBoxTemplate" enableMouse="true" hidden="true" frameStrata="DIALOG" frameLevel="2" topLevel="true">
+				<Size x="220" y="100"/>
+				<Anchors>
+					<Anchor point="RIGHT" relativePoint="LEFT" x="-25" y="0"/>
+				</Anchors>
+				<Layers>
+					<Layer level="OVERLAY">
+						<FontString parentKey="Text" inherits="GameFontHighlightLeft" justifyV="TOP" text="You can view your mission progress here.">
+							<Size x="188" y="0"/>
+							<Anchors>
+								<Anchor point="TOPLEFT" x="16" y="-24"/>
+							</Anchors>
+						</FontString>
+					</Layer>
+					<Layer level="ARTWORK">
+						<Texture parentKey="Arrow" inherits="HelpPlateArrowDOWN">
+							<Size x="53" y="21"/>
+							<Anchors>
+								<Anchor point="LEFT" relativePoint="RIGHT" x="-3" y="0"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+				<Frames>
+					<Button parentKey="CloseButton" inherits="UIPanelCloseButton">
+						<Anchors>
+							<Anchor point="TOPRIGHT" x="6" y="6"/>
+						</Anchors>
+						<Scripts>
+							<OnClick>
+								self:GetParent():Hide();
+								TriggerTutorial(68);
+							</OnClick>
+						</Scripts>
+					</Button>
+				</Frames>
+				<Scripts>
+					<OnLoad>
+						MicroButtonAlert_OnLoad(self);
+						SetClampedTextureRotation(self.Arrow, 270);--make arrow face right
+					</OnLoad>
+					<OnShow>
+						self:SetHeight(self.Text:GetHeight()+42);
+					</OnShow>
+				</Scripts>
+			</Frame>
+		</Frames>
+		<Scripts>
+			<OnClick function="GarrisonLandingPage_ToggleFrame"/>
+		</Scripts>						
+		<HighlightTexture alphaMode="ADD" file="Interface\Minimap\UI-Minimap-ZoomButton-Highlight"/>
+	</Button>	
+	
+</Ui>

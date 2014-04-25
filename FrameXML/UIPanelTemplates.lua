@@ -534,3 +534,38 @@ function InputScrollFrame_OnLoad(self)
 	self.EditBox:SetMaxLetters(self.maxLetters);
 	self.EditBox.Instructions:SetText(self.instructions);
 end
+
+--Radio button functions
+function SetCheckButtonIsRadio(button, isRadio)
+	if ( isRadio ) then
+		button:SetNormalTexture("Interface\\Buttons\\UI-RadioButton");
+		button:GetNormalTexture():SetTexCoord(0, 0.25, 0, 1);
+		
+		button:SetHighlightTexture("Interface\\Buttons\\UI-RadioButton");
+		button:GetHighlightTexture():SetTexCoord(0.5, 0.75, 0, 1);
+		
+		button:SetCheckedTexture("Interface\\Buttons\\UI-RadioButton");
+		button:GetCheckedTexture():SetTexCoord(0.25, 0.5, 0, 1);
+		
+		button:SetPushedTexture("Interface\\Buttons\\UI-RadioButton");
+		button:GetPushedTexture():SetTexCoord(0, 0.25, 0, 1);
+		
+		button:SetDisabledCheckedTexture("Interface\\Buttons\\UI-RadioButton");
+		button:GetDisabledCheckedTexture():SetTexCoord(0.75, 1, 0, 1);
+	else
+		button:SetNormalTexture("Interface\\Buttons\\UI-CheckBox-Up");
+		button:GetNormalTexture():SetTexCoord(0, 1, 0, 1);
+		
+		button:SetHighlightTexture("Interface\\Buttons\\UI-CheckBox-Highlight");
+		button:GetHighlightTexture():SetTexCoord(0, 1, 0, 1);
+		
+		button:SetCheckedTexture("Interface\\Buttons\\UI-CheckBox-Check");
+		button:GetCheckedTexture():SetTexCoord(0, 1, 0, 1);
+		
+		button:SetPushedTexture("Interface\\Buttons\\UI-CheckBox-Down");
+		button:GetPushedTexture():SetTexCoord(0, 1, 0, 1);
+		
+		button:SetDisabledCheckedTexture("Interface\\Buttons\\UI-CheckBox-Check-Disabled");
+		button:GetDisabledCheckedTexture():SetTexCoord(0, 1, 0, 1);
+	end	
+end
