@@ -1249,6 +1249,20 @@
 						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
 					</OnLoad>
 				</Scripts>
+			</CheckButton>	
+			<CheckButton name="$parentMapFade" inherits="InterfaceOptionsCheckButtonTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentWatchFrameWidth" relativePoint="BOTTOMLEFT">
+						<Offset x="0" y="-8"/>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						self.type = CONTROLTYPE_CHECKBOX;
+						self.cvar = "mapFade";
+						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
+					</OnLoad>
+				</Scripts>
 			</CheckButton>				
 		</Frames>
 		<Scripts>
@@ -2130,6 +2144,22 @@
 							</OnLoad>
 						</Scripts>
 					</CheckButton>		
+					<CheckButton name="$parentMinus" inherits="InterfaceOptionsSmallCheckButtonTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="$parentTotems" relativePoint="BOTTOMLEFT">
+								<Offset>
+									<AbsDimension x="0" y="4"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnLoad>
+								self.type = CONTROLTYPE_CHECKBOX;
+								self.cvar = "UnitNameEnemyMinusName";
+								BlizzardOptionsPanel_RegisterControl(self, self:GetParent():GetParent());
+							</OnLoad>
+						</Scripts>
+					</CheckButton>		
 				</Frames>
 			</Frame>
 			<Frame name="$parentUnitNameplates">
@@ -2291,9 +2321,26 @@
 							</OnLoad>
 						</Scripts>
 					</CheckButton>
-					<CheckButton name="$parentNameplateClassColors" inherits="InterfaceOptionsSmallCheckButtonTemplate">
+					<CheckButton name="$parentEnemyMinus" inherits="InterfaceOptionsSmallCheckButtonTemplate">
 						<Anchors>
 							<Anchor point="TOPLEFT" relativeTo="$parentEnemyTotems" relativePoint="BOTTOMLEFT">
+								<Offset>
+									<AbsDimension x="0" y="4"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnLoad>
+								self.type = CONTROLTYPE_CHECKBOX;
+								self.cvar = "nameplateShowEnemyMinus";
+								BlizzardOptionsPanel_RegisterControl(self, self:GetParent():GetParent());
+								BlizzardOptionsPanel_SetupDependentControl(InterfaceOptionsNamesPanelUnitNameplatesEnemies, self);
+							</OnLoad>
+						</Scripts>
+					</CheckButton>
+					<CheckButton name="$parentNameplateClassColors" inherits="InterfaceOptionsSmallCheckButtonTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="$parentEnemyMinus" relativePoint="BOTTOMLEFT">
 								<Offset>
 									<AbsDimension x="0" y="4"/>
 								</Offset>

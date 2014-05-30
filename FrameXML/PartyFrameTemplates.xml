@@ -1,9 +1,7 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\FrameXML\UI.xsd">
 	<Frame name="PartyBuffFrameTemplate" virtual="true" enableMouse="true" hidden="true">
-		<Size>
-			<AbsDimension x="15" y="15"/>
-		</Size>
+		<Size x="15" y="15"/>
 		<Layers>
 			<Layer level="ARTWORK">
 				<Texture name="$parentIcon" setAllPoints="true"/>
@@ -25,25 +23,17 @@
 		</Scripts>
 	</Frame>
 	<Frame name="PartyDebuffFrameTemplate" virtual="true" enableMouse="true" hidden="true">
-		<Size>
-			<AbsDimension x="15" y="15"/>
-		</Size>
+		<Size x="15" y="15"/>
 		<Layers>
 			<Layer level="ARTWORK">
 				<Texture name="$parentIcon" setAllPoints="true"/>
 			</Layer>
 			<Layer level="OVERLAY">
 				<Texture name="$parentBorder" file="Interface\Buttons\UI-Debuff-Overlays">
-					<Size>
-						<AbsDimension x="17" y="17"/>
-					</Size>
+					<Size x="17" y="17"/>
 					<Anchors>
-						<Anchor point="TOPLEFT">
-							<Offset x="-1" y="1"/>
-						</Anchor>
-						<Anchor point="BOTTOMRIGHT">
-							<Offset x="1" y="-1"/>
-						</Anchor>
+						<Anchor point="TOPLEFT" x="-1" y="1"/>
+						<Anchor point="BOTTOMRIGHT" x="1" y="-1"/>
 					</Anchors>
 					<TexCoords left="0.296875" right="0.5703125" top="0" bottom="0.515625"/>
 				</Texture>	
@@ -78,15 +68,9 @@
 		</Scripts>
 	</Frame>
 	<Button name="PartyMemberPetFrameTemplate" frameStrata="LOW" toplevel="true" inherits="SecureUnitButtonTemplate" virtual="true">
-		<Size>
-			<AbsDimension x="64" y="26"/>
-		</Size>
+		<Size x="64" y="26"/>
 		<Anchors>
-			<Anchor point="TOPLEFT">
-				<Offset>
-					<AbsDimension x="20" y="-47"/>
-				</Offset>
-			</Anchor>
+			<Anchor point="TOPLEFT" x="20" y="-47"/>
 		</Anchors>
 		<HitRectInsets>
 			<AbsInset left="3" right="33" top="3" bottom="3"/>
@@ -94,27 +78,15 @@
 		<Layers>
 			<Layer level="ARTWORK">
 				<Texture name="$parentFlash" file="Interface\TargetingFrame\UI-PartyFrame-Flash" hidden="true">
-					<Size>
-						<AbsDimension x="64" y="32"/>
-					</Size>
+					<Size x="64" y="32"/>
 					<Anchors>
-						<Anchor point="TOPLEFT">
-							<Offset>
-								<AbsDimension x="-1" y="1"/>
-							</Offset>
-						</Anchor>
+						<Anchor point="TOPLEFT" x="-1" y="1"/>
 					</Anchors>
 				</Texture>
 				<Texture name="$parentPortrait">
-					<Size>
-						<AbsDimension x="18" y="18"/>
-					</Size>
+					<Size x="18" y="18"/>
 					<Anchors>
-						<Anchor point="TOPLEFT">
-							<Offset>
-								<AbsDimension x="3" y="-3"/>
-							</Offset>
-						</Anchor>
+						<Anchor point="TOPLEFT" x="3" y="-3"/>
 					</Anchors>
 				</Texture>
 			</Layer>
@@ -126,24 +98,14 @@
 						<Layers>
 							<Layer level="ARTWORK">
 								<Texture name="$parentTexture" file="Interface\TargetingFrame\UI-PartyFrame">
-									<Size>
-										<AbsDimension x="64" y="32"/>
-									</Size>
+									<Size x="64" y="32"/>
 									<Anchors>
-										<Anchor point="TOPLEFT">
-											<Offset>
-												<AbsDimension x="0" y="-1"/>
-											</Offset>
-										</Anchor>
+										<Anchor point="TOPLEFT" x="0" y="-1"/>
 									</Anchors>
 								</Texture>
 								<FontString name="$parentName" inherits="GameFontNormalSmall">
 									<Anchors>
-										<Anchor point="BOTTOMLEFT">
-											<Offset>
-												<AbsDimension x="25" y="21"/>
-											</Offset>
-										</Anchor>
+										<Anchor point="BOTTOMLEFT" x="25" y="21"/>
 									</Anchors>
 								</FontString>
 							</Layer>
@@ -152,15 +114,9 @@
 				</Frames>
 			</Frame>
 			<StatusBar name="$parentHealthBar" inherits="TextStatusBar">
-				<Size>
-					<AbsDimension x="35" y="4"/>
-				</Size>
+				<Size x="35" y="4"/>
 				<Anchors>
-					<Anchor point="TOPLEFT">
-						<Offset>
-							<AbsDimension x="23" y="-6"/>
-						</Offset>
-					</Anchor>
+					<Anchor point="TOPLEFT" x="23" y="-6"/>
 				</Anchors>
 				<Scripts>
 					<OnValueChanged>
@@ -171,38 +127,22 @@
 			</StatusBar>
 			<Button name="$parentDebuff1" inherits="PartyPetDebuffFrameTemplate" id="1">
 				<Anchors>
-					<Anchor point="TOPLEFT">
-						<Offset>
-							<AbsDimension x="24" y="-16"/>
-						</Offset>
-					</Anchor>
+					<Anchor point="TOPLEFT" x="24" y="-16"/>
 				</Anchors>
 			</Button>
 			<Button name="$parentDebuff2" inherits="PartyPetDebuffFrameTemplate" id="2">
 				<Anchors>
-					<Anchor point="LEFT" relativeTo="$parentDebuff1" relativePoint="RIGHT">
-						<Offset>
-							<AbsDimension x="2" y="0"/>
-						</Offset>
-					</Anchor>
+					<Anchor point="LEFT" relativeTo="$parentDebuff1" relativePoint="RIGHT" x="2" y="0"/>
 				</Anchors>
 			</Button>
 			<Button name="$parentDebuff3" inherits="PartyPetDebuffFrameTemplate" id="3">
 				<Anchors>
-					<Anchor point="LEFT" relativeTo="$parentDebuff2" relativePoint="RIGHT">
-						<Offset>
-							<AbsDimension x="2" y="0"/>
-						</Offset>
-					</Anchor>
+					<Anchor point="LEFT" relativeTo="$parentDebuff2" relativePoint="RIGHT" x="2" y="0"/>
 				</Anchors>
 			</Button>
 			<Button name="$parentDebuff4" inherits="PartyPetDebuffFrameTemplate" id="4">
 				<Anchors>
-					<Anchor point="LEFT" relativeTo="$parentDebuff3" relativePoint="RIGHT">
-						<Offset>
-							<AbsDimension x="2" y="0"/>
-						</Offset>
-					</Anchor>
+					<Anchor point="LEFT" relativeTo="$parentDebuff3" relativePoint="RIGHT" x="2" y="0"/>
 				</Anchors>
 			</Button>
 		</Frames>
@@ -233,48 +173,28 @@
 		</Scripts>
 	</Button>
 	<Button name="PartyMemberFrameTemplate" frameStrata="LOW" toplevel="true" movable="true" hidden="true" inherits="SecureUnitButtonTemplate" virtual="true">
-		<Size>
-			<AbsDimension x="128" y="53"/>
-		</Size>
+		<Size x="128" y="53"/>
 		<HitRectInsets>
 			<AbsInset left="7" right="85" top="6" bottom="7"/>
 		</HitRectInsets>
 		<Layers>
 			<Layer level="BACKGROUND">
 				<Texture name="$parentFlash" file="Interface\TargetingFrame\UI-PartyFrame-Flash" hidden="true">
-					<Size>
-						<AbsDimension x="128" y="64"/>
-					</Size>
+					<Size x="128" y="64"/>
 					<Anchors>
-						<Anchor point="TOPLEFT">
-							<Offset>
-								<AbsDimension x="-3" y="2"/>
-							</Offset>
-						</Anchor>
+						<Anchor point="TOPLEFT" x="-3" y="2"/>
 					</Anchors>
 				</Texture>
 				<Texture name="$parentPortrait">
-					<Size>
-						<AbsDimension x="37" y="37"/>
-					</Size>
+					<Size x="37" y="37"/>
 					<Anchors>
-						<Anchor point="TOPLEFT">
-							<Offset>
-								<AbsDimension x="7" y="-6"/>
-							</Offset>
-						</Anchor>
+						<Anchor point="TOPLEFT" x="7" y="-6"/>
 					</Anchors>
 				</Texture>
 				<Texture name="$parentBackground">
-					<Size>
-						<AbsDimension x="72" y="20"/>
-					</Size>
+					<Size x="72" y="20"/>
 					<Anchors>
-						<Anchor point="TOPLEFT">
-							<Offset>
-								<AbsDimension x="45" y="-11"/>
-							</Offset>
-						</Anchor>
+						<Anchor point="TOPLEFT" x="45" y="-11"/>
 					</Anchors>
 					<Color r="0" g="0" b="0" a="0.5"/>
 				</Texture>
@@ -288,15 +208,9 @@
 		</Layers>
 		<Frames>
 			<Frame name="$parentDropDown" inherits="UIDropDownMenuTemplate" id="1" hidden="true">
-				<Size>
-					<AbsDimension x="10" y="10"/>
-				</Size>
+				<Size x="10" y="10"/>
 				<Anchors>
-					<Anchor point="TOP">
-						<Offset>
-							<AbsDimension x="-20" y="-10"/>
-						</Offset>
-					</Anchor>
+					<Anchor point="TOP" x="-20" y="-10"/>
 				</Anchors>
 				<Scripts>
 					<OnLoad>
@@ -327,68 +241,58 @@
 							</Layer>
 							<Layer level="BORDER">
 								<Texture name="$parentTexture" file="Interface\TargetingFrame\UI-PartyFrame">
-									<Size>
-										<AbsDimension x="128" y="64"/>
-									</Size>
+									<Size x="128" y="64"/>
 									<Anchors>
-										<Anchor point="TOPLEFT">
-											<Offset>
-												<AbsDimension x="0" y="-2"/>
-											</Offset>
-										</Anchor>
+										<Anchor point="TOPLEFT" x="0" y="-2"/>
 									</Anchors>
 								</Texture>
 								<Texture name="$parentVehicleTexture" file="Interface\Vehicles\UI-Vehicles-PartyFrame" hidden="true">
-									<Size>
-										<AbsDimension x="128" y="64"/>
-									</Size>
+									<Size x="128" y="64"/>
 									<Anchors>
-										<Anchor point="TOPLEFT">
-											<Offset>
-												<AbsDimension x="-6" y="6"/>
-											</Offset>
-										</Anchor>
+										<Anchor point="TOPLEFT" x="-6" y="6"/>
 									</Anchors>
 								</Texture>
 								<FontString name="$parentName" inherits="GameFontNormalSmall" justifyH="LEFT">
 									<Anchors>
-										<Anchor point="BOTTOMLEFT">
-											<Offset>
-												<AbsDimension x="50" y="43"/>
-											</Offset>
-										</Anchor>
+										<Anchor point="BOTTOMLEFT" x="50" y="43"/>
 									</Anchors>
 								</FontString>
 								<FontString name="$parentHealthBarText" inherits="TextStatusBarText">
 									<Anchors>
-										<Anchor point="CENTER">
-											<Offset>
-												<AbsDimension x="20" y="12"/>
-											</Offset>
-										</Anchor>
+										<Anchor point="CENTER" x="20" y="12"/>
+									</Anchors>
+								</FontString>
+								<FontString name="$parentHealthBarTextLeft" inherits="TextStatusBarText">
+									<Anchors>
+										<Anchor point="LEFT" x="42" y="12"/>
+									</Anchors>
+								</FontString>
+								<FontString name="$parentHealthBarTextRight" inherits="TextStatusBarText">
+									<Anchors>
+										<Anchor point="RIGHT" x="-10" y="12"/>
 									</Anchors>
 								</FontString>
 								<FontString name="$parentManaBarText" inherits="TextStatusBarText">
 									<Anchors>
-										<Anchor point="CENTER">
-											<Offset>
-												<AbsDimension x="20" y="2"/>
-											</Offset>
-										</Anchor>
+										<Anchor point="CENTER" x="20" y="2"/>
+									</Anchors>
+								</FontString>
+								<FontString name="$parentManaBarTextLeft" inherits="TextStatusBarText">
+									<Anchors>
+										<Anchor point="LEFT" x="42" y="2"/>
+									</Anchors>
+								</FontString>
+								<FontString name="$parentManaBarTextRight" inherits="TextStatusBarText">
+									<Anchors>
+										<Anchor point="RIGHT" x="-10" y="2"/>
 									</Anchors>
 								</FontString>
 							</Layer>
 							<Layer level="ARTWORK">
 								<Texture name="$parentStatus" file="Interface\Buttons\UI-Debuff-Overlays" hidden="true">
-									<Size>
-										<AbsDimension x="36" y="36"/>
-									</Size>
+									<Size x="36" y="36"/>
 									<Anchors>
-										<Anchor point="CENTER" relativeTo="$parentPortrait">
-											<Offset>
-												<AbsDimension x="0" y="0"/>
-											</Offset>
-										</Anchor>
+										<Anchor point="CENTER" relativeTo="$parentPortrait" x="0" y="0"/>
 									</Anchors>
 									<TexCoords left="0" right="0.2734375" top="0" bottom="0.5625"/>
 								</Texture>
@@ -397,68 +301,40 @@
 							</Layer>
 							<Layer level="OVERLAY">
 								<Texture name="$parentLeaderIcon" file="Interface\GroupFrame\UI-Group-LeaderIcon" hidden="true">
-									<Size>
-										<AbsDimension x="16" y="16"/>
-									</Size>
+									<Size x="16" y="16"/>
 									<Anchors>
 										<Anchor point="TOPLEFT"/>
 									</Anchors>
 								</Texture>
 								<Texture name="$parentGuideIcon" file="Interface\LFGFrame\UI-LFG-ICON-PORTRAITROLES" hidden="true">
-									<Size>
-										<AbsDimension x="19" y="19"/>
-									</Size>
+									<Size x="19" y="19"/>
 									<Anchors>
 										<Anchor point="TOPLEFT"/>
 									</Anchors>
 									<TexCoords left="0" right="0.296875" top="0.015625" bottom="0.3125"/>
 								</Texture>
 								<Texture name="$parentMasterIcon" file="Interface\GroupFrame\UI-Group-MasterLooter" hidden="true">
-									<Size>
-										<AbsDimension x="16" y="16"/>
-									</Size>
+									<Size x="16" y="16"/>
 									<Anchors>
-										<Anchor point="TOPLEFT">
-											<Offset>
-												<AbsDimension x="32" y="0"/>
-											</Offset>
-										</Anchor>
+										<Anchor point="TOPLEFT" x="32" y="0"/>
 									</Anchors>
 								</Texture>
 								<Texture name="$parentPVPIcon" hidden="true">
-									<Size>
-										<AbsDimension x="32" y="32"/>
-									</Size>
+									<Size x="32" y="32"/>
 									<Anchors>
-										<Anchor point="TOPLEFT">
-											<Offset>
-												<AbsDimension x="-9" y="-15"/>
-											</Offset>
-										</Anchor>
+										<Anchor point="TOPLEFT" x="-9" y="-15"/>
 									</Anchors>
 								</Texture>
 								<Texture name="$parentDisconnect" file="Interface\CharacterFrame\Disconnect-Icon" hidden="true">
-									<Size>
-										<AbsDimension x="64" y="64"/>
-									</Size>
+									<Size x="64" y="64"/>
 									<Anchors>
-										<Anchor point="LEFT">
-											<Offset>
-												<AbsDimension x="-7" y="-1"/>
-											</Offset>
-										</Anchor>
+										<Anchor point="LEFT" x="-7" y="-1"/>
 									</Anchors>
 								</Texture>
 								<Texture name="$parentRoleIcon" file="Interface\LFGFrame\UI-LFG-ICON-PORTRAITROLES" hidden="true">
-									<Size>
-										<AbsDimension x="19" y="19"/>
-									</Size>
+									<Size x="19" y="19"/>
 									<Anchors>
-										<Anchor point="TOPLEFT">
-											<Offset>
-												<AbsDimension x="7" y="-33"/>
-											</Offset>
-										</Anchor>
+										<Anchor point="TOPLEFT" x="7" y="-33"/>
 									</Anchors>
 								</Texture>
 							</Layer>
@@ -467,15 +343,9 @@
 				</Frames>
 			</Frame>
 			<StatusBar name="$parentHealthBar" inherits="TextStatusBar">
-				<Size>
-					<AbsDimension x="70" y="8"/>
-				</Size>
+				<Size x="70" y="8"/>
 				<Anchors>
-					<Anchor point="TOPLEFT">
-						<Offset>
-							<AbsDimension x="47" y="-12"/>
-						</Offset>
-					</Anchor>
+					<Anchor point="TOPLEFT" x="47" y="-12"/>
 				</Anchors>
 				<Scripts>
 					<OnLoad>
@@ -498,15 +368,9 @@
 				<BarTexture file="Interface\TargetingFrame\UI-StatusBar"/>
 			</StatusBar>
 			<StatusBar name="$parentManaBar" inherits="TextStatusBar">
-				<Size>
-					<AbsDimension x="70" y="8"/>
-				</Size>
+				<Size x="70" y="8"/>
 				<Anchors>
-					<Anchor point="TOPLEFT">
-						<Offset>
-							<AbsDimension x="47" y="-21"/>
-						</Offset>
-					</Anchor>
+					<Anchor point="TOPLEFT" x="47" y="-21"/>
 				</Anchors>
 				<Scripts>
 					<OnLoad>
@@ -523,15 +387,9 @@
 				<BarColor r="0" g="0" b="1.0"/>
 			</StatusBar>
 			<Button name="$parentSpeaker" inherits="VoiceChatSpeakerTemplate">
-				<Size>
-					<AbsDimension x="12" y="12"/>
-				</Size>
+				<Size x="12" y="12"/>
 				<Anchors>
-					<Anchor point="BOTTOMLEFT" relativeTo="$parentTexture" relativePoint="BOTTOMLEFT">
-						<Offset>
-							<AbsDimension x="10" y="14"/>
-						</Offset>
-					</Anchor>
+					<Anchor point="BOTTOMLEFT" relativeTo="$parentTexture" relativePoint="BOTTOMLEFT" x="10" y="14"/>
 				</Anchors>
 				<Scripts>
 					<OnLoad>
@@ -540,15 +398,9 @@
 				</Scripts>
 			</Button>
 			<Frame name="$parentSpeakerFrame" inherits="VoiceChatSpeakerTemplate" hidden="true">
-				<Size>
-					<AbsDimension x="16" y="16"/>
-				</Size>
+				<Size x="16" y="16"/>
 				<Anchors>
-					<Anchor point="LEFT" relativeTo="$parentTexture" relativePoint="RIGHT">
-						<Offset>
-							<AbsDimension x="-5" y="15"/>
-						</Offset>
-					</Anchor>
+					<Anchor point="LEFT" relativeTo="$parentTexture" relativePoint="RIGHT" x="-5" y="15"/>
 				</Anchors>
 				<Scripts>
 					<OnUpdate>
@@ -558,11 +410,7 @@
 			</Frame>
 			<Frame name="$parentReadyCheck" inherits="ReadyCheckStatusTemplate" hidden="true">
 				<Anchors>
-					<Anchor point="CENTER" relativeTo="$parentPortrait" relativePoint="CENTER">
-						<Offset>
-							<AbsDimension x="0" y="0"/>
-						</Offset>
-					</Anchor>
+					<Anchor point="CENTER" relativeTo="$parentPortrait" relativePoint="CENTER" x="0" y="0"/>
 				</Anchors>
 				<Scripts>
 					<OnLoad>
@@ -594,57 +442,28 @@
 			</Frame>
 			<Button name="$parentDebuff1" inherits="PartyDebuffFrameTemplate" id="1">
 				<Anchors>
-					<Anchor point="TOPLEFT">
-						<Offset>
-							<AbsDimension x="48" y="-32"/>
-						</Offset>
-					</Anchor>
+					<Anchor point="TOPLEFT" x="48" y="-32"/>
 				</Anchors>
 			</Button>
 			<Button name="$parentDebuff2" inherits="PartyDebuffFrameTemplate" id="2">
 				<Anchors>
-					<Anchor point="LEFT" relativeTo="$parentDebuff1" relativePoint="RIGHT">
-						<Offset>
-							<AbsDimension x="2" y="0"/>
-						</Offset>
-					</Anchor>
+					<Anchor point="LEFT" relativeTo="$parentDebuff1" relativePoint="RIGHT" x="2" y="0"/>
 				</Anchors>
 			</Button>
 			<Button name="$parentDebuff3" inherits="PartyDebuffFrameTemplate" id="3">
 				<Anchors>
-					<Anchor point="LEFT" relativeTo="$parentDebuff2" relativePoint="RIGHT">
-						<Offset>
-							<AbsDimension x="2" y="0"/>
-						</Offset>
-					</Anchor>
+					<Anchor point="LEFT" relativeTo="$parentDebuff2" relativePoint="RIGHT" x="2" y="0"/>
 				</Anchors>
 			</Button>
 			<Button name="$parentDebuff4" inherits="PartyDebuffFrameTemplate" id="4">
 				<Anchors>
-					<Anchor point="LEFT" relativeTo="$parentDebuff3" relativePoint="RIGHT">
-						<Offset>
-							<AbsDimension x="2" y="0"/>
-						</Offset>
-					</Anchor>
+					<Anchor point="LEFT" relativeTo="$parentDebuff3" relativePoint="RIGHT" x="2" y="0"/>
 				</Anchors>
 			</Button>
 			<Button name="$parentPetFrame" inherits="PartyMemberPetFrameTemplate"/>
 		</Frames>
 		<Scripts>
 			<OnLoad>
-				local id = self:GetID();
-				self.debuffCountdown = 0; 
-				self.numDebuffs = 0;
-				self.noTextPrefix = true;
-				local prefix = "PartyMemberFrame"..id;
-				UnitFrame_Initialize(self, "party"..id,  _G[prefix.."Name"], _G[prefix.."Portrait"],
-					   _G[prefix.."HealthBar"], _G[prefix.."HealthBarText"], 
-					   _G[prefix.."ManaBar"], _G[prefix.."ManaBarText"],
-				       _G[prefix.."Flash"], nil, nil, _G[prefix.."MyHealPredictionBar"], _G[prefix.."OtherHealPredictionBar"], 
-					   _G[prefix.."TotalAbsorbBar"], _G[prefix.."TotalAbsorbBarOverlay"], _G[prefix.."OverAbsorbGlow"],
-					   _G[prefix.."OverHealAbsorbGlow"], _G[prefix.."HealAbsorbBar"], _G[prefix.."HealAbsorbBarLeftShadow"],
-					   _G[prefix.."HealAbsorbBarRightShadow"]);
-				SetTextStatusBarTextZeroText(_G[prefix.."HealthBar"], DEAD);
 				PartyMemberFrame_OnLoad(self);
 			</OnLoad>
 			<OnShow>

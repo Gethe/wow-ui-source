@@ -584,6 +584,8 @@ ObjectivesPanelOptions = {
 	mapQuestDifficulty = { text = "MAP_QUEST_DIFFICULTY_TEXT" },
 	advancedWorldMap = { text = "ADVANCED_WORLD_MAP_TEXT" },
 	watchFrameWidth = { text = "WATCH_FRAME_WIDTH_TEXT" },
+	watchFrameWidth = { text = "WATCH_FRAME_WIDTH_TEXT" },
+	mapFade = { text = "MAP_FADE_TEXT" },
 }
 
 function InterfaceOptionsObjectivesPanel_OnLoad (self)
@@ -1189,6 +1191,7 @@ NamePanelOptions = {
 	UnitNameEnemyPetName = { text = "UNIT_NAME_ENEMY_PETS" },
 	UnitNameEnemyGuardianName = { text = "UNIT_NAME_ENEMY_GUARDIANS" },
 	UnitNameEnemyTotemName = { text = "UNIT_NAME_ENEMY_TOTEMS" },
+	UnitNameEnemyMinusName = { text = "UNIT_NAME_ENEMY_MINUS" },
 	
 	nameplateShowFriends = { text = "UNIT_NAMEPLATES_SHOW_FRIENDS" },
 	nameplateShowFriendlyPets = { text = "UNIT_NAMEPLATES_SHOW_FRIENDLY_PETS" },
@@ -1198,6 +1201,7 @@ NamePanelOptions = {
 	nameplateShowEnemyPets = { text = "UNIT_NAMEPLATES_SHOW_ENEMY_PETS" },
 	nameplateShowEnemyGuardians = { text = "UNIT_NAMEPLATES_SHOW_ENEMY_GUARDIANS" },
 	nameplateShowEnemyTotems = { text = "UNIT_NAMEPLATES_SHOW_ENEMY_TOTEMS" },
+	nameplateShowEnemyMinus = { text = "UNIT_NAMEPLATES_SHOW_ENEMY_MINUS" },
 	ShowClassColorInNameplate = { text = "SHOW_CLASS_COLOR_IN_V_KEY" },
 }
 

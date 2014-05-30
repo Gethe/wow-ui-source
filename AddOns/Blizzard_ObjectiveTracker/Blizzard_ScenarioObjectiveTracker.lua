@@ -2,7 +2,7 @@
 SCENARIO_CONTENT_TRACKER_MODULE = ObjectiveTracker_GetModuleInfoTable();
 SCENARIO_CONTENT_TRACKER_MODULE.updateReasonModule = OBJECTIVE_TRACKER_UPDATE_MODULE_SCENARIO;
 SCENARIO_CONTENT_TRACKER_MODULE.updateReasonEvents = OBJECTIVE_TRACKER_UPDATE_SCENARIO + OBJECTIVE_TRACKER_UPDATE_SCENARIO_NEW_STAGE;
-SCENARIO_CONTENT_TRACKER_MODULE:SetHeader(ObjectiveTrackerFrame.BlocksFrame.ScenarioHeader, "Scenario", nil, OBJECTIVE_TRACKER_UPDATE_MODULE_SCENARIO);	-- never anim-in the header
+SCENARIO_CONTENT_TRACKER_MODULE:SetHeader(ObjectiveTrackerFrame.BlocksFrame.ScenarioHeader, TRACKER_HEADER_SCENARIO, nil, OBJECTIVE_TRACKER_UPDATE_MODULE_SCENARIO);	-- never anim-in the header
 SCENARIO_CONTENT_TRACKER_MODULE.blockOffsetX = -20;
 SCENARIO_CONTENT_TRACKER_MODULE.fromHeaderOffsetY = -2;
 
@@ -48,6 +48,7 @@ end
 
 function ScenarioBlocksFrame_OnFinishSlideIn()
 	SCENARIO_TRACKER_MODULE.BlocksFrame.slidingAction = nil;
+	ObjectiveTracker_Update(OBJECTIVE_TRACKER_UPDATE_SCENARIO_BONUS_DELAYED);
 end
 
 function ScenarioBlocksFrame_OnFinishSlideOut()

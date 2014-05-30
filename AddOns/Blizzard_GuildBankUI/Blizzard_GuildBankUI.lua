@@ -236,7 +236,7 @@ function GuildBankFrame_Update()
 			column = ceil((i-0.5)/NUM_SLOTS_PER_GUILDBANK_GROUP);
 			button = _G["GuildBankColumn"..column.."Button"..index];
 			button:SetID(i);
-			texture, itemCount, locked, isFiltered = GetGuildBankItemInfo(tab, i);
+			texture, itemCount, locked, isFiltered, quality = GetGuildBankItemInfo(tab, i);
 			SetItemButtonTexture(button, texture);
 			SetItemButtonCount(button, itemCount);
 			SetItemButtonDesaturated(button, locked);
@@ -245,6 +245,13 @@ function GuildBankFrame_Update()
 				button.searchOverlay:Show();
 			else
 				button.searchOverlay:Hide();
+			end
+
+			if (quality and quality > LE_ITEM_QUALITY_COMMON and BAG_ITEM_QUALITY_COLORS[quality]) then
+				button.IconBorder:Show();
+				button.IconBorder:SetVertexColor(BAG_ITEM_QUALITY_COLORS[quality].r, BAG_ITEM_QUALITY_COLORS[quality].g, BAG_ITEM_QUALITY_COLORS[quality].b);
+			else
+				button.IconBorder:Hide();
 			end
 		end
 		MoneyFrame_Update("GuildBankMoneyFrame", GetGuildBankMoney());

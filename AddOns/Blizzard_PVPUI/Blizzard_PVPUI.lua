@@ -148,6 +148,8 @@ function PVPQueueFrame_OnLoad(self)
 	self.CategoryButton2.CurrencyAmount:SetText(currencyAmount);
 	SetPortraitToTexture(self.CategoryButton3.Icon, "Interface\\Icons\\ability_warrior_offensivestance");
 	self.CategoryButton3.Name:SetText(WARGAMES);
+	SetPortraitToTexture(self.CategoryButton4.Icon, "Interface\\Icons\\Achievement_General_StayClassy");
+	self.CategoryButton4.Name:SetText(PVP_TAB_GROUPS);
 
 	-- disable unusable side buttons
 	if ( UnitLevel("player") < SHOW_CONQUEST_LEVEL ) then
@@ -291,6 +293,7 @@ local MIN_BONUS_HONOR_LEVEL;
 function HonorFrame_OnLoad(self)
 	self.SpecificFrame.scrollBar.doNotHide = true;
 	self.SpecificFrame.update = HonorFrameSpecificList_Update;
+	self.SpecificFrame.dynamic = HonorFrame_CalculateScroll;
 	HybridScrollFrame_CreateButtons(self.SpecificFrame, "PVPSpecificBattlegroundButtonTemplate", -2, -1);
 
 	-- min level for bonus frame
@@ -383,7 +386,6 @@ end
 function HonorFrame_UpdateQueueButtons()
 	local HonorFrame = HonorFrame;
 	local canQueue;
-	local isWorldPVP;
 	if ( HonorFrame.type == "specific" ) then
 		if ( HonorFrame.SpecificFrame.selectionID ) then
 			canQueue = true;
@@ -393,13 +395,12 @@ function HonorFrame_UpdateQueueButtons()
 			if ( HonorFrame.BonusFrame.selectedButton.canQueue ) then
 				canQueue = true;
 			end
-			isWorldPVP = HonorFrame.BonusFrame.selectedButton.worldID;
 		end
 	end
 
 	if ( canQueue ) then
 		HonorFrame.SoloQueueButton:Enable();
-		if ( not isWorldPVP and IsInGroup() and UnitIsGroupLeader("player") ) then
+		if ( IsInGroup(LE_PARTY_CATEGORY_HOME) and UnitIsGroupLeader("player", LE_PARTY_CATEGORY_HOME) ) then
 			HonorFrame.GroupQueueButton:Enable();
 		else
 			HonorFrame.GroupQueueButton:Disable();
@@ -419,9 +420,8 @@ function HonorFrame_Queue(isParty, forceSolo)
 	if ( HonorFrame.type == "specific" and HonorFrame.SpecificFrame.selectionID ) then
 		JoinBattlefield(HonorFrame.SpecificFrame.selectionID, isParty);
 	elseif ( HonorFrame.type == "bonus" and HonorFrame.BonusFrame.selectedButton ) then
-		if ( HonorFrame.BonusFrame.selectedButton.worldID ) then
-			local pvpID = GetWorldPVPAreaInfo(HonorFrame.BonusFrame.selectedButton.worldID);
-			BattlefieldMgrQueueRequest(pvpID);
+		if ( HonorFrame.BonusFrame.selectedButton.arenaID ) then
+			JoinSkirmish(HonorFrame.BonusFrame.selectedButton.arenaID, isParty);
 		else
 			JoinBattlefield(HonorFrame.BonusFrame.selectedButton.bgID, isParty);
 		end
@@ -438,6 +438,22 @@ function HonorFrameSpecificList_Update()
 	local numBattlegrounds = GetNumBattlegroundTypes();
 	local selectionID = scrollFrame.selectionID;
 	local buttonCount = -offset;
+
+	-- apply header	
+	local button = buttons[1];
+	local header = HonorFrame.SpecificHeader;
+	if( offset == 0 ) then
+		header:SetParent(button:GetParent());
+		header:SetPoint("BOTTOM", button, 0 , 0);
+		button:SetHeight(25);
+		button:Hide();
+		header:Show();
+	else
+		header:Hide();
+		button:SetHeight(40);
+		button:Show();
+	end
+	buttonCount = buttonCount + 1;
 
 	for i = 1, numBattlegrounds do
 		local localizedName, canEnter, isHoliday, isRandom, battleGroundID, mapDescription, BGMapID, maxPlayers, gameType, iconTexture = GetBattlegroundInfo(i);
@@ -473,6 +489,21 @@ function HonorFrameSpecificList_Update()
 	HybridScrollFrame_Update(scrollFrame, totalHeight, numButtons * scrollFrame.buttonHeight);
 
 	HonorFrame_UpdateQueueButtons();
+end
+
+function HonorFrame_CalculateScroll(offset)
+	local heightLeft = offset;
+	local buttonHeight;
+	local numBattlegrounds = GetNumBattlegroundTypes();
+	
+	for i = 1, numBattlegrounds do
+		buttonHeight = 40;	
+		if ( heightLeft - buttonHeight <= 0 ) then
+			return i-1, heightLeft;
+		else
+			heightLeft = heightLeft - buttonHeight;
+		end
+	end
 end
 
 function HonorFrameSpecificList_FindAndSelectBattleground(bgID)
@@ -606,21 +637,10 @@ function HonorFrameBonusFrame_OnShow(self)
 	RequestRandomBattlegroundInstanceInfo();
 end
 
-function HonorFrameBonusFrame_OnUpdate(self, elapsed)
-	self.updateTime = self.updateTime + elapsed;
-	if ( self.updateTime >= 1 ) then
-		for i = 1, 2 do
-			button = HonorFrame.BonusFrame["WorldPVP"..i.."Button"];
-			local areaID, localizedName, isActive, canQueue, startTime, canEnter, minLevel, maxLevel = GetWorldPVPAreaInfo(i);
-			if ( canEnter ) then
-				HonorFrameBonusFrame_UpdateWorldPVPTime(button, isActive, startTime);
-				button.canQueue = canQueue;
-			end
-		end
-		self.updateTime = 0;
-	end
-end
-
+ARENA_DATA = {
+	{ id = 4, name=SKIRMISH_2V2 },
+	{ id = 5, name=SKIRMISH_3V3  }
+}
 function HonorFrameBonusFrame_Update()
 	local playerLevel = UnitLevel("player");
 	local englishFaction = UnitFactionGroup("player");
@@ -641,8 +661,6 @@ function HonorFrameBonusFrame_Update()
 	HonorFrameBonusFrame_UpdateExcludedBattlegrounds();
 	button.canQueue = canQueue;
 	button.bgID = battleGroundID;
-	-- call to arms
-	button = HonorFrame.BonusFrame.CallToArmsButton;
 	local hasData, canQueue, bgName, battleGroundID, hasWon, winHonorAmount, winConquestAmount, lossHonorAmount, lossConquestAmount, minLevel, maxLevel = GetHolidayBGInfo();
 	if ( hasData ) then
 		-- cap conquest to total earnable
@@ -651,18 +669,6 @@ function HonorFrameBonusFrame_Update()
 		elseif ( ratedBGReward < winConquestAmount ) then
 			winConquestAmount = ratedBGReward
 		end
-		HonorFrameBonusFrame_SetButtonState(button, canQueue, minLevel);
-		button.Contents.BattlegroundName:SetText(bgName);
-		if ( canQueue ) then
-			button.Contents.BattlegroundName:SetTextColor(0.7, 0.7, 0.7);
-			if ( not selectButton ) then
-				selectButton = button;
-			end
-		else
-			button.Contents.BattlegroundName:SetTextColor(0.4, 0.4, 0.4);
-		end
-		button.canQueue = canQueue;
-		button.bgID = battleGroundID;
 		-- rewards for battlegrounds
 		local rewardIndex = 0;
 		if ( winConquestAmount and winConquestAmount > 0 ) then
@@ -689,32 +695,17 @@ function HonorFrameBonusFrame_Update()
 			HonorFrame.BonusFrame.NoBattlegroundReward:Hide();
 		end
 	else
-		HonorFrameBonusFrame_SetButtonState(button, false, nil);
-		button.Contents.BattlegroundName:SetText("");
-		button.canQueue = false;
-		button.bgID = nil;
 		HonorFrame.BonusFrame.BattlegroundReward1:Hide();
 		HonorFrame.BonusFrame.BattlegroundReward2:Hide();
 		HonorFrame.BonusFrame.NoBattlegroundReward:Show();
 	end
-	-- world pvp
+	
+	-- arena pvp
 	for i = 1, 2 do
-		button = HonorFrame.BonusFrame["WorldPVP"..i.."Button"];
-		local areaID, localizedName, isActive, canQueue, startTime, canEnter, minLevel, maxLevel = GetWorldPVPAreaInfo(i);
-		button.Contents.Title:SetText(localizedName);
-		HonorFrameBonusFrame_SetButtonState(button, canEnter, minLevel);
-		if ( canEnter ) then
-			HonorFrameBonusFrame_UpdateWorldPVPTime(button, isActive, startTime);
-			if ( not selectButton ) then
-				selectButton = button;
-			end
-		else
-			button.Contents.InProgressText:Hide();
-			button.Contents.NextBattleText:Hide();
-			button.Contents.TimeText:Hide();
-		end
-		button.canQueue = canQueue;
-		button.worldID = i;
+		button = HonorFrame.BonusFrame["Arena"..i.."Button"];
+		button.Contents.Title:SetText(ARENA_DATA[i].name);
+		button.canQueue = true;
+		button.arenaID = ARENA_DATA[i].id;
 	end
 	-- TODO: rewards for world pvp
 
@@ -739,9 +730,11 @@ function HonorFrameBonusFrame_UpdateExcludedBattlegrounds()
 		end
 	end
 	if ( bgNames ) then
+		HonorFrame.BonusFrame.RandomBGButton.Contents.Title:SetPoint("LEFT", HonorFrame.BonusFrame.RandomBGButton.Contents, "LEFT", 14, 8);
 		HonorFrame.BonusFrame.RandomBGButton.Contents.ThumbTexture:Show();
 		HonorFrame.BonusFrame.RandomBGButton.Contents.ExcludedBattlegrounds:SetText(bgNames);
 	else
+		HonorFrame.BonusFrame.RandomBGButton.Contents.Title:SetPoint("LEFT", HonorFrame.BonusFrame.RandomBGButton.Contents, "LEFT", 14, 0);
 		HonorFrame.BonusFrame.RandomBGButton.Contents.ThumbTexture:Hide();
 		HonorFrame.BonusFrame.RandomBGButton.Contents.ExcludedBattlegrounds:SetText("");
 	end
@@ -778,19 +771,6 @@ function HonorFrameBonusFrame_SetButtonState(button, enable, minLevel)
 			button.Contents.MinLevelText:Hide();
 			button.Contents.UnlockText:Hide();
 		end
-	end
-end
-
-function HonorFrameBonusFrame_UpdateWorldPVPTime(button, isActive, startTime)
-	if ( isActive ) then
-		button.Contents.InProgressText:Show();
-		button.Contents.NextBattleText:Hide();
-		button.Contents.TimeText:Hide();
-	else
-		button.Contents.InProgressText:Hide();
-		button.Contents.NextBattleText:Show();
-		button.Contents.TimeText:Show();
-		button.Contents.TimeText:SetText(SecondsToTime(startTime));
 	end
 end
 
@@ -950,44 +930,9 @@ end
 --------- Conquest Tooltips ----------
 
 function ConquestFrame_ShowMaximumRewardsTooltip(self)
-	local currencyName = GetCurrencyInfo(CONQUEST_CURRENCY);
-
+	GameTooltip:SetMinimumWidth(256, true);
 	GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
-	GameTooltip:SetText(MAXIMUM_REWARD);
-	GameTooltip:AddLine(format(CURRENCY_RECEIVED_THIS_WEEK, currencyName), 1, 1, 1, true);
-	GameTooltip:AddLine(" ");
-
-	local pointsThisWeek, maxPointsThisWeek, tier2Quantity, tier2Limit, tier1Quantity, tier1Limit, randomPointsThisWeek, maxRandomPointsThisWeek, arenaReward, ratedBGReward = GetPVPRewards();
-
-	local r, g, b = 1, 1, 1;
-	local capped;
-	if ( pointsThisWeek >= maxPointsThisWeek ) then
-		r, g, b = 0.5, 0.5, 0.5;
-		capped = true;
-	end
-	GameTooltip:AddDoubleLine(FROM_ALL_SOURCES, format(CURRENCY_WEEKLY_CAP_FRACTION, pointsThisWeek, maxPointsThisWeek), r, g, b, r, g, b);
-
-	if ( capped or tier2Quantity >= tier2Limit ) then
-		r, g, b = 0.5, 0.5, 0.5;
-	else
-		r, g, b = 1, 1, 1;
-	end
-	GameTooltip:AddDoubleLine(" -"..FROM_RATEDBG, format(CURRENCY_WEEKLY_CAP_FRACTION, tier2Quantity, tier2Limit), r, g, b, r, g, b);
-
-	if ( capped or tier1Quantity >= tier1Limit ) then
-		r, g, b = 0.5, 0.5, 0.5;
-	else
-		r, g, b = 1, 1, 1;
-	end
-	GameTooltip:AddDoubleLine(" -"..FROM_ARENA, format(CURRENCY_WEEKLY_CAP_FRACTION, tier1Quantity, tier1Limit), r, g, b, r, g, b);
-
-	if ( capped or randomPointsThisWeek >= maxRandomPointsThisWeek ) then
-		r, g, b = 0.5, 0.5, 0.5;
-	else
-		r, g, b = 1, 1, 1;
-	end
-	GameTooltip:AddDoubleLine(" -"..FROM_RANDOMBG, format(CURRENCY_WEEKLY_CAP_FRACTION, randomPointsThisWeek, maxRandomPointsThisWeek), r, g, b, r, g, b);
-
+	GameTooltip:SetText(BATTLEGROUND_BONUS_REWARD_TOOLTIP);
 	GameTooltip:Show();
 end
 
@@ -996,12 +941,14 @@ local CONQUEST_TOOLTIP_PADDING = 30 --counts both sides
 function ConquestFrameButton_OnEnter(self)
 	local tooltip = ConquestTooltip;
 	
-	local rating, seasonBest, weeklyBest, seasonPlayed, _, weeklyPlayed, _, cap = GetPersonalRatedInfo(self.id);
+	local rating, seasonBest, weeklyBest, seasonPlayed, seasonWon, weeklyPlayed, weeklyWon, cap = GetPersonalRatedInfo(self.id);
 	
 	tooltip.WeeklyBest:SetText(PVP_BEST_RATING..weeklyBest);
+	tooltip.WeeklyGamesWon:SetText(PVP_GAMES_WON..weeklyPlayed);
 	tooltip.WeeklyGamesPlayed:SetText(PVP_GAMES_PLAYED..weeklyPlayed);
 	
 	tooltip.SeasonBest:SetText(PVP_BEST_RATING..seasonBest);
+	tooltip.SeasonWon:SetText(PVP_GAMES_WON..seasonWon);
 	tooltip.SeasonGamesPlayed:SetText(PVP_GAMES_PLAYED..seasonPlayed);
 
 	tooltip.ProjectedCap:SetText(cap);

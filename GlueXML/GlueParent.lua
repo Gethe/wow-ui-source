@@ -4,7 +4,7 @@ GlueCreditsSoundKits[2] = "Menu-Credits02";
 GlueCreditsSoundKits[3] = "Menu-Credits03";
 GlueCreditsSoundKits[4] = "Menu-Credits04";
 GlueCreditsSoundKits[5] = "Menu-Credits05";
-GlueCreditsSoundKits[5] = "Menu-Credits06";
+GlueCreditsSoundKits[6] = "Menu-Credits06";
 
 
 GlueScreenInfo = { };

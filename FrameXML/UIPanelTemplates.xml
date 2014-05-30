@@ -2561,6 +2561,7 @@
 			<!--
 			<KeyValue key="maxLetters" value="127" type="number"/>
 			<KeyValue key="instructions" value="INSTRUCTION_TEXT" type="global"/>
+			<KeyValue key="hideCharCount" value="false" type="boolean"/>
 			-->
 		</KeyValues>
 		<Layers>

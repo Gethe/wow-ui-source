@@ -296,7 +296,7 @@
 					</Layer>
 				</Layers>
 			</Frame>
-<!--
+
 			<Frame name="$parentAntiAliasingDropDown" inherits="VideoOptionsDropDownMenuTemplate" id="4">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeTo="$parentPrimaryMonitorDropDown" relativePoint="BOTTOMLEFT"/>
@@ -313,10 +313,10 @@
 					</Layer>
 				</Layers>
 			</Frame>
--->			
+			
 			<Frame name="$parentVerticalSyncDropDown" inherits="VideoOptionsDropDownMenuTemplate" id="10">
 				<Anchors>
-					<Anchor point="TOPLEFT" relativeTo="$parentPrimaryMonitorDropDown" relativePoint="BOTTOMLEFT"/>
+					<Anchor point="TOPLEFT" relativeTo="$parentAntiAliasingDropDown" relativePoint="BOTTOMLEFT"/>
 				</Anchors>
 				<Layers>
 					<Layer level="BACKGROUND">
@@ -701,9 +701,32 @@
 					</Layer>
 				</Layers>
 			</Frame>
+			<Frame name="$parentOutlineDropDown" inherits="VideoOptionsDropDownMenuTemplate" id="17">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentGraphicsAPIDropDown" relativePoint="BOTTOMLEFT" x="0" y="-8"/>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<FontString name="$parentLabel" inherits="OptionsFontSmall" text="OBJECT_NPC_OUTLINE">
+							<Anchors>
+								<Anchor point="RIGHT" relativePoint="LEFT"/>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnLoad>
+						if(InGlue()) then
+							self:Hide();
+						else
+							VideoOptionsDropDown_OnLoad(self);
+						end
+					</OnLoad>
+				</Scripts>
+			</Frame>
 			<Slider name="$parentUIScaleSlider" inherits="VideoOptionsSliderTemplate" minValue="0.65" maxValue="1.15" valueStep=".05" obeyStepOnDrag="true">
 				<Anchors>
-					<Anchor point="TOPLEFT" relativeTo="$parentGraphicsAPIDropDown" relativePoint="BOTTOMLEFT">
+					<Anchor point="TOPLEFT" relativeTo="$parentOutlineDropDown" relativePoint="BOTTOMLEFT">
 						<Offset x="-90" y="-20"/>
 					</Anchor>
 				</Anchors>

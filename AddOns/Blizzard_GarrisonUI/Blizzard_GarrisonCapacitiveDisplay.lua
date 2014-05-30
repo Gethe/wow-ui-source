@@ -116,7 +116,7 @@ function GarrisonCapacitiveDisplayFrame_Update(self, success, maxShipments, plot
 	    for i = 1, C_Garrison.GetNumShipmentReagents() do
 	    	local reagent = reagents[i];
 	    	if (not reagent) then
-	    		reagent = CreateFrame("Frame", nil, self, "GarrisonCapacitiveItemButtonTemplate");
+	    		reagent = CreateFrame("Button", nil, self, "GarrisonCapacitiveItemButtonTemplate");
 	    		reagent:SetID(i);
 	    		reagent:SetPoint("TOP", reagents[i-1], "BOTTOM", 0, -6);
 	    	end
@@ -140,7 +140,7 @@ function GarrisonCapacitiveDisplayFrame_Update(self, success, maxShipments, plot
 	    local name, texture, quality, itemID, duration = C_Garrison.GetShipmentItemInfo();
 
 		if (not quality) then
-			quality = ITEM_QUALITY_COMMON;
+			quality = LE_ITEM_QUALITY_COMMON;
 		end
 
 		if (not duration) then
@@ -157,7 +157,7 @@ function GarrisonCapacitiveDisplayFrame_Update(self, success, maxShipments, plot
 
 		GarrisonCapacitiveDisplayFrame_UpdateFollower(self);
 
-		local _, name = C_Garrison.GetOwnedBuildingInfo(self.plotID);
+		local _, name = C_Garrison.GetOwnedBuildingInfoAbbrev(self.plotID);
 
 		self.TitleText:SetText(name);
 
@@ -207,19 +207,18 @@ function GarrisonCapacitiveDisplayFrame_UpdateFollower(self)
 
     local follower = display.Follower;
 
-    local data = C_Garrison.GetFollowerInfoForBuilding(self.plotID);
+    local name, level, quality = C_Garrison.GetFollowerInfoForBuilding(self.plotID);
 
-    follower.EmptyFollower:SetShown(not data);
+    follower.EmptyFollower:SetShown(not name);
 
-    follower.FollowerBorder:SetShown(data ~= nil);
-    follower.LevelBorder:SetShown(data ~= nil);
-    follower.LevelText:SetShown(data ~= nil);
+    follower.FollowerBorder:SetShown(name ~= nil);
+    follower.LevelBorder:SetShown(name ~= nil);
+    follower.LevelText:SetShown(name ~= nil);
 
-    if (data) then
-    	local color = ITEM_QUALITY_COLORS[data.quality];
-	
+    if (name) then
+    	local color = ITEM_QUALITY_COLORS[quality];
     	follower.LevelBorder:SetVertexColor(color.r, color.g, color.b);
-    	follower.LevelText:SetText(data.level);
+    	follower.LevelText:SetText(level);
     	follower.FollowerBonus:SetText(CAPACITANCE_INCREASED_YIELD);
     	follower.FollowerBonus:SetTextColor(0.12, 1, 0);
     else

@@ -254,7 +254,7 @@
 						<Anchor point="CENTER"/>
 					</Anchors>
 				</Texture>
-				<FontString name="$parentPowertext" inherits="TextStatusBarText" parentKey="PowerText" hidden="true">
+				<FontString name="$parentPowertext" inherits="TextStatusBarText" justifyH="CENTER" parentKey="PowerText" hidden="true">
 					<Anchors>
 						<Anchor point="CENTER" x="0" y="0"/>
 					</Anchors>

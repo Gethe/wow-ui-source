@@ -2,7 +2,7 @@
 ..\FrameXML\UI.xsd">
 	<Script file="Blizzard_GarrisonCapacitiveDisplay.lua"/>
 
-	<Frame name="GarrisonCapacitiveItemButtonTemplate" parentArray="Reagents" virtual="true">
+	<Button name="GarrisonCapacitiveItemButtonTemplate" parentArray="Reagents" virtual="true">
 		<Size x="147" y="41"/>
 		<Layers>
 			<Layer level="BACKGROUND">
@@ -50,7 +50,7 @@
 	 			GameTooltip:Hide();
 	 		</OnLeave>
 	 	</Scripts>
-	</Frame>
+	</Button>
 
 	<Frame name="GarrisonCapacitiveWorkOrderTemplate" parentArray="WorkOrders" virtual="true">
 		<Size x="32" y="32"/>
@@ -286,11 +286,11 @@
 							</OnLeave>
 						</Scripts>
 					</Frame>
-					<Frame inherits="GarrisonCapacitiveItemButtonTemplate" id="1">
+					<Button inherits="GarrisonCapacitiveItemButtonTemplate" id="1">
 						<Anchors>
 							<Anchor point="TOPLEFT" relativeKey="$parent.Reagents" relativePoint="BOTTOMLEFT" x="0" y="-4"/>
 						</Anchors>
-					</Frame>
+					</Button>
 					<Frame inherits="GarrisonCapacitiveWorkOrderTemplate" id="1">
 						<Anchors>
 							<Anchor point="TOPLEFT" relativeKey="$parent.WorkOrderLabel" relativePoint="BOTTOMLEFT" x="2" y="-8"/>

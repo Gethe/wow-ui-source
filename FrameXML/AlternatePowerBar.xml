@@ -67,6 +67,16 @@
 						</Anchor>
 					</Anchors>
 				</FontString>
+				<FontString parentKey="LeftText" inherits="TextStatusBarText">
+					<Anchors>
+						<Anchor point="LEFT" x="0" y="0"/>
+					</Anchors>
+				</FontString>
+				<FontString parentKey="RightText" inherits="TextStatusBarText">
+					<Anchors>
+						<Anchor point="RIGHT" x="0" y="0"/>
+					</Anchors>
+				</FontString>
 			</Layer>
 		</Layers>
 		<Scripts>

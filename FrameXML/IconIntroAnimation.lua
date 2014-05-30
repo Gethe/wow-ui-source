@@ -1,6 +1,7 @@
 
 
 --This File is responsible for animating spells to the actionbar
+MULTIBOTTOMLEFTINDEX = 6;
 
 function IconIntroTracker_OnLoad(self)
 	self.iconList = {};
@@ -27,11 +28,19 @@ function IconIntroTracker_OnEvent(self, event, ...)
 	
 		freeIcon.icon.icon:SetTexture(icon);
 		freeIcon.icon.slot = slotIndex;
-		
-		freeIcon:ClearAllPoints();
-		
-		freeIcon:SetPoint("CENTER", _G["ActionButton"..slotPos], 0, 0);
-		freeIcon:SetFrameLevel(_G["ActionButton"..slotPos]:GetFrameLevel()+1);
+		freeIcon.icon.pos = slotPos;
+ 		freeIcon:ClearAllPoints();
+
+		local page = math.floor(slotIndex / NUM_ACTIONBAR_BUTTONS) + 1;
+		if (page == MULTIBOTTOMLEFTINDEX) then
+			freeIcon:SetPoint("CENTER", _G["MultiBarBottomLeftButton"..slotPos], 0, 0);
+			freeIcon:SetFrameLevel(_G["MultiBarBottomLeftButton"..slotPos]:GetFrameLevel()+1);
+			freeIcon.icon.multibar = true;
+		else
+			freeIcon:SetPoint("CENTER", _G["ActionButton"..slotPos], 0, 0);
+			freeIcon:SetFrameLevel(_G["ActionButton"..slotPos]:GetFrameLevel()+1);
+			freeIcon.icon.multibar = false;
+		end
 		
 		freeIcon.icon.flyin:Play(1);
 		freeIcon.isFree = false;

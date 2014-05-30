@@ -429,6 +429,98 @@ VideoData["Graphics_VerticalSyncDropDown"]={
 }
 
 -------------------------------------------------------------------------------------------------------
+VideoData["Graphics_AntiAliasingDropDown"]={
+	name = ANTIALIASING;
+	description = OPTION_TOOLTIP_ANTIALIASING,
+	
+	dataA = {
+		[1] = {
+			text = VIDEO_OPTIONS_NONE,
+			cvars =	{
+				ffxAntiAliasingMode = 0,
+			},
+		},
+		[2] = {
+			text = ANTIALIASING_FXAA_LOW,
+			cvars =	{
+				ffxAntiAliasingMode = 2,
+			},
+		},
+		[3] = {
+			text = ANTIALIASING_FXAA_HIGH,
+			cvars =	{
+				ffxAntiAliasingMode = 1,
+			},
+		},
+		[4] = {
+			text = ANTIALIASING_CMAA,
+			cvars =	{
+				ffxAntiAliasingMode = 3,
+			},
+		},
+	},
+	dataB = {
+		[1] = {
+			text = VIDEO_OPTIONS_NONE,
+			cvars =	{
+				ffxAntiAliasingMode = 0,
+			},
+		},
+		[2] = {
+			text = ANTIALIASING_FXAA_LOW,
+			cvars =	{
+				ffxAntiAliasingMode = 2,
+			},
+		},
+		[3] = {
+			text = ANTIALIASING_FXAA_HIGH,
+			cvars =	{
+				ffxAntiAliasingMode = 1,
+			},
+		},
+	},
+	dataC = {
+		[1] = {
+			text = VIDEO_OPTIONS_NONE,
+			cvars =	{
+				ffxAntiAliasingMode = 0,
+			},
+		},
+		[4] = {
+			text = ANTIALIASING_CMAA,
+			cvars =	{
+				ffxAntiAliasingMode = 3,
+			},
+		},
+	},
+	dataD = {
+		[1] = {
+			text = VIDEO_OPTIONS_NONE,
+			cvars =	{
+				ffxAntiAliasingMode = 0,
+			},
+		},
+	},
+	onload =
+		function(self)
+			self.data = self.dataA;
+		end,
+	onrefresh =
+		function(self)
+			local fxaa, cmaa = AntiAliasingSupported();
+			if(fxaa and cmaa) then
+				self.data = self.dataA;
+			elseif(fxaa) then
+				self.data = self.dataB;
+			elseif(cmaa) then
+				self.data = self.dataC;
+			else
+				self.data = self.dataD;
+			end
+		end,
+}
+
+-------------------------------------------------------------------------------------------------------
 -- Graphics
 -------------------------------------------------------------------------------------------------------
 
@@ -1124,4 +1216,37 @@ VideoData["Advanced_GraphicsAPIDropDown"]={
 	lookup = Graphics_TableLookupSafe,
 	clientRestart = true,
 	gameRestart = true,
+}
+
+-------------------------------------------------------------------------------------------------------
+VideoData["Advanced_OutlineDropDown"]={
+	name = OBJECT_NPC_OUTLINE,
+	description = OPTION_TOOLTIP_OBJECT_NPC_OUTLINE,
+
+	data = {
+		[1] = {
+			text = OBJECT_NPC_OUTLINE_DISABLED,
+			cvars =	{
+				Outline = 0,
+			},
+		},
+		[2] = {
+			text = OBJECT_NPC_OUTLINE_MODE_ONE,
+			cvars =	{
+				Outline = 1,
+			},
+		},
+		[3] = {
+			text = OBJECT_NPC_OUTLINE_MODE_TWO,
+			cvars =	{
+				Outline = 2,
+			},
+		},
+		[4] = {
+			text = OBJECT_NPC_OUTLINE_MODE_THREE,
+			cvars =	{
+				Outline = 3,
+			},
+		},
+	},
 }

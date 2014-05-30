@@ -66,6 +66,8 @@ function WorldStateAlwaysUpFrame_OnLoad(self)
 	self:RegisterEvent("WORLD_STATE_UI_TIMER_UPDATE");
 	
 	self:RegisterEvent("BATTLEGROUND_POINTS_UPDATE");
+	self:RegisterEvent("LFG_ROLE_CHECK_DECLINED");
+	self:RegisterEvent("LFG_ROLE_CHECK_SHOW");
 
 	FILTERED_BG_CHAT_ADD = {};
 	FILTERED_BG_CHAT_SUBTRACT = {};
@@ -111,6 +113,11 @@ function WorldStateAlwaysUpFrame_OnEvent(self, event, ...)
 		WorldStateAlwaysUpFrame_StopBGChatFilter(self);
 	elseif ( event == "PLAYER_ENTERING_BATTLEGROUND" ) then
 		WorldStateAlwaysUpFrame_StartBGChatFilter(self);
+		WorldStateScoreFrameQueueButton:Enable();
+	elseif ( event == "LFG_ROLE_CHECK_DECLINED" ) then
+		WorldStateScoreFrameQueueButton:Enable();
+	elseif ( event == "LFG_ROLE_CHECK_SHOW" ) then	
+		WorldStateScoreFrameQueueButton:Disable();
 	else
 		WorldStateAlwaysUpFrame_Update();
 	end
@@ -599,6 +606,14 @@ function WorldStateScoreFrame_Update()
 		WorldStateScoreFrameLeaveButton:Show();
 		WorldStateScoreFrameTimerLabel:Show();
 		WorldStateScoreFrameTimer:Show();
+		
+		if(IsArenaSkirmish())then
+			WorldStateScoreFrameQueueButton:Show();
+			WorldStateScoreFrameLeaveButton:SetPoint("BOTTOM", WorldStateScoreFrameLeaveButton:GetParent(), "BOTTOM", 80, 3);
+		else
+			WorldStateScoreFrameQueueButton:Hide();
+			WorldStateScoreFrameLeaveButton:SetPoint("BOTTOM", WorldStateScoreFrameLeaveButton:GetParent(), "BOTTOM", 0, 3);
+		end
 
 		-- Show winner
 		if ( isArena ) then
@@ -646,6 +661,7 @@ function WorldStateScoreFrame_Update()
 	else
 		WorldStateScoreWinnerFrame:Hide();
 		WorldStateScoreFrameLeaveButton:Hide();
+		WorldStateScoreFrameQueueButton:Hide();
 		WorldStateScoreFrameTimerLabel:Hide();
 		WorldStateScoreFrameTimer:Hide();
 	end
@@ -782,6 +798,7 @@ function WorldStateScoreFrame_Update()
 				scoreButton.honorableKills:Hide();
 				scoreButton.honorGained:Hide();
 				scoreButton.deaths:Hide();
+				scoreButton.bgRating:Hide();
 			else
 				scoreButton.name.text:SetWidth(175);
 				scoreButton.deaths:SetText(deaths);

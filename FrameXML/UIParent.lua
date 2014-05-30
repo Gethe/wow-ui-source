@@ -38,8 +38,7 @@ UIPanelWindows["TabardFrame"] =					{ area = "left",			pushable = 0};
 UIPanelWindows["PVPBannerFrame"] =				{ area = "left",			pushable = 1};
 UIPanelWindows["MailFrame"] =					{ area = "left",			pushable = 0};
 UIPanelWindows["BankFrame"] =					{ area = "left",			pushable = 6,	width = 425 };
-UIPanelWindows["QuestLogFrame"] =				{ area = "doublewide",		pushable = 0,	whileDead = 1 };
-UIPanelWindows["QuestLogDetailFrame"] =			{ area = "left",			pushable = 1,	whileDead = 1 };
+UIPanelWindows["QuestLogPopupDetailFrame"] =	{ area = "left",			pushable = 0,	whileDead = 1 };
 UIPanelWindows["QuestFrame"] =					{ area = "left",			pushable = 0};
 UIPanelWindows["GuildRegistrarFrame"] =			{ area = "left",			pushable = 0};
 UIPanelWindows["GossipFrame"] =					{ area = "left",			pushable = 0};
@@ -57,9 +56,9 @@ UIPanelWindows["CinematicFrame"] =				{ area = "full",			pushable = 0, 		xoffset
 UIPanelWindows["ChatConfigFrame"] =				{ area = "center",			pushable = 0, 		xoffset = -16, 		yoffset = 12,	whileDead = 1 };
 UIPanelWindows["WorldStateScoreFrame"] =		{ area = "center",			pushable = 0, 		xoffset = -16, 		yoffset = 12,	whileDead = 1 };
 UIPanelWindows["QuestChoiceFrame"] =			{ area = "center",			pushable = 0, 		xoffset = -16, 		yoffset = 12,	whileDead = 0, allowOtherPanels = 1 };
-UIPanelWindows["GarrisonBuildingFrame"] =		{ area = "center",			pushable = 0,		whileDead = 1, 		width = 1002};
-UIPanelWindows["GarrisonMissionFrame"] =		{ area = "center",			pushable = 0,		whileDead = 1, 		width = 1002};
-UIPanelWindows["GarrisonLandingPage"] =			{ area = "center",			pushable = 0,		whileDead = 1, 		width = 800};
+UIPanelWindows["GarrisonBuildingFrame"] =		{ area = "center",			pushable = 0,		whileDead = 1, 		width = 1002, 	allowOtherPanels = 1};
+UIPanelWindows["GarrisonMissionFrame"] =		{ area = "center",			pushable = 0,		whileDead = 1, 		width = 1002, 	allowOtherPanels = 1};
+UIPanelWindows["GarrisonLandingPage"] =			{ area = "center",			pushable = 0,		whileDead = 1, 		width = 800, 	allowOtherPanels = 1};
 
 local function GetUIPanelWindowInfo(frame, name)
 	if ( not frame:GetAttribute("UIPanelLayout-defined") ) then
@@ -300,6 +299,8 @@ function UIParent_OnLoad(self)
 	self:RegisterEvent("GARRISON_MISSION_NPC_OPENED");
 	self:RegisterEvent("GARRISON_MISSION_NPC_CLOSED");
 	self:RegisterEvent("SHIPMENT_CRAFTER_OPENED");
+	self:RegisterEvent("GARRISON_TRADESKILL_NPC_CLOSED");
+	self:RegisterEvent("GARRISON_SHOW_LANDING_PAGE");
 
 end
 
@@ -1421,25 +1422,33 @@ function UIParent_OnEvent(self, event, ...)
 		if (not GarrisonBuildingFrame) then
 			Garrison_LoadUI();
 		end
-		GarrisonBuildingFrame:Show();
+		ShowUIPanel(GarrisonBuildingFrame);
 	elseif ( event == "GARRISON_ARCHITECT_CLOSED" ) then
 		if ( GarrisonBuildingFrame ) then
-			GarrisonBuildingFrame:Hide();
+			HideUIPanel(GarrisonBuildingFrame);
 		end
 	elseif ( event == "GARRISON_MISSION_NPC_OPENED") then
 		if (not GarrisonMissionFrame) then
 			Garrison_LoadUI();
 		end
-		GarrisonMissionFrame:Show();
+		ShowUIPanel(GarrisonMissionFrame);
 	elseif ( event == "GARRISON_MISSION_NPC_CLOSED" ) then
 		if ( GarrisonMissionFrame ) then
-			GarrisonMissionFrame:Hide();
+			HideUIPanel(GarrisonMissionFrame);
 		end
 	elseif ( event == "SHIPMENT_CRAFTER_OPENED" ) then
 		if (not GarrisonCapacitiveDisplayFrame) then
 			Garrison_LoadUI();
 		end
 		C_Garrison.RequestShipmentInfo();
+	elseif ( event == "GARRISON_TRADESKILL_NPC_CLOSED" ) then
+		if ( TradeSkillFrame ) then
+			HideUIPanel(TradeSkillFrame);
+		end
+	elseif ( event == "GARRISON_SHOW_LANDING_PAGE" ) then
+		if (not GarrisonLandingPage) then
+			Garrison_LoadUI();
+		end
 	end
 end
 
@@ -1645,6 +1654,7 @@ function FramePositionDelegate:ShowUIPanel(frame, force)
 
 	-- If the store-frame is open, we don't let people open up any other panels (just as if it were full-screened)
 	if ( StoreFrame_IsShown and StoreFrame_IsShown() ) then
+		print("bail3")
 		return;
 	end
 

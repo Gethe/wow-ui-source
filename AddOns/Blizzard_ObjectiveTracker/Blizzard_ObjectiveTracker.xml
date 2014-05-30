@@ -6,11 +6,6 @@
 	<Frame name="ObjectiveTrackerBlockTemplate" hidden="true" virtual="true">
 		<Size x="192" y="10"/>
 		<Layers>
-			<Layer level="BACKGROUND">
-				<Texture parentKey="RemoveMe" setAllPoints="true">
-					<Color r="1" g="0" b="0" a="0"/>
-				</Texture>
-			</Layer>
 			<Layer level="ARTWORK">
 				<FontString parentKey="HeaderText" inherits="ObjectiveFont">
 					<Size x="192" y="0"/>
@@ -40,11 +35,6 @@
 	<Frame name="ObjectiveTrackerHeaderTemplate" virtual="true" hidden="true">
 		<Size x="227" y="25"/>
 		<Layers>
-			<Layer level="BACKGROUND">
-				<Texture setAllPoints="true">
-					<Color r="1" g="1" b="0" a="0"/>
-				</Texture>
-			</Layer>
 			<Layer level="BORDER">
 				<Texture parentKey="Background" atlas="Objective-Header" useAtlasSize="true">
 					<Anchors>
@@ -70,15 +60,6 @@
 						<Anchor point="TOPLEFT" relativeKey="$parent.Background" x="0" y="-8"/>
 					</Anchors>
 					<Animations>
-						<!--
-						<AnimationGroup parentKey="ScaleAnim">
-							<Scale scaleX="1.5" scaleY="1.5" duration="0.23" order="1"/>
-						</AnimationGroup>
-						<AnimationGroup parentKey="AlphaAnim">
-							<Alpha change="1" duration="0.1" order="1"/>
-							<Alpha change="-1" duration="0.2" order="2"/>
-						</AnimationGroup>						
-						-->
 						<AnimationGroup parentKey="Anim">
 							<Scale startDelay="0.17" scaleX="1.5" scaleY="1.5" duration="0.35" order="1"/>
 							<Alpha change="1" duration="0.17" endDelay="0.13" order="1"/>
@@ -161,15 +142,6 @@
 					</Anchors>
 				</FontString>
 			</Layer>
-			<Layer level="BACKGROUND">
-				<Texture parentKey="RemoveMe">
-					<Anchors>
-						<Anchor point="TOPLEFT" relativeKey="$parent.Text"/>
-						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Text"/>
-					</Anchors>
-					<Color r="1" g="0" b="1" a="0"/>
-				</Texture>
-			</Layer>				
 		</Layers>
 		<Scripts>
 			<OnLoad>
@@ -261,11 +233,6 @@
 			<Anchor point="CENTER"/>
 		</Anchors>
 		<Layers>
-			<Layer level="BACKGROUND">
-				<Texture setAllPoints="true">
-					<Color r="1" g="0" b="0" a="0"/>
-				</Texture>
-			</Layer>
 			<Layer level="ARTWORK">
 				<FontString parentKey="Label" inherits="GameFontHighlightMedium" justifyH="LEFT">
 					<Anchors>
@@ -330,13 +297,6 @@
 					<Anchor point="TOPLEFT"/>
 					<Anchor point="BOTTOMRIGHT"/>
 				</Anchors>
-				<Layers>
-					<Layer level="BACKGROUND">
-						<Texture parentKey="RemoveMe" setAllPoints="true">
-							<Color r="0" g="1" b="0" a="0"/>
-						</Texture>						
-					</Layer>
-				</Layers>
 				<Frames>
 					<Frame parentKey="QuestHeader" inherits="ObjectiveTrackerHeaderTemplate"/>
 					<Frame parentKey="AchievementHeader" inherits="ObjectiveTrackerHeaderTemplate"/>

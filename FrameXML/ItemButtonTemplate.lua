@@ -43,7 +43,7 @@ function SetItemButtonTexture(button, texture)
 	if ( not button ) then
 		return;
 	end
-	local icon = button.Icon or _G[button:GetName().."IconTexture"];
+	local icon = button.icon or _G[button:GetName().."IconTexture"];
 	if ( texture ) then
 		icon:Show();
 	else
@@ -57,7 +57,7 @@ function SetItemButtonTextureVertexColor(button, r, g, b)
 		return;
 	end
 	
-	local icon = button.Icon or _G[button:GetName().."IconTexture"];
+	local icon = button.icon or _G[button:GetName().."IconTexture"];
 	icon:SetVertexColor(r, g, b);
 end
 
@@ -65,7 +65,7 @@ function SetItemButtonDesaturated(button, desaturated)
 	if ( not button ) then
 		return;
 	end
-	local icon = _G[button:GetName().."IconTexture"];
+	local icon = button.icon or _G[button:GetName().."IconTexture"];
 	if ( not icon ) then
 		return;
 	end

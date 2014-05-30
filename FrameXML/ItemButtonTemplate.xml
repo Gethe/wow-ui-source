@@ -10,7 +10,7 @@
 				<Texture name="$parentIconTexture" parentKey="icon"/>
 			</Layer>
 			<Layer level="ARTWORK" textureSubLevel="2">
-				<FontString name="$parentCount" inherits="NumberFontNormal" justifyH="RIGHT" hidden="true" parentKey="count">
+				<FontString name="$parentCount" inherits="NumberFontNormal" justifyH="RIGHT" hidden="true" parentKey="Count">
 					<Anchors>
 						<Anchor point="BOTTOMRIGHT">
 							<Offset>
@@ -32,6 +32,12 @@
 			<Layer level="OVERLAY">
 				<Texture name="$parentSearchOverlay" parentKey="searchOverlay" setAllPoints="true" hidden="true">
 					<Color r="0" g="0" b="0" a="0.8"/>
+				</Texture>
+				<Texture parentKey="IconBorder" file="Interface\Common\WhiteIconFrame" hidden="true">
+					<Size x="37" y="37"/>
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
 				</Texture>
 			</Layer>
 		</Layers>

@@ -69,13 +69,6 @@ end
 
 function MapBarFrame_UpdateLayout(self)
 	self:SetFrameLevel(WorldMapPOIFrame:GetFrameLevel() + 1);
-	if ( WorldMapFrame_InWindowedMode() ) then
-		self:SetScale(0.8);
-		self:SetPoint("TOPLEFT", WorldMapButton, "TOPLEFT", 100, -85);
-	else
-		self:SetScale(1);
-		self:SetPoint("TOPLEFT", WorldMapButton, "TOPLEFT", 150, -70);
-	end
 end
 
 function MapBarFrame_GetString(stringType, tag, phase)

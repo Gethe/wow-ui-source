@@ -491,6 +491,20 @@ StaticPopupDialogs["CONFIRM_BUY_GUILDBANK_TAB"] = {
 	timeout = 0,
 	hideOnEscape = 1
 };
+StaticPopupDialogs["CONFIRM_BUY_REAGENTBANK_TAB"] = {
+	text = CONFIRM_BUY_REAGNETBANK_TAB,
+	button1 = YES,
+	button2 = NO,
+	OnAccept = function(self)
+		BuyReagentBank();
+	end,
+	OnShow = function(self)
+		MoneyFrame_Update(self.moneyFrame, GetReagentBankCost());
+	end,
+	hasMoneyFrame = 1,
+	timeout = 0,
+	hideOnEscape = 1
+};
 
 StaticPopupDialogs["TOO_MANY_LUA_ERRORS"] = {
 	text = TOO_MANY_LUA_ERRORS,
@@ -1938,8 +1952,8 @@ StaticPopupDialogs["ABANDON_QUEST"] = {
 	button2 = NO,
 	OnAccept = function(self)
 		AbandonQuest();
-		if ( QuestLogDetailFrame:IsShown() ) then
-			HideUIPanel(QuestLogDetailFrame);
+		if ( QuestLogPopupDetailFrame:IsShown() ) then
+			HideUIPanel(QuestLogPopupDetailFrame);
 		end
 		PlaySound("igQuestLogAbandonQuest");
 	end,
@@ -1954,8 +1968,8 @@ StaticPopupDialogs["ABANDON_QUEST_WITH_ITEMS"] = {
 	button2 = NO,
 	OnAccept = function(self)
 		AbandonQuest();
-		if ( QuestLogDetailFrame:IsShown() ) then
-			HideUIPanel(QuestLogDetailFrame);
+		if ( QuestLogPopupDetailFrame:IsShown() ) then
+			HideUIPanel(QuestLogPopupDetailFrame);
 		end
 		PlaySound("igQuestLogAbandonQuest");
 	end,

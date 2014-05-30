@@ -77,8 +77,8 @@ function TransmogrifyFrame_OnEvent(self, event, ...)
 		local slot, hasItem = ...;
 		if ( slot == INVSLOT_TABARD or slot == INVSLOT_BODY ) then
 			if ( hasItem ) then
-				local itemID = GetInventoryItemID("player", slot);
-				TransmogrifyModelFrame:TryOn(itemID);
+				local itemID, itemAppearanceModID = GetInventoryItemID("player", slot);
+				TransmogrifyModelFrame:TryOn(itemID, nil, itemAppearanceModID);
 			else
 				TransmogrifyModelFrame:UndressSlot(slot);
 			end
@@ -319,7 +319,7 @@ function TransmogrifyFrame_UpdateApplyButton()
 end
 
 function TransmogrifyFrame_UpdateSlotButton(button)
-	local isTransmogrified, canTransmogrify, cannotTransmogrifyReason, hasPending, hasUndo, visibleItemID, textureName = GetTransmogrifySlotInfo(button.id);
+	local isTransmogrified, canTransmogrify, cannotTransmogrifyReason, hasPending, hasUndo, visibleItemID, textureName, visibleItemAppearanceModID = GetTransmogrifySlotInfo(button.id);
 	local hasChange = hasPending or hasUndo;
 
 	if ( canTransmogrify ) then
@@ -388,7 +388,7 @@ function TransmogrifyFrame_UpdateSlotButton(button)
 			elseif ( button.id == INVSLOT_OFFHAND ) then
 				slot = "offhand";
 			end
-			TransmogrifyModelFrame:TryOn(visibleItemID, slot);
+			TransmogrifyModelFrame:TryOn(visibleItemID, slot, visibleItemAppearanceModID);
 		else
 			if ( button.id == INVSLOT_RANGED ) then
 				-- clear both hands

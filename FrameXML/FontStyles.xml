@@ -280,6 +280,12 @@
 		</FontHeight>
 		<Color r="0.529" g="0.451" b="0.341"/>
 	</Font>
+	<Font name="MissionLevelFontLarge" font="Fonts\FRIZQT__.ttf" virtual="true">
+		<FontHeight>
+			<AbsValue val="30"/>
+		</FontHeight>
+		<Color r="0.529" g="0.451" b="0.341"/>
+	</Font>
 	<Font name="RewardNumberFont" font="Fonts\FRIZQT__.TTF" outline="NORMAL" virtual="true">
 		<FontHeight>
 			<AbsValue val="18"/>

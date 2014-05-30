@@ -55,9 +55,9 @@ function AUTO_QUEST_POPUP_TRACKER_MODULE:Update()
 						blockContents.BottomText:Hide();
 						blockContents.TopText:SetPoint("TOP", 0, -15);
 						if (blockContents.QuestName:GetStringWidth() > blockContents.QuestName:GetWidth()) then
-							blockContents.QuestName:SetPoint("TOP", 0, -32);
+							blockContents.QuestName:SetPoint("TOP", 0, -25);
 						else
-							blockContents.QuestName:SetPoint("TOP", 0, -36);
+							blockContents.QuestName:SetPoint("TOP", 0, -29);
 						end
 						block.popUpType = "COMPLETED";
 					elseif ( popUpType == "OFFER" ) then
@@ -68,7 +68,7 @@ function AUTO_QUEST_POPUP_TRACKER_MODULE:Update()
 						blockContents.BottomText:Show();
 						blockContents.BottomText:SetText(QUEST_WATCH_POPUP_CLICK_TO_VIEW);
 						blockContents.TopText:SetPoint("TOP", 0, -9);
-						blockContents.QuestName:SetPoint("TOP", 0, -28);
+						blockContents.QuestName:SetPoint("TOP", 0, -20);
 						blockContents.FlashFrame:Hide();
 						block.popUpType = "OFFER";
 					end

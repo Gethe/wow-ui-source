@@ -279,9 +279,9 @@ function EquipmentManager_GetItemInfoByLocation (location)
 		return;
 	end
 
-	local id, name, textureName, count, durability, maxDurability, invType, locked, start, duration, enable, setTooltip, gem1, gem2, gem3, _;
+	local id, name, textureName, count, durability, maxDurability, invType, locked, start, duration, enable, setTooltip, gem1, gem2, gem3, quality, _;
 	if ( voidStorage ) then
-		id, textureName = GetVoidItemInfo(tab, voidSlot);
+		id, textureName, _, _, _, quality = GetVoidItemInfo(tab, voidSlot);
 		setTooltip = function () GameTooltip:SetVoidItem(tab, voidSlot) end;
 	elseif ( not bags ) then -- and (player or bank) 
 		id = GetInventoryItemID("player", slot);
@@ -290,6 +290,7 @@ function EquipmentManager_GetItemInfoByLocation (location)
 			count = GetInventoryItemCount("player", slot);
 			durability, maxDurability = GetInventoryItemDurability(slot);
 			start, duration, enable = GetInventoryItemCooldown("player", slot);
+			quality = GetInventoryItemQuality("player", slot);
 		end
 		
 		setTooltip = function () GameTooltip:SetInventoryItem("player", slot) end;
@@ -297,7 +298,7 @@ function EquipmentManager_GetItemInfoByLocation (location)
 	else -- bags
 		id = GetContainerItemID(bag, slot);
 		name, _, _, _, _, _, _, _, invType = GetItemInfo(id);
-		textureName, count, locked = GetContainerItemInfo(bag, slot);
+		textureName, count, locked, quality = GetContainerItemInfo(bag, slot);
 		start, duration, enable = GetContainerItemCooldown(bag, slot);
 		
 		durability, maxDurability = GetContainerItemDurability(bag, slot);
@@ -306,7 +307,7 @@ function EquipmentManager_GetItemInfoByLocation (location)
 		gem1, gem2, gem3 = GetContainerItemGems(bag, slot);
 	end
 	
-	return id, name, textureName, count, durability, maxDurability, invType, locked, start, duration, enable, setTooltip, gem1, gem2, gem3;
+	return id, name, textureName, count, durability, maxDurability, invType, locked, start, duration, enable, setTooltip, gem1, gem2, gem3, quality;
 end
 
 function EquipmentManager_EquipSet (name)

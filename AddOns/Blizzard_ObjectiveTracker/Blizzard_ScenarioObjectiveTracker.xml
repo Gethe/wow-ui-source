@@ -107,11 +107,6 @@
 					<Frame name="ScenarioChallengeModeBlock" hidden="true">
 						<Size x="198" y="55"/>
 						<Layers>
-							<Layer level="BACKGROUND">
-								<Texture setAllPoints="true">
-									<Color r="0" g="0" b="0" a="0.5"/>
-								</Texture>
-							</Layer>
 							<Layer level="BORDER">
 								<Texture file="Interface\Challenges\challenges-main">
 									<Size x="207" y="64"/>	

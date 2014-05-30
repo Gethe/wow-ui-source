@@ -29,6 +29,7 @@
 				ActionButton_UpdateFlash(self);
 			</OnReceiveDrag>
 			<OnEnter>
+				self.NewActionTexture:Hide();
 				ActionButton_SetTooltip(self);
 				ActionBarButtonEventsFrame.tooltipOwner = self;
 				ActionBarActionEventsFrame.tooltipOwner = self;

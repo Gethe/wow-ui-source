@@ -247,7 +247,7 @@
 										self.newbieText = NEWBIE_TOOLTIP_WORLDMAP;
 									</OnEvent>
 									<OnClick>
-										ToggleFrame(WorldMapFrame);
+										ToggleWorldMap();
 									</OnClick>
 								</Scripts>
 								<NormalTexture file="Interface\minimap\UI-Minimap-WorldMapSquare">

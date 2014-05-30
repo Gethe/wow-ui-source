@@ -1,6 +1,11 @@
 REQUIRED_REST_HOURS = 5;
 
 function PlayerFrame_OnLoad(self)
+	PlayerFrameHealthBar.LeftText = PlayerFrameHealthBarTextLeft;
+	PlayerFrameHealthBar.RightText = PlayerFrameHealthBarTextRight;
+	PlayerFrameManaBar.LeftText = PlayerFrameManaBarTextLeft;
+	PlayerFrameManaBar.RightText = PlayerFrameManaBarTextRight;
+
 	UnitFrame_Initialize(self, "player", PlayerName, PlayerPortrait,
 						 PlayerFrameHealthBar, PlayerFrameHealthBarText, 
 						 PlayerFrameManaBar, PlayerFrameManaBarText,

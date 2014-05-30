@@ -5,7 +5,7 @@ QUEST_TRACKER_MODULE.updateReasonEvents = OBJECTIVE_TRACKER_UPDATE_QUEST + OBJEC
 QUEST_TRACKER_MODULE.usedBlocks = { };
 QUEST_TRACKER_MODULE.freeItemButtons = { };
 -- because this header is shared, on finishing its anim it has to update all the modules that use it
-QUEST_TRACKER_MODULE:SetHeader(ObjectiveTrackerFrame.BlocksFrame.QuestHeader, "Quests", OBJECTIVE_TRACKER_UPDATE_QUEST_ADDED, OBJECTIVE_TRACKER_UPDATE_MODULE_QUEST + OBJECTIVE_TRACKER_UPDATE_MODULE_AUTO_QUEST_POPUP);
+QUEST_TRACKER_MODULE:SetHeader(ObjectiveTrackerFrame.BlocksFrame.QuestHeader, TRACKER_HEADER_QUESTS, OBJECTIVE_TRACKER_UPDATE_QUEST_ADDED, OBJECTIVE_TRACKER_UPDATE_MODULE_QUEST + OBJECTIVE_TRACKER_UPDATE_MODULE_AUTO_QUEST_POPUP);
 
 function QUEST_TRACKER_MODULE:OnFreeBlock(block)
 	local itemButton = block.itemButton;
@@ -14,16 +14,15 @@ function QUEST_TRACKER_MODULE:OnFreeBlock(block)
 		block.itemButton = nil;
 		itemButton:Hide();
 	end
-	block.numShownObjectives = nil;
 	block.timerLine	= nil;
 	block.questCompleted = nil;
 end
 
-function QUEST_TRACKER_MODULE:OnReleaseTypedLine(line)
+function QUEST_TRACKER_MODULE:OnFreeTypedLine(line)
 	line.block = nil;
 	line.Check:Hide();
-	if ( line.activeAnim ) then
-		line.activeAnim = nil;
+	if ( line.state ) then
+		line.state = nil;
 		line.Glow.Anim:Stop();
 		line.Sheen.Anim:Stop();
 		line.CheckFlash.Anim:Stop();
@@ -92,13 +91,17 @@ function QUEST_TRACKER_MODULE:OnBlockHeaderClick(block, mouseButton)
 				--ShowQuestComplete(questIndex);
 				--WatchFrameAutoQuest_ClearPopUpByLogIndex(questIndex);
 			else
-				--QuestLog_OpenToQuest( questIndex );
+				--QuestLogPopupDetailFrame_Show( questIndex );
 			end
 			]]--
 			if ( GetQuestLogIsAutoComplete(block.questLogIndex) ) then
 				-- TODO: Handle with ShowQuestComplete
+				
+				-- TEMP: (RNM) Copied the line below to fix an issue where 
+				-- auto complete quests weren't showing the detail quest frame.
+				QuestLogPopupDetailFrame_Show(block.questLogIndex);
 			else
-				QuestLog_OpenToQuest(block.questLogIndex);
+				QuestLogPopupDetailFrame_Show(block.questLogIndex);
 			end
 		end
 		return;
@@ -114,13 +117,29 @@ local LINE_TYPE_ANIM = { template = "QuestObjectiveAnimLineTemplate", freeLines 
 -- *****************************************************************************************************
 
 function QuestObjectiveTracker_FinishGlowAnim(line)
-	line.activeAnim = "FADEOUT";
-	line.FadeOutAnim:Play();
-	ObjectiveTracker_Update(OBJECTIVE_TRACKER_UPDATE_MODULE_QUEST);
+	if ( line.state == "ADDING" ) then
+		line.state = "PRESENT";
+	else
+		local questID = line.block.id;
+		if ( IsQuestSequenced(questID) ) then
+			line.FadeOutAnim:Play();
+			line.state = "FADING";
+		else
+			line.state = "COMPLETED";
+			ObjectiveTracker_Update(OBJECTIVE_TRACKER_UPDATE_MODULE_QUEST);
+		end
+	end
 end
 
 function QuestObjectiveTracker_FinishFadeOutAnim(line)
-	QUEST_TRACKER_MODULE:FreeLine(line.block, line);
+	local block = line.block;
+	QUEST_TRACKER_MODULE:FreeLine(block, line);
+	for _, otherLine in pairs(block.lines) do
+		if ( otherLine.state == "FADING" ) then
+			-- some other line is still fading
+			return;
+		end
+	end
 	ObjectiveTracker_Update(OBJECTIVE_TRACKER_UPDATE_MODULE_QUEST);
 end
 
@@ -257,7 +276,7 @@ function QuestObjectiveTracker_OnOpenDropDown(self)
 end
 
 function QuestObjectiveTracker_OpenQuestDetails(dropDownButton, questLogIndex)
-	QuestLog_OpenToQuest(questLogIndex);
+	QuestLogPopupDetailFrame_Show(questLogIndex);
 end
 
 function QuestObjectiveTracker_UntrackQuest(dropDownButton, questLogIndex)
@@ -321,6 +340,82 @@ function QuestObjectiveTracker_UpdatePOIs()
 	QuestPOI_HideUnusedButtons(ObjectiveTrackerFrame.BlocksFrame);
 end
 
+function QuestObjectiveTracker_DoQuestObjectives(block, numObjectives, questCompleted, questSequenced, existingBlock)
+	local objectiveCompleting = false;
+	for objectiveIndex = 1, numObjectives do
+		local text, objectiveType, finished = GetQuestLogLeaderBoard(objectiveIndex, block.questLogIndex);
+		if ( text ) then
+			local line = block.lines[objectiveIndex];
+			if ( questCompleted ) then
+				-- only process existing lines
+				if ( line ) then
+					line = QUEST_TRACKER_MODULE:AddObjective(block, objectiveIndex, text, LINE_TYPE_ANIM, nil, true, OBJECTIVE_TRACKER_COLOR["Complete"]);
+					-- don't do anything else if a line is either COMPLETING or FADING, the anims' OnFinished will continue the process
+					if ( not line.state or line.state == "PRESENT" ) then
+						-- this objective wasn't marked finished
+						line.block = block;
+						line.Check:Show();
+						line.Sheen.Anim:Play();				
+						line.Glow.Anim:Play();
+						line.CheckFlash.Anim:Play();
+						line.state = "COMPLETING";
+					end
+				end
+			else
+				if ( finished ) then		
+					if ( line ) then
+						line = QUEST_TRACKER_MODULE:AddObjective(block, objectiveIndex, text, LINE_TYPE_ANIM, nil, true, OBJECTIVE_TRACKER_COLOR["Complete"]);
+						if ( not line.state or line.state == "PRESENT" ) then
+							-- complete this
+							line.block = block;
+							line.Check:Show();
+							line.Sheen.Anim:Play();
+							line.Glow.Anim:Play();
+							line.CheckFlash.Anim:Play();
+							line.state = "COMPLETING";
+						end
+					else
+						-- didn't have a line, just show completed if not sequenced
+						if ( not questSequenced ) then
+							line = QUEST_TRACKER_MODULE:AddObjective(block, objectiveIndex, text, LINE_TYPE_ANIM, nil, true, OBJECTIVE_TRACKER_COLOR["Complete"]);
+							line.Check:Show();
+							line.state = "COMPLETED";
+						end
+					end
+				else
+					if ( not questSequenced or not objectiveCompleting ) then
+						-- new objectives need to animate in
+						if ( questSequenced and existingBlock and not line ) then
+							line = QUEST_TRACKER_MODULE:AddObjective(block, objectiveIndex, text, LINE_TYPE_ANIM);
+							line.Sheen.Anim:Play();
+							line.Glow.Anim:Play();
+							line.state = "ADDING";
+						else
+							QUEST_TRACKER_MODULE:AddObjective(block, objectiveIndex, text);
+						end
+					end
+				end
+			end
+			if ( line ) then
+				line.block = block;
+				if ( line.state == "COMPLETING" ) then
+					objectiveCompleting = true;
+				end
+			end
+			
+		end
+	end
+	if ( questCompleted and not objectiveCompleting ) then
+		for _, line in pairs(block.lines) do
+			if ( line.state == "COMPLETED" ) then
+				line.FadeOutAnim:Play();
+				line.state = "FADING";
+			end
+		end
+	end
+	return objectiveCompleting;
+end
+
 function QUEST_TRACKER_MODULE:Update()
 
 	QUEST_TRACKER_MODULE:BeginLayout();
@@ -338,6 +433,7 @@ function QUEST_TRACKER_MODULE:Update()
 	end
 	
 	local playerMoney = GetMoney();
+	local watchMoney = false;
 	local inScenario = C_Scenario.IsInScenario();
 	local showPOIs = GetCVarBool("questPOI");
 
@@ -356,72 +452,47 @@ function QUEST_TRACKER_MODULE:Update()
 		end
 
 		if ( showQuest ) then
+			local isSequenced = IsQuestSequenced(questID);
 			local existingBlock = QUEST_TRACKER_MODULE:GetExistingBlock(questID);
 			local block = QUEST_TRACKER_MODULE:GetBlock(questID);
 			QUEST_TRACKER_MODULE:SetBlockHeader(block, title, questLogIndex, isComplete);
 
 			-- completion state
 			local questFailed = false;
+			local isBreadcrumb = false;
 			if ( isComplete and isComplete < 0 ) then
 				isComplete = false;
 				questFailed = true;
 			elseif ( numObjectives == 0 and playerMoney >= requiredMoney and not startEvent ) then
 				isComplete = true;
+				if ( requiredMoney == 0 ) then
+					isBreadcrumb = true;
+				end
+			end
+			
+			if ( requiredMoney > 0 ) then
+				watchMoney = true;
 			end
 
 			if ( isComplete ) then
-				if ( isAutoComplete ) then
-					QUEST_TRACKER_MODULE:AddObjective(block, "QuestComplete", QUEST_WATCH_QUEST_COMPLETE);
-					QUEST_TRACKER_MODULE:AddObjective(block, "ClickComplete", QUEST_WATCH_CLICK_TO_COMPLETE);
-				else
-					QUEST_TRACKER_MODULE:AddObjective(block, "QuestComplete", GetQuestLogCompletionText(questLogIndex), nil, true);
+				-- don't display completion state yet if we're animating an objective completing
+				local objectiveCompleting = QuestObjectiveTracker_DoQuestObjectives(block, numObjectives, true, isSequenced, existingBlock);
+				if ( not objectiveCompleting ) then
+					if ( isAutoComplete ) then
+						QUEST_TRACKER_MODULE:AddObjective(block, "QuestComplete", QUEST_WATCH_QUEST_COMPLETE);
+						QUEST_TRACKER_MODULE:AddObjective(block, "ClickComplete", QUEST_WATCH_CLICK_TO_COMPLETE);
+					else
+						if ( isBreadcrumb ) then
+							QUEST_TRACKER_MODULE:AddObjective(block, "QuestComplete", GetQuestLogCompletionText(questLogIndex), nil, true);
+						else
+							QUEST_TRACKER_MODULE:AddObjective(block, "QuestComplete", QUEST_WATCH_QUEST_READY, nil, nil, true, OBJECTIVE_TRACKER_COLOR["Complete"]);
+						end
+					end
 				end
 			elseif ( questFailed ) then
 				QUEST_TRACKER_MODULE:AddObjective(block, "Failed", FAILED, nil, nil, true, OBJECTIVE_TRACKER_COLOR["Failed"]);
 			else
-				local numShownObjectives = 0;
-				local objectiveCompleting = false;
-				for objectiveIndex = 1, numObjectives do
-					local text, objectiveType, finished = GetQuestLogLeaderBoard(objectiveIndex, questLogIndex);
-					if ( text ) then
-						if ( not finished ) then
-							if ( not ( objectiveCompleting and block.numShownObjectives and objectiveIndex > block.numShownObjectives ) ) then
-								numShownObjectives = numShownObjectives + 1;
-								if ( block.numShownObjectives and objectiveIndex > block.numShownObjectives ) then
-									QUEST_TRACKER_MODULE:AddObjective(block, objectiveIndex, text, LINE_TYPE_ANIM);
-									local line = block.currentLine;
-									if ( not line.activeAnim ) then
-										line.block = block;
-										line.activeAnim = "ADD";
-										line.Sheen.Anim:Play();
-										line.Glow.Anim:Play();									
-									end
-								else
-									QUEST_TRACKER_MODULE:AddObjective(block, objectiveIndex, text);
-								end
-							end
-						else
-							-- this objective is complete, but if we already have a line for it either animate it out or maintain it until it's done animating out
-							if ( block.lines[objectiveIndex] ) then
-								QUEST_TRACKER_MODULE:AddObjective(block, objectiveIndex, text, LINE_TYPE_ANIM, nil, true, OBJECTIVE_TRACKER_COLOR["Complete"]);
-								local line = block.currentLine;
-								if ( not line.activeAnim ) then
-									line.block = block;
-									line.activeAnim = "COMPLETE";
-									line.Check:Show();
-									line.Sheen.Anim:Play();								
-									line.Glow.Anim:Play();
-									line.CheckFlash.Anim:Play();
-								end
-								if ( line.activeAnim == "COMPLETE" ) then
-									objectiveCompleting = true;
-								end
-							end
-							numShownObjectives = numShownObjectives + 1;
-						end
-					end
-				end
-				block.numShownObjectives = numShownObjectives;
+				QuestObjectiveTracker_DoQuestObjectives(block, numObjectives, false, isSequenced, existingBlock);
 				if ( requiredMoney > playerMoney ) then
 					local text = GetMoneyString(playerMoney).." / "..GetMoneyString(requiredMoney);
 					QUEST_TRACKER_MODULE:AddObjective(block, "Money", text);
@@ -474,6 +545,7 @@ function QUEST_TRACKER_MODULE:Update()
 		end
 	end
 
+	ObjectiveTracker_WatchMoney(watchMoney, OBJECTIVE_TRACKER_UPDATE_MODULE_QUEST);
 	QuestSuperTracking_CheckSelection();
 	QuestPOI_SelectButtonByQuestID(ObjectiveTrackerFrame.BlocksFrame, GetSuperTrackedQuestID());
 	QuestPOI_HideUnusedButtons(ObjectiveTrackerFrame.BlocksFrame);

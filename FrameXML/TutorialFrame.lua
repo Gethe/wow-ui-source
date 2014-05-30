@@ -9,7 +9,7 @@ local TUTORIALFRAME_WIDTH = 364;
 
 local TUTORIAL_LAST_ID = nil;
 
-local TUTORIAL_QUEST_ACCEPTED = false; -- used to trigger tutorials after closing the quest log, but after accepting a quest.
+TUTORIAL_QUEST_ACCEPTED = false; -- used to trigger tutorials after closing the quest log, but after accepting a quest.
 
 TUTORIAL_QUEST_TO_WATCH = nil;
 TUTORIAL_DISTANCE_TO_QUEST_KILL_SQ = (50 * 50); -- the square distance to trigger the "near quest creature" tutorial.

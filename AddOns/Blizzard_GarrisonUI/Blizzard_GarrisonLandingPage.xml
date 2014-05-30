@@ -3,83 +3,190 @@
 	<Script file="Blizzard_GarrisonLandingPage.lua"/>
 	
 	<Button name="GarrisonLandingPageMissionTemplate" virtual="true">
-		<Size x="558" y="64"/>
+		<Size x="400" y="47"/>
 		<Layers>
 			<Layer level="BACKGROUND">
-				<Texture atlas="GarrMission_MissionParchment" useAtlasSize="true" vertTile="true" horizTile="true">
+				<Texture parentKey="BG" atlas="GarrLanding-Mission-InProgress" useAtlasSize="true">
 					<Anchors>
-						<Anchor point="TOPLEFT" x="3"/>
-						<Anchor point="BOTTOMRIGHT" x="-3"/>
+						<Anchor point="CENTER"/>
 					</Anchors>
-				</Texture>
-			</Layer>
-			<Layer level="BACKGROUND" textureSubLevel="3">
-				<Texture parentKey="IconBG" atlas="GarrMission_IconLevelBG" useAtlasSize="true">
-					<Anchors>
-						<Anchor point="TOPLEFT" y="-1"/>
-					</Anchors>
-					<Color r="0" g="0" b="0" a="0.4"/>
 				</Texture>
 			</Layer>
 			<Layer level="ARTWORK">
-				<Texture parentKey="MissionType" atlas="GarrMission_MissionIcon-Combat" useAtlasSize="true">
+				<Texture parentKey="MissionTypeIcon" atlas="GarrMission_MissionIcon-Combat">
+					<Size x="50" y="50"/>
 					<Anchors>
-						<Anchor point="TOPLEFT" x="48" y="-0"/>
+						<Anchor point="TOPLEFT" x="0" y="2"/>
 					</Anchors>
 				</Texture>
-				<FontString parentKey="Title" inherits="GameFontHighlightLarge2" justifyH="LEFT" text="Master Blacksmithing Training">
+				<FontString parentKey="Title" inherits="GameFontHighlightLarge" justifyH="LEFT" text="Dangerous Excavation">
 					<Size x="290" y="15"/>
 					<Anchors>
-						<Anchor point="TOPLEFT" x="127" y="-12"/>
+						<Anchor point="TOPLEFT" x="63" y="-8"/>
 					</Anchors>
 				</FontString>
 				<FontString parentKey="MissionType" inherits="GameFontNormal" justifyH="LEFT" text="Combat Mission">
 					<Size x="390" y="0"/>
 					<Anchors>
-						<Anchor point="TOPLEFT" relativeKey="$parent.Title" relativePoint="BOTTOMLEFT" x="0" y="-9"/>
+						<Anchor point="TOPLEFT" relativeKey="$parent.Title" relativePoint="BOTTOMLEFT" x="0" y="-5"/>
 					</Anchors>
 					<Color r="0.792" g="0.690" b="0.529" a="1"/>
 				</FontString>
 				<FontString parentKey="TimeLeft" inherits="GameFontNormalLarge2" justifyH="RIGHT" text="3 hr">
 					<Anchors>
-						<Anchor point="RIGHT" x="-15"/>
+						<Anchor point="TOPRIGHT" x="-10" y="-7"/>
 					</Anchors>
+				</FontString>
+				<FontString parentKey="Status" inherits="GameFontNormal" justifyH="RIGHT" text="In Combat">
+					<Anchors>
+						<Anchor point="BOTTOMRIGHT" x="-10" y="5"/>
+					</Anchors>
+					<Color r="0.792" g="0.690" b="0.529" a="1"/>
 				</FontString>
 			</Layer>
 		</Layers>
 	</Button>
 	
-	<Frame name="GarrisonLandingPage" inherits="BasicFrameTemplate" parent="UIParent" enableMouse="true" hidden="true">
-		<Size x="800" y="600"/>
+	<Frame name="GarrisonLandingPage" parent="UIParent" enableMouse="true" toplevel="true" hidden="true">
+		<Size x="830" y="538"/>
 		<Anchors>
 			<Anchor point="CENTER"/>
 		</Anchors>
+		<Layers>
+			<Layer level="BACKGROUND" textureSubLevel="-1">
+				<Texture atlas="GarrLanding-MiddleTile" horizTile="true" vertTile="true">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="25" y="-25"/>
+						<Anchor point="BOTTOMRIGHT" x="-25" y="25"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="BACKGROUND" textureSubLevel="2">
+				<Texture parentKey="TL" atlas="GarrLanding-upperleft" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="-2" y="1"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="TR" atlas="GarrLanding-upperright" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="TOPRIGHT" y="1"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="BL" atlas="GarrLanding-lowerleft" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="BOTTOMLEFT" x="-2" y="-2"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="BR" atlas="GarrLanding-lowerright" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="BOTTOMRIGHT" y="-2"/>
+					</Anchors>
+				</Texture>
+				<Texture atlas="GarrLanding-Top" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.TL" relativePoint="TOPRIGHT" y="-1"/> 
+						<Anchor point="TOPRIGHT" relativeKey="$parent.TR" relativePoint="TOPLEFT" y="-1"/>
+					</Anchors>
+				</Texture>
+				<Texture atlas="GarLanding-Bottom" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="BOTTOMLEFT" relativeKey="$parent.BL" relativePoint="BOTTOMRIGHT" y="2"/>
+						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.BR" relativePoint="BOTTOMLEFT" y="2"/>
+					</Anchors>
+				</Texture>
+				<Texture atlas="GarLanding-Left" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.TL" relativePoint="BOTTOMLEFT" x="2"/>
+						<Anchor point="BOTTOMLEFT" relativeKey="$parent.BL" relativePoint="TOPLEFT" x="2"/>
+					</Anchors>
+				</Texture>
+				<Texture atlas="GarLanding-Right" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="TOPRIGHT" relativeKey="$parent.TR" relativePoint="BOTTOMRIGHT" y="0"/>
+						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.BR" relativePoint="TOPRIGHT" y="0"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="BORDER">
+				<Texture parentKey="HeaderBar" atlas="GarrLanding-HeaderBar" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="TOP" x="0" y="-36"/>
+					</Anchors>
+				</Texture>
+				<FontString inherits="QuestFont_Enormous" text="GARRISON_LANDING_PAGE_TITLE">
+					<Anchors>
+						<Anchor point="LEFT" relativeKey="$parent.HeaderBar" x="26"/>
+					</Anchors>
+				</FontString>
+				<Texture atlas="GarrLanding_Watermark-Tradeskill" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="BOTTOMLEFT" x="60" y="40"/>
+					</Anchors>
+					<Color r="1" g="1" b="1" a=".6"/>
+				</Texture>
+			</Layer>
+		</Layers>
 		<Frames>
-			<Frame parentKey="MissionList" inherits="GarrisonMissionFrameListTemplate" name="$parentMissions">
-				<Size x="610" y="500"/>
+			<Button parentKey="CloseButton" inherits="UIPanelCloseButton">
 				<Anchors>
-					<Anchor point="BOTTOMLEFT" x="18" y="20"/>
+					<Anchor point="TOPRIGHT" x="-10" y="-10"/>
+				</Anchors>
+			</Button>
+			<Frame parentKey="List" name="$parentList">
+				<Size x="433" y="420"/>
+				<Anchors>
+					<Anchor point="BOTTOMRIGHT" x="-38" y="28"/>
 				</Anchors>
 				<Layers>
-					<Layer level="ARTWORK">
-						<FontString inherits="QuestFont_Super_Huge" text="GARRISON_MISSIONS">
-							<Shadow>
-								<Offset x="-1" y="-2"/>
-							</Shadow>
+					<Layer level="BACKGROUND">
+						<Texture atlas="GarrLanding-MissionListBG">
 							<Anchors>
-								<Anchor point="LEFT" relativeKey="$parent.HeaderLeft" x="18" y="0"/>
+								<Anchor point="TOPLEFT" x="-25"/>
+								<Anchor point="BOTTOMRIGHT"/>
 							</Anchors>
-						</FontString>
+						</Texture>
+					</Layer>
+					<Layer level="BACKGROUND" textureSubLevel="1">
+						<Texture atlas="GarrLanding_Watermark-Missions" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="CENTER" y="-15"/>
+							</Anchors>
+							<Color r="1" g="1" b="1" a=".6"/>
+						</Texture>
 					</Layer>
 				</Layers>
+				<Frames>
+					<ScrollFrame name="$parentListScrollFrame" parentKey="listScroll" inherits="HybridScrollFrameTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT" x="5" y="-6"/>
+							<Anchor point="BOTTOMRIGHT" x="-3" y="8"/>
+						</Anchors>
+						<Frames>
+							<Slider name="$parentScrollBar" inherits="HybridScrollBarTrimTemplate" parentKey="scrollBar">
+								<Anchors>
+									<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" x="-20" y="-15"/>
+									<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMRIGHT" x="-20" y="12"/>
+								</Anchors>
+								<Scripts>
+									<OnLoad>
+										self.trackBG:Show();
+										self.trackBG:SetVertexColor(0, 0, 0, 0.75);
+										self.doNotHide = true;
+									</OnLoad>
+								</Scripts>
+							</Slider>
+						</Frames>
+					</ScrollFrame>
+				</Frames>
 				<Scripts>
-					<OnShow function="GarrisonLandingPageMissionList_OnShow"/>
-					<OnHide function="GarrisonLandingPageMissionList_OnHide"/>
+					<OnShow function="GarrisonLandingPageList_OnShow"/>
+					<OnHide function="GarrisonLandingPageList_OnHide"/>
 				</Scripts>
 			</Frame>
 		</Frames>
 		<Scripts>
-			<OnLoad function="GarrisonMissionFrame_OnLoad"/>
+			<OnLoad function="GarrisonLandingPage_OnLoad"/>
+			<OnEvent function="GarrisonLandingPage_OnEvent"/>
 		</Scripts>
 	</Frame>
 	
@@ -138,7 +245,7 @@
 						<Scripts>
 							<OnClick>
 								self:GetParent():Hide();
-								TriggerTutorial(68);
+								SetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_GARRISON_LANDING, true);
 							</OnClick>
 						</Scripts>
 					</Button>

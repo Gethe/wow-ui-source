@@ -1085,12 +1085,26 @@
 					<OnClick function="WorldStateScoreFrameTab_OnClick"/>
 				</Scripts>
             </Button>
+			<Button name="WorldStateScoreFrameQueueButton" inherits="UIPanelButtonTemplate" text="PVP_QUEUE_AGAIN">
+				<Size>
+					<AbsDimension x="153" y="21"/>
+				</Size>
+				<Anchors>
+					<Anchor point="BOTTOM" x="-80" y="3"/>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						self:Disable();
+						RequeueSkirmish();
+					</OnClick>
+				</Scripts>
+			</Button>
 			<Button name="WorldStateScoreFrameLeaveButton" inherits="UIPanelButtonTemplate" text="LEAVE_BATTLEGROUND">
 				<Size>
 					<AbsDimension x="153" y="21"/>
 				</Size>
 				<Anchors>
-					<Anchor point="BOTTOM" x="0" y="3"/>
+					<Anchor point="BOTTOM" x="80" y="3"/>
 				</Anchors>
 				<Scripts>
 					<OnClick>

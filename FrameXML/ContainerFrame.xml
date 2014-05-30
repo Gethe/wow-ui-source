@@ -10,9 +10,12 @@
 			</Anchor>
 		</Anchors>
 		<Animations>
-			<AnimationGroup parentKey="Shine" setToFinalAlpha="true">
-				<Alpha childKey="ShineTexture" fromAlpha="0.5" toAlpha="1" order="1" duration="0.07"/>
-				<Alpha childKey="ShineTexture" fromAlpha="1" toAlpha="0" order="2" duration="0.76"/>
+			<AnimationGroup parentKey="newitemglowAnim" setToFinalAlpha="true" looping="REPEAT">
+				<Alpha childKey="NewItemTexture" smoothing="NONE" duration="0.8" order="1" fromAlpha="1" toAlpha="0.4"/>
+				<Alpha childKey="NewItemTexture" smoothing="NONE" duration="0.8" order="2" fromAlpha="0.4" toAlpha="1"/>
+			</AnimationGroup>
+			<AnimationGroup parentKey="flashAnim" setToFinalAlpha="true">
+				<Alpha childKey="flash" smoothing="OUT" duration="0.6" order="1" fromAlpha="1" toAlpha="0"/>
 			</AnimationGroup>
 		</Animations>
 		<Layers>
@@ -31,17 +34,6 @@
 				</Texture>
 			</Layer>
 			<Layer level="OVERLAY">
-				<Texture parentKey="ShineTexture" atlas="bags-innerglow" useAtlasSize="true" alpha="0">
-					<Anchors>
-						<Anchor point="CENTER"/>
-					</Anchors>
-				</Texture>
-				<Texture parentKey="IconBorder" file="Interface\Common\WhiteIconFrame" hidden="true">
-					<Size x="37" y="37"/>
-					<Anchors>
-						<Anchor point="CENTER"/>
-					</Anchors>
-				</Texture>
 				<Texture parentKey="JunkIcon" atlas="bags-junkcoin" useAtlasSize="true" hidden="true">
 					<Anchors>
 						<Anchor point="TOPLEFT" x="1" y="0"/>
@@ -49,7 +41,12 @@
 				</Texture>
 			</Layer>
 			<Layer level="OVERLAY" textureSubLevel="1">
-				<Texture parentKey="NewItemTexture" atlas="bags-newitem" useAtlasSize="true">
+				<Texture parentKey="flash" hidden="false" alpha="0" alphaMode="ADD" atlas="bags-glow-flash" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="NewItemTexture" alpha="0" alphaMode="ADD" atlas="bags-glow-green" useAtlasSize="true">
 					<Anchors>
 						<Anchor point="CENTER"/>
 					</Anchors>
@@ -346,7 +343,7 @@
 	</EditBox>
 
 	<Button name="BagItemAutoSortButton" parent="ContainerFrame1" hidden="true">
-		<Size x="18" y="18"/>
+		<Size x="30" y="30"/>
 		<NormalTexture atlas="bags-button-autosort"/>
 		<HighlightTexture file="Interface\Buttons\ButtonHilight-Square" alphaMode="ADD"/>
 		<Scripts>

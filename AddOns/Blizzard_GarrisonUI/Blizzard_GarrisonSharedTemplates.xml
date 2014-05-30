@@ -66,5 +66,288 @@
 		</Layers>
 	</Frame>
 	
-
+	<Frame name="GarrisonFollowerPortraitTemplate" virtual="true">
+		<Size x="52" y="60"/>
+		<Layers>
+			<Layer level="BORDER">
+				<Texture parentKey="PortraitRing" atlas="GarrMission_PortraitRing" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="TOP"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="BORDER" textureSubLevel="-1">
+				<Texture parentKey="Portrait">
+					<Size x="44" y="44"/>
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent.PortraitRing" y="5"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="BORDER" textureSubLevel="1">
+				<Texture parentKey="LevelBorder" atlas="GarrMission_PortraitRing_LevelBorder" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="BOTTOM" y="-3"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="ARTWORK">
+				<FontString parentKey="Level" inherits="GameFontHighlightSmall" justifyH="CENTER" text="95">
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent.LevelBorder"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+	</Frame>
+	
+	<Frame name="GarrisonMissionBaseFrameTemplate" virtual="true">
+		<Layers>
+			<Layer level="BORDER">
+				<Texture atlas="Garr_InfoBoxMission-BackgroundTile" horizTile="true" vertTile="true">
+					<Anchors>
+						<Anchor point="TOPLEFT"/>
+						<Anchor point="BOTTOMRIGHT"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="BORDER" textureSubLevel="1">
+				<Texture atlas="_Garr_InfoBoxMission-Top" horizTile="true" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="1" y="7"/>
+						<Anchor point="TOPRIGHT" x="-1" y="7"/>
+					</Anchors>
+				</Texture>
+				<Texture atlas="_Garr_InfoBoxMission-Top" horizTile="true" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="BOTTOMLEFT" y="-7"/>
+						<Anchor point="BOTTOMRIGHT" y="-7"/>
+					</Anchors>
+					<TexCoords left="0.0" right="1.0" top="1.0" bottom="0.0"/>
+				</Texture>
+				<Texture atlas="!Garr_InfoBoxMission-Left" vertTile="true" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="-7"/>
+						<Anchor point="BOTTOMLEFT" x="-7"/>
+					</Anchors>
+				</Texture>
+				<Texture atlas="!Garr_InfoBoxMission-Left" vertTile="true" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="TOPRIGHT" x="7"/>
+						<Anchor point="BOTTOMRIGHT" x="7"/>
+					</Anchors>
+					<TexCoords left="1.0" right="0.0" top="0.0" bottom="1.0"/>
+				</Texture>
+			</Layer>
+			<Layer level="BORDER" textureSubLevel="2">
+				<Texture atlas="Garr_InfoBoxMission-Corner" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="-6" y="7"/>
+					</Anchors>
+				</Texture>
+				<Texture atlas="Garr_InfoBoxMission-Corner" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="TOPRIGHT" x="6" y="7"/>
+					</Anchors>
+					<TexCoords left="1.0" right="0.0" top="0.0" bottom="1.0"/>
+				</Texture>
+				<Texture atlas="Garr_InfoBoxMission-Corner" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="BOTTOMLEFT" x="-7" y="-7"/>
+					</Anchors>
+					<TexCoords left="0.0" right="1.0" top="1.0" bottom="0.0"/>
+				</Texture>
+				<Texture atlas="Garr_InfoBoxMission-Corner" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="BOTTOMRIGHT" x="7" y="-7"/>
+					</Anchors>
+					<TexCoords left="1.0" right="0.0" top="1.0" bottom="0.0"/>
+				</Texture>
+			</Layer>
+			<Layer level="BORDER" textureSubLevel="4">
+				<Texture atlas="_Garr_InfoBoxBorderMission-Top" horizTile="true" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="TOPLEFT"/>
+						<Anchor point="TOPRIGHT"/>
+					</Anchors>
+				</Texture>
+				<Texture atlas="_Garr_InfoBoxBorderMission-Top" horizTile="true" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="BOTTOMLEFT"/>
+						<Anchor point="BOTTOMRIGHT"/>
+					</Anchors>
+					<TexCoords left="0.0" right="1.0" top="1.0" bottom="0.0"/>
+				</Texture>
+				<Texture atlas="!Garr_InfoBoxBorderMission-Left" vertTile="true" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="TOPLEFT"/>
+						<Anchor point="BOTTOMLEFT"/>
+					</Anchors>
+				</Texture>
+				<Texture atlas="!Garr_InfoBoxBorderMission-Left" vertTile="true" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="TOPRIGHT"/>
+						<Anchor point="BOTTOMRIGHT"/>
+					</Anchors>
+					<TexCoords left="1.0" right="0.0" top="0.0" bottom="1.0"/>
+				</Texture>
+			</Layer>
+			<Layer level="BORDER" textureSubLevel="5">
+				<Texture atlas="Garr_InfoBoxBorderMission-Corner" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="TOPLEFT"/>
+					</Anchors>
+				</Texture>
+				<Texture atlas="Garr_InfoBoxBorderMission-Corner" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="TOPRIGHT"/>
+					</Anchors>
+					<TexCoords left="1.0" right="0.0" top="0.0" bottom="1.0"/>
+				</Texture>
+				<Texture atlas="Garr_InfoBoxBorderMission-Corner" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="BOTTOMLEFT"/>
+					</Anchors>
+					<TexCoords left="0.0" right="1.0" top="1.0" bottom="0.0"/>
+				</Texture>
+				<Texture atlas="Garr_InfoBoxBorderMission-Corner" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="BOTTOMRIGHT"/>
+					</Anchors>
+					<TexCoords left="1.0" right="0.0" top="1.0" bottom="0.0"/>
+				</Texture>
+			</Layer>
+		</Layers>
+	</Frame>
+	
+	<Frame name="GarrisonListTemplate" inherits="GarrisonMissionBaseFrameTemplate" virtual="true">
+		<Size x="300" y="575"/>
+		<Frames>
+			<ScrollFrame name="$parentListScrollFrame" parentKey="listScroll" inherits="HybridScrollFrameTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" x="5" y="-6"/>
+					<Anchor point="BOTTOMRIGHT" x="-3" y="8"/>
+				</Anchors>
+				<Frames>
+					<Slider name="$parentScrollBar" inherits="HybridScrollBarTrimTemplate" parentKey="scrollBar">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" x="-20" y="-12"/>
+							<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMRIGHT" x="-20" y="12"/>
+						</Anchors>
+						<Scripts>
+							<OnLoad>
+								self.trackBG:Show();
+								self.trackBG:SetVertexColor(0, 0, 0, 0.75);
+								self.doNotHide = true;
+							</OnLoad>
+						</Scripts>
+					</Slider>
+				</Frames>
+			</ScrollFrame>
+		</Frames>
+	</Frame>	
+	
+	<Frame name="GarrisonListTemplateHeader" inherits="GarrisonListTemplate" virtual="true">
+		<Size x="300" y="575"/>
+		<Layers>
+			<Layer level="BORDER" textureSubLevel="7">
+				<Texture parentKey="HeaderLeft" atlas="GarrMission_ParchmentHeader-End" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="BOTTOMLEFT" relativePoint="TOPLEFT" x="12" y="-8"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="HeaderRight" atlas="GarrMission_ParchmentHeader-End" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="BOTTOMRIGHT" relativePoint="TOPRIGHT" x="-28" y="-8"/>
+					</Anchors>
+					<TexCoords left="1.0" right="0.0" top="0.0" bottom="1.0"/>
+				</Texture>
+			</Layer>
+			<Layer level="BORDER" textureSubLevel="6">
+				<Texture atlas="_GarrMission_ParchmentHeader-Mid" useAtlasSize="true" horizTile="true">
+					<Anchors>
+						<Anchor point="LEFT" relativeKey="$parent.HeaderLeft" relativePoint="RIGHT" x="-35"/>
+						<Anchor point="RIGHT" relativeKey="$parent.HeaderRight" relativePoint="LEFT" x="35"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers> 
+	</Frame>
+	
+	<Button name="GarrisonFollowerButtonTemplate" virtual="true">
+		<Size x="260" y="56"/>
+		<Anchors>
+			<Anchor point="TOPLEFT" x="12" y="-12"/>
+		</Anchors>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="BG" atlas="GarrMission_FollowerListButton" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="TOPRIGHT"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="BACKGROUND" textureSubLevel="1">
+				<Texture parentKey="Selected" atlas="GarrMission_FollowerListButton-Select" useAtlasSize="true" hidden="true">
+					<Anchors>
+						<Anchor point="TOPRIGHT"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="BACKGROUND" textureSubLevel="2">
+				<Texture parentKey="Class" atlas="GarrMission_ClassIcon-DeathKnight" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="TOPRIGHT"/>
+					</Anchors>
+					<Color r="1" g="1" b="1" a=".2"/>
+				</Texture>
+			</Layer>
+			<Layer level="ARTWORK">
+				<FontString parentKey="Name" inherits="GameFontNormal" justifyH="LEFT" text="Goblin Freeman">
+					<Size x="140" y="0"/>
+					<Anchors>
+						<Anchor point="LEFT" relativePoint="TOPLEFT" x="66" y="-28"/>
+					</Anchors>
+				</FontString>
+				<FontString parentKey="ILevel" inherits="GameFontHighlightSmall" justifyH="LEFT">
+					<Size x="190" y="0"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.Name" relativePoint="BOTTOMLEFT" y="-4"/>
+					</Anchors>
+					<Color r="0.745" g="0.745" b="0.745" a="1"/>
+				</FontString>
+				<Texture parentKey="XPBar">
+					<Size x="205" y="4"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.BG" relativePoint="BOTTOMLEFT" x="24" y="6"/>
+					</Anchors>
+					<Color r="0.212" g="0" b="0.337" a="1"/>
+				</Texture>
+				<FontString parentKey="Status" inherits="GameFontHighlightSmall" justifyH="LEFT">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.ILevel" relativePoint="BOTTOMLEFT" y="-3"/>
+					</Anchors>
+					<Color r="0.698" g="0.941" b="1" a="1"/>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Frame parentKey="PortraitFrame" inherits="GarrisonFollowerPortraitTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" x="4" y="2"/>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						self:SetFrameLevel(self:GetParent():GetFrameLevel() + 2);
+					</OnLoad>
+				</Scripts>
+			</Frame>
+		</Frames>
+		<HighlightTexture atlas="GarrMission_FollowerListButton-Highlight" useAtlasSize="true">
+			<Anchors>
+				<Anchor point="TOPRIGHT"/>
+			</Anchors>
+		</HighlightTexture>
+	</Button>
+	
 </Ui>

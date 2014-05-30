@@ -550,7 +550,7 @@
 				<Layer level="ARTWORK">
 					<Texture parentKey="UpgradeArrow" inherits="store-icon-upgradearrow" hidden="true">
 						<Anchors>
-							<Anchor point="BOTTOMRIGHT" relativeKey="$parent.IconBorder" relativePoint="BOTTOMRIGHT" x="-3" y="4"/>
+							<Anchor point="CENTER" relativeKey="$parent.IconBorder" relativePoint="CENTER" x="18" y="-26"/>
 						</Anchors>
 					</Texture>
 					<FontString parentKey="ProductName" inherits="GameFontNormalWTF2" justifyH="LEFT" justifyV="TOP">

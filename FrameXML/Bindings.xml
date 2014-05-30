@@ -958,7 +958,7 @@
 		ToggleMinimap();
 	</Binding>
 	<Binding name="TOGGLEWORLDMAP" category="BINDING_HEADER_INTERFACE">
-		ToggleFrame(WorldMapFrame);
+		ToggleWorldMap();
 	</Binding>
 	<Binding name="TOGGLEWORLDMAPSIZE" category="BINDING_HEADER_INTERFACE">
 		if ( WorldMapFrame:IsShown() ) then

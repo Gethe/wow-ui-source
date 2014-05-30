@@ -175,29 +175,17 @@ end
 
 function LossOfControlTimeLeftFrame_SetTime(self, timeRemaining)
 	if( timeRemaining ) then
-		self.NumberText:SetText(ConvertToDecimal(timeRemaining, 1));
+		if ( timeRemaining >= 10 ) then
+			self.NumberText:SetFormattedText("%d", timeRemaining);
+		elseif (timeRemaining < 9.95) then -- From 9.95 to 9.99 it will print 10.0 instead of 9.9
+			self.NumberText:SetFormattedText("%.1f", timeRemaining);
+		end
 		self:Show();
 		self.timeRemaining = timeRemaining;
-		LossOfControlTimeLeftFrame_SetNumberWidth(self, timeRemaining);
+		self.numberWidth = self.NumberText:GetStringWidth() + LOSS_OF_CONTROL_TIME_OFFSET;
 	else
 		self:Hide();
 		self.numberWidth = 0;
 	end
 end
 
-local floor = math.floor;
-function LossOfControlTimeLeftFrame_SetNumberWidth(self, timeLeft)
-	local tens = floor(timeLeft / 10);
-	if ( tens ~= self.numberTens ) then
-		-- resize
-		if ( tens == 0 ) then
-			self.numberWidth = self.baseNumberWidth;
-			self.numberTens = 0;
-		else
-			self.NumberText:SetWidth(0);
-			self.numberWidth = self.NumberText:GetStringWidth() + LOSS_OF_CONTROL_TIME_OFFSET;
-			self.numberTens = tens;
-		end
-		self.NumberText:SetWidth(self.numberWidth);
-	end
-end

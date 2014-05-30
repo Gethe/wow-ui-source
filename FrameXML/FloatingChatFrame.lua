@@ -113,8 +113,9 @@ end
 
 function FCF_CopyChatSettings(copyTo, copyFrom)
 	local name, fontSize, r, g, b, a, shown, locked, docked, uninteractable = FCF_GetChatWindowInfo(copyFrom:GetID());
-	FCF_SetWindowColor(copyTo, r, g, b, 1);
-	FCF_SetWindowAlpha(copyTo, a, 1);
+	
+	FCF_SetWindowColor(copyTo, r, g, b, true);
+	FCF_SetWindowAlpha(copyTo, a, true);
 	--If we're copying to a docked window, we don't want to copy locked.
 	if ( not copyTo.isDocked ) then
 		FCF_SetLocked(copyTo, locked);
@@ -128,14 +129,13 @@ function FloatingChatFrame_Update(id, onUpdateEvent)
 	local chatTab = _G["ChatFrame"..id.."Tab"];
 	
 	local name, fontSize, r, g, b, a, shown, locked, docked, uninteractable = FCF_GetChatWindowInfo(id);
-	
 	-- Set Tab Name
-	FCF_SetWindowName(chatFrame, name, 1)
+	FCF_SetWindowName(chatFrame, name, true)
 
 	if ( onUpdateEvent ) then
 		-- Set Frame Color and Alpha
-		FCF_SetWindowColor(chatFrame, r, g, b, 1);
-		FCF_SetWindowAlpha(chatFrame, a, 1);
+		FCF_SetWindowColor(chatFrame, r, g, b, true);
+		FCF_SetWindowAlpha(chatFrame, a, true);
 		FCF_SetLocked(chatFrame, locked);
 		FCF_SetUninteractable(chatFrame, uninteractable);
 	end
@@ -903,7 +903,7 @@ function FCF_SetWindowAlpha(frame, alpha, doNotSave)
 		SetChatWindowAlpha(frame:GetID(), alpha);
 	end
 	-- Remember the alpha
-	frame.oldAlpha = alpha;
+	frame.oldAlpha = alpha or DEFAULT_CHATFRAME_ALPHA;
 end
 
 function FCF_GetCurrentChatFrameID()

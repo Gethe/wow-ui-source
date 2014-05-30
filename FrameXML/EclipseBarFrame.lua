@@ -50,13 +50,7 @@ function EclipseBar_Update(self)
 		return;--catch divide by zero
 	end
 	
-	if (self.textDisplay == "BOTH") then
-		self.PowerText:SetText("("..abs(power/maxPower*100).."%) "..abs(power).." / "..abs(maxPower));
-	elseif (self.textDisplay == "PERCENT") then
-		self.PowerText:SetText(abs(power/maxPower*100).."%");
-	else
-		self.PowerText:SetText(abs(power));
-	end
+	self.PowerText:SetText(abs(power));
 	
 	local xpos =  ECLIPSE_BAR_TRAVEL*(power/maxPower)
 	self.Marker:SetPoint("CENTER", xpos, 0);

@@ -265,29 +265,30 @@ NUM_EVALUATION_TREE_FLAGS				= 2;
 ITEM_UNIQUE_EQUIPPED = -1;
 MAX_NUM_SOCKETS = 3;
 
--- Item quality
-ITEM_QUALITY_POOR = 0;
-ITEM_QUALITY_COMMON = 1;
-ITEM_QUALITY_UNCOMMON = 2;
-ITEM_QUALITY_RARE = 3;
-ITEM_QUALITY_EPIC = 4;
-ITEM_QUALITY_LEGENDARY = 5;
-ITEM_QUALITY_HEIRLOOM = 6;
-
 BAG_ITEM_QUALITY_COLORS = {
-	[ITEM_QUALITY_UNCOMMON] = {r=0.08235, g=0.70196, b=0},
-	[ITEM_QUALITY_RARE] = {r=0, g=0.56863, b=0.94902},
-	[ITEM_QUALITY_EPIC] = {r=0.78431, g=0.27059, b=0.98039},
-	[ITEM_QUALITY_LEGENDARY] = {r=1, g=0.50196, b=0},
-	[ITEM_QUALITY_HEIRLOOM] = {r=0.90196, g=0.8, b=0.50196},
+	[LE_ITEM_QUALITY_UNCOMMON] = {r=0.08235, g=0.70196, b=0},
+	[LE_ITEM_QUALITY_RARE] = {r=0, g=0.56863, b=0.94902},
+	[LE_ITEM_QUALITY_EPIC] = {r=0.78431, g=0.27059, b=0.98039},
+	[LE_ITEM_QUALITY_LEGENDARY] = {r=1, g=0.50196, b=0},
+	[LE_ITEM_QUALITY_HEIRLOOM] = {r=0.90196, g=0.8, b=0.50196},
 }
+
+NEW_ITEM_ATLAS_BY_QUALITY = {
+	[LE_ITEM_QUALITY_POOR] = "bags-glow-white",
+	[LE_ITEM_QUALITY_COMMON] = "bags-glow-white",
+	[LE_ITEM_QUALITY_UNCOMMON] = "bags-glow-green",
+	[LE_ITEM_QUALITY_RARE] = "bags-glow-blue",
+	[LE_ITEM_QUALITY_EPIC] = "bags-glow-purple",
+	[LE_ITEM_QUALITY_LEGENDARY] = "bags-glow-orange",
+	[LE_ITEM_QUALITY_HEIRLOOM] = "bags-glow-heirloom",
+};
 
 -- Loot
 LOOT_BORDER_QUALITY_COORDS = {
-	[ITEM_QUALITY_UNCOMMON] = {0.17968750, 0.23632813, 0.74218750, 0.96875000},
-	[ITEM_QUALITY_RARE] = {0.86718750, 0.92382813, 0.00390625, 0.23046875},
-	[ITEM_QUALITY_EPIC] = {0.92578125, 0.98242188, 0.00390625, 0.23046875},
-	[ITEM_QUALITY_LEGENDARY] = {0.80859375, 0.86523438, 0.00390625, 0.23046875},
+	[LE_ITEM_QUALITY_UNCOMMON] = {0.17968750, 0.23632813, 0.74218750, 0.96875000},
+	[LE_ITEM_QUALITY_RARE] = {0.86718750, 0.92382813, 0.00390625, 0.23046875},
+	[LE_ITEM_QUALITY_EPIC] = {0.92578125, 0.98242188, 0.00390625, 0.23046875},
+	[LE_ITEM_QUALITY_LEGENDARY] = {0.80859375, 0.86523438, 0.00390625, 0.23046875},
 };
 
 LOOT_ROLL_TYPE_PASS = 0;
@@ -339,6 +340,7 @@ BACKPACK_CONTAINER = 0;
 BANK_CONTAINER = -1;
 BANK_CONTAINER_INVENTORY_OFFSET = 39; -- Used for PickupInventoryItem
 KEYRING_CONTAINER = -2;
+REAGENTBANK_CONTAINER = -3;
 
 NUM_BAG_SLOTS = 4;
 NUM_BANKGENERIC_SLOTS = 28;
@@ -523,12 +525,12 @@ CALENDAR_MAX_INVITETYPE			= CALENDAR_INVITETYPE_SIGNUP;
 -- Difficulty
 --
 QuestDifficultyColors = {
-	["impossible"]		= { r = 1.00, g = 0.10, b = 0.10 };
-	["verydifficult"]	= { r = 1.00, g = 0.50, b = 0.25 };
-	["difficult"]		= { r = 1.00, g = 1.00, b = 0.00 };
-	["standard"]		= { r = 0.25, g = 0.75, b = 0.25 };
-	["trivial"]			= { r = 0.50, g = 0.50, b = 0.50 };
-	["header"]			= { r = 0.70, g = 0.70, b = 0.70 };
+	["impossible"]		= { r = 1.00, g = 0.10, b = 0.10, font = QuestDifficulty_Impossible };
+	["verydifficult"]	= { r = 1.00, g = 0.50, b = 0.25, font = QuestDifficulty_VeryDifficult };
+	["difficult"]		= { r = 1.00, g = 1.00, b = 0.00, font = QuestDifficulty_Difficult };
+	["standard"]		= { r = 0.25, g = 0.75, b = 0.25, font = QuestDifficulty_Standard };
+	["trivial"]			= { r = 0.50, g = 0.50, b = 0.50, font = QuestDifficulty_Trivial };
+	["header"]			= { r = 0.70, g = 0.70, b = 0.70, font = QuestDifficulty_Header };
 };
 
 --

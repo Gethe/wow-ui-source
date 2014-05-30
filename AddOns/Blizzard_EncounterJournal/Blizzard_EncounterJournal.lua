@@ -170,6 +170,19 @@ function EncounterJournal_OnShow(self)
 		-- fixes portraits when switching between fullscreen and windowed mode
 		EncounterJournal_UpdatePortraits();
 		EncounterJournal.queuedPortraitUpdate = false;
+	elseif ( self.encounter.overviewFrame:IsShown() and EncounterJournal.overviewDefaultRole and not EncounterJournal.encounter.overviewFrame.linkSection ) then
+		local spec, role;
+
+		spec = GetSpecialization();
+		if (spec) then
+			role = GetSpecializationRole(spec);
+		else
+			role = "DAMAGER";
+		end
+
+		if ( EncounterJournal.overviewDefaultRole ~= role ) then
+			EncounterJournal_ToggleHeaders(EncounterJournal.encounter.overviewFrame);
+		end
 	end
 
 	local tierData = EJ_TIER_DATA[EJ_GetCurrentTier()];
@@ -429,10 +442,13 @@ function EncounterJournal_DisplayInstance(instanceID, noButton)
 		name, description, bossID, _, link = EJ_GetEncounterInfoByIndex(bossIndex);
 	end
 	
-	--disable model tab, no boss selected
+	--disable model tab and abilities tab, no boss selected
 	EncounterJournal.encounter.info.modelTab:Disable();
 	EncounterJournal.encounter.info.modelTab:GetDisabledTexture():SetDesaturated(true);
 	EncounterJournal.encounter.info.modelTab.unselected:SetDesaturated(true);
+	EncounterJournal.encounter.info.bossTab:Disable();
+	EncounterJournal.encounter.info.bossTab:GetDisabledTexture():SetDesaturated(true);
+	EncounterJournal.encounter.info.bossTab.unselected:SetDesaturated(true);
 
 	if (EncounterJournal_SearchForOverview(instanceID)) then
 		EJ_Tabs[1].frame = "overviewScroll";
@@ -497,16 +513,34 @@ function EncounterJournal_DisplayEncounter(encounterID, noButton)
 	
 	local overviewFound;
 	if (EncounterJournal_CheckForOverview(rootSectionID)) then
-		self.overviewFrame.description:SetWidth(self.overviewFrame:GetWidth() - 5);
 		local _, overviewDescription = EJ_GetSectionInfo(rootSectionID);
-		self.overviewFrame.description:SetText(overviewDescription);
+		self.overviewFrame.loreDescription:SetHeight(0);
+		self.overviewFrame.overviewDescription:SetHeight(0);
+		self.overviewFrame.loreDescription:SetText(description);
+		EncounterJournal_SetBullets(self.overviewFrame.overviewDescription, overviewDescription, false);
+		self.overviewFrame.loreDescription:SetWidth(self.overviewFrame:GetWidth() - 5);
+		self.overviewFrame.overviewDescription:SetWidth(self.overviewFrame:GetWidth() - 5);	
+		local bulletHeight = 0;
+		if (self.overviewFrame.Bullets) then
+			for i = 1, #self.overviewFrame.Bullets do
+				if (i == 1) then
+					local bullet = self.overviewFrame.Bullets[i];
+					bullet:ClearAllPoints();
+					bullet:SetPoint("TOPLEFT", self.overviewFrame.overviewDescription, "BOTTOMLEFT", 0, -9);
+				end
+				bulletHeight = bulletHeight + self.overviewFrame.Bullets[i]:GetHeight();
+			end
+		end
+		self.overviewFrame.descriptionHeight = self.overviewFrame.loreDescription:GetHeight() + self.overviewFrame.overviewDescription:GetHeight() + bulletHeight + 42;
 		self.overviewFrame.rootOverviewSectionID = rootSectionID;
 		rootSectionID = EncounterJournal_GetRootAfterOverviews(rootSectionID);
 		overviewFound = true;
 	end
-
+	
 	self.infoFrame.description:SetText(description);
 	self.infoFrame.description:SetWidth(self.infoFrame:GetWidth() -5);
+	self.infoFrame.descriptionHeight = self.infoFrame.description:GetHeight();
+	
 	self.infoFrame.encounterID = encounterID;
 	self.infoFrame.rootSectionID = rootSectionID;
 	self.infoFrame.expanded = false;
@@ -559,11 +593,14 @@ function EncounterJournal_DisplayEncounter(encounterID, noButton)
 		end
 	end
 	
-	--enable model tab
+	--enable model and abilities tab
 	EncounterJournal.encounter.info.modelTab:Enable();
 	EncounterJournal.encounter.info.modelTab:GetDisabledTexture():SetDesaturated(false);
 	EncounterJournal.encounter.info.modelTab.unselected:SetDesaturated(false);
-	
+	EncounterJournal.encounter.info.bossTab:Enable();
+	EncounterJournal.encounter.info.bossTab:GetDisabledTexture():SetDesaturated(false);
+	EncounterJournal.encounter.info.bossTab.unselected:SetDesaturated(false);
+
 	if (overviewFound) then
 		EncounterJournal_ToggleHeaders(self.overviewFrame);
 		self.overviewFrame:Show();
@@ -675,6 +712,101 @@ function EncounterJournal_UpdateButtonState(self)
 	self.tex.down[3]:Hide();
 end
 
+function EncounterJournal_CleanBullets(self, start, keep)
+	if (not self.Bullets) then return end
+    start = start or 1;
+	for i = start, #self.Bullets do
+		self.Bullets[i]:Hide();
+		if (not keep) then
+			if (not self.BulletCache) then
+				self.BulletCache = {};
+			end
+			self.Bullets[i]:ClearAllPoints();
+			tinsert(self.BulletCache, self.Bullets[i]);
+			self.Bullets[i] = nil;
+		end
+	end
+end
+
+function EncounterJournal_SetBullets(object, description, hideBullets)
+	local parent = object:GetParent();
+	object:SetWidth(parent:GetWidth() - 20);
+	object:SetHeight(0);
+
+	if (not string.find(description, "\$bullet;")) then
+		object:SetText(description);
+		EncounterJournal_CleanBullets(parent);
+		return;
+	end
+
+	local desc = string.match(description, "(.-)\$bullet;");
+
+	if (desc) then
+		object:SetText(desc);
+	end
+	
+	local bullets = {}
+	for v in string.gmatch(description,"\$bullet;([^$]+)") do
+		tinsert(bullets, v);
+	end
+
+	local k = 1;
+	for j = 1,#bullets do
+		local text = bullets[j];
+		if (text and text ~= "") then
+			local bullet;
+			if (not parent.Bullets) then
+				parent.Bullets = {};
+			end
+			bullet = parent.Bullets[k];
+			if (not bullet) then
+				if (parent.BulletCache) then
+					parent.Bullets[k] = tremove(parent.BulletCache);
+					bullet = parent.Bullets[k];
+				else
+					bullet = CreateFrame("Frame", nil, parent, "EncounterOverviewBulletTemplate");
+				end
+				bullet:SetWidth(parent:GetWidth() - 13);
+				bullet.Text:SetWidth(bullet:GetWidth() - 26);
+			end
+			bullet:ClearAllPoints();
+			if (k == 1) then
+				if (parent.button) then
+					bullet:SetPoint("TOPLEFT", parent.button, "BOTTOMLEFT", 13, -9 - object:GetHeight());
+				else
+					bullet:SetPoint("TOPLEFT", parent, "TOPLEFT", 13, -9 - object:GetHeight());
+				end
+			else
+				bullet:SetPoint("TOP", parent.Bullets[k-1], "BOTTOM", 0, 0);
+			end
+			bullet.Text:SetText(text);
+			bullet:SetHeight(bullet.Text:GetContentHeight());
+
+			if (hideBullets) then
+				bullet:Hide();
+			else
+				bullet:Show();
+			end
+			k = k + 1;
+		end
+	end
+
+	EncounterJournal_CleanBullets(parent, #bullets + 1);
+end
+
+function EncounterJournal_SetDescriptionWithBullets(infoHeader, description)
+	EncounterJournal_SetBullets(infoHeader.description, description, true);
+
+	infoHeader.descriptionBG:ClearAllPoints();
+	infoHeader.descriptionBG:SetPoint("TOPLEFT", infoHeader.button, "BOTTOMLEFT", 1, 0);
+	if (infoHeader.Bullets and #infoHeader.Bullets > 0) then
+		infoHeader.descriptionBG:SetPoint("BOTTOMRIGHT", infoHeader.Bullets[#infoHeader.Bullets], -1, -11);
+	else
+		infoHeader.descriptionBG:SetPoint("BOTTOMRIGHT", infoHeader.description, 9, -11);
+	end
+	infoHeader.descriptionBG:Hide();
+end
+
 function EncounterJournal_SetUpOverview(self, role, index)
 	if not self.overviews[index] then -- create a new header;
 		infoHeader = CreateFrame("FRAME", "EncounterJournalOverviewInfoHeader"..index, EncounterJournal.encounter.overviewFrame, "EncounterInfoTemplate");
@@ -702,11 +834,12 @@ function EncounterJournal_SetUpOverview(self, role, index)
 	end
 
 	infoHeader.button.expandedIcon:SetText("+");
+	infoHeader.expanded = false;
 	
 	infoHeader:ClearAllPoints();
 	if (index == 1) then
-		infoHeader:SetPoint("TOPLEFT", 0, -15 - self.description:GetHeight() - SECTION_BUTTON_OFFSET);
-		infoHeader:SetPoint("TOPRIGHT", 0, -15 - self.description:GetHeight() - SECTION_BUTTON_OFFSET);
+		infoHeader:SetPoint("TOPLEFT", 0, -15 - self.descriptionHeight - SECTION_BUTTON_OFFSET);
+		infoHeader:SetPoint("TOPRIGHT", 0, -15 - self.descriptionHeight - SECTION_BUTTON_OFFSET);
 	else
 		infoHeader:SetPoint("TOPLEFT", self.overviews[index-1], "BOTTOMLEFT", 0, -9);
 		infoHeader:SetPoint("TOPRIGHT", self.overviews[index-1], "BOTTOMRIGHT", 0, -9);
@@ -731,7 +864,7 @@ function EncounterJournal_SetUpOverview(self, role, index)
 		nextSectionID = siblingID;
 	end
 
-	if (not title) then 
+	if (not title) then
 		return;
 	end
 	
@@ -742,47 +875,7 @@ function EncounterJournal_SetUpOverview(self, role, index)
 	infoHeader.button.link = link;
 	infoHeader.sectionID = nextSectionID;
 	
-	local desc = string.match(description, "(.-)\$bullet;");
-
-	if (desc) then
-		infoHeader.description:SetWidth(infoHeader:GetWidth() - 20);
-		infoHeader.description:SetText(desc);
-	end
-	
-	local bullets = {}
-	for v in string.gmatch(description,"\$bullet;([^\n]+)") do
-		tinsert(bullets, v);
-	end
-
-	local k = 1;
-	for j = 1,#bullets do
-		local text = bullets[j];
-		if (text and text ~= "") then
-			local bullet = infoHeader.Bullets[k];
-			if (not bullet) then
-				bullet = CreateFrame("Frame", nil, infoHeader, "EncounterOverviewBulletTemplate");
-				bullet:SetWidth(infoHeader:GetWidth() - 13);
-				bullet.Text:SetWidth(bullet:GetWidth() - 26);
-				if (k == 1) then
-					bullet:SetPoint("TOPLEFT", infoHeader.button, "BOTTOMLEFT", 13, -9 - infoHeader.description:GetHeight());
-				else
-					bullet:SetPoint("TOP", infoHeader.Bullets[k-1], "BOTTOM", 0, 0);
-				end
-			end
-			bullet.Text:SetHeight(0);
-			bullet.Text:SetText(text);
-			bullet:SetHeight(bullet.Text:GetHeight());
-
-			bullet:Hide();
-			k = k + 1;
-		end
-	end
-
-	infoHeader.descriptionBG:ClearAllPoints();
-	infoHeader.descriptionBG:SetPoint("TOPLEFT", infoHeader.button, "BOTTOMLEFT", 1, 0);
-	infoHeader.descriptionBG:SetPoint("BOTTOMRIGHT", infoHeader.Bullets[#infoHeader.Bullets], -1, -11);
-	infoHeader.descriptionBG:Hide();
-
+	EncounterJournal_SetDescriptionWithBullets(infoHeader, description);
 	infoHeader:Show();
 end
 
@@ -793,36 +886,30 @@ function EncounterJournal_ToggleHeaders(self, doNotShift)
 	local nextSectionID;
 	local topLevelSection = false;
 	
-	self.expanded = not self.expanded;
-	local hideHeaders = not self.expanded;
-
 	local isOverview = self.isOverview;
 	
-	if hideHeaders then
-		if (not isOverview) then
-			self.button.expandedIcon:SetText("+");
-			self.description:Hide();
-			self.descriptionBG:Hide();
-			self.descriptionBGBottom:Hide();
-			
-			EncounterJournal_ClearChildHeaders(self);
-		elseif (self.overviewIndex) then
-			self.button.expandedIcon:SetText("+");
+	local hideHeaders;
+	if (not self.isOverview or (self.isOverview and self.overviewIndex)) then
+		self.expanded = not self.expanded;
+		hideHeaders = not self.expanded;
+	end
 
-			if (self.Bullets) then
-				for i = 1, #self.Bullets do
-					self.Bullets[i]:Hide();
-				end
-			end
-			self.description:Hide();
-			self.descriptionBG:Hide();
-			self.descriptionBGBottom:Hide();
+	if hideHeaders then
+		self.button.expandedIcon:SetText("+");
+		self.description:Hide();
+		self.descriptionBG:Hide();
+		self.descriptionBGBottom:Hide();
+
+		EncounterJournal_CleanBullets(self, nil, true);
 			
+		if (self.overviewIndex) then
 			local overview = EncounterJournal.encounter.overviewFrame.overviews[self.overviewIndex + 1];
 
 			if (overview) then
 				overview:SetPoint("TOPLEFT", self, "BOTTOMLEFT", 0, -9);
 			end
+		else
+			EncounterJournal_ClearChildHeaders(self);
 		end
 	else
 		if (not isOverview) then
@@ -856,7 +943,7 @@ function EncounterJournal_ToggleHeaders(self, doNotShift)
 				end
 			end
 		end
-	
+
 		-- Get Section Info
 		if (not isOverview) then
 			local freeHeaders = EncounterJournal.encounter.freeHeaders;
@@ -910,7 +997,7 @@ function EncounterJournal_ToggleHeaders(self, doNotShift)
 					infoHeader.descriptionBG:Hide();
 					infoHeader.descriptionBGBottom:Hide();
 					infoHeader.button.expandedIcon:SetText("+");
-					
+
 					for i = 1, #infoHeader.Bullets do
 						infoHeader.Bullets[i]:Hide();
 					end
@@ -1017,12 +1104,14 @@ function EncounterJournal_ToggleHeaders(self, doNotShift)
 			end
 			
 			if topLevelSection and usedHeaders[1] then
-				usedHeaders[1]:SetPoint("TOPRIGHT", 0 , -8 - self.description:GetHeight() - SECTION_BUTTON_OFFSET);
+				usedHeaders[1]:SetPoint("TOPRIGHT", 0 , -8 - EncounterJournal.encounter.infoFrame.descriptionHeight - SECTION_BUTTON_OFFSET);
 			end
 		elseif (not self.overviewIndex) then
 			for i = 1, #self.overviews do
 				self.overviews[i]:Hide();
 			end
+
+			EncounterJournal.overviewDefaultRole = nil;
 
 			if (not self.rootOverviewSectionID) then 
 				return;
@@ -1067,6 +1156,7 @@ function EncounterJournal_ToggleHeaders(self, doNotShift)
 				self.linkSection = nil;
 			else
 				self.overviews[1].expanded = false;
+				EncounterJournal.overviewDefaultRole = role;
 				EncounterJournal_ToggleHeaders(self.overviews[1]);
 			end
 		end
@@ -1135,9 +1225,7 @@ end
 
 
 function EncounterJournal_FocusSection(sectionID)
-	if (EncounterJournal_CheckForOverview(sectionID)) then
-		EncounterJournal_ToggleHeaders(EncounterJournal.encounter.overviewFrame);
-	else
+	if (not EncounterJournal_CheckForOverview(sectionID)) then
 		local usedHeaders = EncounterJournal.encounter.usedHeaders;
 		for _, section in pairs(usedHeaders) do
 			if section.myID == sectionID then
@@ -1246,6 +1334,15 @@ function EncounterJournal_ClearDetails()
 	EncounterJournal.searchBox:ClearFocus();
 end
 
+function EncounterJournal_OnHyperlinkEnter(self, link, text, hyperlinkButton)
+	if ( link and string.find(link, "spell") ) then
+		local _, _, spellID = string.find(link, "(%d+)");
+		if ( spellID ) then
+			GameTooltip:SetOwner(hyperlinkButton, "ANCHOR_RIGHT");
+			GameTooltip:SetSpellByID(spellID);
+		end
+	end
+end
 
 function EncounterJournal_TabClicked(self, button)
 	local tabType = self:GetID();
@@ -1380,6 +1477,11 @@ function EncounterJournal_SetFlagIcon(texture, index)
 	local iconSize = 32;
 	local columns = 256/iconSize;
 	local rows = 64/iconSize;
+
+	-- Mythic flag should use heroic Icon
+	if (index == 13) then
+		index = 3;
+	end
 
 	local l = mod(index, columns) / columns;
 	local r = l + (1/columns);

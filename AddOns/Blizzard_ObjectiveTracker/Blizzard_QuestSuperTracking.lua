@@ -26,6 +26,9 @@ function QuestSuperTracking_OnPOIUpdate()
 		if ( GetQuestWatchInfo(1) == PENDING_QUEST_ID ) then
 			SetSuperTrackedQuestID(PENDING_QUEST_ID);
 		end
+	elseif ( GetSuperTrackedQuestID() == 0 ) then
+		-- otherwise pick something if we're not supertrack anything
+		QuestSuperTracking_ChooseClosestQuest();
 	end
 	PENDING_QUEST_ID = nil;
 end
@@ -35,9 +38,9 @@ function QuestSuperTracking_ChooseClosestQuest()
 	local closestQuestID;
 	for i = 1, GetNumQuestWatches() do
 		local questID, title, questLogIndex = GetQuestWatchInfo(i);
-		if ( questID and QuestPOIGetIconInfo(questID) ) then
-			local distSqr = GetDistanceSqToQuest(questLogIndex);
-			if ( distSqr <= minDistSqr ) then
+		if ( questID and QuestHasPOIInfo(questID) ) then
+			local distSqr, onContinent = GetDistanceSqToQuest(questLogIndex);
+			if ( onContinent and distSqr <= minDistSqr ) then
 				minDistSqr = distSqr;
 				closestQuestID = questID;
 			end
@@ -47,9 +50,9 @@ function QuestSuperTracking_ChooseClosestQuest()
 	if ( not closestQuestID ) then
 		for questLogIndex = 1, GetNumQuestLogEntries() do
 			local title, level, suggestedGroup, isHeader, isCollapsed, isComplete, isDaily, questID = GetQuestLogTitle(questLogIndex);	
-			if ( not isHeader and QuestPOIGetIconInfo(questID) ) then
-				local distSqr = GetDistanceSqToQuest(questLogIndex);
-				if ( distSqr <= minDistSqr ) then
+			if ( not isHeader and QuestHasPOIInfo(questID) ) then
+				local distSqr, onContinent = GetDistanceSqToQuest(questLogIndex);
+				if ( onContinent and distSqr <= minDistSqr ) then
 					minDistSqr = distSqr;
 					closestQuestID = questID;
 				end
@@ -59,6 +62,8 @@ function QuestSuperTracking_ChooseClosestQuest()
 	-- Supertrack if we have a valid quest
 	if ( closestQuestID ) then
 		SetSuperTrackedQuestID(closestQuestID);
+	else
+		SetSuperTrackedQuestID(0);
 	end
 end
 

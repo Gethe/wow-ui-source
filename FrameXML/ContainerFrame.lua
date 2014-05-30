@@ -293,9 +293,9 @@ function ContainerFrame_Update(frame)
 	local id = frame:GetID();
 	local name = frame:GetName();
 	local itemButton;
-	local texture, itemCount, locked, quality, readable, _, isFiltered;
+	local texture, itemCount, locked, quality, readable, _, isFiltered, noValue;
 	local isQuestItem, questId, isActive, questTexture;
-	local isNewItem, isBattlePayItem, newItemTexture, shine;
+	local isNewItem, isBattlePayItem, newItemTexture, flash, newItemAnim;
 	local tooltipOwner = GameTooltip:GetOwner();
 	
 	--Update Searchbox and sort button
@@ -305,7 +305,7 @@ function ContainerFrame_Update(frame)
 		BagItemSearchBox.anchorBag = frame;
 		BagItemSearchBox:Show();
 		BagItemAutoSortButton:SetParent(frame);
-		BagItemAutoSortButton:SetPoint("TOPRIGHT", frame, "TOPRIGHT", -10, -28);
+		BagItemAutoSortButton:SetPoint("TOPRIGHT", frame, "TOPRIGHT", -5, -22);
 		BagItemAutoSortButton:Show();
 	elseif ( BagItemSearchBox.anchorBag == frame ) then
 		BagItemSearchBox:ClearAllPoints();
@@ -318,7 +318,7 @@ function ContainerFrame_Update(frame)
 	for i=1, frame.size, 1 do
 		itemButton = _G[name.."Item"..i];
 		
-		texture, itemCount, locked, quality, readable, _, _, isFiltered = GetContainerItemInfo(id, itemButton:GetID());
+		texture, itemCount, locked, quality, readable, _, _, isFiltered, noValue = GetContainerItemInfo(id, itemButton:GetID());
 		isQuestItem, questId, isActive = GetContainerItemQuestInfo(id, itemButton:GetID());
 		
 		SetItemButtonTexture(itemButton, texture);
@@ -340,32 +340,45 @@ function ContainerFrame_Update(frame)
 		isBattlePayItem = IsBattlePayItem(id, itemButton:GetID());
 		battlepayItemTexture = _G[name.."Item"..i].BattlepayItemTexture;
 		newItemTexture = _G[name.."Item"..i].NewItemTexture;
-		shine = _G[name.."Item"..i].Shine;
+		flash = _G[name.."Item"..i].flashAnim;
+		newItemAnim = _G[name.."Item"..i].newitemglowAnim;
+
 		if ( isNewItem ) then
 			if (isBattlePayItem) then
 				newItemTexture:Hide();
 				battlepayItemTexture:Show();
 			else
+				if (quality and NEW_ITEM_ATLAS_BY_QUALITY[quality]) then
+					newItemTexture:SetAtlas(NEW_ITEM_ATLAS_BY_QUALITY[quality]);
+				else
+					newItemTexture:SetAtlas("bags-glow-white");
+				end
 				battlepayItemTexture:Hide();
 				newItemTexture:Show();
 			end
-			if (not shine:IsPlaying()) then
-				shine:Play();
+			if (not flash:IsPlaying() and not newItemAnim:IsPlaying()) then
+				flash:Play();
+				newItemAnim:Play();
 			end
 		else
 			battlepayItemTexture:Hide();
 			newItemTexture:Hide();
-			if (shine:IsPlaying()) then
-				shine:Stop();
+			if (flash:IsPlaying() or newItemAnim:IsPlaying()) then
+				flash:Stop();
+				newItemAnim:Stop();
 			end
 		end
 		
 		itemButton.JunkIcon:Hide();
 		if (quality) then
-			if (quality > ITEM_QUALITY_COMMON and BAG_ITEM_QUALITY_COLORS[quality]) then
+			if (quality > LE_ITEM_QUALITY_COMMON and BAG_ITEM_QUALITY_COLORS[quality]) then
 				itemButton.IconBorder:Show();
 				itemButton.IconBorder:SetVertexColor(BAG_ITEM_QUALITY_COLORS[quality].r, BAG_ITEM_QUALITY_COLORS[quality].g, BAG_ITEM_QUALITY_COLORS[quality].b);
-			elseif (quality == 0) then
+			else
+				itemButton.IconBorder:Hide();
+			end
+
+			if (quality == LE_ITEM_QUALITY_POOR and not noValue) then
 				itemButton.JunkIcon:Show();
 			end
 		else
@@ -401,7 +414,7 @@ function ContainerFrame_UpdateSearchResults(frame)
 	local _, isFiltered;
 	
 	for i=1, frame.size, 1 do
-		itemButton = _G[name..i];
+		itemButton = _G[name..i] or frame["Item"..i];
 		_, _, _, _, _, _, _, isFiltered = GetContainerItemInfo(id, itemButton:GetID());	
 		if ( isFiltered ) then
 			itemButton.searchOverlay:Show();
@@ -831,7 +844,7 @@ function ContainerFrameItemButton_OnClick(self, button)
 				return;
 			end
 		end
-		UseContainerItem(self:GetParent():GetID(), self:GetID());
+		UseContainerItem(self:GetParent():GetID(), self:GetID(), nil, BankFrame:IsShown() and (BankFrame.selectedTab == 2));
 		StackSplitFrame:Hide();
 	end
 end
@@ -874,13 +887,15 @@ function ContainerFrameItemButton_OnEnter(self)
 
 	local newItemTexture = self.NewItemTexture;
 	local battlepayItemTexture = self.BattlepayItemTexture;
-	local shine = self.Shine;
+	local flash = self.flashAnim;
+	local newItemGlowAnim = self.newitemglowAnim;
 	
 	newItemTexture:Hide();
 	battlepayItemTexture:Hide();
 	
-	if (shine:IsPlaying()) then
-		shine:Stop();
+	if (flash:IsPlaying() or newItemGlowAnim:IsPlaying()) then
+		flash:Stop();
+		newItemGlowAnim:Stop();
 	end
 	
 	local showSell = nil;

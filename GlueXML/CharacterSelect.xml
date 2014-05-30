@@ -260,7 +260,7 @@
 				</Texture>
 			</Layer>
 			<Layer level="ARTWORK">
-				<FontString name="$parentText" inherits="GlueFontNormalSmall" parentKey="text" justifyH="LEFT" justifyV="MIDDLE" text="Heal the land ravaged by the evil dragon Deathwing!">
+				<FontString name="$parentText" inherits="GlueFontNormalSmall" parentKey="text" justifyH="LEFT" justifyV="MIDDLE">
 					<Anchors>
 						<Anchor point="TOPLEFT" relativeTo="$parentIconFrame" relativePoint="TOPRIGHT" x="0" y="0"/>
 						<Anchor point="BOTTOMRIGHT"/>
@@ -656,7 +656,7 @@
 							</OnMouseUp>							
 						</Scripts>
 					</Button>					
-					<Button name="CopyCharacterButton" inherits="GlueButtonSmallTemplate" hidden="true" text="Copy Character">
+					<Button name="CopyCharacterButton" inherits="GlueButtonSmallTemplate" hidden="true" text="COPY_CHARACTER">
 						<Size x="164" y="40"/>
 						<Anchors>
 							<Anchor point="BOTTOM" relativeTo="StoreButton" relativePoint="TOP" x="1" y="20"/>
@@ -882,6 +882,7 @@
 										self:SetWidth(self:GetTextWidth() + 50);
 									</OnLoad>
 									<OnClick>
+										PlaySound("igMainMenuOptionCheckBoxOn");
 										CharacterSelect_EndCharacterUndelete();
 									</OnClick>
 									<OnUpdate>
@@ -912,6 +913,7 @@
 										GlueTooltip:Hide();
 									</OnLeave>
 									<OnClick>
+										PlaySound("igMainMenuOptionCheckBoxOn");
 										CharacterSelect_StartCharacterUndelete();
 									</OnClick>
 									<OnLoad>
@@ -1676,7 +1678,7 @@
 									<Anchor point="TOP" x="0" y="-54"/>
 								</Anchors>
 							</Frame>
-							<Button inherits="GlueButtonSmallTemplate" text="CREATE_CHARACTER">
+							<Button parentKey="CreateTemplateButton" inherits="GlueButtonSmallTemplate" text="CREATE_CHARACTER">
 								<Size x="200" y="45"/>
 								<Anchors>
 									<Anchor point="BOTTOM" x="0" y="10"/>
@@ -2202,7 +2204,7 @@
 			<Anchor point="CENTER" x="0" y="24"/>
 		</Anchors>
 		<Frames>
-			<Button parentKey="SearchButton" inherits="MagicButtonTemplate" text="Search" hidden="true">
+			<Button parentKey="SearchButton" inherits="MagicButtonTemplate" text="SEARCH" hidden="true">
 				<Size x="80" y="22"/>
 				<Anchors>
 					<Anchor point="BOTTOMRIGHT" x="0" y="0"/>
@@ -2236,7 +2238,7 @@
 				</Anchors>
 				<Layers>
 					<Layer level="OVERLAY">
-						<FontString parentKey="Text" inherits="GameFontNormalSmall" justifyH="CENTER" text="Region ID">
+						<FontString parentKey="Text" inherits="GameFontNormalSmall" justifyH="CENTER" text="REGION_ID">
 							<Size x="60" y="12"/>
 							<Anchors>
 								<Anchor point="TOP" x="0" y="15"/>
@@ -2259,7 +2261,7 @@
 				</Anchors>
 				<Layers>
 					<Layer level="OVERLAY">
-						<FontString parentKey="Text" inherits="GameFontNormalSmall" justifyH="CENTER" text="Realm Name">
+						<FontString parentKey="Text" inherits="GameFontNormalSmall" justifyH="CENTER" text="REALM_NAME">
 							<Size x="100" y="12"/>
 							<Anchors>
 								<Anchor point="TOP" x="0" y="15"/>
@@ -2282,7 +2284,7 @@
 				</Anchors>
 				<Layers>
 					<Layer level="OVERLAY">
-						<FontString parentKey="Text" inherits="GameFontNormalSmall" justifyH="CENTER" text="Character Name">
+						<FontString parentKey="Text" inherits="GameFontNormalSmall" justifyH="CENTER" text="CHARACTER_NAME">
 							<Size x="100" y="12"/>
 							<Anchors>
 								<Anchor point="TOP" x="0" y="15"/>

@@ -438,6 +438,7 @@ function UnitFrameManaBar_UpdateType (manaBar)
 		end
 	end
 	manaBar.powerType = powerType;
+	manaBar.powerToken = powerToken;
 	
 	-- Update the manabar text
 	if ( not unitFrame.noTextPrefix ) then

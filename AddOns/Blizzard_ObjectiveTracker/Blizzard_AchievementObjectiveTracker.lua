@@ -6,7 +6,7 @@ ACHIEVEMENT_TRACKER_MODULE = ObjectiveTracker_GetModuleInfoTable();
 ACHIEVEMENT_TRACKER_MODULE.updateReasonModule = OBJECTIVE_TRACKER_UPDATE_MODULE_ACHIEVEMENT;
 ACHIEVEMENT_TRACKER_MODULE.updateReasonEvents = OBJECTIVE_TRACKER_UPDATE_ACHIEVEMENT + OBJECTIVE_TRACKER_UPDATE_ACHIEVEMENT_ADDED;
 ACHIEVEMENT_TRACKER_MODULE.usedBlocks = { };
-ACHIEVEMENT_TRACKER_MODULE:SetHeader(ObjectiveTrackerFrame.BlocksFrame.AchievementHeader, "Achievements", OBJECTIVE_TRACKER_UPDATE_ACHIEVEMENT_ADDED, OBJECTIVE_TRACKER_UPDATE_MODULE_ACHIEVEMENT);
+ACHIEVEMENT_TRACKER_MODULE:SetHeader(ObjectiveTrackerFrame.BlocksFrame.AchievementHeader, TRACKER_HEADER_ACHIEVEMENTS, OBJECTIVE_TRACKER_UPDATE_ACHIEVEMENT_ADDED, OBJECTIVE_TRACKER_UPDATE_MODULE_ACHIEVEMENT);
 
 local TIMED_CRITERIA = { };
 
@@ -119,6 +119,7 @@ function ACHIEVEMENT_TRACKER_MODULE:Update()
 				local numShownCriteria = 0;
 				for criteriaIndex = 1, numCriteria do
 					local criteriaString, criteriaType, criteriaCompleted, quantity, totalQuantity, name, flags, assetID, quantityString, criteriaID, eligible, duration, elapsed = GetAchievementCriteriaInfo(achievementID, criteriaIndex);			
+					local colorStyle = eligible and OBJECTIVE_TRACKER_COLOR["Normal"] or OBJECTIVE_TRACKER_COLOR["Failed"];
 					if ( criteriaCompleted or ( numShownCriteria > MAX_CRITERIA_PER_ACHIEVEMENT and not criteriaCompleted ) ) then
 						-- Do not display this one
 					elseif ( numShownCriteria == MAX_CRITERIA_PER_ACHIEVEMENT and numCriteria > (MAX_CRITERIA_PER_ACHIEVEMENT + 1) ) then
@@ -140,10 +141,10 @@ function ACHIEVEMENT_TRACKER_MODULE:Update()
 								_, criteriaString = GetAchievementInfo(assetID);
 							end
 						end
-						local line = ACHIEVEMENT_TRACKER_MODULE:AddObjective(block, criteriaIndex, criteriaString);
+						local line = ACHIEVEMENT_TRACKER_MODULE:AddObjective(block, criteriaIndex, criteriaString, nil, nil, nil, colorStyle);
 						numShownCriteria = numShownCriteria + 1;
 						-- timer bar
-						if ( duration and elapsed and elapsed <= duration ) then
+						if ( duration and elapsed and elapsed < duration ) then
 							ACHIEVEMENT_TRACKER_MODULE:AddTimerBar(block, line, duration, GetTime() - elapsed);
 						elseif ( line.TimerBar ) then
 							ACHIEVEMENT_TRACKER_MODULE:FreeTimerBar(block, line);
@@ -152,8 +153,8 @@ function ACHIEVEMENT_TRACKER_MODULE:Update()
 				end
 			else
 				-- single criteria type of achievement
-				eligible = IsAchievementEligible(achievementID);
-				local line = ACHIEVEMENT_TRACKER_MODULE:AddObjective(block, 1, description);
+				local colorStyle = IsAchievementEligible(achievementID) and OBJECTIVE_TRACKER_COLOR["Normal"] or OBJECTIVE_TRACKER_COLOR["Failed"];
+				local line = ACHIEVEMENT_TRACKER_MODULE:AddObjective(block, 1, description, nil, nil, nil, colorStyle);
 				-- check if we're supposed to show a timer bar for this
 				local timerShown = false;
 				for timedCriteriaID, timedCriteria in next, TIMED_CRITERIA do
@@ -185,14 +186,11 @@ function ACHIEVEMENT_TRACKER_MODULE:Update()
 	ACHIEVEMENT_TRACKER_MODULE:EndLayout();
 end
 
-function AchievementObjectiveTracker_CheckTimedAchievement(achievementID, criteriaID, elapsed, duration)
+function AchievementObjectiveTracker_OnAchievementUpdate(achievementID, criteriaID, elapsed, duration)
 	if ( not elapsed or not duration ) then
 		-- Don't do anything
 	elseif ( elapsed >= duration ) then
 		TIMED_CRITERIA[criteriaID] = nil;
-		if ( IsTrackedAchievement(achievementID) ) then
-			ObjectiveTracker_Update(OBJECTIVE_TRACKER_UPDATE_ACHIEVEMENT);
-		end
 	else
 		-- we're already handling timer bars for achievements with visible criteria
 		-- we use this system to handle timer bars for the rest
@@ -203,10 +201,9 @@ function AchievementObjectiveTracker_CheckTimedAchievement(achievementID, criter
 			timedCriteria.startTime = GetTime() - elapsed;
 			timedCriteria.duration = duration;
 			TIMED_CRITERIA[criteriaID] = timedCriteria;
-			ObjectiveTracker_Update(OBJECTIVE_TRACKER_UPDATE_ACHIEVEMENT);
-		elseif ( IsTrackedAchievement(achievementID) ) then
-			-- just update to incorporate the timer
-			ObjectiveTracker_Update(OBJECTIVE_TRACKER_UPDATE_ACHIEVEMENT);
 		end
+	end
+	if ( IsTrackedAchievement(achievementID) ) then
+		ObjectiveTracker_Update(OBJECTIVE_TRACKER_UPDATE_ACHIEVEMENT);
 	end
 end

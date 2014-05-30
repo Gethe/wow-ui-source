@@ -738,7 +738,7 @@
 						</HighlightTexture>
 						<Scripts>
 							<OnClick>
-								QuestMapFrame_Open();
+								QuestMapFrame_Open(true);
 							</OnClick>
 						</Scripts>
 					</Button>
@@ -766,7 +766,7 @@
 						</HighlightTexture>
 						<Scripts>
 							<OnClick>
-								QuestMapFrame_Close();
+								QuestMapFrame_Close(true);
 							</OnClick>
 						</Scripts>
 					</Button>

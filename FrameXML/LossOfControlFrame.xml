@@ -99,7 +99,7 @@
 						<FontString inherits="GameFontNormalHuge" parentKey="SecondsText" text="LOSS_OF_CONTROL_SECONDS">
 							<Size x="0" y="20"/>
 							<Anchors>
-								<Anchor point="LEFT" relativeKey="$parent.NumberText" relativePoint="RIGHT"/>
+								<Anchor point="LEFT" relativePoint="CENTER" x="-64" y="0"/>
 							</Anchors>
 							<Shadow>
 								<Offset>

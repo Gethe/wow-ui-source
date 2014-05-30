@@ -326,6 +326,57 @@
 	
 	<Button name="GarrisonPlotTemplate" virtual="true">
 		<Size x="108" y="70"/>
+		<Animations>
+            <AnimationGroup parentKey="BuildingGlowPulseAnim" setToFinalAlpha="true" looping="REPEAT">
+                <Scale childKey="BuildingPulse" duration="0.5" order="1" fromScaleX="0.8" fromScaleY="0.8" toScaleX="1.3" toScaleY="1.3">
+                    <Origin point="CENTER">
+                        <Offset x="0" y="0"/>
+                    </Origin>
+                </Scale>
+                <Alpha childKey="BuildingPulse" smoothing="NONE" duration="0.5" order="1" fromAlpha="0" toAlpha="1"/>
+                <Alpha childKey="BuildingPulse" smoothing="NONE" duration="0.5" order="2" fromAlpha="1" toAlpha="0"/>
+                <Alpha childKey="AlphaPulse" smoothing="NONE" duration="0.5" order="1" fromAlpha="0.5" toAlpha="1"/>
+                <Alpha childKey="AlphaPulse" smoothing="NONE" duration="0.5" order="2" fromAlpha="1" toAlpha="0.5"/>
+				<Scripts>
+					<OnPlay>
+						self:GetParent().BuildingPulse:Show();
+						self:GetParent().AlphaPulse:Show();
+					</OnPlay>
+					<OnStop>
+						self:GetParent().BuildingPulse:Hide();
+						self:GetParent().AlphaPulse:Hide();
+					</OnStop>
+				</Scripts>
+            </AnimationGroup>
+			<AnimationGroup parentKey="BuildingCreateFlareAnim" setToFinalAlpha="true">
+                <Scale childKey="BuildGlow" duration="0.5" order="1" fromScaleX="1.5" fromScaleY="0.8" toScaleX="1.5" toScaleY="1.2">
+                    <Origin point="CENTER">
+                        <Offset x="0" y="0"/>
+                    </Origin>
+                </Scale>
+                <Alpha childKey="BuildGlow" duration="0.25" order="1" fromAlpha="0" toAlpha="1"/>
+                <Alpha childKey="BuildGlow" startDelay="0.5" duration="0.5" order="1" fromAlpha="1" toAlpha="0"/>
+                <Translation childKey="BuildGlow" duration="0.25" order="1" offsetX="0" offsetY="25"/>
+                <Translation childKey="BuildLines" duration="0.25" order="1" offsetX="0" offsetY="25"/>
+                <Alpha childKey="BuildLines" duration="0.25" order="1" fromAlpha="0" toAlpha="1"/>
+                <Alpha childKey="BuildLines" startDelay="0.25" duration="0.25" order="1" fromAlpha="1" toAlpha="0"/>
+                <Translation childKey="BuildLines2" startDelay="0.1" duration="0.5" order="1" offsetX="0" offsetY="25"/>
+                <Alpha childKey="BuildLines2" duration="0.5" order="1" fromAlpha="0" toAlpha="1"/>
+                <Alpha childKey="BuildLines2" startDelay="0.5" duration="0.25" order="1" fromAlpha="1" toAlpha="0"/>
+				<Scripts>
+					<OnPlay>
+						self:GetParent().BuildGlow:Show();
+						self:GetParent().BuildLines:Show();
+						self:GetParent().BuildLines2:Show();
+					</OnPlay>
+					<OnFinished>
+						self:GetParent().BuildGlow:Hide();
+						self:GetParent().BuildLines:Hide();
+						self:GetParent().BuildLines2:Hide();
+					</OnFinished>
+				</Scripts>
+            </AnimationGroup>
+        </Animations>
 		<Layers>
 			<Layer level="BACKGROUND">
 				<Texture parentKey="Plot" atlas="Garr_Plot_Shadowmoon_A_1" useAtlasSize="true">
@@ -342,19 +393,24 @@
 				</Texture>
 			</Layer>
 			<Layer level="BORDER" textureSubLevel="2">
-				<Texture parentKey="Bang" atlas="Garr_BuildingPlacementExplosion" useAtlasSize="true" hidden="true">
-					<Anchors>
-						<Anchor point="CENTER" x="3" y="5"/>
-					</Anchors>
-				</Texture>
-				<Texture parentKey="UpgradeBang" atlas="Garr_BuildingUpgradeExplosion" useAtlasSize="true" hidden="true">
-					<Anchors>
-						<Anchor point="CENTER"/>
-					</Anchors>
-				</Texture>
+				 <Texture parentKey="BuildingPulse" hidden="true" alpha="0" atlas="Garr_BuildingPlacementExplosion" useAtlasSize="true">
+                    <Anchors>
+                        <Anchor point="CENTER" y="5"/>
+                    </Anchors>
+                </Texture>
+				<Texture parentKey="AlphaPulse" hidden="true" alpha="0.5" alphaMode="ADD" atlas="Garr_BuildingPlacementExplosion" useAtlasSize="true">
+                    <Anchors>
+                        <Anchor point="CENTER" relativeKey="$parent.BuildingPulse"/>
+                    </Anchors>
+                </Texture>
 			</Layer>
 			<Layer level="ARTWORK">
 				<Texture parentKey="Building" hidden="true">
+					<Anchors>
+						<Anchor point="BOTTOM"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="BuildingHighlight" alpha="0.5" alphaMode="ADD" hidden="true">
 					<Anchors>
 						<Anchor point="BOTTOM"/>
 					</Anchors>
@@ -376,13 +432,59 @@
 				</Texture>
 			</Layer>
 			<Layer level="OVERLAY" textureSubLevel="1">
-				<Texture parentKey="BuildIcon" atlas="Garr_BuildIcon" useAtlasSize="true" hidden="true">
+				<Texture parentKey="Lock" atlas="Garr_LockedBuilding" hidden="true">
+					<Size x="51" y="63"/>
 					<Anchors>
-						<Anchor point="CENTER"/>
+						<Anchor point="CENTER" y="10"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="BuildGlow" hidden="false" alpha="0" alphaMode="ADD" atlas="Garr_BuildFX-Glow" useAtlasSize="true">
+                    <Anchors>
+                        <Anchor point="CENTER"/>
+                    </Anchors>
+                </Texture>
+                <Texture parentKey="BuildLines" hidden="false" alpha="0" alphaMode="ADD" atlas="Garr_BuildFX-Lines" useAtlasSize="true">
+                    <Anchors>
+                        <Anchor point="CENTER" relativeKey="$parent.BuildGlow" x="10" y="0"/>
+                    </Anchors>
+                </Texture>
+                <Texture parentKey="BuildLines2" hidden="false" alpha="0" alphaMode="ADD" atlas="Garr_BuildFX-Lines" useAtlasSize="true">
+                    <Anchors>
+                        <Anchor point="CENTER" relativeKey="$parent.BuildGlow" x="-10" y="0"/>
+                    </Anchors>
+                </Texture>
+				<Texture parentKey="UpgradeArrow" atlas="Garr_LevelUpgradeArrow" useAtlasSize="true" hidden="true">
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent.Icon" relativePoint="BOTTOMRIGHT" x="-2" y="10"/>
 					</Anchors>
 				</Texture>
 			</Layer>
 		</Layers>
+		<Frames>
+			<Frame parentKey="Timer" hidden="true">
+				<Size x="34" y="34"/>
+				<Anchors>
+					<Anchor point="CENTER" relativeKey="$parent.Icon"/>
+				</Anchors>
+				<Layers>
+					<Layer level="BORDER">
+						<Texture parentKey="BG" atlas="Garr_BuildingIconTimerBG" setAllPoints="true"/>
+					</Layer>
+					<Layer level="ARTWORK">
+						<Texture parentKey="CompleteRing" atlas="Garr_BuildingIconTimerFill" setAllPoints="true" hidden="true"/>
+					</Layer>
+				</Layers>
+				<Frames>
+					<Cooldown parentKey="Cooldown" reverse="true" hideCountdownNumbers="true">
+						<Size x="44" y="44"/>
+						<Anchors>
+							<Anchor point="CENTER"/>
+						</Anchors>
+						<SwipeTexture file="Interface\Garrison\Garr_TimerFill"/>
+					</Cooldown>
+				</Frames>
+			</Frame>
+		</Frames>	
 		<Scripts>
 			<OnLoad>
 				self:RegisterForDrag("LeftButton");
@@ -390,147 +492,45 @@
 			<OnReceiveDrag function="GarrisonPlot_OnReceiveDrag"/>
 			<OnClick function="GarrisonPlot_OnClick"/>
 			<OnEnter>
-				if (self.name) then
+				self.BuildingHighlight:Show();
+				if (self.tooltip) then
 					GameTooltip:SetOwner(self, "ANCHOR_CURSOR_RIGHT")
-					GameTooltip:SetText(self.name)
+					GameTooltip:SetText(self.tooltip, nil, nil, nil, nil, true);
 				end
 			</OnEnter>
-			<OnLeave function="GameTooltip_Hide"/>
+			<OnLeave>
+				self.BuildingHighlight:Hide();
+				GameTooltip_Hide();
+			</OnLeave>
+		</Scripts>
+	</Button>
+
+	<Button name="GarrisonBuildingFollowerButtonTemplate" inherits="GarrisonFollowerButtonTemplate" virtual="true">
+		<Scripts>
+			<OnClick function="GarrisonBuildingFollowerButton_OnClick"/>
 		</Scripts>
 	</Button>
 	
-	<Frame name="ConfirmationTemplate" hidden="true" frameStrata="HIGH" virtual="true">
-		<Size x="271" y="123"/>
-		<Layers>
-			<Layer level="BACKGROUND">
-				<Texture atlas="Garr_BuildingConfirmation" useAtlasSize="true">
-					<Anchors>
-						<Anchor point="CENTER"/>
-					</Anchors>
-				</Texture>
-			</Layer>
-			<Layer level="ARTWORK">
-				<FontString parentKey="CostLabel" inherits="GameFontNormal" text="COSTS_LABEL">
-					<Shadow>
-						<Offset x="1" y="-1"/>
-					</Shadow>
-					<Anchors>
-						<Anchor point="TOPLEFT" x="81" y="-34"/>
-					</Anchors>
-				</FontString>
-				<FontString parentKey="Cost" inherits="GameFontHighlight">
-					<Shadow>
-						<Offset x="1" y="-1"/>
-					</Shadow>
-					<Anchors>
-						<Anchor point="LEFT" relativeKey="$parent.CostLabel" relativePoint="RIGHT" x="5"/>
-					</Anchors>
-				</FontString>
-				<FontString parentKey="TimeLabel" inherits="GameFontNormal" text="TIME_LABEL">
-					<Shadow>
-						<Offset x="1" y="-1"/>
-					</Shadow>
-					<Anchors>
-						<Anchor point="TOPLEFT" relativeKey="$parent.CostLabel" relativePoint="BOTTOMLEFT" y="-8"/>
-					</Anchors>
-				</FontString>
-				<FontString parentKey="Time" inherits="GameFontHighlight">
-					<Shadow>
-						<Offset x="1" y="-1"/>
-					</Shadow>
-					<Anchors>
-						<Anchor point="LEFT" relativeKey="$parent.TimeLabel" relativePoint="RIGHT" x="5"/>
-					</Anchors>
-				</FontString>
-			</Layer>
-		</Layers>
-		<Frames>
-			<Button parentKey="CancelButton" inherits="UIPanelButtonTemplate" text="CANCEL">
-				<Size x="80" y="22"/>
-				<Anchors>
-					<Anchor point="BOTTOMRIGHT" x="-45" y="23"/>
-				</Anchors>
-				<Scripts>
-					<OnClick function="GarrisonBuildingFrame_ClearConfirmation"/>
-				</Scripts>
-			</Button>
-		</Frames>
-	</Frame>
-	
-	<Frame name="GarrisonBuildingFrame" inherits="GarrisonUITemplate" parent="UIParent" hidden="true">
+	<Frame name="GarrisonBuildingFrame" inherits="GarrisonUITemplate" parent="UIParent" enableMouse="true" toplevel="true" hidden="true">
 		<Size x="1002" y="662"/>
 		<Anchors>
 			<Anchor point="CENTER"/>
 		</Anchors>
-		<Layers>
-			<Layer level="OVERLAY" textureSubLevel="1">
-				<Texture name="GarrisonBanner" atlas="Garr_TopBanner" useAtlasSize="true">
-					<Anchors>
-						<Anchor point="TOP" y="12"/>
-					</Anchors>
-				</Texture>
-			</Layer>
-			<Layer level="OVERLAY" textureSubLevel="2">
-				<FontString name="GarrisonTitle" inherits="QuestTitleFontBlackShadow" text="Garrison">
-					<Anchors>
-						<Anchor point="CENTER" relativeTo="GarrisonBanner" y="12"/>
-					</Anchors>
-				</FontString>
-			</Layer>
-		</Layers>
 		<Frames>
+			<Button name="$parentTutorialButton" parentKey="MainHelpButton" inherits="MainHelpPlateButton">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent" x="5" y="20" />
+				</Anchors>
+				<Scripts>
+					<OnClick function="GarrisonBuilding_ToggleTutorial"/>
+				</Scripts>
+			</Button>
 			<Frame parentKey="BuildingList" inherits="GarrisonInfoBoxBigBottomTemplate">
 				<Size x="282" y="565"/>
 				<Anchors>
 					<Anchor point="BOTTOMLEFT" x="30" y="34"/>
 				</Anchors>
 				<Frames>
-					<Frame name="GarrisonBarracksTutorialBox" inherits="GlowBoxTemplate" enableMouse="true" hidden="true" frameStrata="DIALOG" frameLevel="2" topLevel="true">
-						<Size x="220" y="100"/>
-						<Anchors>
-							<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" x="25" y="10"/>
-						</Anchors>
-						<Layers>
-							<Layer level="OVERLAY">
-								<FontString parentKey="Text" inherits="GameFontHighlightLeft" justifyV="TOP" text="Drag your barracks to the highlighted plot on the map to begin building.">
-									<Size x="188" y="0"/>
-									<Anchors>
-										<Anchor point="TOPLEFT" x="16" y="-24"/>
-									</Anchors>
-								</FontString>
-							</Layer>
-							<Layer level="ARTWORK">
-								<Texture parentKey="Arrow" inherits="HelpPlateArrowDOWN">
-									<Size x="53" y="21"/>
-									<Anchors>
-										<Anchor point="RIGHT" relativePoint="LEFT" x="-3" y="0"/>
-									</Anchors>
-								</Texture>
-							</Layer>
-						</Layers>
-						<Frames>
-							<Button parentKey="CloseButton" inherits="UIPanelCloseButton">
-								<Anchors>
-									<Anchor point="TOPRIGHT" x="6" y="6"/>
-								</Anchors>
-								<Scripts>
-									<OnClick>
-										self:GetParent():Hide();
-										TriggerTutorial(66);
-									</OnClick>
-								</Scripts>
-							</Button>
-						</Frames>
-						<Scripts>
-							<OnLoad>
-								MicroButtonAlert_OnLoad(self);
-								SetClampedTextureRotation(self.Arrow, 90);--make arrow face left
-							</OnLoad>
-							<OnShow>
-								self:SetHeight(self.Text:GetHeight()+42);
-							</OnShow>
-						</Scripts>
-					</Frame>
 					<Button parentKey="Tab1" inherits="GarrisonBuildingTabTemplate" id="1">
 						<Anchors>
 							<Anchor point="BOTTOMLEFT" relativePoint="TOPLEFT" x="8" y="-13"/>
@@ -568,6 +568,29 @@
 						</Layers>
 					</Frame>
 				</Frames>
+			</Frame>
+			<Frame parentKey="FollowerList" inherits="GarrisonListTemplateHeader" name="$parentFollowers" hidden="true" frameStrata="HIGH">
+				<Size x="305" y="565"/>
+				<Anchors>
+					<Anchor point="BOTTOMLEFT" x="33" y="34"/>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<Texture file="Interface\Common\ShadowOverlay-Left">
+							<Anchors>
+								<Anchor point="TOPLEFT" relativePoint="TOPRIGHT"/>
+								<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMRIGHT"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnLoad>
+						self:SetFrameLevel(self:GetParent():GetFrameLevel() + 2);
+					</OnLoad>
+					<OnShow function="GarrisonBuildingFollowerList_OnShow"/>
+					<OnHide function="GarrisonBuildingFollowerList_OnHide"/>
+				</Scripts>
 			</Frame>
 			<Frame parentKey="InfoBox" inherits="GarrisonInfoBoxFiligreeTemplate">
 				<Size x="634" y="160"/>
@@ -611,6 +634,7 @@
 							<Anchors>
 								<Anchor point="TOPLEFT" relativeKey="$parent.Title" relativePoint="BOTTOMLEFT" y="-4"/>
 							</Anchors>
+							<Color r="0.804" g="0.725" b="0.616"/>
 						</FontString>
 						<Texture parentKey="RankBadge" atlas="Garr_LevelBadge_1" useAtlasSize="true">
 							<Anchors>
@@ -625,6 +649,16 @@
 						</FontString>
 					</Layer>
 					<Layer level="ARTWORK" textureSubLevel="1">
+						<Texture parentKey="Lock" atlas="Garr_LockedBuilding" useAtlasSize="true" hidden="true">
+							<Anchors>
+								<Anchor point="CENTER" relativeKey="$parent.Building"/>
+							</Anchors>
+						</Texture>
+						<Texture parentKey="InfoBar" atlas="Garr_CostBar" useAtlasSize="true" hidden="true">
+							<Anchors>
+								<Anchor point="BOTTOM" relativeKey="$parent.Building" y="17"/>
+							</Anchors>
+						</Texture>
 						<Texture name="GarrisonBuildingUpgradeGlow" parentKey="UpgradeGlow" atlas="Garr_LevelBadgeGlow" useAtlasSize="true" hidden="true">
 							<Anchors>
 								<Anchor point="CENTER" relativeKey="$parent.RankBadge" />
@@ -632,21 +666,92 @@
 						</Texture>
 					</Layer>
 					<Layer level="ARTWORK" textureSubLevel="2">
+						<FontString parentKey="InfoText" inherits="GameFontNormal" justifyH="CENTER">
+							<Size x="150" y="0"/>
+							<Anchors>
+								<Anchor point="CENTER" relativeKey="$parent.InfoBar" y="1"/>
+							</Anchors>
+						</FontString>
+						<FontString parentKey="TimeLeft" inherits="GameFontHighlight" justifyH="CENTER">
+							<Size x="150" y="0"/>
+							<Anchors>
+								<Anchor point="TOP" relativeKey="$parent.InfoText" relativePoint="BOTTOM" y="-7"/>
+							</Anchors>
+						</FontString>
 						<Texture parentKey="UpgradeBadge" hidden="true">
 							<Anchors>
 								<Anchor point="BOTTOMRIGHT" relativeKey="$parent.RankBadge" x="4" y="-4"/>
 							</Anchors>
 						</Texture>
 					</Layer>
-					<Layer level="OVERLAY">
-						<Texture parentKey="BuildIcon" atlas="Garr_BuildIcon" useAtlasSize="true" hidden="true">
-							<Anchors>
-								<Anchor point="CENTER" relativeKey="$parent.Building"/>
-							</Anchors>
-						</Texture>
-					</Layer>
 				</Layers>
 				<Frames>
+					<Frame parentKey="Timer" hidden="true">
+						<Size x="50" y="50"/>
+						<Anchors>
+							<Anchor point="CENTER" relativeKey="$parent.Building"/>
+						</Anchors>
+						<Layers>
+							<Layer level="BACKGROUND">
+								<Texture parentKey="Glow" atlas="Garr_BuildingTimerGlow" useAtlasSize="true" hidden="true">
+									<Anchors>
+										<Anchor point="CENTER"/>
+									</Anchors>
+								</Texture>
+							</Layer>
+							<Layer level="BACKGROUND" textureSubLevel="1">
+								<Texture parentKey="Icon" atlas="Garr_BuildIcon" useAtlasSize="true">
+									<Anchors>
+										<Anchor point="CENTER"/>
+									</Anchors>
+								</Texture>
+							</Layer>
+							<Layer level="BORDER">
+								<Texture parentKey="BG" atlas="Garr_BuildingTimerBG" setAllPoints="true"/>
+							</Layer>
+							<Layer level="ARTWORK">
+								<Texture parentKey="CompleteRing" atlas="Garr_BuildingTimerFill" setAllPoints="true" hidden="true"/>
+							</Layer>
+						</Layers>
+						<Frames>
+							<Cooldown parentKey="Cooldown" reverse="true" hideCountdownNumbers="true">
+								<Size x="64" y="64"/>
+								<Anchors>
+									<Anchor point="CENTER"/>
+								</Anchors>
+								<SwipeTexture file="Interface\Garrison\Garr_TimerFill"/>
+							</Cooldown>
+							<Button parentKey="Cancel" enableMouse="true" frameStrata="HIGH">
+								<Size x="30" y="30"/>
+								<Anchors>
+									<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMRIGHT"/>
+								</Anchors>
+								<Layers>
+									<Layer level="ARTWORK">
+										<Texture file="Interface\Buttons\UI-GroupLoot-Pass-Up" alpha="0.8" parentKey="texture"/>
+									</Layer>
+								</Layers>
+								<Scripts>
+									<OnEnter>
+										self.texture:SetAlpha(1.0);
+										GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+										GameTooltip:SetText(CANCEL);
+									</OnEnter>
+									<OnLeave>
+										self.texture:SetAlpha(0.8);
+										GameTooltip_Hide();
+									</OnLeave>
+									<OnMouseDown>
+										self.texture:SetPoint("TOPLEFT", 1, -1);
+									</OnMouseDown>
+									<OnMouseUp>
+										self.texture:SetPoint("TOPLEFT", 0, 0);
+									</OnMouseUp>
+									<OnClick function="GarrisonBuildingFrameTimerCancel_OnClick"/>
+								</Scripts>
+							</Button>
+						</Frames>
+					</Frame>
 					<Frame parentKey="CostBar" hidden="true">
 						<Size x="158" y="57"/>
 						<Anchors>
@@ -698,6 +803,13 @@
 						</Anchors>
 						<Layers>
 							<Layer level="BACKGROUND">
+								<Texture atlas="Garr_BuildingShadowOverlay" useAtlasSize="true">
+									<Anchors>
+										<Anchor point="CENTER" y="40"/>
+									</Anchors>
+								</Texture>
+							</Layer>
+							<Layer level="BACKGROUND">
 								<Texture atlas="Garr_CostBar" useAtlasSize="true">
 									<Anchors>
 										<Anchor point="CENTER"/>
@@ -718,13 +830,21 @@
 							</Layer>
 						</Layers>
 					</Frame>
-					<Button parentKey="UpgradeButton" inherits="UIPanelButtonTemplate" text="UPGRADE">
+					<Button parentKey="UpgradeButton" inherits="UIPanelButtonTemplate" text="UPGRADE" motionScriptsWhileDisabled="true">
 						<Size x="80" y="22"/>
 						<Anchors>
 							<Anchor point="TOP" relativeKey="$parent.RankLabel" relativePoint="BOTTOM" y="-3"/>
 						</Anchors>
 						<Scripts>
 							<OnClick function="GarrisonBuildingFrame_StartUpgrade"/>
+							<OnEnter>
+								if (self.tooltip) then
+									GameTooltip:SetOwner(self, "ANCHOR_TOPLEFT")
+									GameTooltip:SetText(self.tooltip, nil, nil, nil, true);
+									GameTooltip:Show();
+								end
+							</OnEnter>
+							<OnLeave function="GameTooltip_Hide"/>
 						</Scripts>
 					</Button>
 					<Frame parentKey="SpecFrame" hidden="true">
@@ -761,6 +881,30 @@
 							</Button>
 						</Frames>
 					</Frame>
+					<Button parentKey="AddFollowerButton" inherits="GarrisonFollowerPortraitTemplate">
+						<Anchors>
+							<Anchor point="LEFT" relativeKey="$parent.SpecFrame" relativePoint="RIGHT" x="10"/>
+						</Anchors>
+						<Layers>
+							<Layer level="BORDER" textureSubLevel="-1">
+								<Texture atlas="Garr_FollowerPortrait_Bg" useAtlasSize="true">
+									<Anchors>
+										<Anchor point="CENTER" relativeKey="$parent.PortraitRing"/>
+									</Anchors>
+								</Texture>
+							</Layer>
+							<Layer level="OVERLAY">
+								<Texture parentKey="Plus" atlas="Garr_Building-AddFollowerPlus" useAtlasSize="true">
+									<Anchors>
+										<Anchor point="CENTER" relativeKey="$parent.PortraitRing" y="5"/>
+									</Anchors>
+								</Texture>
+							</Layer>
+						</Layers>
+						<Scripts>
+							<OnClick function="GarrisonBuildingAddFollowerButton_OnClick"/>
+						</Scripts>
+					</Button>
 					
 					<Frame parentKey="Tooltip" inherits="TooltipBorderedFrameTemplate" hidden="true" frameStrata="HIGH">
 						<Size x="230" y="300"/>
@@ -815,7 +959,7 @@
 						</Layers>
 					</Frame>
 					<Frame parentKey="MouseOver" frameStrata="HIGH">
-						<Size x="80" y="65"/>
+						<Size x="80" y="60"/>
 						<Anchors>
 							<Anchor point="TOPRIGHT" x="-15" y="-20"/>
 						</Anchors>
@@ -826,6 +970,19 @@
 							<OnLeave>
 								self:GetParent().Tooltip:Hide();
 							</OnLeave>
+						</Scripts>
+					</Frame>
+					<Frame parentKey="DragArea" frameStrata="HIGH">
+						<Size x="210" y="140"/>
+						<Anchors>
+							<Anchor point="TOPLEFT" x="10" y="-12"/>
+						</Anchors>
+						<Scripts>
+							<OnLoad>
+								self:RegisterForDrag("LeftButton");
+							</OnLoad>
+							<OnDragStart function="GarrisonBuildingInfoBox_OnDragStart"/>
+							<OnDragStop function="GarrisonBuildingInfoBox_OnDragStop"/>
 						</Scripts>
 					</Frame>
 				</Frames>
@@ -961,6 +1118,11 @@
 										<Anchor point="BOTTOM"/>
 									</Anchors>
 								</Texture>
+								<Texture parentKey="BuildingHighlight" alpha="0.5" alphaMode="ADD" hidden="true">
+									<Anchors>
+										<Anchor point="BOTTOM"/>
+									</Anchors>
+								</Texture>
 							</Layer>
 							<Layer level="BORDER">
 								<Texture parentKey="BannerMid" atlas="Garr_TownHallBanner_Mid" useAtlasSize="true">
@@ -1000,12 +1162,12 @@
 							</Layer>
 						</Layers>
 						<Scripts>
-							<OnLoad>
-								if (UnitFactionGroup("player") == PLAYER_FACTION_GROUP[0]) then
-									self:ClearAllPoints();
-									self:SetPoint("CENTER", self:GetParent(), "TOPLEFT", 380, -110);
-								end
-							</OnLoad>
+							<OnEnter>
+								self.BuildingHighlight:Show();
+							</OnEnter>
+							<OnLeave>
+								self.BuildingHighlight:Hide();
+							</OnLeave>
 							<OnClick function="GarrisonTownHall_OnClick"/>
 						</Scripts>
 					</Button>
@@ -1014,17 +1176,66 @@
 				</Frames>
 			</Frame>
 			
-			<Frame parentKey="BuildConfirmation" inherits="ConfirmationTemplate">
+			<Frame parentKey="Confirmation" frameStrata="HIGH" hidden="true">
+				<Size x="271" y="123"/>
 				<Layers>
+					<Layer level="BACKGROUND">
+						<Texture atlas="Garr_BuildingConfirmation" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="CENTER"/>
+							</Anchors>
+						</Texture>
+					</Layer>
 					<Layer level="ARTWORK">
-						<Texture atlas="Garr_BuildIcon" useAtlasSize="true">
+						<Texture parentKey="Icon" atlas="Garr_BuildIcon" useAtlasSize="true">
 							<Anchors>
 								<Anchor point="TOPLEFT" x="25" y="-27"/>
 							</Anchors>
 						</Texture>
+						<FontString parentKey="CostLabel" inherits="GameFontNormal" text="COSTS_LABEL">
+							<Shadow>
+								<Offset x="1" y="-1"/>
+							</Shadow>
+							<Anchors>
+								<Anchor point="TOPLEFT" x="81" y="-34"/>
+							</Anchors>
+						</FontString>
+						<FontString parentKey="Cost" inherits="GameFontHighlight">
+							<Shadow>
+								<Offset x="1" y="-1"/>
+							</Shadow>
+							<Anchors>
+								<Anchor point="LEFT" relativeKey="$parent.CostLabel" relativePoint="RIGHT" x="5"/>
+							</Anchors>
+						</FontString>
+						<FontString parentKey="TimeLabel" inherits="GameFontNormal" text="TIME_LABEL">
+							<Shadow>
+								<Offset x="1" y="-1"/>
+							</Shadow>
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeKey="$parent.CostLabel" relativePoint="BOTTOMLEFT" y="-8"/>
+							</Anchors>
+						</FontString>
+						<FontString parentKey="Time" inherits="GameFontHighlight">
+							<Shadow>
+								<Offset x="1" y="-1"/>
+							</Shadow>
+							<Anchors>
+								<Anchor point="LEFT" relativeKey="$parent.TimeLabel" relativePoint="RIGHT" x="5"/>
+							</Anchors>
+						</FontString>
 					</Layer>
 				</Layers>
 				<Frames>
+					<Button parentKey="CancelButton" inherits="UIPanelButtonTemplate" text="CANCEL">
+						<Size x="80" y="22"/>
+						<Anchors>
+							<Anchor point="BOTTOMRIGHT" x="-45" y="23"/>
+						</Anchors>
+						<Scripts>
+							<OnClick function="GarrisonBuildingFrame_ClearConfirmation"/>
+						</Scripts>
+					</Button>
 					<Button parentKey="BuildButton" inherits="UIPanelButtonTemplate" text="GARRISON_BUILD">
 						<Size x="80" y="22"/>
 						<Anchors>
@@ -1034,19 +1245,6 @@
 							<OnClick function ="GarrisonBuildingFrame_ConfirmBuild"/>
 						</Scripts>
 					</Button>
-				</Frames>
-			</Frame>
-			<Frame parentKey="UpgradeConfirmation" inherits="ConfirmationTemplate">
-				<Layers>
-					<Layer level="ARTWORK">
-						<Texture atlas="Garr_UpgradeIcon" useAtlasSize="true">
-							<Anchors>
-								<Anchor point="TOPLEFT" x="25" y="-27"/>
-							</Anchors>
-						</Texture>
-					</Layer>
-				</Layers>
-				<Frames>
 					<Button parentKey="UpgradeButton" inherits="UIPanelButtonTemplate" text="UPGRADE">
 						<Size x="80" y="22"/>
 						<Anchors>
@@ -1056,67 +1254,22 @@
 							<OnClick function ="GarrisonBuildingFrame_ConfirmUpgrade"/>
 						</Scripts>
 					</Button>
-				</Frames>
-			</Frame>
-		
-			<Frame parentKey="Activation" hidden="true" frameStrata="HIGH">
-				<Size x="538" y="170"/>
-				<Anchors>
-					<Anchor point="CENTER"/>
-				</Anchors>
-				<Layers>
-					<Layer level="BACKGROUND">
-						<Texture atlas="Garr_Notification" useAtlasSize="true">
-							<Anchors>
-								<Anchor point="CENTER"/>
-							</Anchors>
-						</Texture>
-					</Layer>
-					<Layer level="ARTWORK">
-						<Texture parentKey="Building" atlas="GarrBuilding_Alchemy_1_A_Info">
-							<Size x="208" y="135"/>
-							<Anchors>
-								<Anchor point="LEFT" x="20"/>
-							</Anchors>
-						</Texture>
-						<FontString parentKey="Title" inherits="QuestFont_Super_Huge" text="GARRISON_BUILDING_COMPLETE">
-							<Anchors>
-								<Anchor point="TOP" x="50" y="-45"/>
-							</Anchors>
-						</FontString>
-						<FontString parentKey="Name" inherits="GameFontHighlightMedium" text="Blacksmith Foundry">
-							<Anchors>
-								<Anchor point="TOP" relativeKey="$parent.Title" relativePoint="BOTTOM" y="-10"/>
-							</Anchors>
-						</FontString>
-					</Layer>
-					<Layer level="ARTWORK" textureSubLevel="2">
-						<Texture parentKey="UpgradeBadge" atlas="Garr_LevelBadge_2" useAtlasSize="true">
-							<Anchors>
-								<Anchor point="CENTER" relativeKey="$parent.Building" y="10"/>
-							</Anchors>
-						</Texture>
-						<FontString parentKey="LevelUpText" inherits="GameFontHighlightMedium" text="PLAYER_LEVEL_UP">
-							<Anchors>
-								<Anchor point="TOP" relativeKey="$parent.UpgradeBadge" relativePoint="BOTTOM" y="-3"/>
-							</Anchors>
-						</FontString>
-						<Texture parentKey="UpgradeBanner" atlas="Garr_UpgradeBanner">
-							<Anchors>
-								<Anchor point="TOPLEFT" relativeKey="$parent.LevelUpText" x="-50" y="15"/>
-								<Anchor point="BOTTOMRIGHT" relativeKey="$parent.LevelUpText" x="50" y="-15"/>
-							</Anchors>
-						</Texture>
-					</Layer>
-				</Layers>
-				<Frames>
-					<Button inherits="UIPanelButtonTemplate" text="GARRISON_FINALIZE_BUILDING">
-						<Size x="150" y="22"/>
+					<Button parentKey="ReplaceButton" inherits="UIPanelButtonTemplate" text="REPLACE">
+						<Size x="80" y="22"/>
 						<Anchors>
-							<Anchor point="TOP" relativeKey="$parent.Title" relativePoint="BOTTOM" y="-40"/>
+							<Anchor point="BOTTOMLEFT" x="45" y="23"/>
 						</Anchors>
 						<Scripts>
-							<OnClick function="GarrisonBuildingFrame_ActivateBuilding"/>
+							<OnClick function ="GarrisonBuildingFrame_ConfirmBuild"/>
+						</Scripts>
+					</Button>
+					<Button parentKey="SwitchButton" inherits="UIPanelButtonTemplate" text="SWITCH">
+						<Size x="80" y="22"/>
+						<Anchors>
+							<Anchor point="BOTTOMLEFT" x="45" y="23"/>
+						</Anchors>
+						<Scripts>
+							<OnClick function ="GarrisonBuildingSpec_ConfirmSwitch"/>
 						</Scripts>
 					</Button>
 				</Frames>
@@ -1128,12 +1281,13 @@
 			<OnEvent function="GarrisonBuildingFrame_OnEvent"/>
 			<OnHide>
 				C_Garrison.CloseArchitect();
+				HelpPlate_Hide();
 			</OnHide>
 		</Scripts>
 	</Frame>
 	
 	
-	<Frame name="GarrisonBuildingPlacer" parent="UIParent" frameStrata="HIGH">
+	<Frame name="GarrisonBuildingPlacer" parent="UIParent" frameStrata="HIGH" hidden="true">
 		<Size x="108" y="70"/>
 		<Layers>
 			<Layer level="ARTWORK">

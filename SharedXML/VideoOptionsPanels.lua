@@ -804,7 +804,7 @@ function Advanced_OnLoad (self)
 		_G[name .. "StereoHeaderUnderline"]:Hide();
 	end
 	if ( IsMacClient() ) then
-		Advanced_UIScaleSlider:SetPoint("TOPLEFT", Advanced_HardwareCursorDropDown, "BOTTOMLEFT", -90, -20);
+		Advanced_OutlineDropDown:SetPoint("TOPLEFT", Advanced_HardwareCursorDropDown, "BOTTOMLEFT", 0, -8);
 		Advanced_GraphicsAPIDropDown:Hide();
 	end
 end
@@ -870,7 +870,7 @@ function InterfaceOptionsLanguagesPanelLocaleDropDown_OnLoad (self)
 	self.type = CONTROLTYPE_DROPDOWN;
 	BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
 
-	self.cvar = "locale";
+	self.cvar = "textLocale";
 
 	local value = GetCVar(self.cvar);
 	self.defaultValue = GetCVarDefault(self.cvar);
@@ -884,7 +884,8 @@ function InterfaceOptionsLanguagesPanelLocaleDropDown_OnLoad (self)
 
 	self.SetValue = 
 		function (self, value)
-			SetCVar("locale", value, self.event);
+			SetCVar("textLocale", value, self.event);
+			SetCVar("audioLocale", value, self.event);
 			self.value = value;
 			if ( self.oldValue ~= value ) then
 				self.gameRestart = true;
@@ -937,7 +938,7 @@ LANGUAGE_TEXT_HEIGHT = 22/512;
 
 function Language_SetOSLanguageTexture(self)
 	local OSlocale = GetOSLocale();
-	local locale = GetCVar("locale");
+	local locale = GetCVar("textLocale");
 	local value = LanguageRegions[OSlocale];
 	if ((OSlocale ~= locale) and value) then
 		self.Texture:SetTexCoord(0.0, 1.0, LANGUAGE_TEXT_HEIGHT * value, (LANGUAGE_TEXT_HEIGHT * value) + LANGUAGE_TEXT_HEIGHT);

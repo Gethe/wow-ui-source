@@ -454,16 +454,21 @@ function TradeSkillFrame_SetSelection(id)
 	end
 	
 	TradeSkillSkillName:SetText(skillName);
-	local cooldown, isDayCooldown = GetTradeSkillCooldown(id);
-	
-	if ( not cooldown ) then
-		TradeSkillSkillCooldown:SetText("");
-	elseif ( not isDayCooldown ) then
-		TradeSkillSkillCooldown:SetText(COOLDOWN_REMAINING.." "..SecondsToTime(cooldown));
-	elseif ( cooldown > 60 * 60 * 24 ) then	--Cooldown is greater than 1 day.
-		TradeSkillSkillCooldown:SetText(COOLDOWN_REMAINING.." "..SecondsToTime(cooldown, true, false, 1, true));
+	local cooldown, isDayCooldown, charges, maxCharges = GetTradeSkillCooldown(id);
+	if( maxCharges > 0 and (charges > 0 or not cooldown) )then
+		TradeSkillSkillCooldown:SetText(format(TRADESKILL_CHARGES_REMAINING, charges, maxCharges));
+		TradeSkillSkillCooldown:SetTextColor(HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b);
 	else
-		TradeSkillSkillCooldown:SetText(COOLDOWN_EXPIRES_AT_MIDNIGHT);
+		TradeSkillSkillCooldown:SetTextColor(RED_FONT_COLOR.r, RED_FONT_COLOR.g, RED_FONT_COLOR.b);
+		if ( not cooldown ) then
+			TradeSkillSkillCooldown:SetText("");
+		elseif ( not isDayCooldown ) then
+			TradeSkillSkillCooldown:SetText(COOLDOWN_REMAINING.." "..SecondsToTime(cooldown));
+		elseif ( cooldown > 60 * 60 * 24 ) then	--Cooldown is greater than 1 day.
+			TradeSkillSkillCooldown:SetText(COOLDOWN_REMAINING.." "..SecondsToTime(cooldown, true, false, 1, true));
+		else
+			TradeSkillSkillCooldown:SetText(COOLDOWN_EXPIRES_AT_MIDNIGHT);
+		end
 	end
 
 	TradeSkillSkillIcon:SetNormalTexture(GetTradeSkillIcon(id));

@@ -953,6 +953,7 @@ function CharacterSelectScrollDown_OnClick()
 			CharacterSelect_SelectCharacter(1);
 		end
 		UpdateCharacterList();
+		UpdateCharacterSelection(CharacterSelect);
 	end
 end
 
@@ -971,6 +972,7 @@ function CharacterSelectScrollUp_OnClick()
 			CharacterSelect_SelectCharacter(numChars);
 		end
 		UpdateCharacterList();
+		UpdateCharacterSelection(CharacterSelect);
 	end
 end
 
@@ -1293,13 +1295,19 @@ end
 
 function CharacterSelect_UpdateButtonState()
 	local servicesEnabled = not CharSelectServicesFlowFrame:IsShown();
-	local undeleteEnabled = not CharacterSelect.undeleting;
+	local undeleting = CharacterSelect.undeleting;
+	local undeleteEnabled, undeleteOnCooldown = GetCharacterUndeleteStatus();
 	
-	CharSelectEnterWorldButton:SetEnabled(servicesEnabled and undeleteEnabled);
-	CharacterSelectBackButton:SetEnabled(servicesEnabled and undeleteEnabled);
-	CharacterSelectDeleteButton:SetEnabled(servicesEnabled and undeleteEnabled);
-	CharSelectChangeRealmButton:SetEnabled(servicesEnabled and undeleteEnabled);
-	CharacterSelectAddonsButton:SetEnabled(servicesEnabled);
+	CharSelectEnterWorldButton:SetEnabled(servicesEnabled and not undeleting);
+	CharacterSelectBackButton:SetEnabled(servicesEnabled and not undeleting);
+	CharacterSelectDeleteButton:SetEnabled(servicesEnabled and not undeleting);
+	CharSelectChangeRealmButton:SetEnabled(servicesEnabled and not undeleting);
+	CharSelectUndeleteCharacterButton:SetEnabled(servicesEnabled and undeleteEnabled and not undeleteOnCooldown);
+	CharacterSelectAddonsButton:SetEnabled(servicesEnabled and not undeleting);
+	CopyCharacterButton:SetEnabled(servicesEnabled and not undeleting);
+	ActivateFactionChange:SetEnabled(servicesEnabled and not undeleting);
+	ActivateFactionChange.texture:SetDesaturated(not (servicesEnabled and not undeleting));
+	CharacterTemplatesFrame.CreateTemplateButton:SetEnabled(servicesEnabled and not undeleting);
 	CharacterSelectMenuButton:SetEnabled(servicesEnabled);
 	CharSelectCreateCharacterButton:SetEnabled(servicesEnabled);
 end
@@ -1320,6 +1328,7 @@ function CharacterSelect_StartCharacterUndelete()
 	CharSelectUndeleteCharacterButton:Hide();
 	CharSelectBackToActiveButton:Show();
 
+	CharacterServicesMaster_UpdateServiceButton();
 	StartCharacterUndelete();
 end
 
@@ -1331,6 +1340,7 @@ function CharacterSelect_EndCharacterUndelete()
 	CharSelectCreateCharacterButton:Show();
 	CharSelectUndeleteCharacterButton:Show();
 
+	CharacterServicesMaster_UpdateServiceButton();
 	EndCharacterUndelete();
 end
 

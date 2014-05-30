@@ -1,7 +1,7 @@
 
 BONUS_OBJECTIVE_TRACKER_MODULE = ObjectiveTracker_GetModuleInfoTable();
 BONUS_OBJECTIVE_TRACKER_MODULE.updateReasonModule = OBJECTIVE_TRACKER_UPDATE_MODULE_BONUS_OBJECTIVE;
-BONUS_OBJECTIVE_TRACKER_MODULE.updateReasonEvents = OBJECTIVE_TRACKER_UPDATE_QUEST + OBJECTIVE_TRACKER_UPDATE_TASK_ADDED + OBJECTIVE_TRACKER_UPDATE_SCENARIO + OBJECTIVE_TRACKER_UPDATE_SCENARIO_NEW_STAGE;
+BONUS_OBJECTIVE_TRACKER_MODULE.updateReasonEvents = OBJECTIVE_TRACKER_UPDATE_QUEST + OBJECTIVE_TRACKER_UPDATE_TASK_ADDED + OBJECTIVE_TRACKER_UPDATE_SCENARIO + OBJECTIVE_TRACKER_UPDATE_SCENARIO_NEW_STAGE + OBJECTIVE_TRACKER_UPDATE_SCENARIO_BONUS_DELAYED;
 BONUS_OBJECTIVE_TRACKER_MODULE.blockTemplate = "BonusObjectiveTrackerBlockTemplate";
 BONUS_OBJECTIVE_TRACKER_MODULE.blockType = "ScrollFrame";
 BONUS_OBJECTIVE_TRACKER_MODULE.freeBlocks = { };
@@ -9,8 +9,12 @@ BONUS_OBJECTIVE_TRACKER_MODULE.usedBlocks = { };
 BONUS_OBJECTIVE_TRACKER_MODULE.freeLines = { };
 BONUS_OBJECTIVE_TRACKER_MODULE.lineTemplate = "BonusObjectiveTrackerLineTemplate";
 BONUS_OBJECTIVE_TRACKER_MODULE.blockOffsetX = -20;
+BONUS_OBJECTIVE_TRACKER_MODULE.blockOffsetY = -10;
 BONUS_OBJECTIVE_TRACKER_MODULE.lineSpacing = 6;
 BONUS_OBJECTIVE_TRACKER_MODULE.fromHeaderOffsetY = -4;
+BONUS_OBJECTIVE_TRACKER_MODULE.blockPadding = 3;	-- need some extra room so scrollframe doesn't cut tails off gjpqy
+
+local COMPLETED_BONUS_DATA = { };
 
 function BONUS_OBJECTIVE_TRACKER_MODULE:OnFreeBlock(block)
 	if ( block.state == "LEAVING" ) then
@@ -18,9 +22,22 @@ function BONUS_OBJECTIVE_TRACKER_MODULE:OnFreeBlock(block)
 	elseif ( block.state == "ENTERING" ) then
 		block.AnimIn:Stop();
 	end
+	if ( COMPLETED_BONUS_DATA[block.id] ) then
+		COMPLETED_BONUS_DATA[block.id] = nil;
+		local rewardsFrame = ObjectiveTrackerBonusRewardsFrame;
+		if ( rewardsFrame.id == block.id ) then
+			rewardsFrame:Hide();
+			rewardsFrame.Anim:Stop();
+			rewardsFrame.id = nil;
+			for i = 1, #rewardsFrame.rewards do
+				rewardsFrame.rewards[i].Anim:Stop();	
+			end
+		end
+	end
 	block:SetAlpha(0);	
 	block.state = nil;
 	block.finished = nil;
+	block.posIndex = nil;
 end
 
 function BONUS_OBJECTIVE_TRACKER_MODULE:OnFreeLine(line)
@@ -35,7 +52,7 @@ end
 -- *****************************************************************************************************
 
 function BonusObjectiveTracker_OnHeaderLoad(self)
-	BONUS_OBJECTIVE_TRACKER_MODULE:SetHeader(self, "Bonus Objectives", 0, OBJECTIVE_TRACKER_UPDATE_MODULE_BONUS_OBJECTIVE);
+	BONUS_OBJECTIVE_TRACKER_MODULE:SetHeader(self, TRACKER_HEADER_BONUS_OBJECTIVES, 0, OBJECTIVE_TRACKER_UPDATE_MODULE_BONUS_OBJECTIVE);
 	self.height = OBJECTIVE_TRACKER_HEADER_HEIGHT;
 end
 
@@ -76,8 +93,163 @@ function BonusObjectiveTracker_OnBlockLeave(block)
 end
 
 -- *****************************************************************************************************
--- ***** UPDATE FUNCTIONS
+-- ***** REWARD FUNCTIONS
 -- *****************************************************************************************************
+
+function BonusObjectiveTracker_OnTaskCompleted(questID, xp, money)
+	-- make sure we're already displaying this
+	local block = BONUS_OBJECTIVE_TRACKER_MODULE:GetExistingBlock(questID);
+	if ( block ) then
+		BonusObjectiveTracker_AddReward(questID, block, xp, money);
+	end
+end
+
+function BonusObjectiveTracker_AddReward(questID, block, xp, money)
+	-- cancel any entering/leaving animations
+	BonusObjectiveTracker_SetBlockState(block, "PRESENT", true);
+
+	local data = { };
+	-- save data for a quest
+	if ( block.id > 0 ) then
+		data.posIndex = block.posIndex;
+		data.objectives = { };
+		local isInArea, isOnMap, numObjectives = GetTaskInfo(questID);
+		for objectiveIndex = 1, numObjectives do
+			local text, objectiveType, finished = GetQuestObjectiveInfo(questID, objectiveIndex);
+			tinsert(data.objectives, text);
+		end
+	end
+	-- save all the rewards
+	data.rewards = { };
+	-- xp
+	if ( not xp ) then
+		xp = GetQuestLogRewardXP(questID);
+	end
+	if ( xp > 0 ) then
+		local t = { };
+		t.label = xp;
+		t.texture = "Interface\\Icons\\XP_Icon";
+		t.count = 0;
+		t.font = "NumberFontNormal";
+		tinsert(data.rewards, t);
+	end
+	-- currencies
+	local numCurrencies = GetNumQuestLogRewardCurrencies(questID);
+	for i = 1, numCurrencies do
+		local name, texture, count = GetQuestLogRewardCurrencyInfo(i, questID);
+		local t = { };
+		t.label = name;
+		t.texture = texture;
+		t.count = count;
+		t.font = "GameFontHighlightSmall";
+		tinsert(data.rewards, t);
+	end
+	-- items
+	local numItems = GetNumQuestLogRewards(questID);
+	for i = 1, numItems do
+		local name, texture, count, quality, isUsable = GetQuestLogRewardInfo(i, questID);
+		local t = { };
+		t.label = name;
+		t.texture = texture;
+		t.count = count;
+		t.font = "GameFontHighlightSmall";
+		tinsert(data.rewards, t);
+	end	
+	-- money
+	if ( not money ) then
+		money = GetQuestLogRewardMoney(questID);
+	end
+	if ( money > 0 ) then
+		local t = { };
+		t.label = GetMoneyString(money);
+		t.texture = "Interface\\Icons\\inv_misc_coin_01";
+		t.count = 0;
+		t.font = "GameFontHighlight";
+		tinsert(data.rewards, t);
+	end
+	COMPLETED_BONUS_DATA[block.id] = data;
+	-- try to play it
+	BonusObjectiveTracker_AnimateReward(block);	
+end
+
+function BonusObjectiveTracker_AnimateReward(block)
+	local rewardsFrame = ObjectiveTrackerBonusRewardsFrame;
+	if ( not rewardsFrame.id ) then
+		local data = COMPLETED_BONUS_DATA[block.id];
+		if ( not data ) then
+			return;
+		end
+
+		rewardsFrame.id = block.id;
+		rewardsFrame:SetParent(block);
+		rewardsFrame:ClearAllPoints();
+		rewardsFrame:SetPoint("TOPRIGHT", block, "TOPLEFT", 10, -4);
+		rewardsFrame:Show();
+		local numRewards = #data.rewards;
+		local contentsHeight = 12 + numRewards * 36;
+		rewardsFrame.Anim.RewardsBottomAnim:SetOffset(0, -contentsHeight);
+		rewardsFrame.Anim.RewardsShadowAnim:SetToScale(0.8, contentsHeight / 16);
+		rewardsFrame.Anim:Play();
+		-- configure reward frames
+		for i = 1, numRewards do
+			local rewardItem = rewardsFrame.Rewards[i];
+			if ( not rewardItem ) then
+				rewardItem = CreateFrame("FRAME", nil, rewardsFrame, "BonusObjectiveTrackerRewardTemplate");
+				rewardItem:SetPoint("TOPLEFT", rewardsFrame.Rewards[i-1], "BOTTOMLEFT", 0, -4);
+			end
+			local rewardData = data.rewards[i];
+			if ( rewardData.count > 1 ) then
+				rewardItem.Count:Show();
+				rewardItem.Count:SetText(rewardData.count);				
+			else
+				rewardItem.Count:Hide();
+			end
+			rewardItem.Label:SetFontObject(rewardData.font);
+			rewardItem.Label:SetText(rewardData.label);
+			rewardItem.ItemIcon:SetTexture(rewardData.texture);
+			rewardItem:Show();
+			rewardItem.Anim:Play();
+		end
+		-- hide unused reward items
+		for i = numRewards + 1, #rewardsFrame.Rewards do
+			rewardsFrame.Rewards[i]:Hide();
+		end
+	end
+end
+
+function BonusObjectiveTracker_OnAnimateRewardDone(self)
+	local rewardsFrame = ObjectiveTrackerBonusRewardsFrame;
+	-- kill the data
+	local oldPosIndex = COMPLETED_BONUS_DATA[rewardsFrame.id].posIndex;
+	COMPLETED_BONUS_DATA[rewardsFrame.id] = nil;
+	rewardsFrame.id = nil;
+	-- kill anims
+	for i = 1, #rewardsFrame.Rewards do
+		rewardsFrame.Rewards[i].Anim:Stop();
+	end
+	-- look for another reward to animate and fix positions
+	local nextAnimBlock;
+	for id, data in pairs(COMPLETED_BONUS_DATA) do
+		local block = BONUS_OBJECTIVE_TRACKER_MODULE:GetExistingBlock(id);
+		-- make sure we're still showing this
+		if ( block ) then
+			nextAnimBlock = block;
+			-- if this block that completed was ahead of this, bring it up
+			if ( data.posIndex > oldPosIndex ) then
+				data.posIndex = data.posIndex - 1;
+			end
+		end
+	end
+	-- update tracker to remove dead bonus objective
+	ObjectiveTracker_Update(OBJECTIVE_TRACKER_UPDATE_MODULE_BONUS_OBJECTIVE);
+	-- animate if we have something, otherwise clear it all
+	if ( nextAnimBlock ) then
+		BonusObjectiveTracker_AnimateReward(nextAnimBlock);
+	else
+		rewardsFrame:Hide();
+		wipe(COMPLETED_BONUS_DATA);
+	end
+end
 
 function BonusObjectiveTracker_ShowRewardsTooltip(block)
 	local questID;
@@ -90,18 +262,34 @@ function BonusObjectiveTracker_ShowRewardsTooltip(block)
 		end
 	else
 		questID = block.id;
+		if ( COMPLETED_BONUS_DATA[questID] ) then
+			-- no tooltip for completed objectives
+			return;
+		end
 	end
 
 	GameTooltip:ClearAllPoints();
 	GameTooltip:SetPoint("TOPRIGHT", block, "TOPLEFT", 0, 0);
 	GameTooltip:SetOwner(block, "ANCHOR_PRESERVE");
-	GameTooltip:SetText(QUEST_REWARDS, 1, 0.831, 0.380);
+	GameTooltip:SetText(REWARDS, 1, 0.831, 0.380);
 
-	if ( not RequestQuestData(questID) ) then
+	if ( not HaveQuestData(questID) ) then
 		GameTooltip:AddLine(RETRIEVING_DATA, RED_FONT_COLOR.r, RED_FONT_COLOR.g, RED_FONT_COLOR.b);
 	else	
 		GameTooltip:AddLine(BONUS_OBJECTIVE_TOOLTIP_DESCRIPTION, 1, 1, 1, 1);
 		GameTooltip:AddLine(" ");
+		-- xp
+		local xp = GetQuestLogRewardXP(questID);
+		if ( xp > 0 ) then
+			GameTooltip:AddLine(string.format(BONUS_OBJECTIVE_EXPERIENCE_FORMAT, xp), 1, 1, 1);
+		end
+		-- currency		
+		local numQuestCurrencies = GetNumQuestLogRewardCurrencies(questID);
+		for i = 1, numQuestCurrencies do
+			local name, texture, numItems = GetQuestLogRewardCurrencyInfo(i, questID);
+			local text = string.format(BONUS_OBJECTIVE_REWARD_WITH_COUNT_FORMAT, texture, numItems, name);
+			GameTooltip:AddLine(text, 1, 1, 1);			
+		end
 		-- items
 		local numQuestRewards = GetNumQuestLogRewards(questID);
 		for i = 1, numQuestRewards do
@@ -115,18 +303,6 @@ function BonusObjectiveTracker_ShowRewardsTooltip(block)
 			local color = ITEM_QUALITY_COLORS[quality];
 			GameTooltip:AddLine(text, color.r, color.g, color.b);
 		end
-		-- currency		
-		local numQuestCurrencies = GetNumQuestLogRewardCurrencies(questID);
-		for i = 1, numQuestCurrencies do
-			local name, texture, numItems = GetQuestLogRewardCurrencyInfo(i, questID);
-			local text = string.format(BONUS_OBJECTIVE_REWARD_WITH_COUNT_FORMAT, texture, numItems, name);
-			GameTooltip:AddLine(text, 1, 1, 1);			
-		end
-		-- xp
-		local xp = GetQuestLogRewardXP(questID);
-		if ( xp > 0 ) then
-			GameTooltip:AddLine(string.format(BONUS_OBJECTIVE_EXPERIENCE_FORMAT, xp), 1, 1, 1);
-		end
 		-- money
 		local money = GetQuestLogRewardMoney(questID);
 		if ( money > 0 ) then
@@ -137,14 +313,61 @@ function BonusObjectiveTracker_ShowRewardsTooltip(block)
 	BONUS_OBJECTIVE_TRACKER_MODULE.tooltipBlock = block;
 end
 
+-- *****************************************************************************************************
+-- ***** INTERNAL FUNCTIONS - blending present and past data (future data nyi)
+-- *****************************************************************************************************
+
+local function InternalGetTasksTable()
+	local tasks = GetTasksTable();
+	for questID, data in pairs(COMPLETED_BONUS_DATA) do
+		if ( questID > 0 ) then
+			local found = false;
+			for i = 1, #tasks do
+				if ( tasks[i] == questID ) then
+					found = true;
+					break;
+				end
+			end
+			if ( not found ) then
+				if ( data.posIndex <= #tasks ) then
+					tinsert(tasks, data.posIndex, questID);
+				else
+					tinsert(tasks, questID);
+				end
+			end
+		end
+	end
+	return tasks;
+end
+
+local function InternalGetTaskInfo(questID)
+	if ( COMPLETED_BONUS_DATA[questID] ) then
+		return true, true, #COMPLETED_BONUS_DATA[questID].objectives;
+	else
+		return GetTaskInfo(questID);
+	end
+end
+
+local function InternalGetQuestObjectiveInfo(questID, objectiveIndex)
+	if ( COMPLETED_BONUS_DATA[questID] ) then
+		return COMPLETED_BONUS_DATA[questID].objectives[objectiveIndex], nil, true;
+	else
+		return GetQuestObjectiveInfo(questID, objectiveIndex);
+	end
+end
+
+-- *****************************************************************************************************
+-- ***** UPDATE FUNCTIONS
+-- *****************************************************************************************************
+
 local function UpdateScenarioBonusObjectives(BlocksFrame)
 	if ( C_Scenario.IsInScenario() ) then
-		BONUS_OBJECTIVE_TRACKER_MODULE.Header.animateReason = OBJECTIVE_TRACKER_UPDATE_SCENARIO_NEW_STAGE;
+		BONUS_OBJECTIVE_TRACKER_MODULE.Header.animateReason = OBJECTIVE_TRACKER_UPDATE_SCENARIO_NEW_STAGE + OBJECTIVE_TRACKER_UPDATE_SCENARIO_BONUS_DELAYED;
 		local tblBonusSteps = C_Scenario.GetBonusSteps();
 		for i = 1, #tblBonusSteps do
 			local bonusStepIndex = tblBonusSteps[i];
 			local name, description, numCriteria, stepFailed, isBonusStep, isForCurrentStepOnly = C_Scenario.GetStepInfo(bonusStepIndex);
-			local blockKey = -bonusStepIndex;	-- so it won't collide with quest IDs			
+			local blockKey = -bonusStepIndex;	-- so it won't collide with quest IDs
 			local existingBlock = BONUS_OBJECTIVE_TRACKER_MODULE:GetExistingBlock(blockKey);
 			local block = BONUS_OBJECTIVE_TRACKER_MODULE:GetBlock(blockKey);			
 			local stepFinished = true;
@@ -168,7 +391,7 @@ local function UpdateScenarioBonusObjectives(BlocksFrame)
 						BONUS_OBJECTIVE_TRACKER_MODULE:AddObjective(block, criteriaIndex, criteriaString);
 					end
 					-- timer bar
-					if ( duration > 0 and elapsed <= duration and not criteriaFailed ) then
+					if ( duration > 0 and elapsed <= duration and not (criteriaFailed or criteriaCompleted) ) then
 						BONUS_OBJECTIVE_TRACKER_MODULE:AddTimerBar(block, block.currentLine, duration, GetTime() - elapsed);
 					elseif ( block.currentLine.TimerBar ) then
 						BONUS_OBJECTIVE_TRACKER_MODULE:FreeTimerBar(block, block.currentLine);
@@ -189,6 +412,10 @@ local function UpdateScenarioBonusObjectives(BlocksFrame)
 					-- play anim if needed
 					if ( existingBlock and not block.finished ) then
 						firstLine.CheckFlash.Anim:Play();
+						local questID = C_Scenario.GetBonusStepRewardQuestID(bonusStepIndex);
+						if ( questID ~= 0 ) then
+							BonusObjectiveTracker_AddReward(questID, block);
+						end
 					end
 					block.finished = true;
 				else
@@ -196,7 +423,7 @@ local function UpdateScenarioBonusObjectives(BlocksFrame)
 				end
 				firstLine.Icon:Show();
 			end
-			block:SetHeight(block.height);
+			block:SetHeight(block.height + BONUS_OBJECTIVE_TRACKER_MODULE.blockPadding);
 
 			if ( not ObjectiveTracker_AddBlock(block, true) ) then
 				-- there was no room to show the header and the block, bail
@@ -218,16 +445,17 @@ end
 
 local function UpdateQuestBonusObjectives(BlocksFrame)
 	BONUS_OBJECTIVE_TRACKER_MODULE.Header.animateReason = OBJECTIVE_TRACKER_UPDATE_TASK_ADDED;
-	local tasksTable = GetTasksTable();
-	for _, questID in pairs(tasksTable) do
-		local isInArea, isOnMap, numObjectives = GetTaskInfo(questID);
+	local tasksTable = InternalGetTasksTable();
+	for i = 1, #tasksTable do
+		local questID = tasksTable[i];
+		local isInArea, isOnMap, numObjectives = InternalGetTaskInfo(questID);
 		-- show task if we're in the area or on the same map and we were displaying it before
 		local existingTask = BONUS_OBJECTIVE_TRACKER_MODULE:GetExistingBlock(questID);
 		if ( isInArea or ( isOnMap and existingTask ) ) then
 			local block = BONUS_OBJECTIVE_TRACKER_MODULE:GetBlock(questID);
 			local taskFinished = true;
 			for objectiveIndex = 1, numObjectives do
-				local text, objectiveType, finished = GetQuestObjectiveInfo(questID, objectiveIndex);
+				local text, objectiveType, finished = InternalGetQuestObjectiveInfo(questID, objectiveIndex);
 				if ( text ) then
 					if ( finished ) then
 						local existingLine = block.lines[objectiveIndex];
@@ -263,7 +491,7 @@ local function UpdateQuestBonusObjectives(BlocksFrame)
 				end
 				firstLine.Icon:Show();
 			end
-			block:SetHeight(block.height);
+			block:SetHeight(block.height + BONUS_OBJECTIVE_TRACKER_MODULE.blockPadding);
 			
 			if ( not ObjectiveTracker_AddBlock(block, true) ) then
 				-- there was no room to show the header and the block, bail
@@ -271,6 +499,7 @@ local function UpdateQuestBonusObjectives(BlocksFrame)
 				break;
 			end
 
+			block.posIndex = i;
 			block:Show();
 			BONUS_OBJECTIVE_TRACKER_MODULE:FreeUnusedLines(block);
 			
@@ -291,7 +520,11 @@ local function UpdateQuestBonusObjectives(BlocksFrame)
 end
 
 function BONUS_OBJECTIVE_TRACKER_MODULE:Update()
-
+	-- ugh, cross-module dependance
+	if ( SCENARIO_TRACKER_MODULE.BlocksFrame.slidingAction and BONUS_OBJECTIVE_TRACKER_MODULE.contentsHeight == 0 ) then
+		return;
+	end
+	
 	BONUS_OBJECTIVE_TRACKER_MODULE:BeginLayout();
 
 	UpdateScenarioBonusObjectives(BlocksFrame);
@@ -313,7 +546,7 @@ function BONUS_OBJECTIVE_TRACKER_MODULE:Update()
 	BONUS_OBJECTIVE_TRACKER_MODULE:EndLayout();
 end
 
-function BonusObjectiveTracker_SetBlockState(block, state)
+function BonusObjectiveTracker_SetBlockState(block, state, force)
 	if ( block.state == state ) then
 		return;
 	end
@@ -351,6 +584,10 @@ function BonusObjectiveTracker_SetBlockState(block, state)
 		if ( block.state == "LEAVING" ) then
 			-- was leaving, just cancel the animation
 			block.AnimOut:Stop();
+			block:SetAlpha(1);
+			block.state = "PRESENT";
+		elseif ( block.state == "ENTERING" and force ) then
+			block.AnimIn:Stop();
 			block:SetAlpha(1);
 			block.state = "PRESENT";
 		elseif ( not block.state ) then

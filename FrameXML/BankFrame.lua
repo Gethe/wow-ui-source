@@ -1,3 +1,8 @@
+BANK_PANELS = {
+	{ name = "BankSlotsFrame", size = {x=386, y=415}, SetTitle=function() BankFrameTitleText:SetText(UnitName("npc")); end },
+	{ name = "ReagentBankFrame", size = {x=738, y=415}, SetTitle=function() BankFrameTitleText:SetText(REAGENT_BANK); end },
+}
+
 function ButtonInventorySlot (self)
 	return BankButtonIDToInvSlotID(self:GetID(),self.isBag)
 end
@@ -10,9 +15,10 @@ function BankFrameBaseButton_OnLoad (self)
 end
 
 function BankFrameItemButton_OnLoad (self) 
+	local container = self:GetParent():GetID();
 	BankFrameBaseButton_OnLoad (self);
 	self.SplitStack = function(button, split)
-		SplitContainerItem(BANK_CONTAINER, button:GetID(), split);
+		SplitContainerItem(container, button:GetID(), split);
 	end
 end
 
@@ -24,7 +30,7 @@ end
 
 function BankFrameBagButton_OnEvent (self, event, ...)
 	if ( event == "INVENTORY_SEARCH_UPDATE" ) then
-		if ( IsContainerFiltered(self:GetID()) ) then
+		if ( IsContainerFiltered(self:GetID()+NUM_BAG_SLOTS) ) then
 			self.searchOverlay:Show();
 		else
 			self.searchOverlay:Hide();
@@ -51,20 +57,25 @@ function BankFrameItemButton_OnEnter (self)
 end
 
 function BankFrameItemButton_Update (button)
-	local texture = _G[button:GetName().."IconTexture"];
+	local container = button:GetParent():GetID();
+	local buttonID = button:GetID();
+	if( button.isBag ) then
+		container = -4;
+	end
+	local texture = button.icon;
 	local inventoryID = button:GetInventorySlot();
 	local textureName = GetInventoryItemTexture("player",inventoryID);
-	local _, _, _, _, _, _, _, isFiltered = GetContainerItemInfo(BANK_CONTAINER, button:GetID());
+	local _, _, _, quality, _, _, _, isFiltered = GetContainerItemInfo(container, buttonID);
 	local slotName = button:GetName();
 	local id;
 	local slotTextureName;
 	button.hasItem = nil;
 
 	if( button.isBag ) then
-		id, slotTextureName = GetInventorySlotInfo(strsub(slotName,10));
+		id, slotTextureName = GetInventorySlotInfo("Bag"..buttonID);
 	else
-		local isQuestItem, questId, isActive = GetContainerItemQuestInfo(BANK_CONTAINER, button:GetID());
-		local questTexture = _G[button:GetName().."IconQuestTexture"];
+		local isQuestItem, questId, isActive = GetContainerItemQuestInfo(container, buttonID);
+		local questTexture = button["IconQuestTexture"];
 		if ( questId and not isActive ) then
 			questTexture:SetTexture(TEXTURE_ITEM_QUEST_BANG);
 			questTexture:Show();
@@ -96,12 +107,19 @@ function BankFrameItemButton_Update (button)
 		button.searchOverlay:Hide();
 	end
 	
+	if (quality and quality > LE_ITEM_QUALITY_COMMON and BAG_ITEM_QUALITY_COLORS[quality]) then
+		button.IconBorder:Show();
+		button.IconBorder:SetVertexColor(BAG_ITEM_QUALITY_COLORS[quality].r, BAG_ITEM_QUALITY_COLORS[quality].g, BAG_ITEM_QUALITY_COLORS[quality].b);
+	else
+		button.IconBorder:Hide();
+	end
+
 	BankFrameItemButton_UpdateLocked(button);
-	BankFrame_UpdateCooldown(BANK_CONTAINER, button);
+	BankFrame_UpdateCooldown(container, button);
 end
 
 function BankFrame_UpdateCooldown(container, button)
-	local cooldown = _G[button:GetName().."Cooldown"];
+	local cooldown = button.Cooldown;
 	local start, duration, enable;
 	if ( button.isBag ) then
 		-- in case we ever have a bag with a cooldown...
@@ -128,40 +146,48 @@ function BankFrameItemButton_UpdateLocked (button)
 	end
 end
 
+function BankSlotsFrame_OnLoad(self)
+	self:SetID(BANK_CONTAINER);
+
+	--Create bank item buttons, button background textures, and rivets between buttons
+	for i = 2, 28 do
+		local button = CreateFrame("Button", "BankFrameItem"..i, self, "BankItemButtonGenericTemplate");
+		button:SetID(i);
+		self["Item"..i] = button;
+		if ((i%7) == 1) then
+			button:SetPoint("TOPLEFT", self["Item"..(i-7)], "BOTTOMLEFT", 0, -7);
+		else
+			button:SetPoint("TOPLEFT", self["Item"..(i-1)], "TOPRIGHT", 12, 0);
+		end
+	end
+	for i = 1, 28 do
+		local texture = self:CreateTexture(nil, "BORDER", "Bank-Slot-BG");
+		texture:SetPoint("TOPLEFT", self["Item"..i], "TOPLEFT", -6, 5);
+		texture:SetPoint("BOTTOMRIGHT", self["Item"..i], "BOTTOMRIGHT", 6, -7);
+	end
+	for i = 1, 7 do
+		local texture = self:CreateTexture(nil, "BORDER", "Bank-Slot-BG");
+		texture:SetPoint("TOPLEFT", self["Bag"..i], "TOPLEFT", -6, 5);
+		texture:SetPoint("BOTTOMRIGHT", self["Bag"..i], "BOTTOMRIGHT", 6, -7);
+	end
+	for i = 1, 20 do
+		if ((i%7) ~= 0) then
+			local texture = self:CreateTexture(nil, "BORDER", "Bank-Rivet");
+			texture:SetPoint("TOPLEFT", self["Item"..i], "BOTTOMRIGHT", 0, 2);
+			texture:SetPoint("BOTTOMRIGHT", self["Item"..i], "BOTTOMRIGHT", 12, -10);
+		end
+	end
+end
+
 function BankFrame_OnLoad (self)
 	self:RegisterEvent("BANKFRAME_OPENED");
 	self:RegisterEvent("BANKFRAME_CLOSED");
 	self.size = 28;
 	self:SetID(BANK_CONTAINER);
 	
-	--Create bank item buttons, button background textures, and rivets between buttons
-	for i = 2, 28 do
-		local button = CreateFrame("Button", "BankFrameItem"..i, BankFrame, "BankItemButtonGenericTemplate");
-		button:SetID(i);
-		if ((i%7) == 1) then
-			button:SetPoint("TOPLEFT", _G["BankFrameItem"..(i-7)], "BOTTOMLEFT", 0, -7);
-		else
-			button:SetPoint("TOPLEFT", _G["BankFrameItem"..(i-1)], "TOPRIGHT", 12, 0);
-		end
-	end
-	for i = 1, 28 do
-		local texture = self:CreateTexture(nil, "BORDER", "Bank-Slot-BG");
-		texture:SetPoint("TOPLEFT", _G["BankFrameItem"..i], "TOPLEFT", -6, 5);
-		texture:SetPoint("BOTTOMRIGHT", _G["BankFrameItem"..i], "BOTTOMRIGHT", 6, -7);
-	end
-	for i = 1, 7 do
-		local texture = self:CreateTexture(nil, "BORDER", "Bank-Slot-BG");
-		texture:SetPoint("TOPLEFT", _G["BankFrameBag"..i], "TOPLEFT", -6, 5);
-		texture:SetPoint("BOTTOMRIGHT", _G["BankFrameBag"..i], "BOTTOMRIGHT", 6, -7);
-	end
-	for i = 1, 20 do
-		if ((i%7) ~= 0) then
-			local texture = self:CreateTexture(nil, "BORDER", "Bank-Rivet");
-			texture:SetPoint("TOPLEFT", _G["BankFrameItem"..i], "BOTTOMRIGHT", 0, 2);
-			texture:SetPoint("BOTTOMRIGHT", _G["BankFrameItem"..i], "BOTTOMRIGHT", 12, -10);
-		end
-	end
-	
+	PanelTemplates_SetNumTabs(self, #BANK_PANELS);
+	self.maxTabWidth = (self:GetWidth() - 19) / #BANK_PANELS;
+	self.selectedTab = 1;
 end
 
 function UpdateBagSlotStatus () 
@@ -173,7 +199,7 @@ function UpdateBagSlotStatus ()
 	local numSlots,full = GetNumBankSlots();
 	local button;
 	for i=1, NUM_BANKBAGSLOTS, 1 do
-		button = _G["BankFrameBag"..i];
+		button = BankSlotsFrame["Bag"..i];
 		if ( button ) then
 			if ( i <= numSlots ) then
 				SetItemButtonTextureVertexColor(button, 1.0,1.0,1.0);
@@ -210,7 +236,7 @@ end
 
 function BankFrame_OnEvent (self, event, ...)
 	if ( event == "BANKFRAME_OPENED" ) then
-		BankFrameTitleText:SetText(UnitName("npc"));
+		BankFrame_ShowPanel(BANK_PANELS[1].name);
 		SetPortraitTexture(BankPortraitTexture,"npc");
 		ShowUIPanel(self);
 		if ( not self:IsShown() ) then
@@ -222,22 +248,28 @@ function BankFrame_OnEvent (self, event, ...)
 		local bag, slot = ...;
 		if ( bag == BANK_CONTAINER ) then
 			if ( slot <= NUM_BANKGENERIC_SLOTS ) then
-				BankFrameItemButton_UpdateLocked(_G["BankFrameItem"..slot]);
+				BankFrameItemButton_UpdateLocked(BankSlotsFrame["Item"..slot]);
 			else
-				BankFrameItemButton_UpdateLocked(_G["BankFrameBag"..(slot-NUM_BANKGENERIC_SLOTS)]);
+				BankFrameItemButton_UpdateLocked(BankSlotsFrame["Bag"..(slot-NUM_BANKGENERIC_SLOTS)]);
 			end
+		elseif ( bag == REAGENTBANK_CONTAINER ) then
+			BankFrameItemButton_UpdateLocked(ReagentBankFrame["Item"..(slot)]);
 		end
 	elseif ( event == "PLAYERBANKSLOTS_CHANGED" ) then
 		local slot = ...;
 		if ( slot <= NUM_BANKGENERIC_SLOTS ) then
-			BankFrameItemButton_Update(_G["BankFrameItem"..slot]);
+			BankFrameItemButton_Update(BankSlotsFrame["Item"..slot]);
 		else
-			BankFrameItemButton_Update(_G["BankFrameBag"..(slot-NUM_BANKGENERIC_SLOTS)]);
+			BankFrameItemButton_Update(BankSlotsFrame["Bag"..(slot-NUM_BANKGENERIC_SLOTS)]);
 		end
+	elseif ( event == "PLAYERREAGENTBANKSLOTS_CHANGED" ) then
+		local slot = ...;
+		BankFrameItemButton_Update(ReagentBankFrame["Item"..(slot)]);
 	elseif ( event == "PLAYER_MONEY" or event == "PLAYERBANKBAGSLOTS_CHANGED" ) then
 		UpdateBagSlotStatus();
 	elseif ( event == "INVENTORY_SEARCH_UPDATE" ) then
 		ContainerFrame_UpdateSearchResults(self);
+		ContainerFrame_UpdateSearchResults(ReagentBankFrame);
 	end
 end
 
@@ -246,6 +278,7 @@ function BankFrame_OnShow (self)
 
 	self:RegisterEvent("ITEM_LOCK_CHANGED");
 	self:RegisterEvent("PLAYERBANKSLOTS_CHANGED");
+	self:RegisterEvent("PLAYERREAGENTBANKSLOTS_CHANGED");
 	self:RegisterEvent("PLAYERBANKBAGSLOTS_CHANGED");
 	self:RegisterEvent("PLAYER_MONEY");
 	self:RegisterEvent("BAG_UPDATE_COOLDOWN");
@@ -253,12 +286,12 @@ function BankFrame_OnShow (self)
 
 	local button;
 	for i=1, NUM_BANKGENERIC_SLOTS, 1 do
-		button = _G["BankFrameItem"..i];
+		button = BankSlotsFrame["Item"..i];
 		BankFrameItemButton_Update(button);
 	end
 	
 	for i=1, NUM_BANKBAGSLOTS, 1 do
-		button = _G["BankFrameBag"..i];
+		button = BankSlotsFrame["Bag"..i];
 		BankFrameItemButton_Update(button);
 	end
 	UpdateBagSlotStatus();
@@ -270,8 +303,10 @@ function BankFrame_OnHide (self)
 
 	self:UnregisterEvent("ITEM_LOCK_CHANGED");
 	self:UnregisterEvent("PLAYERBANKSLOTS_CHANGED");
+	self:UnregisterEvent("PLAYERREAGENTBANKSLOTS_CHANGED");
 	self:UnregisterEvent("PLAYERBANKBAGSLOTS_CHANGED");
 	self:UnregisterEvent("PLAYER_MONEY");
+	self:UnregisterEvent("BAG_UPDATE_COOLDOWN");
 	self:UnregisterEvent("INVENTORY_SEARCH_UPDATE");
 
 	StaticPopup_Hide("CONFIRM_BUY_BANK_SLOT");
@@ -282,22 +317,24 @@ function BankFrame_OnHide (self)
 end
 
 function BankFrameItemButtonGeneric_OnClick (self, button)
+	local container = self:GetParent():GetID();
 	if ( button == "LeftButton" ) then
-		PickupContainerItem(BANK_CONTAINER, self:GetID());
+		PickupContainerItem(container, self:GetID());
 	else
-		UseContainerItem(BANK_CONTAINER, self:GetID());
+		UseContainerItem(container, self:GetID());
 	end
 end
 
 function BankFrameItemButtonGeneric_OnModifiedClick (self, button)
+	local container = self:GetParent():GetID();
 	if ( self.isBag ) then
 		return;
 	end
-	if ( HandleModifiedItemClick(GetContainerItemLink(BANK_CONTAINER, self:GetID())) ) then
+	if ( HandleModifiedItemClick(GetContainerItemLink(container, self:GetID())) ) then
 		return;
 	end
 	if ( IsModifiedClick("SPLITSTACK") ) then
-		local texture, itemCount, locked = GetContainerItemInfo(BANK_CONTAINER, self:GetID());
+		local texture, itemCount, locked = GetContainerItemInfo(container, self:GetID());
 		if ( not locked and itemCount > 1) then
 			OpenStackSplitFrame(self.count, self, "BOTTOMLEFT", "TOPLEFT");
 		end
@@ -306,7 +343,7 @@ function BankFrameItemButtonGeneric_OnModifiedClick (self, button)
 end
 
 function UpdateBagButtonHighlight (id) 
-	local texture = _G["BankFrameBag"..(id - NUM_BAG_SLOTS).."HighlightFrameTexture"];
+	local texture = BankSlotsFrame["Bag"..(id)]:GetHighlightTexture();
 	if ( not texture ) then
 		return;
 	end
@@ -328,7 +365,7 @@ function BankFrameItemButtonBag_OnClick (self, button)
 	local id = self:GetID();
 	if ( not hadItem ) then
 		-- open bag
-		ToggleBag(id);
+		ToggleBag(id+NUM_BAG_SLOTS);
 	end
 	UpdateBagButtonHighlight(id);
 end
@@ -337,4 +374,137 @@ function BankFrameItemButtonBag_Pickup (self)
 	local inventoryID = self:GetInventorySlot();
 	PickupBagFromSlot(inventoryID);
 	UpdateBagButtonHighlight(self:GetID());
+end
+
+function BankFrame_TabOnClick(self)
+	PlaySound("igCharacterInfoTab");
+	BankFrame_ShowPanel(BANK_PANELS[self:GetID()].name);
+end
+
+-- Bank Frame Show Panel
+function BankFrame_ShowPanel(sidePanelName, selection)
+	local self = BankFrame;
+	-- find side panel
+	local tabIndex;
+	if ( sidePanelName ) then
+		for index, data in pairs(BANK_PANELS) do
+			if ( data.name == sidePanelName ) then
+				tabIndex = index;
+				break;
+			end
+		end
+	else
+		-- no side panel specified, check current panel
+		if ( self.activeTabIndex ) then
+			tabIndex = self.activeTabIndex;
+		else
+			-- no current panel, go to the first panel
+			tabIndex = 1;
+		end
+	end	
+	if ( not tabIndex ) then
+		return;
+	end
+	-- show it
+	ShowUIPanel(self);
+	self.activeTabIndex = tabIndex;	
+	PanelTemplates_SetTab(self, tabIndex);
+	for index, data in pairs(BANK_PANELS) do
+		local panel = _G[data.name];
+		if ( index == tabIndex ) then
+			panel:Show();
+			if( panel.update ) then
+				panel:update(selection);
+			end
+			
+			self:SetWidth(data.size.x);
+			self:SetHeight(data.size.y);
+			data.SetTitle();
+		elseif ( panel ) then
+			panel:Hide();
+		end
+	end
+end
+
+-- Reagent Bank
+function ReagentBankFrame_OnLoad(self)
+	self:SetID(REAGENTBANK_CONTAINER);
+	self.size = 0;
+	self:RegisterEvent("REAGENTBANK_PURCHASED");
+end
+
+function ReagentBankFrame_OnEvent(self, event, ...)
+	if(event == "REAGENTBANK_PURCHASED")then		
+		ReagentBankFrame.UnlockInfo:Hide();
+		ReagentBankFrame.DespositButton:Enable();
+	end
+end
+
+function ReagentBankFrame_OnShow(self)
+	if(not IsReagentBankUnlocked()) then		
+		ReagentBankFrame.UnlockInfo:Show();
+		MoneyFrame_Update( ReagentBankFrame.UnlockInfo.CostMoneyFrame, GetReagentBankCost());
+		ReagentBankFrame.DespositButton:Disable();
+	else
+		ReagentBankFrame.UnlockInfo:Hide();
+		ReagentBankFrame.DespositButton:Enable();
+	end
+
+	if( not self.slots_initialized ) then
+		self.slots_initialized = true;
+		self.numRow = 7;
+		self.numColumn = 7;
+		self.numSlotPerColumn = 2;
+		self.size = self.numRow*self.numColumn*self.numSlotPerColumn;
+		
+		-- setup slot backgrounds and shadows
+		for column = 2, self.numColumn do
+			local texture = ReagentBankFrame:CreateTexture(nil, "ARTWORK");
+			ReagentBankFrame["BG"..(column)] = texture;
+			texture:SetPoint("TOPLEFT", ReagentBankFrame["BG"..(column-1)], "TOPRIGHT", 5, 0);
+			texture:SetAtlas("bank-slots", true);
+			local shadow = ReagentBankFrame:CreateTexture(nil, "BACKGROUND");
+			shadow:SetPoint("CENTER", ReagentBankFrame["BG"..(column)], "CENTER", 0, 0);
+			shadow:SetAtlas("bank-slots-shadow", true);
+		end
+		
+		-- the item slots
+		for row = 1, self.numRow do
+			local rowTop = -(3+(row-1)*44);
+			for column = 1, self.numColumn do
+				for slot = 1, self.numSlotPerColumn do
+					local id = (row-1)*14 + (column-1)*2 + slot;
+					local button = CreateFrame("Button", "ReagentBankFrameItem"..id, ReagentBankFrame, "ReagentBankItemButtonGenericTemplate");
+					button:SetID(id);
+					button:SetPoint("TOPLEFT", ReagentBankFrame["BG"..(column)], "TOPLEFT", 6+(slot-1)*49, rowTop);
+					ReagentBankFrame["Item"..id] = button;
+				end
+			end
+		end
+	end
+	
+	local button;
+	for i=1, self.size do
+		button = ReagentBankFrame["Item"..i];
+		BankFrameItemButton_Update(button);
+	end
+end
+
+
+function ReagentButtonInventorySlot (self)
+	return ReagentBankButtonIDToInvSlotID(self:GetID());
+end
+
+function ReagentBankFrameBaseButton_OnLoad (self)
+	self:RegisterForDrag("LeftButton");
+	self:RegisterForClicks("LeftButtonUp","RightButtonUp");
+	self.GetInventorySlot = ReagentButtonInventorySlot;
+	self.UpdateTooltip = BankFrameItemButton_OnEnter;
+end
+
+function ReagentBankFrameItemButton_OnLoad(self)
+	ReagentBankFrameBaseButton_OnLoad (self);
+	self.SplitStack = function(button, split)
+		SplitContainerItem(REAGENTBANK_CONTAINER, button:GetID(), split);
+	end
 end

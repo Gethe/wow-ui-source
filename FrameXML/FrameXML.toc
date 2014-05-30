@@ -99,7 +99,6 @@ PetPaperDollFrame.xml
 ReputationFrame.xml
 QuestFrame.xml
 QuestPOI.xml
-QuestLogFrame.xml
 QuestInfo.xml
 MerchantFrame.xml
 TradeFrame.xml

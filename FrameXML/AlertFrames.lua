@@ -850,7 +850,7 @@ function LootWonAlertFrame_SetUp(self, itemLink, quantity, rollType, roll, specI
 	self.ItemName:SetText(itemName);
 	local color = ITEM_QUALITY_COLORS[itemRarity];
 	self.ItemName:SetVertexColor(color.r, color.g, color.b);
-	self.IconBorder:SetTexCoord(unpack(LOOT_BORDER_QUALITY_COORDS[itemRarity] or LOOT_BORDER_QUALITY_COORDS[ITEM_QUALITY_UNCOMMON]));
+	self.IconBorder:SetTexCoord(unpack(LOOT_BORDER_QUALITY_COORDS[itemRarity] or LOOT_BORDER_QUALITY_COORDS[LE_ITEM_QUALITY_UNCOMMON]));
 	
 	if ( specID and specID > 0 ) then
 		local id, name, description, texture, background, role, class = GetSpecializationInfoByID(specID);
@@ -949,9 +949,9 @@ end
 
 -- [[ GarrisonFollowerAlertFrame ]] --
 GARRISON_FOLLOWER_QUALITY_TEXTURE_SUFFIXES = {
-	[ITEM_QUALITY_UNCOMMON] = "Uncommon",
-	[ITEM_QUALITY_EPIC] = "Epic",
-	[ITEM_QUALITY_RARE] = "Rare",
+	[LE_ITEM_QUALITY_UNCOMMON] = "Uncommon",
+	[LE_ITEM_QUALITY_EPIC] = "Epic",
+	[LE_ITEM_QUALITY_RARE] = "Rare",
 }
 function GarrisonFollowerAlertFrame_ShowAlert(name, displayID, level, quality)
 	GarrisonFollowerAlertFrame.Name:SetText(name);

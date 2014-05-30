@@ -533,6 +533,7 @@ function InputScrollFrame_OnLoad(self)
 	self.EditBox:SetWidth(self:GetWidth() - 18);
 	self.EditBox:SetMaxLetters(self.maxLetters);
 	self.EditBox.Instructions:SetText(self.instructions);
+	self.CharCount:SetShown(not self.hideCharCount);
 end
 
 --Radio button functions

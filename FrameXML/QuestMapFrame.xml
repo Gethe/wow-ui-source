@@ -8,16 +8,17 @@
 			<OnLoad>
 				--QuestLogTitleButton_OnLoad(self);
 				self.ButtonText:SetTextColor(0.7, 0.7, 0.7);
+				self:RegisterForClicks("LeftButtonUp", "RightButtonUp");
 			</OnLoad>
 			<OnEvent>
 				--QuestLogTitleButton_OnEvent(self, event, ...);
 			</OnEvent>
 			<OnClick function="QuestMapLogHeaderButton_OnClick"/>
 			<OnEnter>
-				--QuestLogTitleButton_OnEnter(self);
+				self.ButtonText:SetTextColor(1, 1, 1);
 			</OnEnter>
 			<OnLeave>
-				--QuestLogTitleButton_OnLeave(self);
+				self.ButtonText:SetTextColor(0.7, 0.7, 0.7);
 			</OnLeave>
 		</Scripts>
 		<ButtonText nonspacewrap="true" parentKey="ButtonText">
@@ -106,7 +107,6 @@
 					<Size x="205" y="0"/>
 					<Anchors>
 						<Anchor point="TOPLEFT" relativeKey="$parent.Dash" relativePoint="TOPRIGHT"/>
-						<Anchor point="TOPRIGHT"/>
 					</Anchors>
 				</FontString>
 			</Layer>
@@ -127,22 +127,162 @@
 			</OnMouseUp>
 		</Scripts>
 	</Button>
-	<Frame name="TaskMapFrameTemplate" virtual="true">
-		<Size x="19" y="19"/>
+
+	<Frame name="QuestLogPopupDetailFrame" toplevel="true" enableMouse="true" parent="UIParent" hidden="true" inherits="ButtonFrameTemplate">
+		<Size x="338" y="496"/>
 		<Layers>
-			<Layer level="ARTWORK">
-				<Texture parentKey="Icon" atlas="TaskPOI-Icon" setAllPoints="true"/>
+			<Layer level="OVERLAY" textureSubLevel="-1">
+				<Texture file="Interface\QuestFrame\UI-QuestLog-BookIcon">
+					<Size x="64" y="64"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" x="-6" y="7"/>
+					</Anchors>
+				</Texture>		
+			</Layer>
+			<Layer level="BACKGROUND">
+				<Texture name="$parentPageBg" file="Interface\QuestFrame\QuestBG">
+					<Size x="512" y="620"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" x="6" y="-62"/>
+					</Anchors>
+				</Texture>
 			</Layer>
 		</Layers>
+		<Frames>
+			<ScrollFrame parentKey="ScrollFrame" name="$parentScrollFrame" inherits="UIPanelScrollFrameTemplate">
+				<Size x="298" y="403"/>
+				<Anchors>
+					<Anchor point="TOPLEFT" x="8" y="-65"/>
+				</Anchors>
+				<Layers>
+					<Layer level="ARTWORK">
+						<Texture name="$parentTop" file="Interface\PaperDollInfoFrame\UI-Character-ScrollBar">
+							<Size x="31" y="102"/>
+							<Anchors>
+								<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" x="-2" y="6"/>
+							</Anchors>
+							<TexCoords left="0" right="0.484375" top="0" bottom="0.4"/>
+						</Texture>
+						<Texture name="$parentBottom" file="Interface\PaperDollInfoFrame\UI-Character-ScrollBar">
+							<Size x="31" y="106"/>
+							<Anchors>
+								<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMRIGHT" x="-2" y="-2"/>
+							</Anchors>
+							<TexCoords left="0.515625" right="1.0" top="0" bottom="0.4140625"/>
+						</Texture>
+						<Texture name="$parentMiddle" file="Interface\PaperDollInfoFrame\UI-Character-ScrollBar">
+							<Size x="31" y="1"/>
+							<Anchors>
+								<Anchor point="TOP" relativeTo="$parentTop" relativePoint="BOTTOM"/>
+								<Anchor point="BOTTOM" relativeTo="$parentBottom" relativePoint="TOP"/>
+							</Anchors>
+							<TexCoords left="0" right="0.484375" top=".75" bottom="1.0"/>
+						</Texture>
+					</Layer>
+				</Layers>
+				<ScrollChild>
+					<Frame parentKey="ScrollChild">
+						<Size x="298" y="403"/>
+					</Frame>
+				</ScrollChild>
+			</ScrollFrame>
+			<Button parentKey="ShowMapButton">
+				<Size x="48" y="32"/>
+				<Anchors>
+					<Anchor point="TOPRIGHT" x="-24" y="-25"/>
+				</Anchors>
+				<Layers>
+					<Layer level="ARTWORK">
+						<Texture parentKey="Texture" file="Interface\QuestFrame\UI-QuestMap_Button">
+							<Size x="48" y="32"/>
+							<Anchors>
+								<Anchor point="RIGHT"/>
+							</Anchors>
+							<TexCoords left="0.125" right="0.875" top="0.0" bottom="0.5"/>
+						</Texture>
+						<FontString parentKey="Text" inherits="GameFontNormal" text="SHOW_MAP">
+							<Anchors>
+								<Anchor point="RIGHT" relativeKey="$parent.Texture" relativePoint="LEFT" x="0" y="0"/>
+							</Anchors>
+						</FontString>
+					</Layer>
+					<Layer level="HIGHLIGHT">
+						<Texture parentKey="Highlight" file="Interface\BUTTONS\ButtonHilight-Square" alphaMode="ADD">
+							<Size x="36" y="25"/>
+							<Anchors>
+								<Anchor point="RIGHT" x="-7" y="0"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnLoad>
+						self:SetWidth(self.Text:GetWidth() + self.Texture:GetWidth());
+					</OnLoad>
+					<OnClick>
+						QuestMapFrame_OpenToQuestDetails(self:GetParent().questID);
+					</OnClick>
+					<OnMouseDown>
+						self.Texture:SetTexCoord(0.125, 0.875, 0.5, 1.0);
+					</OnMouseDown>
+					<OnMouseUp>
+						self.Texture:SetTexCoord(0.125, 0.875, 0.0, 0.5);
+					</OnMouseUp>
+				</Scripts>
+			</Button>
+			<Button parentKey="AbandonButton" name="$parentAbandonButton" inherits="UIPanelButtonTemplate" text="ABANDON_QUEST_ABBREV">
+				<Size x="110" y="21"/>
+				<Anchors>
+					<Anchor point="BOTTOMLEFT" x="4" y="5"/>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						QuestMapQuestOptions_AbandonQuest(self:GetParent().questID);
+					</OnClick>
+					<OnEnter>
+						GameTooltip_AddNewbieTip(self, ABANDON_QUEST, 1.0, 1.0, 1.0, NEWBIE_TOOLTIP_ABANDONQUEST, 1);
+					</OnEnter>
+					<OnLeave function="GameTooltip_Hide"/>
+				</Scripts>
+			</Button>
+			<Button parentKey="TrackButton" name="$parentTrackButton" inherits="UIPanelButtonTemplate" text="TRACK_QUEST_ABBREV">
+				<Size x="100" y="21"/>
+				<Anchors>
+					<Anchor point="BOTTOMRIGHT" x="-8" y="5"/>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						QuestMapQuestOptions_TrackQuest(self:GetParent().questID);
+					</OnClick>
+					<OnEnter>
+						GameTooltip_AddNewbieTip(self, TRACK_QUEST, 1.0, 1.0, 1.0, NEWBIE_TOOLTIP_TRACKQUEST, 1);
+					</OnEnter>
+					<OnLeave function="GameTooltip_Hide"/>
+				</Scripts>
+			</Button>
+			<Button parentKey="ShareButton" name="$parentShareButton" inherits="UIPanelButtonTemplate" text="SHARE_QUEST_ABBREV">
+				<Size x="1" y="21"/>
+				<Anchors>
+					<Anchor point="LEFT" relativeKey="$parent.AbandonButton" relativePoint="RIGHT"/>
+					<Anchor point="RIGHT" relativeKey="$parent.TrackButton" relativePoint="LEFT"/>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						QuestMapQuestOptions_ShareQuest(self:GetParent().questID);
+					</OnClick>
+					<OnEnter>
+						GameTooltip_AddNewbieTip(self, SHARE_QUEST, 1.0, 1.0, 1.0, NEWBIE_TOOLTIP_SHAREQUEST, 1);
+					</OnEnter>
+					<OnLeave function="GameTooltip_Hide"/>
+				</Scripts>
+			</Button>			
+		</Frames>
 		<Scripts>
-			<OnEnter>
-				QuestMapLog_SelectTaskGroup(self.logFrame, self);
-			</OnEnter>
-			<OnLeave>
-				QuestMapLog_DeselectTaskGroup(self.logFrame, self);
-			</OnLeave>
+			<OnLoad function="QuestLogPopupDetailFrame_OnLoad"/>
+			<OnHide function="QuestLogPopupDetailFrame_OnHide"/>
 		</Scripts>
 	</Frame>
+
 	<Frame name="QuestMapFrame" parent="WorldMapFrame" enableMouse="true" hidden="true">
 		<Size x="287" y="464"/>	
 		<Anchors>
@@ -537,7 +677,7 @@
 						</Anchors>
 						<Scripts>
 							<OnClick>
-								QuestMapQuestOptions_AbandonQuest(self, QuestMapFrame_GetDetailQuestID())
+								QuestMapQuestOptions_AbandonQuest(QuestMapFrame_GetDetailQuestID())
 							</OnClick>
 							<OnEnter>
 								GameTooltip_AddNewbieTip(self, ABANDON_QUEST, 1.0, 1.0, 1.0, NEWBIE_TOOLTIP_ABANDONQUEST, 1);
@@ -566,7 +706,7 @@
 						</Layers>
 						<Scripts>
 							<OnClick>
-								QuestMapQuestOptions_ShareQuest(self, QuestMapFrame_GetDetailQuestID())
+								QuestMapQuestOptions_ShareQuest(QuestMapFrame_GetDetailQuestID())
 							</OnClick>
 							<OnEnter>
 								GameTooltip_AddNewbieTip(self, SHARE_QUEST, 1.0, 1.0, 1.0, NEWBIE_TOOLTIP_SHAREQUEST, 1);
@@ -581,7 +721,7 @@
 						</Anchors>
 						<Scripts>
 							<OnClick>
-								QuestMapQuestOptions_TrackQuest(self, QuestMapFrame_GetDetailQuestID())
+								QuestMapQuestOptions_TrackQuest(QuestMapFrame_GetDetailQuestID())
 							</OnClick>
 							<OnEnter>
 								GameTooltip_AddNewbieTip(self, TRACK_QUEST, 1.0, 1.0, 1.0, NEWBIE_TOOLTIP_TRACKQUEST, 1);
@@ -595,6 +735,11 @@
 		<Scripts>
 			<OnLoad function="QuestMapFrame_OnLoad"/>
 			<OnEvent function="QuestMapFrame_OnEvent"/>
+			<OnMouseUp>
+				if ( button == "RightButton" ) then
+					WorldMapZoomOutButton_OnClick();
+				end
+			</OnMouseUp>
 		</Scripts>
 	</Frame>
 </Ui>

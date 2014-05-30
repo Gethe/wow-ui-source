@@ -248,9 +248,15 @@ function VoidStorage_ItemsUpdate(doDeposit, doContents)
 	local button;
 	if ( doDeposit ) then
 		for i = 1, VOID_DEPOSIT_MAX do
-			local itemID, textureName = GetVoidTransferDepositInfo(i);
+			local itemID, textureName, quality = GetVoidTransferDepositInfo(i);
 			button = _G["VoidStorageDepositButton"..i];
 			button.icon:SetTexture(textureName);
+			if (quality and quality > LE_ITEM_QUALITY_COMMON and BAG_ITEM_QUALITY_COLORS[quality]) then
+				button.IconBorder:Show();
+				button.IconBorder:SetVertexColor(BAG_ITEM_QUALITY_COLORS[quality].r, BAG_ITEM_QUALITY_COLORS[quality].g, BAG_ITEM_QUALITY_COLORS[quality].b);
+			else
+				button.IconBorder:Hide();
+			end
 			if ( itemID ) then
 				button.hasItem = true;
 			else
@@ -261,9 +267,15 @@ function VoidStorage_ItemsUpdate(doDeposit, doContents)
 	if ( doContents ) then
 		-- withdrawal
 		for i = 1, VOID_WITHDRAW_MAX do
-			local itemID, textureName = GetVoidTransferWithdrawalInfo(i);
+			local itemID, textureName, quality = GetVoidTransferWithdrawalInfo(i);
 			button = _G["VoidStorageWithdrawButton"..i];
 			button.icon:SetTexture(textureName);
+			if (quality and quality > LE_ITEM_QUALITY_COMMON and BAG_ITEM_QUALITY_COLORS[quality]) then
+				button.IconBorder:Show();
+				button.IconBorder:SetVertexColor(BAG_ITEM_QUALITY_COLORS[quality].r, BAG_ITEM_QUALITY_COLORS[quality].g, BAG_ITEM_QUALITY_COLORS[quality].b);
+			else
+				button.IconBorder:Hide();
+			end
 			if ( itemID ) then
 				button.hasItem = true;
 			else
@@ -273,7 +285,7 @@ function VoidStorage_ItemsUpdate(doDeposit, doContents)
 		
 		-- storage
 		for i = 1, VOID_STORAGE_MAX do
-			local itemID, textureName, locked, recentDeposit, isFiltered = GetVoidItemInfo(self.page, i);
+			local itemID, textureName, locked, recentDeposit, isFiltered, quality = GetVoidItemInfo(self.page, i);
 			button = _G["VoidStorageStorageButton"..i];
 			button.icon:SetTexture(textureName);
 			if ( itemID ) then
@@ -301,6 +313,13 @@ function VoidStorage_ItemsUpdate(doDeposit, doContents)
 				button.searchOverlay:Show();
 			else
 				button.searchOverlay:Hide();
+			end
+
+			if (quality and quality > LE_ITEM_QUALITY_COMMON and BAG_ITEM_QUALITY_COLORS[quality]) then
+				button.IconBorder:Show();
+				button.IconBorder:SetVertexColor(BAG_ITEM_QUALITY_COLORS[quality].r, BAG_ITEM_QUALITY_COLORS[quality].g, BAG_ITEM_QUALITY_COLORS[quality].b);
+			else
+				button.IconBorder:Hide();
 			end
 		end
 	end

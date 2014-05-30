@@ -2475,6 +2475,7 @@ function ChatFrame_OnLoad(self)
 	self:RegisterEvent("BN_DISCONNECTED");
 	self:RegisterEvent("PLAYER_REPORT_SUBMITTED");
 	self:RegisterEvent("NEUTRAL_FACTION_SELECT_RESULT");
+	self:RegisterEvent("CHARACTER_UPGRADE_SPELL_TIER_SET");
 	self.tellTimer = GetTime();
 	self.channelList = {};
 	self.zoneChannelList = {};
@@ -2776,6 +2777,12 @@ function ChatFrame_SystemEventHandler(self, event, ...)
 		if (arg1 == "pet" and UnitName("pet") ~= UNKNOWNOBJECT) then
 			LevelUpDisplay_ChatPrint(self, UnitLevel("pet"), LEVEL_UP_TYPE_PET);
 		end
+	elseif ( event == "CHARACTER_UPGRADE_SPELL_TIER_SET" ) then
+		local tierIndex = ...;
+		if (tierIndex > 0) then
+			LevelUpDisplay_ChatPrint(self, tierIndex, LEVEL_UP_TYPE_SPELL_BUCKET);
+		end
+		return true;
 	elseif ( event == "CHARACTER_POINTS_CHANGED" ) then
 		local arg1 = ...;
 		local info = ChatTypeInfo["SYSTEM"];

@@ -57,6 +57,11 @@ function TargetFrame_OnLoad(self, unit, menuFunc)
 		portraitFrame = _G[thisName.."Portrait"];
 	end
 	
+	_G[thisName.."HealthBar"].LeftText = _G[thisName.."TextureFrameHealthBarTextLeft"];
+	_G[thisName.."HealthBar"].RightText = _G[thisName.."TextureFrameHealthBarTextRight"];
+	_G[thisName.."ManaBar"].LeftText = _G[thisName.."TextureFrameManaBarTextLeft"];
+	_G[thisName.."ManaBar"].RightText = _G[thisName.."TextureFrameManaBarTextRight"];
+
 	UnitFrame_Initialize(self, unit, _G[thisName.."TextureFrameName"], portraitFrame,
 						 _G[thisName.."HealthBar"], _G[thisName.."TextureFrameHealthBarText"],
 						 _G[thisName.."ManaBar"], _G[thisName.."TextureFrameManaBarText"],
@@ -328,7 +333,7 @@ function TargetFrame_CheckClassification (self, forceNormalTexture)
 	local classification = UnitClassification(self.unit);
 	self.nameBackground:Show();
 	self.manabar:Show();
-	self.manabar.TextString:Show();
+	TextStatusBar_UpdateTextString(self.manabar);
 	self.threatIndicator:SetTexture("Interface\\TargetingFrame\\UI-TargetingFrame-Flash");
 
 	if ( forceNormalTexture ) then

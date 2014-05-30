@@ -49,6 +49,7 @@
 				self.UpdateTooltip = BagSlotButton_OnEnter;
 				_G[self:GetName().."NormalTexture"]:SetWidth(50);
 				_G[self:GetName().."NormalTexture"]:SetHeight(50);
+				self.IconBorder:SetSize(30, 30);
 				_G[self:GetName().."Count"]:SetPoint("BOTTOMRIGHT", -2, 2);
 				self.maxDisplayCount = 999;
 			</OnLoad>

@@ -39,8 +39,16 @@ function TextStatusBar_UpdateTextString(textStatusBar)
 end
 
 function TextStatusBar_UpdateTextStringWithValues(statusFrame, textString, value, valueMin, valueMax)
+	if( statusFrame.LeftText and statusFrame.RightText ) then
+		statusFrame.LeftText:SetText("");
+		statusFrame.RightText:SetText("");
+		statusFrame.LeftText:Hide();
+		statusFrame.RightText:Hide();
+	end
+	
 	if ( ( tonumber(valueMax) ~= valueMax or valueMax > 0 ) and not ( statusFrame.pauseUpdates ) ) then
 		statusFrame:Show();
+		
 		if ( (statusFrame.cvar and GetCVar(statusFrame.cvar) == "1" and statusFrame.textLockable) or statusFrame.forceShow ) then
 			textString:Show();
 		elseif ( statusFrame.lockShow > 0 and (not statusFrame.forceHideText) ) then
@@ -67,10 +75,18 @@ function TextStatusBar_UpdateTextStringWithValues(statusFrame, textString, value
 				textString:SetText(statusFrame.zeroText);
 				statusFrame.isZero = 1;
 				textString:Show();
-				return;
-			end
-			if ( textDisplay == "BOTH" and not statusFrame.showPercentage) then
-				valueDisplay = "(" .. math.ceil((value / valueMax) * 100) .. "%) " .. valueDisplay .. " / " .. valueMaxDisplay;
+			elseif ( textDisplay == "BOTH" and not statusFrame.showPercentage) then
+				if( statusFrame.LeftText and statusFrame.RightText ) then
+					if(not statusFrame.powerToken or statusFrame.powerToken == "MANA") then
+						statusFrame.LeftText:SetText(math.ceil((value / valueMax) * 100) .. "%");
+						statusFrame.LeftText:Show();
+					end
+					statusFrame.RightText:SetText(valueDisplay);
+					statusFrame.RightText:Show();
+					textString:Hide();
+				else
+					valueDisplay = "(" .. math.ceil((value / valueMax) * 100) .. "%) " .. valueDisplay .. " / " .. valueMaxDisplay;
+				end
 				textString:SetText(valueDisplay);
 			else
 				valueDisplay = math.ceil((value / valueMax) * 100) .. "%";

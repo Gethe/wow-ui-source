@@ -865,13 +865,20 @@
 						<Anchors>
 							<Anchor point="LEFT"/>
 						</Anchors>
+						<Layers>
+							<Layer level="ARTWORK">
+								<Texture parentKey="Icon" file="Interface\ChatFrame\ChatFrameExpandArrow">
+									<Size x="10" y="12"/>
+									<Anchors>
+										<Anchor point="RIGHT" relativeKey="$parent.Right" relativePoint="RIGHT" x="-5"/>
+									</Anchors>
+								</Texture>
+							</Layer>
+						</Layers>
 						<Scripts>
 							<OnClick> 
 								ToggleDropDownMenu(1, nil, TradeSkillFilterDropDown, "TradeSkillFilterButton", 74, 15);
 							</OnClick>	
-							<OnLoad>
-								TradeSkillFilterButtonRightArrow:Show();
-							</OnLoad>
 						</Scripts>						
 					</Button>
 					<Frame name="TradeSkillFilterDropDown" inherits="UIDropDownMenuTemplate">
@@ -998,6 +1005,7 @@
 			</OnShow>
 			<OnHide>
 				CloseTradeSkill();
+				C_Garrison.CloseGarrisonTradeskillNPC();
 				PlaySound("igCharacterInfoClose");
 			</OnHide>
 			<OnUpdate function="TradeSkillFrame_OnUpdate"/>

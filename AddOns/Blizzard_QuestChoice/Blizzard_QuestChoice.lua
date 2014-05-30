@@ -4,14 +4,14 @@ CURRENCY_HEIGHT = 20;
 MAX_CURRENCIES = 3;
 REWARDS_WIDTH = 200;
 INIT_REWARDS_HEIGHT = 18; --basically total vertical padding between rewards
-INIT_OPTION_HEIGHT = 268;
-INIT_WINDOW_HEIGHT = 440;
+INIT_OPTION_HEIGHT = 278;
+INIT_WINDOW_HEIGHT = 480;
 OPTION_STATIC_HEIGHT = 136; --height of artwork, button, and minimum padding
 
 function QuestChoiceFrame_OnEvent(self, event) 
 	if (event == "QUEST_CHOICE_UPDATE") then
 		QuestChoiceFrame_Update(self)
-	elseif (event == "PLAYER_DEAD" or event == "PLAYER_ENTERING_WORLD") then
+	elseif (event == "PLAYER_DEAD" or event == "PLAYER_ENTERING_WORLD" or event=="QUEST_CHOICE_CLOSE") then
 		HideUIPanel(self);
 	end
 end
@@ -21,6 +21,20 @@ function QuestChoiceFrame_Show()
 	if (not self:IsShown()) then
 		ShowUIPanel(self)
 		QuestChoiceFrame_Update(QuestChoiceFrame);
+	end
+end
+
+function QuestChoiceFrame_OnHyperlinkEnter(self, link, text, hyperlinkButton)
+	if ( link and string.find(link, "spell") ) then
+		local _, _, spellID = string.find(link, "(%d+)");
+		if ( spellID ) then
+			GameTooltip:SetOwner(hyperlinkButton, "ANCHOR_RIGHT");
+			if ( GameTooltip:SetSpellByID(spellID) ) then
+				--hyperlinkButton.UpdateTooltip = QuestChoiceFrame_OnHyperlinkEnter;
+			else
+				hyperlinkButton.UpdateTooltip = nil;
+			end
+		end
 	end
 end
 
@@ -51,7 +65,7 @@ function QuestChoiceFrame_Update(self)
 	for i=1, numOptions do
 		local option = QuestChoiceFrame["Option"..i];
 		currHeight = OPTION_STATIC_HEIGHT;
-		currHeight = currHeight + option.OptionText:GetHeight();
+		currHeight = currHeight + option.OptionText:GetContentHeight();
 		currHeight = currHeight + option.Rewards:GetHeight();
 		maxHeight = max(currHeight, maxHeight);
 	end

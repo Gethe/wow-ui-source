@@ -35,16 +35,16 @@ function QuestFrame_OnEvent(self, event, ...)
 			CloseQuest();
 			return;
 		else
-			HideUIPanel(QuestLogDetailFrame);
+			HideUIPanel(QuestLogPopupDetailFrame);
 			QuestFrameDetailPanel:Hide();
 			QuestFrameDetailPanel:Show();
 		end
 	elseif ( event == "QUEST_PROGRESS" ) then
-		HideUIPanel(QuestLogDetailFrame);
+		HideUIPanel(QuestLogPopupDetailFrame);
 		QuestFrameProgressPanel:Hide();
 		QuestFrameProgressPanel:Show();
 	elseif ( event == "QUEST_COMPLETE" ) then
-		HideUIPanel(QuestLogDetailFrame);
+		HideUIPanel(QuestLogPopupDetailFrame);
 		QuestFrameCompleteQuestButton:Enable();	
 		QuestFrameRewardPanel:Hide();
 		QuestFrameRewardPanel:Show();

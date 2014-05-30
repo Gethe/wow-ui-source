@@ -346,6 +346,10 @@
 		<Size x="16" y="16"/>
 		<TexCoords left="0.966796875" right="0.99609375" top="0.7509765625" bottom="0.765625"/>
 	</Texture>
+	<Texture name="UI-EJ-Header-Overview" file="Interface\EncounterJournal\UI-EncounterJournalTextures" virtual="true">
+		<Size x="327" y="30"/>
+		<TexCoords left="0.359375" right="0.99609375" top="0.8525390625" bottom="0.880859375"/>
+	</Texture>
 
 	<Button name="EncounterInstanceButtonTemplate" virtual="true">
 		<Size x="174" y="96"/>
@@ -717,15 +721,23 @@
 						<Anchor point="TOPLEFT"/>
 					</Anchors>
 				</Texture>
-				<FontString parentKey="Text" inherits="GameFontBlack" justifyH="LEFT" justifyV="TOP" wordWrap="true">
-					<Size x="95" y="0"/>
-					<Anchors>
-						<Anchor point="TOPLEFT" relativeKey="$parent.Bullet" relativePoint="TOPRIGHT" x="4" y="0"/>
-					</Anchors>
-					<Color r="0.25" g="0.1484375" b=".02" a="1"/>
-				</FontString>
 			</Layer>
 		</Layers>
+		<Frames>
+			<SimpleHTML parentKey="Text">
+				<Size x="95" y="10"/>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.Bullet" relativePoint="TOPRIGHT" x="4" y="0"/>
+				</Anchors>
+				<FontString inherits="GameFontBlack" justifyH="LEFT" justifyV="TOP">
+					<Color r="0.25" g="0.1484375" b=".02" a="1"/>
+				</FontString>
+				<Scripts>
+					<OnHyperlinkEnter function="EncounterJournal_OnHyperlinkEnter"/>
+					<OnHyperlinkLeave function="GameTooltip_Hide"/>
+				</Scripts>
+			</SimpleHTML>
+		</Frames>
 	</Frame>
 
 	<Frame name="EncounterInfoTemplate" virtual="true">
@@ -1928,7 +1940,7 @@
 									</OnClick>
 								</Scripts>
 							</Button>
-							<ScrollFrame name="$parentBossesScrollFrame" parentKey="bossesScroll" inherits="UIPanelScrollFrameCodeTemplate">
+							<ScrollFrame name="$parentBossesScrollFrame" useParentLevel="true" parentKey="bossesScroll" inherits="UIPanelScrollFrameCodeTemplate">
 								<Size x="363" y="382"/>
 								<Anchors>
 									<Anchor point="BOTTOMLEFT" x="25" y="1"/>
@@ -2157,7 +2169,9 @@
 										EncounterJournal.encounter.info.encounterTitle:Show();
 									</OnShow>
 									<OnHide>
-										EncounterJournal.encounter.info.reset:Hide()
+										if (not self:GetParent().overviewScroll:IsShown()) then
+											EncounterJournal.encounter.info.reset:Hide();
+										end
 									</OnHide>
 								</Scripts>
 							</ScrollFrame>
@@ -2187,10 +2201,29 @@
 										</Anchors>
 										<Layers>
 											<Layer level="ARTWORK">
-												<FontString name="$parentDescription" inherits="GameFontBlack" justifyH="LEFT" parentKey="description">
+												<FontString name="$parentLoreDescription" inherits="GameFontBlack" justifyH="LEFT" parentKey="loreDescription">
 													<Size x="0" y="0"/>
 													<Anchors>
 														<Anchor point="TOPLEFT" x="2" y="-8"/>
+													</Anchors>
+													<Color r="0.25" g="0.1484375" b=".02" a="1"/>
+												</FontString>
+												<Texture name="$parentHeader" inherits="UI-EJ-Header-Overview" parentKey="header">
+													<Anchors>
+														<Anchor point="TOP" relativeKey="$parent.loreDescription" relativePoint="BOTTOM" x="0" y="-6"/>
+													</Anchors>
+												</Texture>
+												<FontString name="$parentTitle" inherits="GameFontNormal" justifyH="LEFT" text="OVERVIEW">
+													<Size x="200" y="10"/>
+													<Anchors>
+														<Anchor point="BOTTOMLEFT" relativeKey="$parent.header" relativePoint="BOTTOMLEFT" x="8" y="6"/>
+													</Anchors>
+													<Color r="0.929" g="0.788" b="0.620"/>
+												</FontString>
+												<FontString name="$parentOverviewDescription" inherits="GameFontBlack" justifyH="LEFT" parentKey="overviewDescription">
+													<Size x="0" y="0"/>
+													<Anchors>
+														<Anchor point="TOP" relativeKey="$parent.header" relativePoint="BOTTOM" x="0" y="-6"/>
 													</Anchors>
 													<Color r="0.25" g="0.1484375" b=".02" a="1"/>
 												</FontString>
@@ -2207,7 +2240,9 @@
 										EncounterJournal.encounter.info.encounterTitle:Show();
 									</OnShow>
 									<OnHide>
-										EncounterJournal.encounter.info.reset:Hide()
+										if (not self:GetParent().detailsScroll:IsShown()) then
+											EncounterJournal.encounter.info.reset:Hide()
+										end
 									</OnHide>
 								</Scripts>
 							</ScrollFrame>

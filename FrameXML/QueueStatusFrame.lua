@@ -54,6 +54,8 @@ function QueueStatusFrame_OnLoad(self)
 
 	--For LFGList
 	self:RegisterEvent("LFG_LIST_ACTIVE_ENTRY_UPDATE");
+	self:RegisterEvent("LFG_LIST_SEARCH_RESULTS_RECEIVED");
+	self:RegisterEvent("LFG_LIST_SEARCH_RESULT_UPDATED");
 
 	--For PvP Role Checks
 	self:RegisterEvent("PVP_ROLE_CHECK_UPDATED");
@@ -97,7 +99,7 @@ function QueueStatusFrame_GetEntry(self, entryIndex)
 end
 
 function QueueStatusFrame_Update(self)
-	local showMinimapButton, animateEye;
+	local animateEye;
 
 	local nextEntry = 1;
 
@@ -113,7 +115,6 @@ function QueueStatusFrame_Update(self)
 			totalHeight = totalHeight + entry:GetHeight();
 			nextEntry = nextEntry + 1;
 
-			showMinimapButton = true;
 			if ( mode == "queued" ) then
 				animateEye = true;
 			end
@@ -128,7 +129,19 @@ function QueueStatusFrame_Update(self)
 		entry:Show();
 		totalHeight = totalHeight + entry:GetHeight();
 		nextEntry = nextEntry + 1;
-		showMinimapButton = true;
+	end
+
+	--Try LFGList applications
+	local apps = C_LFGList.GetApplications();
+	for i=1, #apps do
+		local _, appStatus = C_LFGList.GetApplicationInfo(apps[i]);
+		if ( appStatus == "applied" ) then
+			local entry = QueueStatusFrame_GetEntry(self, nextEntry);
+			QueueStatusEntry_SetUpLFGListApplication(entry, apps[i]);
+			entry:Show();
+			totalHeight = totalHeight + entry:GetHeight();
+			nextEntry = nextEntry + 1;
+		end
 	end
 
 	local inProgress, _, _, _, _, isBattleground = GetLFGRoleUpdate();
@@ -139,7 +152,6 @@ function QueueStatusFrame_Update(self)
 		entry:Show();
 		totalHeight = totalHeight + entry:GetHeight();
 		nextEntry = nextEntry + 1;
-		showMinimapButton = true;
 	end
 
 	--Try all PvP queues
@@ -152,7 +164,6 @@ function QueueStatusFrame_Update(self)
 			totalHeight = totalHeight + entry:GetHeight();
 			nextEntry = nextEntry + 1;
 
-			showMinimapButton = true;
 			if ( status == "queued" and not suspend ) then
 				animateEye = true;
 			end
@@ -169,7 +180,6 @@ function QueueStatusFrame_Update(self)
 			totalHeight = totalHeight + entry:GetHeight();
 			nextEntry = nextEntry + 1;
 
-			showMinimapButton = true;
 			if ( status == "queued" ) then
 				animateEye = true;
 			end
@@ -183,8 +193,6 @@ function QueueStatusFrame_Update(self)
 		entry:Show();
 		totalHeight = totalHeight + entry:GetHeight();
 		nextEntry = nextEntry + 1;
-
-		showMinimapButton = true;
 	end
 
 	--Pet Battle PvP Queue
@@ -196,7 +204,6 @@ function QueueStatusFrame_Update(self)
 		totalHeight = totalHeight + entry:GetHeight();
 		nextEntry = nextEntry + 1;
 
-		showMinimapButton = true;
 		if ( pbStatus == "queued" ) then
 			animateEye = true;
 		end
@@ -211,7 +218,7 @@ function QueueStatusFrame_Update(self)
 	self:SetHeight(totalHeight);
 
 	--Update the minimap icon
-	if ( showMinimapButton ) then
+	if ( nextEntry > 1 ) then
 		QueueStatusMinimapButton:Show();
 	else
 		QueueStatusMinimapButton:Hide();
@@ -332,6 +339,12 @@ end
 function QueueStatusEntry_SetUpLFGListActiveEntry(entry)
 	local _, _, _, name = C_LFGList.GetActiveEntryInfo();
 	QueueStatusEntry_SetMinimalDisplay(entry, name, QUEUED_STATUS_LISTED);
+end
+
+function QueueStatusEntry_SetUpLFGListApplication(entry, resultID)
+	local _, activityID, name = C_LFGList.GetSearchResultInfo(resultID);
+	local activityName = C_LFGList.GetActivityInfo(activityID);
+	QueueStatusEntry_SetMinimalDisplay(entry, name, QUEUED_STATUS_SIGNED_UP, activityName);
 end
 
 function QueueStatusEntry_SetUpBattlefield(entry, idx)
@@ -578,6 +591,14 @@ function QueueStatusDropDown_Update()
 	local isActive = C_LFGList.GetActiveEntryInfo();
 	if ( isActive ) then
 		QueueStatusDropDown_AddLFGListButtons(info);
+	end
+
+	local apps = C_LFGList.GetApplications();
+	for i=1, #apps do
+		local _, appStatus = C_LFGList.GetApplicationInfo(apps[i]);
+		if ( appStatus == "applied" ) then
+			QueueStatusDropDown_AddLFGListApplicationButtons(info, apps[i]);
+		end
 	end
 
 	--PvP
@@ -860,6 +881,23 @@ function QueueStatusDropDown_AddLFGListButtons(info)
 	info.leftPadding = 10;
 	info.func = wrapFunc(C_LFGList.RemoveListing);
 	info.disabled = not UnitIsGroupLeader("player");
+	UIDropDownMenu_AddButton(info);
+end
+
+function QueueStatusDropDown_AddLFGListApplicationButtons(info, resultID)
+	wipe(info);
+	local _, _, name = C_LFGList.GetSearchResultInfo(resultID);
+	info.text = name;
+	info.isTitle = 1;
+	info.notCheckable = 1;
+	UIDropDownMenu_AddButton(info);
+
+	info.text = CANCEL_SIGN_UP;
+	info.isTitle = nil;
+	info.leftPadding = 10;
+	info.func = wrapFunc(C_LFGList.CancelApplication);
+	info.arg1 = resultID;
+	info.disabled = IsInGroup() and not UnitIsGroupLeader("player");
 	UIDropDownMenu_AddButton(info);
 end
 

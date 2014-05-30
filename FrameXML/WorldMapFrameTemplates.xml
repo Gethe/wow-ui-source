@@ -185,86 +185,6 @@
 			</OnMouseUp>
 		</Scripts>
 	</Frame>
-	<Frame name="WorldMapQuestSecondaryPOITemplate" enableMouse="true" virtual="true"> 
-		<Size x="10" y="10"/>
-		<KeyValues>
-			 <KeyValue key="isSecondary" value="true" type="boolean"/>
-		</KeyValues>
-		<Layers>
-			<Layer level="BACKGROUND">
-				<Texture parentKey="Texture" file="Interface\WorldMap\UI-QuestPoi-NumberIcons.tga">
-					<Size x="16" y="16"/>
-					<Anchors>
-						<Anchor point="CENTER"/>
-					</Anchors>
-					<TexCoords left="0.500" right="0.625" top="0.375" bottom="0.5"/>
-				</Texture>
-			</Layer>
-		</Layers>
-		<Scripts>
-			<OnEnter function="WorldMapPOIButton_OnEnter"/>
-			<OnLeave function="WorldMapPOIButton_OnLeave"/>
-		</Scripts>
-	</Frame>
-	<Frame name="WorldMapQuestFrameTemplate" enableMouse="true" virtual="true">
-		<Size>
-			<AbsDimension x="281" y="100"/>
-		</Size>
-		<Layers>
-			<Layer level="BACKGROUND">
-				<FontString name="$parentTitle" inherits="GameFontNormal" justifyH="LEFT"  justifyV="TOP" spacing="2" parentKey="title">
-					<Size>
-						<AbsDimension x="240" y="0"/>
-					</Size>					
-					<Anchors>
-						<Anchor point="TOPLEFT">
-							<Offset>
-								<AbsDimension x="34" y="-8"/>
-							</Offset>						
-						</Anchor>
-					</Anchors>
-					<Color r="1" g="0.82" b="0" />
-				</FontString>
-				<Texture name="$parentCheck" file="Interface\Buttons\UI-CheckBox-Check" hidden="true" parentKey="check">
-					<Size>
-						<AbsDimension x="16" y="16"/>
-					</Size>
-					<Anchors>
-						<Anchor point="TOPLEFT" relativeTo="$parentTitle" relativePoint="TOPRIGHT" />
-					</Anchors> 
-				</Texture>
-				<FontString name="$parentDashes" inherits="GameFontNormal" justifyH="LEFT"  justifyV="BOTTOM" spacing="2" parentKey="dashes">
-					<Anchors>
-						<Anchor point="TOPLEFT" relativeTo="$parentTitle" relativePoint="BOTTOMLEFT">
-							<Offset>
-								<AbsDimension x="0" y="-4"/>
-							</Offset>						
-						</Anchor>
-					</Anchors>
-					<Color r="0.8" g="0.8" b="0.8" />				
-				</FontString>
-				<FontString name="$parentObjectives" inherits="GameFontNormal" justifyH="LEFT"  justifyV="BOTTOM" spacing="2" parentKey="objectives">
-					<Size>
-						<AbsDimension x="232" y="0"/>
-					</Size>					
-					<Anchors>
-						<Anchor point="TOPLEFT" relativeTo="$parentTitle" relativePoint="BOTTOMLEFT">
-							<Offset>
-								<AbsDimension x="8" y="-4"/>
-							</Offset>						
-						</Anchor>
-					</Anchors>
-					<Color r="0.8" g="0.8" b="0.8" />
-				</FontString>				
-			</Layer>
-		</Layers>		
-		<Scripts>
-			<OnEnter function="WorldMapQuestFrame_OnEnter" />
-			<OnLeave function="WorldMapQuestFrame_OnLeave" />
-			<OnMouseDown function="WorldMapQuestFrame_OnMouseDown" />
-			<OnMouseUp function="WorldMapQuestFrame_OnMouseUp" />
-		</Scripts>
-	</Frame>
 	<Button name="WorldMapFakeButtonTemplate" virtual="true">
 		<Scripts>
 			<OnMouseDown function="WorldMapButton_OnMouseDown"/>
@@ -338,7 +258,7 @@
 			</OnShow>
 			<OnClick>
 				if WORLDMAP_SETTINGS.size ~= WORLDMAP_WINDOWED_SIZE then
-					ToggleFrame(WorldMapFrame);
+					ToggleWorldMap();
 				end
 			
 				if not EncounterJournal or not EncounterJournal:IsShown() then

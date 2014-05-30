@@ -34,6 +34,9 @@ function ActionBarController_OnLoad(self)
 	
 	--Extra Actionbar Only
 	self:RegisterEvent("UPDATE_EXTRA_ACTIONBAR");
+
+	-- MultiBarBottomLeft
+	self:RegisterEvent("ACTIONBAR_SHOW_BOTTOMLEFT");
 	
 	CURRENT_ACTION_BAR_STATE = LE_ACTIONBAR_STATE_MAIN;
 end
@@ -74,6 +77,14 @@ function ActionBarController_OnEvent(self, event, ...)
 	--Extra Action Bar
 	if ( event == "UPDATE_EXTRA_ACTIONBAR" ) then
 		ExtraActionBar_Update();
+	end
+
+	-- MultiBarBottomLeft
+	if ( event == "ACTIONBAR_SHOW_BOTTOMLEFT") then
+		SHOW_MULTI_ACTIONBAR_1 = true;
+		InterfaceOptionsActionBarsPanelBottomLeft.value = nil;
+		MultiActionBar_Update();
+		UIParent_ManageFramePositions();
 	end
 end
 
