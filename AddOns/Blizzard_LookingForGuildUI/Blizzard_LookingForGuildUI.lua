@@ -29,33 +29,47 @@ function LookingForGuildFrame_OnLoad(self)
 	self:RegisterEvent("LF_GUILD_MEMBERSHIP_LIST_CHANGED");
 end
 
+function LookingForGuild_UpdateRoleButton( button, canBeRole )
+	if ( canBeRole ) then
+		button:Enable();
+		SetDesaturation(button:GetNormalTexture(), false);
+		button.cover:Hide();
+		button.checkButton:Enable();
+		if ( button.background ) then
+			button.background:Show();
+		end
+		if ( button.shortageBorder ) then
+			button.shortageBorder:SetVertexColor(1, 1, 1);
+			button.incentiveIcon.texture:SetVertexColor(1, 1, 1);
+			button.incentiveIcon.border:SetVertexColor(1, 1, 1);
+		end
+		button.Text:SetFontObject("GameFontHighlightSmall");
+	else
+		button:Disable();
+		SetDesaturation(button:GetNormalTexture(), true);
+		button.cover:Show();
+		button.cover:SetAlpha(0.7);
+		button.checkButton:Hide();
+		button.checkButton:Disable();
+		if ( button.background ) then
+			button.background:Hide();
+		end
+		if ( button.shortageBorder ) then
+			button.shortageBorder:SetVertexColor(0.5, 0.5, 0.5);
+			button.incentiveIcon.texture:SetVertexColor(0.5, 0.5, 0.5);
+			button.incentiveIcon.border:SetVertexColor(0.5, 0.5, 0.5);
+		end
+		button.Text:SetFontObject("GameFontDisableSmall");
+	end
+end
+
 function LookingForGuildFrame_OnShow(self)
 	PlaySound("igCharacterInfoOpen");
 	local canBeTank, canBeHealer, canBeDPS = UnitGetAvailableRoles("player");
 	
-	if ( canBeTank ) then
-		LFG_EnableRoleButton(LookingForGuildTankButton);
-		LookingForGuildTankButtonText:SetFontObject("GameFontHighlightSmall");
-	else
-		LFG_PermanentlyDisableRoleButton(LookingForGuildTankButton);
-		LookingForGuildTankButtonText:SetFontObject("GameFontDisableSmall");
-	end
-	
-	if ( canBeHealer ) then
-		LFG_EnableRoleButton(LookingForGuildHealerButton);
-		LookingForGuildHealerButtonText:SetFontObject("GameFontHighlightSmall");
-	else
-		LFG_PermanentlyDisableRoleButton(LookingForGuildHealerButton);
-		LookingForGuildHealerButtonText:SetFontObject("GameFontDisableSmall");
-	end
-	
-	if ( canBeDPS ) then
-		LFG_EnableRoleButton(LookingForGuildDamagerButton);
-		LookingForGuildDamagerButtonText:SetFontObject("GameFontHighlightSmall");
-	else
-		LFG_PermanentlyDisableRoleButton(LookingForGuildDamagerButton);
-		LookingForGuildDamagerButtonText:SetFontObject("GameFontDisableSmall");
-	end
+	LookingForGuild_UpdateRoleButton(LookingForGuildTankButton, canBeTank);
+	LookingForGuild_UpdateRoleButton(LookingForGuildHealerButton, canBeHealer);
+	LookingForGuild_UpdateRoleButton(LookingForGuildDamagerButton, canBeDPS);
 
 	UpdateMicroButtons();
 	RequestGuildMembershipList();

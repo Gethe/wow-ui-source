@@ -480,3 +480,39 @@ function GuildInstanceDifficulty_OnEnter(self)
 	end
 	GameTooltip:Show();
 end
+
+
+function GarrisonLandingPageMinimapButton_OnLoad(self)
+	self:RegisterEvent("GARRISON_SHOW_LANDING_PAGE");
+	self:RegisterEvent("GARRISON_HIDE_LANDING_PAGE");
+end
+
+function GarrisonLandingPageMinimapButton_OnEvent(self, event, ...)
+	if (event == "GARRISON_HIDE_LANDING_PAGE") then
+		self:Hide();
+	elseif (event == "GARRISON_SHOW_LANDING_PAGE") then
+		self:Show();
+	end
+end
+
+function GarrisonLandingPageMinimapButton_OnShow(self)
+	self.faction = UnitFactionGroup("player");
+	if ( self.faction == "Horde" ) then
+		self:GetNormalTexture():SetAtlas("GarrLanding-MinimapIcon-Horde-Up", true)
+		self:GetPushedTexture():SetAtlas("GarrLanding-MinimapIcon-Horde-Down", true)
+	else
+		self:GetNormalTexture():SetAtlas("GarrLanding-MinimapIcon-Alliance-Up", true)
+		self:GetPushedTexture():SetAtlas("GarrLanding-MinimapIcon-Alliance-Down", true)
+	end
+end
+
+function GarrisonLandingPageMinimapButton_OnClick()
+	if (not GarrisonLandingPage) then
+		Garrison_LoadUI();
+	end
+	if (not GarrisonLandingPage:IsShown()) then
+		ShowUIPanel(GarrisonLandingPage);
+	else
+		HideUIPanel(GarrisonLandingPage);
+	end
+end

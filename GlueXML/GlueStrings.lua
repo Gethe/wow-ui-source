@@ -1146,6 +1146,7 @@ TRIAL_LOADING_MESSAGE = "|cffffd100Note:|r Since this is your first time playing
 TRIPLE_BUFFER = "Triple Buffering";
 UI_DEPTH = "UI Depth";
 UNDELETE_FAILED_ERROR = "There was a problem restoring your deleted character. Please try again later.";
+UNDELETE_NAME_TAKEN = "You already have an active character with that name. You can't restore this character at this time. Please contact Custom Service if you require further assistance.";
 UNDELETE_NO_CHARACTERS = "You have no deleted characters to restore.";
 UNDELETE_SERVICE_TOOLTIP = "Restore this character";
 UNDELETE_TOOLTIP = "Restore Deleted Character";

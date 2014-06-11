@@ -55,6 +55,8 @@ LFG_INSTANCE_INVALID_CODES = { --Any other codes are unspecified conditions (e.g
 	nil,	--Target level too high
 	nil,	--Target level too low
 	"AREA_NOT_EXPLORED",
+	nil,	--Wrong faction
+	"NO_VALID_ROLES",
 	[1001] = "LEVEL_TOO_LOW",
 	[1002] = "LEVEL_TOO_HIGH",
 	[1022] = "QUEST_NOT_COMPLETED",
@@ -333,6 +335,8 @@ function LFG_PermanentlyDisableRoleButton(button)
 	button.cover:SetAlpha(0.7);
 	button.checkButton:Hide();
 	button.checkButton:Disable();
+	button.checkButton:SetChecked(false);
+	button.alert:Hide();
 	if ( button.background ) then
 		button.background:Hide();
 	end
@@ -365,8 +369,13 @@ function LFG_EnableRoleButton(button)
 	button:Enable();
 	SetDesaturation(button:GetNormalTexture(), false);
 	button.cover:Hide();
-	button.checkButton:Show();
-	button.checkButton:Enable();
+	if( button.lockedIndicator:IsShown() ) then
+		button.checkButton:Hide();
+		button.checkButton:Disable();
+	else
+		button.checkButton:Show();
+		button.checkButton:Enable();
+	end
 	if ( button.background ) then
 		button.background:Show();
 	end
@@ -377,26 +386,19 @@ function LFG_EnableRoleButton(button)
 	end
 end
 
+function LFG_UpdateAvailableRoleButton( button, canBeRole )
+	if (canBeRole) then
+		LFG_EnableRoleButton(button);
+	else
+		LFG_PermanentlyDisableRoleButton(button);
+	end
+end
+
 function LFG_UpdateAvailableRoles(tankButton, healButton, dpsButton, leaderButton)
-	local canBeTank, canBeHealer, canBeDPS = UnitGetAvailableRoles("player");
-	
-	if ( canBeTank ) then
-		LFG_EnableRoleButton(tankButton);
-	else
-		LFG_PermanentlyDisableRoleButton(tankButton);
-	end
-	
-	if ( canBeHealer ) then
-		LFG_EnableRoleButton(healButton);
-	else
-		LFG_PermanentlyDisableRoleButton(healButton);
-	end
-	
-	if ( canBeDPS ) then
-		LFG_EnableRoleButton(dpsButton);
-	else
-		LFG_PermanentlyDisableRoleButton(dpsButton);
-	end
+	local canBeTank, canBeHealer, canBeDPS = UnitGetAvailableRoles("player");	
+	LFG_UpdateAvailableRoleButton(tankButton, canBeTank);
+	LFG_UpdateAvailableRoleButton(healButton, canBeHealer);
+	LFG_UpdateAvailableRoleButton(dpsButton, canBeDPS);
 	
 	if ( leaderButton ) then
 		if (not IsInGroup() or UnitIsGroupLeader("player")) then
@@ -430,10 +432,10 @@ function LFG_UpdateRoleCheckboxes(category, lfgID, tankButton, healButton, dpsBu
 	if ( mode ~= "queued" and mode ~= "listed" and mode ~= "suspended" ) then
 		leader, tank, healer, dps = GetLFGRoles();
 	end
-
-	tankButton.checkButton:SetChecked(tank);
-	healButton.checkButton:SetChecked(healer);
-	dpsButton.checkButton:SetChecked(dps);
+	
+	LFGRole_SetChecked(tankButton, tank);
+	LFGRole_SetChecked(healButton, healer);
+	LFGRole_SetChecked(dpsButton, dps);
 	
 	if ( leaderButton ) then
 		leaderButton.checkButton:SetChecked(leader);
@@ -500,6 +502,49 @@ function LFGRoleIconIncentive_OnEnter(self)
 	GameTooltip:SetText(format(LFG_CALL_TO_ARMS, _G[role]), 1, 1, 1);
 	GameTooltip:AddLine(LFG_CALL_TO_ARMS_EXPLANATION, nil, nil, nil, true);
 	GameTooltip:Show();
+end
+
+function LFDRoleButton_OnEnter(self)
+	GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+	GameTooltip:SetText(_G["ROLE_DESCRIPTION_"..self.role], nil, nil, nil, nil, true);
+	if ( self.permDisabled ) then
+		GameTooltip:AddLine(YOUR_CLASS_MAY_NOT_PERFORM_ROLE, 1, 0, 0, true);
+	elseif ( self.disabledTooltip and not self:IsEnabled() ) then
+		GameTooltip:AddLine(self.disabledTooltip, 1, 0, 0, true);
+	elseif ( self.lockedIndicator:IsShown() ) then
+		local dungeonID = LFDQueueFrame.type;
+		local roleID = self:GetID();
+		local reasons;
+		GameTooltip:SetText(ERR_ROLE_UNAVAILABLE, 1.0, 1.0, 1.0, true);
+		if ( type(dungeonID) == "number" ) then
+			reasons = GetLFDRoleLockInfo(dungeonID, roleID);
+			for i = 1, #reasons do
+				local text = _G["INSTANCE_UNAVAILABLE_SELF_"..(LFG_INSTANCE_INVALID_CODES[reasons[i]])];
+				if( text ) then
+					GameTooltip:AddLine(text, nil, nil, nil, true);
+				end
+			end
+		else
+			for dungeonID, isChecked in pairs(LFGEnabledList) do
+				if( not LFGIsIDHeader(dungeonID) and isChecked and not LFGLockList[dungeonID] ) then
+					reasons = GetLFDRoleLockInfo(dungeonID, roleID);
+					for i = 1, #reasons do
+						local text = _G["INSTANCE_UNAVAILABLE_SELF_"..(LFG_INSTANCE_INVALID_CODES[reasons[i]])];
+						if( text ) then
+							GameTooltip:AddLine(text, nil, nil, nil, true);
+						end
+					end
+				end
+			end
+		end
+		GameTooltip:Show();
+		return;
+	elseif ( self.alert:IsShown() ) then
+		GameTooltip:SetText(INSTANCE_ROLE_WARNING_TITLE, 1.0, 1.0, 1.0, true);
+		GameTooltip:AddLine(INSTANCE_ROLE_WARNING_TEXT, nil, nil, nil, true);
+	end
+	GameTooltip:Show();
+	LFGFrameRoleCheckButton_OnEnter(self);
 end
 
 function LFGSpecificChoiceEnableButton_SetIsRadio(button, isRadio)
@@ -1575,7 +1620,7 @@ end
 -- LFR/LFD group invite stuff
 --
 function LFGInvitePopup_UpdateAcceptButton()
-	if ( LFGInvitePopupRoleButtonTank.checkButton:GetChecked() or LFGInvitePopupRoleButtonHealer.checkButton:GetChecked() or LFGInvitePopupRoleButtonDPS.checkButton:GetChecked() ) then
+	if ( LFGRole_GetChecked(LFGInvitePopupRoleButtonTank) or LFGRole_GetChecked(LFGInvitePopupRoleButtonHealer) or LFGRole_GetChecked(LFGInvitePopupRoleButtonDPS) ) then
 		LFGInvitePopupAcceptButton:Enable();
 	else
 		LFGInvitePopupAcceptButton:Disable();
@@ -1597,7 +1642,7 @@ function LFGInvitePopupCheckButton_OnClick(checkButton)
 end
 
 function LFGInvitePopupAccept_OnClick()
-	AcceptGroup(LFGInvitePopupRoleButtonTank.checkButton:GetChecked(), LFGInvitePopupRoleButtonHealer.checkButton:GetChecked(), LFGInvitePopupRoleButtonDPS.checkButton:GetChecked());
+	AcceptGroup(LFGRole_GetChecked(LFGInvitePopupRoleButtonTank), LFGRole_GetChecked(LFGInvitePopupRoleButtonHealer), LFGRole_GetChecked(LFGInvitePopupRoleButtonDPS));
 	StaticPopupSpecial_Hide(LFGInvitePopup);
 end
 
@@ -2113,7 +2158,7 @@ function LFGDungeonListCheckButton_OnClick(button, category, dungeonList, hidden
 	local dungeonID = parent.id;
 	local isChecked = button:GetChecked();
 
-	PlaySound(isChecked and "igMainMenuOptionCheckBoxOff" or "igMainMenuOptionCheckBoxOff");
+	PlaySound(isChecked and "igMainMenuOptionCheckBoxOn" or "igMainMenuOptionCheckBoxOff");
 	if ( LFGIsIDHeader(dungeonID) ) then
 		LFGDungeonList_SetHeaderEnabled(category, dungeonID, isChecked, dungeonList, hiddenByCollapseList);
 	else
@@ -2174,3 +2219,12 @@ function isRaidFinderDungeonDisplayable(id)
 	return myLevel >= minLevel and myLevel <= maxLevel and EXPANSION_LEVEL >= expansionLevel;
 end
 
+function LFGRole_GetChecked(button)
+	return button.checkButton:GetChecked() and not button.lockedIndicator:IsShown();
+end
+
+function LFGRole_SetChecked(button, checked)
+	if( not button.lockedIndicator:IsShown() ) then
+		button.checkButton:GetChecked(checked);
+	end
+end

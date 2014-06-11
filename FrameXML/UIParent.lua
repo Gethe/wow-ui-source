@@ -59,6 +59,7 @@ UIPanelWindows["QuestChoiceFrame"] =			{ area = "center",			pushable = 0, 		xoff
 UIPanelWindows["GarrisonBuildingFrame"] =		{ area = "center",			pushable = 0,		whileDead = 1, 		width = 1002, 	allowOtherPanels = 1};
 UIPanelWindows["GarrisonMissionFrame"] =		{ area = "center",			pushable = 0,		whileDead = 1, 		width = 1002, 	allowOtherPanels = 1};
 UIPanelWindows["GarrisonLandingPage"] =			{ area = "center",			pushable = 0,		whileDead = 1, 		width = 800, 	allowOtherPanels = 1};
+UIPanelWindows["GarrisonMonumentFrame"] =		{ area = "center",			pushable = 0,		whileDead = 1, 		width = 333, 	allowOtherPanels = 1};
 
 local function GetUIPanelWindowInfo(frame, name)
 	if ( not frame:GetAttribute("UIPanelLayout-defined") ) then
@@ -301,7 +302,7 @@ function UIParent_OnLoad(self)
 	self:RegisterEvent("SHIPMENT_CRAFTER_OPENED");
 	self:RegisterEvent("GARRISON_TRADESKILL_NPC_CLOSED");
 	self:RegisterEvent("GARRISON_SHOW_LANDING_PAGE");
-
+	self:RegisterEvent("GARRISON_MONUMENT_SHOW_UI");
 end
 
 
@@ -1121,9 +1122,14 @@ function UIParent_OnEvent(self, event, ...)
 			dialog.data2 = arg2;
 		end
 	elseif ( event == "INSTANCE_BOOT_START" ) then
-		StaticPopup_Show("INSTANCE_BOOT");
+		if (C_Garrison.IsOnGarrisonMap()) then
+			StaticPopup_Show("GARRISON_BOOT");
+		else
+			StaticPopup_Show("INSTANCE_BOOT");
+		end
 	elseif ( event == "INSTANCE_BOOT_STOP" ) then
 		StaticPopup_Hide("INSTANCE_BOOT");
+		StaticPopup_Hide("GARRISON_BOOT");
 	elseif ( event == "INSTANCE_LOCK_START" ) then
 		StaticPopup_Show("INSTANCE_LOCK", nil, nil, true);
 	elseif ( event == "INSTANCE_LOCK_STOP" ) then
@@ -1445,9 +1451,10 @@ function UIParent_OnEvent(self, event, ...)
 		if ( TradeSkillFrame ) then
 			HideUIPanel(TradeSkillFrame);
 		end
-	elseif ( event == "GARRISON_SHOW_LANDING_PAGE" ) then
-		if (not GarrisonLandingPage) then
+	elseif ( event == "GARRISON_MONUMENT_SHOW_UI") then
+		if(not GarrisonMonumentFrame)then
 			Garrison_LoadUI();
+			GarrisonMountmentFrame_OnEvent(GarrisonMonumentFrame, event, ...);
 		end
 	end
 end
@@ -2327,7 +2334,7 @@ function ToggleFrame(frame)
 	end
 end
 
-function ShowUIPanel(frame, force)	
+function ShowUIPanel(frame, force)
 	if ( not frame or frame:IsShown() ) then
 		return;
 	end

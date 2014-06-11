@@ -83,23 +83,9 @@ function QUEST_TRACKER_MODULE:OnBlockHeaderClick(block, mouseButton)
 		if ( IsModifiedClick("QUESTWATCHTOGGLE") ) then
 			QuestObjectiveTracker_UntrackQuest(_, block.questLogIndex);
 		else
-			--[[
-			ExpandQuestHeader( GetQuestSortIndex( GetQuestIndexForWatch(self.index) ) );
-			 you have to call GetQuestIndexForWatch again because ExpandQuestHeader will sort the indices
-			local questIndex = GetQuestIndexForWatch(self.index);
-			if (self.isComplete and GetQuestLogIsAutoComplete(questIndex)) then
-				--ShowQuestComplete(questIndex);
-				--WatchFrameAutoQuest_ClearPopUpByLogIndex(questIndex);
-			else
-				--QuestLogPopupDetailFrame_Show( questIndex );
-			end
-			]]--
-			if ( GetQuestLogIsAutoComplete(block.questLogIndex) ) then
-				-- TODO: Handle with ShowQuestComplete
-				
-				-- TEMP: (RNM) Copied the line below to fix an issue where 
-				-- auto complete quests weren't showing the detail quest frame.
-				QuestLogPopupDetailFrame_Show(block.questLogIndex);
+			if ( IsQuestComplete(block.id) and GetQuestLogIsAutoComplete(block.questLogIndex) ) then
+				AutoQuestPopupTracker_RemovePopUp(block.id);
+				ShowQuestComplete(block.questLogIndex);
 			else
 				QuestLogPopupDetailFrame_Show(block.questLogIndex);
 			end

@@ -55,7 +55,7 @@
 		</Size>
 		<Layers>
 			<Layer level="ARTWORK">
-				<FontString name="$parentText" inherits="GameFontHighlightSmall">
+				<FontString parentKey="Text" name="$parentText" inherits="GameFontHighlightSmall">
 					<Anchors>
 						<Anchor point="TOP" relativePoint="BOTTOM" x="0" y="0"/>
 					</Anchors>

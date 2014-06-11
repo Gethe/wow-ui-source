@@ -608,8 +608,16 @@ function StoreFrame_UpdateCard(card,entryID,discountReset)
 	end 
 
 	card.NormalPrice:SetText(currencyFormat(normalDollars, normalCents));
+	card.ProductName:SetFontObject("GameFontNormalWTF2");
 	card.ProductName:SetText(name);
 	
+	-- nop, but makes :IsTruncated() work below
+	card.ProductName:GetWidth();
+
+	if (card == StoreFrame.SplashSingle and card.ProductName:IsTruncated()) then
+		card.ProductName:SetFontObject("GameFontNormalHuge3");
+	end
+
 	if (card.Description) then
 		card.Description:SetText(description);
 	end
@@ -955,12 +963,12 @@ function StoreFrame_OnEvent(self, event, ...)
 		StoreFrame_UpdateActivePanel(self);
 	elseif ( event == "PRODUCT_DISTRIBUTIONS_UPDATED" ) then
 		if (JustOrderedBoost) then
-			if (IsOnGlueScreen()) then
+			if (IsOnGlueScreen() and not _G.CharacterSelect.undeleting) then
 				self:Hide();
 				_G.CharacterUpgradeFlow:SetTarget(false);
 				_G.CharSelectServicesFlowFrame:Show();
 				_G.CharacterServicesMaster_SetFlow(_G.CharacterServicesMaster, _G.CharacterUpgradeFlow);
-			else
+			elseif (not IsOnGlueScreen()) then
 				self:Hide();
 				ServicesLogoutPopup.Background.Title:SetText(CHARACTER_UPGRADE_READY);
 				ServicesLogoutPopup.Background.Description:SetText(CHARACTER_UPGRADE_READY_DESCRIPTION);

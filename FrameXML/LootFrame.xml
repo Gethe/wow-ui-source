@@ -616,13 +616,14 @@
 	<Frame name="GroupLootFrame3" inherits="GroupLootFrameTemplate" id="3"/>
 	<Frame name="GroupLootFrame4" inherits="GroupLootFrameTemplate" id="4"/>
 	<Frame name="BonusRollFrame" inherits="BonusRollFrameTemplate"/>
-	<Frame name="BonusRollLootWonFrame" inherits="LootWonAlertFrameTemplate">
+	<Button name="BonusRollLootWonFrame" inherits="LootWonAlertFrameTemplate">
 		<Scripts>
 			<OnHide>
 				GroupLootContainer_RemoveFrame(GroupLootContainer, self);
 			</OnHide>
+			<OnClick function="LootWonAlertFrame_OnClick"/>
 		</Scripts>
-	</Frame>
+	</Button>
 	<Frame name="BonusRollMoneyWonFrame" inherits="MoneyWonAlertFrameTemplate">
 		<Scripts>
 			<OnHide>

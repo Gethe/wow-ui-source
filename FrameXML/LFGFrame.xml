@@ -33,14 +33,48 @@
 				<PushedTexture file="Interface\Buttons\UI-CheckBox-Down"/>
 				<HighlightTexture file="Interface\Buttons\UI-CheckBox-Highlight" alphaMode="ADD"/>
 				<CheckedTexture file="Interface\Buttons\UI-CheckBox-Check"/>
-				<DisabledCheckedTexture file="Interface\Buttons\UI-CheckBox-Check-Disabled"/>	
+				<DisabledCheckedTexture file="Interface\Buttons\UI-CheckBox-Check-Disabled"/>
 			</CheckButton>
+			
+			<Frame parentKey="lockedIndicator" hidden="true">
+				<Size x="17" y="21"/>
+				<Anchors>
+					<Anchor point="CENTER" relativeKey="$parent.checkButton" x="0" y="0"/>
+				</Anchors>
+				<Layers>
+					<Layer level="ARTWORK">
+						<Texture atlas="LFG-lock" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="CENTER" x="0" y="0"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+			</Frame>
+			
+			<Frame parentKey="alert" hidden="true">
+				<Size x="28" y="28"/>
+				<Anchors>
+					<Anchor point="TOPRIGHT" x="5" y="5"/>
+				</Anchors>
+				<Layers>
+					<Layer level="ARTWORK">
+						<Texture file="Interface\DialogFrame\UI-Dialog-Icon-AlertNew" setAllPoints="true"/>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnLoad function="RaiseFrameLevel"/>
+				</Scripts>					
+			</Frame>
 		</Frames>
 		<Scripts>
+			<OnLoad>
+				self:GetNormalTexture():SetTexCoord(GetTexCoordsForRole(self.role));
+			</OnLoad>
 			<OnEnter>
 				<!--Warning: The Leader button overrides this.-->
 				GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
-				GameTooltip:SetText(_G["ROLE_DESCRIPTION"..self:GetID()], nil, nil, nil, nil, true);
+				GameTooltip:SetText(_G["ROLE_DESCRIPTION_"..self.role], nil, nil, nil, nil, true);
 				if ( self.permDisabled ) then
 					GameTooltip:AddLine(YOUR_CLASS_MAY_NOT_PERFORM_ROLE, 1, 0, 0, true);
 				elseif ( self.disabledTooltip and not self:IsEnabled() ) then
@@ -106,9 +140,7 @@
 					</Layer>
 				</Layers>
 				<Scripts>
-					<OnEnter>
-						LFGRoleIconIncentive_OnEnter(self);
-					</OnEnter>
+					<OnEnter function="LFGRoleIconIncentive_OnEnter"/>
 					<OnLeave function="GameTooltip_Hide"/>
 				</Scripts>
 			</Frame>
@@ -151,7 +183,7 @@
 					<TexCoords left="0" right="0.71875" top="0" bottom="0.875"/>
 				</Texture>
 			</Layer>
-		</Layers>					
+		</Layers>
 		<Frames>
 			<CheckButton name="$parentEnableButton" parentKey="enableButton">
 				<Size x="20" y="20"/>
@@ -162,7 +194,7 @@
 				<PushedTexture file="Interface\Buttons\UI-CheckBox-Down"/>
 				<HighlightTexture file="Interface\Buttons\UI-CheckBox-Highlight" alphaMode="ADD"/>
 				<CheckedTexture file="Interface\Buttons\UI-CheckBox-Check"/>
-				<DisabledCheckedTexture file="Interface\Buttons\UI-CheckBox-Check-Disabled"/>	
+				<DisabledCheckedTexture file="Interface\Buttons\UI-CheckBox-Check-Disabled"/>
 			</CheckButton>
 			<Button name="$parentExpandOrCollapseButton" parentKey="expandOrCollapseButton">
 				<Size x="13" y="13"/>
@@ -361,7 +393,7 @@
 								self.ready.statusIcon:Hide();
 							</OnLoad>
 						</Scripts>
-					</Frame>					
+					</Frame>
 				</Frames>
 			</Frame>
 			<Frame name="LFGDungeonReadyDialog" setAllPoints="true" toplevel="true" enableMouse="true">
@@ -576,7 +608,7 @@
 			</OnEvent>
 			<OnShow>
 				LFGDungeonReadyPopup_Update();
-				
+
 				--Request new lock info (which comes with which rewards we're getting) in case the rewards changed.
 				RequestLFDPlayerLockInfo();
 				RequestLFDPartyLockInfo();
@@ -704,7 +736,7 @@
 						<Anchor point="LEFT" relativeTo="$parentXPLabel" relativePoint="RIGHT" x="10" y="0"/>
 					</Anchors>
 				</FontString>
-						
+
 				<!--Texture file="Interface\LFGFrame\UI-LFG-BACKGROUND-QUESTPAPER" setAllPoints="true"/-->
 			</Layer>
 		</Layers>
@@ -888,38 +920,32 @@
 			</Layer>
 		</Layers>
 		<Frames>
-			<Button name="$parentRoleButtonTank" inherits="LFGRoleButtonTemplate" parentArray="RoleButtons" id="2">
+			<Button name="$parentRoleButtonTank" inherits="LFGRoleButtonTemplate" parentArray="RoleButtons" id="1">
 				<Size x="70" y="70"/>
+				<KeyValues>
+					<KeyValue key="role" value="TANK" type="string"/>
+				</KeyValues>
 				<Anchors>
 					<Anchor point="TOPLEFT" x="35" y="-55"/>
 				</Anchors>
-				<Scripts>
-					<OnLoad>
-						self:GetNormalTexture():SetTexCoord(GetTexCoordsForRole("TANK"));
-					</OnLoad>
-				</Scripts>
 			</Button>
-			<Button name="$parentRoleButtonHealer" inherits="LFGRoleButtonTemplate" parentArray="RoleButtons" id="3">
+			<Button name="$parentRoleButtonHealer" inherits="LFGRoleButtonTemplate" parentArray="RoleButtons" id="2">
 				<Size x="70" y="70"/>
+				<KeyValues>
+					<KeyValue key="role" value="HEALER" type="string"/>
+				</KeyValues>
 				<Anchors>
 					<Anchor point="LEFT" relativeTo="$parentRoleButtonTank" relativePoint="RIGHT" x="15" y="0"/>
 				</Anchors>
-				<Scripts>
-					<OnLoad>
-						self:GetNormalTexture():SetTexCoord(GetTexCoordsForRole("HEALER"));
-					</OnLoad>
-				</Scripts>
 			</Button>
-			<Button name="$parentRoleButtonDPS" inherits="LFGRoleButtonTemplate" parentArray="RoleButtons" id="1">
+			<Button name="$parentRoleButtonDPS" inherits="LFGRoleButtonTemplate" parentArray="RoleButtons" id="3">
 				<Size x="70" y="70"/>
+				<KeyValues>
+					<KeyValue key="role" value="DAMAGER" type="string"/>
+				</KeyValues>
 				<Anchors>
 					<Anchor point="LEFT" relativeTo="$parentRoleButtonHealer" relativePoint="RIGHT" x="15" y="0"/>
 				</Anchors>
-				<Scripts>
-					<OnLoad>
-						self:GetNormalTexture():SetTexCoord(GetTexCoordsForRole("DAMAGER"));
-					</OnLoad>
-				</Scripts>
 			</Button>
 			<Button name="$parentAcceptButton" inherits="UIPanelButtonTemplate" text="ACCEPT" motionScriptsWhileDisabled="true">
 				<Size x="115" y="22"/>
@@ -1229,7 +1255,7 @@
 				<Scripts>
 					<OnClick>
 						StaticPopup_Hide("LFG_OFFER_CONTINUE");
-						PartyLFGStartBackfill();											
+						PartyLFGStartBackfill();
 					</OnClick>
 				</Scripts>
 			</Button>

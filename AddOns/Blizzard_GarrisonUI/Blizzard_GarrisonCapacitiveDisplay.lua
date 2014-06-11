@@ -18,13 +18,14 @@ function GarrisonCapacitiveDisplayFrame_OnLoad(self)
     self:RegisterEvent("SHIPMENT_CRAFTER_OPENED");
     self:RegisterEvent("SHIPMENT_CRAFTER_CLOSED");
     self:RegisterEvent("SHIPMENT_CRAFTER_INFO");
+    self:RegisterEvent("SHIPMENT_CRAFTER_REAGENT_UPDATE");
     self:RegisterEvent("SHIPMENT_UPDATE");
 end
 
 local shipmentUpdater;
 
 function GarrisonCapacitiveDisplayFrame_Update(self, success, maxShipments, plotID)
-	if (success) then
+	if (success ~= 0) then
 		self.maxShipments = maxShipments;
 		self.plotID = plotID;
 
@@ -127,8 +128,8 @@ function GarrisonCapacitiveDisplayFrame_Update(self, success, maxShipments, plot
 	    	if (not name) then
 	    		break;
 	    	end
-	    	
-	    	SetItemButtonTexture(reagent, texture);
+
+			reagent.Icon:SetTexture(texture);	    	
 			reagent.Name:SetText(name);
 			reagent.Name:SetTextColor(ITEM_QUALITY_COLORS[quality].r, ITEM_QUALITY_COLORS[quality].g, ITEM_QUALITY_COLORS[quality].b);
 	 	   	reagent.Count:SetText(quantity .. "/" .. needed);
@@ -192,7 +193,16 @@ function GarrisonCapacitiveDisplayFrame_OnEvent(self, event, ...)
 	elseif (event == "SHIPMENT_CRAFTER_CLOSED") then
 		self.containerID = nil;
 
+		if (shipmentUpdater) then
+			shipmentUpdater:Cancel();
+		end
+		shipmentUpdater = nil;
+
 		self:Hide();
+	elseif (event == "SHIPMENT_CRAFTER_REAGENT_UPDATE") then
+		if (self.plotID and self.maxShipments) then
+			GarrisonCapacitiveDisplayFrame_Update(self, true, self.maxShipments, self.plotID);
+		end
 	elseif (event == "SHIPMENT_UPDATE") then
 		C_Garrison.RequestShipmentInfo();
 	end

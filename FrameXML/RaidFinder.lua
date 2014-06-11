@@ -227,7 +227,7 @@ function RaidFinderQueueFrame_Join()
 	end
 end
 
-function RaidFinderQueueFrame_UpdateRoleIncentives()
+function RaidFinderQueueFrame_UpdateRoles()
 	local dungeonID = RaidFinderQueueFrame.raid;
 	LFG_SetRoleIconIncentive(RaidFinderQueueFrameRoleButtonTank, nil);
 	LFG_SetRoleIconIncentive(RaidFinderQueueFrameRoleButtonHealer, nil);
@@ -248,24 +248,45 @@ function RaidFinderQueueFrame_UpdateRoleIncentives()
 				end
 			end
 		end
+		
+		local tankLocked, healerLocked, dpsLocked = GetLFDRoleRestrictions(dungeonID);
+		RaidFinder_UpdateRoleButton(RaidFinderQueueFrameRoleButtonTank, tankLocked);
+		RaidFinder_UpdateRoleButton(RaidFinderQueueFrameRoleButtonHealer, healerLocked);
+		RaidFinder_UpdateRoleButton(RaidFinderQueueFrameRoleButtonDPS, dpsLocked);
+		
+		RaidFinderQueueFrame_SetRoles();
+	end
+end
+
+function RaidFinder_UpdateRoleButton( button, locked )
+	if( button.permDisabled )then
+		return;
+	end
+	
+	if( locked ) then
+		button.lockedIndicator:Show();
+		button.checkButton:Hide();
+	else
+		button.lockedIndicator:Hide();
+		button.checkButton:Show();
 	end
 end
 
 function RaidFinderFrameRoleCheckButton_OnClick(self)
 	RaidFinderQueueFrame_SetRoles();
-	RaidFinderQueueFrame_UpdateRoleIncentives();
+	RaidFinderQueueFrame_UpdateRoles();
 end
 
 function RaidFinderQueueFrame_SetRoles()
-	SetLFGRoles(RaidFinderQueueFrameRoleButtonLeader.checkButton:GetChecked(), 
-		RaidFinderQueueFrameRoleButtonTank.checkButton:GetChecked(),
-		RaidFinderQueueFrameRoleButtonHealer.checkButton:GetChecked(),
-		RaidFinderQueueFrameRoleButtonDPS.checkButton:GetChecked());
+	SetLFGRoles(LFGRole_GetChecked(RaidFinderQueueFrameRoleButtonLeader),
+		LFGRole_GetChecked(RaidFinderQueueFrameRoleButtonTank),
+		LFGRole_GetChecked(RaidFinderQueueFrameRoleButtonHealer),
+		LFGRole_GetChecked(RaidFinderQueueFrameRoleButtonDPS) );
 end
 
 function RaidFinderQueueFrameRewards_UpdateFrame()
 	LFGRewardsFrame_UpdateFrame(RaidFinderQueueFrameScrollFrameChildFrame, RaidFinderQueueFrame.raid, RaidFinderQueueFrameBackground);
-	RaidFinderQueueFrame_UpdateRoleIncentives();
+	RaidFinderQueueFrame_UpdateRoles();
 end
 
 function RaidFinderFrameFindRaidButton_Update()
@@ -296,6 +317,34 @@ function RaidFinderFrameFindRaidButton_Update()
 	else
 		RaidFinderQueueFramePartyBackfillBackfillButton:Disable();
 	end
+end
+
+function RaidFinderRoleButton_OnEnter(self)
+	GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+	GameTooltip:SetText(_G["ROLE_DESCRIPTION_"..self.role], nil, nil, nil, nil, true);
+	if ( self.permDisabled ) then
+		GameTooltip:AddLine(YOUR_CLASS_MAY_NOT_PERFORM_ROLE, 1, 0, 0, true);
+	elseif ( self.disabledTooltip and not self:IsEnabled() ) then
+		GameTooltip:AddLine(self.disabledTooltip, 1, 0, 0, true);
+	elseif ( self.lockedIndicator:IsVisible() ) then
+		local dungeonID = RaidFinderQueueFrame.raid;
+		local roleID = self:GetID();
+		local reasons;
+		GameTooltip:SetText(ERR_ROLE_UNAVAILABLE, 1.0, 1.0, 1.0, true);
+		if ( type(dungeonID) == "number" ) then
+			reasons = GetLFDRoleLockInfo(dungeonID, roleID);
+			for i = 1, #reasons do
+				local text = _G["INSTANCE_UNAVAILABLE_SELF_"..(LFG_INSTANCE_INVALID_CODES[reasons[i]])];
+				if( text ) then
+					GameTooltip:AddLine(text, nil, nil, nil, true);
+				end
+			end
+		end
+		GameTooltip:Show();
+		return;
+	end
+	GameTooltip:Show();
+	LFGFrameRoleCheckButton_OnEnter(self);
 end
 
 --Cooldown panel

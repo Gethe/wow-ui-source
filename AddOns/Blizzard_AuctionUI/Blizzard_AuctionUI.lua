@@ -827,6 +827,15 @@ function AuctionFrameBrowse_Update()
 			itemName = _G[buttonName.."Name"];
 			itemName:SetText(name);
 			itemName:SetVertexColor(color.r, color.g, color.b);
+			local itemButton = _G[buttonName.."Item"];
+
+			if (quality > LE_ITEM_QUALITY_COMMON and BAG_ITEM_QUALITY_COLORS[quality]) then
+				itemButton.IconBorder:Show();
+				itemButton.IconBorder:SetVertexColor(BAG_ITEM_QUALITY_COLORS[quality].r, BAG_ITEM_QUALITY_COLORS[quality].g, BAG_ITEM_QUALITY_COLORS[quality].b);
+			else
+				itemButton.IconBorder:Hide();
+			end
+
 			-- Set level
 			if ( levelColHeader == "REQ_LEVEL_ABBR" and level > UnitLevel("player") ) then
 				_G[buttonName.."Level"]:SetText(RED_FONT_COLOR_CODE..level..FONT_COLOR_CODE_CLOSE);
@@ -1033,6 +1042,16 @@ function AuctionFrameBid_Update()
 			itemName = _G[buttonName.."Name"];
 			itemName:SetText(name);
 			itemName:SetVertexColor(color.r, color.g, color.b);
+
+			local itemButton = _G[buttonName.."Item"];
+
+			if (quality > LE_ITEM_QUALITY_COMMON and BAG_ITEM_QUALITY_COLORS[quality]) then
+				itemButton.IconBorder:Show();
+				itemButton.IconBorder:SetVertexColor(BAG_ITEM_QUALITY_COLORS[quality].r, BAG_ITEM_QUALITY_COLORS[quality].g, BAG_ITEM_QUALITY_COLORS[quality].b);
+			else
+				itemButton.IconBorder:Hide();
+			end
+
 			-- Set level
 			if ( levelColHeader == "REQ_LEVEL_ABBR" and level > UnitLevel("player") ) then
 				_G[buttonName.."Level"]:SetText(RED_FONT_COLOR_CODE..level..FONT_COLOR_CODE_CLOSE);
@@ -1271,6 +1290,16 @@ function AuctionFrameAuctions_Update()
 			bidAmountMoneyFrame = _G[buttonName.."MoneyFrame"];
 			bidAmountMoneyFrameLabel = _G[buttonName.."MoneyFrameLabel"];
 			buttonBuyoutFrame = _G[buttonName.."BuyoutFrame"];
+
+			local itemButton = _G[buttonName.."Item"];
+			
+			if (quality > LE_ITEM_QUALITY_COMMON and BAG_ITEM_QUALITY_COLORS[quality]) then
+				itemButton.IconBorder:Show();
+				itemButton.IconBorder:SetVertexColor(BAG_ITEM_QUALITY_COLORS[quality].r, BAG_ITEM_QUALITY_COLORS[quality].g, BAG_ITEM_QUALITY_COLORS[quality].b);
+			else
+				itemButton.IconBorder:Hide();
+			end
+
 			if ( saleStatus == 1 ) then
 				-- Sold item
 				pendingDeliveries = true;

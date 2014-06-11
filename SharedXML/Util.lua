@@ -106,3 +106,7 @@ function CopyTable(settings)
 	end
 	return copy;
 end
+
+function GetItemIDFromHyperlink(link)
+	return tonumber(link:match("|Hitem:(%d+)"));
+end

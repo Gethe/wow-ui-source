@@ -65,9 +65,10 @@ local EJ_DIFFICULTIES =
 	[5] = { size = "10", prefix = PLAYER_DIFFICULTY2, difficultyID = 5 },
 	[6] = { size = "25", prefix = PLAYER_DIFFICULTY1, difficultyID = 4 },
 	[7] = { size = "25", prefix = PLAYER_DIFFICULTY2, difficultyID = 6 },
-	[8] = { size = "10-25", prefix = PLAYER_DIFFICULTY1, difficultyID = 14 },
-	[9] = { size = "10-25", prefix = PLAYER_DIFFICULTY2, difficultyID = 15 },
+	[8] = { size = "10-30", prefix = PLAYER_DIFFICULTY1, difficultyID = 14 },
+	[9] = { size = "10-30", prefix = PLAYER_DIFFICULTY2, difficultyID = 15 },
 	[10] = { size = "20", prefix = PLAYER_DIFFICULTY6, difficultyID = 16 },
+	[11] = { size = "10-30", prefix = PLAYER_DIFFICULTY3, difficultyID = 17 },
 }
 
 local EJ_TIER_DATA =

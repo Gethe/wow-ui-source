@@ -653,7 +653,21 @@
 							<OnMouseUp>
 								local fontString = self:GetFontString();
 								self.Logo:SetPoint("RIGHT", fontString, "LEFT", -2, 0);
-							</OnMouseUp>							
+							</OnMouseUp>
+							<OnEnable>
+								self.Left:SetTexture("Interface\\Buttons\\UI-DialogBox-goldbutton-up-left");
+								self.Middle:SetTexture("Interface\\Buttons\\UI-DialogBox-goldbutton-up-middle");
+								self.Right:SetTexture("Interface\\Buttons\\UI-DialogBox-goldbutton-up-right");
+								self.Logo:SetDesaturated(false);
+								self.Logo:SetAlpha(1);
+							</OnEnable>
+							<OnDisable>
+								self.Left:SetTexture("Interface\\Buttons\\UI-DialogBox-goldbutton-disabled-left");
+								self.Middle:SetTexture("Interface\\Buttons\\UI-DialogBox-goldbutton-disabled-middle");
+								self.Right:SetTexture("Interface\\Buttons\\UI-DialogBox-goldbutton-disabled-right");
+								self.Logo:SetDesaturated(true);
+								self.Logo:SetAlpha(0.4);
+							</OnDisable>	
 						</Scripts>
 					</Button>					
 					<Button name="CopyCharacterButton" inherits="GlueButtonSmallTemplate" hidden="true" text="COPY_CHARACTER">
@@ -855,7 +869,7 @@
 									<Anchor point="LEFT" x="24" y="0"/>
 								</Anchors>
 							</Button>
-							<Button name="CharSelectCreateCharacterButton" inherits="GlueButtonSmallTemplate" hidden="true" text="CREATE_NEW_CHARACTER">
+							<Button name="CharSelectCreateCharacterButton" inherits="GluePanelButtonTemplate" hidden="true" text="CREATE_NEW_CHARACTER">
 								<Size x="200" y="45"/>
 								<Anchors>
 									<Anchor point="BOTTOM" x="-18" y="15"/>
@@ -863,13 +877,41 @@
 								<Scripts>
 									<OnLoad>
 										self:SetWidth(self:GetTextWidth() + 50);
+										if ( not self:IsEnabled() ) then
+											CharacterSelectPanelButton_DeathKnightSwap(self, "Interface\\Glues\\Common\\Glue-Panel-Button-Disabled");
+										end
 									</OnLoad>
+									<OnMouseDown>
+										self.down = true;
+										if ( self:IsEnabled() ) then
+											CharacterSelectPanelButton_DeathKnightSwap(self, "Interface\\Glues\\Common\\Glue-Panel-Button-Down");
+										end
+									</OnMouseDown>
+									<OnMouseUp>
+										self.down = false;
+										if ( self:IsEnabled() ) then
+											CharacterSelectPanelButton_DeathKnightSwap(self, "Interface\\Glues\\Common\\Glue-Panel-Button-Up");
+										end
+									</OnMouseUp>
+									<OnShow>
+										self.down = false;
+										if ( self:IsEnabled() ) then
+											-- we need to reset our textures just in case we were hidden before a mouse up fired
+											CharacterSelectPanelButton_DeathKnightSwap(self, "Interface\\Glues\\Common\\Glue-Panel-Button-Up");
+										end
+									</OnShow>
+									<OnDisable>
+										CharacterSelectPanelButton_DeathKnightSwap(self, "Interface\\Glues\\Common\\Glue-Panel-Button-Disabled");
+									</OnDisable>
+									<OnEnable>
+										CharacterSelectPanelButton_DeathKnightSwap(self, "Interface\\Glues\\Common\\Glue-Panel-Button-Up");
+									</OnEnable>
+									<OnUpdate>
+										CharacterSelectPanelButton_DeathKnightSwap(self);
+									</OnUpdate>
 									<OnClick>
 										CharacterSelect_SelectCharacter(self:GetID());
 									</OnClick>
-									<OnUpdate>
-										CharacterSelect_DeathKnightSwap(self);
-									</OnUpdate>
 								</Scripts>
 							</Button>
 							<Button name="CharSelectBackToActiveButton" inherits="GlueButtonSmallTemplate" hidden="true" text="BACK_TO_ACTIVE_CHARACTERS">

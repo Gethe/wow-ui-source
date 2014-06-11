@@ -111,6 +111,8 @@ function ContainerFrame_OnHide(self)
 	self:UnregisterEvent("INVENTORY_SEARCH_UPDATE");
 	self:UnregisterEvent("BAG_NEW_ITEMS_UPDATED");
 
+	UpdateNewItemList(self);
+
 	if ( self:GetID() == 0 ) then
 		MainMenuBarBackpackButton:SetChecked(false);
 	else
@@ -120,7 +122,7 @@ function ContainerFrame_OnHide(self)
 		else
 			-- If its a bank bag then update its highlight
 			
-			UpdateBagButtonHighlight(self:GetID()); 
+			UpdateBagButtonHighlight(self:GetID() - NUM_BAG_SLOTS); 
 		end
 	end
 	ContainerFrame1.bagsShown = ContainerFrame1.bagsShown - 1;
@@ -166,7 +168,7 @@ function ContainerFrame_OnShow(self)
 			button:SetChecked(true);
 		end
 	else
-		UpdateBagButtonHighlight(self:GetID());
+		UpdateBagButtonHighlight(self:GetID() - NUM_BAG_SLOTS);
 	end
 	ContainerFrame1.bags[ContainerFrame1.bagsShown + 1] = self:GetName();
 	ContainerFrame1.bagsShown = ContainerFrame1.bagsShown + 1;
@@ -257,7 +259,6 @@ function CloseBackpack()
 	for i=1, NUM_CONTAINER_FRAMES, 1 do
 		local containerFrame = _G["ContainerFrame"..i];
 		if ( containerFrame:IsShown() and (containerFrame:GetID() == 0) and (ContainerFrame1.backpackWasOpen == nil) ) then
-			UpdateNewItemList(containerFrame);
 			containerFrame:Hide();
 			return;
 		end
@@ -273,6 +274,26 @@ function UpdateNewItemList(containerFrame)
 		
 		C_NewItems.RemoveNewItem(id, itemButton:GetID());
 	end
+end
+
+function SearchBagsForItem(itemID)
+	local slot = -1;
+	for i = 0, NUM_BAG_SLOTS do
+		local found = false;
+		local num = GetContainerNumSlots(i);
+		for j = 1, num do
+			local id = GetContainerItemID(i, j);
+			if (id == itemID and C_NewItems.IsNewItem(i, j)) then
+				slot = i;
+				found = true;
+				break;
+			end
+		end
+		if (found) then
+			break;
+		end
+	end
+	return slot;
 end
 
 function ContainerFrame_GetOpenFrame()

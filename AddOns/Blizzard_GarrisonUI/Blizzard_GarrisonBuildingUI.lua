@@ -76,6 +76,7 @@ end
 function GarrisonBuildingFrame_OnShow(self)
 	GarrisonBuildingFrame_UpdateGarrisonInfo(self);
 	GarrisonBuildingFrame.BuildingList.Tab1:Click();
+	GarrisonBuildingList_Show();
 	-- check to show the help plate
 	if ( not GetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_GARRISON_BUILDING) ) then
 		local helpPlate = GarrisonBuilding_HelpPlate;
@@ -241,6 +242,7 @@ end
 
 function GarrisonTownHall_OnClick(self)
 	GarrisonBuildingFrame.InfoBox:Hide();
+	GarrisonBuildingList_Show();
 	local infoBox = GarrisonBuildingFrame.TownHallBox;
 	infoBox:Show();
 	infoBox.RankBadge:SetAtlas("Garr_LevelBadge_"..GarrisonBuildingFrame.level, true);
@@ -282,7 +284,8 @@ function GarrisonBuildingInfoBox_ShowDefault()
 	infoBox.Timer:Hide();
 	infoBox.SpecFrame:Hide();
 	infoBox.AddFollowerButton:Hide();
-	
+	infoBox.RemoveFollowerButton:Hide();
+
 	infoBox.Building:SetAtlas(EMPTY_PLOT_ATLAS, true)
 	infoBox.Building:SetDesaturated(false);
 	infoBox.Title:SetText(GARRISON_EMPTY_PLOT);
@@ -295,6 +298,12 @@ function GarrisonBuildingInfoBox_ShowBuilding(ID, owned, showLock)
 		return;
 	end
 	local infoBox = GarrisonBuildingFrame.InfoBox;
+	if ( infoBox.ID ~= ID ) then
+		if ( GarrisonBuildingFrame.FollowerList:IsShown() ) then
+			GarrisonBuildingList_Show();
+		end
+	end
+	infoBox.ID = ID;
 	infoBox:Show()
 	local id, name, texPrefix, icon, description, rank, currencyID, currencyQty, buildTime, needsPlan, possSpecs, upgrades, canUpgrade, isMaxLevel, knownSpecs, currSpec, specCooldown, isBuilding, timeLeft, canActivate, hasFollower;
 	if (owned) then
@@ -467,6 +476,7 @@ function GarrisonBuildingInfoBox_ShowBuilding(ID, owned, showLock)
 	--follower placement
 	if (not hasFollower) then
 		infoBox.AddFollowerButton:Hide();
+		infoBox.RemoveFollowerButton:Hide();
 		return;
 	end
 	
@@ -479,11 +489,13 @@ function GarrisonBuildingInfoBox_ShowBuilding(ID, owned, showLock)
 		local color = ITEM_QUALITY_COLORS[quality];
     	infoBox.AddFollowerButton.LevelBorder:SetVertexColor(color.r, color.g, color.b);
 		SetPortraitTexture(infoBox.AddFollowerButton.Portrait, displayID);
+		infoBox.RemoveFollowerButton:Show();
 	else
 		infoBox.AddFollowerButton.Plus:Show();
 		infoBox.AddFollowerButton.Level:Hide();
 		infoBox.AddFollowerButton.LevelBorder:SetVertexColor(1, 1, 1);
 		SetPortraitTexture(infoBox.AddFollowerButton.Portrait, 0);
+		infoBox.RemoveFollowerButton:Hide();
 	end
 end
 
@@ -573,12 +585,10 @@ end
 
 function GarrisonBuildingAddFollowerButton_OnClick(self, button)
 	if (GarrisonBuildingFrame.FollowerList:IsShown()) then
-		GarrisonBuildingFrame.FollowerList:Hide();
-		GarrisonBuildingFrame.BuildingList:Show();
+		GarrisonBuildingList_Show();
 	else
 		GarrisonBuildingFrame.FollowerList:Show();
 		GarrisonBuildingFrame.BuildingList:Hide();
-		C_Garrison.RemoveFollowerFromBuilding(GarrisonBuildingFrame.selectedBuilding.plotID);
 	end
 end
 
@@ -608,6 +618,7 @@ function GarrisonBuildingFollowerList_Update()
 			button.id = index;
 			button.info = follower;
 			button.Name:SetText(follower.name);
+			button.Class:SetAtlas(follower.classAtlas);
 			button.Status:SetText(follower.status);
 			local color = ITEM_QUALITY_COLORS[follower.quality];
 			button.PortraitFrame.LevelBorder:SetVertexColor(color.r, color.g, color.b);
@@ -646,13 +657,17 @@ end
 
 function GarrisonBuildingFollowerButton_OnClick(self, button)
 	C_Garrison.AssignFollowerToBuilding(GarrisonBuildingFrame.selectedBuilding.plotID, self.info.followerID);
-	GarrisonBuildingFrame.FollowerList:Hide();
-	GarrisonBuildingFrame.BuildingList:Show();
+	GarrisonBuildingList_Show();
 end
 
 -----------------------------------------------------------------------
 -- Building List stuff
 -----------------------------------------------------------------------
+
+function GarrisonBuildingList_Show()
+	GarrisonBuildingFrame.FollowerList:Hide();
+	GarrisonBuildingFrame.BuildingList:Show();
+end
 
 function GarrisonBuildingList_SelectTab(tab)
 	local list = GarrisonBuildingFrame.BuildingList;
@@ -873,6 +888,7 @@ function GarrisonPlot_OnClick(self)
 		end
 		return;
 	end
+	GarrisonBuildingList_Show();	
 	GarrisonBuildingList_SelectTab(BUILDING_TABS[categoryID]);
 	
 	GarrisonBuildingFrame_ClearPlotHighlights();

@@ -110,9 +110,9 @@ function LFRQueueFrame_SetRoles()
 	local leader, tank, healer, damage = GetLFGRoles();
 	
 	SetLFGRoles(leader, 
-		LFRQueueFrameRoleButtonTank.checkButton:GetChecked(),
-		LFRQueueFrameRoleButtonHealer.checkButton:GetChecked(),
-		LFRQueueFrameRoleButtonDPS.checkButton:GetChecked());
+		LFGRole_GetChecked(LFRQueueFrameRoleButtonTank),
+		LFGRole_GetChecked(LFRQueueFrameRoleButtonHealer),
+		LFGRole_GetChecked(LFRQueueFrameRoleButtonDPS) );
 end
 
 function LFRFrameRoleCheckButton_OnClick(self)

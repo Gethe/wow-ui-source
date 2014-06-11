@@ -33,6 +33,8 @@ CR_ARMOR_PENETRATION = 25;
 CR_MASTERY = 26;
 CR_UNUSED_2 = 27;
 CR_UNUSED_3 = 28;
+CR_VERSATILITY_DAMAGE_DONE = 29;
+CR_VERSATILITY_DAMAGE_TAKEN = 31;
 
 ATTACK_POWER_MAGIC_NUMBER = 3.5;
 BLOCK_PER_STRENGTH = 0.5;
@@ -90,26 +92,6 @@ CLASS_MASTERY_SPELLS = {
 	["SHAMAN"] = 86477,
 	["WARLOCK"] = 86478,
 	["WARRIOR"] = 86479,
-};
-
-STRENGTH_USELESS_STAT = {
-	["MAGE"] = true,
-	["PRIEST"] = true,
-	["DRUID"] = true,
-	["ROGUE"] = true,
-	["MONK"] = true,
-	["SHAMAN"] = true,
-	["HUNTER"] = true,
-	["WARLOCK"] = true,
-};
-
-AGILITY_USELESS_STAT = {
-	["MAGE"] = true,
-	["PRIEST"] = true,
-	["WARLOCK"] = true,
-	["PALADIN"] = true,
-	["WARRIOR"] = true,
-	["DEATHKNIGHT"] = true,
 };
 
 PAPERDOLL_SIDEBARS = {
@@ -195,6 +177,9 @@ PAPERDOLL_STATINFO = {
 	["STURDINESS"] = {
 		updateFunc = function(statFrame, unit) PaperDollFrame_SetSturdiness(statFrame, unit); end
 	},
+	["VERSATILITY"] = {
+		updateFunc = function(statFrame, unit) PaperDollFrame_SetVersatility(statFrame, unit); end
+	},
 
 	-- Attack
 	["ATTACK_DAMAGE"] = {
@@ -246,9 +231,6 @@ PAPERDOLL_STATINFO = {
 	["AVOIDANCE"] = {
 		updateFunc = function(statFrame, unit) PaperDollFrame_SetAvoidance(statFrame, unit); end
 	},
-	["RESILIENCE_REDUCTION"] = {
-		updateFunc = function(statFrame, unit) PaperDollFrame_SetResilience(statFrame, unit); end
-	},
 };
 
 -- Warning: Avoid changing the IDs, since this will screw up the cvars that remember which categories a player has collapsed
@@ -285,7 +267,8 @@ PAPERDOLL_STATCATEGORIES = {
 			"MULTISTRIKE",
 			"READINESS",
 			"LIFESTEAL",
-			"STURDINESS"
+			"STURDINESS",
+			"VERSATILITY",
 		}
 	},
 
@@ -319,7 +302,6 @@ PAPERDOLL_STATCATEGORIES = {
 			"PARRY", 
 			"BLOCK",
 			"AVOIDANCE",
-			"RESILIENCE_REDUCTION",
 		}
 	},
 };
@@ -695,32 +677,33 @@ function PaperDollFrame_SetStat(statFrame, unit, statIndex)
 		local _, unitClass = UnitClass("player");
 		unitClass = strupper(unitClass);
 		
+		local primaryStat, spec;
+		spec = GetSpecialization();
+		if (spec) then
+			primaryStat = select(7, GetSpecializationInfo(spec));
+		end
 		-- Strength
 		if ( statIndex == LE_UNIT_STAT_STRENGTH ) then
-			if (not STRENGTH_USELESS_STAT[unitClass]) then
-				local attackPower = GetAttackPowerForStat(statIndex,effectiveStat);
-				if (HasAPEffectsSpellPower()) then
-					statFrame.tooltip2 = STAT_TOOLTIP_BONUS_AP_SP;
-				end
+			local attackPower = GetAttackPowerForStat(statIndex,effectiveStat);
+			if (HasAPEffectsSpellPower()) then
+				statFrame.tooltip2 = STAT_TOOLTIP_BONUS_AP_SP;
+			end
+			if (not primaryStat or primaryStat == LE_UNIT_STAT_STRENGTH) then
 				statFrame.tooltip2 = format(statFrame.tooltip2, BreakUpLargeNumbers(attackPower));
 			else
-				statFrame.tooltip2 = STAT_USELESS_TOOLTIP;
+				statFrame.tooltip2 = STAT_NO_BENEFIT_TOOLTIP;
 			end
 		-- Agility
 		elseif ( statIndex == LE_UNIT_STAT_AGILITY ) then
-			if (not AGILITY_USELESS_STAT[unitClass]) then
-				local attackPower = GetAttackPowerForStat(statIndex,effectiveStat);
-				local tooltip = STAT_TOOLTIP_BONUS_AP;
-				if (HasAPEffectsSpellPower()) then
-					tooltip = STAT_TOOLTIP_BONUS_AP_SP;
-				end
-				if ( attackPower > 0 ) then
-					statFrame.tooltip2 = format(tooltip, BreakUpLargeNumbers(attackPower)) .. format(statFrame.tooltip2, GetCritChanceFromAgility("player"));
-				else
-					statFrame.tooltip2 = format(statFrame.tooltip2, GetCritChanceFromAgility("player"));
-				end
+			local attackPower = GetAttackPowerForStat(statIndex,effectiveStat);
+			local tooltip = STAT_TOOLTIP_BONUS_AP;
+			if (HasAPEffectsSpellPower()) then
+				tooltip = STAT_TOOLTIP_BONUS_AP_SP;
+			end
+			if (not primaryStat or primaryStat == LE_UNIT_STAT_AGILITY) then
+				statFrame.tooltip2 = format(tooltip, BreakUpLargeNumbers(attackPower));
 			else
-				statFrame.tooltip2 = STAT_USELESS_TOOLTIP;
+				statFrame.tooltip2 = STAT_NO_BENEFIT_TOOLTIP;
 			end
 		-- Stamina
 		elseif ( statIndex == LE_UNIT_STAT_STAMINA ) then
@@ -729,19 +712,21 @@ function PaperDollFrame_SetStat(statFrame, unit, statIndex)
 		elseif ( statIndex == LE_UNIT_STAT_INTELLECT ) then
 			if ( UnitHasMana("player") ) then
 				if (HasAPEffectsSpellPower()) then
-					statFrame.tooltip2 = format(STAT4_NOSPELLPOWER_TOOLTIP, GetSpellCritChanceFromIntellect("player"));
+					statFrame.tooltip2 = STAT_NO_BENEFIT_TOOLTIP;
 				else
 					local result, druid = HasSPEffectsAttackPower();
 					if (result and druid) then
 						statFrame.tooltip2 = format(STAT_TOOLTIP_SP_AP_DRUID, max(0, effectiveStat), max(0, effectiveStat));
 					elseif (result) then
 						statFrame.tooltip2 = format(STAT_TOOLTIP_BONUS_AP_SP, max(0, effectiveStat));
+					elseif (not primaryStat or primaryStat == LE_UNIT_STAT_INTELLECT) then
+						statFrame.tooltip2 = format(statFrame.tooltip2, max(0, effectiveStat));
 					else
-						statFrame.tooltip2 = format(statFrame.tooltip2, max(0, effectiveStat), GetSpellCritChanceFromIntellect("player"));
+						statFrame.tooltip2 = STAT_NO_BENEFIT_TOOLTIP;
 					end
 				end
 			else
-				statFrame.tooltip2 = STAT_USELESS_TOOLTIP;
+				statFrame.tooltip2 = STAT_NO_BENEFIT_TOOLTIP;
 			end
 		-- Spirit
 		elseif ( statIndex == LE_UNIT_STAT_SPIRIT ) then
@@ -751,28 +736,28 @@ function PaperDollFrame_SetStat(statFrame, unit, statIndex)
 				regen = floor( regen * 5.0 );
 				statFrame.tooltip2 = format(MANA_REGEN_FROM_SPIRIT, regen);
 			else
-				statFrame.tooltip2 = STAT_USELESS_TOOLTIP;
+				statFrame.tooltip2 = STAT_NO_BENEFIT_TOOLTIP;
 			end
 		end
 	elseif (unit == "pet") then
-		if ( statIndex == 1 ) then
+		if ( statIndex == LE_UNIT_STAT_STRENGTH ) then
 			local attackPower = BreakUpLargeNumbers(effectiveStat);
 			statFrame.tooltip2 = format(statFrame.tooltip2, attackPower);
-		elseif ( statIndex == 2 ) then
+		elseif ( statIndex == LE_UNIT_STAT_AGILITY ) then
 			statFrame.tooltip2 = format(statFrame.tooltip2, GetCritChanceFromAgility("pet"));
-		elseif ( statIndex == 3 ) then
+		elseif ( statIndex == LE_UNIT_STAT_STAMINA ) then
 			local expectedHealthGain = (((stat - posBuff - negBuff))*CREATURE_HP_PER_STA)*GetUnitHealthModifier("pet");
 			local realHealthGain = (effectiveStat*CREATURE_HP_PER_STA)*GetUnitHealthModifier("pet");
 			local healthGain = BreakUpLargeNumbers((realHealthGain - expectedHealthGain)*GetUnitMaxHealthModifier("pet"));
 			statFrame.tooltip2 = format(statFrame.tooltip2, healthGain);
-		elseif ( statIndex == 4 ) then
+		elseif ( statIndex == LE_UNIT_STAT_INTELLECT ) then
 			if ( UnitHasMana("pet") ) then
 				local manaGain = BreakUpLargeNumbers((effectiveStat*15)*GetUnitPowerModifier("pet"));
 				statFrame.tooltip2 = format(statFrame.tooltip2, manaGain, max(0, effectiveStat), GetSpellCritChanceFromIntellect("pet"));
 			else
 				statFrame.tooltip2 = nil;
 			end
-		elseif ( statIndex == 5 ) then
+		elseif ( statIndex == LE_UNIT_STAT_SPIRIT ) then
 			statFrame.tooltip2 = "";
 			if ( UnitHasMana("pet") ) then
 				statFrame.tooltip2 = format(MANA_REGEN_FROM_SPIRIT, GetUnitManaRegenRateFromSpirit("pet"));
@@ -1555,6 +1540,24 @@ function PaperDollFrame_SetSturdiness(statFrame, unit)
 	statFrame:Show();
 end
 
+function PaperDollFrame_SetVersatility(statFrame, unit)
+	if ( unit ~= "player" ) then
+		statFrame:Hide();
+		return;
+	end
+	
+	_G[statFrame:GetName().."Label"]:SetText(format(STAT_FORMAT, STAT_VERSATILITY));
+	local text = _G[statFrame:GetName().."StatText"];
+	local versatility = GetVersatility();
+	versatility = format("%d", versatility);
+	text:SetText(versatility);
+	statFrame.tooltip = HIGHLIGHT_FONT_COLOR_CODE .. format(PAPERDOLLFRAME_TOOLTIP_FORMAT, STAT_VERSATILITY) .. " " .. versatility .. FONT_COLOR_CODE_CLOSE;
+	
+	statFrame.tooltip2 = format(CR_VERSATILITY_TOOLTIP, BreakUpLargeNumbers(GetCombatRatingBonus(CR_VERSATILITY_DAMAGE_DONE)), BreakUpLargeNumbers(GetCombatRatingBonus(CR_VERSATILITY_DAMAGE_TAKEN)));
+
+	statFrame:Show();
+end
+
 function PaperDollFrame_SetItemLevel(statFrame, unit)
 	if ( unit ~= "player" ) then
 		statFrame:Hide();
@@ -1934,9 +1937,7 @@ function PaperDollItemSlotButton_Update (self)
 		self.ignoreTexture:Hide();
 	end
 
-	if ( not self.isBag ) then
-		PaperDollItemSlotButton_UpdateLock(self);
-	end
+	PaperDollItemSlotButton_UpdateLock(self);
 
 	-- Update repair all button status
 	MerchantFrame_UpdateGuildBankRepair();

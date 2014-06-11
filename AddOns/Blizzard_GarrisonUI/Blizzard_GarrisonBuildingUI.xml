@@ -905,7 +905,37 @@
 							<OnClick function="GarrisonBuildingAddFollowerButton_OnClick"/>
 						</Scripts>
 					</Button>
-					
+					<Button parentKey="RemoveFollowerButton" hidden="true">
+						<Size x="14" y="14"/>
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeKey="$parent.AddFollowerButton" relativePoint="TOPRIGHT" x="-1" y="0"/>
+						</Anchors>
+						<Layers>
+							<Layer level="ARTWORK">
+								<Texture file="Interface\Buttons\UI-GroupLoot-Pass-Up" alpha="0.75" parentKey="texture"/>
+							</Layer>
+						</Layers>
+						<Scripts>
+							<OnEnter>
+								self.texture:SetAlpha(1.0);
+								GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+								GameTooltip:SetText(REMOVE);
+							</OnEnter>
+							<OnLeave>
+								self.texture:SetAlpha(0.75);
+								GameTooltip_Hide();
+							</OnLeave>
+							<OnMouseDown>
+								self.texture:SetPoint("TOPLEFT", 1, -1);
+							</OnMouseDown>
+							<OnMouseUp>
+								self.texture:SetPoint("TOPLEFT", 0, 0);
+							</OnMouseUp>
+							<OnClick>
+								C_Garrison.RemoveFollowerFromBuilding(GarrisonBuildingFrame.InfoBox.ID);
+							</OnClick>
+						</Scripts>
+					</Button>
 					<Frame parentKey="Tooltip" inherits="TooltipBorderedFrameTemplate" hidden="true" frameStrata="HIGH">
 						<Size x="230" y="300"/>
 						<Anchors>

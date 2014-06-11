@@ -292,7 +292,7 @@ function CharacterSelect_OnUpdate(self, elapsed)
 	
 	if ( self.undeleteFailed ) then
 		if (not GlueDialog:IsShown()) then
-			GlueDialog_Show("UNDELETE_FAILED");
+			GlueDialog_Show(self.undeleteFailed == "name" and "UNDELETE_NAME_TAKEN" or "UNDELETE_FAILED");
 			self.undeleteFailed = false;
 		end
 	end
@@ -315,11 +315,13 @@ function CharacterSelect_OnKeyDown(self,key)
 			CharSelectServicesFlowFrame:Hide();
 		elseif ( CopyCharacterFrame:IsShown() ) then
 			CopyCharacterFrame:Hide();
+		elseif (CharacterSelect.undeleting) then
+			CharacterSelect_EndCharacterUndelete();
 		else
 			CharacterSelect_Exit();
 		end
 	elseif ( key == "ENTER" ) then
-		if (CharSelectServicesFlowFrame:IsShown()) then
+		if (CharSelectServicesFlowFrame:IsShown() or CharacterSelect.undeleting) then
 			return;
 		end
 		CharacterSelect_EnterWorld();
@@ -357,13 +359,20 @@ function CharacterSelect_OnEvent(self, event, ...)
 			end
 			CharacterSelect.orderChanged = nil;
 		end
-		if (not CHARACTER_SELECT_BACK_FROM_CREATE) then
-			local numChars = GetNumCharacters();
-			if (numChars == 0) then
-				SetGlueScreen("charcreate");
-				return;
-			end
+		local numChars = GetNumCharacters();
+		if (self.undeleting and numChars == 0) then
+			CharacterSelect_EndCharacterUndelete();
+			self.undeleteNoCharacters = true;
+			return;
+		elseif (not CHARACTER_SELECT_BACK_FROM_CREATE and numChars == 0) then
+			SetGlueScreen("charcreate");
+			return;
 		end
+		if (self.undeleteNoCharacters) then
+			GlueDialog_Show("UNDELETE_NO_CHARACTERS");
+			self.undeleteNoCharacters = false;
+		end
+
 		UpdateCharacterList();
 		CharSelectCharacterName:SetText(GetCharacterInfo(GetCharIDFromIndex(self.selectedIndex)));
 		if (IsBlizzCon()) then
@@ -429,10 +438,14 @@ function CharacterSelect_OnEvent(self, event, ...)
 
 		if ( result == LE_CHARACTER_UNDELETE_RESULT_OK ) then
 			self.undeleteGuid = guid;
-			self.undeleteFailed = false;
+			self.undeleteFailed = nil;
 		else
 			self.undeleteGuid = nil;
-			self.undeleteFailed = true;
+			if ( result == LE_CHARACTER_UNDELETE_RESULT_ERROR_NAME_TAKEN_BY_THIS_ACCOUNT ) then
+				self.undeleteFailed = "name";
+			else
+				self.undeleteFailed = "other";
+			end
 		end
 	end
 end
@@ -462,6 +475,9 @@ function UpdateCharacterSelection(self)
 		button.downButton:Hide();
 		if (self.undeleting) then
 			paidServiceButton:Hide();
+			CharacterSelectButton_DisableDrag(button);
+		else
+			CharacterSelectButton_EnableDrag(button);
 		end
 	end
 
@@ -708,10 +724,13 @@ function CharacterSelectButton_OnDoubleClick(self)
 	if ( id ~= CharacterSelect.selectedIndex ) then
 		CharacterSelect_SelectCharacter(id);
 	end
-	CharacterSelect_EnterWorld();
+	if (not CharacterSelect.undeleting) then
+		CharacterSelect_EnterWorld();
+	end
 end
 
 function CharacterSelectButton_ShowMoveButtons(button)
+	if (CharacterSelect.undeleting) then return end;
 	local numCharacters = GetNumCharacters();
 	if ( numCharacters <= 1 ) then
 		return;
@@ -1057,6 +1076,24 @@ function MoveCharacter(originIndex, targetIndex, fromDrag)
 	UpdateCharacterList();
 end
 
+function CharacterSelectButton_DisableDrag(button)
+	button:SetScript("OnMouseDown", nil);
+	button:SetScript("OnMouseUp", nil);
+	button:SetScript("OnDragStart", nil);
+	button:SetScript("OnDragStop", nil);
+end
+
+function CharacterSelectButton_EnableDrag(button)
+	button:SetScript("OnDragStart", CharacterSelectButton_OnDragStart);
+	button:SetScript("OnDragStop", CharacterSelectButton_OnDragStop);
+	-- Functions here copied from CharacterSelect.xml
+	button:SetScript("OnMouseDown", function(self)
+		CharacterSelect.pressDownButton = self;
+		CharacterSelect.pressDownTime = 0;
+	end);
+	button:SetScript("OnMouseUp", CharacterSelectButton_OnDragStop);
+end
+
 -- translation functions
 function GetCharIDFromIndex(index)
 	return translationTable[index] or 0;
@@ -1310,6 +1347,7 @@ function CharacterSelect_UpdateButtonState()
 	CharacterTemplatesFrame.CreateTemplateButton:SetEnabled(servicesEnabled and not undeleting);
 	CharacterSelectMenuButton:SetEnabled(servicesEnabled);
 	CharSelectCreateCharacterButton:SetEnabled(servicesEnabled);
+	StoreButton:SetEnabled(servicesEnabled and not undeleting);
 end
 
 -- CHARACTER UNDELETE
@@ -1318,6 +1356,18 @@ GlueDialogTypes["UNDELETE_FAILED"] = {
 	text = UNDELETE_FAILED_ERROR,
 	button1 = OKAY,
 	escapeHides = true,
+}
+
+GlueDialogTypes["UNDELETE_NAME_TAKEN"] = {
+	text = UNDELETE_NAME_TAKEN,
+	button1 = OKAY,
+	escapeHides = true,
+}
+
+GlueDialogTypes["UNDELETE_NO_CHARACTERS"] = {
+	text = UNDELETE_NO_CHARACTERS;
+	button1 = OKAY,
+	button2 = nil,
 }
 
 function CharacterSelect_StartCharacterUndelete()

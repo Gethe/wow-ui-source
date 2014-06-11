@@ -635,13 +635,7 @@ function SpellButton_UpdateButton(self)
 	local specs =  {GetSpecsForSpell(slot, SpellBookFrame.bookType)};
 	local specName = table.concat(specs, PLAYER_LIST_DELIMITER);
 	if ( subSpellName == "" ) then
-		if ( specName and specName ~= "" ) then
-			if ( isPassive ) then
-				subSpellName = specName .. ", " .. SPELL_PASSIVE_SECOND
-			else
-				subSpellName = specName;
-			end
-		elseif ( IsTalentSpell(slot, SpellBookFrame.bookType) ) then
+		if ( IsTalentSpell(slot, SpellBookFrame.bookType) ) then
 			if ( isPassive ) then
 				subSpellName = TALENT_PASSIVE
 			else

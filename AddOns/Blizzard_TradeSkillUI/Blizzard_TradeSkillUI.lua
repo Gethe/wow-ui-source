@@ -161,6 +161,7 @@ function TradeSkillFrame_Update()
 	local skillOffset = FauxScrollFrame_GetOffset(TradeSkillListScrollFrame);
 	local name, rank, maxRank = GetTradeSkillLine();
     local isTradeSkillGuild = IsTradeSkillGuild();
+	local isNPCCrafting = IsNPCCrafting() and maxRank == 0;
 	
 	if ( CURRENT_TRADESKILL ~= name ) then
 		StopTradeSkillRepeat();
@@ -245,7 +246,7 @@ function TradeSkillFrame_Update()
 		skillButtonSubSkillRankBar = _G["TradeSkillSkill"..buttonIndex.."SubSkillRankBar"];
 		if ( skillIndex <= numTradeSkills ) then
 			--turn on the multiskill icon
-			if not isTradeSkillGuild and numSkillUps > 1 and skillType=="optimal" then
+			if not isTradeSkillGuild and not isNPCCrafting and numSkillUps > 1 and skillType=="optimal" then
 				skillButtonNumSkillUps:Show();
 				skillButtonNumSkillUpsText:SetText(numSkillUps);
 				usedWidth = TRADE_SKILL_SKILLUP_TEXT_WIDTH;
@@ -256,7 +257,7 @@ function TradeSkillFrame_Update()
 
 			local color;
 			-- override colors for guild
-			if ( isTradeSkillGuild and skillType ~= "header" and skillType ~= "subheader" ) then
+			if ( ( isTradeSkillGuild or isNPCCrafting ) and skillType ~= "header" and skillType ~= "subheader" ) then
 				color = TradeSkillTypeColor["easy"];
 			else
 				color = TradeSkillTypeColor[skillType];
@@ -616,6 +617,11 @@ function TradeSkillFrame_SetSelection(id)
 
 		TradeSkillRankFrame:Show();
 		
+		if ( IsNPCCrafting() and skillLineMaxRank == 0 ) then
+			TradeSkillRankFrame:Hide();
+			color = TradeSkillTypeColor["easy"];
+		end
+		
 		local linked = IsTradeSkillLinked();
 		if ( linked ) then
 			TradeSkillCreateButton:Hide();
@@ -858,7 +864,10 @@ function TradeSkillFilterDropDown_Initialize(self, level)
 		info.isNotRadio = true;
 		UIDropDownMenu_AddButton(info, level)
 		
-		if ( not IsTradeSkillGuild() ) then
+		local name, rank, skillLineMaxRank = GetTradeSkillLine();
+		local isNPCCrafting = IsNPCCrafting() and skillLineMaxRank == 0;
+		
+		if ( not IsTradeSkillGuild() and not isNPCCrafting ) then
 			info.text = TRADESKILL_FILTER_HAS_SKILL_UP;
 			info.func = 	function() 
 								TradeSkillFrame.filterTbl.hasSkillUp  = not TradeSkillFrame.filterTbl.hasSkillUp;

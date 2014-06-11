@@ -534,9 +534,9 @@
 				</Layer>
 				<Layer level="BORDER">
 					<Texture parentKey="Icon" hidden="true">
-						<Size x="70" y="70" />
+						<Size x="68" y="68" />
 						<Anchors>
-							<Anchor point="TOPLEFT" x="88" y="-96" />
+							<Anchor point="TOPLEFT" x="86" y="-96" />
 						</Anchors>
 					</Texture>
 				</Layer>

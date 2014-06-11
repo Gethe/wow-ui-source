@@ -2622,7 +2622,19 @@ StaticPopupDialogs["INSTANCE_BOOT"] = {
 	interruptCinematic = 1,
 	notClosableByLogout = 1
 };
-
+StaticPopupDialogs["GARRISON_BOOT"] = {
+	text = GARRISON_BOOT_TIMER,
+	OnShow = function(self)
+		self.timeleft = GetInstanceBootTimeRemaining();
+		if ( self.timeleft <= 0 ) then
+			self:Hide();
+		end
+	end,
+	timeout = 0,
+	whileDead = 1,
+	interruptCinematic = 1,
+	notClosableByLogout = 1
+};
 StaticPopupDialogs["INSTANCE_LOCK"] = {
 	-- we use a custom timer called lockTimeleft in here to avoid special casing the static popup code
 	-- if you use timeout or timeleft then you will go through the StaticPopup system's standard OnUpdate
@@ -3464,6 +3476,7 @@ function StaticPopup_Show(which, text_arg1, text_arg2, data)
 		 (which == "RESURRECT") or
 		 (which == "RESURRECT_NO_SICKNESS") or
 		 (which == "INSTANCE_BOOT") or
+		 (which == "GARRISON_BOOT") or
 		 (which == "INSTANCE_LOCK") or
 		 (which == "CONFIRM_SUMMON") or
 		 (which == "BFMGR_INVITED_TO_ENTER") or
@@ -3702,13 +3715,14 @@ function StaticPopup_OnUpdate(dialog, elapsed)
 			 (which == "QUIT") or
 			 (which == "DUEL_OUTOFBOUNDS") or
 			 (which == "INSTANCE_BOOT") or
+			 (which == "GARRISON_BOOT") or
 			 (which == "CONFIRM_SUMMON") or
 			 (which == "BFMGR_INVITED_TO_ENTER") or
 			 (which == "AREA_SPIRIT_HEAL") or
 			 (which == "SPELL_CONFIRMATION_PROMPT")) then
 			local text = _G[dialog:GetName().."Text"];
 			timeleft = ceil(timeleft);
-			if ( which == "INSTANCE_BOOT" ) then
+			if ( (which == "INSTANCE_BOOT") or (which == "GARRISON_BOOT") ) then
 				if ( timeleft < 60 ) then
 					text:SetFormattedText(StaticPopupDialogs[which].text, timeleft, SECONDS);
 				else

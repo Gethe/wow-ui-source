@@ -199,9 +199,12 @@ UnitPopupButtons["BATTLEGROUND_UNSILENCE"] = { text = BATTLEGROUND_UNSILENCE, di
 UnitPopupButtons["CHAT_KICK"] = { text = CHAT_KICK, dist = 0 };
 UnitPopupButtons["CHAT_BAN"] = { text = CHAT_BAN, dist = 0 };
 
+-- Garrison
+UnitPopupButtons["GARRISON_VISIT"] = { text = GARRISON_VISIT_LEADER, dist = 0 };
+
 -- First level menus
 UnitPopupMenus = { };
-UnitPopupMenus["SELF"] = { "RAID_TARGET_ICON", "SET_FOCUS", "PVP_FLAG", "LOOT_SUBSECTION_TITLE", "LOOT_METHOD", "LOOT_THRESHOLD", "OPT_OUT_LOOT_TITLE", "LOOT_PROMOTE", "SELECT_LOOT_SPECIALIZATION", "INSTANCE_SUBSECTION_TITLE", "CONVERT_TO_RAID", "CONVERT_TO_PARTY", "DUNGEON_DIFFICULTY", "RAID_DIFFICULTY", "LEGACY_RAID_DIFFICULTY", "RESET_INSTANCES", "RESET_CHALLENGE_MODE", "OTHER_SUBSECTION_TITLE", "SELECT_ROLE", "MOVE_PLAYER_FRAME", "MOVE_TARGET_FRAME", "INSTANCE_LEAVE", "LEAVE", "CANCEL" };
+UnitPopupMenus["SELF"] = { "RAID_TARGET_ICON", "SET_FOCUS", "PVP_FLAG", "LOOT_SUBSECTION_TITLE", "LOOT_METHOD", "LOOT_THRESHOLD", "OPT_OUT_LOOT_TITLE", "LOOT_PROMOTE", "SELECT_LOOT_SPECIALIZATION", "INSTANCE_SUBSECTION_TITLE", "CONVERT_TO_RAID", "CONVERT_TO_PARTY", "DUNGEON_DIFFICULTY", "RAID_DIFFICULTY", "LEGACY_RAID_DIFFICULTY", "RESET_INSTANCES", "RESET_CHALLENGE_MODE", "GARRISON_VISIT", "OTHER_SUBSECTION_TITLE", "SELECT_ROLE", "MOVE_PLAYER_FRAME", "MOVE_TARGET_FRAME", "INSTANCE_LEAVE", "LEAVE", "CANCEL" };
 UnitPopupMenus["PET"] = { "RAID_TARGET_ICON", "SET_FOCUS", "PET_PAPERDOLL", "INTERACT_SUBSECTION_TITLE", "PET_RENAME", "PET_DISMISS", "PET_ABANDON", "OTHER_SUBSECTION_TITLE", "MOVE_PLAYER_FRAME", "MOVE_TARGET_FRAME", "CANCEL" };
 UnitPopupMenus["OTHERPET"] = { "RAID_TARGET_ICON", "SET_FOCUS", "OTHER_SUBSECTION_TITLE", "MOVE_PLAYER_FRAME", "MOVE_TARGET_FRAME",  "REPORT_PET", "CANCEL" };
 UnitPopupMenus["BATTLEPET"] = { "PET_SHOW_IN_JOURNAL", "SET_FOCUS", "OTHER_SUBSECTION_TITLE", "MOVE_PLAYER_FRAME", "MOVE_TARGET_FRAME", "CANCEL" };
@@ -305,6 +308,8 @@ function UnitPopup_ShowMenu (dropdownMenu, which, unit, name, userData)
 	UnitPopupButtons["LOOT_METHOD"].tooltipText = UnitLootMethod[GetLootMethod()].tooltipText;
 	dropdownMenu.selectedLootThreshold = _G["ITEM_QUALITY"..GetLootThreshold().."_DESC"];
 	UnitPopupButtons["LOOT_THRESHOLD"].text = dropdownMenu.selectedLootThreshold;
+	
+	UnitPopupButtons["GARRISON_VISIT"].text = (C_Garrison.IsUsingPartyGarrison() and GARRISON_RETURN) or GARRISON_VISIT_LEADER;
 	-- This allows player to view loot settings if he's not the leader
 	if ( IsInGroup() and UnitIsGroupLeader("player") and not HasLFGRestrictions() ) then
 		-- If this is true then player is the party leader
@@ -429,13 +434,39 @@ function UnitPopup_ShowMenu (dropdownMenu, which, unit, name, userData)
 					if ( ( inParty == 1 and isLeader == 0 ) or inInstance ) then
 						info.disabled = 1;	
 					end
-				elseif ( (strsub(value, 1, 15) == "RAID_DIFFICULTY" and (strlen(value) > 15) ) or (strsub(value, 1, 22) == "LEGACY_RAID_DIFFICULTY" and (strlen (value) > 22)) ) then
+				elseif (strsub(value, 1, 15) == "RAID_DIFFICULTY" and (strlen(value) > 15) ) then
 					if ( isDynamicInstance ) then
 						if ( instanceDifficultyID == UnitPopupButtons[value].difficultyID ) then
 							info.checked = 1;
 						end
 					else
 						local raidDifficultyID = GetRaidDifficultyID();
+						if ( raidDifficultyID == UnitPopupButtons[value].difficultyID ) then
+							info.checked = 1;
+						end
+					end
+					local inParty = 0;
+					if ( IsInGroup() ) then
+						inParty = 1;
+					end
+					local isLeader = 0;
+					if ( UnitIsGroupLeader("player") ) then
+						isLeader = 1;
+					end
+					local inInstance, instanceType = IsInInstance();
+					if ( ( inParty == 1 and isLeader == 0 ) or inInstance ) then
+						info.disabled = 1;
+					end
+					if ( toggleDifficultyID and toggleDifficultyID == UnitPopupButtons[value].difficultyID ) then
+						info.disabled = nil;
+					end
+				elseif (strsub(value, 1, 22) == "LEGACY_RAID_DIFFICULTY" and (strlen(value) > 15) ) then
+					if ( isDynamicInstance ) then
+						if ( instanceDifficultyID == UnitPopupButtons[value].difficultyID ) then
+							info.checked = 1;
+						end
+					else
+						local raidDifficultyID = GetLegacyRaidDifficultyID();
 						if ( raidDifficultyID == UnitPopupButtons[value].difficultyID ) then
 							info.checked = 1;
 						end
@@ -1274,6 +1305,10 @@ function UnitPopup_HideButtons ()
 			if ( C_Scenario.IsInScenario() or not ( IsInGroup() and not HasLFGRestrictions() and (isLeader ~= 0 or isAssistant ~= 0 or UnitIsUnit(dropdownMenu.unit, "player")) ) ) then
 				UnitPopupShown[UIDROPDOWNMENU_MENU_LEVEL][index] = 0;
 			end
+		elseif ( value == "GARRISON_VISIT" ) then
+			if ( inParty == 0 or isLeader ~= 0 or not C_Garrison.GetGarrisonInfo() ) then
+				UnitPopupShown[UIDROPDOWNMENU_MENU_LEVEL][index] = 0;
+			end
 		end
 	end
 end
@@ -1711,9 +1746,12 @@ function UnitPopup_OnClick (self)
 	elseif ( strsub(button, 1, 18) == "DUNGEON_DIFFICULTY" and (strlen(button) > 18) ) then
 		local dungeonDifficultyID = UnitPopupButtons[button].difficultyID;
 		SetDungeonDifficultyID(dungeonDifficultyID);
-	elseif ( (strsub(button, 1, 15) == "RAID_DIFFICULTY" and (strlen(button) > 15)) or (strsub(button, 1, 22) == "LEGACY_RAID_DIFFICULTY" and (strlen(button) > 22))) then
+	elseif ( strsub(button, 1, 15) == "RAID_DIFFICULTY" and (strlen(button) > 15)) then
 		local raidDifficultyID = UnitPopupButtons[button].difficultyID;
 		SetRaidDifficultyID(raidDifficultyID);
+	elseif ( strsub(button, 1, 22) == "LEGACY_RAID_DIFFICULTY" and (strlen(button) > 22)) then
+		local raidDifficultyID = UnitPopupButtons[button].difficultyID;
+		SetLegacyRaidDifficultyID(raidDifficultyID);
 	elseif ( button == "LOOT_PROMOTE" ) then
 		SetLootMethod("master", fullname, 1);
 	elseif ( button == "PVP_ENABLE" ) then
@@ -1845,6 +1883,8 @@ function UnitPopup_OnClick (self)
 			BNCheckBattleTagInviteToGuildMember(fullname);
 		end
 		CloseDropDownMenus();
+	elseif ( button == "GARRISON_VISIT" ) then
+		C_Garrison.SetUsingPartyGarrison( not C_Garrison.IsUsingPartyGarrison());
 	end
 	PlaySound("UChatScrollButton");
 end

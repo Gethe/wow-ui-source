@@ -64,8 +64,8 @@ function AlertFrame_OnEvent (self, event, ...)
 	elseif ( event == "PET_BATTLE_CLOSE" ) then
 		AchievementAlertFrame_FireDelayedAlerts();
 	elseif ( event == "STORE_PRODUCT_DELIVERED" ) then
-		local icon, name = ...;
-		StorePurchaseAlertFrame_ShowAlert(icon, name);
+		local icon, name, itemID = ...;
+		StorePurchaseAlertFrame_ShowAlert(icon, name, itemID);
 	elseif ( event == "GARRISON_BUILDING_ACTIVATABLE" ) then
 		local name = ...;
 		GarrisonBuildingAlertFrame_ShowAlert(name);
@@ -846,6 +846,8 @@ function LootWonAlertFrame_SetUp(self, itemLink, quantity, rollType, roll, specI
 		itemName, itemHyperLink, itemRarity, _, _, _, _, _, _, itemTexture = GetItemInfo(itemLink);
 	end
 
+	self.isCurrency = isCurrency;
+
 	self.Icon:SetTexture(itemTexture);
 	self.ItemName:SetText(itemName);
 	local color = ITEM_QUALITY_COLORS[itemRarity];
@@ -879,6 +881,17 @@ function LootWonAlertFrame_SetUp(self, itemLink, quantity, rollType, roll, specI
 
 	self.hyperlink = itemHyperLink;
 	PlaySoundKitID(31578);	--UI_EpicLoot_Toast
+end
+
+function LootWonAlertFrame_OnClick(self)
+	if (self.isCurrency) then 
+		return;
+	end
+	local itemID = GetItemIDFromHyperlink(self.hyperlink);
+	local slot = SearchBagsForItem(itemID);
+	if (slot >= 0) then
+		OpenBag(slot);
+	end
 end
 
 -- [[ MoneyWonAlertFrameTemplate ]] --
@@ -919,10 +932,11 @@ function DigsiteCompleteToastFrame_ShowAlert(researchBranchID)
 end
 
 -- [[ StorePurchaseAlertFrame ]] --
-function StorePurchaseAlertFrame_ShowAlert(icon, name)
+function StorePurchaseAlertFrame_ShowAlert(icon, name, itemID)
 	StorePurchaseAlertFrame.Icon:SetTexture(icon);
 	StorePurchaseAlertFrame.Title:SetFontObject(GameFontNormalLarge);
 	StorePurchaseAlertFrame.Title:SetText(name);
+	StorePurchaseAlertFrame.itemID = itemID;
 	if ( StorePurchaseAlertFrame.Title:IsTruncated() ) then
 		StorePurchaseAlertFrame.Title:SetFontObject(GameFontNormal);
 	end
@@ -931,8 +945,16 @@ function StorePurchaseAlertFrame_ShowAlert(icon, name)
 	PlaySound("UI_igStore_PurchaseDelivered_Toast_01");
 end
 
+function StorePurchaseAlertFrame_OnClick(self)
+	local slot = SearchBagsForItem(self.itemID);
+	if (slot >= 0) then
+		OpenBag(slot);
+	end
+end
+
 -- [[ GarrisonBuildingAlertFrame ]] --
 function GarrisonBuildingAlertFrame_ShowAlert(name)
+	GarrisonLandingPageMinimapButton.MinimapLoopPulseAnim:Play();
 	GarrisonBuildingAlertFrame.Name:SetFormattedText(GARRISON_BUILDING_COMPLETE_TOAST, name);
 	AlertFrame_AnimateIn(GarrisonBuildingAlertFrame);
 	AlertFrame_FixAnchors();
@@ -941,6 +963,7 @@ end
 
 -- [[ GarrisonMissionAlertFrame ]] --
 function GarrisonMissionAlertFrame_ShowAlert(name)
+	GarrisonLandingPageMinimapButton.MinimapLoopPulseAnim:Play();
 	GarrisonMissionAlertFrame.Name:SetText(name);
 	AlertFrame_AnimateIn(GarrisonMissionAlertFrame);
 	AlertFrame_FixAnchors();

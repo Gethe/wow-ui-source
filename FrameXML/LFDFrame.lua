@@ -83,17 +83,17 @@ end
 --Role-related functions
 
 function LFDQueueFrame_SetRoles()
-	SetLFGRoles(LFDQueueFrameRoleButtonLeader.checkButton:GetChecked(), 
-		LFDQueueFrameRoleButtonTank.checkButton:GetChecked(),
-		LFDQueueFrameRoleButtonHealer.checkButton:GetChecked(),
-		LFDQueueFrameRoleButtonDPS.checkButton:GetChecked());
+	SetLFGRoles(LFGRole_GetChecked(LFDQueueFrameRoleButtonLeader), 
+		LFGRole_GetChecked(LFDQueueFrameRoleButtonTank),
+		LFGRole_GetChecked(LFDQueueFrameRoleButtonHealer),
+		LFGRole_GetChecked(LFDQueueFrameRoleButtonDPS));
 end
 
 function LFDQueueFrame_GetRoles()
-	return LFDQueueFrameRoleButtonLeader.checkButton:GetChecked(), 
-		LFDQueueFrameRoleButtonTank.checkButton:GetChecked(),
-		LFDQueueFrameRoleButtonHealer.checkButton:GetChecked(),
-		LFDQueueFrameRoleButtonDPS.checkButton:GetChecked();
+	return LFGRole_GetChecked(LFDQueueFrameRoleButtonLeader), 
+		LFGRole_GetChecked(LFDQueueFrameRoleButtonTank),
+		LFGRole_GetChecked(LFDQueueFrameRoleButtonHealer),
+		LFGRole_GetChecked(LFDQueueFrameRoleButtonDPS);
 end
 
 function LFDFrameRoleCheckButton_OnClick(self)
@@ -101,13 +101,18 @@ function LFDFrameRoleCheckButton_OnClick(self)
 	LFDQueueFrameRandom_UpdateFrame();	--We may show or hide shortage rewards.
 end
 
-function LFDQueueFrame_UpdateRoleIncentives()
+function LFDQueueFrame_UpdateRoleButtons()
 	local dungeonID = LFDQueueFrame.type;
 	LFG_SetRoleIconIncentive(LFDQueueFrameRoleButtonTank, nil);
 	LFG_SetRoleIconIncentive(LFDQueueFrameRoleButtonHealer, nil);
 	LFG_SetRoleIconIncentive(LFDQueueFrameRoleButtonDPS, nil);
-	
+
+	local tankLocked, healerLocked, dpsLocked;
+	local restrictedRoles = {[1]={count=0, alert=false}, -- tank
+							 [2]={count=0, alert=false}, -- healer
+							 [3]={count=0, alert=false}} -- dps
 	if ( type(dungeonID) == "number" ) then
+		tankLocked, healerLocked, dpsLocked = GetLFDRoleRestrictions(dungeonID);
 		for i=1, LFG_ROLE_NUM_SHORTAGE_TYPES do
 			local eligible, forTank, forHealer, forDamage, itemCount, money, xp = GetLFGRoleShortageRewards(dungeonID, i);
 			if ( eligible and (itemCount ~= 0 or money ~= 0 or xp ~= 0) ) then	--Only show the icon if there is actually a reward.
@@ -122,6 +127,54 @@ function LFDQueueFrame_UpdateRoleIncentives()
 				end
 			end
 		end
+	elseif( dungeonID == "specific" and LFGEnabledList )then
+		-- count the number of dungeons a role is locked
+		local dungeonCount = 0;
+		for id, isChecked in pairs(LFGEnabledList) do
+			if( not LFGIsIDHeader(id) and isChecked and not LFGLockList[id] ) then
+				tankLocked, healerLocked, dpsLocked = GetLFDRoleRestrictions(id);
+				restrictedRoles[1].count = restrictedRoles[1].count + ((tankLocked and 1) or 0);
+				restrictedRoles[2].count = restrictedRoles[2].count + ((healerLocked and 1) or 0);
+				restrictedRoles[3].count = restrictedRoles[3].count + ((dpsLocked and 1) or 0);
+				dungeonCount = dungeonCount + 1;
+			end
+		end
+		if( dungeonCount > 0 ) then
+			tankLocked = restrictedRoles[1].count == dungeonCount;
+			healerLocked = restrictedRoles[2].count == dungeonCount;
+			dpsLocked = restrictedRoles[3].count == dungeonCount;
+		end
+		restrictedRoles[1].alert = not tankLocked and restrictedRoles[1].count > 0;
+		restrictedRoles[2].alert = not healerLocked and restrictedRoles[2].count > 0;
+		restrictedRoles[3].alert = not dpsLocked and restrictedRoles[3].count > 0;
+	end
+
+	LFDQueueFrame_UpdateRoleButton(LFDQueueFrameRoleButtonTank, tankLocked, restrictedRoles[1].alert);
+	LFDQueueFrame_UpdateRoleButton(LFDQueueFrameRoleButtonHealer, healerLocked, restrictedRoles[2].alert);
+	LFDQueueFrame_UpdateRoleButton(LFDQueueFrameRoleButtonDPS, dpsLocked, restrictedRoles[3].alert);
+	LFDQueueFrame_SetRoles();
+end
+
+function LFDQueueFrame_UpdateRoleButton( button, locked, alert )
+	if( button.permDisabled )then
+		return;
+	end
+	
+	if( locked ) then
+		button.lockedIndicator:Show();
+		button.checkButton:Hide();
+		button.checkButton:Disable();
+		button.alert:Hide();
+	else
+		button.lockedIndicator:Hide();
+		button.checkButton:Show();
+		button.checkButton:Enable();
+		
+		if( alert ) then
+			button.alert:Show();
+		else
+			button.alert:Hide();
+		end
 	end
 end
 
@@ -132,15 +185,15 @@ function LFDRoleCheckPopupAccept_OnClick()
 	--Check if the role check is for a BG or not.
 	local _, _, _, _, _, isBGRoleCheck = GetLFGRoleUpdate();
 	if ( isBGRoleCheck ) then
-		SetPVPRoles(LFDRoleCheckPopupRoleButtonTank.checkButton:GetChecked(),
-					LFDRoleCheckPopupRoleButtonHealer.checkButton:GetChecked(),
-					LFDRoleCheckPopupRoleButtonDPS.checkButton:GetChecked());
+		SetPVPRoles(LFGRole_GetChecked(LFDRoleCheckPopupRoleButtonTank),
+					LFGRole_GetChecked(LFDRoleCheckPopupRoleButtonHealer),
+					LFGRole_GetChecked(LFDRoleCheckPopupRoleButtonDPS));
 	else
 		local oldLeader = GetLFGRoles();
 		SetLFGRoles(oldLeader, 
-			LFDRoleCheckPopupRoleButtonTank.checkButton:GetChecked(),
-			LFDRoleCheckPopupRoleButtonHealer.checkButton:GetChecked(),
-			LFDRoleCheckPopupRoleButtonDPS.checkButton:GetChecked());
+			LFGRole_GetChecked(LFDRoleCheckPopupRoleButtonTank),
+			LFGRole_GetChecked(LFDRoleCheckPopupRoleButtonHealer),
+			LFGRole_GetChecked(LFDRoleCheckPopupRoleButtonDPS) );
 	end
 	
 	if ( CompleteLFGRoleCheck(true) ) then
@@ -180,6 +233,31 @@ function LFDRoleCheckPopup_Update()
 	
 	LFDRoleCheckPopupDescription:SetWidth(LFDRoleCheckPopupDescriptionText:GetWidth()+10);
 	LFDRoleCheckPopupDescription:SetHeight(LFDRoleCheckPopupDescriptionText:GetHeight());
+	
+	LFGRoleCheckPopup_UpdateRoleButton(LFDRoleCheckPopupRoleButtonTank);
+	LFGRoleCheckPopup_UpdateRoleButton(LFDRoleCheckPopupRoleButtonHealer);
+	LFGRoleCheckPopup_UpdateRoleButton(LFDRoleCheckPopupRoleButtonDPS);
+end
+
+function LFGRoleCheckPopup_UpdateRoleButton(button)
+	if( button:IsEnabled() )then
+		local unlocked, alert = GetLFGInviteRoleAvailability(button:GetID());
+		if(unlocked)then
+			LFG_EnableRoleButton(button);
+			button.lockedIndicator:Hide();
+			button.checkButton:Show();
+			if(alert) then
+				button.alert:Show();
+			else
+				button.alert:Hide();
+			end
+		else
+			button.lockedIndicator:Show();
+			LFG_DisableRoleButton(button);
+			button.checkButton:Hide();
+			button.alert:Hide();
+		end
+	end
 end
 
 function LFDRoleCheckPopupDescription_OnEnter(self)
@@ -203,6 +281,34 @@ function LFDRoleCheckPopupDescription_OnEnter(self)
 		GameTooltip:AddLine("    "..displayName);
 	end
 	GameTooltip:Show();
+end
+
+function LFDPopupRoleCheckButton_OnEnter(self)
+	GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+	GameTooltip:SetText(_G["ROLE_DESCRIPTION_"..self.role], nil, nil, nil, nil, true);
+	if ( self.permDisabled ) then
+		GameTooltip:AddLine(YOUR_CLASS_MAY_NOT_PERFORM_ROLE, 1, 0, 0, true);
+	elseif ( self.disabledTooltip and not self:IsEnabled() ) then
+		GameTooltip:AddLine(self.disabledTooltip, 1, 0, 0, true);
+	elseif ( not self:IsEnabled() ) then
+		local dungeonID = LFDQueueFrame.type;
+		local roleID = self:GetID();
+		GameTooltip:SetText(ERR_ROLE_UNAVAILABLE, 1.0, 1.0, 1.0);
+		local reasons = GetLFGInviteRoleRestrictions(roleID);
+		for i = 1, #reasons do
+			local text = _G["INSTANCE_UNAVAILABLE_SELF_"..(LFG_INSTANCE_INVALID_CODES[reasons[i]])];
+			if( text ) then
+				GameTooltip:AddLine(text);
+			end
+		end
+		GameTooltip:Show();
+		return;
+	elseif( self.alert:IsShown() ) then
+		GameTooltip:SetText(INSTANCE_ROLE_WARNING_TITLE, 1.0, 1.0, 1.0, true);
+		GameTooltip:AddLine(INSTANCE_ROLE_WARNING_TEXT, nil, nil, nil, true);
+	end
+	GameTooltip:Show();
+	LFGFrameRoleCheckButton_OnEnter(self);
 end
 
 --List functions
@@ -249,6 +355,7 @@ end
 function LFDQueueFrameDungeonChoiceEnableButton_OnClick(self, button)
 	LFGDungeonListCheckButton_OnClick(self, LE_LFG_CATEGORY_LFD, LFDDungeonList, LFDHiddenByCollapseList);
 	LFDQueueFrameSpecificList_Update();
+	LFDQueueFrame_UpdateRoleButtons();
 end
 
 function LFDQueueFrameDungeonListButton_OnEnter(self)
@@ -323,7 +430,7 @@ function LFDQueueFrame_SetType(value)	--"specific" for the list or the record id
 		LFDQueueFrame_SetTypeRandomDungeon(isHoliday);
 		LFDQueueFrameRandom_UpdateFrame();
 	end
-	LFDQueueFrame_UpdateRoleIncentives();
+	LFDQueueFrame_UpdateRoleButtons();
 end
 
 function LFDQueueFrame_SetTypeRandomDungeon(isHoliday)
@@ -348,7 +455,7 @@ function LFDQueueFrameRandom_UpdateFrame()
 	end
 	
 	LFGRewardsFrame_UpdateFrame(LFDQueueFrameRandomScrollFrameChildFrame, dungeonID, LFDQueueFrameBackground);
-	LFDQueueFrame_UpdateRoleIncentives();
+	LFDQueueFrame_UpdateRoleButtons();
 end
 
 function LFDQueueFrameRandomCooldownFrame_OnLoad(self)

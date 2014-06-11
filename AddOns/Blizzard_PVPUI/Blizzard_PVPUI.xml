@@ -506,8 +506,11 @@
 									</Layer>
 								</Layers>
 								<Frames>
-									<Button parentKey="HealerIcon" inherits="LFGRoleButtonTemplate" id="3">
+									<Button parentKey="HealerIcon" inherits="LFGRoleButtonTemplate" id="2">
 										<Size x="45" y="45"/>
+										<KeyValues>
+											<KeyValue key="role" value="HEALER" type="string"/>
+										</KeyValues>
 										<Anchors>
 											<Anchor point="TOP" x="0" y="-7"/>
 										</Anchors>
@@ -518,8 +521,11 @@
 											</OnLoad>
 										</Scripts>
 									</Button>
-									<Button parentKey="TankIcon" inherits="LFGRoleButtonTemplate" id="2">
+									<Button parentKey="TankIcon" inherits="LFGRoleButtonTemplate" id="1">
 										<Size x="45" y="45"/>
+										<KeyValues>
+											<KeyValue key="role" value="TANK" type="string"/>
+										</KeyValues>
 										<Anchors>
 											<Anchor point="RIGHT" relativeKey="$parent.HealerIcon" relativePoint="LEFT" x="-40" y="0"/>
 										</Anchors>
@@ -530,8 +536,11 @@
 											</OnLoad>
 										</Scripts>
 									</Button>
-									<Button parentKey="DPSIcon" inherits="LFGRoleButtonTemplate" id="1">
+									<Button parentKey="DPSIcon" inherits="LFGRoleButtonTemplate" id="3">
 										<Size x="45" y="45"/>
+										<KeyValues>
+											<KeyValue key="role" value="DAMAGER" type="string"/>
+										</KeyValues>
 										<Anchors>
 											<Anchor point="LEFT" relativeKey="$parent.HealerIcon" relativePoint="RIGHT" x="40" y="0"/>
 										</Anchors>

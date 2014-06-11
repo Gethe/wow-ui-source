@@ -286,9 +286,9 @@
 				</Scripts>
 			</Button>
 			<Button parentKey="FiltersButton">
-				<Size x="16" y="16"/>
+				<Size x="18" y="18"/>
 				<Anchors>
-					<Anchor point="CENTER" relativeTo="$parentPortraitButton" relativePoint="BOTTOMRIGHT" x="-8" y="8"/>
+					<Anchor point="CENTER" relativeTo="$parentPortraitButton" relativePoint="BOTTOMRIGHT" x="-7" y="8"/>
 				</Anchors>
 				<Scripts>
 					<OnShow>
@@ -300,8 +300,8 @@
 						ToggleDropDownMenu(1, nil, parent.FilterDropDown, self, 0, 0);
 					</OnClick>
 				</Scripts>
-				<NormalTexture file="Interface\GossipFrame\BinderGossipIcon"/>
-				<HighlightTexture file="Interface\Buttons\UI-Panel-MinimizeButton-Highlight" desaturated="TRUE" alphaMode="ADD" />
+				<NormalTexture atlas="bags-icon-gear"/>
+				<HighlightTexture atlas="bags-icon-gear" desaturated="TRUE" alphaMode="ADD" alpha="0.3" />
 			</Button>
 			<Frame name="$parentFilterDropDown" parentKey="FilterDropDown" inherits="UIDropDownMenuTemplate">
 				<Scripts>

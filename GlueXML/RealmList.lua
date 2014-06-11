@@ -95,30 +95,42 @@ function RealmListUpdate()
 				loadText = _G["RealmListRealmButton"..i.."Load"];
 				
 				if ( realmDown ) then
-					loadText:SetText(REALM_DOWN);
 					loadText:SetTextColor(GRAY_FONT_COLOR.r, GRAY_FONT_COLOR.g, GRAY_FONT_COLOR.b);
-				elseif ( locked ) then
-					loadText:SetText(REALM_LOCKED);
+				elseif ( locked or invalidRealm ) then
 					loadText:SetTextColor(RED_FONT_COLOR.r, RED_FONT_COLOR.g, RED_FONT_COLOR.b);
 				elseif ( load == -3.0 ) then
-					loadText:SetText(LOAD_RECOMMENDED);
 					loadText:SetTextColor(BLUE_FONT_COLOR.r, BLUE_FONT_COLOR.g, BLUE_FONT_COLOR.b);
 				elseif ( load == -2.0 ) then
-					loadText:SetText(LOAD_NEW);
 					loadText:SetTextColor(GREEN_FONT_COLOR.r, GREEN_FONT_COLOR.g, GREEN_FONT_COLOR.b);
 				elseif ( load == 2.0 ) then
-					loadText:SetText(LOAD_FULL);
 					loadText:SetTextColor(RED_FONT_COLOR.r, RED_FONT_COLOR.g, RED_FONT_COLOR.b);
+				elseif ( load > 0 ) then
+					loadText:SetTextColor(RED_FONT_COLOR.r, RED_FONT_COLOR.g, RED_FONT_COLOR.b);
+				elseif ( load < 0 ) then
+					loadText:SetTextColor(GREEN_FONT_COLOR.r, GREEN_FONT_COLOR.g, GREEN_FONT_COLOR.b);
+				else
+					loadText:SetTextColor(NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b);
+				end
+
+				if ( realmDown ) then
+					loadText:SetText(REALM_DOWN);
+				elseif ( locked ) then
+					loadText:SetText(REALM_LOCKED);
+				elseif ( invalidRealm ) then
+					loadText:SetText(ADDON_INCOMPATIBLE);
+				elseif ( load == -3.0 ) then
+					loadText:SetText(LOAD_RECOMMENDED);
+				elseif ( load == -2.0 ) then
+					loadText:SetText(LOAD_NEW);
+				elseif ( load == 2.0 ) then
+					loadText:SetText(LOAD_FULL);
 					isFull = 1;
 				elseif ( load > 0 ) then
 					loadText:SetText(LOAD_HIGH);
-					loadText:SetTextColor(RED_FONT_COLOR.r, RED_FONT_COLOR.g, RED_FONT_COLOR.b);
 				elseif ( load < 0 ) then
 					loadText:SetText(LOAD_LOW);
-					loadText:SetTextColor(GREEN_FONT_COLOR.r, GREEN_FONT_COLOR.g, GREEN_FONT_COLOR.b);
 				else
 					loadText:SetText(LOAD_MEDIUM);
-					loadText:SetTextColor(NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b);
 				end
 
 				if (major) then

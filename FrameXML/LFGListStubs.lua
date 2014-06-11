@@ -35,6 +35,18 @@ LFG_LIST_APP_CANCELLED = "|cffff0000Cancelled|r";
 QUEUED_STATUS_SIGNED_UP = "Signed Up";
 CANCEL_SIGN_UP = "Cancel Sign Up";
 LFG_LIST_NOTE_TO_LEADER = "Optional note to the group leader";
+LFG_LIST_REFRESH = "Refresh";
+LFG_LIST_INVITE_GROUP = "Invite\nGroup (%d)";
+LFG_LIST_APP_DECLINED = "Declined";
+LFG_LIST_APP_TIMED_OUT = "Expired";
+LFG_LIST_APP_INVITED = "Invited";
+LFG_LIST_APP_INVITE_ACCEPTED = "Joined";
+LFG_LIST_APP_INVITE_DECLINED = "Declined Invite";
+
+LFG_LIST_MUST_HAVE_NAME = "You must enter a name for your group."
+LFG_LIST_MUST_SELECT_ROLE = "You must select at least one role for which you have a specialization."
+
+LFG_LIST_INVITED_TO_GROUP = "You have been invited to a group:";
 
 --[[
 function C_LFGList.GetSearchResults()
@@ -48,7 +60,7 @@ function C_LFGList.GetSearchResultInfo(id)
 end
 
 function C_LFGList.GetApplicationInfo(id)
-	return id, id < 4 and "applied" or "none", id * 33;
+	return id, id < 4 and "applied" or "none", nil, id * 33;
 end
 
 function C_LFGList.GetSearchResultFriends(id)
@@ -64,3 +76,19 @@ function C_LFGList.GetApplications()
 end
 --]]
 
+--[[
+function C_LFGList.GetApplicants()
+	return { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25 };
+end
+
+function C_LFGList.GetApplicantInfo(id)
+	return id, "applied", nil, math.max((id % 6)-2,1), id >= 23, "This is comment "..id;
+end
+
+function C_LFGList.GetApplicantMemberInfo(id, idx)
+	local tank = (id + idx) % 5 == 0;
+	local healer = (id + idx) % 3 == 0;
+	local damager = (id + idx) % 2 == 0 or (not tank and not healer);
+	return string.format("Person %d.%d",id,idx), CLASS_SORT_ORDER[((id + idx) % #CLASS_SORT_ORDER) + 1], "Class "..idx, (idx+2)*10, id * 10 + idx, tank, healer, damager, tank and "TANK" or (healer and "HEALER" or "DAMAGER");
+end
+--]]

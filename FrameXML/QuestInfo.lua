@@ -413,17 +413,19 @@ function QuestInfo_ShowRewards()
 		rewardsFrame.SpellLearnText:SetPoint("TOPLEFT", lastFrame, "BOTTOMLEFT", 0, -REWARDS_SECTION_OFFSET);
 
 		if ( QuestInfoFrame.questLog ) then
-			texture, name, isTradeskillSpell, isSpellLearned = GetQuestLogRewardSpell();
+			texture, name, isTradeskillSpell, isSpellLearned, hideSpellLearnText = GetQuestLogRewardSpell();
 		else
-			texture, name, isTradeskillSpell, isSpellLearned = GetRewardSpell();
+			texture, name, isTradeskillSpell, isSpellLearned, hideSpellLearnText = GetRewardSpell();
 		end
 		
-		if ( isTradeskillSpell ) then
-			rewardsFrame.SpellLearnText:SetText(REWARD_TRADESKILL_SPELL);
-		elseif ( not isSpellLearned ) then
-			rewardsFrame.SpellLearnText:SetText(REWARD_AURA);
-		else
-			rewardsFrame.SpellLearnText:SetText(REWARD_SPELL);
+		if ( not hideSpellLearnText ) then
+			if ( isTradeskillSpell ) then
+				rewardsFrame.SpellLearnText:SetText(REWARD_TRADESKILL_SPELL);
+			elseif ( not isSpellLearned ) then
+				rewardsFrame.SpellLearnText:SetText(REWARD_AURA);
+			else
+				rewardsFrame.SpellLearnText:SetText(REWARD_SPELL);
+			end
 		end
 		totalHeight = totalHeight + rewardsFrame.SpellLearnText:GetHeight() + REWARDS_SECTION_OFFSET;
 

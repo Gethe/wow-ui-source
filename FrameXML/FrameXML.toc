@@ -182,6 +182,7 @@ MapBar.xml
 ProductChoice.xml
 DraenorZoneAbility.xml
 ..\SharedXML\ModelPreviewFrame.xml
+SplashFrame.xml
 
 #Save off whatever we need available unmodified.
 SecureCapsule.lua

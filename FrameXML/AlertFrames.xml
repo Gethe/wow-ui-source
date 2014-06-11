@@ -1058,6 +1058,7 @@
 			AlertFrame_ResumeOutAnimation(self);
 			GameTooltip:Hide();
 		</OnLeave>
+		<OnClick function="LootWonAlertFrame_OnClick"/>
 	</Scripts>
 </Button>
 
@@ -1261,6 +1262,9 @@
 			</Texture>
 		</Layer>
 	</Layers>
+	<Scripts>
+		<OnClick function="StorePurchaseAlertFrame_OnClick"/>
+	</Scripts>
 </Button>
 
 <Button name="GarrisonBuildingAlertFrame" parent="UIParent" hidden="true" frameStrata="DIALOG" inherits="AlertFrameTemplate">
