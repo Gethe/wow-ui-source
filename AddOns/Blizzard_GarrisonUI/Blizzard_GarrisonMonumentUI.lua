@@ -12,31 +12,31 @@ end
 
 function GarrisonMountmentFrame_OnEvent(self, event, ...)
 	if(event == "GARRISON_MONUMENT_SHOW_UI")then
-		MonumentLoadList();
+		C_Trophy.MonumentLoadList();
 	elseif(event == "GARRISON_MONUMENT_CLOSE_UI")then
 		HideUIPanel(GarrisonMonumentFrame);
 	elseif(event == "GARRISON_MONUMENT_LIST_LOADED")then
 		ShowUIPanel(GarrisonMonumentFrame);
 	elseif(event == "GARRISON_MONUMENT_SELECTED_TROPHY_ID_LOADED")then
-		self.monumentID = MonumentGetSelectedTrophyID();
+		self.monumentID = C_Trophy.MonumentGetSelectedTrophyID();
 		GarrisonMountmentFrame_UpdateDisplay();
 	elseif(event == "GARRISON_MONUMENT_REPLACED")then
-		self.monumentID = MonumentGetSelectedTrophyID();
+		self.monumentID = C_Trophy.MonumentGetSelectedTrophyID();
 		GarrisonMountmentFrame_UpdateDisplay();
 	end
 end
 
 function GarrisonMountmentFrame_SaveSelection()
-	local trophy_id, lock_code = MonumentGetTrophyInfoByIndex(GarrisonMonumentFrame.monumentID);
+	local trophy_id, lock_code = C_Trophy.MonumentGetTrophyInfoByIndex(GarrisonMonumentFrame.monumentID);
 	if(lock_code == MATCH_CONDITION_SUCCESS) then
-		MonumentSaveSelection(trophy_id);
+		C_Trophy.MonumentSaveSelection(trophy_id);
 	else
-		MonumentRevertAppearanceToSaved();
+		C_Trophy.MonumentRevertAppearanceToSaved();
 	end
 end
 
 function GarrisonMountmentFrame_OnShow(self)
-	self.monumentID = MonumentGetSelectedTrophyID();
+	self.monumentID = C_Trophy.MonumentGetSelectedTrophyID();
 	GarrisonMountmentFrame_UpdateDisplay();
 	PlaySound("igCharacterInfoOpen");
 end
@@ -69,7 +69,7 @@ function GarrisonMountmentFrame_UpdateSelectedTrophyID( delta )
 	local frame = GarrisonMonumentFrame;
 	local id = frame.monumentID + delta;
 	-- constrain id range to 1 to MonumentGetCount();
-	local count = MonumentGetCount();
+	local count = C_Trophy.MonumentGetCount();
 	if( id > count ) then
 		id = 0;
 	elseif(id < 0 )then
@@ -77,15 +77,15 @@ function GarrisonMountmentFrame_UpdateSelectedTrophyID( delta )
 	end
 	frame.monumentID = id;
 	
-	local trophy_id, lock_code, _, trophy_name = MonumentGetTrophyInfoByIndex(id);
-	MonumentChangeAppearanceToTrophyID(trophy_id);
+	local trophy_id, lock_code, _, trophy_name = C_Trophy.MonumentGetTrophyInfoByIndex(id);
+	C_Trophy.MonumentChangeAppearanceToTrophyID(trophy_id);
 	GarrisonMountmentFrame_UpdateDisplay(trophy_id, trophy_name, lock_code);
 end
 
 function GarrisonMountmentFrame_UpdateDisplay(trophy_id, trophy_name, lock_code)
 	local frame = GarrisonMonumentFrame;
 	if( not trophy_id ) then
-		trophy_id, lock_code,_, trophy_name = MonumentGetTrophyInfoByIndex(frame.monumentID);
+		trophy_id, lock_code,_, trophy_name = C_Trophy.MonumentGetTrophyInfoByIndex(frame.monumentID);
 	end
 	frame.Text:SetText( trophy_name or EMPTY ) -- set trophy name;
 	if(lock_code == MATCH_CONDITION_SUCCESS)then
@@ -96,7 +96,7 @@ function GarrisonMountmentFrame_UpdateDisplay(trophy_id, trophy_name, lock_code)
 end
 
 function GarrisonMountmentLock_OnEnter(self)
-	local trophy_id, lock_code, lock_reason, trophy_name = MonumentGetTrophyInfoByIndex(GarrisonMonumentFrame.monumentID);
+	local trophy_id, lock_code, lock_reason, trophy_name = C_Trophy.MonumentGetTrophyInfoByIndex(GarrisonMonumentFrame.monumentID);
 	GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
 	GameTooltip:SetText(trophy_name or EMPTY, 1, 1, 1, true);
 	if( lock_code == MATCH_CONDITION_WRONG_ACHIEVEMENT ) then

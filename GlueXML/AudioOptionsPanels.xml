@@ -407,7 +407,7 @@
 				</Scripts>
 			</CheckButton>-->
 			<Frame name="$parentVolume" inherits="OptionsBoxTemplate">
-				<Size x="186" y="144"/>
+				<Size x="186" y="174"/>
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeTo="$parentHardware" relativePoint="BOTTOMLEFT">
 						<Offset x="0" y="-16"/>
@@ -641,6 +641,56 @@
 							if (not AudioOptionsSoundPanelAmbientSounds:GetChecked()) then
 								GlueTooltip:AddLine(MUTED, 1.0, 0.0, 0.0, 1.0, true);
 								GlueTooltip:Show();
+							end
+						end
+					</OnEnter>
+				</Scripts>
+			</Slider>
+			<Slider name="$parentDialogVolume" inherits="OptionsSliderTemplate">
+				<Size x="100" y="17"/>
+				<Anchors>
+					<Anchor point="TOPRIGHT" relativeTo="$parentAmbienceVolume" relativePoint="BOTTOMRIGHT">
+						<Offset>
+							<AbsDimension x="0" y="-10"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Layers>
+					<Layer level="ARTWORK">
+						<FontString name="$parentLabel" inherits="OptionsFontSmallLeft" text="DIALOG_VOLUME what">
+							<Size x="64" y="14"/>
+							<Anchors>
+								<Anchor point="RIGHT" relativePoint="LEFT">
+									<Offset>
+										<AbsDimension x="-4" y="1"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnLoad>
+						local name = self:GetName();
+						_G[name.."Low"]:Hide();
+						_G[name.."High"]:Hide();
+						_G[name.."Text"]:Hide();
+						self.type = CONTROLTYPE_SLIDER;
+						self.cvar = "Sound_DialogVolume";
+						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
+					</OnLoad>
+					<OnValueChanged>
+						self.value = value;
+						BlizzardOptionsPanel_SetCVarSafe(self.cvar, value);
+						if (self:IsVisible()) then
+							PlaySound("igMainMenuOptionCheckBoxOn", "Dialog");
+						end
+					</OnValueChanged>
+					<OnEnter>
+						if ( self:IsEnabled() ) then
+							if ( self.tooltipText ) then
+								GlueTooltip:SetOwner(self);
+								GlueTooltip:SetText(self.tooltipText, nil, nil, nil, nil, true);
 							end
 						end
 					</OnEnter>

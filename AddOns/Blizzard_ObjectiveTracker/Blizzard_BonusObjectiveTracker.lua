@@ -9,9 +9,8 @@ BONUS_OBJECTIVE_TRACKER_MODULE.usedBlocks = { };
 BONUS_OBJECTIVE_TRACKER_MODULE.freeLines = { };
 BONUS_OBJECTIVE_TRACKER_MODULE.lineTemplate = "BonusObjectiveTrackerLineTemplate";
 BONUS_OBJECTIVE_TRACKER_MODULE.blockOffsetX = -20;
-BONUS_OBJECTIVE_TRACKER_MODULE.blockOffsetY = -10;
-BONUS_OBJECTIVE_TRACKER_MODULE.lineSpacing = 6;
-BONUS_OBJECTIVE_TRACKER_MODULE.fromHeaderOffsetY = -4;
+BONUS_OBJECTIVE_TRACKER_MODULE.blockOffsetY = -6;
+BONUS_OBJECTIVE_TRACKER_MODULE.fromHeaderOffsetY = -8;
 BONUS_OBJECTIVE_TRACKER_MODULE.blockPadding = 3;	-- need some extra room so scrollframe doesn't cut tails off gjpqy
 
 local COMPLETED_BONUS_DATA = { };
@@ -536,7 +535,7 @@ function BONUS_OBJECTIVE_TRACKER_MODULE:Update()
 	if ( BONUS_OBJECTIVE_TRACKER_MODULE.firstBlock ) then
 		local shadowAnim = BONUS_OBJECTIVE_TRACKER_MODULE.Header.ShadowAnim;
 		if ( BONUS_OBJECTIVE_TRACKER_MODULE.Header.animating and not shadowAnim:IsPlaying() ) then
-			local distance = BONUS_OBJECTIVE_TRACKER_MODULE.contentsHeight - OBJECTIVE_TRACKER_HEADER_HEIGHT;
+			local distance = BONUS_OBJECTIVE_TRACKER_MODULE.contentsAnimHeight - 8;
 			shadowAnim.TransAnim:SetOffset(0, -distance);
 			shadowAnim.TransAnim:SetDuration(distance * 0.33 / 50);
 			shadowAnim:Play();

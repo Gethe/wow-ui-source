@@ -286,7 +286,7 @@ end
 function QuestInfo_GetRewardButton(rewardsFrame, index)
 	local rewardButtons = rewardsFrame.RewardButtons;
 	if ( not rewardButtons[index] ) then
-		button = CreateFrame("BUTTON", "QuestInfoItem"..index, rewardsFrame, rewardsFrame.buttonTemplate);
+		button = CreateFrame("BUTTON", "$parentQuestInfoItem"..index, rewardsFrame, rewardsFrame.buttonTemplate);
 		rewardButtons[index] = button;
 	end
 	return rewardButtons[index];

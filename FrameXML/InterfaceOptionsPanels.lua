@@ -575,6 +575,88 @@ function InterfaceOptionsDisplayPanelPreviewTalentChanges_SetFunc()
 	end
 end
 
+function InterfaceOptionsDisplayPanelOutlineDropDown_OnEvent (self, event, ...)
+	if ( event == "VARIABLES_LOADED" ) then
+		self.cvar = "Outline";
+
+		local value = GetCVar(self.cvar);
+		self.defaultValue = GetCVarDefault(self.cvar);
+		self.value = value;
+		self.oldValue = value;
+		self.tooltip = OPTION_TOOLTIP_OBJECT_NPC_OUTLINE;
+
+		UIDropDownMenu_SetWidth(self, 140);
+		UIDropDownMenu_Initialize(self, InterfaceOptionsDisplayPanelOutline_Initialize);
+		UIDropDownMenu_SetSelectedValue(self, value);
+
+		self.SetValue = 
+			function (self, value)
+				self.value = value;
+				SetCVar(self.cvar, self.value);
+				UIDropDownMenu_SetSelectedValue(self, self.value);
+			end
+		self.GetValue =
+			function (self)
+				return UIDropDownMenu_GetSelectedValue(self);
+			end
+		self.RefreshValue =
+			function (self)
+				UIDropDownMenu_Initialize(self, InterfaceOptionsDisplayPanelOutline_Initialize);
+				UIDropDownMenu_SetSelectedValue(self, self.value);
+			end
+			
+		self:UnregisterEvent(event);
+	end
+end
+
+function InterfaceOptionsDisplayPanelOutlineDropDown_OnClick(self)
+	InterfaceOptionsDisplayPanelOutlineDropDown:SetValue(self.value);
+end
+
+function InterfaceOptionsDisplayPanelOutline_Initialize()
+	local selectedValue = UIDropDownMenu_GetSelectedValue(InterfaceOptionsDisplayPanelOutlineDropDown);
+	local info = UIDropDownMenu_CreateInfo();
+--[[
+	info.text = OBJECT_NPC_OUTLINE_DISABLED;
+	info.func = InterfaceOptionsDisplayPanelOutlineDropDown_OnClick;
+	info.value = "0";
+	if ( info.value == selectedValue ) then
+		info.checked = 1;
+	else
+		info.checked = nil;
+	end
+	UIDropDownMenu_AddButton(info);
+]]--
+	info.text = OBJECT_NPC_OUTLINE_MODE_ONE;
+	info.func = InterfaceOptionsDisplayPanelOutlineDropDown_OnClick;
+	info.value = "1";
+	if ( info.value == selectedValue ) then
+		info.checked = 1;
+	else
+		info.checked = nil;
+	end
+	UIDropDownMenu_AddButton(info);
+
+	info.text = OBJECT_NPC_OUTLINE_MODE_TWO;
+	info.func = InterfaceOptionsDisplayPanelOutlineDropDown_OnClick;
+	info.value = "2";
+	if ( info.value == selectedValue ) then
+		info.checked = 1;
+	else
+		info.checked = nil;
+	end
+	UIDropDownMenu_AddButton(info);
+
+	info.text = OBJECT_NPC_OUTLINE_MODE_THREE;
+	info.func = InterfaceOptionsDisplayPanelOutlineDropDown_OnClick;
+	info.value = "3";
+	if ( info.value == selectedValue ) then
+		info.checked = 1;
+	else
+		info.checked = nil;
+	end
+	UIDropDownMenu_AddButton(info);
+end
 
 -- [[ Objectives Options Panel ]] --
 
@@ -1406,6 +1488,7 @@ FCTPanelOptions = {
 	CombatHealingAbsorbSelf = { text = "SHOW_COMBAT_HEALING_ABSORB_SELF" },
 	fctSpellMechanics = { text = "SHOW_TARGET_EFFECTS" },
 	fctSpellMechanicsOther = { text = "SHOW_OTHER_TARGET_EFFECTS" },
+	enablePetBattleCombatText = { text = "SHOW_PETBATTLE_COMBAT_TEXT" },
 }
 
 function BlizzardOptionsPanel_UpdateCombatText ()

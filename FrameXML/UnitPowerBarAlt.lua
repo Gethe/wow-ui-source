@@ -513,17 +513,17 @@ local COUNTERBAR_SLASH_INDEX = 10;
 
 
 function CounterBar_SetUp(self)
-	local useFactional, animNumbers, barType = UnitAlternatePowerCounterInfo(self.unit);
+	local useFactional, animNumbers, anchorTop = UnitAlternatePowerCounterInfo(self.unit);
 
 	local maxValue = UnitPowerMax(self.unit, ALTERNATE_POWER_INDEX);
-	CounterBar_SetStyle(self, useFactional, animNumbers, maxValue);
+	CounterBar_SetStyle(self, useFactional, anchorTop, animNumbers, maxValue);
 	self:RegisterEvent("UNIT_POWER");
 	self:RegisterEvent("UNIT_MAXPOWER");
 	self:Show();
 end
 
 
-function CounterBar_SetStyle(self, useFactional, animNumbers, maxValue)
+function CounterBar_SetStyle(self, useFactional, anchorTop, animNumbers, maxValue)
 	
 	local texturePath, r, g, b;
 	--Set Textures
@@ -578,6 +578,14 @@ function CounterBar_SetStyle(self, useFactional, animNumbers, maxValue)
 	self.maxValue = maxValue;
 	self.fractional = useFactional;
 	self.startIndex = startIndex;
+
+	self:ClearAllPoints();
+	if (anchorTop) then
+		self:SetPoint("TOP", UIParent, 0, -20);
+	else
+		self:SetPoint("CENTER");
+	end
+
 	CounterBar_SetNumbers(self);
 end
 
@@ -783,7 +791,9 @@ function PlayerBuffTimerManager_UpdateTimers(self)
 			local timer = PlayerBuffTimerManager_GetTimer(barType);
 			timer.timerIndex = index;
 			if ( timer.isCounter ) then
-				CounterBar_SetStyle(timer, useFactional, animNumbers, duration);
+				local useFactional, animNumbers, anchorTop = UnitAlternatePowerCounterInfo("player");
+
+				CounterBar_SetStyle(timer, useFactional, animNumbers, anchorTop, duration);
 			else
 				UnitPowerBarAlt_TearDown(timer);
 				UnitPowerBarAlt_SetUp(timer, barID);

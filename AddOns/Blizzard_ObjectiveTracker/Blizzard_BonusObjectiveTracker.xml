@@ -13,7 +13,7 @@
 	</Frame>
 	
 	<ScrollFrame name="BonusObjectiveTrackerBlockTemplate" hidden="true" virtual="true" alpha="0">
-		<Size x="212" y="10"/>
+		<Size x="240" y="10"/>
 		<ScrollChild>
 			<Frame parentKey="ScrollContents">
 				<Size x="10" y="10"/>
@@ -36,6 +36,9 @@
 			</AnimationGroup>
 		</Animations>
 		<Scripts>
+			<OnLoad>
+				self:SetWidth(OBJECTIVE_TRACKER_LINE_WIDTH);
+			</OnLoad>
 			<OnEnter function="BonusObjectiveTracker_OnBlockEnter"/>
 			<OnLeave function="BonusObjectiveTracker_OnBlockLeave"/>
 		</Scripts>

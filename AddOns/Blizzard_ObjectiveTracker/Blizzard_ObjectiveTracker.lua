@@ -2,7 +2,7 @@
 
 OBJECTIVE_TRACKER_ITEM_WIDTH = 33;
 OBJECTIVE_TRACKER_HEADER_HEIGHT = 25;
-OBJECTIVE_TRACKER_LINE_WIDTH = 192;
+OBJECTIVE_TRACKER_LINE_WIDTH = 240;
 OBJECTIVE_TRACKER_HEADER_OFFSET_X = -10;
 -- calculated values
 OBJECTIVE_TRACKER_DOUBLE_LINE_HEIGHT = 0;
@@ -65,6 +65,7 @@ lineSpacing:		spacing between lines; for the first line it'll be the distance fr
 blockOffsetX:		offset from the left edge of the blocksframe
 blockOffsetY:		offset from the block above
 fromHeaderOffsetY:	offset from the header for the first block, if there's a header; used instead of blockOffsetY
+fromModuleOffsetY:	offset from the previous module
 freeBlocks:			table of free blocks; a module needs it own if not using default block template
 usedBlocks:			table of used blocks; a module should always have its own
 freelines:			table of free lines; a module needs it own if not using default line template
@@ -76,6 +77,7 @@ usedTimerBars:		table of used timer bars
 freeTimerBars:		table of free timer bars
 === modules should NOT change these ===
 contentsHeight:		the current combined height of all the blocks in the module
+contentsAnimHeight: the current combined animation height of all the blocks in the module
 oldContentsHeight:	the previous height on the last update
 hasSkippedBlocks:	if the module couldn't display all its blocks because of not enough space
 --]]
@@ -89,9 +91,11 @@ DEFAULT_OBJECTIVE_TRACKER_MODULE = {
 	usedBlocks = { },
 	freeLines = { },
 	blockOffsetX = 0,
-	blockOffsetY = -13,
+	blockOffsetY = -6,
 	fromHeaderOffsetY = -10,
+	fromModuleOffsetY = -10,
 	contentsHeight = 0,
+	contentsAnimHeight = 0,
 	oldContentsHeight = 0,
 	hasSkippedBlocks = false,
 	usedTimerBars = { },
@@ -110,6 +114,7 @@ function DEFAULT_OBJECTIVE_TRACKER_MODULE:BeginLayout(isStaticReanchor)
 	self.firstBlock = nil;
 	self.oldContentsHeight = self.contentsHeight;
 	self.contentsHeight = 0;
+	self.contentsAnimHeight = 0;
 	-- if it's not a static reanchor, reset whether we've skipped blocks
 	if ( not isStaticReanchor ) then
 		self.hasSkippedBlocks = false;
@@ -484,7 +489,7 @@ function ObjectiveTracker_OnLoad(self)
 	-- get measurements
 	OBJECTIVE_TRACKER_DOUBLE_LINE_HEIGHT = math.ceil(line.Text:GetStringHeight());
 	OBJECTIVE_TRACKER_DASH_WIDTH = line.Dash:GetWidth();
-	OBJECTIVE_TRACKER_TEXT_WIDTH = OBJECTIVE_TRACKER_LINE_WIDTH - OBJECTIVE_TRACKER_DASH_WIDTH;
+	OBJECTIVE_TRACKER_TEXT_WIDTH = OBJECTIVE_TRACKER_LINE_WIDTH - OBJECTIVE_TRACKER_DASH_WIDTH - 12;
 	DEFAULT_OBJECTIVE_TRACKER_MODULE.lineWidth = OBJECTIVE_TRACKER_TEXT_WIDTH;
 	DEFAULT_OBJECTIVE_TRACKER_MODULE.BlocksFrame = self.BlocksFrame;
 	line.Text:SetWidth(OBJECTIVE_TRACKER_TEXT_WIDTH);
@@ -616,7 +621,7 @@ function ObjectiveTracker_OnSizeChanged(self)
 end
 
 function ObjectiveTrackerHeader_OnAnimFinished(self)
-	local header = self:GetParent():GetParent();
+	local header = self:GetParent();
 	header.animating = false;
 	ObjectiveTracker_Update(header.onFinishUpdateReason);
 end
@@ -683,12 +688,13 @@ local function InternalAddBlock(block)
 		if ( blocksFrame.contentsHeight + block.height - offsetY > blocksFrame.maxHeight ) then
 			return false;
 		end
-		block:SetPoint("TOP", blocksFrame.currentBlock, "BOTTOM", 0, offsetY);
 		if ( block.isHeader ) then
+			offsetY = offsetY + blocksFrame.currentBlock.module.fromModuleOffsetY;
 			block:SetPoint("LEFT", OBJECTIVE_TRACKER_HEADER_OFFSET_X, 0);
 		else
 			block:SetPoint("LEFT", module.blockOffsetX, 0);		
 		end
+		block:SetPoint("TOP", blocksFrame.currentBlock, "BOTTOM", 0, offsetY);
 	else
 		offsetY = 0;
 		-- check if the block can fit
@@ -711,6 +717,7 @@ local function InternalAddBlock(block)
 	end
 	blocksFrame.currentBlock = block;
 	blocksFrame.contentsHeight = blocksFrame.contentsHeight + block.height - offsetY;
+	module.contentsAnimHeight = module.contentsAnimHeight + block.height;
 	module.contentsHeight = module.contentsHeight + block.height - offsetY;
 	return true;
 end
@@ -735,14 +742,7 @@ function ObjectiveTracker_AddBlock(block, ignoreHeaderAnimating)
 				if ( header.animateReason and band(OBJECTIVE_TRACKER_UPDATE_REASON, header.animateReason ) > 0 and not header.animating ) then
 					-- animate stuff
 					header.animating = true;
-					header.Background.AlphaAnim:Play();
-					header.LineGlow.AlphaAnim:Play();
-					header.LineGlow.ScaleAnim:Play();
-					header.LineGlow.TransAnim:Play();
-					header.Glow.Anim:Play();
-					header.LineBurst.AlphaAnim:Play();
-					header.LineBurst.TransAnim:Play();
-					header.StarBurst.Anim:Play();
+					header.HeaderOpenAnim:Play();
 				end
 			end
 			-- if the header is not animating, we can add block
@@ -926,14 +926,7 @@ function ObjectiveTracker_CheckAndHideHeader(moduleHeader)
 		moduleHeader:Hide();
 		if ( moduleHeader.animating ) then
 			moduleHeader.animating = nil;
-			moduleHeader.Background.AlphaAnim:Stop();
-			moduleHeader.LineGlow.AlphaAnim:Stop();
-			moduleHeader.LineGlow.ScaleAnim:Stop();
-			moduleHeader.LineGlow.TransAnim:Stop();
-			moduleHeader.Glow.Anim:Stop();
-			moduleHeader.LineBurst.AlphaAnim:Stop();
-			moduleHeader.LineBurst.TransAnim:Stop();
-			moduleHeader.StarBurst.Anim:Stop();			
+			moduleHeader.HeaderOpenAnim:Stop();
 		end
 	end
 end

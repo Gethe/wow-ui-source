@@ -1809,6 +1809,7 @@ function MountJournal_OnShow(self)
 		MountJournal_Select(1);
 	end
 	MountJournal_UpdateMountList();
+	MountJournal_UpdateMountDisplay();
 	SetPortraitToTexture(PetJournalParentPortrait,"Interface\\Icons\\MountJournalPortrait");
 end
 

@@ -41,7 +41,7 @@
 			<Layer level="BACKGROUND" textureSubLevel="2">
 				<Texture atlas="Garr_WoodFrameCorner" useAtlasSize="true">
 					<Anchors>
-						<Anchor point="TOPLEFT" y="-22"/>
+						<Anchor point="TOPLEFT" x="2" y="-22"/>
 					</Anchors>
 				</Texture>
 				<Texture atlas="Garr_WoodFrameCorner" useAtlasSize="true">
@@ -52,7 +52,7 @@
 				</Texture>
 				<Texture atlas="Garr_WoodFrameCorner" useAtlasSize="true">
 					<Anchors>
-						<Anchor point="BOTTOMLEFT"/>
+						<Anchor point="BOTTOMLEFT" x="2" y="2"/>
 					</Anchors>
 					<TexCoords left="0.0" right="1.0" top="1.0" bottom="0.0"/>
 				</Texture>
@@ -65,7 +65,7 @@
 			</Layer>
 		</Layers>
 	</Frame>
-	
+
 	<Frame name="GarrisonFollowerPortraitTemplate" virtual="true">
 		<Size x="52" y="60"/>
 		<Layers>
@@ -336,6 +336,15 @@
 				<Anchors>
 					<Anchor point="TOPLEFT" x="4" y="2"/>
 				</Anchors>
+				<Layers>
+					<Layer level="OVERLAY">
+						<Texture parentKey="Favorite" atlas="PetJournal-FavoritesIcon" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="TOPLEFT" x="-5" y="5"/>
+							</Anchors>
+						</Texture>				
+					</Layer>				
+				</Layers>
 				<Scripts>
 					<OnLoad>
 						self:SetFrameLevel(self:GetParent():GetFrameLevel() + 2);

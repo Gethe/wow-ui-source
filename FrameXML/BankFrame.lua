@@ -426,6 +426,16 @@ function BankFrame_ShowPanel(sidePanelName, selection)
 	end
 end
 
+function BankFrame_AutoSortButtonOnClick()
+	local self = BankFrame;
+
+	if (self.activeTabIndex == 1) then
+		SortBankBags();
+	elseif (self.activeTabIndex == 2) then
+		SortReagentBankBags();
+	end
+end
+
 -- Reagent Bank
 function ReagentBankFrame_OnLoad(self)
 	self:SetID(REAGENTBANK_CONTAINER);
@@ -454,8 +464,8 @@ function ReagentBankFrame_OnShow(self)
 		self.slots_initialized = true;
 		self.numRow = 7;
 		self.numColumn = 7;
-		self.numSlotPerColumn = 2;
-		self.size = self.numRow*self.numColumn*self.numSlotPerColumn;
+		self.numSubColumn = 2;
+		self.size = self.numRow*self.numColumn*self.numSubColumn;
 		
 		-- setup slot backgrounds and shadows
 		for column = 2, self.numColumn do
@@ -469,16 +479,20 @@ function ReagentBankFrame_OnShow(self)
 		end
 		
 		-- the item slots
-		for row = 1, self.numRow do
-			local rowTop = -(3+(row-1)*44);
-			for column = 1, self.numColumn do
-				for slot = 1, self.numSlotPerColumn do
-					local id = (row-1)*14 + (column-1)*2 + slot;
+		local slotOffsetX = 49;
+		local slotOffsetY = 44;
+		local id = 1;
+		for column = 1, self.numColumn do
+			local leftOffset = 6;
+			for subColumn = 1, self.numSubColumn do
+				for row = 0, self.numRow-1 do
 					local button = CreateFrame("Button", "ReagentBankFrameItem"..id, ReagentBankFrame, "ReagentBankItemButtonGenericTemplate");
 					button:SetID(id);
-					button:SetPoint("TOPLEFT", ReagentBankFrame["BG"..(column)], "TOPLEFT", 6+(slot-1)*49, rowTop);
+					button:SetPoint("TOPLEFT", ReagentBankFrame["BG"..column], "TOPLEFT", leftOffset, -(3+row*slotOffsetY));
 					ReagentBankFrame["Item"..id] = button;
+					id = id + 1;
 				end
+				leftOffset = leftOffset + slotOffsetX;
 			end
 		end
 	end

@@ -307,12 +307,12 @@ function QuestMapQuestOptionsDropDown_Initialize(self)
 	if ( IsQuestWatched(questLogIndex) ) then
 		info.text = UNTRACK_QUEST;
 	end
-	info.func = QuestMapQuestOptions_TrackQuest;
+	info.func =function(_, questID) QuestMapQuestOptions_TrackQuest(questID) end;
 	info.arg1 = self.questID;
 	UIDropDownMenu_AddButton(info, UIDROPDOWNMENU_MENU_LEVEL);
 	
 	info.text = SHARE_QUEST;
-	info.func = QuestMapQuestOptions_ShareQuest;
+	info.func = function(_, questID) QuestMapQuestOptions_ShareQuest(questID) end;
 	info.arg1 = self.questID;
 	if ( not GetQuestLogPushable(questLogIndex) or not IsInGroup() ) then
 		info.disabled = 1;
@@ -320,7 +320,7 @@ function QuestMapQuestOptionsDropDown_Initialize(self)
 	UIDropDownMenu_AddButton(info, UIDROPDOWNMENU_MENU_LEVEL);
 	
 	info.text = ABANDON_QUEST;
-	info.func = QuestMapQuestOptions_AbandonQuest;
+	info.func = function(_, questID) QuestMapQuestOptions_AbandonQuest(questID) end;
 	info.arg1 = self.questID;
 	info.disabled = nil;
 	UIDropDownMenu_AddButton(info, UIDROPDOWNMENU_MENU_LEVEL);

@@ -77,12 +77,15 @@
 		</Scripts>
 	</Button>
 	<Button name="BankAutoSortButtonTemplate" virtual="true">
-		<Size x="22" y="22"/>
-		<Anchors>
-			<Anchor point="TOPRIGHT" x="-16" y="-33"/>
-		</Anchors>
-		<NormalTexture atlas="bags-button-autosort"/>
-		<HighlightTexture file="Interface\Buttons\ButtonHilight-Square" alphaMode="ADD"/>
+		<Size x="30" y="30"/>
+		<NormalTexture atlas="bags-button-autosort-up"/>
+		<PushedTexture atlas="bags-button-autosort-down"/>
+		<HighlightTexture file="Interface\Buttons\ButtonHilight-Square" alphaMode="ADD">
+			<Size x="26" y="26"/>
+			<Anchors>
+				<Anchor point="CENTER" x="0" y="2"/>
+			</Anchors>
+		</HighlightTexture>
 		<Scripts>
 			<OnEnter>
 				GameTooltip:SetOwner(self);
@@ -147,7 +150,21 @@
 					<OnClick function="BankFrame_TabOnClick"/>
                 </Scripts>
             </Button>
-			
+			<EditBox name="BankItemSearchBox" inherits="BagSearchBoxTemplate" letters="15">
+	            <Size x="110" y="20"/>
+	            <Anchors>
+		            <Anchor point="TOPRIGHT" x="-44" y="-33"/>
+	            </Anchors>
+            </EditBox>
+            
+            <Button name="BankItemAutoSortButton" inherits="BankAutoSortButtonTemplate">
+	            <Anchors>
+		            <Anchor point="LEFT" relativeTo="BankItemSearchBox" relativePoint="RIGHT" x="4" y="0"/>
+	            </Anchors>
+	            <Scripts>
+		            <OnClick function="BankFrame_AutoSortButtonOnClick"/>
+	            </Scripts>
+            </Button>
 			<!-- Bank Slots  -->
 			<Frame name="BankSlotsFrame" SetAllPoints="true" useParentLevel="true" hidden="false">
 				<Layers>
@@ -565,23 +582,4 @@
 			<OnHide function="BankFrame_OnHide"/>
 		</Scripts>
 	</Frame>
-
-	<EditBox name="BankItemSearchBox" inherits="BagSearchBoxTemplate" parent="BankFrame" letters="15">
-		<Size x="110" y="20"/>
-		<Anchors>
-			<Anchor point="TOPRIGHT" x="-44" y="-33"/>
-		</Anchors>
-	</EditBox>
-	
-	<Button name="BankItemAutoSortButton" parent="BankSlotsFrame" inherits="BankAutoSortButtonTemplate">
-		<Scripts>
-			<OnClick function="SortBankBags"/>
-		</Scripts>
-	</Button>
-	
-	<Button name="ReagentBankItemAutoSortButton" parent="ReagentBankFrame" inherits="BankAutoSortButtonTemplate">
-		<Scripts>
-			<OnClick function="SortReagentBankBags"/>
-		</Scripts>
-	</Button>
 </Ui>

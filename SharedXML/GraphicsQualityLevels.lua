@@ -1217,36 +1217,3 @@ VideoData["Advanced_GraphicsAPIDropDown"]={
 	clientRestart = true,
 	gameRestart = true,
 }
-
--------------------------------------------------------------------------------------------------------
-VideoData["Advanced_OutlineDropDown"]={
-	name = OBJECT_NPC_OUTLINE,
-	description = OPTION_TOOLTIP_OBJECT_NPC_OUTLINE,
-
-	data = {
-		[1] = {
-			text = OBJECT_NPC_OUTLINE_DISABLED,
-			cvars =	{
-				Outline = 0,
-			},
-		},
-		[2] = {
-			text = OBJECT_NPC_OUTLINE_MODE_ONE,
-			cvars =	{
-				Outline = 1,
-			},
-		},
-		[3] = {
-			text = OBJECT_NPC_OUTLINE_MODE_TWO,
-			cvars =	{
-				Outline = 2,
-			},
-		},
-		[4] = {
-			text = OBJECT_NPC_OUTLINE_MODE_THREE,
-			cvars =	{
-				Outline = 3,
-			},
-		},
-	},
-}

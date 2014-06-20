@@ -191,7 +191,7 @@
 				<Anchors>
 					<Anchor point="TOPRIGHT" relativeTo="$parent" relativePoint="TOPRIGHT">
 						<Offset>
-							<AbsDimension x="-2" y="-216"/>
+							<AbsDimension x="-2" y="-228"/>
 						</Offset>
 					</Anchor>
 				</Anchors>
@@ -240,7 +240,7 @@
 			<Button name="$parentItem35" inherits="ContainerFrameItemButtonTemplate"/>
 			<Button name="$parentItem36" inherits="ContainerFrameItemButtonTemplate"/>
 
-			<Button name="$parentPortraitButton">
+			<Button name="$parentPortraitButton" parentKey="PortraitButton">
 				<Size>
 					<AbsDimension x="40" y="40"/>
 				</Size>
@@ -251,8 +251,19 @@
 						</Offset>
 					</Anchor>
 				</Anchors>
+				<Layers>
+					<Layer level="OVERLAY">
+						<Texture parentKey="Highlight" atlas="bags-roundhighlight" hidden="true">
+							<Size x="36" y="36"/>
+							<Anchors>
+								<Anchor point="CENTER" x="-2" y="2"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
 				<Scripts>
 					<OnEnter>
+						self.Highlight:Show();
 						GameTooltip:SetOwner(self, "ANCHOR_LEFT");
 						if ( self:GetID() == 0 ) then
 							GameTooltip:SetText(BACKPACK_TOOLTIP, 1.0, 1.0, 1.0);
@@ -265,10 +276,18 @@
 								GameTooltip:AppendText(" "..NORMAL_FONT_COLOR_CODE.."("..binding..")"..FONT_COLOR_CODE_CLOSE);
 							end
 						end
+						GameTooltip:AddLine(CLICK_BAG_SETTINGS);
+						GameTooltip:Show();
 					</OnEnter>
 					<OnLeave>
+						self.Highlight:Hide();
 						GameTooltip:Hide();
 					</OnLeave>
+					<OnClick>
+						local parent = self:GetParent();
+						PlaySound("igMainMenuOptionCheckBoxOn");
+						ToggleDropDownMenu(1, nil, parent.FilterDropDown, self, 0, 0);
+					</OnClick>
 				</Scripts>
 			</Button>
 			<Button name="$parentCloseButton" inherits="UIPanelCloseButton">
@@ -299,6 +318,12 @@
 						PlaySound("igMainMenuOptionCheckBoxOn");
 						ToggleDropDownMenu(1, nil, parent.FilterDropDown, self, 0, 0);
 					</OnClick>
+					<OnEnter>
+						GameTooltip:SetOwner(self, "ANCHOR_LEFT", 4, -4);
+						GameTooltip:AddLine(BAG_SETTINGS_TOOLTIP);
+						GameTooltip:Show();
+					</OnEnter>
+					<OnLeave function="GameTooltip_Hide"/>
 				</Scripts>
 				<NormalTexture atlas="bags-icon-gear"/>
 				<HighlightTexture atlas="bags-icon-gear" desaturated="TRUE" alphaMode="ADD" alpha="0.3" />
@@ -308,6 +333,26 @@
 					<OnLoad function="ContainerFrameFilterDropDown_OnLoad"/>
 				</Scripts>
 			</Frame>
+			<Button parentKey="ClickableTitleFrame">
+				<Size x="118" y="16"/>
+				<Anchors>
+					<Anchor point="TOP" x="8" y="-8"/>
+				</Anchors>
+				<Scripts>
+					<OnEnter>
+						local target = self:GetParent().PortraitButton;
+						target:GetScript("OnEnter")(target);
+					</OnEnter>
+					<OnLeave>
+						local target = self:GetParent().PortraitButton;
+						target:GetScript("OnLeave")(target);
+					</OnLeave>
+					<OnClick>
+						local target = self:GetParent().PortraitButton;
+						target:GetScript("OnClick")(target);
+					</OnClick>
+				</Scripts>
+			</Button>
 		</Frames>
 		<Scripts>
 			<OnEvent>
@@ -339,13 +384,19 @@
 	<Frame name="ContainerFrame13" inherits="ContainerFrameTemplate" parent="UIParent" id="100" hidden="true"/>
 
 	<EditBox name="BagItemSearchBox" inherits="BagSearchBoxTemplate" parent="ContainerFrame1" letters="15" hidden="true">
-		<Size x="110" y="18"/>
+		<Size x="98" y="18"/>
 	</EditBox>
 
 	<Button name="BagItemAutoSortButton" parent="ContainerFrame1" hidden="true">
 		<Size x="30" y="30"/>
-		<NormalTexture atlas="bags-button-autosort"/>
-		<HighlightTexture file="Interface\Buttons\ButtonHilight-Square" alphaMode="ADD"/>
+		<NormalTexture atlas="bags-button-autosort-up"/>
+		<PushedTexture atlas="bags-button-autosort-down"/>
+		<HighlightTexture file="Interface\Buttons\ButtonHilight-Square" alphaMode="ADD">
+			<Size x="26" y="26"/>
+			<Anchors>
+				<Anchor point="CENTER" x="0" y="2"/>
+			</Anchors>
+		</HighlightTexture>
 		<Scripts>
 			<OnClick>
 				SortBags();

@@ -578,6 +578,7 @@ DEPTH_CONVERGENCE = "Convergence Amount";
 DESKTOP_GAMMA = "Use desktop gamma";
 DEVICE_BLACKLISTED = "<html><body><p align=\"CENTER\">Your video device is not compatible. Please see <a href=\"http://nydus.battle.net/WoW/enUS/launcher/video-unsupported\">http://nydus.battle.net/WoW/enUS/launcher/video-unsupported</a> for more information.</p></body></html>";
 DIALOG_HELP_MORE_INFO = "More Info";
+DIALOG_VOLUME = "Dialog";
 DISABLE_ADDONS = "Disable";
 DISABLE_ALL_ADDONS = "Disable All";
 DISCONNECTED = "You have been disconnected from the server.";
@@ -838,6 +839,7 @@ OPTION_TOOLTIP_ANTIALIASING = "Anti-Aliasing is a technique to smooth out jaggy 
 OPTION_TOOLTIP_CINEMATIC_SUBTITLES = "Enables subtitles during the intro cinematic.";
 OPTION_TOOLTIP_DEATH_EFFECT = "Uncheck to disable glowing effect while in ghost form. Disabling this can sometimes improve performance.";
 OPTION_TOOLTIP_DESKTOP_GAMMA = "Use the same gamma settings as your desktop.";
+OPTION_TOOLTIP_DIALOG_VOLUME = "Adjusts the dialog volume.";
 OPTION_TOOLTIP_DISPLAY_MODE = "Allows you to change the primary display mode of the game to Fullscreen, Windowed, or Windowed (Fullscreen).  Windowed modes may cause a drop in performance.";
 OPTION_TOOLTIP_ENABLE_AMBIENCE = "Enable ambient sounds.";
 OPTION_TOOLTIP_ENABLE_BGSOUND = "Enable to allow sounds to play even when World of Warcraft is in the background.";

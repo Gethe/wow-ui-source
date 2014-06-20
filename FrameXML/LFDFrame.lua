@@ -152,7 +152,6 @@ function LFDQueueFrame_UpdateRoleButtons()
 	LFDQueueFrame_UpdateRoleButton(LFDQueueFrameRoleButtonTank, tankLocked, restrictedRoles[1].alert);
 	LFDQueueFrame_UpdateRoleButton(LFDQueueFrameRoleButtonHealer, healerLocked, restrictedRoles[2].alert);
 	LFDQueueFrame_UpdateRoleButton(LFDQueueFrameRoleButtonDPS, dpsLocked, restrictedRoles[3].alert);
-	LFDQueueFrame_SetRoles();
 end
 
 function LFDQueueFrame_UpdateRoleButton( button, locked, alert )

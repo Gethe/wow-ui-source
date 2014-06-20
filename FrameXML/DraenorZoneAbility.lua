@@ -5,6 +5,7 @@ function DraenorZoneAbilityFrame_OnLoad(self)
 	self:RegisterEvent("SPELL_UPDATE_COOLDOWN");
 	self:RegisterEvent("SPELL_UPDATE_USABLE");
 	self:RegisterEvent("SPELLS_CHANGED");
+	self:RegisterEvent("ACTIONBAR_SLOT_CHANGED");
 
 	self.SpellButton.spellID = DraenorZoneAbilitySpellID;
 	DraenorZoneAbilityFrame_Update(self);
@@ -23,18 +24,20 @@ function DraenorZoneAbilityFrame_OnEvent(self, event)
 
 	self.BuffSeen = HasDraenorZoneAbility();
 
-	if (self.BuffSeen) then
+	if (self.BuffSeen and not HasDraenorZoneSpellOnBar(self)) then
+		if ( not GetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_GARRISON_ZONE_ABILITY) ) then
+			DraenorZoneAbilityButtonAlert:SetHeight(DraenorZoneAbilityButtonAlert.Text:GetHeight()+42);
+			DraenorZoneAbilityButtonAlert:Show();
+			SetCVarBitfield( "closedInfoFrames", LE_FRAME_TUTORIAL_GARRISON_ZONE_ABILITY, true );
+		end
 		self:Show();
 
-		WorldStateAlwaysUpFrame:ClearAllPoints();
-		WorldStateAlwaysUpFrame:SetPoint("TOP", self, "BOTTOM", -5, -15);
-
 		DraenorZoneAbilityFrame_Update(self);
+		UIParent_ManageFramePositions();
 	else
 		self:Hide();
 
-		WorldStateAlwaysUpFrame:ClearAllPoints();
-		WorldStateAlwaysUpFrame:SetPoint("TOP", -5, -15);
+		UIParent_ManageFramePositions();
 	end
 end
 
@@ -60,4 +63,25 @@ function DraenorZoneAbilityFrame_Update(self)
 	end
 		
 	self.SpellButton.spellName = self.CurrentSpell;
+end
+
+function HasDraenorZoneSpellOnBar(self)
+	if (not self.baseName) then
+		return false;
+	end
+
+	local name = GetSpellInfo(self.baseName);
+	for i = 1, ((LE_NUM_NORMAL_ACTION_PAGES + LE_NUM_BONUS_ACTION_PAGES) * LE_NUM_ACTIONS_PER_PAGE) + 1, 1 do
+		local type, id = GetActionInfo(i);
+
+		if (type == "spell") then
+			local actionName = GetSpellInfo(id);
+
+			if (name == actionName) then
+				return true;
+			end
+		end
+	end
+
+	return false;
 end

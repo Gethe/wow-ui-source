@@ -2220,11 +2220,9 @@ function isRaidFinderDungeonDisplayable(id)
 end
 
 function LFGRole_GetChecked(button)
-	return button.checkButton:GetChecked() and not button.lockedIndicator:IsShown();
+	return button.checkButton:GetChecked();
 end
 
 function LFGRole_SetChecked(button, checked)
-	if( not button.lockedIndicator:IsShown() ) then
-		button.checkButton:GetChecked(checked);
-	end
+	button.checkButton:SetChecked(checked);
 end

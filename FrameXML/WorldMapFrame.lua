@@ -1214,6 +1214,7 @@ function WorldMapLevelButton_OnClick(self)
 	local level = firstFloor + self:GetID() - 1;
 	
 	SetDungeonMapLevel(level);
+	WorldMapScrollFrame_ResetZoom()
 end
 
 function WorldMapZoomOutButton_OnClick()

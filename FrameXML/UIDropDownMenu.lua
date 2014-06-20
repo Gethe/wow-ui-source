@@ -1122,6 +1122,14 @@ function UIDropDownMenu_SetButtonText(level, id, text, colorCode)
 	end
 end
 
+function UIDropDownMenu_SetButtonNotClickable(level, id)
+	_G["DropDownList"..level.."Button"..id]:SetDisabledFontObject(GameFontHighlightSmallLeft);
+end
+
+function UIDropDownMenu_SetButtonClickable(level, id)
+	_G["DropDownList"..level.."Button"..id]:SetDisabledFontObject(GameFontDisableSmallLeft);
+end
+
 function UIDropDownMenu_DisableDropDown(dropDown)
 	local label = _G[dropDown:GetName().."Label"];
 	if ( label ) then

@@ -307,13 +307,6 @@ function MainMenu_GetMovieDownloadProgress(id)
 	return anyInProgress, allDownloaded, allTotal;
 end
 
--- We want to save which movies were downloading when the player logged in so that we can continue to show
--- those movies after the download finishes
-for i, movieList in next, MovieList do
-	local inProgress = MainMenu_GetMovieDownloadProgress(i);
-	movieList.inProgress = inProgress;
-end
-
 local ipTypes = { "IPv4", "IPv6" }
 
 function MainMenuBarPerformanceBarFrame_OnEnter(self)
@@ -371,7 +364,8 @@ function MainMenuBarPerformanceBarFrame_OnEnter(self)
 	-- Downloaded cinematics
 	local firstMovie = true;
 	for i, movieList in next, MovieList do
-		if (movieList.inProgress) then
+		local inProgress, downloaded, total = MainMenu_GetMovieDownloadProgress(i);
+		if (inProgress) then
 			if (firstMovie) then
 				if ( SHOW_NEWBIE_TIPS == "1" ) then
 					-- The "Cinematics" header looks bad when it's next to the newbie tooltip text, so add an extra line break
@@ -380,12 +374,7 @@ function MainMenuBarPerformanceBarFrame_OnEnter(self)
 				GameTooltip:AddLine("   "..CINEMATICS, NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b, true);
 				firstMovie = false;
 			end
-			local inProgress, downloaded, total = MainMenu_GetMovieDownloadProgress(i);
-			if (inProgress) then
-				GameTooltip:AddLine("   "..format(CINEMATIC_DOWNLOAD_FORMAT, _G["CINEMATIC_NAME_"..i], downloaded/total*100), GRAY_FONT_COLOR.r, GRAY_FONT_COLOR.g, GRAY_FONT_COLOR.b, true);
-			else
-				GameTooltip:AddLine("   "..format(CINEMATIC_DOWNLOAD_FORMAT, _G["CINEMATIC_NAME_"..i], downloaded/total*100), HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b, true);
-			end
+			GameTooltip:AddLine("   "..format(CINEMATIC_DOWNLOAD_FORMAT, _G["CINEMATIC_NAME_"..i], downloaded/total*100), GRAY_FONT_COLOR.r, GRAY_FONT_COLOR.g, GRAY_FONT_COLOR.b, true);
 		end
 	end
 

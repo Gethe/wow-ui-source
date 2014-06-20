@@ -112,7 +112,7 @@
 				</Scripts>
 				<NormalTexture file="Interface\ChatFrame\ChatFrameExpandArrow"/>
 			</Button>
-			<Button name="$parentInvisibleButton" hidden="true">
+			<Button name="$parentInvisibleButton" hidden="true" parentKey="invisibleButton">
 				<Anchors>
 					<Anchor point="TOPLEFT"/>
 					<Anchor point="BOTTOMLEFT"/>
@@ -146,7 +146,7 @@
 			</Button>
 		</Frames>
 		<Scripts>
-			<OnLoad>				
+			<OnLoad>		
 				self:SetFrameLevel(self:GetParent():GetFrameLevel()+2);
 			</OnLoad>
 			<OnClick>
@@ -180,6 +180,12 @@
 				UIDropDownMenu_StartCounting(self:GetParent());
 				GameTooltip:Hide();
 			</OnLeave>
+			<OnEnable>
+				self.invisibleButton:Hide();
+			</OnEnable>
+			<OnDisable>
+				self.invisibleButton:Show();
+			</OnDisable>
 		</Scripts>
 		<ButtonText name="$parentNormalText">
 			<Anchors>

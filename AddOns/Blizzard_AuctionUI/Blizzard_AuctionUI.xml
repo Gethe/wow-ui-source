@@ -582,7 +582,7 @@
 						</Scripts>
 						<FontString inherits="ChatFontNormal" bytes="64"/>
 					</EditBox>
-					<EditBox name="BrowseMinLevel" letters="2" numeric="true" autoFocus="false" inherits="InputBoxTemplate">
+					<EditBox name="BrowseMinLevel" letters="3" numeric="true" autoFocus="false" inherits="InputBoxTemplate">
 						<Size>
 							<AbsDimension x="25" y="16"/>
 						</Size>
@@ -617,7 +617,7 @@
 							<OnEnterPressed function="EditBox_ClearFocus"/>
 						</Scripts>
 					</EditBox>
-					<EditBox name="BrowseMaxLevel" letters="2" numeric="true" autoFocus="false" inherits="InputBoxTemplate">
+					<EditBox name="BrowseMaxLevel" letters="3" numeric="true" autoFocus="false" inherits="InputBoxTemplate">
 						<Size>
 							<AbsDimension x="25" y="16"/>
 						</Size>

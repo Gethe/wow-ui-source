@@ -2,39 +2,31 @@
 ..\FrameXML\UI.xsd">
 	<Script file="DraenorZoneAbility.lua"/>
 	<Frame name="DraenorZoneAbilityFrame" parent="UIParent" hidden="true">
-		<Size x="76" y="66"/>
+		<Size x="64" y="64"/>
 		<Anchors>
-			<Anchor point="TOP"/>
+			<Anchor point="BOTTOM" x="0" y="160"/>
 		</Anchors>
-		<Layers>
-			<Layer level="ARTWORK">
-				<Texture parentKey="SpellBoxTex" atlas="ZoneAbility-Generic-SpellBox" useAtlasSize="true">
-					<Anchors>
-						<Anchor point="TOP"/>
-					</Anchors>
-				</Texture>
-			</Layer>
-		</Layers>
 		<Frames>
 			<Button parentKey="SpellButton">
-				<Size x="42" y="42"/>
+				<Size x="52" y="52"/>
 				<Anchors>
-					<Anchor point="TOPLEFT" relativeKey="$parent.SpellBoxTex" relativePoint="TOPLEFT" x="18" y="-6"/>
+					<Anchor point="CENTER" x="0" y="0"/>
 				</Anchors>
 				<Layers>
-					<Layer level="BORDER">
-						<Texture parentKey="Icon" setAllPoints="true"/>
+					<Layer level="BACKGROUND">
+						<Texture parentKey="Icon"/>
 					</Layer>
 					<Layer level="OVERLAY">
-						<Texture parentKey="Border" atlas="ZoneAbility-Generic-IconBorder" useAtlasSize="true">
+						<Texture parentKey="Style" file="Interface\ExtraButton\GarrZoneAbility-BarracksAlliance">
+							<Size x="256" y="128"/>
 							<Anchors>
-								<Anchor point="CENTER"/>
+								<Anchor point="CENTER" x="-2" y="0"/>
 							</Anchors>
 						</Texture>
 					</Layer>
 				</Layers>
 				<Frames>
-					<Cooldown parentKey="Cooldown" inherits="CooldownFrameTemplate"/>
+					<Cooldown parentKey="Cooldown" inherits="CooldownFrameTemplate" useParentLevel="true"/>
 				</Frames>
 				<Scripts>
 					<OnLoad>
@@ -60,14 +52,26 @@
 						<Anchor point="BOTTOMRIGHT" x="15" y="-15"/>
 					</Anchors>
 				</NormalTexture>
-				<HighlightTexture name="$parentHighlight" file="Interface\Buttons\ButtonHilight-Square" alphaMode="ADD"/>
-				<PushedTexture file="Interface\Buttons\UI-Quickslot-Depress"/>
+				<HighlightTexture alphaMode="ADD" file="Interface\Buttons\ButtonHilight-Square"/>
+				<CheckedTexture alphaMode="ADD" file="Interface\Buttons\CheckButtonHilight"/>
 			</Button>
 		</Frames>		
 		<Scripts>
 			<OnLoad function="DraenorZoneAbilityFrame_OnLoad"/>
 			<OnEvent function="DraenorZoneAbilityFrame_OnEvent"/>
 			<OnShow function="DraenorZoneAbilityFrame_OnShow"/>
+		</Scripts>
+	</Frame>
+
+	<Frame name="DraenorZoneAbilityButtonAlert" inherits="MicroButtonAlertTemplate">
+		<Anchors>
+			<Anchor point="BOTTOM" relativeTo="DraenorZoneAbilityFrame" relativePoint="TOP" x="0" y="8"/>
+		</Anchors>
+		<Scripts>
+			<OnLoad>
+				MicroButtonAlert_OnLoad(self);
+				self.Text:SetText(DRAENOR_ZONE_ABILITY_TUTORIAL);
+			</OnLoad>
 		</Scripts>
 	</Frame>
 </Ui>

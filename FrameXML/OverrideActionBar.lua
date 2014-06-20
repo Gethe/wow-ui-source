@@ -84,6 +84,9 @@ function OverrideActionBar_OnEvent(self, event, ...)
 		OverrideActionBar_UpdateXpBar();
 	elseif ( event == "UNIT_ENTERED_VEHICLE" ) then
 		OverrideActionBar_CalcSize();
+		local anchorX, anchorY = OverrideActionBar_GetMicroButtonAnchor();
+		UpdateMicroButtonsParent(OverrideActionBar);
+		MoveMicroButtons("BOTTOMLEFT", OverrideActionBar, "BOTTOMLEFT", anchorX, anchorY, true);
 	end
 end
 
@@ -141,13 +144,13 @@ end
 
 function OverrideActionBar_GetMicroButtonAnchor()
 	local hasExit, hasPitch = OverrideActionBar.leaveFrame:IsShown(),  OverrideActionBar.pitchFrame:IsShown();
-	local x, y = 544 , 41;
+	local x, y = 542, 41;
 	if hasExit and hasPitch then
-		x = 628;
+		x = 625;
 	elseif hasPitch then
-		x = 632;
+		x = 629;
 	elseif hasExit then
-		x = 540;
+		x = 537;
 	end
 	return x,y
 end

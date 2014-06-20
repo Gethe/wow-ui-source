@@ -217,6 +217,12 @@ SPEC_SPELLS_DISPLAY[268] = { 100784,10, 115180,10, 115181,10, 115295,10 }; --Bre
 SPEC_SPELLS_DISPLAY[269] = { 100780,10, 100787,10, 100784,10, 113656,10  }; --Windwalker
 SPEC_SPELLS_DISPLAY[270] = { 115175,10, 115151,10, 116694,10, 116670,10 }; --Mistweaver
 
+-- Bonus stat to string
+SPEC_STAT_STRINGS = {
+	[LE_UNIT_STAT_STRENGTH] = ITEM_MOD_STRENGTH_SHORT,
+	[LE_UNIT_STAT_AGILITY] = ITEM_MOD_AGILITY_SHORT,
+	[LE_UNIT_STAT_INTELLECT] = ITEM_MOD_INTELLECT_SHORT,
+};
 
 -- PlayerTalentFrame
 
@@ -1383,13 +1389,15 @@ function PlayerTalentFrame_UpdateSpecFrame(self, spec)
 
 	-- display spec info in the scrollframe
 	local scrollChild = self.spellsScroll.child;
-	local id, name, description, icon, background = GetSpecializationInfo(shownSpec, nil, self.isPet);
+	local id, name, description, icon, background, _, primaryStat = GetSpecializationInfo(shownSpec, nil, self.isPet);
 	SetPortraitToTexture(scrollChild.specIcon, icon);
 	scrollChild.specName:SetText(name);
 	scrollChild.description:SetText(description);
 	local role1 = GetSpecializationRole(shownSpec, nil, self.isPet);
 	scrollChild.roleName:SetText(_G[role1]);
+	scrollChild.primaryStat:SetText(SPEC_FRAME_PRIMARY_STAT:format(SPEC_STAT_STRINGS[primaryStat]));
 	scrollChild.roleIcon:SetTexCoord(GetTexCoordsForRole(role1));
+	
 	-- disable stuff if not in active spec or have picked a specialization and not looking at it
 	local disable = (selectedSpec ~= activeSpec) or ( playerTalentSpec and shownSpec ~= playerTalentSpec ) or petNotActive;
 	if ( disable and not self.disabled ) then
@@ -1397,6 +1405,7 @@ function PlayerTalentFrame_UpdateSpecFrame(self, spec)
 		self.bg:SetDesaturated(true);
 		scrollChild.description:SetTextColor(0.75, 0.75, 0.75);
 		scrollChild.roleName:SetTextColor(0.75, 0.75, 0.75);
+		scrollChild.primaryStat:SetTextColor(0.75, 0.75, 0.75);
 --		scrollChild.coreabilities:SetTextColor(0.75, 0.75, 0.75);
 		scrollChild.specIcon:SetDesaturated(true);
 		scrollChild.roleIcon:SetDesaturated(true);
@@ -1414,6 +1423,7 @@ function PlayerTalentFrame_UpdateSpecFrame(self, spec)
 		self.bg:SetDesaturated(false);
 		scrollChild.description:SetTextColor(1.0, 1.0, 1.0);
 		scrollChild.roleName:SetTextColor(1.0, 1.0, 1.0);
+		scrollChild.primaryStat:SetTextColor(1.0, 1.0, 1.0);
 --		scrollChild.coreabilities:SetTextColor(0.878, 0.714, 0.314);
 		scrollChild.specIcon:SetDesaturated(false);
 		scrollChild.roleIcon:SetDesaturated(false);

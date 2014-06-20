@@ -4,7 +4,7 @@
 	<Script file="Blizzard_ObjectiveTracker.lua"/>
 	
 	<Frame name="ObjectiveTrackerBlockTemplate" hidden="true" virtual="true">
-		<Size x="192" y="10"/>
+		<Size x="232" y="10"/>
 		<Layers>
 			<Layer level="ARTWORK">
 				<FontString parentKey="HeaderText" inherits="ObjectiveFont">
@@ -33,101 +33,79 @@
 	</Frame>
 
 	<Frame name="ObjectiveTrackerHeaderTemplate" virtual="true" hidden="true">
-		<Size x="227" y="25"/>
+		<Size x="235" y="25"/>
 		<Layers>
-			<Layer level="BORDER">
-				<Texture parentKey="Background" atlas="Objective-Header" useAtlasSize="true">
+			<Layer level="ARTWORK">
+				<Texture parentKey="Background" hidden="false" alpha="1" atlas="Objective-Header" useAtlasSize="true">
 					<Anchors>
 						<Anchor point="TOPLEFT" x="-29" y="14"/>
 					</Anchors>
-					<Animations>
-						<AnimationGroup parentKey="AlphaAnim">
-							<Alpha startDelay="0.17" change="-1" duration="0.13" order="1"/>
-						</AnimationGroup>
-					</Animations>					
 				</Texture>
-			</Layer>
-			<Layer level="ARTWORK">
 				<FontString parentKey="Text" inherits="GameFontNormalMed2" justifyH="LEFT">
 					<Size x="170" y="16"/>
 					<Anchors>
-						<Anchor point="LEFT" x="0" y="-1"/>
+						<Anchor point="LEFT" x="4" y="-1"/>
 					</Anchors>
 				</FontString>
-				<Texture parentKey="Glow" atlas="OBJFX_Glow" alpha="0">
-					<Size x="32" y="32"/>
+				<Texture parentKey="LineGlow" hidden="false" alpha="0" alphaMode="ADD" atlas="OBJFX_LineGlow" useAtlasSize="true">
 					<Anchors>
-						<Anchor point="TOPLEFT" relativeKey="$parent.Background" x="0" y="-8"/>
+						<Anchor point="LEFT" relativeKey="$parent.Background" x="-50" y="18"/>
 					</Anchors>
-					<Animations>
-						<AnimationGroup parentKey="Anim">
-							<Scale startDelay="0.17" scaleX="1.5" scaleY="1.5" duration="0.35" order="1"/>
-							<Alpha change="1" duration="0.17" endDelay="0.13" order="1"/>
-							<Alpha change="-1" duration="0.40" order="2"/>
-						</AnimationGroup>						
-					</Animations>					
-				</Texture>				
+				</Texture>
+				<Texture parentKey="SoftGlow" hidden="false" alpha="0" alphaMode="ADD" atlas="OBJFX_Glow" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent.Background" relativePoint="LEFT" x="20" y="20"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="StarBurst" hidden="false" alpha="0" alphaMode="ADD" atlas="OBJFX_StarBurst" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent.SoftGlow"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="LineSheen" hidden="false" alpha="0" alphaMode="ADD" atlas="OBJFX_LineBurst">
+					<Size x="60" y="15"/>
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent.SoftGlow" x="0" y="-13"/>
+					</Anchors>
+				</Texture>
 			</Layer>
-			<Layer level="OVERLAY">
-				<Texture parentKey="LineBurst" atlas="OBJFX_LineBurst" useAtlasSize="true" alpha="0">
-					<Anchors>
-						<Anchor point="TOPLEFT" relativeKey="$parent.Background" x="0" y="-26"/>
-					</Anchors>
-					<Animations>
-						<AnimationGroup parentKey="TransAnim">
-							<Translation startDelay="0.13" offsetX="100" offsetY="0" duration="0.97" order="1"/>
-						</AnimationGroup>
-						<AnimationGroup parentKey="AlphaAnim">
-							<Alpha startDelay="0.13" change="1" duration="0.13" order="1"/>
-							<Alpha startDelay="0.30" change="-1" duration="0.60" order="2"/>
-							<Scripts>
-								<OnFinished function="ObjectiveTrackerHeader_OnAnimFinished"/>
-							</Scripts>
-						</AnimationGroup>						
-					</Animations>
-				</Texture>
-				<Texture parentKey="StarBurst" atlas="OBJFX_StarBurst" alpha="0">
-					<Size x="32" y="32"/>
-					<Anchors>
-						<Anchor point="TOPLEFT" relativeKey="$parent.Background" x="0" y="-8"/>
-					</Anchors>
-					<Animations>
-						<AnimationGroup parentKey="Anim">
-							<Scale startDelay="0.17" scaleX="1.5" scaleY="1.5" duration="0.35" order="1"/>
-							<Alpha change="1" duration="0.17" endDelay="0.13" order="1"/>
-							<Alpha change="-1" duration="0.40" order="2"/>
-						</AnimationGroup>					
-					</Animations>					
-				</Texture>
-				<Texture parentKey="LineGlow" atlas="OBJFX_LineGlow" alpha="0">
-					<Size x="85" y="39"/>
-					<Anchors>
-						<Anchor point="TOPLEFT" relativeKey="$parent.Background" x="50" y="-6"/>
-					</Anchors>
-					<Animations>
-						<AnimationGroup parentKey="ScaleAnim">
-							<Scale scaleX="6.08" scaleY="1" duration="0.17" endDelay="0.77" order="1"/>
-						</AnimationGroup>
-						<AnimationGroup parentKey="AlphaAnim">
-							<Alpha change="1" duration="0.07" order="1"/>
-							<Alpha startDelay="0.27" change="-1" duration="0.57" order="2"/>
-						</AnimationGroup>
-						<AnimationGroup parentKey="TransAnim">
-							<Translation startDelay="0.27" offsetX="-25" offsetY="0" duration="0.67" order="1"/>
-						</AnimationGroup>
-					</Animations>
-				</Texture>
-			</Layer>		
 		</Layers>
+		<Animations>
+			<AnimationGroup parentKey="HeaderOpenAnim" setToFinalAlpha="true">
+				<Alpha childKey="Background" startDelay="0" duration="0" order="1" fromAlpha="0" toAlpha="0"/>
+				<Alpha childKey="Background" startDelay="0.25" duration="0.5" order="1" fromAlpha="0" toAlpha="1"/>
+				<Alpha childKey="LineGlow" duration="0.15" order="1" fromAlpha="0" toAlpha="1"/>
+				<Alpha childKey="LineGlow" startDelay="0.25" duration="0.65" order="1" fromAlpha="1" toAlpha="0"/>
+				<Scale childKey="LineGlow" duration="0.15" order="1" fromScaleX="0.1" fromScaleY="1.5" toScaleX="2" toScaleY="1.5">
+					<Origin point="CENTER">
+						<Offset x="-50" y="0"/>
+					</Origin>
+				</Scale>
+				<Translation childKey="LineGlow" duration="0.75" order="1" offsetX="50" offsetY="0"/>
+				<Alpha childKey="SoftGlow" duration="0.25" order="1" fromAlpha="0" toAlpha="1"/>
+				<Alpha childKey="SoftGlow" startDelay="0.25" duration="0.5" order="1" fromAlpha="1" toAlpha="0"/>
+				<Scale childKey="SoftGlow" duration="0.25" order="1" fromScaleX="0.5" fromScaleY="0.5" toScaleX="0.8" toScaleY="0.8"/>
+				<Alpha childKey="StarBurst" duration="0.25" order="1" fromAlpha="0" toAlpha="1"/>
+				<Alpha childKey="StarBurst" startDelay="0.25" duration="0.5" order="1" fromAlpha="1" toAlpha="0"/>
+				<Scale childKey="StarBurst" duration="0.25" order="1" fromScaleX="0.5" fromScaleY="0.5" toScaleX="1" toScaleY="1"/>
+				<Alpha childKey="LineSheen" startDelay="0.15" duration="0.5" order="1" fromAlpha="0" toAlpha="0.75"/>
+				<Alpha childKey="LineSheen" startDelay="0.75" duration="0.5" order="1" fromAlpha="0.75" toAlpha="0"/>
+				<Translation childKey="LineSheen" startDelay="0.15" duration="1.5" order="1" offsetX="250" offsetY="0"/>
+				
+				<Scripts>
+					<OnFinished function="ObjectiveTrackerHeader_OnAnimFinished"/>
+				</Scripts>
+			</AnimationGroup>
+		</Animations>
 		<Scripts>
 			<OnLoad>
 				self.height = OBJECTIVE_TRACKER_HEADER_HEIGHT;
 			</OnLoad>
 		</Scripts>
 	</Frame>
-
+	
 	<Frame name="ObjectiveTrackerLineTemplate" virtual="true">
-		<Size x="150" y="16"/>
+		<Size x="232" y="16"/>
 		<Layers>
 			<Layer level="ARTWORK">
 				<FontString parentKey="Dash" inherits="ObjectiveFont" text="QUEST_DASH">
@@ -151,7 +129,7 @@
 	</Frame>
 	
 	<Frame name="ObjectiveTrackerCheckLineTemplate" virtual="true">
-		<Size x="150" y="16"/>
+		<Size x="232" y="16"/>
 		<Layers>
 			<Layer level="ARTWORK">	
 				<FontString parentKey="Text" inherits="ObjectiveFont">
@@ -180,7 +158,7 @@
 					</Anchors>
 					<Animations>
 						<AnimationGroup parentKey="Anim">
-							<Scale parentKey="ScaleGlow" startDelay="0.067" scaleX="2" scaleY="1" duration="0.433" order="1">
+							<Scale parentKey="ScaleGlow" startDelay="0.067" scaleX="3" scaleY="1" duration="0.433" order="1">
 								<Origin point="LEFT"/>
 							</Scale>
 							<Alpha startDelay="0.067" change="1.0" duration="0.1" order="1"/>
@@ -222,7 +200,7 @@
 		</Layers>
 		<Scripts>
 			<OnLoad>
-				self.Text:SetWidth(OBJECTIVE_TRACKER_LINE_WIDTH);
+				self.Text:SetWidth(OBJECTIVE_TRACKER_TEXT_WIDTH);
 			</OnLoad>
 		</Scripts>
 	</Frame>
@@ -287,7 +265,7 @@
 	</Frame>
 
 	<Frame name="ObjectiveTrackerFrame" parent="UIParent" frameStrata="LOW">
-		<Size x="204" y="140"/>
+		<Size x="235" y="140"/>
 		<Anchors>
 			<Anchor point="TOPRIGHT" relativeTo="MinimapCluster" relativePoint="BOTTOMRIGHT"/>
 		</Anchors>
@@ -312,7 +290,7 @@
 					<Button parentKey="MinimizeButton">
 						<Size x="16" y="16"/>
 						<Anchors>
-							<Anchor point="TOPRIGHT" x="-12" y="-4"/>
+							<Anchor point="TOPRIGHT" x="0" y="-4"/>
 						</Anchors>
 						<Scripts>
 							<OnClick function="ObjectiveTracker_MinimizeButton_OnClick"/>

@@ -7,7 +7,7 @@
 				self:GetNormalTexture():SetTexCoord(GetTexCoordsForRole(self.role));
 				self.background:SetTexCoord(GetBackgroundTexCoordsForRole(self.role));
 				self.background:SetAlpha(0.6);
-				self.checkButton.onClick = LFRFrameRoleCheckButton_OnClick;
+				self.checkButton.onClick = RaidFinderFrameRoleCheckButton_OnClick;
 			</OnLoad>
 			<OnEnter function="RaidFinder_RoleCheckButton_OnEnter"/>
 		</Scripts>

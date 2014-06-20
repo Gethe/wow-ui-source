@@ -608,16 +608,19 @@ function StoreFrame_UpdateCard(card,entryID,discountReset)
 	end 
 
 	card.NormalPrice:SetText(currencyFormat(normalDollars, normalCents));
-	card.ProductName:SetFontObject("GameFontNormalWTF2");
 	card.ProductName:SetText(name);
 	
-	-- nop, but makes :IsTruncated() work below
-	card.ProductName:GetWidth();
+	if (card == StoreFrame.SplashSingle) then
+		card.ProductName:SetFontObject("GameFontNormalWTF2");
 
-	if (card == StoreFrame.SplashSingle and card.ProductName:IsTruncated()) then
-		card.ProductName:SetFontObject("GameFontNormalHuge3");
+		-- nop, but makes :IsTruncated() work below
+		card.ProductName:GetWidth();
+
+		if (card.ProductName:IsTruncated()) then
+			card.ProductName:SetFontObject("GameFontNormalHuge3");
+		end
 	end
-
+	
 	if (card.Description) then
 		card.Description:SetText(description);
 	end

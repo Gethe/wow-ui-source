@@ -253,8 +253,6 @@ function RaidFinderQueueFrame_UpdateRoles()
 		RaidFinder_UpdateRoleButton(RaidFinderQueueFrameRoleButtonTank, tankLocked);
 		RaidFinder_UpdateRoleButton(RaidFinderQueueFrameRoleButtonHealer, healerLocked);
 		RaidFinder_UpdateRoleButton(RaidFinderQueueFrameRoleButtonDPS, dpsLocked);
-		
-		RaidFinderQueueFrame_SetRoles();
 	end
 end
 

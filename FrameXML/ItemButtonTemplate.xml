@@ -168,7 +168,7 @@
 		<Size x="134" y="30"/>
 		<Layers>
 			<Layer level="BACKGROUND">
-				<Texture parentKey="Icon">
+				<Texture name="$parentIconTexture" parentKey="Icon">
 					<Size x="30" y="30"/>
 					<Anchors>
 						<Anchor point="TOPLEFT"/>

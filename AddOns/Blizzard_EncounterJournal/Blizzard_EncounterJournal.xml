@@ -740,6 +740,20 @@
 		</Frames>
 	</Frame>
 
+	<Frame name="EncounterDescriptionTemplate" virtual="true">
+		<Frames>
+			<SimpleHTML parentKey="Text" setAllPoints="true">
+				<FontString inherits="GameFontBlack" justifyH="LEFT" justifyV="TOP">
+					<Color r="0.25" g="0.1484375" b=".02" a="1"/>
+				</FontString>
+				<Scripts>
+					<OnHyperlinkEnter function="EncounterJournal_OnHyperlinkEnter"/>
+					<OnHyperlinkLeave function="GameTooltip_Hide"/>
+				</Scripts>
+			</SimpleHTML>
+		</Frames>
+	</Frame>
+
 	<Frame name="EncounterInfoTemplate" virtual="true">
 		<Animations>
 			<AnimationGroup parentKey="flashAnim">
@@ -1012,6 +1026,12 @@
 					</OnLeave>
 				</Scripts>
 			</Button>
+			<Frame parentKey="overviewDescription" inherits="EncounterDescriptionTemplate">
+				<Size x="95" y="10"/>
+				<Anchors>
+					<Anchor point="TOP" relativePoint="BOTTOM" relativeTo="$parentHeaderButton" x="0" y="-9"/>
+				</Anchors>
+			</Frame>
 			<Frame inherits="EncounterOverviewBulletTemplate">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" relativeTo="$parentHeaderButton" x="13" y="-9"/>
@@ -2220,15 +2240,16 @@
 													</Anchors>
 													<Color r="0.929" g="0.788" b="0.620"/>
 												</FontString>
-												<FontString name="$parentOverviewDescription" inherits="GameFontBlack" justifyH="LEFT" parentKey="overviewDescription">
-													<Size x="0" y="0"/>
-													<Anchors>
-														<Anchor point="TOP" relativeKey="$parent.header" relativePoint="BOTTOM" x="0" y="-6"/>
-													</Anchors>
-													<Color r="0.25" g="0.1484375" b=".02" a="1"/>
-												</FontString>
 											</Layer>
 										</Layers>
+										<Frames>
+											<Frame parentKey="overviewDescription" inherits="EncounterDescriptionTemplate">
+												<Size x="95" y="10"/>
+												<Anchors>
+													<Anchor point="TOP" relativeKey="$parent.header" relativePoint="BOTTOM" x="0" y="-6"/>
+												</Anchors>
+											</Frame>
+										</Frames>
 									</Frame>
 								</ScrollChild>
 								<Scripts>

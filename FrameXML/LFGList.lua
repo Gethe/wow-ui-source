@@ -822,7 +822,8 @@ end
 function LFGListSearchPanel_ValidateSelected(self)
 	if ( self.selectedResult ) then
 		local _, appStatus, pendingStatus, appDuration = C_LFGList.GetApplicationInfo(self.selectedResult);
-		if ( appStatus ~= "none" or pendingStatus ) then
+		local id, activityID, name, comment, voiceChat, iLvl, age, numBNetFriends, numCharFriends, numGuildMates, isDelisted, numTanks, numHealers, numDPS = C_LFGList.GetSearchResultInfo(self.selectedResult);
+		if ( appStatus ~= "none" or pendingStatus or isDelisted ) then
 			self.selectedResult = nil;
 		end
 	end
@@ -952,17 +953,23 @@ function LFGListSearchEntry_Update(self)
 
 	local panel = self:GetParent():GetParent():GetParent();
 
-	local id, activityID, name, comment, voiceChat, iLvl, age, numBNetFriends, numCharFriends, numGuildMates, numTanks, numHealers, numDPS = C_LFGList.GetSearchResultInfo(resultID);
+	local id, activityID, name, comment, voiceChat, iLvl, age, numBNetFriends, numCharFriends, numGuildMates, isDelisted, numTanks, numHealers, numDPS = C_LFGList.GetSearchResultInfo(resultID);
 	local activityName = C_LFGList.GetActivityInfo(activityID);
 
 	self.resultID = resultID;
-	self.Selected:SetShown(panel.selectedResult == resultID and not isApplication);
-	self.Highlight:SetShown(panel.selectedResult ~= resultID and not isApplication);
+	self.Selected:SetShown(panel.selectedResult == resultID and not isApplication and not isDelisted);
+	self.Highlight:SetShown(panel.selectedResult ~= resultID and not isApplication and not isDelisted);
+	local nameColor = isDelisted and GRAY_FONT_COLOR or NORMAL_FONT_COLOR;
+	local roleColor = isDelisted and GRAY_FONT_COLOR or HIGHLIGHT_FONT_COLOR;
 	self.Name:SetText(name);
+	self.Name:SetTextColor(nameColor.r, nameColor.g, nameColor.b);
 	self.ActivityName:SetText(activityName);
 	self.TankCount:SetText(numTanks);
 	self.HealerCount:SetText(numHealers);
 	self.DamageCount:SetText(numDPS);
+	self.TankCount:SetTextColor(roleColor.r, roleColor.g, roleColor.b);
+	self.HealerCount:SetTextColor(roleColor.r, roleColor.g, roleColor.b);
+	self.DamageCount:SetTextColor(roleColor.r, roleColor.g, roleColor.b);
 	self.VoiceChat:SetShown(voiceChat ~= "" and not isApplication);
 	self.VoiceChat.tooltip = string.format(LFG_LIST_TOOLTIP_VOICE_CHAT, voiceChat);
 	self.Friends:SetShown(numBNetFriends + numCharFriends + numGuildMates > 0 and not isApplication);
@@ -1025,7 +1032,7 @@ end
 
 function LFGListSearchEntry_OnEnter(self)
 	local resultID = self.resultID;
-	local id, activityID, name, comment, voiceChat, iLvl, age, numBNetFriends, numCharFriends, numGuildMates, numTanks, numHealers, numDPS = C_LFGList.GetSearchResultInfo(resultID);
+	local id, activityID, name, comment, voiceChat, iLvl, age, numBNetFriends, numCharFriends, numGuildMates, isDelisted, numTanks, numHealers, numDPS = C_LFGList.GetSearchResultInfo(resultID);
 	local activityName = C_LFGList.GetActivityInfo(activityID);
 	GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
 	GameTooltip:SetText(name, 1, 1, 1, true);
@@ -1054,6 +1061,12 @@ function LFGListSearchEntry_OnEnter(self)
 		GameTooltip:AddLine(LFG_LIST_TOOLTIP_FRIENDS_IN_GROUP);
 		GameTooltip:AddLine(LFGListSearchEntryUtil_GetFriendList(resultID), 1, 1, 1, true);
 	end
+
+	if ( isDelisted ) then
+		GameTooltip:AddLine(" ");
+		GameTooltip:AddLine(LFG_LIST_ENTRY_DELISTED, RED_FONT_COLOR.r, RED_FONT_COLOR.g, RED_FONT_COLOR.b, true);
+	end
+
 	GameTooltip:Show();
 end
 
@@ -1225,7 +1238,7 @@ function LFGListInviteDialog_CheckPending(self)
 end
 
 function LFGListInviteDialog_Show(self, resultID)
-	local id, activityID, name, comment, voiceChat, iLvl, age, numBNetFriends, numCharFriends, numGuildMates, numTanks, numHealers, numDPS = C_LFGList.GetSearchResultInfo(resultID);
+	local id, activityID, name, comment, voiceChat, iLvl, age, numBNetFriends, numCharFriends, numGuildMates, isDelisted, numTanks, numHealers, numDPS = C_LFGList.GetSearchResultInfo(resultID);
 	local activityName = C_LFGList.GetActivityInfo(activityID);
 	local _, _, _, _, role = C_LFGList.GetApplicationInfo(resultID);
 
@@ -1340,8 +1353,8 @@ function LFGListUtil_GetDecoratedCategoryName(categoryName, filter, useColors)
 end
 
 function LFGListUtil_SortSearchResultsCB(id1, id2)
-	local id1, activityID1, name1, comment1, voiceChat1, iLvl1, age1, numBNetFriends1, numCharFriends1, numGuildMates1, numTanks1, numHealers1, numDPS1 = C_LFGList.GetSearchResultInfo(id1);
-	local id2, activityID2, name2, comment2, voiceChat2, iLvl2, age2, numBNetFriends2, numCharFriends2, numGuildMates2, numTanks2, numHealers2, numDPS2 = C_LFGList.GetSearchResultInfo(id2);
+	local id1, activityID1, name1, comment1, voiceChat1, iLvl1, age1, numBNetFriends1, numCharFriends1, numGuildMates1, isDelisted1, numTanks1, numHealers1, numDPS1 = C_LFGList.GetSearchResultInfo(id1);
+	local id2, activityID2, name2, comment2, voiceChat2, iLvl2, age2, numBNetFriends2, numCharFriends2, numGuildMates2, isDelisted2, numTanks2, numHealers2, numDPS2 = C_LFGList.GetSearchResultInfo(id2);
 
 	--If one has more friends, do that one first
 	if ( numBNetFriends1 ~= numBNetFriends2 ) then

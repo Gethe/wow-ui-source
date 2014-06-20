@@ -1194,6 +1194,7 @@ function PetBattleUnitFrameDropDown_Initialize(self)
 	UIDropDownMenu_AddButton(info);
 
 	info.isTitle = nil;
+	info.disabled = nil;
 	
 	local name, speciesName = C_PetBattles.GetName(self.petOwner, self.petIndex);
 	if (not C_PetBattles.IsPlayerNPC(LE_BATTLE_PET_ENEMY) and self.petOwner == LE_BATTLE_PET_ENEMY 
@@ -1205,7 +1206,6 @@ function PetBattleUnitFrameDropDown_Initialize(self)
 		UIDropDownMenu_AddButton(info);
 	end
 	
-	info.disabled = nil;
 	info.text = PET_SHOW_IN_JOURNAL;
 	info.func = function ()
 					if (not PetJournalParent) then

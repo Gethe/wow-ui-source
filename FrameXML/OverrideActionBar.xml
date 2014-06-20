@@ -553,11 +553,6 @@
 		<Scripts>
 			<OnLoad function="OverrideActionBar_OnLoad"/>
 			<OnEvent function="OverrideActionBar_OnEvent"/>
-			<OnShow>
-				local anchorX, anchorY = OverrideActionBar_GetMicroButtonAnchor();
-				UpdateMicroButtonsParent(OverrideActionBar);
-				MoveMicroButtons("BOTTOMLEFT", OverrideActionBar, "BOTTOMLEFT", anchorX, anchorY, true);
-			</OnShow>
 		</Scripts>
 	</Frame>
 </Ui>

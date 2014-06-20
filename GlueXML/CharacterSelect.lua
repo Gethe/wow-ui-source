@@ -70,7 +70,6 @@ function CharacterSelect_OnShow()
 	DebugLog("Select_OnShow");
 	CHARACTER_LIST_OFFSET = 0;
 	-- request account data times from the server (so we know if we should refresh keybindings, etc...)
-	ReadyForAccountDataTimes()
 	CheckCharacterUndeleteCooldown();
 	
 	local bgTag = CharacterSelect.currentBGTag;

@@ -58,17 +58,18 @@ local EJ_LINK_SECTION 		= 3;
 
 local EJ_DIFFICULTIES =  
 {
-	[1] = { size = "5", prefix = PLAYER_DIFFICULTY1, difficultyID = 1 },
-	[2] = { size = "5", prefix = PLAYER_DIFFICULTY2, difficultyID =  2 },
-	[3] = { size = "25", prefix = PLAYER_DIFFICULTY3, difficultyID = 7 },
-	[4] = { size = "10", prefix = PLAYER_DIFFICULTY1, difficultyID = 3 },
-	[5] = { size = "10", prefix = PLAYER_DIFFICULTY2, difficultyID = 5 },
-	[6] = { size = "25", prefix = PLAYER_DIFFICULTY1, difficultyID = 4 },
-	[7] = { size = "25", prefix = PLAYER_DIFFICULTY2, difficultyID = 6 },
-	[8] = { size = "10-30", prefix = PLAYER_DIFFICULTY1, difficultyID = 14 },
-	[9] = { size = "10-30", prefix = PLAYER_DIFFICULTY2, difficultyID = 15 },
-	[10] = { size = "20", prefix = PLAYER_DIFFICULTY6, difficultyID = 16 },
-	[11] = { size = "10-30", prefix = PLAYER_DIFFICULTY3, difficultyID = 17 },
+	{ size = "5", prefix = PLAYER_DIFFICULTY1, difficultyID = 1 },
+	{ size = "5", prefix = PLAYER_DIFFICULTY2, difficultyID =  2 },
+	{ size = "5", prefix = PLAYER_DIFFICULTY5, difficultyID = 8 },
+	{ size = "25", prefix = PLAYER_DIFFICULTY3, difficultyID = 7 },
+	{ size = "10", prefix = PLAYER_DIFFICULTY1, difficultyID = 3 },
+	{ size = "10", prefix = PLAYER_DIFFICULTY2, difficultyID = 5 },
+	{ size = "25", prefix = PLAYER_DIFFICULTY1, difficultyID = 4 },
+	{ size = "25", prefix = PLAYER_DIFFICULTY2, difficultyID = 6 },
+	{ size = "10-30", prefix = PLAYER_DIFFICULTY3, difficultyID = 17 },
+	{ size = "10-30", prefix = PLAYER_DIFFICULTY1, difficultyID = 14 },
+	{ size = "10-30", prefix = PLAYER_DIFFICULTY2, difficultyID = 15 },
+	{ size = "20", prefix = PLAYER_DIFFICULTY6, difficultyID = 16 },
 }
 
 local EJ_TIER_DATA =
@@ -516,11 +517,11 @@ function EncounterJournal_DisplayEncounter(encounterID, noButton)
 	if (EncounterJournal_CheckForOverview(rootSectionID)) then
 		local _, overviewDescription = EJ_GetSectionInfo(rootSectionID);
 		self.overviewFrame.loreDescription:SetHeight(0);
-		self.overviewFrame.overviewDescription:SetHeight(0);
 		self.overviewFrame.loreDescription:SetText(description);
-		EncounterJournal_SetBullets(self.overviewFrame.overviewDescription, overviewDescription, false);
 		self.overviewFrame.loreDescription:SetWidth(self.overviewFrame:GetWidth() - 5);
-		self.overviewFrame.overviewDescription:SetWidth(self.overviewFrame:GetWidth() - 5);	
+		self.overviewFrame.overviewDescription:SetWidth(self.overviewFrame:GetWidth() - 5);
+		self.overviewFrame.overviewDescription.Text:SetWidth(self.overviewFrame:GetWidth() - 5);
+		EncounterJournal_SetBullets(self.overviewFrame.overviewDescription, overviewDescription, false);
 		local bulletHeight = 0;
 		if (self.overviewFrame.Bullets) then
 			for i = 1, #self.overviewFrame.Bullets do
@@ -731,11 +732,11 @@ end
 
 function EncounterJournal_SetBullets(object, description, hideBullets)
 	local parent = object:GetParent();
-	object:SetWidth(parent:GetWidth() - 20);
-	object:SetHeight(0);
 
 	if (not string.find(description, "\$bullet;")) then
-		object:SetText(description);
+		object.Text:SetText(description);
+		object.textString = description;
+		object:SetHeight(object.Text:GetContentHeight());
 		EncounterJournal_CleanBullets(parent);
 		return;
 	end
@@ -743,7 +744,9 @@ function EncounterJournal_SetBullets(object, description, hideBullets)
 	local desc = string.match(description, "(.-)\$bullet;");
 
 	if (desc) then
-		object:SetText(desc);
+		object.Text:SetText(desc);
+		object.textString = desc;
+		object:SetHeight(object.Text:GetContentHeight());
 	end
 	
 	local bullets = {}
@@ -796,14 +799,14 @@ function EncounterJournal_SetBullets(object, description, hideBullets)
 end
 
 function EncounterJournal_SetDescriptionWithBullets(infoHeader, description)
-	EncounterJournal_SetBullets(infoHeader.description, description, true);
+	EncounterJournal_SetBullets(infoHeader.overviewDescription, description, true);
 
 	infoHeader.descriptionBG:ClearAllPoints();
 	infoHeader.descriptionBG:SetPoint("TOPLEFT", infoHeader.button, "BOTTOMLEFT", 1, 0);
 	if (infoHeader.Bullets and #infoHeader.Bullets > 0) then
 		infoHeader.descriptionBG:SetPoint("BOTTOMRIGHT", infoHeader.Bullets[#infoHeader.Bullets], -1, -11);
 	else
-		infoHeader.descriptionBG:SetPoint("BOTTOMRIGHT", infoHeader.description, 9, -11);
+		infoHeader.descriptionBG:SetPoint("BOTTOMRIGHT", infoHeader.overviewDescription, 9, -11);
 	end
 	infoHeader.descriptionBG:Hide();
 end
@@ -812,6 +815,7 @@ function EncounterJournal_SetUpOverview(self, role, index)
 	if not self.overviews[index] then -- create a new header;
 		infoHeader = CreateFrame("FRAME", "EncounterJournalOverviewInfoHeader"..index, EncounterJournal.encounter.overviewFrame, "EncounterInfoTemplate");
 		infoHeader.description:Hide();
+		infoHeader.overviewDescription:Hide();
 		infoHeader.descriptionBG:Hide();
 		infoHeader.descriptionBGBottom:Hide();
 		infoHeader.button.abilityIcon:Hide();
@@ -876,6 +880,7 @@ function EncounterJournal_SetUpOverview(self, role, index)
 	infoHeader.button.link = link;
 	infoHeader.sectionID = nextSectionID;
 	
+	infoHeader.overviewDescription:SetWidth(infoHeader:GetWidth() - 20);
 	EncounterJournal_SetDescriptionWithBullets(infoHeader, description);
 	infoHeader:Show();
 end
@@ -898,6 +903,9 @@ function EncounterJournal_ToggleHeaders(self, doNotShift)
 	if hideHeaders then
 		self.button.expandedIcon:SetText("+");
 		self.description:Hide();
+		if (self.overviewDescription) then
+			self.overviewDescription:Hide();
+		end
 		self.descriptionBG:Hide();
 		self.descriptionBGBottom:Hide();
 
@@ -916,6 +924,9 @@ function EncounterJournal_ToggleHeaders(self, doNotShift)
 		if (not isOverview) then
 			if strlen(self.description:GetText() or "") > 0 then
 				self.description:Show();
+				if (self.overviewDescription) then
+					self.overviewDescription:Hide();
+				end
 				if self.button then
 					self.descriptionBG:Show();
 					self.descriptionBGBottom:Show();
@@ -923,6 +934,9 @@ function EncounterJournal_ToggleHeaders(self, doNotShift)
 				end
 			elseif self.button then
 				self.description:Hide();
+				if (self.overviewDescription) then
+					self.overviewDescription:Hide();
+				end
 				self.descriptionBG:Hide();
 				self.descriptionBGBottom:Hide();
 				self.button.expandedIcon:SetText("-");
@@ -933,7 +947,8 @@ function EncounterJournal_ToggleHeaders(self, doNotShift)
 				for i = 1, #self.Bullets do
 					self.Bullets[i]:Show();
 				end
-				self.description:Show();
+				self.description:Hide();
+				self.overviewDescription:Show();
 				self.descriptionBG:Show();
 				self.descriptionBGBottom:Show();
 				
@@ -1340,7 +1355,7 @@ function EncounterJournal_OnHyperlinkEnter(self, link, text, hyperlinkButton)
 		local _, _, spellID = string.find(link, "(%d+)");
 		if ( spellID ) then
 			GameTooltip:SetOwner(hyperlinkButton, "ANCHOR_RIGHT");
-			GameTooltip:SetSpellByID(spellID);
+			GameTooltip:SetSpellByID(spellID, false, false, false, EJ_GetDifficulty());
 		end
 	end
 end
@@ -1480,7 +1495,7 @@ function EncounterJournal_SetFlagIcon(texture, index)
 	local rows = 64/iconSize;
 
 	-- Mythic flag should use heroic Icon
-	if (index == 13) then
+	if (index == 12) then
 		index = 3;
 	end
 

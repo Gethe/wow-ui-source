@@ -66,7 +66,7 @@ UnitPopupButtons["LOOT_SUBSECTION_TITLE"] = makeUnitPopupSubsectionTitle(UNIT_FR
 UnitPopupButtons["INSTANCE_SUBSECTION_TITLE"] = makeUnitPopupSubsectionTitle(UNIT_FRAME_DROPDOWN_SUBSECTION_TITLE_INSTANCE)
 UnitPopupButtons["OTHER_SUBSECTION_TITLE"] = makeUnitPopupSubsectionTitle(UNIT_FRAME_DROPDOWN_SUBSECTION_TITLE_OTHER);
 UnitPopupButtons["INTERACT_SUBSECTION_TITLE"] = makeUnitPopupSubsectionTitle(UNIT_FRAME_DROPDOWN_SUBSECTION_TITLE_INTERACT);
-
+UnitPopupButtons["LEGACY_RAID_SUBSECTION_TITLE"] = makeUnitPopupSubsectionTitle(UNIT_FRAME_DROPDOWN_SUBSECTION_TITLE_LEGACY_RAID);
 
 UnitPopupButtons["REPORT_PLAYER"] = { text = REPORT_PLAYER_FOR, dist = 0, nested = 1 };
 UnitPopupButtons["REPORT_SPAM"]	= { text = REPORT_SPAMMING, dist = 0 };
@@ -87,12 +87,8 @@ UnitPopupButtons["RAID_DIFFICULTY1"] = { text = PLAYER_DIFFICULTY1, dist = 0, ch
 UnitPopupButtons["RAID_DIFFICULTY2"] = { text = PLAYER_DIFFICULTY2, dist = 0, checkable = 1, difficultyID = 15 };
 UnitPopupButtons["RAID_DIFFICULTY3"] = { text = PLAYER_DIFFICULTY6, dist = 0, checkable = 1, difficultyID = 16 };
 
-UnitPopupButtons["LEGACY_RAID_DIFFICULTY"] = { text = LEGACY_RAID_DIFFICULTY, dist = 0, nested = 1, defaultDifficultyID = 3 };
 UnitPopupButtons["LEGACY_RAID_DIFFICULTY1"] = { text = RAID_DIFFICULTY1, dist = 0, checkable = 1, difficultyID = 3 };
 UnitPopupButtons["LEGACY_RAID_DIFFICULTY2"] = { text = RAID_DIFFICULTY2, dist = 0, checkable = 1, difficultyID = 4 };
-UnitPopupButtons["LEGACY_RAID_DIFFICULTY3"] = { text = RAID_DIFFICULTY3, dist = 0, checkable = 1, difficultyID = 5 };
-UnitPopupButtons["LEGACY_RAID_DIFFICULTY4"] = { text = RAID_DIFFICULTY4, dist = 0, checkable = 1, difficultyID = 6 };
-
 
 UnitPopupButtons["PVP_FLAG"] = { text = PVP_FLAG, dist = 0, nested = 1};
 UnitPopupButtons["PVP_ENABLE"] = { text = ENABLE, dist = 0, checkable = 1, checkable = 1 };
@@ -204,7 +200,7 @@ UnitPopupButtons["GARRISON_VISIT"] = { text = GARRISON_VISIT_LEADER, dist = 0 };
 
 -- First level menus
 UnitPopupMenus = { };
-UnitPopupMenus["SELF"] = { "RAID_TARGET_ICON", "SET_FOCUS", "PVP_FLAG", "LOOT_SUBSECTION_TITLE", "LOOT_METHOD", "LOOT_THRESHOLD", "OPT_OUT_LOOT_TITLE", "LOOT_PROMOTE", "SELECT_LOOT_SPECIALIZATION", "INSTANCE_SUBSECTION_TITLE", "CONVERT_TO_RAID", "CONVERT_TO_PARTY", "DUNGEON_DIFFICULTY", "RAID_DIFFICULTY", "LEGACY_RAID_DIFFICULTY", "RESET_INSTANCES", "RESET_CHALLENGE_MODE", "GARRISON_VISIT", "OTHER_SUBSECTION_TITLE", "SELECT_ROLE", "MOVE_PLAYER_FRAME", "MOVE_TARGET_FRAME", "INSTANCE_LEAVE", "LEAVE", "CANCEL" };
+UnitPopupMenus["SELF"] = { "RAID_TARGET_ICON", "SET_FOCUS", "PVP_FLAG", "LOOT_SUBSECTION_TITLE", "LOOT_METHOD", "LOOT_THRESHOLD", "OPT_OUT_LOOT_TITLE", "LOOT_PROMOTE", "SELECT_LOOT_SPECIALIZATION", "INSTANCE_SUBSECTION_TITLE", "CONVERT_TO_RAID", "CONVERT_TO_PARTY", "DUNGEON_DIFFICULTY", "RAID_DIFFICULTY", "RESET_INSTANCES", "RESET_CHALLENGE_MODE", "GARRISON_VISIT", "OTHER_SUBSECTION_TITLE", "SELECT_ROLE", "MOVE_PLAYER_FRAME", "MOVE_TARGET_FRAME", "INSTANCE_LEAVE", "LEAVE", "CANCEL" };
 UnitPopupMenus["PET"] = { "RAID_TARGET_ICON", "SET_FOCUS", "PET_PAPERDOLL", "INTERACT_SUBSECTION_TITLE", "PET_RENAME", "PET_DISMISS", "PET_ABANDON", "OTHER_SUBSECTION_TITLE", "MOVE_PLAYER_FRAME", "MOVE_TARGET_FRAME", "CANCEL" };
 UnitPopupMenus["OTHERPET"] = { "RAID_TARGET_ICON", "SET_FOCUS", "OTHER_SUBSECTION_TITLE", "MOVE_PLAYER_FRAME", "MOVE_TARGET_FRAME",  "REPORT_PET", "CANCEL" };
 UnitPopupMenus["BATTLEPET"] = { "PET_SHOW_IN_JOURNAL", "SET_FOCUS", "OTHER_SUBSECTION_TITLE", "MOVE_PLAYER_FRAME", "MOVE_TARGET_FRAME", "CANCEL" };
@@ -237,8 +233,7 @@ UnitPopupMenus["SELECT_LOOT_SPECIALIZATION"] = { "LOOT_SPECIALIZATION_DEFAULT","
 UnitPopupMenus["OPT_OUT_LOOT_TITLE"] = { "OPT_OUT_LOOT_ENABLE", "OPT_OUT_LOOT_DISABLE"};
 UnitPopupMenus["REPORT_PLAYER"] = { "REPORT_SPAM", "REPORT_BAD_LANGUAGE", "REPORT_BAD_NAME", "REPORT_CHEATING" };
 UnitPopupMenus["DUNGEON_DIFFICULTY"] = { "DUNGEON_DIFFICULTY1", "DUNGEON_DIFFICULTY2", "DUNGEON_DIFFICULTY3" };
-UnitPopupMenus["RAID_DIFFICULTY"] = { "RAID_DIFFICULTY1", "RAID_DIFFICULTY2", "RAID_DIFFICULTY3" };
-UnitPopupMenus["LEGACY_RAID_DIFFICULTY"] = { "LEGACY_RAID_DIFFICULTY1", "LEGACY_RAID_DIFFICULTY2", "LEGACY_RAID_DIFFICULTY3", "LEGACY_RAID_DIFFICULTY4" };
+UnitPopupMenus["RAID_DIFFICULTY"] = { "RAID_DIFFICULTY1", "RAID_DIFFICULTY2", "RAID_DIFFICULTY3", "LEGACY_RAID_SUBSECTION_TITLE", "LEGACY_RAID_DIFFICULTY1", "LEGACY_RAID_DIFFICULTY2" };
 UnitPopupMenus["BN_REPORT"] = { "BN_REPORT_SPAM", "BN_REPORT_ABUSE", "BN_REPORT_NAME" };
 UnitPopupMenus["MOVE_PLAYER_FRAME"] = { "UNLOCK_PLAYER_FRAME", "LOCK_PLAYER_FRAME", "RESET_PLAYER_FRAME_POSITION", "PLAYER_FRAME_SHOW_CASTBARS" };
 UnitPopupMenus["MOVE_TARGET_FRAME"] = { "UNLOCK_TARGET_FRAME", "LOCK_TARGET_FRAME", "RESET_TARGET_FRAME_POSITION" , "TARGET_FRAME_BUFFS_ON_TOP"};
@@ -333,16 +328,13 @@ function UnitPopup_ShowMenu (dropdownMenu, which, unit, name, userData)
 	end	
 	if ( instanceType == "none" ) then
 		UnitPopupButtons["DUNGEON_DIFFICULTY"].nested = 1;
-		UnitPopupButtons["RAID_DIFFICULTY"].nested = 1;
-		UnitPopupButtons["LEGACY_RAID_DIFFICULTY"].nested = 1;		
+		UnitPopupButtons["RAID_DIFFICULTY"].nested = 1;	
 	else
 		UnitPopupButtons["DUNGEON_DIFFICULTY"].nested = nil;
 		if ( toggleDifficultyID ) then
 			UnitPopupButtons["RAID_DIFFICULTY"].nested = 1;
-			UnitPopupButtons["LEGACY_RAID_DIFFICULTY"].nested = 1;
 		else
 			UnitPopupButtons["RAID_DIFFICULTY"].nested = nil;
-			UnitPopupButtons["LEGACY_RAID_DIFFICULTY"].nested = nil;
 		end
 	end
 	
@@ -389,6 +381,9 @@ function UnitPopup_ShowMenu (dropdownMenu, which, unit, name, userData)
 		-- Set which menu is being opened
 		OPEN_DROPDOWNMENUS[UIDROPDOWNMENU_MENU_LEVEL] = {which = dropdownMenu.which, unit = dropdownMenu.unit};
 		info = UIDropDownMenu_CreateInfo();
+		local subsectionTitleValue = nil;
+		local subsectionTitleIndex = nil;
+		local previousWasSubsectionTitle = false;
 		for index, value in ipairs(UnitPopupMenus[UIDROPDOWNMENU_MENU_VALUE]) do
 			if( UnitPopupShown[UIDROPDOWNMENU_MENU_LEVEL][index] == 1 ) then
 				info.text = UnitPopupButtons[value].text;
@@ -436,7 +431,15 @@ function UnitPopup_ShowMenu (dropdownMenu, which, unit, name, userData)
 					end
 				elseif (strsub(value, 1, 15) == "RAID_DIFFICULTY" and (strlen(value) > 15) ) then
 					if ( isDynamicInstance ) then
-						if ( instanceDifficultyID == UnitPopupButtons[value].difficultyID ) then
+						-- Yay, legacy hacks!
+						if ( IsLegacyDifficulty(instanceDifficultyID) ) then
+							-- 3 and 4 are normal, 5 and 6 are heroic
+							if ((instanceDifficultyID == DIFFICULTY_RAID10_NORMAL or instanceDifficultyID == DIFFICULTY_RAID25_NORMAL) and UnitPopupButtons[value].difficultyID == DIFFICULTY_PRIMARYRAID_NORMAL) then
+								info.checked = 1;
+							elseif ((instanceDifficultyID == DIFFICULTY_RAID10_HEROIC or instanceDifficultyID == DIFFICULTY_RAID25_HEROIC) and UnitPopupButtons[value].difficultyID == DIFFICULTY_PRIMARYRAID_HEROIC) then
+								info.checked = 1;
+							end
+						elseif ( instanceDifficultyID == UnitPopupButtons[value].difficultyID ) then
 							info.checked = 1;
 						end
 					else
@@ -457,17 +460,17 @@ function UnitPopup_ShowMenu (dropdownMenu, which, unit, name, userData)
 					if ( ( inParty == 1 and isLeader == 0 ) or inInstance ) then
 						info.disabled = 1;
 					end
-					if ( toggleDifficultyID and toggleDifficultyID == UnitPopupButtons[value].difficultyID ) then
+					if ( toggleDifficultyID and CheckToggleDifficulty(toggleDifficultyID, UnitPopupButtons[value].difficultyID) == 1 ) then
 						info.disabled = nil;
 					end
 				elseif (strsub(value, 1, 22) == "LEGACY_RAID_DIFFICULTY" and (strlen(value) > 15) ) then
 					if ( isDynamicInstance ) then
-						if ( instanceDifficultyID == UnitPopupButtons[value].difficultyID ) then
+						if ( NormalizeLegacyDifficultyID(instanceDifficultyID) == UnitPopupButtons[value].difficultyID ) then
 							info.checked = 1;
 						end
 					else
 						local raidDifficultyID = GetLegacyRaidDifficultyID();
-						if ( raidDifficultyID == UnitPopupButtons[value].difficultyID ) then
+						if ( NormalizeLegacyDifficultyID(raidDifficultyID) == UnitPopupButtons[value].difficultyID ) then
 							info.checked = 1;
 						end
 					end
@@ -480,10 +483,10 @@ function UnitPopup_ShowMenu (dropdownMenu, which, unit, name, userData)
 						isLeader = 1;
 					end
 					local inInstance, instanceType = IsInInstance();
-					if ( ( inParty == 1 and isLeader == 0 ) or inInstance ) then
+					if ( ( inParty == 1 and isLeader == 0 ) or inInstance or GetRaidDifficultyID() == DIFFICULTY_PRIMARYRAID_MYTHIC) then
 						info.disabled = 1;
 					end
-					if ( toggleDifficultyID and toggleDifficultyID == UnitPopupButtons[value].difficultyID ) then
+					if ( toggleDifficultyID and not GetRaidDifficultyID() == DIFFICULTY_PRIMARYRAID_MYTHIC and CheckToggleDifficulty(toggleDifficultyID, UnitPopupButtons[value].difficultyID) == 1 ) then
 						info.disabled = nil;
 					end
 				elseif ( value == "PVP_ENABLE" ) then
@@ -539,7 +542,29 @@ function UnitPopup_ShowMenu (dropdownMenu, which, unit, name, userData)
 				-- Setup newbie tooltips
 				info.tooltipTitle = UnitPopupButtons[value].text;
 				info.tooltipText = _G["NEWBIE_TOOLTIP_UNIT_"..value];
-				UIDropDownMenu_AddButton(info, UIDROPDOWNMENU_MENU_LEVEL);
+				
+				local cntButton = UnitPopupButtons[value];
+						
+				if ( previousWasSubsectionTitle ) then 
+					if ( not cntButton.isSubsectionTitle ) then
+						UnitPopup_AddDropDownButton(info, UnitPopupButtons["SUBSECTION_SEPARATOR"], "SUBSECTION_SEPARATOR", UIDROPDOWNMENU_MENU_LEVEL);
+						UnitPopup_AddDropDownButton(info, UnitPopupButtons[subsectionTitleValue], subsectionTitleValue, UIDROPDOWNMENU_MENU_LEVEL);
+					else
+						UnitPopupShown[UIDROPDOWNMENU_MENU_LEVEL][subsectionTitleIndex] = 0;
+					end
+					subsectionTitleIndex = nil;
+					subsectionTitleValue = nil;
+				end
+				
+				previousWasSubsectionTitle = false;
+				
+				if ( cntButton.isSubsectionTitle ) then
+					subsectionTitleValue = value;
+					subsectionTitleIndex = index;
+					previousWasSubsectionTitle = true;
+				else
+					UnitPopup_AddDropDownButton(info, cntButton, value, UIDROPDOWNMENU_MENU_LEVEL);
+				end
 			end
 		end
 		return;			
@@ -595,7 +620,11 @@ function UnitPopup_ShowMenu (dropdownMenu, which, unit, name, userData)
 	PlaySound("igMainMenuOpen");
 end
 
-function UnitPopup_AddDropDownButton (info, cntButton, buttonIndex)
+function UnitPopup_AddDropDownButton (info, cntButton, buttonIndex, level)
+	if (not level) then
+		level = 1;
+	end
+
 	info.text = cntButton.text;
 	info.value = buttonIndex;
 	info.owner = which;
@@ -639,7 +668,9 @@ function UnitPopup_AddDropDownButton (info, cntButton, buttonIndex)
 	end
 	
 	-- Checked conditions
-	info.checked = nil;
+	if (level == 1) then
+		info.checked = nil;
+	end
 	if ( strsub(buttonIndex, 1, 12) == "RAID_TARGET_"and buttonIndex ~= "RAID_TARGET_ICON" ) then
 		local raidTargetIndex = GetRaidTargetIndex("target");
 		if ( raidTargetIndex == index ) then
@@ -664,7 +695,9 @@ function UnitPopup_AddDropDownButton (info, cntButton, buttonIndex)
 	if ( cntButton.isTitle ) then
 		info.isTitle = 1;
 	else
-		info.disabled = nil;
+		if (level == 1) then
+			info.disabled = nil;
+		end
 		info.isTitle = nil;
 	end
 	
@@ -676,7 +709,7 @@ function UnitPopup_AddDropDownButton (info, cntButton, buttonIndex)
 	end
 	info.tooltipText = tooltipText;
 	
-	UIDropDownMenu_AddButton(info);	
+	UIDropDownMenu_AddButton(info, level);	
 end
 
 function UnitPopup_HideButtons ()
@@ -1023,11 +1056,7 @@ function UnitPopup_HideButtons ()
 				UnitPopupShown[UIDROPDOWNMENU_MENU_LEVEL][index] = 0;
 			end
 		elseif ( value == "RAID_DIFFICULTY" ) then
-			if ( UnitLevel("player") < 65 and GetRaidDifficultyID() == UnitPopupButtons[value].defaultDifficultyID ) then
-				UnitPopupShown[UIDROPDOWNMENU_MENU_LEVEL][index] = 0;
-			end
-		elseif ( value == "LEGACY_RAID_DIFFICULTY" ) then
-			if ( UnitLevel("player") < 65 and GetRaidDifficultyID() == UnitPopupButtons[value].defaultDifficultyID ) then
+			if ( UnitLevel("player") < MAX_PLAYER_LEVEL_TABLE[EXPANSION_LEVEL_WRATH_OF_THE_LICH_KING] and GetRaidDifficultyID() == UnitPopupButtons[value].defaultDifficultyID ) then
 				UnitPopupShown[UIDROPDOWNMENU_MENU_LEVEL][index] = 0;
 			end
 		elseif ( value == "MUTE" ) then
@@ -1360,6 +1389,7 @@ function UnitPopup_OnUpdate (elapsed)
 				if ( UnitPopupShown[level][index] == 1 ) then
 					count = count + 1;
 					local enable = 1;
+					local notClickable = 0;
 					if ( UnitPopupButtons[value].isUninteractable or 
 						(UnitPopupButtons[value].dist > 0 and not CheckInteractDistance(dropdownFrame.unit, UnitPopupButtons[value].dist)) ) then
 						enable = 0;
@@ -1461,21 +1491,25 @@ function UnitPopup_OnUpdate (elapsed)
 						end
 					elseif ( value == "RAID_DIFFICULTY" and inInstance and not toggleDifficultyID ) then
 						enable = 0;
-					elseif ( value == "LEGACY_RAID_DIFFICULTY" and inInstance and not toggleDifficultyID ) then
-						enable = 0;
 					elseif ( ( strsub(value, 1, 15) == "RAID_DIFFICULTY" ) and ( strlen(value) > 15 ) ) then
 						if ( ( inParty == 1 and isLeader == 0 ) or inInstance ) then
 							enable = 0;	
 						end
-						if ( toggleDifficultyID and toggleDifficultyID == UnitPopupButtons[value].difficultyID ) then
-							enable = 1;
+						if (toggleDifficultyID) then
+							enable = CheckToggleDifficulty(toggleDifficultyID, UnitPopupButtons[value].difficultyID);
+						end
+						if (UnitPopupButtons[value].difficultyID == DIFFICULTY_PRIMARYRAID_MYTHIC and UnitLevel("player") < MAX_PLAYER_LEVEL_TABLE[EXPANSION_LEVEL_MISTS_OF_PANDARIA]) then
+							enable = 0;
 						end
 					elseif ( ( strsub(value, 1, 22) == "LEGACY_RAID_DIFFICULTY" ) and ( strlen(value) > 22 ) ) then
-						if ( ( inParty == 1 and isLeader == 0 ) or inInstance ) then
+						if ( ( inParty == 1 and isLeader == 0 ) or inInstance or GetRaidDifficultyID() == DIFFICULTY_PRIMARYRAID_MYTHIC ) then
 							enable = 0;	
 						end
-						if ( toggleDifficultyID and toggleDifficultyID == UnitPopupButtons[value].difficultyID ) then
-							enable = 1;
+						if (toggleDifficultyID) then
+							if (IsLegacyDifficulty(toggleDifficultyID)) then
+								notClickable = CheckToggleDifficulty(toggleDifficultyID, UnitPopupButtons[value].difficultyID);
+							end
+							enable = 0;
 						end
 					elseif ( value == "CONVERT_TO_PARTY" ) then
 						if ( GetNumGroupMembers() > MEMBERS_PER_RAID_GROUP ) then
@@ -1528,21 +1562,26 @@ function UnitPopup_OnUpdate (elapsed)
 						end
 					end
 
-					if ( level > 1 ) then
-						tempCount = count;
-					elseif ( UnitPopupButtons[value].isSubsectionTitle ) then
+					local diff = (level > 1) and 0 or 1;
+
+					if ( UnitPopupButtons[value].isSubsectionTitle ) then
 						--If the button is a title then it has a separator above it that is not in UnitPopupButtons.
 						--So 1 extra is added to each count because UnitPopupButtons does not count the separators and
 						--the DropDown does.
-						tempCount = count + 2;
+						tempCount = count + diff;
 						count = count + 1;
 					else
-						tempCount = count + 1;
+						tempCount = count + diff;
 					end
 
 					if ( enable == 1 ) then
 						UIDropDownMenu_EnableButton(level, tempCount);
 					else
+						if (notClickable == 1) then
+							UIDropDownMenu_SetButtonNotClickable(level, tempCount);
+						else
+							UIDropDownMenu_SetButtonClickable(level, tempCount);
+						end
 						UIDropDownMenu_DisableButton(level, tempCount);
 					end
 				end
@@ -1748,10 +1787,10 @@ function UnitPopup_OnClick (self)
 		SetDungeonDifficultyID(dungeonDifficultyID);
 	elseif ( strsub(button, 1, 15) == "RAID_DIFFICULTY" and (strlen(button) > 15)) then
 		local raidDifficultyID = UnitPopupButtons[button].difficultyID;
-		SetRaidDifficultyID(raidDifficultyID);
+		SetRaidDifficulties(true, raidDifficultyID);
 	elseif ( strsub(button, 1, 22) == "LEGACY_RAID_DIFFICULTY" and (strlen(button) > 22)) then
 		local raidDifficultyID = UnitPopupButtons[button].difficultyID;
-		SetLegacyRaidDifficultyID(raidDifficultyID);
+		SetRaidDifficulties(false, raidDifficultyID);
 	elseif ( button == "LOOT_PROMOTE" ) then
 		SetLootMethod("master", fullname, 1);
 	elseif ( button == "PVP_ENABLE" ) then
@@ -1887,4 +1926,87 @@ function UnitPopup_OnClick (self)
 		C_Garrison.SetUsingPartyGarrison( not C_Garrison.IsUsingPartyGarrison());
 	end
 	PlaySound("UChatScrollButton");
+end
+
+RAID_DIFFICULTY_MAP = {
+	[DIFFICULTY_PRIMARYRAID_NORMAL] = { [10] = DIFFICULTY_RAID10_NORMAL, [25] = DIFFICULTY_RAID25_NORMAL }, -- Normal -> 10-man normal, 25-man normal
+	[DIFFICULTY_PRIMARYRAID_HEROIC] = { [10] = DIFFICULTY_RAID10_HEROIC, [25] = DIFFICULTY_RAID25_HEROIC }, -- Heroic -> 10-man heroic, 25-man heroic
+};
+
+RAID_DIFFICULTY_SIZES = {
+	[DIFFICULTY_RAID10_NORMAL] = 10,
+	[DIFFICULTY_RAID25_NORMAL] = 25,
+	[DIFFICULTY_RAID10_HEROIC] = 10,
+	[DIFFICULTY_RAID25_HEROIC] = 25,
+}
+
+RAID_TOGGLE_MAP = {
+	[DIFFICULTY_PRIMARYRAID_NORMAL] = { DIFFICULTY_RAID10_NORMAL, DIFFICULTY_RAID25_NORMAL },
+	[DIFFICULTY_PRIMARYRAID_HEROIC] = { DIFFICULTY_RAID10_HEROIC, DIFFICULTY_RAID25_HEROIC },
+	[DIFFICULTY_PRIMARYRAID_MYTHIC] = {},
+}
+
+function NormalizeLegacyDifficultyID(difficultyID)
+	if (not IsLegacyDifficulty(difficultyID)) then
+		return difficultyID;
+	end
+
+	-- Normal difficulties are 3 and 4 for 10-player and 25-player, heroic are 5 and 6 respectively.  To "normalize"
+	-- it, we want to always use 3 and 4 (the normal versions), so we subtract 2 to go from heroic to normal.
+	if (difficultyID > 4) then
+		difficultyID = difficultyID - 2;
+	end
+	return difficultyID;
+end
+
+function SetRaidDifficulties(primaryRaid, difficultyID)
+	local otherDifficulty = 0;
+	if (primaryRaid) then
+		local toggleDifficultyID, force;
+		local _, instanceType, instanceDifficultyID, _, _, _, isDynamicInstance = GetInstanceInfo();
+		if ( isDynamicInstance and CanChangePlayerDifficulty() ) then
+			_, _, _, _, toggleDifficultyID = GetDifficultyInfo(instanceDifficultyID);
+		end
+		if (UnitLevel("player") >= MAX_PLAYER_LEVEL_TABLE[EXPANSION_LEVEL_MISTS_OF_PANDARIA]) then			
+			if (toggleDifficultyID ~= nil and IsLegacyDifficulty(toggleDifficultyID)) then
+				force = true;
+			end
+			SetRaidDifficultyID(difficultyID, force);
+		end
+		if (difficultyID == DIFFICULTY_PRIMARYRAID_MYTHIC) then
+			return;
+		end
+		force = nil;
+		if (toggleDifficultyID ~= nil and not IsLegacyDifficulty(toggleDifficultyID)) then
+			force = true;
+		end
+		otherDifficulty = GetLegacyRaidDifficultyID();
+		local size = RAID_DIFFICULTY_SIZES[otherDifficulty];
+		local newDifficulty = RAID_DIFFICULTY_MAP[difficultyID][size];
+		SetLegacyRaidDifficultyID(newDifficulty, force);
+	else
+		local otherDifficulty = GetRaidDifficultyID();
+		local size = RAID_DIFFICULTY_SIZES[difficultyID];
+		local newDifficulty = RAID_DIFFICULTY_MAP[otherDifficulty][size];
+		SetLegacyRaidDifficultyID(newDifficulty);
+	end
+end
+
+function CheckToggleDifficulty(toggleDifficultyID, difficultyID)
+	local enable;
+	if (IsLegacyDifficulty(toggleDifficultyID)) then
+		if (not IsLegacyDifficulty(difficultyID)) then
+			enable = tContains(RAID_TOGGLE_MAP[difficultyID], toggleDifficultyID);
+		else
+			enable = NormalizeLegacyDifficultyID(difficultyID) == NormalizeLegacyDifficultyID(toggleDifficultyID);
+		end
+	else
+		if (IsLegacyDifficulty(difficultyID)) then
+			enable = 0;
+		else
+			enable = toggleDifficultyID == difficultyID;
+		end
+	end
+
+	return enable and 1 or 0;
 end

@@ -197,7 +197,7 @@
 		</Layers>
 		<Frames>
 			<Button parentKey="SpellFrame" name="QuestInfoRewardSpell" inherits="QuestSpellTemplate, QuestInfoRewardSpellCodeTemplate" hidden="true"/>
-			<Button name="QuestInfoItem1" inherits="LargeItemButtonTemplate, QuestInfoRewardItemCodeTemplate" hidden="true" parentArray="RewardButtons"/>
+			<Button name="$parentQuestInfoItem1" inherits="LargeItemButtonTemplate, QuestInfoRewardItemCodeTemplate" hidden="true" parentArray="RewardButtons"/>
 			<Frame parentKey="MoneyFrame" name="QuestInfoMoneyFrame" inherits="MoneyFrameTemplate">
 				<Anchors>
 					<Anchor point="LEFT" relativeKey="$parent.ItemReceiveText" relativePoint="RIGHT">
@@ -371,7 +371,7 @@
 				</Anchors>				
 			</Frame>
 			<Button parentKey="SpellFrame" inherits="SmallItemButtonTemplate, QuestInfoRewardSpellCodeTemplate" hidden="true"/>
-			<Button name="QuestInfoItem1" inherits="SmallItemButtonTemplate, QuestInfoRewardItemCodeTemplate" hidden="true" parentArray="RewardButtons"/>
+			<Button name="$parentQuestInfoItem1" inherits="SmallItemButtonTemplate, QuestInfoRewardItemCodeTemplate" hidden="true" parentArray="RewardButtons"/>
 			<Button parentKey="XPFrame" inherits="SmallItemButtonTemplate" hidden="true"/>
 			<Button parentKey="MoneyFrame" inherits="SmallItemButtonTemplate" hidden="true"/>
 			<Button parentKey="SkillPointFrame" inherits="SmallItemButtonTemplate">

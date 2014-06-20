@@ -11,7 +11,7 @@ VISIBLE_CONTAINER_SPACING = 3;
 CONTAINER_OFFSET_Y = 70;
 CONTAINER_OFFSET_X = 0;
 CONTAINER_SCALE = 0.75;
-BACKPACK_HEIGHT = 240;
+BACKPACK_HEIGHT = 252;
 
 function ContainerFrame_OnLoad(self)
 	self:RegisterEvent("BAG_OPEN");
@@ -53,6 +53,10 @@ function ContainerFrame_OnEvent(self, event, ...)
 		UpdateContainerFrameAnchors();
 	elseif ( event == "INVENTORY_SEARCH_UPDATE" ) then
 		ContainerFrame_UpdateSearchResults(self);
+	elseif ( event == "BAG_SLOT_FLAGS_UPDATED" ) then
+		if (self:IsShown() and self.FilterDropDown:IsShown()) then
+			UIDropDownMenu_RefreshAll(self.FilterDropDown);
+		end
 	end
 end
 
@@ -110,6 +114,7 @@ function ContainerFrame_OnHide(self)
 	self:UnregisterEvent("DISPLAY_SIZE_CHANGED");
 	self:UnregisterEvent("INVENTORY_SEARCH_UPDATE");
 	self:UnregisterEvent("BAG_NEW_ITEMS_UPDATED");
+	self:UnregisterEvent("BAG_SLOT_FLAGS_UPDATED");
 
 	UpdateNewItemList(self);
 
@@ -159,6 +164,7 @@ function ContainerFrame_OnShow(self)
 	self:RegisterEvent("DISPLAY_SIZE_CHANGED");
 	self:RegisterEvent("INVENTORY_SEARCH_UPDATE");
 	self:RegisterEvent("BAG_NEW_ITEMS_UPDATED");
+	self:RegisterEvent("BAG_SLOT_FLAGS_UPDATED");
 
 	if ( self:GetID() == 0 ) then
 		MainMenuBarBackpackButton:SetChecked(true);
@@ -322,11 +328,11 @@ function ContainerFrame_Update(frame)
 	--Update Searchbox and sort button
 	if ( id == 0 ) then
 		BagItemSearchBox:SetParent(frame);
-		BagItemSearchBox:SetPoint("TOPLEFT", frame, "TOPLEFT", 50, -28);
+		BagItemSearchBox:SetPoint("TOPLEFT", frame, "TOPLEFT", 54, -36);
 		BagItemSearchBox.anchorBag = frame;
 		BagItemSearchBox:Show();
 		BagItemAutoSortButton:SetParent(frame);
-		BagItemAutoSortButton:SetPoint("TOPRIGHT", frame, "TOPRIGHT", -5, -22);
+		BagItemAutoSortButton:SetPoint("TOPRIGHT", frame, "TOPRIGHT", -9, -30);
 		BagItemAutoSortButton:Show();
 	elseif ( BagItemSearchBox.anchorBag == frame ) then
 		BagItemSearchBox:ClearAllPoints();
@@ -647,7 +653,7 @@ function ContainerFrame_GenerateFrame(frame, size, id)
 			if ( i == 1 ) then
 				-- Anchor the first item differently if its the backpack frame
 				if ( id == 0 ) then
-					itemButton:SetPoint("BOTTOMRIGHT", name, "TOPRIGHT", -12, -208);
+					itemButton:SetPoint("BOTTOMRIGHT", name, "TOPRIGHT", -12, -222);
 				else
 					itemButton:SetPoint("BOTTOMRIGHT", name, "BOTTOMRIGHT", -12, 9);
 				end
@@ -1068,8 +1074,7 @@ end
 function ContainerFrameFilterDropDown_Initialize(self, level)
 	local id = self:GetParent():GetID();
 
-	local info = UIDropDownMenu_CreateInfo();
-	info.keepShownOnClick = true;	
+	local info = UIDropDownMenu_CreateInfo();	
 
 	if (id > 0 and id <= NUM_BAG_SLOTS) then
 		info.text = BAG_FILTER_ASSIGN_TO;
@@ -1079,7 +1084,6 @@ function ContainerFrameFilterDropDown_Initialize(self, level)
 
 		info.isTitle = nil;
 		info.notCheckable = nil;
-		info.isNotRadio = true;
 		info.tooltipWhileDisabled = 1;
 		info.tooltipOnButton = 1;
 
@@ -1089,12 +1093,8 @@ function ContainerFrameFilterDropDown_Initialize(self, level)
 				SetBagSlotFlag(id, i, value);
 			end;
 			info.checked = GetBagSlotFlag(id, i);
-			info.disabled = IsBagSlotFlagEnabledOnOtherBags(id, i);
-			if (info.disabled) then
-				info.tooltipTitle = BAG_FILTER_ALREADY_ASSIGNED;
-			else
-				info.tooltipTitle = nil;
-			end
+			info.disabled = nil;
+			info.tooltipTitle = nil;
 			UIDropDownMenu_AddButton(info);
 		end
 	end
@@ -1107,6 +1107,7 @@ function ContainerFrameFilterDropDown_Initialize(self, level)
 	info.isTitle = nil;
 	info.notCheckable = nil;
 	info.isNotRadio = true;
+	info.keepShownOnClick = true;
 	info.disabled = nil;
 
 	info.text = BAG_FILTER_IGNORE;

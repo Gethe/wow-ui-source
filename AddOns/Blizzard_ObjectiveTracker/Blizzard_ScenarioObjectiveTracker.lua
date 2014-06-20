@@ -101,6 +101,8 @@ function ScenarioBlocksFrame_OnLoad(self)
 	
 	SCENARIO_TRACKER_MODULE.BlocksFrame = self;
 	
+	self:SetWidth(OBJECTIVE_TRACKER_LINE_WIDTH);
+	
 	self:RegisterEvent("PLAYER_ENTERING_WORLD");
 	self:RegisterEvent("WORLD_STATE_TIMER_START");
 	self:RegisterEvent("WORLD_STATE_TIMER_STOP");
@@ -398,6 +400,7 @@ function SCENARIO_CONTENT_TRACKER_MODULE:Update()
 	local stageName, stageDescription, numCriteria = C_Scenario.GetStepInfo();
 	local inChallengeMode = bit.band(flags, SCENARIO_FLAG_CHALLENGE_MODE) == SCENARIO_FLAG_CHALLENGE_MODE;
 	local inProvingGrounds = bit.band(flags, SCENARIO_FLAG_PROVING_GROUNDS) == SCENARIO_FLAG_PROVING_GROUNDS;
+	local dungeonDisplay = bit.band(flags, SCENARIO_FLAG_USE_DUNGEON_DISPLAY) == SCENARIO_FLAG_USE_DUNGEON_DISPLAY;
 
 	if ( inChallengeMode ) then
 		SCENARIO_CONTENT_TRACKER_MODULE.Header.Text:SetText(stageName);
@@ -406,14 +409,14 @@ function SCENARIO_CONTENT_TRACKER_MODULE:Update()
 		end
 		stageBlock:Hide();
 	elseif ( ScenarioProvingGroundsBlock.timerID ) then
-		SCENARIO_CONTENT_TRACKER_MODULE.Header.Text:SetText("Proving Grounds");
+		SCENARIO_CONTENT_TRACKER_MODULE.Header.Text:SetText(TRACKER_HEADER_PROVINGGROUNDS);
 		ObjectiveTracker_AddBlock(ScenarioProvingGroundsBlock);
 		stageBlock:Hide();
 	else
 		if ( inProvingGrounds ) then
-			SCENARIO_CONTENT_TRACKER_MODULE.Header.Text:SetText("Proving Grounds");
+			SCENARIO_CONTENT_TRACKER_MODULE.Header.Text:SetText(TRACKER_HEADER_PROVINGGROUNDS);
 		else
-			SCENARIO_CONTENT_TRACKER_MODULE.Header.Text:SetText("Scenario");
+			SCENARIO_CONTENT_TRACKER_MODULE.Header.Text:SetText(TRACKER_HEADER_SCENARIO);
 		end
 		-- add the stage block
 		ObjectiveTracker_AddBlock(stageBlock);
@@ -496,18 +499,15 @@ function SCENARIO_CONTENT_TRACKER_MODULE:Update()
 		BlocksFrame:SetHeight(BlocksFrame.contentsHeight + 1);
 		ObjectiveTracker_AddBlock(BlocksFrame);
 		BlocksFrame:Show();
-		-- TODO: levelup display
 		if ( OBJECTIVE_TRACKER_UPDATE_REASON == OBJECTIVE_TRACKER_UPDATE_SCENARIO_NEW_STAGE and not inChallengeMode ) then
 			if ( ObjectiveTrackerFrame:IsVisible() ) then
 				if ( currentStage == 1 ) then
 					ScenarioBlocksFrame_SlideIn();
-					--LevelUpDisplay_PlayScenario();
 				else
 					ScenarioBlocksFrame_SlideOut();
 				end
-			else
-				--LevelUpDisplay_PlayScenario();
 			end
+			LevelUpDisplay_PlayScenario();
 			-- play sound if not the first stage
 			if ( currentStage > 1 and currentStage <= numStages ) then
 				PlaySound("UI_Scenario_Stage_End");
@@ -515,5 +515,10 @@ function SCENARIO_CONTENT_TRACKER_MODULE:Update()
 		end		
 	else
 		BlocksFrame:Hide();
+	end
+	
+	-- treat as dungeon
+	if( dungeonDisplay ) then
+		SCENARIO_CONTENT_TRACKER_MODULE.Header.Text:SetText(TRACKER_HEADER_DUNGEON);
 	end
 end

@@ -790,15 +790,20 @@
 								<Texture name="$parentRoleIcon" file="Interface\LFGFrame\UI-LFG-ICON-ROLES"	parentKey="roleIcon">
 									<Size x="30" y="30"/>
 									<Anchors>
-										<Anchor point="TOPLEFT" relativeTo="$parentRing" relativePoint="RIGHT" x="5" y="-3" />
+										<Anchor point="TOPLEFT" relativeTo="$parentRing" relativePoint="RIGHT" x="5" y="-6" />
 									</Anchors>
 								</Texture>
 								<FontString inherits="GameFontHighlightLarge" parentKey="roleName">
 									<Anchors>
-										<Anchor point="LEFT" relativeTo="$parentRoleIcon" relativePoint="RIGHT" x="3" y="1" />
+										<Anchor point="BOTTOMLEFT" relativeTo="$parentRoleIcon" relativePoint="RIGHT" x="3" y="2" />
 									</Anchors>
 								</FontString>
-								<FontString name="$parentDescription" inherits="GameFontWhite" justifyH="LEFT" parentKey="description">
+								<FontString parentKey="primaryStat" inherits="GameFontHighlight">
+									<Anchors>
+										<Anchor point="TOPLEFT" relativeKey="$parent.roleIcon" relativePoint="RIGHT" x="3" y="-3"/>
+									</Anchors>
+								</FontString>
+								<FontString name="$parentDescription" inherits="GameFontHighlight" justifyH="LEFT" parentKey="description">
 									<Size x="370" y="0"/>
 									<Anchors>
 										<Anchor point="TOPLEFT" relativeTo="$parentRing" relativePoint="BOTTOMLEFT" x="15" y="-8"/>

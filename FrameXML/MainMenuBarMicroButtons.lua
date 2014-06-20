@@ -60,9 +60,15 @@ function UpdateMicroButtonsParent(parent)
 	end
 end
 
-function MoveMicroButtons(anchor, achorTo, relAnchor, x, y, isStacked)
+function MoveMicroButtons(anchor, anchorTo, relAnchor, x, y, isStacked)
 	CharacterMicroButton:ClearAllPoints();
-	CharacterMicroButton:SetPoint(anchor, achorTo, relAnchor, x, y);
+	CharacterMicroButton:SetPoint(anchor, anchorTo, relAnchor, x, y);
+	LFDMicroButton:ClearAllPoints();
+	if ( isStacked ) then
+		LFDMicroButton:SetPoint("TOPLEFT", CharacterMicroButton, "BOTTOMLEFT", 0, 24);
+	else
+		LFDMicroButton:SetPoint("BOTTOMLEFT", GuildMicroButton, "BOTTOMRIGHT", -3, 0);
+	end
 	UpdateMicroButtons();
 end
 
