@@ -809,6 +809,7 @@ function EncounterJournal_SetDescriptionWithBullets(infoHeader, description)
 		infoHeader.descriptionBG:SetPoint("BOTTOMRIGHT", infoHeader.overviewDescription, 9, -11);
 	end
 	infoHeader.descriptionBG:Hide();
+	infoHeader.descriptionBGBottom:Hide();
 end
 
 function EncounterJournal_SetUpOverview(self, role, index)
@@ -957,6 +958,7 @@ function EncounterJournal_ToggleHeaders(self, doNotShift)
 				if (overview) then
 					overview:SetPoint("TOPLEFT", self.Bullets[#self.Bullets], "BOTTOMLEFT", -13, -18);
 				end
+				EncounterJournal_UpdateButtonState(self.button);
 			end
 		end
 
@@ -1437,7 +1439,7 @@ function EncounterJournal_LootUpdate()
 			item:Show();
 			
 			if item.showingTooltip then
-				GameTooltip:SetHyperlink(link);
+				EncounterJournal_SetTooltip(link);
 			end
 		else
 			item:Hide();
@@ -1447,7 +1449,6 @@ function EncounterJournal_LootUpdate()
 	local totalHeight = numLoot * buttonSize;
 	HybridScrollFrame_Update(scrollFrame, totalHeight, scrollFrame:GetHeight());
 end
-
 
 function EncounterJournal_LootCalcScroll(offset)
 	local buttonHeight = BOSS_LOOT_BUTTON_HEIGHT;
@@ -1488,6 +1489,19 @@ function EncounterJournal_Loot_OnClick(self)
 	end
 end
 
+function EncounterJournal_SetTooltip(link)
+	local classID, specID = EJ_GetLootFilter();
+
+	if (specID == 0) then
+		if (classID == select(3, UnitClass("player"))) then
+			specID = GetSpecializationInfo(GetSpecialization());
+		else
+			specID = -1;
+		end
+	end
+
+	GameTooltip:SetHyperlink(link, specID);
+end
 
 function EncounterJournal_SetFlagIcon(texture, index)
 	local iconSize = 32;

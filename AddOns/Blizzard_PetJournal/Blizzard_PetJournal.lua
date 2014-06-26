@@ -1805,10 +1805,13 @@ function MountJournal_OnEvent(self, event, ...)
 end
 
 function MountJournal_OnShow(self)
-	if ( not MountJournal_FindSelectedIndex() ) then
+	MountJournal_UpdateMountList();
+	local index = MountJournal_FindSelectedIndex();
+	if ( not index and MountJournal.cachedMounts and #MountJournal.cachedMounts > 0 ) then
+		MountJournal_Select(MountJournal.cachedMounts[1]);
+	elseif (not index) then
 		MountJournal_Select(1);
 	end
-	MountJournal_UpdateMountList();
 	MountJournal_UpdateMountDisplay();
 	SetPortraitToTexture(PetJournalParentPortrait,"Interface\\Icons\\MountJournalPortrait");
 end
@@ -1952,8 +1955,6 @@ function MountJournal_UpdateMountList()
 					button.icon:SetAlpha(0.75);
 					button.additionalText = nil;
 					button.background:SetVertexColor(1, 0, 0, 1);
-					button.iconBorder:SetVertexColor(1, 0, 0);
-					button.iconBorder:Show();
 				else
 					button.icon:SetDesaturated(true);
 					button.DragButton:SetEnabled(false);
@@ -2026,16 +2027,10 @@ function MountJournal_UpdateMountDisplay()
 		if ( MountJournal.MountDisplay.lastDisplayed ~= spellID ) then
 			local creatureDisplayID, descriptionText, sourceText, isSelfMount = MountJournal_GetMountInfoExtra(index);
 
-			local sourceTypeText = _G["BATTLE_PET_SOURCE_"..sourceType];
-			if (not sourceTypeText) then
-				sourceTypeText = UNKNOWN;
-			end
-
 			MountJournal.MountDisplay.InfoButton.Name:SetText(creatureName);
 			MountJournal.MountDisplay.InfoButton.Icon:SetTexture(icon);
 			
 			MountJournal.MountDisplay.InfoButton.Source:SetText(sourceText);
-			MountJournal.MountDisplay.InfoButton.Location:SetText(sourceTypeText);
 			MountJournal.MountDisplay.InfoButton.Lore:SetText(descriptionText)
 
 			MountJournal.MountDisplay.lastDisplayed = spellID;
@@ -2184,10 +2179,9 @@ end
 
 function MountListItem_OnClick(self, button)
 	if ( button ~= "LeftButton" ) then
-		if ( self.active ) then
-			MountJournal_Dismiss();
-		else
-			MountJournal_Summon(self.index);
+		local _, _, _, _, _, _, _, _, _, _, isCollected = MountJournal_GetMountInfo(self.index);
+		if isCollected then
+			MountJournal_ShowMountDropdown(self.index, self, 0, 0);
 		end
 	elseif ( IsModifiedClick("CHATLINK") ) then
 		local id = self.spellID;

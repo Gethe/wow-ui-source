@@ -395,7 +395,7 @@ function LFG_UpdateAvailableRoleButton( button, canBeRole )
 end
 
 function LFG_UpdateAvailableRoles(tankButton, healButton, dpsButton, leaderButton)
-	local canBeTank, canBeHealer, canBeDPS = UnitGetAvailableRoles("player");	
+	local canBeTank, canBeHealer, canBeDPS = C_LFGList.GetAvailableRoles();
 	LFG_UpdateAvailableRoleButton(tankButton, canBeTank);
 	LFG_UpdateAvailableRoleButton(healButton, canBeHealer);
 	LFG_UpdateAvailableRoleButton(dpsButton, canBeDPS);
@@ -508,7 +508,9 @@ function LFDRoleButton_OnEnter(self)
 	GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
 	GameTooltip:SetText(_G["ROLE_DESCRIPTION_"..self.role], nil, nil, nil, nil, true);
 	if ( self.permDisabled ) then
-		GameTooltip:AddLine(YOUR_CLASS_MAY_NOT_PERFORM_ROLE, 1, 0, 0, true);
+		if(self.permDisabledTip)then
+			GameTooltip:AddLine(self.permDisabledTip, 1, 0, 0, true);
+		end
 	elseif ( self.disabledTooltip and not self:IsEnabled() ) then
 		GameTooltip:AddLine(self.disabledTooltip, 1, 0, 0, true);
 	elseif ( self.lockedIndicator:IsShown() ) then
@@ -1653,7 +1655,7 @@ end
 
 function LFGInvitePopup_Update(inviter, roleTankAvailable, roleHealerAvailable, roleDamagerAvailable, allowMultipleRoles)
 	local self = LFGInvitePopup;
-	local canBeTank, canBeHealer, canBeDamager = UnitGetAvailableRoles("player");
+	local canBeTank, canBeHealer, canBeDamager = C_LFGList.GetAvailableRoles();
 	local tankButton = LFGInvitePopupRoleButtonTank;
 	local healerButton = LFGInvitePopupRoleButtonHealer;
 	local damagerButton = LFGInvitePopupRoleButtonDPS;
@@ -2225,4 +2227,43 @@ end
 
 function LFGRole_SetChecked(button, checked)
 	button.checkButton:SetChecked(checked);
+end
+
+function LFGRoleButtonTemplate_OnLoad(self)
+	self:GetNormalTexture():SetTexCoord(GetTexCoordsForRole(self.role));
+	local classTank, classHealer, classDPS = UnitGetAvailableRoles("player");
+	local id = self.role;
+	if(self.role == "TANK") then
+		if( not classTank ) then
+			self.permDisabledTip = YOUR_CLASS_MAY_NOT_PERFORM_ROLE;
+		else
+			self.permDisabledTip = YOU_ARE_NOT_SPECIALIZED_IN_ROLE;
+		end
+	elseif(self.role == "HEALER")then
+		if( not classHealer ) then
+			self.permDisabledTip = YOUR_CLASS_MAY_NOT_PERFORM_ROLE;
+		else
+			self.permDisabledTip = YOU_ARE_NOT_SPECIALIZED_IN_ROLE;
+		end
+	elseif(self.role == "DAMAGER")then
+		if( not classDPS ) then
+			self.permDisabledTip = YOUR_CLASS_MAY_NOT_PERFORM_ROLE;
+		else
+			self.permDisabledTip = YOU_ARE_NOT_SPECIALIZED_IN_ROLE;
+		end
+	end
+end
+
+function LFGRoleButtonTemplate_OnEnter(self)
+	GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+	GameTooltip:SetText(_G["ROLE_DESCRIPTION_"..self.role], nil, nil, nil, nil, true);
+	if ( self.permDisabled ) then
+		if(self.permDisabledTip)then
+			GameTooltip:AddLine(self.permDisabledTip, 1, 0, 0, true);
+		end
+	elseif ( self.disabledTooltip and not self:IsEnabled() ) then
+		GameTooltip:AddLine(self.disabledTooltip, 1, 0, 0, true);
+	end
+	GameTooltip:Show();
+	LFGFrameRoleCheckButton_OnEnter(self);
 end

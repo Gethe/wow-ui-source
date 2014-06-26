@@ -786,15 +786,15 @@
 					self.Left:SetTexture("Interface\\Buttons\\UI-Silver-Button-Down");
 					self.Middle:SetTexture("Interface\\Buttons\\UI-Silver-Button-Down");
 					self.Right:SetTexture("Interface\\Buttons\\UI-Silver-Button-Down");
-				end
-				if ( self.Icon ) then
-					if ( not self.Icon.oldPoint ) then
-						local point, relativeTo, relativePoint, x, y = self.Icon:GetPoint(1);
-						self.Icon.oldPoint = point;
-						self.Icon.oldX = x;
-						self.Icon.oldY = y;
+					if ( self.Icon ) then
+						if ( not self.Icon.oldPoint ) then
+							local point, relativeTo, relativePoint, x, y = self.Icon:GetPoint(1);
+							self.Icon.oldPoint = point;
+							self.Icon.oldX = x;
+							self.Icon.oldY = y;
+						end
+						self.Icon:SetPoint(self.Icon.oldPoint, self.Icon.oldX + 1, self.Icon.oldY - 1);
 					end
-					self.Icon:SetPoint(self.Icon.oldPoint, self.Icon.oldX + 1, self.Icon.oldY - 1);
 				end
 			</OnMouseDown>
 			<OnMouseUp>
@@ -802,10 +802,10 @@
 					self.Left:SetTexture("Interface\\Buttons\\UI-Silver-Button-Up");
 					self.Middle:SetTexture("Interface\\Buttons\\UI-Silver-Button-Up");
 					self.Right:SetTexture("Interface\\Buttons\\UI-Silver-Button-Up");
+					if ( self.Icon ) then
+						self.Icon:SetPoint(self.Icon.oldPoint, self.Icon.oldX, self.Icon.oldY);
+					end
 				end				
-				if ( self.Icon ) then
-					self.Icon:SetPoint(self.Icon.oldPoint, self.Icon.oldX, self.Icon.oldY);
-				end
 			</OnMouseUp>
 			<OnShow>
 				if ( self:IsEnabled() ) then

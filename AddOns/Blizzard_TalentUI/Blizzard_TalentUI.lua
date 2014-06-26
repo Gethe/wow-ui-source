@@ -944,7 +944,7 @@ function PlayerTalentFrame_UpdateTabs(playerLevel)
 	local meetsGlyphLevel = playerLevel >= SHOW_INSCRIPTION_LEVEL;
 	tab = _G["PlayerTalentFrameTab"..GLYPH_TAB];
 	if ( tab ) then
-		if ( meetsGlyphLevel and not ShouldHideGlyphTab() ) then
+		if ( meetsGlyphLevel and not IsCharacterNewlyBoosted() ) then
 			tab:Show();
 			firstShownTab = firstShownTab or tab;
 			PanelTemplates_TabResize(tab, 0);
@@ -1395,8 +1395,17 @@ function PlayerTalentFrame_UpdateSpecFrame(self, spec)
 	scrollChild.description:SetText(description);
 	local role1 = GetSpecializationRole(shownSpec, nil, self.isPet);
 	scrollChild.roleName:SetText(_G[role1]);
-	scrollChild.primaryStat:SetText(SPEC_FRAME_PRIMARY_STAT:format(SPEC_STAT_STRINGS[primaryStat]));
 	scrollChild.roleIcon:SetTexCoord(GetTexCoordsForRole(role1));
+	
+	if ( primaryStat ~= 0 ) then
+		scrollChild.roleName:ClearAllPoints();
+		scrollChild.roleName:SetPoint("BOTTOMLEFT", "$parentRoleIcon", "RIGHT", 3, 2);
+		scrollChild.primaryStat:SetText(SPEC_FRAME_PRIMARY_STAT:format(SPEC_STAT_STRINGS[primaryStat]));
+	else
+		scrollChild.roleName:ClearAllPoints();
+		scrollChild.roleName:SetPoint("BOTTOMLEFT", "$parentRoleIcon", "RIGHT", 3, -9);
+		scrollChild.primaryStat:SetText(nil);
+	end
 	
 	-- disable stuff if not in active spec or have picked a specialization and not looking at it
 	local disable = (selectedSpec ~= activeSpec) or ( playerTalentSpec and shownSpec ~= playerTalentSpec ) or petNotActive;

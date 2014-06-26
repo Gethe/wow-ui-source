@@ -68,21 +68,8 @@
 			</Frame>
 		</Frames>
 		<Scripts>
-			<OnLoad>
-				self:GetNormalTexture():SetTexCoord(GetTexCoordsForRole(self.role));
-			</OnLoad>
-			<OnEnter>
-				<!--Warning: The Leader button overrides this.-->
-				GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
-				GameTooltip:SetText(_G["ROLE_DESCRIPTION_"..self.role], nil, nil, nil, nil, true);
-				if ( self.permDisabled ) then
-					GameTooltip:AddLine(YOUR_CLASS_MAY_NOT_PERFORM_ROLE, 1, 0, 0, true);
-				elseif ( self.disabledTooltip and not self:IsEnabled() ) then
-					GameTooltip:AddLine(self.disabledTooltip, 1, 0, 0, true);
-				end
-				GameTooltip:Show();
-				LFGFrameRoleCheckButton_OnEnter(self);
-			</OnEnter>
+			<OnLoad function="LFGRoleButtonTemplate_OnLoad"/>
+			<OnEnter function="LFGRoleButtonTemplate_OnEnter"/> <!--Warning: The Leader button overrides this.-->
 			<OnClick>
 				if ( self.checkButton:IsEnabled() ) then
 					self.checkButton:Click();

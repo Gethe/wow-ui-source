@@ -1186,18 +1186,6 @@
 					</OnLoad>
 				</Scripts>
 			</CheckButton>
-			<CheckButton name="$parentCountdownCooldowns" inherits="InterfaceOptionsCheckButtonTemplate">
-				<Anchors>
-					<Anchor point="TOPLEFT" relativeTo="$parentShowHDModels" relativePoint="BOTTOMLEFT" x="0" y="-8"/>
-				</Anchors>
-				<Scripts>
-					<OnLoad>
-						self.type = CONTROLTYPE_CHECKBOX;
-						self.cvar = "countdownForCooldowns";
-						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
-					</OnLoad>
-				</Scripts>
-			</CheckButton>
 		</Frames>
 		<Scripts>
 			<OnLoad function="InterfaceOptionsDisplayPanel_OnLoad"/>
@@ -1271,25 +1259,9 @@
 					</OnLoad>
 				</Scripts>
 			</CheckButton>
-			<CheckButton name="$parentWatchFrameWidth" inherits="InterfaceOptionsCheckButtonTemplate">
-				<Anchors>
-					<Anchor point="TOPLEFT" relativeTo="$parentMapQuestDifficulty" relativePoint="BOTTOMLEFT">
-						<Offset x="0" y="-8"/>
-					</Anchor>
-				</Anchors>
-				<Scripts>
-					<OnLoad>
-						self.type = CONTROLTYPE_CHECKBOX;
-						self.cvar = "watchFrameWidth";
-						self.uvar = "WATCH_FRAME_WIDTH";
-						self.setFunc = function () ObjectiveTracker_SetWidth(WATCH_FRAME_WIDTH); end;
-						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
-					</OnLoad>
-				</Scripts>
-			</CheckButton>	
 			<CheckButton name="$parentMapFade" inherits="InterfaceOptionsCheckButtonTemplate">
 				<Anchors>
-					<Anchor point="TOPLEFT" relativeTo="$parentWatchFrameWidth" relativePoint="BOTTOMLEFT">
+					<Anchor point="TOPLEFT" relativeTo="$parentMapQuestDifficulty" relativePoint="BOTTOMLEFT">
 						<Offset x="0" y="-8"/>
 					</Anchor>
 				</Anchors>
@@ -1300,7 +1272,45 @@
 						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
 					</OnLoad>
 				</Scripts>
-			</CheckButton>				
+			</CheckButton>
+			<Frame name="$parentQuestSorting" inherits="UIDropDownMenuTemplate" enableMouse="true">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentMapFade" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="-13" y="-30"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<FontString name="$parentLabel" inherits="GameFontHighlight" text="TRACK_QUEST_SORTING">
+							<Anchors>
+								<Anchor point="BOTTOMLEFT" relativePoint="TOPLEFT">
+									<Offset>
+										<AbsDimension x="16" y="3"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnLoad>
+						self.type = CONTROLTYPE_DROPDOWN;
+						self:RegisterEvent("PLAYER_ENTERING_WORLD");
+						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
+					</OnLoad>
+					<OnEnter>
+						if ( not self.isDisabled ) then
+							GameTooltip:SetOwner(self, "ANCHOR_TOPRIGHT");
+							GameTooltip:SetText(self.tooltip, nil, nil, nil, nil, true);
+						end
+					</OnEnter>
+					<OnLeave function="GameTooltip_Hide"/>
+					<OnEvent function="InterfaceOptionsObjectivesPanelQuestSorting_OnEvent"/>
+				</Scripts>
+			</Frame>
+			
 		</Frames>
 		<Scripts>
 			<OnLoad function="InterfaceOptionsObjectivesPanel_OnLoad"/>
@@ -1868,6 +1878,18 @@
 					</OnLoad>
 				</Scripts>
 			</CheckButton>			
+			<CheckButton name="$parentCountdownCooldowns" inherits="InterfaceOptionsCheckButtonTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentSecureAbilityToggle" relativePoint="BOTTOMLEFT" x="0" y="-8"/>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						self.type = CONTROLTYPE_CHECKBOX;
+						self.cvar = "countdownForCooldowns";
+						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
+					</OnLoad>
+				</Scripts>
+			</CheckButton>
 		</Frames>
 		<Scripts>
 			<OnLoad function="InterfaceOptionsActionBarsPanel_OnLoad"/>

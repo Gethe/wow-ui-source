@@ -74,7 +74,7 @@ function HasDraenorZoneSpellOnBar(self)
 	for i = 1, ((LE_NUM_NORMAL_ACTION_PAGES + LE_NUM_BONUS_ACTION_PAGES) * LE_NUM_ACTIONS_PER_PAGE) + 1, 1 do
 		local type, id = GetActionInfo(i);
 
-		if (type == "spell") then
+		if (type == "spell" or type == "companion") then
 			local actionName = GetSpellInfo(id);
 
 			if (name == actionName) then

@@ -59,6 +59,12 @@
 			</OnLoad>
 		</Scripts>
 	</Frame>
+	<Frame name="RaidVideoOptionsDropDownMenuTemplate" inherits="VideoOptionsDropDownMenuTemplate" virtual="true">
+		<KeyValues>
+			<KeyValue key="raid" value="true" type="boolean"/>
+		</KeyValues>
+	</Frame>
+
 	<Frame name="VideoOptionsSliderTemplate" inherits="OptionsSliderTemplate" virtual="true">
 		<Scripts>
 			<OnEnter>
@@ -82,6 +88,12 @@
 			</OnLoad>
 		</Scripts>
 	</Frame>
+	<Frame name="RaidVideoOptionsSliderTemplate" inherits="VideoOptionsSliderTemplate" virtual="true">
+		<KeyValues>
+			<KeyValue key="raid" value="true" type="boolean"/>
+		</KeyValues>
+	</Frame>
+
 	<CheckButton name="VideoOptionsSmallCheckButtonTemplate" inherits="OptionsSmallCheckButtonTemplate" virtual="true">
 		<Scripts>
 			<OnEnter>
@@ -112,7 +124,12 @@
 			</OnLoad>
 		</Scripts>
 	</CheckButton>
-	
+	<Frame name="RaidVideoOptionsSmallCheckButtonTemplate" inherits="VideoOptionsSmallCheckButtonTemplate" virtual="true">
+		<KeyValues>
+			<KeyValue key="raid" value="true" type="boolean"/>
+		</KeyValues>
+	</Frame>
+
 	<Texture name="videoUnderline" virtual="true" >
 		<Size x="580" y="1"/>
 		<Color r="1" g="1" b="1" a="0.2"/>
@@ -590,6 +607,498 @@
 			</Frame>
 
 			<Frame name="$parentSSAODropDown" inherits="VideoOptionsDropDownMenuTemplate" id="15">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentParticleDensityDropDown" relativePoint="BOTTOMLEFT"/>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<FontString name="$parentLabel" inherits="OptionsFontSmall" text="SSAO_LABEL">
+							<Anchors>
+								<Anchor point="RIGHT" relativePoint="LEFT"/>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+			</Frame>
+		</Frames>
+	</Frame>	
+
+	<!-- Raid Panel -->
+	<Frame name="RaidGraphics_" hidden="true" parent="VideoOptionsFramePanelContainer">
+		<Layers>
+			<Layer level="ARTWORK">
+				<FontString name="$parentDisplayHeader" text="DISPLAY_HEADER" inherits="OptionsFontHighlight" justifyH="LEFT" justifyV="TOP">
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset>
+								<AbsDimension x="16" y="-16"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<Texture name="$parentDisplayHeaderUnderline" inherits="videoUnderline">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="$parentDisplayHeader" relativePoint="BOTTOMLEFT">
+							<Offset>
+								<AbsDimension x="0" y="-3"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</Texture>
+
+				<FontString name="$parentGraphicsHeader" text="GRAPHICS_HEADER" inherits="OptionsFontHighlight" justifyH="LEFT" justifyV="TOP">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="$parentDisplayHeaderUnderline" relativePoint="BOTTOMLEFT">
+							<Offset>
+								<AbsDimension x="0" y="-136"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<Texture name="$parentGraphicsHeaderUnderline" inherits="videoUnderline">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="$parentGraphicsHeader" relativePoint="BOTTOMLEFT">
+							<Offset>
+								<AbsDimension x="0" y="-3"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</Texture>
+
+				<FontString name="$parentTexturesHeader" text="TEXTURES_SUBHEADER" inherits="OptionsFontHighlight" justifyH="LEFT" justifyV="TOP">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="$parentGraphicsHeaderUnderline" relativePoint="BOTTOMLEFT">
+							<Offset>
+								<AbsDimension x="20" y="-74"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<Texture name="$parentTexturesHeaderUnderline" inherits="videoSubUnderline" hidden="false" >
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="$parentTexturesHeader" relativePoint="BOTTOMLEFT">
+							<Offset>
+								<AbsDimension x="0" y="-3"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</Texture>
+
+				<FontString name="$parentEnvironmentHeader" text="ENVIRONMENT_SUBHEADER" inherits="OptionsFontHighlight" justifyH="LEFT" justifyV="TOP">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="$parentTexturesHeaderUnderline" relativePoint="BOTTOMLEFT">
+							<Offset>
+								<AbsDimension x="0" y="-130"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<Texture name="$parentEnvironmentHeaderUnderline" inherits="videoSubUnderline" hidden="false">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="$parentEnvironmentHeader" relativePoint="BOTTOMLEFT">
+							<Offset>
+								<AbsDimension x="0" y="-3"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</Texture>
+				<FontString name="$parentEffectsHeader" text="EFFECTS_SUBHEADER" inherits="OptionsFontHighlight" justifyH="LEFT" justifyV="TOP">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="$parentGraphicsHeaderUnderline" relativePoint="BOTTOMRIGHT">
+							<Offset>
+								<AbsDimension x="-250" y="-74"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<Texture name="$parentEffectsHeaderUnderline" inherits="videoSubUnderline" hidden="false">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="$parentEffectsHeader" relativePoint="BOTTOMLEFT">
+							<Offset>
+								<AbsDimension x="0" y="-3"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnLoad>
+				self.raid = true;
+				RaidGraphics_OnLoad(self);
+			</OnLoad>
+			<OnShow function="VideoOptionsPanel_OnShow"/>
+		</Scripts>  
+		<Frames>
+			<!-- Display -->
+			<!-- Column A -->
+<!--
+			<Frame name="$parentDisplayModeDropDown" inherits="VideoOptionsDropDownMenuTemplate" id="1">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentDisplayHeaderUnderline" relativePoint="BOTTOMLEFT">
+						<Offset x="120" y="-4"/>
+					</Anchor>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<FontString name="$parentLabel" inherits="OptionsFontSmall" text="DISPLAY_MODE">
+							<Anchors>
+								<Anchor point="RIGHT" relativePoint="LEFT"/>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+			</Frame>
+
+			<Frame name="$parentResolutionDropDown" inherits="RaidVideoOptionsDropDownMenuTemplate" enableMouse="true">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentDisplayHeaderUnderline" relativePoint="BOTTOMLEFT" x="120" y="-30">
+						<Offset x="120" y="-4"/>
+					</Anchor>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<FontString name="$parentLabel" inherits="OptionsFontSmall" text="RESOLUTION" justifyH="RIGHT">
+							<Anchors>
+								<Anchor point="RIGHT" relativePoint="LEFT"/>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+			</Frame>
+
+			<Frame name="$parentRefreshDropDown" inherits="RaidVideoOptionsDropDownMenuTemplate" id="2">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentResolutionDropDown" relativePoint="BOTTOMLEFT"/>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<FontString name="$parentLabel" inherits="OptionsFontSmall" text="REFRESH_RATE">
+							<Anchors>
+								<Anchor point="RIGHT" relativePoint="LEFT"/>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+			</Frame>
+-->
+
+			<!-- Column B -->
+<!--
+			<Frame name="$parentPrimaryMonitorDropDown" inherits="VideoOptionsDropDownMenuTemplate" id="10" >
+				<Anchors>
+					<Anchor point="TOPRIGHT" relativeTo="$parentDisplayHeaderUnderline" relativePoint="BOTTOMRIGHT">
+						<Offset x="16" y="-4"/>
+					</Anchor>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<FontString name="$parentLabel" inherits="OptionsFontSmall" text="PRIMARY_MONITOR">
+							<Anchors>
+								<Anchor point="RIGHT" relativePoint="LEFT">
+									<Offset x="0" y="0"/>
+								</Anchor>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+			</Frame>
+
+			<Frame name="$parentAntiAliasingDropDown" inherits="VideoOptionsDropDownMenuTemplate" id="4">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentPrimaryMonitorDropDown" relativePoint="BOTTOMLEFT"/>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<FontString name="$parentLabel" inherits="OptionsFontSmall" text="ANTIALIASING">
+							<Anchors>
+								<Anchor point="RIGHT" relativePoint="LEFT">
+									<Offset x="0" y="0"/>
+								</Anchor>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+			</Frame>
+			
+			<Frame name="$parentVerticalSyncDropDown" inherits="VideoOptionsDropDownMenuTemplate" id="10">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentAntiAliasingDropDown" relativePoint="BOTTOMLEFT"/>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<FontString name="$parentLabel" inherits="OptionsFontSmall" text="VERTICAL_SYNC">
+							<Anchors>
+								<Anchor point="RIGHT" relativePoint="LEFT">
+									<Offset x="0" y="0"/>
+								</Anchor>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+			</Frame>
+-->
+			<!-- Quality -->
+
+			<Slider name="$parentQuality" inherits="RaidVideoOptionsSliderTemplate" minValue="1" maxValue="5" valueStep="1" stepsPerPage="1" >
+				<Size x="10" y="22"/>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentGraphicsHeaderUnderline" relativePoint="BOTTOMLEFT">
+						<Offset x="10" y="-17"/>
+					</Anchor>
+				</Anchors>
+				<Layers>
+					<Layer level="ARTWORK">
+						<FontString name="$parentLow2" inherits="OptionsFontSmall" text="VIDEO_QUALITY_LABEL1">
+							<Anchors>
+								<Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT">
+									<Offset>
+										<AbsDimension x="1" y="3"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+						<FontString name="$parentFair" inherits="OptionsFontSmall" text="VIDEO_QUALITY_LABEL2">
+							<Anchors>
+								<Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT">
+									<Offset>
+										<AbsDimension x="140" y="3"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+						<FontString name="RaidGraphics_RightQualityLabel" inherits="OptionsFontHighlight" text="CUSTOM" >
+							<Anchors>
+								<Anchor point="BOTTOMLEFT" relativePoint="TOPLEFT">
+									<Offset x="256" y="0"/>
+								</Anchor>
+							</Anchors>
+						</FontString>
+						<FontString name="$parentMed" inherits="OptionsFontSmall" text="VIDEO_QUALITY_LABEL3">
+							<Anchors>
+								<Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT">
+									<Offset>
+										<AbsDimension x="265" y="3"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+						<FontString name="$parentHigh2" inherits="OptionsFontSmall" text="VIDEO_QUALITY_LABEL4">
+							<Anchors>
+								<Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT">
+									<Offset>
+										<AbsDimension x="400" y="3"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+						<FontString name="$parentUltra" inherits="OptionsFontSmall" text="VIDEO_QUALITY_LABEL5">
+							<Anchors>
+								<Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT">
+									<Offset>
+										<AbsDimension x="535" y="3"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnValueChanged>
+						CloseDropDownMenus()
+						if(self.onvaluechanged) then
+							BlizzardOptionsPanel_Slider_OnValueChanged(self, value);
+						end
+					</OnValueChanged>
+				</Scripts>
+			</Slider>   	
+			<Frame name="$parentRightQuality">
+				<Size x="560" y="22"/>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentGraphicsHeaderUnderline" relativePoint="BOTTOMLEFT">
+						<Offset x="11" y="-17"/>
+					</Anchor>
+				</Anchors>
+				<Backdrop bgFile="Interface\Buttons\UI-SliderBar-Background" edgeFile="Interface\Buttons\UI-SliderBar-Border" tile="true">
+					<EdgeSize>
+						<AbsValue val="8"/>
+					</EdgeSize>
+					<TileSize>
+						<AbsValue val="8"/>
+					</TileSize>
+					<BackgroundInsets>
+						<AbsInset left="3" right="3" top="6" bottom="6"/>
+					</BackgroundInsets>
+				</Backdrop>
+			</Frame>
+
+			<!-- Textures -->
+			<Frame name="$parentTextureResolutionDropDown" inherits="RaidVideoOptionsDropDownMenuTemplate" id="7">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentTexturesHeaderUnderline" relativePoint="BOTTOMLEFT">
+						<Offset x="100" y="-4"/>
+					</Anchor>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<FontString name="$parentLabel" inherits="OptionsFontSmall" text="TEXTURE_DETAIL">
+							<Anchors>
+								<Anchor point="RIGHT" relativePoint="LEFT"/>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+			</Frame>
+
+			<Frame name="$parentFilteringDropDown" inherits="RaidVideoOptionsDropDownMenuTemplate" id="14">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentTextureResolutionDropDown" relativePoint="BOTTOMLEFT"/>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<FontString name="$parentLabel" inherits="OptionsFontSmall" text="ANISOTROPIC">
+							<Anchors>
+								<Anchor point="RIGHT" relativePoint="LEFT">
+									<Offset x="0" y="0"/>
+								</Anchor>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+			</Frame>
+
+			<Frame name="$parentProjectedTexturesDropDown" inherits="RaidVideoOptionsDropDownMenuTemplate" id="8">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentFilteringDropDown" relativePoint="BOTTOMLEFT"/>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<FontString name="$parentLabel" inherits="OptionsFontSmall" text="PROJECTED_TEXTURES" >
+							<Anchors>
+								<Anchor point="RIGHT" relativePoint="LEFT"/>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+			</Frame>
+
+			<!-- Environment -->
+			<Frame name="$parentViewDistanceDropDown" inherits="RaidVideoOptionsDropDownMenuTemplate" id="9">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentEnvironmentHeaderUnderline" relativePoint="BOTTOMLEFT">
+						<Offset x="100" y="-4"/>
+					</Anchor>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<FontString name="$parentLabel" inherits="OptionsFontSmall" text="FARCLIP">
+							<Anchors>
+								<Anchor point="RIGHT" relativePoint="LEFT"/>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+			</Frame>
+
+			<Frame name="$parentEnvironmentalDetailDropDown" inherits="RaidVideoOptionsDropDownMenuTemplate" id="8">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentViewDistanceDropDown" relativePoint="BOTTOMLEFT"/>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<FontString name="$parentLabel" inherits="OptionsFontSmall" text="ENVIRONMENT_DETAIL">
+							<Anchors>
+								<Anchor point="RIGHT" relativePoint="LEFT"/>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+			</Frame>
+
+			<Frame name="$parentGroundClutterDropDown" inherits="RaidVideoOptionsDropDownMenuTemplate" id="14">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentEnvironmentalDetailDropDown" relativePoint="BOTTOMLEFT"/>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<FontString name="$parentLabel" inherits="OptionsFontSmall" text="GROUND_CLUTTER">
+							<Anchors>
+								<Anchor point="RIGHT" relativePoint="LEFT">
+									<Offset x="0" y="0"/>
+								</Anchor>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+			</Frame>
+
+			<!-- Effects -->
+			<!-- Column A -->
+			<Frame name="$parentShadowsDropDown" inherits="RaidVideoOptionsDropDownMenuTemplate" id="9">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentEffectsHeaderUnderline" relativePoint="BOTTOMLEFT">
+						<Offset x="100" y="-4"/>
+					</Anchor>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<FontString name="$parentLabel" inherits="OptionsFontSmall" text="SHADOW_QUALITY">
+							<Anchors>
+								<Anchor point="RIGHT" relativePoint="LEFT"/>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+			</Frame>
+
+			<Frame name="$parentLiquidDetailDropDown" inherits="RaidVideoOptionsDropDownMenuTemplate" id="14">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentShadowsDropDown" relativePoint="BOTTOMLEFT"/>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<FontString name="$parentLabel" inherits="OptionsFontSmall" text="LIQUID_DETAIL">
+							<Anchors>
+								<Anchor point="RIGHT" relativePoint="LEFT">
+									<Offset x="0" y="0"/>
+								</Anchor>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+			</Frame>
+
+			<Frame name="$parentSunshaftsDropDown" inherits="RaidVideoOptionsDropDownMenuTemplate" id="15">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentLiquidDetailDropDown" relativePoint="BOTTOMLEFT"/>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<FontString name="$parentLabel" inherits="OptionsFontSmall" text="SUNSHAFTS">
+							<Anchors>
+								<Anchor point="RIGHT" relativePoint="LEFT"/>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+			</Frame>
+			
+			<Frame name="$parentParticleDensityDropDown" inherits="RaidVideoOptionsDropDownMenuTemplate" id="15">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentSunshaftsDropDown" relativePoint="BOTTOMLEFT"/>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<FontString name="$parentLabel" inherits="OptionsFontSmall" text="PARTICLE_DENSITY">
+							<Anchors>
+								<Anchor point="RIGHT" relativePoint="LEFT"/>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+			</Frame>
+
+			<Frame name="$parentSSAODropDown" inherits="RaidVideoOptionsDropDownMenuTemplate" id="15">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeTo="$parentParticleDensityDropDown" relativePoint="BOTTOMLEFT"/>
 				</Anchors>

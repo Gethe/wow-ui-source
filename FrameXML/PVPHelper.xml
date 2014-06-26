@@ -137,37 +137,46 @@
 		<Frames>
 			<Button parentKey="TankIcon" name="$parentRoleButtonTank" inherits="LFGRoleButtonTemplate" id="2">
 				<Size x="70" y="70"/>
+				<KeyValues>
+					<KeyValue key="role" value="TANK" type="string"/>
+				</KeyValues>
 				<Anchors>
 					<Anchor point="TOPLEFT" x="35" y="-35"/>
 				</Anchors>
 				<Scripts>
 					<OnLoad>
-						self:GetNormalTexture():SetTexCoord(GetTexCoordsForRole("TANK"));
 						self.checkButton.onClick = PVPRoleCheckPopup_RoleButtonClicked;
+						LFGRoleButtonTemplate_OnLoad(self);
 					</OnLoad>
 				</Scripts>
 			</Button>
 			<Button parentKey="HealerIcon" name="$parentRoleButtonHealer" inherits="LFGRoleButtonTemplate" id="3">
 				<Size x="70" y="70"/>
+				<KeyValues>
+					<KeyValue key="role" value="HEALER" type="string"/>
+				</KeyValues>
 				<Anchors>
 					<Anchor point="LEFT" relativeTo="$parentRoleButtonTank" relativePoint="RIGHT" x="15" y="0"/>
 				</Anchors>
 				<Scripts>
 					<OnLoad>
-						self:GetNormalTexture():SetTexCoord(GetTexCoordsForRole("HEALER"));
 						self.checkButton.onClick = PVPRoleCheckPopup_RoleButtonClicked;
+						LFGRoleButtonTemplate_OnLoad(self);
 					</OnLoad>
 				</Scripts>
 			</Button>
 			<Button parentKey="DPSIcon" name="$parentRoleButtonDPS" inherits="LFGRoleButtonTemplate" id="1">
 				<Size x="70" y="70"/>
+				<KeyValues>
+					<KeyValue key="role" value="DAMAGER" type="string"/>
+				</KeyValues>
 				<Anchors>
 					<Anchor point="LEFT" relativeTo="$parentRoleButtonHealer" relativePoint="RIGHT" x="15" y="0"/>
 				</Anchors>
 				<Scripts>
 					<OnLoad>
-						self:GetNormalTexture():SetTexCoord(GetTexCoordsForRole("DAMAGER"));
-						self.checkButton.onClick = PVPRoleCheckPopup_RoleButtonClicked;
+						self.checkButton.onClick = PVPRoleCheckPopup_RoleButtonClicked;	
+						LFGRoleButtonTemplate_OnLoad(self);
 					</OnLoad>
 				</Scripts>
 			</Button>

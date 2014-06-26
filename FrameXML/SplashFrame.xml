@@ -25,7 +25,7 @@
 		</Layers>
 	</Frame>
 
-	<Frame name="SplashFrame" parent="UIParent" hidden="true">
+	<Frame name="SplashFrame" parent="UIParent" toplevel="true" frameStrata="DIALOG" enableMouse="true" hidden="true" >
 		<Size x="881" y="584"/>
 		<Anchors>
 			<Anchor point="CENTER"/>

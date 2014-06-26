@@ -7,7 +7,7 @@ function GameMenuFrame_OnShow(self)
 end
 
 function GameMenuFrame_UpdateVisibleButtons(self)
-	local height = 270;
+	local height = 292;
 	if ( IsMacClient() ) then
 		height = height + 20;
 		GameMenuButtonMacOptions:Show();
@@ -20,10 +20,10 @@ function GameMenuFrame_UpdateVisibleButtons(self)
 	if ( C_StorePublic.IsEnabled() ) then
 		height = height + 20;
 		GameMenuButtonStore:Show();
-		GameMenuButtonOptions:SetPoint("TOP", GameMenuButtonStore, "BOTTOM", 0, -16);
+		GameMenuButtonWhatsNew:SetPoint("TOP", GameMenuButtonStore, "BOTTOM", 0, -1);
 	else
 		GameMenuButtonStore:Hide();
-		GameMenuButtonOptions:SetPoint("TOP", GameMenuButtonHelp, "BOTTOM", 0, -16);
+		GameMenuButtonWhatsNew:SetPoint("TOP", GameMenuButtonHelp, "BOTTOM", 0, -1);
 	end
 
 	if ( GameMenuButtonRatings:IsShown() ) then
@@ -34,6 +34,12 @@ function GameMenuFrame_UpdateVisibleButtons(self)
 		GameMenuButtonLogout:SetPoint("TOP", GameMenuButtonAddons, "BOTTOM", 0, -16);
 	else
 		GameMenuButtonLogout:SetPoint("TOP", GameMenuButtonMacros, "BOTTOM", 0, -16);
+	end
+	
+	if ( IsCharacterNewlyBoosted() ) then
+		GameMenuButtonWhatsNew:SetText(GAMEMENU_BOOST_BUTTON);
+	else
+		GameMenuButtonWhatsNew:SetText(GAMEMENU_NEW_BUTTON);
 	end
 
 	self:SetHeight(height);

@@ -1,5 +1,6 @@
 GARRISON_FOLLOWER_LIST_BUTTON_FULL_XP_WIDTH = 205;
 GARRISON_FOLLOWER_MAX_LEVEL = 100;
+GARRISON_MISSION_MANY_THRESHOLD = 4;
 
 function GarrisonMissionFrame_ToggleFrame()
 	if (not GarrisonMissionFrame:IsShown()) then
@@ -346,6 +347,21 @@ function GarrisonFollowerListButton_OnClick(self, button)
 	end
 end
 
+function GarrisonFollowerListButton_OnModifiedClick(self, button)
+if ( IsModifiedClick("CHATLINK") ) then
+		local followerLink;
+		if (self.info.isCollected) then
+			followerLink = C_Garrison.GetFollowerLink(self.info.followerID);
+		else
+			followerLink = C_Garrison.GetFollowerLinkByID(self.info.followerID);
+		end
+		
+		if ( followerLink ) then
+			ChatEdit_InsertLink(followerLink);
+		end
+	end
+end
+
 function GarrisonFollowerListButton_OnDragStart(self, button)
 	GarrisonFollowerPlacer:SetDisplayInfo(self.info.displayID)
 	GarrisonFollowerPlacer:SetAnimation(474);
@@ -362,6 +378,49 @@ function GarrisonFollowerListButton_OnDragStop(self)
 		GarrisonFollowerPlacerFrame:Show();
 	end
 end
+
+--[[
+-- current design desire is to not show any tooltip on mouseover
+function GarrisonFollowerListButton_OnTooltip(self)	
+	GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+	if (self.isCollected) then
+		GarrisonFollowerTooltip_Show(self.info.garrFollowerID, 
+			self.info.isCollected,
+			C_Garrison.GetFollowerQuality(self.info.followerID),
+			C_Garrison.GetFollowerLevel(self.info.followerID), 
+			C_Garrison.GetFollowerXP(self.info.followerID),
+			C_Garrison.GetFollowerLevelXP(self.info.followerID),
+			C_Garrison.GetFollowerItemLevelAverage(self.info.followerID), 
+			C_Garrison.GetFollowerAbilityAtIndex(self.info.followerID, 1),
+			C_Garrison.GetFollowerAbilityAtIndex(self.info.followerID, 2),
+			C_Garrison.GetFollowerAbilityAtIndex(self.info.followerID, 3),
+			C_Garrison.GetFollowerAbilityAtIndex(self.info.followerID, 4),
+			C_Garrison.GetFollowerTraitAtIndex(self.info.followerID, 1),
+			C_Garrison.GetFollowerTraitAtIndex(self.info.followerID, 2),
+			C_Garrison.GetFollowerTraitAtIndex(self.info.followerID, 3),
+			C_Garrison.GetFollowerTraitAtIndex(self.info.followerID, 4)
+			);
+	else
+		GarrisonFollowerTooltip_Show(
+			self.info.followerID, 
+			self.info.isCollected,
+			self.info.quality,
+			self.info.level,
+			0,			
+			0,
+			0,
+			C_Garrison.GetFollowerAbilityAtIndexByID(self.info.followerID, 1),
+			C_Garrison.GetFollowerAbilityAtIndexByID(self.info.followerID, 2),
+			C_Garrison.GetFollowerAbilityAtIndexByID(self.info.followerID, 3),
+			C_Garrison.GetFollowerAbilityAtIndexByID(self.info.followerID, 4),
+			C_Garrison.GetFollowerTraitAtIndexByID(self.info.followerID, 1),
+			C_Garrison.GetFollowerTraitAtIndexByID(self.info.followerID, 2),
+			C_Garrison.GetFollowerTraitAtIndexByID(self.info.followerID, 3),
+			C_Garrison.GetFollowerTraitAtIndexByID(self.info.followerID, 4)
+			);
+	end
+end
+]]--
 
 function GarrisonFollowerPlacer_OnUpdate(self)
 	local cursorX, cursorY = GetCursorPosition();
@@ -692,8 +751,10 @@ function GarrisonFollowerPage_ShowFollower(followerID)
 		end
 		
 		Frame.Name:SetText(ability.name);
-		Frame.Icon:SetTexture(ability.icon);
+		Frame.IconButton.Icon:SetTexture(ability.icon);
 		Frame.Description:SetText(ability.description);
+		
+		Frame.IconButton.abilityID = ability.id;
 		
 		local numCounters = 0;
 		if (ability.counters) then
@@ -1409,6 +1470,36 @@ function GarrisonMissionPageFollowerFrame_OnDragStop(self)
 	end
 end
 
+function GarrisonMissionPageFollowerFrame_OnEnter(self)
+	if not self.info then 
+		return;
+	end
+
+	GameTooltip:SetOwner(self, "ANCHOR_RIGHT");	
+
+	GarrisonFollowerTooltip_Show(self.info.garrFollowerID, 
+		self.info.isCollected,
+		C_Garrison.GetFollowerQuality(self.info.followerID),
+		C_Garrison.GetFollowerLevel(self.info.followerID), 
+		C_Garrison.GetFollowerXP(self.info.followerID),
+		C_Garrison.GetFollowerLevelXP(self.info.followerID),
+		C_Garrison.GetFollowerItemLevelAverage(self.info.followerID), 
+		C_Garrison.GetFollowerAbilityAtIndex(self.info.followerID, 1),
+		C_Garrison.GetFollowerAbilityAtIndex(self.info.followerID, 2),
+		C_Garrison.GetFollowerAbilityAtIndex(self.info.followerID, 3),
+		C_Garrison.GetFollowerAbilityAtIndex(self.info.followerID, 4),
+		C_Garrison.GetFollowerTraitAtIndex(self.info.followerID, 1),
+		C_Garrison.GetFollowerTraitAtIndex(self.info.followerID, 2),
+		C_Garrison.GetFollowerTraitAtIndex(self.info.followerID, 3),
+		C_Garrison.GetFollowerTraitAtIndex(self.info.followerID, 4)
+		);
+	GarrisonFollowerTooltip:Show();
+end
+
+function GarrisonMissionPageFollowerFrame_OnLeave(self)
+	GarrisonFollowerTooltip:Hide();
+end
+
 function GarrisonMissionPageStartMissionButton_OnClick(self)
 	local missionPage = GarrisonMissionFrame.MissionTab.MissionPage;
 	if (not missionPage.mission) then
@@ -1464,12 +1555,17 @@ end
 
 function GarrisonMissionComplete_OnLoad(self)
 	self:RegisterEvent("GARRISON_MISSION_BONUS_ROLL_COMPLETE");
+	self:RegisterEvent("GARRISON_FOLLOWER_XP_CHANGED");
+	self.xpTable = C_Garrison.GetFollowerXPTable();
+	self.pendingXPAwards = { };
 end
 
 function GarrisonMissionComplete_OnEvent(self, event, ...)
 	if (event == "GARRISON_MISSION_BONUS_ROLL_COMPLETE") then
 		missionID, chestIndex, result = ...;
 		GarrisonMissionCompleteReward_OnResult(missionID, result);
+	elseif (event == "GARRISON_FOLLOWER_XP_CHANGED") then
+		GarrisonMissionComplete_AnimXP(...);
 	end
 end
 
@@ -1519,37 +1615,37 @@ function GarrisonMissionComplete_Initialize(missionList, index)
 	end
 	local mission = missionList[index];
 	
-	self.Stage.FewFollowers:Hide();
-	self.Stage.ManyFollowers:Hide();
-	self.Stage.Encounters:Show();
+	local stage = self.Stage;
+	stage.FewFollowers:Hide();
+	stage.ManyFollowers:Hide();
+	stage.Encounters:Show();
 	
-	self.Stage.MissionInfo.Title:SetText(mission.name);
-	self.Stage.MissionInfo.Level:SetText(mission.level);
-	self.Stage.MissionInfo.Location:SetText(mission.location);
-	self.Stage.MissionInfo.NumViewed:SetText(self.currentIndex.." / "..#self.completeMissions);
+	stage.MissionInfo.Title:SetText(mission.name);
+	stage.MissionInfo.Level:SetText(mission.level);
+	stage.MissionInfo.Location:SetText(mission.location);
+	stage.MissionInfo.NumViewed:SetText(self.currentIndex.." / "..#self.completeMissions);
 		
 	local encounters = C_Garrison.GetMissionCompleteEncounters(mission.missionID);
 	GarrisonMissionComplete_SetNumEncounters(#encounters);
 	for i=1, #encounters do
-		local encounter = self.Stage.Encounters["Encounter"..i]
+		local encounter = stage.Encounters["Encounter"..i]
 		if (encounters[i].displayID) then
 			SetPortraitTexture(encounter.Portrait, encounters[i].displayID);
 		end
 	end
 	
-	local followerFrame;
-	if (#mission.followers > 3) then
-		followerFrame = self.Stage.ManyFollowers;
+	if (#mission.followers >= GARRISON_MISSION_MANY_THRESHOLD) then
+		stage.followersFrame = stage.ManyFollowers;
 	else
-		followerFrame = self.Stage.FewFollowers;
+		stage.followersFrame = stage.FewFollowers;
 	end
 	self.animInfo = {};
-	self.animIndex = 1;
-	self.Stage.followers = {};
+	stage.followers = {};
 	for i=1, #mission.followers do
-		local follower = followerFrame["Follower"..i];
+		local follower = stage.followersFrame["Follower"..i];
 		local name, displayID, level, quality, currXP, maxXP, height, scale, movementType, impactDelay, castID, impactID, classAtlas = 
 					C_Garrison.GetFollowerMissionCompleteInfo(mission.followers[i]);
+		follower.followerID = mission.followers[i];
 		SetPortraitTexture(follower.PortraitFrame.Portrait, displayID);
 		local color = ITEM_QUALITY_COLORS[quality];
 		follower.PortraitFrame.LevelBorder:SetVertexColor(color.r, color.g, color.b);
@@ -1557,13 +1653,10 @@ function GarrisonMissionComplete_Initialize(missionList, index)
 		if ( follower.Class ) then
 			follower.Class:SetAtlas(classAtlas);
 		end
-		follower.PortraitFrame.Level:SetText(level);
+		GarrisonMissionComplete_InitFollowerLevel(follower, level, currXP, maxXP);
 		local color = ITEM_QUALITY_COLORS[quality];
 	    follower.PortraitFrame.LevelBorder:SetVertexColor(color.r, color.g, color.b);
-		follower.XP:SetMinMaxValues(0, maxXP);
-		follower.XP:SetValue(currXP);
-		--TODO: calculate the right amount of follower XP and show it in follower.XPGain.Text
-		self.Stage.followers[i] = { displayID = displayID, height = height, scale = scale, followerID = mission.followers[i] };
+		stage.followers[i] = { displayID = displayID, height = height, scale = scale, followerID = mission.followers[i] };
 		if (encounters[i]) then --cannot have more animations than encounters
 			self.animInfo[i] = { 	displayID = displayID,
 									height = height, 
@@ -1630,15 +1723,26 @@ function GarrisonMissionComplete_Initialize(missionList, index)
 
 	GarrisonMissionFrame.MissionComplete.NextMissionButton:Disable();
 	if (mission.state >= 0) then
-		self.Stage.Encounters:Hide();
-		GarrisonMissionCompleteEncountersAnim_OnFinished(true);
+		stage.Encounters:Hide();
+		local animIndex = GarrisonMissionComplete_FindAnimIndexFor(GarrisonMissionComplete_AnimFollowersIn);
+		if ( animIndex > 0 ) then
+			-- want to start animation right before this
+			animIndex = animIndex - 1;
+		end
+		GarrisonMissionComplete_BeginAnims(self, animIndex);
 	else
-		self.Stage.ModelFarLeft:Hide();
-		self.Stage.ModelFarRight:Hide();
-		self.Stage.ModelMiddle:Hide();
-		self.animIndex = 0;
-		GarrisonMissionComplete_SetAnimationState("line");
+		stage.ModelFarLeft:Hide();
+		stage.ModelFarRight:Hide();
+		stage.ModelMiddle:Hide();
+		GarrisonMissionComplete_BeginAnims(self);
 	end
+end
+
+function GarrisonMissionComplete_InitFollowerLevel(followerFrame, level, currXP, maxXP)
+	followerFrame.XP:SetMinMaxValues(0, maxXP);
+	followerFrame.XP:SetValue(currXP);
+	followerFrame.XP.level = level;
+	followerFrame.PortraitFrame.Level:SetText(level);
 end
 
 function GarrisonMissionComplete_SetNumEncounters(numEncounters)
@@ -1750,152 +1854,361 @@ end
 
 GARRISON_ANIMATION_LENGTH = 1;
 
-function GarrisonMissionComplete_SetAnimationState(state)
-	local self = GarrisonMissionFrame.MissionComplete;
-	local encounters = self.Stage.Encounters;
+function GarrisonMissionComplete_AnimLine(self, entry)
+	GarrisonMissionComplete_PreloadEncounterModels(self);
+
 	local iconWidth = 64;			-- size of portrait icon
 	local iconEdgeSpace = 6;		-- empty space on either side of the portrait
 	local lineAnimDuration = 1.25;	-- total time for line to animate from one end to another
 	local modelWaitTime = 1;		-- extra time to wait for models to load
-
-	self.animState = state;
-	if ( state == "line" ) then
-		self.animIndex = self.animIndex + 1;
-		if ( not self.animInfo[self.animIndex] ) then
-			GarrisonMissionComplete_ShowEnding();
-			return;
-		end
-
-		GarrisonMissionComplete_PreloadModels();		
-		local lineStart = encounters.EncounterBarFill:GetLeft();
-		local lineEnd = encounters["Encounter"..self.animIndex]:GetLeft() + iconEdgeSpace;
-		local duration = lineAnimDuration / #self.animInfo;
-		-- fill
-		local barFill = encounters.EncounterBarFill;
-		if ( self.animIndex == 1 ) then
-			barFill:SetWidth(1);
-		else
-			barFill:SetWidth(barFill:GetWidth() + iconWidth - iconEdgeSpace * 2);
-		end
-		barFill.finalWidth = lineEnd - lineStart;
-		barFill.Anim.Scale:SetDuration(duration);
-		barFill.Anim.Scale:SetToScale(barFill.finalWidth / barFill:GetWidth(), 1);
-		barFill.Anim:Play();
-		-- spark
-		local barSpark = encounters.EncounterBarSpark;
-		barSpark.Anim.Translation:SetDuration(duration);
-		barSpark.Anim.Translation:SetOffset(barFill.finalWidth - barFill:GetWidth(), 0);
-		barSpark:Show();
-		barSpark.Anim:Play();
-	elseif ( self.animState == "model" ) then
-		if ( GarrisonMissionComplete_CanShowModels() ) then
-			-- play models
-			local currentAnim = self.animInfo[self.animIndex];
-			local modelLeft = self.Stage.ModelLeft;
-			if ( modelLeft.state == "loaded" ) then
-				modelLeft:InitializePanCamera(currentAnim.scale or 1)
-				modelLeft:SetHeightFactor(currentAnim.height or 0.5);
-				modelLeft:StartPan(currentAnim.movementType or LE_PAN_NONE, GARRISON_ANIMATION_LENGTH, true, currentAnim.castID);
-			end
-			local modelRight = self.Stage.ModelRight;
-			if ( modelRight.state == "loaded" ) then
-				modelRight:InitializePanCamera(currentAnim.enemyScale or 1);
-				modelRight:SetHeightFactor(currentAnim.enemyHeight or 0.5);
-				modelRight:SetAnimOffset(currentAnim.impactDelay  or 0);
-				modelRight:StartPan(LE_PAN_NONE, GARRISON_ANIMATION_LENGTH, true, currentAnim.impactID);
-			end
-		else
-			-- need some more time to load models
-			self.animState = "modelcheck";
-			C_Timer.After(modelWaitTime, GarrisonMissionComplete_OnTimerFinished);
-		end
-	elseif ( self.animState == "portrait" ) then
-		encounters["Encounter"..self.animIndex].Anim:Play();
+	
+	local encounters = self.Stage.Encounters;
+	local lineStart = encounters.EncounterBarFill:GetLeft();
+	local lineEnd = encounters["Encounter"..self.encounterIndex]:GetLeft() + iconEdgeSpace;
+	local duration = lineAnimDuration / #self.animInfo;
+	-- set duration for this segment
+	entry.duration = duration;
+	-- fill
+	local barFill = encounters.EncounterBarFill;
+	if ( self.encounterIndex == 1 ) then
+		barFill:SetWidth(1);
+	else
+		barFill:SetWidth(barFill:GetWidth() + iconWidth - iconEdgeSpace * 2);
 	end
+	barFill.finalWidth = lineEnd - lineStart;
+	barFill.Anim.Scale:SetDuration(duration);
+	barFill.Anim.Scale:SetToScale(barFill.finalWidth / barFill:GetWidth(), 1);
+	barFill.Anim:Play();	-- has OnFinished to set its width to finalWidth
+	-- spark
+	local barSpark = encounters.EncounterBarSpark;
+	barSpark.Anim.Translation:SetDuration(duration);
+	barSpark.Anim.Translation:SetOffset(barFill.finalWidth - barFill:GetWidth(), 0);
+	barSpark:Show();
+	barSpark.Anim:Play();	-- has OnFinished to hide
 end
 
-function GarrisonMissionComplete_OnLineAnimFinished(self)
-	local barFill = self:GetParent();
-	barFill:SetWidth(barFill.finalWidth);
-	GarrisonMissionComplete_SetAnimationState("model");
-end
-
-function GarrisonMissionComplete_OnPortraitAnimFinished(self)
-	GarrisonMissionComplete_SetAnimationState("line");
-end
-
-function GarrisonMissionComplete_OnModelAnimFinished(self)
-	GarrisonMissionComplete_SetAnimationState("portrait");
-end
-
-function GarrisonMissionComplete_OnTimerFinished()
-	-- we ran out of time to load both models, mark what's still loading as empty
-	local self = GarrisonMissionFrame.MissionComplete;
+function GarrisonMissionComplete_AnimCheckModels(self, entry)
+	self.animNumModelHolds = 0;
 	local modelLeft = self.Stage.ModelLeft;
 	if ( modelLeft.state == "loading" ) then
-		modelLeft.state = "empty";
+		self.animNumModelHolds = self.animNumModelHolds + 1;
 	end
 	local modelRight = self.Stage.ModelRight;
 	if ( modelRight.state == "loading" ) then
+		self.animNumModelHolds = self.animNumModelHolds + 1;
+	end
+
+	if ( self.animNumModelHolds == 0 ) then
+		entry.duration = 0;
+	else
+		-- wait another second for models to finish loading	
+		entry.duration = 1;
+	end
+end
+
+function GarrisonMissionComplete_AnimModels(self, entry)
+	self.animNumModelHolds = nil;
+	local modelLeft = self.Stage.ModelLeft;
+	local modelRight = self.Stage.ModelRight;
+	-- if enemy model is still loading, ignore it
+	if ( modelRight.state == "loading" ) then
 		modelRight.state = "empty";
 	end
-	-- if we're still in the modelcheck state, progress
-	if ( self.animState == "modelcheck" ) then
-		if ( GarrisonMissionComplete_CanShowModels() ) then
-			GarrisonMissionComplete_SetAnimationState("model");
+	-- but we must have follower model
+	if ( modelLeft.state == "loaded" ) then
+		-- play models
+		local currentAnim = self.animInfo[self.encounterIndex];
+		modelLeft:InitializePanCamera(currentAnim.scale or 1)
+		modelLeft:SetHeightFactor(currentAnim.height or 0.5);
+		modelLeft:StartPan(currentAnim.movementType or LE_PAN_NONE, GARRISON_ANIMATION_LENGTH, true, currentAnim.castID);
+		-- enemy model is optional
+		if ( modelRight.state == "loaded" ) then
+			modelRight:InitializePanCamera(currentAnim.enemyScale or 1);
+			modelRight:SetHeightFactor(currentAnim.enemyHeight or 0.5);
+			modelRight:SetAnimOffset(currentAnim.impactDelay  or 0);
+			modelRight:StartPan(LE_PAN_NONE, GARRISON_ANIMATION_LENGTH, true, currentAnim.impactID);
+		end
+		entry.duration = GARRISON_ANIMATION_LENGTH - 0.4;
+	else
+		-- no models, skip
+		entry.duration = 0;
+	end
+end
+
+function GarrisonMissionComplete_AnimPortrait(self, entry)
+	self.Stage.Encounters["Encounter"..self.encounterIndex].Anim:Play();
+end
+
+function GarrisonMissionComplete_AnimCheckEncounters(self, entry)
+	self.encounterIndex = self.encounterIndex + 1;
+	if ( self.animInfo[self.encounterIndex] ) then
+		-- restart for new encounter
+		self.animIndex = 0;
+		entry.duration = 0;
+	else
+		self.Stage.Encounters.FadeOut:Play();	-- has OnFinished to hide
+		entry.duration = 0.5;
+	end
+end
+
+function GarrisonMissionComplete_AnimFollowersIn(self, entry)
+	local missionList = self.completeMissions;
+	local missionIndex = self.currentIndex;
+	local mission = missionList[missionIndex];
+	if ( not (mission.state >= 0) ) then
+		C_Garrison.MarkMissionComplete(mission.missionID);
+	end
+	
+	local numFollowers = #mission.followers;
+	GarrisonMissionComplete_SetNumFollowers(numFollowers);
+	_G["Ending"..numFollowers]();
+	local stage = self.Stage;
+	if (stage.ModelLeft:IsShown()) then
+		stage.ModelLeft.FadeIn:Play();		-- no OnFinished
+	end
+	if (stage.ModelRight:IsShown()) then
+		stage.ModelRight.FadeIn:Play();		-- no OnFinished
+	end
+	if (stage.ModelFarLeft:IsShown()) then
+		stage.ModelFarLeft.FadeIn:Play();	-- no OnFinished
+	end
+	if (stage.ModelFarRight:IsShown()) then
+		stage.ModelFarRight.FadeIn:Play();	-- no OnFinished
+	end
+	if (stage.ModelMiddle:IsShown()) then
+		stage.ModelMiddle.FadeIn:Play();	-- no OnFinished
+	end
+	for i = 1, numFollowers do
+		local followerFrame = stage.followersFrame["Follower"..i];
+		followerFrame.XPGain:SetAlpha(0);
+		followerFrame.LevelUpFrame:Hide();
+	end
+	stage.followersFrame.FadeIn:Play();
+end
+
+function GarrisonMissionComplete_AnimRewards(self, entry)
+	if ( self.BonusRewards.firstChest) then
+		self.BonusRewards.firstChest.BonusLockBurstAnim:Play();
+	else
+		self.NextMissionButton:Enable();
+	end
+	self.BonusRewards.Saturated:Show();
+	self.BonusRewards.Saturated.FadeIn:Play();
+end
+
+-- if duration is nil it will be set in the onStart function
+-- duration is irrelevant for the last entry
+local ANIMATION_CONTROL = {
+	[1] = { duration = nil,		onStartFunc = GarrisonMissionComplete_AnimLine },					-- line between encounters
+	[2] = { duration = nil,		onStartFunc = GarrisonMissionComplete_AnimCheckModels },			-- check that models are loaded
+	[3] = { duration = nil,		onStartFunc = GarrisonMissionComplete_AnimModels },					-- model fight
+	[4] = { duration = 0.45,	onStartFunc = GarrisonMissionComplete_AnimPortrait },				-- X over portrait
+	[5] = { duration = nil,		onStartFunc = GarrisonMissionComplete_AnimCheckEncounters },		-- evaluate whether to do next encounter or move on
+	[6] = { duration = 0.5,		onStartFunc = GarrisonMissionComplete_AnimFollowersIn },			-- show all the mission followers - MARK MISSION COMPLETE here
+	[7] = { duration = 0,		onStartFunc = GarrisonMissionComplete_AnimRewards },				-- reward panel
+};
+
+function GarrisonMissionComplete_FindAnimIndexFor(func)
+	for i = 1, #ANIMATION_CONTROL do
+		if ( ANIMATION_CONTROL[i].onStartFunc == func ) then
+			return i;
+		end
+	end
+	return 0;
+end
+
+function GarrisonMissionComplete_BeginAnims(self, animIndex)
+	self.encounterIndex = 1;
+	self.animIndex = animIndex or 0;
+	self.animTimeLeft = 0;
+	self:SetScript("OnUpdate", GarrisonMissionComplete_OnUpdate);
+end
+
+function GarrisonMissionComplete_OnUpdate(self, elapsed)
+	self.animTimeLeft = self.animTimeLeft - elapsed;
+	if ( self.animTimeLeft <= 0 ) then
+		self.animIndex = self.animIndex + 1;
+		local entry = ANIMATION_CONTROL[self.animIndex];
+		if ( entry ) then
+			entry.onStartFunc(self, entry);
+			self.animTimeLeft = entry.duration;
 		else
-			-- no models, skip them
-			GarrisonMissionComplete_SetAnimationState("portrait");
+			-- done
+			self:SetScript("OnUpdate", nil);
 		end
 	end
 end
 
 function GarrisonMissionComplete_OnModelLoaded(self)
-	local frame = GarrisonMissionFrame.MissionComplete;
+	-- making sure we didn't give up on loading this model
 	if ( self.state == "loading" ) then
 		self.state = "loaded";
-		if ( frame.animState == "modelcheck" and GarrisonMissionComplete_CanShowModels() ) then
-			GarrisonMissionComplete_SetAnimationState("model");
+		-- is the anim paused for models?
+		local frame = GarrisonMissionFrame.MissionComplete;
+		if ( frame.animNumModelHolds ) then
+			frame.animNumModelHolds = frame.animNumModelHolds - 1;
+			-- no models left to load, full speed ahead
+			if ( frame.animNumModelHolds == 0 ) then
+				frame.animTimeLeft = 0;
+			end
 		end
 	end
 end
 
-function GarrisonMissionComplete_PreloadModels()
-	local self = GarrisonMissionFrame.MissionComplete;
-	if (not self.animInfo or not self.animIndex) then
-		return;
-	end
+function GarrisonMissionComplete_PreloadEncounterModels(self)
+	local modelLeft = self.Stage.ModelLeft;
+	modelLeft:SetAlpha(0);	
+	modelLeft:Show();
+	modelLeft:ClearModel();
 
-	local currentAnim = self.animInfo[self.animIndex];
-	if (not currentAnim) then 
-		return; 
-	end
+	local modelRight = self.Stage.ModelRight;	
+	modelRight:SetAlpha(0);	
+	modelRight:Show();
+	modelRight:ClearModel();
 
-	self.Stage.ModelLeft:Show();
-	self.Stage.ModelLeft:ClearModel();
-	self.Stage.ModelLeft:SetAlpha(0);
-	self.Stage.ModelLeft.state = "loading";
-	self.Stage.ModelRight:Show();
-	self.Stage.ModelRight:ClearModel();
-	self.Stage.ModelRight:SetAlpha(0);
-	if ( currentAnim.enemyDisplayID ) then
-		self.Stage.ModelRight.state = "loading";
-		self.Stage.ModelRight:SetDisplayInfo(currentAnim.enemyDisplayID);
+	if ( self.animInfo and self.encounterIndex and self.animInfo[self.encounterIndex] ) then
+		local currentAnim = self.animInfo[self.encounterIndex];
+		modelLeft.state = "loading";
+		GarrisonMission_SetFollowerModel(modelLeft, currentAnim.followerID, currentAnim.displayID);		
+		if ( currentAnim.enemyDisplayID ) then
+			modelRight.state = "loading";
+			modelRight:SetDisplayInfo(currentAnim.enemyDisplayID);
+		else
+			modelRight.state = "empty";
+		end
 	else
-		self.Stage.ModelRight.state = "empty";
+		modelLeft.state = "empty";
+		modelRight.state = "empty";
 	end
-	GarrisonMission_SetFollowerModel(self.Stage.ModelLeft, currentAnim.followerID, currentAnim.displayID);
 end
 
-function GarrisonMissionComplete_CanShowModels()
-	local self = GarrisonMissionFrame.MissionComplete;
-	local modelLeft = self.Stage.ModelLeft;
-	local modelRight = self.Stage.ModelRight;
-	-- we want at least follower model loaded
-	if ( modelLeft.state == "loaded" and modelRight.state ~= "loading" ) then
-		return true;
+---------------------------------------------------------------------------------
+--- Mission Complete: XP stuff				                                  ---
+---------------------------------------------------------------------------------
+
+function GarrisonMissionComplete_AwardFollowerXP(followerFrame, xpAward)
+	local xpBar = followerFrame.XP;
+	local xpFrame = followerFrame.XPGain;
+	-- xp text
+	xpFrame:Show();
+	xpFrame.FadeIn:Play();
+	xpFrame.Text:SetText("+"..xpAward);
+	-- bar
+	local _, maxXP = xpBar:GetMinMaxValues();
+	if ( xpBar:GetValue() + xpAward >  maxXP ) then
+		xpBar.toGoXP = maxXP - xpBar:GetValue();
+		xpBar.remainingXP = xpAward - xpBar.toGoXP;
 	else
-		return false;
+		xpBar.toGoXP = xpAward;
+		xpBar.remainingXP = 0;
+	end
+	followerFrame.activeAnims = 2;	-- text & bar
+	GarrisonMissionComplete_AnimXPBar(xpBar);
+end
+
+function GarrisonMissionComplete_AnimXP(followerID, xpAward, oldXP, oldLevel)
+	local self = GarrisonMissionFrame.MissionComplete;
+	local missionList = self.completeMissions;
+	local missionIndex = self.currentIndex;
+	local mission = missionList[missionIndex];
+
+	for i = 1, #mission.followers do
+		local followerFrame = self.Stage.followersFrame["Follower"..i];
+		if ( followerFrame.followerID == followerID ) then
+			if ( not followerFrame.activeAnims or followerFrame.activeAnims == 0 ) then
+				if ( xpAward > 0 ) then
+					GarrisonMissionComplete_InitFollowerLevel(followerFrame, oldLevel, oldXP, self.xpTable[oldLevel]);
+					GarrisonMissionComplete_AwardFollowerXP(followerFrame, xpAward);
+				else
+					-- lost xp, no anim
+					local _, _, level, _, currXP, maxXP = C_Garrison.GetFollowerMissionCompleteInfo(followerID);
+					GarrisonMissionComplete_InitFollowerLevel(followerFrame, level, currXP, maxXP);
+				end
+			else
+				-- save for later
+				local t = {};
+				t.followerID = followerID;
+				t.xpAward = xpAward;
+				t.oldXP = oldXP;
+				t.oldLevel = oldLevel;
+				tinsert(self.pendingXPAwards, t);
+			end
+			break;
+		end
+	end
+end
+
+function GarrisonMissionComplete_AnimXPBar(xpBar)
+	xpBar.timeIn = 0;
+	xpBar.startXP = xpBar:GetValue();
+	local _, maxXP = xpBar:GetMinMaxValues();
+	xpBar.duration = xpBar.toGoXP / maxXP * xpBar.length / 25;
+	xpBar:SetScript("OnUpdate", GarrisonMissionComplete_AnimXPBar_OnUpdate);
+end
+
+function GarrisonMissionComplete_AnimXPBar_OnUpdate(self, elapsed)
+	self.timeIn = self.timeIn + elapsed;
+	if ( self.timeIn >= self.duration ) then
+		self.timeIn = nil;
+		self:SetScript("OnUpdate", nil);
+		self:SetValue(self.startXP + self.toGoXP);
+		GarrisonMissionComplete_AnimXPBarOnFinish(self);
+	else
+		self:SetValue(self.startXP + (self.timeIn / self.duration) * self.toGoXP);
+	end
+	
+end
+
+function GarrisonMissionComplete_AnimXPBarOnFinish(xpBar)
+	local _, maxXP = xpBar:GetMinMaxValues();
+	if ( xpBar:GetValue() == maxXP ) then
+		-- leveled up!
+		local followerFrame = xpBar:GetParent();
+		local levelUpFrame = followerFrame.LevelUpFrame;
+		if ( not levelUpFrame:IsShown() ) then
+			levelUpFrame:Show();
+			levelUpFrame:SetAlpha(1);
+			levelUpFrame.Anim:Play();
+		end
+		local nextLevel = xpBar.level + 1;
+		local nextLevelXP = GarrisonMissionFrame.MissionComplete.xpTable[nextLevel];
+		if ( nextLevelXP ) then
+			GarrisonMissionComplete_InitFollowerLevel(followerFrame, nextLevel, 0, nextLevelXP);
+			maxXP = nextLevelXP;
+		end
+	end
+	if ( xpBar.remainingXP > 0 ) then
+		-- we still have XP to go
+		local availableXP = maxXP - xpBar:GetValue();
+		if ( xpBar.remainingXP > availableXP ) then
+			xpBar.toGoXP = availableXP;
+			xpBar.remainingXP = xpBar.remainingXP - availableXP;
+		else
+			xpBar.toGoXP = xpBar.remainingXP;
+			xpBar.remainingXP = 0;
+		end
+		GarrisonMissionComplete_AnimXPBar(xpBar);
+	else
+		GarrisonMissionComplete_OnFollowerXPFinished(xpBar:GetParent());
+	end
+end
+
+function GarrisonMissionComplete_AnimXPGainOnFinish(self)
+	GarrisonMissionComplete_OnFollowerXPFinished(self:GetParent():GetParent());
+end
+
+function GarrisonMissionComplete_OnFollowerXPFinished(followerFrame)
+	followerFrame.activeAnims = followerFrame.activeAnims - 1;
+	if ( followerFrame.activeAnims == 0 ) then
+		-- check queued rewards
+		local pendingXPAwards = GarrisonMissionFrame.MissionComplete.pendingXPAwards;
+		for k, v in pairs(pendingXPAwards) do
+			if ( v.followerID == followerFrame.followerID ) then
+				GarrisonMissionComplete_AnimXP(v.followerID, v.xpAward, v.oldXP, v.oldLevel);
+				tremove(pendingXPAwards, k);
+				return;
+			end
+		end
 	end
 end
 
@@ -1909,44 +2222,10 @@ function GarrisonMissionComplete_ShowEnding()
 	self.Stage.Encounters.FadeOut:Play();
 end	
 
-function GarrisonMissionCompleteEncountersAnim_OnFinished(dontMarkComplete)
-	local self = GarrisonMissionFrame.MissionComplete.Stage;
-	local missionList = GarrisonMissionFrame.MissionComplete.completeMissions;
-	local missionIndex = GarrisonMissionFrame.MissionComplete.currentIndex;
-	local mission = missionList[missionIndex];
-	if (not dontMarkComplete) then
-		C_Garrison.MarkMissionComplete(mission.missionID);
-	end
-	
-	local numFollowers = #mission.followers;
-	GarrisonMissionComplete_SetNumFollowers(numFollowers);
-	_G["Ending"..numFollowers]();
-	if (self.ModelLeft:IsShown()) then
-		self.ModelLeft.FadeIn:Play();
-	end
-	if (self.ModelRight:IsShown()) then
-		self.ModelRight.FadeIn:Play();
-	end
-	if (self.ModelFarLeft:IsShown()) then
-		self.ModelFarLeft.FadeIn:Play();
-	end
-	if (self.ModelFarRight:IsShown()) then
-		self.ModelFarRight.FadeIn:Play();
-	end
-	if (self.ModelMiddle:IsShown()) then
-		self.ModelMiddle.FadeIn:Play();
-	end
-	if (#mission.followers <= 3) then
-		self.FewFollowers.FadeIn:Play();
-	else
-		self.ManyFollowers.FadeIn:Play();
-	end
-end
-
 function GarrisonMissionComplete_SetNumFollowers(size)
 	local self = GarrisonMissionFrame.MissionComplete.Stage;
 	
-	if (size < 4) then
+	if (size < GARRISON_MISSION_MANY_THRESHOLD) then
 		self.FewFollowers:Show();
 		self.ManyFollowers:Hide();
 		if (size == 1) then
@@ -1986,7 +2265,6 @@ function GarrisonMissionComplete_SetNumFollowers(size)
 			self.ManyFollowers.Follower4:SetPoint("LEFT", self.ManyFollowers.Follower3, "RIGHT", 20, 0);
 		end
 	end
-	
 end
 
 function SetupEnding(M, L, R, FL, FR)

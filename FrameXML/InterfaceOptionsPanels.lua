@@ -542,7 +542,6 @@ DisplayPanelOptions = {
 	SpellTooltip_DisplayAvgValues = { text = "SHOW_POINTS_AS_AVG" },
 	emphasizeMySpellEffects = { text = "EMPHASIZE_MY_SPELLS_TEXT" },
 	hdPlayerModels = { text = "SHOW_HD_MODELS_TEXT" },
-	countdownForCooldowns = { text = "COUNTDOWN_FOR_COOLDOWNS_TEXT" },
 }
 
 function InterfaceOptionsDisplayPanel_OnLoad (self)
@@ -665,8 +664,6 @@ ObjectivesPanelOptions = {
 	autoQuestProgress = { text = "AUTO_QUEST_PROGRESS_TEXT" },
 	mapQuestDifficulty = { text = "MAP_QUEST_DIFFICULTY_TEXT" },
 	advancedWorldMap = { text = "ADVANCED_WORLD_MAP_TEXT" },
-	watchFrameWidth = { text = "WATCH_FRAME_WIDTH_TEXT" },
-	watchFrameWidth = { text = "WATCH_FRAME_WIDTH_TEXT" },
 	mapFade = { text = "MAP_FADE_TEXT" },
 }
 
@@ -680,6 +677,80 @@ end
 
 function InterfaceOptionsObjectivesPanel_OnEvent (self, event, ...)
 	BlizzardOptionsPanel_OnEvent(self, event, ...);
+end
+
+function InterfaceOptionsObjectivesPanelQuestSorting_OnClick(self)
+	InterfaceOptionsObjectivesPanelQuestSorting:SetValue(self.value);
+end
+
+function InterfaceOptionsObjectivesPanelQuestSorting_Initialize()
+	local selectedValue = UIDropDownMenu_GetSelectedValue(InterfaceOptionsObjectivesPanelQuestSorting);
+	local info = UIDropDownMenu_CreateInfo();
+
+	info.text = TRACK_QUEST_PROXIMITY_SORTING;
+	info.func = InterfaceOptionsObjectivesPanelQuestSorting_OnClick;
+	info.value = "proximity";
+	if ( info.value == selectedValue ) then
+		info.checked = 1;
+	else
+		info.checked = nil;
+	end
+	
+	info.tooltipTitle = TRACK_QUEST_PROXIMITY_SORTING;
+	info.tooltipText = OPTION_TOOLTIP_TRACK_QUEST_PROXIMITY_SORTING;
+	UIDropDownMenu_AddButton(info);
+
+	info.text = TRACK_QUEST_TOP_SORTING;
+	info.func = InterfaceOptionsObjectivesPanelQuestSorting_OnClick;
+	info.value = "top";
+	if ( info.value == selectedValue ) then
+		info.checked = 1;
+	else
+		info.checked = nil;
+	end
+	info.tooltipTitle = TRACK_QUEST_TOP_SORTING;
+	info.tooltipText = OPTION_TOOLTIP_TRACK_QUEST_TOP_SORTING;
+	UIDropDownMenu_AddButton(info);
+end
+
+function InterfaceOptionsObjectivesPanelQuestSorting_SetQuestSorting(sortMethod)
+	SetCVar(InterfaceOptionsObjectivesPanelQuestSorting.cvar, sortMethod);
+	UIDropDownMenu_SetSelectedValue(InterfaceOptionsObjectivesPanelQuestSorting, sortMethod);
+end
+
+function InterfaceOptionsObjectivesPanelQuestSorting_OnEvent (self, event, ...)
+	if ( event == "PLAYER_ENTERING_WORLD" ) then
+		self.cvar = "trackQuestSorting";
+
+		local value = GetCVar(self.cvar);
+		self.defaultValue = GetCVarDefault(self.cvar);
+		self.value = value;
+		self.oldValue = value;
+		self.tooltip = _G["OPTION_TOOLTIP_TRACK_QUEST_"..strupper(value)];
+
+		UIDropDownMenu_SetWidth(self, 130);
+		UIDropDownMenu_Initialize(self, InterfaceOptionsObjectivesPanelQuestSorting_Initialize);
+		UIDropDownMenu_SetSelectedValue(self, value);
+		InterfaceOptionsObjectivesPanelQuestSorting_SetQuestSorting(value);
+
+		self.SetValue = 
+			function (self, value)
+				self.value = value;
+				InterfaceOptionsObjectivesPanelQuestSorting_SetQuestSorting(value);
+				self.tooltip = _G["OPTION_TOOLTIP_TRACK_QUEST_"..strupper(value)];
+			end
+		self.GetValue =
+			function (self)
+				return UIDropDownMenu_GetSelectedValue(self);
+			end
+		self.RefreshValue =
+			function (self)
+				UIDropDownMenu_Initialize(self, InterfaceOptionsObjectivesPanelQuestSorting_Initialize);
+				UIDropDownMenu_SetSelectedValue(self, self.value);
+			end
+			
+		self:UnregisterEvent(event);
+	end
 end
 
 -- [[ Social Options Panel ]] --
@@ -1111,6 +1182,7 @@ ActionBarsPanelOptions = {
 	lockActionBars = { text = "LOCK_ACTIONBAR_TEXT" },
 	alwaysShowActionBars = { text = "ALWAYS_SHOW_MULTIBARS_TEXT" },
 	secureAbilityToggle = { text = "SECURE_ABILITY_TOGGLE" },
+	countdownForCooldowns = { text = "COUNTDOWN_FOR_COOLDOWNS_TEXT" },
 }
 
 function InterfaceOptionsActionBarsPanel_OnLoad (self)

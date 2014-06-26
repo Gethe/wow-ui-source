@@ -126,6 +126,7 @@
 				</Anchors>
 				<Scripts>
 					<OnLoad>
+						self.permDisabledTip = YOUR_CLASS_MAY_NOT_PERFORM_ROLE;
 						self:GetNormalTexture():SetTexCoord(GetTexCoordsForRole("TANK"));
 						self.role = "TANK";
 					</OnLoad>
@@ -144,6 +145,7 @@
 				</Anchors>
 				<Scripts>
 					<OnLoad>
+						self.permDisabledTip = YOUR_CLASS_MAY_NOT_PERFORM_ROLE;
 						self:GetNormalTexture():SetTexCoord(GetTexCoordsForRole("HEALER"));
 						self.role = "HEALER";
 					</OnLoad>
@@ -162,6 +164,7 @@
 				</Anchors>
 				<Scripts>
 					<OnLoad>
+						self.permDisabledTip = YOUR_CLASS_MAY_NOT_PERFORM_ROLE;
 						self:GetNormalTexture():SetTexCoord(GetTexCoordsForRole("DAMAGER"));
 						self.role = "DAMAGER";
 					</OnLoad>

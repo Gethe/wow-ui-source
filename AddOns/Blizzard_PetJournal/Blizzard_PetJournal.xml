@@ -1115,22 +1115,16 @@
 										<Anchor point="LEFT" relativePoint="RIGHT" relativeTo="$parentIcon" x="10" y="0"/>
 									</Anchors>
 								</FontString>
-								<FontString name="$parentSource" inherits="GameFontNormalLarge" justifyH="LEFT" parentKey="Source">
-									<Size x="345" y="25"/>
+								<FontString name="$parentSource" inherits="GameFontHighlightLarge" justifyH="LEFT" parentKey="Source">
+									<Size x="345" y="0"/>
 									<Anchors>
-										<Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" relativeTo="$parentIcon" x="0" y="2"/>
-									</Anchors>
-								</FontString>
-								<FontString name="$parentLocation" inherits="GameFontNormalLarge" justifyH="LEFT" parentKey="Location">
-									<Size x="345" y="25"/>
-									<Anchors>
-										<Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" relativeTo="$parentSource" x="0" y="6"/>
+										<Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" relativeTo="$parentIcon" x="0" y="-2"/>
 									</Anchors>
 								</FontString>
 								<FontString name="$parentLore" inherits="GameFontNormal" justifyH="LEFT" parentKey="Lore">
 									<Size x="345" y="50"/>
 									<Anchors>
-										<Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" relativeTo="$parentLocation" x="0" y="4"/>
+										<Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" relativeKey="$parent.Source" x="0" y="4"/>
 									</Anchors>
 								</FontString>
 							</Layer>

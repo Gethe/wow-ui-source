@@ -1135,7 +1135,7 @@
 			</OnClick>
 			<OnEnter>
 				GameTooltip:SetOwner(self, "ANCHOR_LEFT");
-				GameTooltip:SetHyperlink(self.link);
+				EncounterJournal_SetTooltip(self.link);
 				self.showingTooltip = true;
 				self:SetScript("OnUpdate", EncounterJournal_Loot_OnUpdate);
 			</OnEnter>

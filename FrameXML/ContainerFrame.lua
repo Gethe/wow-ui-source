@@ -1090,7 +1090,7 @@ function ContainerFrameFilterDropDown_Initialize(self, level)
 		for i = LE_BAG_FILTER_FLAG_EQUIPMENT, NUM_LE_BAG_FILTER_FLAGS do
 			info.text = BAG_FILTER_LABELS[i];
 			info.func = function(_, _, _, value)
-				SetBagSlotFlag(id, i, value);
+				SetBagSlotFlag(id, i, not value);
 			end;
 			info.checked = GetBagSlotFlag(id, i);
 			info.disabled = nil;

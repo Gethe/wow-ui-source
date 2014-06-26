@@ -365,6 +365,19 @@ function TalentMicroButton_OnEvent(self, event, ...)
 		end
 	elseif ( event == "UPDATE_BINDINGS" ) then
 		self.tooltipText =  MicroButtonTooltipText(TALENTS_BUTTON, "TOGGLETALENTS");
+	elseif ( event == "PLAYER_CHARACTER_UPGRADE_TALENT_COUNT_CHANGED" ) then
+		local prev, current = ...;
+		if ( prev == 0 and current > 0 ) then
+			MicroButtonPulse(self);
+			TalentMicroButtonAlert.Text:SetText(TALENT_MICRO_BUTTON_TALENT_TUTORIAL);
+			TalentMicroButtonAlert:SetHeight(TalentMicroButtonAlert.Text:GetHeight()+42);
+			TalentMicroButtonAlert:Show();
+		elseif ( prev ~= current ) then
+			MicroButtonPulse(self);
+			TalentMicroButtonAlert.Text:SetText(TALENT_MICRO_BUTTON_UNSPENT_TALENTS);
+			TalentMicroButtonAlert:SetHeight(TalentMicroButtonAlert.Text:GetHeight()+42);
+			TalentMicroButtonAlert:Show();
+		end
 	end
 end
 

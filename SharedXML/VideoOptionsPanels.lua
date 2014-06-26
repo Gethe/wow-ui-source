@@ -254,13 +254,23 @@ local function FinishChanges(self)
 		Graphics_ResolutionDropDown.tablerefresh = true;
 		Graphics_PrimaryMonitorDropDown.tablerefresh = true;
 		Graphics_RefreshDropDown.tablerefresh = true;
-		Graphics_Refresh(Graphics_);
+		if ( self.raid ) then
+			Graphics_Refresh(RaidGraphics_);
+		else
+			Graphics_Refresh(Graphics_);
+		end
 	end
-	Graphics_Quality:commitslider();
+
+	if ( self.raid ) then
+		RaidGraphics_Quality:commitslider();
+	else
+		Graphics_Quality:commitslider();
+	end
 end
 
 local function CommitChange(self)
-	if(self:GetName() == "Graphics_Quality") then
+	local name = self:GetName();
+	if(name == "Graphics_Quality" or name == "RaidGraphics_Quality") then
 		return;
 	end
 	local value = self.newValue or self.value;
@@ -306,9 +316,16 @@ end
 function Graphics_Default (self)
 	SetDefaultVideoOptions(0);
 	for _, control in next, self.controls do
-		if(string.find(control:GetName(), "Graphics_")) then
-			control.newValue = nil;
-			control.value = nil;
+		if ( self.raid ) then
+			if(string.find(control:GetName(), "RaidGraphics_")) then
+				control.newValue = nil;
+				control.value = nil;
+			end
+		else
+			if(string.find(control:GetName(), "Graphics_")) then
+				control.newValue = nil;
+				control.value = nil;
+			end
 		end
 	end
 	FinishChanges(self);
@@ -485,19 +502,28 @@ end
 function Graphics_DropDownRefreshValue(self)
 	VideoOptionsDropDownMenu_Initialize(self, self.initialize);
 	VideoOptionsDropDownMenu_SetSelectedID(self, self:GetValue(), 1);
+	local graphicsQuality = "Graphics_Quality";
+	if (self.raid) then
+		graphicsQuality = "RaidGraphics_Quality";
+	end
 	if(self.dependent ~= nil) then
 		local checkWarning;
 		for i, key in ipairs(self.dependent) do
 			 _G[key].needrefresh = true;
-			 if ( key == "Graphics_Quality" ) then
+			 if ( key == graphicsQuality ) then
 				checkWarning = true;
 			 end
 		end
 		-- check warning if this control depended on the graphics quality slider
 		if ( checkWarning ) then
 			local displayWarning;
-			local qualityValue = BlizzardOptionsPanel_GetCVarSafe("graphicsQuality");
-			local settings = VideoData["Graphics_Quality"].data[qualityValue];
+			local qualityValue;
+			if (self.raid) then
+				qualityValue = BlizzardOptionsPanel_GetCVarSafe("raidGraphicsQuality");
+			else
+				qualityValue = BlizzardOptionsPanel_GetCVarSafe("graphicsQuality");
+			end
+			local settings = VideoData[graphicsQuality].data[qualityValue];
 			local value;
 			if ( settings and settings.notify ) then
 				local key = self:GetName();
@@ -567,7 +593,20 @@ end
 -- control OnLoad
 --
 local function LoadVideoData(self)
-	for key, value in pairs(VideoData[self:GetName()]) do
+	local name = self:GetName()
+	if not VideoData[name] then
+		message(name);
+		return
+	end
+	
+	-- preload the base data
+	if ( name == "RaidGraphics_Quality" ) then
+		for key, value in pairs(VideoData["Graphics_Quality"]) do
+			self[key] = value;
+		end
+	end
+	
+	for key, value in pairs(VideoData[name]) do
 		self[key] = value;
 	end
 	self["key"] = self;
@@ -612,30 +651,20 @@ function VideoOptionsDropDown_OnLoad(self)
 				Graphics_PrepareTooltip(self);
 			end
 
-			local p = self:GetValue();
 			for mode, text in ipairs(self.table) do
 				local info = VideoOptionsDropDownMenu_CreateInfo();
 				info.text = text;
 				info.value = text;
 				info.func = self.onclickfunction or VideoOptionsDropDown_OnClick;
---				info.checked = nil;
-				-- disable and recommended settings!
+				-- disable settings
 				if(self.data ~= nil) then
 					if(self.data[mode].cvars ~= nil) then
-						local recommended = true;
 						for cvar_name, cvar_value in pairs(self.data[mode].cvars) do
 							if(self.validity[cvar_name][cvar_value] ~= 0) then
 								info.notClickable = true;
 								info.disablecolor = GREYCOLORCODE;
 							end
-							if(DefaultVideoOptions[cvar_name] ~= cvar_value) then
-								recommended = false;
-							end
 						end
-						-- This plus the check mark feels very distracting to look at.
-						-- if(recommended) then
-						-- 	info.colorCode = GREENCOLORCODE;
-						-- end
 					end
 				end
 				if ( self.capMaxValue and mode > self.capMaxValue ) then
@@ -730,7 +759,13 @@ end
 -------------------------------------------------------------------------------------------------------
 -- OnLoad for each page
 function VideoOptionsPanel_OnLoad (self, okay, cancel, default, refresh)
-	local defaults =  {GetDefaultVideoOptions()};
+	local defaults
+	if (self.raid) then
+		defaults =  {GetDefaultVideoOptions(true)};
+	else
+		defaults =  {GetDefaultVideoOptions(false)};
+	end
+
 	for i=1, #defaults, 2 do
 		DefaultVideoOptions[defaults[i]]=defaults[i+1];
 	end
@@ -762,7 +797,7 @@ function Graphics_OnLoad (self)
 		}
 		local count = #VideoData["Graphics_Quality"].data;
 		for i=1, count do
-			local defaults =  {GetVideoOptions(i)};
+			local defaults =  {GetVideoOptions(i, false)};
 			ThisVideoOptions = {};
 			for m=1, #defaults, 2 do
 				ThisVideoOptions[defaults[m]]=defaults[m+1];
@@ -783,6 +818,45 @@ function Graphics_OnLoad (self)
 		end
 	end
 	self.name = GRAPHICS_LABEL;
+	self.hasApply = true;
+	VideoOptionsPanel_OnLoad(self, nil, nil, Graphics_Default, nil)
+	self:SetScript("OnEvent", Graphics_OnEvent);
+end
+
+function RaidGraphics_OnLoad (self)
+	if(nil and IsGMClient() and InGlue()) then
+		local qualityNames =
+		{
+			VIDEO_QUALITY_LABEL1,
+			VIDEO_QUALITY_LABEL2,
+			VIDEO_QUALITY_LABEL3,
+			VIDEO_QUALITY_LABEL4,
+			VIDEO_QUALITY_LABEL5,
+		}
+		local count = #VideoData["RaidGraphics_Quality"].data;
+		for i=1, count do
+			local defaults =  {GetVideoOptions(i, true)};
+			ThisVideoOptions = {};
+			for m=1, #defaults, 2 do
+				ThisVideoOptions[ defaults[m] ]=defaults[m+1];
+			end
+			local notify = VideoData["RaidGraphics_Quality"].data[i].notify;
+			for key, value in pairs(notify) do
+				for j=1, #VideoData[key].data do
+					if(VideoData[key].data[j].text == value) then
+						for cvar, cvar_value in pairs(VideoData[key].data[j].cvars) do
+							if(ThisVideoOptions[cvar] ~= cvar_value) then
+--								print("mismatch " .. key .. "[" .. qualityNames[i] .. "]:" .. cvar .. ", c++:" .. ThisVideoOptions[cvar] .. " ~= lua:" .. cvar_value);
+								VideoData[key].data[j].cvars[cvar] = ThisVideoOptions[cvar];
+							end
+						end
+					end
+				end
+			end
+		end
+	end
+
+	self.name = RAID_GRAPHICS_LABEL;
 	self.hasApply = true;
 	VideoOptionsPanel_OnLoad(self, nil, nil, Graphics_Default, nil)
 	self:SetScript("OnEvent", Graphics_OnEvent);

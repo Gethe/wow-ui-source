@@ -329,9 +329,10 @@ end
 function QuestMapQuestOptions_TrackQuest(questID)
 	local questLogIndex = GetQuestLogIndexByID(questID);
 	if ( IsQuestWatched(questLogIndex) ) then
-		RemoveQuestWatch(questLogIndex);
+		QuestObjectiveTracker_UntrackQuest(nil, questLogIndex);
 	else
-		AddQuestWatch(questLogIndex);
+		AddQuestWatch(questLogIndex, true);
+		QuestSuperTracking_OnQuestTracked(questID);
 	end
 end
 
@@ -402,7 +403,7 @@ function QuestLogQuests_Update(poiTable)
 
 	local poiFrameLevel = QuestLogQuests_GetHeaderButton(1):GetFrameLevel() + 2;
 
-	local storyID, storyMapID = Test_GetZoneStoryID();
+	local storyID, storyMapID = GetZoneStoryID();
 	if ( storyID ) then
 		QuestScrollFrame.Contents.StoryHeader:Show();
 		QuestScrollFrame.Contents.StoryHeader.Text:SetText(GetMapNameByID(storyMapID));
@@ -481,7 +482,7 @@ function QuestLogQuests_Update(poiTable)
 				button.Text:SetText(title);
 			end
 			totalHeight = totalHeight + button.Text:GetHeight();
-			if ( IsQuestWatched(questLogIndex) ) then
+			if ( IsQuestHardWatched(questLogIndex) ) then
 				button.Check:Show();
 				button.Check:SetPoint("LEFT", button.Text, button.Text:GetWrappedWidth() + 2, 0);
 			else
@@ -837,13 +838,18 @@ end
 
 function QuestMapLog_ShowStoryTooltip(self)
 	local tooltip = QuestScrollFrame.StoryTooltip;
-	local storyID = Test_GetZoneStoryID();
+	local storyID = GetZoneStoryID();
 	local maxWidth = 0;
 	local totalHeight = 0;
 	
 	tooltip.Title:SetText(GetMapNameByID(GetCurrentMapAreaID()));
 	totalHeight = totalHeight + tooltip.Title:GetHeight();	
 	maxWidth = tooltip.Title:GetWidth();
+	
+	-- Clear out old quest criteria
+	for i = 1, #tooltip.Lines do
+		tooltip.Lines[i]:Hide();
+	end
 	
 	local numCriteria = GetAchievementNumCriteria(storyID);
 	local completedCriteria = 0;
@@ -876,6 +882,7 @@ function QuestMapLog_ShowStoryTooltip(self)
 			end
 			maxWidth = max(maxWidth, tooltip.Lines[i]:GetWidth());			
 		end
+		tooltip.Lines[i]:Show();
 		totalHeight = totalHeight + tooltip.Lines[i]:GetHeight() + 6;
 	end
 		
@@ -898,15 +905,35 @@ function QuestMapLog_HideStoryTooltip(self)
 	QuestScrollFrame.StoryTooltip:Hide();
 end
 
--- temp
-function Test_GetZoneStoryID()
+function GetZoneStoryID()
 	local areaID = GetCurrentMapAreaID();
-	if ( areaID == 941 or areaID == 976 ) then
-		return 8671, 941;
+	local key = areaID .. "-" .. UnitFactionGroup("player");
+	local achievementTable = 
+	{
+		-- Frostfire Ridge
+		["941-Horde"] = {8671, 941},
+		-- Tanaan Jungle
+		["945-Alliance"] = {8921, 945},
+		["945-Horde"] = {8922, 945},
+		-- Talador
+		["946-Alliance"] = {8920, 946},
+		["946-Horde"] = {8919, 946},
+		-- Shadowmoon Valley
+		["947-Alliance"] = {8845, 947},
+		-- Spires of Arak
+		["948-Alliance"] = {8925, 948},
+		["948-Horde"] = {8926, 948},
+		-- Gorgrond
+		["949-Alliance"] = {8923, 949},
+		["949-Horde"] = {8924, 949},
+		-- Nagrand
+		["950-Alliance"] = {8927, 950},
+		["950-Horde"] = {8928, 950},
+		
+	};
+	if (achievementTable[key] ~= nil) then
+		return achievementTable[key][1], achievementTable[key][2];
 	end
-	--if ( (areaID >= 945 and areaID <= 950) or areaID == 941 ) then
-	--	return true;
-	--end
 end
 
 -- *****************************************************************************************************

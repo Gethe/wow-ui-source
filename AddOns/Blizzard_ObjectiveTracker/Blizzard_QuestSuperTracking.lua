@@ -1,6 +1,6 @@
 local PENDING_QUEST_ID;
 
-function QuestSuperTracking_OnQuestAccepted(questID)
+function QuestSuperTracking_OnQuestTracked(questID)
 	-- We should supertrack quest if it got added to the top of the tracker
 	-- First check if we have POI info. Could be missing if 1) we didn't know about this quest before, 2) just doesn't have POIs
 	if ( QuestHasPOIInfo(questID) ) then
@@ -16,6 +16,10 @@ function QuestSuperTracking_OnQuestAccepted(questID)
 end
 
 function QuestSuperTracking_OnQuestCompleted()
+	QuestSuperTracking_ChooseClosestQuest();
+end
+
+function QuestSuperTracking_OnQuestUntracked()
 	QuestSuperTracking_ChooseClosestQuest();
 end
 

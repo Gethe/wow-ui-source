@@ -517,7 +517,7 @@
 										<Scripts>
 											<OnLoad>
 												self.checkButton.onClick = PVPUIFrame_RoleButtonClicked;
-												self:GetNormalTexture():SetTexCoord(GetTexCoordsForRole("HEALER"));
+												LFGRoleButtonTemplate_OnLoad(self);
 											</OnLoad>
 										</Scripts>
 									</Button>
@@ -532,7 +532,7 @@
 										<Scripts>
 											<OnLoad>
 												self.checkButton.onClick = PVPUIFrame_RoleButtonClicked;
-												self:GetNormalTexture():SetTexCoord(GetTexCoordsForRole("TANK"));
+												LFGRoleButtonTemplate_OnLoad(self);
 											</OnLoad>
 										</Scripts>
 									</Button>
@@ -547,7 +547,7 @@
 										<Scripts>
 											<OnLoad>
 												self.checkButton.onClick = PVPUIFrame_RoleButtonClicked;
-												self:GetNormalTexture():SetTexCoord(GetTexCoordsForRole("DAMAGER"));
+												LFGRoleButtonTemplate_OnLoad(self);
 											</OnLoad>
 										</Scripts>
 									</Button>

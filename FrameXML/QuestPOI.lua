@@ -272,11 +272,11 @@ function QuestPOIButton_OnClick(self)
 	local questLogIndex = GetQuestLogIndexByID(questID);
 	if ( IsQuestWatched(questLogIndex) ) then
 		if ( IsShiftKeyDown() ) then
-			RemoveQuestWatch(questLogIndex);
+			QuestObjectiveTracker_UntrackQuest(nil, questLogIndex);
 			return;
 		end
 	else
-		AddQuestWatch(questLogIndex);
+		AddQuestWatch(questLogIndex, true);
 	end
 	SetSuperTrackedQuestID(questID);
 end

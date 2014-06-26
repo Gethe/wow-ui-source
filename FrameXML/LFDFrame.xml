@@ -4,10 +4,10 @@
 	<Button name="LFDRoleButtonTemplate" inherits="LFGRoleButtonWithBackgroundAndRewardTemplate" virtual="true">
 		<Scripts>
 			<OnLoad>
-				self:GetNormalTexture():SetTexCoord(GetTexCoordsForRole(self.role));
 				self.background:SetTexCoord(GetBackgroundTexCoordsForRole(self.role));
 				self.background:SetAlpha(0.6);
 				self.checkButton.onClick = LFDFrameRoleCheckButton_OnClick;
+				LFGRoleButtonTemplate_OnLoad(self);
 			</OnLoad>
 			<OnEnter function="LFDRoleButton_OnEnter"/>
 		</Scripts>

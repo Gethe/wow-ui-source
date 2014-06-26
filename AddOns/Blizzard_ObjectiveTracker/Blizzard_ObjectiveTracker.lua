@@ -543,7 +543,7 @@ function ObjectiveTracker_OnEvent(self, event, ...)
 		else
 			if ( AUTO_QUEST_WATCH == "1" and GetNumQuestWatches() < MAX_WATCHABLE_QUESTS ) then
 				AddQuestWatch(questLogIndex);
-				QuestSuperTracking_OnQuestAccepted(questID);
+				QuestSuperTracking_OnQuestTracked(questID);
 			end
 		end
 	elseif ( event == "TRACKED_ACHIEVEMENT_LIST_CHANGED" ) then
@@ -564,7 +564,9 @@ function ObjectiveTracker_OnEvent(self, event, ...)
 		end
 	elseif ( event == "QUEST_POI_UPDATE" ) then
 		QuestPOIUpdateIcons();
-		SortQuestWatches();
+		if ( GetCVar("trackQuestSorting") == "proximity" ) then
+			SortQuestWatches();
+		end
 		-- SortQuestWatches might not trigger a QUEST_WATCH_LIST_CHANGED due to unique signals, so force an update
 		ObjectiveTracker_Update(OBJECTIVE_TRACKER_UPDATE_MODULE_QUEST);
 		QuestSuperTracking_OnPOIUpdate();
@@ -663,10 +665,6 @@ function ObjectiveTracker_ToggleDropDown(frame, handlerFunc)
 	dropDown.activeFrame = frame;
 	dropDown.initialize = handlerFunc;
 	ToggleDropDownMenu(1, nil, dropDown, "cursor", 3, -3);
-end
-
-function ObjectiveTracker_SetWidth(width)
-	-- TODO
 end
 
 -- *****************************************************************************************************

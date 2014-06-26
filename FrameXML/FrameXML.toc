@@ -175,6 +175,8 @@ LootHistory.xml
 FloatingPetBattleTooltip.xml
 QueueStatusFrame.xml
 BattlePetTooltip.xml
+FloatingGarrisonFollowerTooltip.xml
+GarrisonFollowerTooltip.xml
 StaticPopupSpecial.xml
 LossOfControlFrame.xml
 PVPHelper.xml

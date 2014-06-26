@@ -71,6 +71,7 @@ function OverrideActionBar_OnLoad(self)
 	self["PitchDownHighlight"] = self.PitchDownButton:GetHighlightTexture();
 	self:RegisterEvent("VEHICLE_ANGLE_UPDATE");
 	self:RegisterEvent("UNIT_ENTERED_VEHICLE");
+	self:RegisterEvent("UNIT_ENTERING_VEHICLE");
 end
 
 
@@ -84,10 +85,15 @@ function OverrideActionBar_OnEvent(self, event, ...)
 		OverrideActionBar_UpdateXpBar();
 	elseif ( event == "UNIT_ENTERED_VEHICLE" ) then
 		OverrideActionBar_CalcSize();
-		local anchorX, anchorY = OverrideActionBar_GetMicroButtonAnchor();
-		UpdateMicroButtonsParent(OverrideActionBar);
-		MoveMicroButtons("BOTTOMLEFT", OverrideActionBar, "BOTTOMLEFT", anchorX, anchorY, true);
+	elseif ( event == "UNIT_ENTERING_VEHICLE" ) then
+		self.HasExit, self.HasPitch = select(8, ...);
 	end
+end
+
+function OverrideActionBar_OnShow(self)
+	local anchorX, anchorY = OverrideActionBar_GetMicroButtonAnchor();
+	UpdateMicroButtonsParent(OverrideActionBar);
+	MoveMicroButtons("BOTTOMLEFT", OverrideActionBar, "BOTTOMLEFT", anchorX, anchorY, true);
 end
 
 function OverrideActionBar_SetSkin(skin)
@@ -103,18 +109,16 @@ end
 
 function OverrideActionBar_CalcSize()
 	local width, xpWidth, anchor, buttonAnchor;
-	local hasPitch = IsVehicleAimAngleAdjustable();
-	local hasExit =  CanExitVehicle();
 	OverrideActionBar.pitchFrame:Hide();
 	OverrideActionBar.leaveFrame:Hide();
-	if hasExit and hasPitch then
+	if OverrideActionBar.HasExit and OverrideActionBar.HasPitch then
 		width, xpWidth, anchor, buttonAnchor = 1020, 580, 103, -234;
 		OverrideActionBar.pitchFrame:Show();
 		OverrideActionBar.leaveFrame:Show();
-	elseif hasPitch then
+	elseif OverrideActionBar.HasPitch then
 		width, xpWidth, anchor, buttonAnchor = 945, 500, 145, -192;
 		OverrideActionBar.pitchFrame:Show();
-	elseif hasExit then
+	elseif OverrideActionBar.HasExit then
 		width, xpWidth, anchor, buttonAnchor = 930, 490, 60, -277;
 		OverrideActionBar.leaveFrame:Show();
 	else
@@ -143,13 +147,12 @@ end
 
 
 function OverrideActionBar_GetMicroButtonAnchor()
-	local hasExit, hasPitch = OverrideActionBar.leaveFrame:IsShown(),  OverrideActionBar.pitchFrame:IsShown();
 	local x, y = 542, 41;
-	if hasExit and hasPitch then
+	if OverrideActionBar.HasExit and OverrideActionBar.HasPitch then
 		x = 625;
-	elseif hasPitch then
+	elseif OverrideActionBar.HasPitch then
 		x = 629;
-	elseif hasExit then
+	elseif OverrideActionBar.HasExit then
 		x = 537;
 	end
 	return x,y

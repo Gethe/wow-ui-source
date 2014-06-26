@@ -18,6 +18,7 @@ function LFGListFrame_OnLoad(self)
 	self:RegisterEvent("LFG_LIST_SEARCH_RESULT_UPDATED");
 	self:RegisterEvent("LFG_LIST_SEARCH_FAILED");
 	self:RegisterEvent("LFG_LIST_APPLICANT_LIST_UPDATED");
+	self:RegisterEvent("LFG_LIST_APPLICANT_UPDATED");
 	LFGListFrame_SetActivePanel(self, self.NothingAvailable);
 
 	self.EventsInBackground = {
@@ -466,6 +467,12 @@ function LFGListApplicationViewer_OnEvent(self, event, ...)
 	elseif ( event == "LFG_LIST_APPLICANT_LIST_UPDATED" ) then
 		LFGListApplicationViewer_UpdateResultList(self);
 		LFGListApplicationViewer_UpdateResults(self);
+	elseif ( event == "LFG_LIST_APPLICANT_UPDATED" ) then
+		--If we can't make changes, we just remove people immediately
+		local id = ...;
+		if ( not LFGListUtil_IsEntryEmpowered() ) then
+			C_LFGList.RemoveApplicant(id);
+		end
 	end
 end
 
@@ -529,6 +536,8 @@ function LFGListApplicationViewer_UpdateAvailability(self)
 		self.RemoveEntryButton:Hide();
 		self.EditButton:Hide();
 	end
+
+	self.UnempoweredCover:SetShown(not LFGListUtil_IsEntryEmpowered());
 end
 
 function LFGListApplicationViewer_UpdateResultList(self)
@@ -572,7 +581,7 @@ function LFGListApplicationViewer_UpdateResults(self)
 		if ( id ) then
 			button.applicantID = id;
 			LFGListApplicationViewer_UpdateApplicant(button, id);
-			button.Background:SetAlpha(id % 2 == 0 and 0.1 or 0.05);
+			button.Background:SetAlpha(idx % 2 == 0 and 0.1 or 0.05);
 			button:Show();
 		else
 			button.applicantID = nil;
@@ -642,8 +651,8 @@ function LFGListApplicationViewer_UpdateApplicant(button, id)
 		button.Status:SetTextColor(GRAY_FONT_COLOR.r, GRAY_FONT_COLOR.g, GRAY_FONT_COLOR.b);
 	end
 
-	button.InviteButton:SetShown(not pendingStatus and status == "applied");
-	button.DeclineButton:SetShown(not pendingStatus and status ~= "invited");
+	button.InviteButton:SetShown(not pendingStatus and status == "applied" and LFGListUtil_IsEntryEmpowered());
+	button.DeclineButton:SetShown(not pendingStatus and status ~= "invited" and LFGListUtil_IsEntryEmpowered());
 	button.DeclineButton.isAck = (status ~= "applied" and status ~= "invited");
 	button.Spinner:SetShown(pendingStatus);
 end
@@ -694,6 +703,7 @@ function LFGListApplicationViewer_UpdateApplicantMember(self, member, appID, mem
 	end
 
 	member.ItemLevel:SetShown(not grayedOut);
+	member.ItemLevel:SetText(math.floor(itemLevel));
 
 	if ( GetMouseFocus() == member ) then
 		LFGListApplicantMember_OnEnter(member);
@@ -747,6 +757,47 @@ function LFGListApplicantMember_OnEnter(self)
 		GameTooltip:AddLine(" ");
 		GameTooltip:AddLine(string.format(LFG_LIST_COMMENT_FORMAT, comment), GRAY_FONT_COLOR.r, GRAY_FONT_COLOR.g, GRAY_FONT_COLOR.b, true);
 	end
+
+	--Add statistics
+	local stats = C_LFGList.GetApplicantMemberStats(applicantID, memberIdx);
+	local lastTitle = nil;
+
+	--Tank proving ground
+	if ( stats[23690] and stats[23690] > 0 ) then
+		LFGListUtil_AppendStatistic(LFG_LIST_PROVING_TANK_GOLD, nil, LFG_LIST_PROVING_GROUND_TITLE, lastTitle);
+		lastTitle = LFG_LIST_PROVING_GROUND_TITLE;
+	elseif ( stats[23687] and stats[23687] > 0 ) then
+		LFGListUtil_AppendStatistic(LFG_LIST_PROVING_TANK_SILVER, nil, LFG_LIST_PROVING_GROUND_TITLE, lastTitle);
+		lastTitle = LFG_LIST_PROVING_GROUND_TITLE;
+	elseif ( stats[23684] and stats[23684] > 0 ) then
+		LFGListUtil_AppendStatistic(LFG_LIST_PROVING_TANK_BRONZE, nil, LFG_LIST_PROVING_GROUND_TITLE, lastTitle);
+		lastTitle = LFG_LIST_PROVING_GROUND_TITLE;
+	end
+
+	--Healer proving ground
+	if ( stats[23691] and stats[23691] > 0 ) then
+		LFGListUtil_AppendStatistic(LFG_LIST_PROVING_HEALER_GOLD, nil, LFG_LIST_PROVING_GROUND_TITLE, lastTitle);
+		lastTitle = LFG_LIST_PROVING_GROUND_TITLE;
+	elseif ( stats[23688] and stats[23688] > 0 ) then
+		LFGListUtil_AppendStatistic(LFG_LIST_PROVING_HEALER_SILVER, nil, LFG_LIST_PROVING_GROUND_TITLE, lastTitle);
+		lastTitle = LFG_LIST_PROVING_GROUND_TITLE;
+	elseif ( stats[23685] and stats[23685] > 0 ) then
+		LFGListUtil_AppendStatistic(LFG_LIST_PROVING_HEALER_BRONZE, nil, LFG_LIST_PROVING_GROUND_TITLE, lastTitle);
+		lastTitle = LFG_LIST_PROVING_GROUND_TITLE;
+	end
+
+	--Damage proving ground
+	if ( stats[23689] and stats[23689] > 0 ) then
+		LFGListUtil_AppendStatistic(LFG_LIST_PROVING_DAMAGER_GOLD, nil, LFG_LIST_PROVING_GROUND_TITLE, lastTitle);
+		lastTitle = LFG_LIST_PROVING_GROUND_TITLE;
+	elseif ( stats[23686] and stats[23686] > 0 ) then
+		LFGListUtil_AppendStatistic(LFG_LIST_PROVING_DAMAGER_SILVER, nil, LFG_LIST_PROVING_GROUND_TITLE, lastTitle);
+		lastTitle = LFG_LIST_PROVING_GROUND_TITLE;
+	elseif ( stats[23683] and stats[23683] > 0 ) then
+		LFGListUtil_AppendStatistic(LFG_LIST_PROVING_DAMAGER_BRONZE, nil, LFG_LIST_PROVING_GROUND_TITLE, lastTitle);
+		lastTitle = LFG_LIST_PROVING_GROUND_TITLE;
+	end
+
 	GameTooltip:Show();
 end
 
@@ -780,6 +831,9 @@ function LFGListSearchPanel_OnEvent(self, event, ...)
 				LFGListSearchPanel_UpdateResults(self);
 			end
 		end
+		LFGListSearchPanel_UpdateButtonStatus(self);
+	elseif ( event == "PARTY_LEADER_CHANGED" ) then
+		LFGListSearchPanel_UpdateButtonStatus(self);
 	end
 end
 
@@ -883,10 +937,18 @@ end
 
 function LFGListSearchPanel_UpdateButtonStatus(self)
 	local resultID = self.selectedResult;
-	if ( resultID ) then
+	if ( not LFGListUtil_IsAppEmpowered() ) then
+		self.SignUpButton:Disable();
+		self.SignUpButton.tooltip = LFG_LIST_APP_UNEMPOWERED;
+	elseif ( IsInGroup(LE_PARTY_CATEGORY_HOME) and C_LFGList.IsCurrentlyApplying() ) then
+		self.SignUpButton:Disable();
+		self.SignUpButton.tooltip = LFG_LIST_APP_CURRENTLY_APPLYING;
+	elseif ( resultID ) then
 		self.SignUpButton:Enable();
+		self.SignUpButton.tooltip = nil;
 	else
 		self.SignUpButton:Disable();
+		self.SignUpButton.tooltip = LFG_LIST_SELECT_A_SEARCH_RESULT;
 	end
 end
 
@@ -896,6 +958,7 @@ end
 
 function LFGListSearchEntry_OnLoad(self)
 	self:RegisterEvent("LFG_LIST_SEARCH_RESULT_UPDATED");
+	self:RegisterEvent("LFG_ROLE_CHECK_UPDATE");
 end
 
 function LFGListSearchEntry_Update(self)
@@ -911,9 +974,17 @@ function LFGListSearchEntry_Update(self)
 	self.HealerCount:SetShown(not isApplication);
 	self.DamageCount:SetShown(not isApplication);
 	self.CancelButton:SetShown(isApplication and pendingStatus ~= "applied");
+	self.CancelButton:SetEnabled(LFGListUtil_IsAppEmpowered());
+	self.CancelButton.Icon:SetDesaturated(not LFGListUtil_IsAppEmpowered());
+	self.CancelButton.tooltip = (not LFGListUtil_IsAppEmpowered()) and LFG_LIST_APP_UNEMPOWERED;
 	self.Spinner:SetShown(pendingStatus == "applied");
 
-	if ( pendingStatus == "cancelled" or appStatus == "cancelled" or appStatus == "failed" ) then
+	if ( pendingStatus == "applied" and C_LFGList.GetRoleCheckInfo() ) then
+		self.PendingLabel:SetText(LFG_LIST_ROLE_CHECK);
+		self.PendingLabel:Show();
+		self.ExpirationTime:Hide();
+		self.CancelButton:Hide();
+	elseif ( pendingStatus == "cancelled" or appStatus == "cancelled" or appStatus == "failed" ) then
 		self.PendingLabel:SetText(LFG_LIST_APP_CANCELLED);
 		self.PendingLabel:Show();
 		self.ExpirationTime:Hide();
@@ -947,6 +1018,13 @@ function LFGListSearchEntry_Update(self)
 		self.PendingLabel:Hide();
 		self.ExpirationTime:Hide();
 		self.CancelButton:Hide();
+	end
+
+	--Change the anchor of the label depending on whether we have the expiration time
+	if ( self.ExpirationTime:IsShown() ) then
+		self.PendingLabel:SetPoint("RIGHT", self.ExpirationTime, "LEFT", -3, 0);
+	else
+		self.PendingLabel:SetPoint("RIGHT", self.ExpirationTime, "RIGHT", -3, 0);
 	end
 
 	self.expiration = GetTime() + appDuration;
@@ -1020,6 +1098,10 @@ function LFGListSearchEntry_OnEvent(self, event, ...)
 	if ( event == "LFG_LIST_SEARCH_RESULT_UPDATED" ) then
 		local id = ...;
 		if ( id == self.resultID ) then
+			LFGListSearchEntry_Update(self);
+		end
+	elseif ( event == "LFG_ROLE_CHECK_UPDATE" ) then
+		if ( self.resultID ) then
 			LFGListSearchEntry_Update(self);
 		end
 	end
@@ -1201,6 +1283,8 @@ end
 function LFGListInviteDialog_OnLoad(self)
 	self:RegisterEvent("LFG_LIST_SEARCH_RESULTS_RECEIVED");
 	self:RegisterEvent("LFG_LIST_SEARCH_RESULT_UPDATED");
+	self:RegisterEvent("LFG_LIST_JOINED_GROUP");
+	self:RegisterEvent("PARTY_LEADER_CHANGED");
 end
 
 function LFGListInviteDialog_OnEvent(self, event, ...)
@@ -1210,7 +1294,8 @@ function LFGListInviteDialog_OnEvent(self, event, ...)
 		local id = ...;
 		local _, status, pendingStatus = C_LFGList.GetApplicationInfo(id);
 
-		if ( self.resultID == id and status ~= "invited" ) then
+		local empowered = LFGListUtil_IsAppEmpowered();
+		if ( self.resultID == id and not self.informational and (status ~= "invited" or not empowered) ) then
 			--Check if we need to hide the panel
 			StaticPopupSpecial_Hide(self);
 			LFGListInviteDialog_CheckPending(self);
@@ -1218,12 +1303,32 @@ function LFGListInviteDialog_OnEvent(self, event, ...)
 			--Check if we need to show this result
 			LFGListInviteDialog_CheckPending(self);
 		end
+	elseif ( event == "PARTY_LEADER_CHANGED" ) then
+		--Check if we need to hide the current panel
+		if ( not LFGListUtil_IsAppEmpowered() and self:IsShown() and not self.informational ) then
+			StaticPopupSpecial_Hide(self);
+		end
+
+		--Check if we need to show any panels
+		LFGListInviteDialog_CheckPending(self);
+	elseif ( event == "LFG_LIST_JOINED_GROUP" ) then
+		if ( not LFGListUtil_IsAppEmpowered() ) then
+			--Show the informational dialog, regardless of whether we already had something up
+			local id = ...;
+			StaticPopupSpecial_Hide(self);
+			LFGListInviteDialog_Show(self, id);
+		end
 	end
 end
 
 function LFGListInviteDialog_CheckPending(self)
 	--If we're already showing one, don't replace it
 	if ( self:IsShown() ) then
+		return;
+	end
+
+	--If we're not empowered to make changes to applications, don't pop up anything.
+	if ( not LFGListUtil_IsAppEmpowered() ) then
 		return;
 	end
 
@@ -1240,13 +1345,22 @@ end
 function LFGListInviteDialog_Show(self, resultID)
 	local id, activityID, name, comment, voiceChat, iLvl, age, numBNetFriends, numCharFriends, numGuildMates, isDelisted, numTanks, numHealers, numDPS = C_LFGList.GetSearchResultInfo(resultID);
 	local activityName = C_LFGList.GetActivityInfo(activityID);
-	local _, _, _, _, role = C_LFGList.GetApplicationInfo(resultID);
+	local _, status, _, _, role = C_LFGList.GetApplicationInfo(resultID);
+
+	local informational = (status ~= "invited");
+	assert(not informational or status == "inviteaccepted");
 
 	self.resultID = resultID;
 	self.GroupName:SetText(name);
 	self.ActivityName:SetText(activityName);
 	self.Role:SetText(_G[role]);
 	self.RoleIcon:SetTexCoord(GetTexCoordsForRole(role));
+	self.Label:SetText(informational and LFG_LIST_JOINED_GROUP_NOTICE or LFG_LIST_INVITED_TO_GROUP);
+
+	self.informational = informational;
+	self.AcceptButton:SetShown(not informational);
+	self.DeclineButton:SetShown(not informational);
+	self.AcknowledgeButton:SetShown(informational);
 
 	StaticPopupSpecial_Show(self);
 end
@@ -1259,6 +1373,11 @@ end
 
 function LFGListInviteDialog_Decline(self)
 	C_LFGList.DeclineInvite(self.resultID);
+	StaticPopupSpecial_Hide(self);
+	LFGListInviteDialog_CheckPending(self);
+end
+
+function LFGListInviteDialog_Acknowledge(self)
 	StaticPopupSpecial_Hide(self);
 	LFGListInviteDialog_CheckPending(self);
 end
@@ -1403,4 +1522,21 @@ end
 
 function LFGListUtil_SortApplicants(applicants)
 	table.sort(applicants, LFGListUtil_SortApplicantsCB);
+end
+
+function LFGListUtil_IsAppEmpowered()
+	return not IsInGroup(LE_PARTY_CATEGORY_HOME) or UnitIsGroupLeader("player", LE_PARTY_CATEGORY_HOME);
+end
+
+function LFGListUtil_IsEntryEmpowered()
+	return UnitIsGroupLeader("player", LE_PARTY_CATEGORY_HOME) or UnitIsGroupAssistant("player", LE_PARTY_CATEGORY_HOME);
+end
+
+function LFGListUtil_AppendStatistic(label, value, title, lastTitle)
+	if ( title ~= lastTitle ) then
+		GameTooltip:AddLine(" ");
+		GameTooltip:AddLine(title, 1, 1, 1);
+	end
+
+	GameTooltip:AddLine(string.format(label, value));
 end

@@ -767,6 +767,15 @@ function PaperDollFrame_SetStat(statFrame, unit, statIndex)
 	statFrame:Show();
 end
 
+function CharacterArmor_OnEnter (self)
+	if (MOVING_STAT_CATEGORY) then return; end
+	GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+	GameTooltip:SetText(self.tooltip);
+	
+	GameTooltip:AddLine(self.tooltip2);
+	GameTooltip:Show();
+end
+
 function PaperDollFrame_SetArmor(statFrame, unit)
 	local base, effectiveArmor, armor, posBuff, negBuff = UnitArmor(unit);
 	_G[statFrame:GetName().."Label"]:SetText(format(STAT_FORMAT, ARMOR));
@@ -776,10 +785,16 @@ function PaperDollFrame_SetArmor(statFrame, unit)
 	effectiveArmor = effectiveArmor - bonusArmor;
 
 	PaperDollFrame_SetLabelAndText(statFrame, STAT_ARMOR, effectiveArmor, false);
-	local armorReduction = PaperDollFrame_GetArmorReduction(effectiveArmor, UnitLevel(unit));
-	statFrame.tooltip = HIGHLIGHT_FONT_COLOR_CODE..format(PAPERDOLLFRAME_TOOLTIP_FORMAT, ARMOR).." "..string.format("%s", effectiveArmor)..FONT_COLOR_CODE_CLOSE;
-	statFrame.tooltip2 = format(DEFAULT_STATARMOR_TOOLTIP, armorReduction);
+	local baseArmorReduction = PaperDollFrame_GetArmorReduction(effectiveArmor, UnitLevel(unit));
+	local armorReduction = PaperDollFrame_GetArmorReduction((effectiveArmor + bonusArmor), UnitLevel(unit));
 	
+	statFrame.tooltip = HIGHLIGHT_FONT_COLOR_CODE..format(PAPERDOLLFRAME_TOOLTIP_FORMAT, ARMOR).." "..string.format("%s", effectiveArmor)..FONT_COLOR_CODE_CLOSE;
+	statFrame.tooltip2 = format(STAT_ARMOR_BASE_TOOLTIP, baseArmorReduction);
+	
+	if (bonusArmor > 0) then
+		statFrame.tooltip2 = statFrame.tooltip2 .. "\n" .. format(STAT_ARMOR_TOTAL_TOOLTIP, armorReduction);
+	end
+
 	if ( unit == "player" ) then
 		local petBonus = ComputePetBonus("PET_BONUS_ARMOR", effectiveArmor );
 		if( petBonus > 0 ) then
@@ -787,21 +802,30 @@ function PaperDollFrame_SetArmor(statFrame, unit)
 		end
 	end
 	
+	statFrame:SetScript("OnEnter", CharacterArmor_OnEnter);
 	statFrame:Show();
 end
 
 function PaperDollFrame_SetBonusArmor(statFrame, unit)
-	local _, _, _, posBuff, negBuff = UnitArmor(unit);
+	local _, effectiveArmor, _, posBuff, negBuff = UnitArmor(unit);
 	_G[statFrame:GetName().."Label"]:SetText(format(STAT_FORMAT, ARMOR));
 	local text = _G[statFrame:GetName().."StatText"];
 
 	local bonusArmor = posBuff - negBuff;
 
 	PaperDollFrame_SetLabelAndText(statFrame, STAT_BONUS_ARMOR, bonusArmor, false);
-	local armorReduction = PaperDollFrame_GetArmorReduction(bonusArmor, UnitLevel(unit));
+	local armorReduction = PaperDollFrame_GetArmorReduction(effectiveArmor, UnitLevel(unit));
 	statFrame.tooltip = HIGHLIGHT_FONT_COLOR_CODE..format(PAPERDOLLFRAME_TOOLTIP_FORMAT, BONUS_ARMOR).." "..string.format("%s", bonusArmor)..FONT_COLOR_CODE_CLOSE;
-	statFrame.tooltip2 = format(DEFAULT_STATARMOR_TOOLTIP, armorReduction);
+
+	local hasAura, percent = GetBladedArmorEffect();
+
+	if (hasAura) then
+		statFrame.tooltip2 = format(STAT_ARMOR_BONUS_ARMOR_BLADED_ARMOR_TOOLTIP, armorReduction, (bonusArmor * (percent / 100)));
+	else
+		statFrame.tooltip2 = format(STAT_ARMOR_TOTAL_TOOLTIP, armorReduction);
+	end
 	
+	statFrame:SetScript("OnEnter", CharacterArmor_OnEnter);
 	statFrame:Show();
 end
 
@@ -2825,7 +2849,7 @@ function GearManagerDialogPopupOkay_Update ()
 	local popup = GearManagerDialogPopup;
 	local button = GearManagerDialogPopupOkay;
 	
-	if ( popup.selectedIcon and popup.name ) then
+	if ( (popup.selectedIcon or popup.isEdit) and popup.name ) then
 		button:Enable();
 	else
 		button:Disable();

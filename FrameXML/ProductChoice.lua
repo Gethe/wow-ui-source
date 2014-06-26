@@ -53,7 +53,7 @@ function ProductChoiceFrame_ShowAlerts(self, forceShowMain, forceShowSecond)
 			RecruitAFriend_ShowInfoDialog(self.mainAlertFrame, RAF_PRODUCT_CHOICE_EARNED, true);
 		end
 		if ( forceShowSecond ) then
-			self.secondAlertFrame:SetPoint("LEFT", FriendsTabHeaderRecruitAFriendButton, "RIGHT", 15, 0);
+			self.secondAlertFrame:SetPoint("LEFT", FriendsTabHeaderRecruitAFriendButton, "RIGHT", 25, 0);
 			RecruitAFriend_ShowInfoDialog(self.secondAlertFrame, RAF_PRODUCT_CHOICE_CLAIM, false);
 		end
 	end

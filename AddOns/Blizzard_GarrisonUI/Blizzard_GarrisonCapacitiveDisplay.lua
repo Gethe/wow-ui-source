@@ -1,6 +1,3 @@
-local CAPACITIVE_MAX_SHIPMENTS = 7;
-local TIME_TO_UPDATE = 1; -- Every 1 second
-
 UIPanelWindows["GarrisonCapacitiveDisplayFrame"] = { area = "left", pushable = 0, };
 
 function GarrisonCapacitiveDisplayFrame_ToggleFrame()
@@ -12,9 +9,6 @@ function GarrisonCapacitiveDisplayFrame_ToggleFrame()
 end
 
 function GarrisonCapacitiveDisplayFrame_OnLoad(self)
-	ButtonFrameTemplate_HidePortrait(self);
-    ButtonFrameTemplate_HideAttic(self);
-
     self:RegisterEvent("SHIPMENT_CRAFTER_OPENED");
     self:RegisterEvent("SHIPMENT_CRAFTER_CLOSED");
     self:RegisterEvent("SHIPMENT_CRAFTER_INFO");
@@ -33,80 +27,11 @@ function GarrisonCapacitiveDisplayFrame_Update(self, success, maxShipments, plot
 
 		local numPending = C_Garrison.GetNumPendingShipments();
 		local display = self.CapacitiveDisplay;
-		local workOrders = display.WorkOrders;
 
-
-		display.StatusLabel:Hide();
-		display.TimeLeftLabel:Hide();
-		display.Timer:Hide();
+		local available = maxShipments - numPending;
 
 		display.ShipmentIconFrame.itemId = nil;
-
-		for i = 1, CAPACITIVE_MAX_SHIPMENTS do
-			local workOrder = workOrders[i];
-
-			if (not workOrder) then
-				workOrder = CreateFrame("Frame", nil, display, "GarrisonCapacitiveWorkOrderTemplate");
-				workOrder:SetPoint("LEFT", workOrders[i-1], "RIGHT", 8, 0);
-				workOrder:SetID(i);
-			end
-
-			workOrder.Lock:Hide();
-			workOrder.CompletedOverlay:Hide();
-			workOrder.QueuedOverlay:Hide();
-			workOrder.Checkmark:Hide();
-			workOrder.Icon:Hide();
-			workOrder.Active:Hide();
-			workOrder.Border:Hide();
-			workOrder.Arrow:Hide();
-
-			local firstActiveFound = false;
-
-			if (numPending and i <= numPending) then
-				local _, texture, _, _, totalTime, timeRemaining = C_Garrison.GetPendingShipmentInfo(i);
-
-				workOrder.Icon:SetTexture(texture);
-					workOrder.Icon:Show();   				
-				workOrder.Border:Show();
-
-				workOrder.complete = false;
-
-				if (timeRemaining == 0) then
-					workOrder.Border:SetAlpha(1);
-					workOrder.CompletedOverlay:Show();
-					workOrder.Checkmark:Show();
-					workOrder.Active:Show();
-					workOrder.complete = true;
-				elseif (not firstActiveFound) then
-					if (not shipmentUpdater) then
-						shipmentUpdater = C_Timer.NewTicker(1, function() GarrisonCapacitiveDisplayFrame_Update(self, success, maxShipments, plotID) end);
-					end
-					workOrder.Arrow:Show();
-					workOrder.Border:SetAlpha(1);
-					display.StatusLabel:Show();
-					display.TimeLeftLabel:Show();
-					display.TimeLeftLabel:SetText(SecondsToTime(timeRemaining, false, true, 1));
-					display.Timer:Show();
-					display.Timer.Fill:SetMinMaxValues(0, totalTime);
-					display.Timer.Fill:SetValue(totalTime - timeRemaining);
-					firstActiveFound = true;
-				else
-					workOrder.QueuedOverlay:Show();
-					workOrder.Border:SetAlpha(0.4);
-				end
-			elseif (i > self.maxShipments) then
-				workOrder.Lock:Show();
-			end
-
-			workOrder:Show();
-	    end
-
-	    if (numPending == 0) then
-			if (shipmentUpdater) then
-				shipmentUpdater:Cancel();
-			end
-			shipmentUpdater = nil;
-		end
+		
 		
 	    local reagents = display.Reagents;
 
@@ -132,7 +57,24 @@ function GarrisonCapacitiveDisplayFrame_Update(self, success, maxShipments, plot
 			reagent.Icon:SetTexture(texture);	    	
 			reagent.Name:SetText(name);
 			reagent.Name:SetTextColor(ITEM_QUALITY_COLORS[quality].r, ITEM_QUALITY_COLORS[quality].g, ITEM_QUALITY_COLORS[quality].b);
-	 	   	reagent.Count:SetText(quantity .. "/" .. needed);
+			-- Grayout items
+			if ( quantity < needed ) then
+				reagent.Icon:SetVertexColor(0.5, 0.5, 0.5);
+				reagent.Name:SetTextColor(GRAY_FONT_COLOR.r, GRAY_FONT_COLOR.g, GRAY_FONT_COLOR.b);
+			else
+				reagent.Icon:SetVertexColor(1.0, 1.0, 1.0);
+				reagent.Name:SetTextColor(HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b);
+			end
+			if ( quantity >= 100 ) then
+				quantity = "*";
+			end
+			reagent.Count:SetText(quantity.." /"..needed);
+			--fix text overflow when the reagent count is too high
+			if (math.floor(reagent.Count:GetStringWidth()) > math.floor(reagent.Icon:GetWidth() + .5)) then 
+			--round count width down because the leftmost number can overflow slightly without looking bad
+			--round icon width because it should always be an int, but sometimes it's a slightly off float
+				reagent.Count:SetText(quantity.."\n/"..needed);
+			end
 	 	   	reagent.itemId = itemID;
 
 	 	   	reagent:Show();
@@ -148,36 +90,30 @@ function GarrisonCapacitiveDisplayFrame_Update(self, success, maxShipments, plot
 			duration = 0;
 		end
 
-		local prefix, pendingText = C_Garrison.GetShipmentContainerInfo();
+		local prefix, pendingText, description = C_Garrison.GetShipmentContainerInfo();
 
-		if (not prefix or prefix == "") then
-			prefix = "Capacitance-Blacksmithing";
+		local _, buildingName = C_Garrison.GetOwnedBuildingInfoAbbrev(self.plotID);
+
+		self.TitleText:SetText(buildingName);
+		
+		if ( UnitExists("npc") ) then
+			SetPortraitTexture(self.portrait, "npc");
+		else
+			self.portrait:SetTexture("Interface\\QuestFrame\\UI-QuestLog-BookIcon");
 		end
 
-		display.StatusLabel:SetText(pendingText);
+	    local followerName = C_Garrison.GetFollowerInfoForBuilding(self.plotID);
 
-		GarrisonCapacitiveDisplayFrame_UpdateFollower(self);
+	    display.FollowerActive:SetShown(followerName ~= nil);
 
-		local _, name = C_Garrison.GetOwnedBuildingInfoAbbrev(self.plotID);
-
-		self.TitleText:SetText(name);
-
-		self.CapacitiveInset.BG:SetAtlas(prefix.."-BG", true);
-
-		display.IconBG:SetAtlas(prefix.."-IconBG", true);
-		display.ShipmentIconFrame.IconBorder:SetAtlas(prefix.."-IconBorder", true);
-
-		display.Timer.BG:SetAtlas(prefix.."-TimerBG", true);
-		display.Timer.TimerFrame:SetAtlas(prefix.."-TimerFrame", true);
-		display.Timer.Fill:SetStatusBarAtlas(prefix.."-TimerFill");
+		display.Description:SetText(description);
 
 		display.ShipmentIconFrame.ShipmentName:SetText(name);
-		display.ShipmentIconFrame.ShipmentName:SetTextColor(ITEM_QUALITY_COLORS[quality].r, ITEM_QUALITY_COLORS[quality].g, ITEM_QUALITY_COLORS[quality].b);
-		display.ShipmentIconFrame.ShipmentDuration:SetText(SecondsToTime(duration, false, true, 1));
+		display.ShipmentIconFrame.ShipmentsAvailable:SetText(CAPACITANCE_SHIPMENT_COUNT:format(available, maxShipments));
 		display.ShipmentIconFrame.Icon:SetTexture(texture);
 		display.ShipmentIconFrame.itemId = itemID;
 
-		self:Show();
+		ShowUIPanel(GarrisonCapacitiveDisplayFrame);
 	end
 end
 
@@ -198,7 +134,7 @@ function GarrisonCapacitiveDisplayFrame_OnEvent(self, event, ...)
 		end
 		shipmentUpdater = nil;
 
-		self:Hide();
+		HideUIPanel(GarrisonCapacitiveDisplayFrame);
 	elseif (event == "SHIPMENT_CRAFTER_REAGENT_UPDATE") then
 		if (self.plotID and self.maxShipments) then
 			GarrisonCapacitiveDisplayFrame_Update(self, true, self.maxShipments, self.plotID);
@@ -210,49 +146,6 @@ end
 
 function GarrisonCapacitiveDisplayFrame_OnHide(self)
 	C_Garrison.CloseTradeskillCrafter();
-end
-
-function GarrisonCapacitiveDisplayFrame_UpdateFollower(self)
-	local display = self.CapacitiveDisplay;
-
-    local follower = display.Follower;
-
-    local name, level, quality = C_Garrison.GetFollowerInfoForBuilding(self.plotID);
-
-    follower.EmptyFollower:SetShown(not name);
-
-    follower.FollowerBorder:SetShown(name ~= nil);
-    follower.LevelBorder:SetShown(name ~= nil);
-    follower.LevelText:SetShown(name ~= nil);
-
-    if (name) then
-    	local color = ITEM_QUALITY_COLORS[quality];
-    	follower.LevelBorder:SetVertexColor(color.r, color.g, color.b);
-    	follower.LevelText:SetText(level);
-    	follower.FollowerBonus:SetText(CAPACITANCE_INCREASED_YIELD);
-    	follower.FollowerBonus:SetTextColor(0.12, 1, 0);
-    else
-    	follower.FollowerBonus:SetText(NONE);
-    	follower.FollowerBonus:SetTextColor(HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b);
-    end
-end
-
-function GarrisonCapacitiveWorkOrder_OnEnter(self)
-	if (self.complete) then
-		GameTooltip:SetOwner(self, "ANCHOR_RIGHT", -20, -100);
-		GameTooltip:SetText(CAPACITANCE_WORK_COMPLETE_TOOLTIP_TITLE, 1, 1, 1);
-		GameTooltip:AddLine(CAPACITANCE_WORK_COMPLETE_TOOLTIP, nil, nil, nil, true);
-		GameTooltip:Show();
-	elseif (self:GetID() > GarrisonCapacitiveDisplayFrame.maxShipments) then
-		GameTooltip:SetOwner(self, "ANCHOR_RIGHT", 2, -80);
-		GameTooltip:SetText(CAPACITANCE_INCREASED_CAPACITY_TOOLTIP_TITLE, 1, 1, 1);
-		GameTooltip:AddLine(CAPACITANCE_INCREASED_CAPACITY_TOOLTIP, nil, nil, nil, true);
-		GameTooltip:Show();
-	end
-end
-
-function GarrisonCapacitiveWorkOrder_OnLeave(self)
-	GameTooltip:Hide();
 end
 
 function GarrisonCapacitiveStartWorkOrder_OnClick(self)

@@ -517,7 +517,7 @@ function ToggleGlyphFrame()
 --		return;
 --	end
 
-	if ( UnitLevel("player") < SHOW_INSCRIPTION_LEVEL or ShouldHideGlyphTab() ) then
+	if ( UnitLevel("player") < SHOW_INSCRIPTION_LEVEL or IsCharacterNewlyBoosted() ) then
 		return;
 	end
 
@@ -532,7 +532,7 @@ function OpenGlyphFrame()
 --		return;
 --	end
 
-	if ( UnitLevel("player") < SHOW_INSCRIPTION_LEVEL or ShouldHideGlyphTab() ) then
+	if ( UnitLevel("player") < SHOW_INSCRIPTION_LEVEL or IsCharacterNewlyBoosted() ) then
 		return;
 	end
 
@@ -1507,6 +1507,7 @@ UIPARENT_MANAGED_FRAME_POSITIONS = {
 	["MissingLootFrame"] = {baseY = true, bottomEither = actionBarOffset, overrideActionBar = overrideActionBarTop, petBattleFrame = petBattleTop, bonusActionBar = 1, pet = 1, reputation = 1};
 	["TutorialFrameAlertButton"] = {baseY = true, yOffset = -10, bottomEither = actionBarOffset, overrideActionBar = overrideActionBarTop, petBattleFrame = petBattleTop, bonusActionBar = 1, reputation = 1};
 	["FramerateLabel"] = {baseY = true, bottomEither = actionBarOffset, overrideActionBar = overrideActionBarTop, petBattleFrame = petBattleTop, bonusActionBar = 1, pet = 1, reputation = 1, playerPowerBarAlt = 1, extraActionBarFrame = 1};
+	["ArcheologyDigsiteProgressBar"] = {baseY = true, yOffset = 40, bottomEither = actionBarOffset, overrideActionBar = overrideActionBarTop, petBattleFrame = petBattleTop, bonusActionBar = 1, pet = 1, reputation = 1, tutorialAlert = 1, playerPowerBarAlt = 1, extraActionBarFrame = 1, draenorZoneAbilityFrame = 1, castingBar = 1};
 	["CastingBarFrame"] = {baseY = true, yOffset = 40, bottomEither = actionBarOffset, overrideActionBar = overrideActionBarTop, petBattleFrame = petBattleTop, bonusActionBar = 1, pet = 1, reputation = 1, tutorialAlert = 1, playerPowerBarAlt = 1, extraActionBarFrame = 1, draenorZoneAbilityFrame = 1};
 	["PlayerPowerBarAlt"] = {baseY = true, yOffset = 40, bottomEither = actionBarOffset, overrideActionBar = overrideActionBarTop, petBattleFrame = petBattleTop, bonusActionBar = 1, pet = 1, reputation = 1, tutorialAlert = 1, extraActionBarFrame = 1, draenorZoneAbilityFrame = 1};
 	["ExtraActionBarFrame"] = {baseY = true, yOffset = 40, bottomEither = actionBarOffset, overrideActionBar = overrideActionBarTop, petBattleFrame = petBattleTop, bonusActionBar = 1, pet = 1, reputation = 1, tutorialAlert = 1};
@@ -2146,6 +2147,9 @@ function FramePositionDelegate:UIParentManageFramePositions()
 		if (DraenorZoneAbilityFrame and DraenorZoneAbilityFrame:IsShown()) then
 			tinsert(yOffsetFrames, "draenorZoneAbilityFrame");
 		end
+		if ( CastingBarFrame and not CastingBarFrame:GetAttribute("ignoreFramePositionManager") ) then
+			tinsert(yOffsetFrames, "castingBar");
+		end
 	end
 	
 	if ( menuBarTop == 55 ) then
@@ -2169,6 +2173,9 @@ function FramePositionDelegate:UIParentManageFramePositions()
 
 		if ( value.bonusActionBar and BonusActionBarFrame ) then
 			value.bonusActionBar = BonusActionBarFrame:GetHeight() - MainMenuBar:GetHeight();
+		end
+		if ( value.castingBar ) then
+			value.castingBar = CastingBarFrame:GetHeight() + 14;
 		end
 		securecall("UIParent_ManageFramePosition", index, value, yOffsetFrames, xOffsetFrames, hasBottomLeft, hasBottomRight, hasPetBar);
 	end
@@ -3266,6 +3273,8 @@ function ToggleGameMenu()
 	elseif ( ClearTarget() and (not UnitIsCharmed("player")) ) then
 	elseif ( OpacityFrame:IsShown() ) then
 		OpacityFrame:Hide();
+	elseif ( SplashFrame:IsShown() ) then
+		SplashFrame_Close();
 	else
 		PlaySound("igMainMenuOpen");
 		ShowUIPanel(GameMenuFrame);

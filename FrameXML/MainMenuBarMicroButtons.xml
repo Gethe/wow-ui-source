@@ -165,6 +165,7 @@
 				self:RegisterEvent("UPDATE_BINDINGS");
 				self:RegisterEvent("PLAYER_TALENT_UPDATE");
 				self:RegisterEvent("PLAYER_SPECIALIZATION_CHANGED");
+				self:RegisterEvent("PLAYER_CHARACTER_UPGRADE_TALENT_COUNT_CHANGED");
 			</OnLoad>
 			<OnClick function="ToggleTalentFrame"/>
 			<OnEvent function="TalentMicroButton_OnEvent"/>

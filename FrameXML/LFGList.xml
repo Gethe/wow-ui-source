@@ -139,12 +139,17 @@
 		<Scripts>
 			<OnLoad>
 				self:RegisterEvent("LFG_LIST_APPLICANT_UPDATED");
+				self:RegisterEvent("PARTY_LEADER_CHANGED");
 			</OnLoad>
 			<OnEvent>
 				if ( event == "LFG_LIST_APPLICANT_UPDATED" ) then
 					local id = ...;
 					if ( id == self.applicantID ) then
 						LFGListApplicationViewer_UpdateApplicant(self, id);
+					end
+				elseif ( event == "PARTY_LEADER_CHANGED" ) then
+					if ( self.applicantID ) then
+						LFGListApplicationViewer_UpdateApplicant(self, self.applicantID);
 					end
 				end
 			</OnEvent>
@@ -523,7 +528,7 @@
 					</OnLoad>
 				</Scripts>
 			</Frame>
-			<Button parentKey="CancelButton" inherits="UIMenuButtonStretchTemplate">
+			<Button parentKey="CancelButton" inherits="UIMenuButtonStretchTemplate" motionScriptsWhileDisabled="true">
 				<Size x="24" y="24"/>
 				<Anchors>
 					<Anchor point="RIGHT" x="-9" y="0"/>
@@ -541,6 +546,14 @@
 					<OnClick>
 						C_LFGList.CancelApplication(self:GetParent().resultID);
 					</OnClick>
+					<OnEnter>
+						if ( self.tooltip ) then
+							GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+							GameTooltip:SetText(self.tooltip);
+							GameTooltip:Show();
+						end
+					</OnEnter>
+					<OnLeave function="GameTooltip_Hide"/>
 				</Scripts>
 				<HighlightTexture file="Interface\Buttons\UI-Common-MouseHilight" alphaMode="ADD"/>
 			</Button>
@@ -962,6 +975,26 @@
 							<OnClick function="LFGListApplicationViewerEditButton_OnClick"/>
 						</Scripts>
 					</Button>
+					<Frame parentKey="UnempoweredCover" enableMouse="true" frameLevel="15">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeKey="$parent.ScrollFrame" relativePoint="TOPLEFT" x="0" y="0"/>
+							<Anchor point="BOTTOMRIGHT" relativeKey="$parent.ScrollFrame" relativePoint="BOTTOMRIGHT" x="0" y="0"/>
+						</Anchors>
+						<Layers>
+							<Layer level="BACKGROUND">
+								<Texture parentKey="Background" atlas="groupfinder-background-waitingcover" setAllPoints="true">
+									<Color r="1" g="1" b="1" a="0.7"/>
+								</Texture>
+							</Layer>
+							<Layer level="ARTWORK">
+								<FontString parentKey="Label" inherits="GameFontNormalLarge" text="LFG_LIST_GROUP_FORMING" justifyH="CENTER">
+									<Anchors>
+										<Anchor point="CENTER" x="0" y="60"/>
+									</Anchors>
+								</FontString>
+							</Layer>
+						</Layers>
+					</Frame>
 				</Frames>
 				<Scripts>
 					<OnLoad function="LFGListApplicationViewer_OnLoad"/>
@@ -1309,6 +1342,17 @@
 				<Scripts>
 					<OnClick>
 						LFGListInviteDialog_Decline(self:GetParent());
+					</OnClick>
+				</Scripts>
+			</Button>
+			<Button parentKey="AcknowledgeButton" inherits="UIPanelButtonTemplate" text="OK">
+				<Size x="118" y="22"/>
+				<Anchors>
+					<Anchor point="BOTTOM" relativeKey="$parent" relativePoint="BOTTOM" x="0" y="23"/>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						LFGListInviteDialog_Acknowledge(self:GetParent());
 					</OnClick>
 				</Scripts>
 			</Button>

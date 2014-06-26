@@ -283,7 +283,13 @@
 				self:RegisterForClicks("LeftButtonUp", "RightButtonUp");
 				self:RegisterForDrag("LeftButton");
 			</OnLoad>
-			<OnClick function="GarrisonFollowerListButton_OnClick"/>
+			<OnClick>
+				if ( IsModifiedClick() ) then
+					GarrisonFollowerListButton_OnModifiedClick(self, button);
+				else
+					GarrisonFollowerListButton_OnClick(self, button);
+				end
+			</OnClick>
 			<OnDragStart function="GarrisonFollowerListButton_OnDragStart"/>
 			<OnDragStop function="GarrisonFollowerListButton_OnDragStop"/>
 		</Scripts>
@@ -316,16 +322,41 @@
 					</Anchors>
 				</FontString>
 			</Layer>
-			<Layer level="ARTWORK" textureSubLevel="-1">
-				<Texture parentKey="Icon" file="Interface\icons\inv_drink_31_embalmingfluid">
-					<Size x="35" y="35"/>
-					<Anchors>
-						<Anchor point="CENTER" relativeKey="$parent.IconBorder"/>
-					</Anchors>
-				</Texture>
-			</Layer>
 		</Layers>
 		<Frames>
+			<Button parentKey="IconButton">
+				<Layers>
+					<Layer level="ARTWORK" textureSubLevel="-1">
+						<Texture parentKey="Icon" file="Interface\icons\inv_drink_31_embalmingfluid">
+							<Size x="35" y="35"/>
+							<Anchors>
+								<Anchor point="CENTER" relativeKey="$parent.IconBorder"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+				<Size x="35" y="35"/>				
+				<Anchors>
+					<Anchor point="CENTER" relativeKey="$parent.IconBorder"/>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						if ( IsModifiedClick("CHATLINK") ) then
+							local abilityLink = C_Garrison.GetFollowerAbilityLink(self.abilityID);
+							if (abilityLink) then
+								ChatEdit_InsertLink(abilityLink);
+							end
+						end
+					</OnClick>
+					<OnEnter>
+						GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+						GarrisonFollowerAbilityTooltip_Show(self.abilityID);
+					</OnEnter>
+					<OnLeave>
+						GarrisonFollowerAbilityTooltip:Hide();
+					</OnLeave>						
+				</Scripts>
+			</Button>
 			<Frame parentArray="Counters" inherits="GarrisonMissionAbilityCounterTemplate" hidden="true">
 				<Anchors>
 					<Anchor point="LEFT" relativeKey="$parent.CounterString" relativePoint="RIGHT" y="-2"/>
@@ -616,6 +647,7 @@
 		</Frames>
 		<Scripts>
 			<OnClick function="GarrisonMissionButton_OnClick"/>
+
 		</Scripts>
 	</Button>
 	
@@ -1035,6 +1067,8 @@
 			<OnReceiveDrag>
 				GarrisonManyParty_ReceiveDrag(self:GetParent());
 			</OnReceiveDrag>
+			<OnEnter function="GarrisonMissionPageFollowerFrame_OnEnter"/>
+			<OnLeave function="GarrisonMissionPageFollowerFrame_OnLeave"/>
 		</Scripts>
 	</Frame>
 	
@@ -1085,6 +1119,8 @@
 			<OnReceiveDrag>
 				GarrisonManyParty_ReceiveDrag(self:GetParent());
 			</OnReceiveDrag>
+			<OnEnter function="GarrisonMissionPageFollowerFrame_OnEnter"/>
+			<OnLeave function="GarrisonMissionPageFollowerFrame_OnLeave"/>
 		</Scripts>
 	</Frame>
 	
@@ -1142,6 +1178,8 @@
 			<OnReceiveDrag>
 				GarrisonSingleParty_ReceiveDrag(self:GetParent());
 			</OnReceiveDrag>
+			<OnEnter function="GarrisonMissionPageFollowerFrame_OnEnter"/>
+			<OnLeave function="GarrisonMissionPageFollowerFrame_OnLeave"/>
 		</Scripts>
 	</Frame>
 	
@@ -1310,9 +1348,6 @@
 				<Alpha childKey="CrossLeft" duration="0.1" order="1" fromAlpha="0" toAlpha="1"/>
 				<Scale childKey="CrossRight" startDelay="0.1" duration="0.15" order="1" fromScaleX="5" fromScaleY="5" toScaleX="1" toScaleY="1"/>
 				<Alpha childKey="CrossRight" startDelay="0.1" duration="0.1" order="1" fromAlpha="0" toAlpha="1"/>
-				<Scripts>
-					<OnFinished function="GarrisonMissionComplete_OnPortraitAnimFinished"/>
-				</Scripts>
 			</AnimationGroup>
 		</Animations>	
 		<Scripts>
@@ -1355,29 +1390,28 @@
 		</Layers>
 		<BarTexture file="Interface\TargetingFrame\UI-StatusBar"/>
 		<BarColor r="0.482" g="0.098" b="0.706"/>
+		<Scripts>
+			<OnLoad>
+				self.length = self:GetWidth();
+			</OnLoad>
+		</Scripts>
 	</StatusBar>
 	
 	<Frame name="GarrisonFollowerXPGainTemplate" virtual="true">
 		<Size x="100" y="20"/>
 		<Animations>
 			<AnimationGroup parentKey="FadeIn" setToFinalAlpha="true">
-				<Alpha fromAlpha="0" toAlpha="1" duration=".5" order="1"/>
+				<Alpha fromAlpha="0" toAlpha="1" duration=".25" order="1"/>
+				<Translation duration="1" offsetY="20" order="2"/>
+				<Alpha startDelay="0.5" fromAlpha="1" toAlpha="0" duration=".5" order="2"/>
 				<Scripts>
-					<OnFinished>
-						if (GarrisonMissionFrame.MissionComplete.BonusRewards.firstChest) then
-							GarrisonMissionFrame.MissionComplete.BonusRewards.firstChest.BonusLockBurstAnim:Play();
-						else
-							GarrisonMissionFrame.MissionComplete.NextMissionButton:Enable();
-						end
-						GarrisonMissionFrame.MissionComplete.BonusRewards.Saturated:Show();
-						GarrisonMissionFrame.MissionComplete.BonusRewards.Saturated.FadeIn:Play();
-					</OnFinished>
+					<OnFinished function="GarrisonMissionComplete_AnimXPGainOnFinish"/>
 				</Scripts>
 			</AnimationGroup>
 		</Animations>
 		<Layers>
 			<Layer level="OVERLAY">
-				<FontString parentKey="Text" inherits="GameFontHighlightLarge" text="+24,000">
+				<FontString parentKey="Text" inherits="GameFontHighlightLarge">
 					<Anchors>
 						<Anchor point="CENTER" x="-15"/>
 					</Anchors>
@@ -1400,6 +1434,84 @@
 		</Scripts>
 	</Frame>
 	
+	<Frame name="GarrisonFollowerLevelUpTemplate" virtual="true">
+		<Size x="128" y="128"/>
+		<Layers>
+			<Layer level="BORDER">
+				<Texture parentKey="LevelupLines1" hidden="false" alpha="0" alphaMode="ADD" atlas="Garr_MissionFX-Lines" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="CENTER" x="0" y="10"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="LevelupLines2" hidden="false" alpha="0" alphaMode="ADD" atlas="Garr_MissionFX-Lines" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent.LevelupLines1" x="-25" y="10"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="LevelupLines3" hidden="false" alpha="0" alphaMode="ADD" atlas="Garr_MissionFX-Lines" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent.LevelupLines1" x="20" y="10"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="ARTWORK">
+				<Texture parentKey="Banner" hidden="false" alpha="0" atlas="GarrMission_LevelUpBanner" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="BannerGlow" hidden="false" alpha="0" alphaMode="ADD" atlas="GarrMission_LevelUpBanner" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent.Banner"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="LevelupGlow" hidden="false" alpha="0" alphaMode="ADD" atlas="Garr_MissionFX-Glow" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="OVERLAY">
+				<FontString parentKey="Text" inherits="QuestFont_Shadow_Huge" text="GARRISON_FOLLOWER_LEVEL_UP">
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Animations>
+			<AnimationGroup parentKey="Anim" setToFinalAlpha="true">
+				<Alpha childKey="Banner" duration="0.15" order="1" fromAlpha="0" toAlpha="1"/>
+				<Scale childKey="Banner" duration="0.15" order="1" fromScaleX="0.25" fromScaleY="1" toScaleX="1" toScaleY="1"/>
+				<Alpha childKey="BannerGlow" duration="0.25" order="1" fromAlpha="0" toAlpha="1"/>
+				<Scale childKey="BannerGlow" duration="0.25" order="1" fromScaleX="0.5" fromScaleY="1" toScaleX="1.5" toScaleY="1"/>
+				<Alpha childKey="BannerGlow" startDelay="0.25" duration="0.5" order="1" fromAlpha="1" toAlpha="0"/>
+				<Alpha childKey="LevelupLines1" duration="0.25" order="1" fromAlpha="0" toAlpha="1"/>
+				<Alpha childKey="LevelupLines1" startDelay="0.5" duration="0.25" order="1" fromAlpha="1" toAlpha="0"/>
+				<Scale childKey="LevelupLines1" duration="0.5" order="1" fromScaleX="1" fromScaleY="0.25" toScaleX="1" toScaleY="1"/>
+				<Translation childKey="LevelupLines1" duration="0.5" order="1" offsetX="0" offsetY="25"/>
+				<Alpha childKey="LevelupLines2" startDelay="0.15" duration="0.25" order="1" fromAlpha="0" toAlpha="1"/>
+				<Alpha childKey="LevelupLines2" startDelay="0.65" duration="0.25" order="1" fromAlpha="1" toAlpha="0"/>
+				<Scale childKey="LevelupLines2" startDelay="0.15" duration="0.5" order="1" fromScaleX="1" fromScaleY="0.25" toScaleX="1" toScaleY="1"/>
+				<Translation childKey="LevelupLines2" startDelay="0.15" duration="0.5" order="1" offsetX="0" offsetY="25"/>
+				<Alpha childKey="LevelupLines3" startDelay="0.3" duration="0.25" order="1" fromAlpha="0" toAlpha="1"/>
+				<Alpha childKey="LevelupLines3" startDelay="0.8" duration="0.25" order="1" fromAlpha="1" toAlpha="0"/>
+				<Scale childKey="LevelupLines3" startDelay="0.3" duration="0.5" order="1" fromScaleX="1" fromScaleY="0.25" toScaleX="1" toScaleY="1"/>
+				<Translation childKey="LevelupLines3" startDelay="0.3" duration="0.5" order="1" offsetX="0" offsetY="25"/>
+				<Alpha childKey="LevelupGlow" duration="0.5" order="1" fromAlpha="0" toAlpha="1"/>
+				<Alpha childKey="LevelupGlow" startDelay="0.75" duration="0.5" order="1" fromAlpha="1" toAlpha="0"/>
+				<Scale childKey="LevelupGlow" duration="0.75" order="1" fromScaleX="2.5" fromScaleY="0.25" toScaleX="2.5" toScaleY="2"/>
+				<Translation childKey="LevelupGlow" duration="0.75" order="1" offsetX="0" offsetY="30"/>
+				<Alpha duration="0.5" order="2" change="-1"/>
+				<Scripts>
+					<OnFinished>
+						self:GetParent():Hide();
+					</OnFinished>
+				</Scripts>
+			</AnimationGroup>
+		</Animations>
+	</Frame>
+			
 	<Frame name="GarrisonLargeFollowerXPFrameTemplate" virtual="true">
 		<Size x="177" y="72"/>
 		<Layers>
@@ -1433,14 +1545,19 @@
 				</Anchors>
 			</Frame>
 			<StatusBar parentKey="XP" inherits="GarrisonFollowerXPBarTemplate">
+				<Size x="103" y="9"/>
 				<Anchors>
 					<Anchor point="BOTTOMLEFT" x="55" y="13"/>
-					<Anchor point="TOPRIGHT"  relativePoint="BOTTOMRIGHT" x="-19" y="22"/>
 				</Anchors>
 			</StatusBar>
 			<Frame parentKey="XPGain" inherits="GarrisonFollowerXPGainTemplate" hidden="true">
 				<Anchors>
-					<Anchor point="BOTTOM" relativePoint="TOP"/>
+					<Anchor point="BOTTOM" relativePoint="TOP" x="0" y="-10"/>
+				</Anchors>
+			</Frame>
+			<Frame parentKey="LevelUpFrame" hidden="true" inherits="GarrisonFollowerLevelUpTemplate">
+				<Anchors>
+					<Anchor point="BOTTOM" x="16" y="-23"/>
 				</Anchors>
 			</Frame>
 		</Frames>
@@ -1464,14 +1581,19 @@
 				</Anchors>
 			</Frame>
 			<StatusBar parentKey="XP" inherits="GarrisonFollowerXPBarTemplate">
+				<Size x="80" y="9"/>
 				<Anchors>
-					<Anchor point="BOTTOMLEFT" y="18" x="8"/>
-					<Anchor point="TOPRIGHT"  relativePoint="BOTTOMRIGHT" y="27" x="-8"/>
+					<Anchor point="BOTTOM" x="0" y="18"/>
 				</Anchors>
 			</StatusBar>
 			<Frame parentKey="XPGain" inherits="GarrisonFollowerXPGainTemplate" hidden="true">
 				<Anchors>
 					<Anchor point="BOTTOM" relativePoint="TOP"/>
+				</Anchors>
+			</Frame>
+			<Frame parentKey="LevelUpFrame" hidden="true" inherits="GarrisonFollowerLevelUpTemplate">
+				<Anchors>
+					<Anchor point="TOP" x="0" y="40"/>
 				</Anchors>
 			</Frame>
 		</Frames>
@@ -2390,7 +2512,6 @@
 										GarrisonCinematicModelBase_OnLoad(self);
 										self:SetFrameLevel(self:GetParent():GetFrameLevel() + 1);
 									</OnLoad>
-									<OnPanFinished function="GarrisonMissionComplete_OnModelAnimFinished"/>
 									<OnModelLoaded function="GarrisonMissionComplete_OnModelLoaded"/>
 								</Scripts>
 							</CinematicModel>
@@ -2455,7 +2576,6 @@
 											<OnFinished>
 												self:GetParent():Hide();
 												self:GetParent():SetAlpha(1);
-												GarrisonMissionCompleteEncountersAnim_OnFinished();
 											</OnFinished>
 										</Scripts>
 									</AnimationGroup>
@@ -2481,7 +2601,10 @@
 														<Origin point="LEFT"/>
 													</Scale>
 													<Scripts>
-														<OnFinished function="GarrisonMissionComplete_OnLineAnimFinished"/>
+														<OnFinished>
+															local barFill = self:GetParent();
+															barFill:SetWidth(barFill.finalWidth);
+														</OnFinished>
 													</Scripts>
 												</AnimationGroup>
 											</Animations>
@@ -2658,21 +2781,6 @@
 								<Animations>
 									<AnimationGroup parentKey="FadeIn" setToFinalAlpha="true">
 										<Alpha fromAlpha="0" toAlpha="1" duration=".5" order="1"/>
-										<Scripts>
-											<OnPlay>
-												self:GetParent().Follower1.XPGain:SetAlpha(0);
-												self:GetParent().Follower2.XPGain:SetAlpha(0);
-												self:GetParent().Follower3.XPGain:SetAlpha(0);
-											</OnPlay>
-											<OnFinished>
-												self:GetParent().Follower1.XPGain:Show();
-												self:GetParent().Follower1.XPGain.FadeIn:Play();
-												self:GetParent().Follower2.XPGain:Show();
-												self:GetParent().Follower2.XPGain.FadeIn:Play();
-												self:GetParent().Follower3.XPGain:Show();
-												self:GetParent().Follower3.XPGain.FadeIn:Play();
-											</OnFinished>
-										</Scripts>
 									</AnimationGroup>
 								</Animations>
 								<Frames>
@@ -2706,27 +2814,6 @@
 								<Animations>
 									<AnimationGroup parentKey="FadeIn" setToFinalAlpha="true">
 										<Alpha fromAlpha="0" toAlpha="1" duration=".5" order="1"/>
-										<Scripts>
-											<OnPlay>
-												self:GetParent().Follower1.XPGain:SetAlpha(0);
-												self:GetParent().Follower2.XPGain:SetAlpha(0);
-												self:GetParent().Follower3.XPGain:SetAlpha(0);
-												self:GetParent().Follower4.XPGain:SetAlpha(0);
-												self:GetParent().Follower5.XPGain:SetAlpha(0);
-											</OnPlay>
-											<OnFinished>
-												self:GetParent().Follower1.XPGain:Show();
-												self:GetParent().Follower1.XPGain.FadeIn:Play();
-												self:GetParent().Follower2.XPGain:Show();
-												self:GetParent().Follower2.XPGain.FadeIn:Play();
-												self:GetParent().Follower3.XPGain:Show();
-												self:GetParent().Follower3.XPGain.FadeIn:Play();
-												self:GetParent().Follower4.XPGain:Show();
-												self:GetParent().Follower4.XPGain.FadeIn:Play();
-												self:GetParent().Follower5.XPGain:Show();
-												self:GetParent().Follower5.XPGain.FadeIn:Play();
-											</OnFinished>
-										</Scripts>
 									</AnimationGroup>
 								</Animations>
 								<Frames>

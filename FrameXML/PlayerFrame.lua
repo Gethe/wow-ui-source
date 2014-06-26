@@ -786,6 +786,7 @@ function PlayerFrame_AttachCastBar()
 	local petCastBar = PetCastingBarFrame;
 	-- player
 	castBar.ignoreFramePositionManager = true;
+	castBar:SetAttribute("ignoreFramePositionManager", true);
 	CastingBarFrame_SetLook(castBar, "UNITFRAME");
 	castBar:ClearAllPoints();
 	castBar:SetPoint("LEFT", PlayerFrame, 78, 0);
@@ -797,6 +798,7 @@ function PlayerFrame_AttachCastBar()
 	petCastBar:SetPoint("TOP", castBar, "TOP", 0, 0);
 	
 	PlayerFrame_AdjustAttachments();
+	UIParent_ManageFramePositions();
 end
 
 function PlayerFrame_DetachCastBar()
@@ -804,6 +806,7 @@ function PlayerFrame_DetachCastBar()
 	local petCastBar = PetCastingBarFrame;
 	-- player
 	castBar.ignoreFramePositionManager = nil;
+	castBar:SetAttribute("ignoreFramePositionManager", false);
 	CastingBarFrame_SetLook(castBar, "CLASSIC");
 	castBar:ClearAllPoints();
 	-- pet

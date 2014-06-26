@@ -972,6 +972,7 @@ RACE_INFO_TROLL = "Once at home in the jungles of Stranglethorn Vale, the fierce
 RACE_INFO_TROLL_FEMALE = "Once at home in the jungles of Stranglethorn Vale, the fierce trolls of the Darkspear tribe were besieged on all sides by warring factions. The orcish Horde came to their aid, convincing the Darkspear to sail across the Great Sea and settle in the untamed lands of Kalimdor. Though they cling to their shadowy heritage, the Darkspear remain vocal advocates of a united Horde, lending the strength of their arms and powerful tribal magics to the common cause.";
 RACE_INFO_WORGEN = "The worgen were first unleashed upon the Eastern Kingdoms by Archmage Arugal during the Third War. Primarily used as a weapon against the Scourge, the beasts soon proved to be a burden greater than the humans of Lordaeron could bear. A mysterious curse began to spread among those who fought alongside the wolf-men, causing them to become worgen themselves.  The curse rapidly spread as it reached Gilneas, trapping its inhabitants behind the very walls built to protect them.  The survivors of the curse now seek to find a new fate for their people -- their destiny unwritten...";
 RACIAL_ABILITIES = "Racial Abilities";
+RAID_GRAPHICS_LABEL = "Raid Graphics";
 RANDOMIZE = "Randomize";
 RATINGS_TEXT = "This is the placeholder for the Korean Ratings information";
 REALMLIST_NUMCHARACTERS_TOOLTIP = "The number of characters\nyou have created on this realm.";

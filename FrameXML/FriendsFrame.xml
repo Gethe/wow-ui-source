@@ -1223,53 +1223,10 @@ TRAVEL PASS
 							</OnUpdate>
 						</Scripts>
 					</Frame>
-					<Button name="$parentSoRButton" parentKey="soRButton" hidden="true">
-						<Size x="26" y="26"/>
-						<Anchors>
-							<Anchor point="TOPRIGHT" x="-8" y="-55"/>
-						</Anchors>
-						<Layers>
-							<Layer level="BACKGROUND">
-								<Texture name="$parentIcon" parentKey="icon"/>
-							</Layer>
-						</Layers>
-						<Scripts>
-							<OnLoad>
-								self.icon:SetTexture("Interface\\Icons\\SOR-mail");
-								self:RegisterEvent("SOR_BY_TEXT_UPDATED");
-								if ( CanSendSoRByText() ) then
-									self:Show();
-								else
-									self:Hide();
-								end
-							</OnLoad>
-							<OnClick>
-								ScrollOfResurrectionButton_OnClick(self);
-							</OnClick>
-							<OnEnter>
-								GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
-								GameTooltip:SetText(SEND_SCROLL_OF_RESURRECTION);
-								GameTooltip:AddLine(SCROLL_OF_RESURRECTION_TOOLTIP, 1, 1, 1, true);
-								GameTooltip:Show();
-							</OnEnter>
-							<OnLeave>
-								GameTooltip:Hide();
-							</OnLeave>
-							<OnEvent>
-								if ( CanSendSoRByText() ) then
-									self:Show();
-								else
-									self:Hide();
-								end
-							</OnEvent>
-						</Scripts>
-						<PushedTexture file="Interface\Buttons\UI-Quickslot-Depress"/>
-						<HighlightTexture alphaMode="ADD" file="Interface\Buttons\ButtonHilight-Square" parentKey="highlight"/>
-					</Button>
 					<Button name="$parentRecruitAFriendButton" motionScriptsWhileDisabled="true" parentKey="RaFButton" hidden="true">
 						<Size x="26" y="26"/>
 						<Anchors>
-							<Anchor point="RIGHT" relativeKey="$parent.soRButton" relativePoint="LEFT" x="-4" y="0"/>
+							<Anchor point="TOPRIGHT" x="-8" y="-55"/>
 						</Anchors>
 						<Layers>
 							<Layer level="BACKGROUND">
@@ -1316,6 +1273,49 @@ TRAVEL PASS
 							</OnLeave>
 							<OnEvent>
 								RAFButton_Update(self);
+							</OnEvent>
+						</Scripts>
+						<PushedTexture file="Interface\Buttons\UI-Quickslot-Depress"/>
+						<HighlightTexture alphaMode="ADD" file="Interface\Buttons\ButtonHilight-Square" parentKey="highlight"/>
+					</Button>
+					<Button name="$parentSoRButton" parentKey="soRButton" hidden="true">
+						<Size x="26" y="26"/>
+						<Anchors>
+							<Anchor point="RIGHT" relativeKey="$parent.RaFButton" relativePoint="LEFT" x="-4" y="0"/>
+						</Anchors>
+						<Layers>
+							<Layer level="BACKGROUND">
+								<Texture name="$parentIcon" parentKey="icon"/>
+							</Layer>
+						</Layers>
+						<Scripts>
+							<OnLoad>
+								self.icon:SetTexture("Interface\\Icons\\SOR-mail");
+								self:RegisterEvent("SOR_BY_TEXT_UPDATED");
+								if ( CanSendSoRByText() ) then
+									self:Show();
+								else
+									self:Hide();
+								end
+							</OnLoad>
+							<OnClick>
+								ScrollOfResurrectionButton_OnClick(self);
+							</OnClick>
+							<OnEnter>
+								GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+								GameTooltip:SetText(SEND_SCROLL_OF_RESURRECTION);
+								GameTooltip:AddLine(SCROLL_OF_RESURRECTION_TOOLTIP, 1, 1, 1, true);
+								GameTooltip:Show();
+							</OnEnter>
+							<OnLeave>
+								GameTooltip:Hide();
+							</OnLeave>
+							<OnEvent>
+								if ( specialTestOverrideSoR or CanSendSoRByText() ) then
+									self:Show();
+								else
+									self:Hide();
+								end
 							</OnEvent>
 						</Scripts>
 						<PushedTexture file="Interface\Buttons\UI-Quickslot-Depress"/>

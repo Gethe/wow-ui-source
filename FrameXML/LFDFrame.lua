@@ -212,9 +212,12 @@ function LFDRoleCheckPopup_Update()
 	LFG_UpdateAllRoleCheckboxes();
 	
 	local inProgress, slots, members, category, lfgID, bgQueue = GetLFGRoleUpdate();
+	local isLFGList, activityID = C_LFGList.GetRoleCheckInfo();
 	
 	local displayName;
-	if ( bgQueue ) then
+	if( isLFGList ) then
+		displayName = C_LFGList.GetActivityInfo(activityID);
+	elseif ( bgQueue ) then
 		displayName = GetLFGRoleUpdateBattlegroundInfo();
 	elseif ( slots == 1 ) then
 		local dungeonID, dungeonType, dungeonSubType = GetLFGRoleUpdateSlot(1);
@@ -228,7 +231,11 @@ function LFDRoleCheckPopup_Update()
 	end
 	displayName = NORMAL_FONT_COLOR_CODE..displayName.."|r";
 	
-	LFDRoleCheckPopupDescriptionText:SetFormattedText(QUEUED_FOR, displayName);
+	if ( isLFGList ) then
+		LFDRoleCheckPopupDescriptionText:SetFormattedText(LFG_LIST_APPLYING_TO, displayName);
+	else
+		LFDRoleCheckPopupDescriptionText:SetFormattedText(QUEUED_FOR, displayName);
+	end
 	
 	LFDRoleCheckPopupDescription:SetWidth(LFDRoleCheckPopupDescriptionText:GetWidth()+10);
 	LFDRoleCheckPopupDescription:SetHeight(LFDRoleCheckPopupDescriptionText:GetHeight());
@@ -286,7 +293,9 @@ function LFDPopupRoleCheckButton_OnEnter(self)
 	GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
 	GameTooltip:SetText(_G["ROLE_DESCRIPTION_"..self.role], nil, nil, nil, nil, true);
 	if ( self.permDisabled ) then
-		GameTooltip:AddLine(YOUR_CLASS_MAY_NOT_PERFORM_ROLE, 1, 0, 0, true);
+		if(self.permDisabledTip)then
+			GameTooltip:AddLine(self.permDisabledTip, 1, 0, 0, true);
+		end
 	elseif ( self.disabledTooltip and not self:IsEnabled() ) then
 		GameTooltip:AddLine(self.disabledTooltip, 1, 0, 0, true);
 	elseif ( not self:IsEnabled() ) then

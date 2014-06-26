@@ -266,7 +266,12 @@ function QuestObjectiveTracker_OpenQuestDetails(dropDownButton, questLogIndex)
 end
 
 function QuestObjectiveTracker_UntrackQuest(dropDownButton, questLogIndex)
+	local questID = select(8, GetQuestLogTitle(questLogIndex));
+	local superTrackedQuestID = GetSuperTrackedQuestID();
 	RemoveQuestWatch(questLogIndex);
+	if ( questID == superTrackedQuestID ) then
+		QuestSuperTracking_OnQuestUntracked();
+	end
 	ObjectiveTracker_Update(OBJECTIVE_TRACKER_UPDATE_MODULE_QUEST);
 end
 

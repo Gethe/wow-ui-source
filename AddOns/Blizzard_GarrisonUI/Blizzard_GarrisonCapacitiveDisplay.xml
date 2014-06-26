@@ -26,9 +26,9 @@
 				</FontString>
 			</Layer>
 			<Layer level="ARTWORK">
-				<FontString parentKey="Count" inherits="GameFontNormalOutline" justifyH="CENTER">
+				<FontString parentKey="Count" inherits="NumberFontNormal" justifyH="RIGHT">
 					<Anchors>
-						<Anchor point="TOP" relativeKey="$parent.Icon" relativePoint="BOTTOM" x="2" y="12"/>
+						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Icon" x="-1" y="1"/>
 					</Anchors>
 					<Color r="1" b="1" g="1"/>
 				</FontString>
@@ -120,95 +120,66 @@
 
 	<Frame name="GarrisonCapacitiveDisplayFrame" parent="UIParent" inherits="ButtonFrameTemplate" hidden="true">
 		<Anchors>
-			<Anchor point="TOPLEFT" x="20" y="-108"/>
+			<Anchor point="TOPLEFT" x="28" y="-108"/>
 		</Anchors>
 		<Frames>
-			<Frame parentKey="CapacitiveInset">
-				<Anchors>
-					<Anchor point="TOPLEFT" x="4" y="-24" />
-					<Anchor point="BOTTOMRIGHT" x="-6" y="26" />
-				</Anchors>
-				<Layers>
-					<Layer level="BACKGROUND" textureSubLevel="-5">
-						<Texture parentKey="BG" atlas="Capacitance-Blacksmithing-BG" useAtlasSize="true">
-							<Anchors>
-								<Anchor point="TOPLEFT"/>
-								<Anchor point="BOTTOMRIGHT"/>
-							</Anchors>
-						</Texture>
-					</Layer>
-				</Layers>
-			</Frame>
 			<Frame parentKey="CapacitiveDisplay">
 				<Anchors>
-					<Anchor point="TOPLEFT" relativeKey="$parent.CapacitiveInset" relativePoint="TOPLEFT" x="3" y="-3" />
-					<Anchor point="BOTTOMRIGHT" relativeKey="$parent.CapacitiveInset" relativePoint="BOTTOMRIGHT" x="-3" y="3" />
+					<Anchor point="TOPLEFT" relativeKey="$parent.Inset" relativePoint="TOPLEFT" x="3" y="-3" />
+					<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Inset" relativePoint="BOTTOMRIGHT" x="-3" y="3" />
 				</Anchors>
 				<Layers>
 					<Layer level="ARTWORK" textureSubLevel="-1">
-						<Texture parentKey="IconBG" atlas="Capacitance-Blacksmithing-IconBG" useAtlasSize="true">
+						<Texture parentKey="IconBG" atlas="Capacitance-General-ItemBorder">
+							<Size x="250" y="40"/>
 							<Anchors>
-								<Anchor point="TOP" x="0" y="-20"/>
+								<Anchor point="TOP" x="24" y="-12"/>
 							</Anchors>
 						</Texture>
 					</Layer>
 					<Layer level="ARTWORK" textureSubLevel="1">
+						<FontString parentKey="Description" inherits="GameFontHighlight" justifyH="LEFT">
+							<Size x="296" y="0"/>
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeKey="$parent.IconBG" relativePoint="BOTTOMLEFT" x="-48" y="-12"/>
+							</Anchors>
+						</FontString>
 						<FontString parentKey="Reagents" inherits="GameFontNormalSmall" text="SPELL_REAGENTS">
 							<Anchors>
-								<Anchor point="TOPLEFT" relativeKey="$parent.IconBG" relativePoint="BOTTOMLEFT" x="4" y="-4"/>
+								<Anchor point="TOPLEFT" relativeKey="$parent.Description" relativePoint="BOTTOMLEFT" x="0" y="-12"/>
 							</Anchors>
 						</FontString>
-						<FontString parentKey="WorkOrderLabel" inherits="GameFontNormalMed3" text="CAPACITANCE_WORK_ORDERS">
+						<FontString parentKey="FollowerActive" inherits="GameFontNormal" text="CAPACITANCE_FOLLOWER_BONUS_ACTIVE" hidden="true">
 							<Anchors>
-								<Anchor point="TOPLEFT" relativekey="$parent.IconBG" relativePoint="BOTTOMLEFT" x="6" y="-150"/>
+								<Anchor point="BOTTOMLEFT" relativeTo="GarrisonCapacitiveDisplayFrame" relativePoint="BOTTOMLEFT" x="8" y="8"/>
 							</Anchors>
-							<Color r="0.6" g="0.6" b="0.6"/>
-						</FontString>
-						<FontString parentKey="StatusLabel" inherits="GameFontNormal" justifyH="LEFT" hidden="true">
-							<Anchors>
-								<Anchor point="BOTTOMLEFT" x="20" y="54"/>
-							</Anchors>
-							<Color r="0.6" g="0.6" b="0.6"/>
-						</FontString>
-						<FontString parentKey="TimeLeftLabel" inherits="GameFontNormal" justifyH="RIGHT" hidden="true">
-							<Anchors>
-								<Anchor point="BOTTOMRIGHT" x="-20" y="54"/>
-							</Anchors>
-							<Color r="0.6" g="0.6" b="0.6"/>
 						</FontString>
 					</Layer>
 				</Layers>
 				<Frames>
 					<Frame parentKey="ShipmentIconFrame">
-						<Size x="59" y="58"/>
+						<Size x="42" y="42"/>
 						<Anchors>
-							<Anchor point="LEFT" relativeKey="$parent.IconBG" x="1" y="1"/>
+							<Anchor point="RIGHT" relativeKey="$parent.IconBG" relativePoint="LEFT" x="-6" y="0"/>
 						</Anchors>
 						<Layers>
-							<Layer level="ARTWORK" textureSubLevel="1">
-								<Texture parentKey="IconBorder" atlas="Capacitance-Blacksmithing-IconBorder" useAtlasSize="true">
+							<Layer level="ARTWORK">
+								<Texture parentKey="Icon">
+									<Size x="42" y="42"/>
 									<Anchors>
 										<Anchor point="CENTER"/>
 									</Anchors>
 								</Texture>
 							</Layer>
-							<Layer level="ARTWORK">
-								<Texture parentKey="Icon">
-									<Size x="52" y="52"/>
-									<Anchors>
-										<Anchor point="CENTER" relativeKey="$parent.IconBorder"/>
-									</Anchors>
-								</Texture>
-							</Layer>
 							<Layer level="ARTWORK" textureSubLevel="1">
-								<FontString parentKey="ShipmentName" inherits="GameFontNormalLarge">
+								<FontString parentKey="ShipmentName" inherits="GameFontNormal">
 									<Anchors>
-										<Anchor point="TOPLEFT" relativeKey="$parent.IconBorder" relativePoint="TOPRIGHT" x="6" y="-12"/>
+										<Anchor point="TOPLEFT" relativeKey="$parent.$parent.IconBG" relativePoint="TOPLEFT" x="6" y="-6"/>
 									</Anchors>
 								</FontString>
-								<FontString parentKey="ShipmentDuration" inherits="GameFontHighlight">
+								<FontString parentKey="ShipmentsAvailable" inherits="GameFontHighlightSmall">
 									<Anchors>
-										<Anchor point="BOTTOMLEFT" relativeKey="$parent.IconBorder" relativePoint="BOTTOMRIGHT" x="6" y="12"/>
+										<Anchor point="BOTTOMLEFT" relativeKey="$parent.$parent.IconBG" relativePoint="BOTTOMLEFT" x="6" y="6"/>
 									</Anchors>
 								</FontString>
 							</Layer>
@@ -225,108 +196,11 @@
 							</OnLeave>
 						</Scripts>
 					</Frame>
-					<Frame parentKey="Follower">
-						<Size x="84" y="90"/>
-						<Anchors>
-							<Anchor point="TOPRIGHT" relativeKey="$parent.IconBG" relativePoint="BOTTOMRIGHT" x="-12" y="-4"/>
-						</Anchors>
-						<Layers>
-							<Layer level="ARTWORK" textureSubLevel="1">
-								<FontString parentKey="FollowerBonusLabel" inherits="GameFontNormalSmall" text="CAPACITANCE_FOLLOWER_BONUS">
-									<Anchors>
-										<Anchor point="TOP"/>
-									</Anchors>
-								</FontString>
-								<FontString parentKey="FollowerBonus" inherits="GameFontHighlightSmall" text="NONE">
-									<Anchors>
-										<Anchor point="TOP" relativeKey="$parent.FollowerBonusLabel" relativePoint="BOTTOM" x="0" y="-4"/>
-									</Anchors>
-								</FontString>
-								<Texture parentKey="EmptyFollower" atlas="Capacitance-General-EmptyFollower" useAtlasSize="true">
-									<Anchors>
-										<Anchor point="TOP" relativeKey="$parent.FollowerBonus" relativePoint="BOTTOM" x="0" y="-4"/>
-									</Anchors>
-								</Texture>
-								<Texture parentKey="FollowerBorder" atlas="Capacitance-General-PortraitRing" useAtlasSize="true">
-									<Anchors>
-										<Anchor point="TOP" relativeKey="$parent.FollowerBonus" relativePoint="BOTTOM" x="0" y="-4"/>
-									</Anchors>
-								</Texture>
-							</Layer>
-							<Layer level="ARTWORK">
-								<Texture parentKey="FollowerIcon">
-									<Size x="52" y="52"/>
-									<Anchors>
-										<Anchor point="CENTER" relativeKey="$parent.FollowerBorder"/>
-									</Anchors>
-								</Texture>
-							</Layer>
-							<Layer level="ARTWORK" textureSubLevel="2">
-								<Texture parentKey="LevelBorder" atlas="Capacitance-General-LevelBorder" useAtlasSize="true">
-									<Anchors>
-										<Anchor point="BOTTOM" relativeKey="$parent.FollowerBorder"/>
-									</Anchors>
-								</Texture>
-								<FontString parentKey="LevelText" inherits="GameFontHighlight" justifyH="CENTER">
-									<Anchors>
-										<Anchor point="CENTER" relativeKey="$parent.LevelBorder"/>
-									</Anchors>
-								</FontString>
-							</Layer>
-						</Layers>
-						<Scripts>
-							<OnEnter>
-								GameTooltip:SetOwner(self, "ANCHOR_RIGHT", 40, -80);
-								GameTooltip:SetText(CAPACITANCE_FOLLOWER_BONUS_TOOLTIP_TITLE, 1, 1, 1);
-								GameTooltip:AddLine(CAPACITANCE_FOLLOWER_BONUS_TOOLTIP, nil, nil, nil, true);
-								GameTooltip:Show();
-							</OnEnter>
-							<OnLeave>
-								GameTooltip:Hide();
-							</OnLeave>
-						</Scripts>
-					</Frame>
 					<Button inherits="GarrisonCapacitiveItemButtonTemplate" id="1">
 						<Anchors>
 							<Anchor point="TOPLEFT" relativeKey="$parent.Reagents" relativePoint="BOTTOMLEFT" x="0" y="-4"/>
 						</Anchors>
 					</Button>
-					<Frame inherits="GarrisonCapacitiveWorkOrderTemplate" id="1">
-						<Anchors>
-							<Anchor point="TOPLEFT" relativeKey="$parent.WorkOrderLabel" relativePoint="BOTTOMLEFT" x="2" y="-8"/>
-						</Anchors>
-					</Frame>
-					<Frame parentKey="Timer" hidden="true">
-						<Size x="292" y="32"/>
-						<Anchors>
-							<Anchor point="BOTTOMLEFT" x="18" y="20"/>
-						</Anchors>
-						<Layers>
-							<Layer level="BACKGROUND">
-								<Texture parentKey="BG" atlas="Capacitance-Blacksmithing-TimerBG" useAtlasSize="true">
-									<Anchors>
-										<Anchor point="CENTER"/>
-									</Anchors>
-								</Texture>
-							</Layer>
-							<Layer level="OVERLAY">
-								<Texture parentKey="TimerFrame" atlas="Capacitance-Blacksmithing-TimerFrame" useAtlasSize="true">
-									<Anchors>
-										<Anchor point="CENTER"/>
-									</Anchors>
-								</Texture>
-							</Layer>
-						</Layers>
-						<Frames>
-							<StatusBar parentKey="Fill" useParentLevel="true">
-								<Size x="275" y="15"/>
-								<Anchors>
-									<Anchor point="CENTER"/>
-								</Anchors>
-								<BarTexture atlas="Capacitance-Blacksmithing-TimerFill" useAtlasSize="true"/>
-							</StatusBar>
-						</Frames>
-					</Frame>
 				</Frames>
 			</Frame>
 			<Button parentKey="StartWorkOrderButton" inherits="MagicButtonTemplate" text="CAPACITANCE_START_WORK_ORDER">

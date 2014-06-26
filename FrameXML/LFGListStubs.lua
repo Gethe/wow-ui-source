@@ -48,6 +48,28 @@ LFG_LIST_MUST_SELECT_ROLE = "You must select at least one role for which you hav
 
 LFG_LIST_INVITED_TO_GROUP = "You have been invited to a group:";
 LFG_LIST_ENTRY_DELISTED = "This group is no longer looking for additional members."
+LFG_LIST_APP_UNEMPOWERED = "You are not the group leader.";
+LFG_LIST_SELECT_A_SEARCH_RESULT = "Select a search result."
+LFG_LIST_APP_CURRENTLY_APPLYING = "You are currently being signed up for another group.";
+LFG_LIST_APPLYING_TO = "Signing Up for %s";
+LFG_LIST_ROLE_CHECK = "Role Check"
+LFG_LIST_JOINED_GROUP_NOTICE = "You have joined a group:";
+
+LFG_LIST_PROVING_GROUND_TITLE = "Proving Grounds:";
+
+LFG_LIST_PROVING_TANK_GOLD = "|cffe9f400Gold Tank|r";
+LFG_LIST_PROVING_TANK_SILVER = "|cffc0c0c0Silver Tank|r";
+LFG_LIST_PROVING_TANK_BRONZE = "|cff9b6c00Bronze Tank|r";
+
+LFG_LIST_PROVING_HEALER_GOLD = "|cffe9f400Gold Healer|r";
+LFG_LIST_PROVING_HEALER_SILVER = "|cffc0c0c0Silver Healer|r";
+LFG_LIST_PROVING_HEALER_BRONZE = "|cff9b6c00Bronze Healer|r";
+
+LFG_LIST_PROVING_DAMAGER_GOLD = "|cffe9f400Gold Damage|r";
+LFG_LIST_PROVING_DAMAGER_SILVER = "|cffc0c0c0Silver Damage|r";
+LFG_LIST_PROVING_DAMAGER_BRONZE = "|cff9b6c00Bronze Damage|r";
+
+LFG_LIST_GROUP_FORMING = "Your group is currently forming.";
 
 --[[
 function C_LFGList.GetSearchResults()
