@@ -300,6 +300,15 @@ function WorldMapFrame_OnShow(self)
 		WorldMapFrameAreaPetLevels:SetFontObject("SubZoneTextFont");
 	end
 
+	-- check to show the help plate
+	if ( not GetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_WORLD_MAP_FRAME) ) then
+		local helpPlate = WorldMapFrame_HelpPlate;
+		if ( helpPlate and not HelpPlate_IsShowing(helpPlate) ) then
+			HelpPlate_Show( helpPlate, WorldMapFrame, WorldMapFrame.MainHelpButton );
+			SetCVarBitfield( "closedInfoFrames", LE_FRAME_TUTORIAL_WORLD_MAP_FRAME, true );
+		end
+	end
+
 	UpdateMicroButtons();
 	if (not WorldMapFrame.toggling) then
 		SetMapToCurrentZone();
@@ -313,6 +322,7 @@ function WorldMapFrame_OnShow(self)
 end
 
 function WorldMapFrame_OnHide(self)
+	HelpPlate_Hide();
 	UpdateMicroButtons();
 	CloseDropDownMenus();
 	PlaySound("igQuestLogClose");
@@ -1844,6 +1854,8 @@ end
 function WorldMap_ToggleSizeUp()
 	QuestMapFrame_Hide();
 	WorldMapFrame.UIElementsFrame.OpenQuestPanelButton:Hide();
+	HelpPlate_Hide();
+	WorldMapFrame.MainHelpButton:Hide();
 	WORLDMAP_SETTINGS.size = WORLDMAP_FULLMAP_SIZE;
 	-- adjust main frame
 	WorldMapFrame:SetParent(nil);
@@ -1894,6 +1906,7 @@ end
 
 function WorldMap_ToggleSizeDown()
 	WorldMapFrame.UIElementsFrame.OpenQuestPanelButton:Show();
+	WorldMapFrame.MainHelpButton:Show();
 	WORLDMAP_SETTINGS.size = WORLDMAP_WINDOWED_SIZE;
 	-- adjust main frame
 	WorldMapFrame:SetParent(UIParent);
@@ -2700,5 +2713,29 @@ function WorldMapNavBar_Update()
 			buttonData.listFunc = WorldMapNavBar_GetSibling;
 		end
 		NavBar_AddButton(WorldMapFrame.NavBar, buttonData);
+	end
+end
+
+-- *****************************************************************************************************
+-- ***** HELP PLATE STUFF
+-- *****************************************************************************************************
+
+WorldMapFrame_HelpPlate = {
+	FramePos = { x = 4,	y = -40 },
+	FrameSize = { width = 985, height = 500	},
+	[1] = { ButtonPos = { x = 350,	y = -180 }, HighLightBox = { x = 0, y = -30, width = 695, height = 470 },		ToolTipDir = "DOWN",		ToolTipText = WORLD_MAP_TUTORIAL1 },
+	[2] = { ButtonPos = { x = 810,	y = -180 }, HighLightBox = { x = 700, y = -30, width = 285, height = 470 },	ToolTipDir = "DOWN",	ToolTipText = WORLD_MAP_TUTORIAL2 },
+	[3] = { ButtonPos = { x = 810,	y = 16 }, HighLightBox = { x = 700, y = 16, width = 285, height = 44 },	ToolTipDir = "DOWN",	ToolTipText = WORLD_MAP_TUTORIAL3 },
+	[4] = { ButtonPos = { x = 350,	y = 16 }, HighLightBox = { x = 50, y = 16, width = 645, height = 44 },	ToolTipDir = "DOWN",	ToolTipText = WORLD_MAP_TUTORIAL4 },
+}
+
+function WorldMapFrame_ToggleTutorial()
+	local helpPlate = WorldMapFrame_HelpPlate;
+		
+	if ( helpPlate and not HelpPlate_IsShowing(helpPlate) and WorldFrame:IsShown()) then
+		HelpPlate_Show( helpPlate, WorldMapFrame, WorldMapFrame.MainHelpButton, true );
+		SetCVarBitfield( "closedInfoFrames", LE_FRAME_TUTORIAL_WORLD_MAP_FRAME, true );
+	else
+		HelpPlate_Hide(true);
 	end
 end

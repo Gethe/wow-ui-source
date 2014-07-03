@@ -191,7 +191,7 @@
 				<Anchors>
 					<Anchor point="TOPRIGHT" relativeTo="$parent" relativePoint="TOPRIGHT">
 						<Offset>
-							<AbsDimension x="-2" y="-228"/>
+							<AbsDimension x="-2" y="-227"/>
 						</Offset>
 					</Anchor>
 				</Anchors>
@@ -253,10 +253,10 @@
 				</Anchors>
 				<Layers>
 					<Layer level="OVERLAY">
-						<Texture parentKey="Highlight" atlas="bags-roundhighlight" hidden="true">
+						<Texture parentKey="Highlight" atlas="bags-roundhighlight" alphaMode="ADD" hidden="true" alpha="0.8">
 							<Size x="36" y="36"/>
 							<Anchors>
-								<Anchor point="CENTER" x="-2" y="2"/>
+								<Anchor point="CENTER" x="-3" y="3"/>
 							</Anchors>
 						</Texture>
 					</Layer>
@@ -305,9 +305,9 @@
 				</Scripts>
 			</Button>
 			<Button parentKey="FiltersButton">
-				<Size x="18" y="18"/>
+				<Size x="16" y="16"/>
 				<Anchors>
-					<Anchor point="CENTER" relativeTo="$parentPortraitButton" relativePoint="BOTTOMRIGHT" x="-7" y="8"/>
+					<Anchor point="CENTER" relativeTo="$parentPortraitButton" relativePoint="BOTTOMRIGHT" x="-8" y="8"/>
 				</Anchors>
 				<Scripts>
 					<OnShow>
@@ -325,8 +325,8 @@
 					</OnEnter>
 					<OnLeave function="GameTooltip_Hide"/>
 				</Scripts>
-				<NormalTexture atlas="bags-icon-gear"/>
-				<HighlightTexture atlas="bags-icon-gear" desaturated="TRUE" alphaMode="ADD" alpha="0.3" />
+				<NormalTexture file="Interface\GossipFrame\BinderGossipIcon"/>
+				<HighlightTexture file="Interface\GossipFrame\BinderGossipIcon" desaturated="TRUE" alphaMode="ADD" alpha="0.3" />
 			</Button>
 			<Frame name="$parentFilterDropDown" parentKey="FilterDropDown" inherits="UIDropDownMenuTemplate">
 				<Scripts>
@@ -384,17 +384,17 @@
 	<Frame name="ContainerFrame13" inherits="ContainerFrameTemplate" parent="UIParent" id="100" hidden="true"/>
 
 	<EditBox name="BagItemSearchBox" inherits="BagSearchBoxTemplate" parent="ContainerFrame1" letters="15" hidden="true">
-		<Size x="98" y="18"/>
+		<Size x="100" y="18"/>
 	</EditBox>
 
 	<Button name="BagItemAutoSortButton" parent="ContainerFrame1" hidden="true">
-		<Size x="30" y="30"/>
+		<Size x="28" y="26"/>
 		<NormalTexture atlas="bags-button-autosort-up"/>
 		<PushedTexture atlas="bags-button-autosort-down"/>
 		<HighlightTexture file="Interface\Buttons\ButtonHilight-Square" alphaMode="ADD">
-			<Size x="26" y="26"/>
+			<Size x="26" y="24"/>
 			<Anchors>
-				<Anchor point="CENTER" x="0" y="2"/>
+				<Anchor point="CENTER" x="0" y="1"/>
 			</Anchors>
 		</HighlightTexture>
 		<Scripts>

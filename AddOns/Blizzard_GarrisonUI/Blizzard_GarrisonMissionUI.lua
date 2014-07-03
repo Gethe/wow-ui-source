@@ -31,6 +31,11 @@ function GarrisonMissionFrame_OnLoad(self)
 	
 	self.MissionTab.MissionList.Tab1:Click();
 	
+	local factionGroup = UnitFactionGroup("player");
+	if ( factionGroup == "Horde" ) then
+		GarrisonMissionFrame.MissionTab.MissionPage.RewardsFrame.Chest:SetAtlas("GarrMission-HordeChest");
+	end
+
 	self:RegisterEvent("GARRISON_MISSION_LIST_UPDATE");
 	self:RegisterEvent("GARRISON_FOLLOWER_LIST_UPDATE");
 	self:RegisterEvent("GARRISON_FOLLOWER_REMOVED");
@@ -147,10 +152,8 @@ function GarrisonFollowerList_UpdateFollowers()
 		if ( hideNotCollected and not follower.isCollected ) then
 			return true;
 		end
-		if ( searchString ) then
-			if ( not string.find(string.lower(follower.name), searchString, 1, true) ) then
-				return true;
-			end
+		if ( searchString and searchString ~= "" ) then
+			return not C_Garrison.SearchForFollower(follower.followerID, searchString );
 		end
 		return false;
 	end
@@ -289,6 +292,7 @@ function GarrisonFollowerButton_Select(self)
 		end
 		local Ability = self.Abilities[i];
 		local ability = self.info.abilities[i];
+		Ability.abilityID = ability.id;
 		Ability.Name:SetText(ability.name);
 		Ability.Icon:SetTexture(ability.icon);
 		Ability.tooltip = ability.description;
@@ -429,6 +433,12 @@ function GarrisonFollowerPlacer_OnUpdate(self)
 end
 
 function GarrisonFollowerPlacerFrame_OnClick(self, button)
+	if( not GarrisonMissionFrame:IsShown() )then
+		-- TODO: fix this
+		GarrisonFollowerPlacer:Hide();
+		self:Hide();
+		return;
+	end
 	local page = GarrisonMissionFrame.MissionTab.MissionPage;
 	if (page.SmallParty:IsShown() and page.SmallParty:IsMouseOver()) then
 		GarrisonSingleParty_ReceiveDrag(page.SmallParty);
@@ -911,15 +921,16 @@ function GarrisonMissionList_Update()
 			else
 				button.CostFrame:Hide();
 			end
+			
+			button:Enable();
 			if (mission.inProgress) then
 				button.Overlay:Show();
-				button:Disable();
 				button.Summary:SetText(button.Summary:GetText().." "..RED_FONT_COLOR_CODE.."(In Progress)"..FONT_COLOR_CODE_CLOSE);
 				button.CostFrame:Hide();
 			else
 				button.Overlay:Hide();
-				button:Enable();
 			end
+			button.MissionType:SetAtlas(mission.typeAtlas);
 			GarrisonMissionButton_SetRewards(button, mission.rewards, mission.numRewards);
 			button:Show();
 		else
@@ -977,6 +988,19 @@ function GarrisonMissionButton_SetRewards(self, rewards, numRewards)
 end
 
 function GarrisonMissionButton_OnClick(self, button)
+	if ( IsModifiedClick("CHATLINK") ) then
+		local missionLink = C_Garrison.GetMissionLink(self.info.missionID);
+		if (missionLink) then
+			ChatEdit_InsertLink(missionLink);
+		end
+		return;
+	end
+
+	-- don't do anything other than create links for in progress missions
+	if (self.info.inProgress) then
+		return;
+	end
+
 	GarrisonMissionList_Update();
 	
 	GarrisonMissionFrame.MissionTab.MissionList:Hide();
@@ -993,6 +1017,52 @@ function GarrisonMissionButton_OnClick(self, button)
 	end
 end
 
+function GarrisonMissionButton_OnEnter(self, button)
+	GameTooltip:SetOwner(self, "ANCHOR_CURSOR_RIGHT");
+	
+	--Mission Name
+	GameTooltip:SetText(self.info.name);
+	
+	if(self.info.inProgress) then
+		GameTooltip:AddLine(self.info.timeLeft.." "..RED_FONT_COLOR_CODE.."(In Progress)"..FONT_COLOR_CODE_CLOSE, 1, 1, 1);
+		GameTooltip:AddLine(" ");
+		if self.info.followers ~= nil then
+			GameTooltip:AddLine(GARRISON_FOLLOWERS);
+			for i=1, #(self.info.followers) do
+				GameTooltip:AddLine(C_Garrison.GetFollowerName(self.info.followers[i]), 1, 1, 1);
+			end
+			--GameTooltip:AddLine(" ");
+		end
+		--[[
+		-- current UI desire is not to show rewards as they're redundant w/ the reward buttons
+		GameTooltip:AddLine("Rewards");
+		for id, reward in pairs(self.info.rewards) do
+			if (reward.quality) then
+				GameTooltip:AddLine(ITEM_QUALITY_COLORS[reward.quality + 1].hex..reward.title..FONT_COLOR_CODE_CLOSE);
+			elseif (reward.itemID) then
+				local itemName, _, itemRarity, _, _, _, _, _, _, itemTexture = GetItemInfo(reward.itemID);
+				GameTooltip:AddLine(ITEM_QUALITY_COLORS[itemRarity].hex..itemName..FONT_COLOR_CODE_CLOSE);
+			elseif (reward.followerXP) then
+				GameTooltip:AddLine(BreakUpLargeNumbers(reward.followerXP), 1, 1, 1);
+			else
+				GameTooltip:AddLine(reward.title, 1, 1, 1);
+			end
+		end
+		]]--
+	else
+		GameTooltip:AddLine(string.format(GARRISON_MISSION_TOOLTIP_NUM_REQUIRED_FOLLOWERS, self.info.numFollowers), 1, 1, 1);		
+
+		if not C_Garrison.IsOnGarrisonMap() then
+			GameTooltip:AddLine(" ");
+			GameTooltip:AddLine(GARRISON_MISSION_TOOLTIP_RETURN_TO_START);
+		end
+	end
+
+	GameTooltip:Show();
+end
+
+
+
 
 ---------------------------------------------------------------------------------
 --- Mission Page                                                              ---
@@ -1001,19 +1071,24 @@ end
 function GarrisonMissionPage_ShowMission(missionInfo)
 	local self = GarrisonMissionFrame.MissionTab.MissionPage;
 	self.mission = missionInfo.missionID;
-	local location, travelTime, missionTime, enemies = C_Garrison.GetMissionInfo(missionInfo.missionID);
 	
+	local location, xp, environment, locPrefix, enemies = C_Garrison.GetMissionInfo(missionInfo.missionID);
+	GarrisonMissionPage_ShowMissionTimes(missionInfo.missionID);
 	self.Stage.Level:SetText(missionInfo.level);
 	self.Stage.Title:SetText(missionInfo.name);
-	self.Stage.MissionSummary:SetText("Combat - "..missionInfo.duration);
 	self.Stage.MissionDescription:SetText(missionInfo.description);
-	self.Stage.MissionArea:SetText(location);
-	if (travelTime) then
-		self.Stage.MissionTravel:SetText("Travel: "..travelTime);
+	if ( environment ) then
+		self.Stage.MissionArea:SetFormattedText(GARRISON_MISSION_AREA_ENV, location, environment);
+	else
+		self.Stage.MissionArea:SetText(location);
 	end
-	if (missionTime) then
-		self.Stage.MissionTime:SetText("Mission: "..missionTime);
+	if ( locPrefix ) then
+		self.Stage.LocBack:SetAtlas("_"..locPrefix.."-Back", true);
+		self.Stage.LocMid:SetAtlas ("_"..locPrefix.."-Mid", true);
+		self.Stage.LocFore:SetAtlas("_"..locPrefix.."-Fore", true);
 	end
+	self.Stage.MissionXP:SetText(xp);
+	self.Stage.MissionType:SetAtlas(missionInfo.typeAtlas);
 	
 	if (missionInfo.cost > 0) then
 		self.CostFrame:Show();
@@ -1034,8 +1109,8 @@ function GarrisonMissionPage_ShowMission(missionInfo)
 	local index = 1;
 	for id, reward in pairs(missionInfo.rewards) do
 		if (not self.RewardsFrame.Rewards[index]) then
-			self.RewardsFrame.Rewards[index] = CreateFrame("Frame", nil, self.RewardsFrame, "GarrisonMissionPageRewardTemplate");
-			self.RewardsFrame.Rewards[index]:SetPoint("RIGHT", self.RewardsFrame.Rewards[index-1], "LEFT", -9, 0);
+			self.RewardsFrame.Rewards[index] = CreateFrame("Frame", nil, self.RewardsFrame, "GarrisonMissionListButtonRewardTemplate");
+			self.RewardsFrame.Rewards[index]:SetPoint("RIGHT", self.RewardsFrame.Rewards[index-1], "LEFT", 1, 0);
 		end
 		self.RewardsFrame.Rewards[index].id = id;
 		GarrisonMissionPage_SetReward(self.RewardsFrame.Rewards[index], reward);
@@ -1047,12 +1122,30 @@ function GarrisonMissionPage_ShowMission(missionInfo)
 	end
 	self.RewardsFrame.Rewards[1]:ClearAllPoints();
 	if (numRewards == 1) then
-		self.RewardsFrame.Rewards[1]:SetPoint("CENTER", self.RewardsFrame, "CENTER", 0, 0);
+		self.RewardsFrame.Rewards[1]:SetPoint("RIGHT", self.RewardsFrame, "RIGHT", -115, -20);
 	elseif (numRewards == 2) then
-		self.RewardsFrame.Rewards[1]:SetPoint("LEFT", self.RewardsFrame, "CENTER", 5, 0);
+		self.RewardsFrame.Rewards[1]:SetPoint("RIGHT", self.RewardsFrame, "RIGHT", -77, -20);
 	else
-		self.RewardsFrame.Rewards[1]:SetPoint("RIGHT", self.RewardsFrame, "RIGHT", -18, 0);
+		self.RewardsFrame.Rewards[1]:SetPoint("RIGHT", self.RewardsFrame, "RIGHT", -44, -20);
 	end
+end
+
+function GarrisonMissionPage_ShowMissionTimes(missionID)
+	local stage = GarrisonMissionFrame.MissionTab.MissionPage.Stage;
+	local travelTimeString, travelTime, isTravelTimeImproved, missionTimeString, missionTime, isMissionTimeImproved, totalTimeString = C_Garrison.GetMissionTimes(missionID);
+	if ( travelTimeString ) then
+		if ( isTravelTimeImproved ) then
+			travelTimeString = GREEN_FONT_COLOR_CODE..travelTimeString..FONT_COLOR_CODE_CLOSE;
+		end
+		stage.MissionTravel:SetFormattedText(GARRISON_MISSION_TRAVEL, travelTimeString);
+	end
+	if ( missionTimeString ) then
+		if ( isMissionTimeImproved ) then
+			missionTimeString = GREEN_FONT_COLOR_CODE..missionTimeString..FONT_COLOR_CODE_CLOSE;
+		end
+		stage.MissionTime:SetFormattedText(GARRISON_MISSION_TIME, missionTimeString);
+	end
+	stage.MissionSummary:SetFormattedText(GARRISON_MISSION_TIME_TOTAL, totalTimeString);
 end
 
 function GarrisonMissionPage_SetReward(frame, reward)
@@ -1061,38 +1154,45 @@ function GarrisonMissionPage_SetReward(frame, reward)
 		frame.itemID = reward.itemID;
 		local itemName, _, itemRarity, _, _, _, _, _, _, itemTexture = GetItemInfo(reward.itemID);
 		frame.Icon:SetTexture(itemTexture);
-		frame.Name:SetText(ITEM_QUALITY_COLORS[itemRarity].hex..itemName..FONT_COLOR_CODE_CLOSE);
+		if (frame.Name) then
+			frame.Name:SetText(ITEM_QUALITY_COLORS[itemRarity].hex..itemName..FONT_COLOR_CODE_CLOSE);
+		end
 	else
 		frame.Icon:SetTexture(reward.icon);
 		frame.title = reward.title
 		if (reward.currencyID and reward.quantity) then
 			if (reward.currencyID == 0) then
 				frame.tooltip = GetMoneyString(reward.quantity);
-				frame.Name:SetText(frame.tooltip);
+				if (frame.Name) then
+					frame.Name:SetText(frame.tooltip);
+				end
 			else
 				local currencyName, _, currencyTexture = GetCurrencyInfo(reward.currencyID);
 				frame.tooltip = BreakUpLargeNumbers(reward.quantity).." |T"..currencyTexture..":0:0:0:-1|t ";
-				frame.Name:SetText(currencyName);
+				if (frame.Name) then
+					frame.Name:SetText(currencyName);
+				end
 				frame.Quantity:SetText(reward.quantity);
 				frame.Quantity:Show();
 			end
 		else
 			frame.tooltip = reward.tooltip;
-			if (reward.quality) then
-				frame.Name:SetText(ITEM_QUALITY_COLORS[reward.quality + 1].hex..frame.title..FONT_COLOR_CODE_CLOSE);
-			elseif (reward.followerXP) then
-				frame.Name:SetText(BreakUpLargeNumbers(reward.followerXP));
-			else
-				frame.Name:SetText(frame.title);
+			if (frame.Name) then
+				if (reward.quality) then
+					frame.Name:SetText(ITEM_QUALITY_COLORS[reward.quality + 1].hex..frame.title..FONT_COLOR_CODE_CLOSE);
+				elseif (reward.followerXP) then
+					frame.Name:SetText(BreakUpLargeNumbers(reward.followerXP));
+				else
+					frame.Name:SetText(frame.title);
+				end
 			end
 		end
 	end
 	if (reward.chance) then
-		frame.Chance:SetFormattedText(PERCENTAGE_STRING, reward.chance);
-		frame.Chance:Show();
+		-- TODO: fix with mission chance
+		GarrisonMissionFrame.MissionTab.MissionPage.RewardsFrame.Chance:SetFormattedText(PERCENTAGE_STRING, reward.chance);
 		frame.isChest = true;
 	else
-		frame.Chance:Hide();
 		frame.isChest = nil;
 	end
 	frame:Show();
@@ -1103,7 +1203,6 @@ function GarrisonMissionPage_SetPartySize(size)
 	
 	self.RewardsFrame:SetHeight(113);
 	if (size == 1) then
-		self.RewardsFrame:SetHeight(142);
 		self.SmallParty:Show();
 		self.MediumParty:Hide();
 		self.LargeParty:Hide();
@@ -1263,8 +1362,9 @@ function GarrisonMissionPageFollowerFrame_SetFollower(frame, info)
 	for i=1, missionPage.RewardsFrame.numRewards do
 		local rewardFrame = missionPage.RewardsFrame.Rewards[i];
 		if (rewardFrame.isChest) then
+			-- TODO: fix with mission chance
 			local chance = C_Garrison.GetBonusRewardChance(missionPage.mission, rewardFrame.id);
-			rewardFrame.Chance:SetFormattedText(PERCENTAGE_STRING, chance);
+			GarrisonMissionFrame.MissionTab.MissionPage.RewardsFrame.Chance:SetFormattedText(PERCENTAGE_STRING, chance);
 		end
 	end
 	
@@ -1290,8 +1390,9 @@ function GarrisonMissionFollowerFrame_ClearFollower(frame)
 		for i=1, missionPage.RewardsFrame.numRewards do
 			local rewardFrame = missionPage.RewardsFrame.Rewards[i];
 			if (rewardFrame.isChest) then
+				-- TODO: fix with mission chance
 				local chance = C_Garrison.GetBonusRewardChance(missionPage.mission, rewardFrame.id);
-				rewardFrame.Chance:SetFormattedText(PERCENTAGE_STRING, chance);
+				GarrisonMissionFrame.MissionTab.MissionPage.RewardsFrame.Chance:SetFormattedText(PERCENTAGE_STRING, chance);
 			end
 		end
 	end
@@ -1623,8 +1724,16 @@ function GarrisonMissionComplete_Initialize(missionList, index)
 	stage.MissionInfo.Title:SetText(mission.name);
 	stage.MissionInfo.Level:SetText(mission.level);
 	stage.MissionInfo.Location:SetText(mission.location);
-	stage.MissionInfo.NumViewed:SetText(self.currentIndex.." / "..#self.completeMissions);
-		
+
+	local location, xp, environment, locPrefix, enemies = C_Garrison.GetMissionInfo(mission.missionID);
+	if ( locPrefix ) then
+		stage.LocBack:SetAtlas("_"..locPrefix.."-Back", true);
+		stage.LocMid:SetAtlas ("_"..locPrefix.."-Mid", true);
+		stage.LocFore:SetAtlas("_"..locPrefix.."-Fore", true);
+	end
+	stage.MissionInfo.MissionXP:SetText(xp);
+	stage.MissionInfo.MissionType:SetAtlas(mission.typeAtlas);
+	
 	local encounters = C_Garrison.GetMissionCompleteEncounters(mission.missionID);
 	GarrisonMissionComplete_SetNumEncounters(#encounters);
 	for i=1, #encounters do

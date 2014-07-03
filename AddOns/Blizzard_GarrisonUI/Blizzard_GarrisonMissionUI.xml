@@ -201,16 +201,16 @@
 		</Layers>
 		<Scripts>
 			<OnEnter>
-				if (self.tooltip) then
-					GameTooltip:SetOwner(self, "ANCHOR_CURSOR_RIGHT");
-					GameTooltip:SetText(self.tooltip, HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b);
-				end
+				GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+				GarrisonFollowerAbilityTooltip_Show(self.abilityID)
 			</OnEnter>
-			<OnLeave function="GameTooltip_Hide"/>
+			<OnLeave>
+				GarrisonFollowerAbilityTooltip:Hide();
+			</OnLeave>
 		</Scripts>
 	</Frame>
 	
-	<Frame name="GarrisonMissionAbilityCounterTemplate" virtual="true">
+	<Frame name="GarrisonAbilityCounterTemplate" virtual="true">
 		<Size x="32" y="32"/>
 		<Layers>
 			<Layer level="ARTWORK" textureSubLevel="-1">
@@ -229,6 +229,9 @@
 				</Texture>
 			</Layer>
 		</Layers>
+	</Frame>
+	
+	<Frame name="GarrisonMissionAbilityCounterTemplate" inherits="GarrisonAbilityCounterTemplate" virtual="true">
 		<Scripts>
 			<OnEnter function="GarrisonMissionMechanic_OnEnter"/>
 			<OnLeave>
@@ -510,7 +513,7 @@
 						<Anchor point="BOTTOMLEFT" x="-5" y="-4"/>
 					</Anchors>
 				</Texture>
-				<FontString parentKey="RareText" inherits="QuestFont_Huge" justifyH="LEFT" text="Rare!">
+				<FontString parentKey="RareText" inherits="QuestFont_Huge" justifyH="LEFT" text="GARRISON_MISSION_RARE">
 					<Size x="290" y="15"/>
 					<Anchors>
 						<Anchor point="BOTTOMLEFT" relativeKey="$parent.RareOverlay" x="25" y="11"/>
@@ -523,7 +526,7 @@
 				</FontString>
 			</Layer>
 			<Layer level="ARTWORK">
-				<FontString parentKey="Level" inherits="MissionLevelFontLarge" text="92">
+				<FontString parentKey="Level" inherits="MissionLevelFontLarge">
 					<Anchors>
 						<Anchor point="CENTER" relativePoint="TOPLEFT" x="40" y="-36"/>
 					</Anchors>
@@ -534,7 +537,7 @@
 						<Anchor point="TOPLEFT" x="68" y="-2"/>
 					</Anchors>
 				</Texture>
-				<FontString parentKey="Title" inherits="QuestFont_Super_Huge" justifyH="LEFT" text="Master Blacksmithing Training">
+				<FontString parentKey="Title" inherits="QuestFont_Super_Huge" justifyH="LEFT">
 					<Size x="290" y="15"/>
 					<Anchors>
 						<Anchor point="TOPLEFT" x="165" y="-17"/>
@@ -545,7 +548,7 @@
 					</Shadow>
 					<Color r="0.792" g="0.776" b="0.757" a="1"/>
 				</FontString>
-				<FontString parentKey="Summary" inherits="GameFontNormalLarge2" justifyH="LEFT" text="Exploration - 5 hours">
+				<FontString parentKey="Summary" inherits="GameFontNormalLarge2" justifyH="LEFT">
 					<Size x="390" y="0"/>
 					<Anchors>
 						<Anchor point="TOPLEFT" relativeKey="$parent.Title" relativePoint="BOTTOMLEFT" x="0" y="-13"/>
@@ -647,7 +650,8 @@
 		</Frames>
 		<Scripts>
 			<OnClick function="GarrisonMissionButton_OnClick"/>
-
+			<OnEnter function="GarrisonMissionButton_OnEnter"/>
+			<OnLeave function="GameTooltip_Hide"/>
 		</Scripts>
 	</Button>
 	
@@ -814,6 +818,14 @@
 					</Anchors>
 				</Texture>
 			</Layer>
+			<Layer level="ARTWORK" textureSubLevel="3">
+				<Texture atlas="GarrMission_MissionParchment" vertTile="true" horizTile="true" useAtlasSize="true" alpha="0.5">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="LocBack"/>
+						<Anchor point="BOTTOMRIGHT" relativeKey="LocBack"/>
+					</Anchors>
+				</Texture>
+			</Layer>
 		</Layers>
 		<Scripts>
 			<OnLoad function="GarrisonMissionCompleteStage_OnLoad"/>
@@ -881,13 +893,6 @@
 						<Anchor point="BOTTOMRIGHT" x="10" y="-11"/>
 					</Anchors>
 					<TexCoords left="1.0" right="0.0" top="1.0" bottom="0.0"/>
-				</Texture>
-			</Layer>
-			<Layer level="BORDER" textureSubLevel="2">
-				<Texture parentKey="Banner" atlas="GarrMission_RewardsBanner-Desaturate" useAtlasSize="true">
-					<Anchors>
-						<Anchor point="CENTER" relativePoint="TOP" x="0" y="-5"/>
-					</Anchors>
 				</Texture>
 			</Layer>
 		</Layers>
@@ -1153,7 +1158,7 @@
 					<Anchors>
 						<Anchor point="TOPLEFT" x="50" y="-30"/>
 					</Anchors>
-					<Color r="0.792" g="0.690" b="0.529"/>
+					<Color r="0.910" g="0.835" b="0.706"/>
 				</FontString>
 			</Layer>
 		</Layers>
@@ -1237,7 +1242,7 @@
 					<Anchors>
 						<Anchor point="BOTTOM" relativePoint="TOP" y="-15"/>
 					</Anchors>
-					<Color r="0.792" g="0.690" b="0.529"/>
+					<Color r="0.910" g="0.835" b="0.706"/>
 				</FontString>
 			</Layer>
 		</Layers>
@@ -1271,7 +1276,7 @@
 					<Anchors>
 						<Anchor point="TOPLEFT" x="50" y="-18"/>
 					</Anchors>
-					<Color r="0.792" g="0.690" b="0.529"/>
+					<Color r="0.910" g="0.835" b="0.706"/>
 				</FontString>
 			</Layer>
 		</Layers>
@@ -1706,6 +1711,14 @@
 								</FontString>
 							</Layer>
 						</Layers>
+						<Scripts>
+							<OnEnter>
+								GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+								GameTooltip:SetText(GARRISON_MATERIAL_TOOLTIP);
+								GameTooltip:Show();
+							</OnEnter>
+							<OnLeave function="GameTooltip_Hide"/>
+						</Scripts>
 					</Frame>
 					<EditBox parentKey="SearchBox" inherits="SearchBoxTemplate" letters="40">
 						<Size x="145" y="20"/>
@@ -1964,7 +1977,7 @@
 										</Texture>
 									</Layer>
 									<Layer level="OVERLAY" textureSubLevel="5">
-										<FontString parentKey="Level" inherits="MissionLevelFont" text="90">
+										<FontString parentKey="Level" inherits="MissionLevelFont">
 											<Anchors>
 												<Anchor point="CENTER" relativePoint="TOPLEFT" x="30" y="-36"/>
 											</Anchors>
@@ -1975,7 +1988,7 @@
 												<Anchor point="TOPLEFT" x="48" y="-4"/>
 											</Anchors>
 										</Texture>
-										<FontString parentKey="Title" inherits="QuestFont_Super_Huge" text="Dangerous Excavation">
+										<FontString parentKey="Title" inherits="QuestFont_Super_Huge">
 											<Shadow>
 												<Offset x="1" y="-1"/>
 											</Shadow>
@@ -1984,40 +1997,55 @@
 											</Anchors>
 											<Color r="1" g="1" b="1"/>
 										</FontString>
-										<FontString parentKey="MissionSummary" inherits="GameFontNormalMed2" justifyH="LEFT" text="Combat - 1 hr 30 min Total">
+										<Texture parentKey="XPIcon" atlas="GarrMission_CurrencyIcon-Xp">
+											<Size x="42" y="42"/>
+											<Anchors>
+												<Anchor point="TOPRIGHT" x="-7" y="-26"/>
+											</Anchors>
+										</Texture>
+										<FontString parentKey="MissionXP" inherits="GameFontHighlightLarge2" justifyH="LEFT">
+											<Anchors>
+												<Anchor point="RIGHT" relativeKey="$parent.XPIcon" relativePoint="LEFT" x="4" y="-1"/>
+											</Anchors>
+										</FontString>
+										<FontString parentKey="RewardsLabel" inherits="GameFontHighlight" justifyH="LEFT" text="REWARDS">
+											<Anchors>
+												<Anchor point="BOTTOM" relativeKey="$parent.XPIcon" relativePoint="TOP" x="-16" y="-11"/>
+											</Anchors>
+										</FontString>										
+										<FontString parentKey="MissionSummary" inherits="GameFontNormalMed2" justifyH="LEFT">
 											<Size x="400" y="0"/>
 											<Anchors>
 												<Anchor point="TOPLEFT" relativeKey="$parent.Title" relativePoint="BOTTOMLEFT" x="-2" y="-8"/>
 											</Anchors>
-											<Color r="0.792" g="0.690" b="0.529"/>
+											<Color r="0.910" g="0.835" b="0.706"/>
 										</FontString>
-										<FontString parentKey="MissionArea" inherits="GameFontNormalMed2" justifyH="LEFT" text="Taranzu Ridge |cff20ff20(Jungle)|r">
+										<FontString parentKey="MissionArea" inherits="GameFontNormalMed2" justifyH="LEFT">
 											<Size x="300" y="0"/>
 											<Anchors>
 												<Anchor point="TOPLEFT" relativeKey="$parent.IconBG" relativePoint="BOTTOMLEFT" x="15" y="-7"/>
 											</Anchors>
-											<Color r="0.792" g="0.690" b="0.529"/>
+											<Color r="0.910" g="0.835" b="0.706"/>
 										</FontString>
-										<FontString parentKey="MissionTravel" inherits="GameFontNormalMed2" justifyH="LEFT" text="Travel: |cff20ff2030 min|r">
+										<FontString parentKey="MissionTravel" inherits="GameFontNormalMed2" justifyH="LEFT">
 											<Size x="300" y="0"/>
 											<Anchors>
 												<Anchor point="TOPLEFT" relativeKey="$parent.MissionArea" relativePoint="BOTTOMLEFT" y="-3"/>
 											</Anchors>
-											<Color r="0.792" g="0.690" b="0.529"/>
+											<Color r="0.910" g="0.835" b="0.706"/>
 										</FontString>
-										<FontString parentKey="MissionTime" inherits="GameFontNormalMed2" justifyH="LEFT" text="Mission: 1 hr">
+										<FontString parentKey="MissionTime" inherits="GameFontNormalMed2" justifyH="LEFT">
 											<Size x="300" y="0"/>
 											<Anchors>
 												<Anchor point="TOPLEFT" relativeKey="$parent.MissionTravel" relativePoint="BOTTOMLEFT" y="-3"/>
 											</Anchors>
-											<Color r="0.792" g="0.690" b="0.529"/>
+											<Color r="0.910" g="0.835" b="0.706"/>
 										</FontString>
-										<FontString parentKey="MissionDescription" inherits="GameFontNormal" justifyH="RIGHT" text="An archeology team uncovered something terrible... Undead murlocs. Save them from the Murghouls!">
-											<Size x="230" y="60"/>
+										<FontString parentKey="MissionDescription" inherits="GameFontHighlight" justifyH="RIGHT">
+											<Size x="260" y="0"/>
 											<Anchors>
-												<Anchor point="TOPRIGHT" x="-15" y="-65"/>
+												<Anchor point="TOPRIGHT" x="-15" y="-75"/>
 											</Anchors>
-											<Color r="0.792" g="0.690" b="0.529"/>
 										</FontString>
 									</Layer>
 									<Layer level="OVERLAY" textureSubLevel="6">
@@ -2044,22 +2072,41 @@
 								</Layers>
 							</Frame>
 							<Frame parentKey="RewardsFrame" inherits="GarrisonMissionRewardsFrameTemplate">
-								<Size x="512" y="113"/>
+								<Size x="382" y="109"/>
 								<Anchors>
-									<Anchor point="BOTTOM" y="41"/>
+									<Anchor point="BOTTOM" x="19" y="49"/>
 								</Anchors>
 								<Layers>
-									<Layer level="OVERLAY">
-										<FontString inherits="QuestFont_Huge" text="REWARDS">
+									<Layer level="ARTWORK">
+										<FontString parentKey="Title" inherits="QuestFont_Super_Huge_Outline" text="BONUS_REWARDS">
 											<Anchors>
-												<Anchor point="CENTER" relativeKey="$parent.Banner" x="0" y="7"/>
+												<Anchor point="TOP" x="38" y="-12"/>
 											</Anchors>
-											<Color r="0" g="0" b="0"/>
+											<Color r="0.910" g="0.835" b="0.706"/>
+										</FontString>									
+										<Texture parentKey="Chest" atlas="GarrMission-AllianceChest" useAtlasSize="true">
+											<Anchors>
+												<Anchor point="LEFT" x="-75" y="7"/>
+											</Anchors>
+										</Texture>
+									</Layer>
+									<Layer level="OVERLAY">
+										<FontString parentKey="Chance" inherits="ZoneTextFont">
+											<Anchors>
+												<Anchor point="CENTER" relativeKey="$parent.Chest" x="-9" y="-6"/>
+											</Anchors>
+											<Color r="0" g="1" b="0"/>
 										</FontString>
+										<FontString parentKey="ChanceLabel" inherits="QuestFont_Super_Huge_Outline" text="GARRISON_MISSION_CHANCE">
+											<Anchors>
+												<Anchor point="TOP" relativeKey="$parent.Chance" relativePoint="BOTTOM" x="0" y="4"/>
+											</Anchors>
+											<Color r="0" g="1" b="0"/>
+										</FontString>										
 									</Layer>
 								</Layers>
 								<Frames>
-									<Frame parentArray="Rewards" inherits="GarrisonMissionPageRewardTemplate">
+									<Frame parentArray="Rewards" inherits="GarrisonMissionListButtonRewardTemplate">
 										<Anchors>
 											<Anchor point="RIGHT" x="-18"/>
 										</Anchors>
@@ -2134,12 +2181,12 @@
 								</Frames>
 							</Frame>
 							<Frame parentKey="SmallParty" hidden="true" enableMouse="true">
+								<Size x="556" y="191"/>
 								<KeyValues>
 									<KeyValue key="partySize" value="1" type="number"/>
 								</KeyValues>
 								<Anchors>
 									<Anchor point="TOPLEFT" relativeKey="$parent.Stage" relativePoint="BOTTOMLEFT"/>
-									<Anchor point="BOTTOMRIGHT" relativeKey="$parent.RewardsFrame" relativePoint="TOPRIGHT" x="22"/>
 								</Anchors>
 								<Layers>
 									<Layer level="ARTWORK">
@@ -2179,12 +2226,12 @@
 								</Scripts>
 							</Frame>
 							<Frame parentKey="MediumParty" hidden="true" enableMouse="true">
+								<Size x="556" y="196"/>
 								<KeyValues>
 									<KeyValue key="partySize" value="3" type="number"/>
 								</KeyValues>
 								<Anchors>
 									<Anchor point="TOPLEFT" relativeKey="$parent.Stage" relativePoint="BOTTOMLEFT"/>
-									<Anchor point="BOTTOMRIGHT" relativeKey="$parent.RewardsFrame" relativePoint="TOPRIGHT" x="22"/>
 								</Anchors>
 								<Layers>
 									<Layer level="ARTWORK">
@@ -2192,7 +2239,7 @@
 											<Anchors>
 												<Anchor point="BOTTOM" x="0" y="55"/>
 											</Anchors>
-											<Color r="0.792" g="0.690" b="0.529"/>
+											<Color r="0.910" g="0.835" b="0.706"/>
 										</FontString>
 									</Layer>
 								</Layers>
@@ -2227,12 +2274,12 @@
 								</Scripts>
 							</Frame>
 							<Frame parentKey="LargeParty" enableMouse="true">
+								<Size x="556" y="196"/>
 								<KeyValues>
 									<KeyValue key="partySize" value="5" type="number"/>
 								</KeyValues>
 								<Anchors>
 									<Anchor point="TOPLEFT" relativeKey="$parent.Stage" relativePoint="BOTTOMLEFT"/>
-									<Anchor point="BOTTOMRIGHT" relativeKey="$parent.RewardsFrame" relativePoint="TOPRIGHT" x="22"/>
 								</Anchors>
 								<Layers>
 									<Layer level="ARTWORK">
@@ -2240,7 +2287,7 @@
 											<Anchors>
 												<Anchor point="BOTTOM" x="0" y="42"/>
 											</Anchors>
-											<Color r="0.792" g="0.690" b="0.529"/>
+											<Color r="0.910" g="0.835" b="0.706"/>
 										</FontString>
 									</Layer>
 								</Layers>
@@ -2284,13 +2331,21 @@
 									<OnReceiveDrag function="GarrisonManyParty_ReceiveDrag"/>
 								</Scripts>
 							</Frame>
-							<Button parentKey="StartMissionButton" inherits="UIPanelButtonTemplate" text="Start Mission">
+							<Button parentKey="StartMissionButton" inherits="UIPanelButtonTemplate" text="Start Mission" motionScriptsWhileDisabled="true">
 								<Size x="130" y="20"/>
 								<Anchors>
 									<Anchor point="RIGHT" relativeKey="$parent.ButtonFrame" x="-50" y="1"/>
 								</Anchors>
 								<Scripts>
 									<OnClick function="GarrisonMissionPageStartMissionButton_OnClick"/>
+									<OnEnter>
+										if (not self:IsEnabled()) then
+											GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+											GameTooltip:SetText("[PH] Disabled Text");
+											GameTooltip:Show();
+										end
+									</OnEnter>
+									<OnLeave function="GameTooltip_Hide"/>
 								</Scripts>
 							</Button>
 							<Frame parentKey="CostFrame">
@@ -2706,7 +2761,7 @@
 										</Texture>
 									</Layer>
 									<Layer level="OVERLAY" textureSubLevel="5">
-										<FontString parentKey="Level" inherits="MissionLevelFont" text="90">
+										<FontString parentKey="Level" inherits="MissionLevelFont">
 											<Anchors>
 												<Anchor point="CENTER" relativePoint="TOPLEFT" x="30" y="-36"/>
 											</Anchors>
@@ -2717,7 +2772,7 @@
 												<Anchor point="TOPLEFT" x="48" y="-4"/>
 											</Anchors>
 										</Texture>
-										<FontString parentKey="Title" inherits="QuestFont_Super_Huge" text="Dangerous Excavation">
+										<FontString parentKey="Title" inherits="QuestFont_Super_Huge">
 											<Shadow>
 												<Offset x="1" y="-1"/>
 											</Shadow>
@@ -2726,7 +2781,7 @@
 											</Anchors>
 											<Color r="1" g="1" b="1"/>
 										</FontString>
-										<FontString parentKey="Location" inherits="QuestFont_Huge" text="Tannan Jungle">
+										<FontString parentKey="Location" inherits="QuestFont_Huge">
 											<Shadow>
 												<Offset x="1" y="-1"/>
 											</Shadow>
@@ -2735,15 +2790,22 @@
 											</Anchors>
 											<Color r="1" g="1" b="1"/>
 										</FontString>
-										<FontString parentKey="NumViewed" inherits="QuestFont_Super_Huge" justifyH="RIGHT" text="6 / 7">
-											<Shadow>
-												<Offset x="1" y="-1"/>
-											</Shadow>
+										<Texture parentKey="XPIcon" atlas="GarrMission_CurrencyIcon-Xp">
+											<Size x="42" y="42"/>
 											<Anchors>
-												<Anchor point="TOPRIGHT" x="-18" y="-9"/>
+												<Anchor point="TOPRIGHT" x="-7" y="-26"/>
 											</Anchors>
-											<Color r="1" g="1" b="1"/>
+										</Texture>
+										<FontString parentKey="MissionXP" inherits="GameFontHighlightLarge2" justifyH="LEFT">
+											<Anchors>
+												<Anchor point="RIGHT" relativeKey="$parent.XPIcon" relativePoint="LEFT" x="4" y="-1"/>
+											</Anchors>
 										</FontString>
+										<FontString parentKey="RewardsLabel" inherits="GameFontHighlight" justifyH="LEFT" text="REWARDS">
+											<Anchors>
+												<Anchor point="BOTTOM" relativeKey="$parent.XPIcon" relativePoint="TOP" x="-16" y="-11"/>
+											</Anchors>
+										</FontString>										
 									</Layer>
 									<Layer level="OVERLAY" textureSubLevel="6">
 										<Texture atlas="_GarrMission_TopBorder" useAtlasSize="true" horizTile="true">
@@ -2860,6 +2922,13 @@
 							<Anchor point="BOTTOM" y="40"/>
 						</Anchors>
 						<Layers>
+							<Layer level="BORDER" textureSubLevel="2">
+								<Texture parentKey="Banner" atlas="GarrMission_RewardsBanner-Desaturate" useAtlasSize="true">
+									<Anchors>
+										<Anchor point="CENTER" relativePoint="TOP" x="0" y="-5"/>
+									</Anchors>
+								</Texture>
+							</Layer>
 							<Layer level="OVERLAY">
 								<FontString inherits="QuestFont_Huge" text="BONUS_REWARDS">
 									<Anchors>

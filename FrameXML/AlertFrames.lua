@@ -997,3 +997,11 @@ function GarrisonFollowerAlertFrame_ShowAlert(name, displayID, level, quality)
 	AlertFrame_FixAnchors();
 	PlaySound("AuctionWindowOpen");
 end
+
+function GarrisonAlertFrame_OnClick(self)
+	self:Hide();
+	if (not GarrisonLandingPage) then
+		Garrison_LoadUI();
+	end
+	ShowUIPanel(GarrisonLandingPage);
+end

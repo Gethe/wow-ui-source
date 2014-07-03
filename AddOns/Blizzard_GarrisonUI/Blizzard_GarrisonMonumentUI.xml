@@ -58,7 +58,7 @@
 					</Frame>
 				</Frames>
 				<Scripts>
-					<OnEnter function="GarrisonMountmentLock_OnEnter"/>
+					<OnEnter function="GarrisonMonuntmentLock_OnEnter"/>
 					<OnLeave function="GameTooltip_Hide"/>
 				</Scripts>
 			</Frame>
@@ -76,8 +76,8 @@
 				</Layers>
 				
 				<Scripts>
-					<OnMouseDown function="GarrisonMountmentLeftBtn_OnMouseDown"/>
-					<OnMouseUp function="GarrisonMountmentLeftBtn_OnMouseUp"/>
+					<OnMouseDown function="GarrisonMonuntmentLeftBtn_OnMouseDown"/>
+					<OnMouseUp function="GarrisonMonuntmentLeftBtn_OnMouseUp"/>
 				</Scripts>
 				<HighlightTexture file="Interface\Buttons\ButtonHilight-Square" alphaMode="ADD"/>
 			</Button>
@@ -95,17 +95,17 @@
 				</Layers>
 				
 				<Scripts>
-					<OnMouseDown function="GarrisonMountmentRightBtn_OnMouseDown"/>
-					<OnMouseUp function="GarrisonMountmentRightBtn_OnMouseUp"/>
+					<OnMouseDown function="GarrisonMonuntmentRightBtn_OnMouseDown"/>
+					<OnMouseUp function="GarrisonMonuntmentRightBtn_OnMouseUp"/>
 				</Scripts>
 				<HighlightTexture file="Interface\Buttons\ButtonHilight-Square" alphaMode="ADD"/>
 			</Button>
 		</Frames>
 		<Scripts>
-			<OnLoad function="GarrisonMountmentFrame_OnLoad"/>
-			<OnEvent function="GarrisonMountmentFrame_OnEvent"/>
-			<OnShow function="GarrisonMountmentFrame_OnShow"/>
-			<OnHide function="GarrisonMountmentFrame_OnHide"/>
+			<OnLoad function="GarrisonMonuntmentFrame_OnLoad"/>
+			<OnEvent function="GarrisonMonuntmentFrame_OnEvent"/>
+			<OnShow function="GarrisonMonuntmentFrame_OnShow"/>
+			<OnHide function="GarrisonMonuntmentFrame_OnHide"/>
 		</Scripts>
 	</Frame>
 </Ui>

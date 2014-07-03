@@ -214,6 +214,21 @@
 							<Anchor point="TOP" relativeTo="$parentGroupButton3" relativePoint="BOTTOM" x="0" y="-23" />
 						</Anchors>
 					</Button>
+					<Frame name="LFGListPVEStub">
+						<Size x="338" y="428"/>
+						<Anchors>
+							<Anchor point="TOPLEFT" x="224" y="0"/>
+						</Anchors>
+						<Scripts>
+							<OnShow>
+								LFGListFrame:SetParent(self);
+								LFGListFrame:ClearAllPoints();
+								LFGListFrame:SetAllPoints(self);
+								LFGListFrame:SetFrameLevel(self:GetFrameLevel());
+								LFGListFrame_SetBaseFilters(LFGListFrame, LE_LFG_LIST_FILTER_PVE);
+							</OnShow>
+						</Scripts>
+					</Frame>
 				</Frames>
 				<Scripts>
 					<OnLoad function="GroupFinderFrame_OnLoad"/>

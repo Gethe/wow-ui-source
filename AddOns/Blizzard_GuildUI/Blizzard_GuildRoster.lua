@@ -12,8 +12,10 @@ local currentGuildView;
 local GUILD_ROSTER_COLUMNS = {
 	playerStatus = { "level", "class", "wideName", "zone" },
 	guildStatus = { "name", "rank", "note", "online" },
+	--[[
 	weeklyxp = { "level", "class", "wideName", "weeklyxp" },
 	totalxp = { "level", "class", "wideName", "totalxp" },
+	--]]
 	pvp = { "level", "class", "name", "bgrating", "arenarating" },
 	achievement = { "level", "class", "wideName", "achievement" },
 	tradeskill = { "wideName", "zone", "skill" },
@@ -279,6 +281,7 @@ function GuildRoster_Update()
 				else
 					GuildRosterButton_SetStringText(button.string4, GuildRoster_GetLastOnline(index), onlineOrMobile);
 				end
+--[[
 			elseif ( currentGuildView == "weeklyxp" ) then
 				local weeklyXP, totalXP, weeklyRank, totalRank = GetGuildRosterContribution(index);
 				GuildRosterButton_SetStringText(button.string1, level, onlineOrMobile)
@@ -305,6 +308,7 @@ function GuildRoster_Update()
 					button.barTexture:Show();
 				end
 				GuildRosterButton_SetStringText(button.barLabel, "#"..totalRank, onlineOrMobile);			
+--]]
 			elseif ( currentGuildView == "pve" ) then
 				GuildRosterButton_SetStringText(button.string1, level, onlineOrMobile);
 				button.icon:SetTexCoord(unpack(CLASS_ICON_TCOORDS[classFileName]));
@@ -607,6 +611,7 @@ function GuildRosterViewDropdown_Initialize()
 	info.text = GUILD_STATUS;
 	info.value = "guildStatus";
 	UIDropDownMenu_AddButton(info);
+	--[[
 	if ( GetGuildLevelEnabled() ) then
 		info.text = GUILD_XP_WEEKLY;
 		info.value = "weeklyxp";
@@ -615,6 +620,7 @@ function GuildRosterViewDropdown_Initialize()
 		info.value = "totalxp";
 		UIDropDownMenu_AddButton(info);
 	end
+	--]]
 	info.text = ACHIEVEMENT_POINTS;
 	info.value = "achievement";
 	UIDropDownMenu_AddButton(info);

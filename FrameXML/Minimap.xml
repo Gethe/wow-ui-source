@@ -674,6 +674,15 @@
 									<OnEvent function="GarrisonLandingPageMinimapButton_OnEvent"/>
 									<OnShow function="GarrisonLandingPageMinimapButton_OnShow"/>
 									<OnClick function="GarrisonLandingPageMinimapButton_OnClick"/>
+									<OnEnter>
+										GameTooltip:SetOwner(self, "ANCHOR_LEFT");
+										GameTooltip:SetText(GARRISON_LANDING_PAGE_TITLE, 1, 1, 1);
+										GameTooltip:AddLine(MINIMAP_GARRISON_LANDING_PAGE_TOOLTIP, nil, nil, nil, true);
+										GameTooltip:Show();
+									</OnEnter>
+									<OnLeave>
+										GameTooltip:Hide();
+									</OnLeave>
 								</Scripts>						
 								<NormalTexture atlas="GarrLanding-MinimapIcon-Alliance-Up" useAtlasSize="true"/>
 								<PushedTexture atlas="GarrLanding-MinimapIcon-Alliance-Down" useAtlasSize="true"/>

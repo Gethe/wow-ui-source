@@ -212,20 +212,6 @@
 					<Color r="1.0" g="1.0" b="0.45"/>
 				</FontString>
 			</Layer>
-			<Layer level="ARTWORK" textureSubLevel="3">
-				<Texture name="$parentLevelRing" inherits="TalentHeader-PointCircle-Gold" parentKey="PointsSpentBgGold">
-					<Size x="27" y="27"/>
-					<Anchors>
-						<Anchor point="BOTTOMRIGHT" relativeTo="$parentRing" relativePoint="BOTTOMRIGHT" x="6" y="3"/>
-					</Anchors>
-				</Texture>
-				<FontString name="$parentLevelText" inherits="ChatFontSmall" parentKey="level">
-					<Anchors>
-						<Anchor point="CENTER" relativeTo="$parentLevelRing" x="0" y="0"/>
-					</Anchors>
-					<Color r="1.0" g="0.82" b="0.0"/>
-				</FontString>
-			</Layer>
 		</Layers>
 		<Frames>
 			<Frame name="$parentPending" parentKey="pendingFrame" setAllPoints="true" hidden="true" enableMouse="true">

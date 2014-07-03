@@ -745,6 +745,12 @@
 										<Anchor point="RIGHT" x="-8" y="0"/>
 									</Anchors>
 								</FontString>
+								<FontString name="CharSelectUndeleteLabel" inherits="GlueFontDisableLarge" hidden="true" text="UNDELETE_LABEL">
+									<Size x="260" y="13"/>
+									<Anchors>
+										<Anchor point="TOP" relativeTo="CharSelectRealmName" relativePoint="BOTTOM" x="0" y="-8"/>
+									</Anchors>
+								</FontString>
 							</Layer>
 						</Layers>
 						<Frames>

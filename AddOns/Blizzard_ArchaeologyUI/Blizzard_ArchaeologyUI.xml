@@ -98,7 +98,7 @@
 		</Layers>
 		<Scripts>
 			<OnClick>
-				ArchaeologyFrame_ShowArtifact(self:GetID());
+				ArchaeologyFrame_ShowArtifact(self:GetID() + ((ArchaeologyFrame.summaryPage.currentPage - 1) * ARCHAEOLOGY_MAX_RACES));
 				PlaySound("igSpellBookOpen");
 			</OnClick>
 			<OnDisable>
@@ -160,7 +160,7 @@
 		</Layers>
 		<Scripts>
 			<OnClick>
-				ArchaeologyFrame_ShowArtifact(self.raceIndex, self.projectIndex);
+				ArchaeologyFrame_ShowArtifact(self.raceIndex + ((ArchaeologyFrame.summaryPage.currentPage - 1) * ARCHAEOLOGY_MAX_RACES), self.projectIndex);
 				PlaySound("igSpellBookOpen");
 			</OnClick>
 			<OnEnter>

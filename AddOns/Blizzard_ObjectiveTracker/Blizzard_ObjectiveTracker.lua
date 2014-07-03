@@ -100,6 +100,8 @@ DEFAULT_OBJECTIVE_TRACKER_MODULE = {
 	hasSkippedBlocks = false,
 	usedTimerBars = { },
 	freeTimerBars = { },
+	usedProgressBars = { },
+	freeProgressBars = { },
 	updateReasonModule = 0,
 	updateReasonEvents = 0,
 };
@@ -213,6 +215,9 @@ function DEFAULT_OBJECTIVE_TRACKER_MODULE:FreeLine(block, line)
 	-- remove timer bar
 	if ( line.TimerBar ) then
 		self:FreeTimerBar(block, line);
+	end
+	if ( line.ProgressBar ) then
+		self:FreeProgressBar(block, line);
 	end
 	if ( line.type and self.OnFreeTypedLine ) then
 		self:OnFreeTypedLine(line);
@@ -416,6 +421,66 @@ function DEFAULT_OBJECTIVE_TRACKER_MODULE:FreeTimerBar(block, line)
 	end
 end
 
+
+-- *****************************************************************************************************
+-- ***** PROGRESS BAR
+-- *****************************************************************************************************
+
+function DEFAULT_OBJECTIVE_TRACKER_MODULE:AddProgressBar(block, line, questID)
+	local progressBar = self.usedProgressBars[block] and self.usedProgressBars[block][line];
+	if ( not progressBar ) then
+		local numFreeProgressBars = #self.freeProgressBars;
+		local parent = block.ScrollContents or block;
+		if ( numFreeProgressBars > 0 ) then
+			progressBar = self.freeProgressBars[numFreeProgressBars];
+			tremove(self.freeProgressBars, numFreeProgressBars);
+			progressBar:SetParent(parent);
+			progressBar:Show();
+		else
+			progressBar = CreateFrame("Frame", nil, parent, "ObjectiveTrackerProgressBarTemplate");
+			progressBar.Label:SetPoint("LEFT", OBJECTIVE_TRACKER_DASH_WIDTH, 0);
+			progressBar.height = progressBar:GetHeight();
+		end
+		if ( not self.usedProgressBars[block] ) then
+			self.usedProgressBars[block] = { };
+		end
+		self.usedProgressBars[block][line] = progressBar;
+		progressBar:RegisterEvent("QUEST_LOG_UPDATE");
+		progressBar:Show();
+		-- initialize to the right values
+		progressBar.questID = questID;
+		ObjectiveTrackerProgressBar_OnEvent(progressBar)
+	end	
+	-- anchor the status bar
+	local anchor = block.currentLine or block.HeaderText;
+	if ( anchor ) then
+		progressBar:SetPoint("TOPLEFT", anchor, "BOTTOMLEFT", 0, -block.module.lineSpacing);
+	else
+		progressBar:SetPoint("TOPLEFT", 0, -block.module.lineSpacing);
+	end
+
+	progressBar.block = block;
+	progressBar.questID = questID;
+	
+
+	line.ProgressBar = progressBar;
+	block.height = block.height + progressBar.height + block.module.lineSpacing;
+	block.currentLine = progressBar;
+	return progressBar;
+end
+
+function DEFAULT_OBJECTIVE_TRACKER_MODULE:FreeProgressBar(block, line)
+	local progressBar = line.ProgressBar;
+	if ( progressBar ) then
+		self.usedProgressBars[block][line] = nil;
+		tinsert(self.freeProgressBars, progressBar);
+		progressBar:Hide();
+		line.ProgressBar = nil;
+		progressBar:UnregisterEvent("QUEST_LOG_UPDATE");
+	end
+end
+
+
 -- *****************************************************************************************************
 -- ***** BLOCK HEADER HANDLERS
 -- *****************************************************************************************************
@@ -474,6 +539,15 @@ function ObjectiveTrackerTimerBar_GetTextColor(duration, elapsed)
 		local greenOffset = percentageLeft / START_PERCENTAGE_RED; -- Fade to red by eliminating green
 		return 1, greenOffset, 0;
 	end
+end
+
+-- *****************************************************************************************************
+-- ***** PROGRESS BARS
+-- *****************************************************************************************************
+function ObjectiveTrackerProgressBar_OnEvent(self)
+	local percent = GetQuestProgressBarPercent(self.questID);
+	self.Bar:SetValue(percent);
+	self.Label:SetFormattedText(PERCENTAGE_STRING, percent);
 end
 
 -- *****************************************************************************************************

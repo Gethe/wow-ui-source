@@ -16,7 +16,7 @@
 			</OnClick>
 		</Scripts>
 	</Button-->
-	<Frame name="LFGListApplicantMemberTemplate" virtual="true">
+	<Button name="LFGListApplicantMemberTemplate" virtual="true">
 		<Size x="190" y="20"/>
 		<Layers>
 			<Layer level="ARTWORK">
@@ -62,10 +62,16 @@
 			</Button>
 		</Frames>
 		<Scripts>
+			<OnLoad>
+				self:RegisterForClicks("RightButtonUp");
+			</OnLoad>
+			<OnClick>
+				EasyMenu(LFGListUtil_GetApplicantMemberMenu(self:GetParent().applicantID, self.memberIdx), LFGListFrameDropDown, self, 60, -5, "MENU");
+			</OnClick>
 			<OnEnter function="LFGListApplicantMember_OnEnter"/>
 			<OnLeave function="GameTooltip_Hide"/>
 		</Scripts>
-	</Frame>
+	</Button>
 	<Button name="LFGListApplicantTemplate" virtual="true">
 		<Size x="302" y="20"/>
 		<Layers>
@@ -84,11 +90,11 @@
 			</Layer>
 		</Layers>
 		<Frames>
-			<Frame parentKey="Member1" parentArray="Members" inherits="LFGListApplicantMemberTemplate">
+			<Button parentKey="Member1" parentArray="Members" inherits="LFGListApplicantMemberTemplate">
 				<Anchors>
 					<Anchor point="TOPLEFT" x="0" y="-3"/>
 				</Anchors>
-			</Frame>
+			</Button>
 			<Button parentKey="DeclineButton" inherits="UIMenuButtonStretchTemplate">
 				<Size x="24" y="22"/>
 				<Anchors>
@@ -209,11 +215,48 @@
 		</Scripts>
 		<NormalTexture file="Interface\LFGFrame\UI-LFG-ICON-ROLES"/>
 	</Button>
-	<Button name="LFGListCategoryTemplate" inherits="UIPanelButtonTemplate" virtual="true">
-		<Size x="270" y="34"/>
+	<Button name="LFGListCategoryTemplate" virtual="true">
+		<Size x="300" y="46"/>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="Icon" atlas="groupfinder-button-battlegrounds" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="ARTWORK">
+				<Texture parentKey="Cover" atlas="groupfinder-button-cover" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="OVERLAY">
+				<Texture parentKey="SelectedTexture" file="Interface\PVPFrame\PvPMegaQueue" alphaMode="ADD" hidden="true">
+					<Size x="290" y="36"/>
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+					<TexCoords left="0.00195313" right="0.63867188" top="0.76953125" bottom="0.83007813"/>
+				</Texture>
+			</Layer>
+		</Layers>
 		<Scripts>
 			<OnClick function="LFGListCategorySelectionButton_OnClick"/>
 		</Scripts>
+		<HighlightTexture parentKey="HighlightTexture" file="Interface\PVPFrame\PvPMegaQueue" alphaMode="ADD">
+			<Size x="290" y="36"/>
+			<Anchors>
+				<Anchor point="CENTER"/>
+			</Anchors>
+			<TexCoords left="0.00195313" right="0.63867188" top="0.70703125" bottom="0.76757813"/>
+		</HighlightTexture>
+		<ButtonText parentKey="Label" inherits="GameFontNormal" justifyH="LEFT">
+			<Anchors>
+				<Anchor point="LEFT" relativeKey="$parent" relativePoint="LEFT" x="20" y="0"/>
+			</Anchors>
+		</ButtonText>
 	</Button>
 	<Frame name="LFGListVoiceChatIcon" virtual="true">
 		<Size x="16" y="14"/>
@@ -226,7 +269,7 @@
 			<OnEnter>
 				if ( self.tooltip ) then
 					GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
-					GameTooltip:SetText(self.tooltip, NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b, 1, true);
+					GameTooltip:SetText(string.format(VOICE_CHAT_COLON, self.tooltip), 1, 1, 1, 1, true);
 					GameTooltip:Show();
 				end
 			</OnEnter>
@@ -567,13 +610,27 @@
 		</Scripts>
 	</Button>
 	<Frame name="LFGListPanelTemplate" useParentLevel="true" hidden="true" setAllPoints="true" virtual="true"/>
-	<Frame name="LFGListFrame" useParentLevel="true" parent="GroupFinderFrame" hidden="true">
+	<Frame name="LFGListFrame" useParentLevel="true" parent="LFGListPVEStub">
 		<Size x="338" y="428"/>
 		<Anchors>
 			<Anchor point="TOPLEFT" x="224" y="0"/>
 		</Anchors>
 		<Frames>
+			<Frame name="LFGListFrameDropDown" inherits="UIDropDownMenuTemplate"/>
 			<Frame parentKey="CategorySelection" inherits="LFGListPanelTemplate">
+				<KeyValues>
+					<KeyValue key="updateAll" value="LFGListCategorySelection_UpdateCategoryButtons" type="global"/>
+				</KeyValues>
+				<Layers>
+					<Layer level="ARTWORK">
+						<FontString parentKey="Label" inherits="QuestFont_Huge" text="LFGLIST_NAME">
+							<Anchors>
+								<Anchor point="TOP" x="0" y="-35"/>
+							</Anchors>
+							<Color r="1.0" g="0.82" b="0"/>
+						</FontString>
+					</Layer>
+				</Layers>
 				<Frames>
 					<Frame parentKey="Inset" useParentLevel="true" inherits="InsetFrameTemplate" >
 						<Size x="215" y="496"/>
@@ -613,9 +670,12 @@
 				</Scripts>
 			</Frame>
 			<Frame parentKey="NothingAvailable" inherits="LFGListPanelTemplate">
+				<KeyValues>
+					<KeyValue key="updateAll" value="LFGListNothingAvailable_Update" type="global"/>
+				</KeyValues>
 				<Layers>
 					<Layer level="ARTWORK">
-						<FontString inherits="GameFontNormalLarge" text="NO_LFG_LIST_AVAILABLE">
+						<FontString parentKey="Label" inherits="GameFontNormalLarge" text="NO_LFG_LIST_AVAILABLE">
 							<Size x="305" y="0"/>
 							<Anchors>
 								<Anchor point="CENTER"/>
@@ -623,6 +683,12 @@
 						</FontString>
 					</Layer>
 				</Layers>
+				<Scripts>
+					<OnEvent function="LFGListNothingAvailable_OnEvent"/>
+					<OnShow>
+						LFGListNothingAvailable_Update(self);
+					</OnShow>
+				</Scripts>
 			</Frame>
 			<Frame parentKey="SearchPanel" inherits="LFGListPanelTemplate">
 				<Layers>
@@ -813,28 +879,27 @@
 			<Frame parentKey="ApplicationViewer" inherits="LFGListPanelTemplate">
 				<Layers>
 					<Layer level="BACKGROUND">
-						<Texture parentKey="InfoBackground" file="Interface\LFGFrame\UI-LFG-BlueBG">
-							<Size x="512" y="128"/>
+						<Texture parentKey="InfoBackground" atlas="groupfinder-background-blue" useAtlasSize="true">
 							<Anchors>
-								<Anchor point="BOTTOMLEFT" x="2" y="275"/>
+								<Anchor point="TOPLEFT" x="0" y="-23"/>
 							</Anchors>
 						</Texture>
 					</Layer>
 					<Layer level="ARTWORK">
-						<FontString parentKey="EntryName" inherits="QuestFont_Huge" justifyH="LEFT">
+						<FontString parentKey="EntryName" inherits="GameFontNormalLarge" justifyH="LEFT">
 							<Size x="240" y="18"/>
 							<Anchors>
 								<Anchor point="TOPLEFT" relativeKey="$parent.InfoBackground" relativePoint="TOPLEFT" x="10" y="-10"/>
 							</Anchors>
 							<Color r="1" g="0.82" b="0"/>
 						</FontString>
-						<FontString parentKey="ActivityName" inherits="GameFontHighlight" justifyH="LEFT">
+						<FontString parentKey="ActivityName" inherits="GameFontHighlightSmall2" justifyH="LEFT">
 							<Size x="240" y="12"/>
 							<Anchors>
 								<Anchor point="TOPLEFT" relativeKey="$parent.EntryName" relativePoint="BOTTOMLEFT" x="0" y="-5"/>
 							</Anchors>
 						</FontString>
-						<FontString parentKey="ItemLevel" inherits="GameFontNormal">
+						<FontString parentKey="ItemLevel" inherits="GameFontNormalSmall2">
 							<Anchors>
 								<Anchor point="TOPLEFT" relativeKey="$parent.ActivityName" relativePoint="BOTTOMLEFT" x="0" y="-5"/>
 							</Anchors>
@@ -844,24 +909,76 @@
 								<Anchor point="BOTTOM" x="-3" y="8"/>
 							</Anchors>
 						</FontString>
+						<Texture parentKey="TankIcon" file="Interface\LFGFrame\LFGRole">
+							<Size x="14" y="14"/>
+							<Anchors>
+								<Anchor point="TOPRIGHT" x="-60" y="-35"/>
+							</Anchors>
+							<TexCoords left="0.5" right="0.75" top="0" bottom="1"/>
+						</Texture>
+						<FontString parentKey="TankCount" inherits="GameFontHighlightSmall2" text="2" justifyH="CENTER">
+							<Size x="20" y="12"/>
+							<Anchors>
+								<Anchor point="LEFT" relativeKey="$parent.TankIcon" relativePoint="RIGHT" x="2" y="0"/>
+							</Anchors>
+						</FontString>
+						<Texture parentKey="HealerIcon" file="Interface\LFGFrame\LFGRole">
+							<Size x="14" y="14"/>
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeKey="$parent.TankIcon" relativePoint="BOTTOMLEFT" x="0" y="-3"/>
+							</Anchors>
+							<TexCoords left="0.75" right="1" top="0" bottom="1"/>
+						</Texture>
+						<FontString parentKey="HealerCount" inherits="GameFontHighlightSmall2" text="3" justifyH="CENTER">
+							<Size x="20" y="12"/>
+							<Anchors>
+								<Anchor point="LEFT" relativeKey="$parent.HealerIcon" relativePoint="RIGHT" x="2" y="0"/>
+							</Anchors>
+						</FontString>
+						<Texture parentKey="DamagerIcon" file="Interface\LFGFrame\LFGRole">
+							<Size x="14" y="14"/>
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeKey="$parent.HealerIcon" relativePoint="BOTTOMLEFT" x="0" y="-3"/>
+							</Anchors>
+							<TexCoords left="0.25" right="0.5" top="0" bottom="1"/>
+						</Texture>
+						<FontString parentKey="DamagerCount" inherits="GameFontHighlightSmall2" text="25" justifyH="CENTER">
+							<Size x="20" y="12"/>
+							<Anchors>
+								<Anchor point="LEFT" relativeKey="$parent.DamagerIcon" relativePoint="RIGHT" x="2" y="0"/>
+							</Anchors>
+						</FontString>
+						<Texture parentKey="TotalMembersLine" atlas="groupfinder-totalmembersline" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeKey="$parent.DamagerIcon" relativePoint="BOTTOMLEFT" x="-10" y="-5"/>
+							</Anchors>
+
+						</Texture>
+						<FontString parentKey="TotalCount" inherits="GameFontNormalMed3" text="30" justifyH="CENTER">
+							<Anchors>
+								<Anchor point="TOP" relativeKey="$parent.TotalMembersLine" relativePoint="BOTTOM" x="0" y="-5"/>
+							</Anchors>
+						</FontString>
 					</Layer>
 				</Layers>
 				<Frames>
 					<Frame parentKey="DescriptionFrame">
 						<Size x="240" y="14"/> <!--Height changed in Lua-->
 						<Anchors>
-							<Anchor point="BOTTOMLEFT" relativeKey="$parent.InfoBackground" relativePoint="TOPLEFT" x="10" y="-77"/>
+							<Anchor point="BOTTOMLEFT" relativeKey="$parent.InfoBackground" relativePoint="TOPLEFT" x="10" y="-79"/>
 						</Anchors>
 						<Layers>
 							<Layer level="ARTWORK">
-								<FontString parentKey="Text" inherits="GameFontDisableSmallLeft" setAllPoints="true"/>
+								<FontString parentKey="Text" inherits="GameFontNormalSmall2" setAllPoints="true" justifyH="LEFT">
+									<Color r="0.5" g="0.5" b="0.5"/>
+								</FontString>
 							</Layer>
 						</Layers>
 						<Scripts>
 							<OnEnter>
 								if ( self.Text:IsTruncated() ) then
 									GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
-									GameTooltip:SetText(self.Text:GetText(), nil, nil, nil, nil, true);
+									GameTooltip:SetText(string.format(LFG_LIST_IN_QUOTES, self.Text:GetText()), nil, nil, nil, nil, true);
 									GameTooltip:Show();
 								end
 							</OnEnter>

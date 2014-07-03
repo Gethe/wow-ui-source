@@ -268,7 +268,6 @@ function LookingForGuild_Update()
 		if ( index <= numGuilds ) then
 			local name, level, numMembers, achPoints, comment, cached, requestPending = GetRecruitingGuildInfo(index);
 			button.name:SetText(name);
-			button.level:SetText(level);
 			button.numMembers:SetFormattedText(BROWSE_GUILDS_NUM_MEMBERS, numMembers);
 			button.achPoints:SetText(achPoints);
 			button.comment:SetText(comment);

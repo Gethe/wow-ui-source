@@ -11,7 +11,7 @@ VISIBLE_CONTAINER_SPACING = 3;
 CONTAINER_OFFSET_Y = 70;
 CONTAINER_OFFSET_X = 0;
 CONTAINER_SCALE = 0.75;
-BACKPACK_HEIGHT = 252;
+BACKPACK_HEIGHT = 251;
 
 function ContainerFrame_OnLoad(self)
 	self:RegisterEvent("BAG_OPEN");
@@ -328,11 +328,11 @@ function ContainerFrame_Update(frame)
 	--Update Searchbox and sort button
 	if ( id == 0 ) then
 		BagItemSearchBox:SetParent(frame);
-		BagItemSearchBox:SetPoint("TOPLEFT", frame, "TOPLEFT", 54, -36);
+		BagItemSearchBox:SetPoint("TOPLEFT", frame, "TOPLEFT", 54, -35);
 		BagItemSearchBox.anchorBag = frame;
 		BagItemSearchBox:Show();
 		BagItemAutoSortButton:SetParent(frame);
-		BagItemAutoSortButton:SetPoint("TOPRIGHT", frame, "TOPRIGHT", -9, -30);
+		BagItemAutoSortButton:SetPoint("TOPRIGHT", frame, "TOPRIGHT", -9, -32);
 		BagItemAutoSortButton:Show();
 	elseif ( BagItemSearchBox.anchorBag == frame ) then
 		BagItemSearchBox:ClearAllPoints();
@@ -653,7 +653,7 @@ function ContainerFrame_GenerateFrame(frame, size, id)
 			if ( i == 1 ) then
 				-- Anchor the first item differently if its the backpack frame
 				if ( id == 0 ) then
-					itemButton:SetPoint("BOTTOMRIGHT", name, "TOPRIGHT", -12, -222);
+					itemButton:SetPoint("BOTTOMRIGHT", name, "TOPRIGHT", -12, -221);
 				else
 					itemButton:SetPoint("BOTTOMRIGHT", name, "BOTTOMRIGHT", -12, 9);
 				end

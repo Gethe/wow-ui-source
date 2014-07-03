@@ -303,6 +303,51 @@
 					</OnLoad>
 				</Scripts>
 			</CheckButton>
+			<CheckButton name="$parentReverseCleanUpBags" inherits="InterfaceOptionsCheckButtonTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentInteractOnLeftClick" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="0" y="-8"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						self.type = CONTROLTYPE_CHECKBOX;
+						self.text = _G[self:GetName().."Text"];
+						self.text:SetText(REVERSE_CLEAN_UP_BAGS_TEXT);
+						self.tooltipText = OPTION_TOOLTIP_REVERSE_CLEAN_UP_BAGS;
+						self.defaultValue = "0";
+						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
+
+						self.GetValue = function (self) return ( (GetSortBagsRightToLeft() and "1") or "0" ); end
+						self.SetValue = function (self, value) self.value = value; self:SetChecked(value and value ~= "0"); SetSortBagsRightToLeft(value and value ~= "0"); end
+					</OnLoad>
+				</Scripts>
+			</CheckButton>
+			<CheckButton name="$parentReverseNewLoot" inherits="InterfaceOptionsCheckButtonTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentReverseCleanUpBags" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="0" y="-8"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						self.type = CONTROLTYPE_CHECKBOX;
+						self.text = _G[self:GetName().."Text"];
+						self.text:SetText(REVERSE_NEW_LOOT_TEXT);
+						self.tooltipText = OPTION_TOOLTIP_REVERSE_NEW_LOOT;
+						self.defaultValue = "0";
+						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
+
+						self.GetValue = function (self) return ( (GetInsertItemsLeftToRight() and "1") or "0" ); end
+						self.SetValue = function (self, value) self.value = value; self:SetChecked(value and value ~= "0"); SetInsertItemsLeftToRight(value and value ~= "0"); end
+					</OnLoad>
+				</Scripts>
+			</CheckButton>
+			
 		</Frames>
 		<Scripts>
 			<OnLoad>

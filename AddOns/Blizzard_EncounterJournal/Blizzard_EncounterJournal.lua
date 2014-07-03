@@ -1493,8 +1493,9 @@ function EncounterJournal_SetTooltip(link)
 	local classID, specID = EJ_GetLootFilter();
 
 	if (specID == 0) then
-		if (classID == select(3, UnitClass("player"))) then
-			specID = GetSpecializationInfo(GetSpecialization());
+		local spec = GetSpecialization();
+		if (spec and classID == select(3, UnitClass("player"))) then
+			specID = GetSpecializationInfo(spec);
 		else
 			specID = -1;
 		end

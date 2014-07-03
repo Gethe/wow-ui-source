@@ -131,21 +131,26 @@ end
 -- CATEGORY FRAME
 ---------------------------------------------------------------
 
-local pvpFrames = { "HonorFrame", "ConquestFrame", "WarGamesFrame" }
+local pvpFrames = { "HonorFrame", "ConquestFrame", "WarGamesFrame", "LFGListPVPStub" }
 
 function PVPQueueFrame_OnLoad(self)
 	--set up side buttons
 	local englishFaction = UnitFactionGroup("player");
 	SetPortraitToTexture(self.CategoryButton1.Icon, "Interface\\Icons\\achievement_bg_winwsg");
 	self.CategoryButton1.Name:SetText(PVP_TAB_HONOR);
-	self.CategoryButton1.CurrencyIcon:SetTexture("Interface\\PVPFrame\\PVPCurrency-Honor-"..englishFaction);
+	self.CategoryButton1.CurrencyDisplay.Icon:SetTexture("Interface\\PVPFrame\\PVPCurrency-Honor-"..englishFaction);
+	self.CategoryButton1.CurrencyDisplay.currencyID = HONOR_CURRENCY;
 	local _, currencyAmount = GetCurrencyInfo(HONOR_CURRENCY);
-	self.CategoryButton1.CurrencyAmount:SetText(currencyAmount);
+	self.CategoryButton1.CurrencyDisplay.Amount:SetText(currencyAmount);
+
 	SetPortraitToTexture(self.CategoryButton2.Icon, "Interface\\Icons\\achievement_bg_killxenemies_generalsroom");
+
 	self.CategoryButton2.Name:SetText(PVP_TAB_CONQUEST);
-	self.CategoryButton2.CurrencyIcon:SetTexture("Interface\\PVPFrame\\PVPCurrency-Conquest-"..englishFaction);
+	self.CategoryButton2.CurrencyDisplay.Icon:SetTexture("Interface\\PVPFrame\\PVPCurrency-Conquest-"..englishFaction);
+	self.CategoryButton2.CurrencyDisplay.currencyID = CONQUEST_CURRENCY;
 	_, currencyAmount = GetCurrencyInfo(CONQUEST_CURRENCY);
-	self.CategoryButton2.CurrencyAmount:SetText(currencyAmount);
+	self.CategoryButton2.CurrencyDisplay.Amount:SetText(currencyAmount);
+	
 	SetPortraitToTexture(self.CategoryButton3.Icon, "Interface\\Icons\\ability_warrior_offensivestance");
 	self.CategoryButton3.Name:SetText(WARGAMES);
 	SetPortraitToTexture(self.CategoryButton4.Icon, "Interface\\Icons\\Achievement_General_StayClassy");
@@ -235,9 +240,9 @@ end
 function PVPQueueFrame_UpdateCurrencies(self)
 	ConquestFrame_UpdateConquestBar(ConquestFrame)
 	local _, currencyAmount = GetCurrencyInfo(HONOR_CURRENCY);
-	self.CategoryButton1.CurrencyAmount:SetText(currencyAmount);
+	self.CategoryButton1.CurrencyDisplay.Amount:SetText(currencyAmount);
 	_, currencyAmount = GetCurrencyInfo(CONQUEST_CURRENCY);
-	self.CategoryButton2.CurrencyAmount:SetText(currencyAmount);
+	self.CategoryButton2.CurrencyDisplay.Amount:SetText(currencyAmount);
 end
 
 function PVPQueueFrame_OnShow(self)
@@ -438,22 +443,6 @@ function HonorFrameSpecificList_Update()
 	local numBattlegrounds = GetNumBattlegroundTypes();
 	local selectionID = scrollFrame.selectionID;
 	local buttonCount = -offset;
-
-	-- apply header	
-	local button = buttons[1];
-	local header = HonorFrame.SpecificHeader;
-	if( offset == 0 ) then
-		header:SetParent(button:GetParent());
-		header:SetPoint("BOTTOM", button, 0 , 0);
-		button:SetHeight(25);
-		button:Hide();
-		header:Show();
-	else
-		header:Hide();
-		button:SetHeight(40);
-		button:Show();
-	end
-	buttonCount = buttonCount + 1;
 
 	for i = 1, numBattlegrounds do
 		local localizedName, canEnter, isHoliday, isRandom, battleGroundID, mapDescription, BGMapID, maxPlayers, gameType, iconTexture = GetBattlegroundInfo(i);
@@ -675,6 +664,7 @@ function HonorFrameBonusFrame_Update()
 			rewardIndex = rewardIndex + 1;
 			local frame = HonorFrame.BonusFrame["BattlegroundReward"..rewardIndex];
 			frame:Show();
+			frame.currencyID = CONQUEST_CURRENCY;
 			frame.Icon:SetTexture("Interface\\PVPFrame\\PVPCurrency-Conquest-"..englishFaction);
 			frame.Amount:SetText(winConquestAmount);
 		end
@@ -682,6 +672,7 @@ function HonorFrameBonusFrame_Update()
 			rewardIndex = rewardIndex + 1;
 			local frame = HonorFrame.BonusFrame["BattlegroundReward"..rewardIndex];
 			frame:Show();
+			frame.currencyID = HONOR_CURRENCY;
 			frame.Icon:SetTexture("Interface\\PVPFrame\\PVPCurrency-Honor-"..englishFaction);
 			frame.Amount:SetText(winHonorAmount);
 		end
@@ -689,15 +680,15 @@ function HonorFrameBonusFrame_Update()
 			HonorFrame.BonusFrame["BattlegroundReward"..i]:Hide();
 		end
 		if ( rewardIndex == 0 ) then
-			-- we don't have any rewards
-			HonorFrame.BonusFrame.NoBattlegroundReward:Show();
+			-- we don't have any specific rewards
+			HonorFrame.BonusFrame.DefaultBattlegroundReward:Show();
 		else
-			HonorFrame.BonusFrame.NoBattlegroundReward:Hide();
+			HonorFrame.BonusFrame.DefaultBattlegroundReward:Hide();
 		end
 	else
 		HonorFrame.BonusFrame.BattlegroundReward1:Hide();
 		HonorFrame.BonusFrame.BattlegroundReward2:Hide();
-		HonorFrame.BonusFrame.NoBattlegroundReward:Show();
+		HonorFrame.BonusFrame.DefaultBattlegroundReward:Show();
 	end
 	
 	-- arena pvp
@@ -788,7 +779,9 @@ function ConquestFrame_OnLoad(self)
 	CONQUEST_BUTTONS = {ConquestFrame.Arena2v2, ConquestFrame.Arena3v3, ConquestFrame.Arena5v5, ConquestFrame.RatedBG};
 
 	local factionGroup = UnitFactionGroup("player");
+	self.ArenaReward.currencyID = CONQUEST_CURRENCY;
 	self.ArenaReward.Icon:SetTexture("Interface\\PVPFrame\\PVPCurrency-Conquest-"..factionGroup);
+	self.RatedBGReward.currencyID = CONQUEST_CURRENCY;
 	self.RatedBGReward.Icon:SetTexture("Interface\\PVPFrame\\PVPCurrency-Conquest-"..factionGroup);
 
 	RequestRatedInfo();
@@ -930,10 +923,56 @@ end
 --------- Conquest Tooltips ----------
 
 function ConquestFrame_ShowMaximumRewardsTooltip(self)
-	GameTooltip:SetMinimumWidth(256, true);
+	local currencyName = GetCurrencyInfo(CONQUEST_CURRENCY);
+
 	GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
-	GameTooltip:SetText(BATTLEGROUND_BONUS_REWARD_TOOLTIP);
+	GameTooltip:SetText(MAXIMUM_REWARD);
+	GameTooltip:AddLine(format(CURRENCY_RECEIVED_THIS_WEEK, currencyName), 1, 1, 1, true);
+	GameTooltip:AddLine(" ");
+
+	local pointsThisWeek, maxPointsThisWeek, tier2Quantity, tier2Limit, tier1Quantity, tier1Limit, randomPointsThisWeek, maxRandomPointsThisWeek, arenaReward, ratedBGReward = GetPVPRewards();
+
+	local r, g, b = 1, 1, 1;
+	local capped;
+	if ( pointsThisWeek >= maxPointsThisWeek ) then
+		r, g, b = 0.5, 0.5, 0.5;
+		capped = true;
+	end
+	GameTooltip:AddDoubleLine(FROM_ALL_SOURCES, format(CURRENCY_WEEKLY_CAP_FRACTION, pointsThisWeek, maxPointsThisWeek), r, g, b, r, g, b);
+
+	if ( capped or tier2Quantity >= tier2Limit ) then
+		r, g, b = 0.5, 0.5, 0.5;
+	else
+		r, g, b = 1, 1, 1;
+	end
+	GameTooltip:AddDoubleLine(" -"..FROM_RATEDBG, format(CURRENCY_WEEKLY_CAP_FRACTION, tier2Quantity, tier2Limit), r, g, b, r, g, b);
+
+	if ( capped or tier1Quantity >= tier1Limit ) then
+		r, g, b = 0.5, 0.5, 0.5;
+	else
+		r, g, b = 1, 1, 1;
+	end
+	GameTooltip:AddDoubleLine(" -"..FROM_ARENA, format(CURRENCY_WEEKLY_CAP_FRACTION, tier1Quantity, tier1Limit), r, g, b, r, g, b);
+
+	if ( capped or randomPointsThisWeek >= maxRandomPointsThisWeek ) then
+		r, g, b = 0.5, 0.5, 0.5;
+	else
+		r, g, b = 1, 1, 1;
+	end
+	GameTooltip:AddDoubleLine(" -"..FROM_RANDOMBG, format(CURRENCY_WEEKLY_CAP_FRACTION, randomPointsThisWeek, maxRandomPointsThisWeek), r, g, b, r, g, b);
+
 	GameTooltip:Show();
+end
+
+function DefaultBattlegroundReward_ShowTooltip(self)
+	GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+	GameTooltip:SetText(BATTLEGROUND_BONUS_REWARD_TOOLTIP, nil, nil, nil, nil,
+	true);
+	GameTooltip:Show();
+end
+
+function DefaultBattlegroundReward_HideTooltip(self)
+	GameTooltip_Hide();
 end
 
 local CONQUEST_TOOLTIP_PADDING = 30 --counts both sides

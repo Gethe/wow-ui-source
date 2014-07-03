@@ -12,6 +12,7 @@ function GuildNewsFrame_OnLoad(self)
 	GuildFrame_RegisterPanel(self);
 	self:RegisterEvent("GUILD_NEWS_UPDATE");
 	self:RegisterEvent("GUILD_MOTD");
+	self:RegisterEvent("GUILD_ROSTER_UPDATE");
 	local fontString = GuildNewsSetFiltersButton:GetFontString();
 	GuildNewsSetFiltersButton:SetHeight(fontString:GetHeight() + 4);
 	GuildNewsSetFiltersButton:SetWidth(fontString:GetWidth() + 4);
@@ -36,11 +37,23 @@ function GuildNewsFrame_OnEvent(self, event)
 end
 
 function GuildNews_Update(frontPage, numButtons)
+	local numNews = GetNumGuildNews();
+	local hasImpeachFrame = CanReplaceGuildMaster();
+	if ( hasImpeachFrame ) then
+		GuildGMImpeachButton:Show();
+		GuildNewsContainer:SetPoint("TOPLEFT", GuildGMImpeachButton, "BOTTOMLEFT", 0, 0);
+		GuildNewsContainer:SetHeight(295);
+	else
+		GuildGMImpeachButton:Hide();
+		GuildNewsContainer:SetPoint("TOPLEFT", GuildNewsFrameHeader, "BOTTOMLEFT", 0, 0);
+		GuildNewsContainer:SetHeight(305);
+	end
+	
 	local scrollFrame, offset, buttons, button, index;
 	local numGuildNews = GetNumGuildNews();
 	
 	if ( frontPage ) then
-		buttons = GuildMainFrame.buttons;
+		buttons = GuildPerksFrame.buttons;
 		offset = 0;
 	else
 		scrollFrame = GuildNewsContainer;

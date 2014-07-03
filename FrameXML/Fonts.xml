@@ -75,6 +75,11 @@
 			<AbsValue val="20"/>
 		</FontHeight>
 	</Font>
+	<Font name="SystemFont_Huge1_Outline" font="Fonts\FRIZQT__.TTF" outline="NORMAL" virtual="true">
+		<FontHeight>
+			<AbsValue val="20"/>
+		</FontHeight>
+	</Font>	
 	<Font name="SystemFont_OutlineThick_Huge2" font="Fonts\FRIZQT__.TTF" outline="THICK" virtual="true">
 		<FontHeight>
 			<AbsValue val="22"/>
@@ -166,6 +171,12 @@
 		</FontHeight>
 		<Color r="1" g=".82" b="0"/>
 	</Font>
+	<Font name="QuestFont_Super_Huge_Outline" font="Fonts\MORPHEUS.ttf" outline="NORMAL" virtual="true">
+		<FontHeight>
+			<AbsValue val="24"/>
+		</FontHeight>
+		<Color r="1" g=".82" b="0"/>
+	</Font>	
 	<Font name="SplashHeaderFont" font="Fonts\MORPHEUS.ttf" virtual="true">
 		<FontHeight>
 			<AbsValue val="24"/>

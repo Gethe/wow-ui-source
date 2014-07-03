@@ -207,6 +207,7 @@ function ArchaeologyFrame_UpdateSummary(self)
 
 			local numProjects = GetNumArtifactsByRace(raceIndex);
 			if numProjects==0 then
+				raceButton.readyAnim:Stop();
 				raceButton:Disable();
 			else
 				raceButton:Enable();

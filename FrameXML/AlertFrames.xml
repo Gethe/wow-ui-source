@@ -1355,6 +1355,9 @@
 			</Texture>
 		</Layer>		
 	</Layers>
+	<Scripts>
+		<OnClick function="GarrisonAlertFrame_OnClick"/>
+	</Scripts>
 </Button>
 
 <Button name="GarrisonMissionAlertFrame" parent="UIParent" hidden="true" frameStrata="DIALOG" inherits="AlertFrameTemplate">
@@ -1444,6 +1447,9 @@
 			</Texture>
 		</Layer>		
 	</Layers>
+	<Scripts>
+		<OnClick function="GarrisonAlertFrame_OnClick"/>
+	</Scripts>
 </Button>
 
 <Button name="GarrisonFollowerAlertFrame" parent="UIParent" hidden="true" frameStrata="DIALOG" inherits="AlertFrameTemplate">

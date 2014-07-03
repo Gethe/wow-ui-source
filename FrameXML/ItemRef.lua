@@ -230,6 +230,15 @@ function SetItemRef(link, text, button, chatFrame)
 			FloatingGarrisonFollower_Toggle(tonumber(garrisonFollowerID), tonumber(quality), tonumber(level), tonumber(itemLevel), tonumber(ability1), tonumber(ability2), tonumber(ability3), tonumber(ability4), tonumber(trait1), tonumber(trait2), tonumber(trait3), tonumber(trait4));
 		end
 		return;
+	elseif ( strsub(link, 1, 11) == "garrmission" ) then
+		local _, garrMissionID = strsplit(":", link);
+		if ( IsModifiedClick() ) then
+			local fixedLink = GetFixedLink(text);
+			HandleModifiedItemClick(fixedLink);
+		else
+			FloatingGarrisonMission_Toggle(tonumber(garrMissionID));
+		end
+		return;
 	end
 
 	if ( IsModifiedClick() ) then

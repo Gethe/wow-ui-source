@@ -3048,10 +3048,6 @@ function ChatFrame_MessageEventHandler(self, event, ...)
 			if ( not globalstring ) then
 				globalstring = _G["CHAT_"..arg1.."_NOTICE"];
 			end
-			if ( arg10 > 0 ) then
-				arg4 = arg4.." "..arg10;
-			end
-			
 			local accessID = ChatHistory_GetAccessID(Chat_GetChatCategory(type), arg8);
 			local typeID = ChatHistory_GetAccessID(infoType, arg8, arg12);
 			self:AddMessage(format(globalstring, arg8, arg4), info.r, info.g, info.b, info.id, false, accessID, typeID);

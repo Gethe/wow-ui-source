@@ -136,6 +136,11 @@
 				</Anchors>
 			</Frame>
 		</Frames>
+		<Scripts>
+			<OnEnter function="GarrisonLandingPageMission_OnEnter"/>
+			<OnLeave function="GameTooltip_Hide"/>
+			<OnClick function="GarrisonLandingPageMission_OnClick"/>
+		</Scripts>
 	</Button>
 	
 	<Frame name="GarrisonLandingPageShipmentStatusTemplate" virtual="true">

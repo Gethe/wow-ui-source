@@ -579,12 +579,7 @@ function CounterBar_SetStyle(self, useFactional, anchorTop, animNumbers, maxValu
 	self.fractional = useFactional;
 	self.startIndex = startIndex;
 
-	self:ClearAllPoints();
-	if (anchorTop) then
-		self:SetPoint("TOP", UIParent, 0, -20);
-	else
-		self:SetPoint("CENTER");
-	end
+	UIParent_ManageFramePositions();
 
 	CounterBar_SetNumbers(self);
 end

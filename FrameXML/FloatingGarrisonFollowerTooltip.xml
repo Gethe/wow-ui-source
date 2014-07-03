@@ -288,5 +288,60 @@ UI.xsd">
 		</Scripts>
 	</Frame>
 
+	<Frame name="FloatingGarrisonMissionTooltip" movable="true" toplevel="true" parent="UIParent" frameStrata="TOOLTIP" clampedToScreen="true" hidden="true" inherits="TooltipBorderedFrameTemplate">
+		<Size x="240" y="70"/>
+		<Anchors>
+			<Anchor point="BOTTOM" x="0" y="80"/>
+		</Anchors>
+		<Layers>
+			<Layer level="ARTWORK">
+				<FontString parentKey="Name" inherits="GameFontNormal" justifyH="LEFT" text="AbilityText">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="10" y="-10"/>
+					</Anchors>
+				</FontString>
+				<FontString parentKey="FollowerRequirement" inherits="GameFontHighlight" justifyH="LEFT" text="Followers">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.Name" relativePoint="BOTTOMLEFT" y="-3"/>
+					</Anchors>
+				</FontString>
+				<FontString parentKey="RewardsLabel" inherits="GameFontNormal" justifyH="LEFT" text="REWARDS">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.FollowerRequirement" relativePoint="BOTTOMLEFT" y="-12"/>
+					</Anchors>
+				</FontString>
+				<FontString parentKey="Rewards" inherits="GameFontHighlight" justifyH="LEFT" text="Rewards">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.RewardsLabel" relativePoint="BOTTOMLEFT" />
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Button parentKey="CloseButton">
+				<Size x="32" y="32"/>
+				<Anchors>
+					<Anchor point="TOPRIGHT" x="1" y="0"/>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						self:GetParent():Hide();
+					</OnClick>
+				</Scripts>
+				<NormalTexture file="Interface\Buttons\UI-Panel-MinimizeButton-Up"/>
+				<PushedTexture file="Interface\Buttons\UI-Panel-MinimizeButton-Down"/>
+				<HighlightTexture file="Interface\Buttons\UI-Panel-MinimizeButton-Highlight" alphaMode="ADD"/>
+			</Button>
+		</Frames>
+		<Scripts>
+			<OnMouseDown>
+				self:StartMoving();
+			</OnMouseDown>
+			<OnMouseUp>
+				self:StopMovingOrSizing();
+			</OnMouseUp>
+		</Scripts>
+	</Frame>
+
 
 </Ui>

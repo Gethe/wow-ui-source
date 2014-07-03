@@ -155,13 +155,8 @@ function AchievementFrame_ForceUpdate ()
 end
 
 function AchievementFrame_SetTabs()
-	if ( not IsInGuild() or AchievementFrameComparison:IsShown() or not GetGuildLevelEnabled() ) then
-		AchievementFrameTab2:Hide();
-		AchievementFrameTab3:SetPoint("LEFT", AchievementFrameTab1, "RIGHT", -5, 0);
-	else
-		AchievementFrameTab2:Show();
-		AchievementFrameTab3:SetPoint("LEFT", AchievementFrameTab2, "RIGHT", -5, 0);
-	end
+	AchievementFrameTab2:Show();
+	AchievementFrameTab3:SetPoint("LEFT", AchievementFrameTab2, "RIGHT", -5, 0);
 end
 
 function AchievementFrame_UpdateTabs(clickedTab)

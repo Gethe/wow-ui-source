@@ -70,6 +70,19 @@ LFG_LIST_PROVING_DAMAGER_SILVER = "|cffc0c0c0Silver Damage|r";
 LFG_LIST_PROVING_DAMAGER_BRONZE = "|cff9b6c00Bronze Damage|r";
 
 LFG_LIST_GROUP_FORMING = "Your group is currently forming.";
+VOICE_CHAT_COLON = "Voice Chat: |cffffd100\"%s\"|r";
+LFG_LIST_IN_QUOTES = "\"%s\"";
+
+WHISPER_LEADER = "Whisper Leader";
+
+LFG_LIST_REPORT_GROUP_FOR = "Report Group For:";
+LFG_LIST_BAD_NAME = "Inappropriate Name";
+LFG_LIST_BAD_DESCRIPTION = "Inappropriate Description";
+LFG_LIST_REPORT_FOR = "Report For:";
+LFG_LIST_TOOLTIP_LEADER = "Leader: |cffffffff%s|r";
+
+LFG_LIST_LOADING = "Loading...";
+NO_LFG_LIST_AVAILABLE = "You are not eligible for any groups.";
 
 --[[
 function C_LFGList.GetSearchResults()

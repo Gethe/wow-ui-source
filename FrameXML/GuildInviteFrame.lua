@@ -7,7 +7,7 @@ function GuildInviteFrame_OnEvent(self, event, ...)
 		
 		GuildInviteFrameInviterName:SetText(inviterName);
 		GuildInviteFrameGuildName:SetText(guildName);
-		GuildInviteFrameLevelNumber:SetText(guildLevel);
+		GuildInviteFrame.Points.Text:SetText("25"); -- TODO: update with actual number
 		SetLargeGuildTabardTextures(nil, GuildInviteFrameTabardEmblem, GuildInviteFrameTabardBackground, GuildInviteFrameTabardBorder, emblem);
 		-- check if player has any guild rep beyond Neutral 0 if it's being invited to a new guild
 		local name, description, standingID, barMin, barMax, barValue = GetGuildFactionInfo();
@@ -25,12 +25,6 @@ function GuildInviteFrame_OnEvent(self, event, ...)
 		end
 		GuildInviteFrame.accepted = nil;
 		GuildInviteFrame.elapsed = 0;
-
-		if ( GetGuildLevelEnabled() ) then
-			GuildInviteFrameLevel:Show();
-		else
-			GuildInviteFrameLevel:Hide();
-		end
 
 		StaticPopupSpecial_Show(GuildInviteFrame);
 	elseif ( event == "GUILD_INVITE_CANCEL" ) then

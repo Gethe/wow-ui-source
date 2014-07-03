@@ -157,6 +157,17 @@
 					<Anchor point="TOP" x="-80" y="-35"/>
 				</Anchors>
 			</Frame>
+			<Button name="$parentTutorialButton" parentKey="MainHelpButton" inherits="MainHelpPlateButton">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent" x="44" y="18" />
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						self:SetFrameLevel(70); -- NavBar sets itself to framelevel 50...
+					</OnLoad>
+					<OnClick function="WorldMapFrame_ToggleTutorial"/>
+				</Scripts>
+			</Button>
 			<ScrollFrame name="WorldMapScrollFrame">
                 <Size x="1002" y="668"/>
                 <Anchors>

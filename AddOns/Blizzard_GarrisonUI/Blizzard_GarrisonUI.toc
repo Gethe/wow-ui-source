@@ -10,4 +10,5 @@ Blizzard_GarrisonMissionUI.xml
 Blizzard_GarrisonLandingPage.xml
 Blizzard_GarrisonCapacitiveDisplay.xml
 Blizzard_GarrisonMonumentUI.xml
+Blizzard_GarrisonRecruiterUI.xml
 Localization.lua

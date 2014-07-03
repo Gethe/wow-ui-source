@@ -35,6 +35,7 @@ function DraenorZoneAbilityFrame_OnEvent(self, event)
 		DraenorZoneAbilityFrame_Update(self);
 		UIParent_ManageFramePositions();
 	else
+		DraenorZoneAbilityButtonAlert:Hide();
 		self:Hide();
 
 		UIParent_ManageFramePositions();

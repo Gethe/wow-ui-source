@@ -18,6 +18,8 @@ CHARACTER_BUTTON_HEIGHT = 57;
 CHARACTER_LIST_TOP = 688;
 AUTO_DRAG_TIME = 0.5;				-- in seconds
 
+CHARACTER_UNDELETE_COOLDOWN = 0;	-- in days
+
 local translationTable = { };	-- for character reordering: key = button index, value = character ID
 
 BLIZZCON_IS_A_GO = false;
@@ -296,6 +298,14 @@ function CharacterSelect_OnUpdate(self, elapsed)
 		end
 	end
 
+	if ( self.undeleteSucceeded ) then
+		if (not GlueDialog:IsShown()) then
+			GlueDialog_Show(self.undeletePendingRename and "UNDELETE_SUCCEEDED_NAME_TAKEN" or "UNDELETE_SUCCEEDED");
+			self.undeleteSucceeded = false;
+			self.undeletePendingRename = false;
+		end
+	end
+
 	if ( self.pressDownButton ) then
 		self.pressDownTime = self.pressDownTime + elapsed;
 		if ( self.pressDownTime >= AUTO_DRAG_TIME ) then
@@ -422,7 +432,9 @@ function CharacterSelect_OnEvent(self, event, ...)
 			CharacterSelect_UpdateStoreButton();
 		end
 	elseif ( event == "CHARACTER_UNDELETE_STATUS_CHANGED") then
-		local enabled, onCooldown = GetCharacterUndeleteStatus();
+		local enabled, onCooldown, cooldown = GetCharacterUndeleteStatus();
+
+		CHARACTER_UNDELETE_COOLDOWN = cooldown;
 
 		CharSelectUndeleteCharacterButton:SetEnabled(enabled and not onCooldown);
 		if (not enabled) then
@@ -530,9 +542,11 @@ function UpdateCharacterList(skipSelect)
 		local found = false;
 		repeat
 			for i = 1, MAX_CHARACTERS_DISPLAYED, 1 do
-				local guid = select(14, GetCharacterInfo(GetCharIDFromIndex(i + CHARACTER_LIST_OFFSET)));
+				local guid, _, _, _, _, forceRename = select(14, GetCharacterInfo(GetCharIDFromIndex(i + CHARACTER_LIST_OFFSET)));
 				if ( guid == CharacterSelect.undeleteGuid ) then
 					CharacterSelect.selectedIndex = i + CHARACTER_LIST_OFFSET;
+					CharacterSelect.undeleteSucceeded = true;
+					CharacterSelect.undeletePendingRename = forceRename;
 					found = true;
 					break;
 				end
@@ -888,9 +902,8 @@ function CharacterSelect_PaidServiceOnClick(self, button, down, service)
 	PlaySound("gsCharacterSelectionCreateNew");
 	if (CharacterSelect.undeleting) then
 		local guid = select(14, GetCharacterInfo(PAID_SERVICE_CHARACTER_ID));
-		UndeleteCharacter(guid);
-		CharacterSelect.createIndex = 0;
-		CharacterSelect_EndCharacterUndelete();
+		CharacterSelect.pendingUndeleteGuid = guid;
+		GlueDialog_Show("UNDELETE_CONFIRM", UNDELETE_CONFIRMATION:format(CHARACTER_UNDELETE_COOLDOWN));
 	else
 		SetGlueScreen("charcreate");
 	end
@@ -1369,6 +1382,31 @@ GlueDialogTypes["UNDELETE_NO_CHARACTERS"] = {
 	button2 = nil,
 }
 
+GlueDialogTypes["UNDELETE_SUCCEEDED"] = {
+	text = UNDELETE_SUCCESS,
+	button1 = OKAY,
+	escapeHides = true,
+}
+
+GlueDialogTypes["UNDELETE_SUCCEEDED_NAME_TAKEN"] = {
+	text = UNDELETE_SUCCESS_NAME_CHANGE_REQUIRED,
+	button1 = OKAY,
+	escapeHides = true,
+}
+
+GlueDialogTypes["UNDELETE_CONFIRM"] = {
+	text = UNDELETE_CONFIRMATION,
+	button1 = OKAY,
+	button2 = CANCEL,
+	OnAccept = function ()
+		CharacterSelect_FinishUndelete(CharacterSelect.pendingUndeleteGuid);
+		CharacterSelect.pendingUndeleteGuid = nil;
+	end,
+	OnCancel = function ()
+		CharacterSelect.pendingUndeleteGuid = nil;
+	end,
+}
+
 function CharacterSelect_StartCharacterUndelete()
 	CharacterSelect.undeleting = true;
 	CharacterSelect.undeleteChanged = true;
@@ -1376,6 +1414,8 @@ function CharacterSelect_StartCharacterUndelete()
 	CharSelectCreateCharacterButton:Hide();
 	CharSelectUndeleteCharacterButton:Hide();
 	CharSelectBackToActiveButton:Show();
+	CharSelectChangeRealmButton:Hide();
+	CharSelectUndeleteLabel:Show();
 
 	CharacterServicesMaster_UpdateServiceButton();
 	StartCharacterUndelete();
@@ -1388,9 +1428,17 @@ function CharacterSelect_EndCharacterUndelete()
 	CharSelectBackToActiveButton:Hide();
 	CharSelectCreateCharacterButton:Show();
 	CharSelectUndeleteCharacterButton:Show();
+	CharSelectChangeRealmButton:Show();
+	CharSelectUndeleteLabel:Hide();
 
 	CharacterServicesMaster_UpdateServiceButton();
 	EndCharacterUndelete();
+end
+
+function CharacterSelect_FinishUndelete(guid)
+	UndeleteCharacter(guid);
+	CharacterSelect.createIndex = 0;
+	CharacterSelect_EndCharacterUndelete();
 end
 
 -- COPY CHARACTER

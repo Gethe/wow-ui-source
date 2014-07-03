@@ -299,3 +299,47 @@ function GarrisonFollowerAbilityTooltipTemplate_SetAbility(tooltipFrame, garrFol
 		end
 	end
 end
+
+function FloatingGarrisonMission_Toggle(garrMissionID)
+	if ( FloatingGarrisonMissionTooltip:IsShown() and
+		FloatingGarrisonMissionTooltip.garrMissionID == garrMissionID) then
+		FloatingGarrisonMissionTooltip:Hide();
+	else
+		FloatingGarrisonMission_Show(garrMissionID);
+	end
+end
+
+function FloatingGarrisonMission_Show(garrMissionID)
+	FloatingGarrisonMissionTooltip:Show();
+	FloatingGarrisonMissionTooltip.garrMissionID = garrMissionID;
+	FloatingGarrisonMissionTooltip.Name:SetText(C_Garrison.GetMissionName(garrMissionID));
+	FloatingGarrisonMissionTooltip.FollowerRequirement:SetFormattedText(GARRISON_MISSION_TOOLTIP_NUM_REQUIRED_FOLLOWERS, C_Garrison.GetMissionMaxFollowers(garrMissionID), 1, 1, 1);
+	
+	local rewards = C_Garrison.GetMissionRewardInfo(garrMissionID);
+	local rewardText = "";
+	
+	local missionFrameHeightBase = 70;
+	FloatingGarrisonMissionTooltip:SetHeight(missionFrameHeightBase);
+
+	for id, reward in pairs(rewards) do
+		if string.len(rewardText) > 0 then
+			rewardText = rewardText.."\n";
+		end
+
+		if (reward.quality) then
+			rewardText = rewardText..ITEM_QUALITY_COLORS[reward.quality + 1].hex..reward.title..FONT_COLOR_CODE_CLOSE;
+		elseif (reward.itemID) then 
+			local itemName, _, itemRarity, _, _, _, _, _, _, itemTexture = GetItemInfo(reward.itemID);
+			if itemName then
+				rewardText = rewardText..ITEM_QUALITY_COLORS[itemRarity].hex..itemName..FONT_COLOR_CODE_CLOSE;
+			end
+		elseif (reward.followerXP) then
+			rewardText = rewardText..reward.title;
+		else
+			rewardText = rewardText..reward.title;
+		end
+	end
+	
+	FloatingGarrisonMissionTooltip.Rewards:SetText(rewardText, 1, 1, 1);
+	FloatingGarrisonMissionTooltip:SetHeight(FloatingGarrisonMissionTooltip:GetHeight() + FloatingGarrisonMissionTooltip.Rewards:GetHeight());
+end

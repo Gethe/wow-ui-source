@@ -489,8 +489,12 @@
 			<OnLoad>
 				self:RegisterForDrag("LeftButton");
 			</OnLoad>
+			<OnDragStart function="GarrisonPlot_OnDragStart"/>
+			<OnDragStop function="GarrisonPlot_OnDragStop"/>
 			<OnReceiveDrag function="GarrisonPlot_OnReceiveDrag"/>
-			<OnClick function="GarrisonPlot_OnClick"/>
+			<OnMouseDown>
+				GarrisonPlot_OnClick(self);
+			</OnMouseDown>
 			<OnEnter>
 				self.BuildingHighlight:Show();
 				if (self.tooltip) then

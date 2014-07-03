@@ -781,8 +781,10 @@ function PaperDollFrame_SetArmor(statFrame, unit)
 	_G[statFrame:GetName().."Label"]:SetText(format(STAT_FORMAT, ARMOR));
 	local text = _G[statFrame:GetName().."StatText"];
 
-	local bonusArmor = posBuff - negBuff;
-	effectiveArmor = effectiveArmor - bonusArmor;
+	local bonusArmor = posBuff + negBuff;
+	if(bonusArmor > 0) then
+		effectiveArmor = effectiveArmor - bonusArmor;
+	end
 
 	PaperDollFrame_SetLabelAndText(statFrame, STAT_ARMOR, effectiveArmor, false);
 	local baseArmorReduction = PaperDollFrame_GetArmorReduction(effectiveArmor, UnitLevel(unit));
@@ -811,7 +813,8 @@ function PaperDollFrame_SetBonusArmor(statFrame, unit)
 	_G[statFrame:GetName().."Label"]:SetText(format(STAT_FORMAT, ARMOR));
 	local text = _G[statFrame:GetName().."StatText"];
 
-	local bonusArmor = posBuff - negBuff;
+	local bonusArmor = posBuff + negBuff;
+	bonusArmor = max(bonusArmor,0)
 
 	PaperDollFrame_SetLabelAndText(statFrame, STAT_BONUS_ARMOR, bonusArmor, false);
 	local armorReduction = PaperDollFrame_GetArmorReduction(effectiveArmor, UnitLevel(unit));
@@ -1233,7 +1236,12 @@ function PaperDollFrame_SetCritChance(statFrame, unit)
 	text:SetText(critChance);
 		
 	statFrame.tooltip = HIGHLIGHT_FONT_COLOR_CODE..format(PAPERDOLLFRAME_TOOLTIP_FORMAT, CRIT_CHANCE).." "..critChance..FONT_COLOR_CODE_CLOSE;
-	statFrame.tooltip2 = format(CR_CRIT_TOOLTIP, BreakUpLargeNumbers(GetCombatRating(rating)), GetCombatRatingBonus(rating));
+	if (GetCritChanceProvidesParryEffect()) then
+		local critChance = GetCombatRatingBonus(rating);
+		statFrame.tooltip2 = format(CR_CRIT_PARRY_RATING_TOOLTIP, BreakUpLargeNumbers(GetCombatRating(rating)), critChance, critChance);
+	else
+		statFrame.tooltip2 = format(CR_CRIT_TOOLTIP, BreakUpLargeNumbers(GetCombatRating(rating)), GetCombatRatingBonus(rating));
+	end
 	statFrame:Show();
 end
 

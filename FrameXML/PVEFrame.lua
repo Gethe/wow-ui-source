@@ -105,7 +105,7 @@ end
 SCENARIOS_SHOW_LEVEL = 85;
 RAID_FINDER_SHOW_LEVEL = 85;
 
-local groupFrames = { "LFDParentFrame", "ScenarioFinderFrame", "RaidFinderFrame", "LFGListFrame" }
+local groupFrames = { "LFDParentFrame", "ScenarioFinderFrame", "RaidFinderFrame", "LFGListPVEStub" }
 
 function GroupFinderFrame_OnLoad(self)
 	SetPortraitToTexture(self.groupButton1.icon, "Interface\\Icons\\INV_Helmet_08");

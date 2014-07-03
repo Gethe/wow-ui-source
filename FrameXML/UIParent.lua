@@ -65,6 +65,8 @@ UIPanelWindows["GarrisonBuildingFrame"] =		{ area = "center",			pushable = 0,		w
 UIPanelWindows["GarrisonMissionFrame"] =		{ area = "center",			pushable = 0,		whileDead = 1, 		width = 1002, 	allowOtherPanels = 1};
 UIPanelWindows["GarrisonLandingPage"] =			{ area = "center",			pushable = 0,		whileDead = 1, 		width = 800, 	allowOtherPanels = 1};
 UIPanelWindows["GarrisonMonumentFrame"] =		{ area = "center",			pushable = 0,		whileDead = 1, 		width = 333, 	allowOtherPanels = 1};
+UIPanelWindows["GarrisonRecruiterFrame"] =		{ area = "left",			pushable = 0};
+UIPanelWindows["GarrisonRecruitSelectFrame"] =	{ area = "center",			pushable = 0};
 
 local function GetUIPanelWindowInfo(frame, name)
 	if ( not frame:GetAttribute("UIPanelLayout-defined") ) then
@@ -290,7 +292,7 @@ function UIParent_OnLoad(self)
 	self:RegisterEvent("ITEM_UPGRADE_MASTER_OPENED");
 	self:RegisterEvent("ITEM_UPGRADE_MASTER_CLOSED");
 
-	-- Events for Pet Jornal
+	-- Events for Pet Journal
 	self:RegisterEvent("PET_JOURNAL_NEW_BATTLE_SLOT");
 	
 	-- Events for Quest Choice
@@ -308,6 +310,7 @@ function UIParent_OnLoad(self)
 	self:RegisterEvent("GARRISON_TRADESKILL_NPC_CLOSED");
 	self:RegisterEvent("GARRISON_SHOW_LANDING_PAGE");
 	self:RegisterEvent("GARRISON_MONUMENT_SHOW_UI");
+	self:RegisterEvent("GARRISON_RECRUITMENT_NPC_OPENED");
 end
 
 
@@ -1459,8 +1462,13 @@ function UIParent_OnEvent(self, event, ...)
 	elseif ( event == "GARRISON_MONUMENT_SHOW_UI") then
 		if(not GarrisonMonumentFrame)then
 			Garrison_LoadUI();
-			GarrisonMountmentFrame_OnEvent(GarrisonMonumentFrame, event, ...);
 		end
+		GarrisonMonuntmentFrame_OnEvent(GarrisonMonumentFrame, event, ...);
+	elseif ( event == "GARRISON_RECRUITMENT_NPC_OPENED") then
+		if(not GarrisonRecruiterFrame)then
+			Garrison_LoadUI();
+		end
+		ShowUIPanel(GarrisonRecruiterFrame);
 	end
 end
 
@@ -2139,7 +2147,17 @@ function FramePositionDelegate:UIParentManageFramePositions()
 			tinsert(yOffsetFrames, "tutorialAlert");
 		end
 		if ( PlayerPowerBarAlt:IsShown() ) then
-			tinsert(yOffsetFrames, "playerPowerBarAlt");
+			local insert = true;
+			if ( PlayerPowerBarAlt.counterBar:IsShown() ) then
+				local _, _, anchorTop = UnitAlternatePowerCounterInfo(PlayerPowerBarAlt.unit);
+				if (anchorTop) then
+					insert = false;
+				end
+			end
+
+			if (insert) then
+				tinsert(yOffsetFrames, "playerPowerBarAlt");
+			end
 		end
 		if (ExtraActionBarFrame and ExtraActionBarFrame:IsShown() ) then
 			tinsert(yOffsetFrames, "extraActionBarFrame");
@@ -2337,6 +2355,15 @@ function FramePositionDelegate:UIParentManageFramePositions()
 		ObjectiveTrackerFrame:SetPoint("BOTTOMRIGHT", "UIParent", "BOTTOMRIGHT", -OBJTRACKER_OFFSET_X, CONTAINER_OFFSET_Y);
 	end
 
+	-- PlayerPowerBarAlt hack for counters
+	if ( PlayerPowerBarAlt and PlayerPowerBarAlt.counterBar:IsShown() ) then
+		local _, _, anchorTop = UnitAlternatePowerCounterInfo(PlayerPowerBarAlt.unit);
+		if (anchorTop) then
+			PlayerPowerBarAlt:ClearAllPoints();
+			PlayerPowerBarAlt:SetPoint("TOP", 0, -20);
+		end
+	end
+	
 	-- Update chat dock since the dock could have moved
 	FCF_DockUpdate();
 	UpdateContainerFrameAnchors();

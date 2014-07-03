@@ -14,6 +14,7 @@ BONUS_OBJECTIVE_TRACKER_MODULE.fromHeaderOffsetY = -8;
 BONUS_OBJECTIVE_TRACKER_MODULE.blockPadding = 3;	-- need some extra room so scrollframe doesn't cut tails off gjpqy
 
 local COMPLETED_BONUS_DATA = { };
+local COMPLETED_SUPERSEDED_BONUS_OBJECTIVES = { };
 
 function BONUS_OBJECTIVE_TRACKER_MODULE:OnFreeBlock(block)
 	if ( block.state == "LEAVING" ) then
@@ -31,6 +32,12 @@ function BONUS_OBJECTIVE_TRACKER_MODULE:OnFreeBlock(block)
 			for i = 1, #rewardsFrame.rewards do
 				rewardsFrame.rewards[i].Anim:Stop();	
 			end
+		end
+	end
+	if (block.id < 0) then
+		local blockKey = -block.id;
+		if (BonusObjectiveTracker_GetSupersedingStep(blockKey)) then
+			tinsert(COMPLETED_SUPERSEDED_BONUS_OBJECTIVES, blockKey);
 		end
 	end
 	block:SetAlpha(0);	
@@ -71,7 +78,7 @@ function BonusObjectiveTracker_OnBlockAnimInFinished(self)
 		line.Glow.Anim:Play();
 	end
 end
-								
+
 function BonusObjectiveTracker_OnBlockAnimOutFinished(self)
 	local block = self:GetParent();
 	block:SetAlpha(0);
@@ -359,10 +366,53 @@ end
 -- ***** UPDATE FUNCTIONS
 -- *****************************************************************************************************
 
+function BonusObjectiveTracker_GetSupersedingStep(index)
+	local supersededObjectives = C_Scenario.GetSupersededObjectives();
+	for i = 1, #supersededObjectives do
+		local pairs = supersededObjectives[i];
+		local k,v = unpack(pairs);
+
+		if (v == index) then
+			return k;
+		end
+	end
+end
+
 local function UpdateScenarioBonusObjectives(BlocksFrame)
 	if ( C_Scenario.IsInScenario() ) then
 		BONUS_OBJECTIVE_TRACKER_MODULE.Header.animateReason = OBJECTIVE_TRACKER_UPDATE_SCENARIO_NEW_STAGE + OBJECTIVE_TRACKER_UPDATE_SCENARIO_BONUS_DELAYED;
 		local tblBonusSteps = C_Scenario.GetBonusSteps();
+		-- two steps
+		local supersededToRemove = {};
+		for i = 1, #tblBonusSteps do
+			local bonusStepIndex = tblBonusSteps[i];
+			local supersededIndex = BonusObjectiveTracker_GetSupersedingStep(bonusStepIndex);
+			if (supersededIndex) then
+				local name, description, numCriteria, stepFailed, isBonusStep, isForCurrentStepOnly = C_Scenario.GetStepInfo(bonusStepIndex);
+				local completed = true;
+				for criteriaIndex = 1, numCriteria do
+					local criteriaString, criteriaType, criteriaCompleted, quantity, totalQuantity, flags, assetID, quantityString, criteriaID, duration, elapsed, criteriaFailed = C_Scenario.GetCriteriaInfoByStep(bonusStepIndex, criteriaIndex);
+					if ( criteriaString ) then
+						if ( not criteriaCompleted ) then
+							completed = false;
+							break;
+						end
+					end
+				end
+				if (not completed) then
+					-- B supercedes A, A is not completed, show A but not B
+					tinsert(supersededToRemove, supersededIndex);
+				else
+					if (tContains(COMPLETED_SUPERSEDED_BONUS_OBJECTIVES, bonusStepIndex)) then
+						tinsert(supersededToRemove, bonusStepIndex);
+					end
+				end
+			end
+		end
+		for i = 1, #supersededToRemove do
+			tDeleteItem(tblBonusSteps, supersededToRemove[i]);
+		end
+
 		for i = 1, #tblBonusSteps do
 			local bonusStepIndex = tblBonusSteps[i];
 			local name, description, numCriteria, stepFailed, isBonusStep, isForCurrentStepOnly = C_Scenario.GetStepInfo(bonusStepIndex);
@@ -415,6 +465,9 @@ local function UpdateScenarioBonusObjectives(BlocksFrame)
 						if ( questID ~= 0 ) then
 							BonusObjectiveTracker_AddReward(questID, block);
 						end
+						if (BonusObjectiveTracker_GetSupersedingStep(bonusStepIndex)) then
+							BonusObjectiveTracker_SetBlockState(block, "FINISHED");
+						end
 					end
 					block.finished = true;
 				else
@@ -433,12 +486,16 @@ local function UpdateScenarioBonusObjectives(BlocksFrame)
 			block:Show();
 			BONUS_OBJECTIVE_TRACKER_MODULE:FreeUnusedLines(block);
 
-			if ( not existingBlock and isForCurrentStepOnly ) then
-				BonusObjectiveTracker_SetBlockState(block, "ENTERING");
-			else
-				BonusObjectiveTracker_SetBlockState(block, "PRESENT");
+			if ( block.state ~= "FINISHED" ) then
+				if ( not existingBlock and isForCurrentStepOnly ) then
+					BonusObjectiveTracker_SetBlockState(block, "ENTERING");
+				else
+					BonusObjectiveTracker_SetBlockState(block, "PRESENT");
+				end
 			end	
 		end
+	else
+		wipe(COMPLETED_SUPERSEDED_BONUS_OBJECTIVES);
 	end
 end
 
@@ -473,6 +530,9 @@ local function UpdateQuestBonusObjectives(BlocksFrame)
 						local line = block.currentLine;
 						line.Icon:Hide();
 					end
+				end
+				if ( objectiveType == "progressbar" ) then
+					BONUS_OBJECTIVE_TRACKER_MODULE:AddProgressBar(block, block.currentLine, questID);
 				end
 			end
 			-- first line is either going to display the nub or the check
@@ -592,6 +652,12 @@ function BonusObjectiveTracker_SetBlockState(block, state, force)
 		elseif ( not block.state ) then
 			block:SetAlpha(1);
 			block.state = "PRESENT";
+		end
+	elseif ( state == "FINISHED" ) then
+		-- only apply this state if block is PRESENT
+		if ( block.state == "PRESENT" ) then
+			block.AnimOut:Play();
+			block.state = "FINISHED";
 		end
 	end
 end

@@ -504,13 +504,20 @@ function LevelUpDisplay_BuildCharacterList(self)
 end
 
 function LevelUpDisplay_BuildSpellBucketList(self)
-	local allUnlocked, spells = GetSpellsForCharacterUpgradeTier(self.level);
+	local allUnlocked, spells, _, talentTier = GetSpellsForCharacterUpgradeTier(self.level);
 
 	self.unlockList = {};
 	if (not allUnlocked) then
-		for i = 1, #spells do
-			local name, _, icon = GetSpellInfo(spells[i]);
-			self.unlockList[#self.unlockList+1] = { entryType = "bucketspell", text = name, icon = icon };
+		if (spells) then
+			for i = 1, #spells do
+				local name, _, icon = GetSpellInfo(spells[i]);
+				self.unlockList[#self.unlockList+1] = { entryType = "bucketspell", text = name, icon = icon };
+			end
+		else
+			for i = 1, NUM_TALENT_COLUMNS do
+				local _, name, icon = GetTalentInfo(talentTier, i, GetActiveSpecGroup());
+				self.unlockList[#self.unlockList+1] = { entryType = "bucketspell", text = name, icon = icon };
+			end
 		end
 	end
 
@@ -858,7 +865,7 @@ function LevelUpDisplay_Start(self, beginUnlockList)
 				self.currSpell = 1;
 				local tierIndex = self.tierIndex;
 				if (tierIndex > 0) then
-					local unlockAll, spells, tierName = GetSpellsForCharacterUpgradeTier(tierIndex);
+					local unlockAll, spells, tierName, talentTier = GetSpellsForCharacterUpgradeTier(tierIndex);
 					if (unlockAll) then
 						local icon = select(4, GetSpecializationInfo(GetSpecialization()));
 						self.SpellBucketFrame.AllAbilitiesUnlocked.icon:SetTexture(icon);
@@ -867,11 +874,17 @@ function LevelUpDisplay_Start(self, beginUnlockList)
 						self.SpellBucketFrame.AllAbilitiesUnlocked:Show();
 						self:SetHeight(70);
 					else
-						local num = #spells;
+						local num, isTalents;
+						if (spells) then
+							num = #spells;
+						else
+							num = NUM_TALENT_COLUMNS;
+							isTalents = true;
+						end
 						if (num > 5) then
 							num = 5;
 						end
-						local index = 2;
+						local index = #self.SpellBucketFrame.SpellBucketDisplay.BucketIcons + 1;
 						local frameWidth, spacing = 56, 4;
 						while (#self.SpellBucketFrame.SpellBucketDisplay.BucketIcons < num) do
 							local frame = CreateFrame("Frame", nil, self.SpellBucketFrame.SpellBucketDisplay, "SpellBucketSpellTemplate");
@@ -890,9 +903,14 @@ function LevelUpDisplay_Start(self, beginUnlockList)
 							frame:SetPoint("TOPLEFT", self.SpellBucketFrame.SpellBucketDisplay, "TOP", -((frameWidth * x) + (spacing * (x - 1)) + (spacing / 2)), -42);
 						end
 						for i = 1, num do
-							local spellID = spells[i];
-							local name, _, icon = GetSpellInfo(spellID);
+							local name, icon, _;
 							local spellframe = self.SpellBucketFrame.SpellBucketDisplay.BucketIcons[i];
+							if (not isTalents) then
+								local spellID = spells[i];
+								name, _, icon = GetSpellInfo(spellID);
+							else
+								_, name, icon = GetTalentInfo(talentTier, i, GetActiveSpecGroup());
+							end
 							spellframe.name:SetText(name);
 							spellframe.icon:SetTexture(icon);
 							spellframe:Show();
@@ -1029,7 +1047,7 @@ function LevelUpDisplay_AnimStep(self, fast)
 		elseif ( spellInfo.entryType == "spellbucket" ) then
 			local tierIndex = spellInfo.tierIndex;
 			if (tierIndex > 0) then
-				local unlockAll, spells, tierName = GetSpellsForCharacterUpgradeTier(tierIndex);
+				local unlockAll, spells, tierName, talentTier = GetSpellsForCharacterUpgradeTier(tierIndex);
 				if (unlockAll) then
 					local icon = select(4, GetSpecializationInfo(GetSpecialization()));
 					self.SpellBucketFrame.AllAbilitiesUnlocked.icon:SetTexture(icon);
@@ -1038,11 +1056,17 @@ function LevelUpDisplay_AnimStep(self, fast)
 					self.SpellBucketFrame.AllAbilitiesUnlocked:Show();
 					self:SetHeight(70);
 				else
-					local num = #spells;
+					local num, isTalents;
+					if (spells) then
+						num = #spells;
+					else
+						num = NUM_TALENT_COLUMNS;
+						isTalents = true;
+					end
 					if (num > 5) then
 						num = 5;
 					end
-					local index = 2;
+					local index = #self.SpellBucketFrame.SpellBucketDisplay.BucketIcons + 1;
 					local frameWidth, spacing = 56, 4;
 					while (#self.SpellBucketFrame.SpellBucketDisplay.BucketIcons < num) do
 						local frame = CreateFrame("Frame", nil, self.SpellBucketFrame.SpellBucketDisplay, "SpellBucketSpellTemplate");
@@ -1061,9 +1085,14 @@ function LevelUpDisplay_AnimStep(self, fast)
 						frame:SetPoint("TOPLEFT", self.SpellBucketFrame.SpellBucketDisplay, "TOP", -((frameWidth * x) + (spacing * (x - 1)) + (spacing / 2)), -42);
 					end
 					for i = 1, num do
-						local spellID = spells[i];
-						local name, _, icon = GetSpellInfo(spellID);
+						local name, icon, _;
 						local spellframe = self.SpellBucketFrame.SpellBucketDisplay.BucketIcons[i];
+						if (not isTalents) then
+							local spellID = spells[i];
+							name, _, icon = GetSpellInfo(spellID);
+						else
+							_, name, icon = GetTalentInfo(talentTier, i, GetActiveSpecGroup());
+						end
 						spellframe.name:SetText(name);
 						spellframe.icon:SetTexture(icon);
 						spellframe:Show();
@@ -1265,7 +1294,7 @@ function LevelUpDisplay_ChatPrint(self, level, levelUpType, ...)
 			levelstring = format(SPELL_BUCKET_ALL_ABILITIES_UNLOCKED_MESSAGE, class);
 		else
 			LevelUpDisplay_BuildSpellBucketList(chatLevelUP);
-			levelstring = format(SPELL_BUCKET_LEVEL_UP, level, name);
+			levelstring = format(SPELL_BUCKET_LEVEL_UP, level, name or "");
 		end
 		info = ChatTypeInfo["SYSTEM"];
 	end
