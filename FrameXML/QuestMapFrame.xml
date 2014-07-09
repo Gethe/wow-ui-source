@@ -66,7 +66,15 @@
 						<Anchor point="RIGHT" x="0" y="0"/>
 					</Anchors>
 					<TexCoords left="0.28125" right="0.421875" top="0" bottom="0.28125"/>
-				</Texture>		
+				</Texture>
+				<Texture parentKey="WeeklyTagTexture" file="Interface\QuestFrame\QuestTypeIcons" hidden="true">
+					<Size x="18" y="18"/>
+					<Anchors>
+						<Anchor point="TOP" relativeKey="$parent.Text" x="0" y="3"/>
+						<Anchor point="RIGHT" x="0" y="0"/>
+					</Anchors>
+					<TexCoords left="0.28125" right="0.421875" top="0.5625" bottom="0.84375"/>
+				</Texture>
 			</Layer>
 		</Layers>
 		<Scripts>

@@ -251,7 +251,7 @@ function GameTooltip_ShowCompareItem(self)
 	local shoppingTooltip1, shoppingTooltip2 = unpack(self.shoppingTooltips);
 	
 	local primaryItemShown, secondaryItemShown = shoppingTooltip1:SetHyperlinkCompareItem(link, shoppingTooltip2, self);
-	
+
 	local side = "left";
 	
 	-- find correct side
@@ -316,6 +316,8 @@ function GameTooltip_ShowCompareItem(self)
 		else
 			shoppingTooltip1:SetPoint("TOPLEFT", self, "TOPRIGHT", 0, -10);
 		end
+
+		shoppingTooltip2:Hide();
 	end
 	
 	-- We have to call this again because :SetOwner clears the tooltip.

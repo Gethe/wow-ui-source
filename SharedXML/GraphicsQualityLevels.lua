@@ -29,7 +29,7 @@ VideoData["Graphics_Quality"]={
 				Graphics_ParticleDensityDropDown = VIDEO_OPTIONS_FAIR,
 				Graphics_EnvironmentalDetailDropDown = VIDEO_OPTIONS_FAIR,
 				Graphics_GroundClutterDropDown = VIDEO_OPTIONS_FAIR,
-				Graphics_ShadowsDropDown = VIDEO_OPTIONS_LOW,
+				Graphics_ShadowsDropDown = VIDEO_OPTIONS_FAIR,
 				Graphics_TextureResolutionDropDown = VIDEO_OPTIONS_FAIR,
 				Graphics_FilteringDropDown = VIDEO_OPTIONS_TRILINEAR,
 				Graphics_LiquidDetailDropDown = VIDEO_OPTIONS_FAIR,
@@ -69,7 +69,7 @@ VideoData["Graphics_Quality"]={
 				Graphics_LiquidDetailDropDown = VIDEO_OPTIONS_MEDIUM,
 				Graphics_SunshaftsDropDown = VIDEO_OPTIONS_HIGH,
 				Graphics_ProjectedTexturesDropDown = VIDEO_OPTIONS_ENABLED,
-				Graphics_SSAODropDown = VIDEO_OPTIONS_HIGH,
+				Graphics_SSAODropDown = VIDEO_OPTIONS_LOW,
 			},
 		},
 		[5] = {
@@ -87,7 +87,7 @@ VideoData["Graphics_Quality"]={
 				Graphics_LiquidDetailDropDown = VIDEO_OPTIONS_ULTRA,
 				Graphics_SunshaftsDropDown = VIDEO_OPTIONS_HIGH,
 				Graphics_ProjectedTexturesDropDown = VIDEO_OPTIONS_ENABLED,
-				Graphics_SSAODropDown = VIDEO_OPTIONS_ULTRA,
+				Graphics_SSAODropDown = VIDEO_OPTIONS_HIGH,
 			},
 		},
 	},
@@ -214,7 +214,7 @@ VideoData["RaidGraphics_Quality"].data = {
 			RaidGraphics_ParticleDensityDropDown = VIDEO_OPTIONS_FAIR,
 			RaidGraphics_EnvironmentalDetailDropDown = VIDEO_OPTIONS_FAIR,
 			RaidGraphics_GroundClutterDropDown = VIDEO_OPTIONS_FAIR,
-			RaidGraphics_ShadowsDropDown = VIDEO_OPTIONS_LOW,
+			RaidGraphics_ShadowsDropDown = VIDEO_OPTIONS_FAIR,
 			RaidGraphics_TextureResolutionDropDown = VIDEO_OPTIONS_FAIR,
 			RaidGraphics_FilteringDropDown = VIDEO_OPTIONS_TRILINEAR,
 			RaidGraphics_LiquidDetailDropDown = VIDEO_OPTIONS_FAIR,
@@ -254,7 +254,7 @@ VideoData["RaidGraphics_Quality"].data = {
 			RaidGraphics_LiquidDetailDropDown = VIDEO_OPTIONS_MEDIUM,
 			RaidGraphics_SunshaftsDropDown = VIDEO_OPTIONS_HIGH,
 			RaidGraphics_ProjectedTexturesDropDown = VIDEO_OPTIONS_ENABLED,
-			RaidGraphics_SSAODropDown = VIDEO_OPTIONS_HIGH,
+			RaidGraphics_SSAODropDown = VIDEO_OPTIONS_LOW,
 		},
 	},
 	[5] = {
@@ -265,13 +265,13 @@ VideoData["RaidGraphics_Quality"].data = {
 			RaidGraphics_ParticleDensityDropDown = VIDEO_OPTIONS_ULTRA,
 			RaidGraphics_EnvironmentalDetailDropDown = VIDEO_OPTIONS_ULTRA,
 			RaidGraphics_GroundClutterDropDown = VIDEO_OPTIONS_ULTRA,
-			RaidGraphics_ShadowsDropDown = VIDEO_OPTIONS_ULTRA,
+			RaidGraphics_ShadowsDropDown = VIDEO_OPTIONS_HIGH,
 			RaidGraphics_TextureResolutionDropDown = VIDEO_OPTIONS_HIGH,
 			RaidGraphics_FilteringDropDown = VIDEO_OPTIONS_16XANISOTROPIC,
 			RaidGraphics_LiquidDetailDropDown = VIDEO_OPTIONS_ULTRA,
 			RaidGraphics_SunshaftsDropDown = VIDEO_OPTIONS_HIGH,
 			RaidGraphics_ProjectedTexturesDropDown = VIDEO_OPTIONS_ENABLED,
-			RaidGraphics_SSAODropDown = VIDEO_OPTIONS_ULTRA,
+			RaidGraphics_SSAODropDown = VIDEO_OPTIONS_HIGH,
 		},
 	},
 };
@@ -1033,19 +1033,13 @@ VideoData["Graphics_SSAODropDown"]={
 		[2] = {
 			text = VIDEO_OPTIONS_LOW,
 			cvars =	{
-				ssao = 2,
+				ssao = 1,
 			},
 		},
 		[3] = {
 			text = VIDEO_OPTIONS_HIGH,
 			cvars =	{
-				ssao = 1,
-			},
-		},
-		[4] = {
-			text = VIDEO_OPTIONS_ULTRA,
-			cvars =	{
-				ssao = 3,
+				ssao = 2,
 			},
 		},
 	},
@@ -1054,6 +1048,7 @@ VideoData["Graphics_SSAODropDown"]={
 	},
 }
 
+-------------------------------------------------------------------------------------------------------
 VideoData["RaidGraphics_SSAODropDown"]={
 	name = SSAO_LABEL;
 	description = OPTION_TOOLTIP_SSAO,
@@ -1068,19 +1063,13 @@ VideoData["RaidGraphics_SSAODropDown"]={
 		[2] = {
 			text = VIDEO_OPTIONS_LOW,
 			cvars =	{
-				raidSSAO = 2,
+				raidSSAO = 1,
 			},
 		},
 		[3] = {
 			text = VIDEO_OPTIONS_HIGH,
 			cvars =	{
-				raidSSAO = 1,
-			},
-		},
-		[4] = {
-			text = VIDEO_OPTIONS_ULTRA,
-			cvars =	{
-				raidSSAO = 3,
+				raidSSAO = 2,
 			},
 		},
 	},

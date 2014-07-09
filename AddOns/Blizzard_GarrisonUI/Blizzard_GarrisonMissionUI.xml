@@ -790,7 +790,7 @@
 			</Layer>
 		</Layers>
 	</Frame>
-	
+
 	<Frame name="GarrisonMissionStageTemplate" virtual="true" useParentLevel="true">
 		<Size x="556" y="230"/>
 		<Layers>
@@ -987,51 +987,40 @@
 			</Button>
 		</Frames>
 	</Frame>
-	
-	<Frame name="GarrisonMissionPartyBuffTemplate" virtual="true">
-		<Size x="32" y="32"/>
+
+	<Frame name="GarrisonMissionPartyBuffTemplate" parentArray="Buffs" virtual="true">
+		<Size x="20" y="20"/>
 		<Layers>
 			<Layer level="ARTWORK">
-				<Texture parentKey="Icon">
-					<Anchors>
-						<Anchor point="CENTER"/>
-					</Anchors>
-				</Texture>
-			</Layer>
-			<Layer level="ARTWORK">
-				<Texture atlas="GarrMission_PartyBuffAbilityBorder" useAtlasSize="true">
-					<Anchors>
-						<Anchor point="CENTER"/>
-					</Anchors>
-				</Texture>
+				<Texture parentKey="Icon" setAllPoints="true"/>
 			</Layer>
 		</Layers>
 		<Scripts>
-			<OnEnter>
-				if (self.tooltip) then
-					GameTooltip:SetOwner(self, "ANCHOR_CURSOR_RIGHT");
-					GameTooltip:SetText(self.tooltip, HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b);
-				end
+			<OnEnter>	
+				GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+				GameTooltip:SetText(C_Garrison.GetFollowerAbilityName(self.id), NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b);
+				GameTooltip:AddLine(C_Garrison.GetFollowerAbilityDescription(self.id), HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b, true);
+				GameTooltip:Show();
 			</OnEnter>
 			<OnLeave function="GameTooltip_Hide"/>
 		</Scripts>
 	</Frame>
-	
+
 	<Frame name="GarrisonMissionPartyBuffsFrameTemplate" virtual="true">
-		<Size x="250" y="33"/>
+		<Size x="256" y="33"/>
 		<Layers>
 			<Layer level="ARTWORK">
 				<Texture parentKey="BuffsBG" atlas="GarrMission_PartyBuffsBG" setAllPoints="true"/>
 				<FontString parentKey="BuffsTitle" inherits="GameFontNormal" justifyH="LEFT" text="Party Buffs">
 					<Anchors>
-						<Anchor point="LEFT" relativeKey="$parent.BuffsBG"  x="5" y="1"/>
+						<Anchor point="LEFT" relativeKey="$parent.BuffsBG"  x="15" y="1"/>
 					</Anchors>
 					<Color r="0.792" g="0.690" b="0.529" a="1"/>
 				</FontString>
 			</Layer>
 		</Layers>
 		<Frames>
-			<Frame parentArray="Buffs" inherits="GarrisonMissionPartyBuffTemplate">
+			<Frame inherits="GarrisonMissionPartyBuffTemplate">
 				<Anchors>
 					<Anchor point="LEFT" relativeKey="$parent.BuffsTitle" relativePoint="RIGHT" x="5" y="-1"/>
 				</Anchors>
@@ -1148,7 +1137,7 @@
 				</Texture>
 			</Layer>
 			<Layer level="OVERLAY">
-				<FontString parentKey="Name" inherits="GameFontNormalMed3" text="Oprah Windfury" hidden="true">
+				<FontString parentKey="Name" inherits="GameFontNormalMed3" hidden="true">
 					<Anchors>
 						<Anchor point="BOTTOMLEFT" x="58" y="12"/>
 					</Anchors>
@@ -1905,6 +1894,7 @@
 							</Frame>							
 						</Frames>
 						<Scripts>
+							<OnLoad function="GarrisonMissionList_OnLoad"/>
 							<OnShow function="GarrisonMissionList_OnShow"/>
 							<OnHide function="GarrisonMissionList_OnHide"/>
 						</Scripts>
@@ -2072,7 +2062,7 @@
 								</Layers>
 							</Frame>
 							<Frame parentKey="RewardsFrame" inherits="GarrisonMissionRewardsFrameTemplate">
-								<Size x="382" y="109"/>
+								<Size x="382" y="113"/>
 								<Anchors>
 									<Anchor point="BOTTOM" x="19" y="49"/>
 								</Anchors>
@@ -2203,7 +2193,7 @@
 											<Anchor point="TOPLEFT" x="35" y="-20"/>
 										</Anchors>
 									</Frame>
-									<Frame parentKey="Buffs" inherits="GarrisonMissionPartyBuffsFrameTemplate" hidden="true">
+									<Frame parentKey="BuffsFrame" inherits="GarrisonMissionPartyBuffsFrameTemplate" hidden="true">
 										<Anchors>
 											<Anchor point="TOPLEFT" relativeKey="$parent.Follower1" relativePoint="BOTTOMLEFT" y="-15"/>
 										</Anchors>
@@ -2237,7 +2227,7 @@
 									<Layer level="ARTWORK">
 										<FontString parentKey="EmptyString" inherits="GameFontNormalMed3" justifyH="CENTER" text="GARRISON_PARTY_INSTRUCTIONS_MANY">
 											<Anchors>
-												<Anchor point="BOTTOM" x="0" y="55"/>
+												<Anchor point="TOP" x="0" y="0"/>
 											</Anchors>
 											<Color r="0.910" g="0.835" b="0.706"/>
 										</FontString>
@@ -2259,8 +2249,7 @@
 											<Anchor point="LEFT" relativeKey="$parent.Follower2" relativePoint="RIGHT" x="0"/>
 										</Anchors>
 									</Frame>
-									<Frame parentKey="Buffs" inherits="GarrisonMissionPartyBuffsFrameTemplate" hidden="true">
-										<Size x="240" y="33"/>
+									<Frame parentKey="BuffsFrame" inherits="GarrisonMissionPartyBuffsFrameTemplate" hidden="true">
 										<Anchors>
 											<Anchor point="BOTTOM" x="0" y="48"/>
 										</Anchors>
@@ -2285,7 +2274,7 @@
 									<Layer level="ARTWORK">
 										<FontString parentKey="EmptyString" inherits="GameFontNormalMed3" justifyH="CENTER" text="GARRISON_PARTY_INSTRUCTIONS_MANY">
 											<Anchors>
-												<Anchor point="BOTTOM" x="0" y="42"/>
+												<Anchor point="TOP" x="0" y="-20"/>
 											</Anchors>
 											<Color r="0.910" g="0.835" b="0.706"/>
 										</FontString>
@@ -2317,8 +2306,7 @@
 											<Anchor point="LEFT" relativeKey="$parent.Follower4" relativePoint="RIGHT" x="7"/>
 										</Anchors>
 									</Frame>
-									<Frame parentKey="Buffs" inherits="GarrisonMissionPartyBuffsFrameTemplate" hidden="true">
-										<Size x="240" y="33"/>
+									<Frame parentKey="BuffsFrame" inherits="GarrisonMissionPartyBuffsFrameTemplate" hidden="true">
 										<Anchors>
 											<Anchor point="BOTTOM" x="0" y="28"/>
 										</Anchors>
@@ -2338,13 +2326,7 @@
 								</Anchors>
 								<Scripts>
 									<OnClick function="GarrisonMissionPageStartMissionButton_OnClick"/>
-									<OnEnter>
-										if (not self:IsEnabled()) then
-											GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
-											GameTooltip:SetText("[PH] Disabled Text");
-											GameTooltip:Show();
-										end
-									</OnEnter>
+									<OnEnter function="GarrisonMissionPageStartMissionButton_OnEnter"/>
 									<OnLeave function="GameTooltip_Hide"/>
 								</Scripts>
 							</Button>
@@ -2407,7 +2389,7 @@
 						</Texture>
 					</Layer>
 					<Layer level="ARTWORK">
-						<FontString parentKey="NumFollowers" inherits="GameFontNormalMed3" justifyH="LEFT" text="Followers:">
+						<FontString parentKey="NumFollowers" inherits="GameFontNormalMed3" justifyH="LEFT">
 							<Anchors>
 								<Anchor point="BOTTOMLEFT" relativePoint="TOPLEFT" y="12"/>
 							</Anchors>

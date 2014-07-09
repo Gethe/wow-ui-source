@@ -12,6 +12,11 @@
 			<OnEvent>
 				ActionButton_OnEvent(self, event, ...);
 			</OnEvent>
+			<OnClick>
+				if (not self.draenorZoneDisabled) then
+  					SecureActionButton_OnClick(self, button);
+  	 			end
+  	 		</OnClick>
 			<PostClick>
 				ActionButton_UpdateState(self, button, down);
 			</PostClick>

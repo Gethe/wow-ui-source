@@ -2636,6 +2636,14 @@
 					<TexCoords left="0.34960938" right="0.69335938" top="0.47656250" bottom="0.62890625"/>
 				</PushedTexture>
 			</Button>
+			<Button name="CinematicsButton6" inherits="CinematicsButtonTemplate" text="WARLORDS_OF_DRAENOR" hidden="true" id="6">
+				<Size x="176" y="78"/>
+				<Anchors>
+					<Anchor point="TOP" relativeTo="CinematicsButton5" relativePoint="BOTTOM" x="0" y="-8"/>
+				</Anchors>
+				<NormalTexture atlas="StreamCinematic-WOD-Up" />
+				<PushedTexture atlas="StreamCinematic-WOD-Down" />
+			</Button>
 			<CheckButton name="CinematicSubtitlesCheckBox" inherits="GlueCheckButtonTemplate">
 				<Size x="20" y="20"/>
 				<Anchors>

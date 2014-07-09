@@ -53,7 +53,7 @@ function QuestSuperTracking_ChooseClosestQuest()
 	-- If nothing with POI data is being tracked expand search to quest log
 	if ( not closestQuestID ) then
 		for questLogIndex = 1, GetNumQuestLogEntries() do
-			local title, level, suggestedGroup, isHeader, isCollapsed, isComplete, isDaily, questID = GetQuestLogTitle(questLogIndex);	
+			local title, level, suggestedGroup, isHeader, isCollapsed, isComplete, frequency, questID = GetQuestLogTitle(questLogIndex);	
 			if ( not isHeader and QuestHasPOIInfo(questID) ) then
 				local distSqr, onContinent = GetDistanceSqToQuest(questLogIndex);
 				if ( onContinent and distSqr <= minDistSqr ) then

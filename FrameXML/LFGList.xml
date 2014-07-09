@@ -16,6 +16,22 @@
 			</OnClick>
 		</Scripts>
 	</Button-->
+	<Button name="LFGListEntryCreationActivityListTemplate" virtual="true">
+		<Size x="250" y="14"/>
+		<Layers>
+			<Layer level="OVERLAY">
+				<Texture parentKey="Selected" file="Interface\QuestFrame\UI-QuestTitleHighlight" alphaMode="ADD" setAllPoints="true"/>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnClick>
+				LFGListEntryCreationActivityFinder_Select(self:GetParent():GetParent():GetParent():GetParent(), self.activityID);
+			</OnClick>
+		</Scripts>
+		<ButtonText parentKey="Label" setAllPoints="true" justifyH="LEFT"/>
+		<NormalFont style="GameFontNormal"/>
+		<HighlightFont style="GameFontHighlight"/>
+	</Button>
 	<Button name="LFGListApplicantMemberTemplate" virtual="true">
 		<Size x="190" y="20"/>
 		<Layers>
@@ -1186,6 +1202,110 @@
 								</Scripts>
 							</Frame>
 						</Frames>
+					</Frame>
+					<Frame parentKey="ActivityFinder" frameLevel="13" enableMouse="true" hidden="true">
+						<Anchors>
+							<Anchor point="TOPLEFT" x="-5" y="-24"/>
+							<Anchor point="BOTTOMRIGHT" x="-5" y="2"/>
+						</Anchors>
+						<Layers>
+							<Layer level="BACKGROUND">
+								<Texture parentKey="Background" setAllPoints="true">
+									<Color r="0" g="0" b="0" a="0.7"/>
+								</Texture>
+							</Layer>
+						</Layers>
+						<Frames>
+							<Frame parentKey="Dialog">
+								<Size x="320" y="250"/>
+								<Anchors>
+									<Anchor point="CENTER"/>
+								</Anchors>
+								<Backdrop edgeFile="Interface\DialogFrame\UI-DialogBox-Border" tile="true">
+									<TileSize>
+										<AbsValue val="32"/>
+									</TileSize>
+									<EdgeSize>
+										<AbsValue val="32"/>
+									</EdgeSize>
+								</Backdrop>
+								<Layers>
+									<Layer level="BACKGROUND" textureSubLevel="-1">
+										<Texture parentKey="Bg" file="Interface\FrameGeneral\UI-Background-Rock" horizTile="true" vertTile="true">
+											<Anchors>
+												<Anchor point="TOPLEFT" x="4" y="-4"/>
+												<Anchor point="BOTTOMRIGHT" x="-4" y="4"/>
+											</Anchors>
+										</Texture>
+									</Layer>
+								</Layers>
+								<Frames>
+									<EditBox parentKey="EntryBox" inherits="LFGListEditBoxTemplate" autoFocus="true">
+										<Size x="268" y="22"/>
+										<Anchors>
+											<Anchor point="TOP" x="0" y="-15"/>
+										</Anchors>
+										<Scripts>
+											<OnLoad>
+												self.Instructions:SetText(SEARCH);
+											</OnLoad>
+											<OnTextChanged>
+												InputBoxInstructions_OnTextChanged(self);
+												LFGListEntryCreationActivityFinder_UpdateMatching(self:GetParent():GetParent());
+											</OnTextChanged>
+											<OnEnterPressed>
+												LFGListEntryCreationActivityFinder_Accept(self:GetParent():GetParent());
+											</OnEnterPressed>
+										</Scripts>
+									</EditBox>
+									<ScrollFrame name="LFGListEntryCreationSearchScrollFrame" inherits="HybridScrollFrameTemplate" parentKey="ScrollFrame">
+										<Anchors>
+											<Anchor point="TOPLEFT" x="25" y="-45"/>
+											<Anchor point="BOTTOMRIGHT" x="-25" y="50"/>
+										</Anchors>
+										<Frames>
+											<Slider name="$parentScrollBar" inherits="MinimalHybridScrollBarTemplate" parentKey="scrollBar">
+												<Anchors>
+													<Anchor point="TOPRIGHT" relativePoint="TOPRIGHT" x="-3" y="-17"/>
+													<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMRIGHT" x="-15" y="16"/>
+												</Anchors>
+											</Slider>
+										</Frames>
+									</ScrollFrame>
+									<Frame parentKey="BorderFrame" inherits="TooltipBorderedFrameTemplate" useParentLevel="true"> <!--Because there isn't an easy way to change the bounds of a scroll frame-->
+										<Anchors>
+											<Anchor point="TOPLEFT" relativeKey="$parent.ScrollFrame" relativePoint="TOPLEFT" x="-5" y="5"/>
+											<Anchor point="BOTTOMRIGHT" relativeKey="$parent.ScrollFrame" relativePoint="BOTTOMRIGHT" x="5" y="-5"/>
+										</Anchors>
+									</Frame>
+									<Button parentKey="SelectButton" inherits="UIPanelButtonTemplate" text="LFG_LIST_SELECT">
+										<Size x="130" y="22"/>
+										<Anchors>
+											<Anchor point="BOTTOMRIGHT" relativeKey="$parent" relativePoint="BOTTOM" x="-10" y="15"/>
+										</Anchors>
+										<Scripts>
+											<OnClick>
+												LFGListEntryCreationActivityFinder_Accept(self:GetParent():GetParent());
+											</OnClick>
+										</Scripts>
+									</Button>
+									<Button parentKey="CancelButton" inherits="UIPanelButtonTemplate" text="CANCEL">
+										<Size x="130" y="22"/>
+										<Anchors>
+											<Anchor point="BOTTOMLEFT" relativeKey="$parent" relativePoint="BOTTOM" x="10" y="15"/>
+										</Anchors>
+										<Scripts>
+											<OnClick>
+												LFGListEntryCreationActivityFinder_Cancel(self:GetParent():GetParent());
+											</OnClick>
+										</Scripts>
+									</Button>
+								</Frames>
+							</Frame>
+						</Frames>
+						<Scripts>
+							<OnLoad function="LFGListEntryCreationActivityFinder_OnLoad"/>
+						</Scripts>
 					</Frame>
 					<EditBox parentKey="Name" inherits="LFGListEditBoxTemplate" letters="31">
 						<Size x="220" y="22"/>

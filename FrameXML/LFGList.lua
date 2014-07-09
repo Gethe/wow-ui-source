@@ -366,6 +366,8 @@ function LFGListEntryCreation_Clear(self)
 	self.VoiceChat.EditBox:SetText("");
 	self.Description.EditBox:SetText("");
 
+	self.ActivityFinder:Hide();
+
 	LFGListEntryCreation_UpdateValidState(self);
 end
 
@@ -429,58 +431,143 @@ function LFGListEntryCreation_PopulateGroups(self, dropDown, info)
 		return;
 	end
 
+	local useMore = self.selectedFilters == 0;
+
+	--Start out displaying everything
 	local groups = C_LFGList.GetAvailableActivityGroups(self.selectedCategory, bit.bor(self.baseFilters, self.selectedFilters));
+	local activities = C_LFGList.GetAvailableActivities(self.selectedCategory, 0, bit.bor(self.baseFilters, self.selectedFilters));
+	if ( useMore ) then
+		--We don't bother filtering if we have less than 5 items anyway
+		if ( #groups + #activities > 5 ) then
+			--Try just displaying the recommended
+			local filters = bit.bor(self.selectedFilters, self.baseFilters, LE_LFG_LIST_FILTER_RECOMMENDED);
+			local recGroups = C_LFGList.GetAvailableActivityGroups(self.selectedCategory, filters);
+			local recActivities = C_LFGList.GetAvailableActivities(self.selectedCategory, 0, filters);
+
+			--If we still have just as many, we don't need to display more
+			useMore = #recGroups ~= #groups or #recActivities ~= #activities;
+
+			--If we have some recommended, just display those
+			if ( #recGroups + #recActivities > 0 ) then
+				groups = recGroups;
+				activities = recActivities;
+			else
+				--We want to display at least some. Just do some number of activities and groups
+				for i=#groups, 5, -1 do
+					groups[i] = nil;
+				end
+				for i=#activities, 5, -1 do
+					activities[i] = nil;
+				end
+			end
+		else
+			useMore = false;
+		end
+	end
+
 	for i=1, #groups do
 		local groupID = groups[i];
 		local name = C_LFGList.GetActivityGroupInfo(groupID);
 
 		info.text = name;
 		info.value = groupID;
-		info.arg1 = false;	--isActuallyActivity
+		info.arg1 = "group";
 		info.checked = (self.selectedGroup == groupID);
 		info.isRadio = true;
 		UIDropDownMenu_AddButton(info);
 	end
 
 	--We also have in this dropdown any activities that have no parents
-	local activities = C_LFGList.GetAvailableActivities(self.selectedCategory, 0, bit.bor(self.baseFilters, self.selectedFilters));
 	for i=1, #activities do
 		local activityID = activities[i];
 		local name = select(ACTIVITY_RETURN_VALUES.shortName, C_LFGList.GetActivityInfo(activityID));
 
 		info.text = name;
 		info.value = activityID;
-		info.arg1 = true;	--isActuallyActivity
+		info.arg1 = "activity";
 		info.checked = (self.selectedActivity == activityID);
 		info.isRadio = true;
 		UIDropDownMenu_AddButton(info);
 	end
+
+	if ( useMore ) then
+		info.text = LFG_LIST_MORE;
+		info.value = nil;
+		info.arg1 = "more";
+		info.notCheckable = true;
+		info.checked = false;
+		info.isRadio = false;
+		UIDropDownMenu_AddButton(info);
+	end
 end
 
-function LFGListEntryCreation_OnGroupSelected(self, id, isActuallyActivity)
-	if ( isActuallyActivity ) then
+function LFGListEntryCreation_OnGroupSelected(self, id, buttonType)
+	if ( buttonType == "activity" ) then
 		LFGListEntryCreation_Select(self, nil, nil, nil, id);
-	else
+	elseif ( buttonType == "group" ) then
 		LFGListEntryCreation_Select(self, self.selectedFilters, self.selectedCategory, id, nil);
+	elseif ( buttonType == "more" ) then
+		LFGListEntryCreationActivityFinder_Show(self.ActivityFinder, self.selectedCategory, nil, bit.bor(self.baseFilters, self.selectedFilters));
 	end
 end
 
 function LFGListEntryCreation_PopulateActivities(self, dropDown, info)
-	local activities = C_LFGList.GetAvailableActivities(self.selectedCategory, self.selectedGroup, bit.bor(self.baseFilters, self.selectedFilters));
+	local useMore = self.selectedFilters == 0;
+
+	local filters = bit.bor(self.baseFilters, self.selectedFilters);
+
+	--Start out displaying everything
+	local activities = C_LFGList.GetAvailableActivities(self.selectedCategory, self.selectedGroup, filters);
+
+	--If we're displaying more than 5, see if we can just display recommended
+	if ( useMore ) then
+		if ( #activities > 5 ) then
+			filters = bit.bor(filters, LE_LFG_LIST_FILTER_RECOMMENDED);
+			local recActivities = C_LFGList.GetAvailableActivities(self.selectedCategory, self.selectedGroup, filters);
+
+			useMore = #recActivities ~= #activities;
+			if ( #recActivities > 0 ) then
+				activities = recActivities;
+			else
+				--Just display up to 5 non-recommended activities
+				for i=#activities, 5, -1 do
+					activities[i] = nil;
+				end
+			end
+		else
+			useMore = false;
+		end
+	end
+
 	for i=1, #activities do
 		local activityID = activities[i];
 		local shortName = select(ACTIVITY_RETURN_VALUES.shortName, C_LFGList.GetActivityInfo(activityID));
 
 		info.text = shortName;
 		info.value = activityID;
+		info.arg1 = "activity";
 		info.checked = (self.selectedActivity == activityID);
 		info.isRadio = true;
 		UIDropDownMenu_AddButton(info);
 	end
+
+	if ( useMore ) then
+		info.text = LFG_LIST_MORE;
+		info.value = nil;
+		info.arg1 = "more";
+		info.notCheckable = true;
+		info.checked = false;
+		info.isRadio = false;
+		UIDropDownMenu_AddButton(info);
+	end
 end
 
-function LFGListEntryCreation_OnActivitySelected(self, activityID)
-	LFGListEntryCreation_Select(self, nil, nil, nil, activityID);
+function LFGListEntryCreation_OnActivitySelected(self, activityID, buttonType)
+	if ( buttonType == "activity" ) then
+		LFGListEntryCreation_Select(self, nil, nil, nil, activityID);
+	elseif ( buttonType == "more" ) then
+		LFGListEntryCreationActivityFinder_Show(self.ActivityFinder, self.selectedCategory, self.selectedGroup, bit.bor(self.baseFilters, self.selectedFilters));
+	end
 end
 
 function LFGListEntryCreation_ListGroup(self)
@@ -553,6 +640,72 @@ end
 
 function LFGListEntryCreationListGroupButton_OnClick(self)
 	LFGListEntryCreation_ListGroup(self:GetParent());
+end
+
+function LFGListEntryCreationActivityFinder_OnLoad(self)
+	self.Dialog.ScrollFrame.update = function() LFGListEntryCreationActivityFinder_Update(self); end;
+	self.Dialog.ScrollFrame.scrollBar.doNotHide = true;
+	HybridScrollFrame_CreateButtons(self.Dialog.ScrollFrame, "LFGListEntryCreationActivityListTemplate");
+
+	self.matchingActivities = {};
+end
+
+function LFGListEntryCreationActivityFinder_Show(self, categoryID, groupID, filters)
+	self.Dialog.EntryBox:SetText("");
+	self.categoryID = categoryID;
+	self.groupID = groupID;
+	self.filters = filters;
+	self.selectedActivity = nil;
+	LFGListEntryCreationActivityFinder_UpdateMatching(self);
+	self:Show();
+end
+
+function LFGListEntryCreationActivityFinder_UpdateMatching(self)
+	self.matchingActivities = C_LFGList.GetAvailableActivities(self.categoryID, self.groupID, self.filters, self.Dialog.EntryBox:GetText());
+	if ( not self.selectedActivity or not tContains(self.matchingActivities, self.selectedActivity) ) then
+		self.selectedActivity = self.matchingActivities[1];
+	end
+	LFGListEntryCreationActivityFinder_Update(self);
+end
+
+function LFGListEntryCreationActivityFinder_Update(self)
+	local actitivities = self.matchingActivities;
+
+	local offset = HybridScrollFrame_GetOffset(self.Dialog.ScrollFrame);
+
+	for i=1, #self.Dialog.ScrollFrame.buttons do
+		local button = self.Dialog.ScrollFrame.buttons[i];
+		local idx = i + offset;
+		local id = actitivities[idx];
+		if ( id ) then
+			button:SetText( (C_LFGList.GetActivityInfo(id)) );
+			button.activityID = id;
+			button.Selected:SetShown(self.selectedActivity == id);
+			if ( self.selectedActivity == id ) then
+				button:LockHighlight();
+			else
+				button:UnlockHighlight();
+			end
+			button:Show();
+		else
+			button:Hide();
+		end
+	end
+	HybridScrollFrame_Update(self.Dialog.ScrollFrame, self.Dialog.ScrollFrame.buttons[1]:GetHeight() * #actitivities, self.Dialog.ScrollFrame:GetHeight());
+end
+
+function LFGListEntryCreationActivityFinder_Accept(self)
+	LFGListEntryCreation_Select(self:GetParent(), nil, nil, nil, self.selectedActivity);
+	self:Hide();
+end
+
+function LFGListEntryCreationActivityFinder_Cancel(self)
+	self:Hide();
+end
+
+function LFGListEntryCreationActivityFinder_Select(self, activityID)
+	self.selectedActivity = activityID;
+	LFGListEntryCreationActivityFinder_Update(self);
 end
 
 -------------------------------------------------------
@@ -1523,14 +1676,18 @@ end
 -------------------------------------------------------
 function LFGListUtil_AugmentWithBest(filters, categoryID, groupID, activityID)
 	if ( not activityID ) then
-		--Find the best activity by iLevel
+		--Find the best activity by iLevel and recommended flag
 		local activities = C_LFGList.GetAvailableActivities(categoryID, groupID, filters);
-		local bestItemLevel;
+		local bestItemLevel, bestRecommended;
 		for i=1, #activities do
-			local iLevel = select(ACTIVITY_RETURN_VALUES.itemLevel, C_LFGList.GetActivityInfo(activities[i]));
-			if ( not activityID or (iLevel > bestItemLevel and iLevel <= GetAverageItemLevel()) ) then
+			local fullName, shortName, categoryID, groupID, iLevel, filters = C_LFGList.GetActivityInfo(activities[i]);
+			local isRecommended = bit.band(filters, LE_LFG_LIST_FILTER_RECOMMENDED) ~= 0;
+			if (	not activityID
+				or	(not bestRecommended and isRecommended)
+				or	(bestRecommended == isRecommended and iLevel > bestItemLevel and iLevel <= GetAverageItemLevel()) ) then
 				activityID = activities[i];
 				bestItemLevel = iLevel;
+				bestRecommended = isRecommended;
 			end
 		end
 

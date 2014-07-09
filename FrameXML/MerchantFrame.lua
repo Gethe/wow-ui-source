@@ -45,6 +45,7 @@ end
 
 function MerchantFrame_OnShow(self)
 	OpenAllBags(self);
+	ContainerFrame_UpdateAll();
 	
 	-- Update repair all button status
 	MerchantFrame_UpdateCanRepairAll();

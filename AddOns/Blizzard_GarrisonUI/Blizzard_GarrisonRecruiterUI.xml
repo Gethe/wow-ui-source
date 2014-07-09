@@ -346,15 +346,14 @@
 				</Frames>
 			</Frame>
 			
-			<Frame parentKey="NextWeek" hidden="true" setAllPoints="true">
+			<Frame parentKey="UnavailableFrame" hidden="true" setAllPoints="true">
 				<Layers>
 					<Layer level="ARTWORK">
 						<FontString parentKey="Title" inherits="GameFontNormalLarge" justifyH="CENTER" justifyV="CENTER" text="GARRISON_RECRUIT_NEXT_WEEK" wordwrap="true">
 							<Size y="128"/>
 							<Anchors>
-								<Anchor point="CENTER"/>
-								<Anchor point="LEFT" relativePoint="LEFT" x="44"/>
-								<Anchor point="RIGHT" relativePoint="RIGHT" x="-44"/>
+								<Anchor point="LEFT" relativePoint="LEFT" x="54"/>
+								<Anchor point="RIGHT" relativePoint="RIGHT" x="-54"/>
 							</Anchors>
 							<Color r="1" g=".82" b="0"/>
 						</FontString>

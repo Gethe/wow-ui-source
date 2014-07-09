@@ -110,7 +110,7 @@ function GarrisonBuildingFrame_OnEvent(self, event, ...)
 		GarrisonPlot_UpdateBuilding(plotID);
 	elseif (event == "GARRISON_BUILDING_PLACED") then
 		local plotID = ...;
-		local id, name, texPrefix, icon, rank, isBuilding, timeLeft, canActivate, canUpgrade = C_Garrison.GetOwnedBuildingInfoAbbrev(plotID);
+		local id, name, texPrefix, icon, rank, isBuilding, timeStart, buildTime, canActivate, canUpgrade = C_Garrison.GetOwnedBuildingInfoAbbrev(plotID);
 		if (id) then
 			local Plot = self.plots[plotID];
 			if (not Plot) then
@@ -123,7 +123,7 @@ function GarrisonBuildingFrame_OnEvent(self, event, ...)
 			end
 			Plot.BuildingCreateFlareAnim:Play();
 			PlaySoundKitID(40999);
-			GarrisonPlot_SetBuilding(Plot, id, name, texPrefix, icon, rank, isBuilding, timeLeft, canActivate, canUpgrade);
+			GarrisonPlot_SetBuilding(Plot, id, name, texPrefix, icon, rank, isBuilding, timeStart, buildTime, canActivate, canUpgrade);
 			local buildingInfo = GarrisonBuildingFrame.selectedBuilding;
 			if (buildingInfo and id == buildingInfo.buildingID) then
 				GarrisonBuildingInfoBox_ShowBuilding(plotID, true);
@@ -192,9 +192,9 @@ function GarrisonBuildingFrame_UpdatePlots()
 		Plot.PlotHighlight:SetAtlas("Garr_Plot_Glow_"..plot.size, true);
 		Plot.Lock:Hide();
 		Plot.locked = false;
-		local id, name, texPrefix, icon, rank, isBuilding, timeLeft, canActivate, canUpgrade = C_Garrison.GetOwnedBuildingInfoAbbrev(plot.id);
+		local id, name, texPrefix, icon, rank, isBuilding, timeStart, buildTime, canActivate, canUpgrade = C_Garrison.GetOwnedBuildingInfoAbbrev(plot.id);
 		if (id) then
-			GarrisonPlot_SetBuilding(Plot, id, name, texPrefix, icon, rank, isBuilding, timeLeft, canActivate, canUpgrade);
+			GarrisonPlot_SetBuilding(Plot, id, name, texPrefix, icon, rank, isBuilding, timeStart, buildTime, canActivate, canUpgrade);
 		elseif (plot.buildingID) then
 			GarrisonPlot_SetBuilding(Plot, plot.buildingID, "Complete a quest to unlock this building", plot.building, plot.icon);
 			Plot.locked = true;
@@ -303,9 +303,9 @@ function GarrisonBuildingInfoBox_ShowBuilding(ID, owned, showLock)
 	end
 	infoBox.ID = ID;
 	infoBox:Show()
-	local id, name, texPrefix, icon, description, rank, currencyID, currencyQty, buildTime, needsPlan, possSpecs, upgrades, canUpgrade, isMaxLevel, knownSpecs, currSpec, specCooldown, isBuilding, timeLeft, canActivate, hasFollower;
+	local id, name, texPrefix, icon, description, rank, currencyID, currencyQty, buildTime, needsPlan, possSpecs, upgrades, canUpgrade, isMaxLevel, knownSpecs, currSpec, specCooldown, isBuilding, startTime, buildDuration, timeLeftStr, canActivate, hasFollower;
 	if (owned) then
-		id, name, texPrefix, icon, description, rank, currencyID, currencyQty, buildTime, needsPlan, possSpecs, upgrades, canUpgrade, isMaxLevel, knownSpecs, currSpec, specCooldown, isBuilding, timeLeft, canActivate, hasFollower = C_Garrison.GetOwnedBuildingInfo(ID);
+		id, name, texPrefix, icon, description, rank, currencyID, currencyQty, buildTime, needsPlan, possSpecs, upgrades, canUpgrade, isMaxLevel, knownSpecs, currSpec, specCooldown, isBuilding, startTime, buildDuration, timeLeftStr, canActivate, hasFollower = C_Garrison.GetOwnedBuildingInfo(ID);
 	else
 		id, name, texPrefix, icon, description, rank, currencyID, currencyQty, buildTime, needsPlan, possSpecs, upgrades, canUpgrade = C_Garrison.GetBuildingInfo(ID);
 	end
@@ -380,11 +380,12 @@ function GarrisonBuildingInfoBox_ShowBuilding(ID, owned, showLock)
 			infoBox.Timer.Cooldown:SetCooldownDuration(0);
 			infoBox.Timer.Cancel:Hide();
 		else
+			infoBox:SetScript("OnUpdate", GarrisonBuildingInfoBox_OnUpdate);
 			infoBox.TimeLeft:Show();
-			infoBox.TimeLeft:SetText(buildTime);
+			infoBox.TimeLeft:SetText(timeLeftStr);
 			infoBox.Timer.CompleteRing:Hide();
 			infoBox.Timer.Glow:Hide();
-			infoBox.Timer.Cooldown:SetCooldownDuration(timeLeft);
+			infoBox.Timer.Cooldown:SetCooldownUNIX(startTime, buildDuration);
 			infoBox.Timer.Cancel:Show();
 		end
 	else
@@ -494,6 +495,16 @@ function GarrisonBuildingInfoBox_ShowBuilding(ID, owned, showLock)
 		infoBox.AddFollowerButton.LevelBorder:SetVertexColor(1, 1, 1);
 		SetPortraitTexture(infoBox.AddFollowerButton.Portrait, 0);
 		infoBox.RemoveFollowerButton:Hide();
+	end
+end
+
+function GarrisonBuildingInfoBox_OnUpdate(self)
+	local timeLeft, timeLefttext = C_Garrison.GetBuildingTimeRemaining( self.ID );
+	self.TimeLeft:SetText( timeLefttext );
+	if( timeLeft == 0 ) then
+		self.Timer.Cooldown:SetCooldownDuration(0);
+		self.Timer.CompleteRing:Show();
+		self:SetScript("OnUpdate", nil);
 	end
 end
 
@@ -994,12 +1005,12 @@ end
 function GarrisonPlot_UpdateBuilding(plotID)
 	local plot = GarrisonBuildingFrame.plots[plotID];
 	if (plot) then
-		local id, name, texPrefix, icon, rank, isBuilding, timeLeft, canActivate, canUpgrade = C_Garrison.GetOwnedBuildingInfoAbbrev(plotID);
-		GarrisonPlot_SetBuilding(plot, id, tooltip, texPrefix, icon, rank, isBuilding, timeLeft, canActivate, canUpgrade)
+		local id, name, texPrefix, icon, rank, isBuilding, timeStart, buildTime, canActivate, canUpgrade = C_Garrison.GetOwnedBuildingInfoAbbrev(plotID);
+		GarrisonPlot_SetBuilding(plot, id, tooltip, texPrefix, icon, rank, isBuilding, timeStart, buildTime, canActivate, canUpgrade)
 	end
 end
 
-function GarrisonPlot_SetBuilding(self, id, tooltip, texPrefix, icon, rank, isBuilding, timeLeft, canActivate, canUpgrade)
+function GarrisonPlot_SetBuilding(self, id, tooltip, texPrefix, icon, rank, isBuilding, timeStart, buildTime, canActivate, canUpgrade)
 	GarrisonPlot_ClearBuilding(self);
 	self.buildingID = id;
 	if (canActivate) then
@@ -1047,7 +1058,7 @@ function GarrisonPlot_SetBuilding(self, id, tooltip, texPrefix, icon, rank, isBu
 	self.Timer:Show();
 	if (isBuilding) then
 		self.Timer.CompleteRing:Hide();
-		self.Timer.Cooldown:SetCooldownDuration(timeLeft);
+		self.Timer.Cooldown:SetCooldownUNIX(timeStart, buildTime);
 		return;
 	end
 	

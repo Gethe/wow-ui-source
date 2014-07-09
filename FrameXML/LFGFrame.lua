@@ -678,6 +678,11 @@ function LFGDungeonReadyPopup_Update()
 		StaticPopupSpecial_Hide(LFGDungeonReadyPopup);
 		return;
 	end
+
+	--When the group doesn't require a role (like scenarios and legacy raids), we get "NONE" as the role
+	if ( role == "NONE" ) then
+		role = "DAMAGER";
+	end
 	
 	LFGDungeonReadyPopup.dungeonID = id;
 	

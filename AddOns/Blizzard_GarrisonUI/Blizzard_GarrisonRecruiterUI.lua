@@ -34,7 +34,7 @@ function GarrisonRecruiterFrame_OnShow(self)
 	SetPortraitTexture(self.PortraitTexture, "npc");
 	GarrisonRecruiterFrame.Pick:Hide();
 	GarrisonRecruiterFrame.Random:Hide();
-	GarrisonRecruiterFrame.NextWeek:Hide();
+	GarrisonRecruiterFrame.UnavailableFrame:Hide();
 	local followers = C_Garrison.GetAvailableRecruits();
 	if( #followers > 0 )then
 		-- display selection screen if we've already generated followers
@@ -42,12 +42,12 @@ function GarrisonRecruiterFrame_OnShow(self)
 		GarrisonRecruitSelectFrame_UpdateRecruits(false);
 		ShowUIPanel(GarrisonRecruitSelectFrame);
 	else
-		GarrisonRecruiterFrame_Show( C_Garrison.CanGenerateRecruits(), C_Garrison.CanSetRecruitmentPreference() );
+		GarrisonRecruiterFrame_Show( C_Garrison.CanGenerateRecruits(), C_Garrison.IsAboveFollowerSoftCap(), C_Garrison.CanSetRecruitmentPreference() );
 	end
 end
 
-function GarrisonRecruiterFrame_Show( canRecruit, prefAvailable )
-	if( canRecruit ) then
+function GarrisonRecruiterFrame_Show( canRecruit, aboveFollowerCap, prefAvailable )
+	if( canRecruit and not aboveFollowerCap ) then
 		if( prefAvailable )then
 			local frame = GarrisonRecruiterFrame.Pick;
 			local ability, name, desc, icon = C_Garrison.GetRecruitmentPreferences()
@@ -73,8 +73,17 @@ function GarrisonRecruiterFrame_Show( canRecruit, prefAvailable )
 			GarrisonRecruiterFrame.Random:Show();
 		end
 	else
-		GarrisonRecruiterFrame.NextWeek:Show();
+		GarrisonRecruiterFrame_ShowUnavailableFrame(aboveFollowerCap);
 	end
+end
+
+function GarrisonRecruiterFrame_ShowUnavailableFrame(aboveFollowerCap)
+	if ( aboveFollowerCap ) then
+		GarrisonRecruiterFrame.UnavailableFrame.Title:SetText(GARRISON_MAX_FOLLOWERS_CANNOT_RECRUIT);
+	else
+		GarrisonRecruiterFrame.UnavailableFrame.Title:SetText(GARRISON_RECRUIT_NEXT_WEEK);
+	end
+	GarrisonRecruiterFrame.UnavailableFrame:Show();
 end
 
 function GarrisonRecruiterFrame_OnClickClose(self)

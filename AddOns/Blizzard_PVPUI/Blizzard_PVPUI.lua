@@ -164,6 +164,11 @@ function PVPQueueFrame_OnLoad(self)
 		PVPQueueFrame:RegisterEvent("PLAYER_LEVEL_UP");
 	end
 
+	if ( not IsGMClient() ) then
+		PVPQueueFrame_SetCategoryButtonState(self.CategoryButton4, false);
+		self.CategoryButton4.tooltip = "Under Construction";
+	end
+
 	-- set up accessors
 	self.getSelection = PVPQueueFrame_GetSelection;
 	self.update = PVPQueueFrame_Update;

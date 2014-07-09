@@ -1,13 +1,13 @@
 function GuildInviteFrame_OnEvent(self, event, ...)
 	if ( event == "GUILD_INVITE_REQUEST" ) then
-		local inviterName, guildName, guildLevel, oldGuildName, isNewGuild = ...;
+		local inviterName, guildName, guildPoints, oldGuildName, isNewGuild = ...;
 		local emblem = { select(6, ...) };
 		
 		GuildInviteFrame.inviter = inviterName;
 		
 		GuildInviteFrameInviterName:SetText(inviterName);
 		GuildInviteFrameGuildName:SetText(guildName);
-		GuildInviteFrame.Points.Text:SetText("25"); -- TODO: update with actual number
+		GuildInviteFrame.Points.Text:SetText(guildPoints);
 		SetLargeGuildTabardTextures(nil, GuildInviteFrameTabardEmblem, GuildInviteFrameTabardBackground, GuildInviteFrameTabardBorder, emblem);
 		-- check if player has any guild rep beyond Neutral 0 if it's being invited to a new guild
 		local name, description, standingID, barMin, barMax, barValue = GetGuildFactionInfo();

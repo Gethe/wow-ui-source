@@ -84,6 +84,9 @@ LFG_LIST_TOOLTIP_LEADER = "Leader: |cffffffff%s|r";
 LFG_LIST_LOADING = "Loading...";
 NO_LFG_LIST_AVAILABLE = "You are not eligible for any groups.";
 
+LFG_LIST_MORE = "More...";
+LFG_LIST_SELECT = "Select";
+
 --[[
 function C_LFGList.GetSearchResults()
 	return 100, { 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25 };

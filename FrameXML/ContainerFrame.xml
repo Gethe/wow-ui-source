@@ -270,7 +270,11 @@
 							if (GetBindingKey("TOGGLEBACKPACK")) then
 								GameTooltip:AppendText(" "..NORMAL_FONT_COLOR_CODE.."("..GetBindingKey("TOGGLEBACKPACK")..")"..FONT_COLOR_CODE_CLOSE)
 							end
-						elseif ( GameTooltip:SetInventoryItem("player", ContainerIDToInventoryID(self:GetID())) ) then
+						else
+							local link = GetInventoryItemLink("player", ContainerIDToInventoryID(self:GetID()));
+							local name, _, quality = GetItemInfo(link);
+							local r, g, b = GetItemQualityColor(quality);
+							GameTooltip:SetText(name, r, g, b);
 							local binding = GetBindingKey("TOGGLEBAG"..(4 - self:GetID() + 1));
 							if ( binding ) then
 								GameTooltip:AppendText(" "..NORMAL_FONT_COLOR_CODE.."("..binding..")"..FONT_COLOR_CODE_CLOSE);
@@ -303,30 +307,6 @@
 						ToggleBag(self:GetParent():GetID());
 					</OnClick>
 				</Scripts>
-			</Button>
-			<Button parentKey="FiltersButton">
-				<Size x="16" y="16"/>
-				<Anchors>
-					<Anchor point="CENTER" relativeTo="$parentPortraitButton" relativePoint="BOTTOMRIGHT" x="-8" y="8"/>
-				</Anchors>
-				<Scripts>
-					<OnShow>
-						self:SetFrameLevel(self:GetParent():GetFrameLevel()+2);
-					</OnShow>
-					<OnClick>
-						local parent = self:GetParent();
-						PlaySound("igMainMenuOptionCheckBoxOn");
-						ToggleDropDownMenu(1, nil, parent.FilterDropDown, self, 0, 0);
-					</OnClick>
-					<OnEnter>
-						GameTooltip:SetOwner(self, "ANCHOR_LEFT", 4, -4);
-						GameTooltip:AddLine(BAG_SETTINGS_TOOLTIP);
-						GameTooltip:Show();
-					</OnEnter>
-					<OnLeave function="GameTooltip_Hide"/>
-				</Scripts>
-				<NormalTexture file="Interface\GossipFrame\BinderGossipIcon"/>
-				<HighlightTexture file="Interface\GossipFrame\BinderGossipIcon" desaturated="TRUE" alphaMode="ADD" alpha="0.3" />
 			</Button>
 			<Frame name="$parentFilterDropDown" parentKey="FilterDropDown" inherits="UIDropDownMenuTemplate">
 				<Scripts>

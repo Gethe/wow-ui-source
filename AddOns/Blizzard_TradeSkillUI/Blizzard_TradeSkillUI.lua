@@ -16,6 +16,7 @@ TradeSkillTypePrefix = {
 ["trivial"] = " ", 
 ["header"] = " ",
 ["subheader"] = " ",
+["nodifficulty"] = " ",
 }
 
 TradeSkillTypeColor = { };
@@ -25,6 +26,7 @@ TradeSkillTypeColor["easy"]		= { r = 0.25, g = 0.75, b = 0.25,	font = GameFontNo
 TradeSkillTypeColor["trivial"]	= { r = 0.50, g = 0.50, b = 0.50,	font = GameFontNormalLeftGrey };
 TradeSkillTypeColor["header"]	= { r = 1.00, g = 0.82, b = 0,		font = GameFontNormalLeft };
 TradeSkillTypeColor["subheader"]= { r = 1.00, g = 0.82, b = 0,		font = GameFontNormalLeft };
+TradeSkillTypeColor["nodifficulty"] = { r = 0.96, g = 0.96, b = 0.96, font = GameFontNormalLeftGrey };
 
 UIPanelWindows["TradeSkillFrame"] = {area = "left", pushable = 3, showFailedFunc = "TradeSkillFrame_ShowFailed" };
 
@@ -210,7 +212,7 @@ function TradeSkillFrame_Update()
 
 	
 	TradeSkillHighlightFrame:Hide();
-	local skillName, skillType, numAvailable, isExpanded, altVerb, numSkillUps, indentLevel, showProgressBar, currentRank, maxRank, startingRank;
+	local skillName, skillType, numAvailable, isExpanded, altVerb, numSkillUps, indentLevel, showProgressBar, currentRank, maxRank, startingRank, displayAsUnavailable;
 	local skillIndex, skillButton, skillButtonText, skillButtonCount, skillButtonNumSkillUps, skillButtonNumSkillUpsIcon, skillButtonNumSkillUpsText, skillButtonSubSkillRankBar;
 	local nameWidth, countWidth, usedWidth;
 	
@@ -229,7 +231,7 @@ function TradeSkillFrame_Update()
 	
 	for i=1, diplayedSkills, 1 do
 		skillIndex = i + skillOffset;
-		skillName, skillType, numAvailable, isExpanded, altVerb, numSkillUps, indentLevel, showProgressBar, currentRank, maxRank, startingRank = GetTradeSkillInfo(skillIndex);
+		skillName, skillType, numAvailable, isExpanded, altVerb, numSkillUps, indentLevel, showProgressBar, currentRank, maxRank, startingRank, displayAsUnavailable = GetTradeSkillInfo(skillIndex);
 
 		if hasFilterBar then
 			buttonIndex = i+1;
@@ -244,6 +246,7 @@ function TradeSkillFrame_Update()
 		skillButtonNumSkillUpsText = _G["TradeSkillSkill"..buttonIndex.."NumSkillUpsText"];
 		skillButtonNumSkillUpsIcon = _G["TradeSkillSkill"..buttonIndex.."NumSkillUpsIcon"];
 		skillButtonSubSkillRankBar = _G["TradeSkillSkill"..buttonIndex.."SubSkillRankBar"];
+		skillButtonLockedIcon = _G["TradeSkillSkill"..buttonIndex.."LockedIcon"];
 		if ( skillIndex <= numTradeSkills ) then
 			--turn on the multiskill icon
 			if not isTradeSkillGuild and not isNPCCrafting and numSkillUps > 1 and skillType=="optimal" then
@@ -254,11 +257,23 @@ function TradeSkillFrame_Update()
 				skillButtonNumSkillUps:Hide();
 				usedWidth = 0;
 			end
+			
+			-- display a lock icon when the recipe is shown, but unavailable
+			if ( displayAsUnavailable ) then
+				skillButtonLockedIcon:Show();
+				usedWidth = TRADE_SKILL_SKILLUP_TEXT_WIDTH;
+			else
+				skillButtonLockedIcon:Hide();
+			end
 
 			local color;
-			-- override colors for guild
+			-- override colors for guild and NPC crafting
 			if ( ( isTradeSkillGuild or isNPCCrafting ) and skillType ~= "header" and skillType ~= "subheader" ) then
-				color = TradeSkillTypeColor["easy"];
+				if ( isTradeSkillGuild ) then
+					color = TradeSkillTypeColor["easy"];
+				else
+					color = TradeSkillTypeColor["nodifficulty"];
+				end
 			else
 				color = TradeSkillTypeColor[skillType];
 			end
@@ -431,7 +446,7 @@ function TradeSkillFrame_SetSelection(id)
 		id = 0;
 	end
 
-	local skillName, skillType, numAvailable, isExpanded, altVerb = GetTradeSkillInfo(id);
+	local skillName, skillType, numAvailable, isExpanded, altVerb, numSkillUps, indentLevel, showProgressBar, currentRank, maxRank, startingRank, displayAsUnavailable, unavailableString = GetTradeSkillInfo(id);
 	local creatable = 1;
 	if ( not skillName ) then
 		creatable = nil;
@@ -459,6 +474,10 @@ function TradeSkillFrame_SetSelection(id)
 	if( maxCharges > 0 and (charges > 0 or not cooldown) )then
 		TradeSkillSkillCooldown:SetText(format(TRADESKILL_CHARGES_REMAINING, charges, maxCharges));
 		TradeSkillSkillCooldown:SetTextColor(HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b);
+	elseif( displayAsUnavailable )then
+		TradeSkillSkillCooldown:SetTextColor(RED_FONT_COLOR.r, RED_FONT_COLOR.g, RED_FONT_COLOR.b);
+		TradeSkillSkillCooldown:SetText(unavailableString);
+		creatable = nil;
 	else
 		TradeSkillSkillCooldown:SetTextColor(RED_FONT_COLOR.r, RED_FONT_COLOR.g, RED_FONT_COLOR.b);
 		if ( not cooldown ) then
@@ -619,7 +638,7 @@ function TradeSkillFrame_SetSelection(id)
 		
 		if ( IsNPCCrafting() and skillLineMaxRank == 0 ) then
 			TradeSkillRankFrame:Hide();
-			color = TradeSkillTypeColor["easy"];
+			color = TradeSkillTypeColor["nodifficulty"];
 		end
 		
 		local linked = IsTradeSkillLinked();
@@ -1143,4 +1162,18 @@ function TradeSkillRetrievingFrame_OnUpdate(self, elapsed)
 	else
 		self.timer = self.timer - elapsed;
 	end
+end
+
+function TradeSkillFrameLockIcon_OnEnter(self)
+	local skillName, skillType, numAvailable, isExpanded, altVerb, numSkillUps, indentLevel, showProgressBar, currentRank, maxRank, startingRank, displayAsUnavailable, unavailableString = GetTradeSkillInfo(self:GetID());
+	
+	if(unavailableString and unavailableString ~= "") then
+		GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+		GameTooltip:AddLine(unavailableString, NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b, true);
+		GameTooltip:Show();
+	end
+end
+
+function TradeSkillFrameLockIcon_OnLeave(self)
+	GameTooltip:Hide();
 end

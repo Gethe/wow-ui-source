@@ -15,7 +15,7 @@ function InspectGuildFrame_OnShow()
 end
 
 function InspectGuildFrame_Update()
-	local _, guildXP, guildNumMembers, guildName = GetInspectGuildInfo(InspectFrame.unit);
+	local guildPoints, guildNumMembers, guildName = GetInspectGuildInfo(InspectFrame.unit);
 	local _, guildFactionName = UnitFactionGroup(InspectFrame.unit);
 
 	InspectGuildFrame.guildName:SetText(guildName);
@@ -26,7 +26,7 @@ function InspectGuildFrame_Update()
 	end
 	
 	local pointFrame = InspectGuildFrame.Points;
-	pointFrame.SumText:SetText("25"); --TODO: update with actual points
+	pointFrame.SumText:SetText(guildPoints);
 	local width = pointFrame.SumText:GetStringWidth() + pointFrame.LeftCap:GetWidth() + pointFrame.RightCap:GetWidth() + pointFrame.Icon:GetWidth();
 	pointFrame:SetWidth(width); 
 	

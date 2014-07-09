@@ -168,9 +168,6 @@ PAPERDOLL_STATINFO = {
 	["MULTISTRIKE"] = {
 		updateFunc = function(statFrame, unit) PaperDollFrame_SetMultistrike(statFrame, unit); end
 	},
-	["READINESS"] = {
-		updateFunc = function(statFrame, unit) PaperDollFrame_SetReadiness(statFrame, unit); end
-	},
 	["LIFESTEAL"] = {
 		updateFunc = function(statFrame, unit) PaperDollFrame_SetLifesteal(statFrame, unit); end
 	},
@@ -265,7 +262,6 @@ PAPERDOLL_STATCATEGORIES = {
 			"SPIRIT",
 			"BONUS_ARMOR",
 			"MULTISTRIKE",
-			"READINESS",
 			"LIFESTEAL",
 			"STURDINESS",
 			"VERSATILITY",
@@ -777,18 +773,20 @@ function CharacterArmor_OnEnter (self)
 end
 
 function PaperDollFrame_SetArmor(statFrame, unit)
-	local base, effectiveArmor, armor, posBuff, negBuff = UnitArmor(unit);
+	local baselineArmor, effectiveArmor, armor, posBuff, negBuff = UnitArmor(unit);
 	_G[statFrame:GetName().."Label"]:SetText(format(STAT_FORMAT, ARMOR));
 	local text = _G[statFrame:GetName().."StatText"];
 
-	local bonusArmor = posBuff + negBuff;
-	if(bonusArmor > 0) then
-		effectiveArmor = effectiveArmor - bonusArmor;
-	end
+    local bonusArmor = UnitBonusArmor(unit)
+    local nonBonusArmor = effectiveArmor - bonusArmor;
+
+    if ( nonBonusArmor < baselineArmor) then
+        baselineArmor = nonBonusArmor
+    end
 
 	PaperDollFrame_SetLabelAndText(statFrame, STAT_ARMOR, effectiveArmor, false);
-	local baseArmorReduction = PaperDollFrame_GetArmorReduction(effectiveArmor, UnitLevel(unit));
-	local armorReduction = PaperDollFrame_GetArmorReduction((effectiveArmor + bonusArmor), UnitLevel(unit));
+    local baseArmorReduction = PaperDollFrame_GetArmorReduction(baselineArmor, UnitLevel(unit));
+    local armorReduction = PaperDollFrame_GetArmorReduction(effectiveArmor, UnitLevel(unit));
 	
 	statFrame.tooltip = HIGHLIGHT_FONT_COLOR_CODE..format(PAPERDOLLFRAME_TOOLTIP_FORMAT, ARMOR).." "..string.format("%s", effectiveArmor)..FONT_COLOR_CODE_CLOSE;
 	statFrame.tooltip2 = format(STAT_ARMOR_BASE_TOOLTIP, baseArmorReduction);
@@ -813,8 +811,7 @@ function PaperDollFrame_SetBonusArmor(statFrame, unit)
 	_G[statFrame:GetName().."Label"]:SetText(format(STAT_FORMAT, ARMOR));
 	local text = _G[statFrame:GetName().."StatText"];
 
-	local bonusArmor = posBuff + negBuff;
-	bonusArmor = max(bonusArmor,0)
+	local bonusArmor = UnitBonusArmor(unit);
 
 	PaperDollFrame_SetLabelAndText(statFrame, STAT_BONUS_ARMOR, bonusArmor, false);
 	local armorReduction = PaperDollFrame_GetArmorReduction(effectiveArmor, UnitLevel(unit));
@@ -1581,11 +1578,13 @@ function PaperDollFrame_SetVersatility(statFrame, unit)
 	_G[statFrame:GetName().."Label"]:SetText(format(STAT_FORMAT, STAT_VERSATILITY));
 	local text = _G[statFrame:GetName().."StatText"];
 	local versatility = GetVersatility();
+	local versatilityDamageBonus = GetCombatRatingBonus(CR_VERSATILITY_DAMAGE_DONE) + GetVersatilityBonus(CR_VERSATILITY_DAMAGE_DONE);
+	local versatilityDamageTakenReduction = GetCombatRatingBonus(CR_VERSATILITY_DAMAGE_TAKEN) + GetVersatilityBonus(CR_VERSATILITY_DAMAGE_TAKEN);
 	versatility = format("%d", versatility);
 	text:SetText(versatility);
 	statFrame.tooltip = HIGHLIGHT_FONT_COLOR_CODE .. format(PAPERDOLLFRAME_TOOLTIP_FORMAT, STAT_VERSATILITY) .. " " .. versatility .. FONT_COLOR_CODE_CLOSE;
 	
-	statFrame.tooltip2 = format(CR_VERSATILITY_TOOLTIP, BreakUpLargeNumbers(GetCombatRatingBonus(CR_VERSATILITY_DAMAGE_DONE)), BreakUpLargeNumbers(GetCombatRatingBonus(CR_VERSATILITY_DAMAGE_TAKEN)));
+	statFrame.tooltip2 = format(CR_VERSATILITY_TOOLTIP, BreakUpLargeNumbers(versatilityDamageBonus), BreakUpLargeNumbers(versatilityDamageTakenReduction));
 
 	statFrame:Show();
 end

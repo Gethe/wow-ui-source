@@ -288,6 +288,9 @@ local MovieList = {
   { 23 },
   -- Movie sequence 5 = MP
   { 115 },
+  -- Movie sequence 6 = WoD
+  -- TODO change movie ID when it is available
+  { 115 },
 }
 
 function MainMenu_GetMovieDownloadProgress(id)

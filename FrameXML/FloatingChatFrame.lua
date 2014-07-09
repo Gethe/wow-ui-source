@@ -2233,7 +2233,9 @@ function FCFDock_CalculateTabSize(dock, numDynFrames)
 	
 	--Figure out how many tabs we're going to be able to fit at the minimum size
 	local numWholeTabs = min(floor(scrollSize / MIN_SIZE), numDynFrames)
-	
+	if ( scrollSize == 0 ) then
+		return 1, (numDynFrames > 0);
+	end
 	if ( numWholeTabs == 0 ) then
 		return scrollSize, true;
 	end

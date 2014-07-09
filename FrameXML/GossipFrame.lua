@@ -75,7 +75,7 @@ function GossipFrameAvailableQuestsUpdate(...)
 	local titleButton;
 	local titleIndex = 1;
 	local titleButtonIcon;
-	local isTrivial, isDaily, isRepeatable, isLegendary;
+	local isTrivial, frequency, isRepeatable, isLegendary;
 	for i=1, select("#", ...), 6 do
 		if ( GossipFrame.buttonIndex > NUMGOSSIPBUTTONS ) then
 			message("This NPC has too many quests and/or gossip options.");
@@ -83,12 +83,12 @@ function GossipFrameAvailableQuestsUpdate(...)
 		titleButton = _G["GossipTitleButton" .. GossipFrame.buttonIndex];
 		titleButtonIcon = _G[titleButton:GetName() .. "GossipIcon"];
 		isTrivial = select(i+2, ...);
-		isDaily = select(i+3, ...);
+		frequency = select(i+3, ...);
 		isRepeatable = select(i+4, ...);
 		isLegendary = select(i+5, ...);
 		if ( isLegendary ) then
 			titleButtonIcon:SetTexture("Interface\\GossipFrame\\AvailableLegendaryQuestIcon");
-		elseif ( isDaily ) then
+		elseif ( frequency == LE_QUEST_FREQUENCY_DAILY or frequency == LE_QUEST_FREQUENCY_WEEKLY ) then
 			titleButtonIcon:SetTexture("Interface\\GossipFrame\\DailyQuestIcon");
 		elseif ( isRepeatable ) then
 			titleButtonIcon:SetTexture("Interface\\GossipFrame\\DailyActiveQuestIcon");

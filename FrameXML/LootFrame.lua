@@ -39,9 +39,8 @@ function LootFrame_OnEvent(self, event, ...)
 		LootFrame_InitAutoLootTable( self );
 	elseif ( event == "LOOT_SLOT_CLEARED" ) then
 		local arg1 = ...;
-		
-		if ( not self:IsShown() ) then
-			return;
+		if ( not self:IsShown() or self.AutoLootTable) then
+			return; 
 		end
 
 		local numLootToShow = LOOTFRAME_NUMBUTTONS;
@@ -168,79 +167,79 @@ function LootFrame_UpdateButton(index)
 	end
 	
 	local button = _G["LootButton"..index];
-		local slot = (numLootToShow * (LootFrame.page - 1)) + index;
-		if ( slot <= numLootItems ) then	
-			if ( (LootSlotHasItem(slot)  or (self.AutoLootTable and self.AutoLootTable[slot]) )and index <= numLootToShow) then
-				local texture, item, quantity, quality, locked, isQuestItem, questId, isActive;
-				if(self.AutoLootTable)then
-					local entry = self.AutoLootTable[slot];
-					if( entry.hide ) then
-						button:Hide();
-						return;
-					else
-						texture = entry.texture;
-						item = entry.item;
-						quantity = entry.quantity;
-						quality = entry.quality;
-						locked = entry.locked;
-						isQuestItem = entry.isQuestItem;
-						questId = entry.questId;
-						isActive = entry.isActive;
-					end
+	local slot = (numLootToShow * (LootFrame.page - 1)) + index;
+	if ( slot <= numLootItems ) then	
+		if ( (LootSlotHasItem(slot)  or (self.AutoLootTable and self.AutoLootTable[slot]) )and index <= numLootToShow) then
+			local texture, item, quantity, quality, locked, isQuestItem, questId, isActive;
+			if(self.AutoLootTable)then
+				local entry = self.AutoLootTable[slot];
+				if( entry.hide ) then
+					button:Hide();
+					return;
 				else
-					texture, item, quantity, quality, locked, isQuestItem, questId, isActive = GetLootSlotInfo(slot);
+					texture = entry.texture;
+					item = entry.item;
+					quantity = entry.quantity;
+					quality = entry.quality;
+					locked = entry.locked;
+					isQuestItem = entry.isQuestItem;
+					questId = entry.questId;
+					isActive = entry.isActive;
 				end
-				local text = _G["LootButton"..index.."Text"];
-				if ( texture ) then
-					local color = ITEM_QUALITY_COLORS[quality];
-					_G["LootButton"..index.."IconTexture"]:SetTexture(texture);
-					text:SetText(item);
-					if( locked ) then
-						SetItemButtonNameFrameVertexColor(button, 1.0, 0, 0);
-						SetItemButtonTextureVertexColor(button, 0.9, 0, 0);
-						SetItemButtonNormalTextureVertexColor(button, 0.9, 0, 0);
-					else
-						SetItemButtonNameFrameVertexColor(button, 0.5, 0.5, 0.5);
-						SetItemButtonTextureVertexColor(button, 1.0, 1.0, 1.0);
-						SetItemButtonNormalTextureVertexColor(button, 1.0, 1.0, 1.0);
-					end
-					
-					local questTexture = _G["LootButton"..index.."IconQuestTexture"];
-					if ( questId and not isActive ) then
-						questTexture:SetTexture(TEXTURE_ITEM_QUEST_BANG);
-						questTexture:Show();
-					elseif ( questId or isQuestItem ) then
-						questTexture:SetTexture(TEXTURE_ITEM_QUEST_BORDER);
-						questTexture:Show();		
-					else
-						questTexture:Hide();
-					end
-					
-					text:SetVertexColor(color.r, color.g, color.b);
-					local countString = _G["LootButton"..index.."Count"];
-					if ( quantity > 1 ) then
-						countString:SetText(quantity);
-						countString:Show();
-					else
-						countString:Hide();
-					end
-					button.slot = slot;
-					button.quality = quality;
-					button:Enable();
-				else
-					text:SetText("");
-					_G["LootButton"..index.."IconTexture"]:SetTexture(nil);
-					SetItemButtonNormalTextureVertexColor(button, 1.0, 1.0, 1.0);
-					LootFrame:SetScript("OnUpdate", LootFrame_OnUpdate);
-					button:Disable();
-				end
-				button:Show();
 			else
-				button:Hide();
+				texture, item, quantity, quality, locked, isQuestItem, questId, isActive = GetLootSlotInfo(slot);
 			end
+			local text = _G["LootButton"..index.."Text"];
+			if ( texture ) then
+				local color = ITEM_QUALITY_COLORS[quality];
+				_G["LootButton"..index.."IconTexture"]:SetTexture(texture);
+				text:SetText(item);
+				if( locked ) then
+					SetItemButtonNameFrameVertexColor(button, 1.0, 0, 0);
+					SetItemButtonTextureVertexColor(button, 0.9, 0, 0);
+					SetItemButtonNormalTextureVertexColor(button, 0.9, 0, 0);
+				else
+					SetItemButtonNameFrameVertexColor(button, 0.5, 0.5, 0.5);
+					SetItemButtonTextureVertexColor(button, 1.0, 1.0, 1.0);
+					SetItemButtonNormalTextureVertexColor(button, 1.0, 1.0, 1.0);
+				end
+				
+				local questTexture = _G["LootButton"..index.."IconQuestTexture"];
+				if ( questId and not isActive ) then
+					questTexture:SetTexture(TEXTURE_ITEM_QUEST_BANG);
+					questTexture:Show();
+				elseif ( questId or isQuestItem ) then
+					questTexture:SetTexture(TEXTURE_ITEM_QUEST_BORDER);
+					questTexture:Show();		
+				else
+					questTexture:Hide();
+				end
+				
+				text:SetVertexColor(color.r, color.g, color.b);
+				local countString = _G["LootButton"..index.."Count"];
+				if ( quantity > 1 ) then
+					countString:SetText(quantity);
+					countString:Show();
+				else
+					countString:Hide();
+				end
+				button.slot = slot;
+				button.quality = quality;
+				button:Enable();
+			else
+				text:SetText("");
+				_G["LootButton"..index.."IconTexture"]:SetTexture(nil);
+				SetItemButtonNormalTextureVertexColor(button, 1.0, 1.0, 1.0);
+				LootFrame:SetScript("OnUpdate", LootFrame_OnUpdate);
+				button:Disable();
+			end
+			button:Show();
 		else
 			button:Hide();
 		end
+	else
+		button:Hide();
+	end
 end
 
 function LootFrame_Update()

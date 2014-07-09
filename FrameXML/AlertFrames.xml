@@ -943,10 +943,15 @@
 		<Layer level="BACKGROUND">
 			<Texture parentKey="Background" file="Interface\LootFrame\LootToast">
 				<Size x="276" y="96"/>
-				<Anchor>
+				<Anchors>
 					<Anchor point="CENTER"/>
-				</Anchor>
+				</Anchors>
 				<TexCoords left="0.28222656" right="0.55175781" top="0.57812500" bottom="0.95312500"/>	
+			</Texture>
+			<Texture parentKey="PvPBackground" atlas="loottoast-bg-alliance" useAtlasSize="true" alpha="1">
+				<Anchors>
+					<Anchor point="CENTER" x="-1" y="-1"/>
+				</Anchors>
 			</Texture>
 		</Layer>
 		<Layer level="BORDER">
@@ -973,7 +978,7 @@
 			<FontString parentKey="ItemName" inherits="GameFontNormalMed3" justifyH="LEFT" justifyV="MIDDLE">
 				<Size x="167" y="33"/>
 				<Anchors>
-					<Anchor point="BOTTOMRIGHT" x="-25" y="23"/>
+					<Anchor point="TOPLEFT" relativeKey="$parent.Icon" relativePoint="TOPRIGHT" x="10" y="-16"/>
 				</Anchors>
 			</FontString>
 			<Texture parentKey="RollTypeIcon" file="Interface\Buttons\UI-GroupLoot-Dice-Up">
@@ -1062,19 +1067,188 @@
 	</Scripts>
 </Button>
 
+<Texture name="LootUpgradeFrame_ArrowTemplate" hidden="false" alpha="0" alphaMode="BLEND" atlas="loottoast-arrow-blue" useAtlasSize="true" virtual ="true"/>
+<FontString name="LootUpgradeFrame_ItemNameTemplate" inherits="GameFontNormalMed3"  justifyH="LEFT" justifyV="MIDDLE" hidden="false" alpha="1" wordwrap="true" virtual ="true">
+	<Size x="160" y="34"/>
+	<Color r="1" g="1" b="1"/>
+</FontString>
+
+<Button name="LootUpgradeFrameTemplate" parent="UIParent" hidden="true" alpha="0" frameStrata="DIALOG" frameLevel="1" virtual="true">
+	<Size x="276" y="96"/>
+	<KeyValues>
+		<KeyValue key="numArrows" value="5" type="number"/>
+	</KeyValues>
+	<Layers>
+		<Layer level="BACKGROUND">
+			<Texture parentKey="Background" atlas="loottoast-bg-questrewardupgrade" useAtlasSize="true">
+				<Anchors>
+					<Anchor point="TOPLEFT"/>
+				</Anchors>
+			</Texture>
+		</Layer>
+		<Layer level="BORDER" textureSubLevel="2">
+			<Texture parentKey="BaseQualityBorder" hidden="false" alpha="1" alphaMode="BLEND" atlas="loottoast-itemborder-green" useAtlasSize="true">
+				<Anchors>
+					<Anchor point="LEFT" relativeKey="$parent.Background" x="19" y="-1"/>
+				</Anchors>
+			</Texture>
+		</Layer>
+		<Layer level="BORDER" textureSubLevel="1">
+			<Texture parentKey="Icon" hidden="false" alpha="1" alphaMode="BLEND">
+				<Size x="50" y="50"/>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.BaseQualityBorder" x="4" y = "-4"/>
+				</Anchors>
+			</Texture>
+		</Layer>
+		<Layer level="BORDER" textureSubLevel="3">
+			<Texture parentKey="UpgradeQualityBorder" hidden="false" alpha="0" alphaMode="BLEND" atlas="loottoast-itemborder-blue" useAtlasSize="true">
+				<Anchors>
+					<Anchor point="CENTER" relativeKey="$parent.BaseQualityBorder"/>
+				</Anchors>
+			</Texture>
+		</Layer>
+		<Layer level="BORDER" textureSubLevel="4">
+			<Texture parentKey="BorderGlow" hidden="false" alpha="0" alphaMode="ADD" atlas="loottoast-itemborder-glow" useAtlasSize="true">
+				<Anchors>
+					<Anchor point="CENTER" relativeKey="$parent.BaseQualityBorder"/>
+				</Anchors>
+			</Texture>
+		</Layer>
+		<Layer level="ARTWORK">
+			<Texture parentKey="Arrow1" inherits="LootUpgradeFrame_ArrowTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.Background" x="39" y="-45"/>
+				</Anchors>
+			</Texture>
+			<Texture parentKey="Arrow2" inherits="LootUpgradeFrame_ArrowTemplate">
+				<Anchors>
+					<Anchor point="CENTER" relativeKey="$parent.Arrow1" x="16" y="0"/>
+				</Anchors>
+			</Texture>
+			<Texture parentKey="Arrow3" inherits="LootUpgradeFrame_ArrowTemplate">
+				<Anchors>
+					<Anchor point="CENTER" relativeKey="$parent.Arrow1" x="-16" y="0"/>
+				</Anchors>
+			</Texture>
+			<Texture parentKey="Arrow4" inherits="LootUpgradeFrame_ArrowTemplate">
+				<Anchors>
+					<Anchor point="CENTER" relativeKey="$parent.Arrow1" x="5" y="0"/>
+				</Anchors>
+			</Texture>
+			<Texture parentKey="Arrow5" inherits="LootUpgradeFrame_ArrowTemplate">
+				<Anchors>
+					<Anchor point="CENTER" relativeKey="$parent.Arrow1" x="-12" y="0"/>
+				</Anchors>
+			</Texture>
+		</Layer>
+		<Layer level="ARTWORK" textureSubLevel="1">
+			<FontString parentKey="TitleText" inherits="GameFontNormal" justifyH="LEFT" text="Item Upgrade!">
+				<Size x="148" y="16"/>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.BaseQualityBorder" relativePoint="TOPRIGHT" x="30" y="0"/>
+				</Anchors>
+			</FontString>
+			<FontString parentKey="BaseQualityItemName" inherits="LootUpgradeFrame_ItemNameTemplate">
+				<Anchors>
+					<Anchor point="CENTER" relativeKey="$parent.Background" x="28" y="-10"/>
+				</Anchors>
+				<Color r="0" g="1" b="0"/>
+			</FontString>
+		</Layer>
+		<Layer level="ARTWORK" textureSubLevel="2">
+			<FontString parentKey="UpgradeQualityItemName" inherits="LootUpgradeFrame_ItemNameTemplate">
+				<Anchors>
+					<Anchor point="CENTER" relativeKey="$parent.BaseQualityItemName"/>
+				</Anchors>
+				<Color r="0" g="0" b="1"/>
+			</FontString>
+		</Layer>
+		<Layer level="ARTWORK" textureSubLevel="3">
+			<FontString parentKey="WhiteText" inherits="LootUpgradeFrame_ItemNameTemplate">
+				<Anchors>
+					<Anchor point="CENTER" relativeKey="$parent.BaseQualityItemName"/>
+				</Anchors>
+			</FontString>
+		</Layer>
+		<Layer level="ARTWORK" textureSubLevel="4">
+			<FontString parentKey="WhiteText2" inherits="LootUpgradeFrame_ItemNameTemplate">
+				<Anchors>
+					<Anchor point="CENTER" relativeKey="$parent.BaseQualityItemName"/>
+				</Anchors>
+			</FontString>
+		</Layer>
+		<Layer level="OVERLAY">
+			<Texture parentKey="Sheen" hidden="false" alpha="0" alphaMode="ADD" atlas="loottoast-sheen">
+				<Size x="171" y="71"/>
+				<Anchors>
+					<Anchor point="CENTER" relativeKey="$parent.Background" x="-80" y="-1"/>
+				</Anchors>
+			</Texture>
+		</Layer>
+	</Layers>
+	<Animations>
+		<AnimationGroup name="$parentAnimIn" parentKey="animIn" setToFinalAlpha="true">
+			<Alpha startDelay="0.5" duration="0.01" order="1" fromAlpha="0" toAlpha="1"/>
+			<Alpha childKey="Sheen" startDelay="1.1" duration="0.18" order="1" fromAlpha="0" toAlpha="1"/>
+			<Alpha childKey="Sheen" startDelay="1.575" duration="0.25" order="1" fromAlpha="1" toAlpha="0"/>
+			<Translation childKey="Sheen" startDelay="1.1" duration="0.725" order="1" offsetX="165" offsetY="0"/>
+			
+			<Alpha childKey="BorderGlow" startDelay="0.5" smoothing="IN" duration="0.8" order="1" fromAlpha="0" toAlpha="1"/>
+			<Alpha childKey="BorderGlow" startDelay="1.3" smoothing="NONE" duration="0.8" order="1" fromAlpha="1" toAlpha="0"/>
+			<Alpha childKey="UpgradeQualityBorder" startDelay="0.5" smoothing="IN" duration="0.8" order="1" fromAlpha="0" toAlpha="1"/>
+			<Alpha childKey="WhiteText" startDelay="0.5" smoothing="IN" duration="0.8" order="1" fromAlpha="0" toAlpha="1"/>
+			<Alpha childKey="WhiteText" startDelay="1.3" smoothing="NONE" duration="0.8" order="1" fromAlpha="1" toAlpha="0"/>
+			<Alpha childKey="WhiteText2" startDelay="0.5" smoothing="IN" duration="0.8" order="1" fromAlpha="0" toAlpha="1"/>
+			<Alpha childKey="WhiteText2" startDelay="1.3" smoothing="NONE" duration="0.8" order="1" fromAlpha="1" toAlpha="0"/>
+			<Alpha childKey="UpgradeQualityItemName" startDelay="0.5" smoothing="IN" duration="0.8" order="1" fromAlpha="0" toAlpha="1"/>
+			<Alpha childKey="BaseQualityItemName" startDelay="1.3" smoothing="NONE" duration="0.8" order="1" fromAlpha="1" toAlpha="0"/>
+			<Alpha childKey="BaseQualityBorder" startDelay="2.5" duration="0.1" order="1" fromAlpha="1" toAlpha="0"/>
+
+			<Alpha childKey="Arrow1" startDelay="0.9" smoothing="IN" duration="0.2" order="1" fromAlpha="0" toAlpha="1"/>
+			<Alpha childKey="Arrow1" startDelay="1.2" smoothing="OUT" duration="0.2" order="1" fromAlpha="1" toAlpha="0"/>
+			<Translation childKey="Arrow1" startDelay="0.9" duration="0.5" order="1" offsetX="0" offsetY="60"/>
+			<Alpha childKey="Arrow2" startDelay="1" smoothing="IN" duration="0.2" order="1" fromAlpha="0" toAlpha="1"/>
+			<Alpha childKey="Arrow2" startDelay="1.3" smoothing="OUT" duration="0.2" order="1" fromAlpha="1" toAlpha="0"/>
+			<Translation childKey="Arrow2" startDelay="1" duration="0.5" order="1" offsetX="0" offsetY="60"/>			
+			<Alpha childKey="Arrow3" startDelay="1.1" smoothing="IN" duration="0.2" order="1" fromAlpha="0" toAlpha="1"/>
+			<Alpha childKey="Arrow3" startDelay="1.4" smoothing="OUT" duration="0.2" order="1" fromAlpha="1" toAlpha="0"/>
+			<Translation childKey="Arrow3" startDelay="1.1" duration="0.5" order="1" offsetX="0" offsetY="60"/>
+			<Alpha childKey="Arrow4" startDelay="1.3" smoothing="IN" duration="0.2" order="1" fromAlpha="0" toAlpha="1"/>
+			<Alpha childKey="Arrow4" startDelay="1.6" smoothing="OUT" duration="0.2" order="1" fromAlpha="1" toAlpha="0"/>
+			<Translation childKey="Arrow4" startDelay="1.3" duration="0.5" order="1" offsetX="0" offsetY="60"/>
+			<Alpha childKey="Arrow5" startDelay="1.5" smoothing="IN" duration="0.2" order="1" fromAlpha="0" toAlpha="1"/>
+			<Alpha childKey="Arrow5" startDelay="1.8" smoothing="OUT" duration="0.2" order="1" fromAlpha="1" toAlpha="0"/>
+			<Translation childKey="Arrow5" startDelay="1.5" duration="0.5" order="1" offsetX="0" offsetY="60"/>
+			<Alpha startDelay="3.05" duration="1.5" order="2" fromAlpha="1" toAlpha="0"/>
+		</AnimationGroup>
+		<AnimationGroup parentKey="waitAndAnimOut">
+			<Alpha startDelay="4.05" change="-1" duration="1.5" parentKey="animOut"/>
+			<Scripts>
+				<OnFinished function="LootUpgradeFrame_AnimDone"/>
+			</Scripts>
+		</AnimationGroup>
+	</Animations>
+	<Scripts>
+		<OnEnter>
+			AlertFrame_StopOutAnimation(self);
+			GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+			GameTooltip:SetHyperlink(self.hyperlink);
+			GameTooltip:Show();
+		</OnEnter>
+		<OnLeave>
+			AlertFrame_ResumeOutAnimation(self);
+			GameTooltip:Hide();
+		</OnLeave>
+		<OnClick function="LootUpgradeFrame_OnClick"/>
+	</Scripts>
+</Button>
+	
 <Button name="DungeonCompletionAlertFrame1" inherits="DungeonCompletionAlertFrameTemplate"/>
 
 <Button name="ChallengeModeAlertFrame1" inherits="ChallengeModeAlertFrameTemplate"/>
 
 <Button name="ScenarioAlertFrame1" inherits="ScenarioAlertFrameTemplate"/>
-
-<Button name="LootWonAlertFrame1" inherits="LootWonAlertFrameTemplate">
-	<Scripts>
-		<OnLoad>
-			table.insert(LOOT_WON_ALERT_FRAMES, self);
-		</OnLoad>
-	</Scripts>
-</Button>
 
 <Button name="MoneyWonAlertFrame1" inherits="MoneyWonAlertFrameTemplate">
 	<Scripts>

@@ -36,7 +36,9 @@ function ActionButtonDown(id)
 		button:SetButtonState("PUSHED");
 	end
 	if (GetCVarBool("ActionButtonUseKeyDown")) then
-		SecureActionButton_OnClick(button, "LeftButton");
+		if (not button.draenorZoneDisabled) then
+			SecureActionButton_OnClick(button, "LeftButton");
+		end
 		ActionButton_UpdateState(button);
 	end
 end
@@ -62,7 +64,9 @@ function ActionButtonUp(id)
 	if ( button:GetButtonState() == "PUSHED" ) then
 		button:SetButtonState("NORMAL");
 		if (not GetCVarBool("ActionButtonUseKeyDown")) then
-			SecureActionButton_OnClick(button, "LeftButton");
+			if (not button.draenorZoneDisabled) then
+				SecureActionButton_OnClick(button, "LeftButton");
+			end
 			ActionButton_UpdateState(button);
 		end
 	end
@@ -236,9 +240,9 @@ function ActionButton_CalculateAction (self, button)
 	end
 end
 
-function ActionButton_UpdateAction (self)
+function ActionButton_UpdateAction (self, force)
 	local action = ActionButton_CalculateAction(self);
-	if ( action ~= self.action ) then
+	if ( action ~= self.action or force ) then
 		self.action = action;
 		SetActionUIButton(self, action, self.cooldown);
 		ActionButton_Update(self);
@@ -250,6 +254,19 @@ function ActionButton_Update (self)
 	local icon = self.icon;
 	local buttonCooldown = self.cooldown;
 	local texture = GetActionTexture(action);
+
+	self.draenorZoneDisabled = false;
+	icon:SetDesaturated(false);
+	local type, id = GetActionInfo(action);
+	if ((type == "spell" or type == "companion") and DraenorZoneAbilityFrame and DraenorZoneAbilityFrame.baseName and not HasDraenorZoneAbility()) then
+		local name = GetSpellInfo(DraenorZoneAbilityFrame.baseName);
+		local abilityName = GetSpellInfo(id);
+		if (name == abilityName) then
+			texture = GetLastDraenorSpellTexture();
+			self.draenorZoneDisabled = true;
+			icon:SetDesaturated(true);
+		end
+	end
 
 	if ( HasAction(action) ) then
 		if ( not self.eventsRegistered ) then

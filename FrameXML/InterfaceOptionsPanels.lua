@@ -1345,7 +1345,7 @@ NamePanelOptions = {
 	UnitNameEnemyPetName = { text = "UNIT_NAME_ENEMY_PETS" },
 	UnitNameEnemyGuardianName = { text = "UNIT_NAME_ENEMY_GUARDIANS" },
 	UnitNameEnemyTotemName = { text = "UNIT_NAME_ENEMY_TOTEMS" },
-	UnitNameEnemyMinusName = { text = "UNIT_NAME_ENEMY_MINUS" },
+	UnitNameForceHideMinus = { text = "UNIT_NAME_HIDE_MINUS" },
 	
 	nameplateShowFriends = { text = "UNIT_NAMEPLATES_SHOW_FRIENDS" },
 	nameplateShowFriendlyPets = { text = "UNIT_NAMEPLATES_SHOW_FRIENDLY_PETS" },

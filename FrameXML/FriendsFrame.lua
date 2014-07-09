@@ -95,12 +95,42 @@ end
 
 function FriendsFrame_SummonButton_Update (self)
 	local id = self:GetParent().id;
-	if ( not id or (self:GetParent().buttonType ~= FRIENDS_BUTTON_TYPE_WOW) or not IsReferAFriendLinked(GetFriendInfo(id)) ) then
+	if ( not id ) then
 		self:Hide();
 		return;
 	end
-	
-	self:Show();
+
+	local enable = false;
+	local bType = self:GetParent().buttonType;
+	if ( self:GetParent().buttonType == FRIENDS_BUTTON_TYPE_WOW ) then
+		--Get the information by WoW friends list ID (not BNet id.)
+		local name, level, class, area, connected, status, notes, isReferAFriend = GetFriendInfo(id);
+		
+		if ( not isReferAFriend ) then
+			self:Hide();
+			return;
+		end
+		
+		enable = CanSummonFriend(name);
+		self:SetPoint("TOPRIGHT", -4, -4);
+		self:Show();
+	elseif ( self:GetParent().buttonType == FRIENDS_BUTTON_TYPE_BNET ) then
+		--Get the information by BNet friends list ID.
+		local presenceID, presenceName, battleTag, isBattleTagPresence, toonName, toonID, client, isOnline, lastOnline, isAFK, isDND, messageText, noteText, isRIDFriend, messageTime, canSoR, isReferAFriend, canSummonFriend = BNGetFriendInfo(id);
+		
+		if ( not isReferAFriend ) then
+			self:Hide();
+			return;
+		end
+		
+		enable = canSummonFriend;
+		self:ClearAllPoints();
+		self:SetPoint("CENTER", self:GetParent().gameIcon, "CENTER", 0, 0);
+		self:Show();
+	else
+		self:Hide();
+		return;
+	end
 	
 	local start, duration = GetSummonFriendCooldown();
 	
@@ -112,7 +142,6 @@ function FriendsFrame_SummonButton_Update (self)
 		self.start = nil;
 	end
 	
-	local enable = CanSummonFriend(GetFriendInfo(id));
 	
 	local icon = _G[self:GetName().."Icon"];
 	local normalTexture = _G[self:GetName().."NormalTexture"];
@@ -127,9 +156,19 @@ function FriendsFrame_SummonButton_Update (self)
 end
 
 function FriendsFrame_ClickSummonButton (self)
-	local name = GetFriendInfo(self:GetParent().id);
-	if ( CanSummonFriend(name) ) then
+	local id = self:GetParent().id;
+	if ( not id ) then
+		return;
+	end
+	
+	if ( self:GetParent().buttonType == FRIENDS_BUTTON_TYPE_WOW ) then
+		--Summon by WoW friends list ID (not BNet id.)
+		local name = GetFriendInfo(id);
+		
 		SummonFriend(name);
+	elseif ( self:GetParent().buttonType == FRIENDS_BUTTON_TYPE_BNET ) then
+		--Summon by BNet friends list ID (index in this case.)
+		BNSummonFriendByIndex(id);
 	end
 end
 
@@ -218,6 +257,7 @@ function FriendsFrame_OnLoad(self)
 	self:RegisterEvent("BN_INFO_CHANGED");
 	self:RegisterEvent("SPELL_UPDATE_COOLDOWN");
 	self:RegisterEvent("BATTLETAG_INVITE_SHOW");
+	self:RegisterEvent("PARTY_REFER_A_FRIEND_UPDATED");
 	self.playersInBotRank = 0;
 	self.playerStatusFrame = 1;
 	self.selectedFriend = 1;
@@ -934,10 +974,19 @@ function WhoFrameDropDownButton_OnClick(self)
 end
 
 function FriendsFrame_OnEvent(self, event, ...)
-	if ( event == "SPELL_UPDATE_COOLDOWN" and self:IsShown() ) then
-		local buttons = FriendsFrameFriendsScrollFrame.buttons;
-		for _, button in pairs(buttons) do
-			if ( button.summonButton:IsShown() ) then
+	if ( event == "SPELL_UPDATE_COOLDOWN" ) then
+		if ( self:IsShown() ) then
+			local buttons = FriendsFrameFriendsScrollFrame.buttons;
+			for _, button in pairs(buttons) do
+				if ( button.summonButton:IsShown() ) then
+					FriendsFrame_SummonButton_Update(button.summonButton);
+				end
+			end
+		end
+	elseif ( event == "PARTY_REFER_A_FRIEND_UPDATED" ) then
+		if ( self:IsShown() ) then 
+			local buttons = FriendsFrameFriendsScrollFrame.buttons;
+			for _, button in pairs(buttons) do
 				FriendsFrame_SummonButton_Update(button.summonButton);
 			end
 		end

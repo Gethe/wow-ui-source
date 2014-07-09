@@ -1,5 +1,6 @@
 MAX_ACHIEVEMENT_ALERTS = 2;
 LOOT_WON_ALERT_FRAMES = {};
+LOOT_UPGRADE_ALERT_FRAMES = {};
 MONEY_WON_ALERT_FRAMES = {};
 DELAYED_ACHIEVEMENT_ALERTS = {};
 ACHIEVEMENT_ID_INDEX = 1;
@@ -14,6 +15,8 @@ function AlertFrame_OnLoad (self)
 	self:RegisterEvent("CHALLENGE_MODE_COMPLETED");
 	self:RegisterEvent("LOOT_ITEM_ROLL_WON");
 	self:RegisterEvent("SHOW_LOOT_TOAST");
+	self:RegisterEvent("SHOW_LOOT_TOAST_UPGRADE");
+	self:RegisterEvent("SHOW_PVP_FACTION_LOOT_TOAST");
 	self:RegisterEvent("PET_BATTLE_CLOSE");
 	self:RegisterEvent("STORE_PRODUCT_DELIVERED");
 	self:RegisterEvent("GARRISON_BUILDING_ACTIVATABLE");
@@ -61,6 +64,19 @@ function AlertFrame_OnEvent (self, event, ...)
 			-- only toast currency for personal loot
 			LootWonAlertFrame_ShowAlert(itemLink, quantity, nil, nil, specID, true);
 		end
+	elseif ( event == "SHOW_PVP_FACTION_LOOT_TOAST" ) then
+		local typeIdentifier, itemLink, quantity, specID, isPersonal = ...;
+		if ( typeIdentifier == "item" ) then
+			LootWonAlertFrame_ShowAlert(itemLink, quantity, nil, nil, specID, false, true);
+		elseif ( typeIdentifier == "money" ) then
+			MoneyWonAlertFrame_ShowAlert(quantity);
+		elseif ( (isPersonal == true) and (typeIdentifier == "currency") ) then
+			-- only toast currency for personal loot
+			LootWonAlertFrame_ShowAlert(itemLink, quantity, nil, nil, specID, false, true);
+		end
+	elseif ( event == "SHOW_LOOT_TOAST_UPGRADE") then
+		local itemLink, quantity, specID, baseQuality, isPersonal = ...;
+		LootUpgradeFrame_ShowAlert(itemLink, quantity, specID, baseQuality);
 	elseif ( event == "PET_BATTLE_CLOSE" ) then
 		AchievementAlertFrame_FireDelayedAlerts();
 	elseif ( event == "STORE_PRODUCT_DELIVERED" ) then
@@ -113,6 +129,7 @@ function AlertFrame_FixAnchors()
 	alertAnchor = AlertFrame_SetLootAnchors(alertAnchor); --This needs to be first as it doesn't actually anchor anything.
 	alertAnchor = AlertFrame_SetStorePurchaseAnchors(alertAnchor);
 	alertAnchor = AlertFrame_SetLootWonAnchors(alertAnchor);
+	alertAnchor = AlertFrame_SetLootUpgradeFrameAnchors(alertAnchor);
 	alertAnchor = AlertFrame_SetMoneyWonAnchors(alertAnchor);
 	alertAnchor = AlertFrame_SetAchievementAnchors(alertAnchor);
 	alertAnchor = AlertFrame_SetCriteriaAnchors(alertAnchor);
@@ -154,6 +171,17 @@ end
 function AlertFrame_SetLootWonAnchors(alertAnchor)
 	for i=1, #LOOT_WON_ALERT_FRAMES do
 		local frame = LOOT_WON_ALERT_FRAMES[i];
+		if ( frame:IsShown() ) then
+			frame:SetPoint("BOTTOM", alertAnchor, "TOP", 0, 10);
+			alertAnchor = frame;
+		end
+	end
+	return alertAnchor;
+end
+
+function AlertFrame_SetLootUpgradeFrameAnchors(alertAnchor)
+	for i=1, #LOOT_UPGRADE_ALERT_FRAMES do
+		local frame = LOOT_UPGRADE_ALERT_FRAMES[i];
 		if ( frame:IsShown() ) then
 			frame:SetPoint("BOTTOM", alertAnchor, "TOP", 0, 10);
 			alertAnchor = frame;
@@ -814,8 +842,12 @@ function AchievementAlertFrame_OnClick (self)
 end
 
 -- [[ LootWonAlertFrameTemplate ]] --
-
-function LootWonAlertFrame_ShowAlert(itemLink, quantity, rollType, roll, specID, isCurrency)
+LOOTWONALERTFRAME_VALUES={
+	Default = { bgOffsetX=0, bgOffsetY=0, labelOffsetX=7, labelOffsetY=5, labelText=YOU_WON_LABEL},
+	Horde = { bgOffsetX=-1, bgOffsetY=-1, labelOffsetX=7, labelOffsetY=3, labelText=YOU_EARNED_LABEL, pvpAtlas="loottoast-bg-horde"},
+	Alliance = { bgOffsetX=-1, bgOffsetY=-1, labelOffsetX=7, labelOffsetY=3, labelText=YOU_EARNED_LABEL, pvpAtlas="loottoast-bg-alliance"},
+}
+function LootWonAlertFrame_ShowAlert(itemLink, quantity, rollType, roll, specID, isCurrency, showFactionBG)
 	local frame;
 	for i=1, #LOOT_WON_ALERT_FRAMES do
 		local lootWon = LOOT_WON_ALERT_FRAMES[i];
@@ -830,13 +862,13 @@ function LootWonAlertFrame_ShowAlert(itemLink, quantity, rollType, roll, specID,
 		table.insert(LOOT_WON_ALERT_FRAMES, frame);
 	end
 
-	LootWonAlertFrame_SetUp(frame, itemLink, quantity, rollType, roll, specID, isCurrency);
+	LootWonAlertFrame_SetUp(frame, itemLink, quantity, rollType, roll, specID, isCurrency, showFactionBG);
 	AlertFrame_AnimateIn(frame);
 	AlertFrame_FixAnchors();
 end
 
 -- NOTE - This may also be called for an externally created frame. (E.g. bonus roll has its own frame)
-function LootWonAlertFrame_SetUp(self, itemLink, quantity, rollType, roll, specID, isCurrency)
+function LootWonAlertFrame_SetUp(self, itemLink, quantity, rollType, roll, specID, isCurrency, showFactionBG)
 	local itemName, itemHyperLink, itemRarity, itemTexture;
 	if (isCurrency == true) then
 		itemName, _, itemTexture, _, _, _, _, itemRarity = GetCurrencyInfo(itemLink);
@@ -846,6 +878,21 @@ function LootWonAlertFrame_SetUp(self, itemLink, quantity, rollType, roll, specI
 		itemName, itemHyperLink, itemRarity, _, _, _, _, _, _, itemTexture = GetItemInfo(itemLink);
 	end
 
+	local windowInfo = LOOTWONALERTFRAME_VALUES.Default;
+	if( showFactionBG ) then
+		local factionGroup = UnitFactionGroup("player");
+		windowInfo = LOOTWONALERTFRAME_VALUES[factionGroup]
+		self.PvPBackground:SetAtlas(windowInfo.pvpAtlas, true);
+		self.PvPBackground:SetPoint("CENTER", windowInfo.bgOffsetX, windowInfo.bgOffsetY);
+		self.Background:Hide();
+		self.PvPBackground:Show();	
+	else
+		self.Background:Show();
+		self.PvPBackground:Hide();
+	end
+	self.Label:SetText(windowInfo.labelText);
+	self.Label:SetPoint("TOPLEFT", self.Icon, "TOPRIGHT", windowInfo.labelOffsetX, windowInfo.labelOffsetY);
+	
 	self.isCurrency = isCurrency;
 
 	self.Icon:SetTexture(itemTexture);
@@ -892,6 +939,74 @@ function LootWonAlertFrame_OnClick(self)
 	if (slot >= 0) then
 		OpenBag(slot);
 	end
+end
+
+-- [[ LootUpgradeFrameTemplate ]] --
+LOOTUPGRADEFRAME_QUALITY_TEXTURES = {
+	[LE_ITEM_QUALITY_UNCOMMON]	= {border = "loottoast-itemborder-green",	arrow = "loottoast-arrow-green"},
+	[LE_ITEM_QUALITY_RARE]		= {border = "loottoast-itemborder-blue",	arrow = "loottoast-arrow-blue"},
+	[LE_ITEM_QUALITY_EPIC]		= {border = "loottoast-itemborder-purple",	arrow = "loottoast-arrow-purple"},
+	[LE_ITEM_QUALITY_LEGENDARY]	= {border = "loottoast-itemborder-orange",	arrow = "loottoast-arrow-orange"},
+}
+function LootUpgradeFrame_ShowAlert(itemLink, quantity, specID, baseQuality)
+	local frame;
+	for i=1, #LOOT_UPGRADE_ALERT_FRAMES do
+		local lootFrame = LOOT_UPGRADE_ALERT_FRAMES[i];
+		if ( not lootFrame:IsShown() ) then
+			frame = lootFrame;
+			break;
+		end
+	end
+
+	if ( not frame ) then
+		frame = CreateFrame("Button", nil, UIParent, "LootUpgradeFrameTemplate");
+		table.insert(LOOT_UPGRADE_ALERT_FRAMES, frame);
+	end
+
+	LootUpgradeFrame_SetUp(frame, itemLink, quantity, specID, baseQuality);
+	AlertFrame_AnimateIn(frame);
+	AlertFrame_FixAnchors();
+end
+
+function LootUpgradeFrame_SetUp(self, itemLink, quantity, specID, baseQuality)
+	local itemName, itemHyperLink, itemRarity, _, _, _, _, _, _, itemTexture = GetItemInfo(itemLink);
+	local baseQualityColor = ITEM_QUALITY_COLORS[baseQuality];
+	local upgradeQualityColor = ITEM_QUALITY_COLORS[itemRarity];
+	
+	self.Icon:SetTexture(itemTexture);
+	self.BaseQualityItemName:SetText(itemName);
+	self.BaseQualityItemName:SetTextColor(baseQualityColor.r, baseQualityColor.g, baseQualityColor.b);
+	self.UpgradeQualityItemName:SetText(itemName);
+	self.UpgradeQualityItemName:SetTextColor(upgradeQualityColor.r, upgradeQualityColor.g, upgradeQualityColor.b);
+	self.WhiteText:SetText(itemName);
+	self.WhiteText2:SetText(itemName);
+	self.TitleText:SetText(format(LOOTUPGRADEFRAME_TITLE, _G["ITEM_QUALITY"..itemRarity.."_DESC"]));
+	self.TitleText:SetTextColor(upgradeQualityColor.r, upgradeQualityColor.g, upgradeQualityColor.b);
+	
+	local baseTexture = LOOTUPGRADEFRAME_QUALITY_TEXTURES[baseQuality] or LOOTUPGRADEFRAME_QUALITY_TEXTURES[LE_ITEM_QUALITY_UNCOMMON];
+	local upgradeTexture = LOOTUPGRADEFRAME_QUALITY_TEXTURES[itemRarity] or LOOTUPGRADEFRAME_QUALITY_TEXTURES[LE_ITEM_QUALITY_UNCOMMON];
+	self.BaseQualityBorder:SetAtlas(baseTexture.border, true);
+	self.UpgradeQualityBorder:SetAtlas(upgradeTexture.border, true);
+	
+	for i = 1, self.numArrows do
+		self["Arrow"..i]:SetAtlas(upgradeTexture.arrow, true);
+	end
+
+	self.hyperlink = itemHyperLink;
+	PlaySoundKitID(31578);	--UI_EpicLoot_Toast
+end
+
+function LootUpgradeFrame_OnClick(self)
+	local itemID = GetItemIDFromHyperlink(self.hyperlink);
+	local slot = SearchBagsForItem(itemID);
+	if (slot >= 0) then
+		OpenBag(slot);
+	end
+end
+
+function LootUpgradeFrame_AnimDone(self)
+	self:GetParent().animIn:Stop();
+	self:GetParent():Hide();
 end
 
 -- [[ MoneyWonAlertFrameTemplate ]] --

@@ -439,7 +439,7 @@ function QuestLogQuests_Update(poiTable)
 	local objectiveIndex = 0;
 	local headerTitle, headerOnMap, headerShown, headerLogIndex, mapHeaderButtonIndex, firstMapHeaderQuestButtonIndex;
 	for questLogIndex = 1, numEntries do
-		local title, level, suggestedGroup, isHeader, isCollapsed, isComplete, isDaily, questID, startEvent, displayQuestID, isOnMap, hasLocalPOI, isTask, isStory = GetQuestLogTitle(questLogIndex);
+		local title, level, suggestedGroup, isHeader, isCollapsed, isComplete, frequency, questID, startEvent, displayQuestID, isOnMap, hasLocalPOI, isTask, isStory = GetQuestLogTitle(questLogIndex);
 		if ( isHeader ) then
 			headerTitle = title;
 			headerOnMap = isOnMap;
@@ -498,7 +498,15 @@ function QuestLogQuests_Update(poiTable)
 			else
 				local tagID, tagName = GetQuestTagInfo(questID);
 				if ( tagID ) then
-					tagCoords = QUEST_TAG_TCOORDS[tagID];
+					local factionGroup = GetQuestFactionGroup(questID);
+					if ( tagID == QUEST_TAG_ACCOUNT and factionGroup ) then
+						tagCoords = QUEST_TAG_TCOORDS["ALLIANCE"];
+						if ( factionGroup == LE_QUEST_FACTION_HORDE ) then
+							tagCoords = QUEST_TAG_TCOORDS["HORDE"];
+						end
+					else
+						tagCoords = QUEST_TAG_TCOORDS[tagID];
+					end
 				end
 			end
 			if ( tagCoords ) then
@@ -507,7 +515,7 @@ function QuestLogQuests_Update(poiTable)
 			else
 				button.TagTexture:Hide();
 			end
-			if ( isDaily and (not isComplete or isComplete == 0) ) then
+			if ( frequency == LE_QUEST_FREQUENCY_DAILY and (not isComplete or isComplete == 0) ) then
 				button.DailyTagTexture:Show();
 				if ( tagCoords) then
 					button.DailyTagTexture:SetPoint("RIGHT", -14, 0);
@@ -516,6 +524,16 @@ function QuestLogQuests_Update(poiTable)
 				end
 			else
 				button.DailyTagTexture:Hide();
+			end
+			if ( frequency == LE_QUEST_FREQUENCY_WEEKLY and (not isComplete or isComplete == 0) ) then
+				button.WeeklyTagTexture:Show();
+				if ( tagCoords) then
+					button.WeeklyTagTexture:SetPoint("RIGHT", -14, 0);
+				else
+					button.WeeklyTagTexture:SetPoint("RIGHT", 0, 0);
+				end
+			else
+				button.WeeklyTagTexture:Hide();
 			end
 			
 			-- POI/objectives
@@ -689,10 +707,10 @@ function QuestMapLogHeaderButton_OnClick(self, button)
 		-- open to the map for the first quest under the header
 		local questLogIndex = self.questLogIndex;
 		local numEntries = GetNumQuestLogEntries();
-		local title, level, suggestedGroup, isHeader, isCollapsed, isComplete, isDaily, questID, startEvent, displayQuestID, isOnMap, hasLocalPOI, isTask;
+		local title, level, suggestedGroup, isHeader, isCollapsed, isComplete, frequency, questID, startEvent, displayQuestID, isOnMap, hasLocalPOI, isTask;
 		repeat
 			questLogIndex = questLogIndex + 1;
-			title, level, suggestedGroup, isHeader, isCollapsed, isComplete, isDaily, questID, startEvent, displayQuestID, isOnMap, hasLocalPOI, isTask = GetQuestLogTitle(questLogIndex);
+			title, level, suggestedGroup, isHeader, isCollapsed, isComplete, frequency, questID, startEvent, displayQuestID, isOnMap, hasLocalPOI, isTask = GetQuestLogTitle(questLogIndex);
 			if ( isOnMap and not isTask ) then
 				local mapID, floorNumber = GetQuestWorldMapAreaID(questID);
 				if ( mapID ~= 0 ) then
@@ -719,7 +737,7 @@ function QuestMapLogTitleButton_OnEnter(self)
 		WorldMapBlobFrame:DrawBlob(self.questID, true);
 	end
 	
-	local title, level, suggestedGroup, isHeader, isCollapsed, isComplete, isDaily, questID, startEvent, displayQuestID, isOnMap, hasLocalPOI = GetQuestLogTitle(self.questLogIndex);
+	local title, level, suggestedGroup, isHeader, isCollapsed, isComplete, frequency, questID, startEvent, displayQuestID, isOnMap, hasLocalPOI = GetQuestLogTitle(self.questLogIndex);
 
 	GameTooltip:ClearAllPoints();
 	GameTooltip:SetPoint("TOPLEFT", self, "TOPRIGHT", 34, 0);
@@ -736,14 +754,35 @@ function QuestMapLogTitleButton_OnEnter(self)
 	-- quest tag
 	local tagID, tagName = GetQuestTagInfo(questID);
 	if ( tagName ) then
+		local factionGroup = GetQuestFactionGroup(questID);
+		-- Faction-specific account quests have additional info in the tooltip
+		if ( tagID == QUEST_TAG_ACCOUNT and factionGroup ) then
+			local factionString = FACTION_ALLIANCE;
+			if ( factionGroup == LE_QUEST_FACTION_HORDE ) then
+				factionString = FACTION_HORDE;
+			end
+			tagName = format("%s (%s)", tagName, factionString);
+		end
 		GameTooltip:AddLine(tagName, NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b);
 		if ( QUEST_TAG_TCOORDS[tagID] ) then
-			GameTooltip:AddTexture("Interface\\QuestFrame\\QuestTypeIcons", unpack(QUEST_TAG_TCOORDS[tagID]));
+			local questTypeIcon;
+			if ( tagID == QUEST_TAG_ACCOUNT and factionGroup ) then
+				questTypeIcon = QUEST_TAG_TCOORDS["ALLIANCE"];
+				if ( factionGroup == LE_QUEST_FACTION_HORDE ) then
+					questTypeIcon = QUEST_TAG_TCOORDS["HORDE"];
+				end
+			else
+				questTypeIcon = QUEST_TAG_TCOORDS[tagID];
+			end
+			GameTooltip:AddTexture("Interface\\QuestFrame\\QuestTypeIcons", unpack(questTypeIcon));
 		end
 	end
-	if ( isDaily ) then
+	if ( frequency == LE_QUEST_FREQUENCY_DAILY ) then
 		GameTooltip:AddLine(DAILY, NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b);
 		GameTooltip:AddTexture("Interface\\QuestFrame\\QuestTypeIcons", unpack(QUEST_TAG_TCOORDS["DAILY"]));
+	elseif ( frequency == LE_QUEST_FREQUENCY_WEEKLY ) then
+		GameTooltip:AddLine(WEEKLY, NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b);
+		GameTooltip:AddTexture("Interface\\QuestFrame\\QuestTypeIcons", unpack(QUEST_TAG_TCOORDS["WEEKLY"]));
 	end
 	if ( isComplete and isComplete < 0 ) then
 		GameTooltip:AddLine(FAILED, RED_FONT_COLOR.r, RED_FONT_COLOR.g, RED_FONT_COLOR.b);
@@ -803,7 +842,12 @@ end
 
 function QuestMapLogTitleButton_OnClick(self, button)
 	PlaySound("igMainMenuOptionCheckBoxOn");
-	if ( IsShiftKeyDown() ) then
+	if ( IsModifiedClick("CHATLINK") and ChatEdit_GetActiveWindow() ) then
+		local questLink = GetQuestLink(GetQuestLogIndexByID(self.questID));
+		if ( questLink ) then
+			ChatEdit_InsertLink(questLink);
+		end
+	elseif ( IsShiftKeyDown() ) then
 		QuestMapQuestOptions_TrackQuest(self.questID);
 	else
 		if ( button == "RightButton" ) then

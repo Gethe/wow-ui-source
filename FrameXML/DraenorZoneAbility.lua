@@ -22,23 +22,31 @@ function DraenorZoneAbilityFrame_OnEvent(self, event)
 		return;
 	end
 
+	local lastState = self.BuffSeen;
 	self.BuffSeen = HasDraenorZoneAbility();
 
-	if (self.BuffSeen and not HasDraenorZoneSpellOnBar(self)) then
-		if ( not GetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_GARRISON_ZONE_ABILITY) ) then
-			DraenorZoneAbilityButtonAlert:SetHeight(DraenorZoneAbilityButtonAlert.Text:GetHeight()+42);
-			DraenorZoneAbilityButtonAlert:Show();
-			SetCVarBitfield( "closedInfoFrames", LE_FRAME_TUTORIAL_GARRISON_ZONE_ABILITY, true );
+	if (self.BuffSeen) then
+		if (not HasDraenorZoneSpellOnBar(self)) then
+			if ( not GetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_GARRISON_ZONE_ABILITY) ) then
+				DraenorZoneAbilityButtonAlert:SetHeight(DraenorZoneAbilityButtonAlert.Text:GetHeight()+42);
+				DraenorZoneAbilityButtonAlert:Show();
+				SetCVarBitfield( "closedInfoFrames", LE_FRAME_TUTORIAL_GARRISON_ZONE_ABILITY, true );
+			end
+			self:Show();
 		end
-		self:Show();
 
 		DraenorZoneAbilityFrame_Update(self);
-		UIParent_ManageFramePositions();
 	else
+		if (not self.CurrentTexture) then
+			self.CurrentTexture = select(3, GetSpellInfo(self.baseName));
+		end
 		DraenorZoneAbilityButtonAlert:Hide();
 		self:Hide();
+	end
 
+	if (lastState ~= self.BuffSeen) then
 		UIParent_ManageFramePositions();
+		ActionBarController_UpdateAll(true);
 	end
 end
 
@@ -53,6 +61,7 @@ function DraenorZoneAbilityFrame_Update(self)
 
 	local name, _, tex = GetSpellInfo(self.baseName);
 
+	self.CurrentTexture = tex;
 	self.CurrentSpell = name;
 
 	self.SpellButton.Icon:SetTexture(tex);
@@ -85,4 +94,8 @@ function HasDraenorZoneSpellOnBar(self)
 	end
 
 	return false;
+end
+
+function GetLastDraenorSpellTexture()
+	return DraenorZoneAbilityFrame.CurrentTexture;
 end
