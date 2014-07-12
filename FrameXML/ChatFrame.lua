@@ -902,9 +902,6 @@ local function ExecuteCastSequence(sequence, target)
 	else
 		CastSpellByName(spell, target);
 	end
-	if ( spell == "" ) then
-		SetNextCastSequence(sequence, entry);
-	end
 end
 
 function QueryCastSequence(sequence)

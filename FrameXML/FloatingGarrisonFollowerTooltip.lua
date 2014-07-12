@@ -1,4 +1,4 @@
-GARRISON_FOLLOWER_TOOLTIP_FULL_XP_WIDTH = 190;
+GARRISON_FOLLOWER_TOOLTIP_FULL_XP_WIDTH = 180;
 
 -------------------------------------------
 local GARRISON_FOLLOWER_FLOATING_TOOLTIP = {};
@@ -53,34 +53,35 @@ function GarrisonFollowerTooltipTemplate_SetGarrisonFollower(tooltipFrame, data)
 	tooltipFrame.ILevel:SetFormattedText(GARRISON_FOLLOWER_ITEM_LEVEL, data.itemLevel);
 	tooltipFrame.ClassSpecName:SetText(data.classSpecName);
 	tooltipFrame.Portrait.Level:SetText(data.level);
-	tooltipFrame.XP:SetFormattedText(GARRISON_FOLLOWER_TOOLTIP_XP, data.levelxp - data.xp);
 	SetPortraitTexture(tooltipFrame.Portrait.Portrait, data.displayID);
 	local color = ITEM_QUALITY_COLORS[data.quality];
 	tooltipFrame.Portrait.LevelBorder:SetVertexColor(color.r, color.g, color.b);
 	tooltipFrame.Class:SetAtlas(data.classSpecAtlas);
-	
-	local followerLevelCap = 100;
-	if (data.xp == 0 or data.levelxp == 0) then
-		tooltipFrame.XPBar:Hide();
-	else
-		tooltipFrame.XPBar:Show();
-		tooltipFrame.XPBar:SetWidth((data.xp / data.levelxp) * GARRISON_FOLLOWER_TOOLTIP_FULL_XP_WIDTH);
-	end
 
 	if (not data.collected) then
 		tooltipFrame.ILevel:Hide();
 		tooltipFrame.XP:Hide();
 		tooltipFrame.XPBar:Hide();
 		tooltipFrame.XPBarBackground:Hide();
-	elseif (data.level == followerLevelCap) then
+	elseif (data.level == GARRISON_FOLLOWER_MAX_LEVEL and data.quality >= GARRISON_FOLLOWER_MAX_UPGRADE_QUALITY) then
 		tooltipFrame.ILevel:Show();
 		tooltipFrame.XP:Hide();
 		tooltipFrame.XPBar:Hide();
 		tooltipFrame.XPBarBackground:Hide();
 	else
 		tooltipFrame.ILevel:Hide();
+		if (data.level == GARRISON_FOLLOWER_MAX_LEVEL) then
+			tooltipFrame.XP:SetFormattedText(GARRISON_FOLLOWER_TOOLTIP_UPGRADE_XP, data.levelxp - data.xp);
+		else
+			tooltipFrame.XP:SetFormattedText(GARRISON_FOLLOWER_TOOLTIP_XP, data.levelxp - data.xp);
+		end
 		tooltipFrame.XP:Show();
-		tooltipFrame.XPBar:Show();
+		tooltipFrame.XPBar:SetWidth((data.xp / data.levelxp) * GARRISON_FOLLOWER_TOOLTIP_FULL_XP_WIDTH);
+		if (data.xp == 0) then
+			tooltipFrame.XPBar:Hide()
+		else
+			tooltipFrame.XPBar:Show();
+		end
 		tooltipFrame.XPBarBackground:Show();
 	end
 

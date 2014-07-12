@@ -112,7 +112,9 @@ UISpecialFrames = {
 	"ItemRefTooltip",
 	"ColorPickerFrame",
 	"ScrollOfResurrectionFrame",
-	"ScrollOfResurrectionSelectionFrame"
+	"ScrollOfResurrectionSelectionFrame",
+	"FloatingPetBattleAbilityTooltip",
+	"FloatingGarrisonFollowerTooltip",
 };
 
 UIMenus = {
@@ -1160,7 +1162,11 @@ function UIParent_OnEvent(self, event, ...)
 	elseif ( event == "CONFIRM_BINDER" ) then
 		StaticPopup_Show("CONFIRM_BINDER", arg1);
 	elseif ( event == "CONFIRM_SUMMON" ) then
-		StaticPopup_Show("CONFIRM_SUMMON");
+		if ( arg1 ) then -- check if skiping start experience
+			StaticPopup_Show("CONFIRM_SUMMON_STARTING_AREA");
+		else
+			StaticPopup_Show("CONFIRM_SUMMON");
+		end
 	elseif ( event == "CANCEL_SUMMON" ) then
 		StaticPopup_Hide("CONFIRM_SUMMON");
 	elseif ( event == "BILLING_NAG_DIALOG" ) then

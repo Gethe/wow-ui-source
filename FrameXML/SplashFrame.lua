@@ -16,6 +16,26 @@ SPLASH_SCREENS = {
 					rightTitle = SPLASH_BASE_RIGHT_TITLE,
 					rightDesc = SPLASH_BASE_RIGHT_DESC,
 					cVar="splashScreenNormal",
+					features = {
+						[1] = { EnterFunc = function() 
+									CollectionsMicroButtonAlert:Show();
+									MicroButtonPulse(CompanionsMicroButton);
+								end,
+								LeaveFunc = function()
+									CollectionsMicroButtonAlert:Hide();
+									MicroButtonPulseStop(CompanionsMicroButton);
+								end,
+								},
+						[2] = { EnterFunc = function()
+									LFDMicroButtonAlert:Show();
+									MicroButtonPulse(LFDMicroButton);
+								end,
+								LeaveFunc = function()
+									LFDMicroButtonAlert:Hide();
+									MicroButtonPulseStop(LFDMicroButton);
+								end,
+								},
+					}
 				},
 	["NEW"] =	{	id = 2,
 					expansion = 6,
@@ -32,6 +52,14 @@ SPLASH_SCREENS = {
 					rightTitle = SPLASH_NEW_RIGHT_TITLE,
 					rightDesc = SPLASH_NEW_RIGHT_DESC,
 					cVar="splashScreenNormal",
+					features = {
+						[1] = { EnterFunc = function() end,
+								LeaveFunc = function() end,
+								},
+						[2] = { EnterFunc = function() end,
+								LeaveFunc = function() end,
+								},
+					},
 				},
 	["BOOST"] =	{	id = 1,
 					questID = 0, -- questID is set in SplashFrame_OnLoad
@@ -47,6 +75,20 @@ SPLASH_SCREENS = {
 					rightTitle = SPLASH_BOOST_RIGHT_TITLE,
 					rightDesc = SPLASH_BOOST_RIGHT_DESC,
 					cVar="splashScreenBoost",
+					features = {
+						[1] = { EnterFunc = function() 
+									CollectionsMicroButtonAlert:Show();
+									MicroButtonPulse(CompanionsMicroButton);
+								end,
+								LeaveFunc = function()
+									CollectionsMicroButtonAlert:Hide();
+									MicroButtonPulseStop(CompanionsMicroButton);
+								end,
+								},
+						[2] = { EnterFunc = function() end,
+								LeaveFunc = function() end,
+								},
+					},
 				},
 	["BOOST2"] ={	id = 2,
 					expansion = 6,
@@ -63,6 +105,14 @@ SPLASH_SCREENS = {
 					rightTitle = SPLASH_BOOST_RIGHT_TITLE,
 					rightDesc = SPLASH_BOOST2_RIGHT_DESC,
 					cVar="splashScreenBoost",
+					features = {
+						[1] = { EnterFunc = function() end,
+								LeaveFunc = function() end,
+								},
+						[2] = { EnterFunc = function() end,
+								LeaveFunc = function() end,
+								},
+					},
 				},				
 };
 
@@ -95,7 +145,7 @@ end
 function SplashFrame_OnEvent(self, event)
 	self:UnregisterEvent("PLAYER_ENTERING_WORLD");
 	
-	local tag = GetSplashFrameTag();	
+	local tag = GetSplashFrameTag();
 	-- check if they've seen this screen already
 	local lastScreenID = tonumber(GetCVar(SPLASH_SCREENS[tag].cVar)) or 0;
 	if( lastScreenID >= SPLASH_SCREENS[tag].id ) then
@@ -103,14 +153,14 @@ function SplashFrame_OnEvent(self, event)
 	end	
 	
 	if ( tag ) then
-		self.tag = tag;
-		SplashFrame_Open();
+		SplashFrame_Open(tag);
 		SetCVar(SPLASH_SCREENS[tag].cVar, SPLASH_SCREENS[tag].id); -- update cVar value;
 	end
 end
 
 function SplashFrame_Display(tag, showStartButton)
 	local frame = SplashFrame;
+	frame.tag = tag;
 	local screenInfo = SPLASH_SCREENS[tag];
 	frame.LeftTexture:SetAtlas(screenInfo.leftTex);
 	frame.RightTexture:SetAtlas(screenInfo.rightTex);
@@ -139,20 +189,20 @@ function SplashFrame_Display(tag, showStartButton)
 	frame:Show();
 end
 
-function SplashFrame_Open()
-	local frame = SplashFrame;
-	if( not frame.tag ) then
-		frame.tag = GetSplashFrameTag();
+function SplashFrame_Open( tag )
+	if( not tag ) then
+		tag = GetSplashFrameTag();
 	end
+	local frame = SplashFrame;
 	local showStartButton = false;
-	local questID = SPLASH_SCREENS[frame.tag].questID;
+	local questID = SPLASH_SCREENS[tag].questID;
 	if(questID)then
 		local questIndex = GetQuestLogIndexByID(questID);
 		AddQuestWatch(questIndex); -- add quest to tracker
 		showStartButton = not IsQuestFlaggedCompleted(questID) and (questIndex == 0);
 	end
 	
-	SplashFrame_Display( frame.tag, showStartButton );
+	SplashFrame_Display( tag, showStartButton );
 end
 
 function SplashFrame_Close()
@@ -162,8 +212,26 @@ function SplashFrame_Close()
 	end
 	
 	frame:Hide();
+	PlaySound("igMainMenuQuit");
 end
 
 function SplashFrameStartButton_OnClick(self)
 	HideParentPanel(self);
+	local frame = SplashFrame;
+	local questLogIndex = GetQuestLogIndexByID(SPLASH_SCREENS[frame.tag].questID);
+	ShowQuestOffer(questLogIndex);
+	
+	PlaySound("igMainMenuOpen");
+end
+
+--- Splash Feature Sections---
+
+function SplashFeature_OnEnter(self)
+	local frame = SplashFrame;
+	SPLASH_SCREENS[frame.tag].features[self:GetID()].EnterFunc();
+end
+
+function SplashFeature_OnLeave(self)
+	local frame = SplashFrame;
+	SPLASH_SCREENS[frame.tag].features[self:GetID()].LeaveFunc();
 end

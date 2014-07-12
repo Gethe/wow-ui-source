@@ -20,7 +20,7 @@ function AlertFrame_OnLoad (self)
 	self:RegisterEvent("PET_BATTLE_CLOSE");
 	self:RegisterEvent("STORE_PRODUCT_DELIVERED");
 	self:RegisterEvent("GARRISON_BUILDING_ACTIVATABLE");
-	self:RegisterEvent("GARRISON_MISSION_COMPLETED");
+	self:RegisterEvent("GARRISON_MISSION_FINISHED");
 	self:RegisterEvent("GARRISON_FOLLOWER_ADDED");
 end
 
@@ -85,7 +85,7 @@ function AlertFrame_OnEvent (self, event, ...)
 	elseif ( event == "GARRISON_BUILDING_ACTIVATABLE" ) then
 		local name = ...;
 		GarrisonBuildingAlertFrame_ShowAlert(name);
-	elseif ( event == "GARRISON_MISSION_COMPLETED" ) then
+	elseif ( event == "GARRISON_MISSION_FINISHED" ) then
 		local name = ...;
 		GarrisonMissionAlertFrame_ShowAlert(name);
 	elseif ( event == "GARRISON_FOLLOWER_ADDED" ) then

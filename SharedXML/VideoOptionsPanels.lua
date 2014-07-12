@@ -169,16 +169,18 @@ function Graphics_EnableApply(self)
 	end
 end
 
-function VideoOptionsPanel_Refresh(self)
-	Graphics_Refresh(self);
-end
-
-function Graphics_Refresh (self)
-	inrefresh = true;
+function Graphics_Refresh(self)
 	-- first level
 	for key, value in pairs(VideoData) do
 		_G[key].selectedID = nil;
 	end
+	VideoOptionsPanel_Refresh( Display_);
+	VideoOptionsPanel_Refresh( Graphics_);
+	VideoOptionsPanel_Refresh( RaidGraphics_);
+end
+
+function VideoOptionsPanel_Refresh (self)
+	inrefresh = true;
 	BlizzardOptionsPanel_Refresh(self);
 	-- second level.
 	-- do three levels of dependency
@@ -194,12 +196,16 @@ function Graphics_Refresh (self)
 end
 
 function Graphics_OnEvent (self, event, ...)
-	BlizzardOptionsPanel_OnEvent(self, event, ...);
+	BlizzardOptionsPanel_OnEvent( Display_, event, ...);
+	BlizzardOptionsPanel_OnEvent( Graphics_, event, ...);
+	BlizzardOptionsPanel_OnEvent( RaidGraphics_, event, ...);
 end
 
 function ControlSetValue(self, value)
-	if(value ~= nil) then
-		self:SetValue(value);
+	if (value ~= nil) then
+		if (not self.raid or GetCVarBool("raidSettingsEnabled")) then
+			self:SetValue(value);
+		end
 		self.value = nil;
 		self.newValue = nil;
 	end
@@ -249,23 +255,18 @@ local function FinishChanges(self)
 		RestartGx();
 		-- reload some tables and redisplay
 		Graphics_DisplayModeDropDown.selectedID = nil; 							 	-- invalidates cached value
-		BlizzardOptionsPanel_RefreshControl(Graphics_DisplayModeDropDown);			-- hardware may not have set this, so we need to refresh
+		BlizzardOptionsPanel_RefreshControl(Display_DisplayModeDropDown);			-- hardware may not have set this, so we need to refresh
 
-		Graphics_ResolutionDropDown.tablerefresh = true;
-		Graphics_PrimaryMonitorDropDown.tablerefresh = true;
-		Graphics_RefreshDropDown.tablerefresh = true;
-		if ( self.raid ) then
-			Graphics_Refresh(RaidGraphics_);
-		else
-			Graphics_Refresh(Graphics_);
-		end
+		Display_ResolutionDropDown.tablerefresh = true;
+		Display_PrimaryMonitorDropDown.tablerefresh = true;
+		Display_RefreshDropDown.tablerefresh = true;
+		Graphics_Refresh(self)
 	end
 
-	if ( self.raid ) then
+	if ( GetCVarBool("raidSettingsEnabled") ) then
 		RaidGraphics_Quality:commitslider();
-	else
-		Graphics_Quality:commitslider();
 	end
+	Graphics_Quality:commitslider();
 end
 
 local function CommitChange(self)
@@ -287,12 +288,24 @@ local function CommitChange(self)
 	ControlSetValue(self, value);
 end
 
+function Graphics_Okay(self)
+	CommitChange(Display_PrimaryMonitorDropDown);
+	VideoOptionsPanel_Okay( Display_);
+	VideoOptionsPanel_Okay( Graphics_);
+	VideoOptionsPanel_Okay( RaidGraphics_);
+end
+
 function VideoOptionsPanel_Okay (self)
-	CommitChange(Graphics_PrimaryMonitorDropDown);
 	for _, control in next, self.controls do
 		CommitChange(control);
 	end
 	FinishChanges(self);
+end
+
+function Graphics_Cancel(self)
+	VideoOptionsPanel_Cancel( Display_);
+	VideoOptionsPanel_Cancel( Graphics_);
+	VideoOptionsPanel_Cancel( RaidGraphics_);
 end
 
 function VideoOptionsPanel_Cancel (self)
@@ -316,17 +329,8 @@ end
 function Graphics_Default (self)
 	SetDefaultVideoOptions(0);
 	for _, control in next, self.controls do
-		if ( self.raid ) then
-			if(string.find(control:GetName(), "RaidGraphics_")) then
-				control.newValue = nil;
-				control.value = nil;
-			end
-		else
-			if(string.find(control:GetName(), "Graphics_")) then
-				control.newValue = nil;
-				control.value = nil;
-			end
-		end
+		control.newValue = nil;
+		control.value = nil;
 	end
 	FinishChanges(self);
 end
@@ -478,6 +482,60 @@ function VideoOptionsDropDown_OnClick(self)
 	local dropdown = self:GetParent().dropdown;
 	VideoOptions_OnClick(dropdown, value);
 end
+
+function Display_RaidSettingsEnabled_CheckButton_OnClick(self)
+	if ( self:GetChecked() ) then
+		PlaySound("igMainMenuOptionCheckBoxOn");
+	else
+		PlaySound("igMainMenuOptionCheckBoxOff");
+	end
+	if ( self.cvar ) then
+		BlizzardOptionsPanel_CheckButton_OnClick(self);
+		VideoOptionsFrameApply:Enable();		-- we have a change, enable the Apply button
+		GraphicsOptions_SelectBase();
+	end	
+end
+
+function Dispaly_RaidSettingsEnabled_CheckButton_OnShow(self)
+	self:SetChecked( GetCVarBool("raidSettingsEnabled") );
+	if (not InGlue()) then
+		local _, instanceType = IsInInstance()
+		if ( instanceType == "raid" or instanceType == "pvp" ) then
+			GraphicsOptions_SelectRaid();
+			return;
+		end
+	end
+	GraphicsOptions_SelectBase();
+end
+
+function GraphicsOptions_SelectBase()
+	PanelTemplates_SelectTab(GraphicsButton);
+	Graphics_:Show();
+	GraphicsButton:SetFrameLevel( Graphics_:GetFrameLevel() + 1 );
+
+	if ( GetCVarBool("raidSettingsEnabled") or Display_RaidSettingsEnabledCheckBox:GetChecked() ) then
+		PanelTemplates_DeselectTab(RaidButton);
+	else
+		PanelTemplates_SetDisabledTabState(RaidButton);
+	end
+	RaidGraphics_:Hide();
+	RaidButton:SetFrameLevel( Graphics_:GetFrameLevel() - 1 );
+end
+
+function GraphicsOptions_SelectRaid()
+	if ( not Display_RaidSettingsEnabledCheckBox:GetChecked() ) then
+		GraphicsOptions_SelectBase(RaidButton);
+		return;
+	end
+
+	PanelTemplates_SelectTab(RaidButton);
+	Graphics_:Hide();
+	GraphicsButton:SetFrameLevel( RaidGraphics_:GetFrameLevel() - 1 );
+
+	PanelTemplates_DeselectTab(GraphicsButton);
+	RaidGraphics_:Show();
+	RaidButton:SetFrameLevel( RaidGraphics_:GetFrameLevel() + 1 );
+end
 -------------------------------------------------------------------------------------------------------
 -- Refresh handlers
 function Graphics_ControlRefreshValue(self)
@@ -489,7 +547,7 @@ function Graphics_ControlRefreshValue(self)
 	elseif(self.type == CONTROLTYPE_SLIDER) then
 		Graphics_SliderRefreshValue(self);
 	elseif(self.type == CONTROLTYPE_CHECKBOX) then
-		-- no check refresh yet
+		BlizzardOptionsPanel_CheckButton_Refresh(self)
 	end
 end
 
@@ -756,8 +814,9 @@ function VideoOptionsSlider_OnLoad(self)
 	self.RefreshValue = self.RefreshValue or Graphics_ControlRefreshValue;
 	BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
 end
+
 -------------------------------------------------------------------------------------------------------
--- OnLoad for each page
+
 function VideoOptionsPanel_OnLoad (self, okay, cancel, default, refresh)
 	local defaults
 	if (self.raid) then
@@ -769,12 +828,6 @@ function VideoOptionsPanel_OnLoad (self, okay, cancel, default, refresh)
 	for i=1, #defaults, 2 do
 		DefaultVideoOptions[defaults[i]]=defaults[i+1];
 	end
-	okay = okay or VideoOptionsPanel_Okay;
-	cancel = cancel or VideoOptionsPanel_Cancel;
-	default = default or VideoOptionsPanel_Default;
-	refresh = refresh or VideoOptionsPanel_Refresh;
-	BlizzardOptionsPanel_OnLoad(self, okay, cancel, default, refresh);
-	OptionsFrame_AddCategory(VideoOptionsFrame, self);
 end
 
 function VideoOptionsPanel_OnShow(self)
@@ -786,88 +839,23 @@ function VideoOptionsPanel_OnShow(self)
 end
 
 function Graphics_OnLoad (self)
-	if(nil and IsGMClient() and InGlue()) then
-		local qualityNames =
-		{
-			VIDEO_QUALITY_LABEL1,
-			VIDEO_QUALITY_LABEL2,
-			VIDEO_QUALITY_LABEL3,
-			VIDEO_QUALITY_LABEL4,
-			VIDEO_QUALITY_LABEL5,
-		}
-		local count = #VideoData["Graphics_Quality"].data;
-		for i=1, count do
-			local defaults =  {GetVideoOptions(i, false)};
-			ThisVideoOptions = {};
-			for m=1, #defaults, 2 do
-				ThisVideoOptions[defaults[m]]=defaults[m+1];
-			end
-			local notify = VideoData["Graphics_Quality"].data[i].notify;
-			for key, value in pairs(notify) do
-				for j=1, #VideoData[key].data do
-					if(VideoData[key].data[j].text == value) then
-						for cvar, cvar_value in pairs(VideoData[key].data[j].cvars) do
-							if(ThisVideoOptions[cvar] ~= cvar_value) then
---								print("mismatch " .. key .. "[" .. qualityNames[i] .. "]:" .. cvar .. ", c++:" .. ThisVideoOptions[cvar] .. " ~= lua:" .. cvar_value);
-								VideoData[key].data[j].cvars[cvar] = ThisVideoOptions[cvar];
-							end
-						end
-					end
-				end
-			end
-		end
-	end
 	self.name = GRAPHICS_LABEL;
 	self.hasApply = true;
-	VideoOptionsPanel_OnLoad(self, nil, nil, Graphics_Default, nil)
-	self:SetScript("OnEvent", Graphics_OnEvent);
-end
-
-function RaidGraphics_OnLoad (self)
-	if(nil and IsGMClient() and InGlue()) then
-		local qualityNames =
-		{
-			VIDEO_QUALITY_LABEL1,
-			VIDEO_QUALITY_LABEL2,
-			VIDEO_QUALITY_LABEL3,
-			VIDEO_QUALITY_LABEL4,
-			VIDEO_QUALITY_LABEL5,
-		}
-		local count = #VideoData["RaidGraphics_Quality"].data;
-		for i=1, count do
-			local defaults =  {GetVideoOptions(i, true)};
-			ThisVideoOptions = {};
-			for m=1, #defaults, 2 do
-				ThisVideoOptions[ defaults[m] ]=defaults[m+1];
-			end
-			local notify = VideoData["RaidGraphics_Quality"].data[i].notify;
-			for key, value in pairs(notify) do
-				for j=1, #VideoData[key].data do
-					if(VideoData[key].data[j].text == value) then
-						for cvar, cvar_value in pairs(VideoData[key].data[j].cvars) do
-							if(ThisVideoOptions[cvar] ~= cvar_value) then
---								print("mismatch " .. key .. "[" .. qualityNames[i] .. "]:" .. cvar .. ", c++:" .. ThisVideoOptions[cvar] .. " ~= lua:" .. cvar_value);
-								VideoData[key].data[j].cvars[cvar] = ThisVideoOptions[cvar];
-							end
-						end
-					end
-				end
-			end
-		end
-	end
-
-	self.name = RAID_GRAPHICS_LABEL;
-	self.hasApply = true;
-	VideoOptionsPanel_OnLoad(self, nil, nil, Graphics_Default, nil)
+	VideoOptionsPanel_OnLoad( Display_);
+	VideoOptionsPanel_OnLoad( Graphics_);
+	VideoOptionsPanel_OnLoad( RaidGraphics_);
+	BlizzardOptionsPanel_OnLoad(self, Graphics_Okay, Graphics_Cancel, Graphics_Default, Graphics_Refresh);
+	OptionsFrame_AddCategory(VideoOptionsFrame, self);
 	self:SetScript("OnEvent", Graphics_OnEvent);
 end
 
 function Advanced_OnLoad (self)
 	self.name = ADVANCED_LABEL;
 	self.hasApply = true;
-	VideoOptionsPanel_OnLoad(self, nil, nil, Advanced_Default, nil)
-	-- this must come AFTER the parent OnLoad because the functions will be set to defaults there
-	self:SetScript("OnEvent", Graphics_OnEvent);
+
+	VideoOptionsPanel_OnLoad(self);
+	BlizzardOptionsPanel_OnLoad(self, VideoOptionsPanel_Okay, VideoOptionsPanel_Cancel, Advanced_Default, VideoOptionsPanel_Refresh);
+	OptionsFrame_AddCategory(VideoOptionsFrame, self);
 
 	if(not IsStereoVideoAvailable()) then
 		local name = self:GetName();
@@ -895,7 +883,7 @@ NetworkPanelOptions = {
 function NetworkOptionsPanel_OnLoad(self)
 	self.name = NETWORK_LABEL;
 	self.options = NetworkPanelOptions;
-	BlizzardOptionsPanel_OnLoad(self, nil, BlizzardOptionsPanel_Cancel, BlizzardOptionsPanel_Default, BlizzardOptionsPanel_Refresh);
+	BlizzardOptionsPanel_OnLoad(self);
 	OptionsFrame_AddCategory(VideoOptionsFrame, self);
 end
 

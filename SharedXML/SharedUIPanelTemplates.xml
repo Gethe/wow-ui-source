@@ -1319,4 +1319,105 @@
 		</Scripts>
 		<FontString inherits="GameFontHighlightSmall"/>
 	</EditBox>
+
+	<Button name="TabButtonTemplate" virtual="true">
+		<Size>
+            <AbsDimension x="115" y="32"/>
+        </Size>
+        <Layers>
+        	<Layer level="BACKGROUND">
+        		<Texture name="$parentLeftDisabled" file="Interface\HelpFrame\HelpFrameTab-Active">
+        			<Size>
+        				<AbsDimension x="16" y="32"/>
+        			</Size>
+        			<Anchors>
+        				<Anchor point="BOTTOMLEFT">
+        					<Offset>
+        						<AbsDimension x="0" y="-3"/>
+        					</Offset>
+        				</Anchor>
+        			</Anchors>
+					<TexCoords left="0" right="0.25" top="0" bottom="1.0"/>
+        		</Texture>
+				<Texture name="$parentMiddleDisabled" file="Interface\HelpFrame\HelpFrameTab-Active">
+        			<Size>
+        				<AbsDimension x="32" y="32"/>
+        			</Size>
+        			<Anchors>
+        				<Anchor point="LEFT" relativeTo="$parentLeftDisabled" relativePoint="RIGHT"/>
+        			</Anchors>
+					<TexCoords left="0.25" right="0.75" top="0" bottom="1.0"/>
+        		</Texture>
+				<Texture name="$parentRightDisabled" file="Interface\HelpFrame\HelpFrameTab-Active">
+        			<Size>
+        				<AbsDimension x="16" y="32"/>
+        			</Size>
+        			<Anchors>
+        				<Anchor point="LEFT" relativeTo="$parentMiddleDisabled" relativePoint="RIGHT"/>
+        			</Anchors>
+					<TexCoords left="0.75" right="1.0" top="0" bottom="1.0"/>
+        		</Texture>
+				<Texture name="$parentLeft" file="Interface\HelpFrame\HelpFrameTab-Inactive">
+        			<Size>
+        				<AbsDimension x="16" y="32"/>
+        			</Size>
+        			<Anchors>
+        				<Anchor point="BOTTOMLEFT"/>
+        			</Anchors>
+					<TexCoords left="0" right="0.25" top="0" bottom="1.0"/>
+        		</Texture>
+				<Texture name="$parentMiddle" file="Interface\HelpFrame\HelpFrameTab-Inactive">
+        			<Size>
+        				<AbsDimension x="32" y="32"/>
+        			</Size>
+        			<Anchors>
+        				<Anchor point="LEFT" relativeTo="$parentLeft" relativePoint="RIGHT"/>
+        			</Anchors>
+					<TexCoords left="0.25" right="0.75" top="0" bottom="1.0"/>
+        		</Texture>
+				<Texture name="$parentRight" file="Interface\HelpFrame\HelpFrameTab-Inactive">
+        			<Size>
+        				<AbsDimension x="16" y="32"/>
+        			</Size>
+        			<Anchors>
+        				<Anchor point="LEFT" relativeTo="$parentMiddle" relativePoint="RIGHT"/>
+        			</Anchors>
+					<TexCoords left="0.75" right="1.0" top="0" bottom="1.0"/>
+        		</Texture>
+        	</Layer>
+        </Layers>
+		<Scripts>
+			<OnLoad>
+				PanelTemplates_TabResize(self, 0);
+				_G[self:GetName().."HighlightTexture"]:SetWidth(self:GetTextWidth() + 31);
+			</OnLoad>
+		</Scripts>
+		<ButtonText name="$parentText">
+			<Size>
+				<AbsDimension x="0" y="13"/>
+			</Size>
+			<Anchors>
+				<Anchor point="BOTTOM">
+					<Offset>
+						<AbsDimension x="0" y="5"/>
+					</Offset>
+				</Anchor>
+			</Anchors>
+		</ButtonText>
+		<NormalFont style="GameFontNormalSmall"/>
+		<HighlightFont style="GameFontHighlightSmall"/>
+		<DisabledFont style="GameFontDisableSmall"/>
+		<HighlightTexture name="$parentHighlightTexture" file="Interface\PaperDollInfoFrame\UI-Character-Tab-Highlight" alphaMode="ADD">
+			<Size>
+				<AbsDimension x="5" y="32"/>
+			</Size>
+			<Anchors>
+				<Anchor point="BOTTOM">
+					<Offset>
+						<AbsDimension x="2" y="-8"/>
+					</Offset>
+				</Anchor>
+			</Anchors>
+		</HighlightTexture>
+    </Button>
 </Ui>

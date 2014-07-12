@@ -117,6 +117,7 @@ VideoData["Graphics_Quality"]={
 	dependtarget = Graphics_ControlRefreshValue,
 	initialize = 
 		function(self)
+			self:SetWidth(550);
 			self:SetBackdrop({bgFile = "Interface\\Buttons\\UI-SliderBar-Background", edgeFile = "Interface\\Buttons\\UI-SliderBar-Border", tile = true, tileSize = 8, edgeSize = 8, pieces=93, insets = { left = 3, right = 3, top = 6, bottom = 6 } } );
 			local parent = self:GetParent():GetName();
 			local name = self:GetName();
@@ -125,9 +126,7 @@ VideoData["Graphics_Quality"]={
 			_G[name.."Low"]:Hide();
 			_G[name.."High"]:Hide();
 
-			local fullwidth = _G[parent .."GraphicsHeaderUnderline"]:GetWidth() - 20;
 			self.noclick = true;
-			self:SetWidth(fullwidth);
 			if(not self.isdependtarget) then
 				self:setinitialslider();
 			end
@@ -295,7 +294,7 @@ VideoData["RaidGraphics_Quality"].updatecustomfield =
 -- Display
 -------------------------------------------------------------------------------------------------------
 
-VideoData["Graphics_DisplayModeDropDown"]={
+VideoData["Display_DisplayModeDropDown"]={
 	name = DISPLAY_MODE;
 	description = OPTION_TOOLTIP_DISPLAY_MODE,
 	dataA = {
@@ -344,7 +343,7 @@ VideoData["Graphics_DisplayModeDropDown"]={
 		end,
 	onrefresh =
 		function(self)
-			if(Graphics_PrimaryMonitorDropDown:landscape()) then
+			if(Display_PrimaryMonitorDropDown:landscape()) then
 				self.data = self.dataA;
 			else
 				self.data = self.dataB;
@@ -352,8 +351,8 @@ VideoData["Graphics_DisplayModeDropDown"]={
 		end,
 	dependtarget = VideoOptionsDropDownMenu_dependtarget_refreshtable;
 	dependent = {
-		"Graphics_ResolutionDropDown",
-		"Graphics_RefreshDropDown",
+		"Display_ResolutionDropDown",
+		"Display_RefreshDropDown",
 		"Advanced_GammaSlider",
 	},
 	GetSafeValue =
@@ -373,7 +372,7 @@ VideoData["Graphics_DisplayModeDropDown"]={
 	restart = true,
 }
 -------------------------------------------------------------------------------------------------------
-VideoData["Graphics_PrimaryMonitorDropDown"]={
+VideoData["Display_PrimaryMonitorDropDown"]={
 	name = PRIMARY_MONITOR;
 	description = OPTION_TOOLTIP_PRIMARY_MONITOR,
 	
@@ -403,9 +402,9 @@ VideoData["Graphics_PrimaryMonitorDropDown"]={
 		end,
 	cvar = "gxMonitor",
 	dependent = {
-		"Graphics_DisplayModeDropDown",
-		"Graphics_ResolutionDropDown",	--resolutions may disappear when we change the monitor
-		"Graphics_RefreshDropDown",
+		"Display_DisplayModeDropDown",
+		"Display_ResolutionDropDown",	--resolutions may disappear when we change the monitor
+		"Display_RefreshDropDown",
 		"Advanced_GammaSlider",
 	},
 	landscape =
@@ -433,13 +432,13 @@ function DecodeResolution(valueString)
 	return tonumber(width), tonumber(height);
 end
 
-VideoData["Graphics_ResolutionDropDown"]={
+VideoData["Display_ResolutionDropDown"]={
 	name = RESOLUTION;
 	description = OPTION_TOOLTIP_RESOLUTION,	
 	
 	tablefunction = 
 		function(self)
-			return GetScreenResolutions(Graphics_PrimaryMonitorDropDown:GetValue());
+			return GetScreenResolutions(Display_PrimaryMonitorDropDown:GetValue());
 		end,
 	getValues = 
 		function(self)
@@ -460,15 +459,15 @@ VideoData["Graphics_ResolutionDropDown"]={
 		end,
 	doGetValue = 
 		function(self)
-			return GetCurrentResolution(Graphics_PrimaryMonitorDropDown:GetValue());
+			return GetCurrentResolution(Display_PrimaryMonitorDropDown:GetValue());
 		end,
 	dependtarget = VideoOptionsDropDownMenu_dependtarget_refreshtable,
 	dependent = {
-		"Graphics_RefreshDropDown"
+		"Display_RefreshDropDown"
 	},
 	onrefresh =
 	function(self)
-		if(Graphics_DisplayModeDropDown:windowedmode() and Graphics_DisplayModeDropDown:fullscreenmode()) then
+		if(Display_DisplayModeDropDown:windowedmode() and Display_DisplayModeDropDown:fullscreenmode()) then
 			VideoOptions_Disable(self);
 		else
 			VideoOptions_Enable(self);
@@ -479,7 +478,7 @@ VideoData["Graphics_ResolutionDropDown"]={
 }
 
 -------------------------------------------------------------------------------------------------------
-VideoData["Graphics_RefreshDropDown"]={
+VideoData["Display_RefreshDropDown"]={
 	name = REFRESH_RATE;
 	description = OPTION_TOOLTIP_REFRESH_RATE,
 	
@@ -487,8 +486,8 @@ VideoData["Graphics_RefreshDropDown"]={
 	tablefunction = 
 		function()
 			-- get refresh rates for the currently selected resolution
-			local x, y = Graphics_ResolutionDropDown:getValues();
-			local monitor = Graphics_PrimaryMonitorDropDown:GetValue();
+			local x, y = Display_ResolutionDropDown:getValues();
+			local monitor = Display_PrimaryMonitorDropDown:GetValue();
 			return GetRefreshRates(x, y, monitor);
 		end,
 	readfilter =
@@ -497,20 +496,20 @@ VideoData["Graphics_RefreshDropDown"]={
 		end,
 	SetValue = 
 		function (self, value)
-			local x, y = Graphics_ResolutionDropDown:getValues();
-			local monitor = Graphics_PrimaryMonitorDropDown:GetValue();
+			local x, y = Display_ResolutionDropDown:getValues();
+			local monitor = Display_PrimaryMonitorDropDown:GetValue();
 			SetRefresh(value, x, y, monitor);
 		end,
 	doGetValue = 
 		function ()
-			local x, y = Graphics_ResolutionDropDown:getValues();
-			local monitor = Graphics_PrimaryMonitorDropDown:GetValue();
+			local x, y = Display_ResolutionDropDown:getValues();
+			local monitor = Display_PrimaryMonitorDropDown:GetValue();
 			return GetCurrentRefresh(x, y, monitor);
 		end,
 	dependtarget = VideoOptionsDropDownMenu_dependtarget_refreshtable,
 	onrefresh =
 		function(self)
-			if(Graphics_DisplayModeDropDown:windowedmode()) then
+			if(Display_DisplayModeDropDown:windowedmode()) then
 				VideoOptions_Disable(self);
 			else
 				VideoOptions_Enable(self);
@@ -521,7 +520,7 @@ VideoData["Graphics_RefreshDropDown"]={
 }
 
 -------------------------------------------------------------------------------------------------------
-VideoData["Graphics_VerticalSyncDropDown"]={
+VideoData["Display_VerticalSyncDropDown"]={
 	name = VERTICAL_SYNC;
 	description = OPTION_TOOLTIP_VERTICAL_SYNC,
 	
@@ -543,7 +542,7 @@ VideoData["Graphics_VerticalSyncDropDown"]={
 }
 
 -------------------------------------------------------------------------------------------------------
-VideoData["Graphics_AntiAliasingDropDown"]={
+VideoData["Display_AntiAliasingDropDown"]={
 	name = ANTIALIASING;
 	description = OPTION_TOOLTIP_ANTIALIASING,
 	
@@ -632,6 +631,11 @@ VideoData["Graphics_AntiAliasingDropDown"]={
 				self.data = self.dataD;
 			end
 		end,
+}
+
+VideoData["Display_RaidSettingsEnabledCheckBox"]={
+	name = RAID_SETTINGS_ENABLED,
+	tooltip = RAID_SETTINGS_ENABLED_TOOLTIP,
 }
 
 -------------------------------------------------------------------------------------------------------
@@ -1169,7 +1173,8 @@ VideoData["RaidGraphics_ShadowsDropDown"]={
 		[5] = {
 			text = VIDEO_OPTIONS_ULTRA,
 			cvars =	{
-				raidshadowMode = GetDefaultVideoQualityOption("raidshadowMode", 4, 3, true),
+				--raidshadowMode = GetDefaultVideoQualityOption("raidshadowMode", 4, 3, true),
+				raidshadowMode = 4,
 				raidShadowTextureSize = GetDefaultVideoQualityOption("raidShadowTextureSize", 4, 2048, true),
 			},
 			tooltip = VIDEO_OPTIONS_SHADOW_QUALITY_ULTRA;
@@ -1695,7 +1700,7 @@ VideoData["Advanced_GammaSlider"]={
 		function(self)
 			local parent = (self:GetParent()):GetName();
 			local checkbox = _G[parent .. "DesktopGamma"];
-			if((IsMacClient() and not Graphics_DisplayModeDropDown:fullscreenmode()) or (not IsMacClient() and Graphics_DisplayModeDropDown:windowedmode())) then
+			if((IsMacClient() and not Display_DisplayModeDropDown:fullscreenmode()) or (not IsMacClient() and Display_DisplayModeDropDown:windowedmode())) then
 				self:Hide();
 				checkbox:Hide();
 			else

@@ -1,5 +1,25 @@
 DraenorZoneAbilitySpellID = 161691;
 
+DRAENOR_ZONE_SPELL_ABILITY_TEXTURES_BASE = {
+	[161676] = "Interface\\ExtraButton\\GarrZoneAbility-BarracksAlliance",
+	[161332] = "Interface\\ExtraButton\\GarrZoneAbility-BarracksHorde",
+	[162075] = "Interface\\ExtraButton\\GarrZoneAbility-Armory",
+	[161767] = "Interface\\ExtraButton\\GarrZoneAbility-MageTower",
+	[170097] = "Interface\\ExtraButton\\GarrZoneAbility-Inn",
+	[170108] = "Interface\\ExtraButton\\GarrZoneAbility-TradingPost",
+	[164012] = "Interface\\ExtraButton\\GarrZoneAbility-TrainingPit",
+	[164050] = "Interface\\ExtraButton\\GarrZoneAbility-LumberMill",
+	[165803] = "Interface\\ExtraButton\\GarrZoneAbility-Stables",
+	[164222] = "Interface\\ExtraButton\\GarrZoneAbility-Stables",
+	[160240] = "Interface\\ExtraButton\\GarrZoneAbility-Workshop",
+	[160241] = "Interface\\ExtraButton\\GarrZoneAbility-Workshop",
+};
+
+-- This list will be name -> Texture for later use, since we do our comparisons based on names
+DRAENOR_ZONE_SPELL_ABILITY_TEXTURE_CACHE = {
+	
+};
+
 function DraenorZoneAbilityFrame_OnLoad(self)
 	self:RegisterUnitEvent("UNIT_AURA", "player");
 	self:RegisterEvent("SPELL_UPDATE_COOLDOWN");
@@ -15,6 +35,12 @@ function DraenorZoneAbilityFrame_OnEvent(self, event)
 	if (event == "SPELLS_CHANGED") then
 		if (not self.baseName) then
 			self.baseName = GetSpellInfo(DraenorZoneAbilitySpellID);
+			if (self.baseName) then
+				for spellID, path in pairs(DRAENOR_ZONE_SPELL_ABILITY_TEXTURES_BASE) do
+					local name = GetSpellInfo(spellID);
+					DRAENOR_ZONE_SPELL_ABILITY_TEXTURE_CACHE[name] = path;
+				end
+			end
 		end
 	end
 
@@ -33,6 +59,8 @@ function DraenorZoneAbilityFrame_OnEvent(self, event)
 				SetCVarBitfield( "closedInfoFrames", LE_FRAME_TUTORIAL_GARRISON_ZONE_ABILITY, true );
 			end
 			self:Show();
+		else
+			self:Hide();
 		end
 
 		DraenorZoneAbilityFrame_Update(self);
@@ -64,6 +92,7 @@ function DraenorZoneAbilityFrame_Update(self)
 	self.CurrentTexture = tex;
 	self.CurrentSpell = name;
 
+	self.SpellButton.Style:SetTexture(DRAENOR_ZONE_SPELL_ABILITY_TEXTURE_CACHE[name]);
 	self.SpellButton.Icon:SetTexture(tex);
 
 	local start, duration, enable = GetSpellCooldown(name);

@@ -85,8 +85,8 @@ function PVPHelperFrame_OnEvent(self, event, ...)
 		local challengerName, bgName, timeout, tournamentRules = ...;
 		PVPFramePopup_SetupPopUp(event, challengerName, bgName, timeout, tournamentRules);
 	elseif ( event == "BATTLEFIELDS_SHOW" ) then
-		if ( not PVPUIFrame) then
-			PVP_LoadUI();
+		if ( not PVPUIFrame ) then
+			PVEFrame_ShowFrame("PVPUIFrame");
 			PVPQueueFrame_OnEvent(PVPQueueFrame, event, ...);
 		end
 	end

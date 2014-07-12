@@ -591,4 +591,26 @@
 			</OnLoad>
 		</Scripts>
 	</Frame>
+	<Frame name="LFDMicroButtonAlert" inherits="MicroButtonAlertTemplate">
+		<Anchors>
+			<Anchor point="BOTTOM" relativeTo="LFDMicroButton" relativePoint="TOP" x="0" y="-8"/>
+		</Anchors>
+		<Scripts>
+			<OnLoad>
+				MicroButtonAlert_OnLoad(self);
+				self.Text:SetText(LFG_MICRO_BUTTON_SPEC_TUTORIAL);
+			</OnLoad>
+		</Scripts>
+	</Frame>
+	<Frame name="CollectionsMicroButtonAlert" inherits="MicroButtonAlertTemplate">
+		<Anchors>
+			<Anchor point="BOTTOM" relativeTo="CompanionsMicroButton" relativePoint="TOP" x="0" y="-8"/>
+		</Anchors>
+		<Scripts>
+			<OnLoad>
+				MicroButtonAlert_OnLoad(self);
+				self.Text:SetText(COLLECTIONS_MICRO_BUTTON_SPEC_TUTORIAL);
+			</OnLoad>
+		</Scripts>
+	</Frame>
 </Ui>

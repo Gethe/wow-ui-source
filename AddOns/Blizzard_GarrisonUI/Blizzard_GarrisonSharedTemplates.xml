@@ -306,11 +306,11 @@
 				<FontString parentKey="Name" inherits="GameFontNormal" justifyH="LEFT" text="Goblin Freeman">
 					<Size x="140" y="0"/>
 					<Anchors>
-						<Anchor point="LEFT" relativePoint="TOPLEFT" x="66" y="-28"/>
+						<!-- This is re-anchored to PortraitFrame in the Lua code -->
+						<Anchor point="LEFT" relativeKey="$parent.PortraitFrame" relativePoint="LEFT" x="66" y="0"/>
 					</Anchors>
 				</FontString>
 				<FontString parentKey="ILevel" inherits="GameFontHighlightSmall" justifyH="LEFT">
-					<Size x="190" y="0"/>
 					<Anchors>
 						<Anchor point="TOPLEFT" relativeKey="$parent.Name" relativePoint="BOTTOMLEFT" y="-4"/>
 					</Anchors>
@@ -325,7 +325,7 @@
 				</Texture>
 				<FontString parentKey="Status" inherits="GameFontHighlightSmall" justifyH="LEFT">
 					<Anchors>
-						<Anchor point="TOPLEFT" relativeKey="$parent.ILevel" relativePoint="BOTTOMLEFT" y="-3"/>
+						<Anchor point="TOPLEFT" relativeKey="$parent.ILevel" relativePoint="TOPRIGHT" x="4" y="0"/>
 					</Anchors>
 					<Color r="0.698" g="0.941" b="1" a="1"/>
 				</FontString>

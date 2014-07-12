@@ -160,7 +160,7 @@
 					<TexCoords left="1.0" right="0.0" top="0.0" bottom="1.0"/>
 				</Texture>
 			</Layer>
-			<Layer level="BORDER" textureSubLevel="2">>
+			<Layer level="BORDER" textureSubLevel="2">
 				<Texture parentKey="SelectedMid" atlas="_GarrMission_ParchmentHeaderSelect-Mid" useAtlasSize="true" horizTile="true">
 					<Anchors>
 						<Anchor point="LEFT" relativeKey="$parent.SelectedLeft" relativePoint="RIGHT" x="-35"/>
@@ -671,6 +671,13 @@
 					</Anchors>
 				</Texture>
 			</Layer>
+			<Layer level="BORDER">
+				<Texture parentKey="ItemBurst" hidden="false" alpha="0" alphaMode="ADD" atlas="BonusChest-Burst-Uncommon" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent.Icon"/>
+					</Anchors>
+				</Texture>
+			</Layer>			
 			<Layer level="ARTWORK">
 				<FontString parentKey="Name" justifyH="LEFT" inherits="GameFontHighlight">
 					<Size x="95" y="0"/>
@@ -690,7 +697,34 @@
 					<Color r="0.1" g="1" b="0.1"/>
 				</FontString>
 			</Layer>
+			<Layer level="OVERLAY">
+				<Texture parentKey="ItemBorderGlow" hidden="false" alpha="0" alphaMode="ADD" atlas="BonusChest-ItemBorder-Uncommon" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent.Icon"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="GlowSmokeBurst" hidden="false" alpha="0" alphaMode="ADD" atlas="BonusChest-Smoke-Uncommon" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent.Icon"/>
+					</Anchors>
+				</Texture>
+			</Layer>			
 		</Layers>
+		<Animations>
+			<AnimationGroup parentKey="Anim" setToFinalAlpha="true">
+				<Alpha childKey="Icon" duration="0.1" order="1" fromAlpha="0" toAlpha="1"/>
+				<Alpha childKey="ItemBorder" duration="0.15" order="1" fromAlpha="0" toAlpha="1"/>
+				<Alpha childKey="ItemBurst" duration="0.15" order="1" fromAlpha="0" toAlpha="1"/>
+				<Scale childKey="ItemBurst" duration="0.2" order="1" fromScaleX="0.5" fromScaleY="0.5" toScaleX="0.9" toScaleY="0.9"/>
+				<Alpha childKey="ItemBurst" startDelay="0.2" duration="0.5" order="1" fromAlpha="1" toAlpha="0"/>
+				<Alpha childKey="ItemBorderGlow" duration="0.15" order="1" fromAlpha="0" toAlpha="1"/>
+				<Alpha childKey="ItemBorderGlow" startDelay="0.3" duration="0.75" order="1" fromAlpha="1" toAlpha="0"/>
+				<Alpha childKey="GlowSmokeBurst" duration="0.5" order="1" fromAlpha="0" toAlpha="1"/>
+				<Rotation childKey="GlowSmokeBurst" duration="1" order="1" degrees="15"/>
+				<Scale childKey="GlowSmokeBurst" duration="1" order="1" fromScaleX="1" fromScaleY="1" toScaleX="1.8" toScaleY="1.8"/>
+				<Alpha childKey="GlowSmokeBurst" startDelay="0.4" duration="0.5" order="1" fromAlpha="1" toAlpha="0"/>
+			</AnimationGroup>
+		</Animations>
 		<Scripts>
 			<OnEnter>
 				GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
@@ -896,96 +930,6 @@
 				</Texture>
 			</Layer>
 		</Layers>
-	</Frame>
-	
-	<Button name="GarrisonMissionRewardChestTemplate" virtual="true">
-		<Size x="172" y="122"/>
-		<Animations>
-			<AnimationGroup parentKey="BonusLockBurstAnim" setToFinalAlpha="true">
-				<Alpha childKey="Lock" startDelay="0.5" duration="0.5" order="1" fromAlpha="1" toAlpha="0"/>
-                <Alpha childKey="KeyholeGlow" smoothing="IN" duration="0.3" order="1" change="1"/>
-                <Alpha childKey="KeyholeGlow" startDelay="0.5" smoothing="IN_OUT" duration="0.5" order="1" change="-1"/>
-                <Alpha childKey="KeyBurst" startDelay="0.3" smoothing="IN_OUT" duration="0.2" order="1" change="1"/>
-                <Scale childKey="KeyBurst" startDelay="0.3" smoothing="IN" duration="0.2" order="1" scaleX="2.5" scaleY="2.5"/>
-                <Alpha childKey="KeyBurst" startDelay="0.5" smoothing="IN_OUT" duration="0.75" order="1" change="-1"/>
-                <Alpha childKey="LockGlow" startDelay="0.3" smoothing="IN_OUT" duration="0.2" order="1" change="1"/>
-                <Alpha childKey="LockGlow" startDelay="0.5" smoothing="IN_OUT" duration="0.75" order="1" change="-1"/>
-				<Scripts>
-					<OnFinished>
-						self:GetParent().Model:SetAnimation(0, 0);
-						self:GetParent():Enable();
-					</OnFinished>
-				</Scripts>
-			</AnimationGroup>
-		</Animations>
-		<Layers>
-			<Layer level="OVERLAY">
-                <Texture parentKey="Lock" hidden="false" alpha="1" atlas="BonusChest-Lock" useAtlasSize="true">
-					<Anchors>
-                        <Anchor point="CENTER"/>
-                    </Anchors>
-                </Texture>
-                <Texture parentKey="LockGlow" hidden="false" alpha="0" alphaMode="ADD" atlas="BonusChest-Lock" useAtlasSize="true">
-                    <Anchors>
-                        <Anchor point="CENTER" relativeKey="$parent.Lock"/>
-                    </Anchors>
-                </Texture>
-            </Layer>
-            <Layer level="OVERLAY" textureSubLevel="1">
-                <Texture parentKey="KeyholeGlow" hidden="false" alpha="0" atlas="BonusChest-KeyholeGlow" useAtlasSize="true">
-                    <Anchors>
-                        <Anchor point="CENTER" relativeKey="$parent.Lock" x="0" y="-16"/>
-                    </Anchors>
-                </Texture>
-                <Texture parentKey="KeyBurst" hidden="false" alpha="0" alphaMode="ADD" atlas="BonusChest-KeyholeBurst">
-                    <Size x="59" y="64"/>
-                    <Anchors>
-                        <Anchor point="CENTER" relativeKey="$parent.KeyholeGlow"/>
-                    </Anchors>
-                </Texture>
-            </Layer>
-			<Layer level="OVERLAY" textureSubLevel="2">
-				<FontString parentKey="Chance" inherits="RewardNumberFont2" justifyH="CENTER">
-					<Anchors>
-						<Anchor point="TOP" relativePoint="BOTTOM" y="26"/>
-					</Anchors>
-					<Color r="1" g="1" b="1"/>
-				</FontString>
-			</Layer>
-		</Layers>
-		<Frames>
-			<CinematicModel parentKey="Model" useParentLevel="true" inherits="GarrisonCinematicModelBaseTemplate">
-				<Size x="172" y="122"/>
-				<Anchors>
-					<Anchor point="CENTER"/>
-				</Anchors>
-				<Scripts>
-					<OnLoad>
-						GarrisonCinematicModelBase_OnLoad(self);
-						self:SetTargetDistance(0);
-						self:SetHeightFactor(.25);
-						self:SetFacing(-.4);
-						self:InitializeCamera(.7);
-					</OnLoad>
-					<OnShow>
-						self:SetCameraPosition(3.5, 0, 1);
-					</OnShow>
-				</Scripts>
-			</CinematicModel>
-		</Frames>
-		<Scripts>
-			<OnClick function="GarrisonMissionCompleteReward_OnClick"/>
-		</Scripts>
-	</Button>
-	
-	<Frame name="GarrisonMissionCompleteRewardTemplate" inherits="GarrisonMissionPageRewardTemplate" virtual="true">
-		<Frames>
-			<Button parentKey="Chest" inherits="GarrisonMissionRewardChestTemplate" hidden="true">
-				<Anchors>
-					<Anchor point="CENTER"/>
-				</Anchors>
-			</Button>
-		</Frames>
 	</Frame>
 
 	<Frame name="GarrisonMissionPartyBuffTemplate" parentArray="Buffs" virtual="true">
@@ -1212,14 +1156,37 @@
 	
 	<Frame name="GarrisonMissionEnemyMechanicTemplate" inherits="GarrisonMissionAbilityCounterTemplate" virtual="true">
 		<Layers>
+			<Layer level="ARTWORK">
+				<Texture parentKey="CheckGlow" hidden="false" alpha="0" alphaMode="ADD" atlas="GarrMission_CheckGlow" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+			</Layer>
 			<Layer level="OVERLAY">
+				<Texture parentKey="CheckBurst" hidden="false" alpha="0" alphaMode="ADD" atlas="GarrMission_CounterCheck" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.CheckGlow" x="10" y="-10"/>
+					</Anchors>
+				</Texture>
 				<Texture parentKey="Check" atlas="GarrMission_CounterCheck" useAtlasSize="true" hidden="true">
 					<Anchors>
-						<Anchor point="CENTER" x="-5" y="-4"/>
+						<Anchor point="TOPLEFT" relativeKey="$parent.CheckGlow" x="10" y="-10"/>
 					</Anchors>
 				</Texture>
 			</Layer>
 		</Layers>
+		<Animations>
+			<AnimationGroup parentKey="Anim" setToFinalAlpha="true">
+				<Alpha childKey="CheckBurst" duration="0.25" order="1" fromAlpha="0" toAlpha="1"/>
+				<Scale childKey="CheckBurst" duration="0.25" order="1" fromScaleX="4" fromScaleY="4" toScaleX="1" toScaleY="1"/>
+				<Alpha childKey="CheckBurst" duration="1" order="2" fromAlpha="1" toAlpha="0"/>
+				<Alpha childKey="Check" duration="0.25" order="2" fromAlpha="0" toAlpha="1"/>
+				<Alpha childKey="CheckGlow" duration="0.25" order="2" fromAlpha="0" toAlpha="1"/>
+				<Alpha childKey="CheckGlow" duration="0.5" order="2" fromAlpha="1" toAlpha="0"/>
+				<Scale childKey="CheckGlow" duration="0.5" order="2" fromScaleX="1" fromScaleY="1" toScaleX="2" toScaleY="2"/>
+			</AnimationGroup>
+		</Animations>
 	</Frame>
 	
 	<Frame name="GarrisonMissionEnemyFrameSmallTemplate" virtual="true">
@@ -1322,6 +1289,11 @@
 					</Anchors>
 					<TexCoords left="1.0" right="0.0" top="0.0" bottom="1.0"/>
 				</Texture>
+				<Texture parentKey="CheckSmoke" hidden="false" alpha="0" alphaMode="ADD" atlas="GarrMission_EncounterBar-CheckMarkCircleSwipe" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>				
 			</Layer>
 			<Layer level="OVERLAY">
 				<Texture parentKey="CrossLeft" hidden="false" alpha="0" atlas="GarrMission_EncounterBar-Xleft" useAtlasSize="true">
@@ -1334,21 +1306,59 @@
 						<Anchor point="CENTER"/>
 					</Anchors>
 				</Texture>
+				<Texture parentKey="CheckMarkLeft" hidden="false" alpha="0" atlas="GarrMission_EncounterBar-CheckMark-Left" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="CheckMarkRight" hidden="false" alpha="0" atlas="GarrMission_EncounterBar-CheckMark-Right" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="CheckMark" hidden="false" alpha="0" alphaMode="BLEND" atlas="GarrMission_EncounterBar-CheckMark" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="CheckMarkGlow" hidden="false" alpha="0" alphaMode="ADD" atlas="GarrMission_EncounterBar-CheckMark" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>				
 			</Layer>
 		</Layers>
 		<Animations>
-			<AnimationGroup parentKey="Anim" setToFinalAlpha="true">
+			<AnimationGroup parentKey="FailureAnim" setToFinalAlpha="true">
 				<Scale childKey="CrossLeft" duration="0.15" order="1" fromScaleX="5" fromScaleY="5" toScaleX="1" toScaleY="1"/>
 				<Alpha childKey="CrossLeft" duration="0.1" order="1" fromAlpha="0" toAlpha="1"/>
 				<Scale childKey="CrossRight" startDelay="0.1" duration="0.15" order="1" fromScaleX="5" fromScaleY="5" toScaleX="1" toScaleY="1"/>
 				<Alpha childKey="CrossRight" startDelay="0.1" duration="0.1" order="1" fromAlpha="0" toAlpha="1"/>
 			</AnimationGroup>
-		</Animations>	
-		<Scripts>
-			<OnLoad>
-				SetPortraitTexture(self.Portrait, "player");
-			</OnLoad>
-		</Scripts>
+			<AnimationGroup parentKey="SuccessAnim" setToFinalAlpha="true">
+				<Alpha childKey="CheckMarkLeft" duration="0.1" order="1" fromAlpha="0" toAlpha="1"/>
+				<Scale childKey="CheckMarkLeft" duration="0.1" order="1" fromScaleX="0.5" fromScaleY="0.5" toScaleX="1" toScaleY="1">
+					<Origin point="CENTER">
+						<Offset x="-24" y="-2"/>
+					</Origin>
+				</Scale>
+				<Alpha childKey="CheckMarkLeft" startDelay="2" duration="0.5" order="1" fromAlpha="1" toAlpha="0"/>
+				<Alpha childKey="CheckMarkRight" startDelay="0.1" duration="0.1" order="1" fromAlpha="0" toAlpha="1"/>
+				<Scale childKey="CheckMarkRight" startDelay="0.1" duration="0.1" order="1" fromScaleX="0.5" fromScaleY="0.5" toScaleX="1" toScaleY="1">
+					<Origin point="CENTER">
+						<Offset x="-11" y="-22"/>
+					</Origin>
+				</Scale>
+				<Alpha childKey="CheckMarkRight" startDelay="2.1" duration="0.5" order="1" fromAlpha="1" toAlpha="0"/>
+				<Alpha childKey="CheckMark" startDelay="0.15" duration="0.25" order="1" fromAlpha="0" toAlpha="1"/>
+				<Alpha childKey="CheckMarkGlow" startDelay="0.15" duration="0.25" order="1" fromAlpha="0" toAlpha="1"/>
+				<Alpha childKey="CheckMarkGlow" startDelay="0.3" duration="0.5" order="1" fromAlpha="1" toAlpha="0"/>
+				<Scale childKey="CheckMarkGlow" startDelay="0.3" duration="0.5" order="1" fromScaleX="1" fromScaleY="1" toScaleX="1.2" toScaleY="1.2"/>
+				<Alpha childKey="CheckSmoke" startDelay="0.25" duration="0.25" order="1" fromAlpha="0" toAlpha="1"/>
+				<Scale childKey="CheckSmoke" startDelay="0.15" duration="0.5" order="1" fromScaleX="0.75" fromScaleY="0.75" toScaleX="1.25" toScaleY="1.25"/>
+				<Alpha childKey="CheckSmoke" startDelay="0.3" duration="0.7" order="1" fromAlpha="1" toAlpha="0"/>
+			</AnimationGroup>
+		</Animations>
 	</Frame>
 	
 	<StatusBar name="GarrisonFollowerXPBarTemplate" virtual="true">
@@ -1777,15 +1787,59 @@
 							</Layer>
 						</Layers>
 						<Frames>
-							<Button parentKey="Tab1" name="$parentTab1" inherits="GarrisonMissionListTabTemplate" id="1" text="GARRISON_MISSIONS">
+							<Button parentKey="Tab1" name="$parentTab1" inherits="GarrisonMissionListTabTemplate" id="1">
 								<Anchors>
 									<Anchor point="BOTTOMLEFT" relativePoint="TOPLEFT" x="20" y="-8"/>
 								</Anchors>
 							</Button>
-							<Button parentKey="Tab2" name="$parentTab2" inherits="GarrisonMissionListTabTemplate" id="2" text="GARRISON_MISSIONS">
+							<Button parentKey="Tab2" name="$parentTab2" inherits="GarrisonMissionListTabTemplate" id="2">
 								<Anchors>
 									<Anchor point="LEFT" relativeTo="$parentTab1" relativePoint="Right" x="12"/>
 								</Anchors>
+								<Layers>
+									<Layer level="OVERLAY">
+										<Texture parentKey="MissionStart" hidden="false" alpha="0" atlas="GarrMission_MissionStart" useAtlasSize="true">
+											<Anchors>
+												<Anchor point="CENTER"/>
+											</Anchors>
+										</Texture>
+									</Layer>
+									<Layer level="OVERLAY" textureSubLevel="1">
+										<FontString parentKey="MissionStartText" inherits="QuestFont_Huge" alpha="0" text="GARRISON_MISSION_STARTED">
+											<Anchors>
+												<Anchor point="TOPLEFT" relativeKey="$parent.MissionStart" x="60" y="-10"/>
+											</Anchors>
+										</FontString>
+									</Layer>
+									<Layer level="OVERLAY" textureSubLevel="2">
+										<Texture parentKey="GlowHighlight" hidden="false" alpha="0" alphaMode="ADD" atlas="GarrMission_ChestOpenTextGlow">
+											<Size x="220" y="37"/>
+											<Anchors>
+												<Anchor point="CENTER" relativeKey="$parent.MissionStart" x="0" y="-10"/>
+											</Anchors>
+										</Texture>
+									</Layer>
+								</Layers>
+								<Animations>
+									<AnimationGroup parentKey="MissionStartAnim" setToFinalAlpha="true">
+										<Alpha childKey="MissionStart" duration="0.15" order="1" fromAlpha="0" toAlpha="1"/>
+										<Alpha childKey="MissionStartText" duration="0.15" order="1" fromAlpha="0" toAlpha="1"/>
+										<Translation childKey="MissionStart" smoothing="OUT" duration="0.25" order="1" offsetX="0" offsetY="15"/>
+										<Translation childKey="MissionStartText" smoothing="OUT" duration="0.25" order="1" offsetX="0" offsetY="15"/>
+										<Scale childKey="MissionStart" startDelay="0.4" duration="0.3" order="2" fromScaleX="1" fromScaleY="1" toScaleX="0.5" toScaleY="0.5"/>
+										<Translation childKey="MissionStart" startDelay="0.4" smoothing="IN" duration="0.25" order="2" offsetX="0" offsetY="-20"/>
+										<Alpha childKey="MissionStart" startDelay="0.4" duration="0.3" order="2" fromAlpha="1" toAlpha="0"/>
+										<Scale childKey="MissionStartText" startDelay="0.4" duration="0.3" order="2" fromScaleX="1" fromScaleY="1" toScaleX="0.5" toScaleY="0.5">
+											<Origin point="LEFT">
+												<Offset x="30" y="4"/>
+											</Origin>
+										</Scale>
+										<Translation childKey="MissionStartText" startDelay="0.4" smoothing="IN" duration="0.25" order="2" offsetX="0" offsetY="-20"/>
+										<Alpha childKey="MissionStartText" startDelay="0.4" duration="0.3" order="2" fromAlpha="1" toAlpha="0"/>
+										<Alpha childKey="GlowHighlight" duration="0.2" order="3" fromAlpha="0" toAlpha="1"/>
+										<Alpha childKey="GlowHighlight" startDelay="0.2" duration="0.5" order="3" fromAlpha="1" toAlpha="0"/>
+									</AnimationGroup>
+								</Animations>								
 							</Button>
 							<Frame parentKey="MaterialFrame">
 								<Size x="316" y="43"/>
@@ -2087,7 +2141,7 @@
 											</Anchors>
 											<Color r="0" g="1" b="0"/>
 										</FontString>
-										<FontString parentKey="ChanceLabel" inherits="QuestFont_Super_Huge_Outline" text="GARRISON_MISSION_CHANCE">
+										<FontString parentKey="ChanceLabel" inherits="SystemFont_Huge1_Outline" text="GARRISON_MISSION_CHANCE">
 											<Anchors>
 												<Anchor point="TOP" relativeKey="$parent.Chance" relativePoint="BOTTOM" x="0" y="4"/>
 											</Anchors>
@@ -2420,11 +2474,6 @@
 								<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Class" relativePoint="BOTTOMLEFT" y="6"/>
 							</Anchors>
 						</FontString>
-						<FontString parentKey="ItemLevel" inherits="GameFontHighlightLarge2" justifyH="RIGHT" hidden="true">
-							<Anchors>
-								<Anchor point="TOPRIGHT" relativeKey="$parent.XPText"/>
-							</Anchors>
-						</FontString>
 						<FontString parentKey="AbilitiesText" inherits="GameFontNormalLarge2" justifyH="LEFT" text="ABILITIES">
 							<Anchors>
 								<Anchor point="TOPLEFT" relativeKey="$parent.Class" relativePoint="TOPRIGHT" x="-280" y="-80"/>
@@ -2481,12 +2530,36 @@
 						<Anchors>
 							<Anchor point="TOPLEFT" relativeKey="$parent.ItemWeapon" relativePoint="BOTTOMLEFT" x="0" y="-6"/>
 						</Anchors>
-					</Frame>			
+					</Frame>
+					<Frame parentKey="ItemAverageLevel">
+						<Size x="230" y="20"/>
+						<Anchors>
+							<Anchor point="BOTTOM" relativeKey="$parent.ItemWeapon" relativePoint="TOP" x="0" y="0"/>
+						</Anchors>
+						<Layers>
+							<Layer level="OVERLAY">
+								<FontString parentKey="Level" inherits="GameFontNormalLarge2" justifyH="CENTER" />
+							</Layer>
+						</Layers>
+					</Frame>
 				</Frames>
 			</Frame>
-			<Frame parentKey="MissionComplete" inherits="GarrisonMissionPageBaseTemplate" hidden="true">
+			<Frame parentKey="MissionCompleteBackground" enableMouse="true" frameStrata="HIGH" hidden="true">
+				<Size x="956" y="637"/>
 				<Anchors>
-					<Anchor point="TOPRIGHT" x="-105" y="-42"/>
+					<Anchor point="TOPLEFT" x="2" y="-22"/>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<Texture setAllPoints="true">
+							<Color r="0" g="0" b="0" a="0.8"/>
+						</Texture>
+					</Layer>
+				</Layers>
+			</Frame>
+			<Frame parentKey="MissionComplete" inherits="GarrisonMissionPageBaseTemplate" frameStrata="HIGH" hidden="true">
+				<Anchors>
+					<Anchor point="CENTER"/>
 				</Anchors>
 				<Layers>
 					<Layer level="ARTWORK">
@@ -2498,41 +2571,6 @@
 					</Layer>
 				</Layers>
 				<Frames>
-					<Frame parentKey="Rewards">
-						<Size x="230" y="555"/>
-						<Anchors>
-							<Anchor point="TOPLEFT" relativeKey="$parent.$parent" x="20" y="-60"/>
-						</Anchors>
-						<Layers>
-							<Layer level="BACKGROUND" textureSubLevel="-1">
-								<Texture parentKey="BG" atlas="!GarrMission_RewardsListBox-Bg" vertTile="true" useAtlasSize="true">
-									<Anchors>
-										<Anchor point="TOP"/>
-										<Anchor point="BOTTOM"/>
-									</Anchors>
-								</Texture>
-							</Layer>
-							<Layer level="BACKGROUND">
-								<Texture atlas="GarrMission_RewardsListBox-Header" useAtlasSize="true">
-									<Anchors>
-										<Anchor point="TOPLEFT" y="6"/>
-									</Anchors>
-								</Texture>
-								<Texture atlas="GarrMission_RewardsListBox-BottomBar" useAtlasSize="true">
-									<Anchors>
-										<Anchor point="BOTTOMLEFT" y="-4"/>
-									</Anchors>
-								</Texture>
-							</Layer>
-							<Layer level="BORDER" textureSubLevel="1">
-								<FontString inherits="QuestFont_Super_Huge" text="REWARDS">
-									<Anchors>
-										<Anchor point="TOP" x="0" y="-8"/>
-									</Anchors>
-								</FontString>
-							</Layer>
-						</Layers>
-					</Frame>				
 					<Frame parentKey="Stage" inherits="GarrisonMissionStageTemplate">
 						<Size x="556" y="285"/>
 						<Anchors>
@@ -2899,7 +2937,7 @@
 						</Scripts>
 					</Frame>
 					<Frame parentKey="BonusRewards" inherits="GarrisonMissionRewardsFrameTemplate">
-						<Size x="512" y="185"/>
+						<Size x="512" y="174"/>
 						<Anchors>
 							<Anchor point="BOTTOM" y="40"/>
 						</Anchors>
@@ -2911,7 +2949,7 @@
 									</Anchors>
 								</Texture>
 							</Layer>
-							<Layer level="OVERLAY">
+							<Layer level="ARTWORK">
 								<FontString inherits="QuestFont_Huge" text="BONUS_REWARDS">
 									<Anchors>
 										<Anchor point="CENTER" relativeKey="$parent.Banner" x="0" y="7"/>
@@ -2921,7 +2959,163 @@
 							</Layer>
 						</Layers>
 						<Frames>
-							<Frame parentArray="Rewards" inherits="GarrisonMissionCompleteRewardTemplate">
+							<CinematicModel parentKey="ChestModel" useParentLevel="true" inherits="GarrisonCinematicModelBaseTemplate">
+								<Size x="180" y="180"/>
+								<Anchors>
+									<Anchor point="CENTER"/>
+								</Anchors>
+								<Layers>
+									<Layer level="OVERLAY">
+										<Texture parentKey="Lock" atlas="BonusChest-Lock" useAtlasSize="true">
+											<Anchors>
+												<Anchor point="CENTER" x="-6" y="6"/>
+											</Anchors>
+										</Texture>								
+										<Texture parentKey="LockGlow" hidden="false" alpha="0" alphaMode="ADD" atlas="BonusChest-Lock" useAtlasSize="true">
+											<Anchors>
+												<Anchor point="CENTER" relativeKey="$parent.Lock"/>
+											</Anchors>
+										</Texture>
+										<Texture parentKey="ChanceGlow" atlas="GarrMission_ChestOpenTextGlow" useAtlasSize="true" alphaMode="ADD">
+											<Anchors>
+												<Anchor point="TOP" relativePoint="BOTTOM" x="0" y="58"/>
+											</Anchors>
+										</Texture>
+										<Texture parentKey="Banner" atlas="GarrMission_LevelUpBanner" alpha="0">
+											<Size x="200" y="90"/>
+											<Anchors>
+												<Anchor point="TOP" relativePoint="BOTTOM" x="0" y="83"/>
+											</Anchors>									
+										</Texture>
+									</Layer>		
+									<Layer level="OVERLAY" textureSubLevel="1">
+										<Texture parentKey="KeyholeGlow" hidden="false" alpha="0" atlas="BonusChest-KeyholeGlow" useAtlasSize="true">
+											<Anchors>
+												<Anchor point="CENTER" relativeKey="$parent.Lock" x="0" y="-16"/>
+											</Anchors>
+										</Texture>
+										<Texture parentKey="KeyBurst" hidden="false" alpha="0" alphaMode="ADD" atlas="BonusChest-KeyholeBurst">
+											<Size x="59" y="64"/>
+											<Anchors>
+												<Anchor point="CENTER" relativeKey="$parent.KeyholeGlow"/>
+											</Anchors>
+										</Texture>
+										<FontString parentKey="ChanceText" inherits="SystemFont_Huge1">
+											<Anchors>
+												<Anchor point="CENTER" relativeKey="$parent.ChanceGlow" x="0" y="0"/>
+											</Anchors>
+											<Color r="0.1" g="1" b="0.1"/>
+										</FontString>
+										<FontString parentKey="SuccessText" inherits="QuestFont_Super_Huge" text="GARRISON_MISSION_SUCCESS">
+											<Anchors>
+												<Anchor point="CENTER" relativeKey="$parent.Banner" x="0" y="2"/>
+											</Anchors>
+											<Color r="0.1" g="1" b="0.1" a="0"/>
+										</FontString>
+										<FontString parentKey="FailureText" inherits="QuestFont_Super_Huge" text="GARRISON_MISSION_FAILED">
+											<Anchors>
+												<Anchor point="CENTER" relativeKey="$parent.Banner" x="0" y="2"/>
+											</Anchors>
+											<Color r="1" g="0.1" b="0.1" a="0"/>
+										</FontString>
+									</Layer>
+									<Layer level="OVERLAY" textureSubLevel="2">
+										<Texture parentKey="SuccessGlow" hidden="false" alpha="0" alphaMode="ADD" atlas="BonusChest-OrangeGlow-Wide" useAtlasSize="true">
+											<Anchors>
+												<Anchor point="CENTER" relativeKey="$parent.Banner"/>
+											</Anchors>
+										</Texture>
+										<Texture parentKey="OrangeGlow" hidden="false" alpha="0" alphaMode="ADD" atlas="BonusChest-OrangeGlow-Wide" useAtlasSize="true">
+											<Anchors>
+												<Anchor point="CENTER"/>
+											</Anchors>
+										</Texture>
+										<Texture parentKey="OrangeSmoke" hidden="false" alpha="0" atlas="BonusChest-OrangeSmoke-Wide" useAtlasSize="true">
+											<Anchors>
+												<Anchor point="CENTER"/>
+											</Anchors>
+										</Texture>										
+									</Layer>
+								</Layers>
+								<Animations>
+									<AnimationGroup parentKey="LockBurstAnim" setToFinalAlpha="true">
+										<Alpha childKey="Lock" startDelay="0.5" duration="0.5" order="1" fromAlpha="1" toAlpha="0"/>
+										<Alpha childKey="KeyholeGlow" smoothing="IN" duration="0.3" order="1" change="1"/>
+										<Alpha childKey="KeyholeGlow" startDelay="0.5" smoothing="IN_OUT" duration="0.5" order="1" change="-1"/>
+										<Alpha childKey="KeyBurst" startDelay="0.3" smoothing="IN_OUT" duration="0.2" order="1" change="1"/>
+										<Scale childKey="KeyBurst" startDelay="0.3" smoothing="IN" duration="0.2" order="1" scaleX="2.5" scaleY="2.5"/>
+										<Alpha childKey="KeyBurst" startDelay="0.5" smoothing="IN_OUT" duration="0.75" order="1" change="-1"/>
+										<Alpha childKey="LockGlow" startDelay="0.3" smoothing="IN_OUT" duration="0.2" order="1" change="1"/>
+										<Alpha childKey="LockGlow" startDelay="0.5" smoothing="IN_OUT" duration="0.75" order="1" change="-1"/>
+										<Scripts>
+											<OnFinished>
+												self:GetParent().Lock:Hide();
+											</OnFinished>
+										</Scripts>
+									</AnimationGroup>
+									<AnimationGroup parentKey="OpenAnim" setToFinalAlpha="true">
+										<Alpha childKey="OrangeGlow" startDelay="0.75" duration="0.25" order="1" fromAlpha="0" toAlpha="1"/>
+										<Scale childKey="OrangeGlow" startDelay="0.75" duration="0.25" order="1" fromScaleX="0.5" fromScaleY="0.5" toScaleX="2" toScaleY="1.25"/>
+										<Alpha childKey="OrangeGlow" startDelay="1" duration="0.75" order="1" fromAlpha="1" toAlpha="0"/>
+										<Alpha childKey="OrangeSmoke" startDelay="0.9" duration="0.25" order="1" fromAlpha="0" toAlpha="1"/>
+										<Scale childKey="OrangeSmoke" startDelay="0.9" duration="1.5" order="1" fromScaleX="2" fromScaleY="1" toScaleX="3" toScaleY="1.5"/>
+										<Alpha childKey="OrangeSmoke" startDelay="1.5" duration="0.75" order="1" fromAlpha="1" toAlpha="0"/>
+										<Alpha startDelay="1.6" duration="0.25" order="1" fromAlpha="1" toAlpha="0"/>
+									</AnimationGroup>
+									<AnimationGroup parentKey="SuccessAnim" setToFinalAlpha="true">
+										<Alpha childKey="ChanceText" startDelay="0.2" duration="0.15" order="1" fromAlpha="1" toAlpha="0"/>
+										<Alpha childKey="ChanceGlow" startDelay="0.25" duration="0.15" order="1" fromAlpha="1" toAlpha="0"/>
+										<Alpha childKey="Banner" duration="0.15" order="1" fromAlpha="0" toAlpha="1"/>
+										<Scale childKey="Banner" duration="0.2" order="1" fromScaleX="0.5" fromScaleY="1" toScaleX="1.5" toScaleY="1"/>
+										<Alpha childKey="Banner" startDelay="2" duration="0.5" order="1" fromAlpha="1" toAlpha="0"/>
+										<Alpha childKey="SuccessText" duration="0.15" order="1" fromAlpha="0" toAlpha="1"/>
+										<Alpha childKey="SuccessText" startDelay="2" duration="0.5" order="1" fromAlpha="1" toAlpha="0"/>
+										<Alpha childKey="SuccessGlow" startDelay="0.2" duration="0.25" order="1" fromAlpha="0" toAlpha="0.75"/>
+										<Scale childKey="SuccessGlow" startDelay="0.2" duration="0.25" order="1" fromScaleX="0.5" fromScaleY="0.75" toScaleX="1.25" toScaleY="0.75"/>
+										<Alpha childKey="SuccessGlow" startDelay="0.51" duration="0.75" order="1" fromAlpha="0.75" toAlpha="0"/>
+									</AnimationGroup>
+									<AnimationGroup parentKey="FailureAnim" setToFinalAlpha="true">
+										<Alpha childKey="ChanceText" startDelay="0.2" duration="0.15" order="1" fromAlpha="1" toAlpha="0"/>
+										<Alpha childKey="ChanceGlow" startDelay="0.25" duration="0.15" order="1" fromAlpha="1" toAlpha="0"/>
+										<Alpha childKey="Banner" duration="0.15" order="1" fromAlpha="0" toAlpha="1"/>
+										<Scale childKey="Banner" duration="0.2" order="1" fromScaleX="0.5" fromScaleY="1" toScaleX="1.5" toScaleY="1"/>
+										<Alpha childKey="FailureText" duration="0.15" order="1" fromAlpha="0" toAlpha="1"/>
+										<Alpha childKey="SuccessGlow" startDelay="0.2" duration="0.25" order="1" fromAlpha="0" toAlpha="0.75"/>
+										<Scale childKey="SuccessGlow" startDelay="0.2" duration="0.25" order="1" fromScaleX="0.5" fromScaleY="0.75" toScaleX="1.25" toScaleY="0.75"/>
+										<Alpha childKey="SuccessGlow" startDelay="0.51" duration="0.75" order="1" fromAlpha="0.75" toAlpha="0"/>
+										<Scripts>
+											<OnFinished>
+												self:GetParent().Banner:SetWidth(300);
+											</OnFinished>
+										</Scripts>
+									</AnimationGroup>
+								</Animations>
+								<Frames>
+									<Frame parentKey="ClickFrame">
+										<Size x="100" y="96"/>
+										<Anchors>
+											<Anchor point="TOP" x="0" y="-34"/>
+										</Anchors>
+										<Scripts>
+											<OnMouseDown function="GarrisonMissionComplete_OpenChest"/>
+										</Scripts>
+									</Frame>
+								</Frames>			
+								<Scripts>
+									<OnLoad>
+										GarrisonCinematicModelBase_OnLoad(self);
+										self:SetDisplayInfo(54912);
+										self:SetTargetDistance(0);
+										self:SetHeightFactor(.25);
+										self:SetFacing(-.4);
+										self:InitializeCamera(.8);
+									</OnLoad>
+									<OnShow>
+										self:SetCameraPosition(3.5, 0, 1);
+									</OnShow>
+								</Scripts>
+							</CinematicModel>
+							<Frame parentArray="Rewards" hidden="true" inherits="GarrisonMissionPageRewardTemplate">
 								<Anchors>
 									<Anchor point="RIGHT" x="-18"/>
 								</Anchors>
@@ -3004,6 +3198,9 @@
 								</Layers>
 							</Frame>
 						</Frames>
+						<Scripts>
+							<OnEvent function="GarrisonMissionComplete_OnRewardEvent"/>
+						</Scripts>
 					</Frame>
 					<Button parentKey="NextMissionButton" inherits="UIPanelButtonTemplate" text="NEXT">
 						<Size x="130" y="20"/>

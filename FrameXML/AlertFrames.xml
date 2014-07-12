@@ -1146,7 +1146,7 @@
 			<FontString parentKey="TitleText" inherits="GameFontNormal" justifyH="LEFT" text="Item Upgrade!">
 				<Size x="148" y="16"/>
 				<Anchors>
-					<Anchor point="TOPLEFT" relativeKey="$parent.BaseQualityBorder" relativePoint="TOPRIGHT" x="30" y="0"/>
+					<Anchor point="TOPLEFT" relativeKey="$parent.BaseQualityBorder" relativePoint="TOPRIGHT" x="28" y="-1"/>
 				</Anchors>
 			</FontString>
 			<FontString parentKey="BaseQualityItemName" inherits="LootUpgradeFrame_ItemNameTemplate">

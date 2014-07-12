@@ -2279,33 +2279,16 @@
 					<OnClick function="CopyAccountData_OnClick"/>
 				</Scripts>
 			</Button>
-			<EditBox parentKey="RegionID" inherits="InputBoxTemplate" numeric="true" autoFocus="false" hidden="true">
-				<Size x="60" y="16"/>
+			<Frame name="$parentRegionID" inherits="GlueDropDownMenuTemplate" enableMouse="true" parentKey="RegionID">
+				<Size x="50" y="16"/>
 				<Anchors>
-					<Anchor point="TOPLEFT" x="20" y="-40"/>
+					<Anchor point="TOPLEFT" x="-10" y="-30"/>
 				</Anchors>
-				<Layers>
-					<Layer level="OVERLAY">
-						<FontString parentKey="Text" inherits="GameFontNormalSmall" justifyH="CENTER" text="REGION_ID">
-							<Size x="60" y="12"/>
-							<Anchors>
-								<Anchor point="TOP" x="0" y="15"/>
-							</Anchors>
-						</FontString>
-					</Layer>
-				</Layers>
-				<Scripts>
-					<OnLoad function="CopyCharacterEditBox_OnLoad"/>
-					<OnShow function="CopyCharacterEditBox_OnShow"/>
-					<OnTabPressed function="RegionIDEditBox_OnTabPressed"/>
-					<OnEnterPressed function="RegionIDEditBox_OnTabPressed"/>
-				</Scripts>
-				<FontString inherits="CharCopyEditBoxFont"/>
-			</EditBox>
+			</Frame>
 			<EditBox parentKey="RealmName" inherits="InputBoxTemplate" autoFocus="false" hidden="true">
 				<Size x="200" y="16"/>
 				<Anchors>
-					<Anchor point="LEFT" relativeKey="$parent.RegionID" relativePoint="RIGHT" x="20" y="0"/>
+					<Anchor point="LEFT" relativeKey="$parent.RegionID" relativePoint="RIGHT" x="0" y="0"/>
 				</Anchors>
 				<Layers>
 					<Layer level="OVERLAY">
@@ -2320,13 +2303,11 @@
 				<Scripts>
 					<OnLoad function="CopyCharacterEditBox_OnLoad"/>
 					<OnShow function="CopyCharacterEditBox_OnShow"/>
-					<OnTabPressed function="RealmNameEditBox_OnTabPressed"/>
-					<OnEnterPressed function="RealmNameEditBox_OnTabPressed"/>
 				</Scripts>
 				<FontString inherits="CharCopyEditBoxFont"/>
 			</EditBox>
 			<EditBox parentKey="CharacterName" inherits="InputBoxTemplate" autoFocus="false" hidden="true">
-				<Size x="165" y="16"/>
+				<Size x="150" y="16"/>
 				<Anchors>
 					<Anchor point="LEFT" relativeKey="$parent.RealmName" relativePoint="RIGHT" x="20" y="0"/>
 				</Anchors>
@@ -2343,8 +2324,6 @@
 				<Scripts>
 					<OnLoad function="CopyCharacterEditBox_OnLoad"/>
 					<OnShow function="CopyCharacterEditBox_OnShow"/>
-					<OnTabPressed function="CharacterNameEditBox_OnTabPressed"/>
-					<OnEnterPressed function="CharacterNameEditBox_OnTabPressed"/>
 				</Scripts>
 				<FontString inherits="CharCopyEditBoxFont"/>
 			</EditBox>

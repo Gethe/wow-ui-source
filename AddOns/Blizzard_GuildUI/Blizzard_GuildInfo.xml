@@ -204,13 +204,13 @@
 				</Texture>
 			</Layer>
 			<Layer level="ARTWORK" textureSubLevel="2">
-				<Texture name="$parentLevelRing" inherits="TalentHeader-PointCircle-Gold" parentKey="PointsSpentBgGold">
+				<Texture name="$parentLevelRing" atlas="guild-levelring" parentKey="PointsSpentBgGold">
 					<Size x="27" y="27"/>
 					<Anchors>
 						<Anchor point="BOTTOMRIGHT" relativeTo="$parentRing" relativePoint="BOTTOMRIGHT" x="6" y="3"/>
 					</Anchors>
 				</Texture>
-				<FontString name="$parentLevelText" inherits="ChatFontSmall" parentKey="level">
+				<FontString name="$parentLevelText" inherits="GameFontNormalSmall" parentKey="level">
 					<Anchors>
 						<Anchor point="CENTER" relativeTo="$parentLevelRing" x="0" y="0"/>
 					</Anchors>

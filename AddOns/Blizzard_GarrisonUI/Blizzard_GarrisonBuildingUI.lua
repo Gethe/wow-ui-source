@@ -631,21 +631,22 @@ function GarrisonBuildingFollowerList_Update()
 			button.Status:SetText(follower.status);
 			local color = ITEM_QUALITY_COLORS[follower.quality];
 			button.PortraitFrame.LevelBorder:SetVertexColor(color.r, color.g, color.b);
+			button.PortraitFrame.Level:SetText(follower.level);
 			SetPortraitTexture(button.PortraitFrame.Portrait, follower.displayID);
 			button.PortraitFrame.Level:SetText(follower.level);
-			--show iLevel for max level followers
-			if (follower.level < 100) then
-				button.Name:SetHeight(0);
-				button.Name:SetPoint("LEFT", button, "TOPLEFT", 66, -28);
-				button.ILevel:SetText(nil);
-				button.Status:ClearAllPoints();
-				button.Status:SetPoint("TOPLEFT", button.Name, "BOTTOMLEFT", 0, -2)
+			-- adjust text position if we have additional text to show below name
+			if (follower.level == GARRISON_FOLLOWER_MAX_LEVEL or follower.status) then
+				button.Name:SetPoint("LEFT", button.PortraitFrame, "LEFT", 66, 8);
 			else
-				button.Name:SetHeight(10);
-				button.Name:SetPoint("TOPLEFT", button, "TOPLEFT", 66, -13);
+				button.Name:SetPoint("LEFT", button.PortraitFrame, "LEFT", 66, 0);
+			end
+			-- show iLevel for max level followers	
+			if (follower.level == GARRISON_FOLLOWER_MAX_LEVEL) then
 				button.ILevel:SetText(ITEM_LEVEL_ABBR.." "..follower.iLevel);
-				button.Status:ClearAllPoints();
-				button.Status:SetPoint("TOPLEFT", button.ILevel, "BOTTOMLEFT", 0, -3)
+				button.Status:SetPoint("TOPLEFT", button.ILevel, "TOPRIGHT", 4, 0);
+			else
+				button.ILevel:SetText(nil);
+				button.Status:SetPoint("TOPLEFT", button.ILevel, "TOPRIGHT", 0, 0);
 			end
 			if (follower.xp == 0 or follower.levelXP == 0) then 
 				button.XPBar:Hide();

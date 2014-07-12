@@ -7,7 +7,6 @@ BOOKTYPE_SPELL = "spell";
 BOOKTYPE_PROFESSION = "professions";
 BOOKTYPE_PET = "pet";
 BOOKTYPE_CORE_ABILITIES = "core";
-BOOKTYPE_WHAT_HAS_CHANGED = "changed"
 
 local MaxSpellBookTypes = 5;
 local SpellBookInfo = {};
@@ -29,13 +28,9 @@ SpellBookInfo[BOOKTYPE_CORE_ABILITIES]= { 	showFrames = {"SpellBookCoreAbilities
 											title = CORE_ABILITIES,
 											updateFunc =  function() SpellBook_UpdateCoreAbilitiesTab(); end
 										};										
-SpellBookInfo[BOOKTYPE_WHAT_HAS_CHANGED]= { showFrames = {"SpellBookWhatHasChanged"}, 		
-											title = WHAT_HAS_CHANGED,
-											updateFunc =  function() SpellBook_UpdateWhatHasChangedTab(); end
-										};										
 SPELLBOOK_PAGENUMBERS = {};
 
-SpellBookFrames = {	"SpellBookSpellIconsFrame", "SpellBookProfessionFrame",  "SpellBookSideTabsFrame", "SpellBookPageNavigationFrame", "SpellBookCoreAbilitiesFrame", "SpellBookWhatHasChanged"};
+SpellBookFrames = {	"SpellBookSpellIconsFrame", "SpellBookProfessionFrame",  "SpellBookSideTabsFrame", "SpellBookPageNavigationFrame", "SpellBookCoreAbilitiesFrame"};
 
 PROFESSION_RANKS =  {};
 PROFESSION_RANKS[1] = {75,  APPRENTICE};
@@ -97,9 +92,6 @@ function SpellBookFrame_GetTutorialEnum()
 	elseif ( SpellBookFrame.bookType == BOOKTYPE_CORE_ABILITIES ) then
 		helpPlate = CoreAbilitiesFrame_HelpPlate;
 		tutorial = LE_FRAME_TUTORIAL_CORE_ABILITITES;
-	elseif ( SpellBookFrame.bookType == BOOKTYPE_WHAT_HAS_CHANGED ) then
-		helpPlate = WhatHasChangedFrame_HelpPlate;
-		tutorial = LE_FRAME_TUTORIAL_WHAT_HAS_CHANGED;
 	end
 	return tutorial, helpPlate;
 end
@@ -237,13 +229,6 @@ function SpellBookFrame_Update()
 		tabIndex = tabIndex+1;
 	end
 	
-	if ( level >= 40 ) then
-		local nextTab = _G["SpellBookFrameTabButton"..tabIndex];
-		nextTab:Show();
-		nextTab.bookType = BOOKTYPE_WHAT_HAS_CHANGED;
-		nextTab.binding = "TOGGLEWHATHASCHANGEDBOOK";
-		nextTab:SetText(SpellBookInfo[BOOKTYPE_WHAT_HAS_CHANGED].title);
-	end
 	
 	-- Make sure the correct tab is selected
 	for i=1,MaxSpellBookTypes do
@@ -1306,67 +1291,6 @@ end
 
 
 -- *************************************************************************************
-WHAT_HAS_CHANGED_TITLE = {}
-WHAT_HAS_CHANGED_TITLE["HUNTER"]	= { WHC_TITLE_WARRIOR_1,	WHC_TITLE_HUNTER_2,		WHC_TITLE_HUNTER_3,		WHC_TITLE_HUNTER_4	};
-WHAT_HAS_CHANGED_TITLE["WARLOCK"]	= { WHC_TITLE_WARRIOR_1,	WHC_TITLE_WARLOCK_2,	WHC_TITLE_WARLOCK_3,	WHC_TITLE_WARLOCK_4	};
-WHAT_HAS_CHANGED_TITLE["PRIEST"]	= { WHC_TITLE_WARRIOR_1,	WHC_TITLE_PRIEST_2,		WHC_TITLE_PRIEST_3,		WHC_TITLE_PRIEST_4	};
-WHAT_HAS_CHANGED_TITLE["PALADIN"]	= { WHC_TITLE_WARRIOR_1,	WHC_TITLE_PALADIN_2,	WHC_TITLE_PALADIN_3		};
-WHAT_HAS_CHANGED_TITLE["MAGE"]		= { WHC_TITLE_WARRIOR_1,	WHC_TITLE_MAGE_2,		WHC_TITLE_MAGE_3,		WHC_TITLE_MAGE_4	};
-WHAT_HAS_CHANGED_TITLE["ROGUE"]		= { WHC_TITLE_WARRIOR_1,	WHC_TITLE_ROGUE_2,		WHC_TITLE_ROGUE_3,		};
-WHAT_HAS_CHANGED_TITLE["DRUID"]		= { WHC_TITLE_WARRIOR_1,	WHC_TITLE_DRUID_2,		WHC_TITLE_DRUID_3,		WHC_TITLE_DRUID_4	};
-WHAT_HAS_CHANGED_TITLE["SHAMAN"]	= { WHC_TITLE_WARRIOR_1,	WHC_TITLE_SHAMAN_2,		};
-WHAT_HAS_CHANGED_TITLE["WARRIOR"]	= { WHC_TITLE_WARRIOR_1,	WHC_TITLE_WARRIOR_2,	WHC_TITLE_WARRIOR_3,	WHC_TITLE_WARRIOR_4	};
-WHAT_HAS_CHANGED_TITLE["MONK"]		= { WHC_TITLE_MONK_1,		WHC_TITLE_MONK_2,		WHC_TITLE_MONK_3		};
-WHAT_HAS_CHANGED_TITLE["DEATHKNIGHT"] = { WHC_TITLE_WARRIOR_1,	WHC_TITLE_DK_2,			WHC_TITLE_DK_3			};
-
-
-WHAT_HAS_CHANGED_DISPLAY = {}
-WHAT_HAS_CHANGED_DISPLAY["HUNTER"]	= { WHC_WARRIOR_1,	WHC_HUNTER_2,	WHC_HUNTER_3,	WHC_HUNTER_4	};
-WHAT_HAS_CHANGED_DISPLAY["WARLOCK"]	= { WHC_WARRIOR_1,	WHC_WARLOCK_2,	WHC_WARLOCK_3,	WHC_WARLOCK_4	};
-WHAT_HAS_CHANGED_DISPLAY["PRIEST"]	= { WHC_WARRIOR_1,	WHC_PRIEST_2,	WHC_PRIEST_3,	WHC_PRIEST_4	};
-WHAT_HAS_CHANGED_DISPLAY["PALADIN"]	= { WHC_WARRIOR_1,	WHC_PALADIN_2,	WHC_PALADIN_3,	};
-WHAT_HAS_CHANGED_DISPLAY["MAGE"]	= { WHC_WARRIOR_1,	WHC_MAGE_2,		WHC_MAGE_3,		WHC_MAGE_4 };
-WHAT_HAS_CHANGED_DISPLAY["ROGUE"]	= { WHC_WARRIOR_1,	WHC_ROGUE_2,	WHC_ROGUE_3,	};
-WHAT_HAS_CHANGED_DISPLAY["DRUID"]	= { WHC_WARRIOR_1,	WHC_DRUID_2,	WHC_DRUID_3,	WHC_DRUID_4		};
-WHAT_HAS_CHANGED_DISPLAY["SHAMAN"]	= { WHC_WARRIOR_1,	WHC_SHAMAN_2,	};
-WHAT_HAS_CHANGED_DISPLAY["WARRIOR"]	= { WHC_WARRIOR_1,	WHC_WARRIOR_2,	WHC_WARRIOR_3,	WHC_WARRIOR_4 };
-WHAT_HAS_CHANGED_DISPLAY["MONK"]	= { WHC_MONK_1,		WHC_MONK_2,		WHC_MONK_3		};
-WHAT_HAS_CHANGED_DISPLAY["DEATHKNIGHT"] = { WHC_WARRIOR_1,	WHC_DK_2,	WHC_DK_3		};
-
-function SpellBook_GetWhatChangedItem(index)
-	local frame = SpellBookWhatHasChanged.ChangedItems[index];
-	if ( not frame ) then
-		SpellBookWhatHasChanged.ChangedItems[index] = CreateFrame("SimpleHTML", nil, SpellBookWhatHasChanged, "WhatHasChangedEntryTemplate");
-		frame = SpellBookWhatHasChanged.ChangedItems[index];
-		frame:SetPoint("TOP", SpellBookWhatHasChanged.ChangedItems[index-1], "BOTTOM", 0, -80);
-	end
-	return frame;
-end
-
-function SpellBook_UpdateWhatHasChangedTab()
-	local displayName, class = UnitClass("player");
-	local changedList = WHAT_HAS_CHANGED_DISPLAY[class];
-	local changedTitle = WHAT_HAS_CHANGED_TITLE[class];
-
-	SpellBookWhatHasChanged.ClassName:SetText(displayName);
-
-	if ( changedList ) then
-		for i=1, #changedList do
-			local frame = SpellBook_GetWhatChangedItem(i);
-			frame.Number:SetText(i);
-			frame.Title:SetText(changedTitle[i]);
-			frame:SetText(changedList[i], true);
-		end
-	end
-	for i = #changedList + 1, #SpellBookWhatHasChanged.ChangedItems do
-		SpellBook_GetWhatChangedItem(i):Hide();
-	end
-	SpellBookPage1:SetDesaturated(false);
-	SpellBookPage2:SetDesaturated(false);
-end
-
-
--- *************************************************************************************
 
 SpellBookFrame_HelpPlate = {
 	FramePos = { x = 5,	y = -22 },
@@ -1387,12 +1311,6 @@ CoreAbilitiesFrame_HelpPlate = {
 	FramePos = { x = 5,	y = -22 },
 	FrameSize = { width = 580, height = 500	},
 	[1] = { ButtonPos = { x = 430,	y = -30}, HighLightBox = { x = 65, y = -15, width = 460, height = 472 }, ToolTipDir = "RIGHT",	ToolTipText = CORE_ABILITIES_HELP_1 },
-}
-
-WhatHasChangedFrame_HelpPlate = {
-	FramePos = { x = 5,	y = -22 },
-	FrameSize = { width = 580, height = 500	},
-	[1] = { ButtonPos = { x = 430,	y = -30}, HighLightBox = { x = 65, y = -15, width = 460, height = 472 }, ToolTipDir = "DOWN",	ToolTipText = WHAT_HAS_CHANGED_HELP_1 },
 }
 
 function SpellBook_ToggleTutorial()

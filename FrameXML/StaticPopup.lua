@@ -2789,8 +2789,37 @@ StaticPopupDialogs["CONFIRM_SUMMON"] = {
 	timeout = 0,
 	interruptCinematic = 1,
 	notClosableByLogout = 1,
-	hideOnEscape = 1
+	hideOnEscape = 1,
 };
+
+-- Summon dialog when being summoned when in a starting area
+StaticPopupDialogs["CONFIRM_SUMMON_STARTING_AREA"] = {
+	text = CONFIRM_SUMMON_STARTING_AREA,
+	button1 = ACCEPT,
+	button2 = CANCEL,
+	OnShow = function(self)
+		self.timeleft = GetSummonConfirmTimeLeft();
+	end,
+	OnAccept = function(self)
+		ConfirmSummon();
+	end,
+	OnCancel = function()
+		CancelSummon();
+	end,
+	OnUpdate = function(self, elapsed)
+		if ( UnitAffectingCombat("player") or (not PlayerCanTeleport()) ) then
+			self.button1:Disable();
+		else
+			self.button1:Enable();
+		end
+	end,
+	timeout = 0,
+	interruptCinematic = 1,
+	notClosableByLogout = 1,
+	hideOnEscape = 1,
+	showAlert = 1,
+};
+
 StaticPopupDialogs["BILLING_NAG"] = {
 	text = BILLING_NAG_DIALOG;
 	button1 = OKAY,
@@ -3479,6 +3508,7 @@ function StaticPopup_Show(which, text_arg1, text_arg2, data)
 		 (which == "GARRISON_BOOT") or
 		 (which == "INSTANCE_LOCK") or
 		 (which == "CONFIRM_SUMMON") or
+		 (which == "CONFIRM_SUMMON_STARTING_AREA") or
 		 (which == "BFMGR_INVITED_TO_ENTER") or
 		 (which == "AREA_SPIRIT_HEAL") ) then
 		text:SetText(" ");	-- The text will be filled in later.
@@ -3717,6 +3747,7 @@ function StaticPopup_OnUpdate(dialog, elapsed)
 			 (which == "INSTANCE_BOOT") or
 			 (which == "GARRISON_BOOT") or
 			 (which == "CONFIRM_SUMMON") or
+			 (which == "CONFIRM_SUMMON_STARTING_AREA") or
 			 (which == "BFMGR_INVITED_TO_ENTER") or
 			 (which == "AREA_SPIRIT_HEAL") or
 			 (which == "SPELL_CONFIRMATION_PROMPT")) then
@@ -3728,7 +3759,7 @@ function StaticPopup_OnUpdate(dialog, elapsed)
 				else
 					text:SetFormattedText(StaticPopupDialogs[which].text, ceil(timeleft / 60), MINUTES);
 				end
-			elseif ( which == "CONFIRM_SUMMON" ) then
+			elseif ( which == "CONFIRM_SUMMON" or which == "CONFIRM_SUMMON_STARTING_AREA" ) then
 				if ( timeleft < 60 ) then
 					text:SetFormattedText(StaticPopupDialogs[which].text, GetSummonConfirmSummoner(), GetSummonConfirmAreaName(), timeleft, SECONDS);
 				else

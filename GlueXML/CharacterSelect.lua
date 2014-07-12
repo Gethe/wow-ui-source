@@ -19,6 +19,7 @@ CHARACTER_LIST_TOP = 688;
 AUTO_DRAG_TIME = 0.5;				-- in seconds
 
 CHARACTER_UNDELETE_COOLDOWN = 0;	-- in days
+CHARACTER_UNDELETE_COOLDOWN_REMAINING = 0; -- in days
 
 local translationTable = { };	-- for character reordering: key = button index, value = character ID
 
@@ -432,15 +433,16 @@ function CharacterSelect_OnEvent(self, event, ...)
 			CharacterSelect_UpdateStoreButton();
 		end
 	elseif ( event == "CHARACTER_UNDELETE_STATUS_CHANGED") then
-		local enabled, onCooldown, cooldown = GetCharacterUndeleteStatus();
+		local enabled, onCooldown, cooldown, remaining = GetCharacterUndeleteStatus();
 
 		CHARACTER_UNDELETE_COOLDOWN = cooldown;
+		CHARACTER_UNDELETE_COOLDOWN_REMAINING = remaining;
 
 		CharSelectUndeleteCharacterButton:SetEnabled(enabled and not onCooldown);
 		if (not enabled) then
 			CharSelectUndeleteCharacterButton.tooltip = UNDELETE_TOOLTIP_DISABLED;
 		elseif (onCooldown) then
-			CharSelectUndeleteCharacterButton.tooltip = UNDELETE_TOOLTIP_COOLDOWN;
+			CharSelectUndeleteCharacterButton.tooltip = UNDELETE_TOOLTIP_COOLDOWN:format(CHARACTER_UNDELETE_COOLDOWN_REMAINING);
 		else
 			CharSelectUndeleteCharacterButton.tooltip = UNDELETE_TOOLTIP;
 		end
@@ -1480,13 +1482,9 @@ end
 function CopyCharacter_AccountDataFromLive()
 	allowed = CopyAccountCharactersAllowed();
 	if ( allowed >= 2 ) then
-		CopyAccountDataFromLive();
+		CopyAccountDataFromLive(GlueDropDownMenu_GetSelectedValue(CopyCharacterFrame.RegionID));
 	elseif ( allowed == 1 ) then
-		local regionID = nil;
-		if ( CopyCharacterFrame.RegionID:GetText() ~= "" ) then
-			regionID = CopyCharacterFrame.RegionID:GetNumber();
-		end
-		CopyAccountDataFromLive(CopyCharacterFrame.RealmName:GetText(), CopyCharacterFrame.CharacterName:GetText(), regionID);
+		CopyAccountDataFromLive(GlueDropDownMenu_GetSelectedValue(CopyCharacterFrame.RegionID), CopyCharacterFrame.RealmName:GetText(), CopyCharacterFrame.CharacterName:GetText());
 	end
 	GlueDialog_Show("COPY_IN_PROGRESS");
 end
@@ -1503,14 +1501,9 @@ function CopyCharacterButton_OnClick(self)
 end
 
 function CopyCharacterSearch_OnClick(self)
-	local regionID = nil;
-	if ( CopyCharacterFrame.RegionID:GetText() ~= "" ) then
-		regionID = CopyCharacterFrame.RegionID:GetNumber();
-	end
-
 	ClearAccountCharacters();
 	CopyCharacterFrame_Update(CopyCharacterFrame.scrollFrame);
-	RequestAccountCharacters(CopyCharacterFrame.RealmName:GetText(), CopyCharacterFrame.CharacterName:GetText(), regionID);
+	RequestAccountCharacters(GlueDropDownMenu_GetSelectedValue(CopyCharacterFrame.RegionID), CopyCharacterFrame.RealmName:GetText(), CopyCharacterFrame.CharacterName:GetText());
 	self:Disable();
 end
 
@@ -1590,20 +1583,61 @@ function CopyCharacterFrame_OnShow(self)
 	self.SelectedButton = nil;
 	self.SelectedIndex = nil;
 	self.CopyButton:SetEnabled(false);
+
+	GlueDropDownMenu_SetWidth(self.RegionID, 80);
+	GlueDropDownMenu_SetSelectedValue(self.RegionID, 1);
+	GlueDropDownMenu_Initialize(self.RegionID, CopyCharacterFrameRegionIDDropdown_Initialize);
+	GlueDropDownMenu_SetAnchor(self.RegionID, 0, 0, "TOPLEFT", self.RegionID, "BOTTOMLEFT");
+	GlueDropDownMenu_Refresh(self.RegionID);
+	
+	ClearAccountCharacters();
+	CopyCharacterFrame_Update(self.scrollFrame);
+
 	if ( CopyAccountCharactersAllowed() >= 2 ) then
-		RequestAccountCharacters();
-		self.RegionID:Hide();
 		self.RealmName:Hide();
 		self.CharacterName:Hide();
 		self.SearchButton:Hide();
+		RequestAccountCharacters(GlueDropDownMenu_GetSelectedValue(CopyCharacterFrame.RegionID));
 	elseif ( CopyAccountCharactersAllowed() == 1) then
-		self.RegionID:Show();
 		self.RealmName:Show();
 		self.CharacterName:Show();
 		self.SearchButton:Show();
 	end
-	ClearAccountCharacters();
-	CopyCharacterFrame_Update(self.scrollFrame);
+end
+
+function CopyCharacterFrameRegionIDDropdown_Initialize()
+	local info = GlueDropDownMenu_CreateInfo();
+	local selectedValue = GlueDropDownMenu_GetSelectedValue(CopyCharacterFrame.RegionID);
+	info.func = CopyCharacterFrameRegionIDDropdown_OnClick;
+
+	info.text = "N. America";
+	info.value = 1;
+	info.checked = (info.value == selectedValue);
+	GlueDropDownMenu_AddButton(info);
+
+	info.text = "Korea";
+	info.value = 2;
+	info.checked = (info.value == selectedValue);
+	GlueDropDownMenu_AddButton(info);
+	
+	info.text = "Europe";
+	info.value = 3;
+	info.checked = (info.value == selectedValue);
+	GlueDropDownMenu_AddButton(info);
+
+	info.text = "Taiwan";
+	info.value = 4;
+	info.checked = (info.value == selectedValue);
+	GlueDropDownMenu_AddButton(info);
+	
+--	info.text = "China";
+--	info.value = 5;
+--	info.checked = (info.value == selectedValue);
+--	GlueDropDownMenu_AddButton(info);
+end
+
+function CopyCharacterFrameRegionIDDropdown_OnClick(button)
+	GlueDropDownMenu_SetSelectedValue(CopyCharacterFrame.RegionID, button.value);
 end
 
 function CopyCharacterFrame_OnEvent(self, event, ...)
@@ -1666,28 +1700,4 @@ end
 
 function CopyCharacterEditBox_OnShow(self)
 	self:SetText("");
-end
-
-function RegionIDEditBox_OnTabPressed(self)
-	if ( not IsShiftKeyDown() ) then
-		self.parent.RealmName:SetFocus();
-	else
-		self.parent.CharacterName:SetFocus();
-	end
-end
-
-function RealmNameEditBox_OnTabPressed(self)
-	if ( not IsShiftKeyDown() ) then
-		self.parent.CharacterName:SetFocus();
-	else
-		self.parent.RegionID:SetFocus();
-	end
-end
-
-function CharacterNameEditBox_OnTabPressed(self)
-	if ( not IsShiftKeyDown() ) then
-		self.parent.RegionID:SetFocus();
-	else
-		self.parent.RealmName:SetFocus();
-	end
 end

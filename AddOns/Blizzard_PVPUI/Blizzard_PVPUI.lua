@@ -164,10 +164,7 @@ function PVPQueueFrame_OnLoad(self)
 		PVPQueueFrame:RegisterEvent("PLAYER_LEVEL_UP");
 	end
 
-	if ( not IsGMClient() ) then
-		PVPQueueFrame_SetCategoryButtonState(self.CategoryButton4, false);
-		self.CategoryButton4.tooltip = "Under Construction";
-	end
+	PVPQueueFrame_SetCategoryButtonState(self.CategoryButton4, true);
 
 	-- set up accessors
 	self.getSelection = PVPQueueFrame_GetSelection;
@@ -205,13 +202,13 @@ function PVPQueueFrame_OnEvent(self, event, ...)
 	elseif ( event == "PVP_REWARDS_UPDATE" ) then
 		PVPQueueFrame_UpdateCurrencies(self);
 	elseif ( event == "BATTLEFIELDS_SHOW" ) then
+		PVEFrame_ShowFrame("PVPUIFrame");
+
 		local isArena, bgID = ...;
 		if (isArena) then
 			PVPQueueFrame_ShowFrame(ConquestFrame);
-			ShowUIPanel(PVPUIFrame);
 		else
 			PVPQueueFrame_ShowFrame(HonorFrame);
-			ShowUIPanel(PVPUIFrame);
 			HonorFrame_SetType("specific");
 			HonorFrameSpecificList_FindAndSelectBattleground(bgID);
 		end
