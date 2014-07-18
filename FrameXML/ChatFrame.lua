@@ -2331,10 +2331,8 @@ SlashCmdList["EVENTTRACE"] = function(msg)
 end
 
 SlashCmdList["DUMP"] = function(msg)
-	if (IsGMClient()) then
-		UIParentLoadAddOn("Blizzard_DebugTools");
-		DevTools_DumpCommand(msg);
-	end
+	UIParentLoadAddOn("Blizzard_DebugTools");
+	DevTools_DumpCommand(msg);
 end
 
 SlashCmdList["RELOAD"] = function(msg)

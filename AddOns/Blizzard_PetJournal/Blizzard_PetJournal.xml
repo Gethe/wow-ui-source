@@ -2188,7 +2188,7 @@
 
 	<CheckButton name="ToySpellButtonTemplate" inherits="SecureFrameTemplate" virtual="true">
 		<Size>
-			<AbsDimension x="37" y="37"/>
+			<AbsDimension x="50" y="50"/>
 		</Size>
 		<Layers>
 			<Layer level="ARTWORK">
@@ -2213,12 +2213,12 @@
 
 				<Texture name="$parentIconTextureUncollected" setAllPoints="true" hidden="true" desaturated="TRUE">
 					<Size>
-						<AbsDimension x="40" y="39"/>
+						<AbsDimension x="38" y="38"/>
 					</Size>
 					<Anchors>
-						<Anchor point="CENTER" x="0"/>
+						<Anchor point="CENTER" x="0" y="2"/>
 					</Anchors>
-					<TexCoords left="0.0625" right="0.9375" top="0.0625" bottom="0.9166666"/>
+					<TexCoords left="0.125" right="0.875" top="0.25" bottom="0.9166666"/>
 					<Color r="0" g="0" b="0" a=".20"/>
 				</Texture>
 				
@@ -2235,7 +2235,7 @@
 					</Anchors>
 				</FontString>
 			</Layer>
-			<Layer level="OVERLAY" textureSubLevel="0">
+			<Layer level="OVERLAY" textureSubLevel="2">
 				<Texture name="$parentSlotFavorite" atlas="collections-icon-favorites" useAtlasSize="true" hidden="true">
 					<Anchors>
 						<Anchor point="TOPLEFT" x="-18" y="17" relativePoint="TOPLEFT"/>
@@ -2257,7 +2257,7 @@
 					</Anchors>
 				</Texture>
 			</Layer>
-			<Layer level="OVERLAY" textureSubLevel="-1">
+			<Layer level="OVERLAY" textureSubLevel="1">
 				
 				<Texture name="$parentSlotFrameCollected" atlas="collections-itemborder-collected" hidden="false" useAtlasSize="true">
 					<Size>
@@ -2279,7 +2279,12 @@
 			</Layer>			
 		</Layers>
 		<Frames>
-			<Cooldown name="$parentCooldown" parentKey="cooldown" inherits="CooldownFrameTemplate"/>
+			<Cooldown name="$parentCooldown" parentKey="cooldown" inherits="CooldownFrameTemplate">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="5" y="-4"/>
+						<Anchor point="BOTTOMRIGHT" x="-5" y="7"/>
+					</Anchors>
+			</Cooldown>
 		</Frames>
 		<Scripts>
 			<OnLoad function="ToySpellButton_OnLoad"/>
@@ -2302,9 +2307,24 @@
 			<OnEnter function="ToySpellButton_OnEnter"/>
 			<OnLeave function="GameTooltip_Hide"/>
 		</Scripts>
-		<PushedTexture file="Interface\Buttons\UI-Quickslot-Depress"/>
-		<HighlightTexture name="$parentHighlight" file="Interface\Buttons\ButtonHilight-Square" alphaMode="ADD"/>
-		<CheckedTexture file="Interface\Buttons\CheckButtonHilight" alphaMode="ADD"/>
+		<PushedTexture file="Interface\Buttons\UI-Quickslot-Depress">
+			<Size x="42" y="42"/>
+			<Anchors>
+				<Anchor point="CENTER" x="0" y="1"/>
+			</Anchors>
+		</PushedTexture>
+		<HighlightTexture name="$parentHighlight" file="Interface\Buttons\ButtonHilight-Square" alphaMode="ADD">
+			<Size x="49" y="49"/>
+			<Anchors>
+				<Anchor point="CENTER" x="0" y="2"/>
+			</Anchors>			
+		</HighlightTexture>
+		<CheckedTexture file="Interface\Buttons\CheckButtonHilight" alphaMode="ADD">
+			<Size x="42" y="42"/>
+			<Anchors>
+				<Anchor point="CENTER" x="0" y="1"/>
+			</Anchors>
+		</CheckedTexture>
 	</CheckButton>
 
 	<Frame name="ToyBox" parent="PetJournalParent" setAllPoints="true">
@@ -2459,8 +2479,6 @@
 							</Anchors>
 							<TexCoords left="0.9999" right="1" top="1" bottom="0"/>
 						</Texture>
-
-
 					</Layer>
 
 					<Layer level="ARTWORK">
@@ -2567,7 +2585,7 @@
 						<Anchors>
 							<Anchor point="TOPLEFT">
 								<Offset>
-									<AbsDimension x="50" y="-50"/>
+									<AbsDimension x="50" y="-44"/>
 								</Offset>
 							</Anchor>
 						</Anchors>
@@ -2594,7 +2612,7 @@
 						<Anchors>
 							<Anchor point="TOPLEFT" relativeTo="ToySpellButton1" relativePoint="BOTTOMLEFT">
 								<Offset>
-									<AbsDimension x="0" y="-29"/>
+									<AbsDimension x="0" y="-16"/>
 								</Offset>
 							</Anchor>
 						</Anchors>
@@ -2621,7 +2639,7 @@
 						<Anchors>
 							<Anchor point="TOPLEFT" relativeTo="ToySpellButton4" relativePoint="BOTTOMLEFT">
 								<Offset>
-									<AbsDimension x="0" y="-29"/>
+									<AbsDimension x="0" y="-16"/>
 								</Offset>
 							</Anchor>
 						</Anchors>
@@ -2648,7 +2666,7 @@
 						<Anchors>
 							<Anchor point="TOPLEFT" relativeTo="ToySpellButton7" relativePoint="BOTTOMLEFT">
 								<Offset>
-									<AbsDimension x="0" y="-29"/>
+									<AbsDimension x="0" y="-16"/>
 								</Offset>
 							</Anchor>
 						</Anchors>
@@ -2675,7 +2693,7 @@
 						<Anchors>
 							<Anchor point="TOPLEFT" relativeTo="ToySpellButton10" relativePoint="BOTTOMLEFT">
 								<Offset>
-									<AbsDimension x="0" y="-29"/>
+									<AbsDimension x="0" y="-16"/>
 								</Offset>
 							</Anchor>
 						</Anchors>
@@ -2702,7 +2720,7 @@
 						<Anchors>
 							<Anchor point="TOPLEFT" relativeTo="ToySpellButton13" relativePoint="BOTTOMLEFT">
 								<Offset>
-									<AbsDimension x="0" y="-29"/>
+									<AbsDimension x="0" y="-16"/>
 								</Offset>
 							</Anchor>
 						</Anchors>
@@ -2739,7 +2757,7 @@
 							<Anchors>
 								<Anchor point="BOTTOM">
 									<Offset>
-										<AbsDimension x="-95" y="38"/>
+										<AbsDimension x="-58" y="38"/>
 									</Offset>
 								</Anchor>
 							</Anchors>
@@ -2755,7 +2773,7 @@
 						<Anchors>
 							<Anchor point="BOTTOM" relativeTo="ToyBox">
 								<Offset>
-									<AbsDimension x="-18" y="26"/>
+									<AbsDimension x="19" y="26"/>
 								</Offset>
 							</Anchor>
 						</Anchors>
@@ -2774,7 +2792,7 @@
 						<Anchors>
 							<Anchor point="BOTTOM">
 								<Offset>
-									<AbsDimension x="18" y="26"/>
+									<AbsDimension x="55" y="26"/>
 								</Offset>
 							</Anchor>
 						</Anchors>

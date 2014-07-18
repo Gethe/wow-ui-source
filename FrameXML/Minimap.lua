@@ -485,6 +485,7 @@ end
 function GarrisonLandingPageMinimapButton_OnLoad(self)
 	self:RegisterEvent("GARRISON_SHOW_LANDING_PAGE");
 	self:RegisterEvent("GARRISON_HIDE_LANDING_PAGE");
+	self:RegisterEvent("GARRISON_INVASION_AVAILABLE");
 end
 
 function GarrisonLandingPageMinimapButton_OnEvent(self, event, ...)
@@ -492,6 +493,8 @@ function GarrisonLandingPageMinimapButton_OnEvent(self, event, ...)
 		self:Hide();
 	elseif (event == "GARRISON_SHOW_LANDING_PAGE") then
 		self:Show();
+	elseif (event == "GARRISON_INVASION_AVAILABLE") then
+		self.MinimapAlertAnim:Play();
 	end
 end
 

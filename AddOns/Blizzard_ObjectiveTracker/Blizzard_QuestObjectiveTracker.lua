@@ -436,7 +436,7 @@ function QUEST_TRACKER_MODULE:Update()
 
 		-- check filters
 		local showQuest = true;
-		if ( inScenario and questType ~= QUEST_TYPE_SCENARIO ) then
+		if ( inScenario and questType ~= QUEST_TYPE_SCENARIO and questType ~= QUEST_TYPE_DUNGEON) then
 			showQuest = false;
 		elseif ( isTask ) then
 			showQuest = false;

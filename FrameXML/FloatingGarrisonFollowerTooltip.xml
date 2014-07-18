@@ -78,7 +78,7 @@ UI.xsd">
 				</Anchors>
 				<Layers>
 					<Layer level="BORDER">
-						<Texture parentKey="PortraitRing" atlas="GarrMission_PortraitRing" useAtlasSize="true">
+						<Texture parentKey="PortraitRing" atlas="GarrMission_PortraitRing_Quality" useAtlasSize="true">
 							<Anchors>
 								<Anchor point="TOP"/>
 							</Anchors>

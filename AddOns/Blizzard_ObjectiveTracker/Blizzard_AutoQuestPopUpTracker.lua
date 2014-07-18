@@ -32,19 +32,14 @@ function AUTO_QUEST_POPUP_TRACKER_MODULE:Update()
 
 	for i = 1, GetNumAutoQuestPopUps() do
 		local questID, popUpType = GetAutoQuestPopUp(i);
-		local questTitle, level, suggestedGroup, isHeader, isCollapsed, isComplete, frequency, _ = GetQuestLogTitle(GetQuestLogIndexByID(questID));
+		local questTitle = GetQuestLogTitle(GetQuestLogIndexByID(questID));
 		if ( questTitle and questTitle ~= "" ) then
 			local block = AUTO_QUEST_POPUP_TRACKER_MODULE:GetBlock(questID);
 			-- fixed height, just add the block right away
 			if ( ObjectiveTracker_AddBlock(block) ) then
 				if ( not block.init ) then
 					local blockContents = block.ScrollChild;			
-					if ( isComplete and isComplete > 0 ) then
-						isComplete = true;
-					else
-						isComplete = false;
-					end
-					if ( isComplete and popUpType == "COMPLETE" ) then
+					if ( popUpType == "COMPLETE" ) then
 						blockContents.QuestionMark:Show();
 						blockContents.Exclamation:Hide();
 						if ( IsQuestTask(questID) ) then

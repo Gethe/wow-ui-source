@@ -1128,42 +1128,46 @@ end
 
 
 ACCOUNT_UPGRADE_FEATURES = {
-	TRIAL =	{ [1] = { icon = "Interface\\Icons\\achievement_level_85", text = UPGRADE_FEATURE_7 },
-		  [2] = { icon = "Interface\\Icons\\achievement_firelands raid_ragnaros", text = UPGRADE_FEATURE_8 },
-		  [3] = { icon = "Interface\\Icons\\Ability_Mount_CelestialHorse", text = UPGRADE_FEATURE_9 },
-		  logo = "Interface\\Glues\\Common\\Glues-WoW-CCLogo",
-		  banner = { 0.0, 0.777, 0.138, 0.272 }},
 	[1] =	{ [1] = { icon = "Interface\\Icons\\achievement_level_85", text = UPGRADE_FEATURE_7 },
 		  [2] = { icon = "Interface\\Icons\\achievement_firelands raid_ragnaros", text = UPGRADE_FEATURE_8 },
 		  [3] = { icon = "Interface\\Icons\\Ability_Mount_CelestialHorse", text = UPGRADE_FEATURE_9 },
 		  logo = "Interface\\Glues\\Common\\Glues-WoW-CCLogo",
-		  banner = { 0.0, 0.777, 0.138, 0.272 }},
+		  banner = "accountupgradebanner-cataclysm"},
 	[2] =	{ [1] = { icon = "Interface\\Icons\\achievement_level_85", text = UPGRADE_FEATURE_7 },
 		  [2] = { icon = "Interface\\Icons\\achievement_firelands raid_ragnaros", text = UPGRADE_FEATURE_8 },
 		  [3] = { icon = "Interface\\Icons\\Ability_Mount_CelestialHorse", text = UPGRADE_FEATURE_9 },
 		  logo = "Interface\\Glues\\Common\\Glues-WoW-CCLogo",
-		  banner = { 0.0, 0.777, 0.138, 0.272 }},
+		  banner = "accountupgradebanner-cataclysm"},
 	[3] =	{ [1] = { icon = "Interface\\Icons\\achievement_level_90", text = UPGRADE_FEATURE_10 },
 		  [2] = { icon = "Interface\\Glues\\AccountUpgrade\\upgrade-panda", text = UPGRADE_FEATURE_11 },
 		  [3] = { icon = "Interface\\Icons\\achievement_zone_jadeforest", text = UPGRADE_FEATURE_12 },
 		  logo = "Interface\\Glues\\Common\\Glues-WoW-MPLogo",
-		  banner = { 0.0, 0.777, 0.5468, 0.6826 }},
+		  banner = "accountupgradebanner-mop"},
+	[4] =	{ [1] = { icon = "Interface\\Icons\\UI_Promotion_CharacterBoost", text = UPGRADE_FEATURE_13 },
+		  [2] = { icon = "Interface\\Icons\\Achievement_Level_100", text = UPGRADE_FEATURE_14 },
+		  [3] = { icon = "Interface\\Icons\\UI_Promotion_Garrisons", text = UPGRADE_FEATURE_15 },
+		  logo = "Interface\\Glues\\Common\\Glues-WoW-WODLOGO",
+		  banner = "accountupgradebanner-wod"},
 }
 
 -- Account upgrade panel
 function AccountUpgradePanel_Update(isExpanded)
 	local tag = nil;
+	local logoTag = nil;
 	if ( IsTrialAccount() ) then
-		tag = "TRIAL";
+		-- Trial users have the starter edition logo with an upgrade banner that brings you to the lowest expansion level available.
+		tag = max(GetAccountExpansionLevel(), GetExpansionLevel()) - 1;
+		logoTag = "TRIAL";
 	else
-		tag = max(GetAccountExpansionLevel(), GetExpansionLevel());
+		tag = min(GetClientDisplayExpansionLevel(), max(GetAccountExpansionLevel(), GetExpansionLevel()));
+		logoTag = tag;
 		if ( IsExpansionTrial() ) then
 			tag = tag - 1;
 		end
 	end
 
-	if ( EXPANSION_LOGOS[tag] ) then
-		CharacterSelectLogo:SetTexture(EXPANSION_LOGOS[tag]);
+	if ( EXPANSION_LOGOS[logoTag] ) then
+		CharacterSelectLogo:SetTexture(EXPANSION_LOGOS[logoTag]);
 		CharacterSelectLogo:Show();
 	else
 		CharacterSelectLogo:Hide();
@@ -1191,7 +1195,7 @@ function AccountUpgradePanel_Update(isExpanded)
 			CharSelectAccountUpgradeMiniPanel:Hide();
 
 			CharSelectAccountUpgradePanel.logo:SetTexture(featureTable.logo);
-			CharSelectAccountUpgradePanel.banner:SetTexCoord(unpack(featureTable.banner));
+			CharSelectAccountUpgradePanel.banner:SetAtlas(featureTable.banner, true);
 
 			local featureFrames = CharSelectAccountUpgradePanel.featureFrames;
 			for i=1, #featureTable do
@@ -1216,7 +1220,7 @@ function AccountUpgradePanel_Update(isExpanded)
 			CharSelectAccountUpgradeMiniPanel:Show();
 
 			CharSelectAccountUpgradeMiniPanel.logo:SetTexture(featureTable.logo);
-			CharSelectAccountUpgradeMiniPanel.banner:SetTexCoord(unpack(featureTable.banner));
+			CharSelectAccountUpgradeMiniPanel.banner:SetAtlas(featureTable.banner, true);
 
 			CharSelectAccountUpgradeButtonExpandCollapseButton:SetNormalTexture("Interface\\ChatFrame\\UI-ChatIcon-ScrollDown-Up");
 			CharSelectAccountUpgradeButtonExpandCollapseButton:SetPushedTexture("Interface\\ChatFrame\\UI-ChatIcon-ScrollDown-Down");
@@ -1610,22 +1614,22 @@ function CopyCharacterFrameRegionIDDropdown_Initialize()
 	local selectedValue = GlueDropDownMenu_GetSelectedValue(CopyCharacterFrame.RegionID);
 	info.func = CopyCharacterFrameRegionIDDropdown_OnClick;
 
-	info.text = "N. America";
+	info.text = NORTH_AMERICA;
 	info.value = 1;
 	info.checked = (info.value == selectedValue);
 	GlueDropDownMenu_AddButton(info);
 
-	info.text = "Korea";
+	info.text = KOREA;
 	info.value = 2;
 	info.checked = (info.value == selectedValue);
 	GlueDropDownMenu_AddButton(info);
 	
-	info.text = "Europe";
+	info.text = EUROPE;
 	info.value = 3;
 	info.checked = (info.value == selectedValue);
 	GlueDropDownMenu_AddButton(info);
 
-	info.text = "Taiwan";
+	info.text = TAIWAN;
 	info.value = 4;
 	info.checked = (info.value == selectedValue);
 	GlueDropDownMenu_AddButton(info);

@@ -27,7 +27,7 @@ function InspectPaperDollFrame_SetLevel()
 		return;
 	end
 
-	local unit, level = InspectFrame.unit, UnitLevel(InspectFrame.unit);
+	local unit, level, sex = InspectFrame.unit, UnitLevel(InspectFrame.unit), UnitSex(InspectFrame.unit);
 	local specID = GetInspectSpecialization(InspectFrame.unit);
 	
 	local classDisplayName, class = UnitClass(InspectFrame.unit); 
@@ -35,7 +35,7 @@ function InspectPaperDollFrame_SetLevel()
 	local specName, _;
 	
 	if (specID) then
-		_, specName = GetSpecializationInfoByID(specID);
+		_, specName = GetSpecializationInfoByID(specID, sex);
 	end
 	
 	if ( level == -1 ) then

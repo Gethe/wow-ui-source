@@ -19,6 +19,7 @@ VideoData["Graphics_Quality"]={
 				Graphics_SunshaftsDropDown = VIDEO_OPTIONS_DISABLED,
 				Graphics_ProjectedTexturesDropDown = VIDEO_OPTIONS_DISABLED,
 				Graphics_SSAODropDown = VIDEO_OPTIONS_DISABLED,
+				Graphics_RefractionDropDown = VIDEO_OPTIONS_DISABLED
 			},
 		},
 		[2] = {
@@ -36,6 +37,7 @@ VideoData["Graphics_Quality"]={
 				Graphics_SunshaftsDropDown = VIDEO_OPTIONS_DISABLED,
 				Graphics_ProjectedTexturesDropDown = VIDEO_OPTIONS_DISABLED,
 				Graphics_SSAODropDown = VIDEO_OPTIONS_DISABLED,
+				Graphics_RefractionDropDown = VIDEO_OPTIONS_DISABLED
 			},
 		},
 		[3] = {
@@ -53,6 +55,7 @@ VideoData["Graphics_Quality"]={
 				Graphics_SunshaftsDropDown = VIDEO_OPTIONS_LOW,
 				Graphics_ProjectedTexturesDropDown = VIDEO_OPTIONS_ENABLED,
 				Graphics_SSAODropDown = VIDEO_OPTIONS_LOW,
+				Graphics_RefractionDropDown = VIDEO_OPTIONS_LOW
 			},
 		},
 		[4] = {
@@ -70,6 +73,7 @@ VideoData["Graphics_Quality"]={
 				Graphics_SunshaftsDropDown = VIDEO_OPTIONS_HIGH,
 				Graphics_ProjectedTexturesDropDown = VIDEO_OPTIONS_ENABLED,
 				Graphics_SSAODropDown = VIDEO_OPTIONS_LOW,
+				Graphics_RefractionDropDown = VIDEO_OPTIONS_HIGH
 			},
 		},
 		[5] = {
@@ -88,6 +92,7 @@ VideoData["Graphics_Quality"]={
 				Graphics_SunshaftsDropDown = VIDEO_OPTIONS_HIGH,
 				Graphics_ProjectedTexturesDropDown = VIDEO_OPTIONS_ENABLED,
 				Graphics_SSAODropDown = VIDEO_OPTIONS_HIGH,
+				Graphics_RefractionDropDown = VIDEO_OPTIONS_HIGH
 			},
 		},
 	},
@@ -203,6 +208,7 @@ VideoData["RaidGraphics_Quality"].data = {
 			RaidGraphics_SunshaftsDropDown = VIDEO_OPTIONS_DISABLED,
 			RaidGraphics_ProjectedTexturesDropDown = VIDEO_OPTIONS_DISABLED,
 			RaidGraphics_SSAODropDown = VIDEO_OPTIONS_DISABLED,
+			RaidGraphics_RefractionDropDown = VIDEO_OPTIONS_DISABLED
 		},
 	},
 	[2] = {
@@ -220,6 +226,7 @@ VideoData["RaidGraphics_Quality"].data = {
 			RaidGraphics_SunshaftsDropDown = VIDEO_OPTIONS_DISABLED,
 			RaidGraphics_ProjectedTexturesDropDown = VIDEO_OPTIONS_DISABLED,
 			RaidGraphics_SSAODropDown = VIDEO_OPTIONS_DISABLED,
+			RaidGraphics_RefractionDropDown = VIDEO_OPTIONS_DISABLED
 		},
 	},
 	[3] = {
@@ -237,6 +244,7 @@ VideoData["RaidGraphics_Quality"].data = {
 			RaidGraphics_SunshaftsDropDown = VIDEO_OPTIONS_LOW,
 			RaidGraphics_ProjectedTexturesDropDown = VIDEO_OPTIONS_ENABLED,
 			RaidGraphics_SSAODropDown = VIDEO_OPTIONS_LOW,
+			RaidGraphics_RefractionDropDown = VIDEO_OPTIONS_LOW
 		},
 	},
 	[4] = {
@@ -254,6 +262,7 @@ VideoData["RaidGraphics_Quality"].data = {
 			RaidGraphics_SunshaftsDropDown = VIDEO_OPTIONS_HIGH,
 			RaidGraphics_ProjectedTexturesDropDown = VIDEO_OPTIONS_ENABLED,
 			RaidGraphics_SSAODropDown = VIDEO_OPTIONS_LOW,
+			RaidGraphics_RefractionDropDown = VIDEO_OPTIONS_HIGH
 		},
 	},
 	[5] = {
@@ -271,6 +280,7 @@ VideoData["RaidGraphics_Quality"].data = {
 			RaidGraphics_SunshaftsDropDown = VIDEO_OPTIONS_HIGH,
 			RaidGraphics_ProjectedTexturesDropDown = VIDEO_OPTIONS_ENABLED,
 			RaidGraphics_SSAODropDown = VIDEO_OPTIONS_HIGH,
+			RaidGraphics_RefractionDropDown = VIDEO_OPTIONS_HIGH
 		},
 	},
 };
@@ -1216,7 +1226,7 @@ VideoData["Graphics_TextureResolutionDropDown"]={
 				componentTextureLevel = GetDefaultVideoQualityOption("componentTextureLevel", 2, 0),
 				worldBaseMip = GetDefaultVideoQualityOption("worldBaseMip", 2, 1),
 			},
-			tooltip = VIDEO_OPTIONS_TEXTURE_DETAIL_HIGH,
+			tooltip = VIDEO_OPTIONS_TEXTURE_DETAIL_MEDIUM,
 		},
 		[4] = {
 			text = VIDEO_OPTIONS_HIGH,
@@ -1263,7 +1273,7 @@ VideoData["RaidGraphics_TextureResolutionDropDown"]={
 				raidComponentTextureLevel = GetDefaultVideoQualityOption("raidComponentTextureLevel", 2, 0, true),
 				raidWorldBaseMip = GetDefaultVideoQualityOption("raidWorldBaseMip", 2, 1, true),
 			},
-			tooltip = VIDEO_OPTIONS_TEXTURE_DETAIL_HIGH,
+			tooltip = VIDEO_OPTIONS_TEXTURE_DETAIL_MEDIUM,
 		},
 		[4] = {
 			text = VIDEO_OPTIONS_HIGH,
@@ -1577,6 +1587,71 @@ VideoData["RaidGraphics_SunshaftsDropDown"]={
 }
 
 -------------------------------------------------------------------------------------------------------
+VideoData["Graphics_RefractionDropDown"]={
+	name = REFRACTION;
+	description = OPTION_TOOLTIP_REFRACTION,
+
+	data = {
+		[1] = {
+			text = VIDEO_OPTIONS_DISABLED,
+			cvars =	{
+				refraction = 0,
+			},
+--			tooltip = VIDEO_OPTIONS_REFRACTION_DISABLED,
+		},
+		[2] = {
+			text = VIDEO_OPTIONS_LOW,
+			cvars =	{
+				refraction = GetDefaultVideoQualityOption("refraction", 2, 1),
+			},
+--			tooltip = VIDEO_OPTIONS_REFRACTION_LOW,
+		},
+		[3] = {
+			text = VIDEO_OPTIONS_HIGH,
+			cvars =	{
+				refraction = GetDefaultVideoQualityOption("refraction", 3, 2),
+			},
+--			tooltip = VIDEO_OPTIONS_REFRACTION_HIGH,
+		},
+	},
+	dependent = {
+		"Graphics_Quality",
+	},
+}
+
+VideoData["RaidGraphics_RefractionDropDown"]={
+	name = REFRACTION;
+	description = OPTION_TOOLTIP_REFRACTION,
+
+	data = {
+		[1] = {
+			text = VIDEO_OPTIONS_DISABLED,
+			cvars =	{
+				raidRefraction = 0,
+			},
+--			tooltip = VIDEO_OPTIONS_REFRACTION_DISABLED,
+		},
+		[2] = {
+			text = VIDEO_OPTIONS_LOW,
+			cvars =	{
+				raidRefraction = GetDefaultVideoQualityOption("raidRefraction", 2, 1, true),
+			},
+--			tooltip = VIDEO_OPTIONS_REFRACTION_LOW,
+		},
+		[3] = {
+			text = VIDEO_OPTIONS_HIGH,
+			cvars =	{
+				raidRefraction = GetDefaultVideoQualityOption("raidRefraction", 3, 2, true),
+			},
+--			tooltip = VIDEO_OPTIONS_REFRACTION_HIGH,
+		},
+	},
+	dependent = {
+		"RaidGraphics_Quality",
+	},
+}
+
+-------------------------------------------------------------------------------------------------------
 -- Advanced
 -------------------------------------------------------------------------------------------------------
 
@@ -1703,6 +1778,7 @@ VideoData["Advanced_GammaSlider"]={
 			if((IsMacClient() and not Display_DisplayModeDropDown:fullscreenmode()) or (not IsMacClient() and Display_DisplayModeDropDown:windowedmode())) then
 				self:Hide();
 				checkbox:Hide();
+				Advanced_ShowHDModels:SetPoint("TOPLEFT", Advanced_MaxFPSBKCheckBox, "BOTTOMLEFT", 0, -20);
 			else
 				self:Show();
 				checkbox:Show();
@@ -1712,6 +1788,7 @@ VideoData["Advanced_GammaSlider"]={
 				else
 					VideoOptions_Enable(self);
 				end
+				Advanced_ShowHDModels:SetPoint("TOPLEFT", checkbox, "BOTTOMLEFT", 0, -35);
 			end
 		end,
 	initialize = function(self)
@@ -1759,6 +1836,10 @@ VideoData["Advanced_UseUIScale"]={
 VideoData["Advanced_StereoEnabled"]={
 	name = ENABLE_STEREO_VIDEO;
 	tooltip = OPTION_TOOLTIP_ENABLE_STEREO_VIDEO,
+}
+
+VideoData["Advanced_ShowHDModels"]={
+	name = SHOW_HD_MODELS_TEXT;
 }
 
 -------------------------------------------------------------------------------------------------------

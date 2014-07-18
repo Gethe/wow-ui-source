@@ -6,6 +6,9 @@ LOOT_SLOT_ITEM = 1;
 LOOT_SLOT_MONEY = 2;
 LOOT_SLOT_CURRENCY = 3;
 
+LOOTFRAME_AUTOLOOT_DELAY = 0.3;
+LOOTFRAME_AUTOLOOT_RATE = 0.35;
+
 function LootFrame_OnLoad(self)
 	self:RegisterEvent("LOOT_OPENED");
 	self:RegisterEvent("LOOT_SLOT_CLEARED");
@@ -24,7 +27,7 @@ function LootFrame_OnEvent(self, event, ...)
 		if( autoLoot == 1 ) then
 			LootFrame_InitAutoLootTable( self );
 			LootFrame:SetScript("OnUpdate", LootFrame_OnUpdate);
-			self.AutoLootDelay = tonumber(GetCVar("lootAutoDelay"));
+			self.AutoLootDelay = LOOTFRAME_AUTOLOOT_DELAY;
 		else
 			self.AutoLootDelay = 0;
 			self.AutoLootTable = nil;
@@ -109,7 +112,7 @@ function LootFrame_OnUpdate(self, elapsed)
 			self.AutoLootDelay = self.AutoLootDelay - elapsed;
 			self.timeSinceUpdate = 0;
 			self.AutoLootCurrentIdx = 1;
-		elseif( self.timeSinceUpdate >  tonumber(GetCVar("lootAutoRate"))  ) then
+		elseif( self.timeSinceUpdate >  LOOTFRAME_AUTOLOOT_RATE ) then
 			local entry = self.AutoLootTable[self.AutoLootCurrentIdx]
 			if( entry and not entry.roll and not entry.locked) then
 				self.AutoLootTable[self.AutoLootCurrentIdx].hide = true;
@@ -664,6 +667,7 @@ function BonusRollFrame_OnEvent(self, event, ...)
 		self.rewardLink = rewardLink;
 		self.rewardQuantity = rewardQuantity;
 		self.rewardSpecID = rewardSpecID;
+		self.rewardSpecSex = rewardSpecSex;
 		self.StartRollAnim:Finish();
 	elseif ( event == "PLAYER_LOOT_SPEC_UPDATED" ) then
 		local specID = GetLootSpecialization();

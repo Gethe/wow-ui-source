@@ -42,7 +42,7 @@ function AlertFrame_OnEvent (self, event, ...)
 		
 		CriteriaAlertFrame_ShowAlert(id, criteria);
 	elseif ( event == "LFG_COMPLETION_REWARD" ) then
-		if ( C_Scenario.IsInScenario() ) then
+		if ( C_Scenario.IsInScenario() and not C_Scenario.TreatScenarioAsDungeon() ) then
 			ScenarioAlertFrame_ShowAlert();
 		else
 			DungeonCompletionAlertFrame_ShowAlert();
@@ -55,7 +55,7 @@ function AlertFrame_OnEvent (self, event, ...)
 		local itemLink, quantity, rollType, roll = ...;
 		LootWonAlertFrame_ShowAlert(itemLink, quantity, rollType, roll);
 	elseif ( event == "SHOW_LOOT_TOAST" ) then
-		local typeIdentifier, itemLink, quantity, specID, isPersonal = ...;
+		local typeIdentifier, itemLink, quantity, specID, sex, isPersonal = ...;
 		if ( typeIdentifier == "item" ) then
 			LootWonAlertFrame_ShowAlert(itemLink, quantity, nil, nil, specID);
 		elseif ( typeIdentifier == "money" ) then
@@ -65,7 +65,7 @@ function AlertFrame_OnEvent (self, event, ...)
 			LootWonAlertFrame_ShowAlert(itemLink, quantity, nil, nil, specID, true);
 		end
 	elseif ( event == "SHOW_PVP_FACTION_LOOT_TOAST" ) then
-		local typeIdentifier, itemLink, quantity, specID, isPersonal = ...;
+		local typeIdentifier, itemLink, quantity, specID, sex, isPersonal = ...;
 		if ( typeIdentifier == "item" ) then
 			LootWonAlertFrame_ShowAlert(itemLink, quantity, nil, nil, specID, false, true);
 		elseif ( typeIdentifier == "money" ) then
@@ -75,7 +75,7 @@ function AlertFrame_OnEvent (self, event, ...)
 			LootWonAlertFrame_ShowAlert(itemLink, quantity, nil, nil, specID, false, true);
 		end
 	elseif ( event == "SHOW_LOOT_TOAST_UPGRADE") then
-		local itemLink, quantity, specID, baseQuality, isPersonal = ...;
+		local itemLink, quantity, specID, sex, baseQuality, isPersonal = ...;
 		LootUpgradeFrame_ShowAlert(itemLink, quantity, specID, baseQuality);
 	elseif ( event == "PET_BATTLE_CLOSE" ) then
 		AchievementAlertFrame_FireDelayedAlerts();
@@ -86,8 +86,7 @@ function AlertFrame_OnEvent (self, event, ...)
 		local name = ...;
 		GarrisonBuildingAlertFrame_ShowAlert(name);
 	elseif ( event == "GARRISON_MISSION_FINISHED" ) then
-		local name = ...;
-		GarrisonMissionAlertFrame_ShowAlert(name);
+		GarrisonMissionAlertFrame_ShowAlert(...);
 	elseif ( event == "GARRISON_FOLLOWER_ADDED" ) then
 		local name, displayID, level, quality = ...;
 		GarrisonFollowerAlertFrame_ShowAlert(name, displayID, level, quality);
@@ -562,6 +561,7 @@ function ScenarioAlertFrame_ShowAlert()
 	AlertFrame_FixAnchors();
 end
 
+-- [[ ChallengeModeAlertFrameReward ]] --
 function ChallengeModeAlertFrameReward_SetReward(frame, index)
 	local itemID, name, texturePath, quantity, isCurrency = GetChallengeModeCompletionReward(index);
 	SetPortraitToTexture(frame.texture, texturePath);
@@ -1077,9 +1077,11 @@ function GarrisonBuildingAlertFrame_ShowAlert(name)
 end
 
 -- [[ GarrisonMissionAlertFrame ]] --
-function GarrisonMissionAlertFrame_ShowAlert(name)
+function GarrisonMissionAlertFrame_ShowAlert(missionID)
 	GarrisonLandingPageMinimapButton.MinimapLoopPulseAnim:Play();
-	GarrisonMissionAlertFrame.Name:SetText(name);
+	local missionInfo = C_Garrison.GetBasicMissionInfo(missionID);
+	GarrisonMissionAlertFrame.Name:SetText(missionInfo.name);
+	GarrisonMissionAlertFrame.MissionType:SetAtlas(missionInfo.typeAtlas);
 	AlertFrame_AnimateIn(GarrisonMissionAlertFrame);
 	AlertFrame_FixAnchors();
 	PlaySound("AuctionWindowOpen");
@@ -1105,8 +1107,10 @@ function GarrisonFollowerAlertFrame_ShowAlert(name, displayID, level, quality)
 	local color = BAG_ITEM_QUALITY_COLORS[quality];
 	if (color) then
 		GarrisonFollowerAlertFrame.PortraitFrame.LevelBorder:SetVertexColor(color.r, color.g, color.b);
+		GarrisonFollowerAlertFrame.PortraitFrame.PortraitRing:SetVertexColor(color.r, color.g, color.b);
 	else
 		GarrisonFollowerAlertFrame.PortraitFrame.LevelBorder:SetVertexColor(1, 1, 1);
+		GarrisonFollowerAlertFrame.PortraitFrame.PortraitRing:SetVertexColor(1, 1, 1);
 	end
 	AlertFrame_AnimateIn(GarrisonFollowerAlertFrame);
 	AlertFrame_FixAnchors();

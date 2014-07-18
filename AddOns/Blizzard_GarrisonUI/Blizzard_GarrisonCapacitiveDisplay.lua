@@ -35,6 +35,8 @@ function GarrisonCapacitiveDisplayFrame_Update(self, success, maxShipments, plot
 		
 	    local reagents = display.Reagents;
 
+	    local hasReagents = true;
+
 	    for i = 1, #reagents do
 	    	reagents[i]:Hide();
 	    end
@@ -42,7 +44,7 @@ function GarrisonCapacitiveDisplayFrame_Update(self, success, maxShipments, plot
 	    for i = 1, C_Garrison.GetNumShipmentReagents() do
 	    	local reagent = reagents[i];
 	    	if (not reagent) then
-	    		reagent = CreateFrame("Button", nil, self, "GarrisonCapacitiveItemButtonTemplate");
+	    		reagent = CreateFrame("Button", nil, display, "GarrisonCapacitiveItemButtonTemplate");
 	    		reagent:SetID(i);
 	    		reagent:SetPoint("TOP", reagents[i-1], "BOTTOM", 0, -6);
 	    	end
@@ -61,6 +63,7 @@ function GarrisonCapacitiveDisplayFrame_Update(self, success, maxShipments, plot
 			if ( quantity < needed ) then
 				reagent.Icon:SetVertexColor(0.5, 0.5, 0.5);
 				reagent.Name:SetTextColor(GRAY_FONT_COLOR.r, GRAY_FONT_COLOR.g, GRAY_FONT_COLOR.b);
+				hasReagents = false;
 			else
 				reagent.Icon:SetVertexColor(1.0, 1.0, 1.0);
 				reagent.Name:SetTextColor(HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b);
@@ -95,6 +98,7 @@ function GarrisonCapacitiveDisplayFrame_Update(self, success, maxShipments, plot
 		local _, buildingName = C_Garrison.GetOwnedBuildingInfoAbbrev(self.plotID);
 
 		self.TitleText:SetText(buildingName);
+		self.StartWorkOrderButton:SetEnabled(hasReagents);
 		
 		if ( UnitExists("npc") ) then
 			SetPortraitTexture(self.portrait, "npc");
@@ -140,6 +144,10 @@ function GarrisonCapacitiveDisplayFrame_OnEvent(self, event, ...)
 			GarrisonCapacitiveDisplayFrame_Update(self, true, self.maxShipments, self.plotID);
 		end
 	elseif (event == "SHIPMENT_UPDATE") then
+		local shipmentStarted = ...;
+		if (shipmentStarted) then
+			self.FinishedGlow.FinishedAnim:Play();
+		end
 		C_Garrison.RequestShipmentInfo();
 	end
 end

@@ -29,9 +29,7 @@ HelpFrameNavTbl[1] = {	text = KNOWLEDGE_BASE,
 					};
 HelpFrameNavTbl[2] = {	text = HELPFRAME_ACCOUNTSECURITY_TITLE, 
 						icon ="Interface\\HelpFrame\\HelpIcon-AccountSecurity",
-						frame = "asec",
-						disableOnTest = true,
-						disableTootip = DISABLED_ON_TEST_REALM
+						frame = "asec"
 					};
 HelpFrameNavTbl[3] = {	text = HELPFRAME_STUCK_TITLE, 
 						icon ="Interface\\HelpFrame\\HelpIcon-CharacterStuck",
@@ -43,15 +41,11 @@ HelpFrameNavTbl[4] = {	text = HELPFRAME_REPORT_BUG_TITLE,
 					};
 HelpFrameNavTbl[5] = {	text = HELPFRAME_REPORT_PLAYER_TITLE, 
 						icon="Interface\\HelpFrame\\HelpIcon-ReportAbuse",
-						frame = "report",
-						disableOnTest = true,
-						disableTootip = DISABLED_ON_TEST_REALM
+						frame = "report"
 					};
 HelpFrameNavTbl[6] = {	text = HELP_TICKET_OPEN, 
 						icon ="Interface\\HelpFrame\\HelpIcon-OpenTicket",
-						frame = "ticketHelp",
-						disableOnTest = true,
-						disableTootip = DISABLED_ON_TEST_REALM
+						frame = "ticketHelp"
 					};					
 
 --LAG REPORITNG BUTTONS					
@@ -274,18 +268,23 @@ function HelpFrame_OnEvent(self, event, ...)
 	end
 end
 
-function HelpFrame_UpdateQuickTicketSystemStatus()
-	local enabled = GMQuickTicketSystemEnabled() and not GMQuickTicketSystemThrottled();
+function HelpFrame_UpdateSubsystemStatus(key, enabled)
 	if ( enabled ) then
-		HelpFrame_SetButtonEnabled(HelpFrame["button"..HELPFRAME_SUBMIT_BUG], true);
-		HelpFrame_SetButtonEnabled(HelpFrame["button"..HELPFRAME_SUBMIT_SUGGESTION], true);
+		HelpFrame_SetButtonEnabled(HelpFrame["button"..key], true);
 	else
-		if ( HelpFrame.selectedId == HELPFRAME_SUBMIT_BUG or HelpFrame.selectedId == HELPFRAME_SUBMIT_SUGGESTION ) then
+		if ( HelpFrame.selectedId == key ) then
 			HelpFrame.button1:Click();
 		end
-		HelpFrame_SetButtonEnabled(HelpFrame["button"..HELPFRAME_SUBMIT_BUG], false);
-		HelpFrame_SetButtonEnabled(HelpFrame["button"..HELPFRAME_SUBMIT_SUGGESTION], false);
+		HelpFrame_SetButtonEnabled(HelpFrame["button"..key], false);
 	end
+end
+
+function HelpFrame_UpdateQuickTicketSystemStatus()
+	HelpFrame_UpdateSubsystemStatus(HELPFRAME_SUBMIT_BUG, GMEuropaBugsEnabled() and not GMQuickTicketSystemThrottled());
+	HelpFrame_UpdateSubsystemStatus(HELPFRAME_SUBMIT_SUGGESTION, GMEuropaSuggestionsEnabled() and not GMQuickTicketSystemThrottled());
+	HelpFrame_UpdateSubsystemStatus(HELPFRAME_REPORT_ABUSE, GMEuropaComplaintsEnabled() and not GMQuickTicketSystemThrottled());
+	HelpFrame_UpdateSubsystemStatus(HELPFRAME_OPEN_TICKET, GMEuropaTicketsEnabled() and not GMQuickTicketSystemThrottled());
+	HelpFrame_UpdateSubsystemStatus(HELPFRAME_ACCOUNT_SECURITY, GMEuropaTicketsEnabled() and not GMQuickTicketSystemThrottled());
 end
 
 function HelpFrame_UpdateItemRestorationButtonStatus()
@@ -298,7 +297,7 @@ function HelpFrame_UpdateItemRestorationButtonStatus()
 end
 
 function HelpFrame_ShowFrame(key)
-	local testEnabled = IsTestBuild() and GMQuickTicketSystemEnabled() and not GMQuickTicketSystemThrottled();
+	local testEnabled = IsTestBuild() and GMEuropaBugsEnabled() and not GMQuickTicketSystemThrottled();
 	if ( testEnabled ) then
 		key = key or HelpFrame.selectedId or HELPFRAME_SUBMIT_BUG;
 	else
@@ -414,17 +413,6 @@ function HelpFrame_SetTicketEntry()
 end
 
 function HelpFrame_SetButtonEnabled(button, enabled)
-	local id = button:GetID();
-	if ( IsTestBuild() ) then
-		if ( id and HelpFrameNavTbl[id].disableOnTest ) then
-			enabled = false;
-		end
-		button.tooltip = HelpFrameNavTbl[id].disableTootip;
-		button.newbieText = nil;
-	else
-		button.tooltip = HelpFrameNavTbl[id].tooltipTex;
-		button.newbieText = HelpFrameNavTbl[id].newbieText;
-	end
 	if ( enabled ) then
 		button:Enable();
 		button:GetNormalTexture():SetDesaturated(false);

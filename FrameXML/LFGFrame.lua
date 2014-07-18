@@ -866,11 +866,7 @@ function LFGDungeonReadyPopup_Update()
 end
 
 function LFGDungeonReadyDialog_UpdateRewards(dungeonID, role)
-	local doneToday, moneyBase, moneyVar, experienceBase, experienceVar, numRewards = GetLFGDungeonRewards(dungeonID);
-	
-	local numRandoms = 4 - GetNumSubgroupMembers();
-	local moneyAmount = moneyBase + moneyVar * numRandoms;
-	local experienceGained = experienceBase + experienceVar * numRandoms;
+	local doneToday, moneyAmount, moneyVar, experienceGained, experienceVar, numRewards = GetLFGDungeonRewards(dungeonID);
 	
 	local frameID = 1;
 
@@ -965,10 +961,7 @@ function LFGDungeonReadyDialogReward_OnEnter(self, dungeonID)
 	GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
 	if ( self.rewardType == "misc" ) then
 		GameTooltip:AddLine(REWARD_ITEMS_ONLY);
-		local doneToday, moneyBase, moneyVar, experienceBase, experienceVar, numRewards = GetLFGDungeonRewards(LFGDungeonReadyPopup.dungeonID);
-		local numRandoms = 4 - GetNumSubgroupMembers();
-		local moneyAmount = moneyBase + moneyVar * numRandoms;
-		local experienceGained = experienceBase + experienceVar * numRandoms;
+		local doneToday, moneyAmount, moneyVar, experienceGained, experienceVar, numRewards = GetLFGDungeonRewards(LFGDungeonReadyPopup.dungeonID);
 		
 		if ( experienceGained > 0 ) then
 			GameTooltip:AddLine(string.format(GAIN_EXPERIENCE, experienceGained));
@@ -1248,12 +1241,9 @@ end
 
 --Reward frame functions
 function LFGRewardsFrame_OnLoad(self)
-	local myName = self:GetName();
 	self.numRewardFrames = 1;
 	self.description:SetTextColor(1, 1, 1);
 	self.rewardsDescription:SetTextColor(1, 1, 1);
-	self.pugDescription:SetTextColor(1, 1, 1);
-	self.moneyLabel:SetTextColor(1, 1, 1);
 	self.xpLabel:SetTextColor(1, 1, 1);
 	self.BonusValor.BonusText:SetTextColor(1, 1, 1);
 end
@@ -1274,11 +1264,7 @@ function LFGRewardsFrame_UpdateFrame(parentFrame, dungeonID, background)
 	local dungeonName, typeID, subtypeID,_,_,_,_,_,_,_,textureFilename,difficulty,_,dungeonDescription, isHoliday, bonusRepAmount = GetLFGDungeonInfo(dungeonID);
 	local isHeroic = difficulty > 0;
 	local isScenario = (subtypeID == LFG_SUBTYPEID_SCENARIO);
-	local doneToday, moneyBase, moneyVar, experienceBase, experienceVar, numRewards = GetLFGDungeonRewards(dungeonID);
-	local numRandoms = 4 - GetNumSubgroupMembers();
-	local moneyAmount = moneyBase + moneyVar * numRandoms;
-	local experienceGained = experienceBase + experienceVar * numRandoms;
-
+	local doneToday, moneyAmount, moneyVar, experienceGained, experienceVar, numRewards = GetLFGDungeonRewards(dungeonID);
 	
 	local backgroundTexture;
 	
@@ -1400,7 +1386,7 @@ function LFGRewardsFrame_UpdateFrame(parentFrame, dungeonID, background)
 	
 	local totalRewards = itemButtonIndex - 1;
 		
-	if ( totalRewards > 0 or ((moneyVar == 0 and experienceVar == 0) and (moneyAmount > 0 or experienceGained > 0)) ) then
+	if ( totalRewards > 0 or moneyAmount > 0 or experienceGained > 0 ) then
 		parentFrame.rewardsLabel:Show();
 		parentFrame.rewardsDescription:Show();
 		lastFrame = parentFrame.rewardsDescription;
@@ -1409,7 +1395,35 @@ function LFGRewardsFrame_UpdateFrame(parentFrame, dungeonID, background)
 		parentFrame.rewardsDescription:Hide();
 	end
 	
-	if ( totalRewards > 0 ) then
+	local amountText = parentFrame.MoneyReward.Name;
+	if ( moneyAmount > 0 ) then
+		amountText:SetText(GetMoneyString(moneyAmount));
+		if ( amountText:IsTruncated() ) then
+			amountText:SetText(GetMoneyString(moneyAmount - mod(moneyAmount, 100)));
+			if ( amountText:IsTruncated() ) then
+				amountText:SetText(GetMoneyString(moneyAmount - mod(moneyAmount, 10000)));
+			end
+		end
+
+		if ( itemButtonIndex > 1 ) then
+			if ( mod(itemButtonIndex, 2) == 0 ) then
+				parentFrame.MoneyReward:SetPoint("LEFT", parentName.."Item"..(itemButtonIndex-1), "RIGHT", 0, 0);
+			else
+				parentFrame.MoneyReward:SetPoint("TOPLEFT", parentName.."Item"..(itemButtonIndex-2), "BOTTOMLEFT", 0, -5);
+			end
+		else
+			parentFrame.MoneyReward:SetPoint("TOPLEFT", lastFrame, "BOTTOMLEFT", 0, -5);
+		end
+		
+		parentFrame.MoneyReward:Show();
+	else
+		parentFrame.MoneyReward:Hide();
+	end
+	
+	
+	if ( mod(totalRewards, 2) == 0 and parentFrame.MoneyReward:IsShown() ) then
+		lastFrame = parentFrame.MoneyReward;
+	elseif ( totalRewards > 0 ) then
 		lastFrame = _G[parentName.."Item"..(totalRewards - mod(totalRewards+1, 2))];
 	end
 	
@@ -1423,38 +1437,11 @@ function LFGRewardsFrame_UpdateFrame(parentFrame, dungeonID, background)
 	else
 		parentFrame.bonusRepFrame:Hide();
 	end
-
-	if ( moneyVar > 0 or experienceVar > 0 ) then
-		parentFrame.pugDescription:SetPoint("TOPLEFT", lastFrame, "BOTTOMLEFT", 0, -5);
-		parentFrame.pugDescription:Show();
-		lastFrame = parentFrame.pugDescription;
-	else
-		parentFrame.pugDescription:Hide();
-	end
-	
-	if ( moneyAmount > 0 ) then
-		MoneyFrame_Update(parentFrame.moneyFrame, moneyAmount);
-		parentFrame.moneyLabel:SetPoint("TOPLEFT", lastFrame, "BOTTOMLEFT", 20, -10);
-		parentFrame.moneyLabel:Show();
-		parentFrame.moneyFrame:Show()
-		
-		parentFrame.xpLabel:SetPoint("TOPLEFT", lastFrame, "BOTTOMLEFT", 0, -5);
-		
-		lastFrame = parentFrame.moneyLabel;
-	else
-		parentFrame.moneyLabel:Hide();
-		parentFrame.moneyFrame:Hide();
-		
-	end
 	
 	if ( experienceGained > 0 ) then
 		parentFrame.xpAmount:SetText(experienceGained);
+		parentFrame.xpLabel:SetPoint("TOPLEFT", lastFrame, "BOTTOMLEFT", 20, -10);
 		
-		if ( lastFrame == parentFrame.moneyLabel ) then
-			parentFrame.xpLabel:SetPoint("TOPLEFT", lastFrame, "BOTTOMLEFT", 0, -5);
-		else
-			parentFrame.xpLabel:SetPoint("TOPLEFT", lastFrame, "BOTTOMLEFT", 20, -10);
-		end
 		parentFrame.xpLabel:Show();
 		parentFrame.xpAmount:Show();
 		

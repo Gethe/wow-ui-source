@@ -1580,6 +1580,11 @@
 					<Anchor point="TOP" relativeKey="$parent.Title" relativePoint="BOTTOM" y="-10"/>
 				</Anchors>
 			</FontString>
+			<Texture parentKey="MissionType" atlas="GarrMission_MissionIcon-Combat" useAtlasSize="true">
+				<Anchors>
+					<Anchor point="TOPLEFT" x="14" y="-8"/>
+				</Anchors>
+			</Texture>
 		</Layer>
 		<Layer level="OVERLAY">
 			<Texture name="$parentGlow" file="Interface\AchievementFrame\UI-Achievement-Alert-Glow" alphaMode="ADD" hidden="true" parentKey="glow">
@@ -1721,7 +1726,7 @@
 			</Anchors>
 			<Layers>
 				<Layer level="BORDER">
-					<Texture parentKey="PortraitRing" atlas="GarrMission_PortraitRing" useAtlasSize="true">
+					<Texture parentKey="PortraitRing" atlas="GarrMission_PortraitRing_Quality" useAtlasSize="true">
 						<Anchors>
 							<Anchor point="TOP"/>
 						</Anchors>

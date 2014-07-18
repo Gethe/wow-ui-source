@@ -201,7 +201,7 @@ function QuestFrameProgressItems_Update()
 		for i=1, numRequiredItems do	
 			local requiredItem = _G[questItemName..buttonIndex];
 			requiredItem.type = "required";
-			requiredItem.rewardType = "item";
+			requiredItem.objectType = "item";
 			requiredItem:SetID(i);
 			local name, texture, numItems = GetQuestItemInfo(requiredItem.type, i);
 			SetItemButtonCount(requiredItem, numItems);
@@ -214,7 +214,7 @@ function QuestFrameProgressItems_Update()
 		for i=1, numRequiredCurrencies do	
 			local requiredItem = _G[questItemName..buttonIndex];
 			requiredItem.type = "required";
-			requiredItem.rewardType = "currency";
+			requiredItem.objectType = "currency";
 			requiredItem:SetID(i);
 			local name, texture, numItems = GetQuestCurrencyInfo(requiredItem.type, i);
 			SetItemButtonCount(requiredItem, numItems);

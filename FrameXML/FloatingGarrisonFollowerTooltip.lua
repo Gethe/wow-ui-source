@@ -56,6 +56,7 @@ function GarrisonFollowerTooltipTemplate_SetGarrisonFollower(tooltipFrame, data)
 	SetPortraitTexture(tooltipFrame.Portrait.Portrait, data.displayID);
 	local color = ITEM_QUALITY_COLORS[data.quality];
 	tooltipFrame.Portrait.LevelBorder:SetVertexColor(color.r, color.g, color.b);
+	tooltipFrame.Portrait.PortraitRing:SetVertexColor(color.r, color.g, color.b);
 	tooltipFrame.Class:SetAtlas(data.classSpecAtlas);
 
 	if (not data.collected) then

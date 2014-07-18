@@ -148,10 +148,11 @@ function TalentFrame_UpdateSpecInfoCache(cache, inspect, pet, talentGroup)
 
 	local numTabs = GetNumSpecializations(inspect);
 	cache.numTabs = numTabs;
+	local sex = pet and UnitSex("pet") or UnitSex("player");
 	for i = 1, MAX_TALENT_TABS do
 		cache[i] = cache[i] or { };
 		if ( i <= numTabs ) then
-			local id, name, description, icon, background = GetSpecializationInfo(i, inspect);
+			local id, name, description, icon, background = GetSpecializationInfo(i, inspect, nil, nil, sex);
 
 			-- cache the info we care about
 			cache[i].name = name;

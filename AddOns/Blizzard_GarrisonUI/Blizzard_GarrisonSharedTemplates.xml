@@ -85,6 +85,13 @@
 				</Texture>
 			</Layer>
 			<Layer level="BORDER" textureSubLevel="1">
+				<Texture parentKey="PortraitRingQuality" atlas="GarrMission_PortraitRing_Quality" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="TOP"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="BORDER" textureSubLevel="2">
 				<Texture parentKey="LevelBorder" atlas="GarrMission_PortraitRing_LevelBorder" useAtlasSize="true">
 					<Anchors>
 						<Anchor point="BOTTOM" y="-3"/>
@@ -97,6 +104,13 @@
 						<Anchor point="CENTER" relativeKey="$parent.LevelBorder"/>
 					</Anchors>
 				</FontString>
+			</Layer>
+			<Layer level="OVERLAY">
+				<Texture parentKey="PortraitRingCover" atlas="GarrMission_PortraitRing_Darkener" useAtlasSize="true" hidden="true" alpha="0.6">
+					<Anchors>
+						<Anchor point="TOP" x="0" y="-1"/>
+					</Anchors>
+				</Texture>			
 			</Layer>
 		</Layers>
 	</Frame>

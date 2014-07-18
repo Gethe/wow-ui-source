@@ -6,6 +6,7 @@
 function QueueStatusMinimapButton_OnLoad(self)
 	self:RegisterForClicks("LeftButtonUp", "RightButtonUp");
 	self:SetFrameLevel(self:GetFrameLevel() + 1);
+	self.glowLocks = {};
 end
 
 function QueueStatusMinimapButton_OnEnter(self)
@@ -21,10 +22,13 @@ function QueueStatusMinimapButton_OnClick(self, button)
 		QueueStatusDropDown_Show(self.DropDown, self:GetName());
 	else
 		local inBattlefield, showScoreboard = QueueStatus_InActiveBattlefield();
+		local lfgListActiveEntry = C_LFGList.GetActiveEntryInfo();
 		if ( inBattlefield ) then
 			if ( showScoreboard ) then
 				ToggleWorldStateScoreFrame();
 			end
+		elseif ( lfgListActiveEntry ) then
+			PVEFrame_ToggleFrame("GroupFinderFrame", LFGListPVEStub);
 		else
 			QueueStatusDropDown_Show(self.DropDown, self:GetName());
 		end
@@ -33,6 +37,23 @@ end
 
 function QueueStatusMinimapButton_OnShow(self)
 	self.Eye:SetFrameLevel(self:GetFrameLevel() - 1);
+end
+
+function QueueStatusMinimapButton_SetGlowLock(self, lock, enabled)
+	self.glowLocks[lock] = enabled;
+	QueueStatusMinimapButton_UpdateGlow(self);
+end
+
+function QueueStatusMinimapButton_UpdateGlow(self)
+	local enabled = false;
+	for k, v in pairs(self.glowLocks) do
+		if ( v ) then
+			enabled = true;
+			break;
+		end
+	end
+
+	self.Eye.Highlight:SetShown(enabled);
 end
 
 ----------------------------------------------
@@ -56,6 +77,7 @@ function QueueStatusFrame_OnLoad(self)
 	self:RegisterEvent("LFG_LIST_ACTIVE_ENTRY_UPDATE");
 	self:RegisterEvent("LFG_LIST_SEARCH_RESULTS_RECEIVED");
 	self:RegisterEvent("LFG_LIST_SEARCH_RESULT_UPDATED");
+	self:RegisterEvent("LFG_LIST_APPLICANT_UPDATED");
 
 	--For PvP Role Checks
 	self:RegisterEvent("PVP_ROLE_CHECK_UPDATED");
@@ -338,7 +360,8 @@ end
 
 function QueueStatusEntry_SetUpLFGListActiveEntry(entry)
 	local _, _, _, name = C_LFGList.GetActiveEntryInfo();
-	QueueStatusEntry_SetMinimalDisplay(entry, name, QUEUED_STATUS_LISTED);
+	local numApplicants, numActiveApplicants = C_LFGList.GetNumApplicants();
+	QueueStatusEntry_SetMinimalDisplay(entry, name, QUEUED_STATUS_LISTED, string.format(LFG_LIST_PENDING_APPLICANTS, numActiveApplicants));
 end
 
 function QueueStatusEntry_SetUpLFGListApplication(entry, resultID)

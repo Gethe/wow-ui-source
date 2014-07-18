@@ -157,6 +157,25 @@
 				<Anchors>
 					<Anchor point="CENTER"/>
 				</Anchors>
+				<Layers>
+					<Layer level="OVERLAY">
+						<Texture parentKey="Highlight" hidden="true" alphaMode="ADD" atlas="groupfinder-eye-highlight" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="CENTER"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+				<Animations>
+					<AnimationGroup parentKey="EyeHighlightAnim" setToFinalAlpha="true" looping="BOUNCE">
+						<Alpha childKey="Highlight" duration="0.75" order="1" fromAlpha="1" toAlpha="0"/>
+					</AnimationGroup>
+				</Animations>
+				<Scripts>
+					<OnLoad>
+						self.EyeHighlightAnim:Play();
+					</OnLoad>
+				</Scripts>
 			</Frame>
 			<Frame parentKey="DropDown" name="$parentDropDown" inherits="UIDropDownMenuTemplate">
 				<Scripts>

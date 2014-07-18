@@ -541,7 +541,6 @@ DisplayPanelOptions = {
 	threatPlaySounds = { text = "PLAY_AGGRO_SOUNDS" },
 	SpellTooltip_DisplayAvgValues = { text = "SHOW_POINTS_AS_AVG" },
 	emphasizeMySpellEffects = { text = "EMPHASIZE_MY_SPELLS_TEXT" },
-	hdPlayerModels = { text = "SHOW_HD_MODELS_TEXT" },
 }
 
 function InterfaceOptionsDisplayPanel_OnLoad (self)

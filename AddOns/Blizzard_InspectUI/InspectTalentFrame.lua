@@ -163,13 +163,15 @@ end
 --------------------------------------------------------------------------------
 function InspectTalentFrameSpec_OnShow(self)
 	local spec = nil;
+	local sex = nil;
 	if(INSPECTED_UNIT ~= nil) then
 		spec = GetInspectSpecialization(INSPECTED_UNIT);
+		sex = UnitSex(INSPECTED_UNIT);
 	end
-	if(spec ~= nil and spec > 0) then
+	if(spec ~= nil and spec > 0 and sex ~= nil) then
 		local role1 = GetSpecializationRoleByID(spec);
 		if(role1 ~= nil) then
-			local id, name, description, icon, background = GetSpecializationInfoByID(spec);
+			local id, name, description, icon, background = GetSpecializationInfoByID(spec, sex);
 			self.specIcon:Show();
 			SetPortraitToTexture(self.specIcon, icon);
 			self.specName:SetText(name);

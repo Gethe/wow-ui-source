@@ -273,29 +273,7 @@
 	</Font>
 	<Font name="FocusFontSmall" inherits="SystemFont_Shadow_Med2" virtual="true">
 		<Color r="1.0" g="0.82" b="0"/>
-	</Font>		
-	<Font name="MissionLevelFont" font="Fonts\FRIZQT__.ttf" virtual="true">
-		<FontHeight>
-			<AbsValue val="24"/>
-		</FontHeight>
-		<Color r="0.529" g="0.451" b="0.341"/>
 	</Font>
-	<Font name="MissionLevelFontLarge" font="Fonts\FRIZQT__.ttf" virtual="true">
-		<FontHeight>
-			<AbsValue val="30"/>
-		</FontHeight>
-		<Color r="0.529" g="0.451" b="0.341"/>
-	</Font>
-	<Font name="RewardNumberFont" font="Fonts\FRIZQT__.TTF" outline="NORMAL" virtual="true">
-		<FontHeight>
-			<AbsValue val="18"/>
-		</FontHeight>
-	</Font>	
-	<Font name="RewardNumberFont2" font="Fonts\FRIZQT__.TTF" outline="NORMAL" virtual="true">
-		<FontHeight>
-			<AbsValue val="30"/>
-		</FontHeight>
-	</Font>	
 	<Font name="ObjectiveFont" inherits="GameFontHighlight" justifyH="LEFT" justifyV="TOP" virtual="true">
 		<Color r="0.8" g="0.8" b="0.8"/>
 	</Font>	

@@ -1,5 +1,8 @@
 -- The ids will be used to track whether character has seen a splash screen. Have to assign unique ones to each splash screen in each category (normal and boost)
-PREPATCH_BOOST_QUESTS = {Alliance=35460, Horde=35745};
+PREPATCH_BOOST_QUESTS = {Alliance = {id=35460, text=SPLASH_BOOST_RIGHT_DESC_ALLIANCE}
+						, Horde = {id=35745, text=SPLASH_BOOST_RIGHT_DESC_HORDE}
+						};
+						
 POSTPATCH_BOOST_QUEST = 34398;
 SPLASH_SCREENS = {
 	["BASE"] =	{	id = 1,
@@ -38,7 +41,7 @@ SPLASH_SCREENS = {
 					}
 				},
 	["NEW"] =	{	id = 2,
-					expansion = 6,
+					expansion = LE_EXPANSION_WARLORDS_OF_DRAENOR,
 					questID = nil,			
 					leftTex = "splash-601-topleft",
 					rightTex = "splash-601-right",
@@ -72,7 +75,7 @@ SPLASH_SCREENS = {
 					feature1Desc = SPLASH_BOOST_FEATURE1_DESC,
 					feature2Title = SPLASH_BOOST_FEATURE2_TITLE,
 					feature2Desc = SPLASH_BOOST_FEATURE2_DESC,
-					rightTitle = SPLASH_BOOST_RIGHT_TITLE,
+					rightTitle = SPLASH_BOOST_RIGHT_TITLE_ALLIANCE,
 					rightDesc = SPLASH_BOOST_RIGHT_DESC,
 					cVar="splashScreenBoost",
 					features = {
@@ -91,7 +94,7 @@ SPLASH_SCREENS = {
 					},
 				},
 	["BOOST2"] ={	id = 2,
-					expansion = 6,
+					expansion = LE_EXPANSION_WARLORDS_OF_DRAENOR,
 					questID = POSTPATCH_BOOST_QUEST,
 					leftTex = "splash-boost-topleft",
 					rightTex = "splash-boost-right",
@@ -118,8 +121,9 @@ SPLASH_SCREENS = {
 
 local function GetSplashFrameTag()
 	local tag;
+	local expansionLevel = GetExpansionLevel();
 	if ( IsCharacterNewlyBoosted() ) then
-		if ( GetExpansionLevel() >= SPLASH_SCREENS["BOOST2"].expansion ) then		
+		if ( expansionLevel >= SPLASH_SCREENS["BOOST2"].expansion ) then		
 			tag = "BOOST2";
 		else
 			tag = "BOOST";
@@ -127,7 +131,7 @@ local function GetSplashFrameTag()
 	end
 	
 	if( not tag ) then
-		if ( GetExpansionLevel() >= SPLASH_SCREENS["NEW"].expansion) then
+		if ( expansionLevel >= SPLASH_SCREENS["NEW"].expansion) then
 			tag = "NEW";
 		else
 			tag = "BASE";
@@ -139,7 +143,9 @@ end
 function SplashFrame_OnLoad(self)
 	self:RegisterEvent("PLAYER_ENTERING_WORLD");
 	-- need an event for expansion becoming active
-	SPLASH_SCREENS["BOOST"].questID = PREPATCH_BOOST_QUESTS[UnitFactionGroup("player")];
+	local faction = UnitFactionGroup("player");
+	SPLASH_SCREENS["BOOST"].questID = PREPATCH_BOOST_QUESTS[faction].id;
+	SPLASH_SCREENS["BOOST"].rightDesc = PREPATCH_BOOST_QUESTS[faction].text;
 end
 
 function SplashFrame_OnEvent(self, event)

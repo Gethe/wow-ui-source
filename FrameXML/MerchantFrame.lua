@@ -527,7 +527,7 @@ function MerchantFrame_ConfirmExtendedItemCost(itemButton, numToPurchase)
 		local specName, specIcon;
 		specText = "\n\n";
 		for i=1, #specs do
-			_, specName, _, specIcon = GetSpecializationInfoByID(specs[i]);
+			_, specName, _, specIcon = GetSpecializationInfoByID(specs[i], UnitSex("player"));
 			specText = specText.." |T"..specIcon..":0:0:0:-1|t "..NORMAL_FONT_COLOR_CODE..specName..FONT_COLOR_CODE_CLOSE;
 			if (i < #specs) then
 				specText = specText..PLAYER_LIST_DELIMITER
@@ -802,7 +802,7 @@ function MerchantFrame_UpdateFilterString()
 	elseif currFilter == LE_LOOT_FILTER_ALL then
 		name = ALL;
 	else -- Spec
-		local _, specName, _, icon = GetSpecializationInfo(currFilter - LE_LOOT_FILTER_SPEC1 + 1);
+		local _, specName, _, icon = GetSpecializationInfo(currFilter - LE_LOOT_FILTER_SPEC1 + 1, nil, nil, nil, UnitSex("player"));
 		name = specName;
 	end
 	
@@ -813,6 +813,7 @@ function MerchantFrame_InitFilter()
 	local info = UIDropDownMenu_CreateInfo();
 	local currFilter = GetMerchantFilter();
 	local className = UnitClass("player");
+	local sex = UnitSex("player");
 
 	info.func = MerchantFrame_SetFilter;
 	
@@ -823,7 +824,7 @@ function MerchantFrame_InitFilter()
 	
 	local numSpecs = GetNumSpecializations();
 	for i = 1, numSpecs do
-		local _, name, _, icon = GetSpecializationInfo(i);
+		local _, name, _, icon = GetSpecializationInfo(i, nil, nil, nil, sex);
 		info.text = name;
 		info.arg1 = LE_LOOT_FILTER_SPEC1 + i - 1;
 		info.checked = currFilter == (LE_LOOT_FILTER_SPEC1 + i - 1);

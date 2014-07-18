@@ -123,6 +123,7 @@ function BonusObjectiveTracker_AddReward(questID, block, xp, money)
 		for objectiveIndex = 1, numObjectives do
 			local text, objectiveType, finished = GetQuestObjectiveInfo(questID, objectiveIndex);
 			tinsert(data.objectives, text);
+			data.objectiveType = objectiveType;
 		end
 	end
 	-- save all the rewards
@@ -356,7 +357,7 @@ end
 
 local function InternalGetQuestObjectiveInfo(questID, objectiveIndex)
 	if ( COMPLETED_BONUS_DATA[questID] ) then
-		return COMPLETED_BONUS_DATA[questID].objectives[objectiveIndex], nil, true;
+		return COMPLETED_BONUS_DATA[questID].objectives[objectiveIndex], COMPLETED_BONUS_DATA[questID].objectiveType, true;
 	else
 		return GetQuestObjectiveInfo(questID, objectiveIndex);
 	end
@@ -532,7 +533,7 @@ local function UpdateQuestBonusObjectives(BlocksFrame)
 					end
 				end
 				if ( objectiveType == "progressbar" ) then
-					BONUS_OBJECTIVE_TRACKER_MODULE:AddProgressBar(block, block.currentLine, questID);
+					BONUS_OBJECTIVE_TRACKER_MODULE:AddProgressBar(block, block.currentLine, questID, finished);
 				end
 			end
 			-- first line is either going to display the nub or the check
@@ -660,4 +661,107 @@ function BonusObjectiveTracker_SetBlockState(block, state, force)
 			block.state = "FINISHED";
 		end
 	end
+end
+
+-- *****************************************************************************************************
+-- ***** PROGRESS BAR
+-- *****************************************************************************************************
+function BONUS_OBJECTIVE_TRACKER_MODULE:AddProgressBar(block, line, questID, finished)
+	local progressBar = self.usedProgressBars[block] and self.usedProgressBars[block][line];
+	if ( not progressBar ) then
+		local numFreeProgressBars = #self.freeProgressBars;
+		local parent = block.ScrollContents or block;
+		if ( numFreeProgressBars > 0 ) then
+			progressBar = self.freeProgressBars[numFreeProgressBars];
+			tremove(self.freeProgressBars, numFreeProgressBars);
+			progressBar:SetParent(parent);
+			progressBar:Show();
+		else
+			progressBar = CreateFrame("Frame", nil, parent, "BonusTrackerProgressBarTemplate");
+			progressBar.height = progressBar:GetHeight();
+		end
+		if ( not self.usedProgressBars[block] ) then
+			self.usedProgressBars[block] = { };
+		end
+		self.usedProgressBars[block][line] = progressBar;
+		progressBar:Show();
+		progressBar.Bar.Label:Hide();
+		-- initialize to the right values
+		progressBar.questID = questID;
+		if( not finished ) then
+			progressBar:RegisterEvent("QUEST_LOG_UPDATE");
+			BonusObjectiveTrackerProgressBar_OnEvent(progressBar)
+		end
+	end	
+	-- anchor the status bar
+	local anchor = block.currentLine or block.HeaderText;
+	if ( anchor ) then
+		progressBar:SetPoint("TOPLEFT", anchor, "BOTTOMLEFT", 0, -block.module.lineSpacing);
+	else
+		progressBar:SetPoint("TOPLEFT", 0, -block.module.lineSpacing);
+	end
+	
+	if( finished ) then
+		progressBar.finished = true;
+		progressBar.Bar:SetValue(100)
+		progressBar.Bar.Label:SetFormattedText(PERCENTAGE_STRING, 100);
+	end
+
+	progressBar.block = block;
+	progressBar.questID = questID;
+	
+
+	line.ProgressBar = progressBar;
+	block.height = block.height + progressBar.height + block.module.lineSpacing;
+	block.currentLine = progressBar;
+	return progressBar;
+end
+
+function BONUS_OBJECTIVE_TRACKER_MODULE:FreeProgressBar(block, line)
+	local progressBar = line.ProgressBar;
+	if ( progressBar ) then
+		self.usedProgressBars[block][line] = nil;
+		tinsert(self.freeProgressBars, progressBar);
+		progressBar:Hide(); 
+		line.ProgressBar = nil;
+		progressBar.finished = nil;
+		progressBar:UnregisterEvent("QUEST_LOG_UPDATE");
+	end
+end
+
+function BonusObjectiveTrackerProgressBar_OnEvent(self)
+	local percent = GetQuestProgressBarPercent(self.questID);
+	if( self.finished or percent >= 100 ) then
+		BonusObjectiveTrackerProgressBar_PlayFlareAnim(self, percent - (self.AnimValue or 0));
+		return;
+	end
+	self.Bar:SetValue(percent);
+	self.Bar.Label:SetFormattedText(PERCENTAGE_STRING, percent);
+	if( self.AnimValue ) then
+		BonusObjectiveTrackerProgressBar_PlayFlareAnim(self, percent - self.AnimValue);
+	end
+	self.AnimValue = percent;
+end
+
+function BonusObjectiveTrackerProgressBar_PlayFlareAnim(progressBar, delta)
+	local prefix = "";
+	local width = progressBar.Bar:GetWidth();
+	local offset = 0;
+	if( delta < 1 ) then
+		return;
+	elseif( delta < 10 ) then
+		prefix = "Small";
+		offset = width * progressBar.AnimValue/100-12;
+	else
+		offset = width * progressBar.AnimValue/100-12;
+	end
+	local flare = progressBar[prefix.."Flare1"];
+	if( flare.FlareAnim:IsPlaying() ) then
+		flare = progressBar[prefix.."Flare2"];
+		if( flare.FlareAnim:IsPlaying() ) then
+			return;
+		end
+	end
+	flare:SetPoint("LEFT", progressBar.Bar, "LEFT", offset,0);
+	flare.FlareAnim:Play();
 end

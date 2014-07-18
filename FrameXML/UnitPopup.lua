@@ -341,8 +341,9 @@ function UnitPopup_ShowMenu (dropdownMenu, which, unit, name, userData)
 	-- setup default Loot Specialization
 	local specPopupButton = UnitPopupButtons["LOOT_SPECIALIZATION_DEFAULT"];
 	local specIndex = GetSpecialization();
+	local sex = UnitSex("player");
 	if ( specIndex) then
-		local specID, specName = GetSpecializationInfo(specIndex);
+		local specID, specName = GetSpecializationInfo(specIndex, nil, nil, nil, sex);
 		if ( specName ) then
 			specPopupButton.text = format(LOOT_SPECIALIZATION_DEFAULT, specName);
 		end
@@ -351,7 +352,7 @@ function UnitPopup_ShowMenu (dropdownMenu, which, unit, name, userData)
 	for index = 1, 4 do
 		specPopupButton = UnitPopupButtons["LOOT_SPECIALIZATION_SPEC"..index];
 		if ( specPopupButton ) then
-			local id, name = GetSpecializationInfo(index);
+			local id, name = GetSpecializationInfo(index, nil, nil, nil, sex);
 			if ( id ) then
 				specPopupButton.specializationID = id;
 				specPopupButton.text = name;
@@ -1645,7 +1646,7 @@ function UnitPopup_OnClick (self)
 			dialog.data = dropdownFrame.unit or tonumber(dropdownFrame.lineID);
 		end
 	elseif ( button == "REPORT_BAD_NAME" ) then
-		if ( GMQuickTicketSystemEnabled() and not GMQuickTicketSystemThrottled() ) then
+		if ( GMEuropaComplaintsEnabled() and not GMQuickTicketSystemThrottled() ) then
 			HelpFrame_ShowReportPlayerNameDialog(dropdownFrame.unit or tonumber(dropdownFrame.lineID));
 		else
 			UIErrorsFrame:AddMessage(ERR_REPORT_SUBMISSION_FAILED , 1.0, 0.1, 0.1, 1.0);
@@ -1663,7 +1664,7 @@ function UnitPopup_OnClick (self)
 		C_PetBattles.SetPendingReportTargetFromUnit(unit);
 		StaticPopup_Show("CONFIRM_REPORT_BATTLEPET_NAME", fullname);
 	elseif ( button == "REPORT_CHEATING" ) then
-		if ( GMQuickTicketSystemEnabled() and not GMQuickTicketSystemThrottled() ) then
+		if ( GMEuropaComplaintsEnabled() and not GMQuickTicketSystemThrottled() ) then
 			HelpFrame_ShowReportCheatingDialog(dropdownFrame.unit or tonumber(dropdownFrame.lineID));
 		else
 			UIErrorsFrame:AddMessage(ERR_REPORT_SUBMISSION_FAILED , 1.0, 0.1, 0.1, 1.0);

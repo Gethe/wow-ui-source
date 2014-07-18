@@ -401,6 +401,7 @@ end
 
 function PlayerTalentFrameSpec_OnLoad(self)
 	local numSpecs = GetNumSpecializations(false, self.isPet);
+	local sex = self.isPet and UnitSex("pet") or UnitSex("player");
 	-- 4th spec?
 	if ( numSpecs > 3 ) then
 		self.specButton1:SetPoint("TOPLEFT", 6, -61);
@@ -409,7 +410,7 @@ function PlayerTalentFrameSpec_OnLoad(self)
 	
 	for i = 1, numSpecs do
 		local button = self["specButton"..i];
-		local _, name, description, icon = GetSpecializationInfo(i, false, self.isPet);
+		local _, name, description, icon = GetSpecializationInfo(i, false, self.isPet, nil, sex);
 		SetPortraitToTexture(button.specIcon, icon);
 		button.specName:SetText(name);
 		button.tooltip = description;
@@ -1331,7 +1332,7 @@ function PlayerTalentFrame_UpdateSpecFrame(self, spec)
 	local shownSpec = spec or playerTalentSpec or 1;
 	local numSpecs = GetNumSpecializations(nil, self.isPet);
 	local petNotActive = self.isPet and not IsPetActive();
-	
+	local sex = self.isPet and UnitSex("pet") or UnitSex("player");
 	-- do spec buttons
 	for i = 1, numSpecs do
 		local button = self["specButton"..i];
@@ -1389,13 +1390,20 @@ function PlayerTalentFrame_UpdateSpecFrame(self, spec)
 
 	-- display spec info in the scrollframe
 	local scrollChild = self.spellsScroll.child;
-	local id, name, description, icon, background, _, primaryStat = GetSpecializationInfo(shownSpec, nil, self.isPet);
+	local id, name, description, icon, background, _, primaryStat = GetSpecializationInfo(shownSpec, nil, self.isPet, nil, sex);
 	SetPortraitToTexture(scrollChild.specIcon, icon);
 	scrollChild.specName:SetText(name);
 	scrollChild.description:SetText(description);
 	local role1 = GetSpecializationRole(shownSpec, nil, self.isPet);
 	scrollChild.roleName:SetText(_G[role1]);
 	scrollChild.roleIcon:SetTexCoord(GetTexCoordsForRole(role1));
+
+	-- update spec button names
+	for i = 1, numSpecs do
+		local button = self["specButton"..i];
+		local _, name, description, icon = GetSpecializationInfo(i, false, self.isPet, nil, sex);
+		button.specName:SetText(name);
+	end
 	
 	if ( primaryStat ~= 0 ) then
 		scrollChild.roleName:ClearAllPoints();

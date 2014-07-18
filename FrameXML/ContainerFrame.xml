@@ -106,7 +106,7 @@
 		</Size>
 		<Layers>
 			<Layer level="BACKGROUND">
-                <Texture name="$parentPortrait">
+                <Texture name="$parentPortrait" parentKey="Portrait">
                     <Size>
                         <AbsDimension x="40" y="40"/>
                     </Size>
@@ -389,4 +389,47 @@
 			<OnLeave function="GameTooltip_Hide"/>
 		</Scripts>
 	</Button>
+
+	<Frame name="BagHelpBox" parent="UIParent" inherits="GlowBoxTemplate" frameStrata="HIGH" hidden="true">
+		<Size x="220" y="200"/>
+		<Layers>
+			<Layer level="ARTWORK">
+				<FontString parentKey="Text" inherits="GameFontHighlightLeft" justifyV="TOP">
+					<Size x="188" y="0"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" x="16" y="-12"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Button parentKey="CloseButton" inherits="UIPanelCloseButton">
+				<Anchors>
+					<Anchor point="TOPRIGHT" x="6" y="6"/>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						self:GetParent():Hide();
+					</OnClick>
+				</Scripts>
+			</Button>
+			<Frame parentKey="Arrow" inherits="GlowBoxArrowTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativePoint="RIGHT" x="-2" y="16"/>
+				</Anchors>
+			</Frame>
+		</Frames>
+		<Scripts>
+			<OnLoad>
+				self.Text:SetSpacing(4);
+				SetClampedTextureRotation(self.Arrow.Arrow, 270);
+				SetClampedTextureRotation(self.Arrow.Glow, 270);
+				self.Arrow.Glow:ClearAllPoints();
+				self.Arrow.Glow:SetPoint("LEFT", self, "RIGHT");
+			</OnLoad>
+			<OnShow>
+				self:SetHeight(self.Text:GetHeight()+30);
+			</OnShow>
+		</Scripts>
+	</Frame>
 </Ui>

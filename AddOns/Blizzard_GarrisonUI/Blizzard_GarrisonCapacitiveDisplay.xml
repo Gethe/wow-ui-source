@@ -203,6 +203,30 @@
 					</Button>
 				</Frames>
 			</Frame>
+			<Frame parentKey="FinishedGlow" setAllPoints="true">
+				<Animations>
+					<AnimationGroup parentKey="FinishedAnim">
+						<Alpha change="1" duration="0.1" order="1" />
+						<Alpha startDelay="0.1" change="-1" duration="0.5" order="2" />
+					</AnimationGroup>
+				</Animations>
+				<Layers>
+					<Layer level="OVERLAY">
+						<Texture parentKey="FinishedFlare" file="Interface\Reforging\Valor-Flare" alphaMode="ADD">
+							<Size x="256" y="256"/>
+							<Anchors>
+								<Anchor point="TOPLEFT" y="-23"/>
+								<Anchor point="BOTTOMRIGHT" y="26"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnLoad>
+						self:SetAlpha(0);
+					</OnLoad>
+				</Scripts>
+			</Frame>
 			<Button parentKey="StartWorkOrderButton" inherits="MagicButtonTemplate" text="CAPACITANCE_START_WORK_ORDER">
 				<Size x="160" y="22"/>
 				<Anchors>

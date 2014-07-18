@@ -26,9 +26,7 @@
 					</Layer>
 				</Layers>
 				<Frames>
-					<Cooldown parentKey="Cooldown" inherits="CooldownFrameTemplate" useParentLevel="true">
-						<Size x="52" y="52"/>
-					</Cooldown> 
+					<Cooldown parentKey="Cooldown" inherits="CooldownFrameTemplate" useParentLevel="true"/>
 				</Frames>
 				<Scripts>
 					<OnLoad>

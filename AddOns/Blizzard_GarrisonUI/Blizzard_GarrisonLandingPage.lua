@@ -16,6 +16,13 @@ end
 function GarrisonLandingPage_OnShow(self)
 	-- Shipments
 	C_Garrison.RequestLandingPageShipmentInfo();
+
+	if (C_Garrison.IsInvasionAvailable()) then
+		self.InvasionBadge:Show();
+		self.InvasionBadge.InvasionBadgeAnim:Play();
+	else
+		self.InvasionBadge:Hide();
+	end
 end
 
 function GarrisonLandingPage_OnHide(self)

@@ -52,10 +52,6 @@ function GarrisonBuildingFrame_OnLoad(self)
 	--get plots
 	GarrisonBuildingFrame_UpdatePlots();
 	
-	for i = 1, GARRISON_MAX_BUILDING_LEVEL do
-		self.InfoBox.Tooltip["Rank"..i]:SetFormattedText(GARRISON_CURRENT_LEVEL, i);
-	end
-	
 	GarrisonBuildingFrame_UpdateCurrency();
 	
 	self.FollowerList.listScroll.update = GarrisonBuildingFollowerList_Update;
@@ -75,16 +71,18 @@ end
 
 function GarrisonBuildingFrame_OnShow(self)
 	GarrisonBuildingFrame_UpdateGarrisonInfo(self);
-	GarrisonBuildingFrame.BuildingList.Tab1:Click();
-	GarrisonBuildingList_Show();
-	-- check to show the help plate
-	if ( not GetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_GARRISON_BUILDING) ) then
-		local helpPlate = GarrisonBuilding_HelpPlate;
-		if ( helpPlate and not HelpPlate_IsShowing(helpPlate) ) then
-			HelpPlate_Show( helpPlate, GarrisonBuildingFrame, GarrisonBuildingFrame.MainHelpButton );
-			SetCVarBitfield( "closedInfoFrames", LE_FRAME_TUTORIAL_GARRISON_BUILDING, true );
+	if (not GarrisonBuildingFrame.selectedBuilding) then
+		GarrisonBuildingFrame.BuildingList.Tab1:Click();
+		GarrisonBuildingList_Show();
+		-- check to show the help plate
+		if ( not GetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_GARRISON_BUILDING) ) then
+			local helpPlate = GarrisonBuilding_HelpPlate;
+			if ( helpPlate and not HelpPlate_IsShowing(helpPlate) ) then
+				HelpPlate_Show( helpPlate, GarrisonBuildingFrame, GarrisonBuildingFrame.MainHelpButton );
+				SetCVarBitfield( "closedInfoFrames", LE_FRAME_TUTORIAL_GARRISON_BUILDING, true );
+			end
+			GarrisonBuildingList_SelectBuilding(BARRACKS_BUILDING_ID);
 		end
-		GarrisonBuildingList_SelectBuilding(BARRACKS_BUILDING_ID);
 	end
 end
 
@@ -189,6 +187,7 @@ function GarrisonBuildingFrame_UpdatePlots()
 		Plot.plotID = plot.id;
 		Plot:SetPoint("CENTER", GarrisonBuildingFrame.MapFrame, "BOTTOMLEFT", plot.x * mapWidth, plot.y * mapHeight)
 		Plot.Plot:SetAtlas("Garr_Plot_Shadowmoon_A_"..plot.size, true);
+		Plot.PlotHover:SetAtlas("Garr_Plot_Shadowmoon_A_"..plot.size, true);
 		Plot.PlotHighlight:SetAtlas("Garr_Plot_Glow_"..plot.size, true);
 		Plot.Lock:Hide();
 		Plot.locked = false;
@@ -243,6 +242,12 @@ function GarrisonTownHall_OnClick(self)
 	GarrisonBuildingList_Show();
 	local infoBox = GarrisonBuildingFrame.TownHallBox;
 	infoBox:Show();
+	local factionGroup = UnitFactionGroup("player");
+	if ( factionGroup == "Alliance" ) then
+		infoBox.Title:SetText(GARRISON_TOWN_HALL_ALLIANCE);
+	else
+		infoBox.Title:SetText(GARRISON_TOWN_HALL_HORDE);
+	end
 	infoBox.RankBadge:SetAtlas("Garr_LevelBadge_"..GarrisonBuildingFrame.level, true);
 	infoBox.Building:SetAtlas("GarrBuilding_TownHall_"..GarrisonBuildingFrame.level.."_A_Info", true);
 	local emptyPlots = false;
@@ -261,6 +266,43 @@ function GarrisonTownHall_OnClick(self)
 		infoBox.UpgradeGlow:Show();
 		infoBox.UpgradeAnim:Play();
 	end
+end
+
+function GarrisonTownHallBoxMouseOver_GetColor(textLevel, garrisonLevel)
+	if (textLevel > garrisonLevel) then
+		return GRAY_FONT_COLOR;
+	else
+		return HIGHLIGHT_FONT_COLOR;
+	end
+end
+
+function GarrisonTownHallBoxMouseOver_OnEnter(self, button)
+	GameTooltip:SetOwner(self, "ANCHOR_BOTTOMLEFT", 15, 15);
+	local factionGroup = UnitFactionGroup("player");
+	if ( factionGroup == "Alliance" ) then
+		GameTooltip:SetText(GARRISON_TOWN_HALL_ALLIANCE, HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b);
+	else
+		GameTooltip:SetText(GARRISON_TOWN_HALL_HORDE, HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b);
+	end
+	local garrisonLevel = C_Garrison.GetGarrisonInfo();
+	local color;
+	
+	GameTooltip:AddLine(" ");
+	GameTooltip:AddLine(format(GARRISON_CURRENT_LEVEL, 1), NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b, true);
+	color = GarrisonTownHallBoxMouseOver_GetColor(1, garrisonLevel);
+	GameTooltip:AddLine(GARRISON_TOWN_HALL_LEVEL1_DESCRIPTION, color.r, color.g, color.b, true);
+	
+	GameTooltip:AddLine(" ");
+	GameTooltip:AddLine(format(GARRISON_CURRENT_LEVEL, 2), NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b, true);
+	color = GarrisonTownHallBoxMouseOver_GetColor(2, garrisonLevel);
+	GameTooltip:AddLine(GARRISON_TOWN_HALL_LEVEL2_DESCRIPTION, color.r, color.g, color.b, true);
+	
+	GameTooltip:AddLine(" ");
+	GameTooltip:AddLine(format(GARRISON_CURRENT_LEVEL, 3), NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b, true);
+	color = GarrisonTownHallBoxMouseOver_GetColor(3, garrisonLevel);
+	GameTooltip:AddLine(GARRISON_TOWN_HALL_LEVEL3_DESCRIPTION, color.r, color.g, color.b, true);
+	
+	GameTooltip:Show();
 end
 
 -----------------------------------------------------------------------
@@ -282,7 +324,6 @@ function GarrisonBuildingInfoBox_ShowDefault()
 	infoBox.Timer:Hide();
 	infoBox.SpecFrame:Hide();
 	infoBox.AddFollowerButton:Hide();
-	infoBox.RemoveFollowerButton:Hide();
 
 	infoBox.Building:SetAtlas(EMPTY_PLOT_ATLAS, true)
 	infoBox.Building:SetDesaturated(false);
@@ -303,11 +344,11 @@ function GarrisonBuildingInfoBox_ShowBuilding(ID, owned, showLock)
 	end
 	infoBox.ID = ID;
 	infoBox:Show()
-	local id, name, texPrefix, icon, description, rank, currencyID, currencyQty, buildTime, needsPlan, possSpecs, upgrades, canUpgrade, isMaxLevel, knownSpecs, currSpec, specCooldown, isBuilding, startTime, buildDuration, timeLeftStr, canActivate, hasFollower;
+	local id, name, texPrefix, icon, description, rank, currencyID, currencyQty, buildTime, needsPlan, possSpecs, upgrades, canUpgrade, isMaxLevel, knownSpecs, currSpec, specCooldown, isBuilding, startTime, buildDuration, timeLeftStr, canActivate, hasFollowerSlot;
 	if (owned) then
-		id, name, texPrefix, icon, description, rank, currencyID, currencyQty, buildTime, needsPlan, possSpecs, upgrades, canUpgrade, isMaxLevel, knownSpecs, currSpec, specCooldown, isBuilding, startTime, buildDuration, timeLeftStr, canActivate, hasFollower = C_Garrison.GetOwnedBuildingInfo(ID);
+		id, name, texPrefix, icon, description, rank, currencyID, currencyQty, buildTime, needsPlan, possSpecs, upgrades, canUpgrade, isMaxLevel, hasFollowerSlot, knownSpecs, currSpec, specCooldown, isBuilding, startTime, buildDuration, timeLeftStr, canActivate = C_Garrison.GetOwnedBuildingInfo(ID);
 	else
-		id, name, texPrefix, icon, description, rank, currencyID, currencyQty, buildTime, needsPlan, possSpecs, upgrades, canUpgrade = C_Garrison.GetBuildingInfo(ID);
+		id, name, texPrefix, icon, description, rank, currencyID, currencyQty, buildTime, needsPlan, possSpecs, upgrades, canUpgrade, isMaxLevel, hasFollowerSlot = C_Garrison.GetBuildingInfo(ID);
 	end
 	if (name == nil) then
 		return;
@@ -317,26 +358,38 @@ function GarrisonBuildingInfoBox_ShowBuilding(ID, owned, showLock)
 	infoBox.RankBadge:Show();
 	infoBox.RankLabel:Show();
 	
+	-- We need to set the follower portrait data before the upgrade animation plays
+	-- so that the animation does not change the portrait alpha values
+	GarrisonBuildingInfoBox_ShowFollowerPortrait(owned, hasFollowerSlot, infoBox, isBuilding, canActivate, ID);
+	
 	--upgrade stuff
 	infoBox.UpgradeButton:Hide();
 	infoBox.UpgradeAnim:Stop();
 	infoBox.UpgradeGlow:Hide();
 	if (owned and not isBuilding and upgrades and #upgrades > 0 and rank ~= #upgrades) then
+		infoBox.UpgradeButton:Show();
 		if (canUpgrade) then
-			infoBox.UpgradeBadge:SetAtlas(CAN_UPGRADE_ATLAS, true);
 			infoBox.UpgradeButton.upgradePlotID = ID;
-			infoBox.UpgradeButton:Show();
 			if (not isMaxLevel) then
 				infoBox.UpgradeButton:Enable();
+				infoBox.UpgradeBadge:SetAtlas(CAN_UPGRADE_ATLAS, true);
 				infoBox.UpgradeButton.tooltip = nil;
 				infoBox.UpgradeGlow:Show();
 				infoBox.UpgradeAnim:Play();
 			else
 				infoBox.UpgradeButton:Disable();
+				infoBox.UpgradeBadge:SetAtlas(LOCKED_UPGRADE_ATLAS, true);
 				infoBox.UpgradeButton.tooltip = GARRISON_UPGRADE_ERROR;
 			end
 		else
+			infoBox.UpgradeButton:Disable();
 			infoBox.UpgradeBadge:SetAtlas(LOCKED_UPGRADE_ATLAS, true);
+			local _, _, _, _, upgradeNeedsPlan = C_Garrison.GetBuildingTooltip(upgrades[rank+1]);
+			if (upgradeNeedsPlan) then
+				infoBox.UpgradeButton.tooltip = GARRISON_UPGRADE_NEED_PLAN;
+			else
+				infoBox.UpgradeButton.tooltip = GARRISON_UPGRADE_ERROR;
+			end
 		end
 		infoBox.UpgradeBadge:Show();
 	else
@@ -416,8 +469,25 @@ function GarrisonBuildingInfoBox_ShowBuilding(ID, owned, showLock)
 		infoBox.CostBar:Hide();
 	end
 	
-	--tooltip
-	GarrisonBuildingInfoBox_SetTooltip(infoBox.Tooltip, name, rank, upgrades, canUpgrade, owned)
+	-- Show the cost to upgrade the building if it can be upgraded.
+	local _;
+	if (owned and canUpgrade) then
+		_, _, _, _, _, currencyID, currencyQty = C_Garrison.GetBuildingUpgradeInfo(id);
+	end
+	if (owned and not isBuilding and currencyID) then
+		local _, _, currencyTexture = GetCurrencyInfo(currencyID);
+		infoBox.UpgradeCostBar.CostAmount:SetText(currencyQty.."  |T"..currencyTexture..":0:0:0:-1|t ");
+		infoBox.UpgradeCostBar.TimeAmount:SetText(buildTime);
+		infoBox.UpgradeCostBar.CostLabel:Show();
+		infoBox.UpgradeCostBar.TimeLabel:Show();
+		infoBox.UpgradeCostBar.CostAmount:Show();
+		infoBox.UpgradeCostBar.TimeAmount:Show();
+	else
+		infoBox.UpgradeCostBar.CostLabel:Hide();
+		infoBox.UpgradeCostBar.TimeLabel:Hide();
+		infoBox.UpgradeCostBar.CostAmount:Hide();
+		infoBox.UpgradeCostBar.TimeAmount:Hide();
+	end
 	
 	-- hide old specs
 	for i=1, #infoBox.SpecFrame.Specs do
@@ -471,31 +541,77 @@ function GarrisonBuildingInfoBox_ShowBuilding(ID, owned, showLock)
 	else 
 		infoBox.SpecFrame:Hide();
 	end
-	
-	--follower placement
-	if (not hasFollower) then
+end
+
+function GarrisonBuildingInfoBox_ShowFollowerPortrait(owned, hasFollowerSlot, infoBox, isBuilding, canActivate, ID)
+	if (not hasFollowerSlot) then
 		infoBox.AddFollowerButton:Hide();
-		infoBox.RemoveFollowerButton:Hide();
+		infoBox.FollowerPortrait:Hide();
 		return;
 	end
 	
-	infoBox.AddFollowerButton:Show();
-	local followerName, level, quality, displayID = C_Garrison.GetFollowerInfoForBuilding(ID);
+	infoBox.AddFollowerButton.greyedOut = (isBuilding or canActivate or not owned);
+	
+	local followerName, level, quality, displayID, followerID, garrFollowerID, status = C_Garrison.GetFollowerInfoForBuilding(ID);
 	if (followerName) then
-		infoBox.AddFollowerButton.Plus:Hide();
-		infoBox.AddFollowerButton.Level:Show();
-		infoBox.AddFollowerButton.Level:SetText(level);
+		infoBox.AddFollowerButton:Hide();
+		local button = infoBox.FollowerPortrait;
+		button.Level:SetText(level);
 		local color = ITEM_QUALITY_COLORS[quality];
-    	infoBox.AddFollowerButton.LevelBorder:SetVertexColor(color.r, color.g, color.b);
-		SetPortraitTexture(infoBox.AddFollowerButton.Portrait, displayID);
-		infoBox.RemoveFollowerButton:Show();
+    	button.LevelBorder:SetVertexColor(color.r, color.g, color.b);
+		button.PortraitRing:SetVertexColor(color.r, color.g, color.b);
+		SetPortraitTexture(button.Portrait, displayID);
+		button.FollowerName:SetText(followerName);
+		button.FollowerStatus:SetText(status);
+		button.garrFollowerID = garrFollowerID;
+		button.followerID = followerID;
+		button:Show();
 	else
-		infoBox.AddFollowerButton.Plus:Show();
-		infoBox.AddFollowerButton.Level:Hide();
-		infoBox.AddFollowerButton.LevelBorder:SetVertexColor(1, 1, 1);
-		SetPortraitTexture(infoBox.AddFollowerButton.Portrait, 0);
-		infoBox.RemoveFollowerButton:Hide();
+		infoBox.FollowerPortrait:Hide();
+		infoBox.AddFollowerButton:Show();
+		if (infoBox.AddFollowerButton.greyedOut) then
+			infoBox.AddFollowerButton.Plus:Hide();
+			infoBox.AddFollowerButton.EmptyPortrait:SetAlpha(0.5);
+			if (owned) then
+				infoBox.AddFollowerButton.AddFollowerText:SetText(GARRISON_BUILDING_SELECT_FOLLOWER_DEACTIVATED_TEXT);
+			else
+				infoBox.AddFollowerButton.AddFollowerText:SetText(GARRISON_BUILDING_SELECT_FOLLOWER_NOT_OWNED_TEXT);
+			end
+		else
+			infoBox.AddFollowerButton.Plus:Show();
+			infoBox.AddFollowerButton.EmptyPortrait:SetAlpha(1.0);
+			infoBox.AddFollowerButton.AddFollowerText:SetText(GARRISON_BUILDING_SELECT_FOLLOWER_ACTIVATED_TEXT);
+		end
 	end
+end
+
+function GarrisonFollowerPortrait_OnEnter(self, button)
+	GarrisonFollowerTooltipShow(self, self.followerID, self.garrFollowerID);
+end
+
+function GarrisonFollowerPortrait_OnLeave(self, button)
+	GarrisonFollowerTooltip:Hide();
+end
+
+function GarrisonFollowerTooltipShow(self, followerID, garrFollowerID)
+	GameTooltip:SetOwner(self, "ANCHOR_RIGHT");	
+	GarrisonFollowerTooltip_Show(garrFollowerID, 
+		true,
+		C_Garrison.GetFollowerQuality(followerID),
+		C_Garrison.GetFollowerLevel(followerID), 
+		C_Garrison.GetFollowerXP(followerID),
+		C_Garrison.GetFollowerLevelXP(followerID),
+		C_Garrison.GetFollowerItemLevelAverage(followerID), 
+		C_Garrison.GetFollowerAbilityAtIndex(followerID, 1),
+		C_Garrison.GetFollowerAbilityAtIndex(followerID, 2),
+		C_Garrison.GetFollowerAbilityAtIndex(followerID, 3),
+		C_Garrison.GetFollowerAbilityAtIndex(followerID, 4),
+		C_Garrison.GetFollowerTraitAtIndex(followerID, 1),
+		C_Garrison.GetFollowerTraitAtIndex(followerID, 2),
+		C_Garrison.GetFollowerTraitAtIndex(followerID, 3),
+		C_Garrison.GetFollowerTraitAtIndex(followerID, 4)
+		);
+	GarrisonFollowerTooltip:Show();
 end
 
 function GarrisonBuildingInfoBox_OnUpdate(self)
@@ -506,48 +622,6 @@ function GarrisonBuildingInfoBox_OnUpdate(self)
 		self.Timer.CompleteRing:Show();
 		self:SetScript("OnUpdate", nil);
 	end
-end
-
-function GarrisonBuildingInfoBox_SetTooltip(self, name, rank, upgrades, canUpgrade, owned)
-	
-	self.Name:SetText(name);
-	
-	if (not upgrades or #upgrades == 0) then
-		return;
-	end
-	
-	self.Rank1Tooltip:SetVertexColor(0.5, 0.5, 0.5, 1);
-	self.Rank2Tooltip:SetVertexColor(0.5, 0.5, 0.5, 1);
-	self.Rank3Tooltip:SetVertexColor(0.5, 0.5, 0.5, 1);
-	if (owned) then
-		for i=1, rank do
-			self["Rank"..i.."Tooltip"]:SetVertexColor(1, 1, 1, 1);
-		end
-	end
-	
-	local height = self.Name:GetHeight() + 30; --15 pixels of padding on top and bottom
-	for i=1, #upgrades do
-		local tooltip = C_Garrison.GetBuildingTooltip(upgrades[i]);
-		if (tooltip == "") then 
-			tooltip = nil 
-		end
-		if (owned and i == (rank + 1) and not canUpgrade) then
-			self["Rank"..i.."Tooltip"]:SetText((tooltip or "This is a TOOLTIP!").."\n"..RED_FONT_COLOR_CODE..GARRISON_PLAN_REQUIRED..FONT_COLOR_CODE_CLOSE);
-		else
-			self["Rank"..i.."Tooltip"]:SetText(tooltip or "This is a TOOLTIP!");
-		end
-		self["Rank"..i.."Tooltip"]:Show();
-		self["Rank"..i]:Show();
-		--10 pixels padding above rank title, 5 pixes above rank tooltip
-		height = height + self["Rank"..i.."Tooltip"]:GetHeight() + self["Rank"..i]:GetHeight() + 15;
-	end
-	self:SetHeight(height);
-	
-	for i=#upgrades+1, 3 do
-		self["Rank"..i.."Tooltip"]:Hide();
-		self["Rank"..i]:Hide();
-	end
-	
 end
 
 function GarrisonBuildingInfoBox_OnDragStart(self, button)
@@ -588,6 +662,53 @@ function GarrisonBuildingFrameTimerCancel_OnClick(self, button)
 	
 	C_Garrison.CancelConstruction(buildingInfo.plotID);
 end
+
+function GarrisonBuildingFrameLevelIcon_OnEnter(self, button)
+	local building = GarrisonBuildingFrame.selectedBuilding;
+	GameTooltip:SetOwner(self, "ANCHOR_BOTTOMLEFT", 15, 15);
+	local _, id, name, texPrefix, icon, rank, currencyID, cost, buildTime, tooltip, needsPlan;
+	
+	-- If we own the building, show upgrade info
+	if (building.plotID) then
+		id, name, texPrefix, icon, rank, currencyID, cost, buildTime, tooltip = C_Garrison.GetBuildingUpgradeInfo(building.buildingID);
+		if (rank) then
+			_, _, _, _, needsPlan = C_Garrison.GetBuildingTooltip(id);
+			GameTooltip:SetText(format(GARRISON_BUILDING_LEVEL_UPGRADE, rank)); 
+		else
+			-- We are at max rank
+			GameTooltip:SetText(GARRISON_BUILDING_LEVEL_MAX);
+			GameTooltip:Show();
+			return;
+		end
+		tooltip = HIGHLIGHT_FONT_COLOR_CODE .. tooltip .. "|r";
+	else
+		tooltip, cost, currencyID, buildTime, needsPlan = C_Garrison.GetBuildingTooltip(building.buildingID);
+		tooltip = GRAY_FONT_COLOR_CODE .. tooltip .. "|r";
+		GameTooltip:SetText(GARRISON_BUILDING_LEVEL_ONE); 
+	end
+
+	if (tooltip and tooltip ~= "") then
+		GameTooltip:AddLine(tooltip, 1, 1, 1, true);
+	end
+	if (needsPlan) then
+		GameTooltip:AddLine(GARRISON_PLAN_REQUIRED, RED_FONT_COLOR.r, RED_FONT_COLOR.g, RED_FONT_COLOR.b);
+	end
+	if (cost) then
+		GameTooltip:AddLine(" ")
+		if (building.plotID) then
+			GameTooltip:AddLine(UPGRADE, GREEN_FONT_COLOR.r, GREEN_FONT_COLOR.g, GREEN_FONT_COLOR.b)
+		end
+		local _, _, currencyTexture = GetCurrencyInfo(currencyID);
+		GameTooltip:AddLine(NORMAL_FONT_COLOR_CODE..COSTS_LABEL..FONT_COLOR_CODE_CLOSE.." "..cost.."  |T"..currencyTexture..":0:0:0:-1|t ", 1, 1, 1, true);
+		GameTooltip:AddLine(NORMAL_FONT_COLOR_CODE..TIME_LABEL..FONT_COLOR_CODE_CLOSE.." "..buildTime, 1, 1, 1, true);
+	end
+	GameTooltip:Show();
+end
+
+function GarrisonBuildingFrameLevelIcon_OnLeave(self, button)
+	GameTooltip_Hide();
+end
+
 -----------------------------------------------------------------------
 -- Placing followers stuff
 -----------------------------------------------------------------------
@@ -595,15 +716,35 @@ end
 function GarrisonBuildingAddFollowerButton_OnClick(self, button)
 	if (GarrisonBuildingFrame.FollowerList:IsShown()) then
 		GarrisonBuildingList_Show();
-	else
+	elseif (not self.greyedOut) then
 		GarrisonBuildingFrame.FollowerList:Show();
 		GarrisonBuildingFrame.BuildingList:Hide();
 	end
 end
 
+function GarrisonBuildingAddFollowerButton_OnEnter(self, button)
+	if (not self.greyedOut) then
+		self.PortraitHighlight:Show();
+		GameTooltip:SetOwner(self, "ANCHOR_TOPLEFT")
+		GameTooltip:SetText(GARRISON_BUILDING_SELECT_FOLLOWER_TOOLTIP, nil, nil, nil, nil, true);
+		GameTooltip:Show();
+	end
+end
+
+function GarrisonBuildingAddFollowerButton_OnLeave(self, button)
+	self.PortraitHighlight:Hide();
+	GameTooltip_Hide();
+end
+
 function GarrisonBuildingFollowerList_OnShow(self)
 	self.followers = C_Garrison.GetPossibleFollowersForBuilding(GarrisonBuildingFrame.selectedBuilding.plotID);
 	GarrisonBuildingFollowerList_Update();
+	
+	if (#self.followers == 0) then
+		GarrisonBuildingFrame.FollowerList.NoFollowerText:Show();
+	else
+		GarrisonBuildingFrame.FollowerList.NoFollowerText:Hide();
+	end
 end
 
 function GarrisonBuildingFollowerList_OnHide(self)
@@ -631,9 +772,12 @@ function GarrisonBuildingFollowerList_Update()
 			button.Status:SetText(follower.status);
 			local color = ITEM_QUALITY_COLORS[follower.quality];
 			button.PortraitFrame.LevelBorder:SetVertexColor(color.r, color.g, color.b);
+			button.PortraitFrame.PortraitRing:SetVertexColor(color.r, color.g, color.b);
 			button.PortraitFrame.Level:SetText(follower.level);
 			SetPortraitTexture(button.PortraitFrame.Portrait, follower.displayID);
 			button.PortraitFrame.Level:SetText(follower.level);
+			button.followerID = follower.followerID;
+			button.garrFollowerID = follower.garrFollowerID;
 			-- adjust text position if we have additional text to show below name
 			if (follower.level == GARRISON_FOLLOWER_MAX_LEVEL or follower.status) then
 				button.Name:SetPoint("LEFT", button.PortraitFrame, "LEFT", 66, 8);
@@ -668,6 +812,14 @@ end
 function GarrisonBuildingFollowerButton_OnClick(self, button)
 	C_Garrison.AssignFollowerToBuilding(GarrisonBuildingFrame.selectedBuilding.plotID, self.info.followerID);
 	GarrisonBuildingList_Show();
+end
+
+function GarrisonBuildingFollowerButton_OnEnter(self, button)
+	GarrisonFollowerTooltipShow(self, self.followerID, self.garrFollowerID);
+end
+
+function GarrisonBuildingFollowerButton_OnLeave(self, button)
+	GarrisonFollowerTooltip:Hide();
 end
 
 -----------------------------------------------------------------------
@@ -718,13 +870,6 @@ function GarrisonBuildingList_SelectTab(tab)
 		list.Buttons[i]:Hide();
 	end
 	
-	--clear old building selection
-	if (GarrisonBuildingFrame.selectedBuilding) then
-		if (GarrisonBuildingFrame.selectedBuilding.button) then
-			GarrisonBuildingFrame.selectedBuilding.button.SelectedBG:Hide()
-		end
-		GarrisonBuildingFrame.selectedBuilding = nil;
-	end
 	GarrisonBuildingFrame_ClearPlotHighlights();
 end
 
@@ -769,22 +914,86 @@ function GarrisonBuildingList_SelectBuilding(buildingID)
 end
 
 function GarrisonBuildingListButton_OnEnter(self)
-	GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
-	GameTooltip:SetText(self.info.name);
-	local tooltip, cost, currencyID, buildTime = C_Garrison.GetBuildingTooltip(self.info.buildingID);
-	if (tooltip and tooltip ~= "") then
-		GameTooltip:AddLine(tooltip, 1, 1, 1, true);
+	local Tooltip = GarrisonBuildingFrame.BuildingList.Tooltip;
+	Tooltip.Name:SetText(self.info.name);
+	local _, rank, currencyID, currencyQty, buildTime, needsPlan, upgrades, canUpgrade;
+	local owned = self.info.plotID;
+	if (owned) then
+		_, _, _, _, _, rank, currencyID, currencyQty, buildTime, needsPlan, _, upgrades, canUpgrade = C_Garrison.GetOwnedBuildingInfo(self.info.plotID);
+	else
+		_, _, _, _, _, rank, currencyID, currencyQty, buildTime, needsPlan, _, upgrades, canUpgrade = C_Garrison.GetBuildingInfo(self.info.buildingID);
 	end
-	if (cost) then
-		GameTooltip:AddLine(" ")
-		if (self.info.plotID) then
-			GameTooltip:AddLine(UPGRADE, GREEN_FONT_COLOR.r, GREEN_FONT_COLOR.g, GREEN_FONT_COLOR.b)
+		
+	for i = 1, GARRISON_MAX_BUILDING_LEVEL do
+		Tooltip["Rank"..i]:SetFormattedText(GARRISON_CURRENT_LEVEL, i);
+	end
+
+	if (not upgrades or #upgrades == 0) then
+		return;
+	end
+	
+	Tooltip.Rank1Tooltip:SetVertexColor(0.5, 0.5, 0.5, 1);
+	Tooltip.Rank2Tooltip:SetVertexColor(0.5, 0.5, 0.5, 1);
+	Tooltip.Rank3Tooltip:SetVertexColor(0.5, 0.5, 0.5, 1);
+	if (owned) then
+		for i=1, rank do
+			Tooltip["Rank"..i.."Tooltip"]:SetVertexColor(1, 1, 1, 1);
 		end
-		local _, _, currencyTexture = GetCurrencyInfo(currencyID);
-		GameTooltip:AddLine(NORMAL_FONT_COLOR_CODE..COSTS_LABEL..FONT_COLOR_CODE_CLOSE.." "..cost.."  |T"..currencyTexture..":0:0:0:-1|t ", 1, 1, 1, true);
-		GameTooltip:AddLine(NORMAL_FONT_COLOR_CODE..TIME_LABEL..FONT_COLOR_CODE_CLOSE.." "..buildTime, 1, 1, 1, true);
 	end
-	GameTooltip:Show();
+	
+	local nextAnchor = nil;
+	local height = Tooltip.Name:GetHeight() + 30; --15 pixels of padding on top and bottom
+	for i=1, #upgrades do
+		local tooltip, _, _, _, needsPlan = C_Garrison.GetBuildingTooltip(upgrades[i]);
+		if (tooltip == "") then 
+			tooltip = nil 
+		end
+		
+		if (nextAnchor) then
+			Tooltip["Rank"..i]:SetPoint("TOPLEFT", nextAnchor, "BOTTOMLEFT", -10, -10);
+		end
+		local tooltipText = tooltip;
+		
+		if (needsPlan) then
+			tooltipText = tooltipText .. "\n" .. RED_FONT_COLOR_CODE .. GARRISON_PLAN_REQUIRED .. FONT_COLOR_CODE_CLOSE;
+		end
+		Tooltip["Rank"..i.."Tooltip"]:SetText(tooltipText);
+		if ((not owned and i == 1) or (owned and i == (rank + 1))) then
+			local _, _, currencyTexture = GetCurrencyInfo(currencyID);
+			Tooltip["Rank"..i.."Cost"]:SetText(currencyQty.."  |T"..currencyTexture..":0:0:0:-1|t ");
+			Tooltip["Rank"..i.."Time"]:SetText(buildTime);
+			Tooltip["Rank"..i.."Cost"]:Show();
+			Tooltip["Rank"..i.."Time"]:Show();
+			Tooltip["Rank"..i.."CostLabel"]:Show();
+			Tooltip["Rank"..i.."TimeLabel"]:Show();
+			nextAnchor = Tooltip["Rank"..i.."TimeLabel"];
+			-- 10 pixels above cost, 2 pixels above time
+			height = height + Tooltip["Rank"..i.."Cost"]:GetHeight() +Tooltip["Rank"..i.."Time"]:GetHeight() + 12;
+		else
+			Tooltip["Rank"..i.."Cost"]:Hide();
+			Tooltip["Rank"..i.."Time"]:Hide();
+			Tooltip["Rank"..i.."CostLabel"]:Hide();
+			Tooltip["Rank"..i.."TimeLabel"]:Hide();
+			nextAnchor = Tooltip["Rank"..i.."Tooltip"];
+		end
+		Tooltip["Rank"..i]:Show();
+		Tooltip["Rank"..i.."Tooltip"]:Show();
+		--10 pixels padding above rank title, 5 pixes above rank tooltip
+		height = height + Tooltip["Rank"..i.."Tooltip"]:GetHeight() + Tooltip["Rank"..i]:GetHeight() + 15;
+	end
+	
+	for i=#upgrades+1, 3 do
+		Tooltip["Rank"..i.."Tooltip"]:Hide();
+		Tooltip["Rank"..i]:Hide();
+	end
+	
+	Tooltip:SetHeight(height);
+	Tooltip:SetPoint("LEFT", self, "RIGHT", -3, -5);
+	Tooltip:Show();
+end
+
+function GarrisonBuildingListButton_OnLeave(self)
+	GarrisonBuildingFrame.BuildingList.Tooltip:Hide();
 end
 
 function GarrisonBuildingListButton_OnDragStart(self, button)
@@ -971,6 +1180,7 @@ function GarrisonPlot_OnClick(self)
 	GarrisonBuildingFrame.InfoBox.UpgradeButton:Hide();
 	GarrisonBuildingFrame_ClearPlotHighlights();
 	self.PlotHighlight:Show();
+	GarrisonPlot_ShowTooltip(self);
 	
 	if (self.buildingID) then
 		GarrisonBuildingList_SelectBuilding(self.buildingID);
@@ -989,6 +1199,34 @@ function GarrisonPlot_OnClick(self)
 	end
 	GarrisonBuildingInfoBox_ShowDefault();
 end
+
+function GarrisonPlot_ShowTooltip(self)
+	if (self.buildingID) then
+		GameTooltip:SetOwner(self, "ANCHOR_CURSOR_RIGHT")
+		GameTooltip:SetText(self.tooltip, nil, nil, nil, nil, true);
+	else
+		GameTooltip:SetOwner(self, "ANCHOR_CURSOR_RIGHT")
+		GameTooltip:SetText(GARRISON_EMPTY_PLOT);
+		if (self.PlotHighlight:IsShown()) then
+			GameTooltip:AddLine(GARRISON_EMPTY_PLOT_SELECTED_TOOLTIP, HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b, true);
+		else
+			GameTooltip:AddLine(GARRISON_EMPTY_PLOT_HOVER_TOOLTIP, HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b, true);
+		end
+		GameTooltip:Show();
+	end
+end
+
+function GarrisonPlot_OnEnter(self)
+	self.BuildingHighlight:Show();
+	self.PlotHover:Show();
+	GarrisonPlot_ShowTooltip(self);
+end
+
+function GarrisonPlot_OnLeave(self)
+	self.BuildingHighlight:Hide();
+	self.PlotHover:Hide();
+	GameTooltip_Hide();
+end	
 
 function GarrisonPlot_ClearBuilding(self)
 	self.buildingID = nil;

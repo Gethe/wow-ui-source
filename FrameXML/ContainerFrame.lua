@@ -153,6 +153,13 @@ function ContainerFrame_OnHide(self)
 		UpdateMicroButtons();
 		PlaySound("KeyRingClose");
 	else
+		if ( self:GetID() == 0 ) then
+			SetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_CLEAN_UP_BAGS, true);
+		end
+		if ( BagHelpBox:IsShown() and BagHelpBox.owner == self ) then
+			BagHelpBox.owner = nil;
+			BagHelpBox:Hide();
+		end
 		PlaySound("igBackPackClose");
 	end
 end
@@ -167,11 +174,21 @@ function ContainerFrame_OnShow(self)
 	self:RegisterEvent("BAG_SLOT_FLAGS_UPDATED");
 
 	if ( self:GetID() == 0 ) then
+		if ( not GetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_CLEAN_UP_BAGS) ) then
+			BagHelpBox:ClearAllPoints();
+			BagHelpBox:SetPoint("RIGHT", BagItemAutoSortButton, "LEFT", -24, 0);
+			BagHelpBox.Text:SetText(CLEAN_UP_BAGS_TUTORIAL);
+			BagHelpBox.owner = self;
+			BagHelpBox:Show();
+		end
 		MainMenuBarBackpackButton:SetChecked(true);
 	elseif ( self:GetID() <= NUM_BAG_SLOTS ) then 
 		local button = _G["CharacterBag"..(self:GetID() - 1).."Slot"];
 		if ( button ) then
 			button:SetChecked(true);
+		end
+		if ( not ContainerFrame1.allBags ) then
+			CheckBagSettingsTutorial();
 		end
 	else
 		UpdateBagButtonHighlight(self:GetID() - NUM_BAG_SLOTS);
@@ -211,6 +228,9 @@ function OpenBag(id)
 		end
 		if ( not containerShowing ) then
 			ContainerFrame_GenerateFrame(ContainerFrame_GetOpenFrame(), size, id);
+		end
+		if (not ContainerFrame1.allBags) then
+			CheckBagSettingsTutorial();
 		end
 	end
 end
@@ -279,6 +299,30 @@ function UpdateNewItemList(containerFrame)
 		itemButton = _G[name.."Item"..i];
 		
 		C_NewItems.RemoveNewItem(id, itemButton:GetID());
+	end
+end
+
+function CheckBagSettingsTutorial()
+	if (GetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_CLEAN_UP_BAGS) and not GetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_BAG_SETTINGS)) then
+		local frame;
+		if (ContainerFrame4:IsShown() and ContainerFrame4:GetID() ~= 0) then
+			frame = ContainerFrame4;
+		else
+			for i=NUM_CONTAINER_FRAMES, 1, -1 do
+				if ( _G["ContainerFrame"..i]:IsShown() and _G["ContainerFrame"..i]:GetID() ~= 0 ) then
+					frame = _G["ContainerFrame"..i];
+					break;
+				end
+			end
+		end
+		if (frame) then
+			BagHelpBox:ClearAllPoints();
+			BagHelpBox:SetPoint("RIGHT", frame.Portrait, "LEFT", -8, 0);
+			BagHelpBox.Text:SetText(BAG_SETTINGS_TUTORIAL);
+			BagHelpBox:Show();
+			BagHelpBox.owner = frame;
+			SetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_BAG_SETTINGS, true);
+		end
 	end
 end
 
@@ -986,10 +1030,13 @@ function ToggleAllBags()
 		end
 	end
 	if (bagsOpen < totalBags) then
+		ContainerFrame1.allBags = true;
 		OpenBackpack();
 		for i=1, NUM_BAG_FRAMES, 1 do
 			OpenBag(i);
 		end
+		ContainerFrame1.allBags = false;
+		CheckBagSettingsTutorial();
 	elseif( BankFrame:IsShown() ) then
 		bagsOpen = 0;
 		totalBags = 0;
@@ -1003,10 +1050,13 @@ function ToggleAllBags()
 			end
 		end
 		if (bagsOpen < totalBags) then
+			ContainerFrame1.allBags = true;
 			OpenBackpack();
 			for i=1, NUM_CONTAINER_FRAMES, 1 do
 				OpenBag(i);
 			end
+			ContainerFrame1.allBags = false;
+			CheckBagSettingsTutorial();
 		end
 	end
 end
@@ -1026,11 +1076,14 @@ function OpenAllBags(frame)
 	if( frame and not FRAME_THAT_OPENED_BAGS ) then
 		FRAME_THAT_OPENED_BAGS = frame:GetName();
 	end
-	
+
+	ContainerFrame1.allBags = true;
 	OpenBackpack();
 	for i=1, NUM_BAG_FRAMES, 1 do
 		OpenBag(i);
 	end
+	ContainerFrame1.allBags = false;
+	CheckBagSettingsTutorial();
 end
 
 function CloseAllBags(frame)	
@@ -1097,14 +1150,16 @@ function ContainerFrameFilterDropDown_Initialize(self, level)
 		info.tooltipOnButton = 1;
 
 		for i = LE_BAG_FILTER_FLAG_EQUIPMENT, NUM_LE_BAG_FILTER_FLAGS do
-			info.text = BAG_FILTER_LABELS[i];
-			info.func = function(_, _, _, value)
-				SetBagSlotFlag(id, i, not value);
-			end;
-			info.checked = GetBagSlotFlag(id, i);
-			info.disabled = nil;
-			info.tooltipTitle = nil;
-			UIDropDownMenu_AddButton(info);
+			if ( i ~= LE_BAG_FILTER_FLAG_JUNK ) then
+				info.text = BAG_FILTER_LABELS[i];
+				info.func = function(_, _, _, value)
+					SetBagSlotFlag(id, i, not value);
+				end;
+				info.checked = GetBagSlotFlag(id, i);
+				info.disabled = nil;
+				info.tooltipTitle = nil;
+				UIDropDownMenu_AddButton(info);
+			end
 		end
 	end
 

@@ -3297,6 +3297,7 @@ function ToggleGameMenu()
 	elseif ( securecall("CloseMenus") ) then
 	elseif ( CloseCalendarMenus and securecall("CloseCalendarMenus") ) then
 	elseif ( CloseGuildMenus and securecall("CloseGuildMenus") ) then
+	elseif ( GarrisonMissionFrame_ClearMouse and securecall("GarrisonMissionFrame_ClearMouse") ) then
 	elseif ( SpellStopCasting() ) then
 	elseif ( SpellStopTargeting() ) then
 	elseif ( securecall("CloseAllWindows") ) then
@@ -4232,47 +4233,6 @@ function AbbreviateLargeNumbers(value)
 	return retString;
 end
 
-function ConvertToDecimal(value, fractionalWidth)
-	local retString = "";
-	fractionalWidth = fractionalWidth or 2;
-	
-		if ( (value - math.floor(value)) == 0) then
-			return value;
-		end
-	
-	local decimal = value - (math.floor(value));
-	decimal = math.floor(decimal*(10^fractionalWidth));
-	
-	retString = ""..math.floor(value);
-		retString = retString..DECIMAL_SEPERATOR;
-	retString = retString..decimal;
-	
-	return retString
-end
-
-function BreakUpLargeNumbers(value, fractionalWidth)
-	local retString = "";
-	
-	if ( value < 1000 ) then
-		return ConvertToDecimal(value, fractionalWidth);
-	end
-
-	value = math.floor(value);
-	local strLen = strlen(value);
-	if ( GetCVarBool("breakUpLargeNumbers") ) then
-		if ( strLen > 6 ) then
-			retString = string.sub(value, 1, -7)..LARGE_NUMBER_SEPERATOR;
-		end
-		if ( strLen > 3 ) then
-			retString = retString..string.sub(value, -6, -4)..LARGE_NUMBER_SEPERATOR;
-		end
-		retString = retString..string.sub(value, -3, -1);
-	else
-		retString = value;
-	end
-	return retString;
-end
-
 function GetTimeStringFromSeconds(timeAmount, hasMS, dropZeroHours)
 	local seconds, ms;
 	-- milliseconds
@@ -4319,14 +4279,15 @@ end
 
 function PrintLootSpecialization()
 	local specID = GetLootSpecialization();
+	local sex = UnitSex("player");
 	local lootSpecChoice;
 	if ( specID and specID > 0 ) then
-		local id, name = GetSpecializationInfoByID(specID);
+		local id, name = GetSpecializationInfoByID(specID, sex);
 		lootSpecChoice = format(ERR_LOOT_SPEC_CHANGED_S, name);
 --[[	else
 		local specIndex = GetSpecialization();
 		if ( specIndex) then
-			local specID, specName = GetSpecializationInfo(specIndex);
+			local specID, specName = GetSpecializationInfo(specIndex, nil, nil, nil, sex);
 			if ( specName ) then
 				lootSpecChoice = format(ERR_LOOT_SPEC_CHANGED_S, format(LOOT_SPECIALIZATION_DEFAULT, specName));
 			end

@@ -245,7 +245,8 @@ function WorldMapFrame_OnLoad(self)
 	self:RegisterEvent("PLAYER_STOPPED_MOVING");
 	self:RegisterEvent("QUESTLINE_UPDATE");
 	self:RegisterEvent("QUEST_LOG_UPDATE");
-
+	self:RegisterEvent("QUESTTASK_UPDATE");
+	
 	self:SetClampRectInsets(0, 0, 0, -60);				-- don't overlap the xp/rep bars
 	self.poiHighlight = nil;
 	self.areaName = nil;
@@ -434,6 +435,8 @@ function WorldMapFrame_OnEvent(self, event, ...)
 		WorldMapFrame_AnimAlphaIn(self, true);
 	elseif ( event == "QUEST_LOG_UPDATE" and WorldMapFrame:IsVisible() ) then
 		WorldMap_UpdateQuestBonusObjectives();
+	elseif ( event == "QUESTTASK_UPDATE" and WorldMapFrame:IsVisible() ) then
+		TaskPOI_OnEnter(_G["lastPOIButtonUsed"]);
 	end
 end
 
@@ -533,29 +536,30 @@ function WorldMap_UpdateQuestBonusObjectives()
 		NUM_WORLDMAP_TASK_POIS = numTaskPOIs;
 	end
 
-
 	local taskIconCount = 1;
-	for _, info  in next, taskInfo do
-		local textureIndex = MINIMAP_QUEST_BONUS_OBJECTIVE;
-		local x = info.x;
-		local y = info.y;
-		local questid = info.questId;
-			
-		local taskPOIName = "WorldMapFrameTaskPOI"..taskIconCount;
-		local taskPOI = _G[taskPOIName];
-			
-		local x1, x2, y1, y2 = GetWorldEffectTextureCoords(textureIndex);
-		_G[taskPOIName.."Texture"]:SetTexCoord(x1, x2, y1, y2);
-		x = x * WorldMapButton:GetWidth();
-		y = -y * WorldMapButton:GetHeight();
-		taskPOI:SetPoint("CENTER", "WorldMapButton", "TOPLEFT", x, y);
-		taskPOI.name = taskPOIName;
-		taskPOI.questID = questid;
-		taskPOI:Show();
+	if ( numTaskPOIs > 0 ) then
+		for _, info  in next, taskInfo do
+			local textureIndex = MINIMAP_QUEST_BONUS_OBJECTIVE;
+			local x = info.x;
+			local y = info.y;
+			local questid = info.questId;
+				
+			local taskPOIName = "WorldMapFrameTaskPOI"..taskIconCount;
+			local taskPOI = _G[taskPOIName];
+				
+			local x1, x2, y1, y2 = GetWorldEffectTextureCoords(textureIndex);
+			_G[taskPOIName.."Texture"]:SetTexCoord(x1, x2, y1, y2);
+			x = x * WorldMapButton:GetWidth();
+			y = -y * WorldMapButton:GetHeight();
+			taskPOI:SetPoint("CENTER", "WorldMapButton", "TOPLEFT", x, y);
+			taskPOI.name = taskPOIName;
+			taskPOI.questID = questid;
+			taskPOI:Show();
 
-		taskIconCount = taskIconCount + 1;
+			taskIconCount = taskIconCount + 1;
+		end
 	end
-
+	
 	-- Hide unused icons in the pool
 	for i=taskIconCount, NUM_WORLDMAP_TASK_POIS do
 		local taskPOIName = "WorldMapFrameTaskPOI"..i;
@@ -1118,16 +1122,19 @@ function WorldEffectPOI_OnLeave()
 end
 
 function TaskPOI_OnEnter(self)
-	if(self.questID ~= nil) then
+	if(self ~= nil and self.questID ~= nil) then
 		WorldMapTooltip:SetOwner(self, "ANCHOR_RIGHT");
 		local name = C_TaskQuest.GetQuestTitleByQuestID(self.questID)
 		local objectives = C_TaskQuest.GetQuestObjectiveStrByQuestID(self.questID)
 
+		_G["lastPOIButtonUsed"] = self;
+		
 		WorldMapTooltip:SetText(name);
-		for key,value in pairs(objectives) do
-			WorldMapTooltip:AddLine(QUEST_DASH..value, 1, 1, 1, true);
-		end	
-
+		if ( objectives ~= nil ) then
+			for key,value in pairs(objectives) do
+				WorldMapTooltip:AddLine(QUEST_DASH..value, 1, 1, 1, true);
+			end	
+		end
 		WorldMapTooltip:Show();
 	end
 end

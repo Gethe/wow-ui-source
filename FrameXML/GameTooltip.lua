@@ -71,7 +71,7 @@ function GameTooltip_SetDefaultAnchor(tooltip, parent)
 end
 
 function GameTooltip_OnLoad(self)
-	self.advanceNextCompare = true;
+	self.needsReset = true;
 	self.updateTooltip = TOOLTIP_UPDATE_TIME;
 	self:SetBackdropBorderColor(TOOLTIP_DEFAULT_COLOR.r, TOOLTIP_DEFAULT_COLOR.g, TOOLTIP_DEFAULT_COLOR.b);
 	self:SetBackdropColor(TOOLTIP_DEFAULT_BACKGROUND_COLOR.r, TOOLTIP_DEFAULT_BACKGROUND_COLOR.g, TOOLTIP_DEFAULT_BACKGROUND_COLOR.b);
@@ -180,8 +180,11 @@ function GameTooltip_OnHide(self)
 end
 
 function GameTooltip_OnControlPressed(self)
-	self.advanceNextCompare = true;
-	GameTooltip_ShowCompareItem(self);
+	GameTooltip_AdvanceSecondaryCompareItem(self);
+
+	local shoppingTooltip1, shoppingTooltip2 = unpack(self.shoppingTooltips);
+	if ( shoppingTooltip1:IsShown() ) then		GameTooltip_ShowCompareItem(self);
+	end
 end
 
 function GameTooltip_OnUpdate(self, elapsed)
@@ -222,11 +225,6 @@ function GameTooltip_AddNewbieTip(frame, normalText, r, g, b, newbieText, noNorm
 	end
 end
 
-local allowCompareWithToggle = GetCVarBool("allowCompareWithToggle");
-ITEM_DELTA_DUAL_WIELD_COMPARISON_DESCRIPTION = "(With |c%s%s|r %s)";
-ITEM_COMPARISON_SWAP_ITEM_DESCRIPTION = GRAY_FONT_COLOR_CODE.."Cycle through your %s items by pressing Ctrl."..FONT_COLOR_CODE_CLOSE;
-ITEM_SLOT_OFF_HAND = "off-hand";
-ITEM_SLOT_MAIN_HAND = "one-hand";
 function GameTooltip_ShowCompareItem(self)
 	if ( not self ) then
 		self = GameTooltip;
@@ -234,23 +232,13 @@ function GameTooltip_ShowCompareItem(self)
 	
 	if ( self.needsReset ) then
 		self:ResetSecondaryCompareItem();
-		self.advanceNextCompare = true;
+		GameTooltip_AdvanceSecondaryCompareItem(self);
 		self.needsReset = false;
-	end
-	
-	local item, link = self:GetItem();
-	if ( not link ) then
-		return;
-	end
-	
-	if ( self.advanceNextCompare and allowCompareWithToggle ) then
-		self:AdvanceSecondaryCompareItem(link);
-		self.advanceNextCompare = false;
 	end
 	
 	local shoppingTooltip1, shoppingTooltip2 = unpack(self.shoppingTooltips);
 	
-	local primaryItemShown, secondaryItemShown = shoppingTooltip1:SetHyperlinkCompareItem(link, shoppingTooltip2, self);
+	local primaryItemShown, secondaryItemShown = shoppingTooltip1:SetCompareItem(shoppingTooltip2, self);
 
 	local side = "left";
 	
@@ -321,8 +309,18 @@ function GameTooltip_ShowCompareItem(self)
 	end
 	
 	-- We have to call this again because :SetOwner clears the tooltip.
-	shoppingTooltip1:SetHyperlinkCompareItem(link, shoppingTooltip2, self);
+	shoppingTooltip1:SetCompareItem(shoppingTooltip2, self);
 	shoppingTooltip1:Show();
+end
+
+function GameTooltip_AdvanceSecondaryCompareItem(self)
+	if ( not self ) then
+		self = GameTooltip;
+	end
+	
+	if ( GetCVarBool("allowCompareWithToggle") ) then
+		self:AdvanceSecondaryCompareItem();
+	end
 end
 
 function GameTooltip_ShowStatusBar(self, min, max, value, text)

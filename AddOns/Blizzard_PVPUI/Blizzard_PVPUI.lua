@@ -1024,11 +1024,8 @@ function WarGamesFrame_OnEvent(self, event, ...)
 end
 
 function WarGamesFrame_OnShow(self)
-	if ( not self.dataLevel or UnitLevel("player") > self.dataLevel ) then
-		WarGamesFrame.otherHeaderIndex = nil;
-		self.dataLevel = UnitLevel("player");
-		UpdateWarGamesList();
-	end
+	WarGamesFrame.otherHeaderIndex = nil;
+	UpdateWarGamesList();
 	WarGamesFrame_Update();
 end
 

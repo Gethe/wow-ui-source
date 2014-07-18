@@ -1276,14 +1276,14 @@
 		
 		<Layers>
 			<Layer level="ARTWORK">
-				<Texture name="$parentArrow" inherits="HelpPlateArrowDOWN">
+				<Texture name="$parentArrow" parentKey="Arrow" inherits="HelpPlateArrowDOWN">
 					<Anchors>
 						<Anchor point="TOPLEFT"/>
 					</Anchors>
 				</Texture>
 			</Layer>
 			<Layer level="BORDER">
-				<Texture name="$parentGlow" inherits="HelpPlateArrow-GlowDOWN" alphaMode="ADD" alpha="0.5">
+				<Texture name="$parentGlow" parentKey="Glow" inherits="HelpPlateArrow-GlowDOWN" alphaMode="ADD" alpha="0.5">
 					<Anchors>
 						<Anchor point="TOP"/>
 					</Anchors>

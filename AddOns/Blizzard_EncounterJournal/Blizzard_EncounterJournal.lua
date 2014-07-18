@@ -66,7 +66,7 @@ local EJ_DIFFICULTIES =
 	{ size = "10", prefix = PLAYER_DIFFICULTY2, difficultyID = 5 },
 	{ size = "25", prefix = PLAYER_DIFFICULTY1, difficultyID = 4 },
 	{ size = "25", prefix = PLAYER_DIFFICULTY2, difficultyID = 6 },
-	{ size = "10-30", prefix = PLAYER_DIFFICULTY3, difficultyID = 17 },
+	{ size = "10-25", prefix = PLAYER_DIFFICULTY3, difficultyID = 17 },
 	{ size = "10-30", prefix = PLAYER_DIFFICULTY1, difficultyID = 14 },
 	{ size = "10-30", prefix = PLAYER_DIFFICULTY2, difficultyID = 15 },
 	{ size = "20", prefix = PLAYER_DIFFICULTY6, difficultyID = 16 },
@@ -1495,7 +1495,7 @@ function EncounterJournal_SetTooltip(link)
 	if (specID == 0) then
 		local spec = GetSpecialization();
 		if (spec and classID == select(3, UnitClass("player"))) then
-			specID = GetSpecializationInfo(spec);
+			specID = GetSpecializationInfo(spec, nil, nil, nil, UnitSex("player"));
 		else
 			specID = -1;
 		end
@@ -1872,7 +1872,7 @@ function EncounterJournal_UpdateFilterString()
 	local classID, specID = EJ_GetLootFilter();
 
 	if (specID > 0) then
-		_, name = GetSpecializationInfoByID(specID)
+		_, name = GetSpecializationInfoByID(specID, UnitSex("player"))
 	elseif (classID > 0) then
 		name = GetClassInfoByID(classID);
 	end
@@ -1890,6 +1890,7 @@ end
 local CLASS_DROPDOWN = 1;
 function EncounterJournal_InitLootFilter(self, level)
 	local filterClassID, filterSpecID = EJ_GetLootFilter();
+	local sex = UnitSex("player");
 	local classDisplayName, classTag, classID;
 	local info = UIDropDownMenu_CreateInfo();
 	info.keepShownOnClick = nil;
@@ -1938,7 +1939,7 @@ function EncounterJournal_InitLootFilter(self, level)
 		info.notCheckable = nil;
 		local numSpecs = GetNumSpecializationsForClassID(classID);
 		for i = 1, numSpecs do
-			local specID, specName = GetSpecializationInfoForClassID(classID, i);
+			local specID, specName = GetSpecializationInfoForClassID(classID, i, sex);
 			info.leftPadding = 10;
 			info.text = specName;
 			info.checked = (filterSpecID == specID);

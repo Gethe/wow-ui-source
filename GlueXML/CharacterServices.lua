@@ -880,7 +880,7 @@ function CharacterUpgradeSpecSelectBlock:Initialize(results)
 	self.selected = nil;
 
 	local classID = classIds[select(4,GetCharacterInfo(results.charid))];
-
+	local sex = UnitSex("player");
 	local numSpecs = GetNumSpecializationsForClassID(classID);
 
 	for i = 1, 4 do
@@ -891,7 +891,7 @@ function CharacterUpgradeSpecSelectBlock:Initialize(results)
 		end
 		local button = self.frame.ControlsFrame.SpecButtons[i];
 		if (i <= numSpecs ) then
-			local specID, name, description, icon, _, role  = GetSpecializationInfoForClassID(classID, i);
+			local specID, name, description, icon, _, role  = GetSpecializationInfoForClassID(classID, i, sex);
 			button:SetID(specID);
 			button.SpecIcon:SetTexture(icon);
 			button.SpecName:SetText(name);

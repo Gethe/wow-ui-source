@@ -702,20 +702,9 @@
 						<Anchor point="TOPLEFT" relativeTo="$parentRewardsLabel" relativePoint="BOTTOMLEFT" x="0" y="-5"/>
 					</Anchors>
 				</FontString>
-				<FontString name="$parentPUGDescription" inherits="QuestFont" justifyH="LEFT" parentKey="pugDescription" text="LFD_RANDOM_REWARD_PUG_EXPLANATION">
-					<Size x="280" y="0"/>
-					<Anchors>
-						<Anchor point="TOPLEFT" relativeTo="$parentRewardsLabel" relativePoint="BOTTOMLEFT" x="0" y="-5"/>
-					</Anchors>
-				</FontString>
-				<FontString name="$parentMoneyLabel" inherits="QuestFont" justifyH="LEFT" parentKey="moneyLabel" text="MONEY_COLON">
-					<Anchors>
-						<Anchor point="TOPLEFT" relativeTo="$parentPUGDescription" relativePoint="BOTTOMLEFT" x="20" y="-10"/>
-					</Anchors>
-				</FontString>
 				<FontString name="$parentXPLabel" inherits="QuestFont" justifyH="LEFT" parentKey="xpLabel" text="EXPERIENCE_COLON">
 					<Anchors>
-						<Anchor point="TOPLEFT" relativeTo="$parentMoneyLabel" relativePoint="BOTTOMLEFT" x="0" y="-5"/>
+						<Anchor point="TOPLEFT" relativeTo="$parentRewardsDescription" relativePoint="BOTTOMLEFT" x="0" y="-5"/>
 					</Anchors>
 				</FontString>
 				<FontString name="$parentXPAmount" inherits="NumberFontNormalLarge" justifyH="LEFT" parentKey="xpAmount">
@@ -733,15 +722,19 @@
 					<Anchor point="TOPLEFT" relativeTo="$parentRewardsDescription" relativePoint="BOTTOMLEFT" x="0" y="-10"/>
 				</Anchors>
 			</Button>
-			<Frame name="$parentMoneyFrame" inherits="MoneyFrameTemplate" parentKey="moneyFrame">
-				<Anchors>
-					<Anchor point="LEFT" relativeTo="$parentMoneyLabel" relativePoint="RIGHT" x="10" y="0"/>
-				</Anchors>
+			<Frame name="$parentMoneyReward" inherits="LargeItemButtonTemplate" parentKey="MoneyReward" hidden="true">
 				<Scripts>
 					<OnLoad>
-						SmallMoneyFrame_OnLoad(self);
-						MoneyFrame_SetType(self, "STATIC");
+						self.Icon:SetTexture("Interface\\Icons\\inv_misc_coin_01");
+						self.Name:SetHeight(4);
 					</OnLoad>
+					<OnEnter>
+						GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+						GameTooltip:SetText(LFG_TOOLTIP_MONEY_REWARD, 1, 1, 1);
+					</OnEnter>
+					<OnLeave>
+						GameTooltip:Hide();
+					</OnLeave>
 				</Scripts>
 			</Frame>
 			<Frame name="$parentBonusValor" parentKey="BonusValor" hidden="true">

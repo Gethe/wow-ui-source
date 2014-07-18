@@ -138,6 +138,8 @@
 						</Anchor>
 					</Anchors>
 				</Texture>
+			</Layer>
+			<Layer level="BORDER">
 				<FontString name="$parentName" inherits="GameFontHighlight" justifyH="LEFT" parentKey="Name">
 					<Size>
 						<AbsDimension x="90" y="36"/>

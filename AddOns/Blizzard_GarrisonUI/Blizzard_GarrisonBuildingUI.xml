@@ -215,7 +215,7 @@
 		<Size x="91" y="50"/>
 		<Layers>
 			<Layer level="ARTWORK">
-				<FontString parentKey="Text" inherits="GameFontHighlight" justifyH="CENTER" text="Small">
+				<FontString parentKey="Text" inherits="GameFontHighlight" justifyH="CENTER">
 					<Size x="91" y="50"/>
 					<Anchors>
 						<Anchor point="TOP"/>
@@ -261,7 +261,7 @@
 				</Texture>
 			</Layer>
 			<Layer level="ARTWORK">
-				<FontString parentKey="Name" inherits="GameFontNormal" justifyH="LEFT" text="Alchemy Labratory">
+				<FontString parentKey="Name" inherits="GameFontNormal" justifyH="LEFT">
 					<Anchors>
 						<Anchor point="TOPLEFT" relativeKey="$parent.BG" x="8" y="-3"/>
 						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.BG" x="-8" y="6"/>
@@ -287,7 +287,7 @@
 			<OnDragStart function="GarrisonBuildingListButton_OnDragStart"/>
 			<OnDragStop function="GarrisonBuildingListButton_OnDragStop"/>
 			<OnEnter function="GarrisonBuildingListButton_OnEnter"/>
-			<OnLeave function="GameTooltip_Hide"/>
+			<OnLeave function="GarrisonBuildingListButton_OnLeave"/>
 		</Scripts>
 	</Button>
 	
@@ -380,6 +380,11 @@
 		<Layers>
 			<Layer level="BACKGROUND">
 				<Texture parentKey="Plot" atlas="Garr_Plot_Shadowmoon_A_1" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="BOTTOM"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="PlotHover" alpha="0.5" alphaMode="ADD" hidden="true">
 					<Anchors>
 						<Anchor point="BOTTOM"/>
 					</Anchors>
@@ -495,23 +500,16 @@
 			<OnMouseDown>
 				GarrisonPlot_OnClick(self);
 			</OnMouseDown>
-			<OnEnter>
-				self.BuildingHighlight:Show();
-				if (self.tooltip) then
-					GameTooltip:SetOwner(self, "ANCHOR_CURSOR_RIGHT")
-					GameTooltip:SetText(self.tooltip, nil, nil, nil, nil, true);
-				end
-			</OnEnter>
-			<OnLeave>
-				self.BuildingHighlight:Hide();
-				GameTooltip_Hide();
-			</OnLeave>
+			<OnEnter function="GarrisonPlot_OnEnter"/>
+			<OnLeave function="GarrisonPlot_OnLeave"/>
 		</Scripts>
 	</Button>
 
 	<Button name="GarrisonBuildingFollowerButtonTemplate" inherits="GarrisonFollowerButtonTemplate" virtual="true">
 		<Scripts>
 			<OnClick function="GarrisonBuildingFollowerButton_OnClick"/>
+			<OnEnter function="GarrisonBuildingFollowerButton_OnEnter"/>
+			<OnLeave function="GarrisonBuildingFollowerButton_OnLeave"/>
 		</Scripts>
 	</Button>
 	
@@ -571,6 +569,120 @@
 							</Layer>
 						</Layers>
 					</Frame>
+					<Frame parentKey="Tooltip" inherits="TooltipBorderedFrameTemplate" hidden="true" frameStrata="HIGH">
+						<Size x="230" y="300"/>
+						<Anchors>
+							<Anchor point="LEFT" relativePoint="RIGHT" x="-3" y="-5"/>
+						</Anchors>
+						<Layers>
+							<Layer level="ARTWORK">
+								<FontString parentKey="Name" inherits="GameFontHighlightMedium" justifyH="LEFT">
+									<Size x="190" y="0"/>
+									<Anchors>
+										<Anchor point="TOPLEFT" x="15" y="-15"/>
+									</Anchors>
+								</FontString>
+								<FontString parentKey="Rank1" inherits="GameFontNormal" justifyH="LEFT">
+									<Size x="190" y="0"/>
+									<Anchors>
+										<Anchor point="TOPLEFT" relativeKey="$parent.Name" relativePoint="BOTTOMLEFT" x="0" y="-10"/>
+									</Anchors>
+								</FontString>
+								<FontString parentKey="Rank1Tooltip" inherits="GameFontHighlight" justifyH="LEFT">
+									<Size x="190" y="0"/>
+									<Anchors>
+										<Anchor point="TOPLEFT" relativeKey="$parent.Rank1" relativePoint="BOTTOMLEFT" x="10" y="-5"/>
+									</Anchors>
+								</FontString>
+								<FontString parentKey="Rank1CostLabel" inherits="GameFontNormal" text="COSTS_LABEL">
+									<Anchors>
+										<Anchor point="TOPLEFT" relativeKey="$parent.Rank1Tooltip" relativePoint="BOTTOMLEFT" x="0" y="-10"/>
+									</Anchors>
+								</FontString>
+								<FontString parentKey="Rank1Cost" inherits="GameFontHighlight">
+									<Anchors>
+										<Anchor point="LEFT" relativeKey="$parent.Rank1CostLabel" relativePoint="RIGHT" x="2"/>
+									</Anchors>
+								</FontString>
+								<FontString parentKey="Rank1TimeLabel" inherits="GameFontNormal" text="TIME_LABEL">
+									<Anchors>
+										<Anchor point="TOPLEFT" relativeKey="$parent.Rank1CostLabel" relativePoint="BOTTOMLEFT" y="-2"/>
+									</Anchors>
+								</FontString>
+								<FontString parentKey="Rank1Time" inherits="GameFontHighlight">
+									<Anchors>
+										<Anchor point="LEFT" relativeKey="$parent.Rank1TimeLabel" relativePoint="RIGHT" x="2"/>
+									</Anchors>
+								</FontString>
+								
+								<FontString parentKey="Rank2" inherits="GameFontNormal" justifyH="LEFT">
+									<Size x="190" y="0"/>
+									<Anchors>
+										<Anchor point="TOPLEFT" relativeKey="$parent.Rank1TimeLabel" relativePoint="BOTTOMLEFT" x="-10" y="-10"/>
+									</Anchors>
+								</FontString>
+								<FontString parentKey="Rank2Tooltip" inherits="GameFontHighlight" justifyH="LEFT">
+									<Size x="190" y="0"/>
+									<Anchors>
+										<Anchor point="TOPLEFT" relativeKey="$parent.Rank2" relativePoint="BOTTOMLEFT" x="10" y="-5"/>
+									</Anchors>
+								</FontString>
+								<FontString parentKey="Rank2CostLabel" inherits="GameFontNormal" text="COSTS_LABEL">
+									<Anchors>
+										<Anchor point="TOPLEFT" relativeKey="$parent.Rank2Tooltip" relativePoint="BOTTOMLEFT" x="0" y="-10"/>
+									</Anchors>
+								</FontString>
+								<FontString parentKey="Rank2Cost" inherits="GameFontHighlight">
+									<Anchors>
+										<Anchor point="LEFT" relativeKey="$parent.Rank2CostLabel" relativePoint="RIGHT" x="2"/>
+									</Anchors>
+								</FontString>
+								<FontString parentKey="Rank2TimeLabel" inherits="GameFontNormal" text="TIME_LABEL">
+									<Anchors>
+										<Anchor point="TOPLEFT" relativeKey="$parent.Rank2CostLabel" relativePoint="BOTTOMLEFT" y="-2"/>
+									</Anchors>
+								</FontString>
+								<FontString parentKey="Rank2Time" inherits="GameFontHighlight">
+									<Anchors>
+										<Anchor point="LEFT" relativeKey="$parent.Rank2TimeLabel" relativePoint="RIGHT" x="2"/>
+									</Anchors>
+								</FontString>
+								
+								<FontString parentKey="Rank3" inherits="GameFontNormal" justifyH="LEFT">
+									<Size x="190" y="0"/>
+									<Anchors>
+										<Anchor point="TOPLEFT" relativeKey="$parent.Rank2TimeLabel" relativePoint="BOTTOMLEFT" x="-10" y="-10"/>
+									</Anchors>
+								</FontString>
+								<FontString parentKey="Rank3Tooltip" inherits="GameFontHighlight" justifyH="LEFT">
+									<Size x="190" y="0"/>
+									<Anchors>
+										<Anchor point="TOPLEFT" relativeKey="$parent.Rank3" relativePoint="BOTTOMLEFT" x="10" y="-5"/>
+									</Anchors>
+								</FontString>
+								<FontString parentKey="Rank3CostLabel" inherits="GameFontNormal" text="COSTS_LABEL">
+									<Anchors>
+										<Anchor point="TOPLEFT" relativeKey="$parent.Rank3Tooltip" relativePoint="BOTTOMLEFT" x="0" y="-10"/>
+									</Anchors>
+								</FontString>
+								<FontString parentKey="Rank3Cost" inherits="GameFontHighlight">
+									<Anchors>
+										<Anchor point="LEFT" relativeKey="$parent.Rank3CostLabel" relativePoint="RIGHT" x="2"/>
+									</Anchors>
+								</FontString>
+								<FontString parentKey="Rank3TimeLabel" inherits="GameFontNormal" text="TIME_LABEL">
+									<Anchors>
+										<Anchor point="TOPLEFT" relativeKey="$parent.Rank3CostLabel" relativePoint="BOTTOMLEFT" y="-2"/>
+									</Anchors>
+								</FontString>
+								<FontString parentKey="Rank3Time" inherits="GameFontHighlight">
+									<Anchors>
+										<Anchor point="LEFT" relativeKey="$parent.Rank3TimeLabel" relativePoint="RIGHT" x="2"/>
+									</Anchors>
+								</FontString>
+							</Layer>
+						</Layers>
+					</Frame>
 				</Frames>
 			</Frame>
 			<Frame parentKey="FollowerList" inherits="GarrisonListTemplateHeader" name="$parentFollowers" hidden="true" frameStrata="HIGH">
@@ -586,6 +698,19 @@
 								<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMRIGHT"/>
 							</Anchors>
 						</Texture>
+					</Layer>
+					<Layer level="ARTWORK">
+						<FontString parentKey="Header" inherits="GameFontNormalLarge" justifyH="CENTER" text="GARRISON_BUILDING_SELECT_FOLLOWER_TITLE">
+							<Anchors>
+								<Anchor point="TOP" x="-7" y="20"/>
+							</Anchors>
+						</FontString>
+						<FontString parentKey="NoFollowerText" inherits="GameFontNormalLarge" justifyH="CENTER" text="GARRISON_BUILDING_NO_FOLLOWERS">
+							<Size x="228" y="0"/>
+							<Anchors>
+								<Anchor point="LEFT" x="22" y="0"/>
+							</Anchors>
+						</FontString>
 					</Layer>
 				</Layers>
 				<Scripts>
@@ -627,13 +752,13 @@
 								<Anchor point="LEFT" />
 							</Anchors>
 						</Texture>
-						<FontString parentKey="Title" inherits="GameFontNormalMed3" justifyH="LEFT" text="Blacksmith Foundry">
+						<FontString parentKey="Title" inherits="GameFontNormalMed3" justifyH="LEFT">
 							<Size x="315" y="0"/>
 							<Anchors>
 								<Anchor point="TOPLEFT" x="221" y="-24"/>
 							</Anchors>
 						</FontString>
-						<FontString parentKey="Description" inherits="GameFontHighlight" justifyH="LEFT" text="Assign qualified followers to discover plans and craft Blacksmithing recipes.">
+						<FontString parentKey="Description" inherits="GameFontHighlight" justifyH="LEFT">
 							<Size x="315" y="0"/>
 							<Anchors>
 								<Anchor point="TOPLEFT" relativeKey="$parent.Title" relativePoint="BOTTOMLEFT" y="-4"/>
@@ -782,7 +907,7 @@
 										<Anchor point="TOPLEFT" x="50" y="-17"/>
 									</Anchors>
 								</FontString>
-								<FontString parentKey="Cost" inherits="GameFontHighlight" text="400">
+								<FontString parentKey="Cost" inherits="GameFontHighlight">
 									<Anchors>
 										<Anchor point="LEFT" relativeKey="$parent.CostLabel" relativePoint="RIGHT" x="2"/>
 									</Anchors>
@@ -792,7 +917,7 @@
 										<Anchor point="TOPLEFT" relativeKey="$parent.CostLabel" relativePoint="BOTTOMLEFT" y="-2"/>
 									</Anchors>
 								</FontString>
-								<FontString parentKey="Time" inherits="GameFontHighlight" text="5 minutes">
+								<FontString parentKey="Time" inherits="GameFontHighlight">
 									<Anchors>
 										<Anchor point="LEFT" relativeKey="$parent.TimeLabel" relativePoint="RIGHT" x="2"/>
 									</Anchors>
@@ -821,7 +946,7 @@
 								</Texture>
 							</Layer>
 							<Layer level="ARTWORK">
-								<FontString inherits="GameFontNormal" text="Plans Required">
+								<FontString inherits="GameFontNormal" text="GARRISON_BUILDING_PLANS_REQUIRED">
 									<Anchors>
 										<Anchor point="CENTER"/>
 									</Anchors>
@@ -844,13 +969,43 @@
 							<OnEnter>
 								if (self.tooltip) then
 									GameTooltip:SetOwner(self, "ANCHOR_TOPLEFT")
-									GameTooltip:SetText(self.tooltip, nil, nil, nil, true);
+									GameTooltip:SetText(self.tooltip, nil, nil, nil, nil, true);
 									GameTooltip:Show();
 								end
 							</OnEnter>
 							<OnLeave function="GameTooltip_Hide"/>
 						</Scripts>
 					</Button>
+					<Frame parentKey="UpgradeCostBar" hidden="false">
+						<Size x="80" y="22"/>
+						<Anchors>
+							<Anchor point="TOP" relativeKey="$parent.RankLabel" relativePoint="BOTTOM" y="-30"/>
+						</Anchors>
+						<Layers>
+							<Layer level="ARTWORK">
+								<FontString parentKey="CostLabel" inherits="GameFontNormal" justifyH="LEFT" text="COSTS_LABEL">
+									<Anchors>
+										<Anchor point="TOPLEFT"/>`
+									</Anchors>
+								</FontString>
+								<FontString parentKey="CostAmount" inherits="GameFontHighlight" justifyH="LEFT">
+									<Anchors>
+										<Anchor point="TOPLEFT" relativeKey="$parent.CostLabel" relativePoint="TOPRIGHT" x="2" y="0"/>
+									</Anchors>
+								</FontString>
+								<FontString parentKey="TimeLabel" inherits="GameFontNormal" text="TIME_LABEL">
+									<Anchors>
+										<Anchor point="TOPLEFT" relativeKey="$parent.CostLabel" relativePoint="BOTTOMLEFT" y="-5"/>
+									</Anchors>
+								</FontString>
+								<FontString parentKey="TimeAmount" inherits="GameFontHighlight">
+									<Anchors>
+										<Anchor point="LEFT" relativeKey="$parent.TimeLabel" relativePoint="RIGHT" x="2"/>
+									</Anchors>
+								</FontString>
+							</Layer>
+						</Layers>
+					</Frame>
 					<Frame parentKey="SpecFrame" hidden="true">
 						<Size x="150" y="57"/>
 						<Anchors>
@@ -885,15 +1040,73 @@
 							</Button>
 						</Frames>
 					</Frame>
-					<Button parentKey="AddFollowerButton" inherits="GarrisonFollowerPortraitTemplate">
+					<Button parentKey="FollowerPortrait" inherits="GarrisonFollowerPortraitTemplate">
 						<Anchors>
-							<Anchor point="LEFT" relativeKey="$parent.SpecFrame" relativePoint="RIGHT" x="10"/>
+							<Anchor point="BOTTOMLEFT" x="221" y="20"/>
 						</Anchors>
 						<Layers>
-							<Layer level="BORDER" textureSubLevel="-1">
-								<Texture atlas="Garr_FollowerPortrait_Bg" useAtlasSize="true">
+							<Layer level="OVERLAY">
+								<FontString parentKey="FollowerName" inherits="GameFontNormal" justifyH="LEFT">
 									<Anchors>
-										<Anchor point="CENTER" relativeKey="$parent.PortraitRing"/>
+										<Anchor point="TOPLEFT" x="70" y="-17"/>
+									</Anchors>
+								</FontString>
+								<FontString parentKey="FollowerStatus" inherits="GameFontHighlightSmall" justifyH="LEFT">
+									<Anchors>
+										<Anchor point="TOPLEFT" relativeKey="$parent.FollowerName" relativePoint="BOTTOMLEFT" x="1" y="-5"/>
+									</Anchors>
+									<Color r="0.698" g="0.941" b="1" a="1"/>
+								</FontString>
+							</Layer>
+						</Layers>
+						<Frames>
+							<Button parentKey="RemoveFollowerButton">
+								<Size x="14" y="14"/>
+								<Anchors>
+									<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" x="-1" y="0"/>
+								</Anchors>
+								<Layers>
+									<Layer level="ARTWORK">
+										<Texture file="Interface\Buttons\UI-GroupLoot-Pass-Up" alpha="0.75" parentKey="texture"/>
+									</Layer>
+								</Layers>
+								<Scripts>
+									<OnEnter>
+										self.texture:SetAlpha(1.0);
+										GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+										GameTooltip:SetText(REMOVE);
+									</OnEnter>
+									<OnLeave>
+										self.texture:SetAlpha(0.75);
+										GameTooltip_Hide();
+									</OnLeave>
+									<OnMouseDown>
+										self.texture:SetPoint("TOPLEFT", 1, -1);
+									</OnMouseDown>
+									<OnMouseUp>
+										self.texture:SetPoint("TOPLEFT", 0, 0);
+									</OnMouseUp>
+									<OnClick>
+										C_Garrison.RemoveFollowerFromBuilding(GarrisonBuildingFrame.InfoBox.ID);
+									</OnClick>
+								</Scripts>
+							</Button>
+						</Frames>
+						<Scripts>
+							<OnEnter function="GarrisonFollowerPortrait_OnEnter" />
+							<OnLeave function="GarrisonFollowerPortrait_OnLeave" />
+						</Scripts>
+					</Button>
+					<Button parentKey="AddFollowerButton" hidden="true">
+						<Size x="52" y="60"/>
+						<Anchors>
+							<Anchor point="BOTTOMLEFT" x="221" y="20"/>
+						</Anchors>
+						<Layers>
+							<Layer level="BORDER" textureSubLevel="0">
+								<Texture parentKey="EmptyPortrait" atlas="GarrMission_PortraitRing_Empty" useAtlasSize="true">
+									<Anchors>
+										<Anchor point="TOP" relativeKey="$parent.PortraitRing"/>
 									</Anchors>
 								</Texture>
 							</Layer>
@@ -903,107 +1116,34 @@
 										<Anchor point="CENTER" relativeKey="$parent.PortraitRing" y="5"/>
 									</Anchors>
 								</Texture>
+								<Texture parentKey="PortraitHighlight" atlas="GarrMission_PortraitRing_Highlight" useAtlasSize="true" alphaMode="ADD" hidden="true">
+									<Anchors>
+										<Anchor point="CENTER" relativeKey="$parent.PortraitRing" />
+									</Anchors>
+								</Texture>
+								<FontString parentKey="AddFollowerText" inherits="GameFontHighlight" justifyH="LEFT">
+									<Size x="200" y="0"/>
+									<Anchors>
+										<Anchor point="LEFT" relativePoint="RIGHT" x="10" y="0"/>
+									</Anchors>
+									<Color r="0.804" g="0.725" b="0.616"/>
+								</FontString>
 							</Layer>
 						</Layers>
 						<Scripts>
 							<OnClick function="GarrisonBuildingAddFollowerButton_OnClick"/>
+							<OnEnter function="GarrisonBuildingAddFollowerButton_OnEnter"/>
+							<OnLeave function="GarrisonBuildingAddFollowerButton_OnLeave"/>
 						</Scripts>
 					</Button>
-					<Button parentKey="RemoveFollowerButton" hidden="true">
-						<Size x="14" y="14"/>
-						<Anchors>
-							<Anchor point="TOPLEFT" relativeKey="$parent.AddFollowerButton" relativePoint="TOPRIGHT" x="-1" y="0"/>
-						</Anchors>
-						<Layers>
-							<Layer level="ARTWORK">
-								<Texture file="Interface\Buttons\UI-GroupLoot-Pass-Up" alpha="0.75" parentKey="texture"/>
-							</Layer>
-						</Layers>
-						<Scripts>
-							<OnEnter>
-								self.texture:SetAlpha(1.0);
-								GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
-								GameTooltip:SetText(REMOVE);
-							</OnEnter>
-							<OnLeave>
-								self.texture:SetAlpha(0.75);
-								GameTooltip_Hide();
-							</OnLeave>
-							<OnMouseDown>
-								self.texture:SetPoint("TOPLEFT", 1, -1);
-							</OnMouseDown>
-							<OnMouseUp>
-								self.texture:SetPoint("TOPLEFT", 0, 0);
-							</OnMouseUp>
-							<OnClick>
-								C_Garrison.RemoveFollowerFromBuilding(GarrisonBuildingFrame.InfoBox.ID);
-							</OnClick>
-						</Scripts>
-					</Button>
-					<Frame parentKey="Tooltip" inherits="TooltipBorderedFrameTemplate" hidden="true" frameStrata="HIGH">
-						<Size x="230" y="300"/>
-						<Anchors>
-							<Anchor point="TOPRIGHT" relativeKey="$parent.RankBadge" relativePoint="TOPLEFT" x="-3" y="-5"/>
-						</Anchors>
-						<Layers>
-							<Layer level="ARTWORK">
-								<FontString parentKey="Name" inherits="GameFontHighlightMedium" justifyH="LEFT">
-									<Size x="190" y="0"/>
-									<Anchors>
-										<Anchor point="TOPLEFT" x="15" y="-15"/>
-									</Anchors>
-								</FontString>
-								<FontString parentKey="Rank1" inherits="GameFontNormal" justifyH="LEFT">
-									<Size x="190" y="0"/>
-									<Anchors>
-										<Anchor point="TOPLEFT" relativeKey="$parent.Name" relativePoint="BOTTOMLEFT" x="0" y="-10"/>
-									</Anchors>
-								</FontString>
-								<FontString parentKey="Rank1Tooltip" inherits="GameFontHighlight" justifyH="LEFT">
-									<Size x="190" y="0"/>
-									<Anchors>
-										<Anchor point="TOPLEFT" relativeKey="$parent.Rank1" relativePoint="BOTTOMLEFT" x="10" y="-5"/>
-									</Anchors>
-								</FontString>
-								<FontString parentKey="Rank2" inherits="GameFontNormal" justifyH="LEFT">
-									<Size x="190" y="0"/>
-									<Anchors>
-										<Anchor point="TOPLEFT" relativeKey="$parent.Rank1Tooltip" relativePoint="BOTTOMLEFT" x="-10" y="-10"/>
-									</Anchors>
-								</FontString>
-								<FontString parentKey="Rank2Tooltip" inherits="GameFontHighlight" justifyH="LEFT">
-									<Size x="190" y="0"/>
-									<Anchors>
-										<Anchor point="TOPLEFT" relativeKey="$parent.Rank2" relativePoint="BOTTOMLEFT" x="10" y="-5"/>
-									</Anchors>
-								</FontString>
-								<FontString parentKey="Rank3" inherits="GameFontNormal" justifyH="LEFT">
-									<Size x="190" y="0"/>
-									<Anchors>
-										<Anchor point="TOPLEFT" relativeKey="$parent.Rank2Tooltip" relativePoint="BOTTOMLEFT" x="-10" y="-10"/>
-									</Anchors>
-								</FontString>
-								<FontString parentKey="Rank3Tooltip" inherits="GameFontHighlight" justifyH="LEFT">
-									<Size x="190" y="0"/>
-									<Anchors>
-										<Anchor point="TOPLEFT" relativeKey="$parent.Rank3" relativePoint="BOTTOMLEFT" x="10" y="-5"/>
-									</Anchors>
-								</FontString>
-							</Layer>
-						</Layers>
-					</Frame>
 					<Frame parentKey="MouseOver" frameStrata="HIGH">
 						<Size x="80" y="60"/>
 						<Anchors>
 							<Anchor point="TOPRIGHT" x="-15" y="-20"/>
 						</Anchors>
 						<Scripts>
-							<OnEnter>
-								self:GetParent().Tooltip:Show();
-							</OnEnter>
-							<OnLeave>
-								self:GetParent().Tooltip:Hide();
-							</OnLeave>
+							<OnEnter function="GarrisonBuildingFrameLevelIcon_OnEnter"/>
+							<OnLeave function="GarrisonBuildingFrameLevelIcon_OnLeave"/>
 						</Scripts>
 					</Frame>
 					<Frame parentKey="DragArea" frameStrata="HIGH">
@@ -1052,13 +1192,13 @@
 								<Anchor point="LEFT" />
 							</Anchors>
 						</Texture>
-						<FontString parentKey="Title" inherits="GameFontNormalMed3" justifyH="LEFT" text="Town Hall">
+						<FontString parentKey="Title" inherits="GameFontNormalMed3" justifyH="LEFT">
 							<Size x="315" y="0"/>
 							<Anchors>
 								<Anchor point="TOPLEFT" x="221" y="-24"/>
 							</Anchors>
 						</FontString>
-						<FontString parentKey="Description" inherits="GameFontHighlight" justifyH="LEFT" text="The Town Hall is the central hub of all garrison activity.">
+						<FontString parentKey="Description" inherits="GameFontHighlight" justifyH="LEFT" text="GARRISON_TOWN_HALL_EXPLANATION">
 							<Size x="315" y="0"/>
 							<Anchors>
 								<Anchor point="TOPLEFT" relativeKey="$parent.Title" relativePoint="BOTTOMLEFT" y="-4"/>
@@ -1110,13 +1250,7 @@
 							<Anchor point="TOPRIGHT" x="-15" y="-20"/>
 						</Anchors>
 						<Scripts>
-							<OnEnter>
-								GameTooltip:SetOwner(self, "ANCHOR_TOPLEFT")
-								GameTooltip:SetText("Town Hall");
-								GameTooltip:AddLine("");
-								GameTooltip:AddLine("Manage your garrison buildings by speaking to the Architect inside the Town Hall.", 1, 1, 1, true);
-								GameTooltip:Show();
-							</OnEnter>
+							<OnEnter function="GarrisonTownHallBoxMouseOver_OnEnter"/>
 							<OnLeave function="GameTooltip_Hide"/>
 						</Scripts>
 					</Frame>

@@ -290,6 +290,43 @@
 					<Anchor point="TOPRIGHT" x="-10" y="-10"/>
 				</Anchors>
 			</Button>
+			<Frame parentKey="InvasionBadge" hidden="true">
+				<Size x="86" y="44"/>
+				<Anchors>
+					<Anchor point="TOP" y="22"/>
+				</Anchors>
+				<Layers>
+					<Layer level="OVERLAY">
+						<Texture parentKey="InvasionIcon" atlas="GarrLanding-InvasionBadge" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="TOP"/>
+							</Anchors>
+						</Texture>
+						<Texture parentKey="InvasionGlow" alpha="0" alphaMode="ADD" atlas="GarrLanding-InvasionBadge-Glow" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="TOP"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+				<Animations>
+					<AnimationGroup parentKey="InvasionBadgeAnim" setToFinalAlpha="true" looping="REPEAT">
+						<Alpha childKey="InvasionGlow" duration="1.5" order="1" fromAlpha="0" toAlpha="1"/>
+						<Alpha childKey="InvasionGlow" startDelay="1.5" duration="1.5" order="1" fromAlpha="1" toAlpha="0"/>
+					</AnimationGroup>
+				</Animations>
+				<Scripts>
+					<OnEnter>
+						GameTooltip:SetOwner(self, "ANCHOR_CURSOR_RIGHT");
+						GameTooltip:SetText(GARRISON_LANDING_INVASION);
+						GameTooltip:AddLine(GARRISON_LANDING_INVASION_TOOLTIP, 1, 1, 1, true);
+						GameTooltip:Show();
+					</OnEnter>
+					<OnLeave>
+						GameTooltip_Hide();
+					</OnLeave>
+				</Scripts>
+			</Frame>
 			<Frame parentKey="List" name="$parentList">
 				<Size x="433" y="420"/>
 				<Anchors>
@@ -302,14 +339,6 @@
 								<Anchor point="TOPLEFT" x="-25"/>
 								<Anchor point="BOTTOMRIGHT"/>
 							</Anchors>
-						</Texture>
-					</Layer>
-					<Layer level="BACKGROUND" textureSubLevel="1">
-						<Texture atlas="GarrLanding_Watermark-Missions" useAtlasSize="true">
-							<Anchors>
-								<Anchor point="CENTER" y="-15"/>
-							</Anchors>
-							<Color r="1" g="1" b="1" a=".6"/>
 						</Texture>
 					</Layer>
 				</Layers>
@@ -431,6 +460,7 @@
 		<Scripts>
 			<OnLoad function="GarrisonLandingPage_OnLoad"/>
 			<OnShow function="GarrisonLandingPage_OnShow"/>
+			<OnHide function="GarrisonLandingPage_OnHide"/>
 			<OnEvent function="GarrisonLandingPage_OnEvent"/>
 		</Scripts>
 	</Frame>

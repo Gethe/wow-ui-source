@@ -849,8 +849,13 @@ function Graphics_OnLoad (self)
 	self:SetScript("OnEvent", Graphics_OnEvent);
 end
 
+AdvancedPanelOptions = {
+	hdPlayerModels = { text = "SHOW_HD_MODELS_TEXT" },
+}
+
 function Advanced_OnLoad (self)
 	self.name = ADVANCED_LABEL;
+	self.options = AdvancedPanelOptions;
 	self.hasApply = true;
 
 	VideoOptionsPanel_OnLoad(self);

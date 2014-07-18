@@ -445,7 +445,7 @@
 						</Anchors>
 					</Slider>				
 					<Button parentKey="ViewAll" inherits="UIPanelButtonTemplate" id="1">
-						<Size x="140" y="22"/>
+						<Size x="246" y="22"/>
 						<Anchors>
 							<Anchor point="TOPRIGHT" relativeTo="QuestMapFrame" x="-24" y="35"/>
 						</Anchors>

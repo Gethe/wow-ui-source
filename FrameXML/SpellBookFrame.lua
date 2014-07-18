@@ -1190,11 +1190,12 @@ end
 function SpellBookCoreAbilities_UpdateTabs()
 	local numSpecs = GetNumSpecializations();
 	local currentSpec = GetSpecialization();
+	local sex = UnitSex("player")
 	local index = 1;
 	local tab;
 	if ( currentSpec ) then
 		tab = SpellBook_GetCoreAbilitySpecTab(index);
-		local id, name, description, icon = GetSpecializationInfo(currentSpec);
+		local id, name, description, icon = GetSpecializationInfo(currentSpec, nil, nil, nil, sex);
 		tab:SetID(currentSpec);
 		tab:SetNormalTexture(icon);
 		tab:SetChecked(SpellBookCoreAbilitiesFrame.selectedSpec == tab:GetID());
@@ -1213,7 +1214,7 @@ function SpellBookCoreAbilities_UpdateTabs()
 	for i=1, numSpecs do
 		if ( not currentSpec or currentSpec ~= i ) then
 			tab = SpellBook_GetCoreAbilitySpecTab(index);
-			local id, name, description, icon = GetSpecializationInfo(i);
+			local id, name, description, icon = GetSpecializationInfo(i, nil, nil, nil, sex);
 			tab:SetID(i);
 			tab:SetNormalTexture(icon);
 			tab:SetChecked(SpellBookCoreAbilitiesFrame.selectedSpec == tab:GetID());
@@ -1233,8 +1234,9 @@ function SpellBook_UpdateCoreAbilitiesTab()
 	SpellBookCoreAbilities_UpdateTabs();
 	
 	local currentSpec = GetSpecialization();
+	local sex = UnitSex("player");
 	local desaturate = currentSpec and (currentSpec ~= SpellBookCoreAbilitiesFrame.selectedSpec);
-	local specID, displayName = GetSpecializationInfo(SpellBookCoreAbilitiesFrame.selectedSpec);
+	local specID, displayName = GetSpecializationInfo(SpellBookCoreAbilitiesFrame.selectedSpec, nil, nil, nil, sex);
 	local draggable = false;
 	if ( GetSpecialization() == SpellBookCoreAbilitiesFrame.selectedSpec ) then
 		draggable = true;

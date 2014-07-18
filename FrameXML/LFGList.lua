@@ -1,3 +1,5 @@
+MAX_LFG_LIST_APPLICATIONS = 5;
+
 ACTIVITY_RETURN_VALUES = {
 	fullName = 1,
 	shortName = 2,
@@ -61,6 +63,11 @@ function LFGListFrame_OnEvent(self, event, ...)
 		end
 	elseif ( event == "LFG_LIST_ENTRY_CREATION_FAILED" ) then
 		self.EntryCreation.WorkingCover:Hide();
+	elseif ( event == "LFG_LIST_APPLICANT_LIST_UPDATED" ) then
+		local hasNewPending = ...;
+		if ( hasNewPending and not self:IsVisible() and LFGListUtil_IsEntryEmpowered() ) then
+			QueueStatusMinimapButton_SetGlowLock(QueueStatusMinimapButton, "lfglist-applicant", true);
+		end
 	end
 	
 	--Dispatch the event to our currently active panel
@@ -83,6 +90,7 @@ end
 function LFGListFrame_OnShow(self)
 	LFGListFrame_FixPanelValid(self);
 	C_LFGList.RequestAvailableActivities();
+	QueueStatusMinimapButton_SetGlowLock(QueueStatusMinimapButton, "lfglist-applicant", false);
 	PlaySound("igCharacterInfoOpen");
 end
 
@@ -1108,6 +1116,8 @@ function LFGListSearchPanel_OnEvent(self, event, ...)
 			end
 		end
 		LFGListSearchPanel_UpdateButtonStatus(self);
+	elseif ( event == "LFG_LIST_SEARCH_RESULT_UPDATED" ) then
+		LFGListSearchPanel_UpdateButtonStatus(self);
 	elseif ( event == "PARTY_LEADER_CHANGED" ) then
 		LFGListSearchPanel_UpdateButtonStatus(self);
 	end
@@ -1214,12 +1224,16 @@ end
 
 function LFGListSearchPanel_UpdateButtonStatus(self)
 	local resultID = self.selectedResult;
+	local numApplications, numActiveApplications = C_LFGList.GetNumApplications();
 	if ( not LFGListUtil_IsAppEmpowered() ) then
 		self.SignUpButton:Disable();
 		self.SignUpButton.tooltip = LFG_LIST_APP_UNEMPOWERED;
 	elseif ( IsInGroup(LE_PARTY_CATEGORY_HOME) and C_LFGList.IsCurrentlyApplying() ) then
 		self.SignUpButton:Disable();
 		self.SignUpButton.tooltip = LFG_LIST_APP_CURRENTLY_APPLYING;
+	elseif ( numActiveApplications >= MAX_LFG_LIST_APPLICATIONS ) then
+		self.SignUpButton:Disable();
+		self.SignUpButton.tooltip = string.format(LFG_LIST_HIT_MAX_APPLICATIONS, MAX_LFG_LIST_APPLICATIONS);
 	elseif ( resultID ) then
 		self.SignUpButton:Enable();
 		self.SignUpButton.tooltip = nil;
@@ -1431,6 +1445,15 @@ function LFGListSearchEntry_OnEnter(self)
 		GameTooltip:AddLine(" ");
 		GameTooltip:AddLine(LFG_LIST_TOOLTIP_FRIENDS_IN_GROUP);
 		GameTooltip:AddLine(LFGListSearchEntryUtil_GetFriendList(resultID), 1, 1, 1, true);
+	end
+
+	local completedEncounters = C_LFGList.GetSearchResultEncounterInfo(resultID);
+	if ( completedEncounters and #completedEncounters > 0 ) then
+		GameTooltip:AddLine(" ");
+		GameTooltip:AddLine(LFG_LIST_BOSSES_DEFEATED);
+		for i=1, #completedEncounters do
+			GameTooltip:AddLine(completedEncounters[i], RED_FONT_COLOR.r, RED_FONT_COLOR.g, RED_FONT_COLOR.b);
+		end
 	end
 
 	if ( isDelisted ) then
@@ -1875,9 +1898,10 @@ local LFG_LIST_SEARCH_ENTRY_MENU = {
 
 function LFGListUtil_GetSearchEntryMenu(resultID)
 	local id, activityID, name, comment, voiceChat, iLvl, age, numBNetFriends, numCharFriends, numGuildMates, isDelisted, numTanks, numHealers, numDPS, leaderName = C_LFGList.GetSearchResultInfo(resultID);
+	local _, appStatus, pendingStatus, appDuration = C_LFGList.GetApplicationInfo(resultID);
 	LFG_LIST_SEARCH_ENTRY_MENU[1].text = name;
 	LFG_LIST_SEARCH_ENTRY_MENU[2].arg1 = leaderName;
-	LFG_LIST_SEARCH_ENTRY_MENU[2].disabled = not leaderName;
+	LFG_LIST_SEARCH_ENTRY_MENU[2].disabled = not leaderName or (appStatus ~= "applied" and appStatus ~= "invited");
 	return LFG_LIST_SEARCH_ENTRY_MENU;
 end
 
@@ -1915,8 +1939,9 @@ local LFG_LIST_APPLICANT_MEMBER_MENU = {
 
 function LFGListUtil_GetApplicantMemberMenu(applicantID, memberIdx)
 	local name, class, localizedClass, level, itemLevel, tank, healer, damage, assignedRole = C_LFGList.GetApplicantMemberInfo(applicantID, memberIdx);
+	local id, status, pendingStatus, numMembers, isNew, comment = C_LFGList.GetApplicantInfo(applicantID);
 	LFG_LIST_APPLICANT_MEMBER_MENU[1].text = name or " ";
 	LFG_LIST_APPLICANT_MEMBER_MENU[2].arg1 = name;
-	LFG_LIST_APPLICANT_MEMBER_MENU[2].disabled = not name;
+	LFG_LIST_APPLICANT_MEMBER_MENU[2].disabled = not name or (status ~= "applied" and status ~= "invited");
 	return LFG_LIST_APPLICANT_MEMBER_MENU;
 end

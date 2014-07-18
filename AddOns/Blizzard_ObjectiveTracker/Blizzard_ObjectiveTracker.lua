@@ -438,7 +438,6 @@ function DEFAULT_OBJECTIVE_TRACKER_MODULE:AddProgressBar(block, line, questID)
 			progressBar:Show();
 		else
 			progressBar = CreateFrame("Frame", nil, parent, "ObjectiveTrackerProgressBarTemplate");
-			progressBar.Label:SetPoint("LEFT", OBJECTIVE_TRACKER_DASH_WIDTH, 0);
 			progressBar.height = progressBar:GetHeight();
 		end
 		if ( not self.usedProgressBars[block] ) then
@@ -447,6 +446,7 @@ function DEFAULT_OBJECTIVE_TRACKER_MODULE:AddProgressBar(block, line, questID)
 		self.usedProgressBars[block][line] = progressBar;
 		progressBar:RegisterEvent("QUEST_LOG_UPDATE");
 		progressBar:Show();
+		progressBar.Bar.Label:Hide();
 		-- initialize to the right values
 		progressBar.questID = questID;
 		ObjectiveTrackerProgressBar_OnEvent(progressBar)
@@ -547,7 +547,7 @@ end
 function ObjectiveTrackerProgressBar_OnEvent(self)
 	local percent = GetQuestProgressBarPercent(self.questID);
 	self.Bar:SetValue(percent);
-	self.Label:SetFormattedText(PERCENTAGE_STRING, percent);
+	self.Bar.Label:SetFormattedText(PERCENTAGE_STRING, percent);
 end
 
 -- *****************************************************************************************************
@@ -603,6 +603,25 @@ function ObjectiveTracker_Initialize(self)
 	self.watchMoneyReasons = 0;
 
 	self.initialized = true;
+end
+
+function ObjectiveTracker_ReorganizeModules( isScenario )
+	local frame = ObjectiveTrackerFrame;
+	if( isScenario ) then
+		frame.MODULES = {	SCENARIO_CONTENT_TRACKER_MODULE,
+							BONUS_OBJECTIVE_TRACKER_MODULE,
+							AUTO_QUEST_POPUP_TRACKER_MODULE,
+							QUEST_TRACKER_MODULE,
+							ACHIEVEMENT_TRACKER_MODULE,
+		};
+	else
+		frame.MODULES = {	SCENARIO_CONTENT_TRACKER_MODULE,
+							AUTO_QUEST_POPUP_TRACKER_MODULE,
+							QUEST_TRACKER_MODULE,
+							BONUS_OBJECTIVE_TRACKER_MODULE,
+							ACHIEVEMENT_TRACKER_MODULE,
+		};
+	end
 end
 
 function ObjectiveTracker_OnEvent(self, event, ...)
@@ -866,9 +885,11 @@ end
 
 function ObjectiveTracker_EndSlideBlock(block)
 	block:SetScript("OnUpdate", nil);
-	block:SetHeight(block.slideData.endHeight);
-	if ( block.slideData.scroll ) then
-		block:SetVerticalScroll(0);
+	if ( block.slideData ) then
+		block:SetHeight(block.slideData.endHeight);
+		if ( block.slideData.scroll ) then
+			block:SetVerticalScroll(0);
+		end
 	end
 end
 

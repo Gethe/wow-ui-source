@@ -660,6 +660,21 @@
 							</Layer>
 						</Layers>
 					</Frame>
+
+					<Frame name="$parentRefractionDropDown" inherits="VideoOptionsDropDownMenuTemplate" id="15">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="$parentSSAODropDown" relativePoint="BOTTOMLEFT"/>
+						</Anchors>
+						<Layers>
+							<Layer level="BACKGROUND">
+								<FontString name="$parentLabel" inherits="OptionsFontSmall" text="REFRACTION">
+									<Anchors>
+										<Anchor point="RIGHT" relativePoint="LEFT"/>
+									</Anchors>
+								</FontString>
+							</Layer>
+						</Layers>
+					</Frame>
 				</Frames>
 				<Scripts>
 					<OnLoad>
@@ -1008,6 +1023,21 @@
 						<Layers>
 							<Layer level="BACKGROUND">
 								<FontString name="$parentLabel" inherits="OptionsFontSmall" text="SSAO_LABEL">
+									<Anchors>
+										<Anchor point="RIGHT" relativePoint="LEFT"/>
+									</Anchors>
+								</FontString>
+							</Layer>
+						</Layers>
+					</Frame>
+
+					<Frame name="$parentRefractionDropDown" inherits="VideoOptionsDropDownMenuTemplate" id="15">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="$parentSSAODropDown" relativePoint="BOTTOMLEFT"/>
+						</Anchors>
+						<Layers>
+							<Layer level="BACKGROUND">
+								<FontString name="$parentLabel" inherits="OptionsFontSmall" text="REFRACTION">
 									<Anchors>
 										<Anchor point="RIGHT" relativePoint="LEFT"/>
 									</Anchors>
@@ -1453,6 +1483,18 @@
 					</OnClick>
 				</Scripts>
 			</CheckButton>		
+			<CheckButton name="$parentShowHDModels" inherits="VideoOptionsSmallCheckButtonTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentDesktopGamma" relativePoint="BOTTOMLEFT" x="0" y="-20"/>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						self.type = CONTROLTYPE_CHECKBOX;
+						self.cvar = "hdPlayerModels";
+						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
+					</OnLoad>
+				</Scripts>
+			</CheckButton>
 		</Frames>
 
 			<!-- stereo -->

@@ -5,8 +5,10 @@ DRAENOR_ZONE_SPELL_ABILITY_TEXTURES_BASE = {
 	[161332] = "Interface\\ExtraButton\\GarrZoneAbility-BarracksHorde",
 	[162075] = "Interface\\ExtraButton\\GarrZoneAbility-Armory",
 	[161767] = "Interface\\ExtraButton\\GarrZoneAbility-MageTower",
-	[170097] = "Interface\\ExtraButton\\GarrZoneAbility-Inn",
+	[170097] = "Interface\\ExtraButton\\GarrZoneAbility-TradingPost",
 	[170108] = "Interface\\ExtraButton\\GarrZoneAbility-TradingPost",
+	[168487] = "Interface\\ExtraButton\\GarrZoneAbility-Inn",
+	[168499] = "Interface\\ExtraButton\\GarrZoneAbility-Inn",
 	[164012] = "Interface\\ExtraButton\\GarrZoneAbility-TrainingPit",
 	[164050] = "Interface\\ExtraButton\\GarrZoneAbility-LumberMill",
 	[165803] = "Interface\\ExtraButton\\GarrZoneAbility-Stables",
@@ -60,6 +62,7 @@ function DraenorZoneAbilityFrame_OnEvent(self, event)
 			end
 			self:Show();
 		else
+			DraenorZoneAbilityButtonAlert:Hide();
 			self:Hide();
 		end
 
