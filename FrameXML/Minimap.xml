@@ -519,7 +519,7 @@
 										</Texture>
 									</Layer>
 									<Layer level="OVERLAY">
-										<FontString parentKey="AlertText" hidden="true" alpha="0" justifyH="CENTER" inherits="GameFontHighlightLeft" text="GARRISON_LANDING_INVASION_ALERT">
+										<FontString parentKey="AlertText" hidden="true" alpha="0" justifyH="CENTER" inherits="GameFontHighlightLeft">
 											<Size x="188" y="0"/>
 											<Anchors>
 												<Anchor point="CENTER" relativePoint="LEFT" x="-45" y="0"/>
@@ -604,7 +604,6 @@
 												self:GetParent().AlertText:Show();
 												self:GetParent().SideToastGlow:Show();
 												self:GetParent().MinimapPulseAnim:Play();
-												self:GetParent().MinimapLoopPulseAnim:Play();
 											</OnPlay>
 											<OnStop>
 												self:GetParent().AlertBG:Hide();

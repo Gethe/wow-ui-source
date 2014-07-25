@@ -5,7 +5,7 @@ QUEST_TRACKER_MODULE.updateReasonEvents = OBJECTIVE_TRACKER_UPDATE_QUEST + OBJEC
 QUEST_TRACKER_MODULE.usedBlocks = { };
 QUEST_TRACKER_MODULE.freeItemButtons = { };
 -- because this header is shared, on finishing its anim it has to update all the modules that use it
-QUEST_TRACKER_MODULE:SetHeader(ObjectiveTrackerFrame.BlocksFrame.QuestHeader, TRACKER_HEADER_QUESTS, OBJECTIVE_TRACKER_UPDATE_QUEST_ADDED, OBJECTIVE_TRACKER_UPDATE_MODULE_QUEST + OBJECTIVE_TRACKER_UPDATE_MODULE_AUTO_QUEST_POPUP);
+QUEST_TRACKER_MODULE:SetHeader(ObjectiveTrackerFrame.BlocksFrame.QuestHeader, TRACKER_HEADER_QUESTS, OBJECTIVE_TRACKER_UPDATE_QUEST_ADDED);
 
 function QUEST_TRACKER_MODULE:OnFreeBlock(block)
 	local itemButton = block.itemButton;

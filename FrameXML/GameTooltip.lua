@@ -179,7 +179,7 @@ function GameTooltip_OnHide(self)
 	self.comparing = false;
 end
 
-function GameTooltip_OnControlPressed(self)
+function GameTooltip_CycleSecondaryComparedItem(self)
 	GameTooltip_AdvanceSecondaryCompareItem(self);
 
 	local shoppingTooltip1, shoppingTooltip2 = unpack(self.shoppingTooltips);

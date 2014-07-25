@@ -452,7 +452,7 @@ end
 
 function AudioOptionsVoicePanelKeyBindingButton_Refresh ()
 	PUSH_TO_TALK_BUTTON = BlizzardOptionsPanel_GetCVarSafe("PushToTalkButton");
-	local bindingText = GetBindingText(PUSH_TO_TALK_BUTTON, "KEY_");
+	local bindingText = GetBindingText(PUSH_TO_TALK_BUTTON);
 	AudioOptionsVoicePanelChatMode1KeyBindingButtonHiddenText:SetText(bindingText);
 	AudioOptionsVoicePanelChatMode1KeyBindingButton:SetText(bindingText);
 end
@@ -583,7 +583,7 @@ function AudioOptionsVoicePanelKeyBindingButton_BindButton (self)
 	end
 	if ( PUSH_TO_TALK_BUTTON ~= "" ) then
 		BlizzardOptionsPanel_SetCVarSafe("PushToTalkButton", PUSH_TO_TALK_BUTTON);
-		local bindingText = GetBindingText(PUSH_TO_TALK_BUTTON, "KEY_");
+		local bindingText = GetBindingText(PUSH_TO_TALK_BUTTON);
 		self:SetText(bindingText);
 		AudioOptionsVoicePanelChatMode1KeyBindingButtonHiddenText:SetText(bindingText);
 
@@ -592,8 +592,8 @@ function AudioOptionsVoicePanelKeyBindingButton_BindButton (self)
 
 		local currentbinding = GetBindingByKey(PUSH_TO_TALK_BUTTON);
 		if ( currentbinding ) then
-			UIErrorsFrame:AddMessage(format(ALREADY_BOUND, GetBindingText(currentbinding, "BINDING_NAME_")), 1.0, 1.0, 0.0, 1.0);
-			AudioOptionsVoicePanelBindingOutputTextConflict:SetText(format(ALREADY_BOUND, GetBindingText(currentbinding, "BINDING_NAME_")));
+			UIErrorsFrame:AddMessage(format(ALREADY_BOUND, _G["BINDING_NAME_"..currentbinding]), 1.0, 1.0, 0.0, 1.0);
+			AudioOptionsVoicePanelBindingOutputTextConflict:SetText(format(ALREADY_BOUND, _G["BINDING_NAME_"..currentbinding]));
 		else
 			AudioOptionsVoicePanelBindingOutputTextConflict:SetText("");
 		end

@@ -11,6 +11,7 @@ function GarrisonLandingPage_OnLoad(self)
 	HybridScrollFrame_CreateButtons(self.List.listScroll, "GarrisonLandingPageMissionTemplate", 0, 0);
 	GarrisonLandingPageList_Update();
 	self:RegisterEvent("GARRISON_LANDINGPAGE_SHIPMENTS");
+	self:RegisterEvent("GARRISON_MISSION_LIST_UPDATE");
 end
 
 function GarrisonLandingPage_OnShow(self)
@@ -31,29 +32,9 @@ end
 
 function GarrisonLandingPage_OnEvent(self, event)
 	if ( event == "GARRISON_LANDINGPAGE_SHIPMENTS" ) then
-		for i = 1, #self.Shipments do
-			local shipment = self.Shipments[i];
-			local name, texture, shipmentsReady, shipmentsTotal, creationTime, duration, timeleftString, itemName, itemIcon, itemQuality, itemID = C_Garrison.GetLandingPageShipmentInfo(i);
-			if ( name ) then
-				SetPortraitToTexture(shipment.Icon, texture);
-				shipment.Icon:SetDesaturated(true);
-				shipment.Name:SetText(name);
-				shipment.Count:SetFormattedText(GARRISON_LANDING_SHIPMENT_COUNT, shipmentsReady, shipmentsTotal);
-				if ( shipmentsReady == shipmentsTotal ) then
-					shipment.Swipe:SetCooldownUNIX(0, 0);
-					shipment.Done:Show();
-					shipment.BG:Hide();
-				else
-					shipment.Swipe:SetCooldownUNIX(creationTime, duration);
-					shipment.Done:Hide();
-					shipment.BG:Show();
-				end
-				shipment:Show();
-				shipment.index = i;
-			else
-				shipment:Hide();
-			end
-		end
+		GarrisonLandingPage_GetShipments(self);
+	elseif ( event == "GARRISON_MISSION_LIST_UPDATE" ) then
+		GarrisonLandingPageList_UpdateItems();
 	end
 end
 
@@ -69,8 +50,52 @@ function GarrisonLandingPage_OnUpdate()
 	end
 end
 
+---------------------------------------------------------------------------------
+--- Shipments                                                                 ---
+---------------------------------------------------------------------------------
+function GarrisonLandingPage_GetShipments(self)
+	local shipmentIndex = 1;
+	local buildings = C_Garrison.GetBuildings();
+	for i = 1, #buildings do
+		local buildingID = buildings[i].buildingID;
+		if ( buildingID ) then
+			local name, texture, shipmentsReady, shipmentsTotal, creationTime, duration, timeleftString, itemName, itemIcon, itemQuality, itemID = C_Garrison.GetLandingPageShipmentInfo(buildingID);
+			local shipment = self.Shipments[shipmentIndex];
+			if ( not shipment ) then
+				return;
+			end
+			if ( name ) then
+				SetPortraitToTexture(shipment.Icon, texture);
+				shipment.Icon:SetDesaturated(true);
+				shipment.Name:SetText(name);
+				shipment.Done:Hide();
+				shipment.BG:Show();
+				shipment.Count:SetText(nil);
+				shipment.buildingID = buildingID;
+				if (shipmentsTotal) then
+					shipment.Count:SetFormattedText(GARRISON_LANDING_SHIPMENT_COUNT, shipmentsReady, shipmentsTotal);
+					if ( shipmentsReady == shipmentsTotal ) then
+						shipment.Swipe:SetCooldownUNIX(0, 0);
+						shipment.Done:Show();
+						shipment.BG:Hide();
+					else
+						shipment.Swipe:SetCooldownUNIX(creationTime, duration);
+					end
+				end
+				shipment:Show();
+				shipmentIndex = shipmentIndex + 1;
+			else
+				shipment:Hide();
+			end
+		end
+	end
+	for i = shipmentIndex, #self.Shipments do
+		self.Shipments[i]:Hide();
+	end
+end
+
 function GarrisonLandingPageShipment_OnEnter(self)
-	local name, texture, shipmentsReady, shipmentsTotal, creationTime, duration, timeleftString, itemName, itemIcon, itemQuality, itemID = C_Garrison.GetLandingPageShipmentInfo(self.index);
+	local name, texture, shipmentsReady, shipmentsTotal, creationTime, duration, timeleftString, itemName, itemIcon, itemQuality, itemID = C_Garrison.GetLandingPageShipmentInfo(self.buildingID);
 	GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
 	if (itemName) then
 		GameTooltip:SetText(itemName);
@@ -92,7 +117,7 @@ end
 ---------------------------------------------------------------------------------
 
 function GarrisonLandingPageList_OnShow(self)
-	GarrisonLandingPageMinimapButton.MinimapLoopPulseAnim:Stop();
+	GarrisonMinimap_ClearPulse();
 	if ( not GarrisonLandingPage.selectedTab ) then
 		-- SetTab flips the tabs, so set them up reversed & call SetTab
 		GarrisonLandingPage.unselectedTab = GarrisonLandingPage.InProgress;
@@ -151,6 +176,12 @@ function GarrisonLandingPageList_UpdateAvailable()
 	local buttons = scrollFrame.buttons;
 	local numButtons = #buttons;
 
+	if (numItems == 0) then
+		GarrisonLandingPage.List.EmptyMissionText:SetText(GARRISON_EMPTY_MISSION_LIST);
+	else
+		GarrisonLandingPage.List.EmptyMissionText:SetText(nil);
+	end
+	
 	for i = 1, numButtons do
 		local button = buttons[i];
 		local index = offset + i; -- adjust index
@@ -231,6 +262,12 @@ function GarrisonLandingPageList_Update()
 	local numButtons = #buttons;
 
 	local stopUpdate = true;
+	
+	if (numItems == 0) then
+		GarrisonLandingPage.List.EmptyMissionText:SetText(GARRISON_EMPTY_IN_PROGRESS_LIST);
+	else
+		GarrisonLandingPage.List.EmptyMissionText:SetText(nil);
+	end
 	
 	for i = 1, numButtons do
 		local button = buttons[i];

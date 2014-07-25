@@ -236,7 +236,7 @@ function GuildRoster_Update()
 		GuildMemberDetailFrame:Hide();
 	end
 	
-	local maxWeeklyXP, maxTotalXP = GetGuildRosterLargestContribution();
+--	local maxWeeklyXP, maxTotalXP = GetGuildRosterLargestContribution();
 	local maxAchievementsPoints = GetGuildRosterLargestAchievementPoints();
 	-- numVisible
 	local visibleMembers = onlineAndMobileMembers;

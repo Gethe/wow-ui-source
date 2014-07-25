@@ -417,7 +417,7 @@
 				</Texture>
 				<Texture parentKey="BuildingHighlight" alpha="0.5" alphaMode="ADD" hidden="true">
 					<Anchors>
-						<Anchor point="BOTTOM"/>
+						<Anchor point="BOTTOM" relativeKey="$parent.Building"/>
 					</Anchors>
 				</Texture>
 			</Layer>
@@ -425,7 +425,7 @@
 				<Texture parentKey="Icon" hidden="true">
 					<Size x="32" y="32"/>
 					<Anchors>
-						<Anchor point="BOTTOMLEFT" x="5" y="20"/>
+						<Anchor point="BOTTOMLEFT" x="10" y="20"/>
 					</Anchors>
 				</Texture>
 			</Layer>
@@ -438,9 +438,9 @@
 			</Layer>
 			<Layer level="OVERLAY" textureSubLevel="1">
 				<Texture parentKey="Lock" atlas="Garr_LockedBuilding" hidden="true">
-					<Size x="51" y="63"/>
+					<Size x="38" y="47"/>
 					<Anchors>
-						<Anchor point="CENTER" y="10"/>
+						<Anchor point="CENTER" x="-12" y="-2"/>
 					</Anchors>
 				</Texture>
 				<Texture parentKey="BuildGlow" hidden="false" alpha="0" alphaMode="ADD" atlas="Garr_BuildFX-Glow" useAtlasSize="true">
@@ -594,31 +594,11 @@
 										<Anchor point="TOPLEFT" relativeKey="$parent.Rank1" relativePoint="BOTTOMLEFT" x="10" y="-5"/>
 									</Anchors>
 								</FontString>
-								<FontString parentKey="Rank1CostLabel" inherits="GameFontNormal" text="COSTS_LABEL">
-									<Anchors>
-										<Anchor point="TOPLEFT" relativeKey="$parent.Rank1Tooltip" relativePoint="BOTTOMLEFT" x="0" y="-10"/>
-									</Anchors>
-								</FontString>
-								<FontString parentKey="Rank1Cost" inherits="GameFontHighlight">
-									<Anchors>
-										<Anchor point="LEFT" relativeKey="$parent.Rank1CostLabel" relativePoint="RIGHT" x="2"/>
-									</Anchors>
-								</FontString>
-								<FontString parentKey="Rank1TimeLabel" inherits="GameFontNormal" text="TIME_LABEL">
-									<Anchors>
-										<Anchor point="TOPLEFT" relativeKey="$parent.Rank1CostLabel" relativePoint="BOTTOMLEFT" y="-2"/>
-									</Anchors>
-								</FontString>
-								<FontString parentKey="Rank1Time" inherits="GameFontHighlight">
-									<Anchors>
-										<Anchor point="LEFT" relativeKey="$parent.Rank1TimeLabel" relativePoint="RIGHT" x="2"/>
-									</Anchors>
-								</FontString>
 								
 								<FontString parentKey="Rank2" inherits="GameFontNormal" justifyH="LEFT">
 									<Size x="190" y="0"/>
 									<Anchors>
-										<Anchor point="TOPLEFT" relativeKey="$parent.Rank1TimeLabel" relativePoint="BOTTOMLEFT" x="-10" y="-10"/>
+										<Anchor point="TOPLEFT" relativeKey="$parent.Rank1Tooltip" relativePoint="BOTTOMLEFT" x="-10" y="-10"/>
 									</Anchors>
 								</FontString>
 								<FontString parentKey="Rank2Tooltip" inherits="GameFontHighlight" justifyH="LEFT">
@@ -627,57 +607,17 @@
 										<Anchor point="TOPLEFT" relativeKey="$parent.Rank2" relativePoint="BOTTOMLEFT" x="10" y="-5"/>
 									</Anchors>
 								</FontString>
-								<FontString parentKey="Rank2CostLabel" inherits="GameFontNormal" text="COSTS_LABEL">
-									<Anchors>
-										<Anchor point="TOPLEFT" relativeKey="$parent.Rank2Tooltip" relativePoint="BOTTOMLEFT" x="0" y="-10"/>
-									</Anchors>
-								</FontString>
-								<FontString parentKey="Rank2Cost" inherits="GameFontHighlight">
-									<Anchors>
-										<Anchor point="LEFT" relativeKey="$parent.Rank2CostLabel" relativePoint="RIGHT" x="2"/>
-									</Anchors>
-								</FontString>
-								<FontString parentKey="Rank2TimeLabel" inherits="GameFontNormal" text="TIME_LABEL">
-									<Anchors>
-										<Anchor point="TOPLEFT" relativeKey="$parent.Rank2CostLabel" relativePoint="BOTTOMLEFT" y="-2"/>
-									</Anchors>
-								</FontString>
-								<FontString parentKey="Rank2Time" inherits="GameFontHighlight">
-									<Anchors>
-										<Anchor point="LEFT" relativeKey="$parent.Rank2TimeLabel" relativePoint="RIGHT" x="2"/>
-									</Anchors>
-								</FontString>
 								
 								<FontString parentKey="Rank3" inherits="GameFontNormal" justifyH="LEFT">
 									<Size x="190" y="0"/>
 									<Anchors>
-										<Anchor point="TOPLEFT" relativeKey="$parent.Rank2TimeLabel" relativePoint="BOTTOMLEFT" x="-10" y="-10"/>
+										<Anchor point="TOPLEFT" relativeKey="$parent.Rank2Tooltip" relativePoint="BOTTOMLEFT" x="-10" y="-10"/>
 									</Anchors>
 								</FontString>
 								<FontString parentKey="Rank3Tooltip" inherits="GameFontHighlight" justifyH="LEFT">
 									<Size x="190" y="0"/>
 									<Anchors>
 										<Anchor point="TOPLEFT" relativeKey="$parent.Rank3" relativePoint="BOTTOMLEFT" x="10" y="-5"/>
-									</Anchors>
-								</FontString>
-								<FontString parentKey="Rank3CostLabel" inherits="GameFontNormal" text="COSTS_LABEL">
-									<Anchors>
-										<Anchor point="TOPLEFT" relativeKey="$parent.Rank3Tooltip" relativePoint="BOTTOMLEFT" x="0" y="-10"/>
-									</Anchors>
-								</FontString>
-								<FontString parentKey="Rank3Cost" inherits="GameFontHighlight">
-									<Anchors>
-										<Anchor point="LEFT" relativeKey="$parent.Rank3CostLabel" relativePoint="RIGHT" x="2"/>
-									</Anchors>
-								</FontString>
-								<FontString parentKey="Rank3TimeLabel" inherits="GameFontNormal" text="TIME_LABEL">
-									<Anchors>
-										<Anchor point="TOPLEFT" relativeKey="$parent.Rank3CostLabel" relativePoint="BOTTOMLEFT" y="-2"/>
-									</Anchors>
-								</FontString>
-								<FontString parentKey="Rank3Time" inherits="GameFontHighlight">
-									<Anchors>
-										<Anchor point="LEFT" relativeKey="$parent.Rank3TimeLabel" relativePoint="RIGHT" x="2"/>
 									</Anchors>
 								</FontString>
 							</Layer>
@@ -879,51 +819,17 @@
 									<OnClick function="GarrisonBuildingFrameTimerCancel_OnClick"/>
 								</Scripts>
 							</Button>
+							<Frame parentKey="CompleteMouseOver" frameStrata="HIGH">
+								<Size x="80" y="80"/>
+								<Anchors>
+									<Anchor point="CENTER"/>
+								</Anchors>
+								<Scripts>
+									<OnEnter function="GarrisonBuildingFrameComplete_OnEnter"/>
+									<OnLeave function="GameTooltip_Hide"/>
+								</Scripts>
+							</Frame>
 						</Frames>
-					</Frame>
-					<Frame parentKey="CostBar" hidden="true">
-						<Size x="158" y="57"/>
-						<Anchors>
-							<Anchor point="BOTTOMLEFT" x="35" y="10"/>
-						</Anchors>
-						<Layers>
-							<Layer level="BACKGROUND" textureSubLevel="-1">
-								<Texture atlas="Garr_BuildingInfoShadow" useAtlasSize="true">
-									<Anchors>
-										<Anchor point="CENTER"/>
-									</Anchors>
-								</Texture>
-							</Layer>
-							<Layer level="BACKGROUND">
-								<Texture atlas="Garr_BuildIcon" useAtlasSize="true">
-									<Anchors>
-										<Anchor point="LEFT"/>
-									</Anchors>
-								</Texture>
-							</Layer>
-							<Layer level="ARTWORK">
-								<FontString parentKey="CostLabel" inherits="GameFontNormal" text="COSTS_LABEL">
-									<Anchors>
-										<Anchor point="TOPLEFT" x="50" y="-17"/>
-									</Anchors>
-								</FontString>
-								<FontString parentKey="Cost" inherits="GameFontHighlight">
-									<Anchors>
-										<Anchor point="LEFT" relativeKey="$parent.CostLabel" relativePoint="RIGHT" x="2"/>
-									</Anchors>
-								</FontString>
-								<FontString parentKey="TimeLabel" inherits="GameFontNormal" text="TIME_LABEL">
-									<Anchors>
-										<Anchor point="TOPLEFT" relativeKey="$parent.CostLabel" relativePoint="BOTTOMLEFT" y="-2"/>
-									</Anchors>
-								</FontString>
-								<FontString parentKey="Time" inherits="GameFontHighlight">
-									<Anchors>
-										<Anchor point="LEFT" relativeKey="$parent.TimeLabel" relativePoint="RIGHT" x="2"/>
-									</Anchors>
-								</FontString>
-							</Layer>
-						</Layers>
 					</Frame>
 					<Frame parentKey="PlansNeeded" hidden="true">
 						<Size x="175" y="44"/>
@@ -1232,18 +1138,37 @@
 					</Layer>
 				</Layers>
 				<Frames>
-					<Button parentKey="UpgradeButton" inherits="UIPanelButtonTemplate" text="UPGRADE">
+					<Button parentKey="UpgradeButton" inherits="UIPanelButtonTemplate" text="UPGRADE" motionScriptsWhileDisabled="true">
 						<Size x="80" y="22"/>
 						<Anchors>
 							<Anchor point="TOP" relativeKey="$parent.RankLabel" relativePoint="BOTTOM" y="-3"/>
 						</Anchors>
 						<Scripts>
-							<OnClick>
-								C_Garrison.UpgradeGarrison();
-							</OnClick>
+							<OnClick function="GarrisonTownHall_StartUpgrade"/>
+							<OnEnter function="GarrisonTownHallUpgradeButton_OnEnter"/>
+							<OnLeave function="GameTooltip_Hide"/>
 						</Scripts>
 					</Button>
-					
+					<Frame parentKey="UpgradeCostBar" hidden="false">
+						<Size x="80" y="22"/>
+						<Anchors>
+							<Anchor point="TOP" relativeKey="$parent.RankLabel" relativePoint="BOTTOM" y="-30"/>
+						</Anchors>
+						<Layers>
+							<Layer level="ARTWORK">
+								<FontString parentKey="CostLabel" inherits="GameFontNormal" justifyH="LEFT" text="COSTS_LABEL">
+									<Anchors>
+										<Anchor point="TOPLEFT"/>`
+									</Anchors>
+								</FontString>
+								<FontString parentKey="CostAmount" inherits="GameFontHighlight" justifyH="LEFT">
+									<Anchors>
+										<Anchor point="TOPLEFT" relativeKey="$parent.CostLabel" relativePoint="TOPRIGHT" x="2" y="0"/>
+									</Anchors>
+								</FontString>
+							</Layer>
+						</Layers>
+					</Frame>
 					<Frame parentKey="MouseOver" frameStrata="HIGH">
 						<Size x="80" y="65"/>
 						<Anchors>
@@ -1280,7 +1205,7 @@
 									</Anchors>
 								</Texture>
 							</Layer>
-							<Layer level="BACKGROUND">
+							<Layer level="BORDER" textureSubLevel="-1">>
 								<Texture parentKey="Building" useAtlasSize="true">
 									<Anchors>
 										<Anchor point="BOTTOM"/>
@@ -1292,14 +1217,26 @@
 									</Anchors>
 								</Texture>
 							</Layer>
-							<Layer level="BORDER">
+							<Layer level="BORDER" textureSubLevel="0">
+								 <Texture parentKey="BuildingPulse" hidden="true" alpha="0" atlas="Garr_BuildingUpgradeExplosion" useAtlasSize="true">
+									<Anchors>
+										<Anchor point="CENTER" y="-35"/>
+									</Anchors>
+								</Texture>
+								<Texture parentKey="AlphaPulse" hidden="true" alpha="0.5" alphaMode="ADD" atlas="Garr_BuildingUpgradeExplosion" useAtlasSize="true">
+									<Anchors>
+										<Anchor point="CENTER" relativeKey="$parent.BuildingPulse"/>
+									</Anchors>
+								</Texture>
+							</Layer>
+							<Layer level="BORDER" textureSubLevel="2">
 								<Texture parentKey="BannerMid" atlas="Garr_TownHallBanner_Mid" useAtlasSize="true">
 									<Anchors>
 										<Anchor point="BOTTOM"/>
 									</Anchors>
 								</Texture>
 							</Layer>
-							<Layer level="BORDER" textureSubLevel="-1">
+							<Layer level="BORDER" textureSubLevel="1">
 								<Texture atlas="Garr_TownHallBanner_Left" useAtlasSize="true">
 									<Anchors>
 										<Anchor point="TOPRIGHT" relativeKey="$parent.BannerMid" relativePoint="TOPLEFT" x="16" y="-6"/>
@@ -1317,7 +1254,7 @@
 								</Texture>
 							</Layer>
 							<Layer level="ARTWORK" >
-								<FontString inherits="GameFontBlackSmall" text="GARRISON_TOWN_HALL">
+								<FontString parentKey="TownHallName" inherits="GameFontBlackSmall">
 									<Anchors>
 										<Anchor point="CENTER" relativeKey="$parent.BannerMid" y="2"/>
 									</Anchors>
@@ -1327,6 +1264,11 @@
 										<Anchor point="BOTTOM" relativeKey="$parent.Filigree" relativePoint="BOTTOM" x="0" y="13"/>
 									</Anchors>
 								</FontString>
+								<Texture parentKey="UpgradeArrow" atlas="Garr_LevelUpgradeArrow" useAtlasSize="true" hidden="true">
+									<Anchors>
+										<Anchor point="CENTER" relativeKey="$parent.Level" relativePoint="TOPLEFT" x="19" y="-9"/>
+									</Anchors>
+								</Texture>
 							</Layer>
 						</Layers>
 						<Scripts>
@@ -1338,8 +1280,31 @@
 							</OnLeave>
 							<OnClick function="GarrisonTownHall_OnClick"/>
 						</Scripts>
+						<Animations>
+							<AnimationGroup parentKey="BuildingGlowPulseAnim" setToFinalAlpha="true" looping="REPEAT">
+								<Scale childKey="BuildingPulse" duration="0.5" order="1" fromScaleX="0.8" fromScaleY="0.8" toScaleX="1.3" toScaleY="1.3">
+									<Origin point="CENTER">
+										<Offset x="0" y="0"/>
+									</Origin>
+								</Scale>
+								<Alpha childKey="BuildingPulse" smoothing="NONE" duration="0.5" order="1" fromAlpha="0" toAlpha="1"/>
+								<Alpha childKey="BuildingPulse" smoothing="NONE" duration="0.5" order="2" fromAlpha="1" toAlpha="0"/>
+								<Alpha childKey="AlphaPulse" smoothing="NONE" duration="0.5" order="1" fromAlpha="0.5" toAlpha="1"/>
+								<Alpha childKey="AlphaPulse" smoothing="NONE" duration="0.5" order="2" fromAlpha="1" toAlpha="0.5"/>
+
+								<Scripts>
+									<OnPlay>
+										self:GetParent().BuildingPulse:Show();
+										self:GetParent().AlphaPulse:Show();
+									</OnPlay>
+									<OnStop>
+										self:GetParent().BuildingPulse:Hide();
+										self:GetParent().AlphaPulse:Hide();
+									</OnStop>
+								</Scripts>
+							</AnimationGroup>
+						</Animations>
 					</Button>
-					
 					<Button parentArray="Plots" inherits="GarrisonPlotTemplate"/>
 				</Frames>
 			</Frame>
@@ -1422,6 +1387,15 @@
 							<OnClick function ="GarrisonBuildingFrame_ConfirmUpgrade"/>
 						</Scripts>
 					</Button>
+					<Button parentKey="UpgradeGarrisonButton" inherits="UIPanelButtonTemplate" text="UPGRADE">
+						<Size x="80" y="22"/>
+						<Anchors>
+							<Anchor point="BOTTOMLEFT" x="45" y="23"/>
+						</Anchors>
+						<Scripts>
+							<OnClick function ="GarrisonBuildingFrame_ConfirmUpgradeGarrison"/>
+						</Scripts>
+					</Button>
 					<Button parentKey="ReplaceButton" inherits="UIPanelButtonTemplate" text="REPLACE">
 						<Size x="80" y="22"/>
 						<Anchors>
@@ -1469,7 +1443,7 @@
 				<Texture parentKey="Icon" >
 					<Size x="32" y="32"/>
 					<Anchors>
-						<Anchor point="BOTTOMLEFT" x="5" y="20"/>
+						<Anchor point="BOTTOMLEFT" x="10" y="20"/>
 					</Anchors>
 				</Texture>
 			</Layer>

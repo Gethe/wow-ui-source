@@ -243,12 +243,21 @@
 			</Layer>
 		</Layers>
 	</Frame>
-	
-	<Frame name="GarrisonMissionAbilityCounterTemplate" inherits="GarrisonAbilityCounterTemplate" virtual="true">
+
+	<Frame name="GarrisonMissionMechanicTemplate" inherits="GarrisonAbilityCounterTemplate" virtual="true">
 		<Scripts>
 			<OnEnter function="GarrisonMissionMechanic_OnEnter"/>
 			<OnLeave>
 				GarrisonMissionMechanicTooltip:Hide();
+			</OnLeave>
+		</Scripts>
+	</Frame>
+	
+	<Frame name="GarrisonMissionAbilityCounterTemplate" inherits="GarrisonAbilityCounterTemplate" virtual="true">
+		<Scripts>
+			<OnEnter function="GarrisonMissionMechanicFollowerCounter_OnEnter"/>
+			<OnLeave>
+				GarrisonMissionMechanicFollowerCounterTooltip:Hide();
 			</OnLeave>
 		</Scripts>
 	</Frame>
@@ -292,6 +301,15 @@
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeKey="$parent.AbilitiesBG" x="2" y="-9"/>
 				</Anchors>
+			</Frame>
+			<Frame parentKey="BusyFrame" setAllPoints="true" hidden="true">
+				<Layers>
+					<Layer level="ARTWORK">
+						<Texture setAllPoints="true">
+							<Color r="0" g="0.06" b="0.22" a="0.44"/>
+						</Texture>
+					</Layer>
+				</Layers>
 			</Frame>
 		</Frames>
 		<Scripts>
@@ -990,6 +1008,36 @@
 		</Frames>
 	</Frame>
 	
+	<Button name="GarrisonMissionRemoveFollowerButtonTemplate" hidden="true" virtual="true">
+		<Size x="14" y="14"/>
+		<Anchors>
+			<Anchor point="TOPLEFT" relativeKey="$parent.PortraitFrame" relativePoint="TOPRIGHT" x="-8" y="4"/>
+		</Anchors>
+		<Layers>
+			<Layer level="ARTWORK">
+				<Texture file="Interface\Buttons\UI-GroupLoot-Pass-Up" alpha="0.75" parentKey="texture"/>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnEnter>
+				self.texture:SetAlpha(1.0);
+				GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+				GameTooltip:SetText(REMOVE);
+			</OnEnter>
+			<OnLeave>
+				self.texture:SetAlpha(0.75);
+				GameTooltip_Hide();
+			</OnLeave>
+			<OnMouseDown>
+				self.texture:SetPoint("TOPLEFT", 1, -1);
+			</OnMouseDown>
+			<OnMouseUp>
+				self.texture:SetPoint("TOPLEFT", 0, 0);
+			</OnMouseUp>
+			<OnClick function="GarrisonMissionRemoveFollowerButton_OnClick"/>
+		</Scripts>
+	</Button>
+			
 	<Frame name="GarrisonMissionPartyFrameSmallTemplate" virtual="true">
 		<Size x="100" y="110"/>
 		<Layers>
@@ -1013,6 +1061,7 @@
 					<Anchor point="TOP"/>
 				</Anchors>
 			</Frame>
+			<Button parentKey="RemoveFollowerButton" inherits="GarrisonMissionRemoveFollowerButtonTemplate"/>
 		</Frames>
 		<Scripts>
 			<OnLoad>
@@ -1065,6 +1114,7 @@
 					<Anchor point="TOPLEFT" relativeKey="$parent.PortraitFrame" relativePoint="TOPRIGHT" x="3" y="-6"/>
 				</Anchors>
 			</Frame>
+			<Button parentKey="RemoveFollowerButton" inherits="GarrisonMissionRemoveFollowerButtonTemplate"/>		
 		</Frames>
 		<Scripts>
 			<OnLoad>
@@ -1124,6 +1174,7 @@
 					<Anchor point="TOPLEFT" relativeKey="$parent.PortraitFrame" relativePoint="TOPRIGHT" x="2" y="-3"/>
 				</Anchors>
 			</Frame>
+			<Button parentKey="RemoveFollowerButton" inherits="GarrisonMissionRemoveFollowerButtonTemplate"/>
 		</Frames>
 		<Scripts>
 			<OnLoad>
@@ -1160,7 +1211,7 @@
 		</Layers>
 	</Frame>
 	
-	<Frame name="GarrisonMissionEnemyMechanicTemplate" inherits="GarrisonMissionAbilityCounterTemplate" virtual="true">
+	<Frame name="GarrisonMissionEnemyMechanicTemplate" inherits="GarrisonMissionMechanicTemplate" virtual="true">
 		<Layers>
 			<Layer level="ARTWORK">
 				<Texture parentKey="CheckGlow" hidden="false" alpha="0" alphaMode="ADD" atlas="GarrMission_CheckGlow" useAtlasSize="true">
@@ -1663,20 +1714,76 @@
 		</Scripts>
 	</Frame>
 	
+	<Frame name="GarrisonMissionTutorialFrame" frameStrata="DIALOG" enableMouse="true">
+		<Frames>
+			<Frame name="GarrisonMissionFrameHelpBox" parentKey="GlowBox" inherits="GlowBoxTemplate">
+				<Size x="190" y="200"/>
+				<Layers>
+					<Layer level="ARTWORK">
+						<FontString parentKey="BigText" inherits="GameFontHighlight">
+							<Size x="176" y="0"/>
+							<Anchors>
+								<Anchor point="TOP" x="0" y="-12"/>
+							</Anchors>
+						</FontString>
+						<FontString parentKey="SmallText" inherits="GameFontHighlightSmall">
+							<Size x="176" y="0"/>
+							<Anchors>
+								<Anchor point="TOP" relativeKey="$parent.BigText" relativePoint="BOTTOM" x="0" y="-12"/>
+							</Anchors>
+						</FontString>
+						<Texture parentKey="ArrowUp" inherits="HelpPlateArrowUP">
+							<Size x="53" y="21"/>
+							<Anchors>
+								<Anchor point="BOTTOM" relativePoint="TOP" x="0" y="-1"/>
+							</Anchors>
+						</Texture>
+						<Texture parentKey="ArrowDown" inherits="HelpPlateArrowDOWN">
+							<Size x="53" y="21"/>
+							<Anchors>
+								<Anchor point="TOP" relativePoint="BOTTOM" x="0" y="1"/>
+							</Anchors>
+						</Texture>								
+					</Layer>
+					<Layer level="BORDER">
+						<Texture parentKey="ArrowGlowDown" inherits="HelpPlateArrow-GlowDOWN" alphaMode="ADD" alpha="0.5">
+							<Size x="53" y="21"/>
+							<Anchors>
+								<Anchor point="TOP" relativePoint="BOTTOM" x="0" y="1"/>
+							</Anchors>
+						</Texture>
+						<Texture parentKey="ArrowGlowUp" inherits="HelpPlateArrow-GlowUP" alphaMode="ADD" alpha="0.5">
+							<Size x="53" y="21"/>
+							<Anchors>
+								<Anchor point="BOTTOM" relativePoint="TOP" x="0" y="-1"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+				<Frames>
+					<Button parentKey="Button" name="$parentButton" inherits="UIPanelButtonTemplate" text="OKAY">
+						<Size x="110" y="22"/>
+						<Anchors>
+							<Anchor point="BOTTOM" x="0" y="12"/>
+						</Anchors>
+						<Scripts>
+							<OnClick>
+								PlaySound("igMainMenuOptionCheckBoxOn");
+								GarrisonMissionFrame_CheckTutorials(true);
+							</OnClick>
+						</Scripts>
+					</Button>
+				</Frames>
+			</Frame>				
+		</Frames>
+	</Frame>
+			
 	<Frame name="GarrisonMissionFrame" inherits="GarrisonUITemplate" parent="UIParent" enableMouse="true" toplevel="true" hidden="true">
 		<Size x="962" y="662"/>
 		<Anchors>
 			<Anchor point="CENTER"/>
 		</Anchors>
 		<Frames>
-			<Button name="$parentTutorialButton" parentKey="MainHelpButton" inherits="MainHelpPlateButton">
-				<Anchors>
-					<Anchor point="TOPLEFT" relativeKey="$parent" x="5" y="20" />
-				</Anchors>
-				<Scripts>
-					<OnClick function="GarrisonMission_ToggleTutorial"/>
-				</Scripts>
-			</Button>
 			<Button name="$parentTab1" inherits="GarrisonMissionFrameTabTemplate" id="1" text="GARRISON_MISSIONS">
 				<Anchors>
 					<Anchor point="BOTTOMLEFT" x="11" y="-32"/>
@@ -1889,6 +1996,57 @@
 										<Anchors>
 											<Anchor point="CENTER"/>
 										</Anchors>
+										<Frames>
+											<Frame parentKey="Stage" inherits="GarrisonMissionStageTemplate">
+												<Size x="686" y="327"/>
+												<Anchors>
+													<Anchor point="TOP" x="0" y="-3"/>
+												</Anchors>
+												<Layers>
+													<Layer level="OVERLAY">
+														<Texture atlas="GarrMission_LocationCover-Side" useAtlasSize="true">
+															<Anchors>
+																<Anchor point="TOPLEFT"/>
+																<Anchor point="BOTTOMLEFT" />
+															</Anchors>
+														</Texture>
+														<Texture atlas="GarrMission_LocationCover-Side" useAtlasSize="true">
+															<Anchors>
+																<Anchor point="TOPRIGHT"/>
+																<Anchor point="BOTTOMRIGHT"/>
+															</Anchors>
+															<TexCoords left="1.0" right="0.0" top="0.0" bottom="1.0"/>
+														</Texture>
+													</Layer>
+												</Layers>
+											</Frame>
+											<CinematicModel parentKey="Model" inherits="GarrisonCinematicModelBaseTemplate">
+												<Size x="600" y="483"/>
+												<Anchors>
+													<Anchor point="BOTTOMLEFT" x="-133" y="3"/>
+												</Anchors>
+												<Layers>
+													<Layer level="BACKGROUND">
+														<Texture setAllPoints="true">
+															<Color r="1" g="1" b="1" a="0"/>
+														</Texture>
+													</Layer>
+												</Layers>
+											</CinematicModel>
+											<Button parentKey="ViewButton" inherits="UIPanelButtonTemplate" text="GARRISON_VIEW_COMPLETED_MISSIONS">
+												<Size x="132" y="24"/>
+												<Anchors>
+													<Anchor point="BOTTOM" x="137" y="88"/>
+												</Anchors>
+												<Scripts>
+													<OnLoad>
+														local textWidth = self:GetFontString():GetWidth();
+														self:SetWidth(textWidth + 64);
+													</OnLoad>
+													<OnClick function="GarrisonMissionFrame_ShowCompleteMissions"/>
+												</Scripts>
+											</Button>
+										</Frames>
 										<Layers>
 											<Layer level="BORDER" textureSubLevel="4">
 												<Texture atlas="_GarrMission_TopBorder" useAtlasSize="true" horizTile="true">
@@ -1910,17 +2068,11 @@
 													</Anchors>
 													<TexCoords left="1.0" right="0.0" top="0.0" bottom="1.0"/>
 												</Texture>
-												<Texture atlas="GarrMission_MissionCrest">
-													<Size x="209" y="251"/>
-													<Anchors>
-														<Anchor point="LEFT" x="32"/>
-													</Anchors>
-												</Texture>
 											</Layer>
 											<Layer level="ARTWORK">
-												<FontString parentKey="Title" inherits="DestinyFontHuge" justifyH="CENTER" text="GARRISON_MISSION_REPORT">
+												<FontString parentKey="Title" inherits="DestinyFontHuge" justifyH="CENTER" text="GARRISON_MISSION_REPORT" spacing="8">
 													<Anchors>
-														<Anchor point="CENTER" x="97" y="24"/>
+														<Anchor point="BOTTOM" relativeKey="$parent.ViewButton" relativePoint="TOP" x="0" y="60"/>
 													</Anchors>
 													<Shadow>
 														<Offset x="1" y="-1"/>
@@ -1929,26 +2081,12 @@
 												</FontString>
 												<FontString parentKey="Summary" inherits="GameFontHighlightLarge2" justifyH="CENTER">
 													<Anchors>
-														<Anchor point="TOP" relativeKey="$parent.Title" relativePoint="BOTTOM" y="-27"/>
+														<Anchor point="TOP" relativeKey="$parent.Title" relativePoint="BOTTOM" y="-6"/>
 													</Anchors>
+													<Color r="0.8" g="0.8" b="0.8"/>
 												</FontString>	
 											</Layer>
 										</Layers>
-										<Frames>
-											<Button parentKey="ViewButton" inherits="UIPanelButtonTemplate" text="GARRISON_VIEW_COMPLETED_MISSIONS">
-												<Size x="132" y="22"/>
-												<Anchors>
-													<Anchor point="TOP" relativeKey="$parent.Summary" relativePoint="BOTTOM" y="-11"/>
-												</Anchors>
-												<Scripts>
-													<OnLoad>
-														local textWidth = self:GetFontString():GetWidth();
-														self:SetWidth(textWidth + 64);
-													</OnLoad>
-													<OnClick function="GarrisonMissionFrame_ShowCompleteMissions"/>
-												</Scripts>
-											</Button>
-										</Frames>
 									</Frame>
 								</Frames>
 							</Frame>							
@@ -2033,6 +2171,12 @@
 											</Anchors>
 											<Color r="0.84" g="0.72" b="0.57"/>
 										</FontString>
+										<FontString parentKey="ItemLevel" inherits="GameFontNormalLarge" hidden="true">
+											<Anchors>
+												<Anchor point="TOP" relativeKey="$parent.Level" relativePoint="BOTTOM" x="0" y="2"/>
+											</Anchors>
+											<Color r="0.84" g="0.72" b="0.57"/>
+										</FontString>
 										<Texture parentKey="MissionType" atlas="GarrMission_MissionIcon-Combat" useAtlasSize="true">
 											<Anchors>
 												<Anchor point="TOPLEFT" x="48" y="-4"/>
@@ -2058,6 +2202,13 @@
 												<Anchor point="RIGHT" relativeKey="$parent.XPIcon" relativePoint="LEFT" x="4" y="-1"/>
 											</Anchors>
 										</FontString>
+										<FontString parentKey="ExhaustingLabel" inherits="GameFontNormalMed2" justifyH="LEFT" text="GARRISON_MISSION_EXHAUSTING" hidden="true">
+											<Size x="400" y="0"/>
+											<Anchors>
+												<Anchor point="TOPLEFT" relativeKey="$parent.IconBG" relativePoint="BOTTOMLEFT" x="15" y="-7"/>
+											</Anchors>
+											<Color r="1" g="0.573" b="0.075"/>
+										</FontString>										
 										<FontString parentKey="MissionSummary" inherits="GameFontNormalMed2" justifyH="LEFT">
 											<Size x="400" y="0"/>
 											<Anchors>
@@ -2115,6 +2266,22 @@
 										</Texture>
 									</Layer>
 								</Layers>
+							</Frame>
+							<Frame parentKey="ItemLevelHitboxFrame" enableMouse="true" hidden="true">
+								<Size x="49" y="41"/>
+								<Anchors>
+									<Anchor point="TOP" relativeKey="$parent.Stage.Level" x="0" y="3"/>
+								</Anchors>
+								<Scripts>
+									<OnEnter>
+										GameTooltip:SetOwner(self, "ANCHOR_BOTTOMRIGHT");
+										local itemLevel = GarrisonMissionFrame.MissionTab.MissionPage.missionInfo.iLevel;
+										GameTooltip:SetText(string.format(GARRISON_MISSION_EXPECTED_ILVL, itemLevel), 1, 1, 1);
+										GameTooltip:AddLine(GARRISON_MISSION_EXPECTED_ILVL_TOOLTIP, nil, nil, nil, 1);
+										GameTooltip:Show();
+									</OnEnter>
+									<OnLeave function="GameTooltip_Hide"/>
+								</Scripts>
 							</Frame>
 							<Frame parentKey="RewardsFrame" inherits="GarrisonMissionRewardsFrameTemplate">
 								<Size x="382" y="113"/>
@@ -2843,6 +3010,12 @@
 											</Anchors>
 											<Color r="0.84" g="0.72" b="0.57"/>
 										</FontString>
+										<FontString parentKey="ItemLevel" inherits="GameFontNormalLarge" hidden="true">
+											<Anchors>
+												<Anchor point="TOP" relativeKey="$parent.Level" relativePoint="BOTTOM" x="0" y="2"/>
+											</Anchors>
+											<Color r="0.84" g="0.72" b="0.57"/>
+										</FontString>										
 										<Texture parentKey="MissionType" atlas="GarrMission_MissionIcon-Combat" useAtlasSize="true">
 											<Anchors>
 												<Anchor point="TOPLEFT" x="48" y="-4"/>
@@ -2911,6 +3084,22 @@
 									</OnLoad>
 								</Scripts>
 							</Frame>
+							<Frame parentKey="ItemLevelHitboxFrame" enableMouse="true" hidden="true">
+								<Size x="49" y="41"/>
+								<Anchors>
+									<Anchor point="TOP" relativeKey="$parent.MissionInfo.Level" x="0" y="3"/>
+								</Anchors>
+								<Scripts>
+									<OnEnter>
+										GameTooltip:SetOwner(self, "ANCHOR_BOTTOMRIGHT");
+										local itemLevel = GarrisonMissionFrame.MissionComplete.currentMission.iLevel;
+										GameTooltip:SetText(string.format(GARRISON_MISSION_EXPECTED_ILVL, itemLevel), 1, 1, 1);
+										GameTooltip:AddLine(GARRISON_MISSION_EXPECTED_ILVL_TOOLTIP, nil, nil, nil, 1);
+										GameTooltip:Show();
+									</OnEnter>
+									<OnLeave function="GameTooltip_Hide"/>
+								</Scripts>
+							</Frame>							
 							<Frame parentKey="FewFollowers" hidden="true">
 								<Size x="556" y="285"/>
 								<Anchors>
@@ -3286,6 +3475,9 @@
 
 	<Button name="GarrisonFollowerPlacerFrame" parent="UIParent" frameStrata="HIGH" setAllPoints="true" hidden="true">
 		<Scripts>
+			<OnLoad>
+				self:RegisterForClicks("LeftButtonUp", "RightButtonUp");
+			</OnLoad>
 			<OnClick function="GarrisonFollowerPlacerFrame_OnClick"/>
 		</Scripts>
 	</Button>
@@ -3321,11 +3513,51 @@
 						<Anchor point="TOPLEFT" relativeKey="$parent.Icon" relativePoint="BOTTOMLEFT" y="-6"/>
 					</Anchors>
 				</FontString>
+			</Layer>
+		</Layers>
+	</Frame>
+
+	<Frame name="GarrisonMissionMechanicFollowerCounterTooltip" inherits="GameTooltipTemplate" parent="GarrisonMissionFrame" frameStrata="TOOLTIP">
+		<Size x="280" y="250"/>
+		<Anchors>
+			<Anchor point="CENTER"/>
+		</Anchors>
+		<Layers>
+			<Layer level="ARTWORK" textureSubLevel="-1">
+				<Texture parentKey="Icon">
+					<Size x="23" y="23"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" x="15" y="-43" relativeKey="$parent.Subtitle"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="ARTWORK">
+				<FontString parentKey="Title" inherits="GameFontHighlightMedium" justifyH="LEFT" text="Threat Counter">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="15" y="-10"/>
+					</Anchors>
+				</FontString>
+				<FontString parentKey="Subtitle" inherits="GameFontNormal" justifyH="LEFT" text="This follower can counter:">
+					<Anchors>
+						<Anchor point="TOPLEFT" y="-15" relativeKey="$parent.Title"/>
+					</Anchors>
+				</FontString>
+				<Texture atlas="GarrMission_EncounterAbilityBorder" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent.Icon"/>
+					</Anchors>
+				</Texture>
+				<FontString parentKey="Name" inherits="GameFontHighlightMedium" justifyH="LEFT">
+					<Anchors>
+						<Anchor point="BOTTOMLEFT" relativeKey="$parent.Icon" relativePoint="BOTTOMRIGHT" x="4" y="4"/>
+					</Anchors>
+				</FontString>
 				<FontString parentKey="CounterFrom" inherits="GameFontNormal" justifyH="LEFT" text="GARRISON_MISSION_COUNTER_FROM">
 					<Size x="260" y="0"/>
 					<Anchors>
-						<Anchor point="TOPLEFT" relativeKey="$parent.Description" relativePoint="BOTTOMLEFT" y="-20"/>
+						<Anchor point="TOPLEFT" relativeKey="$parent.Icon" relativePoint="BOTTOMLEFT" y="-15"/>
 					</Anchors>
+					<Color r="0.4" g="0.73" b="1.0"/>
 				</FontString>
 				<Texture parentKey="CounterIcon">
 					<Size x="20" y="20"/>
@@ -3341,5 +3573,5 @@
 			</Layer>
 		</Layers>
 	</Frame>
-	
+
 </Ui>

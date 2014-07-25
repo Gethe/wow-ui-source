@@ -40,7 +40,7 @@
 					</OnDragStart>
 					<OnEnter>
 						GameTooltip:SetOwner(self);
-						GameTooltip:SetHyperlink(GetSpellLink(GetSpellInfo(self.spellID)));
+						GameTooltip:SetSpellByID(self.currentSpellID);
 					</OnEnter>
 					<OnLeave>
 						GameTooltip:Hide();

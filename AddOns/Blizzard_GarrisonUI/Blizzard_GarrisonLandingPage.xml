@@ -341,6 +341,15 @@
 							</Anchors>
 						</Texture>
 					</Layer>
+					<Layer level="OVERLAY">
+						<FontString parentKey="EmptyMissionText" inherits="GameFontNormalLarge2" justifyH="CENTER">
+							<Size x="324" y="0"/>
+							<Anchors>
+								<Anchor point="CENTER"/>
+							</Anchors>
+							<Color r=".75" g=".75" b=".73"/>
+						</FontString>
+					</Layer>
 				</Layers>
 				<Frames>
 					<ScrollFrame name="$parentListScrollFrame" parentKey="listScroll" inherits="HybridScrollFrameTemplate">
@@ -428,32 +437,42 @@
 			</Button>
 			<Frame parentArray="Shipments" inherits="GarrisonLandingPageShipmentStatusTemplate" hidden="true">
 				<Anchors>
-					<Anchor point="TOPLEFT" x="70" y="-110"/>
+					<Anchor point="TOPLEFT" x="70" y="-100"/>
 				</Anchors>
 			</Frame>
 			<Frame parentArray="Shipments" inherits="GarrisonLandingPageShipmentStatusTemplate" hidden="true">
 				<Anchors>
-					<Anchor point="TOPLEFT" x="230" y="-110"/>
+					<Anchor point="TOPLEFT" x="230" y="-100"/>
 				</Anchors>
 			</Frame>
 			<Frame parentArray="Shipments" inherits="GarrisonLandingPageShipmentStatusTemplate" hidden="true">
 				<Anchors>
-					<Anchor point="TOPLEFT" x="70" y="-245"/>
+					<Anchor point="TOPLEFT" x="70" y="-205"/>
 				</Anchors>
 			</Frame>
 			<Frame parentArray="Shipments" inherits="GarrisonLandingPageShipmentStatusTemplate" hidden="true">
 				<Anchors>
-					<Anchor point="TOPLEFT" x="230" y="-245"/>
+					<Anchor point="TOPLEFT" x="230" y="-205"/>
 				</Anchors>
 			</Frame>
 			<Frame parentArray="Shipments" inherits="GarrisonLandingPageShipmentStatusTemplate" hidden="true">
 				<Anchors>
-					<Anchor point="TOPLEFT" x="70" y="-390"/>
+					<Anchor point="TOPLEFT" x="70" y="-310"/>
 				</Anchors>
 			</Frame>
 			<Frame parentArray="Shipments" inherits="GarrisonLandingPageShipmentStatusTemplate" hidden="true">
 				<Anchors>
-					<Anchor point="TOPLEFT" x="230" y="-390"/>
+					<Anchor point="TOPLEFT" x="230" y="-310"/>
+				</Anchors>
+			</Frame>
+			<Frame parentArray="Shipments" inherits="GarrisonLandingPageShipmentStatusTemplate" hidden="true">
+				<Anchors>
+					<Anchor point="TOPLEFT" x="70" y="-415"/>
+				</Anchors>
+			</Frame>
+			<Frame parentArray="Shipments" inherits="GarrisonLandingPageShipmentStatusTemplate" hidden="true">
+				<Anchors>
+					<Anchor point="TOPLEFT" x="230" y="-415"/>
 				</Anchors>
 			</Frame>
 		</Frames>

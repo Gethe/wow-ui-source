@@ -24,7 +24,7 @@ function GuildFrame_OnLoad(self)
 	GuildFrame.hasForcedNameChange = GetGuildRenameRequired();
 	PanelTemplates_SetNumTabs(self, 5);
 	RequestGuildRewards();
-	QueryGuildXP();
+--	QueryGuildXP();
 	QueryGuildNews();
 	OpenCalendar();		-- to get event data
 	GuildFrame_UpdateTabard();
@@ -101,7 +101,7 @@ function GuildFrame_OnEvent(self, event, ...)
 			end
 		end
 	elseif ( event == "PLAYER_ENTERING_WORLD" ) then
-		QueryGuildXP();
+--		QueryGuildXP();
 		QueryGuildNews();
 	elseif ( event == "GUILD_RENAME_REQUIRED" ) then
 		GuildFrame.hasForcedNameChange = ...;
@@ -328,7 +328,6 @@ function GuildFrame_TabClicked(self)
 	elseif ( tabIndex == 3 ) then -- Perks
 		ButtonFrameTemplate_HideButtonBar(GuildFrame);
 		GuildFrame_ShowPanel("GuildPerksFrame");
-		-- inset changes are in GuildPerksFrame_OnShow()
 		GuildFrameBottomInset:Show();
 		GuildPointFrame:Show();
 		GuildFactionFrame:Hide();
@@ -336,8 +335,6 @@ function GuildFrame_TabClicked(self)
 		GuildFrameMembersCountLabel:Show();
 		GuildPerksFrameMembersCountLabel:Hide();
 		GuildFrameBottomInset:Hide();
-		GuildFrameInset:SetPoint("BOTTOMRIGHT", -7, 26);
-		--GuildPerksToggleButton:SetPoint("TOPLEFT", GuildFrameInset);
 	elseif ( tabIndex == 4 ) then -- Rewards
 		ButtonFrameTemplate_HideButtonBar(GuildFrame);
 		GuildFrame_ShowPanel("GuildRewardsFrame");
@@ -425,15 +422,11 @@ end
 function GuildPerksFrame_OnShow(self)
 	-- inset stuff
 	GuildFrameInset:SetPoint("TOPLEFT", 4, -65);
-	if ( not GuildPerksFrame.allPerks ) then
-		GuildFrameInset:SetPoint("BOTTOMRIGHT", -7, 170);
-		GuildFrameBottomInset:Show();
-	else
-		GuildFrameBottomInset:Hide();
-		GuildFrameInset:SetPoint("BOTTOMRIGHT", -7, 44);
-	end
+	
+	GuildFrameInset:SetPoint("BOTTOMRIGHT", -7, 170);
+	GuildFrameBottomInset:Show();
+	
 	GuildPerks_Update();
-	GuildNewsSort(1);	-- disregard filters and stickies
 end
 
 function GuildPerksFrame_OnEvent(self, event, ...)
@@ -532,7 +525,7 @@ function GuildPerks_Update()
 	local numButtons = #buttons;
 	local button, index;
 	local numPerks = GetNumGuildPerks();
-	local guildLevel = GetGuildLevel();
+--	local guildLevel = GetGuildLevel();
 	
 	local totalHeight = numPerks * scrollFrame.buttonHeight;
 	local displayedHeight = numButtons * scrollFrame.buttonHeight;

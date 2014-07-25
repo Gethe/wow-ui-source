@@ -28,7 +28,7 @@ function QueueStatusMinimapButton_OnClick(self, button)
 				ToggleWorldStateScoreFrame();
 			end
 		elseif ( lfgListActiveEntry ) then
-			PVEFrame_ToggleFrame("GroupFinderFrame", LFGListPVEStub);
+			LFGListUtil_OpenBestWindow();
 		else
 			QueueStatusDropDown_Show(self.DropDown, self:GetName());
 		end
@@ -897,6 +897,13 @@ function QueueStatusDropDown_AddLFGListButtons(info)
 	info.text = name;
 	info.isTitle = 1;
 	info.notCheckable = 1;
+	UIDropDownMenu_AddButton(info);
+
+	info.text = LFG_LIST_VIEW_GROUP;
+	info.isTitle = nil;
+	info.leftPadding = 10;
+	info.func = LFGListUtil_OpenBestWindow;
+	info.disabled = false;
 	UIDropDownMenu_AddButton(info);
 
 	info.text = UNLIST_MY_GROUP;

@@ -78,10 +78,17 @@
 						<Anchor point="BOTTOM" x="164" y="183"/>
 					</Anchors>
 				</FontString>
-				<FontString parentKey="RightTitle" inherits="SplashBigFont">
+				<FontString parentKey="RightTitle" inherits="Game32Font">
 					<Anchors>
 						<Anchor point="BOTTOM" relativeKey="$parent.RightDescription" relativePoint="TOP" x="0" y="10"/>
 					</Anchors>
+					<Shadow>
+						<Offset>
+							<AbsDimension x="1" y="-1"/>
+						</Offset>
+						<Color r="0" g="0" b="0"/>
+					</Shadow>	
+					<Color r="1" g=".82" b="0"/>
 				</FontString>				
 			</Layer>
 			<Layer level="BORDER">
@@ -109,10 +116,17 @@
 						</Texture>
 					</Layer>
 					<Layer level="ARTWORK">
-						<FontString parentKey="Text" inherits="SplashBigFont" text="SPLASH_START_QUEST_NOW">
+						<FontString parentKey="Text" inherits="Game27Font" text="SPLASH_START_QUEST_NOW">
 							<Anchors>
 								<Anchor point="CENTER" x="20" y="0"/>
-							</Anchors>						
+							</Anchors>
+							<Shadow>
+								<Offset>
+									<AbsDimension x="1" y="-1"/>
+								</Offset>
+								<Color r="0" g="0" b="0"/>
+							</Shadow>	
+							<Color r="1" g=".82" b="0"/>
 						</FontString>
 					</Layer>				
 				</Layers>

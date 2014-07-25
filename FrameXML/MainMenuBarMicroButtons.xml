@@ -613,4 +613,16 @@
 			</OnLoad>
 		</Scripts>
 	</Frame>
+	<Frame name="ToyBoxMicroButtonAlert" inherits="MicroButtonAlertTemplate">
+		<Anchors>
+			<Anchor point="BOTTOM" relativeTo="CompanionsMicroButton" relativePoint="TOP" x="0" y="-8"/>
+		</Anchors>
+		<Scripts>
+			<OnLoad>
+				MicroButtonAlert_OnLoad(self);
+				self.Text:SetText(TOYBOX_MICRO_BUTTON_SPEC_TUTORIAL);
+				self:SetHeight(CollectionsMicroButtonAlert.Text:GetHeight()+42);
+			</OnLoad>
+		</Scripts>
+	</Frame>
 </Ui>

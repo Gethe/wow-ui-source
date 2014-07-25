@@ -447,7 +447,7 @@ function QuestLogQuests_Update(poiTable)
 			headerLogIndex = questLogIndex;
 		elseif ( headerOnMap and isOnMap and not isTask ) then
 			-- we have at least one valid entry, show the header for it
-			if ( not headerShown ) then
+			if ( not headerShown and not showQuestObjectives ) then
 				headerShown = true;
 				headerIndex = headerIndex + 1;
 				button = QuestLogQuests_GetHeaderButton(headerIndex);
@@ -490,50 +490,38 @@ function QuestLogQuests_Update(poiTable)
 			end
 			
 			-- tag. daily icon can be alone or before other icons except for COMPLETED or FAILED
-			local tagCoords;
+			local tagID;
+			local questTagID, tagName = GetQuestTagInfo(questID);
 			if ( isComplete and isComplete < 0 ) then
-				tagCoords = QUEST_TAG_TCOORDS["FAILED"];
+				tagID = "FAILED";
 			elseif ( isComplete and isComplete > 0 ) then
-				tagCoords = QUEST_TAG_TCOORDS["COMPLETED"];
-			else
-				local tagID, tagName = GetQuestTagInfo(questID);
-				if ( tagID ) then
-					local factionGroup = GetQuestFactionGroup(questID);
-					if ( tagID == QUEST_TAG_ACCOUNT and factionGroup ) then
-						tagCoords = QUEST_TAG_TCOORDS["ALLIANCE"];
-						if ( factionGroup == LE_QUEST_FACTION_HORDE ) then
-							tagCoords = QUEST_TAG_TCOORDS["HORDE"];
-						end
-					else
-						tagCoords = QUEST_TAG_TCOORDS[tagID];
+				tagID = "COMPLETED";
+			elseif( questTagID and questTagID == QUEST_TAG_ACCOUNT ) then
+				local factionGroup = GetQuestFactionGroup(questID);
+				if( factionGroup ) then
+					tagID = "ALLIANCE";
+					if ( factionGroup == LE_QUEST_FACTION_HORDE ) then
+						tagID = "HORDE";
 					end
+				else
+					tagID = QUEST_TAG_ACCOUNT;
 				end
+			elseif( frequency == LE_QUEST_FREQUENCY_DAILY and (not isComplete or isComplete == 0) ) then
+				tagID = "DAILY";
+			elseif( frequency == LE_QUEST_FREQUENCY_WEEKLY and (not isComplete or isComplete == 0) )then
+				tagID = "WEEKLY";
+			elseif( questTagID ) then
+				tagID = questTagID;
 			end
-			if ( tagCoords ) then
-				button.TagTexture:SetTexCoord(unpack(tagCoords));
-				button.TagTexture:Show();
+
+			if ( tagID ) then
+				local tagCoords = QUEST_TAG_TCOORDS[tagID];
+				if( tagCoords ) then
+					button.TagTexture:SetTexCoord( unpack(tagCoords) );
+					button.TagTexture:Show();
+				end
 			else
 				button.TagTexture:Hide();
-			end
-			if ( frequency == LE_QUEST_FREQUENCY_DAILY and (not isComplete or isComplete == 0) ) then
-				button.DailyTagTexture:Show();
-				if ( tagCoords) then
-					button.DailyTagTexture:SetPoint("RIGHT", -14, 0);
-				else
-					button.DailyTagTexture:SetPoint("RIGHT", 0, 0);
-				end
-			else
-				button.DailyTagTexture:Hide();
-			end
-			if ( frequency == LE_QUEST_FREQUENCY_WEEKLY and (not isComplete or isComplete == 0) ) then
-				button.WeeklyTagTexture:Show();
-				if ( tagCoords) then
-					button.WeeklyTagTexture:SetPoint("RIGHT", -14, 0);
-				else
-					button.WeeklyTagTexture:SetPoint("RIGHT", 0, 0);
-				end
-			else
-				button.WeeklyTagTexture:Hide();
 			end
 			
 			-- POI/objectives
@@ -628,7 +616,11 @@ function QuestLogQuests_Update(poiTable)
 			button:SetHeight(totalHeight);
 			button.questLogIndex = questLogIndex;
 			button:ClearAllPoints();
-			button:SetPoint("TOPLEFT", prevButton, "BOTTOMLEFT", 0, 0);
+			if ( prevButton ) then
+				button:SetPoint("TOPLEFT", prevButton, "BOTTOMLEFT", 0, 0);
+			else
+				button:SetPoint("TOPLEFT", 1, -6);
+			end
 			button:Show();			
 			prevButton = button;
 		end
@@ -867,8 +859,6 @@ function QuestMapLogTitleButton_OnMouseDown(self)
 	self.Text:SetPoint(anchor, x + 1, y - 1);
 	anchor, _, _, x, y = self.TagTexture:GetPoint(2);
 	self.TagTexture:SetPoint(anchor, x + 1, y - 1);
-	anchor, _, _, x, y = self.DailyTagTexture:GetPoint(2);
-	self.DailyTagTexture:SetPoint(anchor, x + 1, y - 1);
 end
 
 function QuestMapLogTitleButton_OnMouseUp(self)
@@ -876,8 +866,6 @@ function QuestMapLogTitleButton_OnMouseUp(self)
 	self.Text:SetPoint(anchor, x - 1, y + 1);
 	anchor, _, _, x, y = self.TagTexture:GetPoint(2);
 	self.TagTexture:SetPoint(anchor, x - 1, y + 1);
-	anchor, _, _, x, y = self.DailyTagTexture:GetPoint(2);
-	self.DailyTagTexture:SetPoint(anchor, x - 1, y + 1);
 end
 
 function QuestMapLog_ShowStoryTooltip(self)

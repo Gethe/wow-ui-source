@@ -660,7 +660,7 @@
 							<Anchor point="TOP" x="0" y="-70"/>
 						</Anchors>
 					</Button>
-					<Button parentKey="FindGroupButton" inherits="LFGListMagicButtonTemplate" text="FIND_A_GROUP">
+					<Button parentKey="FindGroupButton" inherits="LFGListMagicButtonTemplate" text="LFG_LIST_FIND_A_GROUP">
 						<Size x="135" y="22"/>
 						<Anchors>
 							<Anchor point="BOTTOMRIGHT" x="-5" y="4"/>

@@ -880,7 +880,7 @@ function CharacterUpgradeSpecSelectBlock:Initialize(results)
 	self.selected = nil;
 
 	local classID = classIds[select(4,GetCharacterInfo(results.charid))];
-	local sex = UnitSex("player");
+	local sex = select(17, GetCharacterInfo(results.charid));
 	local numSpecs = GetNumSpecializationsForClassID(classID);
 
 	for i = 1, 4 do

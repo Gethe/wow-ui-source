@@ -39,7 +39,7 @@ LFG_RETURN_VALUES = {
 	description = 14,
 	isHoliday = 15,
 	bonusRepAmount = 16,
-	forceHide = 17,
+	minPlayers = 17,
 }
 
 LFG_INSTANCE_INVALID_RAID_LOCKED = 6;
@@ -1803,16 +1803,11 @@ function LFGDungeonListButton_SetDungeon(button, dungeonID, enabled, checkedList
 end
 
 function LFGList_DefaultFilterFunction(dungeonID, maxLevelDiff)
-	local name, typeID, subtypeID, minLevel, maxLevel, recLevel, minRecLevel, maxRecLevel, expansionLevel, groupID, textureFilename, difficulty, maxPlayers, description, isHoliday, repAmount, forceHide = GetLFGDungeonInfo(dungeonID);
+	local name, typeID, subtypeID, minLevel, maxLevel, recLevel, minRecLevel, maxRecLevel, expansionLevel, groupID, textureFilename, difficulty, maxPlayers, description, isHoliday, repAmount = GetLFGDungeonInfo(dungeonID);
 	local level = UnitLevel("player");
 
 	--Check whether we're initialized yet
 	if ( not LFGLockList ) then
-		return false;
-	end
-
-	--Sometimes we want to force hide even if the server thinks we can join (e.g. there are certain dungeons where you can only join from the NPCs, so we don't want to show them in the UI)
-	if ( forceHide ) then
 		return false;
 	end
 
@@ -1891,7 +1886,7 @@ function LFG_HasRequiredGroupSize(category, joinType, dungeonList, hiddenByColla
 	if ( joinType == "specific" ) then	--Random queue
 		for _, queueID in pairs(dungeonList) do
 			if ( not LFGIsIDHeader(queueID) and LFGEnabledList[queueID] and not LFGLockList[queueID] ) then
-				numRequiredPlayers = select(18, GetLFGDungeonInfo(queueID));
+				numRequiredPlayers = select(LFG_RETURN_VALUES.minPlayers, GetLFGDungeonInfo(queueID));
 				if ( numRequiredPlayers and numRequiredPlayers ~= numGroupMembers ) then
 					return false, numRequiredPlayers;
 				end
@@ -1899,14 +1894,14 @@ function LFG_HasRequiredGroupSize(category, joinType, dungeonList, hiddenByColla
 		end
 		for _, queueID in pairs(hiddenByCollapseList) do
 			if ( not LFGIsIDHeader(queueID) and LFGEnabledList[queueID] and not LFGLockList[queueID] ) then
-				numRequiredPlayers = select(18, GetLFGDungeonInfo(queueID));
+				numRequiredPlayers = select(LFG_RETURN_VALUES.minPlayers, GetLFGDungeonInfo(queueID));
 				if ( numRequiredPlayers and numRequiredPlayers ~= numGroupMembers ) then
 					return false, numRequiredPlayers;
 				end
 			end
 		end
 	else
-		numRequiredPlayers = select(18, GetLFGDungeonInfo(joinType));
+		numRequiredPlayers = select(LFG_RETURN_VALUES.minPlayers, GetLFGDungeonInfo(joinType));
 		if ( numRequiredPlayers and numRequiredPlayers ~= numGroupMembers ) then
 			return false, numRequiredPlayers;
 		end	

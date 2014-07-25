@@ -28,7 +28,6 @@
 				LFRBrowseFrame_OnUpdateAlways(elapsed);
 				BNToastFrame_OnUpdate();
 				HelpOpenWebTicketButton_OnUpdate(HelpOpenWebTicketButton, elapsed);
-				ControlKeyListener_OnUpdate(_, elapsed);
 			</OnUpdate>
 			<!-- used to properly hide and show certain frames when the UI is toggled on and off -->
 			<OnShow>

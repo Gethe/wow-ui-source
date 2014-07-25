@@ -203,7 +203,7 @@ end
 
 function ControlSetValue(self, value)
 	if (value ~= nil) then
-		if (not self.raid or GetCVarBool("raidSettingsEnabled")) then
+		if (not self.raid or GetCVarBool("RAIDsettingsEnabled")) then
 			self:SetValue(value);
 		end
 		self.value = nil;
@@ -263,7 +263,7 @@ local function FinishChanges(self)
 		Graphics_Refresh(self)
 	end
 
-	if ( GetCVarBool("raidSettingsEnabled") ) then
+	if ( GetCVarBool("RAIDsettingsEnabled") ) then
 		RaidGraphics_Quality:commitslider();
 	end
 	Graphics_Quality:commitslider();
@@ -497,7 +497,7 @@ function Display_RaidSettingsEnabled_CheckButton_OnClick(self)
 end
 
 function Dispaly_RaidSettingsEnabled_CheckButton_OnShow(self)
-	self:SetChecked( GetCVarBool("raidSettingsEnabled") );
+	self:SetChecked( GetCVarBool("RAIDsettingsEnabled") );
 	if (not InGlue()) then
 		local _, instanceType = IsInInstance()
 		if ( instanceType == "raid" or instanceType == "pvp" ) then
@@ -513,7 +513,7 @@ function GraphicsOptions_SelectBase()
 	Graphics_:Show();
 	GraphicsButton:SetFrameLevel( Graphics_:GetFrameLevel() + 1 );
 
-	if ( GetCVarBool("raidSettingsEnabled") or Display_RaidSettingsEnabledCheckBox:GetChecked() ) then
+	if ( GetCVarBool("RAIDsettingsEnabled") or Display_RaidSettingsEnabledCheckBox:GetChecked() ) then
 		PanelTemplates_DeselectTab(RaidButton);
 	else
 		PanelTemplates_SetDisabledTabState(RaidButton);
@@ -577,7 +577,7 @@ function Graphics_DropDownRefreshValue(self)
 			local displayWarning;
 			local qualityValue;
 			if (self.raid) then
-				qualityValue = BlizzardOptionsPanel_GetCVarSafe("raidGraphicsQuality");
+				qualityValue = BlizzardOptionsPanel_GetCVarSafe("RAIDgraphicsQuality");
 			else
 				qualityValue = BlizzardOptionsPanel_GetCVarSafe("graphicsQuality");
 			end

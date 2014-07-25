@@ -280,6 +280,8 @@ function PetActionButtonUp (id)
 end
 
 function PetActionButton_OnLoad (self)
+	self.HotKey:ClearAllPoints();
+	self.HotKey:SetPoint("TOPLEFT", -2, -3);
 	self:RegisterForDrag("LeftButton", "RightButton");
 	self:RegisterForClicks("AnyUp");
 	self:RegisterEvent("UPDATE_BINDINGS");
@@ -336,7 +338,7 @@ function PetActionButton_OnEnter (self)
 	local uber = GetCVar("UberTooltips");
 	if ( uber == "0" ) then
 		GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
-		local bindingText = GetBindingText(GetBindingKey("BONUSACTIONBUTTON"..self:GetID()), "KEY_");
+		local bindingText = GetBindingText(GetBindingKey("BONUSACTIONBUTTON"..self:GetID()));
 		if (bindingText and bindingText ~= "") then
 			GameTooltip:SetText(self.tooltipName..NORMAL_FONT_COLOR_CODE.." ("..bindingText..")"..FONT_COLOR_CODE_CLOSE, 1.0, 1.0, 1.0);
 		else
@@ -400,14 +402,9 @@ function PetActionButton_IsFlashing (self)
 end
 
 function PetActionButton_SetHotkeys (self)
-	local binding = GetBindingText(GetBindingKey("BONUSACTIONBUTTON"..self:GetID()), 1);
-	local bindingSuffix = gsub(binding, ".*%-", "");
+	local binding = GetBindingText(GetBindingKey("BONUSACTIONBUTTON"..self:GetID()), true);
 	local hotkey = _G[self:GetName().."HotKey"];
-	if ( bindingSuffix == self:GetID() ) then
-		hotkey:SetText(self:GetID());
-	else
-		hotkey:SetText("");
-	end
+	hotkey:SetText(binding);
 end
 
 function LockPetActionBar()

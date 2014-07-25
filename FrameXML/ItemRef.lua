@@ -290,9 +290,3 @@ function GetBattlePetAbilityHyperlink(abilityID, maxHealth, power, speed)
 		return "";
 	end
 end
-
-function ItemRefTooltip_OnControlPressed(self)
-	if ( self:IsMouseOver() and IsShiftKeyDown() ) then
-		GameTooltip_OnControlPressed(self);
-	end
-end

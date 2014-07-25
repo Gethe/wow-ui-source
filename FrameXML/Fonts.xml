@@ -189,17 +189,17 @@
 		</Shadow>		
 		<Color r="1" g=".82" b="0"/>
 	</Font>
-	<Font name="SplashBigFont" font="Fonts\FRIZQT__.ttf" virtual="true">
-		<FontHeight>
-			<AbsValue val="27"/>
-		</FontHeight>
-		<Shadow>
-			<Offset>
-				<AbsDimension x="1" y="-1"/>
-			</Offset>
-			<Color r="0" g="0" b="0"/>
-		</Shadow>		
-		<Color r="1" g=".82" b="0"/>
+	<Font name="Game18Font" font="Fonts\FRIZQT__.ttf" virtual="true">
+		<FontHeight val="18"/>
+	</Font>
+	<Font name="Game24Font" font="Fonts\FRIZQT__.ttf" virtual="true">
+		<FontHeight val="24"/>
+	</Font>
+	<Font name="Game27Font" font="Fonts\FRIZQT__.ttf" virtual="true">
+		<FontHeight val="27"/>
+	</Font>
+	<Font name="Game32Font" font="Fonts\FRIZQT__.ttf" virtual="true">
+		<FontHeight val="32"/>
 	</Font>	
 	<Font name="QuestFont_Enormous" font="Fonts\MORPHEUS.ttf" virtual="true">
 		<FontHeight>

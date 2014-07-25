@@ -75,7 +75,7 @@ SPLASH_SCREENS = {
 					feature1Desc = SPLASH_BOOST_FEATURE1_DESC,
 					feature2Title = SPLASH_BOOST_FEATURE2_TITLE,
 					feature2Desc = SPLASH_BOOST_FEATURE2_DESC,
-					rightTitle = SPLASH_BOOST_RIGHT_TITLE_ALLIANCE,
+					rightTitle = SPLASH_BOOST_RIGHT_TITLE,
 					rightDesc = SPLASH_BOOST_RIGHT_DESC,
 					cVar="splashScreenBoost",
 					features = {
@@ -178,6 +178,26 @@ function SplashFrame_Display(tag, showStartButton)
 	frame.Feature2.Title:SetText(screenInfo.feature2Title);
 	frame.Feature2.Description:SetText(screenInfo.feature2Desc);
 	frame.RightTitle:SetText(screenInfo.rightTitle);
+	frame.RightTitle:SetSize( 400, 32 );	
+	frame.RightTitle:SetWordWrap( false );
+	local fontSizeFound = false;
+	local fonts = {
+		"Game32Font",
+		"Game27Font",
+		"Game24Font",
+		"Game18Font",
+	}
+	for _, font in pairs(fonts) do
+		frame.RightTitle:SetFontObject(font);
+		if( frame.RightTitle:GetStringWidth() < 300 ) then
+			fontSizeFound = true
+			break;
+		end
+	end
+	if( not fontSizeFound ) then
+		frame.RightTitle:SetSize( 300, 40 );
+		frame.RightTitle:SetWordWrap( true );
+	end	
 	frame.RightDescription:SetText(screenInfo.rightDesc);
 	if ( showStartButton ) then
 		frame.StartButton:Show();

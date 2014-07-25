@@ -218,21 +218,21 @@ function KeyBindingFrame_Update()
 				keyBindingButton1.commandName = commandName;
 				keyBindingButton2.commandName = commandName;
 				if ( binding1 ) then
-					keyBindingButton1:SetText(GetBindingText(binding1, "KEY_"));
+					keyBindingButton1:SetText(GetBindingText(binding1));
 					keyBindingButton1:SetAlpha(1);
 				else
 					keyBindingButton1:SetText(GRAY_FONT_COLOR_CODE..NOT_BOUND..FONT_COLOR_CODE_CLOSE);
 					keyBindingButton1:SetAlpha(0.8);
 				end
 				if ( binding2 ) then
-					keyBindingButton2:SetText(GetBindingText(binding2, "KEY_"));
+					keyBindingButton2:SetText(GetBindingText(binding2));
 					keyBindingButton2:SetAlpha(1);
 				else
 					keyBindingButton2:SetText(GRAY_FONT_COLOR_CODE..NOT_BOUND..FONT_COLOR_CODE_CLOSE);
 					keyBindingButton2:SetAlpha(0.8);
 				end
 				-- Set description
-				keyBindingDescription:SetText(GetBindingText(commandName, "BINDING_NAME_"));
+				keyBindingDescription:SetText(_G["BINDING_NAME_"..commandName]);
 				
 				keyBindingRow:Show();
 			end
@@ -261,7 +261,7 @@ function KeyBindingFrame_UnbindKey(keyPressed)
 		local key1, key2 = GetBindingKey(oldAction, KeyBindingFrame.mode);
 		if ( (not key1 or key1 == keyPressed) and (not key2 or key2 == keyPressed) ) then
 			--Error message
-			KeyBindingFrame.outputText:SetFormattedText(KEY_UNBOUND_ERROR, GetBindingText(oldAction, "BINDING_NAME_"));
+			KeyBindingFrame.outputText:SetFormattedText(KEY_UNBOUND_ERROR, _G["BINDING_NAME_"..oldAction]);
 		end
 	end
 	SetBinding(keyPressed, nil, KeyBindingFrame.mode);
@@ -481,7 +481,7 @@ function KeyBindingButton_OnClick(self, button)
 				KeyBindingFrame.buttonPressed = self;
 				KeyBindingFrame_SetSelected(self.commandName, self);
 				KeyBindingFrame.keyID = self:GetID();
-				KeyBindingFrame.outputText:SetFormattedText(BIND_KEY_TO_COMMAND, GetBindingText(self.commandName, "BINDING_NAME_"));
+				KeyBindingFrame.outputText:SetFormattedText(BIND_KEY_TO_COMMAND, _G["BINDING_NAME_"..self.commandName]);
 			end
 			KeyBindingFrame_Update();
 			return;
@@ -494,7 +494,7 @@ function KeyBindingButton_OnClick(self, button)
 		KeyBindingFrame.buttonPressed = self;
 		KeyBindingFrame_SetSelected(self.commandName, self);
 		KeyBindingFrame.keyID = self:GetID();
-		KeyBindingFrame.outputText:SetFormattedText(BIND_KEY_TO_COMMAND, GetBindingText(self.commandName, "BINDING_NAME_"));
+		KeyBindingFrame.outputText:SetFormattedText(BIND_KEY_TO_COMMAND, _G["BINDING_NAME_"..self.commandName]);
 		KeyBindingFrame_Update();
 	end
 	KeyBindingFrame_UpdateUnbindKey();

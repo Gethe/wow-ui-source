@@ -29,6 +29,82 @@ StaticPopupDialogs["DISMISS_UNIQUE_FOLLOWER"] = {
 	hideOnEscape = 1
 };
 
+local tutorials = {
+	[1] = { text1 = GARRISON_MISSION_TUTORIAL1, xOffset = 240, yOffset = -150, parent = "MissionList" },
+	[2] = { text1 = GARRISON_MISSION_TUTORIAL2, xOffset = 752, yOffset = -150, parent = "MissionList" },
+	[3] = { text1 = GARRISON_MISSION_TUTORIAL3, specialAnchor = "threat", xOffset = 0, yOffset = -16, parent = "MissionPage" },
+	[4] = { text1 = GARRISON_MISSION_TUTORIAL4, xOffset = 194, yOffset = -104, parent = "MissionPage" },
+	[5] = { text1 = GARRISON_MISSION_TUTORIAL5, specialAnchor = "follower", xOffset = 0, yOffset = -20, parent = "MissionPage" },
+	[6] = { text1 = GARRISON_MISSION_TUTORIAL6, specialAnchor = "threat", xOffset = 0, yOffset = -16, parent = "MissionPage" },
+	[7] = { text1 = GARRISON_MISSION_TUTORIAL7, xOffset = 368, yOffset = -304, downArrow = true, parent = "MissionPage" },
+	[8] = { text1 = GARRISON_MISSION_TUTORIAL8, specialAnchor = "buff", xOffset = 0, yOffset = -22, parent = "MissionPage" },
+	[9] = { text1 = GARRISON_MISSION_TUTORIAL9, xOffset = 536, yOffset = -474, downArrow = true, parent = "MissionPage" },	
+}
+
+function GarrisonMissionFrame_CheckTutorials(advance)
+	local lastTutorial = tonumber(GetCVar("lastGarrisonMissionTutorial"));
+	if ( lastTutorial ) then
+		if ( advance ) then
+			lastTutorial = lastTutorial + 1;
+			SetCVar("lastGarrisonMissionTutorial", lastTutorial);
+		end
+		local tutorialFrame = GarrisonMissionTutorialFrame;
+		if ( lastTutorial >= #tutorials ) then
+			tutorialFrame:Hide();
+		else
+			local tutorial = tutorials[lastTutorial + 1];
+			-- parent frame
+			tutorialFrame:SetParent(GarrisonMissionFrame.MissionTab[tutorial.parent]);
+			tutorialFrame:SetFrameStrata("DIALOG");
+			tutorialFrame:SetPoint("TOPLEFT", GarrisonMissionFrame, 0, -21);
+			tutorialFrame:SetPoint("BOTTOMRIGHT", GarrisonMissionFrame);
+
+			local height = 58;	-- button height + top and bottom padding + spacing between text and button
+			local glowBox = tutorialFrame.GlowBox;
+			glowBox.BigText:SetText(tutorial.text1);
+			height = height + glowBox.BigText:GetHeight();
+			if ( tutorial.text2 ) then
+				glowBox.SmallText:SetText(tutorial.text2);
+				height = height + 12 + glowBox.SmallText:GetHeight();
+				glowBox.SmallText:Show();
+			else
+				glowBox.SmallText:Hide();
+			end
+			glowBox:SetHeight(height);
+			glowBox:ClearAllPoints();
+			if ( tutorial.specialAnchor == "threat" ) then
+				local enemy;
+				if ( GarrisonMissionFrame.MissionTab.MissionPage.FewEnemies:IsShown() ) then
+					enemy = GarrisonMissionFrame.MissionTab.MissionPage.FewEnemies.Enemy1;
+				else
+					enemy = GarrisonMissionFrame.MissionTab.MissionPage.ManyEnemies.Enemy1;
+				end
+				glowBox:SetPoint("TOP", enemy.Mechanics[1], "BOTTOM", tutorial.xOffset, tutorial.yOffset);
+			elseif ( tutorial.specialAnchor == "follower" ) then
+				local followerFrame = GarrisonMissionFrame.MissionTab.MissionPage.partyFrame.Follower1;
+				glowBox:SetPoint("TOP", followerFrame.PortraitFrame, "BOTTOM", tutorial.xOffset, tutorial.yOffset);
+			elseif ( tutorial.specialAnchor == "buff" ) then
+				local buffsFrame = GarrisonMissionFrame.MissionTab.MissionPage.partyFrame.BuffsFrame;
+				glowBox:SetPoint("TOP", buffsFrame.Buffs[1], "BOTTOM", tutorial.xOffset, tutorial.yOffset);
+			else
+				glowBox:SetPoint("TOPLEFT", tutorial.xOffset, tutorial.yOffset);
+			end
+			if ( tutorial.downArrow ) then
+				glowBox.ArrowUp:Hide();
+				glowBox.ArrowGlowUp:Hide();
+				glowBox.ArrowDown:Show();
+				glowBox.ArrowGlowDown:Show();
+			else
+				glowBox.ArrowUp:Show();
+				glowBox.ArrowGlowUp:Show();
+				glowBox.ArrowDown:Hide();
+				glowBox.ArrowGlowDown:Hide();
+			end
+			tutorialFrame:Show();
+		end
+	end
+end
+
 function GarrisonMissionFrame_ToggleFrame()
 	if (not GarrisonMissionFrame:IsShown()) then
 		ShowUIPanel(GarrisonMissionFrame);
@@ -62,6 +138,25 @@ function GarrisonMissionFrame_OnLoad(self)
 	if ( factionGroup == "Horde" ) then
 		GarrisonMissionFrame.MissionTab.MissionPage.RewardsFrame.Chest:SetAtlas("GarrMission-HordeChest");
 		GarrisonMissionFrame.MissionComplete.BonusRewards.ChestModel:SetDisplayInfo(54913);
+		local dialogBorderFrame = GarrisonMissionFrame.MissionTab.MissionList.CompleteDialog.BorderFrame;
+		dialogBorderFrame.Model:SetDisplayInfo(59175);
+		dialogBorderFrame.Model:SetPosition(0.2, 1.15, -0.7);
+		dialogBorderFrame.Stage.LocBack:SetAtlas("_GarrMissionLocation-FrostfireRidge-Back", true);
+		dialogBorderFrame.Stage.LocMid:SetAtlas ("_GarrMissionLocation-FrostfireRidge-Mid", true);
+		dialogBorderFrame.Stage.LocFore:SetAtlas("_GarrMissionLocation-FrostfireRidge-Fore", true);
+		dialogBorderFrame.Stage.LocBack:SetTexCoord(0, 0.485, 0, 1);
+		dialogBorderFrame.Stage.LocMid:SetTexCoord(0, 0.485, 0, 1);
+		dialogBorderFrame.Stage.LocFore:SetTexCoord(0, 0.485, 0, 1);
+	else
+		local dialogBorderFrame = GarrisonMissionFrame.MissionTab.MissionList.CompleteDialog.BorderFrame;
+		dialogBorderFrame.Model:SetDisplayInfo(58063);
+		dialogBorderFrame.Model:SetPosition(1.4, 0.5, -0.6);
+		dialogBorderFrame.Stage.LocBack:SetAtlas("_GarrMissionLocation-ShadowmoonValley-Back", true);
+		dialogBorderFrame.Stage.LocMid:SetAtlas ("_GarrMissionLocation-ShadowmoonValley-Mid", true);
+		dialogBorderFrame.Stage.LocFore:SetAtlas("_GarrMissionLocation-ShadowmoonValley-Fore", true);
+		dialogBorderFrame.Stage.LocBack:SetTexCoord(0.2, 0.685, 0, 1);
+		dialogBorderFrame.Stage.LocMid:SetTexCoord(0.2, 0.685, 0, 1);
+		dialogBorderFrame.Stage.LocFore:SetTexCoord(0.2, 0.685, 0, 1);
 	end
 
 	self:RegisterEvent("GARRISON_MISSION_LIST_UPDATE");
@@ -71,6 +166,20 @@ function GarrisonMissionFrame_OnLoad(self)
 	self:RegisterEvent("GARRISON_FOLLOWER_XP_CHANGED");
 	self:RegisterEvent("GARRISON_MISSION_STARTED");
 	self:RegisterEvent("GARRISON_MISSION_FINISHED");
+	
+	self.followerXPTable = C_Garrison.GetFollowerXPTable();
+	local maxLevel = 0;
+	for level in pairs(self.followerXPTable) do
+		maxLevel = max(maxLevel, level);
+	end
+	self.followerMaxLevel = maxLevel;
+
+	self.followerQualityTable = C_Garrison.GetFollowerQualityTable();
+	local maxQuality = 0;
+	for quality, xp in pairs(self.followerQualityTable) do
+		maxQuality = max(maxQuality, quality);
+	end
+	self.followerMaxQuality = maxQuality;
 end
 
 function GarrisonMissionFrame_OnEvent(self, event, ...)
@@ -85,7 +194,6 @@ function GarrisonMissionFrame_OnEvent(self, event, ...)
 		GarrisonFollowerList_DirtyList();
 		GarrisonFollowerList_UpdateFollowers();
 		GarrisonMissionPageFollowerFrame_UpdateParty();
-		GarrisonMissionPageStartMissionButton_CheckEnabled();
 	elseif (event == "GARRISON_FOLLOWER_REMOVED") then
 		if (GarrisonMissionFrame.FollowerTab.followerID and not C_Garrison.GetFollowerInfo(GarrisonMissionFrame.FollowerTab.followerID)) then
 			-- viewed follower got removed, pick someone else
@@ -152,6 +260,17 @@ function GarrisonMissionFrame_CheckCompleteMissions(onShow)
 	end
 end
 
+function GarrisonMissionFrame_GetFollowerNextLevelXP(level, quality)
+	local self = GarrisonMissionFrame;
+	if ( level < self.followerMaxLevel ) then
+		return self.followerXPTable[level];
+	elseif ( quality < self.followerMaxQuality ) then
+		return self.followerQualityTable[quality];
+	else
+		return nil;
+	end	
+end
+
 function GarrisonMissionFrameTab_OnClick(self)
 	PlaySound("igCharacterInfoTab");
 	GarrisonMissionFrame_SelectTab(self:GetID());
@@ -163,16 +282,23 @@ function GarrisonMissionFrame_SelectTab(id)
 		if ( GarrisonMissionFrame.MissionComplete.currentIndex ) then
 			GarrisonMissionFrame.MissionComplete:Show();
 			GarrisonMissionFrame.MissionCompleteBackground:Show();
-			GarrisonMissionFrame.FollowerList:Hide();		
+			GarrisonMissionFrame.FollowerList:Hide();
 		end
 		GarrisonMissionFrame.MissionTab:Show();
 		GarrisonMissionFrame.FollowerTab:Hide();
+		if ( GarrisonMissionFrame.MissionTab.MissionPage:IsShown() ) then
+			GarrisonFollowerList_UpdateFollowers();
+		end
 	else
 		GarrisonMissionFrame.MissionComplete:Hide();
 		GarrisonMissionFrame.MissionCompleteBackground:Hide();
 		GarrisonMissionFrame.MissionTab:Hide();
 		GarrisonMissionFrame.FollowerTab:Show();
-		GarrisonMissionFrame.FollowerList:Show();
+		if ( GarrisonMissionFrame.FollowerList:IsShown() ) then
+			GarrisonFollowerList_UpdateFollowers();
+		else
+			GarrisonMissionFrame.FollowerList:Show();
+		end
 		-- if there's no follower displayed on the right, select the first one
 		if (not GarrisonMissionFrame.FollowerTab.followerID) then
 			local index = GarrisonMissionFrame.FollowerList.followersList[1];
@@ -194,11 +320,15 @@ function GarrisonMissionFrame_UpdateCurrency()
 	GarrisonMissionFrame.FollowerList.MaterialFrame.Materials:SetText(amount.." |T"..currencyTexture..":0:0:0:-1|t ");
 end
 
-function GarrisonMissionFrame_SetFollowerPortrait(portraitFrame, followerInfo)
+function GarrisonMissionFrame_SetFollowerPortrait(portraitFrame, followerInfo, showItemLevel)
 	local color = ITEM_QUALITY_COLORS[followerInfo.quality];
 	portraitFrame.PortraitRingQuality:SetVertexColor(color.r, color.g, color.b);
 	portraitFrame.LevelBorder:SetVertexColor(color.r, color.g, color.b);
-	portraitFrame.Level:SetText(followerInfo.level);
+	if ( showItemLevel and followerInfo.level == GarrisonMissionFrame.followerMaxLevel ) then
+		portraitFrame.Level:SetFormattedText(GARRISON_FOLLOWER_ITEM_LEVEL, followerInfo.iLevel);
+	else
+		portraitFrame.Level:SetText(followerInfo.level);
+	end
 	if ( followerInfo.displayID ) then
 		SetPortraitTexture(portraitFrame.Portrait, followerInfo.displayID);
 	end
@@ -226,7 +356,7 @@ function GarrisonFollowerList_UpdateFollowers()
 	self.followersList = { };
 
 	local hideCollected = GetCVarBitfield("garrisonFollowerFilters", LE_FOLLOWER_FILTER_COLLECTED);
-	local hideNotCollected = GetCVarBitfield("garrisonFollowerFilters", LE_FOLLOWER_FILTER_NOT_COLLECTED);
+	local hideNotCollected = GetCVarBitfield("garrisonFollowerFilters", LE_FOLLOWER_FILTER_NOT_COLLECTED) or GarrisonMissionFrame.MissionTab:IsVisible();
 	local searchString = self.SearchBox:GetText();
 	if ( searchString == SEARCH ) then
 		searchString = nil;
@@ -300,7 +430,15 @@ function GarrisonFollowerList_Update()
 				button.PortraitFrame.PortraitRingQuality:Show();
 				button.PortraitFrame.PortraitRingQuality:SetVertexColor(color.r, color.g, color.b);
 				button.PortraitFrame.Portrait:SetDesaturated(false);
-				button.PortraitFrame.PortraitRingCover:Hide();
+				-- if looking at a mission, indicate followers that cannot currently be dragged to it
+				if ( GarrisonMissionFrame.followerCounters and follower.status ) then
+					button.PortraitFrame.PortraitRingCover:Show();
+					button.PortraitFrame.PortraitRingCover:SetAlpha(0.5);
+					button.BusyFrame:Show();
+				else
+					button.PortraitFrame.PortraitRingCover:Hide();
+					button.BusyFrame:Hide();
+				end
 				button.DownArrow:SetAlpha(1);
 				-- adjust text position if we have additional text to show below name
 				if (follower.level == GARRISON_FOLLOWER_MAX_LEVEL or follower.status) then
@@ -331,8 +469,10 @@ function GarrisonFollowerList_Update()
 				button.PortraitFrame.PortraitRingQuality:Hide();
 				button.PortraitFrame.Portrait:SetDesaturated(true);
 				button.PortraitFrame.PortraitRingCover:Show();
+				button.PortraitFrame.PortraitRingCover:SetAlpha(0.6);
 				button.XPBar:Hide();
 				button.DownArrow:SetAlpha(0);
+				button.BusyFrame:Hide();
 			end
 			for i = 1, #button.Counters do
 				button.Counters[i].info = nil;
@@ -340,8 +480,9 @@ function GarrisonFollowerList_Update()
 			end
 			if (GarrisonMissionFrame.followerCounters) then
 			--if a mission is being viewed, show mechanics this follower can counter
+			--for followers you have, show counters if they are or could be on the mission
 				counters = GarrisonMissionFrame.followerCounters[follower.followerID];
-				if (counters) then
+				if (counters and (not follower.status or follower.status == GARRISON_FOLLOWER_IN_PARTY or follower.status == GARRISON_FOLLOWER_WORKING)) then
 					for j = 1, #counters do
 						if (not button.Counters[j]) then
 							button.Counters[j] = CreateFrame("Frame", nil, button, "GarrisonMissionAbilityCounterTemplate");
@@ -543,13 +684,15 @@ function GarrisonFollowerPlacer_OnUpdate(self)
 end
 
 function GarrisonFollowerPlacerFrame_OnClick(self, button)
-	local page = GarrisonMissionFrame.MissionTab.MissionPage;
-	if (page.SmallParty:IsShown() and page.SmallParty:IsMouseOver()) then
-		GarrisonSingleParty_ReceiveDrag(page.SmallParty);
-	elseif (page.MediumParty:IsShown() and page.MediumParty:IsMouseOver()) then
-		GarrisonManyParty_ReceiveDrag(page.MediumParty);
-	elseif (page.LargeParty:IsShown() and page.LargeParty:IsMouseOver()) then
-		GarrisonManyParty_ReceiveDrag(page.LargeParty);
+	if ( button == "LeftButton" ) then
+		local page = GarrisonMissionFrame.MissionTab.MissionPage;
+		if (page.SmallParty:IsShown() and page.SmallParty:IsMouseOver()) then
+			GarrisonSingleParty_ReceiveDrag(page.SmallParty);
+		elseif (page.MediumParty:IsShown() and page.MediumParty:IsMouseOver()) then
+			GarrisonManyParty_ReceiveDrag(page.MediumParty);
+		elseif (page.LargeParty:IsShown() and page.LargeParty:IsMouseOver()) then
+			GarrisonManyParty_ReceiveDrag(page.LargeParty);
+		end
 	end
 	GarrisonMissionFrame_ClearMouse();
 end
@@ -957,14 +1100,7 @@ end
 function GarrisonMissionList_OnShow(self)
 	GarrisonMissionList_UpdateMissions();
 	GarrisonMissionFrame.FollowerList:Hide();
-	-- check to show the help plate
-	if ( not GetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_GARRISON_MISSION_LIST) ) then
-		local helpPlate = GarrisonMissionList_HelpPlate;
-		if ( helpPlate and not HelpPlate_IsShowing(helpPlate) ) then
-			HelpPlate_Show( helpPlate, GarrisonBuildingFrame, GarrisonBuildingFrame.MainHelpButton );
-			SetCVarBitfield( "closedInfoFrames", LE_FRAME_TUTORIAL_GARRISON_MISSION_LIST, true );
-		end
-	end
+	GarrisonMissionFrame_CheckTutorials();
 end
 
 function GarrisonMissionList_OnHide(self)
@@ -1174,13 +1310,6 @@ function GarrisonMissionButton_OnClick(self, button)
 	GarrisonMissionPage_ShowMission(self.info);
 	GarrisonMissionFrame.followerCounters = C_Garrison.GetBuffedFollowersForMission(self.info.missionID)
 	GarrisonFollowerList_Update();
-	if ( not GetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_GARRISON_MISSION_PAGE) ) then
-		local helpPlate = GarrisonMissionPage_HelpPlate;
-		if ( helpPlate and not HelpPlate_IsShowing(helpPlate) ) then
-			HelpPlate_Show( helpPlate, GarrisonBuildingFrame, GarrisonBuildingFrame.MainHelpButton );
-			SetCVarBitfield( "closedInfoFrames", LE_FRAME_TUTORIAL_GARRISON_MISSION_PAGE, true );
-		end
-	end
 end
 
 function GarrisonMissionButton_OnEnter(self, button)
@@ -1227,7 +1356,9 @@ function GarrisonMissionButton_OnEnter(self, button)
 	GameTooltip:Show();
 end
 
-
+function GarrisonMissionRemoveFollowerButton_OnClick(self)
+	GarrisonMissionFollowerFrame_ClearFollower(self:GetParent(), true);
+end
 
 
 ---------------------------------------------------------------------------------
@@ -1253,7 +1384,7 @@ function GarrisonMissionPage_ShowMission(missionInfo)
 	local self = GarrisonMissionFrame.MissionTab.MissionPage;
 	self.missionInfo = missionInfo;
 	
-	local location, xp, environment, locPrefix, enemies = C_Garrison.GetMissionInfo(missionInfo.missionID);
+	local location, xp, environment, locPrefix, isExhausting, enemies = C_Garrison.GetMissionInfo(missionInfo.missionID);
 	self.Stage.Level:SetText(missionInfo.level);
 	self.Stage.Title:SetText(missionInfo.name);
 	self.Stage.MissionDescription:SetText(missionInfo.description);
@@ -1266,6 +1397,28 @@ function GarrisonMissionPage_ShowMission(missionInfo)
 	end
 	self.Stage.MissionXP:SetText(xp);
 	self.Stage.MissionType:SetAtlas(missionInfo.typeAtlas);
+
+	-- max level
+	if ( self.missionInfo.level == GarrisonMissionFrame.followerMaxLevel and self.missionInfo.iLevel > 0 ) then
+		self.showItemLevel = true;
+		self.Stage.Level:SetPoint("CENTER", self.Stage, "TOPLEFT", 30, -28);
+		self.Stage.ItemLevel:Show();
+		self.Stage.ItemLevel:SetFormattedText(NUMBER_IN_PARENTHESES, self.missionInfo.iLevel);
+		self.ItemLevelHitboxFrame:Show();
+	else
+		self.showItemLevel = false;
+		self.Stage.Level:SetPoint("CENTER", self.Stage, "TOPLEFT", 30, -36);
+		self.Stage.ItemLevel:Hide();
+		self.ItemLevelHitboxFrame:Hide();
+	end
+
+	if ( isExhausting ) then
+		self.Stage.ExhaustingLabel:Show();
+		self.Stage.MissionSummary:SetPoint("TOPLEFT", self.Stage.ExhaustingLabel, "BOTTOMLEFT", 0, -3);
+	else
+		self.Stage.ExhaustingLabel:Hide();
+		self.Stage.MissionSummary:SetPoint("TOPLEFT", self.Stage.IconBG, "BOTTOMLEFT", 15, -7);
+	end
 	
 	if (missionInfo.cost > 0) then
 		self.CostFrame:Show();
@@ -1276,7 +1429,6 @@ function GarrisonMissionPage_ShowMission(missionInfo)
 		self.StartMissionButton:ClearAllPoints();
 		self.StartMissionButton:SetPoint("CENTER", self.ButtonFrame, "CENTER", 0, 1);
 	end
-	GarrisonMissionPageStartMissionButton_CheckEnabled();
 		
 	GarrisonMissionPage_SetPartySize(missionInfo.numFollowers);
 	GarrisonMissionPage_SetEnemies(enemies);
@@ -1311,6 +1463,7 @@ function GarrisonMissionPage_ShowMission(missionInfo)
 		GarrisonMissionPageRewardsFrame_StopUpdate(self.RewardsFrame);
 	end
 	GarrisonMissionPage_UpdateMission();
+	GarrisonMissionFrame_CheckTutorials();
 end
 
 function GarrisonMissionPage_UpdateMission()
@@ -1571,8 +1724,9 @@ function GarrisonMissionPage_SetEnemies(enemies)
 		if (enemy.displayID) then
 			SetPortraitTexture(Frame.PortraitFrame.Portrait, enemy.displayID);
 		end
-		local numMechs = 1;
+		local numMechs = 0;
 		for id, mechanic in pairs(enemy.mechanics) do
+			numMechs = numMechs + 1;	
 			if (not Frame.Mechanics[numMechs]) then
 				Frame.Mechanics[numMechs] = CreateFrame("Frame", nil, Frame, "GarrisonMissionEnemyMechanicTemplate");
 				Frame.Mechanics[numMechs]:SetPoint("LEFT", Frame.Mechanics[numMechs-1], "RIGHT", 0, 0);
@@ -1583,7 +1737,6 @@ function GarrisonMissionPage_SetEnemies(enemies)
 			Mechanic.Icon:SetMask("Interface\\CharacterFrame\\TempPortraitAlphaMask");
 			Mechanic.mechanicID = id;
 			Mechanic:Show();
-			numMechs = numMechs + 1;
 		end
 		for j=(numMechs + 1), #Frame.Mechanics do
 			Frame.Mechanics[j]:Hide();
@@ -1601,6 +1754,9 @@ function GarrisonMissionPageRewardsFrame_OnUpdate(self, elapsed)
 	self.Chance:SetFormattedText(PERCENTAGE_STRING, newChance);
 	self.currentChance = newChance
 	if ( newChance == self.endingChance ) then
+		if ( newChance == 100 ) then
+			PlaySoundKitID(43507);	-- 100% chance reached
+		end
 		GarrisonMissionPageRewardsFrame_StopUpdate(self);
 	end
 end
@@ -1624,7 +1780,21 @@ function GarrisonMissionPageFollowerFrame_SetFollower(frame, info)
 		frame.Class:SetAtlas(info.classAtlas);
 	end
 	frame.PortraitFrame.Empty:Hide();
-	GarrisonMissionFrame_SetFollowerPortrait(frame.PortraitFrame, info);
+	frame.RemoveFollowerButton:Show();
+
+	local missionPage = GarrisonMissionFrame.MissionTab.MissionPage;
+	local showItemLevel;
+	if ( missionPage.showItemLevel and info.level == GarrisonMissionFrame.followerMaxLevel ) then
+		frame.PortraitFrame.LevelBorder:SetAtlas("GarrMission_PortraitRing_iLvlBorder");
+		frame.PortraitFrame.LevelBorder:SetWidth(70);
+		showItemLevel = true;
+	else
+		frame.PortraitFrame.LevelBorder:SetAtlas("GarrMission_PortraitRing_LevelBorder");
+		frame.PortraitFrame.LevelBorder:SetWidth(58);
+		showItemLevel = false;
+	end
+	GarrisonMissionFrame_SetFollowerPortrait(frame.PortraitFrame, info, showItemLevel);
+
 	counters = GarrisonMissionFrame.followerCounters and GarrisonMissionFrame.followerCounters[frame.info.followerID] or nil;
 	if (counters) then
 		for i = 1, #counters do
@@ -1645,13 +1815,31 @@ function GarrisonMissionPageFollowerFrame_SetFollower(frame, info)
 		end
 		frame.Counters[1]:SetPoint("TOP", (#counters - 1) * -14, 0);
 	end
-	
-	local missionPage = GarrisonMissionFrame.MissionTab.MissionPage;
+
 	C_Garrison.AddFollowerToMission(missionPage.missionInfo.missionID, info.followerID);
-	local missionLevel = missionPage.missionInfo.level;
-	if ( missionLevel >= info.level + 3 ) then
+	local powerLevel;
+	if ( showItemLevel and info.level == GarrisonMissionFrame.followerMaxLevel ) then
+		local missionItemLevel = missionPage.missionInfo.iLevel;
+		if (missionItemLevel > info.iLevel + 15 ) then
+			powerLevel = 0;
+		elseif ( missionItemLevel > info.iLevel ) then
+			powerLevel = 1;
+		else
+			powerLevel = 2;
+		end
+	else
+		local missionLevel = missionPage.missionInfo.level;	
+		if ( missionLevel >= info.level + 3 ) then
+			powerLevel = 0;
+		elseif ( missionLevel > info.level ) then
+			powerLevel = 1;
+		else
+			powerLevel = 2;
+		end
+	end
+	if ( powerLevel == 0 ) then
 		frame.PortraitFrame.Level:SetTextColor(1, 0.1, 0.1);
-	elseif ( missionLevel > info.level ) then
+	elseif ( powerLevel == 1 ) then
 		frame.PortraitFrame.Level:SetTextColor(1, 0.5, 0.25);
 	else
 		frame.PortraitFrame.Level:SetTextColor(1, 1, 1);
@@ -1676,13 +1864,14 @@ end
 
 function GarrisonMissionPageFollowerFrame_UpdateParty()
 	local partyFrame = GarrisonMissionPageFollowerFrame_GetPartyFrame();
-	
+	local showItemLevel = GarrisonMissionFrame.MissionTab.MissionPage.showItemLevel;
+
 	-- Update follower level and portrait color in case they have changed
 	for i=1, partyFrame.partySize do
 		local Follower = partyFrame["Follower"..i];
 		if (Follower.info) then
 			local followerInfo = C_Garrison.GetFollowerInfo(Follower.info.followerID);
-			GarrisonMissionFrame_SetFollowerPortrait(Follower.PortraitFrame, followerInfo);
+			GarrisonMissionFrame_SetFollowerPortrait(Follower.PortraitFrame, followerInfo, showItemLevel);
 		end
 	end
 end
@@ -1695,10 +1884,13 @@ function GarrisonMissionFollowerFrame_ClearFollower(frame, updateValues)
 		frame.Class:Hide();
 	end
 	frame.PortraitFrame.Empty:Show();
+	frame.RemoveFollowerButton:Hide();	
+	frame.PortraitFrame.LevelBorder:SetAtlas("GarrMission_PortraitRing_LevelBorder");
+	frame.PortraitFrame.LevelBorder:SetWidth(58);
 	for i = 1, #frame.Counters do
 		frame.Counters[i]:Hide();
 	end
-	
+
 	local missionPage = GarrisonMissionFrame.MissionTab.MissionPage;
 	if (followerID) then
 		C_Garrison.RemoveFollowerFromMission(missionPage.missionInfo.missionID, followerID);
@@ -1811,6 +2003,7 @@ function GarrisonMissionPage_SetCounters()
 	end
 	local partyFrame = GarrisonMissionPageFollowerFrame_GetPartyFrame();
 	
+	local playSound = false;
 	for e=1, enemiesFrame.numEnemies do
 		local enemy = enemiesFrame["Enemy"..e];
 		for m=1, #enemy.Mechanics do
@@ -1819,11 +2012,15 @@ function GarrisonMissionPage_SetCounters()
 					enemy.Mechanics[m].Check:SetAlpha(1);
 					enemy.Mechanics[m].Check:Show();
 					enemy.Mechanics[m].Anim:Play();
+					playSound = true;
 				end
 			else
 				enemy.Mechanics[m].Check:Hide();
 			end
 		end
+	end
+	if ( playSound ) then
+		PlaySoundKitID(43505);		-- threat countered
 	end
 end
 
@@ -1844,7 +2041,7 @@ function GarrisonSingleParty_ReceiveDrag(self)
 	if (not GarrisonFollowerPlacer:IsShown()) then
 		return;
 	end
-	
+
 	local follower = GarrisonFollowerPlacer.info;
 	
 	self.EmptyShadow:Hide();
@@ -1867,24 +2064,14 @@ function GarrisonManyParty_ReceiveDrag(self)
 	end
 	
 	local follower = GarrisonFollowerPlacer.info;
-	
-	self.EmptyString:Hide();
-	GarrisonMissionFrame_ClearMouse();
-	
-	local followerFrame;
 	for i=1, self.partySize do
-		if (not self["Follower"..i].info) then
-			followerFrame = self["Follower"..i];
-			break;
-		elseif (self["Follower"..i].info.followerID == follower.followerID) then
-			return;
+		local followerFrame = self["Follower"..i];
+		if (followerFrame:IsMouseOver()) then
+			self.EmptyString:Hide();
+			GarrisonMissionFrame_ClearMouse();
+			GarrisonMissionPageFollowerFrame_SetFollower(followerFrame, follower);
 		end
 	end
-	if (not followerFrame) then
-		return;
-	end
-	
-	GarrisonMissionPageFollowerFrame_SetFollower(followerFrame, follower)
 end
 
 function GarrisonMissionPageFollowerFrame_OnDragStart(self)
@@ -1898,21 +2085,15 @@ function GarrisonMissionPageFollowerFrame_OnDragStart(self)
 	GarrisonFollowerPlacer:SetPoint("TOP", UIParent, "BOTTOMLEFT", cursorX / uiScale, cursorY / uiScale + 24);
 	GarrisonFollowerPlacer:Show();
 	GarrisonFollowerPlacer:SetScript("OnUpdate", GarrisonFollowerPlacer_OnUpdate);
-end
-
-function GarrisonMissionPageFollowerFrame_OnDragStop(self)
-	GarrisonMissionFrame_ClearMouse();
-	
-	if (self:IsMouseOver()) then
-		return;
-	end
-	
 	GarrisonMissionFollowerFrame_ClearFollower(self, true);
-	
-	local partyFrame = self:GetParent()
+	local partyFrame = self:GetParent();
 	if (GarrisonMissionPageParty_IsEmpty(partyFrame)) then
 		GarrisonMissionPageParty_Reset(partyFrame);
 	end
+end
+
+function GarrisonMissionPageFollowerFrame_OnDragStop(self)
+	GarrisonFollowerPlacerFrame:Show();
 end
 
 function GarrisonMissionPageFollowerFrame_OnEnter(self)
@@ -1967,10 +2148,6 @@ function GarrisonMissionPageStartMissionButton_OnEnter(self)
 	end
 end
 
-function GarrisonMissionPageStartMissionButton_CheckEnabled()
-	GarrisonMissionFrame.MissionTab.MissionPage.StartMissionButton:SetEnabled(not C_Garrison.IsAboveFollowerSoftCap());
-end
-
 
 ---------------------------------------------------------------------------------
 --- Tooltips                                                                  ---
@@ -1987,14 +2164,29 @@ function GarrisonMissionMechanic_OnEnter(self)
 	local height = tooltip.Icon:GetHeight() + 28; --height of icon plus padding around it and at the bottom
 	tooltip.Description:SetText(self.info.description);
 	height = height + tooltip.Description:GetHeight();
-	
+	tooltip:SetHeight(height);
+	tooltip:ClearAllPoints();
+	tooltip:SetPoint("TOPLEFT", self, "BOTTOMRIGHT", 5, 0);
+	tooltip:Show();
+end
+
+function GarrisonMissionMechanicFollowerCounter_OnEnter(self)
+if (not self.info) then
+		return;
+	end
+	local tooltip = GarrisonMissionMechanicFollowerCounterTooltip;
+	tooltip.Icon:SetTexture(self.info.icon);
+	tooltip.Icon:SetMask("Interface\\CharacterFrame\\TempPortraitAlphaMask");
+	tooltip.Name:SetText(self.info.name);
+	local height = tooltip.Title:GetHeight() + tooltip.Subtitle:GetHeight() + tooltip.Icon:GetHeight() + 28; --height of icon plus padding around it and at the bottom
+
 	if (self.info.showCounters) then
 		tooltip.CounterFrom:Show();
 		tooltip.CounterIcon:Show();
 		tooltip.CounterName:Show();
 		tooltip.CounterIcon:SetTexture(self.info.counterIcon);
 		tooltip.CounterName:SetText(self.info.counterName);
-		height = height + 25 + tooltip.CounterFrom:GetHeight() + tooltip.CounterIcon:GetHeight();
+		height = height + 21 + tooltip.CounterFrom:GetHeight() + tooltip.CounterIcon:GetHeight();
 	else
 		tooltip.CounterFrom:Hide();
 		tooltip.CounterIcon:Hide();
@@ -2014,7 +2206,6 @@ end
 function GarrisonMissionComplete_OnLoad(self)
 	self:RegisterEvent("GARRISON_FOLLOWER_XP_CHANGED");
 	self:RegisterEvent("GARRISON_MISSION_COMPLETED");
-	self.xpTable = C_Garrison.GetFollowerXPTable();
 	self.pendingXPAwards = { };
 	self:SetFrameLevel(GarrisonMissionFrame.MissionCompleteBackground:GetFrameLevel() + 2);
 end
@@ -2038,7 +2229,6 @@ function GarrisonMissionFrame_ShowCompleteMissions()
 	GarrisonMissionFrame.FollowerTab:Hide();
 	GarrisonMissionFrame.FollowerList:Hide();
 	HelpPlate_Hide();
-	GarrisonMissionFrame.MainHelpButton:Hide();
 
 	GarrisonMissionFrame.MissionComplete:Show();
 	GarrisonMissionFrame.MissionCompleteBackground:Show();
@@ -2051,7 +2241,6 @@ function GarrisonMissionFrame_HideCompleteMissions()
 	local self = GarrisonMissionFrame;
 	
 	self.MissionTab:Show();
-	self.MainHelpButton:Show();
 
 	self.MissionComplete:Hide();
 	self.MissionCompleteBackground:Hide();
@@ -2089,7 +2278,19 @@ function GarrisonMissionComplete_Initialize(missionList, index)
 	stage.MissionInfo.Level:SetText(mission.level);
 	stage.MissionInfo.Location:SetText(mission.location);
 
-	local location, xp, environment, locPrefix, enemies = C_Garrison.GetMissionInfo(mission.missionID);
+	-- max level
+	if ( mission.level == GarrisonMissionFrame.followerMaxLevel and mission.iLevel > 0 ) then
+		stage.MissionInfo.Level:SetPoint("CENTER", stage.MissionInfo, "TOPLEFT", 30, -28);
+		stage.MissionInfo.ItemLevel:Show();
+		stage.MissionInfo.ItemLevel:SetFormattedText(NUMBER_IN_PARENTHESES, mission.iLevel);
+		stage.ItemLevelHitboxFrame:Show();
+	else
+		stage.MissionInfo.Level:SetPoint("CENTER", stage.MissionInfo, "TOPLEFT", 30, -36);
+		stage.MissionInfo.ItemLevel:Hide();
+		stage.ItemLevelHitboxFrame:Hide();
+	end
+	
+	local location, xp, environment, locPrefix, isExhausting, enemies = C_Garrison.GetMissionInfo(mission.missionID);
 	if ( locPrefix ) then
 		stage.LocBack:SetAtlas("_"..locPrefix.."-Back", true);
 		stage.LocMid:SetAtlas ("_"..locPrefix.."-Mid", true);
@@ -2124,10 +2325,13 @@ function GarrisonMissionComplete_Initialize(missionList, index)
 		end
 	end
 	
+	local smallFollowerFrame;
 	if (#mission.followers >= GARRISON_MISSION_MANY_FOLLOWERS_THRESHOLD) then
 		stage.followersFrame = stage.ManyFollowers;
+		smallFollowerFrame = true;
 	else
 		stage.followersFrame = stage.FewFollowers;
+		smallFollowerFrame = false;
 	end
 	self.animInfo = {};
 	stage.followers = {};
@@ -2141,10 +2345,8 @@ function GarrisonMissionComplete_Initialize(missionList, index)
 		if ( follower.Class ) then
 			follower.Class:SetAtlas(classAtlas);
 		end
-		GarrisonMissionComplete_InitFollowerLevel(follower, level, currXP, maxXP);
-		local color = ITEM_QUALITY_COLORS[quality];
-	    follower.PortraitFrame.LevelBorder:SetVertexColor(color.r, color.g, color.b);
-		follower.PortraitFrame.PortraitRingQuality:SetVertexColor(color.r, color.g, color.b);
+		follower.isSmall = smallFollowerFrame;
+		GarrisonMissionComplete_SetFollowerLevel(follower, level, quality, currXP, maxXP);
 		stage.followers[i] = { displayID = displayID, height = height, scale = scale, followerID = mission.followers[i] };
 		if (encounters[i]) then --cannot have more animations than encounters
 			self.animInfo[i] = { 	displayID = displayID,
@@ -2220,11 +2422,32 @@ function GarrisonMissionComplete_Initialize(missionList, index)
 	end
 end
 
-function GarrisonMissionComplete_InitFollowerLevel(followerFrame, level, currXP, maxXP)
-	followerFrame.XP:SetMinMaxValues(0, maxXP);
-	followerFrame.XP:SetValue(currXP);
+function GarrisonMissionComplete_SetFollowerLevel(followerFrame, level, quality, currXP, maxXP)
+	local maxLevel = GarrisonMissionFrame.followerMaxLevel;
+	local maxQuality = GarrisonMissionFrame.followerMaxQuality;
+	level = min(level, maxLevel);
+	quality = min(quality, maxQuality);
+	if ( maxXP ) then
+		followerFrame.XP:SetMinMaxValues(0, maxXP);
+		followerFrame.XP:SetValue(currXP);
+		followerFrame.XP:Show();
+		if ( not followerFrame.isSmall ) then
+			followerFrame.Name:ClearAllPoints();
+			followerFrame.Name:SetPoint("TOPLEFT", 58, -25);
+		end
+	else
+		followerFrame.XP:Hide();
+		if ( not followerFrame.isSmall ) then
+			followerFrame.Name:ClearAllPoints();		
+			followerFrame.Name:SetPoint("LEFT", 58, 0);
+		end
+	end
 	followerFrame.XP.level = level;
+	followerFrame.XP.quality = quality;
 	followerFrame.PortraitFrame.Level:SetText(level);
+	local color = ITEM_QUALITY_COLORS[quality];
+    followerFrame.PortraitFrame.LevelBorder:SetVertexColor(color.r, color.g, color.b);
+	followerFrame.PortraitFrame.PortraitRingQuality:SetVertexColor(color.r, color.g, color.b);
 end
 
 function GarrisonMissionComplete_SetNumEncounters(numEncounters)
@@ -2304,6 +2527,7 @@ function GarrisonMissionComplete_OpenChest(self)
 		bonusRewards.ChestModel.OpenAnim:Play();
 		C_Timer.After(1.1, GarrisonMissionComplete_OnRewardTimer);
 		C_Garrison.MissionBonusRoll(GarrisonMissionFrame.MissionComplete.currentMission.missionID);
+		PlaySoundKitID(43504);		-- chest opened
 	end
 end
 
@@ -2449,8 +2673,10 @@ function GarrisonMissionComplete_AnimPortrait(self, entry)
 	else
 		if ( self.currentMission.failedEncounter == self.encounterIndex ) then
 			self.Stage.Encounters["Encounter"..self.encounterIndex].FailureAnim:Play();
+			PlaySoundKitID(43501);		-- encounter fail
 		else
 			self.Stage.Encounters["Encounter"..self.encounterIndex].SuccessAnim:Play();
+			PlaySoundKitID(43500);		-- encounter success
 		end
 	end
 end
@@ -2506,11 +2732,11 @@ function GarrisonMissionComplete_AnimRewards(self, entry)
 	if ( self.currentMission.succeeded ) then
 		self.BonusRewards.ChestModel.SuccessAnim:Play();
 		self.BonusRewards.ChestModel:SetAnimation(0, 0);
-		PlaySoundKitID(41361);
+		PlaySoundKitID(43502);		-- mission succeeded
 	else
 		self.BonusRewards.ChestModel.FailureAnim:Play();
 		self.NextMissionButton:Enable();
-		PlaySoundKitID(41362);
+		PlaySoundKitID(43503);		-- mission failed
 	end
 end
 
@@ -2638,7 +2864,7 @@ function GarrisonMissionComplete_AwardFollowerXP(followerFrame, xpAward)
 	GarrisonMissionComplete_AnimXPBar(xpBar);
 end
 
-function GarrisonMissionComplete_AnimFollowerXP(followerID, xpAward, oldXP, oldLevel)
+function GarrisonMissionComplete_AnimFollowerXP(followerID, xpAward, oldXP, oldLevel, oldQuality)
 	local self = GarrisonMissionFrame.MissionComplete;
 	local missionList = self.completeMissions;
 	local missionIndex = self.currentIndex;
@@ -2651,12 +2877,12 @@ function GarrisonMissionComplete_AnimFollowerXP(followerID, xpAward, oldXP, oldL
 			local animIndex = GarrisonMissionComplete_FindAnimIndexFor(GarrisonMissionComplete_AnimFollowersIn);
 			if ( self.animIndex > animIndex and (not followerFrame.activeAnims or followerFrame.activeAnims == 0) ) then
 				if ( xpAward > 0 ) then
-					GarrisonMissionComplete_InitFollowerLevel(followerFrame, oldLevel, oldXP, self.xpTable[oldLevel]);
+					GarrisonMissionComplete_SetFollowerLevel(followerFrame, oldLevel, oldQuality, oldXP, GarrisonMissionFrame_GetFollowerNextLevelXP(oldLevel, oldQuality));
 					GarrisonMissionComplete_AwardFollowerXP(followerFrame, xpAward);
 				else
 					-- lost xp, no anim
-					local _, _, level, _, currXP, maxXP = C_Garrison.GetFollowerMissionCompleteInfo(followerID);
-					GarrisonMissionComplete_InitFollowerLevel(followerFrame, level, currXP, maxXP);
+					local _, _, level, quality, currXP, maxXP = C_Garrison.GetFollowerMissionCompleteInfo(followerID);
+					GarrisonMissionComplete_SetFollowerLevel(followerFrame, level, quality, currXP, maxXP);
 				end
 			else
 				-- save for later
@@ -2665,6 +2891,7 @@ function GarrisonMissionComplete_AnimFollowerXP(followerID, xpAward, oldXP, oldL
 				t.xpAward = xpAward;
 				t.oldXP = oldXP;
 				t.oldLevel = oldLevel;
+				t.oldQuality = oldQuality;
 				tinsert(self.pendingXPAwards, t);
 			end
 			break;
@@ -2704,11 +2931,25 @@ function GarrisonMissionComplete_AnimXPBarOnFinish(xpBar)
 			levelUpFrame:SetAlpha(1);
 			levelUpFrame.Anim:Play();
 		end
-		local nextLevel = xpBar.level + 1;
-		local nextLevelXP = GarrisonMissionFrame.MissionComplete.xpTable[nextLevel];
+		
+		local maxLevel = GarrisonMissionFrame.followerMaxLevel;
+		local nextLevel, nextQuality;
+		if ( xpBar.level == maxLevel ) then
+			-- at max level progress the quality
+			nextLevel = xpBar.level;
+			nextQuality = xpBar.quality + 1;
+		else
+			nextLevel = xpBar.level + 1;
+			nextQuality = xpBar.quality;
+		end
+	
+		local nextLevelXP = GarrisonMissionFrame_GetFollowerNextLevelXP(nextLevel, nextQuality);
+		GarrisonMissionComplete_SetFollowerLevel(followerFrame, nextLevel, nextQuality, 0, nextLevelXP);
 		if ( nextLevelXP ) then
-			GarrisonMissionComplete_InitFollowerLevel(followerFrame, nextLevel, 0, nextLevelXP);
 			maxXP = nextLevelXP;
+		else
+			-- ensure we're done
+			xpBar.remainingXP = 0;
 		end
 		-- visual
 		local models = GarrisonMissionFrame.MissionComplete.Stage.Models;
@@ -2750,7 +2991,7 @@ function GarrisonMissionComplete_CheckAndShowFollowerXP(followerID)
 	local pendingXPAwards = GarrisonMissionFrame.MissionComplete.pendingXPAwards;
 	for k, v in pairs(pendingXPAwards) do
 		if ( v.followerID == followerID ) then
-			GarrisonMissionComplete_AnimFollowerXP(v.followerID, v.xpAward, v.oldXP, v.oldLevel);
+			GarrisonMissionComplete_AnimFollowerXP(v.followerID, v.xpAward, v.oldXP, v.oldLevel, v.oldQuality);
 			tremove(pendingXPAwards, k);
 			return;
 		end
@@ -2873,7 +3114,7 @@ function GarrisonMissionCompleteStage_OnLoad(self)
 	local _, midWidth = GetAtlasInfo("_GarrMissionLocation-TannanJungle-Mid");
 	local _, foreWidth = GetAtlasInfo("_GarrMissionLocation-TannanJungle-Fore");
 	local texWidth = self.LocBack:GetWidth();
-	self.LocBack:SetTexCoord(0, texWidth/backWidth, 0, 1);
+	self.LocBack:SetTexCoord(0, texWidth/backWidth,  0, 1);
 	self.LocMid:SetTexCoord (0, texWidth/midWidth, 0, 1);
 	self.LocFore:SetTexCoord(0, texWidth/foreWidth, 0, 1);
 end
@@ -2916,44 +3157,3 @@ function GarrisonMissionCompleteStage_OnUpdate(self, elapsed)
 	self.LocMid:SetTexCoord (midL, midR, 0, 1);
 	self.LocFore:SetTexCoord(foreL, foreR, 0, 1);
 end
-
----------------------------------------
--------Help plate stuff-----------
----------------------------------------
-
-GarrisonMissionList_HelpPlate = {
-	FramePos = { x = 20,          y = -22 },
-	FrameSize = { width = 960, height = 620 },
-	[1] = { ButtonPos = { x = 135,	y = -85 },  HighLightBox = { x = 10, y = -15, width = 305, height = 590 },	 ToolTipDir = "DOWN",  ToolTipText = "Your followers are listed here. \n \nA green arrow indicates this follower is good for the mission you are highlighting." },
-	[2] = { ButtonPos = { x = 640,  y = -95 },  HighLightBox = { x = 340, y = -15, width = 605, height = 590 },  ToolTipDir = "DOWN",  ToolTipText = "Click on a mission to view." },
-}
-
-GarrisonMissionPage_HelpPlate = {
-	FramePos = { x = 20,          y = -22 },
-	FrameSize = { width = 960, height = 620 },
-	[1] = { ButtonPos = { x = 32,	y = -55 },  HighLightBox = { x = 20, y = -50, width = 180, height = 64 },	 ToolTipDir = "DOWN",  ToolTipText = "Drag your follower to the mission to add them to the party."	},
-	[2] = { ButtonPos = { x = 205,  y = -55 }, HighLightBox = { x = 205, y = -50, width = 84, height = 64 },  ToolTipDir = "DOWN",   ToolTipText = "Icons will show up if a follower can counter a threat in the mission." },
-	[3] = { ButtonPos = { x = 500,  y = -175 },  HighLightBox = { x = 350, y = -150, width = 555, height = 100 }, ToolTipDir = "RIGHT",   ToolTipText = "Enemies are displayed with their threat mechanic icon. \n \nTry to counter as many threats as possible for a better chance at loot." },
-	[4] = { ButtonPos = { x = 390,  y = -285 },  HighLightBox = { x = 350, y = -260, width = 555, height = 100 },  ToolTipDir = "RIGHT",		ToolTipText = "Drag your follower here to add them to the party." },
-	[5] = { ButtonPos = { x = 500,  y = -475 },  HighLightBox = { x = 350, y = -400, width = 555, height = 170 },  ToolTipDir = "LEFT",  ToolTipText = "The more threats you counter, the better chance you'll have at opening a Bonus Chest when the mission completes." },
-}
-
-function GarrisonMission_ToggleTutorial()
-	local helpPlate;
-	if (GarrisonMissionFrame.MissionTab.MissionList:IsShown()) then
-		helpPlate = GarrisonMissionList_HelpPlate;
-	else
-		helpPlate = GarrisonMissionPage_HelpPlate;
-	end
-	if ( helpPlate and not HelpPlate_IsShowing(helpPlate) ) then
-		HelpPlate_Show( helpPlate, GarrisonBuildingFrame, GarrisonBuildingFrame.MainHelpButton, true );
-		if (GarrisonMissionFrame.MissionTab.MissionList:IsShown()) then
-			SetCVarBitfield( "closedInfoFrames", LE_FRAME_TUTORIAL_GARRISON_MISSION_LIST, true );
-		else
-			SetCVarBitfield( "closedInfoFrames", LE_FRAME_TUTORIAL_GARRISON_MISSION_PAGE, true );
-		end
-	else
-		HelpPlate_Hide(true);
-	end
-end
-

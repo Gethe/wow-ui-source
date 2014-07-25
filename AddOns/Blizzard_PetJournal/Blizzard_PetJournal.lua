@@ -2386,6 +2386,12 @@ function ToyBox_OnEvent(self, event, itemID, new)
 		ToyBox_UpdateProgressBar();
 		ToyBox_UpdateButtons();
 
+		-- if this is the first toy we've ever collected, show the UI alert
+		if(C_ToyBox.GetNumLearnedDisplayedToys() <= 1 and new == 1) then			
+			ToyBoxMicroButtonAlert:Show();			
+			PetJournalParent_SetTab(PetJournalParent, 3);
+		end
+
 		if (new == 1) then
 			ToyBox.newToys[itemID] = 1;
 		end
@@ -2398,6 +2404,7 @@ function ToyBox_OnShow(self)
 	ToyBox_UpdatePages();	
 	ToyBox_UpdateProgressBar();
 	ToyBox_UpdateButtons();
+	ToyBoxMicroButtonAlert:Hide();
 end
 
 function ToyBoxOptionsMenu_Init(self, level)

@@ -13,6 +13,7 @@ function QuestFrame_OnLoad(self)
 	self:RegisterEvent("QUEST_FINISHED");
 	self:RegisterEvent("QUEST_ITEM_UPDATE");
 	self:RegisterEvent("QUEST_LOG_UPDATE");
+	self:RegisterEvent("UNIT_PORTRAIT_UPDATE");
 end
 
 function QuestFrame_OnEvent(self, event, ...)
@@ -21,6 +22,9 @@ function QuestFrame_OnEvent(self, event, ...)
 		return;
 	end
 	if ( (event == "QUEST_ITEM_UPDATE") and not QuestFrame:IsShown() ) then
+		return;
+	end
+	if ( (event == "UNIT_PORTRAIT_UPDATE") and not QuestFrame:IsShown() ) then
 		return;
 	end
 		

@@ -58,8 +58,10 @@ end
 -- *****************************************************************************************************
 
 function BonusObjectiveTracker_OnHeaderLoad(self)
-	BONUS_OBJECTIVE_TRACKER_MODULE:SetHeader(self, TRACKER_HEADER_BONUS_OBJECTIVES, 0, OBJECTIVE_TRACKER_UPDATE_MODULE_BONUS_OBJECTIVE);
+	BONUS_OBJECTIVE_TRACKER_MODULE:SetHeader(self, TRACKER_HEADER_BONUS_OBJECTIVES, 0);
 	self.height = OBJECTIVE_TRACKER_HEADER_HEIGHT;
+	
+	self:RegisterEvent("CRITERIA_COMPLETE");
 end
 
 function BonusObjectiveTracker_OnBlockAnimInFinished(self)
@@ -96,6 +98,33 @@ function BonusObjectiveTracker_OnBlockLeave(block)
 	BONUS_OBJECTIVE_TRACKER_MODULE:OnBlockHeaderLeave(block);
 	GameTooltip:Hide();
 	BONUS_OBJECTIVE_TRACKER_MODULE.tooltipBlock = nil;
+end
+
+function BonusObjectiveTracker_OnEvent(self, event, ...)
+	if ( event == "CRITERIA_COMPLETE" ) then
+		local id = ...;
+		if( id > 0 ) then
+			local tblBonusSteps = C_Scenario.GetBonusSteps();
+			for i = 1, #tblBonusSteps do
+				local bonusStepIndex = tblBonusSteps[i];
+				local _, _, numCriteria = C_Scenario.GetStepInfo(bonusStepIndex);
+				local blockKey = -bonusStepIndex;	-- so it won't collide with quest IDs
+				local block = BONUS_OBJECTIVE_TRACKER_MODULE:GetBlock(blockKey);
+				if( block ) then
+					for criteriaIndex = 1, numCriteria do
+						local _, _, _, _, _, _, _, _, criteriaID = C_Scenario.GetCriteriaInfoByStep(bonusStepIndex, criteriaIndex);		
+						if( id == criteriaID ) then
+							local questID = C_Scenario.GetBonusStepRewardQuestID(bonusStepIndex);
+							if ( questID ~= 0 ) then
+								BonusObjectiveTracker_AddReward(questID, block);
+								return;
+							end
+						end
+					end
+				end
+			end
+		end
+	end
 end
 
 -- *****************************************************************************************************
@@ -462,10 +491,6 @@ local function UpdateScenarioBonusObjectives(BlocksFrame)
 					-- play anim if needed
 					if ( existingBlock and not block.finished ) then
 						firstLine.CheckFlash.Anim:Play();
-						local questID = C_Scenario.GetBonusStepRewardQuestID(bonusStepIndex);
-						if ( questID ~= 0 ) then
-							BonusObjectiveTracker_AddReward(questID, block);
-						end
 						if (BonusObjectiveTracker_GetSupersedingStep(bonusStepIndex)) then
 							BonusObjectiveTracker_SetBlockState(block, "FINISHED");
 						end
@@ -478,7 +503,7 @@ local function UpdateScenarioBonusObjectives(BlocksFrame)
 			end
 			block:SetHeight(block.height + BONUS_OBJECTIVE_TRACKER_MODULE.blockPadding);
 
-			if ( not ObjectiveTracker_AddBlock(block, true) ) then
+			if ( not ObjectiveTracker_AddBlock(block) ) then
 				-- there was no room to show the header and the block, bail
 				block.used = false;
 				break;
@@ -553,7 +578,7 @@ local function UpdateQuestBonusObjectives(BlocksFrame)
 			end
 			block:SetHeight(block.height + BONUS_OBJECTIVE_TRACKER_MODULE.blockPadding);
 			
-			if ( not ObjectiveTracker_AddBlock(block, true) ) then
+			if ( not ObjectiveTracker_AddBlock(block) ) then
 				-- there was no room to show the header and the block, bail
 				block.used = false;
 				break;

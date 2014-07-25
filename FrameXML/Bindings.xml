@@ -930,9 +930,6 @@
 	<Binding name="TOGGLECOREABILITIESBOOK" category="BINDING_HEADER_INTERFACE">
 		ToggleSpellBook(BOOKTYPE_CORE_ABILITIES);
 	</Binding>
-	<Binding name="TOGGLEWHATHASCHANGEDBOOK" category="BINDING_HEADER_INTERFACE">
-		ToggleSpellBook(BOOKTYPE_WHAT_HAS_CHANGED);
-	</Binding>
 	<Binding name="TOGGLEINSCRIPTION" category="BINDING_HEADER_INTERFACE">
 		ToggleGlyphFrame();
 	</Binding>
@@ -1025,6 +1022,11 @@
 	<Binding name="TOGGLEPETJOURNAL" category="BINDING_HEADER_INTERFACE">
 		TogglePetJournal();
 	</Binding>
+	<Binding name="TOGGLEGARRISONLANDINGPAGE" category="BINDING_HEADER_INTERFACE">
+		if ( GarrisonLandingPageMinimapButton:IsShown() ) then
+			GarrisonLandingPage_Toggle();
+		end
+	</Binding>
 
 
 
@@ -1069,7 +1071,7 @@
 			securecall("CloseAllWindows");
 			UIParent:Hide();
 			SetUIVisibility(false);
-			ActionStatus_DisplayMessage(format(UI_HIDDEN, GetBindingText(GetBindingKey("TOGGLEUI"), "KEY_")))
+			ActionStatus_DisplayMessage(format(UI_HIDDEN, GetBindingText(GetBindingKey("TOGGLEUI"))))
 		else
 			UIParent:Show();
 			SetUIVisibility(true);
@@ -1080,6 +1082,9 @@
 	</Binding>
 	<Binding name="SCREENSHOT" category="BINDING_HEADER_MISC">
 		TakeScreenshot();
+	</Binding>
+	<Binding name="ITEMCOMPARISONCYCLING" category="BINDING_HEADER_MISC">
+		GameTooltip_CycleSecondaryComparedItem(GameTooltip);
 	</Binding>
 
 	<!-- Debug function key bindings -->

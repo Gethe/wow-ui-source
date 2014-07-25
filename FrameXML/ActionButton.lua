@@ -210,7 +210,7 @@ function ActionButton_UpdateHotkeys (self, actionButtonType)
     local key = GetBindingKey(actionButtonType..id) or
                 GetBindingKey("CLICK "..self:GetName()..":LeftButton");
 
-	local text = GetBindingText(key, "KEY_", 1);
+	local text = GetBindingText(key, 1);
     if ( text == "" ) then
         hotkey:SetText(RANGE_INDICATOR);
         hotkey:Hide();

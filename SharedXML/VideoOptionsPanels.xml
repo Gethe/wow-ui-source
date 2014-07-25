@@ -301,7 +301,7 @@
 						</Anchors>
 						<Scripts>
 							<OnLoad>
-								self.cvar = "raidSettingsEnabled";
+								self.cvar = "RAIDsettingsEnabled";
 								self.SetValue = function (self, value)
 										BlizzardOptionsPanel_SetCVarSafe(self.cvar, value);
 									end

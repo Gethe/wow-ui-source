@@ -8,6 +8,10 @@ MINIMAP_EXPANDER_MAXSIZE = 28;
 HUNTER_TRACKING = 1;
 TOWNSFOLK = 2;
 
+GARRISON_ALERT_CONTEXT_BUILDING = 1;
+GARRISON_ALERT_CONTEXT_MISSION = 2;
+GARRISON_ALERT_CONTEXT_INVASION = 3;
+
 LFG_EYE_TEXTURES = { };
 LFG_EYE_TEXTURES["default"] = { file = "Interface\\LFGFrame\\LFG-Eye", width = 512, height = 256, frames = 29, iconSize = 64, delay = 0.1 };
 LFG_EYE_TEXTURES["raid"] = { file = "Interface\\LFGFrame\\LFR-Anim", width = 256, height = 256, frames = 16, iconSize = 64, delay = 0.05 };
@@ -483,9 +487,17 @@ end
 
 
 function GarrisonLandingPageMinimapButton_OnLoad(self)
+	self.pulseLocks = {};
 	self:RegisterEvent("GARRISON_SHOW_LANDING_PAGE");
 	self:RegisterEvent("GARRISON_HIDE_LANDING_PAGE");
+	self:RegisterEvent("GARRISON_BUILDING_ACTIVATABLE");
+	self:RegisterEvent("GARRISON_BUILDING_ACTIVATED");
+	self:RegisterEvent("GARRISON_ARCHITECT_OPENED");
+	self:RegisterEvent("GARRISON_MISSION_FINISHED");
+	self:RegisterEvent("GARRISON_MISSION_NPC_OPENED");
 	self:RegisterEvent("GARRISON_INVASION_AVAILABLE");
+	self:RegisterEvent("GARRISON_INVASION_UNAVAILABLE");
+	self:RegisterEvent("SHIPMENT_UPDATE");
 end
 
 function GarrisonLandingPageMinimapButton_OnEvent(self, event, ...)
@@ -493,8 +505,23 @@ function GarrisonLandingPageMinimapButton_OnEvent(self, event, ...)
 		self:Hide();
 	elseif (event == "GARRISON_SHOW_LANDING_PAGE") then
 		self:Show();
+	elseif ( event == "GARRISON_BUILDING_ACTIVATABLE" ) then
+		GarrisonMinimapBuilding_ShowPulse(self);
+	elseif ( event == "GARRISON_BUILDING_ACTIVATED" or event == "GARRISON_ARCHITECT_OPENED") then
+		GarrisonMinimap_HidePulse(self, GARRISON_ALERT_CONTEXT_BUILDING);
+	elseif ( event == "GARRISON_MISSION_FINISHED" ) then
+		GarrisonMinimapMission_ShowPulse(self);
+	elseif ( event == "GARRISON_MISSION_NPC_OPENED" ) then
+		GarrisonMinimap_HidePulse(self, GARRISON_ALERT_CONTEXT_MISSION);
 	elseif (event == "GARRISON_INVASION_AVAILABLE") then
-		self.MinimapAlertAnim:Play();
+		GarrisonMinimapInvasion_ShowPulse(self);
+	elseif (event == "GARRISON_INVASION_UNAVAILABLE") then
+		GarrisonMinimap_HidePulse(self, GARRISON_ALERT_CONTEXT_INVASION);
+	elseif (event == "SHIPMENT_UPDATE") then
+		local shipmentStarted = ...;
+		if (shipmentStarted) then
+			GarrisonMinimapShipmentCreated_ShowPulse(self);
+		end
 	end
 end
 
@@ -510,6 +537,10 @@ function GarrisonLandingPageMinimapButton_OnShow(self)
 end
 
 function GarrisonLandingPageMinimapButton_OnClick()
+	GarrisonLandingPage_Toggle();
+end
+
+function GarrisonLandingPage_Toggle()
 	if (not GarrisonLandingPage) then
 		Garrison_LoadUI();
 	end
@@ -518,4 +549,60 @@ function GarrisonLandingPageMinimapButton_OnClick()
 	else
 		HideUIPanel(GarrisonLandingPage);
 	end
+end
+
+function GarrisonMinimap_SetPulseLock(self, lock, enabled)
+	self.pulseLocks[lock] = enabled;
+end
+
+-- We play an animation on the garrison minimap icon for a number of reasons, but only want to turn the
+-- animation off if the user handles all actions related to that alert. For example if we play the animation
+-- because a building can be activated and then another because a garrison invasion has occurred,  we want to
+-- turn off the animation after they handle both the building and invasion, but not if they handle only one.
+-- We always stop the pulse when they click on the landing page icon.
+
+function GarrisonMinimap_HidePulse(self, lock)
+	GarrisonMinimap_SetPulseLock(self, lock, false);
+	local enabled = false;
+	for k, v in pairs(self.pulseLocks) do
+		if ( v ) then
+			enabled = true;
+			break;
+		end
+	end
+
+	-- If there are no other reasons to show the pulse, hide it
+	if (not enabled) then
+		GarrisonLandingPageMinimapButton.MinimapLoopPulseAnim:Stop();
+	end
+end
+
+function GarrisonMinimap_ClearPulse()
+	local self = GarrisonLandingPageMinimapButton;
+	for k, v in pairs(self.pulseLocks) do
+		self.pulseLocks[k] = false;
+	end
+	self.MinimapLoopPulseAnim:Stop();
+end
+
+function GarrisonMinimapBuilding_ShowPulse(self)
+	GarrisonMinimap_SetPulseLock(self, GARRISON_ALERT_CONTEXT_BUILDING, true);
+	self.MinimapLoopPulseAnim:Play();
+end
+
+function GarrisonMinimapMission_ShowPulse(self)
+	GarrisonMinimap_SetPulseLock(self, GARRISON_ALERT_CONTEXT_MISSION, true);
+	self.MinimapLoopPulseAnim:Play();
+end
+
+function GarrisonMinimapInvasion_ShowPulse(self)
+	self.AlertText:SetText(GARRISON_LANDING_INVASION_ALERT);
+	GarrisonMinimap_SetPulseLock(self, GARRISON_ALERT_CONTEXT_INVASION, true);
+	self.MinimapAlertAnim:Play();
+	self.MinimapLoopPulseAnim:Play();
+end
+
+function GarrisonMinimapShipmentCreated_ShowPulse(self)
+	self.AlertText:SetText(GARRISON_LANDING_SHIPMENT_STARTED_ALERT);
+	self.MinimapAlertAnim:Play();
 end

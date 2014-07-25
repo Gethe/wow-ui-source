@@ -392,7 +392,7 @@ function LFGListEntryCreation_Select(self, filters, categoryID, groupID, activit
 	UIDropDownMenu_SetText(self.CategoryDropDown, LFGListUtil_GetDecoratedCategoryName(categoryName, filters, false));
 
 	--Update the activity dropdown
-	local shortName = select(ACTIVITY_RETURN_VALUES.shortName, C_LFGList.GetActivityInfo(activityID));
+	local _, shortName, _, _, iLevel = C_LFGList.GetActivityInfo(activityID);
 	UIDropDownMenu_SetText(self.ActivityDropDown, shortName);
 
 	--Update the group dropdown. If the group dropdown is showing an activity, hide the activity dropdown
@@ -400,6 +400,13 @@ function LFGListEntryCreation_Select(self, filters, categoryID, groupID, activit
 	UIDropDownMenu_SetText(self.GroupDropDown, groupName or shortName);
 	self.ActivityDropDown:SetShown(groupName and not autoChoose);
 	self.GroupDropDown:SetShown(not autoChoose);
+
+	--Update the recommended item level box
+	if ( iLevel ~= 0 ) then
+		self.ItemLevel.EditBox.Instructions:SetFormattedText(LFG_LIST_RECOMMENDED_ILVL, iLevel);
+	else
+		self.ItemLevel.EditBox.Instructions:SetText(LFG_LIST_ITEM_LEVEL_INSTR_SHORT);
+	end
 end
 
 function LFGListEntryCreation_PopulateCategories(self, dropDown, info)
@@ -949,10 +956,11 @@ function LFGListApplicationViewer_UpdateApplicantMember(self, member, appID, mem
 
 	member.memberIdx = memberIdx;
 	if ( name ) then
+		local displayName = Ambiguate(name, "short");
 		if ( memberIdx > 1 ) then
-			member.Name:SetText("  "..name);
+			member.Name:SetText("  "..displayName);
 		else
-			member.Name:SetText(name);
+			member.Name:SetText(displayName);
 		end
 
 		local classTextColor = grayedOut and GRAY_FONT_COLOR or RAID_CLASS_COLORS[class];
@@ -1120,6 +1128,8 @@ function LFGListSearchPanel_OnEvent(self, event, ...)
 		LFGListSearchPanel_UpdateButtonStatus(self);
 	elseif ( event == "PARTY_LEADER_CHANGED" ) then
 		LFGListSearchPanel_UpdateButtonStatus(self);
+	elseif ( event == "GROUP_ROSTER_UPDATE" ) then
+		LFGListSearchPanel_UpdateButtonStatus(self);
 	end
 end
 
@@ -1234,6 +1244,9 @@ function LFGListSearchPanel_UpdateButtonStatus(self)
 	elseif ( numActiveApplications >= MAX_LFG_LIST_APPLICATIONS ) then
 		self.SignUpButton:Disable();
 		self.SignUpButton.tooltip = string.format(LFG_LIST_HIT_MAX_APPLICATIONS, MAX_LFG_LIST_APPLICATIONS);
+	elseif ( GetNumGroupMembers(LE_PARTY_CATEGORY_HOME) > MAX_PARTY_MEMBERS + 1 ) then
+		self.SignUpButton:Disable();
+		self.SignUpButton.tooltip = LFG_LIST_MAX_MEMBERS;
 	elseif ( resultID ) then
 		self.SignUpButton:Enable();
 		self.SignUpButton.tooltip = nil;
@@ -1288,6 +1301,11 @@ function LFGListSearchEntry_Update(self)
 		self.CancelButton:Hide();
 	elseif ( appStatus == "timedout" ) then
 		self.PendingLabel:SetText(LFG_LIST_APP_TIMED_OUT);
+		self.PendingLabel:Show();
+		self.ExpirationTime:Hide();
+		self.CancelButton:Hide();
+	elseif ( appStatus == "invited" ) then
+		self.PendingLabel:SetText(LFG_LIST_APP_INVITED);
 		self.PendingLabel:Show();
 		self.ExpirationTime:Hide();
 		self.CancelButton:Hide();
@@ -1944,4 +1962,19 @@ function LFGListUtil_GetApplicantMemberMenu(applicantID, memberIdx)
 	LFG_LIST_APPLICANT_MEMBER_MENU[2].arg1 = name;
 	LFG_LIST_APPLICANT_MEMBER_MENU[2].disabled = not name or (status ~= "applied" and status ~= "invited");
 	return LFG_LIST_APPLICANT_MEMBER_MENU;
+end
+
+function LFGListUtil_OpenBestWindow()
+	local active, activityID, ilvl, name, comment, voiceChat = C_LFGList.GetActiveEntryInfo();
+	if ( not active ) then
+		return;
+	end
+	local fullName, shortName, categoryID, groupID, iLevel, filters = C_LFGList.GetActivityInfo(activityID);
+
+	if ( bit.band(filters, LE_LFG_LIST_FILTER_PVE) ~= 0 ) then
+		PVEFrame_ShowFrame("GroupFinderFrame", LFGListPVEStub);
+	else
+		PVEFrame_ShowFrame("PVPUIFrame", nil);
+		PVPQueueFrame_ShowFrame(LFGListPVPStub);
+	end
 end

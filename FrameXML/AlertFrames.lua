@@ -88,8 +88,8 @@ function AlertFrame_OnEvent (self, event, ...)
 	elseif ( event == "GARRISON_MISSION_FINISHED" ) then
 		GarrisonMissionAlertFrame_ShowAlert(...);
 	elseif ( event == "GARRISON_FOLLOWER_ADDED" ) then
-		local name, displayID, level, quality = ...;
-		GarrisonFollowerAlertFrame_ShowAlert(name, displayID, level, quality);
+		local name, displayID, level, quality, isUpgraded = ...;
+		GarrisonFollowerAlertFrame_ShowAlert(name, displayID, level, quality, isUpgraded);
 	end
 end
 
@@ -1093,7 +1093,7 @@ GARRISON_FOLLOWER_QUALITY_TEXTURE_SUFFIXES = {
 	[LE_ITEM_QUALITY_EPIC] = "Epic",
 	[LE_ITEM_QUALITY_RARE] = "Rare",
 }
-function GarrisonFollowerAlertFrame_ShowAlert(name, displayID, level, quality)
+function GarrisonFollowerAlertFrame_ShowAlert(name, displayID, level, quality, isUpgraded)
 	GarrisonFollowerAlertFrame.Name:SetText(name);
 	local texSuffix = GARRISON_FOLLOWER_QUALITY_TEXTURE_SUFFIXES[quality]
 	if (texSuffix) then
@@ -1112,7 +1112,23 @@ function GarrisonFollowerAlertFrame_ShowAlert(name, displayID, level, quality)
 		GarrisonFollowerAlertFrame.PortraitFrame.LevelBorder:SetVertexColor(1, 1, 1);
 		GarrisonFollowerAlertFrame.PortraitFrame.PortraitRing:SetVertexColor(1, 1, 1);
 	end
+	
+	GarrisonFollowerAlertFrame.ArrowsAnim:Stop();	
+	if ( isUpgraded ) then
+		local upgradeTexture = LOOTUPGRADEFRAME_QUALITY_TEXTURES[quality] or LOOTUPGRADEFRAME_QUALITY_TEXTURES[LE_ITEM_QUALITY_UNCOMMON];
+		for i = 1, GarrisonFollowerAlertFrame.Arrows.numArrows do
+			GarrisonFollowerAlertFrame.Arrows["Arrow"..i]:SetAtlas(upgradeTexture.arrow, true);
+		end
+		GarrisonFollowerAlertFrame.Title:SetText(GARRISON_FOLLOWER_ADDED_UPGRADED_TOAST);
+		GarrisonFollowerAlertFrame.DieIcon:Show();
+		GarrisonFollowerAlertFrame.ArrowsAnim:Play();
+	else
+		GarrisonFollowerAlertFrame.Title:SetText(GARRISON_FOLLOWER_ADDED_TOAST);
+		GarrisonFollowerAlertFrame.DieIcon:Hide();
+	end
+
 	AlertFrame_AnimateIn(GarrisonFollowerAlertFrame);
+	
 	AlertFrame_FixAnchors();
 	PlaySound("AuctionWindowOpen");
 end

@@ -295,7 +295,7 @@ function GarrisonRecruitSelectFrame_UpdateRecruits( waiting )
 			frame.Name:SetVertexColor(color.r, color.g, color.b);
 			frame.PortraitFrame.LevelBorder:SetVertexColor(color.r, color.g, color.b);
 			
-			local abilities = C_Garrison.GetFollowerAbilities(follower.followerID);
+			local abilities = C_Garrison.GetRecruitAbilities(i);
 			local abilityIndex = 0;
 			local traitIndex = 0;
 			frame.Counter:Hide();

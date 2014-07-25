@@ -326,7 +326,7 @@ function UnitPopup_ShowMenu (dropdownMenu, which, unit, name, userData)
 	if ( isDynamicInstance and CanChangePlayerDifficulty() ) then
 		_, _, _, _, toggleDifficultyID = GetDifficultyInfo(instanceDifficultyID);
 	end	
-	if ( instanceType == "none" ) then
+	if ( instanceType == "none" or C_Garrison:IsOnGarrisonMap()) then
 		UnitPopupButtons["DUNGEON_DIFFICULTY"].nested = 1;
 		UnitPopupButtons["RAID_DIFFICULTY"].nested = 1;	
 	else
@@ -1336,7 +1336,7 @@ function UnitPopup_HideButtons ()
 				UnitPopupShown[UIDROPDOWNMENU_MENU_LEVEL][index] = 0;
 			end
 		elseif ( value == "GARRISON_VISIT" ) then
-			if ( inParty == 0 or isLeader ~= 0 or not C_Garrison.GetGarrisonInfo() ) then
+			if ( inParty == 0 or isLeader ~= 0 or not C_Garrison.IsVisitGarrisonAvailable() ) then
 				UnitPopupShown[UIDROPDOWNMENU_MENU_LEVEL][index] = 0;
 			end
 		end

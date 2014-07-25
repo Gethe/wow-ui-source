@@ -466,7 +466,11 @@ function ContainerFrame_Update(frame)
 		itemButton.readable = readable;
 		
 		if ( itemButton == tooltipOwner ) then
-			itemButton.UpdateTooltip(itemButton);
+			if (GetContainerItemInfo(frame:GetID(), itemButton:GetID())) then
+				itemButton.UpdateTooltip(itemButton);
+			else
+				GameTooltip:Hide();
+			end
 		end
 		
 		

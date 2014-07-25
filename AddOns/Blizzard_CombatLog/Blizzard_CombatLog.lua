@@ -2584,10 +2584,10 @@ function CombatLog_OnEvent(filterSettings, timestamp, event, hideCaster, sourceG
 		spellId, spellName, spellSchool = ...;
 		if ( event == "RANGE_DAMAGE" ) then 
 			-- Damage standard
-			amount, overkill, school, resisted, blocked, absorbed, critical, glancing, crushing = select(4, ...);
+			amount, overkill, school, resisted, blocked, absorbed, critical, glancing, crushing, isOffHand, multistrike = select(4, ...);
 
 			-- Parse the result string
-			resultStr = CombatLog_String_DamageResultString( resisted, blocked, absorbed, critical, glancing, crushing, overhealing, textMode, spellId, overkill );
+			resultStr = CombatLog_String_DamageResultString( resisted, blocked, absorbed, critical, glancing, crushing, overhealing, textMode, spellId, overkill, multistrike);
 
 			if ( not resultStr ) then
 				resultEnabled = false

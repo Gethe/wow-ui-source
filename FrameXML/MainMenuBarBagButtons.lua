@@ -85,6 +85,14 @@ function BagSlotButton_OnEnter(self)
 		if ( bindingKey ) then
 			GameTooltip:AppendText(" "..NORMAL_FONT_COLOR_CODE.."("..bindingKey..")"..FONT_COLOR_CODE_CLOSE);
 		end
+		local bagID = (self:GetID() - CharacterBag0Slot:GetID()) + 1;
+		for i = LE_BAG_FILTER_FLAG_EQUIPMENT, NUM_LE_BAG_FILTER_FLAGS do
+			if ( GetBagSlotFlag(bagID, i) ) then
+				GameTooltip:AddLine(BAG_FILTER_ASSIGNED_TO:format(BAG_FILTER_LABELS[i]));
+				break;
+			end
+		end
+		GameTooltip:Show();
 	else
 		GameTooltip:SetText(EQUIP_CONTAINER, 1.0, 1.0, 1.0);
 	end

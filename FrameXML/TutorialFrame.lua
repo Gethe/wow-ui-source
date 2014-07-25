@@ -918,7 +918,7 @@ function TutorialFrame_Update(currentTutorial)
 		local keyData = displayData["keyData"..i];
 		if(keyTexture and keyString and keyData) then
 			keyTexture:SetPoint( keyData.align, TutorialFrame, keyData.align, keyData.xOff, keyData.yOff );
-			keyString:SetText( GetBindingText(GetBindingKey(keyData.command), "KEY_") );
+			keyString:SetText( GetBindingText(GetBindingKey(keyData.command)) );
 			if ( keyData.layer ) then
 				keyTexture:SetDrawLayer(keyData.layer);
 				keyString:SetDrawLayer(keyData.layer);

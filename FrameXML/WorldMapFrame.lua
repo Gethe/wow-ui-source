@@ -323,6 +323,8 @@ function WorldMapFrame_OnShow(self)
 	CloseDropDownMenus();
 	WorldMapFrame_UpdateUnits("WorldMapRaid", "WorldMapParty");
 	DoEmote("READ", nil, true);
+	
+	WorldMapFrame.fadeOut = false;
 end
 
 function WorldMapFrame_OnHide(self)
@@ -430,9 +432,11 @@ function WorldMapFrame_OnEvent(self, event, ...)
 	elseif ( event == "PLAYER_STARTED_MOVING" ) then
 		if ( GetCVarBool("mapFade") ) then
 			WorldMapFrame_AnimAlphaOut(self, true);
+			WorldMapFrame.fadeOut = true;
 		end
 	elseif ( event == "PLAYER_STOPPED_MOVING" ) then
 		WorldMapFrame_AnimAlphaIn(self, true);
+		WorldMapFrame.fadeOut = false;
 	elseif ( event == "QUEST_LOG_UPDATE" and WorldMapFrame:IsVisible() ) then
 		WorldMap_UpdateQuestBonusObjectives();
 	elseif ( event == "QUESTTASK_UPDATE" and WorldMapFrame:IsVisible() ) then
@@ -491,7 +495,7 @@ function WorldMapFrame_OnUpdate(self, elapsed)
 		WorldMapZoneInfo:Hide();
 	end
 	
-	if ( WorldMapFrame_InWindowedMode() and IsPlayerMoving() ) then
+	if ( WorldMapFrame_InWindowedMode() and IsPlayerMoving() and GetCVarBool("mapFade") and WorldMapFrame.fadeOut ) then
 		if ( self:IsMouseOver() ) then
 			WorldMapFrame_AnimAlphaIn(self);
 			self.wasMouseOver = true;

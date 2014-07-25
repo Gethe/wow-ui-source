@@ -17,8 +17,18 @@ DRAENOR_ZONE_SPELL_ABILITY_TEXTURES_BASE = {
 	[160241] = "Interface\\ExtraButton\\GarrZoneAbility-Workshop",
 };
 
+-- Make sure we only cache the proper spells
+DRAENOR_ZONE_FACTION_SPECIFIC_SPELLS = {
+	[161676] = PLAYER_FACTION_GROUP[1],
+	[161332] = PLAYER_FACTION_GROUP[0],
+};
+
 -- This list will be name -> Texture for later use, since we do our comparisons based on names
 DRAENOR_ZONE_SPELL_ABILITY_TEXTURE_CACHE = {
+
+};
+
+DRAENOR_ZONE_NAME_TO_SPELL_ID_CACHE = {
 	
 };
 
@@ -39,8 +49,11 @@ function DraenorZoneAbilityFrame_OnEvent(self, event)
 			self.baseName = GetSpellInfo(DraenorZoneAbilitySpellID);
 			if (self.baseName) then
 				for spellID, path in pairs(DRAENOR_ZONE_SPELL_ABILITY_TEXTURES_BASE) do
-					local name = GetSpellInfo(spellID);
-					DRAENOR_ZONE_SPELL_ABILITY_TEXTURE_CACHE[name] = path;
+					if (not DRAENOR_ZONE_FACTION_SPECIFIC_SPELLS[spellID] or DRAENOR_ZONE_FACTION_SPECIFIC_SPELLS[spellID] == UnitFactionGroup("player")) then
+						local name = GetSpellInfo(spellID);
+						DRAENOR_ZONE_SPELL_ABILITY_TEXTURE_CACHE[name] = path;
+						DRAENOR_ZONE_NAME_TO_SPELL_ID_CACHE[name] = spellID;
+					end
 				end
 			end
 		end
@@ -105,6 +118,7 @@ function DraenorZoneAbilityFrame_Update(self)
 	end
 		
 	self.SpellButton.spellName = self.CurrentSpell;
+	self.SpellButton.currentSpellID = DRAENOR_ZONE_NAME_TO_SPELL_ID_CACHE[name];
 end
 
 function HasDraenorZoneSpellOnBar(self)

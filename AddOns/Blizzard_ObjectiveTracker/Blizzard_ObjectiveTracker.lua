@@ -131,12 +131,11 @@ end
 
 -- ***** BLOCKS
 
-function DEFAULT_OBJECTIVE_TRACKER_MODULE:SetHeader(block, text, animateReason, onFinishUpdateReason)
+function DEFAULT_OBJECTIVE_TRACKER_MODULE:SetHeader(block, text, animateReason)
 	block.module = self;
 	block.isHeader = true;
 	block.Text:SetText(text);
 	block.animateReason = animateReason or 0;
-	block.onFinishUpdateReason = onFinishUpdateReason or OBJECTIVE_TRACKER_UPDATE_ALL;
 	self.Header = block;
 end
 
@@ -718,7 +717,6 @@ end
 function ObjectiveTrackerHeader_OnAnimFinished(self)
 	local header = self:GetParent();
 	header.animating = false;
-	ObjectiveTracker_Update(header.onFinishUpdateReason);
 end
 
 -- *****************************************************************************************************
@@ -813,17 +811,12 @@ local function InternalAddBlock(block)
 	return true;
 end
 
-function ObjectiveTracker_AddBlock(block, ignoreHeaderAnimating)
+function ObjectiveTracker_AddBlock(block)
 	local header = block.module.Header;
 	local blockAdded = false;
 	-- if there's no header or it's been added, just add the block...
 	if ( not header or header.added ) then
-		-- ...unless we're still animating the header
-		if ( header and header.animating and not ignoreHeaderAnimating ) then
-			blockAdded = false;
-		else
-			blockAdded = InternalAddBlock(block);
-		end
+		blockAdded = InternalAddBlock(block);
 	elseif ( ObjectiveTracker_CanFitBlock(block, header) ) then
 		-- try to add header and maybe block
 		if ( InternalAddBlock(header) ) then
@@ -831,15 +824,14 @@ function ObjectiveTracker_AddBlock(block, ignoreHeaderAnimating)
 			if ( not header:IsShown() ) then
 				header:Show();
 				if ( header.animateReason and band(OBJECTIVE_TRACKER_UPDATE_REASON, header.animateReason ) > 0 and not header.animating ) then
-					-- animate stuff
+					-- animate header
 					header.animating = true;
+					header.HeaderOpenAnim:Stop();
 					header.HeaderOpenAnim:Play();
 				end
 			end
-			-- if the header is not animating, we can add block
-			if ( not header.animating or ignoreHeaderAnimating ) then
-				blockAdded = InternalAddBlock(block);
-			end
+			-- add the block
+			blockAdded = InternalAddBlock(block);
 		end
 	end
 	if ( not blockAdded ) then

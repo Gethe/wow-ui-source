@@ -47,7 +47,8 @@
 								</Texture>
 							</Layer>
 							<Layer level="ARTWORK">
-								<FontString parentKey="Stage" inherits="QuestTitleFont">
+								<FontString parentKey="Stage" inherits="QuestTitleFont" wordwrap="true" justifyH="LEFT">
+									<Size x="172" y="18"/>
 									<Anchors>
 										<Anchor point="TOPLEFT" x="15" y="-10"/>
 									</Anchors>
