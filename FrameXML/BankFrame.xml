@@ -77,13 +77,13 @@
 		</Scripts>
 	</Button>
 	<Button name="BankAutoSortButtonTemplate" virtual="true">
-		<Size x="30" y="30"/>
+		<Size x="28" y="26"/>
 		<NormalTexture atlas="bags-button-autosort-up"/>
 		<PushedTexture atlas="bags-button-autosort-down"/>
 		<HighlightTexture file="Interface\Buttons\ButtonHilight-Square" alphaMode="ADD">
-			<Size x="26" y="26"/>
+			<Size x="24" y="23"/>
 			<Anchors>
-				<Anchor point="CENTER" x="0" y="2"/>
+				<Anchor point="CENTER" x="0" y="0"/>
 			</Anchors>
 		</HighlightTexture>
 		<Scripts>
@@ -159,7 +159,7 @@
             
             <Button name="BankItemAutoSortButton" inherits="BankAutoSortButtonTemplate">
 	            <Anchors>
-		            <Anchor point="LEFT" relativeTo="BankItemSearchBox" relativePoint="RIGHT" x="4" y="0"/>
+		            <Anchor point="LEFT" relativeTo="BankItemSearchBox" relativePoint="RIGHT" x="4" y="-1"/>
 	            </Anchors>
 	            <Scripts>
 		            <OnClick function="BankFrame_AutoSortButtonOnClick"/>

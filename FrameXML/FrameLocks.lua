@@ -34,6 +34,7 @@ FRAMELOCK_STATES = {
 		FocusFrame			= "hidden",
 		TemporaryEnchantFrame = "hidden",
 		WorldStateAlwaysUpFrame = "hidden",
+		DraenorZoneAbilityFrame = "hidden",
 	},
 };
 

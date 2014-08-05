@@ -325,7 +325,7 @@
 		</Layers>
 	</Frame>
 
-	<Frame name="LevelUpDisplay" toplevel="true" parent="UIParent" hidden="true">
+	<Frame name="LevelUpDisplay" toplevel="true" parent="UIParent" hidden="true" frameStrata="HIGH">
 		<Animations>
 			<AnimationGroup parentKey="hideAnim">
 				<Alpha change="-1" duration="1.0" order="1" />

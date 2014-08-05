@@ -144,23 +144,49 @@ function SplashFrame_OnLoad(self)
 	self:RegisterEvent("PLAYER_ENTERING_WORLD");
 	-- need an event for expansion becoming active
 	local faction = UnitFactionGroup("player");
-	SPLASH_SCREENS["BOOST"].questID = PREPATCH_BOOST_QUESTS[faction].id;
-	SPLASH_SCREENS["BOOST"].rightDesc = PREPATCH_BOOST_QUESTS[faction].text;
+	local data = PREPATCH_BOOST_QUESTS[faction];
+	if( data ) then
+		SPLASH_SCREENS["BOOST"].questID = PREPATCH_BOOST_QUESTS[faction].id;
+		SPLASH_SCREENS["BOOST"].rightDesc = PREPATCH_BOOST_QUESTS[faction].text;
+		SPLASH_SCREENS["NEW"].questID = PREPATCH_BOOST_QUESTS[faction].id;
+	else
+		SPLASH_SCREENS["NEW"].questID = nil;
+	end
+end
+
+local function IsQuestAutoQuest( questID )
+	if( questID )then
+		for i = 1, GetNumAutoQuestPopUps() do
+			local id, popUpType = GetAutoQuestPopUp(i);	
+			if( id == questID and popUpType ) then
+				return true;
+			end
+		end
+	end
+	return false;
 end
 
 function SplashFrame_OnEvent(self, event)
-	self:UnregisterEvent("PLAYER_ENTERING_WORLD");
-	
-	local tag = GetSplashFrameTag();
-	-- check if they've seen this screen already
-	local lastScreenID = tonumber(GetCVar(SPLASH_SCREENS[tag].cVar)) or 0;
-	if( lastScreenID >= SPLASH_SCREENS[tag].id ) then
-		return;
-	end	
-	
-	if ( tag ) then
-		SplashFrame_Open(tag);
-		SetCVar(SPLASH_SCREENS[tag].cVar, SPLASH_SCREENS[tag].id); -- update cVar value;
+	if( event == "PLAYER_ENTERING_WORLD" ) then
+		self:UnregisterEvent("PLAYER_ENTERING_WORLD");
+		
+		local tag = GetSplashFrameTag();
+		-- check if they've seen this screen already
+		local lastScreenID = tonumber(GetCVar(SPLASH_SCREENS[tag].cVar)) or 0;
+		if( lastScreenID >= SPLASH_SCREENS[tag].id ) then
+			return;
+		end	
+		
+		if ( tag ) then
+			SplashFrame_Open(tag);
+			SetCVar(SPLASH_SCREENS[tag].cVar, SPLASH_SCREENS[tag].id); -- update cVar value;
+		end
+	elseif( event == "QUEST_LOG_UPDATE" ) then
+		if( self:IsShown() and self.tag )then
+			if( IsQuestAutoQuest(SPLASH_SCREENS[self.tag].questID) ) then
+				SplashFrame_SetStartButtonDisplay(true);
+			end
+		end
 	end
 end
 
@@ -180,6 +206,7 @@ function SplashFrame_Display(tag, showStartButton)
 	frame.RightTitle:SetText(screenInfo.rightTitle);
 	frame.RightTitle:SetSize( 400, 32 );	
 	frame.RightTitle:SetWordWrap( false );
+
 	local fontSizeFound = false;
 	local fonts = {
 		"Game32Font",
@@ -198,7 +225,25 @@ function SplashFrame_Display(tag, showStartButton)
 		frame.RightTitle:SetSize( 300, 40 );
 		frame.RightTitle:SetWordWrap( true );
 	end	
-	frame.RightDescription:SetText(screenInfo.rightDesc);
+
+	SplashFrame_SetStartButtonDisplay(showStartButton);
+	frame:Show();
+	
+	frame:RegisterEvent("QUEST_LOG_UPDATE");
+end
+
+function SplashFrame_SetStartButtonDisplay( showStartButton )
+	local frame = SplashFrame;
+	if( frame.tag == "NEW" ) then
+		local faction = UnitFactionGroup("player");
+		local data = PREPATCH_BOOST_QUESTS[faction];
+		if( showStartButton and data )then 
+			SPLASH_SCREENS["NEW"].rightDesc = data.text;
+		else
+			SPLASH_SCREENS["NEW"].rightDesc = SPLASH_NEW_RIGHT_DESC;
+		end
+	end
+	frame.RightDescription:SetText(SPLASH_SCREENS[frame.tag].rightDesc);
 	if ( showStartButton ) then
 		frame.StartButton:Show();
 		frame.RightDescription:SetWidth(300);
@@ -212,20 +257,16 @@ function SplashFrame_Display(tag, showStartButton)
 		frame.TopCloseButton:Show();
 		frame.BottomCloseButton:Show();		
 	end
-	frame:Show();
 end
 
 function SplashFrame_Open( tag )
 	if( not tag ) then
 		tag = GetSplashFrameTag();
 	end
-	local frame = SplashFrame;
 	local showStartButton = false;
 	local questID = SPLASH_SCREENS[tag].questID;
 	if(questID)then
-		local questIndex = GetQuestLogIndexByID(questID);
-		AddQuestWatch(questIndex); -- add quest to tracker
-		showStartButton = not IsQuestFlaggedCompleted(questID) and (questIndex == 0);
+		showStartButton = not IsQuestFlaggedCompleted(questID) and IsQuestAutoQuest(questID);
 	end
 	
 	SplashFrame_Display( tag, showStartButton );
@@ -237,16 +278,18 @@ function SplashFrame_Close()
 		return;
 	end
 	
-	frame:Hide();
+	HideParentPanel(SplashFrame.BottomCloseButton);
 	PlaySound("igMainMenuQuit");
+	frame:UnregisterEvent("PLAYER_ENTERING_WORLD");
 end
 
 function SplashFrameStartButton_OnClick(self)
 	HideParentPanel(self);
 	local frame = SplashFrame;
-	local questLogIndex = GetQuestLogIndexByID(SPLASH_SCREENS[frame.tag].questID);
-	ShowQuestOffer(questLogIndex);
-	
+	local questID = SPLASH_SCREENS[frame.tag].questID;
+	frame:UnregisterEvent("PLAYER_ENTERING_WORLD");
+	ShowQuestOffer(GetQuestLogIndexByID(questID));
+	AutoQuestPopupTracker_RemovePopUp(questID);
 	PlaySound("igMainMenuOpen");
 end
 

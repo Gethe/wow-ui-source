@@ -1744,11 +1744,11 @@
 		<Frame parentKey="PortraitFrame">
 			<Size x="52" y="60"/>
 			<Anchors>
-				<Anchor point="LEFT" x="20" y="2"/>
+				<Anchor point="LEFT" x="23" y="3"/>
 			</Anchors>
 			<Layers>
 				<Layer level="BORDER">
-					<Texture parentKey="PortraitRing" atlas="GarrMission_PortraitRing_Quality" useAtlasSize="true">
+					<Texture parentKey="PortraitRing" atlas="GarrMission_PortraitRing" useAtlasSize="true">
 						<Anchors>
 							<Anchor point="TOP"/>
 						</Anchors>
@@ -1762,7 +1762,14 @@
 						</Anchors>
 					</Texture>
 				</Layer>
-				<Layer level="BORDER" textureSubLevel="1">
+				<Layer level="BORDER" textureSubLevel="1">	
+					<Texture parentKey="PortraitRingQuality" atlas="GarrMission_PortraitRing_Quality" useAtlasSize="true">
+						<Anchors>
+							<Anchor point="TOP"/>
+						</Anchors>
+					</Texture>
+				</Layer>				
+				<Layer level="BORDER" textureSubLevel="2">
 					<Texture parentKey="LevelBorder" atlas="GarrMission_PortraitRing_LevelBorder" useAtlasSize="true">
 						<Anchors>
 							<Anchor point="BOTTOM" y="-3"/>
@@ -1813,6 +1820,12 @@
 			</Layers>
 		</Frame>
 	</Frames>
+	<Scripts>
+		<OnEnter function="GarrisonFollowerAlertFrame_OnEnter"/>
+		<OnLeave>
+			GarrisonFollowerTooltip:Hide();
+		</OnLeave>
+	</Scripts>
 </Button>
 
 <Frame name="AlertFrame" parent="UIParent" hidden="true">

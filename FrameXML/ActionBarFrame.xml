@@ -35,7 +35,8 @@
 			</OnReceiveDrag>
 			<OnEnter>
 				if (self.NewActionTexture) then
-					self.NewActionTexture:Hide();
+					MarkNewActionHighlight(self.action, false);
+					ActionButton_UpdateAction(self, true);
 				end
 				ActionButton_SetTooltip(self);
 				ActionBarButtonEventsFrame.tooltipOwner = self;

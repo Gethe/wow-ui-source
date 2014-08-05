@@ -593,7 +593,7 @@
 							</OnShow>
 						</Scripts>
 					</Frame>
-					<Button name="$parentFindGroupButton" inherits="MagicButtonTemplate" text="FIND_A_GROUP">
+					<Button name="$parentFindGroupButton" inherits="MagicButtonTemplate" text="FIND_A_GROUP" motionScriptsWhileDisabled="true">
 						<Size>
 							<AbsDimension x="135" y="22"/>
 						</Size>
@@ -613,6 +613,14 @@
 									LFDQueueFrame_Join();
 								end
 							</OnClick>
+							<OnEnter>
+								if ( self.tooltip ) then
+									GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+									GameTooltip:SetText(self.tooltip, NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b, 1, true);
+									GameTooltip:Show();
+								end
+							</OnEnter>
+							<OnLeave function="GameTooltip_Hide"/>
 						</Scripts>
 					</Button>
 					<Frame name="$parentPartyBackfill" parentKey="PartyBackfill" inherits="LFGBackfillCoverTemplate">

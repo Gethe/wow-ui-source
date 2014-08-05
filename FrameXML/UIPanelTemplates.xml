@@ -65,7 +65,7 @@
 			<OnLoad function="SearchBoxTemplate_OnLoad"/>
 			<OnEscapePressed function="EditBox_ClearFocus"/>
 			<OnEditFocusLost function="SearchBoxTemplate_OnEditFocusLost"/>
-			<OnEditFocusGained function="SerachBoxTemplate_OnEditFocusGained"/>
+			<OnEditFocusGained function="SearchBoxTemplate_OnEditFocusGained"/>
 		</Scripts>
 	</EditBox>
 	<EditBox name="BagSearchBoxTemplate" inherits="SearchBoxTemplate" autoFocus="false" virtual="true">

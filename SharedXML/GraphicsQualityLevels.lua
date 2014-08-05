@@ -273,7 +273,7 @@ VideoData["RaidGraphics_Quality"].data = {
 			RaidGraphics_ParticleDensityDropDown = VIDEO_OPTIONS_ULTRA,
 			RaidGraphics_EnvironmentalDetailDropDown = VIDEO_OPTIONS_ULTRA,
 			RaidGraphics_GroundClutterDropDown = VIDEO_OPTIONS_ULTRA,
-			RaidGraphics_ShadowsDropDown = VIDEO_OPTIONS_HIGH,
+			RaidGraphics_ShadowsDropDown = VIDEO_OPTIONS_ULTRA,
 			RaidGraphics_TextureResolutionDropDown = VIDEO_OPTIONS_HIGH,
 			RaidGraphics_FilteringDropDown = VIDEO_OPTIONS_16XANISOTROPIC,
 			RaidGraphics_LiquidDetailDropDown = VIDEO_OPTIONS_ULTRA,
@@ -1116,7 +1116,7 @@ VideoData["Graphics_ShadowsDropDown"]={
 		[3] = {
 			text = VIDEO_OPTIONS_MEDIUM,
 			cvars =	{
-				shadowMode = GetDefaultVideoQualityOption("shadowMode", 2, 1),
+				shadowMode = GetDefaultVideoQualityOption("shadowMode", 2, 2),
 				shadowTextureSize = GetDefaultVideoQualityOption("shadowTextureSize", 2, 2048),
 			},
 			tooltip = VIDEO_OPTIONS_SHADOW_QUALITY_MEDIUM;
@@ -1124,7 +1124,7 @@ VideoData["Graphics_ShadowsDropDown"]={
 		[4] = {
 			text = VIDEO_OPTIONS_HIGH,
 			cvars =	{
-				shadowMode = GetDefaultVideoQualityOption("shadowMode", 3, 2),
+				shadowMode = GetDefaultVideoQualityOption("shadowMode", 3, 3),
 				shadowTextureSize = GetDefaultVideoQualityOption("shadowTextureSize", 3, 2048),
 			},
 			tooltip = VIDEO_OPTIONS_SHADOW_QUALITY_HIGH;
@@ -1132,7 +1132,7 @@ VideoData["Graphics_ShadowsDropDown"]={
 		[5] = {
 			text = VIDEO_OPTIONS_ULTRA,
 			cvars =	{
-				shadowMode = GetDefaultVideoQualityOption("shadowMode", 4, 3),
+				shadowMode = GetDefaultVideoQualityOption("shadowMode", 4, 4),
 				shadowTextureSize = GetDefaultVideoQualityOption("shadowTextureSize", 4, 2048),
 			},
 			tooltip = VIDEO_OPTIONS_SHADOW_QUALITY_ULTRA;
@@ -1167,7 +1167,7 @@ VideoData["RaidGraphics_ShadowsDropDown"]={
 		[3] = {
 			text = VIDEO_OPTIONS_MEDIUM,
 			cvars =	{
-				raidshadowMode = GetDefaultVideoQualityOption("RAIDshadowMode", 2, 1, true),
+				raidshadowMode = GetDefaultVideoQualityOption("RAIDshadowMode", 2, 2, true),
 				raidShadowTextureSize = GetDefaultVideoQualityOption("RAIDshadowTextureSize", 2, 2048, true),
 			},
 			tooltip = VIDEO_OPTIONS_SHADOW_QUALITY_MEDIUM;
@@ -1175,7 +1175,7 @@ VideoData["RaidGraphics_ShadowsDropDown"]={
 		[4] = {
 			text = VIDEO_OPTIONS_HIGH,
 			cvars =	{
-				raidshadowMode = GetDefaultVideoQualityOption("RAIDshadowMode", 3, 2, true),
+				raidshadowMode = GetDefaultVideoQualityOption("RAIDshadowMode", 3, 3, true),
 				raidShadowTextureSize = GetDefaultVideoQualityOption("RAIDshadowTextureSize", 3, 2048, true),
 			},
 			tooltip = VIDEO_OPTIONS_SHADOW_QUALITY_HIGH;
@@ -1183,8 +1183,7 @@ VideoData["RaidGraphics_ShadowsDropDown"]={
 		[5] = {
 			text = VIDEO_OPTIONS_ULTRA,
 			cvars =	{
-				--raidshadowMode = GetDefaultVideoQualityOption("RAIDshadowMode", 4, 3, true),
-				raidshadowMode = 4,
+				raidshadowMode = GetDefaultVideoQualityOption("RAIDshadowMode", 4, 4, true),
 				raidShadowTextureSize = GetDefaultVideoQualityOption("RAIDshadowTextureSize", 4, 2048, true),
 			},
 			tooltip = VIDEO_OPTIONS_SHADOW_QUALITY_ULTRA;

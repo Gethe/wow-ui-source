@@ -440,11 +440,13 @@ function QuestLogQuests_Update(poiTable)
 	local headerTitle, headerOnMap, headerShown, headerLogIndex, mapHeaderButtonIndex, firstMapHeaderQuestButtonIndex;
 	for questLogIndex = 1, numEntries do
 		local title, level, suggestedGroup, isHeader, isCollapsed, isComplete, frequency, questID, startEvent, displayQuestID, isOnMap, hasLocalPOI, isTask, isStory = GetQuestLogTitle(questLogIndex);
+		local difficultyColor = GetQuestDifficultyColor(level);
 		if ( isHeader ) then
 			headerTitle = title;
 			headerOnMap = isOnMap;
 			headerShown = false;
 			headerLogIndex = questLogIndex;
+			difficultyColor = QuestDifficultyColors["header"];
 		elseif ( headerOnMap and isOnMap and not isTask ) then
 			-- we have at least one valid entry, show the header for it
 			if ( not headerShown and not showQuestObjectives ) then
@@ -476,11 +478,16 @@ function QuestLogQuests_Update(poiTable)
 			button = QuestLogQuests_GetTitleButton(titleIndex);
 			button.questID = questID;
 
+			if ( ENABLE_COLORBLIND_MODE == "1" ) then
+				title = "["..level.."] " .. title;
+			end
 			if ( displayQuestID ) then
 				button.Text:SetText(questID.." - "..title);
 			else
 				button.Text:SetText(title);
 			end
+			button.Text:SetTextColor( difficultyColor.r, difficultyColor.g, difficultyColor.b );
+			
 			totalHeight = totalHeight + button.Text:GetHeight();
 			if ( IsQuestHardWatched(questLogIndex) ) then
 				button.Check:Show();
@@ -718,7 +725,12 @@ end
 
 function QuestMapLogTitleButton_OnEnter(self)
 	-- do block highlight
-	self.Text:SetTextColor(NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b);	
+	local title, level, suggestedGroup, isHeader, isCollapsed, isComplete, frequency, questID, startEvent, displayQuestID, isOnMap, hasLocalPOI = GetQuestLogTitle(self.questLogIndex);
+	local _, difficultyHighlightColor = GetQuestDifficultyColor(level);
+	if ( isHeader ) then
+		_, difficultyHighlightColor = QuestDifficultyColors["header"];
+	end
+	self.Text:SetTextColor( difficultyHighlightColor.r, difficultyHighlightColor.g, difficultyHighlightColor.b );
 	for _, line in pairs(OBJECTIVE_FRAMES) do
 		if ( line.questID == self.questID ) then
 			line.Text:SetTextColor(1, 1, 1);
@@ -729,7 +741,6 @@ function QuestMapLogTitleButton_OnEnter(self)
 		WorldMapBlobFrame:DrawBlob(self.questID, true);
 	end
 	
-	local title, level, suggestedGroup, isHeader, isCollapsed, isComplete, frequency, questID, startEvent, displayQuestID, isOnMap, hasLocalPOI = GetQuestLogTitle(self.questLogIndex);
 
 	GameTooltip:ClearAllPoints();
 	GameTooltip:SetPoint("TOPLEFT", self, "TOPRIGHT", 34, 0);
@@ -819,7 +830,12 @@ end
 
 function QuestMapLogTitleButton_OnLeave(self)
 	-- remove block highlight
-	self.Text:SetTextColor(0.75, 0.61, 0);
+	local title, level, suggestedGroup, isHeader = GetQuestLogTitle(self.questLogIndex);
+	local difficultyColor = GetQuestDifficultyColor(level);
+	if ( isHeader ) then
+		difficultyColor = QuestDifficultyColors["header"];
+	end
+	self.Text:SetTextColor( difficultyColor.r, difficultyColor.g, difficultyColor.b );
 	for _, line in pairs(OBJECTIVE_FRAMES) do
 		if ( line.questID == self.questID ) then
 			line.Text:SetTextColor(0.8, 0.8, 0.8);

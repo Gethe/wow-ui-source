@@ -1276,25 +1276,9 @@
 					</OnLoad>
 				</Scripts>
 			</CheckButton>
-			<CheckButton name="$parentMapQuestDifficulty" inherits="InterfaceOptionsCheckButtonTemplate">
-				<Anchors>
-					<Anchor point="TOPLEFT" relativeTo="$parentAutoQuestTracking" relativePoint="BOTTOMLEFT">
-						<Offset x="0" y="-8"/>
-					</Anchor>
-				</Anchors>
-				<Scripts>
-					<OnLoad>
-						self.type = CONTROLTYPE_CHECKBOX;
-						self.cvar = "mapQuestDifficulty";
-						self.uvar = "MAP_QUEST_DIFFICULTY";
-						self.setFunc = function () WorldMapFrame_ResetQuestColors(); end;
-						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
-					</OnLoad>
-				</Scripts>
-			</CheckButton>
 			<CheckButton name="$parentMapFade" inherits="InterfaceOptionsCheckButtonTemplate">
 				<Anchors>
-					<Anchor point="TOPLEFT" relativeTo="$parentMapQuestDifficulty" relativePoint="BOTTOMLEFT">
+					<Anchor point="TOPLEFT" relativeTo="$parentAutoQuestTracking" relativePoint="BOTTOMLEFT">
 						<Offset x="0" y="-8"/>
 					</Anchor>
 				</Anchors>

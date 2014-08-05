@@ -331,6 +331,8 @@ function HonorFrame_OnLoad(self)
 	self:RegisterEvent("PVP_RATED_STATS_UPDATE");
 	self:RegisterEvent("GROUP_ROSTER_UPDATE");
 	self:RegisterEvent("PVP_REWARDS_UPDATE");
+	self:RegisterEvent("LFG_LIST_ACTIVE_ENTRY_UPDATE");
+	self:RegisterEvent("LFG_LIST_SEARCH_RESULT_UPDATED");
 end
 
 function HonorFrame_OnEvent(self, event, ...)
@@ -346,6 +348,8 @@ function HonorFrame_OnEvent(self, event, ...)
 		HonorFrame_UpdateQueueButtons();
 	elseif ( event == "PVP_REWARDS_UPDATE" and self:IsShown() ) then
 		RequestRandomBattlegroundInstanceInfo();
+	elseif ( event == "LFG_LIST_ACTIVE_ENTRY_UPDATE" or event == "LFG_LIST_SEARCH_RESULT_UPDATED" ) then
+		HonorFrame_UpdateQueueButtons();
 	end
 end
 
@@ -415,6 +419,24 @@ function HonorFrame_UpdateQueueButtons()
 	else
 		HonorFrame.SoloQueueButton:Disable();
 		HonorFrame.GroupQueueButton:Disable();
+	end
+
+	--Disable the button if the person is active in LFGList
+	local lfgListDisabled;
+	if ( select(2,C_LFGList.GetNumApplications()) > 0 ) then
+		lfgListDisabled = CANNOT_DO_THIS_WITH_LFGLIST_APP;
+	elseif ( C_LFGList.GetActiveEntryInfo() ) then
+		lfgListDisabled = CANNOT_DO_THIS_WHILE_LFGLIST_LISTED;
+	end
+
+	if ( lfgListDisabled ) then
+		HonorFrame.SoloQueueButton:Disable();
+		HonorFrame.GroupQueueButton:Disable();
+		HonorFrame.SoloQueueButton.tooltip = lfgListDisabled;
+		HonorFrame.GroupQueueButton.tooltip = lfgListDisabled;
+	else
+		HonorFrame.SoloQueueButton.tooltip = nil;
+		HonorFrame.GroupQueueButton.tooltip = nil;
 	end
 end
 
@@ -793,10 +815,16 @@ function ConquestFrame_OnLoad(self)
 	self:RegisterEvent("GROUP_ROSTER_UPDATE");
 	self:RegisterEvent("PVP_RATED_STATS_UPDATE");
 	self:RegisterEvent("PVP_REWARDS_UPDATE");
+	self:RegisterEvent("LFG_LIST_ACTIVE_ENTRY_UPDATE");
+	self:RegisterEvent("LFG_LIST_SEARCH_RESULT_UPDATED");
 end
 
 function ConquestFrame_OnEvent(self, event, ...)
-	ConquestFrame_Update(self);
+	if ( event == "LFG_LIST_ACTIVE_ENTRY_UPDATE" or event == "LFG_LIST_SEARCH_RESULT_UPDATED" ) then
+		ConquestFrame_UpdateJoinButton(self);
+	else
+		ConquestFrame_Update(self);
+	end
 end
 
 function ConquestFrame_OnShow(self)
@@ -847,6 +875,22 @@ end
 function ConquestFrame_UpdateJoinButton()
 	local button = ConquestFrame.JoinButton;
 	local groupSize = GetNumGroupMembers();
+
+	--Disable the button if the person is active in LFGList
+	local lfgListDisabled;
+	if ( select(2,C_LFGList.GetNumApplications()) > 0 ) then
+		lfgListDisabled = CANNOT_DO_THIS_WITH_LFGLIST_APP;
+	elseif ( C_LFGList.GetActiveEntryInfo() ) then
+		lfgListDisabled = CANNOT_DO_THIS_WHILE_LFGLIST_LISTED;
+	end
+
+	if ( lfgListDisabled ) then
+		button:Disable();
+		button.tooltip = lfgListDisabled;
+		return;
+	end
+
+	--Check whether they have a valid button selected
 	if ( ConquestFrame.selectedButton ) then
 		if ( groupSize == 0 ) then
 			button.tooltip = PVP_NO_QUEUE_GROUP;

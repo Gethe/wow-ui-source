@@ -429,6 +429,7 @@ end
 function BankFrame_AutoSortButtonOnClick()
 	local self = BankFrame;
 
+	PlaySound("UI_BagSorting_01");
 	if (self.activeTabIndex == 1) then
 		SortBankBags();
 	elseif (self.activeTabIndex == 2) then

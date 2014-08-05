@@ -333,11 +333,13 @@ function BonusObjectiveTracker_ShowRewardsTooltip(block)
 			local text;
 			if ( numItems > 1 ) then
 				text = string.format(BONUS_OBJECTIVE_REWARD_WITH_COUNT_FORMAT, texture, numItems, name);
-			else
+			elseif( texture and name ) then
 				text = string.format(BONUS_OBJECTIVE_REWARD_FORMAT, texture, name);			
 			end
-			local color = ITEM_QUALITY_COLORS[quality];
-			GameTooltip:AddLine(text, color.r, color.g, color.b);
+			if( text ) then
+				local color = ITEM_QUALITY_COLORS[quality];
+				GameTooltip:AddLine(text, color.r, color.g, color.b);
+			end
 		end
 		-- money
 		local money = GetQuestLogRewardMoney(questID);
@@ -528,6 +530,7 @@ end
 local function UpdateQuestBonusObjectives(BlocksFrame)
 	BONUS_OBJECTIVE_TRACKER_MODULE.Header.animateReason = OBJECTIVE_TRACKER_UPDATE_TASK_ADDED;
 	local tasksTable = InternalGetTasksTable();
+	local displayObjectiveHeader = false;
 	for i = 1, #tasksTable do
 		local questID = tasksTable[i];
 		local isInArea, isOnMap, numObjectives = InternalGetTaskInfo(questID);
@@ -537,7 +540,8 @@ local function UpdateQuestBonusObjectives(BlocksFrame)
 			local block = BONUS_OBJECTIVE_TRACKER_MODULE:GetBlock(questID);
 			local taskFinished = true;
 			for objectiveIndex = 1, numObjectives do
-				local text, objectiveType, finished = InternalGetQuestObjectiveInfo(questID, objectiveIndex);
+				local text, objectiveType, finished, displayAsObjective = InternalGetQuestObjectiveInfo(questID, objectiveIndex);
+				displayObjectiveHeader = displayObjectiveHeader or displayAsObjective;
 				if ( text ) then
 					if ( finished ) then
 						local existingLine = block.lines[objectiveIndex];
@@ -598,6 +602,9 @@ local function UpdateQuestBonusObjectives(BlocksFrame)
 				BonusObjectiveTracker_SetBlockState(block, "LEAVING");
 			end
 		end
+	end
+	if( displayObjectiveHeader ) then
+		BONUS_OBJECTIVE_TRACKER_MODULE.Header.Text:SetText(TRACKER_HEADER_OBJECTIVE);
 	end
 	if ( OBJECTIVE_TRACKER_UPDATE_REASON == OBJECTIVE_TRACKER_UPDATE_TASK_ADDED ) then
 		PlaySound("UI_Scenario_Stage_End");
@@ -709,13 +716,13 @@ function BONUS_OBJECTIVE_TRACKER_MODULE:AddProgressBar(block, line, questID, fin
 			self.usedProgressBars[block] = { };
 		end
 		self.usedProgressBars[block][line] = progressBar;
+		progressBar:RegisterEvent("QUEST_LOG_UPDATE");
 		progressBar:Show();
 		progressBar.Bar.Label:Hide();
 		-- initialize to the right values
 		progressBar.questID = questID;
 		if( not finished ) then
-			progressBar:RegisterEvent("QUEST_LOG_UPDATE");
-			BonusObjectiveTrackerProgressBar_OnEvent(progressBar)
+			BonusObjectiveTrackerProgressBar_SetValue( progressBar, GetQuestProgressBarPercent(questID) );
 		end
 	end	
 	-- anchor the status bar
@@ -725,16 +732,14 @@ function BONUS_OBJECTIVE_TRACKER_MODULE:AddProgressBar(block, line, questID, fin
 	else
 		progressBar:SetPoint("TOPLEFT", 0, -block.module.lineSpacing);
 	end
-	
+
 	if( finished ) then
 		progressBar.finished = true;
-		progressBar.Bar:SetValue(100)
-		progressBar.Bar.Label:SetFormattedText(PERCENTAGE_STRING, 100);
+		BonusObjectiveTrackerProgressBar_SetValue( progressBar, 100 );
 	end
-
-	progressBar.block = block;
-	progressBar.questID = questID;
 	
+	progressBar.block = block;
+	progressBar.questID = questID;	
 
 	line.ProgressBar = progressBar;
 	block.height = block.height + progressBar.height + block.module.lineSpacing;
@@ -750,28 +755,34 @@ function BONUS_OBJECTIVE_TRACKER_MODULE:FreeProgressBar(block, line)
 		progressBar:Hide(); 
 		line.ProgressBar = nil;
 		progressBar.finished = nil;
+		progressBar.AnimValue = nil;
 		progressBar:UnregisterEvent("QUEST_LOG_UPDATE");
 	end
 end
 
-function BonusObjectiveTrackerProgressBar_OnEvent(self)
-	local percent = GetQuestProgressBarPercent(self.questID);
-	if( self.finished or percent >= 100 ) then
-		BonusObjectiveTrackerProgressBar_PlayFlareAnim(self, percent - (self.AnimValue or 0));
-		return;
-	end
+function BonusObjectiveTrackerProgressBar_SetValue(self, percent)
 	self.Bar:SetValue(percent);
 	self.Bar.Label:SetFormattedText(PERCENTAGE_STRING, percent);
-	if( self.AnimValue ) then
-		BonusObjectiveTrackerProgressBar_PlayFlareAnim(self, percent - self.AnimValue);
-	end
 	self.AnimValue = percent;
 end
 
+function BonusObjectiveTrackerProgressBar_OnEvent(self)
+	local percent = 100;
+	if( not self.finished ) then
+		percent = GetQuestProgressBarPercent(self.questID);
+	end
+	BonusObjectiveTrackerProgressBar_PlayFlareAnim(self, percent - self.AnimValue);
+	BonusObjectiveTrackerProgressBar_SetValue(self, percent);
+end
+
 function BonusObjectiveTrackerProgressBar_PlayFlareAnim(progressBar, delta)
+	if( progressBar.AnimValue >= 100 ) then
+		return;
+	end
 	local prefix = "";
 	local width = progressBar.Bar:GetWidth();
 	local offset = 0;
+	
 	if( delta < 1 ) then
 		return;
 	elseif( delta < 10 ) then

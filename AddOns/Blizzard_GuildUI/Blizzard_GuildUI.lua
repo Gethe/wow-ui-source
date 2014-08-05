@@ -4,16 +4,6 @@ local GUILDFRAME_POPUPS = { };
 local BUTTON_WIDTH_WITH_SCROLLBAR = 298;
 local BUTTON_WIDTH_NO_SCROLLBAR = 320;
 
-local GUILD_EVENT_TEXTURES = {
-	--[CALENDAR_EVENTTYPE_RAID]		= "Interface\\LFGFrame\\LFGIcon-",
-	--[CALENDAR_EVENTTYPE_DUNGEON]	= "Interface\\LFGFrame\\LFGIcon-",
-	[CALENDAR_EVENTTYPE_PVP]		= "Interface\\Calendar\\UI-Calendar-Event-PVP",
-	[CALENDAR_EVENTTYPE_MEETING]	= "Interface\\Calendar\\MeetingIcon",
-	[CALENDAR_EVENTTYPE_OTHER]		= "Interface\\Calendar\\UI-Calendar-Event-Other",
-	--[CALENDAR_EVENTTYPE_HEROIC_DUNGEON]	= "Interface\\LFGFrame\\LFGIcon-",
-};
-local GUILD_EVENT_TEXTURE_PATH = "Interface\\LFGFrame\\LFGIcon-";
-
 function GuildFrame_OnLoad(self)
 	self:RegisterEvent("GUILD_ROSTER_UPDATE");
 	self:RegisterEvent("PLAYER_GUILD_UPDATE");
@@ -195,6 +185,18 @@ function GuildFrame_CheckName()
 		GuildNameChangeAlertFrame:Hide();
 		GuildNameChangeFrame:Hide();
 	end
+end
+
+function GuildPointFrame_OnEnter(self)
+	self.Highlight:Show();
+	GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+	GameTooltip:SetText(GUILD_POINTS_TT, 1, 1, 1);
+	GameTooltip:Show();
+end
+
+function GuildPointFrame_OnLeave(self)
+	self.Highlight:Hide();
+	GameTooltip:Hide();
 end
 
 --****** Common Functions *******************************************************
@@ -405,12 +407,6 @@ function GuildPerksFrame_OnLoad(self)
 	GuildPerksContainer.update = GuildPerks_Update;
 	HybridScrollFrame_CreateButtons(GuildPerksContainer, "GuildPerksButtonTemplate", 8, 0, "TOPLEFT", "TOPLEFT", 0, 0, "TOP", "BOTTOM");	
 	self:RegisterEvent("GUILD_ROSTER_UPDATE");
-	-- faction icon
-	if ( GetGuildFactionGroup() == 0 ) then  -- horde
-		GUILD_EVENT_TEXTURES[CALENDAR_EVENTTYPE_PVP] = "Interface\\Calendar\\UI-Calendar-Event-PVP01";
-	else  -- alliance
-		GUILD_EVENT_TEXTURES[CALENDAR_EVENTTYPE_PVP] = "Interface\\Calendar\\UI-Calendar-Event-PVP02";
-	end
 	-- create buttons table for news update
 	local buttons = { };
 	for i = 1, 9 do
@@ -442,45 +438,6 @@ function GuildPerksFrame_OnEvent(self, event, ...)
 end
 
 --****** News/Events ************************************************************
-local SIX_DAYS = 6 * 24 * 60 * 60		-- time in seconds
-function GuildPerksFrame_SetNewsOrEventButton(button, eventIndex)
-	local today = date("*t");
-	local month, day, weekday, hour, minute, eventType, title, calendarType, textureName = CalendarGetGuildEventInfo(eventIndex);
-	local displayTime = GameTime_GetFormattedTime(hour, minute, true);
-	local displayDay;
-	
-	if ( today["day"] == day and today["month"] == month ) then
-		displayDay = NORMAL_FONT_COLOR_CODE..GUILD_EVENT_TODAY..FONT_COLOR_CODE_CLOSE;
-	else
-		local year = today["year"];
-		-- if in December and looking at an event in January
-		if ( month < today["month"] ) then
-			year = year + 1;
-		end
-		local eventTime = time{year = year, month = month, day = day};
-		if ( eventTime - time() < SIX_DAYS ) then
-			displayDay = CALENDAR_WEEKDAY_NAMES[weekday];
-		else
-			displayDay = string.format(GUILD_NEWS_DATE, CALENDAR_WEEKDAY_NAMES[weekday], day, month);
-		end
-	end
-
-	button.text:SetFormattedText(GUILD_EVENT_FORMAT, displayDay, displayTime, title);
-	button.index = eventIndex;
-	-- icon
-	if ( button.icon.type ~= "event" ) then
-		button.icon.type = "event"
-		button.icon:SetTexCoord(0, 1, 0, 1);
-		button.icon:SetWidth(14);
-		button.icon:SetHeight(14);
-	end
-	if ( GUILD_EVENT_TEXTURES[eventType] ) then
-		button.icon:SetTexture(GUILD_EVENT_TEXTURES[eventType]);
-	else
-		button.icon:SetTexture(GUILD_EVENT_TEXTURE_PATH..textureName);
-	end	
-end
-
 function GuildEventButton_OnClick(self, button)
 	if ( button == "LeftButton" ) then
 		if ( CalendarFrame and CalendarFrame:IsShown() ) then

@@ -16,6 +16,29 @@
 			</OnClick>
 		</Scripts>
 	</Button-->
+	<Button name="LFGListSearchAutoCompleteButtonTemplate" useParentLevel="true" virtual="true">
+		<Size x="275" y="22"/>
+		<Layers>
+			<Layer level="OVERLAY">
+				<Texture parentKey="Selected" atlas="search-select" hidden="true" setAllPoints="true"/>
+			</Layer>
+		</Layers>
+		<NormalTexture atlas="_search-rowbg"/>
+		<PushedTexture atlas="_search-rowbg"/>
+		<HighlightTexture atlas="search-highlight"/>
+		<ButtonText parentKey="Label" setAllPoints="true" justifyH="LEFT" wordWrap="false">
+			<Anchors>
+				<Anchor point="TOPLEFT" relativeKey="$parent" relativePoint="TOPLEFT" x="5" y="0"/>
+				<Anchor point="BOTTOMRIGHT" relativeKey="$parent" relativePoint="BOTTOMRIGHT" x="0" y="0"/>
+			</Anchors>
+		</ButtonText>
+		<NormalFont style="GameFontHighlightSmall"/>
+		<HighlightFont style="GameFontHighlightSmall"/>
+		<DisabledFont style="GameFontDisableSmall"/>
+		<Scripts>
+			<OnClick function="LFGListSearchAutoCompleteButton_OnClick"/>
+		</Scripts>
+	</Button>
 	<Button name="LFGListEntryCreationActivityListTemplate" virtual="true">
 		<Size x="250" y="14"/>
 		<Layers>
@@ -719,18 +742,73 @@
 					</Layer>
 				</Layers>
 				<Frames>
-					<EditBox parentKey="SearchBox" inherits="BagSearchBoxTemplate" letters="64">
+					<EditBox parentKey="SearchBox" inherits="SearchBoxTemplate" letters="64">
 						<Size x="310" y="18"/>
 						<Anchors>
 							<Anchor point="TOPLEFT" relativeKey="$parent.CategoryName" relativePoint="BOTTOMLEFT" x="0" y="-10"/>
 						</Anchors>
 						<Scripts>
-							<OnEnterPressed>
-								LFGListSearchPanel_DoSearch(self:GetParent());
-								self:ClearFocus();
-							</OnEnterPressed>
+							<OnEnterPressed function="LFGListSearchPanelSearchBox_OnEnterPressed"/>
+							<OnTabPressed function="LFGListSearchPanelSearchBox_OnTabPressed"/>
+							<OnArrowPressed function="LFGListSearchPanelSearchBox_OnArrowPressed"/>
+							<OnTextChanged function="LFGListSearchPanelSearchBox_OnTextChanged"/>
+							<OnEditFocusGained>
+								LFGListSearchPanel_UpdateAutoComplete(self:GetParent());
+								SearchBoxTemplate_OnEditFocusGained(self);
+							</OnEditFocusGained>
+							<OnEditFocusLost>
+								LFGListSearchPanel_UpdateAutoComplete(self:GetParent());
+								SearchBoxTemplate_OnEditFocusLost(self);
+							</OnEditFocusLost>
 						</Scripts>
 					</EditBox>
+					<Frame parentKey="AutoCompleteFrame" frameLevel="20">
+						<Size x="0" y="30"/>
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeKey="$parent.SearchBox" relativePoint="BOTTOMLEFT" x="-2" y="0"/>
+							<Anchor point="TOPRIGHT" relativeKey="$parent.SearchBox" relativePoint="BOTTOMRIGHT" x="-4" y="0"/>
+						</Anchors>
+						<Layers>
+							<Layer level="OVERLAY">
+								<Texture parentKey="BottomLeftBorder" inherits="UI-Frame-BotCornerLeft">
+									<Anchors>
+										<Anchor point="BOTTOMLEFT" x="0" y="0"/>
+									</Anchors>
+								</Texture>
+								<Texture parentKey="BottomRightBorder" inherits="UI-Frame-BotCornerRight">
+									<Anchors>
+										<Anchor point="BOTTOMRIGHT" x="0" y="0"/>
+									</Anchors>
+								</Texture>
+								<Texture parentKey="BottomBorder" inherits="_UI-Frame-Bot">
+									<Anchors>
+										<Anchor point="BOTTOMLEFT" relativeKey="$parent.BottomLeftBorder" relativePoint="BOTTOMRIGHT" x="0" y="0"/>
+										<Anchor point="BOTTOMRIGHT" relativeKey="$parent.BottomRightBorder" relativePoint="BOTTOMLEFT" x="0" y="0"/>
+									</Anchors>
+								</Texture>
+								<Texture parentKey="LeftBorder" inherits="!UI-Frame-LeftTile">
+									<Anchors>
+										<Anchor point="TOPLEFT" x="0" y="0" />
+										<Anchor point="BOTTOMLEFT" relativeKey="$parent.BottomLeftBorder" relativePoint="TOPLEFT"/>
+									</Anchors>
+								</Texture>
+								<Texture parentKey="RightBorder" inherits="!UI-Frame-RightTile">
+									<Anchors>
+										<Anchor point="TOPRIGHT" x="1" y="0" />
+										<Anchor point="BOTTOMRIGHT" relativeKey="$parent.BottomRightBorder" relativePoint="TOPRIGHT" x="1" y="0"/>
+									</Anchors>
+								</Texture>
+							</Layer>
+						</Layers>
+						<Frames>
+							<Button parentArray="Results" inherits="LFGListSearchAutoCompleteButtonTemplate">
+								<Anchors>
+									<Anchor point="TOPLEFT" relativeKey="$parent.LeftBorder" relativePoint="TOPRIGHT" x="-8" y="0"/>
+									<Anchor point="TOPRIGHT" relativeKey="$parent.RightBorder" relativePoint="TOPLEFT" x="5" y="0"/>
+								</Anchors>
+							</Button>
+						</Frames>
+					</Frame>
 					<Button parentKey="RefreshButton">
 						<Size x="32" y="32"/>
 						<Anchors>
@@ -1399,6 +1477,8 @@
 				</Frames>
 				<Scripts>
 					<OnLoad function="LFGListEntryCreation_OnLoad"/>
+					<OnEvent function="LFGListEntryCreation_OnEvent"/>
+					<OnShow function="LFGListEntryCreation_OnShow"/>
 				</Scripts>
 			</Frame>
 		</Frames>

@@ -92,8 +92,6 @@ function LootFrame_OnEvent(self, event, ...)
 	elseif ( event == "LOOT_CLOSED" ) then
 		if( not self.AutoLootTable ) then
 			LootFrame_Close();
-		else
-			self.CloseRequest = true;
 		end
 		return;
 	elseif ( event == "OPEN_MASTER_LOOT_LIST" ) then
@@ -124,11 +122,7 @@ function LootFrame_OnUpdate(self, elapsed)
 				self.timeSinceUpdate = nil;
 				self.AutoLootTable = nil;
 				--close
-				if( self.CloseRequest )then
-					LootFrame_Close();
-				else
-					LootFrame_Update();
-				end
+				LootFrame_Close();
 			else
 				local numLootToShow = LOOTFRAME_NUMBUTTONS;
 				if ( self.numLootItems > LOOTFRAME_NUMBUTTONS ) then
@@ -272,7 +266,6 @@ end
 function LootFrame_InitAutoLootTable( self )
 	if( not self.AutoLootTable )then
 		self.AutoLootTable = GetLootInfo();
-		self.CloseRequest = nil;
 	end
 end
 

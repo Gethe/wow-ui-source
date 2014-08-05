@@ -54,8 +54,11 @@ function ContainerFrame_OnEvent(self, event, ...)
 	elseif ( event == "INVENTORY_SEARCH_UPDATE" ) then
 		ContainerFrame_UpdateSearchResults(self);
 	elseif ( event == "BAG_SLOT_FLAGS_UPDATED" ) then
-		if (self:IsShown() and self.FilterDropDown:IsShown()) then
-			UIDropDownMenu_RefreshAll(self.FilterDropDown);
+		if (self:GetID() == arg1) then
+			self.localFlag = nil;
+			if (self:IsShown()) then
+				ContainerFrame_Update(self);
+			end
 		end
 	end
 end
@@ -153,7 +156,8 @@ function ContainerFrame_OnHide(self)
 		UpdateMicroButtons();
 		PlaySound("KeyRingClose");
 	else
-		if ( self:GetID() == 0 ) then
+		if ( self:GetID() == 0 and BagHelpBox.wasShown ) then
+			BagHelpBox.wasShown = nil;
 			SetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_CLEAN_UP_BAGS, true);
 		end
 		if ( BagHelpBox:IsShown() and BagHelpBox.owner == self ) then
@@ -173,12 +177,25 @@ function ContainerFrame_OnShow(self)
 	self:RegisterEvent("BAG_NEW_ITEMS_UPDATED");
 	self:RegisterEvent("BAG_SLOT_FLAGS_UPDATED");
 
+	self.FilterIcon:Hide();
 	if ( self:GetID() == 0 ) then
-		if ( not GetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_CLEAN_UP_BAGS) ) then
+		local shouldShow = true;
+		if (IsCharacterNewlyBoosted()) then
+			shouldShow = false;
+		else
+			for i = BACKPACK_CONTAINER + 1, NUM_BAG_SLOTS, 1 do
+				if ( not GetInventoryItemID("player", ContainerIDToInventoryID(i)) ) then
+					shouldShow = false;
+					break;
+				end
+			end
+		end
+		if ( shouldShow and not GetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_CLEAN_UP_BAGS) ) then
 			BagHelpBox:ClearAllPoints();
 			BagHelpBox:SetPoint("RIGHT", BagItemAutoSortButton, "LEFT", -24, 0);
 			BagHelpBox.Text:SetText(CLEAN_UP_BAGS_TUTORIAL);
 			BagHelpBox.owner = self;
+			BagHelpBox.wasShown = true;
 			BagHelpBox:Show();
 		end
 		MainMenuBarBackpackButton:SetChecked(true);
@@ -186,6 +203,13 @@ function ContainerFrame_OnShow(self)
 		local button = _G["CharacterBag"..(self:GetID() - 1).."Slot"];
 		if ( button ) then
 			button:SetChecked(true);
+		end
+		for i = LE_BAG_FILTER_FLAG_EQUIPMENT, NUM_LE_BAG_FILTER_FLAGS do
+			if ( GetBagSlotFlag(self:GetID(), i) ) then
+				self.FilterIcon.Icon:SetAtlas(BAG_FILTER_ICONS[i], true);
+				self.FilterIcon:Show();
+				break;
+			end
 		end
 		if ( not ContainerFrame1.allBags ) then
 			CheckBagSettingsTutorial();
@@ -369,6 +393,17 @@ function ContainerFrame_Update(frame)
 	local isNewItem, isBattlePayItem, newItemTexture, flash, newItemAnim;
 	local tooltipOwner = GameTooltip:GetOwner();
 	
+	frame.FilterIcon:Hide();
+	if ( id ~= 0 ) then
+		for i = LE_BAG_FILTER_FLAG_EQUIPMENT, NUM_LE_BAG_FILTER_FLAGS do
+			if ( GetBagSlotFlag(id, i) ) then
+				frame.FilterIcon.Icon:SetAtlas(BAG_FILTER_ICONS[i], true);
+				frame.FilterIcon:Show();
+				break;
+			end
+		end
+	end
+
 	--Update Searchbox and sort button
 	if ( id == 0 ) then
 		BagItemSearchBox:SetParent(frame);
@@ -1133,13 +1168,20 @@ BAG_FILTER_LABELS = {
 	[LE_BAG_FILTER_FLAG_JUNK] = BAG_FILTER_JUNK,
 };
 
+BAG_FILTER_ICONS = {
+	[LE_BAG_FILTER_FLAG_EQUIPMENT] = "bags-icon-equipment",
+	[LE_BAG_FILTER_FLAG_CONSUMABLES] = "bags-icon-consumables",
+	[LE_BAG_FILTER_FLAG_TRADE_GOODS] = "bags-icon-tradegoods",
+};
+
 function ContainerFrameFilterDropDown_OnLoad(self)
 	UIDropDownMenu_Initialize(self, ContainerFrameFilterDropDown_Initialize, "MENU");
 end
 
 function ContainerFrameFilterDropDown_Initialize(self, level)
-	local id = self:GetParent():GetID();
-
+	local frame = self:GetParent();
+	local id = frame:GetID();
+	
 	local info = UIDropDownMenu_CreateInfo();	
 
 	if (id > 0 and id <= NUM_BAG_SLOTS) then
@@ -1157,9 +1199,22 @@ function ContainerFrameFilterDropDown_Initialize(self, level)
 			if ( i ~= LE_BAG_FILTER_FLAG_JUNK ) then
 				info.text = BAG_FILTER_LABELS[i];
 				info.func = function(_, _, _, value)
-					SetBagSlotFlag(id, i, not value);
+					value = not value;
+					SetBagSlotFlag(id, i, value);
+					if (value) then
+						frame.localFlag = i;
+						frame.FilterIcon.Icon:SetAtlas(BAG_FILTER_ICONS[i]);
+						frame.FilterIcon:Show();
+					else
+						frame.FilterIcon:Hide();
+						frame.localFlag = -1;						
+					end
 				end;
-				info.checked = GetBagSlotFlag(id, i);
+				if (frame.localFlag) then
+					info.checked = frame.localFlag == i;
+				else
+					info.checked = GetBagSlotFlag(id, i);
+				end
 				info.disabled = nil;
 				info.tooltipTitle = nil;
 				UIDropDownMenu_AddButton(info);

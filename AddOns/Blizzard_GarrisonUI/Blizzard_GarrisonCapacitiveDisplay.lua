@@ -18,6 +18,11 @@ end
 
 local shipmentUpdater;
 
+function GarrisonCapacitiveDisplayFrame_TimerUpdate()
+	local self = GarrisonCapacitiveDisplayFrame;
+	GarrisonCapacitiveDisplayFrame_Update(self, true, self.maxShipments, self.plotID);
+end
+
 function GarrisonCapacitiveDisplayFrame_Update(self, success, maxShipments, plotID)
 	if (success ~= 0) then
 		self.maxShipments = maxShipments;
@@ -27,6 +32,10 @@ function GarrisonCapacitiveDisplayFrame_Update(self, success, maxShipments, plot
 
 		local numPending = C_Garrison.GetNumPendingShipments();
 		local display = self.CapacitiveDisplay;
+
+		if (not numPending) then
+			return;
+		end
 
 		local available = maxShipments - numPending;
 
@@ -98,7 +107,7 @@ function GarrisonCapacitiveDisplayFrame_Update(self, success, maxShipments, plot
 		local _, buildingName = C_Garrison.GetOwnedBuildingInfoAbbrev(self.plotID);
 
 		self.TitleText:SetText(buildingName);
-		self.StartWorkOrderButton:SetEnabled(hasReagents);
+		self.StartWorkOrderButton:SetEnabled(hasReagents and available > 0);
 		
 		if ( UnitExists("npc") ) then
 			SetPortraitTexture(self.portrait, "npc");
@@ -113,7 +122,26 @@ function GarrisonCapacitiveDisplayFrame_Update(self, success, maxShipments, plot
 		display.Description:SetText(description);
 
 		display.ShipmentIconFrame.ShipmentName:SetText(name);
-		display.ShipmentIconFrame.ShipmentsAvailable:SetText(CAPACITANCE_SHIPMENT_COUNT:format(available, maxShipments));
+		if (available > 0) then
+			if (shipmentUpdater) then
+				shipmentUpdater:Cancel();
+				shipmentUpdater = nil;
+			end
+			display.ShipmentIconFrame.ShipmentsAvailable:SetText(CAPACITANCE_SHIPMENT_COUNT:format(available, maxShipments));
+		else
+			local timeRemaining = select(6,C_Garrison.GetPendingShipmentInfo(1));
+			if (timeRemaining ~= 0) then
+				if (not shipmentUpdater) then
+					shipmentUpdater = C_Timer.NewTicker(1, GarrisonCapacitiveDisplayFrame_TimerUpdate);
+				end
+			end
+			if (timeRemaining == 0) then
+				display.ShipmentIconFrame.ShipmentsAvailable:SetText(GREEN_FONT_COLOR_CODE..CAPACITANCE_SHIPMENT_READY..FONT_COLOR_CODE_CLOSE);
+			else
+				display.ShipmentIconFrame.ShipmentsAvailable:SetText(RED_FONT_COLOR_CODE..CAPACITANCE_SHIPMENT_COOLDOWN:format(SecondsToTime(timeRemaining, false, true, 1))..FONT_COLOR_CODE_CLOSE);
+			end
+		end
+
 		display.ShipmentIconFrame.Icon:SetTexture(texture);
 		display.ShipmentIconFrame.itemId = itemID;
 
@@ -153,6 +181,10 @@ function GarrisonCapacitiveDisplayFrame_OnEvent(self, event, ...)
 end
 
 function GarrisonCapacitiveDisplayFrame_OnHide(self)
+	if (shipmentUpdater) then
+		shipmentUpdater:Cancel();
+		shipmentUpdater = nil;
+	end
 	C_Garrison.CloseTradeskillCrafter();
 end
 

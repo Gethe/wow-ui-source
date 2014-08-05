@@ -120,7 +120,8 @@ function AddonList_OnLoad(self)
 		template = "GlueDropDownMenuTemplate"
 		value = ALL
 	else
-		self:SetParent(UIParent)
+		self:SetParent(UIParent);
+		self:SetFrameStrata("HIGH");
 		template = "UIDropDownMenuTemplate"
 		value = true
 		for i=1,GetNumAddOns() do

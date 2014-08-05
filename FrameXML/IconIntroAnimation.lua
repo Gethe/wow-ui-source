@@ -12,6 +12,20 @@ end
 function IconIntroTracker_OnEvent(self, event, ...)
 	if event == "SPELL_PUSHED_TO_ACTIONBAR" then
 		local spellID, slotIndex, slotPos = ...;
+		MarkNewActionHighlight(slotIndex, true);
+		
+		local page = math.floor(slotIndex / NUM_ACTIONBAR_BUTTONS) + 1;
+		local currentPage = GetActionBarPage();
+		
+		local bonusBarIndex = GetBonusBarIndex();
+		if (HasBonusActionBar() and bonusBarIndex ~= 0) then
+			currentPage = bonusBarIndex;
+		end
+		
+		if (page ~= currentPage and page ~= MULTIBOTTOMLEFTINDEX) then
+			return;
+		end
+		
 		local _, _, icon = GetSpellInfo(spellID);
 		local freeIcon;
 	
@@ -31,7 +45,7 @@ function IconIntroTracker_OnEvent(self, event, ...)
 		freeIcon.icon.pos = slotPos;
  		freeIcon:ClearAllPoints();
 
-		local page = math.floor(slotIndex / NUM_ACTIONBAR_BUTTONS) + 1;
+		
 		if (page == MULTIBOTTOMLEFTINDEX) then
 			freeIcon:SetPoint("CENTER", _G["MultiBarBottomLeftButton"..slotPos], 0, 0);
 			freeIcon:SetFrameLevel(_G["MultiBarBottomLeftButton"..slotPos]:GetFrameLevel()+1);

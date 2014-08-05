@@ -1405,7 +1405,7 @@ function PlayerTalentFrame_UpdateSpecFrame(self, spec)
 		button.specName:SetText(name);
 	end
 	
-	if ( primaryStat ~= 0 ) then
+	if ( not self.isPet and primaryStat ~= 0 ) then
 		scrollChild.roleName:ClearAllPoints();
 		scrollChild.roleName:SetPoint("BOTTOMLEFT", "$parentRoleIcon", "RIGHT", 3, 2);
 		scrollChild.primaryStat:SetText(SPEC_FRAME_PRIMARY_STAT:format(SPEC_STAT_STRINGS[primaryStat]));

@@ -46,11 +46,16 @@
 							iconFrame.glow:Play();
 							SetBarSlotFromIntro(iconFrame.slot);
 							iconFrame:GetParent().isFree = true;
+							
+							local button;
 							if (iconFrame.multibar) then
-								_G["MultiBarBottomLeftButton"..iconFrame.pos].NewActionTexture:Show();
+								button = _G["MultiBarBottomLeftButton"..iconFrame.pos];
 							else
-								_G["ActionButton"..iconFrame.pos].NewActionTexture:Show();
+								button = _G["ActionButton"..iconFrame.pos];
 							end
+							
+							MarkNewActionHighlight(button.action, true);
+							ActionButton_UpdateAction(button, true);
 						else 
 							iconFrame:SetFrameLevel(1);
 						end

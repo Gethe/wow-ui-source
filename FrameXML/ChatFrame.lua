@@ -2342,9 +2342,9 @@ end
 
 
 SlashCmdList["WARGAME"] = function(msg)
-	local area, isTournamentMode = strmatch(msg, "^([^%s]+)%s*([^%s]*)");
-	if (area == "" or area == "nil" or area == "0") then area = nil end 
-	StartWarGame("target", area, ValueToBoolean(isTournamentMode) );
+	-- Parameters are (playername, area, isTournamentMode). Since the player name can be multiple words,
+	-- we pass in theses parameters as a whitespace delimited string and let the C side tokenize it
+	StartWarGameByName(msg);
 end
 
 SlashCmdList["SPECTATOR_WARGAME"] = function(msg)

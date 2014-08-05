@@ -78,7 +78,7 @@ UI.xsd">
 				</Anchors>
 				<Layers>
 					<Layer level="BORDER">
-						<Texture parentKey="PortraitRing" atlas="GarrMission_PortraitRing_Quality" useAtlasSize="true">
+						<Texture parentKey="PortraitRing" atlas="GarrMission_PortraitRing" useAtlasSize="true">
 							<Anchors>
 								<Anchor point="TOP"/>
 							</Anchors>
@@ -92,7 +92,14 @@ UI.xsd">
 							</Anchors>
 						</Texture>
 					</Layer>
-					<Layer level="BORDER" textureSubLevel="1">
+					<Layer level="BORDER" textureSubLevel="1">	
+						<Texture parentKey="PortraitRingQuality" atlas="GarrMission_PortraitRing_Quality" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="TOP"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+					<Layer level="BORDER" textureSubLevel="2">
 						<Texture parentKey="LevelBorder" atlas="GarrMission_PortraitRing_LevelBorder" useAtlasSize="true">
 							<Anchors>
 								<Anchor point="BOTTOM" y="-3"/>

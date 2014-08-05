@@ -28,7 +28,6 @@ function GarrisonFollowerTooltip_Show(garrisonFollowerID, collected, quality, le
 	GarrisonFollowerTooltip:Show();
 
 	GarrisonFollowerTooltip:ClearAllPoints();
-	GarrisonFollowerTooltip:SetPoint(GameTooltip:GetPoint());
 end
 
 

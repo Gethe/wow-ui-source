@@ -10,8 +10,21 @@ LEFT_ACTIONBAR_PAGE = 4;
 RIGHT_ACTIONBAR_PAGE = 3;
 RANGE_INDICATOR = "●";
 
+COOLDOWN_TYPE_LOSS_OF_CONTROL = 1;
+COOLDOWN_TYPE_NORMAL = 2;
+
 -- Table of actionbar pages and whether they're viewable or not
 VIEWABLE_ACTION_BAR_PAGES = {1, 1, 1, 1, 1, 1};
+
+ACTION_HIGHLIGHT_MARKS = { };
+
+function MarkNewActionHighlight(action, mark)
+	ACTION_HIGHLIGHT_MARKS[action] = mark;
+end
+
+function GetNewActionHighlightMark(action)
+	return ACTION_HIGHLIGHT_MARKS[action];
+end
 
 local isInPetBattle = C_PetBattles.IsInBattle;
 function ActionButtonDown(id)
@@ -154,6 +167,7 @@ function ActionBarActionEventsFrame_OnLoad(self)
 	self:RegisterEvent("SPELL_ACTIVATION_OVERLAY_GLOW_SHOW");
 	self:RegisterEvent("SPELL_ACTIVATION_OVERLAY_GLOW_HIDE");
 	self:RegisterEvent("UPDATE_SUMMONPETS_ACTION");
+	self:RegisterEvent("LOSS_OF_CONTROL_ADDED");
 end
 
 function ActionBarActionEventsFrame_OnEvent(self, event, ...)
@@ -246,6 +260,14 @@ function ActionButton_UpdateAction (self, force)
 		self.action = action;
 		SetActionUIButton(self, action, self.cooldown);
 		ActionButton_Update(self);
+		
+		if ( self.NewActionTexture ) then
+			if ( GetNewActionHighlightMark(action) ) then
+				self.NewActionTexture:Show();
+			else
+				self.NewActionTexture:Hide();
+			end
+		end
 	end
 end
 
@@ -280,7 +302,6 @@ function ActionButton_Update (self)
 		ActionButton_UpdateState(self);
 		ActionButton_UpdateUsable(self);
 		ActionButton_UpdateCooldown(self);
-		ActionButton_UpdateLossOfControlCooldown(self);
 		ActionButton_UpdateFlash(self);
 	else
 		if ( self.eventsRegistered ) then
@@ -432,13 +453,28 @@ function ActionButton_UpdateCount (self)
 end
 
 function ActionButton_UpdateCooldown (self)
+	local locStart, locDuration = GetActionLossOfControlCooldown(self.action);
 	local start, duration, enable, charges, maxCharges = GetActionCooldown(self.action);
-	CooldownFrame_SetTimer(self.cooldown, start, duration, enable, charges, maxCharges);
-end
 
-function ActionButton_UpdateLossOfControlCooldown (self)
-	local start, duration = GetActionLossOfControlCooldown(self.action);
-	self.cooldown:SetCooldown(start, duration);
+	if ( (locStart + locDuration) > (start + duration) ) then
+		if ( self.cooldown.currentCooldownType ~= COOLDOWN_TYPE_LOSS_OF_CONTROL ) then
+			self.cooldown:SetEdgeTexture("Interface\\Cooldown\\edge-LoC");
+			self.cooldown:SetSwipeColor(0.17, 0, 0);
+			self.cooldown:SetHideCountdownNumbers(true);
+			self.cooldown.currentCooldownType = COOLDOWN_TYPE_LOSS_OF_CONTROL;
+		end
+		
+		CooldownFrame_SetTimer(self.cooldown, locStart, locDuration, 1, nil, nil, true);
+	else
+		if ( self.cooldown.currentCooldownType ~= COOLDOWN_TYPE_NORMAL ) then
+			self.cooldown:SetEdgeTexture("Interface\\Cooldown\\edge");
+			self.cooldown:SetSwipeColor(0, 0, 0);
+			self.cooldown:SetHideCountdownNumbers(false);
+			self.cooldown.currentCooldownType = COOLDOWN_TYPE_NORMAL;
+		end
+		
+		CooldownFrame_SetTimer(self.cooldown, start, duration, enable, charges, maxCharges);
+	end
 end
 
 --Overlay stuff
@@ -560,14 +596,12 @@ function ActionButton_OnEvent (self, event, ...)
 		ActionButton_UpdateState(self);
 	elseif ( event == "ACTIONBAR_UPDATE_USABLE" ) then
 		ActionButton_UpdateUsable(self);
-	elseif ( event == "ACTIONBAR_UPDATE_COOLDOWN" ) then
+	elseif ( event == "ACTIONBAR_UPDATE_COOLDOWN" or event == "LOSS_OF_CONTROL_ADDED" ) then
 		ActionButton_UpdateCooldown(self);
 		-- Update tooltip
 		if ( GameTooltip:GetOwner() == self ) then
 			ActionButton_SetTooltip(self);
 		end
-	elseif ( event == "LOSS_OF_CONTROL_UPDATE" ) then
-		ActionButton_UpdateLossOfControlCooldown(self);
 	elseif ( event == "TRADE_SKILL_SHOW" or event == "TRADE_SKILL_CLOSE"  or event == "ARCHAEOLOGY_CLOSED" ) then
 		ActionButton_UpdateState(self);
 	elseif ( event == "PLAYER_ENTER_COMBAT" ) then

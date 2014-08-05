@@ -49,7 +49,7 @@
 			</OnLoad>
 		</Scripts>
 	</CheckButton>
-	<Frame name="HorizontalMultiBar1" toplevel="true" frameStrata="HIGH" virtual="true" hidden="true">
+	<Frame name="HorizontalMultiBar1" toplevel="true" frameStrata="MEDIUM" virtual="true" hidden="true">
 		<Size>
 			<AbsDimension x="500" y="38"/>
 		</Size>
@@ -167,7 +167,7 @@
 			</CheckButton>
 		</Frames>
 	</Frame>
-	<Frame name="HorizontalMultiBar2" toplevel="true" frameStrata="HIGH" virtual="true" hidden="true">
+	<Frame name="HorizontalMultiBar2" toplevel="true" frameStrata="MEDIUM" virtual="true" hidden="true">
 		<Size>
 			<AbsDimension x="500" y="38"/>
 		</Size>
@@ -285,7 +285,7 @@
 			</CheckButton>
 		</Frames>
 	</Frame>
-	<Frame name="VerticalMultiBar3" toplevel="true" frameStrata="HIGH" virtual="true" hidden="true">
+	<Frame name="VerticalMultiBar3" toplevel="true" frameStrata="MEDIUM" virtual="true" hidden="true">
 		<Size>
 			<AbsDimension x="38" y="500"/>
 		</Size>
@@ -403,7 +403,7 @@
 			</CheckButton>
 		</Frames>
 	</Frame>
-	<Frame name="VerticalMultiBar4" toplevel="true" frameStrata="HIGH" virtual="true" hidden="true">
+	<Frame name="VerticalMultiBar4" toplevel="true" frameStrata="MEDIUM" virtual="true" hidden="true">
 		<Size>
 			<AbsDimension x="38" y="500"/>
 		</Size>

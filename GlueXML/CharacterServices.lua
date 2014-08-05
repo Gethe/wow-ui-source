@@ -29,6 +29,7 @@
 --  :FormatResult() - Formats the result for display with the result label.  If absent, :GetResult() will be used instead.
 --  :OnHide() - This function is called when a block needs to handle any resetting when the flow is hidden.
 --  :OnAdvance() - This function is called in response to the flow:Advance call if the block needs to handle any logic here.
+--  :OnRewind() - This function is called in response to the flow:Rewind call if the block needs to handle any logic here.
 --  :SkipIf() - Skip this block if a certain result is present
 --  :OnSkip() - If you have a SkipIf() then OnSkip() will perform any actions you need if you are skipped.
 --
@@ -447,6 +448,9 @@ end
 function CharacterServicesFlowPrototype:Rewind(controller)
 	local block = self.Steps[self.step];
 	local results;
+	if (block.OnRewind) then
+		block:OnRewind();
+	end
 	if (block:IsFinished() and not block.SkipOnRewind) then
 		if (self.step ~= 1) then
 			results = self:BuildResults(self.step - 1);
@@ -456,6 +460,9 @@ function CharacterServicesFlowPrototype:Rewind(controller)
 		self:HideBlock(self.step);
 		self.step = self.step - 1;
 		while ( self.Steps[self.step].SkipOnRewind ) do
+			if (self.Steps[self.step].OnRewind) then
+				self.Steps[self.step]:OnRewind();
+			end
 			self:HideBlock(self.step);
 			self.step = self.step - 1;
 		end
@@ -1010,6 +1017,12 @@ end
 
 function CharacterUpgradeEndStep:GetResult()
 	return {};
+end
+
+function CharacterUpgradeEndStep:OnRewind()
+	if (CharacterUpgradeSecondChanceWarningFrame:IsShown()) then
+		CharacterUpgradeSecondChanceWarningFrame:Hide();
+	end
 end
 
 function CharacterUpgradeSecondChanceWarningFrameConfirmButton_OnClick(self)

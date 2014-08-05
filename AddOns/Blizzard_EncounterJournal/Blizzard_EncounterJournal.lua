@@ -79,7 +79,7 @@ local EJ_TIER_DATA =
 	[3] = { backgroundTexture = "Interface\\EncounterJournal\\UI-EJ-WrathoftheLichKing", r = 0.2, g = 0.8, b = 1.0 },
 	[4] = { backgroundTexture = "Interface\\EncounterJournal\\UI-EJ-Cataclysm", r = 1.0, g = 0.4, b = 0.0 },
 	[5] = { backgroundTexture = "Interface\\EncounterJournal\\UI-EJ-MistsofPandaria", r = 0.0, g = 0.6, b = 0.2 },
-	[6] = { backgroundTexture = "Interface\\EncounterJournal\\UI-EJ-Classic", r = 1.0, g = 0.8, b = 0.0 },
+	[6] = { backgroundTexture = "Interface\\ENCOUNTERJOURNAL\\UI-EJ-WarlordsofDraenor", r = 0.82, g = 0.55, b = 0.1 },
 }
 
 
@@ -871,6 +871,7 @@ function EncounterJournal_SetUpOverview(self, role, index)
 	end
 
 	if (not title) then
+		infoHeader:Hide();
 		return;
 	end
 	
@@ -1501,7 +1502,7 @@ function EncounterJournal_SetTooltip(link)
 		end
 	end
 
-	GameTooltip:SetHyperlink(link, specID);
+	GameTooltip:SetHyperlink(link, classID, specID);
 end
 
 function EncounterJournal_SetFlagIcon(texture, index)
@@ -1972,6 +1973,10 @@ end
 function EJNAV_SelectInstance(self, index, navBar)
 	local showRaid = not EncounterJournal.instanceSelect.raidsTab:IsEnabled();
 	local instanceID = EJ_GetInstanceByIndex(index, showRaid);
+	
+	--Clear any previous selection.
+	NavBar_Reset(navBar);
+	
 	EncounterJournal_DisplayInstance(instanceID);
 end
 

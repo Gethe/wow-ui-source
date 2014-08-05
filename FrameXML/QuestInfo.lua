@@ -311,7 +311,11 @@ function QuestInfo_ShowRewards()
 		numQuestChoices = GetNumQuestLogChoices();
 		numQuestCurrencies = GetNumQuestLogRewardCurrencies();
 		if ( GetQuestLogRewardSpell() ) then
-			numQuestSpellRewards = 1;
+			if (select(6, GetQuestLogRewardSpell()) and (not IsCharacterNewlyBoosted())) then
+				numQuestSpellRewards = 0;
+			else
+				numQuestSpellRewards = 1;
+			end
 		end
 		money = GetQuestLogRewardMoney();
 		skillName, skillIcon, skillPoints = GetQuestLogRewardSkillPoints();
@@ -323,7 +327,11 @@ function QuestInfo_ShowRewards()
 		numQuestChoices = GetNumQuestChoices();
 		numQuestCurrencies = GetNumRewardCurrencies();
 		if ( GetRewardSpell() ) then
-			numQuestSpellRewards = 1;
+			if (select(6, GetRewardSpell()) and (not IsCharacterNewlyBoosted())) then
+				numQuestSpellRewards = 0;
+			else
+				numQuestSpellRewards = 1;
+			end
 		end
 		money = GetRewardMoney();
 		skillName, skillIcon, skillPoints = GetRewardSkillPoints();

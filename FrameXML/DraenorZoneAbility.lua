@@ -36,6 +36,7 @@ function DraenorZoneAbilityFrame_OnLoad(self)
 	self:RegisterUnitEvent("UNIT_AURA", "player");
 	self:RegisterEvent("SPELL_UPDATE_COOLDOWN");
 	self:RegisterEvent("SPELL_UPDATE_USABLE");
+	self:RegisterEvent("SPELL_UPDATE_CHARGES");
 	self:RegisterEvent("SPELLS_CHANGED");
 	self:RegisterEvent("ACTIONBAR_SLOT_CHANGED");
 
@@ -111,6 +112,15 @@ function DraenorZoneAbilityFrame_Update(self)
 	self.SpellButton.Style:SetTexture(DRAENOR_ZONE_SPELL_ABILITY_TEXTURE_CACHE[name]);
 	self.SpellButton.Icon:SetTexture(tex);
 
+	local spellID = DRAENOR_ZONE_NAME_TO_SPELL_ID_CACHE[name];
+	local charges, maxCharges = GetSpellCharges(spellID);
+
+	if (maxCharges and maxCharges > 1) then
+		self.SpellButton.Count:SetText(charges);
+	else
+		self.SpellButton.Count:SetText("");
+	end
+
 	local start, duration, enable = GetSpellCooldown(name);
 
 	if (start) then
@@ -118,7 +128,7 @@ function DraenorZoneAbilityFrame_Update(self)
 	end
 		
 	self.SpellButton.spellName = self.CurrentSpell;
-	self.SpellButton.currentSpellID = DRAENOR_ZONE_NAME_TO_SPELL_ID_CACHE[name];
+	self.SpellButton.currentSpellID = spellID;
 end
 
 function HasDraenorZoneSpellOnBar(self)

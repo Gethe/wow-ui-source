@@ -385,7 +385,7 @@
 					<Anchor point="BOTTOMLEFT" relativeKey="$parent.List" relativePoint="TOPLEFT" x="0" y="2"/>
 				</Anchors>
 				<Scripts>
-					<OnClick function="GarrisonLandingPage_SetTab"/>
+					<OnClick function="GarrisonLandingPageTab_OnClick"/>
 				</Scripts>
 				<NormalTexture atlas="GarrLanding-TopTabSelected" useAtlasSize="true">
 					<Size x="205" y="36"/>
@@ -413,7 +413,7 @@
 					<Anchor point="BOTTOMRIGHT" relativeKey="$parent.List" relativePoint="TOPRIGHT" x="-20" y="2"/>
 				</Anchors>
 				<Scripts>
-					<OnClick function="GarrisonLandingPage_SetTab"/>
+					<OnClick function="GarrisonLandingPageTab_OnClick"/>
 				</Scripts>
 				<NormalTexture atlas="GarrLanding-TopTabSelected" useAtlasSize="true">
 					<Size x="205" y="36"/>

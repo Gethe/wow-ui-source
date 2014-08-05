@@ -300,14 +300,7 @@
 							</Anchor>
 						</Anchors>
 						<Scripts>
-							<OnLoad>
-								self.cvar = "RAIDsettingsEnabled";
-								self.SetValue = function (self, value)
-										BlizzardOptionsPanel_SetCVarSafe(self.cvar, value);
-									end
-								_G[self:GetName().."Text"]:SetText(RAID_SETTINGS_ENABLED);
-								VideoOptionsCheckbox_OnLoad(self);
-							</OnLoad>
+							<OnLoad function="Display_RaidSettingsEnabled_CheckButton_OnLoad"/>
 							<OnClick function="Display_RaidSettingsEnabled_CheckButton_OnClick"/>
 							<OnShow function="Dispaly_RaidSettingsEnabled_CheckButton_OnShow"/>
 						</Scripts>
@@ -685,7 +678,7 @@
 
 			
 			<!-- Raid Panel -->
-			<Frame name="RaidGraphics_" hidden="true" parent="VideoOptionsFramePanelContainer">
+			<Frame name="RaidGraphics_" hidden="true">
 				<Anchors>
 					<Anchor point="TOPLEFT" x="5" y="-185"/>
 					<Anchor point="BOTTOMRIGHT" x="-5" y="40"/>
@@ -833,9 +826,7 @@
 					<Frame name="$parentRightQuality">
 						<Size x="560" y="22"/>
 						<Anchors>
-							<Anchor point="TOPLEFT" relativeTo="$parentGraphicsHeaderUnderline" relativePoint="BOTTOMLEFT">
-								<Offset x="11" y="-17"/>
-							</Anchor>
+							<Anchor point="TOPLEFT" x="15" y="-17"/>
 						</Anchors>
 						<Backdrop bgFile="Interface\Buttons\UI-SliderBar-Background" edgeFile="Interface\Buttons\UI-SliderBar-Border" tile="true">
 							<EdgeSize>

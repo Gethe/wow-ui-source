@@ -920,7 +920,7 @@
 									</OnClick>
 								</Scripts>
 							</Button>
-							<Button name="CharSelectBackToActiveButton" inherits="GlueButtonSmallTemplate" hidden="true" text="BACK_TO_ACTIVE_CHARACTERS">
+							<Button name="CharSelectBackToActiveButton" inherits="GlueButtonSmallTemplate" hidden="true" text="CANCEL">
 								<Size x="200" y="45"/>
 								<Anchors>
 									<Anchor point="BOTTOM" x="0" y="15"/>

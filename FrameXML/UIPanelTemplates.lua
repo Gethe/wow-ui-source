@@ -16,7 +16,7 @@ function SearchBoxTemplate_OnEditFocusLost(self)
 	end
 end
 
-function SerachBoxTemplate_OnEditFocusGained(self)
+function SearchBoxTemplate_OnEditFocusGained(self)
 	self:HighlightText();
 	self:SetFontObject("ChatFontSmall");
 	self.searchIcon:SetVertexColor(1.0, 1.0, 1.0);
@@ -80,7 +80,7 @@ function BagSearch_OnChar(self, text)
 end
 
 function BagSearch_OnEditFocusGained(self)
-	SerachBoxTemplate_OnEditFocusGained(self);
+	SearchBoxTemplate_OnEditFocusGained(self);
 
 	for _,barName in pairs(ITEM_SEARCHBAR_LIST) do
 		local bar = _G[barName];
@@ -91,7 +91,7 @@ function BagSearch_OnEditFocusGained(self)
 end
 
 function BagSearch_OnEditFocusLost(self)
-	SerachBoxTemplate_OnEditFocusGained(self);
+	SearchBoxTemplate_OnEditFocusGained(self);
 
 	local search = self:GetText();
 	for _,barName in pairs(ITEM_SEARCHBAR_LIST) do

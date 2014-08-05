@@ -7,7 +7,6 @@ GARRISON_MISSION_TYPE_FONT_COLOR	=	{r=0.8, g=0.7, b=0.53};
 
 
 function GarrisonLandingPage_OnLoad(self)
-	self.List.listScroll.update = GarrisonLandingPageList_Update;
 	HybridScrollFrame_CreateButtons(self.List.listScroll, "GarrisonLandingPageMissionTemplate", 0, 0);
 	GarrisonLandingPageList_Update();
 	self:RegisterEvent("GARRISON_LANDINGPAGE_SHIPMENTS");
@@ -24,10 +23,13 @@ function GarrisonLandingPage_OnShow(self)
 	else
 		self.InvasionBadge:Hide();
 	end
+	
+	PlaySound("igSpellBookOpen");
 end
 
 function GarrisonLandingPage_OnHide(self)
 	GarrisonLandingPage:SetScript("OnUpdate", nil);
+	PlaySound("igSpellBookClose");
 end
 
 function GarrisonLandingPage_OnEvent(self, event)
@@ -132,26 +134,37 @@ function GarrisonLandingPageList_OnHide(self)
 	self.missions = nil;
 end
 
-function GarrisonLandingPage_SetTab(self)
+function GarrisonLandingPageTab_OnClick(self)
 	if ( self == GarrisonLandingPage.unselectedTab ) then
-		local tab = GarrisonLandingPage.selectedTab;
-		tab:GetNormalTexture():SetAtlas("GarrLanding-TopTabUnselected", true);
-		tab:SetNormalFontObject(GameFontNormalMed2);
-		tab:SetHighlightFontObject(GameFontNormalMed2);
-		tab:GetHighlightTexture():SetAlpha(1);
-		tab:SetSize(205,30);
-		
-		GarrisonLandingPage.unselectedTab = tab;
-		GarrisonLandingPage.selectedTab = self;
-		
-		self:GetNormalTexture():SetAtlas("GarrLanding-TopTabSelected", true);
-		self:SetNormalFontObject(GameFontHighlightMed2);
-		self:SetHighlightFontObject(GameFontHighlightMed2);
-		self:GetHighlightTexture():SetAlpha(0);
-		self:SetSize(205,36);
-		
-		GarrisonLandingPageList_UpdateItems();
+		PlaySound("igMainMenuOptionCheckBoxOn");
+		GarrisonLandingPage_SetTab(self);
 	end
+end
+
+function GarrisonLandingPage_SetTab(self)
+	local tab = GarrisonLandingPage.selectedTab;
+	tab:GetNormalTexture():SetAtlas("GarrLanding-TopTabUnselected", true);
+	tab:SetNormalFontObject(GameFontNormalMed2);
+	tab:SetHighlightFontObject(GameFontNormalMed2);
+	tab:GetHighlightTexture():SetAlpha(1);
+	tab:SetSize(205,30);
+	
+	GarrisonLandingPage.unselectedTab = tab;
+	GarrisonLandingPage.selectedTab = self;
+	
+	self:GetNormalTexture():SetAtlas("GarrLanding-TopTabSelected", true);
+	self:SetNormalFontObject(GameFontHighlightMed2);
+	self:SetHighlightFontObject(GameFontHighlightMed2);
+	self:GetHighlightTexture():SetAlpha(0);
+	self:SetSize(205,36);
+	
+	if (self == GarrisonLandingPage.InProgress) then
+		GarrisonLandingPage.List.listScroll.update = GarrisonLandingPageList_Update;
+	else
+		GarrisonLandingPage.List.listScroll.update = GarrisonLandingPageList_UpdateAvailable;
+	end
+	
+	GarrisonLandingPageList_UpdateItems();
 end
 
 function GarrisonLandingPageList_UpdateItems()

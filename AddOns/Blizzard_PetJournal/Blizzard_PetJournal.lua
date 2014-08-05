@@ -63,6 +63,7 @@ StaticPopupDialogs["BATTLE_PET_PUT_IN_CAGE"] = {
 	button2 = CANCEL,
 	maxLetters = 30,
 	OnAccept = function(self)
+		PetJournal_SetPendingCage(self.data);
 		C_PetJournal.CagePetByID(self.data);
 		if (PetJournalPetCard.petID == self.data) then
 			PetJournal_ShowPetCard(1);
@@ -128,7 +129,6 @@ end
 
 function PetJournalParent_OnShow(self)
 	PlaySound("igCharacterInfoOpen");
-
 	PetJournalParent_UpdateSelectedTab(self);
 	UpdateMicroButtons();
 end
@@ -158,7 +158,6 @@ function PetJournal_OnLoad(self)
 end
 
 function PetJournal_OnShow(self)
-	PlaySound("igCharacterInfoOpen");
 	PetJournal_UpdatePetList();
 	PetJournal_UpdatePetLoadOut();
 	PetJournal_UpdatePetCard(PetJournalPetCard);
@@ -183,7 +182,6 @@ end
 
 function PetJournal_OnHide(self)
 	self:UnregisterEvent("ACHIEVEMENT_EARNED");
-	PlaySound("igCharacterInfoClose");
 	PetJournal.SpellSelect:Hide();
 	HelpPlate_Hide();
 end
@@ -194,6 +192,9 @@ function PetJournal_OnEvent(self, event, ...)
 		PetJournal_UpdatePetLoadOut();
 	elseif event == "PET_JOURNAL_PET_DELETED" then
 		local petID = ...;
+		if (PetJournal_IsPendingCage(petID)) then
+			PetJournal_ClearPendingCage();
+		end
 		PetJournal_UpdatePetList();
 		PetJournal_UpdatePetLoadOut();
 		if(PetJournalPetCard.petID == petID) then
@@ -1257,6 +1258,20 @@ function PetJournal_UpdatePetCard(self)
 	end
 end
 
+function PetJournal_SetPendingCage(petID)
+	local self = PetJournal;
+	self.pendingCage = petID;
+end
+
+function PetJournal_ClearPendingCage()
+	local self = PetJournal;
+	self.pendingCage = nil;
+end
+
+function PetJournal_IsPendingCage(petID)
+	local self = PetJournal;
+	return self.pendingCage and self.pendingCage == petID;
+end
 
 function GetPetTypeTexture(petType) 
 	if PET_TYPE_SUFFIX[petType] then
@@ -1651,7 +1666,6 @@ end
 
 function PetJournalPetCount_OnEnter(self)
 	GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
-	GameTooltip:SetMinimumWidth(150);
 	GameTooltip:SetText(BATTLE_PETS_TOTAL_PETS, 1, 1, 1);
 	GameTooltip:AddLine(BATTLE_PETS_TOTAL_PETS_TOOLTIP, nil, nil, nil, true);
 	GameTooltip:Show();
@@ -1672,7 +1686,6 @@ end
 
 function PetJournalFindBattle_OnEnter(self)
 	GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
-	GameTooltip:SetMinimumWidth(150);
 	GameTooltip:SetText(FIND_BATTLE, 1, 1, 1);
 	GameTooltip:AddLine(BATTLE_PETS_FIND_BATTLE_TOOLTIP, nil, nil, nil, true);
 	
@@ -1688,7 +1701,6 @@ end
 function PetJournalAchievementStatus_OnEnter(self)
 	PetJournal.AchievementStatus.highlight:Show();
 	GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
-	GameTooltip:SetMinimumWidth(150);
 	GameTooltip:SetText(BATTLE_PETS_ACHIEVEMENT, 1, 1, 1);
 	GameTooltip:AddLine(BATTLE_PETS_ACHIEVEMENT_TOOLTIP, nil, nil, nil, true);
 	GameTooltip:Show();
@@ -1696,7 +1708,6 @@ end
 
 function PetJournalSummonButton_OnEnter(self)
 	GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
-	GameTooltip:SetMinimumWidth(150);
 	GameTooltip:SetText(self:GetText(), 1, 1, 1);
 	GameTooltip:AddLine(BATTLE_PETS_SUMMON_TOOLTIP, nil, nil, nil, true);
 	GameTooltip:Show();
@@ -1826,6 +1837,7 @@ function MountJournal_UpdateCachedList(self)
 	end
 	self.cachedMounts = {};
 	self.sortVal = {};
+	self.numOwned = 0;
 
 	for i=1, MountJournal_GetNumMounts() do
 		local creatureName, spellID, icon, active, isUsable, sourceType, isFavorite, _, _, hideOnChar, isCollected = MountJournal_GetMountInfo(i);
@@ -1833,6 +1845,9 @@ function MountJournal_UpdateCachedList(self)
 		if ( hideOnChar ~= true and MountJournal_MountMatchesFilter(self, creatureName, sourceType, isCollected ) ) then
 			self.cachedMounts[#self.cachedMounts + 1] = i;
 			self.sortVal[i] = MountJournal_GetMountSortVal(self, isUsable, sourceType, isFavorite, isCollected);
+		end
+		if (isCollected and hideOnChar ~= true) then
+			self.numOwned = self.numOwned + 1;
 		end
 	end
 
@@ -2002,7 +2017,7 @@ function MountJournal_UpdateMountList()
 
 	local totalHeight = #MountJournal.cachedMounts * MOUNT_BUTTON_HEIGHT;
 	HybridScrollFrame_Update(scrollFrame, totalHeight, scrollFrame:GetHeight());
-	MountJournal.MountCount.Count:SetText(numMounts);
+	MountJournal.MountCount.Count:SetText(MountJournal.numOwned);
 	if ( not showMounts ) then
 		MountJournal.selectedSpellID = 0;
 		MountJournal_UpdateMountDisplay();
@@ -2557,8 +2572,8 @@ function ToySpellButton_UpdateButton(self)
 	iconTexture:SetTexture(icon);
 	iconTextureUncollected:SetTexture(icon);
 	iconTextureUncollected:SetDesaturated(true);
-	slotFrameUncollectedInnerGlow:SetAlpha(0.2);
-	iconTextureUncollected:SetAlpha(0.2);
+	slotFrameUncollectedInnerGlow:SetAlpha(0.18);
+	iconTextureUncollected:SetAlpha(0.18);
 	toyString:SetText(toyName);	
 	toyString:Show();
 
@@ -2580,13 +2595,15 @@ function ToySpellButton_UpdateButton(self)
 		iconTexture:Show();
 		iconTextureUncollected:Hide();
 		toyString:SetTextColor(1, 0.82, 0, 1);
+		toyString:SetShadowColor(0, 0, 0, 1);
 		slotFrameCollected:Show();
 		slotFrameUncollected:Hide();
 		slotFrameUncollectedInnerGlow:Hide();
 	else
 		iconTexture:Hide();
 		iconTextureUncollected:Show();
-		toyString:SetTextColor(0.32, 0.27, 0.20, 1);
+		toyString:SetTextColor(0.33, 0.27, 0.20, 1);
+		toyString:SetShadowColor(0, 0, 0, 0.33);
 		slotFrameCollected:Hide();
 		slotFrameUncollected:Show();		
 		slotFrameUncollectedInnerGlow:Show();

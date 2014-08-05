@@ -88,8 +88,8 @@ function AlertFrame_OnEvent (self, event, ...)
 	elseif ( event == "GARRISON_MISSION_FINISHED" ) then
 		GarrisonMissionAlertFrame_ShowAlert(...);
 	elseif ( event == "GARRISON_FOLLOWER_ADDED" ) then
-		local name, displayID, level, quality, isUpgraded = ...;
-		GarrisonFollowerAlertFrame_ShowAlert(name, displayID, level, quality, isUpgraded);
+		local followerID, name, displayID, level, quality, isUpgraded = ...;
+		GarrisonFollowerAlertFrame_ShowAlert(followerID, name, displayID, level, quality, isUpgraded);
 	end
 end
 
@@ -1093,7 +1093,8 @@ GARRISON_FOLLOWER_QUALITY_TEXTURE_SUFFIXES = {
 	[LE_ITEM_QUALITY_EPIC] = "Epic",
 	[LE_ITEM_QUALITY_RARE] = "Rare",
 }
-function GarrisonFollowerAlertFrame_ShowAlert(name, displayID, level, quality, isUpgraded)
+function GarrisonFollowerAlertFrame_ShowAlert(followerID, name, displayID, level, quality, isUpgraded)
+	GarrisonFollowerAlertFrame.followerID = followerID;
 	GarrisonFollowerAlertFrame.Name:SetText(name);
 	local texSuffix = GARRISON_FOLLOWER_QUALITY_TEXTURE_SUFFIXES[quality]
 	if (texSuffix) then
@@ -1107,10 +1108,10 @@ function GarrisonFollowerAlertFrame_ShowAlert(name, displayID, level, quality, i
 	local color = BAG_ITEM_QUALITY_COLORS[quality];
 	if (color) then
 		GarrisonFollowerAlertFrame.PortraitFrame.LevelBorder:SetVertexColor(color.r, color.g, color.b);
-		GarrisonFollowerAlertFrame.PortraitFrame.PortraitRing:SetVertexColor(color.r, color.g, color.b);
+		GarrisonFollowerAlertFrame.PortraitFrame.PortraitRingQuality:SetVertexColor(color.r, color.g, color.b);
 	else
 		GarrisonFollowerAlertFrame.PortraitFrame.LevelBorder:SetVertexColor(1, 1, 1);
-		GarrisonFollowerAlertFrame.PortraitFrame.PortraitRing:SetVertexColor(1, 1, 1);
+		GarrisonFollowerAlertFrame.PortraitFrame.PortraitRingQuality:SetVertexColor(1, 1, 1);
 	end
 	
 	GarrisonFollowerAlertFrame.ArrowsAnim:Stop();	
@@ -1131,6 +1132,13 @@ function GarrisonFollowerAlertFrame_ShowAlert(name, displayID, level, quality, i
 	
 	AlertFrame_FixAnchors();
 	PlaySound("AuctionWindowOpen");
+end
+
+function GarrisonFollowerAlertFrame_OnEnter(self)
+	local link = C_Garrison.GetFollowerLink(self.followerID);
+	local _, garrisonFollowerID, quality, level, itemLevel, ability1, ability2, ability3, ability4, trait1, trait2, trait3, trait4 = strsplit(":", link);
+	GarrisonFollowerTooltip_Show(tonumber(garrisonFollowerID), false, tonumber(quality), tonumber(level), 0, 0, tonumber(itemLevel), tonumber(ability1), tonumber(ability2), tonumber(ability3), tonumber(ability4), tonumber(trait1), tonumber(trait2), tonumber(trait3), tonumber(trait4));
+	GarrisonFollowerTooltip:SetPoint("BOTTOM", self, "TOP");
 end
 
 function GarrisonAlertFrame_OnClick(self)

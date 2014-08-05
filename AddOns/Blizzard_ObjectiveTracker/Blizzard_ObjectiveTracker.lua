@@ -448,7 +448,7 @@ function DEFAULT_OBJECTIVE_TRACKER_MODULE:AddProgressBar(block, line, questID)
 		progressBar.Bar.Label:Hide();
 		-- initialize to the right values
 		progressBar.questID = questID;
-		ObjectiveTrackerProgressBar_OnEvent(progressBar)
+		ObjectiveTrackerProgressBar_SetValue(progressBar, GetQuestProgressBarPercent(questID));
 	end	
 	-- anchor the status bar
 	local anchor = block.currentLine or block.HeaderText;
@@ -543,10 +543,13 @@ end
 -- *****************************************************************************************************
 -- ***** PROGRESS BARS
 -- *****************************************************************************************************
-function ObjectiveTrackerProgressBar_OnEvent(self)
-	local percent = GetQuestProgressBarPercent(self.questID);
+function ObjectiveTrackerProgressBar_SetValue(self, percent)
 	self.Bar:SetValue(percent);
 	self.Bar.Label:SetFormattedText(PERCENTAGE_STRING, percent);
+end
+
+function ObjectiveTrackerProgressBar_OnEvent(self)
+	ObjectiveTrackerProgressBar_SetValue(self, GetQuestProgressBarPercent(self.questID));
 end
 
 -- *****************************************************************************************************
@@ -909,6 +912,17 @@ function ObjectiveTracker_OnSlideBlockUpdate(block, elapsed)
 		if ( slideData.onFinishFunc ) then
 			slideData.onFinishFunc(block);
 		end
+	end
+end
+
+function ObjectiveTracker_CancelSlideBlock(block)
+	block:SetScript("OnUpdate", nil);
+	local slideData = block.slideData;
+	block:SetHeight(slideData.startHeight);
+	if ( slideData.scroll ) then
+		block:UpdateScrollChildRect();
+		-- scrolling means the bottom of the content comes in first or leaves last
+		block:SetVerticalScroll(0);
 	end
 end
 

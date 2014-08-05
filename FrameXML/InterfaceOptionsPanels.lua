@@ -583,7 +583,7 @@ function InterfaceOptionsDisplayPanelOutlineDropDown_OnEvent (self, event, ...)
 		self.oldValue = value;
 		self.tooltip = OPTION_TOOLTIP_OBJECT_NPC_OUTLINE;
 
-		UIDropDownMenu_SetWidth(self, 140);
+		UIDropDownMenu_SetWidth(self, 180);
 		UIDropDownMenu_Initialize(self, InterfaceOptionsDisplayPanelOutline_Initialize);
 		UIDropDownMenu_SetSelectedValue(self, value);
 
@@ -614,17 +614,6 @@ end
 function InterfaceOptionsDisplayPanelOutline_Initialize()
 	local selectedValue = UIDropDownMenu_GetSelectedValue(InterfaceOptionsDisplayPanelOutlineDropDown);
 	local info = UIDropDownMenu_CreateInfo();
---[[
-	info.text = OBJECT_NPC_OUTLINE_DISABLED;
-	info.func = InterfaceOptionsDisplayPanelOutlineDropDown_OnClick;
-	info.value = "0";
-	if ( info.value == selectedValue ) then
-		info.checked = 1;
-	else
-		info.checked = nil;
-	end
-	UIDropDownMenu_AddButton(info);
-]]--
 	info.text = OBJECT_NPC_OUTLINE_MODE_ONE;
 	info.func = InterfaceOptionsDisplayPanelOutlineDropDown_OnClick;
 	info.value = "1";
@@ -661,7 +650,6 @@ end
 ObjectivesPanelOptions = {
 	autoQuestWatch = { text = "AUTO_QUEST_WATCH_TEXT" },
 	autoQuestProgress = { text = "AUTO_QUEST_PROGRESS_TEXT" },
-	mapQuestDifficulty = { text = "MAP_QUEST_DIFFICULTY_TEXT" },
 	advancedWorldMap = { text = "ADVANCED_WORLD_MAP_TEXT" },
 	mapFade = { text = "MAP_FADE_TEXT" },
 }

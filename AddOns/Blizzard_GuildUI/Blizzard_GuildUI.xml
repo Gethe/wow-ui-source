@@ -518,8 +518,18 @@
 							<Color r="1" g="1" b="1" a="1"/>
 							<TexCoords left="1.0" right="0" top="0" bottom="1.0"/>
 						</Texture>
+						<Texture parentKey="Highlight" atlas="PetJournal-PetBattleAchievementGlow" hidden="true">
+							<Anchors>
+								<Anchor point="CENTER" x="0" y="0"/>
+							</Anchors>
+							<Size x="210" y="40"/>		
+						</Texture>
 					</Layer>
 				</Layers>
+				<Scripts>
+					<OnEnter function="GuildPointFrame_OnEnter"/>
+					<OnLeave function="GuildPointFrame_OnLeave"/>
+				</Scripts>
 			</Frame>
 			<Frame name="GuildFactionFrame">
 				<Size>

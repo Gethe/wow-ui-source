@@ -582,6 +582,7 @@ end
 
 function LFDQueueFrameFindGroupButton_Update()
 	local mode, subMode = GetLFGMode(LE_LFG_CATEGORY_LFD);
+	--Update the text on the button
 	if ( mode == "queued" or mode == "rolecheck" or mode == "proposal" or mode == "suspended" ) then
 		LFDQueueFrameFindGroupButton:SetText(LEAVE_QUEUE);
 	else
@@ -591,7 +592,8 @@ function LFDQueueFrameFindGroupButton_Update()
 			LFDQueueFrameFindGroupButton:SetText(FIND_A_GROUP);
 		end
 	end
-	
+
+	--Disable the button if we're not in a state where we can make a change
 	if ( LFD_IsEmpowered() and mode ~= "proposal" and mode ~= "listed"  ) then --During the proposal, they must use the proposal buttons to leave the queue.
 		if ( (mode == "queued" or mode == "rolecheck" or mode == "suspended")	--The players can dequeue even if one of the two cover panels is up.
 			or (not LFDQueueFramePartyBackfill:IsVisible() and not LFDQueueFrameCooldownFrame:IsVisible()) ) then
@@ -604,6 +606,22 @@ function LFDQueueFrameFindGroupButton_Update()
 		LFDQueueFrameFindGroupButton:Disable();
 	end
 	
+	--Disable the button if the person is active in LFGList
+	local lfgListDisabled;
+	if ( select(2,C_LFGList.GetNumApplications()) > 0 ) then
+		lfgListDisabled = CANNOT_DO_THIS_WITH_LFGLIST_APP;
+	elseif ( C_LFGList.GetActiveEntryInfo() ) then
+		lfgListDisabled = CANNOT_DO_THIS_WHILE_LFGLIST_LISTED;
+	end
+
+	if ( lfgListDisabled ) then
+		LFDQueueFrameFindGroupButton:Disable();
+		LFDQueueFrameFindGroupButton.tooltip = lfgListDisabled;
+	else
+		LFDQueueFrameFindGroupButton.tooltip = nil;
+	end
+	
+	--Update the backfill enable state
 	if ( LFD_IsEmpowered() and mode ~= "proposal" and mode ~= "queued" and mode ~= "suspended" and mode ~= "rolecheck" ) then
 		LFDQueueFramePartyBackfillBackfillButton:Enable();
 	else

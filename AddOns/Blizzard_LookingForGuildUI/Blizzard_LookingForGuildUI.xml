@@ -968,7 +968,7 @@
 -->
 	<Frame name="GuildFinderRequestMembershipFrame" parent="UIParent" hidden="true" frameStrata="DIALOG">
 		<Size>
-			<AbsDimension x="328" y="192"/>
+			<AbsDimension x="328" y="174"/>
 		</Size>
 		<Anchors>
 			<Anchor point="CENTER"/>
@@ -997,11 +997,6 @@
 						<Anchor point="TOP" relativeTo="$parentTitle" relativePoint="BOTTOM" x="0" y="-12"/>
 					</Anchors>
 					<Color r="0.1" g="1" b="0.1"/>
-				</FontString>
-				<FontString name="$parentGuildLevel" inherits="GameFontHighlightSmall">
-					<Anchors>
-						<Anchor point="TOP" relativeTo="$parentGuildName" relativePoint="BOTTOM" x="0" y="-4"/>
-					</Anchors>
 				</FontString>
 			</Layer>
 		</Layers>

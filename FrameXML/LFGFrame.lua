@@ -102,6 +102,10 @@ function LFGEventFrame_OnLoad(self)
 	self:RegisterEvent("LFG_ROLE_UPDATE");
 	self:RegisterEvent("LFG_UPDATE_RANDOM_INFO");
 	self:RegisterEvent("LFG_INVALID_ERROR_MESSAGE");
+
+	--Used for disabling buttons when active in LFGList
+	self:RegisterEvent("LFG_LIST_ACTIVE_ENTRY_UPDATE");
+	self:RegisterEvent("LFG_LIST_SEARCH_RESULT_UPDATED");
 end
 
 LFGQueuedForList = {};

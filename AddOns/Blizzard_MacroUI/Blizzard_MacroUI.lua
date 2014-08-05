@@ -7,6 +7,18 @@ local MACRO_ICON_FILENAMES = {};
 
 UIPanelWindows["MacroFrame"] = { area = "left", pushable = 1, whileDead = 1, width = PANEL_DEFAULT_WIDTH };
 
+StaticPopupDialogs["CONFIRM_DELETE_SELECTED_MACRO"] = {
+	text = CONFIRM_DELETE_MACRO,
+	button1 = OKAY,
+	button2 = CANCEL,
+	OnAccept = function(self)
+		MacroFrame_DeleteMacro()
+	end,
+	timeout = 0,
+	whileDead = 1,
+	showAlert = 1
+};
+
 function MacroFrame_Show()
 	ShowUIPanel(MacroFrame);
 end

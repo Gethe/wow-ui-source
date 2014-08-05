@@ -381,6 +381,7 @@ function QuestObjectiveTracker_DoQuestObjectives(block, numObjectives, questComp
 							line.Sheen.Anim:Play();
 							line.Glow.Anim:Play();
 							line.state = "ADDING";
+							PlaySound("UI_QuestRollingForward_01");
 						else
 							QUEST_TRACKER_MODULE:AddObjective(block, objectiveIndex, text);
 						end

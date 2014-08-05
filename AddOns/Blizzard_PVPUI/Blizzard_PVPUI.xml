@@ -823,7 +823,7 @@
 									</Frame>
 								</Frames>
 							</Frame>
-							<Button name="$parentSoloQueueButton" parentKey="SoloQueueButton" inherits="MagicButtonTemplate" text="BATTLEFIELD_JOIN">
+							<Button name="$parentSoloQueueButton" parentKey="SoloQueueButton" inherits="MagicButtonTemplate" text="BATTLEFIELD_JOIN" motionScriptsWhileDisabled="true">
 								<Size x="116" y="22"/>
 								<Anchors>
 									<Anchor point="BOTTOMLEFT" x="1" y="0"/>
@@ -833,9 +833,17 @@
 										PlaySound("igMainMenuOptionCheckBoxOn");
 										HonorFrame_Queue();
 									</OnClick>
+									<OnEnter>
+										if ( self.tooltip ) then
+											GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+											GameTooltip:SetText(self.tooltip, NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b, 1, true);
+											GameTooltip:Show();
+										end
+									</OnEnter>
+									<OnLeave function="GameTooltip_Hide"/>
 								</Scripts>
 							</Button>
-							<Button name="$parentGroupQueueButton" parentKey="GroupQueueButton" inherits="MagicButtonTemplate" text="BATTLEFIELD_GROUP_JOIN">
+							<Button name="$parentGroupQueueButton" parentKey="GroupQueueButton" inherits="MagicButtonTemplate" text="BATTLEFIELD_GROUP_JOIN" motionScriptsWhileDisabled="true">
 								<Size x="116" y="22"/>
 								<Anchors>
 									<Anchor point="BOTTOMRIGHT" x="1" y="0"/>
@@ -845,6 +853,14 @@
 										PlaySound("igMainMenuOptionCheckBoxOn");
 										HonorFrame_Queue(true);
 									</OnClick>
+									<OnEnter>
+										if ( self.tooltip ) then
+											GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+											GameTooltip:SetText(self.tooltip, NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b, 1, true);
+											GameTooltip:Show();
+										end
+									</OnEnter>
+									<OnLeave function="GameTooltip_Hide"/>
 								</Scripts>
 							</Button>					
 						</Frames>

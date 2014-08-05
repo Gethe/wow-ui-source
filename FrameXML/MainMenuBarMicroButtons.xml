@@ -293,7 +293,7 @@
 			<OnLoad>
 				LoadMicroButtonTextures(self, "LFG");
 				SetDesaturation(self:GetDisabledTexture(), true);
-				self.tooltipText = MicroButtonTooltipText(DUNGEONS_BUTTON, "TOGGLELFGPARENT");
+				self.tooltipText = MicroButtonTooltipText(DUNGEONS_BUTTON, "TOGGLEGROUPFINDER");
 				self.newbieText = NEWBIE_TOOLTIP_LFGPARENT;
 				self.minLevel = SHOW_LFD_LEVEL;
 				if (IsBlizzCon()) then
@@ -304,7 +304,7 @@
 				if (IsBlizzCon()) then
 					return;
 				end
-				self.tooltipText = MicroButtonTooltipText(DUNGEONS_BUTTON, "TOGGLELFGPARENT");
+				self.tooltipText = MicroButtonTooltipText(DUNGEONS_BUTTON, "TOGGLEGROUPFINDER");
 				self.newbieText = NEWBIE_TOOLTIP_LFGPARENT;
 				UpdateMicroButtons();
 			</OnEvent>
@@ -325,11 +325,11 @@
 			<OnLoad>
 				LoadMicroButtonTextures(self, "Mounts");
 				SetDesaturation(self:GetDisabledTexture(), true);
-				self.tooltipText = MicroButtonTooltipText(COLLECTIONS, "TOGGLEPETJOURNAL");
+				self.tooltipText = MicroButtonTooltipText(COLLECTIONS, "TOGGLECOLLECTIONS");
 				self.newbieText = NEWBIE_TOOLTIP_MOUNTS_AND_PETS;
 			</OnLoad>
 			<OnEvent>
-				self.tooltipText = MicroButtonTooltipText(COLLECTIONS, "TOGGLEPETJOURNAL");
+				self.tooltipText = MicroButtonTooltipText(COLLECTIONS, "TOGGLECOLLECTIONS");
 				self.newbieText = NEWBIE_TOOLTIP_MOUNTS_AND_PETS;
 				UpdateMicroButtons();
 			</OnEvent>

@@ -125,6 +125,7 @@ TRAVEL PASS
 						normalTexture:SetWidth(49);
 						normalTexture:SetHeight(49);
 						self.cooldown:SetHideCountdownNumbers(true);
+						self.cooldown:SetSwipeColor(0, 0, 0);
 					</OnLoad>
 					<OnShow>
 						FriendsFrame_SummonButton_OnShow(self);

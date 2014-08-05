@@ -62,7 +62,7 @@ UIPanelWindows["ChatConfigFrame"] =				{ area = "center",			pushable = 0, 		xoff
 UIPanelWindows["WorldStateScoreFrame"] =		{ area = "center",			pushable = 0, 		xoffset = -16, 		yoffset = 12,	whileDead = 1 };
 UIPanelWindows["QuestChoiceFrame"] =			{ area = "center",			pushable = 0, 		xoffset = -16, 		yoffset = 12,	whileDead = 0, allowOtherPanels = 1 };
 UIPanelWindows["GarrisonBuildingFrame"] =		{ area = "center",			pushable = 0,		whileDead = 1, 		width = 1002, 	allowOtherPanels = 1};
-UIPanelWindows["GarrisonMissionFrame"] =		{ area = "center",			pushable = 0,		whileDead = 1, 		width = 1002, 	allowOtherPanels = 1};
+UIPanelWindows["GarrisonMissionFrame"] =		{ area = "center",			pushable = 0,		whileDead = 1, 		checkFit = 1,	extraWidth = 20,	extraHeight = 100 };
 UIPanelWindows["GarrisonLandingPage"] =			{ area = "center",			pushable = 0,		whileDead = 1, 		width = 800, 	allowOtherPanels = 1};
 UIPanelWindows["GarrisonMonumentFrame"] =		{ area = "center",			pushable = 0,		whileDead = 1, 		width = 333, 	allowOtherPanels = 1};
 UIPanelWindows["GarrisonRecruiterFrame"] =		{ area = "left",			pushable = 0};
@@ -1684,7 +1684,6 @@ function FramePositionDelegate:ShowUIPanel(frame, force)
 
 	-- If the store-frame is open, we don't let people open up any other panels (just as if it were full-screened)
 	if ( StoreFrame_IsShown and StoreFrame_IsShown() ) then
-		print("bail3")
 		return;
 	end
 
@@ -1698,6 +1697,17 @@ function FramePositionDelegate:ShowUIPanel(frame, force)
 		end
 	end
 
+	-- check if the UI fits due to scaling issues
+	if ( GetUIPanelWindowInfo(frame, "checkFit") == 1 ) then
+		local horizRatio = UIParent:GetWidth() / GetUIPanelWidth(frame);
+		local vertRatio = UIParent:GetHeight() / GetUIPanelHeight(frame);
+		if ( horizRatio < 1 or vertRatio < 1 ) then
+			frame:SetScale(min(horizRatio, vertRatio));
+		else
+			frame:SetScale(1);
+		end
+	end
+	
 	-- If we have a "center" frame open, only listen to other "center" open requests
 	local centerFrame = self:GetUIPanel("center");
 	local centerArea, centerPushable;
@@ -3634,15 +3644,15 @@ function GetRelativeDifficultyColor(unitLevel, challengeLevel)
 	local levelDiff = challengeLevel - unitLevel;
 	local color;
 	if ( levelDiff >= 5 ) then
-		return QuestDifficultyColors["impossible"];
+		return QuestDifficultyColors["impossible"], QuestDifficultyHighlightColors["impossible"];
 	elseif ( levelDiff >= 3 ) then
-		return QuestDifficultyColors["verydifficult"];
+		return QuestDifficultyColors["verydifficult"], QuestDifficultyHighlightColors["verydifficult"];
 	elseif ( levelDiff >= -4 ) then
-		return QuestDifficultyColors["difficult"];
+		return QuestDifficultyColors["difficult"], QuestDifficultyHighlightColors["difficult"];
 	elseif ( -levelDiff <= GetQuestGreenRange() ) then
-		return QuestDifficultyColors["standard"];
+		return QuestDifficultyColors["standard"], QuestDifficultyHighlightColors["standard"];
 	else
-		return QuestDifficultyColors["trivial"];
+		return QuestDifficultyColors["trivial"], QuestDifficultyHighlightColors["trivial"];
 	end
 end
 

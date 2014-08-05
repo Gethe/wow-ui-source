@@ -493,7 +493,7 @@
 									</OnUpdate>
 								</Scripts>
 							</Button>
-							<Button name="GarrisonLandingPageMinimapButton">
+							<Button name="GarrisonLandingPageMinimapButton" hidden="true">
 								<Size x="53" y="53"/>
 								<Anchors>
 									<Anchor point="TOPLEFT" x="32" y="-118"/>

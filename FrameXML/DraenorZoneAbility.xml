@@ -23,6 +23,11 @@
 								<Anchor point="CENTER" x="-2" y="0"/>
 							</Anchors>
 						</Texture>
+						<FontString parentKey="Count" inherits="NumberFontNormal" justifyH="RIGHT">
+							<Anchors>
+								<Anchor point="BOTTOMRIGHT" x="-2" y="2"/>
+							</Anchors>
+						</FontString>
 					</Layer>
 				</Layers>
 				<Frames>

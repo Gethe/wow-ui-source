@@ -1,4 +1,5 @@
 MAX_LFG_LIST_APPLICATIONS = 5;
+MAX_LFG_LIST_SEARCH_AUTOCOMPLETE_ENTRIES = 6;
 
 ACTIVITY_RETURN_VALUES = {
 	fullName = 1,
@@ -45,6 +46,9 @@ function LFGListFrame_OnLoad(self)
 	self:RegisterEvent("LFG_LIST_SEARCH_FAILED");
 	self:RegisterEvent("LFG_LIST_APPLICANT_LIST_UPDATED");
 	self:RegisterEvent("LFG_LIST_APPLICANT_UPDATED");
+	for i=1, #LFG_LIST_ACTIVE_QUEUE_MESSAGE_EVENTS do
+		self:RegisterEvent(LFG_LIST_ACTIVE_QUEUE_MESSAGE_EVENTS[i]);
+	end
 	LFGListFrame_SetBaseFilters(self, LE_LFG_LIST_FILTER_PVE);
 	LFGListFrame_SetActivePanel(self, self.NothingAvailable);
 
@@ -204,10 +208,15 @@ function LFGListCategorySelection_OnEvent(self, event, ...)
 	if ( event == "LFG_LIST_AVAILABILITY_UPDATE" ) then
 		LFGListCategorySelection_UpdateCategoryButtons(self);
 	end
+
+	if ( tContains(LFG_LIST_ACTIVE_QUEUE_MESSAGE_EVENTS, event) ) then
+		LFGListCategorySelection_UpdateNavButtons(self);
+	end
 end
 
 function LFGListCategorySelection_OnShow(self)
 	LFGListCategorySelection_UpdateCategoryButtons(self);
+	LFGListCategorySelection_UpdateNavButtons(self);
 end
 
 function LFGListCategorySelection_UpdateCategoryButtons(self)
@@ -307,6 +316,13 @@ function LFGListCategorySelection_UpdateNavButtons(self)
 		self.StartGroupButton.tooltip = LFG_LIST_NOT_LEADER;
 	end
 
+	--Check if the player is currently in some incompatible queue
+	local messageStart = LFGListUtil_GetActiveQueueMessage(false);
+	if ( messageStart ) then
+		startEnabled = false;
+		self.StartGroupButton.tooltip = messageStart;
+	end
+
 	self.FindGroupButton:SetEnabled(findEnabled);
 	self.StartGroupButton:SetEnabled(startEnabled);
 end
@@ -357,6 +373,16 @@ function LFGListEntryCreation_OnLoad(self)
 	LFGListUtil_SetUpDropDown(self, self.GroupDropDown, LFGListEntryCreation_PopulateGroups, LFGListEntryCreation_OnGroupSelected);
 	LFGListUtil_SetUpDropDown(self, self.ActivityDropDown, LFGListEntryCreation_PopulateActivities, LFGListEntryCreation_OnActivitySelected);
 	LFGListEntryCreation_SetBaseFilters(self, 0);
+end
+
+function LFGListEntryCreation_OnEvent(self, event, ...)
+	if ( tContains(LFG_LIST_ACTIVE_QUEUE_MESSAGE_EVENTS, event) ) then
+		LFGListEntryCreation_UpdateValidState(self);
+	end
+end
+
+function LFGListEntryCreation_OnShow(self)
+	LFGListEntryCreation_UpdateValidState(self);
 end
 
 function LFGListEntryCreation_Clear(self)
@@ -602,6 +628,8 @@ function LFGListEntryCreation_UpdateValidState(self)
 		errorText = LFG_LIST_MUST_HAVE_NAME;
 	elseif ( self.ItemLevel.warningText ) then
 		errorText = self.ItemLevel.warningText;
+	else
+		errorText = LFGListUtil_GetActiveQueueMessage(false);
 	end
 
 	self.ListGroupButton:SetEnabled(not errorText);
@@ -677,6 +705,7 @@ end
 
 function LFGListEntryCreationActivityFinder_UpdateMatching(self)
 	self.matchingActivities = C_LFGList.GetAvailableActivities(self.categoryID, self.groupID, self.filters, self.Dialog.EntryBox:GetText());
+	LFGListUtil_SortActivitiesByRelevancy(self.matchingActivities);
 	if ( not self.selectedActivity or not tContains(self.matchingActivities, self.selectedActivity) ) then
 		self.selectedActivity = self.matchingActivities[1];
 	end
@@ -1131,11 +1160,16 @@ function LFGListSearchPanel_OnEvent(self, event, ...)
 	elseif ( event == "GROUP_ROSTER_UPDATE" ) then
 		LFGListSearchPanel_UpdateButtonStatus(self);
 	end
+
+	if ( tContains(LFG_LIST_ACTIVE_QUEUE_MESSAGE_EVENTS, event) ) then
+		LFGListSearchPanel_UpdateButtonStatus(self);
+	end
 end
 
 function LFGListSearchPanel_OnShow(self)
 	LFGListSearchPanel_UpdateResultList(self);
 	LFGListSearchPanel_UpdateResults(self);
+	--LFGListSearchPanel_UpdateButtonStatus(self); --Called by UpdateResults
 end
 
 function LFGListSearchPanel_Clear(self)
@@ -1235,7 +1269,11 @@ end
 function LFGListSearchPanel_UpdateButtonStatus(self)
 	local resultID = self.selectedResult;
 	local numApplications, numActiveApplications = C_LFGList.GetNumApplications();
-	if ( not LFGListUtil_IsAppEmpowered() ) then
+	local messageApply = LFGListUtil_GetActiveQueueMessage(true);
+	if ( messageApply ) then
+		self.SignUpButton:Disable();
+		self.SignUpButton.tooltip = messageApply;
+	elseif ( not LFGListUtil_IsAppEmpowered() ) then
 		self.SignUpButton:Disable();
 		self.SignUpButton.tooltip = LFG_LIST_APP_UNEMPOWERED;
 	elseif ( IsInGroup(LE_PARTY_CATEGORY_HOME) and C_LFGList.IsCurrentlyApplying() ) then
@@ -1258,6 +1296,147 @@ end
 
 function LFGListSearchPanel_SignUp(self)
 	LFGListApplicationDialog_Show(LFGListApplicationDialog, self.selectedResult);
+end
+
+function LFGListSearchPanelSearchBox_OnEnterPressed(self)
+	local parent = self:GetParent();
+	if ( parent.AutoCompleteFrame:IsShown() and parent.AutoCompleteFrame.selected ) then
+		self:SetText( (C_LFGList.GetActivityInfo(parent.AutoCompleteFrame.selected)) );
+	end
+
+	LFGListSearchPanel_DoSearch(self:GetParent());
+	self:ClearFocus();
+end
+
+function LFGListSearchPanelSearchBox_OnTabPressed(self)
+	if ( IsShiftKeyDown() ) then
+		LFGListSearchPanel_AutoCompleteAdvance(self:GetParent(), -1);
+	else
+		LFGListSearchPanel_AutoCompleteAdvance(self:GetParent(), 1);
+	end
+end
+
+function LFGListSearchPanelSearchBox_OnArrowPressed(self, key)
+	if ( key == "UP" ) then
+		LFGListSearchPanel_AutoCompleteAdvance(self:GetParent(), -1);
+	elseif ( key == "DOWN" ) then
+		LFGListSearchPanel_AutoCompleteAdvance(self:GetParent(), 1);
+	end
+end
+
+function LFGListSearchPanelSearchBox_OnTextChanged(self)
+	LFGListSearchPanel_UpdateAutoComplete(self:GetParent());
+end
+
+function LFGListSearchAutoCompleteButton_OnClick(self)
+	local panel = self:GetParent():GetParent();
+	panel.SearchBox:SetText( (C_LFGList.GetActivityInfo(self.activityID)) );
+	LFGListSearchPanel_DoSearch(panel);
+	panel.SearchBox:ClearFocus();
+end
+
+function LFGListSearchPanel_AutoCompleteAdvance(self, offset)
+	local selected = self.AutoCompleteFrame.selected;
+
+	--Find the index of the current selection and how many results we have displayed
+	local idx = nil;
+	local numDisplayed = 0;
+	for i=1, #self.AutoCompleteFrame.Results do
+		local btn = self.AutoCompleteFrame.Results[i];
+		if ( btn:IsShown() and btn.activityID ) then
+			numDisplayed = i;
+			if ( btn.activityID == selected ) then
+				idx = i;
+			end
+		else
+			break;
+		end
+	end
+
+	local newIndex = nil;
+	if ( not idx ) then
+		--We had nothing selected, advance from the front or back
+		if ( offset > 0 ) then
+			newIndex = offset;
+		else
+			newIndex = numDisplayed + 1 + offset;
+		end
+	else
+		--Advance from our old location
+		newIndex = ((idx - 1 + offset + numDisplayed) % numDisplayed) + 1;
+	end
+
+	self.AutoCompleteFrame.selected = self.AutoCompleteFrame.Results[newIndex].activityID;
+	LFGListSearchPanel_UpdateAutoComplete(self);
+end
+
+function LFGListSearchPanel_UpdateAutoComplete(self)
+	local text = self.SearchBox:GetText();
+	if ( text == "" or not self.SearchBox:HasFocus() ) then
+		self.AutoCompleteFrame:Hide();
+		self.AutoCompleteFrame.selected = nil;
+		return;
+	end
+
+	--Choose the autocomplete results
+	local matchingActivities = C_LFGList.GetAvailableActivities(self.categoryID, nil, self.filters, text);
+	LFGListUtil_SortActivitiesByRelevancy(matchingActivities);
+
+	local numResults = math.min(#matchingActivities, MAX_LFG_LIST_SEARCH_AUTOCOMPLETE_ENTRIES);
+
+	if ( numResults == 0 ) then
+		self.AutoCompleteFrame:Hide();
+		self.AutoCompleteFrame.selected = nil;
+		return;
+	end
+
+	--Update the buttons
+	local foundSelected = false;
+	for i=1, numResults do
+		local id = matchingActivities[i];
+
+		local button = self.AutoCompleteFrame.Results[i];
+		if ( not button ) then
+			button = CreateFrame("BUTTON", nil, self.AutoCompleteFrame, "LFGListSearchAutoCompleteButtonTemplate");
+			button:SetPoint("TOPLEFT", self.AutoCompleteFrame.Results[i-1], "BOTTOMLEFT", 0, 0);
+			button:SetPoint("TOPRIGHT", self.AutoCompleteFrame.Results[i-1], "BOTTOMRIGHT", 0, 0);
+			self.AutoCompleteFrame.Results[i] = button;
+		end
+
+		if ( i == numResults and numResults < #matchingActivities ) then
+			--This is just a "x more" button
+			button:SetFormattedText(LFG_LIST_AND_MORE, #matchingActivities - numResults + 1);
+			button:Disable();
+			button.Selected:Hide();
+			button.activityID = nil;
+		else
+			--This is an actual activity
+			button:SetText( (C_LFGList.GetActivityInfo(id)) );
+			button:Enable();
+			button.activityID = id;
+
+			if ( id == self.AutoCompleteFrame.selected ) then
+				button.Selected:Show();
+				foundSelected = true;
+			else
+				button.Selected:Hide();
+			end
+		end
+		button:Show();
+	end
+
+	if ( not foundSelected ) then
+		self.selected = nil;
+	end
+
+	--Hide unused buttons
+	for i=numResults + 1, #self.AutoCompleteFrame.Results do
+		self.AutoCompleteFrame.Results[i]:Hide();
+	end
+
+	--Update the frames height and show it
+	self.AutoCompleteFrame:SetHeight(numResults * self.AutoCompleteFrame.Results[1]:GetHeight() + 8);
+	self.AutoCompleteFrame:Show();
 end
 
 function LFGListSearchEntry_OnLoad(self)
@@ -1719,20 +1898,30 @@ function LFGListUtil_AugmentWithBest(filters, categoryID, groupID, activityID)
 	if ( not activityID ) then
 		--Find the best activity by iLevel and recommended flag
 		local activities = C_LFGList.GetAvailableActivities(categoryID, groupID, filters);
-		local bestItemLevel, bestRecommended;
+		local bestItemLevel, bestRecommended, bestCurrentArea;
 		for i=1, #activities do
 			local fullName, shortName, categoryID, groupID, iLevel, filters = C_LFGList.GetActivityInfo(activities[i]);
 			local isRecommended = bit.band(filters, LE_LFG_LIST_FILTER_RECOMMENDED) ~= 0;
-			if (	not activityID
-				or	(not bestRecommended and isRecommended)
-				or	(bestRecommended == isRecommended and iLevel > bestItemLevel and iLevel <= GetAverageItemLevel()) ) then
+			local currentArea = C_LFGList.GetActivityInfoExpensive(activities[i]);
+
+			local isBetter = false;
+			if ( not activityID ) then
+				isBetter = true;
+			elseif ( currentArea ~= bestCurrentArea ) then
+				isBetter = currentArea;
+			elseif ( bestRecommended ~= isRecommended ) then
+				isBetter = isRecommended;
+			elseif ( iLevel ~= bestItemLevel ) then
+				isBetter = iLevel > bestItemLevel and iLevel < GetAverageItemLevel();
+			end
+
+			if ( isBetter ) then
 				activityID = activities[i];
 				bestItemLevel = iLevel;
 				bestRecommended = isRecommended;
+				bestCurrentArea = currentArea;
 			end
 		end
-
-		--TODO: If the categoryID we're given has the flag set for using current area, use that instead
 	end
 
 	assert(activityID);
@@ -1976,5 +2165,77 @@ function LFGListUtil_OpenBestWindow()
 	else
 		PVEFrame_ShowFrame("PVPUIFrame", nil);
 		PVPQueueFrame_ShowFrame(LFGListPVPStub);
+	end
+end
+
+function LFGListUtil_SortActivitiesByRelevancyCB(id1, id2)
+	local fullName1, _, _, _, iLevel1, _, minLevel1 = C_LFGList.GetActivityInfo(id1);
+	local fullName2, _, _, _, iLevel2, _, minLevel2 = C_LFGList.GetActivityInfo(id2);
+
+	if ( minLevel1 ~= minLevel2 ) then
+		return minLevel1 > minLevel2;
+	elseif ( iLevel1 ~= iLevel2 ) then
+		local myILevel = GetAverageItemLevel();
+		
+		if ( (iLevel1 <= myILevel) ~= (iLevel2 <= myILevel) ) then
+			--If one is below our item level and the other above, choose the one we meet
+			return iLevel1 < myILevel;
+		else
+			--If both are above or both are below, choose the one closest to our iLevel
+			return math.abs(iLevel1 - myILevel) < math.abs(iLevel2 - myILevel);
+		end
+	else
+		return strcmputf8i(fullName1, fullName2) < 0;
+	end
+end
+
+function LFGListUtil_SortActivitiesByRelevancy(activities)
+	table.sort(activities, LFGListUtil_SortActivitiesByRelevancyCB);
+end
+
+LFG_LIST_ACTIVE_QUEUE_MESSAGE_EVENTS = {
+	"LFG_LIST_ACTIVE_ENTRY_UPDATE",
+	"LFG_LIST_SEARCH_RESULT_UPDATED",
+	"PVP_ROLE_CHECK_UPDATED",
+	"UPDATE_BATTLEFIELD_STATUS",
+	"LFG_UPDATE",
+	"LFG_ROLE_CHECK_UPDATE",
+	"LFG_PROPOSAL_UPDATE",
+	"LFG_PROPOSAL_FAILED",
+	"LFG_PROPOSAL_SUCCEEDED",
+	"LFG_PROPOSAL_SHOW",
+	"LFG_QUEUE_STATUS_UPDATE",
+};
+
+function LFGListUtil_GetActiveQueueMessage(isApplication)
+	--Check for applications if we're trying to list
+	if ( not isApplication and select(2,C_LFGList.GetNumApplications()) > 0 ) then
+		return CANNOT_DO_THIS_WITH_LFGLIST_APP;
+	end
+
+	--Check for listings if we have an application
+	if ( isApplication and C_LFGList.GetActiveEntryInfo() ) then
+		return CANNOT_DO_THIS_WHILE_LFGLIST_LISTED;
+	end
+
+	--Check all LFG categories
+	for category=1, NUM_LE_LFG_CATEGORYS do
+		local mode = GetLFGMode(category);
+		if ( mode ) then
+			return mode == "lfgparty" and CANNOT_DO_THIS_IN_LFG_PARTY or CANNOT_DO_THIS_IN_PVE_QUEUE;
+		end
+	end
+
+	--Check PvP role check
+	local inProgress, _, _, _, _, isBattleground = GetLFGRoleUpdate();
+	if ( inProgress and isBattleground ) then
+		return CANNOT_DO_THIS_IN_PVP_QUEUE;
+	end
+
+	for i=1, GetMaxBattlefieldID() do
+		local status, mapName, teamSize, registeredMatch, suspend = GetBattlefieldStatus(i);
+		if ( status and status ~= "none" ) then
+			return CANNOT_DO_THIS_IN_BATTLEGROUND;
+		end
 	end
 end

@@ -371,7 +371,6 @@ function LookingForGuild_RequestMembership()
 	PlaySound("igMainMenuOpen");
 	local name, level = GetRecruitingGuildInfo(GetRecruitingGuildSelection());
 	GuildFinderRequestMembershipFrameGuildName:SetText(name);
-	GuildFinderRequestMembershipFrameGuildLevel:SetFormattedText(GUILD_LEVEL, level);
 	GuildFinderRequestMembershipEditBox:SetText(GetLookingForGuildComment());
 end
 

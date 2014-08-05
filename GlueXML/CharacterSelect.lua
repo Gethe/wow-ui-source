@@ -1642,6 +1642,9 @@ end
 
 function CopyCharacterFrameRegionIDDropdown_OnClick(button)
 	GlueDropDownMenu_SetSelectedValue(CopyCharacterFrame.RegionID, button.value);
+	if ( CopyAccountCharactersAllowed() >= 2 ) then
+		RequestAccountCharacters(button.value);
+	end
 end
 
 function CopyCharacterFrame_OnEvent(self, event, ...)

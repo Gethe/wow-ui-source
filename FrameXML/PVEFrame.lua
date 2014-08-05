@@ -22,7 +22,7 @@ function PVEFrame_ToggleFrame(sidePanelName, selection)
 	if ( self:IsShown() ) then
 		if ( sidePanelName ) then
 			local sidePanel = _G[sidePanelName];
-			if ( sidePanel and sidePanel:IsShown() and  (not sidePanel.getSelection or sidePanel:getSelection() == selection) ) then
+			if ( sidePanel and sidePanel:IsShown() and (not selection or not sidePanel.getSelection or sidePanel:getSelection() == selection) ) then
 				HideUIPanel(self);
 			else
 				PVEFrame_ShowFrame(sidePanelName, selection);

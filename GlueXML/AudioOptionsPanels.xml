@@ -657,7 +657,7 @@
 				</Anchors>
 				<Layers>
 					<Layer level="ARTWORK">
-						<FontString name="$parentLabel" inherits="OptionsFontSmallLeft" text="DIALOG_VOLUME what">
+						<FontString name="$parentLabel" inherits="OptionsFontSmallLeft" text="DIALOG_VOLUME">
 							<Size x="64" y="14"/>
 							<Anchors>
 								<Anchor point="RIGHT" relativePoint="LEFT">

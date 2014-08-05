@@ -82,31 +82,7 @@
 							</Layer>
 						</Layers>
 						<Scripts>
-							<OnEnter>
-								GameTooltip:SetOwner(self, "ANCHOR_NONE");
-								GameTooltip:ClearAllPoints();
-								GameTooltip:SetPoint("RIGHT", self, "LEFT", 0, 0);
-								local _, currentStage, numStages, flags, _, _, _, xp, money = C_Scenario.GetInfo();
-								local name, description = C_Scenario.GetStepInfo();
-								if(bit.band(flags, SCENARIO_FLAG_SUPRESS_STAGE_TEXT) == SCENARIO_FLAG_SUPRESS_STAGE_TEXT) then
-								  GameTooltip:SetText(name, 1, 0.914, 0.682, 1);
-								  GameTooltip:AddLine(description, 1, 1, 1, true);
-								  GameTooltip:AddLine(" ");
-								  if ( xp > 0 ) then
-									GameTooltip:AddLine(string.format(BONUS_OBJECTIVE_EXPERIENCE_FORMAT, xp), 1, 1, 1);
-								  end
-								  if ( money > 0 ) then
-									SetTooltipMoney(GameTooltip, money, nil);
-								  end
-								  GameTooltip:Show();
-								else
-								  GameTooltip:SetText(string.format(SCENARIO_STAGE_STATUS, currentStage, numStages), 1, 0.914, 0.682, 1);
-								  GameTooltip:AddLine(name, 1, 0.831, 0.380, true);
-								  GameTooltip:AddLine(" ");
-								  GameTooltip:AddLine(description, 1, 1, 1, true);
-								  GameTooltip:Show();
-								end
-							</OnEnter>
+							<OnEnter function="ScenarioObjectiveStageBlock_OnEnter"/>
 							<OnLeave>
 								GameTooltip:Hide();
 							</OnLeave>
@@ -212,19 +188,6 @@
 					</Frame>
 					<Frame name="ScenarioProvingGroundsBlock" hidden="true">
 						<Size x="201" y="77"/>
-						<Animations>
-							<AnimationGroup parentKey="CountdownAnim">
-								<Alpha childKey="BGAnim" change="1" duration="0.25" order="1"/>
-								<Alpha childKey="BGAnim" endDelay="0.45" change="-1" duration="0.3" order="2"/>
-								<Alpha childKey="BorderAnim" change="1" duration="0.25" order="1"/>
-								<Alpha childKey="BorderAnim" endDelay="0.45" change="-1" duration="0.3" order="2"/>
-								<Alpha childKey="Glow" change=".5" duration="0.25" order="1"/>
-								<Alpha childKey="Glow" endDelay="0.45" change="-.5" duration="0.3" order="2"/>
-								<Scripts>
-									<OnFinished function="Scenario_ProvingGrounds_CountdownAnim_OnFinished"/>
-								</Scripts>
-							</AnimationGroup>
-						</Animations>
 						<Layers>
 							<Layer level="BACKGROUND">
 								<Texture file="Interface\Scenarios\ScenariosParts" parentKey="BG">
@@ -282,29 +245,6 @@
 									</Anchors>
 								</FontString>
 							</Layer>
-							<Layer level="OVERLAY">
-								<Texture file="Interface\Scenarios\ScenariosParts" parentKey="BGAnim" alpha="0" alphaMode="ADD">
-									<Size x="201" y="77"/>
-									<Anchors>
-										<Anchor point="TOP" x="0" y="0"/>
-									</Anchors>
-									<TexCoords left="0.00195313" right="0.39453125" top="0.48242188" bottom="0.63281250"/>
-								</Texture>
-								<Texture file="Interface\Scenarios\ScenariosParts" parentKey="BorderAnim" alpha="0" alphaMode="ADD">
-									<Size x="193" y="69"/>
-									<Anchors>
-										<Anchor point="TOP" x="0" y="-4"/>
-									</Anchors>
-									<TexCoords left="0.61328125" right="0.99023438" top="0.26171875" bottom="0.39648438"/>
-								</Texture>
-								<Texture file="Interface\AchievementFrame\UI-Achievement-Alert-Glow" parentKey="Glow" alpha="0" alphaMode="ADD">
-									<Anchors>
-										<Anchor point="TOPLEFT" relativeKey="$parent.BGAnim" x="-36" y="73"/>
-										<Anchor point="BOTTOMRIGHT" relativeKey="$parent.BGAnim" x="36" y="-73"/>
-									</Anchors>
-									<TexCoords left="0" right="0.78125" top="0" bottom="0.66796875"/>
-								</Texture>
-							</Layer>
 						</Layers>
 						<Frames>
 							<StatusBar parentKey="StatusBar" useParentLevel="true">
@@ -341,6 +281,51 @@
 			<OnEvent function="ScenarioBlocksFrame_OnEvent"/>
 		</Scripts>
 	</ScrollFrame>
+	
+	<Frame name="ScenarioProvingGroundsBlockAnim">
+		<Anchors>
+			<Anchor point="TOPLEFT" relativeTo="ScenarioProvingGroundsBlock"/>
+			<Anchor point="BOTTOMRIGHT" relativeTo="ScenarioProvingGroundsBlock"/>
+		</Anchors>
+		<Animations>
+			<AnimationGroup parentKey="CountdownAnim">
+				<Alpha childKey="BGAnim" change="1" duration="0.25" order="1"/>
+				<Alpha childKey="BGAnim" endDelay="0.45" change="-1" duration="0.3" order="2"/>
+				<Alpha childKey="BorderAnim" change="1" duration="0.25" order="1"/>
+				<Alpha childKey="BorderAnim" endDelay="0.45" change="-1" duration="0.3" order="2"/>
+				<Alpha childKey="Glow" change=".5" duration="0.25" order="1"/>
+				<Alpha childKey="Glow" endDelay="0.45" change="-.5" duration="0.3" order="2"/>
+				<Scripts>
+					<OnFinished function="Scenario_ProvingGrounds_CountdownAnim_OnFinished"/>
+				</Scripts>
+			</AnimationGroup>
+		</Animations>
+		<Layers>
+			<Layer level="OVERLAY">
+				<Texture file="Interface\Scenarios\ScenariosParts" parentKey="BGAnim" alpha="0" alphaMode="ADD">
+					<Size x="201" y="77"/>
+					<Anchors>
+						<Anchor point="TOP" x="0" y="0"/>
+					</Anchors>
+					<TexCoords left="0.00195313" right="0.39453125" top="0.48242188" bottom="0.63281250"/>
+				</Texture>
+				<Texture file="Interface\Scenarios\ScenariosParts" parentKey="BorderAnim" alpha="0" alphaMode="ADD">
+					<Size x="193" y="69"/>
+					<Anchors>
+						<Anchor point="TOP" x="0" y="-4"/>
+					</Anchors>
+					<TexCoords left="0.61328125" right="0.99023438" top="0.26171875" bottom="0.39648438"/>
+				</Texture>
+				<Texture file="Interface\AchievementFrame\UI-Achievement-Alert-Glow" parentKey="Glow" alpha="0" alphaMode="ADD">				
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.BGAnim" x="-36" y="73"/>
+						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.BGAnim" x="36" y="-73"/>
+					</Anchors>
+					<TexCoords left="0" right="0.78125" top="0" bottom="0.66796875"/>
+				</Texture>
+			</Layer>
+		</Layers>
+	</Frame>
 	
 	<Frame name="ObjectiveTrackerScenarioRewardsFrame" hidden="true">
         <Size x="168" y="128"/>

@@ -161,6 +161,7 @@ function InspectPaperDollItemSlotButton_Update(button)
 		end
 		SetItemButtonTexture(button, textureName);
 		SetItemButtonCount(button, 0);
+		button.IconBorder:Hide();
 		button.hasItem = nil;
 	end
 	if ( GameTooltip:IsOwned(button) ) then

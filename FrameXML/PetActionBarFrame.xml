@@ -38,6 +38,7 @@
 		<Scripts>
 			<OnLoad>
 				PetActionButton_OnLoad(self);
+				self.cooldown:SetSwipeColor(0, 0, 0);
 			</OnLoad>
 			<OnEvent>
 				PetActionButton_OnEvent(self, event, ...);

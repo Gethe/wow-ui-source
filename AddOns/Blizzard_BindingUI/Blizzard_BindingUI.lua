@@ -44,6 +44,18 @@ StaticPopupDialogs["CONFIRM_LOSE_BINDING_CHANGES"] = {
 	showAlert = 1,
 };
 
+StaticPopupDialogs["CONFIRM_RESET_TO_DEFAULT_KEYBINDINGS"] = {
+	text = CONFIRM_RESET_KEYBINDINGS,
+	button1 = OKAY,
+	button2 = CANCEL,
+	OnAccept = function(self)
+		KeyBindingFrame_ResetBindingsToDefault();
+	end,
+	timeout = 0,
+	whileDead = 1,
+	showAlert = 1
+};
+
 function KeyBindingFrame_OnLoad(self)
 	self:RegisterForClicks("AnyUp");
 	KeyBindingFrame.scrollOffset = 0;
@@ -508,6 +520,7 @@ function KeybindingsCategoryListButton_OnClick(self, button)
 	KeyBindingFrame.cntCategory = self.element.category;
 	KeyBindingFrame_SetSelected(nil);
 	KeyBindingFrame.outputText:SetText("");
+	KeyBindingFrameScrollFrame.ScrollBar:SetValue(0);
 	KeyBindingFrame_Update();
 end
 
@@ -593,6 +606,10 @@ function CancelButton_OnClick(self)
 end
 
 function DefaultsButton_OnClick(self)
+	StaticPopup_Show("CONFIRM_RESET_TO_DEFAULT_KEYBINDINGS");
+end
+
+function KeyBindingFrame_ResetBindingsToDefault()
 	PlaySound("igMainMenuOptionCheckBoxOn");
 	LoadBindings(DEFAULT_BINDINGS);
 	KeyBindingFrame.outputText:SetText("");
