@@ -13,6 +13,8 @@ function PVPHelperFrame_OnLoad(self)
 	self:RegisterEvent("BATTLEFIELD_MGR_EJECT_PENDING");
 	self:RegisterEvent("BATTLEFIELD_MGR_EJECTED");
 	self:RegisterEvent("BATTLEFIELD_MGR_ENTERED");
+	self:RegisterEvent("BATTLEFIELD_MGR_DROP_TIMER_STARTED");
+	self:RegisterEvent("BATTLEFIELD_MGR_DROP_TIMER_CANCELED");
 	self:RegisterEvent("WARGAME_REQUESTED");
 	self:RegisterEvent("BATTLEFIELDS_SHOW");
 	self:RegisterEvent("PLAYER_ENTERING_WORLD");
@@ -69,6 +71,7 @@ function PVPHelperFrame_OnEvent(self, event, ...)
 		StaticPopup_Hide("BFMGR_INVITED_TO_QUEUE_WARMUP");
 		StaticPopup_Hide("BFMGR_INVITED_TO_ENTER");
 		StaticPopup_Hide("BFMGR_EJECT_PENDING");
+		StaticPopup_Hide("BATTLEFIELD_BORDER_WARNING");
 		if(lowLevel) then
 			StaticPopup_Show("BFMGR_PLAYER_LOW_LEVEL", areaName, nil, arg1);
 		elseif (playerExited and battleActive and not relocated) then
@@ -81,6 +84,11 @@ function PVPHelperFrame_OnEvent(self, event, ...)
 		StaticPopup_Hide("BFMGR_INVITED_TO_ENTER");
 		StaticPopup_Hide("BFMGR_EJECT_PENDING");
 		PVP_UpdateStatus();
+	elseif ( event == "BATTLEFIELD_MGR_DROP_TIMER_STARTED" ) then
+		local areaName, seconds = ...;
+		StaticPopup_Show("BATTLEFIELD_BORDER_WARNING", nil, nil, {name = areaName, timer = seconds});
+	elseif ( event == "BATTLEFIELD_MGR_DROP_TIMER_CANCELED" ) then
+		StaticPopup_Hide("BATTLEFIELD_BORDER_WARNING");
 	elseif ( event == "WARGAME_REQUESTED" ) then
 		local challengerName, bgName, timeout, tournamentRules = ...;
 		PVPFramePopup_SetupPopUp(event, challengerName, bgName, timeout, tournamentRules);

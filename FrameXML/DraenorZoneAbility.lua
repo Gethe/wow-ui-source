@@ -85,7 +85,6 @@ function DraenorZoneAbilityFrame_OnEvent(self, event)
 		if (not self.CurrentTexture) then
 			self.CurrentTexture = select(3, GetSpellInfo(self.baseName));
 		end
-		DraenorZoneAbilityButtonAlert:Hide();
 		self:Hide();
 	end
 
@@ -97,6 +96,10 @@ end
 
 function DraenorZoneAbilityFrame_OnShow(self)
 	DraenorZoneAbilityFrame_Update(self);
+end
+
+function DraenorZoneAbilityFrame_OnHide(self)
+	DraenorZoneAbilityButtonAlert:Hide();
 end
 
 function DraenorZoneAbilityFrame_Update(self)

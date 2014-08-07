@@ -199,7 +199,7 @@ function QuestMapFrame_ShowQuestDetails(questID)
 	
 	local mapID, floorNumber = GetQuestWorldMapAreaID(questID);
 	if ( mapID ~= 0 ) then
-		SetMapByID(mapID);
+		SetMapByID(mapID, floorNumber);
 		if ( floorNumber ~= 0 ) then
 			SetDungeonMapLevel(floorNumber);
 		end
@@ -264,7 +264,7 @@ function QuestMapFrame_ReturnFromQuestDetails()
 	if ( QuestMapFrame.DetailsFrame.mapID == -1 ) then
 		SetMapZoom(QuestMapFrame.DetailsFrame.continent);
 	elseif ( QuestMapFrame.DetailsFrame.mapID ) then
-		SetMapByID(QuestMapFrame.DetailsFrame.mapID);
+		SetMapByID(QuestMapFrame.DetailsFrame.mapID, QuestMapFrame.DetailsFrame.dungeonFloor);
 		if ( QuestMapFrame.DetailsFrame.dungeonFloor ~= 0 ) then
 			SetDungeonMapLevel(QuestMapFrame.DetailsFrame.dungeonFloor);
 		end

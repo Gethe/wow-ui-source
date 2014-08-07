@@ -273,6 +273,15 @@
 			</OnLeave>
 		</Scripts>
 	</Frame>
+
+	<Frame name="GarrisonMissionLargeMechanicTemplate" inherits="GarrisonAbilityLargeCounterTemplate" virtual="true">
+		<Scripts>
+			<OnEnter function="GarrisonMissionMechanic_OnEnter"/>
+			<OnLeave>
+				GarrisonMissionMechanicTooltip:Hide();
+			</OnLeave>
+		</Scripts>
+	</Frame>
 	
 	<Frame name="GarrisonMissionAbilityCounterTemplate" inherits="GarrisonAbilityCounterTemplate" virtual="true">
 		<Scripts>
@@ -328,7 +337,11 @@
 					<Anchor point="TOPLEFT" relativeKey="$parent.AbilitiesBG" x="2" y="-9"/>
 				</Anchors>
 			</Frame>
-			<Frame parentKey="BusyFrame" setAllPoints="true" hidden="true">
+			<Frame parentKey="BusyFrame" hidden="true">
+				<Anchors>
+					<Anchor point="TOPLEFT" x="3" y="1"/>
+					<Anchor point="BOTTOMRIGHT" x="0" y="1"/>
+				</Anchors>			
 				<Layers>
 					<Layer level="ARTWORK">
 						<Texture setAllPoints="true">
@@ -417,11 +430,6 @@
 					</OnLeave>						
 				</Scripts>
 			</Button>
-			<Frame parentArray="Counters" inherits="GarrisonMissionAbilityCounterTemplate" hidden="true">
-				<Anchors>
-					<Anchor point="LEFT" relativeKey="$parent.CounterString" relativePoint="RIGHT" y="-2"/>
-				</Anchors>
-			</Frame>
 		</Frames>
 	</Frame>
 	
@@ -1025,6 +1033,7 @@
 			</Layer>
 			<Layer level="OVERLAY">
 				<FontString parentKey="Name" inherits="GameFontNormal" hidden="true">
+					<Size x="140" y="0"/>
 					<Anchors>
 						<Anchor point="BOTTOM" relativePoint="TOP" x="0" y="4"/>
 					</Anchors>
@@ -1121,6 +1130,14 @@
 
 	<Frame name="GarrisonMissionEnemyMechanicTemplate" inherits="GarrisonMissionMechanicTemplate, GarrisonMissionCheckTemplate" virtual="true"/>
 	
+	<Frame name="GarrisonMissionEnemyLargeMechanicTemplate" inherits="GarrisonMissionLargeMechanicTemplate, GarrisonMissionCheckTemplate" virtual="true">
+		<Scripts>
+			<OnLoad>
+				self.CheckGlow:SetPoint("CENTER", 4, -4);
+			</OnLoad>
+		</Scripts>
+	</Frame>
+
 	<Frame name="GarrisonMissionPageEnemyTemplate" virtual="true">
 		<Size x="53" y="53"/>
 		<Layers>		
@@ -1139,7 +1156,7 @@
 					<Anchor point="TOP"/>
 				</Anchors>
 			</Frame>
-			<Frame parentArray="Mechanics" inherits="GarrisonMissionEnemyMechanicTemplate"/>
+			<Frame parentArray="Mechanics" inherits="GarrisonMissionEnemyLargeMechanicTemplate"/>
 		</Frames>
 	</Frame>
 	
@@ -1476,10 +1493,8 @@
 				</Texture>
 			</Layer>
 			<Layer level="OVERLAY">
-				<FontString parentKey="Name" inherits="GameFontNormalSmall2">
-					<Anchors>
-						<Anchor point="TOPLEFT" x="58" y="-25"/>
-					</Anchors>
+				<FontString parentKey="Name" inherits="GameFontNormalSmall2" justifyH="LEFT">
+					<Size x="96" y="0"/>
 				</FontString>
 			</Layer>
 		</Layers>
@@ -1691,7 +1706,7 @@
 						</Anchors>
 					</Frame>
 					<EditBox parentKey="SearchBox" inherits="SearchBoxTemplate" letters="40">
-						<Size x="145" y="20"/>
+						<Size x="236" y="20"/>
 						<Anchors>
 							<Anchor point="TOPLEFT" relativeKey="$parent.HeaderLeft" x="17" y="-10"/>
 						</Anchors>
@@ -1699,35 +1714,6 @@
 							<OnTextChanged function="GarrisonFollowerList_UpdateFollowers"/>
 						</Scripts>
 					</EditBox>
-					<Button inherits="UIMenuButtonStretchTemplate" text="FILTER">
-						<Size x="85" y="22"/>
-						<Anchors>
-							<Anchor point="TOPLEFT" relativeKey="$parent.SearchBox" relativePoint="TOPRIGHT" x="7" y="0"/>
-						</Anchors>
-						<Layers>
-							<Layer level="ARTWORK">
-								<Texture parentKey="Icon" file="Interface\ChatFrame\ChatFrameExpandArrow">
-									<Size x="10" y="12"/>
-									<Anchors>
-										<Anchor point="RIGHT" relativeKey="$parent.Right" relativePoint="RIGHT" x="-5"/>
-									</Anchors>
-								</Texture>
-							</Layer>
-						</Layers>
-						<Scripts>
-							<OnClick> 
-								PlaySound("igMainMenuOptionCheckBoxOn");
-								ToggleDropDownMenu(1, nil, GarrisonFollowerFilterDropDown, self, 74, 15);
-							</OnClick>
-						</Scripts>
-					</Button>
-					<Frame name="GarrisonFollowerFilterDropDown" inherits="UIDropDownMenuTemplate">
-						<Scripts>
-							<OnLoad>
-								UIDropDownMenu_Initialize(self, GarrisonFollowerFilterDropDown_Initialize, "MENU");
-							</OnLoad>
-						</Scripts>
-					</Frame>
 					<Frame name="GarrisonFollowerOptionDropDown" inherits="UIDropDownMenuTemplate">
 						<Scripts>
 							<OnLoad>
@@ -1963,7 +1949,7 @@
 									<Anchor point="TOPRIGHT" x="1" y="3"/>
 								</Anchors>
 								<Scripts>
-									<OnClick function="GarrisonMissionPageCloseButton_OnClick"/>
+									<OnClick function="GarrisonMissionPage_Close"/>
 								</Scripts>
 							</Button>
 							<Frame parentKey="Stage" inherits="GarrisonMissionStageTemplate">
@@ -2205,7 +2191,28 @@
 										<Anchors>
 											<Anchor point="LEFT" relativeKey="$parent.Reward1" relativePoint="RIGHT" x="6" y="0"/>
 										</Anchors>
-									</Frame>								
+									</Frame>
+									<Frame parentKey="TooltipHitBox">
+										<Anchors>
+											<Anchor point="TOP" relativeKey="$parent.Chance"/>
+											<Anchor point="BOTTOMRIGHT" relativeKey="$parent.ChanceLabel"/>
+											<Anchor point="BOTTOMLEFT" relativeKey="$parent.ChanceLabel"/>
+										</Anchors>
+										<Scripts>
+											<OnEnter>
+												GameTooltip:ClearAllPoints();
+												GameTooltip:SetPoint("BOTTOMLEFT", self, "BOTTOMRIGHT", 10, 0);
+												GameTooltip:SetOwner(self, "ANCHOR_PRESERVE");
+												GameTooltip:SetText(GARRISON_MISSION_CHANCE_TOOLTIP_HEADER);
+												local missionID = GarrisonMissionFrame.MissionTab.MissionPage.missionInfo.missionID;
+												GameTooltip:AddLine(string.format(GARRISON_MISSION_PERCENT_CHANCE, C_Garrison.GetRewardChance(missionID)), HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b);
+												GameTooltip:AddLine(" ");
+												GameTooltip:AddLine(GARRISON_MISSION_CHANCE_TOOLTIP_TEXT, NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b, 1, 1);
+												GameTooltip:Show();
+											</OnEnter>
+											<OnLeave function="GameTooltip_Hide"/>
+										</Scripts>
+									</Frame>
 								</Frames>
 								<Animations>
 									<AnimationGroup parentKey="ChanceGlowAnim" setToFinalAlpha="true">
@@ -2420,16 +2427,8 @@
 							</OnShow>
 						</Scripts>
 					</CinematicModel>
-					<Frame parentArray="Abilities" inherits="GarrisonFollowerPageAbilityTemplate">
-						<Anchors>
-							<Anchor point="TOPLEFT" relativeKey="$parent.AbilitiesText" relativePoint="BOTTOMLEFT" x="2" y="-12"/>
-						</Anchors>
-					</Frame>
-					<Frame parentArray="Traits" inherits="GarrisonFollowerPageAbilityTemplate">
-						<Anchors>
-							<Anchor point="TOPLEFT" relativeKey="$parent.TraitsText" relativePoint="BOTTOMLEFT" x="2" y="-12"/>
-						</Anchors>
-					</Frame>
+					<Frame parentArray="Abilities" inherits="GarrisonFollowerPageAbilityTemplate"/>
+					<Frame parentArray="Counters" inherits="GarrisonMissionAbilityCounterTemplate"/>
 					<Frame parentKey="Source">
 						<Size x="230" y="80"/>
 						<Anchors>
@@ -2896,7 +2895,14 @@
 										<Alpha childKey="LockGlow" startDelay="0.5" smoothing="IN_OUT" duration="0.75" order="1" change="-1"/>
 										<Scripts>
 											<OnFinished>
-												self:GetParent().Lock:Hide();
+												if ( C_Garrison.CanOpenMissionChest(GarrisonMissionFrame.MissionComplete.currentMission.missionID) ) then
+													local chest = self:GetParent();
+													chest.Lock:Hide();
+													chest.ClickFrame:Show();
+												else
+													self:GetParent().Lock:Show();
+													self:GetParent().Lock:SetAlpha(1);
+												end
 											</OnFinished>
 										</Scripts>
 									</AnimationGroup>
@@ -2920,7 +2926,7 @@
 										<Alpha childKey="SuccessGlow" startDelay="0.51" duration="0.75" order="1" fromAlpha="0.75" toAlpha="0"/>
 										<Scripts>
 											<OnFinished>
-												self:GetParent().Banner:SetWidth(300);
+												self:GetParent().Banner:SetWidth(GARRISON_MISSION_COMPLETE_BANNER_WIDTH);
 											</OnFinished>
 										</Scripts>										
 									</AnimationGroup>
@@ -2935,7 +2941,7 @@
 										<Alpha childKey="SuccessGlow" startDelay="0.51" duration="0.75" order="1" fromAlpha="0.75" toAlpha="0"/>
 										<Scripts>
 											<OnFinished>
-												self:GetParent().Banner:SetWidth(300);
+												self:GetParent().Banner:SetWidth(GARRISON_MISSION_COMPLETE_BANNER_WIDTH);
 											</OnFinished>
 										</Scripts>
 									</AnimationGroup>
@@ -2947,13 +2953,15 @@
 									</AnimationGroup>
 								</Animations>
 								<Frames>
-									<Frame parentKey="ClickFrame">
+									<Frame parentKey="ClickFrame" hidden="true">
 										<Size x="100" y="96"/>
 										<Anchors>
 											<Anchor point="TOP" x="0" y="-34"/>
 										</Anchors>
 										<Scripts>
-											<OnMouseDown function="GarrisonMissionComplete_OpenChest"/>
+											<OnMouseDown function="GarrisonMissionCompleteChest_OnMouseDown"/>
+											<OnEnter function="GarrisonMissionCompleteChest_OnEnter"/>
+											<OnLeave function="GarrisonMissionCompleteChest_OnLeave"/>
 										</Scripts>
 									</Frame>
 								</Frames>			

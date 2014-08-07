@@ -2145,13 +2145,21 @@ function CombatLog_OnEvent(filterSettings, timestamp, event, hideCaster, sourceG
 		spellName = ACTION_SWING;
 
 		-- Miss type
-		missType, isOffHand, amountMissed = ...;
+		missType, isOffHand, multistrike, amountMissed = ...;
 
 		-- Result String
 		if( missType == "RESIST" or missType == "BLOCK" or missType == "ABSORB" ) then
 			resultStr = format(_G["TEXT_MODE_A_STRING_RESULT_"..missType], amountMissed);
 		else
 			resultStr = _G["ACTION_SWING_MISSED_"..missType];
+		end
+
+		if ( multistrike ) then
+			if ( resultStr ) then
+				resultStr = resultStr.." "..TEXT_MODE_A_STRING_RESULT_MULTISTRIKE;
+			else
+				resultStr = TEXT_MODE_A_STRING_RESULT_MULTISTRIKE;
+			end
 		end
 
 		-- Miss Type
@@ -2183,7 +2191,7 @@ function CombatLog_OnEvent(filterSettings, timestamp, event, hideCaster, sourceG
 			end
 		elseif ( event == "SPELL_MISSED" ) then 
 			-- Miss type
-			missType,  isOffHand, amountMissed = select(4, ...);
+			missType,  isOffHand, multistrike, amountMissed = select(4, ...);
 
 			resultEnabled = true;
 			-- Result String
@@ -2195,6 +2203,15 @@ function CombatLog_OnEvent(filterSettings, timestamp, event, hideCaster, sourceG
 				end
 			else
 				resultStr = _G["ACTION_SWING_MISSED_"..missType];
+			end
+
+
+			if ( multistrike ) then
+				if ( resultStr ) then
+					resultStr = resultStr.." "..TEXT_MODE_A_STRING_RESULT_MULTISTRIKE;
+				else
+					resultStr = TEXT_MODE_A_STRING_RESULT_MULTISTRIKE;
+				end
 			end
 
 			-- Miss Event
@@ -2603,13 +2620,21 @@ function CombatLog_OnEvent(filterSettings, timestamp, event, hideCaster, sourceG
 			spellName = ACTION_RANGED;
 
 			-- Miss type
-			missType, isOffHand, amountMissed = select(4,...);
+			missType, isOffHand, multistrike, amountMissed = select(4,...);
 
 			-- Result String
 			if( missType == "RESIST" or missType == "BLOCK" or missType == "ABSORB" ) then
 				resultStr = format(_G["TEXT_MODE_A_STRING_RESULT_"..missType], amountMissed);
 			else
 				resultStr = _G["ACTION_RANGE_MISSED_"..missType];
+			end
+
+			if ( multistrike ) then
+				if ( resultStr ) then
+					resultStr = resultStr.." "..TEXT_MODE_A_STRING_RESULT_MULTISTRIKE;
+				else
+					resultStr = TEXT_MODE_A_STRING_RESULT_MULTISTRIKE;
+				end
 			end
 
 			-- Miss Type

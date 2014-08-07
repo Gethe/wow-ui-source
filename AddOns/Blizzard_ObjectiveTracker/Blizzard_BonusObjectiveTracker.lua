@@ -304,6 +304,12 @@ function BonusObjectiveTracker_ShowRewardsTooltip(block)
 		end
 	end
 
+	if ( HaveQuestData(questID) and GetQuestLogRewardXP(questID) == 0 and GetNumQuestLogRewardCurrencies(questID) == 0
+								and GetNumQuestLogRewards(questID) == 0 and GetQuestLogRewardMoney(questID) == 0 ) then
+		GameTooltip:Hide();
+		return;
+	end
+
 	GameTooltip:ClearAllPoints();
 	GameTooltip:SetPoint("TOPRIGHT", block, "TOPLEFT", 0, 0);
 	GameTooltip:SetOwner(block, "ANCHOR_PRESERVE");

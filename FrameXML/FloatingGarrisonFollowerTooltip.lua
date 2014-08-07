@@ -101,7 +101,7 @@ function GarrisonFollowerTooltipTemplate_SetGarrisonFollower(tooltipFrame, data)
 	if (data.trait3 ~= 0 and data.trait3 ~= nil) then traitCount = traitCount + 1 end;
 	if (data.trait4 ~= 0 and data.trait4 ~= nil) then traitCount = traitCount + 1 end;
 
-	local detailed = true; -- always showing the detailed tooltip for now
+	local detailed = not data.noAbilityDescriptions;
 	
 	local abilityTemplate = "GarrisonFollowerAbilityTemplate";
 
@@ -242,6 +242,10 @@ function GarrisonFollowerTooltipTemplate_SetGarrisonFollower(tooltipFrame, data)
 		Trait:Show();
 				
 		tooltipFrameHeight = tooltipFrameHeight + Trait:GetHeight();
+	end
+
+	if ( not detailed ) then
+		tooltipFrameHeight = tooltipFrameHeight + abilityOffset;
 	end
 
 	tooltipFrame:SetSize(260, tooltipFrameHeight);

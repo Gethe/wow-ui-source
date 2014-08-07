@@ -1389,6 +1389,7 @@
 			<OnEvent function="SpellBookFrame_OnEvent"/>
 			<OnShow function="SpellBookFrame_OnShow"/>
 			<OnHide function="SpellBookFrame_OnHide"/>
+			<OnMouseWheel function="SpellBookFrame_OnMouseWheel"/>
 		</Scripts>
 	</Frame>
 </Ui>

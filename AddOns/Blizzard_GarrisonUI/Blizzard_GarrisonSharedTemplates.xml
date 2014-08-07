@@ -350,15 +350,6 @@
 				<Anchors>
 					<Anchor point="TOPLEFT" x="4" y="2"/>
 				</Anchors>
-				<Layers>
-					<Layer level="OVERLAY">
-						<Texture parentKey="Favorite" atlas="PetJournal-FavoritesIcon" useAtlasSize="true">
-							<Anchors>
-								<Anchor point="TOPLEFT" x="-5" y="5"/>
-							</Anchors>
-						</Texture>				
-					</Layer>				
-				</Layers>
 				<Scripts>
 					<OnLoad>
 						self:SetFrameLevel(self:GetParent():GetFrameLevel() + 2);

@@ -39,7 +39,8 @@ function AccountLogin_OnShow(self)
 
 	-- special code for BlizzCon
 	if (IsBlizzCon()) then
-		DefaultServerLogin(GetCVar("accountName"), GetCVar("password"));
+		AccountLoginPasswordEdit:SetText(GetCVar("password"));
+		DefaultServerLogin(GetCVar("accountName"), AccountLoginPasswordEdit);
 		AccountLoginUI:Hide();
 		return;
 	end
@@ -237,7 +238,7 @@ end
 
 function AccountLogin_Login()
 	PlaySound("gsLogin");
-	DefaultServerLogin(AccountLoginAccountEdit:GetText(), AccountLoginPasswordEdit:GetText());
+	DefaultServerLogin(AccountLoginAccountEdit:GetText(), AccountLoginPasswordEdit);
 	AccountLoginPasswordEdit:SetText("");
 
 	if ( AccountLoginSaveAccountName:GetChecked() ) then

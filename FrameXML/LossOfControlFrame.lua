@@ -179,7 +179,7 @@ function LossOfControlTimeLeftFrame_SetTime(self, timeRemaining)
 		if ( timeRemaining >= 10 ) then
 			self.NumberText:SetFormattedText("%d", timeRemaining);
 		elseif (timeRemaining < 9.95) then -- From 9.95 to 9.99 it will print 10.0 instead of 9.9
-			self.NumberText:SetFormattedText("%.1f", timeRemaining);
+			self.NumberText:SetFormattedText("%.1F", timeRemaining);
 		end
 		self:Show();
 		self.timeRemaining = timeRemaining;

@@ -509,7 +509,14 @@ function SpellButton_UpdateCooldown(self)
 	if (slot) then
 		local start, duration, enable = GetSpellCooldown(slot, SpellBookFrame.bookType);
 		if (cooldown and start and duration) then
+			if (enable) then
+				cooldown:Hide();
+			else
+				cooldown:Show();
+			end
 			CooldownFrame_SetTimer(cooldown, start, duration, enable);
+		else
+			cooldown:Hide();
 		end
 	end
 end
@@ -753,6 +760,26 @@ function SpellBookNextPageButton_OnClick()
 	end
 	SpellBookFrame_Update();
 end
+
+function SpellBookFrame_OnMouseWheel(self, value, scrollBar)
+	--do nothing if not on an appropriate book type
+	if(SpellBookFrame.bookType ~= BOOKTYPE_SPELL and SpellBookFrame.bookType ~= BOOKTYPE_CORE_ABILITIES) then
+		return;
+	end
+
+	local currentPage, maxPages = SpellBook_GetCurrentPage();
+
+	if(value > 0) then
+		if(currentPage > 1) then
+			SpellBookPrevPageButton_OnClick()
+		end
+	else 
+		if(value < maxPages) then
+			SpellBookNextPageButton_OnClick()
+		end
+	end
+end
+
 
 function SpellBookSkillLineTab_OnClick(self)
 	local id = self:GetID();

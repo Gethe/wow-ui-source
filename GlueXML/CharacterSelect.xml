@@ -927,7 +927,7 @@
 								</Anchors>
 								<Scripts>
 									<OnLoad>
-										self:SetWidth(self:GetTextWidth() + 50);
+										self:SetWidth(self:GetTextWidth() + 73);
 									</OnLoad>
 									<OnClick>
 										PlaySound("igMainMenuOptionCheckBoxOn");
@@ -941,7 +941,7 @@
 							<Button name="CharSelectUndeleteCharacterButton" inherits="GluePanelButtonTemplate" hidden="true" motionScriptsWhileDisabled="true">
 								<Size x="52" y="45"/>
 								<Anchors>
-									<Anchor point="LEFT" relativeTo="CharSelectCreateCharacterButton" relativePoint="RIGHT" x="-18" y="0"/>
+									<Anchor point="LEFT" relativeTo="CharSelectCreateCharacterButton" relativePoint="RIGHT" x="-10" y="0"/>
 								</Anchors>
 								<Layers>
 									<Layer level="OVERLAY">

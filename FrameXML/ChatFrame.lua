@@ -1600,6 +1600,14 @@ SecureCmdList["DISMISSBATTLEPET"] = function(msg)
 	end
 end
 
+SecureCmdList["PET_DISMISS"] = function(msg)
+	if ( PetCanBeAbandoned() ) then
+		CastSpellByID(HUNTER_DISMISS_PET);
+	else
+		PetDismiss();
+	end
+end
+
 -- Pre-populate the secure command hash table
 for index, value in pairs(SecureCmdList) do
 	local i = 1;

@@ -65,6 +65,7 @@
 			<OnLoad function="DraenorZoneAbilityFrame_OnLoad"/>
 			<OnEvent function="DraenorZoneAbilityFrame_OnEvent"/>
 			<OnShow function="DraenorZoneAbilityFrame_OnShow"/>
+			<OnHide function="DraenorZoneAbilityFrame_OnHide"/>
 		</Scripts>
 	</Frame>
 

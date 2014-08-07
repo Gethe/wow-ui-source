@@ -247,7 +247,7 @@
 				</Anchors>
 				<Layers>
 					<Layer level="OVERLAY">
-						<Texture parentKey="Highlight" atlas="bags-roundhighlight" alphaMode="ADD" hidden="true" alpha="0.8">
+						<Texture parentKey="Highlight" atlas="bags-roundhighlight" alphaMode="ADD" hidden="true">
 							<Size x="36" y="36"/>
 							<Anchors>
 								<Anchor point="CENTER" x="-3" y="3"/>
@@ -447,6 +447,9 @@
 				</Anchors>
 				<Scripts>
 					<OnClick>
+						if (self:GetParent().bitField) then
+							SetCVarBitfield("closedInfoFrames", self:GetParent().bitField, true);
+						end
 						self:GetParent():Hide();
 					</OnClick>
 				</Scripts>

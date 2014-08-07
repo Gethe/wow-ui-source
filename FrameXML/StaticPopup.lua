@@ -3323,6 +3323,21 @@ StaticPopupDialogs["PRODUCT_ASSIGN_TO_TARGET_FAILED"] = {
 	whileDead = 1,
 }
 
+StaticPopupDialogs["BATTLEFIELD_BORDER_WARNING"] = {
+	text = "",
+	OnShow = function(self)
+		self.timeleft = self.data.timer;
+	end,
+	OnUpdate = function(self)
+		self.text:SetFormattedText(BATTLEFIELD_BORDER_WARNING, self.data.name, SecondsToTime(self.timeleft, false, true));
+		StaticPopup_Resize(self, "BATTLEFIELD_BORDER_WARNING");
+	end,
+	nobuttons = 1,
+	timeout = 0,
+	whileDead = 1,
+	closeButton = 1,
+};
+
 function StaticPopup_FindVisible(which, data)
 	local info = StaticPopupDialogs[which];
 	if ( not info ) then
@@ -3367,7 +3382,10 @@ function StaticPopup_Resize(dialog, which)
 		dialog.maxWidthSoFar = width;
 	end
 
-	local height = 32 + text:GetHeight() + 8 + button1:GetHeight();
+	local height = 32 + text:GetHeight() + 2;
+	if (not info.nobuttons) then
+		height = height + 6 + button1:GetHeight();
+	end
 	if ( info.hasEditBox ) then
 		height = height + 8 + editBox:GetHeight();
 	elseif ( info.hasMoneyFrame ) then

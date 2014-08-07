@@ -343,8 +343,8 @@
 		<TexCoords left="0.904296875" right="0.99609375" top="0.70703125" bottom="0.748046875"/>
 	</Texture>
 	<Texture name="UI-EJ-Bullet" file="Interface\EncounterJournal\UI-EncounterJournalTextures" virtual="true">
-		<Size x="16" y="16"/>
-		<TexCoords left="0.966796875" right="0.99609375" top="0.7509765625" bottom="0.765625"/>
+		<Size x="13" y="13"/>
+		<TexCoords left="0.974609375" right="1.0" top="0.7509765625" bottom="0.763671875"/>
 	</Texture>
 	<Texture name="UI-EJ-Header-Overview" file="Interface\EncounterJournal\UI-EncounterJournalTextures" virtual="true">
 		<Size x="327" y="30"/>

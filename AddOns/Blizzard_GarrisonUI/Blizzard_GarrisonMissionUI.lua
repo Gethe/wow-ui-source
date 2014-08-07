@@ -1,5 +1,6 @@
 GARRISON_FOLLOWER_LIST_BUTTON_FULL_XP_WIDTH = 205;
 GARRISON_FOLLOWER_MAX_LEVEL = 100;
+GARRISON_MISSION_COMPLETE_BANNER_WIDTH = 300;
 
 local MISSION_PAGE_FRAME;	-- set in GarrisonMissionFrame_OnLoad
 
@@ -108,6 +109,8 @@ function GarrisonMissionFrame_ToggleFrame()
 end
 
 function GarrisonMissionFrame_OnLoad(self)
+	MISSION_PAGE_FRAME = GarrisonMissionFrame.MissionTab.MissionPage;
+
 	PanelTemplates_SetNumTabs(self, 2);
 	self.selectedTab = 1;
 	PanelTemplates_UpdateTabs(self);
@@ -131,6 +134,7 @@ function GarrisonMissionFrame_OnLoad(self)
 	local factionGroup = UnitFactionGroup("player");
 	if ( factionGroup == "Horde" ) then
 		GarrisonMissionFrame.MissionTab.MissionPage.RewardsFrame.Chest:SetAtlas("GarrMission-HordeChest");
+		GarrisonMissionFrame.MissionTab.MissionPage.FollowerModel.EmptyShadow:SetAtlas("GarrMission_Silhouettes-1Horde");
 		GarrisonMissionFrame.MissionComplete.BonusRewards.ChestModel:SetDisplayInfo(54913);
 		local dialogBorderFrame = GarrisonMissionFrame.MissionTab.MissionList.CompleteDialog.BorderFrame;
 		dialogBorderFrame.Model:SetDisplayInfo(59175);
@@ -174,8 +178,6 @@ function GarrisonMissionFrame_OnLoad(self)
 		maxQuality = max(maxQuality, quality);
 	end
 	self.followerMaxQuality = maxQuality;
-	
-	MISSION_PAGE_FRAME = GarrisonMissionFrame.MissionTab.MissionPage;	
 end
 
 function GarrisonMissionFrame_OnEvent(self, event, ...)
@@ -226,6 +228,9 @@ function GarrisonMissionFrame_OnShow(self)
 end
 
 function GarrisonMissionFrame_OnHide(self)
+	if ( MISSION_PAGE_FRAME.missionInfo ) then
+		GarrisonMissionPage_Close();
+	end
 	GarrisonMissionFrame_ClearMouse();
 	C_Garrison.CloseMissionNPC();
 	HelpPlate_Hide();
@@ -354,36 +359,23 @@ function GarrisonFollowerList_UpdateFollowers()
 	end
 	self.followersList = { };
 
-	local hideCollected = GetCVarBitfield("garrisonFollowerFilters", LE_FOLLOWER_FILTER_COLLECTED);
-	local hideNotCollected = GetCVarBitfield("garrisonFollowerFilters", LE_FOLLOWER_FILTER_NOT_COLLECTED) or GarrisonMissionFrame.MissionTab:IsVisible();
 	local searchString = self.SearchBox:GetText();
 	if ( searchString == SEARCH ) then
 		searchString = nil;
 	end
 
-	local isFiltered = function(follower)
-		if ( hideCollected and follower.isCollected ) then
-			return true;
-		end
-		if ( hideNotCollected and not follower.isCollected ) then
-			return true;
-		end
-		if ( searchString and searchString ~= "" ) then
-			return not C_Garrison.SearchForFollower(follower.followerID, searchString );
-		end
-		return false;
-	end
-
+	local skipUncollected = MISSION_PAGE_FRAME:IsVisible();
+	
 	local numCollected = 0;
 	for i = 1, #self.followers do
 		if ( self.followers[i].isCollected ) then
 			numCollected = numCollected + 1;
 		end
-		if ( not isFiltered(self.followers[i]) ) then
+		if ( (self.followers[i].isCollected or not skipUncollected) and (not searchString or searchString == "" or C_Garrison.SearchForFollower(self.followers[i].followerID, searchString)) ) then
 			tinsert(self.followersList, i);
 		end
 	end
-	
+
 	local maxFollowers = C_Garrison.GetFollowerSoftCap();
 	local countColor = NORMAL_FONT_COLOR_CODE;
 	if ( numCollected > maxFollowers ) then
@@ -404,7 +396,8 @@ function GarrisonFollowerList_Update()
 	local buttons = scrollFrame.buttons;
 	local numButtons = #buttons;
 	local expandedHeight = 0;
-	
+	local showCounters = MISSION_PAGE_FRAME:IsVisible();
+
 	for i = 1, numButtons do
 		local button = buttons[i];
 		local index = offset + i; -- adjust index
@@ -419,7 +412,6 @@ function GarrisonFollowerList_Update()
 			button.PortraitFrame.LevelBorder:SetVertexColor(color.r, color.g, color.b);
 			button.PortraitFrame.Level:SetText(follower.level);
 			SetPortraitTexture(button.PortraitFrame.Portrait, follower.displayID);
-			button.PortraitFrame.Favorite:SetShown(follower.isFavorite);
 			if ( follower.isCollected ) then
 				-- have this follower
 				button.isCollected = true;
@@ -474,7 +466,7 @@ function GarrisonFollowerList_Update()
 				button.BusyFrame:Hide();
 			end
 
-			GarrisonFollowerButton_UpdateCounters(button, follower);
+			GarrisonFollowerButton_UpdateCounters(button, follower, showCounters);
 
 			if (button.id == GarrisonMissionFrame.openFollower) then
 				GarrisonFollowerButton_Select(button);
@@ -493,9 +485,9 @@ function GarrisonFollowerList_Update()
 	HybridScrollFrame_Update(scrollFrame, totalHeight, displayedHeight);
 end
 
-function GarrisonFollowerButton_UpdateCounters(button, follower)
+function GarrisonFollowerButton_UpdateCounters(button, follower, showCounters)
 	local numShown = 0;
-	if ( button.isCollected and (not follower.status or follower.status == GARRISON_FOLLOWER_IN_PARTY or follower.status == GARRISON_FOLLOWER_WORKING) ) then
+	if ( showCounters and button.isCollected and (not follower.status or follower.status == GARRISON_FOLLOWER_IN_PARTY or follower.status == GARRISON_FOLLOWER_WORKING) ) then
 		--if a mission is being viewed, show mechanics this follower can counter
 		--for followers you have, show counters if they are or could be on the mission
 		local counters = GarrisonMissionFrame.followerCounters and GarrisonMissionFrame.followerCounters[follower.followerID];
@@ -751,19 +743,6 @@ function GarrisonFollowerOptionDropDown_Initialize(self)
 		end
 		info.disabled = nil;
 		
-		if ( follower.isFavorite ) then
-			info.text = BATTLE_PET_UNFAVORITE;
-			info.func = function() 
-				C_Garrison.SetFollowerFavorite(self.followerID, false); 
-			end
-		else
-			info.text = BATTLE_PET_FAVORITE;
-			info.func = function() 
-				C_Garrison.SetFollowerFavorite(self.followerID, true); 
-			end
-		end
-		UIDropDownMenu_AddButton(info, level);
-		
 		info.text = GARRISON_DISMISS_FOLLOWER;
 		if (C_Garrison.IsFollowerUnique(self.followerID)) then
 			info.func = function()
@@ -786,101 +765,19 @@ end
 --- Follower filtering and searching                                          ---
 ---------------------------------------------------------------------------------
 
-function GarrisonFollowerFilterDropDown_Initialize(self, level)
-	local info = UIDropDownMenu_CreateInfo();
-	info.keepShownOnClick = true;	
-
-	if level == 1 then
-	
-		info.text = COLLECTED
-		info.func = 	function(_, _, _, value)
-							SetCVarBitfield("garrisonFollowerFilters", LE_FOLLOWER_FILTER_COLLECTED, not value);
-							GarrisonFollowerList_UpdateFollowers();
-						end 
-		info.checked = not GetCVarBitfield("garrisonFollowerFilters", LE_FOLLOWER_FILTER_COLLECTED);
-		info.isNotRadio = true;
-		UIDropDownMenu_AddButton(info, level)
-
-		info.text = NOT_COLLECTED
-		info.func = 	function(_, _, _, value)
-							SetCVarBitfield("garrisonFollowerFilters", LE_FOLLOWER_FILTER_NOT_COLLECTED, not value);
-							GarrisonFollowerList_UpdateFollowers();		
-						end 
-		info.checked = not GetCVarBitfield("garrisonFollowerFilters", LE_FOLLOWER_FILTER_NOT_COLLECTED);
-		info.isNotRadio = true;
-		UIDropDownMenu_AddButton(info, level)
-	
-		info.checked = 	nil;
-		info.isNotRadio = nil;
-		info.func =  nil;
-		info.hasArrow = true;
-		info.notCheckable = true;
-		
-		info.text = RAID_FRAME_SORT_LABEL
-		info.value = 1;
-		UIDropDownMenu_AddButton(info, level)
-	
-	else --if level == 2 then	
-		if UIDROPDOWNMENU_MENU_VALUE == 1 then
-			info.hasArrow = false;
-			info.isNotRadio = nil;
-			info.notCheckable = nil;
-			info.keepShownOnClick = nil;	
-			
-			local sortCVar = GetCVar("garrisonFollowerSort");
-			local sortType;
-			if ( sortCVar == "level" or sortCVar == "rarity" ) then
-				sortType = sortCVar;
-			else
-				-- this is the default
-				sortType = "name";
-			end
-			
-			info.text = NAME
-			info.func = function()
-							GarrisonFollowerList_SetSortType("name");
-						end
-			info.checked = (sortType == "name");
-			UIDropDownMenu_AddButton(info, level);
-			
-			info.text = LEVEL
-			info.func = function()
-							GarrisonFollowerList_SetSortType("level");
-						end
-			info.checked = (sortType == "level");
-			UIDropDownMenu_AddButton(info, level);
-			
-			info.text = RARITY
-			info.func = function()
-							GarrisonFollowerList_SetSortType("rarity");
-						end
-			info.checked = (sortType == "rarity");
-			UIDropDownMenu_AddButton(info, level);			
-		end
-	end
-end
-
 function GarrisonFollowerList_DirtyList()
 	GarrisonMissionFrame.FollowerList.dirtyList = true;
 end
 
-function GarrisonFollowerList_SetSortType(sortType)
-	SetCVar("garrisonFollowerSort", sortType);
-	GarrisonFollowerList_SortFollowers();
-	GarrisonFollowerList_Update();
-end
-
 function GarrisonFollowerList_SortFollowers()
-	local sortCVar = GetCVar("garrisonFollowerSort");
 	local followers = GarrisonMissionFrame.FollowerList.followers;
-
+	local followerCounters = GarrisonMissionFrame.followerCounters;
+	local followerTraits = GarrisonMissionFrame.followerTraits;
+	local checkAbilities = followerCounters and followerTraits and GarrisonMissionFrame.MissionTab:IsVisible();
 	local comparison = function(index1, index2)
 		local follower1 = followers[index1];
 		local follower2 = followers[index2];
 
-		if ( follower1.isFavorite ~= follower2.isFavorite ) then
-			return follower1.isFavorite;
-		end
 		if ( follower1.isCollected ~= follower2.isCollected ) then
 			return follower1.isCollected;
 		end
@@ -890,25 +787,29 @@ function GarrisonFollowerList_SortFollowers()
 			return true;
 		end
 
-		if ( sortCVar == "rarity" ) then
-			if ( follower1.quality == follower2.quality ) then
-				if ( follower1.level ~= follower2.level ) then
-					return follower1.level > follower2.level;
-				end
-			else
-				return follower1.quality > follower2.quality;
+		-- sorting: level > item level > (num counters for mission) > (num traits for mission) > quality > name
+		if ( follower1.level ~= follower2.level ) then
+			return follower1.level > follower2.level;
+		end
+		if ( follower1.level == GARRISON_FOLLOWER_MAX_LEVEL and follower1.iLevel ~= follower2.iLevel ) then		-- only checking follower 1 because follower 2 has same level at this point
+			return follower1.iLevel > follower2.iLevel;
+		end
+		if ( checkAbilities and not follower1.status and follower1.isCollected ) then		-- only checking follower 1 because follower 2 has same status and collected-ness at this point
+			local numCounters1 = followerCounters[follower1.followerID] and #followerCounters[follower1.followerID] or 0;
+			local numCounters2 = followerCounters[follower2.followerID] and #followerCounters[follower2.followerID] or 0;
+			if ( numCounters1 ~= numCounters2 ) then
+				return numCounters1 > numCounters2;
 			end
-		elseif ( sortCVar == "level" ) then
-			if ( follower1.level == follower2.level ) then
-				if ( follower1.quality ~= follower2.quality ) then
-					return follower1.quality > follower2.quality;
-				end		
-			else
-				return follower1.level > follower2.level;
+			local numTraits1 = followerTraits[follower1.followerID] and #followerTraits[follower1.followerID] or 0;
+			local numTraits2 = followerTraits[follower2.followerID] and #followerTraits[follower2.followerID] or 0;
+			if ( numTraits1 ~= numTraits2 ) then
+				return numTraits1 > numTraits2;
 			end
 		end
-		-- default is name sort
-		return follower1.name < follower2.name;
+		if ( follower1.quality ~= follower2.quality ) then
+			return follower1.quality > follower2.quality;
+		end
+		return strcmputf8i(follower1.name, follower2.name) < 0;
 	end
 
 	table.sort(GarrisonMissionFrame.FollowerList.followersList, comparison);
@@ -1039,88 +940,87 @@ function GarrisonFollowerPage_ShowFollower(followerID)
 		self.XPLabel:Hide();
 		self.XPBar:Hide();
 	end
-	
-	for i=1, #self.Abilities do
-		self.Abilities[i]:Hide();
-	end
-	for i=1, #self.Traits do
-		self.Traits[i]:Hide();
-	end
-	
-	local numAbilities = 0;
-	local numTraits = 0;
+
+	self.TraitsText:ClearAllPoints();
 	if (not followerInfo.abilities) then
 		followerInfo.abilities = C_Garrison.GetFollowerAbilities(followerID);
 	end
+	local lastAbilityAnchor, lastTraitAnchor;
+	local numCounters = 0;
+
 	for i=1, #followerInfo.abilities do
 		local ability = followerInfo.abilities[i];
-		local Frame;
-		if (ability.isTrait) then
-			numTraits = numTraits + 1;
-			if (not self.Traits[numTraits]) then
-				self.Traits[numTraits] = CreateFrame("Frame", nil, self, "GarrisonFollowerPageAbilityTemplate");
-				self.Traits[numTraits]:SetPoint("TOPLEFT", self.Traits[numTraits-1], "BOTTOMLEFT", 0, -2);
-			end
-			Frame = self.Traits[numTraits];
-		else
-			numAbilities = numAbilities + 1;
-			if (not self.Abilities[numAbilities]) then
-				self.Abilities[numAbilities] = CreateFrame("Frame", nil, self, "GarrisonFollowerPageAbilityTemplate");
-				self.Abilities[numAbilities]:SetPoint("TOPLEFT", self.Abilities[numAbilities-1], "BOTTOMLEFT", 0, -2);
-			end
-			Frame = self.Abilities[numAbilities];
+
+		local abilityFrame = self.Abilities[i];
+		if ( not abilityFrame ) then
+			abilityFrame = CreateFrame("Frame", nil, self, "GarrisonFollowerPageAbilityTemplate");
+			self.Abilities[i] = abilityFrame;
 		end
-		
-		Frame.Name:SetText(ability.name);
-		Frame.IconButton.Icon:SetTexture(ability.icon);
-		Frame.Description:SetText(ability.description);
-		
-		Frame.IconButton.abilityID = ability.id;
-		
-		local numCounters = 0;
-		if (ability.counters) then
+
+		abilityFrame.Name:SetText(ability.name);
+		abilityFrame.IconButton.Icon:SetTexture(ability.icon);
+		abilityFrame.Description:SetText(ability.description);
+		abilityFrame.IconButton.abilityID = ability.id;
+
+		local hasCounters = false;
+		if ( ability.counters and not ability.isTrait ) then
 			for id, counter in pairs(ability.counters) do
 				numCounters = numCounters + 1;
-				if (not Frame.Counters[numCounters]) then
-					Frame.Counters[numCounters] = CreateFrame("Frame", nil, Frame, "GarrisonMissionAbilityCounterTemplate");
-					Frame.Counters[numCounters]:SetPoint("LEFT", Frame.Counters[numCounters-1], "RIGHT", 2, 0)
+				local counterFrame = self.Counters[numCounters];
+				if ( not counterFrame ) then
+					counterFrame = CreateFrame("Frame", nil, self, "GarrisonMissionAbilityCounterTemplate");
+					self.Counters[numCounters] = counterFrame;
 				end
-				local Counter = Frame.Counters[numCounters];
-				Counter.Icon:SetTexture(counter.icon);
-				Counter.tooltip = counter.name;
-				Counter:Show();
+				counterFrame.Icon:SetTexture(counter.icon);
+				counterFrame.tooltip = counter.name;
+				counterFrame:ClearAllPoints();
+				if ( hasCounters ) then			
+					counterFrame:SetPoint("LEFT", self.Counters[numCounters - 1], "RIGHT", 10, 0);
+				else
+					counterFrame:SetPoint("LEFT", abilityFrame.CounterString, "RIGHT", 2, -2);
+				end
+				counterFrame:Show();
+				hasCounters = true;
 			end
 		end
-		if (numCounters > 0) then
-			Frame.CounterString:Show();
+		if ( hasCounters ) then
+			abilityFrame.CounterString:Show();
 		else
-			Frame.CounterString:Hide();
+			abilityFrame.CounterString:Hide();
 		end
-		local startIndex = numCounters + 1;
-		for j = startIndex, #Frame.Counters do
-			Frame.Counters[j]:Hide();
+		-- anchor ability
+		if ( ability.isTrait ) then
+			lastTraitAnchor = GarrisonFollowerPage_AnchorAbility(abilityFrame, lastTraitAnchor, self.TraitsText, hasCounters);
+		else
+			lastAbilityAnchor = GarrisonFollowerPage_AnchorAbility(abilityFrame, lastAbilityAnchor, self.AbilitiesText, hasCounters);
 		end
-		
-		Frame:Show();
+		abilityFrame:Show();
 	end
 
-	if (numAbilities == 0) then
-		self.AbilitiesText:Hide();
-		self.TraitsText:ClearAllPoints();
-		self.TraitsText:SetPoint("TOPLEFT", self.AbilitiesText, "TOPLEFT");
-	else
+	if ( lastAbilityAnchor ) then
 		self.AbilitiesText:Show();
-		self.TraitsText:ClearAllPoints();
-		local offset = numAbilities * (self.Abilities[1]:GetHeight() + 2) + 10;
-		self.TraitsText:SetPoint("TOPLEFT", self.AbilitiesText, "BOTTOMLEFT", 0, -offset);
+	else
+		self.AbilitiesText:Hide();
+	end
+	if ( lastTraitAnchor ) then
+		self.TraitsText:Show();
+		if ( lastAbilityAnchor ) then
+			self.TraitsText:SetPoint("LEFT", self.AbilitiesText, "LEFT");
+			self.TraitsText:SetPoint("TOP", lastAbilityAnchor, "BOTTOM", 0, -16);
+		else
+			self.TraitsText:SetPoint("TOPLEFT", self.AbilitiesText, "TOPLEFT");
+		end
+	else
+		self.TraitsText:Hide();
 	end
 	
-	if (numTraits == 0) then
-		self.TraitsText:Hide();
-	else
-		self.TraitsText:Show();
+	for i = #followerInfo.abilities + 1, #self.Abilities do
+		self.Abilities[i]:Hide();
 	end
-
+	for i = numCounters + 1, #self.Counters do
+		self.Counters[i]:Hide();
+	end
+	
 	-- gear	/ source
 	if ( followerInfo.isCollected ) then
 		local weaponItemID, weaponItemLevel, armorItemID, armorItemLevel = C_Garrison.GetFollowerItems(followerInfo.followerID);
@@ -1143,6 +1043,21 @@ function GarrisonFollowerPage_ShowFollower(followerID)
 		self.Source.SourceText:SetText(C_Garrison.GetFollowerSourceTextByID(followerID));		
 		self.Source.SourceText:Show();
 	end	
+end
+
+function GarrisonFollowerPage_AnchorAbility(abilityFrame, lastAnchor, headerString, hasCounters)
+	abilityFrame:ClearAllPoints();
+	if ( lastAnchor ) then
+		abilityFrame:SetPoint("LEFT", lastAnchor:GetParent());
+		abilityFrame:SetPoint("TOP", lastAnchor, "BOTTOM", 0, -16);			
+	else
+		abilityFrame:SetPoint("TOPLEFT", headerString, "BOTTOMLEFT", 2, -12);
+	end
+	if ( hasCounters ) then
+		return abilityFrame.CounterString;
+	else
+		return abilityFrame.Description;
+	end
 end
 
 ---------------------------------------------------------------------------------
@@ -1177,7 +1092,7 @@ function GarrisonMissionList_SetTab(self)
 	else
 		list.showInProgress = true;
 		GarrisonMissonListTab_SetSelected(list.Tab1, false);
-		GarrisonFollowerPlacer:SetScript("OnUpdate", GarrisonMissionFrame_OnUpdate);
+		list:SetScript("OnUpdate", GarrisonMissionFrame_OnUpdate);
 	end
 	GarrisonMissonListTab_SetSelected(self, true);
 	GarrisonMissionList_UpdateMissions();
@@ -1218,12 +1133,12 @@ function GarrisonMissionFrame_OnUpdate()
 		self.Tab2:SetText(WINTERGRASP_IN_PROGRESS.." - "..#self.inProgressMissions)
 		
 		if( #self.inProgressMissions == 0) then
-			GarrisonFollowerPlacer:SetScript("OnUpdate", nil);
+			self:SetScript("OnUpdate", nil);
 		end
 	else
 		self.availableMissions = C_Garrison.GetAvailableMissions();
 		self.Tab1:SetText(AVAILABLE.." - "..#self.availableMissions)
-		GarrisonFollowerPlacer:SetScript("OnUpdate", nil);
+		self:SetScript("OnUpdate", nil);
 	end
 	GarrisonMissionList_Update();
 end
@@ -1368,7 +1283,7 @@ function GarrisonMissionButton_OnClick(self, button)
 	GarrisonMissionPage_ShowMission(self.info);
 	GarrisonMissionFrame.followerCounters = C_Garrison.GetBuffedFollowersForMission(self.info.missionID)
 	GarrisonMissionFrame.followerTraits = C_Garrison.GetFollowersTraitsForMission(self.info.missionID);
-	GarrisonFollowerList_Update();
+	GarrisonFollowerList_UpdateFollowers();
 end
 
 function GarrisonMissionButton_OnEnter(self, button)
@@ -1762,8 +1677,8 @@ function GarrisonMissionPage_SetEnemies(enemies, numFollowers)
 		for id, mechanic in pairs(enemy.mechanics) do
 			numMechs = numMechs + 1;	
 			if (not Frame.Mechanics[numMechs]) then
-				Frame.Mechanics[numMechs] = CreateFrame("Frame", nil, Frame, "GarrisonMissionEnemyMechanicTemplate");
-				Frame.Mechanics[numMechs]:SetPoint("LEFT", Frame.Mechanics[numMechs-1], "RIGHT", 12, 0);
+				Frame.Mechanics[numMechs] = CreateFrame("Frame", nil, Frame, "GarrisonMissionEnemyLargeMechanicTemplate");
+				Frame.Mechanics[numMechs]:SetPoint("LEFT", Frame.Mechanics[numMechs-1], "RIGHT", 16, 0);
 			end
 			local Mechanic = Frame.Mechanics[numMechs];
 			Mechanic.info = mechanic;
@@ -1771,7 +1686,7 @@ function GarrisonMissionPage_SetEnemies(enemies, numFollowers)
 			Mechanic.mechanicID = id;
 			Mechanic:Show();
 		end
-		Frame.Mechanics[1]:SetPoint("BOTTOM", (numMechs - 1) * -16, -12);
+		Frame.Mechanics[1]:SetPoint("BOTTOM", (numMechs - 1) * -22, -16);
 		for j=(numMechs + 1), #Frame.Mechanics do
 			Frame.Mechanics[j]:Hide();
 			Frame.Mechanics[j].mechanicID = nil;
@@ -1884,31 +1799,12 @@ function GarrisonMissionPage_SetFollower(frame, info)
 	C_Garrison.AddFollowerToMission(MISSION_PAGE_FRAME.missionInfo.missionID, info.followerID);
 	-- update follower list
 	GarrisonMissionFrame.followerTraits = C_Garrison.GetFollowersTraitsForMission(MISSION_PAGE_FRAME.missionInfo.missionID);
-	GarrisonFollowerList_Update();
+	GarrisonFollowerList_UpdateFollowers();
 
-	local powerLevel;
-	if ( showItemLevel and info.level == GarrisonMissionFrame.followerMaxLevel ) then
-		local missionItemLevel = MISSION_PAGE_FRAME.missionInfo.iLevel;
-		if (missionItemLevel > info.iLevel + 15 ) then
-			powerLevel = 0;
-		elseif ( missionItemLevel > info.iLevel ) then
-			powerLevel = 1;
-		else
-			powerLevel = 2;
-		end
-	else
-		local missionLevel = MISSION_PAGE_FRAME.missionInfo.level;
-		if ( missionLevel >= info.level + 3 ) then
-			powerLevel = 0;
-		elseif ( missionLevel > info.level ) then
-			powerLevel = 1;
-		else
-			powerLevel = 2;
-		end
-	end
-	if ( powerLevel == 0 ) then
+	local followerBias = C_Garrison.GetFollowerBiasForMission(MISSION_PAGE_FRAME.missionInfo.missionID, info.followerID);
+	if ( followerBias == -1 ) then
 		frame.PortraitFrame.Level:SetTextColor(1, 0.1, 0.1);
-	elseif ( powerLevel == 1 ) then
+	elseif ( followerBias < 0 ) then
 		frame.PortraitFrame.Level:SetTextColor(1, 0.5, 0.25);
 	else
 		frame.PortraitFrame.Level:SetTextColor(1, 1, 1);
@@ -1963,7 +1859,7 @@ function GarrisonMissionPage_ClearFollower(frame, updateValues)
 			GarrisonMissionPage_UpdateMissionForParty();
 			-- update follower list
 			GarrisonMissionFrame.followerTraits = C_Garrison.GetFollowersTraitsForMission(MISSION_PAGE_FRAME.missionInfo.missionID);
-			GarrisonFollowerList_Update();			
+			GarrisonFollowerList_UpdateFollowers();
 		end
 	end
 	
@@ -1992,14 +1888,17 @@ function GarrisonMissionPage_CanPartyCounterMechanic(mechanicID)
 	for i = 1, #MISSION_PAGE_FRAME.Followers do
 		local followerFrame = MISSION_PAGE_FRAME.Followers[i];
 		if (followerFrame.info) then
-			if (not followerFrame.info.abilities) then
-				followerFrame.info.abilities = C_Garrison.GetFollowerAbilities(followerFrame.info.followerID)
-			end
-			for a=1, #followerFrame.info.abilities do
-				local ability = followerFrame.info.abilities[a];
-				for counterID, counterInfo in pairs(ability.counters) do
-					if (counterID == mechanicID) then
-						return true;
+			local followerBias = C_Garrison.GetFollowerBiasForMission(MISSION_PAGE_FRAME.missionInfo.missionID, followerFrame.info.followerID);
+			if ( followerBias > -1 ) then
+				if (not followerFrame.info.abilities) then
+					followerFrame.info.abilities = C_Garrison.GetFollowerAbilities(followerFrame.info.followerID)
+				end
+				for a=1, #followerFrame.info.abilities do
+					local ability = followerFrame.info.abilities[a];
+					for counterID, counterInfo in pairs(ability.counters) do
+						if (counterID == mechanicID) then
+							return true;
+						end
 					end
 				end
 			end
@@ -2031,7 +1930,7 @@ function GarrisonMissionPage_SetCounters()
 	end
 end
 
-function GarrisonMissionPageCloseButton_OnClick(self)
+function GarrisonMissionPage_Close(self)
 	GarrisonMissionFrame.MissionTab.MissionPage:Hide();
 	GarrisonMissionFrame.MissionTab.MissionList:Show();
 	GarrisonMissionPage_ClearParty();
@@ -2087,9 +1986,10 @@ function GarrisonMissionPageFollowerFrame_OnEnter(self)
 		C_Garrison.GetFollowerTraitAtIndex(self.info.followerID, 1),
 		C_Garrison.GetFollowerTraitAtIndex(self.info.followerID, 2),
 		C_Garrison.GetFollowerTraitAtIndex(self.info.followerID, 3),
-		C_Garrison.GetFollowerTraitAtIndex(self.info.followerID, 4)
+		C_Garrison.GetFollowerTraitAtIndex(self.info.followerID, 4),
+		true
 		);
-	GarrisonFollowerTooltip:SetPoint("BOTTOMLEFT", self, "TOPRIGHT");
+	GarrisonFollowerTooltip:SetPoint("TOPLEFT", self, "BOTTOMRIGHT");
 end
 
 function GarrisonMissionPageFollowerFrame_OnLeave(self)
@@ -2359,20 +2259,21 @@ function GarrisonMissionComplete_Initialize(missionList, index)
 
 	self.NextMissionButton:Disable();
 	self.BonusRewards.ChestModel:SetAlpha(1);
-	self.BonusRewards.ChestModel.ClickFrame:Show();
 	for i = 1, #self.BonusRewards.Rewards do
 		self.BonusRewards.Rewards[i]:Hide();
 	end
 	if (mission.state >= 0) then
 		stage.EncountersFrame:Hide();
-	
 		self.BonusRewards.Saturated:Show();
 		self.BonusRewards.ChestModel.Lock:Hide();
 		self.BonusRewards.ChestModel.ChanceText:SetAlpha(0);
+		self.BonusRewards.ChestModel.ChanceBG:Hide();		
 		self.BonusRewards.ChestModel.FailureText:SetAlpha(0);
-		self.BonusRewards.ChestModel.SuccessText:SetAlpha(0);
-		self.BonusRewards.ChestModel.Banner:SetAlpha(0);
+		self.BonusRewards.ChestModel.SuccessText:SetAlpha(1);
+		self.BonusRewards.ChestModel.Banner:SetAlpha(1);
+		self.BonusRewards.ChestModel.Banner:SetWidth(GARRISON_MISSION_COMPLETE_BANNER_WIDTH);
 		self.BonusRewards.ChestModel:SetAnimation(0, 0);
+		self.BonusRewards.ChestModel.ClickFrame:Show();
 
 		GarrisonMissionComplete_AnimFollowersIn(self);
 	else
@@ -2390,6 +2291,7 @@ function GarrisonMissionComplete_Initialize(missionList, index)
 		self.BonusRewards.ChestModel.Banner:SetWidth(200);
 		self.BonusRewards.ChestModel:SetAnimation(148);
 		self.BonusRewards.ChestModel.SuccessChanceInAnim:Play();
+		self.BonusRewards.ChestModel.ClickFrame:Hide();
 		C_Garrison.MarkMissionComplete(mission.missionID);
 	end
 end
@@ -2404,7 +2306,7 @@ function GarrisonMissionComplete_SetFollowerLevel(followerFrame, level, quality,
 		followerFrame.XP:SetValue(currXP);
 		followerFrame.XP:Show();
 		followerFrame.Name:ClearAllPoints();
-		followerFrame.Name:SetPoint("TOPLEFT", 58, -25);
+		followerFrame.Name:SetPoint("LEFT", 58, 6);
 	else
 		followerFrame.XP:Hide();
 		followerFrame.Name:ClearAllPoints();		
@@ -2478,7 +2380,7 @@ function GarrisonMissionCompleteNextButton_OnClick(self)
 	GarrisonMissionComplete_Initialize(frame.completeMissions, frame.currentIndex);
 end
 
-function GarrisonMissionComplete_OpenChest(self)
+function GarrisonMissionCompleteChest_OnMouseDown(self)
 	if ( C_Garrison.CanOpenMissionChest(GarrisonMissionFrame.MissionComplete.currentMission.missionID) ) then
 		-- hide the click frame
 		self:Hide();
@@ -2493,6 +2395,16 @@ function GarrisonMissionComplete_OpenChest(self)
 		C_Garrison.MissionBonusRoll(GarrisonMissionFrame.MissionComplete.currentMission.missionID);
 		PlaySoundKitID(43504);		-- chest opened
 	end
+end
+
+function GarrisonMissionCompleteChest_OnEnter(self)
+	if ( C_Garrison.CanOpenMissionChest(GarrisonMissionFrame.MissionComplete.currentMission.missionID) ) then
+		SetCursor("INTERACT_CURSOR");
+	end
+end
+
+function GarrisonMissionCompleteChest_OnLeave(self)
+	ResetCursor();
 end
 
 function GarrisonMissionComplete_OnRewardTimer()

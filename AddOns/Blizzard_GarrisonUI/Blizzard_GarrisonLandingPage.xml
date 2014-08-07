@@ -280,7 +280,7 @@
 					<Anchors>
 						<Anchor point="BOTTOMLEFT" x="60" y="40"/>
 					</Anchors>
-					<Color r="1" g="1" b="1" a=".6"/>
+					<Color r="1" g="1" b="1" a=".8"/>
 				</Texture>
 			</Layer>
 		</Layers>

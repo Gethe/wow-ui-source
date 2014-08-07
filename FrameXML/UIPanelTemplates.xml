@@ -2250,6 +2250,9 @@
 -->
 	<Button name="MainHelpPlateButton" virtual="true">
 		<Size x="64" y="64"/>
+		<HitRectInsets>
+			<AbsInset left="20" right="20" top="20" bottom="20"/>
+		</HitRectInsets>		
 		<Layers>
 			<Layer level="BACKGROUND">
 				<Texture parentKey="I" file="Interface\common\help-i">
@@ -2585,6 +2588,12 @@
 					<OnEscapePressed>
 						self:ClearFocus();
 					</OnEscapePressed>
+					<OnEditFocusGained>
+						self:GetParent().FocusButton:Hide();
+					</OnEditFocusGained>
+					<OnEditFocusLost>
+						self:GetParent().FocusButton:Show();
+					</OnEditFocusLost>
 				</Scripts>
 				<FontString inherits="GameFontHighlightSmall"/>
 			</EditBox>

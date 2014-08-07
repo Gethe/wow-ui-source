@@ -2267,7 +2267,7 @@
 
 				<Texture name="$parentToyNewGlow" atlas="collections-newglow" useAtlasSize="true" hidden="true">
 					<Anchors>
-						<Anchor point="CENTER" x="8" y="0" relativePoint="TOPLEFT"/>
+						<Anchor point="CENTER" x="8" y="-1" relativePoint="TOPLEFT"/>
 					</Anchors>
 				</Texture>
 			</Layer>
@@ -2628,7 +2628,7 @@
 						<Anchors>
 							<Anchor point="TOPLEFT">
 								<Offset>
-									<AbsDimension x="40" y="-44"/>
+									<AbsDimension x="40" y="-46"/>
 								</Offset>
 							</Anchor>
 						</Anchors>
@@ -2856,6 +2856,7 @@
 			<OnHide function="ToyBox_OnHide"/>
 			<OnEvent function="ToyBox_OnEvent"/>
 			<OnShow function="ToyBox_OnShow"/>
+			<OnMouseWheel function="ToyBox_OnMouseWheel"/>
 		</Scripts>
 	</Frame> <!-- End ToyBox Frame-->
 	

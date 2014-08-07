@@ -89,7 +89,7 @@
 					<Anchors>
 						<Anchor point="RIGHT"/>
 					</Anchors>
-				</FontString>
+          </FontString>
 			</Layer>
 		</Layers>
 		<Scripts>
@@ -99,7 +99,12 @@
 			<OnLeave>
 				GameTooltip:Hide();
 			</OnLeave>
-		</Scripts>
+      <OnLoad>
+        if (STATFRAME_STATTEXT_FONT_OVERRIDE) then
+          self.Value:SetFontObject(STATFRAME_STATTEXT_FONT_OVERRIDE);
+        end
+      </OnLoad>
+    </Scripts>
 	</Frame>
 	<Frame name="StatGroupTemplate" virtual="true">
 		<Size x="169" y="0"/>

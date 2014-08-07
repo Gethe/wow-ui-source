@@ -143,6 +143,7 @@ function PetJournal_OnLoad(self)
 	self:RegisterEvent("PET_JOURNAL_LIST_UPDATE");
 	self:RegisterEvent("PET_JOURNAL_PET_DELETED");
 	self:RegisterEvent("PET_JOURNAL_PETS_HEALED");
+	self:RegisterEvent("PET_JOURNAL_CAGE_FAILED");
 	self:RegisterEvent("BATTLE_PET_CURSOR_CLEAR");
 	self:RegisterEvent("COMPANION_UPDATE");
 	self:RegisterEvent("PET_BATTLE_LEVEL_CHANGED");
@@ -203,6 +204,8 @@ function PetJournal_OnEvent(self, event, ...)
 		PetJournal_FindPetCardIndex();
 		PetJournal_UpdatePetCard(PetJournalPetCard);
 		PetJournal_HidePetDropdown();
+	elseif event == "PET_JOURNAL_CAGE_FAILED" then
+		PetJournal_ClearPendingCage();
 	elseif event == "PET_JOURNAL_PETS_HEALED" then
 		PetJournal_UpdatePetLoadOut();
 	elseif event == "PET_JOURNAL_LIST_UPDATE" then
@@ -2422,6 +2425,14 @@ function ToyBox_OnShow(self)
 	ToyBoxMicroButtonAlert:Hide();
 end
 
+function ToyBox_OnMouseWheel(self, value, scrollBar)
+	if(value > 0) then
+		ToyBoxPrevPageButton_OnClick()		
+	else
+		ToyBoxNextPageButton_OnClick()
+	end
+end
+
 function ToyBoxOptionsMenu_Init(self, level)
 	local info = UIDropDownMenu_CreateInfo();
 	info.notCheckable = true;
@@ -2540,7 +2551,14 @@ function ToySpellButton_UpdateCooldown(self)
 	local cooldown = self.cooldown;
 	local start, duration, enable = GetItemCooldown(self.itemID);
 	if (cooldown and start and duration) then
+		if (enable) then
+			cooldown:Hide();
+		else
+			cooldown:Show();
+		end
 		CooldownFrame_SetTimer(cooldown, start, duration, enable);
+	else
+		cooldown:Hide();
 	end
 end
 

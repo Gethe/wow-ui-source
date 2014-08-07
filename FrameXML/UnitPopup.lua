@@ -215,7 +215,7 @@ UnitPopupMenus["BN_FRIEND"] = { "POP_OUT_CHAT", "BN_TARGET", "BN_SET_NOTE", "BN_
 UnitPopupMenus["BN_FRIEND_OFFLINE"] = { "BN_SET_NOTE", "BN_VIEW_FRIENDS", "OTHER_SUBSECTION_TITLE", "BN_REMOVE_FRIEND", "BN_REPORT", "CANCEL" };
 UnitPopupMenus["GUILD"] = { "TARGET", "GUILD_BATTLETAG_FRIEND", "INTERACT_SUBSECTION_TITLE", "INVITE", "WHISPER", "GUILD_PROMOTE", "OTHER_SUBSECTION_TITLE", "IGNORE", "GUILD_LEAVE", "CANCEL" };
 UnitPopupMenus["GUILD_OFFLINE"] = { "GUILD_BATTLETAG_FRIEND", "INTERACT_SUBSECTION_TITLE", "GUILD_PROMOTE", "OTHER_SUBSECTION_TITLE", "IGNORE", "GUILD_LEAVE", "CANCEL" };
-UnitPopupMenus["RAID_TARGET_ICON"] = { "RAID_TARGET_1", "RAID_TARGET_2", "RAID_TARGET_3", "RAID_TARGET_4", "RAID_TARGET_5", "RAID_TARGET_6", "RAID_TARGET_7", "RAID_TARGET_8", "RAID_TARGET_NONE" };
+UnitPopupMenus["RAID_TARGET_ICON"] = { "RAID_TARGET_8", "RAID_TARGET_7", "RAID_TARGET_6", "RAID_TARGET_5", "RAID_TARGET_4", "RAID_TARGET_3", "RAID_TARGET_2", "RAID_TARGET_1", "RAID_TARGET_NONE" };
 UnitPopupMenus["SELECT_ROLE"] = { "SET_ROLE_TANK", "SET_ROLE_HEALER", "SET_ROLE_DAMAGER", "SET_ROLE_NONE" };
 UnitPopupMenus["CHAT_ROSTER"] = { "TARGET", "INTERACT_SUBSECTION_TITLE", "WHISPER", "CHAT_OWNER", "CHAT_PROMOTE", "OTHER_SUBSECTION_TITLE", "MUTE", "UNMUTE", "CHAT_SILENCE", "CHAT_UNSILENCE", "CHAT_DEMOTE", "CANCEL"  };
 UnitPopupMenus["VEHICLE"] = { "RAID_TARGET_ICON", "SET_FOCUS", "OTHER_SUBSECTION_TITLE", "VEHICLE_LEAVE", "MOVE_PLAYER_FRAME", "MOVE_TARGET_FRAME", "CANCEL" };
@@ -409,8 +409,15 @@ function UnitPopup_ShowMenu (dropdownMenu, which, unit, name, userData)
 				elseif ( info.text == dropdownMenu.selectedLootThreshold ) then
 					info.checked = 1;
 				elseif ( strsub(value, 1, 12) == "RAID_TARGET_" ) then
-					local raidTargetIndex = GetRaidTargetIndex(unit);
-					if ( raidTargetIndex == index ) then
+					local buttonRaidTargetIndex = strsub(value, 13);
+					if ( buttonRaidTargetIndex == "NONE" ) then
+						buttonRaidTargetIndex = 0;
+					else
+						buttonRaidTargetIndex = tonumber(buttonRaidTargetIndex);
+					end
+					
+					local activeRaidTargetIndex = GetRaidTargetIndex(unit);
+					if ( activeRaidTargetIndex == buttonRaidTargetIndex ) then
 						info.checked = 1;
 					end
 				elseif ( strsub(value, 1, 18) == "DUNGEON_DIFFICULTY" and (strlen(value) > 18)) then
@@ -672,12 +679,7 @@ function UnitPopup_AddDropDownButton (info, cntButton, buttonIndex, level)
 	if (level == 1) then
 		info.checked = nil;
 	end
-	if ( strsub(buttonIndex, 1, 12) == "RAID_TARGET_"and buttonIndex ~= "RAID_TARGET_ICON" ) then
-		local raidTargetIndex = GetRaidTargetIndex("target");
-		if ( raidTargetIndex == index ) then
-			info.checked = 1;
-		end
-	elseif ( buttonIndex == "LARGE_FOCUS" ) then
+	if ( buttonIndex == "LARGE_FOCUS" ) then
 		if ( GetCVarBool("fullSizeFocusFrame") ) then
 			info.checked = 1;
 		end

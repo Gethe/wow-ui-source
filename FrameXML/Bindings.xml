@@ -1205,29 +1205,29 @@
 		FlipCameraYaw(180);
 	</Binding>
 	<!--  header="RAID_TARGET" -->
-	<Binding name="RAIDTARGET1" category="BINDING_HEADER_RAID_TARGET">
-		SetRaidTargetIcon("target", 1);
-	</Binding>
-	<Binding name="RAIDTARGET2" category="BINDING_HEADER_RAID_TARGET">
-		SetRaidTargetIcon("target", 2);
-	</Binding>
-	<Binding name="RAIDTARGET3" category="BINDING_HEADER_RAID_TARGET">
-		SetRaidTargetIcon("target", 3);
-	</Binding>
-	<Binding name="RAIDTARGET4" category="BINDING_HEADER_RAID_TARGET">
-		SetRaidTargetIcon("target", 4);
-	</Binding>
-	<Binding name="RAIDTARGET5" category="BINDING_HEADER_RAID_TARGET">
-		SetRaidTargetIcon("target", 5);
-	</Binding>
-	<Binding name="RAIDTARGET6" category="BINDING_HEADER_RAID_TARGET">
-		SetRaidTargetIcon("target", 6);
-	</Binding>
-	<Binding name="RAIDTARGET7" category="BINDING_HEADER_RAID_TARGET">
-		SetRaidTargetIcon("target", 7);
-	</Binding>
 	<Binding name="RAIDTARGET8" category="BINDING_HEADER_RAID_TARGET">
 		SetRaidTargetIcon("target", 8);
+	</Binding>
+		<Binding name="RAIDTARGET7" category="BINDING_HEADER_RAID_TARGET">
+		SetRaidTargetIcon("target", 7);
+	</Binding>
+		<Binding name="RAIDTARGET6" category="BINDING_HEADER_RAID_TARGET">
+		SetRaidTargetIcon("target", 6);
+	</Binding>
+		<Binding name="RAIDTARGET5" category="BINDING_HEADER_RAID_TARGET">
+		SetRaidTargetIcon("target", 5);
+	</Binding>
+		<Binding name="RAIDTARGET4" category="BINDING_HEADER_RAID_TARGET">
+		SetRaidTargetIcon("target", 4);
+	</Binding>
+		<Binding name="RAIDTARGET3" category="BINDING_HEADER_RAID_TARGET">
+		SetRaidTargetIcon("target", 3);
+	</Binding>
+		<Binding name="RAIDTARGET2" category="BINDING_HEADER_RAID_TARGET">
+		SetRaidTargetIcon("target", 2);
+	</Binding>
+	<Binding name="RAIDTARGET1" category="BINDING_HEADER_RAID_TARGET">
+		SetRaidTargetIcon("target", 1);
 	</Binding>
 	<Binding name="RAIDTARGETNONE" category="BINDING_HEADER_RAID_TARGET">
 		SetRaidTarget("target", 0);

@@ -437,6 +437,7 @@ function GarrisonBuildingInfoBox_ShowEmptyPlot(plotSize)
 	infoBox.UpgradeGlow:Hide();
 	infoBox.PlansNeeded:Hide();
 	infoBox.Timer:Hide();
+	infoBox.TimeLeft:Hide();
 	infoBox.SpecFrame:Hide();
 	infoBox.AddFollowerButton:Hide();
 	infoBox.UpgradeCostBar:Hide();
@@ -775,6 +776,7 @@ function GarrisonBuildingInfoBox_OnDragStart(self, button)
 	GarrisonBuildingPlacer:SetPoint("CENTER", UIParent, "BOTTOMLEFT", cursorX / uiScale, cursorY / uiScale);
 	GarrisonBuildingPlacer:Show();
 	GarrisonBuildingPlacer:SetScript("OnUpdate", GarrisonBuildingPlacer_OnUpdate);
+	GarrisonBuildingFrame_HighlightPlots(C_Garrison.GetPlotsForBuilding(building.buildingID), true);
 end
 
 function GarrisonBuildingInfoBox_OnDragStop(self)
@@ -1171,7 +1173,7 @@ function GarrisonBuildingListButton_OnLeave(self)
 end
 
 function GarrisonBuildingListButton_OnDragStart(self, button)
-	if (self.plotID or self.info.needsPlan) then --You can't place a building you already have
+	if (self.info.needsPlan) then --You can't place a building you don't have the plans for
 		return;
 	end
 	
@@ -1183,11 +1185,13 @@ function GarrisonBuildingListButton_OnDragStart(self, button)
 		GarrisonPlot_SetBuildingArt(GarrisonBuildingPlacer, texPrefix.."_Map");
 	end
 	GarrisonBuildingPlacer.info = self.info;
+	GarrisonBuildingPlacer.fromExistingBuilding = (self.info.plotID ~= nil);
 	local cursorX, cursorY = GetCursorPosition();
 	local uiScale = UIParent:GetScale();
 	GarrisonBuildingPlacer:SetPoint("CENTER", UIParent, "BOTTOMLEFT", cursorX / uiScale, cursorY / uiScale);
 	GarrisonBuildingPlacer:Show();
 	GarrisonBuildingPlacer:SetScript("OnUpdate", GarrisonBuildingPlacer_OnUpdate);
+	GarrisonBuildingFrame_HighlightPlots(C_Garrison.GetPlotsForBuilding(self.info.buildingID), true);
 end
 
 function GarrisonBuildingListButton_OnDragStop(self)

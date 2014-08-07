@@ -462,42 +462,42 @@
 					<Frame name="$parentRaidMarkers" parentKey="raidMarkers" hidden="true">
 						<Size x="200" y="50"/>
 						<Frames>
-							<Button name="$parentRaidMarker1" inherits="CRFManagerRaidIconButtonTemplate" id="1">
+							<Button name="$parentRaidMarker1" inherits="CRFManagerRaidIconButtonTemplate" id="8">
 								<Anchors>
 									<Anchor point="TOPLEFT" relativeTo="$parent" relativePoint="TOPLEFT" x="25" y="0"/>
 								</Anchors>
 							</Button>
-							<Button name="$parentRaidMarker2" inherits="CRFManagerRaidIconButtonTemplate" id="2">
+							<Button name="$parentRaidMarker2" inherits="CRFManagerRaidIconButtonTemplate" id="7">
 								<Anchors>
 									<Anchor point="LEFT" relativeTo="$parentRaidMarker1" relativePoint="RIGHT" x="8" y="0"/>
 								</Anchors>
 							</Button>
-							<Button name="$parentRaidMarker3" inherits="CRFManagerRaidIconButtonTemplate" id="3">
+							<Button name="$parentRaidMarker3" inherits="CRFManagerRaidIconButtonTemplate" id="6">
 								<Anchors>
 									<Anchor point="LEFT" relativeTo="$parentRaidMarker2" relativePoint="RIGHT" x="8" y="0"/>
 								</Anchors>
 							</Button>
-							<Button name="$parentRaidMarker4" inherits="CRFManagerRaidIconButtonTemplate" id="4">
+							<Button name="$parentRaidMarker4" inherits="CRFManagerRaidIconButtonTemplate" id="5">
 								<Anchors>
 									<Anchor point="LEFT" relativeTo="$parentRaidMarker3" relativePoint="RIGHT" x="8" y="0"/>
 								</Anchors>
 							</Button>
-							<Button name="$parentRaidMarker5" inherits="CRFManagerRaidIconButtonTemplate" id="5">
+							<Button name="$parentRaidMarker5" inherits="CRFManagerRaidIconButtonTemplate" id="4">
 								<Anchors>
 									<Anchor point="LEFT" relativeTo="$parentRaidMarker4" relativePoint="RIGHT" x="8" y="0"/>
 								</Anchors>
 							</Button>
-							<Button name="$parentRaidMarker6" inherits="CRFManagerRaidIconButtonTemplate" id="6">
+							<Button name="$parentRaidMarker6" inherits="CRFManagerRaidIconButtonTemplate" id="3">
 								<Anchors>
 									<Anchor point="TOPLEFT" relativeTo="$parentRaidMarker1" relativePoint="BOTTOMLEFT" x="0" y="-2"/>
 								</Anchors>
 							</Button>
-							<Button name="$parentRaidMarker7" inherits="CRFManagerRaidIconButtonTemplate" id="7">
+							<Button name="$parentRaidMarker7" inherits="CRFManagerRaidIconButtonTemplate" id="2">
 								<Anchors>
 									<Anchor point="LEFT" relativeTo="$parentRaidMarker6" relativePoint="RIGHT" x="8" y="0"/>
 								</Anchors>
 							</Button>
-							<Button name="$parentRaidMarker8" inherits="CRFManagerRaidIconButtonTemplate" id="8">
+							<Button name="$parentRaidMarker8" inherits="CRFManagerRaidIconButtonTemplate" id="1">
 								<Anchors>
 									<Anchor point="LEFT" relativeTo="$parentRaidMarker7" relativePoint="RIGHT" x="8" y="0"/>
 								</Anchors>

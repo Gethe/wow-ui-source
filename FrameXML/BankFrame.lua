@@ -296,6 +296,17 @@ function BankFrame_OnShow (self)
 	end
 	UpdateBagSlotStatus();
 	OpenAllBags(self);
+
+	if(not GetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_REAGENT_BANK_UNLOCK)) then
+		local numSlots,full = GetNumBankSlots();
+		if (full and not IsReagentBankUnlocked()) then
+			ReagentBankHelpBox:Show();
+		else
+			ReagentBankHelpBox:Hide();
+		end
+	else
+		ReagentBankHelpBox:Hide();
+	end
 end
 
 function BankFrame_OnHide (self)
@@ -452,6 +463,9 @@ function ReagentBankFrame_OnEvent(self, event, ...)
 end
 
 function ReagentBankFrame_OnShow(self)
+	ReagentBankHelpBox:Hide();
+	SetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_REAGENT_BANK_UNLOCK, true);
+
 	if(not IsReagentBankUnlocked()) then		
 		ReagentBankFrame.UnlockInfo:Show();
 		MoneyFrame_Update( ReagentBankFrame.UnlockInfo.CostMoneyFrame, GetReagentBankCost());

@@ -13,6 +13,8 @@ CONTAINER_OFFSET_X = 0;
 CONTAINER_SCALE = 0.75;
 BACKPACK_HEIGHT = 251;
 
+FRAME_THAT_OPENED_BAGS = nil;
+
 function ContainerFrame_OnLoad(self)
 	self:RegisterEvent("BAG_OPEN");
 	self:RegisterEvent("BAG_CLOSED");
@@ -158,7 +160,6 @@ function ContainerFrame_OnHide(self)
 	else
 		if ( self:GetID() == 0 and BagHelpBox.wasShown ) then
 			BagHelpBox.wasShown = nil;
-			SetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_CLEAN_UP_BAGS, true);
 		end
 		if ( BagHelpBox:IsShown() and BagHelpBox.owner == self ) then
 			BagHelpBox.owner = nil;
@@ -180,7 +181,7 @@ function ContainerFrame_OnShow(self)
 	self.FilterIcon:Hide();
 	if ( self:GetID() == 0 ) then
 		local shouldShow = true;
-		if (IsCharacterNewlyBoosted()) then
+		if (IsCharacterNewlyBoosted() or FRAME_THAT_OPENED_BAGS ~= nil) then
 			shouldShow = false;
 		else
 			for i = BACKPACK_CONTAINER + 1, NUM_BAG_SLOTS, 1 do
@@ -196,6 +197,7 @@ function ContainerFrame_OnShow(self)
 			BagHelpBox.Text:SetText(CLEAN_UP_BAGS_TUTORIAL);
 			BagHelpBox.owner = self;
 			BagHelpBox.wasShown = true;
+			BagHelpBox.bitField = LE_FRAME_TUTORIAL_CLEAN_UP_BAGS;
 			BagHelpBox:Show();
 		end
 		MainMenuBarBackpackButton:SetChecked(true);
@@ -327,7 +329,18 @@ function UpdateNewItemList(containerFrame)
 end
 
 function CheckBagSettingsTutorial()
-	if (GetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_CLEAN_UP_BAGS) and not GetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_BAG_SETTINGS)) then
+	local shouldShow = true;
+	if (IsCharacterNewlyBoosted() or FRAME_THAT_OPENED_BAGS ~= nil) then
+		shouldShow = false;
+	else
+		for i = BACKPACK_CONTAINER + 1, NUM_BAG_SLOTS, 1 do
+			if ( not GetInventoryItemID("player", ContainerIDToInventoryID(i)) ) then
+				shouldShow = false;
+				break;
+			end
+		end
+	end
+	if (shouldShow and GetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_CLEAN_UP_BAGS) and not GetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_BAG_SETTINGS)) then
 		local frame;
 		if (ContainerFrame4:IsShown() and ContainerFrame4:GetID() ~= 0) then
 			frame = ContainerFrame4;
@@ -345,7 +358,7 @@ function CheckBagSettingsTutorial()
 			BagHelpBox.Text:SetText(BAG_SETTINGS_TUTORIAL);
 			BagHelpBox:Show();
 			BagHelpBox.owner = frame;
-			SetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_BAG_SETTINGS, true);
+			BagHelpBox.bitField = LE_FRAME_TUTORIAL_BAG_SETTINGS;
 		end
 	end
 end
@@ -1100,7 +1113,6 @@ function ToggleAllBags()
 	end
 end
 
-FRAME_THAT_OPENED_BAGS = nil;
 function OpenAllBags(frame)
 	if ( not UIParent:IsShown() ) then
 		return;
@@ -1126,27 +1138,13 @@ function OpenAllBags(frame)
 end
 
 function CloseAllBags(frame)	
-	if( frame ) then
-		if ( frame:GetName() == FRAME_THAT_OPENED_BAGS) then
-			FRAME_THAT_OPENED_BAGS = nil;
-			CloseBackpack();
-			for i=1, NUM_BAG_FRAMES, 1 do
-				CloseBag(i);
-			end
-		end
+	if ( frame and frame:GetName() ~= FRAME_THAT_OPENED_BAGS) then
 		return;
 	end
-	
+
 	FRAME_THAT_OPENED_BAGS = nil;
 	CloseBackpack();
 	for i=1, NUM_BAG_FRAMES, 1 do
-		CloseBag(i);
-	end
-end
-
-function CloseAllBags()
-	CloseBackpack();
-	for i=1, NUM_CONTAINER_FRAMES, 1 do
 		CloseBag(i);
 	end
 end
@@ -1239,7 +1237,7 @@ function ContainerFrameFilterDropDown_Initialize(self, level)
 		elseif (id == 0) then
 			SetBackpackAutosortDisabled(not value);
 		elseif (id > NUM_BAG_SLOTS) then
-			SetBankBagSlotAutosortDisabled(id, not value);
+			SetBankBagSlotAutosortDisabled(id - NUM_BAG_SLOTS, not value);
 		else
 			SetBagSlotFlag(id, LE_BAG_FILTER_FLAG_IGNORE_CLEANUP, not value);
 		end
@@ -1249,7 +1247,7 @@ function ContainerFrameFilterDropDown_Initialize(self, level)
 	elseif (id == 0) then
 		info.checked = GetBackpackAutosortDisabled();
 	elseif (id > NUM_BAG_SLOTS) then
-		info.checked = GetBankBagSlotAutosortDisabled(id);
+		info.checked = GetBankBagSlotAutosortDisabled(id - NUM_BAG_SLOTS);
 	else
 		info.checked = GetBagSlotFlag(id, LE_BAG_FILTER_FLAG_IGNORE_CLEANUP);
 	end

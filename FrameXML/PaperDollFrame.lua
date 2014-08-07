@@ -715,7 +715,8 @@ function PaperDollFrame_SetStat(statFrame, unit, statIndex)
 		-- Spirit
 		elseif ( statIndex == LE_UNIT_STAT_SPIRIT ) then
 			-- All mana regen stats are displayed as mana/5 sec.
-			local regen, isNegatedForSpec = GetUnitManaRegenRateFromSpirit("player");
+			local _, isNegatedForSpec = GetUnitManaRegenRateFromSpirit("player");
+			local _, regen = GetManaRegen();
 			if ( UnitHasMana("player") and not isNegatedForSpec ) then
 				regen = floor( regen * 5.0 );
 				statFrame.tooltip2 = format(MANA_REGEN_FROM_SPIRIT, regen);
@@ -1432,7 +1433,7 @@ function PaperDollFrame_SetVersatility(statFrame, unit)
 	local versatility = GetVersatility();
 	local versatilityDamageBonus = GetCombatRatingBonus(CR_VERSATILITY_DAMAGE_DONE) + GetVersatilityBonus(CR_VERSATILITY_DAMAGE_DONE);
 	local versatilityDamageTakenReduction = GetCombatRatingBonus(CR_VERSATILITY_DAMAGE_TAKEN) + GetVersatilityBonus(CR_VERSATILITY_DAMAGE_TAKEN);
-	versatility = format("%d", versatility);
+	versatility = format("%.2F%%", versatilityDamageBonus);
 	text:SetText(versatility);
 	statFrame.tooltip = HIGHLIGHT_FONT_COLOR_CODE .. format(PAPERDOLLFRAME_TOOLTIP_FORMAT, STAT_VERSATILITY) .. " " .. versatility .. FONT_COLOR_CODE_CLOSE;
 	

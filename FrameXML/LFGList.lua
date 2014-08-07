@@ -369,6 +369,7 @@ end
 -------------------------------------------------------
 function LFGListEntryCreation_OnLoad(self)
 	self.Name.Instructions:SetText(LFG_LIST_ENTER_NAME);
+	self.Description.EditBox:SetScript("OnEnterPressed", nop);
 	LFGListUtil_SetUpDropDown(self, self.CategoryDropDown, LFGListEntryCreation_PopulateCategories, LFGListEntryCreation_OnCategorySelected);
 	LFGListUtil_SetUpDropDown(self, self.GroupDropDown, LFGListEntryCreation_PopulateGroups, LFGListEntryCreation_OnGroupSelected);
 	LFGListUtil_SetUpDropDown(self, self.ActivityDropDown, LFGListEntryCreation_PopulateActivities, LFGListEntryCreation_OnActivitySelected);
@@ -1538,7 +1539,7 @@ function LFGListSearchEntry_Update(self)
 	self.HealerCount:SetTextColor(roleColor.r, roleColor.g, roleColor.b);
 	self.DamageCount:SetTextColor(roleColor.r, roleColor.g, roleColor.b);
 	self.VoiceChat:SetShown(voiceChat ~= "" and not isApplication);
-	self.VoiceChat.tooltip = string.format(LFG_LIST_TOOLTIP_VOICE_CHAT, voiceChat);
+	self.VoiceChat.tooltip = voiceChat;
 	self.Friends:SetShown(numBNetFriends + numCharFriends + numGuildMates > 0 and not isApplication);
 
 	local nameWidth = 185;
@@ -1703,6 +1704,8 @@ end
 -------------------------------------------------------
 function LFGListApplicationDialog_OnLoad(self)
 	self:RegisterEvent("LFG_ROLE_UPDATE");
+	self.Description.EditBox:SetScript("OnEnterPressed", nop);
+	self.hideOnEscape = true;
 end
 
 function LFGListApplicationDialog_OnEvent(self, event)

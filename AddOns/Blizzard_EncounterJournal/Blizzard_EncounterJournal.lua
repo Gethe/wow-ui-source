@@ -764,7 +764,7 @@ function EncounterJournal_SetBullets(object, description, hideBullets)
 			end
 			bullet = parent.Bullets[k];
 			if (not bullet) then
-				if (parent.BulletCache) then
+				if (parent.BulletCache and #parent.BulletCache > 0) then
 					parent.Bullets[k] = tremove(parent.BulletCache);
 					bullet = parent.Bullets[k];
 				else
