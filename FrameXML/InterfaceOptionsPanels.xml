@@ -3900,9 +3900,7 @@
 							SetCVar(self.cvar, value);
 						end
 						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
-						if(IsMacClient()) then
-							BlizzardOptionsPanel_SetupDependentControl(InterfaceOptionsMousePanelEnableMouseSpeed, self);
-						end
+						BlizzardOptionsPanel_SetupDependentControl(InterfaceOptionsMousePanelEnableMouseSpeed, self);
 					</OnLoad>
 					<OnValueChanged>
 						self.value = value;
@@ -3999,11 +3997,7 @@
 				self.name = MOUSE_LABEL;
 				self.options = MousePanelOptions;
 				InterfaceOptionsPanel_OnLoad(self);
-				if(IsMacClient()) then
-					InterfaceOptionsMousePanelEnableMouseSpeed:Show();
-				else
-					InterfaceOptionsMousePanelEnableMouseSpeed:Hide();
-				end
+				InterfaceOptionsMousePanelEnableMouseSpeed:Show();
 			</OnLoad>
 		</Scripts>	
 	</Frame>

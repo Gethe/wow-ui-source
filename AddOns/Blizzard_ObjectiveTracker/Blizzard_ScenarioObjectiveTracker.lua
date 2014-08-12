@@ -430,7 +430,7 @@ function Scenario_ProvingGrounds_ShowBlock(timerID, elapsedTime, duration, medal
 		block.Score:Hide();
 		block.WaveLabel:SetPoint("TOPLEFT", block.MedalIcon, "TOPRIGHT", 1, -4);
 		block.Wave:SetFormattedText(GENERIC_FRACTION_STRING, currWave, maxWave);
-		statusBar:SetPoint("CENTER", block, "CENTER", 22, -8);
+		statusBar:SetPoint("CENTER", block, "CENTER", 42, -8);
 	else
 		block.ScoreLabel:Show();
 		block.Score:Show();

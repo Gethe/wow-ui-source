@@ -62,6 +62,13 @@ function ContainerFrame_OnEvent(self, event, ...)
 				ContainerFrame_Update(self);
 			end
 		end
+	elseif ( event == "BANK_BAG_SLOT_FLAGS_UPDATED" ) then
+		if (self:GetID() == (arg1 + NUM_BAG_SLOTS)) then
+			self.localFlag = nil;
+			if (self:IsShown()) then
+				ContainerFrame_Update(self);
+			end
+		end
 	end
 end
 
@@ -201,13 +208,19 @@ function ContainerFrame_OnShow(self)
 			BagHelpBox:Show();
 		end
 		MainMenuBarBackpackButton:SetChecked(true);
-	elseif ( self:GetID() <= NUM_BAG_SLOTS ) then 
+	elseif ( self:GetID() > 0 ) then -- The actual bank has ID -1, backpack has ID 0, we want to make sure we're looking at a regular or bank bag
 		local button = _G["CharacterBag"..(self:GetID() - 1).."Slot"];
 		if ( button ) then
 			button:SetChecked(true);
 		end
 		for i = LE_BAG_FILTER_FLAG_EQUIPMENT, NUM_LE_BAG_FILTER_FLAGS do
-			if ( GetBagSlotFlag(self:GetID(), i) ) then
+			local active = false;
+			if ( self:GetID() > NUM_BAG_SLOTS ) then
+				active = GetBankBagSlotFlag(self:GetID() - NUM_BAG_SLOTS, i);
+			else
+				active = GetBagSlotFlag(self:GetID(), i);
+			end
+			if ( active ) then
 				self.FilterIcon.Icon:SetAtlas(BAG_FILTER_ICONS[i], true);
 				self.FilterIcon:Show();
 				break;
@@ -216,8 +229,9 @@ function ContainerFrame_OnShow(self)
 		if ( not ContainerFrame1.allBags ) then
 			CheckBagSettingsTutorial();
 		end
-	else
-		UpdateBagButtonHighlight(self:GetID() - NUM_BAG_SLOTS);
+		if ( self:GetID() > NUM_BAG_SLOTS ) then
+			UpdateBagButtonHighlight(self:GetID() - NUM_BAG_SLOTS);
+		end
 	end
 	ContainerFrame1.bags[ContainerFrame1.bagsShown + 1] = self:GetName();
 	ContainerFrame1.bagsShown = ContainerFrame1.bagsShown + 1;
@@ -409,7 +423,13 @@ function ContainerFrame_Update(frame)
 	frame.FilterIcon:Hide();
 	if ( id ~= 0 ) then
 		for i = LE_BAG_FILTER_FLAG_EQUIPMENT, NUM_LE_BAG_FILTER_FLAGS do
-			if ( GetBagSlotFlag(id, i) ) then
+			local active = false;
+			if ( id > NUM_BAG_SLOTS ) then
+				active = GetBankBagSlotFlag(id - NUM_BAG_SLOTS, i);
+			else
+				active = GetBagSlotFlag(id, i);
+			end
+			if ( active ) then
 				frame.FilterIcon.Icon:SetAtlas(BAG_FILTER_ICONS[i], true);
 				frame.FilterIcon:Show();
 				break;
@@ -1182,7 +1202,7 @@ function ContainerFrameFilterDropDown_Initialize(self, level)
 	
 	local info = UIDropDownMenu_CreateInfo();	
 
-	if (id > 0 and id <= NUM_BAG_SLOTS) then
+	if (id > 0) then -- The actual bank has ID -1, backpack has ID 0, we want to make sure we're looking at a regular or bank bag
 		info.text = BAG_FILTER_ASSIGN_TO;
 		info.isTitle = 1;
 		info.notCheckable = 1;
@@ -1198,7 +1218,11 @@ function ContainerFrameFilterDropDown_Initialize(self, level)
 				info.text = BAG_FILTER_LABELS[i];
 				info.func = function(_, _, _, value)
 					value = not value;
-					SetBagSlotFlag(id, i, value);
+					if (id > NUM_BAG_SLOTS) then
+						SetBankBagSlotFlag(id - NUM_BAG_SLOTS, i, value);
+					else
+						SetBagSlotFlag(id, i, value);
+					end
 					if (value) then
 						frame.localFlag = i;
 						frame.FilterIcon.Icon:SetAtlas(BAG_FILTER_ICONS[i]);
@@ -1211,7 +1235,11 @@ function ContainerFrameFilterDropDown_Initialize(self, level)
 				if (frame.localFlag) then
 					info.checked = frame.localFlag == i;
 				else
-					info.checked = GetBagSlotFlag(id, i);
+					if (id > NUM_BAG_SLOTS) then
+						info.checked = GetBankBagSlotFlag(id - NUM_BAG_SLOTS, i);
+					else
+						info.checked = GetBagSlotFlag(id, i);
+					end
 				end
 				info.disabled = nil;
 				info.tooltipTitle = nil;
@@ -1237,7 +1265,7 @@ function ContainerFrameFilterDropDown_Initialize(self, level)
 		elseif (id == 0) then
 			SetBackpackAutosortDisabled(not value);
 		elseif (id > NUM_BAG_SLOTS) then
-			SetBankBagSlotAutosortDisabled(id - NUM_BAG_SLOTS, not value);
+			SetBankBagSlotFlag(id - NUM_BAG_SLOTS, LE_BAG_FILTER_FLAG_IGNORE_CLEANUP, not value);
 		else
 			SetBagSlotFlag(id, LE_BAG_FILTER_FLAG_IGNORE_CLEANUP, not value);
 		end
@@ -1247,7 +1275,7 @@ function ContainerFrameFilterDropDown_Initialize(self, level)
 	elseif (id == 0) then
 		info.checked = GetBackpackAutosortDisabled();
 	elseif (id > NUM_BAG_SLOTS) then
-		info.checked = GetBankBagSlotAutosortDisabled(id - NUM_BAG_SLOTS);
+		info.checked = GetBankBagSlotFlag(id - NUM_BAG_SLOTS, LE_BAG_FILTER_FLAG_IGNORE_CLEANUP);
 	else
 		info.checked = GetBagSlotFlag(id, LE_BAG_FILTER_FLAG_IGNORE_CLEANUP);
 	end

@@ -641,8 +641,7 @@
 	</Animations>
 	<Layers>
 		<Layer level="BACKGROUND">
-			<Texture file="Interface\Challenges\challenges-main" setAllPoints="true">
-				<TexCoords left="0.00097656" right="0.30468750" top="0.52148438" bottom="0.67382813"/>
+			<Texture atlas="challenges-toast" setAllPoints="true">
 			</Texture>
 		</Layer>
 		<Layer level="BORDER">
@@ -710,8 +709,7 @@
 		<Frame name="$parentGlowFrame" setAllPoints="true" enableMouse="false" parentKey="glowFrame">
 			<Layers>
 				<Layer level="OVERLAY">
-					<Texture name="$parentGlow" file="Interface\Scenarios\ScenariosParts" alphaMode="ADD" hidden="true" parentKey="glow">
-						<Size x="327" y="94"/>
+					<Texture name="$parentGlow" atlas="Toast-Flash" useAtlasSize="true" alphaMode="ADD" hidden="true" parentKey="glow">
 						<Anchors>
 							<Anchor point="CENTER" x="0" y="0"/>
 						</Anchors>
@@ -726,7 +724,6 @@
 								</Scripts>
 							</AnimationGroup>
 						</Animations>
-						<TexCoords left="0.00195313" right="0.64062500" top="0.07421875" bottom="0.25781250"/>
 					</Texture>
 				</Layer>
 			</Layers>
@@ -767,12 +764,10 @@
 	</Animations>
 	<Layers>
 		<Layer level="BACKGROUND" textureSubLevel="-1">
-			<Texture file="Interface\Scenarios\ScenariosParts">
-				<Size x="47" y="52"/>
+			<Texture atlas="Toast-IconBG" useAtlasSize="true">
 				<Anchors>
 					<Anchor point="LEFT" x="15" y="0"/>
 				</Anchors>
-				<TexCoords left="0.00195313" right="0.09375000" top="0.70703125" bottom="0.80859375"/>
 			</Texture>
 		</Layer>
 		<Layer level="BACKGROUND">
@@ -784,9 +779,7 @@
 			</Texture>
 		</Layer>
 		<Layer level="BORDER">
-			<Texture file="Interface\Scenarios\ScenariosParts" setAllPoints="true">
-				<TexCoords left="0.00195313" right="0.60937500" top="0.26171875" bottom="0.41406250"/>
-			</Texture>
+			<Texture atlas="Toast-Frame" setAllPoints="true"/>
 		</Layer>
 		<Layer level="ARTWORK">
 			<FontString inherits="GameFontWhiteTiny" text="SCENARIO_COMPLETED">
@@ -802,12 +795,10 @@
 					<Anchor point="CENTER" relativePoint="TOP" x="20" y="-46"/>
 				</Anchors>
 			</FontString>
-			<Texture parentKey="BonusStar" file="Interface\Scenarios\ScenariosParts" hidden="true">
-				<Size x="36" y="44"/>
+			<Texture parentKey="BonusStar" atlas="Bonus-ToastBanner" useAtlasSize="true" hidden="true">
 				<Anchors>
 					<Anchor point="TOPRIGHT" x="-18" y="-5"/>
 				</Anchors>
-				<TexCoords left="0.09765625" right="0.16796875" top="0.70703125" bottom="0.79296875"/>	
 			</Texture>
 		</Layer>
 		<Layer level="OVERLAY">
@@ -837,8 +828,7 @@
 		<Frame name="$parentGlowFrame" setAllPoints="true" enableMouse="false" parentKey="glowFrame">
 			<Layers>
 				<Layer level="OVERLAY">
-					<Texture name="$parentGlow" file="Interface\Scenarios\ScenariosParts" alphaMode="ADD" hidden="true" parentKey="glow">
-						<Size x="327" y="94"/>
+					<Texture name="$parentGlow" atlas="Toast-Flash" useAtlasSize="true" alphaMode="ADD" hidden="true" parentKey="glow">
 						<Anchors point="CENTER" x="0" y="0"/>
 						<Animations>
 							<AnimationGroup name="$parentAnimIn" parentKey="animIn">
@@ -851,7 +841,6 @@
 								</Scripts>
 							</AnimationGroup>
 						</Animations>
-						<TexCoords left="0.00195313" right="0.64062500" top="0.07421875" bottom="0.25781250"/>
 					</Texture>
 				</Layer>
 			</Layers>

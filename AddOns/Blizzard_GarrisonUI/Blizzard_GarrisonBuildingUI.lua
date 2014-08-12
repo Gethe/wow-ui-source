@@ -12,7 +12,7 @@ local FactionData = {
 	["Alliance"] = {
 		townHallPlot = "GarrBuilding_TownHall_%d_A_Map",
 		townHallInfo = "GarrBuilding_TownHall_%d_A_Info",
-		emptyPlot = "GarrBuilding_EmptyPlot_H_%d",
+		emptyPlot = "GarrBuilding_EmptyPlot_A_%d",
 		plotCircle = "Garr_Plot_Shadowmoon_A_%d",
 		townHallUpgrade1Tooltip = GARRISON_TOWN_HALL_ALLIANCE_UPGRADE_TIER1_TOOLTIP,
 		townHallUpgrade2Tooltip = GARRISON_TOWN_HALL_ALLIANCE_UPGRADE_TIER2_TOOLTIP,
@@ -719,7 +719,8 @@ function GarrisonFollowerPortrait_OnLeave(self, button)
 end
 
 function GarrisonFollowerTooltipShow(self, followerID, garrFollowerID)
-	GameTooltip:SetOwner(self, "ANCHOR_RIGHT");	
+	GarrisonFollowerTooltip:ClearAllPoints();
+	GarrisonFollowerTooltip:SetPoint("TOPLEFT", self, "BOTTOMRIGHT");
 	GarrisonFollowerTooltip_Show(garrFollowerID, 
 		true,
 		C_Garrison.GetFollowerQuality(followerID),
@@ -736,7 +737,6 @@ function GarrisonFollowerTooltipShow(self, followerID, garrFollowerID)
 		C_Garrison.GetFollowerTraitAtIndex(followerID, 3),
 		C_Garrison.GetFollowerTraitAtIndex(followerID, 4)
 		);
-	GarrisonFollowerTooltip:Show();
 end
 
 function GarrisonBuildingInfoBox_OnUpdate(self)

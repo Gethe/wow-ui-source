@@ -6,56 +6,124 @@ GARRISON_MISSION_NAME_FONT_COLOR	=	{r=0.78, g=0.75, b=0.73};
 GARRISON_MISSION_TYPE_FONT_COLOR	=	{r=0.8, g=0.7, b=0.53};
 
 
+---------------------------------------------------------------------------------
+--- Main Frame                                                                ---
+---------------------------------------------------------------------------------
 function GarrisonLandingPage_OnLoad(self)
-	HybridScrollFrame_CreateButtons(self.List.listScroll, "GarrisonLandingPageMissionTemplate", 0, 0);
-	GarrisonLandingPageList_Update();
-	self:RegisterEvent("GARRISON_LANDINGPAGE_SHIPMENTS");
-	self:RegisterEvent("GARRISON_MISSION_LIST_UPDATE");
+	GarrisonFollowerList_OnLoad(self)
+
+	PanelTemplates_SetNumTabs(self, 2);
+	self.selectedTab = 1;
+	PanelTemplates_UpdateTabs(self);
+	
+	if ( PanelTemplates_GetSelectedTab(self) == 1 ) then
+		GarrisonLandingPage.Report:Show();
+		GarrisonLandingPage.FollowerList:Hide();
+		GarrisonLandingPage.FollowerTab:Hide();
+	else
+		GarrisonLandingPage.Report:Hide();
+		GarrisonLandingPage.FollowerList:Show();
+		GarrisonLandingPage.FollowerTab:Show();
+	end
 end
 
 function GarrisonLandingPage_OnShow(self)
-	-- Shipments
-	C_Garrison.RequestLandingPageShipmentInfo();
-
 	if (C_Garrison.IsInvasionAvailable()) then
 		self.InvasionBadge:Show();
 		self.InvasionBadge.InvasionBadgeAnim:Play();
 	else
 		self.InvasionBadge:Hide();
 	end
+
+	-- if there's no follower displayed on the right, select the first one
+	if (not GarrisonLandingPage.FollowerTab.followerID) then
+		local index = GarrisonLandingPage.FollowerList.followersList[1];
+		if (index) then
+			GarrisonFollowerPage_ShowFollower(GarrisonLandingPage.FollowerTab, GarrisonLandingPage.FollowerList.followers[index].followerID);
+		else
+			-- empty page
+			GarrisonFollowerPage_ShowFollower(GarrisonLandingPage.FollowerTab,0);
+		end
+	end
 	
 	PlaySound("igSpellBookOpen");
 end
 
 function GarrisonLandingPage_OnHide(self)
-	GarrisonLandingPage:SetScript("OnUpdate", nil);
 	PlaySound("igSpellBookClose");
 end
 
-function GarrisonLandingPage_OnEvent(self, event)
-	if ( event == "GARRISON_LANDINGPAGE_SHIPMENTS" ) then
-		GarrisonLandingPage_GetShipments(self);
-	elseif ( event == "GARRISON_MISSION_LIST_UPDATE" ) then
-		GarrisonLandingPageList_UpdateItems();
+function GarrisonLandingPage_OnEvent(self, event, ...)
+	GarrisonFollowerList_OnEvent(self, event, ...);
+end
+
+function GarrisonLandingPageTab_OnClick(self)
+	PlaySound("igCharacterInfoTab");
+	local id = self:GetID();
+	PanelTemplates_SetTab(GarrisonLandingPage, id);
+	if ( id == 1 ) then
+		GarrisonLandingPage.Report:Show();
+		GarrisonLandingPage.FollowerList:Hide();
+		GarrisonLandingPage.FollowerTab:Hide();
+	else
+		GarrisonLandingPage.Report:Hide();
+		GarrisonLandingPage.FollowerList:Show();
+		GarrisonLandingPage.FollowerTab:Show();
 	end
 end
 
-function GarrisonLandingPage_OnUpdate()
-	if( GarrisonLandingPage.List.items and #GarrisonLandingPage.List.items > 0 )then
-		GarrisonLandingPage.List.items = C_Garrison.GetLandingPageItems(true); -- don't sort entries again
+---------------------------------------------------------------------------------
+--- Report Page                                                          ---
+---------------------------------------------------------------------------------
+function GarrisonLandingPageReport_OnLoad(self)
+	HybridScrollFrame_CreateButtons(self.List.listScroll, "GarrisonLandingPageReportMissionTemplate", 0, 0);
+	GarrisonLandingPageReportList_Update();
+	self:RegisterEvent("GARRISON_LANDINGPAGE_SHIPMENTS");
+	self:RegisterEvent("GARRISON_MISSION_LIST_UPDATE");
+end
+
+function GarrisonLandingPageReport_OnShow(self)
+	-- Shipments
+	C_Garrison.RequestLandingPageShipmentInfo();
+
+	if ( not GarrisonLandingPageReport.selectedTab ) then
+		-- SetTab flips the tabs, so set them up reversed & call SetTab
+		GarrisonLandingPageReport.unselectedTab = GarrisonLandingPageReport.InProgress;
+		GarrisonLandingPageReport.selectedTab = GarrisonLandingPageReport.Available;
+		GarrisonLandingPageReport_SetTab(GarrisonLandingPageReport.unselectedTab);
 	else
-		GarrisonLandingPage.List.items = C_Garrison.GetLandingPageItems();
+		GarrisonLandingPageReportList_UpdateItems()
+	end
+end
+
+function GarrisonLandingPageReport_OnHide(self)
+	GarrisonLandingPageReport:SetScript("OnUpdate", nil);
+end
+
+function GarrisonLandingPageReport_OnEvent(self, event)
+	if ( event == "GARRISON_LANDINGPAGE_SHIPMENTS" ) then
+		GarrisonLandingPageReport_GetShipments(self);
+	elseif ( event == "GARRISON_MISSION_LIST_UPDATE" ) then
+		GarrisonLandingPageReportList_UpdateItems();
+	end
+end
+
+function GarrisonLandingPageReport_OnUpdate()
+	if( GarrisonLandingPageReport.List.items and #GarrisonLandingPageReport.List.items > 0 )then
+		GarrisonLandingPageReport.List.items = C_Garrison.GetLandingPageItems(true); -- don't sort entries again
+	else
+		GarrisonLandingPageReport.List.items = C_Garrison.GetLandingPageItems();
 	end
 	
-	if( GarrisonLandingPageList_Update() ) then
-		GarrisonLandingPage:SetScript("OnUpdate", nil);
+	if( GarrisonLandingPageReportList_Update() ) then
+		GarrisonLandingPageReport:SetScript("OnUpdate", nil);
 	end
 end
 
 ---------------------------------------------------------------------------------
---- Shipments                                                                 ---
+--- Report - Shipments                                                        ---
 ---------------------------------------------------------------------------------
-function GarrisonLandingPage_GetShipments(self)
+function GarrisonLandingPageReport_GetShipments(self)
 	local shipmentIndex = 1;
 	local buildings = C_Garrison.GetBuildings();
 	for i = 1, #buildings do
@@ -96,7 +164,7 @@ function GarrisonLandingPage_GetShipments(self)
 	end
 end
 
-function GarrisonLandingPageShipment_OnEnter(self)
+function GarrisonLandingPageReportShipment_OnEnter(self)
 	local name, texture, shipmentsReady, shipmentsTotal, creationTime, duration, timeleftString, itemName, itemIcon, itemQuality, itemID = C_Garrison.GetLandingPageShipmentInfo(self.buildingID);
 	GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
 	if (itemName) then
@@ -115,42 +183,36 @@ function GarrisonLandingPageShipment_OnEnter(self)
 end
 
 ---------------------------------------------------------------------------------
---- Mission List                                                              ---
+--- Report - Mission List                                                     ---
 ---------------------------------------------------------------------------------
-
-function GarrisonLandingPageList_OnShow(self)
+function GarrisonLandingPageReportList_OnShow(self)
 	GarrisonMinimap_ClearPulse();
-	if ( not GarrisonLandingPage.selectedTab ) then
-		-- SetTab flips the tabs, so set them up reversed & call SetTab
-		GarrisonLandingPage.unselectedTab = GarrisonLandingPage.InProgress;
-		GarrisonLandingPage.selectedTab = GarrisonLandingPage.Available;
-		GarrisonLandingPage_SetTab(GarrisonLandingPage.unselectedTab);
-	else
-		GarrisonLandingPageList_UpdateItems()
+	if ( GarrisonLandingPageReport.selectedTab ) then
+		GarrisonLandingPageReportList_UpdateItems()
 	end
 end
 
-function GarrisonLandingPageList_OnHide(self)
+function GarrisonLandingPageReportList_OnHide(self)
 	self.missions = nil;
 end
 
-function GarrisonLandingPageTab_OnClick(self)
-	if ( self == GarrisonLandingPage.unselectedTab ) then
+function GarrisonLandingPageReportTab_OnClick(self)
+	if ( self == GarrisonLandingPageReport.unselectedTab ) then
 		PlaySound("igMainMenuOptionCheckBoxOn");
-		GarrisonLandingPage_SetTab(self);
+		GarrisonLandingPageReport_SetTab(self);
 	end
 end
 
-function GarrisonLandingPage_SetTab(self)
-	local tab = GarrisonLandingPage.selectedTab;
+function GarrisonLandingPageReport_SetTab(self)
+	local tab = GarrisonLandingPageReport.selectedTab;
 	tab:GetNormalTexture():SetAtlas("GarrLanding-TopTabUnselected", true);
 	tab:SetNormalFontObject(GameFontNormalMed2);
 	tab:SetHighlightFontObject(GameFontNormalMed2);
 	tab:GetHighlightTexture():SetAlpha(1);
 	tab:SetSize(205,30);
 	
-	GarrisonLandingPage.unselectedTab = tab;
-	GarrisonLandingPage.selectedTab = self;
+	GarrisonLandingPageReport.unselectedTab = tab;
+	GarrisonLandingPageReport.selectedTab = self;
 	
 	self:GetNormalTexture():SetAtlas("GarrLanding-TopTabSelected", true);
 	self:SetNormalFontObject(GameFontHighlightMed2);
@@ -158,41 +220,41 @@ function GarrisonLandingPage_SetTab(self)
 	self:GetHighlightTexture():SetAlpha(0);
 	self:SetSize(205,36);
 	
-	if (self == GarrisonLandingPage.InProgress) then
-		GarrisonLandingPage.List.listScroll.update = GarrisonLandingPageList_Update;
+	if (self == GarrisonLandingPageReport.InProgress) then
+		GarrisonLandingPageReport.List.listScroll.update = GarrisonLandingPageReportList_Update;
 	else
-		GarrisonLandingPage.List.listScroll.update = GarrisonLandingPageList_UpdateAvailable;
+		GarrisonLandingPageReport.List.listScroll.update = GarrisonLandingPageReportList_UpdateAvailable;
 	end
 	
-	GarrisonLandingPageList_UpdateItems();
+	GarrisonLandingPageReportList_UpdateItems();
 end
 
-function GarrisonLandingPageList_UpdateItems()
-	GarrisonLandingPage.List.items = C_Garrison.GetLandingPageItems();
-	GarrisonLandingPage.List.AvailableItems = C_Garrison.GetAvailableMissions();
-	GarrisonLandingPage.InProgress.Text:SetFormattedText(GARRISON_LANDING_IN_PROGRESS, #GarrisonLandingPage.List.items);
-	GarrisonLandingPage.Available.Text:SetFormattedText(GARRISON_LANDING_AVAILABLE, #GarrisonLandingPage.List.AvailableItems);
-	if ( GarrisonLandingPage.selectedTab == GarrisonLandingPage.InProgress ) then
-		GarrisonLandingPageList_Update();
-		GarrisonLandingPage:SetScript("OnUpdate", GarrisonLandingPage_OnUpdate);
+function GarrisonLandingPageReportList_UpdateItems()
+	GarrisonLandingPageReport.List.items = C_Garrison.GetLandingPageItems();
+	GarrisonLandingPageReport.List.AvailableItems = C_Garrison.GetAvailableMissions();
+	GarrisonLandingPageReport.InProgress.Text:SetFormattedText(GARRISON_LANDING_IN_PROGRESS, #GarrisonLandingPageReport.List.items);
+	GarrisonLandingPageReport.Available.Text:SetFormattedText(GARRISON_LANDING_AVAILABLE, #GarrisonLandingPageReport.List.AvailableItems);
+	if ( GarrisonLandingPageReport.selectedTab == GarrisonLandingPageReport.InProgress ) then
+		GarrisonLandingPageReportList_Update();
+		GarrisonLandingPageReport:SetScript("OnUpdate", GarrisonLandingPageReport_OnUpdate);
 	else
-		GarrisonLandingPageList_UpdateAvailable();
-		GarrisonLandingPage:SetScript("OnUpdate", nil);
+		GarrisonLandingPageReportList_UpdateAvailable();
+		GarrisonLandingPageReport:SetScript("OnUpdate", nil);
 	end
 end
 
-function GarrisonLandingPageList_UpdateAvailable()
-	local items = GarrisonLandingPage.List.AvailableItems or {};
+function GarrisonLandingPageReportList_UpdateAvailable()
+	local items = GarrisonLandingPageReport.List.AvailableItems or {};
 	local numItems = #items;
-	local scrollFrame = GarrisonLandingPage.List.listScroll;
+	local scrollFrame = GarrisonLandingPageReport.List.listScroll;
 	local offset = HybridScrollFrame_GetOffset(scrollFrame);
 	local buttons = scrollFrame.buttons;
 	local numButtons = #buttons;
 
 	if (numItems == 0) then
-		GarrisonLandingPage.List.EmptyMissionText:SetText(GARRISON_EMPTY_MISSION_LIST);
+		GarrisonLandingPageReport.List.EmptyMissionText:SetText(GARRISON_EMPTY_MISSION_LIST);
 	else
-		GarrisonLandingPage.List.EmptyMissionText:SetText(nil);
+		GarrisonLandingPageReport.List.EmptyMissionText:SetText(nil);
 	end
 	
 	for i = 1, numButtons do
@@ -266,10 +328,10 @@ function GarrisonLandingPageList_UpdateAvailable()
 	HybridScrollFrame_Update(scrollFrame, totalHeight, displayedHeight);
 end
 
-function GarrisonLandingPageList_Update()
-	local items = GarrisonLandingPage.List.items or {};
+function GarrisonLandingPageReportList_Update()
+	local items = GarrisonLandingPageReport.List.items or {};
 	local numItems = #items;
-	local scrollFrame = GarrisonLandingPage.List.listScroll;
+	local scrollFrame = GarrisonLandingPageReport.List.listScroll;
 	local offset = HybridScrollFrame_GetOffset(scrollFrame);
 	local buttons = scrollFrame.buttons;
 	local numButtons = #buttons;
@@ -277,9 +339,9 @@ function GarrisonLandingPageList_Update()
 	local stopUpdate = true;
 	
 	if (numItems == 0) then
-		GarrisonLandingPage.List.EmptyMissionText:SetText(GARRISON_EMPTY_IN_PROGRESS_LIST);
+		GarrisonLandingPageReport.List.EmptyMissionText:SetText(GARRISON_EMPTY_IN_PROGRESS_LIST);
 	else
-		GarrisonLandingPage.List.EmptyMissionText:SetText(nil);
+		GarrisonLandingPageReport.List.EmptyMissionText:SetText(nil);
 	end
 	
 	for i = 1, numButtons do
@@ -338,11 +400,11 @@ function GarrisonLandingPageList_Update()
 	return stopUpdate;
 end
 
-function GarrisonLandingPageMission_OnClick(self, button)
+function GarrisonLandingPageReportMission_OnClick(self, button)
 	if ( IsModifiedClick("CHATLINK") ) then
-		local items = GarrisonLandingPage.List.items or {};
-		if GarrisonLandingPage.selectedTab == GarrisonLandingPage.Available then
-			items = GarrisonLandingPage.List.AvailableItems or {};
+		local items = GarrisonLandingPageReport.List.items or {};
+		if GarrisonLandingPageReport.selectedTab == GarrisonLandingPageReport.Available then
+			items = GarrisonLandingPageReport.List.AvailableItems or {};
 		end
 	
 		local item = items[self.id];
@@ -360,11 +422,11 @@ function GarrisonLandingPageMission_OnClick(self, button)
 	end
 end
 
-function GarrisonLandingPageMission_OnEnter(self, button)
+function GarrisonLandingPageReportMission_OnEnter(self, button)
 	GameTooltip:SetOwner(self, "ANCHOR_CURSOR_RIGHT");
-	local items = GarrisonLandingPage.List.items or {};
-	if GarrisonLandingPage.selectedTab == GarrisonLandingPage.Available then
-	    items = GarrisonLandingPage.List.AvailableItems or {};
+	local items = GarrisonLandingPageReport.List.items or {};
+	if GarrisonLandingPageReport.selectedTab == GarrisonLandingPageReport.Available then
+	    items = GarrisonLandingPageReport.List.AvailableItems or {};
 	end
 	
 	local item = items[self.id];
@@ -377,7 +439,7 @@ function GarrisonLandingPageMission_OnEnter(self, button)
 	--mission tooltips
 	GameTooltip:SetText(item.name);
 
-	if(GarrisonLandingPage.selectedTab == GarrisonLandingPage.InProgress) then
+	if(GarrisonLandingPageReport.selectedTab == GarrisonLandingPageReport.InProgress) then
 		if(item.isComplete) then
 			GameTooltip:AddLine(COMPLETE, 1, 1, 1);
 		else

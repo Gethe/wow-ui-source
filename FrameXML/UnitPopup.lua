@@ -324,7 +324,7 @@ function UnitPopup_ShowMenu (dropdownMenu, which, unit, name, userData)
 	local toggleDifficultyID;
 	local _, instanceType, instanceDifficultyID, _, _, _, isDynamicInstance = GetInstanceInfo();
 	if ( isDynamicInstance and CanChangePlayerDifficulty() ) then
-		_, _, _, _, toggleDifficultyID = GetDifficultyInfo(instanceDifficultyID);
+		_, _, _, _, _, _, toggleDifficultyID = GetDifficultyInfo(instanceDifficultyID);
 	end	
 	if ( instanceType == "none" or C_Garrison:IsOnGarrisonMap()) then
 		UnitPopupButtons["DUNGEON_DIFFICULTY"].nested = 1;
@@ -1379,7 +1379,7 @@ function UnitPopup_OnUpdate (elapsed)
 	local toggleDifficultyID;
 	local _, instanceType, instanceDifficultyID, _, _, _, isDynamicInstance = GetInstanceInfo();
 	if ( isDynamicInstance and CanChangePlayerDifficulty() ) then
-		_, _, _, _, toggleDifficultyID = GetDifficultyInfo(instanceDifficultyID);
+		_, _, _, _, _, _, toggleDifficultyID = GetDifficultyInfo(instanceDifficultyID);
 	end
 	
 	-- Loop through all menus and enable/disable their buttons appropriately
@@ -1968,7 +1968,7 @@ function SetRaidDifficulties(primaryRaid, difficultyID)
 		local toggleDifficultyID, force;
 		local _, instanceType, instanceDifficultyID, _, _, _, isDynamicInstance = GetInstanceInfo();
 		if ( isDynamicInstance and CanChangePlayerDifficulty() ) then
-			_, _, _, _, toggleDifficultyID = GetDifficultyInfo(instanceDifficultyID);
+			_, _, _, _, _, _, toggleDifficultyID = GetDifficultyInfo(instanceDifficultyID);
 		end
 		if (UnitLevel("player") >= MAX_PLAYER_LEVEL_TABLE[EXPANSION_LEVEL_MISTS_OF_PANDARIA]) then			
 			if (toggleDifficultyID ~= nil and IsLegacyDifficulty(toggleDifficultyID)) then

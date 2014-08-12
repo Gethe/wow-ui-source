@@ -389,6 +389,27 @@
 			<Anchor point="CENTER"/>
 		</Anchors>
 		<Frames>
+			<Frame parentKey="FollowerList" inherits="GarrisonListTemplateHeader">
+				<Size x="305" y="565"/>
+				<Anchors>
+					<Anchor point="TOPLEFT" x="33" y="-64"/>
+				</Anchors>
+				<Frames>
+					<EditBox parentKey="SearchBox" inherits="SearchBoxTemplate" letters="40">
+						<Size x="236" y="20"/>
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeKey="$parent.HeaderLeft" x="17" y="-10"/>
+						</Anchors>
+						<Scripts>
+							<OnTextChanged function="GarrisonFollowListEditBox_OnTextChanged"/>
+						</Scripts>
+					</EditBox>
+				</Frames>
+				<Scripts>
+					<OnShow function="GarrisonFollowerList_OnShow"/>
+					<OnHide function="GarrisonFollowerList_OnHide"/>
+				</Scripts>
+			</Frame>		
 			<Frame parentKey="FollowerSelection" inherits="GarrisonMissionBaseFrameTemplate">
 				<Size x="580" y="565"/>
 				<Anchors>

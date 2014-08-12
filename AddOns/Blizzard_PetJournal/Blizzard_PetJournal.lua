@@ -2385,6 +2385,7 @@ end
 
 function ToyBox_OnLoad(self)
 	ToyBox.currentPage = 1;
+	ToyBox.firstCollectedToyID = 0; -- used to track which toy gets the favorite helpbox
 	ToyBox.newToys = {};
 
 	ToyBox_UpdatePages();
@@ -2426,6 +2427,8 @@ function ToyBox_OnShow(self)
 end
 
 function ToyBox_OnMouseWheel(self, value, scrollBar)
+	SetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_TOYBOX_MOUSEWHEEL_PAGING, true);
+	ToyBoxMousewheelPagingHelpBox:Hide();
 	if(value > 0) then
 		ToyBoxPrevPageButton_OnClick()		
 	else
@@ -2449,6 +2452,8 @@ function ToyBoxOptionsMenu_Init(self, level)
 		info.text = BATTLE_PET_FAVORITE;
 		info.func = function() 
 			C_ToyBox.SetIsFavorite(ToyBox.menuItemID, true);
+			SetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_TOYBOX_FAVORITE, true);
+			ToyBoxFavoriteHelpBox:Hide();
 		end
 	end
 
@@ -2576,7 +2581,7 @@ function ToySpellButton_UpdateButton(self)
 	local slotFrameCollected = _G[name.."SlotFrameCollected"];
 	local slotFrameUncollected = _G[name.."SlotFrameUncollected"];
 	local slotFrameUncollectedInnerGlow = _G[name.."SlotFrameUncollectedInnerGlow"];
-	local iconFavoriteTexture = _G[name.."SlotFavorite"];
+	local iconFavoriteTexture = _G[name.."CooldownWrapperSlotFavorite"];
 
 	if (self.itemID == -1) then	
 		self:Hide();		
@@ -2617,6 +2622,15 @@ function ToySpellButton_UpdateButton(self)
 		slotFrameCollected:Show();
 		slotFrameUncollected:Hide();
 		slotFrameUncollectedInnerGlow:Hide();
+
+		if(ToyBox.firstCollectedToyID == 0) then
+			ToyBox.firstCollectedToyID = self.itemID;
+		end
+
+		if (ToyBox.firstCollectedToyID == self.itemID and not ToyBoxFavoriteHelpBox:IsVisible() and not GetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_TOYBOX_FAVORITE)) then
+			ToyBoxFavoriteHelpBox:Show();
+			ToyBoxFavoriteHelpBox:SetPoint("TOPLEFT", self, "BOTTOMLEFT", -5, -20);
+		end
 	else
 		iconTexture:Hide();
 		iconTextureUncollected:Show();
@@ -2637,6 +2651,7 @@ function ToyBox_GetCurrentPage()
 end
 
 function ToyBox_UpdateButtons()
+	ToyBoxFavoriteHelpBox:Hide();
 	for i = 1,TOYS_PER_PAGE do
 	    local button = _G["ToySpellButton"..i];
 		ToySpellButton_UpdateButton(button);
@@ -2694,6 +2709,14 @@ function ToyBoxPrevPageButton_OnClick()
 end
 
 function ToyBoxNextPageButton_OnClick()
+	
+	-- show the mousewheel tip after the player's advanced a few pages
+	if(ToyBox.currentPage > 2) then
+		if(not GetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_TOYBOX_MOUSEWHEEL_PAGING) and GetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_TOYBOX_FAVORITE)) then
+			ToyBoxMousewheelPagingHelpBox:Show();
+		end
+	end
+
 	PlaySound("igAbiliityPageTurn");
 	ToyBox.currentPage = ToyBox.currentPage + 1;
 	ToyBox_UpdatePages();
@@ -2710,6 +2733,7 @@ function ToyBox_OnSearchTextChanged(self)
 	end
 
 	if ( oldText ~= ToyBox.searchString ) then		
+		ToyBox.firstCollectedToyID = 0;
 		C_ToyBox.SetFilterString(ToyBox.searchString);
 		ToyBox_UpdatePages();
 		ToyBox_UpdateButtons();
@@ -2727,6 +2751,7 @@ function ToyBoxFilterDropDown_Initialize(self, level)
 	if level == 1 then
 		info.text = COLLECTED
 		info.func = function(_, _, _, value)
+						ToyBox.firstCollectedToyID = 0;
 						C_ToyBox.SetFilterCollected(value);
 						ToyBox_UpdatePages();
 						ToyBox_UpdateButtons();
@@ -2737,6 +2762,7 @@ function ToyBoxFilterDropDown_Initialize(self, level)
 
 		info.text = NOT_COLLECTED
 		info.func = function(_, _, _, value)
+						ToyBox.firstCollectedToyID = 0;
 						C_ToyBox.SetFilterUncollected(value);
 						ToyBox_UpdatePages();
 						ToyBox_UpdateButtons();
@@ -2762,6 +2788,7 @@ function ToyBoxFilterDropDown_Initialize(self, level)
 		
 			info.text = CHECK_ALL
 			info.func = function()
+							ToyBox.firstCollectedToyID = 0;
 							C_ToyBox.ClearAllSourceTypesFiltered();
 							UIDropDownMenu_Refresh(ToyBoxFilterDropDown, 1, 2);
 							ToyBox_UpdatePages();
@@ -2771,6 +2798,7 @@ function ToyBoxFilterDropDown_Initialize(self, level)
 			
 			info.text = UNCHECK_ALL
 			info.func = function()
+							ToyBox.firstCollectedToyID = 0;
 							C_ToyBox.SetAllSourceTypesFiltered();
 							UIDropDownMenu_Refresh(ToyBoxFilterDropDown, 1, 2);
 							ToyBox_UpdatePages();
@@ -2783,6 +2811,7 @@ function ToyBoxFilterDropDown_Initialize(self, level)
 			for i=1,numSources do
 				info.text = _G["BATTLE_PET_SOURCE_"..i];
 				info.func = function(_, _, _, value)
+							ToyBox.firstCollectedToyID = 0;
 							C_ToyBox.SetFilterSourceType(i, value);
 							ToyBox_UpdatePages();
 							ToyBox_UpdateButtons();

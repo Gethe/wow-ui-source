@@ -281,7 +281,7 @@
 					</OnLoad>
 				</Scripts>
 			</CheckButton>				
-			<Slider name="$parentSoundQuality" inherits="OptionsSliderTemplate">
+			<Slider name="$parentSoundQuality" inherits="OptionsSliderTemplate" obeyStepOnDrag="true">
 				<Size x="156" y="17"/>
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeTo="$parentEnableDSPs" relativePoint="BOTTOMLEFT">

@@ -798,6 +798,13 @@
 							<Size x="12" y="13"/>
 							<TexCoords left="0.67968750" right="0.77343750" top="0.65625000" bottom="0.85937500"/>
 						</Texture>
+						<Texture name="$parentMythicTexture" file="Interface\GuildFrame\GuildDifficulty">
+							<Anchors>
+								<Anchor point="BOTTOMLEFT" x="8" y="7"/>
+							</Anchors>
+							<Size x="12" y="13"/>
+							<TexCoords left="0.77343750" right="0.8671875" top="0.65625000" bottom="0.85937500"/>
+						</Texture>
 						<Texture name="$parentChallengeModeTexture" file="Interface\Common\mini-hourglass">
 							<Anchors>
 								<Anchor point="BOTTOMLEFT" x="8" y="7"/>

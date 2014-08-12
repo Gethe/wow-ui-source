@@ -214,8 +214,9 @@
 		</Layers>
 		<Scripts>
 			<OnEnter>
-				GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
-				GarrisonFollowerAbilityTooltip_Show(self.abilityID)
+				GarrisonFollowerAbilityTooltip:ClearAllPoints();
+				GarrisonFollowerAbilityTooltip:SetPoint("TOPLEFT", self, "BOTTOMRIGHT");
+				GarrisonFollowerAbilityTooltip_Show(self.abilityID);
 			</OnEnter>
 			<OnLeave>
 				GarrisonFollowerAbilityTooltip:Hide();
@@ -339,7 +340,7 @@
 			</Frame>
 			<Frame parentKey="BusyFrame" hidden="true">
 				<Anchors>
-					<Anchor point="TOPLEFT" x="3" y="1"/>
+					<Anchor point="TOPLEFT" x="28" y="1"/>
 					<Anchor point="BOTTOMRIGHT" x="0" y="1"/>
 				</Anchors>			
 				<Layers>
@@ -355,6 +356,7 @@
 			<OnLoad>
 				self:RegisterForClicks("LeftButtonUp", "RightButtonUp");
 				self:RegisterForDrag("LeftButton");
+				self.PortraitFrame:SetFrameLevel(self.BusyFrame:GetFrameLevel() + 1);
 			</OnLoad>
 			<OnClick>
 				if ( IsModifiedClick() ) then
@@ -422,7 +424,8 @@
 						end
 					</OnClick>
 					<OnEnter>
-						GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+						GarrisonFollowerAbilityTooltip:ClearAllPoints();
+						GarrisonFollowerAbilityTooltip:SetPoint("TOPLEFT", self, "BOTTOMRIGHT");
 						GarrisonFollowerAbilityTooltip_Show(self.abilityID);
 					</OnEnter>
 					<OnLeave>
@@ -464,6 +467,10 @@
 				GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
 				if (self.itemID) then
 					GameTooltip:SetItemByID(self.itemID);
+					return;
+				end
+				if (self.currencyID) then
+					GameTooltip:SetCurrencyByID(self.currencyID);
 					return;
 				end
 				if (self.title) then
@@ -774,6 +781,10 @@
 					GameTooltip:SetItemByID(self.itemID);
 					return;
 				end
+				if (self.currencyID) then
+					GameTooltip:SetCurrencyByID(self.currencyID);
+					return;
+				end				
 				if (self.title) then
 					GameTooltip:SetText(self.title);
 				end
@@ -1614,6 +1625,13 @@
 	</Frame>
 	
 	<Frame name="GarrisonMissionTutorialFrame" frameStrata="DIALOG" enableMouse="true">
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture setAllPoints="true">
+					<Color r="0" g="0" b="0" a="0.5"/>
+				</Texture>
+			</Layer>
+		</Layers>
 		<Frames>
 			<Frame name="GarrisonMissionFrameHelpBox" parentKey="GlowBox" inherits="GlowBoxTemplate">
 				<Size x="190" y="200"/>
@@ -1660,7 +1678,7 @@
 					</Layer>
 				</Layers>
 				<Frames>
-					<Button parentKey="Button" name="$parentButton" inherits="UIPanelButtonTemplate" text="OKAY">
+					<Button parentKey="Button" name="$parentButton" inherits="UIPanelButtonTemplate" text="NEXT">
 						<Size x="110" y="22"/>
 						<Anchors>
 							<Anchor point="BOTTOM" x="0" y="12"/>
@@ -1695,6 +1713,9 @@
 			</Button>
 			<Frame parentKey="FollowerList" inherits="GarrisonListTemplateHeader" name="$parentFollowers" hidden="true">
 				<Size x="305" y="535"/>
+				<KeyValues>
+					 <KeyValue key="showUncollected" value="true" type="boolean"/>
+				</KeyValues>				
 				<Anchors>
 					<Anchor point="TOPLEFT" x="33" y="-64"/>
 				</Anchors>
@@ -1711,7 +1732,7 @@
 							<Anchor point="TOPLEFT" relativeKey="$parent.HeaderLeft" x="17" y="-10"/>
 						</Anchors>
 						<Scripts>
-							<OnTextChanged function="GarrisonFollowerList_UpdateFollowers"/>
+							<OnTextChanged function="GarrisonFollowListEditBox_OnTextChanged"/>
 						</Scripts>
 					</EditBox>
 					<Frame name="GarrisonFollowerOptionDropDown" inherits="UIDropDownMenuTemplate">
@@ -2323,6 +2344,7 @@
 							<OnLoad function="GarrisonMissionPage_OnLoad"/>
 							<OnEvent function="GarrisonMissionPage_OnEvent"/>
 							<OnShow function="GarrisonMissionPage_OnShow"/>
+							<OnHide function="GarrisonMissionPage_OnHide"/>
 						</Scripts>
 					</Frame>
 				</Frames>
@@ -2428,7 +2450,7 @@
 						</Scripts>
 					</CinematicModel>
 					<Frame parentArray="Abilities" inherits="GarrisonFollowerPageAbilityTemplate"/>
-					<Frame parentArray="Counters" inherits="GarrisonMissionAbilityCounterTemplate"/>
+					<Frame parentArray="Counters" inherits="GarrisonMissionMechanicTemplate"/>
 					<Frame parentKey="Source">
 						<Size x="230" y="80"/>
 						<Anchors>
@@ -2436,7 +2458,7 @@
 						</Anchors>
 						<Layers>
 							<Layer level="OVERLAY">
-								<FontString parentKey="SourceText" inherits="GameFontNormal" justifyH="LEFT" text="ABILITIES">
+								<FontString parentKey="SourceText" inherits="GameFontHighlight" justifyH="LEFT" text="ABILITIES">
 									<Size x="230" y="80"/>
 								</FontString>														
 							</Layer>
@@ -3109,7 +3131,7 @@
 		<Layers>
 			<Layer level="ARTWORK" textureSubLevel="-1">
 				<Texture parentKey="Icon">
-					<Size x="23" y="23"/>
+					<Size x="20" y="20"/>
 					<Anchors>
 						<Anchor point="TOPLEFT" x="15" y="-12"/>
 					</Anchors>
@@ -3144,7 +3166,7 @@
 		<Layers>
 			<Layer level="ARTWORK" textureSubLevel="-1">
 				<Texture parentKey="Icon">
-					<Size x="23" y="23"/>
+					<Size x="20" y="20"/>
 					<Anchors>
 						<Anchor point="TOPLEFT" x="15" y="-43" relativeKey="$parent.Subtitle"/>
 					</Anchors>

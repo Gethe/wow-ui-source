@@ -20,8 +20,6 @@ function FloatingGarrisonFollower_Show(garrisonFollowerID, quality, level, itemL
 		GARRISON_FOLLOWER_FLOATING_TOOLTIP.displayID = C_Garrison.GetFollowerDisplayIDByID(garrisonFollowerID);
 		GARRISON_FOLLOWER_FLOATING_TOOLTIP.name = C_Garrison.GetFollowerNameByID(garrisonFollowerID);
 		GARRISON_FOLLOWER_FLOATING_TOOLTIP.spec = C_Garrison.GetFollowerClassSpecByID(garrisonFollowerID);
-		GARRISON_FOLLOWER_FLOATING_TOOLTIP.classSpecName = C_Garrison.GetFollowerClassSpecName(GARRISON_FOLLOWER_FLOATING_TOOLTIP.spec);
-		GARRISON_FOLLOWER_FLOATING_TOOLTIP.classSpecAtlas = C_Garrison.GetFollowerClassSpecAtlas(GARRISON_FOLLOWER_FLOATING_TOOLTIP.spec);
 		GARRISON_FOLLOWER_FLOATING_TOOLTIP.quality = quality;
 		GARRISON_FOLLOWER_FLOATING_TOOLTIP.level = level;
 		GARRISON_FOLLOWER_FLOATING_TOOLTIP.xp = 0;
@@ -51,13 +49,21 @@ function GarrisonFollowerTooltipTemplate_SetGarrisonFollower(tooltipFrame, data)
 	tooltipFrame.name = data.name;
 	tooltipFrame.Name:SetText(data.name);
 	tooltipFrame.ILevel:SetFormattedText(GARRISON_FOLLOWER_ITEM_LEVEL, data.itemLevel);
-	tooltipFrame.ClassSpecName:SetText(data.classSpecName);
 	tooltipFrame.Portrait.Level:SetText(data.level);
-	SetPortraitTexture(tooltipFrame.Portrait.Portrait, data.displayID);
+	SetPortraitTexture(tooltipFrame.Portrait.Portrait, data.displayID or 0);
 	local color = ITEM_QUALITY_COLORS[data.quality];
 	tooltipFrame.Portrait.LevelBorder:SetVertexColor(color.r, color.g, color.b);
 	tooltipFrame.Portrait.PortraitRingQuality:SetVertexColor(color.r, color.g, color.b);
-	tooltipFrame.Class:SetAtlas(data.classSpecAtlas);
+	if ( data.spec ) then
+		local classSpecName = C_Garrison.GetFollowerClassSpecName(data.spec);
+		tooltipFrame.ClassSpecName:SetText(classSpecName);
+		local classSpecAtlas = C_Garrison.GetFollowerClassSpecAtlas(data.spec);
+		if ( classSpecAtlas ) then
+			tooltipFrame.Class:SetAtlas(classSpecAtlas);
+		else
+			tooltipFrame.Class:SetTexture(nil);
+		end
+	end
 
 	if (not data.collected) then
 		tooltipFrame.ILevel:Hide();

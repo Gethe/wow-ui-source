@@ -253,7 +253,10 @@ function BankFrame_OnEvent (self, event, ...)
 				BankFrameItemButton_UpdateLocked(BankSlotsFrame["Bag"..(slot-NUM_BANKGENERIC_SLOTS)]);
 			end
 		elseif ( bag == REAGENTBANK_CONTAINER ) then
-			BankFrameItemButton_UpdateLocked(ReagentBankFrame["Item"..(slot)]);
+			local button = ReagentBankFrame["Item"..(slot)];
+			if (button) then
+				BankFrameItemButton_UpdateLocked(button);
+			end
 		end
 	elseif ( event == "PLAYERBANKSLOTS_CHANGED" ) then
 		local slot = ...;

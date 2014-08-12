@@ -227,7 +227,7 @@
 		</Frames>
 	</Button>
 	
-	<Frame name="PVPCurrencyDisplayTemplate" virtual="true">
+	<Button name="PVPCurrencyDisplayTemplate" virtual="true">
 		<Size x="36" y="36"/>
 		<Layers>
 			<Layer level="ARTWORK">	
@@ -251,11 +251,18 @@
 				GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
 				GameTooltip:SetCurrencyTokenByID(self.currencyID);
 			</OnEnter>
+			<OnClick>
+				local parent = self:GetParent();
+				local parentFunction = parent:GetScript("OnClick");
+				if ( parentFunction ) then
+					parentFunction(parent, button, down);
+				end
+			</OnClick>
 			<OnLeave>
 				GameTooltip:Hide();
 			</OnLeave>
 		</Scripts>
-	</Frame>
+	</Button>
 	
 	<Frame name="PVPCurrencyRewardTemplate" virtual="true">
 		<Size x="28" y="28"/>
@@ -452,11 +459,11 @@
 							</Layer>
 						</Layers>
 						<Frames>
-							<Frame parentKey="CurrencyDisplay" inherits="PVPCurrencyDisplayTemplate">
+							<Button parentKey="CurrencyDisplay" inherits="PVPCurrencyDisplayTemplate">
 								<Anchors>
 									<Anchor point="TOPLEFT" relativeKey="$parent.Name" relativePoint="BOTTOMLEFT" x="-10" y="0"/>
 								</Anchors>
-							</Frame>
+							</Button>
 						</Frames>
 					</Button>
 					<Button name="$parentCategoryButton2" inherits="PVPQueueFrameButtonTemplate" parentKey="CategoryButton2" id="2">
@@ -474,11 +481,11 @@
 							</Layer>
 						</Layers>
 						<Frames>
-							<Frame parentKey="CurrencyDisplay" inherits="PVPCurrencyDisplayTemplate">
+							<Button parentKey="CurrencyDisplay" inherits="PVPCurrencyDisplayTemplate">
 								<Anchors>
 									<Anchor point="TOPLEFT" relativeKey="$parent.Name" relativePoint="BOTTOMLEFT" x="-10" y="0"/>
 								</Anchors>
-							</Frame>
+							</Button>
 						</Frames>
 					</Button>
 					<Button name="$parentCategoryButton3" inherits="PVPQueueFrameButtonTemplate" parentKey="CategoryButton3" id="3">

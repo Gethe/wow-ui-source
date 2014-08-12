@@ -273,7 +273,13 @@
 								GameTooltip:AddLine(BAG_FILTER_ASSIGNED_TO:format(BAG_FILTER_LABELS[self:GetParent().localFlag]));
 							elseif (not self:GetParent().localFlag) then
 								for i = LE_BAG_FILTER_FLAG_EQUIPMENT, NUM_LE_BAG_FILTER_FLAGS do
-									if ( GetBagSlotFlag(self:GetID(), i) ) then
+									local active = false;
+									if ( self:GetID() > NUM_BAG_SLOTS ) then
+										active = GetBankBagSlotFlag(self:GetID() - NUM_BAG_SLOTS, i);
+									else
+										active = GetBagSlotFlag(self:GetID(), i);
+									end
+									if ( active ) then
 										GameTooltip:AddLine(BAG_FILTER_ASSIGNED_TO:format(BAG_FILTER_LABELS[i]));
 										break;
 									end

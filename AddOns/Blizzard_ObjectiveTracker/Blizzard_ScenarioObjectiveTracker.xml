@@ -16,28 +16,22 @@
 						<Size x="201" y="83"/>
 						<Layers>
 							<Layer level="BACKGROUND">
-								<Texture parentKey="NormalBG" file="Interface\Scenarios\ScenariosParts">
-									<Size x="201" y="77"/>
+								<Texture parentKey="NormalBG" atlas="ScenarioTrackerToast" useAtlasSize="true">
 									<Anchors>
-										<Anchor point="TOP" x="0" y="0"/>
+										<Anchor point="TOPLEFT" x="0" y="0"/>
 									</Anchors>
-									<TexCoords left="0.00195313" right="0.39453125" top="0.48242188" bottom="0.63281250"/>
 								</Texture>
 							</Layer>
 							<Layer level="BORDER">
-								<Texture parentKey="FinalBG" file="Interface\Scenarios\ScenariosParts">
-									<Size x="193" y="69"/>
+								<Texture parentKey="FinalBG" atlas="ScenarioTrackerToast-FinalFiligree" useAtlasSize="true">
 									<Anchors>
-										<Anchor point="TOP" x="0" y="-4"/>
+										<Anchor point="TOPLEFT" x="4" y="-4"/>
 									</Anchors>
-									<TexCoords left="0.61328125" right="0.99023438" top="0.26171875" bottom="0.39648438"/>
 								</Texture>
-								<Texture parentKey="GlowTexture" file="Interface\Scenarios\ScenariosParts" alpha="0" alphaMode="ADD">
-									<Size x="201" y="77"/>
+								<Texture parentKey="GlowTexture" atlas="ScenarioTrackerToast" useAtlasSize="true" alpha="0" alphaMode="ADD">
 									<Anchors>
-										<Anchor point="TOP" x="0" y="0"/>
+										<Anchor point="TOPLEFT" x="0" y="0"/>
 									</Anchors>
-									<TexCoords left="0.00195313" right="0.39453125" top="0.48242188" bottom="0.63281250"/>
 									<Animations>
 										<AnimationGroup parentKey="AlphaAnim">
 											<Alpha change="1" duration="0.266" order="1"/>
@@ -92,12 +86,10 @@
 						<Size x="198" y="55"/>
 						<Layers>
 							<Layer level="BORDER">
-								<Texture file="Interface\Challenges\challenges-main">
-									<Size x="207" y="64"/>	
+								<Texture atlas="challenges-timerbg" useAtlasSize="true">
 									<Anchors>
-										<Anchor point="CENTER"/>
+										<Anchor point="TOPLEFT"/>
 									</Anchors>
-									<TexCoords left="0.71972656" right="0.92187500" top="0.21289063" bottom="0.33789063"/>	
 								</Texture>			
 							</Layer>
 							<Layer level="ARTWORK">
@@ -107,35 +99,30 @@
 										<Anchor point="LEFT" x="5" y="-2"/>
 									</Anchors>
 								</Texture>
-								<Texture parentKey="NoMedal" file="Interface\Challenges\challenges-main" hidden="true">
-									<Size x="9" y="10"/>
+								<Texture parentKey="NoMedal" atlas="challenges-nomedal" useAtlasSize="true" hidden="true">
 									<Anchors>
 										<Anchor point="LEFT" x="24" y="-2"/>
 									</Anchors>
-									<TexCoords left="0.93847656" right="0.94726563" top="0.00195313" bottom="0.02148438"/>
 								</Texture>
 							</Layer>		
 						</Layers>
 						<Frames>
 							<StatusBar parentKey="StatusBar">
-								<Size>
-									<AbsDimension x="133" y="17"/>
-								</Size>
+								<Size x="177" y="17"/>
 								<Anchors>
-									<Anchor point="CENTER" x="22" y="-2"/>
+									<Anchor point="CENTER" x="42" y="-3"/>
 								</Anchors>				
 								<Layers>
 									<Layer level="OVERLAY">
-										<Texture file="Interface\Challenges\challenges-main">
-											<Size x="140" y="32"/>
+										<Texture atlas="challenges-timerborder">
+											<Size x="184" y="32"/>
 											<Anchors>
 												<Anchor point="CENTER" x="0" y="0"/>
 											</Anchors>
-											<TexCoords left="0.00097656" right="0.13769531" top="0.47265625" bottom="0.51757813"/>	
 										</Texture>
 										<FontString parentKey="TimeLeft" inherits="GameFontHighlight" justifyH="LEFT">
 											<Anchors>
-												<Anchor point="LEFT" x="42" y="0"/>
+												<Anchor point="LEFT" x="60" y="0"/>
 											</Anchors>
 										</FontString>
 									</Layer>
@@ -190,21 +177,17 @@
 						<Size x="201" y="77"/>
 						<Layers>
 							<Layer level="BACKGROUND">
-								<Texture file="Interface\Scenarios\ScenariosParts" parentKey="BG">
-									<Size x="201" y="77"/>
+								<Texture parentKey="BG" atlas="ScenarioTrackerToast" useAtlasSize="true">
 									<Anchors>
-										<Anchor point="TOP" x="0" y="0"/>
+										<Anchor point="TOPLEFT" x="0" y="0"/>
 									</Anchors>
-									<TexCoords left="0.00195313" right="0.39453125" top="0.48242188" bottom="0.63281250"/>
 								</Texture>
 							</Layer>
 							<Layer level="BORDER">
-								<Texture file="Interface\Scenarios\ScenariosParts" parentKey="GoldCurlies">
-									<Size x="193" y="69"/>
+								<Texture parentKey="GoldCurlies" atlas="ScenarioTrackerToast-FinalFiligree" useAtlasSize="true">
 									<Anchors>
-										<Anchor point="TOP" x="0" y="-4"/>
+										<Anchor point="TOPLEFT" x="4" y="-4"/>
 									</Anchors>
-									<TexCoords left="0.61328125" right="0.99023438" top="0.26171875" bottom="0.39648438"/>
 								</Texture>
 							</Layer>
 							<Layer level="ARTWORK">
@@ -248,18 +231,17 @@
 						</Layers>
 						<Frames>
 							<StatusBar parentKey="StatusBar" useParentLevel="true">
-								<Size x="133" y="15"/>
+								<Size x="177" y="15"/>
 								<Anchors>
-									<Anchor point="CENTER" x="22" y="-8"/>
+									<Anchor point="CENTER" x="22" y="-9"/>
 								</Anchors>				
 								<Layers>
 									<Layer level="OVERLAY">
-										<Texture file="Interface\Challenges\challenges-main">
-											<Size x="140" y="25"/>
+										<Texture atlas="challenges-timerborder">
+											<Size x="184" y="25"/>
 											<Anchors>
 												<Anchor point="CENTER" x="0" y="0"/>
 											</Anchors>
-											<TexCoords left="0.00097656" right="0.13769531" top="0.47265625" bottom="0.51757813"/>	
 										</Texture>
 										<FontString inherits="GameFontHighlight" justifyH="LEFT" parentKey="TimeLeft">
 											<Anchors>
@@ -302,24 +284,20 @@
 		</Animations>
 		<Layers>
 			<Layer level="OVERLAY">
-				<Texture file="Interface\Scenarios\ScenariosParts" parentKey="BGAnim" alpha="0" alphaMode="ADD">
-					<Size x="201" y="77"/>
+				<Texture parentKey="BGAnim" atlas="ScenarioTrackerToast" useAtlasSize="true" alpha="0" alphaMode="ADD">
 					<Anchors>
-						<Anchor point="TOP" x="0" y="0"/>
+						<Anchor point="TOPLEFT" x="0" y="0"/>
 					</Anchors>
-					<TexCoords left="0.00195313" right="0.39453125" top="0.48242188" bottom="0.63281250"/>
 				</Texture>
-				<Texture file="Interface\Scenarios\ScenariosParts" parentKey="BorderAnim" alpha="0" alphaMode="ADD">
-					<Size x="193" y="69"/>
+				<Texture parentKey="BorderAnim" atlas="ScenarioTrackerToast-FinalFiligree" useAtlasSize="true" alpha="0" alphaMode="ADD">
 					<Anchors>
-						<Anchor point="TOP" x="0" y="-4"/>
+						<Anchor point="TOP" x="20" y="-4"/>
 					</Anchors>
-					<TexCoords left="0.61328125" right="0.99023438" top="0.26171875" bottom="0.39648438"/>
 				</Texture>
 				<Texture file="Interface\AchievementFrame\UI-Achievement-Alert-Glow" parentKey="Glow" alpha="0" alphaMode="ADD">				
 					<Anchors>
-						<Anchor point="TOPLEFT" relativeKey="$parent.BGAnim" x="-36" y="73"/>
-						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.BGAnim" x="36" y="-73"/>
+						<Anchor point="TOPLEFT" relativeKey="$parent.BGAnim" x="-35" y="45"/>
+						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.BGAnim" x="35" y="-45"/>
 					</Anchors>
 					<TexCoords left="0" right="0.78125" top="0" bottom="0.66796875"/>
 				</Texture>

@@ -2,7 +2,7 @@
 ..\FrameXML\UI.xsd">
 	<Script file="Blizzard_GarrisonLandingPage.lua"/>
 	
-	<Frame name="GarrisonLandingPageMissionRewardTemplate" enableMouse="true" virtual="true">
+	<Frame name="GarrisonLandingPageReportMissionRewardTemplate" enableMouse="true" virtual="true">
 		<Size x="32" y="32"/>
 		<Layers>
 			<Layer level="BACKGROUND">
@@ -47,7 +47,7 @@
 		</Scripts>
 	</Frame>
 
-	<Button name="GarrisonLandingPageMissionTemplate" virtual="true">
+	<Button name="GarrisonLandingPageReportMissionTemplate" virtual="true">
 		<Size x="400" y="47"/>
 		<Layers>
 			<Layer level="BACKGROUND">
@@ -120,30 +120,30 @@
 			</Layer>
 		</Layers>
 		<Frames>
-			<Frame parentArray="Rewards" parentKey="Reward1" inherits="GarrisonLandingPageMissionRewardTemplate" hidden="true">
+			<Frame parentArray="Rewards" parentKey="Reward1" inherits="GarrisonLandingPageReportMissionRewardTemplate" hidden="true">
 				<Anchors>
 					<Anchor point="RIGHT" x="-6" y="-2"/>
 				</Anchors>
 			</Frame>
-			<Frame parentArray="Rewards" parentKey="Reward2" inherits="GarrisonLandingPageMissionRewardTemplate" hidden="true">
+			<Frame parentArray="Rewards" parentKey="Reward2" inherits="GarrisonLandingPageReportMissionRewardTemplate" hidden="true">
 				<Anchors>
 					<Anchor point="RIGHT" relativeKey="$parent.Reward1" relativePoint="LEFT" x="-10" y="0"/>
 				</Anchors>
 			</Frame>
-			<Frame parentArray="Rewards" parentKey="Reward3" inherits="GarrisonLandingPageMissionRewardTemplate" hidden="true">
+			<Frame parentArray="Rewards" parentKey="Reward3" inherits="GarrisonLandingPageReportMissionRewardTemplate" hidden="true">
 				<Anchors>
 					<Anchor point="RIGHT" relativeKey="$parent.Reward2" relativePoint="LEFT" x="-10" y="0"/>
 				</Anchors>
 			</Frame>
 		</Frames>
 		<Scripts>
-			<OnEnter function="GarrisonLandingPageMission_OnEnter"/>
+			<OnEnter function="GarrisonLandingPageReportMission_OnEnter"/>
 			<OnLeave function="GameTooltip_Hide"/>
-			<OnClick function="GarrisonLandingPageMission_OnClick"/>
+			<OnClick function="GarrisonLandingPageReportMission_OnClick"/>
 		</Scripts>
 	</Button>
 	
-	<Frame name="GarrisonLandingPageShipmentStatusTemplate" virtual="true">
+	<Frame name="GarrisonLandingPageReportShipmentStatusTemplate" virtual="true">
 		<Size x="64" y="64"/>
 		<Layers>
 			<Layer level="BACKGROUND">
@@ -200,11 +200,12 @@
 			</Cooldown>
 		</Frames>
 		<Scripts>
-			<OnEnter function="GarrisonLandingPageShipment_OnEnter"/>
+			<OnEnter function="GarrisonLandingPageReportShipment_OnEnter"/>
 			<OnLeave function="GameTooltip_Hide"/>
 		</Scripts>
 	</Frame>
 	
+
 	<Frame name="GarrisonLandingPage" parent="UIParent" enableMouse="true" toplevel="true" hidden="true">
 		<Size x="830" y="538"/>
 		<Anchors>
@@ -271,17 +272,6 @@
 						<Anchor point="TOP" x="0" y="-36"/>
 					</Anchors>
 				</Texture>
-				<FontString inherits="QuestFont_Enormous" text="GARRISON_LANDING_PAGE_TITLE">
-					<Anchors>
-						<Anchor point="LEFT" relativeKey="$parent.HeaderBar" x="26"/>
-					</Anchors>
-				</FontString>
-				<Texture atlas="GarrLanding_Watermark-Tradeskill" useAtlasSize="true">
-					<Anchors>
-						<Anchor point="BOTTOMLEFT" x="60" y="40"/>
-					</Anchors>
-					<Color r="1" g="1" b="1" a=".8"/>
-				</Texture>
 			</Layer>
 		</Layers>
 		<Frames>
@@ -327,46 +317,258 @@
 					</OnLeave>
 				</Scripts>
 			</Frame>
-			<Frame parentKey="List" name="$parentList">
-				<Size x="433" y="420"/>
+			
+			<Button name="$parentTab1" inherits="GarrisonMissionFrameTabTemplate" id="1" text="LANDING_PAGE_REPORT">
 				<Anchors>
-					<Anchor point="BOTTOMRIGHT" x="-38" y="28"/>
+					<Anchor point="BOTTOMLEFT" x="70" y="-22"/>
+				</Anchors>
+				<Scripts>
+					<OnClick function="GarrisonLandingPageTab_OnClick"/>
+				</Scripts>
+			</Button>
+			
+			<Button name="$parentTab2" inherits="GarrisonMissionFrameTabTemplate" id="2" text="GARRISON_FOLLOWERS">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="$parentTab1" relativePoint="RIGHT" x="-5" y="0"/>
+				</Anchors>		
+				<Scripts>
+					<OnClick function="GarrisonLandingPageTab_OnClick"/>
+				</Scripts>
+			</Button>
+			
+			<Frame name="$parentReport" parentKey="Report">
+				<Anchors>
+					<Anchor point="TOPLEFT"/>
+					<Anchor point="BOTTOMRIGHT"/>
 				</Anchors>
 				<Layers>
-					<Layer level="BACKGROUND">
-						<Texture atlas="GarrLanding-MissionListBG">
+					<Layer level="BORDER">
+						<FontString inherits="QuestFont_Enormous" text="GARRISON_LANDING_PAGE_TITLE">
 							<Anchors>
-								<Anchor point="TOPLEFT" x="-25"/>
-								<Anchor point="BOTTOMRIGHT"/>
+								<Anchor point="LEFT" relativeKey="$parent.$parent.HeaderBar" x="26"/>
 							</Anchors>
-						</Texture>
-					</Layer>
-					<Layer level="OVERLAY">
-						<FontString parentKey="EmptyMissionText" inherits="GameFontNormalLarge2" justifyH="CENTER">
-							<Size x="324" y="0"/>
-							<Anchors>
-								<Anchor point="CENTER"/>
-							</Anchors>
-							<Color r=".75" g=".75" b=".73"/>
 						</FontString>
+						<Texture atlas="GarrLanding_Watermark-Tradeskill" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="BOTTOMLEFT" x="60" y="40"/>
+							</Anchors>
+							<Color r="1" g="1" b="1" a=".8"/>
+						</Texture>
 					</Layer>
 				</Layers>
 				<Frames>
+					<Frame parentKey="List" name="$parentList">
+						<Size x="433" y="420"/>
+						<Anchors>
+							<Anchor point="BOTTOMRIGHT" x="-38" y="28"/>
+						</Anchors>
+						<Layers>
+							<Layer level="BACKGROUND">
+								<Texture atlas="GarrLanding-MissionListBG">
+									<Anchors>
+										<Anchor point="TOPLEFT" x="-25"/>
+										<Anchor point="BOTTOMRIGHT"/>
+									</Anchors>
+								</Texture>
+							</Layer>
+							<Layer level="OVERLAY">
+								<FontString parentKey="EmptyMissionText" inherits="GameFontNormalLarge2" justifyH="CENTER">
+									<Size x="324" y="0"/>
+									<Anchors>
+										<Anchor point="CENTER"/>
+									</Anchors>
+									<Color r=".75" g=".75" b=".73"/>
+								</FontString>
+							</Layer>
+						</Layers>
+						<Frames>
+							<ScrollFrame name="$parentListScrollFrame" parentKey="listScroll" inherits="HybridScrollFrameTemplate">
+								<Anchors>
+									<Anchor point="TOPLEFT" x="5" y="-6"/>
+									<Anchor point="BOTTOMRIGHT" x="-3" y="8"/>
+								</Anchors>
+								<Frames>
+									<Slider name="$parentScrollBar" inherits="MinimalHybridScrollBarTemplate" parentKey="scrollBar">
+										<Anchors>
+											<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" x="-20" y="-15"/>
+											<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMRIGHT" x="-20" y="12"/>
+										</Anchors>
+										<Scripts>
+											<OnLoad>
+												self.trackBG:Show();
+												self.trackBG:SetVertexColor(0, 0, 0, 0.75);
+												self.doNotHide = true;
+											</OnLoad>
+										</Scripts>
+									</Slider>
+								</Frames>
+							</ScrollFrame>
+						</Frames>
+						<Scripts>
+							<OnShow function="GarrisonLandingPageReportList_OnShow"/>
+							<OnHide function="GarrisonLandingPageReportList_OnHide"/>
+						</Scripts>
+					</Frame>
+					<Button parentKey="InProgress">
+						<Size x="205" y="36"/>
+						<Anchors>
+							<Anchor point="BOTTOMLEFT" relativeKey="$parent.List" relativePoint="TOPLEFT" x="0" y="2"/>
+						</Anchors>
+						<Scripts>
+							<OnClick function="GarrisonLandingPageReportTab_OnClick"/>
+						</Scripts>
+						<NormalTexture atlas="GarrLanding-TopTabSelected" useAtlasSize="true">
+							<Size x="205" y="36"/>
+							<Anchors>
+								<Anchor point="TOP"/>
+							</Anchors>
+						</NormalTexture>
+						<HighlightTexture atlas="GarrLanding-TopTabHighlight" useAtlasSize="true">
+							<Size x="191" y="24"/>
+							<Anchors>
+								<Anchor point="BOTTOM"/>
+							</Anchors>
+						</HighlightTexture>
+						<ButtonText parentKey="Text" text="GARRISON_LANDING_IN_PROGRESS">
+							<Anchors>
+								<Anchor point="BOTTOM" x="0" y="5"/>
+							</Anchors>
+						</ButtonText>
+						<NormalFont style="GameFontHighlightMed2"/>
+						<HighlightFont style="GameFontHighlightMed2"/>
+					</Button>
+					<Button parentKey="Available">
+						<Size x="191" y="24"/>
+						<Anchors>
+							<Anchor point="BOTTOMRIGHT" relativeKey="$parent.List" relativePoint="TOPRIGHT" x="-20" y="2"/>
+						</Anchors>
+						<Scripts>
+							<OnClick function="GarrisonLandingPageReportTab_OnClick"/>
+						</Scripts>
+						<NormalTexture atlas="GarrLanding-TopTabSelected" useAtlasSize="true">
+							<Size x="205" y="36"/>
+							<Anchors>
+								<Anchor point="TOP"/>
+							</Anchors>
+						</NormalTexture>
+						<HighlightTexture atlas="GarrLanding-TopTabHighlight" useAtlasSize="true">
+							<Size x="191" y="24"/>
+							<Anchors>
+								<Anchor point="BOTTOM"/>
+							</Anchors>
+						</HighlightTexture>
+						<ButtonText parentKey="Text" text="GARRISON_LANDING_AVAILABLE">
+							<Anchors>
+								<Anchor point="BOTTOM" x="0" y="5"/>
+							</Anchors>
+						</ButtonText>
+						<NormalFont style="GameFontHighlightMed2"/>
+						<HighlightFont style="GameFontHighlightMed2"/>
+					</Button>
+					<Frame parentArray="Shipments" inherits="GarrisonLandingPageReportShipmentStatusTemplate" hidden="true">
+						<Anchors>
+							<Anchor point="TOPLEFT" x="70" y="-100"/>
+						</Anchors>
+					</Frame>
+					<Frame parentArray="Shipments" inherits="GarrisonLandingPageReportShipmentStatusTemplate" hidden="true">
+						<Anchors>
+							<Anchor point="TOPLEFT" x="230" y="-100"/>
+						</Anchors>
+					</Frame>
+					<Frame parentArray="Shipments" inherits="GarrisonLandingPageReportShipmentStatusTemplate" hidden="true">
+						<Anchors>
+							<Anchor point="TOPLEFT" x="70" y="-205"/>
+						</Anchors>
+					</Frame>
+					<Frame parentArray="Shipments" inherits="GarrisonLandingPageReportShipmentStatusTemplate" hidden="true">
+						<Anchors>
+							<Anchor point="TOPLEFT" x="230" y="-205"/>
+						</Anchors>
+					</Frame>
+					<Frame parentArray="Shipments" inherits="GarrisonLandingPageReportShipmentStatusTemplate" hidden="true">
+						<Anchors>
+							<Anchor point="TOPLEFT" x="70" y="-310"/>
+						</Anchors>
+					</Frame>
+					<Frame parentArray="Shipments" inherits="GarrisonLandingPageReportShipmentStatusTemplate" hidden="true">
+						<Anchors>
+							<Anchor point="TOPLEFT" x="230" y="-310"/>
+						</Anchors>
+					</Frame>
+					<Frame parentArray="Shipments" inherits="GarrisonLandingPageReportShipmentStatusTemplate" hidden="true">
+						<Anchors>
+							<Anchor point="TOPLEFT" x="70" y="-415"/>
+						</Anchors>
+					</Frame>
+					<Frame parentArray="Shipments" inherits="GarrisonLandingPageReportShipmentStatusTemplate" hidden="true">
+						<Anchors>
+							<Anchor point="TOPLEFT" x="230" y="-415"/>
+						</Anchors>
+					</Frame>
+				</Frames>
+				<Scripts>
+					<OnLoad function="GarrisonLandingPageReport_OnLoad"/>
+					<OnShow function="GarrisonLandingPageReport_OnShow"/>
+					<OnHide function="GarrisonLandingPageReport_OnHide"/>
+					<OnEvent function="GarrisonLandingPageReport_OnEvent"/>
+				</Scripts>
+			</Frame>
+
+			<Frame parentKey="FollowerList" hidden="true">
+				<Size x="299" y="388"/>
+				<KeyValues>
+					 <KeyValue key="showUncollected" value="true" type="boolean"/>
+				</KeyValues>				
+				<Anchors>
+					<Anchor point="TOPLEFT" x="45" y="-120"/>
+				</Anchors>
+				<KeyValues>
+					<KeyValue key="isLandingPage" value="true" type="boolean"/>
+				</KeyValues>
+				<Layers>
+					<Layer level="BORDER">
+						<FontString inherits="QuestFont_Enormous" text="GARRISON_FOLLOWERS">
+							<Anchors>
+								<Anchor point="LEFT" relativeKey="$parent.$parent.HeaderBar" x="26"/>
+							</Anchors>
+						</FontString>
+						<Texture parentKey="FollowerHeaderBar" atlas="GarrLanding-HeaderBar" alpha="0.7">
+							<Size x="772" y="76"/>
+							<Anchors>
+								<Anchor point="TOP" relativeKey="$parent.$parent.HeaderBar" relativePoint="BOTTOM" x="0" y="8"/>
+							</Anchors>
+						</Texture>
+						<Texture parentKey="FollowerHeaderBar" atlas="GarrLanding-FollowerScrollFrame" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="TOPLEFT" x="0" y="0"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+				<Frames>
+					<EditBox parentKey="SearchBox" inherits="SearchBoxTemplate" letters="40">
+						<Size x="295" y="20"/>
+						<Anchors>
+							<Anchor point="TOPLEFT" x="5" y="25"/>
+						</Anchors>
+						<Scripts>
+							<OnTextChanged function="GarrisonFollowListEditBox_OnTextChanged"/>
+						</Scripts>
+					</EditBox>
 					<ScrollFrame name="$parentListScrollFrame" parentKey="listScroll" inherits="HybridScrollFrameTemplate">
 						<Anchors>
-							<Anchor point="TOPLEFT" x="5" y="-6"/>
-							<Anchor point="BOTTOMRIGHT" x="-3" y="8"/>
+							<Anchor point="TOPLEFT" x="-3" y="-4"/>
+							<Anchor point="BOTTOMRIGHT" x="-5" y="9"/>
 						</Anchors>
 						<Frames>
 							<Slider name="$parentScrollBar" inherits="MinimalHybridScrollBarTemplate" parentKey="scrollBar">
 								<Anchors>
-									<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" x="-20" y="-15"/>
-									<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMRIGHT" x="-20" y="12"/>
+									<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" x="-18" y="-17"/>
+									<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMRIGHT" x="-18" y="12"/>
 								</Anchors>
 								<Scripts>
 									<OnLoad>
-										self.trackBG:Show();
-										self.trackBG:SetVertexColor(0, 0, 0, 0.75);
+										self.trackBG:Hide();
 										self.doNotHide = true;
 									</OnLoad>
 								</Scripts>
@@ -375,105 +577,148 @@
 					</ScrollFrame>
 				</Frames>
 				<Scripts>
-					<OnShow function="GarrisonLandingPageList_OnShow"/>
-					<OnHide function="GarrisonLandingPageList_OnHide"/>
+					<OnShow function="GarrisonFollowerList_OnShow"/>
+					<OnHide function="GarrisonFollowerList_OnHide"/>
 				</Scripts>
 			</Frame>
-			<Button parentKey="InProgress">
-				<Size x="205" y="36"/>
+			<Frame parentKey="FollowerTab">
+				<Size x="470" y="565"/>
 				<Anchors>
-					<Anchor point="BOTTOMLEFT" relativeKey="$parent.List" relativePoint="TOPLEFT" x="0" y="2"/>
+					<Anchor point="TOPRIGHT" x="-25" y="-85"/>
 				</Anchors>
-				<Scripts>
-					<OnClick function="GarrisonLandingPageTab_OnClick"/>
-				</Scripts>
-				<NormalTexture atlas="GarrLanding-TopTabSelected" useAtlasSize="true">
-					<Size x="205" y="36"/>
-					<Anchors>
-						<Anchor point="TOP"/>
-					</Anchors>
-				</NormalTexture>
-				<HighlightTexture atlas="GarrLanding-TopTabHighlight" useAtlasSize="true">
-					<Size x="191" y="24"/>
-					<Anchors>
-						<Anchor point="BOTTOM"/>
-					</Anchors>
-				</HighlightTexture>
-				<ButtonText parentKey="Text" text="GARRISON_LANDING_IN_PROGRESS">
-					<Anchors>
-						<Anchor point="BOTTOM" x="0" y="5"/>
-					</Anchors>
-				</ButtonText>
-				<NormalFont style="GameFontHighlightMed2"/>
-				<HighlightFont style="GameFontHighlightMed2"/>
-			</Button>
-			<Button parentKey="Available">
-				<Size x="191" y="24"/>
-				<Anchors>
-					<Anchor point="BOTTOMRIGHT" relativeKey="$parent.List" relativePoint="TOPRIGHT" x="-20" y="2"/>
-				</Anchors>
-				<Scripts>
-					<OnClick function="GarrisonLandingPageTab_OnClick"/>
-				</Scripts>
-				<NormalTexture atlas="GarrLanding-TopTabSelected" useAtlasSize="true">
-					<Size x="205" y="36"/>
-					<Anchors>
-						<Anchor point="TOP"/>
-					</Anchors>
-				</NormalTexture>
-				<HighlightTexture atlas="GarrLanding-TopTabHighlight" useAtlasSize="true">
-					<Size x="191" y="24"/>
-					<Anchors>
-						<Anchor point="BOTTOM"/>
-					</Anchors>
-				</HighlightTexture>
-				<ButtonText parentKey="Text" text="GARRISON_LANDING_AVAILABLE">
-					<Anchors>
-						<Anchor point="BOTTOM" x="0" y="5"/>
-					</Anchors>
-				</ButtonText>
-				<NormalFont style="GameFontHighlightMed2"/>
-				<HighlightFont style="GameFontHighlightMed2"/>
-			</Button>
-			<Frame parentArray="Shipments" inherits="GarrisonLandingPageShipmentStatusTemplate" hidden="true">
-				<Anchors>
-					<Anchor point="TOPLEFT" x="70" y="-100"/>
-				</Anchors>
-			</Frame>
-			<Frame parentArray="Shipments" inherits="GarrisonLandingPageShipmentStatusTemplate" hidden="true">
-				<Anchors>
-					<Anchor point="TOPLEFT" x="230" y="-100"/>
-				</Anchors>
-			</Frame>
-			<Frame parentArray="Shipments" inherits="GarrisonLandingPageShipmentStatusTemplate" hidden="true">
-				<Anchors>
-					<Anchor point="TOPLEFT" x="70" y="-205"/>
-				</Anchors>
-			</Frame>
-			<Frame parentArray="Shipments" inherits="GarrisonLandingPageShipmentStatusTemplate" hidden="true">
-				<Anchors>
-					<Anchor point="TOPLEFT" x="230" y="-205"/>
-				</Anchors>
-			</Frame>
-			<Frame parentArray="Shipments" inherits="GarrisonLandingPageShipmentStatusTemplate" hidden="true">
-				<Anchors>
-					<Anchor point="TOPLEFT" x="70" y="-310"/>
-				</Anchors>
-			</Frame>
-			<Frame parentArray="Shipments" inherits="GarrisonLandingPageShipmentStatusTemplate" hidden="true">
-				<Anchors>
-					<Anchor point="TOPLEFT" x="230" y="-310"/>
-				</Anchors>
-			</Frame>
-			<Frame parentArray="Shipments" inherits="GarrisonLandingPageShipmentStatusTemplate" hidden="true">
-				<Anchors>
-					<Anchor point="TOPLEFT" x="70" y="-415"/>
-				</Anchors>
-			</Frame>
-			<Frame parentArray="Shipments" inherits="GarrisonLandingPageShipmentStatusTemplate" hidden="true">
-				<Anchors>
-					<Anchor point="TOPLEFT" x="230" y="-415"/>
-				</Anchors>
+				<KeyValues>
+					<KeyValue key="isLandingPage" value="true" type="boolean"/>
+				</KeyValues>
+				<Layers>
+					<Layer level="ARTWORK">
+						<FontString parentKey="NoFollowersLabel" inherits="GameFontNormalLarge2" text="GARRISON_NO_SELECTED_FOLLOWER" hidden="true">
+							<Size x="500" y="0"/>
+							<Anchors>
+								<Anchor point="CENTER"/>
+							</Anchors>
+						</FontString>
+					</Layer>
+					<Layer level="ARTWORK">
+						<FontString parentKey="FollowerText" inherits="GameFontNormalMed2" justifyH="RIGHT" text="GARRISON_FOLLOWERS">
+							<Anchors>
+								<Anchor point="TOPRIGHT" x="-20" y="36"/>
+							</Anchors>
+						</FontString>
+						<FontString parentKey="NumFollowers" inherits="GameFontHighlightLarge2" justifyH="RIGHT">
+							<Anchors>
+								<Anchor point="TOPRIGHT" relativeKey="$parent.FollowerText" relativePoint="BOTTOMRIGHT" x="0" y="0"/>
+							</Anchors>
+						</FontString>
+						<FontString parentKey="Name" inherits="GameFontHighlightLarge2" justifyH="LEFT">
+							<Anchors>
+								<Anchor point="TOPLEFT" x="84" y="-16"/>
+							</Anchors>
+						</FontString>
+						<FontString parentKey="ClassSpec" inherits="GameFontHighlight" justifyH="LEFT">
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeKey="$parent.Name" relativePoint="BOTTOMLEFT" y="-4"/>
+							</Anchors>
+						</FontString>
+						<Texture parentKey="Class" atlas="GarrMission_ClassIcon-Shaman" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="TOPRIGHT" x="-15" y="-8"/>
+							</Anchors>
+							<Color r="1" g="1" b="1" a=".8"/>
+						</Texture>
+						<FontString parentKey="XPText" inherits="GameFontHighlightLarge2" justifyH="RIGHT">
+							<Anchors>
+								<Anchor point="TOPRIGHT" relativeKey="$parent.Class" relativePoint="TOPLEFT" x="-2" y="-12"/>
+							</Anchors>
+						</FontString>
+						<FontString parentKey="XPLabel" inherits="GameFontHighlight" justifyH="RIGHT" text="GARRISON_FOLLOWER_XP_STRING">
+							<Anchors>
+								<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Class" relativePoint="BOTTOMLEFT" y="6"/>
+							</Anchors>
+						</FontString>
+						<FontString parentKey="AbilitiesText" inherits="GameFontNormalLarge2" justifyH="LEFT" text="ABILITIES">
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeKey="$parent.Class" relativePoint="TOPRIGHT" x="-200" y="-80"/>
+							</Anchors>
+						</FontString>
+						<FontString parentKey="TraitsText" inherits="GameFontNormalLarge2" justifyH="LEFT" text="GARRISON_TRAITS">
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeKey="$parent.AbilitiesText" relativePoint="BOTTOMLEFT" y="-150"/>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+				<Frames>
+					<Frame parentKey="PortraitFrame" inherits="GarrisonFollowerPortraitTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT" x="23" y="-10"/>
+						</Anchors>
+					</Frame>
+					<StatusBar parentKey="XPBar" inherits="GarrisonFollowerXPBarTemplate">
+						<Size x="370" y="5"/>
+						<Anchors>
+							<Anchor point="BOTTOMLEFT" relativeKey="$parent.PortraitFrame" relativePoint="BOTTOMRIGHT" x="7" y="5"/>
+						</Anchors>
+					</StatusBar>
+					<CinematicModel parentKey="Model" inherits="ModelTemplate">
+						<Size x="325" y="300"/>
+						<Anchors>
+							<Anchor point="TOPLEFT" x="0" y="-74"/>
+						</Anchors>
+						<Layers>
+							<Layer level="BACKGROUND">
+								<Texture atlas="GarrFollower-Shadow" useAtlasSize="true">
+									<Anchors>
+										<Anchor point="BOTTOM" x="-2" y="-100"/>
+									</Anchors>
+								</Texture>
+							</Layer>
+						</Layers>
+						<Scripts>
+							<OnShow>
+								self:SetTargetDistance(0);
+								self:SetFacing(.2);
+								GarrisonMission_SetFollowerModelItems(self);
+								self:SetFrameLevel(self:GetParent():GetFrameLevel() - 1);
+							</OnShow>
+						</Scripts>
+					</CinematicModel>
+					<Frame parentArray="Abilities" inherits="GarrisonFollowerPageAbilityTemplate" hidden="true"/>
+					<Frame parentArray="Counters" inherits="GarrisonMissionAbilityCounterTemplate" hidden="true"/>
+					<Frame parentKey="Source">
+						<Size x="300" y="80"/>
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeKey="$parent.Model" relativePoint="BOTTOMLEFT" x="26" y="3"/>
+						</Anchors>
+						<Layers>
+							<Layer level="OVERLAY">
+								<FontString parentKey="SourceText" inherits="GameFontHighlight" justifyH="LEFT" text="ABILITIES">
+									<Size x="230" y="80"/>
+								</FontString>														
+							</Layer>
+						</Layers>
+					</Frame>
+					<Frame parentKey="ItemWeapon" inherits="GarrisonFollowerItemButtonTemplate" hidden="true">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeKey="$parent.Model" relativePoint="BOTTOMLEFT" x="26" y="-3"/>
+						</Anchors>
+					</Frame>
+					<Frame parentKey="ItemArmor" inherits="GarrisonFollowerItemButtonTemplate" hidden="true">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeKey="$parent.ItemWeapon" relativePoint="BOTTOMLEFT" x="0" y="-6"/>
+						</Anchors>
+					</Frame>
+					<Frame parentKey="ItemAverageLevel" hidden="true">
+						<Size x="230" y="20"/>
+						<Anchors>
+							<Anchor point="BOTTOM" relativeKey="$parent.ItemWeapon" relativePoint="TOP" x="0" y="0"/>
+						</Anchors>
+						<Layers>
+							<Layer level="OVERLAY">
+								<FontString parentKey="Level" inherits="GameFontNormalLarge2" justifyH="CENTER" />
+							</Layer>
+						</Layers>
+					</Frame>
+				</Frames>
 			</Frame>
 		</Frames>
 		<Scripts>
@@ -483,4 +728,5 @@
 			<OnEvent function="GarrisonLandingPage_OnEvent"/>
 		</Scripts>
 	</Frame>
+
 </Ui>

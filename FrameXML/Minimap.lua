@@ -391,7 +391,7 @@ end
 
 function MiniMapInstanceDifficulty_Update()
 	local _, instanceType, difficulty, _, maxPlayers, playerDifficulty, isDynamicInstance, _, instanceGroupSize = GetInstanceInfo();
-	local _, _, isHeroic, isChallengeMode = GetDifficultyInfo(difficulty);
+	local _, _, isHeroic, isChallengeMode, displayHeroic, displayMythic = GetDifficultyInfo(difficulty);
 
 	if ( IS_GUILD_GROUP ) then
 		if ( instanceGroupSize == 0 ) then
@@ -404,14 +404,20 @@ function MiniMapInstanceDifficulty_Update()
 			GuildInstanceDifficulty.emblem:SetPoint("TOPLEFT", 12, -10);
 		end
 		GuildInstanceDifficultyText:ClearAllPoints();
-		if ( isHeroic or isChallengeMode ) then
+		if ( isHeroic or isChallengeMode or displayMythic or displayHeroic ) then
 			local symbolTexture;
 			if ( isChallengeMode ) then
 				symbolTexture = GuildInstanceDifficultyChallengeModeTexture;
 				GuildInstanceDifficultyHeroicTexture:Hide();
+				GuildInstanceDifficultyMythicTexture:Hide();
+			elseif ( displayMythic ) then
+				symbolTexture = GuildInstanceDifficultyMythicTexture;
+				GuildInstanceDifficultyHeroicTexture:Hide();
+				GuildInstanceDifficultyChallengeModeTexture:Hide();
 			else
 				symbolTexture = GuildInstanceDifficultyHeroicTexture;
 				GuildInstanceDifficultyChallengeModeTexture:Hide();
+				GuildInstanceDifficultyMythicTexture:Hide();
 			end
 			-- the 1 looks a little off when text is centered
 			if ( instanceGroupSize < 10 ) then
@@ -428,6 +434,7 @@ function MiniMapInstanceDifficulty_Update()
 		else
 			GuildInstanceDifficultyHeroicTexture:Hide();
 			GuildInstanceDifficultyChallengeModeTexture:Hide();
+			GuildInstanceDifficultyMythicTexture:Hide();
 			GuildInstanceDifficultyText:SetPoint("BOTTOM", 2, 8);
 		end
 		MiniMapInstanceDifficulty:Hide();
@@ -438,18 +445,21 @@ function MiniMapInstanceDifficulty_Update()
 		MiniMapChallengeMode:Show();
 		MiniMapInstanceDifficulty:Hide();
 		GuildInstanceDifficulty:Hide();
-	elseif ( instanceType == "raid" or isHeroic ) then
+	elseif ( instanceType == "raid" or isHeroic or displayMythic or displayHeroic ) then
 		MiniMapInstanceDifficultyText:SetText(instanceGroupSize);
 		-- the 1 looks a little off when text is centered
 		local xOffset = 0;
 		if ( instanceGroupSize >= 10 and instanceGroupSize <= 19 ) then
 			xOffset = -1;
 		end
-		if ( isHeroic ) then
-			MiniMapInstanceDifficultyTexture:SetTexCoord(0, 0.25, 0.0703125, 0.4140625);
+		if ( displayMythic ) then
+			MiniMapInstanceDifficultyTexture:SetTexCoord(0.25, 0.5, 0.0703125, 0.4296875);
+			MiniMapInstanceDifficultyText:SetPoint("CENTER", xOffset, -9);
+		elseif ( isHeroic or displayHeroic ) then
+			MiniMapInstanceDifficultyTexture:SetTexCoord(0, 0.25, 0.0703125, 0.4296875);
 			MiniMapInstanceDifficultyText:SetPoint("CENTER", xOffset, -9);
 		else
-			MiniMapInstanceDifficultyTexture:SetTexCoord(0, 0.25, 0.5703125, 0.9140625);
+			MiniMapInstanceDifficultyTexture:SetTexCoord(0, 0.25, 0.5703125, 0.9296875);
 			MiniMapInstanceDifficultyText:SetPoint("CENTER", xOffset, 5);
 		end
 		MiniMapInstanceDifficulty:Show();

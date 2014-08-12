@@ -21,12 +21,11 @@
 						<Anchor point="LEFT" x="-6" y="0"/>
 					</Anchors>
 				</Texture>
-				<Texture parentKey="NoMedal" file="Interface\Challenges\challenges-main" hidden="true">
+				<Texture parentKey="NoMedal" atlas="challenges-nomedal" useAtlasSize="true" hidden="true">
 					<Size x="9" y="10"/>
 					<Anchors>
 						<Anchor point="LEFT" x="19" y="0"/>
 					</Anchors>
-					<TexCoords left="0.93847656" right="0.94726563" top="0.00195313" bottom="0.02148438"/>
 				</Texture>
 				<FontString parentKey="text" inherits="GameFontNormal" justifyH="LEFT">
 					<Size x="151" y="0"/>
@@ -222,12 +221,11 @@
 							</Anchors>
 							<TexCoords left="0.00781250" right="0.04687500" top="0" bottom="1"/>
 						</Texture>
-						<Texture file="Interface\Challenges\challenges-main">	<!-- black fade for best times -->
+						<Texture atlas="challenges-blackfade" useAtlasSize="true">	<!-- black fade for best times -->
 							<Anchors>
 								<Anchor point="TOPLEFT" relativeTo="$parentLine1" relativePoint="BOTTOMLEFT" x="1" y="0"/>
 								<Anchor point="BOTTOMRIGHT" relativeTo="$parentLine2" relativePoint="TOPRIGHT" x="-2" y="0"/>
 							</Anchors>
-							<TexCoords left="0.00097656" right="0.32617188" top="0.34960938" bottom="0.46875000"/>
 						</Texture>
 					</Layer>
 					<Layer level="ARTWORK">

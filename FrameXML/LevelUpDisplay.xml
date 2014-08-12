@@ -520,35 +520,31 @@
 				</Animations>
 				<Layers>
 					<Layer level="BACKGROUND">
-						<Texture file="Interface\Scenarios\ScenariosParts" alphaMode="ADD" alpha="0.3">
-							<Size x="249" y="31"/>
+						<Texture atlas="Banner-BgFiligree" useAtlasSize="true" alphaMode="ADD" alpha="0.3">
 							<Anchors>
 								<Anchor point="BOTTOM" relativePoint="TOP" x="0" y="-6"/>
 							</Anchors>
-							<TexCoords left="0.00195313" right="0.48828125" top="0.41796875" bottom="0.47851563"/>
 						</Texture>
-						<Texture file="Interface\Scenarios\ScenariosParts" alphaMode="ADD" alpha="0.3">
-							<Size x="249" y="31"/>
+						<Texture atlas="Banner-BgFiligree" useAtlasSize="true" alphaMode="ADD" alpha="0.3">
 							<Anchors>
 								<Anchor point="TOP" relativePoint="BOTTOM" x="0" y="0"/>
 							</Anchors>
-							<TexCoords left="0.00195313" right="0.48828125" bottom="0.41796875" top="0.47851563"/>
+							<TexCoords left="0" right="1" bottom="0" top="1"/>
 						</Texture>
 					</Layer>
 					<Layer level="BORDER">
-						<Texture file="Interface\Scenarios\ScenariosParts">
+						<Texture atlas="Banner-FiligreeShadow">
 							<Size x="480" y="35"/>
 							<Anchors>
 								<Anchor point="BOTTOM" relativePoint="TOP" x="0" y="-6"/>
 							</Anchors>
-							<TexCoords left="0.00195313" right="0.74804688" top="0.00195313" bottom="0.07031250"/>							
 						</Texture>
-						<Texture file="Interface\Scenarios\ScenariosParts">
+						<Texture atlas="Banner-FiligreeShadow">
 							<Size x="480" y="35"/>
 							<Anchors>
 								<Anchor point="TOP" relativePoint="BOTTOM" x="0" y="0"/>
 							</Anchors>
-							<TexCoords left="0.00195313" right="0.74804688" bottom="0.00195313" top="0.07031250"/>
+							<TexCoords left="0" right="1" bottom="0" top="1"/>
 						</Texture>
 					</Layer>
 				</Layers>
@@ -556,19 +552,16 @@
 			<Frame parentKey="scenarioFiligree" setAllPoints="true" hidden="true">
 				<Layers>
 					<Layer level="OVERLAY">
-						<Texture file="Interface\Scenarios\ScenariosParts">
-							<Size x="61" y="19"/>
+						<Texture atlas="Banner-SmallFiligree" useAtlasSize="true">
 							<Anchors>
 								<Anchor point="TOP" x="0" y="4"/>
 							</Anchors>
-							<TexCoords left="0.75195313" right="0.87109375" top="0.00195313" bottom="0.03906250"/>
 						</Texture>
-						<Texture file="Interface\Scenarios\ScenariosParts">
-							<Size x="61" y="19"/>
+						<Texture atlas="Banner-SmallFiligree" useAtlasSize="true">
 							<Anchors>
 								<Anchor point="BOTTOM" x="0" y="-10"/>
 							</Anchors>
-							<TexCoords left="0.75195313" right="0.87109375" bottom="0.00195313" top="0.03906250"/>
+							<TexCoords left="0" right="1" bottom="0" top="1"/>
 						</Texture>
 					</Layer>
 				</Layers>
@@ -622,37 +615,33 @@
 				</Animations>
 				<Layers>
 					<Layer level="BACKGROUND">
-						<Texture parentKey="MedalFlare" file="Interface\Challenges\challenges-main">
-							<Size x="222" y="106"/>
+						<Texture parentKey="MedalFlare" atlas="challenges-bannershine" useAtlasSize="true">
 							<Anchors>
 								<Anchor point="BOTTOM" relativePoint="TOP" x="0" y="-8"/>
 							</Anchors>
-							<TexCoords left="0.71972656" right="0.93652344" top="0.00195313" bottom="0.20898438"/>
 						</Texture>
 					</Layer>
 					<Layer level="BORDER">
-						<Texture file="Interface\Scenarios\ScenariosParts">
+						<Texture atlas="Banner-FiligreeShadow">
 							<Size x="480" y="35"/>
 							<Anchors>
 								<Anchor point="BOTTOM" relativePoint="TOP" x="0" y="-6"/>
 							</Anchors>
-							<TexCoords left="0.00195313" right="0.74804688" top="0.00195313" bottom="0.07031250"/>
 						</Texture>
-						<Texture file="Interface\Scenarios\ScenariosParts">
+						<Texture atlas="Banner-FiligreeShadow">
 							<Size x="480" y="35"/>
 							<Anchors>
 								<Anchor point="TOP" relativePoint="BOTTOM" x="0" y="0"/>
 							</Anchors>
-							<TexCoords left="0.00195313" right="0.74804688" bottom="0.00195313" top="0.07031250"/>
+							<TexCoords left="0" right="1" bottom="0" top="1"/>
 						</Texture>
 					</Layer>
 					<Layer level="OVERLAY">
-						<Texture parentKey="BottomFiligree" file="Interface\Scenarios\ScenariosParts">
-							<Size x="61" y="19"/>
+						<Texture parentKey="BottomFiligree" atlas="Banner-SmallFiligree" useAtlasSize="true">
 							<Anchors>
 								<Anchor point="BOTTOM" x="0" y="-10"/>
 							</Anchors>
-							<TexCoords left="0.75195313" right="0.87109375" bottom="0.00195313" top="0.03906250"/>
+							<TexCoords left="0" right="1" bottom="0" top="1"/>
 						</Texture>
 						<Texture parentKey="MedalIcon">
 							<Size x="102" y="102"/>

@@ -7,8 +7,6 @@ function GarrisonFollowerTooltip_Show(garrisonFollowerID, collected, quality, le
 	GARRISON_FOLLOWER_TOOLTIP.displayID = C_Garrison.GetFollowerDisplayIDByID(garrisonFollowerID);
 	GARRISON_FOLLOWER_TOOLTIP.name = C_Garrison.GetFollowerNameByID(garrisonFollowerID);
 	GARRISON_FOLLOWER_TOOLTIP.spec = C_Garrison.GetFollowerClassSpecByID(garrisonFollowerID);
-	GARRISON_FOLLOWER_TOOLTIP.classSpecName = C_Garrison.GetFollowerClassSpecName(GARRISON_FOLLOWER_TOOLTIP.spec);
-	GARRISON_FOLLOWER_TOOLTIP.classSpecAtlas = C_Garrison.GetFollowerClassSpecAtlas(GARRISON_FOLLOWER_TOOLTIP.spec);
 	GARRISON_FOLLOWER_TOOLTIP.quality = quality;
 	GARRISON_FOLLOWER_TOOLTIP.level = level;
 	GARRISON_FOLLOWER_TOOLTIP.xp = xp;
@@ -27,8 +25,6 @@ function GarrisonFollowerTooltip_Show(garrisonFollowerID, collected, quality, le
 	GarrisonFollowerTooltipTemplate_SetGarrisonFollower(GarrisonFollowerTooltip, GARRISON_FOLLOWER_TOOLTIP);
 
 	GarrisonFollowerTooltip:Show();
-
-	GarrisonFollowerTooltip:ClearAllPoints();
 end
 
 
@@ -36,7 +32,4 @@ function GarrisonFollowerAbilityTooltip_Show(garrFollowerAbilityID)
 	GarrisonFollowerAbilityTooltipTemplate_SetAbility(GarrisonFollowerAbilityTooltip, garrFollowerAbilityID);
 	
 	GarrisonFollowerAbilityTooltip:Show();
-	
-	GarrisonFollowerAbilityTooltip:ClearAllPoints();
-	GarrisonFollowerAbilityTooltip:SetPoint(GameTooltip:GetPoint());
 end

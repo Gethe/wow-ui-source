@@ -1136,9 +1136,12 @@ end
 
 function GarrisonFollowerAlertFrame_OnEnter(self)
 	local link = C_Garrison.GetFollowerLink(self.followerID);
-	local _, garrisonFollowerID, quality, level, itemLevel, ability1, ability2, ability3, ability4, trait1, trait2, trait3, trait4 = strsplit(":", link);
-	GarrisonFollowerTooltip_Show(tonumber(garrisonFollowerID), false, tonumber(quality), tonumber(level), 0, 0, tonumber(itemLevel), tonumber(ability1), tonumber(ability2), tonumber(ability3), tonumber(ability4), tonumber(trait1), tonumber(trait2), tonumber(trait3), tonumber(trait4));
-	GarrisonFollowerTooltip:SetPoint("BOTTOM", self, "TOP");
+	if ( link ) then
+		GarrisonFollowerTooltip:ClearAllPoints();
+		GarrisonFollowerTooltip:SetPoint("BOTTOM", self, "TOP");
+		local _, garrisonFollowerID, quality, level, itemLevel, ability1, ability2, ability3, ability4, trait1, trait2, trait3, trait4 = strsplit(":", link);
+		GarrisonFollowerTooltip_Show(tonumber(garrisonFollowerID), false, tonumber(quality), tonumber(level), 0, 0, tonumber(itemLevel), tonumber(ability1), tonumber(ability2), tonumber(ability3), tonumber(ability4), tonumber(trait1), tonumber(trait2), tonumber(trait3), tonumber(trait4));
+	end
 end
 
 function GarrisonAlertFrame_OnClick(self)
