@@ -1,3 +1,6 @@
+-------------------------------------------------------
+----------Constants
+-------------------------------------------------------
 MAX_LFG_LIST_APPLICATIONS = 5;
 MAX_LFG_LIST_SEARCH_AUTOCOMPLETE_ENTRIES = 6;
 
@@ -7,19 +10,24 @@ ACTIVITY_RETURN_VALUES = {
 	categoryID = 3,
 	groupID = 4,
 	itemLevel = 5,
+	filters = 6,
+	minLevel = 7,
+	maxPlayers = 8,
+	displayType = 9,
 };
 
 --Hard-coded values. Should probably make these part of the DB, but it gets a little more complicated with the per-expansion textures
 LFG_LIST_CATEGORY_TEXTURES = {
-	[1] = "groupfinder-button-questing",
-	[2] = "groupfinder-button-dungeons",
-	[3] = "groupfinder-button-raids-", --Prefix for expansion
-	[4] = "groupfinder-button-arenas",
-	[5] = "groupfinder-button-scenarios",
-	[6] = "groupfinder-button-custom-pve",
-	[7] = "groupfinder-button-skirmishes",
-	[8] = "groupfinder-button-battlegrounds",
-	[9] = "groupfinder-button-ratedbgs",
+	[1] = "questing",
+	[2] = "dungeons",
+	[3] = "raids", --Prefix for expansion
+	[4] = "arenas",
+	[5] = "scenarios",
+	[6] = "custom", -- Prefix for "-pve" or "-pvp"
+	[7] = "skirmishes",
+	[8] = "battlegrounds",
+	[9] = "ratedbgs",
+	[10] = "ashran",
 };
 
 LFG_LIST_PER_EXPANSION_TEXTURES = {
@@ -31,9 +39,25 @@ LFG_LIST_PER_EXPANSION_TEXTURES = {
 	[5] = "classic",	--Replace with WoD name
 }
 
+LFG_LIST_GROUP_DATA_ATLASES = {
+	--Roles
+	TANK = "groupfinder-icon-role-large-tank",
+	HEALER = "groupfinder-icon-role-large-heal",
+	DAMAGER = "groupfinder-icon-role-large-dps",
+};
+
+--Fill out classes
+for i=1, #CLASS_SORT_ORDER do
+	LFG_LIST_GROUP_DATA_ATLASES[CLASS_SORT_ORDER[i]] = "groupfinder-icon-class-"..string.lower(CLASS_SORT_ORDER[i]);
+end
+
+LFG_LIST_GROUP_DATA_ROLE_ORDER = { "TANK", "HEALER", "DAMAGER" };
+LFG_LIST_GROUP_DATA_CLASS_ORDER = CLASS_SORT_ORDER;
+
 -------------------------------------------------------
 ----------Base Frame
 -------------------------------------------------------
+LFG_LIST_EDIT_BOX_TAB_CATEGORIES = {};
 function LFGListFrame_OnLoad(self)
 	self:RegisterEvent("PARTY_LEADER_CHANGED");
 	self:RegisterEvent("GROUP_ROSTER_UPDATE");
@@ -46,6 +70,8 @@ function LFGListFrame_OnLoad(self)
 	self:RegisterEvent("LFG_LIST_SEARCH_FAILED");
 	self:RegisterEvent("LFG_LIST_APPLICANT_LIST_UPDATED");
 	self:RegisterEvent("LFG_LIST_APPLICANT_UPDATED");
+	self:RegisterEvent("LFG_LIST_ENTRY_EXPIRED_TOO_MANY_PLAYERS");
+	self:RegisterEvent("LFG_LIST_ENTRY_EXPIRED_TIMEOUT");
 	for i=1, #LFG_LIST_ACTIVE_QUEUE_MESSAGE_EVENTS do
 		self:RegisterEvent(LFG_LIST_ACTIVE_QUEUE_MESSAGE_EVENTS[i]);
 	end
@@ -71,6 +97,14 @@ function LFGListFrame_OnEvent(self, event, ...)
 		local hasNewPending = ...;
 		if ( hasNewPending and not self:IsVisible() and LFGListUtil_IsEntryEmpowered() ) then
 			QueueStatusMinimapButton_SetGlowLock(QueueStatusMinimapButton, "lfglist-applicant", true);
+		end
+	elseif ( event == "LFG_LIST_ENTRY_EXPIRED_TOO_MANY_PLAYERS" ) then
+		if ( UnitIsGroupLeader("player", LE_PARTY_CATEGORY_HOME) ) then
+			StaticPopup_Show("LFG_LIST_ENTRY_EXPIRED_TOO_MANY_PLAYERS");
+		end
+	elseif ( event == "LFG_LIST_ENTRY_EXPIRED_TIMEOUT" ) then
+		if ( UnitIsGroupLeader("player", LE_PARTY_CATEGORY_HOME) ) then
+			StaticPopup_Show("LFG_LIST_ENTRY_EXPIRED_TIMEOUT");
 		end
 	end
 	
@@ -257,8 +291,9 @@ end
 function LFGListCategorySelection_AddButton(self, btnIndex, categoryID, filters)
 	--Check that we have activities with this filter
 	local baseFilters = self:GetParent().baseFilters;
+	local allFilters = bit.bor(baseFilters, filters);
 
-	if ( filters ~= 0 and #C_LFGList.GetAvailableActivities(categoryID, nil, bit.bor(baseFilters, filters)) == 0) then
+	if ( filters ~= 0 and #C_LFGList.GetAvailableActivities(categoryID, nil, allFilters) == 0) then
 		return btnIndex, false;
 	end
 
@@ -267,7 +302,7 @@ function LFGListCategorySelection_AddButton(self, btnIndex, categoryID, filters)
 	local button = self.CategoryButtons[btnIndex];
 	if ( not button ) then
 		self.CategoryButtons[btnIndex] = CreateFrame("BUTTON", nil, self, "LFGListCategoryTemplate");
-		self.CategoryButtons[btnIndex]:SetPoint("TOP", self.CategoryButtons[btnIndex - 1], "BOTTOM", 0, -5);
+		self.CategoryButtons[btnIndex]:SetPoint("TOP", self.CategoryButtons[btnIndex - 1], "BOTTOM", 0, -3);
 		button = self.CategoryButtons[btnIndex];
 	end
 
@@ -275,12 +310,25 @@ function LFGListCategorySelection_AddButton(self, btnIndex, categoryID, filters)
 	button.categoryID = categoryID;
 	button.filters = filters;
 
-	if ( bit.band(filters, LE_LFG_LIST_FILTER_RECOMMENDED) ~= 0 ) then
-		button.Icon:SetAtlas(LFG_LIST_CATEGORY_TEXTURES[categoryID]..LFG_LIST_PER_EXPANSION_TEXTURES[LFGListUtil_GetCurrentExpansion()]);
-	elseif ( bit.band(filters, LE_LFG_LIST_FILTER_NOT_RECOMMENDED) ~= 0 ) then
-		button.Icon:SetAtlas(LFG_LIST_CATEGORY_TEXTURES[categoryID]..LFG_LIST_PER_EXPANSION_TEXTURES[math.max(0,LFGListUtil_GetCurrentExpansion() - 1)]);
+	local atlasName = nil;
+	if ( bit.band(allFilters, LE_LFG_LIST_FILTER_RECOMMENDED) ~= 0 ) then
+		atlasName = "groupfinder-button-"..(LFG_LIST_CATEGORY_TEXTURES[categoryID] or "raids").."-"..LFG_LIST_PER_EXPANSION_TEXTURES[LFGListUtil_GetCurrentExpansion()];
+	elseif ( bit.band(allFilters, LE_LFG_LIST_FILTER_NOT_RECOMMENDED) ~= 0 ) then
+		atlasName = "groupfinder-button-"..(LFG_LIST_CATEGORY_TEXTURES[categoryID] or "raids").."-"..LFG_LIST_PER_EXPANSION_TEXTURES[math.max(0,LFGListUtil_GetCurrentExpansion() - 1)];
 	else
-		button.Icon:SetAtlas(LFG_LIST_CATEGORY_TEXTURES[categoryID]);
+		atlasName = "groupfinder-button-"..(LFG_LIST_CATEGORY_TEXTURES[categoryID] or "questing");
+	end
+
+	local suffix = "";
+	if ( bit.band(allFilters, LE_LFG_LIST_FILTER_PVE) ~= 0 ) then
+		suffix = "-pve";
+	elseif ( bit.band(allFilters, LE_LFG_LIST_FILTER_PVP) ~= 0 ) then
+		suffix = "-pvp";
+	end
+
+	--Try with the suffix and then without it
+	if ( not button.Icon:SetAtlas(atlasName..suffix) ) then
+		button.Icon:SetAtlas(atlasName);
 	end
 
 	local selected = self.selectedCategory == categoryID and self.selectedFilters == filters;
@@ -336,11 +384,8 @@ function LFGListCategorySelectionStartGroupButton_OnClick(self)
 	local baseFilters = panel:GetParent().baseFilters;
 
 	local entryCreation = panel:GetParent().EntryCreation;
-	LFGListEntryCreation_Clear(entryCreation);
-	LFGListEntryCreation_SetBaseFilters(entryCreation, baseFilters);
-	LFGListEntryCreation_SetEditMode(entryCreation, false);
-	LFGListEntryCreation_Select(entryCreation, panel.selectedFilters, panel.selectedCategory);
-	LFGListFrame_SetActivePanel(panel:GetParent(), entryCreation);
+
+	LFGListEntryCreation_Show(entryCreation, baseFilters, panel.selectedCategory, panel.selectedFilters);
 end
 
 function LFGListCategorySelectionFindGroupButton_OnClick(self)
@@ -377,13 +422,33 @@ function LFGListEntryCreation_OnLoad(self)
 end
 
 function LFGListEntryCreation_OnEvent(self, event, ...)
-	if ( tContains(LFG_LIST_ACTIVE_QUEUE_MESSAGE_EVENTS, event) ) then
+	if ( event == "GROUP_ROSTER_UPDATE" ) then
+		LFGListEntryCreation_UpdateValidState(self);
+	elseif ( tContains(LFG_LIST_ACTIVE_QUEUE_MESSAGE_EVENTS, event) ) then
 		LFGListEntryCreation_UpdateValidState(self);
 	end
 end
 
 function LFGListEntryCreation_OnShow(self)
 	LFGListEntryCreation_UpdateValidState(self);
+end
+
+function LFGListEntryCreation_Show(self, baseFilters, selectedCategory, selectedFilters)
+	--If this was what the player selected last time, just leave it filled out with the same info.
+	--Also don't save it for categories that try to set it to the current area.
+	local _, _, _, preferCurrentArea = C_LFGList.GetCategoryInfo(selectedCategory);
+	local keepOldData = not preferCurrentArea and self.selectedCategory == selectedCategory and baseFilters == self.baseFilters and self.selectedFilters == selectedFilters;
+	LFGListEntryCreation_SetBaseFilters(self, baseFilters);
+	if ( not keepOldData ) then
+		LFGListEntryCreation_Clear(self);
+		LFGListEntryCreation_Select(self, selectedFilters, selectedCategory);
+	end
+	LFGListEntryCreation_SetEditMode(self, false);
+
+	LFGListEntryCreation_UpdateValidState(self);
+
+	LFGListFrame_SetActivePanel(self:GetParent(), self);
+	self.Name:SetFocus();
 end
 
 function LFGListEntryCreation_Clear(self)
@@ -402,8 +467,13 @@ function LFGListEntryCreation_Clear(self)
 	self.Description.EditBox:SetText("");
 
 	self.ActivityFinder:Hide();
+end
 
-	LFGListEntryCreation_UpdateValidState(self);
+function LFGListEntryCreation_ClearFocus(self)
+	self.Name:ClearFocus();
+	self.ItemLevel.EditBox:ClearFocus();
+	self.VoiceChat.EditBox:ClearFocus();
+	self.Description.EditBox:ClearFocus();
 end
 
 --This function accepts any or all of categoryID, groupId, and activityID
@@ -434,6 +504,7 @@ function LFGListEntryCreation_Select(self, filters, categoryID, groupID, activit
 	else
 		self.ItemLevel.EditBox.Instructions:SetText(LFG_LIST_ITEM_LEVEL_INSTR_SHORT);
 	end
+	LFGListEntryCreation_UpdateValidState(self);
 end
 
 function LFGListEntryCreation_PopulateCategories(self, dropDown, info)
@@ -619,13 +690,17 @@ function LFGListEntryCreation_ListGroup(self)
 	else
 		if(C_LFGList.CreateListing(self.selectedActivity, self.Name:GetText(), tonumber(self.ItemLevel.EditBox:GetText()) or 0, self.VoiceChat.EditBox:GetText(), self.Description.EditBox:GetText())) then
 			self.WorkingCover:Show();
+			LFGListEntryCreation_ClearFocus(self);
 		end
 	end
 end
 
 function LFGListEntryCreation_UpdateValidState(self)
 	local errorText;
-	if ( self.Name:GetText() == "" ) then
+	local maxPlayers = select(ACTIVITY_RETURN_VALUES.maxPlayers, C_LFGList.GetActivityInfo(self.selectedActivity));
+	if ( maxPlayers > 0 and GetNumGroupMembers(LE_PARTY_CATEGORY_HOME) >= maxPlayers ) then
+		errorText = string.format(LFG_LIST_TOO_MANY_FOR_ACTIVITY, maxPlayers);
+	elseif ( self.Name:GetText() == "" ) then
 		errorText = LFG_LIST_MUST_HAVE_NAME;
 	elseif ( self.ItemLevel.warningText ) then
 		errorText = self.ItemLevel.warningText;
@@ -779,9 +854,9 @@ function LFGListApplicationViewer_OnEvent(self, event, ...)
 		end
 	elseif ( event == "GROUP_ROSTER_UPDATE" ) then
 		LFGListApplicationViewer_UpdateAvailability(self);
-		LFGListApplicationViewer_UpdateRoleCount(self);
+		LFGListApplicationViewer_UpdateGroupData(self);
 	elseif ( event == "PLAYER_ROLES_ASSIGNED") then
-		LFGListApplicationViewer_UpdateRoleCount(self);
+		LFGListApplicationViewer_UpdateGroupData(self);
 	end
 end
 
@@ -791,62 +866,75 @@ function LFGListApplicationViewer_OnShow(self)
 	LFGListApplicationViewer_UpdateResults(self);
 	LFGListApplicationViewer_UpdateInfo(self);
 	LFGListApplicationViewer_UpdateAvailability(self);
-	LFGListApplicationViewer_UpdateRoleCount(self);
+	LFGListApplicationViewer_UpdateGroupData(self);
 end
 
-function LFGListApplicationViewer_OnUpdate(self)
-	if ( self.expiration ) then
-		local duration = self.expiration - GetTime();
-		self.Duration:SetText(SecondsToTime(duration, false, false, 1, false));
-	else
-		self.Duration:SetText("");
+function LFGListApplicationViewer_UpdateGroupData(self)
+	local active, activityID = C_LFGList.GetActiveEntryInfo();
+	if ( not active ) then
+		return;
 	end
-end
 
-function LFGListApplicationViewer_UpdateRoleCount(self)
-	local tanks, healers, damage, other = GetPartyRoleCount(LE_PARTY_CATEGORY_HOME);
-	
-	--Just count anyone who doesn't have a role as "damage".
-	damage = damage + other;
-	self.TankCount:SetText(tanks);
-	self.HealerCount:SetText(healers);
-	self.DamagerCount:SetText(damage);
-	self.TotalCount:SetText(tanks + healers + damage);
+	local data = GetGroupMemberCounts();
+	data.DAMAGER = data.DAMAGER + data.NOROLE; --People without a role count as damage
+	LFGListGroupDataDisplay_Update(self.DataDisplay, activityID, data);
 end
 
 function LFGListApplicationViewer_UpdateInfo(self)
 	local active, activityID, ilvl, name, comment, voiceChat, duration = C_LFGList.GetActiveEntryInfo();
+	local fullName, shortName, categoryID, groupID, iLevel, filters, minLevel, maxPlayers, displayType = C_LFGList.GetActivityInfo(activityID);
+	local _, separateRecommended = C_LFGList.GetCategoryInfo(categoryID);
 	assert(active);
+	self.EntryName:SetWidth(0);
 	self.EntryName:SetText(name);
-	self.ActivityName:SetText(select(ACTIVITY_RETURN_VALUES.fullName, C_LFGList.GetActivityInfo(activityID)));
-	self.DescriptionFrame.Text:SetText(comment);
+	self.DescriptionFrame.activityName = C_LFGList.GetActivityInfo(activityID);
+	self.DescriptionFrame.comment = comment;
+	if ( comment == "" ) then
+		self.DescriptionFrame.Text:SetText(self.DescriptionFrame.activityName);
+	else
+		self.DescriptionFrame.Text:SetFormattedText("%s |cff888888- %s|r", self.DescriptionFrame.activityName, self.DescriptionFrame.comment);
+	end
 
 	local hasRestrictions = false;
 	if ( ilvl == 0 ) then
 		self.ItemLevel:SetText("");
-		self.VoiceChatFrame:SetPoint("TOPLEFT", self.ItemLevel, "TOPRIGHT", 0, 0);
 	else
-		hasRestrictions = true;
 		self.ItemLevel:SetFormattedText(LFG_LIST_ITEM_LEVEL_CURRENT, ilvl);
-		self.VoiceChatFrame:SetPoint("TOPLEFT", self.ItemLevel, "TOPRIGHT", 20, 0);
 	end
 
 	if ( voiceChat == "" ) then
 		self.VoiceChatFrame.tooltip = nil;
 		self.VoiceChatFrame:Hide();
 	else
-		hasRestrictions = true;
 		self.VoiceChatFrame.tooltip = voiceChat;
 		self.VoiceChatFrame:Show();
 	end
 
-	if ( hasRestrictions ) then
-		self.DescriptionFrame:SetHeight(14);
-	else
-		self.DescriptionFrame:SetHeight(28);
+	if ( self.EntryName:GetWidth() > 290 ) then
+		self.EntryName:SetWidth(290);
 	end
 
-	self.expiration = GetTime() + duration;
+	--Set the background
+	local atlasName = nil;
+	if ( separateRecommended and bit.band(filters, LE_LFG_LIST_FILTER_RECOMMENDED) ~= 0 ) then
+		atlasName = "groupfinder-background-"..(LFG_LIST_CATEGORY_TEXTURES[categoryID] or "raids").."-"..LFG_LIST_PER_EXPANSION_TEXTURES[LFGListUtil_GetCurrentExpansion()];
+	elseif ( separateRecommended and bit.band(filters, LE_LFG_LIST_FILTER_NOT_RECOMMENDED) ~= 0 ) then
+		atlasName = "groupfinder-background-"..(LFG_LIST_CATEGORY_TEXTURES[categoryID] or "raids").."-"..LFG_LIST_PER_EXPANSION_TEXTURES[math.max(0,LFGListUtil_GetCurrentExpansion() - 1)];
+	else
+		atlasName = "groupfinder-background-"..(LFG_LIST_CATEGORY_TEXTURES[categoryID] or "questing");
+	end
+
+	local suffix = "";
+	if ( bit.band(filters, LE_LFG_LIST_FILTER_PVE) ~= 0 ) then
+		suffix = "-pve";
+	elseif ( bit.band(filters, LE_LFG_LIST_FILTER_PVP) ~= 0 ) then
+		suffix = "-pvp";
+	end
+
+	--Try with the suffix and then without it
+	if ( not self.InfoBackground:SetAtlas(atlasName..suffix) ) then
+		self.InfoBackground:SetAtlas(atlasName);
+	end
 end
 
 function LFGListApplicationViewer_UpdateAvailability(self)
@@ -893,6 +981,8 @@ function LFGListApplicationViewer_UpdateResults(self)
 		--Just hide the tooltip. We should show it again inside the update function.
 		GameTooltip:Hide();
 	end
+
+	self.ScrollFrame.NoApplicants:SetShown(#self.applicants == 0);
 
 	for i=1, #buttons do
 		local button = buttons[i];
@@ -1191,12 +1281,21 @@ function LFGListSearchPanel_SetCategory(self, categoryID, filters, preferredFilt
 end
 
 function LFGListSearchPanel_DoSearch(self)
-	C_LFGList.Search(self.categoryID, self.SearchBox:GetText(), self.filters, self.preferredFilters);
+	local searchText = self.SearchBox:GetText();
+	--Terrible terrible hack done until we can make search boxes less buggy.
+	if ( searchText == SEARCH ) then
+		searchText = "";
+	end
+	C_LFGList.Search(self.categoryID, searchText, self.filters, self.preferredFilters);
 	self.searching = true;
 	self.searchFailed = false;
 	self.selectedResult = nil;
 	LFGListSearchPanel_UpdateResultList(self);
 	LFGListSearchPanel_UpdateResults(self);
+end
+
+function LFGListSearchPanel_CreateGroupInstead(self)
+	LFGListEntryCreation_Show(self:GetParent().EntryCreation, self.preferredFilters, self.categoryID, self.filters);
 end
 
 function LFGListSearchPanel_UpdateResultList(self)
@@ -1208,7 +1307,7 @@ end
 function LFGListSearchPanel_ValidateSelected(self)
 	if ( self.selectedResult ) then
 		local _, appStatus, pendingStatus, appDuration = C_LFGList.GetApplicationInfo(self.selectedResult);
-		local id, activityID, name, comment, voiceChat, iLvl, age, numBNetFriends, numCharFriends, numGuildMates, isDelisted, numTanks, numHealers, numDPS = C_LFGList.GetSearchResultInfo(self.selectedResult);
+		local id, activityID, name, comment, voiceChat, iLvl, age, numBNetFriends, numCharFriends, numGuildMates, isDelisted = C_LFGList.GetSearchResultInfo(self.selectedResult);
 		if ( appStatus ~= "none" or pendingStatus or isDelisted ) then
 			self.selectedResult = nil;
 		end
@@ -1225,6 +1324,7 @@ function LFGListSearchPanel_UpdateResults(self)
 	if ( self.searching ) then
 		self.SearchingSpinner:Show();
 		self.ScrollFrame.NoResultsFound:Hide();
+		self.ScrollFrame.StartGroupButton:Hide();
 		for i=1, #buttons do
 			buttons[i]:Hide();
 		end
@@ -1252,9 +1352,10 @@ function LFGListSearchPanel_UpdateResults(self)
 
 		--Reanchor the errors to not overlap applications
 		if ( totalHeight < self.ScrollFrame:GetHeight() ) then
-			self.ScrollFrame.NoResultsFound:SetPoint("CENTER", self.ScrollFrame, "BOTTOM", 0, (self.ScrollFrame:GetHeight() - totalHeight)/2);
+			self.ScrollFrame.NoResultsFound:SetPoint("TOP", self.ScrollFrame, "TOP", 0, -totalHeight - 27);
 		end
 		self.ScrollFrame.NoResultsFound:SetShown(self.totalResults == 0);
+		self.ScrollFrame.StartGroupButton:SetShown(self.totalResults == 0 and not self.searchFailed);
 		self.ScrollFrame.NoResultsFound:SetText(self.searchFailed and LFG_LIST_SEARCH_FAILED or LFG_LIST_NO_RESULTS_FOUND);
 
 		HybridScrollFrame_Update(self.ScrollFrame, totalHeight, self.ScrollFrame:GetHeight());
@@ -1268,6 +1369,7 @@ function LFGListSearchPanel_SelectResult(self, resultID)
 end
 
 function LFGListSearchPanel_UpdateButtonStatus(self)
+	--Update the SignUpButton
 	local resultID = self.selectedResult;
 	local numApplications, numActiveApplications = C_LFGList.GetNumApplications();
 	local messageApply = LFGListUtil_GetActiveQueueMessage(true);
@@ -1292,6 +1394,21 @@ function LFGListSearchPanel_UpdateButtonStatus(self)
 	else
 		self.SignUpButton:Disable();
 		self.SignUpButton.tooltip = LFG_LIST_SELECT_A_SEARCH_RESULT;
+	end
+
+	--Update the StartGroupButton
+	if ( IsInGroup() and not UnitIsGroupLeader("player") ) then
+		self.ScrollFrame.StartGroupButton:Disable();
+		self.ScrollFrame.StartGroupButton.tooltip = LFG_LIST_NOT_LEADER;
+	else
+		local messageStart = LFGListUtil_GetActiveQueueMessage(false);
+		if ( messageStart ) then
+			self.ScrollFrame.StartGroupButton:Disable();
+			self.ScrollFrame.StartGroupButton.tooltip = messageStart;
+		else
+			self.ScrollFrame.StartGroupButton:Enable();
+			self.ScrollFrame.StartGroupButton.tooltip = nil;
+		end
 	end
 end
 
@@ -1455,9 +1572,7 @@ function LFGListSearchEntry_Update(self)
 	self.isApplication = isApplication;
 	self.ApplicationBG:SetShown(isApplication);
 	self.ResultBG:SetShown(not isApplication);
-	self.TankCount:SetShown(not isApplication);
-	self.HealerCount:SetShown(not isApplication);
-	self.DamageCount:SetShown(not isApplication);
+	self.DataDisplay:SetShown(not isApplication);
 	self.CancelButton:SetShown(isApplication and pendingStatus ~= "applied");
 	self.CancelButton:SetEnabled(LFGListUtil_IsAppEmpowered());
 	self.CancelButton.Icon:SetDesaturated(not LFGListUtil_IsAppEmpowered());
@@ -1466,41 +1581,49 @@ function LFGListSearchEntry_Update(self)
 
 	if ( pendingStatus == "applied" and C_LFGList.GetRoleCheckInfo() ) then
 		self.PendingLabel:SetText(LFG_LIST_ROLE_CHECK);
+		self.PendingLabel:SetTextColor(NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b);
 		self.PendingLabel:Show();
 		self.ExpirationTime:Hide();
 		self.CancelButton:Hide();
 	elseif ( pendingStatus == "cancelled" or appStatus == "cancelled" or appStatus == "failed" ) then
 		self.PendingLabel:SetText(LFG_LIST_APP_CANCELLED);
+		self.PendingLabel:SetTextColor(RED_FONT_COLOR.r, RED_FONT_COLOR.g, RED_FONT_COLOR.b);
 		self.PendingLabel:Show();
 		self.ExpirationTime:Hide();
 		self.CancelButton:Hide();
 	elseif ( appStatus == "declined" ) then
 		self.PendingLabel:SetText(LFG_LIST_APP_DECLINED);
+		self.PendingLabel:SetTextColor(RED_FONT_COLOR.r, RED_FONT_COLOR.g, RED_FONT_COLOR.b);
 		self.PendingLabel:Show();
 		self.ExpirationTime:Hide();
 		self.CancelButton:Hide();
 	elseif ( appStatus == "timedout" ) then
 		self.PendingLabel:SetText(LFG_LIST_APP_TIMED_OUT);
+		self.PendingLabel:SetTextColor(RED_FONT_COLOR.r, RED_FONT_COLOR.g, RED_FONT_COLOR.b);
 		self.PendingLabel:Show();
 		self.ExpirationTime:Hide();
 		self.CancelButton:Hide();
 	elseif ( appStatus == "invited" ) then
 		self.PendingLabel:SetText(LFG_LIST_APP_INVITED);
+		self.PendingLabel:SetTextColor(GREEN_FONT_COLOR.r, GREEN_FONT_COLOR.g, GREEN_FONT_COLOR.b);
 		self.PendingLabel:Show();
 		self.ExpirationTime:Hide();
 		self.CancelButton:Hide();
 	elseif ( appStatus == "inviteaccepted" ) then
 		self.PendingLabel:SetText(LFG_LIST_APP_INVITE_ACCEPTED);
+		self.PendingLabel:SetTextColor(GREEN_FONT_COLOR.r, GREEN_FONT_COLOR.g, GREEN_FONT_COLOR.b);
 		self.PendingLabel:Show();
 		self.ExpirationTime:Hide();
 		self.CancelButton:Hide();
 	elseif ( appStatus == "invitedeclined" ) then
 		self.PendingLabel:SetText(LFG_LIST_APP_INVITE_DECLINED);
+		self.PendingLabel:SetTextColor(RED_FONT_COLOR.r, RED_FONT_COLOR.g, RED_FONT_COLOR.b);
 		self.PendingLabel:Show();
 		self.ExpirationTime:Hide();
 		self.CancelButton:Hide();
 	elseif ( isApplication and pendingStatus ~= "applied" ) then
 		self.PendingLabel:SetText(LFG_LIST_PENDING);
+		self.PendingLabel:SetTextColor(GREEN_FONT_COLOR.r, GREEN_FONT_COLOR.g, GREEN_FONT_COLOR.b);
 		self.PendingLabel:Show();
 		self.ExpirationTime:Show();
 		self.CancelButton:Show();
@@ -1521,46 +1644,41 @@ function LFGListSearchEntry_Update(self)
 
 	local panel = self:GetParent():GetParent():GetParent();
 
-	local id, activityID, name, comment, voiceChat, iLvl, age, numBNetFriends, numCharFriends, numGuildMates, isDelisted, numTanks, numHealers, numDPS = C_LFGList.GetSearchResultInfo(resultID);
+	local id, activityID, name, comment, voiceChat, iLvl, age, numBNetFriends, numCharFriends, numGuildMates, isDelisted = C_LFGList.GetSearchResultInfo(resultID);
 	local activityName = C_LFGList.GetActivityInfo(activityID);
 
 	self.resultID = resultID;
 	self.Selected:SetShown(panel.selectedResult == resultID and not isApplication and not isDelisted);
 	self.Highlight:SetShown(panel.selectedResult ~= resultID and not isApplication and not isDelisted);
-	local nameColor = isDelisted and GRAY_FONT_COLOR or NORMAL_FONT_COLOR;
-	local roleColor = isDelisted and GRAY_FONT_COLOR or HIGHLIGHT_FONT_COLOR;
+	local nameColor = NORMAL_FONT_COLOR;
+	if ( isDelisted ) then
+		nameColor = GRAY_FONT_COLOR;
+	elseif ( numBNetFriends > 0 or numCharFriends > 0 or numGuildMates > 0 ) then
+		nameColor = BATTLENET_FONT_COLOR;
+	end
+	self.Name:SetWidth(0);
 	self.Name:SetText(name);
 	self.Name:SetTextColor(nameColor.r, nameColor.g, nameColor.b);
 	self.ActivityName:SetText(activityName);
-	self.TankCount:SetText(numTanks);
-	self.HealerCount:SetText(numHealers);
-	self.DamageCount:SetText(numDPS);
-	self.TankCount:SetTextColor(roleColor.r, roleColor.g, roleColor.b);
-	self.HealerCount:SetTextColor(roleColor.r, roleColor.g, roleColor.b);
-	self.DamageCount:SetTextColor(roleColor.r, roleColor.g, roleColor.b);
 	self.VoiceChat:SetShown(voiceChat ~= "" and not isApplication);
 	self.VoiceChat.tooltip = voiceChat;
-	self.Friends:SetShown(numBNetFriends + numCharFriends + numGuildMates > 0 and not isApplication);
 
-	local nameWidth = 185;
-	if ( isApplication ) then
-		nameWidth = 165;
-	elseif ( numBNetFriends + numCharFriends + numGuildMates > 0 ) then
-		nameWidth = 145;
-	elseif ( voiceChat ~= "" ) then
-		nameWidth = 165;
+	local displayData = C_LFGList.GetSearchResultMemberCounts(resultID);
+	LFGListGroupDataDisplay_Update(self.DataDisplay, activityID, displayData, isDelisted);
+
+	local nameWidth = isApplication and 165 or 180;
+	if ( voiceChat ~= "" ) then
+		nameWidth = nameWidth - 22;
 	end
-	self.Name:SetWidth(nameWidth);
-	self.ActivityName:SetWidth(nameWidth);
+	if ( self.Name:GetWidth() > nameWidth ) then
+		self.Name:SetWidth(nameWidth);
+	end
 
 	local mouseFocus = GetMouseFocus();
 	if ( mouseFocus == self ) then
 		LFGListSearchEntry_OnEnter(self);
 	end
 	if ( mouseFocus == self.VoiceChat ) then
-		mouseFocus:GetScript("OnEnter")(mouseFocus);
-	end
-	if ( mouseFocus == self.Friends ) then
 		mouseFocus:GetScript("OnEnter")(mouseFocus);
 	end
 
@@ -1608,9 +1726,10 @@ end
 
 function LFGListSearchEntry_OnEnter(self)
 	local resultID = self.resultID;
-	local id, activityID, name, comment, voiceChat, iLvl, age, numBNetFriends, numCharFriends, numGuildMates, isDelisted, numTanks, numHealers, numDPS, leaderName = C_LFGList.GetSearchResultInfo(resultID);
+	local id, activityID, name, comment, voiceChat, iLvl, age, numBNetFriends, numCharFriends, numGuildMates, isDelisted, leaderName = C_LFGList.GetSearchResultInfo(resultID);
 	local activityName = C_LFGList.GetActivityInfo(activityID);
-	GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+	local memberCounts = C_LFGList.GetSearchResultMemberCounts(resultID);
+	GameTooltip:SetOwner(self, "ANCHOR_RIGHT", 25, 0);
 	GameTooltip:SetText(name, 1, 1, 1, true);
 	GameTooltip:AddLine(activityName);
 	if ( comment ~= "" ) then
@@ -1637,7 +1756,7 @@ function LFGListSearchEntry_OnEnter(self)
 	if ( leaderName or age > 0 ) then
 		GameTooltip:AddLine(" ");
 	end
-	GameTooltip:AddLine(string.format(LFG_LIST_TOOLTIP_MEMBERS, numTanks + numHealers + numDPS, numTanks, numHealers, numDPS));
+	GameTooltip:AddLine(string.format(LFG_LIST_TOOLTIP_MEMBERS, memberCounts.TANK + memberCounts.HEALER + memberCounts.DAMAGER, memberCounts.TANK, memberCounts.HEALER, memberCounts.DAMAGER));
 
 	if ( numBNetFriends + numCharFriends + numGuildMates > 0 ) then
 		GameTooltip:AddLine(" ");
@@ -1855,7 +1974,7 @@ function LFGListInviteDialog_CheckPending(self)
 end
 
 function LFGListInviteDialog_Show(self, resultID)
-	local id, activityID, name, comment, voiceChat, iLvl, age, numBNetFriends, numCharFriends, numGuildMates, isDelisted, numTanks, numHealers, numDPS = C_LFGList.GetSearchResultInfo(resultID);
+	local id, activityID, name, comment, voiceChat, iLvl, age, numBNetFriends, numCharFriends, numGuildMates, isDelisted = C_LFGList.GetSearchResultInfo(resultID);
 	local activityName = C_LFGList.GetActivityInfo(activityID);
 	local _, status, _, _, role = C_LFGList.GetApplicationInfo(resultID);
 
@@ -1895,15 +2014,114 @@ function LFGListInviteDialog_Acknowledge(self)
 end
 
 -------------------------------------------------------
+----------Group Data Display functions
+-------------------------------------------------------
+function LFGListGroupDataDisplay_Update(self, activityID, displayData, disabled)
+	local fullName, shortName, categoryID, groupID, iLevel, filters, minLevel, maxPlayers, displayType = C_LFGList.GetActivityInfo(activityID);
+	if ( displayType == LE_LFG_LIST_DISPLAY_TYPE_ROLE_COUNT ) then
+		self.RoleCount:Show();
+		self.Enumerate:Hide();
+		LFGListGroupDataDisplayRoleCount_Update(self.RoleCount, displayData, disabled);
+	elseif ( displayType == LE_LFG_LIST_DISPLAY_TYPE_ROLE_ENUMERATE ) then
+		self.RoleCount:Hide();
+		self.Enumerate:Show();
+		LFGListGroupDataDisplayEnumerate_Update(self.Enumerate, maxPlayers, displayData, disabled, LFG_LIST_GROUP_DATA_ROLE_ORDER);
+	elseif ( displayType == LE_LFG_LIST_DISPLAY_TYPE_CLASS_ENUMERATE ) then
+		self.RoleCount:Hide();
+		self.Enumerate:Show();
+		LFGListGroupDataDisplayEnumerate_Update(self.Enumerate, maxPlayers, displayData, disabled, LFG_LIST_GROUP_DATA_CLASS_ORDER);
+	elseif ( displayType == LE_LFG_LIST_DISPLAY_TYPE_HIDE_ALL ) then
+		self.RoleCount:Hide();
+		self.Enumerate:Hide();
+	else
+		GMError("Unknown display type");
+		self.RoleCount:Hide();
+		self.Enumerate:Hide();
+	end
+end
+
+function LFGListGroupDataDisplayRoleCount_Update(self, displayData, disabled)
+	self.TankCount:SetText(displayData.TANK);
+	self.HealerCount:SetText(displayData.HEALER);
+	self.DamagerCount:SetText(displayData.DAMAGER);
+
+	--Update for the disabled state
+	self.TankCount:SetFontObject(disabled and GameFontDisableSmall or GameFontHighlightSmall);
+	self.HealerCount:SetFontObject(disabled and GameFontDisableSmall or GameFontHighlightSmall);
+	self.DamagerCount:SetFontObject(disabled and GameFontDisableSmall or GameFontHighlightSmall);
+	self.TankIcon:SetDesaturated(disabled);
+	self.HealerIcon:SetDesaturated(disabled);
+	self.DamagerIcon:SetDesaturated(disabled);
+	self.TankIcon:SetAlpha(disabled and 0.5 or 1.0);
+	self.HealerIcon:SetAlpha(disabled and 0.5 or 1.0);
+	self.DamagerIcon:SetAlpha(disabled and 0.5 or 1.0);
+end
+
+function LFGListGroupDataDisplayEnumerate_Update(self, numPlayers, displayData, disabled, iconOrder)
+	--Show/hide the required icons
+	for i=1, #self.Icons do
+		if ( i > numPlayers ) then
+			self.Icons[i]:Hide();
+		else
+			self.Icons[i]:Show();
+			self.Icons[i]:SetDesaturated(disabled);
+			self.Icons[i]:SetAlpha(disabled and 0.5 or 1.0);
+		end
+	end
+
+	--Note that icons are numbered from right to left
+	local iconIndex = numPlayers;
+	for i=1, #iconOrder do
+		for j=1, displayData[iconOrder[i]] do
+			self.Icons[iconIndex]:SetAtlas(LFG_LIST_GROUP_DATA_ATLASES[iconOrder[i]], true);
+			iconIndex = iconIndex - 1;
+			if ( iconIndex < 1 ) then
+				return;
+			end
+		end
+	end
+
+	for i=1, iconIndex do
+		self.Icons[i]:SetAtlas("groupfinder-icon-emptyslot", true);
+	end
+end
+
+-------------------------------------------------------
+----------Edit Box functions
+-------------------------------------------------------
+function LFGListEditBox_AddToTabCategory(self, tabCategory)
+	self.tabCategory = tabCategory;
+	local cat = LFG_LIST_EDIT_BOX_TAB_CATEGORIES[tabCategory];
+	if ( not cat ) then
+		cat = {};
+		LFG_LIST_EDIT_BOX_TAB_CATEGORIES[tabCategory] = cat;
+	end
+	self.tabCategoryIndex = #cat+1;
+	cat[self.tabCategoryIndex] = self;
+end
+
+function LFGListEditBox_OnTabPressed(self)
+	if ( self.tabCategory ) then
+		local offset = IsShiftKeyDown() and -1 or 1;
+		local cat = LFG_LIST_EDIT_BOX_TAB_CATEGORIES[self.tabCategory];
+		if ( cat ) then
+			--It's times like this when I wish Lua was 0-based...
+			cat[((self.tabCategoryIndex - 1 + offset + #cat) % #cat) + 1]:SetFocus();
+		end
+	end
+end
+
+-------------------------------------------------------
 ----------Utility functions
 -------------------------------------------------------
 function LFGListUtil_AugmentWithBest(filters, categoryID, groupID, activityID)
+	local myNumMembers = math.max(GetNumGroupMembers(LE_PARTY_CATEGORY_HOME), 1);
 	if ( not activityID ) then
 		--Find the best activity by iLevel and recommended flag
 		local activities = C_LFGList.GetAvailableActivities(categoryID, groupID, filters);
-		local bestItemLevel, bestRecommended, bestCurrentArea;
+		local bestItemLevel, bestRecommended, bestCurrentArea, bestMinLevel, bestMaxPlayers;
 		for i=1, #activities do
-			local fullName, shortName, categoryID, groupID, iLevel, filters = C_LFGList.GetActivityInfo(activities[i]);
+			local fullName, shortName, categoryID, groupID, iLevel, filters, minLevel, maxPlayers = C_LFGList.GetActivityInfo(activities[i]);
 			local isRecommended = bit.band(filters, LE_LFG_LIST_FILTER_RECOMMENDED) ~= 0;
 			local currentArea = C_LFGList.GetActivityInfoExpensive(activities[i]);
 
@@ -1914,8 +2132,12 @@ function LFGListUtil_AugmentWithBest(filters, categoryID, groupID, activityID)
 				isBetter = currentArea;
 			elseif ( bestRecommended ~= isRecommended ) then
 				isBetter = isRecommended;
+			elseif ( bestMinLevel ~= minLevel ) then
+				isBetter = minLevel > bestMinLevel;
 			elseif ( iLevel ~= bestItemLevel ) then
 				isBetter = iLevel > bestItemLevel and iLevel < GetAverageItemLevel();
+			elseif ( (myNumMembers < maxPlayers) ~= (myNumMembers < bestMaxPlayers) ) then
+				isBetter = myNumMembers < maxPlayers;
 			end
 
 			if ( isBetter ) then
@@ -1923,6 +2145,8 @@ function LFGListUtil_AugmentWithBest(filters, categoryID, groupID, activityID)
 				bestItemLevel = iLevel;
 				bestRecommended = isRecommended;
 				bestCurrentArea = currentArea;
+				bestMinLevel = minLevel;
+				bestMaxPlayers = maxPlayers;
 			end
 		end
 	end
@@ -2005,8 +2229,8 @@ function LFGListUtil_GetDecoratedCategoryName(categoryName, filter, useColors)
 end
 
 function LFGListUtil_SortSearchResultsCB(id1, id2)
-	local id1, activityID1, name1, comment1, voiceChat1, iLvl1, age1, numBNetFriends1, numCharFriends1, numGuildMates1, isDelisted1, numTanks1, numHealers1, numDPS1 = C_LFGList.GetSearchResultInfo(id1);
-	local id2, activityID2, name2, comment2, voiceChat2, iLvl2, age2, numBNetFriends2, numCharFriends2, numGuildMates2, isDelisted2, numTanks2, numHealers2, numDPS2 = C_LFGList.GetSearchResultInfo(id2);
+	local id1, activityID1, name1, comment1, voiceChat1, iLvl1, age1, numBNetFriends1, numCharFriends1, numGuildMates1, isDelisted1 = C_LFGList.GetSearchResultInfo(id1);
+	local id2, activityID2, name2, comment2, voiceChat2, iLvl2, age2, numBNetFriends2, numCharFriends2, numGuildMates2, isDelisted2 = C_LFGList.GetSearchResultInfo(id2);
 
 	--If one has more friends, do that one first
 	if ( numBNetFriends1 ~= numBNetFriends2 ) then
@@ -2085,7 +2309,11 @@ local LFG_LIST_SEARCH_ENTRY_MENU = {
 		func = function(_, name) ChatFrame_SendTell(name); end,
 		notCheckable = true,
 		arg1 = nil, --Leader name goes here
-		disabled = nil, --Disabled if we don't have a leader name yet
+		disabled = nil, --Disabled if we don't have a leader name yet or you haven't applied
+		tooltipWhileDisabled = 1,
+		tooltipOnButton = 1,
+		tooltipTitle = nil, --The title to display on mouseover
+		tooltipText = nil, --The text to display on mouseover
 	},
 	{
 		text = LFG_LIST_REPORT_GROUP_FOR,
@@ -2094,24 +2322,55 @@ local LFG_LIST_SEARCH_ENTRY_MENU = {
 		menuList = {
 			{
 				text = LFG_LIST_BAD_NAME,
+				func = function(_, id) C_LFGList.ReportSearchResult(id, "lfglistname"); end,
+				arg1 = nil, --Search result ID goes here
 				notCheckable = true,
-				disabled = true,
 			},
 			{
 				text = LFG_LIST_BAD_DESCRIPTION,
+				func = function(_, id) C_LFGList.ReportSearchResult(id, "lfglistcomment"); end,
+				arg1 = nil, --Search reuslt ID goes here
 				notCheckable = true,
-				disabled = true,
+				disabled = nil,	--Disabled if the description is just an empty string
+			},
+			{
+				text = LFG_LIST_BAD_VOICE_CHAT_COMMENT,
+				func = function(_, id) C_LFGList.ReportSearchResult(id, "lfglistvoicechat"); end,
+				arg1 = nil, --Search reuslt ID goes here
+				notCheckable = true,
+				disabled = nil,	--Disabled if the description is just an empty string
+			},
+			{
+				text = LFG_LIST_BAD_LEADER_NAME,
+				func = function(_, id) C_LFGList.ReportSearchResult(id, "badplayername"); end,
+				arg1 = nil, --Search reuslt ID goes here
+				notCheckable = true,
+				disabled = nil,	--Disabled if we don't have a name for the leader
 			},
 		},
+	},
+	{
+		text = CANCEL,
+		notCheckable = true,
 	},
 };
 
 function LFGListUtil_GetSearchEntryMenu(resultID)
-	local id, activityID, name, comment, voiceChat, iLvl, age, numBNetFriends, numCharFriends, numGuildMates, isDelisted, numTanks, numHealers, numDPS, leaderName = C_LFGList.GetSearchResultInfo(resultID);
+	local id, activityID, name, comment, voiceChat, iLvl, age, numBNetFriends, numCharFriends, numGuildMates, isDelisted, leaderName = C_LFGList.GetSearchResultInfo(resultID);
 	local _, appStatus, pendingStatus, appDuration = C_LFGList.GetApplicationInfo(resultID);
 	LFG_LIST_SEARCH_ENTRY_MENU[1].text = name;
 	LFG_LIST_SEARCH_ENTRY_MENU[2].arg1 = leaderName;
-	LFG_LIST_SEARCH_ENTRY_MENU[2].disabled = not leaderName or (appStatus ~= "applied" and appStatus ~= "invited");
+	local applied = (appStatus == "applied" or appStatus == "invited");
+	LFG_LIST_SEARCH_ENTRY_MENU[2].disabled = not leaderName or not applied;
+	LFG_LIST_SEARCH_ENTRY_MENU[2].tooltipTitle = (not applied) and WHISPER
+	LFG_LIST_SEARCH_ENTRY_MENU[2].tooltipText = (not applied) and LFG_LIST_MUST_SIGN_UP_TO_WHISPER;
+	LFG_LIST_SEARCH_ENTRY_MENU[3].menuList[1].arg1 = resultID;
+	LFG_LIST_SEARCH_ENTRY_MENU[3].menuList[2].arg1 = resultID;
+	LFG_LIST_SEARCH_ENTRY_MENU[3].menuList[2].disabled = (comment == "");
+	LFG_LIST_SEARCH_ENTRY_MENU[3].menuList[3].arg1 = resultID;
+	LFG_LIST_SEARCH_ENTRY_MENU[3].menuList[3].disabled = (voiceChat == "");
+	LFG_LIST_SEARCH_ENTRY_MENU[3].menuList[4].arg1 = resultID;
+	LFG_LIST_SEARCH_ENTRY_MENU[3].menuList[4].disabled = not leaderName;
 	return LFG_LIST_SEARCH_ENTRY_MENU;
 end
 
@@ -2134,16 +2393,23 @@ local LFG_LIST_APPLICANT_MEMBER_MENU = {
 		notCheckable = true,
 		menuList = {
 			{
-				text = LFG_LIST_BAD_NAME,
+				text = LFG_LIST_BAD_PLAYER_NAME,
 				notCheckable = true,
-				disabled = true,
+				func = function(_, id, memberIdx) C_LFGList.ReportApplicant(id, "badplayername", memberIdx); end,
+				arg1 = nil, --Applicant ID goes here
+				arg2 = nil, --Applicant Member index goes here
 			},
 			{
 				text = LFG_LIST_BAD_DESCRIPTION,
 				notCheckable = true,
-				disabled = true,
+				func = function(_, id) C_LFGList.ReportApplicant(id, "lfglistappcomment"); end,
+				arg1 = nil, --Applicant ID goes here
 			},
 		},
+	},
+	{
+		text = CANCEL,
+		notCheckable = true,
 	},
 };
 
@@ -2153,6 +2419,10 @@ function LFGListUtil_GetApplicantMemberMenu(applicantID, memberIdx)
 	LFG_LIST_APPLICANT_MEMBER_MENU[1].text = name or " ";
 	LFG_LIST_APPLICANT_MEMBER_MENU[2].arg1 = name;
 	LFG_LIST_APPLICANT_MEMBER_MENU[2].disabled = not name or (status ~= "applied" and status ~= "invited");
+	LFG_LIST_APPLICANT_MEMBER_MENU[3].menuList[1].arg1 = applicantID;
+	LFG_LIST_APPLICANT_MEMBER_MENU[3].menuList[1].arg2 = memberIdx;
+	LFG_LIST_APPLICANT_MEMBER_MENU[3].menuList[2].arg1 = applicantID;
+	LFG_LIST_APPLICANT_MEMBER_MENU[3].menuList[2].disabled = (comment == "");
 	return LFG_LIST_APPLICANT_MEMBER_MENU;
 end
 

@@ -2418,6 +2418,11 @@ function ToyBox_OnEvent(self, event, itemID, new)
 end
 
 function ToyBox_OnShow(self)
+	if(C_ToyBox.HasFavorites()) then 
+		SetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_TOYBOX_FAVORITE, true);
+		ToyBoxFavoriteHelpBox:Hide();
+	end
+
 	SetPortraitToTexture(PetJournalParentPortrait,"Interface\\Icons\\Trade_Archaeology_ChestofTinyGlassAnimals");	
 	C_ToyBox.FilterToys();
 	ToyBox_UpdatePages();	
@@ -2809,15 +2814,17 @@ function ToyBoxFilterDropDown_Initialize(self, level)
 			info.notCheckable = false;
 			local numSources = C_PetJournal.GetNumPetSources();
 			for i=1,numSources do
-				info.text = _G["BATTLE_PET_SOURCE_"..i];
-				info.func = function(_, _, _, value)
-							ToyBox.firstCollectedToyID = 0;
-							C_ToyBox.SetFilterSourceType(i, value);
-							ToyBox_UpdatePages();
-							ToyBox_UpdateButtons();
-						end
-				info.checked = function() return not C_ToyBox.IsSourceTypeFiltered(i) end;
-				UIDropDownMenu_AddButton(info, level);
+				if (i == 1 or i == 2 or i == 3 or i == 4 or i == 7 or i == 8) then -- Drop/Quest/Vendor/Profession/WorldEvent/Promotion
+					info.text = _G["BATTLE_PET_SOURCE_"..i];
+					info.func = function(_, _, _, value)
+								ToyBox.firstCollectedToyID = 0;
+								C_ToyBox.SetFilterSourceType(i, value);
+								ToyBox_UpdatePages();
+								ToyBox_UpdateButtons();
+							end
+					info.checked = function() return not C_ToyBox.IsSourceTypeFiltered(i) end;
+					UIDropDownMenu_AddButton(info, level);
+				end
 			end
 		end
 	end

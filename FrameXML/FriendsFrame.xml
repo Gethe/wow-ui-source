@@ -2851,7 +2851,7 @@ TRAVEL PASS
 	</Frame>
 
 	<Frame name="BattleTagInviteFrame" parent="UIParent" frameStrata="DIALOG" hidden="true">
-		<Size x="357" y="211"/>
+		<Size x="357" y="150"/>
 		<Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background" edgeFile="Interface\DialogFrame\UI-DialogBox-Border" tile="true">
 			<BackgroundInsets>
 				<AbsInset left="12" right="12" top="12" bottom="11"/>
@@ -2879,39 +2879,21 @@ TRAVEL PASS
 				<FontString parentKey="InfoText" inherits="GameFontHighlightSmall" spacing="2" text="BATTLE_TAG_REQUEST_INFO">
 					<Size x="241" y="0"/>
 					<Anchors>
-						<Anchor point="CENTER" x="0" y="-29"/>
+						<Anchor point="CENTER" x="0" y="-10"/>
 					</Anchors>
 				</FontString>				
 			</Layer>
 		</Layers>
 		<Frames>			
-			<ScrollFrame name="$parentScrollFrame" inherits="InputScrollFrameTemplate" parentKey="NoteFrame">
-				<Size x="261" y="48"/>
-				<Anchors>
-					<Anchor point="TOP" x="0" y="-59"/>
-				</Anchors>
-				<KeyValues>
-					<KeyValue key="maxLetters" value="127" type="number"/>
-					<KeyValue key="instructions" value="ENTER_INVITE_NOTE" type="global"/>
-				</KeyValues>
-				<Scripts>
-					<OnLoad>
-						self.EditBox.Instructions:SetFontObject("FriendsFont_Small");
-						self.EditBox:SetFontObject("FriendsFont_Small");
-						InputScrollFrame_OnLoad(self);
-					</OnLoad>
-				</Scripts>
-			</ScrollFrame>
 			<Button inherits="UIPanelButtonTemplate" text="SEND_REQUEST">
 				<Size x="128" y="22"/>
 				<Anchors>
-					<Anchor point="LEFT" x="43" y="0"/>
-					<Anchor point="TOP" relativeKey="$parent.InfoText" relativePoint="BOTTOM" x="0" y="-17"/>
+					<Anchor point="BOTTOMLEFT" x="43" y="15"/>
 				</Anchors>
 				<Scripts>
 					<OnClick>
 						PlaySound("igMainMenuOptionCheckBoxOn");
-						BNSendVerifiedBattleTagInvite(BattleTagInviteFrame.NoteFrame.EditBox:GetText());	-- unit should have been set with BNCheckBattleTagInviteToUnit or BNCheckBattleTagInviteToGuildMember
+						BNSendVerifiedBattleTagInvite();	-- unit should have been set with BNCheckBattleTagInviteToUnit or BNCheckBattleTagInviteToGuildMember
 						StaticPopupSpecial_Hide(self:GetParent());
 					</OnClick>
 				</Scripts>
@@ -2919,8 +2901,7 @@ TRAVEL PASS
 			<Button inherits="UIPanelButtonTemplate" text="CANCEL">
 				<Size x="98" y="22"/>
 				<Anchors>
-					<Anchor point="RIGHT" x="-43" y="0"/>
-					<Anchor point="TOP" relativeKey="$parent.InfoText" relativePoint="BOTTOM" x="0" y="-17"/>
+					<Anchor point="BOTTOMRIGHT" x="-43" y="15"/>
 				</Anchors>
 				<Scripts>
 					<OnClick>

@@ -848,6 +848,7 @@ end
 
 function VideoOptionsPanel_OnLoad (self, okay, cancel, default, refresh)
 	local defaults
+	self.hasApply = true;
 	if (self.raid) then
 		defaults =  {GetDefaultVideoOptions(true)};
 	else
@@ -917,6 +918,7 @@ NetworkPanelOptions = {
 function NetworkOptionsPanel_OnLoad(self)
 	self.name = NETWORK_LABEL;
 	self.options = NetworkPanelOptions;
+	self.hasApply = true;
 	BlizzardOptionsPanel_OnLoad(self);
 	OptionsFrame_AddCategory(VideoOptionsFrame, self);
 end
@@ -931,6 +933,7 @@ function NetworkOptionsPanel_CheckButton_OnClick(self)
 	if ( self.cvar ) then
 		BlizzardOptionsPanel_SetCVarSafe(self.cvar, self:GetChecked(), self.event);
 	end	
+	Graphics_EnableApply(self);
 end
 
 
@@ -958,6 +961,7 @@ end
 function InterfaceOptionsLanguagesPanel_OnLoad (self)
 	self.name = LANGUAGES_LABEL;
 	self.options = LanguagesPanelOptions;
+	self.hasApply = true;
 	BlizzardOptionsPanel_OnLoad(self, LanguagePanel_Okay, LanguagePanel_Cancel, BlizzardOptionsPanel_Default, BlizzardOptionsPanel_Refresh);
 	OptionsFrame_AddCategory(VideoOptionsFrame, self);
 end
@@ -1004,6 +1008,7 @@ end
 
 function InterfaceOptionsLanguagesPanelLocaleDropDown_OnClick (self)
 	InterfaceOptionsLanguagesPanelLocaleDropDown:SetValue(self.value);
+	Graphics_EnableApply(self);
 end
 
 function InterfaceOptionsLanguagesPanelLocaleDropDown_Initialize (self)

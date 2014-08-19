@@ -150,6 +150,40 @@ function GameTooltip_ClearMoney(self)
 	self.shownMoneyFrames = nil;
 end
 
+function GameTooltip_InsertFrame(tooltipFrame, frame)
+	local textSpacing = 2;
+	local textHeight = _G[tooltipFrame:GetName().."TextLeft2"]:GetHeight();
+	local numLinesNeeded = math.ceil(frame:GetHeight() / (textHeight + textSpacing));
+	local currentLine = tooltipFrame:NumLines();
+	for i = 1, numLinesNeeded do
+		tooltipFrame:AddLine(" ");
+	end
+	frame:SetParent(tooltipFrame);
+	frame:ClearAllPoints();
+	frame:SetPoint("TOPLEFT", tooltipFrame:GetName().."TextLeft"..(currentLine + 1), "TOPLEFT", 0, 0);
+	if ( not tooltipFrame.insertedFrames ) then
+		tooltipFrame.insertedFrames = { };
+	end
+	local frameWidth = frame:GetWidth();
+	if ( tooltipFrame:GetMinimumWidth() < frameWidth ) then
+		tooltipFrame:SetMinimumWidth(frameWidth);
+	end	
+	frame:Show();
+	tinsert(tooltipFrame.insertedFrames, frame);
+	-- return space taken so inserted frame can resize if needed
+	return (numLinesNeeded * textHeight) + (numLinesNeeded - 1) * textSpacing;
+end
+
+function GameTooltip_ClearInsertedFrames(self)
+	if ( self.insertedFrames ) then
+		for i = 1, #self.insertedFrames do
+			self.insertedFrames[i]:SetParent(nil);
+			self.insertedFrames[i]:Hide();
+		end
+	end
+	self.insertedFrames = nil;
+end
+
 function GameTooltip_ClearStatusBars(self)
 	if ( not self.shownStatusBars ) then
 		return;

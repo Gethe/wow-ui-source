@@ -16,9 +16,9 @@
 			</Layer>
 			<Layer level="ARTWORK" textureSubLevel="2">
 				<Texture name="$parentRing" atlas="bluemenu-Ring" parentKey="ring">
-					<Size x="100" y="100"/>
+					<Size x="95" y="96"/>
 					<Anchors>
-						<Anchor point="LEFT" x="-14" y="-1" />
+						<Anchor point="LEFT" x="-12" y="-1" />
 					</Anchors>
 				</Texture>
 			</Layer>
@@ -32,7 +32,7 @@
 				<FontString name="$parentName" inherits="GameFontNormalLarge" parentKey="name" spacing="2" justifyH="LEFT">
 					<Size x="106" y="0"/>
 					<Anchors>
-						<Anchor point="LEFT" relativeTo="$parentRing" relativePoint="RIGHT" x="-3" y="0" />
+						<Anchor point="LEFT" relativeTo="$parentRing" relativePoint="RIGHT" x="0" y="0" />
 					</Anchors>
 				</FontString>
 			</Layer>

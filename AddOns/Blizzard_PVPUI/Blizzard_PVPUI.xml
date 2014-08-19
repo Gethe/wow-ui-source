@@ -307,9 +307,9 @@
 			</Layer>
 			<Layer level="ARTWORK" textureSubLevel="2">
 				<Texture parentKey="Ring" atlas="bluemenu-Ring">
-					<Size x="100" y="100"/>
+					<Size x="95" y="96"/>
 					<Anchors>
-						<Anchor point="LEFT" x="-14" y="-1" />
+						<Anchor point="LEFT" x="-12" y="-1" />
 					</Anchors>
 				</Texture>
 			</Layer>
@@ -446,14 +446,14 @@
 				<Frames>
 					<Button name="$parentCategoryButton1" inherits="PVPQueueFrameButtonTemplate" parentKey="CategoryButton1" id="1">
 						<Anchors>
-							<Anchor point="TOPLEFT" x="10" y="-68" />
+							<Anchor point="TOPLEFT" x="10" y="-70" />
 						</Anchors>
 						<Layers>
 							<Layer level="ARTWORK">
 								<FontString parentKey="Name" inherits="GameFontNormalMed3" spacing="2" justifyH="LEFT">
 									<Size x="106" y="0"/>
 									<Anchors>
-										<Anchor point="LEFT" relativeKey="$parent.Ring" relativePoint="RIGHT" x="-5" y="13" />
+										<Anchor point="LEFT" relativeKey="$parent.Ring" relativePoint="RIGHT" x="0" y="13" />
 									</Anchors>
 								</FontString>
 							</Layer>
@@ -461,21 +461,21 @@
 						<Frames>
 							<Button parentKey="CurrencyDisplay" inherits="PVPCurrencyDisplayTemplate">
 								<Anchors>
-									<Anchor point="TOPLEFT" relativeKey="$parent.Name" relativePoint="BOTTOMLEFT" x="-10" y="0"/>
+									<Anchor point="TOPLEFT" relativeKey="$parent.Name" relativePoint="BOTTOMLEFT" x="-9" y="2"/>
 								</Anchors>
 							</Button>
 						</Frames>
 					</Button>
 					<Button name="$parentCategoryButton2" inherits="PVPQueueFrameButtonTemplate" parentKey="CategoryButton2" id="2">
 						<Anchors>
-							<Anchor point="TOP" relativeTo="$parentCategoryButton1" relativePoint="BOTTOM" x="0" y="-24" />
+							<Anchor point="TOP" relativeTo="$parentCategoryButton1" relativePoint="BOTTOM" x="0" y="-23" />
 						</Anchors>
 						<Layers>
 							<Layer level="ARTWORK">
 								<FontString parentKey="Name" inherits="GameFontNormalMed3" spacing="2" justifyH="LEFT">
 									<Size x="106" y="0"/>
 									<Anchors>
-										<Anchor point="LEFT" relativeKey="$parent.Ring" relativePoint="RIGHT" x="-5" y="13" />
+										<Anchor point="LEFT" relativeKey="$parent.Ring" relativePoint="RIGHT" x="0" y="13" />
 									</Anchors>
 								</FontString>
 							</Layer>
@@ -483,21 +483,21 @@
 						<Frames>
 							<Button parentKey="CurrencyDisplay" inherits="PVPCurrencyDisplayTemplate">
 								<Anchors>
-									<Anchor point="TOPLEFT" relativeKey="$parent.Name" relativePoint="BOTTOMLEFT" x="-10" y="0"/>
+									<Anchor point="TOPLEFT" relativeKey="$parent.Name" relativePoint="BOTTOMLEFT" x="-9" y="2"/>
 								</Anchors>
 							</Button>
 						</Frames>
 					</Button>
 					<Button name="$parentCategoryButton3" inherits="PVPQueueFrameButtonTemplate" parentKey="CategoryButton3" id="3">
 						<Anchors>
-							<Anchor point="TOP" relativeTo="$parentCategoryButton2" relativePoint="BOTTOM" x="0" y="-24" />
+							<Anchor point="TOP" relativeTo="$parentCategoryButton2" relativePoint="BOTTOM" x="0" y="-23" />
 						</Anchors>
 						<Layers>
 							<Layer level="ARTWORK">
 								<FontString parentKey="Name" inherits="GameFontNormalLarge" spacing="2" justifyH="LEFT">
 									<Size x="106" y="0"/>
 									<Anchors>
-										<Anchor point="LEFT" relativeKey="$parent.Ring" relativePoint="RIGHT" x="-5" y="0" />
+										<Anchor point="LEFT" relativeKey="$parent.Ring" relativePoint="RIGHT" x="0" y="0" />
 									</Anchors>
 								</FontString>
 							</Layer>
@@ -505,14 +505,14 @@
 					</Button>
 					<Button name="$parentCategoryButton4" inherits="PVPQueueFrameButtonTemplate" parentKey="CategoryButton4" id="4">
 						<Anchors>
-							<Anchor point="TOP" relativeTo="$parentCategoryButton3" relativePoint="BOTTOM" x="0" y="-24" />
+							<Anchor point="TOP" relativeTo="$parentCategoryButton3" relativePoint="BOTTOM" x="0" y="-23" />
 						</Anchors>
 						<Layers>
 							<Layer level="ARTWORK">
 								<FontString parentKey="Name" inherits="GameFontNormalLarge" spacing="2" justifyH="LEFT">
 									<Size x="106" y="0"/>
 									<Anchors>
-										<Anchor point="LEFT" relativeKey="$parent.Ring" relativePoint="RIGHT" x="-5" y="0" />
+										<Anchor point="LEFT" relativeKey="$parent.Ring" relativePoint="RIGHT" x="0" y="0" />
 									</Anchors>
 								</FontString>
 							</Layer>
@@ -538,6 +538,14 @@
 												<MinColor r="1" g="0" b="0" a="0.0"/>
 												<MaxColor r="0.38" g="0" b="0.79" a="0.2"/>
 											</Gradient>
+										</Texture>
+									</Layer>
+									<Layer level="BORDER">
+										<Texture parentKey="TopTileStreaks" inherits="_UI-Frame-TopTileStreaks">
+											<Anchors>
+												<Anchor point="TOPLEFT" x="0" y="0"/>
+												<Anchor point="TOPRIGHT" x="0" y="0"/>
+											</Anchors>
 										</Texture>
 									</Layer>
 								</Layers>
@@ -781,12 +789,12 @@
 									</Button>
 									<Button parentKey="Arena2Button" inherits="PVPBonusWorldPVPButtonTemplate">
 										<Anchors>
-											<Anchor point="BOTTOM" relativeKey="$parent.WorldBattlesTexture" relativePoint="BOTTOM" x="0" y="9"/>
+											<Anchor point="BOTTOM" relativeKey="$parent.WorldBattlesTexture" relativePoint="BOTTOM" x="0" y="12"/>
 										</Anchors>
 									</Button>
 									<Button parentKey="Arena1Button" inherits="PVPBonusWorldPVPButtonTemplate">
 										<Anchors>
-											<Anchor point="BOTTOM" relativeKey="$parent.Arena2Button" relativePoint="TOP" x="0" y="9"/>
+											<Anchor point="BOTTOM" relativeKey="$parent.Arena2Button" relativePoint="TOP" x="0" y="3"/>
 										</Anchors>
 									</Button>
 									<Frame parentKey="BattlegroundReward1" inherits="PVPCurrencyRewardTemplate">
@@ -1252,38 +1260,6 @@
 					<OnShow function="PVPQueueFrame_OnShow"/>
 					<OnEvent function="PVPQueueFrame_OnEvent"/>
 				</Scripts>
-			</Frame>
-			<!-- raised frame for shadows to be on top of the buttons -->
-			<Frame parentKey="Shadows">
-				<Size x="227" y="399"/>
-				<Anchors>
-					<Anchor point="TOPLEFT" x="4" y="-25" />
-				</Anchors>
-				<Layers>
-					<Layer level="OVERLAY">
-						<Texture file="Interface\Common\bluemenu-shadowcovers">		<!-- left line -->
-							<Size x="84" y="324"/>
-							<Anchors>
-								<Anchor point="TOPLEFT" x="4" y="-36" />
-							</Anchors>
-							<TexCoords left="0.00781250" right="0.66406250" top="0.00097656" bottom="0.34960938"/>
-						</Texture>
-						<Texture file="Interface\Common\bluemenu-shadowcovers">		<!-- right line -->
-							<Size x="84" y="324"/>
-							<Anchors>
-								<Anchor point="TOPLEFT" x="127" y="-36" />
-							</Anchors>
-							<TexCoords left="0.00781250" right="0.66406250" top="0.35156250" bottom="0.70019531"/>
-						</Texture>
-						<Texture file="Interface\Common\bluemenu-vert" vertTile="true">
-							<Size x="5" y="403"/>
-							<Anchors>
-								<Anchor point="TOPLEFT" x="211" y="3" />
-							</Anchors>
-							<TexCoords left="0.00781250" right="0.04687500" top="0" bottom="1"/>
-						</Texture>
-					</Layer>
-				</Layers>
 			</Frame>
 			
 		</Frames>

@@ -32,7 +32,6 @@ function LossOfControlFrame_OnLoad(self)
 	-- figure out some string widths - our base width is for under 10 seconds which should be almost all loss of control durations
 	self.TimeLeft.baseNumberWidth = self.TimeLeft.NumberText:GetStringWidth() + LOSS_OF_CONTROL_TIME_OFFSET;
 	self.TimeLeft.secondsWidth = self.TimeLeft.SecondsText:GetStringWidth();
-	self.Cooldown:SetHideCountdownNumbers(true);
 end
 
 function LossOfControlFrame_OnEvent(self, event, ...)

@@ -929,7 +929,7 @@
 		</AnimationGroup>
 	</Animations>
 	<Layers>
-		<Layer level="BACKGROUND">
+		<Layer level="BACKGROUND" textureSubLevel="1">
 			<Texture parentKey="Background" file="Interface\LootFrame\LootToast">
 				<Size x="276" y="96"/>
 				<Anchors>
@@ -940,6 +940,12 @@
 			<Texture parentKey="PvPBackground" atlas="loottoast-bg-alliance" useAtlasSize="true" alpha="1">
 				<Anchors>
 					<Anchor point="CENTER" x="-1" y="-1"/>
+				</Anchors>
+			</Texture>
+			<Texture parentKey="BGAtlas" hidden="true">
+				<Size x="276" y="96"/>
+				<Anchors>
+					<Anchor point="CENTER"/>
 				</Anchors>
 			</Texture>
 		</Layer>
@@ -999,7 +1005,7 @@
 		</Layer>
 		<Layer level="OVERLAY">
 			<!--LootWin-Glow-->
-			<Texture name="$parentGlow" file="Interface\LootFrame\LootToast" alphaMode="ADD" hidden="true" parentKey="glow">
+			<Texture name="$parentGlow" atlas="loottoast-glow" alphaMode="ADD" hidden="true" parentKey="glow">
 				<Size>
 					<AbsDimension x="286" y="109"/>
 				</Size>
@@ -1017,7 +1023,6 @@
 						</Scripts>
 					</AnimationGroup>
 				</Animations>
-				<TexCoords left="0.00097656" right="0.28027344" top="0.00390625" bottom="0.42968750"/>	
 			</Texture>
 			<!--LootWin-Sheen-->
 			<Texture name="$parentShine" file="Interface\LootFrame\LootToast" alphaMode="ADD" hidden="true" parentKey="shine">
@@ -1811,9 +1816,7 @@
 	</Frames>
 	<Scripts>
 		<OnEnter function="GarrisonFollowerAlertFrame_OnEnter"/>
-		<OnLeave>
-			GarrisonFollowerTooltip:Hide();
-		</OnLeave>
+		<OnLeave function="GarrisonFollowerAlertFrame_OnLeave"/>
 	</Scripts>
 </Button>
 

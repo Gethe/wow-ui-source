@@ -282,12 +282,37 @@ function TargetFrame_CheckLevel (self)
 		else
 			self.levelText:SetVertexColor(1.0, 0.82, 0.0);
 		end
+		
+		if ( self.isBossFrame ) then
+			BossTargetFrame_UpdateLevelTextAnchor(self, targetLevel);
+		else
+			TargetFrame_UpdateLevelTextAnchor(self, targetLevel);
+		end
+		
 		self.levelText:Show();
 		self.highLevelTexture:Hide();
 	else
 		-- Target is too high level to tell
 		self.levelText:Hide();
 		self.highLevelTexture:Show();
+	end
+end
+
+--This is overwritten in LocalizationPost for different languages.
+function TargetFrame_UpdateLevelTextAnchor (self, targetLevel)
+	if ( targetLevel == 100 ) then
+		self.levelText:SetPoint("CENTER", 61, -17);
+	else
+		self.levelText:SetPoint("CENTER", 62, -17);
+	end
+end
+
+--This is overwritten in LocalizationPost for different languages.
+function BossTargetFrame_UpdateLevelTextAnchor (self, targetLevel)
+	if ( targetLevel == 100 ) then
+		self.levelText:SetPoint("CENTER", 11, -16);
+	else
+		self.levelText:SetPoint("CENTER", 12, -16);
 	end
 end
 
@@ -1119,6 +1144,7 @@ end
 -- *********************************************************************************
 
 function BossTargetFrame_OnLoad(self, unit, event)
+	self.isBossFrame = true;
 	self.noTextPrefix = true;
 	self.showLevel = true;
 	self.showThreat = true;
@@ -1127,7 +1153,7 @@ function BossTargetFrame_OnLoad(self, unit, event)
 	TargetFrame_OnLoad(self, unit, BossTargetFrameDropDown_Initialize);
 	self:RegisterEvent("UNIT_TARGETABLE_CHANGED");
 	self.borderTexture:SetTexture("Interface\\TargetingFrame\\UI-UnitFrame-Boss");
-	self.levelText:SetPoint("CENTER", 12, -16);
+	self.levelText:SetPoint("CENTER", 12, select(5, self.levelText:GetPoint("CENTER")));
 	self.raidTargetIcon:SetPoint("RIGHT", -90, 0);
 	self.threatNumericIndicator:SetPoint("BOTTOM", self, "TOP", -85, -22);
 	self.threatIndicator:SetTexture("Interface\\TargetingFrame\\UI-UnitFrame-Boss-Flash");

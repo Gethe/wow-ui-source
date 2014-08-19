@@ -357,7 +357,7 @@ function BankFrameItemButtonGeneric_OnModifiedClick (self, button)
 end
 
 function UpdateBagButtonHighlight (id) 
-	local texture = BankSlotsFrame["Bag"..(id)]:GetHighlightTexture();
+	local texture = BankSlotsFrame["Bag"..(id)].HighlightFrame.HighlightTexture;
 	if ( not texture ) then
 		return;
 	end
@@ -365,7 +365,7 @@ function UpdateBagButtonHighlight (id)
 	local frame;
 	for i=1, NUM_CONTAINER_FRAMES, 1 do
 		frame = _G["ContainerFrame"..i];
-		if ( ( frame:GetID() == id ) and frame:IsShown() ) then
+		if ( ( frame:GetID() == (id + NUM_BAG_SLOTS) ) and frame:IsShown() ) then
 			texture:Show();
 			return;
 		end

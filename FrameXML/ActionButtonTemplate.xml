@@ -64,8 +64,8 @@
 				</Texture>
 			</Layer>
 			<Layer level="OVERLAY" textureSubLevel="1">
-				<Texture parentKey="NewActionTexture" atlas="bags-newitem" useAtlasSize="false" hidden="true">
-					<Size x="36" y="36"/>
+				<Texture parentKey="NewActionTexture" atlas="bags-newitem" useAtlasSize="false" alphaMode="ADD" hidden="true">
+					<Size x="44" y="44"/>
 					<Anchors>
 						<Anchor point="CENTER"/>
 					</Anchors>

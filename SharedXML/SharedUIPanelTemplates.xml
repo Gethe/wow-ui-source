@@ -1311,7 +1311,9 @@
 	<EditBox name="InputBoxInstructionsTemplate" inherits="InputBoxTemplate" virtual="true">
 		<Layers>
 			<Layer level="ARTWORK">
-				<FontString parentKey="Instructions" justifyH="LEFT" justivyV="TOP" inherits="GameFontDisableSmall" setAllPoints="true"/>
+				<FontString parentKey="Instructions" justifyH="LEFT" justivyV="TOP" inherits="GameFontDisableSmall" setAllPoints="true">
+					<Color r="0.35" g="0.35" b="0.35"/>
+				</FontString>
 			</Layer>
 		</Layers>
 		<Scripts>

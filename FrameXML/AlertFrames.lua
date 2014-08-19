@@ -55,14 +55,14 @@ function AlertFrame_OnEvent (self, event, ...)
 		local itemLink, quantity, rollType, roll = ...;
 		LootWonAlertFrame_ShowAlert(itemLink, quantity, rollType, roll);
 	elseif ( event == "SHOW_LOOT_TOAST" ) then
-		local typeIdentifier, itemLink, quantity, specID, sex, isPersonal = ...;
+		local typeIdentifier, itemLink, quantity, specID, sex, isPersonal, lootSource = ...;
 		if ( typeIdentifier == "item" ) then
 			LootWonAlertFrame_ShowAlert(itemLink, quantity, nil, nil, specID);
 		elseif ( typeIdentifier == "money" ) then
 			MoneyWonAlertFrame_ShowAlert(quantity);
 		elseif ( (isPersonal == true) and (typeIdentifier == "currency") ) then
 			-- only toast currency for personal loot
-			LootWonAlertFrame_ShowAlert(itemLink, quantity, nil, nil, specID, true);
+			LootWonAlertFrame_ShowAlert(itemLink, quantity, nil, nil, specID, true, false, lootSource);
 		end
 	elseif ( event == "SHOW_PVP_FACTION_LOOT_TOAST" ) then
 		local typeIdentifier, itemLink, quantity, specID, sex, isPersonal = ...;
@@ -843,11 +843,12 @@ end
 
 -- [[ LootWonAlertFrameTemplate ]] --
 LOOTWONALERTFRAME_VALUES={
-	Default = { bgOffsetX=0, bgOffsetY=0, labelOffsetX=7, labelOffsetY=5, labelText=YOU_WON_LABEL},
-	Horde = { bgOffsetX=-1, bgOffsetY=-1, labelOffsetX=7, labelOffsetY=3, labelText=YOU_EARNED_LABEL, pvpAtlas="loottoast-bg-horde"},
-	Alliance = { bgOffsetX=-1, bgOffsetY=-1, labelOffsetX=7, labelOffsetY=3, labelText=YOU_EARNED_LABEL, pvpAtlas="loottoast-bg-alliance"},
+	Default = { bgOffsetX=0, bgOffsetY=0, labelOffsetX=7, labelOffsetY=5, labelText=YOU_WON_LABEL, glowAtlas="loottoast-glow"},
+	GarrisonCache = { bgOffsetX=-4, bgOffsetY=0, labelOffsetX=7, labelOffsetY=1, labelText=GARRISON_CACHE, glowAtlas="CacheToast-Glow", bgAtlas="CacheToast", noIconBorder=true, iconUnderBG=true},
+	Horde = { bgOffsetX=-1, bgOffsetY=-1, labelOffsetX=7, labelOffsetY=3, labelText=YOU_EARNED_LABEL, pvpAtlas="loottoast-bg-horde", glowAtlas="loottoast-glow"},
+	Alliance = { bgOffsetX=-1, bgOffsetY=-1, labelOffsetX=7, labelOffsetY=3, labelText=YOU_EARNED_LABEL, pvpAtlas="loottoast-bg-alliance", glowAtlas="loottoast-glow"},
 }
-function LootWonAlertFrame_ShowAlert(itemLink, quantity, rollType, roll, specID, isCurrency, showFactionBG)
+function LootWonAlertFrame_ShowAlert(itemLink, quantity, rollType, roll, specID, isCurrency, showFactionBG, lootSource)
 	local frame;
 	for i=1, #LOOT_WON_ALERT_FRAMES do
 		local lootWon = LOOT_WON_ALERT_FRAMES[i];
@@ -862,18 +863,24 @@ function LootWonAlertFrame_ShowAlert(itemLink, quantity, rollType, roll, specID,
 		table.insert(LOOT_WON_ALERT_FRAMES, frame);
 	end
 
-	LootWonAlertFrame_SetUp(frame, itemLink, quantity, rollType, roll, specID, isCurrency, showFactionBG);
+	LootWonAlertFrame_SetUp(frame, itemLink, quantity, rollType, roll, specID, isCurrency, showFactionBG, lootSource);
 	AlertFrame_AnimateIn(frame);
 	AlertFrame_FixAnchors();
 end
 
+local LOOT_SOURCE_GARRISON_CACHE = 10;
+
 -- NOTE - This may also be called for an externally created frame. (E.g. bonus roll has its own frame)
-function LootWonAlertFrame_SetUp(self, itemLink, quantity, rollType, roll, specID, isCurrency, showFactionBG)
+function LootWonAlertFrame_SetUp(self, itemLink, quantity, rollType, roll, specID, isCurrency, showFactionBG, lootSource)
 	local itemName, itemHyperLink, itemRarity, itemTexture;
 	if (isCurrency == true) then
 		itemName, _, itemTexture, _, _, _, _, itemRarity = GetCurrencyInfo(itemLink);
-		itemName = format(CURRENCY_QUANTITY_TEMPLATE, quantity, itemName);
-		itemHyperLink = itemLink;
+		if ( lootSource == LOOT_SOURCE_GARRISON_CACHE ) then
+			itemName = format(GARRISON_RESOURCES_LOOT, quantity);
+		else
+			itemName = format(CURRENCY_QUANTITY_TEMPLATE, quantity, itemName);
+		end
+		itemHyperLink = itemLink;		
 	else
 		itemName, itemHyperLink, itemRarity, _, _, _, _, _, _, itemTexture = GetItemInfo(itemLink);
 	end
@@ -885,12 +892,33 @@ function LootWonAlertFrame_SetUp(self, itemLink, quantity, rollType, roll, specI
 		self.PvPBackground:SetAtlas(windowInfo.pvpAtlas, true);
 		self.PvPBackground:SetPoint("CENTER", windowInfo.bgOffsetX, windowInfo.bgOffsetY);
 		self.Background:Hide();
+		self.BGAtlas:Hide();
 		self.PvPBackground:Show();	
 	else
-		self.Background:Show();
+		if ( lootSource == LOOT_SOURCE_GARRISON_CACHE ) then
+			windowInfo = LOOTWONALERTFRAME_VALUES["GarrisonCache"];
+		end
+		if ( windowInfo.bgAtlas ) then
+			self.Background:Hide();
+			self.BGAtlas:Show();
+			self.BGAtlas:SetAtlas(windowInfo.bgAtlas);
+			self.BGAtlas:SetPoint("CENTER", windowInfo.bgOffsetX, windowInfo.bgOffsetY);
+		else
+			self.Background:SetPoint("CENTER", windowInfo.bgOffsetX, windowInfo.bgOffsetY);
+			self.Background:Show();
+			self.BGAtlas:Hide();
+		end
 		self.PvPBackground:Hide();
 	end
-	self.Label:SetText(windowInfo.labelText);
+	self.glow:SetAtlas(windowInfo.glowAtlas);
+	self.IconBorder:SetShown(not windowInfo.noIconBorder);
+	if ( windowInfo.iconUnderBG ) then
+		self.Icon:SetDrawLayer("BACKGROUND");
+	else
+		self.Icon:SetDrawLayer("BORDER");
+	end
+
+	self.Label:SetText(windowInfo.labelText);	
 	self.Label:SetPoint("TOPLEFT", self.Icon, "TOPRIGHT", windowInfo.labelOffsetX, windowInfo.labelOffsetY);
 	
 	self.isCurrency = isCurrency;
@@ -910,7 +938,7 @@ function LootWonAlertFrame_SetUp(self, itemLink, quantity, rollType, roll, specI
 		self.SpecIcon:Hide();
 		self.SpecRing:Hide();
 	end
-	
+
 	if ( rollType == LOOT_ROLL_TYPE_NEED ) then
 		self.RollTypeIcon:SetTexture("Interface\\Buttons\\UI-GroupLoot-Dice-Up");
 		self.RollValue:SetText(roll);
@@ -1135,6 +1163,8 @@ function GarrisonFollowerAlertFrame_ShowAlert(followerID, name, displayID, level
 end
 
 function GarrisonFollowerAlertFrame_OnEnter(self)
+	AlertFrame_StopOutAnimation(self);
+	
 	local link = C_Garrison.GetFollowerLink(self.followerID);
 	if ( link ) then
 		GarrisonFollowerTooltip:ClearAllPoints();
@@ -1142,6 +1172,11 @@ function GarrisonFollowerAlertFrame_OnEnter(self)
 		local _, garrisonFollowerID, quality, level, itemLevel, ability1, ability2, ability3, ability4, trait1, trait2, trait3, trait4 = strsplit(":", link);
 		GarrisonFollowerTooltip_Show(tonumber(garrisonFollowerID), false, tonumber(quality), tonumber(level), 0, 0, tonumber(itemLevel), tonumber(ability1), tonumber(ability2), tonumber(ability3), tonumber(ability4), tonumber(trait1), tonumber(trait2), tonumber(trait3), tonumber(trait4));
 	end
+end
+
+function GarrisonFollowerAlertFrame_OnLeave(self)
+	GarrisonFollowerTooltip:Hide();
+	AlertFrame_ResumeOutAnimation(self);
 end
 
 function GarrisonAlertFrame_OnClick(self)

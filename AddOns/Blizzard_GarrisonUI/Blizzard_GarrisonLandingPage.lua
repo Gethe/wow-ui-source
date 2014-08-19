@@ -129,7 +129,7 @@ function GarrisonLandingPageReport_GetShipments(self)
 	for i = 1, #buildings do
 		local buildingID = buildings[i].buildingID;
 		if ( buildingID ) then
-			local name, texture, shipmentsReady, shipmentsTotal, creationTime, duration, timeleftString, itemName, itemIcon, itemQuality, itemID = C_Garrison.GetLandingPageShipmentInfo(buildingID);
+			local name, texture, shipmentCapacity, shipmentsReady, shipmentsTotal, creationTime, duration, timeleftString, itemName, itemIcon, itemQuality, itemID = C_Garrison.GetLandingPageShipmentInfo(buildingID);
 			local shipment = self.Shipments[shipmentIndex];
 			if ( not shipment ) then
 				return;
@@ -165,18 +165,36 @@ function GarrisonLandingPageReport_GetShipments(self)
 end
 
 function GarrisonLandingPageReportShipment_OnEnter(self)
-	local name, texture, shipmentsReady, shipmentsTotal, creationTime, duration, timeleftString, itemName, itemIcon, itemQuality, itemID = C_Garrison.GetLandingPageShipmentInfo(self.buildingID);
+	local name, texture, shipmentCapacity, shipmentsReady, shipmentsTotal, creationTime, duration, timeleftString, itemName, itemIcon, itemQuality, itemID = C_Garrison.GetLandingPageShipmentInfo(self.buildingID);
 	GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
 	if (itemName) then
 		GameTooltip:SetText(itemName);
+	else
+		GameTooltip:SetText(name);
 	end
+
+	GameTooltip:AddLine(GARRISON_LANDING_SHIPMENT_LABEL, 1, 1, 1);
+	GameTooltip:AddLine(" ");
+
+	local shipmentsAvailable = shipmentCapacity;
+
+	if(shipmentsTotal) then
+		shipmentsAvailable = shipmentCapacity - shipmentsTotal;
+	end
+
+	if shipmentsAvailable > 0 then
+		GameTooltip:AddLine(format(GARRISON_LANDING_SHIPMENT_READY_TO_START, shipmentsAvailable) , GREEN_FONT_COLOR.r, GREEN_FONT_COLOR.g, GREEN_FONT_COLOR.b);
+	end
+
 	if (shipmentsReady and shipmentsTotal) then
-		GameTooltip:AddLine(format(GARRISON_LANDING_COMPLETED, shipmentsReady, shipmentsTotal), 1, 1, 1);
-	    
 		if (shipmentsReady == shipmentsTotal) then
-		    GameTooltip:AddLine(GARRISON_LANDING_RETURN, GREEN_FONT_COLOR.r, GREEN_FONT_COLOR.g, GREEN_FONT_COLOR.b);
-	    elseif (timeleftString) then
-		    GameTooltip:AddLine(format(GARRISON_LANDING_NEXT,timeleftString), 1, 1, 1);
+		    GameTooltip:AddLine(format(GARRISON_LANDING_RETURN, shipmentsTotal), GREEN_FONT_COLOR.r, GREEN_FONT_COLOR.g, GREEN_FONT_COLOR.b);
+	    else			
+			if (timeleftString) then
+				GameTooltip:AddLine(format(GARRISON_LANDING_COMPLETED, shipmentsReady, shipmentsTotal) .. " " .. format(GARRISON_LANDING_NEXT,timeleftString), 1, 1, 1);
+			else
+				GameTooltip:AddLine(format(GARRISON_LANDING_COMPLETED, shipmentsReady, shipmentsTotal), 1, 1, 1);			
+			end
 	    end
 	end
 	GameTooltip:Show();
@@ -269,20 +287,7 @@ function GarrisonLandingPageReportList_UpdateAvailable()
 			button.MissionType:SetTextColor(GARRISON_MISSION_TYPE_FONT_COLOR.r, GARRISON_MISSION_TYPE_FONT_COLOR.g, GARRISON_MISSION_TYPE_FONT_COLOR.b);
 			button.MissionType:SetText(item.duration);
 			button.MissionTypeIcon:Show();
-			button.RewardBG:Show();
-			
-			if ( item.cost > 0 ) then
-				button.CostBG:Show();
-				button.Cost:SetText(BreakUpLargeNumbers(item.cost));
-				button.Cost:Show();
-				button.CostLabel:Show();
-				button.MaterialIcon:Show();
-			else
-				button.CostBG:Hide();
-				button.Cost:Hide();
-				button.CostLabel:Hide();
-				button.MaterialIcon:Hide();
-			end
+			button.MissionTypeIcon:SetAtlas(item.typeAtlas);
 			
 			local index = 1;
 			for id, reward in pairs(item.rewards) do
@@ -357,10 +362,12 @@ function GarrisonLandingPageReportList_Update()
 			else
 				bgName = "GarrLanding-Mission-";
 			end
+			button.Title:SetText(item.name);
 			if (item.isComplete) then
 				bgName = bgName.."Complete";
 				button.MissionType:SetText(GARRISON_LANDING_BUILDING_COMPLEATE);
 				button.MissionType:SetTextColor(YELLOW_FONT_COLOR.r, YELLOW_FONT_COLOR.g, YELLOW_FONT_COLOR.b);
+				button.Title:SetWidth(290);
 			else
 				bgName = bgName.."InProgress";
 				button.MissionType:SetTextColor(GARRISON_MISSION_TYPE_FONT_COLOR.r, GARRISON_MISSION_TYPE_FONT_COLOR.g, GARRISON_MISSION_TYPE_FONT_COLOR.b);
@@ -371,6 +378,7 @@ function GarrisonLandingPageReportList_Update()
 				end
 				button.TimeLeft:SetText(item.timeLeft);
 				stopUpdate = false;
+				button.Title:SetWidth(322 - button.TimeLeft:GetWidth());
 			end
 
 			button.MissionTypeIcon:SetShown(not item.isBuilding);
@@ -378,12 +386,6 @@ function GarrisonLandingPageReportList_Update()
 			button.TimeLeft:SetShown(not item.isComplete);
 
 			button.BG:SetAtlas(bgName, true);
-			button.Title:SetText(item.name);
-			button.Cost:Hide();
-			button.CostLabel:Hide();
-			button.MaterialIcon:Hide();
-			button.RewardBG:Hide();
-			button.CostBG:Hide();
 			for i = 1, #button.Rewards do
 				button.Rewards[i]:Hide();
 			end

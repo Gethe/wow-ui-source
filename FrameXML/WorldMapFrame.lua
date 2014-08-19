@@ -428,7 +428,15 @@ function WorldMapFrame_OnEvent(self, event, ...)
 	elseif ( event == "UNIT_PORTRAIT_UPDATE" ) then
 		EncounterJournal_UpdateMapButtonPortraits();
 	elseif ( event == "SUPER_TRACKED_QUEST_CHANGED" ) then
-		WorldMapPOIFrame_SelectPOI(...);
+		local questID = ...;
+		local mapID, floorNumber = GetQuestWorldMapAreaID(questID);
+		if ( mapID ~= 0 ) then
+			SetMapByID(mapID, floorNumber);
+			if ( floorNumber ~= 0 ) then
+				SetDungeonMapLevel(floorNumber);
+			end
+		end
+		WorldMapPOIFrame_SelectPOI(questID);
 	elseif ( event == "PLAYER_STARTED_MOVING" ) then
 		if ( GetCVarBool("mapFade") ) then
 			WorldMapFrame_AnimAlphaOut(self, true);

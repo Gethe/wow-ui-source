@@ -159,7 +159,7 @@
 				</Anchors>
 				<Layers>
 					<Layer level="OVERLAY">
-						<Texture parentKey="Highlight" hidden="true" alphaMode="ADD" atlas="groupfinder-eye-highlight" useAtlasSize="true">
+						<Texture parentKey="Highlight" hidden="true" alpha="0" alphaMode="ADD" atlas="groupfinder-eye-highlight" useAtlasSize="true">
 							<Anchors>
 								<Anchor point="CENTER"/>
 							</Anchors>
@@ -167,8 +167,9 @@
 					</Layer>
 				</Layers>
 				<Animations>
-					<AnimationGroup parentKey="EyeHighlightAnim" setToFinalAlpha="true" looping="BOUNCE">
-						<Alpha childKey="Highlight" duration="0.75" order="1" fromAlpha="1" toAlpha="0"/>
+					<AnimationGroup parentKey="EyeHighlightAnim" setToFinalAlpha="true" looping="REPEAT">
+						<Scale childKey="Highlight" startDelay="0.1" smoothing="NONE" duration="1.3" order="1" fromScaleX="1" fromScaleY="1" toScaleX="2" toScaleY="2"/>
+						<Alpha childKey="Highlight" startDelay="0.1" smoothing="NONE" duration="1.3" order="1" fromAlpha="1" toAlpha="0"/>
 					</AnimationGroup>
 				</Animations>
 				<Scripts>

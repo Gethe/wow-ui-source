@@ -220,6 +220,12 @@
 	<Font name="TextStatusBarText" inherits="SystemFont_Outline_Small" virtual="true">
 		<Color r="1.0" g="1.0" b="1.0"/>
 	</Font>
+	<Font name="GameNormalNumberFont" inherits="NumberFont_GameNormal" virtual="true">
+		<Color r="1.0" g="0.82" b="0"/>
+	</Font>	
+	<Font name="WhiteNormalNumberFont" inherits="NumberFont_GameNormal" virtual="true">
+		<Color r="1.0" g="1.0" b="1.0"/>
+	</Font>	
 	<Font name="TextStatusBarTextLarge" inherits="SystemFont_Outline" virtual="true">
 		<Color r="1.0" g="1.0" b="1.0"/>
 	</Font>	

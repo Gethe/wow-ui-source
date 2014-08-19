@@ -95,7 +95,19 @@
 			<AbsValue val="32"/>
 		</FontHeight>
 	</Font>
-
+	
+	<!-- This font is used as a way to localize numbers (in some locations.) -->
+	<Font name="NumberFont_GameNormal" font="Fonts\FRIZQT__.TTF" virtual="true">
+		<Shadow>
+			<Offset>
+				<AbsDimension x="1" y="-1"/>
+			</Offset>
+			<Color r="0" g="0" b="0"/>
+		</Shadow>
+		<FontHeight>
+			<AbsValue val="10"/>
+		</FontHeight>
+	</Font>
 	<Font name="NumberFont_Shadow_Small" font="Fonts\ARIALN.TTF" virtual="true">
 		<Shadow>
 			<Offset>

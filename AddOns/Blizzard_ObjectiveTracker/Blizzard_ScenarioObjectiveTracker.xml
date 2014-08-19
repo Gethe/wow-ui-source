@@ -264,7 +264,7 @@
 		</Scripts>
 	</ScrollFrame>
 	
-	<Frame name="ScenarioProvingGroundsBlockAnim">
+	<Frame name="ScenarioProvingGroundsBlockAnim" parent="UIParent">
 		<Anchors>
 			<Anchor point="TOPLEFT" relativeTo="ScenarioProvingGroundsBlock"/>
 			<Anchor point="BOTTOMRIGHT" relativeTo="ScenarioProvingGroundsBlock"/>
@@ -291,7 +291,7 @@
 				</Texture>
 				<Texture parentKey="BorderAnim" atlas="ScenarioTrackerToast-FinalFiligree" useAtlasSize="true" alpha="0" alphaMode="ADD">
 					<Anchors>
-						<Anchor point="TOP" x="20" y="-4"/>
+						<Anchor point="TOPLEFT" x="4" y="-4"/>
 					</Anchors>
 				</Texture>
 				<Texture file="Interface\AchievementFrame\UI-Achievement-Alert-Glow" parentKey="Glow" alpha="0" alphaMode="ADD">				

@@ -2206,12 +2206,6 @@ function LFGRandomList_OnEnter(self)
 	GameTooltip:Show();
 end
 
-function isRaidFinderDungeonDisplayable(id)
-	local name, typeID, subtypeID, minLevel, maxLevel, _, _, _, expansionLevel = GetLFGDungeonInfo(id);
-	local myLevel = UnitLevel("player");
-	return myLevel >= minLevel and myLevel <= maxLevel and EXPANSION_LEVEL >= expansionLevel;
-end
-
 function LFGRole_GetChecked(button)
 	return button.checkButton:GetChecked();
 end

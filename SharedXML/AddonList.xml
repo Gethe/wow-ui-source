@@ -129,10 +129,10 @@
 					<OnClick>
 						if ( self:GetChecked() ) then
 							PlaySound("igMainMenuOptionCheckBoxOn");
-							SetAddonVersionCheck(0);
+							SetAddonVersionCheck(false);
 						else
 							PlaySound("igMainMenuOptionCheckBoxOff");
-							SetAddonVersionCheck(1);
+							SetAddonVersionCheck(true);
 						end
 						AddonList_Update();
 					</OnClick>

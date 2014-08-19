@@ -6,6 +6,8 @@ function QuestMapFrame_OnLoad(self)
 	self:RegisterEvent("QUEST_WATCH_LIST_CHANGED");
 	self:RegisterEvent("SUPER_TRACKED_QUEST_CHANGED");
 	self:RegisterEvent("GROUP_ROSTER_UPDATE");
+	self:RegisterEvent("PARTY_MEMBER_ENABLE");
+	self:RegisterEvent("PARTY_MEMBER_DISABLE");
 	self:RegisterEvent("QUEST_POI_UPDATE");
 	self:RegisterEvent("QUEST_WATCH_UPDATE");
 	self:RegisterEvent("QUEST_ACCEPTED");
@@ -67,10 +69,20 @@ function QuestMapFrame_OnEvent(self, event, ...)
 	elseif ( event == "SUPER_TRACKED_QUEST_CHANGED" ) then
 		local questID = ...;
 		QuestPOI_SelectButtonByQuestID(QuestScrollFrame.Contents, questID);
-	elseif ( event == "GROUP_ROSTER_UPDATE" and QuestMapFrame.DetailsFrame.questID ) then
-		QuestMapFrame_UpdateQuestDetailsButtons();
+	elseif ( event == "GROUP_ROSTER_UPDATE" ) then
+		if ( QuestMapFrame.DetailsFrame.questID ) then
+			QuestMapFrame_UpdateQuestDetailsButtons();
+		end
+
+		if ( self:IsVisible() ) then
+			QuestMapFrame_UpdateAll();
+		end
 	elseif ( event == "QUEST_POI_UPDATE" ) then
 		QuestMapFrame_UpdateAll();
+	elseif ( event == "PARTY_MEMBER_ENABLE" or event == "PARTY_MEMBER_DISABLE" ) then
+		if ( self:IsVisible() ) then
+			QuestMapFrame_UpdateAll();
+		end	
 	elseif ( event == "QUEST_ACCEPTED" ) then
 		TUTORIAL_QUEST_ACCEPTED = arg2;
 	end
@@ -99,6 +111,9 @@ function QuestMapFrame_Show()
 	if ( not QuestMapFrame:IsShown() ) then
 		WorldMapFrame:SetWidth(992);
 		WorldMapFrame.BorderFrame:SetWidth(992);
+		
+		QuestMapFrame_UpdateAll();
+		
 		QuestMapFrame:Show();
 	
 		WorldMapFrame.UIElementsFrame.OpenQuestPanelButton:Hide();
@@ -478,14 +493,26 @@ function QuestLogQuests_Update(poiTable)
 			button = QuestLogQuests_GetTitleButton(titleIndex);
 			button.questID = questID;
 
+			if ( displayQuestID ) then
+				title = questID.." - "..title;
+			end
 			if ( ENABLE_COLORBLIND_MODE == "1" ) then
 				title = "["..level.."] " .. title;
 			end
-			if ( displayQuestID ) then
-				button.Text:SetText(questID.." - "..title);
-			else
-				button.Text:SetText(title);
+			
+			-- If not a header see if any nearby group mates are on this quest
+			partyMembersOnQuest = 0;
+			for j=1, GetNumSubgroupMembers() do
+				if ( IsUnitOnQuestByQuestID(questID, "party"..j) ) then
+					partyMembersOnQuest = partyMembersOnQuest + 1;
+				end
 			end
+			
+			if ( partyMembersOnQuest > 0 ) then
+				title = "["..partyMembersOnQuest.."] "..title;
+			end
+
+			button.Text:SetText(title);
 			button.Text:SetTextColor( difficultyColor.r, difficultyColor.g, difficultyColor.b );
 			
 			totalHeight = totalHeight + button.Text:GetHeight();
@@ -796,7 +823,9 @@ function QuestMapLogTitleButton_OnEnter(self)
 	-- description
 	if ( isComplete and isComplete > 0 ) then
 		GameTooltip:AddLine(GetQuestLogCompletionText(self.questLogIndex), 1, 1, 1, true);
+		GameTooltip:AddLine(" ");
 	else
+		local needsSeparator = false;
 		local _, objectiveText = GetQuestLogQuestText(self.questLogIndex);
 		GameTooltip:AddLine(objectiveText, 1, 1, 1, true);
 		GameTooltip:AddLine(" ");
@@ -810,6 +839,7 @@ function QuestMapLogTitleButton_OnEnter(self)
 					color = GRAY_FONT_COLOR;
 				end
 				GameTooltip:AddLine(QUEST_DASH..text, color.r, color.g, color.b, true);
+				needsSeparator = true;
 			end
 		end
 		if ( requiredMoney > 0 ) then
@@ -820,11 +850,29 @@ function QuestMapLogTitleButton_OnEnter(self)
 				color = GRAY_FONT_COLOR;
 			end
 			GameTooltip:AddLine(QUEST_DASH..GetMoneyString(playerMoney).." / "..GetMoneyString(requiredMoney), color.r, color.g, color.b);
+			needsSeparator = true;
+		end
+		
+		if ( needsSeparator ) then
+			GameTooltip:AddLine(" ");
 		end
 	end
-	GameTooltip:AddLine(" ");
-
-	GameTooltip:AddLine(CLICK_QUEST_DETAILS, GREEN_FONT_COLOR.r, GREEN_FONT_COLOR.g, GREEN_FONT_COLOR.b);	
+	
+	GameTooltip:AddLine(CLICK_QUEST_DETAILS, GREEN_FONT_COLOR.r, GREEN_FONT_COLOR.g, GREEN_FONT_COLOR.b);
+	
+	local partyMembersOnQuest = 0;
+	for i=1, GetNumSubgroupMembers() do
+		if ( IsUnitOnQuestByQuestID(self.questID, "party"..i) ) then
+			--Add the header line if this the first party member found that is on the quest.
+			if ( partyMembersOnQuest == 0 ) then
+				GameTooltip:AddLine(" ");
+				GameTooltip:AddLine("Nearby party members that are on this quest: ");
+			end
+			partyMembersOnQuest = partyMembersOnQuest + 1;
+			GameTooltip:AddLine(LIGHTYELLOW_FONT_COLOR_CODE..GetUnitName("party"..i, true)..FONT_COLOR_CODE_CLOSE);
+		end
+	end
+	
 	GameTooltip:Show();
 end
 

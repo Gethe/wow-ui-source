@@ -280,7 +280,7 @@ function GarrisonFollowerAbilityTooltipTemplate_SetAbility(tooltipFrame, garrFol
 
 		local abilityIsTrait = C_Garrison.GetFollowerAbilityIsTrait(garrFollowerAbilityID);
 		
-		local abilityFrameHeightBase = 40;
+		local abilityFrameHeightBase = 45;
 		local spacingBetweenNameAndDescription = 4;			-- must match the XML ability template setting
 		local spacingBetweenDescriptionAndDetails = 10;		-- must match the XML ability template setting
 

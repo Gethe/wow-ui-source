@@ -3338,6 +3338,20 @@ StaticPopupDialogs["BATTLEFIELD_BORDER_WARNING"] = {
 	closeButton = 1,
 };
 
+StaticPopupDialogs["LFG_LIST_ENTRY_EXPIRED_TOO_MANY_PLAYERS"] = {
+	text = LFG_LIST_ENTRY_EXPIRED_TOO_MANY_PLAYERS,
+	button1 = OKAY,
+	timeout = 0,
+	whileDead = 1,
+};
+
+StaticPopupDialogs["LFG_LIST_ENTRY_EXPIRED_TIMEOUT"] = {
+	text = LFG_LIST_ENTRY_EXPIRED_TIMEOUT,
+	button1 = OKAY,
+	timeout = 0,
+	whileDead = 1,
+};
+
 function StaticPopup_FindVisible(which, data)
 	local info = StaticPopupDialogs[which];
 	if ( not info ) then

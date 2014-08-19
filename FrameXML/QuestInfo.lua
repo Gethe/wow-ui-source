@@ -632,7 +632,7 @@ function QuestInfo_ShowRewards()
 end
 
 function QuestInfo_ToggleRewardElement(frame, value, anchor)
-	if ( value and value ~= 0 ) then
+	if ( value and tonumber(value) ~= 0 ) then
 		frame:SetPoint("TOPLEFT", anchor, "BOTTOMLEFT", 0, -REWARDS_SECTION_OFFSET);
 		frame.ValueText:SetText(value);
 		frame:Show();

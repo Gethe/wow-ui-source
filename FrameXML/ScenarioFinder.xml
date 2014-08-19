@@ -19,7 +19,7 @@
 			<Layer level="BORDER">
 				<Texture name="$parentTopTileStreaks" inherits="_UI-Frame-TopTileStreaks" parentKey="TopTileStreaks">
 					<Anchors>
-						<Anchor point="TOPLEFT" x="0" y="-21"/>
+						<Anchor point="TOPLEFT" x="-5" y="-21"/>
 						<Anchor point="TOPRIGHT" x="-2" y="-21"/>
 					</Anchors>
 				</Texture>

@@ -401,7 +401,7 @@ function GlyphFrame_CalculateScroll(offset)
 end
 
 
-function GlyphFrame_OnTextChanged(self)
+function GlyphFrameSearchBox_OnTextChanged(self)
 	local text = self:GetText();
 	
 	if ( text == SEARCH ) then
@@ -410,6 +410,7 @@ function GlyphFrame_OnTextChanged(self)
 	end
 	
 	SetGlyphNameFilter(text);
+	GlyphFrame_DirtyList(self:GetParent());
 	GlyphFrame_UpdateGlyphList();
 end
 

@@ -70,9 +70,10 @@
 										<Anchor point="CENTER" x="50" y="19"/>
 									</Anchors>
 								</FontString>
-								<FontString name="PlayerLevelText" inherits="GameFontNormalSmall" justifyH="CENTER">
+								<FontString name="PlayerLevelText" inherits="GameNormalNumberFont" justifyH="CENTER">
+									<!--WARNING:: This is re-anchored in code.-->
 									<Anchors>
-										<Anchor point="CENTER" x="-63" y="-17"/>
+										<Anchor point="CENTER" x="-62" y="-17"/>
 									</Anchors>
 								</FontString>
 								<FontString name="PlayerPVPTimerText" inherits="GameFontNormalSmall">

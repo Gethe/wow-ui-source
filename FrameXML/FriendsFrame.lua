@@ -1811,15 +1811,16 @@ function FriendsFrameTooltip_Show(self)
 				end
 				toonNameString = _G["FriendsTooltipToon"..toonIndex.."Name"];
 				toonInfoString = _G["FriendsTooltipToon"..toonIndex.."Info"];
+				text = BNet_GetClientEmbeddedTexture(client, 14).." ";
 				if ( client == BNET_CLIENT_WOW ) then
 					if ( realmName == playerRealmName and faction == playerFactionGroup ) then
-						text = string.format(FRIENDS_TOOLTIP_WOW_TOON_TEMPLATE, toonName, level, race, class);
+						text = text..string.format(FRIENDS_TOOLTIP_WOW_TOON_TEMPLATE, toonName, level, race, class);
 					else
-						text = string.format(FRIENDS_TOOLTIP_WOW_TOON_TEMPLATE, toonName..CANNOT_COOPERATE_LABEL, level, race, class);
+						text = text..string.format(FRIENDS_TOOLTIP_WOW_TOON_TEMPLATE, toonName..CANNOT_COOPERATE_LABEL, level, race, class);
 					end
 					gameText = zoneName;
 				else
-					text = toonName;
+					text = text..toonName;
 				end
 				FriendsFrameTooltip_SetLine(toonNameString, nil, text);
 				FriendsFrameTooltip_SetLine(toonInfoString, nil, gameText);
@@ -2395,7 +2396,6 @@ end
 
 function BattleTagInviteFrame_Show(name)
 	BattleTagInviteFrame.BattleTag:SetText(name);
-	BattleTagInviteFrame.NoteFrame.EditBox:SetText("");
 	if ( not BattleTagInviteFrame:IsShown() ) then
 		StaticPopupSpecial_Show(BattleTagInviteFrame);
 	end

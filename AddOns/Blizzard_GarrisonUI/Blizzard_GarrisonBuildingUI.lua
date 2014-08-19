@@ -99,6 +99,8 @@ function GarrisonBuildingFrame_OnLoad(self)
 	
 	GarrisonBuildingFrame.SPEC_CHANGE_CURRENCY, GarrisonBuildingFrame.SPEC_CHANGE_COST = C_Garrison.GetSpecChangeCost();
 	
+	self.TitleText:SetText(GARRISON_ARCHITECT);
+
 	self:RegisterEvent("GARRISON_UPDATE");
 	self:RegisterEvent("CURRENCY_DISPLAY_UPDATE");
 	self:RegisterEvent("GARRISON_BUILDING_UPDATE");
@@ -158,7 +160,7 @@ function GarrisonBuildingFrame_OnEvent(self, event, ...)
 		GarrisonPlot_UpdateBuilding(plotID);
 	elseif (event == "GARRISON_BUILDING_PLACED") then
 		local plotID = ...;
-		local id, name, texPrefix, icon, rank, isBuilding, timeStart, buildTime, canActivate, canUpgrade = C_Garrison.GetOwnedBuildingInfoAbbrev(plotID);
+		local id, name, texPrefix, icon, rank, isBuilding, timeStart, buildTime, canActivate, canUpgrade, isPrebuilt = C_Garrison.GetOwnedBuildingInfoAbbrev(plotID);
 		if (id) then
 			local Plot = self.plots[plotID];
 			if (not Plot) then
@@ -171,7 +173,7 @@ function GarrisonBuildingFrame_OnEvent(self, event, ...)
 			end
 			Plot.BuildingCreateFlareAnim:Play();
 			PlaySoundKitID(40999);
-			GarrisonPlot_SetBuilding(Plot, id, name, texPrefix, icon, rank, isBuilding, timeStart, buildTime, canActivate, canUpgrade);
+			GarrisonPlot_SetBuilding(Plot, id, name, texPrefix, icon, rank, isBuilding, timeStart, buildTime, canActivate, canUpgrade, isPrebuilt);
 			local buildingInfo = GarrisonBuildingFrame.selectedBuilding;
 			if (buildingInfo and id == buildingInfo.buildingID) then
 				GarrisonBuildingInfoBox_ShowBuilding(plotID, true);
@@ -246,18 +248,20 @@ function GarrisonBuildingFrame_UpdatePlots()
 		Plot.PlotHighlight:SetAtlas("Garr_Plot_Glow_"..plot.size, true);
 		Plot.Lock:Hide();
 		Plot.locked = false;
-		local id, name, texPrefix, icon, rank, isBuilding, timeStart, buildTime, canActivate, canUpgrade, planExists = C_Garrison.GetOwnedBuildingInfoAbbrev(plot.id);
+		local id, name, texPrefix, icon, rank, isBuilding, timeStart, buildTime, canActivate, canUpgrade, isPrebuilt = C_Garrison.GetOwnedBuildingInfoAbbrev(plot.id);
+		Plot.isPrebuilt = isPrebuilt;
 		if (id) then
-			GarrisonPlot_SetBuilding(Plot, id, name, texPrefix, icon, rank, isBuilding, timeStart, buildTime, canActivate, canUpgrade);
+			GarrisonPlot_SetBuilding(Plot, id, name, texPrefix, icon, rank, isBuilding, timeStart, buildTime, canActivate, canUpgrade, isPrebuilt);
 		elseif (plot.buildingID) then
 			id, name = C_Garrison.GetBuildingInfo(plot.buildingID);
 			GarrisonPlot_SetBuilding(Plot, plot.buildingID, name, plot.building, plot.icon);
 			Plot.locked = true;
 			Plot.Lock:Show();
+			-- Locked buildings are prebuilt
+			Plot.isPrebuilt = true;
 		else
 			GarrisonPlot_ClearBuilding(Plot);
 		end
-		Plot.planExists = planExists;
 		Plot:Show();
 		GarrisonBuildingFrame.plots[plot.id] = Plot;
 	end
@@ -335,11 +339,19 @@ function GarrisonTownHall_Select()
 	infoBox.RankBadge:SetAtlas("Garr_LevelBadge_"..GarrisonBuildingFrame.level, true);
 	local factionGroup = UnitFactionGroup("player");
 	infoBox.Building:SetAtlas(format(FactionData[factionGroup].townHallInfo, GarrisonBuildingFrame.level), true);
-	local upgradeCost = C_Garrison.GetGarrisonUpgradeCost();
-	if (upgradeCost and upgradeCost > 0) then
+	local costMaterial, costGold = C_Garrison.GetGarrisonUpgradeCost();
+	if (costMaterial and costMaterial > 0) then
 		local _, _, currencyTexture = GetCurrencyInfo(GARRISON_CURRENCY);
-		infoBox.UpgradeCostBar.CostAmount:SetText(upgradeCost .."  |T" .. currencyTexture .. ":0:0:0:-1|t ");
+		infoBox.UpgradeCostBar.CostAmountMaterial:SetText(costMaterial .."  |T" .. currencyTexture .. ":0:0:0:-1|t ");
 		infoBox.UpgradeCostBar:Show();
+		if (costGold and costGold > 0) then
+			infoBox.UpgradeCostBar.CostAmountGold:SetText(costGold);
+			infoBox.UpgradeCostBar.CostAmountGold:Show();
+			infoBox.UpgradeCostBar.GoldIcon:Show();
+		else
+			infoBox.UpgradeCostBar.CostAmountGold:Hide();
+			infoBox.UpgradeCostBar.GoldIcon:Hide();
+		end
 	else
 		infoBox.UpgradeCostBar:Hide();
 	end
@@ -471,11 +483,11 @@ function GarrisonBuildingInfoBox_ShowBuilding(ID, owned, showLock)
 	end
 	infoBox.ID = ID;
 	infoBox:Show()
-	local id, name, texPrefix, icon, description, rank, currencyID, currencyQty, buildTime, needsPlan, planExists, possSpecs, upgrades, canUpgrade, isMaxLevel, knownSpecs, currSpec, specCooldown, isBuilding, startTime, buildDuration, timeLeftStr, canActivate, hasFollowerSlot;
+	local id, name, texPrefix, icon, description, rank, currencyID, currencyQty, buildTime, needsPlan, isPrebuilt, possSpecs, upgrades, canUpgrade, isMaxLevel, knownSpecs, currSpec, specCooldown, isBuilding, startTime, buildDuration, timeLeftStr, canActivate, hasFollowerSlot;
 	if (owned) then
-		id, name, texPrefix, icon, description, rank, currencyID, currencyQty, buildTime, needsPlan, planExists, possSpecs, upgrades, canUpgrade, isMaxLevel, hasFollowerSlot, knownSpecs, currSpec, specCooldown, isBuilding, startTime, buildDuration, timeLeftStr, canActivate = C_Garrison.GetOwnedBuildingInfo(ID);
+		id, name, texPrefix, icon, description, rank, currencyID, currencyQty, buildTime, needsPlan, isPrebuilt, possSpecs, upgrades, canUpgrade, isMaxLevel, hasFollowerSlot, knownSpecs, currSpec, specCooldown, isBuilding, startTime, buildDuration, timeLeftStr, canActivate = C_Garrison.GetOwnedBuildingInfo(ID);
 	else
-		id, name, texPrefix, icon, description, rank, currencyID, currencyQty, buildTime, needsPlan, planExists, possSpecs, upgrades, canUpgrade, isMaxLevel, hasFollowerSlot = C_Garrison.GetBuildingInfo(ID);
+		id, name, texPrefix, icon, description, rank, currencyID, currencyQty, buildTime, needsPlan, isPrebuilt, possSpecs, upgrades, canUpgrade, isMaxLevel, hasFollowerSlot = C_Garrison.GetBuildingInfo(ID);
 	end
 	infoBox.canActivate = canActivate;
 	if (name == nil) then
@@ -1309,8 +1321,8 @@ function GarrisonPlot_OnReceiveDrag(self)
 	-- Error if we drag the wrong building size onto the plot, or we drag onto a pre-built plot
 	local dragPlotSize = BuildingSizeForTab(GarrisonBuildingFrame.selectedTab:GetID())
 	local myPlotSize = GarrisonBuildingFrame.plots[self.plotID].size;
-	local planExists = GarrisonBuildingFrame.plots[self.plotID].planExists;
-	if (dragPlotSize ~= myPlotSize or (self.buildingID and not planExists)) then
+	local isPrebuilt = GarrisonBuildingFrame.plots[self.plotID].isPrebuilt;
+	if (dragPlotSize ~= myPlotSize or (self.buildingID and isPrebuilt)) then
 		UIErrorsFrame:AddMessage(ERR_GARRISON_INVALID_PLOT_BUILDING, 1.0, 0.1, 0.1, 1.0);
 		GarrisonBuildingPlacer_Clear();
 		return;
@@ -1395,7 +1407,7 @@ end
 function GarrisonPlot_ShowTooltip(self)
 	if (self.buildingID and self.tooltip) then
 		GameTooltip:SetOwner(self, "ANCHOR_CURSOR_RIGHT")
-		if (not self.planExists) then
+		if (self.isPrebuilt) then
 			GarrisonBuilding_ShowLevelTooltip(self.tooltip, self.plotID, self.buildingID, self);
 		else
 			GameTooltip:SetText(self.tooltip, nil, nil, nil, nil, true);
@@ -1449,8 +1461,8 @@ end
 function GarrisonPlot_UpdateBuilding(plotID)
 	local plot = GarrisonBuildingFrame.plots[plotID];
 	if (plot) then
-		local id, name, texPrefix, icon, rank, isBuilding, timeStart, buildTime, canActivate, canUpgrade = C_Garrison.GetOwnedBuildingInfoAbbrev(plotID);
-		GarrisonPlot_SetBuilding(plot, id, name, texPrefix, icon, rank, isBuilding, timeStart, buildTime, canActivate, canUpgrade)
+		local id, name, texPrefix, icon, rank, isBuilding, timeStart, buildTime, canActivate, canUpgrade, isPrebuilt = C_Garrison.GetOwnedBuildingInfoAbbrev(plotID);
+		GarrisonPlot_SetBuilding(plot, id, name, texPrefix, icon, rank, isBuilding, timeStart, buildTime, canActivate, canUpgrade, isPrebuilt)
 	end
 end
 
@@ -1465,7 +1477,7 @@ function GarrisonPlot_SetBuildingArt(frame, texture)
 	end
 end
 		
-function GarrisonPlot_SetBuilding(self, id, tooltip, texPrefix, icon, rank, isBuilding, timeStart, buildTime, canActivate, canUpgrade)
+function GarrisonPlot_SetBuilding(self, id, tooltip, texPrefix, icon, rank, isBuilding, timeStart, buildTime, canActivate, canUpgrade, isPrebuilt)
 	GarrisonPlot_ClearBuilding(self);
 	self.buildingID = id;
 	if (canActivate) then
@@ -1598,7 +1610,14 @@ function GarrisonBuildingFrame_StartUpgrade(self)
 	end
 	
 	local id, name, texPrefix, icon, rank, currencyID, currencyQty, buildTime = C_Garrison.GetBuildingUpgradeInfo(building.buildingID)
-	
+
+	-- Error if not enough money
+	local _, currencyAmount = GetCurrencyInfo(GARRISON_CURRENCY);
+	if (currencyAmount < currencyQty) then
+		UIErrorsFrame:AddMessage(ERR_GARRISON_NOT_ENOUGH_CURRENCY, 1.0, 0.1, 0.1, 1.0);
+		return;
+	end
+
 	local Plot = GarrisonBuildingFrame.plots[building.plotID];
 	
 	local confirmation = GarrisonBuildingFrame.Confirmation;

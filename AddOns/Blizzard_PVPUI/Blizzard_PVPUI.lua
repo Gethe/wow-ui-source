@@ -34,7 +34,6 @@ StaticPopupDialogs["CONFIRM_JOIN_SOLO"] = {
 local DEFAULT_BG_TEXTURE = "Interface\\PVPFrame\\RandomPVPIcon";
 
 function PVPUIFrame_OnLoad(self)
-	RaiseFrameLevel(self.Shadows);
 	PanelTemplates_SetNumTabs(self, 2);
 
 	if (UnitFactionGroup("player") == PLAYER_FACTION_GROUP[0]) then

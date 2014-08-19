@@ -337,6 +337,28 @@
 										</Scripts>
 									</ScenarioPOIFrame>
 									<Button name="WorldMapButton" setAllPoints="true">
+										<Layers>
+											<Layer level="ARTWORK">
+												<Texture parentKey="AzerothHighlight" file="Interface\WorldMap\Cosmic\Cosmic-Azeroth-Highlight" hidden="true">
+													<Size x="1024" y="512"/>
+													<Anchors>
+														<Anchor point="BOTTOMLEFT" x="0" y="0"/>
+													</Anchors>
+												</Texture>												
+												<Texture parentKey="OutlandHighlight" file="Interface\WorldMap\Cosmic\Cosmic-Outland-Highlight" hidden="true">
+													<Size x="1024" y="512"/>
+													<Anchors>
+														<Anchor point="BOTTOMLEFT" x="0" y="0"/>
+													</Anchors>
+												</Texture>	
+												<Texture parentKey="DraenorHighlight" file="Interface\WorldMap\Cosmic\Cosmic-Draenor-Highlight" hidden="true">
+													<Size x="1024" y="512"/>
+													<Anchors>
+														<Anchor point="TOPLEFT" x="0" y="0"/>
+													</Anchors>
+												</Texture>
+											</Layer>
+										</Layers>
 										<Frames>
 											<Frame name="WorldMapUnitDropDown" inherits="UIDropDownMenuTemplate" clampedToScreen="true" id="1" hidden="true"/>
 											<Frame name="WorldMapFlag1" inherits="WorldMapFlagTemplate" id="1"/>
@@ -360,63 +382,56 @@
 												</Scripts>
 											</Frame>							
 											<Button name="OutlandButton" inherits="WorldMapFakeButtonTemplate"  hidden="true">
-												<Size x="320" y="320"/>
+												<Size x="241" y="253"/>
 												<Anchors>
-													<Anchor point="TOPLEFT" x="115" y="-90"/>
+													<Anchor point="TOPLEFT" x="126" y="-337"/>
 												</Anchors>
 												<Scripts>
 													<OnLoad>
 														self.continent = 3;
 													</OnLoad>
+													<OnEnter>
+														self:GetParent().OutlandHighlight:Show();
+													</OnEnter>
+													<OnLeave>
+														self:GetParent().OutlandHighlight:Hide();
+													</OnLeave>													
 												</Scripts>
-												<HighlightTexture name="$parentHighlight" file="Interface\WorldMap\Cosmic\Cosmic-Outland-Highlight">
-													<Size x="856" y="605"/>
-													<Anchors>
-														<Anchor point="CENTER" x="176" y="-87"/>
-													</Anchors>
-												</HighlightTexture>
 											</Button>
 											<Button name="AzerothButton" inherits="WorldMapFakeButtonTemplate" hidden="true">
-												<Size x="366" y="366"/>
+												<Size x="330" y="342"/>
 												<Anchors>
-													<Anchor point="TOPLEFT" x="593" y="-255"/>
+													<Anchor point="TOPLEFT" x="611" y="-288"/>
 												</Anchors>
 												<Scripts>
 													<OnLoad>
 														self.continent = 0;
 													</OnLoad>
+													<OnEnter>
+														self:GetParent().AzerothHighlight:Show();
+													</OnEnter>
+													<OnLeave>
+														self:GetParent().AzerothHighlight:Hide();
+													</OnLeave>													
 												</Scripts>
-												<HighlightTexture name="$parentHighlight" file="Interface\WorldMap\Cosmic\Cosmic-Azeroth-Highlight">
-													<Size x="898" y="647"/>
-													<Anchors>
-														<Anchor point="CENTER" x="-224" y="104"/>
-													</Anchors>
-												</HighlightTexture>
 											</Button>
 											<Button name="DraenorButton" inherits="WorldMapFakeButtonTemplate"  hidden="true">
-												<Size x="220" y="220"/>
+												<Size x="273" y="261"/>
 												<Anchors>
-													<Anchor point="TOPLEFT" x="500" y="-20"/>
+													<Anchor point="TOPLEFT" x="329" y="-142"/>
 												</Anchors>
-												<Layers>
-													<Layer level="ARTWORK">
-														<Texture setAllPoints="true">
-															<Color r="0" g="0.5" b="1"/>
-														</Texture>
-														<FontString inherits="DestinyFontHuge" text="Draenor">
-															<Anchors>
-																<Anchor point="CENTER"/>
-															</Anchors>
-															<Color r="1" g="0.82" b="1"/>
-														</FontString>
-													</Layer>
-												</Layers>
 												<Scripts>
 													<OnLoad>
 														self.continent = 7;
+														self:SetFrameLevel(OutlandButton:GetFrameLevel()+1);
 													</OnLoad>
+													<OnEnter>
+														self:GetParent().DraenorHighlight:Show();
+													</OnEnter>
+													<OnLeave>
+														self:GetParent().DraenorHighlight:Hide();
+													</OnLeave>													
 												</Scripts>
-												<HighlightTexture parentKey="HighlightTexture" file="Interface\QuestFrame\UI-QuestLogTitleHighlight" alphaMode="ADD"/>
 											</Button>							
 											<Button name="TheMaelstromButton" inherits="WorldMapMaelstromButtonTemplate" text="TheMaelstrom">
 												<Size x="120" y="120"/>

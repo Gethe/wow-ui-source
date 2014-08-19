@@ -57,18 +57,6 @@
 					</Anchors>
 				</Texture>
 			</Layer>
-			<Layer level="BORDER">
-				<Texture parentKey="CostBG" atlas="GarrLandingList-CostBG" useAtlasSize="true">
-					<Anchors>
-						<Anchor point="BOTTOM" x="-15" y="4"/>
-					</Anchors>
-				</Texture>
-				<Texture parentKey="RewardBG" atlas="GarrLanding_RewardsListBG" useAtlasSize="true">
-					<Anchors>
-						<Anchor point="RIGHT"/>
-					</Anchors>
-				</Texture>
-			</Layer>
 			<Layer level="ARTWORK">
 				<Texture parentKey="MissionTypeIcon" atlas="GarrMission_MissionIcon-Combat">
 					<Size x="50" y="50"/>
@@ -100,22 +88,6 @@
 						<Anchor point="BOTTOMRIGHT" x="-10" y="5"/>
 					</Anchors>
 					<Color r="0.792" g="0.690" b="0.529" a="1"/>
-				</FontString>
-				<FontString parentKey="CostLabel" inherits="GameFontNormal" justifyH="LEFT" text="COSTS_LABEL" hidden="true">
-					<Anchors>
-						<Anchor point="LEFT" relativeKey="$parent.CostBG" relativePoint="LEFT" x="4" y="0"/>
-					</Anchors>
-				</FontString>
-				<Texture parentKey="MaterialIcon" atlas="GarrMission_CurrencyIcon-Material" hidden="true">
-					<Size x="24" y="24"/>
-					<Anchors>
-						<Anchor point="RIGHT" relativeKey="$parent.CostBG" relativePoint="RIGHT" x="0" y="0"/>
-					</Anchors>
-				</Texture>
-				<FontString parentKey="Cost" inherits="GameFontHighlight" justifyH="RIGHT" hidden="true">
-					<Anchors>
-						<Anchor point="RIGHT" relativeKey="$parent.MaterialIcon" relativePoint="LEFT" x="0" y="0"/>
-					</Anchors>
 				</FontString>
 			</Layer>
 		</Layers>
@@ -205,6 +177,86 @@
 		</Scripts>
 	</Frame>
 	
+	<Button name="GarrisonLandingPageTabTemplate" virtual="true">
+        <Size x="115" y="32"/>
+        <Layers>
+        	<Layer level="BACKGROUND">
+				<Texture parentKey="LeftDisabled" atlas="GarrLanding-Tab-Bottom-Selected-Left" useAtlasSize="true">
+        			<Anchors>
+        				<Anchor point="TOPLEFT" x="0" y="0"/>
+        			</Anchors>
+        		</Texture>
+				<Texture parentKey="MiddleDisabled" atlas="GarrLanding-Tab-Bottom-Selected" useAtlasSize="true">
+        			<Anchors>
+        				<Anchor point="LEFT" relativeKey="$parent.LeftDisabled" relativePoint="RIGHT"/>
+        			</Anchors>
+        		</Texture>
+				<Texture parentKey="RightDisabled" atlas="GarrLanding-Tab-Bottom-Selected-Right" useAtlasSize="true">
+        			<Anchors>
+        				<Anchor point="LEFT" relativeKey="$parent.MiddleDisabled" relativePoint="RIGHT"/>
+        			</Anchors>
+        		</Texture>
+				<Texture parentKey="Left" atlas="GarrLanding-Tab-Bottom-Unselected-Left" useAtlasSize="true">
+        			<Anchors>
+        				<Anchor point="TOPLEFT"/>
+        			</Anchors>
+        		</Texture>
+				<Texture parentKey="Middle" atlas="GarrLanding-Tab-Bottom-Unselected" useAtlasSize="true">
+        			<Anchors>
+        				<Anchor point="LEFT" relativeKey="$parent.Left" relativePoint="RIGHT"/>
+					</Anchors>
+        		</Texture>
+				<Texture parentKey="Right" atlas="GarrLanding-Tab-Bottom-Unselected-Right" useAtlasSize="true">
+        			<Anchors>
+        				<Anchor point="LEFT" relativeKey="$parent.Middle" relativePoint="RIGHT"/>
+        			</Anchors>
+        		</Texture>
+				<Texture parentKey="LeftHighlight" atlas="GarrLanding-Tab-Bottom-Highlight-Left" useAtlasSize="true" hidden="true" alphaMode="ADD">
+        			<Anchors>
+        				<Anchor point="TOPLEFT" x="0" y="0"/>
+        			</Anchors>
+        		</Texture>
+				<Texture parentKey="RightHighlight" atlas="GarrLanding-Tab-Bottom-Highlight-Right" useAtlasSize="true" hidden="true" alphaMode="ADD">
+        			<Anchors>
+        				<Anchor point="TOPRIGHT" x="0" y="0"/>
+        			</Anchors>
+        		</Texture>
+				<Texture parentKey="MiddleHighlight" atlas="GarrLanding-Tab-Bottom-Highlight" useAtlasSize="true" hidden="true" alphaMode="ADD">
+        			<Anchors>
+        				<Anchor point="LEFT" relativeKey="$parent.LeftHighlight" relativePoint="RIGHT"/>
+						<Anchor point="RIGHT" relativeKey="$parent.RightHighlight" relativePoint="LEFT"/>
+					</Anchors>
+        		</Texture>
+        	</Layer>
+        </Layers>
+		<Scripts>
+			<OnLoad>
+				self.deselectedTextY = -3;
+			</OnLoad>
+			<OnEnter>
+				self.LeftHighlight:Show();
+				self.MiddleHighlight:Show();
+				self.RightHighlight:Show();
+			</OnEnter>
+			<OnLeave>
+				self.LeftHighlight:Hide();
+				self.MiddleHighlight:Hide();
+				self.RightHighlight:Hide();
+			</OnLeave>
+			<OnShow>
+				PanelTemplates_TabResize(self, 10);
+			</OnShow>
+			<OnClick function="GarrisonLandingPageTab_OnClick"/>
+		</Scripts>
+		<ButtonText name="$parentText" parentKey="Text">
+			<Anchors>
+				<Anchor point="TOP" x="0" y="-18"/>
+			</Anchors>
+		</ButtonText>
+		<NormalFont style="GameFontNormalSmall"/>
+		<HighlightFont style="GameFontHighlightSmall"/>
+		<DisabledFont style="GameFontHighlightSmall"/>
+    </Button>
 
 	<Frame name="GarrisonLandingPage" parent="UIParent" enableMouse="true" toplevel="true" hidden="true">
 		<Size x="830" y="538"/>
@@ -318,22 +370,16 @@
 				</Scripts>
 			</Frame>
 			
-			<Button name="$parentTab1" inherits="GarrisonMissionFrameTabTemplate" id="1" text="LANDING_PAGE_REPORT">
+			<Button name="$parentTab1" inherits="GarrisonLandingPageTabTemplate" id="1" text="LANDING_PAGE_REPORT">
 				<Anchors>
-					<Anchor point="BOTTOMLEFT" x="70" y="-22"/>
+					<Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" x="70" y="21"/>
 				</Anchors>
-				<Scripts>
-					<OnClick function="GarrisonLandingPageTab_OnClick"/>
-				</Scripts>
 			</Button>
 			
-			<Button name="$parentTab2" inherits="GarrisonMissionFrameTabTemplate" id="2" text="GARRISON_FOLLOWERS">
+			<Button name="$parentTab2" inherits="GarrisonLandingPageTabTemplate" id="2" text="GARRISON_FOLLOWERS">
 				<Anchors>
 					<Anchor point="LEFT" relativeTo="$parentTab1" relativePoint="RIGHT" x="-5" y="0"/>
 				</Anchors>		
-				<Scripts>
-					<OnClick function="GarrisonLandingPageTab_OnClick"/>
-				</Scripts>
 			</Button>
 			
 			<Frame name="$parentReport" parentKey="Report">
@@ -653,11 +699,20 @@
 							<Anchor point="TOPLEFT" x="23" y="-10"/>
 						</Anchors>
 					</Frame>
-					<StatusBar parentKey="XPBar" inherits="GarrisonFollowerXPBarTemplate">
+					<StatusBar parentKey="XPBar" inherits="GarrisonFollowerXPBarTemplate" enableMouse="true">
 						<Size x="370" y="5"/>
 						<Anchors>
 							<Anchor point="BOTTOMLEFT" relativeKey="$parent.PortraitFrame" relativePoint="BOTTOMRIGHT" x="7" y="5"/>
 						</Anchors>
+						<Layers>
+							<Layer level="HIGHLIGHT">
+								<FontString parentKey="Label" inherits="NumberFontNormalLarge">
+									<Anchors>
+										<Anchor point="CENTER"/>
+									</Anchors>
+								</FontString>
+							</Layer>
+						</Layers>						
 					</StatusBar>
 					<CinematicModel parentKey="Model" inherits="ModelTemplate">
 						<Size x="325" y="300"/>
@@ -668,14 +723,17 @@
 							<Layer level="BACKGROUND">
 								<Texture atlas="GarrFollower-Shadow" useAtlasSize="true">
 									<Anchors>
-										<Anchor point="BOTTOM" x="-2" y="-100"/>
+										<Anchor point="BOTTOM" x="-2" y="-60"/>
 									</Anchors>
 								</Texture>
 							</Layer>
 						</Layers>
 						<Scripts>
+							<OnLoad>
+								Model_OnLoad(self);
+								self:UseDefaultCamera(true);
+							</OnLoad>						
 							<OnShow>
-								self:SetTargetDistance(0);
 								self:SetFacing(.2);
 								GarrisonMission_SetFollowerModelItems(self);
 								self:SetFrameLevel(self:GetParent():GetFrameLevel() - 1);

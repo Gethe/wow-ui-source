@@ -374,17 +374,7 @@
 		<Size x="240" y="60"/>
 		<Layers>
 			<Layer level="ARTWORK">
-				<Texture parentKey="IconBorder" file="Interface\Common\WhiteIconFrame">
-					<Size x="37" y="37"/>
-					<Anchors>
-						<Anchor point="TOPLEFT"/>
-					</Anchors>
-				</Texture>
-				<FontString parentKey="Name" inherits="GameFontNormalLarge2" justifyH="LEFT">
-					<Anchors>
-						<Anchor point="TOPLEFT" relativeKey="$parent.IconBorder" relativePoint="TOPRIGHT" x="10"/>
-					</Anchors>
-				</FontString>
+				<FontString parentKey="Name" inherits="GameFontNormalLarge2" justifyH="LEFT"/>
 				<FontString parentKey="Description" inherits="GameFontHighlight" justifyH="LEFT">
 					<Size x="220" y="0"/>
 					<Anchors>
@@ -405,14 +395,14 @@
 						<Texture parentKey="Icon" file="Interface\icons\inv_drink_31_embalmingfluid">
 							<Size x="35" y="35"/>
 							<Anchors>
-								<Anchor point="CENTER" relativeKey="$parent.IconBorder"/>
+								<Anchor point="CENTER"/>
 							</Anchors>
 						</Texture>
 					</Layer>
 				</Layers>
 				<Size x="35" y="35"/>				
 				<Anchors>
-					<Anchor point="CENTER" relativeKey="$parent.IconBorder"/>
+					<Anchor point="TOPLEFT"/>
 				</Anchors>
 				<Scripts>
 					<OnClick>
@@ -1618,7 +1608,9 @@
 			<OnEvent function="GarrisonFollowerPageItemButton_OnEvent"/>
 			<OnEnter>
 				GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
-				GameTooltip:SetItemByID(self.itemID);
+				GameTooltip:SetText(GARRISON_FOLLOWER_ITEMS);
+				GameTooltip:AddLine(GARRISON_FOLLOWER_ITEMS_TOOLTIP, 1, 1, 1, 1);
+				GameTooltip:Show();
 			</OnEnter>
 			<OnLeave function="GameTooltip_Hide"/>
 		</Scripts>
@@ -2421,11 +2413,20 @@
 							<Anchor point="TOPLEFT" x="13" y="-13"/>
 						</Anchors>
 					</Frame>
-					<StatusBar parentKey="XPBar" inherits="GarrisonFollowerXPBarTemplate">
+					<StatusBar parentKey="XPBar" inherits="GarrisonFollowerXPBarTemplate" enableMouse="true">
 						<Size x="500" y="9"/>
 						<Anchors>
 							<Anchor point="BOTTOMLEFT" relativeKey="$parent.PortraitFrame" relativePoint="BOTTOMRIGHT" x="7" y="5"/>
 						</Anchors>
+						<Layers>
+							<Layer level="HIGHLIGHT">
+								<FontString parentKey="Label" inherits="NumberFontNormalLarge">
+									<Anchors>
+										<Anchor point="CENTER"/>
+									</Anchors>
+								</FontString>
+							</Layer>
+						</Layers>
 					</StatusBar>
 					<CinematicModel parentKey="Model" inherits="ModelTemplate">
 						<Size x="305" y="370"/>
@@ -2436,14 +2437,17 @@
 							<Layer level="BACKGROUND">
 								<Texture atlas="GarrFollower-Shadow" useAtlasSize="true">
 									<Anchors>
-										<Anchor point="BOTTOM" x="0" y="-60"/>
+										<Anchor point="BOTTOM" x="0" y="-35"/>
 									</Anchors>
 								</Texture>
 							</Layer>
 						</Layers>
 						<Scripts>
+							<OnLoad>
+								Model_OnLoad(self);
+								self:UseDefaultCamera(true);
+							</OnLoad>
 							<OnShow>
-								self:SetTargetDistance(0);
 								self:SetFacing(.2);
 								GarrisonMission_SetFollowerModelItems(self);
 							</OnShow>
@@ -3213,6 +3217,27 @@
 				</FontString>
 			</Layer>
 		</Layers>
+	</Frame>
+
+	<Frame name="GarrisonMissionListTooltipThreatsFrame">
+		<Size x="0" y="26"/>
+		<Layers>
+			<Layer level="ARTWORK">
+				<Texture parentKey="EnvIcon">
+					<Size x="20" y="20"/>
+					<Anchors>
+						<Anchor point="LEFT"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Frame parentArray="Threats" inherits="GarrisonAbilityCounterTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativeKey="$parent.EnvIcon" relativePoint="RIGHT" x="9" y="0"/>
+				</Anchors>
+			</Frame>
+		</Frames>
 	</Frame>
 
 </Ui>

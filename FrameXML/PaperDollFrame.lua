@@ -347,6 +347,10 @@ function PaperDollFrame_OnLoad (self)
 	self:RegisterEvent("SKILL_LINES_CHANGED");
 	self:RegisterEvent("COMBAT_RATING_UPDATE");
 	self:RegisterEvent("MASTERY_UPDATE");
+	self:RegisterEvent("MULTISTRIKE_UPDATE");
+	self:RegisterEvent("SPEED_UPDATE");
+	self:RegisterEvent("LIFESTEAL_UPDATE");
+	self:RegisterEvent("AVOIDANCE_UPDATE");
 	self:RegisterEvent("KNOWN_TITLES_UPDATE");
 	self:RegisterEvent("UNIT_NAME_UPDATE");
 	self:RegisterEvent("VARIABLES_LOADED");
@@ -433,7 +437,17 @@ function PaperDollFrame_OnEvent (self, event, ...)
 		end
 	end
 	
-	if ( event == "COMBAT_RATING_UPDATE" or event=="MASTERY_UPDATE" or event == "BAG_UPDATE" or event == "PLAYER_EQUIPMENT_CHANGED" or event == "PLAYER_BANKSLOTS_CHANGED" or event == "PLAYER_AVG_ITEM_LEVEL_UPDATE" or event == "PLAYER_DAMAGE_DONE_MODS") then
+	if ( event == "COMBAT_RATING_UPDATE" or 
+			event == "MASTERY_UPDATE" or 
+			event == "MULTISTRIKE_UPDATE" or 
+			event == "SPEED_UPDATE" or 
+			event == "LIFESTEAL_UPDATE" or 
+			event == "AVOIDANCE_UPDATE" or 
+			event == "BAG_UPDATE" or 
+			event == "PLAYER_EQUIPMENT_CHANGED" or 
+			event == "PLAYER_BANKSLOTS_CHANGED" or 
+			event == "PLAYER_AVG_ITEM_LEVEL_UPDATE" or 
+			event == "PLAYER_DAMAGE_DONE_MODS") then
 		self:SetScript("OnUpdate", PaperDollFrame_QueuedUpdate);
 	elseif (event == "VARIABLES_LOADED") then
 		if (GetCVar("characterFrameCollapsed") ~= "0") then
@@ -1433,11 +1447,11 @@ function PaperDollFrame_SetVersatility(statFrame, unit)
 	local versatility = GetVersatility();
 	local versatilityDamageBonus = GetCombatRatingBonus(CR_VERSATILITY_DAMAGE_DONE) + GetVersatilityBonus(CR_VERSATILITY_DAMAGE_DONE);
 	local versatilityDamageTakenReduction = GetCombatRatingBonus(CR_VERSATILITY_DAMAGE_TAKEN) + GetVersatilityBonus(CR_VERSATILITY_DAMAGE_TAKEN);
-	versatility = format("%.2F%%", versatilityDamageBonus);
-	text:SetText(versatility);
-	statFrame.tooltip = HIGHLIGHT_FONT_COLOR_CODE .. format(PAPERDOLLFRAME_TOOLTIP_FORMAT, STAT_VERSATILITY) .. " " .. versatility .. FONT_COLOR_CODE_CLOSE;
+	local versatilityLabel = format("%.2F%%", versatilityDamageBonus);
+	text:SetText(versatilityLabel);
+	statFrame.tooltip = HIGHLIGHT_FONT_COLOR_CODE .. format(VERSATILITY_TOOLTIP_FORMAT, STAT_VERSATILITY, versatilityDamageBonus, versatilityDamageTakenReduction) .. FONT_COLOR_CODE_CLOSE;
 	
-	statFrame.tooltip2 = format(CR_VERSATILITY_TOOLTIP, BreakUpLargeNumbers(versatilityDamageBonus), BreakUpLargeNumbers(versatilityDamageTakenReduction));
+	statFrame.tooltip2 = format(CR_VERSATILITY_TOOLTIP, versatilityDamageBonus, versatilityDamageTakenReduction, BreakUpLargeNumbers(versatility), versatilityDamageBonus, versatilityDamageTakenReduction);
 
 	statFrame:Show();
 end

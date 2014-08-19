@@ -86,7 +86,7 @@ function BonusObjectiveTracker_OnBlockAnimOutFinished(self)
 	block:SetAlpha(0);
 	block.used = nil;
 	BONUS_OBJECTIVE_TRACKER_MODULE:FreeBlock(block);
-	ObjectiveTracker_Update(OBJECTIVE_TRACKER_UPDATE_MODULE_BONUS_OBJECTIVE);
+	ObjectiveTracker_Update(OBJECTIVE_TRACKER_UPDATE_ALL);
 end
 
 function BonusObjectiveTracker_OnBlockEnter(block)
@@ -161,7 +161,7 @@ function BonusObjectiveTracker_AddReward(questID, block, xp, money)
 	if ( not xp ) then
 		xp = GetQuestLogRewardXP(questID);
 	end
-	if ( xp > 0 ) then
+	if ( xp > 0 and UnitLevel("player") < MAX_PLAYER_LEVEL ) then
 		local t = { };
 		t.label = xp;
 		t.texture = "Interface\\Icons\\XP_Icon";
@@ -205,7 +205,11 @@ function BonusObjectiveTracker_AddReward(questID, block, xp, money)
 	end
 	COMPLETED_BONUS_DATA[block.id] = data;
 	-- try to play it
-	BonusObjectiveTracker_AnimateReward(block);	
+	if( #data.rewards > 0 ) then
+		BonusObjectiveTracker_AnimateReward(block);
+	else
+		BonusObjectiveTracker_OnAnimateNextReward();
+	end
 end
 
 function BonusObjectiveTracker_AnimateReward(block)
@@ -226,6 +230,7 @@ function BonusObjectiveTracker_AnimateReward(block)
 		rewardsFrame.Anim.RewardsBottomAnim:SetOffset(0, -contentsHeight);
 		rewardsFrame.Anim.RewardsShadowAnim:SetToScale(0.8, contentsHeight / 16);
 		rewardsFrame.Anim:Play();
+		PlaySoundKitID(45142); --UI_BonusEventSystemVignettes
 		-- configure reward frames
 		for i = 1, numRewards do
 			local rewardItem = rewardsFrame.Rewards[i];
@@ -263,6 +268,12 @@ function BonusObjectiveTracker_OnAnimateRewardDone(self)
 	for i = 1, #rewardsFrame.Rewards do
 		rewardsFrame.Rewards[i].Anim:Stop();
 	end
+	
+	BonusObjectiveTracker_OnAnimateNextReward();
+end
+
+function BonusObjectiveTracker_OnAnimateNextReward()
+	local rewardsFrame = ObjectiveTrackerBonusRewardsFrame;
 	-- look for another reward to animate and fix positions
 	local nextAnimBlock;
 	for id, data in pairs(COMPLETED_BONUS_DATA) do

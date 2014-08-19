@@ -310,6 +310,7 @@
 					<OnLoad>
 						self:SetBackdropBorderColor(.6, .6, .6, 1);
 					</OnLoad>
+					<OnShow function="VideoOptionsPanel_OnShow"/>
 				</Scripts>
 			</Frame>
 			
@@ -1756,6 +1757,7 @@
 			<OnLoad>
 				InterfaceOptionsLanguagesPanel_OnLoad(self);			
 			</OnLoad>
+			<OnShow function="VideoOptionsPanel_OnShow"/>
 		</Scripts>		
 	</Frame>
 </Ui>

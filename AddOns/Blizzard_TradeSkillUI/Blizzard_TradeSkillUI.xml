@@ -787,7 +787,7 @@
 				</Anchors>
 				<Layers>
 					<Layer level="ARTWORK">
-						<FontString name="$parentSkillRank" inherits="GameFontHighlightSmall" justifyH="CENTER">
+						<FontString name="$parentSkillRank" inherits="WhiteNormalNumberFont" justifyH="CENTER">
 							<Size x="0" y="9"/>
 							<Anchors>
 								<Anchor point="CENTER" relativeTo="TradeSkillRankFrame" x="0" y="0"/>

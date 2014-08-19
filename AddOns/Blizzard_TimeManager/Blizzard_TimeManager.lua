@@ -409,6 +409,10 @@ end
 
 -- TimeManagerClockButton
 function TimeManagerClockButton_OnLoad(self)
+	if ( CLOCK_TICKER_Y_OVERRIDE ) then
+		TimeManagerClockTicker:SetPoint("CENTER", select(4, TimeManagerClockTicker:GetPoint("CENTER")), CLOCK_TICKER_Y_OVERRIDE);
+	end
+	
 	self:SetFrameLevel(self:GetFrameLevel() + 2);
 	TimeManagerClockButton_Update();
 	if ( Settings.alarmEnabled ) then

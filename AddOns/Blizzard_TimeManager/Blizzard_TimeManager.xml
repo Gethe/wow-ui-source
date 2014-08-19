@@ -193,7 +193,7 @@
 				</Texture>
 			</Layer>
 			<Layer level="ARTWORK">
-				<FontString name="TimeManagerClockTicker" inherits="GameFontHighlightSmall">
+				<FontString name="TimeManagerClockTicker" inherits="WhiteNormalNumberFont">
 					<Anchors>
 						<Anchor point="CENTER" x="3" y="1"/>
 					</Anchors>

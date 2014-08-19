@@ -69,7 +69,7 @@
 		</Scripts>
 	</Frame>
 
-	<Frame name="DraenorZoneAbilityButtonAlert" inherits="MicroButtonAlertTemplate">
+	<Frame name="DraenorZoneAbilityButtonAlert" inherits="MicroButtonAlertTemplate" parent="DraenorZoneAbilityFrame" frameStrata="HIGH" topLevel="false">
 		<Anchors>
 			<Anchor point="BOTTOM" relativeTo="DraenorZoneAbilityFrame" relativePoint="TOP" x="0" y="8"/>
 		</Anchors>

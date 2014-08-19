@@ -2636,6 +2636,12 @@
 								<Anchor point="BOTTOMRIGHT" relativeTo="ToyBoxIconsFrame" relativePoint="BOTTOMRIGHT" x="-4" y="4"/>
 							</Anchors>
 						</Texture>
+						
+						<Texture name="$parentWatermarkToy" atlas="collections-watermark-toy" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="BOTTOMRIGHT" relativeTo="ToyBoxIconsFrame" relativePoint="BOTTOMRIGHT" x="-25" y="17"/>
+							</Anchors>
+						</Texture>
 					</Layer>
 					
 					<Layer level="BORDER" textureSubLevel="2">

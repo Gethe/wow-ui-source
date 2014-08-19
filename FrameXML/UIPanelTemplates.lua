@@ -344,6 +344,7 @@ function InputScrollFrame_OnLoad(self)
 	self.EditBox:SetWidth(self:GetWidth() - 18);
 	self.EditBox:SetMaxLetters(self.maxLetters);
 	self.EditBox.Instructions:SetText(self.instructions);
+	self.EditBox.Instructions:SetWidth(self:GetWidth());
 	self.CharCount:SetShown(not self.hideCharCount);
 end
 

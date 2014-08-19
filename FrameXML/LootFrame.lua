@@ -264,9 +264,9 @@ function LootFrame_Update()
 end
 
 function LootFrame_InitAutoLootTable( self )
-	if( not self.AutoLootTable )then
-		self.AutoLootTable = GetLootInfo();
-	end
+--	if( not self.AutoLootTable )then
+--		self.AutoLootTable = GetLootInfo();
+--	end
 end
 
 function LootFrame_Close()

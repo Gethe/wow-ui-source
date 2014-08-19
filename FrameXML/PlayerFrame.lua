@@ -59,14 +59,19 @@ function PlayerFrame_OnLoad(self)
 	SecureUnitButton_OnLoad(self, "player", showmenu);
 end
 
+--This is overwritten in LocalizationPost for different languages.
+function PlayerFrame_UpdateLevelTextAnchor(level)
+	if ( level == 100 ) then
+		PlayerLevelText:SetPoint("CENTER", PlayerFrameTexture, "CENTER", -62, -17);
+	else
+		PlayerLevelText:SetPoint("CENTER", PlayerFrameTexture, "CENTER", -61, -17);
+	end
+end
+
 function PlayerFrame_Update ()
 	if ( UnitExists("player") ) then
 		local level = UnitLevel(PlayerFrame.unit);
-		if ( level == 100 ) then
-			PlayerLevelText:SetPoint("CENTER", PlayerFrameTexture, "CENTER", -62, -17);
-		else
-			PlayerLevelText:SetPoint("CENTER", PlayerFrameTexture, "CENTER", -61, -17);
-		end
+		PlayerFrame_UpdateLevelTextAnchor(level);
 		PlayerLevelText:SetText(level);
 		PlayerFrame_UpdatePartyLeader();
 		PlayerFrame_UpdatePvPStatus();

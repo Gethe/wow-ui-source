@@ -482,7 +482,6 @@ function GarrisonFollowerPage_SetItem(itemFrame, itemID, itemLevel)
 		local itemName, _, itemQuality, _, _, _, _, _, _, itemTexture = GetItemInfo(itemID);
 		if ( itemName ) then
 			itemFrame.Icon:SetTexture(itemTexture);
-			itemFrame.Name:SetText(itemName);
 			itemFrame.Name:SetTextColor(GetItemQualityColor(itemQuality));
 			itemFrame.ItemLevel:SetFormattedText(GARRISON_FOLLOWER_ITEM_LEVEL, itemLevel);
 			itemFrame:Show();			
@@ -503,12 +502,6 @@ function GarrisonFollowerPage_ShowFollower(self, followerID)
 		self.NoFollowersLabel:Hide();
 		self.PortraitFrame:Show();
 		GarrisonMission_SetFollowerModel(self.Model, followerInfo.followerID, followerInfo.displayID);
-		if (followerInfo.height) then
-			self.Model:SetHeightFactor(followerInfo.height * GARRISON_FOLLOWER_PAGE_HEIGHT_MULTIPLIER)
-		end
-		if (followerInfo.scale) then
-			self.Model:InitializeCamera(followerInfo.scale * GARRISON_FOLLOWER_PAGE_SCALE_MULTIPLIER)
-		end
 	else
 		self.followerID = nil;
 		self.NoFollowersLabel:Show();
@@ -540,6 +533,7 @@ function GarrisonFollowerPage_ShowFollower(self, followerID)
 			self.XPLabel:Show();
 			self.XPBar:Show();
 			self.XPBar:SetMinMaxValues(0, followerInfo.levelXP);
+			self.XPBar.Label:SetFormattedText(GARRISON_FOLLOWER_XP_BAR_LABEL, BreakUpLargeNumbers(followerInfo.xp), BreakUpLargeNumbers(followerInfo.levelXP));
 			self.XPBar:SetValue(followerInfo.xp);
 			local xpLeft = followerInfo.levelXP - followerInfo.xp;
 			self.XPText:SetText(format(GARRISON_FOLLOWER_XP_LEFT, xpLeft));
@@ -571,13 +565,13 @@ function GarrisonFollowerPage_ShowFollower(self, followerID)
 			abilityFrame.Description:SetText("");
 			abilityFrame.Name:SetFontObject("GameFontHighlightMed2");
 			abilityFrame.Name:ClearAllPoints();
-			abilityFrame.Name:SetPoint("LEFT", abilityFrame.IconBorder, "RIGHT", 10, 0);
+			abilityFrame.Name:SetPoint("LEFT", abilityFrame.IconButton, "RIGHT", 8, 0);
 			abilityFrame.Name:SetWidth(150);
 		else
 			abilityFrame.Description:SetText(ability.description);
 			abilityFrame.Name:SetFontObject("GameFontNormalLarge2");
 			abilityFrame.Name:ClearAllPoints();
-			abilityFrame.Name:SetPoint("TOPLEFT", abilityFrame.IconBorder, "TOPRIGHT", 10, 0);
+			abilityFrame.Name:SetPoint("TOPLEFT", abilityFrame.IconButton, "TOPRIGHT", 8, 0);
 			abilityFrame.Name:SetWidth(0);
 		end
 		abilityFrame.Name:SetText(ability.name);

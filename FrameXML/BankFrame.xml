@@ -40,10 +40,10 @@
 	<Button name="BankItemButtonBagTemplate" inherits="ItemButtonTemplate" virtual="true">
 		<Frames>
 			<Cooldown name="$parentCooldown" parentKey="Cooldown" inherits="CooldownFrameTemplate"/>
-			<Frame name="$parentHighlightFrame" setAllPoints="true">
+			<Frame name="$parentHighlightFrame" parentKey="HighlightFrame" setAllPoints="true">
 				<Layers>
 					<Layer>
-						<Texture name="$parentTexture" alphaMode="ADD" file="Interface\Buttons\CheckButtonHilight" setAllPoints="true" hidden="true"/>
+						<Texture name="$parentTexture" parentKey="HighlightTexture" alphaMode="ADD" file="Interface\Buttons\CheckButtonHilight" setAllPoints="true" hidden="true"/>
 					</Layer>
 				</Layers>
 			</Frame>

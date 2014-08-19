@@ -162,38 +162,46 @@ function RaidFinderQueueFrameSelectionDropDown_SetUp(self)
 	end
 end
 
+local function isRaidFinderDungeonDisplayable(id)
+	local name, typeID, subtypeID, minLevel, maxLevel, _, _, _, expansionLevel = GetLFGDungeonInfo(id);
+	local myLevel = UnitLevel("player");
+	return myLevel >= minLevel and myLevel <= maxLevel and EXPANSION_LEVEL >= expansionLevel;
+end
+
 function RaidFinderQueueFrameSelectionDropDown_Initialize(self)
 	local info = UIDropDownMenu_CreateInfo();
 	
 	-- If we ever change this logic, we also need to change the logic in RaidFinderFrame_UpdateAvailability
 	for i=1, GetNumRFDungeons() do
 		local id, name = GetRFDungeonInfo(i);
-		local isAvailable, isAvailableToPlayer = IsLFGDungeonJoinable(id);
-		if ( isAvailable or isAvailableToPlayer or isRaidFinderDungeonDisplayable(id) ) then
-			if ( isAvailable ) then
-				info.text = name; --Note that the dropdown text may be manually changed in RaidFinderQueueFrame_SetRaid
-				info.value = id;
-				info.isTitle = nil;
-				info.func = RaidFinderQueueFrameSelectionDropDownButton_OnClick;
-				info.disabled = nil;
-				info.checked = (RaidFinderQueueFrame.raid == info.value);
-				info.tooltipWhileDisabled = nil;
-				info.tooltipOnButton = nil;
-				info.tooltipTitle = nil;
-				info.tooltipText = nil;
-				UIDropDownMenu_AddButton(info);
-			else
-				info.text = name; --Note that the dropdown text may be manually changed in RaidFinderQueueFrame_SetRaid
-				info.value = id;
-				info.isTitle = nil;
-				info.func = nil;
-				info.disabled = 1;
-				info.checked = nil;
-				info.tooltipWhileDisabled = 1;
-				info.tooltipOnButton = 1;
-				info.tooltipTitle = YOU_MAY_NOT_QUEUE_FOR_THIS;
-				info.tooltipText = LFGConstructDeclinedMessage(id);
-				UIDropDownMenu_AddButton(info);
+		local isAvailable, isAvailableToPlayer, hideIfUnmet = IsLFGDungeonJoinable(id);
+		if( not hideIfUnmet or isAvailable ) then
+			if ( isAvailable or isAvailableToPlayer or isRaidFinderDungeonDisplayable(id) ) then
+				if ( isAvailable ) then
+					info.text = name; --Note that the dropdown text may be manually changed in RaidFinderQueueFrame_SetRaid
+					info.value = id;
+					info.isTitle = nil;
+					info.func = RaidFinderQueueFrameSelectionDropDownButton_OnClick;
+					info.disabled = nil;
+					info.checked = (RaidFinderQueueFrame.raid == info.value);
+					info.tooltipWhileDisabled = nil;
+					info.tooltipOnButton = nil;
+					info.tooltipTitle = nil;
+					info.tooltipText = nil;
+					UIDropDownMenu_AddButton(info);
+				else
+					info.text = name; --Note that the dropdown text may be manually changed in RaidFinderQueueFrame_SetRaid
+					info.value = id;
+					info.isTitle = nil;
+					info.func = nil;
+					info.disabled = 1;
+					info.checked = nil;
+					info.tooltipWhileDisabled = 1;
+					info.tooltipOnButton = 1;
+					info.tooltipTitle = YOU_MAY_NOT_QUEUE_FOR_THIS;
+					info.tooltipText = LFGConstructDeclinedMessage(id);
+					UIDropDownMenu_AddButton(info);
+				end
 			end
 		end
 	end

@@ -69,7 +69,7 @@
 			</Layer>
 		</Layers>
 		<Frames>
-			<Cooldown parentKey="Cooldown" drawEdge="true" inherits="CooldownFrameTemplate">
+			<Cooldown parentKey="Cooldown" hideCountdownNumbers="true" drawEdge="true" inherits="CooldownFrameTemplate">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeKey="$parent.Icon"/>
 					<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Icon"/>

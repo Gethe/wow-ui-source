@@ -19,7 +19,7 @@
 			</Layer>
 		</Layers>
 		<Frames>
-			<Cooldown name="$parentCooldown" inherits="CooldownFrameTemplate" reverse="true" drawEdge="true" hidden="true">
+			<Cooldown name="$parentCooldown" inherits="CooldownFrameTemplate" hideCountdownNumbers="true" reverse="true" drawEdge="true" hidden="true">
 				<Anchors>
 					<Anchor point="CENTER" x="0" y="-1"/>
 				</Anchors>
@@ -67,7 +67,7 @@
 			</Layer>
 		</Layers>
 		<Frames>
-			<Cooldown name="$parentCooldown" inherits="CooldownFrameTemplate" reverse="true" drawEdge="true" hidden="true">
+			<Cooldown name="$parentCooldown" inherits="CooldownFrameTemplate" hideCountdownNumbers="true" reverse="true" drawEdge="true" hidden="true">
 				<Anchors>
 					<Anchor point="CENTER" x="0" y="-1"/>
 				</Anchors>
@@ -111,7 +111,7 @@
 			</Layer>
 		</Layers>
 		<Frames>
-			<Cooldown name="$parentCooldown" inherits="CooldownFrameTemplate" reverse="true" drawEdge="true">
+			<Cooldown name="$parentCooldown" inherits="CooldownFrameTemplate" hideCountdownNumbers="true" reverse="true" drawEdge="true">
 				<Anchors>
 					<Anchor point="CENTER" x="0" y="-1"/>
 				</Anchors>
@@ -193,9 +193,10 @@
 								<Anchor point="CENTER" x="-50" y="19"/>
 							</Anchors>
 						</FontString>
-						<FontString name="$parentLevelText" inherits="GameFontNormalSmall" justifyH="CENTER">
+						<FontString name="$parentLevelText" inherits="GameNormalNumberFont" justifyH="CENTER">
+							<!--WARNING:: This is re-anchored in code.-->
 							<Anchors>
-								<Anchor point="CENTER" x="61" y="-16"/>
+								<Anchor point="CENTER" x="61" y="-17"/>
 							</Anchors>
 						</FontString>
 						<FontString name="$parentDeadText" inherits="GameFontNormalSmall" text="DEAD">

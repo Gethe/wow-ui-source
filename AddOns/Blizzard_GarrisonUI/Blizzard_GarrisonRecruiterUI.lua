@@ -148,7 +148,7 @@ function GarrisonRecruiterFrame_Init(self, level)
 		info.tooltipText = nil;
 		info.hasArrow = true;
 		info.notCheckable = true;
-		info.func = CloseDropDownMenus;
+		info.func = function() CloseDropDownMenus() end;
 		for i, entry in pairs(frame.categories) do
 			if( #entry.entries > 0 ) then
 				entry.id = i;
@@ -219,13 +219,12 @@ end
 function GarrisonRecruiterFrame_UpdateAbilityEntries( isTrait )
 	local frame = GarrisonRecruiterFrame.Pick;
 	C_Garrison.GetRecruiterAbilityList(isTrait, frame.entries);
-	--frame.categories = {};
+	for _, category in pairs( frame.categories ) do
+		category.entries = {};
+	end
 	if( isTrait ) then
 		-- sort abilities into categories
 		local categoryless = {};
-		for _, category in pairs( frame.categories ) do
-			category.entries = {};
-		end
 		for _, entry in pairs( frame.entries ) do
 			local category = entry.category;
 			if( category and frame.categories[category]) then
@@ -317,15 +316,14 @@ function GarrisonRecruitSelectFrame_UpdateRecruits( waiting )
 			frame.PortraitFrame.Level:SetText(follower.level);
 			SetPortraitTexture(frame.PortraitFrame.Portrait, follower.displayID);
 			GarrisonMission_SetFollowerModel(frame.Model, follower.followerID, follower.displayID);
-			frame.Model:SetHeightFactor(follower.height * RECRUIT_HEIGHT_MULTUPLER);
-			frame.Model:InitializeCamera(follower.scale * RECRUIT_SCALE_MULTIPLIER);
 			frame.Model:Show();
 			frame.Class:SetAtlas(follower.classAtlas);
 			
 			local color = ITEM_QUALITY_COLORS[follower.quality];
 			frame.Name:SetVertexColor(color.r, color.g, color.b);
 			frame.PortraitFrame.LevelBorder:SetVertexColor(color.r, color.g, color.b);
-			
+			frame.PortraitFrame.PortraitRingQuality:SetVertexColor(color.r, color.g, color.b);
+
 			local abilities = C_Garrison.GetRecruitAbilities(i);
 			local abilityIndex = 0;
 			local traitIndex = 0;
@@ -350,10 +348,10 @@ function GarrisonRecruitSelectFrame_UpdateRecruits( waiting )
 				end
 				
 				if(uiEntry)then
+					uiEntry.abilityID = ability.id;
 					uiEntry:Show();
 					uiEntry.Icon:SetTexture(ability.icon);
 					uiEntry.Name:SetText(ability.name);
-					uiEntry.tooltip = ability.description;
 				end
 			end
 

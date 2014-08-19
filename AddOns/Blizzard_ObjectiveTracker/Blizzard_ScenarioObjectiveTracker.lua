@@ -48,6 +48,7 @@ end
 
 function ScenarioBlocksFrame_OnFinishSlideIn()
 	SCENARIO_TRACKER_MODULE.BlocksFrame.slidingAction = nil;
+	ObjectiveTracker_Update(OBJECTIVE_TRACKER_UPDATE_SCENARIO);
 	ObjectiveTracker_Update(OBJECTIVE_TRACKER_UPDATE_SCENARIO_BONUS_DELAYED);
 end
 
@@ -457,25 +458,24 @@ function Scenario_ProvingGrounds_UpdateTime(block, elapsedTime)
 		
 		local timeLeft = statusBar.duration - elapsedTime;
 		if (timeLeft <= 5) then
-			if (anim:IsPlaying()) then 
-				anim.timeLeft = timeLeft;
-			else
+			if (not anim:IsPlaying() and anim.cycles == 0) then 
 				anim:Play();
+				anim.cycles = 4; 
 			end
-		elseif (anim.timeLeft ~= nil) then
-			-- the time left never reaches 0 if there's another wave, but the animation always needs to get to 0
-			anim.timeLeft = 0; 
+		else
+			anim.cycles = 0;
 		end
 	else
-		anim.timeLeft = 0;
+		anim.cycles = 0;
 	end
 end
 
 function Scenario_ProvingGrounds_CountdownAnim_OnFinished(self)
-	if ( self.timeLeft and self.timeLeft > 0 and self.timeLeft < 5 ) then
+	if ( self.cycles > 0 ) then
 		self:Play();
+		self.cycles = self.cycles - 1;
 	else
-		self.timeLeft = nil;
+		self.cycles = 0;
 	end
 end
 
@@ -652,10 +652,8 @@ function SCENARIO_CONTENT_TRACKER_MODULE:Update()
 				PlaySound("UI_Scenario_Stage_End");
 			end		
 		end
-		ObjectiveTracker_ReorganizeModules(true);
 	else
 		BlocksFrame:Hide();
-		ObjectiveTracker_ReorganizeModules(false);
 	end
 	
 	-- treat as dungeon

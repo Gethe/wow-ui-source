@@ -1150,7 +1150,7 @@
 					<Frame parentKey="UpgradeCostBar" hidden="false">
 						<Size x="80" y="22"/>
 						<Anchors>
-							<Anchor point="TOP" relativeKey="$parent.RankLabel" relativePoint="BOTTOM" y="-30"/>
+							<Anchor point="TOP" relativeKey="$parent.RankLabel" relativePoint="BOTTOM" x="-6" y="-30"/>
 						</Anchors>
 						<Layers>
 							<Layer level="ARTWORK">
@@ -1159,11 +1159,23 @@
 										<Anchor point="TOPLEFT"/>`
 									</Anchors>
 								</FontString>
-								<FontString parentKey="CostAmount" inherits="GameFontHighlight" justifyH="LEFT">
+								<FontString parentKey="CostAmountMaterial" inherits="GameFontHighlight" justifyH="LEFT">
 									<Anchors>
 										<Anchor point="TOPLEFT" relativeKey="$parent.CostLabel" relativePoint="TOPRIGHT" x="2" y="0"/>
 									</Anchors>
 								</FontString>
+								<FontString parentKey="CostAmountGold" inherits="GameFontHighlight" justifyH="LEFT">
+									<Anchors>
+										<Anchor point="TOPLEFT" relativeKey="$parent.CostAmountMaterial" relativePoint="BOTTOMLEFT" x="0" y="-3"/>
+									</Anchors>
+								</FontString>
+								<Texture parentKey="GoldIcon" file="Interface\MoneyFrame\UI-MoneyIcons">
+									<Size x="15" y="15"/>
+									<Anchors>
+										<Anchor point="LEFT" relativeKey="$parent.CostAmountGold" relativePoint="RIGHT" x="4" y="-1"/>
+									</Anchors>
+									<TexCoords left="0" right="0.25" top="0" bottom="1"/>
+								</Texture>
 							</Layer>
 						</Layers>
 					</Frame>

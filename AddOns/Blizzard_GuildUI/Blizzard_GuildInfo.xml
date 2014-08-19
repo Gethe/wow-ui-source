@@ -204,13 +204,12 @@
 				</Texture>
 			</Layer>
 			<Layer level="ARTWORK" textureSubLevel="2">
-				<Texture name="$parentLevelRing" atlas="guild-levelring" parentKey="PointsSpentBgGold">
-					<Size x="27" y="27"/>
+				<Texture name="$parentLevelRing" atlas="guild-levelring" useAtlasSize="true" parentKey="PointsSpentBgGold">
 					<Anchors>
 						<Anchor point="BOTTOMRIGHT" relativeTo="$parentRing" relativePoint="BOTTOMRIGHT" x="6" y="3"/>
 					</Anchors>
 				</Texture>
-				<FontString name="$parentLevelText" inherits="GameFontNormalSmall" parentKey="level">
+				<FontString name="$parentLevelText" inherits="GameNormalNumberFont" parentKey="level">
 					<Anchors>
 						<Anchor point="CENTER" relativeTo="$parentLevelRing" x="0" y="0"/>
 					</Anchors>
@@ -222,6 +221,10 @@
 			<OnLoad>
 				self:SetBackdropColor(1, 1, 1, 0.3);
 				self:RegisterForClicks("LeftButtonUp", "RightButtonUp");
+				
+				if ( GUILD_APPLICANT_LEVEL_TEXT_Y_OVERRIDE ) then
+					self.level:SetPoint("CENTER", "$parentLevelRing", "CENTER", select(4, self.level:GetPoint("CENTER")), GUILD_APPLICANT_LEVEL_TEXT_Y_OVERRIDE);
+				end
 			</OnLoad>
 			<OnClick function="GuildRecruitmentApplicant_OnClick"/>
 			<OnEnter function="GuildRecruitmentApplicant_ShowTooltip"/>
