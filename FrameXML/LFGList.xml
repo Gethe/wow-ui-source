@@ -143,7 +143,7 @@
 				</FontString>
 				<FontString parentKey="ItemLevel" inherits="GameFontNormalSmall" justifyH="CENTER" text="529">
 					<Anchors>
-						<Anchor point="CENTER" relativeKey="$parent" relativePoint="LEFT" x="177" y="0"/>
+						<Anchor point="CENTER" relativeKey="$parent" relativePoint="LEFT" x="177" y="-1"/>
 					</Anchors>
 				</FontString>
 			</Layer>
@@ -191,7 +191,11 @@
 		<Size x="309" y="20"/>
 		<Layers>
 			<Layer level="BACKGROUND">
-				<Texture parentKey="Background" setAllPoints="true">
+				<Texture parentKey="Background">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="3" y="-1"/>
+						<Anchor point="BOTTOMRIGHT" x="0" y="0"/>
+					</Anchors>
 					<Color r="1" g="1" b="1"/>
 				</Texture>
 			</Layer>
@@ -213,7 +217,7 @@
 			<Button parentKey="DeclineButton" inherits="UIMenuButtonStretchTemplate">
 				<Size x="24" y="22"/>
 				<Anchors>
-					<Anchor point="RIGHT" x="-2" y="0"/>
+					<Anchor point="RIGHT" x="-3" y="0"/>
 				</Anchors>
 				<Layers>
 					<Layer level="ARTWORK">
@@ -630,7 +634,7 @@
 					<Color r="0.25" g="0.75" b="0.25"/>
 				</FontString>
 				<FontString parentKey="PendingLabel" inherits="GameFontGreenSmall" text="LFG_LIST_PENDING" justifyH="RIGHT">
-					<Size x="70" y="28"/>
+					<Size x="70" y="0"/>
 					<Anchors>
 						<Anchor point="RIGHT" relativeKey="$parent.ExpirationTime" relativePoint="LEFT" x="-3" y="0"/>
 					</Anchors>
@@ -682,7 +686,7 @@
 			<Button parentKey="CancelButton" inherits="UIMenuButtonStretchTemplate" motionScriptsWhileDisabled="true">
 				<Size x="26" y="24"/>
 				<Anchors>
-					<Anchor point="RIGHT" x="-9" y="0"/>
+					<Anchor point="RIGHT" x="-9" y="-1"/>
 				</Anchors>
 				<Layers>
 					<Layer level="ARTWORK">
@@ -919,10 +923,10 @@
 						<HighlightTexture file="Interface\Buttons\UI-Common-MouseHilight" alphaMode="ADD"/>
 						<Scripts>
 							<OnMouseDown>
-								self.Icon:SetPoint("CENTER", self, "CENTER", -1, -1);
+								self.Icon:SetPoint("CENTER", self, "CENTER", -2, -1);
 							</OnMouseDown>
 							<OnMouseUp>
-								self.Icon:SetPoint("CENTER", self, "CENTER", 0, 0);
+								self.Icon:SetPoint("CENTER", self, "CENTER", -1, 0);
 							</OnMouseUp>
 							<OnEnter>
 								GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
@@ -1044,7 +1048,7 @@
 					<Layer level="BACKGROUND">
 						<Texture parentKey="InfoBackground" atlas="groupfinder-background-dungeons" useAtlasSize="true">
 							<Anchors>
-								<Anchor point="TOPLEFT" x="0" y="-21"/>
+								<Anchor point="TOPLEFT" x="-2" y="-21"/>
 							</Anchors>
 						</Texture>
 					</Layer>
@@ -1052,13 +1056,13 @@
 						<FontString parentKey="EntryName" inherits="GameFontNormalLarge" justifyH="LEFT">
 							<Size x="0" y="18"/>
 							<Anchors>
-								<Anchor point="TOPLEFT" relativeKey="$parent.InfoBackground" relativePoint="TOPLEFT" x="10" y="-10"/>
+								<Anchor point="TOPLEFT" relativeKey="$parent.InfoBackground" relativePoint="TOPLEFT" x="12" y="-10"/>
 							</Anchors>
 							<Color r="1" g="0.82" b="0"/>
 						</FontString>
 						<FontString parentKey="ItemLevel" inherits="GameFontNormalSmall">
 							<Anchors>
-								<Anchor point="TOPLEFT" relativeKey="$parent.InfoBackground" relativePoint="TOPLEFT" x="10" y="-52"/>
+								<Anchor point="TOPLEFT" relativeKey="$parent.InfoBackground" relativePoint="TOPLEFT" x="12" y="-52"/>
 							</Anchors>
 						</FontString>
 					</Layer>
@@ -1067,7 +1071,7 @@
 					<Frame parentKey="DescriptionFrame">
 						<Size x="310" y="14"/>
 						<Anchors>
-							<Anchor point="TOPLEFT" relativeKey="$parent.InfoBackground" relativePoint="TOPLEFT" x="10" y="-35"/>
+							<Anchor point="TOPLEFT" relativeKey="$parent.InfoBackground" relativePoint="TOPLEFT" x="12" y="-35"/>
 						</Anchors>
 						<Layers>
 							<Layer level="ARTWORK">
@@ -1144,10 +1148,10 @@
 						<HighlightTexture file="Interface\Buttons\UI-Common-MouseHilight" alphaMode="ADD"/>
 						<Scripts>
 							<OnMouseDown>
-								self.Icon:SetPoint("CENTER", self, "CENTER", -1, -1);
+								self.Icon:SetPoint("CENTER", self, "CENTER", -2, -1);
 							</OnMouseDown>
 							<OnMouseUp>
-								self.Icon:SetPoint("CENTER", self, "CENTER", 0, 0);
+								self.Icon:SetPoint("CENTER", self, "CENTER", -1, 0);
 							</OnMouseUp>
 							<OnEnter>
 								GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
@@ -1219,7 +1223,7 @@
 						<Layers>
 							<Layer level="BACKGROUND">
 								<Texture parentKey="Background" atlas="groupfinder-background-waitingcover" setAllPoints="true">
-									<Color r="1" g="1" b="1" a="0.7"/>
+									<Color r="1" g="1" b="1"/>
 								</Texture>
 							</Layer>
 							<Layer level="ARTWORK">

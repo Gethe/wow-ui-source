@@ -46,11 +46,11 @@ function GarrisonLandingPage_OnShow(self)
 		end
 	end
 	
-	PlaySound("igSpellBookOpen");
+	PlaySound("UI_Garrison_GarrisonReport_Open");
 end
 
 function GarrisonLandingPage_OnHide(self)
-	PlaySound("igSpellBookClose");
+	PlaySound("UI_Garrison_GarrisonReport_Close");
 end
 
 function GarrisonLandingPage_OnEvent(self, event, ...)
@@ -58,7 +58,7 @@ function GarrisonLandingPage_OnEvent(self, event, ...)
 end
 
 function GarrisonLandingPageTab_OnClick(self)
-	PlaySound("igCharacterInfoTab");
+	PlaySound("UI_Garrison_Nav_Tabs");
 	local id = self:GetID();
 	PanelTemplates_SetTab(GarrisonLandingPage, id);
 	if ( id == 1 ) then
@@ -216,7 +216,7 @@ end
 
 function GarrisonLandingPageReportTab_OnClick(self)
 	if ( self == GarrisonLandingPageReport.unselectedTab ) then
-		PlaySound("igMainMenuOptionCheckBoxOn");
+		PlaySound("UI_Garrison_Nav_Tabs");
 		GarrisonLandingPageReport_SetTab(self);
 	end
 end
@@ -380,7 +380,7 @@ function GarrisonLandingPageReportList_Update()
 				stopUpdate = false;
 				button.Title:SetWidth(322 - button.TimeLeft:GetWidth());
 			end
-
+			button.MissionTypeIcon:SetAtlas(item.typeAtlas);
 			button.MissionTypeIcon:SetShown(not item.isBuilding);
 			button.Status:SetShown(not item.isComplete);
 			button.TimeLeft:SetShown(not item.isComplete);
@@ -432,25 +432,29 @@ function GarrisonLandingPageReportMission_OnEnter(self, button)
 	end
 	
 	local item = items[self.id];
-
-	-- building entries have no tooltip
-	if item.isBuilding then
-		return;
-	end
 	
-	--mission tooltips
 	GameTooltip:SetText(item.name);
 
-	if(GarrisonLandingPageReport.selectedTab == GarrisonLandingPageReport.InProgress) then
+	if(item.isBuilding or GarrisonLandingPageReport.selectedTab == GarrisonLandingPageReport.InProgress) then
+		if (item.isBuilding) then
+			GameTooltip:AddLine(string.format(GARRISON_BUILDING_LEVEL_LABEL_TOOLTIP, item.buildingLevel), 1, 1, 1);
+		end
+		
 		if(item.isComplete) then
 			GameTooltip:AddLine(COMPLETE, 1, 1, 1);
 		else
 			GameTooltip:AddLine(tostring(item.timeLeft), 1, 1, 1);
 		end
+		
+		--This is all the information buildings have.
+		if (item.isBuilding) then
+			GameTooltip:Show();
+			return;
+		end
 
 		GameTooltip:AddLine(" ");
 
-		if item.followers ~= nil then
+		if (item.followers ~= nil) then
 			GameTooltip:AddLine(GARRISON_FOLLOWERS);
 			for i=1, #(item.followers) do
 				GameTooltip:AddLine(C_Garrison.GetFollowerName(item.followers[i]), 1, 1, 1);

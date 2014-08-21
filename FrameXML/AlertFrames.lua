@@ -1101,7 +1101,7 @@ function GarrisonBuildingAlertFrame_ShowAlert(name)
 	GarrisonBuildingAlertFrame.Name:SetFormattedText(GARRISON_BUILDING_COMPLETE_TOAST, name);
 	AlertFrame_AnimateIn(GarrisonBuildingAlertFrame);
 	AlertFrame_FixAnchors();
-	PlaySound("AuctionWindowOpen");
+	PlaySound("UI_Garrison_Toast_BuildingComplete");
 end
 
 -- [[ GarrisonMissionAlertFrame ]] --
@@ -1112,7 +1112,7 @@ function GarrisonMissionAlertFrame_ShowAlert(missionID)
 	GarrisonMissionAlertFrame.MissionType:SetAtlas(missionInfo.typeAtlas);
 	AlertFrame_AnimateIn(GarrisonMissionAlertFrame);
 	AlertFrame_FixAnchors();
-	PlaySound("AuctionWindowOpen");
+	PlaySound("UI_Garrison_Toast_MissionComplete");
 end
 
 -- [[ GarrisonFollowerAlertFrame ]] --
@@ -1159,7 +1159,7 @@ function GarrisonFollowerAlertFrame_ShowAlert(followerID, name, displayID, level
 	AlertFrame_AnimateIn(GarrisonFollowerAlertFrame);
 	
 	AlertFrame_FixAnchors();
-	PlaySound("AuctionWindowOpen");
+	PlaySound("UI_Garrison_Toast_FollowerGained");
 end
 
 function GarrisonFollowerAlertFrame_OnEnter(self)

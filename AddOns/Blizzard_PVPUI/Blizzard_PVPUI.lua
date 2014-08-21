@@ -686,18 +686,18 @@ function HonorFrameBonusFrame_Update()
 		if ( winConquestAmount and winConquestAmount > 0 ) then
 			rewardIndex = rewardIndex + 1;
 			local frame = HonorFrame.BonusFrame["BattlegroundReward"..rewardIndex];
-			frame:Show();
 			frame.currencyID = CONQUEST_CURRENCY;
 			frame.Icon:SetTexture("Interface\\PVPFrame\\PVPCurrency-Conquest-"..englishFaction);
 			frame.Amount:SetText(winConquestAmount);
+			frame:Show();
 		end
 		if ( winHonorAmount and winHonorAmount > 0 ) then
 			rewardIndex = rewardIndex + 1;
 			local frame = HonorFrame.BonusFrame["BattlegroundReward"..rewardIndex];
-			frame:Show();
 			frame.currencyID = HONOR_CURRENCY;
 			frame.Icon:SetTexture("Interface\\PVPFrame\\PVPCurrency-Honor-"..englishFaction);
 			frame.Amount:SetText(winHonorAmount);
+			frame:Show();
 		end
 		for i = rewardIndex + 1, 2 do
 			HonorFrame.BonusFrame["BattlegroundReward"..i]:Hide();

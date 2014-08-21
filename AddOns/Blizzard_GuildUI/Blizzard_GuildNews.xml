@@ -164,7 +164,7 @@
 -->	
 	<Frame name="GuildNewsFiltersFrame" toplevel="true" frameStrata="DIALOG" hidden="true" parent="GuildFrame" enableMouse="true" inherits="TranslucentFrameTemplate">
 		<Size>
-			<AbsDimension x="264" y="224"/>
+			<AbsDimension x="264" y="200"/>
 		</Size>
 		<Anchors>
 			<Anchor point="TOPLEFT" relativeTo="GuildFrame" relativePoint="TOPRIGHT" x="0" y="-20"/>
@@ -216,11 +216,6 @@
 			<CheckButton name="GuildNewsFilterButton6" inherits="GuildNewsCheckButtonTemplate" id="6">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeTo="GuildNewsFilterButton5" relativePoint="BOTTOMLEFT" x="0" y="0"/>
-				</Anchors>
-			</CheckButton>
-			<CheckButton name="GuildNewsFilterButton7" inherits="GuildNewsCheckButtonTemplate" id="7">
-				<Anchors>
-					<Anchor point="TOPLEFT" relativeTo="GuildNewsFilterButton6" relativePoint="BOTTOMLEFT" x="0" y="0"/>
 				</Anchors>
 			</CheckButton>
 		</Frames>

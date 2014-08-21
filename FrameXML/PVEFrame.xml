@@ -213,8 +213,19 @@
 						<Anchors>
 							<Anchor point="TOP" relativeTo="$parentGroupButton3" relativePoint="BOTTOM" x="0" y="-23" />
 						</Anchors>
+						<Frames>
+							<Frame name="PremadeGroupsPvETutorialAlert" inherits="MicroButtonAlertTemplate" parent="GroupFinderFrameGroupButton4">
+								<KeyValues>
+									<KeyValue key="label" value="LFG_LIST_TUTORIAL_ALERT" type="global"/>
+									<KeyValue key="tutorialIndex" value="LE_FRAME_TUTORIAL_LFG_LIST" type="global"/>
+								</KeyValues>
+								<Anchors>
+									<Anchor point="BOTTOM" relativeKey="$parent" relativePoint="TOP" x="0" y="8"/>
+								</Anchors>
+							</Frame>
+						</Frames>
 					</Button>
-					<Frame name="LFGListPVEStub">
+					<Frame name="LFGListPVEStub" hidden="true">
 						<Size x="338" y="428"/>
 						<Anchors>
 							<Anchor point="TOPLEFT" x="224" y="0"/>

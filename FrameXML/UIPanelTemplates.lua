@@ -382,3 +382,22 @@ function SetCheckButtonIsRadio(button, isRadio)
 		button:GetDisabledCheckedTexture():SetTexCoord(0, 1, 0, 1);
 	end	
 end
+
+---------------------------------------------------------------------------------
+--- Follower Portrait                                                         ---
+---------------------------------------------------------------------------------
+function GarrisonFollowerPortait_Set(portrait, allianceIconID, hordeIconID)
+	local factionGroup = UnitFactionGroup("player");
+	local iconFileID = 0;
+	if (factionGroup == "Alliance") then
+		iconFileID = allianceIconID;
+	else
+		iconFileID = hordeIconID;
+	end
+	if (iconFileID == nil or iconFileID == 0) then
+		-- unknown icon file ID; use the default silhouette portrait
+		portrait:SetTexture("Interface\\Garrison\\Portraits\\FollowerPortrait_NoPortrait");
+	else
+		portrait:SetToFileData(iconFileID);
+	end
+end

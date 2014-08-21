@@ -536,7 +536,7 @@
 					<AbsDimension x="170" y="16"/>
 				</Size>
 				<Anchors>
-					<Anchor point="TOPLEFT" relativeTo="$parentBottomInset" relativePoint="BOTTOMLEFT" x="6" y="-21"/>
+					<Anchor point="BOTTOMLEFT" x="12" y="8"/>
 				</Anchors>
 				<Layers>
 					<Layer level="OVERLAY">

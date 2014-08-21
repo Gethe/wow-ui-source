@@ -71,7 +71,7 @@ function GuildNews_Update()
 	local buttons = scrollFrame.buttons;
 	local button, index;
 	
-	local numEvents = CalendarGetNumGuildEvents();
+	local numEvents = math.min(7, CalendarGetNumGuildEvents());
 	local numNews = GetNumGuildNews();
 	local offset = HybridScrollFrame_GetOffset(scrollFrame);
 	local numButtons = #buttons;
@@ -115,7 +115,6 @@ function GuildNews_Update()
 	GuildFrame_UpdateScrollFrameWidth(scrollFrame);
 end
 
----
 function GuildNewsButton_SetText( button, text_color, text, ...)
 	button.text:SetFormattedText(text, ...);
 	button.text:SetTextColor(text_color.r, text_color.g, text_color.b);
@@ -392,7 +391,7 @@ end
 
 function GuildNewsFiltersFrame_OnLoad(self)
 	GuildFrame_RegisterPopup(self);
-	for i = 1, 7 do
+	for i = 1, 6 do
 		_G["GuildNewsFilterButton"..i.."Text"]:SetText(_G["GUILD_NEWS_FILTER"..i]);
 	end
 end

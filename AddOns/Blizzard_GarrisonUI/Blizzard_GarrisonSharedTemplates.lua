@@ -139,7 +139,7 @@ function GarrisonFollowerList_Update(self)
 			local color = ITEM_QUALITY_COLORS[follower.quality];
 			button.PortraitFrame.LevelBorder:SetVertexColor(color.r, color.g, color.b);
 			button.PortraitFrame.Level:SetText(follower.level);
-			SetPortraitTexture(button.PortraitFrame.Portrait, follower.displayID);
+			GarrisonFollowerPortait_Set(button.PortraitFrame.Portrait, follower.allianceIconFileDataID, follower.hordeIconFileDataID);
 			if ( follower.isCollected ) then
 				-- have this follower
 				button.isCollected = true;
@@ -330,16 +330,20 @@ end
 function GarrisonFollowerListButton_OnClick(self, button)
 	local followerFrame = self:GetParent():GetParent().followerFrame;
 	if ( button == "LeftButton" ) then
+		PlaySound("UI_Garrison_CommandTable_SelectFollower");
 		if ( self.isCollected ) then
 			if (not C_Garrison.CastSpellOnFollower(self.id)) then
 				if (followerFrame.openFollower == self.id) then
 					followerFrame.openFollower = nil;
+					PlaySound("UI_Garrison_CommandTable_FollowerAbilityClose");
 				else
 					followerFrame.openFollower = self.id;
+					PlaySound("UI_Garrison_CommandTable_FollowerAbilityOpen");
 				end
 			end
 		else
 			followerFrame.openFollower = nil;
+			PlaySound("UI_Garrison_CommandTable_FollowerAbilityClose");
 		end
 		GarrisonFollowerList_Update(followerFrame);
 		if ( followerFrame.FollowerTab ) then

@@ -34,15 +34,16 @@ end
 function GarrisonMonuntmentFrame_OnShow(self)
 	self.monumentID = C_Trophy.MonumentGetSelectedTrophyID();
 	GarrisonMonuntmentFrame_UpdateDisplay();
-	PlaySound("igCharacterInfoOpen");
+	PlaySound("UI_Garrison_Monuments_Open");
 end
 
 function GarrisonMonuntmentFrame_OnHide(self)
 	GarrisonMonuntmentFrame_SaveSelection();
+	PlaySound("UI_Garrison_Monuments_Close");
 end
 
 function GarrisonMonuntmentLeftBtn_OnMouseDown(self)
-	PlaySound("igCharacterInfoOpen");
+	PlaySound("UI_Garrison_Monuments_Nav");
 	GarrisonMonumentFrame.LeftBtn.Texture:SetAtlas("Monuments-LeftButton-Down");
 	GarrisonMonuntmentFrame_UpdateSelectedTrophyID( -1 );
 end
@@ -52,7 +53,7 @@ function GarrisonMonuntmentLeftBtn_OnMouseUp(self)
 end
 
 function GarrisonMonuntmentRightBtn_OnMouseDown(self)
-	PlaySound("igCharacterInfoOpen");
+	PlaySound("UI_Garrison_Monuments_Nav");
 	GarrisonMonumentFrame.RightBtn.Texture:SetAtlas("Monuments-RightButton-Down");
 	GarrisonMonuntmentFrame_UpdateSelectedTrophyID( 1 );
 end

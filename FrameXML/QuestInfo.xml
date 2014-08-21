@@ -76,6 +76,68 @@
 		</Scripts>
 	</Button>
 	
+	<Button name="QuestInfoRewardFollowerTemplate" virtual="true">
+		<Size x="195" y="59"/>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="BG" atlas="GarrMission_FollowerListButton">
+					<Size x="172" y="51"/>
+					<Anchors>
+						<Anchor point="TOPRIGHT" x="0" y="-4"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="BACKGROUND" textureSubLevel="2">
+				<Texture parentKey="Class" atlas="GarrMission_ClassIcon-DeathKnight" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="TOPRIGHT" x="0" y="-4"/>
+					</Anchors>
+					<Color r="1" g="1" b="1" a=".2"/>
+				</Texture>
+			</Layer>
+			<Layer level="ARTWORK">
+				<FontString parentKey="Name" inherits="GameFontNormal" justifyH="LEFT" text="Goblin Freeman">
+					<Size x="120" y="0"/>
+					<Anchors>
+						<Anchor point="LEFT" relativeKey="$parent.PortraitFrame" relativePoint="LEFT" x="66" y="0"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Frame parentKey="PortraitFrame" inherits="GarrisonFollowerPortraitTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" x="4" y="2"/>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						self:SetFrameLevel(self:GetParent():GetFrameLevel() + 2);
+					</OnLoad>
+				</Scripts>
+			</Frame>
+		</Frames>
+		<Scripts>
+			<OnEnter>
+				GarrisonFollowerTooltip:ClearAllPoints();
+				GarrisonFollowerTooltip:SetPoint("BOTTOMLEFT", self, "TOPRIGHT");
+				local link = C_Garrison.GetFollowerLinkByID(self.ID);
+				local _, garrisonFollowerID, quality, level, itemLevel, ability1, ability2, ability3, ability4, trait1, trait2, trait3, trait4 = strsplit(":", link);
+				GarrisonFollowerTooltip_Show(tonumber(garrisonFollowerID), false, tonumber(quality), tonumber(level), 0, 0, tonumber(itemLevel), tonumber(ability1), tonumber(ability2), tonumber(ability3), tonumber(ability4), tonumber(trait1), tonumber(trait2), tonumber(trait3), tonumber(trait4));
+			</OnEnter>
+			<OnClick>
+				if ( IsModifiedClick("CHATLINK") ) then
+					local followerLink = C_Garrison.GetFollowerLinkByID(self.ID);
+					if ( followerLink ) then
+						ChatEdit_InsertLink(followerLink);
+					end
+				end			
+			</OnClick>
+			<OnLeave>
+				GarrisonFollowerTooltip:Hide();
+			</OnLeave>
+		</Scripts>
+	</Button>
+	
 	<Frame name="QuestInfoObjectivesFrame" hidden="true">					
 		<Size>
 			<AbsDimension x="285" y="10"/>
@@ -197,6 +259,7 @@
 		</Layers>
 		<Frames>
 			<Button parentKey="SpellFrame" name="QuestInfoRewardSpell" inherits="QuestSpellTemplate, QuestInfoRewardSpellCodeTemplate" hidden="true"/>
+			<Button parentKey="FollowerFrame" inherits="QuestInfoRewardFollowerTemplate"/>
 			<Button name="$parentQuestInfoItem1" inherits="LargeItemButtonTemplate, QuestInfoRewardItemCodeTemplate" hidden="true" parentArray="RewardButtons"/>
 			<Frame parentKey="MoneyFrame" name="QuestInfoMoneyFrame" inherits="MoneyFrameTemplate">
 				<Anchors>
@@ -371,6 +434,7 @@
 				</Anchors>				
 			</Frame>
 			<Button parentKey="SpellFrame" inherits="SmallItemButtonTemplate, QuestInfoRewardSpellCodeTemplate" hidden="true"/>
+			<Frame parentKey="FollowerFrame" inherits="QuestInfoRewardFollowerTemplate"/>
 			<Button name="$parentQuestInfoItem1" inherits="SmallItemButtonTemplate, QuestInfoRewardItemCodeTemplate" hidden="true" parentArray="RewardButtons"/>
 			<Button parentKey="XPFrame" inherits="SmallItemButtonTemplate" hidden="true"/>
 			<Button parentKey="MoneyFrame" inherits="SmallItemButtonTemplate" hidden="true"/>

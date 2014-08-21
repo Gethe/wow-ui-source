@@ -517,6 +517,17 @@
 								</FontString>
 							</Layer>
 						</Layers>
+						<Frames>
+							<Frame name="PremadeGroupsPvPTutorialAlert" inherits="MicroButtonAlertTemplate" parent="PVPQueueFrameCategoryButton4">
+								<KeyValues>
+									<KeyValue key="label" value="LFG_LIST_TUTORIAL_ALERT" type="global"/>
+									<KeyValue key="tutorialIndex" value="LE_FRAME_TUTORIAL_LFG_LIST" type="global"/>
+								</KeyValues>
+								<Anchors>
+									<Anchor point="BOTTOM" relativeKey="$parent" relativePoint="TOP" x="0" y="8"/>
+								</Anchors>
+							</Frame>
+						</Frames>
 					</Button>
 					<!-- Casual  -->
 					<Frame name="HonorFrame" toplevel="true" useParentLevel="true" >
@@ -1239,7 +1250,7 @@
 							<OnShow  function="WarGamesFrame_OnShow"/>
 						</Scripts>
 					</Frame>
-					<Frame name="LFGListPVPStub">
+					<Frame name="LFGListPVPStub" hidden="true">
 						<Size x="338" y="428"/>
 						<Anchors>
 							<Anchor point="TOPLEFT" x="224" y="0"/>

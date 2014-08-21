@@ -351,7 +351,7 @@ function QuestInfo_ShowRewards()
 		rewardButtons[i]:Hide();
 	end
 	
-	local questItem, name, texture, isTradeskillSpell, isSpellLearned, quality, isUsable, numItems;
+	local questItem, name, texture, isTradeskillSpell, isSpellLearned, quality, isUsable, numItems, garrFollowerID;
 	local rewardsCount = 0;
 	local lastFrame = rewardsFrame.Header;
 	
@@ -421,9 +421,9 @@ function QuestInfo_ShowRewards()
 		rewardsFrame.SpellLearnText:SetPoint("TOPLEFT", lastFrame, "BOTTOMLEFT", 0, -REWARDS_SECTION_OFFSET);
 
 		if ( QuestInfoFrame.questLog ) then
-			texture, name, isTradeskillSpell, isSpellLearned, hideSpellLearnText, isBoostSpell = GetQuestLogRewardSpell();
+			texture, name, isTradeskillSpell, isSpellLearned, hideSpellLearnText, isBoostSpell, garrFollowerID = GetQuestLogRewardSpell();
 		else
-			texture, name, isTradeskillSpell, isSpellLearned, hideSpellLearnText, isBoostSpell = GetRewardSpell();
+			texture, name, isTradeskillSpell, isSpellLearned, hideSpellLearnText, isBoostSpell, garrFollowerID = GetRewardSpell();
 		end
 		
 		if ( not hideSpellLearnText ) then
@@ -431,6 +431,8 @@ function QuestInfo_ShowRewards()
 				rewardsFrame.SpellLearnText:SetText(REWARD_TRADESKILL_SPELL);
 			elseif ( isBoostSpell ) then
 				rewardsFrame.SpellLearnText:SetText(REWARD_ABILITY);
+			elseif ( garrFollowerID ) then
+				rewardsFrame.SpellLearnText:SetText(REWARD_FOLLOWER);				
 			elseif ( not isSpellLearned ) then
 				rewardsFrame.SpellLearnText:SetText(REWARD_AURA);
 			else
@@ -438,17 +440,33 @@ function QuestInfo_ShowRewards()
 			end
 		end
 		totalHeight = totalHeight + rewardsFrame.SpellLearnText:GetHeight() + REWARDS_SECTION_OFFSET;
-
-		questItem = rewardsFrame.SpellFrame;
-		questItem:Show();
-		-- For the tooltip
-		questItem.Icon:SetTexture(texture);
-		questItem.Name:SetText(name);
+		if ( garrFollowerID ) then
+			rewardsFrame.SpellFrame:Hide();
+			questItem = rewardsFrame.FollowerFrame;
+			questItem:Show();
+			questItem.ID = garrFollowerID;
+			local followerInfo = C_Garrison.GetFollowerInfo(garrFollowerID);
+			questItem.Name:SetText(followerInfo.name);
+			questItem.PortraitFrame.Level:SetText(followerInfo.level);
+			questItem.Class:SetAtlas(followerInfo.classAtlas);
+			local color = ITEM_QUALITY_COLORS[followerInfo.quality];
+			questItem.PortraitFrame.PortraitRingQuality:SetVertexColor(color.r, color.g, color.b);
+			questItem.PortraitFrame.LevelBorder:SetVertexColor(color.r, color.g, color.b);
+			GarrisonFollowerPortait_Set(questItem.PortraitFrame.Portrait, followerInfo.allianceIconFileDataID, followerInfo.hordeIconFileDataID);
+		else
+			rewardsFrame.FollowerFrame:Hide();
+			questItem = rewardsFrame.SpellFrame;
+			questItem:Show();
+			-- For the tooltip
+			questItem.Icon:SetTexture(texture);
+			questItem.Name:SetText(name);
+		end
 		questItem:SetPoint("TOPLEFT", rewardsFrame.SpellLearnText, "BOTTOMLEFT", 0, -REWARDS_SECTION_OFFSET);
 		lastFrame = questItem;
 		totalHeight = totalHeight + questItem:GetHeight() + REWARDS_SECTION_OFFSET;
 	else
 		rewardsFrame.SpellFrame:Hide();
+		rewardsFrame.FollowerFrame:Hide();
 		rewardsFrame.SpellLearnText:Hide();
 	end
 

@@ -44,10 +44,12 @@ function AccountLogin_OnShow(self)
 		AccountLoginUI:Hide();
 		return;
 	end
-
+	
+	local displayedExpansionLevel = GetClientDisplayExpansionLevel();
+	
 	self:SetSequence(0);
-	PlayGlueMusic(EXPANSION_GLUE_MUSIC[GetClientDisplayExpansionLevel()]);
-	PlayGlueAmbience(GlueAmbienceTracks["DARKPORTAL"], 4.0);
+	PlayGlueMusic(EXPANSION_GLUE_MUSIC[displayedExpansionLevel]);
+	PlayGlueAmbience(EXPANSION_GLUE_AMBIENCE[displayedExpansionLevel], 4.0);
 
 	-- Try to show the EULA or the TOS
 	AccountLogin_ShowUserAgreements();

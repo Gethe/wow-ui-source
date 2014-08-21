@@ -35,6 +35,11 @@
 	</Button>
 	<Frame name="MicroButtonAlertTemplate" inherits="GlowBoxTemplate" parent="UIParent" enableMouse="true" hidden="true" frameStrata="DIALOG" frameLevel="2" topLevel="true" virtual="true">
 		<Size x="220" y="100"/>
+		<!--KeyValues>
+			Optional
+			<KeyValue key="label" value="DISPLAY_STRING" type="global"/>
+			<KeyValue key="tutorialIndex" value="LE_FRAME_TUTORIAL_X" type="global"/>
+		</KeyValues-->
 		<Layers>
 			<Layer level="OVERLAY">
 				<FontString parentKey="Text" inherits="GameFontHighlightLeft" justifyV="TOP">
@@ -53,6 +58,10 @@
 				<Scripts>
 					<OnClick>
 						self:GetParent():Hide();
+						local tutIdx = self:GetParent().tutorialIndex;
+						if ( tutIdx ) then
+							SetCVarBitfield("closedInfoFrames", tutIdx, true);
+						end
 					</OnClick>
 				</Scripts>
 			</Button>
@@ -66,6 +75,9 @@
 			<OnLoad function="MicroButtonAlert_OnLoad"/>
 			<OnShow>
 				self:SetHeight(self.Text:GetHeight()+42);
+				if ( self.tutorialIndex and GetCVarBitfield("closedInfoFrames", self.tutorialIndex) ) then
+					self:Hide();
+				end
 			</OnShow>
 		</Scripts>
 	</Frame>

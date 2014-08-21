@@ -745,7 +745,7 @@
 					<Frame parentKey="Source">
 						<Size x="300" y="80"/>
 						<Anchors>
-							<Anchor point="TOPLEFT" relativeKey="$parent.Model" relativePoint="BOTTOMLEFT" x="26" y="3"/>
+							<Anchor point="TOPLEFT" relativeKey="$parent.Model" relativePoint="BOTTOMLEFT" x="26" y="16"/>
 						</Anchors>
 						<Layers>
 							<Layer level="OVERLAY">

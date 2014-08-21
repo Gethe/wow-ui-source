@@ -384,5 +384,8 @@ end
 --Micro Button alerts
 function MicroButtonAlert_OnLoad(self)
 	self.Text:SetSpacing(4);
+	if ( self.label ) then
+		self.Text:SetText(self.label);
+	end
 end
 

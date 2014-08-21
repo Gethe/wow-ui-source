@@ -116,20 +116,24 @@ function DraenorZoneAbilityFrame_Update(self)
 	self.SpellButton.Icon:SetTexture(tex);
 
 	local spellID = DRAENOR_ZONE_NAME_TO_SPELL_ID_CACHE[name];
-	local charges, maxCharges = GetSpellCharges(spellID);
+	local charges, maxCharges, chargeStart, chargeDuration = GetSpellCharges(spellID);
 
+	local usesCharges = false;
 	if (maxCharges and maxCharges > 1) then
 		self.SpellButton.Count:SetText(charges);
+		usesCharges = true;
 	else
 		self.SpellButton.Count:SetText("");
 	end
 
 	local start, duration, enable = GetSpellCooldown(name);
-
-	if (start) then
+	
+	if (usesCharges and charges < maxCharges) then
+		CooldownFrame_SetTimer(self.SpellButton.Cooldown, chargeStart, chargeDuration, enable, charges, maxCharges);
+	elseif (start) then
 		CooldownFrame_SetTimer(self.SpellButton.Cooldown, start, duration, enable);
 	end
-		
+
 	self.SpellButton.spellName = self.CurrentSpell;
 	self.SpellButton.currentSpellID = spellID;
 end

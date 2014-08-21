@@ -311,6 +311,12 @@ function SplashFrame_Open( tag )
 	end
 	frame.TopCloseButton:Hide();
 	SplashFrame_Display( tag, showStartButton );
+	
+	-- hide some quest elements when splash frame is up
+	ObjectiveTracker_Update();
+	if( QuestFrame:IsShown() )then
+		HideUIPanel(QuestFrame);
+	end
 end
 
 function SplashFrame_Close()
@@ -349,6 +355,8 @@ function SplashFrame_OnHide(self)
 	self:UnregisterEvent("PLAYER_ENTERING_WORLD");
 	self:UnregisterEvent("QUEST_LOG_UPDATE");
 	self:SetScript("OnUpdate", nil);
+	
+	ObjectiveTracker_Update();
 end
 
 function SplashFrame_OnUpdate(self, elasped)

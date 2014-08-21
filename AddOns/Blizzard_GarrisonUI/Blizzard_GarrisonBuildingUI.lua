@@ -109,6 +109,7 @@ function GarrisonBuildingFrame_OnLoad(self)
 	self:RegisterEvent("GARRISON_BUILDING_LIST_UPDATE");
 	self:RegisterEvent("GARRISON_BUILDING_ACTIVATED");
 	self:RegisterEvent("GARRISON_UPGRADEABLE_RESULT");
+	self:RegisterEvent("GARRISON_BUILDING_ERROR");
 end
 
 function GarrisonBuildingFrame_OnShow(self)
@@ -128,14 +129,14 @@ function GarrisonBuildingFrame_OnShow(self)
 	else
 		GarrisonTownHall_Select();
 	end
-	PlaySound("igCharacterInfoOpen");
+	PlaySound("UI_Garrison_ArchitectTable_Open");
 end
 
 function GarrisonBuildingFrame_OnHide(self)
 	C_Garrison.CloseArchitect();
 	HelpPlate_Hide();
 	GarrisonBuildingPlacer_Clear();
-	PlaySound("igCharacterInfoClose");
+	PlaySound("UI_Garrison_ArchitectTable_Close");
 end
 
 function GarrisonBuildingFrame_OnEvent(self, event, ...)
@@ -168,11 +169,12 @@ function GarrisonBuildingFrame_OnEvent(self, event, ...)
 			end
 			if (rank > 1) then
 				Plot.BuildGlow:SetAtlas("Garr_UpgradeFX-Glow", true);
+				PlaySound("UI_Garrison_ArchitectTable_UpgradeStart");
 			else
 				Plot.BuildGlow:SetAtlas("Garr_BuildFX-Glow", true);
+				PlaySound("UI_Garrison_ArchitectTable_BuildingPlacement");
 			end
 			Plot.BuildingCreateFlareAnim:Play();
-			PlaySoundKitID(40999);
 			GarrisonPlot_SetBuilding(Plot, id, name, texPrefix, icon, rank, isBuilding, timeStart, buildTime, canActivate, canUpgrade, isPrebuilt);
 			local buildingInfo = GarrisonBuildingFrame.selectedBuilding;
 			if (buildingInfo and id == buildingInfo.buildingID) then
@@ -224,6 +226,8 @@ function GarrisonBuildingFrame_OnEvent(self, event, ...)
 		end
 	elseif (event == "GARRISON_UPGRADEABLE_RESULT") then
 		GarrisonBuildingFrame_UpdateUpgradeButton();
+	elseif (event == "GARRISON_BUILDING_ERROR") then
+		PlaySound("UI_Garrison_ArchitectTable_BuildingPlacementError");
 	end
 end
 
@@ -319,7 +323,20 @@ function GarrisonTownHall_GetName()
 	return FactionData[factionGroup].townHallName;
 end
 
+function GarrisonTownHall_OnEnter(self)
+	self.BuildingHighlight:Show();
+	GameTooltip:SetOwner(self, "ANCHOR_CURSOR_RIGHT");
+	GameTooltip:SetText(GarrisonTownHall_GetName());
+	GameTooltip:Show();
+end
+
+function GarrisonTownHall_OnLeave(self)
+	self.BuildingHighlight:Hide();
+	GameTooltip_Hide();
+end
+
 function GarrisonTownHall_OnClick(self)
+	PlaySound("UI_Garrison_ArchitectTable_BuildingSelect");
 	GarrisonTownHall_Select();
 end
 
@@ -369,8 +386,6 @@ function GarrisonTownHall_Select()
 			infoBox.UpgradeButton:Disable();
 		end
 	end
-	
-	PlaySound("igCharacterInfoTab");
 end
 
 function GarrisonTownHall_StartUpgrade(self)
@@ -381,7 +396,7 @@ function GarrisonTownHall_StartUpgrade(self)
 	confirmation:ClearAllPoints();
 	confirmation:SetPoint("BOTTOM", GarrisonBuildingFrame.MapFrame.TownHall, "TOP", 0, -40);
 	confirmation:Show();
-	PlaySound("igMainMenuOpen");
+	PlaySound("UI_Garrison_ArchitectTable_Upgrade");
 end
 
 function GarrisonTownHallUpgradeButton_OnEnter(self)
@@ -689,7 +704,7 @@ function GarrisonBuildingInfoBox_ShowFollowerPortrait(owned, hasFollowerSlot, in
 	
 	infoBox.AddFollowerButton.greyedOut = (isBuilding or canActivate or not owned);
 	
-	local followerName, level, quality, displayID, followerID, garrFollowerID, status = C_Garrison.GetFollowerInfoForBuilding(ID);
+	local followerName, level, quality, displayID, followerID, garrFollowerID, status, allianceIconID, hordeIconID = C_Garrison.GetFollowerInfoForBuilding(ID);
 	if (followerName) then
 		infoBox.AddFollowerButton:Hide();
 		local button = infoBox.FollowerPortrait;
@@ -697,7 +712,7 @@ function GarrisonBuildingInfoBox_ShowFollowerPortrait(owned, hasFollowerSlot, in
 		local color = ITEM_QUALITY_COLORS[quality];
     	button.LevelBorder:SetVertexColor(color.r, color.g, color.b);
 		button.PortraitRing:SetVertexColor(color.r, color.g, color.b);
-		SetPortraitTexture(button.Portrait, displayID);
+		GarrisonFollowerPortait_Set(button.Portrait, allianceIconID, hordeIconID);
 		button.FollowerName:SetText(followerName);
 		button.FollowerStatus:SetText(status);
 		button.garrFollowerID = garrFollowerID;
@@ -872,11 +887,11 @@ end
 function GarrisonBuildingAddFollowerButton_OnClick(self, button)
 	if (GarrisonBuildingFrame.FollowerList:IsShown()) then
 		GarrisonBuildingList_Show();
-		PlaySound("igMainMenuClose");
+		PlaySound("UI_Garrison_CommandTable_AssignFollower");
 	elseif (not self.greyedOut) then
 		GarrisonBuildingFrame.FollowerList:Show();
 		GarrisonBuildingFrame.BuildingList:Hide();
-		PlaySound("igCharacterInfoTab");
+		PlaySound("UI_Garrison_CommandTable_AssignFollower")
 	end
 end
 
@@ -932,7 +947,7 @@ function GarrisonBuildingFollowerList_Update()
 			button.PortraitFrame.LevelBorder:SetVertexColor(color.r, color.g, color.b);
 			button.PortraitFrame.PortraitRing:SetVertexColor(color.r, color.g, color.b);
 			button.PortraitFrame.Level:SetText(follower.level);
-			SetPortraitTexture(button.PortraitFrame.Portrait, follower.displayID);
+			GarrisonFollowerPortait_Set(button.PortraitFrame.Portrait, follower.allianceIconFileDataID, follower.hordeIconFileDataID);
 			button.PortraitFrame.Level:SetText(follower.level);
 			button.followerID = follower.followerID;
 			button.garrFollowerID = follower.garrFollowerID;
@@ -970,7 +985,7 @@ end
 function GarrisonBuildingFollowerButton_OnClick(self, button)
 	C_Garrison.AssignFollowerToBuilding(GarrisonBuildingFrame.selectedBuilding.plotID, self.info.followerID);
 	GarrisonBuildingList_Show();
-	PlaySound("igMainMenuClose");
+	PlaySound("UI_Garrison_CommandTable_SelectFollower");
 end
 
 function GarrisonBuildingFollowerButton_OnEnter(self, button)
@@ -1032,7 +1047,7 @@ end
 
 function GarrisonBuildingTab_OnMouseDown(self)
 	if (GarrisonBuildingFrame.selectedTab ~= self) then
-		PlaySound("igMainMenuOptionCheckBoxOn");
+		PlaySound("UI_Garrison_Nav_Tabs");
 		GarrisonBuildingTab_Select(self);
 	end
 end
@@ -1043,7 +1058,7 @@ function GarrisonBuildingTab_Select(self)
 end
 
 function GarrisonBuildingListButton_OnMouseDown(self, button)
-	PlaySound("igCharacterInfoTab");
+	PlaySound("UI_Garrison_ArchitectTable_BuildingSelect");
 	GarrisonBuildingListButton_Select(self);
 end
 
@@ -1082,6 +1097,16 @@ end
 function GarrisonBuilding_ShowLevelTooltip(name, plotID, buildingID, anchor)
 	local Tooltip = GarrisonBuildingFrame.BuildingLevelTooltip;
 	Tooltip.Name:SetText(name);
+	local height = Tooltip.Name:GetHeight() + 30; --15 pixels of padding on top and bottom
+	local followerText = plotID and GarrisonBuildingFrame.plots[plotID].followerTooltip;
+	if (followerText) then
+		Tooltip.FollowerText:SetText(followerText);
+		height = height + Tooltip.FollowerText:GetHeight() + 5;
+		Tooltip.Rank1:SetPoint("TOPLEFT", Tooltip.FollowerText, "BOTTOMLEFT", 0, -10);
+	else
+		Tooltip.FollowerText:SetText(nil);
+		Tooltip.Rank1:SetPoint("TOPLEFT", Tooltip.Name, "BOTTOMLEFT", 0, -10);
+	end
 	local _, rank, currencyID, currencyQty, buildTime, needsPlan, upgrades, canUpgrade;
 	local locked = plotID and GarrisonBuildingFrame.plots[plotID].locked;
 	local owned = plotID and not locked;
@@ -1109,7 +1134,6 @@ function GarrisonBuilding_ShowLevelTooltip(name, plotID, buildingID, anchor)
 	end
 	
 	local nextAnchor = nil;
-	local height = Tooltip.Name:GetHeight() + 30; --15 pixels of padding on top and bottom
 	for i=1, #upgrades do
 		local tooltip = C_Garrison.GetBuildingTooltip(upgrades[i]);
 		if (tooltip == "") then 
@@ -1308,11 +1332,14 @@ function GarrisonPlot_OnReceiveDrag(self)
 	if (GarrisonBuildingPlacer.info.plotID == self.plotID) then
 		return;
 	end
-	PlaySoundKitID(40998);
 	-- If this was dragged from another plot, swap the buildings
 	if (GarrisonBuildingPlacer.fromExistingBuilding) then
-		C_Garrison.SwapBuildings(GarrisonBuildingPlacer.info.plotID, self.plotID);
-		GarrisonBuildingPlacer_Clear();
+		if (self.buildingID) then
+			C_Garrison.SwapBuildings(GarrisonBuildingPlacer.info.plotID, self.plotID);
+			GarrisonBuildingPlacer_Clear();
+		else
+			PlaySound("UI_Garrison_ArchitectTable_BuildingPlacementError");
+		end
 		return;
 	end
 	
@@ -1325,6 +1352,7 @@ function GarrisonPlot_OnReceiveDrag(self)
 	if (dragPlotSize ~= myPlotSize or (self.buildingID and isPrebuilt)) then
 		UIErrorsFrame:AddMessage(ERR_GARRISON_INVALID_PLOT_BUILDING, 1.0, 0.1, 0.1, 1.0);
 		GarrisonBuildingPlacer_Clear();
+		PlaySound("UI_Garrison_ArchitectTable_BuildingPlacementError");
 		return;
 	end
 		
@@ -1344,6 +1372,7 @@ function GarrisonPlot_OnReceiveDrag(self)
 	confirmation:ClearAllPoints();
 	confirmation:SetPoint("BOTTOM", self, "TOP", 0, 0);
 	confirmation:Show();
+	PlaySound("UI_Garrison_ArchitectTable_Upgrade");
 	
 	local id, name, texPrefix, icon = C_Garrison.GetBuildingInfo(GarrisonBuildingPlacer.info.buildingID)
 	GarrisonPlot_SetBuilding(self, id, name, texPrefix, icon);
@@ -1356,7 +1385,6 @@ function GarrisonPlot_OnClick(self)
 		return;
 	end
 	
-	PlaySound("igCharacterInfoTab");
 	local list = GarrisonBuildingFrame.BuildingList;
 	
 	local categoryID = C_Garrison.GetTabForPlot(self.plotID);
@@ -1374,6 +1402,7 @@ function GarrisonPlot_OnClick(self)
 			GarrisonBuildingFrame_ClearPlotHighlights();
 			self.PlotHighlight:Show();
 		end
+		PlaySound("UI_Garrison_ArchitectTable_BuildingSelect");
 		return;
 	end
 	GarrisonBuildingList_Show();	
@@ -1385,6 +1414,7 @@ function GarrisonPlot_OnClick(self)
 	GarrisonPlot_ShowTooltip(self);
 	
 	if (self.buildingID) then
+		PlaySound("UI_Garrison_ArchitectTable_BuildingSelect");
 		GarrisonBuildingList_SelectBuilding(self.buildingID);
 		return;
 	end
@@ -1394,14 +1424,31 @@ function GarrisonPlot_OnClick(self)
 		for i=1, #list.Buttons do
 			local Button = list.Buttons[i];
 			if (Button.info.buildingID == buildings[1]) then
+				PlaySound("UI_Garrison_ArchitectTable_BuildingSelect");
 				GarrisonBuildingListButton_Select(Button);
 				return;
 			end
 		end
 	end
 
+	PlaySound("UI_Garrison_ArchitectTable_PlotSelect");
 	local plotSize = GarrisonBuildingFrame.plots[self.plotID].size;
 	GarrisonBuildingInfoBox_ShowEmptyPlot(plotSize);
+end
+
+function GarrisonPlot_GetFollowerTooltipText(buildingID, plotID)
+	local _,_,_,_,_,_,_,_,_,_,_,_,_,_,_, hasFollowerSlot = C_Garrison.GetBuildingInfo(buildingID);
+	if (hasFollowerSlot) then
+		local followerName = C_Garrison.GetFollowerInfoForBuilding(plotID);
+		local followerString;
+		if (followerName) then
+			followerString = format(GARRISON_BUILDING_FOLLOWER_WORKING, followerName);
+		else
+			followerString = GARRISON_BUILDING_FOLLOWER_EMPTY;
+		end
+		return format("|cffb2f0ff%s|r", followerString);
+	end
+	return nil;
 end
 
 function GarrisonPlot_ShowTooltip(self)
@@ -1411,6 +1458,9 @@ function GarrisonPlot_ShowTooltip(self)
 			GarrisonBuilding_ShowLevelTooltip(self.tooltip, self.plotID, self.buildingID, self);
 		else
 			GameTooltip:SetText(self.tooltip, nil, nil, nil, nil, true);
+			if (self.followerTooltip) then
+				GameTooltip:AddLine(self.followerTooltip);
+			end
 		end
 	else
 		GameTooltip:SetOwner(self, "ANCHOR_CURSOR_RIGHT")
@@ -1428,8 +1478,8 @@ function GarrisonPlot_ShowTooltip(self)
 		else
 			GameTooltip:AddLine(GARRISON_EMPTY_PLOT_HOVER_TOOLTIP, HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b, true);
 		end
-		GameTooltip:Show();
 	end
+	GameTooltip:Show();
 end
 
 function GarrisonPlot_OnEnter(self)
@@ -1481,9 +1531,11 @@ function GarrisonPlot_SetBuilding(self, id, tooltip, texPrefix, icon, rank, isBu
 	GarrisonPlot_ClearBuilding(self);
 	self.buildingID = id;
 	if (canActivate) then
-		self.tooltip = GARRISON_FINALIZE_BUILDING_TOOLTIP
+		self.tooltip = GARRISON_FINALIZE_BUILDING_TOOLTIP;
+		self.followerTooltip = nil;
 	else
 		self.tooltip = tooltip;
+		self.followerTooltip = GarrisonPlot_GetFollowerTooltipText(self.buildingID, self.plotID);
 	end
 	if (icon) then
 		SetPortraitToTexture(self.Icon, icon);
@@ -1615,6 +1667,7 @@ function GarrisonBuildingFrame_StartUpgrade(self)
 	local _, currencyAmount = GetCurrencyInfo(GARRISON_CURRENCY);
 	if (currencyAmount < currencyQty) then
 		UIErrorsFrame:AddMessage(ERR_GARRISON_NOT_ENOUGH_CURRENCY, 1.0, 0.1, 0.1, 1.0);
+		PlaySound("UI_Garrison_ArchitectTable_BuildingPlacementError");
 		return;
 	end
 
@@ -1632,7 +1685,7 @@ function GarrisonBuildingFrame_StartUpgrade(self)
 	confirmation:ClearAllPoints();
 	confirmation:SetPoint("BOTTOM", Plot, "TOP", 0, 0);
 	confirmation:Show();
-	PlaySound("igMainMenuOpen");
+	PlaySound("UI_Garrison_ArchitectTable_Upgrade");
 	
 	GarrisonPlot_SetBuilding(Plot, id, name, texPrefix, icon);
 end
@@ -1655,7 +1708,7 @@ end
 
 function GarrisonBuildingFrame_CancelConfirmation()
 	GarrisonBuildingFrame_ClearConfirmation();
-	PlaySound("igMainMenuClose");
+	PlaySound("UI_Garrison_ArchitectTable_UpgradeCancel");
 end
 
 function GarrisonBuildingFrame_ClearConfirmation()

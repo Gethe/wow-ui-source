@@ -972,6 +972,26 @@ function UIParent_OnEvent(self, event, ...)
 
 		-- display loot specialization setting
 		PrintLootSpecialization();
+		
+		--Bonus roll/spell confirmation.
+		local spellConfirmations = GetSpellConfirmationPromptsInfo();
+		
+		for i=1, #spellConfirmations do
+			if ( spellConfirmations[i].spellID ) then
+				if ( spellConfirmations[i].confirmType == CONFIRMATION_PROMPT_BONUS_ROLL ) then
+					BonusRollFrame_StartBonusRoll(spellConfirmations[i].spellID, spellConfirmations[i].text, spellConfirmations[i].duration, spellConfirmations[i].currencyID);
+				else
+					StaticPopup_Show("SPELL_CONFIRMATION_PROMPT", spellConfirmations[i].text, spellConfirmations[i].duration, spellConfirmations[i].spellID);
+				end
+			end
+		end
+		
+		--Group Loot Roll Windows.
+		local pendingLootRollIDs = GetActiveLootRollIDs();
+		
+		for i=1, #pendingLootRollIDs do
+			GroupLootFrame_OpenNewFrame(pendingLootRollIDs[i], GetLootRollTimeLeft(pendingLootRollIDs[i]));
+		end
 	elseif ( event == "GROUP_ROSTER_UPDATE" ) then
 		-- Hide/Show party member frames
 		RaidOptionsFrame_UpdatePartyFrames();

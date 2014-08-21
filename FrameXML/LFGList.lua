@@ -36,7 +36,7 @@ LFG_LIST_PER_EXPANSION_TEXTURES = {
 	[2] = "wrath",
 	[3] = "cataclysm",
 	[4] = "mists",
-	[5] = "classic",	--Replace with WoD name
+	[5] = "warlords",
 }
 
 LFG_LIST_GROUP_DATA_ATLASES = {
@@ -72,6 +72,9 @@ function LFGListFrame_OnLoad(self)
 	self:RegisterEvent("LFG_LIST_APPLICANT_UPDATED");
 	self:RegisterEvent("LFG_LIST_ENTRY_EXPIRED_TOO_MANY_PLAYERS");
 	self:RegisterEvent("LFG_LIST_ENTRY_EXPIRED_TIMEOUT");
+	self:RegisterEvent("LFG_LIST_APPLICATION_STATUS_UPDATED");
+	self:RegisterEvent("VARIABLES_LOADED");
+	self:RegisterEvent("ADDON_LOADED");
 	for i=1, #LFG_LIST_ACTIVE_QUEUE_MESSAGE_EVENTS do
 		self:RegisterEvent(LFG_LIST_ACTIVE_QUEUE_MESSAGE_EVENTS[i]);
 	end
@@ -80,23 +83,35 @@ function LFGListFrame_OnLoad(self)
 
 	self.EventsInBackground = {
 		LFG_LIST_SEARCH_FAILED = { self.SearchPanel };
-	}
+	};
 end
 
 function LFGListFrame_OnEvent(self, event, ...)
 	if ( event == "LFG_LIST_AVAILABILITY_UPDATE" ) then
 		LFGListFrame_FixPanelValid(self);
 	elseif ( event == "LFG_LIST_ACTIVE_ENTRY_UPDATE" ) then
+		local createdNew = ...;
 		LFGListFrame_FixPanelValid(self);	--If our current panel isn't valid, change it.
 		if ( C_LFGList.GetActiveEntryInfo() ) then
 			self.EntryCreation.WorkingCover:Hide();
+		end
+		if ( createdNew ) then
+			PlaySound("PVPEnterQueue");
 		end
 	elseif ( event == "LFG_LIST_ENTRY_CREATION_FAILED" ) then
 		self.EntryCreation.WorkingCover:Hide();
 	elseif ( event == "LFG_LIST_APPLICANT_LIST_UPDATED" ) then
 		local hasNewPending = ...;
-		if ( hasNewPending and not self:IsVisible() and LFGListUtil_IsEntryEmpowered() ) then
-			QueueStatusMinimapButton_SetGlowLock(QueueStatusMinimapButton, "lfglist-applicant", true);
+		if ( hasNewPending and LFGListUtil_IsEntryEmpowered() ) then
+			if ( not self:IsVisible() ) then
+				QueueStatusMinimapButton_SetGlowLock(QueueStatusMinimapButton, "lfglist-applicant", true);
+			end
+			PlaySound("UI_Groupfinder_Application_Recieved");	--'i' before 'e' EXCEPT AFTER 'C'
+		end
+	elseif ( event == "LFG_LIST_APPLICANT_UPDATED" ) then
+		local numApps, numActiveApps = C_LFGList.GetNumApplicants();
+		if ( numActiveApps == 0 ) then
+			QueueStatusMinimapButton_SetGlowLock(QueueStatusMinimapButton, "lfglist-applicant", false);
 		end
 	elseif ( event == "LFG_LIST_ENTRY_EXPIRED_TOO_MANY_PLAYERS" ) then
 		if ( UnitIsGroupLeader("player", LE_PARTY_CATEGORY_HOME) ) then
@@ -105,6 +120,24 @@ function LFGListFrame_OnEvent(self, event, ...)
 	elseif ( event == "LFG_LIST_ENTRY_EXPIRED_TIMEOUT" ) then
 		if ( UnitIsGroupLeader("player", LE_PARTY_CATEGORY_HOME) ) then
 			StaticPopup_Show("LFG_LIST_ENTRY_EXPIRED_TIMEOUT");
+		end
+	elseif ( event == "LFG_LIST_APPLICATION_STATUS_UPDATED" ) then
+		local id, newStatus, oldStatus = ...;
+		if ( newStatus == "declined" ) then
+			local info = ChatTypeInfo["SYSTEM"];
+			local id, activity, name = C_LFGList.GetSearchResultInfo(id);
+			DEFAULT_CHAT_FRAME:AddMessage(string.format(LFG_LIST_APP_DECLINED_MESSAGE, name), info.r, info.g, info.b);
+		elseif ( newStatus == "timedout" ) then
+			local info = ChatTypeInfo["SYSTEM"];
+			local id, activity, name = C_LFGList.GetSearchResultInfo(id);
+			DEFAULT_CHAT_FRAME:AddMessage(string.format(LFG_LIST_APP_TIMED_OUT_MESSAGE, name), info.r, info.g, info.b);
+		end
+	elseif ( event == "VARIABLES_LOADED" or event == "ADDON_LOADED" ) then
+		if ( not GetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_LFG_LIST) and UnitLevel("player") >= 90 ) then
+			PremadeGroupsPvETutorialAlert:Show();
+			if ( PremadeGroupsPvPTutorialAlert ) then
+				PremadeGroupsPvPTutorialAlert:Show();
+			end
 		end
 	end
 	
@@ -1105,10 +1138,10 @@ function LFGListApplicationViewer_UpdateApplicantMember(self, member, appID, mem
 			member.RoleIcon2:GetHighlightTexture():SetTexCoord(GetTexCoordsForRoleSmallCircle(role2));
 		end
 		member.RoleIcon1:SetEnabled(not noTouchy and role1 ~= assignedRole);
-		member.RoleIcon1:SetAlpha(role1 == assignedRole and 1 or 0.5);
+		member.RoleIcon1:SetAlpha(role1 == assignedRole and 1 or 0.3);
 		member.RoleIcon1:Show();
 		member.RoleIcon2:SetEnabled(not noTouchy and role2 ~= assignedRole);
-		member.RoleIcon2:SetAlpha(role2 == assignedRole and 1 or 0.5);
+		member.RoleIcon2:SetAlpha(role2 == assignedRole and 1 or 0.3);
 		member.RoleIcon2:SetShown(role2);
 		member.RoleIcon1.role = role1;
 		member.RoleIcon2.role = role2;
@@ -1633,6 +1666,13 @@ function LFGListSearchEntry_Update(self)
 		self.CancelButton:Hide();
 	end
 
+	--Center justify if we're on more than one line
+	if ( self.PendingLabel:GetHeight() > 15 ) then
+		self.PendingLabel:SetJustifyH("CENTER");
+	else
+		self.PendingLabel:SetJustifyH("RIGHT");
+	end
+
 	--Change the anchor of the label depending on whether we have the expiration time
 	if ( self.ExpirationTime:IsShown() ) then
 		self.PendingLabel:SetPoint("RIGHT", self.ExpirationTime, "LEFT", -3, 0);
@@ -1726,8 +1766,8 @@ end
 
 function LFGListSearchEntry_OnEnter(self)
 	local resultID = self.resultID;
-	local id, activityID, name, comment, voiceChat, iLvl, age, numBNetFriends, numCharFriends, numGuildMates, isDelisted, leaderName = C_LFGList.GetSearchResultInfo(resultID);
-	local activityName = C_LFGList.GetActivityInfo(activityID);
+	local id, activityID, name, comment, voiceChat, iLvl, age, numBNetFriends, numCharFriends, numGuildMates, isDelisted, leaderName, numMembers = C_LFGList.GetSearchResultInfo(resultID);
+	local activityName, shortName, categoryID, groupID, minItemLevel, filters, minLevel, maxPlayers, displayType = C_LFGList.GetActivityInfo(activityID);
 	local memberCounts = C_LFGList.GetSearchResultMemberCounts(resultID);
 	GameTooltip:SetOwner(self, "ANCHOR_RIGHT", 25, 0);
 	GameTooltip:SetText(name, 1, 1, 1, true);
@@ -1756,7 +1796,17 @@ function LFGListSearchEntry_OnEnter(self)
 	if ( leaderName or age > 0 ) then
 		GameTooltip:AddLine(" ");
 	end
-	GameTooltip:AddLine(string.format(LFG_LIST_TOOLTIP_MEMBERS, memberCounts.TANK + memberCounts.HEALER + memberCounts.DAMAGER, memberCounts.TANK, memberCounts.HEALER, memberCounts.DAMAGER));
+
+	if ( displayType == LE_LFG_LIST_DISPLAY_TYPE_CLASS_ENUMERATE ) then
+		GameTooltip:AddLine(string.format(LFG_LIST_TOOLTIP_MEMBERS_SIMPLE, numMembers));
+		for i=1, numMembers do
+			local role, class, classLocalized = C_LFGList.GetSearchResultMemberInfo(resultID, i);
+			local classColor = RAID_CLASS_COLORS[class] or NORMAL_FONT_COLOR;
+			GameTooltip:AddLine(string.format(LFG_LIST_TOOLTIP_CLASS_ROLE, classLocalized, _G[role]), classColor.r, classColor.g, classColor.b);
+		end
+	else
+		GameTooltip:AddLine(string.format(LFG_LIST_TOOLTIP_MEMBERS, numMembers, memberCounts.TANK, memberCounts.HEALER, memberCounts.DAMAGER));
+	end
 
 	if ( numBNetFriends + numCharFriends + numGuildMates > 0 ) then
 		GameTooltip:AddLine(" ");

@@ -70,9 +70,10 @@ function QuestFrame_OnEvent(self, event, ...)
 		end
 		return;
 	end
-	
-	QuestFrame_SetPortrait();
-	ShowUIPanel(QuestFrame);
+	if( not SplashFrame:IsShown() )then
+		QuestFrame_SetPortrait();
+		ShowUIPanel(QuestFrame);
+	end
 	if ( not QuestFrame:IsShown() ) then
 		QuestFrameGreetingPanel:Hide();
 		QuestFrameDetailPanel:Hide();

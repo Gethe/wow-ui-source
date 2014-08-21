@@ -54,10 +54,12 @@ function GarrisonRecruiterFrame_OnShow(self)
 	local followers = C_Garrison.GetAvailableRecruits();
 	if( #followers > 0 )then
 		-- display selection screen if we've already generated followers
+		self.keepRecruitmentNPCOpen = true;
 		HideUIPanel(self);
 		GarrisonRecruitSelectFrame_UpdateRecruits(false);
 		ShowUIPanel(GarrisonRecruitSelectFrame);
 	else
+		self.keepRecruitmentNPCOpen = nil;
 		GarrisonRecruiterFrame_Show( C_Garrison.CanGenerateRecruits(), GarrisonRecruiterFrame_HaveRoomToRecruit(), C_Garrison.CanSetRecruitmentPreference() );
 	end
 end
@@ -103,7 +105,6 @@ function GarrisonRecruiterFrame_ShowUnavailableFrame(haveRoomToRecruit)
 end
 
 function GarrisonRecruiterFrame_OnClickClose(self)
-	C_Garrison.CloseRecruitmentNPC();
 	HideUIPanel(GarrisonRecruiterFrame);
 end
 
@@ -116,6 +117,12 @@ function GarrisonRecruiterFrame_OnHide(self)
 	end
 	self:UnregisterEvent("GARRISON_RECRUITMENT_NPC_CLOSED");
 	self:UnregisterEvent("GARRISON_RECRUITMENT_READY");
+	
+	if ( not self.keepRecruitmentNPCOpen ) then
+		C_Garrison.CloseRecruitmentNPC();
+	else
+		self.keepRecruitmentNPCOpen = nil;
+	end
 end
 
 function GarrisonRecruiterType_OnClick( self )
@@ -198,6 +205,7 @@ end
 
 function GarrisonRecruiterFrame_GenerateRecruits(ability, trait)
 	C_Garrison.GenerateRecruits(ability, trait);
+	GarrisonRecruiterFrame.keepRecruitmentNPCOpen = true;
 	HideUIPanel(GarrisonRecruiterFrame);
 	
 	GarrisonRecruitSelectFrame_UpdateRecruits(true);
@@ -264,7 +272,6 @@ function GarrisonRecruitSelectFrame_OnEvent(self, event, ...)
 	GarrisonFollowerList_OnEvent(self, event, ...);
 	if(event == "GARRISON_RECRUIT_FOLLOWER_RESULT")then
 		-- post event for recruiting follower
-		C_Garrison.CloseRecruitmentNPC();
 		HideUIPanel(GarrisonRecruitSelectFrame);
 	elseif(event == "GARRISON_RECRUITMENT_FOLLOWERS_GENERATED")then
 		GarrisonRecruitSelectFrame_UpdateRecruits( false )

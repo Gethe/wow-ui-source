@@ -606,6 +606,7 @@ function GarrisonMinimapMission_ShowPulse(self)
 end
 
 function GarrisonMinimapInvasion_ShowPulse(self)
+	PlaySound("UI_Garrison_Toast_InvasionAlert");
 	self.AlertText:SetText(GARRISON_LANDING_INVASION_ALERT);
 	GarrisonMinimap_SetPulseLock(self, GARRISON_ALERT_CONTEXT_INVASION, true);
 	self.MinimapAlertAnim:Play();

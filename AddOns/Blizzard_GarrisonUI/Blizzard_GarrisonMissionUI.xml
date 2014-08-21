@@ -111,6 +111,16 @@
 		</Scripts>
 	</CinematicModel>
 
+	<PlayerModel name="MissionCompletePreloadModelTemplate" frameStrata="LOW" virtual="true">
+		<Size x="100" y="100"/>
+		<Anchors>
+			<Anchor point="TOPLEFT" x="10" y="-10"/>
+		</Anchors>
+		<Scripts>
+			<OnModelLoaded function="MissionCompletePreload_OnModelLoaded"/>
+		</Scripts>
+	</PlayerModel>
+	
 	<Frame name="GarrisonFollowerMissionPortraitTemplate" inherits="GarrisonFollowerPortraitTemplate" virtual="true">
 		<Layers>
 			<Layer level="OVERLAY" textureSubLevel="1">
@@ -1134,7 +1144,7 @@
 	<Frame name="GarrisonMissionEnemyLargeMechanicTemplate" inherits="GarrisonMissionLargeMechanicTemplate, GarrisonMissionCheckTemplate" virtual="true">
 		<Scripts>
 			<OnLoad>
-				self.CheckGlow:SetPoint("CENTER", 4, -4);
+				self.Check:SetPoint("TOPLEFT", self.CheckGlow, "TOPLEFT", 14, -14);
 			</OnLoad>
 		</Scripts>
 	</Frame>
@@ -1885,6 +1895,23 @@
 													<OnClick function="GarrisonMissionFrame_ShowCompleteMissions"/>
 												</Scripts>
 											</Button>
+											<Frame parentKey="LoadingFrame" inherits="LoadingSpinnerTemplate" hidden="true">
+												<Layers>
+													<Layer level="ARTWORK">
+														<FontString parentKey="Label" inherits="GameFontHighlight" text="LFG_LIST_LOADING">
+															<Anchors>
+																<Anchor point="LEFT" relativePoint="RIGHT"/>
+															</Anchors>														
+														</FontString>
+													</Layer>
+												</Layers>
+												<Scripts>
+													<OnLoad>
+														self.Anim:Play();
+														self:SetPoint("TOP", self:GetParent().ViewButton, "BOTTOM", -self.Label:GetWidth()/2, 0);
+													</OnLoad>
+												</Scripts>
+											</Frame>
 										</Frames>
 										<Layers>
 											<Layer level="BORDER" textureSubLevel="4">
@@ -1962,7 +1989,10 @@
 									<Anchor point="TOPRIGHT" x="1" y="3"/>
 								</Anchors>
 								<Scripts>
-									<OnClick function="GarrisonMissionPage_Close"/>
+									<OnClick>
+										PlaySound("UI_Garrison_CommandTable_MissionClose");
+										GarrisonMissionPage_Close();
+									</OnClick>
 								</Scripts>
 							</Button>
 							<Frame parentKey="Stage" inherits="GarrisonMissionStageTemplate">
@@ -2339,6 +2369,12 @@
 							<OnHide function="GarrisonMissionPage_OnHide"/>
 						</Scripts>
 					</Frame>
+					<PlayerModel parentArray="MissionCompletePreloadModels" inherits="MissionCompletePreloadModelTemplate"/>
+					<PlayerModel parentArray="MissionCompletePreloadModels" inherits="MissionCompletePreloadModelTemplate"/>
+					<PlayerModel parentArray="MissionCompletePreloadModels" inherits="MissionCompletePreloadModelTemplate"/>
+					<PlayerModel parentArray="MissionCompletePreloadModels" inherits="MissionCompletePreloadModelTemplate"/>
+					<PlayerModel parentArray="MissionCompletePreloadModels" inherits="MissionCompletePreloadModelTemplate"/>
+					<PlayerModel parentArray="MissionCompletePreloadModels" inherits="MissionCompletePreloadModelTemplate"/>
 				</Frames>
 			</Frame>
 			<Frame parentKey="FollowerTab" inherits="GarrisonMissionBaseFrameTemplate" hidden="true">
@@ -2837,22 +2873,6 @@
 												<Anchor point="CENTER" relativeKey="$parent.Lock"/>
 											</Anchors>
 										</Texture>
-										<Texture parentKey="ChanceBG" atlas="GarrMission_MissionCompleteChanceBg" useAtlasSize="true">
-											<Anchors>
-												<Anchor point="BOTTOM" relativeKey="$parent.$parent" relativePoint="TOP" x="0" y="-2"/>
-											</Anchors>									
-										</Texture>
-										<Texture parentKey="ChanceGlow" atlas="GarrMission_TabGlow" useAtlasSize="true" alphaMode="ADD" hidden="true">
-											<Anchors>
-												<Anchor point="BOTTOM" relativeKey="$parent.$parent" relativePoint="TOP" x="0" y="38"/>
-											</Anchors>
-										</Texture>
-										<Texture parentKey="Banner" atlas="GarrMission_LevelUpBanner" alpha="0">
-											<Size x="200" y="90"/>
-											<Anchors>
-												<Anchor point="BOTTOM" relativeKey="$parent.$parent" relativePoint="TOP" x="0" y="1"/>
-											</Anchors>									
-										</Texture>
 									</Layer>		
 									<Layer level="OVERLAY" textureSubLevel="1">
 										<Texture parentKey="KeyholeGlow" hidden="false" alpha="0" atlas="BonusChest-KeyholeGlow" useAtlasSize="true">
@@ -2866,31 +2886,8 @@
 												<Anchor point="CENTER" relativeKey="$parent.KeyholeGlow"/>
 											</Anchors>
 										</Texture>
-										<FontString parentKey="ChanceText" inherits="Game24Font">
-											<Anchors>
-												<Anchor point="CENTER" relativeKey="$parent.ChanceBG" x="0" y="2"/>
-											</Anchors>
-											<Color r="0.1" g="1" b="0.1"/>
-										</FontString>
-										<FontString parentKey="SuccessText" inherits="QuestFont_Super_Huge" text="GARRISON_MISSION_SUCCESS">
-											<Anchors>
-												<Anchor point="CENTER" relativeKey="$parent.Banner" x="0" y="2"/>
-											</Anchors>
-											<Color r="0.1" g="1" b="0.1" a="0"/>
-										</FontString>
-										<FontString parentKey="FailureText" inherits="QuestFont_Super_Huge" text="GARRISON_MISSION_FAILED">
-											<Anchors>
-												<Anchor point="CENTER" relativeKey="$parent.Banner" x="0" y="2"/>
-											</Anchors>
-											<Color r="1" g="0.1" b="0.1" a="0"/>
-										</FontString>
 									</Layer>
 									<Layer level="OVERLAY" textureSubLevel="2">
-										<Texture parentKey="SuccessGlow" hidden="false" alpha="0" alphaMode="ADD" atlas="BonusChest-OrangeGlow-Wide" useAtlasSize="true">
-											<Anchors>
-												<Anchor point="CENTER" relativeKey="$parent.Banner"/>
-											</Anchors>
-										</Texture>
 										<Texture parentKey="OrangeGlow" hidden="false" alpha="0" alphaMode="ADD" atlas="BonusChest-OrangeGlow-Wide" useAtlasSize="true">
 											<Anchors>
 												<Anchor point="CENTER"/>
@@ -2899,12 +2896,6 @@
 										<Texture parentKey="OrangeSmoke" hidden="false" alpha="0" atlas="BonusChest-OrangeSmoke-Wide" useAtlasSize="true">
 											<Anchors>
 												<Anchor point="CENTER"/>
-											</Anchors>
-										</Texture>
-										<Texture parentKey="GreenGlow" hidden="false" alpha="0" alphaMode="ADD" atlas="BonusChest-GreenGlow-Wide">
-											<Size x="244" y="44"/>
-											<Anchors>
-												<Anchor point="CENTER" x="0" relativeKey="$parent.ChanceText"/>
 											</Anchors>
 										</Texture>
 									</Layer>
@@ -2940,42 +2931,6 @@
 										<Scale childKey="OrangeSmoke" startDelay="0.9" duration="1.5" order="1" fromScaleX="2" fromScaleY="1" toScaleX="3" toScaleY="1.5"/>
 										<Alpha childKey="OrangeSmoke" startDelay="1.5" duration="0.75" order="1" fromAlpha="1" toAlpha="0"/>
 										<Alpha startDelay="1.6" duration="0.25" order="1" fromAlpha="1" toAlpha="0"/>
-									</AnimationGroup>
-									<AnimationGroup parentKey="SuccessAnim" setToFinalAlpha="true">
-										<Alpha childKey="ChanceText" startDelay="0.2" duration="0.15" order="1" fromAlpha="1" toAlpha="0"/>
-										<Alpha childKey="ChanceGlow" startDelay="0.25" duration="0.15" order="1" fromAlpha="1" toAlpha="0"/>
-										<Alpha childKey="Banner" duration="0.15" order="1" fromAlpha="0" toAlpha="1"/>
-										<Scale childKey="Banner" duration="0.2" order="1" fromScaleX="0.5" fromScaleY="1" toScaleX="1.5" toScaleY="1"/>
-										<Alpha childKey="SuccessText" duration="0.15" order="1" fromAlpha="0" toAlpha="1"/>
-										<Alpha childKey="SuccessGlow" startDelay="0.2" duration="0.25" order="1" fromAlpha="0" toAlpha="0.75"/>
-										<Scale childKey="SuccessGlow" startDelay="0.2" duration="0.25" order="1" fromScaleX="0.5" fromScaleY="0.75" toScaleX="1.25" toScaleY="0.75"/>
-										<Alpha childKey="SuccessGlow" startDelay="0.51" duration="0.75" order="1" fromAlpha="0.75" toAlpha="0"/>
-										<Scripts>
-											<OnFinished>
-												self:GetParent().Banner:SetWidth(GARRISON_MISSION_COMPLETE_BANNER_WIDTH);
-											</OnFinished>
-										</Scripts>										
-									</AnimationGroup>
-									<AnimationGroup parentKey="FailureAnim" setToFinalAlpha="true">
-										<Alpha childKey="ChanceText" startDelay="0.2" duration="0.15" order="1" fromAlpha="1" toAlpha="0"/>
-										<Alpha childKey="ChanceGlow" startDelay="0.25" duration="0.15" order="1" fromAlpha="1" toAlpha="0"/>
-										<Alpha childKey="Banner" duration="0.15" order="1" fromAlpha="0" toAlpha="1"/>
-										<Scale childKey="Banner" duration="0.2" order="1" fromScaleX="0.5" fromScaleY="1" toScaleX="1.5" toScaleY="1"/>
-										<Alpha childKey="FailureText" duration="0.15" order="1" fromAlpha="0" toAlpha="1"/>
-										<Alpha childKey="SuccessGlow" startDelay="0.2" duration="0.25" order="1" fromAlpha="0" toAlpha="0.75"/>
-										<Scale childKey="SuccessGlow" startDelay="0.2" duration="0.25" order="1" fromScaleX="0.5" fromScaleY="0.75" toScaleX="1.25" toScaleY="0.75"/>
-										<Alpha childKey="SuccessGlow" startDelay="0.51" duration="0.75" order="1" fromAlpha="0.75" toAlpha="0"/>
-										<Scripts>
-											<OnFinished>
-												self:GetParent().Banner:SetWidth(GARRISON_MISSION_COMPLETE_BANNER_WIDTH);
-											</OnFinished>
-										</Scripts>
-									</AnimationGroup>
-									<AnimationGroup parentKey="SuccessChanceInAnim" setToFinalAlpha="true">
-										<Alpha childKey="GreenGlow" duration="0.15" order="1" fromAlpha="0" toAlpha="0.75"/>
-										<Scale childKey="GreenGlow" duration="0.15" order="1" fromScaleX="0.1" fromScaleY="1" toScaleX="1.5" toScaleY="1"/>
-										<Scale childKey="GreenGlow" duration="0.8" order="2" fromScaleX="1" fromScaleY="1" toScaleX="1.5" toScaleY="1"/>
-										<Alpha childKey="GreenGlow" startDelay="0.26" duration="0.5" order="2" fromAlpha="0.75" toAlpha="0"/>
 									</AnimationGroup>
 								</Animations>
 								<Frames>
@@ -3092,6 +3047,103 @@
 							<OnEvent function="GarrisonMissionComplete_OnRewardEvent"/>
 						</Scripts>
 					</Frame>
+					<Frame parentKey="ChanceFrame">
+						<Size x="100" y="100"/>
+						<Anchors>
+							<Anchor point="BOTTOM" relativeKey="$parent.BonusRewards" relativePoint="TOP" x="0" y="0"/>
+						</Anchors>
+						<Layers>
+							<Layer level="BORDER">
+								<Texture parentKey="ChanceBG" atlas="GarrMission_MissionCompleteChanceBg" useAtlasSize="true">
+									<Anchors>
+										<Anchor point="BOTTOM" x="0" y="-2"/>
+									</Anchors>									
+								</Texture>
+								<Texture parentKey="ChanceGlow" atlas="GarrMission_TabGlow" useAtlasSize="true" alphaMode="ADD" hidden="true">
+									<Anchors>
+										<Anchor point="BOTTOM" x="0" y="38"/>
+									</Anchors>
+								</Texture>
+								<Texture parentKey="Banner" atlas="GarrMission_LevelUpBanner" alpha="0">
+									<Size x="200" y="90"/>
+									<Anchors>
+										<Anchor point="BOTTOM" x="0" y="1"/>
+									</Anchors>					
+								</Texture>		
+							</Layer>
+							<Layer level="ARTWORK">
+								<FontString parentKey="ChanceText" inherits="Game24Font">
+									<Anchors>
+										<Anchor point="CENTER" relativeKey="$parent.ChanceBG" x="0" y="2"/>
+									</Anchors>
+									<Color r="0.1" g="1" b="0.1"/>
+								</FontString>
+								<FontString parentKey="SuccessText" inherits="QuestFont_Super_Huge" text="GARRISON_MISSION_SUCCESS">
+									<Anchors>
+										<Anchor point="CENTER" relativeKey="$parent.Banner" x="0" y="2"/>
+									</Anchors>
+									<Color r="0.1" g="1" b="0.1" a="0"/>
+								</FontString>
+								<FontString parentKey="FailureText" inherits="QuestFont_Super_Huge" text="GARRISON_MISSION_FAILED">
+									<Anchors>
+										<Anchor point="CENTER" relativeKey="$parent.Banner" x="0" y="2"/>
+									</Anchors>
+									<Color r="1" g="0.1" b="0.1" a="0"/>
+								</FontString>
+							</Layer>
+							<Layer level="OVERLAY">
+								<Texture parentKey="SuccessGlow" hidden="false" alpha="0" alphaMode="ADD" atlas="BonusChest-OrangeGlow-Wide" useAtlasSize="true">
+									<Anchors>
+										<Anchor point="CENTER" relativeKey="$parent.Banner"/>
+									</Anchors>
+								</Texture>
+								<Texture parentKey="GreenGlow" hidden="false" alpha="0" alphaMode="ADD" atlas="BonusChest-GreenGlow-Wide">
+									<Size x="244" y="44"/>
+									<Anchors>
+										<Anchor point="CENTER" x="0" relativeKey="$parent.ChanceText"/>
+									</Anchors>
+								</Texture>
+							</Layer>
+						</Layers>
+						<Animations>
+							<AnimationGroup parentKey="SuccessAnim" setToFinalAlpha="true">
+								<Alpha childKey="ChanceText" startDelay="0.2" duration="0.15" order="1" fromAlpha="1" toAlpha="0"/>
+								<Alpha childKey="ChanceGlow" startDelay="0.25" duration="0.15" order="1" fromAlpha="1" toAlpha="0"/>
+								<Alpha childKey="Banner" duration="0.15" order="1" fromAlpha="0" toAlpha="1"/>
+								<Scale childKey="Banner" duration="0.2" order="1" fromScaleX="0.5" fromScaleY="1" toScaleX="1.5" toScaleY="1"/>
+								<Alpha childKey="SuccessText" duration="0.15" order="1" fromAlpha="0" toAlpha="1"/>
+								<Alpha childKey="SuccessGlow" startDelay="0.2" duration="0.25" order="1" fromAlpha="0" toAlpha="0.75"/>
+								<Scale childKey="SuccessGlow" startDelay="0.2" duration="0.25" order="1" fromScaleX="0.5" fromScaleY="0.75" toScaleX="1.25" toScaleY="0.75"/>
+								<Alpha childKey="SuccessGlow" startDelay="0.51" duration="0.75" order="1" fromAlpha="0.75" toAlpha="0"/>
+								<Scripts>
+									<OnFinished>
+										self:GetParent().Banner:SetWidth(GARRISON_MISSION_COMPLETE_BANNER_WIDTH);
+									</OnFinished>
+								</Scripts>										
+							</AnimationGroup>
+							<AnimationGroup parentKey="FailureAnim" setToFinalAlpha="true">
+								<Alpha childKey="ChanceText" startDelay="0.2" duration="0.15" order="1" fromAlpha="1" toAlpha="0"/>
+								<Alpha childKey="ChanceGlow" startDelay="0.25" duration="0.15" order="1" fromAlpha="1" toAlpha="0"/>
+								<Alpha childKey="Banner" duration="0.15" order="1" fromAlpha="0" toAlpha="1"/>
+								<Scale childKey="Banner" duration="0.2" order="1" fromScaleX="0.5" fromScaleY="1" toScaleX="1.5" toScaleY="1"/>
+								<Alpha childKey="FailureText" duration="0.15" order="1" fromAlpha="0" toAlpha="1"/>
+								<Alpha childKey="SuccessGlow" startDelay="0.2" duration="0.25" order="1" fromAlpha="0" toAlpha="0.75"/>
+								<Scale childKey="SuccessGlow" startDelay="0.2" duration="0.25" order="1" fromScaleX="0.5" fromScaleY="0.75" toScaleX="1.25" toScaleY="0.75"/>
+								<Alpha childKey="SuccessGlow" startDelay="0.51" duration="0.75" order="1" fromAlpha="0.75" toAlpha="0"/>
+								<Scripts>
+									<OnFinished>
+										self:GetParent().Banner:SetWidth(GARRISON_MISSION_COMPLETE_BANNER_WIDTH);
+									</OnFinished>
+								</Scripts>
+							</AnimationGroup>
+							<AnimationGroup parentKey="SuccessChanceInAnim" setToFinalAlpha="true">
+								<Alpha childKey="GreenGlow" duration="0.15" order="1" fromAlpha="0" toAlpha="0.75"/>
+								<Scale childKey="GreenGlow" duration="0.15" order="1" fromScaleX="0.1" fromScaleY="1" toScaleX="1.5" toScaleY="1"/>
+								<Scale childKey="GreenGlow" duration="0.8" order="2" fromScaleX="1" fromScaleY="1" toScaleX="1.5" toScaleY="1"/>
+								<Alpha childKey="GreenGlow" startDelay="0.26" duration="0.5" order="2" fromAlpha="0.75" toAlpha="0"/>
+							</AnimationGroup>
+						</Animations>
+					</Frame>					
 					<Button parentKey="NextMissionButton" inherits="UIPanelButtonTemplate" text="NEXT">
 						<Size x="130" y="20"/>
 						<Anchors>
@@ -3101,6 +3153,23 @@
 							<OnClick function="GarrisonMissionCompleteNextButton_OnClick"/>
 						</Scripts>
 					</Button>
+					<Frame parentKey="LoadingFrame" inherits="LoadingSpinnerTemplate" hidden="true">
+						<Layers>
+							<Layer level="ARTWORK">
+								<FontString parentKey="Label" inherits="GameFontHighlight" text="LFG_LIST_LOADING">
+									<Anchors>
+										<Anchor point="LEFT" relativePoint="RIGHT"/>
+									</Anchors>														
+								</FontString>
+							</Layer>
+						</Layers>
+						<Scripts>
+							<OnLoad>
+								self.Anim:Play();
+								self:SetPoint("TOP", self:GetParent().NextMissionButton, "BOTTOM", -self.Label:GetWidth()/2, 4);
+							</OnLoad>
+						</Scripts>
+					</Frame>
 				</Frames>
 				<Scripts>
 					<OnLoad function="GarrisonMissionComplete_OnLoad"/>
@@ -3239,5 +3308,4 @@
 			</Frame>
 		</Frames>
 	</Frame>
-
 </Ui>

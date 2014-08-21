@@ -6,6 +6,7 @@
 function QueueStatusMinimapButton_OnLoad(self)
 	self:RegisterForClicks("LeftButtonUp", "RightButtonUp");
 	self:SetFrameLevel(self:GetFrameLevel() + 1);
+	self.EyeHighlightAnim:Play();
 	self.glowLocks = {};
 end
 
@@ -53,7 +54,7 @@ function QueueStatusMinimapButton_UpdateGlow(self)
 		end
 	end
 
-	self.Eye.Highlight:SetShown(enabled);
+	self.Highlight:SetShown(enabled);
 end
 
 ----------------------------------------------
@@ -151,18 +152,23 @@ function QueueStatusFrame_Update(self)
 		entry:Show();
 		totalHeight = totalHeight + entry:GetHeight();
 		nextEntry = nextEntry + 1;
+		animateEye = true;
 	end
 
 	--Try LFGList applications
 	local apps = C_LFGList.GetApplications();
 	for i=1, #apps do
 		local _, appStatus = C_LFGList.GetApplicationInfo(apps[i]);
-		if ( appStatus == "applied" ) then
+		if ( appStatus == "applied" or appStatus == "invited" ) then
 			local entry = QueueStatusFrame_GetEntry(self, nextEntry);
 			QueueStatusEntry_SetUpLFGListApplication(entry, apps[i]);
 			entry:Show();
 			totalHeight = totalHeight + entry:GetHeight();
 			nextEntry = nextEntry + 1;
+
+			if ( appStatus == "applied" ) then
+				animateEye = true;
+			end
 		end
 	end
 

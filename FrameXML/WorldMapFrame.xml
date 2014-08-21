@@ -764,6 +764,7 @@
 						</HighlightTexture>
 						<Scripts>
 							<OnClick>
+								PlaySound("igMainMenuOptionCheckBoxOn");
 								QuestMapFrame_Open(true);
 							</OnClick>
 						</Scripts>
@@ -792,6 +793,7 @@
 						</HighlightTexture>
 						<Scripts>
 							<OnClick>
+								PlaySound("igMainMenuOptionCheckBoxOn");
 								QuestMapFrame_Close(true);
 							</OnClick>
 						</Scripts>

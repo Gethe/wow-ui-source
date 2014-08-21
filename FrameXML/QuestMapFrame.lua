@@ -305,6 +305,7 @@ function QuestMapFrameViewAllButton_Update()
 end
 
 function QuestMapFrameViewAllButton_OnClick(self)
+	PlaySound("igMainMenuOptionCheckBoxOn");
 	SetMapZoom(WORLDMAP_COSMIC_ID);
 end
 
@@ -729,6 +730,7 @@ function ShowQuestLog()
 end
 
 function QuestMapLogHeaderButton_OnClick(self, button)
+	PlaySound("igMainMenuOptionCheckBoxOn");
 	if ( button == "LeftButton" ) then
 		-- open to the map for the first quest under the header
 		local questLogIndex = self.questLogIndex;

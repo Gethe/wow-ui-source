@@ -743,49 +743,91 @@
 		<TexCoords left="0" right="0.625" top="0" bottom="0.6875"/>
 	</Texture>
 	<Button name="UIMenuButtonStretchTemplate" virtual="true">
-		<Size x="40" y="22"/>
+		<Size x="40" y="26"/>
 		<Layers>
 			<Layer level="BACKGROUND">
-				<Texture parentKey="Left" name="$parentLeft" file="Interface\Buttons\UI-Silver-Button-Up">
-					<Size x="12" y="22"/>
+				<Texture parentKey="TopLeft" name="$parentTopLeft" file="Interface\Buttons\UI-Silver-Button-Up">
+					<Size x="12" y="6"/>
 					<Anchors>
 						<Anchor point="TOPLEFT"/>
-						<Anchor point="BOTTOMLEFT"/>
 					</Anchors>
-					<TexCoords left="0" right="0.09375" top="0" bottom="0.79"/>
+					<TexCoords left="0" right="0.09375" top="0" bottom="0.1875"/>
 				</Texture>
-				<Texture parentKey="Right" name="$parentRight" file="Interface\Buttons\UI-Silver-Button-Up">
-					<Size x="12" y="18"/>
+				<Texture parentKey="TopRight" name="$parentTopRight" file="Interface\Buttons\UI-Silver-Button-Up">
+					<Size x="12" y="6"/>
 					<Anchors>
 						<Anchor point="TOPRIGHT"/>
+					</Anchors>
+					<TexCoords left="0.53125" right="0.625" top="0" bottom="0.1875"/>
+				</Texture>
+				<Texture parentKey="BottomLeft" name="$parentBottomLeft" file="Interface\Buttons\UI-Silver-Button-Up">
+					<Size x="12" y="6"/>
+					<Anchors>
+						<Anchor point="BOTTOMLEFT"/>
+					</Anchors>
+					<TexCoords left="0" right="0.09375" top="0.625" bottom="0.8125"/>
+				</Texture>
+				<Texture parentKey="BottomRight" name="$parentBottomRight" file="Interface\Buttons\UI-Silver-Button-Up">
+					<Size x="12" y="6"/>
+					<Anchors>
 						<Anchor point="BOTTOMRIGHT"/>
 					</Anchors>
-					<TexCoords left="0.53125" right="0.625" top="0" bottom="0.79"/>
+					<TexCoords left="0.53125" right="0.625" top="0.625" bottom="0.8125"/>
 				</Texture>
-				<Texture parentKey="Middle" name="$parentMiddle" file="Interface\Buttons\UI-Silver-Button-Up">
-					<Size x="12" y="22"/>
+				<Texture parentKey="TopMiddle" name="$parentTopMiddle" file="Interface\Buttons\UI-Silver-Button-Up">
+					<Size x="56" y="6"/>
 					<Anchors>
-						<Anchor point="TOPLEFT" relativeKey="$parent.Left" relativePoint="TOPRIGHT"/>
-						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Right" relativePoint="BOTTOMLEFT"/>
+						<Anchor point="TOPLEFT" relativeKey="$parent.TopLeft" relativePoint="TOPRIGHT"/>
+						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.TopRight" relativePoint="BOTTOMLEFT"/>
 					</Anchors>
-					<TexCoords left="0.09375" right="0.53125" top="0" bottom="0.79"/>
+					<TexCoords left="0.09375" right="0.53125" top="0" bottom="0.1875"/>
+				</Texture>
+				<Texture parentKey="MiddleLeft" name="$parentMiddleLeft" file="Interface\Buttons\UI-Silver-Button-Up">
+					<Size x="12" y="14"/>
+					<Anchors>
+						<Anchor point="TOPRIGHT" relativeKey="$parent.TopLeft" relativePoint="BOTTOMRIGHT"/>
+						<Anchor point="BOTTOMLEFT" relativeKey="$parent.BottomLeft" relativePoint="TOPLEFT"/>
+					</Anchors>
+					<TexCoords left="0" right="0.09375" top="0.1875" bottom="0.625"/>
+				</Texture>
+				<Texture parentKey="MiddleRight" name="$parentMiddleRight" file="Interface\Buttons\UI-Silver-Button-Up">
+					<Size x="12" y="14"/>
+					<Anchors>
+						<Anchor point="TOPRIGHT" relativeKey="$parent.TopRight" relativePoint="BOTTOMRIGHT"/>
+						<Anchor point="BOTTOMLEFT" relativeKey="$parent.BottomRight" relativePoint="TOPLEFT"/>
+					</Anchors>
+					<TexCoords left="0.53125" right="0.625" top="0.1875" bottom="0.625"/>
+				</Texture>
+				<Texture parentKey="BottomMiddle" name="$parentBottomMiddle" file="Interface\Buttons\UI-Silver-Button-Up">
+					<Size x="56" y="6"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.BottomLeft" relativePoint="TOPRIGHT"/>
+						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.BottomRight" relativePoint="BOTTOMLEFT"/>
+					</Anchors>
+					<TexCoords left="0.09375" right="0.53125" top="0.625" bottom="0.8125"/>
+				</Texture>
+				<Texture parentKey="MiddleMiddle" name="$parentMiddleMiddle" file="Interface\Buttons\UI-Silver-Button-Up">
+					<Size x="56" y="14"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.TopLeft" relativePoint="BOTTOMRIGHT"/>
+						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.BottomRight" relativePoint="TOPLEFT"/>
+					</Anchors>
+					<TexCoords left="0.09375" right="0.53125" top="0.1875" bottom="0.625"/>
 				</Texture>
 			</Layer>
 		</Layers>
 		<Scripts>
-			<!--OnLoad>
-				if ( not self:IsEnabled() ) then
-					local name = self:GetName();
-					_G[name.."Left"]:SetTexture("Interface\\Buttons\\UI-Panel-Button-Disabled");
-					_G[name.."Middle"]:SetTexture("Interface\\Buttons\\UI-Panel-Button-Disabled");
-					_G[name.."Right"]:SetTexture("Interface\\Buttons\\UI-Panel-Button-Disabled");
-				end
-			</OnLoad-->
 			<OnMouseDown>
 				if ( self:IsEnabled() ) then
-					self.Left:SetTexture("Interface\\Buttons\\UI-Silver-Button-Down");
-					self.Middle:SetTexture("Interface\\Buttons\\UI-Silver-Button-Down");
-					self.Right:SetTexture("Interface\\Buttons\\UI-Silver-Button-Down");
+					self.TopLeft:SetTexture("Interface\\Buttons\\UI-Silver-Button-Down");
+					self.TopRight:SetTexture("Interface\\Buttons\\UI-Silver-Button-Down");
+					self.BottomLeft:SetTexture("Interface\\Buttons\\UI-Silver-Button-Down");
+					self.BottomRight:SetTexture("Interface\\Buttons\\UI-Silver-Button-Down");
+					self.TopMiddle:SetTexture("Interface\\Buttons\\UI-Silver-Button-Down");
+					self.MiddleLeft:SetTexture("Interface\\Buttons\\UI-Silver-Button-Down");
+					self.MiddleRight:SetTexture("Interface\\Buttons\\UI-Silver-Button-Down");
+					self.BottomMiddle:SetTexture("Interface\\Buttons\\UI-Silver-Button-Down");
+					self.MiddleMiddle:SetTexture("Interface\\Buttons\\UI-Silver-Button-Down");
 					if ( self.Icon ) then
 						if ( not self.Icon.oldPoint ) then
 							local point, relativeTo, relativePoint, x, y = self.Icon:GetPoint(1);
@@ -799,9 +841,15 @@
 			</OnMouseDown>
 			<OnMouseUp>
 				if ( self:IsEnabled() ) then
-					self.Left:SetTexture("Interface\\Buttons\\UI-Silver-Button-Up");
-					self.Middle:SetTexture("Interface\\Buttons\\UI-Silver-Button-Up");
-					self.Right:SetTexture("Interface\\Buttons\\UI-Silver-Button-Up");
+					self.TopLeft:SetTexture("Interface\\Buttons\\UI-Silver-Button-Up");
+					self.TopRight:SetTexture("Interface\\Buttons\\UI-Silver-Button-Up");
+					self.BottomLeft:SetTexture("Interface\\Buttons\\UI-Silver-Button-Up");
+					self.BottomRight:SetTexture("Interface\\Buttons\\UI-Silver-Button-Up");
+					self.TopMiddle:SetTexture("Interface\\Buttons\\UI-Silver-Button-Up");
+					self.MiddleLeft:SetTexture("Interface\\Buttons\\UI-Silver-Button-Up");
+					self.MiddleRight:SetTexture("Interface\\Buttons\\UI-Silver-Button-Up");
+					self.BottomMiddle:SetTexture("Interface\\Buttons\\UI-Silver-Button-Up");
+					self.MiddleMiddle:SetTexture("Interface\\Buttons\\UI-Silver-Button-Up");
 					if ( self.Icon ) then
 						self.Icon:SetPoint(self.Icon.oldPoint, self.Icon.oldX, self.Icon.oldY);
 					end
@@ -810,21 +858,27 @@
 			<OnShow>
 				if ( self:IsEnabled() ) then
 					-- we need to reset our textures just in case we were hidden before a mouse up fired
-					self.Left:SetTexture("Interface\\Buttons\\UI-Silver-Button-Up");
-					self.Middle:SetTexture("Interface\\Buttons\\UI-Silver-Button-Up");
-					self.Right:SetTexture("Interface\\Buttons\\UI-Silver-Button-Up");
+					self.TopLeft:SetTexture("Interface\\Buttons\\UI-Silver-Button-Up");
+					self.TopRight:SetTexture("Interface\\Buttons\\UI-Silver-Button-Up");
+					self.BottomLeft:SetTexture("Interface\\Buttons\\UI-Silver-Button-Up");
+					self.BottomRight:SetTexture("Interface\\Buttons\\UI-Silver-Button-Up");
+					self.TopMiddle:SetTexture("Interface\\Buttons\\UI-Silver-Button-Up");
+					self.MiddleLeft:SetTexture("Interface\\Buttons\\UI-Silver-Button-Up");
+					self.MiddleRight:SetTexture("Interface\\Buttons\\UI-Silver-Button-Up");
+					self.BottomMiddle:SetTexture("Interface\\Buttons\\UI-Silver-Button-Up");
+					self.MiddleMiddle:SetTexture("Interface\\Buttons\\UI-Silver-Button-Up");
 				end
 			</OnShow>
-			<!--OnDisable>
-				local name = self:GetName();
-				_G[name.."Left"]:SetTexture("Interface\\Buttons\\UI-Panel-Button-Disabled");
-				_G[name.."Middle"]:SetTexture("Interface\\Buttons\\UI-Panel-Button-Disabled");
-				_G[name.."Right"]:SetTexture("Interface\\Buttons\\UI-Panel-Button-Disabled");
-			</OnDisable-->
 			<OnEnable>
-				self.Left:SetTexture("Interface\\Buttons\\UI-Silver-Button-Up");
-				self.Middle:SetTexture("Interface\\Buttons\\UI-Silver-Button-Up");
-				self.Right:SetTexture("Interface\\Buttons\\UI-Silver-Button-Up");
+				self.TopLeft:SetTexture("Interface\\Buttons\\UI-Silver-Button-Up");
+				self.TopRight:SetTexture("Interface\\Buttons\\UI-Silver-Button-Up");
+				self.BottomLeft:SetTexture("Interface\\Buttons\\UI-Silver-Button-Up");
+				self.BottomRight:SetTexture("Interface\\Buttons\\UI-Silver-Button-Up");
+				self.TopMiddle:SetTexture("Interface\\Buttons\\UI-Silver-Button-Up");
+				self.MiddleLeft:SetTexture("Interface\\Buttons\\UI-Silver-Button-Up");
+				self.MiddleRight:SetTexture("Interface\\Buttons\\UI-Silver-Button-Up");
+				self.BottomMiddle:SetTexture("Interface\\Buttons\\UI-Silver-Button-Up");
+				self.MiddleMiddle:SetTexture("Interface\\Buttons\\UI-Silver-Button-Up");
 			</OnEnable>
 			<OnEnter>
 				if(self.tooltipText ~= nil) then

@@ -48,7 +48,6 @@ GlueAmbienceTracks["DRAENEI"] = "AMB_GlueScreen_Draenei";
 GlueAmbienceTracks["BLOODELF"] = "AMB_GlueScreen_BloodElf";
 GlueAmbienceTracks["GOBLIN"] = "AMB_GlueScreen_Goblin";
 GlueAmbienceTracks["WORGEN"] = "AMB_GlueScreen_Worgen";
-GlueAmbienceTracks["DARKPORTAL"] = "GlueScreenIntro";
 GlueAmbienceTracks["DEATHKNIGHT"] = "AMB_GlueScreen_Deathknight";
 GlueAmbienceTracks["CHARACTERSELECT"] = "GlueScreenIntro";
 GlueAmbienceTracks["PANDAREN"] = "AMB_GlueScreen_Pandaren";
@@ -101,10 +100,20 @@ EXPANSION_LOGOS = {
 	--When adding entries to here, make sure to update the zhTW and zhCN localization files.
 };
 
+--Login Screen Ambience
+EXPANSION_GLUE_AMBIENCE = {
+	TRIAL = "GlueScreenIntro",
+	[1] = "GlueScreenIntro",
+	[2] = "GlueScreenIntro",
+	[3] = "GlueScreenIntro",
+	[4] = "GlueScreenIntro",
+	[5] = "AMB_GlueScreen_WarlordsofDraenor",
+}
+
 --Music
 EXPANSION_GLUE_MUSIC = {
 	TRIAL = "GS_Cataclysm",
-	[1] = "GS_Cataclysm",
+	[1] = "MUS_1.0_MainTitle_Original",
 	[2] = "GS_Cataclysm",
 	[3] = "GS_Cataclysm",
 	[4] = "MUS_50_HeartofPandaria_MainTitle",
@@ -114,20 +123,20 @@ EXPANSION_GLUE_MUSIC = {
 --Backgrounds
 EXPANSION_HIGH_RES_BG = {
 	TRIAL = "Interface\\Glues\\Models\\UI_MainMenu_Cataclysm\\UI_MainMenu_Cataclysm.m2",
-	[1] = "Interface\\Glues\\Models\\UI_MainMenu_Cataclysm\\UI_MainMenu_Cataclysm.m2",
+	[1] = "Interface\\Glues\\Models\\UI_MAINMENU\\UI_MainMenu.m2",
 	[2] = "Interface\\Glues\\Models\\UI_MainMenu_Cataclysm\\UI_MainMenu_Cataclysm.m2",
 	[3] = "Interface\\Glues\\Models\\UI_MainMenu_Cataclysm\\UI_MainMenu_Cataclysm.m2",
 	[4] = "Interface\\Glues\\Models\\UI_MainMenu_Pandaria\\UI_MainMenu_Pandaria.m2",
-	[5] = "Interface\\Glues\\Models\\UI_MAINMENU\\UI_MainMenu.m2",
+	[5] = "Interface\\Glues\\Models\\UI_MainMenu_Warlords\\UI_MainMenu_Warlords.m2",
 }
 
 EXPANSION_LOW_RES_BG = {
 	TRIAL =  "Interface\\Glues\\Models\\UI_MainMenu_Cata_LowBandwidth\\UI_MainMenu_Cata_LowBandwidth.m2",
-	[1] =  "Interface\\Glues\\Models\\UI_MainMenu_Cata_LowBandwidth\\UI_MainMenu_Cata_LowBandwidth.m2",
+	[1] =  "Interface\\Glues\\Models\\UI_MAINMENU\\UI_MainMenu.m2",
 	[2] =  "Interface\\Glues\\Models\\UI_MainMenu_Cata_LowBandwidth\\UI_MainMenu_Cata_LowBandwidth.m2",
 	[3] =  "Interface\\Glues\\Models\\UI_MainMenu_Cata_LowBandwidth\\UI_MainMenu_Cata_LowBandwidth.m2",
 	[4] =  "Interface\\Glues\\Models\\UI_MainMenu_LowBandwidth\\UI_MainMenu_LowBandwidth.m2",
-	[5] =  "Interface\\Glues\\Models\\UI_MAINMENU\\UI_MainMenu.m2",
+	[5] =  "Interface\\Glues\\Models\\UI_MainMenu_Warlords\\UI_MainMenu_Warlords_LowBandwidth.m2",
 }
 
 --Credits titles
@@ -170,9 +179,10 @@ function SetGlueScreen(name)
 			PlayCreditsMusic( GlueCreditsSoundKits[CreditsFrame.creditsType] );
 			StopGlueAmbience();
 		elseif ( name ~= "movie" ) then
-			PlayGlueMusic(EXPANSION_GLUE_MUSIC[GetClientDisplayExpansionLevel()]);
+			local displayedExpansionLevel = GetClientDisplayExpansionLevel();
+			PlayGlueMusic(EXPANSION_GLUE_MUSIC[displayedExpansionLevel]);
 			if (name == "login") then
-				PlayGlueAmbience(GlueAmbienceTracks["DARKPORTAL"], 4.0);
+				PlayGlueAmbience(EXPANSION_GLUE_AMBIENCE[displayedExpansionLevel], 4.0);
 			end
 		end
 	end
@@ -225,8 +235,9 @@ function GlueParent_OnEvent(event, arg1, arg2, arg3)
 	elseif ( event == "SET_GLUE_SCREEN" ) then
 		GlueScreenExit(GetCurrentGlueScreenName(), arg1);
 	elseif ( event == "START_GLUE_MUSIC" ) then
-		PlayGlueMusic(EXPANSION_GLUE_MUSIC[GetClientDisplayExpansionLevel()]);
-		PlayGlueAmbience(GlueAmbienceTracks["DARKPORTAL"], 4.0);
+		local displayedExpansionLevel = GetClientDisplayExpansionLevel();
+		PlayGlueMusic(EXPANSION_GLUE_MUSIC[displayedExpansionLevel]);
+		PlayGlueAmbience(EXPANSION_GLUE_AMBIENCE[displayedExpansionLevel], 4.0);
 	elseif ( event == "DISCONNECTED_FROM_SERVER" ) then
 		TokenEntry_Cancel(TokenEnterDialog);
 		SetGlueScreen("login");
@@ -237,7 +248,7 @@ function GlueParent_OnEvent(event, arg1, arg2, arg3)
 			SetPreferredInfo(1);
 		else
 			SetGlueScreen("realmwizard");
-			PlayGlueAmbience(GlueAmbienceTracks["DARKPORTAL"], 4.0);
+			PlayGlueAmbience(EXPANSION_GLUE_AMBIENCE[GetClientDisplayExpansionLevel()], 4.0);
 		end
 	elseif ( event == "SERVER_SPLIT_NOTICE" ) then
 		CharacterSelectRealmSplitButton:Show();

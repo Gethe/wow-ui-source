@@ -710,6 +710,7 @@ end
 -- *****************************************************************************************************
 
 function ObjectiveTracker_MinimizeButton_OnClick(self)
+	PlaySound("igMainMenuOptionCheckBoxOn");
 	if ( ObjectiveTrackerFrame.collapsed ) then
 		ObjectiveTracker_Expand();
 	else
@@ -875,6 +876,10 @@ local function MoveBonusObjectivesBelowQuests()
 	otherHeader:ClearAllPoints();
 	AnchorBlock(BONUS_OBJECTIVE_TRACKER_MODULE.Header, otherModule.lastBlock);
 	AnchorBlock(otherHeader, nil);		-- not calling this function if in a scenario so Quest header should be at the very top
+	if ( ACHIEVEMENT_TRACKER_MODULE.firstBlock ) then
+		ACHIEVEMENT_TRACKER_MODULE.Header:ClearAllPoints();
+		AnchorBlock(ACHIEVEMENT_TRACKER_MODULE.Header, BONUS_OBJECTIVE_TRACKER_MODULE.lastBlock);
+	end
 end
 
 -- ***** SLIDING

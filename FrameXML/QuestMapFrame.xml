@@ -528,6 +528,7 @@
 						</Anchors>
 						<Scripts>
 							<OnClick>
+								PlaySound("igMainMenuOptionCheckBoxOn");
 								QuestMapFrame_ReturnFromQuestDetails();
 							</OnClick>
 						</Scripts>
@@ -713,6 +714,7 @@
 						</Anchors>
 						<Scripts>
 							<OnClick>
+								PlaySound("igMainMenuOptionCheckBoxOn");
 								QuestMapQuestOptions_TrackQuest(QuestMapFrame_GetDetailQuestID())
 							</OnClick>
 							<OnEnter>

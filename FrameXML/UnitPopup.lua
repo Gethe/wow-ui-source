@@ -1338,7 +1338,7 @@ function UnitPopup_HideButtons ()
 				UnitPopupShown[UIDROPDOWNMENU_MENU_LEVEL][index] = 0;
 			end
 		elseif ( value == "GARRISON_VISIT" ) then
-			if ( inParty == 0 or isLeader ~= 0 or not C_Garrison.IsVisitGarrisonAvailable() ) then
+			if ( not C_Garrison.IsVisitGarrisonAvailable() ) then
 				UnitPopupShown[UIDROPDOWNMENU_MENU_LEVEL][index] = 0;
 			end
 		end

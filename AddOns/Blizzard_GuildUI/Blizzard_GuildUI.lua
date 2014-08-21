@@ -330,7 +330,6 @@ function GuildFrame_TabClicked(self)
 	elseif ( tabIndex == 3 ) then -- Perks
 		ButtonFrameTemplate_HideButtonBar(GuildFrame);
 		GuildFrame_ShowPanel("GuildPerksFrame");
-		GuildFrameBottomInset:Show();
 		GuildPointFrame:Show();
 		GuildFactionFrame:Hide();
 		updateRosterCount = true;
@@ -420,7 +419,6 @@ function GuildPerksFrame_OnShow(self)
 	GuildFrameInset:SetPoint("TOPLEFT", 4, -65);
 	
 	GuildFrameInset:SetPoint("BOTTOMRIGHT", -7, 170);
-	GuildFrameBottomInset:Show();
 	
 	GuildPerks_Update();
 end
