@@ -951,7 +951,7 @@ function CinematicsButton_Update(self)
 		self.isLocal = false;
 		self.isPlayable = isPlayable;
 		
-		if (inProgress or (downloaded/total) > 0.1) then
+		if (inProgress or (total > 0 and ((downloaded/total) > 0.1))) then
 			self.StatusBar:SetMinMaxValues(0, total);
 			self.StatusBar:SetValue(downloaded);
 			self.StatusBar:Show();

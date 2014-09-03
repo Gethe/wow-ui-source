@@ -224,8 +224,8 @@ function MacOptionsFrameResolutionButton_OnClick(self)
 	UIDropDownMenu_SetSelectedValue(MacOptionsFrameResolutionDropDown, self.value);
 	
 	-- update selected value in code
-	xIndex = strfind(self.value, "x");
-	width = strsub(self.value, 1, xIndex-1);
+	local xIndex = strfind(self.value, "x");
+	local width = strsub(self.value, 1, xIndex-1);
 	MovieRecording_SetSelectedWidth(width);
 
 	MacOptionsFrame_UpdateTime();

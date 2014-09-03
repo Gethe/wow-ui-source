@@ -204,13 +204,14 @@ function NavBar_CheckLength(self)
 	local collapsed = false;
 	
 	for i=#self.navList,1,-1 do
+		local currentWidth = width;
 		width = width + self.navList[i]:GetWidth();
 		
 		if width > maxWidth then
 			self.navList[i]:Hide();
 			collapsed = true;
 			if not collapsedWidth then -- store the width for adding the offset button
-				collapsedWidth = width;
+				collapsedWidth = currentWidth;
 			end
 		else
 			self.navList[i]:Show();
@@ -246,12 +247,22 @@ function NavBar_CheckLength(self)
 			self.navList[lastShown]:Hide();
 			lastShown = lastShown + 1;
 		end
-	
-		local lastButton = self.navList[lastShown];
+		
 		self.overflowButton:Show();
-		xoffset = self.overflowButton.xoffset or 0
-		lastButton:SetPoint("LEFT", self.overflowButton, "RIGHT", xoffset, 0);
-		self.overflowButton:SetFrameLevel(lastButton:GetFrameLevel()+1);
+			
+		--There should only ever be no lastShown if a single button is longer than maxWidth by itself.
+		if ( lastShown ) then
+			local lastButton = self.navList[lastShown];	
+			
+			--There should only ever be no lastButton when there is lastShown if a single button is less than maxWidth
+			--but it's width plus the width of the overflow button is longer than maxWidth.  In this case the single button
+			--is hidden to make room for the overflowButton.
+			if ( lastButton ) then
+				xoffset = self.overflowButton.xoffset or 0
+				lastButton:SetPoint("LEFT", self.overflowButton, "RIGHT", xoffset, 0);
+				self.overflowButton:SetFrameLevel(lastButton:GetFrameLevel()+1);
+			end
+		end
 	else
 		self.overflowButton:Hide();
 	end

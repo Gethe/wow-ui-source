@@ -48,11 +48,24 @@ function BankFrameItemButton_OnEnter (self)
 		return;
 	end
 
+	if (self.isBag) then
+		if (not IsInventoryItemProfessionBag("player", self:GetInventorySlot())) then
+			for i = LE_BAG_FILTER_FLAG_EQUIPMENT, NUM_LE_BAG_FILTER_FLAGS do
+				if ( GetBankBagSlotFlag(self:GetID(), i) ) then
+					GameTooltip:AddLine(BAG_FILTER_ASSIGNED_TO:format(BAG_FILTER_LABELS[i]));
+					break;
+				end
+			end
+		end
+	end
+
 	if ( not hasItem ) then
 		if ( self.isBag ) then
 			GameTooltip:SetText(self.tooltipText);
 		end
 	end
+
+	GameTooltip:Show();
 	CursorUpdate(self);
 end
 

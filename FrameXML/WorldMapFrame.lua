@@ -429,11 +429,13 @@ function WorldMapFrame_OnEvent(self, event, ...)
 		EncounterJournal_UpdateMapButtonPortraits();
 	elseif ( event == "SUPER_TRACKED_QUEST_CHANGED" ) then
 		local questID = ...;
-		local mapID, floorNumber = GetQuestWorldMapAreaID(questID);
-		if ( mapID ~= 0 ) then
-			SetMapByID(mapID, floorNumber);
-			if ( floorNumber ~= 0 ) then
-				SetDungeonMapLevel(floorNumber);
+		if ( self:IsShown() ) then
+			local mapID, floorNumber = GetQuestWorldMapAreaID(questID);
+			if ( mapID ~= 0 ) then
+				SetMapByID(mapID, floorNumber);
+				if ( floorNumber ~= 0 ) then
+					SetDungeonMapLevel(floorNumber);
+				end
 			end
 		end
 		WorldMapPOIFrame_SelectPOI(questID);
@@ -2138,7 +2140,7 @@ function WorldMapQuestPOI_AppendTooltip(poiButton, questLogIndex)
 			end
 		else
 			local numPOITooltips = WorldMapBlobFrame:GetNumTooltips();
-			numObjectives = numObjectives or GetNumQuestLeaderBoards(questLogIndex);
+			local numObjectives = GetNumQuestLeaderBoards(questLogIndex);
 			for i = 1, numObjectives do
 				if(numPOITooltips and (numPOITooltips == numObjectives)) then
 					local questPOIIndex = WorldMapBlobFrame:GetTooltipIndex(i);

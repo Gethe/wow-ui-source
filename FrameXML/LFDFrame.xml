@@ -38,13 +38,10 @@
 		</Backdrop>
 		<Layers>
 			<Layer level="ARTWORK">
-				<FontString inherits="GameFontHighlight" justifyH="CENTER" text="CONFIRM_YOUR_ROLE">
+				<FontString parentKey="Text" inherits="GameFontHighlight" justifyH="CENTER" text="CONFIRM_YOUR_ROLE">
+					<Size x="266" y="0"/>
 					<Anchors>
-						<Anchor point="TOP">
-							<Offset>
-								<AbsDimension x="0" y="-15"/>
-							</Offset>
-						</Anchor>
+						<Anchor point="TOP" x="0" y="-15"/>
 					</Anchors>
 				</FontString>
 			</Layer>
@@ -56,11 +53,8 @@
 					<KeyValue key="role" value="TANK" type="string"/>
 				</KeyValues>
 				<Anchors>
-					<Anchor point="TOPLEFT">
-						<Offset>
-							<AbsDimension x="35" y="-35"/>
-						</Offset>
-					</Anchor>
+					<Anchor point="TOP" relativeKey="$parent.Text" relativePoint="BOTTOM" x="0" y="-8"/>
+					<Anchor point="LEFT" x="35" y="0"/>
 				</Anchors>
 				<Scripts>
 					<OnEnter function="LFDPopupRoleCheckButton_OnEnter"/>
@@ -72,11 +66,7 @@
 					<KeyValue key="role" value="HEALER" type="string"/>
 				</KeyValues>
 				<Anchors>
-					<Anchor point="LEFT" relativeTo="$parentRoleButtonTank" relativePoint="RIGHT">
-						<Offset>
-							<AbsDimension x="15" y="0"/>
-						</Offset>
-					</Anchor>
+					<Anchor point="LEFT" relativeTo="$parentRoleButtonTank" relativePoint="RIGHT" x="15" y="0"/>
 				</Anchors>
 				<Scripts>
 					<OnEnter function="LFDPopupRoleCheckButton_OnEnter"/>
@@ -88,11 +78,7 @@
 					<KeyValue key="role" value="DAMAGER" type="string"/>
 				</KeyValues>
 				<Anchors>
-					<Anchor point="LEFT" relativeTo="$parentRoleButtonHealer" relativePoint="RIGHT">
-						<Offset>
-							<AbsDimension x="15" y="0"/>
-						</Offset>
-					</Anchor>
+					<Anchor point="LEFT" relativeTo="$parentRoleButtonHealer" relativePoint="RIGHT" x="15" y="0"/>
 				</Anchors>
 				<Scripts>
 					<OnEnter function="LFDPopupRoleCheckButton_OnEnter"/>

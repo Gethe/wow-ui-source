@@ -236,7 +236,7 @@
 		</Scripts>		
 	</Frame>
 	
-    <Frame name="ObjectiveTrackerBonusRewardsFrame" hidden="true">
+    <Frame name="ObjectiveTrackerBonusRewardsFrame" parent="UIParent" hidden="true">
         <Size x="168" y="128"/>
         <Layers>
             <Layer level="ARTWORK">

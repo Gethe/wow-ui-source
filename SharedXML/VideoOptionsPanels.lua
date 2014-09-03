@@ -500,7 +500,6 @@ function Display_RaidSettingsEnabled_CheckButton_OnLoad(self)
 				AutoChooseCurrentGraphicsSetting();
 			end
 		end
-	_G[self:GetName().."Text"]:SetText(RAID_SETTINGS_ENABLED);
 	VideoOptionsCheckbox_OnLoad(self);
 end
 
@@ -944,16 +943,20 @@ LanguagesPanelOptions = {
 }
 
 function LanguagePanel_Cancel (self)
-	local languageDropDown = InterfaceOptionsLanguagesPanelLocaleDropDown;
-	if (languageDropDown.value ~= languageDropDown.oldValue) then
-		languageDropDown.SetValue(languageDropDown, languageDropDown.oldValue);
+	local dropDowns = { InterfaceOptionsLanguagesPanelLocaleDropDown, InterfaceOptionsLanguagesPanelAudioLocaleDropDown };
+	for i = 1, #dropDowns do 
+		if (dropDowns[i].value ~= dropDowns[i].oldValue) then
+			dropDowns[i].SetValue(dropDowns[i], dropDowns[i].oldValue);
+		end
 	end
 end
 
 function LanguagePanel_Okay (self)
-	local languageDropDown = InterfaceOptionsLanguagesPanelLocaleDropDown;
-	if (languageDropDown.value ~= languageDropDown.oldValue) then
-		languageDropDown.oldValue = languageDropDown.value;
+	local dropDowns = { InterfaceOptionsLanguagesPanelLocaleDropDown, InterfaceOptionsLanguagesPanelAudioLocaleDropDown };
+	for i = 1, #dropDowns do 
+		if (dropDowns[i].value ~= dropDowns[i].oldValue) then
+			dropDowns[i].oldValue = dropDowns[i].value;
+		end
 	end
 	BlizzardOptionsPanel_Okay(self);
 end
@@ -966,6 +969,17 @@ function InterfaceOptionsLanguagesPanel_OnLoad (self)
 	OptionsFrame_AddCategory(VideoOptionsFrame, self);
 end
 
+function InterfaceOptionsLanguagesPanel_UpdateRestartTexture()
+	if (InterfaceOptionsLanguagesPanelAudioLocaleDropDown.originalValue ~= InterfaceOptionsLanguagesPanelAudioLocaleDropDown.value
+		or InterfaceOptionsLanguagesPanelLocaleDropDown.originalValue ~= InterfaceOptionsLanguagesPanelLocaleDropDown.value) then
+		Language_ShowRestartTexture(InterfaceOptionsLanguagesPanel, InterfaceOptionsLanguagesPanelLocaleDropDown.value);
+	else
+		InterfaceOptionsLanguagesPanel.RestartNeeded:Hide();
+	end
+end
+
+
+
 function InterfaceOptionsLanguagesPanelLocaleDropDown_OnLoad (self)
 	self.type = CONTROLTYPE_DROPDOWN;
 	BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
@@ -975,6 +989,7 @@ function InterfaceOptionsLanguagesPanelLocaleDropDown_OnLoad (self)
 	local value = GetCVar(self.cvar);
 	self.defaultValue = GetCVarDefault(self.cvar);
 	self.oldValue = value;
+	self.originalValue = value;
 	self.value = value;
 	self.tooltip = OPTION_TOOLTIP_LOCALE;
 
@@ -984,15 +999,22 @@ function InterfaceOptionsLanguagesPanelLocaleDropDown_OnLoad (self)
 
 	self.SetValue = 
 		function (self, value)
-			SetCVar("textLocale", value, self.event);
-			SetCVar("audioLocale", value, self.event);
-			self.value = value;
-			if ( self.oldValue ~= value ) then
-				self.gameRestart = true;
-				Language_ShowRestartTexture(self, value);
-			else
-				self.RestartNeeded:Hide();
+			local currentValue = VideoOptionsDropDownMenu_GetSelectedValue(self);
+			local audioCurrentValue = VideoOptionsDropDownMenu_GetSelectedValue(InterfaceOptionsLanguagesPanelAudioLocaleDropDown);
+			-- Audio dropdown value should follow changes to text dropdown, except if user has explicitly chosen English instead of
+			-- the text level.
+			if (audioCurrentValue ~= "enUS" or currentValue == "enUS") then
+				InterfaceOptionsLanguagesPanelAudioLocaleDropDown.SetValue(InterfaceOptionsLanguagesPanelAudioLocaleDropDown, value);
 			end
+			if (value == "enUS") then
+				VideoOptionsDropDownMenu_DisableDropDown(InterfaceOptionsLanguagesPanelAudioLocaleDropDown);
+			else
+				VideoOptionsDropDownMenu_EnableDropDown(InterfaceOptionsLanguagesPanelAudioLocaleDropDown);
+			end
+
+			SetCVar("textLocale", value, self.event);
+			self.value = value;
+			InterfaceOptionsLanguagesPanel_UpdateRestartTexture();
 			VideoOptionsDropDownMenu_SetSelectedValue(self, value);
 		end
 	self.GetValue =
@@ -1006,8 +1028,52 @@ function InterfaceOptionsLanguagesPanelLocaleDropDown_OnLoad (self)
 		end
 end
 
+function InterfaceOptionsLanguagesPanelAudioLocaleDropDown_OnLoad(self)
+	self.type = CONTROLTYPE_DROPDOWN;
+	BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
+
+	self.cvar = "audioLocale";
+
+	local value = GetCVar(self.cvar);
+	self.defaultValue = GetCVarDefault(self.cvar);
+	self.oldValue = value;
+	self.originalValue = value;
+	self.value = value;
+	self.tooltip = OPTION_TOOLTIP_AUDIO_LOCALE;
+
+	VideoOptionsDropDownMenu_SetWidth(self, 200);
+	VideoOptionsDropDownMenu_Initialize(self, InterfaceOptionsLanguagesPanelLocaleDropDown_Initialize);
+	VideoOptionsDropDownMenu_SetSelectedValue(self, value);
+
+	self.SetValue = 
+		function (self, value)
+			SetCVar("audioLocale", value, self.event);
+			self.value = value;
+			InterfaceOptionsLanguagesPanel_UpdateRestartTexture();
+			VideoOptionsDropDownMenu_SetSelectedValue(self, value);
+		end
+	self.GetValue =
+		function (self)
+			return VideoOptionsDropDownMenu_GetSelectedValue(self);
+		end
+	self.RefreshValue =
+		function (self)
+			VideoOptionsDropDownMenu_Initialize(self, InterfaceOptionsLanguagesPanelAudioLocaleDropDown_Initialize);
+			VideoOptionsDropDownMenu_SetSelectedValue(self, self.value);
+			
+			local audioLocales = {GetAvailableAudioLocales()};
+			if (#audioLocales <= 1) then
+				VideoOptionsDropDownMenu_DisableDropDown(InterfaceOptionsLanguagesPanelAudioLocaleDropDown);
+			else
+				VideoOptionsDropDownMenu_EnableDropDown(InterfaceOptionsLanguagesPanelAudioLocaleDropDown);
+			end
+		end
+
+end
+
 function InterfaceOptionsLanguagesPanelLocaleDropDown_OnClick (self)
-	InterfaceOptionsLanguagesPanelLocaleDropDown:SetValue(self.value);
+	local dropdown = self:GetParent().dropdown;
+	dropdown.SetValue(dropdown, self.value);
 	Graphics_EnableApply(self);
 end
 
@@ -1016,6 +1082,23 @@ function InterfaceOptionsLanguagesPanelLocaleDropDown_Initialize (self)
 	local info = VideoOptionsDropDownMenu_CreateInfo();
 
 	InterfaceOptionsLanguagesPanelLocaleDropDown_InitializeHelper(info, selectedValue, GetAvailableLocales());
+end
+
+function GetAvailableAudioLocales()
+	if (GetCVar("textLocale") == "enUS") then
+		return "enUS";
+	end
+	return "enUS", GetCVar("textLocale");
+end
+
+function InterfaceOptionsLanguagesPanelAudioLocaleDropDown_Initialize (self)
+	local selectedValue = VideoOptionsDropDownMenu_GetSelectedValue(self);
+	local info = VideoOptionsDropDownMenu_CreateInfo();
+
+	InterfaceOptionsLanguagesPanelLocaleDropDown_InitializeHelper(info, selectedValue, GetAvailableAudioLocales());
+	if (GetCVar("textLocale") == "enUS") then
+		VideoOptionsDropDownMenu_DisableDropDown(InterfaceOptionsLanguagesPanelAudioLocaleDropDown);
+	end
 end
 
 LanguageRegions = {}

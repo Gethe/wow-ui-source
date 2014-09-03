@@ -59,17 +59,6 @@
 			<AbsValue val="14"/>
 		</FontHeight>
 	</Font>
-	<Font name="SystemFont_Shadow_Large_Outline" font="Fonts\FRIZQT__.TTF" outline="NORMAL" virtual="true">
-		<Shadow>
-			<Offset>
-				<AbsDimension x="1" y="-1"/>
-			</Offset>
-			<Color r="0" g="0" b="0"/>
-		</Shadow>
-		<FontHeight>
-			<AbsValue val="16"/>
-		</FontHeight>
-	</Font>
 	<Font name="SystemFont_Huge1" font="Fonts\FRIZQT__.TTF" virtual="true">
 		<FontHeight>
 			<AbsValue val="20"/>

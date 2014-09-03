@@ -81,7 +81,7 @@ function SpellFlyoutButton_UpdateState(self)
 end
 
 function SpellFlyoutButton_UpdateUsable(self)
-	local isUsable, notEnoughtMana = IsUsableSpell(self.spellID);
+	local isUsable, notEnoughMana = IsUsableSpell(self.spellID);
 	local name = self:GetName();
 	local icon = _G[name.."Icon"];
 	if ( isUsable or not self:GetParent().isActionBar) then

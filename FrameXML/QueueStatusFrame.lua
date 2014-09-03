@@ -6,7 +6,6 @@
 function QueueStatusMinimapButton_OnLoad(self)
 	self:RegisterForClicks("LeftButtonUp", "RightButtonUp");
 	self:SetFrameLevel(self:GetFrameLevel() + 1);
-	self.EyeHighlightAnim:Play();
 	self.glowLocks = {};
 end
 
@@ -29,8 +28,20 @@ function QueueStatusMinimapButton_OnClick(self, button)
 				ToggleWorldStateScoreFrame();
 			end
 		elseif ( lfgListActiveEntry ) then
-			LFGListUtil_OpenBestWindow();
+			LFGListUtil_OpenBestWindow(true);
 		else
+			--See if we have any active LFGList applications
+			local apps = C_LFGList.GetApplications();
+			for i=1, #apps do
+				local _, appStatus = C_LFGList.GetApplicationInfo(apps[i]);
+				if ( appStatus == "applied" or appStatus == "invited" ) then
+					--We want to open to the LFGList screen
+					LFGListUtil_OpenBestWindow(true);
+					return;
+				end
+			end
+
+			--Just show the dropdown
 			QueueStatusDropDown_Show(self.DropDown, self:GetName());
 		end
 	end
@@ -55,6 +66,11 @@ function QueueStatusMinimapButton_UpdateGlow(self)
 	end
 
 	self.Highlight:SetShown(enabled);
+	if ( enabled ) then
+		self.EyeHighlightAnim:Play();
+	else
+		self.EyeHighlightAnim:Stop();
+	end
 end
 
 ----------------------------------------------

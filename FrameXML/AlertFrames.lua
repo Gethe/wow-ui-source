@@ -1025,10 +1025,9 @@ function LootUpgradeFrame_SetUp(self, itemLink, quantity, specID, baseQuality)
 end
 
 function LootUpgradeFrame_OnClick(self)
-	local itemID = GetItemIDFromHyperlink(self.hyperlink);
-	local slot = SearchBagsForItem(itemID);
-	if (slot >= 0) then
-		OpenBag(slot);
+	local bag = SearchBagsForItemLink(self.hyperlink);
+	if (bag >= 0) then
+		OpenBag(bag);
 	end
 end
 

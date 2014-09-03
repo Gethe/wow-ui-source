@@ -10,8 +10,8 @@ function StanceBar_OnLoad(self)
 	self:RegisterEvent("UPDATE_SHAPESHIFT_COOLDOWN");
 end
 
-function StanceBar_OnEvent(self)
-	if(event == UPDATE_SHAPESHIFT_COOLDOWN) then
+function StanceBar_OnEvent(self, event)
+	if(event == "UPDATE_SHAPESHIFT_COOLDOWN") then
 		StanceBar_UpdateState();
 	end
 end

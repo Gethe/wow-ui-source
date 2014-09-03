@@ -41,7 +41,7 @@ function GarrisonFollowerList_OnEvent(self, event, ...)
 		GarrisonMissionPage_UpdateParty();
 		return true;
 	elseif (event == "GARRISON_FOLLOWER_REMOVED") then
-		if (self.FollowerTab and self.FollowerTab.followerID and not C_Garrison.GetFollowerInfo(self.FollowerTab.followerID)) then
+		if (self.FollowerTab and self.FollowerTab.followerID and not C_Garrison.GetFollowerInfo(self.FollowerTab.followerID) and self.FollowerList.followers) then
 			-- viewed follower got removed, pick someone else
 			local index = self.FollowerList.followersList[1];
 			if (index and self.FollowerList.followers[index].followerID ~= self.FollowerTab.followerID) then
@@ -125,6 +125,7 @@ function GarrisonFollowerList_Update(self)
 	local numButtons = #buttons;
 	local expandedHeight = 0;
 	local showCounters = followerFrame.FollowerList.showCounters;
+	local canExpand = followerFrame.FollowerList.canExpand;
 
 	for i = 1, numButtons do
 		local button = buttons[i];
@@ -158,7 +159,11 @@ function GarrisonFollowerList_Update(self)
 					button.PortraitFrame.PortraitRingCover:Hide();
 					button.BusyFrame:Hide();
 				end
-				button.DownArrow:SetAlpha(1);
+				if ( canExpand ) then
+					button.DownArrow:SetAlpha(1);
+				else
+					button.DownArrow:SetAlpha(0);
+				end
 				-- adjust text position if we have additional text to show below name
 				if (follower.level == GARRISON_FOLLOWER_MAX_LEVEL or follower.status) then
 					button.Name:SetPoint("LEFT", button.PortraitFrame, "LEFT", 66, 8);
@@ -198,11 +203,16 @@ function GarrisonFollowerList_Update(self)
 
 			GarrisonFollowerButton_UpdateCounters(button, follower, showCounters);
 
-			if (button.id == followerFrame.openFollower) then
+			if (canExpand and button.id == followerFrame.openFollower and button.id == followerFrame.selectedFollower) then
 				GarrisonFollowerButton_Select(button);
 				expandedHeight = button:GetHeight() - scrollFrame.buttonHeight + 6;
 			else
 				GarrisonFollowerButton_UnSelect(button);
+			end
+			if ( button.id == followerFrame.selectedFollower ) then
+				button.Selection:Show();
+			else
+				button.Selection:Hide();
 			end
 			button:Show();
 		else
@@ -331,8 +341,15 @@ function GarrisonFollowerListButton_OnClick(self, button)
 	local followerFrame = self:GetParent():GetParent().followerFrame;
 	if ( button == "LeftButton" ) then
 		PlaySound("UI_Garrison_CommandTable_SelectFollower");
-		if ( self.isCollected ) then
-			if (not C_Garrison.CastSpellOnFollower(self.id)) then
+		followerFrame.selectedFollower = self.id;
+		
+		local spellCastConsumedClick = false;
+		if ( self.isCollected and followerFrame.FollowerList.canCastSpellsOnFollowers ) then
+			spellCastConsumedClick = C_Garrison.CastSpellOnFollower(self.id);
+		end
+		
+		if ( followerFrame.FollowerList.canExpand and not spellCastConsumedClick ) then
+			if ( self.isCollected ) then
 				if (followerFrame.openFollower == self.id) then
 					followerFrame.openFollower = nil;
 					PlaySound("UI_Garrison_CommandTable_FollowerAbilityClose");
@@ -340,17 +357,18 @@ function GarrisonFollowerListButton_OnClick(self, button)
 					followerFrame.openFollower = self.id;
 					PlaySound("UI_Garrison_CommandTable_FollowerAbilityOpen");
 				end
+			else
+				followerFrame.openFollower = nil;
+				PlaySound("UI_Garrison_CommandTable_FollowerAbilityClose");
 			end
-		else
-			followerFrame.openFollower = nil;
-			PlaySound("UI_Garrison_CommandTable_FollowerAbilityClose");
 		end
 		GarrisonFollowerList_Update(followerFrame);
 		if ( followerFrame.FollowerTab ) then
 			GarrisonFollowerPage_ShowFollower(followerFrame.FollowerTab, self.id);
 		end
 		CloseDropDownMenus();
-	elseif ( button == "RightButton" ) then
+	-- Don't show right click follower menu in landing page
+	elseif ( button == "RightButton" and not self:GetParent():GetParent():GetParent().isLandingPage) then
 		if ( self.isCollected ) then
 			if ( GarrisonFollowerOptionDropDown.followerID ~= self.id ) then
 				CloseDropDownMenus();
@@ -449,7 +467,7 @@ end
 function GarrisonMission_SetFollowerModelItems(modelFrame)
 	if ( modelFrame.followerID ) then
 		local follower =  C_Garrison.GetFollowerInfo(modelFrame.followerID);
-		if ( follower.isCollected ) then
+		if ( follower and follower.isCollected ) then
 			local modelItems = C_Garrison.GetFollowerModelItems(modelFrame.followerID);
 			for i = 1, #modelItems do
 				modelFrame:EquipItem(modelItems[i]);
@@ -683,4 +701,28 @@ function GarrisonFollowerPage_AnchorAbility(abilityFrame, lastAnchor, headerStri
 	else
 		return abilityFrame.Description;
 	end
+end
+
+---------------------------------------------------------------------------------
+--- Mission Sorting                                                           ---
+---------------------------------------------------------------------------------
+
+function Garrison_SortMissions(missionsList)
+	local comparison = function(mission1, mission2)
+		if ( mission1.level ~= mission2.level ) then
+			return mission1.level > mission2.level;
+		end
+		
+		if ( mission1.durationSeconds ~= mission2.durationSeconds ) then
+			return mission1.durationSeconds < mission2.durationSeconds;
+		end
+		
+		if ( mission1.isRare ~= mission2.isRare ) then
+			return mission1.isRare;
+		end
+
+		return strcmputf8i(mission1.name, mission2.name) < 0;
+	end
+
+	table.sort(missionsList, comparison);
 end

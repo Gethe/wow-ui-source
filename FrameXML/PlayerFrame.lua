@@ -61,7 +61,7 @@ end
 
 --This is overwritten in LocalizationPost for different languages.
 function PlayerFrame_UpdateLevelTextAnchor(level)
-	if ( level == 100 ) then
+	if ( level >= 100 ) then
 		PlayerLevelText:SetPoint("CENTER", PlayerFrameTexture, "CENTER", -62, -17);
 	else
 		PlayerLevelText:SetPoint("CENTER", PlayerFrameTexture, "CENTER", -61, -17);

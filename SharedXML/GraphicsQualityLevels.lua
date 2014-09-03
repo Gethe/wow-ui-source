@@ -1824,7 +1824,7 @@ VideoData["Advanced_DesktopGamma"]={
 				PlaySound("igMainMenuOptionCheckBoxOff");
 			end
 			BlizzardOptionsPanel_CheckButton_OnClick(self);
-			VideoOptionsValueChanged(self, (self:GetChecked() and 1 or 0), flag);
+			VideoOptionsValueChanged(self, (self:GetChecked() and 1 or 0));
 			Graphics_EnableApply(self);
 		end,
 }

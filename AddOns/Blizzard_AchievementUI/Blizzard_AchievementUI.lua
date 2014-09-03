@@ -2569,7 +2569,7 @@ function AchievementFrameAchievements_FindSelection()
 	local scrollHeight = AchievementFrameAchievementsContainer:GetHeight();
 	local newHeight = 0;
 	AchievementFrameAchievementsContainerScrollBar:SetValue(0);	
-	while ( not shown ) do
+	while ( true ) do
 		for _, button in next, AchievementFrameAchievementsContainer.buttons do
 			if ( button.selected ) then
 				newHeight = AchievementFrameAchievementsContainerScrollBar:GetValue() + AchievementFrameAchievementsContainer:GetTop() - button:GetTop();

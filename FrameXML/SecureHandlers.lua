@@ -388,7 +388,7 @@ local function Wrapped_Drag(self, header, preBody, postBody, wrap, ...)
 			local pickupType, target, x1, x2, x3 =
 				CallRestrictedClosure("self,button,kind,value,...",
 									  environment,
-									  control, preBody,
+									  controlHandle, preBody,
 									  selfHandle, button,
 									  GetCursorInfo());
 			if (pickupType == false) then

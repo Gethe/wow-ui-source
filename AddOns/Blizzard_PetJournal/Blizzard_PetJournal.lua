@@ -388,7 +388,7 @@ end
 
 function PetJournal_UpdatePetAbility(abilityFrame, abilityID, petID)
 	--Get the info for the pet that has this ability
-	local speciesID, customName, level, xp, maxXp, displayID, isFavorite, petName, petIcon, petType, creatureID = C_PetJournal.GetPetInfoByPetID(petID);
+	local speciesID, customName, level, xp, maxXp, displayID, isFavorite, petName, petIcon, petType = C_PetJournal.GetPetInfoByPetID(petID);
 
 	local requiredLevel = PetJournalLoadout_GetRequiredLevel(abilityFrame:GetParent(), abilityID);
 
@@ -423,7 +423,7 @@ function PetJournal_ShowPetSelect(self)
 	local spellIndex2 = spellIndex1 + 3;
 
 	--Get the info for the pet that has this ability
-	local speciesID, customName, level, xp, maxXp, displayID, isFavorite, petName, petIcon, petType, creatureID = C_PetJournal.GetPetInfoByPetID(slotFrame.petID);
+	local speciesID, customName, level, xp, maxXp, displayID, isFavorite, petName, petIcon, petType = C_PetJournal.GetPetInfoByPetID(slotFrame.petID);
 	
 	if PetJournal.SpellSelect:IsShown() then 
 		if PetJournal.SpellSelect.slotIndex == slotIndex and 
@@ -579,7 +579,7 @@ function PetJournal_UpdatePetLoadOut()
 			loadoutPlate.petTypeIcon:Hide();
 			loadoutPlate.petID = nil;
 		else -- not locked and petID is not nil
-			local speciesID, customName, level, xp, maxXp, displayID, isFavorite, name, icon, petType, creatureID = C_PetJournal.GetPetInfoByPetID(petID);
+			local speciesID, customName, level, xp, maxXp, displayID, isFavorite, name, icon, petType = C_PetJournal.GetPetInfoByPetID(petID);
 			C_PetJournal.GetPetAbilityList(speciesID, loadoutPlate.abilities, loadoutPlate.abilityLevels);	--Read ability/ability levels into the correct tables
 
 			--Find out how many abilities are usable due to level
@@ -665,23 +665,12 @@ function PetJournal_UpdatePetLoadOut()
 			loadoutPlate.isDead:SetShown(health <= 0);
 			
 			loadoutPlate.model:Show();
-			local modelChanged = false;
-			if ( displayID ~= 0 ) then
-				if ( displayID ~= loadoutPlate.displayID ) then
-					loadoutPlate.creatureID = nil;
-					loadoutPlate.displayID = displayID;
-					loadoutPlate.model:SetDisplayInfo(displayID);
-					loadoutPlate.model:SetDoBlend(false);
-					modelChanged = true;
-				end
-			elseif ( creatureID ~= 0 ) then
-				if ( creatureID ~= loadoutPlate.creatureID ) then
-					loadoutPlate.creatureID = creatureID;
-					loadoutPlate.displayID = nil;
-					loadoutPlate.model:SetCreature(creatureID);
-					loadoutPlate.model:SetDoBlend(false);
-					modelChanged = true;
-				end
+			local modelChanged = false;			
+			if ( displayID ~= loadoutPlate.displayID ) then
+				loadoutPlate.displayID = displayID;
+				loadoutPlate.model:SetDisplayInfo(displayID);
+				loadoutPlate.model:SetDoBlend(false);
+				modelChanged = true;
 			end
 			local isDead = health <= 0;
 			if ( modelChanged or isDead ~= loadoutPlate.model.wasDead ) then
@@ -1203,22 +1192,11 @@ function PetJournal_UpdatePetCard(self)
 	self.model:Show();
 	self.shadows:Show();
 	local modelChanged = false;
-	if ( displayID and displayID ~= 0 ) then
-		if ( displayID ~= self.displayID ) then
-			self.creatureID = nil;
-			self.displayID = displayID;
-			self.model:SetDisplayInfo(displayID);
-			self.model:SetDoBlend(false);
-			modelChanged = true;
-		end
-	elseif ( creatureID ~= 0 ) then
-		if ( creatureID ~= self.creatureID ) then
-			self.creatureID = creatureID;
-			self.displayID = nil;
-			self.model:SetCreature(creatureID);
-			self.model:SetDoBlend(false);
-			modelChanged = true;
-		end
+	if ( displayID ~= self.displayID ) then
+		self.displayID = displayID;
+		self.model:SetDisplayInfo(displayID);
+		self.model:SetDoBlend(false);
+		modelChanged = true;
 	end
 	if ( modelChanged or self.model.wasDead ~= isDead ) then
 		if ( isDead ) then
@@ -1762,7 +1740,7 @@ function MountJournal_Pickup(index)
 end
 
 function MountJournal_Dismiss()
-	return C_MountJournal.Dismiss(index);
+	return C_MountJournal.Dismiss();
 end
 
 function MountJournal_Summon(index)
@@ -2123,7 +2101,7 @@ function MountJournal_CollectAvailableFilters()
 		MountJournal.baseFilterTypes[i] = false
 	end
 	for i = 1, MountJournal_GetNumMounts() do
-		sourceType = select(6,MountJournal_GetMountInfo(i))
+		local sourceType = select(6,MountJournal_GetMountInfo(i))
 		MountJournal.baseFilterTypes[sourceType] = true;
 	end
 end
@@ -2308,7 +2286,8 @@ function MountJournalSummonRandomFavoriteButton_OnLoad(self)
 	self.spellID = SUMMON_RANDOM_FAVORITE_MOUNT_SPELL;
 	local spellName, spellSubname, spellIcon = GetSpellInfo(self.spellID);
 	self.texture:SetTexture(spellIcon);
-	self.spellname:SetText(spellName);
+	-- Use the global string instead of the spellName from the db here so that we can have custom newlines in the string
+	self.spellname:SetText(MOUNT_JOURNAL_SUMMON_RANDOM_FAVORITE_MOUNT);
 	self:RegisterForDrag("LeftButton");
 end
 
@@ -2333,7 +2312,7 @@ function MountOptionsMenu_Init(self, level)
 	info.func = function() MountJournal_Summon(MountJournal.menuMountID) end
 	if (MountJournal.menuMountID and MountJournal.active) then
 		info.text = PET_DISMISS;
-		info.func = function() MountJournal_Dismiss(MountJournal.menuMountID) end
+		info.func = function() MountJournal_Dismiss() end
 	end
 	if ( MountJournal.menuMountID and MountJournal.menuIsUsable ) then
 		info.disabled = false;
@@ -2596,6 +2575,10 @@ function ToySpellButton_UpdateButton(self)
 	self:Show();
 
 	local itemID, toyName, icon = C_ToyBox.GetToyInfo(self.itemID);
+
+	if string.len(toyName) == 0 then
+		toyName = itemID;
+	end
 
 	iconTexture:SetTexture(icon);
 	iconTextureUncollected:SetTexture(icon);

@@ -267,7 +267,8 @@
 						<Anchor point="CENTER" relativeTo="$parentRing" x="0" y="0" />
 					</Anchors>
 				</Texture>
-				<FontString name="$parentSpecName" inherits="GameFontNormal" parentKey="specName">
+				<FontString name="$parentSpecName" inherits="GameFontNormal" parentKey="specName" justifyH="LEFT" wordwrap="false">
+					<Size x="110" y="0"/>
 					<Anchors>
 						<Anchor point="TOPLEFT" relativeTo="$parentRing" relativePoint="TOPRIGHT" x="-5" y="-30" />
 					</Anchors>

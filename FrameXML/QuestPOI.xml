@@ -3,7 +3,7 @@
 	
 	<Script file="QuestPOI.lua"/>
 	
-	<Button name="QuestPOINumericTemplate" hidden="true" toplevel="true" virtual="true">
+	<Button name="QuestPOINumericTemplate" hidden="true" virtual="true">
 		<Size x="20" y="20"/>
 		<Layers>
 			<Layer level="BACKGROUND">
@@ -50,7 +50,7 @@
 			<TexCoords left="0.750" right=".875" top="0.875" bottom="1"/>
 		</PushedTexture>
 	</Button>
-	<Button name="QuestPOICompletedTemplate" hidden="true" toplevel="true" virtual="true">
+	<Button name="QuestPOICompletedTemplate" hidden="true" virtual="true">
 		<Size x="20" y="20"/>
 		<Layers>
 			<Layer level="BACKGROUND">

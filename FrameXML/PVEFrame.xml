@@ -205,9 +205,7 @@
 						</Anchors>
 					</Button>
 					<Button name="$parentGroupButton3" inherits="GroupFinderGroupButtonTemplate" parentKey="groupButton3" id="3">
-						<Anchors>
-							<Anchor point="TOP" relativeTo="$parentGroupButton2" relativePoint="BOTTOM" x="0" y="-23" />
-						</Anchors>
+						<!-- Anchors set in Lua -->
 					</Button>
 					<Button name="$parentGroupButton4" inherits="GroupFinderGroupButtonTemplate" parentKey="groupButton4" id="4">
 						<Anchors>
@@ -244,6 +242,7 @@
 				<Scripts>
 					<OnLoad function="GroupFinderFrame_OnLoad"/>
 					<OnShow function="GroupFinderFrame_OnShow"/>
+					<OnEvent function="GroupFinderFrame_OnEvent"/>
 				</Scripts>
 			</Frame>
 			<!-- raised frame for shadows to be on top of the buttons -->

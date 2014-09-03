@@ -11,7 +11,7 @@ StaticPopupDialogs["CONFIRM_REMOVE_TALENT"] = {
 		end
 	end,
 	OnShow = function(self)
-		local talentID, name = GetTalentInfoByID(self.data.id, selectedSpec);
+		local talentID, name = GetTalentInfoByID(self.data.id);
 		local resourceName, count, _, _, cost = GetTalentClearInfo();
 		if cost == 0 then
 			self.text:SetFormattedText(CONFIRM_REMOVE_GLYPH_NO_COST, name);
@@ -41,8 +41,8 @@ StaticPopupDialogs["CONFIRM_UNLEARN_AND_SWITCH_TALENT"] = {
 		end
 	end,
 	OnShow = function(self)
-		local talentID, name = GetTalentInfoByID(self.data.id, selectedSpec);
-		local oldTalentID, oldName = GetTalentInfoByID(self.data.oldID, selectedSpec);
+		local talentID, name = GetTalentInfoByID(self.data.id);
+		local oldTalentID, oldName = GetTalentInfoByID(self.data.oldID);
 		local resourceName, count, _, _, cost = GetTalentClearInfo();
 		if cost == 0 then
 			self.text:SetFormattedText(CONFIRM_UNLEARN_AND_SWITCH_TALENT_NO_COST, name, oldName);
@@ -219,9 +219,9 @@ SPEC_SPELLS_DISPLAY[270] = { 115175,10, 116694,10, 115151,10, 116670,10	}; --Mis
 
 -- Bonus stat to string
 SPEC_STAT_STRINGS = {
-	[LE_UNIT_STAT_STRENGTH] = ITEM_MOD_STRENGTH_SHORT,
-	[LE_UNIT_STAT_AGILITY] = ITEM_MOD_AGILITY_SHORT,
-	[LE_UNIT_STAT_INTELLECT] = ITEM_MOD_INTELLECT_SHORT,
+	[LE_UNIT_STAT_STRENGTH] = SPEC_FRAME_PRIMARY_STAT_STRENGTH,
+	[LE_UNIT_STAT_AGILITY] = SPEC_FRAME_PRIMARY_STAT_AGILITY,
+	[LE_UNIT_STAT_INTELLECT] = SPEC_FRAME_PRIMARY_STAT_INTELLECT,
 };
 
 -- PlayerTalentFrame
@@ -1478,7 +1478,7 @@ function PlayerTalentFrame_UpdateSpecFrame(self, spec)
 	local index = 1;
 	local bonuses
 	if ( self.isPet ) then
-		bonuses = {GetSpecializationSpells(shownSpec, nil, self.isPet)};
+		bonuses = {GetSpecializationSpells(shownSpec, nil, self.isPet, true)};
 	else
 		bonuses = SPEC_SPELLS_DISPLAY[id];
 	end

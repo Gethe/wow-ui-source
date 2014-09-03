@@ -227,7 +227,7 @@ function GuildBankFrame_Update()
 
 		-- Update the tab items		
 		local button, index, column;
-		local texture, itemCount, locked, isFiltered;
+		local texture, itemCount, locked, isFiltered, quality;
 		for i=1, MAX_GUILDBANK_SLOTS_PER_TAB do
 			index = mod(i, NUM_SLOTS_PER_GUILDBANK_GROUP);
 			if ( index == 0 ) then

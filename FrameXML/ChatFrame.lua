@@ -1608,6 +1608,13 @@ SecureCmdList["PET_DISMISS"] = function(msg)
 	end
 end
 
+SecureCmdList["USE_TOY"] = function(msg)
+	local toyName = SecureCmdOptionParse(msg);
+	if ( toyName and toyName ~= "" ) then
+		UseToyByName(toyName)
+	end
+end
+
 -- Pre-populate the secure command hash table
 for index, value in pairs(SecureCmdList) do
 	local i = 1;
@@ -3065,6 +3072,8 @@ function ChatFrame_MessageEventHandler(self, event, ...)
 		elseif ( type == "BN_CONVERSATION_LIST" ) then
 			local channelLink = format(CHAT_BN_CONVERSATION_GET_LINK, arg8, MAX_WOW_CHAT_CHANNELS + arg8);
 			local message = format(CHAT_BN_CONVERSATION_LIST, channelLink, arg1);
+			local accessID = ChatHistory_GetAccessID(Chat_GetChatCategory(type), arg8);
+			local typeID = ChatHistory_GetAccessID(infoType, arg8, arg12);
 			self:AddMessage(message, info.r, info.g, info.b, info.id, false, accessID, typeID);
 		elseif ( type == "BN_INLINE_TOAST_ALERT" ) then	
 			if ( arg1 == "FRIEND_OFFLINE" and not BNet_ShouldProcessOfflineEvents() ) then
@@ -4529,7 +4538,7 @@ function ChatMenu_Yell(self)
 end
 
 function ChatMenu_Whisper(self)
-	local editBox = ChatFrame_OpenChat(SLASH_SMART_WHISPER1.." ", chatFrame);
+	local editBox = ChatFrame_OpenChat(SLASH_SMART_WHISPER1.." ");
 	editBox:SetText(SLASH_SMART_WHISPER1.." "..editBox:GetText());
 end
 

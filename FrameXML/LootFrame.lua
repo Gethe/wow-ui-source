@@ -660,7 +660,6 @@ function BonusRollFrame_OnEvent(self, event, ...)
 		self.rewardLink = rewardLink;
 		self.rewardQuantity = rewardQuantity;
 		self.rewardSpecID = rewardSpecID;
-		self.rewardSpecSex = rewardSpecSex;
 		self.StartRollAnim:Finish();
 	elseif ( event == "PLAYER_LOOT_SPEC_UPDATED" ) then
 		local specID = GetLootSpecialization();

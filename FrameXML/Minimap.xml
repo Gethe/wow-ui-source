@@ -498,6 +498,9 @@
 								<Anchors>
 									<Anchor point="TOPLEFT" x="32" y="-118"/>
 								</Anchors>
+								<HitRectInsets>
+									<AbsInset left="5" right="10" top="5" bottom="10"/>
+								</HitRectInsets>
 								<Layers>
 									<Layer level="BORDER">
 										<Texture parentKey="AlertBG" hidden="true" alpha="0" atlas="GarrLanding-MinimapAlertBG" useAtlasSize="true">
@@ -519,10 +522,10 @@
 										</Texture>
 									</Layer>
 									<Layer level="OVERLAY">
-										<FontString parentKey="AlertText" hidden="true" alpha="0" justifyH="CENTER" inherits="GameFontHighlightLeft">
-											<Size x="188" y="0"/>
+										<FontString parentKey="AlertText" hidden="true" alpha="0" justifyH="RIGHT" inherits="GameFontHighlightLeft">
+											<Size x="138" y="45"/>
 											<Anchors>
-												<Anchor point="CENTER" relativePoint="LEFT" x="-45" y="0"/>
+												<Anchor point="RIGHT" relativePoint="LEFT" x="4" y="0"/>
 											</Anchors>
 										</FontString>
 										<Texture parentKey="CircleGlow" hidden="true" alpha="1" alphaMode="ADD" atlas="GarrLanding-CircleGlow" useAtlasSize="true">
@@ -628,7 +631,7 @@
 										</Anchors>
 										<Layers>
 											<Layer level="OVERLAY">
-												<FontString parentKey="Text" inherits="GameFontHighlightLeft" justifyV="TOP" text="You can view your mission progress here.">
+												<FontString parentKey="Text" inherits="GameFontHighlightLeft" justifyV="TOP" text="GARRISON_VIEW_MISSION_PROGRESS_HERE">
 													<Size x="188" y="0"/>
 													<Anchors>
 														<Anchor point="TOPLEFT" x="16" y="-24"/>

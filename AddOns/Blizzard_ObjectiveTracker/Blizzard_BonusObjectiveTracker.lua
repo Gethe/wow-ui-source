@@ -208,7 +208,9 @@ function BonusObjectiveTracker_AddReward(questID, block, xp, money)
 	if( #data.rewards > 0 ) then
 		BonusObjectiveTracker_AnimateReward(block);
 	else
-		BonusObjectiveTracker_OnAnimateNextReward();
+		local oldPosIndex = COMPLETED_BONUS_DATA[block.id].posIndex;
+		COMPLETED_BONUS_DATA[block.id] = nil;
+		BonusObjectiveTracker_OnAnimateNextReward(oldPosIndex);
 	end
 end
 
@@ -269,10 +271,10 @@ function BonusObjectiveTracker_OnAnimateRewardDone(self)
 		rewardsFrame.Rewards[i].Anim:Stop();
 	end
 	
-	BonusObjectiveTracker_OnAnimateNextReward();
+	BonusObjectiveTracker_OnAnimateNextReward(oldPosIndex);
 end
 
-function BonusObjectiveTracker_OnAnimateNextReward()
+function BonusObjectiveTracker_OnAnimateNextReward(oldPosIndex)
 	local rewardsFrame = ObjectiveTrackerBonusRewardsFrame;
 	-- look for another reward to animate and fix positions
 	local nextAnimBlock;

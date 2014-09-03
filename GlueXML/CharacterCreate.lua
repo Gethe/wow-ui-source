@@ -200,7 +200,7 @@ function CharacterCreate_OnShow()
 
 	SetFaceCustomizeCamera(false);
 
-	CharacterCreateFrame_UpdateRecruitInfo(self);
+	CharacterCreateFrame_UpdateRecruitInfo();
 	
 	if( IsBlizzCon() ) then
 		BLIZZCON_IS_A_GO = false;
@@ -269,7 +269,7 @@ local function ShowGlowyDialog(dialog, text, showOKButton)
 	dialog:Show();
 end
 
-function CharacterCreateFrame_UpdateRecruitInfo(self)
+function CharacterCreateFrame_UpdateRecruitInfo()
 	local active, faction = C_RecruitAFriend.GetRecruitInfo();
 	if ( active and not PAID_SERVICE_TYPE ) then
 		if ( faction == FACTION_GROUP_HORDE ) then

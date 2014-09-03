@@ -2,6 +2,9 @@
 ..\FrameXML\UI.xsd">
 	<Script file="LootFrame.lua"/>
 	<Button name="LootButtonTemplate" inherits="ItemButtonTemplate" virtual="true">
+		<HitRectInsets>
+			<AbsInset left="0" right="-107" top="0" bottom="0"/>
+		</HitRectInsets>
 		<Layers>
 			<Layer level="OVERLAY">
 				<Texture name="$parentIconQuestTexture">

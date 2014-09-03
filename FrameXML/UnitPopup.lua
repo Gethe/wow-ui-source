@@ -306,7 +306,22 @@ function UnitPopup_ShowMenu (dropdownMenu, which, unit, name, userData)
 	
 	UnitPopupButtons["GARRISON_VISIT"].text = (C_Garrison.IsUsingPartyGarrison() and GARRISON_RETURN) or GARRISON_VISIT_LEADER;
 	-- This allows player to view loot settings if he's not the leader
-	if ( IsInGroup() and UnitIsGroupLeader("player") and not HasLFGRestrictions() ) then
+	local inParty = 0;
+	if ( IsInGroup() ) then
+		inParty = 1;
+	end
+
+	local inPublicParty = 0;
+	if ( IsInGroup(LE_PARTY_CATEGORY_INSTANCE) ) then
+		inPublicParty = 1;
+	end
+
+	local isLeader = 0;
+	if ( UnitIsGroupLeader("player") ) then
+		isLeader = 1;
+	end
+		
+	if ( inParty == 1 and isLeader == 1 and not HasLFGRestrictions() ) then
 		-- If this is true then player is the party leader
 		UnitPopupButtons["LOOT_METHOD"].nested = 1;
 		UnitPopupButtons["LOOT_THRESHOLD"].nested = 1;
@@ -326,9 +341,15 @@ function UnitPopup_ShowMenu (dropdownMenu, which, unit, name, userData)
 	if ( isDynamicInstance and CanChangePlayerDifficulty() ) then
 		_, _, _, _, _, _, toggleDifficultyID = GetDifficultyInfo(instanceDifficultyID);
 	end	
-	if ( instanceType == "none" or C_Garrison:IsOnGarrisonMap()) then
+
+	local inInstance, instanceType = IsInInstance();
+	if ( not inInstance ) then
 		UnitPopupButtons["DUNGEON_DIFFICULTY"].nested = 1;
-		UnitPopupButtons["RAID_DIFFICULTY"].nested = 1;	
+		if( inPublicParty == 1 ) then
+			UnitPopupButtons["RAID_DIFFICULTY"].nested = nil;
+		else
+			UnitPopupButtons["RAID_DIFFICULTY"].nested = 1;	
+		end
 	else
 		UnitPopupButtons["DUNGEON_DIFFICULTY"].nested = nil;
 		if ( toggleDifficultyID ) then
@@ -425,15 +446,6 @@ function UnitPopup_ShowMenu (dropdownMenu, which, unit, name, userData)
 					if ( dungeonDifficultyID == UnitPopupButtons[value].difficultyID ) then
 						info.checked = 1;
 					end
-					local inParty = 0;
-					if ( IsInGroup() ) then
-						inParty = 1;
-					end
-					local isLeader = 0;
-					if ( UnitIsGroupLeader("player") ) then
-						isLeader = 1;
-					end
-					local inInstance, instanceType = IsInInstance();
 					if ( ( inParty == 1 and isLeader == 0 ) or inInstance ) then
 						info.disabled = 1;	
 					end
@@ -456,16 +468,8 @@ function UnitPopup_ShowMenu (dropdownMenu, which, unit, name, userData)
 							info.checked = 1;
 						end
 					end
-					local inParty = 0;
-					if ( IsInGroup() ) then
-						inParty = 1;
-					end
-					local isLeader = 0;
-					if ( UnitIsGroupLeader("player") ) then
-						isLeader = 1;
-					end
-					local inInstance, instanceType = IsInInstance();
-					if ( ( inParty == 1 and isLeader == 0 ) or inInstance ) then
+				
+					if ( ( inParty == 1 and isLeader == 0 ) or inPublicParty == 1 or inInstance ) then
 						info.disabled = 1;
 					end
 					if ( toggleDifficultyID and CheckToggleDifficulty(toggleDifficultyID, UnitPopupButtons[value].difficultyID) == 1 ) then
@@ -482,16 +486,7 @@ function UnitPopup_ShowMenu (dropdownMenu, which, unit, name, userData)
 							info.checked = 1;
 						end
 					end
-					local inParty = 0;
-					if ( IsInGroup() ) then
-						inParty = 1;
-					end
-					local isLeader = 0;
-					if ( UnitIsGroupLeader("player") ) then
-						isLeader = 1;
-					end
-					local inInstance, instanceType = IsInInstance();
-					if ( ( inParty == 1 and isLeader == 0 ) or inInstance or GetRaidDifficultyID() == DIFFICULTY_PRIMARYRAID_MYTHIC) then
+					if ( ( inParty == 1 and isLeader == 0 ) or inPublicParty == 1 or inInstance or GetRaidDifficultyID() == DIFFICULTY_PRIMARYRAID_MYTHIC ) then
 						info.disabled = 1;
 					end
 					if ( toggleDifficultyID and not GetRaidDifficultyID() == DIFFICULTY_PRIMARYRAID_MYTHIC and CheckToggleDifficulty(toggleDifficultyID, UnitPopupButtons[value].difficultyID) == 1 ) then
@@ -635,7 +630,7 @@ function UnitPopup_AddDropDownButton (info, cntButton, buttonIndex, level)
 
 	info.text = cntButton.text;
 	info.value = buttonIndex;
-	info.owner = which;
+	info.owner = nil;
 	info.func = UnitPopup_OnClick;
 	if ( not cntButton.checkable ) then
 		info.notCheckable = 1;
@@ -647,7 +642,7 @@ function UnitPopup_AddDropDownButton (info, cntButton, buttonIndex, level)
 		-- Set the text color
 		info.colorCode = ITEM_QUALITY_COLORS[GetLootThreshold()].hex;
 	else
-		color = cntButton.color;
+		local color = cntButton.color;
 		if ( color ) then
 			info.colorCode = string.format("|cFF%02x%02x%02x",  color.r*255,  color.g*255,  color.b*255);
 		else
@@ -706,7 +701,7 @@ function UnitPopup_AddDropDownButton (info, cntButton, buttonIndex, level)
 	
 	-- Setup newbie tooltips
 	info.tooltipTitle = cntButton.text;
-	tooltipText = _G["NEWBIE_TOOLTIP_UNIT_"..buttonIndex];
+	local tooltipText = _G["NEWBIE_TOOLTIP_UNIT_"..buttonIndex];
 	if ( not tooltipText ) then
 		tooltipText = cntButton.tooltipText;
 	end
@@ -1365,6 +1360,11 @@ function UnitPopup_OnUpdate (elapsed)
 	if ( IsInGroup() ) then
 		inParty = 1;
 	end
+	
+	local inPublicParty = 0;
+	if ( IsInGroup(LE_PARTY_CATEGORY_INSTANCE) ) then
+		inPublicParty = 1;
+	end
 
 	local isLeader = 0;
 	if ( UnitIsGroupLeader("player") ) then
@@ -1492,10 +1492,14 @@ function UnitPopup_OnUpdate (elapsed)
 						if ( ( inParty == 1 and isLeader == 0 ) or inInstance or HasLFGRestrictions() ) then
 							enable = 0;	
 						end
-					elseif ( value == "RAID_DIFFICULTY" and inInstance and not toggleDifficultyID ) then
-						enable = 0;
+					elseif ( value == "RAID_DIFFICULTY" ) then
+						if( inInstance and not toggleDifficultyID ) then
+							enable = 0;
+						elseif( inParty == 1 and isLeader == 0 or inPublicParty == 1 ) then
+							enable = 0;
+						end
 					elseif ( ( strsub(value, 1, 15) == "RAID_DIFFICULTY" ) and ( strlen(value) > 15 ) ) then
-						if ( ( inParty == 1 and isLeader == 0 ) or inInstance ) then
+						if ( ( inParty == 1 and isLeader == 0 ) or inPublicParty == 1 or inInstance ) then
 							enable = 0;	
 						end
 						if (toggleDifficultyID) then
@@ -1505,7 +1509,7 @@ function UnitPopup_OnUpdate (elapsed)
 							enable = 0;
 						end
 					elseif ( ( strsub(value, 1, 22) == "LEGACY_RAID_DIFFICULTY" ) and ( strlen(value) > 22 ) ) then
-						if ( ( inParty == 1 and isLeader == 0 ) or inInstance or GetRaidDifficultyID() == DIFFICULTY_PRIMARYRAID_MYTHIC ) then
+						if ( ( inParty == 1 and isLeader == 0 ) or inPublicParty == 1 or inInstance or GetRaidDifficultyID() == DIFFICULTY_PRIMARYRAID_MYTHIC ) then
 							enable = 0;	
 						end
 						if (toggleDifficultyID) then

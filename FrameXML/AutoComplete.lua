@@ -164,7 +164,7 @@ function AutoComplete_Update(parent, text, cursorPosition)
 		
 		self.parent = parent;
 		--We ask for one more result than we need so that we know whether or not results are continued
-		possibilities = GetAutoCompleteResults(text, parent.autoCompleteParams.include, parent.autoCompleteParams.exclude, AUTOCOMPLETE_MAX_BUTTONS+1, cursorPosition);
+		local possibilities = GetAutoCompleteResults(text, parent.autoCompleteParams.include, parent.autoCompleteParams.exclude, AUTOCOMPLETE_MAX_BUTTONS+1, cursorPosition);
 
 		if (not possibilities) then
 			possibilities = {};

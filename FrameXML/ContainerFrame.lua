@@ -208,22 +208,24 @@ function ContainerFrame_OnShow(self)
 			BagHelpBox:Show();
 		end
 		MainMenuBarBackpackButton:SetChecked(true);
-	elseif ( self:GetID() > 0 ) then -- The actual bank has ID -1, backpack has ID 0, we want to make sure we're looking at a regular or bank bag
+	elseif ( self:GetID() > 0) then -- The actual bank has ID -1, backpack has ID 0, we want to make sure we're looking at a regular or bank bag
 		local button = _G["CharacterBag"..(self:GetID() - 1).."Slot"];
 		if ( button ) then
 			button:SetChecked(true);
 		end
-		for i = LE_BAG_FILTER_FLAG_EQUIPMENT, NUM_LE_BAG_FILTER_FLAGS do
-			local active = false;
-			if ( self:GetID() > NUM_BAG_SLOTS ) then
-				active = GetBankBagSlotFlag(self:GetID() - NUM_BAG_SLOTS, i);
-			else
-				active = GetBagSlotFlag(self:GetID(), i);
-			end
-			if ( active ) then
-				self.FilterIcon.Icon:SetAtlas(BAG_FILTER_ICONS[i], true);
-				self.FilterIcon:Show();
-				break;
+		if (not IsInventoryItemProfessionBag("player", ContainerIDToInventoryID(self:GetID()))) then
+			for i = LE_BAG_FILTER_FLAG_EQUIPMENT, NUM_LE_BAG_FILTER_FLAGS do
+				local active = false;
+				if ( self:GetID() > NUM_BAG_SLOTS ) then
+					active = GetBankBagSlotFlag(self:GetID() - NUM_BAG_SLOTS, i);
+				else
+					active = GetBagSlotFlag(self:GetID(), i);
+				end
+				if ( active ) then
+					self.FilterIcon.Icon:SetAtlas(BAG_FILTER_ICONS[i], true);
+					self.FilterIcon:Show();
+					break;
+				end
 			end
 		end
 		if ( not ContainerFrame1.allBags ) then
@@ -336,8 +338,7 @@ function UpdateNewItemList(containerFrame)
 	local name = containerFrame:GetName()
 	
 	for i=1, containerFrame.size, 1 do
-		itemButton = _G[name.."Item"..i];
-		
+		local itemButton = _G[name.."Item"..i];
 		C_NewItems.RemoveNewItem(id, itemButton:GetID());
 	end
 end
@@ -378,23 +379,27 @@ function CheckBagSettingsTutorial()
 end
 
 function SearchBagsForItem(itemID)
-	local slot = -1;
 	for i = 0, NUM_BAG_SLOTS do
-		local found = false;
-		local num = GetContainerNumSlots(i);
-		for j = 1, num do
+		for j = 1, GetContainerNumSlots(i) do
 			local id = GetContainerItemID(i, j);
 			if (id == itemID and C_NewItems.IsNewItem(i, j)) then
-				slot = i;
-				found = true;
-				break;
+				return i;
 			end
 		end
-		if (found) then
-			break;
+	end
+	return -1;
+end
+
+function SearchBagsForItemLink(itemLink)
+	for i = 0, NUM_BAG_SLOTS do
+		for j = 1, GetContainerNumSlots(i) do
+			local _, _, _, _, _, _, link = GetContainerItemInfo(i, j);
+			if (link == itemLink and C_NewItems.IsNewItem(i, j)) then
+				return i;
+			end
 		end
 	end
-	return slot;
+	return -1;
 end
 
 function ContainerFrame_GetOpenFrame()
@@ -417,11 +422,11 @@ function ContainerFrame_Update(frame)
 	local itemButton;
 	local texture, itemCount, locked, quality, readable, _, isFiltered, noValue;
 	local isQuestItem, questId, isActive, questTexture;
-	local isNewItem, isBattlePayItem, newItemTexture, flash, newItemAnim;
+	local isNewItem, isBattlePayItem, battlepayItemTexture, newItemTexture, flash, newItemAnim;
 	local tooltipOwner = GameTooltip:GetOwner();
 	
 	frame.FilterIcon:Hide();
-	if ( id ~= 0 ) then
+	if ( id ~= 0 and not IsInventoryItemProfessionBag("player", ContainerIDToInventoryID(id)) ) then
 		for i = LE_BAG_FILTER_FLAG_EQUIPMENT, NUM_LE_BAG_FILTER_FLAGS do
 			local active = false;
 			if ( id > NUM_BAG_SLOTS ) then
@@ -892,7 +897,7 @@ function ContainerFrame_GetExtendedPriceString(itemButton, isEquipped, quantity)
 	local bag = itemButton:GetParent():GetID();
 
 	local money, itemCount, refundSec, currencyCount, hasEnchants = GetContainerItemPurchaseInfo(bag, slot, isEquipped);
-	if ( not refundSec or ((honorPoints == 0) and (arenaPoints == 0) and (itemCount == 0) and (money == 0) and (currencyCount == 0)) ) then
+	if ( not refundSec or ((itemCount == 0) and (money == 0) and (currencyCount == 0)) ) then
 		return false;
 	end
 	
@@ -935,8 +940,8 @@ function ContainerFrame_GetExtendedPriceString(itemButton, isEquipped, quantity)
 	MerchantFrame.price = 0;
 	MerchantFrame.refundBag = bag;
 	MerchantFrame.refundSlot = slot;
-	MerchantFrame.honorPoints = honorPoints;
-	MerchantFrame.arenaPoints = arenaPoints;
+	MerchantFrame.honorPoints = nil;
+	MerchantFrame.arenaPoints = nil;
 
 	local refundItemTexture, refundItemLink, _;
 	if ( isEquipped ) then
@@ -952,7 +957,7 @@ function ContainerFrame_GetExtendedPriceString(itemButton, isEquipped, quantity)
 		textLine2 = "\n\n"..CONFIRM_REFUND_ITEM_ENHANCEMENTS_LOST;
 	end
 	StaticPopupDialogs["CONFIRM_REFUND_TOKEN_ITEM"].hasMoneyFrame = nil;
-	StaticPopup_Show("CONFIRM_REFUND_TOKEN_ITEM", itemsString, textLine2, {["texture"] = refundItemTexture, ["name"] = itemName, ["color"] = {r, g, b, 1}, ["link"] = refundItemLink, ["index"] = index, ["count"] = count * quantity});
+	StaticPopup_Show("CONFIRM_REFUND_TOKEN_ITEM", itemsString, textLine2, {["texture"] = refundItemTexture, ["name"] = itemName, ["color"] = {r, g, b, 1}, ["link"] = refundItemLink, ["index"] = nil, ["count"] = count * quantity});
 	return true;
 end
 

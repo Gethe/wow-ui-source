@@ -1463,7 +1463,7 @@ GlueDialogTypes["COPY_CHARACTER"] = {
 }
 
 GlueDialogTypes["COPY_ACCOUNT_DATA"] = {
-	text = "Are you sure you want to copy your LIVE account data to this TEST account?",
+	text = COPY_ACCOUNT_CONFIRM,
 	button1 = OKAY,
 	button2 = CANCEL,
 	escapeHides = true,
@@ -1473,7 +1473,7 @@ GlueDialogTypes["COPY_ACCOUNT_DATA"] = {
 }
 
 GlueDialogTypes["COPY_IN_PROGRESS"] = {
-	text = "Please wait ... Copy in progress.",
+	text = COPY_IN_PROGRESS,
 	button1 = nil,
 	button2 = nil,
 }
@@ -1484,7 +1484,7 @@ function CopyCharacterFromLive()
 end
 
 function CopyCharacter_AccountDataFromLive()
-	allowed = CopyAccountCharactersAllowed();
+	local allowed = CopyAccountCharactersAllowed();
 	if ( allowed >= 2 ) then
 		CopyAccountDataFromLive(GlueDropDownMenu_GetSelectedValue(CopyCharacterFrame.RegionID));
 	elseif ( allowed == 1 ) then
@@ -1514,7 +1514,7 @@ end
 function CopyCharacterCopy_OnClick(self)
 	if ( CopyCharacterFrame.SelectedIndex and not GlueDialog:IsShown() ) then
 		local name, realm = GetAccountCharacterInfo(CopyCharacterFrame.SelectedIndex);
-		GlueDialog_Show("COPY_CHARACTER", format("Are you sure you want to copy %s from %s?", name, realm));
+		GlueDialog_Show("COPY_CHARACTER", format(COPY_CHARACTER_CONFIRM, name, realm));
 	end
 end
 

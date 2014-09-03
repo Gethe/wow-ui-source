@@ -204,10 +204,7 @@ function GuildNewsButton_SetNews( button, news_id )
 		button.data2 = data2;
 		if ( text2 and text2 ~= UNKNOWN ) then
 			if ( newsType == NEWS_ITEM_LOOTED or newsType == NEWS_ITEM_CRAFTED or newsType == NEWS_ITEM_PURCHASED ) then
-				local _, itemLink = GetItemInfo(id);
-				if ( itemLink ) then
-					text2 = itemLink;
-				end
+				-- item link is already filled out from GetGuildNewsInfo
 			elseif ( newsType == NEWS_PLAYER_ACHIEVEMENT ) then
 				text2 = ACHIEVEMENT_COLOR_CODE.."["..text2.."]|r";
 			elseif ( newsType == NEWS_GUILD_ACHIEVEMENT ) then
@@ -239,8 +236,8 @@ function GuildNewsButton_OnEnter(self)
 	local newsType = self.newsType;	
 	if ( newsType == NEWS_ITEM_LOOTED or newsType == NEWS_ITEM_CRAFTED or newsType == NEWS_ITEM_PURCHASED ) then
 		GuildNewsButton_AnchorTooltip(self);
-		-- Bug 356148: Send the item upgrade info down to the hyperlink as well, so it shows up correctly
-		GameTooltip:SetHyperlink("item:"..self.id..":0:0:0:0:0:0:0:0:0:"..self.data2);
+		local _, _, _, _, text2, _, _, _ = GetGuildNewsInfo(self.index);
+		GameTooltip:SetHyperlink(text2);
 	elseif ( newsType == NEWS_PLAYER_ACHIEVEMENT or newsType == NEWS_GUILD_ACHIEVEMENT ) then
 		local achievementId = self.id;
 		local _, name, _, _, _, _, _, description = GetAchievementInfo(achievementId);

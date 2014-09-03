@@ -630,6 +630,9 @@
 			
 			<Frame parentKey="FollowerList" inherits="GarrisonListTemplateHeader" name="$parentFollowers" hidden="true" frameStrata="HIGH">
 				<Size x="305" y="565"/>
+				<KeyValues>
+					 <KeyValue key="canExpand" value="true" type="boolean"/>
+				</KeyValues>				
 				<Anchors>
 					<Anchor point="BOTTOMLEFT" x="33" y="34"/>
 				</Anchors>
@@ -696,13 +699,13 @@
 							</Anchors>
 						</Texture>
 						<FontString parentKey="Title" inherits="GameFontNormalMed3" justifyH="LEFT">
-							<Size x="315" y="0"/>
+							<Size x="300" y="0"/>
 							<Anchors>
 								<Anchor point="TOPLEFT" x="221" y="-24"/>
 							</Anchors>
 						</FontString>
 						<FontString parentKey="Description" inherits="GameFontHighlight" justifyH="LEFT">
-							<Size x="315" y="0"/>
+							<Size x="300" y="0"/>
 							<Anchors>
 								<Anchor point="TOPLEFT" relativeKey="$parent.Title" relativePoint="BOTTOMLEFT" y="-4"/>
 							</Anchors>
@@ -710,7 +713,7 @@
 						</FontString>
 						<Texture parentKey="RankBadge" atlas="Garr_LevelBadge_1" useAtlasSize="true">
 							<Anchors>
-								<Anchor point="TOPRIGHT" x="-30" y="-25" />
+								<Anchor point="TOPRIGHT" x="-35" y="-20" />
 							</Anchors>
 						</Texture>
 						<FontString parentKey="RankLabel" inherits="GameFontHighlight" justifyH="CENTER" text="LEVEL">
@@ -888,28 +891,33 @@
 					<Frame parentKey="UpgradeCostBar" hidden="false">
 						<Size x="80" y="22"/>
 						<Anchors>
-							<Anchor point="TOP" relativeKey="$parent.RankLabel" relativePoint="BOTTOM" y="-30"/>
+							<Anchor point="TOPRIGHT" relativeKey="$parent.RankLabel" relativePoint="BOTTOMRIGHT" x="11" y="-30"/>
 						</Anchors>
 						<Layers>
 							<Layer level="ARTWORK">
-								<FontString parentKey="CostLabel" inherits="GameFontNormal" justifyH="LEFT" text="COSTS_LABEL">
+								<FontString parentKey="CostAmountMaterial" inherits="GameFontHighlight" justifyH="LEFT">
 									<Anchors>
-										<Anchor point="TOPLEFT"/>`
+										<Anchor point="TOPRIGHT"/>
 									</Anchors>
 								</FontString>
-								<FontString parentKey="CostAmount" inherits="GameFontHighlight" justifyH="LEFT">
+								<FontString parentKey="CostLabel" inherits="GameFontNormal" justifyH="LEFT" text="COSTS_LABEL">
 									<Anchors>
-										<Anchor point="TOPLEFT" relativeKey="$parent.CostLabel" relativePoint="TOPRIGHT" x="2" y="0"/>
+										<Anchor point="RIGHT" relativeKey="$parent.CostAmountMaterial" relativePoint="LEFT" x="-2" y="0"/>
+									</Anchors>
+								</FontString>
+								<FontString parentKey="CostAmountGold" inherits="GameFontHighlight" justifyH="LEFT">
+									<Anchors>
+										<Anchor point="TOPLEFT" relativeKey="$parent.CostAmountMaterial" relativePoint="BOTTOMLEFT" x="0" y="-3"/>
 									</Anchors>
 								</FontString>
 								<FontString parentKey="TimeLabel" inherits="GameFontNormal" text="TIME_LABEL">
 									<Anchors>
-										<Anchor point="TOPLEFT" relativeKey="$parent.CostLabel" relativePoint="BOTTOMLEFT" y="-5"/>
+										<Anchor point="TOPRIGHT" relativeKey="$parent.CostLabel" relativePoint="BOTTOMRIGHT" x="0" y="-18"/>
 									</Anchors>
 								</FontString>
 								<FontString parentKey="TimeAmount" inherits="GameFontHighlight">
 									<Anchors>
-										<Anchor point="LEFT" relativeKey="$parent.TimeLabel" relativePoint="RIGHT" x="2"/>
+										<Anchor point="LEFT" relativeKey="$parent.TimeLabel" relativePoint="RIGHT" x="2" y="0"/>
 									</Anchors>
 								</FontString>
 							</Layer>
@@ -1103,20 +1111,20 @@
 							</Anchors>
 						</Texture>
 						<FontString parentKey="Title" inherits="GameFontNormalMed3" justifyH="LEFT">
-							<Size x="315" y="0"/>
+							<Size x="300" y="0"/>
 							<Anchors>
 								<Anchor point="TOPLEFT" x="221" y="-24"/>
 							</Anchors>
 						</FontString>
 						<FontString parentKey="Description" inherits="GameFontHighlight" justifyH="LEFT" text="GARRISON_TOWN_HALL_EXPLANATION">
-							<Size x="315" y="0"/>
+							<Size x="300" y="0"/>
 							<Anchors>
 								<Anchor point="TOPLEFT" relativeKey="$parent.Title" relativePoint="BOTTOMLEFT" y="-4"/>
 							</Anchors>
 						</FontString>
 						<Texture parentKey="RankBadge" atlas="Garr_LevelBadge_1" useAtlasSize="true">
 							<Anchors>
-								<Anchor point="TOPRIGHT" x="-30" y="-25" />
+								<Anchor point="TOPRIGHT" x="-35" y="-20" />
 							</Anchors>
 						</Texture>
 						<FontString parentKey="RankLabel" inherits="GameFontHighlight" justifyH="CENTER" text="LEVEL">
@@ -1156,32 +1164,25 @@
 					<Frame parentKey="UpgradeCostBar" hidden="false">
 						<Size x="80" y="22"/>
 						<Anchors>
-							<Anchor point="TOP" relativeKey="$parent.RankLabel" relativePoint="BOTTOM" x="-6" y="-30"/>
+							<Anchor point="TOPRIGHT" relativeKey="$parent.RankLabel" relativePoint="BOTTOMRIGHT" x="11" y="-30"/>
 						</Anchors>
 						<Layers>
 							<Layer level="ARTWORK">
-								<FontString parentKey="CostLabel" inherits="GameFontNormal" justifyH="LEFT" text="COSTS_LABEL">
-									<Anchors>
-										<Anchor point="TOPLEFT"/>`
-									</Anchors>
-								</FontString>
 								<FontString parentKey="CostAmountMaterial" inherits="GameFontHighlight" justifyH="LEFT">
 									<Anchors>
-										<Anchor point="TOPLEFT" relativeKey="$parent.CostLabel" relativePoint="TOPRIGHT" x="2" y="0"/>
+										<Anchor point="TOPRIGHT"/>
 									</Anchors>
 								</FontString>
-								<FontString parentKey="CostAmountGold" inherits="GameFontHighlight" justifyH="LEFT">
+								<FontString parentKey="CostLabel" inherits="GameFontNormal" justifyH="LEFT" text="COSTS_LABEL">
+									<Anchors>
+										<Anchor point="RIGHT" relativeKey="$parent.CostAmountMaterial" relativePoint="LEFT" x="-2" y="0"/>
+									</Anchors>
+								</FontString>
+								<FontString parentKey="CostAmountGold" inherits="GameFontHighlight" justifyH="LEFT" text="100">
 									<Anchors>
 										<Anchor point="TOPLEFT" relativeKey="$parent.CostAmountMaterial" relativePoint="BOTTOMLEFT" x="0" y="-3"/>
 									</Anchors>
 								</FontString>
-								<Texture parentKey="GoldIcon" file="Interface\MoneyFrame\UI-MoneyIcons">
-									<Size x="15" y="15"/>
-									<Anchors>
-										<Anchor point="LEFT" relativeKey="$parent.CostAmountGold" relativePoint="RIGHT" x="4" y="-1"/>
-									</Anchors>
-									<TexCoords left="0" right="0.25" top="0" bottom="1"/>
-								</Texture>
 							</Layer>
 						</Layers>
 					</Frame>
@@ -1345,12 +1346,20 @@
 								<Anchor point="TOPLEFT" x="81" y="-34"/>
 							</Anchors>
 						</FontString>
-						<FontString parentKey="Cost" inherits="GameFontHighlight">
+						<FontString parentKey="MaterialCost" inherits="GameFontHighlight">
 							<Shadow>
 								<Offset x="1" y="-1"/>
 							</Shadow>
 							<Anchors>
 								<Anchor point="LEFT" relativeKey="$parent.CostLabel" relativePoint="RIGHT" x="5"/>
+							</Anchors>
+						</FontString>
+						<FontString parentKey="GoldCost" inherits="GameFontHighlight">
+							<Shadow>
+								<Offset x="1" y="-1"/>
+							</Shadow>
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeKey="$parent.MaterialCost" relativePoint="BOTTOMLEFT" x="0" y="-3"/>
 							</Anchors>
 						</FontString>
 						<FontString parentKey="TimeLabel" inherits="GameFontNormal" text="TIME_LABEL">
@@ -1427,6 +1436,32 @@
 						</Scripts>
 					</Button>
 				</Frames>
+				<Scripts>
+					<OnShow>
+						GarrisonBuildingFrame.Cover:Show();
+					</OnShow>
+					<OnHide>
+						GarrisonBuildingFrame.Cover:Hide();
+					</OnHide>
+				</Scripts>
+			</Frame>
+			<Frame parentKey="Cover" setAllPoints="true" enableMouse="true" hidden="true">
+				<Anchors>
+					<Anchor point="TOPLEFT" x="0" y="-20" />
+					<Anchor point="BOTTOMRIGHT" x="0" y="0" />
+				</Anchors>
+				<Layers>
+					<Layer level="ARTWORK">
+						<Texture parentKey="Texture" setAllPoints="true">
+							<Color r="0" g="0" b="0" a="0" />
+						</Texture>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnShow>
+						self:SetFrameLevel(self:GetParent():GetFrameLevel()+3);
+					</OnShow>
+				</Scripts>
 			</Frame>
 		</Frames>
 		<Scripts>

@@ -560,30 +560,12 @@
 									</Frame>
 								</Frames>
 								<Scripts>
-									<OnMouseDown>
-										if ( self:IsEnabled() ) then
-											self:GetNormalTexture():SetPoint("CENTER", self, "CENTER", 1, -2);
-											local name = self:GetName();
-											_G[name.."Left"]:SetTexture("Interface\\Buttons\\UI-Silver-Button-Down");
-											_G[name.."Middle"]:SetTexture("Interface\\Buttons\\UI-Silver-Button-Down");
-											_G[name.."Right"]:SetTexture("Interface\\Buttons\\UI-Silver-Button-Down");
-										end
-									</OnMouseDown>
-									<OnMouseUp>
-										if ( self:IsEnabled() ) then
-											self:GetNormalTexture():SetPoint("CENTER", self, "CENTER", 0, -1);
-											local name = self:GetName();
-											_G[name.."Left"]:SetTexture("Interface\\Buttons\\UI-Silver-Button-Up");
-											_G[name.."Middle"]:SetTexture("Interface\\Buttons\\UI-Silver-Button-Up");
-											_G[name.."Right"]:SetTexture("Interface\\Buttons\\UI-Silver-Button-Up");
-										end
-									</OnMouseUp>
 									<OnClick>
 										PlaySound("igMainMenuOptionCheckBoxOn");
 										ToggleDropDownMenu(1, nil, self.dropDown, self:GetName(), 0, 0);
 									</OnClick>
 								</Scripts>
-								<NormalTexture file="Interface\RaidFrame\Raid-WorldPing">
+								<NormalTexture parentKey="Icon" file="Interface\RaidFrame\Raid-WorldPing">
 									<Size x="14" y ="14"/>
 									<Anchors>
 										<Anchor point="CENTER" x="0" y="-1"/>

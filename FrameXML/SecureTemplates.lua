@@ -385,6 +385,17 @@ SECURE_ACTIONS.spell =
             CastSpellByName(spell, unit);
         end
     end;
+	
+SECURE_ACTIONS.toy =
+	function (self, unit, button)
+		local toy = SecureButton_GetModifiedAttribute(self, "toy", button);
+		local toyID = tonumber(toy);
+		if ( toyID ) then
+			UseToy(toyID);
+		elseif ( toy ) then
+			UseToyByName(toy);
+		end
+	end;
 
 -- Allow friendly names for glyph slots
 local GLYPH_SLOTS = {

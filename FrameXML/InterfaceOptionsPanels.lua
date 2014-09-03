@@ -493,7 +493,7 @@ function InterfaceOptionsLossOfControl_SetUpDropdown(dropDown, cvar, checkBox, t
 
 	UIDropDownMenu_SetWidth(dropDown, 130);
 	UIDropDownMenu_Initialize(dropDown, InterfaceOptionsLossOfControlDropDown_Initialize);
-	UIDropDownMenu_SetSelectedValue(dropDown, value);
+	UIDropDownMenu_SetSelectedValue(dropDown, dropDown.value);
 
 	dropDown.SetValue = InterfaceOptionsLossOfControlDropDown_SetValue;
 	dropDown.GetValue = InterfaceOptionsLossOfControlDropDown_GetValue;

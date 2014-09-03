@@ -41,6 +41,14 @@ end
 
 function LFDFrame_OnEvent(self, event, ...)
 	if ( event == "LFG_ROLE_CHECK_SHOW" ) then
+		local requeue = ...;
+		if( true or requeue ) then
+			LFDRoleCheckPopup.Text:SetText(REQUEUE_CONFIRM_YOUR_ROLE);
+		else
+			LFDRoleCheckPopup.Text:SetText(CONFIRM_YOUR_ROLE);
+		end
+		local height = LFDRoleCheckPopup.Text:GetHeight();
+		LFDRoleCheckPopup:SetHeight(168+height);
 		StaticPopupSpecial_Show(LFDRoleCheckPopup);
 		LFDQueueFrameSpecificList_Update();
 	elseif ( event == "LFG_ROLE_CHECK_HIDE" ) then

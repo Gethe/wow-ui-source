@@ -1125,7 +1125,7 @@ function KnowledgeBase_SelectCategory(self, index, navBar) -- Index could also b
 	elseif index == 2  then
 		KnowledgeBase_GotoTopIssues();
 	else
-		KnowledgeBase_DisplaySubCategories(index-2, text);
+		KnowledgeBase_DisplaySubCategories(index-2);
 		HelpFrame.kbase.category = index-2;
 	end
 	

@@ -355,15 +355,11 @@ function RaidFinderRoleButton_OnEnter(self)
 	elseif ( self.lockedIndicator:IsVisible() ) then
 		local dungeonID = RaidFinderQueueFrame.raid;
 		local roleID = self:GetID();
-		local reasons;
 		GameTooltip:SetText(ERR_ROLE_UNAVAILABLE, 1.0, 1.0, 1.0, true);
 		if ( type(dungeonID) == "number" ) then
-			reasons = GetLFDRoleLockInfo(dungeonID, roleID);
-			for i = 1, #reasons do
-				local text = _G["INSTANCE_UNAVAILABLE_SELF_"..(LFG_INSTANCE_INVALID_CODES[reasons[i]])];
-				if( text ) then
-					GameTooltip:AddLine(text, nil, nil, nil, true);
-				end
+			local textTable = LFGRoleButton_LockReasonsTextTable(dungeonID, roleID);
+			for text,_ in pairs( textTable ) do
+				GameTooltip:AddLine(text, nil, nil, nil, true);
 			end
 		end
 		GameTooltip:Show();

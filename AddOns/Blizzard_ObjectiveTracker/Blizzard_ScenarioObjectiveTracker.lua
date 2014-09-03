@@ -431,13 +431,13 @@ function Scenario_ProvingGrounds_ShowBlock(timerID, elapsedTime, duration, medal
 		block.Score:Hide();
 		block.WaveLabel:SetPoint("TOPLEFT", block.MedalIcon, "TOPRIGHT", 1, -4);
 		block.Wave:SetFormattedText(GENERIC_FRACTION_STRING, currWave, maxWave);
-		statusBar:SetPoint("CENTER", block, "CENTER", 42, -8);
+		statusBar:SetPoint("TOPLEFT", block.WaveLabel, "BOTTOMLEFT", -2, -6);
 	else
 		block.ScoreLabel:Show();
 		block.Score:Show();
 		block.WaveLabel:SetPoint("TOPLEFT", block.MedalIcon, "TOPRIGHT", 1, 4);
 		block.Wave:SetText(currWave);
-		statusBar:SetPoint("CENTER", block, "CENTER", 22, -17);
+		statusBar:SetPoint("TOPLEFT", block.ScoreLabel, "BOTTOMLEFT", -2, -6);
 	end
 
 	Scenario_ProvingGrounds_UpdateTime(block, elapsedTime);

@@ -1320,7 +1320,7 @@ StaticPopupDialogs["DEATH"] = {
 				self.text:SetText("");
 				StaticPopupDialogs[self.which].OnShow(self);
 			end
-			StaticPopup_Resize(dialog, which);
+			StaticPopup_Resize(self, self.which);
 		end
 
 		if( HasSoulstone() and CanUseSoulstone() ) then

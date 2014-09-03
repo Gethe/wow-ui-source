@@ -126,7 +126,7 @@
 			</OnLeave>
 		</Scripts>
 	</Frame>
-	<Frame name="WorldMapCorpseTemplate" hidden="true" virtual="true">
+	<Frame name="WorldMapCorpseTemplate" hidden="true" virtual="true" toplevel="true">
 		<Size>
 			<AbsDimension x="16" y="16"/>
 		</Size>
@@ -141,9 +141,6 @@
 			</Layer>
 		</Layers>
 		<Scripts>
-			<OnLoad>
-				RaiseFrameLevel(self);
-			</OnLoad>
 			<OnEnter>
 				local x, y = self:GetCenter();
 				local parentX, parentY = self:GetParent():GetCenter();

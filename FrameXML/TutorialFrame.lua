@@ -830,8 +830,9 @@ function TutorialFrame_Update(currentTutorial)
 
 	-- setup the title
 	-- check for race-class specific first, then race specific, then class, then normal
+	local title;
 	if (displayData.tileHeight > 0) then
-		local title = _G["TUTORIAL_TITLE"..currentTutorial.."_"..raceName.."_"..className];
+		title = _G["TUTORIAL_TITLE"..currentTutorial.."_"..raceName.."_"..className];
 		if ( not title ) then
 			title = _G["TUTORIAL_TITLE"..currentTutorial.."_"..raceName];
 			if ( not title ) then

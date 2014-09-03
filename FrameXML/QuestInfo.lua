@@ -286,7 +286,7 @@ end
 function QuestInfo_GetRewardButton(rewardsFrame, index)
 	local rewardButtons = rewardsFrame.RewardButtons;
 	if ( not rewardButtons[index] ) then
-		button = CreateFrame("BUTTON", "$parentQuestInfoItem"..index, rewardsFrame, rewardsFrame.buttonTemplate);
+		local button = CreateFrame("BUTTON", "$parentQuestInfoItem"..index, rewardsFrame, rewardsFrame.buttonTemplate);
 		rewardButtons[index] = button;
 	end
 	return rewardButtons[index];
@@ -306,37 +306,33 @@ function QuestInfo_ShowRewards()
 	local totalHeight = 0;
 	local rewardsFrame = QuestInfoFrame.rewardsFrame;
 	
+	local spellGetter;
 	if ( QuestInfoFrame.questLog ) then
 		numQuestRewards = GetNumQuestLogRewards();
 		numQuestChoices = GetNumQuestLogChoices();
 		numQuestCurrencies = GetNumQuestLogRewardCurrencies();
-		if ( GetQuestLogRewardSpell() ) then
-			if (select(6, GetQuestLogRewardSpell()) and (not IsCharacterNewlyBoosted())) then
-				numQuestSpellRewards = 0;
-			else
-				numQuestSpellRewards = 1;
-			end
-		end
 		money = GetQuestLogRewardMoney();
 		skillName, skillIcon, skillPoints = GetQuestLogRewardSkillPoints();
 		xp = GetQuestLogRewardXP();
 		playerTitle = GetQuestLogRewardTitle();
 		ProcessQuestLogRewardFactions();
+		spellGetter = GetQuestLogRewardSpell;
 	else
 		numQuestRewards = GetNumQuestRewards();
 		numQuestChoices = GetNumQuestChoices();
 		numQuestCurrencies = GetNumRewardCurrencies();
-		if ( GetRewardSpell() ) then
-			if (select(6, GetRewardSpell()) and (not IsCharacterNewlyBoosted())) then
-				numQuestSpellRewards = 0;
-			else
-				numQuestSpellRewards = 1;
-			end
-		end
 		money = GetRewardMoney();
 		skillName, skillIcon, skillPoints = GetRewardSkillPoints();
 		xp = GetRewardXP();
 		playerTitle = GetRewardTitle();
+		spellGetter = GetRewardSpell;
+	end
+	if ( spellGetter ) then
+		local texture, name, isTradeskillSpell, isSpellLearned, hideSpellLearnText, isBoostSpell, garrFollowerID = spellGetter();
+		-- only allow the spell reward if user can learn it		
+		if ( texture and (not isBoostSpell or IsCharacterNewlyBoosted()) and (not garrFollowerID or not C_Garrison.IsFollowerCollected(garrFollowerID)) ) then
+			numQuestSpellRewards = 1;
+		end
 	end
 
 	local totalRewards = numQuestRewards + numQuestChoices + numQuestCurrencies;
@@ -351,7 +347,7 @@ function QuestInfo_ShowRewards()
 		rewardButtons[i]:Hide();
 	end
 	
-	local questItem, name, texture, isTradeskillSpell, isSpellLearned, quality, isUsable, numItems, garrFollowerID;
+	local questItem, name, texture, isTradeskillSpell, isSpellLearned, hideSpellLearnText, isBoostSpell, quality, isUsable, numItems, garrFollowerID;
 	local rewardsCount = 0;
 	local lastFrame = rewardsFrame.Header;
 	
@@ -420,11 +416,7 @@ function QuestInfo_ShowRewards()
 		rewardsFrame.SpellLearnText:Show();
 		rewardsFrame.SpellLearnText:SetPoint("TOPLEFT", lastFrame, "BOTTOMLEFT", 0, -REWARDS_SECTION_OFFSET);
 
-		if ( QuestInfoFrame.questLog ) then
-			texture, name, isTradeskillSpell, isSpellLearned, hideSpellLearnText, isBoostSpell, garrFollowerID = GetQuestLogRewardSpell();
-		else
-			texture, name, isTradeskillSpell, isSpellLearned, hideSpellLearnText, isBoostSpell, garrFollowerID = GetRewardSpell();
-		end
+		texture, name, isTradeskillSpell, isSpellLearned, hideSpellLearnText, isBoostSpell, garrFollowerID = spellGetter();
 		
 		if ( not hideSpellLearnText ) then
 			if ( isTradeskillSpell ) then

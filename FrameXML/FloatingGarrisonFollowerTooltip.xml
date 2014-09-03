@@ -145,31 +145,31 @@ UI.xsd">
 						<Anchor point="TOPLEFT" x="2"/>
 					</Anchors>
 				</Texture>
-				<FontString parentKey="Name" inherits="GameFontNormal" justifyH="LEFT" text="AbilityText">
+				<FontString parentKey="Name" inherits="GameFontNormal" justifyH="LEFT">
 					<Anchors>
 						<Anchor point="LEFT" relativeKey="$parent.Icon" relativePoint="RIGHT" x="2"/>
 					</Anchors>
 				</FontString>
-				<FontString parentKey="Description" inherits="GameFontHighlight" justifyH="LEFT" text="AbilityDescription" wordwrap="true">
+				<FontString parentKey="Description" inherits="GameFontHighlight" justifyH="LEFT" wordwrap="true">
 					<Size x="200" y="0"/>
 					<Anchors>
 						<Anchor point="TOPLEFT" relativeKey="$parent.Name" relativePoint="BOTTOMLEFT" x="0" y="-4"/>
 					</Anchors>
 				</FontString>
-				<FontString parentKey="Details" inherits="GameFontHighlight" justifyH="LEFT" text="Details">
-					<Anchors>
-						<Anchor point="TOPLEFT" relativeKey="$parent.Description" relativePoint="BOTTOMLEFT" x="0" y="-10"/>
-					</Anchors>
-					<Color r="0.698" g="0.941" b="1" a="1"/>
-				</FontString>
-
 				<Texture parentKey="CounterIcon">
 					<Size x="16" y="16"/>
 					<Anchors>
-						<Anchor point="LEFT" relativeKey="$parent.Details" relativePoint="RIGHT" x="5"/>
+						<Anchor point="TOPLEFT" relativeKey="$parent.Description" relativePoint="BOTTOMLEFT" x="0" y="-8"/>
 					</Anchors>
 				</Texture>
-
+				<FontString parentKey="Details" inherits="GameFontHighlight" justifyH="LEFT">
+					<Size x="176" y="0"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.CounterIcon" relativePoint="TOPRIGHT" x="8" y="-1"/>
+					</Anchors>
+					<Color r="0.698" g="0.941" b="1" a="1"/>
+				</FontString>
+				
 				<Texture atlas="GarrMission_EncounterAbilityBorder" useAtlasSize="true" parentKey="CounterIconBorder" hidden="true">
 					<Size x="15" y="15"/>
 					<Anchors>
@@ -225,31 +225,31 @@ UI.xsd">
 						<Anchor point="TOPLEFT" x="10" y="-10"/>
 					</Anchors>
 				</Texture>
-				<FontString parentKey="Name" inherits="GameFontNormal" justifyH="LEFT" text="AbilityText">
+				<FontString parentKey="Name" inherits="GameFontNormal" justifyH="LEFT">
 					<Anchors>
 						<Anchor point="LEFT" relativeKey="$parent.Icon" relativePoint="RIGHT" x="6"/>
 					</Anchors>
 				</FontString>
-				<FontString parentKey="Description" inherits="GameFontHighlight" justifyH="LEFT" text="AbilityDescription" wordwrap="true">
-					<Size x="200" y="0"/>
+				<FontString parentKey="Description" inherits="GameFontHighlight" justifyH="LEFT" wordwrap="true">
+					<Size x="190" y="0"/>
 					<Anchors>
 						<Anchor point="TOPLEFT" relativeKey="$parent.Name" relativePoint="BOTTOMLEFT" x="0" y="-4"/>
 					</Anchors>
 				</FontString>
-				<FontString parentKey="Details" inherits="GameFontHighlight" justifyH="LEFT" text="Details">
-					<Anchors>
-						<Anchor point="TOPLEFT" relativeKey="$parent.Description" relativePoint="BOTTOMLEFT" x="0" y="-10"/>
-					</Anchors>
-					<Color r="0.698" g="0.941" b="1" a="1"/>
-				</FontString>
-
 				<Texture parentKey="CounterIcon">
 					<Size x="16" y="16"/>
 					<Anchors>
-						<Anchor point="LEFT" relativeKey="$parent.Details" relativePoint="RIGHT" x="5"/>
+						<Anchor point="TOPLEFT" relativeKey="$parent.Description" relativePoint="BOTTOMLEFT" x="0" y="-8"/>
 					</Anchors>
 				</Texture>
-
+				<FontString parentKey="Details" inherits="GameFontHighlight" justifyH="LEFT">
+					<Size x="176" y="0"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.CounterIcon" relativePoint="TOPRIGHT" x="8" y="-1"/>
+					</Anchors>
+					<Color r="0.698" g="0.941" b="1" a="1"/>
+				</FontString>
+				
 				<Texture atlas="GarrMission_EncounterAbilityBorder" useAtlasSize="true" parentKey="CounterIconBorder" hidden="true">
 					<Size x="15" y="15"/>
 					<Anchors>

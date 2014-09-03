@@ -24,13 +24,13 @@
 					<Layer level="ARTWORK">
 						<Texture parentKey="DamagerIcon" atlas="groupfinder-icon-role-large-dps" useAtlasSize="true">
 							<Anchors>
-								<Anchor point="RIGHT" x="-11"/>
+								<Anchor point="RIGHT" x="-11" y="0"/>
 							</Anchors>
 						</Texture>
 						<FontString parentKey="DamagerCount" inherits="GameFontHighlightSmall" justifyH="CENTER">
 							<Size x="17" y="14"/>
 							<Anchors>
-								<Anchor point="RIGHT" relativeKey="$parent.DamagerIcon" relativePoint="LEFT" x="-2" y="0"/>
+								<Anchor point="RIGHT" relativeKey="$parent.DamagerIcon" relativePoint="LEFT" x="-1" y="0"/>
 							</Anchors>
 						</FontString>
 						<Texture parentKey="HealerIcon" atlas="groupfinder-icon-role-large-heal" useAtlasSize="true">
@@ -41,11 +41,10 @@
 						<FontString parentKey="HealerCount" inherits="GameFontHighlightSmall" justifyH="CENTER">
 							<Size x="17" y="14"/>
 							<Anchors>
-								<Anchor point="RIGHT" relativeKey="$parent.HealerIcon" relativePoint="LEFT" x="-2" y="0"/>
+								<Anchor point="RIGHT" relativeKey="$parent.HealerIcon" relativePoint="LEFT" x="-1" y="0"/>
 							</Anchors>
 						</FontString>
-						<Texture parentKey="TankIcon" atlas="groupfinder-icon-role-large-tank">
-							<Size x="16" y="16"/>
+						<Texture parentKey="TankIcon" atlas="groupfinder-icon-role-large-tank" useAtlasSize="true">
 							<Anchors>
 								<Anchor point="RIGHT" relativeKey="$parent.HealerCount" relativePoint="LEFT" x="-4" y="0"/>
 							</Anchors>
@@ -53,7 +52,7 @@
 						<FontString parentKey="TankCount" inherits="GameFontHighlightSmall" justifyH="CENTER">
 							<Size x="17" y="14"/>
 							<Anchors>
-								<Anchor point="RIGHT" relativeKey="$parent.TankIcon" relativePoint="LEFT" x="-2" y="0"/>
+								<Anchor point="RIGHT" relativeKey="$parent.TankIcon" relativePoint="LEFT" x="-1" y="0"/>
 							</Anchors>
 						</FontString>
 					</Layer>
@@ -64,7 +63,7 @@
 					<Layer level="ARTWORK">
 						<Texture parentKey="Icon1" parentArray="Icons" atlas="groupfinder-icon-role-large-tank" useAtlasSize="true">
 							<Anchors>
-								<Anchor point="CENTER" relativeKey="$parent" relativePoint="RIGHT" x="-20" y="0"/>
+								<Anchor point="RIGHT" relativeKey="$parent" relativePoint="RIGHT" x="-16" y="0"/>
 							</Anchors>
 						</Texture>
 						<Texture parentKey="Icon2" parentArray="Icons" atlas="groupfinder-icon-role-large-tank" useAtlasSize="true">
@@ -124,6 +123,7 @@
 		</Layers>
 		<Scripts>
 			<OnClick>
+				PlaySound("igMainMenuOptionCheckBoxOn");
 				LFGListEntryCreationActivityFinder_Select(self:GetParent():GetParent():GetParent():GetParent(), self.activityID);
 			</OnClick>
 		</Scripts>
@@ -149,6 +149,33 @@
 			</Layer>
 		</Layers>
 		<Frames>
+			<Frame parentKey="FriendIcon">
+				<Size x="20" y="19"/>
+				<Anchors>
+					<Anchor point="LEFT" relativeKey="$parent.Name" relativePoint="RIGHT" x="0" y="0"/>
+				</Anchors>
+				<Layers>
+					<Layer level="ARTWORK">
+						<Texture parentKey="Icon" atlas="groupfinder-icon-friend" setAllPoints="true"/>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnEnter>
+						if ( self.relationship == "friend" ) then
+							GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+							GameTooltip:SetText(LFG_LIST_FRIEND, NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b, 1, true);
+							GameTooltip:Show();
+						elseif ( self.relationship == "guild" ) then
+							GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+							GameTooltip:SetText(LFG_LIST_GUILD_MEMBER, NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b, 1, true);
+							GameTooltip:Show();
+						else
+							GameTooltip:Hide();
+						end
+					</OnEnter>
+					<OnLeave function="GameTooltip_Hide"/>
+				</Scripts>
+			</Frame>
 			<Button parentKey="RoleIcon1">
 				<Size x="19" y="19"/>
 				<Anchors>
@@ -158,6 +185,7 @@
 				<HighlightTexture file="Interface\LFGFrame\UI-LFG-ICON-PORTRAITROLES" alphaMode="ADD"/>
 				<Scripts>
 					<OnClick>
+						PlaySound("igMainMenuOptionCheckBoxOn");
 						C_LFGList.SetApplicantMemberRole(self:GetParent():GetParent().applicantID, self:GetParent().memberIdx, self.role);
 					</OnClick>
 				</Scripts>
@@ -171,6 +199,7 @@
 				<HighlightTexture file="Interface\LFGFrame\UI-LFG-ICON-PORTRAITROLES" alphaMode="ADD"/>
 				<Scripts>
 					<OnClick>
+						PlaySound("igMainMenuOptionCheckBoxOn");
 						C_LFGList.SetApplicantMemberRole(self:GetParent():GetParent().applicantID, self:GetParent().memberIdx, self.role);
 					</OnClick>
 				</Scripts>
@@ -181,6 +210,7 @@
 				self:RegisterForClicks("RightButtonUp");
 			</OnLoad>
 			<OnClick>
+				PlaySound("igMainMenuOptionCheckBoxOn");
 				EasyMenu(LFGListUtil_GetApplicantMemberMenu(self:GetParent().applicantID, self.memberIdx), LFGListFrameDropDown, self, 60, -5, "MENU");
 			</OnClick>
 			<OnEnter function="LFGListApplicantMember_OnEnter"/>
@@ -230,6 +260,7 @@
 				</Layers>
 				<Scripts>
 					<OnClick>
+						PlaySound("igMainMenuOptionCheckBoxOn");
 						if ( self.isAck ) then
 							C_LFGList.RemoveApplicant(self:GetParent().applicantID);
 						else
@@ -239,15 +270,31 @@
 				</Scripts>
 				<HighlightTexture file="Interface\Buttons\UI-Common-MouseHilight" alphaMode="ADD"/>
 			</Button>
-			<Button parentKey="InviteButton" inherits="UIMenuButtonStretchTemplate" text="INVITE">
+			<Button parentKey="InviteButton" inherits="UIMenuButtonStretchTemplate" text="INVITE" motionScriptsWhileDisabled="true">
 				<Size x="80" y="22"/>
 				<Anchors>
 					<Anchor point="RIGHT" relativeKey="$parent.DeclineButton" relativePoint="LEFT" x="-2" y="0"/>
 				</Anchors>
 				<Scripts>
 					<OnClick>
-						C_LFGList.InviteApplicant(self:GetParent().applicantID);
+						PlaySound("igMainMenuOptionCheckBoxOn");
+						if ( not IsInRaid(LE_PARTY_CATEGORY_HOME) and GetNumGroupMembers(LE_PARTY_CATEGORY_HOME) + self:GetParent().numMembers + C_LFGList.GetNumInvitedApplicantMembers() > MAX_PARTY_MEMBERS + 1 ) then
+							local dialog = StaticPopup_Show("LFG_LIST_INVITING_CONVERT_TO_RAID");
+							if ( dialog ) then
+								dialog.data = self:GetParent().applicantID;
+							end
+						else
+							C_LFGList.InviteApplicant(self:GetParent().applicantID);
+						end
 					</OnClick>
+					<OnEnter>
+						if ( self.tooltip ) then
+							GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+							GameTooltip:SetText(self.tooltip, NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b, 1, true);
+							GameTooltip:Show();
+						end
+					</OnEnter>
+					<OnLeave function="GameTooltip_Hide"/>
 				</Scripts>
 			</Button>
 			<Frame parentKey="Spinner" inherits="LoadingSpinnerTemplate" hidden="true">
@@ -601,15 +648,15 @@
 			<Layer level="BACKGROUND">
 				<Texture parentKey="ResultBG">
 					<Anchors>
-						<Anchor point="TOPLEFT" x="3" y="-1"/>
-						<Anchor point="BOTTOMRIGHT" x="-3" y="1"/>
+						<Anchor point="TOPLEFT" x="3" y="-2"/>
+						<Anchor point="BOTTOMRIGHT" x="-3" y="0"/>
 					</Anchors>
 					<Color r="1" g="1" b="1" a="0.04"/>
 				</Texture>
 				<Texture parentKey="ApplicationBG" atlas="groupfinder-highlightbar-green" alphaMode="ADD">
 					<Anchors>
-						<Anchor point="TOPLEFT" x="3" y="-1"/>
-						<Anchor point="BOTTOMRIGHT" x="-3" y="1"/>
+						<Anchor point="TOPLEFT" x="3" y="-2"/>
+						<Anchor point="BOTTOMRIGHT" x="-3" y="0"/>
 					</Anchors>
 				</Texture>
 			</Layer>
@@ -617,42 +664,42 @@
 				<FontString parentKey="Name" inherits="GameFontNormal" justifyH="LEFT">
 					<Size x="0" y="14"/>
 					<Anchors>
-						<Anchor point="TOPLEFT" x="10" y="-5"/>
+						<Anchor point="TOPLEFT" x="10" y="-6"/>
 					</Anchors>
 				</FontString>
 				<FontString parentKey="ActivityName" inherits="GameFontDisableSmallLeft">
 					<Size x="0" y="15"/>
 					<Anchors>
-						<Anchor point="BOTTOMLEFT" x="10" y="3"/>
+						<Anchor point="BOTTOMLEFT" x="10" y="2"/>
 					</Anchors>
 				</FontString>
 				<FontString parentKey="ExpirationTime" inherits="GameFontGreenSmall" text="(1:77)" justifyH="LEFT">
 					<Size x="35" y="12"/>
 					<Anchors>
-						<Anchor point="RIGHT" x="-35" y="0"/>
+						<Anchor point="RIGHT" x="-35" y="-1"/>
 					</Anchors>
 					<Color r="0.25" g="0.75" b="0.25"/>
 				</FontString>
 				<FontString parentKey="PendingLabel" inherits="GameFontGreenSmall" text="LFG_LIST_PENDING" justifyH="RIGHT">
 					<Size x="70" y="0"/>
 					<Anchors>
-						<Anchor point="RIGHT" relativeKey="$parent.ExpirationTime" relativePoint="LEFT" x="-3" y="0"/>
+						<Anchor point="RIGHT" relativeKey="$parent.ExpirationTime" relativePoint="LEFT" x="-3" y="-1"/>
 					</Anchors>
 				</FontString>
 			</Layer>
 			<Layer level="OVERLAY">
 				<Texture parentKey="Selected" atlas="groupfinder-highlightbar-yellow" alphaMode="ADD" hidden="true">
 					<Anchors>
-						<Anchor point="TOPLEFT" x="3" y="-2"/>
-						<Anchor point="BOTTOMRIGHT" x="-3" y="0"/>
+						<Anchor point="TOPLEFT" x="3" y="-3"/>
+						<Anchor point="BOTTOMRIGHT" x="-3" y="-1"/>
 					</Anchors>
 				</Texture>
 			</Layer>
 			<Layer level="HIGHLIGHT">
 				<Texture parentKey="Highlight" atlas="groupfinder-highlightbar-blue" alphaMode="ADD">
 					<Anchors>
-						<Anchor point="TOPLEFT" x="3" y="-2"/>
-						<Anchor point="BOTTOMRIGHT" x="-3" y="0"/>
+						<Anchor point="TOPLEFT" x="3" y="-3"/>
+						<Anchor point="BOTTOMRIGHT" x="-3" y="-1"/>
 					</Anchors>
 				</Texture>
 			</Layer>
@@ -660,12 +707,12 @@
 		<Frames>
 			<Frame parentKey="DataDisplay" inherits="LFGListGroupDataDisplayTemplate">
 				<Anchors>
-					<Anchor point="RIGHT" relativeKey="$parent" relativePoint="RIGHT" x="0" y="0"/>
+					<Anchor point="RIGHT" relativeKey="$parent" relativePoint="RIGHT" x="0" y="-1"/>
 				</Anchors>
 			</Frame>
 			<Button parentKey="VoiceChat" inherits="LFGListVoiceChatIcon">
 				<Anchors>
-					<Anchor point="LEFT" relativeKey="$parent.Name" relativePoint="RIGHT" x="5" y="-3"/>
+					<Anchor point="LEFT" relativeKey="$parent.Name" relativePoint="RIGHT" x="5" y="-1"/>
 				</Anchors>
 				<Scripts>
 					<OnClick>
@@ -675,7 +722,7 @@
 			</Button>
 			<Frame parentKey="Spinner" inherits="LoadingSpinnerTemplate" hidden="true">
 				<Anchors>
-					<Anchor point="RIGHT" x="3" y="0"/>
+					<Anchor point="RIGHT" x="3" y="-1"/>
 				</Anchors>
 				<Scripts>
 					<OnLoad>
@@ -699,6 +746,7 @@
 				</Layers>
 				<Scripts>
 					<OnClick>
+						PlaySound("igMainMenuOptionCheckBoxOn");
 						C_LFGList.CancelApplication(self:GetParent().resultID);
 					</OnClick>
 					<OnEnter>
@@ -799,8 +847,37 @@
 				<KeyValues>
 					<KeyValue key="updateAll" value="LFGListNothingAvailable_Update" type="global"/>
 				</KeyValues>
+				<Frames>
+					<Frame parentKey="Inset" useParentLevel="true" inherits="InsetFrameTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT" x="-1" y="-61" />
+							<Anchor point="BOTTOMRIGHT" x="-5" y="26" />
+						</Anchors>
+						<Layers>
+							<Layer level="BACKGROUND">
+								<Texture parentKey="CustomBG" atlas="groupfinder-background" useAtlasSize="true">
+									<Anchors>
+										<Anchor point="TOPLEFT" x="3" y="-3" relativePoint="TOPLEFT"/>
+									</Anchors>
+								</Texture>
+							</Layer>
+						</Layers>
+					</Frame>
+				</Frames>
 				<Layers>
 					<Layer level="ARTWORK">
+						<FontString parentKey="Label" inherits="QuestFont_Huge" text="LFGLIST_NAME">
+							<Anchors>
+								<Anchor point="TOP" x="-3" y="-35"/>
+							</Anchors>
+							<Color r="1.0" g="0.82" b="0"/>
+							<Shadow>
+								<Offset>
+									<AbsDimension x="1" y="-1"/>
+								</Offset>
+								<Color r="0" g="0" b="0"/>
+							</Shadow>
+						</FontString>
 						<FontString parentKey="Label" inherits="GameFontNormalLarge" text="NO_LFG_LIST_AVAILABLE">
 							<Size x="305" y="0"/>
 							<Anchors>
@@ -934,6 +1011,7 @@
 							</OnEnter>
 							<OnLeave function="GameTooltip_Hide"/>
 							<OnClick>
+								PlaySound("igMainMenuOptionCheckBoxOn");
 								LFGListSearchPanel_DoSearch(self:GetParent());
 							</OnClick>
 						</Scripts>
@@ -968,6 +1046,7 @@
 								</Anchors>
 								<Scripts>
 									<OnClick>
+										PlaySound("igMainMenuOptionCheckBoxOn");
 										LFGListSearchPanel_CreateGroupInstead(self:GetParent():GetParent());
 									</OnClick>
 									<OnEnter>
@@ -1021,6 +1100,7 @@
 						<Scripts>
 							<OnClick>
 								local frame = self:GetParent():GetParent();
+								PlaySound("igMainMenuOptionCheckBoxOn");
 								LFGListFrame_SetActivePanel(frame, frame.CategorySelection);
 							</OnClick>
 						</Scripts>
@@ -1032,6 +1112,7 @@
 						</Anchors>
 						<Scripts>
 							<OnClick>
+								PlaySound("igMainMenuOptionCheckBoxOn");
 								LFGListSearchPanel_SignUp(self:GetParent());
 							</OnClick>
 						</Scripts>
@@ -1094,12 +1175,12 @@
 					</Frame>
 					<Frame parentKey="DataDisplay" inherits="LFGListGroupDataDisplayTemplate">
 						<Anchors>
-							<Anchor point="BOTTOMRIGHT" relativeKey="$parent.InfoBackground" relativePoint="BOTTOMRIGHT" x="-3" y="10"/>
+							<Anchor point="BOTTOMRIGHT" relativeKey="$parent.InfoBackground" relativePoint="RIGHT" x="-4" y="-38"/>
 						</Anchors>
 					</Frame>
 					<Frame parentKey="VoiceChatFrame" inherits="LFGListVoiceChatIcon">
 						<Anchors>
-							<Anchor point="LEFT" relativeKey="$parent.EntryName" relativePoint="RIGHT" x="5" y="-2"/>
+							<Anchor point="LEFT" relativeKey="$parent.EntryName" relativePoint="RIGHT" x="5" y="-1"/>
 						</Anchors>
 					</Frame>
 					<Frame parentKey="Inset" useParentLevel="true" inherits="InsetFrameTemplate">
@@ -1159,6 +1240,7 @@
 							</OnEnter>
 							<OnLeave function="GameTooltip_Hide"/>
 							<OnClick>
+								PlaySound("igMainMenuOptionCheckBoxOn");
 								C_LFGList.RefreshApplicants();
 							</OnClick>
 						</Scripts>
@@ -1202,6 +1284,7 @@
 						</Anchors>
 						<Scripts>
 							<OnClick>
+								PlaySound("igMainMenuOptionCheckBoxOn");
 								C_LFGList.RemoveListing();
 							</OnClick>
 						</Scripts>
@@ -1222,18 +1305,46 @@
 						</Anchors>
 						<Layers>
 							<Layer level="BACKGROUND">
-								<Texture parentKey="Background" atlas="groupfinder-background-waitingcover" setAllPoints="true">
-									<Color r="1" g="1" b="1"/>
+								<Texture parentKey="Background" setAllPoints="true">
+									<Color r=".035" g=".071" b=".118" a="0.5"/>
 								</Texture>
 							</Layer>
 							<Layer level="ARTWORK">
-								<FontString parentKey="Label" inherits="GameFontNormalLarge" text="LFG_LIST_GROUP_FORMING" justifyH="CENTER">
+								<FontString parentKey="Label" inherits="GameFontNormalMed2" text="LFG_LIST_GROUP_FORMING" justifyH="CENTER">
 									<Anchors>
-										<Anchor point="CENTER" x="0" y="60"/>
+										<Anchor point="CENTER" x="0" y="20"/>
 									</Anchors>
 								</FontString>
+								<Texture parentKey="Waitdot2" hidden="false" alpha="0" atlas="groupfinder-waitdot" useAtlasSize="true">
+									<Anchors>
+										<Anchor point="TOP" relativeKey="$parent.Label" relativePoint="BOTTOM" x="0" y="-16"/>
+									</Anchors>
+								</Texture>
+								<Texture parentKey="Waitdot1" hidden="false" alpha="0" atlas="groupfinder-waitdot" useAtlasSize="true">
+									<Anchors>
+										<Anchor point="CENTER" relativeKey="$parent.Waitdot2" x="-16" y="0"/>
+									</Anchors>
+								</Texture>
+								<Texture parentKey="Waitdot3" hidden="false" alpha="0" atlas="groupfinder-waitdot" useAtlasSize="true">
+									<Anchors>
+										<Anchor point="CENTER" relativeKey="$parent.Waitdot2" x="16" y="0"/>
+									</Anchors>
+								</Texture>
 							</Layer>
 						</Layers>
+						<Animations>
+							<AnimationGroup parentKey="WaitAnim" looping="REPEAT">
+								<Alpha childKey="Waitdot1" startDelay="0.65" duration="0" order="1" fromAlpha="0" toAlpha="1"/>
+								<Alpha childKey="Waitdot2" startDelay="0.65" duration="0" order="2" fromAlpha="0" toAlpha="1"/>
+								<Alpha childKey="Waitdot3" startDelay="0.65" duration="0" order="3" fromAlpha="0" toAlpha="1"/>
+								<Alpha childKey="Waitdot3" startDelay="0.65" duration="0" order="4" fromAlpha="1" toAlpha="0"/>
+							</AnimationGroup>
+						</Animations>
+						<Scripts>
+							<OnLoad>
+								self.WaitAnim:Play();
+							</OnLoad>
+						</Scripts>
 					</Frame>
 				</Frames>
 				<Scripts>
@@ -1375,6 +1486,7 @@
 											</OnTextChanged>
 											<OnEnterPressed>
 												LFGListEntryCreationActivityFinder_Accept(self:GetParent():GetParent());
+												PlaySound("igMainMenuOptionCheckBoxOn");
 											</OnEnterPressed>
 										</Scripts>
 									</EditBox>
@@ -1405,6 +1517,7 @@
 										</Anchors>
 										<Scripts>
 											<OnClick>
+												PlaySound("igMainMenuOptionCheckBoxOn");
 												LFGListEntryCreationActivityFinder_Accept(self:GetParent():GetParent());
 											</OnClick>
 										</Scripts>
@@ -1416,6 +1529,7 @@
 										</Anchors>
 										<Scripts>
 											<OnClick>
+												PlaySound("igMainMenuOptionCheckBoxOn");
 												LFGListEntryCreationActivityFinder_Cancel(self:GetParent():GetParent());
 											</OnClick>
 										</Scripts>
@@ -1545,7 +1659,7 @@
 		</Scripts>
 	</Frame>
 	<Frame name="LFGListApplicationDialog" parent="UIParent" frameStrata="DIALOG" hidden="true" enableMouse="true">
-		<Size x="306" y="199"/>
+		<Size x="306" y="203"/>
 		<Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background" edgeFile="Interface\DialogFrame\UI-DialogBox-Border" tile="true">
 			<BackgroundInsets>
 				<AbsInset left="11" right="12" top="12" bottom="11"/>
@@ -1559,7 +1673,7 @@
 		</Backdrop>
 		<Layers>
 			<Layer level="ARTWORK">
-				<FontString parentKey="Label" inherits="GameFontHighlight" text="Choose your Roles">
+				<FontString parentKey="Label" inherits="GameFontHighlight" text="LFG_LIST_CHOOSE_YOUR_ROLES">
 					<Anchors>
 						<Anchor point="TOP" x="0" y="-15"/>
 					</Anchors>
@@ -1598,7 +1712,7 @@
 				</KeyValues>
 			</Button>
 			<ScrollFrame parentKey="Description" name="LFGListApplicationDialogDescription" inherits="InputScrollFrameTemplate">
-				<Size x="210" y="24"/>
+				<Size x="210" y="28"/>
 				<Anchors>
 					<Anchor point="BOTTOM" x="0" y="55"/>
 				</Anchors>
@@ -1616,6 +1730,7 @@
 				<Scripts>
 					<OnClick>
 						local dialog = self:GetParent();
+						PlaySound("igMainMenuOptionCheckBoxOn");
 						C_LFGList.ApplyToGroup(dialog.resultID, dialog.Description.EditBox:GetText(), dialog.TankButton:IsShown() and dialog.TankButton.CheckButton:GetChecked(), dialog.HealerButton:IsShown() and dialog.HealerButton.CheckButton:GetChecked(), dialog.DamagerButton:IsShown() and dialog.DamagerButton.CheckButton:GetChecked());
 						StaticPopupSpecial_Hide(dialog);
 					</OnClick>
@@ -1636,6 +1751,7 @@
 				</Anchors>
 				<Scripts>
 					<OnClick>
+						PlaySound("igMainMenuOptionCheckBoxOn");
 						StaticPopupSpecial_Hide(self:GetParent());
 					</OnClick>
 				</Scripts>
@@ -1693,16 +1809,23 @@
 						<Anchor point="TOPRIGHT" relativeKey="$parent.RoleDescription" relativePoint="BOTTOMRIGHT" x="0" y="0"/>
 					</Anchors>
 				</FontString>
+				<FontString parentKey="OfflineNotice" inherits="GameFontRed" text="LFG_LIST_OFFLINE_MEMBER_NOTICE">
+					<Size x="250" y="0"/>
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent" relativePoint="BOTTOM" x="0" y="35"/>
+					</Anchors>
+				</FontString>
 			</Layer>
 		</Layers>
 		<Frames>
 			<Button parentKey="AcceptButton" inherits="UIPanelButtonTemplate" text="ACCEPT">
 				<Size x="118" y="22"/>
 				<Anchors>
-					<Anchor point="BOTTOMRIGHT" relativeKey="$parent" relativePoint="BOTTOM" x="-8" y="23"/>
+					<Anchor point="TOPRIGHT" relativeKey="$parent" relativePoint="TOP" x="-8" y="-165"/>
 				</Anchors>
 				<Scripts>
 					<OnClick>
+						PlaySound("igMainMenuOptionCheckBoxOn");
 						LFGListInviteDialog_Accept(self:GetParent());
 					</OnClick>
 				</Scripts>
@@ -1710,10 +1833,11 @@
 			<Button parentKey="DeclineButton" inherits="UIPanelButtonTemplate" text="DECLINE">
 				<Size x="118" y="22"/>
 				<Anchors>
-					<Anchor point="BOTTOMLEFT" relativeKey="$parent" relativePoint="BOTTOM" x="8" y="23"/>
+					<Anchor point="TOPLEFT" relativeKey="$parent" relativePoint="TOP" x="8" y="-165"/>
 				</Anchors>
 				<Scripts>
 					<OnClick>
+						PlaySound("igMainMenuOptionCheckBoxOn");
 						LFGListInviteDialog_Decline(self:GetParent());
 					</OnClick>
 				</Scripts>

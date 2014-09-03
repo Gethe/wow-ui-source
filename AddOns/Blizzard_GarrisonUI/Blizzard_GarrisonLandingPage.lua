@@ -128,7 +128,9 @@ function GarrisonLandingPageReport_GetShipments(self)
 	local buildings = C_Garrison.GetBuildings();
 	for i = 1, #buildings do
 		local buildingID = buildings[i].buildingID;
-		if ( buildingID ) then
+		local _,_,_,_,_, isBuilding, _,_, canActivate = C_Garrison.GetOwnedBuildingInfoAbbrev(buildings[i].plotID);
+		-- Only show buildings that you own and are fully completed
+		if ( buildingID and not isBuilding and not canActivate ) then
 			local name, texture, shipmentCapacity, shipmentsReady, shipmentsTotal, creationTime, duration, timeleftString, itemName, itemIcon, itemQuality, itemID = C_Garrison.GetLandingPageShipmentInfo(buildingID);
 			local shipment = self.Shipments[shipmentIndex];
 			if ( not shipment ) then
@@ -139,7 +141,8 @@ function GarrisonLandingPageReport_GetShipments(self)
 				shipment.Icon:SetDesaturated(true);
 				shipment.Name:SetText(name);
 				shipment.Done:Hide();
-				shipment.BG:Show();
+				shipment.Border:Show();
+				shipment.BG:Hide();
 				shipment.Count:SetText(nil);
 				shipment.buildingID = buildingID;
 				if (shipmentsTotal) then
@@ -147,8 +150,9 @@ function GarrisonLandingPageReport_GetShipments(self)
 					if ( shipmentsReady == shipmentsTotal ) then
 						shipment.Swipe:SetCooldownUNIX(0, 0);
 						shipment.Done:Show();
-						shipment.BG:Hide();
+						shipment.Border:Hide();
 					else
+						shipment.BG:Show();
 						shipment.Swipe:SetCooldownUNIX(creationTime, duration);
 					end
 				end
@@ -250,6 +254,7 @@ end
 function GarrisonLandingPageReportList_UpdateItems()
 	GarrisonLandingPageReport.List.items = C_Garrison.GetLandingPageItems();
 	GarrisonLandingPageReport.List.AvailableItems = C_Garrison.GetAvailableMissions();
+	Garrison_SortMissions(GarrisonLandingPageReport.List.AvailableItems);
 	GarrisonLandingPageReport.InProgress.Text:SetFormattedText(GARRISON_LANDING_IN_PROGRESS, #GarrisonLandingPageReport.List.items);
 	GarrisonLandingPageReport.Available.Text:SetFormattedText(GARRISON_LANDING_AVAILABLE, #GarrisonLandingPageReport.List.AvailableItems);
 	if ( GarrisonLandingPageReport.selectedTab == GarrisonLandingPageReport.InProgress ) then
@@ -285,7 +290,11 @@ function GarrisonLandingPageReportList_UpdateAvailable()
 			button.BG:SetAtlas("GarrLanding-Mission-InProgress", true);
 			button.Title:SetText(item.name);
 			button.MissionType:SetTextColor(GARRISON_MISSION_TYPE_FONT_COLOR.r, GARRISON_MISSION_TYPE_FONT_COLOR.g, GARRISON_MISSION_TYPE_FONT_COLOR.b);
-			button.MissionType:SetText(item.duration);
+			if ( item.durationSeconds >= GARRISON_LONG_MISSION_TIME ) then
+				button.MissionType:SetFormattedText(GARRISON_LONG_MISSION_TIME_FORMAT, item.duration);
+			else
+				button.MissionType:SetText(item.duration);
+			end
 			button.MissionTypeIcon:Show();
 			button.MissionTypeIcon:SetAtlas(item.typeAtlas);
 			
@@ -319,6 +328,10 @@ function GarrisonLandingPageReportList_UpdateAvailable()
 			for i = index, #button.Rewards do
 				button.Rewards[i]:Hide();
 			end
+			
+			-- Set title width based on number of rewards
+			local titleWidth = 334 - ((index - 1)* 42);
+			button.Title:SetWidth(titleWidth);
 			
 			button.Status:Hide();
 			button.TimeLeft:Hide();

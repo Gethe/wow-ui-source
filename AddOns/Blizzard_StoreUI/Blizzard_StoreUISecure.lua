@@ -1300,7 +1300,7 @@ function StoreConfirmationFrame_SetNotice(self, icon, name, dollars, cents, wall
 	local middleHeight = ConfirmationFrameMiddleHeight;
 	local frameHeight = ConfirmationFrameHeight;
 
-	if (currency == CURRENCY_EUR or currency == CURRENCY_RUB or currency == CURRENCY_GBP or currency == CURRENCY_BRL) then
+	if (currency == CURRENCY_EUR or currency == CURRENCY_RUB or currency == CURRENCY_GBP or currency == CURRENCY_BRL or (IsOnGlueScreen() and currency == CURRENCY_KRW and _G.GetLocale() ~= "koKR")) then
 		middleHeight = ConfirmationFrameMiddleHeightEur;
 		frameHeight = ConfirmationFrameHeightEur;
 	else
@@ -1467,7 +1467,7 @@ function StoreProductCard_UpdateState(card)
 		local enableHighlight = card:GetID() ~= selectedEntryID and not isRotating;
 		card.HighlightTexture:SetAlpha(enableHighlight and 1 or 0);
 		if (not card.Description and card:IsMouseOver()) then
-			if (isRotating or forceHide) then
+			if (isRotating) then
 				StoreTooltip:Hide()
 			else
 				local point, rpoint, xoffset;

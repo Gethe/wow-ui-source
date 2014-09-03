@@ -144,7 +144,7 @@ function ItemSocketingFrame_Update()
 	end
 
 	-- Playsound if all sockets are matched 
-	if ( numMatches == numsockets ) then
+	if ( numMatches == numSockets ) then
 		-- Will probably need a new sound
 		PlaySound("MapPing");
 	end

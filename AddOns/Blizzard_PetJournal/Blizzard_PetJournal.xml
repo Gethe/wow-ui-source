@@ -992,7 +992,7 @@
 						</Texture>
 						<Texture name="$parentLockIcon" parentKey="LockIcon" file="Interface\PetBattles\PetBattle-LockIcon" setAllPoints="true" hidden="true"/>
 						<FontString name="$parentSpellName" inherits="GameFontNormal" maxLines="2" justifyH="RIGHT" parentKey="spellname" text="Summon Random Favorite Mount">
-							<Size x="150" y="0"/>
+							<Size x="170" y="0"/>
 							<Color r="1" g="1" b="1"/>
 							<Anchors>
 								<Anchor point="RIGHT" relativePoint="LEFT" relativeTo="$parentBorder" x="-2" y="0"/>

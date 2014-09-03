@@ -1568,7 +1568,8 @@
 					<Anchor point="TOP" x="20" y="-18"/>
 				</Anchors>
 			</FontString>
-			<FontString parentKey="Name" inherits="GameFontHighlight" text="Dangerous Excavation">
+			<FontString parentKey="Name" inherits="GameFontHighlight">
+				<Size x="196" y="10"/>		
 				<Anchors>
 					<Anchor point="TOP" relativeKey="$parent.Title" relativePoint="BOTTOM" y="-10"/>
 				</Anchors>
@@ -1621,6 +1622,17 @@
 	</Layers>
 	<Scripts>
 		<OnClick function="GarrisonAlertFrame_OnClick"/>
+		<OnEnter>
+			if ( self.Name:IsTruncated() ) then
+				GameTooltip:SetOwner(self, "ANCHOR_TOP", 0, -8);
+				GameTooltip:SetText(self.Name:GetText(), 1, 1, 1, 1, 1);
+			end
+			AlertFrame_StopOutAnimation(self);
+		</OnEnter>
+		<OnLeave>
+			GameTooltip:Hide();
+			AlertFrame_ResumeOutAnimation(self);
+		</OnLeave>
 	</Scripts>
 </Button>
 

@@ -605,9 +605,19 @@ function GarrisonMinimapMission_ShowPulse(self)
 	self.MinimapLoopPulseAnim:Play();
 end
 
+function GarrisonMinimap_Justify(text)
+	--Center justify if we're on more than one line
+	if ( text:GetNumLines() > 1 ) then
+		text:SetJustifyH("CENTER");
+	else
+		text:SetJustifyH("RIGHT");
+	end
+end
+
 function GarrisonMinimapInvasion_ShowPulse(self)
 	PlaySound("UI_Garrison_Toast_InvasionAlert");
 	self.AlertText:SetText(GARRISON_LANDING_INVASION_ALERT);
+	GarrisonMinimap_Justify(self.AlertText);
 	GarrisonMinimap_SetPulseLock(self, GARRISON_ALERT_CONTEXT_INVASION, true);
 	self.MinimapAlertAnim:Play();
 	self.MinimapLoopPulseAnim:Play();
@@ -615,5 +625,6 @@ end
 
 function GarrisonMinimapShipmentCreated_ShowPulse(self)
 	self.AlertText:SetText(GARRISON_LANDING_SHIPMENT_STARTED_ALERT);
+	GarrisonMinimap_Justify(self.AlertText);
 	self.MinimapAlertAnim:Play();
 end

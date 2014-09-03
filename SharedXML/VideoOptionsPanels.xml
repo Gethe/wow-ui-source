@@ -186,6 +186,11 @@
 								</Anchor>
 							</Anchors>
 						</Texture>
+						<FontString name="$parentEnableRaidSettingsText" text="RAID_SETTINGS_ENABLED" inherits="GameFontNormalSmall" justifyH="RIGHT">
+							<Anchors>
+								<Anchor point="TOPRIGHT" x="-10" y="-165"/>
+							</Anchors>
+						</FontString>
 					</Layer>
 				</Layers>
 				<Frames>
@@ -295,9 +300,7 @@
 					<!-- Outside the box -->
 					<CheckButton name="$parentRaidSettingsEnabledCheckBox" inherits="VideoOptionsSmallCheckButtonTemplate" motionScriptsWhileDisabled="true">
 						<Anchors>
-							<Anchor point="TOPRIGHT">
-								<Offset x="-200" y="-158"/>
-							</Anchor>
+							<Anchor point="RIGHT" relativeTo="$parentEnableRaidSettingsText" relativePoint="LEFT" x="0" y="0"/>
 						</Anchors>
 						<Scripts>
 							<OnLoad function="Display_RaidSettingsEnabled_CheckButton_OnLoad"/>
@@ -335,7 +338,7 @@
 					<Layer level="ARTWORK">
 						<FontString name="$parentTexturesHeader" text="TEXTURES_SUBHEADER" inherits="OptionsFontHighlight" justifyH="LEFT" justifyV="TOP">
 							<Anchors>
-								<Anchor point="TOPLEFT" x="20" y="-74"/>
+								<Anchor point="TOPLEFT" x="40" y="-74"/>
 							</Anchors>
 						</FontString>
 						<Texture name="$parentTexturesHeaderUnderline" inherits="videoSubUnderline" hidden="false" >
@@ -371,7 +374,7 @@
 							<Anchors>
 								<Anchor point="TOPLEFT" relativeTo="$parentTexturesHeader" relativePoint="TOPLEFT">
 									<Offset>
-										<AbsDimension x="320" y="0"/>
+										<AbsDimension x="310" y="0"/>
 									</Offset>
 								</Anchor>
 							</Anchors>
@@ -700,7 +703,7 @@
 
 						<FontString name="$parentTexturesHeader" text="TEXTURES_SUBHEADER" inherits="OptionsFontHighlight" justifyH="LEFT" justifyV="TOP">
 							<Anchors>
-								<Anchor point="TOPLEFT" x="20" y="-74"/>
+								<Anchor point="TOPLEFT" x="40" y="-74"/>
 							</Anchors>
 						</FontString>
 						<Texture name="$parentTexturesHeaderUnderline" inherits="videoSubUnderline" hidden="false" >
@@ -736,7 +739,7 @@
 							<Anchors>
 								<Anchor point="TOPLEFT" relativeTo="$parentTexturesHeader" relativePoint="TOPLEFT">
 									<Offset>
-										<AbsDimension x="320" y="0"/>
+										<AbsDimension x="310" y="0"/>
 									</Offset>
 								</Anchor>
 							</Anchors>
@@ -1697,34 +1700,37 @@
 						<Anchor point="TOPLEFT" x="16" y="-16"/>
 					</Anchors>
 				</FontString>
+				<Texture name="$parentDisplayHeaderUnderline" inherits="videoUnderline">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="$parentDisplayHeader" relativePoint="BOTTOMLEFT">
+							<Offset>
+								<AbsDimension x="0" y="-3"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</Texture>
 			</Layer>
 		</Layers>
 		<Frames>
 			<Frame name="$parentLocaleDropDown" inherits="DropDownMenuTemplate" enableMouse="true">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeTo="$parentDisplayHeader" relativePoint="BOTTOMLEFT">
-						<Offset>
-							<AbsDimension x="-16" y="-16"/>
-						</Offset>
+						<Offset x="120" y="-14"/>
 					</Anchor>
 				</Anchors>
 				<Layers>
-					<Layer level="ARTWORK">
-						<Texture parentKey="RestartNeeded" file="Interface\Common\Lang-Alerts" hidden="true">
-							<Size x="512" y="22"/>
+					<Layer level="BACKGROUND">
+						<FontString name="$parentLabel" inherits="OptionsFontSmall" text="LOCALE_TEXT_LABEL">
 							<Anchors>
-								<Anchor point="TOPLEFT" relativeTo="$parent" relativePoint="BOTTOMLEFT" x="20" y="-20"/>
+								<Anchor point="RIGHT" relativePoint="LEFT"/>
 							</Anchors>
-						</Texture>
+						</FontString>
 					</Layer>
 				</Layers>
 				<Scripts>
 					<OnLoad>
 						InterfaceOptionsLanguagesPanelLocaleDropDown_OnLoad(self)
 					</OnLoad>
-					<OnEvent>
-						InterfaceOptionsLanguagesPanelLocaleDropDown_OnEvent(self, event, ...);
-					</OnEvent>
 					<OnEnter>
 						VideoOptionsTooltip:SetOwner(self, "ANCHOR_TOPRIGHT");
 						VideoOptionsTooltip:SetText(self.tooltip, nil, nil, nil, nil, 1);
@@ -1734,7 +1740,37 @@
 					</OnLeave>
 				</Scripts>
 			</Frame>
-<!--
+			<Frame name="$parentAudioLocaleDropDown" inherits="DropDownMenuTemplate" enableMouse="true">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentLocaleDropDown" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="0" y="-10"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<FontString name="$parentLabel" inherits="OptionsFontSmall" text="LOCALE_AUDIO_LABEL">
+							<Anchors>
+								<Anchor point="RIGHT" relativePoint="LEFT"/>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnLoad>
+						InterfaceOptionsLanguagesPanelAudioLocaleDropDown_OnLoad(self)
+					</OnLoad>
+					<OnEnter>
+						VideoOptionsTooltip:SetOwner(self, "ANCHOR_TOPRIGHT");
+						VideoOptionsTooltip:SetText(self.tooltip, nil, nil, nil, nil, 1);
+					</OnEnter>
+					<OnLeave>
+						VideoOptionsTooltip:Hide();
+					</OnLeave>
+				</Scripts>
+			</Frame>
+			<!--
 			<CheckButton name="$parentUseEnglishAudio" inherits="InterfaceOptionsCheckButtonTemplate" hidden="true">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeTo="$parentLocaleDropDown" relativePoint="TOPRIGHT">
@@ -1753,11 +1789,21 @@
 			</CheckButton>
 -->
 		</Frames>
+		<Layers>
+			<Layer level="ARTWORK">
+				<Texture parentKey="RestartNeeded" file="Interface\Common\Lang-Alerts" hidden="true">
+					<Size x="512" y="22"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="$parentAudioLocaleDropDown" relativePoint="BOTTOMLEFT" x="-80" y="-20"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
 		<Scripts>
 			<OnLoad>
-				InterfaceOptionsLanguagesPanel_OnLoad(self);			
+				InterfaceOptionsLanguagesPanel_OnLoad(self);
 			</OnLoad>
 			<OnShow function="VideoOptionsPanel_OnShow"/>
-		</Scripts>		
+		</Scripts>
 	</Frame>
 </Ui>

@@ -471,6 +471,7 @@ size=512,512
 			</OnShow>
 			<OnHide>
 				PlaySound("igQuestListClose");
+				CloseQuestChoice();
 			</OnHide>
 		</Scripts>
 	</Frame>

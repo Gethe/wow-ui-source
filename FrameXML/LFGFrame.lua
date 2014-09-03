@@ -523,25 +523,20 @@ function LFDRoleButton_OnEnter(self)
 		local reasons;
 		GameTooltip:SetText(ERR_ROLE_UNAVAILABLE, 1.0, 1.0, 1.0, true);
 		if ( type(dungeonID) == "number" ) then
-			reasons = GetLFDRoleLockInfo(dungeonID, roleID);
-			for i = 1, #reasons do
-				local text = _G["INSTANCE_UNAVAILABLE_SELF_"..(LFG_INSTANCE_INVALID_CODES[reasons[i]])];
-				if( text ) then
-					GameTooltip:AddLine(text, nil, nil, nil, true);
-				end
+			local textTable = LFGRoleButton_LockReasonsTextTable(dungeonID, roleID);
+			for text,_ in pairs( textTable ) do
+				GameTooltip:AddLine(text, nil, nil, nil, true);
 			end
 		else
+			local textTable = {};
 			for dungeonID, isChecked in pairs(LFGEnabledList) do
 				if( not LFGIsIDHeader(dungeonID) and isChecked and not LFGLockList[dungeonID] ) then
-					reasons = GetLFDRoleLockInfo(dungeonID, roleID);
-					for i = 1, #reasons do
-						local text = _G["INSTANCE_UNAVAILABLE_SELF_"..(LFG_INSTANCE_INVALID_CODES[reasons[i]])];
-						if( text ) then
-							GameTooltip:AddLine(text, nil, nil, nil, true);
-						end
-					end
+					LFGRoleButton_LockReasonsTextTable(dungeonID, roleID, textTable);
 				end
 			end
+			for text, _ in pairs( textTable ) do
+				GameTooltip:AddLine(text, nil, nil, nil, true);
+			end						
 		end
 		GameTooltip:Show();
 		return;
@@ -613,7 +608,7 @@ function LFGConstructDeclinedMessage(dungeonID)
 	local returnVal;
 	local hasTimeRestriction = false;
 	for i=1, GetLFDLockPlayerCount() do
-		local playerName, lockedReason, subReason1, subReason2 = GetLFDLockInfo(dungeonID, i);
+		local playerName, lockedReason, subReason1, subReason2, secondReasonID, secondReasonString = GetLFDLockInfo(dungeonID, i);
 		if ( lockedReason == 1029 or lockedReason == 1030 or lockedReason == 1031 ) then --WRONG_TIME_RANGE, WRONG_TIME, WRONG_WORLD_STATE_EXPRESSION
 			hasTimeRestriction = true;
 		elseif ( lockedReason ~= 0 ) then
@@ -623,10 +618,15 @@ function LFGConstructDeclinedMessage(dungeonID)
 			else
 				who = "OTHER_";
 			end
+			local text = secondReasonString;
+			if( not text ) then
+				local id = secondReasonID or lockedReason;
+				text = format(_G["INSTANCE_UNAVAILABLE_"..who..(LFG_INSTANCE_INVALID_CODES[id] or "OTHER")], playerName, subReason1, subReason2)
+			end
 			if ( returnVal ) then
-				returnVal = returnVal.."\n"..format(_G["INSTANCE_UNAVAILABLE_"..who..(LFG_INSTANCE_INVALID_CODES[lockedReason] or "OTHER")], playerName, subReason1, subReason2);
+				returnVal = returnVal.."\n"..text;
 			else
-				returnVal = format(_G["INSTANCE_UNAVAILABLE_"..who..(LFG_INSTANCE_INVALID_CODES[lockedReason] or "OTHER")], playerName, subReason1, subReason2);
+				returnVal = text;
 			end
 		end
 	end
@@ -870,7 +870,7 @@ function LFGDungeonReadyPopup_Update()
 end
 
 function LFGDungeonReadyDialog_UpdateRewards(dungeonID, role)
-	local doneToday, moneyAmount, moneyVar, experienceGained, experienceVar, numRewards = GetLFGDungeonRewards(dungeonID);
+	local doneToday, moneyAmount, moneyVar, experienceGained, experienceVar, numRewards, spellID = GetLFGDungeonRewards(dungeonID);
 	
 	local frameID = 1;
 
@@ -965,7 +965,7 @@ function LFGDungeonReadyDialogReward_OnEnter(self, dungeonID)
 	GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
 	if ( self.rewardType == "misc" ) then
 		GameTooltip:AddLine(REWARD_ITEMS_ONLY);
-		local doneToday, moneyAmount, moneyVar, experienceGained, experienceVar, numRewards = GetLFGDungeonRewards(LFGDungeonReadyPopup.dungeonID);
+		local doneToday, moneyAmount, moneyVar, experienceGained, experienceVar, numRewards, spellID = GetLFGDungeonRewards(LFGDungeonReadyPopup.dungeonID);
 		
 		if ( experienceGained > 0 ) then
 			GameTooltip:AddLine(string.format(GAIN_EXPERIENCE, experienceGained));
@@ -1268,7 +1268,7 @@ function LFGRewardsFrame_UpdateFrame(parentFrame, dungeonID, background)
 	local dungeonName, typeID, subtypeID,_,_,_,_,_,_,_,textureFilename,difficulty,_,dungeonDescription, isHoliday, bonusRepAmount = GetLFGDungeonInfo(dungeonID);
 	local isHeroic = difficulty > 0;
 	local isScenario = (subtypeID == LFG_SUBTYPEID_SCENARIO);
-	local doneToday, moneyAmount, moneyVar, experienceGained, experienceVar, numRewards = GetLFGDungeonRewards(dungeonID);
+	local doneToday, moneyAmount, moneyVar, experienceGained, experienceVar, numRewards, spellID = GetLFGDungeonRewards(dungeonID);
 	
 	local backgroundTexture;
 	
@@ -1408,15 +1408,15 @@ function LFGRewardsFrame_UpdateFrame(parentFrame, dungeonID, background)
 				amountText:SetText(GetMoneyString(moneyAmount - mod(moneyAmount, 10000)));
 			end
 		end
-
+		parentFrame.MoneyReward:ClearAllPoints()
 		if ( itemButtonIndex > 1 ) then
 			if ( mod(itemButtonIndex, 2) == 0 ) then
 				parentFrame.MoneyReward:SetPoint("LEFT", parentName.."Item"..(itemButtonIndex-1), "RIGHT", 0, 0);
 			else
-				parentFrame.MoneyReward:SetPoint("TOPLEFT", parentName.."Item"..(itemButtonIndex-2), "BOTTOMLEFT", 0, -5);
+				parentFrame.MoneyReward:SetPoint("TOPLEFT", parentName.."Item"..(itemButtonIndex-2), "BOTTOMLEFT", 0, -8);
 			end
 		else
-			parentFrame.MoneyReward:SetPoint("TOPLEFT", lastFrame, "BOTTOMLEFT", 0, -5);
+			parentFrame.MoneyReward:SetPoint("TOPLEFT", lastFrame, "BOTTOMLEFT", 0, -8);
 		end
 		
 		parentFrame.MoneyReward:Show();
@@ -1960,15 +1960,20 @@ function LFGDungeonListButton_OnEnter(button, tooltipTitle)
 			GameTooltip:SetOwner(button, "ANCHOR_TOP");
 			GameTooltip:AddLine(tooltipTitle, 1.0, 1.0, 1.0);
 			for i=1, GetLFDLockPlayerCount() do
-				local playerName, lockedReason, subReason1, subReason2 = GetLFDLockInfo(dungeonID, i);
+				local playerName, lockedReason, subReason1, subReason2, secondReasonID, secondReasonString  = GetLFDLockInfo(dungeonID, i);
 				if ( lockedReason ~= 0 ) then
-					local who;
-					if ( i == 1 ) then
-						who = "SELF_";
-					else
-						who = "OTHER_";
+					local text = secondReasonString;
+					if ( not text ) then
+						local who;
+						if ( i == 1 ) then
+							who = "SELF_";
+						else
+							who = "OTHER_";
+						end
+						local id = secondReasonID or lockedReason;
+						text = format(_G["INSTANCE_UNAVAILABLE_"..who..(LFG_INSTANCE_INVALID_CODES[id] or "OTHER")], playerName, subReason1, subReason2)
 					end
-					GameTooltip:AddLine(format(_G["INSTANCE_UNAVAILABLE_"..who..(LFG_INSTANCE_INVALID_CODES[lockedReason] or "OTHER")], playerName, subReason1, subReason2));
+					GameTooltip:AddLine(text, nil, nil, nil, true);
 				end
 			end
 			GameTooltip:Show();
@@ -2251,4 +2256,15 @@ function LFGRoleButtonTemplate_OnEnter(self)
 	end
 	GameTooltip:Show();
 	LFGFrameRoleCheckButton_OnEnter(self);
+end
+
+function LFGRoleButton_LockReasonsTextTable(dungeonID, roleID, textTable)
+	local reasons = GetLFDRoleLockInfo(dungeonID, roleID);
+	textTable = textTable or {};
+	for i = 1, #reasons do
+		local text = reasons[i].reason_string or _G["INSTANCE_UNAVAILABLE_SELF_"..(LFG_INSTANCE_INVALID_CODES[reasons[i].reason_id])];
+		textTable[text] = true;
+	end
+	
+	return textTable;
 end

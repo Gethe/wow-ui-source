@@ -25,6 +25,30 @@
 			<AbsValue val="14"/>
 		</FontHeight>
 	</Font>
+
+	<Font name="ChatFontSmallKO" font="Fonts\2002.TTF" spacing="3" alternateTo="ChatFontSmall" alternateAlphabetID = "0" virtual="true">
+		<Shadow>
+			<Offset>
+				<AbsDimension x="1" y="-1"/>
+			</Offset>
+				<Color r="0" g="0" b="0"/>
+		</Shadow>
+		<FontHeight>
+			<AbsValue val="12"/>
+		</FontHeight>
+	</Font>
+	
+	<Font name="ChatFontSmallZH" font="Fonts\ARHei.ttf" alternateTo="ChatFontSmall" alternateAlphabetID = "1" virtual="true">
+		<Shadow>
+			<Offset>
+				<AbsDimension x="1" y="-1"/>
+			</Offset>
+			<Color r="0" g="0" b="0"/>
+		</Shadow>
+		<FontHeight>
+			<AbsValue val="12"/>
+		</FontHeight>
+	</Font>
 	
 	<Font name="GameFontNormalKO" font="Fonts\2002.TTF" alternateTo="GameFontNormal" alternateAlphabetID = "0" virtual="true">
 		<Shadow>
@@ -95,6 +119,40 @@
 			<AbsValue val="12"/>
 		</FontHeight>
 	</Font>
+
+	<Font name="GameFontDisable_KO" font="Fonts\2002.TTF" alternateTo="GameFontDisable" alternateAlphabetID = "0" virtual="true">
+		<Shadow>
+			<Offset>
+				<AbsDimension x="1" y="-1"/>
+			</Offset>
+			<Color r="0" g="0" b="0"/>
+		</Shadow>
+		<FontHeight>
+			<AbsValue val="12"/>
+		</FontHeight>
+	</Font>
+	<Font name="GameFontDisable_ZH" font="Fonts\ARKai_T.ttf" alternateTo="GameFontDisable" alternateAlphabetID = "1" virtual="true">
+		<Shadow>
+			<Offset>
+				<AbsDimension x="1" y="-1"/>
+			</Offset>
+			<Color r="0" g="0" b="0"/>
+		</Shadow>
+		<FontHeight>
+			<AbsValue val="15"/>
+		</FontHeight>
+	</Font>
+	<Font name="GameFontDisable_RU" font="Fonts\FRIZQT___CYR.TTF" alternateTo="GameFontDisable" alternateAlphabetID = "2" virtual="true">
+		<Shadow>
+			<Offset>
+				<AbsDimension x="1" y="-1"/>
+			</Offset>
+			<Color r="0" g="0" b="0"/>
+		</Shadow>
+		<FontHeight>
+			<AbsValue val="12"/>
+		</FontHeight>
+	</Font>
 	
 	<Font name="GameFontNormalSmall_KO" font="Fonts\2002.TTF" alternateTo="GameFontNormalSmall" alternateAlphabetID= "0" virtual="true">
 		<Shadow x="1" y="-1">
@@ -118,6 +176,24 @@
 		<Shadow x="1" y="-1">
 			<Color r="0" g="0" b="0"/>
 		</Shadow>
+		<FontHeight>
+			<AbsValue val="10"/>
+		</FontHeight>
+	</Font>
+	
+	<Font name="GameFontHighlightSmall_KO" font="Fonts\2002.TTF" alternateTo="GameFontHighlightSmall" alternateAlphabetID= "0" virtual="true">
+		<FontHeight>
+			<AbsValue val="11"/>
+		</FontHeight>
+	</Font>
+	
+	<Font name="GameFontHighlightSmall_ZH" font="Fonts\ARKai_T.ttf" alternateTo="GameFontHighlightSmall" alternateAlphabetID= "1" virtual="true">
+		<FontHeight>
+			<AbsValue val="15"/>
+		</FontHeight>
+	</Font>
+	
+	<Font name="GameFontHighlightSmall_RU" font="Fonts\FRIZQT___CYR.TTF" alternateTo="GameFontHighlightSmall" alternateAlphabetID= "2" virtual="true">
 		<FontHeight>
 			<AbsValue val="10"/>
 		</FontHeight>
@@ -428,6 +504,31 @@
 		</Shadow>
 		<FontHeight>
 			<AbsValue val="20"/>
+		</FontHeight>
+	</Font>
+	
+	<Font name="GameFontNormalLarge_KO" font="Fonts\2002.TTF" alternateTo="GameFontNormalLarge" alternateAlphabetID="0" virtual="true">
+		<Shadow x="1" y="-1">
+			<Color r="0" g="0" b="0"/>
+		</Shadow>
+		<FontHeight>
+			<AbsValue val="16"/>
+		</FontHeight>
+	</Font>
+	<Font name="GameFontNormalLarge_ZH" font="Fonts\ARKai_T.ttf" alternateTo="GameFontNormalLarge" alternateAlphabetID="1" virtual="true">
+		<Shadow x="1" y="-1">
+			<Color r="0" g="0" b="0"/>
+		</Shadow>
+		<FontHeight>
+			<AbsValue val="16"/>
+		</FontHeight>
+	</Font>
+	<Font name="GameFontNormalLarge_RU" font="Fonts\FRIZQT___CYR.TTF" alternateTo="GameFontNormalLarge" alternateAlphabetID="2" virtual="true">
+		<Shadow x="1" y="-1">
+			<Color r="0" g="0" b="0"/>
+		</Shadow>
+		<FontHeight>
+			<AbsValue val="16"/>
 		</FontHeight>
 	</Font>
 </Ui>

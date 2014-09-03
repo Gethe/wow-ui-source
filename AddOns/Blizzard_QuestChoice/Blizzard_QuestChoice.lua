@@ -81,7 +81,7 @@ end
 function QuestChoiceFrame_ShowRewards()
 	local rewardFrame, height;
 	local title, skillID, skillPoints, money, xp, numItems, numCurrencies, numChoices, numReps;
-	local name, texture, quantity, itemFrame;
+	local itemID, name, texture, quantity, itemFrame;
 	local currID, factionID;
 	
 	for i=1, MAX_NUM_OPTIONS do
@@ -151,7 +151,7 @@ function QuestChoiceFrame_ShowRewards()
 			local amountFrame = repFrame.Amount;
 			local dummyString = QuestChoiceFrame.DummyString;
 			factionID, quantity = GetQuestChoiceRewardFaction(i, 1); --there should only be one reputation reward
-			factionName = format(REWARD_REPUTATION, GetFactionInfoByID(factionID));
+			local factionName = format(REWARD_REPUTATION, GetFactionInfoByID(factionID));
 			dummyString:SetText(factionName);
 			factionFrame:SetText(factionName);
 			amountFrame:SetText(quantity);

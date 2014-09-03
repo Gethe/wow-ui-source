@@ -504,7 +504,6 @@ function RaidGroupFrame_Update()
 				-- Tell the slot what button is in it
 				button.slot.button = button:GetName();
 				raidGroup.nextIndex = raidGroup.nextIndex + 1;
-				button.voice = voice;
 				button.rank = rank;
 				button.role = role;
 				button.loot = loot;

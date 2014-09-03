@@ -14,8 +14,7 @@ MovieList = {
   -- Movie sequence 5 = MP
   { 115 },
   -- Movie sequence 6 = WoD
-  -- TODO change movie ID when it is available
-  { 115 },
+  { 195 },
 }
 
 function MovieFrame_OnLoad(self)

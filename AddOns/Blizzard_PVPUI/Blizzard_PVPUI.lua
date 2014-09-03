@@ -52,6 +52,8 @@ function PVPUIFrame_OnLoad(self)
 	self:RegisterEvent("PVP_ROLE_UPDATE");
 	self:RegisterEvent("UPDATE_BATTLEFIELD_STATUS");
 		
+	self.update = function(self, panel) return PVPQueueFrame_Update(PVPQueueFrame, panel); end
+	self.getSelection = function(self) return PVPQueueFrame_GetSelection(PVPQueueFrame); end
 	PVPQueueFrame_ShowFrame(HonorFrame);
 end
 
@@ -201,13 +203,11 @@ function PVPQueueFrame_OnEvent(self, event, ...)
 	elseif ( event == "PVP_REWARDS_UPDATE" ) then
 		PVPQueueFrame_UpdateCurrencies(self);
 	elseif ( event == "BATTLEFIELDS_SHOW" ) then
-		PVEFrame_ShowFrame("PVPUIFrame");
-
 		local isArena, bgID = ...;
 		if (isArena) then
-			PVPQueueFrame_ShowFrame(ConquestFrame);
+			PVEFrame_ShowFrame("PVPUIFrame", ConquestFrame);
 		else
-			PVPQueueFrame_ShowFrame(HonorFrame);
+			PVEFrame_ShowFrame("PVPUIFrame", HonorFrame);
 			HonorFrame_SetType("specific");
 			HonorFrameSpecificList_FindAndSelectBattleground(bgID);
 		end
@@ -256,6 +256,7 @@ function PVPQueueFrame_OnShow(self)
 	PVEFrame.TopTileStreaks:Show()
 end
 
+--WARNING - You probably want to call PVEFrame_ShowFrame("PVPUIFrame", "frameName") instead
 function PVPQueueFrame_ShowFrame(frame)
 	frame = frame or PVPQueueFrame.selection or HonorFrame;
 	-- hide the other frames and select the right button
@@ -864,7 +865,7 @@ function ConquestFrame_Update(self)
 end
 
 function ConquestFrame_UpdateConquestBar(self)
-	currencyName, currencyAmount = GetCurrencyInfo(CONQUEST_CURRENCY);
+	local currencyName = GetCurrencyInfo(CONQUEST_CURRENCY);
 	local pointsThisWeek, maxPointsThisWeek = GetPVPRewards();
 	-- just want a plain bar
 	CapProgressBar_Update(self.ConquestBar, 0, 0, nil, nil, pointsThisWeek, maxPointsThisWeek);
@@ -916,9 +917,13 @@ function ConquestFrame_UpdateJoinButton()
 					end
 				end
 				if ( validGroup ) then
-					button.tooltip = nil;
-					button:Enable();
-					return;
+					if ( not GetSpecialization() ) then
+						button.tooltip = SPELL_FAILED_CUSTOM_ERROR_122;
+					else
+						button.tooltip = nil;
+						button:Enable();
+						return;
+					end
 				end
 			elseif ( neededSize > groupSize ) then
 				if ( ConquestFrame.selectedButton.id == RATED_BG_ID ) then
@@ -1047,7 +1052,7 @@ function ConquestFrameButton_OnEnter(self)
 	local rating, seasonBest, weeklyBest, seasonPlayed, seasonWon, weeklyPlayed, weeklyWon, cap = GetPersonalRatedInfo(self.id);
 	
 	tooltip.WeeklyBest:SetText(PVP_BEST_RATING..weeklyBest);
-	tooltip.WeeklyGamesWon:SetText(PVP_GAMES_WON..weeklyPlayed);
+	tooltip.WeeklyGamesWon:SetText(PVP_GAMES_WON..weeklyWon);
 	tooltip.WeeklyGamesPlayed:SetText(PVP_GAMES_PLAYED..weeklyPlayed);
 	
 	tooltip.SeasonBest:SetText(PVP_BEST_RATING..seasonBest);

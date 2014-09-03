@@ -11,11 +11,8 @@ if ( not InGlue() ) then
 	ADDON_DEPENDENCIES = "Dependencies: "
 	ADDON_FORCE_LOAD = "Load out of date Addons"
 	CONFIGURE_MODS_FOR = "Configure AddOns For: "
-	UIPanelWindows["AddonList"] = { area = "center", pushable = 0 };
+	UIPanelWindows["AddonList"] = { area = "center", pushable = 0, whileDead = 1 };
 end
-
-local startStatus = {}
-local shouldReload = false
 
 -- We use this in the shared XML file
 AddonTooltip = nil;
@@ -57,8 +54,13 @@ end
 
 function AddonList_HasAnyChanged()
 	for i=1,GetNumAddOns() do
-		local enabled, _, reason = select(4,GetAddOnInfo(i))
-		if ( enabled ~= startStatus[i] and reason ~= "DEP_DISABLED" ) then
+		local character = nil;
+		if (not InGlue()) then
+			character = UnitName("player");
+		end
+		local enabled = (GetAddOnEnableState(character, i) > 0);
+		local reason = select(5,GetAddOnInfo(i))
+		if ( enabled ~= AddonList.startStatus[i] and reason ~= "DEP_DISABLED" ) then
 			return true
 		end
 	end
@@ -68,7 +70,7 @@ end
 function AddonList_HasNewVersion()
 	local hasNewVersion = false;
 	for i=1, GetNumAddOns() do
-		local name, title, notes, url, loadable, reason, security, newVersion = GetAddOnInfo(i);
+		local name, title, notes, loadable, reason, security, newVersion = GetAddOnInfo(i);
 		if ( newVersion ) then
 			hasNewVersion = true;
 			break;
@@ -124,8 +126,10 @@ function AddonList_OnLoad(self)
 		self:SetFrameStrata("HIGH");
 		template = "UIDropDownMenuTemplate"
 		value = true
+		self.startStatus = {};
+		self.shouldReload = false;
 		for i=1,GetNumAddOns() do
-			startStatus[i] = select(4,GetAddOnInfo(i))
+			self.startStatus[i] = (GetAddOnEnableState(UnitName("player"), i) > 0);
 		end
 	end
 	local drop = CreateFrame("Frame", "AddonCharacterDropDown", self, template)
@@ -170,9 +174,12 @@ function AddonList_Update()
 		if ( addonIndex > numEntrys ) then
 			entry:Hide();
 		else
-			name, title, notes, enabled, loadable, reason, security = GetAddOnInfo(addonIndex);
+			name, title, notes, loadable, reason, security = GetAddOnInfo(addonIndex);
 
 			checkbox = _G["AddonListEntry"..i.."Enabled"];
+			local checkboxState = GetAddOnEnableState(character, addonIndex);
+			enabled = (checkboxState > 0);
+
 			if (not InGlue()) then
 				checkbox:SetChecked(enabled);
 			else
@@ -181,8 +188,6 @@ function AddonList_Update()
 				if ( character == ALL ) then
 					character = nil;
 				end
-				local checkboxState = GetAddOnEnableState(character, addonIndex);
-				enabled = (checkboxState > 0);
 
 				TriStateCheckbox_SetState(checkboxState, checkbox);
 				if (checkboxState == 1 ) then
@@ -215,14 +220,14 @@ function AddonList_Update()
 			end
 			_G["AddonListEntry"..i.."Security"].tooltip = _G["ADDON_"..security];
 			string = _G["AddonListEntry"..i.."Status"];
-			if ( reason ) then
+			if ( not enabled and reason ) then
 				string:SetText(_G["ADDON_"..reason]);
 			else
 				string:SetText("");
 			end
 
 			if ( not InGlue() ) then
-				if ( enabled ~= startStatus[addonIndex] and reason ~= "DEP_DISABLED" ) then
+				if ( enabled ~= AddonList.startStatus[addonIndex] and reason ~= "DEP_DISABLED" ) then
 					if ( enabled ) then
 						-- special case for loadable on demand addons
 						if ( AddonList_IsAddOnLoadOnDemand(addonIndex) ) then
@@ -255,10 +260,10 @@ function AddonList_Update()
 	if ( not InGlue() ) then
 		if ( AddonList_HasAnyChanged() ) then
 			AddonListOkayButton:SetText(RELOADUI)
-			shouldReload = true
+			AddonList.shouldReload = true
 		else
 			AddonListOkayButton:SetText(OKAY)
-			shouldReload = false
+			AddonList.shouldReload = false
 		end
 	end
 end
@@ -279,7 +284,7 @@ function AddonList_IsAddOnLoadOnDemand(index)
 		local deps = GetAddOnDependencies(index)
 		local okay = true;
 		for i = 1, select('#', deps) do
-			dep = select(i, deps)
+			local dep = select(i, deps)
 			if ( dep and not IsAddOnLoaded(select(i, deps)) ) then
 				okay = false;
 				break;
@@ -318,7 +323,7 @@ function AddonList_LoadAddOn(index)
 	if ( not AddonList_IsAddOnLoadOnDemand(index) ) then return end
 	LoadAddOn(index)
 	if ( IsAddOnLoaded(index) ) then
-		startStatus[index] = true
+		AddonList.startStatus[index] = true
 	end
 	AddonList_Update()
 end
@@ -327,7 +332,7 @@ function AddonList_OnOkay()
 	PlaySound("gsLoginChangeRealmOK");
 	AddonList_Hide(true);
 	if ( not InGlue() ) then
-		if ( shouldReload ) then
+		if ( AddonList.shouldReload ) then
 			ReloadUI();
 		end
 	end
@@ -371,7 +376,12 @@ end
 function AddonList_HasOutOfDate()
 	local hasOutOfDate = false;
 	for i=1, GetNumAddOns() do
-		local name, title, notes, url, loadable, reason = GetAddOnInfo(i);
+		local name, title, notes, loadable, reason = GetAddOnInfo(i);
+		local character = nil;
+		if (not InGlue()) then
+			character = UnitName("player");
+		end
+		local enabled = (GetAddOnEnableState(character, i) > 0);
 		if ( enabled and not loadable and reason == "INTERFACE_VERSION" ) then
 			hasOutOfDate = true;
 			break;
@@ -392,7 +402,7 @@ end
 
 function AddonList_DisableOutOfDate()
 	for i=1, GetNumAddOns() do
-		local name, title, notes, url, loadable, reason = GetAddOnInfo(i);
+		local name, title, notes, loadable, reason = GetAddOnInfo(i);
 		if ( enabled and not loadable and reason == "INTERFACE_VERSION" ) then
 			DisableAddOn(i);
 		end
@@ -456,7 +466,7 @@ function AddonTooltip_BuildDeps(...)
 end
 
 function AddonTooltip_Update(owner)
-	local name, title, notes,_,_,_, security = GetAddOnInfo(owner:GetID());
+	local name, title, notes, _, _, security = GetAddOnInfo(owner:GetID());
 	if ( InGlue() ) then
 		AddonTooltip:Clear()
 	else

@@ -11,7 +11,7 @@ POSTPATCH_BOOST_QUEST = 34398;
 
 SPLASH_SCREENS = {
 	["BASE"] =	{	id = 1,
-					questID = 0,	-- questID is set in SplashFrame_OnLoad
+					questID = nil,
 					leftTex = "splash-600-topleft",
 					rightTex = "splash-600-right",
 					bottomTex = "splash-600-botleft",
@@ -43,9 +43,44 @@ SPLASH_SCREENS = {
 									MicroButtonPulseStop(LFDMicroButton);
 								end,
 								},
-					}
+					},
 				},
-	["NEW"] =	{	id = 2,
+	["BASE_90"] =	{	id = 2,
+					questID = 0,	-- questID is set in SplashFrame_OnLoad
+					leftTex = "splash-600-topleft",
+					rightTex = "splash-601-right",
+					bottomTex = "splash-600-botleft",
+					header = SPLASH_BASE_HEADER,
+					label = SPLASH_BASE_LABEL,
+					feature1Title = SPLASH_BASE_FEATURE1_TITLE,
+					feature1Desc = SPLASH_BASE_FEATURE1_DESC,
+					feature2Title = SPLASH_BASE_FEATURE2_TITLE,
+					feature2Desc = SPLASH_BASE_FEATURE2_DESC,
+					rightTitle = SPLASH_BASE_90_RIGHT_TITLE,
+					rightDesc = SPLASH_BASE_90_RIGHT_DESC,
+					cVar="splashScreenNormal",
+					features = {
+						[1] = { EnterFunc = function() 
+									CollectionsMicroButtonAlert:Show();
+									MicroButtonPulse(CompanionsMicroButton);
+								end,
+								LeaveFunc = function()
+									CollectionsMicroButtonAlert:Hide();
+									MicroButtonPulseStop(CompanionsMicroButton);
+								end,
+								},
+						[2] = { EnterFunc = function()
+									LFDMicroButtonAlert:Show();
+									MicroButtonPulse(LFDMicroButton);
+								end,
+								LeaveFunc = function()
+									LFDMicroButtonAlert:Hide();
+									MicroButtonPulseStop(LFDMicroButton);
+								end,
+								},
+					},
+				},
+	["NEW"] =	{	id = 3,
 					expansion = LE_EXPANSION_WARLORDS_OF_DRAENOR,
 					questID = POSTPATCH_BOOST_QUEST,			
 					leftTex = "splash-601-topleft",
@@ -109,7 +144,7 @@ SPLASH_SCREENS = {
 					feature1Title = SPLASH_BOOST_FEATURE1_TITLE,
 					feature1Desc = SPLASH_BOOST_FEATURE1_DESC,
 					feature2Title = SPLASH_BOOST_FEATURE2_TITLE,
-					feature2Desc = SPLASH_BOOST_FEATURE2_DESC,
+					feature2Desc = SPLASH_BOOST2_FEATURE2_DESC,
 					rightTitle = SPLASH_BOOST_RIGHT_TITLE,
 					rightDesc = SPLASH_BOOST2_RIGHT_DESC,
 					cVar="splashScreenBoost",
@@ -133,13 +168,12 @@ local function GetSplashFrameTag()
 		else
 			tag = "BOOST";
 		end
-	end
-	
-	if( not tag ) then
+	else
 		if ( expansionLevel >= SPLASH_SCREENS["NEW"].expansion) then
 			tag = "NEW";
 		else
-			tag = "BASE";
+			local playerLevel = UnitLevel("player");
+			tag = (playerLevel >= 90 and "BASE_90") or "BASE";
 		end
 	end
 	return tag;
@@ -151,7 +185,7 @@ function SplashFrame_OnLoad(self)
 	local faction = UnitFactionGroup("player");
 	local data = PREPATCH_BOOST_QUESTS[faction];
 	if( data ) then
-		SPLASH_SCREENS["BASE"].questID = PREPATCH_QUESTS[faction];
+		SPLASH_SCREENS["BASE_90"].questID = PREPATCH_QUESTS[faction];
 		SPLASH_SCREENS["BOOST"].questID = PREPATCH_BOOST_QUESTS[faction].id;
 		SPLASH_SCREENS["BOOST"].rightDesc = PREPATCH_BOOST_QUESTS[faction].text;
 	else
@@ -159,15 +193,23 @@ function SplashFrame_OnLoad(self)
 	end
 end
 
-local function IsQuestAutoQuest( questID )
-	if( questID )then
+local function ShouldShowStartButton( questID )
+	return questID and not IsQuestFlaggedCompleted(questID) and UnitLevel("player") >= 90;
+end
+
+local function ShouldEnableStartButton( questID )
+	if( questID ) then
+		local autoQuest = false;
 		for i = 1, GetNumAutoQuestPopUps() do
 			local id, popUpType = GetAutoQuestPopUp(i);	
 			if( id == questID and popUpType ) then
-				return true;
+				autoQuest = true;
+				break;
 			end
 		end
+		return autoQuest or GetQuestLogIndexByID(questID) > 0;
 	end
+	
 	return false;
 end
 
@@ -195,14 +237,7 @@ function SplashFrame_OnEvent(self, event)
 	elseif( event == "QUEST_LOG_UPDATE" ) then
 		local tag = GetSplashFrameTag();
 		if( self:IsShown() and tag )then
-			local showStartButton = false;
-			local questID = SPLASH_SCREENS[tag].questID;
-			if(questID)then
-				local playerLevel = UnitLevel("player");
-				showStartButton = not IsQuestFlaggedCompleted(questID) and playerLevel >= 90;
-			end
-
-			SplashFrame_SetStartButtonDisplay(showStartButton);
+			SplashFrame_SetStartButtonDisplay( ShouldShowStartButton(SPLASH_SCREENS[tag].questID) );
 		end
 	end
 end
@@ -267,27 +302,20 @@ function SplashFrame_SetStartButtonDisplay( showStartButton )
 		frame.RightDescription:SetWidth(300);
 		frame.RightDescription:SetPoint("BOTTOM", 164, 183);
 		frame.BottomCloseButton:Hide();
-		local questID = SPLASH_SCREENS[tag].questID;
-		if(questID)then
-			local questIndex = GetQuestLogIndexByID(questID);
-			if( IsQuestAutoQuest(questID) or questIndex > 0 ) then
-				frame.StartButton.Text:SetTextColor(1, 1, 1);
-				frame.StartButton.Texture:SetDesaturated(false);
-				frame.StartButton:Enable();
-				frame.TopCloseButton:Hide();
-				frame:UnregisterEvent("QUEST_LOG_UPDATE");
-				frame:SetScript("OnUpdate", nil);
-			else
-				frame.StartButton.Text:SetTextColor(0.5, 0.5, 0.5);
-				frame.StartButton.Texture:SetDesaturated(true);
-				frame.StartButton:Disable();
-			end
+		if( ShouldEnableStartButton( SPLASH_SCREENS[tag].questID ) ) then
+			frame.StartButton.Text:SetTextColor(1, 1, 1);
+			frame.StartButton.Texture:SetDesaturated(false);
+			frame.StartButton:Enable();
+			frame:SetScript("OnUpdate", nil);
+		else
+			frame.StartButton.Text:SetTextColor(0.5, 0.5, 0.5);
+			frame.StartButton.Texture:SetDesaturated(true);
+			frame.StartButton:Disable();
 		end
 	else
 		frame.StartButton:Hide();
 		frame.RightDescription:SetWidth(234);
 		frame.RightDescription:SetPoint("BOTTOM", 164, 133);
-		frame.TopCloseButton:Show();
 		frame.BottomCloseButton:Show();		
 	end
 end
@@ -305,11 +333,8 @@ function SplashFrame_Open( tag )
 		
 		if( not IsQuestFlaggedCompleted(questID) and playerLevel >= 90 and questIndex == 0 ) then
 			showStartButton = true;
-			frame.timeSinceOpen = 0;
-			frame:SetScript("OnUpdate", SplashFrame_OnUpdate);
 		end
 	end
-	frame.TopCloseButton:Hide();
 	SplashFrame_Display( tag, showStartButton );
 	
 	-- hide some quest elements when splash frame is up
@@ -319,23 +344,32 @@ function SplashFrame_Open( tag )
 	end
 end
 
+local function OpenQuestDialog()
+	local frame = SplashFrame;
+	local questID = SPLASH_SCREENS[frame.tag].questID;
+	if( questID ) then
+		frame:UnregisterEvent("PLAYER_ENTERING_WORLD");
+		ShowQuestOffer(GetQuestLogIndexByID(questID));
+		AutoQuestPopupTracker_RemovePopUp(questID);
+	end
+end
+
 function SplashFrame_Close()
 	local frame = SplashFrame;
-	if(frame.StartButton:IsShown())then
-		return;
-	end
+	HideUIPanel(frame);
 	
-	HideParentPanel(SplashFrame.BottomCloseButton);
+	local tag = frame.tag;
+	local questID = SPLASH_SCREENS[tag].questID;
+	if( tag and questID and ShouldShowStartButton(questID) and ShouldEnableStartButton(questID) ) then
+		OpenQuestDialog();
+	end	
+	
 	PlaySound("igMainMenuQuit");
 end
 
 function SplashFrameStartButton_OnClick(self)
 	HideParentPanel(self);
-	local frame = SplashFrame;
-	local questID = SPLASH_SCREENS[frame.tag].questID;
-	frame:UnregisterEvent("PLAYER_ENTERING_WORLD");
-	ShowQuestOffer(GetQuestLogIndexByID(questID));
-	AutoQuestPopupTracker_RemovePopUp(questID);
+	OpenQuestDialog();
 	PlaySound("igMainMenuOpen");
 end
 
@@ -357,12 +391,4 @@ function SplashFrame_OnHide(self)
 	self:SetScript("OnUpdate", nil);
 	
 	ObjectiveTracker_Update();
-end
-
-function SplashFrame_OnUpdate(self, elasped)
-	self.timeSinceOpen = self.timeSinceOpen + elasped;
-	if( self.timeSinceOpen > 2 and not self.TopCloseButton:IsShown() ) then
-		self.TopCloseButton:Show();
-		self:SetScript("OnUpdate", nil);
-	end
 end

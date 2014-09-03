@@ -300,7 +300,7 @@ end
 
 --This is overwritten in LocalizationPost for different languages.
 function TargetFrame_UpdateLevelTextAnchor (self, targetLevel)
-	if ( targetLevel == 100 ) then
+	if ( targetLevel >= 100 ) then
 		self.levelText:SetPoint("CENTER", 61, -17);
 	else
 		self.levelText:SetPoint("CENTER", 62, -17);
@@ -309,7 +309,7 @@ end
 
 --This is overwritten in LocalizationPost for different languages.
 function BossTargetFrame_UpdateLevelTextAnchor (self, targetLevel)
-	if ( targetLevel == 100 ) then
+	if ( targetLevel >= 100 ) then
 		self.levelText:SetPoint("CENTER", 11, -16);
 	else
 		self.levelText:SetPoint("CENTER", 12, -16);

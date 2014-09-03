@@ -808,6 +808,7 @@ function EncounterJournal_SetDescriptionWithBullets(infoHeader, description)
 end
 
 function EncounterJournal_SetUpOverview(self, role, index)
+	local infoHeader;
 	if not self.overviews[index] then -- create a new header;
 		infoHeader = CreateFrame("FRAME", "EncounterJournalOverviewInfoHeader"..index, EncounterJournal.encounter.overviewFrame, "EncounterInfoTemplate");
 		infoHeader.description:Hide();
@@ -853,7 +854,7 @@ function EncounterJournal_SetUpOverview(self, role, index)
 	end
 
 	wipe(infoHeader.Bullets);
-	local flag1, title, description, link;
+	local title, description, siblingID, link, flag1;
 	
 	local _, _, _, _, _, _, nextSectionID =  EJ_GetSectionInfo(self.rootOverviewSectionID);
 

@@ -231,10 +231,7 @@
 						</Layers>
 						<Frames>
 							<StatusBar parentKey="StatusBar" useParentLevel="true">
-								<Size x="177" y="15"/>
-								<Anchors>
-									<Anchor point="CENTER" x="22" y="-9"/>
-								</Anchors>				
+								<Size x="177" y="15"/>			
 								<Layers>
 									<Layer level="OVERLAY">
 										<Texture atlas="challenges-timerborder">
@@ -243,11 +240,7 @@
 												<Anchor point="CENTER" x="0" y="0"/>
 											</Anchors>
 										</Texture>
-										<FontString inherits="GameFontHighlight" justifyH="LEFT" parentKey="TimeLeft">
-											<Anchors>
-												<Anchor point="LEFT" x="42" y="0"/>
-											</Anchors>
-										</FontString>
+										<FontString inherits="GameFontHighlight" justifyH="CENTER" parentKey="TimeLeft" />
 									</Layer>
 								</Layers>
 								<BarTexture file="Interface\TargetingFrame\UI-StatusBar"/>
@@ -305,7 +298,7 @@
 		</Layers>
 	</Frame>
 	
-	<Frame name="ObjectiveTrackerScenarioRewardsFrame" hidden="true">
+	<Frame name="ObjectiveTrackerScenarioRewardsFrame" parent="UIParent" hidden="true">
         <Size x="168" y="128"/>
 		<Anchors>
 			<Anchor point="RIGHT" relativeTo="ScenarioBlocksFrame" relativePoint="LEFT" x="8" y="-24"/>

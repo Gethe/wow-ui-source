@@ -190,4 +190,5 @@ end
 
 function GarrisonCapacitiveStartWorkOrder_OnClick(self)
 	C_Garrison.RequestShipmentCreation();
+	PlaySound("UI_Garrison_Start_Work_Order");
 end

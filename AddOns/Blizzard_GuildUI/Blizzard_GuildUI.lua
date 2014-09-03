@@ -366,7 +366,7 @@ end
 
 function GuildFactionBar_OnEnter(self)
 	local name, description, standingID, barMin, barMax, barValue, _, _, _, _, _, _, _ = GetGuildFactionInfo();
-	local factionStandingtext = GetText("FACTION_STANDING_LABEL"..standingID, gender);
+	local factionStandingtext = GetText("FACTION_STANDING_LABEL"..standingID);
 	--Normalize Values
 	barMax = barMax - barMin;
 	barValue = barValue - barMin;

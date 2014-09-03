@@ -1444,7 +1444,7 @@ function PaperDollFrame_SetVersatility(statFrame, unit)
 	
 	_G[statFrame:GetName().."Label"]:SetText(format(STAT_FORMAT, STAT_VERSATILITY));
 	local text = _G[statFrame:GetName().."StatText"];
-	local versatility = GetVersatility();
+	local versatility = GetCombatRating(CR_VERSATILITY_DAMAGE_DONE);
 	local versatilityDamageBonus = GetCombatRatingBonus(CR_VERSATILITY_DAMAGE_DONE) + GetVersatilityBonus(CR_VERSATILITY_DAMAGE_DONE);
 	local versatilityDamageTakenReduction = GetCombatRatingBonus(CR_VERSATILITY_DAMAGE_TAKEN) + GetVersatilityBonus(CR_VERSATILITY_DAMAGE_TAKEN);
 	local versatilityLabel = format("%.2F%%", versatilityDamageBonus);
@@ -1622,13 +1622,16 @@ function PaperDollFrame_ClearIgnoredSlots ()
 end
 
 function PaperDollFrame_IgnoreSlotsForSet (setName)
-	local set = GetEquipmentSetItemIDs(setName);
-	for slot, item in ipairs(set) do
-		if ( item == EQUIPMENT_SET_IGNORED_SLOT ) then
+	local set = GetEquipmentSetIgnoreSlots(setName);
+	for slot, ignored in pairs(set) do
+		if ( ignored ) then
 			EquipmentManagerIgnoreSlotForSave(slot);
 			itemSlotButtons[slot].ignored = true;
-			PaperDollItemSlotButton_Update(itemSlotButtons[slot]);
+		else
+			EquipmentManagerClearIgnoredSlotsForSave(slot);
+			itemSlotButtons[slot].ignored = false;
 		end
+		PaperDollItemSlotButton_Update(itemSlotButtons[slot]);
 	end
 end
 

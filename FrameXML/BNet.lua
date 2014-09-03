@@ -22,6 +22,8 @@ BNET_CLIENT_WOW = "WoW";
 BNET_CLIENT_SC2 = "S2";
 BNET_CLIENT_D3 = "D3";
 BNET_CLIENT_WTCG = "WTCG";
+BNET_CLIENT_APP = "App";
+BNET_CLIENT_CLNT = "CLNT";
 
 function BNet_OnLoad(self)
 	self:RegisterEvent("BN_CONNECTED");

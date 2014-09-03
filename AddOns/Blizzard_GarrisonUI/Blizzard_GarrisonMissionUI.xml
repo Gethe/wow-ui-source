@@ -1389,8 +1389,8 @@
 						<Anchor point="CENTER" x="-15"/>
 					</Anchors>
 				</FontString>
-				<Texture parentKey="XPIcon" atlas="GarrMission_CurrencyIcon-Xp">
-					<Size x="35" y="35"/>
+				<Texture parentKey="XPIcon" file="Interface\Icons\Garr_CurrencyIcon-XP">
+					<Size x="37" y="37"/>
 					<Anchors>
 						<Anchor point="LEFT" relativeKey="$parent.Text" relativePoint="RIGHT" x="-5" y="1"/>
 					</Anchors>
@@ -1717,6 +1717,7 @@
 				<Size x="305" y="535"/>
 				<KeyValues>
 					 <KeyValue key="showUncollected" value="true" type="boolean"/>
+					 <KeyValue key="canCastSpellsOnFollowers" value="true" type="boolean"/>
 				</KeyValues>				
 				<Anchors>
 					<Anchor point="TOPLEFT" x="33" y="-64"/>
@@ -2094,12 +2095,6 @@
 											</Anchors>
 											<Color r="1" g="1" b="1"/>
 										</FontString>
-										<Texture parentKey="MissionEnvIcon">
-											<Size x="16" y="16"/>
-											<Anchors>
-												<Anchor point="LEFT" relativeKey="$parent.MissionEnv" relativePoint="RIGHT" x="4" y="0"/>
-											</Anchors>
-										</Texture>
 										<FontString parentKey="MissionDescription" inherits="GameFontHighlight" justifyH="LEFT">
 											<Size x="260" y="0"/>
 											<Anchors>
@@ -2130,11 +2125,20 @@
 									</Layer>
 								</Layers>
 								<Frames>
-									<Frame parentKey="MissionEnvCheck" inherits="GarrisonMissionCheckTemplate">
+									<Frame parentKey="MissionEnvIcon" inherits="GarrisonMissionCheckTemplate">
 										<Size x="16" y="16"/>
 										<Anchors>
-											<Anchor point="CENTER" relativeKey="$parent.MissionEnvIcon"/>
+											<Anchor point="LEFT" relativeKey="$parent.MissionEnv" relativePoint="RIGHT" x="4" y="0"/>
 										</Anchors>
+										<Layers>
+											<Layer level="BACKGROUND">
+												<Texture parentKey="Texture" setAllPoints="true"/>
+											</Layer>
+										</Layers>
+										<Scripts>
+											<OnEnter function="GarrisonMissionPageEnvironment_OnEnter"/>
+											<OnLeave function="GameTooltip_Hide"/>
+										</Scripts>
 									</Frame>
 								</Frames>
 								<Scripts>
@@ -2295,19 +2299,25 @@
 								<Anchors>
 									<Anchor point="BOTTOMRIGHT" x="0" y="148"/>
 								</Anchors>
-								<Layers>
-									<Layer level="ARTWORK">
-										<Texture parentKey="EmptyShadow" atlas="GarrMission_Silhouettes-1Alliance" useAtlasSize="true">
-											<Anchors>
-												<Anchor point="BOTTOM" x="0" y="0"/>
-											</Anchors>
-										</Texture>
-									</Layer>
-								</Layers>
 								<Scripts>
 									<OnShow function="GarrisonMission_SetFollowerModelItems"/>
 								</Scripts>
 							</CinematicModel>
+							<Frame parentKey="EmptyFollowerModel">
+								<Size x="10" y="10"/>
+								<Anchors>
+									<Anchor point="BOTTOMRIGHT" x="0" y="148"/>
+								</Anchors>
+								<Layers>
+									<Layer level="ARTWORK">
+										<Texture parentKey="Texture" atlas="GarrMission_Silhouettes-1Alliance" useAtlasSize="true">
+											<Anchors>
+												<Anchor point="BOTTOMRIGHT"/>
+											</Anchors>
+										</Texture>
+									</Layer>
+								</Layers>
+							</Frame>
 							<Button parentKey="StartMissionButton" inherits="UIPanelButtonTemplate" text="GARRISON_START_MISSION" motionScriptsWhileDisabled="true">
 								<Size x="130" y="20"/>
 								<Anchors>
@@ -2593,7 +2603,7 @@
 								</Anchors>
 								<Layers>
 									<Layer level="ARTWORK">
-										<FontString parentKey="MissText" inherits="Game32Font" alpha="0" text="Miss">
+										<FontString parentKey="MissText" inherits="Game32Font" alpha="0" text="MISS">
 											<Anchors>
 												<Anchor point="CENTER" x="150" y="0"/>
 											</Anchors>
@@ -2890,12 +2900,12 @@
 									<Layer level="OVERLAY" textureSubLevel="2">
 										<Texture parentKey="OrangeGlow" hidden="false" alpha="0" alphaMode="ADD" atlas="BonusChest-OrangeGlow-Wide" useAtlasSize="true">
 											<Anchors>
-												<Anchor point="CENTER"/>
+												<Anchor point="CENTER" x="0" y="11"/>
 											</Anchors>
 										</Texture>
 										<Texture parentKey="OrangeSmoke" hidden="false" alpha="0" atlas="BonusChest-OrangeSmoke-Wide" useAtlasSize="true">
 											<Anchors>
-												<Anchor point="CENTER"/>
+												<Anchor point="CENTER" x="0" y="11"/>
 											</Anchors>
 										</Texture>
 									</Layer>
@@ -3246,12 +3256,12 @@
 				</Texture>
 			</Layer>
 			<Layer level="ARTWORK">
-				<FontString parentKey="Title" inherits="GameFontHighlightMedium" justifyH="LEFT" text="Threat Counter">
+				<FontString parentKey="Title" inherits="GameFontHighlightMedium" justifyH="LEFT" text="GARRISON_THREAT_COUNTER">
 					<Anchors>
 						<Anchor point="TOPLEFT" x="15" y="-10"/>
 					</Anchors>
 				</FontString>
-				<FontString parentKey="Subtitle" inherits="GameFontNormal" justifyH="LEFT" text="This follower can counter:">
+				<FontString parentKey="Subtitle" inherits="GameFontNormal" justifyH="LEFT" text="GARRISON_FOLLOWER_CAN_COUNTER">
 					<Anchors>
 						<Anchor point="TOPLEFT" y="-15" relativeKey="$parent.Title"/>
 					</Anchors>

@@ -116,7 +116,7 @@ function GarrisonFollowerTooltipTemplate_SetGarrisonFollower(tooltipFrame, data)
 	local abilityFrameHeightBase = 20;					-- ability frame height w/ no description/details being displayed
 	local spacingBetweenLabelAndFirstAbility = 8;		-- distance between the "Abilities" label and the first ability below it
 	local spacingBetweenNameAndDescription = 4;			-- must match the XML ability template setting
-	local spacingBetweenDescriptionAndDetails = 10;		-- must match the XML ability template setting
+	local spacingBetweenDescriptionAndDetails = 8;		-- must match the XML ability template setting
 
 	local tooltipFrameHeight = tooltipFrameHeightBase;
 	tooltipFrame:SetSize(260, tooltipFrameHeight);
@@ -254,7 +254,7 @@ function GarrisonFollowerTooltipTemplate_SetGarrisonFollower(tooltipFrame, data)
 		tooltipFrameHeight = tooltipFrameHeight + abilityOffset;
 	end
 
-	tooltipFrame:SetSize(260, tooltipFrameHeight);
+	tooltipFrame:SetSize(260, tooltipFrameHeight + 10);
 end
 
 function FloatingGarrisonFollowerAbility_Toggle(garrFollowerAbilityID)
@@ -282,7 +282,7 @@ function GarrisonFollowerAbilityTooltipTemplate_SetAbility(tooltipFrame, garrFol
 		
 		local abilityFrameHeightBase = 45;
 		local spacingBetweenNameAndDescription = 4;			-- must match the XML ability template setting
-		local spacingBetweenDescriptionAndDetails = 10;		-- must match the XML ability template setting
+		local spacingBetweenDescriptionAndDetails = 8;		-- must match the XML ability template setting
 
 		tooltipFrame:SetHeight(abilityFrameHeightBase);
 		

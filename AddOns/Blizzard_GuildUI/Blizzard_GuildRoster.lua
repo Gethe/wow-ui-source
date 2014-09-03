@@ -313,8 +313,8 @@ function GuildRoster_Update()
 				GuildRosterButton_SetStringText(button.string1, level, onlineOrMobile);
 				button.icon:SetTexCoord(unpack(CLASS_ICON_TCOORDS[classFileName]));
 				GuildRosterButton_SetStringText(button.string2, displayedName, onlineOrMobile, classFileName);
-				GuildRosterButton_SetStringText(button.string3, valor, onlineOrMobile);
-				GuildRosterButton_SetStringText(button.string4, hero, onlineOrMobile);
+				GuildRosterButton_SetStringText(button.string3, nil, onlineOrMobile);
+				GuildRosterButton_SetStringText(button.string4, nil, onlineOrMobile);
 			elseif ( currentGuildView == "achievement" ) then
 				GuildRosterButton_SetStringText(button.string1, level, onlineOrMobile);
 				button.icon:SetTexCoord(unpack(CLASS_ICON_TCOORDS[classFileName]));
@@ -336,7 +336,7 @@ function GuildRoster_Update()
 				GuildRosterButton_SetStringText(button.string1, level, onlineOrMobile)
 				button.icon:SetTexCoord(unpack(CLASS_ICON_TCOORDS[classFileName]));
 				GuildRosterButton_SetStringText(button.string2, displayedName, onlineOrMobile, classFileName);
-				GuildRosterButton_SetStringText(button.string3, GetText("FACTION_STANDING_LABEL"..repStanding, gender), onlineOrMobile);
+				GuildRosterButton_SetStringText(button.string3, GetText("FACTION_STANDING_LABEL"..repStanding), onlineOrMobile);
 			end
 			button:Show();
 			if ( mod(index, 2) == 0 ) then

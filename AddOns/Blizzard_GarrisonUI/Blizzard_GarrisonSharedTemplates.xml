@@ -296,6 +296,13 @@
 					<Color r="0.698" g="0.941" b="1" a="1"/>
 				</FontString>
 			</Layer>
+			<Layer level="OVERLAY">
+				<Texture parentKey="Selection" atlas="GarrMission_FollowerListButton-Select" useAtlasSize="true" hidden="true">
+					<Anchors>
+						<Anchor point="TOP" x="14" y="-1"/>
+					</Anchors>
+				</Texture>
+			</Layer>
 		</Layers>
 		<Frames>
 			<Frame parentKey="PortraitFrame" inherits="GarrisonFollowerPortraitTemplate">

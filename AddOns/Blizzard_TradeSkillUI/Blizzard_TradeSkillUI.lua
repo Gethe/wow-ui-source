@@ -213,7 +213,7 @@ function TradeSkillFrame_Update()
 	
 	TradeSkillHighlightFrame:Hide();
 	local skillName, skillType, numAvailable, isExpanded, altVerb, numSkillUps, indentLevel, showProgressBar, currentRank, maxRank, startingRank, displayAsUnavailable;
-	local skillIndex, skillButton, skillButtonText, skillButtonCount, skillButtonNumSkillUps, skillButtonNumSkillUpsIcon, skillButtonNumSkillUpsText, skillButtonSubSkillRankBar;
+	local skillIndex, skillButton, skillButtonText, skillButtonCount, skillButtonNumSkillUps, skillButtonNumSkillUpsIcon, skillButtonNumSkillUpsText, skillButtonSubSkillRankBar, skillButtonLockedIcon;
 	local nameWidth, countWidth, usedWidth;
 	
 	local skillNamePrefix = " ";
@@ -1121,7 +1121,7 @@ end
 function TradeSkillGuildCraftersFrame_Update()
 	local skillLineID, recipeID, numMembers = GetGuildRecipeInfoPostQuery();
 	local offset = FauxScrollFrame_GetOffset(TradeSkillGuildCraftersFrame);
-	local index, button, name, classFileName, online;
+	local index, button, displayName, fullName, classFileName, online;
 	
 	for i = 1, TRADE_SKILL_GUILD_CRAFTERS_DISPLAYED, 1 do
 		index = i + offset;

@@ -162,10 +162,13 @@
 					<OnClick function="SplashFrame_Close"/>
 				</Scripts>
 			</Button>
-			<Button parentKey="TopCloseButton" inherits="UIPanelCloseButton">
+			<Button parentKey="TopCloseButton" inherits="UIPanelCloseButtonNoScripts">
 				<Anchors>
 					<Anchor point="TOPRIGHT" x="-14" y="-10"/>
-				</Anchors>			
+				</Anchors>
+				<Scripts>
+					<OnClick function="SplashFrame_Close"/>
+				</Scripts>				
 			</Button>
 			<Frame parentKey="Feature1" inherits="SplashFeatureFrameTemplate" id="1">
 				<Anchors>

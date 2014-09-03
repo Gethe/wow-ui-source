@@ -306,7 +306,7 @@ end
 function DEFAULT_OBJECTIVE_TRACKER_MODULE:SetStringText(fontString, text, useFullHeight, colorStyle, useHighlight)
 	fontString:SetHeight(0);
 	fontString:SetText(text);
-	stringHeight = fontString:GetHeight();
+	local stringHeight = fontString:GetHeight();
 	if ( stringHeight > OBJECTIVE_TRACKER_DOUBLE_LINE_HEIGHT and not useFullHeight ) then
 		fontString:SetHeight(OBJECTIVE_TRACKER_DOUBLE_LINE_HEIGHT);
 		stringHeight = OBJECTIVE_TRACKER_DOUBLE_LINE_HEIGHT;
@@ -904,6 +904,7 @@ function ObjectiveTracker_EndSlideBlock(block)
 			block:SetVerticalScroll(0);
 		end
 	end
+	block.slidingAction = nil;
 end
 
 function ObjectiveTracker_OnSlideBlockUpdate(block, elapsed)
@@ -914,7 +915,7 @@ function ObjectiveTracker_OnSlideBlockUpdate(block, elapsed)
 		return;
 	end
 	
-	height = floor(slideData.startHeight + (slideData.endHeight - slideData.startHeight) * (min(block.slideTime, slideData.duration) / slideData.duration));
+	local height = floor(slideData.startHeight + (slideData.endHeight - slideData.startHeight) * (min(block.slideTime, slideData.duration) / slideData.duration));
 	if ( height ~= block.slideHeight ) then
 		block.slideHeight = height;
 		block:SetHeight(height);

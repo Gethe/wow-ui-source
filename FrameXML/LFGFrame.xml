@@ -147,10 +147,7 @@
 					</Anchors>
 					<TexCoords left="0.0" right="0.5" top="0" bottom="0.625"/>
 				</Texture>
-				<FontString name="$parentInstanceLevel" inherits="GameFontNormal" justifyH="LEFT" parentKey="level">
-					<Size>
-						<AbsDimension x="60" y="16"/>
-					</Size>
+				<FontString name="$parentInstanceLevel" inherits="GameFontNormal" justifyH="RIGHT" parentKey="level">
 					<Anchors>
 						<Anchor point="RIGHT" x="0" y="0"/>
 					</Anchors>
@@ -719,7 +716,7 @@
 		<Frames>
 			<Button name="$parentItem1" inherits="LFGRewardsLootTemplate" id="1">
 				<Anchors>
-					<Anchor point="TOPLEFT" relativeTo="$parentRewardsDescription" relativePoint="BOTTOMLEFT" x="0" y="-10"/>
+					<Anchor point="TOPLEFT" relativeTo="$parentRewardsDescription" relativePoint="BOTTOMLEFT" x="0" y="-8"/>
 				</Anchors>
 			</Button>
 			<Frame name="$parentMoneyReward" inherits="LargeItemButtonTemplate" parentKey="MoneyReward" hidden="true">

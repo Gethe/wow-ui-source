@@ -1,6 +1,8 @@
 
 local MIN_STORY_TOOLTIP_WIDTH = 240;
 
+local tooltipButton;
+
 function QuestMapFrame_OnLoad(self)
 	self:RegisterEvent("QUEST_LOG_UPDATE");
 	self:RegisterEvent("QUEST_WATCH_LIST_CHANGED");
@@ -19,7 +21,7 @@ function QuestMapFrame_OnLoad(self)
 end
 
 function QuestMapFrame_OnEvent(self, event, ...)
-	local arg1 = ...;
+	local arg1, arg2 = ...;
 	if ( (event == "QUEST_LOG_UPDATE" or (event == "UNIT_QUEST_LOG_CHANGED" and arg1 == "player")) and not self.ignoreQuestLogUpdate ) then
 		if (not IsTutorialFlagged(55) and TUTORIAL_QUEST_TO_WATCH) then
 			local isComplete = select(6, GetQuestLogTitle(GetQuestLogIndexByID(TUTORIAL_QUEST_TO_WATCH)));
@@ -28,6 +30,10 @@ function QuestMapFrame_OnEvent(self, event, ...)
 			end
 		end
 
+		if ( tooltipButton ) then
+			QuestMapLogTitleButton_OnEnter(tooltipButton);
+		end
+		
 		local updateButtons = false;
 		if ( QuestLogPopupDetailFrame.questID ) then
 			if ( GetQuestLogIndexByID(QuestLogPopupDetailFrame.questID) == 0 ) then
@@ -441,21 +447,23 @@ function QuestLogQuests_Update(poiTable)
 				ExpandQuestHeader(mapHeaderIndex);
 				QuestMapFrame.ignoreQuestLogUpdate = nil;
 			end
-			QuestScrollFrame.Contents.StoryHeader:SetHeight(59);
-		else
-			QuestScrollFrame.Contents.StoryHeader:SetHeight(80);
 		end
 		prevButton = QuestScrollFrame.Contents.StoryHeader;
 	else
 		QuestScrollFrame.Contents.StoryHeader:Hide();
 	end
 
+	local localQuestsGroup;
+	local firstLocalQuestButton;
+	local nextQuestsGroup;
+	local firstNextQuestButton;
+
 	local headerIndex = 0;
 	local titleIndex = 0;
 	local objectiveIndex = 0;
-	local headerTitle, headerOnMap, headerShown, headerLogIndex, mapHeaderButtonIndex, firstMapHeaderQuestButtonIndex;
+	local headerTitle, headerOnMap, headerShown, headerLogIndex, mapHeaderButtonIndex;
 	for questLogIndex = 1, numEntries do
-		local title, level, suggestedGroup, isHeader, isCollapsed, isComplete, frequency, questID, startEvent, displayQuestID, isOnMap, hasLocalPOI, isTask, isStory = GetQuestLogTitle(questLogIndex);
+		local title, level, suggestedGroup, isHeader, isCollapsed, isComplete, frequency, questID, startEvent, displayQuestID, isOnMap, hasLocalPOI, isTask, isStory = GetQuestLogTitle(questLogIndex);	
 		local difficultyColor = GetQuestDifficultyColor(level);
 		if ( isHeader ) then
 			headerTitle = title;
@@ -463,6 +471,12 @@ function QuestLogQuests_Update(poiTable)
 			headerShown = false;
 			headerLogIndex = questLogIndex;
 			difficultyColor = QuestDifficultyColors["header"];
+			if ( questLogIndex == mapHeaderIndex ) then
+				localQuestsGroup = true;
+			elseif ( localQuestsGroup ) then
+				localQuestsGroup = false;
+				nextQuestsGroup = true;
+			end
 		elseif ( headerOnMap and isOnMap and not isTask ) then
 			-- we have at least one valid entry, show the header for it
 			if ( not headerShown and not showQuestObjectives ) then
@@ -483,7 +497,6 @@ function QuestLogQuests_Update(poiTable)
 				button:Show();				
 				if ( mapHeaderIndex == headerLogIndex ) then
 					mapHeaderButtonIndex = headerIndex;
-					firstMapHeaderQuestButtonIndex = titleIndex + 1;
 				end
 				button.questLogIndex = headerLogIndex;
 				prevButton = button;
@@ -494,6 +507,18 @@ function QuestLogQuests_Update(poiTable)
 			button = QuestLogQuests_GetTitleButton(titleIndex);
 			button.questID = questID;
 
+			if ( localQuestsGroup and not firstLocalQuestButton ) then
+				if ( titleIndex > 1 ) then
+					firstLocalQuestButton = button;
+				else
+					-- no need to move this group of quests, it's already at the top
+					localQuestsGroup = nil;
+				end
+			end
+			if ( nextQuestsGroup and not firstNextQuestButton ) then
+				firstNextQuestButton = button;
+			end
+
 			if ( displayQuestID ) then
 				title = questID.." - "..title;
 			end
@@ -502,7 +527,7 @@ function QuestLogQuests_Update(poiTable)
 			end
 			
 			-- If not a header see if any nearby group mates are on this quest
-			partyMembersOnQuest = 0;
+			local partyMembersOnQuest = 0;
 			for j=1, GetNumSubgroupMembers() do
 				if ( IsUnitOnQuestByQuestID(questID, "party"..j) ) then
 					partyMembersOnQuest = partyMembersOnQuest + 1;
@@ -564,10 +589,14 @@ function QuestLogQuests_Update(poiTable)
 				local requiredMoney = GetQuestLogRequiredMoney(questLogIndex);
 				local numObjectives = GetNumQuestLeaderBoards(questLogIndex);
 				-- complete?
+				local isBreadcrumb = false;		
 				if ( isComplete and isComplete < 0 ) then
 					isComplete = false;
 				elseif ( numObjectives == 0 and playerMoney >= requiredMoney and not startEvent) then
 					isComplete = true;
+					if ( requiredMoney == 0 ) then
+						isBreadcrumb = true;
+					end
 				end
 				-- objectives
 				if ( isComplete ) then
@@ -575,7 +604,11 @@ function QuestLogQuests_Update(poiTable)
 					local objectiveFrame = QuestLog_GetObjectiveFrame(objectiveIndex);
 					objectiveFrame.questID = questID;
 					objectiveFrame:Show();
-					objectiveFrame.Text:SetText(GetQuestLogCompletionText(questLogIndex));
+					if ( isBreadcrumb ) then
+						objectiveFrame.Text:SetText(GetQuestLogCompletionText(questLogIndex));
+					else
+						objectiveFrame.Text:SetText(QUEST_WATCH_QUEST_READY);
+					end
 					local height = objectiveFrame.Text:GetStringHeight();
 					objectiveFrame:SetHeight(height);
 					objectiveFrame:SetPoint("TOPLEFT", button.Text, "BOTTOMLEFT", 0, -3);
@@ -660,36 +693,29 @@ function QuestLogQuests_Update(poiTable)
 			prevButton = button;
 		end
 	end
-	-- if we have a header for this map and it's not already the first, move it up
-	if ( mapHeaderButtonIndex ) then
-		local mapHeaderButton = QuestLogQuests_GetHeaderButton(mapHeaderButtonIndex);
-		if ( mapHeaderButtonIndex > 1 ) then
-			local _, origAnchor = mapHeaderButton:GetPoint();		
-			local followingHeaderButton;
-			if ( mapHeaderButtonIndex ~= headerIndex ) then
-				followingHeaderButton = QuestLogQuests_GetHeaderButton(mapHeaderButtonIndex + 1);
-			end		
-			-- get last quest button for map header
-			-- if it's the last header, it will be the last quest button
-			local lastQuestButton;		
-			if ( followingHeaderButton ) then
-				_, lastQuestButton = followingHeaderButton:GetPoint();		
-			else
-				lastQuestButton = QuestLogQuests_GetTitleButton(titleIndex);
-			end
-			-- now rearrange
-			mapHeaderButton:SetPoint("TOPLEFT", 1, -6);
-			QuestLogQuests_GetHeaderButton(1):SetPoint("TOPLEFT", lastQuestButton, "BOTTOMLEFT", 0, 0);
-			if ( followingHeaderButton ) then
-				followingHeaderButton:SetPoint("TOPLEFT", origAnchor, "BOTTOMLEFT", 0, 0);
-			end
+
+	-- if we have quests for this map, move them up
+	if ( firstLocalQuestButton ) then
+		local _, origAnchor = firstLocalQuestButton:GetPoint();
+		-- if it's the last header, it will be the last quest button
+		local lastQuestButton;		
+		if ( firstNextQuestButton ) then
+			_, lastQuestButton = firstNextQuestButton:GetPoint();		
+		else
+			lastQuestButton = QuestLogQuests_GetTitleButton(titleIndex);
 		end
-		-- replace header
+		-- now rearrange
 		if ( storyID ) then
-			mapHeaderButton:Hide();
-			QuestLogQuests_GetTitleButton(firstMapHeaderQuestButtonIndex):SetPoint("TOPLEFT", QuestScrollFrame.Contents.StoryHeader, "BOTTOMLEFT", 0, 0);
+			firstLocalQuestButton:SetPoint("TOPLEFT", QuestScrollFrame.Contents.StoryHeader, "BOTTOMLEFT", 0, 0);
+		else
+			firstLocalQuestButton:SetPoint("TOPLEFT", 1, -6);
 		end
+		QuestLogQuests_GetTitleButton(1):SetPoint("TOPLEFT", lastQuestButton, "BOTTOMLEFT", 0, 0);
+		if ( firstNextQuestButton ) then
+			firstNextQuestButton:SetPoint("TOPLEFT", origAnchor, "BOTTOMLEFT", 0, 0);
+		end	
 	end
+
 	-- background
 	if ( titleIndex > 0 ) then
 		QuestScrollFrame.Background:SetAtlas("QuestLogBackground", true);
@@ -876,6 +902,7 @@ function QuestMapLogTitleButton_OnEnter(self)
 	end
 	
 	GameTooltip:Show();
+	tooltipButton = self;
 end
 
 function QuestMapLogTitleButton_OnLeave(self)
@@ -896,6 +923,7 @@ function QuestMapLogTitleButton_OnLeave(self)
 		WorldMapBlobFrame:DrawBlob(self.questID, false);
 	end
 	GameTooltip:Hide();
+	tooltipButton = nil;
 end
 
 function QuestMapLogTitleButton_OnClick(self, button)
@@ -1005,6 +1033,12 @@ end
 
 function GetZoneStoryID()
 	local areaID = GetCurrentMapAreaID();
+	if ( IsMapGarrisonMap(areaID) ) then
+		local parentData = GetMapHierarchy();
+		if ( parentData ) then
+			areaID = parentData[1].id;
+		end
+	end
 	local key = areaID .. "-" .. UnitFactionGroup("player");
 	local achievementTable = 
 	{

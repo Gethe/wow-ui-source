@@ -80,9 +80,6 @@
 		<Color r="1.0" g="0.1" b="0.1"/>
 	</Font>
 	<Font name="GameFontHighlightSmallOutline" inherits="GameFontHighlightSmall"  virtual="true"/>
-	<Font name="GameFontNormalLargeOutline" inherits="SystemFont_Shadow_Large_Outline" outline="NORMAL" virtual="true">
-		<Color r="1.0" g="0.82" b="0"/>
-	</Font>
 	<Font name="GameFontNormalLargeLeft" inherits="GameFontNormalLarge" justifyH="LEFT" virtual="true"/>
 	<Font name="GameFontNormalLargeLeftTop" inherits="GameFontNormalLargeLeft" justifyV="TOP" virtual="true"/>
 	<Font name="GameFontGreenLarge" inherits="GameFontNormalLarge" virtual="true">

@@ -86,10 +86,12 @@ function BagSlotButton_OnEnter(self)
 			GameTooltip:AppendText(" "..NORMAL_FONT_COLOR_CODE.."("..bindingKey..")"..FONT_COLOR_CODE_CLOSE);
 		end
 		local bagID = (self:GetID() - CharacterBag0Slot:GetID()) + 1;
-		for i = LE_BAG_FILTER_FLAG_EQUIPMENT, NUM_LE_BAG_FILTER_FLAGS do
-			if ( GetBagSlotFlag(bagID, i) ) then
-				GameTooltip:AddLine(BAG_FILTER_ASSIGNED_TO:format(BAG_FILTER_LABELS[i]));
-				break;
+		if (not IsInventoryItemProfessionBag("player", ContainerIDToInventoryID(bagID))) then
+			for i = LE_BAG_FILTER_FLAG_EQUIPMENT, NUM_LE_BAG_FILTER_FLAGS do
+				if ( GetBagSlotFlag(bagID, i) ) then
+					GameTooltip:AddLine(BAG_FILTER_ASSIGNED_TO:format(BAG_FILTER_LABELS[i]));
+					break;
+				end
 			end
 		end
 		GameTooltip:Show();

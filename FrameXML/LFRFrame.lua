@@ -265,7 +265,7 @@ end
 
 function LFRQueueFrame_QueueForInstanceIfEnabled(queueID)
 	if ( not LFGIsIDHeader(queueID) and LFGEnabledList[queueID] and
-		(not LFGLockList[dungeonID] or LFR_CanQueueForLockedInstances() or (LFR_CanQueueForRaidLockedInstances() and LFGLockList[dungeonID] == LFG_INSTANCE_INVALID_RAID_LOCKED)) ) then
+		(not LFGLockList[queueID] or LFR_CanQueueForLockedInstances() or (LFR_CanQueueForRaidLockedInstances() and LFGLockList[queueID] == LFG_INSTANCE_INVALID_RAID_LOCKED)) ) then
 		SetLFGDungeon(LE_LFG_CATEGORY_LFR, queueID);
 		return true;
 	end
