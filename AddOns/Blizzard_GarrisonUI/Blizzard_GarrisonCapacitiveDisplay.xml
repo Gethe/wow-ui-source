@@ -240,6 +240,7 @@
 		<Scripts>
 			<OnLoad function="GarrisonCapacitiveDisplayFrame_OnLoad"/>
 			<OnEvent function="GarrisonCapacitiveDisplayFrame_OnEvent"/>
+			<OnShow function="GarrisonCapacitiveDisplayFrame_OnShow"/>
 			<OnHide function="GarrisonCapacitiveDisplayFrame_OnHide"/>
 		</Scripts>
 	</Frame>

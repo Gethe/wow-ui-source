@@ -11,6 +11,7 @@ function GarrisonFollowerList_OnLoad(self)
 	GarrisonFollowerList_DirtyList(self.FollowerList);
 
 	self.FollowerList.listScroll.update = GarrisonFollowerList_ScrollListUpdate;
+	self.FollowerList.listScroll.dynamic = function(offset) return GarrisonFollowerList_GetTopButton(self, offset); end;
 	HybridScrollFrame_CreateButtons(self.FollowerList.listScroll, "GarrisonMissionFollowerButtonTemplate", 7, -7, nil, nil, nil, -6);
 	self.FollowerList.listScroll.followerFrame = self;
 
@@ -113,9 +114,32 @@ function GarrisonFollowerList_UpdateFollowers(self)
 	GarrisonFollowerList_Update(self:GetParent());
 end
 
+function GarrisonFollowerList_GetTopButton(self, offset)
+	local followerFrame = self.FollowerList;
+	local buttonHeight = followerFrame.listScroll.buttonHeight;
+	local expandedFollower = followerFrame.expandedFollower;
+	local followers = followerFrame.followers;
+	local sortedList = followerFrame.followersList;
+	local totalHeight = 0;
+	for i = 1, #sortedList do
+		local height;
+		if ( followers[sortedList[i]].followerID == expandedFollower ) then
+			height = followerFrame.expandedFollowerHeight;
+		else
+			height = buttonHeight;
+		end
+		totalHeight = totalHeight + height;
+		if ( totalHeight > offset ) then
+			return i - 1, height + offset - totalHeight;
+		end
+	end
+
+	--We're scrolled completely off the bottom
+	return #followers, 0;
+end
+
 function GarrisonFollowerList_Update(self)
 	local followerFrame = self;
-
 	local followers = followerFrame.FollowerList.followers;
 	local followersList = followerFrame.FollowerList.followersList;
 	local numFollowers = #followersList;
@@ -123,7 +147,6 @@ function GarrisonFollowerList_Update(self)
 	local offset = HybridScrollFrame_GetOffset(scrollFrame);
 	local buttons = scrollFrame.buttons;
 	local numButtons = #buttons;
-	local expandedHeight = 0;
 	local showCounters = followerFrame.FollowerList.showCounters;
 	local canExpand = followerFrame.FollowerList.canExpand;
 
@@ -203,11 +226,10 @@ function GarrisonFollowerList_Update(self)
 
 			GarrisonFollowerButton_UpdateCounters(button, follower, showCounters);
 
-			if (canExpand and button.id == followerFrame.openFollower and button.id == followerFrame.selectedFollower) then
-				GarrisonFollowerButton_Select(button);
-				expandedHeight = button:GetHeight() - scrollFrame.buttonHeight + 6;
+			if (canExpand and button.id == followerFrame.FollowerList.expandedFollower and button.id == followerFrame.selectedFollower) then
+				GarrisonFollowerButton_Expand(button, followerFrame.FollowerList);
 			else
-				GarrisonFollowerButton_UnSelect(button);
+				GarrisonFollowerButton_Collapse(button);
 			end
 			if ( button.id == followerFrame.selectedFollower ) then
 				button.Selection:Show();
@@ -219,8 +241,14 @@ function GarrisonFollowerList_Update(self)
 			button:Hide();
 		end
 	end
-	
-	local totalHeight = numFollowers * scrollFrame.buttonHeight + expandedHeight;
+
+	local extraHeight = 0;
+	if ( followerFrame.FollowerList.expandedFollower ) then
+		extraHeight = followerFrame.FollowerList.expandedFollowerHeight - scrollFrame.buttonHeight;
+	else
+		extraHeight = 0;
+	end
+	local totalHeight = numFollowers * scrollFrame.buttonHeight + extraHeight;
 	local displayedHeight = numButtons * scrollFrame.buttonHeight;
 	HybridScrollFrame_Update(scrollFrame, totalHeight, displayedHeight);
 end
@@ -289,7 +317,7 @@ function GarrisonFollowerButton_SetCounterButton(button, index, info)
 	counter:Show();
 end
 
-function GarrisonFollowerButton_Select(self)
+function GarrisonFollowerButton_Expand(self, followerListFrame)
 	if ( not self.isCollected ) then
 		return;
 	end
@@ -325,9 +353,10 @@ function GarrisonFollowerButton_Select(self)
 		self.AbilitiesBG:Hide();
 	end
 	self:SetHeight(51 + abHeight);
+	followerListFrame.expandedFollowerHeight = 51 + abHeight + 6;
 end
 
-function GarrisonFollowerButton_UnSelect(self)
+function GarrisonFollowerButton_Collapse(self)
 	self.UpArrow:Hide();
 	self.DownArrow:Show();
 	self.AbilitiesBG:Hide();
@@ -350,16 +379,22 @@ function GarrisonFollowerListButton_OnClick(self, button)
 		
 		if ( followerFrame.FollowerList.canExpand and not spellCastConsumedClick ) then
 			if ( self.isCollected ) then
-				if (followerFrame.openFollower == self.id) then
-					followerFrame.openFollower = nil;
+				if (followerFrame.FollowerList.expandedFollower == self.id) then
+					followerFrame.FollowerList.expandedFollower = nil;
 					PlaySound("UI_Garrison_CommandTable_FollowerAbilityClose");
 				else
-					followerFrame.openFollower = self.id;
+					followerFrame.FollowerList.expandedFollower = self.id;
+					-- expand button now to get height
+					GarrisonFollowerButton_Expand(self, followerFrame.FollowerList);
 					PlaySound("UI_Garrison_CommandTable_FollowerAbilityOpen");
 				end
 			else
-				followerFrame.openFollower = nil;
+				followerFrame.FollowerList.expandedFollower = nil;
 				PlaySound("UI_Garrison_CommandTable_FollowerAbilityClose");
+			end
+		else
+			if ( not followerFrame.FollowerList.canExpand and followerFrame.FollowerList.expandedFollower ~= self.id ) then
+				followerFrame.FollowerList.expandedFollower = nil;
 			end
 		end
 		GarrisonFollowerList_Update(followerFrame);
@@ -524,6 +559,12 @@ function GarrisonFollowerPage_ShowFollower(self, followerID)
 		self.NoFollowersLabel:Hide();
 		self.PortraitFrame:Show();
 		GarrisonMission_SetFollowerModel(self.Model, followerInfo.followerID, followerInfo.displayID);
+		if (followerInfo.displayHeight) then
+			self.Model:SetHeightFactor(followerInfo.displayHeight);
+		end
+		if (followerInfo.displayScale) then
+			self.Model:InitializeCamera(followerInfo.displayScale);
+		end		
 	else
 		self.followerID = nil;
 		self.NoFollowersLabel:Show();
@@ -567,7 +608,7 @@ function GarrisonFollowerPage_ShowFollower(self, followerID)
 		self.XPBar:Hide();
 	end
 
-	self.TraitsText:ClearAllPoints();
+	self.AbilitiesFrame.TraitsText:ClearAllPoints();
 	if (not followerInfo.abilities) then
 		followerInfo.abilities = C_Garrison.GetFollowerAbilities(followerID);
 	end
@@ -577,10 +618,10 @@ function GarrisonFollowerPage_ShowFollower(self, followerID)
 	for i=1, #followerInfo.abilities do
 		local ability = followerInfo.abilities[i];
 
-		local abilityFrame = self.Abilities[i];
+		local abilityFrame = self.AbilitiesFrame.Abilities[i];
 		if ( not abilityFrame ) then
-			abilityFrame = CreateFrame("Frame", nil, self, "GarrisonFollowerPageAbilityTemplate");
-			self.Abilities[i] = abilityFrame;
+			abilityFrame = CreateFrame("Frame", nil, self.AbilitiesFrame, "GarrisonFollowerPageAbilityTemplate");
+			self.AbilitiesFrame.Abilities[i] = abilityFrame;
 		end
 
 		if ( self.isLandingPage ) then
@@ -604,16 +645,16 @@ function GarrisonFollowerPage_ShowFollower(self, followerID)
 		if ( ability.counters and not ability.isTrait and not self.isLandingPage ) then
 			for id, counter in pairs(ability.counters) do
 				numCounters = numCounters + 1;
-				local counterFrame = self.Counters[numCounters];
+				local counterFrame = self.AbilitiesFrame.Counters[numCounters];
 				if ( not counterFrame ) then
-					counterFrame = CreateFrame("Frame", nil, self, "GarrisonMissionMechanicTemplate");
-					self.Counters[numCounters] = counterFrame;
+					counterFrame = CreateFrame("Frame", nil, self.AbilitiesFrame, "GarrisonMissionMechanicTemplate");
+					self.AbilitiesFrame.Counters[numCounters] = counterFrame;
 				end
 				counterFrame.Icon:SetTexture(counter.icon);
 				counterFrame.tooltip = counter.name;
 				counterFrame:ClearAllPoints();
 				if ( hasCounters ) then			
-					counterFrame:SetPoint("LEFT", self.Counters[numCounters - 1], "RIGHT", 10, 0);
+					counterFrame:SetPoint("LEFT", self.AbilitiesFrame.Counters[numCounters - 1], "RIGHT", 10, 0);
 				else
 					counterFrame:SetPoint("LEFT", abilityFrame.CounterString, "RIGHT", 2, -2);
 				end
@@ -629,39 +670,39 @@ function GarrisonFollowerPage_ShowFollower(self, followerID)
 		end
 		-- anchor ability
 		if ( ability.isTrait ) then
-			lastTraitAnchor = GarrisonFollowerPage_AnchorAbility(abilityFrame, lastTraitAnchor, self.TraitsText, hasCounters);
+			lastTraitAnchor = GarrisonFollowerPage_AnchorAbility(abilityFrame, lastTraitAnchor, self.AbilitiesFrame.TraitsText, hasCounters);
 		else
-			lastAbilityAnchor = GarrisonFollowerPage_AnchorAbility(abilityFrame, lastAbilityAnchor, self.AbilitiesText, hasCounters);
+			lastAbilityAnchor = GarrisonFollowerPage_AnchorAbility(abilityFrame, lastAbilityAnchor, self.AbilitiesFrame.AbilitiesText, hasCounters);
 		end
 		abilityFrame:Show();
 	end
 
 	if ( lastAbilityAnchor ) then
-		self.AbilitiesText:Show();
+		self.AbilitiesFrame.AbilitiesText:Show();
 	else
-		self.AbilitiesText:Hide();
+		self.AbilitiesFrame.AbilitiesText:Hide();
 	end
 	if ( lastTraitAnchor ) then
-		self.TraitsText:Show();
+		self.AbilitiesFrame.TraitsText:Show();
 		if ( lastAbilityAnchor ) then
-			self.TraitsText:SetPoint("LEFT", self.AbilitiesText, "LEFT");
+			self.AbilitiesFrame.TraitsText:SetPoint("LEFT", self.AbilitiesFrame.AbilitiesText, "LEFT");
 			if ( self.isLandingPage ) then
-				self.TraitsText:SetPoint("TOP", lastAbilityAnchor, "BOTTOM", 0, -24);
+				self.AbilitiesFrame.TraitsText:SetPoint("TOP", lastAbilityAnchor, "BOTTOM", 0, -24);
 			else
-				self.TraitsText:SetPoint("TOP", lastAbilityAnchor, "BOTTOM", 0, -16);
+				self.AbilitiesFrame.TraitsText:SetPoint("TOP", lastAbilityAnchor, "BOTTOM", 0, -16);
 			end
 		else
-			self.TraitsText:SetPoint("TOPLEFT", self.AbilitiesText, "TOPLEFT");
+			self.AbilitiesFrame.TraitsText:SetPoint("TOPLEFT", self.AbilitiesFrame.AbilitiesText, "TOPLEFT");
 		end
 	else
-		self.TraitsText:Hide();
+		self.AbilitiesFrame.TraitsText:Hide();
 	end
 	
-	for i = #followerInfo.abilities + 1, #self.Abilities do
-		self.Abilities[i]:Hide();
+	for i = #followerInfo.abilities + 1, #self.AbilitiesFrame.Abilities do
+		self.AbilitiesFrame.Abilities[i]:Hide();
 	end
-	for i = numCounters + 1, #self.Counters do
-		self.Counters[i]:Hide();
+	for i = numCounters + 1, #self.AbilitiesFrame.Counters do
+		self.AbilitiesFrame.Counters[i]:Hide();
 	end
 	
 	-- gear	/ source

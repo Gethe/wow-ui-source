@@ -1033,7 +1033,9 @@ function LFGListApplicationViewer_UpdateAvailability(self)
 		self.EditButton.tooltip = nil;
 	end
 
-	self.UnempoweredCover:SetShown(not LFGListUtil_IsEntryEmpowered());
+	local empowered = LFGListUtil_IsEntryEmpowered();
+	self.UnempoweredCover:SetShown(not empowered);
+	self.ScrollFrame.NoApplicants:SetShown(empowered and (not self.applicants or #self.applicants == 0));
 end
 
 function LFGListApplicationViewer_UpdateResultList(self)
@@ -1054,6 +1056,8 @@ function LFGListApplicationViewer_UpdateResultList(self)
 		totalHeight = totalHeight + LFGListApplicationViewerUtil_GetButtonHeight(numMembers);
 	end
 	self.totalApplicantHeight = totalHeight;
+
+	LFGListApplicationViewer_UpdateAvailability(self);
 end
 
 function LFGListApplicationViewer_UpdateInviteState(self)
@@ -1109,8 +1113,6 @@ function LFGListApplicationViewer_UpdateResults(self)
 		--Just hide the tooltip. We should show it again inside the update function.
 		GameTooltip:Hide();
 	end
-
-	self.ScrollFrame.NoApplicants:SetShown(#self.applicants == 0);
 
 	for i=1, #buttons do
 		local button = buttons[i];
@@ -2629,6 +2631,14 @@ local LFG_LIST_APPLICANT_MEMBER_MENU = {
 		},
 	},
 	{
+		text = IGNORE_PLAYER,
+		notCheckable = true,
+		func = function(_, name, applicantID) AddIgnore(name); C_LFGList.DeclineApplicant(applicantID); end,
+		arg1 = nil, --Player name goes here
+		arg2 = nil, --Applicant ID goes here
+		disabled = nil, --Disabled if we don't have a name yet
+	},
+	{
 		text = CANCEL,
 		notCheckable = true,
 	},
@@ -2644,6 +2654,9 @@ function LFGListUtil_GetApplicantMemberMenu(applicantID, memberIdx)
 	LFG_LIST_APPLICANT_MEMBER_MENU[3].menuList[1].arg2 = memberIdx;
 	LFG_LIST_APPLICANT_MEMBER_MENU[3].menuList[2].arg1 = applicantID;
 	LFG_LIST_APPLICANT_MEMBER_MENU[3].menuList[2].disabled = (comment == "");
+	LFG_LIST_APPLICANT_MEMBER_MENU[4].arg1 = name;
+	LFG_LIST_APPLICANT_MEMBER_MENU[4].arg2 = applicantID;
+	LFG_LIST_APPLICANT_MEMBER_MENU[4].disabled = not name;
 	return LFG_LIST_APPLICANT_MEMBER_MENU;
 end
 

@@ -937,11 +937,13 @@ end
 function ObjectiveTracker_CancelSlideBlock(block)
 	block:SetScript("OnUpdate", nil);
 	local slideData = block.slideData;
-	block:SetHeight(slideData.startHeight);
-	if ( slideData.scroll ) then
-		block:UpdateScrollChildRect();
-		-- scrolling means the bottom of the content comes in first or leaves last
-		block:SetVerticalScroll(0);
+	if( slidaData ) then
+		block:SetHeight(slideData.startHeight);
+		if ( slideData.scroll ) then
+			block:UpdateScrollChildRect();
+			-- scrolling means the bottom of the content comes in first or leaves last
+			block:SetVerticalScroll(0);
+		end
 	end
 end
 

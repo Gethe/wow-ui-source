@@ -142,12 +142,18 @@
 				</Layers>
 			</Frame>
 			
-			<PlayerModel parentKey="Model" hidden="true" inherits="ModelTemplate">
+			<CinematicModel parentKey="Model" hidden="true" inherits="ModelTemplate">
 				<Size x="188" y="300"/>
 				<Anchors>
 					<Anchor point="BOTTOM" y="-20"/>
 				</Anchors>
-			</PlayerModel>
+					<Scripts>
+						<OnShow>
+							self:SetTargetDistance(0);
+							self:SetFacing(.2);
+						</OnShow>
+					</Scripts>
+			</CinematicModel>
 			<Button parentKey="HireRecruits" inherits="MagicButtonTemplate" text="GARRISON_HIRE_FOLLOWER">
 				<Size x="116" y="22"/>
 				<Anchors>

@@ -675,20 +675,20 @@
 				
 				<Animations>
 					<AnimationGroup parentKey="UpgradeAnim">
-						<Alpha target="GarrisonBuildingUpgradeGlow" change="1.0" duration="0.9" order="1"/>
-						<Alpha target="GarrisonBuildingUpgradeGlow" change="-1.0" duration="0.9" order="2"/>
-						<Alpha target="GarrisonBuildingUpgradeGlow" change="1.0" duration="0.9" order="3"/>
-						<Alpha target="GarrisonBuildingUpgradeGlow" change="-1.0" duration="0.9" order="4"/>
-						<Alpha target="GarrisonBuildingUpgradeGlow" change="1.0" duration="0.9" order="5"/>
+						<Alpha childKey="UpgradeGlow" change="1.0" duration="0.9" order="1"/>
+						<Alpha childKey="UpgradeGlow" change="-1.0" duration="0.9" order="2"/>
+						<Alpha childKey="UpgradeGlow" change="1.0" duration="0.9" order="3"/>
+						<Alpha childKey="UpgradeGlow" change="-1.0" duration="0.9" order="4"/>
+						<Alpha childKey="UpgradeGlow" change="1.0" duration="0.9" order="5"/>
+						<Scripts>
+							<OnPlay>
+								self:GetParent().UpgradeGlow:SetAlpha(0);
+							</OnPlay>
+							<OnFinished>
+								self:GetParent().UpgradeGlow:SetAlpha(1);
+							</OnFinished>
+						</Scripts>
 					</AnimationGroup>
-					<Scripts>
-						<OnPlay>
-							self:GetParent().UpgradeGlow:SetAlpha(0);
-						</OnPlay>
-						<OnFinished>
-							self:GetParent().UpgradeGlow:SetAlpha(1);
-						</OnFinished>
-					</Scripts>
 				</Animations>
 		
 				<Layers>
@@ -734,7 +734,7 @@
 								<Anchor point="BOTTOM" relativeKey="$parent.Building" y="17"/>
 							</Anchors>
 						</Texture>
-						<Texture name="GarrisonBuildingUpgradeGlow" parentKey="UpgradeGlow" atlas="Garr_LevelBadgeGlow" useAtlasSize="true" hidden="true">
+						<Texture parentKey="UpgradeGlow" atlas="Garr_LevelBadgeGlow" useAtlasSize="true" hidden="true">
 							<Anchors>
 								<Anchor point="CENTER" relativeKey="$parent.RankBadge" />
 							</Anchors>
@@ -1087,20 +1087,20 @@
 				
 				<Animations>
 					<AnimationGroup parentKey="UpgradeAnim">
-						<Alpha target="GarrisonBuildingUpgradeGlow" change="1.0" duration="0.9" order="1"/>
-						<Alpha target="GarrisonBuildingUpgradeGlow" change="-1.0" duration="0.9" order="2"/>
-						<Alpha target="GarrisonBuildingUpgradeGlow" change="1.0" duration="0.9" order="3"/>
-						<Alpha target="GarrisonBuildingUpgradeGlow" change="-1.0" duration="0.9" order="4"/>
-						<Alpha target="GarrisonBuildingUpgradeGlow" change="1.0" duration="0.9" order="5"/>
+						<Alpha childKey="UpgradeGlow" change="1.0" duration="0.9" order="1"/>
+						<Alpha childKey="UpgradeGlow" change="-1.0" duration="0.9" order="2"/>
+						<Alpha childKey="UpgradeGlow" change="1.0" duration="0.9" order="3"/>
+						<Alpha childKey="UpgradeGlow" change="-1.0" duration="0.9" order="4"/>
+						<Alpha childKey="UpgradeGlow" change="1.0" duration="0.9" order="5"/>
+						<Scripts>
+							<OnPlay>
+								self:GetParent().UpgradeGlow:SetAlpha(0);
+							</OnPlay>
+							<OnFinished>
+								self:GetParent().UpgradeGlow:SetAlpha(1);
+							</OnFinished>
+						</Scripts>
 					</AnimationGroup>
-					<Scripts>
-						<OnPlay>
-							self:GetParent().UpgradeGlow:SetAlpha(0);
-						</OnPlay>
-						<OnFinished>
-							self:GetParent().UpgradeGlow:SetAlpha(1);
-						</OnFinished>
-					</Scripts>
 				</Animations>
 		
 				<Layers>
@@ -1135,7 +1135,7 @@
 						</FontString>
 					</Layer>
 					<Layer level="ARTWORK" textureSubLevel="1">
-						<Texture name="GarrisonBuildingUpgradeGlow" parentKey="UpgradeGlow" atlas="Garr_LevelBadgeGlow" useAtlasSize="true" hidden="true">
+						<Texture parentKey="UpgradeGlow" atlas="Garr_LevelBadgeGlow" useAtlasSize="true" hidden="true">
 							<Anchors>
 								<Anchor point="CENTER" relativeKey="$parent.RankBadge" />
 							</Anchors>
@@ -1439,13 +1439,14 @@
 				<Scripts>
 					<OnShow>
 						GarrisonBuildingFrame.Cover:Show();
+						self:SetFrameLevel(GarrisonBuildingFrame.Cover:GetFrameLevel()+1);
 					</OnShow>
 					<OnHide>
 						GarrisonBuildingFrame.Cover:Hide();
 					</OnHide>
 				</Scripts>
 			</Frame>
-			<Frame parentKey="Cover" setAllPoints="true" enableMouse="true" hidden="true">
+			<Frame parentKey="Cover" setAllPoints="true" enableMouse="true" hidden="true" frameStrata="HIGH">
 				<Anchors>
 					<Anchor point="TOPLEFT" x="0" y="-20" />
 					<Anchor point="BOTTOMRIGHT" x="0" y="0" />

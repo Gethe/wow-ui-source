@@ -96,6 +96,59 @@
 			</OnLeave>
 		</Scripts>
 	</Button>
+	<Frame name="AddonDialog" toplevel="true" setAllPoints="true" enableMouse="true" enableKeyboard="true" frameStrata="DIALOG" hidden="true">
+		<Frames>
+			<Frame name="AddonDialogBackground">
+				<Size x="512" y="256"/>
+				<Anchors>
+					<Anchor point="CENTER" x="0" y="0"/>
+				</Anchors>
+				<Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background" edgeFile="Interface\DialogFrame\UI-DialogBox-Border" tile="true">
+					<BackgroundInsets>
+						<AbsInset left="11" right="12" top="12" bottom="11"/>
+					</BackgroundInsets>
+					<TileSize>
+						<AbsValue val="32"/>
+					</TileSize>
+					<EdgeSize>
+						<AbsValue val="32"/>
+					</EdgeSize>
+				</Backdrop>
+				<Layers>
+					<Layer level="ARTWORK">
+						<FontString name="AddonDialogText" inherits="GameFontNormalLarge">
+							<Size x="440" y="0"/>
+							<Anchors>
+								<Anchor point="TOP" x="0" y="-16"/>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+				<Frames>
+					<Button name="AddonDialogButton1" inherits="UIPanelButtonTemplate" id="1">
+						<Size x="120" y="22"/>
+						<Scripts>
+							<OnClick function="AddonDialog_OnClick"/>
+						</Scripts>
+					</Button>
+					<Button name="AddonDialogButton2" inherits="UIPanelButtonTemplate" id="2">
+						<Size x="120" y="22"/>
+						<Scripts>
+							<OnClick function="AddonDialog_OnClick"/>
+						</Scripts>
+					</Button>
+				</Frames>
+			</Frame>
+		</Frames>
+		<Scripts>
+			<OnShow>
+				self:Raise();
+			</OnShow>
+			<OnKeyDown>
+				AddonDialog_OnKeyDown(key);
+			</OnKeyDown>
+		</Scripts>
+	</Frame>
 	<Frame name="AddonList" enableMouse="true" inherits="ButtonFrameTemplate" hidden="true">
 		<Size x="500" y="478"/>
 		<Anchors>
@@ -107,7 +160,7 @@
 					<AbsDimension x="32" y="32"/>
 				</Size>
 				<Anchors>
-					<Anchor point="TOP" x="85" y="-30"/>
+					<Anchor point="TOP" x="75" y="-30"/>
 				</Anchors>
 				<Layers>
 					<Layer level="ARTWORK">
@@ -166,7 +219,7 @@
 				</Scripts>
 			</Button>
 			<Button name="$parentEnableAllButton" inherits="MagicButtonTemplate" parentKey="EnableAllButton" text="ENABLE_ALL_ADDONS">
-				<Size x="100" y="22"/>
+				<Size x="120" y="22"/>
 				<Anchors>
 					<Anchor point="BOTTOMLEFT"/>
 				</Anchors>
@@ -178,7 +231,7 @@
 				</Scripts>
 			</Button>
 			<Button name="$parentDisableAllButton" inherits="MagicButtonTemplate" parentKey="DisableAllButton" text="DISABLE_ALL_ADDONS">
-				<Size x="100" y="22"/>
+				<Size x="120" y="22"/>
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeTo="$parentEnableAllButton" relativePoint="TOPRIGHT" x="0" y="0"/>
 				</Anchors>

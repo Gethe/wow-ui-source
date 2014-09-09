@@ -180,12 +180,17 @@ function GarrisonCapacitiveDisplayFrame_OnEvent(self, event, ...)
 	end
 end
 
+function GarrisonCapacitiveDisplayFrame_OnShow(self)
+	PlaySound("UI_Garrison_Shipments_Window_Open");
+end
+
 function GarrisonCapacitiveDisplayFrame_OnHide(self)
 	if (shipmentUpdater) then
 		shipmentUpdater:Cancel();
 		shipmentUpdater = nil;
 	end
 	C_Garrison.CloseTradeskillCrafter();
+	PlaySound("UI_Garrison_Shipments_Window_Close");
 end
 
 function GarrisonCapacitiveStartWorkOrder_OnClick(self)

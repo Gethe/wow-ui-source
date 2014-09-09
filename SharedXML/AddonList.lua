@@ -2,15 +2,6 @@ ADDON_BUTTON_HEIGHT = 16;
 MAX_ADDONS_DISPLAYED = 19;
 
 if ( not InGlue() ) then
-	ADDON_LIST = "AddOn List"
-	ENABLE_ALL_ADDONS = "Enable All"
-	DISABLE_ALL_ADDONS = "Disable All"
-	RELOADUI = "Reload UI"
-	LOAD_ADDON = "Load AddOn"
-	REQUIRES_RELOAD = "Requires Reload"
-	ADDON_DEPENDENCIES = "Dependencies: "
-	ADDON_FORCE_LOAD = "Load out of date Addons"
-	CONFIGURE_MODS_FOR = "Configure AddOns For: "
 	UIPanelWindows["AddonList"] = { area = "center", pushable = 0, whileDead = 1 };
 end
 
@@ -24,32 +15,131 @@ local UIDropDownMenu_GetSelectedValue = UIDropDownMenu_GetSelectedValue
 local UIDropDownMenu_SetSelectedValue = UIDropDownMenu_SetSelectedValue
 
 if ( InGlue() ) then
+	AddonDialogTypes = { };
+
+	AddonDialogTypes["ADDONS_OUT_OF_DATE"] = {
+		text = ADDONS_OUT_OF_DATE,
+		button1 = DISABLE_ADDONS,
+		button2 = LOAD_ADDONS,
+		OnAccept = function()
+			AddonDialog_Show("CONFIRM_DISABLE_ADDONS");
+		end,
+		OnCancel = function()
+			AddonDialog_Show("CONFIRM_LOAD_ADDONS");
+		end,
+	}
+
+	AddonDialogTypes["CONFIRM_LOAD_ADDONS"] = {
+		text = CONFIRM_LOAD_ADDONS,
+		button1 = OKAY,
+		button2 = CANCEL,
+		OnAccept = function()
+			SetAddonVersionCheck(0);
+		end,
+		OnCancel = function()
+			AddonDialog_Show("ADDONS_OUT_OF_DATE");
+		end,
+	}
+
+	AddonDialogTypes["CONFIRM_DISABLE_ADDONS"] = {
+		text = CONFIRM_DISABLE_ADDONS,
+		button1 = OKAY,
+		button2 = CANCEL,
+		OnAccept = function()
+			AddonList_DisableOutOfDate();
+		end,
+		OnCancel = function()
+			AddonDialog_Show("ADDONS_OUT_OF_DATE");
+		end,
+	}
+
+	function AddonDialog_Show(which)
+		-- Set the text of the dialog
+		AddonDialogText:SetText(AddonDialogTypes[which].text);
+
+		-- Set the buttons of the dialog
+		if ( AddonDialogTypes[which].button2 ) then
+			AddonDialogButton1:ClearAllPoints();
+			AddonDialogButton1:SetPoint("BOTTOMRIGHT", "AddonDialogBackground", "BOTTOM", -6, 16);
+			AddonDialogButton2:ClearAllPoints();
+			AddonDialogButton2:SetPoint("LEFT", "AddonDialogButton1", "RIGHT", 13, 0);
+			AddonDialogButton2:SetText(AddonDialogTypes[which].button2);
+			AddonDialogButton2:Show();
+		else
+			AddonDialogButton1:ClearAllPoints();
+			AddonDialogButton1:SetPoint("BOTTOM", "AddonDialogBackground", "BOTTOM", 0, 16);
+			AddonDialogButton2:Hide();
+		end
+
+		AddonDialogButton1:SetText(AddonDialogTypes[which].button1);
+
+		-- Set the miscellaneous variables for the dialog
+		AddonDialog.which = which;
+
+		-- Finally size and show the dialog
+		AddonDialogBackground:SetHeight(16 + AddonDialogText:GetHeight() + 8 + AddonDialogButton1:GetHeight() + 16);
+		AddonDialog:Show();
+	end
+
+	function AddonDialog_OnClick(self, button, down)
+		local index = self:GetID();
+		AddonDialog:Hide();
+		if ( index == 1 ) then
+			local OnAccept = AddonDialogTypes[AddonDialog.which].OnAccept;
+			if ( OnAccept ) then
+				OnAccept();
+			end
+		else
+			local OnCancel = AddonDialogTypes[AddonDialog.which].OnCancel;
+			if ( OnCancel ) then
+				OnCancel();
+			end
+		end
+	end
+
+	function AddonDialog_OnKeyDown(key)
+		if ( key == "PRINTSCREEN" ) then
+			Screenshot();
+			return;
+		end
+
+		if ( key == "ESCAPE" ) then
+			if ( AddonDialogButton2:IsShown() ) then
+				AddonDialogButton2:Click();
+			else
+				AddonDialogButton1:Click();
+			end
+		elseif (key == "ENTER" ) then
+			AddonDialogButton1:Click();
+		end
+	end
+
 	AddonTooltip = GlueTooltip
 	UIDropDownMenu_Initialize = GlueDropDownMenu_Initialize
 	UIDropDownMenu_AddButton = GlueDropDownMenu_AddButton
 	UIDropDownMenu_CreateInfo = GlueDropDownMenu_CreateInfo
 	UIDropDownMenu_GetSelectedValue = GlueDropDownMenu_GetSelectedValue
 	UIDropDownMenu_SetSelectedValue = GlueDropDownMenu_SetSelectedValue
+
+	function UpdateAddonButton()
+		if ( GetNumAddOns() > 0 ) then
+			-- Check to see if any of them are out of date and not disabled
+			if ( IsAddonVersionCheckEnabled() and AddonList_HasOutOfDate() and not HasShownAddonOutOfDateDialog ) then
+				AddonDialog_Show("ADDONS_OUT_OF_DATE");
+				HasShownAddonOutOfDateDialog = true;
+			end
+			if ( AddonList_HasNewVersion() ) then
+				CharacterSelectAddonsButtonGlow:Show();
+			else
+				CharacterSelectAddonsButtonGlow:Hide();
+			end
+			CharacterSelectAddonsButton:Show();
+		else
+			CharacterSelectAddonsButton:Hide();
+		end
+	end
 else
 	AddonTooltip = GameTooltip
-end
-
-function UpdateAddonButton()
-	if ( GetNumAddOns() > 0 ) then
-		-- Check to see if any of them are out of date and not disabled
-		if ( IsAddonVersionCheckEnabled() and AddonList_HasOutOfDate() and not HasShownAddonOutOfDateDialog ) then
-			AddonDialog_Show("ADDONS_OUT_OF_DATE");
-			HasShownAddonOutOfDateDialog = true;
-		end
-		if ( AddonList_HasNewVersion() ) then
-			CharacterSelectAddonsButtonGlow:Show();
-		else
-			CharacterSelectAddonsButtonGlow:Hide();
-		end
-		CharacterSelectAddonsButton:Show();
-	else
-		CharacterSelectAddonsButton:Hide();
-	end
 end
 
 function AddonList_HasAnyChanged()
@@ -106,6 +196,7 @@ function AddonList_OnLoad(self)
 	local template, value;
 	if ( InGlue() ) then
 		self:SetParent(GlueParent)
+		AddonDialog:SetParent(GlueParent)
 		local bg = CreateFrame("Frame", "AddonListBackground", GlueParent)
 		bg:SetFrameStrata("HIGH")
 		bg:EnableMouse(true)
@@ -122,6 +213,7 @@ function AddonList_OnLoad(self)
 		template = "GlueDropDownMenuTemplate"
 		value = ALL
 	else
+		AddonDialog = nil;
 		self:SetParent(UIParent);
 		self:SetFrameStrata("HIGH");
 		template = "UIDropDownMenuTemplate"

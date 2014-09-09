@@ -66,10 +66,10 @@ local EJ_DIFFICULTIES =
 	{ size = "10", prefix = PLAYER_DIFFICULTY2, difficultyID = 5 },
 	{ size = "25", prefix = PLAYER_DIFFICULTY1, difficultyID = 4 },
 	{ size = "25", prefix = PLAYER_DIFFICULTY2, difficultyID = 6 },
-	{ size = "10-25", prefix = PLAYER_DIFFICULTY3, difficultyID = 17 },
-	{ size = "10-30", prefix = PLAYER_DIFFICULTY1, difficultyID = 14 },
-	{ size = "10-30", prefix = PLAYER_DIFFICULTY2, difficultyID = 15 },
-	{ size = "20", prefix = PLAYER_DIFFICULTY6, difficultyID = 16 },
+	{ prefix = PLAYER_DIFFICULTY3, difficultyID = 17 },
+	{ prefix = PLAYER_DIFFICULTY1, difficultyID = 14 },
+	{ prefix = PLAYER_DIFFICULTY2, difficultyID = 15 },
+	{ prefix = PLAYER_DIFFICULTY6, difficultyID = 16 },
 }
 
 local EJ_TIER_DATA =
@@ -213,7 +213,11 @@ function EncounterJournal_OnEvent(self, event, ...)
 		EncounterJournal.difficultyID = newDifficultyID;
 		for _, entry in pairs(EJ_DIFFICULTIES) do
 			if entry.difficultyID == newDifficultyID then
-				EncounterJournal.encounter.info.difficulty:SetFormattedText(ENCOUNTER_JOURNAL_DIFF_TEXT, entry.size, entry.prefix);
+				if (entry.size) then
+					EncounterJournal.encounter.info.difficulty:SetFormattedText(ENCOUNTER_JOURNAL_DIFF_TEXT, entry.size, entry.prefix);
+				else
+					EncounterJournal.encounter.info.difficulty:SetText(entry.prefix);
+				end
 				EncounterJournal_Refresh();
 				break;
 			end
@@ -512,21 +516,19 @@ function EncounterJournal_DisplayEncounter(encounterID, noButton)
 	if (EncounterJournal_CheckForOverview(rootSectionID)) then
 		local _, overviewDescription = EJ_GetSectionInfo(rootSectionID);
 		self.overviewFrame.loreDescription:SetHeight(0);
-		self.overviewFrame.loreDescription:SetText(description);
 		self.overviewFrame.loreDescription:SetWidth(self.overviewFrame:GetWidth() - 5);
+		self.overviewFrame.loreDescription:SetText(description);
 		self.overviewFrame.overviewDescription:SetWidth(self.overviewFrame:GetWidth() - 5);
 		self.overviewFrame.overviewDescription.Text:SetWidth(self.overviewFrame:GetWidth() - 5);
 		EncounterJournal_SetBullets(self.overviewFrame.overviewDescription, overviewDescription, false);
 		local bulletHeight = 0;
-		if (self.overviewFrame.Bullets) then
+		if (self.overviewFrame.Bullets and #self.overviewFrame.Bullets > 0) then
 			for i = 1, #self.overviewFrame.Bullets do
-				if (i == 1) then
-					local bullet = self.overviewFrame.Bullets[i];
-					bullet:ClearAllPoints();
-					bullet:SetPoint("TOPLEFT", self.overviewFrame.overviewDescription, "BOTTOMLEFT", 0, -9);
-				end
 				bulletHeight = bulletHeight + self.overviewFrame.Bullets[i]:GetHeight();
 			end
+			local bullet = self.overviewFrame.Bullets[1];
+			bullet:ClearAllPoints();
+			bullet:SetPoint("TOPLEFT", self.overviewFrame.overviewDescription, "BOTTOMLEFT", 0, -9);
 		end
 		self.overviewFrame.descriptionHeight = self.overviewFrame.loreDescription:GetHeight() + self.overviewFrame.overviewDescription:GetHeight() + bulletHeight + 42;
 		self.overviewFrame.rootOverviewSectionID = rootSectionID;
@@ -534,8 +536,8 @@ function EncounterJournal_DisplayEncounter(encounterID, noButton)
 		overviewFound = true;
 	end
 	
-	self.infoFrame.description:SetText(description);
 	self.infoFrame.description:SetWidth(self.infoFrame:GetWidth() -5);
+	self.infoFrame.description:SetText(description);
 	self.infoFrame.descriptionHeight = self.infoFrame.description:GetHeight();
 	
 	self.infoFrame.encounterID = encounterID;
@@ -727,7 +729,7 @@ end
 
 function EncounterJournal_SetBullets(object, description, hideBullets)
 	local parent = object:GetParent();
-
+	
 	if (not string.find(description, "\$bullet;")) then
 		object.Text:SetText(description);
 		object.textString = description;
@@ -750,16 +752,15 @@ function EncounterJournal_SetBullets(object, description, hideBullets)
 	end
 
 	local k = 1;
+	local skipped = 0;
 	for j = 1,#bullets do
 		local text = bullets[j];
 		if (text and text ~= "") then
 			local bullet;
-			if (not parent.Bullets) then
-				parent.Bullets = {};
-			end
-			bullet = parent.Bullets[k];
+			bullet = parent.Bullets and parent.Bullets[k];
 			if (not bullet) then
 				if (parent.BulletCache and #parent.BulletCache > 0) then
+					-- We only need to check for BulletCache because the BulletCache is created when we clean the bullets, so the BulletCache existing also means the Bullets exist.
 					parent.Bullets[k] = tremove(parent.BulletCache);
 					bullet = parent.Bullets[k];
 				else
@@ -779,7 +780,9 @@ function EncounterJournal_SetBullets(object, description, hideBullets)
 				bullet:SetPoint("TOP", parent.Bullets[k-1], "BOTTOM", 0, 0);
 			end
 			bullet.Text:SetText(text);
-			bullet:SetHeight(bullet.Text:GetContentHeight());
+			if (bullet.Text:GetContentHeight() ~= 0) then
+				bullet:SetHeight(bullet.Text:GetContentHeight());
+			end
 
 			if (hideBullets) then
 				bullet:Hide();
@@ -787,10 +790,12 @@ function EncounterJournal_SetBullets(object, description, hideBullets)
 				bullet:Show();
 			end
 			k = k + 1;
+		else
+			skipped = skipped + 1;
 		end
 	end
 
-	EncounterJournal_CleanBullets(parent, #bullets + 1);
+	EncounterJournal_CleanBullets(parent, (#bullets - skipped) + 1);
 end
 
 function EncounterJournal_SetDescriptionWithBullets(infoHeader, description)
@@ -953,7 +958,12 @@ function EncounterJournal_ToggleHeaders(self, doNotShift)
 				local overview = EncounterJournal.encounter.overviewFrame.overviews[self.overviewIndex + 1];
 
 				if (overview) then
-					overview:SetPoint("TOPLEFT", self.Bullets[#self.Bullets], "BOTTOMLEFT", -13, -18);
+					if (self.Bullets and #self.Bullets > 0) then
+						overview:SetPoint("TOPLEFT", self.Bullets[#self.Bullets], "BOTTOMLEFT", -13, -18);
+					else
+						local yoffset = -18 - self:GetHeight();
+						overview:SetPoint("TOPLEFT", self, "BOTTOMLEFT", 0, yoffset);
+					end
 				end
 				EncounterJournal_UpdateButtonState(self.button);
 			end
@@ -1782,7 +1792,11 @@ function EncounterJournal_DifficultyInit(self, level)
 		local entry = EJ_DIFFICULTIES[i];
 		if EJ_IsValidInstanceDifficulty(entry.difficultyID) then
 			info.func = EncounterJournal_SelectDifficulty;
-			info.text = string.format(ENCOUNTER_JOURNAL_DIFF_TEXT, entry.size, entry.prefix);
+			if (entry.size) then
+				info.text = string.format(ENCOUNTER_JOURNAL_DIFF_TEXT, entry.size, entry.prefix);
+			else
+				info.text = entry.prefix;
+			end
 			info.arg1 = entry.difficultyID;
 			info.checked = currDifficulty == entry.difficultyID;
 			UIDropDownMenu_AddButton(info);

@@ -42,7 +42,7 @@ end
 function LFDFrame_OnEvent(self, event, ...)
 	if ( event == "LFG_ROLE_CHECK_SHOW" ) then
 		local requeue = ...;
-		if( true or requeue ) then
+		if( requeue ) then
 			LFDRoleCheckPopup.Text:SetText(REQUEUE_CONFIRM_YOUR_ROLE);
 		else
 			LFDRoleCheckPopup.Text:SetText(CONFIRM_YOUR_ROLE);

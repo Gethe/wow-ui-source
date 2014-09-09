@@ -80,7 +80,7 @@ function QuestPOI_GetButton(parent, questID, style, index, storyQuest)
 					poiButton.Glow:SetSize(64, 64);				
 				else
 					poiButton.NormalTexture:SetTexCoord(0.875, 1, 0.875, 1);
-					poiButton.PushedTexture:SetTexCoord(0.625, 0.750, 0.875, 1);
+					poiButton.PushedTexture:SetTexCoord(0.750, 0.875, 0.875, 1);
 					poiButton.FullHighlightTexture:SetTexCoord(0.625, 0.750, 0.375, 0.5);
 					poiButton.Glow:SetSize(50, 50);	
 				end

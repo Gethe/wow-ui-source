@@ -687,16 +687,6 @@
 							<Anchors>
 								<Anchor point="TOPLEFT" relativeKey="$parent.Name" relativePoint="BOTTOMLEFT" y="-4"/>
 							</Anchors>
-						</FontString>						
-						<FontString parentKey="AbilitiesText" inherits="GameFontNormalLarge2" justifyH="LEFT" text="ABILITIES">
-							<Anchors>
-								<Anchor point="TOPLEFT" relativeKey="$parent.Class" relativePoint="TOPRIGHT" x="-200" y="-80"/>
-							</Anchors>
-						</FontString>
-						<FontString parentKey="TraitsText" inherits="GameFontNormalLarge2" justifyH="LEFT" text="GARRISON_TRAITS">
-							<Anchors>
-								<Anchor point="TOPLEFT" relativeKey="$parent.AbilitiesText" relativePoint="BOTTOMLEFT" y="-150"/>
-							</Anchors>
 						</FontString>
 					</Layer>
 				</Layers>
@@ -736,18 +726,38 @@
 							</Layer>
 						</Layers>
 						<Scripts>
-							<OnLoad>
-								Model_OnLoad(self);
-								self:UseDefaultCamera(true);
-							</OnLoad>						
 							<OnShow>
+								self:SetTargetDistance(0);
 								self:SetFacing(.2);
 								GarrisonMission_SetFollowerModelItems(self);
 							</OnShow>
 						</Scripts>
 					</CinematicModel>
-					<Frame parentArray="Abilities" inherits="GarrisonFollowerPageAbilityTemplate" hidden="true"/>
-					<Frame parentArray="Counters" inherits="GarrisonMissionAbilityCounterTemplate" hidden="true"/>
+					<Frame parentKey="AbilitiesFrame" setAllPoints="true">
+						<Layers>
+							<Layer level="ARTWORK">
+								<FontString parentKey="AbilitiesText" inherits="GameFontNormalLarge2" justifyH="LEFT" text="ABILITIES">
+									<Anchors>
+										<Anchor point="TOPLEFT" relativeKey="$parent.$parentClass" relativePoint="TOPRIGHT" x="-200" y="-80"/>
+									</Anchors>
+								</FontString>
+								<FontString parentKey="TraitsText" inherits="GameFontNormalLarge2" justifyH="LEFT" text="GARRISON_TRAITS">
+									<Anchors>
+										<Anchor point="TOPLEFT" relativeKey="$parent.AbilitiesText" relativePoint="BOTTOMLEFT" y="-150"/>
+									</Anchors>
+								</FontString>
+							</Layer>
+						</Layers>
+						<Frames>
+							<Frame parentArray="Abilities" inherits="GarrisonFollowerPageAbilityTemplate" hidden="true"/>
+							<Frame parentArray="Counters" inherits="GarrisonMissionAbilityCounterTemplate" hidden="true"/>
+						</Frames>
+						<Scripts>
+							<OnLoad>
+								self:SetFrameLevel(self:GetParent().Model:GetFrameLevel() + 1);
+							</OnLoad>
+						</Scripts>
+					</Frame>
 					<Frame parentKey="Source">
 						<Size x="300" y="80"/>
 						<Anchors>

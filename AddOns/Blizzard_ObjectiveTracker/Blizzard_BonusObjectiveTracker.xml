@@ -78,7 +78,7 @@
 			</Layer>
 		</Layers>
 		<Animations>
-			<AnimationGroup parentKey="Anim" setToFinalAlpha="true">
+			<AnimationGroup parentKey="Anim">
 				<Alpha childKey="ItemIcon" startDelay="0.95" duration="0.3" order="1" fromAlpha="0" toAlpha="1"/>
 				<Alpha childKey="ItemIcon" startDelay="2" duration="1" order="2" fromAlpha="1" toAlpha="0"/>
 				<Alpha childKey="Label" startDelay="0.95" duration="0.3" order="1" fromAlpha="0" toAlpha="1"/>
@@ -134,6 +134,26 @@
 						<Offset x="20" y="0"/>
 					</Origin>
 				</Scale>
+			</AnimationGroup>
+		</Animations>
+	</Frame>
+	
+	<Frame name="BonusTrackerProgressBarFullBarFlareTemplate" hidden="false" alpha="1" virtual="true">
+		<Size x="128" y="128"/>
+		<Layers>
+			<Layer level="ARTWORK">
+				<Texture parentKey="BarGlow" hidden="false" alpha="0" alphaMode="BLEND" atlas="OBJFX-BarGlow">
+					<Size x="300" y="32"/>
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Animations>
+			<AnimationGroup parentKey="FlareAnim" setToFinalAlpha="true">
+				<Alpha childKey="BarGlow" duration="0.15" order="1" fromAlpha="0" toAlpha="1"/>
+				<Alpha childKey="BarGlow" startDelay="0.3" duration="0.4" order="1" fromAlpha="1" toAlpha="0"/>
 			</AnimationGroup>
 		</Animations>
 	</Frame>
@@ -229,6 +249,18 @@
 			
 			<Frame parentKey="SmallFlare1" inherits="BonusTrackerProgressBarSmallFlareAnimTemplate"/>
 			<Frame parentKey="SmallFlare2" inherits="BonusTrackerProgressBarSmallFlareAnimTemplate"/>
+			
+			<Frame parentKey="FullBarFlare1" inherits="BonusTrackerProgressBarFullBarFlareTemplate">
+				<Anchors>
+					<Anchor point="CENTER" relativeKey="$parent.Bar" relativePoint="CENTER" x="12" y="0"/>
+				</Anchors>
+			</Frame>
+			
+			<Frame parentKey="FullBarFlare2" inherits="BonusTrackerProgressBarFullBarFlareTemplate">
+				<Anchors>
+					<Anchor point="CENTER" relativeKey="$parent.Bar" relativePoint="CENTER" x="12" y="0"/>
+				</Anchors>
+			</Frame>
 			
 		</Frames>
 		<Scripts>

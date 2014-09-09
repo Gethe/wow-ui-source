@@ -295,6 +295,9 @@ function GarrisonMissionFrame_SelectTab(id)
 		end
 		GarrisonMissionFrame.TitleText:SetText(GARRISON_FOLLOWERS_TITLE);
 	end
+	if ( UIDropDownMenu_GetCurrentDropDown() == GarrisonFollowerOptionDropDown ) then
+		CloseDropDownMenus();
+	end
 end
 
 function GarrisonMissionFrame_UpdateCurrency()
@@ -667,7 +670,7 @@ function GarrisonMissionButton_OnEnter(self, button)
 		GameTooltip:AddLine(string.format(GARRISON_MISSION_TOOLTIP_NUM_REQUIRED_FOLLOWERS, self.info.numFollowers), 1, 1, 1);		
 
 		-- environment and threats
-		local location, xp, environment, environmentTexture, locPrefix, isExhausting, enemies = C_Garrison.GetMissionInfo(self.info.missionID);
+		local location, xp, environment, environmentDesc, environmentTexture, locPrefix, isExhausting, enemies = C_Garrison.GetMissionInfo(self.info.missionID);
 		local numThreats = 0;
 		GarrisonMissionListTooltipThreatsFrame.EnvIcon:SetTexture(environmentTexture);
 		for i = 1, #enemies do
@@ -740,7 +743,7 @@ function GarrisonMissionPage_ShowMission(missionInfo)
 	local self = GarrisonMissionFrame.MissionTab.MissionPage;
 	self.missionInfo = missionInfo;
 	
-	local location, xp, environment, environmentTexture, locPrefix, isExhausting, enemies = C_Garrison.GetMissionInfo(missionInfo.missionID);
+	local location, xp, environment, environmentDesc, environmentTexture, locPrefix, isExhausting, enemies = C_Garrison.GetMissionInfo(missionInfo.missionID);
 	self.Stage.Level:SetText(missionInfo.level);
 	self.Stage.Title:SetText(missionInfo.name);
 	self.Stage.Location:SetText(missionInfo.location);
@@ -914,10 +917,11 @@ function GarrisonMissionPage_UpdateMissionForParty()
 end
 
 function GarrisonMissionPageEnvironment_OnEnter(self)
-	if ( MISSION_PAGE_FRAME.environment ) then
+	local _, _, environment, environmentDesc = C_Garrison.GetMissionInfo(MISSION_PAGE_FRAME.missionInfo.missionID);
+	if ( environment ) then
 		GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
-		GameTooltip:SetText(MISSION_PAGE_FRAME.environment);
-		GameTooltip:AddLine(GARRISON_MISSION_ENVIRONMENT_TOOLTIP, 1, 1, 1, 1);
+		GameTooltip:SetText(environment);
+		GameTooltip:AddLine(environmentDesc, 1, 1, 1, 1);
 		GameTooltip:Show();
 	end
 end
@@ -1253,6 +1257,7 @@ function GarrisonMissionPage_ClearFollower(frame, updateValues)
 	frame.PortraitFrame.Empty:Show();
 	frame.PortraitFrame.LevelBorder:SetAtlas("GarrMission_PortraitRing_LevelBorder");
 	frame.PortraitFrame.LevelBorder:SetWidth(58);
+	frame.PortraitFrame.Level:SetText("");
 	for i = 1, #frame.Counters do
 		frame.Counters[i]:Hide();
 	end
@@ -1647,7 +1652,7 @@ function GarrisonMissionComplete_Initialize(missionList, index)
 		stage.ItemLevelHitboxFrame:Hide();
 	end
 	
-	local location, xp, environment, environmentTexture, locPrefix, isExhausting, enemies = C_Garrison.GetMissionInfo(mission.missionID);
+	local location, xp, environment, environmentDesc, environmentTexture, locPrefix, isExhausting, enemies = C_Garrison.GetMissionInfo(mission.missionID);
 	if ( locPrefix ) then
 		stage.LocBack:SetAtlas("_"..locPrefix.."-Back", true);
 		stage.LocMid:SetAtlas ("_"..locPrefix.."-Mid", true);
@@ -2033,6 +2038,7 @@ function GarrisonMissionComplete_AnimModels(self, entry)
 				currentAnim.playImpactSound = true;
 			end
 		end
+		PlaySound("UI_Garrison_MissionEncounter_Animation_Generic");		
 		if ( currentAnim.castSoundID ) then
 			PlaySoundKitID(currentAnim.castSoundID);
 		end

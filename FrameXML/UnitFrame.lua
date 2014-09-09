@@ -395,7 +395,8 @@ function UnitFrame_OnEnter (self)
 	UnitFrame_UpdateTooltip(self);
 end
 
-function UnitFrame_OnLeave ()
+function UnitFrame_OnLeave (self)
+	self.UpdateTooltip = nil;
 	if ( SHOW_NEWBIE_TIPS == "1" ) then
 		GameTooltip:Hide();
 	else
@@ -410,8 +411,8 @@ function UnitFrame_UpdateTooltip (self)
 	else
 		self.UpdateTooltip = nil;
 	end
+	
 	local r, g, b = GameTooltip_UnitColor(self.unit);
-	--GameTooltip:SetBackdropColor(r, g, b);
 	GameTooltipTextLeft1:SetTextColor(r, g, b);
 end
 

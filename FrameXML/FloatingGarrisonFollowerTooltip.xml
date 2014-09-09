@@ -21,7 +21,7 @@ UI.xsd">
 				</Texture>
 			</Layer>
 			<Layer level="ARTWORK">
-				<FontString parentKey="Name" inherits="GameFontNormal" justifyH="LEFT" text="Goblin Freeman">
+				<FontString parentKey="Name" inherits="GameFontNormal" justifyH="LEFT">
 					<Size x="140" y="0"/>
 					<Anchors>
 						<Anchor point="LEFT" relativePoint="TOPLEFT" x="66" y="-20"/>
@@ -55,13 +55,13 @@ UI.xsd">
 					<Color r="1" g="1" b="1" a="1"/>
 				</FontString>
 
-				<FontString parentKey="AbilitiesLabel" inherits="GameFontNormal" justifyH="LEFT" text="Abilities">
+				<FontString parentKey="AbilitiesLabel" inherits="GameFontNormal" justifyH="LEFT" text="ABILITIES">
 					<Anchors>
 						<Anchor point="TOPLEFT" relativePoint="TOPLEFT" x="15" y="-85" />
 					</Anchors>
 				</FontString>
 
-				<FontString parentKey="TraitsLabel" inherits="GameFontNormal" justifyH="LEFT" text="Traits">
+				<FontString parentKey="TraitsLabel" inherits="GameFontNormal" justifyH="LEFT" text="GARRISON_TRAITS">
 					<Anchors>
 						<Anchor point="TOPLEFT" relativePoint="TOPLEFT" x="15" y="-85" />
 					</Anchors>
@@ -107,7 +107,7 @@ UI.xsd">
 						</Texture>
 					</Layer>
 					<Layer level="ARTWORK">
-						<FontString parentKey="Level" inherits="GameFontHighlightSmall" justifyH="CENTER" text="95">
+						<FontString parentKey="Level" inherits="GameFontHighlightSmall" justifyH="CENTER">
 							<Anchors>
 								<Anchor point="CENTER" relativeKey="$parent.LevelBorder"/>
 							</Anchors>
@@ -302,12 +302,12 @@ UI.xsd">
 		</Anchors>
 		<Layers>
 			<Layer level="ARTWORK">
-				<FontString parentKey="Name" inherits="GameFontNormal" justifyH="LEFT" text="AbilityText">
+				<FontString parentKey="Name" inherits="GameFontNormal" justifyH="LEFT">
 					<Anchors>
 						<Anchor point="TOPLEFT" x="10" y="-10"/>
 					</Anchors>
 				</FontString>
-				<FontString parentKey="FollowerRequirement" inherits="GameFontHighlight" justifyH="LEFT" text="Followers">
+				<FontString parentKey="FollowerRequirement" inherits="GameFontHighlight" justifyH="LEFT">
 					<Anchors>
 						<Anchor point="TOPLEFT" relativeKey="$parent.Name" relativePoint="BOTTOMLEFT" y="-3"/>
 					</Anchors>
@@ -317,7 +317,7 @@ UI.xsd">
 						<Anchor point="TOPLEFT" relativeKey="$parent.FollowerRequirement" relativePoint="BOTTOMLEFT" y="-12"/>
 					</Anchors>
 				</FontString>
-				<FontString parentKey="Rewards" inherits="GameFontHighlight" justifyH="LEFT" text="Rewards">
+				<FontString parentKey="Rewards" inherits="GameFontHighlight" justifyH="LEFT">
 					<Anchors>
 						<Anchor point="TOPLEFT" relativeKey="$parent.RewardsLabel" relativePoint="BOTTOMLEFT" />
 					</Anchors>

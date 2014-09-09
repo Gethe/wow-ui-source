@@ -1,13 +1,9 @@
 -- The ids will be used to track whether character has seen a splash screen. Have to assign unique ones to each splash screen in each category (normal and boost)
-PREPATCH_BOOST_QUESTS = { Alliance = {id=35460, text=SPLASH_BOOST_RIGHT_DESC_ALLIANCE}
-						, Horde = {id=35745, text=SPLASH_BOOST_RIGHT_DESC_HORDE}
-						};
-						
-PREPATCH_QUESTS = { Alliance = 36498,
-					Horde = 36499
-				  };
-				  
-POSTPATCH_BOOST_QUEST = 34398;
+PREPATCH_QUESTS = { Alliance = {id=36498 , text=SPLASH_BOOST_RIGHT_DESC_ALLIANCE}
+					, Horde = {id=36499 , text=SPLASH_BOOST_RIGHT_DESC_HORDE}
+				};
+
+POSTPATCH_QUEST = 34398;
 
 SPLASH_SCREENS = {
 	["BASE"] =	{	id = 1,
@@ -45,8 +41,8 @@ SPLASH_SCREENS = {
 								},
 					},
 				},
-	["BASE_90"] =	{	id = 2,
-					questID = 0,	-- questID is set in SplashFrame_OnLoad
+	["BASE_90"] =	{	id = 1,
+					questID = nil,	-- questID is set in SplashFrame_OnLoad
 					leftTex = "splash-600-topleft",
 					rightTex = "splash-601-right",
 					bottomTex = "splash-600-botleft",
@@ -80,9 +76,9 @@ SPLASH_SCREENS = {
 								},
 					},
 				},
-	["NEW"] =	{	id = 3,
+	["NEW"] =	{	id = 2,
 					expansion = LE_EXPANSION_WARLORDS_OF_DRAENOR,
-					questID = POSTPATCH_BOOST_QUEST,			
+					questID = nil,			
 					leftTex = "splash-601-topleft",
 					rightTex = "splash-601-right",
 					bottomTex = "splash-601-botleft",
@@ -105,7 +101,7 @@ SPLASH_SCREENS = {
 					},
 				},
 	["BOOST"] =	{	id = 1,
-					questID = 0, -- questID is set in SplashFrame_OnLoad
+					questID = nil, -- questID is set in SplashFrame_OnLoad
 					leftTex = "splash-boost-topleft",
 					rightTex = "splash-boost-right",
 					bottomTex = "splash-boost-botleft",
@@ -135,7 +131,7 @@ SPLASH_SCREENS = {
 				},
 	["BOOST2"] ={	id = 2,
 					expansion = LE_EXPANSION_WARLORDS_OF_DRAENOR,
-					questID = POSTPATCH_BOOST_QUEST,
+					questID = POSTPATCH_QUEST,
 					leftTex = "splash-boost-topleft",
 					rightTex = "splash-boost-right",
 					bottomTex = "splash-boost-botleft",
@@ -183,14 +179,13 @@ function SplashFrame_OnLoad(self)
 	self:RegisterEvent("PLAYER_ENTERING_WORLD");
 	-- need an event for expansion becoming active
 	local faction = UnitFactionGroup("player");
-	local data = PREPATCH_BOOST_QUESTS[faction];
-	if( data ) then
-		SPLASH_SCREENS["BASE_90"].questID = PREPATCH_QUESTS[faction];
-		SPLASH_SCREENS["BOOST"].questID = PREPATCH_BOOST_QUESTS[faction].id;
-		SPLASH_SCREENS["BOOST"].rightDesc = PREPATCH_BOOST_QUESTS[faction].text;
-	else
-		SPLASH_SCREENS["NEW"].questID = nil;
+	local questData = PREPATCH_QUESTS[faction];
+	if( questData ) then
+		SPLASH_SCREENS["BASE_90"].questID = questData.id;
+		SPLASH_SCREENS["BOOST"].questID = questData.id;
+		SPLASH_SCREENS["BOOST"].rightDesc = questData.text;
 	end
+	SPLASH_SCREENS["NEW"].questID = UnitLevel("player") >= 90 and POSTPATCH_QUEST or nil;
 end
 
 local function ShouldShowStartButton( questID )
@@ -289,7 +284,7 @@ function SplashFrame_SetStartButtonDisplay( showStartButton )
 	local tag = frame.tag;
 	if( tag == "NEW" ) then
 		local faction = UnitFactionGroup("player");
-		local data = PREPATCH_BOOST_QUESTS[faction];
+		local data = PREPATCH_QUESTS[faction];
 		if( showStartButton and data )then 
 			SPLASH_SCREENS["NEW"].rightDesc = data.text;
 		else

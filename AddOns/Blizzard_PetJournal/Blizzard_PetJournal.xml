@@ -2249,9 +2249,6 @@
 
 			<Layer level="OVERLAY" textureSubLevel="2">
 				<FontString name="$parentToyNew" inherits="GameFontHighlight" maxLines="1" justifyH="CENTER" text="NEW_CAPS" hidden="true">
-					<Size>
-						<AbsDimension x="50"/>
-					</Size>
 					<Shadow>
 						<Color r="0.32" g="0.5" b="1.0"/>
 					</Shadow>
@@ -2260,9 +2257,10 @@
 					</Anchors>
 				</FontString>
 
-				<Texture name="$parentToyNewGlow" atlas="collections-newglow" useAtlasSize="true" hidden="true">
+				<Texture name="$parentToyNewGlow" atlas="collections-newglow" hidden="true">
 					<Anchors>
-						<Anchor point="CENTER" x="8" y="-1" relativePoint="TOPLEFT"/>
+						<Anchor point="TOPLEFT" relativeTo="$parentToyNew" x="-20" y="10"/>
+						<Anchor point="BOTTOMRIGHT" relativeTo="$parentToyNew" x="20" y="-10"/>
 					</Anchors>
 				</Texture>
 			</Layer>

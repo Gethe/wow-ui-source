@@ -251,6 +251,9 @@ function BonusObjectiveTracker_AnimateReward(block)
 			rewardItem.Label:SetText(rewardData.label);
 			rewardItem.ItemIcon:SetTexture(rewardData.texture);
 			rewardItem:Show();
+			if( rewardItem.Anim:IsPlaying() ) then
+				rewardItem.Anim:Stop();
+			end
 			rewardItem.Anim:Play();
 		end
 		-- hide unused reward items
@@ -266,10 +269,6 @@ function BonusObjectiveTracker_OnAnimateRewardDone(self)
 	local oldPosIndex = COMPLETED_BONUS_DATA[rewardsFrame.id].posIndex;
 	COMPLETED_BONUS_DATA[rewardsFrame.id] = nil;
 	rewardsFrame.id = nil;
-	-- kill anims
-	for i = 1, #rewardsFrame.Rewards do
-		rewardsFrame.Rewards[i].Anim:Stop();
-	end
 	
 	BonusObjectiveTracker_OnAnimateNextReward(oldPosIndex);
 end
@@ -798,25 +797,32 @@ function BonusObjectiveTrackerProgressBar_PlayFlareAnim(progressBar, delta)
 	if( progressBar.AnimValue >= 100 ) then
 		return;
 	end
-	local prefix = "";
-	local width = progressBar.Bar:GetWidth();
-	local offset = 0;
 	
-	if( delta < 1 ) then
-		return;
-	elseif( delta < 10 ) then
-		prefix = "Small";
-		offset = width * progressBar.AnimValue/100-12;
-	else
-		offset = width * progressBar.AnimValue/100-12;
-	end
-	local flare = progressBar[prefix.."Flare1"];
-	if( flare.FlareAnim:IsPlaying() ) then
-		flare = progressBar[prefix.."Flare2"];
+	if( delta > 1 ) then
+		local width = progressBar.Bar:GetWidth();
+		local offset = width * progressBar.AnimValue/100-12;
+		local prefix = "";
+		if( delta < 10 ) then
+			prefix = "Small";
+		end
+		local flare = progressBar[prefix.."Flare1"];
+		
 		if( flare.FlareAnim:IsPlaying() ) then
+			flare = progressBar[prefix.."Flare2"];
+			if( not flare.FlareAnim:IsPlaying() ) then
+				flare:SetPoint("LEFT", progressBar.Bar, "LEFT", offset,0);
+				flare.FlareAnim:Play();
+			end
+		end
+	end
+	
+	local barFlare = progressBar["FullBarFlare1"];
+	if( barFlare.FlareAnim:IsPlaying() ) then
+		barFlare = progressBar["FullBarFlare2"];
+		if( barFlare.FlareAnim:IsPlaying() ) then
 			return;
 		end
 	end
-	flare:SetPoint("LEFT", progressBar.Bar, "LEFT", offset,0);
-	flare.FlareAnim:Play();
+	
+	barFlare.FlareAnim:Play();
 end

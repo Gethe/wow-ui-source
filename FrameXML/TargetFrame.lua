@@ -640,8 +640,12 @@ function TargetFrame_ShouldShowDebuff(unit, index, filter)
 	--This is an enemy
 	if ( SHOW_ALL_ENEMY_DEBUFFS == "1" or not UnitCanAttack("player", unit) ) then
 		return true;
-	else
+	else		
 		local name, rank, icon, count, debuffType, duration, expirationTime, unitCaster, canStealOrPurge, shouldConsolidate, spellId, canApplyAura, isBossDebuff, isCastByPlayer = UnitDebuff(unit, index, filter);
+
+		if SpellIsAlwaysShown(spellId) then
+			return true;
+		end
 
 		local hasCustom, alwaysShowMine, showForMySpec = SpellGetVisibilityInfo(spellId, "ENEMY_TARGET");
 		if ( hasCustom ) then

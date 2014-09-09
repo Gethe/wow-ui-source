@@ -1666,7 +1666,7 @@
 							<Anchor point="CENTER" relativeTo="$parentScrollFrame" x="0" y="20"/>
 						</Anchors>
 						<Frames>
-							<Frame name="$parentErrorFrame" inherits="TranslucentFrameTemplate" enableMouse="true" hidden="true">
+							<Frame name="$parentErrorFrame" frameStrata="DIALOG" inherits="TranslucentFrameTemplate" enableMouse="true" hidden="true">
 								<Size x="350" y="230"/>
 								<Anchors>
 									<Anchor point="CENTER" relativeTo="$parentScrollFrame" x="0" y="20"/>

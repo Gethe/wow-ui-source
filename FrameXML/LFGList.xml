@@ -126,6 +126,14 @@
 				PlaySound("igMainMenuOptionCheckBoxOn");
 				LFGListEntryCreationActivityFinder_Select(self:GetParent():GetParent():GetParent():GetParent(), self.activityID);
 			</OnClick>
+			<OnEnter>
+				if ( self.Label:IsTruncated() ) then
+					GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+					GameTooltip:SetText(self.Label:GetText());
+					GameTooltip:Show();
+				end
+			</OnEnter>
+			<OnLeave function="GameTooltip_Hide"/>
 		</Scripts>
 		<ButtonText parentKey="Label" setAllPoints="true" justifyH="LEFT"/>
 		<NormalFont style="GameFontNormal"/>
@@ -609,7 +617,8 @@
 				</Texture>
 			</Layer>
 		</Layers>
-		<ButtonText>
+		<ButtonText parentKey="Label">
+			<!--This may get reanchored in script if the text is too big for the box-->
 			<Anchors>
 				<Anchor point="LEFT" x="8" y="0"/>
 			</Anchors>
@@ -621,26 +630,6 @@
 				<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Right" x="2" y="-7"/>
 			</Anchors>
 		</HighlightTexture>
-	</Button>
-	<Button name="LFGListColumnHeaderRoleTemplate" inherits="LFGListColumnHeaderTemplate" virtual="true">
-		<Layers>
-			<Layer level="ARTWORK">
-				<Texture parentKey="Icon" file="Interface\LFGFrame\LFGRole">
-					<Size x="16" y="16"/>
-					<Anchors>
-						<Anchor point="CENTER" x="0" y="0"/>
-					</Anchors>
-				</Texture>
-			</Layer>
-		</Layers>
-		<Scripts>
-			<OnMouseDown>
-				self.Icon:SetPoint("CENTER", 1, -2);
-			</OnMouseDown>
-			<OnMouseUp>
-				self.Icon:SetPoint("CENTER", 0, 0);
-			</OnMouseUp>
-		</Scripts>
 	</Button>
 	<Button name="LFGListSearchEntryTemplate" virtual="true">
 		<Size x="312" y="36"/>
@@ -1207,6 +1196,18 @@
 						<Anchors>
 							<Anchor point="LEFT" relativeKey="$parent.RoleColumnHeader" relativePoint="RIGHT" x="0" y="0"/>
 						</Anchors>
+						<Scripts>
+							<OnLoad>
+								--The ItemLevel tab will increase in width as needed
+								local overBy = self.Label:GetWidth() + 15 - self:GetWidth();
+								if ( overBy > 0 ) then
+									--Bring in by up to 4 pixels on each side
+									local bringIn = math.min(4, overBy / 2);
+									self.Label:SetPoint("LEFT", self, "LEFT", 8 - bringIn, 0);
+									self:SetWidth(self.Label:GetWidth() + 15 - bringIn * 2);
+								end
+							</OnLoad>
+						</Scripts>
 					</Button>
 					<Button parentKey="RefreshButton">
 						<Size x="32" y="32"/>
@@ -1334,10 +1335,12 @@
 						</Layers>
 						<Animations>
 							<AnimationGroup parentKey="WaitAnim" looping="REPEAT">
-								<Alpha childKey="Waitdot1" startDelay="0.65" duration="0" order="1" fromAlpha="0" toAlpha="1"/>
-								<Alpha childKey="Waitdot2" startDelay="0.65" duration="0" order="2" fromAlpha="0" toAlpha="1"/>
-								<Alpha childKey="Waitdot3" startDelay="0.65" duration="0" order="3" fromAlpha="0" toAlpha="1"/>
-								<Alpha childKey="Waitdot3" startDelay="0.65" duration="0" order="4" fromAlpha="1" toAlpha="0"/>
+								<Alpha childKey="Waitdot1" startDelay="0.65" duration="0.15" order="1" fromAlpha="0" toAlpha="1"/>
+								<Alpha childKey="Waitdot2" startDelay="0.50" duration="0.15" order="2" fromAlpha="0" toAlpha="1"/>
+								<Alpha childKey="Waitdot3" startDelay="0.50" duration="0.15" order="3" fromAlpha="0" toAlpha="1"/>
+								<Alpha childKey="Waitdot1" startDelay="0.50" duration="0.15" order="4" fromAlpha="1" toAlpha="0"/>
+								<Alpha childKey="Waitdot2" startDelay="0.50" duration="0.15" order="4" fromAlpha="1" toAlpha="0"/>
+								<Alpha childKey="Waitdot3" startDelay="0.50" duration="0.15" order="4" fromAlpha="1" toAlpha="0"/>
 							</AnimationGroup>
 						</Animations>
 						<Scripts>
