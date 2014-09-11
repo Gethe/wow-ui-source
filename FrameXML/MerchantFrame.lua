@@ -45,6 +45,7 @@ end
 
 function MerchantFrame_OnShow(self)
 	OpenAllBags(self);
+	ContainerFrame_UpdateAll();
 	
 	-- Update repair all button status
 	MerchantFrame_UpdateCanRepairAll();
@@ -501,7 +502,7 @@ function MerchantFrame_ConfirmExtendedItemCost(itemButton, numToPurchase)
 		end
 	end
 	
-	if ( not usingCurrency and maxQuality <= ITEM_QUALITY_UNCOMMON ) then
+	if ( not usingCurrency and maxQuality <= LE_ITEM_QUALITY_UNCOMMON ) then
 		BuyMerchantItem( itemButton:GetID(), numToPurchase );
 		return;
 	end
@@ -526,7 +527,7 @@ function MerchantFrame_ConfirmExtendedItemCost(itemButton, numToPurchase)
 		local specName, specIcon;
 		specText = "\n\n";
 		for i=1, #specs do
-			_, specName, _, specIcon = GetSpecializationInfoByID(specs[i]);
+			_, specName, _, specIcon = GetSpecializationInfoByID(specs[i], UnitSex("player"));
 			specText = specText.." |T"..specIcon..":0:0:0:-1|t "..NORMAL_FONT_COLOR_CODE..specName..FONT_COLOR_CODE_CLOSE;
 			if (i < #specs) then
 				specText = specText..PLAYER_LIST_DELIMITER
@@ -565,10 +566,10 @@ function MerchantFrame_UpdateCanRepairAll()
 	if ( MerchantRepairAllIcon ) then
 		local repairAllCost, canRepair = GetRepairAllCost();
 		if ( canRepair ) then
-			SetDesaturation(MerchantRepairAllIcon, nil);
+			SetDesaturation(MerchantRepairAllIcon, false);
 			MerchantRepairAllButton:Enable();
 		else
-			SetDesaturation(MerchantRepairAllIcon, 1);
+			SetDesaturation(MerchantRepairAllIcon, true);
 			MerchantRepairAllButton:Disable();
 		end	
 	end
@@ -577,10 +578,10 @@ end
 function MerchantFrame_UpdateGuildBankRepair()
 	local repairAllCost, canRepair = GetRepairAllCost();
 	if ( canRepair ) then
-		SetDesaturation(MerchantGuildBankRepairButtonIcon, nil);
+		SetDesaturation(MerchantGuildBankRepairButtonIcon, false);
 		MerchantGuildBankRepairButton:Enable();
 	else
-		SetDesaturation(MerchantGuildBankRepairButtonIcon, 1);
+		SetDesaturation(MerchantGuildBankRepairButtonIcon, true);
 		MerchantGuildBankRepairButton:Disable();
 	end	
 end
@@ -801,7 +802,7 @@ function MerchantFrame_UpdateFilterString()
 	elseif currFilter == LE_LOOT_FILTER_ALL then
 		name = ALL;
 	else -- Spec
-		local _, specName, _, icon = GetSpecializationInfo(currFilter - LE_LOOT_FILTER_SPEC1 + 1);
+		local _, specName, _, icon = GetSpecializationInfo(currFilter - LE_LOOT_FILTER_SPEC1 + 1, nil, nil, nil, UnitSex("player"));
 		name = specName;
 	end
 	
@@ -812,6 +813,7 @@ function MerchantFrame_InitFilter()
 	local info = UIDropDownMenu_CreateInfo();
 	local currFilter = GetMerchantFilter();
 	local className = UnitClass("player");
+	local sex = UnitSex("player");
 
 	info.func = MerchantFrame_SetFilter;
 	
@@ -822,7 +824,7 @@ function MerchantFrame_InitFilter()
 	
 	local numSpecs = GetNumSpecializations();
 	for i = 1, numSpecs do
-		local _, name, _, icon = GetSpecializationInfo(i);
+		local _, name, _, icon = GetSpecializationInfo(i, nil, nil, nil, sex);
 		info.text = name;
 		info.arg1 = LE_LOOT_FILTER_SPEC1 + i - 1;
 		info.checked = currFilter == (LE_LOOT_FILTER_SPEC1 + i - 1);

@@ -15,14 +15,10 @@
       <AbsDimension x="18" y="18"/>
     </Size>
     <Frames>
-		<Cooldown name="$parentCooldown" drawEdge="true" frameStrata="LOW">
+		<Cooldown name="$parentCooldown" drawEdge="true" frameStrata="LOW" inherits="CooldownFrameTemplate">
 			<Size x="15" y="15"/>
 			<Anchors>
-			  <Anchor point="CENTER">
-				<Offset>
-				  <AbsDimension x="0" y="-1"/>
-				</Offset>
-			  </Anchor>
+			  <Anchor point="CENTER" x="0" y="-1"/>
 			</Anchors>
 		</Cooldown>
 		<Frame name="$parentBorder" frameStrata="LOW">

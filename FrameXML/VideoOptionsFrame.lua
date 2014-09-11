@@ -34,12 +34,18 @@ function VideoOptionsFrame_OnHide (self)
 		StaticPopup_Show("CLIENT_LOGOUT_ALERT");
 		VideoOptionsFrame.logout = nil;
 	end
+	
+	if (not self.ignoreCancelOnHide) then
+		OptionsFrameCancel_OnClick(VideoOptionsFrame);
+	end
 end
 
 function VideoOptionsFrameOkay_OnClick (self, button, down, apply)
 	OptionsFrameOkay_OnClick(VideoOptionsFrame, apply);
 	if ( not apply ) then
+		VideoOptionsFrame.ignoreCancelOnHide = true;
 		VideoOptionsFrame_Toggle();
+		VideoOptionsFrame.ignoreCancelOnHide = nil;
 	end
 end
 

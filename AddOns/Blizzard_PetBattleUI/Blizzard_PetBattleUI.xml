@@ -686,9 +686,9 @@
 		</Scripts>
 		<Animations>
 			<AnimationGroup parentKey="CooldownFlashAnim">
-				<Rotation targetKey="$parent.$parent.CooldownFlash" degrees="-90" duration="0.5" order="1"/>
-				<Alpha targetKey="$parent.$parent.CooldownFlash" change="0.50" duration="0.1667" order="1"/>
-				<Alpha targetKey="$parent.$parent.CooldownFlash" change="-0.50" duration="0.3333" order="2"/>
+				<Rotation childKey="CooldownFlash" degrees="-90" duration="0.5" order="1"/>
+				<Alpha childKey="CooldownFlash" change="0.50" duration="0.1667" order="1"/>
+				<Alpha childKey="CooldownFlash" change="-0.50" duration="0.3333" order="2"/>
 			</AnimationGroup>
 		</Animations>
 	</Button>
@@ -1057,18 +1057,18 @@
 				</Frames>
 				<Animations>
 					<AnimationGroup parentKey="SpeedFlash">
-						<Alpha targetKey="$parent.$parent.BorderFlash" change="1.0" duration="0.34" smoothing="IN_OUT" order="1"/>
-						<Alpha targetKey="$parent.$parent.BorderFlash" change="-0.90" duration="0.33" smoothing="IN_OUT" order="2"/>
-						<Alpha targetKey="$parent.$parent.BorderFlash" change="0.90" duration="0.33" smoothing="IN_OUT" order="3"/>
-						<Alpha targetKey="$parent.$parent.BorderFlash" change="-0.90" duration="0.33" smoothing="IN_OUT" order="4"/>
-						<Alpha targetKey="$parent.$parent.BorderFlash" change="0.90" duration="0.33" smoothing="IN_OUT" order="5"/>
-						<Alpha targetKey="$parent.$parent.BorderFlash" change="-0.90" duration="0.33" smoothing="IN_OUT" order="6"/>
-						<Alpha targetKey="$parent.$parent.BorderFlash" change="0.90" duration="0.33" smoothing="IN_OUT" order="7"/>
-						<Alpha targetKey="$parent.$parent.BorderFlash" change="-0.90" duration="0.33" smoothing="IN_OUT" order="8"/>
-						<Alpha targetKey="$parent.$parent.BorderFlash" change="0.90" duration="0.33" smoothing="IN_OUT" order="9"/>
-						<Alpha targetKey="$parent.$parent.BorderFlash" change="-0.90" duration="0.33" smoothing="IN_OUT" order="10"/>
-						<Alpha targetKey="$parent.$parent.BorderFlash" change="0.90" duration="0.33" smoothing="IN_OUT" order="11"/>
-						<Alpha targetKey="$parent.$parent.BorderFlash" change="-1.0" duration="0.34" smoothing="IN_OUT" order="12"/>
+						<Alpha childKey="BorderFlash" change="1.0" duration="0.34" smoothing="IN_OUT" order="1"/>
+						<Alpha childKey="BorderFlash" change="-0.90" duration="0.33" smoothing="IN_OUT" order="2"/>
+						<Alpha childKey="BorderFlash" change="0.90" duration="0.33" smoothing="IN_OUT" order="3"/>
+						<Alpha childKey="BorderFlash" change="-0.90" duration="0.33" smoothing="IN_OUT" order="4"/>
+						<Alpha childKey="BorderFlash" change="0.90" duration="0.33" smoothing="IN_OUT" order="5"/>
+						<Alpha childKey="BorderFlash" change="-0.90" duration="0.33" smoothing="IN_OUT" order="6"/>
+						<Alpha childKey="BorderFlash" change="0.90" duration="0.33" smoothing="IN_OUT" order="7"/>
+						<Alpha childKey="BorderFlash" change="-0.90" duration="0.33" smoothing="IN_OUT" order="8"/>
+						<Alpha childKey="BorderFlash" change="0.90" duration="0.33" smoothing="IN_OUT" order="9"/>
+						<Alpha childKey="BorderFlash" change="-0.90" duration="0.33" smoothing="IN_OUT" order="10"/>
+						<Alpha childKey="BorderFlash" change="0.90" duration="0.33" smoothing="IN_OUT" order="11"/>
+						<Alpha childKey="BorderFlash" change="-1.0" duration="0.34" smoothing="IN_OUT" order="12"/>
 					</AnimationGroup>
 				</Animations>
 				<Scripts>
@@ -1224,18 +1224,18 @@
 				</Frames>
 				<Animations>
 					<AnimationGroup parentKey="SpeedFlash">
-						<Alpha targetKey="$parent.$parent.BorderFlash" change="1.0" duration="0.34" smoothing="IN_OUT" order="1"/>
-						<Alpha targetKey="$parent.$parent.BorderFlash" change="-0.90" duration="0.33" smoothing="IN_OUT" order="2"/>
-						<Alpha targetKey="$parent.$parent.BorderFlash" change="0.90" duration="0.33" smoothing="IN_OUT" order="3"/>
-						<Alpha targetKey="$parent.$parent.BorderFlash" change="-0.90" duration="0.33" smoothing="IN_OUT" order="4"/>
-						<Alpha targetKey="$parent.$parent.BorderFlash" change="0.90" duration="0.33" smoothing="IN_OUT" order="5"/>
-						<Alpha targetKey="$parent.$parent.BorderFlash" change="-0.90" duration="0.33" smoothing="IN_OUT" order="6"/>
-						<Alpha targetKey="$parent.$parent.BorderFlash" change="0.90" duration="0.33" smoothing="IN_OUT" order="7"/>
-						<Alpha targetKey="$parent.$parent.BorderFlash" change="-0.90" duration="0.33" smoothing="IN_OUT" order="8"/>
-						<Alpha targetKey="$parent.$parent.BorderFlash" change="0.90" duration="0.33" smoothing="IN_OUT" order="9"/>
-						<Alpha targetKey="$parent.$parent.BorderFlash" change="-0.90" duration="0.33" smoothing="IN_OUT" order="10"/>
-						<Alpha targetKey="$parent.$parent.BorderFlash" change="0.90" duration="0.33" smoothing="IN_OUT" order="11"/>
-						<Alpha targetKey="$parent.$parent.BorderFlash" change="-1.0" duration="0.34" smoothing="IN_OUT" order="12"/>
+						<Alpha childKey="BorderFlash" change="1.0" duration="0.34" smoothing="IN_OUT" order="1"/>
+						<Alpha childKey="BorderFlash" change="-0.90" duration="0.33" smoothing="IN_OUT" order="2"/>
+						<Alpha childKey="BorderFlash" change="0.90" duration="0.33" smoothing="IN_OUT" order="3"/>
+						<Alpha childKey="BorderFlash" change="-0.90" duration="0.33" smoothing="IN_OUT" order="4"/>
+						<Alpha childKey="BorderFlash" change="0.90" duration="0.33" smoothing="IN_OUT" order="5"/>
+						<Alpha childKey="BorderFlash" change="-0.90" duration="0.33" smoothing="IN_OUT" order="6"/>
+						<Alpha childKey="BorderFlash" change="0.90" duration="0.33" smoothing="IN_OUT" order="7"/>
+						<Alpha childKey="BorderFlash" change="-0.90" duration="0.33" smoothing="IN_OUT" order="8"/>
+						<Alpha childKey="BorderFlash" change="0.90" duration="0.33" smoothing="IN_OUT" order="9"/>
+						<Alpha childKey="BorderFlash" change="-0.90" duration="0.33" smoothing="IN_OUT" order="10"/>
+						<Alpha childKey="BorderFlash" change="0.90" duration="0.33" smoothing="IN_OUT" order="11"/>
+						<Alpha childKey="BorderFlash" change="-1.0" duration="0.34" smoothing="IN_OUT" order="12"/>
 					</AnimationGroup>
 				</Animations>
 				<Scripts>
@@ -1500,10 +1500,12 @@
 								PetBattleFrame_PetSelectionFrameUpdateVisible(true);
 							</OnClick>
 							<OnEnter>
-								GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
-								GameTooltip:SetText(SWITCH_PET, 1, 1, 1, true);
-								GameTooltip:AddLine(SWITCH_PET_DESCRIPTION, nil, nil, nil, true);
-								GameTooltip:Show();
+								if ( self:GetEffectiveAlpha() > 0 ) then
+									GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+									GameTooltip:SetText(SWITCH_PET, 1, 1, 1, true);
+									GameTooltip:AddLine(SWITCH_PET_DESCRIPTION, nil, nil, nil, true);
+									GameTooltip:Show();
+								end
 							</OnEnter>
 							<OnLeave function="GameTooltip_Hide"/>
 						</Scripts>

@@ -27,7 +27,7 @@ function GlueTooltip_SetOwner(self, owner, xOffset, yOffset, myPoint, ownerPoint
 	self:Show();
 end
 
-function GlueTooltip_GetOwner()
+function GlueTooltip_GetOwner(self)
 	return self.owner;
 end
 

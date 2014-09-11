@@ -1,0 +1,381 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\FrameXML\UI.xsd">
+	
+	<Script file="Blizzard_BonusObjectiveTracker.lua"/>
+
+	<Frame name="BonusObjectiveTrackerLineTemplate" inherits="ObjectiveTrackerCheckLineTemplate" virtual="true">
+		<Animations>
+			<AnimationGroup parentKey="TranslationAnim">
+				<Translation childKey="Text" offsetX="-150" offsetY="0" duration="0.01" order="1"/>
+				<Translation childKey="Text" offsetX="150" offsetY="0" duration="3" order="2"/>
+			</AnimationGroup>
+		</Animations>
+	</Frame>
+	
+	<ScrollFrame name="BonusObjectiveTrackerBlockTemplate" hidden="true" virtual="true" alpha="0">
+		<Size x="240" y="10"/>
+		<ScrollChild>
+			<Frame parentKey="ScrollContents">
+				<Size x="10" y="10"/>
+			</Frame>
+		</ScrollChild>
+		<Animations>
+			<AnimationGroup parentKey="AnimIn">
+				<Translation parentKey="TransOut" childKey="ScrollContents" offsetX="0" offsetY="0" duration="0.01" endDelay="0" order="1"/>
+				<Alpha change="1" duration="0.1" order="2"/>
+				<Translation parentKey="TransIn" childKey="ScrollContents" offsetX="0" offsetY="0" duration="0" order="2"/>
+				<Scripts>
+					<OnFinished function="BonusObjectiveTracker_OnBlockAnimInFinished"/>
+				</Scripts>						
+			</AnimationGroup>
+			<AnimationGroup parentKey="AnimOut">
+				<Alpha change="-1.0" duration="0.5" startDelay="3.5" order="1"/>
+				<Scripts>
+					<OnFinished function="BonusObjectiveTracker_OnBlockAnimOutFinished"/>
+				</Scripts>
+			</AnimationGroup>
+		</Animations>
+		<Scripts>
+			<OnLoad>
+				self:SetWidth(OBJECTIVE_TRACKER_LINE_WIDTH);
+			</OnLoad>
+			<OnEnter function="BonusObjectiveTracker_OnBlockEnter"/>
+			<OnLeave function="BonusObjectiveTracker_OnBlockLeave"/>
+		</Scripts>
+	</ScrollFrame>
+
+	<Frame name="BonusObjectiveTrackerRewardTemplate" parentArray="Rewards" virtual="true">
+		<Size x="32" y="32"/>
+		<Anchors>
+			<Anchor point="TOPLEFT" relativeKey="$parent.RewardsTop" relativePoint="BOTTOMLEFT" x="25" y="0"/>
+		</Anchors>
+		<Layers>
+			<Layer level="ARTWORK">
+				<Texture parentKey="ItemIcon" hidden="false" alpha="0" file="Interface\Icons\XP_Icon">
+					<Size x="32" y="32"/>
+					<Anchors>
+						<Anchor point="TOPLEFT"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="ItemBorder" hidden="false" alpha="0" atlas="Objective-ItemBorder" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.ItemIcon" relativePoint="TOPRIGHT" x="2" y="-1"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="OVERLAY">
+				<FontString parentKey="Label" alpha="0" inherits="GameFontHighlightSmall" justifyH="LEFT">
+					<Size x="76" y="36"/>
+					<Anchors>
+						<Anchor point="LEFT" relativeKey="$parent.ItemIcon" relativePoint="RIGHT" x="6" y="0"/>
+					</Anchors>
+				</FontString>
+				<FontString parentKey="Count" alpha="0" inherits="NumberFontNormalSmall" justifyH="RIGHT">
+					<Anchors>
+						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.ItemIcon" x="5" y="2"/>
+					</Anchors>
+				</FontString>						
+			</Layer>
+		</Layers>
+		<Animations>
+			<AnimationGroup parentKey="Anim">
+				<Alpha childKey="ItemIcon" startDelay="0.95" duration="0.3" order="1" fromAlpha="0" toAlpha="1"/>
+				<Alpha childKey="ItemIcon" startDelay="2" duration="1" order="2" fromAlpha="1" toAlpha="0"/>
+				<Alpha childKey="Label" startDelay="0.95" duration="0.3" order="1" fromAlpha="0" toAlpha="1"/>
+				<Alpha childKey="Label" startDelay="2" duration="1" order="2" fromAlpha="1" toAlpha="0"/>
+				<Alpha childKey="Count" startDelay="0.95" duration="0.3" order="1" fromAlpha="0" toAlpha="1"/>
+				<Alpha childKey="Count" startDelay="2" duration="1" order="2" fromAlpha="1" toAlpha="0"/>						
+				<Alpha childKey="ItemBorder" startDelay="0.95" duration="0.3" order="1" fromAlpha="0" toAlpha="1"/>
+				<Alpha childKey="ItemBorder" startDelay="2" duration="1" order="2" fromAlpha="1" toAlpha="0"/>
+			</AnimationGroup> 
+		</Animations>
+	</Frame>
+	
+	<Frame name="BonusTrackerProgressBarFlareAnimTemplate" enableMouse="false" virtual="true">
+		<Size x="100" y="38"/>
+		<Anchors>
+			<Anchor point="LEFT" x="0" y="0"/>
+		</Anchors>
+		<Layers>
+			<Layer level="ARTWORK">
+				<Texture parentKey="AnimTopLine" hidden="false" alpha="0" alphaMode="ADD" atlas="OBJFX_LineBurst">
+					<Size x="60" y="10"/>
+					<Anchors>
+						<Anchor point="CENTER" x="0" y="10"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="AnimBottomLine" hidden="false" alpha="0" alphaMode="ADD" atlas="OBJFX_LineBurst">
+					<Size x="60" y="10"/>
+					<Anchors>
+						<Anchor point="CENTER" x="0" y="-10"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="AnimBarGlow" hidden="false" alpha="0" alphaMode="ADD" atlas="OBJFX_LineGlow">
+					<Size x="100" y="38"/>
+					<Anchors>
+						<Anchor point="CENTER" x="5" y="0"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Animations>
+			<AnimationGroup parentKey="FlareAnim" setToFinalAlpha="true">
+				<Alpha childKey="AnimTopLine" duration="0.25" order="1" fromAlpha="0" toAlpha="1"/>
+				<Alpha childKey="AnimTopLine" startDelay="0.3" duration="0.2" order="1" fromAlpha="1" toAlpha="0"/>
+				<Translation parentKey="TransAnim" childKey="AnimTopLine" duration="0.25" order="1" offsetX="5" offsetY="0"/>
+				<Alpha childKey="AnimBottomLine" duration="0.25" order="1" fromAlpha="0" toAlpha="1"/>
+				<Alpha childKey="AnimBottomLine" startDelay="0.3" duration="0.2" order="1" fromAlpha="1" toAlpha="0"/>
+				<Translation parentKey="TransAnim2" childKey="AnimBottomLine" duration="0.25" order="1" offsetX="5" offsetY="0"/>
+				<Alpha childKey="AnimBarGlow" duration="0.25" order="1" fromAlpha="0" toAlpha="1"/>
+				<Alpha childKey="AnimBarGlow" startDelay="0.3" duration="0.2" order="1" fromAlpha="1" toAlpha="0"/>
+				<Translation parentKey="TransAnim3" childKey="AnimBarGlow" duration="0.25" order="1" offsetX="5" offsetY="0"/>
+				<Scale childKey="AnimBarGlow" duration="0.25" order="1" fromScaleX="0.25" fromScaleY="1" toScaleX="0.75" toScaleY="1">
+					<Origin point="LEFT">
+						<Offset x="20" y="0"/>
+					</Origin>
+				</Scale>
+			</AnimationGroup>
+		</Animations>
+	</Frame>
+	
+	<Frame name="BonusTrackerProgressBarFullBarFlareTemplate" hidden="false" alpha="1" virtual="true">
+		<Size x="128" y="128"/>
+		<Layers>
+			<Layer level="ARTWORK">
+				<Texture parentKey="BarGlow" hidden="false" alpha="0" alphaMode="BLEND" atlas="OBJFX-BarGlow">
+					<Size x="300" y="32"/>
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Animations>
+			<AnimationGroup parentKey="FlareAnim" setToFinalAlpha="true">
+				<Alpha childKey="BarGlow" duration="0.15" order="1" fromAlpha="0" toAlpha="1"/>
+				<Alpha childKey="BarGlow" startDelay="0.3" duration="0.4" order="1" fromAlpha="1" toAlpha="0"/>
+			</AnimationGroup>
+		</Animations>
+	</Frame>
+	
+	<Frame name="BonusTrackerProgressBarSmallFlareAnimTemplate" hidden="false" alpha="1" virtual="true">
+		<Size x="100" y="30"/>
+		<Anchors>
+			<Anchor point="LEFT" x="0" y="0"/>
+		</Anchors>
+		<Layers>
+			<Layer level="ARTWORK">
+				<Texture parentKey="BarGlow" hidden="false" alpha="0" alphaMode="ADD" atlas="OBJFX_LineGlow">
+					<Size x="100" y="30"/>
+					<Anchors>
+						<Anchor point="CENTER" x="5" y="0"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Animations>
+			<AnimationGroup parentKey="FlareAnim" setToFinalAlpha="true">
+				<Alpha childKey="BarGlow" duration="0.25" order="1" fromAlpha="0" toAlpha="1"/>
+				<Alpha childKey="BarGlow" startDelay="0.3" duration="0.2" order="1" fromAlpha="1" toAlpha="0"/>
+				<Translation parentKey="TransAnim" childKey="BarGlow" duration="0.25" order="1" offsetX="2" offsetY="0"/>
+				<Scale childKey="BarGlow" duration="0.25" order="1" fromScaleX="0.15" fromScaleY="1" toScaleX="0.2" toScaleY="1">
+					<Origin point="LEFT">
+						<Offset x="20" y="0"/>
+					</Origin>
+				</Scale>
+			</AnimationGroup>
+		</Animations>
+	</Frame>
+			
+	<Frame name="BonusTrackerProgressBarTemplate" virtual="true" hidden="true">
+		<Size x="192" y="25"/>
+		<Anchors>
+			<Anchor point="CENTER"/>
+		</Anchors>
+		<Frames>
+			<StatusBar parentKey="Bar" drawLayer="BACKGROUND" minValue="0" maxValue="100" defaultValue="0" enableMouse="true">
+				<Size x="180" y="15"/>
+				<Anchors>
+					<Anchor point="RIGHT" x="15" y="0"/>
+				</Anchors>
+				<Layers>
+					<Layer level="ARTWORK">
+						<Texture parentKey="BorderLeft" file="Interface\PaperDollInfoFrame\UI-Character-Skills-BarBorder">
+							<Size x="9" y="22"/>
+							<TexCoords left="0.007843" right="0.043137" top="0.193548" bottom="0.774193"/>
+							<Anchors>
+								<Anchor point="LEFT" x="-3" y="0"/>
+							</Anchors>
+						</Texture>
+						<Texture parentKey="BorderRight" file="Interface\PaperDollInfoFrame\UI-Character-Skills-BarBorder">
+							<Size x="9" y="22"/>
+							<TexCoords left="0.043137" right="0.007843" top="0.193548" bottom="0.774193"/>
+							<Anchors>
+								<Anchor point="RIGHT" x="3" y="0"/>
+							</Anchors>
+						</Texture>
+						<Texture parentKey="BorderMid" file="Interface\PaperDollInfoFrame\UI-Character-Skills-BarBorder">
+							<TexCoords left="0.113726" right="0.1490196" top="0.193548" bottom="0.774193"/>
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeKey="$parent.BorderLeft" relativePoint="TOPRIGHT"/>
+								<Anchor point="BOTTOMRIGHT" relativeKey="$parent.BorderRight" relativePoint="BOTTOMLEFT"/>
+							</Anchors>
+						</Texture>
+						<FontString parentKey="Label" inherits="GameFontHighlightMedium" justifyH="LEFT">
+						  <Anchors>
+							<Anchor point="CENTER" x="0" y="-2"/>
+						  </Anchors>
+						</FontString>
+					</Layer>
+					<Layer level="BACKGROUND" textureSubLevel="-1">
+						<Texture>
+							<Color r="0.04" g="0.07" b="0.18"/>
+						</Texture>
+					</Layer>
+				</Layers>
+				<BarTexture file="Interface\TargetingFrame\UI-StatusBar"/>
+				<BarColor r="0.26" g="0.42" b="1"/>
+				<Scripts>
+					<OnEnter>
+						self.Label:Show();
+					</OnEnter>
+					<OnLeave>
+						self.Label:Hide();
+					</OnLeave>
+				</Scripts>
+			</StatusBar>
+			<Frame parentKey="Flare1" inherits="BonusTrackerProgressBarFlareAnimTemplate"/>
+			<Frame parentKey="Flare2" inherits="BonusTrackerProgressBarFlareAnimTemplate"/>
+			
+			<Frame parentKey="SmallFlare1" inherits="BonusTrackerProgressBarSmallFlareAnimTemplate"/>
+			<Frame parentKey="SmallFlare2" inherits="BonusTrackerProgressBarSmallFlareAnimTemplate"/>
+			
+			<Frame parentKey="FullBarFlare1" inherits="BonusTrackerProgressBarFullBarFlareTemplate">
+				<Anchors>
+					<Anchor point="CENTER" relativeKey="$parent.Bar" relativePoint="CENTER" x="12" y="0"/>
+				</Anchors>
+			</Frame>
+			
+			<Frame parentKey="FullBarFlare2" inherits="BonusTrackerProgressBarFullBarFlareTemplate">
+				<Anchors>
+					<Anchor point="CENTER" relativeKey="$parent.Bar" relativePoint="CENTER" x="12" y="0"/>
+				</Anchors>
+			</Frame>
+			
+		</Frames>
+		<Scripts>
+			<OnEvent function="BonusObjectiveTrackerProgressBar_OnEvent"/>
+		</Scripts>		
+	</Frame>
+	
+    <Frame name="ObjectiveTrackerBonusRewardsFrame" parent="UIParent" hidden="true">
+        <Size x="168" y="128"/>
+        <Layers>
+            <Layer level="ARTWORK">
+                <Texture parentKey="RewardsTop" hidden="false" alpha="0" atlas="Rewards-Top" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="TOPRIGHT"/>
+					</Anchors>
+				</Texture>
+                <Texture parentKey="HeaderTop" hidden="false" alpha="0" atlas="OBJFX_LineGlow" useAtlasSize="true">
+                    <Anchors>
+                        <Anchor point="CENTER" relativeKey="$parent.RewardsTop" x="50" y="6"/>
+                    </Anchors>
+                </Texture>
+                <Texture parentKey="RewardsBottom" hidden="false" alpha="0" atlas="Rewards-Top" useAtlasSize="true">
+                    <Anchors>
+                        <Anchor point="CENTER" relativeKey="$parent.RewardsTop" x="0" y="0"/>
+                    </Anchors>
+                </Texture>
+            </Layer>
+            <Layer level="BORDER">
+                <Texture parentKey="RewardsShadow" hidden="false" alpha="0" atlas="Rewards-Shadow" useAtlasSize="true">
+                    <Anchors>
+                        <Anchor point="TOP" relativeKey="$parent.RewardsBottom" relativePoint="BOTTOM" x="0" y="10"/>
+                    </Anchors>
+                </Texture>
+            </Layer>			
+            <Layer level="OVERLAY">
+				<FontString parentKey="Header" alpha="0" inherits="QuestFont_Outline_Huge" text="REWARDS">
+					<Anchors>
+						<Anchor point="TOP" x="0" y="2"/>
+					</Anchors>
+				</FontString>			
+                <Texture parentKey="HeaderGlow" hidden="false" alpha="0" alphaMode="ADD" atlas="OBJFX_LineGlow" useAtlasSize="true">
+                    <Anchors>
+                        <Anchor point="CENTER" relativeKey="$parent.HeaderTop" x="-25" y="0"/>
+                    </Anchors>
+                </Texture>
+            </Layer>
+        </Layers>
+		<Frames>
+			<Frame inherits="BonusObjectiveTrackerRewardTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.RewardsTop" relativePoint="BOTTOMLEFT" x="25" y="0"/>
+                </Anchors>
+			</Frame>
+		</Frames>
+        <Animations>
+            <AnimationGroup parentKey="Anim" setToFinalAlpha="true">
+                <Scale childKey="RewardsTop" duration="0.25" order="1" fromScaleX="0.25" fromScaleY="1" toScaleX="1" toScaleY="1">
+					<Origin point="RIGHT"/>
+				</Scale>
+                <Alpha childKey="RewardsTop" duration="0.25" order="1" fromAlpha="0" toAlpha="1"/>
+                <Alpha childKey="RewardsTop" startDelay="2" duration="1" order="2" fromAlpha="1" toAlpha="0"/>
+                <Alpha childKey="Header" duration="0.25" order="1" fromAlpha="0" toAlpha="1"/>
+                <Alpha childKey="Header" startDelay="2" duration="1" order="2" fromAlpha="1" toAlpha="0"/>				
+                <Scale childKey="HeaderTop" duration="0.25" order="1" fromScaleX="0.25" fromScaleY="1.2" toScaleX="1.2" toScaleY="1.2"/>
+                <Alpha childKey="HeaderTop" duration="0.25" order="1" fromAlpha="0" toAlpha="1"/>
+                <Translation childKey="HeaderTop" duration="0.25" order="1" offsetX="-30" offsetY="0"/>
+                <Alpha childKey="HeaderTop" startDelay="2" duration="1" order="2" fromAlpha="1" toAlpha="0"/>
+                <Scale childKey="HeaderGlow" startDelay="0.05" duration="0.5" order="1" fromScaleX="1" fromScaleY="1.2" toScaleX="1.2" toScaleY="1.2"/>
+                <Alpha childKey="HeaderGlow" startDelay="0.05" duration="0.25" order="1" fromAlpha="0" toAlpha="1"/>
+                <Alpha childKey="HeaderGlow" startDelay="0.3" duration="0.5" order="1" fromAlpha="1" toAlpha="0"/>
+                <Translation childKey="HeaderGlow" startDelay="0.05" duration="0.5" order="1" offsetX="-70" offsetY="0"/>
+                <Alpha childKey="RewardsBottom" startDelay="0.5" duration="0.25" order="1" fromAlpha="0" toAlpha="1"/>
+                <Translation parentKey="RewardsBottomAnim" childKey="RewardsBottom" startDelay="0.5" duration="0.35" order="1" offsetX="0" offsetY="-83"/>
+                <Alpha childKey="RewardsBottom" startDelay="2" duration="1" order="2" fromAlpha="1" toAlpha="0"/>
+                <Scale parentKey="RewardsShadowAnim" childKey="RewardsShadow" startDelay="0.5" duration="0.35" order="1" fromScaleX="0.8" fromScaleY="0.2" toScaleX="0.8" toScaleY="3">
+					<Origin point="TOP"/>
+				</Scale>
+                <Alpha childKey="RewardsShadow" startDelay="0.5" duration="0.35" order="1" fromAlpha="0" toAlpha="1"/>
+                <Alpha childKey="RewardsShadow" startDelay="2" duration="1" order="2" fromAlpha="1" toAlpha="0"/>
+				<Scripts>
+					<OnFinished function="BonusObjectiveTracker_OnAnimateRewardDone"/>
+				</Scripts>				
+            </AnimationGroup>
+        </Animations>
+    </Frame>
+
+	<Frame parent="ObjectiveTrackerBlocksFrame" inherits="ObjectiveTrackerHeaderTemplate" hidden="true">
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="TopShadow" atlas="OBJBonusBar-Top" useAtlasSize="true" alpha="0">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="-27" y="-24"/>
+					</Anchors>
+					<Color r="1" g="0" b="0"/>
+				</Texture>
+				<Texture parentKey="BottomShadow" atlas="OBJBonusBar-Top" useAtlasSize="true" alpha="0">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="-27" y="0"/>
+					</Anchors>
+					<TexCoords left="0" right="1" top="1" bottom="0"/>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Animations>
+			<AnimationGroup parentKey="ShadowAnim">
+				<Alpha childKey="TopShadow" change="1" duration="0.05" startDelay="0.05" order="1"/>
+				<Alpha childKey="BottomShadow" change="1" duration="0.05" order="2"/>
+				<Translation parentKey="TransAnim" childKey="BottomShadow" offsetX="0" offsetY="-100" duration="1" endDelay="1" order="3"/>
+				<Alpha childKey="TopShadow" change="-1" duration="0.2" order="4"/>
+				<Alpha childKey="BottomShadow" change="-1" duration="0.2" order="4"/>				
+			</AnimationGroup>
+		</Animations>
+		<Scripts>
+			<OnLoad function="BonusObjectiveTracker_OnHeaderLoad"/>
+			<OnEvent function="BonusObjectiveTracker_OnEvent"/>
+		</Scripts>
+	</Frame>
+</Ui>

@@ -1,13 +1,13 @@
 function GuildInviteFrame_OnEvent(self, event, ...)
 	if ( event == "GUILD_INVITE_REQUEST" ) then
-		local inviterName, guildName, guildLevel, oldGuildName, isNewGuild = ...;
+		local inviterName, guildName, guildPoints, oldGuildName, isNewGuild = ...;
 		local emblem = { select(6, ...) };
 		
 		GuildInviteFrame.inviter = inviterName;
 		
 		GuildInviteFrameInviterName:SetText(inviterName);
 		GuildInviteFrameGuildName:SetText(guildName);
-		GuildInviteFrameLevelNumber:SetText(guildLevel);
+		GuildInviteFrame.Points.Text:SetText(guildPoints);
 		SetLargeGuildTabardTextures(nil, GuildInviteFrameTabardEmblem, GuildInviteFrameTabardBackground, GuildInviteFrameTabardBorder, emblem);
 		-- check if player has any guild rep beyond Neutral 0 if it's being invited to a new guild
 		local name, description, standingID, barMin, barMax, barValue = GetGuildFactionInfo();
@@ -26,12 +26,6 @@ function GuildInviteFrame_OnEvent(self, event, ...)
 		GuildInviteFrame.accepted = nil;
 		GuildInviteFrame.elapsed = 0;
 
-		if ( GetGuildLevelEnabled() ) then
-			GuildInviteFrameLevel:Show();
-		else
-			GuildInviteFrameLevel:Hide();
-		end
-
 		StaticPopupSpecial_Show(GuildInviteFrame);
 	elseif ( event == "GUILD_INVITE_CANCEL" ) then
 		self:Hide();
@@ -41,7 +35,7 @@ end
 function GuildInviteFrame_OnEnter()
 	if ( GuildInviteFrameInviterName:IsTruncated() ) then
 		GameTooltip:SetOwner(GuildInviteFrame, "ANCHOR_CURSOR_RIGHT");
-		GameTooltip:SetText(GuildInviteFrame.inviter, 1, 1, 1, 1, 1);
+		GameTooltip:SetText(GuildInviteFrame.inviter, 1, 1, 1, 1, true);
 	end
 end
 

@@ -2,7 +2,7 @@
 ..\FrameXML\UI.xsd">
 	<Script file="GameMenuFrame.lua"/>
 	<Frame name="GameMenuFrame" toplevel="true" frameStrata="DIALOG" enableMouse="true" hidden="true" parent="UIParent">
-		<Size x="195" y="270"/>
+		<Size x="195" y="312"/>
 		<Anchors>
 			<Anchor point="CENTER"/>
 		</Anchors>
@@ -69,9 +69,21 @@
 					</OnClick>
 				</Scripts>
 			</Button>
+			<Button name="GameMenuButtonWhatsNew" inherits="GameMenuButtonTemplate" text="GAMEMENU_NEW_BUTTON" motionScriptsWhileDisabled="true">
+				<Anchors>
+					<Anchor point="TOP" relativeTo="GameMenuButtonStore" relativePoint="BOTTOM" x="0" y="-1"/>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						PlaySound("igMainMenuOption");
+						HideUIPanel(GameMenuFrame);
+						SplashFrame_Open();
+					</OnClick>
+				</Scripts>
+			</Button>
 			<Button name="GameMenuButtonOptions" inherits="GameMenuButtonTemplate" text="SYSTEMOPTIONS_MENU">
 				<Anchors>
-					<Anchor point="TOP" relativeTo="GameMenuButtonHelp" relativePoint="BOTTOM" x="0" y="-16"/>
+					<Anchor point="TOP" relativeTo="GameMenuButtonWhatsNew" relativePoint="BOTTOM" x="0" y="-16"/>
 				</Anchors>
 				<Scripts>
 					<OnShow>
@@ -141,11 +153,37 @@
 					</OnClick>
 				</Scripts>
 			</Button>
-			<Button name="GameMenuButtonRatings" inherits="GameMenuButtonTemplate" hidden="true" text="RATINGS_MENU">
+			<Button name="GameMenuButtonAddons" inherits="GameMenuButtonTemplate" hidden="true" text="ADDONS">
 				<Anchors>
 					<Anchor point="TOP" relativeTo="GameMenuButtonMacros" relativePoint="BOTTOM" x="0" y="-1"/>
 				</Anchors>
 				<Scripts>
+					<OnLoad>
+						if ( GetNumAddOns() == 0 ) then
+							GameMenuButtonAddons:Hide();
+						else
+							GameMenuButtonAddons:Show();
+						end
+					</OnLoad>
+					<OnClick>
+						PlaySound("igMainMenuOption");
+						HideUIPanel(GameMenuFrame);
+						ShowUIPanel(AddonList);
+					</OnClick>
+				</Scripts>
+			</Button>
+			<Button name="GameMenuButtonRatings" inherits="GameMenuButtonTemplate" hidden="true" text="RATINGS_MENU">
+				<Anchors>
+					<Anchor point="TOP" relativeTo="GameMenuButtonAddons" relativePoint="BOTTOM" x="0" y="-1"/>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						if ( GetNumAddOns() == 0 ) then
+							self:SetParent(GameMenuButtonMacros);
+							self:SetPoint("TOP", GameMenuButtonMacros, "BOTTOM", 0, -1);
+							GameMenuFrame:SetHeight(270);
+						end
+					</OnLoad>
 					<OnClick>
 						PlaySound("igMainMenuOption");
 						HideUIPanel(GameMenuFrame);
@@ -155,9 +193,16 @@
 			</Button>
 			<Button name="GameMenuButtonLogout" inherits="GameMenuButtonTemplate" text="LOGOUT">
 				<Anchors>
-					<Anchor point="TOP" relativeTo="GameMenuButtonMacros" relativePoint="BOTTOM" x="0" y="-16"/>
+					<Anchor point="TOP" relativeTo="GameMenuButtonAddons" relativePoint="BOTTOM" x="0" y="-16"/>
 				</Anchors>
 				<Scripts>
+					<OnLoad>
+						if ( GetNumAddOns() == 0 ) then
+							self:SetParent(GameMenuButtonMacros);
+							self:SetPoint("TOP", GameMenuButtonMacros, "BOTTOM", 0, -16);
+							GameMenuFrame:SetHeight(270);
+						end
+					</OnLoad>
 					<OnShow>
 						if ( not StaticPopup_Visible("CAMP") and not StaticPopup_Visible("QUIT") ) then
 							self:Enable();

@@ -4,6 +4,7 @@ GlueCreditsSoundKits[2] = "Menu-Credits02";
 GlueCreditsSoundKits[3] = "Menu-Credits03";
 GlueCreditsSoundKits[4] = "Menu-Credits04";
 GlueCreditsSoundKits[5] = "Menu-Credits05";
+GlueCreditsSoundKits[6] = "Menu-Credits06";
 
 
 GlueScreenInfo = { };
@@ -47,7 +48,6 @@ GlueAmbienceTracks["DRAENEI"] = "AMB_GlueScreen_Draenei";
 GlueAmbienceTracks["BLOODELF"] = "AMB_GlueScreen_BloodElf";
 GlueAmbienceTracks["GOBLIN"] = "AMB_GlueScreen_Goblin";
 GlueAmbienceTracks["WORGEN"] = "AMB_GlueScreen_Worgen";
-GlueAmbienceTracks["DARKPORTAL"] = "GlueScreenIntro";
 GlueAmbienceTracks["DEATHKNIGHT"] = "AMB_GlueScreen_Deathknight";
 GlueAmbienceTracks["CHARACTERSELECT"] = "GlueScreenIntro";
 GlueAmbienceTracks["PANDAREN"] = "AMB_GlueScreen_Pandaren";
@@ -96,37 +96,47 @@ EXPANSION_LOGOS = {
 	[2] = "Interface\\Glues\\Common\\Glues-WoW-WotLKLogo",
 	[3] = "Interface\\Glues\\Common\\Glues-WoW-CCLogo",
 	[4] = "Interface\\Glues\\Common\\Glues-WoW-MPLogo",
-	[5] = "Interface\\Glues\\Common\\Glues-WoW-MPLogo",
+	[5] = "Interface\\Glues\\Common\\GLUES-WOW-WODLOGO",
 	--When adding entries to here, make sure to update the zhTW and zhCN localization files.
 };
+
+--Login Screen Ambience
+EXPANSION_GLUE_AMBIENCE = {
+	TRIAL = "GlueScreenIntro",
+	[1] = "GlueScreenIntro",
+	[2] = "GlueScreenIntro",
+	[3] = "GlueScreenIntro",
+	[4] = "GlueScreenIntro",
+	[5] = "AMB_GlueScreen_WarlordsofDraenor",
+}
 
 --Music
 EXPANSION_GLUE_MUSIC = {
 	TRIAL = "GS_Cataclysm",
-	[1] = "GS_Cataclysm",
+	[1] = "MUS_1.0_MainTitle_Original",
 	[2] = "GS_Cataclysm",
 	[3] = "GS_Cataclysm",
 	[4] = "MUS_50_HeartofPandaria_MainTitle",
-	[5] = "MUS_50_HeartofPandaria_MainTitle",
+	[5] = "MUS_60_MainTitle",
 }
 
 --Backgrounds
 EXPANSION_HIGH_RES_BG = {
 	TRIAL = "Interface\\Glues\\Models\\UI_MainMenu_Cataclysm\\UI_MainMenu_Cataclysm.m2",
-	[1] = "Interface\\Glues\\Models\\UI_MainMenu_Cataclysm\\UI_MainMenu_Cataclysm.m2",
+	[1] = "Interface\\Glues\\Models\\UI_MAINMENU\\UI_MainMenu.m2",
 	[2] = "Interface\\Glues\\Models\\UI_MainMenu_Cataclysm\\UI_MainMenu_Cataclysm.m2",
 	[3] = "Interface\\Glues\\Models\\UI_MainMenu_Cataclysm\\UI_MainMenu_Cataclysm.m2",
 	[4] = "Interface\\Glues\\Models\\UI_MainMenu_Pandaria\\UI_MainMenu_Pandaria.m2",
-	[5] = "Interface\\Glues\\Models\\UI_MainMenu_Pandaria\\UI_MainMenu_Pandaria.m2",
+	[5] = "Interface\\Glues\\Models\\UI_MainMenu_Warlords\\UI_MainMenu_Warlords.m2",
 }
 
 EXPANSION_LOW_RES_BG = {
 	TRIAL =  "Interface\\Glues\\Models\\UI_MainMenu_Cata_LowBandwidth\\UI_MainMenu_Cata_LowBandwidth.m2",
-	[1] =  "Interface\\Glues\\Models\\UI_MainMenu_Cata_LowBandwidth\\UI_MainMenu_Cata_LowBandwidth.m2",
+	[1] =  "Interface\\Glues\\Models\\UI_MAINMENU\\UI_MainMenu.m2",
 	[2] =  "Interface\\Glues\\Models\\UI_MainMenu_Cata_LowBandwidth\\UI_MainMenu_Cata_LowBandwidth.m2",
 	[3] =  "Interface\\Glues\\Models\\UI_MainMenu_Cata_LowBandwidth\\UI_MainMenu_Cata_LowBandwidth.m2",
 	[4] =  "Interface\\Glues\\Models\\UI_MainMenu_LowBandwidth\\UI_MainMenu_LowBandwidth.m2",
-	[5] =  "Interface\\Glues\\Models\\UI_MainMenu_LowBandwidth\\UI_MainMenu_LowBandwidth.m2",
+	[5] =  "Interface\\Glues\\Models\\UI_MainMenu_Warlords\\UI_MainMenu_Warlords_LowBandwidth.m2",
 }
 
 --Credits titles
@@ -136,6 +146,7 @@ CREDITS_TITLES = { --Note: These are off by 1 from the other expansion tables
 	CREDITS_WOW_LK,
 	CREDITS_WOW_CC,
 	CREDITS_WOW_MOP,
+	CREDITS_WOW_WOD,
 }
 
 -- replace the C functions with local lua versions
@@ -168,9 +179,10 @@ function SetGlueScreen(name)
 			PlayCreditsMusic( GlueCreditsSoundKits[CreditsFrame.creditsType] );
 			StopGlueAmbience();
 		elseif ( name ~= "movie" ) then
-			PlayGlueMusic(EXPANSION_GLUE_MUSIC[GetClientDisplayExpansionLevel()]);
+			local displayedExpansionLevel = GetClientDisplayExpansionLevel();
+			PlayGlueMusic(EXPANSION_GLUE_MUSIC[displayedExpansionLevel]);
 			if (name == "login") then
-				PlayGlueAmbience(GlueAmbienceTracks["DARKPORTAL"], 4.0);
+				PlayGlueAmbience(EXPANSION_GLUE_AMBIENCE[displayedExpansionLevel], 4.0);
 			end
 		end
 	end
@@ -223,25 +235,20 @@ function GlueParent_OnEvent(event, arg1, arg2, arg3)
 	elseif ( event == "SET_GLUE_SCREEN" ) then
 		GlueScreenExit(GetCurrentGlueScreenName(), arg1);
 	elseif ( event == "START_GLUE_MUSIC" ) then
-		PlayGlueMusic(EXPANSION_GLUE_MUSIC[GetClientDisplayExpansionLevel()]);
-		PlayGlueAmbience(GlueAmbienceTracks["DARKPORTAL"], 4.0);
+		local displayedExpansionLevel = GetClientDisplayExpansionLevel();
+		PlayGlueMusic(EXPANSION_GLUE_MUSIC[displayedExpansionLevel]);
+		PlayGlueAmbience(EXPANSION_GLUE_AMBIENCE[displayedExpansionLevel], 4.0);
 	elseif ( event == "DISCONNECTED_FROM_SERVER" ) then
 		TokenEntry_Cancel(TokenEnterDialog);
 		SetGlueScreen("login");
-		if ( arg1 == 4 ) then
-			GlueDialog_Show("PARENTAL_CONTROL");
-		elseif ( arg1 == 5 ) then
-			GlueDialog_Show("STREAMING_ERROR");
-		else
-			GlueDialog_Show("DISCONNECTED");
-		end
+		GlueDialog_Show(arg1);
 		AddonList:Hide();
 	elseif ( event == "GET_PREFERRED_REALM_INFO" ) then
 		if( arg1 == 1) then
 			SetPreferredInfo(1);
 		else
 			SetGlueScreen("realmwizard");
-			PlayGlueAmbience(GlueAmbienceTracks["DARKPORTAL"], 4.0);
+			PlayGlueAmbience(EXPANSION_GLUE_AMBIENCE[GetClientDisplayExpansionLevel()], 4.0);
 		end
 	elseif ( event == "SERVER_SPLIT_NOTICE" ) then
 		CharacterSelectRealmSplitButton:Show();
@@ -466,18 +473,18 @@ function TriStateCheckbox_SetState(checked, checkButton)
 	end
 	if ( not checked or checked == 0 ) then
 		-- nil or 0 means not checked
-		checkButton:SetChecked(nil);
+		checkButton:SetChecked(false);
 		checkButton.state = 0;
 	elseif ( checked == 2 ) then
 		-- 2 is a normal
-		checkButton:SetChecked(1);
+		checkButton:SetChecked(true);
 		checkedTexture:SetVertexColor(1, 1, 1);
-		checkedTexture:SetDesaturated(0);
+		checkedTexture:SetDesaturated(false);
 		checkButton.state = 2;
 	else
 		-- 1 is a gray check
-		checkButton:SetChecked(1);
-		checkedTexture:SetDesaturated(1);
+		checkButton:SetChecked(true);
+		checkedTexture:SetDesaturated(true);
 		checkButton.state = 1;
 	end
 end
@@ -506,6 +513,10 @@ function SetLoginScreenModel(model)
 	local background = GetLoginScreenBackground(highResBG, lowResBG);
 							
 	model:SetModel(background, 1);	
+end
+
+function InGlue()
+	return true;
 end
 
 function SecureCapsuleGet(name)

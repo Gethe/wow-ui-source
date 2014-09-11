@@ -1,6 +1,6 @@
-## Interface: 50400
+## Interface: 60000
 ## Title: Blizzard Companion Journal
-## Notes:  Show Boss Info
+## Notes:  Pet and Mount Journal
 ## Secure: 1
 ## Author: Blizzard Entertainment
 ## Version: 1.0

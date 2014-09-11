@@ -68,11 +68,11 @@
 	</Button>
 
 	<Button name="PlayerTalentButtonTemplate" virtual="true">
-		<Size x="190" y="50"/>
+		<Size x="190" y="42"/>
 		<Layers>
 			<Layer level="BACKGROUND">
 				<Texture name="$parentIconTexture" parentKey="icon">
-					<Size x="40" y="40"/>
+					<Size x="36" y="36"/>
 					<Anchors>
 						<Anchor point="LEFT" x="35" y="0"/>
 					</Anchors>
@@ -80,7 +80,7 @@
 			</Layer>
 			<Layer level="ARTWORK" textureSubLevel="1">
 				<Texture name="$parentSlot" inherits="Talent-SingleBorder" parentKey="Slot">
-					<Size x="41" y="40"/>
+					<Size x="37" y="36"/>
 					<Anchors>
 						<Anchor point="CENTER" relativeTo="$parentIconTexture" x="-1" y="0"/>
 					</Anchors>
@@ -94,25 +94,19 @@
 				</FontString>
 			</Layer>
 			<Layer level="OVERLAY">
-				<Texture name="$parentSelection" file="Interface\TalentFrame\talent-main" alphaMode="ADD" parentKey="knownSelection" hidden="true">
-					<Size x="190" y="51"/>
+				<Texture name="$parentSelection" atlas="Talent-Selection" useAtlasSize="true" alphaMode="ADD" parentKey="knownSelection" hidden="true">
 					<Anchors>
 						<Anchor point="CENTER"/>
 					</Anchors>
-					<TexCoords left="0.00390625" right="0.74609375" top="0.37304688" bottom="0.47265625"/>
 				</Texture>
-				<Texture file="Interface\TalentFrame\talent-main" alphaMode="ADD" parentKey="learnSelection" hidden="true">
-					<Size x="200" y="61"/>
-					<TexCoords left="0.00390625" right="0.78515625" top="0.25000000" bottom="0.36914063"/>
+				<Texture atlas="Talent-Highlight" useAtlasSize="true" alphaMode="ADD" parentKey="learnSelection" hidden="true">
 					<Anchors>
 						<Anchor point="CENTER"/>
 					</Anchors>
 				</Texture>
 			</Layer>
 		</Layers>
-		<HighlightTexture file="Interface\TalentFrame\talent-main" alphaMode="ADD" parentKey="highlight">
-			<Size x="200" y="61"/>
-			<TexCoords left="0.00390625" right="0.78515625" top="0.25000000" bottom="0.36914063"/>
+		<HighlightTexture atlas="Talent-Highlight" useAtlasSize="true" alphaMode="ADD" parentKey="highlight">
 			<Anchors>
 				<Anchor point="CENTER"/>
 			</Anchors>
@@ -147,73 +141,65 @@
 	</Button>
 	
 	<Frame name="PlayerTalentRowTemplate" virtual="true">
-		<Size x="627" y="50"/>
+		<Size x="629" y="42"/>
 		<Layers>
 			<Layer level="BACKGROUND">
-				<Texture name="$parentBg" file="Interface\TalentFrame\talent-horiz">
-					<Size x="0" y="49"/>
+				<Texture name="$parentBg" atlas="Talent-Background" useAtlasSize="true">
 					<Anchors>
-						<Anchor point="BOTTOMLEFT"/>
-						<Anchor point="BOTTOMRIGHT"/>
+						<Anchor point="BOTTOMLEFT" x="0" y="-1"/>
+						<Anchor point="BOTTOMRIGHT" x="0" y="-1"/>
 					</Anchors>
-					<TexCoords left="0.00000000" right="1.00000000" top="0.15625000" bottom="0.53906250"/>
 				</Texture>
 			</Layer>
 			<Layer level="BORDER">
-				<Texture name="$parentLeftCap" file="Interface\TalentFrame\talent-main">
-					<Size x="34" y="56"/>
+				<Texture name="$parentLeftCap" atlas="Talent-Separator">
+					<Size x="34" y="50"/>
 					<Anchors>
 						<Anchor point="LEFT" x="0" y="0"/>
 					</Anchors>
-					<TexCoords left="0.140625" right="0.26953125" top="0.47656250" bottom="0.58593750"/>
+					<TexCoords left="0.5" right="1" top="0" bottom="1"/>
 				</Texture>
-				<Texture name="$parentRightCap" file="Interface\TalentFrame\talent-main">
-					<Size x="34" y="56"/>
+				<Texture name="$parentRightCap" atlas="Talent-Separator">
+					<Size x="34" y="50"/>
 					<Anchors>
 						<Anchor point="RIGHT" x="0" y="0"/>
 					</Anchors>
-					<TexCoords left="0.00390625" right="0.140625" top="0.47656250" bottom="0.58593750"/>
+					<TexCoords left="0" right="0.5" top="0" bottom="1"/>
 				</Texture>
-				<Texture name="$parentSeparator1" file="Interface\TalentFrame\talent-main">
-					<Size x="68" y="56"/>
+				<Texture name="$parentSeparator1" atlas="Talent-Separator" useAtlasSize="true">
 					<Anchors>
 						<Anchor point="CENTER" relativePoint="LEFT" x="57" y="0"/>
 					</Anchors>
-					<TexCoords left="0.00390625" right="0.26953125" top="0.47656250" bottom="0.58593750"/>
 				</Texture>
-				<Texture name="$parentSeparator2" file="Interface\TalentFrame\talent-main">
-					<Size x="68" y="56"/>
+				<Texture name="$parentSeparator2" atlas="Talent-Separator" useAtlasSize="true">
 					<Anchors>
 						<Anchor point="LEFT" relativeTo="$parentSeparator1" x="190" y="0"/>
 					</Anchors>
-					<TexCoords left="0.00390625" right="0.26953125" top="0.47656250" bottom="0.58593750"/>
 				</Texture>
-				<Texture name="$parentSeparator3" file="Interface\TalentFrame\talent-main">
-					<Size x="68" y="56"/>
+				<Texture name="$parentSeparator3" atlas="Talent-Separator" useAtlasSize="true">
 					<Anchors>
 						<Anchor point="LEFT" relativeTo="$parentSeparator2" x="190" y="0"/>
 					</Anchors>
-					<TexCoords left="0.00390625" right="0.26953125" top="0.47656250" bottom="0.58593750"/>
 				</Texture>
 			</Layer>
 			<Layer level="ARTWORK">
-				<FontString name="$parentLevel" inherits="GameFontNormalHuge" parentKey="level">
+				<FontString name="$parentLevel" inherits="GameFontNormalLarge" parentKey="level">
 					<Size x="0" y="0"/>
 					<Anchors>
-						<Anchor point="CENTER" relativeTo="$parentLeftCap" relativePoint="RIGHT" x="-5" y="0"/>
+						<Anchor point="CENTER" relativeTo="$parentLeftCap" relativePoint="RIGHT" x="-6" y="0"/>
 					</Anchors>
 				</FontString>
 				<Texture parentKey="TopLine" file="Interface\Common\talent-blue-glow" horizTile="true" hidden="true">					
-					<Size x="627" y = "16"/>
+					<Size x="629" y = "14"/>
 					<Anchors>
-						<Anchor point="TOP" x="0" y="16"/>
+						<Anchor point="TOP" x="0" y="14"/>
 					</Anchors>
 					<Color r="1" g="1" b="1" a="0.5"/>
 				</Texture>
 				<Texture parentKey="BottomLine" file="Interface\Common\talent-blue-glow" horizTile="true" hidden="true">					
-					<Size x="627" y = "16"/>
+					<Size x="629" y = "14"/>
 					<Anchors>
-						<Anchor point="BOTTOM" x="0" y="-16"/>
+						<Anchor point="BOTTOM" x="0" y="-14"/>
 					</Anchors>
 					<TexCoords left="0" right="1" top="1" bottom="0"/>
 					<Color r="1" g="1" b="1" a="0.5"/>
@@ -258,12 +244,11 @@
 				</Texture>
 			</Layer>
 			<Layer level="ARTWORK" textureSubLevel="2">
-				<Texture name="$parentRing" file="Interface\TalentFrame\talent-main" parentKey="ring">
+				<Texture name="$parentRing" atlas="bluemenu-Ring" parentKey="ring">
 					<Size x="100" y="100"/>
 					<Anchors>
 						<Anchor point="LEFT" x="-14" y="-1" />
 					</Anchors>
-					<TexCoords left="0.50000000" right="0.91796875" top="0.00195313" bottom="0.21093750"/>
 				</Texture>
 			</Layer>
 			<Layer level="BORDER">
@@ -282,7 +267,8 @@
 						<Anchor point="CENTER" relativeTo="$parentRing" x="0" y="0" />
 					</Anchors>
 				</Texture>
-				<FontString name="$parentSpecName" inherits="GameFontNormal" parentKey="specName">
+				<FontString name="$parentSpecName" inherits="GameFontNormal" parentKey="specName" justifyH="LEFT" wordwrap="false">
+					<Size x="110" y="0"/>
 					<Anchors>
 						<Anchor point="TOPLEFT" relativeTo="$parentRing" relativePoint="TOPRIGHT" x="-5" y="-30" />
 					</Anchors>
@@ -599,7 +585,7 @@
 				</Scripts>
 				<Animations>
 					<AnimationGroup parentKey="FlashAnim" looping="BOUNCE">
-						<Alpha targetkey="$parent.$parent.Flash" change="-0.75" duration="1.0" smoothing="IN_OUT" order="1"/>
+						<Alpha childKey="Flash" change="-0.75" duration="1.0" smoothing="IN_OUT" order="1"/>
 					</AnimationGroup>
 				</Animations>
 			</Button>
@@ -790,12 +776,11 @@
 								</Texture>
 							</Layer>
 							<Layer level="ARTWORK">
-								<Texture name="$parentRing" file="Interface\TalentFrame\talent-main" parentKey="ring">
-									<Size x="101" y="101"/>	
+								<Texture name="$parentRing" atlas="Talent-RingWithDot" parentKey="ring">
+									<Size x="101" y="101"/>
 									<Anchors>
 										<Anchor point="TOPLEFT" x="5" y="-3"/>
 									</Anchors>
-									<TexCoords left="0.00390625" right="0.49218750" top="0.00195313" bottom="0.24609375"/>
 								</Texture>
 								<FontString name="$parentSpecName" inherits="BossEmoteNormalHuge" justifyH="BOTTOM" parentKey="specName">
 									<Anchors>
@@ -806,15 +791,20 @@
 								<Texture name="$parentRoleIcon" file="Interface\LFGFrame\UI-LFG-ICON-ROLES"	parentKey="roleIcon">
 									<Size x="30" y="30"/>
 									<Anchors>
-										<Anchor point="TOPLEFT" relativeTo="$parentRing" relativePoint="RIGHT" x="5" y="-3" />
+										<Anchor point="TOPLEFT" relativeTo="$parentRing" relativePoint="RIGHT" x="5" y="-6" />
 									</Anchors>
 								</Texture>
 								<FontString inherits="GameFontHighlightLarge" parentKey="roleName">
 									<Anchors>
-										<Anchor point="LEFT" relativeTo="$parentRoleIcon" relativePoint="RIGHT" x="3" y="1" />
+										<Anchor point="BOTTOMLEFT" relativeTo="$parentRoleIcon" relativePoint="RIGHT" x="3" y="2" />
 									</Anchors>
 								</FontString>
-								<FontString name="$parentDescription" inherits="GameFontWhite" justifyH="LEFT" parentKey="description">
+								<FontString parentKey="primaryStat" inherits="GameFontHighlight">
+									<Anchors>
+										<Anchor point="TOPLEFT" relativeKey="$parent.roleIcon" relativePoint="RIGHT" x="3" y="-3"/>
+									</Anchors>
+								</FontString>
+								<FontString name="$parentDescription" inherits="GameFontHighlight" justifyH="LEFT" parentKey="description">
 									<Size x="370" y="0"/>
 									<Anchors>
 										<Anchor point="TOPLEFT" relativeTo="$parentRing" relativePoint="BOTTOMLEFT" x="15" y="-8"/>
@@ -896,49 +886,39 @@
 				</Texture>
 			</Layer>
 			<Layer level="BORDER">
-				<Texture name="$parentTLCorner" file="Interface\TalentFrame\talent-main">
-					<Size x="64" y="55"/>
+				<Texture name="$parentTLCorner" atlas="Talent-TopLeftCurlies" useAtlasSize="true">
 					<Anchors>
 						<Anchor point="TOPLEFT" x="3" y="-2"/>
 					</Anchors>
-					<TexCoords left="0.00390625" right="0.25390625" top="0.70117188" bottom="0.80859375"/>
 				</Texture>
-				<Texture name="$parentTRCorner" file="Interface\TalentFrame\talent-main">
-					<Size x="64" y="55"/>
+				<Texture name="$parentTRCorner" atlas="Talent-TopRightCurlies" useAtlasSize="true">
 					<Anchors>
 						<Anchor point="TOPRIGHT" x="-3" y="-2"/>
 					</Anchors>
-					<TexCoords left="0.00390625" right="0.25390625" top="0.58984375" bottom="0.69726563"/>
 				</Texture>
-				<Texture name="$parentBLCorner" file="Interface\TalentFrame\talent-main">
-					<Size x="64" y="55"/>
+				<Texture name="$parentBLCorner" atlas="Talent-BottomLeftCurlies" useAtlasSize="true">
 					<Anchors>
 						<Anchor point="BOTTOMLEFT" x="3" y="2"/>
 					</Anchors>
-					<TexCoords left="0.27734375" right="0.52734375" top="0.47656250" bottom="0.58398438"/>
 				</Texture>
-				<Texture name="$parentBRCorner" file="Interface\TalentFrame\talent-main">
-					<Size x="64" y="55"/>
+				<Texture name="$parentBRCorner" atlas="Talent-BottomRightCurlies" useAtlasSize="true">
 					<Anchors>
 						<Anchor point="BOTTOMRIGHT" x="-3" y="2"/>
 					</Anchors>
-					<TexCoords left="0.53515625" right="0.78515625" top="0.47656250" bottom="0.58398438"/>
 				</Texture>
-				<Texture file="Interface\TalentFrame\talent-horiz" horizTile="true">
+				<Texture atlas="_Talent-Top-Tile" horizTile="true">
 					<Size x="0" y="11"/>
 					<Anchors>
-						<Anchor point="TOPLEFT" relativeTo="$parentTLCorner" relativePoint="TOPRIGHT" x="0" y="0"/>
-						<Anchor point="TOPRIGHT" relativeTo="$parentTRCorner" relativePoint="TOPLEFT" x="0" y="0"/>
+						<Anchor point="TOPLEFT" relativeTo="$parentTLCorner" relativePoint="TOPRIGHT" x="0" y="1"/>
+						<Anchor point="TOPRIGHT" relativeTo="$parentTRCorner" relativePoint="TOPLEFT" x="0" y="1"/>
 					</Anchors>
-					<TexCoords left="0.00000000" right="1.00000000" top="0.05468750" bottom="0.14062500"/>
 				</Texture>
-				<Texture file="Interface\TalentFrame\talent-horiz" horizTile="true">
+				<Texture atlas="_Talent-Bottom-Tile" horizTile="true">
 					<Size x="0" y="4"/>
 					<Anchors>
 						<Anchor point="BOTTOMLEFT" relativeTo="$parentBLCorner" relativePoint="BOTTOMRIGHT" x="0" y="0"/>
 						<Anchor point="BOTTOMRIGHT" relativeTo="$parentBRCorner" relativePoint="BOTTOMLEFT" x="0" y="0"/>
 					</Anchors>
-					<TexCoords left="0.00000000" right="1.00000000" top="0.00781250" bottom="0.03906250"/>
 				</Texture>
 			</Layer>
 			<Layer level="ARTWORK">
@@ -962,33 +942,38 @@
 			</Button>
 			<Frame name="$parentTalentRow1" inherits="PlayerTalentRowTemplate" parentKey="tier1" id="1">
 				<Anchors>
-					<Anchor point="TOPLEFT" x="5" y="-17"/>
+					<Anchor point="TOPLEFT" x="4" y="-17"/>
 				</Anchors>				
 			</Frame>
 			<Frame name="$parentTalentRow2" inherits="PlayerTalentRowTemplate" parentKey="tier2" id="2">
 				<Anchors>
-					<Anchor point="TOPLEFT" relativeTo="$parentTalentRow1" relativePoint="BOTTOMLEFT" x="0" y="-10"/>
+					<Anchor point="TOPLEFT" relativeTo="$parentTalentRow1" relativePoint="BOTTOMLEFT" x="0" y="-9"/>
 				</Anchors>				
 			</Frame>
 			<Frame name="$parentTalentRow3" inherits="PlayerTalentRowTemplate" parentKey="tier3" id="3">
 				<Anchors>
-					<Anchor point="TOPLEFT" relativeTo="$parentTalentRow2" relativePoint="BOTTOMLEFT" x="0" y="-10"/>
+					<Anchor point="TOPLEFT" relativeTo="$parentTalentRow2" relativePoint="BOTTOMLEFT" x="0" y="-9"/>
 				</Anchors>				
 			</Frame>
 			<Frame name="$parentTalentRow4" inherits="PlayerTalentRowTemplate" parentKey="tier4" id="4">
 				<Anchors>
-					<Anchor point="TOPLEFT" relativeTo="$parentTalentRow3" relativePoint="BOTTOMLEFT" x="0" y="-10"/>
+					<Anchor point="TOPLEFT" relativeTo="$parentTalentRow3" relativePoint="BOTTOMLEFT" x="0" y="-9"/>
 				</Anchors>				
 			</Frame>
 			<Frame name="$parentTalentRow5" inherits="PlayerTalentRowTemplate" parentKey="tier5" id="5">
 				<Anchors>
-					<Anchor point="TOPLEFT" relativeTo="$parentTalentRow4" relativePoint="BOTTOMLEFT" x="0" y="-10"/>
+					<Anchor point="TOPLEFT" relativeTo="$parentTalentRow4" relativePoint="BOTTOMLEFT" x="0" y="-9"/>
 				</Anchors>				
 			</Frame>
 			<Frame name="$parentTalentRow6" inherits="PlayerTalentRowTemplate" parentKey="tier6" id="6">
 				<Anchors>
-					<Anchor point="TOPLEFT" relativeTo="$parentTalentRow5" relativePoint="BOTTOMLEFT" x="0" y="-10"/>
+					<Anchor point="TOPLEFT" relativeTo="$parentTalentRow5" relativePoint="BOTTOMLEFT" x="0" y="-9"/>
 				</Anchors>				
+			</Frame>
+			<Frame name="$parentTalentRow7" inherits="PlayerTalentRowTemplate" parentKey="tier7" id="7">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentTalentRow6" relativePoint="BOTTOMLEFT" x="0" y="-9"/>
+				</Anchors>
 			</Frame>
 			<Button name="$parentLearnButton" inherits="MagicButtonTemplate" text="LEARN" parentKey="learnButton">
 				<Size x="98" y="22"/>
@@ -1018,7 +1003,7 @@
 				</Scripts>
 				<Animations>
 					<AnimationGroup parentKey="FlashAnim" looping="BOUNCE">
-						<Alpha targetkey="$parent.$parent.Flash" change="-0.75" duration="1.0" smoothing="IN_OUT" order="1"/>
+						<Alpha childKey="Flash" change="-0.75" duration="1.0" smoothing="IN_OUT" order="1"/>
 					</AnimationGroup>
 				</Animations>
 			</Button>

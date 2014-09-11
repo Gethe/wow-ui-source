@@ -212,8 +212,35 @@ function SetItemRef(link, text, button, chatFrame)
 			FloatingBattlePet_Toggle(tonumber(speciesID), tonumber(level), tonumber(breedQuality), tonumber(maxHealth), tonumber(power), tonumber(speed), string.gsub(string.gsub(text, "^(.*)%[", ""), "%](.*)$", ""), battlePetID);
 		end
 		return;
+	elseif ( strsub(link, 1, 19) == "garrfollowerability" ) then
+		local _, garrFollowerAbilityID = strsplit(":", link);
+		if ( IsModifiedClick() ) then
+			local fixedLink = GetFixedLink(text);
+			HandleModifiedItemClick(fixedLink);
+		else
+			FloatingGarrisonFollowerAbility_Toggle(tonumber(garrFollowerAbilityID));
+		end
+		return;
+	elseif ( strsub(link, 1, 12) == "garrfollower" ) then
+		local _, garrisonFollowerID, quality, level, itemLevel, ability1, ability2, ability3, ability4, trait1, trait2, trait3, trait4 = strsplit(":", link);
+		if ( IsModifiedClick() ) then
+			local fixedLink = GetFixedLink(text);
+			HandleModifiedItemClick(fixedLink);
+		else
+			FloatingGarrisonFollower_Toggle(tonumber(garrisonFollowerID), tonumber(quality), tonumber(level), tonumber(itemLevel), tonumber(ability1), tonumber(ability2), tonumber(ability3), tonumber(ability4), tonumber(trait1), tonumber(trait2), tonumber(trait3), tonumber(trait4));
+		end
+		return;
+	elseif ( strsub(link, 1, 11) == "garrmission" ) then
+		local _, garrMissionID = strsplit(":", link);
+		if ( IsModifiedClick() ) then
+			local fixedLink = GetFixedLink(text);
+			HandleModifiedItemClick(fixedLink);
+		else
+			FloatingGarrisonMission_Toggle(tonumber(garrMissionID));
+		end
+		return;
 	end
-    
+
 	if ( IsModifiedClick() ) then
 		local fixedLink = GetFixedLink(text);
 		HandleModifiedItemClick(fixedLink);

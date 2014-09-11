@@ -113,6 +113,12 @@
 				<Texture name="$parentIconTexture" parentKey="icon"/>
 			</Layer>
 			<Layer level="OVERLAY">
+				<Texture parentKey="IconBorder" file="Interface\Common\WhiteIconFrame" hidden="true">
+					<Size x="37" y="37"/>
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
 				<Texture name="$parentSearchOverlay" parentKey="searchOverlay" setAllPoints="true" hidden="true">
 					<Color r="0" g="0" b="0" a="0.8"/>
 				</Texture>
@@ -169,6 +175,35 @@
 		</Scripts>
 	</Frame>
 	
+	<CheckButton name="VoidStorageTabTemplate" virtual="true">
+		<Size>
+			<AbsDimension x="32" y="32"/>
+		</Size>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture file="Interface\SpellBook\SpellBook-SkillLineTab">
+					<Size>
+						<AbsDimension x="64" y="64"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset>
+								<AbsDimension x="-3" y="11"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnClick>
+				VoidStorage_SetPageNumber(self:GetID());
+			</OnClick>
+		</Scripts>
+		<HighlightTexture file="Interface\Buttons\ButtonHilight-Square" alphaMode="ADD"/>
+		<CheckedTexture file="Interface\Buttons\CheckButtonHilight" alphaMode="ADD"/>
+	</CheckButton>
+
 	<Frame name="VoidStorageInsetFrameTemplate" inherits="InsetFrameTemplate" virtual="true">
 		<Layers>
 			<Layer level="BACKGROUND" textureSubLevel="-6">
@@ -644,6 +679,18 @@
 					</Frame>
 				</Frames>
 			</Frame>
+			<CheckButton parentKey="Page1" inherits="VoidStorageTabTemplate" id="1">
+				<Anchors>
+					<Anchor point="LEFT" relativePoint="TOPRIGHT" x="0" y="-60"/>
+				</Anchors>
+				<NormalTexture file="Interface\Icons\INV_Enchant_EssenceCosmicGreater"/>
+			</CheckButton>
+			<CheckButton parentKey="Page2" inherits="VoidStorageTabTemplate" id="2">
+				<Anchors>
+					<Anchor point="TOP" relativeKey="$parent.Page1" relativePoint="BOTTOM" x="0" y="-16"/>
+				</Anchors>
+				<NormalTexture file="Interface\Icons\INV_Enchant_EssenceArcaneLarge"/>
+			</CheckButton>
 		</Frames>
 		<Scripts>
 			<OnLoad function="VoidStorageFrame_OnLoad"/>

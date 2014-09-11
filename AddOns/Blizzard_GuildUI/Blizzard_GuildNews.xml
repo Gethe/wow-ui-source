@@ -41,7 +41,7 @@
 	<Frame name="GuildNewsFrame" parent="GuildFrame" hidden="true">
 		<Anchors>
 			<Anchor point="TOPLEFT" relativeTo="$parent" x="4" y="-65"/>
-			<Anchor point="BOTTOMRIGHT" relativeTo="$parent" x="-7" y="26"/>
+			<Anchor point="BOTTOMRIGHT" relativeTo="$parent" x="-7" y="44"/>
 		</Anchors>
 		<Layers>
 			<Layer level="BACKGROUND">
@@ -79,6 +79,11 @@
 						<Anchor point="CENTER" x="0" y="-11"/>
 					</Anchors>
 				</FontString>
+				<FontString name="$parentMembersCountLabel" inherits="GameFontNormalSmall" text="GUILD_MEMBERS_ONLINE">
+					<Anchors>
+						<Anchor point="BOTTOMRIGHT" relativeTo="GuildFrameMembersCount" relativePoint="TOPRIGHT" x="0" y="6"/>
+					</Anchors>
+				</FontString>
 			</Layer>
 		</Layers>
 		<Frames>
@@ -99,20 +104,47 @@
 				</ButtonText>
 				<NormalFont style="GameFontNormalSmall"/>
 			</Button>
+			<Button name="GuildGMImpeachButton" hidden="true">
+				<Size x="320" y="18"/>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentHeader" relativePoint="BOTTOMLEFT" x="0" y="0"/>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<Texture name="$parentLockTexture">
+							<Color r="0.2" g="0.0" b="0.0"/>
+						</Texture>
+					</Layer>
+					<Layer level="OVERLAY">
+						<FontString name="$parentText" inherits="GameFontHighlightSmall" justifyH="LEFT" wordwrap="false" text="GUILD_IMPEACH_BUTTON_TEXT">
+							<Anchors>
+								<Anchor point="LEFT" x="24" y="-1"/>
+								<Anchor point="RIGHT" x="-8" y="-1"/>
+							</Anchors>
+						</FontString>
+						<Texture name="$parentAlert" file="Interface\DialogFrame\UI-Dialog-Icon-AlertNew">
+							<Size x="14" y="14"/>
+							<Anchors>
+								<Anchor point="LEFT" x="3" y="-1"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnClick>
+						StaticPopup_Show("GUILD_IMPEACH");
+					</OnClick>
+				</Scripts>
+				<HighlightTexture file="Interface\FriendsFrame\UI-FriendsFrame-HighlightBar-Blue" setAllPoints="true" alphaMode="ADD"/>
+			</Button>
 			<ScrollFrame name="GuildNewsContainer" inherits="MinimalHybridScrollFrameTemplate">
 				<Size x="298" y="305"/>
 				<Anchors>
-					<Anchor point="TOPLEFT">
-						<Offset>
-							<AbsDimension x="4" y="-25"/>
-						</Offset>
-					</Anchor>
+					<Anchor point="TOPLEFT" x="4" y="-25"/>
 				</Anchors>
 			</ScrollFrame>
 			<Frame name="GuildNewsDropDown" inherits="UIDropDownMenuTemplate" hidden="true">
-				<Size>
-					<AbsDimension x="10" y="10"/>
-				</Size>
+				<Size x="10" y="10"/>
 				<Scripts>
 					<OnLoad function="GuildNewsDropDown_OnLoad"/>
 				</Scripts>
@@ -132,7 +164,7 @@
 -->	
 	<Frame name="GuildNewsFiltersFrame" toplevel="true" frameStrata="DIALOG" hidden="true" parent="GuildFrame" enableMouse="true" inherits="TranslucentFrameTemplate">
 		<Size>
-			<AbsDimension x="264" y="224"/>
+			<AbsDimension x="264" y="200"/>
 		</Size>
 		<Anchors>
 			<Anchor point="TOPLEFT" relativeTo="GuildFrame" relativePoint="TOPRIGHT" x="0" y="-20"/>
@@ -184,11 +216,6 @@
 			<CheckButton name="GuildNewsFilterButton6" inherits="GuildNewsCheckButtonTemplate" id="6">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeTo="GuildNewsFilterButton5" relativePoint="BOTTOMLEFT" x="0" y="0"/>
-				</Anchors>
-			</CheckButton>
-			<CheckButton name="GuildNewsFilterButton7" inherits="GuildNewsCheckButtonTemplate" id="7">
-				<Anchors>
-					<Anchor point="TOPLEFT" relativeTo="GuildNewsFilterButton6" relativePoint="BOTTOMLEFT" x="0" y="0"/>
 				</Anchors>
 			</CheckButton>
 		</Frames>

@@ -2,15 +2,9 @@
 ..\FrameXML\UI.xsd">
 	<Script file="PetFrame.lua"/>
 	<Button name="PetFrame" frameStrata="LOW" toplevel="true" inherits="SecureUnitButtonTemplate" parent="PlayerFrame">
-		<Size>
-			<AbsDimension x="128" y="53"/>
-		</Size>
+		<Size x="128" y="53"/>
 		<Anchors>
-			<Anchor point="TOPLEFT">
-				<Offset>
-					<AbsDimension x="80" y="-60"/>
-				</Offset>
-			</Anchor>
+			<Anchor point="TOPLEFT" x="80" y="-60"/>
 		</Anchors>
 		<HitRectInsets>
 			<AbsInset left="7" right="66" top="6" bottom="7"/>
@@ -18,28 +12,16 @@
 		<Layers>
 			<Layer level="BACKGROUND">
 				<Texture name="PetFrameFlash" file="Interface\TargetingFrame\UI-PartyFrame-Flash" hidden="true">
-					<Size>
-						<AbsDimension x="128" y="64"/>
-					</Size>
+					<Size x="128" y="64"/>
 					<Anchors>
-						<Anchor point="TOPLEFT">
-							<Offset>
-								<AbsDimension x="-4" y="11"/>
-							</Offset>
-						</Anchor>
+						<Anchor point="TOPLEFT" x="-4" y="11"/>
 					</Anchors>
 					<TexCoords left="0" right="1.0" top="1.0" bottom="0"/>
 				</Texture>
 				<Texture name="PetPortrait">
-					<Size>
-						<AbsDimension x="37" y="37"/>
-					</Size>
+					<Size x="37" y="37"/>
 					<Anchors>
-						<Anchor point="TOPLEFT">
-							<Offset>
-								<AbsDimension x="7" y="-6"/>
-							</Offset>
-						</Anchor>
+						<Anchor point="TOPLEFT" x="7" y="-6"/>
 					</Anchors>
 				</Texture>
 			</Layer>
@@ -52,15 +34,9 @@
 		</Layers>
 		<Frames>
 			<Frame name="PetFrameDropDown" inherits="UIDropDownMenuTemplate" id="1" hidden="true">
-				<Size>
-					<AbsDimension x="10" y="10"/>
-				</Size>
+				<Size x="10" y="10"/>
 				<Anchors>
-					<Anchor point="TOP">
-						<Offset>
-							<AbsDimension x="-20" y="-20"/>
-						</Offset>
-					</Anchor>
+					<Anchor point="TOP" x="-20" y="-20"/>
 				</Anchors>
 				<Scripts>
 					<OnLoad function="PetFrameDropDown_OnLoad"/>
@@ -79,65 +55,57 @@
 							</Layer>
 							<Layer level="BORDER">
 								<Texture name="PetFrameTexture" file="Interface\TargetingFrame\UI-SmallTargetingFrame">
-									<Size>
-										<AbsDimension x="128" y="64"/>
-									</Size>
+									<Size x="128" y="64"/>
 									<Anchors>
-										<Anchor point="TOPLEFT">
-											<Offset>
-												<AbsDimension x="0" y="-2"/>
-											</Offset>
-										</Anchor>
+										<Anchor point="TOPLEFT" x="0" y="-2"/>
 									</Anchors>
 								</Texture>
 								<FontString name="PetHitIndicator" hidden="true" inherits="NumberFontNormalHuge">
 									<Anchors>
-										<Anchor point="CENTER" relativePoint="TOPLEFT">
-											<Offset>
-												<AbsDimension x="28" y="-27"/>
-											</Offset>
-										</Anchor>
+										<Anchor point="CENTER" relativePoint="TOPLEFT" x="28" y="-27"/>
 									</Anchors>
 								</FontString>
 								<FontString name="PetFrameHealthBarText" inherits="TextStatusBarText">
 									<Anchors>
-										<Anchor point="CENTER" relativePoint="TOPLEFT">
-											<Offset>
-												<AbsDimension x="82" y="-26"/>
-											</Offset>
-										</Anchor>
+										<Anchor point="CENTER" relativePoint="TOPLEFT" x="82" y="-26"/>
+									</Anchors>
+								</FontString>
+								<FontString name="PetFrameHealthBarTextLeft" inherits="TextStatusBarText">
+									<Anchors>
+										<Anchor point="LEFT" relativePoint="TOPLEFT" x="46" y="-26"/>
+									</Anchors>
+								</FontString>
+								<FontString name="PetFrameHealthBarTextRight" inherits="TextStatusBarText">
+									<Anchors>
+										<Anchor point="RIGHT" relativePoint="TOPLEFT" x="113" y="-26"/>
 									</Anchors>
 								</FontString>
 								<FontString name="PetFrameManaBarText" inherits="TextStatusBarText">
 									<Anchors>
-										<Anchor point="CENTER" relativePoint="TOPLEFT">
-											<Offset>
-												<AbsDimension x="82" y="-35"/>
-											</Offset>
-										</Anchor>
+										<Anchor point="CENTER" relativePoint="TOPLEFT" x="82" y="-35"/>
+									</Anchors>
+								</FontString>
+								<FontString name="PetFrameManaBarTextLeft" inherits="TextStatusBarText">
+									<Anchors>
+										<Anchor point="LEFT" relativePoint="TOPLEFT" x="46" y="-35"/>
+									</Anchors>
+								</FontString>
+								<FontString name="PetFrameManaBarTextRight" inherits="TextStatusBarText">
+									<Anchors>
+										<Anchor point="RIGHT" relativePoint="TOPLEFT" x="113" y="-35"/>
 									</Anchors>
 								</FontString>
 							</Layer>
 							<Layer level="ARTWORK">
 								<FontString name="PetName" inherits="GameFontNormalSmall">
 									<Anchors>
-										<Anchor point="BOTTOMLEFT">
-											<Offset>
-												<AbsDimension x="52" y="33"/>
-											</Offset>
-										</Anchor>
+										<Anchor point="BOTTOMLEFT" x="52" y="33"/>
 									</Anchors>
 								</FontString>
 								<Texture name="PetAttackModeTexture" file="Interface\TargetingFrame\UI-Player-AttackStatus" alphaMode="ADD" hidden="true">
-									<Size>
-										<AbsDimension x="76" y="64"/>
-									</Size>
+									<Size x="76" y="64"/>
 									<Anchors>
-										<Anchor point="TOPLEFT">
-											<Offset>
-												<AbsDimension x="6" y="-9"/>
-											</Offset>
-										</Anchor>
+										<Anchor point="TOPLEFT" x="6" y="-9"/>
 									</Anchors>
 									<TexCoords left="0.703125" right="1.0" top="0" bottom="1.0"/>
 								</Texture>
@@ -149,15 +117,9 @@
 				</Frames>
 			</Frame>
 			<StatusBar name="PetFrameHealthBar" inherits="TextStatusBar">
-				<Size>
-					<AbsDimension x="69" y="8"/>
-				</Size>
+				<Size x="69" y="8"/>
 				<Anchors>
-					<Anchor point="TOPLEFT">
-						<Offset>
-							<AbsDimension x="47" y="-22"/>
-						</Offset>
-					</Anchor>
+					<Anchor point="TOPLEFT" x="47" y="-22"/>
 				</Anchors>
 				<Scripts>
 					<OnLoad>
@@ -174,15 +136,9 @@
 				<BarTexture file="Interface\TargetingFrame\UI-StatusBar"/>
 			</StatusBar>
 			<StatusBar name="PetFrameManaBar" inherits="TextStatusBar">
-				<Size>
-					<AbsDimension x="69" y="8"/>
-				</Size>
+				<Size x="69" y="8"/>
 				<Anchors>
-					<Anchor point="TOPLEFT">
-						<Offset>
-							<AbsDimension x="47" y="-29"/>
-						</Offset>
-					</Anchor>
+					<Anchor point="TOPLEFT" x="47" y="-29"/>
 				</Anchors>
 				<Scripts>
 					<OnLoad>
@@ -197,11 +153,7 @@
 			</StatusBar>
 			<Button name="$parentDebuff1" inherits="PartyDebuffFrameTemplate" id="1">
 				<Anchors>
-					<Anchor point="TOPLEFT">
-						<Offset>
-							<AbsDimension x="48" y="-42"/>
-						</Offset>
-					</Anchor>
+					<Anchor point="TOPLEFT" x="48" y="-42"/>
 				</Anchors>
 				<Scripts>
 					<OnEnter>
@@ -212,11 +164,7 @@
 			</Button>
 			<Button name="$parentDebuff2" inherits="PartyDebuffFrameTemplate" id="2">
 				<Anchors>
-					<Anchor point="LEFT" relativeTo="$parentDebuff1" relativePoint="RIGHT">
-						<Offset>
-							<AbsDimension x="2" y="0"/>
-						</Offset>
-					</Anchor>
+					<Anchor point="LEFT" relativeTo="$parentDebuff1" relativePoint="RIGHT" x="2" y="0"/>
 				</Anchors>
 				<Scripts>
 					<OnEnter>
@@ -227,11 +175,7 @@
 			</Button>
 			<Button name="$parentDebuff3" inherits="PartyDebuffFrameTemplate" id="3">
 				<Anchors>
-					<Anchor point="LEFT" relativeTo="$parentDebuff2" relativePoint="RIGHT">
-						<Offset>
-							<AbsDimension x="2" y="0"/>
-						</Offset>
-					</Anchor>
+					<Anchor point="LEFT" relativeTo="$parentDebuff2" relativePoint="RIGHT" x="2" y="0"/>
 				</Anchors>
 				<Scripts>
 					<OnEnter>
@@ -242,11 +186,7 @@
 			</Button>
 			<Button name="$parentDebuff4" inherits="PartyDebuffFrameTemplate" id="4">
 				<Anchors>
-					<Anchor point="LEFT" relativeTo="$parentDebuff3" relativePoint="RIGHT">
-						<Offset>
-							<AbsDimension x="2" y="0"/>
-						</Offset>
-					</Anchor>
+					<Anchor point="LEFT" relativeTo="$parentDebuff3" relativePoint="RIGHT" x="2" y="0"/>
 				</Anchors>
 				<Scripts>
 					<OnEnter>
@@ -284,15 +224,9 @@
 		</Scripts>
 	</Button>
 	<StatusBar name="PetCastingBarFrame" toplevel="true" parent="UIParent" hidden="true" inherits="CastingBarFrameTemplate">
-		<Size>
-			<AbsDimension x="195" y="13"/>
-		</Size>
+		<Size x="195" y="13"/>
 		<Anchors>
-			<Anchor point="BOTTOM" relativeTo="CastingBarFrame" relativePoint="TOP">
-				<Offset>
-					<AbsDimension x="0" y="12"/>
-				</Offset>
-			</Anchor>
+			<Anchor point="BOTTOM" relativeTo="CastingBarFrame" relativePoint="TOP" x="0" y="12"/>
 		</Anchors>
 		<Scripts>
 			<OnLoad function="PetCastingBarFrame_OnLoad"/>

@@ -187,7 +187,7 @@ function HybridScrollFrame_SetOffset (self, offset)
 	
 	if ( math.floor(self.offset or 0) ~= math.floor(element) and self.update ) then
 		self.offset = element;
-		self.update();
+		self:update();
 	else
 		self.offset = element;
 	end

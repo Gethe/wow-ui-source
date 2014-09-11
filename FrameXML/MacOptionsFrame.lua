@@ -58,9 +58,8 @@ function MacOptionsFrame_Load()
 	for index, value in pairs(MacOptionsFrameCheckButtons) do
 		local button = _G["MacOptionsFrameCheckButton"..value.index];
 		local string = _G["MacOptionsFrameCheckButton"..value.index.."Text"];
-		local checked = 0;
-		checked = GetCVar(value.cvar);
-		button:SetChecked(checked);
+		local checked = GetCVar(value.cvar);
+		button:SetChecked(checked and checked ~= "0");
 		
 		string:SetText(_G[index]);
 		button.tooltipText = value.tooltipText;
@@ -98,13 +97,13 @@ function MacOptionsFrame_Load()
 	end
 	if(not MovieRecordingSupported() or not MovieRecording_IsCursorRecordingSupported()) then
 		local button = _G["MacOptionsFrameCheckButton3"];
-		button:SetChecked(0);
+		button:SetChecked(false);
 		MacOptionsFrame_DisableCheckBox(button);
 	end
 
 	-- make sure that if UI recording is not enabled, that we disable cursor recording (it's part of the UI)
 	if ( not MacOptionsFrameCheckButton1:GetChecked() ) then
-		MacOptionsFrameCheckButton3:SetChecked(0);
+		MacOptionsFrameCheckButton3:SetChecked(false);
 		MacOptionsFrame_DisableCheckBox(MacOptionsFrameCheckButton3);		
 	end
 	
@@ -114,12 +113,12 @@ function MacOptionsFrame_Load()
 			StaticPopup_Show("MAC_OPEN_UNIVERSAL_ACCESS");
 			HideUIPanel(MacOptionsFrame);
 			HideUIPanel(GameMenuFrame);
-			_G["MacOptionsFrameCheckButton9"]:SetChecked(0);
+			_G["MacOptionsFrameCheckButton9"]:SetChecked(false);
 		end
 	end;
 	
 	if ( (not MacOptions_IsUniversalAccessEnabled()) and disableOSShortcutsButton:GetChecked() ) then
-		disableOSShortcutsButton:SetChecked(0);
+		disableOSShortcutsButton:SetChecked(false);
 		SetCVar("MacDisableOSShortcuts", "0");
 	end
 end
@@ -225,8 +224,8 @@ function MacOptionsFrameResolutionButton_OnClick(self)
 	UIDropDownMenu_SetSelectedValue(MacOptionsFrameResolutionDropDown, self.value);
 	
 	-- update selected value in code
-	xIndex = strfind(self.value, "x");
-	width = strsub(self.value, 1, xIndex-1);
+	local xIndex = strfind(self.value, "x");
+	local width = strsub(self.value, 1, xIndex-1);
 	MovieRecording_SetSelectedWidth(width);
 
 	MacOptionsFrame_UpdateTime();
@@ -330,11 +329,12 @@ function MacOptionsFrame_SetDefaults()
 	local checkButton, slider;
 	for index, value in pairs(MacOptionsFrameCheckButtons) do
 		checkButton = _G["MacOptionsFrameCheckButton"..value.index];
-		checkButton:SetChecked(GetCVarDefault(value.cvar));
+		local checked = GetCVarDefault(value.cvar);
+		checkButton:SetChecked(checked and checked ~= "0");
 	end    
 	if((not MovieRecordingSupported()) or (not MovieRecording_IsCursorRecordingSupported())) then
 		local button = _G["MacOptionsFrameCheckButton3"];
-		button:SetChecked(0);
+		button:SetChecked(false);
 		MacOptionsFrame_DisableCheckBox(button);
 	else
 		local button = _G["MacOptionsFrameCheckButton3"];
@@ -356,14 +356,14 @@ function MacOptionsFrame_SetDefaults()
 end
 
 function MacOptionsFrame_DisableCheckBox(checkBox)
-	--checkBox:SetChecked(0);
+	--checkBox:SetChecked(false);
 	checkBox:Disable();
 	_G[checkBox:GetName().."Text"]:SetTextColor(GRAY_FONT_COLOR.r, GRAY_FONT_COLOR.g, GRAY_FONT_COLOR.b);
 end
 
 function MacOptionsFrame_EnableCheckBox(checkBox, setChecked, checked, isWhite)
 	if ( setChecked ) then
-		checkBox:SetChecked(checked);
+		checkBox:SetChecked(checked and checked ~= "0");
 	end
 	checkBox:Enable();
 	if ( isWhite ) then
@@ -385,18 +385,18 @@ function MacOptionsFrame_UpdateTime()
 		xIndex = strfind(resolution, "x");
 		width = tonumber(strsub(resolution, 1, xIndex-1));
 		if(MacOptionsFrameCheckButton2:GetChecked()) then
-			sound = 1;
+			sound = true;
 		else
-			sound = 0;
+			sound = false;
 		end
 		
 		MacOptionsFrameText2:SetText(MovieRecording_MaxLength(	tonumber(width), 
 																tonumber(framerate),
-																tonumber(sound)));
+																sound));
 
 		local dataRate = MovieRecording_DataRate(	tonumber(width), 
 													tonumber(UIDropDownMenu_GetSelectedValue(MacOptionsFrameFramerateDropDown)),
-													tonumber(sound))
+													sound)
 		MacOptionsFrameText4:SetText(dataRate);
 		MovieRecordingFrameTextTooltip1:SetWidth(MacOptionsFrameText1:GetWidth() + MacOptionsFrameText2:GetWidth() + 2);
 		MovieRecordingFrameTextTooltip2:SetWidth(MacOptionsFrameText3:GetWidth() + MacOptionsFrameText4:GetWidth() + 2);

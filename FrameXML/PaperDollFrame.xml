@@ -419,14 +419,8 @@
     <Frame name="PaperDollFrame" setAllPoints="true" enableMouse="true" parent="CharacterFrame" useParentLevel="true" id="1">
 		<Layers>
             <Layer level="ARTWORK">
-                <FontString name="CharacterLevelText" inherits="GameFontNormalSmall" text="Level level race class">
-                    <Anchors>
-                        <Anchor point="TOP">
-                            <Offset>
-                                <AbsDimension x="0" y="-37"/>
-                            </Offset>
-                        </Anchor>
-                    </Anchors>
+                <FontString name="CharacterLevelText" inherits="GameFontNormalSmall" justifyV="MIDDLE" justifyH="CENTER" text="Level level race class">
+					<Size x="200" y="20"/>
                 </FontString>
 			</Layer>
 			<Layer level="OVERLAY">

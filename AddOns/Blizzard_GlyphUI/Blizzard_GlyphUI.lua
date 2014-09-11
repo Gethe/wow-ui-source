@@ -85,9 +85,11 @@ function GlyphFrame_OnEvent (self, event, ...)
 			self:SetPoint("BOTTOMRIGHT", "PlayerTalentFrameInset", -3, 3);
 		end
 	elseif ((event == "USE_GLYPH") or (event == "PLAYER_TALENT_UPDATE")) then
+		GlyphFrame_DirtyList(self);
 		GlyphFrame_UpdateGlyphList();
 		GlyphFrame_Update(self);
 	elseif ( event == "PLAYER_LEVEL_UP" ) then
+		GlyphFrame_DirtyList(self);
 		GlyphFrame_Update(self);
 	elseif ( event == "GLYPH_ADDED" or event == "GLYPH_REMOVED" or event == "GLYPH_UPDATED" ) then
 		local index = ...;
@@ -188,8 +190,79 @@ function GlyphFrame_Update (self)
 	end
 end
 
+function GlyphFrame_GetGlyphSortVal(learned, specMatches, header, glyphType)
+	local sortOrder;
+	if (header) then
+		if (glyphType == 1) then
+			sortOrder = 1;
+		else
+			sortOrder = 6;
+		end
+	else
+		if (learned) then
+			if (specMatches) then
+				sortOrder = 2;
+			else
+				sortOrder = 4;
+			end
+		else
+			if (specMatches) then
+				sortOrder = 3;
+			else
+				sortOrder = 5;
+			end
+		end
+		if (glyphType == 2) then
+			sortOrder = sortOrder + 5;
+		end
+	end
+	return sortOrder;
+end
+
+function GlyphFrame_SortComparison(self, index1, index2)
+	local sortTest1 = self.sortVal[index1];
+	local sortTest2 = self.sortVal[index2];
+
+	local sortVal = sortTest1 - sortTest2;
+	if (sortVal < 0) then
+		return true;
+	elseif (sortVal == 0) then
+		return (index1 < index2);	-- from C side elements are alphabetically sorted
+	else
+		return false;
+	end
+end
+
+function GlyphFrame_DirtyList(self)
+	self.dirtyList = true;
+end
+
+function GlyphFrame_UpdateCachedList(self)
+	if ( self.cachedGlyphs and not self.dirtyList ) then
+		return;
+	end
+	self.cachedGlyphs = {};
+	self.sortVal = {};
+
+	for i=1, GetNumGlyphs() do
+		local name, glyphType, isKnown, _, _, _, _, specMatches = GetGlyphInfo(i);
+
+		self.cachedGlyphs[#self.cachedGlyphs + 1] = i;
+		self.sortVal[i] = GlyphFrame_GetGlyphSortVal(isKnown, specMatches, name == "header", glyphType);
+	end
+
+	local comparison = function(index1, index2)
+		return GlyphFrame_SortComparison(self, index1, index2);
+	end
+
+	table.sort(self.cachedGlyphs, comparison);
+	self.sortVal = {};
+
+	self.dirtyList = false;
+end
 
 function GlyphFrame_UpdateGlyphList ()
+	GlyphFrame_UpdateCachedList(GlyphFrame);
 	local scrollFrame = GlyphFrame.scrollFrame;
 	local offset = HybridScrollFrame_GetOffset(scrollFrame);
 	local buttons = scrollFrame.buttons;
@@ -204,14 +277,17 @@ function GlyphFrame_UpdateGlyphList ()
 		header = _G["GlyphFrameHeader"..currentHeader];
 	end
 	currentHeader = 1;	
-	
+
 	local selectedIndex = GetSelectedGlyphSpellIndex();
 	
 	for i = 1, numButtons do
 		local button = buttons[i];
 		local index = offset + i;
+		if ( index <= #GlyphFrame.cachedGlyphs ) then
+			index = GlyphFrame.cachedGlyphs[index];
+		end
 		if index <= numGlyphs  then
-			local name, glyphType, isKnown, icon, glyphID, link, subText = GetGlyphInfo(index);
+			local name, glyphType, isKnown, icon, glyphID, link, subText, specMatches, excluded = GetGlyphInfo(index);
 			if name == "header" then
 				button:Hide();
 				header = _G["GlyphFrameHeader"..currentHeader];
@@ -248,9 +324,18 @@ function GlyphFrame_UpdateGlyphList ()
 					glyphSubText = "";
 				end
 				if isKnown then
-					button.icon:SetDesaturated(0);
-					button.name:SetText(name);
-					button.typeName:SetText(glyphSubText);
+					button.icon:SetDesaturated(false);
+					if ( not excluded ) then
+						button.name:SetText(name);
+					else
+						button.name:SetText(RED_FONT_COLOR_CODE..name..FONT_COLOR_CODE_CLOSE);
+					end
+					-- Task 68154: If a glyph has a required specialization that does not match our spec, display the spec requirement in red
+					if specMatches then
+						button.typeName:SetText(glyphSubText);
+					else
+						button.typeName:SetText(RED_FONT_COLOR_CODE..glyphSubText..FONT_COLOR_CODE_CLOSE);
+					end
 					button.disabledBG:Hide();
 					if selectedIndex and selectedIndex == index then
 						button.selectedTex:Show();
@@ -259,9 +344,9 @@ function GlyphFrame_UpdateGlyphList ()
 					end
 				else
 					button.selectedTex:Hide();
-					button.icon:SetDesaturated(1);
-					button.name:SetText(GRAY_FONT_COLOR_CODE..name);
-					button.typeName:SetText(GRAY_FONT_COLOR_CODE..glyphSubText);
+					button.icon:SetDesaturated(true);
+					button.name:SetText(GRAY_FONT_COLOR_CODE..name..FONT_COLOR_CODE_CLOSE);
+					button.typeName:SetText(GRAY_FONT_COLOR_CODE..glyphSubText..FONT_COLOR_CODE_CLOSE);
 					button.disabledBG:Show();
 				end
 				
@@ -316,7 +401,7 @@ function GlyphFrame_CalculateScroll(offset)
 end
 
 
-function GlyphFrame_OnTextChanged(self)
+function GlyphFrameSearchBox_OnTextChanged(self)
 	local text = self:GetText();
 	
 	if ( text == SEARCH ) then
@@ -325,6 +410,7 @@ function GlyphFrame_OnTextChanged(self)
 	end
 	
 	SetGlyphNameFilter(text);
+	GlyphFrame_DirtyList(self:GetParent());
 	GlyphFrame_UpdateGlyphList();
 end
 

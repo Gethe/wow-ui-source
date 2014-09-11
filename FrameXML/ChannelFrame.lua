@@ -98,7 +98,7 @@ function ChannelFrame_New_OnClick()
 		ChannelFrameDaughterFrameChannelPasswordLabel:SetText(PASSWORD);
 		ChannelFrameDaughterFrameChannelPasswordOptional:Show();
 		ChannelFrameDaughterFrameName:SetText(CHANNEL_NEW_CHANNEL);
-		--ChannelFrameDaughterFrameVoiceChat:SetChecked(1);
+		--ChannelFrameDaughterFrameVoiceChat:SetChecked(true);
 		--ChannelFrameDaughterFrameVoiceChat:Show();
 		ChannelFrameDaughterFrame:Show();
 		PlaySound("UChatScrollButton");
@@ -334,12 +334,12 @@ function ChannelList_UpdateVoice(id, enabled, active)
 		button.voiceEnabled = true;
 		if ( active ) then
 			button.voiceActive = true;
-			ChannelFrame_Desaturate(speakerIcon, nil, 0.75);
-			ChannelFrame_Desaturate(speakerFlash, nil, 0.75);
+			ChannelFrame_Desaturate(speakerIcon, false, 0.75);
+			ChannelFrame_Desaturate(speakerFlash, false, 0.75);
 		else
 			button.voiceActive = nil;
-			ChannelFrame_Desaturate(speakerIcon, 1, 0.5);
-			ChannelFrame_Desaturate(speakerFlash, 1, 0.5);
+			ChannelFrame_Desaturate(speakerIcon, true, 0.5);
+			ChannelFrame_Desaturate(speakerFlash, true, 0.5);
 		end
 		speaker:Show()
 		speaker:SetFrameLevel(speaker:GetFrameLevel()+5);
@@ -677,11 +677,11 @@ function ChannelRoster_UpdateVoice(id, enabled, active, muted)
 
 	if ( enabled ) then
 		if ( active ) then
-			ChannelFrame_Desaturate(speakerIcon, nil, 0.75);
-			ChannelFrame_Desaturate(speakerFlash, nil, 0.75);
+			ChannelFrame_Desaturate(speakerIcon, false, 0.75);
+			ChannelFrame_Desaturate(speakerFlash, false, 0.75);
 		else
-			ChannelFrame_Desaturate(speakerIcon, 1, 0.25);
-			ChannelFrame_Desaturate(speakerFlash, 1, 0.25);
+			ChannelFrame_Desaturate(speakerIcon, true, 0.25);
+			ChannelFrame_Desaturate(speakerFlash, true, 0.25);
 		end
 		if ( muted ) then
 			speakerMuted:Show();
@@ -1133,7 +1133,7 @@ function ChannelPulloutRoster_Update (roster)
 	local name = 1;
 	
 	if ( not CHANNELPULLOUT_OPTIONS.session ) then
-		CHANNEL_EMPTY_DATA[name] = GRAY_FONT_COLOR_CODE .. NO_VOICE_SESSIONS;
+		CHANNEL_EMPTY_DATA[name] = GRAY_FONT_COLOR_CODE .. NO_VOICE_SESSIONS .. FONT_COLOR_CODE_CLOSE ;
 		ChannelPulloutRoster_DrawButton(rosterFrame.buttons[1], CHANNEL_EMPTY_DATA);
 		for i = 2, #rosterFrame.buttons do
 			ChannelPulloutRoster_DrawButton(rosterFrame.buttons[i], nil);
@@ -1180,12 +1180,12 @@ function ChannelPulloutRoster_DrawButton (button, data)
 	end
 	
 	if ( data[sessionActive] ) then			
-		ChannelFrame_Desaturate(_G[button.speaker:GetName().."On"], nil, 0.75);
-		ChannelFrame_Desaturate(_G[button.speaker:GetName().."Flash"], nil, 0.75);
+		ChannelFrame_Desaturate(_G[button.speaker:GetName().."On"], false, 0.75);
+		ChannelFrame_Desaturate(_G[button.speaker:GetName().."Flash"], false, 0.75);
 		_G[button.speaker:GetName().."Muted"]:SetVertexColor(1, 1, 1, 1);
 	else
-		ChannelFrame_Desaturate(_G[button.speaker:GetName().."On"], 1, 0.25);
-		ChannelFrame_Desaturate(_G[button.speaker:GetName().."Flash"], 1, 0.25);
+		ChannelFrame_Desaturate(_G[button.speaker:GetName().."On"], true, 0.25);
+		ChannelFrame_Desaturate(_G[button.speaker:GetName().."Flash"], true, 0.25);
 		_G[button.speaker:GetName().."Muted"]:SetVertexColor(1, 1, 1, .35);
 	end
 	

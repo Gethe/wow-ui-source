@@ -1,5 +1,15 @@
-NUM_WORLD_RAID_MARKERS = 5;
+NUM_WORLD_RAID_MARKERS = 8;
 NUM_RAID_ICONS = 8;
+
+WORLD_RAID_MARKER_ORDER = {};
+WORLD_RAID_MARKER_ORDER[1] = 8;
+WORLD_RAID_MARKER_ORDER[2] = 4;
+WORLD_RAID_MARKER_ORDER[3] = 1;
+WORLD_RAID_MARKER_ORDER[4] = 7;
+WORLD_RAID_MARKER_ORDER[5] = 2;
+WORLD_RAID_MARKER_ORDER[6] = 3;
+WORLD_RAID_MARKER_ORDER[7] = 6;
+WORLD_RAID_MARKER_ORDER[8] = 5;
 
 MINIMUM_RAID_CONTAINER_HEIGHT = 72;
 local RESIZE_HORIZONTAL_OUTSETS = 4;
@@ -231,10 +241,11 @@ function CRFManager_RaidWorldMarkerDropDown_Update()
 	info.isNotRadio = true;
 	
 	for i=1, NUM_WORLD_RAID_MARKERS do
-		info.text = _G["WORLD_MARKER"..i];
+		local index = WORLD_RAID_MARKER_ORDER[i];
+		info.text = _G["WORLD_MARKER"..index];
 		info.func = RaidWorldMarker_OnClick;
-		info.checked = IsRaidMarkerActive(i);
-		info.arg1 = i;
+		info.checked = IsRaidMarkerActive(index);
+		info.arg1 = index;
 		UIDropDownMenu_AddButton(info);
 	end
 
@@ -324,7 +335,7 @@ function CompactRaidFrameManager_UpdateRaidIcons()
 	local disableAll = not CanBeRaidTarget(unit);
 	for i=1, NUM_RAID_ICONS do
 		local button = _G["CompactRaidFrameManagerDisplayFrameRaidMarkersRaidMarker"..i];	--.... /cry
-		if ( disableAll or i == GetRaidTargetIndex(unit) ) then
+		if ( disableAll or button:GetID() == GetRaidTargetIndex(unit) ) then
 			button:GetNormalTexture():SetDesaturated(true);
 			button:SetAlpha(0.7);
 			button:Disable();

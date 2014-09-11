@@ -110,9 +110,9 @@ function LFRQueueFrame_SetRoles()
 	local leader, tank, healer, damage = GetLFGRoles();
 	
 	SetLFGRoles(leader, 
-		LFRQueueFrameRoleButtonTank.checkButton:GetChecked(),
-		LFRQueueFrameRoleButtonHealer.checkButton:GetChecked(),
-		LFRQueueFrameRoleButtonDPS.checkButton:GetChecked());
+		LFGRole_GetChecked(LFRQueueFrameRoleButtonTank),
+		LFGRole_GetChecked(LFRQueueFrameRoleButtonHealer),
+		LFGRole_GetChecked(LFRQueueFrameRoleButtonDPS) );
 end
 
 function LFRFrameRoleCheckButton_OnClick(self)
@@ -224,10 +224,8 @@ function LFRQueueFrameSpecificListButton_SetDungeon(button, dungeonID, mode, sub
 			button.enableButton:SetCheckedTexture("Interface\\Buttons\\UI-CheckBox-Check");
 			button.enableButton:SetDisabledCheckedTexture("Interface\\Buttons\\UI-CheckBox-Check-Disabled");
 		end
-		button.enableButton:SetChecked(enableState and enableState ~= 0);
-	else
-		button.enableButton:SetChecked(enableState);
 	end
+	button.enableButton:SetChecked(enableState and enableState ~= 0);
 	
 	if ( mode == "rolecheck" or mode == "queued" or mode == "listed" or mode == "suspended" or not RaidBrowser_IsEmpowered() ) then
 		button.enableButton:Disable();
@@ -267,7 +265,7 @@ end
 
 function LFRQueueFrame_QueueForInstanceIfEnabled(queueID)
 	if ( not LFGIsIDHeader(queueID) and LFGEnabledList[queueID] and
-		(not LFGLockList[dungeonID] or LFR_CanQueueForLockedInstances() or (LFR_CanQueueForRaidLockedInstances() and LFGLockList[dungeonID] == LFG_INSTANCE_INVALID_RAID_LOCKED)) ) then
+		(not LFGLockList[queueID] or LFR_CanQueueForLockedInstances() or (LFR_CanQueueForRaidLockedInstances() and LFGLockList[queueID] == LFG_INSTANCE_INVALID_RAID_LOCKED)) ) then
 		SetLFGDungeon(LE_LFG_CATEGORY_LFR, queueID);
 		return true;
 	end
@@ -603,7 +601,7 @@ function LFRBrowseButton_OnEnter(self)
 	end
 	
 	if ( comment and comment ~= "" ) then
-		GameTooltip:AddLine("\n"..comment, HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b, 1);
+		GameTooltip:AddLine("\n"..comment, HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b, true);
 	end
 	
 	if ( partyMembers == 0 ) then

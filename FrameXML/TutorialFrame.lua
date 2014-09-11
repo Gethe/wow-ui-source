@@ -9,7 +9,7 @@ local TUTORIALFRAME_WIDTH = 364;
 
 local TUTORIAL_LAST_ID = nil;
 
-local TUTORIAL_QUEST_ACCEPTED = false; -- used to trigger tutorials after closing the quest log, but after accepting a quest.
+TUTORIAL_QUEST_ACCEPTED = false; -- used to trigger tutorials after closing the quest log, but after accepting a quest.
 
 TUTORIAL_QUEST_TO_WATCH = nil;
 TUTORIAL_DISTANCE_TO_QUEST_KILL_SQ = (50 * 50); -- the square distance to trigger the "near quest creature" tutorial.
@@ -830,8 +830,9 @@ function TutorialFrame_Update(currentTutorial)
 
 	-- setup the title
 	-- check for race-class specific first, then race specific, then class, then normal
+	local title;
 	if (displayData.tileHeight > 0) then
-		local title = _G["TUTORIAL_TITLE"..currentTutorial.."_"..raceName.."_"..className];
+		title = _G["TUTORIAL_TITLE"..currentTutorial.."_"..raceName.."_"..className];
 		if ( not title ) then
 			title = _G["TUTORIAL_TITLE"..currentTutorial.."_"..raceName];
 			if ( not title ) then
@@ -918,7 +919,7 @@ function TutorialFrame_Update(currentTutorial)
 		local keyData = displayData["keyData"..i];
 		if(keyTexture and keyString and keyData) then
 			keyTexture:SetPoint( keyData.align, TutorialFrame, keyData.align, keyData.xOff, keyData.yOff );
-			keyString:SetText( GetBindingText(GetBindingKey(keyData.command), "KEY_") );
+			keyString:SetText( GetBindingText(GetBindingKey(keyData.command)) );
 			if ( keyData.layer ) then
 				keyTexture:SetDrawLayer(keyData.layer);
 				keyString:SetDrawLayer(keyData.layer);

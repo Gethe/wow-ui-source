@@ -57,6 +57,11 @@ function TargetFrame_OnLoad(self, unit, menuFunc)
 		portraitFrame = _G[thisName.."Portrait"];
 	end
 	
+	_G[thisName.."HealthBar"].LeftText = _G[thisName.."TextureFrameHealthBarTextLeft"];
+	_G[thisName.."HealthBar"].RightText = _G[thisName.."TextureFrameHealthBarTextRight"];
+	_G[thisName.."ManaBar"].LeftText = _G[thisName.."TextureFrameManaBarTextLeft"];
+	_G[thisName.."ManaBar"].RightText = _G[thisName.."TextureFrameManaBarTextRight"];
+
 	UnitFrame_Initialize(self, unit, _G[thisName.."TextureFrameName"], portraitFrame,
 						 _G[thisName.."HealthBar"], _G[thisName.."TextureFrameHealthBarText"],
 						 _G[thisName.."ManaBar"], _G[thisName.."TextureFrameManaBarText"],
@@ -277,12 +282,37 @@ function TargetFrame_CheckLevel (self)
 		else
 			self.levelText:SetVertexColor(1.0, 0.82, 0.0);
 		end
+		
+		if ( self.isBossFrame ) then
+			BossTargetFrame_UpdateLevelTextAnchor(self, targetLevel);
+		else
+			TargetFrame_UpdateLevelTextAnchor(self, targetLevel);
+		end
+		
 		self.levelText:Show();
 		self.highLevelTexture:Hide();
 	else
 		-- Target is too high level to tell
 		self.levelText:Hide();
 		self.highLevelTexture:Show();
+	end
+end
+
+--This is overwritten in LocalizationPost for different languages.
+function TargetFrame_UpdateLevelTextAnchor (self, targetLevel)
+	if ( targetLevel >= 100 ) then
+		self.levelText:SetPoint("CENTER", 61, -17);
+	else
+		self.levelText:SetPoint("CENTER", 62, -17);
+	end
+end
+
+--This is overwritten in LocalizationPost for different languages.
+function BossTargetFrame_UpdateLevelTextAnchor (self, targetLevel)
+	if ( targetLevel >= 100 ) then
+		self.levelText:SetPoint("CENTER", 11, -16);
+	else
+		self.levelText:SetPoint("CENTER", 12, -16);
 	end
 end
 
@@ -328,7 +358,7 @@ function TargetFrame_CheckClassification (self, forceNormalTexture)
 	local classification = UnitClassification(self.unit);
 	self.nameBackground:Show();
 	self.manabar:Show();
-	self.manabar.TextString:Show();
+	TextStatusBar_UpdateTextString(self.manabar);
 	self.threatIndicator:SetTexture("Interface\\TargetingFrame\\UI-TargetingFrame-Flash");
 
 	if ( forceNormalTexture ) then
@@ -501,7 +531,6 @@ function TargetFrame_UpdateAuras (self)
 	local color;
 	local frameBorder;
 	local numDebuffs = 0;
-	local isEnemy = UnitCanAttack("player", self.unit);
 	
 	if ( SHOW_DISPELLABLE_DEBUFFS == "1" and canAssist ) then
 		filter = "RAID";
@@ -611,8 +640,12 @@ function TargetFrame_ShouldShowDebuff(unit, index, filter)
 	--This is an enemy
 	if ( SHOW_ALL_ENEMY_DEBUFFS == "1" or not UnitCanAttack("player", unit) ) then
 		return true;
-	else
+	else		
 		local name, rank, icon, count, debuffType, duration, expirationTime, unitCaster, canStealOrPurge, shouldConsolidate, spellId, canApplyAura, isBossDebuff, isCastByPlayer = UnitDebuff(unit, index, filter);
+
+		if SpellIsAlwaysShown(spellId) then
+			return true;
+		end
 
 		local hasCustom, alwaysShowMine, showForMySpec = SpellGetVisibilityInfo(spellId, "ENEMY_TARGET");
 		if ( hasCustom ) then
@@ -1115,6 +1148,7 @@ end
 -- *********************************************************************************
 
 function BossTargetFrame_OnLoad(self, unit, event)
+	self.isBossFrame = true;
 	self.noTextPrefix = true;
 	self.showLevel = true;
 	self.showThreat = true;
@@ -1123,7 +1157,7 @@ function BossTargetFrame_OnLoad(self, unit, event)
 	TargetFrame_OnLoad(self, unit, BossTargetFrameDropDown_Initialize);
 	self:RegisterEvent("UNIT_TARGETABLE_CHANGED");
 	self.borderTexture:SetTexture("Interface\\TargetingFrame\\UI-UnitFrame-Boss");
-	self.levelText:SetPoint("CENTER", 12, -16);
+	self.levelText:SetPoint("CENTER", 12, select(5, self.levelText:GetPoint("CENTER")));
 	self.raidTargetIcon:SetPoint("RIGHT", -90, 0);
 	self.threatNumericIndicator:SetPoint("BOTTOM", self, "TOP", -85, -22);
 	self.threatIndicator:SetTexture("Interface\\TargetingFrame\\UI-UnitFrame-Boss-Flash");

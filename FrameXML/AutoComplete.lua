@@ -68,6 +68,10 @@ AUTOCOMPLETE_LIST_TEMPLATES = {
 		include = bit.bor(AUTOCOMPLETE_FLAG_IN_GROUP, AUTOCOMPLETE_FLAG_FRIEND, AUTOCOMPLETE_FLAG_INTERACTED_WITH),
 		exclude = bit.bor(AUTOCOMPLETE_FLAG_BNET, AUTOCOMPLETE_FLAG_IN_GUILD),
 	},
+	BNET_NOT_IN_PARTY = {
+		include = AUTOCOMPLETE_FLAG_BNET,
+		exclude = AUTOCOMPLETE_FLAG_IN_GROUP,
+	},
 }
 		
 AUTOCOMPLETE_LIST = {};
@@ -95,6 +99,7 @@ local AUTOCOMPLETE_LIST = AUTOCOMPLETE_LIST;
 	AUTOCOMPLETE_LIST.CALENDAREVENT		= AUTOCOMPLETE_LIST_TEMPLATES.KNOWN;
 	AUTOCOMPLETE_LIST.IGNORE			= AUTOCOMPLETE_LIST_TEMPLATES.NOT_FRIEND;
 	AUTOCOMPLETE_LIST.LOOT_MASTER		= AUTOCOMPLETE_LIST_TEMPLATES.IN_GROUP;
+	AUTOCOMPLETE_LIST.WARGAME			= AUTOCOMPLETE_LIST_TEMPLATES.BNET_NOT_IN_PARTY;
 
 AUTOCOMPLETE_COLOR_KEYS = 
 {
@@ -116,6 +121,11 @@ function AutoComplete_OnLoad(self)
 	self.maxHeight = AUTOCOMPLETE_MAX_BUTTONS * AutoCompleteButton1:GetHeight();
 	
 	AutoCompleteInstructions:SetText("|cffbbbbbb"..PRESS_TAB.."|r");
+	C_Timer.After(5, function()
+		if ( IsInGuild() ) then
+			GuildRoster();
+		end
+	end);
 end
 
 function AutoComplete_Update(parent, text, cursorPosition)
@@ -154,7 +164,7 @@ function AutoComplete_Update(parent, text, cursorPosition)
 		
 		self.parent = parent;
 		--We ask for one more result than we need so that we know whether or not results are continued
-		possibilities = GetAutoCompleteResults(text, parent.autoCompleteParams.include, parent.autoCompleteParams.exclude, AUTOCOMPLETE_MAX_BUTTONS+1, cursorPosition);
+		local possibilities = GetAutoCompleteResults(text, parent.autoCompleteParams.include, parent.autoCompleteParams.exclude, AUTOCOMPLETE_MAX_BUTTONS+1, cursorPosition);
 
 		if (not possibilities) then
 			possibilities = {};

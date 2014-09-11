@@ -94,7 +94,7 @@
 				</Anchors>
 				<Scripts>
 					<OnClick>
-						self:SetChecked(nil);
+						self:SetChecked(false);
 						PickupMacro(MacroFrame.selectedMacro);
 					</OnClick>
 				</Scripts>
@@ -288,7 +288,7 @@
 				<Scripts>
 					<OnClick>
 						PlaySound("igMainMenuOptionCheckBoxOn");
-						MacroFrame_DeleteMacro();
+						StaticPopup_Show("CONFIRM_DELETE_SELECTED_MACRO");
 					</OnClick>
 				</Scripts>
 			</Button>

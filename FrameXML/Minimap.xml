@@ -247,7 +247,7 @@
 										self.newbieText = NEWBIE_TOOLTIP_WORLDMAP;
 									</OnEvent>
 									<OnClick>
-										ToggleFrame(WorldMapFrame);
+										ToggleWorldMap();
 									</OnClick>
 								</Scripts>
 								<NormalTexture file="Interface\minimap\UI-Minimap-WorldMapSquare">
@@ -357,7 +357,7 @@
 											<OnEnter>
 												GameTooltip:SetOwner(self, "ANCHOR_LEFT");
 												GameTooltip:SetText(TRACKING, 1, 1, 1);
-												GameTooltip:AddLine(MINIMAP_TRACKING_TOOLTIP_NONE, nil, nil, nil, 1);
+												GameTooltip:AddLine(MINIMAP_TRACKING_TOOLTIP_NONE, nil, nil, nil, true);
 												GameTooltip:Show();
 											</OnEnter>
 											<OnLeave>
@@ -493,6 +493,203 @@
 									</OnUpdate>
 								</Scripts>
 							</Button>
+							<Button name="GarrisonLandingPageMinimapButton" hidden="true">
+								<Size x="53" y="53"/>
+								<Anchors>
+									<Anchor point="TOPLEFT" x="32" y="-118"/>
+								</Anchors>
+								<HitRectInsets>
+									<AbsInset left="5" right="10" top="5" bottom="10"/>
+								</HitRectInsets>
+								<Layers>
+									<Layer level="BORDER">
+										<Texture parentKey="AlertBG" hidden="true" alpha="0" atlas="GarrLanding-MinimapAlertBG" useAtlasSize="true">
+											<Anchors>
+												<Anchor point="RIGHT" relativePoint="CENTER"/>
+											</Anchors>
+										</Texture>
+									</Layer>
+									<Layer level="ARTWORK">
+										<Texture parentKey="LoopingGlow" hidden="true" alpha="0" alphaMode="ADD" atlas="GarrLanding-CircleGlow" useAtlasSize="true">
+											<Anchors>
+												<Anchor point="CENTER"/>
+											</Anchors>
+										</Texture>
+										<Texture parentKey="SideToastGlow" hidden="true" alpha="0" alphaMode="ADD" atlas="GarrLanding-SideToast-Glow" useAtlasSize="true">
+											<Anchors>
+												<Anchor point="CENTER"/>
+											</Anchors>
+										</Texture>
+									</Layer>
+									<Layer level="OVERLAY">
+										<FontString parentKey="AlertText" hidden="true" alpha="0" justifyH="RIGHT" inherits="GameFontHighlightLeft">
+											<Size x="138" y="45"/>
+											<Anchors>
+												<Anchor point="RIGHT" relativePoint="LEFT" x="4" y="0"/>
+											</Anchors>
+										</FontString>
+										<Texture parentKey="CircleGlow" hidden="true" alpha="1" alphaMode="ADD" atlas="GarrLanding-CircleGlow" useAtlasSize="true">
+											<Anchors>
+												<Anchor point="CENTER"/>
+											</Anchors>
+										</Texture>
+										<Texture parentKey="SoftButtonGlow" hidden="true" alpha="1" alphaMode="ADD" atlas="GarrLanding-SideToast-Glow" useAtlasSize="true">
+											<Anchors>
+												<Anchor point="CENTER"/>
+											</Anchors>
+										</Texture>
+									</Layer>
+								</Layers>
+								<Animations>
+									<AnimationGroup parentKey="MinimapLoopPulseAnim" looping="REPEAT">
+										<Alpha childKey="LoopingGlow" duration="0.5" order="1" fromAlpha="0" toAlpha="1"/>
+										<Alpha childKey="LoopingGlow" startDelay="0.5" duration="1" order="1" fromAlpha="1" toAlpha="0"/>
+										<Scale childKey="LoopingGlow" duration="0.75" order="1" fromScaleX="0.75" fromScaleY="0.75" toScaleX="1.1" toScaleY="1.1"/>
+										<Scripts>
+											<OnPlay>
+												self:GetParent().LoopingGlow:Show();
+											</OnPlay>
+											<OnStop>
+												self:GetParent().LoopingGlow:Hide();
+											</OnStop>
+											<OnFinished>
+												self:GetParent().LoopingGlow:Hide();
+											</OnFinished>
+										</Scripts>
+									</AnimationGroup>
+									<AnimationGroup parentKey="MinimapPulseAnim" setToFinalAlpha="true">
+										<Alpha childKey="CircleGlow" duration="0.1" order="1" fromAlpha="0" toAlpha="1"/>
+										<Alpha childKey="CircleGlow" startDelay="0.1" duration="0.5" order="1" fromAlpha="1" toAlpha="0"/>
+										<Scale childKey="CircleGlow" duration="0.25" order="1" fromScaleX="0.75" fromScaleY="0.75" toScaleX="1.75" toScaleY="1.75"/>
+										<Alpha childKey="SoftButtonGlow" duration="0.5" order="1" fromAlpha="0" toAlpha="1"/>
+										<Alpha childKey="SoftButtonGlow" startDelay="0.5" duration="0.5" order="1" fromAlpha="1" toAlpha="0"/>
+										<Scale childKey="SoftButtonGlow" duration="0.75" order="1" fromScaleX="1" fromScaleY="1" toScaleX="1.5" toScaleY="1.5"/>
+										<Scripts>
+											<OnPlay>
+												self:GetParent().CircleGlow:Show();
+												self:GetParent().SoftButtonGlow:Show();
+											</OnPlay>
+											<OnStop>
+												self:GetParent().CircleGlow:Hide();
+												self:GetParent().SoftButtonGlow:Hide();
+											</OnStop>
+											<OnFinished>
+												self:GetParent().CircleGlow:Hide();
+												self:GetParent().SoftButtonGlow:Hide();
+											</OnFinished>
+										</Scripts>
+									</AnimationGroup>
+									<AnimationGroup parentKey="MinimapAlertAnim" setToFinalAlpha="true">
+										<Alpha childKey="AlertText" duration="0.25" order="1" fromAlpha="0" toAlpha="1"/>
+										<Alpha childKey="AlertBG" duration="0.25" order="1" fromAlpha="0" toAlpha="1"/>
+										<Scale childKey="AlertBG" duration="0.25" order="1" fromScaleX="0.1" fromScaleY="1" toScaleX="1" toScaleY="1">
+											<Origin point="CENTER">
+												<Offset x="65" y="0"/>
+											</Origin>
+										</Scale>
+										<Alpha childKey="SideToastGlow" duration="0.5" order="1" fromAlpha="0" toAlpha="1"/>
+										<Alpha childKey="SideToastGlow" startDelay="0.5" duration="0.5" order="1" fromAlpha="1" toAlpha="0"/>
+										<Scale childKey="SideToastGlow" duration="0.5" order="1" fromScaleX="1" fromScaleY="1" toScaleX="2" toScaleY="1">
+											<Origin point="RIGHT">
+												<Offset x="-10" y="0"/>
+											</Origin>
+										</Scale>
+										<Alpha childKey="AlertText" startDelay="5" duration="0.25" order="2" fromAlpha="1" toAlpha="0"/>
+										<Alpha childKey="AlertBG" startDelay="5" duration="0.25" order="2" fromAlpha="1" toAlpha="0"/>
+										<Scale childKey="AlertBG" startDelay="5" duration="0.25" order="2" fromScaleX="1" fromScaleY="1" toScaleX="0.1" toScaleY="1">
+											<Origin point="RIGHT">
+												<Offset x="0" y="0"/>
+											</Origin>
+										</Scale>
+										<Scripts>
+											<OnPlay>
+												self:GetParent().AlertBG:Show();
+												self:GetParent().AlertText:Show();
+												self:GetParent().SideToastGlow:Show();
+												self:GetParent().MinimapPulseAnim:Play();
+											</OnPlay>
+											<OnStop>
+												self:GetParent().AlertBG:Hide();
+												self:GetParent().AlertText:Hide();
+												self:GetParent().SideToastGlow:Hide();
+												self:GetParent().MinimapPulseAnim:Stop();
+											</OnStop>
+											<OnFinished>
+												self:GetParent().AlertBG:Hide();
+												self:GetParent().AlertText:Hide();
+												self:GetParent().SideToastGlow:Hide();
+												self:GetParent().MinimapPulseAnim:Stop();
+											</OnFinished>
+										</Scripts>
+									</AnimationGroup>
+								</Animations>
+								<Frames>
+									<Frame name="GarrisonLandingPageTutorialBox" inherits="GlowBoxTemplate" enableMouse="true" hidden="true" frameStrata="DIALOG" frameLevel="2" topLevel="true">
+										<Size x="220" y="100"/>
+										<Anchors>
+											<Anchor point="RIGHT" relativePoint="LEFT" x="-25" y="0"/>
+										</Anchors>
+										<Layers>
+											<Layer level="OVERLAY">
+												<FontString parentKey="Text" inherits="GameFontHighlightLeft" justifyV="TOP" text="GARRISON_VIEW_MISSION_PROGRESS_HERE">
+													<Size x="188" y="0"/>
+													<Anchors>
+														<Anchor point="TOPLEFT" x="16" y="-24"/>
+													</Anchors>
+												</FontString>
+											</Layer>
+											<Layer level="ARTWORK">
+												<Texture parentKey="Arrow" inherits="HelpPlateArrowDOWN">
+													<Size x="53" y="21"/>
+													<Anchors>
+														<Anchor point="LEFT" relativePoint="RIGHT" x="-3" y="0"/>
+													</Anchors>
+												</Texture>
+											</Layer>
+										</Layers>
+										<Frames>
+											<Button parentKey="CloseButton" inherits="UIPanelCloseButton">
+												<Anchors>
+													<Anchor point="TOPRIGHT" x="6" y="6"/>
+												</Anchors>
+												<Scripts>
+													<OnClick>
+														self:GetParent():Hide();
+														SetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_GARRISON_LANDING, true);
+													</OnClick>
+												</Scripts>
+											</Button>
+										</Frames>
+										<Scripts>
+											<OnLoad>
+												MicroButtonAlert_OnLoad(self);
+												SetClampedTextureRotation(self.Arrow, 270);--make arrow face right
+											</OnLoad>
+											<OnShow>
+												self:SetHeight(self.Text:GetHeight()+42);
+											</OnShow>
+										</Scripts>
+									</Frame>
+								</Frames>
+								<Scripts>
+									<OnLoad function="GarrisonLandingPageMinimapButton_OnLoad"/>
+									<OnEvent function="GarrisonLandingPageMinimapButton_OnEvent"/>
+									<OnShow function="GarrisonLandingPageMinimapButton_OnShow"/>
+									<OnClick function="GarrisonLandingPageMinimapButton_OnClick"/>
+									<OnEnter>
+										GameTooltip:SetOwner(self, "ANCHOR_LEFT");
+										GameTooltip:SetText(GARRISON_LANDING_PAGE_TITLE, 1, 1, 1);
+										GameTooltip:AddLine(MINIMAP_GARRISON_LANDING_PAGE_TOOLTIP, nil, nil, nil, true);
+										GameTooltip:Show();
+									</OnEnter>
+									<OnLeave>
+										GameTooltip:Hide();
+									</OnLeave>
+								</Scripts>						
+								<NormalTexture atlas="GarrLanding-MinimapIcon-Alliance-Up" useAtlasSize="true"/>
+								<PushedTexture atlas="GarrLanding-MinimapIcon-Alliance-Down" useAtlasSize="true"/>
+								<HighlightTexture alphaMode="ADD" file="Interface\Minimap\UI-Minimap-ZoomButton-Highlight"/>
+							</Button>
 						</Frames>
 					</Frame>
 				</Frames>
@@ -603,6 +800,13 @@
 							</Anchors>
 							<Size x="12" y="13"/>
 							<TexCoords left="0.67968750" right="0.77343750" top="0.65625000" bottom="0.85937500"/>
+						</Texture>
+						<Texture name="$parentMythicTexture" file="Interface\GuildFrame\GuildDifficulty">
+							<Anchors>
+								<Anchor point="BOTTOMLEFT" x="8" y="7"/>
+							</Anchors>
+							<Size x="12" y="13"/>
+							<TexCoords left="0.77343750" right="0.8671875" top="0.65625000" bottom="0.85937500"/>
 						</Texture>
 						<Texture name="$parentChallengeModeTexture" file="Interface\Common\mini-hourglass">
 							<Anchors>

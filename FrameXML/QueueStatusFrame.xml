@@ -150,7 +150,25 @@
 					</Anchors>
 				</FontString>
 			</Layer>
+			<Layer level="OVERLAY">
+				<Texture parentKey="Highlight" hidden="true" alpha="0" alphaMode="ADD" atlas="groupfinder-eye-highlight" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="CENTER" x="0" y="1"/>
+					</Anchors>
+				</Texture>
+			</Layer>
 		</Layers>
+		<Animations>
+			<AnimationGroup parentKey="EyeHighlightAnim" setToFinalAlpha="true" looping="REPEAT">
+				<Scale childKey="Highlight" startDelay="0.1" smoothing="NONE" duration="1.0" order="1" fromScaleX="0.39" fromScaleY="0.39" toScaleX="1" toScaleY="1"/>
+				<Alpha childKey="Highlight" startDelay="0.1" smoothing="NONE" duration="1.0" order="1" fromAlpha="1" toAlpha="0"/>
+				<Scripts>
+					<OnLoop>
+						PlaySound("UI_GroupFinderReceiveApplication");
+					</OnLoop>
+				</Scripts>
+			</AnimationGroup>
+		</Animations>
 		<Frames>
 			<Frame name="$parentIcon" inherits="EyeTemplate" hidden="false" parentKey="Eye">
 				<Size x="30" y="30"/>

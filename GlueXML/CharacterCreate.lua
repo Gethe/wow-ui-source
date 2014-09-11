@@ -69,6 +69,7 @@ RACE_ICON_TCOORDS = {
 	["PANDAREN_MALE"]	= {0.750, 0.875, 0, 0.25},
 	["PANDAREN_FEMALE"]	= {0.750, 0.875, 0.5, 0.75},
 };
+
 CLASS_ICON_TCOORDS = {
 	["WARRIOR"]	= {0, 0.25, 0, 0.25},
 	["MAGE"]	= {0.25, 0.49609375, 0, 0.25},
@@ -146,10 +147,6 @@ function CharacterCreate_OnLoad(self)
 	CharacterCreateNameEdit:SetBackdropBorderColor(backdropColor[1], backdropColor[2], backdropColor[3]);
 	CharacterCreateNameEdit:SetBackdropColor(backdropColor[4], backdropColor[5], backdropColor[6]);
 
-	if( IsBlizzCon() ) then
-		CharCreateBackButton:Disable();
-	end
-
 	CharacterCreateFrame.state = "CLASSRACE";
 	
 	CharCreatePreviewFrame.previews = { };
@@ -203,64 +200,10 @@ function CharacterCreate_OnShow()
 
 	SetFaceCustomizeCamera(false);
 
-	CharacterCreateFrame_UpdateRecruitInfo(self);
+	CharacterCreateFrame_UpdateRecruitInfo();
 	
 	if( IsBlizzCon() ) then
 		BLIZZCON_IS_A_GO = false;
-		CharacterCreateAllianceLabel:Hide();
-		CharacterCreateHordeLabel:Hide();
-		CharacterCreateGender:Hide();
-		CharCreateRandomizeButton:Hide();
-		CharacterCreateRandomName:Hide();
-		CharacterCreateGenderButtonMale:Hide();
-		CharacterCreateGenderButtonFemale:Hide();
-		CharacterCreateBanners:Hide();
-		CharacterCreateOuterBorder1:Hide();
-		CharacterCreateOuterBorder2:Hide();
-		CharacterCreateOuterBorder3:Hide();
-		CharacterCreateConfigurationBackground:Hide();
-
-		CharCreateBlizzconFrame:Show();
-		CharCreateBlizzconFrame2:Show();
-
-		for i=1, MAX_RACES, 1 do
-			_G["CharacterCreateRaceButton"..i]:Hide();
-		end
-		
-		for i=1, NUM_CHAR_CUSTOMIZATIONS, 1 do
-			_G["CharacterCustomizationButtonFrame"..i]:Hide();
-		end
-
---		CharacterCreateClassName:Hide();
---		CharacterCreateClassName:ClearAllPoints();
---		CharacterCreateClassName:SetPoint("BOTTOM", CharCreateBlizzconFrame, "BOTTOM", 0, 15);
---		CharacterCreateClassName:SetFontObject(GlueFontNormalGigantor);
-		
-		local previous = nil;
-		for i=1, MAX_CLASSES_PER_RACE, 1 do
-			local button = _G["CharacterCreateClassButton"..i];
-			if ( i == 2 or i == 6 or i == 9 or i == 11 ) then
-				button:Hide();
-			else
-				button:SetSize(64,64);
-				button:GetNormalTexture():SetSize(64,64);
-				button:GetPushedTexture():SetSize(64,64);
-				_G["CharacterCreateClassButton"..i.."BevelEdge"]:SetSize(64,64);
-				_G["CharacterCreateClassButton"..i.."Shadow"]:SetSize(84,84);
-				_G["CharacterCreateClassButton"..i.."DisableTexture"]:SetSize(60,60);
-				button:ClearAllPoints();
-				if ( i == 1 ) then
-					button:SetPoint("BOTTOM", CharCreateBlizzconFrame, "BOTTOMLEFT", 70, 20);
---				elseif ( i == 5 ) then
---					button:SetPoint("BOTTOM", CharCreateBlizzconFrame, "TOP", 50, 30);
---				elseif ( i == 10 ) then
---					button:SetPoint("BOTTOM", CharCreateBlizzconFrame, "TOP", 0, 290);
-				else
-					button:SetPoint("BOTTOM", previous, "TOP", 0, 20)
-				end
-				previous = button;
-			end
-		end
 	end
 end
 
@@ -326,7 +269,7 @@ local function ShowGlowyDialog(dialog, text, showOKButton)
 	dialog:Show();
 end
 
-function CharacterCreateFrame_UpdateRecruitInfo(self)
+function CharacterCreateFrame_UpdateRecruitInfo()
 	local active, faction = C_RecruitAFriend.GetRecruitInfo();
 	if ( active and not PAID_SERVICE_TYPE ) then
 		if ( faction == FACTION_GROUP_HORDE ) then
@@ -355,9 +298,7 @@ function CharacterCreateEnumerateRaces(...)
 		message("Too many races!  Update MAX_RACES");
 		return;
 	end
-	local coords;
-	local index = 1;
-	local button;
+
 	local gender;
 	local selectedSex = GetSelectedSex();
 	if ( selectedSex == SEX_MALE ) then
@@ -365,19 +306,20 @@ function CharacterCreateEnumerateRaces(...)
 	else
 		gender = "FEMALE";
 	end
+
+	local index = 1;
 	for i=1, select("#", ...), 3 do
-		local name = select(i, ...);
-		coords = RACE_ICON_TCOORDS[strupper(select(i+1, ...).."_"..gender)];
-		_G["CharCreateRaceButton"..index.."NormalTexture"]:SetTexCoord(coords[1], coords[2], coords[3], coords[4]);
-		_G["CharCreateRaceButton"..index.."PushedTexture"]:SetTexCoord(coords[1], coords[2], coords[3], coords[4]);
-		button = _G["CharCreateRaceButton"..index];
+		local button = _G["CharCreateRaceButton"..index];
 		if ( not button  ) then
 			return;
 		end
-		if( not IsBlizzCon() ) then
-			button:Show();
-		end
+		
+		local name = select(i, ...);
+		local coords = RACE_ICON_TCOORDS[strupper(select(i+1, ...).."_"..gender)];
+		_G["CharCreateRaceButton"..index.."NormalTexture"]:SetTexCoord(coords[1], coords[2], coords[3], coords[4]);
+		_G["CharCreateRaceButton"..index.."PushedTexture"]:SetTexCoord(coords[1], coords[2], coords[3], coords[4]);
 		button.nameFrame.text:SetText(name);
+
 		if ( select(i+2, ...) == 1 ) then
 			button:Enable();
 			SetButtonDesaturated(button);
@@ -385,7 +327,7 @@ function CharacterCreateEnumerateRaces(...)
 			button.tooltip = name;
 		else
 			button:Disable();
-			SetButtonDesaturated(button, 1);
+			SetButtonDesaturated(button, true);
 			button.name = name;
 			local disabledReason = _G[strupper(select(i+1, ...).."_".."DISABLED")];
 			if ( disabledReason ) then
@@ -425,19 +367,15 @@ function CharacterCreateEnumerateClasses(...)
 				_G["CharCreateClassButton"..index.."DisableTexture"]:Hide();
 			else
 				button:Disable();
-				SetButtonDesaturated(button, 1);
+				SetButtonDesaturated(button, true);
 				button.tooltip = CLASS_DISABLED;
 				_G["CharCreateClassButton"..index.."DisableTexture"]:Show();
 			end
 		else
 			button:Disable();
-			SetButtonDesaturated(button, 1);
+			SetButtonDesaturated(button, true);
 			button.tooltip = _G[strupper(select(i+1, ...).."_".."DISABLED")];
 			_G["CharCreateClassButton"..index.."DisableTexture"]:Show();
-		end
-		if( IsBlizzCon() ) then
-			button.text:SetText(select(i, ...));
-			button.text:Show();
 		end
 		index = index + 1;
 	end
@@ -447,17 +385,13 @@ function CharacterCreateEnumerateClasses(...)
 end
 
 function SetCharacterRace(id)
-	if( IsBlizzCon() ) then
-		id = 7;
-	end
-
 	CharacterCreate.selectedRace = id;
 	for i=1, CharacterCreate.numRaces, 1 do
 		local button = _G["CharCreateRaceButton"..i];
 		if ( i == id ) then
-			button:SetChecked(1);
+			button:SetChecked(true);
 		else
-			button:SetChecked(0);
+			button:SetChecked(false);
 		end
 	end
 
@@ -560,12 +494,9 @@ function SetCharacterClass(id)
 	for i=1, CharacterCreate.numClasses, 1 do
 		local button = _G["CharCreateClassButton"..i];
 		if ( i == id ) then
-			button:SetChecked(1);
-			if( IsBlizzCon() ) then
-				button.selection:Show();
-			end
+			button:SetChecked(true);
 		else
-			button:SetChecked(0);
+			button:SetChecked(false);
 			button.selection:Hide();
 		end
 	end
@@ -723,7 +654,7 @@ function CharCreateCustomizationFrame_OnShow ()
 			_G["CharCreateCustomizationButton"..i]:Hide();
 		else
 			_G["CharCreateCustomizationButton"..i]:Show();
-			_G["CharCreateCustomizationButton"..i]:SetChecked(0); -- we will handle default selection
+			_G["CharCreateCustomizationButton"..i]:SetChecked(false); -- we will handle default selection
 			-- this must be done since a selected button can 'disappear' when swapping genders
 			if ( isDefaultSet == 0 and CharacterCreateFrame.customizationType == i) then
 				isDefaultSet = 1;
@@ -741,7 +672,7 @@ function CharCreateCustomizationFrame_OnShow ()
 		CharacterCreateFrame.customizationType = lastGood;
 		checkedButton = lastGood;
 	end
-	_G["CharCreateCustomizationButton"..checkedButton]:SetChecked(1);
+	_G["CharCreateCustomizationButton"..checkedButton]:SetChecked(true);
 
 	if (resize > 0) then
 	-- we need to resize and remap the banner texture
@@ -770,10 +701,10 @@ function CharacterClass_OnClick(self, id)
 			SetCharacterRace(GetSelectedRace());
 			CharacterChangeFixup();
 		else
-			self:SetChecked(1);
+			self:SetChecked(true);
 		end
 	else
-		self:SetChecked(0);
+		self:SetChecked(false);
 	end
 end
 
@@ -798,25 +729,22 @@ function CharacterRace_OnClick(self, id, forceSelect)
 				
 			CharacterChangeFixup();
 		else
-			self:SetChecked(1);
+			self:SetChecked(true);
 		end
 	else
-		self:SetChecked(0);
+		self:SetChecked(false);
 	end
 end
 
 function SetCharacterGender(sex)
-	if( IsBlizzCon() ) then
-		sex = 2;
-	end
 	local gender;
 	SetSelectedSex(sex);
 	if ( sex == SEX_MALE ) then
-		CharCreateMaleButton:SetChecked(1);
-		CharCreateFemaleButton:SetChecked(0);
+		CharCreateMaleButton:SetChecked(true);
+		CharCreateFemaleButton:SetChecked(false);
 	else
-		CharCreateMaleButton:SetChecked(0);
-		CharCreateFemaleButton:SetChecked(1);
+		CharCreateMaleButton:SetChecked(false);
+		CharCreateFemaleButton:SetChecked(true);
 	end
 
 	-- Update race images to reflect gender
@@ -983,9 +911,9 @@ end
 function CharCreateSelectCustomizationType(newType)
 	-- deselect previous type selection
 	if ( CharacterCreateFrame.customizationType and CharacterCreateFrame.customizationType ~= newType ) then
-		_G["CharCreateCustomizationButton"..CharacterCreateFrame.customizationType]:SetChecked(0);
+		_G["CharCreateCustomizationButton"..CharacterCreateFrame.customizationType]:SetChecked(false);
 	end
-	_G["CharCreateCustomizationButton"..newType]:SetChecked(1);
+	_G["CharCreateCustomizationButton"..newType]:SetChecked(true);
 	CharacterCreateFrame.customizationType = newType;
 	CharCreate_ResetFeaturesDisplay();
 
@@ -1285,7 +1213,7 @@ function PandarenFactionButtons_Show()
 	local _, faction = PaidChange_GetCurrentFaction();
 	-- deselect first in case of multiple pandaren faction changes
 	PandarenFactionButtons_ClearSelection();
-	frame[faction.."Button"]:SetChecked(1);
+	frame[faction.."Button"]:SetChecked(true);
 	-- show the frame on top of the normal pandaren button
 	frame:Show();
 	frame:SetFrameLevel(frame.PandarenButton:GetFrameLevel() + 2);
@@ -1312,8 +1240,8 @@ function PandarenFactionButtons_SetTextures()
 end
 
 function PandarenFactionButtons_ClearSelection()
-	CharCreatePandarenFactionFrame.AllianceButton:SetChecked(0);
-	CharCreatePandarenFactionFrame.HordeButton:SetChecked(0);
+	CharCreatePandarenFactionFrame.AllianceButton:SetChecked(false);
+	CharCreatePandarenFactionFrame.HordeButton:SetChecked(false);
 end
 
 function PandarenFactionButtons_GetSelectedFaction()
@@ -1326,6 +1254,6 @@ end
 
 function PandarenFactionButton_OnClick(self)
 	PandarenFactionButtons_ClearSelection();
-	self:SetChecked(1);
+	self:SetChecked(true);
 	CharacterRace_OnClick(CharCreatePandarenFactionFrame.PandarenButton, CharCreatePandarenFactionFrame.PandarenButton:GetID(), true);
 end

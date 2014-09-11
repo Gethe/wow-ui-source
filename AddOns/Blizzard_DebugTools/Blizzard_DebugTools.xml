@@ -249,7 +249,7 @@
 			<!-- <OnSizeChanged function="EventTraceFrame_OnSizeChanged"/> Set in EventTraceFrame_OnLoad -->
 		</Scripts>
 	</Frame>
-	<Frame name="ScriptErrorsFrame" inherits="UIPanelDialogTemplate" movable="true" clampedToScreen="true" hidden="true" toplevel="true">
+	<Frame name="ScriptErrorsFrame" inherits="UIPanelDialogTemplate" frameStrata="TOOLTIP" movable="true" clampedToScreen="true" hidden="true" toplevel="true">
 		<Size x="384" y="260"/>
 		<Anchors>
 			<Anchor point="CENTER"/>

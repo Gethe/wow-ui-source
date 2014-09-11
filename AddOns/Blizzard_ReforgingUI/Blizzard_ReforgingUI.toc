@@ -1,6 +1,0 @@
-## Interface: 50400
-## Title: Blizzard Reforging UI
-## Secure: 1
-## LoadOnDemand: 1
-Blizzard_ReforgingUI.xml
-Localization.lua

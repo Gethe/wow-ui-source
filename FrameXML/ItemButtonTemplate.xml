@@ -10,7 +10,7 @@
 				<Texture name="$parentIconTexture" parentKey="icon"/>
 			</Layer>
 			<Layer level="ARTWORK" textureSubLevel="2">
-				<FontString name="$parentCount" inherits="NumberFontNormal" justifyH="RIGHT" hidden="true" parentKey="count">
+				<FontString name="$parentCount" inherits="NumberFontNormal" justifyH="RIGHT" hidden="true" parentKey="Count">
 					<Anchors>
 						<Anchor point="BOTTOMRIGHT">
 							<Offset>
@@ -32,6 +32,12 @@
 			<Layer level="OVERLAY">
 				<Texture name="$parentSearchOverlay" parentKey="searchOverlay" setAllPoints="true" hidden="true">
 					<Color r="0" g="0" b="0" a="0.8"/>
+				</Texture>
+				<Texture parentKey="IconBorder" file="Interface\Common\WhiteIconFrame" hidden="true">
+					<Size x="37" y="37"/>
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
 				</Texture>
 			</Layer>
 		</Layers>
@@ -108,7 +114,7 @@
 		</Size>
 		<Layers>
 			<Layer level="BACKGROUND">
-				<Texture name="$parentIconTexture" parentKey="icon">
+				<Texture name="$parentIconTexture" parentKey="Icon">
 					<Size>
 						<AbsDimension x="39" y="39"/>
 					</Size>
@@ -120,7 +126,7 @@
 						</Anchor>
 					</Anchors>
 				</Texture>
-				<Texture name="$parentNameFrame" file="Interface\QuestFrame\UI-QuestItemNameFrame">
+				<Texture name="$parentNameFrame" file="Interface\QuestFrame\UI-QuestItemNameFrame" parentKey="NameFrame">
 					<Size>
 						<AbsDimension x="128" y="64"/>
 					</Size>
@@ -132,7 +138,9 @@
 						</Anchor>
 					</Anchors>
 				</Texture>
-				<FontString name="$parentName" inherits="GameFontHighlight" justifyH="LEFT" parentKey="name">
+			</Layer>
+			<Layer level="BORDER">
+				<FontString name="$parentName" inherits="GameFontHighlight" justifyH="LEFT" parentKey="Name">
 					<Size>
 						<AbsDimension x="90" y="36"/>
 					</Size>
@@ -146,7 +154,7 @@
 				</FontString>
 			</Layer>
 			<Layer level="ARTWORK">
-				<FontString name="$parentCount" inherits="NumberFontNormal" justifyH="RIGHT" parentKey="count">
+				<FontString name="$parentCount" inherits="NumberFontNormal" justifyH="RIGHT" parentKey="Count">
 					<Anchors>
 						<Anchor point="BOTTOMRIGHT" relativeTo="$parentIconTexture">
 							<Offset>
@@ -158,4 +166,35 @@
 			</Layer>
 		</Layers>
 	</Button>
+	<Button name="SmallItemButtonTemplate" virtual="true">
+		<Size x="134" y="30"/>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture name="$parentIconTexture" parentKey="Icon">
+					<Size x="30" y="30"/>
+					<Anchors>
+						<Anchor point="TOPLEFT"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="NameFrame" atlas="QuestItemBorder" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="LEFT" relativeKey="$parent.Icon" relativePoint="RIGHT" x="2" y="0"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="ARTWORK">
+				<FontString parentKey="Name" inherits="GameFontHighlightSmall" justifyH="LEFT">
+					<Size x="92" y="36"/>
+					<Anchors>
+						<Anchor point="LEFT" relativeKey="$parent.NameFrame" x="4" y="0"/>
+					</Anchors>
+				</FontString>			
+				<FontString parentKey="Count" inherits="NumberFontNormalSmall" justifyH="RIGHT">
+					<Anchors>
+						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Icon" x="4" y="1"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+	</Button>	
  </Ui>

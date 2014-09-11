@@ -18,7 +18,7 @@ FRAMELOCK_STATES = {
 		MinimapCluster		= "hidden",
 		PlayerFrame			= "hidden",
 		TargetFrame			= "hidden",
-		WatchFrame 			= "hidden",
+		ObjectiveTrackerFrame = "hidden",
 		RuneFrame			= "hidden",
 		MainMenuBar			= "hidden",
 		DurabilityFrame 	= "hidden",
@@ -34,6 +34,7 @@ FRAMELOCK_STATES = {
 		FocusFrame			= "hidden",
 		TemporaryEnchantFrame = "hidden",
 		WorldStateAlwaysUpFrame = "hidden",
+		DraenorZoneAbilityFrame = "hidden",
 	},
 };
 

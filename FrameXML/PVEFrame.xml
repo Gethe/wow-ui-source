@@ -15,12 +15,11 @@
 				</Texture>
 			</Layer>
 			<Layer level="ARTWORK" textureSubLevel="2">
-				<Texture name="$parentRing" file="Interface\TalentFrame\talent-main" parentKey="ring">
-					<Size x="100" y="100"/>
+				<Texture name="$parentRing" atlas="bluemenu-Ring" parentKey="ring">
+					<Size x="95" y="96"/>
 					<Anchors>
-						<Anchor point="LEFT" x="-14" y="-1" />
+						<Anchor point="LEFT" x="-12" y="-1" />
 					</Anchors>
-					<TexCoords left="0.50000000" right="0.91796875" top="0.00195313" bottom="0.21093750"/>
 				</Texture>
 			</Layer>
 			<Layer level="ARTWORK">
@@ -33,7 +32,7 @@
 				<FontString name="$parentName" inherits="GameFontNormalLarge" parentKey="name" spacing="2" justifyH="LEFT">
 					<Size x="106" y="0"/>
 					<Anchors>
-						<Anchor point="LEFT" relativeTo="$parentRing" relativePoint="RIGHT" x="-3" y="0" />
+						<Anchor point="LEFT" relativeTo="$parentRing" relativePoint="RIGHT" x="0" y="0" />
 					</Anchors>
 				</FontString>
 			</Layer>
@@ -50,7 +49,7 @@
 			<OnEnter>
 				if ( self.tooltip ) then
 					GameTooltip:SetOwner(self, "ANCHOR_TOP");
-					GameTooltip:SetText(self.tooltip, nil, nil, nil, nil, 1);
+					GameTooltip:SetText(self.tooltip, nil, nil, nil, nil, true);
 				end
 			</OnEnter>
 			<OnLeave>
@@ -169,7 +168,7 @@
 					<OnClick function="PVEFrame_TabOnClick"/>
 				</Scripts>
 			</Button>
-			<Button name="$parentTab2" inherits="CharacterFrameTabButtonTemplate" text="CHALLENGES" id="2" parentKey="tab2">
+			<Button name="$parentTab2" inherits="CharacterFrameTabButtonTemplate" text="PLAYER_V_PLAYER" id="2" parentKey="tab2">
 				<Anchors>
 					<Anchor point="LEFT" relativeTo="$parentTab1" relativePoint="RIGHT">
 						<Offset>
@@ -181,6 +180,18 @@
 					<OnClick function="PVEFrame_TabOnClick"/>
 				</Scripts>
 			</Button>			
+			<Button name="$parentTab3" inherits="CharacterFrameTabButtonTemplate" text="CHALLENGES" id="3" parentKey="tab3">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="$parentTab2" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="-16" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick function="PVEFrame_TabOnClick"/>
+				</Scripts>
+			</Button>	
 			<Frame name="GroupFinderFrame" useParentLevel="true" setAllPoints="true">
 				<Frames>
 					<Button name="$parentGroupButton1" inherits="GroupFinderGroupButtonTemplate" parentKey="groupButton1" id="1">
@@ -194,19 +205,44 @@
 						</Anchors>
 					</Button>
 					<Button name="$parentGroupButton3" inherits="GroupFinderGroupButtonTemplate" parentKey="groupButton3" id="3">
-						<Anchors>
-							<Anchor point="TOP" relativeTo="$parentGroupButton2" relativePoint="BOTTOM" x="0" y="-23" />
-						</Anchors>
+						<!-- Anchors set in Lua -->
 					</Button>
 					<Button name="$parentGroupButton4" inherits="GroupFinderGroupButtonTemplate" parentKey="groupButton4" id="4">
 						<Anchors>
 							<Anchor point="TOP" relativeTo="$parentGroupButton3" relativePoint="BOTTOM" x="0" y="-23" />
 						</Anchors>
+						<Frames>
+							<Frame name="PremadeGroupsPvETutorialAlert" inherits="MicroButtonAlertTemplate" parent="GroupFinderFrameGroupButton4">
+								<KeyValues>
+									<KeyValue key="label" value="LFG_LIST_TUTORIAL_ALERT" type="global"/>
+									<KeyValue key="tutorialIndex" value="LE_FRAME_TUTORIAL_LFG_LIST" type="global"/>
+								</KeyValues>
+								<Anchors>
+									<Anchor point="BOTTOM" relativeKey="$parent" relativePoint="TOP" x="0" y="8"/>
+								</Anchors>
+							</Frame>
+						</Frames>
 					</Button>
+					<Frame name="LFGListPVEStub" hidden="true">
+						<Size x="338" y="428"/>
+						<Anchors>
+							<Anchor point="TOPLEFT" x="224" y="0"/>
+						</Anchors>
+						<Scripts>
+							<OnShow>
+								LFGListFrame:SetParent(self);
+								LFGListFrame:ClearAllPoints();
+								LFGListFrame:SetAllPoints(self);
+								LFGListFrame:SetFrameLevel(self:GetFrameLevel());
+								LFGListFrame_SetBaseFilters(LFGListFrame, LE_LFG_LIST_FILTER_PVE);
+							</OnShow>
+						</Scripts>
+					</Frame>
 				</Frames>
 				<Scripts>
 					<OnLoad function="GroupFinderFrame_OnLoad"/>
 					<OnShow function="GroupFinderFrame_OnShow"/>
+					<OnEvent function="GroupFinderFrame_OnEvent"/>
 				</Scripts>
 			</Frame>
 			<!-- raised frame for shadows to be on top of the buttons -->

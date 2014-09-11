@@ -8,7 +8,7 @@
 			<OnEnter>
 				GameTooltip_SetDefaultAnchor(GameTooltip, self)
 				GameTooltip:SetText(self.title, HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b);
-				GameTooltip:AddLine(self.tooltip, NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b, 1);
+				GameTooltip:AddLine(self.tooltip, NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b, true);
 				GameTooltip:Show();
 			</OnEnter>
 			<OnLeave>

@@ -1,0 +1,389 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\FrameXML\UI.xsd">
+	
+	<Script file="Blizzard_ObjectiveTracker.lua"/>
+	
+	<Frame name="ObjectiveTrackerBlockTemplate" hidden="true" virtual="true">
+		<Size x="232" y="10"/>
+		<Layers>
+			<Layer level="ARTWORK">
+				<FontString parentKey="HeaderText" inherits="ObjectiveFont">
+					<Size x="192" y="0"/>
+					<Anchors>
+						<Anchor point="TOPLEFT"/>
+					</Anchors>
+					<Color r="0.75" g="0.61" b="0"/>
+				</FontString>
+			</Layer>			
+		</Layers>
+		<Frames>
+			<Button name="$parentHeader" parentKey="HeaderButton">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.HeaderText"/>
+					<Anchor point="BOTTOMRIGHT" relativeKey="$parent.HeaderText"/>
+				</Anchors>
+				<Scripts>
+					<OnLoad function="ObjectiveTrackerBlockHeader_OnLoad"/>
+					<OnClick function="ObjectiveTrackerBlockHeader_OnClick"/>
+					<OnEnter function="ObjectiveTrackerBlockHeader_OnEnter"/>
+					<OnLeave function="ObjectiveTrackerBlockHeader_OnLeave"/>
+				</Scripts>
+			</Button>
+		</Frames>	
+	</Frame>
+
+	<Frame name="ObjectiveTrackerHeaderTemplate" virtual="true" hidden="true">
+		<Size x="235" y="25"/>
+		<Layers>
+			<Layer level="ARTWORK">
+				<Texture parentKey="Background" hidden="false" alpha="1" atlas="Objective-Header" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="-29" y="14"/>
+					</Anchors>
+				</Texture>
+				<FontString parentKey="Text" inherits="GameFontNormalMed2" justifyH="LEFT">
+					<Size x="170" y="16"/>
+					<Anchors>
+						<Anchor point="LEFT" x="4" y="-1"/>
+					</Anchors>
+				</FontString>
+				<Texture parentKey="LineGlow" hidden="false" alpha="0" alphaMode="ADD" atlas="OBJFX_LineGlow" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="LEFT" relativeKey="$parent.Background" x="-50" y="18"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="SoftGlow" hidden="false" alpha="0" alphaMode="ADD" atlas="OBJFX_Glow" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent.Background" relativePoint="LEFT" x="20" y="20"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="StarBurst" hidden="false" alpha="0" alphaMode="ADD" atlas="OBJFX_StarBurst" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent.SoftGlow"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="LineSheen" hidden="false" alpha="0" alphaMode="ADD" atlas="OBJFX_LineBurst">
+					<Size x="60" y="15"/>
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent.SoftGlow" x="0" y="-13"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Animations>
+			<AnimationGroup parentKey="HeaderOpenAnim" setToFinalAlpha="true">
+				<Alpha childKey="Background" startDelay="0" duration="0" order="1" fromAlpha="0" toAlpha="0"/>
+				<Alpha childKey="Background" startDelay="0.25" duration="0.5" order="1" fromAlpha="0" toAlpha="1"/>
+				<Alpha childKey="LineGlow" duration="0.15" order="1" fromAlpha="0" toAlpha="1"/>
+				<Alpha childKey="LineGlow" startDelay="0.25" duration="0.65" order="1" fromAlpha="1" toAlpha="0"/>
+				<Scale childKey="LineGlow" duration="0.15" order="1" fromScaleX="0.1" fromScaleY="1.5" toScaleX="2" toScaleY="1.5">
+					<Origin point="CENTER">
+						<Offset x="-50" y="0"/>
+					</Origin>
+				</Scale>
+				<Translation childKey="LineGlow" duration="0.75" order="1" offsetX="50" offsetY="0"/>
+				<Alpha childKey="SoftGlow" duration="0.25" order="1" fromAlpha="0" toAlpha="1"/>
+				<Alpha childKey="SoftGlow" startDelay="0.25" duration="0.5" order="1" fromAlpha="1" toAlpha="0"/>
+				<Scale childKey="SoftGlow" duration="0.25" order="1" fromScaleX="0.5" fromScaleY="0.5" toScaleX="0.8" toScaleY="0.8"/>
+				<Alpha childKey="StarBurst" duration="0.25" order="1" fromAlpha="0" toAlpha="1"/>
+				<Alpha childKey="StarBurst" startDelay="0.25" duration="0.5" order="1" fromAlpha="1" toAlpha="0"/>
+				<Scale childKey="StarBurst" duration="0.25" order="1" fromScaleX="0.5" fromScaleY="0.5" toScaleX="1" toScaleY="1"/>
+				<Alpha childKey="LineSheen" startDelay="0.15" duration="0.5" order="1" fromAlpha="0" toAlpha="0.75"/>
+				<Alpha childKey="LineSheen" startDelay="0.75" duration="0.5" order="1" fromAlpha="0.75" toAlpha="0"/>
+				<Translation childKey="LineSheen" startDelay="0.15" duration="1.5" order="1" offsetX="250" offsetY="0"/>
+				
+				<Scripts>
+					<OnFinished function="ObjectiveTrackerHeader_OnAnimFinished"/>
+				</Scripts>
+			</AnimationGroup>
+		</Animations>
+		<Scripts>
+			<OnLoad>
+				self.height = OBJECTIVE_TRACKER_HEADER_HEIGHT;
+			</OnLoad>
+		</Scripts>
+	</Frame>
+	
+	<Frame name="ObjectiveTrackerLineTemplate" virtual="true">
+		<Size x="232" y="16"/>
+		<Layers>
+			<Layer level="ARTWORK">
+				<FontString parentKey="Dash" inherits="ObjectiveFont" text="QUEST_DASH">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="0" y="1"/>
+					</Anchors>
+				</FontString>
+				<FontString parentKey="Text" inherits="ObjectiveFont">
+					<Anchors>
+						<Anchor point="TOP"/>
+						<Anchor point="LEFT" relativeKey="$parent.Dash" relativePoint="RIGHT"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnLoad>
+				self.Text:SetWidth(OBJECTIVE_TRACKER_TEXT_WIDTH);
+			</OnLoad>
+		</Scripts>
+	</Frame>
+	
+	<Frame name="ObjectiveTrackerCheckLineTemplate" virtual="true">
+		<Size x="232" y="16"/>
+		<Layers>
+			<Layer level="ARTWORK">	
+				<FontString parentKey="Text" inherits="ObjectiveFont">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="20" y="0"/>
+					</Anchors>
+				</FontString>
+				<Texture parentKey="IconAnchor">
+					<Size x="16" y="16"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" x="1" y="2"/>
+					</Anchors>
+				</Texture>				
+				<Texture parentKey="Icon">
+					<Size x="16" y="16"/>
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent.IconAnchor"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="Glow" file="Interface\Scenarios\Objective-Lineglow" alpha="0" alphaMode="ADD">
+					<Size x="80" y="0"/>
+					<Anchors>
+						<Anchor point="LEFT" relativeKey="$parent.Text" x="-2" y="0"/>
+						<Anchor point="TOP" x="0" y="0"/>
+						<Anchor point="BOTTOM" x="0" y="-4"/>
+					</Anchors>
+					<Animations>
+						<AnimationGroup parentKey="Anim">
+							<Scale parentKey="ScaleGlow" startDelay="0.067" scaleX="3" scaleY="1" duration="0.433" order="1">
+								<Origin point="LEFT"/>
+							</Scale>
+							<Alpha startDelay="0.067" change="1.0" duration="0.1" order="1"/>
+							<Alpha startDelay="0.467" change="-1.0" duration="0.267" order="1"/>
+						</AnimationGroup>
+					</Animations>
+				</Texture>				
+			</Layer>
+			<Layer level="OVERLAY">
+				<Texture parentKey="CheckFlash" file="Interface\Scenarios\ScenarioIcon-Check" alphaMode="ADD" alpha="0">
+					<Size x="16" y="16"/>
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent.Icon"/>
+					</Anchors>
+					<Animations>
+						<AnimationGroup parentKey="Anim">
+							<Alpha change="1.0" duration="0.067" order="1"/>
+							<Scale scaleX="1.25" scaleY="1.25" duration="0.2" order="2"/>
+							<Alpha change="-1.0" startDelay="0.167" duration="0.23" order="2"/>
+						</AnimationGroup>
+					</Animations>
+				</Texture>			
+				<Texture parentKey="Sheen" file="Interface\Scenarios\Objective-Sheen" alpha="0">
+					<Size x="32" y="0"/>
+					<Anchors>
+						<Anchor point="LEFT" relativeKey="$parent.Glow"/>
+						<Anchor point="TOP" x="0" y="2"/>
+						<Anchor point="BOTTOM" x="0" y="-14"/>
+					</Anchors>
+					<Animations>
+						<AnimationGroup parentKey="Anim">
+							<Translation startDelay="0.067" offsetX="155" offsetY="0" duration="0.467" order="1"/>
+							<Alpha startDelay="0.067" change="1.0" duration="0.133" order="1"/>
+							<Alpha startDelay="0.2" change="-1.0" duration="0.133" order="1" smoothing="IN"/>
+						</AnimationGroup>
+					</Animations>
+				</Texture>				
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnLoad>
+				self.Text:SetWidth(OBJECTIVE_TRACKER_TEXT_WIDTH);
+			</OnLoad>
+		</Scripts>
+	</Frame>
+	
+	<Frame name="ObjectiveTrackerTimerBarTemplate" virtual="true" hidden="true">
+		<Size x="192" y="20"/>
+		<Anchors>
+			<Anchor point="CENTER"/>
+		</Anchors>
+		<Layers>
+			<Layer level="ARTWORK">
+				<FontString parentKey="Label" inherits="GameFontHighlightMedium" justifyH="LEFT">
+					<Anchors>
+						<Anchor point="LEFT"/>
+					</Anchors>				
+				</FontString>
+			</Layer>
+		</Layers>
+		<Frames>
+			<StatusBar parentKey="Bar" drawLayer="BACKGROUND" minValue="0" maxValue="1" defaultValue="0" enableMouse="false">
+				<Size x="128" y="10"/>
+				<Anchors>
+					<Anchor point="RIGHT" x="-4" y="0"/>
+				</Anchors>
+				<Layers>
+					<Layer level="ARTWORK">
+						<Texture parentKey="BorderLeft" file="Interface\PaperDollInfoFrame\UI-Character-Skills-BarBorder">
+							<Size x="9" y="14"/>
+							<TexCoords left="0.007843" right="0.043137" top="0.193548" bottom="0.774193"/>
+							<Anchors>
+								<Anchor point="LEFT" x="-3" y="0"/>
+							</Anchors>
+						</Texture>
+						<Texture parentKey="BorderRight" file="Interface\PaperDollInfoFrame\UI-Character-Skills-BarBorder">
+							<Size x="9" y="14"/>
+							<TexCoords left="0.043137" right="0.007843" top="0.193548" bottom="0.774193"/>
+							<Anchors>
+								<Anchor point="RIGHT" x="3" y="0"/>
+							</Anchors>
+						</Texture>
+						<Texture parentKey="BorderMid" file="Interface\PaperDollInfoFrame\UI-Character-Skills-BarBorder">
+							<TexCoords left="0.113726" right="0.1490196" top="0.193548" bottom="0.774193"/>
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeKey="$parent.BorderLeft" relativePoint="TOPRIGHT"/>
+								<Anchor point="BOTTOMRIGHT" relativeKey="$parent.BorderRight" relativePoint="BOTTOMLEFT"/>
+							</Anchors>
+						</Texture>						
+					</Layer>
+					<Layer level="BACKGROUND" textureSubLevel="-1">
+						<Texture>
+							<Color r="0.04" g="0.07" b="0.18"/>
+						</Texture>
+					</Layer>
+				</Layers>
+				<BarTexture file="Interface\TargetingFrame\UI-StatusBar"/>
+				<BarColor r="0.26" g="0.42" b="1"/>
+			</StatusBar>
+		</Frames>
+		<Scripts>
+			<OnUpdate function="ObjectiveTrackerTimerBar_OnUpdate"/>
+		</Scripts>
+	</Frame>
+	
+	<Frame name="ObjectiveTrackerProgressBarTemplate" virtual="true" hidden="true">
+		<Size x="192" y="25"/>
+		<Anchors>
+			<Anchor point="CENTER"/>
+		</Anchors>
+		<Frames>
+			<StatusBar parentKey="Bar" drawLayer="BACKGROUND" minValue="0" maxValue="100" defaultValue="0" enableMouse="true">
+				<Size x="180" y="15"/>
+				<Anchors>
+					<Anchor point="RIGHT" x="15" y="0"/>
+				</Anchors>
+				<Layers>
+					<Layer level="ARTWORK">
+						<Texture parentKey="BorderLeft" file="Interface\PaperDollInfoFrame\UI-Character-Skills-BarBorder">
+							<Size x="9" y="22"/>
+							<TexCoords left="0.007843" right="0.043137" top="0.193548" bottom="0.774193"/>
+							<Anchors>
+								<Anchor point="LEFT" x="-3" y="0"/>
+							</Anchors>
+						</Texture>
+						<Texture parentKey="BorderRight" file="Interface\PaperDollInfoFrame\UI-Character-Skills-BarBorder">
+							<Size x="9" y="22"/>
+							<TexCoords left="0.043137" right="0.007843" top="0.193548" bottom="0.774193"/>
+							<Anchors>
+								<Anchor point="RIGHT" x="3" y="0"/>
+							</Anchors>
+						</Texture>
+						<Texture parentKey="BorderMid" file="Interface\PaperDollInfoFrame\UI-Character-Skills-BarBorder">
+							<TexCoords left="0.113726" right="0.1490196" top="0.193548" bottom="0.774193"/>
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeKey="$parent.BorderLeft" relativePoint="TOPRIGHT"/>
+								<Anchor point="BOTTOMRIGHT" relativeKey="$parent.BorderRight" relativePoint="BOTTOMLEFT"/>
+							</Anchors>
+						</Texture>
+						<FontString parentKey="Label" inherits="GameFontHighlightMedium" justifyH="LEFT">
+						  <Anchors>
+							<Anchor point="CENTER" x="0" y="-2"/>
+						  </Anchors>
+						</FontString>
+					</Layer>
+					<Layer level="BACKGROUND" textureSubLevel="-1">
+						<Texture>
+							<Color r="0.04" g="0.07" b="0.18"/>
+						</Texture>
+					</Layer>
+				</Layers>
+				<BarTexture file="Interface\TargetingFrame\UI-StatusBar"/>
+				<BarColor r="0.26" g="0.42" b="1"/>
+				<Scripts>
+					<OnEnter>
+						self.Label:Show();
+					</OnEnter>
+					<OnLeave>
+						self.Label:Hide();
+					</OnLeave>
+				</Scripts>
+			</StatusBar>
+		</Frames>
+		<Scripts>
+			<OnEvent function="ObjectiveTrackerProgressBar_OnEvent"/>
+		</Scripts>
+	</Frame>
+
+	<Frame name="ObjectiveTrackerFrame" parent="UIParent" frameStrata="LOW">
+		<Size x="235" y="140"/>
+		<Anchors>
+			<Anchor point="TOPRIGHT" relativeTo="MinimapCluster" relativePoint="BOTTOMRIGHT"/>
+		</Anchors>
+		<Frames>
+			<Frame name="ObjectiveTrackerBlocksFrame" parentKey="BlocksFrame" hidden="false">
+				<Anchors>
+					<Anchor point="TOPLEFT"/>
+					<Anchor point="BOTTOMRIGHT"/>
+				</Anchors>
+				<Frames>
+					<Frame parentKey="QuestHeader" inherits="ObjectiveTrackerHeaderTemplate"/>
+					<Frame parentKey="AchievementHeader" inherits="ObjectiveTrackerHeaderTemplate"/>
+					<Frame parentKey="ScenarioHeader" inherits="ObjectiveTrackerHeaderTemplate"/>
+				</Frames>
+			</Frame>
+			<Frame parentKey="HeaderMenu">
+				<Size x="10" y="10"/>
+				<Anchors>
+					<Anchor point="TOPRIGHT"/>
+				</Anchors>
+				<Frames>
+					<Button parentKey="MinimizeButton">
+						<Size x="16" y="16"/>
+						<Anchors>
+							<Anchor point="TOPRIGHT" x="0" y="-4"/>
+						</Anchors>
+						<Scripts>
+							<OnClick function="ObjectiveTracker_MinimizeButton_OnClick"/>
+						</Scripts>
+						<NormalTexture file="Interface\Buttons\UI-Panel-QuestHideButton">
+							<TexCoords left="0" right="0.5" top="0.5" bottom="1"/>
+						</NormalTexture>
+						<PushedTexture file="Interface\Buttons\UI-Panel-QuestHideButton">
+							<TexCoords left="0.5" right="1" top="0.5" bottom="1"/>
+						</PushedTexture>
+						<HighlightTexture file="Interface\Buttons\UI-Panel-MinimizeButton-Highlight" alphaMode="ADD" />
+						<DisabledTexture file="Interface\Buttons\UI-Panel-QuestHideButton-disabled" />
+					</Button>
+				</Frames>
+				<Layers>
+					<Layer level="ARTWORK">
+						<FontString parentKey="Title" inherits="GameFontNormal" hidden="true" text="OBJECTIVES_TRACKER_LABEL">
+							<Anchors>
+								<Anchor point="RIGHT" relativeKey="$parent.MinimizeButton" relativePoint="LEFT" x="-3" y="1"/>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+			</Frame>
+			<Frame name="ObjectiveTrackerBlockDropDown" parentKey="BlockDropDown" inherits="UIDropDownMenuTemplate" hidden="true"/>
+		</Frames>
+		<Scripts>
+			<OnLoad function="ObjectiveTracker_OnLoad"/>
+			<OnEvent function="ObjectiveTracker_OnEvent"/>
+			<OnSizeChanged function="ObjectiveTracker_OnSizeChanged"/>
+		</Scripts>
+	</Frame>
+</Ui>	

@@ -25,10 +25,10 @@
 	</Texture>
 	<!--End Patchwerks-->
 
-	<StatusBar name="MapBarFrame" parent="WorldMapFrame">
+	<StatusBar name="MapBarFrame" parent="WorldMapDetailFrame">
 		<Size x="225" y="17"/>
 		<Anchors>
-			<Anchor point="TOPLEFT" relativeTo="WorldMapButton" relativePoint="TOPLEFT" x="150" y="-70"/>
+			<Anchor point="TOPLEFT" relativeTo="WorldMapDetailFrame" relativePoint="TOPLEFT" x="150" y="-70"/>
 		</Anchors>
 		<HitRectInsets>
 			<AbsInset left="-80" right="-10" top="-60" bottom="0"/>

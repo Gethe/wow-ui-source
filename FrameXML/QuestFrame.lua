@@ -13,6 +13,7 @@ function QuestFrame_OnLoad(self)
 	self:RegisterEvent("QUEST_FINISHED");
 	self:RegisterEvent("QUEST_ITEM_UPDATE");
 	self:RegisterEvent("QUEST_LOG_UPDATE");
+	self:RegisterEvent("UNIT_PORTRAIT_UPDATE");
 end
 
 function QuestFrame_OnEvent(self, event, ...)
@@ -23,28 +24,31 @@ function QuestFrame_OnEvent(self, event, ...)
 	if ( (event == "QUEST_ITEM_UPDATE") and not QuestFrame:IsShown() ) then
 		return;
 	end
+	if ( (event == "UNIT_PORTRAIT_UPDATE") and not QuestFrame:IsShown() ) then
+		return;
+	end
 		
 	if ( event == "QUEST_GREETING" ) then
 		QuestFrameGreetingPanel:Hide();
 		QuestFrameGreetingPanel:Show();
 	elseif ( event == "QUEST_DETAIL" ) then
 		if ( QuestGetAutoAccept() and QuestIsFromAreaTrigger()) then
-			if (WatchFrameAutoQuest_AddPopUp(GetQuestID(), "OFFER")) then
+			if (AutoQuestPopupTracker_AddPopUp(GetQuestID(), "OFFER")) then
 				PlayAutoAcceptQuestSound();
 			end
 			CloseQuest();
 			return;
 		else
-			HideUIPanel(QuestLogDetailFrame);
+			HideUIPanel(QuestLogPopupDetailFrame);
 			QuestFrameDetailPanel:Hide();
 			QuestFrameDetailPanel:Show();
 		end
 	elseif ( event == "QUEST_PROGRESS" ) then
-		HideUIPanel(QuestLogDetailFrame);
+		HideUIPanel(QuestLogPopupDetailFrame);
 		QuestFrameProgressPanel:Hide();
 		QuestFrameProgressPanel:Show();
 	elseif ( event == "QUEST_COMPLETE" ) then
-		HideUIPanel(QuestLogDetailFrame);
+		HideUIPanel(QuestLogPopupDetailFrame);
 		QuestFrameCompleteQuestButton:Enable();	
 		QuestFrameRewardPanel:Hide();
 		QuestFrameRewardPanel:Show();
@@ -66,9 +70,10 @@ function QuestFrame_OnEvent(self, event, ...)
 		end
 		return;
 	end
-	
-	QuestFrame_SetPortrait();
-	ShowUIPanel(QuestFrame);
+	if( not SplashFrame:IsShown() )then
+		QuestFrame_SetPortrait();
+		ShowUIPanel(QuestFrame);
+	end
 	if ( not QuestFrame:IsShown() ) then
 		QuestFrameGreetingPanel:Hide();
 		QuestFrameDetailPanel:Hide();
@@ -201,7 +206,7 @@ function QuestFrameProgressItems_Update()
 		for i=1, numRequiredItems do	
 			local requiredItem = _G[questItemName..buttonIndex];
 			requiredItem.type = "required";
-			requiredItem.rewardType = "item";
+			requiredItem.objectType = "item";
 			requiredItem:SetID(i);
 			local name, texture, numItems = GetQuestItemInfo(requiredItem.type, i);
 			SetItemButtonCount(requiredItem, numItems);
@@ -214,7 +219,7 @@ function QuestFrameProgressItems_Update()
 		for i=1, numRequiredCurrencies do	
 			local requiredItem = _G[questItemName..buttonIndex];
 			requiredItem.type = "required";
-			requiredItem.rewardType = "currency";
+			requiredItem.objectType = "currency";
 			requiredItem:SetID(i);
 			local name, texture, numItems = GetQuestCurrencyInfo(requiredItem.type, i);
 			SetItemButtonCount(requiredItem, numItems);
@@ -300,10 +305,10 @@ function QuestFrameGreetingPanel_OnShow()
 		for i=(numActiveQuests + 1), (numActiveQuests + numAvailableQuests), 1 do
 			local questTitleButton = _G["QuestTitleButton"..i];
 			local questTitleButtonIcon = _G[questTitleButton:GetName() .. "QuestIcon"];
-			local isTrivial, isDaily, isRepeatable, isLegendary = GetAvailableQuestInfo(i - numActiveQuests);
+			local isTrivial, frequency, isRepeatable, isLegendary = GetAvailableQuestInfo(i - numActiveQuests);
 			if ( isLegendary ) then
 				questTitleButtonIcon:SetTexture("Interface\\GossipFrame\\AvailableLegendaryQuestIcon");
-			elseif ( isDaily ) then
+			elseif ( frequency == LE_QUEST_FREQUENCY_DAILY or frequency == LE_QUEST_FREQUENCY_WEEKLY ) then
 				questTitleButtonIcon:SetTexture("Interface\\GossipFrame\\DailyQuestIcon");
 			elseif ( isRepeatable ) then
 				questTitleButtonIcon:SetTexture("Interface\\GossipFrame\\DailyActiveQuestIcon");
@@ -436,8 +441,7 @@ function QuestFrameDetailPanel_OnShow()
 	end		
 	local material = QuestFrame_GetMaterial();
 	QuestFrame_SetMaterial(QuestFrameDetailPanel, material);
-	QuestInfo_Display(QUEST_TEMPLATE_DETAIL1, QuestDetailScrollChildFrame, QuestFrameAcceptButton, material);
-	QuestInfo_Display(QUEST_TEMPLATE_DETAIL2, QuestInfoFadingFrame, QuestFrameAcceptButton, material);
+	QuestInfo_Display(QUEST_TEMPLATE_DETAIL, QuestDetailScrollChildFrame, QuestFrameAcceptButton, material);
 	QuestDetailScrollFrameScrollBar:SetValue(0);
 	local questPortrait, questPortraitText, questPortraitName = GetQuestPortraitGiver();
 	if (questPortrait ~= 0) then

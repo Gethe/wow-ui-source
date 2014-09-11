@@ -203,7 +203,7 @@
 				<Texture file="Interface\Buttons\UI-Slot-Background">
 					<Size x="39" y="39"/>
 					<Anchors>
-						<Anchor point="TOPLEFT" x="-2" y="2"/>
+						<Anchor point="TOPLEFT" x="-1" y="1"/>
 					</Anchors>
 					<TexCoords left="0" right="0.640625" top="0" bottom="0.640625"/>
 				</Texture>
@@ -214,6 +214,14 @@
 						<Anchor point="BOTTOMRIGHT" x="-5" y="2"/>
 					</Anchors>
 				</FontString>
+			</Layer>
+			<Layer level="OVERLAY">
+				<Texture parentKey="IconBorder" file="Interface\Common\WhiteIconFrame" hidden="true">
+					<Size x="37" y="37"/>
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
 			</Layer>
 		</Layers>
 		<Scripts>
@@ -296,7 +304,7 @@
 				<FontString name="$parentTrialError" inherits="GameFontNormal" text="TRIAL_RESTRICTED" parentKey="trialError" hidden="true">
 					<Size x="250" y="0"/>
 					<Anchors>
-						<Anchor point="TOP" x="20" y="-40"/>
+						<Anchor point="TOP" x="20" y="-30"/>
 					</Anchors>
 					<Color r="1.0" g="0.1" b="0.1" a="1"/>
 				</FontString>

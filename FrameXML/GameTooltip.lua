@@ -71,6 +71,7 @@ function GameTooltip_SetDefaultAnchor(tooltip, parent)
 end
 
 function GameTooltip_OnLoad(self)
+	self.needsReset = true;
 	self.updateTooltip = TOOLTIP_UPDATE_TIME;
 	self:SetBackdropBorderColor(TOOLTIP_DEFAULT_COLOR.r, TOOLTIP_DEFAULT_COLOR.g, TOOLTIP_DEFAULT_COLOR.b);
 	self:SetBackdropColor(TOOLTIP_DEFAULT_BACKGROUND_COLOR.r, TOOLTIP_DEFAULT_BACKGROUND_COLOR.g, TOOLTIP_DEFAULT_BACKGROUND_COLOR.b);
@@ -149,6 +150,40 @@ function GameTooltip_ClearMoney(self)
 	self.shownMoneyFrames = nil;
 end
 
+function GameTooltip_InsertFrame(tooltipFrame, frame)
+	local textSpacing = 2;
+	local textHeight = _G[tooltipFrame:GetName().."TextLeft2"]:GetHeight();
+	local numLinesNeeded = math.ceil(frame:GetHeight() / (textHeight + textSpacing));
+	local currentLine = tooltipFrame:NumLines();
+	for i = 1, numLinesNeeded do
+		tooltipFrame:AddLine(" ");
+	end
+	frame:SetParent(tooltipFrame);
+	frame:ClearAllPoints();
+	frame:SetPoint("TOPLEFT", tooltipFrame:GetName().."TextLeft"..(currentLine + 1), "TOPLEFT", 0, 0);
+	if ( not tooltipFrame.insertedFrames ) then
+		tooltipFrame.insertedFrames = { };
+	end
+	local frameWidth = frame:GetWidth();
+	if ( tooltipFrame:GetMinimumWidth() < frameWidth ) then
+		tooltipFrame:SetMinimumWidth(frameWidth);
+	end	
+	frame:Show();
+	tinsert(tooltipFrame.insertedFrames, frame);
+	-- return space taken so inserted frame can resize if needed
+	return (numLinesNeeded * textHeight) + (numLinesNeeded - 1) * textSpacing;
+end
+
+function GameTooltip_ClearInsertedFrames(self)
+	if ( self.insertedFrames ) then
+		for i = 1, #self.insertedFrames do
+			self.insertedFrames[i]:SetParent(nil);
+			self.insertedFrames[i]:Hide();
+		end
+	end
+	self.insertedFrames = nil;
+end
+
 function GameTooltip_ClearStatusBars(self)
 	if ( not self.shownStatusBars ) then
 		return;
@@ -164,6 +199,7 @@ function GameTooltip_ClearStatusBars(self)
 end
 
 function GameTooltip_OnHide(self)
+	self.needsReset = true;
 	self:SetBackdropBorderColor(TOOLTIP_DEFAULT_COLOR.r, TOOLTIP_DEFAULT_COLOR.g, TOOLTIP_DEFAULT_COLOR.b);
 	self:SetBackdropColor(TOOLTIP_DEFAULT_BACKGROUND_COLOR.r, TOOLTIP_DEFAULT_BACKGROUND_COLOR.g, TOOLTIP_DEFAULT_BACKGROUND_COLOR.b);
 	self.default = nil;
@@ -177,6 +213,14 @@ function GameTooltip_OnHide(self)
 	self.comparing = false;
 end
 
+function GameTooltip_CycleSecondaryComparedItem(self)
+	GameTooltip_AdvanceSecondaryCompareItem(self);
+
+	local shoppingTooltip1, shoppingTooltip2 = unpack(self.shoppingTooltips);
+	if ( shoppingTooltip1:IsShown() ) then		GameTooltip_ShowCompareItem(self);
+	end
+end
+
 function GameTooltip_OnUpdate(self, elapsed)
 	-- Only update every TOOLTIP_UPDATE_TIME seconds
 	self.updateTooltip = self.updateTooltip - elapsed;
@@ -184,7 +228,13 @@ function GameTooltip_OnUpdate(self, elapsed)
 		return;
 	end
 	self.updateTooltip = TOOLTIP_UPDATE_TIME;
-
+	
+	local shoppingTooltip1 = self.shoppingTooltips[1];
+	
+	if ( not shoppingTooltip1:IsShown() ) then
+		self.needsReset = true;
+	end
+	
 	local owner = self:GetOwner();
 	if ( owner and owner.UpdateTooltip ) then
 		owner:UpdateTooltip();
@@ -196,9 +246,9 @@ function GameTooltip_AddNewbieTip(frame, normalText, r, g, b, newbieText, noNorm
 		GameTooltip_SetDefaultAnchor(GameTooltip, frame);
 		if ( normalText ) then
 			GameTooltip:SetText(normalText, r, g, b);
-			GameTooltip:AddLine(newbieText, NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b, 1);
+			GameTooltip:AddLine(newbieText, NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b, true);
 		else
-			GameTooltip:SetText(newbieText, r, g, b, 1, 1);
+			GameTooltip:SetText(newbieText, r, g, b, 1, true);
 		end
 		GameTooltip:Show();
 	else
@@ -209,31 +259,23 @@ function GameTooltip_AddNewbieTip(frame, normalText, r, g, b, newbieText, noNorm
 	end
 end
 
-function GameTooltip_ShowCompareItem(self, shift)
+function GameTooltip_ShowCompareItem(self)
 	if ( not self ) then
 		self = GameTooltip;
 	end
-	local item, link = self:GetItem();
-	if ( not link ) then
-		return;
+	
+	if ( self.needsReset ) then
+		self:ResetSecondaryCompareItem();
+		GameTooltip_AdvanceSecondaryCompareItem(self);
+		self.needsReset = false;
 	end
 	
-	local shoppingTooltip1, shoppingTooltip2, shoppingTooltip3 = unpack(self.shoppingTooltips);
+	local shoppingTooltip1, shoppingTooltip2 = unpack(self.shoppingTooltips);
+	
+	local primaryItemShown, secondaryItemShown = shoppingTooltip1:SetCompareItem(shoppingTooltip2, self);
 
-	local item1 = nil;
-	local item2 = nil;
-	local item3 = nil;
 	local side = "left";
-	if ( shoppingTooltip1:SetHyperlinkCompareItem(link, 1, shift, self) ) then
-		item1 = true;
-	end
-	if ( shoppingTooltip2:SetHyperlinkCompareItem(link, 2, shift, self) ) then
-		item2 = true;
-	end
-	if ( shoppingTooltip3:SetHyperlinkCompareItem(link, 3, shift, self) ) then
-		item3 = true;
-	end
-
+	
 	-- find correct side
 	local rightDist = 0;
 	local leftPos = self:GetLeft();
@@ -256,14 +298,11 @@ function GameTooltip_ShowCompareItem(self, shift)
 	-- see if we should slide the tooltip
 	if ( self:GetAnchorType() and self:GetAnchorType() ~= "ANCHOR_PRESERVE" ) then
 		local totalWidth = 0;
-		if ( item1  ) then
+		if ( primaryItemShown  ) then
 			totalWidth = totalWidth + shoppingTooltip1:GetWidth();
 		end
-		if ( item2  ) then
+		if ( secondaryItemShown  ) then
 			totalWidth = totalWidth + shoppingTooltip2:GetWidth();
-		end
-		if ( item3  ) then
-			totalWidth = totalWidth + shoppingTooltip3:GetWidth();
 		end
 
 		if ( (side == "left") and (totalWidth > leftPos) ) then
@@ -272,54 +311,49 @@ function GameTooltip_ShowCompareItem(self, shift)
 			self:SetAnchorType(self:GetAnchorType(), -((rightPos + totalWidth) - GetScreenWidth()), 0);
 		end
 	end
-
-	-- anchor the compare tooltips
-	if ( item3 ) then
-		shoppingTooltip3:SetOwner(self, "ANCHOR_NONE");
-		shoppingTooltip3:ClearAllPoints();
+	
+	if ( secondaryItemShown ) then
+		shoppingTooltip2:SetOwner(self, "ANCHOR_NONE");
+		shoppingTooltip2:ClearAllPoints();
 		if ( side and side == "left" ) then
-			shoppingTooltip3:SetPoint("TOPRIGHT", self, "TOPLEFT", 0, -10);
+			shoppingTooltip2:SetPoint("TOPRIGHT", self, "TOPLEFT", 0, -10);
 		else
-			shoppingTooltip3:SetPoint("TOPLEFT", self, "TOPRIGHT", 0, -10);
+			shoppingTooltip2:SetPoint("TOPLEFT", self, "TOPRIGHT", 0, -10);
 		end
-		shoppingTooltip3:SetHyperlinkCompareItem(link, 3, shift, self);
-		shoppingTooltip3:Show();
+		
+		shoppingTooltip1:SetOwner(self, "ANCHOR_NONE");
+		shoppingTooltip1:ClearAllPoints();
+		
+		if ( side and side == "left" ) then
+			shoppingTooltip1:SetPoint("TOPRIGHT", shoppingTooltip2, "TOPLEFT");
+		else
+			shoppingTooltip1:SetPoint("TOPLEFT", shoppingTooltip2, "TOPRIGHT");
+		end
+	else
+		shoppingTooltip1:SetOwner(self, "ANCHOR_NONE");
+		shoppingTooltip1:ClearAllPoints();
+		
+		if ( side and side == "left" ) then
+			shoppingTooltip1:SetPoint("TOPRIGHT", self, "TOPLEFT", 0, -10);
+		else
+			shoppingTooltip1:SetPoint("TOPLEFT", self, "TOPRIGHT", 0, -10);
+		end
+
+		shoppingTooltip2:Hide();
 	end
 	
-	if ( item1 ) then
-		if( item3 ) then
-			shoppingTooltip1:SetOwner(shoppingTooltip3, "ANCHOR_NONE");
-		else
-			shoppingTooltip1:SetOwner(self, "ANCHOR_NONE");
-		end
-		shoppingTooltip1:ClearAllPoints();
-		if ( side and side == "left" ) then
-			if( item3 ) then
-				shoppingTooltip1:SetPoint("TOPRIGHT", shoppingTooltip3, "TOPLEFT", 0, 0);
-			else
-				shoppingTooltip1:SetPoint("TOPRIGHT", self, "TOPLEFT", 0, -10);
-			end
-		else
-			if( item3 ) then
-				shoppingTooltip1:SetPoint("TOPLEFT", shoppingTooltip3, "TOPRIGHT", 0, 0);
-			else
-				shoppingTooltip1:SetPoint("TOPLEFT", self, "TOPRIGHT", 0, -10);
-			end
-		end
-		shoppingTooltip1:SetHyperlinkCompareItem(link, 1, shift, self);
-		shoppingTooltip1:Show();
+	-- We have to call this again because :SetOwner clears the tooltip.
+	shoppingTooltip1:SetCompareItem(shoppingTooltip2, self);
+	shoppingTooltip1:Show();
+end
 
-		if ( item2 ) then
-			shoppingTooltip2:SetOwner(shoppingTooltip1, "ANCHOR_NONE");
-			shoppingTooltip2:ClearAllPoints();
-			if ( side and side == "left" ) then
-				shoppingTooltip2:SetPoint("TOPRIGHT", shoppingTooltip1, "TOPLEFT", 0, 0);
-			else
-				shoppingTooltip2:SetPoint("TOPLEFT", shoppingTooltip1, "TOPRIGHT", 0, 0);
-			end
-			shoppingTooltip2:SetHyperlinkCompareItem(link, 2, shift, self);
-			shoppingTooltip2:Show();
-		end
+function GameTooltip_AdvanceSecondaryCompareItem(self)
+	if ( not self ) then
+		self = GameTooltip;
+	end
+	
+	if ( GetCVarBool("allowCompareWithToggle") ) then
+		self:AdvanceSecondaryCompareItem();
 	end
 end
 

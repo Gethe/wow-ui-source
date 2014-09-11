@@ -51,7 +51,7 @@ function BarberShop_OnShow(self)
 
 	PlaySound("BarberShop_Sit");
 	
-	WatchFrame:Hide();
+	ObjectiveTrackerFrame:Hide();
 
 	--load the texture
 	BarberShopFrameBackground:SetTexture("Interface\\Barbershop\\UI-Barbershop");
@@ -60,7 +60,7 @@ end
 function BarberShop_OnHide(self)
 	BarberShopBannerFrame:Hide();
 
-	WatchFrame:Show();
+	ObjectiveTrackerFrame:Show();
 	
 	--unload the texture to save memory
 	BarberShopFrameBackground:SetTexture(nil);

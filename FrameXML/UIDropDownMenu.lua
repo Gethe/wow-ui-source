@@ -98,11 +98,23 @@ function UIDropDownMenu_Initialize(frame, initFunction, displayMode, level, menu
 
 end
 
+function UIDropDownMenu_RefreshDropDownSize(self)
+	self.maxWidth = UIDropDownMenu_GetMaxButtonWidth(self);
+	self:SetWidth(self.maxWidth + 25);
+		
+	for i=1, UIDROPDOWNMENU_MAXBUTTONS, 1 do
+		local icon = _G[self:GetName().."Button"..i.."Icon"];
+		
+		if ( icon.tFitDropDownSizeX ) then
+			icon:SetWidth(self.maxWidth - 5);
+		end
+	end	
+end
+
 -- If dropdown is visible then see if its timer has expired, if so hide the frame
 function UIDropDownMenu_OnUpdate(self, elapsed)
 	if ( self.shouldRefresh ) then
-		self.maxWidth = UIDropDownMenu_GetMaxButtonWidth(self);
-		self:SetWidth(self.maxWidth + 25);
+		UIDropDownMenu_RefreshDropDownSize(self);
 		self.shouldRefresh = false;
 	end
 	
@@ -200,7 +212,7 @@ function UIDropDownMenu_CreateFrames(level, index)
 		UIDROPDOWNMENU_MAXLEVELS = UIDROPDOWNMENU_MAXLEVELS + 1;
 		local newList = CreateFrame("Button", "DropDownList"..UIDROPDOWNMENU_MAXLEVELS, nil, "UIDropDownListTemplate");
 		newList:SetFrameStrata("FULLSCREEN_DIALOG");
-		newList:SetToplevel(1);
+		newList:SetToplevel(true);
 		newList:Hide();
 		newList:SetID(UIDROPDOWNMENU_MAXLEVELS);
 		newList:SetWidth(180)
@@ -323,6 +335,12 @@ function UIDropDownMenu_AddButton(info, level)
 	button.iconOnly = nil;
 	button.icon = nil;
 	button.iconInfo = nil;
+	
+	if (info.iconInfo) then
+		icon.tFitDropDownSizeX = info.iconInfo.tFitDropDownSizeX;
+	else
+		icon.tFitDropDownSizeX = nil;
+	end
 	if (info.iconOnly and info.icon) then
 		button.iconOnly = true;
 		button.icon = info.icon;
@@ -605,7 +623,7 @@ function UIDropDownMenu_Refresh(frame, useValue, dropdownLevel)
 			button = _G["DropDownList"..dropdownLevel.."Button"..i];
 			button:SetWidth(maxWidth);
 		end
-		_G["DropDownList"..dropdownLevel]:SetWidth(maxWidth+15);
+		UIDropDownMenu_RefreshDropDownSize(_G["DropDownList"..dropdownLevel]);
 	end
 end
 
@@ -766,17 +784,13 @@ function ToggleDropDownMenu(level, value, dropDownFrame, anchorName, xOffset, yO
 		-- Set the dropdownframe scale
 		local uiScale;
 		local uiParentScale = UIParent:GetScale();
-		if ( tempFrame ~= WorldMapContinentDropDown and tempFrame ~= WorldMapZoneDropDown ) then
-			if ( GetCVar("useUIScale") == "1" ) then
-				uiScale = tonumber(GetCVar("uiscale"));
-				if ( uiParentScale < uiScale ) then
-					uiScale = uiParentScale;
-				end
-			else
+		if ( GetCVar("useUIScale") == "1" ) then
+			uiScale = tonumber(GetCVar("uiscale"));
+			if ( uiParentScale < uiScale ) then
 				uiScale = uiParentScale;
 			end
 		else
-			uiScale = 1;
+			uiScale = uiParentScale;
 		end
 		listFrame:SetScale(uiScale);
 		
@@ -1106,6 +1120,14 @@ function UIDropDownMenu_SetButtonText(level, id, text, colorCode)
 	else
 		button:SetText(text);
 	end
+end
+
+function UIDropDownMenu_SetButtonNotClickable(level, id)
+	_G["DropDownList"..level.."Button"..id]:SetDisabledFontObject(GameFontHighlightSmallLeft);
+end
+
+function UIDropDownMenu_SetButtonClickable(level, id)
+	_G["DropDownList"..level.."Button"..id]:SetDisabledFontObject(GameFontDisableSmallLeft);
 end
 
 function UIDropDownMenu_DisableDropDown(dropDown)

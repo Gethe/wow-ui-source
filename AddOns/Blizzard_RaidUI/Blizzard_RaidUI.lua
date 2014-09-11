@@ -85,7 +85,7 @@ function RaidClassButton_Update()
 		end
 
 		if ( button.count > 0 ) then
-			SetItemButtonDesaturated(button, nil);
+			SetItemButtonDesaturated(button, false);
 			icon:SetAlpha(1);
 			count:SetText(button.count);
 			count:Show();
@@ -109,7 +109,7 @@ function RaidClassButton_Update()
 		else
 			button:Disable();
 			icon:SetAlpha(0.5);
-			SetItemButtonDesaturated(button, 1);
+			SetItemButtonDesaturated(button, true);
 			count:Hide();
 			button.class = nil;
 			button.fileName = nil;
@@ -120,7 +120,7 @@ end
 function RaidClassButton_OnEnter(self)
 	self.tooltip = format("%s%s (%d)%s", self.class, NORMAL_FONT_COLOR_CODE, self.count, FONT_COLOR_CODE_CLOSE);
 	GameTooltip_SetDefaultAnchor(GameTooltip, UIParent);
-	GameTooltip:SetText(self.tooltip, 1, 1, 1, 1, 1);
+	GameTooltip:SetText(self.tooltip, 1, 1, 1, 1, true);
 	local classList;
 	if ( getn(RAID_SUBGROUP_LISTS[self.fileName]) > 0 ) then
 		local unit = "raid";
@@ -138,7 +138,7 @@ function RaidClassButton_OnEnter(self)
 		end
 	end
 	GameTooltip:AddLine(classList, 1, 1, 1);
-	GameTooltip:AddLine(TOOLTIP_RAID_CLASS_BUTTON, NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b, 1);
+	GameTooltip:AddLine(TOOLTIP_RAID_CLASS_BUTTON, NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b, true);
 	GameTooltip:Show();
 end
 
@@ -392,7 +392,7 @@ function RaidGroupFrame_Update()
 					subframes.rankTexture:SetTexture("Interface\\GroupFrame\\UI-Group-LeaderIcon");
 				elseif ( rank == 1 ) then
 					subframes.rankTexture:SetTexture("Interface\\GroupFrame\\UI-Group-AssistantIcon");
-				elseif ( (rank == 0 ) and ( muted == 2 ) ) then
+				elseif ( (rank == 0 ) and muted ) then
 					subframes.rankTexture:SetTexture("Interface\\Common\\VoiceChat-Speaker");
 				else 
 					subframes.rankTexture:SetTexture("");
@@ -443,7 +443,7 @@ function RaidGroupFrame_Update()
 				
 				buttonCount = 0;
 
-				if ( rank > 0 or muted == 2 ) then
+				if ( rank > 0 or muted ) then
 					tinsert(button.jobs, subframes.rank);
 					buttonCount = buttonCount + 1;
 				else
@@ -504,7 +504,6 @@ function RaidGroupFrame_Update()
 				-- Tell the slot what button is in it
 				button.slot.button = button:GetName();
 				raidGroup.nextIndex = raidGroup.nextIndex + 1;
-				button.voice = voice;
 				button.rank = rank;
 				button.role = role;
 				button.loot = loot;

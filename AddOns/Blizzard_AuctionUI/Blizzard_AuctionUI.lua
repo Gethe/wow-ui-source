@@ -457,7 +457,8 @@ function AuctionFrameBrowse_Reset(self)
 	BrowseName:SetText("");
 	BrowseMinLevel:SetText("");
 	BrowseMaxLevel:SetText("");
-	IsUsableCheckButton:SetChecked(0);
+	IsUsableCheckButton:SetChecked(false);
+	ExactMatchCheckButton:SetChecked(false);
 	UIDropDownMenu_SetSelectedValue(BrowseDropDown,-1);
 
 	-- reset the filters
@@ -476,7 +477,7 @@ end
 
 function BrowseResetButton_OnUpdate(self, elapsed)
 	if ( (BrowseName:GetText() == "") and (BrowseMinLevel:GetText() == "") and (BrowseMaxLevel:GetText() == "") and
-	     (not IsUsableCheckButton:GetChecked()) and (UIDropDownMenu_GetSelectedValue(BrowseDropDown) == -1) and
+	     (not IsUsableCheckButton:GetChecked()) and (not ExactMatchCheckButton:GetChecked()) and (UIDropDownMenu_GetSelectedValue(BrowseDropDown) == -1) and
 	     (not AuctionFrameBrowse.selectedClass) and (not AuctionFrameBrowse.selectedSubclass) and (not AuctionFrameBrowse.selectedInvtype) )
 	then
 		self:Disable();
@@ -522,7 +523,7 @@ end
 
 local prevBrowseParams;
 local function AuctionFrameBrowse_SearchHelper(...)
-	local text, minLevel, maxLevel, invType, class, subclass, page, usable, rarity = ...;
+	local text, minLevel, maxLevel, invType, class, subclass, page, usable, rarity, exactMatch = ...;
 
 	if ( not prevBrowseParams ) then
 		-- if we are doing a search for the first time then create the browse param cache
@@ -540,7 +541,7 @@ local function AuctionFrameBrowse_SearchHelper(...)
 		end
 	end
 
-	QueryAuctionItems(text, minLevel, maxLevel, invType, class, subclass, page, usable, rarity);
+	QueryAuctionItems(text, minLevel, maxLevel, invType, class, subclass, page, usable, rarity, false, exactMatch);
 
 	-- store this query's params so we can compare them with the next set of params we get
 	for i = 1, select('#', ...) do
@@ -557,7 +558,7 @@ function AuctionFrameBrowse_Search()
 		AuctionFrameBrowse.page = 0;
 	end
 
-	AuctionFrameBrowse_SearchHelper(BrowseName:GetText(), BrowseMinLevel:GetText(), BrowseMaxLevel:GetText(), AuctionFrameBrowse.selectedInvtypeIndex, AuctionFrameBrowse.selectedClassIndex, AuctionFrameBrowse.selectedSubclassIndex, AuctionFrameBrowse.page, IsUsableCheckButton:GetChecked(), UIDropDownMenu_GetSelectedValue(BrowseDropDown));
+	AuctionFrameBrowse_SearchHelper(BrowseName:GetText(), BrowseMinLevel:GetText(), BrowseMaxLevel:GetText(), AuctionFrameBrowse.selectedInvtypeIndex, AuctionFrameBrowse.selectedClassIndex, AuctionFrameBrowse.selectedSubclassIndex, AuctionFrameBrowse.page, IsUsableCheckButton:GetChecked(), UIDropDownMenu_GetSelectedValue(BrowseDropDown), ExactMatchCheckButton:GetChecked());
 
 	-- Start "searching" messaging
 	AuctionFrameBrowse.isSearching = 1;
@@ -770,7 +771,7 @@ function AuctionFrameBrowse_Update()
 	local offset = FauxScrollFrame_GetOffset(BrowseScrollFrame);
 	local index;
 	local isLastSlotEmpty;
-	local name, texture, count, quality, canUse, level, levelColHeader, minBid, minIncrement, buyoutPrice, duration, bidAmount, highBidder, owner, saleStatus, itemId, hasAllInfo;
+	local name, texture, count, quality, canUse, level, levelColHeader, minBid, minIncrement, buyoutPrice, duration, bidAmount, highBidder, bidderFullName, owner, ownerFullName, saleStatus, itemId, hasAllInfo;
 	local displayedPrice, requiredBid;
 	BrowseBidButton:Disable();
 	BrowseBuyoutButton:Disable();
@@ -826,6 +827,15 @@ function AuctionFrameBrowse_Update()
 			itemName = _G[buttonName.."Name"];
 			itemName:SetText(name);
 			itemName:SetVertexColor(color.r, color.g, color.b);
+			local itemButton = _G[buttonName.."Item"];
+
+			if (quality > LE_ITEM_QUALITY_COMMON and BAG_ITEM_QUALITY_COLORS[quality]) then
+				itemButton.IconBorder:Show();
+				itemButton.IconBorder:SetVertexColor(BAG_ITEM_QUALITY_COLORS[quality].r, BAG_ITEM_QUALITY_COLORS[quality].g, BAG_ITEM_QUALITY_COLORS[quality].b);
+			else
+				itemButton.IconBorder:Hide();
+			end
+
 			-- Set level
 			if ( levelColHeader == "REQ_LEVEL_ABBR" and level > UnitLevel("player") ) then
 				_G[buttonName.."Level"]:SetText(RED_FONT_COLOR_CODE..level..FONT_COLOR_CODE_CLOSE);
@@ -987,7 +997,8 @@ function AuctionFrameBid_Update()
 	local offset = FauxScrollFrame_GetOffset(BidScrollFrame);
 	local index;
 	local isLastSlotEmpty;
-	local name, texture, count, quality, canUse, level, levelColHeader, minBid, minIncrement, buyoutPrice, duration, bidAmount, highBidder, owner;
+	local name, texture, count, quality, canUse, level, levelColHeader, minBid, minIncrement, buyoutPrice, bidAmount, highBidder, bidderFullName, owner, ownerFullName;
+	local duration;
 	BidBidButton:Disable();
 	BidBuyoutButton:Disable();
 	-- Update sort arrows
@@ -1032,6 +1043,16 @@ function AuctionFrameBid_Update()
 			itemName = _G[buttonName.."Name"];
 			itemName:SetText(name);
 			itemName:SetVertexColor(color.r, color.g, color.b);
+
+			local itemButton = _G[buttonName.."Item"];
+
+			if (quality > LE_ITEM_QUALITY_COMMON and BAG_ITEM_QUALITY_COLORS[quality]) then
+				itemButton.IconBorder:Show();
+				itemButton.IconBorder:SetVertexColor(BAG_ITEM_QUALITY_COLORS[quality].r, BAG_ITEM_QUALITY_COLORS[quality].g, BAG_ITEM_QUALITY_COLORS[quality].b);
+			else
+				itemButton.IconBorder:Hide();
+			end
+
 			-- Set level
 			if ( levelColHeader == "REQ_LEVEL_ABBR" and level > UnitLevel("player") ) then
 				_G[buttonName.."Level"]:SetText(RED_FONT_COLOR_CODE..level..FONT_COLOR_CODE_CLOSE);
@@ -1208,12 +1229,12 @@ function AuctionFrameAuctions_Update()
 	local offset = FauxScrollFrame_GetOffset(AuctionsScrollFrame);
 	local index;
 	local isLastSlotEmpty;
-	local auction, button, buttonName, buttonHighlight, iconTexture, itemName, color, itemCount;
+	local auction, button, buttonName, buttonHighlight, iconTexture, itemName, color, itemCount, duration;
 	local highBidderFrame;
 	local closingTimeFrame, closingTimeText;
 	local buttonBuyoutFrame, buttonBuyoutMoney;
 	local bidAmountMoneyFrame, bidAmountMoneyFrameLabel;
-	local name, texture, count, quality, canUse, level, levelColHeader, minBid, minIncrement, buyoutPrice, duration, bidAmount, highBidder, owner, saleStatus;
+	local name, texture, count, quality, canUse, level, levelColHeader, minBid, minIncrement, buyoutPrice, bidAmount, highBidder, bidderFullName, owner, ownerFullName, saleStatus;
 	local pendingDeliveries = false;
 	
 	-- Update sort arrows
@@ -1270,6 +1291,16 @@ function AuctionFrameAuctions_Update()
 			bidAmountMoneyFrame = _G[buttonName.."MoneyFrame"];
 			bidAmountMoneyFrameLabel = _G[buttonName.."MoneyFrameLabel"];
 			buttonBuyoutFrame = _G[buttonName.."BuyoutFrame"];
+
+			local itemButton = _G[buttonName.."Item"];
+			
+			if (quality > LE_ITEM_QUALITY_COMMON and BAG_ITEM_QUALITY_COLORS[quality]) then
+				itemButton.IconBorder:Show();
+				itemButton.IconBorder:SetVertexColor(BAG_ITEM_QUALITY_COLORS[quality].r, BAG_ITEM_QUALITY_COLORS[quality].g, BAG_ITEM_QUALITY_COLORS[quality].b);
+			else
+				itemButton.IconBorder:Hide();
+			end
+
 			if ( saleStatus == 1 ) then
 				-- Sold item
 				pendingDeliveries = true;

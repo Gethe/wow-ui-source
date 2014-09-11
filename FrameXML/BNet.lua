@@ -22,6 +22,8 @@ BNET_CLIENT_WOW = "WoW";
 BNET_CLIENT_SC2 = "S2";
 BNET_CLIENT_D3 = "D3";
 BNET_CLIENT_WTCG = "WTCG";
+BNET_CLIENT_APP = "App";
+BNET_CLIENT_CLNT = "CLNT";
 
 function BNet_OnLoad(self)
 	self:RegisterEvent("BN_CONNECTED");
@@ -61,7 +63,17 @@ function BNet_ReopenClosedConversations()
 end
 
 function BNet_GetPresenceID(name)
-	return GetAutoCompletePresenceID(name);
+	local id = GetAutoCompletePresenceID(name);
+	if (id) then
+		return id;
+	end
+	local _, numBNetOnline = BNGetNumFriends();
+	for i=1, numBNetOnline do
+		local presenceID, _, _, _, toonName, toonID = BNGetFriendInfo(i);
+		if (strlower(name) == strlower(toonName)) then
+			return presenceID;
+		end
+	end	
 end
 
 -- BNET toast

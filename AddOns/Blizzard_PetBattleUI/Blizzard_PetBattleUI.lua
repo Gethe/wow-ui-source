@@ -896,12 +896,18 @@ end
 
 function PetBattleAbilityButton_OnEnter(self)
 	local petIndex = C_PetBattles.GetActivePet(LE_BATTLE_PET_ALLY);
-	if ( self:GetEffectiveAlpha() > 0 and C_PetBattles.GetAbilityInfo(LE_BATTLE_PET_ALLY, petIndex, self:GetID()) ) then
-		PetBattleAbilityTooltip_SetAbility(LE_BATTLE_PET_ALLY, petIndex, self:GetID());
-		PetBattleAbilityTooltip_Show("BOTTOMRIGHT", UIParent, "BOTTOMRIGHT", -5, 120, self.additionalText);
-	elseif ( self.abilityID ) then
-		PetBattleAbilityTooltip_SetAbilityByID(LE_BATTLE_PET_ALLY, petIndex, self.abilityID, format(PET_ABILITY_REQUIRES_LEVEL, self.requiredLevel));
-		PetBattleAbilityTooltip_Show("BOTTOMRIGHT", UIParent, "BOTTOMRIGHT", -5, 120);
+	if ( self:GetEffectiveAlpha() > 0 ) then
+		if ( C_PetBattles.GetAbilityInfo(LE_BATTLE_PET_ALLY, petIndex, self:GetID()) ) then
+			PetBattleAbilityTooltip_SetAbility(LE_BATTLE_PET_ALLY, petIndex, self:GetID());
+			PetBattleAbilityTooltip_Show("BOTTOMRIGHT", UIParent, "BOTTOMRIGHT", -5, 120, self.additionalText);
+		elseif ( self.abilityID ) then
+			if ( self.requiredLevel ) then
+				PetBattleAbilityTooltip_SetAbilityByID(LE_BATTLE_PET_ALLY, petIndex, self.abilityID, format(PET_ABILITY_REQUIRES_LEVEL, self.requiredLevel));
+			else
+				PetBattleAbilityTooltip_SetAbilityByID(LE_BATTLE_PET_ALLY, petIndex, self.abilityID);
+			end
+			PetBattleAbilityTooltip_Show("BOTTOMRIGHT", UIParent, "BOTTOMRIGHT", -5, 120);
+		end
 	else
 		PetBattlePrimaryAbilityTooltip:Hide();
 	end
@@ -1188,6 +1194,7 @@ function PetBattleUnitFrameDropDown_Initialize(self)
 	UIDropDownMenu_AddButton(info);
 
 	info.isTitle = nil;
+	info.disabled = nil;
 	
 	local name, speciesName = C_PetBattles.GetName(self.petOwner, self.petIndex);
 	if (not C_PetBattles.IsPlayerNPC(LE_BATTLE_PET_ENEMY) and self.petOwner == LE_BATTLE_PET_ENEMY 
@@ -1199,7 +1206,6 @@ function PetBattleUnitFrameDropDown_Initialize(self)
 		UIDropDownMenu_AddButton(info);
 	end
 	
-	info.disabled = nil;
 	info.text = PET_SHOW_IN_JOURNAL;
 	info.func = function ()
 					if (not PetJournalParent) then

@@ -38,12 +38,13 @@
 		<Scripts>
 			<OnLoad>
 				PetActionButton_OnLoad(self);
+				self.cooldown:SetSwipeColor(0, 0, 0);
 			</OnLoad>
 			<OnEvent>
 				PetActionButton_OnEvent(self, event, ...);
 			</OnEvent>
 			<PreClick>
-				self:SetChecked(0);
+				self:SetChecked(false);
 			</PreClick>
 			<OnClick>
 				if ( IsModifiedClick() ) then

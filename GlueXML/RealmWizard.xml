@@ -393,14 +393,14 @@
 										end
 
 										if ( not self:GetChecked() ) then
-											RealmWizardGameTypeButton1:SetChecked(1);
+											RealmWizardGameTypeButton1:SetChecked(true);
 										end
 										RealmWizardGametypeLabel:SetText(GAMETYPE_PVE);
 										RealmWizardGametypeText:SetText(GAMETYPE_PVE_TEXT);
 										RealmWizardGametype:SetHeight(RealmWizardGametypeText:GetHeight()+RealmWizardGametypeLabel:GetHeight()+40);
-										RealmWizardGameTypeButton2:SetChecked(0);
-										RealmWizardGameTypeButton3:SetChecked(0);
-										RealmWizardGameTypeButton4:SetChecked(0);
+										RealmWizardGameTypeButton2:SetChecked(false);
+										RealmWizardGameTypeButton3:SetChecked(false);
+										RealmWizardGameTypeButton4:SetChecked(false);
 									</OnClick>
 								</Scripts>
 							</CheckButton>
@@ -424,14 +424,14 @@
 										end
 										
 										if ( not self:GetChecked() ) then
-											RealmWizardGameTypeButton2:SetChecked(1);
+											RealmWizardGameTypeButton2:SetChecked(true);
 										end
 										RealmWizardGametypeLabel:SetText(GAMETYPE_PVP);
 										RealmWizardGametypeText:SetText(GAMETYPE_PVP_TEXT);
 										RealmWizardGametype:SetHeight(RealmWizardGametypeText:GetHeight()+RealmWizardGametypeLabel:GetHeight()+40);
-										RealmWizardGameTypeButton1:SetChecked(0);
-										RealmWizardGameTypeButton3:SetChecked(0);
-										RealmWizardGameTypeButton4:SetChecked(0);
+										RealmWizardGameTypeButton1:SetChecked(false);
+										RealmWizardGameTypeButton3:SetChecked(false);
+										RealmWizardGameTypeButton4:SetChecked(false);
 									</OnClick>
 								</Scripts>
 							</CheckButton>
@@ -455,14 +455,14 @@
 										end
 										
 										if ( not self:GetChecked() ) then
-											RealmWizardGameTypeButton3:SetChecked(1);
+											RealmWizardGameTypeButton3:SetChecked(true);
 										end
 										RealmWizardGametypeLabel:SetText(GAMETYPE_RP);
 										RealmWizardGametypeText:SetText(GAMETYPE_RP_TEXT);
 										RealmWizardGametype:SetHeight(RealmWizardGametypeText:GetHeight()+RealmWizardGametypeLabel:GetHeight()+40);
-										RealmWizardGameTypeButton1:SetChecked(0);
-										RealmWizardGameTypeButton2:SetChecked(0);
-										RealmWizardGameTypeButton4:SetChecked(0);
+										RealmWizardGameTypeButton1:SetChecked(false);
+										RealmWizardGameTypeButton2:SetChecked(false);
+										RealmWizardGameTypeButton4:SetChecked(false);
 									</OnClick>
 								</Scripts>
 							</CheckButton>
@@ -486,14 +486,14 @@
 										end
 
 										if ( not self:GetChecked() ) then
-											RealmWizardGameTypeButton4:SetChecked(1);
+											RealmWizardGameTypeButton4:SetChecked(true);
 										end
 										RealmWizardGametypeLabel:SetText(GAMETYPE_RPPVP);
 										RealmWizardGametypeText:SetText(GAMETYPE_RPPVP_TEXT);
 										RealmWizardGametype:SetHeight(RealmWizardGametypeText:GetHeight()+RealmWizardGametypeLabel:GetHeight()+40);
-										RealmWizardGameTypeButton1:SetChecked(0);
-										RealmWizardGameTypeButton2:SetChecked(0);
-										RealmWizardGameTypeButton3:SetChecked(0);
+										RealmWizardGameTypeButton1:SetChecked(false);
+										RealmWizardGameTypeButton2:SetChecked(false);
+										RealmWizardGameTypeButton3:SetChecked(false);
 									</OnClick>
 								</Scripts>
 							</CheckButton>
@@ -510,7 +510,7 @@
 										PlaySound("gsTitleOptionOK");
 										
 										if ( RealmWizardGameTypeButton4:GetChecked() ) then
-											SetPreferredInfo(RealmWizard.selectedCategory, 1, 1);
+											SetPreferredInfo(RealmWizard.selectedCategory, true, true);
 										else
 											SetPreferredInfo(RealmWizard.selectedCategory, RealmWizardGameTypeButton2:GetChecked(), RealmWizardGameTypeButton3:GetChecked());
 										end

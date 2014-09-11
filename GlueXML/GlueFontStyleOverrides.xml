@@ -67,4 +67,23 @@
 		</FontHeight>
 	</Font>
 
+	
+	<Font name="CharCopyEditBoxFont_KO" font="Fonts\2002.TTF" outline="NORMAL" alternateTo="CharCopyEditBoxFont" alternateAlphabetID = "0" virtual="true">
+		<FontHeight>
+			<AbsValue val="13"/>
+		</FontHeight>
+	</Font>
+	
+	<Font name="CharCopyEditBoxFont_ZH" font="Fonts\ARKai_T.ttf" outline="NORMAL" alternateTo="CharCopyEditBoxFont" alternateAlphabetID = "1" virtual="true">
+		<FontHeight>
+			<AbsValue val="13"/>
+		</FontHeight>
+	</Font>
+	
+	<Font name="CharCopyEditBoxFont_RU" font="Fonts\ARIALN.TTF" outline="NORMAL" alternateTo="CharCopyEditBoxFont" alternateAlphabetID = "2" virtual="true">
+		<FontHeight>
+			<AbsValue val="12"/>
+		</FontHeight>
+	</Font>
+
 </Ui>

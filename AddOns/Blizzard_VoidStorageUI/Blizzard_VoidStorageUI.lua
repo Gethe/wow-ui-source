@@ -6,6 +6,8 @@ local BUTTON_TYPE_STORAGE = 3;
 local VOID_DEPOSIT_MAX = 9;
 local VOID_WITHDRAW_MAX = 9;
 local VOID_STORAGE_MAX = 80;
+local VOID_STORAGE_PAGES = 2;
+
 local voidStorageTutorials = {
 	[1] = { text1 = VOID_STORAGE_TUTORIAL1, text2 = VOID_STORAGE_TUTORIAL2, yOffset = 340 },
 	[2] = { text1 = VOID_STORAGE_TUTORIAL3, yOffset = 180 },
@@ -83,6 +85,8 @@ function VoidStorageFrame_OnLoad(self)
 		lastButton.slot = i;
 	end
 	
+	self.page = 1;
+
 	MoneyFrame_Update("VoidStorageMoneyFrame", 0);
 
 	self:RegisterEvent("VOID_STORAGE_UPDATE");
@@ -95,7 +99,24 @@ end
 
 function VoidStorageFrame_OnEvent(self, event, ...)
 	if ( event == "VOID_TRANSFER_DONE" ) then
-		VoidStorage_ItemsUpdate(true, true);
+		local recentDepositPage;
+		for i = VOID_STORAGE_PAGES, 1, -1 do
+			for j = VOID_STORAGE_MAX, 1, -1 do
+				if (select(4, GetVoidItemInfo(i, j))) then
+					recentDepositPage = i;
+					break;
+				end
+			end
+			if (recentDepositPage) then
+				break;
+			end
+		end
+
+		if (recentDepositPage and self.page ~= recentDepositPage) then
+			VoidStorage_SetPageNumber(recentDepositPage);
+		else
+			VoidStorage_ItemsUpdate(true, true);
+		end
 	elseif ( event == "VOID_STORAGE_DEPOSIT_UPDATE" ) then
 		local slot = ...;
 		local dialog = StaticPopup_FindVisible("VOID_DEPOSIT_CONFIRM");
@@ -124,6 +145,19 @@ function VoidStorageFrame_OnShow(self)
 	PlaySound("UI_EtherealWindow_Open");
 	SetUpSideDressUpFrame(self, 726, 906, "TOPLEFT", "TOPRIGHT", -2, -15);
 	VoidStorageFrame_Update();
+end
+
+function VoidStorageFrame_UpdateTabs()
+	local self = VoidStorageFrame;
+
+	local canUse = CanUseVoidStorage();
+	for i=1,2 do
+		local page = self["Page"..i];
+		page:SetEnabled(canUse);
+		if (canUse) then
+			page:SetChecked(page:GetID() == self.page);
+		end
+	end
 end
 
 function VoidStorageFrame_Update()
@@ -176,6 +210,7 @@ function VoidStorageFrame_Update()
 		VoidStorageFrame_SetUpBlockingFrame();
 		VoidStoragePurchaseFrame:Show();
 	end
+	VoidStorageFrame_UpdateTabs();
 end
 
 function VoidStorageFrame_OnHide(self)
@@ -201,13 +236,27 @@ function VoidStorage_CloseConfirmationDialog(slot)
 	VoidStorage_UpdateTransferButton();
 end
 
-function VoidStorage_ItemsUpdate(doDeposit, doContents)	
+function VoidStorage_SetPageNumber(page)
+	local self = VoidStorageFrame;
+
+	self.page = page;
+	VoidStorageFrame_Update();
+end
+
+function VoidStorage_ItemsUpdate(doDeposit, doContents)
+	local self = VoidStorageFrame;
 	local button;
 	if ( doDeposit ) then
 		for i = 1, VOID_DEPOSIT_MAX do
-			local itemID, textureName = GetVoidTransferDepositInfo(i);
+			local itemID, textureName, quality = GetVoidTransferDepositInfo(i);
 			button = _G["VoidStorageDepositButton"..i];
 			button.icon:SetTexture(textureName);
+			if (quality and quality > LE_ITEM_QUALITY_COMMON and BAG_ITEM_QUALITY_COLORS[quality]) then
+				button.IconBorder:Show();
+				button.IconBorder:SetVertexColor(BAG_ITEM_QUALITY_COLORS[quality].r, BAG_ITEM_QUALITY_COLORS[quality].g, BAG_ITEM_QUALITY_COLORS[quality].b);
+			else
+				button.IconBorder:Hide();
+			end
 			if ( itemID ) then
 				button.hasItem = true;
 			else
@@ -218,9 +267,15 @@ function VoidStorage_ItemsUpdate(doDeposit, doContents)
 	if ( doContents ) then
 		-- withdrawal
 		for i = 1, VOID_WITHDRAW_MAX do
-			local itemID, textureName = GetVoidTransferWithdrawalInfo(i);
+			local itemID, textureName, quality = GetVoidTransferWithdrawalInfo(i);
 			button = _G["VoidStorageWithdrawButton"..i];
 			button.icon:SetTexture(textureName);
+			if (quality and quality > LE_ITEM_QUALITY_COMMON and BAG_ITEM_QUALITY_COLORS[quality]) then
+				button.IconBorder:Show();
+				button.IconBorder:SetVertexColor(BAG_ITEM_QUALITY_COLORS[quality].r, BAG_ITEM_QUALITY_COLORS[quality].g, BAG_ITEM_QUALITY_COLORS[quality].b);
+			else
+				button.IconBorder:Hide();
+			end
 			if ( itemID ) then
 				button.hasItem = true;
 			else
@@ -230,7 +285,7 @@ function VoidStorage_ItemsUpdate(doDeposit, doContents)
 		
 		-- storage
 		for i = 1, VOID_STORAGE_MAX do
-			local itemID, textureName, locked, recentDeposit, isFiltered = GetVoidItemInfo(i);
+			local itemID, textureName, locked, recentDeposit, isFiltered, quality = GetVoidItemInfo(self.page, i);
 			button = _G["VoidStorageStorageButton"..i];
 			button.icon:SetTexture(textureName);
 			if ( itemID ) then
@@ -258,6 +313,13 @@ function VoidStorage_ItemsUpdate(doDeposit, doContents)
 				button.searchOverlay:Show();
 			else
 				button.searchOverlay:Hide();
+			end
+
+			if (quality and quality > LE_ITEM_QUALITY_COMMON and BAG_ITEM_QUALITY_COLORS[quality]) then
+				button.IconBorder:Show();
+				button.IconBorder:SetVertexColor(BAG_ITEM_QUALITY_COLORS[quality].r, BAG_ITEM_QUALITY_COLORS[quality].g, BAG_ITEM_QUALITY_COLORS[quality].b);
+			else
+				button.IconBorder:Hide();
 			end
 		end
 	end
@@ -296,7 +358,7 @@ function VoidStorage_ItemsFilteredUpdate()
 	local button, isFiltered, _;
 	-- storage
 	for i = 1, VOID_STORAGE_MAX do
-		_, _, _, _, isFiltered = GetVoidItemInfo(i);
+		_, _, _, _, isFiltered = GetVoidItemInfo(VoidStorageFrame.page, i);
 		button = _G["VoidStorageStorageButton"..i];
 		
 		if ( isFiltered ) then
@@ -339,7 +401,7 @@ function VoidStorageItemButton_OnClick(self, button)
 		if ( self.buttonType == BUTTON_TYPE_DEPOSIT ) then
 			itemID = GetVoidTransferDepositInfo(self.slot);
 		elseif ( self.buttonType == BUTTON_TYPE_STORAGE ) then
-			itemID = GetVoidItemInfo(self.slot);
+			itemID = GetVoidItemInfo(VoidStorageFrame.page, self.slot);
 		elseif ( self.buttonType == BUTTON_TYPE_WITHDRAW ) then
 			itemID = GetVoidTransferWithdrawalInfo(self.slot);
 		end
@@ -352,7 +414,7 @@ function VoidStorageItemButton_OnClick(self, button)
 		if ( self.buttonType == BUTTON_TYPE_DEPOSIT ) then
 			ClickVoidTransferDepositSlot(self.slot, isRightClick);
 		elseif ( self.buttonType == BUTTON_TYPE_STORAGE ) then
-			ClickVoidStorageSlot(self.slot, isRightClick);
+			ClickVoidStorageSlot(VoidStorageFrame.page, self.slot, isRightClick);
 		elseif ( self.buttonType == BUTTON_TYPE_WITHDRAW ) then
 			ClickVoidTransferWithdrawalSlot(self.slot, isRightClick);
 		end
@@ -376,7 +438,7 @@ function VoidStorageItemButton_OnEnter(self)
 		if ( self.buttonType == BUTTON_TYPE_DEPOSIT ) then
 			GameTooltip:SetVoidDepositItem(self.slot);
 		elseif ( self.buttonType == BUTTON_TYPE_STORAGE ) then
-			GameTooltip:SetVoidItem(self.slot);
+			GameTooltip:SetVoidItem(VoidStorageFrame.page, self.slot);
 		elseif ( self.buttonType == BUTTON_TYPE_WITHDRAW ) then
 			GameTooltip:SetVoidWithdrawalItem(self.slot);
 		end

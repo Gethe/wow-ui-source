@@ -10,8 +10,8 @@ function StanceBar_OnLoad(self)
 	self:RegisterEvent("UPDATE_SHAPESHIFT_COOLDOWN");
 end
 
-function StanceBar_OnEvent(self)
-	if(event == UPDATE_SHAPESHIFT_COOLDOWN) then
+function StanceBar_OnEvent(self, event)
+	if(event == "UPDATE_SHAPESHIFT_COOLDOWN") then
 		StanceBar_UpdateState();
 	end
 end
@@ -61,14 +61,14 @@ function StanceBar_UpdateState ()
 	local button, icon, cooldown;
 	local start, duration, enable;
 	for i=1, NUM_STANCE_SLOTS do
-		button = _G["StanceButton"..i];
-		icon = _G["StanceButton"..i.."Icon"];
+		button = StanceBarFrame.StanceButtons[i];
+		icon = button.icon;
 		if ( i <= numForms ) then
 			texture, name, isActive, isCastable = GetShapeshiftFormInfo(i);
 			icon:SetTexture(texture);
 			
 			--Cooldown stuffs
-			cooldown = _G["StanceButton"..i.."Cooldown"];
+			cooldown = button.cooldown;
 			if ( texture ) then
 				cooldown:Show();
 			else
@@ -79,9 +79,9 @@ function StanceBar_UpdateState ()
 			
 			if ( isActive ) then
 				StanceBarFrame.lastSelected = button:GetID();
-				button:SetChecked(1);
+				button:SetChecked(true);
 			else
-				button:SetChecked(0);
+				button:SetChecked(false);
 			end
 
 			if ( isCastable ) then

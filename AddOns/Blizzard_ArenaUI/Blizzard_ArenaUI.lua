@@ -54,40 +54,11 @@ function ArenaEnemyFrames_OnEvent(self, event, ...)
 end
 
 function ArenaEnemyFrames_OnShow(self)
-	--Set it up to hide stuff we don't want shown in an arena.
-	ArenaEnemyFrames_UpdateWatchFrame();
-	
 	DurabilityFrame_SetAlerts();
 	UIParent_ManageFramePositions();
 end
 
-function ArenaEnemyFrames_UpdateWatchFrame()
-	local ArenaEnemyFrames = ArenaEnemyFrames;
-	if ( not WatchFrame:IsUserPlaced() ) then
-		if ( ArenaEnemyFrames:IsShown() ) then
-			if ( WatchFrame_RemoveObjectiveHandler(WatchFrame_DisplayTrackedQuests) ) then
-				ArenaEnemyFrames.hidWatchedQuests = true;
-			end
-		else
-			if ( ArenaEnemyFrames.hidWatchedQuests ) then
-				WatchFrame_AddObjectiveHandler(WatchFrame_DisplayTrackedQuests);
-				ArenaEnemyFrames.hidWatchedQuests = false;
-			end
-		end
-		WatchFrame_ClearDisplay();
-		WatchFrame_Update();
-	elseif ( ArenaEnemyFrames.hidWatchedQuests ) then
-		WatchFrame_AddObjectiveHandler(WatchFrame_DisplayTrackedQuests);
-		ArenaEnemyFrames.hidWatchedQuests = false;
-		WatchFrame_ClearDisplay();
-		WatchFrame_Update();
-	end
-end
-
-function ArenaEnemyFrames_OnHide(self)
-	--Make the stuff that needs to be shown shown again.
-	ArenaEnemyFrames_UpdateWatchFrame();
-	
+function ArenaEnemyFrames_OnHide(self)	
 	DurabilityFrame_SetAlerts();
 	UIParent_ManageFramePositions();
 end
@@ -388,41 +359,13 @@ function ArenaPrepFrames_OnEvent(self, event, ...) --also called in OnLoad
 end
 
 function ArenaPrepFrames_OnShow(self)
-	ArenaPrepFrames_UpdateWatchFrame();
-	
 	DurabilityFrame_SetAlerts();
 	UIParent_ManageFramePositions()
 end
 
 function ArenaPrepFrames_OnHide(self)
-	--Make the stuff that needs to be shown shown again.
-	ArenaEnemyFrames_UpdateWatchFrame();
-	
 	DurabilityFrame_SetAlerts();
 	UIParent_ManageFramePositions();
-end
-
-function ArenaPrepFrames_UpdateWatchFrame()
-	local ArenaPrepFrames = ArenaPrepFrames;
-	if ( not WatchFrame:IsUserPlaced() ) then
-		if ( ArenaPrepFrames:IsShown() ) then
-			if ( WatchFrame_RemoveObjectiveHandler(WatchFrame_DisplayTrackedQuests) ) then
-				ArenaPrepFrames.hidWatchedQuests = true;
-			end
-		else
-			if ( ArenaPrepFrames.hidWatchedQuests ) then
-				WatchFrame_AddObjectiveHandler(WatchFrame_DisplayTrackedQuests);
-				ArenaPrepFrames.hidWatchedQuests = false;
-			end
-		end
-		WatchFrame_ClearDisplay();
-		WatchFrame_Update();
-	elseif ( ArenaPrepFrames.hidWatchedQuests ) then
-		WatchFrame_AddObjectiveHandler(WatchFrame_DisplayTrackedQuests);
-		ArenaPrepFrames.hidWatchedQuests = false;
-		WatchFrame_ClearDisplay();
-		WatchFrame_Update();
-	end
 end
 
 function UpdatePrepFrames()
@@ -431,9 +374,9 @@ function UpdatePrepFrames()
 		local prepFrame = _G["ArenaPrepFrame"..i];
 		if (i <= numOpps) then 
 			prepFrame.specPortrait = _G["ArenaPrepFrame"..i.."SpecPortrait"];
-			local specID = GetArenaOpponentSpec(i);
+			local specID, gender = GetArenaOpponentSpec(i);
 			if (specID > 0) then 
-				local _, spec, _, specIcon, _, _, class = GetSpecializationInfoByID(specID);
+				local _, _, _, specIcon, _, _, class = GetSpecializationInfoByID(specID, gender);
 				if( class ) then
 					prepFrame.classPortrait:SetTexture("Interface\\TargetingFrame\\UI-Classes-Circles");
 					prepFrame.classPortrait:SetTexCoord(unpack(CLASS_ICON_TCOORDS[strupper(class)]));

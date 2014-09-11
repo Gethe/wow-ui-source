@@ -46,7 +46,7 @@
 				<Scripts>
 					<OnClick>
 						local parent = self:GetParent();
-						SetNextBarberShopStyle(parent:GetID(), 1);
+						SetNextBarberShopStyle(parent:GetID(), true);
 						PlaySound("UChatScrollButton");
 						BarberShop_UpdateCost();
 						BarberShop_UpdateSelector(parent);

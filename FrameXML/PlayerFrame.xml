@@ -5,15 +5,9 @@
 		If you change anything in this file, be sure to change the equivalent data in PlayerFrame.lua, function PlayerFrame_ToPlayerArt
 		IMPORTANT-->
 	<Button name="PlayerFrame" frameStrata="LOW" toplevel="true" movable="true" inherits="SecureUnitButtonTemplate" parent="UIParent">
-		<Size>
-			<AbsDimension x="232" y="100"/>
-		</Size>
+		<Size x="232" y="100"/>
 		<Anchors>
-			<Anchor point="TOPLEFT">
-				<Offset>
-					<AbsDimension x="-19" y="-4"/>
-				</Offset>
-			</Anchor>
+			<Anchor point="TOPLEFT" x="-19" y="-4"/>
 		</Anchors>
 		<HitRectInsets>
 			<AbsInset left="6" right="0" top="4" bottom="9"/>
@@ -21,43 +15,25 @@
 		<Layers>
 			<Layer level="BACKGROUND">
 				<Texture name="PlayerFrameFlash" file="Interface\TargetingFrame\UI-TargetingFrame-Flash" hidden="true">
-					<Size>
-						<AbsDimension x="242" y="93"/>
-					</Size>
+					<Size x="242" y="93"/>
 					<Anchors>
-						<Anchor point="TOPLEFT">
-							<Offset>
-								<AbsDimension x="13" y="0"/>
-							</Offset>
-						</Anchor>
+						<Anchor point="TOPLEFT" x="13" y="0"/>
 					</Anchors>
 					<TexCoords left="0.9453125" right="0" top="0" bottom="0.181640625"/>
 				</Texture>
 				<Texture name="PlayerFrameBackground">
-					<Size>
-						<AbsDimension x="119" y="41"/>
-					</Size>
+					<Size x="119" y="41"/>
 					<Anchors>
-						<Anchor point="TOPLEFT">
-							<Offset>
-								<AbsDimension x="106" y="-22"/>
-							</Offset>
-						</Anchor>
+						<Anchor point="TOPLEFT" x="106" y="-22"/>
 					</Anchors>
 					<Color r="0" g="0" b="0" a="0.5"/>
 				</Texture>
 			</Layer>
 			<Layer level="ARTWORK">
 				<Texture name="PlayerPortrait">
-					<Size>
-						<AbsDimension x="64" y="64"/>
-					</Size>
+					<Size x="64" y="64"/>
 					<Anchors>
-						<Anchor point="TOPLEFT">
-							<Offset>
-								<AbsDimension x="42" y="-12"/>
-							</Offset>
-						</Anchor>
+						<Anchor point="TOPLEFT" x="42" y="-12"/>
 					</Anchors>
 				</Texture>
 				<Texture name="$parentTotalAbsorbBar" inherits="TotalAbsorbBarTemplate"/>
@@ -83,102 +59,77 @@
 									<TexCoords left="1.0" right="0.09375" top="0" bottom="0.78125"/>
 								</Texture>
 								<Texture name="PlayerFrameVehicleTexture" file="Interface\Vehicles\UI-Vehicle-Frame" hidden="true">
-									<Size>
-										<AbsDimension x="240" y="120"/>
-									</Size>
+									<Size x="240" y="120"/>
 									<Anchors>
-										<Anchor point="CENTER">
-											<Offset>
-												<AbsDimension x="20" y="0"/>
-											</Offset>
-										</Anchor>
+										<Anchor point="CENTER" x="20" y="0"/>
 									</Anchors>
 								</Texture>
 								<FontString name="PlayerName" inherits="GameFontNormalSmall">
-									<Size>
-										<AbsDimension x="100" y="12"/>
-									</Size>
+									<Size x="100" y="12"/>
 									<Anchors>
-										<Anchor point="CENTER">
-											<Offset>
-												<AbsDimension x="50" y="19"/>
-											</Offset>
-										</Anchor>
+										<Anchor point="CENTER" x="50" y="19"/>
 									</Anchors>
 								</FontString>
-								<FontString name="PlayerLevelText" inherits="GameFontNormalSmall">
+								<FontString name="PlayerLevelText" inherits="GameNormalNumberFont" justifyH="CENTER">
+									<!--WARNING:: This is re-anchored in code.-->
 									<Anchors>
-										<Anchor point="CENTER">
-											<Offset>
-												<AbsDimension x="-63" y="-16"/>
-											</Offset>
-										</Anchor>
+										<Anchor point="CENTER" x="-62" y="-17"/>
 									</Anchors>
 								</FontString>
 								<FontString name="PlayerPVPTimerText" inherits="GameFontNormalSmall">
 									<Anchors>
-										<Anchor point="CENTER" relativePoint="TOPLEFT">
-											<Offset>
-												<AbsDimension x="38" y="-8"/>
-											</Offset>
-										</Anchor>
+										<Anchor point="CENTER" relativePoint="TOPLEFT" x="38" y="-8"/>
 									</Anchors>
 								</FontString>
 								<FontString name="PlayerFrameHealthBarText" inherits="TextStatusBarText">
 									<Anchors>
-										<Anchor point="CENTER">
-											<Offset>
-												<AbsDimension x="50" y="3"/>
-											</Offset>
-										</Anchor>
+										<Anchor point="CENTER" x="50" y="3"/>
+									</Anchors>
+								</FontString>
+								<FontString name="PlayerFrameHealthBarTextLeft" inherits="TextStatusBarText">
+									<Anchors>
+										<Anchor point="LEFT" x="110" y="3"/>
+									</Anchors>
+								</FontString>
+								<FontString name="PlayerFrameHealthBarTextRight" inherits="TextStatusBarText">
+									<Anchors>
+										<Anchor point="RIGHT" x="-8" y="3"/>
 									</Anchors>
 								</FontString>
 								<FontString name="PlayerFrameManaBarText" inherits="TextStatusBarText">
 									<Anchors>
-										<Anchor point="CENTER">
-											<Offset>
-												<AbsDimension x="50" y="-8"/>
-											</Offset>
-										</Anchor>
+										<Anchor point="CENTER" x="50" y="-8"/>
+									</Anchors>
+								</FontString>
+								<FontString name="PlayerFrameManaBarTextLeft" inherits="TextStatusBarText">
+									<Anchors>
+										<Anchor point="LEFT" x="110" y="-8"/>
+									</Anchors>
+								</FontString>
+								<FontString name="PlayerFrameManaBarTextRight" inherits="TextStatusBarText">
+									<Anchors>
+										<Anchor point="RIGHT" x="-8" y="-8"/>
 									</Anchors>
 								</FontString>
 							</Layer>
 							<Layer level="ARTWORK">
 								<Texture name="PlayerStatusTexture" file="Interface\CharacterFrame\UI-Player-Status" alphaMode="ADD" hidden="true">
-									<Size>
-										<AbsDimension x="190" y="66"/>
-									</Size>
+									<Size x="190" y="66"/>
 									<Anchors>
-										<Anchor point="TOPLEFT">
-											<Offset>
-												<AbsDimension x="35" y="-8"/>
-											</Offset>
-										</Anchor>
+										<Anchor point="TOPLEFT" x="35" y="-8"/>
 									</Anchors>
 									<TexCoords left="0" right="0.74609375" top="0" bottom="0.53125"/>
 								</Texture>
 								<Texture name="PlayerAttackBackground" file="Interface\TargetingFrame\UI-TargetingFrame-AttackBackground" hidden="true">
-									<Size>
-										<AbsDimension x="32" y="32"/>
-									</Size>
+									<Size x="32" y="32"/>
 									<Anchors>
-										<Anchor point="TOPLEFT">
-											<Offset>
-												<AbsDimension x="37" y="-50"/>
-											</Offset>
-										</Anchor>
+										<Anchor point="TOPLEFT" x="37" y="-50"/>
 									</Anchors>
 								</Texture>
 								<Texture name="PlayerPVPIcon" hidden="true">
-									<Size>
-										<AbsDimension x="64" y="64"/>
-									</Size>
+									<Size x="64" y="64"/>
 									<Anchors>
-										<Anchor point="TOPLEFT">
-											<Offset>
-												<AbsDimension x="18" y="-20"/>
-											</Offset>
-										</Anchor>
+										<Anchor point="TOPLEFT" x="18" y="-20"/>
 									</Anchors>
 								</Texture>
 							</Layer>
@@ -189,125 +140,71 @@
 							<Layer level="OVERLAY">
 								<FontString name="PlayerHitIndicator" hidden="true" inherits="NumberFontNormalHuge">
 									<Anchors>
-										<Anchor point="CENTER" relativePoint="TOPLEFT">
-											<Offset>
-												<AbsDimension x="73" y="-42"/>
-											</Offset>
-										</Anchor>
+										<Anchor point="CENTER" relativePoint="TOPLEFT" x="73" y="-42"/>
 									</Anchors>
 								</FontString>
 								<Texture name="PlayerLeaderIcon" file="Interface\GroupFrame\UI-Group-LeaderIcon" hidden="true">
-									<Size>
-										<AbsDimension x="16" y="16"/>
-									</Size>
+									<Size x="16" y="16"/>
 									<Anchors>
-										<Anchor point="TOPLEFT">
-											<Offset>
-												<AbsDimension x="40" y="-12"/>
-											</Offset>
-										</Anchor>
+										<Anchor point="TOPLEFT" x="40" y="-12"/>
 									</Anchors>
 								</Texture>
 								<Texture name="PlayerGuideIcon" file="Interface\LFGFrame\UI-LFG-ICON-PORTRAITROLES" hidden="true">
-									<Size>
-										<AbsDimension x="19" y="19"/>
-									</Size>
+									<Size x="19" y="19"/>
 									<Anchors>
-										<Anchor point="TOPLEFT">
-											<Offset>
-												<AbsDimension x="40" y="-12"/>
-											</Offset>
-										</Anchor>
+										<Anchor point="TOPLEFT" x="40" y="-12"/>
 									</Anchors>
 									<TexCoords left="0" right="0.296875" top="0.015625" bottom="0.3125"/>
 								</Texture>
 								<Texture name="PlayerMasterIcon" file="Interface\GroupFrame\UI-Group-MasterLooter" hidden="true">
-									<Size>
-										<AbsDimension x="16" y="16"/>
-									</Size>
+									<Size x="16" y="16"/>
 									<Anchors>
-										<Anchor point="TOPLEFT">
-											<Offset>
-												<AbsDimension x="80" y="-10"/>
-											</Offset>
-										</Anchor>
+										<Anchor point="TOPLEFT" x="80" y="-10"/>
 									</Anchors>
 								</Texture>
 								<Texture name="PlayerRestIcon" file="Interface\CharacterFrame\UI-StateIcon" hidden="false">
-									<Size>
-										<AbsDimension x="31" y="33"/>
-									</Size>
+									<Size x="31" y="31"/>
 									<Anchors>
-										<Anchor point="TOPLEFT">
-											<Offset>
-												<AbsDimension x="37" y="-49"/>
-											</Offset>
-										</Anchor>
+										<Anchor point="TOPLEFT" x="39" y="-50"/>
 									</Anchors>
 									<TexCoords left="0" right="0.5" top="0" bottom="0.421875"/>
 								</Texture>
 								<Texture name="PlayerAttackIcon" file="Interface\CharacterFrame\UI-StateIcon" hidden="false">
-									<Size>
-										<AbsDimension x="32" y="32"/>
-									</Size>
+									<Size x="32" y="32"/>
 									<Anchors>
-										<Anchor point="TOPLEFT" relativeTo="PlayerRestIcon">
-											<Offset>
-												<AbsDimension x="1" y="1"/>
-											</Offset>
-										</Anchor>
+										<Anchor point="TOPLEFT" relativeTo="PlayerRestIcon" x="1" y="1"/>
 									</Anchors>
 									<TexCoords left="0.5" right="1.0" top="0" bottom="0.5"/>
 								</Texture>
 								<Texture name="$parentRoleIcon" file="Interface\LFGFrame\UI-LFG-ICON-PORTRAITROLES" hidden="true">
-									<Size>
-										<AbsDimension x="19" y="19"/>
-									</Size>
+									<Size x="19" y="19"/>
 									<Anchors>
-										<Anchor point="TOPLEFT">
-											<Offset>
-												<AbsDimension x="95" y="-15"/>
-											</Offset>
-										</Anchor>
+										<Anchor point="TOPLEFT" x="95" y="-15"/>
 									</Anchors>
 								</Texture>
 							</Layer>
 						</Layers>
 					</Frame>
 					<Button name="PlayerSpeakerFrame" inherits="VoiceChatSpeakerTemplate" hidden="true">
-						<Size>
-							<AbsDimension x="20" y="20"/>
-						</Size>
+						<Size x="20" y="20"/>
 						<Anchors>
-							<Anchor point="LEFT" relativePoint="RIGHT">
-								<Offset>
-									<AbsDimension x="0" y="-3"/>
-								</Offset>
-							</Anchor>
+							<Anchor point="LEFT" relativePoint="RIGHT" x="0" y="-3"/>
 						</Anchors>
 						<Scripts>
 							<OnUpdate function="VoiceChat_OnUpdate"/>
 						</Scripts>
 					</Button>
 					<Frame name="PlayerFrameReadyCheck" inherits="ReadyCheckStatusTemplate" hidden="true">
-						<Size>
-							<AbsDimension x="40" y="40"/>
-						</Size>
+						<Size x="40" y="40"/>
 						<Anchors>
-							<Anchor point="CENTER" relativeTo="PlayerPortrait" relativePoint="CENTER">
-								<Offset>
-									<AbsDimension x="0" y="0"/>
-								</Offset>
-							</Anchor>
+							<Anchor point="CENTER" relativeTo="PlayerPortrait" relativePoint="CENTER" x="0" y="0"/>
 						</Anchors>
 						<Scripts>
 							<OnLoad function="RaiseFrameLevelByTwo"/>
 						</Scripts>
 					</Frame>
 					<Frame name="PlayerPVPIconHitArea" enableMouse="true" hidden="true">
-						<Size>
-							<AbsDimension x="39" y="37"/>
-						</Size>
+						<Size x="39" y="37"/>
 						<Anchors>
 							<Anchor point="TOPLEFT" relativeTo="PlayerPVPIcon"/>
 						</Anchors>
@@ -319,37 +216,23 @@
 						</Scripts>
 					</Frame>
 					<Frame name="PlayerStatusGlow" hidden="true">
-						<Size>
-							<AbsDimension x="32" y="32"/>
-						</Size>
+						<Size x="32" y="32"/>
 						<Anchors>
-							<Anchor point="TOPLEFT" relativeTo="PlayerRestIcon">
-								<Offset>
-									<AbsDimension x="0" y="0"/>
-								</Offset>
-							</Anchor>
+							<Anchor point="TOPLEFT" relativeTo="PlayerRestIcon" x="0" y="0"/>
 						</Anchors>
 						<Layers>
 							<Layer level="OVERLAY">
 								<Texture name="PlayerRestGlow" file="Interface\CharacterFrame\UI-StateIcon" hidden="false" alphaMode="ADD">
-									<Size>
-										<AbsDimension x="32" y="32"/>
-									</Size>
+									<Size x="32" y="32"/>
 									<Anchors>
 										<Anchor point="TOPLEFT"/>
 									</Anchors>
 									<TexCoords left="0" right="0.5" top="0.5" bottom="1.0"/>
 								</Texture>
 								<Texture name="PlayerAttackGlow" file="Interface\CharacterFrame\UI-StateIcon" hidden="false" alphaMode="ADD">
-									<Size>
-										<AbsDimension x="32" y="32"/>
-									</Size>
+									<Size x="32" y="32"/>
 									<Anchors>
-										<Anchor point="TOPLEFT">
-											<Offset>
-												<AbsDimension x="1" y="1"/>
-											</Offset>
-										</Anchor>
+										<Anchor point="TOPLEFT" x="1" y="1"/>
 									</Anchors>
 									<Color r="1.0" g="0" b="0"/>
 									<TexCoords left="0.5" right="1.0" top="0.5" bottom="1.0"/>
@@ -363,15 +246,9 @@
 						</Scripts>
 					</Frame>
 					<Frame name="PlayerPlayTime" enableMouse="true" hidden="true">
-						<Size>
-							<AbsDimension x="32" y="32"/>
-						</Size>
+						<Size x="32" y="32"/>
 						<Anchors>
-							<Anchor point="TOPLEFT" relativePoint="TOPRIGHT">
-								<Offset>
-									<AbsDimension x="-4" y="-17"/>
-								</Offset>
-							</Anchor>
+							<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" x="-4" y="-17"/>
 						</Anchors>
 						<Layers>
 							<Layer level="BACKGROUND">
@@ -381,7 +258,7 @@
 						<Scripts>
 							<OnEnter>
 								GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
-								GameTooltip:SetText(self.tooltip, nil, nil, nil, nil, 1);
+								GameTooltip:SetText(self.tooltip, nil, nil, nil, nil, true);
 							</OnEnter>						
 							<OnLeave function="GameTooltip_Hide"/>
 						</Scripts>
@@ -426,15 +303,9 @@
 				</Frames>
 			</Frame>
 			<StatusBar name="PlayerFrameHealthBar" inherits="TextStatusBar">
-				<Size>
-					<AbsDimension x="119" y="12"/>
-				</Size>
+				<Size x="119" y="12"/>
 				<Anchors>
-					<Anchor point="TOPLEFT">
-						<Offset>
-							<AbsDimension x="106" y="-41"/>
-						</Offset>
-					</Anchor>
+					<Anchor point="TOPLEFT" x="106" y="-41"/>
 				</Anchors>
 				<Scripts>
 					<OnLoad>
@@ -454,15 +325,9 @@
 				<BarTexture file="Interface\TargetingFrame\UI-StatusBar"/>
 			</StatusBar>
 			<StatusBar name="PlayerFrameManaBar" inherits="TextStatusBar">
-				<Size>
-					<AbsDimension x="119" y="12"/>
-				</Size>
+				<Size x="119" y="12"/>
 				<Anchors>
-					<Anchor point="TOPLEFT">
-						<Offset>
-							<AbsDimension x="106" y="-52"/>
-						</Offset>
-					</Anchor>
+					<Anchor point="TOPLEFT" x="106" y="-52"/>
 				</Anchors>
 				<Scripts>
 					<OnLoad>
@@ -479,55 +344,37 @@
 				<BarColor r="0" g="0" b="1.0"/>
 			</StatusBar>
 			<Frame name="PlayerFrameDropDown" inherits="UIDropDownMenuTemplate" id="1" hidden="true">
-				<Size>
-					<AbsDimension x="10" y="10"/>
-				</Size>
+				<Size x="10" y="10"/>
 				<Anchors>
-					<Anchor point="TOP">
-						<Offset>
-							<AbsDimension x="-10" y="-50"/>
-						</Offset>
-					</Anchor>
+					<Anchor point="TOP" x="-10" y="-50"/>
 				</Anchors>
 				<Scripts>
 					<OnLoad function="PlayerFrameDropDown_OnLoad"/>
 				</Scripts>
 			</Frame>
 			<Frame name="PlayerFrameGroupIndicator" hidden="true">
-				<Size>
-					<AbsDimension x="10" y="16"/>
-				</Size>
+				<Size x="10" y="16"/>
 				<Anchors>
-					<Anchor point="BOTTOMLEFT" relativePoint="TOPLEFT">
-						<Offset>
-							<AbsDimension x="97" y="-20"/>
-						</Offset>
-					</Anchor>
+					<Anchor point="BOTTOMLEFT" relativePoint="TOPLEFT" x="97" y="-20"/>
 				</Anchors>
 				<Layers>
 					<Layer level="BACKGROUND">
 						<Texture name="PlayerFrameGroupIndicatorLeft" file="Interface\CharacterFrame\UI-CharacterFrame-GroupIndicator">
-							<Size>
-								<AbsDimension x="24" y="16"/>
-							</Size>
+							<Size x="24" y="16"/>
 							<Anchors>
 								<Anchor point="TOPLEFT"/>
 							</Anchors>
 							<TexCoords left="0" right="0.1875" top="0" bottom="1"/>
 						</Texture>
 						<Texture name="PlayerFrameGroupIndicatorRight" file="Interface\CharacterFrame\UI-CharacterFrame-GroupIndicator">
-							<Size>
-								<AbsDimension x="24" y="16"/>
-							</Size>
+							<Size x="24" y="16"/>
 							<Anchors>
 								<Anchor point="TOPRIGHT"/>
 							</Anchors>
 							<TexCoords left="0.53125" right="0.71875" top="0" bottom="1"/>
 						</Texture>
 						<Texture name="PlayerFrameGroupIndicatorMiddle" file="Interface\CharacterFrame\UI-CharacterFrame-GroupIndicator">
-							<Size>
-								<AbsDimension x="0" y="16"/>
-							</Size>
+							<Size x="0" y="16"/>
 							<Anchors>
 								<Anchor point="LEFT" relativeTo="PlayerFrameGroupIndicatorLeft" relativePoint="RIGHT"/>
 								<Anchor point="RIGHT" relativeTo="PlayerFrameGroupIndicatorRight" relativePoint="LEFT"/>
@@ -536,11 +383,7 @@
 						</Texture>
 						<FontString name="PlayerFrameGroupIndicatorText" inherits="GameFontHighlightSmall">
 							<Anchors>
-								<Anchor point="LEFT">
-									<Offset>
-										<AbsDimension x="20" y="-2"/>
-									</Offset>
-								</Anchor>
+								<Anchor point="LEFT" x="20" y="-2"/>
 							</Anchors>
 						</FontString>
 					</Layer>

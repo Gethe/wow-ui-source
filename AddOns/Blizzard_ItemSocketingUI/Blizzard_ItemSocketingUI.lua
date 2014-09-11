@@ -24,7 +24,7 @@ function ItemSocketingFrame_OnLoad(self)
 	ItemSocketingScrollFrameTop:SetPoint("TOP", ItemSocketingScrollFrameScrollBarScrollUpButton, "TOP", -2, 3);
 	ItemSocketingScrollFrameScrollBar:SetPoint("TOPLEFT", ItemSocketingScrollFrame, "TOPRIGHT", 7.9999995231628, -18);
 	ItemSocketingScrollFrameScrollBar:SetHeight(221);
-	ItemSocketingDescription:SetMinimumWidth(ITEM_SOCKETING_DESCRIPTION_MIN_WIDTH, 1);
+	ItemSocketingDescription:SetMinimumWidth(ITEM_SOCKETING_DESCRIPTION_MIN_WIDTH, true);
 	ButtonFrameTemplate_HideButtonBar(self);
 end
 
@@ -113,11 +113,11 @@ function ItemSocketingFrame_Update()
 				gemBorder:Show();
 				if ( gemColor == "Meta" ) then
 					-- Special stuff for meta gem sockets
-					SetDesaturation(openBracket, 1);
-					SetDesaturation(closedBracket, 1);
+					SetDesaturation(openBracket, true);
+					SetDesaturation(closedBracket, true);
 				else
-					SetDesaturation(openBracket, nil);
-					SetDesaturation(closedBracket, nil);
+					SetDesaturation(openBracket, false);
+					SetDesaturation(closedBracket, false);
 				end
 				openBracket:SetSize(gemInfo.OBx, gemInfo.OBy);
 				openBracket:SetTexture(gemInfo.tex);
@@ -144,7 +144,7 @@ function ItemSocketingFrame_Update()
 	end
 
 	-- Playsound if all sockets are matched 
-	if ( numMatches == numsockets ) then
+	if ( numMatches == numSockets ) then
 		-- Will probably need a new sound
 		PlaySound("MapPing");
 	end
@@ -177,7 +177,7 @@ function ItemSocketingFrame_Update()
 		scrollBarOffset = 0;
 	end
 	ItemSocketingScrollFrame:SetWidth(269+scrollBarOffset);
-	ItemSocketingDescription:SetMinimumWidth(ITEM_SOCKETING_DESCRIPTION_MIN_WIDTH+scrollBarOffset, 1);
+	ItemSocketingDescription:SetMinimumWidth(ITEM_SOCKETING_DESCRIPTION_MIN_WIDTH+scrollBarOffset, true);
 	-- Owner needs to be set everytime since it is cleared everytime the tooltip is hidden
 	ItemSocketingDescription:SetOwner(ItemSocketingScrollChild, "ANCHOR_PRESERVE");
 	ItemSocketingDescription:SetSocketedItem();
@@ -214,7 +214,7 @@ function ItemSocketingSocketButton_OnScrollRangeChanged()
 		scrollBarOffset = 0;
 	end
 	ItemSocketingScrollFrame:SetWidth(269+scrollBarOffset);
-	ItemSocketingDescription:SetMinimumWidth(ITEM_SOCKETING_DESCRIPTION_MIN_WIDTH+scrollBarOffset, 1);
+	ItemSocketingDescription:SetMinimumWidth(ITEM_SOCKETING_DESCRIPTION_MIN_WIDTH+scrollBarOffset, true);
 
 	ItemSocketingDescription:SetSocketedItem();
 end
@@ -233,7 +233,7 @@ function ItemSocketingSocketButton_OnEnter(self)
 		ShoppingTooltip1:SetOwner(GameTooltip, "ANCHOR_NONE");
 		ShoppingTooltip1:ClearAllPoints();
 		ShoppingTooltip1:SetPoint("TOPLEFT", "GameTooltip", "TOPRIGHT", 0, -10);
-		ShoppingTooltip1:SetExistingSocketGem(self:GetID(), 1);
+		ShoppingTooltip1:SetExistingSocketGem(self:GetID(), true);
 		ShoppingTooltip1:Show();
 	end
 end

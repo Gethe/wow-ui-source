@@ -4,9 +4,11 @@
 
 <Frame name="ArcheologyDigsiteProgressBar" parent="UIParent" hidden="true">
 	<Size x="240" y="24"/>
+	<!-- Anchored with the UIPARENT_MANAGED_FRAME_POSITIONS system.
 	<Anchors>
 		<Anchor point="BOTTOM" relativeTo="CastingBarFrame" relativePoint="Top" x="0" y="10"/>
 	</Anchors>
+	-->
 	<Animations>
 		<AnimationGroup parentKey="AnimIn">
 			<Alpha change="-1" duration="0" order="1"/>

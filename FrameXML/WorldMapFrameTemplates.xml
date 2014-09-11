@@ -97,7 +97,36 @@
 			</OnLeave>
 		</Scripts>
 	</Frame>
-	<Frame name="WorldMapCorpseTemplate" hidden="true" virtual="true">
+	<Frame name="WorldMapStoryLineTemplate" hidden="true" virtual="true">
+		<Size>
+			<AbsDimension x="32" y="32"/>
+		</Size>
+		<HitRectInsets>
+			<AbsInset left="4" right="4" top="0" bottom="0"/>
+		</HitRectInsets>
+		<Layers>
+			<Layer level="ARTWORK">
+				<Texture parentKey="Texture" file="Interface\Minimap\ObjectIcons" setAllPoints="true">
+					<TexCoords left="0.25" right="0.375" top="0.75" bottom="0.875"/>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnEnter>
+				local questLineName, questName, continentID, x, y = C_Questline.GetQuestlineInfoByIndex(self.index);
+				if ( questName ) then
+					WorldMapTooltip:SetOwner(self, "ANCHOR_LEFT");
+					WorldMapTooltip:SetText(questName);
+					WorldMapTooltip:AddLine(AVAILABLE_QUEST, 1, 1, 1, true);
+					WorldMapTooltip:Show();
+				end
+			</OnEnter>
+			<OnLeave>
+				WorldMapTooltip:Hide();
+			</OnLeave>
+		</Scripts>
+	</Frame>
+	<Frame name="WorldMapCorpseTemplate" hidden="true" virtual="true" toplevel="true">
 		<Size>
 			<AbsDimension x="16" y="16"/>
 		</Size>
@@ -112,11 +141,7 @@
 			</Layer>
 		</Layers>
 		<Scripts>
-			<OnLoad>
-				RaiseFrameLevel(self);
-			</OnLoad>
 			<OnEnter>
-				WorldMapPOIFrame.allowBlobTooltip = false;
 				local x, y = self:GetCenter();
 				local parentX, parentY = self:GetParent():GetCenter();
 				if ( x > parentX ) then
@@ -128,7 +153,6 @@
 				WorldMapTooltip:Show();
 			</OnEnter>
 			<OnLeave>
-				WorldMapPOIFrame.allowBlobTooltip = true;
 				WorldMapTooltip:Hide();
 			</OnLeave>
 		</Scripts>
@@ -158,66 +182,14 @@
 			</OnMouseUp>
 		</Scripts>
 	</Frame>
-	<Frame name="WorldMapQuestFrameTemplate" enableMouse="true" virtual="true">
-		<Size>
-			<AbsDimension x="281" y="100"/>
-		</Size>
-		<Layers>
-			<Layer level="BACKGROUND">
-				<FontString name="$parentTitle" inherits="GameFontNormal" justifyH="LEFT"  justifyV="TOP" spacing="2" parentKey="title">
-					<Size>
-						<AbsDimension x="240" y="0"/>
-					</Size>					
-					<Anchors>
-						<Anchor point="TOPLEFT">
-							<Offset>
-								<AbsDimension x="34" y="-8"/>
-							</Offset>						
-						</Anchor>
-					</Anchors>
-					<Color r="1" g="0.82" b="0" />
-				</FontString>
-				<Texture name="$parentCheck" file="Interface\Buttons\UI-CheckBox-Check" hidden="true" parentKey="check">
-					<Size>
-						<AbsDimension x="16" y="16"/>
-					</Size>
-					<Anchors>
-						<Anchor point="TOPLEFT" relativeTo="$parentTitle" relativePoint="TOPRIGHT" />
-					</Anchors> 
-				</Texture>
-				<FontString name="$parentDashes" inherits="GameFontNormal" justifyH="LEFT"  justifyV="BOTTOM" spacing="2" parentKey="dashes">
-					<Anchors>
-						<Anchor point="TOPLEFT" relativeTo="$parentTitle" relativePoint="BOTTOMLEFT">
-							<Offset>
-								<AbsDimension x="0" y="-4"/>
-							</Offset>						
-						</Anchor>
-					</Anchors>
-					<Color r="0.8" g="0.8" b="0.8" />				
-				</FontString>
-				<FontString name="$parentObjectives" inherits="GameFontNormal" justifyH="LEFT"  justifyV="BOTTOM" spacing="2" parentKey="objectives">
-					<Size>
-						<AbsDimension x="232" y="0"/>
-					</Size>					
-					<Anchors>
-						<Anchor point="TOPLEFT" relativeTo="$parentTitle" relativePoint="BOTTOMLEFT">
-							<Offset>
-								<AbsDimension x="8" y="-4"/>
-							</Offset>						
-						</Anchor>
-					</Anchors>
-					<Color r="0.8" g="0.8" b="0.8" />
-				</FontString>				
-			</Layer>
-		</Layers>		
+	<Button name="WorldMapFakeButtonTemplate" virtual="true">
 		<Scripts>
-			<OnEnter function="WorldMapQuestFrame_OnEnter" />
-			<OnLeave function="WorldMapQuestFrame_OnLeave" />
-			<OnMouseDown function="WorldMapQuestFrame_OnMouseDown" />
-			<OnMouseUp function="WorldMapQuestFrame_OnMouseUp" />
+			<OnMouseDown function="WorldMapButton_OnMouseDown"/>
+			<OnMouseUp function="WorldMapButton_OnMouseUp"/>
+			<OnClick function="WorldMapFakeButton_OnClick"/>
 		</Scripts>
-	</Frame>
-	<Button name="WorldMapMaelstromButtonTemplate" hidden="true" virtual="true">
+	</Button>
+	<Button name="WorldMapMaelstromButtonTemplate" inherits="WorldMapFakeButtonTemplate" hidden="true" virtual="true">
 		<Scripts>
 			<OnLoad>
 				self:RegisterForClicks("LeftButtonUp", "RightButtonUp");
@@ -228,13 +200,6 @@
 				self.petMinLevel = MAELSTROM_ZONES_LEVELS[zoneName].petMinLevel;
 				self.petMaxLevel = MAELSTROM_ZONES_LEVELS[zoneName].petMaxLevel;
 			</OnLoad>
-			<OnClick>
-				if ( button == "LeftButton" ) then
-					SetMapByID(self.zoneID);
-				else
-					WorldMapZoomOutButton_OnClick();
-				end
-			</OnClick>
 			<OnEnter>
 				WorldMapFrame.maelstromZoneText = GetMapNameByID(self.zoneID);
 				WorldMapFrame.minLevel = self.minLevel;
@@ -278,21 +243,19 @@
 				if self.tooltipTitle then
 					WorldMapTooltip:SetOwner(self, "ANCHOR_LEFT");
 					WorldMapTooltip:SetText(self.tooltipTitle,1,1,1);
-					WorldMapTooltip:AddLine(self.tooltipText, nil, nil, nil, 1);
+					WorldMapTooltip:AddLine(self.tooltipText, nil, nil, nil, true);
 					WorldMapTooltip:Show();
-					WorldMapTooltip.EJ_using = true;
 				end
 			</OnEnter>
 			<OnLeave>
 				WorldMapTooltip:Hide();
-				WorldMapTooltip.EJ_using = false;
 			</OnLeave>
 			<OnShow>
 				self:SetFrameLevel(self:GetParent():GetFrameLevel() + 10);
 			</OnShow>
 			<OnClick>
 				if WORLDMAP_SETTINGS.size ~= WORLDMAP_WINDOWED_SIZE then
-					ToggleFrame(WorldMapFrame);
+					ToggleWorldMap();
 				end
 			
 				if not EncounterJournal or not EncounterJournal:IsShown() then

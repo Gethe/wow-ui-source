@@ -74,6 +74,25 @@ function PartyMemberFrame_ToVehicleArt(self, vehicleType)
 end
 
 function PartyMemberFrame_OnLoad (self)
+	local id = self:GetID();
+	self.debuffCountdown = 0; 
+	self.numDebuffs = 0;
+	self.noTextPrefix = true;
+	local prefix = "PartyMemberFrame"..id;
+	_G[prefix.."HealthBar"].LeftText = _G[prefix.."HealthBarTextLeft"];
+	_G[prefix.."HealthBar"].RightText = _G[prefix.."HealthBarTextRight"];
+	_G[prefix.."ManaBar"].LeftText = _G[prefix.."ManaBarTextLeft"];
+	_G[prefix.."ManaBar"].RightText = _G[prefix.."ManaBarTextRight"];
+
+	UnitFrame_Initialize(self, "party"..id,  _G[prefix.."Name"], _G[prefix.."Portrait"],
+		   _G[prefix.."HealthBar"], _G[prefix.."HealthBarText"], 
+		   _G[prefix.."ManaBar"], _G[prefix.."ManaBarText"],
+		   _G[prefix.."Flash"], nil, nil, _G[prefix.."MyHealPredictionBar"], _G[prefix.."OtherHealPredictionBar"], 
+		   _G[prefix.."TotalAbsorbBar"], _G[prefix.."TotalAbsorbBarOverlay"], _G[prefix.."OverAbsorbGlow"],
+		   _G[prefix.."OverHealAbsorbGlow"], _G[prefix.."HealAbsorbBar"], _G[prefix.."HealAbsorbBarLeftShadow"],
+		   _G[prefix.."HealAbsorbBarRightShadow"]);
+	SetTextStatusBarTextZeroText(_G[prefix.."HealthBar"], DEAD);
+
 	self.statusCounter = 0;
 	self.statusSign = -1;
 	self.unitHPPercent = 1;
@@ -638,13 +657,13 @@ function PartyMemberFrame_UpdateOnlineStatus(self)
 		
 		healthBar:SetValue(unitHPMax);
 		healthBar:SetStatusBarColor(0.5, 0.5, 0.5);
-		SetDesaturation(_G[selfName.."Portrait"], 1);
+		SetDesaturation(_G[selfName.."Portrait"], true);
 		_G[selfName.."Disconnect"]:Show();
 		_G[selfName.."PetFrame"]:Hide();
 		return;
 	else
 		local selfName = self:GetName();
-		SetDesaturation(_G[selfName.."Portrait"], nil);
+		SetDesaturation(_G[selfName.."Portrait"], false);
 		_G[selfName.."Disconnect"]:Hide();
 	end
 end

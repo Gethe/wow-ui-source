@@ -44,12 +44,41 @@
 					</OnClick>
 					<OnEnter>
 						GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
-						GameTooltip:AddLine(string.format(SKILLUP_TOOLTIP, self.countText:GetText()), NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b, 1, 1);
+						GameTooltip:AddLine(string.format(SKILLUP_TOOLTIP, self.countText:GetText()), NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b, true);
 						GameTooltip:Show();
 						TradeSkillFrameButton_OnEnter(self:GetParent());
 					</OnEnter>
 					<OnLeave>
 						GameTooltip:Hide();
+						TradeSkillFrameButton_OnLeave(self:GetParent());
+					</OnLeave>
+				</Scripts>
+			</Button>
+			<Button name="$parentLockedIcon" parentKey="lockedicon">
+				<Size x="26" y="16"/>
+				<Anchors>
+					<Anchor point="RIGHT" x="-2" y="0"/>
+				</Anchors>
+				<Layers>
+					<Layer level="OVERLAY">
+						<Texture name="$parentIcon" file="Interface\LFGFrame\UI-LFG-ICON-LOCK" parentKey="icon">
+							<Size x="16" y="16"/>
+							<Anchors>
+								<Anchor point="RIGHT" x="0" y="-1"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnClick>
+						self:GetParent():Click(button);
+					</OnClick>
+					<OnEnter>
+						TradeSkillFrameLockIcon_OnEnter(self:GetParent());
+						TradeSkillFrameButton_OnEnter(self:GetParent());
+					</OnEnter>
+					<OnLeave>
+						TradeSkillFrameLockIcon_OnLeave(self:GetParent());
 						TradeSkillFrameButton_OnLeave(self:GetParent());
 					</OnLeave>
 				</Scripts>
@@ -247,7 +276,7 @@
 							<OnEnter>
 								if (self.tooltip) then
 									GameTooltip:SetOwner(self, "ANCHOR_LEFT");
-									GameTooltip:SetText(self.tooltip, nil, nil, nil, nil, 1);
+									GameTooltip:SetText(self.tooltip, nil, nil, nil, nil, true);
 								end
 							</OnEnter>
 							<OnLeave function="GameTooltip_Hide"/>
@@ -284,7 +313,7 @@
 							<OnEnter>
 								if (self.tooltip) then
 									GameTooltip:SetOwner(self, "ANCHOR_LEFT");
-									GameTooltip:SetText(self.tooltip, nil, nil, nil, nil, 1);
+									GameTooltip:SetText(self.tooltip, nil, nil, nil, nil, true);
 								end
 							</OnEnter>
 							<OnLeave function="GameTooltip_Hide"/>
@@ -758,7 +787,7 @@
 				</Anchors>
 				<Layers>
 					<Layer level="ARTWORK">
-						<FontString name="$parentSkillRank" inherits="GameFontHighlightSmall" justifyH="CENTER">
+						<FontString name="$parentSkillRank" inherits="WhiteNormalNumberFont" justifyH="CENTER">
 							<Size x="0" y="9"/>
 							<Anchors>
 								<Anchor point="CENTER" relativeTo="TradeSkillRankFrame" x="0" y="0"/>
@@ -853,7 +882,6 @@
 						end
 					</OnEditFocusGained>
 				</Scripts>
-				<FontString inherits="ChatFontSmall"/>
 			</EditBox>
 			<Frame name="TradeSkillFilterFrame" >
 				<Size x="1" y="1"/>
@@ -866,13 +894,20 @@
 						<Anchors>
 							<Anchor point="LEFT"/>
 						</Anchors>
+						<Layers>
+							<Layer level="ARTWORK">
+								<Texture parentKey="Icon" file="Interface\ChatFrame\ChatFrameExpandArrow">
+									<Size x="10" y="12"/>
+									<Anchors>
+										<Anchor point="RIGHT" relativeKey="$parent.Right" relativePoint="RIGHT" x="-5"/>
+									</Anchors>
+								</Texture>
+							</Layer>
+						</Layers>
 						<Scripts>
 							<OnClick> 
 								ToggleDropDownMenu(1, nil, TradeSkillFilterDropDown, "TradeSkillFilterButton", 74, 15);
 							</OnClick>	
-							<OnLoad>
-								TradeSkillFilterButtonRightArrow:Show();
-							</OnLoad>
 						</Scripts>						
 					</Button>
 					<Frame name="TradeSkillFilterDropDown" inherits="UIDropDownMenuTemplate">
@@ -919,7 +954,7 @@
 							</OnClick>
 							<OnEnter>
 								GameTooltip:SetOwner(self,"ANCHOR_TOPLEFT");
-								GameTooltip:SetText(LINK_TRADESKILL_TOOLTIP, nil, nil, nil, nil, 1);
+								GameTooltip:SetText(LINK_TRADESKILL_TOOLTIP, nil, nil, nil, nil, true);
 								GameTooltip:Show();
 							</OnEnter>
 							<OnLeave function="GameTooltip_Hide"/>
@@ -999,6 +1034,7 @@
 			</OnShow>
 			<OnHide>
 				CloseTradeSkill();
+				C_Garrison.CloseGarrisonTradeskillNPC();
 				PlaySound("igCharacterInfoClose");
 			</OnHide>
 			<OnUpdate function="TradeSkillFrame_OnUpdate"/>

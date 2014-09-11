@@ -433,7 +433,7 @@ StaticPopupDialogs["USE_GUILDBANK_REPAIR"] = {
 		PlaySound("ITEM_REPAIR");
 	end,
 	OnCancel = function ()
-		RepairAllItems(1);
+		RepairAllItems(true);
 		PlaySound("ITEM_REPAIR");
 	end,
 	timeout = 0,
@@ -486,6 +486,20 @@ StaticPopupDialogs["CONFIRM_BUY_GUILDBANK_TAB"] = {
 	end,
 	OnShow = function(self)
 		MoneyFrame_Update(self.moneyFrame, GetGuildBankTabCost());
+	end,
+	hasMoneyFrame = 1,
+	timeout = 0,
+	hideOnEscape = 1
+};
+StaticPopupDialogs["CONFIRM_BUY_REAGENTBANK_TAB"] = {
+	text = CONFIRM_BUY_REAGNETBANK_TAB,
+	button1 = YES,
+	button2 = NO,
+	OnAccept = function(self)
+		BuyReagentBank();
+	end,
+	OnShow = function(self)
+		MoneyFrame_Update(self.moneyFrame, GetReagentBankCost());
 	end,
 	hasMoneyFrame = 1,
 	timeout = 0,
@@ -637,7 +651,7 @@ StaticPopupDialogs["CONFIRM_BATTLEFIELD_ENTRY"] = {
 		end
 	end,
 	OnAccept = function(self, data)
-		if ( not AcceptBattlefieldPort(data, 1) ) then
+		if ( not AcceptBattlefieldPort(data, true) ) then
 			return 1;
 		end
 		if( StaticPopup_Visible( "DEATH" ) ) then
@@ -645,7 +659,7 @@ StaticPopupDialogs["CONFIRM_BATTLEFIELD_ENTRY"] = {
 		end
 	end,
 	OnCancel = function(self, data)
-		if ( not AcceptBattlefieldPort(data, 0) ) then	--Actually declines the battlefield port.
+		if ( not AcceptBattlefieldPort(data, false) ) then	--Actually declines the battlefield port.
 			return 1;
 		end
 	end,
@@ -725,10 +739,10 @@ StaticPopupDialogs["BFMGR_INVITED_TO_ENTER"] = {
 		end
 	end,
 	OnAccept = function(self, battleID)
-		BattlefieldMgrEntryInviteResponse(battleID,1);
+		BattlefieldMgrEntryInviteResponse(battleID, true);
 	end,
 	OnCancel = function(self, battleID)
-		BattlefieldMgrEntryInviteResponse(battleID,0);
+		BattlefieldMgrEntryInviteResponse(battleID, false);
 	end,
 	timeout = 0,
 	timeoutInformationalOnly = 1;
@@ -1306,7 +1320,7 @@ StaticPopupDialogs["DEATH"] = {
 				self.text:SetText("");
 				StaticPopupDialogs[self.which].OnShow(self);
 			end
-			StaticPopup_Resize(dialog, which);
+			StaticPopup_Resize(self, self.which);
 		end
 
 		if( HasSoulstone() and CanUseSoulstone() ) then
@@ -1938,8 +1952,8 @@ StaticPopupDialogs["ABANDON_QUEST"] = {
 	button2 = NO,
 	OnAccept = function(self)
 		AbandonQuest();
-		if ( QuestLogDetailFrame:IsShown() ) then
-			HideUIPanel(QuestLogDetailFrame);
+		if ( QuestLogPopupDetailFrame:IsShown() ) then
+			HideUIPanel(QuestLogPopupDetailFrame);
 		end
 		PlaySound("igQuestLogAbandonQuest");
 	end,
@@ -1954,8 +1968,8 @@ StaticPopupDialogs["ABANDON_QUEST_WITH_ITEMS"] = {
 	button2 = NO,
 	OnAccept = function(self)
 		AbandonQuest();
-		if ( QuestLogDetailFrame:IsShown() ) then
-			HideUIPanel(QuestLogDetailFrame);
+		if ( QuestLogPopupDetailFrame:IsShown() ) then
+			HideUIPanel(QuestLogPopupDetailFrame);
 		end
 		PlaySound("igQuestLogAbandonQuest");
 	end,
@@ -2608,7 +2622,19 @@ StaticPopupDialogs["INSTANCE_BOOT"] = {
 	interruptCinematic = 1,
 	notClosableByLogout = 1
 };
-
+StaticPopupDialogs["GARRISON_BOOT"] = {
+	text = GARRISON_BOOT_TIMER,
+	OnShow = function(self)
+		self.timeleft = GetInstanceBootTimeRemaining();
+		if ( self.timeleft <= 0 ) then
+			self:Hide();
+		end
+	end,
+	timeout = 0,
+	whileDead = 1,
+	interruptCinematic = 1,
+	notClosableByLogout = 1
+};
 StaticPopupDialogs["INSTANCE_LOCK"] = {
 	-- we use a custom timer called lockTimeleft in here to avoid special casing the static popup code
 	-- if you use timeout or timeleft then you will go through the StaticPopup system's standard OnUpdate
@@ -2763,8 +2789,37 @@ StaticPopupDialogs["CONFIRM_SUMMON"] = {
 	timeout = 0,
 	interruptCinematic = 1,
 	notClosableByLogout = 1,
-	hideOnEscape = 1
+	hideOnEscape = 1,
 };
+
+-- Summon dialog when being summoned when in a starting area
+StaticPopupDialogs["CONFIRM_SUMMON_STARTING_AREA"] = {
+	text = CONFIRM_SUMMON_STARTING_AREA,
+	button1 = ACCEPT,
+	button2 = CANCEL,
+	OnShow = function(self)
+		self.timeleft = GetSummonConfirmTimeLeft();
+	end,
+	OnAccept = function(self)
+		ConfirmSummon();
+	end,
+	OnCancel = function()
+		CancelSummon();
+	end,
+	OnUpdate = function(self, elapsed)
+		if ( UnitAffectingCombat("player") or (not PlayerCanTeleport()) ) then
+			self.button1:Disable();
+		else
+			self.button1:Enable();
+		end
+	end,
+	timeout = 0,
+	interruptCinematic = 1,
+	notClosableByLogout = 1,
+	hideOnEscape = 1,
+	showAlert = 1,
+};
+
 StaticPopupDialogs["BILLING_NAG"] = {
 	text = BILLING_NAG_DIALOG;
 	button1 = OKAY,
@@ -3268,6 +3323,35 @@ StaticPopupDialogs["PRODUCT_ASSIGN_TO_TARGET_FAILED"] = {
 	whileDead = 1,
 }
 
+StaticPopupDialogs["BATTLEFIELD_BORDER_WARNING"] = {
+	text = "",
+	OnShow = function(self)
+		self.timeleft = self.data.timer;
+	end,
+	OnUpdate = function(self)
+		self.text:SetFormattedText(BATTLEFIELD_BORDER_WARNING, self.data.name, SecondsToTime(self.timeleft, false, true));
+		StaticPopup_Resize(self, "BATTLEFIELD_BORDER_WARNING");
+	end,
+	nobuttons = 1,
+	timeout = 0,
+	whileDead = 1,
+	closeButton = 1,
+};
+
+StaticPopupDialogs["LFG_LIST_ENTRY_EXPIRED_TOO_MANY_PLAYERS"] = {
+	text = LFG_LIST_ENTRY_EXPIRED_TOO_MANY_PLAYERS,
+	button1 = OKAY,
+	timeout = 0,
+	whileDead = 1,
+};
+
+StaticPopupDialogs["LFG_LIST_ENTRY_EXPIRED_TIMEOUT"] = {
+	text = LFG_LIST_ENTRY_EXPIRED_TIMEOUT,
+	button1 = OKAY,
+	timeout = 0,
+	whileDead = 1,
+};
+
 function StaticPopup_FindVisible(which, data)
 	local info = StaticPopupDialogs[which];
 	if ( not info ) then
@@ -3312,7 +3396,10 @@ function StaticPopup_Resize(dialog, which)
 		dialog.maxWidthSoFar = width;
 	end
 
-	local height = 32 + text:GetHeight() + 8 + button1:GetHeight();
+	local height = 32 + text:GetHeight() + 2;
+	if (not info.nobuttons) then
+		height = height + 6 + button1:GetHeight();
+	end
 	if ( info.hasEditBox ) then
 		height = height + 8 + editBox:GetHeight();
 	elseif ( info.hasMoneyFrame ) then
@@ -3450,8 +3537,10 @@ function StaticPopup_Show(which, text_arg1, text_arg2, data)
 		 (which == "RESURRECT") or
 		 (which == "RESURRECT_NO_SICKNESS") or
 		 (which == "INSTANCE_BOOT") or
+		 (which == "GARRISON_BOOT") or
 		 (which == "INSTANCE_LOCK") or
 		 (which == "CONFIRM_SUMMON") or
+		 (which == "CONFIRM_SUMMON_STARTING_AREA") or
 		 (which == "BFMGR_INVITED_TO_ENTER") or
 		 (which == "AREA_SPIRIT_HEAL") ) then
 		text:SetText(" ");	-- The text will be filled in later.
@@ -3688,19 +3777,21 @@ function StaticPopup_OnUpdate(dialog, elapsed)
 			 (which == "QUIT") or
 			 (which == "DUEL_OUTOFBOUNDS") or
 			 (which == "INSTANCE_BOOT") or
+			 (which == "GARRISON_BOOT") or
 			 (which == "CONFIRM_SUMMON") or
+			 (which == "CONFIRM_SUMMON_STARTING_AREA") or
 			 (which == "BFMGR_INVITED_TO_ENTER") or
 			 (which == "AREA_SPIRIT_HEAL") or
 			 (which == "SPELL_CONFIRMATION_PROMPT")) then
 			local text = _G[dialog:GetName().."Text"];
 			timeleft = ceil(timeleft);
-			if ( which == "INSTANCE_BOOT" ) then
+			if ( (which == "INSTANCE_BOOT") or (which == "GARRISON_BOOT") ) then
 				if ( timeleft < 60 ) then
 					text:SetFormattedText(StaticPopupDialogs[which].text, timeleft, SECONDS);
 				else
 					text:SetFormattedText(StaticPopupDialogs[which].text, ceil(timeleft / 60), MINUTES);
 				end
-			elseif ( which == "CONFIRM_SUMMON" ) then
+			elseif ( which == "CONFIRM_SUMMON" or which == "CONFIRM_SUMMON_STARTING_AREA" ) then
 				if ( timeleft < 60 ) then
 					text:SetFormattedText(StaticPopupDialogs[which].text, GetSummonConfirmSummoner(), GetSummonConfirmAreaName(), timeleft, SECONDS);
 				else

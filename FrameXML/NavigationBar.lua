@@ -15,10 +15,10 @@ function NavBar_Initialize(self, template, homeData, homeButton, overflowButton)
 	
 	if not homeButton then
 		homeButton = CreateFrame("BUTTON", self:GetName().."HomeButton", self, self.template);
-		homeButton:SetText(homeData.name or HOME);
 		homeButton:SetWidth(homeButton.text:GetStringWidth()+30);
 	end
-	
+	homeButton:SetText(homeData.name or HOME);
+
 	if not overflowButton then
 		overflowButton = CreateFrame("BUTTON", self:GetName().."OverflowButton", self, self.template);
 		overflowButton:SetWidth(30);
@@ -35,8 +35,13 @@ function NavBar_Initialize(self, template, homeData, homeButton, overflowButton)
 		homeButton:SetScript("OnLeave",	NavBar_ButtonOnLeave);
 	end
 
-	homeButton:RegisterForClicks("LeftButtonUp", "RightButtonUp");
-	overflowButton:RegisterForClicks("LeftButtonUp", "RightButtonUp");
+	if ( self.oldStyle ) then
+		homeButton:RegisterForClicks("LeftButtonUp", "RightButtonUp");
+		overflowButton:RegisterForClicks("LeftButtonUp", "RightButtonUp");
+	else
+		homeButton:RegisterForClicks("LeftButtonUp");
+		overflowButton:RegisterForClicks("LeftButtonUp");
+	end
 	overflowButton.listFunc = NavBar_ListOverFlowButtons;
 	homeButton:ClearAllPoints();
 	overflowButton:ClearAllPoints();
@@ -81,7 +86,11 @@ function NavBar_AddButton(self, buttonData)
 		navButton = CreateFrame("BUTTON", self:GetName().."Button"..(#self.navList+1), self, self.template);
 		navButton.oldClick = navButton:GetScript("OnClick");
 		navButton:SetScript("OnClick", NavBar_ButtonOnClick);
-		navButton:RegisterForClicks("LeftButtonUp", "RightButtonUp");
+		if ( self.oldStyle ) then
+			navButton:RegisterForClicks("LeftButtonUp", "RightButtonUp");
+		else
+			navButton:RegisterForClicks("LeftButtonUp");
+		end
 		
 		if not navButton:GetScript("OnEnter") then
 			navButton:SetScript("OnEnter",	NavBar_ButtonOnEnter);
@@ -90,16 +99,28 @@ function NavBar_AddButton(self, buttonData)
 		if not navButton:GetScript("OnLeave") then
 			navButton:SetScript("OnLeave", NavBar_ButtonOnLeave);
 		end
+		
+		if ( self.textMaxWidth ) then
+			navButton.text:SetWidth(self.textMaxWidth);
+		end
 	end
 	
 
 	--Set up the button
 	local navParent = self.navList[#self.navList];
 	self.navList[#self.navList+1] = navButton;
-	
+	navButton.navParent = navParent;
+
 	navButton:SetText(buttonData.name);
-	navButton:SetWidth(navButton.text:GetStringWidth()+30);
-	
+	local buttonExtraWidth;
+	if ( buttonData.listFunc and not self.oldStyle ) then
+		navButton.MenuArrowButton:Show();
+		buttonExtraWidth = 53;
+	else
+		navButton.MenuArrowButton:Hide();
+		buttonExtraWidth = 30;
+	end
+	navButton:SetWidth(navButton.text:GetStringWidth() + buttonExtraWidth);
 	navButton.myclick = buttonData.OnClick;
 	navButton.listFunc = buttonData.listFunc;
 	navButton.id = buttonData.id;
@@ -160,7 +181,7 @@ end
 function NavBar_ButtonOnEnter(self)
 	if self.text:IsTruncated() then
 		GameTooltip:SetOwner(self, "ANCHOR_BOTTOMRIGHT");
-		GameTooltip:AddLine(self.text:GetText(), NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b, 1);
+		GameTooltip:AddLine(self.text:GetText(), NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b, true);
 		GameTooltip:Show();
 	end
 end
@@ -183,13 +204,14 @@ function NavBar_CheckLength(self)
 	local collapsed = false;
 	
 	for i=#self.navList,1,-1 do
+		local currentWidth = width;
 		width = width + self.navList[i]:GetWidth();
 		
 		if width > maxWidth then
 			self.navList[i]:Hide();
 			collapsed = true;
 			if not collapsedWidth then -- store the width for adding the offset button
-				collapsedWidth = width;
+				collapsedWidth = currentWidth;
 			end
 		else
 			self.navList[i]:Show();
@@ -225,12 +247,22 @@ function NavBar_CheckLength(self)
 			self.navList[lastShown]:Hide();
 			lastShown = lastShown + 1;
 		end
-	
-		local lastButton = self.navList[lastShown];
+		
 		self.overflowButton:Show();
-		xoffset = self.overflowButton.xoffset or 0
-		lastButton:SetPoint("LEFT", self.overflowButton, "RIGHT", xoffset, 0);
-		self.overflowButton:SetFrameLevel(lastButton:GetFrameLevel()+1);
+			
+		--There should only ever be no lastShown if a single button is longer than maxWidth by itself.
+		if ( lastShown ) then
+			local lastButton = self.navList[lastShown];	
+			
+			--There should only ever be no lastButton when there is lastShown if a single button is less than maxWidth
+			--but it's width plus the width of the overflow button is longer than maxWidth.  In this case the single button
+			--is hidden to make room for the overflowButton.
+			if ( lastButton ) then
+				xoffset = self.overflowButton.xoffset or 0
+				lastButton:SetPoint("LEFT", self.overflowButton, "RIGHT", xoffset, 0);
+				self.overflowButton:SetFrameLevel(lastButton:GetFrameLevel()+1);
+			end
+		end
 	else
 		self.overflowButton:Hide();
 	end
@@ -250,7 +282,9 @@ end
 
 
 function NavBar_ToggleMenu(self)
-	CloseDropDownMenus();
+	if ( self:GetParent().dropDown.buttonOwner ~= self ) then
+		CloseDropDownMenus();
+	end
 	self:GetParent().dropDown.buttonOwner = self;
 	ToggleDropDownMenu(nil, nil, self:GetParent().dropDown, self:GetName(), 20, 3);
 end

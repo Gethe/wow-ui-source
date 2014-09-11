@@ -3,117 +3,48 @@
 	<Script file="PatchDownload.lua"/>
 	<ModelFFX name="PatchDownload" toplevel="true" parent="GlueParent" setAllPoints="true" enableKeyboard="true" hidden="true" file="Interface\Glues\Models\UI_CharacterSelect\UI_CharacterSelect.mdx" fogNear="0" fogFar="1200">
 		<Frames>
-			<Frame name="PatchDownloadUI" setAllPoints="true">
+			<Frame parentKey="PatchDownloadUI" setAllPoints="true">
 				<Layers>
 					<Layer level="ARTWORK">
-
-					<FontString name="DownloadingUpdateTitle" inherits="GlueFontNormalHuge" text="DOWNLOADING_UPDATE">
-						<Anchors>
-							<Anchor point="BOTTOM">
-								<Offset>
-									<AbsDimension x="0" y="450"/>
-								</Offset>
-							</Anchor>
-						</Anchors>
-					</FontString>
-
-					<FontString name="PatchSuccessfulTitle" inherits="GlueFontNormalHuge" text="DOWNLOAD_SUCCESSFUL">
-						<Anchors>
-							<Anchor point="BOTTOM">
-								<Offset>
-									<AbsDimension x="0" y="450"/>
-								</Offset>
-							</Anchor>
-						</Anchors>
-					</FontString>
-
-					<FontString name="PatchSuccessfulText" inherits="GlueFontNormalLarge" text="DOWNLOAD_SUCCESSFUL_TEXT">
-						<Anchors>
-							<Anchor point="BOTTOM">
-								<Offset>
-									<AbsDimension x="0" y="400"/>
-								</Offset>
-							</Anchor>
-						</Anchors>
-					</FontString>
-
-					<FontString name="PatchProgressText" inherits="GlueFontNormalLarge">
-						<Anchors>
-							<Anchor point="BOTTOM">
-								<Offset>
-									<AbsDimension x="0" y="400"/>
-								</Offset>
-							</Anchor>
-						</Anchors>
-					</FontString>
-
+						<FontString parentKey="PatchRequiredText" inherits="GlueFontNormalLarge" text="PATCH_DOWNLOAD_REQUIRED_TEXT">
+							<Size x="400" y="0"/>
+							<Anchors>
+								<Anchor point="BOTTOM" x="0" y="400"/>
+							</Anchors>
+						</FontString>
+						<FontString parentKey="PatchRequiredTitle" inherits="GlueFontNormalHuge" text="PATCH_DOWNLOAD_REQUIRED">
+							<Anchors>
+								<Anchor point="BOTTOM" relativeKey="$parent.PatchRequiredText" relativePoint="TOP" x="0" y="15"/>
+							</Anchors>
+						</FontString>
 					</Layer>
 					<Layer level="OVERLAY">
-						<Texture name="PatchDownloadLogo" file="Interface\Glues\Common\Glues-WoW-MPLogo">
-							<Size>
-								<AbsDimension x="256" y="128"/>
-							</Size>
+						<Texture parentKey="Logo" file="Interface\Glues\Common\Glues-WoW-MPLogo">
+							<Size x="256" y="128"/>
 							<Anchors>
-								<Anchor point="TOPLEFT">
-									<Offset>
-										<AbsDimension x="13" y="-10"/>
-									</Offset>
-								</Anchor>
+								<Anchor point="TOPLEFT" x="13" y="-10"/>
 							</Anchors>
 						</Texture>
 					</Layer>
 				</Layers>
 				<Frames>
-
-					<Button name="PatchDownloadCancelButton" inherits="GlueButtonTemplate" hidden="true" text="CANCEL">
+					<Button parentKey="RestartButton" inherits="GlueButtonTemplate" text="QUIT">
 						<Anchors>
-							<Anchor point="BOTTOM">
-								<Offset>
-									<AbsDimension x="8" y="300"/>
-								</Offset>
-							</Anchor>
+							<Anchor point="BOTTOM" x="8" y="300"/>
 						</Anchors>
 						<Scripts>
 							<OnClick>
-								PatchDownload_Cancel();
-							</OnClick>
-						</Scripts>
-					</Button>
-					<Button name="PatchDownloadRestartButton" inherits="GlueButtonTemplate" hidden="true" text="RESTART">
-						<Anchors>
-							<Anchor point="BOTTOM">
-								<Offset>
-									<AbsDimension x="8" y="300"/>
-								</Offset>
-							</Anchor>
-						</Anchors>
-						<Scripts>
-							<OnClick>
-								PatchDownload_Restart();
+								QuitGame();
 							</OnClick>
 						</Scripts>
 					</Button>
 				</Frames>
-				<Scripts>
-					<OnShow>
-						<!-- GlueFrameFadeIn(self, LOGIN_FADE_IN); -->
-					</OnShow>
-				</Scripts>
 			</Frame>
 		</Frames>
 		<Scripts>
-			<OnLoad>
-				PatchDownload_OnLoad(self);
-			</OnLoad>
-			<OnShow>
-				PatchDownload_OnShow();
-			</OnShow>
-			<OnKeyDown>
-				PatchDownload_OnKeyDown(key);
-			</OnKeyDown>
-			<OnEvent>
-				PatchDownload_OnEvent(event);
-			</OnEvent>
+			<OnLoad function="PatchDownload_OnLoad"/>
+			<OnShow function="PatchDownload_OnShow"/>
+			<OnKeyDown function="PatchDownload_OnKeyDown"/>
 		</Scripts>
 		<FogColor r="0.25" g="0.06" b="0.015"/>
 	</ModelFFX>

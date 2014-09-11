@@ -1,0 +1,388 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\FrameXML\UI.xsd">
+	
+	<Script file="Blizzard_ScenarioObjectiveTracker.lua"/>
+
+	<ScrollFrame name="ScenarioBlocksFrame" parent="ObjectiveTrackerBlocksFrame" hidden="true">
+		<Size x="212" y="10"/>
+		<ScrollChild>
+			<Frame parentKey="ScrollContents">
+				<Size x="10" y="10"/>
+				<Frames>
+					<Frame name="ScenarioObjectiveBlock" hidden="true">
+						<Size x="192" y="10"/>
+					</Frame>
+					<Frame name="ScenarioStageBlock" hidden="true">
+						<Size x="201" y="83"/>
+						<Layers>
+							<Layer level="BACKGROUND">
+								<Texture parentKey="NormalBG" atlas="ScenarioTrackerToast" useAtlasSize="true">
+									<Anchors>
+										<Anchor point="TOPLEFT" x="0" y="0"/>
+									</Anchors>
+								</Texture>
+							</Layer>
+							<Layer level="BORDER">
+								<Texture parentKey="FinalBG" atlas="ScenarioTrackerToast-FinalFiligree" useAtlasSize="true">
+									<Anchors>
+										<Anchor point="TOPLEFT" x="4" y="-4"/>
+									</Anchors>
+								</Texture>
+								<Texture parentKey="GlowTexture" atlas="ScenarioTrackerToast" useAtlasSize="true" alpha="0" alphaMode="ADD">
+									<Anchors>
+										<Anchor point="TOPLEFT" x="0" y="0"/>
+									</Anchors>
+									<Animations>
+										<AnimationGroup parentKey="AlphaAnim">
+											<Alpha change="1" duration="0.266" order="1"/>
+											<Alpha endDelay="0.2" change="-1" duration="0.333" order="2"/>
+										</AnimationGroup>
+									</Animations>
+								</Texture>
+							</Layer>
+							<Layer level="ARTWORK">
+								<FontString parentKey="Stage" inherits="QuestTitleFont" wordwrap="true" justifyH="LEFT">
+									<Size x="172" y="18"/>
+									<Anchors>
+										<Anchor point="TOPLEFT" x="15" y="-10"/>
+									</Anchors>
+									<Color r="1" g="0.914" b="0.682"/>
+									<Shadow>
+										<Offset>
+											<AbsDimension x="1" y="-1"/>
+										</Offset>
+										<Color r="0" g="0" b="0"/>
+									</Shadow>
+								</FontString>
+								<FontString parentKey="CompleteLabel" inherits="QuestTitleFont" text="STAGE_COMPLETE" hidden="true">
+									<Anchors>
+										<Anchor point="LEFT" x="15" y="3"/>
+									</Anchors>
+									<Color r="1" g="0.914" b="0.682"/>
+									<Shadow>
+										<Offset>
+											<AbsDimension x="1" y="-1"/>
+										</Offset>
+										<Color r="0" g="0" b="0"/>
+									</Shadow>
+								</FontString>
+								<FontString parentKey="Name" inherits="GameFontNormal" justifyH="LEFT" justifyV="TOP" spacing="2">
+									<Size x="172" y="28"/>
+									<Anchors>
+										<Anchor point="TOPLEFT" relativeKey="$parent.Stage" relativePoint="BOTTOMLEFT" x="0" y="-4"/>
+									</Anchors>
+									<Color r="1" g="0.831" b="0.380"/>
+								</FontString>
+							</Layer>
+						</Layers>
+						<Scripts>
+							<OnEnter function="ScenarioObjectiveStageBlock_OnEnter"/>
+							<OnLeave>
+								GameTooltip:Hide();
+							</OnLeave>
+						</Scripts>
+					</Frame>
+					<Frame name="ScenarioChallengeModeBlock" hidden="true">
+						<Size x="198" y="55"/>
+						<Layers>
+							<Layer level="BORDER">
+								<Texture atlas="challenges-timerbg" useAtlasSize="true">
+									<Anchors>
+										<Anchor point="TOPLEFT"/>
+									</Anchors>
+								</Texture>			
+							</Layer>
+							<Layer level="ARTWORK">
+								<Texture parentKey="MedalIcon" alphaMode="ADD">
+									<Size x="48" y="48"/>
+									<Anchors>
+										<Anchor point="LEFT" x="5" y="-2"/>
+									</Anchors>
+								</Texture>
+								<Texture parentKey="NoMedal" atlas="challenges-nomedal" useAtlasSize="true" hidden="true">
+									<Anchors>
+										<Anchor point="LEFT" x="24" y="-2"/>
+									</Anchors>
+								</Texture>
+							</Layer>		
+						</Layers>
+						<Frames>
+							<StatusBar parentKey="StatusBar">
+								<Size x="177" y="17"/>
+								<Anchors>
+									<Anchor point="CENTER" x="42" y="-3"/>
+								</Anchors>				
+								<Layers>
+									<Layer level="OVERLAY">
+										<Texture atlas="challenges-timerborder">
+											<Size x="184" y="32"/>
+											<Anchors>
+												<Anchor point="CENTER" x="0" y="0"/>
+											</Anchors>
+										</Texture>
+										<FontString parentKey="TimeLeft" inherits="GameFontHighlight" justifyH="LEFT">
+											<Anchors>
+												<Anchor point="LEFT" x="60" y="0"/>
+											</Anchors>
+										</FontString>
+									</Layer>
+								</Layers>
+								<Scripts>
+									<OnLoad>
+										self:SetStatusBarColor(0, 0.33, 0.61);
+									</OnLoad>
+								</Scripts>
+								<BarTexture file="Interface\TargetingFrame\UI-StatusBar"/>
+							</StatusBar>
+							<Frame parentKey="GlowFrame">
+								<Layers>
+									<Layer level="OVERLAY">
+										<Texture parentKey="MedalGlow" file="Interface\Challenges\challenges-metalglow">
+											<Size x="150" y="150"/>
+											<Anchors>
+												<Anchor point="CENTER" relativeKey="$parent.$parent.MedalIcon" />
+											</Anchors>
+										</Texture>
+										<Texture parentKey="MedalIcon" alphaMode="ADD">
+											<Size x="48" y="48"/>
+											<Anchors>
+												<Anchor point="CENTER" relativeKey="$parent.$parent.MedalIcon"/>
+											</Anchors>
+										</Texture>
+									</Layer>
+								</Layers>
+								<Scripts>
+									<OnLoad>
+										self.MedalGlow:SetAlpha(0);
+										self.MedalIcon:SetAlpha(0);
+									</OnLoad>	
+								</Scripts>
+								<Animations>
+									<AnimationGroup parentKey="MedalGlowAnim">
+										<Alpha childKey="MedalGlow" change="1" duration="0.4" order="1"/>
+										<Alpha childKey="MedalGlow" change="-1" duration="2" order="2"/>
+									</AnimationGroup>
+									<AnimationGroup parentKey="MedalPulseAnim">
+										<Alpha childKey="MedalIcon" change="1" duration="0.25" order="1"/>
+										<Alpha childKey="MedalIcon" change="-1" endDelay=".5" duration="0.25" order="2"/>
+										<Scripts>
+											<OnFinished function="Scenario_ChallengeMode_MedalPulseAnim_OnFinished"/>
+										</Scripts>
+									</AnimationGroup>
+								</Animations>
+							</Frame>
+						</Frames>
+					</Frame>
+					<Frame name="ScenarioProvingGroundsBlock" hidden="true">
+						<Size x="201" y="77"/>
+						<Layers>
+							<Layer level="BACKGROUND">
+								<Texture parentKey="BG" atlas="ScenarioTrackerToast" useAtlasSize="true">
+									<Anchors>
+										<Anchor point="TOPLEFT" x="0" y="0"/>
+									</Anchors>
+								</Texture>
+							</Layer>
+							<Layer level="BORDER">
+								<Texture parentKey="GoldCurlies" atlas="ScenarioTrackerToast-FinalFiligree" useAtlasSize="true">
+									<Anchors>
+										<Anchor point="TOPLEFT" x="4" y="-4"/>
+									</Anchors>
+								</Texture>
+							</Layer>
+							<Layer level="ARTWORK">
+								<Texture parentKey="MedalIcon" alphaMode="ADD" file="Interface\Challenges\challenges-plat">
+									<Size x="52" y="52"/>
+									<Anchors>
+										<Anchor point="LEFT" x="5" y="-1"/>
+									</Anchors>
+								</Texture>
+								<FontString inherits="QuestFont_Large" parentKey="WaveLabel" text="PROVING_GROUNDS_WAVE">
+									<Anchors>
+										<Anchor point="TOPLEFT" relativeKey="$parent.MedalIcon" relativePoint="TOPRIGHT" x="1" y="-4"/>
+									</Anchors>
+									<Color r="1.0" g="0.82" b="0"/>
+									<Shadow>
+										<Offset x="1" y="-1"/>
+										<Color r="0" g="0" b="0"/>
+									</Shadow>
+								</FontString>
+								<FontString inherits="GameFontHighlightLarge" parentKey="Wave" text="0">
+									<Anchors>
+										<Anchor point="BOTTOMLEFT" relativeKey="$parent.WaveLabel" relativePoint="BOTTOMRIGHT" x="4" y="-1"/>
+									</Anchors>
+								</FontString>
+								<FontString inherits="QuestFont_Large" parentKey="ScoreLabel" text="PROVING_GROUNDS_SCORE" hidden="true">
+									<Anchors>
+										<Anchor point="TOPLEFT" relativeKey="$parent.WaveLabel" relativePoint="BOTTOMLEFT" x="0" y="-3"/>
+									</Anchors>
+									<Color r="1.0" g="0.82" b="0"/>
+									<Shadow>
+										<Offset x="1" y="-1"/>
+										<Color r="0" g="0" b="0"/>
+									</Shadow>
+								</FontString>
+								<FontString inherits="GameFontHighlightLarge" parentKey="Score" text="0" hidden="true">
+									<Anchors>
+										<Anchor point="BOTTOMLEFT" relativeKey="$parent.ScoreLabel" relativePoint="BOTTOMRIGHT" x="4" y="-1"/>
+									</Anchors>
+								</FontString>
+							</Layer>
+						</Layers>
+						<Frames>
+							<StatusBar parentKey="StatusBar" useParentLevel="true">
+								<Size x="177" y="15"/>			
+								<Layers>
+									<Layer level="OVERLAY">
+										<Texture atlas="challenges-timerborder">
+											<Size x="184" y="25"/>
+											<Anchors>
+												<Anchor point="CENTER" x="0" y="0"/>
+											</Anchors>
+										</Texture>
+										<FontString inherits="GameFontHighlight" justifyH="CENTER" parentKey="TimeLeft" />
+									</Layer>
+								</Layers>
+								<BarTexture file="Interface\TargetingFrame\UI-StatusBar"/>
+								<BarColor r="0" g="0.33" b="0.61"/>
+							</StatusBar>
+						</Frames>
+					</Frame>					
+				</Frames>
+			</Frame>
+		</ScrollChild>
+		<Scripts>
+			<OnLoad function="ScenarioBlocksFrame_OnLoad"/>
+			<OnEvent function="ScenarioBlocksFrame_OnEvent"/>
+		</Scripts>
+	</ScrollFrame>
+	
+	<Frame name="ScenarioProvingGroundsBlockAnim" parent="UIParent">
+		<Anchors>
+			<Anchor point="TOPLEFT" relativeTo="ScenarioProvingGroundsBlock"/>
+			<Anchor point="BOTTOMRIGHT" relativeTo="ScenarioProvingGroundsBlock"/>
+		</Anchors>
+		<Animations>
+			<AnimationGroup parentKey="CountdownAnim">
+				<Alpha childKey="BGAnim" change="1" duration="0.25" order="1"/>
+				<Alpha childKey="BGAnim" endDelay="0.45" change="-1" duration="0.3" order="2"/>
+				<Alpha childKey="BorderAnim" change="1" duration="0.25" order="1"/>
+				<Alpha childKey="BorderAnim" endDelay="0.45" change="-1" duration="0.3" order="2"/>
+				<Alpha childKey="Glow" change=".5" duration="0.25" order="1"/>
+				<Alpha childKey="Glow" endDelay="0.45" change="-.5" duration="0.3" order="2"/>
+				<Scripts>
+					<OnFinished function="Scenario_ProvingGrounds_CountdownAnim_OnFinished"/>
+				</Scripts>
+			</AnimationGroup>
+		</Animations>
+		<Layers>
+			<Layer level="OVERLAY">
+				<Texture parentKey="BGAnim" atlas="ScenarioTrackerToast" useAtlasSize="true" alpha="0" alphaMode="ADD">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="0" y="0"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="BorderAnim" atlas="ScenarioTrackerToast-FinalFiligree" useAtlasSize="true" alpha="0" alphaMode="ADD">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="4" y="-4"/>
+					</Anchors>
+				</Texture>
+				<Texture file="Interface\AchievementFrame\UI-Achievement-Alert-Glow" parentKey="Glow" alpha="0" alphaMode="ADD">				
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.BGAnim" x="-35" y="45"/>
+						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.BGAnim" x="35" y="-45"/>
+					</Anchors>
+					<TexCoords left="0" right="0.78125" top="0" bottom="0.66796875"/>
+				</Texture>
+			</Layer>
+		</Layers>
+	</Frame>
+	
+	<Frame name="ObjectiveTrackerScenarioRewardsFrame" parent="UIParent" hidden="true">
+        <Size x="168" y="128"/>
+		<Anchors>
+			<Anchor point="RIGHT" relativeTo="ScenarioBlocksFrame" relativePoint="LEFT" x="8" y="-24"/>
+		</Anchors>
+        <Layers>
+            <Layer level="ARTWORK">
+                <Texture parentKey="RewardsTop" hidden="false" alpha="0" atlas="Rewards-Top" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="TOPRIGHT"/>
+					</Anchors>
+				</Texture>
+                <Texture parentKey="HeaderTop" hidden="false" alpha="0" atlas="OBJFX_LineGlow" useAtlasSize="true">
+                    <Anchors>
+                        <Anchor point="CENTER" relativeKey="$parent.RewardsTop" x="50" y="6"/>
+                    </Anchors>
+                </Texture>
+                <Texture parentKey="RewardsBottom" hidden="false" alpha="0" atlas="Rewards-Top" useAtlasSize="true">
+                    <Anchors>
+                        <Anchor point="CENTER" relativeKey="$parent.RewardsTop" x="0" y="0"/>
+                    </Anchors>
+                </Texture>
+            </Layer>
+            <Layer level="BORDER">
+                <Texture parentKey="RewardsShadow" hidden="false" alpha="0" atlas="Rewards-Shadow" useAtlasSize="true">
+                    <Anchors>
+                        <Anchor point="TOP" relativeKey="$parent.RewardsBottom" relativePoint="BOTTOM" x="0" y="10"/>
+                    </Anchors>
+                </Texture>
+            </Layer>			
+            <Layer level="OVERLAY">
+				<FontString parentKey="Header" alpha="0" inherits="QuestFont_Outline_Huge" text="REWARDS">
+					<Anchors>
+						<Anchor point="TOP" x="0" y="2"/>
+					</Anchors>
+				</FontString>			
+                <Texture parentKey="HeaderGlow" hidden="false" alpha="0" alphaMode="ADD" atlas="OBJFX_LineGlow" useAtlasSize="true">
+                    <Anchors>
+                        <Anchor point="CENTER" relativeKey="$parent.HeaderTop" x="-25" y="0"/>
+                    </Anchors>
+                </Texture>
+            </Layer>
+        </Layers>
+		<Frames>
+			<Frame inherits="BonusObjectiveTrackerRewardTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.RewardsTop" relativePoint="BOTTOMLEFT" x="25" y="0"/>
+                </Anchors>
+			</Frame>
+		</Frames>
+        <Animations>
+            <AnimationGroup parentKey="Anim" setToFinalAlpha="true">
+                <Scale childKey="RewardsTop" duration="0.25" order="1" fromScaleX="0.25" fromScaleY="1" toScaleX="1" toScaleY="1">
+					<Origin point="RIGHT"/>
+				</Scale>
+                <Alpha childKey="RewardsTop" duration="0.25" order="1" fromAlpha="0" toAlpha="1"/>
+                <Alpha childKey="RewardsTop" startDelay="2" duration="1" order="2" fromAlpha="1" toAlpha="0"/>
+                <Alpha childKey="Header" duration="0.25" order="1" fromAlpha="0" toAlpha="1"/>
+                <Alpha childKey="Header" startDelay="2" duration="1" order="2" fromAlpha="1" toAlpha="0"/>				
+                <Scale childKey="HeaderTop" duration="0.25" order="1" fromScaleX="0.25" fromScaleY="1.2" toScaleX="1.2" toScaleY="1.2"/>
+                <Alpha childKey="HeaderTop" duration="0.25" order="1" fromAlpha="0" toAlpha="1"/>
+                <Translation childKey="HeaderTop" duration="0.25" order="1" offsetX="-30" offsetY="0"/>
+                <Alpha childKey="HeaderTop" startDelay="2" duration="1" order="2" fromAlpha="1" toAlpha="0"/>
+                <Scale childKey="HeaderGlow" startDelay="0.05" duration="0.5" order="1" fromScaleX="1" fromScaleY="1.2" toScaleX="1.2" toScaleY="1.2"/>
+                <Alpha childKey="HeaderGlow" startDelay="0.05" duration="0.25" order="1" fromAlpha="0" toAlpha="1"/>
+                <Alpha childKey="HeaderGlow" startDelay="0.3" duration="0.5" order="1" fromAlpha="1" toAlpha="0"/>
+                <Translation childKey="HeaderGlow" startDelay="0.05" duration="0.5" order="1" offsetX="-70" offsetY="0"/>
+                <Alpha childKey="RewardsBottom" startDelay="0.5" duration="0.25" order="1" fromAlpha="0" toAlpha="1"/>
+                <Translation parentKey="RewardsBottomAnim" childKey="RewardsBottom" startDelay="0.5" duration="0.35" order="1" offsetX="0" offsetY="-83"/>
+                <Alpha childKey="RewardsBottom" startDelay="2" duration="1" order="2" fromAlpha="1" toAlpha="0"/>
+                <Scale parentKey="RewardsShadowAnim" childKey="RewardsShadow" startDelay="0.5" duration="0.35" order="1" fromScaleX="0.8" fromScaleY="0.2" toScaleX="0.8" toScaleY="3">
+					<Origin point="TOP"/>
+				</Scale>
+                <Alpha childKey="RewardsShadow" startDelay="0.5" duration="0.35" order="1" fromAlpha="0" toAlpha="1"/>
+                <Alpha childKey="RewardsShadow" startDelay="2" duration="1" order="2" fromAlpha="1" toAlpha="0"/>
+				<Scripts>
+					<OnFinished function="ScenarioObjectiveTracker_OnAnimateRewardDone"/>
+				</Scripts>				
+            </AnimationGroup>
+        </Animations>
+    </Frame>
+	
+	<Frame name="ScenarioTimerFrame" hidden="true">
+		<Scripts>
+			<OnUpdate function="ScenarioTimer_OnUpdate"/>
+		</Scripts>
+	</Frame>
+</Ui>

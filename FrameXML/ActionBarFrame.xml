@@ -12,6 +12,11 @@
 			<OnEvent>
 				ActionButton_OnEvent(self, event, ...);
 			</OnEvent>
+			<OnClick>
+				if (not self.draenorZoneDisabled) then
+  					SecureActionButton_OnClick(self, button);
+  	 			end
+  	 		</OnClick>
 			<PostClick>
 				ActionButton_UpdateState(self, button, down);
 			</PostClick>
@@ -29,6 +34,10 @@
 				ActionButton_UpdateFlash(self);
 			</OnReceiveDrag>
 			<OnEnter>
+				if (self.NewActionTexture) then
+					MarkNewActionHighlight(self.action, false);
+					ActionButton_UpdateAction(self, true);
+				end
 				ActionButton_SetTooltip(self);
 				ActionBarButtonEventsFrame.tooltipOwner = self;
 				ActionBarActionEventsFrame.tooltipOwner = self;
