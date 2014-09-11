@@ -683,7 +683,7 @@
 					<OnEnter>
 						if ( self:IsEnabled() ) then
 							if ( self.tooltipText ) then
-								GameTooltip:SetOwner(self);
+								GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
 								GameTooltip:SetText(self.tooltipText, nil, nil, nil, nil, true);
 							end
 						end

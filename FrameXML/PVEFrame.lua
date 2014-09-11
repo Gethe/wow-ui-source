@@ -15,7 +15,7 @@ function PVEFrame_OnLoad(self)
 end
 
 function PVEFrame_ToggleFrame(sidePanelName, selection)
-	if ( UnitLevel("player") < SHOW_LFD_LEVEL ) then
+	if ( UnitLevel("player") < math.min(SHOW_LFD_LEVEL,SHOW_PVP_LEVEL) ) then
 		return;
 	end
 	local self = PVEFrame;
@@ -160,6 +160,14 @@ function GroupFinderFrame_EvaluateButtonVisibility(self, level)
 		
 		self.groupButton2:Show()
 	end
+
+	if ( level < SHOW_LFD_LEVEL ) then
+		GroupFinderFrameButton_SetEnabled(self.groupButton1, false);
+		self.groupButton1.tooltip = self.groupButton3.tooltip or format(FEATURE_BECOMES_AVAILABLE_AT_LEVEL, SHOW_LFD_LEVEL);
+	else
+		self.groupButton1.tooltip = nil;
+		GroupFinderFrameButton_SetEnabled(self.groupButton1, true);
+	end
 	
 	if ( level < RAID_FINDER_SHOW_LEVEL ) then
 		GroupFinderFrameButton_SetEnabled(self.groupButton3, false);
@@ -173,8 +181,12 @@ function GroupFinderFrame_EvaluateButtonVisibility(self, level)
 end
 
 function GroupFinderFrame_UpdateButtonAnchors(self)
-	local button3RelativeTo = self.groupButton2:IsShown() and self.groupButton2 or self.groupButton1
-	self.groupButton3:SetPoint("TOP", button3RelativeTo, "BOTTOM", 0, -23);
+	local moveDown = not self.groupButton2:IsShown();
+	local spacing =  moveDown and -30 or -23
+	local button3RelativeTo = moveDown and self.groupButton1 or self.groupButton2
+	self.groupButton3:SetPoint("TOP", button3RelativeTo, "BOTTOM", 0, spacing);
+	self.groupButton4:SetPoint("TOP", self.groupButton3, "BOTTOM", 0, spacing);
+	self.groupButton1:SetPoint("TOPLEFT", self, "TOPLEFT", 10, moveDown and -101 or -70);
 end
 
 function GroupFinderFrameButton_SetEnabled(button, enabled)
@@ -217,7 +229,7 @@ function GroupFinderFrame_OnShow(self)
 end
 
 function GroupFinderFrame_ShowGroupFrame(frame)
-	frame = frame or GroupFinderFrame.selection or LFDParentFrame;
+	frame = frame or GroupFinderFrame.selection or (UnitLevel("player") >= SHOW_LFD_LEVEL and LFDParentFrame or LFGListPVEStub);
 	-- hide the other frames and select the right button
 	for index, frameName in pairs(groupFrames) do
 		local groupFrame = _G[frameName];

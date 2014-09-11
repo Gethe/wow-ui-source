@@ -38,6 +38,18 @@ function QuestChoiceFrame_OnHyperlinkEnter(self, link, text, hyperlinkButton)
 	end
 end
 
+function QuestChoiceFrameOptionButton_OnEnter(self)
+	if ( self.Text:IsTruncated() ) then
+		GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+		GameTooltip:SetText(self.Text:GetText(), 1, 1, 1, 1, true);
+		GameTooltip:Show();
+	end
+end
+
+function QuestChoiceFrameOptionButton_OnLeave(self)
+	GameTooltip:Hide();
+end
+
 function QuestChoiceFrame_Update(self)
 	
 	local choiceID, questionText, numOptions = GetQuestChoiceInfo();

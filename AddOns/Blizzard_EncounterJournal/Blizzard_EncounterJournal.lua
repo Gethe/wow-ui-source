@@ -122,10 +122,6 @@ function EncounterJournal_OnLoad(self)
 
 	EJ_SetDifficulty(EJ_DIFFICULTIES[1].difficultyID);	-- default to 5-man normal
 	
-	EncounterJournal.searchBox.oldEditLost = EncounterJournal.searchBox:GetScript("OnEditFocusLost");
-	EncounterJournal.searchBox:SetScript("OnEditFocusLost", function(self) self:oldEditLost(); EncounterJournal_HideSearchPreview(); end);
-	EncounterJournal.searchBox.clearFunc = EncounterJournal_ClearSearch;
-	
 	
 	local homeData = {
 		name = HOME,
@@ -646,6 +642,11 @@ function EncounterJournal_DisplayCreature(self)
 		EncounterJournal.encounter.info.model.modelDisplayId:Show();
 		EncounterJournal.encounter.info.model.modelNameLabel:Show();
 		EncounterJournal.encounter.info.model.modelDisplayIdLabel:Show();
+		if (EncounterJournal.encounter.info.model.modelName:IsTruncated()) then
+			local pos = string.find(name, "\\[^\\]*$");
+			name = name:sub(1, pos - 1) .. "\\\n" .. name:sub(pos + 1);
+			EncounterJournal.encounter.info.model.modelName:SetText(name);
+		end
 	else
 		EncounterJournal.encounter.info.model.modelName:Hide();
 		EncounterJournal.encounter.info.model.modelDisplayId:Hide();
@@ -1684,10 +1685,12 @@ end
 
 
 function EncounterJournal_OnSearchTextChanged(self)
+	SearchBoxTemplate_OnTextChanged(self);
+
 	local text = self:GetText();
 	EncounterJournal_HideSearchPreview();
 		
-	if strlen(text) < EJ_MIN_CHARACTER_SEARCH or text == SEARCH then
+	if strlen(text) < EJ_MIN_CHARACTER_SEARCH then
 		EJ_ClearSearch();
 		EncounterJournal.searchResults:Hide();
 		return;
@@ -1729,6 +1732,10 @@ function EncounterJournal_OnSearchTextChanged(self)
 	end
 end
 
+function EncounterJournal_OnSearchFocusLost(self)
+	SearchBoxTemplate_OnEditFocusLost(self);
+	EncounterJournal_HideSearchPreview();
+end
 
 function EncounterJournal_OpenJournalLink(tag, jtype, id, difficultyID)
 	jtype = tonumber(jtype);

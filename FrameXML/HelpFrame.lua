@@ -228,7 +228,7 @@ function HelpFrame_OnEvent(self, event, ...)
 			-- the player does not have a ticket
 			haveTicket = false;
 			haveResponse = false;
-			if ( not TicketStatusFrame.hasGMSurvey ) then
+			if ( not TicketStatusFrame.hasGMSurvey and not TicketStatusFrame.hasWebTicket ) then
 				TicketStatusFrame:Hide();
 			end
 		end

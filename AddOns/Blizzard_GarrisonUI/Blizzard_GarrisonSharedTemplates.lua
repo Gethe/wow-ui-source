@@ -1,3 +1,6 @@
+GARRISON_FOLLOWER_BUSY_COLOR = { 0, 0.06, 0.22, 0.44 };
+GARRISON_FOLLOWER_INACTIVE_COLOR = { 0.22, 0.06, 0, 0.44 };
+
 ---------------------------------------------------------------------------------
 --- Follower List                                                             ---
 ---------------------------------------------------------------------------------
@@ -66,6 +69,7 @@ function GarrisonFollowerList_OnEvent(self, event, ...)
 end
 
 function GarrisonFollowListEditBox_OnTextChanged(self)
+	SearchBoxTemplate_OnTextChanged(self);
 	GarrisonFollowerList_UpdateFollowers(self:GetParent());
 end
 
@@ -78,16 +82,13 @@ function GarrisonFollowerList_UpdateFollowers(self)
 	followerList.followersList = { };
 
 	local searchString = followerList.SearchBox:GetText();
-	if ( searchString == SEARCH ) then
-		searchString = nil;
-	end
 	
 	local numCollected = 0;
 	for i = 1, #followerList.followers do
 		if ( followerList.followers[i].isCollected ) then
 			numCollected = numCollected + 1;
 		end
-		if ( (self.followers[i].isCollected or self.showUncollected) and (not searchString or searchString == "" or C_Garrison.SearchForFollower(self.followers[i].followerID, searchString)) ) then
+		if ( (self.followers[i].isCollected or self.showUncollected) and (searchString == "" or C_Garrison.SearchForFollower(self.followers[i].followerID, searchString)) ) then
 			tinsert(self.followersList, i);
 		end
 	end
@@ -160,6 +161,11 @@ function GarrisonFollowerList_Update(self)
 			button.Name:SetText(follower.name);
 			button.Class:SetAtlas(follower.classAtlas);
 			button.Status:SetText(follower.status);
+			if ( follower.status == GARRISON_FOLLOWER_INACTIVE ) then
+				button.Status:SetTextColor(1, 0.1, 0.1);
+			else
+				button.Status:SetTextColor(0.698, 0.941, 1);
+			end
 			local color = ITEM_QUALITY_COLORS[follower.quality];
 			button.PortraitFrame.LevelBorder:SetVertexColor(color.r, color.g, color.b);
 			button.PortraitFrame.Level:SetText(follower.level);
@@ -173,11 +179,17 @@ function GarrisonFollowerList_Update(self)
 				button.PortraitFrame.PortraitRingQuality:Show();
 				button.PortraitFrame.PortraitRingQuality:SetVertexColor(color.r, color.g, color.b);
 				button.PortraitFrame.Portrait:SetDesaturated(false);
-				-- if looking at a mission, indicate followers that cannot currently be dragged to it
-				if ( followerFrame.followerCounters and follower.status ) then
+				if ( follower.status == GARRISON_FOLLOWER_INACTIVE ) then
 					button.PortraitFrame.PortraitRingCover:Show();
 					button.PortraitFrame.PortraitRingCover:SetAlpha(0.5);
 					button.BusyFrame:Show();
+					button.BusyFrame.Texture:SetTexture(unpack(GARRISON_FOLLOWER_INACTIVE_COLOR));
+				elseif ( followerFrame.followerCounters and follower.status ) then
+					-- followers with any status on the mission page are invalid
+					button.PortraitFrame.PortraitRingCover:Show();
+					button.PortraitFrame.PortraitRingCover:SetAlpha(0.5);
+					button.BusyFrame:Show();
+					button.BusyFrame.Texture:SetTexture(unpack(GARRISON_FOLLOWER_BUSY_COLOR));
 				else
 					button.PortraitFrame.PortraitRingCover:Hide();
 					button.BusyFrame:Hide();
@@ -439,6 +451,14 @@ function GarrisonFollowerList_DirtyList(self)
 	self.dirtyList = true;
 end
 
+local statusPriority = {
+	[GARRISON_FOLLOWER_IN_PARTY] = 1,
+	[GARRISON_FOLLOWER_WORKING] = 2,
+	[GARRISON_FOLLOWER_ON_MISSION] = 3,
+	[GARRISON_FOLLOWER_EXHAUSTED] = 4,
+	[GARRISON_FOLLOWER_INACTIVE] = 5,
+}
+
 function GarrisonFollowerList_SortFollowers(self)
 	local followers = self.followers;
 	local followerCounters = GarrisonMissionFrame.followerCounters;
@@ -451,10 +471,24 @@ function GarrisonFollowerList_SortFollowers(self)
 		if ( follower1.isCollected ~= follower2.isCollected ) then
 			return follower1.isCollected;
 		end
-		if ( follower1.status and not follower2.status ) then
+		
+		-- treat IN_PARTY status as no status
+		local status1 = follower1.status;
+		if ( status1 == GARRISON_FOLLOWER_IN_PARTY ) then
+			status1 = nil;
+		end
+		local status2 = follower2.status;
+		if ( status2 == GARRISON_FOLLOWER_IN_PARTY ) then
+			status2 = nil;
+		end		
+		if ( status1 and not status2 ) then
 			return false;
-		elseif ( not follower1.status and follower2.status ) then
+		elseif ( not status1 and status2 ) then
 			return true;
+		end
+
+		if ( status1 ~= status2 ) then
+			return statusPriority[status1] < statusPriority[status2];
 		end
 
 		-- sorting: level > item level > (num counters for mission) > (num traits for mission) > quality > name
@@ -464,7 +498,7 @@ function GarrisonFollowerList_SortFollowers(self)
 		if ( follower1.level == GARRISON_FOLLOWER_MAX_LEVEL and follower1.iLevel ~= follower2.iLevel ) then		-- only checking follower 1 because follower 2 has same level at this point
 			return follower1.iLevel > follower2.iLevel;
 		end
-		if ( checkAbilities and not follower1.status and follower1.isCollected ) then		-- only checking follower 1 because follower 2 has same status and collected-ness at this point
+		if ( checkAbilities and not status1 and follower1.isCollected ) then		-- only checking follower 1 because follower 2 has same status and collected-ness at this point
 			local numCounters1 = followerCounters[follower1.followerID] and #followerCounters[follower1.followerID] or 0;
 			local numCounters2 = followerCounters[follower2.followerID] and #followerCounters[follower2.followerID] or 0;
 			if ( numCounters1 ~= numCounters2 ) then
@@ -491,8 +525,10 @@ end
 function GarrisonMission_SetFollowerModel(modelFrame, followerID, displayID)
 	if ( not displayID or displayID == 0 ) then
 		modelFrame:ClearModel();
+		modelFrame:Hide();
 		modelFrame.followerID = nil;
 	else
+		modelFrame:Show();
 		modelFrame:SetDisplayInfo(displayID);
 		modelFrame.followerID = followerID;
 		GarrisonMission_SetFollowerModelItems(modelFrame);

@@ -7,12 +7,19 @@ GARRISON_LONG_MISSION_TIME_FORMAT = "|cffff7d1a%s|r";
 
 local MISSION_PAGE_FRAME;	-- set in GarrisonMissionFrame_OnLoad
 
-StaticPopupDialogs["DISMISS_FOLLOWER"] = {
-	text = GARRISON_DISMISS_FOLLOWER_CONFIRMATION,
-	button1 = GARRISON_DISMISS_FOLLOWER,
-	button2 = CANCEL,
+StaticPopupDialogs["DEACTIVATE_FOLLOWER"] = {
+	text = "",
+	button1 = YES,
+	button2 = NO,
 	OnAccept = function(self)
-		C_Garrison.RemoveFollower(self.data);
+		C_Garrison.SetFollowerInactive(self.data, true);
+	end,
+	OnShow = function(self)
+		local quality = C_Garrison.GetFollowerQuality(self.data);
+		local name = ITEM_QUALITY_COLORS[quality].hex..C_Garrison.GetFollowerName(self.data)..FONT_COLOR_CODE_CLOSE;
+		local cost = GetMoneyString(C_Garrison.GetFollowerActivationCost());
+		local uses = C_Garrison.GetNumFollowerDailyActivations();
+		self.text:SetFormattedText(GARRISON_DEACTIVATE_FOLLOWER_CONFIRMATION, name, cost, uses);
 	end,
 	showAlert = 1,
 	timeout = 0,
@@ -20,19 +27,27 @@ StaticPopupDialogs["DISMISS_FOLLOWER"] = {
 	hideOnEscape = 1
 };
 
-StaticPopupDialogs["DISMISS_UNIQUE_FOLLOWER"] = {
-	text = GARRISON_DISMISS_UNIQUE_FOLLOWER_CONFIRMATION,
-	button1 = GARRISON_DISMISS_FOLLOWER,
-	button2 = CANCEL,
+StaticPopupDialogs["ACTIVATE_FOLLOWER"] = {
+	text = "",
+	button1 = YES,
+	button2 = NO,
 	OnAccept = function(self)
-		C_Garrison.RemoveFollower(self.data);
+		C_Garrison.SetFollowerInactive(self.data, false);
 	end,
+	OnShow = function(self)
+		local quality = C_Garrison.GetFollowerQuality(self.data);
+		local name = ITEM_QUALITY_COLORS[quality].hex..C_Garrison.GetFollowerName(self.data)..FONT_COLOR_CODE_CLOSE;
+		local uses = C_Garrison.GetNumFollowerActivationsRemaining();
+		self.text:SetFormattedText(GARRISON_ACTIVATE_FOLLOWER_CONFIRMATION, name, uses);
+		MoneyFrame_Update(self.moneyFrame, C_Garrison.GetFollowerActivationCost());
+	end,	
 	showAlert = 1,
 	timeout = 0,
 	exclusive = 1,
+	hasMoneyFrame = 1,
 	hideOnEscape = 1
 };
-
+	
 local tutorials = {
 	[1] = { text1 = GARRISON_MISSION_TUTORIAL1, xOffset = 240, yOffset = -150, parent = "MissionList" },
 	[2] = { text1 = GARRISON_MISSION_TUTORIAL2, xOffset = 752, yOffset = -150, parent = "MissionList" },
@@ -371,24 +386,41 @@ function GarrisonFollowerOptionDropDown_Initialize(self)
 			UIDropDownMenu_AddButton(info);
 		end
 		
-		info.text = GARRISON_DISMISS_FOLLOWER;
-		if (C_Garrison.IsFollowerUnique(self.followerID)) then
-			info.func = function()
-				StaticPopup_Show("DISMISS_UNIQUE_FOLLOWER", follower.name, nil, self.followerID);
+		local followerStatus = C_Garrison.GetFollowerStatus(self.followerID);
+		if ( followerStatus == GARRISON_FOLLOWER_INACTIVE ) then
+			info.text = GARRISON_ACTIVATE_FOLLOWER;
+			if ( C_Garrison.GetNumFollowerActivationsRemaining() == 0 ) then
+				info.disabled = 1;
+				info.tooltipWhileDisabled = 1;
+				info.tooltipTitle = GARRISON_ACTIVATE_FOLLOWER;
+				info.tooltipText = GARRISON_NO_MORE_FOLLOWER_ACTIVATIONS;
+				info.tooltipOnButton = 1;
+			elseif ( C_Garrison.GetFollowerActivationCost() > GetMoney() ) then
+				info.tooltipWhileDisabled = 1;
+				info.tooltipTitle = GARRISON_ACTIVATE_FOLLOWER;
+				info.tooltipText = format(GARRISON_CANNOT_AFFORD_FOLLOWER_ACTIVATION, GetMoneyString(C_Garrison.GetFollowerActivationCost()));
+				info.tooltipOnButton = 1;			
+				info.disabled = 1;
+			else
+				info.disabled = nil;
+				info.func = function()
+					StaticPopup_Show("ACTIVATE_FOLLOWER", follower.name, nil, self.followerID);
+				end
 			end
 		else
+			info.text = GARRISON_DEACTIVATE_FOLLOWER;
 			info.func = function()
-				StaticPopup_Show("DISMISS_FOLLOWER", follower.name, nil, self.followerID);
+				StaticPopup_Show("DEACTIVATE_FOLLOWER", follower.name, nil, self.followerID);
 			end
-		end
-		if ( C_Garrison.GetFollowerStatus(self.followerID) == GARRISON_FOLLOWER_ON_MISSION ) then
-			info.disabled = 1;
-			info.tooltipWhileDisabled = 1;
-			info.tooltipTitle = GARRISON_DISMISS_FOLLOWER;
-			info.tooltipText = GARRISON_FOLLOWER_CANNOT_DISMISS_ON_MISSION;
-			info.tooltipOnButton = 1;
-		else
-			info.disabled = nil;
+			if ( followerStatus == GARRISON_FOLLOWER_ON_MISSION ) then
+				info.disabled = 1;
+				info.tooltipWhileDisabled = 1;
+				info.tooltipTitle = GARRISON_DEACTIVATE_FOLLOWER;
+				info.tooltipText = GARRISON_FOLLOWER_CANNOT_DEACTIVATE_ON_MISSION;
+				info.tooltipOnButton = 1;
+			else
+				info.disabled = nil;
+			end
 		end
 		UIDropDownMenu_AddButton(info);
 	end
@@ -697,7 +729,7 @@ function GarrisonMissionButton_OnEnter(self, button)
 
 		if not C_Garrison.IsOnGarrisonMap() then
 			GameTooltip:AddLine(" ");
-			GameTooltip:AddLine(GARRISON_MISSION_TOOLTIP_RETURN_TO_START);
+			GameTooltip:AddLine(GARRISON_MISSION_TOOLTIP_RETURN_TO_START, nil, nil, nil, 1);
 		end
 	end
 
@@ -719,6 +751,7 @@ function GarrisonMissionPage_OnLoad(self)
 	self:RegisterEvent("CURRENCY_DISPLAY_UPDATE");
 	self:RegisterEvent("GARRISON_FOLLOWER_ADDED");
 	self:RegisterEvent("GARRISON_FOLLOWER_REMOVED");
+	self.BuffsFrame:SetFrameLevel(self.FollowerModel:GetFrameLevel() + 1);
 end
 
 function GarrisonMissionPage_OnEvent(self, event)
@@ -1051,7 +1084,9 @@ function GarrisonMissionPage_SetPartySize(size, numEnemies)
 		else
 			MISSION_PAGE_FRAME.Followers[1]:SetPoint("TOPLEFT", 22, -274);
 			MISSION_PAGE_FRAME.EmptyString:SetPoint("TOPLEFT", 28, -255);
-		end		
+		end
+		MISSION_PAGE_FRAME.BuffsFrame:ClearAllPoints();
+		MISSION_PAGE_FRAME.BuffsFrame:SetPoint("BOTTOMLEFT", 80, 198);
 	else
 		MISSION_PAGE_FRAME.EmptyString:SetText(GARRISON_PARTY_INSTRUCTIONS_MANY);
 		MISSION_PAGE_FRAME.EmptyString:SetPoint("TOP", 0, -255);
@@ -1061,6 +1096,8 @@ function GarrisonMissionPage_SetPartySize(size, numEnemies)
 		else
 			MISSION_PAGE_FRAME.Followers[1]:SetPoint("TOPLEFT", 22, -274);
 		end
+		MISSION_PAGE_FRAME.BuffsFrame:ClearAllPoints();
+		MISSION_PAGE_FRAME.BuffsFrame:SetPoint("BOTTOM", 0, 198);		
 	end
 end
 
@@ -1727,6 +1764,8 @@ function GarrisonMissionComplete_Initialize(missionList, index)
 	end
 
 	self.NextMissionButton:Disable();
+	self.BonusRewards.ChestModel.OpenAnim:Stop();
+	self.BonusRewards.ChestModel.LockBurstAnim:Stop();
 	self.BonusRewards.ChestModel:SetAlpha(1);
 	for i = 1, #self.BonusRewards.Rewards do
 		self.BonusRewards.Rewards[i]:Hide();

@@ -1969,6 +1969,8 @@ function WorldMap_ToggleSizeUp()
 	-- adjust main frame
 	WorldMapFrame:SetParent(nil);
 	WorldMapTooltip:SetFrameStrata("TOOLTIP");	
+	WorldMapPlayerLower:SetFrameStrata("MEDIUM");
+	WorldMapPlayerLower:SetFrameStrata("FULLSCREEN");
 	WorldMapFrame:ClearAllPoints();
 	WorldMapFrame:SetAllPoints();
 	SetUIPanelAttribute(WorldMapFrame, "area", "full");
@@ -2021,6 +2023,8 @@ function WorldMap_ToggleSizeDown()
 	WorldMapFrame:SetParent(UIParent);
 	WorldMapFrame:SetFrameStrata("HIGH");
 	WorldMapTooltip:SetFrameStrata("TOOLTIP");
+	WorldMapPlayerLower:SetFrameStrata("MEDIUM");
+	WorldMapPlayerLower:SetFrameStrata("FULLSCREEN");
 	WorldMapFrame:EnableKeyboard(false);
 	-- adjust map frames
 	WorldMapDetailFrame:SetScale(WORLDMAP_WINDOWED_SIZE);

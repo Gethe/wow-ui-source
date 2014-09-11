@@ -145,8 +145,14 @@ SPLASH_SCREENS = {
 					rightDesc = SPLASH_BOOST2_RIGHT_DESC,
 					cVar="splashScreenBoost",
 					features = {
-						[1] = { EnterFunc = function() end,
-								LeaveFunc = function() end,
+							[1] = { EnterFunc = function() 
+									CollectionsMicroButtonAlert:Show();
+									MicroButtonPulse(CompanionsMicroButton);
+								end,
+								LeaveFunc = function()
+									CollectionsMicroButtonAlert:Hide();
+									MicroButtonPulseStop(CompanionsMicroButton);
+								end,
 								},
 						[2] = { EnterFunc = function() end,
 								LeaveFunc = function() end,
@@ -177,19 +183,10 @@ end
 
 function SplashFrame_OnLoad(self)
 	self:RegisterEvent("PLAYER_ENTERING_WORLD");
-	-- need an event for expansion becoming active
-	local faction = UnitFactionGroup("player");
-	local questData = PREPATCH_QUESTS[faction];
-	if( questData ) then
-		SPLASH_SCREENS["BASE_90"].questID = questData.id;
-		SPLASH_SCREENS["BOOST"].questID = questData.id;
-		SPLASH_SCREENS["BOOST"].rightDesc = questData.text;
-	end
-	SPLASH_SCREENS["NEW"].questID = UnitLevel("player") >= 90 and POSTPATCH_QUEST or nil;
 end
 
 local function ShouldShowStartButton( questID )
-	return questID and not IsQuestFlaggedCompleted(questID) and UnitLevel("player") >= 90;
+	return questID and not IsQuestFlaggedCompleted(questID) and UnitLevel("player") >= 90 and GetQuestLogIndexByID(questID) == 0;
 end
 
 local function ShouldEnableStartButton( questID )
@@ -282,15 +279,6 @@ end
 function SplashFrame_SetStartButtonDisplay( showStartButton )
 	local frame = SplashFrame;
 	local tag = frame.tag;
-	if( tag == "NEW" ) then
-		local faction = UnitFactionGroup("player");
-		local data = PREPATCH_QUESTS[faction];
-		if( showStartButton and data )then 
-			SPLASH_SCREENS["NEW"].rightDesc = data.text;
-		else
-			SPLASH_SCREENS["NEW"].rightDesc = SPLASH_NEW_RIGHT_DESC;
-		end
-	end
 	frame.RightDescription:SetText(SPLASH_SCREENS[tag].rightDesc);
 	if ( showStartButton ) then
 		frame.StartButton:Show();
@@ -319,18 +307,27 @@ function SplashFrame_Open( tag )
 	if( not tag ) then
 		tag = GetSplashFrameTag();
 	end
-	local showStartButton = false;
-	local questID = SPLASH_SCREENS[tag].questID;
-	local frame = SplashFrame;
-	if(questID)then
-		local playerLevel = UnitLevel("player");
-		local questIndex = GetQuestLogIndexByID(questID);
-		
-		if( not IsQuestFlaggedCompleted(questID) and playerLevel >= 90 and questIndex == 0 ) then
-			showStartButton = true;
+	
+	-- need an event for expansion becoming active
+	if( not SplashFrame.initialized ) then
+		SplashFrame.initialized = true;
+		local faction = UnitFactionGroup("player");
+		local questData = PREPATCH_QUESTS[faction];
+		if( questData ) then
+			SPLASH_SCREENS["BASE_90"].questID = questData.id;
+			SPLASH_SCREENS["BOOST"].questID = questData.id;
+			SPLASH_SCREENS["BOOST"].rightDesc = questData.text;
 		end
 	end
-	SplashFrame_Display( tag, showStartButton );
+	if( tag == "NEW" ) then
+		local displayQuest = UnitLevel("player") >= 90;
+		SPLASH_SCREENS["NEW"].questID = displayQuest and POSTPATCH_QUEST;
+		SPLASH_SCREENS["NEW"].rightDesc = displayQuest and SPLASH_NEW_90_RIGHT_DESC or SPLASH_NEW_RIGHT_DESC;
+	end
+	
+	local showStartButton = false;
+	local questID = SPLASH_SCREENS[tag].questID;
+	SplashFrame_Display( tag, ShouldShowStartButton( questID ) );
 	
 	-- hide some quest elements when splash frame is up
 	ObjectiveTracker_Update();

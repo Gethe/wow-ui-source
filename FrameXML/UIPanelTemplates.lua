@@ -1,29 +1,41 @@
 
 function SearchBoxTemplate_OnLoad(self)
-	self:SetText(SEARCH);
-	self:SetFontObject("GameFontDisable");
 	self.searchIcon:SetVertexColor(0.6, 0.6, 0.6);
 	self:SetTextInsets(16, 20, 0, 0);
+	self.Instructions:SetText(SEARCH);
+	self.Instructions:ClearAllPoints();
+	self.Instructions:SetPoint("TOPLEFT", self, "TOPLEFT", 16, 0);
+	self.Instructions:SetPoint("BOTTOMRIGHT", self, "BOTTOMRIGHT", -20, 0);
 end
 
 function SearchBoxTemplate_OnEditFocusLost(self)
-	self:HighlightText(0, 0);
-	self:SetFontObject("GameFontDisable");
-	self.searchIcon:SetVertexColor(0.6, 0.6, 0.6);
-	if ( self:GetText() == "" or self:GetText() == SEARCH ) then
-		self:SetText(SEARCH);
+	if ( self:GetText() == "" ) then
+		self.searchIcon:SetVertexColor(0.6, 0.6, 0.6);
 		self.clearButton:Hide();
 	end
 end
 
 function SearchBoxTemplate_OnEditFocusGained(self)
-	self:HighlightText();
-	self:SetFontObject("ChatFontSmall");
 	self.searchIcon:SetVertexColor(1.0, 1.0, 1.0);
-	if ( self:GetText() == SEARCH ) then
-		self:SetText("")
-	end
 	self.clearButton:Show();
+end
+
+function SearchBoxTemplate_OnTextChanged(self)
+	if ( not self:HasFocus() and self:GetText() == "" ) then
+		self.searchIcon:SetVertexColor(0.6, 0.6, 0.6);
+		self.clearButton:Hide();
+	else
+		self.searchIcon:SetVertexColor(1.0, 1.0, 1.0);
+		self.clearButton:Show();
+	end
+	InputBoxInstructions_OnTextChanged(self);
+end
+
+function SearchBoxTemplateClearButton_OnClick(self)
+	PlaySound("igMainMenuOptionCheckBoxOn");
+	local editBox = self:GetParent();
+	editBox:SetText("");
+	editBox:ClearFocus();
 end
 
 ITEM_SEARCHBAR_LIST = {
@@ -48,26 +60,25 @@ function BagSearch_OnHide(self)
 end
 
 function BagSearch_OnTextChanged(self, userChanged)
-	local text = self:GetText();
-	if ( text == SEARCH ) then
-		text = "";
+	SearchBoxTemplate_OnTextChanged(self);
+
+	for _, barName in pairs(ITEM_SEARCHBAR_LIST) do
+		local bar = _G[barName];
+		if ( bar and bar:GetText() ~= self:GetText() ) then
+			bar:SetText(self:GetText());
+		end
 	end
-	SetItemSearch(text);
-	if (text ~= "") then
-		self.clearButton:Show();
-	else
-		self.clearButton:Hide();
-	end
+	SetItemSearch(self:GetText());
 end
 
 function BagSearch_OnChar(self, text)
 	-- clear focus if the player is repeating keys (ie - trying to move)
 	-- TODO: move into base editbox code?
-	local MIN_REPEAT_CHARACTERS = 3
+	local MIN_REPEAT_CHARACTERS = 4;
 	local searchString = self:GetText();
-	if (string.len(searchString) > MIN_REPEAT_CHARACTERS) then
+	if (string.len(searchString) >= MIN_REPEAT_CHARACTERS) then
 		local repeatChar = true;
-		for i=1, MIN_REPEAT_CHARACTERS, 1 do 
+		for i=1, MIN_REPEAT_CHARACTERS - 1, 1 do 
 			if ( string.sub(searchString,(0-i), (0-i)) ~= string.sub(searchString,(-1-i),(-1-i)) ) then
 				repeatChar = false;
 				break;
@@ -75,29 +86,6 @@ function BagSearch_OnChar(self, text)
 		end
 		if ( repeatChar ) then
 			self:ClearFocus();
-		end
-	end
-end
-
-function BagSearch_OnEditFocusGained(self)
-	SearchBoxTemplate_OnEditFocusGained(self);
-
-	for _,barName in pairs(ITEM_SEARCHBAR_LIST) do
-		local bar = _G[barName];
-		if bar and bar ~= self then
-			bar:SetText(SEARCH);
-		end
-	end
-end
-
-function BagSearch_OnEditFocusLost(self)
-	SearchBoxTemplate_OnEditFocusGained(self);
-
-	local search = self:GetText();
-	for _,barName in pairs(ITEM_SEARCHBAR_LIST) do
-		local bar = _G[barName];
-		if bar and bar ~= self then
-			bar:SetText(search);
 		end
 	end
 end

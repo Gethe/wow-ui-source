@@ -792,9 +792,13 @@ function UnitPopup_HideButtons ()
 				end
 			end
 		elseif ( value == "BN_INVITE" ) then
-			local presenceID, presenceName, battleTag, isBattleTagPresence, toonName = BNGetFriendInfoByID(dropdownMenu.presenceID);
-			if ( CanCooperateWithToon(dropdownMenu.presenceID) and (UnitInParty(toonName) or UnitInRaid(toonName)) ) then
+			if ( not dropdownMenu.presenceID or not BNFeaturesEnabledAndConnected() ) then
 				UnitPopupShown[UIDROPDOWNMENU_MENU_LEVEL][index] = 0;
+			else
+				local presenceID, presenceName, battleTag, isBattleTagPresence, toonName = BNGetFriendInfoByID(dropdownMenu.presenceID);
+				if ( CanCooperateWithToon(dropdownMenu.presenceID) and (UnitInParty(toonName) or UnitInRaid(toonName)) ) then
+					UnitPopupShown[UIDROPDOWNMENU_MENU_LEVEL][index] = 0;
+				end
 			end
 		elseif ( value == "FOLLOW" ) then
 			if ( canCoop == 0 ) then

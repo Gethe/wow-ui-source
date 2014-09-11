@@ -355,7 +355,7 @@
 				</Anchors>			
 				<Layers>
 					<Layer level="ARTWORK">
-						<Texture setAllPoints="true">
+						<Texture parentKey="Texture" setAllPoints="true">
 							<Color r="0" g="0.06" b="0.22" a="0.44"/>
 						</Texture>
 					</Layer>
@@ -2433,12 +2433,12 @@
 						</Texture>
 						<FontString parentKey="XPText" inherits="GameFontHighlightLarge2" justifyH="RIGHT">
 							<Anchors>
-								<Anchor point="TOPRIGHT" relativeKey="$parent.Class" relativePoint="TOPLEFT" x="-2" y="-12"/>
+								<Anchor point="TOPRIGHT" relativeKey="$parent.Class" relativePoint="TOPLEFT" x="-2" y="-6"/>
 							</Anchors>
 						</FontString>
 						<FontString parentKey="XPLabel" inherits="GameFontHighlight" justifyH="RIGHT" text="GARRISON_FOLLOWER_XP_STRING">
 							<Anchors>
-								<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Class" relativePoint="BOTTOMLEFT" y="6"/>
+								<Anchor point="TOPRIGHT" relativeKey="$parent.XPText" relativePoint="BOTTOMRIGHT" y="-4"/>
 							</Anchors>
 						</FontString>
 					</Layer>

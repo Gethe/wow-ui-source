@@ -622,7 +622,7 @@ function ToggleLFDParentFrame()
 		return;
 	end
 
-	if ( UnitLevel("player") >= SHOW_LFD_LEVEL ) then
+	if ( UnitLevel("player") >= math.min(SHOW_LFD_LEVEL,SHOW_PVP_LEVEL) ) then
 		PVEFrame_ToggleFrame("GroupFinderFrame", LFDParentFrame);
 	end
 end
@@ -713,7 +713,7 @@ function TogglePVPUI()
 		return;
 	end
 	
-	if ( UnitLevel("player") >= SHOW_LFD_LEVEL ) then
+	if ( UnitLevel("player") >= math.min(SHOW_LFD_LEVEL,SHOW_PVP_LEVEL) ) then
 		PVEFrame_ToggleFrame("PVPUIFrame", nil);
 	end
 end

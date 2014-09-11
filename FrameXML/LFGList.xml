@@ -907,6 +907,7 @@
 							<Anchor point="TOPLEFT" relativeKey="$parent.CategoryName" relativePoint="BOTTOMLEFT" x="4" y="-7"/>
 						</Anchors>
 						<Scripts>
+							<!--Note: The clearButton's OnClick is also changed in Lua-->
 							<OnEnterPressed function="LFGListSearchPanelSearchBox_OnEnterPressed"/>
 							<OnTabPressed function="LFGListSearchPanelSearchBox_OnTabPressed"/>
 							<OnArrowPressed function="LFGListSearchPanelSearchBox_OnArrowPressed"/>

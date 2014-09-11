@@ -1833,6 +1833,8 @@ local function CombatLog_String_PowerType(powerType, amount, alternatePowerType)
 		return BURNING_EMBERS_POWER;
 	elseif ( powerType == SPELL_POWER_SHADOW_ORBS ) then
 		return SHADOW_ORBS_POWER;
+	elseif ( powerType == SPELL_POWER_DEMONIC_FURY) then
+		return DEMONIC_FURY
 	elseif ( powerType == SPELL_POWER_ALTERNATE_POWER and alternatePowerType ) then
 		local costName = select(12, GetAlternatePowerInfoByID(alternatePowerType));
 		return costName;	--costName could be nil if we didn't get the alternatePowerType for some reason (e.g. target out of AOI)

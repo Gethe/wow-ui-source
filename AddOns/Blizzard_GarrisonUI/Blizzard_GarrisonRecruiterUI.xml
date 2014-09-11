@@ -5,7 +5,7 @@
 		<Layers>
 			<Layer level="ARTWORK">
 				<FontString parentKey="Text" inherits="GameFontHighlightLeft">
-					<Size x="75" y="0"/>
+					<Size x="100" y="0"/>
 					<Anchors>
 						<Anchor point="LEFT" relativePoint="RIGHT" x="2"/>
 					</Anchors>
@@ -245,7 +245,7 @@
 				<Frames>
 					<CheckButton parentKey="Radio1" inherits="GarrisonRecruiterRadioButtonTemplate" id="1">
 						<Anchors>
-							<Anchor point="LEFTTOP" relativeKey="$parent.Line1" relativePoint="LEFTBOTTOM" x="32" y="-12"/>
+							<Anchor point="LEFTTOP" relativeKey="$parent.Line1" relativePoint="LEFTBOTTOM" x="0" y="-12"/>
 						</Anchors>
 						<Scripts>
 							<OnClick function="GarrisonRecruiterType_OnClick" />
@@ -253,7 +253,7 @@
 					</CheckButton>
 					<CheckButton parentKey="Radio2" inherits="GarrisonRecruiterRadioButtonTemplate" id ="2">
 						<Anchors>
-							<Anchor point="LEFT" relativeKey="$parent.Line1" relativePoint="CENTER" x="16" y="-12"/>
+							<Anchor point="LEFT" relativeKey="$parent.Line1" relativePoint="CENTER" x="6" y="-12"/>
 							<Anchor point="TOP" relativeKey="$parent.Radio1" relativePoint="TOP"/>
 						</Anchors>
 						<Scripts>

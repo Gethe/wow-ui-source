@@ -1,5 +1,5 @@
-local NUM_ITEMS_PER_ROW = 4;
-local NUM_ITEMS_PER_PAGE = 8;
+local NUM_ITEMS_PER_ROW = 5;
+local NUM_ITEMS_PER_PAGE = 10;
 
 function ProductChoiceFrame_OnLoad(self)
 	self:RegisterEvent("PLAYER_LOGIN");
@@ -65,10 +65,12 @@ function ProductChoiceFrame_Update(self)
 	local selectedID = self.selectedData and self.selectedData.id;
 	for i = 1, #self.Inset.Buttons do
 		local button = self.Inset.Buttons[i];
-		button:SetChecked(button.data.id == selectedID);
+		if ( button.data ) then
+			button:SetChecked(button.data.id == selectedID);
 
-		local enableHighlight = (not button.data.disabled) and (button.data.id ~= selectedID) and (not self.rotatingID);
-		button:GetHighlightTexture():SetAlpha(enableHighlight and 1 or 0);
+			local enableHighlight = (not button.data.disabled) and (button.data.id ~= selectedID) and (not self.rotatingID);
+			button:GetHighlightTexture():SetAlpha(enableHighlight and 1 or 0);
+		end
 	end
 
 	self.Inset.ClaimButton:SetEnabled(selectedID ~= nil);

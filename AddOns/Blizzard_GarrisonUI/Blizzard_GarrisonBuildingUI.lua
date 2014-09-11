@@ -150,6 +150,12 @@ function GarrisonBuildingFrame_OnShow(self)
 	GarrisonBuildingTab_Select(GarrisonBuildingFrame.BuildingList.Tab1);
 	GarrisonBuildingList_Show();
 	
+	-- Update building state for owned buildings. This is only really needed to refresh the cooldown timers.
+	local buildings = C_Garrison.GetBuildings();
+	for i = 1, #buildings do
+		GarrisonPlot_UpdateBuilding(buildings[i].plotID);
+	end
+	
 	-- check to show the help plate
 	if ( not GetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_GARRISON_BUILDING) ) then
 		local helpPlate = GarrisonBuilding_HelpPlate;
@@ -352,6 +358,7 @@ function GarrisonBuildingFrame_UpdateGarrisonInfo(self)
 	self.MapFrame.Map:SetAtlas(mapTexture);
 	self.MapFrame.TownHall.Level:SetText(level);
 	self.MapFrame.TownHall.TownHallName:SetText(GarrisonTownHall_GetName());
+	GarrisonTownHall_UpdateNameBanner(self.MapFrame.TownHall);
 
 	local factionGroup = UnitFactionGroup("player");
 	local townHallPlot = format(FactionData[factionGroup].townHallPlot, level);
@@ -376,6 +383,12 @@ end
 function GarrisonTownHall_GetName()
 	local factionGroup = UnitFactionGroup("player");
 	return FactionData[factionGroup].townHallName;
+end
+
+function GarrisonTownHall_UpdateNameBanner(self)
+	if ( self.BannerMid:GetWidth() < (self.TownHallName:GetWidth() + 18) ) then
+		self.BannerMid:SetWidth(self.TownHallName:GetWidth() + 18);
+	end
 end
 
 function GarrisonTownHall_OnEnter(self)

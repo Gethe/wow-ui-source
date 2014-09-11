@@ -1135,7 +1135,7 @@ TRAVEL PASS
 						</Frames>
 						<Scripts>
 							<OnLoad>
-								frameLevel = self:GetFrameLevel();
+								local frameLevel = self:GetFrameLevel();
 								FriendsFrameBroadcastInputTooltipButton:SetFrameLevel(frameLevel + 1);
 								FriendsFrameBroadcastInputClearButton:SetFrameLevel(frameLevel + 2);
 							</OnLoad>

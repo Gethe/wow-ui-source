@@ -754,12 +754,17 @@ function LFGListEntryCreation_OnActivitySelected(self, activityID, buttonType)
 	end
 end
 
+function LFGListEntryCreation_GetSanitizedName(self)
+	return string.match(self.Name:GetText(), "^%s*(.-)%s*$");
+end
+
 function LFGListEntryCreation_ListGroup(self)
+	local name = LFGListEntryCreation_GetSanitizedName(self);
 	if ( LFGListEntryCreation_IsEditMode(self) ) then
-		C_LFGList.UpdateListing(self.selectedActivity, self.Name:GetText(), tonumber(self.ItemLevel.EditBox:GetText()) or 0, self.VoiceChat.EditBox:GetText(), self.Description.EditBox:GetText());
+		C_LFGList.UpdateListing(self.selectedActivity, name, tonumber(self.ItemLevel.EditBox:GetText()) or 0, self.VoiceChat.EditBox:GetText(), self.Description.EditBox:GetText());
 		LFGListFrame_SetActivePanel(self:GetParent(), self:GetParent().ApplicationViewer);
 	else
-		if(C_LFGList.CreateListing(self.selectedActivity, self.Name:GetText(), tonumber(self.ItemLevel.EditBox:GetText()) or 0, self.VoiceChat.EditBox:GetText(), self.Description.EditBox:GetText())) then
+		if(C_LFGList.CreateListing(self.selectedActivity, name, tonumber(self.ItemLevel.EditBox:GetText()) or 0, self.VoiceChat.EditBox:GetText(), self.Description.EditBox:GetText())) then
 			self.WorkingCover:Show();
 			LFGListEntryCreation_ClearFocus(self);
 		end
@@ -771,7 +776,7 @@ function LFGListEntryCreation_UpdateValidState(self)
 	local maxPlayers = select(ACTIVITY_RETURN_VALUES.maxPlayers, C_LFGList.GetActivityInfo(self.selectedActivity));
 	if ( maxPlayers > 0 and GetNumGroupMembers(LE_PARTY_CATEGORY_HOME) >= maxPlayers ) then
 		errorText = string.format(LFG_LIST_TOO_MANY_FOR_ACTIVITY, maxPlayers);
-	elseif ( self.Name:GetText() == "" ) then
+	elseif ( LFGListEntryCreation_GetSanitizedName(self) == "" ) then
 		errorText = LFG_LIST_MUST_HAVE_NAME;
 	elseif ( self.ItemLevel.warningText ) then
 		errorText = self.ItemLevel.warningText;
@@ -1372,6 +1377,10 @@ function LFGListSearchPanel_OnLoad(self)
 	self.ScrollFrame.update = function() LFGListSearchPanel_UpdateResults(self); end;
 	self.ScrollFrame.scrollBar.doNotHide = true;
 	HybridScrollFrame_CreateButtons(self.ScrollFrame, "LFGListSearchEntryTemplate");
+	self.SearchBox.clearButton:SetScript("OnClick", function(btn)
+		SearchBoxTemplateClearButton_OnClick(btn);
+		LFGListSearchPanel_DoSearch(self);
+	end);
 end
 
 function LFGListSearchPanel_OnEvent(self, event, ...)
@@ -1441,10 +1450,6 @@ end
 
 function LFGListSearchPanel_DoSearch(self)
 	local searchText = self.SearchBox:GetText();
-	--Terrible terrible hack done until we can make search boxes less buggy.
-	if ( searchText == SEARCH ) then
-		searchText = "";
-	end
 	C_LFGList.Search(self.categoryID, searchText, self.filters, self.preferredFilters);
 	self.searching = true;
 	self.searchFailed = false;
@@ -1614,6 +1619,7 @@ function LFGListSearchPanelSearchBox_OnArrowPressed(self, key)
 end
 
 function LFGListSearchPanelSearchBox_OnTextChanged(self)
+	SearchBoxTemplate_OnTextChanged(self);
 	LFGListSearchPanel_UpdateAutoComplete(self:GetParent());
 end
 

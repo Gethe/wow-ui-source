@@ -93,7 +93,7 @@ StaticPopupDialogs["BATTLE_PET_RELEASE"] = {
 };
 
 function PetJournalUtil_GetDisplayName(petID)
-	local speciesID, customName, level, xp, maxXp, displayID, isFavorite, petName, petIcon, petType, creatureID = C_PetJournal.GetPetInfoByPetID(petID);
+	local _, customName, _, _, _, _, _, petName = C_PetJournal.GetPetInfoByPetID(petID);
 	if ( customName ) then
 		return customName;
 	else
@@ -745,7 +745,7 @@ function PetJournal_UpdatePetList()
 		pet = petButtons[i];
 		index = offset + i;
 		if index <= numPets then
-			local petID, speciesID, isOwned, customName, level, favorite, isRevoked, name, icon, petType, creatureID, sourceText, description, isWildPet, canBattle = C_PetJournal.GetPetInfoByIndex(index);
+			local petID, speciesID, isOwned, customName, level, favorite, isRevoked, name, icon, petType, _, _, _, _, canBattle = C_PetJournal.GetPetInfoByIndex(index);
 
 			if customName then
 				pet.name:SetText(customName);
@@ -785,7 +785,7 @@ function PetJournal_UpdatePetList()
 				else
 					pet.isDead:Hide();
 				end
-				if(isRevoked == true) then
+				if(isRevoked) then
 					pet.dragButton.levelBG:Hide();
 					pet.dragButton.level:Hide();
 					pet.iconBorder:Hide();
@@ -843,13 +843,8 @@ end
 
 
 function PetJournal_OnSearchTextChanged(self)
-	local text = self:GetText();
-	if text == SEARCH then
-		C_PetJournal.SetSearchFilter("");
-		return;
-	end
-	
-	C_PetJournal.SetSearchFilter(text);
+	SearchBoxTemplate_OnTextChanged(self);
+	C_PetJournal.SetSearchFilter(self:GetText());
 end
 
 function PetJournalListItem_OnClick(self, button)
@@ -1136,7 +1131,7 @@ function PetJournal_UpdatePetCard(self)
 		end
 	else
 		speciesID = PetJournalPetCard.speciesID;
-		name, icon, petType, creatureID, sourceText, description, isWild, canBattle, tradable, unique = C_PetJournal.GetPetInfoBySpeciesID(PetJournalPetCard.speciesID);
+		name, icon, petType, creatureID, sourceText, description, isWild, canBattle, tradable, unique, _, displayID = C_PetJournal.GetPetInfoBySpeciesID(PetJournalPetCard.speciesID);
 		level = 1;
 		self.PetInfo.level:Hide();
 		self.PetInfo.levelBG:Hide();
@@ -1567,7 +1562,7 @@ function PET_JOURNAL_ABILITY_INFO:GetPetType(target)
 		GMError("No species id found");
 		return 1;
 	end
-	local name, icon, petType, creatureID, sourceText, description, isWild, canBattle, tradable = C_PetJournal.GetPetInfoBySpeciesID(self.speciesID);
+	local _, _, petType = C_PetJournal.GetPetInfoBySpeciesID(self.speciesID);
 	return petType;
 end
 
@@ -2194,9 +2189,11 @@ function MountListItem_OnClick(self, button)
 end
 
 function MountJournal_OnSearchTextChanged(self)
+	SearchBoxTemplate_OnTextChanged(self);
+
 	local text = self:GetText();
 	local oldText = MountJournal.searchString;
-	if ( text == "" or text == SEARCH ) then
+	if ( text == "" ) then
 		MountJournal.searchString = nil;
 	else
 		MountJournal.searchString = string.lower(text);
@@ -2712,13 +2709,9 @@ function ToyBoxNextPageButton_OnClick()
 end
 
 function ToyBox_OnSearchTextChanged(self)
-	local text = self:GetText();
+	SearchBoxTemplate_OnTextChanged(self);
 	local oldText = ToyBox.searchString;
-	if ( text == "" or text == SEARCH ) then
-		ToyBox.searchString = "";
-	else
-		ToyBox.searchString = text;
-	end
+	ToyBox.searchString = self:GetText();
 
 	if ( oldText ~= ToyBox.searchString ) then		
 		ToyBox.firstCollectedToyID = 0;

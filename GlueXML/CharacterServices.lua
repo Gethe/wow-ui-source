@@ -54,7 +54,6 @@
 ----
 
 local CHARACTER_UPGRADE_CREATE_CHARACTER = false;
-local CHARACTER_UPGRADE_WAITING_ON_COMPLETE = false;
 
 local UPGRADE_MAX_LEVEL = 90;
 local UPGRADE_BONUS_LEVEL = 60;
@@ -252,7 +251,6 @@ function CharacterServicesMaster_OnLoad(self)
 	
 	self:RegisterEvent("PRODUCT_DISTRIBUTIONS_UPDATED");
 	self:RegisterEvent("CHARACTER_UPGRADE_STARTED");
-	self:RegisterEvent("CHARACTER_UPGRADE_COMPLETE");
 end
 
 local completedGuid;
@@ -263,9 +261,6 @@ function CharacterServicesMaster_OnEvent(self, event, ...)
 	elseif (event == "CHARACTER_UPGRADE_STARTED") then
 		UpdateCharacterList(true);
 		UpdateCharacterSelection(CharacterSelect);
-	elseif (event == "CHARACTER_UPGRADE_COMPLETE") then
-		completedGuid = ...;
-		CHARACTER_UPGRADE_WAITING_ON_COMPLETE = true;
 	end
 end
 
@@ -275,11 +270,13 @@ function CharacterServicesMaster_OnCharacterListUpdate()
 		CharacterServicesMaster_SetFlow(CharacterServicesMaster, CharacterUpgradeFlow);
 		CHARACTER_UPGRADE_CREATE_CHARACTER = false;
 		C_SharedCharacterServices.SetStartAutomatically(false);
-	elseif (CHARACTER_UPGRADE_WAITING_ON_COMPLETE) then
+	elseif (C_CharacterServices.HasQueuedUpgrade()) then
+		local guid = C_CharacterServices.GetQueuedUpgradeGUID();
+
 		local num = math.min(GetNumCharacters(), MAX_CHARACTERS_DISPLAYED);
 
 		for i = 1, num do
-			if (select(14, GetCharacterInfo(GetCharIDFromIndex(i))) == completedGuid) then
+			if (select(14, GetCharacterInfo(GetCharIDFromIndex(i))) == guid) then
 				local button = _G["CharSelectCharacterButton"..i];
 				CharacterSelectButton_OnClick(button);
 				button.selection:Show();
@@ -289,7 +286,7 @@ function CharacterServicesMaster_OnCharacterListUpdate()
 			end
 		end
 
-		CHARACTER_UPGRADE_WAITING_ON_COMPLETE = false;
+		C_CharacterServices.ClearQueuedUpgrade();
 	end
 end
 

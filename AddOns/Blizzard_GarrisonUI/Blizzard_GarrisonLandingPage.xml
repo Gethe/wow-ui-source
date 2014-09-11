@@ -669,12 +669,13 @@
 						</Texture>
 						<FontString parentKey="XPText" inherits="GameFontHighlightLarge2" justifyH="RIGHT">
 							<Anchors>
-								<Anchor point="TOPRIGHT" relativeKey="$parent.Class" relativePoint="TOPLEFT" x="-2" y="-12"/>
+								<Anchor point="TOPRIGHT" relativeKey="$parent.Class" relativePoint="TOPLEFT" x="-2" y="-8"/>
 							</Anchors>
 						</FontString>
 						<FontString parentKey="XPLabel" inherits="GameFontHighlight" justifyH="RIGHT" text="GARRISON_FOLLOWER_XP_STRING">
+							<Size x="100" y="0"/>
 							<Anchors>
-								<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Class" relativePoint="BOTTOMLEFT" y="6"/>
+								<Anchor point="TOPRIGHT" relativeKey="$parent.XPText" relativePoint="BOTTOMRIGHT" y="-4"/>
 							</Anchors>
 						</FontString>
 						<FontString parentKey="Name" inherits="GameFontHighlightLarge2" justifyH="LEFT">
@@ -711,7 +712,7 @@
 							</Layer>
 						</Layers>						
 					</StatusBar>
-					<CinematicModel parentKey="Model" inherits="ModelTemplate">
+					<CinematicModel parentKey="Model" inherits="ModelTemplate" hidden="true">
 						<Size x="325" y="300"/>
 						<Anchors>
 							<Anchor point="TOPLEFT" x="0" y="-74"/>

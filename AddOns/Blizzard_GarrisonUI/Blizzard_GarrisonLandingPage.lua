@@ -128,9 +128,7 @@ function GarrisonLandingPageReport_GetShipments(self)
 	local buildings = C_Garrison.GetBuildings();
 	for i = 1, #buildings do
 		local buildingID = buildings[i].buildingID;
-		local _,_,_,_,_, isBuilding, _,_, canActivate = C_Garrison.GetOwnedBuildingInfoAbbrev(buildings[i].plotID);
-		-- Only show buildings that you own and are fully completed
-		if ( buildingID and not isBuilding and not canActivate ) then
+		if ( buildingID) then
 			local name, texture, shipmentCapacity, shipmentsReady, shipmentsTotal, creationTime, duration, timeleftString, itemName, itemIcon, itemQuality, itemID = C_Garrison.GetLandingPageShipmentInfo(buildingID);
 			local shipment = self.Shipments[shipmentIndex];
 			if ( not shipment ) then
@@ -145,6 +143,7 @@ function GarrisonLandingPageReport_GetShipments(self)
 				shipment.BG:Hide();
 				shipment.Count:SetText(nil);
 				shipment.buildingID = buildingID;
+				shipment.plotID = buildings[i].plotID;
 				if (shipmentsTotal) then
 					shipment.Count:SetFormattedText(GARRISON_LANDING_SHIPMENT_COUNT, shipmentsReady, shipmentsTotal);
 					if ( shipmentsReady == shipmentsTotal ) then
@@ -176,30 +175,35 @@ function GarrisonLandingPageReportShipment_OnEnter(self)
 	else
 		GameTooltip:SetText(name);
 	end
+	
+	local _,_,_,_,_, isBuilding, _,_, canActivate = C_Garrison.GetOwnedBuildingInfoAbbrev(self.plotID);
+	if (isBuilding or canActivate) then
+		GameTooltip:AddLine(GARRISON_BUILDING_UNDER_CONSTRUCTION, 1, 1, 1);
+	else
+		GameTooltip:AddLine(GARRISON_LANDING_SHIPMENT_LABEL, 1, 1, 1);
+		GameTooltip:AddLine(" ");
 
-	GameTooltip:AddLine(GARRISON_LANDING_SHIPMENT_LABEL, 1, 1, 1);
-	GameTooltip:AddLine(" ");
+		local shipmentsAvailable = shipmentCapacity;
 
-	local shipmentsAvailable = shipmentCapacity;
+		if(shipmentsTotal) then
+			shipmentsAvailable = shipmentCapacity - shipmentsTotal;
+		end
 
-	if(shipmentsTotal) then
-		shipmentsAvailable = shipmentCapacity - shipmentsTotal;
-	end
+		if shipmentsAvailable > 0 then
+			GameTooltip:AddLine(format(GARRISON_LANDING_SHIPMENT_READY_TO_START, shipmentsAvailable) , GREEN_FONT_COLOR.r, GREEN_FONT_COLOR.g, GREEN_FONT_COLOR.b);
+		end
 
-	if shipmentsAvailable > 0 then
-		GameTooltip:AddLine(format(GARRISON_LANDING_SHIPMENT_READY_TO_START, shipmentsAvailable) , GREEN_FONT_COLOR.r, GREEN_FONT_COLOR.g, GREEN_FONT_COLOR.b);
-	end
-
-	if (shipmentsReady and shipmentsTotal) then
-		if (shipmentsReady == shipmentsTotal) then
-		    GameTooltip:AddLine(format(GARRISON_LANDING_RETURN, shipmentsTotal), GREEN_FONT_COLOR.r, GREEN_FONT_COLOR.g, GREEN_FONT_COLOR.b);
-	    else			
-			if (timeleftString) then
-				GameTooltip:AddLine(format(GARRISON_LANDING_COMPLETED, shipmentsReady, shipmentsTotal) .. " " .. format(GARRISON_LANDING_NEXT,timeleftString), 1, 1, 1);
-			else
-				GameTooltip:AddLine(format(GARRISON_LANDING_COMPLETED, shipmentsReady, shipmentsTotal), 1, 1, 1);			
+		if (shipmentsReady and shipmentsTotal) then
+			if (shipmentsReady == shipmentsTotal) then
+				GameTooltip:AddLine(format(GARRISON_LANDING_RETURN, shipmentsTotal), GREEN_FONT_COLOR.r, GREEN_FONT_COLOR.g, GREEN_FONT_COLOR.b);
+			else			
+				if (timeleftString) then
+					GameTooltip:AddLine(format(GARRISON_LANDING_COMPLETED, shipmentsReady, shipmentsTotal) .. " " .. format(GARRISON_LANDING_NEXT,timeleftString), 1, 1, 1);
+				else
+					GameTooltip:AddLine(format(GARRISON_LANDING_COMPLETED, shipmentsReady, shipmentsTotal), 1, 1, 1);			
+				end
 			end
-	    end
+		end
 	end
 	GameTooltip:Show();
 end
@@ -495,7 +499,7 @@ function GarrisonLandingPageReportMission_OnEnter(self, button)
 		
 		if not C_Garrison.IsOnGarrisonMap() then
 			GameTooltip:AddLine(" ");
-			GameTooltip:AddLine(GARRISON_MISSION_TOOLTIP_RETURN_TO_START);
+			GameTooltip:AddLine(GARRISON_MISSION_TOOLTIP_RETURN_TO_START, nil, nil, nil, 1);
 		end
 	end
 
