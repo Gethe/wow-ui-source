@@ -44,6 +44,9 @@
 	 			if (self.itemId) then
 	 				GameTooltip:SetOwner(self, "ANCHOR_RIGHT", 2, -80);
 	 				GameTooltip:SetItemByID(self.itemId);
+	 			elseif (self.currencyID) then
+	 				GameTooltip:SetOwner(self, "ANCHOR_RIGHT", 2, -80);
+	 				GameTooltip:SetCurrencyTokenByID(self.currencyID);
 	 			end
 	 		</OnEnter>
 	 		<OnLeave>

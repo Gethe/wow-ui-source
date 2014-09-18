@@ -115,8 +115,8 @@ function LFGListFrame_OnEvent(self, event, ...)
 	elseif ( event == "LFG_LIST_ENTRY_CREATION_FAILED" ) then
 		self.EntryCreation.WorkingCover:Hide();
 	elseif ( event == "LFG_LIST_APPLICANT_LIST_UPDATED" ) then
-		local hasNewPending = ...;
-		if ( hasNewPending and LFGListUtil_IsEntryEmpowered() ) then
+		local hasNewPending, hasNewPendingWithData = ...;
+		if ( hasNewPending and hasNewPendingWithData and LFGListUtil_IsEntryEmpowered() ) then
 			if ( not self:IsVisible() ) then
 				QueueStatusMinimapButton_SetGlowLock(QueueStatusMinimapButton, "lfglist-applicant", true);
 			end
@@ -915,6 +915,9 @@ function LFGListApplicationViewer_OnLoad(self)
 	self.ScrollFrame.update = function() LFGListApplicationViewer_UpdateResults(self); end;
 	self.ScrollFrame.dynamic = function(offset) return LFGListApplicationViewer_GetScrollOffset(self, offset) end
 	self.ScrollFrame.scrollBar.doNotHide = true;
+	self.NameColumnHeader:Disable();
+	self.RoleColumnHeader:Disable();
+	self.ItemLevelColumnHeader:Disable();
 	HybridScrollFrame_CreateButtons(self.ScrollFrame, "LFGListApplicantTemplate");
 end
 
@@ -1374,6 +1377,7 @@ end
 ----------Searching
 -------------------------------------------------------
 function LFGListSearchPanel_OnLoad(self)
+	self.SearchBox.Instructions:SetText(FILTER);
 	self.ScrollFrame.update = function() LFGListSearchPanel_UpdateResults(self); end;
 	self.ScrollFrame.scrollBar.doNotHide = true;
 	HybridScrollFrame_CreateButtons(self.ScrollFrame, "LFGListSearchEntryTemplate");
@@ -1745,11 +1749,12 @@ function LFGListSearchEntry_Update(self)
 	local resultID = self.resultID;
 	local _, appStatus, pendingStatus, appDuration = C_LFGList.GetApplicationInfo(resultID);
 	local isApplication = (appStatus ~= "none" or pendingStatus);
+	local isAppFinished = LFGListUtil_IsStatusInactive(appStatus) or LFGListUtil_IsStatusInactive(pendingStatus);
 
 	--Update visibility based on whether we're an application or not
 	self.isApplication = isApplication;
-	self.ApplicationBG:SetShown(isApplication);
-	self.ResultBG:SetShown(not isApplication);
+	self.ApplicationBG:SetShown(isApplication and not isAppFinished);
+	self.ResultBG:SetShown(not isApplication or isAppFinished);
 	self.DataDisplay:SetShown(not isApplication);
 	self.CancelButton:SetShown(isApplication and pendingStatus ~= "applied");
 	self.CancelButton:SetEnabled(LFGListUtil_IsAppEmpowered());
@@ -1837,7 +1842,7 @@ function LFGListSearchEntry_Update(self)
 	self.Highlight:SetShown(panel.selectedResult ~= resultID and not isApplication and not isDelisted);
 	local nameColor = NORMAL_FONT_COLOR;
 	local activityColor = GRAY_FONT_COLOR;
-	if ( isDelisted ) then
+	if ( isDelisted or isAppFinished ) then
 		nameColor = LFG_LIST_DELISTED_FONT_COLOR;
 		activityColor = LFG_LIST_DELISTED_FONT_COLOR;
 	elseif ( numBNetFriends > 0 or numCharFriends > 0 or numGuildMates > 0 ) then
@@ -2494,16 +2499,15 @@ function LFGListUtil_FilterApplicants(applicants)
 end
 
 function LFGListUtil_SortApplicantsCB(id1, id2)
-	local _, _, _, _, isNew1 = C_LFGList.GetApplicantInfo(id1);
-	local _, _, _, _, isNew2 = C_LFGList.GetApplicantInfo(id2);
+	local _, _, _, _, isNew1, _, orderID1 = C_LFGList.GetApplicantInfo(id1);
+	local _, _, _, _, isNew2, _, orderID2 = C_LFGList.GetApplicantInfo(id2);
 
 	--New items go to the bottom
 	if ( isNew1 ~= isNew2 ) then
 		return isNew2;
 	end
 
-	--Just sort by the order in which we received these applications
-	return id1 < id2;
+	return orderID1 < orderID2;
 end
 
 function LFGListUtil_SortApplicants(applicants)
@@ -2758,4 +2762,16 @@ function LFGListUtil_GetActiveQueueMessage(isApplication)
 			return CANNOT_DO_THIS_IN_BATTLEGROUND;
 		end
 	end
+end
+
+local LFG_LIST_INACTIVE_STATUSES = {
+	cancelled = true,
+	failed = true,
+	declined = true,
+	timedout = true,
+	invitedeclined = true,
+}
+
+function LFGListUtil_IsStatusInactive(status)
+	return LFG_LIST_INACTIVE_STATUSES[status];
 end

@@ -1249,7 +1249,6 @@ function LFGRewardsFrame_OnLoad(self)
 	self.description:SetTextColor(1, 1, 1);
 	self.rewardsDescription:SetTextColor(1, 1, 1);
 	self.xpLabel:SetTextColor(1, 1, 1);
-	self.BonusValor.BonusText:SetTextColor(1, 1, 1);
 end
 
 function LFGRewardsFrame_UpdateFrame(parentFrame, dungeonID, background)
@@ -1302,7 +1301,6 @@ function LFGRewardsFrame_UpdateFrame(parentFrame, dungeonID, background)
 		background:SetTexture(backgroundTexture);
 	end
 
-	parentFrame.BonusValor:Hide();
 	local lastFrame = parentFrame.rewardsLabel;
 	if ( isHoliday ) then
 		if ( doneToday ) then
@@ -1333,34 +1331,13 @@ function LFGRewardsFrame_UpdateFrame(parentFrame, dungeonID, background)
 			if ( LFG_IsHeroicScenario(dungeonID) ) then
 				parentFrame.title:SetText(LFG_TYPE_RANDOM_HEROIC_SCENARIO);
 				parentFrame.description:SetText(SCENARIO_RANDOM_HEROIC_EXPLANATION);
-				local numValor = 0;
-				local numRewards = select(6, GetLFGDungeonRewards(dungeonID));
-				-- there should only be 1 bonus reward, and it should give valor...
-				for i = 1, numRewards do
-					local name, texturePath, quantity, isBonusCurrency = GetLFGDungeonRewardInfo(dungeonID, i);
-					if ( isBonusCurrency ) then
-						numValor = quantity;
-					end
-				end
-				if ( numValor > 0 ) then
-					parentFrame.BonusValor.BonusText:SetFormattedText(HEROIC_SCENARIO_BONUS_VALOR_SPECIFIC, numValor);
-				else
-					parentFrame.BonusValor.BonusText:SetText(HEROIC_SCENARIO_BONUS_VALOR);
-				end
 			else
 				parentFrame.title:SetText(LFG_TYPE_RANDOM_SCENARIO);
 				parentFrame.description:SetText(SCENARIO_RANDOM_EXPLANATION);
-				parentFrame.BonusValor.BonusText:SetText(SCENARIO_BONUS_VALOR);
 			end
 		else
 			parentFrame.title:SetText(LFG_TYPE_RANDOM_DUNGEON);
 			parentFrame.description:SetText(LFD_RANDOM_EXPLANATION);
-			parentFrame.BonusValor.BonusText:SetText(DUNGEON_BONUS_VALOR);
-		end
-		if (UnitLevel("player") == GetMaxPlayerLevel()) then
-			parentFrame.BonusValor:Show();
-		else
-			parentFrame.BonusValor:Hide();
 		end
 	end
 
@@ -1453,11 +1430,6 @@ function LFGRewardsFrame_UpdateFrame(parentFrame, dungeonID, background)
 	else
 		parentFrame.xpLabel:Hide();
 		parentFrame.xpAmount:Hide();
-	end
-	
-	if (parentFrame.BonusValor:IsShown()) then
-		parentFrame.BonusValor:SetPoint("TOPLEFT", lastFrame, "BOTTOMLEFT", -5, -4);
-		lastFrame = parentFrame.BonusValor;
 	end
 	
 	if ( typeID == TYPEID_RANDOM_DUNGEON ) then
@@ -2262,7 +2234,7 @@ function LFGRoleButton_LockReasonsTextTable(dungeonID, roleID, textTable)
 	local reasons = GetLFDRoleLockInfo(dungeonID, roleID);
 	textTable = textTable or {};
 	for i = 1, #reasons do
-		local text = reasons[i].reason_string or _G["INSTANCE_UNAVAILABLE_SELF_"..(LFG_INSTANCE_INVALID_CODES[reasons[i].reason_id])];
+		local text = reasons[i].reason_string or _G["INSTANCE_UNAVAILABLE_SELF_"..(LFG_INSTANCE_INVALID_CODES[reasons[i].reason_id] or "OTHER")];
 		textTable[text] = true;
 	end
 	

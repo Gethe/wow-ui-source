@@ -44,7 +44,7 @@ SPLASH_SCREENS = {
 	["BASE_90"] =	{	id = 1,
 					questID = nil,	-- questID is set in SplashFrame_OnLoad
 					leftTex = "splash-600-topleft",
-					rightTex = "splash-601-right",
+					rightTex = "splash-boost-right",
 					bottomTex = "splash-600-botleft",
 					header = SPLASH_BASE_HEADER,
 					label = SPLASH_BASE_LABEL,
@@ -186,7 +186,7 @@ function SplashFrame_OnLoad(self)
 end
 
 local function ShouldShowStartButton( questID )
-	return questID and not IsQuestFlaggedCompleted(questID) and UnitLevel("player") >= 90 and GetQuestLogIndexByID(questID) == 0;
+	return SplashFrame.firstTimeViewed and questID and not IsQuestFlaggedCompleted(questID) and UnitLevel("player") >= 90;
 end
 
 local function ShouldEnableStartButton( questID )
@@ -224,6 +224,7 @@ function SplashFrame_OnEvent(self, event)
 		
 		if ( tag ) then
 			SplashFrame_Open(tag);
+			SplashFrame.firstTimeViewed = true;
 			SetCVar(SPLASH_SCREENS[tag].cVar, SPLASH_SCREENS[tag].id); -- update cVar value;
 		end
 	elseif( event == "QUEST_LOG_UPDATE" ) then
@@ -325,7 +326,6 @@ function SplashFrame_Open( tag )
 		SPLASH_SCREENS["NEW"].rightDesc = displayQuest and SPLASH_NEW_90_RIGHT_DESC or SPLASH_NEW_RIGHT_DESC;
 	end
 	
-	local showStartButton = false;
 	local questID = SPLASH_SCREENS[tag].questID;
 	SplashFrame_Display( tag, ShouldShowStartButton( questID ) );
 	
@@ -343,13 +343,17 @@ local function OpenQuestDialog()
 		frame:UnregisterEvent("PLAYER_ENTERING_WORLD");
 		ShowQuestOffer(GetQuestLogIndexByID(questID));
 		AutoQuestPopupTracker_RemovePopUp(questID);
+
+		local questLogIndex = GetQuestLogIndexByID(questID);
+		AddQuestWatch(questLogIndex);
+		SetSuperTrackedQuestID(questID);
 	end
 end
 
 function SplashFrame_Close()
 	local frame = SplashFrame;
 	HideUIPanel(frame);
-	
+
 	local tag = frame.tag;
 	local questID = SPLASH_SCREENS[tag].questID;
 	if( tag and questID and ShouldShowStartButton(questID) and ShouldEnableStartButton(questID) ) then
@@ -381,6 +385,8 @@ function SplashFrame_OnHide(self)
 	self:UnregisterEvent("PLAYER_ENTERING_WORLD");
 	self:UnregisterEvent("QUEST_LOG_UPDATE");
 	self:SetScript("OnUpdate", nil);
+	
+	SplashFrame.firstTimeViewed = false;
 	
 	ObjectiveTracker_Update();
 end

@@ -4152,12 +4152,18 @@
 					</OnShow>
 					<OnClick>
 						PlaySound("gsTitleOptionOK");
-						SetCVar("closedInfoFrames",""); -- reset the help plates too
+						SetCVar("closedInfoFrames", ""); -- reset the help plates too
+						SetCVar("showNPETutorials", "1");
 						ResetTutorials();
 						TutorialFrame_ClearQueue();
 						local tutorialsCheckButton = _G[self:GetParent():GetName() .. "ShowTutorials"];
 						if ( not tutorialsCheckButton:GetChecked() ) then
 							tutorialsCheckButton:Click()
+						end
+						if ( NewPlayerExperience ) then
+							NewPlayerExperience:Begin();
+						else
+							Tutorial_LoadUI();
 						end
 						TriggerTutorial(1);
 						self:Disable();
@@ -4168,11 +4174,7 @@
 			</Button>
 		</Frames>
 		<Scripts>
-			<OnLoad>
-				self.name = HELP_LABEL;
-				self.options = HelpPanelOptions;
-				InterfaceOptionsPanel_OnLoad(self);
-			</OnLoad>
+			<OnLoad function="InterfaceOptionsHelpPanel_OnLoad"/>
 		</Scripts>
 	</Frame>
 </Ui>

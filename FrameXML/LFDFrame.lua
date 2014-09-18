@@ -312,7 +312,7 @@ function LFDPopupRoleCheckButton_OnEnter(self)
 		GameTooltip:SetText(ERR_ROLE_UNAVAILABLE, 1.0, 1.0, 1.0);
 		local reasons = GetLFGInviteRoleRestrictions(roleID);
 		for i = 1, #reasons do
-			local text = _G["INSTANCE_UNAVAILABLE_SELF_"..(LFG_INSTANCE_INVALID_CODES[reasons[i]])];
+			local text = _G["INSTANCE_UNAVAILABLE_SELF_"..(LFG_INSTANCE_INVALID_CODES[reasons[i]] or "OTHER")];
 			if( text ) then
 				GameTooltip:AddLine(text);
 			end

@@ -20,6 +20,7 @@ function FloatingGarrisonFollower_Show(garrisonFollowerID, quality, level, itemL
 		GARRISON_FOLLOWER_FLOATING_TOOLTIP.displayID = C_Garrison.GetFollowerDisplayIDByID(garrisonFollowerID);
 		GARRISON_FOLLOWER_FLOATING_TOOLTIP.name = C_Garrison.GetFollowerNameByID(garrisonFollowerID);
 		GARRISON_FOLLOWER_FLOATING_TOOLTIP.spec = C_Garrison.GetFollowerClassSpecByID(garrisonFollowerID);
+		GARRISON_FOLLOWER_FLOATING_TOOLTIP.portraitIconID = C_Garrison.GetFollowerPortraitIconIDByID(garrisonFollowerID);
 		GARRISON_FOLLOWER_FLOATING_TOOLTIP.quality = quality;
 		GARRISON_FOLLOWER_FLOATING_TOOLTIP.level = level;
 		GARRISON_FOLLOWER_FLOATING_TOOLTIP.xp = 0;
@@ -50,7 +51,7 @@ function GarrisonFollowerTooltipTemplate_SetGarrisonFollower(tooltipFrame, data)
 	tooltipFrame.Name:SetText(data.name);
 	tooltipFrame.ILevel:SetFormattedText(GARRISON_FOLLOWER_ITEM_LEVEL, data.itemLevel);
 	tooltipFrame.Portrait.Level:SetText(data.level);
-	SetPortraitTexture(tooltipFrame.Portrait.Portrait, data.displayID or 0);
+	GarrisonFollowerPortrait_Set(tooltipFrame.Portrait.Portrait, data.portraitIconID);
 	local color = ITEM_QUALITY_COLORS[data.quality];
 	tooltipFrame.Portrait.LevelBorder:SetVertexColor(color.r, color.g, color.b);
 	tooltipFrame.Portrait.PortraitRingQuality:SetVertexColor(color.r, color.g, color.b);

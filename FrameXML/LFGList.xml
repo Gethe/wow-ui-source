@@ -63,7 +63,7 @@
 					<Layer level="ARTWORK">
 						<Texture parentKey="Icon1" parentArray="Icons" atlas="groupfinder-icon-role-large-tank" useAtlasSize="true">
 							<Anchors>
-								<Anchor point="RIGHT" relativeKey="$parent" relativePoint="RIGHT" x="-16" y="0"/>
+								<Anchor point="RIGHT" relativeKey="$parent" relativePoint="RIGHT" x="-12" y="0"/>
 							</Anchors>
 						</Texture>
 						<Texture parentKey="Icon2" parentArray="Icons" atlas="groupfinder-icon-role-large-tank" useAtlasSize="true">
@@ -1167,6 +1167,16 @@
 						<Anchors>
 							<Anchor point="BOTTOMRIGHT" relativeKey="$parent.InfoBackground" relativePoint="RIGHT" x="-4" y="-38"/>
 						</Anchors>
+						<Scripts>
+							<OnEnter>
+								if ( self.RoleCount:IsShown() ) then
+									GameTooltip:SetOwner(self, "ANCHOR_TOP");
+									GameTooltip:SetText(string.format(LFG_LIST_MEMBER_COUNT, GetNumGroupMembers(LE_PARTY_CATEGORY_HOME)));
+									GameTooltip:Show();
+								end
+							</OnEnter>
+							<OnLeave function="GameTooltip_Hide"/>
+						</Scripts>
 					</Frame>
 					<Frame parentKey="VoiceChatFrame" inherits="LFGListVoiceChatIcon">
 						<Anchors>

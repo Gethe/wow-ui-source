@@ -772,7 +772,7 @@ end
 function PlayerTalentFrameTalent_OnClick(self, button)
 	if ( IsModifiedClick("CHATLINK") ) then
 		if ( MacroFrameText and MacroFrameText:HasFocus() ) then
-			local _, talentName = GetTalentInfoByID(self:GetID(), selectedSpec);
+			local _, talentName = GetTalentInfoByID(self:GetID(), specs[selectedSpec].talentGroup);
 			local spellName, subSpellName = GetSpellInfo(talentName);
 			if ( spellName and not IsPassiveSpell(spellName) ) then
 				if ( subSpellName and (strlen(subSpellName) > 0) ) then
@@ -788,17 +788,11 @@ function PlayerTalentFrameTalent_OnClick(self, button)
 			end
 		end
 	elseif ( selectedSpec and (activeSpec == selectedSpec)) then
-		local _, _, _, selected, available = GetTalentInfoByID(self:GetID(), selectedSpec);
+		local _, _, _, selected, available = GetTalentInfoByID(self:GetID(), specs[selectedSpec].talentGroup);
 		if ( available ) then
 			-- only allow functionality if an active spec is selected
 			if ( button == "LeftButton" and not selected ) then
 				PlayerTalentFrame_SelectTalent(self.tier, self:GetID());
-			elseif ( button == "RightButton" and selected ) then
-				if ( UnitIsDeadOrGhost("player") ) then
-					UIErrorsFrame:AddMessage(ERR_PLAYER_DEAD, 1.0, 0.1, 0.1, 1.0);
-				else
-					StaticPopup_Show("CONFIRM_REMOVE_TALENT", nil, nil, {id = self:GetID()});
-				end
 			end
 		else
 			-- if there is something else already learned for this tier, display a dialog about unlearning that one.

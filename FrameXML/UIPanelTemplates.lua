@@ -374,14 +374,7 @@ end
 ---------------------------------------------------------------------------------
 --- Follower Portrait                                                         ---
 ---------------------------------------------------------------------------------
-function GarrisonFollowerPortait_Set(portrait, allianceIconID, hordeIconID)
-	local factionGroup = UnitFactionGroup("player");
-	local iconFileID = 0;
-	if (factionGroup == "Alliance") then
-		iconFileID = allianceIconID;
-	else
-		iconFileID = hordeIconID;
-	end
+function GarrisonFollowerPortrait_Set(portrait, iconFileID)
 	if (iconFileID == nil or iconFileID == 0) then
 		-- unknown icon file ID; use the default silhouette portrait
 		portrait:SetTexture("Interface\\Garrison\\Portraits\\FollowerPortrait_NoPortrait");

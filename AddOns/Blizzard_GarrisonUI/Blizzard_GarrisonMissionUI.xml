@@ -3,7 +3,7 @@
 	<Script file="Blizzard_GarrisonMissionUI.lua"/>
 	
 	<Button name="GarrisonMissionFrameTabTemplate" virtual="true">
-        <Size x="115" y="32"/>
+        <Size x="115" y="42"/>
         <Layers>
         	<Layer level="BACKGROUND">
 				<Texture parentKey="LeftDisabled" file="Interface\AchievementFrame\UI-Achievement-Header">
@@ -77,7 +77,8 @@
 				self.Left:SetVertexColor(0.6, 0.6, 0.6);
 				self.Middle:SetVertexColor(0.6, 0.6, 0.6);
 				self.Right:SetVertexColor(0.6, 0.6, 0.6);
-				self.deselectedTextY = -3;
+				self.deselectedTextY = 2;
+				self.selectedTextY = 2;
 			</OnLoad>
 			<OnEnter>
 				self.LeftHighlight:Show();
@@ -307,78 +308,6 @@
 			<OnLeave function="GarrisonMissionMechanicFollowerCounter_OnLeave"/>
 		</Scripts>
 	</Frame>
-
-	<Button name="GarrisonMissionFollowerButtonTemplate" inherits="GarrisonFollowerButtonTemplate" virtual="true">
-		<Layers>
-			<Layer level="BACKGROUND" textureSubLevel="-1">
-				<Texture parentKey="AbilitiesBG" atlas="GarrMission_FollowerListButton" hidden="true">
-					<Size x="232" y="0"/>
-					<Anchors>
-						<Anchor point="TOPRIGHT" relativeKey="$parent.BG" relativePoint="BOTTOMRIGHT" y="5"/>
-					</Anchors>
-				</Texture>
-			</Layer>
-			<Layer level="ARTWORK">
-				<Texture parentKey="UpArrow" file="Interface\Buttons\SquareButtonTextures" hidden="true">
-					<Size x="13" y="13"/>
-					<Anchors>
-						<Anchor point="TOPRIGHT" x="-10" y="-38"/>
-					</Anchors>
-					<TexCoords left="0.45312500" right="0.64062500" bottom="0.20312500" top="0.01562500"/>
-				</Texture>
-			</Layer>
-			<Layer level="HIGHLIGHT">
-				<Texture parentKey="DownArrow" file="Interface\Buttons\SquareButtonTextures">
-					<Size x="13" y="13"/>
-					<Anchors>
-						<Anchor point="TOPRIGHT" x="-10" y="-38"/>
-					</Anchors>
-					<TexCoords left="0.45312500" right="0.64062500" bottom="0.01562500" top="0.20312500"/>
-				</Texture>
-			</Layer>
-		</Layers>
-		<Frames>
-			<Frame parentArray="Counters" inherits="GarrisonMissionAbilityCounterTemplate" hidden="true">
-				<Anchors>
-					<Anchor point="TOPRIGHT" x="-8" y="-4"/>
-				</Anchors>
-			</Frame>
-			<Frame parentArray="Abilities" inherits="GarrisonFollowerListButtonAbilityTemplate" hidden="true">
-				<Anchors>
-					<Anchor point="TOPLEFT" relativeKey="$parent.AbilitiesBG" x="2" y="-9"/>
-				</Anchors>
-			</Frame>
-			<Frame parentKey="BusyFrame" hidden="true">
-				<Anchors>
-					<Anchor point="TOPLEFT" x="28" y="1"/>
-					<Anchor point="BOTTOMRIGHT" x="0" y="1"/>
-				</Anchors>			
-				<Layers>
-					<Layer level="ARTWORK">
-						<Texture parentKey="Texture" setAllPoints="true">
-							<Color r="0" g="0.06" b="0.22" a="0.44"/>
-						</Texture>
-					</Layer>
-				</Layers>
-			</Frame>
-		</Frames>
-		<Scripts>
-			<OnLoad>
-				self:RegisterForClicks("LeftButtonUp", "RightButtonUp");
-				self:RegisterForDrag("LeftButton");
-				self.PortraitFrame:SetFrameLevel(self.BusyFrame:GetFrameLevel() + 1);
-			</OnLoad>
-			<OnClick>
-				if ( IsModifiedClick() ) then
-					GarrisonFollowerListButton_OnModifiedClick(self, button);
-				else
-					GarrisonFollowerListButton_OnClick(self, button);
-				end
-			</OnClick>
-			<OnDragStart function="GarrisonFollowerListButton_OnDragStart"/>
-			<OnDragStop function="GarrisonFollowerListButton_OnDragStop"/>
-		</Scripts>
-	</Button>
 	
 	<Frame name="GarrisonFollowerPageAbilityTemplate" virtual="true">
 		<Size x="240" y="60"/>
@@ -616,7 +545,7 @@
 						<Anchor point="TOPLEFT" x="68" y="-2"/>
 					</Anchors>
 				</Texture>
-				<FontString parentKey="Title" inherits="QuestFont_Super_Huge" justifyH="LEFT">
+				<FontString parentKey="Title" inherits="QuestFont_Super_Huge" justifyH="LEFT" maxLines="1">
 					<Anchors>
 						<Anchor point="LEFT" x="165" y="0"/>
 					</Anchors>
@@ -627,7 +556,7 @@
 					<Color r="1" g="1" b="1"/>
 				</FontString>
 				<FontString parentKey="Summary" inherits="GameFontNormalLarge2" justifyH="LEFT">
-					<Size x="390" y="0"/>
+					<Size x="0" y="0"/>
 					<Anchors>
 						<Anchor point="BOTTOMLEFT" relativeKey="$parent.Title" relativePoint="BOTTOMRIGHT" x="8" y="0"/>
 					</Anchors>
@@ -1386,15 +1315,9 @@
 			<Layer level="OVERLAY">
 				<FontString parentKey="Text" inherits="GameFontHighlightLarge">
 					<Anchors>
-						<Anchor point="CENTER" x="-15"/>
+						<Anchor point="CENTER"/>
 					</Anchors>
 				</FontString>
-				<Texture parentKey="XPIcon" file="Interface\Icons\Garr_CurrencyIcon-XP">
-					<Size x="37" y="37"/>
-					<Anchors>
-						<Anchor point="LEFT" relativeKey="$parent.Text" relativePoint="RIGHT" x="-5" y="1"/>
-					</Anchors>
-				</Texture>
 			</Layer>
 		</Layers>
 		<Scripts>
@@ -1705,7 +1628,7 @@
 		<Frames>
 			<Button name="$parentTab1" inherits="GarrisonMissionFrameTabTemplate" id="1" text="GARRISON_MISSIONS">
 				<Anchors>
-					<Anchor point="BOTTOMLEFT" x="11" y="-32"/>
+					<Anchor point="BOTTOMLEFT" x="11" y="-42"/>
 				</Anchors>
 			</Button>
 			<Button name="$parentTab2" inherits="GarrisonMissionFrameTabTemplate" id="2" text="GARRISON_FOLLOWERS">
@@ -1870,19 +1793,6 @@
 													</Layer>
 												</Layers>
 											</Frame>
-											<CinematicModel parentKey="Model" inherits="GarrisonCinematicModelBaseTemplate">
-												<Size x="600" y="483"/>
-												<Anchors>
-													<Anchor point="BOTTOMLEFT" x="-133" y="3"/>
-												</Anchors>
-												<Layers>
-													<Layer level="BACKGROUND">
-														<Texture setAllPoints="true">
-															<Color r="1" g="1" b="1" a="0"/>
-														</Texture>
-													</Layer>
-												</Layers>
-											</CinematicModel>
 											<Button parentKey="ViewButton" inherits="UIPanelButtonTemplate" text="GARRISON_VIEW_COMPLETED_MISSIONS">
 												<Size x="132" y="24"/>
 												<Anchors>
@@ -1896,6 +1806,36 @@
 													<OnClick function="GarrisonMissionFrame_ShowCompleteMissions"/>
 												</Scripts>
 											</Button>
+											<CinematicModel parentKey="Model" inherits="GarrisonCinematicModelBaseTemplate">
+												<Size x="600" y="483"/>
+												<Anchors>
+													<Anchor point="BOTTOMLEFT" x="-133" y="3"/>
+												</Anchors>
+												<Layers>
+													<Layer level="BACKGROUND">
+														<Texture setAllPoints="true">
+															<Color r="1" g="1" b="1" a="0"/>
+														</Texture>
+													</Layer>
+													<Layer level="OVERLAY">
+														<FontString parentKey="Title" inherits="DestinyFontHuge" justifyH="CENTER" text="GARRISON_MISSION_REPORT" spacing="8">
+															<Anchors>
+																<Anchor point="BOTTOM" relativeKey="$parent.$parent.ViewButton" relativePoint="TOP" x="0" y="60"/>
+															</Anchors>
+															<Shadow>
+																<Offset x="1" y="-1"/>
+															</Shadow>		
+															<Color r="1" g="0.82" b="0"/>
+														</FontString>
+														<FontString parentKey="Summary" inherits="GameFontHighlightLarge2" justifyH="CENTER">
+															<Anchors>
+																<Anchor point="TOP" relativeKey="$parent.Title" relativePoint="BOTTOM" y="-6"/>
+															</Anchors>
+															<Color r="0.8" g="0.8" b="0.8"/>
+														</FontString>
+													</Layer>													
+												</Layers>
+											</CinematicModel>
 											<Frame parentKey="LoadingFrame" inherits="LoadingSpinnerTemplate" hidden="true">
 												<Layers>
 													<Layer level="ARTWORK">
@@ -1935,23 +1875,6 @@
 													</Anchors>
 													<TexCoords left="1.0" right="0.0" top="0.0" bottom="1.0"/>
 												</Texture>
-											</Layer>
-											<Layer level="ARTWORK">
-												<FontString parentKey="Title" inherits="DestinyFontHuge" justifyH="CENTER" text="GARRISON_MISSION_REPORT" spacing="8">
-													<Anchors>
-														<Anchor point="BOTTOM" relativeKey="$parent.ViewButton" relativePoint="TOP" x="0" y="60"/>
-													</Anchors>
-													<Shadow>
-														<Offset x="1" y="-1"/>
-													</Shadow>		
-													<Color r="1" g="0.82" b="0"/>
-												</FontString>
-												<FontString parentKey="Summary" inherits="GameFontHighlightLarge2" justifyH="CENTER">
-													<Anchors>
-														<Anchor point="TOP" relativeKey="$parent.Title" relativePoint="BOTTOM" y="-6"/>
-													</Anchors>
-													<Color r="0.8" g="0.8" b="0.8"/>
-												</FontString>	
 											</Layer>
 										</Layers>
 									</Frame>
@@ -2058,7 +1981,8 @@
 												<Anchor point="TOPLEFT" x="48" y="-4"/>
 											</Anchors>
 										</Texture>
-										<FontString parentKey="Title" inherits="QuestFont_Super_Huge">
+										<FontString parentKey="Title" inherits="QuestFont_Super_Huge" justifyH="LEFT" maxLines="1">
+											<Size x="410" y="0"/>
 											<Shadow>
 												<Offset x="1" y="-1"/>
 											</Shadow>
@@ -2479,6 +2403,9 @@
 							</Layer>
 						</Layers>
 						<Scripts>
+							<OnModelLoaded>
+								self:SetAlpha(1);
+							</OnModelLoaded>
 							<OnShow>
 								self:SetTargetDistance(0);
 								self:SetFacing(.2);
@@ -2752,7 +2679,8 @@
 												<Anchor point="TOPLEFT" x="48" y="-4"/>
 											</Anchors>
 										</Texture>
-										<FontString parentKey="Title" inherits="QuestFont_Super_Huge">
+										<FontString parentKey="Title" inherits="QuestFont_Super_Huge" justifyH="LEFT" maxLines="1">
+											<Size x="430" y="0"/>
 											<Shadow>
 												<Offset x="1" y="-1"/>
 											</Shadow>

@@ -40,10 +40,6 @@ function GarrisonRecruiterFrame_OnEvent(self, event, ...)
 	end
 end
 
-function GarrisonRecruiterFrame_HaveRoomToRecruit()
-	return C_Garrison.GetNumFollowers() < C_Garrison.GetFollowerSoftCap()
-end
-
 function GarrisonRecruiterFrame_OnShow(self)
 	self:RegisterEvent("GARRISON_RECRUITMENT_NPC_CLOSED");
 	self:RegisterEvent("GARRISON_RECRUITMENT_READY");
@@ -60,12 +56,12 @@ function GarrisonRecruiterFrame_OnShow(self)
 		ShowUIPanel(GarrisonRecruitSelectFrame);
 	else
 		self.keepRecruitmentNPCOpen = nil;
-		GarrisonRecruiterFrame_Show( C_Garrison.CanGenerateRecruits(), GarrisonRecruiterFrame_HaveRoomToRecruit(), C_Garrison.CanSetRecruitmentPreference() );
+		GarrisonRecruiterFrame_Show( C_Garrison.CanGenerateRecruits(), C_Garrison.CanSetRecruitmentPreference() );
 	end
 end
 
-function GarrisonRecruiterFrame_Show( canRecruit, haveRoomToRecruit, prefAvailable )
-	if( canRecruit and haveRoomToRecruit ) then
+function GarrisonRecruiterFrame_Show( canRecruit, prefAvailable )
+	if( canRecruit ) then
 		if( prefAvailable )then
 			local frame = GarrisonRecruiterFrame.Pick;
 			local ability, name, desc, icon = C_Garrison.GetRecruitmentPreferences()
@@ -91,16 +87,12 @@ function GarrisonRecruiterFrame_Show( canRecruit, haveRoomToRecruit, prefAvailab
 			GarrisonRecruiterFrame.Random:Show();
 		end
 	else
-		GarrisonRecruiterFrame_ShowUnavailableFrame(haveRoomToRecruit);
+		GarrisonRecruiterFrame_ShowUnavailableFrame();
 	end
 end
 
-function GarrisonRecruiterFrame_ShowUnavailableFrame(haveRoomToRecruit)
-	if ( haveRoomToRecruit ) then
-		GarrisonRecruiterFrame.UnavailableFrame.Title:SetText(GARRISON_RECRUIT_NEXT_WEEK);	
-	else
-		GarrisonRecruiterFrame.UnavailableFrame.Title:SetText(GARRISON_MAX_FOLLOWERS_CANNOT_RECRUIT);	
-	end
+function GarrisonRecruiterFrame_ShowUnavailableFrame()
+	GarrisonRecruiterFrame.UnavailableFrame.Title:SetText(GARRISON_RECRUIT_NEXT_WEEK);	
 	GarrisonRecruiterFrame.UnavailableFrame:Show();
 end
 
@@ -277,24 +269,11 @@ function GarrisonRecruitSelectFrame_OnEvent(self, event, ...)
 		GarrisonRecruitSelectFrame_UpdateRecruits( false )
 	elseif(event == "GARRISON_RECRUITMENT_NPC_CLOSED")then
 		HideUIPanel(GarrisonRecruitSelectFrame);
-	elseif ( event == "GARRISON_FOLLOWER_ADDED" or event == "GARRISON_FOLLOWER_REMOVED" ) then
-		GarrisonRecruitSelectFrame_UpdateButtons();
 	end
 end
 
 function GarrisonRecruitSelectFrame_OnShow(self)
 	self:RegisterEvent("GARRISON_RECRUITMENT_NPC_CLOSED");
-	self:RegisterEvent("GARRISON_FOLLOWER_ADDED");
-	self:RegisterEvent("GARRISON_FOLLOWER_REMOVED");
-	GarrisonRecruitSelectFrame_UpdateButtons();
-end
-
-function GarrisonRecruitSelectFrame_UpdateButtons()
-	local haveRoomToRecruit = GarrisonRecruiterFrame_HaveRoomToRecruit();
-	for i = 1, 3 do
-		local frame = GarrisonRecruitSelectFrame.FollowerSelection["Recruit"..i];
-		frame.HireRecruits:SetEnabled(haveRoomToRecruit);
-	end
 end
 
 function GarrisonRecruitSelectFrame_UpdateRecruits( waiting )
@@ -407,8 +386,6 @@ end
 
 function GarrisonRecruitSelectFrame_OnHide(self)
 	self:UnregisterEvent("GARRISON_RECRUITMENT_NPC_CLOSED");
-	self:UnregisterEvent("GARRISON_FOLLOWER_ADDED");
-	self:UnregisterEvent("GARRISON_FOLLOWER_REMOVED");	
 	C_Garrison.CloseRecruitmentNPC();
 	StaticPopup_Hide("CONFIRM_RECRUIT_FOLLOWER");
 end

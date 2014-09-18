@@ -438,7 +438,7 @@ function EncounterJournal_DisplayInstance(instanceID, noButton)
 		bossIndex = bossIndex + 1;
 		name, description, bossID, _, link = EJ_GetEncounterInfoByIndex(bossIndex);
 	end
-	
+
 	--disable model tab and abilities tab, no boss selected
 	EncounterJournal.encounter.info.modelTab:Disable();
 	EncounterJournal.encounter.info.modelTab:GetDisabledTexture():SetDesaturated(true);
@@ -469,7 +469,7 @@ function EncounterJournal_DisplayInstance(instanceID, noButton)
 	self.info.lootScroll:Hide();
 	self.info.rightShadow:Hide();
 	
-	if (self.info.tab < 4) then
+	if (self.info.tab < 3) then
 		self.info[EJ_Tabs[self.info.tab].button]:Click()
 	else
 		self.info.overviewTab:Click();

@@ -444,7 +444,7 @@ function QuestInfo_ShowRewards()
 			local color = ITEM_QUALITY_COLORS[followerInfo.quality];
 			questItem.PortraitFrame.PortraitRingQuality:SetVertexColor(color.r, color.g, color.b);
 			questItem.PortraitFrame.LevelBorder:SetVertexColor(color.r, color.g, color.b);
-			GarrisonFollowerPortait_Set(questItem.PortraitFrame.Portrait, followerInfo.allianceIconFileDataID, followerInfo.hordeIconFileDataID);
+			GarrisonFollowerPortrait_Set(questItem.PortraitFrame.Portrait, followerInfo.portraitIconID);
 		else
 			rewardsFrame.FollowerFrame:Hide();
 			questItem = rewardsFrame.SpellFrame;
@@ -589,8 +589,9 @@ function QuestInfo_ShowRewards()
 		
 		-- currency
 		baseIndex = rewardsCount;
-		for i = 1, numQuestCurrencies, 1 do
-			buttonIndex = buttonIndex + 1;
+		local foundCurrencies = 0;
+		buttonIndex = buttonIndex + 1;
+		for i = 1, GetMaxRewardCurrencies(), 1 do
 			index = i + baseIndex;
 			questItem = QuestInfo_GetRewardButton(rewardsFrame, index);
 			questItem.type = "reward";
@@ -600,29 +601,36 @@ function QuestInfo_ShowRewards()
 			else
 				name, texture, numItems = GetQuestCurrencyInfo(questItem.type, i);
 			end
-			questItem:SetID(i)
-			questItem:Show();
-			-- For the tooltip
-			questItem.Name:SetText(name);
-			SetItemButtonCount(questItem, numItems);
-			SetItemButtonTexture(questItem, texture);
-			SetItemButtonTextureVertexColor(questItem, 1.0, 1.0, 1.0);
-			SetItemButtonNameFrameVertexColor(questItem, 1.0, 1.0, 1.0);
-			
-			if ( buttonIndex > 1 ) then
-				if ( mod(buttonIndex,2) == 1 ) then
-					questItem:SetPoint("TOPLEFT", rewardButtons[index - 2], "BOTTOMLEFT", 0, -2);
-					lastFrame = questItem;
-					totalHeight = totalHeight + buttonHeight + 2;
+			if (name and texture and numItems) then
+				questItem:SetID(i)
+				questItem:Show();
+				-- For the tooltip
+				questItem.Name:SetText(name);
+				SetItemButtonCount(questItem, numItems);
+				SetItemButtonTexture(questItem, texture);
+				SetItemButtonTextureVertexColor(questItem, 1.0, 1.0, 1.0);
+				SetItemButtonNameFrameVertexColor(questItem, 1.0, 1.0, 1.0);
+				
+				if ( buttonIndex > 1 ) then
+					if ( mod(buttonIndex,2) == 1 ) then
+						questItem:SetPoint("TOPLEFT", rewardButtons[index - 2], "BOTTOMLEFT", 0, -2);
+						lastFrame = questItem;
+						totalHeight = totalHeight + buttonHeight + 2;
+					else
+						questItem:SetPoint("TOPLEFT", rewardButtons[index - 1], "TOPRIGHT", 1, 0);
+					end
 				else
-					questItem:SetPoint("TOPLEFT", rewardButtons[index - 1], "TOPRIGHT", 1, 0);
+					questItem:SetPoint("TOPLEFT", lastFrame, "BOTTOMLEFT", 0, -REWARDS_SECTION_OFFSET);
+					lastFrame = questItem;
+					totalHeight = totalHeight + buttonHeight + REWARDS_SECTION_OFFSET;
 				end
-			else
-				questItem:SetPoint("TOPLEFT", lastFrame, "BOTTOMLEFT", 0, -REWARDS_SECTION_OFFSET);
-				lastFrame = questItem;
-				totalHeight = totalHeight + buttonHeight + REWARDS_SECTION_OFFSET;
+				rewardsCount = rewardsCount + 1;
+				foundCurrencies = foundCurrencies + 1;
+				buttonIndex = buttonIndex + 1;
+				if (foundCurrencies == numQuestCurrencies) then
+					break;
+				end
 			end
-			rewardsCount = rewardsCount + 1;
 		end
 	else	
 		rewardsFrame.ItemReceiveText:Hide();

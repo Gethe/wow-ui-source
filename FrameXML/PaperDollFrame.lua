@@ -992,15 +992,8 @@ function PaperDollFrame_SetDamage(statFrame, unit)
 end
 
 function PaperDollFrame_SetAttackSpeed(statFrame, unit)
-	local speed, offhandSpeed;
 	local meleeHaste = GetMeleeHaste();
-
-	local rangedWeapon = IsRangedWeapon();
-	if ( rangedWeapon ) then
-		speed = UnitRangedDamage(unit);	
-	else 
-		speed, offhandSpeed = UnitAttackSpeed(unit);
-	end
+	local speed, offhandSpeed = UnitAttackSpeed(unit);
 
 --	speed = format("%.2F", speed);
 	if ( offhandSpeed ) then

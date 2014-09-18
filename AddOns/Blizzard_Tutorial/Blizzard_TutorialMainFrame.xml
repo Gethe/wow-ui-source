@@ -1,0 +1,105 @@
+﻿<Ui xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns="http://www.blizzard.com/wow/ui/">
+	<Script file="Blizzard_TutorialMainFrame.lua" />
+
+	<Texture name="NPE_TutorialLine" file="Interface\LevelUp\LevelUpTex" virtual="true">
+		<Size y="7" />
+		<TexCoords left="0.00195313" right="0.81835938" top="0.01953125" bottom="0.03320313"/>
+	</Texture>
+
+	<Frame name="NPE_TutorialMainFrame_Frame" alpha="0">
+		<Size x="350" y="80" />
+		<Anchors>
+			<Anchor point="CENTER" y="160" />
+		</Anchors>    
+		<Layers>
+			<!-- Black gradient background -->
+			<Layer level="BACKGROUND">
+				<Texture file="Interface\LevelUp\LevelUpTex">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="-125" y="100" />
+						<Anchor point="BOTTOMRIGHT" x="125" />
+					</Anchors>
+					<TexCoords left="0.00195313" right="0.6386719" top="0.03710938" bottom="0.23828125" />
+				</Texture>
+			</Layer>
+		  
+			<!-- Top line -->
+			<Layer level="BORDER">
+				<Texture inherits="NPE_TutorialLine">
+					<Anchors>
+						<Anchor point="TOP" />
+					</Anchors>
+				</Texture>
+
+				<!-- Bottom line-->
+				<Texture inherits="NPE_TutorialLine">
+					<Anchors>
+						<Anchor point="BOTTOM" />
+					</Anchors>
+				</Texture>
+			</Layer>
+		  
+			<!-- Question mark -->
+			<Layer level="ARTWORK" textureSubLevel="1">
+				<Texture parentKey="Ring" file="Interface\TutorialFrame\UI-TUTORIAL-FRAME">
+					<Size x="75" y="46"/>
+					<Anchors>
+						<Anchor point="BOTTOM" relativePoint="TOP" y="-11"/>
+					</Anchors>
+					<TexCoords left="0.7167969" right="0.9414063" top="0.0019531" bottom="0.1386719"/>
+				</Texture>
+			</Layer>
+
+			<!--Questionmark glow--> 
+			<Layer level="ARTWORK" textureSubLevel="2">
+				<Texture alphaMode="ADD" file="Interface\Challenges\challenges-metalglow">
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent.Ring" x="2" y="2"/>
+					</Anchors>
+					<Size x="175" y="175"/>
+					<Animations>
+						<AnimationGroup looping="BOUNCE">
+							<Alpha fromAlpha="0.25" toAlpha="0.5" duration="0.75" />
+							<Scripts>
+								<OnLoad> self:Play() </OnLoad>
+							</Scripts>
+						</AnimationGroup>
+					</Animations>
+				</Texture>
+			</Layer>
+		  
+			<!-- Text -->
+			<Layer level="OVERLAY">
+				<FontString parentKey="Text" text="Sed aliquet suscipit magna, eget imperdiet orci. Cras elementum leo at elit luctus malesuada. Nulla velit est, facilisis in lectus a, ornare faucibus magna." inherits="GameFontNormalLarge">
+					<Size x="400" y="65" />
+					<Anchors>
+						<Anchor point="CENTER" y="-3" />
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		
+		<Animations>
+			<AnimationGroup parentKey="Anim_FadeIn" setToFinalAlpha="true">
+				<Alpha fromAlpha="0" toAlpha="1" duration="1" />
+				<Scripts>
+					<OnPlay> NPE_TutorialMainFrame:_SetState(NPE_TutorialMainFrame.States.AnimatingIn) </OnPlay>
+					<OnFinished> NPE_TutorialMainFrame:_SetState(NPE_TutorialMainFrame.States.Visible) </OnFinished>
+				</Scripts>
+			</AnimationGroup>
+			<AnimationGroup parentKey="Anim_FadeOut" setToFinalAlpha="true">
+				<Alpha fromAlpha="1" toAlpha="0" duration="0.5" />
+				<Scripts>
+					<OnPlay> NPE_TutorialMainFrame:_SetState(NPE_TutorialMainFrame.States.AnimatingOut) </OnPlay>
+					<OnFinished> NPE_TutorialMainFrame:_SetState(NPE_TutorialMainFrame.States.Hidden) </OnFinished>
+				</Scripts>
+			</AnimationGroup>
+		</Animations>
+		
+		<Scripts>
+			<OnLoad>
+			NPE_TutorialMainFrame:Initialize(self);
+			</OnLoad>
+		</Scripts>
+	</Frame>
+</Ui>

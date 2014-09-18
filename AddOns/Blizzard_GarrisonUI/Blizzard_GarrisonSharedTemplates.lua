@@ -42,7 +42,6 @@ function GarrisonFollowerList_OnEvent(self, event, ...)
 		
 		GarrisonFollowerList_DirtyList(self.FollowerList);
 		GarrisonFollowerList_UpdateFollowers(self.FollowerList);
-		GarrisonMissionPage_UpdateParty();
 		return true;
 	elseif (event == "GARRISON_FOLLOWER_REMOVED") then
 		if (self.FollowerTab and self.FollowerTab.followerID and not C_Garrison.GetFollowerInfo(self.FollowerTab.followerID) and self.FollowerList.followers) then
@@ -83,11 +82,7 @@ function GarrisonFollowerList_UpdateFollowers(self)
 
 	local searchString = followerList.SearchBox:GetText();
 	
-	local numCollected = 0;
 	for i = 1, #followerList.followers do
-		if ( followerList.followers[i].isCollected ) then
-			numCollected = numCollected + 1;
-		end
 		if ( (self.followers[i].isCollected or self.showUncollected) and (searchString == "" or C_Garrison.SearchForFollower(self.followers[i].followerID, searchString)) ) then
 			tinsert(self.followersList, i);
 		end
@@ -96,18 +91,19 @@ function GarrisonFollowerList_UpdateFollowers(self)
 	local followerTab = self:GetParent().FollowerTab;
 	if ( followerTab ) then
 		local maxFollowers = C_Garrison.GetFollowerSoftCap();
+		local numActiveFollowers = C_Garrison.GetNumActiveFollowers();
 		if ( self.isLandingPage ) then
 			local countColor = HIGHLIGHT_FONT_COLOR_CODE;
-			if ( numCollected > maxFollowers ) then
+			if ( numActiveFollowers > maxFollowers ) then
 				countColor = RED_FONT_COLOR_CODE;
 			end
-			self:GetParent().FollowerTab.NumFollowers:SetText(countColor..numCollected.."/"..maxFollowers..FONT_COLOR_CODE_CLOSE);
+			self:GetParent().FollowerTab.NumFollowers:SetText(countColor..numActiveFollowers.."/"..maxFollowers..FONT_COLOR_CODE_CLOSE);
 		else
 			local countColor = NORMAL_FONT_COLOR_CODE;
-			if ( numCollected > maxFollowers ) then
+			if ( numActiveFollowers > maxFollowers ) then
 				countColor = RED_FONT_COLOR_CODE;
 			end
-			self:GetParent().FollowerTab.NumFollowers:SetText(format(GARRISON_FOLLOWER_COUNT, countColor, numCollected, maxFollowers, FONT_COLOR_CODE_CLOSE));
+			self:GetParent().FollowerTab.NumFollowers:SetText(format(GARRISON_FOLLOWER_COUNT, countColor, numActiveFollowers, maxFollowers, FONT_COLOR_CODE_CLOSE));
 		end
 	end
 
@@ -169,7 +165,7 @@ function GarrisonFollowerList_Update(self)
 			local color = ITEM_QUALITY_COLORS[follower.quality];
 			button.PortraitFrame.LevelBorder:SetVertexColor(color.r, color.g, color.b);
 			button.PortraitFrame.Level:SetText(follower.level);
-			GarrisonFollowerPortait_Set(button.PortraitFrame.Portrait, follower.allianceIconFileDataID, follower.hordeIconFileDataID);
+			GarrisonFollowerPortrait_Set(button.PortraitFrame.Portrait, follower.portraitIconID);
 			if ( follower.isCollected ) then
 				-- have this follower
 				button.isCollected = true;
@@ -184,8 +180,7 @@ function GarrisonFollowerList_Update(self)
 					button.PortraitFrame.PortraitRingCover:SetAlpha(0.5);
 					button.BusyFrame:Show();
 					button.BusyFrame.Texture:SetTexture(unpack(GARRISON_FOLLOWER_INACTIVE_COLOR));
-				elseif ( followerFrame.followerCounters and follower.status ) then
-					-- followers with any status on the mission page are invalid
+				elseif ( follower.status ) then
 					button.PortraitFrame.PortraitRingCover:Show();
 					button.PortraitFrame.PortraitRingCover:SetAlpha(0.5);
 					button.BusyFrame:Show();
@@ -340,20 +335,23 @@ function GarrisonFollowerButton_Expand(self, followerListFrame)
 	if (not self.info.abilities) then
 		self.info.abilities = C_Garrison.GetFollowerAbilities(self.info.followerID);
 	end
+
+	local buttonCount = 0;
+	-- abilities
 	for i=1, #self.info.abilities do
-		if (not self.Abilities[i]) then
-			self.Abilities[i] = CreateFrame("Frame", nil, self, "GarrisonFollowerListButtonAbilityTemplate");
-			self.Abilities[i]:SetPoint("TOPLEFT", self.Abilities[i-1], "BOTTOMLEFT", 0, -2);
+		if ( not self.info.abilities[i].isTrait ) then
+			buttonCount = buttonCount + 1;
+			abHeight = abHeight + GarrisonFollowerButton_AddAbility(self, buttonCount, self.info.abilities[i]);			
 		end
-		local Ability = self.Abilities[i];
-		local ability = self.info.abilities[i];
-		Ability.abilityID = ability.id;
-		Ability.Name:SetText(ability.name);
-		Ability.Icon:SetTexture(ability.icon);
-		Ability.tooltip = ability.description;
-		Ability:Show();
-		abHeight = abHeight + Ability:GetHeight() + 3;
 	end
+	-- traits
+	for i=1, #self.info.abilities do
+		if ( self.info.abilities[i].isTrait ) then
+			buttonCount = buttonCount + 1;
+			abHeight = abHeight + GarrisonFollowerButton_AddAbility(self, buttonCount, self.info.abilities[i]);			
+		end
+	end
+
 	for i=(#self.info.abilities + 1), #self.Abilities do
 		self.Abilities[i]:Hide();
 	end
@@ -366,6 +364,20 @@ function GarrisonFollowerButton_Expand(self, followerListFrame)
 	end
 	self:SetHeight(51 + abHeight);
 	followerListFrame.expandedFollowerHeight = 51 + abHeight + 6;
+end
+
+function GarrisonFollowerButton_AddAbility(self, index, ability)
+	if (not self.Abilities[index]) then
+		self.Abilities[index] = CreateFrame("Frame", nil, self, "GarrisonFollowerListButtonAbilityTemplate");
+		self.Abilities[index]:SetPoint("TOPLEFT", self.Abilities[index-1], "BOTTOMLEFT", 0, -2);
+	end
+	local Ability = self.Abilities[index];
+	Ability.abilityID = ability.id;
+	Ability.Name:SetText(ability.name);
+	Ability.Icon:SetTexture(ability.icon);
+	Ability.tooltip = ability.description;
+	Ability:Show();
+	return Ability:GetHeight() + 3;
 end
 
 function GarrisonFollowerButton_Collapse(self)
@@ -537,6 +549,7 @@ end
 
 function GarrisonMission_SetFollowerModelItems(modelFrame)
 	if ( modelFrame.followerID ) then
+		modelFrame:UnequipItems();
 		local follower =  C_Garrison.GetFollowerInfo(modelFrame.followerID);
 		if ( follower and follower.isCollected ) then
 			local modelItems = C_Garrison.GetFollowerModelItems(modelFrame.followerID);
@@ -594,6 +607,7 @@ function GarrisonFollowerPage_ShowFollower(self, followerID)
 		self.followerID = followerID;
 		self.NoFollowersLabel:Hide();
 		self.PortraitFrame:Show();
+		self.Model:SetAlpha(0);
 		GarrisonMission_SetFollowerModel(self.Model, followerInfo.followerID, followerInfo.displayID);
 		if (followerInfo.displayHeight) then
 			self.Model:SetHeightFactor(followerInfo.displayHeight);
@@ -629,7 +643,18 @@ function GarrisonFollowerPage_ShowFollower(self, followerID)
 			else
 				self.XPLabel:SetText(GARRISON_FOLLOWER_XP_STRING);
 			end
+			self.XPLabel:SetWidth(0);
+			self.XPLabel:SetFontObject("GameFontHighlight");
+			self.XPLabel:SetPoint("TOPRIGHT", self.XPText, "BOTTOMRIGHT", 0, -4);
 			self.XPLabel:Show();
+			-- If the XPLabel text does not fit within 100 pixels, shrink the font. If it wraps to 2 lines, move the text up.
+			if (self.XPLabel:GetWidth() > 100) then
+				self.XPLabel:SetWidth(100);
+				self.XPLabel:SetFontObject("GameFontWhiteSmall");
+				if (self.XPLabel:GetNumLines() > 1) then
+					self.XPLabel:SetPoint("TOPRIGHT", self.XPText, "BOTTOMRIGHT", -1, 0);
+				end
+			end
 			self.XPBar:Show();
 			self.XPBar:SetMinMaxValues(0, followerInfo.levelXP);
 			self.XPBar.Label:SetFormattedText(GARRISON_FOLLOWER_XP_BAR_LABEL, BreakUpLargeNumbers(followerInfo.xp), BreakUpLargeNumbers(followerInfo.levelXP));
@@ -803,3 +828,32 @@ function Garrison_SortMissions(missionsList)
 
 	table.sort(missionsList, comparison);
 end
+
+---------------------------------------------------------------------------------
+--- Truncation		                                                          ---
+---------------------------------------------------------------------------------
+
+function GarrisonTruncationFrame_Check(fontString)
+	local self = GarrisonTruncationFrame;
+	if ( fontString:IsTruncated() ) then
+		self:SetParent(fontString:GetParent());
+		self:SetPoint("TOPLEFT", fontString);
+		self:SetPoint("BOTTOMRIGHT", fontString);
+		self:Show();
+		self.tooltip = fontString:GetText();
+	else
+		self:Hide();
+		self.tooltip = nil;
+	end
+end
+
+function GarrisonTruncationFrame_OnEnter(self)
+	GameTooltip:SetOwner(self, "ANCHOR_TOP");
+	GameTooltip:SetText(self.tooltip);
+end
+
+function GarrisonTruncationFrame_OnLeave(self)
+	GameTooltip:Hide();
+end
+
+

@@ -250,7 +250,10 @@ function WorldMapFrame_OnLoad(self)
 	self:SetClampRectInsets(0, 0, 0, -60);				-- don't overlap the xp/rep bars
 	self.poiHighlight = nil;
 	self.areaName = nil;
-	WorldMapFrame_Update();
+	
+	-- RE: Bug ID: 345647 - Texture errors occur after entering the Nexus and relogging.
+	-- The correct GetMapInfo() data is not yet available here, so don't try preloading incorrect map textures.
+	--WorldMapFrame_Update();
 
 	--[[ Hide the world behind the map when we're in widescreen mode
 	local width = GetScreenWidth();
@@ -305,11 +308,10 @@ function WorldMapFrame_OnShow(self)
 	end
 
 	-- check to show the help plate
-	if ( not GetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_WORLD_MAP_FRAME) ) then
+	if ( UnitLevel("player") >= 7 and not GetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_WORLD_MAP_FRAME) ) then
 		local helpPlate = WorldMapFrame_HelpPlate;
 		if ( helpPlate and not HelpPlate_IsShowing(helpPlate) ) then
-			HelpPlate_Show( helpPlate, WorldMapFrame, WorldMapFrame.MainHelpButton );
-			SetCVarBitfield( "closedInfoFrames", LE_FRAME_TUTORIAL_WORLD_MAP_FRAME, true );
+			WorldMapFrame_ToggleTutorial();
 		end
 	end
 
@@ -2096,7 +2098,11 @@ function WorldMapQuestPOI_SetTooltip(poiButton, questLogIndex, numObjectives)
 	WorldMapTooltip:SetOwner(poiButton or WorldMapBlobFrame, "ANCHOR_CURSOR_RIGHT", 5, 2);
 	WorldMapTooltip:SetText(title);
 	if ( poiButton and poiButton.style ~= "numeric" ) then
-		WorldMapTooltip:AddLine("- "..GetQuestLogCompletionText(questLogIndex), 1, 1, 1, true);
+		if ( IsBreadcrumbQuest(poiButton.questID) ) then
+			WorldMapTooltip:AddLine("- "..GetQuestLogCompletionText(questLogIndex), 1, 1, 1, true);
+		else
+			WorldMapTooltip:AddLine("- "..QUEST_WATCH_QUEST_READY, 1, 1, 1, true);
+		end
 	else
 		local text, finished, objectiveType;
 		local numItemDropTooltips = GetNumQuestItemDrops(questLogIndex);
@@ -2131,7 +2137,11 @@ function WorldMapQuestPOI_AppendTooltip(poiButton, questLogIndex)
 	WorldMapTooltip:AddLine(" ");
 	WorldMapTooltip:AddLine(title);
 	if ( poiButton and poiButton.style ~= "numeric" ) then
-		WorldMapTooltip:AddLine("- "..GetQuestLogCompletionText(questLogIndex), 1, 1, 1, true);
+		if ( IsBreadcrumbQuest(poiButton.questID) ) then
+			WorldMapTooltip:AddLine("- "..GetQuestLogCompletionText(questLogIndex), 1, 1, 1, true);
+		else
+			WorldMapTooltip:AddLine("- "..QUEST_WATCH_QUEST_READY, 1, 1, 1, true);
+		end			
 	else
 		local text, finished, objectiveType;
 		local numItemDropTooltips = GetNumQuestItemDrops(questLogIndex);

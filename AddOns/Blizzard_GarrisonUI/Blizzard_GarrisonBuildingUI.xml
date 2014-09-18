@@ -504,14 +504,6 @@
 			<OnLeave function="GarrisonPlot_OnLeave"/>
 		</Scripts>
 	</Button>
-
-	<Button name="GarrisonBuildingFollowerButtonTemplate" inherits="GarrisonFollowerButtonTemplate" virtual="true">
-		<Scripts>
-			<OnClick function="GarrisonBuildingFollowerButton_OnClick"/>
-			<OnEnter function="GarrisonBuildingFollowerButton_OnEnter"/>
-			<OnLeave function="GarrisonBuildingFollowerButton_OnLeave"/>
-		</Scripts>
-	</Button>
 	
 	<Frame name="GarrisonBuildingFrame" inherits="GarrisonUITemplate" parent="UIParent" enableMouse="true" toplevel="true" hidden="true">
 		<Size x="1002" y="662"/>
@@ -630,9 +622,6 @@
 			
 			<Frame parentKey="FollowerList" inherits="GarrisonListTemplateHeader" name="$parentFollowers" hidden="true" frameStrata="HIGH">
 				<Size x="305" y="565"/>
-				<KeyValues>
-					 <KeyValue key="canExpand" value="true" type="boolean"/>
-				</KeyValues>				
 				<Anchors>
 					<Anchor point="BOTTOMLEFT" x="33" y="34"/>
 				</Anchors>
@@ -1474,7 +1463,7 @@
 	</Frame>
 	
 	
-	<Frame name="GarrisonBuildingPlacer" parent="UIParent" frameStrata="HIGH" hidden="true">
+	<Frame name="GarrisonBuildingPlacer" parent="UIParent" frameStrata="DIALOG" hidden="true">
 		<Size x="108" y="70"/>
 		<Layers>
 			<Layer level="ARTWORK">
@@ -1502,7 +1491,7 @@
 		</Layers>
 	</Frame>
 	
-	<Button name="GarrisonBuildingPlacerFrame" parent="UIParent" frameStrata="HIGH" setAllPoints="true" hidden="true">
+	<Button name="GarrisonBuildingPlacerFrame" parent="UIParent" frameStrata="DIALOG" setAllPoints="true" hidden="true">
 		<Scripts>
 			<OnClick function="GarrisonBuildingPlacerFrame_OnClick"/>
 		</Scripts>

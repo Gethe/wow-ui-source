@@ -929,7 +929,7 @@ function LootWonAlertFrame_SetUp(self, itemLink, quantity, rollType, roll, specI
 	self.ItemName:SetVertexColor(color.r, color.g, color.b);
 	self.IconBorder:SetTexCoord(unpack(LOOT_BORDER_QUALITY_COORDS[itemRarity] or LOOT_BORDER_QUALITY_COORDS[LE_ITEM_QUALITY_UNCOMMON]));
 	
-	if ( specID and specID > 0 ) then
+	if ( specID and specID > 0 and lootSource ~= LOOT_SOURCE_GARRISON_CACHE ) then
 		local id, name, description, texture, background, role, class = GetSpecializationInfoByID(specID);
 		self.SpecIcon:SetTexture(texture);
 		self.SpecIcon:Show();

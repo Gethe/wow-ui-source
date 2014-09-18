@@ -313,6 +313,9 @@ function UIParent_OnLoad(self)
 	self:RegisterEvent("GARRISON_SHOW_LANDING_PAGE");
 	self:RegisterEvent("GARRISON_MONUMENT_SHOW_UI");
 	self:RegisterEvent("GARRISON_RECRUITMENT_NPC_OPENED");
+
+	-- Shop (for Asia promotion)
+	self:RegisterEvent("PRODUCT_DISTRIBUTIONS_UPDATED");
 end
 
 
@@ -478,6 +481,12 @@ function MovePad_LoadUI()
 	UIParentLoadAddOn("Blizzard_MovePad");
 end
 ]]
+
+function Tutorial_LoadUI()
+	if ( GetTutorialsEnabled() and UnitLevel("player") < NPE_TUTORIAL_COMPLETE_LEVEL ) then
+		UIParentLoadAddOn("Blizzard_Tutorial");
+	end
+end
 
 function ShowMacroFrame()
 	MacroFrame_LoadUI();
@@ -798,6 +807,7 @@ function UIParent_OnEvent(self, event, ...)
 		TimeManager_LoadUI();
 		-- You can override this if you want a Combat Log replacement
 		CombatLog_LoadUI();
+		Tutorial_LoadUI();
 	elseif ( event == "PLAYER_DEAD" ) then
 		if ( not StaticPopup_Visible("DEATH") ) then
 			CloseAllWindows(1);
@@ -1495,6 +1505,10 @@ function UIParent_OnEvent(self, event, ...)
 			Garrison_LoadUI();
 		end
 		ShowUIPanel(GarrisonRecruiterFrame);
+	elseif ( event == "PRODUCT_DISTRIBUTIONS_UPDATED" ) then
+		Store_LoadUI();
+
+		StoreFrame_CheckForFree();
 	end
 end
 

@@ -208,8 +208,10 @@ LEVEL_UP_TYPES = {
 									
  	["LockMount1"] 			= {	spellID=5784	},
  	["LockMount2"] 			= {	spellID=23161	},
- 	["PaliMount1"] 			= {	spellID=34769	},
- 	["PaliMount2"] 			= {	spellID=34767	},
+ 	["PaliMountHorde1"] 	= {	spellID=34769	},
+ 	["PaliMountHorde2"] 	= {	spellID=34767	},
+ 	["PaliMountAlliance1"] 	= {	spellID=13819	},
+ 	["PaliMountAlliance2"] 	= {	spellID=23214	},
  	["PaliMountTauren1"] 	= {	spellID=69820	},
  	["PaliMountTauren2"] 	= {	spellID=69826	},
  	["PaliMountDraenei1"] 	= {	spellID=73629	},
@@ -259,10 +261,15 @@ LEVEL_UP_CLASS_HACKS = {
 							--  Level  = {unlock}
 								[40] = {"Plate"},
 							},
-	["PALADIN"] 		= {
+	["PALADINHorde"] 		= {
 							--  Level  = {unlock}
-								[20] = {"PaliMount1"},
-								[40] = {"PaliMount2", "Plate"},
+								[20] = {"PaliMountHorde1"},
+								[40] = {"PaliMountHorde2", "Plate"},
+							},
+	["PALADINAlliance"] 	= {
+							--  Level  = {unlock}
+								[20] = {"PaliMountAlliance1"},
+								[40] = {"PaliMountAlliance2", "Plate"},
 							},
 	["PALADINTauren"]	= {
 							--  Level  = {unlock}

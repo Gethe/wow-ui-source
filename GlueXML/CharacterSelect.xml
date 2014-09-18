@@ -1327,7 +1327,7 @@
 										<Scripts>
 											<OnClick>
 												PlaySound("igMainMenuOptionCheckBoxOn");
-												C_CharacterServices.SetPopupSeen(true);
+												C_SharedCharacterServices.SetPopupSeen(true);
 												CharacterUpgradeFlow:SetTarget(true);
 												CharSelectServicesFlowFrame:Show();
 												CharacterServicesMaster_SetFlow(CharacterServicesMaster, CharacterUpgradeFlow);
@@ -1342,7 +1342,7 @@
 										<Scripts>
 											<OnClick>
 												PlaySound("igMainMenuOptionCheckBoxOn");
-												C_CharacterServices.SetPopupSeen(true);
+												C_SharedCharacterServices.SetPopupSeen(true);
 												CharacterServicesMaster_UpdateServiceButton();
 											</OnClick>
 										</Scripts>
@@ -1361,13 +1361,7 @@
 								CharSelectServicesFlowFrame:Show();
 								CharacterServicesMaster_SetFlow(CharacterServicesMaster, CharacterUpgradeFlow);
 							</OnClick>
-							<OnEnter>
-								self.Highlight:Show();
-				  				GlueTooltip:SetOwner(self, "ANCHOR_LEFT");
-				   				GlueTooltip:AddLine(CHARACTER_UPGRADE_WOD_TOKEN_TITLE, 1.0, 1.0, 1.0);
-				   				GlueTooltip:AddLine(CHARACTER_UPGRADE_WOD_TOKEN_DESCRIPTION, nil, nil, nil, 1, 1);
-				  				GlueTooltip:Show();
-							</OnEnter>
+							<OnEnter function="CharacterServicesTokenWoDFree_OnEnter"/>
 							<OnLeave>
 								self.Highlight:Hide();
 								GlueTooltip:Hide();

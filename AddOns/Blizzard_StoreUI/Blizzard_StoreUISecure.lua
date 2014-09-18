@@ -150,6 +150,12 @@ Import("CHARACTER_UPGRADE_LOG_OUT_NOW");
 Import("CHARACTER_UPGRADE_POPUP_LATER");
 Import("CHARACTER_UPGRADE_READY");
 Import("CHARACTER_UPGRADE_READY_DESCRIPTION");
+Import("FREE_CHARACTER_UPGRADE_READY_KRW");
+Import("FREE_CHARACTER_UPGRADE_READY_CPT");
+Import("FREE_CHARACTER_UPGRADE_READY_TPT");
+Import("FREE_CHARACTER_UPGRADE_READY_DESCRIPTION_KRW");
+Import("FREE_CHARACTER_UPGRADE_READY_DESCRIPTION_CPT");
+Import("FREE_CHARACTER_UPGRADE_READY_DESCRIPTION_TPT");
 
 Import("OKAY");
 Import("LARGE_NUMBER_SEPERATOR");
@@ -335,6 +341,9 @@ local currencySpecific = {
 		requireLicenseAccept = true,
 		hideConfirmationBrowseNotice = true,
 		browseHasStar = false,
+		notifyFreeIsAvailable = true,
+		freeTitle = FREE_CHARACTER_UPGRADE_READY_KRW,
+		freeDescription = FREE_CHARACTER_UPGRADE_READY_DESCRIPTION_KRW,
 	},
 	[CURRENCY_EUR] = {
 		formatShort = currencyFormatEuro,
@@ -430,6 +439,9 @@ local currencySpecific = {
 		paymentMethodSubtext = "",
 		hideConfirmationBrowseNotice = true,
 		browseHasStar = false,
+		notifyFreeIsAvailable = true,
+		freeTitle = FREE_CHARACTER_UPGRADE_READY_CPT,
+		freeDescription = FREE_CHARACTER_UPGRADE_READY_DESCRIPTION_CPT,
 	},
 	[CURRENCY_TPT] = {
 		formatShort = currencyFormatTPT,
@@ -441,6 +453,9 @@ local currencySpecific = {
 		paymentMethodText = "",
 		paymentMethodSubtext = "",
 		browseHasStar = false,
+		notifyFreeIsAvailable = true,
+		freeTitle = FREE_CHARACTER_UPGRADE_READY_TPT,
+		freeDescription = FREE_CHARACTER_UPGRADE_READY_DESCRIPTION_TPT,
 	},
 	[CURRENCY_BETA] = {
 		formatShort = currencyFormatBeta,
@@ -1077,6 +1092,8 @@ function StoreFrame_OnAttributeChanged(self, name, value)
 		end
 	elseif ( name == "previewframeshown" ) then
 		StoreFrame_UpdateCoverState();
+	elseif ( name == "checkforfree" ) then
+		StoreFrame_CheckForFree(self);
 	end
 end
 
@@ -1257,6 +1274,17 @@ end
 function StoreFrame_ShowPreview(name, modelID)
 	Outbound.ShowPreview(name, modelID);
 	StoreProductCard_UpdateAllStates();
+end
+
+function StoreFrame_CheckForFree(self)
+	local info = currencyInfo();
+	if (C_SharedCharacterServices.HasFreeDistribution() and info and info.notifyFreeIsAvailable and not C_SharedCharacterServices.HasSeenPopup() and not IsOnGlueScreen()) then
+		C_SharedCharacterServices.SetPopupSeen(true);
+		self:Hide();
+		ServicesLogoutPopup.Background.Title:SetText(info.freeTitle);
+		ServicesLogoutPopup.Background.Description:SetText(info.freeDescription);
+		ServicesLogoutPopup:Show();
+	end
 end
 
 function StoreFramePrevPageButton_OnClick(self)

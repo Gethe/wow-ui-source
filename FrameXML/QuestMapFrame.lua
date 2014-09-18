@@ -850,7 +850,11 @@ function QuestMapLogTitleButton_OnEnter(self)
 
 	-- description
 	if ( isComplete and isComplete > 0 ) then
-		GameTooltip:AddLine(GetQuestLogCompletionText(self.questLogIndex), 1, 1, 1, true);
+		if ( IsBreadcrumbQuest(self.questID) ) then
+			GameTooltip:AddLine(GetQuestLogCompletionText(self.questLogIndex), 1, 1, 1, true);
+		else
+			GameTooltip:AddLine(QUEST_WATCH_QUEST_READY, 1, 1, 1, true);
+		end
 		GameTooltip:AddLine(" ");
 	else
 		local needsSeparator = false;

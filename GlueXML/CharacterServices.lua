@@ -59,6 +59,31 @@ local UPGRADE_MAX_LEVEL = 90;
 local UPGRADE_BONUS_LEVEL = 60;
 
 CURRENCY_KRW = 3;
+CURRENCY_CPT = 14;
+CURRENCY_TPT = 15;
+
+local freeTokenTooltips = {
+	[-1] = {
+		["title"] = CHARACTER_UPGRADE_WOD_TOKEN_TITLE,
+		["description"] = CHARACTER_UPGRADE_WOD_TOKEN_DESCRIPTION,
+		["showPopup"] = true,
+	},
+	[CURRENCY_KRW] = {
+		["title"] = CHARACTER_UPGRADE_WOD_TOKEN_TITLE_KRW,
+		["description"] = CHARACTER_UPGRADE_WOD_TOKEN_DESCRIPTION_KRW,
+		["showPopup"] = false,
+	},
+	[CURRENCY_CPT] = {
+		["title"] = CHARACTER_UPGRADE_WOD_TOKEN_TITLE_CPT,
+		["description"] = CHARACTER_UPGRADE_WOD_TOKEN_DESCRIPTION_CPT,
+		["showPopup"] = false,
+	},
+	[CURRENCY_TPT] = {
+		["title"] = CHARACTER_UPGRADE_WOD_TOKEN_TITLE_TPT,
+		["description"] = CHARACTER_UPGRADE_WOD_TOKEN_DESCRIPTION_TPT,
+		["showPopup"] = false,
+	},
+};
 
 local RAID_CLASS_COLORS = {
 	["HUNTER"] = { r = 0.67, g = 0.83, b = 0.45, colorStr = "ffabd473" },
@@ -183,9 +208,14 @@ function CharacterServicesMaster_UpdateServiceButton()
 	local showPopup = false;
 	local hasFree = false;
 	local hasPaid = false;
-	if (C_CharacterServices.HasFreeDistribution()) then
+	if (C_SharedCharacterServices.HasFreeDistribution()) then
 		hasFree = true;
-		if (not C_CharacterServices.HasSeenPopup()) then
+		local currencyID = C_PurchaseAPI.GetCurrencyID();
+		local shouldShow = true;
+		if (freeTokenTooltips[currencyID]) then
+			shouldShow = freeTokenTooltips[currencyID].showPopup;
+		end
+		if (not C_SharedCharacterServices.HasSeenPopup() and shouldShow) then
 			showPopup = true;
 		end
 	end
@@ -429,6 +459,23 @@ function CharacterServicesMasterFinishButton_OnClick(self)
 	end
 end
 
+function CharacterServicesTokenWoDFree_OnEnter(self)
+	local currencyID = C_PurchaseAPI.GetCurrencyID();
+	local title, desc;
+	if (freeTokenTooltips[currencyID]) then
+		title = freeTokenTooltips[currencyID].title;
+		desc = freeTokenTooltips[currencyID].description;
+	else
+		title = freeTokenTooltips[-1].title;
+		desc = freeTokenTooltips[-1].description;
+	end
+	self.Highlight:Show();
+	GlueTooltip:SetOwner(self, "ANCHOR_LEFT");
+	GlueTooltip:AddLine(title, 1.0, 1.0, 1.0);
+	GlueTooltip:AddLine(desc, nil, nil, nil, 1, 1);
+	GlueTooltip:Show();
+end
+
 function CharacterServicesFlowPrototype:BuildResults(steps)
 	if (not self.results) then
 		self.results = {};
@@ -626,6 +673,8 @@ local function replaceScripts(button)
 	button:SetScript("OnMouseUp", nil);
 	button.upButton:SetScript("OnClick", nil);
 	button.downButton:SetScript("OnClick", nil);
+	button:SetScript("OnEnter", nil);
+	button:SetScript("OnLeave", nil);
 end
 
 local function resetScripts(button)
@@ -647,6 +696,17 @@ local function resetScripts(button)
 		PlaySound("igMainMenuOptionCheckBoxOn");
 		local index = self:GetParent().index;
 		MoveCharacter(index, index + 1);
+	end);
+	button:SetScript("OnEnter", function(self)
+		if ( self.selection:IsShown() ) then
+			CharacterSelectButton_ShowMoveButtons(self);
+		end
+	end);
+	button:SetScript("OnLeave", function(self)
+		if ( self.upButton:IsShown() and not (self.upButton:IsMouseOver() or self.downButton:IsMouseOver()) ) then
+			self.upButton:Hide();
+			self.downButton:Hide();
+		end
 	end);
 	button:SetScript("OnMouseUp", CharacterSelectButton_OnDragStop);
 end
@@ -686,6 +746,8 @@ function CharacterUpgradeCharacterSelectBlock:Initialize(results)
 			self.index = CharacterSelect.selectedIndex;
 			self.charid = GetCharIDFromIndex(CharacterSelect.selectedIndex + CHARACTER_LIST_OFFSET);
 			self.playerguid = select(14, GetCharacterInfo(self.charid));
+			local button = _G["CharSelectCharacterButton"..num];
+			replaceScripts(button);
 			CharacterServicesMaster_Update();
 			return;
 		end

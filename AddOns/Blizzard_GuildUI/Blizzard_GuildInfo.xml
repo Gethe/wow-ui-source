@@ -505,24 +505,25 @@
 					<Anchor point="TOPLEFT" relativeTo="GuildInfoFrameInfoHeader1" relativePoint="BOTTOMLEFT" x="0" y="-1"/>
 				</Anchors>
 			</Frame>
-			<Frame name="$parentChallenge4" inherits="GuildChallengeTemplate" id="4">
+			<!--Scenario rewards aren't a thing at the moment, so Challenge4 is hidden-->
+			<Frame name="$parentChallenge4" inherits="GuildChallengeTemplate" id="4" hidden="true">
 				<Anchors>
 					<Anchor point="TOP" relativeTo="$parentChallenge1" relativePoint="BOTTOM" x="0" y="-1"/>
 				</Anchors>
 			</Frame>
 			<Frame name="$parentChallenge5" inherits="GuildChallengeTemplate" id="5">
 				<Anchors>
-					<Anchor point="TOP" relativeTo="$parentChallenge4" relativePoint="BOTTOM" x="0" y="-1"/>
+					<Anchor point="TOP" relativeTo="$parentChallenge1" relativePoint="BOTTOM" x="0" y="-7"/>
 				</Anchors>
 			</Frame>
 			<Frame name="$parentChallenge2" inherits="GuildChallengeTemplate" id="2">
 				<Anchors>
-					<Anchor point="TOP" relativeTo="$parentChallenge5" relativePoint="BOTTOM" x="0" y="-1"/>
+					<Anchor point="TOP" relativeTo="$parentChallenge5" relativePoint="BOTTOM" x="0" y="-7"/>
 				</Anchors>
 			</Frame>
 			<Frame name="$parentChallenge3" inherits="GuildChallengeTemplate" id="3">
 				<Anchors>
-					<Anchor point="TOP" relativeTo="$parentChallenge2" relativePoint="BOTTOM" x="0" y="-1"/>
+					<Anchor point="TOP" relativeTo="$parentChallenge2" relativePoint="BOTTOM" x="0" y="-7"/>
 				</Anchors>
 			</Frame>
 			<Button name="GuildInfoEditMOTDButton" text="GUILD_EDIT_TEXT_LINK" hidden="true">

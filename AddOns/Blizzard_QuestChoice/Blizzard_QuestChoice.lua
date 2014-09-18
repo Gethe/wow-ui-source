@@ -8,6 +8,24 @@ INIT_OPTION_HEIGHT = 278;
 INIT_WINDOW_HEIGHT = 480;
 OPTION_STATIC_HEIGHT = 136; --height of artwork, button, and minimum padding
 
+GORGROND_GARRISON_ALLIANCE_CHOICE = 55;
+GORGROND_GARRISON_HORDE_CHOICE = 56;
+
+StaticPopupDialogs["CONFIRM_GORGROND_GARRISON_CHOICE"] = {
+	text = CONFIRM_GORGROND_GARRISON_CHOICE,
+	button1 = OKAY,
+	button2 = CANCEL,
+	OnAccept = function(self)
+		SendQuestChoiceResponse(self.data);
+		HideUIPanel(QuestChoiceFrame);
+	end,
+	hideOnEscape = 1,
+	timeout = 0,
+	exclusive = 1,
+	whileDead = 1,
+	showAlert = 1,	
+}
+
 function QuestChoiceFrame_OnEvent(self, event) 
 	if (event == "QUEST_CHOICE_UPDATE") then
 		QuestChoiceFrame_Update(self)
@@ -34,6 +52,19 @@ function QuestChoiceFrame_OnHyperlinkEnter(self, link, text, hyperlinkButton)
 			else
 				hyperlinkButton.UpdateTooltip = nil;
 			end
+		end
+	end
+end
+
+function QuestChoiceFrameOptionButton_OnClick(self)
+	PlaySound("igMainMenuOptionCheckBoxOn");
+	local parent = self:GetParent();
+	if ( parent.optID ) then
+		if ( IsInGroup() and (QuestChoiceFrame.choiceID == GORGROND_GARRISON_ALLIANCE_CHOICE or QuestChoiceFrame.choiceID == GORGROND_GARRISON_HORDE_CHOICE) ) then
+			StaticPopup_Show("CONFIRM_GORGROND_GARRISON_CHOICE", nil, nil, parent.optID);
+		else
+			SendQuestChoiceResponse(parent.optID);
+			HideUIPanel(QuestChoiceFrame);
 		end
 	end
 end

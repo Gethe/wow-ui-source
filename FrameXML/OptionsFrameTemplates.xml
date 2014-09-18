@@ -312,6 +312,8 @@
 				PlaySound("igMainMenuOptionCheckBoxOn");
 				OptionsListButton_OnClick(self, button);
 			</OnClick>
+			<OnEnter function="OptionsListButton_OnEnter"/>
+			<OnLeave function="OptionsListButton_OnLeave"/>
 		</Scripts>
 		<ButtonText name="$parentText" justifyH="LEFT" />
 		<NormalFont style="GameFontNormal"/>

@@ -197,6 +197,9 @@ function AddonList_OnLoad(self)
 	if ( InGlue() ) then
 		self:SetParent(GlueParent)
 		AddonDialog:SetParent(GlueParent)
+		AddonDialog:SetFrameStrata("DIALOG")
+		AddonDialogButton1:SetScript("OnClick", AddonDialog_OnClick);
+		AddonDialogButton2:SetScript("OnClick", AddonDialog_OnClick);
 		local bg = CreateFrame("Frame", "AddonListBackground", GlueParent)
 		bg:SetFrameStrata("HIGH")
 		bg:EnableMouse(true)
@@ -228,6 +231,7 @@ function AddonList_OnLoad(self)
 	drop:SetPoint("TOPLEFT", 0, -30)
 	UIDropDownMenu_Initialize(drop, AddonListCharacterDropDown_Initialize);
 	UIDropDownMenu_SetSelectedValue(drop, value);
+	AddonListScrollFrameScrollChildFrame:SetParent(AddonListScrollFrame);
 end
 
 function AddonList_SetStatus(self,lod,status,reload)

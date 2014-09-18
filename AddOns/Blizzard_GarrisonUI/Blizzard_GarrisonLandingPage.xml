@@ -183,7 +183,7 @@
 	</Frame>
 	
 	<Button name="GarrisonLandingPageTabTemplate" virtual="true">
-        <Size x="115" y="32"/>
+        <Size x="115" y="42"/>
         <Layers>
         	<Layer level="BACKGROUND">
 				<Texture parentKey="LeftDisabled" atlas="GarrLanding-Tab-Bottom-Selected-Left" useAtlasSize="true">
@@ -673,7 +673,6 @@
 							</Anchors>
 						</FontString>
 						<FontString parentKey="XPLabel" inherits="GameFontHighlight" justifyH="RIGHT" text="GARRISON_FOLLOWER_XP_STRING">
-							<Size x="100" y="0"/>
 							<Anchors>
 								<Anchor point="TOPRIGHT" relativeKey="$parent.XPText" relativePoint="BOTTOMRIGHT" y="-4"/>
 							</Anchors>
@@ -698,9 +697,9 @@
 						</Anchors>
 					</Frame>
 					<StatusBar parentKey="XPBar" inherits="GarrisonFollowerXPBarTemplate" enableMouse="true">
-						<Size x="370" y="5"/>
+						<Size x="370" y="9"/>
 						<Anchors>
-							<Anchor point="BOTTOMLEFT" relativeKey="$parent.PortraitFrame" relativePoint="BOTTOMRIGHT" x="7" y="5"/>
+							<Anchor point="BOTTOMLEFT" relativeKey="$parent.PortraitFrame" relativePoint="BOTTOMRIGHT" x="7" y="1"/>
 						</Anchors>
 						<Layers>
 							<Layer level="HIGHLIGHT">
@@ -727,6 +726,9 @@
 							</Layer>
 						</Layers>
 						<Scripts>
+							<OnModelLoaded>
+								self:SetAlpha(1);
+							</OnModelLoaded>						
 							<OnShow>
 								self:SetTargetDistance(0);
 								self:SetFacing(.2);

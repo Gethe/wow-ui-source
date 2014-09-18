@@ -2201,3 +2201,28 @@ HelpPanelOptions = {
 	colorblindMode = { text = "USE_COLORBLIND_MODE" },
 	enableMovePad = { text = "MOVE_PAD" },
 }
+
+function InterfaceOptionsHelpPanel_OnLoad(self)
+	self.name = HELP_LABEL;
+	self.options = HelpPanelOptions;
+	InterfaceOptionsPanel_OnLoad(self);
+
+	self:SetScript("OnEvent", InterfaceOptionsHelpPanel_OnEvent);
+	self:RegisterEvent("CVAR_UPDATE");
+	self:RegisterEvent("NPE_TUTORIAL_UPDATE");
+end
+
+function InterfaceOptionsHelpPanel_OnEvent(self, event, ...)
+	if ( event == "CVAR_UPDATE" or event == "NPE_TUTORIAL_UPDATE" ) then
+		if ( GetCVarBool("showTutorials") and GetCVarBool("showNPETutorials") ) then
+			if ( NewPlayerExperience ) then
+				NewPlayerExperience:Begin();
+			else
+				Tutorial_LoadUI();
+			end
+		elseif ( NewPlayerExperience ) then
+			NewPlayerExperience:Shutdown();
+		end
+	end
+	BlizzardOptionsPanel_OnEvent(self, event, ...);
+end
