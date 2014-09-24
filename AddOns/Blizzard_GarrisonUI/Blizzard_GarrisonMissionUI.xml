@@ -2368,6 +2368,21 @@
 					</Layer>
 				</Layers>
 				<Frames>
+					<Frame parentKey="QualityFrame">
+						<Size x="10" y="10"/>
+						<Anchors>
+							<Anchor point="TOPLEFT" x="20" y="-90"/>
+						</Anchors>
+						<Layers>
+							<Layer level="OVERLAY">
+								<FontString parentKey="Text" inherits="GameFontHighlight" justifyH="LEFT">
+									<Anchors>
+										<Anchor point="TOPLEFT"/>
+									</Anchors>
+								</FontString>					
+							</Layer>
+						</Layers>
+					</Frame>
 					<Frame parentKey="PortraitFrame" inherits="GarrisonFollowerPortraitTemplate">
 						<Anchors>
 							<Anchor point="TOPLEFT" x="13" y="-13"/>

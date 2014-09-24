@@ -12,8 +12,6 @@ function NPE_TutorialCallout:Show()
 
 	frame:Show();
 	frame.Animator.Anim_Pulse:Play();
-	
-	print("NPE_TutorialCallout:Show()");
 
 	return frame;
 end

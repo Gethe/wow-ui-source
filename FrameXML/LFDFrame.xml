@@ -12,6 +12,14 @@
 			<OnEnter function="LFDRoleButton_OnEnter"/>
 		</Scripts>
 	</Button>
+	<Button name="LFDRoleCheckPopupButtonTemplate" inherits="LFGRoleButtonTemplate" virtual="true">
+		<Scripts>
+			<OnLoad>
+				self.checkButton.onClick = LFDFramePopupRoleCheckButton_OnClick;
+				LFGRoleButtonTemplate_OnLoad(self);
+			</OnLoad>
+		</Scripts>
+	</Button>
 	<Frame name="LFDFrameDungeonChoiceTemplate" enableMouse="true" inherits="LFGSpecificChoiceTemplate" virtual="true">
 		<Scripts>
 			<OnLoad>
@@ -47,7 +55,7 @@
 			</Layer>
 		</Layers>
 		<Frames>
-			<Button name="$parentRoleButtonTank" inherits="LFGRoleButtonTemplate" id="1">
+			<Button name="$parentRoleButtonTank" inherits="LFDRoleCheckPopupButtonTemplate" id="1">
 				<Size x="70" y="70"/>
 				<KeyValues>
 					<KeyValue key="role" value="TANK" type="string"/>
@@ -60,7 +68,7 @@
 					<OnEnter function="LFDPopupRoleCheckButton_OnEnter"/>
 				</Scripts>
 			</Button>
-			<Button name="$parentRoleButtonHealer" inherits="LFGRoleButtonTemplate" id="2">
+			<Button name="$parentRoleButtonHealer" inherits="LFDRoleCheckPopupButtonTemplate" id="2">
 				<Size x="70" y="70"/>
 				<KeyValues>
 					<KeyValue key="role" value="HEALER" type="string"/>
@@ -72,7 +80,7 @@
 					<OnEnter function="LFDPopupRoleCheckButton_OnEnter"/>
 				</Scripts>
 			</Button>
-			<Button name="$parentRoleButtonDPS" inherits="LFGRoleButtonTemplate" id="3">
+			<Button name="$parentRoleButtonDPS" inherits="LFDRoleCheckPopupButtonTemplate" id="3">
 				<Size x="70" y="70"/>
 				<KeyValues>
 					<KeyValue key="role" value="DAMAGER" type="string"/>
@@ -84,7 +92,7 @@
 					<OnEnter function="LFDPopupRoleCheckButton_OnEnter"/>
 				</Scripts>
 			</Button>
-			<Button name="$parentAcceptButton" inherits="UIPanelButtonTemplate" text="ACCEPT">
+			<Button name="$parentAcceptButton" inherits="UIPanelButtonTemplate" text="ACCEPT" motionScriptsWhileDisabled="true">
 				<Size>
 					<AbsDimension x="115" y="22"/>
 				</Size>
@@ -97,6 +105,13 @@
 				</Anchors>
 				<Scripts>
 					<OnClick function="LFDRoleCheckPopupAccept_OnClick"/>
+					<OnEnter>
+						if ( self.tooltipText ) then
+							GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+							GameTooltip:SetText(self.tooltipText, nil, nil, nil, nil, true);
+							GameTooltip:Show();
+						end
+					</OnEnter>
 				</Scripts>
 			</Button>
 			<Button name="$parentDeclineButton" inherits="UIPanelButtonTemplate" text="DECLINE">
@@ -574,9 +589,7 @@
 							</ScrollFrame>
 						</Frames>
 						<Scripts>
-							<OnShow>
-								LFDQueueFrame_Update();
-							</OnShow>
+							<OnShow function="LFDQueueFrame_Update"/>
 						</Scripts>
 					</Frame>
 					<Button name="$parentFindGroupButton" inherits="MagicButtonTemplate" text="FIND_A_GROUP" motionScriptsWhileDisabled="true">

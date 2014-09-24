@@ -34,17 +34,6 @@ function GarrisonLandingPage_OnShow(self)
 	else
 		self.InvasionBadge:Hide();
 	end
-
-	-- if there's no follower displayed on the right, select the first one
-	if (not GarrisonLandingPage.FollowerTab.followerID) then
-		local index = GarrisonLandingPage.FollowerList.followersList[1];
-		if (index) then
-			GarrisonFollowerPage_ShowFollower(GarrisonLandingPage.FollowerTab, GarrisonLandingPage.FollowerList.followers[index].followerID);
-		else
-			-- empty page
-			GarrisonFollowerPage_ShowFollower(GarrisonLandingPage.FollowerTab,0);
-		end
-	end
 	
 	PlaySound("UI_Garrison_GarrisonReport_Open");
 end
@@ -311,6 +300,7 @@ function GarrisonLandingPageReportList_UpdateAvailable()
 					local _, _, _, _, _, _, _, _, _, itemTexture = GetItemInfo(reward.itemID);
 					Reward.Icon:SetTexture(itemTexture);
 				else
+					Reward.itemID = nil;
 					Reward.Icon:SetTexture(reward.icon);
 					Reward.title = reward.title
 					if (reward.currencyID and reward.quantity) then

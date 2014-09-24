@@ -4160,11 +4160,7 @@
 						if ( not tutorialsCheckButton:GetChecked() ) then
 							tutorialsCheckButton:Click()
 						end
-						if ( NewPlayerExperience ) then
-							NewPlayerExperience:Begin();
-						else
-							Tutorial_LoadUI();
-						end
+						NPETutorial_AttemptToBegin();
 						TriggerTutorial(1);
 						self:Disable();
 					</OnClick>

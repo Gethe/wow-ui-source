@@ -186,9 +186,9 @@
 								</Anchor>
 							</Anchors>
 						</Texture>
-						<FontString name="$parentEnableRaidSettingsText" text="RAID_SETTINGS_ENABLED" inherits="GameFontNormalSmall" justifyH="RIGHT">
+						<FontString name="$parentEnableRaidSettingsText" text="RAID_SETTINGS_ENABLED" inherits="GameFontNormalSmall" justifyH="LEFT">
 							<Anchors>
-								<Anchor point="TOPRIGHT" x="-10" y="-165"/>
+								<Anchor point="TOPRIGHT" x="-10" y="-160"/>
 							</Anchors>
 						</FontString>
 					</Layer>
@@ -1080,6 +1080,7 @@
 		</Frames>
 		<Scripts>
 			<OnShow>
+				Display_EnableRaidSettingsText:SetPoint("LEFT", "RaidButton", "RIGHT", 30, 0);
 				if( not InGlue() ) then
 					local inInstance, instanceType = IsInInstance();
 					if ( inInstance and (instanceType == "raid" or instanceType == "pvp") ) then
@@ -1486,6 +1487,8 @@
 					<OnLoad>
 						self.type = CONTROLTYPE_CHECKBOX;
 						self.cvar = "hdPlayerModels";
+						self.name = SHOW_HD_MODELS_TEXT;
+						self.tooltip = OPTION_TOOLTIP_SHOW_HD_MODELS;
 						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
 					</OnLoad>
 				</Scripts>

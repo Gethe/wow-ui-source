@@ -23,8 +23,8 @@ function GarrisonRecruiterFrame_OnLoad(self)
 	
 	self.onCloseCallback = GarrisonRecruiterFrame_OnClickClose;
 	self.Pick.categories ={};
-	local categoriesTable = C_Garrison.GetRecruiterAbilityCategories();
-	for index, category in pairs(categoriesTable)do
+	self.categoriesTable = C_Garrison.GetRecruiterAbilityCategories();
+	for index, category in pairs(self.categoriesTable)do
 		self.Pick.categories[category] = {
 			name = category,
 			entries = {}
@@ -131,8 +131,6 @@ function GarrisonRecruiterType_OnClick( self )
 		GarrisonRecruiterFrame_UpdateAbilityEntries(true);
 		frame.Title2:SetText(GARRISON_CHOOSE_TRAIT);
 	end
-	GarrisonRecruiterFrame_SetAbilityPreference (frame.entries[1]);
-	UIDropDownMenu_SetText(frame.ThreatDropDown, frame.entries[1].name);
 end
 
 function GarrisonRecruiterFrame_Init(self, level)
@@ -148,9 +146,10 @@ function GarrisonRecruiterFrame_Init(self, level)
 		info.hasArrow = true;
 		info.notCheckable = true;
 		info.func = function() CloseDropDownMenus() end;
-		for i, entry in pairs(frame.categories) do
+		for i, category in pairs(GarrisonRecruiterFrame.categoriesTable) do
+			local entry = frame.categories[category];
 			if( #entry.entries > 0 ) then
-				entry.id = i;
+				entry.id = category;
 				GarrisonRecruiterFrame_AddEntryToDropdown(entry, info);
 			end
 		end
@@ -225,7 +224,12 @@ function GarrisonRecruiterFrame_UpdateAbilityEntries( isTrait )
 	if( isTrait ) then
 		-- sort abilities into categories
 		local categoryless = {};
+		local firstEntry = nil;
 		for _, entry in pairs( frame.entries ) do
+			if( not firstEntry ) then
+				firstEntry = entry;
+			end
+				
 			local category = entry.category;
 			if( category and frame.categories[category]) then
 				table.insert(frame.categories[category].entries, entry);
@@ -234,21 +238,27 @@ function GarrisonRecruiterFrame_UpdateAbilityEntries( isTrait )
 			end
 		end
 		frame.entries = categoryless;
+		
+		GarrisonRecruiterFrame_SetAbilityPreference(firstEntry)
+	else
+		GarrisonRecruiterFrame_SetAbilityPreference(frame.entries[1])
 	end
 end
 
 -- called when setting recruiter ability/trait, but up to the client
 function GarrisonRecruiterFrame_SetAbilityPreference(data)
-	local frame = GarrisonRecruiterFrame.Pick;
-	frame.dropDownValue = data.id;
-	frame.dropDownName = data.name;
-	
-	frame.Counter.Title:SetText(data.name);
-	frame.Counter.Description:SetText(data.description);
-	frame.Counter.Icon:SetTexture(data.icon);
-	frame.Counter.Icon:SetMask("Interface\\CharacterFrame\\TempPortraitAlphaMask");
-	
-	UIDropDownMenu_SetText(frame.ThreatDropDown, data.name);
+	if( data ) then
+		local frame = GarrisonRecruiterFrame.Pick;
+		frame.dropDownValue = data.id;
+		frame.dropDownName = data.name;
+		
+		frame.Counter.Title:SetText(data.name);
+		frame.Counter.Description:SetText(data.description);
+		frame.Counter.Icon:SetTexture(data.icon);
+		frame.Counter.Icon:SetMask("Interface\\CharacterFrame\\TempPortraitAlphaMask");
+		
+		UIDropDownMenu_SetText(frame.ThreatDropDown, data.name);
+	end
 end
 
 ----------------------------------
@@ -388,6 +398,8 @@ function GarrisonRecruitSelectFrame_OnHide(self)
 	self:UnregisterEvent("GARRISON_RECRUITMENT_NPC_CLOSED");
 	C_Garrison.CloseRecruitmentNPC();
 	StaticPopup_Hide("CONFIRM_RECRUIT_FOLLOWER");
+	StaticPopup_Hide("DEACTIVATE_FOLLOWER");
+	StaticPopup_Hide("ACTIVATE_FOLLOWER");
 end
 
 function GarrisonRecruiterFrame_HireRecruit(self)

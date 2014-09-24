@@ -2687,25 +2687,29 @@ function ToyBox_UpdateProgressBar()
 end
 
 function ToyBoxPrevPageButton_OnClick()
-	PlaySound("igAbiliityPageTurn");
-	ToyBox.currentPage = math.max(1, ToyBox.currentPage - 1);
-	ToyBox_UpdatePages();
-	ToyBox_UpdateButtons();
+	if (ToyBox.currentPage > 1) then
+		PlaySound("igAbiliityPageTurn");
+		ToyBox.currentPage = math.max(1, ToyBox.currentPage - 1);
+		ToyBox_UpdatePages();
+		ToyBox_UpdateButtons();
+	end
 end
 
 function ToyBoxNextPageButton_OnClick()
-	
-	-- show the mousewheel tip after the player's advanced a few pages
-	if(ToyBox.currentPage > 2) then
-		if(not GetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_TOYBOX_MOUSEWHEEL_PAGING) and GetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_TOYBOX_FAVORITE)) then
-			ToyBoxMousewheelPagingHelpBox:Show();
+	local maxPages = 1 + math.floor( math.max((C_ToyBox.GetNumFilteredToys() - 1), 0)/ TOYS_PER_PAGE);
+	if (ToyBox.currentPage < maxPages) then
+		-- show the mousewheel tip after the player's advanced a few pages
+		if(ToyBox.currentPage > 2) then
+			if(not GetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_TOYBOX_MOUSEWHEEL_PAGING) and GetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_TOYBOX_FAVORITE)) then
+				ToyBoxMousewheelPagingHelpBox:Show();
+			end
 		end
-	end
 
-	PlaySound("igAbiliityPageTurn");
-	ToyBox.currentPage = ToyBox.currentPage + 1;
-	ToyBox_UpdatePages();
-	ToyBox_UpdateButtons();
+		PlaySound("igAbiliityPageTurn");
+		ToyBox.currentPage = ToyBox.currentPage + 1;
+		ToyBox_UpdatePages();
+		ToyBox_UpdateButtons();
+	end
 end
 
 function ToyBox_OnSearchTextChanged(self)

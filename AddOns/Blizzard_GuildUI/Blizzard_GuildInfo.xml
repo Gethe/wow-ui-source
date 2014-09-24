@@ -268,7 +268,7 @@
 				self.label:SetText(_G["GUILD_CHALLENGE_TYPE"..self:GetID()]);
 			</OnLoad>
 			<OnEnter>
-				local index, current, max, gold, maxGold = GetGuildChallengeInfo(self:GetID());
+				local index, current, max, gold, maxGold = GetGuildChallengeInfo(self.dataIndex);
 				if ( index ) then
 					GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
 					GameTooltip:SetText(_G["GUILD_CHALLENGE_LABEL"..index]);

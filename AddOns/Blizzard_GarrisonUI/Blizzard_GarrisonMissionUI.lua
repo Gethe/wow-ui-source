@@ -300,16 +300,6 @@ function GarrisonMissionFrame_SelectTab(id)
 		else
 			GarrisonMissionFrame.FollowerList:Show();
 		end
-		-- if there's no follower displayed on the right, select the first one
-		if (not GarrisonMissionFrame.FollowerTab.followerID) then
-			local index = GarrisonMissionFrame.FollowerList.followersList[1];
-			if (index) then
-				GarrisonFollowerPage_ShowFollower(GarrisonMissionFrame.FollowerTab, GarrisonMissionFrame.FollowerList.followers[index].followerID);
-			else
-				-- empty page
-				GarrisonFollowerPage_ShowFollower(GarrisonMissionFrame.FollowerTab,0);
-			end
-		end
 		GarrisonMissionFrame.TitleText:SetText(GARRISON_FOLLOWERS_TITLE);
 	end
 	if ( UIDropDownMenu_GetCurrentDropDown() == GarrisonFollowerOptionDropDown ) then
@@ -882,11 +872,13 @@ function GarrisonMissionPage_ShowMission(missionInfo)
 end
 
 function GarrisonMissionPage_UpdateMissionForParty()
-	local totalTimeString, isMissionTimeImproved, successChance, partyBuffs, isEnvMechanicCountered, xpBonus = C_Garrison.GetPartyMissionInfo(MISSION_PAGE_FRAME.missionInfo.missionID);
+	local totalTimeString, totalTimeSeconds, isMissionTimeImproved, successChance, partyBuffs, isEnvMechanicCountered, xpBonus, materialMultiplier = C_Garrison.GetPartyMissionInfo(MISSION_PAGE_FRAME.missionInfo.missionID);
 
 	-- TIME
 	if ( isMissionTimeImproved ) then
 		totalTimeString = GREEN_FONT_COLOR_CODE..totalTimeString..FONT_COLOR_CODE_CLOSE;
+	elseif ( totalTimeSeconds >= GARRISON_LONG_MISSION_TIME ) then
+		totalTimeString = format(GARRISON_LONG_MISSION_TIME_FORMAT, totalTimeString);
 	end
 	MISSION_PAGE_FRAME.Stage.MissionTime:SetFormattedText(GARRISON_MISSION_TIME_TOTAL, totalTimeString);
 
@@ -967,6 +959,9 @@ function GarrisonMissionPage_UpdateMissionForParty()
 		rewardsFrame.MissionXP:SetFormattedText(GARRISON_MISSION_BASE_XP, MISSION_PAGE_FRAME.xp);
 	end
 	
+	-- Material
+	GarrisonMissionPage_UpdateRewardQuantities(rewardsFrame, materialMultiplier);
+
 	-- START BUTTON AND STUFF
 	GarrisonMissionPage_UpdateStartButton(MISSION_PAGE_FRAME);	
 	GarrisonMissionPage_UpdatePortraitPulse(MISSION_PAGE_FRAME);
@@ -1051,6 +1046,7 @@ function GarrisonMissionPage_SetReward(frame, reward)
 	frame.Quantity:Hide();
 	frame.itemID = nil;
 	frame.currencyID = nil;
+	frame.currencyQuantity = nil;
 	frame.tooltip = nil;
 	if (reward.itemID) then
 		frame.itemID = reward.itemID;
@@ -1071,6 +1067,7 @@ function GarrisonMissionPage_SetReward(frame, reward)
 			else
 				local currencyName, _, currencyTexture = GetCurrencyInfo(reward.currencyID);
 				frame.currencyID = reward.currencyID;
+				frame.currencyQuantity = reward.quantity;
 				if (frame.Name) then
 					frame.Name:SetText(currencyName);
 				end
@@ -1091,6 +1088,16 @@ function GarrisonMissionPage_SetReward(frame, reward)
 		end
 	end
 	frame:Show();
+end
+
+function GarrisonMissionPage_UpdateRewardQuantities(rewardsFrame, materialMultiplier)
+	for i = 1, #rewardsFrame.Rewards do
+		local rewardFrame = rewardsFrame.Rewards[i];
+		if ( rewardFrame.currencyID == GARRISON_CURRENCY and rewardFrame:IsShown() ) then
+			local amount = floor(rewardFrame.currencyQuantity * materialMultiplier);
+			rewardFrame.Quantity:SetText(amount);
+		end
+	end
 end
 
 function GarrisonMissionPage_SetPartySize(size, numEnemies)
@@ -1364,7 +1371,16 @@ function GarrisonMissionPage_ClearCounters(enemiesFrame)
 	end
 end
 
-function GarrisonMissionPage_CanPartyCounterMechanic(mechanicID)
+--this function puts check marks on the encounter mechanics countered by the slotted followers abilities
+function GarrisonMissionPage_SetCounters()
+	-- clear counter state
+	for i = 1, #MISSION_PAGE_FRAME.Enemies do
+		local enemyFrame = MISSION_PAGE_FRAME.Enemies[i];
+		for mechanicIndex = 1, #enemyFrame.Mechanics do
+			enemyFrame.Mechanics[mechanicIndex].hasCounter = nil;
+		end
+	end
+	
 	for i = 1, #MISSION_PAGE_FRAME.Followers do
 		local followerFrame = MISSION_PAGE_FRAME.Followers[i];
 		if (followerFrame.info) then
@@ -1373,40 +1389,49 @@ function GarrisonMissionPage_CanPartyCounterMechanic(mechanicID)
 				if (not followerFrame.info.abilities) then
 					followerFrame.info.abilities = C_Garrison.GetFollowerAbilities(followerFrame.info.followerID)
 				end
-				for a=1, #followerFrame.info.abilities do
+				for a = 1, #followerFrame.info.abilities do
 					local ability = followerFrame.info.abilities[a];
 					for counterID, counterInfo in pairs(ability.counters) do
-						if (counterID == mechanicID) then
-							return true;
-						end
+						GarrisonMissionPage_CheckCounter(counterID);
 					end
 				end
 			end
 		end
 	end
-	return false;
-end
-
---this function puts check marks on the encounter mechanics countered by the slotted followers abilities
-function GarrisonMissionPage_SetCounters()
+	
+	-- show/remove checks
 	local playSound = false;
 	for i = 1, #MISSION_PAGE_FRAME.Enemies do
 		local enemyFrame = MISSION_PAGE_FRAME.Enemies[i];
-		for m=1, #enemyFrame.Mechanics do
-			if (GarrisonMissionPage_CanPartyCounterMechanic(enemyFrame.Mechanics[m].mechanicID)) then
-				if ( not enemyFrame.Mechanics[m].Check:IsShown() ) then
-					enemyFrame.Mechanics[m].Check:SetAlpha(1);
-					enemyFrame.Mechanics[m].Check:Show();
-					enemyFrame.Mechanics[m].Anim:Play();
+		for mechanicIndex = 1, #enemyFrame.Mechanics do
+			local mechanicFrame = enemyFrame.Mechanics[mechanicIndex];
+			if ( mechanicFrame.hasCounter ) then
+				if ( not mechanicFrame.Check:IsShown() ) then
+					mechanicFrame.Check:SetAlpha(1);
+					mechanicFrame.Check:Show();
+					mechanicFrame.Anim:Play();
 					playSound = true;
 				end
 			else
-				enemyFrame.Mechanics[m].Check:Hide();
+				mechanicFrame.Check:Hide();
 			end
 		end
 	end
+	
 	if ( playSound ) then
 		PlaySound("UI_Garrison_Mission_Threat_Countered");
+	end
+end
+
+function GarrisonMissionPage_CheckCounter(counterID)
+	for i = 1, #MISSION_PAGE_FRAME.Enemies do
+		local enemyFrame = MISSION_PAGE_FRAME.Enemies[i];
+		for mechanicIndex = 1, #enemyFrame.Mechanics do
+			if ( counterID == enemyFrame.Mechanics[mechanicIndex].mechanicID and not enemyFrame.Mechanics[mechanicIndex].hasCounter ) then			
+				enemyFrame.Mechanics[mechanicIndex].hasCounter = true;
+				return;
+			end
+		end
 	end
 end
 
@@ -1800,6 +1825,8 @@ function GarrisonMissionComplete_Initialize(missionList, index)
 							};
 	end
 
+	self.currentMission.materialMultiplier = select(8, C_Garrison.GetPartyMissionInfo(self.currentMission.missionID));
+
 	self.NextMissionButton:Disable();
 	self.BonusRewards.ChestModel.OpenAnim:Stop();
 	self.BonusRewards.ChestModel.LockBurstAnim:Stop();
@@ -2002,6 +2029,8 @@ function GarrisonMissionComplete_ShowRewards(self)
 	for i = (numRewards + 1), #self.Rewards do
 		self.Rewards[i]:Hide();
 	end
+	GarrisonMissionPage_UpdateRewardQuantities(self, currentMission.materialMultiplier);
+
 	self.Rewards[1]:ClearAllPoints();
 	if (numRewards == 1) then
 		self.Rewards[1]:SetPoint("CENTER", self, "CENTER", 0, 0);

@@ -488,6 +488,23 @@ function Tutorial_LoadUI()
 	end
 end
 
+local playerEnteredWorld = false;
+local varsLoaded = false;
+function NPETutorial_AttemptToBegin(event)
+	if ( NewPlayerExperience and not NewPlayerExperience.IsActive ) then
+		NewPlayerExperience:Begin();
+		return;
+	end
+	if( event == "PLAYER_ENTERING_WORLD" ) then
+		playerEnteredWorld = true;
+	elseif ( event == "VARIABLES_LOADED" ) then
+		varsLoaded = true;
+	end
+	if ( playerEnteredWorld and varsLoaded ) then
+		Tutorial_LoadUI();
+	end
+end
+
 function ShowMacroFrame()
 	MacroFrame_LoadUI();
 	if ( MacroFrame_Show ) then
@@ -803,11 +820,12 @@ function UIParent_OnEvent(self, event, ...)
 			GMChatFrameEditBox:SetAttribute("chatType", "WHISPER");
 		end
 		TargetFrame_OnVariablesLoaded();
+		
+		NPETutorial_AttemptToBegin(event);
 	elseif ( event == "PLAYER_LOGIN" ) then
 		TimeManager_LoadUI();
 		-- You can override this if you want a Combat Log replacement
 		CombatLog_LoadUI();
-		Tutorial_LoadUI();
 	elseif ( event == "PLAYER_DEAD" ) then
 		if ( not StaticPopup_Visible("DEATH") ) then
 			CloseAllWindows(1);
@@ -1002,6 +1020,8 @@ function UIParent_OnEvent(self, event, ...)
 		for i=1, #pendingLootRollIDs do
 			GroupLootFrame_OpenNewFrame(pendingLootRollIDs[i], GetLootRollTimeLeft(pendingLootRollIDs[i]));
 		end
+		
+		NPETutorial_AttemptToBegin(event);
 	elseif ( event == "GROUP_ROSTER_UPDATE" ) then
 		-- Hide/Show party member frames
 		RaidOptionsFrame_UpdatePartyFrames();

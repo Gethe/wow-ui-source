@@ -279,4 +279,5 @@ function QuestPOIButton_OnClick(self)
 		AddQuestWatch(questLogIndex, true);
 	end
 	SetSuperTrackedQuestID(questID);
+	WorldMapFrame_OnUserChangedSuperTrackedQuest(questID);
 end

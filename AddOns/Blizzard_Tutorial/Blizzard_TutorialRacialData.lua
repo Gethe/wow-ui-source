@@ -1064,7 +1064,7 @@ TutorialData.Goblin = {
 		{
 			24567, -- Report for Tryouts
 			14070, -- Do it Yourself
-			( UnitSex("player") == 2 and 26711 or 26712 ), -- Off to the Bank (M, F) Not the most elegant way to do this, but it works since it's a unique case
+			( UnitSex("player") == 2 and 26712 or 26711 ), -- Off to the Bank (M, F) Not the most elegant way to do this, but it works since it's a unique case
 		},
 	};
 

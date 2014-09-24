@@ -5,7 +5,7 @@
 		<Color a="1" r="0" g="0" b="0"/>
 	</Font>
 
-	<Frame name="NPE_TutorialKeyboardMouseFrame_Frame" parent="UIParent" hidden="true" inherits="PortraitFrameTemplate">
+	<Frame name="NPE_TutorialKeyboardMouseFrame_Frame" parent="UIParent" hidden="true" inherits="PortraitFrameTemplate" frameStrata="DIALOG">
 		<Size x="706" y="294" />
 		<Anchors>
 			<Anchor point="BOTTOM" y="100" />
@@ -148,7 +148,7 @@
 	</Frame>
 
 
-	<Frame name="NPE_TutorialInterfaceHelp" parent="UIParent" hidden="true">
+	<Frame name="NPE_TutorialInterfaceHelp" parent="UIParent" hidden="true" frameStrata="MEDIUM">
 		<Size x="200" y="50" />
 		<Anchors>
 			<Anchor point="BOTTOM" relativeTo="GuildMicroButton" relativePoint="TOP" y="-10" />
@@ -190,7 +190,7 @@
 				</Scripts>
 			</Button>
 		</Frames>
-		
+
 		<Animations>
 			<AnimationGroup parentKey="Anim_In" setToFinalAlpha="true">
 				<Alpha fromAlpha="0" toAlpha="1" duration="0.5" smoothing="OUT" />

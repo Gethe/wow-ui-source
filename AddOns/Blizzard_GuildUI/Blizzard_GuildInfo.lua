@@ -163,8 +163,9 @@ function GuildInfoFrame_UpdateChallenges()
 	local numChallenges = GetNumGuildChallenges();
 	for i = 1, numChallenges do
 		local index, current, max = GetGuildChallengeInfo(i);
-		local frame = _G["GuildInfoFrameInfoChallenge"..i];
+		local frame = _G["GuildInfoFrameInfoChallenge"..index];
 		if ( frame ) then
+			frame.dataIndex = i;
 			if ( current == max ) then
 				frame.count:Hide();
 				frame.check:Show();

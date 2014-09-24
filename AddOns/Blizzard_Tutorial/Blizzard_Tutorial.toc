@@ -3,6 +3,7 @@
 ## Interface: 60000
 ## Secure: 1
 ## LoadOnDemand: 1
+# Inspired by the Newbie Assistant written by 网易
 
 middleclass.lua
 Blizzard_TutorialDispatcher.lua

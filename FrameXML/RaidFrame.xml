@@ -202,7 +202,7 @@
 				<HighlightFont style="GameFontHighlightSmall"/>
 				<DisabledFont style="GameFontDisableSmall"/>
 			</Button>
-			<Button name="RaidFrameRaidBrowserButton" inherits="UIPanelButtonTemplate" text="LOOKING_FOR_RAID" >
+			<!--Button name="RaidFrameRaidBrowserButton" inherits="UIPanelButtonTemplate" text="LOOKING_FOR_RAID" >
 				<Size x="100" y="21"/>
 				<Anchors>
 					<Anchor point="TOPRIGHT" x="-100" y="-24"/>
@@ -216,7 +216,7 @@
 				<NormalFont style="GameFontNormalSmall"/>
 				<HighlightFont style="GameFontHighlightSmall"/>
 				<DisabledFont style="GameFontDisableSmall"/>
-			</Button>
+			</Button-->
 			<Button name="RaidFrameRaidInfoButton" inherits="UIPanelButtonTemplate" text="RAID_INFO" >
 				<Size x="90" y="21"/>
 				<Anchors>

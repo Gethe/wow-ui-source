@@ -774,7 +774,7 @@ function SpellBookFrame_OnMouseWheel(self, value, scrollBar)
 			SpellBookPrevPageButton_OnClick()
 		end
 	else 
-		if(value < maxPages) then
+		if(currentPage < maxPages) then
 			SpellBookNextPageButton_OnClick()
 		end
 	end

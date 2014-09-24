@@ -693,7 +693,7 @@
 								<Anchor point="TOPLEFT" x="221" y="-24"/>
 							</Anchors>
 						</FontString>
-						<FontString parentKey="Description" inherits="GameFontHighlight" justifyH="LEFT">
+						<FontString parentKey="Description" inherits="GameFontNormalSmall" justifyH="LEFT">
 							<Size x="300" y="0"/>
 							<Anchors>
 								<Anchor point="TOPLEFT" relativeKey="$parent.Title" relativePoint="BOTTOMLEFT" y="-4"/>
@@ -948,7 +948,7 @@
 					</Frame>
 					<Button parentKey="FollowerPortrait" inherits="GarrisonFollowerPortraitTemplate">
 						<Anchors>
-							<Anchor point="BOTTOMLEFT" x="221" y="20"/>
+							<Anchor point="BOTTOMLEFT" x="221" y="10"/>
 						</Anchors>
 						<Layers>
 							<Layer level="OVERLAY">
@@ -1007,7 +1007,7 @@
 					<Button parentKey="AddFollowerButton" hidden="true">
 						<Size x="52" y="60"/>
 						<Anchors>
-							<Anchor point="BOTTOMLEFT" x="221" y="20"/>
+							<Anchor point="BOTTOMLEFT" x="221" y="10"/>
 						</Anchors>
 						<Layers>
 							<Layer level="BORDER" textureSubLevel="0">

@@ -9,6 +9,8 @@ function NPE_TutorialKeyboardMouseFrame:Initialize()
 	self.IsLocalized = false;
 	self.Frame = NPE_TutorialKeyboardMouseFrame_Frame;
 	self.HelpFrame = NPE_TutorialInterfaceHelp;
+
+	Dispatcher:RegisterEvent("UI_SCALE_CHANGED", self);
 end
 
 -- ------------------------------------------------------------------------------------------------------------
@@ -41,17 +43,29 @@ function NPE_TutorialKeyboardMouseFrame:Show()
 	NPE_TutorialPointerFrame:Hide(self.PointerFrameID);
 
 	-- Set scale
+	self:UpdateScale();
+end
+
+-- ------------------------------------------------------------------------------------------------------------
+function NPE_TutorialKeyboardMouseFrame:Hide()
+	self.Frame:Hide();
+end
+
+-- ------------------------------------------------------------------------------------------------------------
+function NPE_TutorialKeyboardMouseFrame:UI_SCALE_CHANGED()
+	if (NewPlayerExperience:GetIsActive()) then
+		self:UpdateScale();
+	end
+end
+
+-- ------------------------------------------------------------------------------------------------------------
+function NPE_TutorialKeyboardMouseFrame:UpdateScale()
 	local ratio = self.Frame:GetHeight() / UIParent:GetHeight();
 	if (ratio > 0.3) then
 		self.Frame:SetScale(0.3 / ratio);
 	else
 		self.Frame:SetScale(1);
 	end
-end
-
--- ------------------------------------------------------------------------------------------------------------
-function NPE_TutorialKeyboardMouseFrame:Hide()
-	self.Frame:Hide();
 end
 
 -- ------------------------------------------------------------------------------------------------------------
@@ -91,6 +105,10 @@ end
 
 -- ------------------------------------------------------------------------------------------------------------
 function NPE_TutorialKeyboardMouseFrame:ShowHelpFrame()
+	if (not NewPlayerExperience:GetIsActive()) then
+		return false;
+	end
+
 	if (not self.HelpFrame:IsVisible()) then
 		self.HelpFrame:Show();
 		self.HelpFrame.Anim_In:Play();

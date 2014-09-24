@@ -308,7 +308,7 @@ function WorldMapFrame_OnShow(self)
 	end
 
 	-- check to show the help plate
-	if ( UnitLevel("player") >= 7 and not GetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_WORLD_MAP_FRAME) ) then
+	if ( (not NewPlayerExperience or not NewPlayerExperience.IsActive) and not GetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_WORLD_MAP_FRAME) ) then
 		local helpPlate = WorldMapFrame_HelpPlate;
 		if ( helpPlate and not HelpPlate_IsShowing(helpPlate) ) then
 			WorldMapFrame_ToggleTutorial();
@@ -431,15 +431,6 @@ function WorldMapFrame_OnEvent(self, event, ...)
 		EncounterJournal_UpdateMapButtonPortraits();
 	elseif ( event == "SUPER_TRACKED_QUEST_CHANGED" ) then
 		local questID = ...;
-		if ( self:IsShown() ) then
-			local mapID, floorNumber = GetQuestWorldMapAreaID(questID);
-			if ( mapID ~= 0 ) then
-				SetMapByID(mapID, floorNumber);
-				if ( floorNumber ~= 0 ) then
-					SetDungeonMapLevel(floorNumber);
-				end
-			end
-		end
 		WorldMapPOIFrame_SelectPOI(questID);
 	elseif ( event == "PLAYER_STARTED_MOVING" ) then
 		if ( GetCVarBool("mapFade") ) then
@@ -453,6 +444,18 @@ function WorldMapFrame_OnEvent(self, event, ...)
 		WorldMap_UpdateQuestBonusObjectives();
 	elseif ( event == "QUESTTASK_UPDATE" and WorldMapFrame:IsVisible() ) then
 		TaskPOI_OnEnter(_G["lastPOIButtonUsed"]);
+	end
+end
+
+function WorldMapFrame_OnUserChangedSuperTrackedQuest(questID)
+	if ( WorldMapFrame:IsShown() ) then
+		local mapID, floorNumber = GetQuestWorldMapAreaID(questID);
+		if ( mapID ~= 0 ) then
+			SetMapByID(mapID, floorNumber);
+			if ( floorNumber ~= 0 ) then
+				SetDungeonMapLevel(floorNumber);
+			end
+		end
 	end
 end
 

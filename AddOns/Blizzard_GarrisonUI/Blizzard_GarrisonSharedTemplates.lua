@@ -27,7 +27,18 @@ end
 
 function GarrisonFollowerList_OnShow(self)
 	GarrisonFollowerList_DirtyList(self);
-	GarrisonFollowerList_UpdateFollowers(self)
+	GarrisonFollowerList_UpdateFollowers(self);
+	-- if there's no follower displayed in the tab, select the first one
+	local followerTab = self:GetParent().FollowerTab;
+	if (followerTab and not followerTab.followerID) then
+		local index = self.followersList[1];
+		if (index) then
+			GarrisonFollowerPage_ShowFollower(followerTab, self.followers[index].followerID);
+		else
+			-- empty page
+			GarrisonFollowerPage_ShowFollower(followerTab,0);
+		end
+	end	
 end
 
 function GarrisonFollowerList_OnHide(self)
@@ -669,6 +680,13 @@ function GarrisonFollowerPage_ShowFollower(self, followerID)
 		self.XPBar:Hide();
 	end
 
+	if ( ENABLE_COLORBLIND_MODE == "1" ) then
+		self.QualityFrame:Show();
+		self.QualityFrame.Text:SetText(_G["ITEM_QUALITY"..followerInfo.quality.."_DESC"]);
+	else
+		self.QualityFrame:Hide();
+	end
+
 	self.AbilitiesFrame.TraitsText:ClearAllPoints();
 	if (not followerInfo.abilities) then
 		followerInfo.abilities = C_Garrison.GetFollowerAbilities(followerID);
@@ -814,7 +832,13 @@ function Garrison_SortMissions(missionsList)
 		if ( mission1.level ~= mission2.level ) then
 			return mission1.level > mission2.level;
 		end
-		
+
+		if ( mission1.level == GARRISON_FOLLOWER_MAX_LEVEL ) then	-- mission 2 level is same as 1's at this point
+			if ( mission1.iLevel ~= mission2.iLevel ) then
+				return mission1.iLevel > mission2.iLevel;
+			end		
+		end
+
 		if ( mission1.durationSeconds ~= mission2.durationSeconds ) then
 			return mission1.durationSeconds < mission2.durationSeconds;
 		end
