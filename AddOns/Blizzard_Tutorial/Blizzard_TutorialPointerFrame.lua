@@ -1,4 +1,4 @@
-﻿NPE_TutorialPointerFrame = {};
+NPE_TutorialPointerFrame = {};
 
 NPE_TutorialPointerFrame.Direction = {
 	UP		= "UP",

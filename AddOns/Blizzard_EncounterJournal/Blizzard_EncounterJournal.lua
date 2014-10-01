@@ -149,15 +149,14 @@ function EncounterJournal_OnShow(self)
 	--automatically navigate to the current dungeon if you are in one;
 	local instanceID = EJ_GetCurrentInstance();
 	local _, _, difficultyID = GetInstanceInfo();
-	if instanceID ~= 0 and (instanceID ~= EncounterJournal.lastInstance or difficultyID ~= EncounterJournal.difficultyID) then
-		EncounterJournal.difficultyID = difficultyID;
+	if instanceID ~= 0 and (instanceID ~= EncounterJournal.lastInstance or EJ_GetDifficulty() ~= difficultyID) then
 		EncounterJournal_ListInstances();
 		EncounterJournal_DisplayInstance(instanceID);
 		EncounterJournal.lastInstance = instanceID;
-		if ( EncounterJournal.difficultyID == 0 ) then
-			difficultyID = EJ_DIFFICULTIES[1].difficultyID; 	-- default to 5-man normal
+		-- try to set difficulty to current instance difficulty
+		if ( EJ_IsValidInstanceDifficulty(difficultyID) ) then
+			EJ_SetDifficulty(difficultyID);
 		end
-		EJ_SetDifficulty(EncounterJournal.difficultyID);
 	elseif ( EncounterJournal.queuedPortraitUpdate ) then
 		-- fixes portraits when switching between fullscreen and windowed mode
 		EncounterJournal_UpdatePortraits();
@@ -206,7 +205,6 @@ function EncounterJournal_OnEvent(self, event, ...)
 	elseif event == "EJ_DIFFICULTY_UPDATE" then
 		--fix the difficulty buttons
 		local newDifficultyID = ...;	
-		EncounterJournal.difficultyID = newDifficultyID;
 		for _, entry in pairs(EJ_DIFFICULTIES) do
 			if entry.difficultyID == newDifficultyID then
 				if (entry.size) then

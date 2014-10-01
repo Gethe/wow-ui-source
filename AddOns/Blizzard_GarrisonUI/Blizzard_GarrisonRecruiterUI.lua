@@ -64,7 +64,7 @@ function GarrisonRecruiterFrame_Show( canRecruit, prefAvailable )
 	if( canRecruit ) then
 		if( prefAvailable )then
 			local frame = GarrisonRecruiterFrame.Pick;
-			local ability, name, desc, icon = C_Garrison.GetRecruitmentPreferences()
+			local ability, name, desc, icon, id = C_Garrison.GetRecruitmentPreferences()
 			if( name ) then
 				if( ability ) then
 					frame.Radio1:SetChecked(true);
@@ -77,7 +77,7 @@ function GarrisonRecruiterFrame_Show( canRecruit, prefAvailable )
 					GarrisonRecruiterFrame_UpdateAbilityEntries(true);
 					frame.Title2:SetText(GARRISON_CHOOSE_TRAIT);
 				end
-				GarrisonRecruiterFrame_SetAbilityPreference ({name=name, description=desc, icon=icon});
+				GarrisonRecruiterFrame_SetAbilityPreference ({id=id, name=name, description=desc, icon=icon});
 			else
 				GarrisonRecruiterFrame_UpdateAbilityEntries(frame.Radio2:GetChecked());
 				GarrisonRecruiterFrame_SetAbilityPreference (frame.entries[1]);

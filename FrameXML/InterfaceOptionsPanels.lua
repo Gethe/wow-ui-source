@@ -2227,7 +2227,7 @@ function InterfaceOptionsHelpPanel_OnEvent(self, event, ...)
 	local loadNPE = false;
 	if ( event == "CVAR_UPDATE" ) then
 		local cVarName = ...;
-		loadNPE = cVarName == "showTutorials" or cVarName == "showNPETutorials";
+		loadNPE = cVarName == "SHOW_TUTORIALS";
 	elseif ( event == "NPE_TUTORIAL_UPDATE" ) then
 		loadNPE = true;
 	end

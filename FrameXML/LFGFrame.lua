@@ -501,9 +501,7 @@ end
 
 function LFGRoleIconIncentive_OnEnter(self)
 	GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
-	local role = LFG_ID_TO_ROLES[self:GetParent():GetID()];
-	
-	GameTooltip:SetText(format(LFG_CALL_TO_ARMS, _G[role]), 1, 1, 1);
+	GameTooltip:SetText(format(LFG_CALL_TO_ARMS, _G[self:GetParent().role]), 1, 1, 1);
 	GameTooltip:AddLine(LFG_CALL_TO_ARMS_EXPLANATION, nil, nil, nil, true);
 	GameTooltip:Show();
 end

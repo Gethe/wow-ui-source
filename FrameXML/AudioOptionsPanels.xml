@@ -91,7 +91,7 @@
 				</Scripts>
 			</CheckButton>	
 			<Frame name="$parentPlayback" inherits="OptionsBoxTemplate">
-				<Size x="186" y="336"/>
+				<Size x="186" y="298"/>
 				<Anchors>
 					<Anchor point="TOPLEFT">
 						<Offset x="16" y="-116"/>
@@ -281,32 +281,6 @@
 					</OnLoad>
 				</Scripts>
 			</CheckButton>
-			<Slider name="$parentSoundQuality" inherits="OptionsSliderTemplate" obeyStepOnDrag="true">
-				<Size x="156" y="17"/>
-				<Anchors>
-					<Anchor point="TOPLEFT" relativeTo="$parentEnableDSPs" relativePoint="BOTTOMLEFT">
-						<Offset>
-							<AbsDimension x="8" y="-14"/>
-						</Offset>
-					</Anchor>
-				</Anchors>
-				<Scripts>
-					<OnLoad>
-						self.type = CONTROLTYPE_SLIDER;
-						self.cvar = "Sound_OutputQuality";
-						self.restart = true;
-						_G[self:GetName().."Text"]:SetFontObject("GameFontNormalSmall");
-						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
-					</OnLoad>
-					<OnValueChanged>
-						local prevValue = self.value;
-						BlizzardOptionsPanel_Slider_OnValueChanged(self, value);
-						if (self:GetParent():IsShown() and self.restart and prevValue and prevValue ~= value) then
-							AudioOptionsFrame_AudioRestart();
-						end
-					</OnValueChanged>
-				</Scripts>	
-			</Slider>
 			<Frame name="$parentHardware" inherits="OptionsBoxTemplate">
 				<Size x="186" y="108"/>
 				<Anchors>

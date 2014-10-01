@@ -130,7 +130,8 @@
 		</Frames>
 		<Scripts>
 			<OnShow>
-				local featureTable = ACCOUNT_UPGRADE_FEATURES["TRIAL"];
+				local tag = max(GetAccountExpansionLevel(), GetExpansionLevel()) - 1;
+				local featureTable = ACCOUNT_UPGRADE_FEATURES[tag];
 				self.Logo:SetTexture(featureTable.logo);
 				for i=1, #featureTable do
 					local frame = _G["StarterEditionPopUpFeature"..i];

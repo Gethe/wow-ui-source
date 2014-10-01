@@ -2319,7 +2319,11 @@ function MountOptionsMenu_Init(self, level)
 	UIDropDownMenu_AddButton(info, level);
 	info.disabled = nil;
 
-	local isFavorite = MountJournal.menuMountID and MountJournal_GetIsFavorite(MountJournal.menuMountID);
+	local canFavorite = false;
+	local isFavorite = false;
+	if (MountJournal.menuMountID) then
+		 isFavorite, canFavorite = MountJournal_GetIsFavorite(MountJournal.menuMountID);
+	end
 
 	if (isFavorite) then
 		info.text = BATTLE_PET_UNFAVORITE;
@@ -2331,6 +2335,12 @@ function MountOptionsMenu_Init(self, level)
 		info.func = function() 
 			MountJournal_SetIsFavorite(MountJournal.menuMountID, true); 
 		end
+	end
+
+	if (canFavorite) then
+		info.disabled = false;
+	else
+		info.disabled = true;
 	end
 
 	UIDropDownMenu_AddButton(info, level);
@@ -2572,6 +2582,10 @@ function ToySpellButton_UpdateButton(self)
 	self:Show();
 
 	local itemID, toyName, icon = C_ToyBox.GetToyInfo(self.itemID);
+
+	if (itemID == nil) then
+		return;
+	end
 
 	if string.len(toyName) == 0 then
 		toyName = itemID;

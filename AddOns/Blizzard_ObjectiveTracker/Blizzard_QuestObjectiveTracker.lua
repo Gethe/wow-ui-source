@@ -132,10 +132,6 @@ end
 -- *****************************************************************************************************
 -- ***** ITEM FUNCTIONS
 -- *****************************************************************************************************
-
-function QuestObjectiveItem_OnClick(self, button, down)
-end
-
 function QuestObjectiveItem_OnLoad(self)
 	self:RegisterForClicks("AnyUp");
 end
@@ -437,9 +433,7 @@ function QUEST_TRACKER_MODULE:Update()
 
 		-- check filters
 		local showQuest = true;
-		if ( inScenario and questType ~= QUEST_TYPE_SCENARIO and questType ~= QUEST_TYPE_DUNGEON) then
-			showQuest = false;
-		elseif ( isTask ) then
+		if ( isTask ) then
 			showQuest = false;
 		end
 

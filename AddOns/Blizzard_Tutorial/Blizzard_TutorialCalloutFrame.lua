@@ -1,4 +1,4 @@
-﻿NPE_TutorialCallout = {};
+NPE_TutorialCallout = {};
 
 -- ------------------------------------------------------------------------------------------------------------
 function NPE_TutorialCallout:Initialize()

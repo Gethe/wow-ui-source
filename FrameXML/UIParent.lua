@@ -822,6 +822,8 @@ function UIParent_OnEvent(self, event, ...)
 		TargetFrame_OnVariablesLoaded();
 		
 		NPETutorial_AttemptToBegin(event);
+		
+		StoreFrame_CheckForFree(event);
 	elseif ( event == "PLAYER_LOGIN" ) then
 		TimeManager_LoadUI();
 		-- You can override this if you want a Combat Log replacement
@@ -1526,9 +1528,7 @@ function UIParent_OnEvent(self, event, ...)
 		end
 		ShowUIPanel(GarrisonRecruiterFrame);
 	elseif ( event == "PRODUCT_DISTRIBUTIONS_UPDATED" ) then
-		Store_LoadUI();
-
-		StoreFrame_CheckForFree();
+		StoreFrame_CheckForFree(event);
 	end
 end
 

@@ -16,6 +16,6 @@ function StoreFrame_PreviewFrameIsShown(isShown)
 	StoreFrame:SetAttribute("previewframeshown", isShown);
 end
 
-function StoreFrame_CheckForFree()
-	StoreFrame:SetAttribute("checkforfree");
+function StoreFrame_CheckForFree(event)
+	StoreFrame:SetAttribute("checkforfree", event);
 end

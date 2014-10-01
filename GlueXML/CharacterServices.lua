@@ -59,31 +59,6 @@ local UPGRADE_MAX_LEVEL = 90;
 local UPGRADE_BONUS_LEVEL = 60;
 
 CURRENCY_KRW = 3;
-CURRENCY_CPT = 14;
-CURRENCY_TPT = 15;
-
-local freeTokenTooltips = {
-	[-1] = {
-		["title"] = CHARACTER_UPGRADE_WOD_TOKEN_TITLE,
-		["description"] = CHARACTER_UPGRADE_WOD_TOKEN_DESCRIPTION,
-		["showPopup"] = true,
-	},
-	[CURRENCY_KRW] = {
-		["title"] = CHARACTER_UPGRADE_WOD_TOKEN_TITLE_KRW,
-		["description"] = CHARACTER_UPGRADE_WOD_TOKEN_DESCRIPTION_KRW,
-		["showPopup"] = false,
-	},
-	[CURRENCY_CPT] = {
-		["title"] = CHARACTER_UPGRADE_WOD_TOKEN_TITLE_CPT,
-		["description"] = CHARACTER_UPGRADE_WOD_TOKEN_DESCRIPTION_CPT,
-		["showPopup"] = false,
-	},
-	[CURRENCY_TPT] = {
-		["title"] = CHARACTER_UPGRADE_WOD_TOKEN_TITLE_TPT,
-		["description"] = CHARACTER_UPGRADE_WOD_TOKEN_DESCRIPTION_TPT,
-		["showPopup"] = false,
-	},
-};
 
 local RAID_CLASS_COLORS = {
 	["HUNTER"] = { r = 0.67, g = 0.83, b = 0.45, colorStr = "ffabd473" },
@@ -211,10 +186,7 @@ function CharacterServicesMaster_UpdateServiceButton()
 	if (C_SharedCharacterServices.HasFreeDistribution()) then
 		hasFree = true;
 		local currencyID = C_PurchaseAPI.GetCurrencyID();
-		local shouldShow = true;
-		if (freeTokenTooltips[currencyID]) then
-			shouldShow = freeTokenTooltips[currencyID].showPopup;
-		end
+		local shouldShow = not select(2, C_SharedCharacterServices.HasFreeDistribution());
 		if (not C_SharedCharacterServices.HasSeenPopup() and shouldShow) then
 			showPopup = true;
 		end
@@ -295,7 +267,10 @@ function CharacterServicesMaster_OnEvent(self, event, ...)
 end
 
 function CharacterServicesMaster_OnCharacterListUpdate()
-	if (CHARACTER_UPGRADE_CREATE_CHARACTER or C_CharacterServices.GetStartAutomatically()) then
+	if (CharacterServicesMaster.waitingForLevelUp) then
+		C_CharacterServices.ApplyLevelUp();
+		CharacterServicesMaster.waitingForLevelUp = false;
+	elseif (CHARACTER_UPGRADE_CREATE_CHARACTER or C_CharacterServices.GetStartAutomatically()) then
 		CharSelectServicesFlowFrame:Show();
 		CharacterServicesMaster_SetFlow(CharacterServicesMaster, CharacterUpgradeFlow);
 		CHARACTER_UPGRADE_CREATE_CHARACTER = false;
@@ -306,12 +281,13 @@ function CharacterServicesMaster_OnCharacterListUpdate()
 		local num = math.min(GetNumCharacters(), MAX_CHARACTERS_DISPLAYED);
 
 		for i = 1, num do
-			if (select(14, GetCharacterInfo(GetCharIDFromIndex(i))) == guid) then
+			if (select(14, GetCharacterInfo(GetCharIDFromIndex(i + CHARACTER_LIST_OFFSET))) == guid) then
 				local button = _G["CharSelectCharacterButton"..i];
 				CharacterSelectButton_OnClick(button);
 				button.selection:Show();
-				C_CharacterServices.ApplyLevelUp();
 				UpdateCharacterSelection(CharacterSelect);
+				GetCharacterListUpdate();
+				CharacterServicesMaster.waitingForLevelUp = true;
 				break;
 			end
 		end
@@ -460,14 +436,13 @@ function CharacterServicesMasterFinishButton_OnClick(self)
 end
 
 function CharacterServicesTokenWoDFree_OnEnter(self)
-	local currencyID = C_PurchaseAPI.GetCurrencyID();
 	local title, desc;
-	if (freeTokenTooltips[currencyID]) then
-		title = freeTokenTooltips[currencyID].title;
-		desc = freeTokenTooltips[currencyID].description;
+	if (select(2, C_SharedCharacterServices.HasFreeDistribution())) then
+		title = CHARACTER_UPGRADE_WOD_TOKEN_TITLE_ASIA;
+		desc = CHARACTER_UPGRADE_WOD_TOKEN_DESCRIPTION_ASIA;
 	else
-		title = freeTokenTooltips[-1].title;
-		desc = freeTokenTooltips[-1].description;
+		title = CHARACTER_UPGRADE_WOD_TOKEN_TITLE;
+		desc = CHARACTER_UPGRADE_WOD_TOKEN_DESCRIPTION;
 	end
 	self.Highlight:Show();
 	GlueTooltip:SetOwner(self, "ANCHOR_LEFT");
@@ -753,6 +728,7 @@ function CharacterUpgradeCharacterSelectBlock:Initialize(results)
 		end
 	end
 
+	CharacterSelect_SaveCharacterOrder();
 	-- Set up the GlowBox around the show characters
 	self.frame.ControlsFrame.GlowBox:SetHeight(58 * num);
 	if (CharacterSelectCharacterFrame.scrollBar:IsShown()) then

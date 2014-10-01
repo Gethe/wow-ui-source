@@ -855,6 +855,7 @@ function LFGListEntryCreationActivityFinder_Show(self, categoryID, groupID, filt
 	self.selectedActivity = nil;
 	LFGListEntryCreationActivityFinder_UpdateMatching(self);
 	self:Show();
+	self.Dialog.EntryBox:SetFocus();
 end
 
 function LFGListEntryCreationActivityFinder_UpdateMatching(self)
@@ -1153,7 +1154,7 @@ function LFGListApplicationViewer_UpdateApplicant(button, id)
 			member:SetPoint("TOPLEFT", button.Members[i-1], "BOTTOMLEFT", 0, 0);
 			button.Members[i] = member;
 		end
-		LFGListApplicationViewer_UpdateApplicantMember(self, member, id, i, status, pendingStatus);
+		LFGListApplicationViewer_UpdateApplicantMember(member, id, i, status, pendingStatus);
 		member:Show();
 	end
 
@@ -1208,7 +1209,7 @@ function LFGListApplicationViewer_UpdateApplicant(button, id)
 	button.Spinner:SetShown(pendingStatus);
 end
 
-function LFGListApplicationViewer_UpdateApplicantMember(self, member, appID, memberIdx, status, pendingStatus)
+function LFGListApplicationViewer_UpdateApplicantMember(member, appID, memberIdx, status, pendingStatus)
 	local grayedOut = not pendingStatus and (status == "failed" or status == "cancelled" or status == "declined" or status == "invitedeclined" or status == "timedout");
 	local noTouchy = (status == "invited" or status == "inviteaccepted" or status == "invitedeclined");
 
@@ -2202,7 +2203,7 @@ function LFGListInviteDialog_Show(self, resultID)
 	self.DeclineButton:SetShown(not informational);
 	self.AcknowledgeButton:SetShown(informational);
 
-	if ( GroupHasOfflineMember(LE_PARTY_CATEGORY_HOME) ) then
+	if ( not informational and GroupHasOfflineMember(LE_PARTY_CATEGORY_HOME) ) then
 		self:SetHeight(250);
 		self.OfflineNotice:Show();
 		LFGListInviteDialog_UpdateOfflineNotice(self);

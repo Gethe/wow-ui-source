@@ -2882,6 +2882,7 @@
 												else
 													self:GetParent().Lock:Show();
 													self:GetParent().Lock:SetAlpha(1);
+													GarrisonMissionFrame.MissionComplete.NextMissionButton:SetEnabled(true);
 												end
 											</OnFinished>
 										</Scripts>
@@ -3148,7 +3149,7 @@
 		</Scripts>
 	</Frame>	
 
-	<Frame name="GarrisonFollowerPlacer" inherits="GarrisonFollowerPortraitTemplate" parent="UIParent" frameStrata="HIGH"/>
+	<Frame name="GarrisonFollowerPlacer" inherits="GarrisonFollowerPortraitTemplate" hidden="true" parent="UIParent" frameStrata="HIGH"/>
 
 	<Button name="GarrisonFollowerPlacerFrame" parent="UIParent" frameStrata="HIGH" setAllPoints="true" hidden="true">
 		<Scripts>

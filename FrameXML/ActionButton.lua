@@ -168,6 +168,7 @@ function ActionBarActionEventsFrame_OnLoad(self)
 	self:RegisterEvent("SPELL_ACTIVATION_OVERLAY_GLOW_HIDE");
 	self:RegisterEvent("UPDATE_SUMMONPETS_ACTION");
 	self:RegisterEvent("LOSS_OF_CONTROL_ADDED");
+	self:RegisterEvent("LOSS_OF_CONTROL_UPDATE");
 end
 
 function ActionBarActionEventsFrame_OnEvent(self, event, ...)
@@ -473,8 +474,16 @@ function ActionButton_UpdateCooldown (self)
 			self.cooldown.currentCooldownType = COOLDOWN_TYPE_NORMAL;
 		end
 		
+		if( locStart > 0 ) then
+			self.cooldown:SetScript("OnCooldownDone", ActionButton_OnCooldownDone );
+		end
 		CooldownFrame_SetTimer(self.cooldown, start, duration, enable, charges, maxCharges);
 	end
+end
+
+function ActionButton_OnCooldownDone(self)
+	self:SetScript("OnCooldownDone", nil);
+	ActionButton_UpdateCooldown(self:GetParent());
 end
 
 --Overlay stuff
@@ -596,6 +605,8 @@ function ActionButton_OnEvent (self, event, ...)
 		ActionButton_UpdateState(self);
 	elseif ( event == "ACTIONBAR_UPDATE_USABLE" ) then
 		ActionButton_UpdateUsable(self);
+	elseif ( event == "LOSS_OF_CONTROL_UPDATE" ) then
+		ActionButton_UpdateCooldown(self);
 	elseif ( event == "ACTIONBAR_UPDATE_COOLDOWN" or event == "LOSS_OF_CONTROL_ADDED" ) then
 		ActionButton_UpdateCooldown(self);
 		-- Update tooltip

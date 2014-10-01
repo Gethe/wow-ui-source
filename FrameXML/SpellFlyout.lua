@@ -21,8 +21,12 @@ function SpellFlyoutButton_OnClick(self)
 		end
 		SpellFlyoutButton_UpdateState(self);
 	else
+		local spellID = select(7, GetSpellInfo(self.spellID));
 		if ( self.offSpec ) then
 			return;
+		elseif ( spellID ) then
+			CastSpellByID(spellID);
+			self:GetParent():Hide();
 		elseif ( self.spellName ) then
 			CastSpellByName(self.spellName);
 			self:GetParent():Hide();

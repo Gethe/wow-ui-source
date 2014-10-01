@@ -212,7 +212,7 @@ end
 
 function LFDCheckRolesRestricted(dungeonID, tank, healer, dps)
 	local tankSelected, healerSelected, dpsSelected = tank, healer, dps;
-	tankLocked, healerLocked, dpsLocked = GetLFDRoleRestrictions(dungeonID);
+	local tankLocked, healerLocked, dpsLocked = GetLFDRoleRestrictions(dungeonID);
 	if ( tankLocked ) then
 		tankSelected = false; 
 	end

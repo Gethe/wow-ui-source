@@ -121,10 +121,10 @@ if ( InGlue() ) then
 	UIDropDownMenu_GetSelectedValue = GlueDropDownMenu_GetSelectedValue
 	UIDropDownMenu_SetSelectedValue = GlueDropDownMenu_SetSelectedValue
 
-	function UpdateAddonButton()
+	function UpdateAddonButton(checkVersion)
 		if ( GetNumAddOns() > 0 ) then
 			-- Check to see if any of them are out of date and not disabled
-			if ( IsAddonVersionCheckEnabled() and AddonList_HasOutOfDate() and not HasShownAddonOutOfDateDialog ) then
+			if ( checkVersion and IsAddonVersionCheckEnabled() and AddonList_HasOutOfDate() and not HasShownAddonOutOfDateDialog ) then
 				AddonDialog_Show("ADDONS_OUT_OF_DATE");
 				HasShownAddonOutOfDateDialog = true;
 			end
@@ -272,6 +272,16 @@ function AddonList_Update()
 		else
 			name, title, notes, loadable, reason, security = GetAddOnInfo(addonIndex);
 
+			local character = nil;
+			if (InGlue()) then
+				-- Get the character from the current list (nil is all characters)
+				character = UIDropDownMenu_GetSelectedValue(AddonCharacterDropDown);
+				if ( character == ALL ) then
+					character = nil;
+				end
+			else
+				character = UnitName("player");
+			end
 			checkbox = _G["AddonListEntry"..i.."Enabled"];
 			local checkboxState = GetAddOnEnableState(character, addonIndex);
 			enabled = (checkboxState > 0);
@@ -279,12 +289,6 @@ function AddonList_Update()
 			if (not InGlue()) then
 				checkbox:SetChecked(enabled);
 			else
-				-- Get the character from the current list (nil is all characters)
-				local character = UIDropDownMenu_GetSelectedValue(AddonCharacterDropDown);
-				if ( character == ALL ) then
-					character = nil;
-				end
-
 				TriStateCheckbox_SetState(checkboxState, checkbox);
 				if (checkboxState == 1 ) then
 					checkbox.AddonTooltip = ENABLED_FOR_SOME;
@@ -499,10 +503,16 @@ end
 function AddonList_DisableOutOfDate()
 	for i=1, GetNumAddOns() do
 		local name, title, notes, loadable, reason = GetAddOnInfo(i);
+		local character = nil;
+		if (not InGlue()) then
+			character = UnitName("player");
+		end
+		local enabled = (GetAddOnEnableState(character , i) > 0);
 		if ( enabled and not loadable and reason == "INTERFACE_VERSION" ) then
 			DisableAddOn(i);
 		end
 	end
+	SaveAddOns();
 end
 
 function AddonListCharacterDropDown_OnClick(self)

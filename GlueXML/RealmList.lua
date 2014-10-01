@@ -303,13 +303,14 @@ function RealmList_OnKeyDown(key)
 end
 
 function RealmList_OnOk()
-	RealmListUI:Hide();
 	-- If trying to join a Full realm then popup a dialog
 	if ( RealmList.showRealmIsFullDialog ) then
+		RealmListUI:Hide();
 		GlueDialog_Show("REALM_IS_FULL");
 		return;
 	end
 	if ( RealmList.currentRealm ) then
+		RealmListUI:Hide();
 		ChangeRealm(RealmList.selectedCategory , RealmList.currentRealm);
 	end
 end

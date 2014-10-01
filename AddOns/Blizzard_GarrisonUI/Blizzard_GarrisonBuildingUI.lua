@@ -414,7 +414,7 @@ function GarrisonTownHall_OnClick(self)
 end
 
 function GarrisonTownHall_Select()
-	self = GarrisonBuildingFrame.MapFrame.TownHall;
+	local self = GarrisonBuildingFrame.MapFrame.TownHall;
 	GarrisonBuildingFrame.InfoBox:Hide();
 	GarrisonBuildingFrame_ClearPlotHighlights();
 	GarrisonBuildingList_Show();
@@ -489,9 +489,9 @@ function GarrisonTownHallUpgradeButton_OnEnter(self)
 	GameTooltip:SetOwner(self, "ANCHOR_BOTTOMLEFT", 15, 15);
 	local factionGroup = UnitFactionGroup("player");
 	if (GarrisonBuildingFrame.level == 1) then
-		GameTooltip:SetText(format(FactionData[factionGroup].townHallUpgrade1Tooltip, RED_FONT_COLOR_CODE, FONT_COLOR_CODE_CLOSE));
+		GameTooltip:SetText(format(FactionData[factionGroup].townHallUpgrade1Tooltip, RED_FONT_COLOR_CODE, FONT_COLOR_CODE_CLOSE), nil, nil, nil, nil, true);
 	elseif (GarrisonBuildingFrame.level == 2) then
-		GameTooltip:SetText(format(FactionData[factionGroup].townHallUpgrade2Tooltip, RED_FONT_COLOR_CODE, FONT_COLOR_CODE_CLOSE));
+		GameTooltip:SetText(format(FactionData[factionGroup].townHallUpgrade2Tooltip, RED_FONT_COLOR_CODE, FONT_COLOR_CODE_CLOSE), nil, nil, nil, nil, true);
 	else
 		return;
 	end
@@ -611,10 +611,10 @@ function GarrisonBuildingInfoBox_ShowBuilding(ID, owned, showLock)
 	infoBox.UpgradeBadge:Hide();
 	
 	-- Show the upgrade button if we own it, construction is complete, and we are not at max level
-	if (owned and not isBuilding and not canActivate and not isMaxLevel) then
+	if (owned and not isBuilding and not canActivate and rank < GARRISON_MAX_BUILDING_LEVEL) then
 		infoBox.UpgradeButton:Show();
 		infoBox.UpgradeBadge:Show();
-		if (canUpgrade) then
+		if (canUpgrade and rank < GarrisonBuildingFrame.level) then
 			infoBox.UpgradeButton.upgradePlotID = ID;
 			infoBox.UpgradeButton:Enable();
 			infoBox.UpgradeBadge:SetAtlas(CAN_UPGRADE_ATLAS, true);
@@ -1381,13 +1381,8 @@ function GarrisonPlot_OnReceiveDrag(self)
 	end
 	-- If this was dragged from another plot, swap the buildings
 	if (GarrisonBuildingPlacer.fromExistingBuilding) then
-		if (self.buildingID) then
-			C_Garrison.SwapBuildings(GarrisonBuildingPlacer.info.plotID, self.plotID);
-			GarrisonBuildingPlacer_Clear();
-		else
-			UIErrorsFrame:AddMessage(ERR_GARRISON_CANNOT_MOVE_BUILDING, 1.0, 0.1, 0.1, 1.0);
-			PlaySound("UI_Garrison_ArchitectTable_BuildingPlacementError");
-		end
+		C_Garrison.SwapBuildings(GarrisonBuildingPlacer.info.plotID, self.plotID);
+		GarrisonBuildingPlacer_Clear();
 		return;
 	end
 	

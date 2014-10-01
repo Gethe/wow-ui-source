@@ -1088,8 +1088,7 @@ end
 function QuestLogPopupDetailFrame_Show(questLogIndex)
 
 	local questID = select(8, GetQuestLogTitle(questLogIndex));
-
-	if ( QuestLogPopupDetailFrame.questID == questID ) then
+	if ( QuestLogPopupDetailFrame.questID == questID and QuestLogPopupDetailFrame:IsShown() ) then
 		HideUIPanel(QuestLogPopupDetailFrame);
 		return;
 	end

@@ -1,4 +1,4 @@
-﻿NPE_TutorialKeyboardMouseFrame = {};
+NPE_TutorialKeyboardMouseFrame = {};
 
 -- ------------------------------------------------------------------------------------------------------------
 function NPE_TutorialKeyboardMouseFrame:Initialize()

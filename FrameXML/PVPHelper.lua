@@ -153,6 +153,7 @@ function PVPFramePopup_SetupPopUp(event, challengerName, bgName, timeout, tourna
 	PVPFramePopup.title:SetFormattedText(WARGAME_CHALLENGED, challengerName, bgName);
 	PVPFramePopup.type = event;
 	PVPFramePopup.timeout = timeout  - 3;  -- add a 3 second buffer
+	PVPFramePopup.minimizeButton:Disable();
 	SetPortraitToTexture(PVPFramePopup.ringIcon,"Interface\\BattlefieldFrame\\UI-Battlefield-Icon");
 	StaticPopupSpecial_Show(PVPFramePopup);
 	PlaySound("ReadyCheck");

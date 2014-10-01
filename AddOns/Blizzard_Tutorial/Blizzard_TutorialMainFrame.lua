@@ -1,4 +1,4 @@
-﻿NPE_TutorialMainFrame = {};
+NPE_TutorialMainFrame = {};
 
 NPE_TutorialMainFrame.States =
 {

@@ -1,4 +1,4 @@
-﻿local _, addonTable = ...;
+local _, addonTable = ...;
 local TutorialData = addonTable.TutorialData;
 
 
