@@ -908,6 +908,8 @@ function CharacterSelect_PaidServiceOnClick(self, button, down, service)
 	if (translatedIndex <= 0 or translatedIndex > GetNumCharacters()) then
 		-- Somehow our character order got borked, reset the offset and get an updated character list.
 		CHARACTER_LIST_OFFSET = 0;
+		PAID_SERVICE_CHARACTER_ID = nil;
+		PAID_SERVICE_TYPE = nil;
 		GetCharacterListUpdate();
 		return;
 	end

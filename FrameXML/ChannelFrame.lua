@@ -26,7 +26,7 @@ function ChannelFrame_OnLoad(self)
 	FauxScrollFrame_SetOffset(ChannelRosterScrollFrame, 0);
 	
 	for i = 2, 20 do
-		local button = CreateFrame("Button", "ChannelButton"..i, ChannelListScrollFrame, "ChannelButtonTemplate");
+		local button = CreateFrame("Button", "ChannelButton"..i, ChannelListScrollChildFrame, "ChannelButtonTemplate");
 		button:SetID(i);
 		button:SetPoint("TOPLEFT", _G["ChannelButton"..(i-1)], "BOTTOMLEFT");
 	end
@@ -164,7 +164,7 @@ end
 --[ Channel List Functions ]--
 function ChannelList_Update()
 	-- Scroll Bar Handling --
-	local frameHeight = ChannelListScrollChildFrame:GetHeight();
+	local frameHeight = 0;
 	local button, buttonName, buttonLines, buttonCollapsed, buttonSpeaker, hideVoice;
 	local name, header, collapsed, channelNumber, active, count, category, voiceEnabled, voiceActive;
 	local channelCount = GetNumDisplayChannels();
@@ -254,13 +254,14 @@ function ChannelList_Update()
 				channelNumber = nil;
 			end
 			button:Show();
+
+			-- Scroll Bar Handling --
+			frameHeight = frameHeight + button:GetHeight();
 		else
 --			button.channel = nil;
 			button:Hide();
 			button.voiceEnabled = nil;
 			button.voiceActive = nil;
-			-- Scroll Bar Handling --
-			frameHeight = frameHeight - button:GetHeight();
 		end
 	end	
 

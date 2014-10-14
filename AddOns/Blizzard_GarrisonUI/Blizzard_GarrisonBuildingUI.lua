@@ -90,6 +90,9 @@ end
 function GarrisonBuildingFrame_OnLoad(self)
 	local list = GarrisonBuildingFrame.BuildingList;
 	
+	self.plots = {};
+	self.level = 1;
+
 	--set up tabs
 	local tabInfo = C_Garrison.GetBuildingSizes();
 	if (#tabInfo ~= GARRISON_NUM_BUILDING_SIZES) then
@@ -150,6 +153,10 @@ function GarrisonBuildingFrame_OnLoad(self)
 end
 
 function GarrisonBuildingFrame_OnShow(self)
+	if ( #GarrisonBuildingFrame.plots == 0 ) then
+		GarrisonBuildingFrame_UpdateGarrisonInfo(self);
+	end
+
 	C_Garrison.RequestGarrisonUpgradeable();
 	GarrisonBuildingTab_Select(GarrisonBuildingFrame.BuildingList.Tab1);
 	GarrisonBuildingList_Show();
@@ -282,7 +289,6 @@ function GarrisonBuildingFrame_OnEvent(self, event, ...)
 end
 
 function GarrisonBuildingFrame_UpdatePlots()
-	GarrisonBuildingFrame.plots = {}
 	local plots = C_Garrison.GetPlots();
 	local mapWidth = GarrisonBuildingFrame.MapFrame:GetWidth();
 	local mapHeight = GarrisonBuildingFrame.MapFrame:GetHeight();
@@ -359,6 +365,9 @@ end
 
 function GarrisonBuildingFrame_UpdateGarrisonInfo(self)
 	local level, mapTexture, townHallX, townHallY = C_Garrison.GetGarrisonInfo();
+	if ( not level or not townHallX or not townHallY ) then
+		return;
+	end
 	self.level = level;
 	self.MapFrame.Map:SetAtlas(mapTexture);
 	self.MapFrame.TownHall.Level:SetText(level);
@@ -588,7 +597,7 @@ function GarrisonBuildingInfoBox_ShowBuilding(ID, owned, showLock)
 		id, name, texPrefix, icon, description, rank, currencyID, currencyQty, goldQty, buildTime, needsPlan, isPrebuilt, possSpecs, upgrades, canUpgrade, isMaxLevel, hasFollowerSlot = C_Garrison.GetBuildingInfo(ID);
 	end
 	-- currencyID, currencyQty, and goldQty from above are the cost of the building's current level, which we do not display. What we do display is the cost of the next level.
-	if ( id ) then
+	if ( id and owned ) then
 		_, _, _, _, _, currencyID, currencyQty, goldQty = C_Garrison.GetBuildingUpgradeInfo(id);
 	end
 	infoBox.canActivate = canActivate;
@@ -828,6 +837,9 @@ function GarrisonFollowerPortrait_OnLeave(self, button)
 end
 
 function GarrisonFollowerTooltipShow(self, followerID, garrFollowerID)
+	if ( not followerID ) then
+		return;
+	end
 	GarrisonFollowerTooltip:ClearAllPoints();
 	GarrisonFollowerTooltip:SetPoint("TOPLEFT", self, "BOTTOMRIGHT");
 	GarrisonFollowerTooltip_Show(garrFollowerID, 
@@ -922,7 +934,7 @@ function GarrisonBuildingFrameLevelIcon_OnEnter(self, button)
 	local building = GarrisonBuildingFrame.selectedBuilding;
 	GameTooltip:SetOwner(self, "ANCHOR_BOTTOMLEFT", 15, 15);
 	local _, id, name, texPrefix, icon, rank, currencyID, cost, goldQty, buildTime, tooltip, needsPlan;
-	local locked = building.plotID and GarrisonBuildingFrame.plots[building.plotID].locked;
+	local locked = building.plotID and GarrisonBuildingFrame.plots[building.plotID] and GarrisonBuildingFrame.plots[building.plotID].locked;
 	
 	-- If we own the building, show upgrade info
 	if (building.plotID and not locked) then
@@ -1142,6 +1154,9 @@ function GarrisonBuildingList_SelectBuilding(buildingID)
 end
 
 function GarrisonBuilding_ShowLevelTooltip(name, plotID, buildingID, anchor)
+	if ( plotID and not GarrisonBuildingFrame.plots[plotID] ) then
+		return;
+	end
 	local Tooltip = GarrisonBuildingFrame.BuildingLevelTooltip;
 	Tooltip.Name:SetText(name);
 	local height = Tooltip.Name:GetHeight() + 30; --15 pixels of padding on top and bottom
@@ -1226,7 +1241,9 @@ function GarrisonBuildingListButton_OnEnter(self)
 	
 	-- Highlight the building on the map if we own it or relevant plots if we don't
 	if (self.info.plotID) then
-		GarrisonBuildingFrame.plots[self.info.plotID].BuildingHighlight:Show();
+		if ( GarrisonBuildingFrame.plots[self.info.plotID] ) then
+			GarrisonBuildingFrame.plots[self.info.plotID].BuildingHighlight:Show();
+		end
 	else
 		local plotList = C_Garrison.GetPlotsForBuilding(self.info.buildingID);
 		for i=1, #plotList do
@@ -1243,7 +1260,9 @@ function GarrisonBuildingListButton_OnLeave(self)
 		
 	-- Un-Highlight building or empty plots on the map
 	if (self.info.plotID) then
-		GarrisonBuildingFrame.plots[self.info.plotID].BuildingHighlight:Hide();
+		if ( GarrisonBuildingFrame.plots[self.info.plotID] ) then
+			GarrisonBuildingFrame.plots[self.info.plotID].BuildingHighlight:Hide();
+		end
 	else
 		local plotList = C_Garrison.GetPlotsForBuilding(self.info.buildingID);
 		for i=1, #plotList do

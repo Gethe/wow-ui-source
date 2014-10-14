@@ -359,8 +359,8 @@ function GarrisonLandingPageReportList_Update()
 	for i = 1, numButtons do
 		local button = buttons[i];
 		local index = offset + i; -- adjust index
-		if ( index <= numItems ) then
-			local item = items[index];
+		local item = items[index];
+		if ( item ) then
 			button.id = index;
 			local bgName;
 			if (item.isBuilding) then

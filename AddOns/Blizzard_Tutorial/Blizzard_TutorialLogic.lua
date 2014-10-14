@@ -1417,7 +1417,7 @@ end
 
 function Class_LootCorpseWatcher:UnitLootable(unitGUID)
 
-	local unitID = tonumber(string.match(unitGUID, "Creature:.-:.-:.-:.-:(.-):"));
+	local unitID = tonumber(string.match(unitGUID, "Creature%-.-%-.-%-.-%-.-%-(.-)%-"));
 	for id, hasKilled in pairs(self._QuestMobs) do
 		if ((unitID == id) and (not hasKilled)) then
 			Tutorials.LootCorpse:ForceBegin(unitID);
