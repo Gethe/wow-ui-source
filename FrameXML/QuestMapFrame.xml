@@ -1,0 +1,740 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\FrameXML\UI.xsd">
+	<Script file="QuestMapFrame.lua"/>
+	
+	<Button name="QuestLogHeaderTemplate" virtual="true">
+		<Size x="255" y="16"/>		
+		<Scripts>
+			<OnLoad>
+				--QuestLogTitleButton_OnLoad(self);
+				self.ButtonText:SetTextColor(0.7, 0.7, 0.7);
+				self:RegisterForClicks("LeftButtonUp", "RightButtonUp");
+			</OnLoad>
+			<OnEvent>
+				--QuestLogTitleButton_OnEvent(self, event, ...);
+			</OnEvent>
+			<OnClick function="QuestMapLogHeaderButton_OnClick"/>
+			<OnEnter>
+				self.ButtonText:SetTextColor(1, 1, 1);
+			</OnEnter>
+			<OnLeave>
+				self.ButtonText:SetTextColor(0.7, 0.7, 0.7);
+			</OnLeave>
+		</Scripts>
+		<ButtonText nonspacewrap="true" parentKey="ButtonText">
+			<Size x="0" y="10"/>
+			<Anchors>
+				<Anchor point="LEFT" x="5" y="0"/>
+			</Anchors> 
+		</ButtonText>
+		<NormalFont style="GameFontNormalMed3"/>
+		<HighlightFont style="GameFontHighlightMedium"/>
+	</Button>
+	<Button name="QuestLogTitleTemplate" virtual="true">
+		<Size x="255" y="16"/>
+		<Layers>
+			<Layer level="ARTWORK">
+				<FontString parentKey="Text" inherits="GameFontNormalLeft">
+					<Size x="175" y="0"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" x="31" y="-8"/>
+					</Anchors>
+					<Color r="0.75" g="0.61" b="0"/>
+				</FontString>
+				<Texture parentKey="TaskIcon" atlas="TaskPOI-Icon" useAtlasSize="true" hidden="true">
+					<Anchors>
+						<Anchor point="TOPRIGHT" relativeKey="$parent.Text" relativePoint="TOPLEFT" x="-5" y="4"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="Check" file="Interface\Buttons\UI-CheckBox-Check" hidden="true">
+					<Size x="16" y="16"/>
+					<Anchors>
+						<Anchor point="TOP" relativeKey="$parent.Text" x="0" y="2"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="TagTexture" file="Interface\QuestFrame\QuestTypeIcons" hidden="true">
+					<Size x="18" y="18"/>
+					<Anchors>
+						<Anchor point="TOP" relativeKey="$parent.Text" x="0" y="3"/>
+						<Anchor point="RIGHT" x="0" y="0"/>
+					</Anchors>					
+				</Texture>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnLoad>
+				self:RegisterForClicks("LeftButtonUp", "RightButtonUp");
+				--QuestLogTitleButton_OnLoad(self);
+			</OnLoad>
+			<OnEvent>
+				--QuestLogTitleButton_OnEvent(self, event, ...);
+			</OnEvent>
+			<OnClick function="QuestMapLogTitleButton_OnClick"/>
+			<OnEnter function="QuestMapLogTitleButton_OnEnter"/>
+			<OnLeave function="QuestMapLogTitleButton_OnLeave"/>
+			<OnMouseDown function="QuestMapLogTitleButton_OnMouseDown"/>
+			<OnMouseUp function="QuestMapLogTitleButton_OnMouseUp"/>
+		</Scripts>
+		<ButtonText nonspacewrap="true" parentKey="ButtonText">
+			<Size x="0" y="10"/>
+			<Anchors>
+				<Anchor point="LEFT" x="20" y="0"/>
+			</Anchors> 
+		</ButtonText>
+		<NormalFont style="GameFontNormalLeft"/>
+		<HighlightFont style="GameFontHighlightLeft"/>
+		<DisabledFont style="GameFontHighlightLeft"/>
+	</Button>
+	<Frame name="QuestLogObjectiveTemplate" virtual="true">
+		<Size x="220" y="16"/>
+		<Layers>
+			<Layer level="ARTWORK">
+				<FontString parentKey="Dash" inherits="ObjectiveFont" text="QUEST_DASH">
+					<Size x="0" y="16"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" x="0" y="0"/>
+					</Anchors>
+				</FontString>				
+				<FontString parentKey="Text" inherits="ObjectiveFont">
+					<Size x="205" y="0"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.Dash" relativePoint="TOPRIGHT"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>	
+	</Frame>
+	<Button name="QuestDetailsButtonTemplate" virtual="true">
+		<Size x="32" y="32"/>
+		<NormalTexture atlas="UI-SquareButtonBrown-Up"/>
+		<PushedTexture atlas="UI-SquareButtonBrown-Down"/>
+		<Scripts>
+			<OnMouseDown>
+				local anchor, _, _, x, y = self.Icon:GetPoint(1);
+				self.Icon:SetPoint(anchor, x - 1, y - 1);
+			</OnMouseDown>
+			<OnMouseUp>
+				local anchor, _, _, x, y = self.Icon:GetPoint(1);
+				self.Icon:SetPoint(anchor, x + 1, y + 1);
+			</OnMouseUp>
+		</Scripts>
+	</Button>
+
+	<Frame name="QuestLogPopupDetailFrame" toplevel="true" enableMouse="true" parent="UIParent" hidden="true" inherits="ButtonFrameTemplate">
+		<Size x="338" y="496"/>
+		<Layers>
+			<Layer level="OVERLAY" textureSubLevel="-1">
+				<Texture file="Interface\QuestFrame\UI-QuestLog-BookIcon">
+					<Size x="64" y="64"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" x="-6" y="7"/>
+					</Anchors>
+				</Texture>		
+			</Layer>
+			<Layer level="BACKGROUND">
+				<Texture name="$parentPageBg" file="Interface\QuestFrame\QuestBG">
+					<Size x="512" y="620"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" x="6" y="-62"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Frames>
+			<ScrollFrame parentKey="ScrollFrame" name="$parentScrollFrame" inherits="UIPanelScrollFrameTemplate">
+				<Size x="298" y="403"/>
+				<Anchors>
+					<Anchor point="TOPLEFT" x="8" y="-65"/>
+				</Anchors>
+				<Layers>
+					<Layer level="ARTWORK">
+						<Texture name="$parentTop" file="Interface\PaperDollInfoFrame\UI-Character-ScrollBar">
+							<Size x="31" y="102"/>
+							<Anchors>
+								<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" x="-2" y="6"/>
+							</Anchors>
+							<TexCoords left="0" right="0.484375" top="0" bottom="0.4"/>
+						</Texture>
+						<Texture name="$parentBottom" file="Interface\PaperDollInfoFrame\UI-Character-ScrollBar">
+							<Size x="31" y="106"/>
+							<Anchors>
+								<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMRIGHT" x="-2" y="-2"/>
+							</Anchors>
+							<TexCoords left="0.515625" right="1.0" top="0" bottom="0.4140625"/>
+						</Texture>
+						<Texture name="$parentMiddle" file="Interface\PaperDollInfoFrame\UI-Character-ScrollBar">
+							<Size x="31" y="1"/>
+							<Anchors>
+								<Anchor point="TOP" relativeTo="$parentTop" relativePoint="BOTTOM"/>
+								<Anchor point="BOTTOM" relativeTo="$parentBottom" relativePoint="TOP"/>
+							</Anchors>
+							<TexCoords left="0" right="0.484375" top=".75" bottom="1.0"/>
+						</Texture>
+					</Layer>
+				</Layers>
+				<ScrollChild>
+					<Frame parentKey="ScrollChild">
+						<Size x="298" y="403"/>
+					</Frame>
+				</ScrollChild>
+			</ScrollFrame>
+			<Button parentKey="ShowMapButton">
+				<Size x="48" y="32"/>
+				<Anchors>
+					<Anchor point="TOPRIGHT" x="-24" y="-25"/>
+				</Anchors>
+				<Layers>
+					<Layer level="ARTWORK">
+						<Texture parentKey="Texture" file="Interface\QuestFrame\UI-QuestMap_Button">
+							<Size x="48" y="32"/>
+							<Anchors>
+								<Anchor point="RIGHT"/>
+							</Anchors>
+							<TexCoords left="0.125" right="0.875" top="0.0" bottom="0.5"/>
+						</Texture>
+						<FontString parentKey="Text" inherits="GameFontNormal" text="SHOW_MAP">
+							<Anchors>
+								<Anchor point="RIGHT" relativeKey="$parent.Texture" relativePoint="LEFT" x="0" y="0"/>
+							</Anchors>
+						</FontString>
+					</Layer>
+					<Layer level="HIGHLIGHT">
+						<Texture parentKey="Highlight" file="Interface\BUTTONS\ButtonHilight-Square" alphaMode="ADD">
+							<Size x="36" y="25"/>
+							<Anchors>
+								<Anchor point="RIGHT" x="-7" y="0"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnLoad>
+						self:SetWidth(self.Text:GetWidth() + self.Texture:GetWidth());
+					</OnLoad>
+					<OnClick>
+						QuestMapFrame_OpenToQuestDetails(self:GetParent().questID);
+					</OnClick>
+					<OnMouseDown>
+						self.Texture:SetTexCoord(0.125, 0.875, 0.5, 1.0);
+					</OnMouseDown>
+					<OnMouseUp>
+						self.Texture:SetTexCoord(0.125, 0.875, 0.0, 0.5);
+					</OnMouseUp>
+				</Scripts>
+			</Button>
+			<Button parentKey="AbandonButton" name="$parentAbandonButton" inherits="UIPanelButtonTemplate" text="ABANDON_QUEST_ABBREV">
+				<Size x="110" y="21"/>
+				<Anchors>
+					<Anchor point="BOTTOMLEFT" x="4" y="5"/>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						QuestMapQuestOptions_AbandonQuest(self:GetParent().questID);
+					</OnClick>
+					<OnEnter>
+						GameTooltip_AddNewbieTip(self, ABANDON_QUEST, 1.0, 1.0, 1.0, NEWBIE_TOOLTIP_ABANDONQUEST, 1);
+					</OnEnter>
+					<OnLeave function="GameTooltip_Hide"/>
+				</Scripts>
+			</Button>
+			<Button parentKey="TrackButton" name="$parentTrackButton" inherits="UIPanelButtonTemplate" text="TRACK_QUEST_ABBREV">
+				<Size x="100" y="21"/>
+				<Anchors>
+					<Anchor point="BOTTOMRIGHT" x="-8" y="5"/>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						PlaySound("igMainMenuOptionCheckBoxOn");
+						QuestMapQuestOptions_TrackQuest(self:GetParent().questID);
+					</OnClick>
+					<OnEnter>
+						GameTooltip_AddNewbieTip(self, TRACK_QUEST, 1.0, 1.0, 1.0, NEWBIE_TOOLTIP_TRACKQUEST, 1);
+					</OnEnter>
+					<OnLeave function="GameTooltip_Hide"/>
+				</Scripts>
+			</Button>
+			<Button parentKey="ShareButton" name="$parentShareButton" inherits="UIPanelButtonTemplate" text="SHARE_QUEST_ABBREV">
+				<Size x="1" y="21"/>
+				<Anchors>
+					<Anchor point="LEFT" relativeKey="$parent.AbandonButton" relativePoint="RIGHT"/>
+					<Anchor point="RIGHT" relativeKey="$parent.TrackButton" relativePoint="LEFT"/>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						QuestMapQuestOptions_ShareQuest(self:GetParent().questID);
+					</OnClick>
+					<OnEnter>
+						GameTooltip_AddNewbieTip(self, SHARE_QUEST, 1.0, 1.0, 1.0, NEWBIE_TOOLTIP_SHAREQUEST, 1);
+					</OnEnter>
+					<OnLeave function="GameTooltip_Hide"/>
+				</Scripts>
+			</Button>			
+		</Frames>
+		<Scripts>
+			<OnLoad function="QuestLogPopupDetailFrame_OnLoad"/>
+			<OnHide function="QuestLogPopupDetailFrame_OnHide"/>
+		</Scripts>
+	</Frame>
+
+	<Frame name="QuestMapFrame" parent="WorldMapFrame" enableMouse="true" hidden="true">
+		<Size x="287" y="464"/>	
+		<Anchors>
+			<Anchor point="TOPLEFT" relativeTo="WorldMapScrollFrame" relativePoint="TOPRIGHT" x="1" y="0"/>
+		</Anchors>
+		<Layers>
+			<Layer level="OVERLAY">
+				<Texture parentKey="VerticalSeparator" inherits="!UI-Frame-InnerRightTile">
+					<Size x="3" y="466"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" x="-1" y="1"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Frame name="QuestMapQuestOptionsDropDown" inherits="UIDropDownMenuTemplate" hidden="true"/>
+			<ScrollFrame parentKey="QuestsFrame" name="QuestScrollFrame" inherits="UIPanelScrollFrameCodeTemplate">
+				<Size x="259" y="462"/>
+				<Anchors>
+					<Anchor point="TOPRIGHT" x="-26" y="-1"/>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<Texture parentKey="Background" atlas="QuestLogBackground" useAtlasSize="true">
+							<Size x="287" y="464"/>
+							<Anchors>
+								<Anchor point="TOPLEFT"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+				<ScrollChild>
+					<Frame parentKey="Contents">
+						<Size x="258" y="454"/>
+						<Anchors>
+							<Anchor point="TOPLEFT"/>
+						</Anchors>					
+						<Frames>
+							<Button parentArray="Headers" inherits="QuestLogHeaderTemplate">
+								<Anchors>
+									<Anchor point="TOPLEFT" x="1" y="-6"/>
+								</Anchors>
+							</Button>
+							<Button parentArray="Titles" inherits="QuestLogTitleTemplate">
+								<Anchors>
+									<Anchor point="TOPLEFT"/>
+								</Anchors>
+							</Button>
+							<Frame parentKey="StoryHeader" hidden="true">
+								<Size x="262" y="59"/>
+								<Anchors>
+									<Anchor point="TOPLEFT" x="1" y="1"/>
+								</Anchors>							
+								<Layers>
+									<Layer level="BACKGROUND">
+										<Texture parentKey="Background" atlas="StoryHeader-BG" useAtlasSize="true">
+											<Anchors>
+												<Anchor point="TOP" x="-2" y="0"/>
+											</Anchors>
+										</Texture>
+									</Layer>
+									<Layer level="ARTWORK">
+										<FontString parentKey="Text" inherits="GameFontHighlightMedium">
+											<Anchors>
+												<Anchor point="TOPLEFT" x="18" y="-12"/>
+											</Anchors>
+										</FontString>
+										<FontString parentKey="Progress" inherits="GameFontHighlightSmall">
+											<Anchors>
+												<Anchor point="TOPLEFT" relativeKey="$parent.Text" relativePoint="BOTTOMLEFT" x="0" y="-4"/>
+											</Anchors>
+										</FontString>
+										<Texture parentKey="AchIcon" atlas="StoryHeader-CheevoIcon" useAtlasSize="true">
+											<Anchors>
+												<Anchor point="TOPRIGHT" x="-11" y="-4"/>
+											</Anchors>
+										</Texture>
+									</Layer>
+									<Layer level="OVERLAY">
+										<Texture parentKey="Shadow" atlas="StoryHeader-Shadow" useAtlasSize="true">
+											<Anchors>
+												<Anchor point="TOP" x="-2" y="0"/>
+											</Anchors>											
+										</Texture>
+										<FontString inherits="GameFontHighlightSmall" parentKey="Points" text="25">
+											<Size x="42" y="16"/>
+											<Anchors>
+												<Anchor point="TOP" relativeKey="$parent.AchIcon" x="0" y="-15"/>
+											</Anchors>
+										</FontString>										
+									</Layer>
+									<Layer level="HIGHLIGHT">
+										<Texture parentKey="HighlightTexture" file="Interface\QuestFrame\UI-QuestLogTitleHighlight" alphaMode="ADD">
+											<Size x="248" y="50"/>
+											<Anchors>
+												<Anchor point="TOPLEFT"/>
+											</Anchors>
+										</Texture>
+									</Layer>
+								</Layers>
+								<Scripts>
+									<OnEnter function="QuestMapLog_ShowStoryTooltip"/>
+									<OnLeave function="QuestMapLog_HideStoryTooltip"/>
+								</Scripts>								
+							</Frame>
+						</Frames>
+					</Frame>
+				</ScrollChild>
+				<Frames>
+					<Slider name="$parentScrollBar" inherits="UIPanelScrollBarTemplate" parentKey="ScrollBar">
+						<Layers>
+							<Layer level="ARTWORK">
+								<Texture name="$parentTop" file="Interface\PaperDollInfoFrame\UI-Character-ScrollBar">
+									<Size>
+										<AbsDimension x="31" y="256"/>
+									</Size>
+									<Anchors>
+										<Anchor point="TOPLEFT" relativeTo="$parentScrollUpButton" relativePoint="TOPLEFT" x="-7" y="5"/>
+									</Anchors>
+									<TexCoords left="0" right="0.484375" top="0" bottom="1.0"/>
+								</Texture>
+								<Texture name="$parentBottom" file="Interface\PaperDollInfoFrame\UI-Character-ScrollBar">
+									<Size>
+										<AbsDimension x="31" y="106"/>
+									</Size>
+									<Anchors>
+										<Anchor point="BOTTOMLEFT" relativeTo="$parentScrollDownButton" relativePoint="BOTTOMLEFT" x="-7" y="-2"/>
+									</Anchors>
+									<TexCoords left="0.515625" right="1.0" top="0" bottom="0.4140625"/>
+								</Texture>
+								<Texture name="$parentMiddle" file="Interface\PaperDollInfoFrame\UI-Character-ScrollBar">
+									<Anchors>
+										<Anchor point="TOPLEFT" relativeTo="$parentTop" relativePoint="BOTTOMLEFT"/>
+										<Anchor point="BOTTOMRIGHT" relativeTo="$parentBottom" relativePoint="TOPRIGHT"/>
+									</Anchors>
+									<TexCoords left="0" right="0.484375" top="0.1640625" bottom="1"/>
+								</Texture>
+							</Layer>
+						</Layers>
+						<Anchors>
+							<Anchor point="TOPLEFT" relativePoint="TOPRIGHT">
+								<Offset>
+									<AbsDimension x="6" y="-16"/>
+								</Offset>
+							</Anchor>
+							<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMRIGHT">
+								<Offset>
+									<AbsDimension x="6" y="16"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</Slider>				
+					<Button parentKey="ViewAll" inherits="UIPanelButtonTemplate" id="1">
+						<Size x="246" y="22"/>
+						<Anchors>
+							<Anchor point="TOPRIGHT" relativeTo="QuestMapFrame" x="-24" y="35"/>
+						</Anchors>
+						<Scripts>
+							<OnClick function="QuestMapFrameViewAllButton_OnClick"/>
+						</Scripts>
+					</Button>
+					<Frame parentKey="StoryTooltip" frameStrata="TOOLTIP" clampedToScreen="true" hidden="true">
+						<Size x="10" y="10"/>
+						<Backdrop bgFile="Interface\Tooltips\UI-Tooltip-Background" edgeFile="Interface\Tooltips\UI-Tooltip-Border" tile="true">
+							<EdgeSize>
+								<AbsValue val="16"/>
+							</EdgeSize>
+							<TileSize>
+								<AbsValue val="16"/>
+							</TileSize>
+							<BackgroundInsets>
+								<AbsInset left="5" right="5" top="5" bottom="5"/>
+							</BackgroundInsets>
+						</Backdrop>
+						<Layers>
+							<Layer level="ARTWORK">
+								<FontString parentKey="Title" inherits="GameFontHighlightMedium">
+									<Anchors>
+										<Anchor point="TOPLEFT" x="10" y="-10"/>
+									</Anchors>
+								</FontString>
+								<FontString parentKey="ProgressLabel" inherits="GameFontNormal" text="STORY_PROGRESS">
+									<Anchors>
+										<Anchor point="TOPLEFT" relativeKey="$parent.Title" relativePoint="BOTTOMLEFT" x="0" y="-11"/>
+									</Anchors>
+								</FontString>								
+								<FontString parentKey="ProgressCount" inherits="GameFontHighlightSmall">
+									<Anchors>
+										<Anchor point="TOPLEFT" relativeKey="$parent.ProgressLabel" relativePoint="BOTTOMLEFT" x="0" y="-4"/>
+									</Anchors>
+								</FontString>
+								<FontString parentKey="Line1" parentArray="Lines" inherits="GameFontHighlight">
+									<Anchors>
+										<Anchor point="TOP" relativeKey="$parent.ProgressCount" relativePoint="BOTTOM" x="0" y="-12"/>
+										<Anchor point="LEFT" x="10" y="0"/>
+									</Anchors>
+								</FontString>
+								<Texture parentArray="CheckMarks" inherits="GreenCheckMarkTemplate">
+									<Anchors>
+										<Anchor point="RIGHT" relativeKey="$parent.Line1" relativePoint="LEFT" x="-4" y="-1"/>
+									</Anchors>
+								</Texture>
+							</Layer>
+						</Layers>
+					</Frame>					
+				</Frames>
+				<Scripts>
+					<OnLoad>					
+						ScrollFrame_OnLoad(self);
+						self.Contents.StoryHeader.HighlightTexture:SetVertexColor(0.243, 0.570, 1);
+						self.StoryTooltip:SetBackdropBorderColor(TOOLTIP_DEFAULT_COLOR.r, TOOLTIP_DEFAULT_COLOR.g, TOOLTIP_DEFAULT_COLOR.b);
+						self.StoryTooltip:SetBackdropColor(TOOLTIP_DEFAULT_BACKGROUND_COLOR.r, TOOLTIP_DEFAULT_BACKGROUND_COLOR.g, TOOLTIP_DEFAULT_BACKGROUND_COLOR.b);						
+					</OnLoad>
+				</Scripts>
+			</ScrollFrame>
+			<Frame parentKey="DetailsFrame" hidden="true">
+				<Size x="259" y="462"/>
+				<Anchors>
+					<Anchor point="TOPRIGHT" x="-26" y="-1"/>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<Texture atlas="QuestDetailsBackgrounds" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="TOPLEFT"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+					<Layer level="BORDER">
+						<Texture atlas="QuestDetails-TopOverlay" useAtlasSize="true">	<!-- buttons background -->
+							<Anchors>
+								<Anchor point="TOPLEFT" x="0" y="45"/>
+							</Anchors>							
+						</Texture>
+					</Layer>
+					<Layer level="ARTWORK">
+						<Texture inherits="_UI-Frame-BtnBotTile">
+							<Size x="288" y="3"/>
+							<Anchors>
+								<Anchor point="BOTTOMLEFT" x="0" y="18"/>
+							</Anchors>
+						</Texture>						
+					</Layer>
+				</Layers>
+				<Frames>
+					<Button parentKey="BackButton" inherits="UIPanelButtonTemplate" text="BACK">
+						<Size x="90" y="22"/>
+						<Anchors>
+							<Anchor point="TOPLEFT" x="10" y="30"/>
+						</Anchors>
+						<Scripts>
+							<OnClick>
+								PlaySound("igMainMenuOptionCheckBoxOn");
+								QuestMapFrame_ReturnFromQuestDetails();
+							</OnClick>
+						</Scripts>
+					</Button>
+					<Frame parentKey="RewardsFrame">
+						<Size x="287" y="275"/>
+						<Anchors>
+							<Anchor point="BOTTOMLEFT" x="0" y="20"/>
+						</Anchors>					
+						<Layers>
+							<Layer level="BORDER">
+								<Texture parentKey="Background" atlas="QuestDetails-RewardsOverlay" setAllPoints="true"/>
+							</Layer>
+							<Layer level="BORDER" textureSubLevel="1">
+								<Texture atlas="QuestDetails-RewardsBottomOverlay" useAtlasSize="true">		<!-- bottom shadow -->
+									<Anchors>
+										<Anchor point="BOTTOMLEFT" x="0" y="0"/>
+									</Anchors>
+								</Texture>
+							</Layer>
+							<Layer level="ARTWORK">
+								<FontString inherits="QuestFont_Huge" text="REWARDS">
+									<Anchors>
+										<Anchor point="TOP" x="0" y="-16"/>
+									</Anchors>
+									<Color r="0.902" g="0.788" b="0.671"/>
+								</FontString>
+							</Layer>
+						</Layers>
+					</Frame>					
+					<ScrollFrame parentKey="ScrollFrame" name="QuestMapDetailsScrollFrame" inherits="UIPanelScrollFrameCodeTemplate">
+						<Size x="258" y="0"/>
+						<Anchors>
+							<Anchor point="TOPLEFT" x="5" y="0"/>
+							<Anchor point="BOTTOM" relativeKey="$parent.RewardsFrame" relativePoint="TOP" x="0" y="-7"/>
+						</Anchors>
+						<ScrollChild>
+							<Frame parentKey="Contents">
+								<Size x="300" y="199"/>
+								<Anchors>
+									<Anchor point="TOPLEFT"/>
+								</Anchors>
+							</Frame>
+						</ScrollChild>
+						<Frames>
+							<Slider name="$parentScrollBar" parentKey="ScrollBar" inherits="MinimalScrollBarTemplate">
+								<Anchors>
+									<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" x="0" y="-14"/>
+									<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMRIGHT" x="0" y="14"/>
+								</Anchors>
+							</Slider>
+						</Frames>
+						<Scripts>
+							<OnLoad>
+								self.scrollBarHideable = true;
+								self.ScrollBar.trackBG:SetAlpha(0.5);
+								ScrollFrame_OnLoad(self);
+							</OnLoad>
+						</Scripts>
+					</ScrollFrame>
+					<Button>
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeKey="$parent.ScrollFrame" x="-4" y="0"/>
+							<Anchor point="BOTTOMRIGHT" relativeKey="$parent.RewardsFrame"/>
+						</Anchors>
+						<Scripts>
+							<OnLoad>
+								self:RegisterForClicks("RightButtonUp");
+							</OnLoad>
+							<OnClick>
+								QuestMapFrame_ReturnFromQuestDetails();
+							</OnClick>								
+						</Scripts>						
+					</Button>
+					<Frame parentKey="CompleteQuestFrame">
+						<Size x="287" y="24"/>
+						<Anchors>
+							<Anchor point="TOP" relativeKey="$parent.RewardsFrame" relativePoint="BOTTOM"/>
+						</Anchors>
+						<Layers>
+							<Layer level="BACKGROUND">
+								<Texture file="Interface\FrameGeneral\UI-Background-Rock" horizTile="true" vertTile="true" setAllPoints="true"/>
+							</Layer>
+							<Layer level="ARTWORK">
+								<Texture inherits="_UI-Frame-BtnBotTile">
+									<Size x="288" y="3"/>
+									<Anchors>
+										<Anchor point="TOP" x="0" y="0"/>
+									</Anchors>
+								</Texture>
+							</Layer>					
+						</Layers>
+						<Frames>
+							<Button parentKey="CompleteButton" inherits="UIPanelButtonTemplate" text="COMPLETE_QUEST">
+								<Size x="160" y="22"/>
+								<Anchors>
+									<Anchor point="TOP" x="0" y="-1"/>
+								</Anchors>
+								<Layers>
+									<Layer level="BORDER">
+										<Texture file="Interface\FrameGeneral\UI-Frame">
+											<Size x="13" y="25"/>
+											<Anchors>
+												<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" x="-5" y="1"/>						
+											</Anchors>
+											<TexCoords left="0.00781250" right="0.10937500" top="0.75781250" bottom="0.95312500"/>
+										</Texture>
+										<Texture file="Interface\FrameGeneral\UI-Frame">
+											<Size x="13" y="25"/>
+											<Anchors>
+												<Anchor point="TOPRIGHT" relativePoint="TOPLEFT" x="5" y="1"/>						
+											</Anchors>
+											<TexCoords left="0.00781250" right="0.10937500" top="0.75781250" bottom="0.95312500"/>
+										</Texture>
+									</Layer>
+									<Layer level="OVERLAY">
+										<Texture parentKey="Flash" inherits="UIPanelButtonHighlightTexture"/>
+									</Layer>
+								</Layers>
+								<Scripts>
+									<OnClick>
+										ShowQuestComplete(GetQuestLogSelection());
+										AutoQuestPopupTracker_RemovePopUp(QuestMapFrame.DetailsFrame.questID);
+									</OnClick>
+									<OnShow>
+										UIFrameFlash(self.Flash, 0.75, 0.75, -1, nil);
+									</OnShow>
+									<OnHide>
+										UIFrameFlashStop(self.Flash);
+									</OnHide>
+								</Scripts>
+							</Button>
+						</Frames>
+					</Frame>
+					<Button parentKey="AbandonButton" inherits="UIPanelButtonTemplate" text="ABANDON_QUEST_ABBREV">
+						<Size x="98" y="22"/>
+						<Anchors>
+							<Anchor point="BOTTOMLEFT" x="-3" y="-2"/>
+						</Anchors>
+						<Scripts>
+							<OnClick>
+								QuestMapQuestOptions_AbandonQuest(QuestMapFrame_GetDetailQuestID())
+							</OnClick>
+							<OnEnter>
+								GameTooltip_AddNewbieTip(self, ABANDON_QUEST, 1.0, 1.0, 1.0, NEWBIE_TOOLTIP_ABANDONQUEST, 1);
+							</OnEnter>
+							<OnLeave function="GameTooltip_Hide"/>
+						</Scripts>
+					</Button>
+					<Button parentKey="ShareButton" inherits="UIPanelButtonTemplate" text="SHARE_QUEST_ABBREV">
+						<Size x="96" y="22"/>
+						<Anchors>
+							<Anchor point="LEFT" relativeKey="$parent.AbandonButton" relativePoint="RIGHT"/>
+						</Anchors>
+						<Layers>
+							<Layer level="OVERLAY">
+								<Texture inherits="UI-Frame-BtnDivMiddle">
+									<Anchors>
+										<Anchor point="RIGHT" relativePoint="LEFT" x="6" y="0"/>
+									</Anchors>
+								</Texture>
+								<Texture inherits="UI-Frame-BtnDivMiddle">
+									<Anchors>
+										<Anchor point="LEFT" relativePoint="RIGHT" x="-6" y="0"/>
+									</Anchors>
+								</Texture>
+							</Layer>
+						</Layers>
+						<Scripts>
+							<OnClick>
+								QuestMapQuestOptions_ShareQuest(QuestMapFrame_GetDetailQuestID())
+							</OnClick>
+							<OnEnter>
+								GameTooltip_AddNewbieTip(self, SHARE_QUEST, 1.0, 1.0, 1.0, NEWBIE_TOOLTIP_SHAREQUEST, 1);
+							</OnEnter>
+							<OnLeave function="GameTooltip_Hide"/>
+						</Scripts>
+					</Button>
+					<Button parentKey="TrackButton" inherits="UIPanelButtonTemplate" text="TRACK_QUEST_ABBREV">
+						<Size x="98" y="22"/>
+						<Anchors>
+							<Anchor point="LEFT" relativeKey="$parent.ShareButton" relativePoint="RIGHT"/>
+						</Anchors>
+						<Scripts>
+							<OnClick>
+								PlaySound("igMainMenuOptionCheckBoxOn");
+								QuestMapQuestOptions_TrackQuest(QuestMapFrame_GetDetailQuestID())
+							</OnClick>
+							<OnEnter>
+								GameTooltip_AddNewbieTip(self, TRACK_QUEST, 1.0, 1.0, 1.0, NEWBIE_TOOLTIP_TRACKQUEST, 1);
+							</OnEnter>
+							<OnLeave function="GameTooltip_Hide"/>
+						</Scripts>
+					</Button>
+				</Frames>
+			</Frame>
+		</Frames>
+		<Scripts>
+			<OnLoad function="QuestMapFrame_OnLoad"/>
+			<OnEvent function="QuestMapFrame_OnEvent"/>
+			<OnMouseUp>
+				if ( button == "RightButton" ) then
+					WorldMapZoomOutButton_OnClick();
+				end
+			</OnMouseUp>
+		</Scripts>
+	</Frame>
+</Ui>

@@ -30,7 +30,7 @@ local ACHIEVEMENTUI_FONTHEIGHT;						-- set in AchievementButton_OnLoad
 local ACHIEVEMENTUI_MAX_LINES_COLLAPSED = 3;		-- can show 3 lines of text when achievement is collapsed
 
 ACHIEVEMENTUI_DEFAULTSUMMARYACHIEVEMENTS = {6, 503, 116, 545, 1017};
-ACHIEVEMENTUI_SUMMARYCATEGORIES = {92, 96, 97, 95, 168, 169, 201, 155, 15117, 15165};
+ACHIEVEMENTUI_SUMMARYCATEGORIES = {92, 96, 97, 95, 168, 169, 201, 155, 15117, 15165, 15246, 15237};
 ACHIEVEMENTUI_DEFAULTGUILDSUMMARYACHIEVEMENTS = {4943, 4860, 4989, 4947};
 ACHIEVEMENTUI_GUILDSUMMARYCATEGORIES = {15088, 15077, 15078, 15079, 15080, 15089};
 
@@ -155,13 +155,8 @@ function AchievementFrame_ForceUpdate ()
 end
 
 function AchievementFrame_SetTabs()
-	if ( not IsInGuild() or AchievementFrameComparison:IsShown() or not GetGuildLevelEnabled() ) then
-		AchievementFrameTab2:Hide();
-		AchievementFrameTab3:SetPoint("LEFT", AchievementFrameTab1, "RIGHT", -5, 0);
-	else
-		AchievementFrameTab2:Show();
-		AchievementFrameTab3:SetPoint("LEFT", AchievementFrameTab2, "RIGHT", -5, 0);
-	end
+	AchievementFrameTab2:Show();
+	AchievementFrameTab3:SetPoint("LEFT", AchievementFrameTab2, "RIGHT", -5, 0);
 end
 
 function AchievementFrame_UpdateTabs(clickedTab)
@@ -554,8 +549,8 @@ end
 
 function AchievementFrameCategory_StatusBarTooltip(self)
 	GameTooltip_SetDefaultAnchor(GameTooltip, self);
-	GameTooltip:SetMinimumWidth(128, 1);
-	GameTooltip:SetText(self.name, 1, 1, 1, nil, 1);
+	GameTooltip:SetMinimumWidth(128, true);
+	GameTooltip:SetText(self.name, 1, 1, 1, nil, true);
 	GameTooltip_ShowStatusBar(GameTooltip, 0, self.numAchievements, self.numCompleted, self.numCompletedText);
 	GameTooltip:Show();
 end
@@ -563,7 +558,7 @@ end
 function AchievementFrameCategory_FeatOfStrengthTooltip(self)
 	GameTooltip_SetDefaultAnchor(GameTooltip, self);
 	GameTooltip:SetText(self.name, 1, 1, 1);
-	GameTooltip:AddLine(self.text, nil, nil, nil, 1);
+	GameTooltip:AddLine(self.text, nil, nil, nil, true);
 	GameTooltip:Show();
 end
 
@@ -766,7 +761,7 @@ function AchievementFrameAchievements_OnEvent (self, event, ...)
 	if ( event == "ADDON_LOADED" ) then
 		self:RegisterEvent("ACHIEVEMENT_EARNED");
 		self:RegisterEvent("CRITERIA_UPDATE");
-		self:RegisterEvent("TRACKED_ACHIEVEMENT_UPDATE");
+		self:RegisterEvent("TRACKED_ACHIEVEMENT_LIST_CHANGED");
 		self:RegisterEvent("RECEIVED_ACHIEVEMENT_MEMBER_LIST");
 		
 		updateTrackedAchievements(GetTrackedAchievements());
@@ -794,11 +789,11 @@ function AchievementFrameAchievements_OnEvent (self, event, ...)
 		else
 			AchievementFrameAchievementsObjectives.id = nil; -- Force redraw
 		end
-	elseif ( event == "TRACKED_ACHIEVEMENT_UPDATE" ) then
+	elseif ( event == "TRACKED_ACHIEVEMENT_LIST_CHANGED" ) then
 		for k, v in next, trackedAchievements do
 			trackedAchievements[k] = nil;
 		end
-		
+
 		updateTrackedAchievements(GetTrackedAchievements());
 	elseif ( event == "RECEIVED_ACHIEVEMENT_MEMBER_LIST" ) then
 		local achievementID = ...;
@@ -1201,14 +1196,13 @@ function AchievementButton_ToggleTracking (id)
 	if ( trackedAchievements[id] ) then
 		RemoveTrackedAchievement(id);
 		AchievementFrameAchievements_ForceUpdate();
-		WatchFrame_Update();
 		return;
 	end
 	
 	local count = GetNumTrackedAchievements();
 	
-	if ( count >= WATCHFRAME_MAXACHIEVEMENTS ) then
-		UIErrorsFrame:AddMessage(format(ACHIEVEMENT_WATCH_TOO_MANY, WATCHFRAME_MAXACHIEVEMENTS), 1.0, 0.1, 0.1, 1.0);
+	if ( count >= MAX_TRACKED_ACHIEVEMENTS ) then
+		UIErrorsFrame:AddMessage(format(ACHIEVEMENT_WATCH_TOO_MANY, MAX_TRACKED_ACHIEVEMENTS), 1.0, 0.1, 0.1, 1.0);
 		return;
 	end
 	
@@ -1220,7 +1214,6 @@ function AchievementButton_ToggleTracking (id)
 	
 	AddTrackedAchievement(id);
 	AchievementFrameAchievements_ForceUpdate();
-	WatchFrame_Update();
 	
 	return true;
 end
@@ -1584,16 +1577,23 @@ function AchievementObjectives_DisplayProgressiveAchievement (objectivesFrame, i
 			miniAchievement:SetPoint("TOPLEFT", miniTable[index-1], "TOPRIGHT", 4, 0);
 		end
 		
-		miniAchievement.points:SetText(points);
+		if ( points > 0 ) then
+			miniAchievement.points:SetText(points);
+			miniAchievement.points:Show();
+			miniAchievement.shield:SetTexture([[Interface\AchievementFrame\UI-Achievement-Progressive-Shield]]);
+		else
+			miniAchievement.points:Hide();
+			miniAchievement.shield:SetTexture([[Interface\AchievementFrame\UI-Achievement-Progressive-Shield-NoPoints]]);
+		end
 		
 		miniAchievement.numCriteria = 0;
 		if ( not ( bit.band(flags, ACHIEVEMENT_FLAGS_HAS_PROGRESS_BAR) == ACHIEVEMENT_FLAGS_HAS_PROGRESS_BAR ) ) then
 			for i = 1, GetAchievementNumCriteria(achievementID) do
 				local criteriaString, criteriaType, completed = GetAchievementCriteriaInfo(achievementID, i);
 				if ( completed == false ) then
-					criteriaString = "|CFF808080 - " .. criteriaString;
+					criteriaString = "|CFF808080 - " .. criteriaString .. "|r";
 				else
-					criteriaString = "|CFF00FF00 - " .. criteriaString;
+					criteriaString = "|CFF00FF00 - " .. criteriaString .. "|r";
 				end
 				miniAchievement["criteria" .. i] = criteriaString;
 				miniAchievement.numCriteria = i;
@@ -2129,7 +2129,7 @@ end
 function AchievementStatButton_OnEnter(self)
 	if ( self.text:IsTruncated() ) then
 		GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
-		GameTooltip:SetText(self.text:GetText(), 1, 1, 1, 1, 1);
+		GameTooltip:SetText(self.text:GetText(), 1, 1, 1, 1, true);
 	end
 end
 
@@ -2181,7 +2181,7 @@ function AchievementFrameSummary_ToggleView()
 		end
 	end
 	-- categories
-	for i = 1, 10 do
+	for i = 1, 12 do
 		local statusBar = _G["AchievementFrameSummaryCategoriesCategory"..i];
 		if ( tCategories[i] ) then
 			local categoryName = GetCategoryInfo(tCategories[i]);
@@ -2370,7 +2370,7 @@ function AchievementFrameSummaryAchievement_OnEnter(self)
 	if ( self.tooltipTitle ) then
 		GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
 		GameTooltip:SetText(self.tooltipTitle,1,1,1);
-		GameTooltip:AddLine(self.tooltip, nil, nil, nil, 1);
+		GameTooltip:AddLine(self.tooltip, nil, nil, nil, true);
 		GameTooltip:Show();
 	end
 end
@@ -2569,7 +2569,7 @@ function AchievementFrameAchievements_FindSelection()
 	local scrollHeight = AchievementFrameAchievementsContainer:GetHeight();
 	local newHeight = 0;
 	AchievementFrameAchievementsContainerScrollBar:SetValue(0);	
-	while ( not shown ) do
+	while ( true ) do
 		for _, button in next, AchievementFrameAchievementsContainer.buttons do
 			if ( button.selected ) then
 				newHeight = AchievementFrameAchievementsContainerScrollBar:GetValue() + AchievementFrameAchievementsContainer:GetTop() - button:GetTop();
@@ -3360,7 +3360,7 @@ end
 function AchievementMeta_OnEnter(self)
 	if ( self.date ) then
 		GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
-		GameTooltip:AddLine(string.format(ACHIEVEMENT_META_COMPLETED_DATE, self.date), 1, 1, 1);
+		GameTooltip:AddLine(string.format(ACHIEVEMENT_META_COMPLETED_DATE, self.date), 1, 1, true);
 		AchievementFrameAchievements_CheckGuildMembersTooltip(self);
 		GameTooltip:Show();
 	end

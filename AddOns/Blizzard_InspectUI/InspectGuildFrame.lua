@@ -15,20 +15,20 @@ function InspectGuildFrame_OnShow()
 end
 
 function InspectGuildFrame_Update()
-	local guildLevel, guildXP, guildNumMembers, guildName = GetInspectGuildInfo(InspectFrame.unit);
+	local guildPoints, guildNumMembers, guildName = GetInspectGuildInfo(InspectFrame.unit);
 	local _, guildFactionName = UnitFactionGroup(InspectFrame.unit);
 
 	InspectGuildFrame.guildName:SetText(guildName);
 
-	if ( guildLevel and guildFactionName and guildNumMembers ) then
-		if ( GetGuildLevelEnabled() ) then
-			InspectGuildFrame.guildLevel:SetFormattedText(INSPECT_GUILD_LEVEL, guildLevel, guildFactionName);
-		else
-			InspectGuildFrame.guildLevel:SetFormattedText(INSPECT_GUILD_FACTION, guildFactionName);
-		end
+	if ( guildFactionName and guildNumMembers ) then
+		InspectGuildFrame.guildLevel:SetFormattedText(INSPECT_GUILD_FACTION, guildFactionName);
 		InspectGuildFrame.guildNumMembers:SetFormattedText(INSPECT_GUILD_NUM_MEMBERS, guildNumMembers);
 	end
 	
-	SetDoubleGuildTabardTextures(InspectFrame.unit, InspectGuildFrameTabardLeftIcon, InspectGuildFrameTabardRightIcon, InspectGuildFrameBanner, InspectGuildFrameBannerBorder);
+	local pointFrame = InspectGuildFrame.Points;
+	pointFrame.SumText:SetText(guildPoints);
+	local width = pointFrame.SumText:GetStringWidth() + pointFrame.LeftCap:GetWidth() + pointFrame.RightCap:GetWidth() + pointFrame.Icon:GetWidth();
+	pointFrame:SetWidth(width); 
 	
+	SetDoubleGuildTabardTextures(InspectFrame.unit, InspectGuildFrameTabardLeftIcon, InspectGuildFrameTabardRightIcon, InspectGuildFrameBanner, InspectGuildFrameBannerBorder);
 end

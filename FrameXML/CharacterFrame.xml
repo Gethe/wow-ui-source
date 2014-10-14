@@ -80,14 +80,15 @@
 		<Size x="104" y="13"/>
 		<Layers>
 			<Layer level="BACKGROUND">
-				<FontString name="$parentLabel" inherits="GameFontNormalSmall" parentKey="Label">
-					<Anchors>
-						<Anchor point="LEFT"/>
-					</Anchors>
-				</FontString>
 				<FontString name="$parentStatText" inherits="GameFontHighlightSmall" justifyH="RIGHT" parentKey="Value">
 					<Anchors>
 						<Anchor point="RIGHT"/>
+					</Anchors>
+				</FontString>
+				<FontString name="$parentLabel" inherits="GameFontNormalSmall" justifyH="LEFT" parentKey="Label">
+					<Anchors>
+						<Anchor point="LEFT"/>
+						<Anchor point="RIGHT" relativeKey="$parent.Value" relativePoint="LEFT" x="-5" y="0"/>
 					</Anchors>
 				</FontString>
 			</Layer>
@@ -99,7 +100,12 @@
 			<OnLeave>
 				GameTooltip:Hide();
 			</OnLeave>
-		</Scripts>
+      <OnLoad>
+        if (STATFRAME_STATTEXT_FONT_OVERRIDE) then
+          self.Value:SetFontObject(STATFRAME_STATTEXT_FONT_OVERRIDE);
+        end
+      </OnLoad>
+    </Scripts>
 	</Frame>
 	<Frame name="StatGroupTemplate" virtual="true">
 		<Size x="169" y="0"/>

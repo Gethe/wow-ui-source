@@ -91,7 +91,7 @@
 				</Scripts>
 			</CheckButton>	
 			<Frame name="$parentPlayback" inherits="OptionsBoxTemplate">
-				<Size x="186" y="336"/>
+				<Size x="186" y="298"/>
 				<Anchors>
 					<Anchor point="TOPLEFT">
 						<Offset x="16" y="-116"/>
@@ -281,33 +281,6 @@
 					</OnLoad>
 				</Scripts>
 			</CheckButton>				
-			<Slider name="$parentSoundQuality" inherits="OptionsSliderTemplate">
-				<Size x="156" y="17"/>
-				<Anchors>
-					<Anchor point="TOPLEFT" relativeTo="$parentEnableDSPs" relativePoint="BOTTOMLEFT">
-						<Offset>
-							<AbsDimension x="8" y="-14"/>
-						</Offset>
-					</Anchor>
-				</Anchors>
-				<Scripts>
-					<OnLoad>
-						self.type = CONTROLTYPE_SLIDER;
-						self.cvar = "Sound_OutputQuality";
-						self.restart = true;
-						_G[self:GetName().."Text"]:SetFontObject("OptionsFontSmall");
-						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
-					</OnLoad>
-					<OnValueChanged>
-						local prevValue = self.value;
-						self.value = value;
-						BlizzardOptionsPanel_SetCVarSafe(self.cvar, value);
-						if (self:GetParent():IsShown() and self.restart and prevValue and prevValue ~= value) then
-							AudioOptionsFrame_AudioRestart();
-						end
-					</OnValueChanged>
-				</Scripts>	
-			</Slider>
 			<Frame name="$parentHardware" inherits="OptionsBoxTemplate">
 				<Size x="186" y="108"/>
 				<Anchors>
@@ -350,7 +323,7 @@
 					</OnLoad>
 					<OnEnter>
 						GlueTooltip:SetOwner(self);
-						GlueTooltip:SetText(OPTION_TOOLTIP_SOUND_OUTPUT, nil, nil, nil, nil, 1);
+						GlueTooltip:SetText(OPTION_TOOLTIP_SOUND_OUTPUT, nil, nil, nil, nil, true);
 					</OnEnter>
 					<OnLeave>
 						GlueTooltip:Hide();
@@ -384,7 +357,7 @@
 					</OnLoad>
 					<OnEnter>
 						GlueTooltip:SetOwner(self);
-						GlueTooltip:SetText(OPTION_TOOLTIP_SOUND_CHANNELS, nil, nil, nil, nil, 1);
+						GlueTooltip:SetText(OPTION_TOOLTIP_SOUND_CHANNELS, nil, nil, nil, nil, true);
 					</OnEnter>
 					<OnLeave>
 						GlueTooltip:Hide();
@@ -407,7 +380,7 @@
 				</Scripts>
 			</CheckButton>-->
 			<Frame name="$parentVolume" inherits="OptionsBoxTemplate">
-				<Size x="186" y="144"/>
+				<Size x="186" y="174"/>
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeTo="$parentHardware" relativePoint="BOTTOMLEFT">
 						<Offset x="0" y="-16"/>
@@ -467,10 +440,10 @@
 						if ( self:IsEnabled() ) then
 							if ( self.tooltipText ) then
 								GlueTooltip:SetOwner(self);
-								GlueTooltip:SetText(self.tooltipText, nil, nil, nil, nil, 1);
+								GlueTooltip:SetText(self.tooltipText, nil, nil, nil, nil, true);
 							end
 							if (not AudioOptionsSoundPanelEnableSound:GetChecked()) then
-								GlueTooltip:AddLine(MUTED, 1.0, 0.0, 0.0, 1.0, 1);
+								GlueTooltip:AddLine(MUTED, 1.0, 0.0, 0.0, 1.0, true);
 								GlueTooltip:Show();
 							end
 						end
@@ -528,10 +501,10 @@
 						if ( self:IsEnabled() ) then
 							if ( self.tooltipText ) then
 								GlueTooltip:SetOwner(self);
-								GlueTooltip:SetText(self.tooltipText, nil, nil, nil, nil, 1);
+								GlueTooltip:SetText(self.tooltipText, nil, nil, nil, nil, true);
 							end
 							if (not AudioOptionsSoundPanelSoundEffects:GetChecked()) then
-								GlueTooltip:AddLine(MUTED, 1.0, 0.0, 0.0, 1.0, 1);
+								GlueTooltip:AddLine(MUTED, 1.0, 0.0, 0.0, 1.0, true);
 								GlueTooltip:Show();
 							end	
 						end
@@ -582,10 +555,10 @@
 						if ( self:IsEnabled() ) then
 							if ( self.tooltipText ) then
 								GlueTooltip:SetOwner(self);
-								GlueTooltip:SetText(self.tooltipText, nil, nil, nil, nil, 1);
+								GlueTooltip:SetText(self.tooltipText, nil, nil, nil, nil, true);
 							end
 							if (not AudioOptionsSoundPanelMusic:GetChecked()) then
-								GlueTooltip:AddLine(MUTED, 1.0, 0.0, 0.0, 1.0, 1);
+								GlueTooltip:AddLine(MUTED, 1.0, 0.0, 0.0, 1.0, true);
 								GlueTooltip:Show();
 							end	
 						end
@@ -636,11 +609,61 @@
 						if ( self:IsEnabled() ) then
 							if ( self.tooltipText ) then
 								GlueTooltip:SetOwner(self);
-								GlueTooltip:SetText(self.tooltipText, nil, nil, nil, nil, 1);
+								GlueTooltip:SetText(self.tooltipText, nil, nil, nil, nil, true);
 							end
 							if (not AudioOptionsSoundPanelAmbientSounds:GetChecked()) then
-								GlueTooltip:AddLine(MUTED, 1.0, 0.0, 0.0, 1.0, 1);
+								GlueTooltip:AddLine(MUTED, 1.0, 0.0, 0.0, 1.0, true);
 								GlueTooltip:Show();
+							end
+						end
+					</OnEnter>
+				</Scripts>
+			</Slider>
+			<Slider name="$parentDialogVolume" inherits="OptionsSliderTemplate">
+				<Size x="100" y="17"/>
+				<Anchors>
+					<Anchor point="TOPRIGHT" relativeTo="$parentAmbienceVolume" relativePoint="BOTTOMRIGHT">
+						<Offset>
+							<AbsDimension x="0" y="-10"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Layers>
+					<Layer level="ARTWORK">
+						<FontString name="$parentLabel" inherits="OptionsFontSmallLeft" text="DIALOG_VOLUME">
+							<Size x="64" y="14"/>
+							<Anchors>
+								<Anchor point="RIGHT" relativePoint="LEFT">
+									<Offset>
+										<AbsDimension x="-4" y="1"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnLoad>
+						local name = self:GetName();
+						_G[name.."Low"]:Hide();
+						_G[name.."High"]:Hide();
+						_G[name.."Text"]:Hide();
+						self.type = CONTROLTYPE_SLIDER;
+						self.cvar = "Sound_DialogVolume";
+						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
+					</OnLoad>
+					<OnValueChanged>
+						self.value = value;
+						BlizzardOptionsPanel_SetCVarSafe(self.cvar, value);
+						if (self:IsVisible()) then
+							PlaySound("igMainMenuOptionCheckBoxOn", "Dialog");
+						end
+					</OnValueChanged>
+					<OnEnter>
+						if ( self:IsEnabled() ) then
+							if ( self.tooltipText ) then
+								GlueTooltip:SetOwner(self);
+								GlueTooltip:SetText(self.tooltipText, nil, nil, nil, nil, true);
 							end
 						end
 					</OnEnter>

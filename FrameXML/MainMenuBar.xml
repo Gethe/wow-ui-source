@@ -382,7 +382,7 @@
 			</OnLoad>
 			<OnShow>
 				UpdateMicroButtonsParent(MainMenuBarArtFrame);
-				MoveMicroButtons("BOTTOMLEFT", MainMenuBarArtFrame, "BOTTOMLEFT", 550, 2, false);
+				MoveMicroButtons("BOTTOMLEFT", MainMenuBarArtFrame, "BOTTOMLEFT", 556, 2, false);
 			</OnShow>
 		</Scripts>
 	</Frame>

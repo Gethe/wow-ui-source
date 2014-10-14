@@ -6,14 +6,16 @@ local GUILD_ROSTER_BAR_MAX = 239;
 local GUILD_ROSTER_BUTTON_OFFSET = 2;
 local GUILD_ROSTER_BUTTON_HEIGHT = 20;
 GUILD_ROSTER_STRING_OFFSET = 6;
-GUILD_ROSTER_STRING_WIDTH_ADJ =  14;
+GUILD_ROSTER_STRING_WIDTH_ADJ = 14;
 local currentGuildView;
 
 local GUILD_ROSTER_COLUMNS = {
 	playerStatus = { "level", "class", "wideName", "zone" },
 	guildStatus = { "name", "rank", "note", "online" },
+	--[[
 	weeklyxp = { "level", "class", "wideName", "weeklyxp" },
 	totalxp = { "level", "class", "wideName", "totalxp" },
+	--]]
 	pvp = { "level", "class", "name", "bgrating", "arenarating" },
 	achievement = { "level", "class", "wideName", "achievement" },
 	tradeskill = { "wideName", "zone", "skill" },
@@ -22,21 +24,21 @@ local GUILD_ROSTER_COLUMNS = {
 
 -- global for localization changes
 GUILD_ROSTER_COLUMN_DATA = {
-	level = { width = 32, text = LEVEL_ABBR, stringJustify="CENTER" },
+	level = { width = 40, text = LEVEL_ABBR, stringJustify="CENTER" },
 	class = { width = 32, text = CLASS_ABBR, hasIcon = true },
 	name = { width = 81, text = NAME, stringJustify="LEFT" },
 	wideName = { width = 101, text = NAME, sortType = "name", stringJustify="LEFT" },
 	rank = { width = 76, text = RANK, stringJustify="LEFT" },
 	note = { width = 76, text = LABEL_NOTE, stringJustify="LEFT" },
 	online = { width = 76, text = LASTONLINE, stringJustify="LEFT" },
-	zone = { width = 144, text = ZONE, stringJustify="LEFT" },	
+	zone = { width = 136, text = ZONE, stringJustify="LEFT" },	
 	bgrating = { width = 83, text = BG_RATING_ABBR, stringJustify="RIGHT" },
 	arenarating = { width = 83, text = ARENA_RATING, stringJustify="RIGHT" },
-	weeklyxp = { width = 144, text = GUILD_XP_WEEKLY, stringJustify="RIGHT", hasBar = true },
-	totalxp = { width = 144, text = GUILD_XP_TOTAL, stringJustify="RIGHT", hasBar = true },
-	achievement = { width = 144, text = ACHIEVEMENT_POINTS, stringJustify="RIGHT", sortType="achievementpoints", hasBar = true },
+	weeklyxp = { width = 136, text = GUILD_XP_WEEKLY, stringJustify="RIGHT", hasBar = true },
+	totalxp = { width = 136, text = GUILD_XP_TOTAL, stringJustify="RIGHT", hasBar = true },
+	achievement = { width = 136, text = ACHIEVEMENT_POINTS, stringJustify="RIGHT", sortType="achievementpoints", hasBar = true },
 	skill = { width = 63, text = SKILL_POINTS_ABBR, stringJustify="LEFT" },
-	reputation = { width = 144, text = REPUTATION, stringJustify="LEFT" },
+	reputation = { width = 136, text = REPUTATION, stringJustify="LEFT" },
 };
 
 local MOBILE_BUSY_ICON = "|TInterface\\ChatFrame\\UI-ChatIcon-ArmoryChat-BusyMobile:14:14:0:0:16:16:0:16:0:16|t";
@@ -234,7 +236,7 @@ function GuildRoster_Update()
 		GuildMemberDetailFrame:Hide();
 	end
 	
-	local maxWeeklyXP, maxTotalXP = GetGuildRosterLargestContribution();
+--	local maxWeeklyXP, maxTotalXP = GetGuildRosterLargestContribution();
 	local maxAchievementsPoints = GetGuildRosterLargestAchievementPoints();
 	-- numVisible
 	local visibleMembers = onlineAndMobileMembers;
@@ -279,6 +281,7 @@ function GuildRoster_Update()
 				else
 					GuildRosterButton_SetStringText(button.string4, GuildRoster_GetLastOnline(index), onlineOrMobile);
 				end
+--[[
 			elseif ( currentGuildView == "weeklyxp" ) then
 				local weeklyXP, totalXP, weeklyRank, totalRank = GetGuildRosterContribution(index);
 				GuildRosterButton_SetStringText(button.string1, level, onlineOrMobile)
@@ -305,12 +308,13 @@ function GuildRoster_Update()
 					button.barTexture:Show();
 				end
 				GuildRosterButton_SetStringText(button.barLabel, "#"..totalRank, onlineOrMobile);			
+--]]
 			elseif ( currentGuildView == "pve" ) then
 				GuildRosterButton_SetStringText(button.string1, level, onlineOrMobile);
 				button.icon:SetTexCoord(unpack(CLASS_ICON_TCOORDS[classFileName]));
 				GuildRosterButton_SetStringText(button.string2, displayedName, onlineOrMobile, classFileName);
-				GuildRosterButton_SetStringText(button.string3, valor, onlineOrMobile);
-				GuildRosterButton_SetStringText(button.string4, hero, onlineOrMobile);
+				GuildRosterButton_SetStringText(button.string3, nil, onlineOrMobile);
+				GuildRosterButton_SetStringText(button.string4, nil, onlineOrMobile);
 			elseif ( currentGuildView == "achievement" ) then
 				GuildRosterButton_SetStringText(button.string1, level, onlineOrMobile);
 				button.icon:SetTexCoord(unpack(CLASS_ICON_TCOORDS[classFileName]));
@@ -332,7 +336,7 @@ function GuildRoster_Update()
 				GuildRosterButton_SetStringText(button.string1, level, onlineOrMobile)
 				button.icon:SetTexCoord(unpack(CLASS_ICON_TCOORDS[classFileName]));
 				GuildRosterButton_SetStringText(button.string2, displayedName, onlineOrMobile, classFileName);
-				GuildRosterButton_SetStringText(button.string3, GetText("FACTION_STANDING_LABEL"..repStanding, gender), onlineOrMobile);
+				GuildRosterButton_SetStringText(button.string3, GetText("FACTION_STANDING_LABEL"..repStanding), onlineOrMobile);
 			end
 			button:Show();
 			if ( mod(index, 2) == 0 ) then
@@ -607,6 +611,7 @@ function GuildRosterViewDropdown_Initialize()
 	info.text = GUILD_STATUS;
 	info.value = "guildStatus";
 	UIDropDownMenu_AddButton(info);
+	--[[
 	if ( GetGuildLevelEnabled() ) then
 		info.text = GUILD_XP_WEEKLY;
 		info.value = "weeklyxp";
@@ -615,6 +620,7 @@ function GuildRosterViewDropdown_Initialize()
 		info.value = "totalxp";
 		UIDropDownMenu_AddButton(info);
 	end
+	--]]
 	info.text = ACHIEVEMENT_POINTS;
 	info.value = "achievement";
 	UIDropDownMenu_AddButton(info);

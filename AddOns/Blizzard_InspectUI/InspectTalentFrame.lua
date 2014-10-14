@@ -163,13 +163,15 @@ end
 --------------------------------------------------------------------------------
 function InspectTalentFrameSpec_OnShow(self)
 	local spec = nil;
+	local sex = nil;
 	if(INSPECTED_UNIT ~= nil) then
 		spec = GetInspectSpecialization(INSPECTED_UNIT);
+		sex = UnitSex(INSPECTED_UNIT);
 	end
-	if(spec ~= nil and spec > 0) then
+	if(spec ~= nil and spec > 0 and sex ~= nil) then
 		local role1 = GetSpecializationRoleByID(spec);
 		if(role1 ~= nil) then
-			local id, name, description, icon, background = GetSpecializationInfoByID(spec);
+			local id, name, description, icon, background = GetSpecializationInfoByID(spec, sex);
 			self.specIcon:Show();
 			SetPortraitToTexture(self.specIcon, icon);
 			self.specName:SetText(name);
@@ -198,7 +200,7 @@ function InspectTalentFrameSpec_OnEnter(self)
 end
 
 function InspectTalentFrameSpec_OnLeave(self)
-	GameTooltip:SetMinimumWidth(0, 0);
+	GameTooltip:SetMinimumWidth(0, false);
 	GameTooltip:Hide();
 end
 
@@ -222,7 +224,7 @@ end
 function InspectTalentFrameTalent_OnClick(self)
 	if ( IsModifiedClick("CHATLINK") ) then
 		local _, _, classID = UnitClass(INSPECTED_UNIT);
-		local link = GetTalentLink(self:GetID(), InspectTalentFrame.InspectTalents.inspect, classID);
+		local link = GetTalentLink(self:GetID());
 		if ( link ) then
 			ChatEdit_InsertLink(link);
 		end

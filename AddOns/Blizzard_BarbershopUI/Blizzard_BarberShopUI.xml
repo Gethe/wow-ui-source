@@ -46,7 +46,7 @@
 				<Scripts>
 					<OnClick>
 						local parent = self:GetParent();
-						SetNextBarberShopStyle(parent:GetID(), 1);
+						SetNextBarberShopStyle(parent:GetID(), true);
 						PlaySound("UChatScrollButton");
 						BarberShop_UpdateCost();
 						BarberShop_UpdateSelector(parent);
@@ -85,27 +85,35 @@
 		</Frames>
 	</Frame>
 	<Frame name="BarberShopFrame" parent="UIParent" toplevel="true" hidden="true" enableMouse="true">
-		<Size>
-			<AbsDimension x="265" y="319"/>
-		</Size>
+		<Size x="266" y="348"/>
 		<Anchors>
-			<Anchor point="RIGHT" relativeTo="UIParent" relativePoint="RIGHT">
-				<Offset x="-18" y="-54"/>
-			</Anchor>
+			<Anchor point="RIGHT" relativeTo="UIParent" relativePoint="RIGHT" x="-18" y="-54"/>
 		</Anchors>
 		<Layers>
 			<Layer level="BACKGROUND">
-				<Texture name="$parentBackground" setAllPoints="true">
-					<TexCoords left="0" right="0.517578" top="0" bottom="0.623047"/>
-				</Texture>
+				<Texture atlas="barbershop-background" setAllPoints="true"/>
 			</Layer>
 		</Layers>
 		<Frames>
-			<Frame name="$parentSelector1" inherits="BarberShopSelectorTemplate" id="1">
+			<Frame name="$parentSelector5" inherits="BarberShopSelectorTemplate" id="5">
 				<Anchors>
 					<Anchor point="TOP" relativeTo="$parent">
 						<Offset>
 							<AbsDimension x="2" y="-74"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						_G[self:GetName().."Category"]:SetText(FACE);
+					</OnLoad>
+				</Scripts>
+			</Frame>
+			<Frame name="$parentSelector1" inherits="BarberShopSelectorTemplate" id="1">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentSelector5" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="0" y="-1"/>
 						</Offset>
 					</Anchor>
 				</Anchors>
@@ -121,11 +129,7 @@
 			</Frame>
 			<Frame name="$parentSelector3" inherits="BarberShopSelectorTemplate" id="3">
 				<Anchors>
-					<Anchor point="TOPLEFT" relativeTo="$parentSelector2" relativePoint="BOTTOMLEFT">
-						<Offset>
-							<AbsDimension x="0" y="-1"/>
-						</Offset>
-					</Anchor>
+					<Anchor point="TOPLEFT" relativeTo="$parentSelector2" relativePoint="BOTTOMLEFT" x="0" y="-1"/>
 				</Anchors>
 			</Frame>
 			<Frame name="$parentSelector4" inherits="BarberShopSelectorTemplate" id="4" hidden="true">

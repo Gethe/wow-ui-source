@@ -22,7 +22,7 @@
 			</Layer>
 		</Layers>
 		<Frames>
-			<Cooldown name="$parentCooldown" parentKey="cooldown" inherits="CooldownFrameTemplate" reverse="true" hidden="true">
+			<Cooldown name="$parentCooldown" parentKey="cooldown" hideCountdownNumbers="true" inherits="CooldownFrameTemplate" reverse="true" hidden="true">
 				<Anchors>
 					<Anchor point="CENTER">
 						<Offset>
@@ -59,7 +59,7 @@
 					parent.debuffFrames = {};
 				end
 				tinsert(parent.debuffFrames, self);
-				self:RegisterForClicks("LeftButtonUp", "RightButtonUp");
+				self:RegisterForClicks("LeftButtonDown", "RightButtonUp");
 			</OnLoad>
 			<OnUpdate>
 				if ( GameTooltip:IsOwned(self) ) then
@@ -91,7 +91,7 @@
 					parent.buffFrames = {};
 				end
 				tinsert(parent.buffFrames, self);
-				self:RegisterForClicks("LeftButtonUp", "RightButtonUp");
+				self:RegisterForClicks("LeftButtonDown", "RightButtonUp");
 			</OnLoad>
 			<OnUpdate>
 				if ( GameTooltip:IsOwned(self) ) then
@@ -122,7 +122,7 @@
 					parent.dispelDebuffFrames = {};
 				end
 				tinsert(parent.dispelDebuffFrames, self);
-				self:RegisterForClicks("LeftButtonUp", "RightButtonUp");
+				self:RegisterForClicks("LeftButtonDown", "RightButtonUp");
 			</OnLoad>
 			<OnClick function="PassClickToParent"/>
 			<OnUpdate>
@@ -215,6 +215,9 @@
 					</Layer>
 				</Layers>
 				<Scripts>
+					<OnLoad>
+						self:RegisterForClicks("LeftButtonDown", "RightButtonUp");
+					</OnLoad>
 					<OnClick>
 						self:GetParent():GetScript("OnClick")(self:GetParent(), button);
 					</OnClick>

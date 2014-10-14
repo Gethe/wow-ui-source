@@ -21,10 +21,10 @@
 			<OnEnter>
 				if ( self.tooltipText ) then
 					GlueTooltip:SetOwner(self);
-					GlueTooltip:SetText(self.tooltipText, nil, nil, nil, nil, 1);
+					GlueTooltip:SetText(self.tooltipText, nil, nil, nil, nil, true);
 				end
 				if ( self.tooltipRequirement ) then
-					GlueTooltip:AddLine(self.tooltipRequirement, 1.0, 1.0, 1.0, 1.0, 1);
+					GlueTooltip:AddLine(self.tooltipRequirement, 1.0, 1.0, 1.0, 1.0, true);
 					GlueTooltip:Show();
 				end
 			</OnEnter>
@@ -118,10 +118,10 @@
 				if ( self:IsEnabled() ) then
 					if ( self.tooltipText ) then
 						GlueTooltip:SetOwner(self, 0, 0, self.tooltipPoint, self.tooltipOwnerPoint);
-						GlueTooltip:SetText(self.tooltipText, nil, nil, nil, nil, 1);
+						GlueTooltip:SetText(self.tooltipText, nil, nil, nil, nil, true);
 					end
 					if ( self.tooltipRequirement ) then
-						GlueTooltip:AddLine(self.tooltipRequirement, 1.0, 1.0, 1.0, 1.0, 1);
+						GlueTooltip:AddLine(self.tooltipRequirement, 1.0, 1.0, 1.0, 1.0, true);
 						GlueTooltip:Show();
 					end
 				end

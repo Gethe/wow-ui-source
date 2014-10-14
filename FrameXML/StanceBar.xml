@@ -7,6 +7,9 @@
 			<AbsDimension x="30" y="30"/>
 		</Size>
 		<Scripts>
+			<OnLoad>
+				self.cooldown:SetSwipeColor(0, 0, 0);
+			</OnLoad>
 			<OnClick>
 				self:SetChecked(not self:GetChecked());
 				StanceBar_Select(self:GetID());
@@ -67,7 +70,7 @@
 			</Layer>
 		</Layers>
 		<Frames>
-			<CheckButton name="StanceButton1" inherits="StanceButtonTemplate" id="1">
+			<CheckButton name="StanceButton1" parentArray="StanceButtons" inherits="StanceButtonTemplate" id="1">
 				<Anchors>
 					<Anchor point="BOTTOMLEFT">
 						<Offset>
@@ -76,7 +79,7 @@
 					</Anchor>
 				</Anchors>
 			</CheckButton>
-			<CheckButton name="StanceButton2" inherits="StanceButtonTemplate" id="2">
+			<CheckButton name="StanceButton2" parentArray="StanceButtons" inherits="StanceButtonTemplate" id="2">
 				<Anchors>
 					<Anchor point="LEFT" relativeTo="StanceButton1" relativePoint="RIGHT">
 						<Offset>
@@ -85,7 +88,7 @@
 					</Anchor>
 				</Anchors>
 			</CheckButton>
-			<CheckButton name="StanceButton3" inherits="StanceButtonTemplate" id="3">
+			<CheckButton name="StanceButton3" parentArray="StanceButtons" inherits="StanceButtonTemplate" id="3">
 				<Anchors>
 					<Anchor point="LEFT" relativeTo="StanceButton2" relativePoint="RIGHT">
 						<Offset>
@@ -94,7 +97,7 @@
 					</Anchor>
 				</Anchors>
 			</CheckButton>
-			<CheckButton name="StanceButton4" inherits="StanceButtonTemplate" id="4">
+			<CheckButton name="StanceButton4" parentArray="StanceButtons" inherits="StanceButtonTemplate" id="4">
 				<Anchors>
 					<Anchor point="LEFT" relativeTo="StanceButton3" relativePoint="RIGHT">
 						<Offset>
@@ -103,7 +106,7 @@
 					</Anchor>
 				</Anchors>
 			</CheckButton>
-			<CheckButton name="StanceButton5" inherits="StanceButtonTemplate" id="5">
+			<CheckButton name="StanceButton5" parentArray="StanceButtons" inherits="StanceButtonTemplate" id="5">
 				<Anchors>
 					<Anchor point="LEFT" relativeTo="StanceButton4" relativePoint="RIGHT">
 						<Offset>
@@ -112,7 +115,7 @@
 					</Anchor>
 				</Anchors>
 			</CheckButton>
-			<CheckButton name="StanceButton6" inherits="StanceButtonTemplate" id="6">
+			<CheckButton name="StanceButton6" parentArray="StanceButtons" inherits="StanceButtonTemplate" id="6">
 				<Anchors>
 					<Anchor point="LEFT" relativeTo="StanceButton5" relativePoint="RIGHT">
 						<Offset>
@@ -121,7 +124,7 @@
 					</Anchor>
 				</Anchors>
 			</CheckButton>
-			<CheckButton name="StanceButton7" inherits="StanceButtonTemplate" id="7">
+			<CheckButton name="StanceButton7" parentArray="StanceButtons" inherits="StanceButtonTemplate" id="7">
 				<Anchors>
 					<Anchor point="LEFT" relativeTo="StanceButton6" relativePoint="RIGHT">
 						<Offset>
@@ -130,7 +133,7 @@
 					</Anchor>
 				</Anchors>
 			</CheckButton>
-			<CheckButton name="StanceButton8" inherits="StanceButtonTemplate" id="8">
+			<CheckButton name="StanceButton8" parentArray="StanceButtons" inherits="StanceButtonTemplate" id="8">
 				<Anchors>
 					<Anchor point="LEFT" relativeTo="StanceButton7" relativePoint="RIGHT">
 						<Offset>
@@ -139,7 +142,7 @@
 					</Anchor>
 				</Anchors>
 			</CheckButton>
-			<CheckButton name="StanceButton9" inherits="StanceButtonTemplate" id="9">
+			<CheckButton name="StanceButton9" parentArray="StanceButtons" inherits="StanceButtonTemplate" id="9">
 				<Anchors>
 					<Anchor point="LEFT" relativeTo="StanceButton8" relativePoint="RIGHT">
 						<Offset>
@@ -148,7 +151,7 @@
 					</Anchor>
 				</Anchors>
 			</CheckButton>
-			<CheckButton name="StanceButton10" inherits="StanceButtonTemplate" id="10">
+			<CheckButton name="StanceButton10" parentArray="StanceButtons" inherits="StanceButtonTemplate" id="10">
 				<Anchors>
 					<Anchor point="LEFT" relativeTo="StanceButton9" relativePoint="RIGHT">
 						<Offset>

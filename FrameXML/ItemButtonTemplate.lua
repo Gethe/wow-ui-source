@@ -9,14 +9,15 @@ function SetItemButtonCount(button, count)
 	end
 
 	button.count = count;
+	local countString = button.Count or _G[button:GetName().."Count"];
 	if ( count > 1 or (button.isBag and count > 0) ) then
 		if ( count > (button.maxDisplayCount or 9999) ) then
 			count = "*";
 		end
-		_G[button:GetName().."Count"]:SetText(count);
-		_G[button:GetName().."Count"]:Show();
+		countString:SetText(count);
+		countString:Show();
 	else
-		_G[button:GetName().."Count"]:Hide();
+		countString:Hide();
 	end
 end
 
@@ -42,12 +43,13 @@ function SetItemButtonTexture(button, texture)
 	if ( not button ) then
 		return;
 	end
+	local icon = button.icon or _G[button:GetName().."IconTexture"];
 	if ( texture ) then
-		_G[button:GetName().."IconTexture"]:Show();
+		icon:Show();
 	else
-		_G[button:GetName().."IconTexture"]:Hide();
+		icon:Hide();
 	end
-	_G[button:GetName().."IconTexture"]:SetTexture(texture);
+	icon:SetTexture(texture);
 end
 
 function SetItemButtonTextureVertexColor(button, r, g, b)
@@ -55,14 +57,15 @@ function SetItemButtonTextureVertexColor(button, r, g, b)
 		return;
 	end
 	
-	_G[button:GetName().."IconTexture"]:SetVertexColor(r, g, b);
+	local icon = button.icon or _G[button:GetName().."IconTexture"];
+	icon:SetVertexColor(r, g, b);
 end
 
 function SetItemButtonDesaturated(button, desaturated)
 	if ( not button ) then
 		return;
 	end
-	local icon = _G[button:GetName().."IconTexture"];
+	local icon = button.icon or _G[button:GetName().."IconTexture"];
 	if ( not icon ) then
 		return;
 	end
@@ -83,7 +86,8 @@ function SetItemButtonNameFrameVertexColor(button, r, g, b)
 		return;
 	end
 	
-	_G[button:GetName().."NameFrame"]:SetVertexColor(r, g, b);
+	local nameFrame = button.NameFrame or _G[button:GetName().."NameFrame"];
+	nameFrame:SetVertexColor(r, g, b);
 end
 
 function SetItemButtonSlotVertexColor(button, r, g, b)

@@ -228,7 +228,7 @@ function HelpFrame_OnEvent(self, event, ...)
 			-- the player does not have a ticket
 			haveTicket = false;
 			haveResponse = false;
-			if ( not TicketStatusFrame.hasGMSurvey ) then
+			if ( not TicketStatusFrame.hasGMSurvey and not TicketStatusFrame.hasWebTicket ) then
 				TicketStatusFrame:Hide();
 			end
 		end
@@ -268,18 +268,23 @@ function HelpFrame_OnEvent(self, event, ...)
 	end
 end
 
-function HelpFrame_UpdateQuickTicketSystemStatus()
-	local enabled = GMQuickTicketSystemEnabled() and not GMQuickTicketSystemThrottled();
+function HelpFrame_UpdateSubsystemStatus(key, enabled)
 	if ( enabled ) then
-		HelpFrame_SetButtonEnabled(HelpFrame["button"..HELPFRAME_SUBMIT_BUG], true);
-		HelpFrame_SetButtonEnabled(HelpFrame["button"..HELPFRAME_SUBMIT_SUGGESTION], true);
+		HelpFrame_SetButtonEnabled(HelpFrame["button"..key], true);
 	else
-		if ( HelpFrame.selectedId == HELPFRAME_SUBMIT_BUG or HelpFrame.selectedId == HELPFRAME_SUBMIT_SUGGESTION ) then
+		if ( HelpFrame.selectedId == key ) then
 			HelpFrame.button1:Click();
 		end
-		HelpFrame_SetButtonEnabled(HelpFrame["button"..HELPFRAME_SUBMIT_BUG], false);
-		HelpFrame_SetButtonEnabled(HelpFrame["button"..HELPFRAME_SUBMIT_SUGGESTION], false);
+		HelpFrame_SetButtonEnabled(HelpFrame["button"..key], false);
 	end
+end
+
+function HelpFrame_UpdateQuickTicketSystemStatus()
+	HelpFrame_UpdateSubsystemStatus(HELPFRAME_SUBMIT_BUG, GMEuropaBugsEnabled() and not GMQuickTicketSystemThrottled());
+	HelpFrame_UpdateSubsystemStatus(HELPFRAME_SUBMIT_SUGGESTION, GMEuropaSuggestionsEnabled() and not GMQuickTicketSystemThrottled());
+	HelpFrame_UpdateSubsystemStatus(HELPFRAME_REPORT_ABUSE, GMEuropaComplaintsEnabled() and not GMQuickTicketSystemThrottled());
+	HelpFrame_UpdateSubsystemStatus(HELPFRAME_OPEN_TICKET, GMEuropaTicketsEnabled() and not GMQuickTicketSystemThrottled());
+	HelpFrame_UpdateSubsystemStatus(HELPFRAME_ACCOUNT_SECURITY, GMEuropaTicketsEnabled() and not GMQuickTicketSystemThrottled());
 end
 
 function HelpFrame_UpdateItemRestorationButtonStatus()
@@ -292,7 +297,12 @@ function HelpFrame_UpdateItemRestorationButtonStatus()
 end
 
 function HelpFrame_ShowFrame(key)
-	key = key or HelpFrame.selectedId or HELPFRAME_START_PAGE;
+	local testEnabled = IsTestBuild() and GMEuropaBugsEnabled() and not GMQuickTicketSystemThrottled();
+	if ( testEnabled ) then
+		key = key or HelpFrame.selectedId or HELPFRAME_SUBMIT_BUG;
+	else
+		key = key or HelpFrame.selectedId or HELPFRAME_START_PAGE;
+	end
 	if HelpFrameNavTbl[key].button and HelpFrameNavTbl[key].button:IsEnabled() then
 		HelpFrameNavTbl[key].button:Click();
 	else
@@ -405,14 +415,14 @@ end
 function HelpFrame_SetButtonEnabled(button, enabled)
 	if ( enabled ) then
 		button:Enable();
-		button:GetNormalTexture():SetDesaturated(0);
-		button.icon:SetDesaturated(0);
+		button:GetNormalTexture():SetDesaturated(false);
+		button.icon:SetDesaturated(false);
 		button.icon:SetVertexColor(1, 1, 1);
 		button.text:SetFontObject(GameFontNormalMed3);
 	else
 		button:Disable();
-		button:GetNormalTexture():SetDesaturated(1);
-		button.icon:SetDesaturated(1);
+		button:GetNormalTexture():SetDesaturated(true);
+		button.icon:SetDesaturated(true);
 		button.icon:SetVertexColor(0.5, 0.5, 0.5);
 		button.text:SetFontObject(GameFontDisableMed3);
 	end
@@ -601,21 +611,21 @@ function HelpOpenTicketButton_OnUpdate(self, elapsed)
 		end
 		
 		GameTooltip:SetOwner(self, "ANCHOR_TOP");
-		GameTooltip:AddLine(self.titleText, HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b, 1);
+		GameTooltip:AddLine(self.titleText, HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b, true);
 		GameTooltip:AddLine(self.statusText);
 		if (timeText) then
 			GameTooltip:AddLine(timeText);
 		end
 		
 		GameTooltip:AddLine(" ");
-		GameTooltip:AddLine(HELPFRAME_TICKET_CLICK_HELP, GRAY_FONT_COLOR.r, GRAY_FONT_COLOR.g, GRAY_FONT_COLOR.b, 1);
+		GameTooltip:AddLine(HELPFRAME_TICKET_CLICK_HELP, GRAY_FONT_COLOR.r, GRAY_FONT_COLOR.g, GRAY_FONT_COLOR.b, true);
 		GameTooltip:Show();
 	elseif ( haveResponse ) then
 		GameTooltip:SetOwner(self, "ANCHOR_TOP");
-		GameTooltip:SetText(GM_RESPONSE_ALERT, nil, nil, nil, nil, 1);
+		GameTooltip:SetText(GM_RESPONSE_ALERT, nil, nil, nil, nil, true);
 	elseif ( TicketStatusFrame.hasGMSurvey ) then
 		GameTooltip:SetOwner(self, "ANCHOR_TOP");
-		GameTooltip:SetText(CHOSEN_FOR_GMSURVEY, nil, nil, nil, nil, 1);
+		GameTooltip:SetText(CHOSEN_FOR_GMSURVEY, nil, nil, nil, nil, true);
 	end
 end
 
@@ -717,19 +727,19 @@ function HelpOpenWebTicketButton_OnEnter(self, elapsed)
 	if ( self.haveTicket ) then
 		if ( self.haveResponse ) then
 			GameTooltip:SetOwner(self, "ANCHOR_TOP");
-			GameTooltip:SetText(GM_RESPONSE_ALERT, nil, nil, nil, nil, 1);
+			GameTooltip:SetText(GM_RESPONSE_ALERT, nil, nil, nil, nil, true);
 		elseif ( self.hasGMSurvey ) then
 			GameTooltip:SetOwner(self, "ANCHOR_TOP");
-			GameTooltip:SetText(CHOSEN_FOR_GMSURVEY, nil, nil, nil, nil, 1);
+			GameTooltip:SetText(CHOSEN_FOR_GMSURVEY, nil, nil, nil, nil, true);
 		else
 			GameTooltip:SetOwner(self, "ANCHOR_TOP");
-			GameTooltip:AddLine(self.titleText, HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b, 1);
+			GameTooltip:AddLine(self.titleText, HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b, true);
 			if (self.statusText) then
 				GameTooltip:AddLine(self.statusText);
 			end
 		end
 		GameTooltip:AddLine(" ");
-		GameTooltip:AddLine(HELPFRAME_TICKET_CLICK_HELP, GRAY_FONT_COLOR.r, GRAY_FONT_COLOR.g, GRAY_FONT_COLOR.b, 1);
+		GameTooltip:AddLine(HELPFRAME_TICKET_CLICK_HELP, GRAY_FONT_COLOR.r, GRAY_FONT_COLOR.g, GRAY_FONT_COLOR.b, true);
 		GameTooltip:Show();
 	end
 end
@@ -910,6 +920,8 @@ function KnowledgeBase_OnLoad(self)
 		OnClick = KnowledgeBase_DisplayCategories,
 		listFunc = KnowledgeBase_ListCategory,
 	}
+	self.navBar.textMaxWidth = 117;
+	self.navBar.oldStyle = true;
 	NavBar_Initialize(self.navBar, "HelpFrameNavButtonTemplate", homeData, self.navBar.home, self.navBar.overflow);
 
 	--Scroll Frame
@@ -1113,7 +1125,7 @@ function KnowledgeBase_SelectCategory(self, index, navBar) -- Index could also b
 	elseif index == 2  then
 		KnowledgeBase_GotoTopIssues();
 	else
-		KnowledgeBase_DisplaySubCategories(index-2, text);
+		KnowledgeBase_DisplaySubCategories(index-2);
 		HelpFrame.kbase.category = index-2;
 	end
 	
@@ -1297,7 +1309,7 @@ function KnowledgeBase_SnapToTopIssues()
 			KnowledgeBase_ShowErrorFrame(HelpFrame.kbase, KBASE_ERROR_NO_RESULTS);
 		end
 	else
-		KBSetup_BeginLoading(KBASE_NUM_ARTICLES_PER_PAGE, 0);
+		--KBSetup_BeginLoading(KBASE_NUM_ARTICLES_PER_PAGE, 0);
 	end
 end
 

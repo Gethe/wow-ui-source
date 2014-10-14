@@ -29,33 +29,47 @@ function LookingForGuildFrame_OnLoad(self)
 	self:RegisterEvent("LF_GUILD_MEMBERSHIP_LIST_CHANGED");
 end
 
+function LookingForGuild_UpdateRoleButton( button, canBeRole )
+	if ( canBeRole ) then
+		button:Enable();
+		SetDesaturation(button:GetNormalTexture(), false);
+		button.cover:Hide();
+		button.checkButton:Enable();
+		if ( button.background ) then
+			button.background:Show();
+		end
+		if ( button.shortageBorder ) then
+			button.shortageBorder:SetVertexColor(1, 1, 1);
+			button.incentiveIcon.texture:SetVertexColor(1, 1, 1);
+			button.incentiveIcon.border:SetVertexColor(1, 1, 1);
+		end
+		button.Text:SetFontObject("GameFontHighlightSmall");
+	else
+		button:Disable();
+		SetDesaturation(button:GetNormalTexture(), true);
+		button.cover:Show();
+		button.cover:SetAlpha(0.7);
+		button.checkButton:Hide();
+		button.checkButton:Disable();
+		if ( button.background ) then
+			button.background:Hide();
+		end
+		if ( button.shortageBorder ) then
+			button.shortageBorder:SetVertexColor(0.5, 0.5, 0.5);
+			button.incentiveIcon.texture:SetVertexColor(0.5, 0.5, 0.5);
+			button.incentiveIcon.border:SetVertexColor(0.5, 0.5, 0.5);
+		end
+		button.Text:SetFontObject("GameFontDisableSmall");
+	end
+end
+
 function LookingForGuildFrame_OnShow(self)
 	PlaySound("igCharacterInfoOpen");
 	local canBeTank, canBeHealer, canBeDPS = UnitGetAvailableRoles("player");
 	
-	if ( canBeTank ) then
-		LFG_EnableRoleButton(LookingForGuildTankButton);
-		LookingForGuildTankButtonText:SetFontObject("GameFontHighlightSmall");
-	else
-		LFG_PermanentlyDisableRoleButton(LookingForGuildTankButton);
-		LookingForGuildTankButtonText:SetFontObject("GameFontDisableSmall");
-	end
-	
-	if ( canBeHealer ) then
-		LFG_EnableRoleButton(LookingForGuildHealerButton);
-		LookingForGuildHealerButtonText:SetFontObject("GameFontHighlightSmall");
-	else
-		LFG_PermanentlyDisableRoleButton(LookingForGuildHealerButton);
-		LookingForGuildHealerButtonText:SetFontObject("GameFontDisableSmall");
-	end
-	
-	if ( canBeDPS ) then
-		LFG_EnableRoleButton(LookingForGuildDamagerButton);
-		LookingForGuildDamagerButtonText:SetFontObject("GameFontHighlightSmall");
-	else
-		LFG_PermanentlyDisableRoleButton(LookingForGuildDamagerButton);
-		LookingForGuildDamagerButtonText:SetFontObject("GameFontDisableSmall");
-	end
+	LookingForGuild_UpdateRoleButton(LookingForGuildTankButton, canBeTank);
+	LookingForGuild_UpdateRoleButton(LookingForGuildHealerButton, canBeHealer);
+	LookingForGuild_UpdateRoleButton(LookingForGuildDamagerButton, canBeDPS);
 
 	UpdateMicroButtons();
 	RequestGuildMembershipList();
@@ -113,19 +127,19 @@ end
 function LookingForGuildPlaystyleButton_OnClick(index, userClick)
 	local param;
 	if ( index == 1 ) then
-		LookingForGuildCasualButton:SetChecked(1);
-		LookingForGuildModerateButton:SetChecked(nil);
-		LookingForGuildHardcoreButton:SetChecked(nil);
+		LookingForGuildCasualButton:SetChecked(true);
+		LookingForGuildModerateButton:SetChecked(false);
+		LookingForGuildHardcoreButton:SetChecked(false);
 		param = LFGUILD_PARAM_CASUAL;
 	elseif ( index == 2 ) then
-		LookingForGuildCasualButton:SetChecked(nil);
-		LookingForGuildModerateButton:SetChecked(1);
-		LookingForGuildHardcoreButton:SetChecked(nil);
+		LookingForGuildCasualButton:SetChecked(false);
+		LookingForGuildModerateButton:SetChecked(true);
+		LookingForGuildHardcoreButton:SetChecked(false);
 		param = LFGUILD_PARAM_MODERATE;
 	else
-		LookingForGuildCasualButton:SetChecked(nil);
-		LookingForGuildModerateButton:SetChecked(nil);
-		LookingForGuildHardcoreButton:SetChecked(1);
+		LookingForGuildCasualButton:SetChecked(false);
+		LookingForGuildModerateButton:SetChecked(false);
+		LookingForGuildHardcoreButton:SetChecked(true);
 		param = LFGUILD_PARAM_HARDCORE;
 	end
 	if ( userClick ) then
@@ -198,7 +212,7 @@ function LookingForGuildCheckButton_OnEnter(self)
 	if ( interestType ) then
 		GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
 		GameTooltip:SetText(_G["GUILD_INTEREST_"..interestType]);
-		GameTooltip:AddLine(_G["GUILD_INTEREST_"..interestType.."_TOOLTIP"], 1, 1, 1, 1, 1);
+		GameTooltip:AddLine(_G["GUILD_INTEREST_"..interestType.."_TOOLTIP"], 1, 1, 1, true);
 		GameTooltip:Show();
 	end
 end
@@ -254,7 +268,6 @@ function LookingForGuild_Update()
 		if ( index <= numGuilds ) then
 			local name, level, numMembers, achPoints, comment, cached, requestPending = GetRecruitingGuildInfo(index);
 			button.name:SetText(name);
-			button.level:SetText(level);
 			button.numMembers:SetFormattedText(BROWSE_GUILDS_NUM_MEMBERS, numMembers);
 			button.achPoints:SetText(achPoints);
 			button.comment:SetText(comment);
@@ -337,18 +350,18 @@ function LookingForGuildGuild_ShowTooltip(self)
 	if ( bRaid ) then buf = buf.."\n"..QUEST_DASH..GUILD_INTEREST_RAID; end
 	if ( bPvP ) then buf = buf.."\n"..QUEST_DASH..GUILD_INTEREST_PVP; end
 	if ( bRP ) then buf = buf.."\n"..QUEST_DASH..GUILD_INTEREST_RP; end	
-	GameTooltip:AddLine(GUILD_INTEREST..HIGHLIGHT_FONT_COLOR_CODE..buf);
+	GameTooltip:AddLine(GUILD_INTEREST..HIGHLIGHT_FONT_COLOR_CODE..buf..FONT_COLOR_CODE_CLOSE);
 	-- availability
 	buf = "";
 	if ( bWeekdays ) then buf = buf.."\n"..QUEST_DASH..GUILD_AVAILABILITY_WEEKDAYS; end
 	if ( bWeekends ) then buf = buf.."\n"..QUEST_DASH..GUILD_AVAILABILITY_WEEKENDS; end
-	GameTooltip:AddLine(GUILD_AVAILABILITY..HIGHLIGHT_FONT_COLOR_CODE..buf);
+	GameTooltip:AddLine(GUILD_AVAILABILITY..HIGHLIGHT_FONT_COLOR_CODE..buf..FONT_COLOR_CODE_CLOSE);
 	-- roles
 	buf = "";
 	if ( bTank ) then buf = buf.."\n"..QUEST_DASH..TANK; end
 	if ( bHealer ) then buf = buf.."\n"..QUEST_DASH..HEALER; end
 	if ( bDamage ) then buf = buf.."\n"..QUEST_DASH..DAMAGER; end
-	GameTooltip:AddLine(CLASS_ROLES..HIGHLIGHT_FONT_COLOR_CODE..buf);
+	GameTooltip:AddLine(CLASS_ROLES..HIGHLIGHT_FONT_COLOR_CODE..buf..FONT_COLOR_CODE_CLOSE);
 	
 	GameTooltip:Show();
 end
@@ -358,7 +371,6 @@ function LookingForGuild_RequestMembership()
 	PlaySound("igMainMenuOpen");
 	local name, level = GetRecruitingGuildInfo(GetRecruitingGuildSelection());
 	GuildFinderRequestMembershipFrameGuildName:SetText(name);
-	GuildFinderRequestMembershipFrameGuildLevel:SetFormattedText(GUILD_LEVEL, level);
 	GuildFinderRequestMembershipEditBox:SetText(GetLookingForGuildComment());
 end
 
@@ -448,18 +460,18 @@ function LookingForGuildApp_ShowTooltip(self)
 	if ( bRaid ) then buf = buf.."\n"..QUEST_DASH..GUILD_INTEREST_RAID; end
 	if ( bPvP ) then buf = buf.."\n"..QUEST_DASH..GUILD_INTEREST_PVP; end
 	if ( bRP ) then buf = buf.."\n"..QUEST_DASH..GUILD_INTEREST_RP; end	
-	GameTooltip:AddLine(GUILD_INTEREST..HIGHLIGHT_FONT_COLOR_CODE..buf);
+	GameTooltip:AddLine(GUILD_INTEREST..HIGHLIGHT_FONT_COLOR_CODE..buf..FONT_COLOR_CODE_CLOSE);
 	-- availability
 	buf = "";
 	if ( bWeekdays ) then buf = buf.."\n"..QUEST_DASH..GUILD_AVAILABILITY_WEEKDAYS; end
 	if ( bWeekends ) then buf = buf.."\n"..QUEST_DASH..GUILD_AVAILABILITY_WEEKENDS; end
-	GameTooltip:AddLine(GUILD_AVAILABILITY..HIGHLIGHT_FONT_COLOR_CODE..buf);
+	GameTooltip:AddLine(GUILD_AVAILABILITY..HIGHLIGHT_FONT_COLOR_CODE..buf..FONT_COLOR_CODE_CLOSE);
 	-- roles
 	buf = "";
 	if ( bTank ) then buf = buf.."\n"..QUEST_DASH..TANK; end
 	if ( bHealer ) then buf = buf.."\n"..QUEST_DASH..HEALER; end
 	if ( bDamage ) then buf = buf.."\n"..QUEST_DASH..DAMAGER; end
-	GameTooltip:AddLine(CLASS_ROLES..HIGHLIGHT_FONT_COLOR_CODE..buf);
+	GameTooltip:AddLine(CLASS_ROLES..HIGHLIGHT_FONT_COLOR_CODE..buf..FONT_COLOR_CODE_CLOSE);
 	
 	GameTooltip:Show();
 end

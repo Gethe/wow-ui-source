@@ -7,6 +7,9 @@
 			<AbsDimension x="30" y="30"/>
 		</Size>
 		<Scripts>
+			<OnLoad>
+				self.cooldown:SetSwipeColor(0, 0, 0);
+			</OnLoad>
 			<OnClick>
 				PossessButton_OnClick(self, button, down);
 			</OnClick>

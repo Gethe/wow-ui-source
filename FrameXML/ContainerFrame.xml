@@ -9,6 +9,15 @@
 				</Offset>
 			</Anchor>
 		</Anchors>
+		<Animations>
+			<AnimationGroup parentKey="newitemglowAnim" setToFinalAlpha="true" looping="REPEAT">
+				<Alpha childKey="NewItemTexture" smoothing="NONE" duration="0.8" order="1" fromAlpha="1" toAlpha="0.4"/>
+				<Alpha childKey="NewItemTexture" smoothing="NONE" duration="0.8" order="2" fromAlpha="0.4" toAlpha="1"/>
+			</AnimationGroup>
+			<AnimationGroup parentKey="flashAnim" setToFinalAlpha="true">
+				<Alpha childKey="flash" smoothing="OUT" duration="0.6" order="1" fromAlpha="1" toAlpha="0"/>
+			</AnimationGroup>
+		</Animations>
 		<Layers>
 			<Layer level="ARTWORK" textureSubLevel="1">
 				<Texture name="$parentIconQuestTexture">
@@ -24,10 +33,27 @@
 					</Anchors>
 				</Texture>
 			</Layer>
-			<Layer level="OVERLAY" textureSubLevel="1">
-				<Texture name="$parentNewItemTexture" file="Interface\Store\store-item-highlight">
+			<Layer level="OVERLAY">
+				<Texture parentKey="JunkIcon" atlas="bags-junkcoin" useAtlasSize="true" hidden="true">
 					<Anchors>
-						<Anchor point="CENTER" x="0" y="0"/>
+						<Anchor point="TOPLEFT" x="1" y="0"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="OVERLAY" textureSubLevel="1">
+				<Texture parentKey="flash" hidden="false" alpha="0" alphaMode="ADD" atlas="bags-glow-flash" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="NewItemTexture" alpha="0" alphaMode="ADD" atlas="bags-glow-green" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="BattlepayItemTexture" file="Interface\Store\store-item-highlight">
+					<Anchors>
+						<Anchor point="CENTER"/>
 					</Anchors>
 				</Texture>
 			</Layer>
@@ -80,7 +106,7 @@
 		</Size>
 		<Layers>
 			<Layer level="BACKGROUND">
-                <Texture name="$parentPortrait">
+                <Texture name="$parentPortrait" parentKey="Portrait">
                     <Size>
                         <AbsDimension x="40" y="40"/>
                     </Size>
@@ -165,7 +191,7 @@
 				<Anchors>
 					<Anchor point="TOPRIGHT" relativeTo="$parent" relativePoint="TOPRIGHT">
 						<Offset>
-							<AbsDimension x="-2" y="-216"/>
+							<AbsDimension x="-2" y="-227"/>
 						</Offset>
 					</Anchor>
 				</Anchors>
@@ -214,53 +240,143 @@
 			<Button name="$parentItem35" inherits="ContainerFrameItemButtonTemplate"/>
 			<Button name="$parentItem36" inherits="ContainerFrameItemButtonTemplate"/>
 
-			<Button name="$parentPortraitButton">
-				<Size>
-					<AbsDimension x="40" y="40"/>
-				</Size>
+			<Button name="$parentPortraitButton" parentKey="PortraitButton">
+				<Size x="40" y="40"/>
 				<Anchors>
-					<Anchor point="TOPLEFT">
-						<Offset>
-							<AbsDimension x="7" y="-5"/>
-						</Offset>
-					</Anchor>
+					<Anchor point="TOPLEFT" x="7" y="-5"/>
 				</Anchors>
+				<Layers>
+					<Layer level="OVERLAY">
+						<Texture parentKey="Highlight" atlas="bags-roundhighlight" alphaMode="ADD" hidden="true">
+							<Size x="36" y="36"/>
+							<Anchors>
+								<Anchor point="CENTER" x="-3" y="3"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
 				<Scripts>
 					<OnEnter>
+						self.Highlight:Show();
 						GameTooltip:SetOwner(self, "ANCHOR_LEFT");
 						if ( self:GetID() == 0 ) then
 							GameTooltip:SetText(BACKPACK_TOOLTIP, 1.0, 1.0, 1.0);
 							if (GetBindingKey("TOGGLEBACKPACK")) then
 								GameTooltip:AppendText(" "..NORMAL_FONT_COLOR_CODE.."("..GetBindingKey("TOGGLEBACKPACK")..")"..FONT_COLOR_CODE_CLOSE)
 							end
-						elseif ( self:GetID() == KEYRING_CONTAINER ) then
-							GameTooltip:SetText(KEYRING, 1.0, 1.0, 1.0);
-							if (GetBindingKey("TOGGLEKEYRING")) then
-								GameTooltip:AppendText(" "..NORMAL_FONT_COLOR_CODE.."("..GetBindingKey("TOGGLEKEYRING")..")"..FONT_COLOR_CODE_CLOSE)
+						else
+							local parent = self:GetParent();
+							local id = parent:GetID();
+							local link = GetInventoryItemLink("player", ContainerIDToInventoryID(id));
+							local name, _, quality = GetItemInfo(link);
+							local r, g, b = GetItemQualityColor(quality);
+							GameTooltip:SetText(name, r, g, b);
+							if (not IsInventoryItemProfessionBag("player", ContainerIDToInventoryID(id))) then
+								if (parent.localFlag and BAG_FILTER_LABELS[parent.localFlag]) then
+									GameTooltip:AddLine(BAG_FILTER_ASSIGNED_TO:format(BAG_FILTER_LABELS[parent.localFlag]));
+								elseif (not parent.localFlag) then
+									for i = LE_BAG_FILTER_FLAG_EQUIPMENT, NUM_LE_BAG_FILTER_FLAGS do
+										local active = false;
+										if ( self:GetID() > NUM_BAG_SLOTS ) then
+											active = GetBankBagSlotFlag(id - NUM_BAG_SLOTS, i);
+										else
+											active = GetBagSlotFlag(id, i);
+										end
+										if ( active ) then
+											GameTooltip:AddLine(BAG_FILTER_ASSIGNED_TO:format(BAG_FILTER_LABELS[i]));
+											break;
+										end
+									end
+								end
 							end
-						elseif ( GameTooltip:SetInventoryItem("player", ContainerIDToInventoryID(self:GetID())) ) then
 							local binding = GetBindingKey("TOGGLEBAG"..(4 - self:GetID() + 1));
 							if ( binding ) then
 								GameTooltip:AppendText(" "..NORMAL_FONT_COLOR_CODE.."("..binding..")"..FONT_COLOR_CODE_CLOSE);
 							end
 						end
+						if (self:GetID() == 0 or not IsInventoryItemProfessionBag("player", ContainerIDToInventoryID(self:GetID()))) then
+							GameTooltip:AddLine(CLICK_BAG_SETTINGS);
+						end
+						GameTooltip:Show();
 					</OnEnter>
 					<OnLeave>
+						self.Highlight:Hide();
 						GameTooltip:Hide();
 					</OnLeave>
+					<OnClick>
+						if (self:GetID() ~= 0 and IsInventoryItemProfessionBag("player", ContainerIDToInventoryID(self:GetID()))) then
+							return;
+						end
+						local parent = self:GetParent();
+						PlaySound("igMainMenuOptionCheckBoxOn");
+						ToggleDropDownMenu(1, nil, parent.FilterDropDown, self, 0, 0);
+					</OnClick>
+				</Scripts>
+			</Button>
+			<Button parentKey="FilterIcon" hidden="true">
+				<Size x="28" y="28"/>
+				<Anchors>
+					<Anchor point="CENTER" relativeKey="$parent.Portrait" relativePoint="BOTTOMRIGHT" x="-9" y="14"/>
+				</Anchors>
+				<Layers>
+					<Layer level="OVERLAY">
+						<Texture parentKey="Icon" atlas="bags-icon-consumables" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="CENTER"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnShow>
+						self:SetFrameLevel(self:GetParent().PortraitButton:GetFrameLevel()+1);
+					</OnShow>
+					<OnEnter>
+						local target = self:GetParent().PortraitButton;
+						target:GetScript("OnEnter")(target);
+					</OnEnter>
+					<OnLeave>
+						local target = self:GetParent().PortraitButton;
+						target:GetScript("OnLeave")(target);
+					</OnLeave>
+					<OnClick>
+						local target = self:GetParent().PortraitButton;
+						target:GetScript("OnClick")(target);
+					</OnClick>
 				</Scripts>
 			</Button>
 			<Button name="$parentCloseButton" inherits="UIPanelCloseButton">
 				<Anchors>
-					<Anchor point="TOPRIGHT" relativeTo="$parent" relativePoint="TOPRIGHT">
-						<Offset>
-							<AbsDimension x="0" y="-1"/>
-						</Offset>
-					</Anchor>
+					<Anchor point="TOPRIGHT" relativeTo="$parent" relativePoint="TOPRIGHT" x="0" y="-1"/>
 				</Anchors>
 				<Scripts>
 					<OnClick>
 						ToggleBag(self:GetParent():GetID());
+					</OnClick>
+				</Scripts>
+			</Button>
+			<Frame name="$parentFilterDropDown" parentKey="FilterDropDown" inherits="UIDropDownMenuTemplate">
+				<Scripts>
+					<OnLoad function="ContainerFrameFilterDropDown_OnLoad"/>
+				</Scripts>
+			</Frame>
+			<Button parentKey="ClickableTitleFrame">
+				<Size x="118" y="16"/>
+				<Anchors>
+					<Anchor point="TOP" x="8" y="-8"/>
+				</Anchors>
+				<Scripts>
+					<OnEnter>
+						local target = self:GetParent().PortraitButton;
+						target:GetScript("OnEnter")(target);
+					</OnEnter>
+					<OnLeave>
+						local target = self:GetParent().PortraitButton;
+						target:GetScript("OnLeave")(target);
+					</OnLeave>
+					<OnClick>
+						local target = self:GetParent().PortraitButton;
+						target:GetScript("OnClick")(target);
 					</OnClick>
 				</Scripts>
 			</Button>
@@ -295,6 +411,76 @@
 	<Frame name="ContainerFrame13" inherits="ContainerFrameTemplate" parent="UIParent" id="100" hidden="true"/>
 
 	<EditBox name="BagItemSearchBox" inherits="BagSearchBoxTemplate" parent="ContainerFrame1" letters="15" hidden="true">
-		<Size x="130" y="20"/>
+		<Size x="100" y="18"/>
 	</EditBox>
+
+	<Button name="BagItemAutoSortButton" parent="ContainerFrame1" hidden="true">
+		<Size x="28" y="26"/>
+		<NormalTexture atlas="bags-button-autosort-up"/>
+		<PushedTexture atlas="bags-button-autosort-down"/>
+		<HighlightTexture file="Interface\Buttons\ButtonHilight-Square" alphaMode="ADD">
+			<Size x="24" y="23"/>
+			<Anchors>
+				<Anchor point="CENTER" x="0" y="0"/>
+			</Anchors>
+		</HighlightTexture>
+		<Scripts>
+			<OnClick>
+				PlaySound("UI_BagSorting_01");
+				SortBags();
+			</OnClick>
+			<OnEnter>
+				GameTooltip:SetOwner(self);
+				GameTooltip:SetText(BAG_CLEANUP_BAGS);
+				GameTooltip:Show();
+			</OnEnter>
+			<OnLeave function="GameTooltip_Hide"/>
+		</Scripts>
+	</Button>
+
+	<Frame name="BagHelpBox" parent="UIParent" inherits="GlowBoxTemplate" frameStrata="HIGH" hidden="true">
+		<Size x="220" y="200"/>
+		<Layers>
+			<Layer level="ARTWORK">
+				<FontString parentKey="Text" inherits="GameFontHighlightLeft" justifyV="TOP">
+					<Size x="188" y="0"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" x="16" y="-12"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Button parentKey="CloseButton" inherits="UIPanelCloseButton">
+				<Anchors>
+					<Anchor point="TOPRIGHT" x="6" y="6"/>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						if (self:GetParent().bitField) then
+							SetCVarBitfield("closedInfoFrames", self:GetParent().bitField, true);
+						end
+						self:GetParent():Hide();
+					</OnClick>
+				</Scripts>
+			</Button>
+			<Frame parentKey="Arrow" inherits="GlowBoxArrowTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativePoint="RIGHT" x="-2" y="16"/>
+				</Anchors>
+			</Frame>
+		</Frames>
+		<Scripts>
+			<OnLoad>
+				self.Text:SetSpacing(4);
+				SetClampedTextureRotation(self.Arrow.Arrow, 270);
+				SetClampedTextureRotation(self.Arrow.Glow, 270);
+				self.Arrow.Glow:ClearAllPoints();
+				self.Arrow.Glow:SetPoint("LEFT", self, "RIGHT");
+			</OnLoad>
+			<OnShow>
+				self:SetHeight(self.Text:GetHeight()+30);
+			</OnShow>
+		</Scripts>
+	</Frame>
 </Ui>

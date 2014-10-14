@@ -4,7 +4,7 @@
 	<Frame name="ModelPreviewFrame" frameStrata="FULLSCREEN_DIALOG" frameLevel="5" inherits="ButtonFrameTemplate" parent="UIParent" hidden="true">
 		<Size x="415" y="565"/>
 		<Anchors>
-			<Anchor point="CENTER" relativePoint="CENTER" x="0" y="80"/>
+			<Anchor point="CENTER" relativePoint="CENTER" x="0" y="40"/>
 		</Anchors>
 		<Frames>
 			<Frame parentKey="Display">

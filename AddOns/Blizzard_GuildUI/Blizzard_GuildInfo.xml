@@ -94,12 +94,12 @@
 		<Scripts>
 			<OnEnter>
 				GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
-				GameTooltip:SetText(_G["GUILDRECRUITMENT_ROLE"..self:GetID()], nil, nil, nil, nil, 1);
+				GameTooltip:SetText(_G["GUILDRECRUITMENT_ROLE"..self:GetID()], nil, nil, nil, nil, true);
 				GameTooltip:Show();
 				LFGFrameRoleCheckButton_OnEnter(self);
 			</OnEnter>
 			<OnClick>
-				if ( self.checkButton:IsEnabled() == 1 ) then
+				if ( self.checkButton:IsEnabled()) then
 					self.checkButton:Click();
 				end
 			</OnClick>
@@ -204,13 +204,12 @@
 				</Texture>
 			</Layer>
 			<Layer level="ARTWORK" textureSubLevel="2">
-				<Texture name="$parentLevelRing" inherits="TalentHeader-PointCircle-Gold" parentKey="PointsSpentBgGold">
-					<Size x="27" y="27"/>
+				<Texture name="$parentLevelRing" atlas="guild-levelring" useAtlasSize="true" parentKey="PointsSpentBgGold">
 					<Anchors>
 						<Anchor point="BOTTOMRIGHT" relativeTo="$parentRing" relativePoint="BOTTOMRIGHT" x="6" y="3"/>
 					</Anchors>
 				</Texture>
-				<FontString name="$parentLevelText" inherits="ChatFontSmall" parentKey="level">
+				<FontString name="$parentLevelText" inherits="GameNormalNumberFont" parentKey="level">
 					<Anchors>
 						<Anchor point="CENTER" relativeTo="$parentLevelRing" x="0" y="0"/>
 					</Anchors>
@@ -222,6 +221,10 @@
 			<OnLoad>
 				self:SetBackdropColor(1, 1, 1, 0.3);
 				self:RegisterForClicks("LeftButtonUp", "RightButtonUp");
+				
+				if ( GUILD_APPLICANT_LEVEL_TEXT_Y_OVERRIDE ) then
+					self.level:SetPoint("CENTER", "$parentLevelRing", "CENTER", select(4, self.level:GetPoint("CENTER")), GUILD_APPLICANT_LEVEL_TEXT_Y_OVERRIDE);
+				end
 			</OnLoad>
 			<OnClick function="GuildRecruitmentApplicant_OnClick"/>
 			<OnEnter function="GuildRecruitmentApplicant_ShowTooltip"/>
@@ -265,24 +268,15 @@
 				self.label:SetText(_G["GUILD_CHALLENGE_TYPE"..self:GetID()]);
 			</OnLoad>
 			<OnEnter>
-				local index, current, max, xp, gold, maxGold = GetGuildChallengeInfo(self:GetID());
+				local index, current, max, gold, maxGold = GetGuildChallengeInfo(self.dataIndex);
 				if ( index ) then
 					GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
 					GameTooltip:SetText(_G["GUILD_CHALLENGE_LABEL"..index]);
 					GameTooltip:AddLine(" ")
-					GameTooltip:AddLine(_G["GUILD_CHALLENGE_TOOLTIP"..index], 1, 1, 1, 1, 1);
+					GameTooltip:AddLine(_G["GUILD_CHALLENGE_TOOLTIP"..index], 1, 1, 1, true);
 					GameTooltip:AddLine(" ")
-					local guildLevel, maxGuildLevel = GetGuildLevel();
-					if ( guildLevel == maxGuildLevel ) then
-						local goldString = GetMoneyString(maxGold * COPPER_PER_SILVER * SILVER_PER_GOLD);
-						GameTooltip:AddLine(string.format(GUILD_CHALLENGE_REWARD_GOLD, goldString), 1, 1, 1, 1, 1);
-					else
-						GameTooltip:AddLine(string.format(GUILD_CHALLENGE_REWARD_XP, xp), 1, 1, 1, 1, 1);
-						if ( gold > 0 ) then
-							local goldString = GetMoneyString(gold * COPPER_PER_SILVER * SILVER_PER_GOLD);
-							GameTooltip:AddLine(goldString, 1, 1, 1, 1, 1);
-						end
-					end
+					local goldString = GetMoneyString(maxGold * COPPER_PER_SILVER * SILVER_PER_GOLD);
+					GameTooltip:AddLine(string.format(GUILD_CHALLENGE_REWARD_GOLD, goldString), 1, 1, 1, true);
 					GameTooltip:Show();
 				end
 			</OnEnter>
@@ -511,24 +505,25 @@
 					<Anchor point="TOPLEFT" relativeTo="GuildInfoFrameInfoHeader1" relativePoint="BOTTOMLEFT" x="0" y="-1"/>
 				</Anchors>
 			</Frame>
-			<Frame name="$parentChallenge4" inherits="GuildChallengeTemplate" id="4">
+			<!--Scenario rewards aren't a thing at the moment, so Challenge4 is hidden-->
+			<Frame name="$parentChallenge4" inherits="GuildChallengeTemplate" id="4" hidden="true">
 				<Anchors>
 					<Anchor point="TOP" relativeTo="$parentChallenge1" relativePoint="BOTTOM" x="0" y="-1"/>
 				</Anchors>
 			</Frame>
 			<Frame name="$parentChallenge5" inherits="GuildChallengeTemplate" id="5">
 				<Anchors>
-					<Anchor point="TOP" relativeTo="$parentChallenge4" relativePoint="BOTTOM" x="0" y="-1"/>
+					<Anchor point="TOP" relativeTo="$parentChallenge1" relativePoint="BOTTOM" x="0" y="-7"/>
 				</Anchors>
 			</Frame>
 			<Frame name="$parentChallenge2" inherits="GuildChallengeTemplate" id="2">
 				<Anchors>
-					<Anchor point="TOP" relativeTo="$parentChallenge5" relativePoint="BOTTOM" x="0" y="-1"/>
+					<Anchor point="TOP" relativeTo="$parentChallenge5" relativePoint="BOTTOM" x="0" y="-7"/>
 				</Anchors>
 			</Frame>
 			<Frame name="$parentChallenge3" inherits="GuildChallengeTemplate" id="3">
 				<Anchors>
-					<Anchor point="TOP" relativeTo="$parentChallenge2" relativePoint="BOTTOM" x="0" y="-1"/>
+					<Anchor point="TOP" relativeTo="$parentChallenge2" relativePoint="BOTTOM" x="0" y="-7"/>
 				</Anchors>
 			</Frame>
 			<Button name="GuildInfoEditMOTDButton" text="GUILD_EDIT_TEXT_LINK" hidden="true">

@@ -49,7 +49,7 @@
 			</OnLoad>
 		</Scripts>
 	</CheckButton>
-	<Frame name="HorizontalMultiBar1" toplevel="true" frameStrata="HIGH" virtual="true" hidden="true">
+	<Frame name="HorizontalMultiBar1" toplevel="true" frameStrata="MEDIUM" virtual="true" hidden="true">
 		<Size>
 			<AbsDimension x="500" y="38"/>
 		</Size>
@@ -167,7 +167,7 @@
 			</CheckButton>
 		</Frames>
 	</Frame>
-	<Frame name="HorizontalMultiBar2" toplevel="true" frameStrata="HIGH" virtual="true" hidden="true">
+	<Frame name="HorizontalMultiBar2" toplevel="true" frameStrata="MEDIUM" virtual="true" hidden="true">
 		<Size>
 			<AbsDimension x="500" y="38"/>
 		</Size>
@@ -285,7 +285,7 @@
 			</CheckButton>
 		</Frames>
 	</Frame>
-	<Frame name="VerticalMultiBar3" toplevel="true" frameStrata="HIGH" virtual="true" hidden="true">
+	<Frame name="VerticalMultiBar3" toplevel="true" frameStrata="MEDIUM" virtual="true" hidden="true">
 		<Size>
 			<AbsDimension x="38" y="500"/>
 		</Size>
@@ -403,7 +403,7 @@
 			</CheckButton>
 		</Frames>
 	</Frame>
-	<Frame name="VerticalMultiBar4" toplevel="true" frameStrata="HIGH" virtual="true" hidden="true">
+	<Frame name="VerticalMultiBar4" toplevel="true" frameStrata="MEDIUM" virtual="true" hidden="true">
 		<Size>
 			<AbsDimension x="38" y="500"/>
 		</Size>
@@ -521,7 +521,7 @@
 			</CheckButton>
 		</Frames>
 	</Frame>
-	<Frame name="MultiBarBottomLeft" inherits="HorizontalMultiBar1" parent="MainMenuBar">
+	<Frame name="MultiBarBottomLeft" inherits="HorizontalMultiBar1" parent="MainMenuBarArtFrame">
 		<Anchors>
 			<Anchor point="BOTTOMLEFT" relativeTo="ActionButton1" relativePoint="TOPLEFT">
 				<Offset>
@@ -530,7 +530,7 @@
 			</Anchor>
 		</Anchors>
 	</Frame>
-	<Frame name="MultiBarBottomRight" inherits="HorizontalMultiBar2" parent="MainMenuBar">
+	<Frame name="MultiBarBottomRight" inherits="HorizontalMultiBar2" parent="MainMenuBarArtFrame">
 		<Anchors>
 			<Anchor point="LEFT" relativeTo="MultiBarBottomLeft" relativePoint="RIGHT">
 				<Offset>
@@ -539,7 +539,7 @@
 			</Anchor>
 		</Anchors>
 	</Frame>
-	<Frame name="MultiBarRight" inherits="VerticalMultiBar3" parent="UIParent">
+	<Frame name="MultiBarRight" inherits="VerticalMultiBar3" parent="MainMenuBarArtFrame">
 		<Anchors>
 			<Anchor point="BOTTOMRIGHT">
 				<Offset>
@@ -560,7 +560,7 @@
 			</AnimationGroup>
 		</Animations>
 	</Frame>
-	<Frame name="MultiBarLeft" inherits="VerticalMultiBar4" parent="MultiBarRight">
+	<Frame name="MultiBarLeft" inherits="VerticalMultiBar4" parent="MainMenuBarArtFrame">
 		<Anchors>
 			<Anchor point="TOPRIGHT" relativeTo="MultiBarRight" relativePoint="TOPLEFT">
 				<Offset>

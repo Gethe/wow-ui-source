@@ -7,7 +7,6 @@ BOOKTYPE_SPELL = "spell";
 BOOKTYPE_PROFESSION = "professions";
 BOOKTYPE_PET = "pet";
 BOOKTYPE_CORE_ABILITIES = "core";
-BOOKTYPE_WHAT_HAS_CHANGED = "changed"
 
 local MaxSpellBookTypes = 5;
 local SpellBookInfo = {};
@@ -29,13 +28,9 @@ SpellBookInfo[BOOKTYPE_CORE_ABILITIES]= { 	showFrames = {"SpellBookCoreAbilities
 											title = CORE_ABILITIES,
 											updateFunc =  function() SpellBook_UpdateCoreAbilitiesTab(); end
 										};										
-SpellBookInfo[BOOKTYPE_WHAT_HAS_CHANGED]= { showFrames = {"SpellBookWhatHasChanged"}, 		
-											title = WHAT_HAS_CHANGED,
-											updateFunc =  function() SpellBook_UpdateWhatHasChangedTab(); end
-										};										
 SPELLBOOK_PAGENUMBERS = {};
 
-SpellBookFrames = {	"SpellBookSpellIconsFrame", "SpellBookProfessionFrame",  "SpellBookSideTabsFrame", "SpellBookPageNavigationFrame", "SpellBookCoreAbilitiesFrame", "SpellBookWhatHasChanged"};
+SpellBookFrames = {	"SpellBookSpellIconsFrame", "SpellBookProfessionFrame",  "SpellBookSideTabsFrame", "SpellBookPageNavigationFrame", "SpellBookCoreAbilitiesFrame"};
 
 PROFESSION_RANKS =  {};
 PROFESSION_RANKS[1] = {75,  APPRENTICE};
@@ -46,6 +41,7 @@ PROFESSION_RANKS[5] = {375, MASTER};
 PROFESSION_RANKS[6] = {450, GRAND_MASTER};
 PROFESSION_RANKS[7] = {525, ILLUSTRIOUS};
 PROFESSION_RANKS[8] = {600, ZEN_MASTER};
+PROFESSION_RANKS[9] = {700, DRAENOR_MASTER};
 
 
 
@@ -96,9 +92,6 @@ function SpellBookFrame_GetTutorialEnum()
 	elseif ( SpellBookFrame.bookType == BOOKTYPE_CORE_ABILITIES ) then
 		helpPlate = CoreAbilitiesFrame_HelpPlate;
 		tutorial = LE_FRAME_TUTORIAL_CORE_ABILITITES;
-	elseif ( SpellBookFrame.bookType == BOOKTYPE_WHAT_HAS_CHANGED ) then
-		helpPlate = WhatHasChangedFrame_HelpPlate;
-		tutorial = LE_FRAME_TUTORIAL_WHAT_HAS_CHANGED;
 	end
 	return tutorial, helpPlate;
 end
@@ -236,13 +229,6 @@ function SpellBookFrame_Update()
 		tabIndex = tabIndex+1;
 	end
 	
-	if ( level >= 40 ) then
-		local nextTab = _G["SpellBookFrameTabButton"..tabIndex];
-		nextTab:Show();
-		nextTab.bookType = BOOKTYPE_WHAT_HAS_CHANGED;
-		nextTab.binding = "TOGGLEWHATHASCHANGEDBOOK";
-		nextTab:SetText(SpellBookInfo[BOOKTYPE_WHAT_HAS_CHANGED].title);
-	end
 	
 	-- Make sure the correct tab is selected
 	for i=1,MaxSpellBookTypes do
@@ -300,8 +286,8 @@ function SpellBookFrame_UpdateSpells ()
 		SpellBookPage1:SetDesaturated(_G["SpellBookSkillLineTab"..SpellBookFrame.selectedSkillLine].isOffSpec);
 		SpellBookPage2:SetDesaturated(_G["SpellBookSkillLineTab"..SpellBookFrame.selectedSkillLine].isOffSpec);
 	else
-		SpellBookPage1:SetDesaturated(0);
-		SpellBookPage2:SetDesaturated(0);
+		SpellBookPage1:SetDesaturated(false);
+		SpellBookPage2:SetDesaturated(false);
 	end
 end
 
@@ -504,26 +490,33 @@ function SpellButton_OnDrag(self)
 	if (not slot or slot > MAX_SPELLS or not _G[self:GetName().."IconTexture"]:IsShown() or (slotType == "FUTURESPELL")) then
 		return;
 	end
-	self:SetChecked(0);
+	self:SetChecked(false);
 	PickupSpellBookItem(slot, SpellBookFrame.bookType);
 end
 
 function SpellButton_UpdateSelection(self)
 	local slot = SpellBook_GetSpellBookSlot(self);
 	if ( slot and IsSelectedSpellBookItem(slot, SpellBookFrame.bookType) ) then
-		self:SetChecked("true");
+		self:SetChecked(true);
 	else
-		self:SetChecked("false");
+		self:SetChecked(false);
 	end
 end
 
 function SpellButton_UpdateCooldown(self)
-	local cooldown = _G[self:GetName().."Cooldown"];
+	local cooldown = self.cooldown;
 	local slot, slotType = SpellBook_GetSpellBookSlot(self);
 	if (slot) then
 		local start, duration, enable = GetSpellCooldown(slot, SpellBookFrame.bookType);
 		if (cooldown and start and duration) then
+			if (enable) then
+				cooldown:Hide();
+			else
+				cooldown:Show();
+			end
 			CooldownFrame_SetTimer(cooldown, start, duration, enable);
+		else
+			cooldown:Hide();
 		end
 	end
 end
@@ -577,7 +570,7 @@ function SpellButton_UpdateButton(self)
 		SpellBook_ReleaseAutoCastShine(self.shine);
 		self.shine = nil;
 		highlightTexture:SetTexture("Interface\\Buttons\\ButtonHilight-Square");
-		self:SetChecked(0);
+		self:SetChecked(false);
 		slotFrame:Hide();
 		self.IconTextureBg:Hide();
 		self.SeeTrainerString:Hide();
@@ -634,13 +627,7 @@ function SpellButton_UpdateButton(self)
 	local specs =  {GetSpecsForSpell(slot, SpellBookFrame.bookType)};
 	local specName = table.concat(specs, PLAYER_LIST_DELIMITER);
 	if ( subSpellName == "" ) then
-		if ( specName and specName ~= "" ) then
-			if ( isPassive ) then
-				subSpellName = specName .. ", " .. SPELL_PASSIVE_SECOND
-			else
-				subSpellName = specName;
-			end
-		elseif ( IsTalentSpell(slot, SpellBookFrame.bookType) ) then
+		if ( IsTalentSpell(slot, SpellBookFrame.bookType) ) then
 			if ( isPassive ) then
 				subSpellName = TALENT_PASSIVE
 			else
@@ -671,7 +658,7 @@ function SpellButton_UpdateButton(self)
 		self.TrainFrame:Hide();
 		self.IconTextureBg:Hide();
 		iconTexture:SetAlpha(1);
-		iconTexture:SetDesaturated(0);
+		iconTexture:SetDesaturated(false);
 		self.RequiredLevelString:Hide();
 		self.SeeTrainerString:Hide();
 		self.TrainTextBackground:Hide();
@@ -693,7 +680,7 @@ function SpellButton_UpdateButton(self)
 		slotFrame:Hide();
 		self.IconTextureBg:Show();
 		iconTexture:SetAlpha(0.5);
-		iconTexture:SetDesaturated(1);
+		iconTexture:SetDesaturated(true);
 		if (level and level > UnitLevel("player")) then
 			self.SeeTrainerString:Hide();
 			self.RequiredLevelString:Show();
@@ -742,7 +729,7 @@ function SpellButton_UpdateButton(self)
 		autoCastableTexture:Hide();
 		SpellBook_ReleaseAutoCastShine(self.shine);
 		self.shine = nil;
-		self:SetChecked("false");
+		self:SetChecked(false);
 	else
 		SpellButton_UpdateSelection(self);
 	end
@@ -774,6 +761,26 @@ function SpellBookNextPageButton_OnClick()
 	SpellBookFrame_Update();
 end
 
+function SpellBookFrame_OnMouseWheel(self, value, scrollBar)
+	--do nothing if not on an appropriate book type
+	if(SpellBookFrame.bookType ~= BOOKTYPE_SPELL and SpellBookFrame.bookType ~= BOOKTYPE_CORE_ABILITIES) then
+		return;
+	end
+
+	local currentPage, maxPages = SpellBook_GetCurrentPage();
+
+	if(value > 0) then
+		if(currentPage > 1) then
+			SpellBookPrevPageButton_OnClick()
+		end
+	else 
+		if(currentPage < maxPages) then
+			SpellBookNextPageButton_OnClick()
+		end
+	end
+end
+
+
 function SpellBookSkillLineTab_OnClick(self)
 	local id = self:GetID();
 	if ( SpellBookFrame.selectedSkillLine ~= id ) then
@@ -781,7 +788,7 @@ function SpellBookSkillLineTab_OnClick(self)
 		SpellBookFrame.selectedSkillLine = id;
 		SpellBookFrame_Update();
 	else
-		self:SetChecked(1);
+		self:SetChecked(true);
 	end
 	
 	-- Stop tab flashing
@@ -871,44 +878,50 @@ function SpellBookFrame_UpdateSkillLineTabs()
 		local skillLineTab = _G["SpellBookSkillLineTab"..i];
 		local prevTab = _G["SpellBookSkillLineTab"..i-1];
 		if ( i <= numSkillLineTabs and SpellBookFrame.bookType == BOOKTYPE_SPELL ) then
-			local name, texture, _, _, isGuild, offSpecID = GetSpellTabInfo(i);
-			local isOffSpec = (offSpecID ~= 0);
-			skillLineTab:SetNormalTexture(texture);
-			skillLineTab.tooltip = name;
-			skillLineTab:Show();
-			skillLineTab.isOffSpec = isOffSpec;
-			if(texture) then
-				skillLineTab:GetNormalTexture():SetDesaturated(isOffSpec);
-			end
-
-			-- Guild tab gets additional space
-			if (prevTab) then
-				if (isGuild) then
-					skillLineTab:SetPoint("TOPLEFT", prevTab, "BOTTOMLEFT", 0, -46);
-				elseif (isOffSpec and not prevTab.isOffSpec) then
-					skillLineTab:SetPoint("TOPLEFT", prevTab, "BOTTOMLEFT", 0, -40);
-				else
-					skillLineTab:SetPoint("TOPLEFT", prevTab, "BOTTOMLEFT", 0, -17);
-				end
-			end
+			local name, texture, _, _, isGuild, offSpecID, shouldHide = GetSpellTabInfo(i);
 			
-			-- Guild tab must show the Guild Banner
-			if (isGuild) then
-				skillLineTab:SetNormalTexture("Interface\\SpellBook\\GuildSpellbooktabBG");
-				skillLineTab.TabardEmblem:Show();
-				skillLineTab.TabardIconFrame:Show();
-				SetLargeGuildTabardTextures("player", skillLineTab.TabardEmblem, skillLineTab:GetNormalTexture(), skillLineTab.TabardIconFrame);
+			if ( shouldHide ) then
+				_G["SpellBookSkillLineTab"..i.."Flash"]:Hide();
+				skillLineTab:Hide();
 			else
-				skillLineTab.TabardEmblem:Hide();
-				skillLineTab.TabardIconFrame:Hide();
-			end
+				local isOffSpec = (offSpecID ~= 0);
+				skillLineTab:SetNormalTexture(texture);
+				skillLineTab.tooltip = name;
+				skillLineTab:Show();
+				skillLineTab.isOffSpec = isOffSpec;
+				if(texture) then
+					skillLineTab:GetNormalTexture():SetDesaturated(isOffSpec);
+				end
 
-			-- Set the selected tab
-			if ( SpellBookFrame.selectedSkillLine == i ) then
-				skillLineTab:SetChecked(1);
-				--SpellBookSpellGroupText:SetText(name);
-			else
-				skillLineTab:SetChecked(nil);
+				-- Guild tab gets additional space
+				if (prevTab) then
+					if (isGuild) then
+						skillLineTab:SetPoint("TOPLEFT", prevTab, "BOTTOMLEFT", 0, -46);
+					elseif (isOffSpec and not prevTab.isOffSpec) then
+						skillLineTab:SetPoint("TOPLEFT", prevTab, "BOTTOMLEFT", 0, -40);
+					else
+						skillLineTab:SetPoint("TOPLEFT", prevTab, "BOTTOMLEFT", 0, -17);
+					end
+				end
+				
+				-- Guild tab must show the Guild Banner
+				if (isGuild) then
+					skillLineTab:SetNormalTexture("Interface\\SpellBook\\GuildSpellbooktabBG");
+					skillLineTab.TabardEmblem:Show();
+					skillLineTab.TabardIconFrame:Show();
+					SetLargeGuildTabardTextures("player", skillLineTab.TabardEmblem, skillLineTab:GetNormalTexture(), skillLineTab.TabardIconFrame);
+				else
+					skillLineTab.TabardEmblem:Hide();
+					skillLineTab.TabardIconFrame:Hide();
+				end
+
+				-- Set the selected tab
+				if ( SpellBookFrame.selectedSkillLine == i ) then
+					skillLineTab:SetChecked(true);
+					--SpellBookSpellGroupText:SetText(name);
+				else
+					skillLineTab:SetChecked(false);
+				end
 			end
 		else
 			_G["SpellBookSkillLineTab"..i.."Flash"]:Hide();
@@ -1007,7 +1020,7 @@ function FormatProfession(frame, index)
 			if rank >= profCap then
 				frame.statusBar.capped:Show();
 				frame.statusBar.rankText:SetTextColor(RED_FONT_COLOR.r, RED_FONT_COLOR.g, RED_FONT_COLOR.b);
-				frame.statusBar.tooltip = RED_FONT_COLOR_CODE..TRIAL_CAPPED;
+				frame.statusBar.tooltip = RED_FONT_COLOR_CODE..TRIAL_CAPPED..FONT_COLOR_CODE_CLOSE;
 			else
 				frame.statusBar.capped:Hide();
 				frame.statusBar.rankText:SetTextColor(HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b);
@@ -1130,50 +1143,50 @@ SPEC_CORE_ABILITY_TEXT[73] = "WARRIOR_PROT";
 
 -- Hardcoded spell id's for spec display
 SPEC_CORE_ABILITY_DISPLAY = {}
-SPEC_CORE_ABILITY_DISPLAY[250] = {	45462,	45477,	55050,	49998,	56815,			}; --Blood
-SPEC_CORE_ABILITY_DISPLAY[251] = {	45462,	49184,	49020,	49143,					}; --Frost
-SPEC_CORE_ABILITY_DISPLAY[252] = {	45462,	45477,	55090,	85948,	63560,	47541,	}; --Unholy
+SPEC_CORE_ABILITY_DISPLAY[250] = {	45462,	45477,	50842,	47541,	49998,	48982,	}; --Blood
+SPEC_CORE_ABILITY_DISPLAY[251] = {	45462,	49184,	49020,	49143,	130735,		}; --Frost
+SPEC_CORE_ABILITY_DISPLAY[252] = {	45462,	85948,	47541,	130736,	46584,	63560,	}; --Unholy
 
-SPEC_CORE_ABILITY_DISPLAY[102] = {	79577,	8921,	93402,	5176,	2912,	78674,	}; --Balance
-SPEC_CORE_ABILITY_DISPLAY[103] = {	5221,	33917 ,	1822,	52610,	1079,	22568,	}; --Feral
-SPEC_CORE_ABILITY_DISPLAY[104] = {	33745,	77758,	33917,	62606,	22842,			}; --Guardian
-SPEC_CORE_ABILITY_DISPLAY[105] = {	774,	8936,	50464,	5185,	33763,	18562,	}; --Restoration
+SPEC_CORE_ABILITY_DISPLAY[102] = {	8921,	93402,	5176,	2912,	78674,  79577,	}; --Balance
+SPEC_CORE_ABILITY_DISPLAY[103] = {	1822,	5221,	52610,	1079, 	22568,		}; --Feral
+SPEC_CORE_ABILITY_DISPLAY[104] = {	33917,	33745,	106832,	6807,	62606,	22842,	}; --Guardian
+SPEC_CORE_ABILITY_DISPLAY[105] = {	33763,	774,	5185, 	8936,	48438,	18562,	}; --Restoration
 
-SPEC_CORE_ABILITY_DISPLAY[253] = {	1978,	34026,	3044,	77767,	53351,			}; --Beast Mastery
-SPEC_CORE_ABILITY_DISPLAY[254] = {	1978,	19434,	53209,	3044,	56641,	53351,	}; --Marskmanship
-SPEC_CORE_ABILITY_DISPLAY[255] = {	1978,	3674,	53301,	3044,	77767,	53351,	}; --Survival
+SPEC_CORE_ABILITY_DISPLAY[253] = {	3044, 	77767, 	82692, 	34026,	53351,		}; --Beast Mastery
+SPEC_CORE_ABILITY_DISPLAY[254] = {	19434,	53209,	56641,	53351,			}; --Marskmanship
+SPEC_CORE_ABILITY_DISPLAY[255] = {	3674,	53301,	77767,	3044,			}; --Survival
 
-SPEC_CORE_ABILITY_DISPLAY[62] = {	114664,	30451,	5143,	44425,	}; --Arcane
-SPEC_CORE_ABILITY_DISPLAY[63] = {	133,	11129,	108853,	11366,	}; --Fire
-SPEC_CORE_ABILITY_DISPLAY[64] = {	116,	44614,	84714,	30455,	}; --Frost
+SPEC_CORE_ABILITY_DISPLAY[62] = {	30451,	44425,	5143, 	114664,	12051,		}; --Arcane
+SPEC_CORE_ABILITY_DISPLAY[63] = {	133,	11366,	108853,	2948,	11129,		}; --Fire
+SPEC_CORE_ABILITY_DISPLAY[64] = {	116,	30455,	44614,	31687,	44549,	112965,	}; --Frost
 
-SPEC_CORE_ABILITY_DISPLAY[268] = {	100780,	115295,	100784,	115180,	115181, }; --Brewmaster
-SPEC_CORE_ABILITY_DISPLAY[270] = {	116694,	115151,	116670,	115175,	115460, }; --Mistweaver
-SPEC_CORE_ABILITY_DISPLAY[269] = {	100780,	100787,	100784,	107428,	115072,	113656,	}; --Windwalker
+SPEC_CORE_ABILITY_DISPLAY[268] = {	121253, 100780,	100784,	100787,	119582,	115308, }; --Brewmaster
+SPEC_CORE_ABILITY_DISPLAY[270] = {	115175,	116694,	124682,	115072,	115151, 116670,	}; --Mistweaver
+SPEC_CORE_ABILITY_DISPLAY[269] = {	100780,	100787,	100784,	107428,	113656,	116740,	}; --Windwalker
 
-SPEC_CORE_ABILITY_DISPLAY[65] = {	20473,	19750,	635,	82326,	85673,	53563,	}; --Holy
-SPEC_CORE_ABILITY_DISPLAY[66] = {	31935,	20271,	35395,	26573,	119072,	53600,	}; --Protection
-SPEC_CORE_ABILITY_DISPLAY[70] = {	20271,	35395,	879,	84963,	85256,	24275,	}; --Retribution
+SPEC_CORE_ABILITY_DISPLAY[65] = {	20473,	85673,	82326,	19750,	53563,	82327,	}; --Holy
+SPEC_CORE_ABILITY_DISPLAY[66] = {	31935,	35395,	20271,	85673,	53600,	31801,	}; --Protection
+SPEC_CORE_ABILITY_DISPLAY[70] = {	35395,	20271,	85256,	879,	24275,	31801,	}; --Retribution
 
-SPEC_CORE_ABILITY_DISPLAY[256] = {	33076,	47540,	2061,	2050,	2060,	17		}; --Discipline
-SPEC_CORE_ABILITY_DISPLAY[257] = {	33076,	139,	2061,	2050,	2060,	126172	}; --Holy
+SPEC_CORE_ABILITY_DISPLAY[256] = {	47540,	17,	2060,	2061,	132157,	596,	}; --Discipline
+SPEC_CORE_ABILITY_DISPLAY[257] = {	2060,	2061,	139,	33076,	34861,	596,	}; --Holy
 SPEC_CORE_ABILITY_DISPLAY[258] = {	589,	34914,	8092,	15407,	2944,	32379,	}; --Shadow
 
-SPEC_CORE_ABILITY_DISPLAY[259] = {	1329,	1943,	5171,	32645,	111240,	}; --Assassination
-SPEC_CORE_ABILITY_DISPLAY[260] = {	1752,	84617,	5171,	2098,			}; --Combat
-SPEC_CORE_ABILITY_DISPLAY[261] = {	53,		16511,	1943,	5171,	2098,	}; --Subtlety
+SPEC_CORE_ABILITY_DISPLAY[259] = {	8676,	111240,	1329,	5171,	1943,	32645,	}; --Assassination
+SPEC_CORE_ABILITY_DISPLAY[260] = {	8676,	84617,	1752,	5171,	2098,		}; --Combat
+SPEC_CORE_ABILITY_DISPLAY[261] = {	8676,	16511,	53,	5171,	1943,	2098,	}; --Subtlety
 
-SPEC_CORE_ABILITY_DISPLAY[262] = {	8050,	324,	8042,	51505,	403,	}; --Elemental
-SPEC_CORE_ABILITY_DISPLAY[263] = {	8050,	17364,	60103,	403,			}; --Enhancement
-SPEC_CORE_ABILITY_DISPLAY[264] = {	974,	61295,	8004,	331,	77472,	}; --Restoration
+SPEC_CORE_ABILITY_DISPLAY[262] = {	8050,	51505,	403,	8042,	324,		}; --Elemental
+SPEC_CORE_ABILITY_DISPLAY[263] = {	8050,	17364,	60103,	403,	73680,	51530,	}; --Enhancement
+SPEC_CORE_ABILITY_DISPLAY[264] = {	974,	77472,	8004,	61295,	73920,	1064,	}; --Restoration
 
-SPEC_CORE_ABILITY_DISPLAY[265] = {	172,	980,	30108,	103103,	1120,	48181,	}; --Affliction
-SPEC_CORE_ABILITY_DISPLAY[266] = {	104315,	172,	105174,	686,	6353,	103958,	}; --Demonology
-SPEC_CORE_ABILITY_DISPLAY[267] = {	108647,	348,	17962,	29722,	116858,	17877,	}; --Destruction
+SPEC_CORE_ABILITY_DISPLAY[265] = {	172,	980,	30108,	48181,	103103,	74434,	}; --Affliction
+SPEC_CORE_ABILITY_DISPLAY[266] = {	172,	686,	6353,	105174,	103958,	122351,	}; --Demonology
+SPEC_CORE_ABILITY_DISPLAY[267] = {	348,	17962,	116858,	29722,	17877,		}; --Destruction
 
-SPEC_CORE_ABILITY_DISPLAY[71] = {	100,	86346,	12294,	7384,	1464,	5308,	}; --Arms
-SPEC_CORE_ABILITY_DISPLAY[72] = {	100,	23881,	85288,	100130,	5308,			}; --Fury	
-SPEC_CORE_ABILITY_DISPLAY[73] = {	100,	23922,	6572,	20243,	2565,			}; --Protection
+SPEC_CORE_ABILITY_DISPLAY[71] = {	100,	167105,	12294,	772,	1680,	163201,	}; --Arms
+SPEC_CORE_ABILITY_DISPLAY[72] = {	100,	23881,	85288,	100130,	5308,	}; --Fury	
+SPEC_CORE_ABILITY_DISPLAY[73] = {	100,	23922,	20243,	6572,	112048,	2565,	}; --Protection
 
 function SpellBook_GetCoreAbilityButton(index)
 	local button = SpellBookCoreAbilitiesFrame.Abilities[index];
@@ -1204,11 +1217,12 @@ end
 function SpellBookCoreAbilities_UpdateTabs()
 	local numSpecs = GetNumSpecializations();
 	local currentSpec = GetSpecialization();
+	local sex = UnitSex("player")
 	local index = 1;
 	local tab;
 	if ( currentSpec ) then
 		tab = SpellBook_GetCoreAbilitySpecTab(index);
-		local id, name, description, icon = GetSpecializationInfo(currentSpec);
+		local id, name, description, icon = GetSpecializationInfo(currentSpec, nil, nil, nil, sex);
 		tab:SetID(currentSpec);
 		tab:SetNormalTexture(icon);
 		tab:SetChecked(SpellBookCoreAbilitiesFrame.selectedSpec == tab:GetID());
@@ -1227,7 +1241,7 @@ function SpellBookCoreAbilities_UpdateTabs()
 	for i=1, numSpecs do
 		if ( not currentSpec or currentSpec ~= i ) then
 			tab = SpellBook_GetCoreAbilitySpecTab(index);
-			local id, name, description, icon = GetSpecializationInfo(i);
+			local id, name, description, icon = GetSpecializationInfo(i, nil, nil, nil, sex);
 			tab:SetID(i);
 			tab:SetNormalTexture(icon);
 			tab:SetChecked(SpellBookCoreAbilitiesFrame.selectedSpec == tab:GetID());
@@ -1247,8 +1261,9 @@ function SpellBook_UpdateCoreAbilitiesTab()
 	SpellBookCoreAbilities_UpdateTabs();
 	
 	local currentSpec = GetSpecialization();
+	local sex = UnitSex("player");
 	local desaturate = currentSpec and (currentSpec ~= SpellBookCoreAbilitiesFrame.selectedSpec);
-	local specID, displayName = GetSpecializationInfo(SpellBookCoreAbilitiesFrame.selectedSpec);
+	local specID, displayName = GetSpecializationInfo(SpellBookCoreAbilitiesFrame.selectedSpec, nil, nil, nil, sex);
 	local draggable = false;
 	if ( GetSpecialization() == SpellBookCoreAbilitiesFrame.selectedSpec ) then
 		draggable = true;
@@ -1305,67 +1320,6 @@ end
 
 
 -- *************************************************************************************
-WHAT_HAS_CHANGED_TITLE = {}
-WHAT_HAS_CHANGED_TITLE["HUNTER"]	= { WHC_TITLE_WARRIOR_1,	WHC_TITLE_HUNTER_2,		WHC_TITLE_HUNTER_3,		WHC_TITLE_HUNTER_4	};
-WHAT_HAS_CHANGED_TITLE["WARLOCK"]	= { WHC_TITLE_WARRIOR_1,	WHC_TITLE_WARLOCK_2,	WHC_TITLE_WARLOCK_3,	WHC_TITLE_WARLOCK_4	};
-WHAT_HAS_CHANGED_TITLE["PRIEST"]	= { WHC_TITLE_WARRIOR_1,	WHC_TITLE_PRIEST_2,		WHC_TITLE_PRIEST_3,		WHC_TITLE_PRIEST_4	};
-WHAT_HAS_CHANGED_TITLE["PALADIN"]	= { WHC_TITLE_WARRIOR_1,	WHC_TITLE_PALADIN_2,	WHC_TITLE_PALADIN_3		};
-WHAT_HAS_CHANGED_TITLE["MAGE"]		= { WHC_TITLE_WARRIOR_1,	WHC_TITLE_MAGE_2,		WHC_TITLE_MAGE_3,		WHC_TITLE_MAGE_4	};
-WHAT_HAS_CHANGED_TITLE["ROGUE"]		= { WHC_TITLE_WARRIOR_1,	WHC_TITLE_ROGUE_2,		WHC_TITLE_ROGUE_3,		};
-WHAT_HAS_CHANGED_TITLE["DRUID"]		= { WHC_TITLE_WARRIOR_1,	WHC_TITLE_DRUID_2,		WHC_TITLE_DRUID_3,		WHC_TITLE_DRUID_4	};
-WHAT_HAS_CHANGED_TITLE["SHAMAN"]	= { WHC_TITLE_WARRIOR_1,	WHC_TITLE_SHAMAN_2,		};
-WHAT_HAS_CHANGED_TITLE["WARRIOR"]	= { WHC_TITLE_WARRIOR_1,	WHC_TITLE_WARRIOR_2,	WHC_TITLE_WARRIOR_3,	WHC_TITLE_WARRIOR_4	};
-WHAT_HAS_CHANGED_TITLE["MONK"]		= { WHC_TITLE_MONK_1,		WHC_TITLE_MONK_2,		WHC_TITLE_MONK_3		};
-WHAT_HAS_CHANGED_TITLE["DEATHKNIGHT"] = { WHC_TITLE_WARRIOR_1,	WHC_TITLE_DK_2,			WHC_TITLE_DK_3			};
-
-
-WHAT_HAS_CHANGED_DISPLAY = {}
-WHAT_HAS_CHANGED_DISPLAY["HUNTER"]	= { WHC_WARRIOR_1,	WHC_HUNTER_2,	WHC_HUNTER_3,	WHC_HUNTER_4	};
-WHAT_HAS_CHANGED_DISPLAY["WARLOCK"]	= { WHC_WARRIOR_1,	WHC_WARLOCK_2,	WHC_WARLOCK_3,	WHC_WARLOCK_4	};
-WHAT_HAS_CHANGED_DISPLAY["PRIEST"]	= { WHC_WARRIOR_1,	WHC_PRIEST_2,	WHC_PRIEST_3,	WHC_PRIEST_4	};
-WHAT_HAS_CHANGED_DISPLAY["PALADIN"]	= { WHC_WARRIOR_1,	WHC_PALADIN_2,	WHC_PALADIN_3,	};
-WHAT_HAS_CHANGED_DISPLAY["MAGE"]	= { WHC_WARRIOR_1,	WHC_MAGE_2,		WHC_MAGE_3,		WHC_MAGE_4 };
-WHAT_HAS_CHANGED_DISPLAY["ROGUE"]	= { WHC_WARRIOR_1,	WHC_ROGUE_2,	WHC_ROGUE_3,	};
-WHAT_HAS_CHANGED_DISPLAY["DRUID"]	= { WHC_WARRIOR_1,	WHC_DRUID_2,	WHC_DRUID_3,	WHC_DRUID_4		};
-WHAT_HAS_CHANGED_DISPLAY["SHAMAN"]	= { WHC_WARRIOR_1,	WHC_SHAMAN_2,	};
-WHAT_HAS_CHANGED_DISPLAY["WARRIOR"]	= { WHC_WARRIOR_1,	WHC_WARRIOR_2,	WHC_WARRIOR_3,	WHC_WARRIOR_4 };
-WHAT_HAS_CHANGED_DISPLAY["MONK"]	= { WHC_MONK_1,		WHC_MONK_2,		WHC_MONK_3		};
-WHAT_HAS_CHANGED_DISPLAY["DEATHKNIGHT"] = { WHC_WARRIOR_1,	WHC_DK_2,	WHC_DK_3		};
-
-function SpellBook_GetWhatChangedItem(index)
-	local frame = SpellBookWhatHasChanged.ChangedItems[index];
-	if ( not frame ) then
-		SpellBookWhatHasChanged.ChangedItems[index] = CreateFrame("SimpleHTML", nil, SpellBookWhatHasChanged, "WhatHasChangedEntryTemplate");
-		frame = SpellBookWhatHasChanged.ChangedItems[index];
-		frame:SetPoint("TOP", SpellBookWhatHasChanged.ChangedItems[index-1], "BOTTOM", 0, -80);
-	end
-	return frame;
-end
-
-function SpellBook_UpdateWhatHasChangedTab()
-	local displayName, class = UnitClass("player");
-	local changedList = WHAT_HAS_CHANGED_DISPLAY[class];
-	local changedTitle = WHAT_HAS_CHANGED_TITLE[class];
-
-	SpellBookWhatHasChanged.ClassName:SetText(displayName);
-
-	if ( changedList ) then
-		for i=1, #changedList do
-			local frame = SpellBook_GetWhatChangedItem(i);
-			frame.Number:SetText(i);
-			frame.Title:SetText(changedTitle[i]);
-			frame:SetText(changedList[i], true);
-		end
-	end
-	for i = #changedList + 1, #SpellBookWhatHasChanged.ChangedItems do
-		SpellBook_GetWhatChangedItem(i):Hide();
-	end
-	SpellBookPage1:SetDesaturated(false);
-	SpellBookPage2:SetDesaturated(false);
-end
-
-
--- *************************************************************************************
 
 SpellBookFrame_HelpPlate = {
 	FramePos = { x = 5,	y = -22 },
@@ -1386,12 +1340,6 @@ CoreAbilitiesFrame_HelpPlate = {
 	FramePos = { x = 5,	y = -22 },
 	FrameSize = { width = 580, height = 500	},
 	[1] = { ButtonPos = { x = 430,	y = -30}, HighLightBox = { x = 65, y = -15, width = 460, height = 472 }, ToolTipDir = "RIGHT",	ToolTipText = CORE_ABILITIES_HELP_1 },
-}
-
-WhatHasChangedFrame_HelpPlate = {
-	FramePos = { x = 5,	y = -22 },
-	FrameSize = { width = 580, height = 500	},
-	[1] = { ButtonPos = { x = 430,	y = -30}, HighLightBox = { x = 65, y = -15, width = 460, height = 472 }, ToolTipDir = "DOWN",	ToolTipText = WHAT_HAS_CHANGED_HELP_1 },
 }
 
 function SpellBook_ToggleTutorial()

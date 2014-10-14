@@ -2,6 +2,7 @@
 local OPTION_TABLE_NONE = {};
 BOSS_DEBUFF_SIZE_INCREASE = 9;
 CUF_READY_CHECK_DECAY_TIME = 11;
+DISTANCE_THRESHOLD_SQUARED = 250*250;
 
 function CompactUnitFrame_OnLoad(self)
 	if ( not self:GetName() ) then
@@ -31,6 +32,7 @@ function CompactUnitFrame_OnLoad(self)
 	self:RegisterEvent("UNIT_OTHER_PARTY_CHANGED");
 	self:RegisterEvent("UNIT_ABSORB_AMOUNT_CHANGED");
 	self:RegisterEvent("UNIT_HEAL_ABSORB_AMOUNT_CHANGED");
+	self:RegisterEvent("UNIT_PHASE");
 	-- also see CompactUnitFrame_UpdateUnitEvents for more events
 	
 	self.maxBuffs = 0;
@@ -108,6 +110,8 @@ function CompactUnitFrame_OnEvent(self, event, ...)
 			CompactUnitFrame_UpdateHealPrediction(self);
 		elseif ( event == "PLAYER_FLAGS_CHANGED" ) then
 			CompactUnitFrame_UpdateStatusText(self);
+		elseif ( event == "UNIT_PHASE" ) then
+			CompactUnitFrame_UpdateCenterStatusIcon(self);
 		end
 	end
 end
@@ -115,6 +119,7 @@ end
 --DEBUG FIXME - We should really try to avoid having OnUpdate on every frame. An event when going in/out of range would be greatly preferred.
 function CompactUnitFrame_OnUpdate(self, elapsed)
 	CompactUnitFrame_UpdateInRange(self);
+	CompactUnitFrame_UpdateDistance(self);
 	CompactUnitFrame_CheckReadyCheckDecay(self, elapsed);
 end
 
@@ -203,7 +208,7 @@ function CompactUnitFrame_SetUpClicks(frame)
 	frame:SetAttribute("*type1", "target");
     frame:SetAttribute("*type2", "menu");
 	--NOTE: Make sure you also change the CompactAuraTemplate. (It has to be registered for clicks to be able to pass them through.)
-	frame:RegisterForClicks("LeftButtonUp", "RightButtonUp");
+	frame:RegisterForClicks("LeftButtonDown", "RightButtonUp");
 	CompactUnitFrame_SetMenuFunc(frame, CompactUnitFrameDropDown_Initialize);
 end
 
@@ -425,6 +430,18 @@ function CompactUnitFrame_UpdateInRange(frame)
 		frame:SetAlpha(0.55);
 	else
 		frame:SetAlpha(1);
+	end
+end
+
+function CompactUnitFrame_UpdateDistance(frame)
+	local distance, checkedDistance = UnitDistanceSquared(frame.displayedUnit);
+
+	if ( checkedDistance ) then
+		local inDistance = distance < DISTANCE_THRESHOLD_SQUARED;
+		if ( inDistance ~= frame.inDistance ) then
+			frame.inDistance = inDistance;
+			CompactUnitFrame_UpdateCenterStatusIcon(frame);
+		end
 	end
 end
 
@@ -703,6 +720,12 @@ function CompactUnitFrame_UpdateCenterStatusIcon(frame)
 		frame.centerStatusIcon.texture:SetTexCoord(0, 1, 0, 1);
 		frame.centerStatusIcon.border:Hide();
 		frame.centerStatusIcon.tooltip = nil;
+		frame.centerStatusIcon:Show();
+	elseif ( frame.optionTable.displayInOtherPhase and frame.inDistance and not UnitInPhase(frame.unit)) then
+		frame.centerStatusIcon.texture:SetTexture("Interface\\TargetingFrame\\UI-PhasingIcon");
+		frame.centerStatusIcon.texture:SetTexCoord(0.15625, 0.84375, 0.15625, 0.84375);
+		frame.centerStatusIcon.border:Hide();
+		frame.centerStatusIcon.tooltip = PARTY_PHASED_MESSAGE;
 		frame.centerStatusIcon:Show();
 	else
 		frame.centerStatusIcon:Hide();
@@ -1068,6 +1091,7 @@ DefaultCompactUnitFrameOptions = {
 	healthText = "none",
 	displayIncomingResurrect = true,
 	displayInOtherGroup = true,
+	displayInOtherPhase = true,
 }
 
 local NATIVE_UNIT_FRAME_HEIGHT = 36;

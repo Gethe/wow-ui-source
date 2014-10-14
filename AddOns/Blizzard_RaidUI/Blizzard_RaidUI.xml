@@ -78,13 +78,13 @@
 		<Layers>
 			<Layer level="ARTWORK">
 				<FontString name="$parentName" inherits="GameFontNormalSmall" justifyH="LEFT">
-					<Size x="55" y="8"/>
+					<Size x="50" y="8"/>
 					<Anchors>
 						<Anchor point="LEFT" relativeTo="$parent" relativePoint="LEFT" x="29" y="0"/>
 					</Anchors>
 				</FontString>
 				<FontString name="$parentLevel" inherits="GameFontNormalSmall" justifyH="CENTER">
-					<Size x="18" y="8"/>
+					<Size x="23" y="8"/>
 					<Anchors>
 						<Anchor point="LEFT" relativeTo="$parentName" relativePoint="RIGHT" x="2" y="0"/>
 					</Anchors>
@@ -111,9 +111,9 @@
 						if ( rank ) then
 							GameTooltip:SetOwner(self, "ANCHOR_LEFT");
 							if ( rank == 2 ) then
-								GameTooltip:SetText(RAID_LEADER, nil, nil, nil, nil, 1);
+								GameTooltip:SetText(RAID_LEADER, nil, nil, nil, nil, true);
 							elseif ( rank == 1 ) then
-								GameTooltip:SetText(RAID_ASSISTANT, nil, nil, nil, nil, 1);
+								GameTooltip:SetText(RAID_ASSISTANT, nil, nil, nil, nil, true);
 							end
 							if ( voice == 2 ) then
 								GameToolTip:AddLine("("..MUTED..")", HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b);
@@ -136,9 +136,9 @@
 						if ( role ) then
 							GameTooltip:SetOwner(self, "ANCHOR_LEFT");
 							if ( role == "MAINTANK" ) then
-								GameTooltip:SetText(MAIN_TANK, nil, nil, nil, nil, 1);
+								GameTooltip:SetText(MAIN_TANK, nil, nil, nil, nil, true);
 							elseif ( role == "MAINASSIST" ) then
-								GameTooltip:SetText(MAIN_ASSIST, nil, nil, nil, nil, 1);
+								GameTooltip:SetText(MAIN_ASSIST, nil, nil, nil, nil, true);
 							end
 						else
 							GameTooltip:Hide();
@@ -156,7 +156,7 @@
 						-- Sets the Master Looter Tooltip
 						if ( self:GetParent().loot ) then
 							GameTooltip:SetOwner(self, "ANCHOR_LEFT");
-							GameTooltip:SetText(MASTER_LOOTER, nil, nil, nil, nil, 1);
+							GameTooltip:SetText(MASTER_LOOTER, nil, nil, nil, nil, true);
 						else
 							GameTooltip:Hide();
 						end	
@@ -220,7 +220,7 @@
 			<TexCoords left="0" right="0.640625" top="0" bottom="0.4375"/>
 		</NormalTexture>
 		<HighlightTexture file="Interface\RaidFrame\UI-RaidFrame-GroupButton" alphaMode="ADD">
-			<TexCoords left="0" right="0.640625" top="0.46875" bottom="0.90625"/>
+			<TexCoords left="0" right="0.640625" top="0.5" bottom="0.9375"/>
 		</HighlightTexture>
 	</Button>
 	<Button name="RaidGroupSlotTemplate" virtual="true">
@@ -235,7 +235,7 @@
 			</Layer>
 		</Layers>
 		<HighlightTexture file="Interface\RaidFrame\UI-RaidFrame-GroupButton" alphaMode="ADD">
-			<TexCoords left="0" right="0.640625" top="0.46875" bottom="0.90625"/>
+			<TexCoords left="0" right="0.640625" top="0.5" bottom="0.9375"/>
 		</HighlightTexture>
 	</Button>
 	<Frame name="RaidGroupTemplate" parent="RaidFrame" virtual="true">

@@ -39,15 +39,17 @@ function AccountLogin_OnShow(self)
 
 	-- special code for BlizzCon
 	if (IsBlizzCon()) then
-		local account = GetCVar("accountName");
-		DefaultServerLogin(account, "blizzcon11");
+		AccountLoginPasswordEdit:SetText(GetCVar("password"));
+		DefaultServerLogin(GetCVar("accountName"), AccountLoginPasswordEdit);
 		AccountLoginUI:Hide();
 		return;
 	end
-
+	
+	local displayedExpansionLevel = GetClientDisplayExpansionLevel();
+	
 	self:SetSequence(0);
-	PlayGlueMusic(EXPANSION_GLUE_MUSIC[GetClientDisplayExpansionLevel()]);
-	PlayGlueAmbience(GlueAmbienceTracks["DARKPORTAL"], 4.0);
+	PlayGlueMusic(EXPANSION_GLUE_MUSIC[displayedExpansionLevel]);
+	PlayGlueAmbience(EXPANSION_GLUE_AMBIENCE[displayedExpansionLevel], 4.0);
 
 	-- Try to show the EULA or the TOS
 	AccountLogin_ShowUserAgreements();
@@ -125,7 +127,7 @@ function AccountLogin_OnKeyDown(key)
 		elseif ( TOSFrame:IsShown() or ConnectionHelpFrame:IsShown() ) then
 			return;
 		elseif ( SurveyNotificationFrame:IsShown() ) then
-			AccountLogin_SurveyNotificationDone(1);
+			AccountLogin_SurveyNotificationDone(true);
 		end
 		if ( IsLauncherLogin() ) then
 			AttemptFastLogin();
@@ -238,7 +240,7 @@ end
 
 function AccountLogin_Login()
 	PlaySound("gsLogin");
-	DefaultServerLogin(AccountLoginAccountEdit:GetText(), AccountLoginPasswordEdit:GetText());
+	DefaultServerLogin(AccountLoginAccountEdit:GetText(), AccountLoginPasswordEdit);
 	AccountLoginPasswordEdit:SetText("");
 
 	if ( AccountLoginSaveAccountName:GetChecked() ) then
@@ -927,8 +929,8 @@ end
 function CinematicsButton_Update(self)
 	local movieId = self:GetID();
 	if (CinematicsFrame_IsMovieListLocal(movieId)) then
-		self:GetNormalTexture():SetDesaturated(nil);
-		self:GetPushedTexture():SetDesaturated(nil);
+		self:GetNormalTexture():SetDesaturated(false);
+		self:GetPushedTexture():SetDesaturated(false);
 		self.PlayButton:Show();
 		self.DownloadIcon:Hide();
 		self.StreamingIcon:Hide();
@@ -949,7 +951,7 @@ function CinematicsButton_Update(self)
 		self.isLocal = false;
 		self.isPlayable = isPlayable;
 		
-		if (inProgress or (downloaded/total) > 0.1) then
+		if (inProgress or (total > 0 and ((downloaded/total) > 0.1))) then
 			self.StatusBar:SetMinMaxValues(0, total);
 			self.StatusBar:SetValue(downloaded);
 			self.StatusBar:Show();
@@ -958,16 +960,16 @@ function CinematicsButton_Update(self)
 		end
 
 		if (isPlayable and inProgress) then
-			self:GetNormalTexture():SetDesaturated(nil);
-			self:GetPushedTexture():SetDesaturated(nil);
+			self:GetNormalTexture():SetDesaturated(false);
+			self:GetPushedTexture():SetDesaturated(false);
 			self.PlayButton:Show();
 			self.DownloadIcon:Hide();
 			self.StreamingIcon:Hide();
 			self.StatusBar:SetStatusBarColor(0, 0.8, 0);
 			self:SetScript("OnUpdate", CinematicsButton_Update);
 		elseif (inProgress) then
-			self:GetNormalTexture():SetDesaturated(1);
-			self:GetPushedTexture():SetDesaturated(1);
+			self:GetNormalTexture():SetDesaturated(true);
+			self:GetPushedTexture():SetDesaturated(true);
 			self.PlayButton:Hide();
 			self.DownloadIcon:Hide();
 			self.StreamingIcon:Show();
@@ -975,8 +977,8 @@ function CinematicsButton_Update(self)
 			self.StatusBar:SetStatusBarColor(0, 0.8, 0);
 			self:SetScript("OnUpdate", CinematicsButton_Update);
 		else
-			self:GetNormalTexture():SetDesaturated(1);
-			self:GetPushedTexture():SetDesaturated(1);
+			self:GetNormalTexture():SetDesaturated(true);
+			self:GetPushedTexture():SetDesaturated(true);
 			self.PlayButton:Hide();
 			self.DownloadIcon:Show();
 			self.StreamingIcon:Hide();

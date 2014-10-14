@@ -115,7 +115,7 @@
 		<Scripts>
 			<OnEnter>
 				GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
-				GameTooltip:AddLine(self.tooltip, 1.0, 1.0, 1.0, 1);
+				GameTooltip:AddLine(self.tooltip, 1.0, 1.0, 1.0, true);
 				GameTooltip:Show();
 			</OnEnter>
 			<OnClick>
@@ -439,7 +439,7 @@
 						if ( self.tooltip ) then
 							GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
 							GameTooltip:SetText(self.name);
-							GameTooltip:AddLine(self.tooltip, 1.0, 1.0, 1.0, 1);
+							GameTooltip:AddLine(self.tooltip, 1.0, 1.0, 1.0, true);
 							GameTooltip:Show();
 						end
 					</OnEnter>
@@ -846,7 +846,7 @@
 					</OnLoad>
 					<OnEnter>
 						GameTooltip:SetOwner(self, "ANCHOR_LEFT");
-						GameTooltip:AddLine(self.tooltip, 1.0, 1.0, 1.0, 1);
+						GameTooltip:AddLine(self.tooltip, 1.0, 1.0, 1.0, true);
 						GameTooltip:Show();
 					</OnEnter>
 				</Scripts>
@@ -860,7 +860,7 @@
 					</OnLoad>
 					<OnEnter>
 						GameTooltip:SetOwner(self, "ANCHOR_LEFT");
-						GameTooltip:AddLine(self.tooltip, 1.0, 1.0, 1.0, 1);
+						GameTooltip:AddLine(self.tooltip, 1.0, 1.0, 1.0, true);
 						GameTooltip:Show();
 					</OnEnter>
 				</Scripts>
@@ -874,7 +874,7 @@
 					</OnLoad>
 					<OnEnter>
 						GameTooltip:SetOwner(self, "ANCHOR_LEFT");
-						GameTooltip:AddLine(self.tooltip, 1.0, 1.0, 1.0, 1);
+						GameTooltip:AddLine(self.tooltip, 1.0, 1.0, 1.0, true);
 						GameTooltip:Show();
 					</OnEnter>
 				</Scripts>
@@ -893,7 +893,7 @@
 					</OnLoad>
 					<OnEnter>
 						GameTooltip:SetOwner(self, "ANCHOR_LEFT");
-						GameTooltip:AddLine(self.tooltip, 1.0, 1.0, 1.0, 1);
+						GameTooltip:AddLine(self.tooltip, 1.0, 1.0, 1.0, true);
 						GameTooltip:Show();
 					</OnEnter>
 				</Scripts>
@@ -1085,12 +1085,26 @@
 					<OnClick function="WorldStateScoreFrameTab_OnClick"/>
 				</Scripts>
             </Button>
+			<Button name="WorldStateScoreFrameQueueButton" inherits="UIPanelButtonTemplate" text="PVP_QUEUE_AGAIN">
+				<Size>
+					<AbsDimension x="153" y="21"/>
+				</Size>
+				<Anchors>
+					<Anchor point="BOTTOM" x="-80" y="3"/>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						self:Disable();
+						RequeueSkirmish();
+					</OnClick>
+				</Scripts>
+			</Button>
 			<Button name="WorldStateScoreFrameLeaveButton" inherits="UIPanelButtonTemplate" text="LEAVE_BATTLEGROUND">
 				<Size>
 					<AbsDimension x="153" y="21"/>
 				</Size>
 				<Anchors>
-					<Anchor point="BOTTOM" x="0" y="3"/>
+					<Anchor point="BOTTOM" x="80" y="3"/>
 				</Anchors>
 				<Scripts>
 					<OnClick>
@@ -1174,249 +1188,6 @@
 				WorldStateScoreFrameTab_OnClick(WorldStateScoreFrameTab1);
 			</OnShow>
 			<OnUpdate function="RequestBattlefieldScoreData"/>
-		</Scripts>
-	</Frame>
-	<Frame name="WorldStateChallengeModeFrame" hidden="true">
-		<Size x="198" y="55"/>
-		<Layers>
-			<Layer level="BACKGROUND">
-				<Texture setAllPoints="true">
-					<Color r="0" g="0" b="0" a="0.5"/>
-				</Texture>
-			</Layer>
-			<Layer level="BORDER">
-				<Texture file="Interface\Challenges\challenges-main">
-					<Size x="207" y="64"/>	
-					<Anchors>
-						<Anchor point="CENTER"/>
-					</Anchors>
-					<TexCoords left="0.71972656" right="0.92187500" top="0.21289063" bottom="0.33789063"/>	
-				</Texture>			
-			</Layer>
-			<Layer level="ARTWORK">
-				<Texture parentKey="medalIcon" alphaMode="ADD">
-					<Size x="48" y="48"/>
-					<Anchors>
-						<Anchor point="LEFT" x="5" y="-2"/>
-					</Anchors>
-				</Texture>
-				<Texture parentKey="noMedal" file="Interface\Challenges\challenges-main" hidden="true">
-					<Size x="9" y="10"/>
-					<Anchors>
-						<Anchor point="LEFT" x="24" y="-2"/>
-					</Anchors>
-					<TexCoords left="0.93847656" right="0.94726563" top="0.00195313" bottom="0.02148438"/>
-				</Texture>
-			</Layer>		
-		</Layers>
-		<Frames>
-			<StatusBar parentKey="statusBar">
-				<Size>
-					<AbsDimension x="133" y="17"/>
-				</Size>
-				<Anchors>
-					<Anchor point="CENTER" x="22" y="-2"/>
-				</Anchors>				
-				<Layers>
-					<Layer level="OVERLAY">
-						<Texture file="Interface\Challenges\challenges-main">
-							<Size x="140" y="32"/>
-							<Anchors>
-								<Anchor point="CENTER" x="0" y="0"/>
-							</Anchors>
-							<TexCoords left="0.00097656" right="0.13769531" top="0.47265625" bottom="0.51757813"/>	
-						</Texture>
-						<FontString inherits="GameFontHighlight" justifyH="LEFT" parentKey="timeLeft">
-							<Anchors>
-								<Anchor point="LEFT" x="42" y="0"/>
-							</Anchors>
-						</FontString>
-					</Layer>
-				</Layers>
-				<Scripts>
-					<OnLoad>
-						self:SetStatusBarColor(0, 0.33, 0.61);
-					</OnLoad>
-				</Scripts>
-				<BarTexture file="Interface\TargetingFrame\UI-StatusBar"/>
-			</StatusBar>
-			<Frame parentKey="GlowFrame">
-				<Layers>
-					<Layer level="OVERLAY">
-						<Texture parentKey="MedalGlow" file="Interface\Challenges\challenges-metalglow">
-							<Size x="150" y="150"/>
-							<Anchors>
-								<Anchor point="CENTER" relativeKey="$parent.$parent.medalIcon" />
-							</Anchors>
-						</Texture>
-						<Texture parentKey="MedalIcon" alphaMode="ADD">
-							<Size x="48" y="48"/>
-							<Anchors>
-								<Anchor point="CENTER" relativeKey="$parent.$parent.medalIcon"/>
-							</Anchors>
-						</Texture>
-					</Layer>
-				</Layers>
-				<Scripts>
-					<OnLoad>
-						self.MedalGlow:SetAlpha(0);
-						self.MedalIcon:SetAlpha(0);
-					</OnLoad>	
-				</Scripts>
-				<Animations>
-					<AnimationGroup parentKey="MedalGlowAnim">
-						<Alpha targetKey="$parent.$parent.MedalGlow" change="1" duration="0.4" order="1"/>
-						<Alpha targetKey="$parent.$parent.MedalGlow" change="-1" duration="2" order="2"/>
-					</AnimationGroup>
-					<AnimationGroup parentKey="MedalPulseAnim">
-						<Alpha targetKey="$parent.$parent.MedalIcon" change="1" duration="0.25" order="1"/>
-						<Alpha targetKey="$parent.$parent.MedalIcon" change="-1" endDelay=".5" duration="0.25" order="2"/>
-						<Scripts>
-							<OnFinished function="WorldStateChallengeModeAnim_OnFinished" />
-						</Scripts>
-					</AnimationGroup>
-				</Animations>
-			</Frame>
-		</Frames>
-	</Frame>
-	<Frame name="WorldStateChallengeModeTimer" hidden="true">
-		<Scripts>
-			<OnUpdate function="WorldStateChallengeModeTimer_OnUpdate"/>
-		</Scripts>
-	</Frame>
-	<Frame name="WorldStateProvingGroundsFrame" hidden="true" parent="UIParent">
-		<Size x="201" y="77"/>
-		<Animations>
-			<AnimationGroup parentKey="CountdownAnim">
-				<Alpha targetKey="$parent.$parent.BGAnim" change="1" duration="0.25" order="1"/>
-				<Alpha targetKey="$parent.$parent.BGAnim" endDelay="0.45" change="-1" duration="0.3" order="2"/>
-				<Alpha targetKey="$parent.$parent.BorderAnim" change="1" duration="0.25" order="1"/>
-				<Alpha targetKey="$parent.$parent.BorderAnim" endDelay="0.45" change="-1" duration="0.3" order="2"/>
-				<Alpha targetKey="$parent.$parent.Glow" change=".5" duration="0.25" order="1"/>
-				<Alpha targetKey="$parent.$parent.Glow" endDelay="0.45" change="-.5" duration="0.3" order="2"/>
-				<Scripts>
-					<OnFinished function="WorldStateProvingGroundsAnim_OnFinished"/>
-				</Scripts>
-			</AnimationGroup>
-		</Animations>
-		<Layers>
-			<Layer level="BACKGROUND">
-				<Texture file="Interface\Scenarios\ScenariosParts" parentKey="BG">
-					<Size x="201" y="77"/>
-					<Anchors>
-						<Anchor point="TOP" x="0" y="0"/>
-					</Anchors>
-					<TexCoords left="0.00195313" right="0.39453125" top="0.48242188" bottom="0.63281250"/>
-				</Texture>
-			</Layer>
-			<Layer level="BORDER">
-				<Texture file="Interface\Scenarios\ScenariosParts" parentKey="GoldCurlies">
-					<Size x="193" y="69"/>
-					<Anchors>
-						<Anchor point="TOP" x="0" y="-4"/>
-					</Anchors>
-					<TexCoords left="0.61328125" right="0.99023438" top="0.26171875" bottom="0.39648438"/>
-				</Texture>
-			</Layer>
-			<Layer level="ARTWORK">
-				<Texture parentKey="MedalIcon" alphaMode="ADD" file="Interface\Challenges\challenges-plat">
-					<Size x="52" y="52"/>
-					<Anchors>
-						<Anchor point="LEFT" x="5" y="-1"/>
-					</Anchors>
-				</Texture>
-				<FontString inherits="QuestFont_Large" parentKey="WaveLabel" text="PROVING_GROUNDS_WAVE">
-					<Anchors>
-						<Anchor point="TOPLEFT" relativeKey="$parent.MedalIcon" relativePoint="TOPRIGHT" x="1" y="-4"/>
-					</Anchors>
-					<Color r="1.0" g="0.82" b="0"/>
-					<Shadow>
-						<Offset x="1" y="-1"/>
-						<Color r="0" g="0" b="0"/>
-					</Shadow>
-				</FontString>
-				<FontString inherits="GameFontHighlightLarge" parentKey="Wave" text="0">
-					<Anchors>
-						<Anchor point="BOTTOMLEFT" relativeKey="$parent.WaveLabel" relativePoint="BOTTOMRIGHT" x="4" y="-1"/>
-					</Anchors>
-				</FontString>
-				<FontString inherits="QuestFont_Large" parentKey="ScoreLabel" text="PROVING_GROUNDS_SCORE" hidden="true">
-					<Anchors>
-						<Anchor point="TOPLEFT" relativeKey="$parent.WaveLabel" relativePoint="BOTTOMLEFT" x="0" y="-3"/>
-					</Anchors>
-					<Color r="1.0" g="0.82" b="0"/>
-					<Shadow>
-						<Offset x="1" y="-1"/>
-						<Color r="0" g="0" b="0"/>
-					</Shadow>
-				</FontString>
-				<FontString inherits="GameFontHighlightLarge" parentKey="Score" text="0" hidden="true">
-					<Anchors>
-						<Anchor point="BOTTOMLEFT" relativeKey="$parent.ScoreLabel" relativePoint="BOTTOMRIGHT" x="4" y="-1"/>
-					</Anchors>
-				</FontString>
-			</Layer>
-			<Layer level="OVERLAY">
-				<Texture file="Interface\Scenarios\ScenariosParts" parentKey="BGAnim" alpha="0" alphaMode="ADD">
-					<Size x="201" y="77"/>
-					<Anchors>
-						<Anchor point="TOP" x="0" y="0"/>
-					</Anchors>
-					<TexCoords left="0.00195313" right="0.39453125" top="0.48242188" bottom="0.63281250"/>
-				</Texture>
-				<Texture file="Interface\Scenarios\ScenariosParts" parentKey="BorderAnim" alpha="0" alphaMode="ADD">
-					<Size x="193" y="69"/>
-					<Anchors>
-						<Anchor point="TOP" x="0" y="-4"/>
-					</Anchors>
-					<TexCoords left="0.61328125" right="0.99023438" top="0.26171875" bottom="0.39648438"/>
-				</Texture>
-				<Texture file="Interface\AchievementFrame\UI-Achievement-Alert-Glow" parentKey="Glow" alpha="0" alphaMode="ADD">
-					<Anchors>
-						<Anchor point="TOPLEFT" relativeKey="$parent.BGAnim" x="-36" y="73"/>
-						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.BGAnim" x="36" y="-73"/>
-					</Anchors>
-					<TexCoords left="0" right="0.78125" top="0" bottom="0.66796875"/>
-				</Texture>
-			</Layer>
-		</Layers>
-		<Frames>
-			<StatusBar parentKey="statusBar" useParentLevel="true">
-				<Size x="133" y="15"/>
-				<Anchors>
-					<Anchor point="CENTER" x="22" y="-8"/>
-				</Anchors>				
-				<Layers>
-					<Layer level="OVERLAY">
-						<Texture file="Interface\Challenges\challenges-main">
-							<Size x="140" y="25"/>
-							<Anchors>
-								<Anchor point="CENTER" x="0" y="0"/>
-							</Anchors>
-							<TexCoords left="0.00097656" right="0.13769531" top="0.47265625" bottom="0.51757813"/>	
-						</Texture>
-						<FontString inherits="GameFontHighlight" justifyH="LEFT" parentKey="timeLeft">
-							<Anchors>
-								<Anchor point="LEFT" x="42" y="0"/>
-							</Anchors>
-						</FontString>
-					</Layer>
-				</Layers>
-				<Scripts>
-					<OnLoad>
-						self:SetStatusBarColor(0, 0.33, 0.61);
-					</OnLoad>
-				</Scripts>
-				<BarTexture file="Interface\TargetingFrame\UI-StatusBar"/>
-			</StatusBar>
-		</Frames>
-		<Scripts>
-			<OnEvent function="WorldStateProvingGrounds_OnEvent"/>
-		</Scripts>
-	</Frame>
-	<Frame name="WorldStateProvingGroundsTimer" hidden="true">
-		<Scripts>
-			<OnUpdate function="WorldStateProvingGroundsTimer_OnUpdate"/>
 		</Scripts>
 	</Frame>
 </Ui>

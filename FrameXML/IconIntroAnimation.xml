@@ -7,7 +7,7 @@
 	<Frame name="IconIntroAnimTemplate" virtual="true" alpha="0.5">
 		<Animations>
 			<AnimationGroup parentKey="flyin">
-				<Alpha 	change="-1" startDelay="1.0" duration="0.5" order="1"/>
+				<Alpha change="-1" startDelay="1.0" duration="0.5" order="1"/>
 				<Path curve="SMOOTH" duration="1.5" order="1">
 					<ControlPoints>
 						<ControlPoint offsetX="-117" offsetY="190"/>
@@ -46,6 +46,16 @@
 							iconFrame.glow:Play();
 							SetBarSlotFromIntro(iconFrame.slot);
 							iconFrame:GetParent().isFree = true;
+							
+							local button;
+							if (iconFrame.multibar) then
+								button = _G["MultiBarBottomLeftButton"..iconFrame.pos];
+							else
+								button = _G["ActionButton"..iconFrame.pos];
+							end
+							
+							MarkNewActionHighlight(button.action, true);
+							ActionButton_UpdateAction(button, true);
 						else 
 							iconFrame:SetFrameLevel(1);
 						end

@@ -250,6 +250,7 @@
 			</OnTooltipAddMoney>
 			<OnTooltipCleared>
 				GameTooltip_ClearMoney(self);
+				GameTooltip_ClearInsertedFrames(self);
 			</OnTooltipCleared>
 		</Scripts>
 	</GameTooltip>

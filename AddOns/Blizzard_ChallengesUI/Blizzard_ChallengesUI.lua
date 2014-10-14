@@ -186,10 +186,10 @@ function ChallengesFrameGuild_OnEnter(self)
 	
 	local numGuildBest = GetChallengeBestTimeNum(guildTime.mapID, true);
 	for i = 1, numGuildBest do
-		local name, className, class, specID = GetChallengeBestTimeInfo(guildTime.mapID, i, true);
+		local name, className, class, specID, gender = GetChallengeBestTimeInfo(guildTime.mapID, i, true);
 		if (name) then
 			local classColor = RAID_CLASS_COLORS[class].colorStr;
-			local _, specName = GetSpecializationInfoByID(specID);
+			local _, specName = GetSpecializationInfoByID(specID, gender);
 			if (specName and specName ~= "") then
 				GameTooltip:AddLine(name.." - "..format(PLAYER_CLASS, classColor, specName, className));
 			else
@@ -211,10 +211,10 @@ function ChallengesFrameRealm_OnEnter(self)
 	GameTooltip:SetText(CHALLENGE_MODE_REALM_BEST);
 	local numRealmBest = GetChallengeBestTimeNum(realmTime.mapID, false);
 	for i = 1, numRealmBest do
-		local name, className, class, specID = GetChallengeBestTimeInfo(realmTime.mapID, i, false);
+		local name, className, class, specID, gender = GetChallengeBestTimeInfo(realmTime.mapID, i, false);
 		if (name) then
 			local classColor = RAID_CLASS_COLORS[class].colorStr;
-			local _, specName = GetSpecializationInfoByID(specID);
+			local _, specName = GetSpecializationInfoByID(specID, gender);
 			if (specName and specName ~= "") then
 				GameTooltip:AddLine(name.." - "..format(PLAYER_CLASS, classColor, specName, className));
 			else

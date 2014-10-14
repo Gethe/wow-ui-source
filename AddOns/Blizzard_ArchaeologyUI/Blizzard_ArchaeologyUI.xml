@@ -98,7 +98,7 @@
 		</Layers>
 		<Scripts>
 			<OnClick>
-				ArchaeologyFrame_ShowArtifact(self:GetID());
+				ArchaeologyFrame_ShowArtifact(self:GetID() + ((ArchaeologyFrame.summaryPage.currentPage - 1) * ARCHAEOLOGY_MAX_RACES));
 				PlaySound("igSpellBookOpen");
 			</OnClick>
 			<OnDisable>
@@ -160,19 +160,19 @@
 		</Layers>
 		<Scripts>
 			<OnClick>
-				ArchaeologyFrame_ShowArtifact(self.raceIndex, self.projectIndex);
+				ArchaeologyFrame_ShowArtifact(self.raceIndex + ((ArchaeologyFrame.summaryPage.currentPage - 1) * ARCHAEOLOGY_MAX_RACES), self.projectIndex);
 				PlaySound("igSpellBookOpen");
 			</OnClick>
 			<OnEnter>
 				GameTooltip:SetOwner(self, "ANCHOR_BOTTOMRIGHT");
-				GameTooltip:AddLine(self.artifactName:GetText(), HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b, 1);
-				GameTooltip:AddLine(self.spellDescription, NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b, 1);
+				GameTooltip:AddLine(self.artifactName:GetText(), HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b, true);
+				GameTooltip:AddLine(self.spellDescription, NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b, true);
 				
 				GameTooltip:AddLine(" ");
 				
 				local adate = date("*t", self.firstComletionTime);
 				GameTooltip:AddLine(ARCHAEOLOGY_TIMESTAMP.." |cffffffff"..string.format(SHORTDATE, adate.day, adate.month, adate.year).." "..
-												GameTime_GetFormattedTime(adate.hour, adate.min, true));
+												GameTime_GetFormattedTime(adate.hour, adate.min, true).."|r");
 				GameTooltip:AddLine(string.format(ARCHAEOLOGY_COMPLETION, self.completionCount));
 				GameTooltip:Show();
 			</OnEnter>
@@ -315,7 +315,7 @@
 				<Scripts>
 					<OnEnter>
 						GameTooltip:SetOwner(self, "ANCHOR_BOTTOMRIGHT");
-						GameTooltip:AddLine(ARCHAEOLOGY_RANK_TOOLTIP, HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b, 1);
+						GameTooltip:AddLine(ARCHAEOLOGY_RANK_TOOLTIP, HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b, true);
 						GameTooltip:Show();
 					</OnEnter>
 					<OnLeave>
@@ -430,6 +430,15 @@
 							<Size x="42" y="27"/>
 							<TexCoords left="0.00195313" right="0.08398438" top="0.84375000" bottom="0.94921875"/>
 						</Texture>
+						<FontString name="$parentPageText" inherits="GameFontBlack" justifyH="RIGHT" parentKey="pageText" text="PAGE">
+							<Size>
+								<AbsDimension x="102" y="0"/>
+							</Size>
+							<Anchors>
+								<Anchor point="BOTTOMRIGHT"  x="-110" y="22"/>
+							</Anchors>
+							<Color r="0.13" g="0.06" b="0"/>
+						</FontString>
 					</Layer>
 				</Layers>
 				<Frames>
@@ -492,6 +501,34 @@
 						<Anchors>
 							<Anchor point="TOPLEFT" relativeTo="$parentRace11" relativePoint="TOPRIGHT" x="13"/>
 						</Anchors>
+					</Button>
+					<Button name="$parentPrevPageButton"  inherits="UIPanelSquareButton" parentKey="prevPageButon">
+						<Anchors>
+							<Anchor point="LEFT" relativeTo="$parentPageText" relativePoint="RIGHT" x="8"/>
+						</Anchors>
+						<Scripts>
+							<OnLoad>
+								SquareButton_SetIcon(self, "LEFT");
+							</OnLoad>
+							<OnClick>
+								ArchaeologyFrameSummary_PageClick(self, false);
+								PlaySound("igSpellBookOpen");
+							</OnClick>
+						</Scripts>
+					</Button>
+					<Button name="$parentNextPageButton"  inherits="UIPanelSquareButton" parentKey="nextPageButon">
+						<Anchors>
+							<Anchor point="LEFT" relativeTo="$parentPrevPageButton" relativePoint="RIGHT" x="8" y="0"/>
+						</Anchors>
+						<Scripts>
+							<OnLoad>
+								SquareButton_SetIcon(self, "RIGHT");
+							</OnLoad>
+							<OnClick>
+								ArchaeologyFrameSummary_PageClick(self, true);
+								PlaySound("igSpellBookOpen");
+							</OnClick>
+						</Scripts>
 					</Button>
 				</Frames>
 			</Frame>
@@ -830,7 +867,7 @@
 								<Scripts>
 									<OnEnter>
 										GameTooltip:SetOwner(self, "ANCHOR_BOTTOMRIGHT");
-										GameTooltip:AddLine(ARCHAEOLOGY_POJECTBAR_TOOLTIP, HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b, 1);
+										GameTooltip:AddLine(ARCHAEOLOGY_POJECTBAR_TOOLTIP, HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b, true);
 										GameTooltip:Show();
 									</OnEnter>
 									<OnLeave>

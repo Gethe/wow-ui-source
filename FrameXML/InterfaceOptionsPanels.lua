@@ -493,7 +493,7 @@ function InterfaceOptionsLossOfControl_SetUpDropdown(dropDown, cvar, checkBox, t
 
 	UIDropDownMenu_SetWidth(dropDown, 130);
 	UIDropDownMenu_Initialize(dropDown, InterfaceOptionsLossOfControlDropDown_Initialize);
-	UIDropDownMenu_SetSelectedValue(dropDown, value);
+	UIDropDownMenu_SetSelectedValue(dropDown, dropDown.value);
 
 	dropDown.SetValue = InterfaceOptionsLossOfControlDropDown_SetValue;
 	dropDown.GetValue = InterfaceOptionsLossOfControlDropDown_GetValue;
@@ -573,15 +573,96 @@ function InterfaceOptionsDisplayPanelPreviewTalentChanges_SetFunc()
 	end
 end
 
+function InterfaceOptionsDisplayPanelOutlineDropDown_OnEvent (self, event, ...)
+	if ( event == "VARIABLES_LOADED" ) then
+		self.cvar = "Outline";
+
+		local value = GetCVar(self.cvar);
+		self.defaultValue = GetCVarDefault(self.cvar);
+		self.value = value;
+		self.oldValue = value;
+		self.tooltip = OPTION_TOOLTIP_OBJECT_NPC_OUTLINE;
+
+		UIDropDownMenu_SetWidth(self, 180);
+		UIDropDownMenu_Initialize(self, InterfaceOptionsDisplayPanelOutline_Initialize);
+		UIDropDownMenu_SetSelectedValue(self, value);
+
+		self.SetValue = 
+			function (self, value)
+				self.value = value;
+				SetCVar(self.cvar, self.value);
+				UIDropDownMenu_SetSelectedValue(self, self.value);
+			end
+		self.GetValue =
+			function (self)
+				return UIDropDownMenu_GetSelectedValue(self);
+			end
+		self.RefreshValue =
+			function (self)
+				UIDropDownMenu_Initialize(self, InterfaceOptionsDisplayPanelOutline_Initialize);
+				UIDropDownMenu_SetSelectedValue(self, self.value);
+			end
+			
+		self:UnregisterEvent(event);
+	end
+end
+
+function InterfaceOptionsDisplayPanelOutlineDropDown_OnClick(self)
+	InterfaceOptionsDisplayPanelOutlineDropDown:SetValue(self.value);
+end
+
+function InterfaceOptionsDisplayPanelOutline_Initialize()
+	local selectedValue = UIDropDownMenu_GetSelectedValue(InterfaceOptionsDisplayPanelOutlineDropDown);
+	local info = UIDropDownMenu_CreateInfo();
+
+	info.text = OBJECT_NPC_OUTLINE_DISABLED;
+	info.func = InterfaceOptionsDisplayPanelOutlineDropDown_OnClick;
+	info.value = "0";
+	if ( info.value == selectedValue ) then
+		info.checked = 1;
+	else
+		info.checked = nil;
+	end
+	UIDropDownMenu_AddButton(info);
+
+	info.text = OBJECT_NPC_OUTLINE_MODE_ONE;
+	info.func = InterfaceOptionsDisplayPanelOutlineDropDown_OnClick;
+	info.value = "1";
+	if ( info.value == selectedValue ) then
+		info.checked = 1;
+	else
+		info.checked = nil;
+	end
+	UIDropDownMenu_AddButton(info);
+
+	info.text = OBJECT_NPC_OUTLINE_MODE_TWO;
+	info.func = InterfaceOptionsDisplayPanelOutlineDropDown_OnClick;
+	info.value = "2";
+	if ( info.value == selectedValue ) then
+		info.checked = 1;
+	else
+		info.checked = nil;
+	end
+	UIDropDownMenu_AddButton(info);
+
+	info.text = OBJECT_NPC_OUTLINE_MODE_THREE;
+	info.func = InterfaceOptionsDisplayPanelOutlineDropDown_OnClick;
+	info.value = "3";
+	if ( info.value == selectedValue ) then
+		info.checked = 1;
+	else
+		info.checked = nil;
+	end
+	UIDropDownMenu_AddButton(info);
+end
 
 -- [[ Objectives Options Panel ]] --
 
 ObjectivesPanelOptions = {
 	autoQuestWatch = { text = "AUTO_QUEST_WATCH_TEXT" },
 	autoQuestProgress = { text = "AUTO_QUEST_PROGRESS_TEXT" },
-	mapQuestDifficulty = { text = "MAP_QUEST_DIFFICULTY_TEXT" },
 	advancedWorldMap = { text = "ADVANCED_WORLD_MAP_TEXT" },
-	watchFrameWidth = { text = "WATCH_FRAME_WIDTH_TEXT" },
+	mapFade = { text = "MAP_FADE_TEXT" },
 }
 
 function InterfaceOptionsObjectivesPanel_OnLoad (self)
@@ -594,6 +675,80 @@ end
 
 function InterfaceOptionsObjectivesPanel_OnEvent (self, event, ...)
 	BlizzardOptionsPanel_OnEvent(self, event, ...);
+end
+
+function InterfaceOptionsObjectivesPanelQuestSorting_OnClick(self)
+	InterfaceOptionsObjectivesPanelQuestSorting:SetValue(self.value);
+end
+
+function InterfaceOptionsObjectivesPanelQuestSorting_Initialize()
+	local selectedValue = UIDropDownMenu_GetSelectedValue(InterfaceOptionsObjectivesPanelQuestSorting);
+	local info = UIDropDownMenu_CreateInfo();
+
+	info.text = TRACK_QUEST_PROXIMITY_SORTING;
+	info.func = InterfaceOptionsObjectivesPanelQuestSorting_OnClick;
+	info.value = "proximity";
+	if ( info.value == selectedValue ) then
+		info.checked = 1;
+	else
+		info.checked = nil;
+	end
+	
+	info.tooltipTitle = TRACK_QUEST_PROXIMITY_SORTING;
+	info.tooltipText = OPTION_TOOLTIP_TRACK_QUEST_PROXIMITY_SORTING;
+	UIDropDownMenu_AddButton(info);
+
+	info.text = TRACK_QUEST_TOP_SORTING;
+	info.func = InterfaceOptionsObjectivesPanelQuestSorting_OnClick;
+	info.value = "top";
+	if ( info.value == selectedValue ) then
+		info.checked = 1;
+	else
+		info.checked = nil;
+	end
+	info.tooltipTitle = TRACK_QUEST_TOP_SORTING;
+	info.tooltipText = OPTION_TOOLTIP_TRACK_QUEST_TOP_SORTING;
+	UIDropDownMenu_AddButton(info);
+end
+
+function InterfaceOptionsObjectivesPanelQuestSorting_SetQuestSorting(sortMethod)
+	SetCVar(InterfaceOptionsObjectivesPanelQuestSorting.cvar, sortMethod);
+	UIDropDownMenu_SetSelectedValue(InterfaceOptionsObjectivesPanelQuestSorting, sortMethod);
+end
+
+function InterfaceOptionsObjectivesPanelQuestSorting_OnEvent (self, event, ...)
+	if ( event == "PLAYER_ENTERING_WORLD" ) then
+		self.cvar = "trackQuestSorting";
+
+		local value = GetCVar(self.cvar);
+		self.defaultValue = GetCVarDefault(self.cvar);
+		self.value = value;
+		self.oldValue = value;
+		self.tooltip = _G["OPTION_TOOLTIP_TRACK_QUEST_"..strupper(value)];
+
+		UIDropDownMenu_SetWidth(self, 130);
+		UIDropDownMenu_Initialize(self, InterfaceOptionsObjectivesPanelQuestSorting_Initialize);
+		UIDropDownMenu_SetSelectedValue(self, value);
+		InterfaceOptionsObjectivesPanelQuestSorting_SetQuestSorting(value);
+
+		self.SetValue = 
+			function (self, value)
+				self.value = value;
+				InterfaceOptionsObjectivesPanelQuestSorting_SetQuestSorting(value);
+				self.tooltip = _G["OPTION_TOOLTIP_TRACK_QUEST_"..strupper(value)];
+			end
+		self.GetValue =
+			function (self)
+				return UIDropDownMenu_GetSelectedValue(self);
+			end
+		self.RefreshValue =
+			function (self)
+				UIDropDownMenu_Initialize(self, InterfaceOptionsObjectivesPanelQuestSorting_Initialize);
+				UIDropDownMenu_SetSelectedValue(self, self.value);
+			end
+			
+		self:UnregisterEvent(event);
+	end
 end
 
 -- [[ Social Options Panel ]] --
@@ -1025,6 +1180,7 @@ ActionBarsPanelOptions = {
 	lockActionBars = { text = "LOCK_ACTIONBAR_TEXT" },
 	alwaysShowActionBars = { text = "ALWAYS_SHOW_MULTIBARS_TEXT" },
 	secureAbilityToggle = { text = "SECURE_ABILITY_TOGGLE" },
+	countdownForCooldowns = { text = "COUNTDOWN_FOR_COOLDOWNS_TEXT" },
 }
 
 function InterfaceOptionsActionBarsPanel_OnLoad (self)
@@ -1073,7 +1229,7 @@ function InterfaceOptions_UpdateMultiActionBars ()
 		LOCK_ACTIONBAR = nil;
 	end
 
-	SetActionBarToggles(SHOW_MULTI_ACTIONBAR_1, SHOW_MULTI_ACTIONBAR_2, SHOW_MULTI_ACTIONBAR_3, SHOW_MULTI_ACTIONBAR_4, ALWAYS_SHOW_MULTIBARS);
+	SetActionBarToggles(not not SHOW_MULTI_ACTIONBAR_1, not not SHOW_MULTI_ACTIONBAR_2, not not SHOW_MULTI_ACTIONBAR_3, not not SHOW_MULTI_ACTIONBAR_4, not not ALWAYS_SHOW_MULTIBARS);
 	MultiActionBar_Update();
 	UIParent_ManageFramePositions();
 end
@@ -1187,6 +1343,7 @@ NamePanelOptions = {
 	UnitNameEnemyPetName = { text = "UNIT_NAME_ENEMY_PETS" },
 	UnitNameEnemyGuardianName = { text = "UNIT_NAME_ENEMY_GUARDIANS" },
 	UnitNameEnemyTotemName = { text = "UNIT_NAME_ENEMY_TOTEMS" },
+	UnitNameForceHideMinus = { text = "UNIT_NAME_HIDE_MINUS" },
 	
 	nameplateShowFriends = { text = "UNIT_NAMEPLATES_SHOW_FRIENDS" },
 	nameplateShowFriendlyPets = { text = "UNIT_NAMEPLATES_SHOW_FRIENDLY_PETS" },
@@ -1196,20 +1353,24 @@ NamePanelOptions = {
 	nameplateShowEnemyPets = { text = "UNIT_NAMEPLATES_SHOW_ENEMY_PETS" },
 	nameplateShowEnemyGuardians = { text = "UNIT_NAMEPLATES_SHOW_ENEMY_GUARDIANS" },
 	nameplateShowEnemyTotems = { text = "UNIT_NAMEPLATES_SHOW_ENEMY_TOTEMS" },
+	nameplateShowEnemyMinus = { text = "UNIT_NAMEPLATES_SHOW_ENEMY_MINUS" },
 	ShowClassColorInNameplate = { text = "SHOW_CLASS_COLOR_IN_V_KEY" },
 }
 
 function InterfaceOptionsNPCNamesDropDown_OnEvent (self, event, ...)
 	if ( event == "PLAYER_ENTERING_WORLD" ) then
 		local value = "2";
-		if ( GetCVar("UnitNameNPC") == "1" ) then
-			value = "2";
+		if ( GetCVarBool("UnitNameNPC") ) then
+			value = "3";
 			self.tooltip = NPC_NAMES_DROPDOWN_ALL_TOOLTIP;
-		elseif ( GetCVar("UnitNameFriendlySpecialNPCName") == "1" ) then
+		elseif ( GetCVarBool("UnitNameFriendlySpecialNPCName") and GetCVarBool("UnitNameHostleNPC") ) then
+			value = "2";
+			self.tooltip = NPC_NAMES_DROPDOWN_HOSTILE_TOOLTIP;
+		elseif ( GetCVarBool("UnitNameFriendlySpecialNPCName") ) then
 			value = "1";
 			self.tooltip = NPC_NAMES_DROPDOWN_TRACKED_TOOLTIP;
 		else
-			value = "3";
+			value = "4";
 			self.tooltip = NPC_NAMES_DROPDOWN_NONE_TOOLTIP;
 		end
 		self.defaultValue = "1";
@@ -1232,6 +1393,7 @@ function InterfaceOptionsNPCNamesDropDown_OnEvent (self, event, ...)
 				elseif ( value == "2" ) then
 					SetCVar("UnitNameFriendlySpecialNPCName", "1");
 					SetCVar("UnitNameHostleNPC", "1");
+					SetCVar("UnitNameNPC", "0");
 					self.tooltip = NPC_NAMES_DROPDOWN_HOSTILE_TOOLTIP;
 				elseif ( value == "3" ) then
 					SetCVar("UnitNameFriendlySpecialNPCName", "0");
@@ -1396,6 +1558,7 @@ FCTPanelOptions = {
 	CombatHealingAbsorbSelf = { text = "SHOW_COMBAT_HEALING_ABSORB_SELF" },
 	fctSpellMechanics = { text = "SHOW_TARGET_EFFECTS" },
 	fctSpellMechanicsOther = { text = "SHOW_OTHER_TARGET_EFFECTS" },
+	enablePetBattleCombatText = { text = "SHOW_PETBATTLE_COMBAT_TEXT" },
 }
 
 function BlizzardOptionsPanel_UpdateCombatText ()
@@ -1537,6 +1700,73 @@ function InterfaceOptionsCombatTextPanelFCTDropDown_Initialize(self)
 	end
 	info.tooltipTitle = COMBAT_TEXT_SCROLL_ARC;
 	info.tooltipText = OPTION_TOOLTIP_SCROLL_ARC;
+	UIDropDownMenu_AddButton(info);
+end
+
+function InterfaceOptionsCombatTextPanelTargetModeDropDown_OnEvent (self, event, ...)
+	if ( event == "PLAYER_ENTERING_WORLD" ) then
+		self.cvar = "CombatDamageStyle";
+
+		local value = GetCVar(self.cvar);
+		self.defaultValue = GetCVarDefault(self.cvar);
+		self.oldValue = value;
+		self.value = value;
+		self.tooltip = OPTION_TOOLTIP_COMBAT_TARGET_MODE;
+
+		UIDropDownMenu_SetWidth(self, 110);
+		UIDropDownMenu_Initialize(self, InterfaceOptionsCombatTextPanelTargetModeDropDown_Initialize);
+		UIDropDownMenu_SetSelectedValue(self, value);
+
+		self.SetValue = 
+			function (self, value) 
+				self.value = value;
+				SetCVar(self.cvar, value, self.event);
+				UIDropDownMenu_SetSelectedValue(self, value);
+			end;	
+		self.GetValue =
+			function (self)
+				return UIDropDownMenu_GetSelectedValue(self);
+			end
+		self.RefreshValue =
+			function (self)
+				UIDropDownMenu_Initialize(self, InterfaceOptionsCombatTextPanelTargetModeDropDown_Initialize);
+				UIDropDownMenu_SetSelectedValue(self, self.value);
+			end
+	end
+end
+
+function InterfaceOptionsCombatTextPanelTargetModeDropDown_OnClick(self)
+	InterfaceOptionsCombatTextPanelTargetModeDropDown:SetValue(self.value);
+end
+
+function InterfaceOptionsCombatTextPanelTargetModeDropDown_Initialize(self)
+	local selectedValue = UIDropDownMenu_GetSelectedValue(self);
+	local info = UIDropDownMenu_CreateInfo();
+
+	info.text = COMBAT_TARGET_MODE_NEW;
+	info.func = InterfaceOptionsCombatTextPanelTargetModeDropDown_OnClick;
+	info.value = "1";
+	if ( info.value == selectedValue ) then
+		info.checked = 1;
+	else
+		info.checked = nil;
+	end
+	info.tooltipTitle = COMBAT_TARGET_MODE_NEW;
+	info.tooltipText = OPTION_TOOLTIP_COMBAT_TARGET_MODE_NEW;
+	info.tooltipOnButton = true;
+	UIDropDownMenu_AddButton(info);
+
+	info.text = COMBAT_TARGET_MODE_OLD;
+	info.func = InterfaceOptionsCombatTextPanelTargetModeDropDown_OnClick;
+	info.value = "2";
+	if ( info.value == selectedValue ) then
+		info.checked = 1;
+	else
+		info.checked = nil;
+	end
+	info.tooltipTitle = COMBAT_TARGET_MODE_OLD;
+	info.tooltipText = OPTION_TOOLTIP_COMBAT_TARGET_MODE_OLD;
+	info.tooltipOnButton = true;
 	UIDropDownMenu_AddButton(info);
 end
 
@@ -1982,3 +2212,32 @@ HelpPanelOptions = {
 	colorblindMode = { text = "USE_COLORBLIND_MODE" },
 	enableMovePad = { text = "MOVE_PAD" },
 }
+
+function InterfaceOptionsHelpPanel_OnLoad(self)
+	self.name = HELP_LABEL;
+	self.options = HelpPanelOptions;
+	InterfaceOptionsPanel_OnLoad(self);
+
+	self:SetScript("OnEvent", InterfaceOptionsHelpPanel_OnEvent);
+	self:RegisterEvent("CVAR_UPDATE");
+	self:RegisterEvent("NPE_TUTORIAL_UPDATE");
+end
+
+function InterfaceOptionsHelpPanel_OnEvent(self, event, ...)
+	local loadNPE = false;
+	if ( event == "CVAR_UPDATE" ) then
+		local cVarName = ...;
+		loadNPE = cVarName == "SHOW_TUTORIALS";
+	elseif ( event == "NPE_TUTORIAL_UPDATE" ) then
+		loadNPE = true;
+	end
+	
+	if ( loadNPE ) then
+		if ( GetCVarBool("showTutorials") and GetCVarBool("showNPETutorials") ) then
+			NPETutorial_AttemptToBegin(event);
+		elseif ( NewPlayerExperience ) then
+			NewPlayerExperience:Shutdown();
+		end
+	end
+	BlizzardOptionsPanel_OnEvent(self, event, ...);
+end

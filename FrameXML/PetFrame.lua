@@ -4,6 +4,12 @@
 
 function PetFrame_OnLoad (self)
 	self.noTextPrefix = true;
+
+	PetFrameHealthBar.LeftText = PetFrameHealthBarTextLeft;
+	PetFrameHealthBar.RightText = PetFrameHealthBarTextRight;
+	PetFrameManaBar.LeftText = PetFrameManaBarTextLeft;
+	PetFrameManaBar.RightText = PetFrameManaBarTextRight;
+
 	UnitFrame_Initialize(self, "pet", PetName, PetPortrait,
 						 PetFrameHealthBar, PetFrameHealthBarText, 
 						 PetFrameManaBar, PetFrameManaBarText,

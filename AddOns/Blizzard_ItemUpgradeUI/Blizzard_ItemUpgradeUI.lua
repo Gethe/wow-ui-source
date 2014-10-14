@@ -173,7 +173,7 @@ function ItemUpgradeFrame_UpdateStats(setStatsRight)
 	ItemUpgradeFrame.LeftItemLevel:Show();
 	
 	if ( setStatsRight ) then
-		ItemUpgradeFrame.RightItemLevel.incText:SetText(GREEN_FONT_COLOR_CODE.."+"..ilvlInc);
+		ItemUpgradeFrame.RightItemLevel.incText:SetText(GREEN_FONT_COLOR_CODE.."+"..ilvlInc..FONT_COLOR_CODE_CLOSE);
 		ItemUpgradeFrame.RightItemLevel.iLvlText:SetText(itemLevel + ilvlInc);
 		ItemUpgradeFrame.RightItemLevel.ItemLevelText:SetText(ITEM_UPGRADE_STAT_AVERAGE_ITEM_LEVEL);
 		ItemUpgradeFrame.RightItemLevel:Show();
@@ -198,7 +198,7 @@ function ItemUpgradeFrame_UpdateStats(setStatsRight)
 		if ( setStatsRight ) then
 			local name, value = statsRight[i], statsRight[i + 1];
 			local statInc = statsRight[i + 1] - statsLeft[i + 1];
-			rightStat.ItemIncText:SetText(GREEN_FONT_COLOR_CODE.."+"..statInc);
+			rightStat.ItemIncText:SetText(GREEN_FONT_COLOR_CODE.."+"..statInc..FONT_COLOR_CODE_CLOSE);
 			rightStat.ItemLevelText:SetText(value);
 			rightStat.ItemText:SetText(name);
 			rightStat:Show();

@@ -19,17 +19,14 @@ function BattlefieldMinimap_Toggle()
 	if ( BattlefieldMinimap:IsShown() ) then
 		SetCVar("showBattlefieldMinimap", "0");
 		BattlefieldMinimap:Hide();
-		WorldMapZoneMinimapDropDown_Update();
 	else
 		local _, instanceType = IsInInstance();
 		if ( instanceType == "pvp" ) then
 			SetCVar("showBattlefieldMinimap", "1");
 			BattlefieldMinimap:Show();
-			WorldMapZoneMinimapDropDown_Update();
 		elseif ( instanceType ~= "arena" ) then
 			SetCVar("showBattlefieldMinimap", "2");
 			BattlefieldMinimap:Show();
-			WorldMapZoneMinimapDropDown_Update();
 		end
 	end
 end

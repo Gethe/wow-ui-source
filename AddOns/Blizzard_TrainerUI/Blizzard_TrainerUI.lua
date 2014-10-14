@@ -219,11 +219,11 @@ function ClassTrainerFrame_SetServiceButton( skillButton, skillIndex, playerMone
 	end
 	
 	if ( serviceType == "unavailable" ) then
-		skillButton.icon:SetDesaturated(1);
-		skillButton.name:SetText(GRAY_FONT_COLOR_CODE..serviceName);
+		skillButton.icon:SetDesaturated(true);
+		skillButton.name:SetText(GRAY_FONT_COLOR_CODE..serviceName..FONT_COLOR_CODE_CLOSE);
 		skillButton.disabledBG:Show();
 	else
-		skillButton.icon:SetDesaturated(0);
+		skillButton.icon:SetDesaturated(false);
 		skillButton.disabledBG:Hide();
 	end
 	

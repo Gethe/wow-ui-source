@@ -62,7 +62,7 @@ TRAVEL PASS
 					</Anchors>
 				</Texture>
 				<FontString name="$parentName" inherits="FriendsFont_Normal" justifyH="LEFT" parentKey="name">
-					<Size x="232" y="12"/>
+					<Size x="226" y="12"/>
 					<Anchors>
 						<Anchor point="TOPLEFT" x="20" y="-3"/>
 					</Anchors>
@@ -116,47 +116,16 @@ TRAVEL PASS
 				<Anchors>
 					<Anchor point="TOPRIGHT" x="-4" y="-4"/>
 				</Anchors>
-				<Layers>
-					<Layer level="BACKGROUND">
-						<Texture name="$parentIcon"/>
-					</Layer>
-					<Layer level="ARTWORK">
-						<Texture name="$parentFlash" file="Interface\Buttons\UI-QuickslotRed" hidden="true"/>
-						<FontString name="$parentHotKey" inherits="NumberFontNormalSmallGray" justifyH="RIGHT">
-							<Size x="32" y="10"/>
-							<Anchors>
-								<Anchor point="TOPLEFT" x="-2" y="-2"/>
-							</Anchors>
-						</FontString>
-						<FontString name="$parentCount" inherits="NumberFontNormal" justifyH="RIGHT">
-							<Anchors>
-								<Anchor point="BOTTOMRIGHT" x="-2" y="2"/>
-							</Anchors>
-						</FontString>
-					</Layer>
-					<Layer level="OVERLAY">
-						<FontString name="$parentName" inherits="GameFontHighlightSmallOutline">
-							<Size x="32" y="10"/>
-							<Anchors>
-								<Anchor point="BOTTOM" x="0" y="2"/>
-							</Anchors>
-						</FontString>
-					</Layer>
-				</Layers>
-				<Frames>
-					<Cooldown name="$parentCooldown" inherits="CooldownFrameTemplate">
-						<Size x="28" y="28"/>
-						<Anchors>
-							<Anchor point="CENTER" x="0" y="-1"/>
-						</Anchors> 
-					</Cooldown>
-				</Frames>
 				<Scripts>
 					<OnLoad>
 						_G[self:GetName().."Icon"]:SetTexture("Interface\\Icons\\Spell_Shadow_Teleport");
 						local normalTexture = _G[self:GetName().."NormalTexture"];
-						normalTexture:SetWidth(40);
-						normalTexture:SetHeight(40);
+						normalTexture:ClearAllPoints();
+						normalTexture:SetPoint("CENTER");
+						normalTexture:SetWidth(49);
+						normalTexture:SetHeight(49);
+						self.cooldown:SetHideCountdownNumbers(true);
+						self.cooldown:SetSwipeColor(0, 0, 0);
 					</OnLoad>
 					<OnShow>
 						FriendsFrame_SummonButton_OnShow(self);
@@ -166,12 +135,12 @@ TRAVEL PASS
 					</OnClick>
 					<OnEnter>
 						GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
-						GameTooltip:AddLine(RAF_SUMMON_LINKED, 1, 1, 1, 1);
+						GameTooltip:AddLine(RAF_SUMMON_LINKED, 1, 1, 1, true);
 						if ( self.duration ) then
-							GameTooltip:AddLine(COOLDOWN_REMAINING .. " " .. SecondsToTime(self.duration - (GetTime() - self.start)), 1, 1, 1, 1);
+							GameTooltip:AddLine(COOLDOWN_REMAINING .. " " .. SecondsToTime(self.duration - (GetTime() - self.start)), 1, 1, 1, true);
 						end
 						if ( SHOW_NEWBIE_TIPS == "1" ) then
-							GameTooltip:AddLine(NEWBIE_TOOLTIP_RAF_SUMMON_LINKED, NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b, 1)
+							GameTooltip:AddLine(NEWBIE_TOOLTIP_RAF_SUMMON_LINKED, NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b, true)
 						end
 						GameTooltip:Show();
 					</OnEnter>
@@ -298,12 +267,12 @@ TRAVEL PASS
 							</OnClick>
 							<OnEnter>
 								GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
-								GameTooltip:AddLine(RAF_SUMMON_LINKED, 1, 1, 1, 1);
+								GameTooltip:AddLine(RAF_SUMMON_LINKED, 1, 1, 1, true);
 								if ( self.duration ) then
-									GameTooltip:AddLine(COOLDOWN_REMAINING .. " " .. SecondsToTime(self.duration - (GetTime() - self.start)), 1, 1, 1, 1);
+									GameTooltip:AddLine(COOLDOWN_REMAINING .. " " .. SecondsToTime(self.duration - (GetTime() - self.start)), 1, 1, 1, true);
 								end
 								if ( SHOW_NEWBIE_TIPS == "1" ) then
-									GameTooltip:AddLine(NEWBIE_TOOLTIP_RAF_SUMMON_LINKED, NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b, 1)
+									GameTooltip:AddLine(NEWBIE_TOOLTIP_RAF_SUMMON_LINKED, NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b, true)
 								end
 								GameTooltip:Show();
 							</OnEnter>
@@ -495,7 +464,7 @@ TRAVEL PASS
 						self.texture:SetAlpha(1.0);
 						GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
 						GameTooltip:AddLine(BNET_REPORT_PLAYER, 1, 1, 1);
-						GameTooltip:AddLine(BNET_REPORT_PLAYER_TOOLTIP, nil, nil, nil, 1);
+						GameTooltip:AddLine(BNET_REPORT_PLAYER_TOOLTIP, nil, nil, nil, true);
 						GameTooltip:Show();
 					</OnEnter>
 					<OnLeave>
@@ -531,7 +500,7 @@ TRAVEL PASS
 						self.texture:SetAlpha(1.0);
 						GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
 						GameTooltip:AddLine(BLOCK_INVITES, 1, 1, 1);
-						GameTooltip:AddLine(BLOCK_INVITES_TOOLTIP, nil, nil, nil, 1);
+						GameTooltip:AddLine(BLOCK_INVITES_TOOLTIP, nil, nil, nil, true);
 						GameTooltip:Show();
 					</OnEnter>
 					<OnLeave>
@@ -588,8 +557,8 @@ TRAVEL PASS
 						<Anchor point="LEFT" relativeTo="$parentName" relativePoint="RIGHT" x="0" y="0"/>
 					</Anchors>
 				</FontString>
-				<FontString name="$parentLevel" inherits="GameFontHighlightSmall" justifyH="CENTER">
-					<Size x="20" y="14"/>
+				<FontString name="$parentLevel" inherits="GameFontHighlightSmall" justifyH="CENTER" wordwrap="false">
+					<Size x="24" y="0"/>
 					<Anchors>
 						<Anchor point="LEFT" relativeTo="$parentVariable" relativePoint="RIGHT" x="2" y="0"/>
 					</Anchors>
@@ -597,7 +566,7 @@ TRAVEL PASS
 				<FontString name="$parentClass" inherits="GameFontHighlightSmall" justifyH="LEFT">
 					<Size x="80" y="8"/>
 					<Anchors>
-						<Anchor point="LEFT" relativeTo="$parentLevel" relativePoint="RIGHT" x="12" y="0"/>
+						<Anchor point="LEFT" relativeTo="$parentLevel" relativePoint="RIGHT" x="8" y="0"/>
 					</Anchors>
 				</FontString>
 				<!--
@@ -645,24 +614,24 @@ TRAVEL PASS
 		<Size x="10" y="24"/>
 		<Layers>
 			<Layer level="BACKGROUND">
-				<Texture name="$parentLeft" file="Interface\FriendsFrame\WhoFrame-ColumnTabs">
+				<Texture parentKey="Left" name="$parentLeft" file="Interface\FriendsFrame\WhoFrame-ColumnTabs">
 					<Size x="5" y="24"/>
 					<Anchors>
 						<Anchor point="TOPLEFT"/>
 					</Anchors>
 					<TexCoords left="0" right="0.078125" top="0" bottom="0.75"/>
 				</Texture>
-				<Texture name="$parentMiddle" file="Interface\FriendsFrame\WhoFrame-ColumnTabs">
+				<Texture parentKey="Middle" name="$parentMiddle" file="Interface\FriendsFrame\WhoFrame-ColumnTabs">
 					<Size x="53" y="24"/>
 					<Anchors>
-						<Anchor point="LEFT" relativeTo="$parentLeft" relativePoint="RIGHT"/>
+						<Anchor point="LEFT" relativeKey="$parent.Left" relativePoint="RIGHT"/>
 					</Anchors>
 					<TexCoords left="0.078125" right="0.90625" top="0" bottom="0.75"/>
 				</Texture>
-				<Texture name="$parentRight" file="Interface\FriendsFrame\WhoFrame-ColumnTabs">
+				<Texture parentKey="Right" name="$parentRight" file="Interface\FriendsFrame\WhoFrame-ColumnTabs">
 					<Size x="4" y="24"/>
 					<Anchors>
-						<Anchor point="LEFT" relativeTo="$parentMiddle" relativePoint="RIGHT"/>
+						<Anchor point="LEFT" relativeKey="$parent.Middle" relativePoint="RIGHT"/>
 					</Anchors>
 					<TexCoords left="0.90625" right="0.96875" top="0" bottom="0.75"/>
 				</Texture>
@@ -682,10 +651,10 @@ TRAVEL PASS
 			</Anchors>
 		</ButtonText>
 		<NormalFont style="GameFontHighlightSmall"/>
-		<HighlightTexture name="$parentHighlightTexture" file="Interface\PaperDollInfoFrame\UI-Character-Tab-Highlight" alphaMode="ADD">
+		<HighlightTexture parentKey="HighlightTexture" name="$parentHighlightTexture" file="Interface\PaperDollInfoFrame\UI-Character-Tab-Highlight" alphaMode="ADD">
 			<Anchors>
-				<Anchor point="TOPLEFT" relativeTo="$parentLeft" x="-2" y="5"/>
-				<Anchor point="BOTTOMRIGHT" relativeTo="$parentRight" x="2" y="-7"/>
+				<Anchor point="TOPLEFT" relativeKey="$parent.Left" x="-2" y="5"/>
+				<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Right" x="2" y="-7"/>
 			</Anchors>
 		</HighlightTexture>
 	</Button>
@@ -1137,7 +1106,7 @@ TRAVEL PASS
 									</OnClick>
 									<OnEnter>
 										GameTooltip:SetOwner(FriendsFrameBroadcastInput, "ANCHOR_RIGHT");
-										GameTooltip:SetText(BN_BROADCAST_TOOLTIP, nil, nil, nil, nil, 1);
+										GameTooltip:SetText(BN_BROADCAST_TOOLTIP, nil, nil, nil, nil, true);
 									</OnEnter>
 									<OnLeave>
 										GameTooltip:Hide();
@@ -1166,7 +1135,7 @@ TRAVEL PASS
 						</Frames>
 						<Scripts>
 							<OnLoad>
-								frameLevel = self:GetFrameLevel();
+								local frameLevel = self:GetFrameLevel();
 								FriendsFrameBroadcastInputTooltipButton:SetFrameLevel(frameLevel + 1);
 								FriendsFrameBroadcastInputClearButton:SetFrameLevel(frameLevel + 2);
 							</OnLoad>
@@ -1223,53 +1192,10 @@ TRAVEL PASS
 							</OnUpdate>
 						</Scripts>
 					</Frame>
-					<Button name="$parentSoRButton" parentKey="soRButton" hidden="true">
-						<Size x="26" y="26"/>
-						<Anchors>
-							<Anchor point="TOPRIGHT" x="-8" y="-55"/>
-						</Anchors>
-						<Layers>
-							<Layer level="BACKGROUND">
-								<Texture name="$parentIcon" parentKey="icon"/>
-							</Layer>
-						</Layers>
-						<Scripts>
-							<OnLoad>
-								self.icon:SetTexture("Interface\\Icons\\SOR-mail");
-								self:RegisterEvent("SOR_BY_TEXT_UPDATED");
-								if ( CanSendSoRByText() ) then
-									self:Show();
-								else
-									self:Hide();
-								end
-							</OnLoad>
-							<OnClick>
-								ScrollOfResurrectionButton_OnClick(self);
-							</OnClick>
-							<OnEnter>
-								GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
-								GameTooltip:SetText(SEND_SCROLL_OF_RESURRECTION);
-								GameTooltip:AddLine(SCROLL_OF_RESURRECTION_TOOLTIP, 1, 1, 1, 1);
-								GameTooltip:Show();
-							</OnEnter>
-							<OnLeave>
-								GameTooltip:Hide();
-							</OnLeave>
-							<OnEvent>
-								if ( CanSendSoRByText() ) then
-									self:Show();
-								else
-									self:Hide();
-								end
-							</OnEvent>
-						</Scripts>
-						<PushedTexture file="Interface\Buttons\UI-Quickslot-Depress"/>
-						<HighlightTexture alphaMode="ADD" file="Interface\Buttons\ButtonHilight-Square" parentKey="highlight"/>
-					</Button>
 					<Button name="$parentRecruitAFriendButton" motionScriptsWhileDisabled="true" parentKey="RaFButton" hidden="true">
 						<Size x="26" y="26"/>
 						<Anchors>
-							<Anchor point="RIGHT" relativeKey="$parent.soRButton" relativePoint="LEFT" x="-4" y="0"/>
+							<Anchor point="TOPRIGHT" x="-8" y="-55"/>
 						</Anchors>
 						<Layers>
 							<Layer level="BACKGROUND">
@@ -1316,6 +1242,49 @@ TRAVEL PASS
 							</OnLeave>
 							<OnEvent>
 								RAFButton_Update(self);
+							</OnEvent>
+						</Scripts>
+						<PushedTexture file="Interface\Buttons\UI-Quickslot-Depress"/>
+						<HighlightTexture alphaMode="ADD" file="Interface\Buttons\ButtonHilight-Square" parentKey="highlight"/>
+					</Button>
+					<Button name="$parentSoRButton" parentKey="soRButton" hidden="true">
+						<Size x="26" y="26"/>
+						<Anchors>
+							<Anchor point="RIGHT" relativeKey="$parent.RaFButton" relativePoint="LEFT" x="-4" y="0"/>
+						</Anchors>
+						<Layers>
+							<Layer level="BACKGROUND">
+								<Texture name="$parentIcon" parentKey="icon"/>
+							</Layer>
+						</Layers>
+						<Scripts>
+							<OnLoad>
+								self.icon:SetTexture("Interface\\Icons\\SOR-mail");
+								self:RegisterEvent("SOR_BY_TEXT_UPDATED");
+								if ( CanSendSoRByText() ) then
+									self:Show();
+								else
+									self:Hide();
+								end
+							</OnLoad>
+							<OnClick>
+								ScrollOfResurrectionButton_OnClick(self);
+							</OnClick>
+							<OnEnter>
+								GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+								GameTooltip:SetText(SEND_SCROLL_OF_RESURRECTION);
+								GameTooltip:AddLine(SCROLL_OF_RESURRECTION_TOOLTIP, 1, 1, 1, true);
+								GameTooltip:Show();
+							</OnEnter>
+							<OnLeave>
+								GameTooltip:Hide();
+							</OnLeave>
+							<OnEvent>
+								if ( specialTestOverrideSoR or CanSendSoRByText() ) then
+									self:Show();
+								else
+									self:Hide();
+								end
 							</OnEvent>
 						</Scripts>
 						<PushedTexture file="Interface\Buttons\UI-Quickslot-Depress"/>
@@ -1923,13 +1892,13 @@ TRAVEL PASS
 				</Frames>
 				<Scripts>
 					<OnLoad>
-						SetWhoToUI(0);
+						SetWhoToUI(false);
 					</OnLoad>
 					<OnShow>
-						SetWhoToUI(1);
+						SetWhoToUI(true);
 					</OnShow>
 					<OnHide>
-						SetWhoToUI(0);
+						SetWhoToUI(false);
 					</OnHide>
 				</Scripts>
 			</Frame>
@@ -2882,7 +2851,7 @@ TRAVEL PASS
 	</Frame>
 
 	<Frame name="BattleTagInviteFrame" parent="UIParent" frameStrata="DIALOG" hidden="true">
-		<Size x="357" y="211"/>
+		<Size x="357" y="150"/>
 		<Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background" edgeFile="Interface\DialogFrame\UI-DialogBox-Border" tile="true">
 			<BackgroundInsets>
 				<AbsInset left="12" right="12" top="12" bottom="11"/>
@@ -2910,36 +2879,21 @@ TRAVEL PASS
 				<FontString parentKey="InfoText" inherits="GameFontHighlightSmall" spacing="2" text="BATTLE_TAG_REQUEST_INFO">
 					<Size x="241" y="0"/>
 					<Anchors>
-						<Anchor point="CENTER" x="0" y="-29"/>
+						<Anchor point="CENTER" x="0" y="-10"/>
 					</Anchors>
 				</FontString>				
 			</Layer>
 		</Layers>
 		<Frames>			
-			<ScrollFrame name="$parentScrollFrame" inherits="InputScrollFrameTemplate" parentKey="NoteFrame">
-				<Size x="261" y="48"/>
-				<Anchors>
-					<Anchor point="TOP" x="0" y="-59"/>
-				</Anchors>
-				<Scripts>
-					<OnLoad>
-						self.EditBox.PromptText:SetFontObject("FriendsFont_Small");
-						self.EditBox.PromptText:SetText(ENTER_INVITE_NOTE);
-						self.EditBox:SetFontObject("FriendsFont_Small");
-						InputScrollFrame_OnLoad(self);
-					</OnLoad>
-				</Scripts>
-			</ScrollFrame>
 			<Button inherits="UIPanelButtonTemplate" text="SEND_REQUEST">
 				<Size x="128" y="22"/>
 				<Anchors>
-					<Anchor point="LEFT" x="43" y="0"/>
-					<Anchor point="TOP" relativeKey="$parent.InfoText" relativePoint="BOTTOM" x="0" y="-17"/>
+					<Anchor point="BOTTOMLEFT" x="43" y="15"/>
 				</Anchors>
 				<Scripts>
 					<OnClick>
 						PlaySound("igMainMenuOptionCheckBoxOn");
-						BNSendVerifiedBattleTagInvite(BattleTagInviteFrame.NoteFrame.EditBox:GetText());	-- unit should have been set with BNCheckBattleTagInviteToUnit or BNCheckBattleTagInviteToGuildMember
+						BNSendVerifiedBattleTagInvite();	-- unit should have been set with BNCheckBattleTagInviteToUnit or BNCheckBattleTagInviteToGuildMember
 						StaticPopupSpecial_Hide(self:GetParent());
 					</OnClick>
 				</Scripts>
@@ -2947,8 +2901,7 @@ TRAVEL PASS
 			<Button inherits="UIPanelButtonTemplate" text="CANCEL">
 				<Size x="98" y="22"/>
 				<Anchors>
-					<Anchor point="RIGHT" x="-43" y="0"/>
-					<Anchor point="TOP" relativeKey="$parent.InfoText" relativePoint="BOTTOM" x="0" y="-17"/>
+					<Anchor point="BOTTOMRIGHT" x="-43" y="15"/>
 				</Anchors>
 				<Scripts>
 					<OnClick>

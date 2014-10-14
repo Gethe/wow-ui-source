@@ -15,6 +15,8 @@ TaxiButtonTypes["DISTANT"] = {
 	file = "Interface\\TaxiFrame\\UI-Taxi-Icon-Yellow"
 }
 
+local taxiNodePositions = {};
+
 TAXI_BUTTON_MIN_DIST = 18;
 
 function TaxiFrame_OnLoad(self)
@@ -43,7 +45,6 @@ function TaxiFrame_OnEvent(self, event, ...)
 		end
 		
 		-- Draw nodes
-		local taxiNodePositions = {};
 		local numValidFlightNodes = 0;
 		for index = 1, num_nodes do
 			local type = TaxiNodeGetType(index);
@@ -109,7 +110,7 @@ end
 function TaxiNodeOnButtonEnter(button) 
 	local index = button:GetID();
 	GameTooltip:SetOwner(button, "ANCHOR_RIGHT");
-	GameTooltip:AddLine(TaxiNodeName(index), "", 1.0, 1.0, 1.0);
+	GameTooltip:AddLine(TaxiNodeName(index), nil, nil, nil, true);
 	
 	-- Setup variables
 	local numRoutes = GetNumRoutes(index);
@@ -134,10 +135,12 @@ function TaxiNodeOnButtonEnter(button)
 		for i=1, NUM_TAXI_ROUTES do
 			line = _G["TaxiRoute"..i];
 			if ( i <= numRoutes ) then
-				sX = TaxiGetSrcX(index, i)*w;
-				sY = TaxiGetSrcY(index, i)*h;
-				dX = TaxiGetDestX(index, i)*w;
-				dY = TaxiGetDestY(index, i)*h;
+				local slot = TaxiGetNodeSlot(index, i, true);
+				sX = taxiNodePositions[slot].x;
+				sY = taxiNodePositions[slot].y;
+				slot = TaxiGetNodeSlot(index, i, false);
+				dX = taxiNodePositions[slot].x;
+				dY = taxiNodePositions[slot].y;
 				DrawRouteLine(line, "TaxiRouteMap", sX, sY, dX, dY, 32);
 				line:Show();
 			else
@@ -145,7 +148,7 @@ function TaxiNodeOnButtonEnter(button)
 			end
 		end
 	elseif ( type == "CURRENT" ) then
-		GameTooltip:AddLine(TAXINODEYOUAREHERE, "", 0.5, 1.0, 0.5);
+		GameTooltip:AddLine(TAXINODEYOUAREHERE, 1.0, 1.0, 1.0, true);
 		DrawOneHopLines();
 	end
 
@@ -162,7 +165,7 @@ function DrawOneHopLines()
 	local numLines = 0;
 	local numSingleHops = 0;
 	for i=1, numNodes  do
-		if ( GetNumRoutes(i) == 1 ) then
+		if ( GetNumRoutes(i) == 1 and TaxiNodeGetType(i) ~= "NONE" ) then
 			numSingleHops = numSingleHops + 1;
 			numLines = numLines + 1;
 			if ( numLines > NUM_TAXI_ROUTES ) then
@@ -173,10 +176,12 @@ function DrawOneHopLines()
 				line = _G["TaxiRoute"..numLines];
 			end
 			if ( line ) then
-				sX = TaxiGetSrcX(i, 1)*w;
-				sY = TaxiGetSrcY(i, 1)*h;
-				dX = TaxiGetDestX(i, 1)*w;
-				dY = TaxiGetDestY(i, 1)*h;
+				local slot = TaxiGetNodeSlot(i, 1, true);
+				sX = taxiNodePositions[slot].x;
+				sY = taxiNodePositions[slot].y;
+				slot = TaxiGetNodeSlot(i, 1, false);
+				dX = taxiNodePositions[slot].x;
+				dY = taxiNodePositions[slot].y;
 				DrawRouteLine(line, "TaxiRouteMap", sX, sY, dX, dY, 32);
 				line:Show();
 			end

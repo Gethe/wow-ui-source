@@ -5,11 +5,11 @@
 	
 	<!-- Talent button template, taken from PlayerTalentButtonTemplate in Blizzard_TalentUI.xml -->
 	<Button name="InspectTalentButtonTemplate" virtual="true">
-		<Size x="64" y="64"/>
+		<Size x="54" y="54"/>
 		<Layers>
 			<Layer level="BACKGROUND">
 				<Texture name="$parentIconTexture" parentKey="icon">
-					<Size x="30" y="30"/>
+					<Size x="26" y="26"/>
 					<Anchors>
 						<Anchor point="CENTER" x="-1" y="2"/>
 					</Anchors>
@@ -17,7 +17,7 @@
 			</Layer>
 			<Layer level="ARTWORK" textureSubLevel="1">
 				<Texture name="$parentSlot" inherits="Talent-SingleBorder" parentKey="Slot">
-					<Size x="31" y="30"/>
+					<Size x="27" y="26"/>
 					<Anchors>
 						<Anchor point="CENTER" x="-1" y="2"/>
 					</Anchors>
@@ -46,7 +46,7 @@
 	
 	<!-- Row of player talents, taken from PlayerTalentRowTemplate in Blizzard_TalentUI.xml -->
 	<Frame name="InspectTalentRowTemplate" virtual="true">
-		<Size x="627" y="50"/>
+		<Size x="627" y="42"/>
 		<Frames>
 			<Button name="$parentTalent1" inherits="InspectTalentButtonTemplate" parentKey="talent1">
 				<Anchors>
@@ -55,12 +55,12 @@
 			</Button>
 			<Button name="$parentTalent2" inherits="InspectTalentButtonTemplate" parentKey="talent2">
 				<Anchors>
-					<Anchor point="LEFT" x="40" y="0"/>
+					<Anchor point="LEFT" x="32" y="0"/>
 				</Anchors>
 			</Button>
 			<Button name="$parentTalent3" inherits="InspectTalentButtonTemplate" parentKey="talent3">
 				<Anchors>
-					<Anchor point="LEFT" x="90" y="0"/>
+					<Anchor point="LEFT" x="74" y="0"/>
 				</Anchors>
 			</Button>
 		</Frames>
@@ -123,13 +123,12 @@
 			</Layer>
 			<!-- Gold border bar separating blue and black areas-->
 			<Layer level="BORDER">
-				<Texture file="Interface\TalentFrame\talent-horiz" horizTile="true">
+				<Texture atlas="_Talent-Top-Tile" horizTile="true">
 					<Size x="0" y="11"/>
 					<Anchors>
 						<Anchor point="TOPLEFT"  x="7" y="-130"/>
 						<Anchor point="TOPRIGHT" x="-9" y="-130"/>
 					</Anchors>
-					<TexCoords left="0.00000000" right="1.00000000" top="0.05468750" bottom="0.14062500"/>
 				</Texture>
 			</Layer>
 		</Layers>
@@ -143,12 +142,11 @@
 				<Layers>
 					
 					<Layer level="ARTWORK">
-						<Texture name="$parentRing" file="Interface\TalentFrame\talent-main" parentKey="ring">
-							<Size x="101" y="101"/>	
+						<Texture name="$parentRing" atlas="Talent-RingWithDot" parentKey="ring">
+							<Size x="101" y="101"/>
 							<Anchors>
 								<Anchor point="TOPLEFT" x="5" y="-3"/>
 							</Anchors>
-							<TexCoords left="0.00390625" right="0.49218750" top="0.00195313" bottom="0.24609375"/>
 						</Texture>
 						<FontString name="$parentSpecName" inherits="BossEmoteNormalHuge" justifyH="BOTTOM" parentKey="specName">
 							<Anchors>
@@ -200,7 +198,7 @@
 				<Frames>
 					<Frame name="$parentTalentRow1" inherits="InspectTalentRowTemplate" parentKey="tier1" id="1">
 						<Anchors>
-							<Anchor point="TOPLEFT" x="5" y="-142"/>
+							<Anchor point="TOPLEFT" x="20" y="-146"/>
 						</Anchors>				
 					</Frame>
 					<Frame name="$parentTalentRow2" inherits="InspectTalentRowTemplate" parentKey="tier2" id="2">
@@ -227,6 +225,11 @@
 						<Anchors>
 							<Anchor point="TOPLEFT" relativeTo="$parentTalentRow5" relativePoint="BOTTOMLEFT" x="0" y="4"/>
 						</Anchors>				
+					</Frame>
+					<Frame name="$parentTalentRow7" inherits="InspectTalentRowTemplate" parentKey="tier7" id="7">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="$parentTalentRow6" relativePoint="BOTTOMLEFT" x="0" y="4"/>
+						</Anchors>
 					</Frame>
 				</Frames>
 				<Scripts>

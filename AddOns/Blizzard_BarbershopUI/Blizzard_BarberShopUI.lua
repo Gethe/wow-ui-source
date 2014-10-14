@@ -10,7 +10,7 @@ function BarberShop_OnLoad(self)
 	if ( IsBarberShopStyleValid(STYLE_SKIN) ) then
 		if ( IsBarberShopStyleValid(STYLE_HAIR_COLOR) ) then
 			-- tauren, worgen, female pandaren
-			BarberShop_ToFourAttributeFormat();
+			BarberShop_ToFiveAttributeFormat();
 		else
 			-- male pandaren
 			BarberShopFrameSelector2:Hide();
@@ -51,19 +51,13 @@ function BarberShop_OnShow(self)
 
 	PlaySound("BarberShop_Sit");
 	
-	WatchFrame:Hide();
-
-	--load the texture
-	BarberShopFrameBackground:SetTexture("Interface\\Barbershop\\UI-Barbershop");
+	ObjectiveTrackerFrame:Hide();
 end
 
 function BarberShop_OnHide(self)
 	BarberShopBannerFrame:Hide();
 
-	WatchFrame:Show();
-	
-	--unload the texture to save memory
-	BarberShopFrameBackground:SetTexture(nil);
+	ObjectiveTrackerFrame:Show();
 end
 
 function BarberShop_OnEvent(self, event, ...)
@@ -78,7 +72,7 @@ function BarberShop_UpdateCost()
 	-- The 4th return from GetBarberShopStyleInfo is whether the selected style is the active character style
 	local defaultHairColor = not BarberShopFrameSelector2:IsShown() or select(4, GetBarberShopStyleInfo(2));
 	local defaultSkinColor = not BarberShopFrameSelector4:IsShown() or select(4, GetBarberShopStyleInfo(4));
-	if ( select(4, GetBarberShopStyleInfo(1)) and defaultHairColor and select(4, GetBarberShopStyleInfo(3)) and defaultSkinColor ) then
+	if ( select(4, GetBarberShopStyleInfo(1)) and defaultHairColor and select(4, GetBarberShopStyleInfo(3)) and defaultSkinColor and select(4, GetBarberShopStyleInfo(5)) ) then
 		BarberShopFrameOkayButton:Disable();
 		BarberShopFrameResetButton:Disable();
 	else
@@ -99,6 +93,7 @@ function BarberShop_Update(self)
 	BarberShop_UpdateSelector(BarberShopFrameSelector3);
 	BarberShop_UpdateSelector(BarberShopFrameSelector2);
 	BarberShop_UpdateSelector(BarberShopFrameSelector1);
+	BarberShop_UpdateSelector(BarberShopFrameSelector5);
 end
 
 function BarberShop_UpdateSelector(self)
@@ -127,13 +122,14 @@ function BarberShop_SetLabelColor(label, isCurrent)
 end
 
 function BarberShop_ResetLabelColors()
+	BarberShop_SetLabelColor(BarberShopFrameSelector5Category, 1);
 	BarberShop_SetLabelColor(BarberShopFrameSelector1Category, 1);
 	BarberShop_SetLabelColor(BarberShopFrameSelector2Category, 1);
 	BarberShop_SetLabelColor(BarberShopFrameSelector3Category, 1);
 	BarberShop_SetLabelColor(BarberShopFrameSelector4Category, 1);
 end
 
-function BarberShop_ToFourAttributeFormat()
+function BarberShop_ToFiveAttributeFormat()
 	BarberShopFrameSelector2:SetPoint("TOPLEFT", BarberShopFrameSelector1, "BOTTOMLEFT", 0, 3);
 	BarberShopFrameSelector3:SetPoint("TOPLEFT", BarberShopFrameSelector2, "BOTTOMLEFT", 0, 3);
 	BarberShopFrameSelector4:Show();

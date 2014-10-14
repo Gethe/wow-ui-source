@@ -1,0 +1,191 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\FrameXML\UI.xsd">
+	<Script file="SplashFrame.lua"/>
+
+	<Frame name="SplashFeatureFrameTemplate" virtual="true">
+		<Size x="286" y="177"/>
+		<Layers>
+			<Layer level="ARTWORK">
+				<FontString parentKey="Description" inherits="GameFontHighlight" spacing="2" justifyH="CENTER">
+					<Size x="250" y="0"/>
+					<Anchors>
+						<Anchor point="BOTTOM" x="0" y="20"/>
+					</Anchors>
+				</FontString>
+				<FontString parentKey="Title" inherits="GameFontNormalLarge2" justifyH="CENTER">
+					<Size x="250" y="0"/>
+					<Anchors>
+						<Anchor point="BOTTOM" relativeKey="$parent.Description" relativePoint="TOP" x="0" y="6"/>
+					</Anchors>
+				</FontString>				
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnEnter function="SplashFeature_OnEnter"/>
+			<OnLeave function="SplashFeature_OnLeave"/>
+		</Scripts>
+	</Frame>
+
+	<Frame name="SplashFrame" parent="UIParent" toplevel="true" frameStrata="DIALOG" enableMouse="true" hidden="true" >
+		<Size x="882" y="584"/>
+		<Anchors>
+			<Anchor point="CENTER"/>
+		</Anchors>		
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="LeftTexture" atlas="splash-600-topleft" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="TOPLEFT"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="RightTexture" atlas="splash-600-right" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.LeftTexture" relativePoint="TOPRIGHT" x="0" y="-1"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="BottomTexture" atlas="splash-600-botleft">
+					<Size>
+						<AbsDimension x="371" y="137"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.LeftTexture" relativePoint="BOTTOMLEFT"/>
+					</Anchors>
+					<TexCoords>
+						<Rect ULx="1" ULy="0" LLx="0" LLy="0" URx="1" URy="1" LRx="0" LRy="1"/>
+					</TexCoords>
+				</Texture>
+				<Texture parentKey="BottomLine" atlas="splash-botleft" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.BottomTexture" relativePoint="BOTTOMLEFT" x="3" y="0"/>
+					</Anchors>	
+				</Texture>
+			</Layer>
+			<Layer level="ARTWORK">
+				<FontString parentKey="Header" inherits="SplashHeaderFont">
+					<Anchors>
+						<Anchor point="TOP" x="-9" y="-16"/>
+					</Anchors>
+				</FontString>
+				<FontString parentKey="Label" inherits="SystemFont_Large" justifyH="LEFT" justifyV="MIDDLE">
+					<Size x="400" y="45"/>
+					<Anchors>
+						<Anchor point="LEFT" x="61" y="211"/>
+					</Anchors>
+					<Color r="0.13" g="0.07" b="0"/>
+				</FontString>
+				<FontString parentKey="RightDescription" inherits="SystemFont_Shadow_Med2" spacing="4">
+					<Size x="300" y="0"/>
+					<Anchors>
+						<Anchor point="BOTTOM" x="164" y="183"/>
+					</Anchors>
+				</FontString>
+				<FontString parentKey="RightTitle" inherits="Game32Font">
+					<Anchors>
+						<Anchor point="BOTTOM" relativeKey="$parent.RightDescription" relativePoint="TOP" x="0" y="10"/>
+					</Anchors>
+					<Shadow>
+						<Offset>
+							<AbsDimension x="1" y="-1"/>
+						</Offset>
+						<Color r="0" g="0" b="0"/>
+					</Shadow>	
+					<Color r="1" g=".82" b="0"/>
+				</FontString>				
+			</Layer>
+			<Layer level="BORDER">
+				<Texture>
+					<Color r="0" g="1" b="0" a="0"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.RightDescription"/>
+						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.RightDescription"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Button parentKey="StartButton">
+				<Size x="320" y="60"/>
+				<Anchors>
+					<Anchor point="BOTTOMRIGHT" x="-118" y="91"/>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<Texture parentKey="Texture" atlas="splash-bigbutton" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="CENTER" x="-4" y="0"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+					<Layer level="ARTWORK">
+						<FontString parentKey="Text" inherits="Game27Font" text="SPLASH_START_QUEST_NOW">
+							<Anchors>
+								<Anchor point="CENTER" x="20" y="0"/>
+							</Anchors>
+							<Shadow>
+								<Offset>
+									<AbsDimension x="1" y="-1"/>
+								</Offset>
+								<Color r="0" g="0" b="0"/>
+							</Shadow>	
+							<Color r="1" g=".82" b="0"/>
+						</FontString>
+					</Layer>				
+				</Layers>
+				<HighlightTexture atlas="splash-bigbutton" useAtlasSize="true" alphaMode="ADD" alpha="0.1">
+					<Anchors>
+						<Anchor point="CENTER" x="-4" y="0"/>
+					</Anchors>
+				</HighlightTexture>
+				<Scripts>
+					<OnEnter>
+						self.Text:SetTextColor(1, 1, 1);
+					</OnEnter>
+					<OnLeave>
+						self.Text:SetTextColor(1, 0.82, 0);
+					</OnLeave>					
+					<OnMouseDown>
+						if( self:IsEnabled() ) then
+							self.Text:SetPoint("CENTER", 22, -2);
+						end
+					</OnMouseDown>
+					<OnMouseUp>
+						self.Text:SetPoint("CENTER", 20, 0);
+					</OnMouseUp>
+					<OnClick function="SplashFrameStartButton_OnClick"/>
+				</Scripts>
+			</Button>
+			<Button parentKey="BottomCloseButton" inherits="UIPanelButtonTemplate" text="CLOSE">
+				<Size x="132" y="22"/>
+				<Anchors>
+					<Anchor point="BOTTOM" x="0" y="34"/>
+				</Anchors>
+				<Scripts>
+					<OnClick function="SplashFrame_Close"/>
+				</Scripts>
+			</Button>
+			<Button parentKey="TopCloseButton" inherits="UIPanelCloseButtonNoScripts">
+				<Anchors>
+					<Anchor point="TOPRIGHT" x="-14" y="-10"/>
+				</Anchors>
+				<Scripts>
+					<OnClick function="SplashFrame_Close"/>
+				</Scripts>				
+			</Button>
+			<Frame parentKey="Feature1" inherits="SplashFeatureFrameTemplate" id="1">
+				<Anchors>
+					<Anchor point="TOPLEFT" x="67" y="-122"/>
+				</Anchors>
+			</Frame>
+			<Frame parentKey="Feature2" inherits="SplashFeatureFrameTemplate" id="2">
+				<Anchors>
+					<Anchor point="TOPLEFT" x="67" y="-326"/>
+				</Anchors>
+			</Frame>			
+		</Frames>
+		<Scripts>
+			<OnLoad function="SplashFrame_OnLoad"/>
+			<OnEvent function="SplashFrame_OnEvent"/>
+			<OnHide function="SplashFrame_OnHide"/>
+		</Scripts>
+	</Frame>
+</Ui>

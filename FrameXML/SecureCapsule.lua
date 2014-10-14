@@ -58,6 +58,7 @@ end
 --For store
 if ( IsGMClient() ) then
 	retain("C_PurchaseAPI");
+	retain("HideGMOnly");
 else
 	take("C_PurchaseAPI");
 end
@@ -190,6 +191,9 @@ take("CHARACTER_UPGRADE_LOG_OUT_NOW");
 take("CHARACTER_UPGRADE_POPUP_LATER");
 take("CHARACTER_UPGRADE_READY");
 take("CHARACTER_UPGRADE_READY_DESCRIPTION");
+take("FREE_CHARACTER_UPGRADE_READY");
+take("FREE_CHARACTER_UPGRADE_READY_DESCRIPTION");
+
 
 retain("OKAY");
 retain("LARGE_NUMBER_SEPERATOR");

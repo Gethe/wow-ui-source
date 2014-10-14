@@ -10,8 +10,21 @@ LEFT_ACTIONBAR_PAGE = 4;
 RIGHT_ACTIONBAR_PAGE = 3;
 RANGE_INDICATOR = "●";
 
+COOLDOWN_TYPE_LOSS_OF_CONTROL = 1;
+COOLDOWN_TYPE_NORMAL = 2;
+
 -- Table of actionbar pages and whether they're viewable or not
 VIEWABLE_ACTION_BAR_PAGES = {1, 1, 1, 1, 1, 1};
+
+ACTION_HIGHLIGHT_MARKS = { };
+
+function MarkNewActionHighlight(action, mark)
+	ACTION_HIGHLIGHT_MARKS[action] = mark;
+end
+
+function GetNewActionHighlightMark(action)
+	return ACTION_HIGHLIGHT_MARKS[action];
+end
 
 local isInPetBattle = C_PetBattles.IsInBattle;
 function ActionButtonDown(id)
@@ -36,7 +49,9 @@ function ActionButtonDown(id)
 		button:SetButtonState("PUSHED");
 	end
 	if (GetCVarBool("ActionButtonUseKeyDown")) then
-		SecureActionButton_OnClick(button, "LeftButton");
+		if (not button.draenorZoneDisabled) then
+			SecureActionButton_OnClick(button, "LeftButton");
+		end
 		ActionButton_UpdateState(button);
 	end
 end
@@ -62,7 +77,9 @@ function ActionButtonUp(id)
 	if ( button:GetButtonState() == "PUSHED" ) then
 		button:SetButtonState("NORMAL");
 		if (not GetCVarBool("ActionButtonUseKeyDown")) then
-			SecureActionButton_OnClick(button, "LeftButton");
+			if (not button.draenorZoneDisabled) then
+				SecureActionButton_OnClick(button, "LeftButton");
+			end
 			ActionButton_UpdateState(button);
 		end
 	end
@@ -115,14 +132,9 @@ function ActionBarButtonEventsFrame_OnLoad(self)
 end
 
 function ActionBarButtonEventsFrame_OnEvent(self, event, ...)
-	if ( event == "ACTIONBAR_UPDATE_COOLDOWN" ) then
-		if ( self.tooltipOwner and GameTooltip:GetOwner() == self.tooltipOwner ) then
-			ActionButton_SetTooltip(self.tooltipOwner);
-		end
-	else
-		for k, frame in pairs(self.frames) do
-			ActionButton_OnEvent(frame, event, ...);
-		end
+	-- pass event down to the buttons
+	for k, frame in pairs(self.frames) do
+		ActionButton_OnEvent(frame, event, ...);
 	end
 end
 
@@ -155,6 +167,8 @@ function ActionBarActionEventsFrame_OnLoad(self)
 	self:RegisterEvent("SPELL_ACTIVATION_OVERLAY_GLOW_SHOW");
 	self:RegisterEvent("SPELL_ACTIVATION_OVERLAY_GLOW_HIDE");
 	self:RegisterEvent("UPDATE_SUMMONPETS_ACTION");
+	self:RegisterEvent("LOSS_OF_CONTROL_ADDED");
+	self:RegisterEvent("LOSS_OF_CONTROL_UPDATE");
 end
 
 function ActionBarActionEventsFrame_OnEvent(self, event, ...)
@@ -207,11 +221,11 @@ function ActionButton_UpdateHotkeys (self, actionButtonType)
 		end
     end
 
-    local hotkey = _G[self:GetName().."HotKey"];
+    local hotkey = self.HotKey;
     local key = GetBindingKey(actionButtonType..id) or
                 GetBindingKey("CLICK "..self:GetName()..":LeftButton");
 
-	local text = GetBindingText(key, "KEY_", 1);
+	local text = GetBindingText(key, 1);
     if ( text == "" ) then
         hotkey:SetText(RANGE_INDICATOR);
         hotkey:Hide();
@@ -241,22 +255,41 @@ function ActionButton_CalculateAction (self, button)
 	end
 end
 
-function ActionButton_UpdateAction (self)
+function ActionButton_UpdateAction (self, force)
 	local action = ActionButton_CalculateAction(self);
-	if ( action ~= self.action ) then
+	if ( action ~= self.action or force ) then
 		self.action = action;
 		SetActionUIButton(self, action, self.cooldown);
 		ActionButton_Update(self);
+		
+		if ( self.NewActionTexture ) then
+			if ( GetNewActionHighlightMark(action) ) then
+				self.NewActionTexture:Show();
+			else
+				self.NewActionTexture:Hide();
+			end
+		end
 	end
 end
 
 function ActionButton_Update (self)
-	local name = self:GetName();
-
 	local action = self.action;
 	local icon = self.icon;
 	local buttonCooldown = self.cooldown;
 	local texture = GetActionTexture(action);
+
+	self.draenorZoneDisabled = false;
+	icon:SetDesaturated(false);
+	local type, id = GetActionInfo(action);
+	if ((type == "spell" or type == "companion") and DraenorZoneAbilityFrame and DraenorZoneAbilityFrame.baseName and not HasDraenorZoneAbility()) then
+		local name = GetSpellInfo(DraenorZoneAbilityFrame.baseName);
+		local abilityName = GetSpellInfo(id);
+		if (name == abilityName) then
+			texture = GetLastDraenorSpellTexture();
+			self.draenorZoneDisabled = true;
+			icon:SetDesaturated(true);
+		end
+	end
 
 	if ( HasAction(action) ) then
 		if ( not self.eventsRegistered ) then
@@ -270,7 +303,6 @@ function ActionButton_Update (self)
 		ActionButton_UpdateState(self);
 		ActionButton_UpdateUsable(self);
 		ActionButton_UpdateCooldown(self);
-		ActionButton_UpdateLossOfControlCooldown(self);
 		ActionButton_UpdateFlash(self);
 	else
 		if ( self.eventsRegistered ) then
@@ -286,7 +318,7 @@ function ActionButton_Update (self)
 	end
 
 	-- Add a green border if button is an equipped item
-	local border = _G[name.."Border"];
+	local border = self.Border;
 	if border then
 		if ( IsEquippedAction(action) ) then
 			border:SetVertexColor(0, 1.0, 0, 0.35);
@@ -297,7 +329,7 @@ function ActionButton_Update (self)
 	end
 
 	-- Update Action Text
-	local actionName = _G[name.."Name"];
+	local actionName = self.Name;
 	if actionName then
 		if ( not IsConsumableAction(action) and not IsStackableAction(action) and (IsItemAction(action) or GetActionCount(action) == 0) ) then
 			actionName:SetText(GetActionText(action));
@@ -313,11 +345,11 @@ function ActionButton_Update (self)
 		self.rangeTimer = -1;
 		ActionButton_UpdateCount(self);	
 	else
-		_G[self:GetName().."Count"]:SetText("");
+		self.Count:SetText("");
 		icon:Hide();
 		buttonCooldown:Hide();
 		self.rangeTimer = nil;
-		local hotkey = _G[name.."HotKey"];
+		local hotkey = self.HotKey;
         if ( hotkey:GetText() == RANGE_INDICATOR ) then
 			hotkey:Hide();
 		else
@@ -345,8 +377,8 @@ function ActionButton_ShowGrid (button)
 		button:SetAttribute("showgrid", button:GetAttribute("showgrid") + 1);
 	end
 
-	if ( _G[button:GetName().."NormalTexture"] ) then
-		_G[button:GetName().."NormalTexture"]:SetVertexColor(1.0, 1.0, 1.0, 0.5);
+	if ( button.NormalTexture ) then
+		button.NormalTexture:SetVertexColor(1.0, 1.0, 1.0, 0.5);
 	end
 	
 	if ( button:GetAttribute("showgrid") >= 1 and not button:GetAttribute("statehidden") ) then
@@ -375,16 +407,15 @@ function ActionButton_UpdateState (button)
 	
 	local action = button.action;
 	if ( IsCurrentAction(action) or IsAutoRepeatAction(action) ) then
-		button:SetChecked(1);
+		button:SetChecked(true);
 	else
-		button:SetChecked(0);
+		button:SetChecked(false);
 	end
 end
 
 function ActionButton_UpdateUsable (self)
-	local name = self:GetName();
-	local icon = _G[name.."Icon"];
-	local normalTexture = _G[name.."NormalTexture"];
+	local icon = self.icon;
+	local normalTexture = self.NormalTexture;
 	if ( not normalTexture ) then
 		return;
 	end
@@ -403,7 +434,7 @@ function ActionButton_UpdateUsable (self)
 end
 
 function ActionButton_UpdateCount (self)
-	local text = _G[self:GetName().."Count"];
+	local text = self.Count;
 	local action = self.action;
 	if ( IsConsumableAction(action) or IsStackableAction(action) or (not IsItemAction(action) and GetActionCount(action) > 0) ) then
 		local count = GetActionCount(action);
@@ -423,13 +454,36 @@ function ActionButton_UpdateCount (self)
 end
 
 function ActionButton_UpdateCooldown (self)
+	local locStart, locDuration = GetActionLossOfControlCooldown(self.action);
 	local start, duration, enable, charges, maxCharges = GetActionCooldown(self.action);
-	CooldownFrame_SetTimer(self.cooldown, start, duration, enable, charges, maxCharges);
+
+	if ( (locStart + locDuration) > (start + duration) ) then
+		if ( self.cooldown.currentCooldownType ~= COOLDOWN_TYPE_LOSS_OF_CONTROL ) then
+			self.cooldown:SetEdgeTexture("Interface\\Cooldown\\edge-LoC");
+			self.cooldown:SetSwipeColor(0.17, 0, 0);
+			self.cooldown:SetHideCountdownNumbers(true);
+			self.cooldown.currentCooldownType = COOLDOWN_TYPE_LOSS_OF_CONTROL;
+		end
+		
+		CooldownFrame_SetTimer(self.cooldown, locStart, locDuration, 1, nil, nil, true);
+	else
+		if ( self.cooldown.currentCooldownType ~= COOLDOWN_TYPE_NORMAL ) then
+			self.cooldown:SetEdgeTexture("Interface\\Cooldown\\edge");
+			self.cooldown:SetSwipeColor(0, 0, 0);
+			self.cooldown:SetHideCountdownNumbers(false);
+			self.cooldown.currentCooldownType = COOLDOWN_TYPE_NORMAL;
+		end
+		
+		if( locStart > 0 ) then
+			self.cooldown:SetScript("OnCooldownDone", ActionButton_OnCooldownDone );
+		end
+		CooldownFrame_SetTimer(self.cooldown, start, duration, enable, charges, maxCharges);
+	end
 end
 
-function ActionButton_UpdateLossOfControlCooldown (self)
-	local start, duration = GetActionLossOfControlCooldown(self.action);
-	self.cooldown:SetLossOfControlCooldown(start, duration);
+function ActionButton_OnCooldownDone(self)
+	self:SetScript("OnCooldownDone", nil);
+	ActionButton_UpdateCooldown(self:GetParent());
 end
 
 --Overlay stuff
@@ -551,14 +605,14 @@ function ActionButton_OnEvent (self, event, ...)
 		ActionButton_UpdateState(self);
 	elseif ( event == "ACTIONBAR_UPDATE_USABLE" ) then
 		ActionButton_UpdateUsable(self);
-	elseif ( event == "ACTIONBAR_UPDATE_COOLDOWN" ) then	--Not actually registered for default action bars. Cooldowns are changed in C-code.
+	elseif ( event == "LOSS_OF_CONTROL_UPDATE" ) then
+		ActionButton_UpdateCooldown(self);
+	elseif ( event == "ACTIONBAR_UPDATE_COOLDOWN" or event == "LOSS_OF_CONTROL_ADDED" ) then
 		ActionButton_UpdateCooldown(self);
 		-- Update tooltip
 		if ( GameTooltip:GetOwner() == self ) then
 			ActionButton_SetTooltip(self);
 		end
-	elseif ( event == "LOSS_OF_CONTROL_UPDATE" ) then	--Not actually registered for default action bars. Cooldowns are changed in C-code.
-		ActionButton_UpdateLossOfControlCooldown(self);
 	elseif ( event == "TRADE_SKILL_SHOW" or event == "TRADE_SKILL_CLOSE"  or event == "ARCHAEOLOGY_CLOSED" ) then
 		ActionButton_UpdateState(self);
 	elseif ( event == "PLAYER_ENTER_COMBAT" ) then
@@ -647,7 +701,7 @@ function ActionButton_OnUpdate (self, elapsed)
 			end
 			flashtime = ATTACK_BUTTON_FLASH_TIME - overtime;
 
-			local flashTexture = _G[self:GetName().."Flash"];
+			local flashTexture = self.Flash;
 			if ( flashTexture:IsShown() ) then
 				flashTexture:Hide();
 			else
@@ -664,20 +718,20 @@ function ActionButton_OnUpdate (self, elapsed)
 		rangeTimer = rangeTimer - elapsed;
 
 		if ( rangeTimer <= 0 ) then
-			local count = _G[self:GetName().."HotKey"];
+			local count = self.HotKey;
 			local valid = IsActionInRange(self.action);
 			if ( count:GetText() == RANGE_INDICATOR ) then
-				if ( valid == 0 ) then
+				if ( valid == false ) then
 					count:Show();
 					count:SetVertexColor(1.0, 0.1, 0.1);
-				elseif ( valid == 1 ) then
+				elseif ( valid ) then
 					count:Show();
 					count:SetVertexColor(0.6, 0.6, 0.6);
 				else
 					count:Hide();
 				end
 			else
-				if ( valid == 0 ) then
+				if ( valid == false ) then
 					count:SetVertexColor(1.0, 0.1, 0.1);
 				else
 					count:SetVertexColor(0.6, 0.6, 0.6);
@@ -711,7 +765,7 @@ end
 
 function ActionButton_StopFlash (self)
 	self.flashing = 0;
-	_G[self:GetName().."Flash"]:Hide();
+	self.Flash:Hide();
 	ActionButton_UpdateState (self);
 end
 

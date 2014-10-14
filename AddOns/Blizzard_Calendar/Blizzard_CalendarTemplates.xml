@@ -372,13 +372,6 @@
 				</Anchors>
 				<Scripts>
 					<OnClick>
-					--[[
-						if ( self:GetParent().partyMode ) then
-							self.criterion = "party";
-						else
-							self.criterion = "name";
-						end
-					--]]
 						self.criterion = "name";
 						CalendarEventInviteSortButton_OnClick(self);
 					</OnClick>

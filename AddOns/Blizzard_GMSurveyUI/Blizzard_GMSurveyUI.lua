@@ -26,7 +26,7 @@ function GMSurveyFrame_Update()
 				if ( surveyAnswer ) then
 					_G["GMSurveyQuestion"..i.."RadioButton"..(j-1).."Score"]:SetText(surveyAnswer);
 					answerFrame:Show();
-					answerFrame:SetChecked(0);
+					answerFrame:SetChecked(false);
 				else
 					answerFrame:Hide();
 				end
@@ -139,10 +139,10 @@ function GMSurveyRadioButton_OnClick(self)
 	for i=0, #radioButtons do
 		radioButton = radioButtons[i];
 		if ( i == owner.selectedRadioButton ) then
-			radioButton:SetChecked(1);
+			radioButton:SetChecked(true);
 			radioButton:Disable();
 		else
-			radioButton:SetChecked(0);
+			radioButton:SetChecked(false);
 			radioButton:Enable();
 			PlaySound("igMainMenuOptionCheckBoxOn");
 		end

@@ -6,11 +6,15 @@ LOOT_SLOT_ITEM = 1;
 LOOT_SLOT_MONEY = 2;
 LOOT_SLOT_CURRENCY = 3;
 
+LOOTFRAME_AUTOLOOT_DELAY = 0.3;
+LOOTFRAME_AUTOLOOT_RATE = 0.35;
+
 function LootFrame_OnLoad(self)
 	self:RegisterEvent("LOOT_OPENED");
 	self:RegisterEvent("LOOT_SLOT_CLEARED");
 	self:RegisterEvent("LOOT_SLOT_CHANGED");
 	self:RegisterEvent("LOOT_CLOSED");
+	self:RegisterEvent("LOOT_READY");
 	self:RegisterEvent("OPEN_MASTER_LOOT_LIST");
 	self:RegisterEvent("UPDATE_MASTER_LOOT_LIST");
 	--hide button bar
@@ -20,17 +24,26 @@ end
 function LootFrame_OnEvent(self, event, ...)
 	if ( event == "LOOT_OPENED" ) then
 		local autoLoot = ...;
+		if( autoLoot == 1 ) then
+			LootFrame_InitAutoLootTable( self );
+			LootFrame:SetScript("OnUpdate", LootFrame_OnUpdate);
+			self.AutoLootDelay = LOOTFRAME_AUTOLOOT_DELAY;
+		else
+			self.AutoLootDelay = 0;
+			self.AutoLootTable = nil;
+		end
 		
 		self.page = 1;
 		LootFrame_Show(self);
 		if ( not self:IsShown()) then
 			CloseLoot(autoLoot == 0);	-- The parameter tells code that we were unable to open the UI
 		end
+	elseif( event == "LOOT_READY" ) then
+		LootFrame_InitAutoLootTable( self );
 	elseif ( event == "LOOT_SLOT_CLEARED" ) then
 		local arg1 = ...;
-		
-		if ( not self:IsShown() ) then
-			return;
+		if ( not self:IsShown() or self.AutoLootTable) then
+			return; 
 		end
 
 		local numLootToShow = LOOTFRAME_NUMBUTTONS;
@@ -77,8 +90,9 @@ function LootFrame_OnEvent(self, event, ...)
 			end
 		end
 	elseif ( event == "LOOT_CLOSED" ) then
-		StaticPopup_Hide("LOOT_BIND");
-		HideUIPanel(self);
+		if( not self.AutoLootTable ) then
+			LootFrame_Close();
+		end
 		return;
 	elseif ( event == "OPEN_MASTER_LOOT_LIST" ) then
 		ToggleDropDownMenu(1, nil, GroupLootDropDown, LootFrame.selectedLootButton, 0, 0);
@@ -91,7 +105,46 @@ end
 local LOOT_UPDATE_INTERVAL = 0.5;
 function LootFrame_OnUpdate(self, elapsed)
 	self.timeSinceUpdate = (self.timeSinceUpdate or 0) + elapsed;
-	if ( self.timeSinceUpdate >= LOOT_UPDATE_INTERVAL ) then
+	if( self.AutoLootTable )then
+		if( self.AutoLootDelay > 0 ) then
+			self.AutoLootDelay = self.AutoLootDelay - elapsed;
+			self.timeSinceUpdate = 0;
+			self.AutoLootCurrentIdx = 1;
+		elseif( self.timeSinceUpdate >  LOOTFRAME_AUTOLOOT_RATE ) then
+			local entry = self.AutoLootTable[self.AutoLootCurrentIdx]
+			if( entry and not entry.roll and not entry.locked) then
+				self.AutoLootTable[self.AutoLootCurrentIdx].hide = true;
+			end
+			self.AutoLootCurrentIdx = self.AutoLootCurrentIdx +1; 
+			self.timeSinceUpdate = 0;
+			if( self.AutoLootCurrentIdx > #self.AutoLootTable ) then 
+				self:SetScript("OnUpdate", nil);
+				self.timeSinceUpdate = nil;
+				self.AutoLootTable = nil;
+				--close
+				LootFrame_Close();
+			else
+				local numLootToShow = LOOTFRAME_NUMBUTTONS;
+				if ( self.numLootItems > LOOTFRAME_NUMBUTTONS ) then
+					numLootToShow = numLootToShow - 1;
+				end
+				local slot = self.AutoLootCurrentIdx - ((self.page - 1) * numLootToShow) - 1;
+				if ( (slot > 0) and (slot < (numLootToShow + 1)) ) then
+					local button = _G["LootButton"..slot];
+					if ( button ) then
+						button:Hide();
+					end
+				end
+				-- try to move second page of loot items to the first page
+				if( self.AutoLootCurrentIdx % numLootToShow == 1 ) then
+					if( LootFrameDownButton:IsShown() ) then
+						LootFrame_PageDown();
+					end
+				end
+				LootFrame_Update();
+			end
+		end
+	elseif ( self.timeSinceUpdate >= LOOT_UPDATE_INTERVAL ) then
 		self:SetScript("OnUpdate", nil);
 		self.timeSinceUpdate = nil;
 		LootFrame_Update();
@@ -102,66 +155,88 @@ function LootFrame_UpdateButton(index)
 	local numLootItems = LootFrame.numLootItems;
 	--Logic to determine how many items to show per page
 	local numLootToShow = LOOTFRAME_NUMBUTTONS;
+	local self = LootFrame;
+	if( self.AutoLootTable ) then
+		numLootItems = #self.AutoLootTable;
+	end
 	if ( numLootItems > LOOTFRAME_NUMBUTTONS ) then
-		numLootToShow = numLootToShow - 1;
+		numLootToShow = numLootToShow - 1; -- make space for the page buttons
 	end
 	
 	local button = _G["LootButton"..index];
-		local slot = (numLootToShow * (LootFrame.page - 1)) + index;
-		if ( slot <= numLootItems ) then	
-			if ( LootSlotHasItem(slot) and index <= numLootToShow ) then
-				local texture, item, quantity, quality, locked, isQuestItem, questId, isActive = GetLootSlotInfo(slot);
-				local text = _G["LootButton"..index.."Text"];
-				if ( texture ) then
-					local color = ITEM_QUALITY_COLORS[quality];
-					_G["LootButton"..index.."IconTexture"]:SetTexture(texture);
-					text:SetText(item);
-					if( locked ) then
-						SetItemButtonNameFrameVertexColor(button, 1.0, 0, 0);
-						SetItemButtonTextureVertexColor(button, 0.9, 0, 0);
-						SetItemButtonNormalTextureVertexColor(button, 0.9, 0, 0);
-					else
-						SetItemButtonNameFrameVertexColor(button, 0.5, 0.5, 0.5);
-						SetItemButtonTextureVertexColor(button, 1.0, 1.0, 1.0);
-						SetItemButtonNormalTextureVertexColor(button, 1.0, 1.0, 1.0);
-					end
-					
-					local questTexture = _G["LootButton"..index.."IconQuestTexture"];
-					if ( questId and not isActive ) then
-						questTexture:SetTexture(TEXTURE_ITEM_QUEST_BANG);
-						questTexture:Show();
-					elseif ( questId or isQuestItem ) then
-						questTexture:SetTexture(TEXTURE_ITEM_QUEST_BORDER);
-						questTexture:Show();		
-					else
-						questTexture:Hide();
-					end
-					
-					text:SetVertexColor(color.r, color.g, color.b);
-					local countString = _G["LootButton"..index.."Count"];
-					if ( quantity > 1 ) then
-						countString:SetText(quantity);
-						countString:Show();
-					else
-						countString:Hide();
-					end
-					button.slot = slot;
-					button.quality = quality;
-					button:Enable();
+	local slot = (numLootToShow * (LootFrame.page - 1)) + index;
+	if ( slot <= numLootItems ) then	
+		if ( (LootSlotHasItem(slot)  or (self.AutoLootTable and self.AutoLootTable[slot]) )and index <= numLootToShow) then
+			local texture, item, quantity, quality, locked, isQuestItem, questId, isActive;
+			if(self.AutoLootTable)then
+				local entry = self.AutoLootTable[slot];
+				if( entry.hide ) then
+					button:Hide();
+					return;
 				else
-					text:SetText("");
-					_G["LootButton"..index.."IconTexture"]:SetTexture(nil);
-					SetItemButtonNormalTextureVertexColor(button, 1.0, 1.0, 1.0);
-					LootFrame:SetScript("OnUpdate", LootFrame_OnUpdate);
-					button:Disable();
+					texture = entry.texture;
+					item = entry.item;
+					quantity = entry.quantity;
+					quality = entry.quality;
+					locked = entry.locked;
+					isQuestItem = entry.isQuestItem;
+					questId = entry.questId;
+					isActive = entry.isActive;
 				end
-				button:Show();
 			else
-				button:Hide();
+				texture, item, quantity, quality, locked, isQuestItem, questId, isActive = GetLootSlotInfo(slot);
 			end
+			local text = _G["LootButton"..index.."Text"];
+			if ( texture ) then
+				local color = ITEM_QUALITY_COLORS[quality];
+				_G["LootButton"..index.."IconTexture"]:SetTexture(texture);
+				text:SetText(item);
+				if( locked ) then
+					SetItemButtonNameFrameVertexColor(button, 1.0, 0, 0);
+					SetItemButtonTextureVertexColor(button, 0.9, 0, 0);
+					SetItemButtonNormalTextureVertexColor(button, 0.9, 0, 0);
+				else
+					SetItemButtonNameFrameVertexColor(button, 0.5, 0.5, 0.5);
+					SetItemButtonTextureVertexColor(button, 1.0, 1.0, 1.0);
+					SetItemButtonNormalTextureVertexColor(button, 1.0, 1.0, 1.0);
+				end
+				
+				local questTexture = _G["LootButton"..index.."IconQuestTexture"];
+				if ( questId and not isActive ) then
+					questTexture:SetTexture(TEXTURE_ITEM_QUEST_BANG);
+					questTexture:Show();
+				elseif ( questId or isQuestItem ) then
+					questTexture:SetTexture(TEXTURE_ITEM_QUEST_BORDER);
+					questTexture:Show();		
+				else
+					questTexture:Hide();
+				end
+				
+				text:SetVertexColor(color.r, color.g, color.b);
+				local countString = _G["LootButton"..index.."Count"];
+				if ( quantity > 1 ) then
+					countString:SetText(quantity);
+					countString:Show();
+				else
+					countString:Hide();
+				end
+				button.slot = slot;
+				button.quality = quality;
+				button:Enable();
+			else
+				text:SetText("");
+				_G["LootButton"..index.."IconTexture"]:SetTexture(nil);
+				SetItemButtonNormalTextureVertexColor(button, 1.0, 1.0, 1.0);
+				LootFrame:SetScript("OnUpdate", LootFrame_OnUpdate);
+				button:Disable();
+			end
+			button:Show();
 		else
 			button:Hide();
 		end
+	else
+		button:Hide();
+	end
 end
 
 function LootFrame_Update()
@@ -188,6 +263,17 @@ function LootFrame_Update()
 	end
 end
 
+function LootFrame_InitAutoLootTable( self )
+--	if( not self.AutoLootTable )then
+--		self.AutoLootTable = GetLootInfo();
+--	end
+end
+
+function LootFrame_Close()
+	StaticPopup_Hide("LOOT_BIND");
+	HideUIPanel(LootFrame);
+end
+
 function LootFrame_PageDown()
 	LootFrame.page = LootFrame.page + 1;
 	LootFrame_Update();
@@ -200,6 +286,9 @@ end
 
 function LootFrame_Show(self)
 	self.numLootItems = GetNumLootItems();
+	if(self.AutoLootTable) then
+		self.numLootItems = #self.AutoLootTable;
+	end
 	
 	if ( GetCVar("lootUnderMouse") == "1" ) then
 		self:Show();
@@ -242,11 +331,17 @@ function LootFrame_OnShow(self)
 	end
 end
 
-function LootFrame_OnHide()
+function LootFrame_OnHide(self)
 	CloseLoot();
 	-- Close any loot distribution confirmation windows
 	StaticPopup_Hide("CONFIRM_LOOT_DISTRIBUTION");
 	MasterLooterFrame:Hide();
+	
+	if( self.AutoLootTable )then
+		self:SetScript("OnUpdate", nil);
+		self.timeSinceUpdate = nil;
+		self.AutoLootTable = nil;
+	end		
 end
 
 function LootButton_OnClick(self, button)
@@ -418,7 +513,7 @@ function GroupLootFrame_OnShow(self)
 	end
 	
 	self.IconFrame.Icon:SetTexture(texture);
-	local borderTexCoord = LOOT_BORDER_QUALITY_COORDS[quality] or LOOT_BORDER_QUALITY_COORDS[ITEM_QUALITY_UNCOMMON];
+	local borderTexCoord = LOOT_BORDER_QUALITY_COORDS[quality] or LOOT_BORDER_QUALITY_COORDS[LE_ITEM_QUALITY_UNCOMMON];
 	self.IconFrame.Border:SetTexCoord(unpack(borderTexCoord));
 	self.Name:SetText(name);
 	local color = ITEM_QUALITY_COLORS[quality];

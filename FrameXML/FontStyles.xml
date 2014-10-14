@@ -37,15 +37,15 @@
 	<Font name="GameFontHighlightLeft" inherits="GameFontHighlight" justifyH="LEFT" virtual="true"/>
 	<Font name="GameFontHighlightCenter" inherits="GameFontHighlight" justifyH="CENTER" virtual="true"/>
 	<Font name="GameFontHighlightRight" inherits="GameFontHighlight" justifyH="RIGHT" virtual="true"/>
+	<Font name="GameFontHighlightLarge2" inherits="GameFontNormalLarge2" virtual="true">
+		<Color r="1.0" g="1.0" b="1.0"/>
+	</Font>
 	<Font name="GameFontDisableTiny" inherits="SystemFont_Tiny" virtual="true">
 		<Color r="0.5" g="0.5" b="0.5"/>
 	</Font>
 	<Font name="GameFontDisableLeft" inherits="GameFontDisable" justifyH="LEFT" virtual="true"/>
 	<Font name="GameFontGreen" inherits="GameFontNormal" virtual="true">
 		<Color r="0.1" g="1.0" b="0.1"/>
-	</Font>
-	<Font name="GameFontRed" inherits="GameFontNormal" virtual="true">
-		<Color r="1.0" g="0.1" b="0.1"/>
 	</Font>
 	<Font name="GameFontBlackSmall" inherits="SystemFont_Small" virtual="true">
 		<Color r="0" g="0" b="0"/>
@@ -80,9 +80,6 @@
 		<Color r="1.0" g="0.1" b="0.1"/>
 	</Font>
 	<Font name="GameFontHighlightSmallOutline" inherits="GameFontHighlightSmall"  virtual="true"/>
-	<Font name="GameFontNormalLargeOutline" inherits="SystemFont_Shadow_Large_Outline" outline="NORMAL" virtual="true">
-		<Color r="1.0" g="0.82" b="0"/>
-	</Font>
 	<Font name="GameFontNormalLargeLeft" inherits="GameFontNormalLarge" justifyH="LEFT" virtual="true"/>
 	<Font name="GameFontNormalLargeLeftTop" inherits="GameFontNormalLargeLeft" justifyV="TOP" virtual="true"/>
 	<Font name="GameFontGreenLarge" inherits="GameFontNormalLarge" virtual="true">
@@ -220,6 +217,12 @@
 	<Font name="TextStatusBarText" inherits="SystemFont_Outline_Small" virtual="true">
 		<Color r="1.0" g="1.0" b="1.0"/>
 	</Font>
+	<Font name="GameNormalNumberFont" inherits="NumberFont_GameNormal" virtual="true">
+		<Color r="1.0" g="0.82" b="0"/>
+	</Font>	
+	<Font name="WhiteNormalNumberFont" inherits="NumberFont_GameNormal" virtual="true">
+		<Color r="1.0" g="1.0" b="1.0"/>
+	</Font>	
 	<Font name="TextStatusBarTextLarge" inherits="SystemFont_Outline" virtual="true">
 		<Color r="1.0" g="1.0" b="1.0"/>
 	</Font>	
@@ -273,5 +276,8 @@
 	</Font>
 	<Font name="FocusFontSmall" inherits="SystemFont_Shadow_Med2" virtual="true">
 		<Color r="1.0" g="0.82" b="0"/>
-	</Font>		
+	</Font>
+	<Font name="ObjectiveFont" inherits="GameFontHighlight" justifyH="LEFT" justifyV="TOP" virtual="true">
+		<Color r="0.8" g="0.8" b="0.8"/>
+	</Font>	
 </Ui>

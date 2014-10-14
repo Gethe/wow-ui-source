@@ -11,13 +11,6 @@ FACTION_BAR_COLORS = {
 	[7] = {r = 0, g = 0.6, b = 0.1},
 	[8] = {r = 0, g = 0.6, b = 0.1},
 };
--- Hard coded =(, will need to add entries for each expansion
-MAX_PLAYER_LEVEL_TABLE = {};
-MAX_PLAYER_LEVEL_TABLE[0] = 60;
-MAX_PLAYER_LEVEL_TABLE[1] = 70;
-MAX_PLAYER_LEVEL_TABLE[2] = 80;
-MAX_PLAYER_LEVEL_TABLE[3] = 85;
-MAX_PLAYER_LEVEL_TABLE[4] = 90;
 MAX_PLAYER_LEVEL = 0;
 REPUTATIONFRAME_ROWSPACING = 23;
 
@@ -60,17 +53,20 @@ function ReputationFrame_SetRowType(factionRow, isChild, isHeader, hasRep)	--row
 	factionRightTexture:SetWidth(42);
 	factionBar:SetPoint("RIGHT", factionRow, "RIGHT", 0, 0);
 	if ( isHeader ) then
-		if ( isChild ) then
+		if (isChild) then
 			factionRow:SetPoint("LEFT", ReputationFrame, "LEFT", 29, 0);
-			factionTitle:SetWidth(135);
 		else
 			factionRow:SetPoint("LEFT", ReputationFrame, "LEFT", 10, 0);
-			factionTitle:SetWidth(145);
 		end
-
 		factionButton:SetPoint("LEFT", factionRow, "LEFT", 3, 0);
 		factionButton:Show();
-		factionTitle:SetPoint("LEFT",factionButton,"RIGHT",10,0);
+		factionTitle:SetPoint("LEFT",factionButton,"RIGHT", 10, 0);
+		if (hasRep) then 
+			factionTitle:SetPoint("RIGHT", factionBar, "LEFT", -3, 0);
+		else
+			factionTitle:SetPoint("RIGHT", factionBar, "RIGHT", -3, 0);
+		end
+
 		factionTitle:SetFontObject(GameFontNormalLeft);
 		factionBackground:Hide()	
 		factionLeftTexture:SetHeight(15);
@@ -84,14 +80,13 @@ function ReputationFrame_SetRowType(factionRow, isChild, isHeader, hasRep)	--row
 	else
 		if ( isChild ) then
 			factionRow:SetPoint("LEFT", ReputationFrame, "LEFT", 52, 0);
-			factionTitle:SetWidth(150);
 		else
 			factionRow:SetPoint("LEFT", ReputationFrame, "LEFT", 34, 0);
-			factionTitle:SetWidth(160);
 		end
 
 		factionButton:Hide();
 		factionTitle:SetPoint("LEFT", factionRow, "LEFT", 10, 0);
+		factionTitle:SetPoint("RIGHT", factionBar, "LEFT", -3, 0);
 		factionTitle:SetFontObject(GameFontHighlightSmall);
 		factionBackground:Show();
 		factionLeftTexture:SetHeight(21);
@@ -215,9 +210,9 @@ function ReputationFrame_Update(showLFGPulse)
 					ReputationDetailFactionName:SetText(name);
 					ReputationDetailFactionDescription:SetText(description);
 					if ( atWarWith ) then
-						ReputationDetailAtWarCheckBox:SetChecked(1);
+						ReputationDetailAtWarCheckBox:SetChecked(true);
 					else
-						ReputationDetailAtWarCheckBox:SetChecked(nil);
+						ReputationDetailAtWarCheckBox:SetChecked(false);
 					end
 					if ( canToggleAtWar and (not isHeader)) then
 						ReputationDetailAtWarCheckBox:Enable();
@@ -234,14 +229,14 @@ function ReputationFrame_Update(showLFGPulse)
 						ReputationDetailInactiveCheckBoxText:SetTextColor(GRAY_FONT_COLOR.r, GRAY_FONT_COLOR.g, GRAY_FONT_COLOR.b);
 					end
 					if ( IsFactionInactive(factionIndex) ) then
-						ReputationDetailInactiveCheckBox:SetChecked(1);
+						ReputationDetailInactiveCheckBox:SetChecked(true);
 					else
-						ReputationDetailInactiveCheckBox:SetChecked(nil);
+						ReputationDetailInactiveCheckBox:SetChecked(false);
 					end
 					if ( isWatched ) then
-						ReputationDetailMainScreenCheckBox:SetChecked(1);
+						ReputationDetailMainScreenCheckBox:SetChecked(true);
 					else
-						ReputationDetailMainScreenCheckBox:SetChecked(nil);
+						ReputationDetailMainScreenCheckBox:SetChecked(false);
 					end
 					ReputationDetailFrame:SetHeight(canBeLFGBonus and 225 or 203);
 					ReputationDetailLFGBonusReputationCheckBox:SetShown(canBeLFGBonus);

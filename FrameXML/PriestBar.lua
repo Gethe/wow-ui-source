@@ -1,5 +1,7 @@
 SHADOW_ORBS_SHOW_LEVEL = 10;
-PRIEST_BAR_NUM_ORBS = 3;
+PRIEST_BAR_NUM_LARGE_ORBS = 3;
+PRIEST_BAR_NUM_SMALL_ORBS = 5;
+SHADOW_ORB_MINOR_TALENT_ID = 157217
 
 function PriestBarFrame_OnLoad(self)
 	local _, class = UnitClass("player");
@@ -10,6 +12,7 @@ function PriestBarFrame_OnLoad(self)
 		else
 			self.hasReqLevel = true;
 			self:RegisterEvent("PLAYER_TALENT_UPDATE");
+			self:RegisterEvent("SPELLS_CHANGED");
 		end
 		PriestBarFrame_CheckAndShow(self);
 	end
@@ -24,7 +27,7 @@ function PriestBarFrame_OnEvent(self, event, arg1, arg2)
 		PriestBar_Update();
 	elseif ( event == "PLAYER_ENTERING_WORLD" ) then
 		PriestBar_Update();
-	elseif ( event == "PLAYER_TALENT_UPDATE" ) then
+	elseif ( event == "PLAYER_TALENT_UPDATE" or event == "SPELLS_CHANGED" ) then
 		PriestBarFrame_CheckAndShow(self);
 	elseif( event ==  "PLAYER_LEVEL_UP" ) then
 		local level = arg1;
@@ -53,7 +56,7 @@ function PriestBarFrame_CheckAndShow(self)
 				self:RegisterEvent("UNIT_DISPLAYPOWER");
 				self:RegisterUnitEvent("UNIT_POWER_FREQUENT", "player", "vehicle");
 				self:SetAlpha(0);
-				self.showAnim:Play();
+				self.ShowAnim:Play();
 				adjustAttachments = true;
 			end
 			self:Show();
@@ -77,30 +80,64 @@ end
 
 function PriestBar_Update()
 	local numOrbs = UnitPower( PriestBarFrame:GetParent().unit, SPELL_POWER_SHADOW_ORBS );
-	for i = 1, PRIEST_BAR_NUM_ORBS do
-		local orb = _G["PriestBarFrameOrb"..i];
-		local shouldShow = i <= numOrbs;
-		PriestBar_SetOrb(orb, shouldShow);
+	if (IsSpellKnown(SHADOW_ORB_MINOR_TALENT_ID)) then
+		PriestBarFrame.Holder:SetAtlas("shadoworbs-small-Frame", true);
+		for i = 1, PRIEST_BAR_NUM_LARGE_ORBS do
+			local orb = PriestBarFrame.LargeOrbs[i];
+			if (orb) then
+				orb:Hide();
+			end
+		end
+		for i = 1, PRIEST_BAR_NUM_SMALL_ORBS do
+			local orb = PriestBarFrame.SmallOrbs[i];
+			if (not orb) then
+				orb = CreateFrame("Frame", nil, PriestBarFrame, "ShadowOrbSmallTemplate");
+				orb:ClearAllPoints();
+				orb:SetPoint("LEFT", PriestBarFrame.SmallOrbs[i-1], "RIGHT", -15, 0);
+			end
+			orb:Show();
+			local shouldShow = i <= numOrbs;
+			PriestBar_SetOrb(orb, shouldShow);
+		end
+	else
+		PriestBarFrame.Holder:SetAtlas("shadoworbs-large-Frame", true);
+		for i = 1, PRIEST_BAR_NUM_SMALL_ORBS do
+			local orb = PriestBarFrame.SmallOrbs[i];
+			if (orb) then
+				orb:Hide();
+			end
+		end
+		for i = 1, PRIEST_BAR_NUM_LARGE_ORBS do
+			local orb = PriestBarFrame.LargeOrbs[i];
+			if (not orb) then
+				orb = CreateFrame("Frame", nil, PriestBarFrame, "ShadowOrbLargeTemplate");
+				orb:ClearAllPoints();
+				orb:SetPoint("LEFT", PriestBarFrame.LargeOrbs[i-1], "RIGHT", -5, 0);
+			end
+			orb:Show();
+			local shouldShow = i <= numOrbs;
+			PriestBar_SetOrb(orb, shouldShow);
+		end
 	end
 end
 
 function PriestBar_SetOrb(self, active)
 	if ( active ) then
-		if (self.animOut:IsPlaying()) then
-			self.animOut:Stop();
+		if (self.AnimOut:IsPlaying()) then
+			self.AnimOut:Stop();
 		end
 		
-		if (not self.active and not self.animIn:IsPlaying()) then
-			self.animIn:Play();
+		if (not self.active and not self.AnimIn:IsPlaying()) then
+			self.AnimIn:Play();
 			self.active = true;
 		end
 	else
-		if (self.animIn:IsPlaying()) then
-			self.animIn:Stop();
+		if (self.AnimIn:IsPlaying()) then
+			self.AnimIn:Stop();
 		end
 		
-		if (self.active and not self.animOut:IsPlaying()) then
-			self.animOut:Play();
+		if (self.active and not self.AnimOut:IsPlaying()) then
+			self.AnimOut:Play();
 			self.active = false;
 		end
 	end

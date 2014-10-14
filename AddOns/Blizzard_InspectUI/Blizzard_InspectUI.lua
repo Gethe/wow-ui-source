@@ -138,7 +138,7 @@ function InspectFrame_UpdateTabs()
 	end
 	
 	-- Guild tab
-	local _, _, _, guildName = GetInspectGuildInfo(InspectFrame.unit);
+	local _, guildName = GetInspectGuildInfo(InspectFrame.unit);
 	if ( guildName and guildName ~= "" ) then
 		PanelTemplates_EnableTab(InspectFrame, 4);
 	else

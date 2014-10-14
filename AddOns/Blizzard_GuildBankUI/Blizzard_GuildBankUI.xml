@@ -224,7 +224,7 @@
 					</OnClick>
 					<OnEnter>
 						GameTooltip:SetOwner(self, "ANCHOR_LEFT");
-						GameTooltip:SetText(self.tooltip, nil, nil, nil, nil, 1);
+						GameTooltip:SetText(self.tooltip, nil, nil, nil, nil, true);
 					</OnEnter>
 					<OnLeave>
 						GameTooltip:Hide();

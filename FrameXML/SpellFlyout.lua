@@ -21,8 +21,12 @@ function SpellFlyoutButton_OnClick(self)
 		end
 		SpellFlyoutButton_UpdateState(self);
 	else
+		local spellID = select(7, GetSpellInfo(self.spellID));
 		if ( self.offSpec ) then
 			return;
+		elseif ( spellID ) then
+			CastSpellByID(spellID);
+			self:GetParent():Hide();
 		elseif ( self.spellName ) then
 			CastSpellByName(self.spellName);
 			self:GetParent():Hide();
@@ -69,19 +73,19 @@ function SpellFlyoutButton_UpdateCooldown(self)
 	CooldownFrame_SetTimer(cooldown, start, duration, enable);
 	-- loss of control cooldown
 	start, duration = GetSpellLossOfControlCooldown(self.spellID);
-	self.cooldown:SetLossOfControlCooldown(start, duration);
+	self.cooldown:SetCooldown(start, duration);
 end
 
 function SpellFlyoutButton_UpdateState(self)
 	if ( IsCurrentSpell(self.spellID) ) then
-		self:SetChecked(1);
+		self:SetChecked(true);
 	else
-		self:SetChecked(nil);
+		self:SetChecked(false);
 	end
 end
 
 function SpellFlyoutButton_UpdateUsable(self)
-	local isUsable, notEnoughtMana = IsUsableSpell(self.spellID);
+	local isUsable, notEnoughMana = IsUsableSpell(self.spellID);
 	local name = self:GetName();
 	local icon = _G[name.."Icon"];
 	if ( isUsable or not self:GetParent().isActionBar) then

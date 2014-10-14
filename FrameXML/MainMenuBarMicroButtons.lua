@@ -6,7 +6,6 @@ MICRO_BUTTONS = {
 	"AchievementMicroButton",
 	"QuestLogMicroButton",
 	"GuildMicroButton",
-	"PVPMicroButton",
 	"LFDMicroButton",
 	"EJMicroButton",
 	"CompanionsMicroButton",
@@ -29,7 +28,7 @@ end
 
 function MicroButtonTooltipText(text, action)
 	if ( GetBindingKey(action) ) then
-		return text.." "..NORMAL_FONT_COLOR_CODE.."("..GetBindingText(GetBindingKey(action), "KEY_")..")"..FONT_COLOR_CODE_CLOSE;
+		return text.." "..NORMAL_FONT_COLOR_CODE.."("..GetBindingText(GetBindingKey(action))..")"..FONT_COLOR_CODE_CLOSE;
 	else
 		return text;
 	end
@@ -61,14 +60,14 @@ function UpdateMicroButtonsParent(parent)
 	end
 end
 
-function MoveMicroButtons(anchor, achorTo, relAnchor, x, y, isStacked)
+function MoveMicroButtons(anchor, anchorTo, relAnchor, x, y, isStacked)
 	CharacterMicroButton:ClearAllPoints();
-	CharacterMicroButton:SetPoint(anchor, achorTo, relAnchor, x, y);
-	PVPMicroButton:ClearAllPoints();
+	CharacterMicroButton:SetPoint(anchor, anchorTo, relAnchor, x, y);
+	LFDMicroButton:ClearAllPoints();
 	if ( isStacked ) then
-		PVPMicroButton:SetPoint("TOPLEFT", CharacterMicroButton, "BOTTOMLEFT", 0, 24);
+		LFDMicroButton:SetPoint("TOPLEFT", CharacterMicroButton, "BOTTOMLEFT", 0, 24);
 	else
-		PVPMicroButton:SetPoint("BOTTOMLEFT", GuildMicroButton, "BOTTOMRIGHT", -3, 0);
+		LFDMicroButton:SetPoint("BOTTOMLEFT", GuildMicroButton, "BOTTOMRIGHT", -3, 0);
 	end
 	UpdateMicroButtons();
 end
@@ -78,18 +77,16 @@ function UpdateMicroButtons()
 	local factionGroup = UnitFactionGroup("player");
 
 	if ( factionGroup == "Neutral" ) then
-		PVPMicroButton.factionGroup = factionGroup;
 		GuildMicroButton.factionGroup = factionGroup;
 		LFDMicroButton.factionGroup = factionGroup;
 	else
-		PVPMicroButton.factionGroup = nil;
 		GuildMicroButton.factionGroup = nil;
 		LFDMicroButton.factionGroup = nil;
 	end
 		
 
 	if ( CharacterFrame and CharacterFrame:IsShown() ) then
-		CharacterMicroButton:SetButtonState("PUSHED", 1);
+		CharacterMicroButton:SetButtonState("PUSHED", true);
 		CharacterMicroButton_SetPushed();
 	else
 		CharacterMicroButton:SetButtonState("NORMAL");
@@ -97,13 +94,13 @@ function UpdateMicroButtons()
 	end
 	
 	if ( SpellBookFrame and SpellBookFrame:IsShown() ) then
-		SpellbookMicroButton:SetButtonState("PUSHED", 1);
+		SpellbookMicroButton:SetButtonState("PUSHED", true);
 	else
 		SpellbookMicroButton:SetButtonState("NORMAL");
 	end
 
 	if ( PlayerTalentFrame and PlayerTalentFrame:IsShown() ) then
-		TalentMicroButton:SetButtonState("PUSHED", 1);
+		TalentMicroButton:SetButtonState("PUSHED", true);
 	else
 		if ( playerLevel < SHOW_SPEC_LEVEL ) then
 			TalentMicroButton:Disable();
@@ -113,8 +110,8 @@ function UpdateMicroButtons()
 		end
 	end
 
-	if (  QuestLogFrame and QuestLogFrame:IsShown() ) then
-		QuestLogMicroButton:SetButtonState("PUSHED", 1);
+	if (  WorldMapFrame and WorldMapFrame:IsShown() ) then
+		QuestLogMicroButton:SetButtonState("PUSHED", true);
 	else
 		QuestLogMicroButton:SetButtonState("NORMAL");
 	end
@@ -123,24 +120,11 @@ function UpdateMicroButtons()
 		or ( InterfaceOptionsFrame:IsShown()) 
 		or ( KeyBindingFrame and KeyBindingFrame:IsShown()) 
 		or ( MacroFrame and MacroFrame:IsShown()) ) then
-		MainMenuMicroButton:SetButtonState("PUSHED", 1);
+		MainMenuMicroButton:SetButtonState("PUSHED", true);
 		MainMenuMicroButton_SetPushed();
 	else
 		MainMenuMicroButton:SetButtonState("NORMAL");
 		MainMenuMicroButton_SetNormal();
-	end
-
-	if ( PVPUIFrame and PVPUIFrame:IsShown() ) then
-		PVPMicroButton:SetButtonState("PUSHED", 1);
-		PVPMicroButton_SetPushed();
-	else
-		if ( playerLevel < PVPMicroButton.minLevel or factionGroup == "Neutral" ) then
-			PVPMicroButton:Disable();
-		else
-			PVPMicroButton:Enable();
-			PVPMicroButton:SetButtonState("NORMAL");
-			PVPMicroButton_SetNormal();
-		end
 	end
 
 	GuildMicroButton_UpdateTabard();
@@ -148,7 +132,7 @@ function UpdateMicroButtons()
 		GuildMicroButton:Disable();
 	elseif ( ( GuildFrame and GuildFrame:IsShown() ) or ( LookingForGuildFrame and LookingForGuildFrame:IsShown() ) ) then
 		GuildMicroButton:Enable();
-		GuildMicroButton:SetButtonState("PUSHED", 1);
+		GuildMicroButton:SetButtonState("PUSHED", true);
 		GuildMicroButtonTabard:SetPoint("TOPLEFT", -1, -1);
 		GuildMicroButtonTabard:SetAlpha(0.70);
 	else
@@ -166,7 +150,7 @@ function UpdateMicroButtons()
 	end
 	
 	if ( PVEFrame and PVEFrame:IsShown() ) then
-		LFDMicroButton:SetButtonState("PUSHED", 1);
+		LFDMicroButton:SetButtonState("PUSHED", true);
 	else
 		if ( playerLevel < LFDMicroButton.minLevel or factionGroup == "Neutral" ) then
 			LFDMicroButton:Disable();
@@ -177,13 +161,13 @@ function UpdateMicroButtons()
 	end
 
 	if ( HelpFrame and HelpFrame:IsShown() ) then
-		HelpMicroButton:SetButtonState("PUSHED", 1);
+		HelpMicroButton:SetButtonState("PUSHED", true);
 	else
 		HelpMicroButton:SetButtonState("NORMAL");
 	end
 	
 	if ( AchievementFrame and AchievementFrame:IsShown() ) then
-		AchievementMicroButton:SetButtonState("PUSHED", 1);
+		AchievementMicroButton:SetButtonState("PUSHED", true);
 	else
 		if ( ( HasCompletedAnyAchievement() or IsInGuild() ) and CanShowAchievementUI() ) then
 			AchievementMicroButton:Enable();
@@ -194,21 +178,21 @@ function UpdateMicroButtons()
 	end
 	
 	if ( EncounterJournal and EncounterJournal:IsShown() ) then
-		EJMicroButton:SetButtonState("PUSHED", 1);
+		EJMicroButton:SetButtonState("PUSHED", true);
 	else
 		EJMicroButton:SetButtonState("NORMAL");
 	end
 
 	if ( PetJournalParent and PetJournalParent:IsShown() ) then
 		CompanionsMicroButton:Enable();
-		CompanionsMicroButton:SetButtonState("PUSHED", 1);
+		CompanionsMicroButton:SetButtonState("PUSHED", true);
 	else
 		CompanionsMicroButton:Enable();
 		CompanionsMicroButton:SetButtonState("NORMAL");
 	end
 
 	if ( StoreFrame and StoreFrame_IsShown() ) then
-		StoreMicroButton:SetButtonState("PUSHED", 1);
+		StoreMicroButton:SetButtonState("PUSHED", true);
 	else
 		StoreMicroButton:SetButtonState("NORMAL");
 	end
@@ -243,17 +227,11 @@ function MicroButtonPulseStop(self)
 	UIFrameFlashStop(self.Flash);
 end
 
-function PVPMicroButton_SetPushed()
-	PVPMicroButtonTexture:SetPoint("TOP", PVPMicroButton, "TOP", 5, -31);
-	PVPMicroButtonTexture:SetAlpha(0.5);
-end
-
-function PVPMicroButton_SetNormal()
-	PVPMicroButtonTexture:SetPoint("TOP", PVPMicroButton, "TOP", 6, -30);
-	PVPMicroButtonTexture:SetAlpha(1.0);
-end
-
 function AchievementMicroButton_OnEvent(self, event, ...)
+	if (IsBlizzCon()) then
+		return;
+	end
+
 	if ( event == "UPDATE_BINDINGS" ) then
 		AchievementMicroButton.tooltipText = MicroButtonTooltipText(ACHIEVEMENT_BUTTON, "TOGGLEACHIEVEMENT");
 	else
@@ -342,7 +320,7 @@ function CharacterMicroButton_SetNormal()
 end
 
 function MainMenuMicroButton_SetPushed()
-	MainMenuMicroButton:SetButtonState("PUSHED", 1);
+	MainMenuMicroButton:SetButtonState("PUSHED", true);
 end
 
 function MainMenuMicroButton_SetNormal()
@@ -351,10 +329,6 @@ end
 
 --Talent button specific functions
 function TalentMicroButton_OnEvent(self, event, ...)
-	if (IsBlizzCon()) then
-		return;
-	end
-
 	if ( event == "PLAYER_LEVEL_UP" ) then
 		local level = ...;
 		if (level == SHOW_SPEC_LEVEL) then
@@ -368,6 +342,15 @@ function TalentMicroButton_OnEvent(self, event, ...)
 			TalentMicroButtonAlert:SetHeight(TalentMicroButtonAlert.Text:GetHeight()+42);
 			TalentMicroButtonAlert:Show();
 		end
+	elseif ( event == "PLAYER_SPECIALIZATION_CHANGED") then
+		-- If we just unspecced, and we have unspent talent points, it's probably spec-specific talents that were just wiped.  Show the tutorial box.
+		local unit = ...;
+		if(unit == "player" and GetSpecialization() == nil and GetNumUnspentTalents() > 0) then
+			TalentMicroButtonAlert.Text:SetText(TALENT_MICRO_BUTTON_UNSPENT_TALENTS);
+			TalentMicroButtonAlert:SetHeight(TalentMicroButtonAlert.Text:GetHeight()+42);
+			TalentMicroButtonAlert:SetHeight(TalentMicroButtonAlert.Text:GetHeight()+42);
+			TalentMicroButtonAlert:Show();
+		end
 	elseif ( event == "PLAYER_TALENT_UPDATE" or event == "NEUTRAL_FACTION_SELECT_RESULT" ) then
 		UpdateMicroButtons();
 		
@@ -375,17 +358,34 @@ function TalentMicroButton_OnEvent(self, event, ...)
 		-- Small hack: GetNumSpecializations should return 0 if talents haven't been initialized yet
 		if (not self.receivedUpdate and GetNumSpecializations(false) > 0) then
 			self.receivedUpdate = true;
-			if (UnitLevel("player") >= SHOW_SPEC_LEVEL and (not GetSpecialization() or GetNumUnspentTalents() > 0)) then
+			local shouldPulseForTalents = GetNumUnspentTalents() > 0 and not ShouldHideTalentsTab();
+			if (UnitLevel("player") >= SHOW_SPEC_LEVEL and (not GetSpecialization() or shouldPulseForTalents)) then
 				MicroButtonPulse(self);
 			end
 		end
 	elseif ( event == "UPDATE_BINDINGS" ) then
 		self.tooltipText =  MicroButtonTooltipText(TALENTS_BUTTON, "TOGGLETALENTS");
+	elseif ( event == "PLAYER_CHARACTER_UPGRADE_TALENT_COUNT_CHANGED" ) then
+		local prev, current = ...;
+		if ( prev == 0 and current > 0 ) then
+			MicroButtonPulse(self);
+			TalentMicroButtonAlert.Text:SetText(TALENT_MICRO_BUTTON_TALENT_TUTORIAL);
+			TalentMicroButtonAlert:SetHeight(TalentMicroButtonAlert.Text:GetHeight()+42);
+			TalentMicroButtonAlert:Show();
+		elseif ( prev ~= current ) then
+			MicroButtonPulse(self);
+			TalentMicroButtonAlert.Text:SetText(TALENT_MICRO_BUTTON_UNSPENT_TALENTS);
+			TalentMicroButtonAlert:SetHeight(TalentMicroButtonAlert.Text:GetHeight()+42);
+			TalentMicroButtonAlert:Show();
+		end
 	end
 end
 
 --Micro Button alerts
 function MicroButtonAlert_OnLoad(self)
 	self.Text:SetSpacing(4);
+	if ( self.label ) then
+		self.Text:SetText(self.label);
+	end
 end
 

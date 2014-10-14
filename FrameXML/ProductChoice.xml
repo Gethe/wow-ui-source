@@ -151,7 +151,7 @@
 		</CheckedTexture>
 	</CheckButton>
 	<Frame name="ProductChoiceFrame" hidden="true" frameStrata="DIALOG" inherits="PortraitFrameTemplate" parent="UIParent">
-		<Size x="645" y="572"/>
+		<Size x="800" y="572"/>
 		<Anchors>
 			<Anchor point="CENTER" x="-5" y="25"/>
 		</Anchors>
@@ -170,6 +170,15 @@
 					<Anchor point="BOTTOMRIGHT" relativeKey="$parent" relativePoint="BOTTOMRIGHT" x="-8" y="3"/>
 					<Anchor point="TOPLEFT" relativeKey="$parent" relativePoint="TOPLEFT" x="3" y="-68"/>
 				</Anchors>
+				<Layers>
+					<Layer level="ARTWORK">
+						<FontString parentKey="PageText" inherits="GameFontHighlight" justifyH="RIGHT">
+							<Anchors>
+								<Anchor point="BOTTOMRIGHT" x="-98" y="36" />
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
 				<Frames>
 					<Frame parentKey="NoTakeBacksies" toplevel="true" enableMouse="true" hidden="true" setAllPoints="true">
 						<Layers>
@@ -256,6 +265,38 @@
 						<NormalFont style="GameFontNormalLarge"/>
 						<HighlightFont style="GameFontHighlightLarge"/>
 						<DisabledFont style="GameFontDisableLarge"/>
+					</Button>
+					<Button parentKey="PrevPageButton">
+						<Size x="32" y="32" />
+						<Anchors>
+							<Anchor point="LEFT" relativeKey="$parent.PageText" relativePoint="RIGHT" x="8"/>
+						</Anchors>
+						<Scripts>
+							<OnClick>
+								ProductChoiceFrame_PageClick(self, false);
+								PlaySound("igSpellBookOpen");
+							</OnClick>
+						</Scripts>
+						<NormalTexture file="Interface\Buttons\UI-SpellbookIcon-PrevPage-Up" />
+						<PushedTexture file="Interface\Buttons\UI-SpellbookIcon-PrevPage-Down" />
+						<DisabledTexture file="Interface\Buttons\UI-SpellbookIcon-PrevPage-Disabled" />
+						<HighlightTexture file="Interface\Buttons\UI-Common-MouseHilight" alphaMode="ADD" />
+					</Button>
+					<Button parentKey="NextPageButton">
+						<Size x="32" y="32" />
+						<Anchors>
+							<Anchor point="LEFT" relativeKey="$parent.PrevPageButton" relativePoint="RIGHT" x="4" y="0"/>
+						</Anchors>
+						<Scripts>
+							<OnClick>
+								ProductChoiceFrame_PageClick(self, true);
+								PlaySound("igSpellBookOpen");
+							</OnClick>
+						</Scripts>
+						<NormalTexture file="Interface\Buttons\UI-SpellbookIcon-NextPage-Up" />
+						<PushedTexture file="Interface\Buttons\UI-SpellbookIcon-NextPage-Down" />
+						<DisabledTexture file="Interface\Buttons\UI-SpellbookIcon-NextPage-Disabled" />
+						<HighlightTexture file="Interface\Buttons\UI-Common-MouseHilight" alphaMode="ADD" />
 					</Button>
 				</Frames>
 			</Frame>

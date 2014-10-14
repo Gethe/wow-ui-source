@@ -46,7 +46,7 @@ function ItemTextFrame_OnEvent(self, event, ...)
 		ItemTextScrollFrameScrollBar:SetValue(0);
 		ItemTextScrollFrame:Show();	
 		local page = ItemTextGetPage();
-		local next = ItemTextHasNextPage();
+		local hasNext = ItemTextHasNextPage();
 		local material = ItemTextGetMaterial(); 
 		if ( not material ) then
 			material = "Parchment";
@@ -66,7 +66,7 @@ function ItemTextFrame_OnEvent(self, event, ...)
 			ItemTextMaterialBotLeft:SetTexture("Interface\\ItemTextFrame\\ItemText-"..material.."-BotLeft");
 			ItemTextMaterialBotRight:SetTexture("Interface\\ItemTextFrame\\ItemText-"..material.."-BotRight");
 		end
-		if ( (page > 1) or next ) then
+		if ( (page > 1) or hasNext ) then
 			ItemTextCurrentPage:SetText(page);
 			ItemTextCurrentPage:Show();
 			if ( page > 1 ) then
@@ -74,7 +74,7 @@ function ItemTextFrame_OnEvent(self, event, ...)
 			else
 				ItemTextPrevPageButton:Hide();
 			end
-			if ( next ) then
+			if ( hasNext ) then
 				ItemTextNextPageButton:Show();
 			else
 				ItemTextNextPageButton:Hide();

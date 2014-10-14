@@ -330,7 +330,7 @@ function BlizzardOptionsPanel_OnEvent (frame, event, ...)
 
 					if ( control.cvar ) then
 						if ( control.type == CONTROLTYPE_CHECKBOX ) then
-							control.defaultValue = GetCVarDefault(control.cvar);
+							control.defaultValue = control.defaultValue or GetCVarDefault(control.cvar);
 						else
 							control.defaultValue = BlizzardOptionsPanel_GetCVarDefaultSafe(control.cvar);
 							minValue = entry.minValue;

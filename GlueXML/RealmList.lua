@@ -36,6 +36,33 @@ function RealmListUpdate()
 	local pvpText, loadText, isFull;
 	local major, minor, revision, build, type;
 
+	local found = false;
+
+	if ( not RealmList.firstUpdate or RealmList.selectedCategory ~= RealmList.oldSelectedCategory or numRealms ~= RealmList.numRealms ) then
+		RealmList.offset = 0;
+		
+		repeat
+			for i = 1, MAX_REALMS_DISPLAYED, 1 do
+				local currentRealm = select(5,GetRealmInfo(RealmList.selectedCategory, i + RealmList.offset));
+				
+				if ( currentRealm ) then
+					RealmList.currentRealm = i + RealmList.offset;
+					found = true;
+					break;
+				end
+			end
+			if (not found) then
+				RealmList.offset = RealmList.offset + 1;
+			end
+		until found or RealmList.offset > numRealms;
+		if (RealmList.offset > numRealms) then
+			RealmList.offset = 0;
+		end
+		RealmList.numRealms = numRealms;
+		RealmList.oldSelectedCategory = RealmList.selectedCategory;
+		RealmList.firstUpdate = true;
+	end
+
 	RealmListOkButton:Disable();
 	RealmListHighlight:Hide();
 	for i=1, MAX_REALMS_DISPLAYED, 1 do
@@ -68,30 +95,42 @@ function RealmListUpdate()
 				loadText = _G["RealmListRealmButton"..i.."Load"];
 				
 				if ( realmDown ) then
-					loadText:SetText(REALM_DOWN);
 					loadText:SetTextColor(GRAY_FONT_COLOR.r, GRAY_FONT_COLOR.g, GRAY_FONT_COLOR.b);
-				elseif ( locked ) then
-					loadText:SetText(REALM_LOCKED);
+				elseif ( locked or invalidRealm ) then
 					loadText:SetTextColor(RED_FONT_COLOR.r, RED_FONT_COLOR.g, RED_FONT_COLOR.b);
 				elseif ( load == -3.0 ) then
-					loadText:SetText(LOAD_RECOMMENDED);
 					loadText:SetTextColor(BLUE_FONT_COLOR.r, BLUE_FONT_COLOR.g, BLUE_FONT_COLOR.b);
 				elseif ( load == -2.0 ) then
-					loadText:SetText(LOAD_NEW);
 					loadText:SetTextColor(GREEN_FONT_COLOR.r, GREEN_FONT_COLOR.g, GREEN_FONT_COLOR.b);
 				elseif ( load == 2.0 ) then
-					loadText:SetText(LOAD_FULL);
 					loadText:SetTextColor(RED_FONT_COLOR.r, RED_FONT_COLOR.g, RED_FONT_COLOR.b);
+				elseif ( load > 0 ) then
+					loadText:SetTextColor(RED_FONT_COLOR.r, RED_FONT_COLOR.g, RED_FONT_COLOR.b);
+				elseif ( load < 0 ) then
+					loadText:SetTextColor(GREEN_FONT_COLOR.r, GREEN_FONT_COLOR.g, GREEN_FONT_COLOR.b);
+				else
+					loadText:SetTextColor(NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b);
+				end
+
+				if ( realmDown ) then
+					loadText:SetText(REALM_DOWN);
+				elseif ( locked ) then
+					loadText:SetText(REALM_LOCKED);
+				elseif ( invalidRealm ) then
+					loadText:SetText(ADDON_INCOMPATIBLE);
+				elseif ( load == -3.0 ) then
+					loadText:SetText(LOAD_RECOMMENDED);
+				elseif ( load == -2.0 ) then
+					loadText:SetText(LOAD_NEW);
+				elseif ( load == 2.0 ) then
+					loadText:SetText(LOAD_FULL);
 					isFull = 1;
 				elseif ( load > 0 ) then
 					loadText:SetText(LOAD_HIGH);
-					loadText:SetTextColor(RED_FONT_COLOR.r, RED_FONT_COLOR.g, RED_FONT_COLOR.b);
 				elseif ( load < 0 ) then
 					loadText:SetText(LOAD_LOW);
-					loadText:SetTextColor(GREEN_FONT_COLOR.r, GREEN_FONT_COLOR.g, GREEN_FONT_COLOR.b);
 				else
 					loadText:SetText(LOAD_MEDIUM);
-					loadText:SetTextColor(NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b);
 				end
 
 				if (major) then
@@ -175,7 +214,7 @@ function RealmListUpdate()
 						button:UnlockHighlight();
 					end
 				else
-					if ( currentRealm == 1 ) then
+					if ( currentRealm ) then
 						RealmList.currentRealm = realmIndex;
 						button:LockHighlight();
 						RealmListHighlight:SetPoint("TOPLEFT", button, "TOPLEFT", 0, 0);
@@ -205,8 +244,19 @@ function RealmListUpdate()
 		end
 	end
 
+	if ( RealmList.currentRealm and not RealmListOkButton:IsEnabled() ) then
+		local _, _, _, realmDown = GetRealmInfo(RealmList.selectedCategory, RealmList.currentRealm);
+		if ( not realmDown ) then
+			RealmListOkButton:Enable();
+		end
+	end
+
 	-- ScrollFrame stuff
 	GlueScrollFrame_Update(RealmListScrollFrame, numRealms, MAX_REALMS_DISPLAYED, REALM_BUTTON_HEIGHT, RealmListHighlight, 557,  587);
+
+	if (found) then
+		RealmListScrollFrameScrollBar:SetValue(RealmList.offset * REALM_BUTTON_HEIGHT);
+	end
 end
 
 function RealmList_UpdateTabs(...)
@@ -253,13 +303,14 @@ function RealmList_OnKeyDown(key)
 end
 
 function RealmList_OnOk()
-	RealmListUI:Hide();
 	-- If trying to join a Full realm then popup a dialog
 	if ( RealmList.showRealmIsFullDialog ) then
+		RealmListUI:Hide();
 		GlueDialog_Show("REALM_IS_FULL");
 		return;
 	end
 	if ( RealmList.currentRealm ) then
+		RealmListUI:Hide();
 		ChangeRealm(RealmList.selectedCategory , RealmList.currentRealm);
 	end
 end
@@ -300,6 +351,7 @@ end
 function RealmListScrollFrame_OnVerticalScroll(self, offset)
 	RealmList.refreshTime = RealmListUpdateRate();
 	local scrollbar = _G[self:GetName().."ScrollBar"];
+
 	scrollbar:SetValue(offset);
 	RealmList.offset = floor((offset / REALM_BUTTON_HEIGHT) + 0.5);
 	RealmListUpdate();
@@ -307,7 +359,9 @@ end
 
 function RealmList_OnShow(self)
 	RealmList.currentRealm = nil;
-	RealmListUpdate();
+
+	RequestRealmList();
+	
 	self.refreshTime = RealmListUpdateRate();
 	local selectedCategory = GetSelectedCategory();
 	if ( selectedCategory == 0 ) then

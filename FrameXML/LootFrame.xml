@@ -2,6 +2,9 @@
 ..\FrameXML\UI.xsd">
 	<Script file="LootFrame.lua"/>
 	<Button name="LootButtonTemplate" inherits="ItemButtonTemplate" virtual="true">
+		<HitRectInsets>
+			<AbsInset left="0" right="-107" top="0" bottom="0"/>
+		</HitRectInsets>
 		<Layers>
 			<Layer level="OVERLAY">
 				<Texture name="$parentIconQuestTexture">
@@ -62,7 +65,7 @@
 			<OnEnter>
 				GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
 				GameTooltip_AddNewbieTip(self, self.tooltipText, 1.0, 1.0, 1.0, self.newbieText);
-				if ( self:IsEnabled() ~= 1 ) then
+				if ( not self:IsEnabled() ) then
 					GameTooltip:AddLine(self.reason, RED_FONT_COLOR.r, RED_FONT_COLOR.g, RED_FONT_COLOR.b, true);
 					GameTooltip:Show();
 				end
@@ -172,8 +175,8 @@
 		<Size x="286" y="76"/>	
 		<Animations>
 			<AnimationGroup parentKey="StartRollAnim">
-				<Alpha change="-1" duration="0.25" order="1" targetKey="$parent.$parent.PromptFrame"/>
-				<Alpha change="1" duration="0.25" order="1" targetKey="$parent.$parent.RollingFrame"/>
+				<Alpha change="-1" duration="0.25" order="1" childKey="PromptFrame"/>
+				<Alpha change="1" duration="0.25" order="1" childKey="RollingFrame"/>
 				<Scripts>
 					<OnPlay>
 						local parent = self:GetParent();
@@ -190,12 +193,12 @@
 				</Scripts>
 			</AnimationGroup>
 			<AnimationGroup parentKey="FinishRollAnim">
-				<!--Scale scaleX="0.5" scaleY="0.5" duration="0" order="1" targetKey="$parent.$parent.RollingFrame.LootSpinnerFinalText"/-->
-				<Alpha change="-1" duration="0.2" order="1" targetKey="$parent.$parent.RollingFrame.Label"/>
-				<Alpha change="1" duration="0.2" order="2" targetKey="$parent.$parent.RollingFrame.LootSpinnerFinalText"/>
-				<!--Scale scaleX="3" scaleY="3" duration="5" order="2" targetKey="$parent.$parent.RollingFrame.LootSpinnerFinalText"/>
-				<Scale scaleX="0.66" scaleY="0.66" duration="5" order="2" startDelay="5" targetKey="$parent.$parent.RollingFrame.LootSpinnerFinalText"/-->
-				<Alpha change="0.8" duration="0.3" order="3" startDelay="0.5" targetKey="$parent.$parent.WhiteFade"/>
+				<!--Scale scaleX="0.5" scaleY="0.5" duration="0" order="1" childKey="RollingFrame.LootSpinnerFinalText"/-->
+				<Alpha change="-1" duration="0.2" order="1" childKey="RollingFrame.Label"/>
+				<Alpha change="1" duration="0.2" order="2" childKey="RollingFrame.LootSpinnerFinalText"/>
+				<!--Scale scaleX="3" scaleY="3" duration="5" order="2" childKey="RollingFrame.LootSpinnerFinalText"/>
+				<Scale scaleX="0.66" scaleY="0.66" duration="5" order="2" startDelay="5" childKey="RollingFrame.LootSpinnerFinalText"/-->
+				<Alpha change="0.8" duration="0.3" order="3" startDelay="0.5" childKey="WhiteFade"/>
 				<Alpha change="-1" duration="0.3" order="4"/>
 				<Scripts>
 					<OnFinished>
@@ -616,13 +619,14 @@
 	<Frame name="GroupLootFrame3" inherits="GroupLootFrameTemplate" id="3"/>
 	<Frame name="GroupLootFrame4" inherits="GroupLootFrameTemplate" id="4"/>
 	<Frame name="BonusRollFrame" inherits="BonusRollFrameTemplate"/>
-	<Frame name="BonusRollLootWonFrame" inherits="LootWonAlertFrameTemplate">
+	<Button name="BonusRollLootWonFrame" inherits="LootWonAlertFrameTemplate">
 		<Scripts>
 			<OnHide>
 				GroupLootContainer_RemoveFrame(GroupLootContainer, self);
 			</OnHide>
+			<OnClick function="LootWonAlertFrame_OnClick"/>
 		</Scripts>
-	</Frame>
+	</Button>
 	<Frame name="BonusRollMoneyWonFrame" inherits="MoneyWonAlertFrameTemplate">
 		<Scripts>
 			<OnHide>

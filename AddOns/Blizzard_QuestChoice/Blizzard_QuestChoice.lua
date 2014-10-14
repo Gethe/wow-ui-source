@@ -4,14 +4,32 @@ CURRENCY_HEIGHT = 20;
 MAX_CURRENCIES = 3;
 REWARDS_WIDTH = 200;
 INIT_REWARDS_HEIGHT = 18; --basically total vertical padding between rewards
-INIT_OPTION_HEIGHT = 268;
-INIT_WINDOW_HEIGHT = 440;
+INIT_OPTION_HEIGHT = 278;
+INIT_WINDOW_HEIGHT = 480;
 OPTION_STATIC_HEIGHT = 136; --height of artwork, button, and minimum padding
+
+GORGROND_GARRISON_ALLIANCE_CHOICE = 55;
+GORGROND_GARRISON_HORDE_CHOICE = 56;
+
+StaticPopupDialogs["CONFIRM_GORGROND_GARRISON_CHOICE"] = {
+	text = CONFIRM_GORGROND_GARRISON_CHOICE,
+	button1 = OKAY,
+	button2 = CANCEL,
+	OnAccept = function(self)
+		SendQuestChoiceResponse(self.data);
+		HideUIPanel(QuestChoiceFrame);
+	end,
+	hideOnEscape = 1,
+	timeout = 0,
+	exclusive = 1,
+	whileDead = 1,
+	showAlert = 1,	
+}
 
 function QuestChoiceFrame_OnEvent(self, event) 
 	if (event == "QUEST_CHOICE_UPDATE") then
 		QuestChoiceFrame_Update(self)
-	elseif (event == "PLAYER_DEAD" or event == "PLAYER_ENTERING_WORLD") then
+	elseif (event == "PLAYER_DEAD" or event == "PLAYER_ENTERING_WORLD" or event=="QUEST_CHOICE_CLOSE") then
 		HideUIPanel(self);
 	end
 end
@@ -22,6 +40,45 @@ function QuestChoiceFrame_Show()
 		ShowUIPanel(self)
 		QuestChoiceFrame_Update(QuestChoiceFrame);
 	end
+end
+
+function QuestChoiceFrame_OnHyperlinkEnter(self, link, text, hyperlinkButton)
+	if ( link and string.find(link, "spell") ) then
+		local _, _, spellID = string.find(link, "(%d+)");
+		if ( spellID ) then
+			GameTooltip:SetOwner(hyperlinkButton, "ANCHOR_RIGHT");
+			if ( GameTooltip:SetSpellByID(spellID) ) then
+				--hyperlinkButton.UpdateTooltip = QuestChoiceFrame_OnHyperlinkEnter;
+			else
+				hyperlinkButton.UpdateTooltip = nil;
+			end
+		end
+	end
+end
+
+function QuestChoiceFrameOptionButton_OnClick(self)
+	PlaySound("igMainMenuOptionCheckBoxOn");
+	local parent = self:GetParent();
+	if ( parent.optID ) then
+		if ( IsInGroup() and (QuestChoiceFrame.choiceID == GORGROND_GARRISON_ALLIANCE_CHOICE or QuestChoiceFrame.choiceID == GORGROND_GARRISON_HORDE_CHOICE) ) then
+			StaticPopup_Show("CONFIRM_GORGROND_GARRISON_CHOICE", nil, nil, parent.optID);
+		else
+			SendQuestChoiceResponse(parent.optID);
+			HideUIPanel(QuestChoiceFrame);
+		end
+	end
+end
+
+function QuestChoiceFrameOptionButton_OnEnter(self)
+	if ( self.Text:IsTruncated() ) then
+		GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+		GameTooltip:SetText(self.Text:GetText(), 1, 1, 1, 1, true);
+		GameTooltip:Show();
+	end
+end
+
+function QuestChoiceFrameOptionButton_OnLeave(self)
+	GameTooltip:Hide();
 end
 
 function QuestChoiceFrame_Update(self)
@@ -51,7 +108,7 @@ function QuestChoiceFrame_Update(self)
 	for i=1, numOptions do
 		local option = QuestChoiceFrame["Option"..i];
 		currHeight = OPTION_STATIC_HEIGHT;
-		currHeight = currHeight + option.OptionText:GetHeight();
+		currHeight = currHeight + option.OptionText:GetContentHeight();
 		currHeight = currHeight + option.Rewards:GetHeight();
 		maxHeight = max(currHeight, maxHeight);
 	end
@@ -67,7 +124,7 @@ end
 function QuestChoiceFrame_ShowRewards()
 	local rewardFrame, height;
 	local title, skillID, skillPoints, money, xp, numItems, numCurrencies, numChoices, numReps;
-	local name, texture, quantity, itemFrame;
+	local itemID, name, texture, quantity, itemFrame;
 	local currID, factionID;
 	
 	for i=1, MAX_NUM_OPTIONS do
@@ -137,7 +194,7 @@ function QuestChoiceFrame_ShowRewards()
 			local amountFrame = repFrame.Amount;
 			local dummyString = QuestChoiceFrame.DummyString;
 			factionID, quantity = GetQuestChoiceRewardFaction(i, 1); --there should only be one reputation reward
-			factionName = format(REWARD_REPUTATION, GetFactionInfoByID(factionID));
+			local factionName = format(REWARD_REPUTATION, GetFactionInfoByID(factionID));
 			dummyString:SetText(factionName);
 			factionFrame:SetText(factionName);
 			amountFrame:SetText(quantity);

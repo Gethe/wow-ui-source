@@ -81,7 +81,7 @@ function MailFrame_OnEvent(self, event, ...)
 		SendMailMailButton:Enable();
 	elseif ( event == "MAIL_SUCCESS" ) then
 		SendMailMailButton:Enable();
-		if ( InboxNextPageButton:IsEnabled() ~= 0 ) then
+		if ( InboxNextPageButton:IsEnabled() ) then
 			InboxGetMoreMail();
 		end
 	elseif ( event == "MAIL_CLOSED" ) then
@@ -187,12 +187,12 @@ function InboxFrame_Update()
 				senderText:SetTextColor(0.75, 0.75, 0.75);
 				subjectText:SetTextColor(0.75, 0.75, 0.75);
 				_G["MailItem"..i.."ButtonSlot"]:SetVertexColor(0.5, 0.5, 0.5);
-				SetDesaturation(buttonIcon, 1);
+				SetDesaturation(buttonIcon, true);
 			else
 				senderText:SetTextColor(NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b);
 				subjectText:SetTextColor(HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b);
 				_G["MailItem"..i.."ButtonSlot"]:SetVertexColor(1.0, 0.82, 0);
-				SetDesaturation(buttonIcon, nil);
+				SetDesaturation(buttonIcon, false);
 			end
 			-- Format expiration time
 			if ( daysLeft >= 1 ) then
@@ -227,10 +227,10 @@ function InboxFrame_Update()
 			end
 			-- Set highlight
 			if ( InboxFrame.openMailID == index ) then
-				button:SetChecked(1);
+				button:SetChecked(true);
 				SetPortraitToTexture("OpenMailFrameIcon", stationeryIcon);
 			else
-				button:SetChecked(nil);
+				button:SetChecked(false);
 			end
 		else
 			-- Clear everything
@@ -300,14 +300,14 @@ function InboxFrameItem_OnEnter(self)
 		if ( self.hasItem ) then
 			GameTooltip:AddLine(" ");
 		end
-		GameTooltip:AddLine(ENCLOSED_MONEY, "", 1, 1, 1);
+		GameTooltip:AddLine(ENCLOSED_MONEY, nil, nil, nil, true);
 		SetTooltipMoney(GameTooltip, self.money);
 		SetMoneyFrameColor("GameTooltipMoneyFrame1", "white");
 	elseif (self.cod) then
 		if ( self.hasItem ) then
 			GameTooltip:AddLine(" ");
 		end
-		GameTooltip:AddLine(COD_AMOUNT, "", 1, 1, 1);
+		GameTooltip:AddLine(COD_AMOUNT, nil, nil, nil, true);
 		SetTooltipMoney(GameTooltip, self.cod);
 		if ( self.cod > GetMoney() ) then
 			SetMoneyFrameColor("GameTooltipMoneyFrame1", "red");
@@ -413,6 +413,14 @@ function OpenMailFrame_UpdateButtonPositions(letterIsTakeable, textCreated, stat
 
 			SetItemButtonTexture(attachmentButton, itemTexture);
 			SetItemButtonCount(attachmentButton, count);
+
+			if (quality > LE_ITEM_QUALITY_COMMON and BAG_ITEM_QUALITY_COLORS[quality]) then
+				attachmentButton.IconBorder:Show();
+				attachmentButton.IconBorder:SetVertexColor(BAG_ITEM_QUALITY_COLORS[quality].r, BAG_ITEM_QUALITY_COLORS[quality].g, BAG_ITEM_QUALITY_COLORS[quality].b);
+			else
+				attachmentButton.IconBorder:Hide();
+			end
+
 			if ( canUse ) then
 				SetItemButtonTextureVertexColor(attachmentButton, HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b);
 			else
@@ -836,6 +844,16 @@ function SendMailFrame_Update()
 		else
 			_G["SendMailAttachment"..i.."Count"]:SetText(stackCount);
 		end
+
+		local attachmentButton = _G["SendMailAttachment"..i];
+		
+		if (quality > LE_ITEM_QUALITY_COMMON and BAG_ITEM_QUALITY_COLORS[quality]) then
+			attachmentButton.IconBorder:Show();
+			attachmentButton.IconBorder:SetVertexColor(BAG_ITEM_QUALITY_COLORS[quality].r, BAG_ITEM_QUALITY_COLORS[quality].g, BAG_ITEM_QUALITY_COLORS[quality].b);
+		else
+			attachmentButton.IconBorder:Hide();
+		end
+
 		-- determine what a name for the message in case it doesn't already have one
 		if ( itemName ) then
 			itemCount = itemCount + 1;
@@ -1004,12 +1022,12 @@ end
 
 function SendMailRadioButton_OnClick(index)
 	if ( index == 1 ) then
-		SendMailSendMoneyButton:SetChecked(1);
-		SendMailCODButton:SetChecked(nil);
+		SendMailSendMoneyButton:SetChecked(true);
+		SendMailCODButton:SetChecked(false);
 		SendMailMoneyText:SetText(AMOUNT_TO_SEND);
 	else
-		SendMailSendMoneyButton:SetChecked(nil);
-		SendMailCODButton:SetChecked(1);
+		SendMailSendMoneyButton:SetChecked(false);
+		SendMailCODButton:SetChecked(true);
 		SendMailMoneyText:SetText(COD_AMOUNT);
 	end
 	PlaySound("igMainMenuOptionCheckBoxOn");
@@ -1051,9 +1069,9 @@ function StationeryPopupFrame_Update()
 		end
 		
 		if ( index == StationeryPopupFrame.selectedIndex ) then
-			button:SetChecked(1);
+			button:SetChecked(true);
 		else
-			button:SetChecked(nil);
+			button:SetChecked(false);
 		end
 		button.index = index;
 		index = index + 1;

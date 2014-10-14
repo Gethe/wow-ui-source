@@ -425,10 +425,10 @@ local textureMapping = {
 };
 
 function TemporaryEnchantFrame_Update(...)
-	local RETURNS_PER_ITEM = 3;
+	local RETURNS_PER_ITEM = 4;
 	local numVals = select("#", ...);
 	local numItems = numVals / RETURNS_PER_ITEM;
-	
+
 	if ( numItems == 0 ) then
 		TemporaryEnchantFrame_Hide();
 		return;

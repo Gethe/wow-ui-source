@@ -37,16 +37,14 @@ function MapBarFrame_OnEnter(self)
 	local title = MapBarFrame_GetString("TITLE", tag, phase);
 	local tooltipText = MapBarFrame_GetString("TOOLTIP", tag, phase);
 	local percentage = math.floor(100 * C_MapBar.GetCurrentValue() / C_MapBar.GetMaxValue());
-	WorldMapTooltip.MB_using = true;
 	WorldMapTooltip:SetOwner(self, "ANCHOR_RIGHT");
 	WorldMapTooltip:SetText(format(MAP_BAR_TOOLTIP_TITLE, title, percentage), 1, 1, 1);
 	WorldMapTooltip:AddLine(tooltipText, nil, nil, nil, true);
-	WorldMapTooltip:AddLine(format(MAP_BAR_PARTICIPATION, getEmbeddedFactionIcon(), participation), 1, 1, 1);
+	WorldMapTooltip:AddLine(format(MAP_BAR_PARTICIPATION, getEmbeddedFactionIcon(), participation), 1, 1, true);
 	WorldMapTooltip:Show();
 end
 
 function MapBarFrame_OnLeave(self)
-	WorldMapTooltip.MB_using = false;
 	WorldMapTooltip:Hide();
 end
 
@@ -71,16 +69,6 @@ end
 
 function MapBarFrame_UpdateLayout(self)
 	self:SetFrameLevel(WorldMapPOIFrame:GetFrameLevel() + 1);
-	if ( WORLDMAP_SETTINGS.size == WORLDMAP_FULLMAP_SIZE ) then
-		self:SetScale(1);
-		self:SetPoint("TOPLEFT", WorldMapButton, "TOPLEFT", 150, -70);
-	elseif ( WORLDMAP_SETTINGS.size == WORLDMAP_QUESTLIST_SIZE ) then
-		self:SetScale(1);
-		self:SetPoint("TOPLEFT", WorldMapButton, "TOPLEFT", 115, -65);
-	else --We'll treat it like it's WORLDMAP_WINDOWED_SIZE
-		self:SetScale(0.8);
-		self:SetPoint("TOPLEFT", WorldMapButton, "TOPLEFT", 100, -85);
-	end
 end
 
 function MapBarFrame_GetString(stringType, tag, phase)

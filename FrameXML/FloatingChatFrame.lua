@@ -113,8 +113,9 @@ end
 
 function FCF_CopyChatSettings(copyTo, copyFrom)
 	local name, fontSize, r, g, b, a, shown, locked, docked, uninteractable = FCF_GetChatWindowInfo(copyFrom:GetID());
-	FCF_SetWindowColor(copyTo, r, g, b, 1);
-	FCF_SetWindowAlpha(copyTo, a, 1);
+	
+	FCF_SetWindowColor(copyTo, r, g, b, true);
+	FCF_SetWindowAlpha(copyTo, a, true);
 	--If we're copying to a docked window, we don't want to copy locked.
 	if ( not copyTo.isDocked ) then
 		FCF_SetLocked(copyTo, locked);
@@ -128,14 +129,13 @@ function FloatingChatFrame_Update(id, onUpdateEvent)
 	local chatTab = _G["ChatFrame"..id.."Tab"];
 	
 	local name, fontSize, r, g, b, a, shown, locked, docked, uninteractable = FCF_GetChatWindowInfo(id);
-	
 	-- Set Tab Name
-	FCF_SetWindowName(chatFrame, name, 1)
+	FCF_SetWindowName(chatFrame, name, true)
 
 	if ( onUpdateEvent ) then
 		-- Set Frame Color and Alpha
-		FCF_SetWindowColor(chatFrame, r, g, b, 1);
-		FCF_SetWindowAlpha(chatFrame, a, 1);
+		FCF_SetWindowColor(chatFrame, r, g, b, true);
+		FCF_SetWindowAlpha(chatFrame, a, true);
 		FCF_SetLocked(chatFrame, locked);
 		FCF_SetUninteractable(chatFrame, uninteractable);
 	end
@@ -570,7 +570,7 @@ function FCF_OpenNewWindow(name)
 			FCF_SetWindowName(chatFrame, name);
 			FCF_SetWindowColor(chatFrame, DEFAULT_CHATFRAME_COLOR.r, DEFAULT_CHATFRAME_COLOR.g, DEFAULT_CHATFRAME_COLOR.b);
 			FCF_SetWindowAlpha(chatFrame, DEFAULT_CHATFRAME_ALPHA);
-			SetChatWindowLocked(i, nil);
+			SetChatWindowLocked(i, false);
 
 			-- clear stale messages
 			chatFrame:Clear();
@@ -596,7 +596,7 @@ function FCF_OpenNewWindow(name)
 			-- Show the frame and tab
 			chatFrame:Show();
 			chatTab:Show();
-			SetChatWindowShown(i, 1);
+			SetChatWindowShown(i, true);
 			
 			-- Dock the frame by default
 			FCF_DockFrame(chatFrame, (#FCFDock_GetChatFrames(GENERAL_CHAT_DOCK)+1), true);
@@ -903,7 +903,7 @@ function FCF_SetWindowAlpha(frame, alpha, doNotSave)
 		SetChatWindowAlpha(frame:GetID(), alpha);
 	end
 	-- Remember the alpha
-	frame.oldAlpha = alpha;
+	frame.oldAlpha = alpha or DEFAULT_CHATFRAME_ALPHA;
 end
 
 function FCF_GetCurrentChatFrameID()
@@ -987,9 +987,9 @@ function FCF_ToggleLock()
 			FCF_SetTabPosition(chatFrame, 0);
 			chatFrame:Show();
 		end
-		FCF_SetLocked(chatFrame, nil);
+		FCF_SetLocked(chatFrame, false);
 	else
-		FCF_SetLocked(chatFrame, 1);
+		FCF_SetLocked(chatFrame, true);
 	end
 end
 
@@ -1532,7 +1532,7 @@ function FCF_DockFrame(frame, index, selected)
 	end
 	
 	-- Lock frame
-	FCF_SetLocked(frame, 1);
+	FCF_SetLocked(frame, true);
 	
 	--If the frame that is being docked and the frame it is docking to have different interactable settings, make them both interactable.
 	if ( frame.isUninteractable ~= DEFAULT_CHAT_FRAME.isUninteractable ) then
@@ -1768,7 +1768,7 @@ end
 function FCF_Set_NormalChat()
 	ChatFrame2:StartMoving();
 	ChatFrame2:StopMovingOrSizing();
-	FCF_SetLocked(ChatFrame2, nil);
+	FCF_SetLocked(ChatFrame2, false);
 	-- to fix a bug with the combat log not repositioning its tab properly when coming out of
 	-- simple chat, we need to update now
 	FCF_DockUpdate();
@@ -2233,7 +2233,9 @@ function FCFDock_CalculateTabSize(dock, numDynFrames)
 	
 	--Figure out how many tabs we're going to be able to fit at the minimum size
 	local numWholeTabs = min(floor(scrollSize / MIN_SIZE), numDynFrames)
-	
+	if ( scrollSize == 0 ) then
+		return 1, (numDynFrames > 0);
+	end
 	if ( numWholeTabs == 0 ) then
 		return scrollSize, true;
 	end

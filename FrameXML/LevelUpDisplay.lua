@@ -2,12 +2,14 @@ LEVEL_UP_TYPE_CHARACTER = "character";	--Name used in globalstring LEVEL_UP
 LEVEL_UP_TYPE_GUILD = "guild";	--Name used in globalstring GUILD_LEVEL_UP
 LEVEL_UP_TYPE_PET = "pet" -- Name used in globalstring PET_LEVEL_UP
 LEVEL_UP_TYPE_SCENARIO = "scenario";
+LEVEL_UP_TYPE_SPELL_BUCKET = "spellbucket";
 TOAST_QUEST_BOSS_EMOTE = "questbossemote";
 TOAST_PET_BATTLE_WINNER = "petbattlewinner";
 TOAST_PET_BATTLE_CAPTURE = "petbattlecapturetoast";
 TOAST_PET_BATTLE_LEVELUP = "petbattleleveluptoast";
 TOAST_PET_BATTLE_LOOT = "petbattleloot";
 TOAST_CHALLENGE_MODE_RECORD = "challengemode";
+TOAST_GARRISON_ABILITY = "garrisonability";
 
 LEVEL_UP_EVENTS = {
 --  Level  = {unlock}
@@ -88,7 +90,19 @@ local levelUpTexCoords = {
 		gLine = { 0.00195313, 0.81835938, 0.00195313, 0.01562500 },
 		tint = {0.777, 0.698, 0.451},
 		gLineDelay = 0,
-	},	
+	},
+	[TOAST_GARRISON_ABILITY] = {
+		dot = { 0.64257813, 0.68359375, 0.18750000, 0.23046875 },
+		goldBG = { 0.56054688, 0.99609375, 0.24218750, 0.46679688 },
+		gLine = { 0.00195313, 0.81835938, 0.01953125, 0.03320313 },
+		gLineDelay = 1.5,
+	},
+	[LEVEL_UP_TYPE_SPELL_BUCKET] = {
+		dot = { 0.64257813, 0.68359375, 0.18750000, 0.23046875 },
+		goldBG = { 0.56054688, 0.99609375, 0.24218750, 0.46679688 },
+		gLine = { 0.00195313, 0.81835938, 0.01953125, 0.03320313 },
+		gLineDelay = 1.5,
+	},
 }
 
 LEVEL_UP_TYPES = {
@@ -194,8 +208,10 @@ LEVEL_UP_TYPES = {
 									
  	["LockMount1"] 			= {	spellID=5784	},
  	["LockMount2"] 			= {	spellID=23161	},
- 	["PaliMount1"] 			= {	spellID=34769	},
- 	["PaliMount2"] 			= {	spellID=34767	},
+ 	["PaliMountHorde1"] 	= {	spellID=34769	},
+ 	["PaliMountHorde2"] 	= {	spellID=34767	},
+ 	["PaliMountAlliance1"] 	= {	spellID=13819	},
+ 	["PaliMountAlliance2"] 	= {	spellID=23214	},
  	["PaliMountTauren1"] 	= {	spellID=69820	},
  	["PaliMountTauren2"] 	= {	spellID=69826	},
  	["PaliMountDraenei1"] 	= {	spellID=73629	},
@@ -245,10 +261,15 @@ LEVEL_UP_CLASS_HACKS = {
 							--  Level  = {unlock}
 								[40] = {"Plate"},
 							},
-	["PALADIN"] 		= {
+	["PALADINHorde"] 		= {
 							--  Level  = {unlock}
-								[20] = {"PaliMount1"},
-								[40] = {"PaliMount2", "Plate"},
+								[20] = {"PaliMountHorde1"},
+								[40] = {"PaliMountHorde2", "Plate"},
+							},
+	["PALADINAlliance"] 	= {
+							--  Level  = {unlock}
+								[20] = {"PaliMountAlliance1"},
+								[40] = {"PaliMountAlliance2", "Plate"},
 							},
 	["PALADINTauren"]	= {
 							--  Level  = {unlock}
@@ -262,13 +283,21 @@ LEVEL_UP_CLASS_HACKS = {
 							},	
 }
 
+GARRISON_ABILITY_HACKS = {
+	[26] = {
+		["Horde"] = 161332,
+		["Alliance"] = 161676,
+		["Subtext"] = GARRISON_ABILITY_BARRACKS_UNLOCKED,
+	},
+}
+
 LEVEL_UP_TRAP_LEVELS = {427, 77, 135}
 
 function LevelUpDisplay_OnLoad(self)
 	self:RegisterEvent("PLAYER_LEVEL_UP");
 	self:RegisterEvent("UNIT_GUILD_LEVEL");
 	self:RegisterEvent("UNIT_LEVEL");
-	--self:RegisterEvent("SCENARIO_UPDATE");	this is now handled from the WatchFrame
+	--self:RegisterEvent("SCENARIO_UPDATE");	this is now handled from the ObjectiveTracker
 	self:RegisterEvent("PET_BATTLE_FINAL_ROUND"); -- display winner, start listening for additional results
 	self:RegisterEvent("PET_BATTLE_CLOSE");        -- stop listening for additional results
 	self:RegisterEvent("QUEST_BOSS_EMOTE");
@@ -279,6 +308,8 @@ function LevelUpDisplay_OnLoad(self)
 	self:RegisterEvent("PET_BATTLE_LOOT_RECEIVED");
 	self:RegisterEvent("LOADING_SCREEN_ENABLED");
 	self:RegisterEvent("LOADING_SCREEN_DISABLED");
+	self:RegisterEvent("GARRISON_BUILDING_ACTIVATED");
+	self:RegisterEvent("CHARACTER_UPGRADE_SPELL_TIER_SET");
 	self.currSpell = 0;
 end
 
@@ -357,6 +388,19 @@ function LevelUpDisplay_OnEvent(self, event, ...)
 		self.medal = medal;
 		LevelUpDisplay_Show(self);
 		PlaySoundKitID(33338);
+	elseif ( event == "GARRISON_BUILDING_ACTIVATED" ) then
+		local _, buildingID = ...;
+		if (GARRISON_ABILITY_HACKS[buildingID]) then
+			self.buildingID = buildingID;
+			self:RegisterEvent("CINEMATIC_STOP");
+		end
+	elseif ( event == "CINEMATIC_STOP" ) then
+		self.type = TOAST_GARRISON_ABILITY;
+		LevelUpDisplay_Show(self);
+		self:UnregisterEvent("CINEMATIC_STOP");
+	elseif ( event == "CHARACTER_UPGRADE_SPELL_TIER_SET") then
+		local tierIndex = ...;
+		LevelUpDisplay_AddSpellBucketUnlockEvent(self, tierIndex);
 	end
 end
 
@@ -392,7 +436,7 @@ function LevelUpDisplay_BuildCharacterList(self)
 																link=LEVEL_UP_ABILITY2.." "..GetSpellLink(spell)
 															};
 	end	
-	
+
 	local GUILD_EVENT_TEXTURE_PATH = "Interface\\LFGFrame\\LFGIcon-";
 	local dungeons = {GetLevelUpInstances(self.level, false)};
 	for _,dungeon in pairs(dungeons) do
@@ -456,6 +500,34 @@ function LevelUpDisplay_BuildCharacterList(self)
 															};
 	end	
 	
+	local draenorTalent = GetCurrentLevelDraenorTalent(self.level);
+	if (draenorTalent) then
+		name, _, icon = GetSpellInfo(draenorTalent);
+		self.unlockList[#self.unlockList +1] = { entryType = "draenortalent", text = name, subText = LEVEL_UP_DRAENORTALENT, icon = icon, subIcon = SUBICON_TEXCOOR_BOOK, description = GetSpellDescription(draenorTalent),
+																link=LEVEL_UP_DRAENOR_TALENT2.." "..GetSpellLink(draenorTalent) };
+	end
+
+	self.currSpell = 1;
+end
+
+function LevelUpDisplay_BuildSpellBucketList(self)
+	local allUnlocked, spells, _, talentTier = GetSpellsForCharacterUpgradeTier(self.level);
+
+	self.unlockList = {};
+	if (not allUnlocked) then
+		if (spells) then
+			for i = 1, #spells do
+				local name, _, icon = GetSpellInfo(spells[i]);
+				self.unlockList[#self.unlockList+1] = { entryType = "bucketspell", text = name, icon = icon };
+			end
+		else
+			for i = 1, NUM_TALENT_COLUMNS do
+				local _, name, icon = GetTalentInfo(talentTier, i, GetActiveSpecGroup());
+				self.unlockList[#self.unlockList+1] = { entryType = "bucketspell", text = name, icon = icon };
+			end
+		end
+	end
+
 	self.currSpell = 1;
 end
 
@@ -493,6 +565,18 @@ function LevelUpDisplay_BuildGuildList(self)
 		end
 	end
 	
+	self.currSpell = 1;
+end
+
+function LevelUpDisplay_BuildGarrisonAbilityList(self)
+	self.unlockList = {};
+
+	local faction = UnitFactionGroup("player");
+	local spellID = GARRISON_ABILITY_HACKS[self.buildingID][faction];
+	local abilityText = GARRISON_ABILITY_HACKS[self.buildingID].Subtext;
+	local name, _, texture = GetSpellInfo(spellID);
+	tinsert(self.unlockList, { text = name, subText = abilityText, icon = texture, subIcon = SUBICON_TEXCOOR_BOOK, link = LEVEL_UP_ABILITY2.." "..GetSpellLink(spellID)});
+
 	self.currSpell = 1;
 end
 
@@ -581,6 +665,25 @@ function LevelUpDisplay_AddBattlePetLevelUpEvent(self, activePlayer, activePetSl
 	end
 end
 
+function LevelUpDisplay_AddSpellBucketUnlockEvent(self, tierIndex)
+	if (tierIndex == 0) then
+		return;
+	end
+
+	if (self.currSpell == 0) then
+		self.type = LEVEL_UP_TYPE_SPELL_BUCKET;
+		self.tierIndex = tierIndex;
+		LevelUpDisplay_Show(self);
+		return;
+	end
+
+	table.insert(self.unlockList,
+		{
+		entryType = "spellbucket",
+		tierIndex = tierIndex,
+		});
+end
+
 function LevelUpDisplay_CreateOrAppendItem(self, createType, info)
 	local unlockList = nil;
 	if ( self.hideAnim:IsPlaying() or self.fastHideAnim:IsPlaying() ) then --If we're currently animating out
@@ -662,6 +765,7 @@ function LevelUpDisplay_Start(self, beginUnlockList)
 		return;
 	end
 
+	self:SetHeight(72);
 	self:Show();
 	ZoneTextFrame:Hide();	--LevelUpDisplay is more important than zoning text
 	SubZoneTextFrame:Hide();
@@ -763,6 +867,73 @@ function LevelUpDisplay_Start(self, beginUnlockList)
 				self.currSpell = 1;
 				self.levelFrame.singleline:SetText(PLAYER_LEVEL_UP);
 				playAnim = self.levelFrame.fastReveal;
+			elseif ( self.type == LEVEL_UP_TYPE_SPELL_BUCKET ) then
+				self.unlockList = unlockList or {};
+				self.currSpell = 1;
+				local tierIndex = self.tierIndex;
+				if (tierIndex > 0) then
+					local unlockAll, spells, tierName, talentTier = GetSpellsForCharacterUpgradeTier(tierIndex);
+					if (unlockAll) then
+						local icon = select(4, GetSpecializationInfo(GetSpecialization()));
+						self.SpellBucketFrame.AllAbilitiesUnlocked.icon:SetTexture(icon);
+						self.SpellBucketFrame.AllAbilitiesUnlocked.subIcon:SetTexCoord(unpack(SUBICON_TEXCOOR_BOOK));
+						self.SpellBucketFrame.SpellBucketDisplay:Hide();
+						self.SpellBucketFrame.AllAbilitiesUnlocked:Show();
+						self:SetHeight(70);
+					else
+						local num, isTalents;
+						if (spells) then
+							num = #spells;
+						else
+							num = NUM_TALENT_COLUMNS;
+							isTalents = true;
+						end
+						if (num > 5) then
+							num = 5;
+						end
+						local index = #self.SpellBucketFrame.SpellBucketDisplay.BucketIcons + 1;
+						local frameWidth, spacing = 56, 4;
+						while (#self.SpellBucketFrame.SpellBucketDisplay.BucketIcons < num) do
+							local frame = CreateFrame("Frame", nil, self.SpellBucketFrame.SpellBucketDisplay, "SpellBucketSpellTemplate");
+							local prev = self.SpellBucketFrame.SpellBucketDisplay.BucketIcons[index - 1];
+							frame:SetPoint("LEFT", prev, "RIGHT", spacing, 0);
+							index = index + 1;
+						end
+						-- Figure out where to place the leftmost spell
+						local frame = self.SpellBucketFrame.SpellBucketDisplay.BucketIcons[1];
+						frame:ClearAllPoints();
+						if (num % 2 == 1) then
+							local x = (num - 1) / 2;
+							frame:SetPoint("TOPLEFT", self.SpellBucketFrame.SpellBucketDisplay, "TOP", -((frameWidth / 2) + (frameWidth * x) + (spacing * x)), -42);
+						else
+							local x = num / 2;
+							frame:SetPoint("TOPLEFT", self.SpellBucketFrame.SpellBucketDisplay, "TOP", -((frameWidth * x) + (spacing * (x - 1)) + (spacing / 2)), -42);
+						end
+						for i = 1, num do
+							local name, icon, _;
+							local spellframe = self.SpellBucketFrame.SpellBucketDisplay.BucketIcons[i];
+							if (not isTalents) then
+								local spellID = spells[i];
+								name, _, icon = GetSpellInfo(spellID);
+							else
+								_, name, icon = GetTalentInfo(talentTier, i, GetActiveSpecGroup());
+							end
+							spellframe.name:SetText(name);
+							spellframe.icon:SetTexture(icon);
+							spellframe:Show();
+						end
+						for i = num+1, #self.SpellBucketFrame.SpellBucketDisplay.BucketIcons do
+							self.SpellBucketFrame.SpellBucketDisplay.BucketIcons[i]:Hide();
+						end
+						self.SpellBucketFrame.SpellBucketDisplay.Name:SetText(tierName);
+						self.SpellBucketFrame.AllAbilitiesUnlocked:Hide();
+						self.SpellBucketFrame.SpellBucketDisplay:Show();
+						self:SetHeight(112);
+					end
+					playAnim = self.SpellBucketFrame.bucketUnlocked;
+				end
+			elseif (self.type == TOAST_GARRISON_ABILITY ) then
+				LevelUpDisplay_BuildGarrisonAbilityList(self);
 			end
 		end
 
@@ -802,12 +973,16 @@ function LevelUpDisplay_AnimStep(self, fast)
 		local spellInfo = self.unlockList[self.currSpell];
 		self.currSpell = self.currSpell+1;
 
+		self.spellFrame:Hide();
+		self.DraenorTalentFrame:Hide();
 		self.spellFrame.name:SetText("");
 		self.spellFrame.flavorText:SetText("");
+		self.spellFrame.middleName:SetText("");
 		self.spellFrame.upperwhite:SetText("");
 		self.spellFrame.bottomGiant:SetText("");
 		self.spellFrame.subIcon:Hide();
 		self.spellFrame.subIconRight:Hide();
+		self.spellFrame.iconBorder:Hide();
 		self.spellFrame.rarityUpperwhite:SetText("");
 		self.spellFrame.rarityMiddleHuge:SetText("");
 		self.spellFrame.rarityIcon:Hide();
@@ -820,22 +995,27 @@ function LevelUpDisplay_AnimStep(self, fast)
 			spellInfo.entryType == "heroicdungeon") then
 			self.spellFrame.name:SetText(spellInfo.text);
 			self.spellFrame.flavorText:SetText(spellInfo.subText);
+			self.spellFrame.icon:Show();
 			self.spellFrame.icon:SetTexture(spellInfo.icon);
 			if (spellInfo.subIcon) then
 				self.spellFrame.subIcon:Show();
 				self.spellFrame.subIcon:SetTexCoord(unpack(spellInfo.subIcon));
 			end
+			self.spellFrame:Show();
 			self.spellFrame.showAnim:Play();
 		elseif (spellInfo.entryType == "petlevelup") then
 			if (spellInfo.subIcon) then
 				self.spellFrame.subIconRight:Show();
 				self.spellFrame.subIconRight:SetTexCoord(unpack(spellInfo.subIcon));
 			end
+			self.spellFrame.icon:Show();
 			self.spellFrame.icon:SetTexture(spellInfo.icon);
 			self.spellFrame.upperwhite:SetText(spellInfo.text);
 			self.spellFrame.bottomGiant:SetText(spellInfo.subText);
+			self.spellFrame:Show();
 			self.spellFrame.showAnim:Play();
 		elseif (spellInfo.entryType == "petcapture") then
+			self.spellFrame.icon:Show();
 			self.spellFrame.icon:SetTexture(spellInfo.icon);
 			self.spellFrame.rarityUpperwhite:SetText(spellInfo.text);
 			self.spellFrame.rarityMiddleHuge:SetText(spellInfo.subText);
@@ -847,8 +1027,10 @@ function LevelUpDisplay_AnimStep(self, fast)
 				self.spellFrame.rarityValue:SetTextColor(ITEM_QUALITY_COLORS[spellInfo.quality-1].r, ITEM_QUALITY_COLORS[spellInfo.quality-1].g, ITEM_QUALITY_COLORS[spellInfo.quality-1].b);
 				self.spellFrame.rarityValue:Show();
 			end
+			self.spellFrame:Show();
 			self.spellFrame.showAnim:Play();
 		elseif ( spellInfo.entryType == "petbattleloot" ) then
+			self.spellFrame.icon:Show();
 			self.spellFrame.flavorText:SetText(HIGHLIGHT_FONT_COLOR_CODE..spellInfo.text.."|r");
 			self.spellFrame.icon:SetTexture(spellInfo.icon);
 			local coloredText = ITEM_QUALITY_COLORS[spellInfo.quality].hex..spellInfo.subText.."|r";
@@ -857,7 +1039,83 @@ function LevelUpDisplay_AnimStep(self, fast)
 			self.spellFrame.iconBorder:SetVertexColor(ITEM_QUALITY_COLORS[spellInfo.quality].r, ITEM_QUALITY_COLORS[spellInfo.quality].g, ITEM_QUALITY_COLORS[spellInfo.quality].b);
 			self.spellFrame.subIconRight:Show();
 			self.spellFrame.subIconRight:SetTexCoord(0.719, 0.779, 0.117, 0.178)
+			self.spellFrame:Show();
 			self.spellFrame.showAnim:Play();
+		elseif ( spellInfo.entryType == "draenortalent" ) then
+			LevelUpDisplayBlackBg:Hide();
+			LevelUpDisplayGLine:Hide();
+			LevelUpDisplayGLine2:Hide();
+			self.DraenorTalentFrame.Icon:SetTexture(spellInfo.icon);
+			self.DraenorTalentFrame.Icon2:SetTexture(spellInfo.icon);
+			self.DraenorTalentFrame.spelltext:SetText(spellInfo.text);
+			self.DraenorTalentFrame.descriptiontext:SetText(spellInfo.description);
+			self.DraenorTalentFrame:Show();
+			self.DraenorTalentFrame.showAnim:Play();
+		elseif ( spellInfo.entryType == "spellbucket" ) then
+			local tierIndex = spellInfo.tierIndex;
+			if (tierIndex > 0) then
+				local unlockAll, spells, tierName, talentTier = GetSpellsForCharacterUpgradeTier(tierIndex);
+				if (unlockAll) then
+					local icon = select(4, GetSpecializationInfo(GetSpecialization()));
+					self.SpellBucketFrame.AllAbilitiesUnlocked.icon:SetTexture(icon);
+					self.SpellBucketFrame.AllAbilitiesUnlocked.subIcon:SetTexCoord(unpack(SUBICON_TEXCOOR_BOOK));
+					self.SpellBucketFrame.SpellBucketDisplay:Hide();
+					self.SpellBucketFrame.AllAbilitiesUnlocked:Show();
+					self:SetHeight(70);
+				else
+					local num, isTalents;
+					if (spells) then
+						num = #spells;
+					else
+						num = NUM_TALENT_COLUMNS;
+						isTalents = true;
+					end
+					if (num > 5) then
+						num = 5;
+					end
+					local index = #self.SpellBucketFrame.SpellBucketDisplay.BucketIcons + 1;
+					local frameWidth, spacing = 56, 4;
+					while (#self.SpellBucketFrame.SpellBucketDisplay.BucketIcons < num) do
+						local frame = CreateFrame("Frame", nil, self.SpellBucketFrame.SpellBucketDisplay, "SpellBucketSpellTemplate");
+						local prev = self.SpellBucketFrame.SpellBucketDisplay.BucketIcons[index - 1];
+						frame:SetPoint("LEFT", prev, "RIGHT", spacing, 0);
+						index = index + 1;
+					end
+					-- Figure out where to place the leftmost spell
+					local frame = self.SpellBucketFrame.SpellBucketDisplay.BucketIcons[1];
+					frame:ClearAllPoints();
+					if (num % 2 == 1) then
+						local x = (num - 1) / 2;
+						frame:SetPoint("TOPLEFT", self.SpellBucketFrame.SpellBucketDisplay, "TOP", -((frameWidth / 2) + (frameWidth * x) + (spacing * x)), -42);
+					else
+						local x = num / 2;
+						frame:SetPoint("TOPLEFT", self.SpellBucketFrame.SpellBucketDisplay, "TOP", -((frameWidth * x) + (spacing * (x - 1)) + (spacing / 2)), -42);
+					end
+					for i = 1, num do
+						local name, icon, _;
+						local spellframe = self.SpellBucketFrame.SpellBucketDisplay.BucketIcons[i];
+						if (not isTalents) then
+							local spellID = spells[i];
+							name, _, icon = GetSpellInfo(spellID);
+						else
+							_, name, icon = GetTalentInfo(talentTier, i, GetActiveSpecGroup());
+						end
+						spellframe.name:SetText(name);
+						spellframe.icon:SetTexture(icon);
+						spellframe:Show();
+					end
+					for i = num+1, #self.SpellBucketFrame.SpellBucketDisplay.BucketIcons do
+						self.SpellBucketFrame.SpellBucketDisplay.BucketIcons[i]:Hide();
+					end
+					self.SpellBucketFrame.SpellBucketDisplay.Name:SetText(tierName);
+					self.SpellBucketFrame.AllAbilitiesUnlocked:Hide();
+					self:SetHeight(112);
+				end
+				self.SpellBucketFrame:Show();
+				self.SpellBucketFrame.bucketUnlocked:Play();
+			else
+				LevelUpDisplay_AnimStep(self, fast);
+			end
 		end
 	end
 end
@@ -906,6 +1164,10 @@ end
 
 
 function LevelUpDisplaySide_OnShow(self)
+	self.abilitiesUnlocked:Hide();
+	self.spellBucketName:Hide();
+	self.reachedText:Show();
+	self.levelText:Show();
 	if ( self.type == LEVEL_UP_TYPE_CHARACTER ) then
 		LevelUpDisplay_BuildCharacterList(self);
 		self.reachedText:SetText(LEVEL_UP_YOU_REACHED);
@@ -920,6 +1182,14 @@ function LevelUpDisplaySide_OnShow(self)
 		local guildName = GetGuildInfo("player");
 		self.reachedText:SetFormattedText(GUILD_LEVEL_UP_YOU_REACHED, guildName);
 		self.levelText:SetFormattedText(LEVEL_GAINED,self.level);
+	elseif ( self.type == LEVEL_UP_TYPE_SPELL_BUCKET ) then
+		LevelUpDisplay_BuildSpellBucketList(self);
+		self.reachedText:Hide();
+		self.levelText:Hide();
+		local _, _, name = GetSpellsForCharacterUpgradeTier(self.level);
+		self.spellBucketName:SetText(name);
+		self.abilitiesUnlocked:Show();
+		self.spellBucketName:Show();
 	end
 	self.goldBG:SetTexCoord(unpack(levelUpTexCoords[self.type].goldBG));
 	self.dot:SetTexCoord(unpack(levelUpTexCoords[self.type].dot));
@@ -976,10 +1246,19 @@ function LevelUpDisplaySide_AnimStep(self)
 	if self.currSpell <= #self.unlockList then
 		local spellInfo = self.unlockList[self.currSpell];
 		local displayFrame = _G["LevelUpDisplaySideUnlockFrame"..self.currSpell];
-		displayFrame.name:SetText(spellInfo.text);
-		displayFrame.flavorText:SetText(spellInfo.subText);
-		displayFrame.icon:SetTexture(spellInfo.icon);
-		displayFrame.subIcon:SetTexCoord(unpack(spellInfo.subIcon));
+		if (spellInfo.entryType and spellInfo.entryType == "bucketspell") then
+			displayFrame.name:SetText("");
+			displayFrame.flavorText:SetText("");
+			displayFrame.middleName:SetText(spellInfo.text);
+			displayFrame.icon:SetTexture(spellInfo.icon);
+			displayFrame.subIcon:Hide();
+		else
+			displayFrame.name:SetText(spellInfo.text);
+			displayFrame.flavorText:SetText(spellInfo.subText);
+			displayFrame.icon:SetTexture(spellInfo.icon);
+			displayFrame.subIcon:SetTexCoord(unpack(spellInfo.subIcon));
+			displayFrame.subIcon:Show();
+		end
 		displayFrame.subIconRight:Hide();
 		displayFrame.sideAnimIn:Play();
 		self.currSpell = self.currSpell+1;
@@ -1015,17 +1294,92 @@ function LevelUpDisplay_ChatPrint(self, level, levelUpType, ...)
 		local guildName = GetGuildInfo("player");
 		levelstring = format(GUILD_LEVEL_UP, guildName, level, level);
 		info = ChatTypeInfo["GUILD"];
+	elseif ( levelUpType == LEVEL_UP_TYPE_SPELL_BUCKET ) then
+		local allUnlocked, _, name = GetSpellsForCharacterUpgradeTier(level);
+		if (allUnlocked) then
+			local class = UnitClass("player");
+			levelstring = format(SPELL_BUCKET_ALL_ABILITIES_UNLOCKED_MESSAGE, class);
+		else
+			LevelUpDisplay_BuildSpellBucketList(chatLevelUP);
+			levelstring = format(SPELL_BUCKET_LEVEL_UP, level, name or "");
+		end
+		info = ChatTypeInfo["SYSTEM"];
 	end
 	self:AddMessage(levelstring, info.r, info.g, info.b, info.id);
-	for _,skill in pairs(chatLevelUP.unlockList) do
-		if skill.entryType == "heroicdungeon" then
-			local name, link = EJ_GetTierInfo(skill.tier);
-			self:AddMessage(LEVEL_UP_HEROIC2..link, info.r, info.g, info.b, info.id);
-		elseif skill.entryType ~= "spell" then
-			self:AddMessage(skill.link, info.r, info.g, info.b, info.id);
+	if (chatLevelUP.unlockList) then
+		for _,skill in pairs(chatLevelUP.unlockList) do
+			if skill.entryType == "heroicdungeon" then
+				local name, link = EJ_GetTierInfo(skill.tier);
+				self:AddMessage(LEVEL_UP_HEROIC2..link, info.r, info.g, info.b, info.id);
+			elseif skill.entryType ~= "spell" and skill.entryType ~= "bucketspell" then
+				self:AddMessage(skill.link, info.r, info.g, info.b, info.id);
+			end
 		end
 	end
 end
 
+function LevelUpDraenorTalent_OnLoad(self)
+	self.beginLeft = 0;
+	self.beginRight = 0.43359375;
 
+	self.left = self.beginLeft;
+	self.right = self.beginRight;
 
+	self.beginWidth = 222;
+
+	self.leftWidth = self.beginWidth;
+	self.rightWidth = 0;
+
+	self.Icon2:SetVertexColor(1,1,1);
+	self.book2:SetVertexColor(1,1,1);
+end
+
+function LevelUpDraenorTalent_SpinnerUpdate(self, elapsed)
+	self = self:GetParent():GetParent();
+	-- Shifts 512 pixels every .57 seconds, 898.246 pixels every second
+	self.shift = 898.246 * elapsed;
+	self.move = self.shift / 512;
+
+	if (not self.reset) then
+		self.left = self.left + self.move;
+		self.right = self.right + self.move;
+
+		if (self.right > 1) then
+			local diff = self.right - 1;
+			self.right = 1;
+			self.left = self.left + diff;
+
+			self.reset = true;
+		end
+		self.SpinningPlateLeft:SetTexCoord(self.left, self.right, 0, 1);
+	else
+		self.rightWidth = self.rightWidth + self.shift;
+		self.leftWidth = self.leftWidth - self.shift;
+
+		self.SpinningPlateLeft:SetWidth(self.leftWidth);
+		self.SpinningPlateRight:SetWidth(self.rightWidth);
+
+		if (self.leftWidth <= 0) then
+			self.SpinningPlateRight:Hide();
+			self.SpinningPlateLeft:SetWidth(self.beginWidth);
+			self.SpinningPlateLeft:SetTexCoord(self.beginLeft, self.beginRight, 0, 1);
+
+			self.leftWidth = self.beginWidth;
+			self.rightWidth = 0;
+
+			self.left = self.beginLeft;
+			self.right = self.beginRight;
+
+			self.reset = false;
+		else
+			self.SpinningPlateRight:Show();
+			self.left = self.left + self.move;
+
+			self.SpinningPlateLeft:SetTexCoord(self.left, self.right, 0, 1);
+
+			local tLeft = 0; -- always 0, this is the reset one
+			local tRight = self.rightWidth / 512;
+			self.SpinningPlateRight:SetTexCoord(tLeft, tRight, 0, 1);
+		end
+	end
+end

@@ -534,9 +534,9 @@
 				</Layer>
 				<Layer level="BORDER">
 					<Texture parentKey="Icon" hidden="true">
-						<Size x="70" y="70" />
+						<Size x="68" y="68" />
 						<Anchors>
-							<Anchor point="TOPLEFT" x="88" y="-96" />
+							<Anchor point="TOPLEFT" x="86" y="-96" />
 						</Anchors>
 					</Texture>
 				</Layer>
@@ -550,7 +550,7 @@
 				<Layer level="ARTWORK">
 					<Texture parentKey="UpgradeArrow" inherits="store-icon-upgradearrow" hidden="true">
 						<Anchors>
-							<Anchor point="BOTTOMRIGHT" relativeKey="$parent.IconBorder" relativePoint="BOTTOMRIGHT" x="-3" y="4"/>
+							<Anchor point="CENTER" relativeKey="$parent.IconBorder" relativePoint="CENTER" x="18" y="-26"/>
 						</Anchors>
 					</Texture>
 					<FontString parentKey="ProductName" inherits="GameFontNormalWTF2" justifyH="LEFT" justifyV="TOP">
@@ -1582,8 +1582,8 @@
 					<Size x="140" y="30" />
 					<Animations>
 						<AnimationGroup parentKey="PulseAnim">
-							<Alpha targetKey="$parent.$parent.Flash" change="1.0" duration="0.5" order="1"/>
-							<Alpha targetKey="$parent.$parent.Flash" change="-1.0" duration="0.5" order="2"/>
+							<Alpha childKey="Flash" change="1.0" duration="0.5" order="1"/>
+							<Alpha childKey="Flash" change="-1.0" duration="0.5" order="2"/>
 						</AnimationGroup>
 					</Animations>
 					<Anchors>

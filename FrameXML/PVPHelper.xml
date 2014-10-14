@@ -73,7 +73,7 @@
 				<Scripts>
 					<OnClick>
 						PlaySound("igCharacterInfoTab");
-						StaticPopupSpecial_Hide(PVPFrameReadyPopup);
+						StaticPopupSpecial_Hide(PVPFramePopup);
 					</OnClick>
 				</Scripts>
 				<NormalTexture file="Interface\Buttons\UI-Panel-HideButton-Up"/>
@@ -137,37 +137,46 @@
 		<Frames>
 			<Button parentKey="TankIcon" name="$parentRoleButtonTank" inherits="LFGRoleButtonTemplate" id="2">
 				<Size x="70" y="70"/>
+				<KeyValues>
+					<KeyValue key="role" value="TANK" type="string"/>
+				</KeyValues>
 				<Anchors>
 					<Anchor point="TOPLEFT" x="35" y="-35"/>
 				</Anchors>
 				<Scripts>
 					<OnLoad>
-						self:GetNormalTexture():SetTexCoord(GetTexCoordsForRole("TANK"));
 						self.checkButton.onClick = PVPRoleCheckPopup_RoleButtonClicked;
+						LFGRoleButtonTemplate_OnLoad(self);
 					</OnLoad>
 				</Scripts>
 			</Button>
 			<Button parentKey="HealerIcon" name="$parentRoleButtonHealer" inherits="LFGRoleButtonTemplate" id="3">
 				<Size x="70" y="70"/>
+				<KeyValues>
+					<KeyValue key="role" value="HEALER" type="string"/>
+				</KeyValues>
 				<Anchors>
 					<Anchor point="LEFT" relativeTo="$parentRoleButtonTank" relativePoint="RIGHT" x="15" y="0"/>
 				</Anchors>
 				<Scripts>
 					<OnLoad>
-						self:GetNormalTexture():SetTexCoord(GetTexCoordsForRole("HEALER"));
 						self.checkButton.onClick = PVPRoleCheckPopup_RoleButtonClicked;
+						LFGRoleButtonTemplate_OnLoad(self);
 					</OnLoad>
 				</Scripts>
 			</Button>
 			<Button parentKey="DPSIcon" name="$parentRoleButtonDPS" inherits="LFGRoleButtonTemplate" id="1">
 				<Size x="70" y="70"/>
+				<KeyValues>
+					<KeyValue key="role" value="DAMAGER" type="string"/>
+				</KeyValues>
 				<Anchors>
 					<Anchor point="LEFT" relativeTo="$parentRoleButtonHealer" relativePoint="RIGHT" x="15" y="0"/>
 				</Anchors>
 				<Scripts>
 					<OnLoad>
-						self:GetNormalTexture():SetTexCoord(GetTexCoordsForRole("DAMAGER"));
-						self.checkButton.onClick = PVPRoleCheckPopup_RoleButtonClicked;
+						self.checkButton.onClick = PVPRoleCheckPopup_RoleButtonClicked;	
+						LFGRoleButtonTemplate_OnLoad(self);
 					</OnLoad>
 				</Scripts>
 			</Button>
@@ -291,7 +300,7 @@
 				</Anchors>
 				<Scripts>
 					<OnClick>
-						if ( AcceptBattlefieldPort(self:GetParent().activeIndex, 1) ) then
+						if ( AcceptBattlefieldPort(self:GetParent().activeIndex, true) ) then
 							if( StaticPopup_Visible( "DEATH" ) ) then
 								StaticPopup_Hide( "DEATH" );
 							end
@@ -308,7 +317,7 @@
 				</Anchors>
 				<Scripts>
 					<OnClick>
-						if ( AcceptBattlefieldPort(self:GetParent().activeIndex, 0) ) then
+						if ( AcceptBattlefieldPort(self:GetParent().activeIndex, false) ) then
 							StaticPopupSpecial_Hide(self:GetParent());
 						end
 						PlaySound("igCharacterInfoTab");
@@ -344,9 +353,9 @@
 					</Layer>
 					<Layer level="ARTWORK">
 						<FontString name="$parentName" inherits="GameFontNormalLarge" justifyH="CENTER" parentKey="name">
-							<Size x="300" y="20"/>
+							<Size x="280" y="0"/>
 							<Anchors>
-								<Anchor point="TOP" x="0" y="-13"/>
+								<Anchor point="BOTTOM" relativeKey="$parent.underline" relativePoint="TOP" x="0" y="-30"/>
 							</Anchors>
 						</FontString>
 						<FontString name="$parentStatusText" inherits="GameFontNormal" justifyH="CENTER" parentKey="statusText">

@@ -1,4 +1,5 @@
-local NUM_ITEMS_PER_ROW = 4;
+local NUM_ITEMS_PER_ROW = 5;
+local NUM_ITEMS_PER_PAGE = 10;
 
 function ProductChoiceFrame_OnLoad(self)
 	self:RegisterEvent("PLAYER_LOGIN");
@@ -7,7 +8,8 @@ function ProductChoiceFrame_OnLoad(self)
 	ButtonFrameTemplate_HidePortrait(self);
 
 	self.TitleText:SetText(RECRUIT_A_FRIEND_REWARDS);
-	
+	self.selectedPageNum = 1;
+
 	ProductChoiceFrame_ShowAlerts(self);
 end
 
@@ -53,7 +55,7 @@ function ProductChoiceFrame_ShowAlerts(self, forceShowMain, forceShowSecond)
 			RecruitAFriend_ShowInfoDialog(self.mainAlertFrame, RAF_PRODUCT_CHOICE_EARNED, true);
 		end
 		if ( forceShowSecond ) then
-			self.secondAlertFrame:SetPoint("LEFT", FriendsTabHeaderRecruitAFriendButton, "RIGHT", 15, 0);
+			self.secondAlertFrame:SetPoint("LEFT", FriendsTabHeaderRecruitAFriendButton, "RIGHT", 25, 0);
 			RecruitAFriend_ShowInfoDialog(self.secondAlertFrame, RAF_PRODUCT_CHOICE_CLAIM, false);
 		end
 	end
@@ -63,10 +65,12 @@ function ProductChoiceFrame_Update(self)
 	local selectedID = self.selectedData and self.selectedData.id;
 	for i = 1, #self.Inset.Buttons do
 		local button = self.Inset.Buttons[i];
-		button:SetChecked(button.data.id == selectedID);
+		if ( button.data ) then
+			button:SetChecked(button.data.id == selectedID);
 
-		local enableHighlight = (not button.data.disabled) and (button.data.id ~= selectedID) and (not self.rotatingID);
-		button:GetHighlightTexture():SetAlpha(enableHighlight and 1 or 0);
+			local enableHighlight = (not button.data.disabled) and (button.data.id ~= selectedID) and (not self.rotatingID);
+			button:GetHighlightTexture():SetAlpha(enableHighlight and 1 or 0);
+		end
 	end
 
 	self.Inset.ClaimButton:SetEnabled(selectedID ~= nil);
@@ -110,9 +114,12 @@ function ProductChoiceFrame_SetUp(self)
 
 	self.choiceID = choices[1];
 
+	local pageNum = self.selectedPageNum;
+
 	local products = C_ProductChoice.GetProducts(self.choiceID);
-	for i=1, #products do
-		local data = products[i];
+
+	for i=1, NUM_ITEMS_PER_PAGE do
+		local data = products[i + NUM_ITEMS_PER_PAGE * (pageNum - 1)];
 		local button = self.Inset.Buttons[i];
 		if ( not button ) then
 			button = CreateFrame("CheckButton", nil, self.Inset, "ProductChoiceItemTemplate");
@@ -123,15 +130,32 @@ function ProductChoiceFrame_SetUp(self)
 				button:SetPoint("TOPLEFT", self.Inset.Buttons[i - 1], "TOPRIGHT", 10, 0);
 			end
 		end
-		button.data = data;
-		button.Model.PreviewButton:Show();
+		if ( not data ) then
+			button:Hide();
+		else
+			button.data = data;
+			button.Model.PreviewButton:Show();
 
-		ProductChoiceFrameItem_SetUpDisplay(button, data);
+			ProductChoiceFrameItem_SetUpDisplay(button, data);
+			button:Show();
+		end
 	end
-	--Hide unused buttons
-	for i=#products + 1, #self.Inset.Buttons do
-		self.Inset.Buttons[i]:Hide();
+
+	if ( #products > NUM_ITEMS_PER_PAGE ) then
+		-- 10, 10/8 = 1, 2 remain 
+		local numPages = math.ceil(#products / NUM_ITEMS_PER_PAGE);
+		self.Inset.PageText:SetText(PRODUCT_CHOICE_PAGE_NUMBER:format(pageNum,numPages));
+		self.Inset.PageText:Show();
+		self.Inset.NextPageButton:Show();
+		self.Inset.PrevPageButton:Show();
+		self.Inset.PrevPageButton:SetEnabled(pageNum ~= 1);
+		self.Inset.NextPageButton:SetEnabled(pageNum ~= numPages);
+	else
+		self.Inset.PageText:Hide();
+		self.Inset.NextPageButton:Hide();
+		self.Inset.PrevPageButton:Hide();
 	end
+	
 	ProductChoiceFrame_Update(self);
 end
 
@@ -183,4 +207,16 @@ function ProductChoiceFrame_ShowConfirmation(confirmationFrame, choiceID, data)
 	confirmationFrame.data = data;
 	ProductChoiceFrameItem_SetUpDisplay(confirmationFrame.Dialog.ItemPreview, data);
 	confirmationFrame:Show();
+end
+
+function ProductChoiceFrame_PageClick(self, advance)
+	local frame = ProductChoiceFrame;
+	frame.selectedData = nil;
+	if (advance) then
+		frame.selectedPageNum = frame.selectedPageNum + 1;
+	else
+		frame.selectedPageNum = frame.selectedPageNum - 1;
+	end
+
+	ProductChoiceFrame_SetUp(frame);
 end

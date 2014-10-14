@@ -118,7 +118,7 @@ function TotemFrame_OnEvent(self, event, ...)
 end
 
 function TotemButton_OnClick(self, mouseButton)
-	if ( mouseButton == "RightButton" ) then
+	if ( mouseButton == "RightButton" and self.slot > 0 ) then
 		DestroyTotem(self.slot);
 	end
 end

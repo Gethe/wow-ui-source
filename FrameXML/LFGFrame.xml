@@ -33,24 +33,45 @@
 				<PushedTexture file="Interface\Buttons\UI-CheckBox-Down"/>
 				<HighlightTexture file="Interface\Buttons\UI-CheckBox-Highlight" alphaMode="ADD"/>
 				<CheckedTexture file="Interface\Buttons\UI-CheckBox-Check"/>
-				<DisabledCheckedTexture file="Interface\Buttons\UI-CheckBox-Check-Disabled"/>	
+				<DisabledCheckedTexture file="Interface\Buttons\UI-CheckBox-Check-Disabled"/>
 			</CheckButton>
+			
+			<Frame parentKey="lockedIndicator" hidden="true">
+				<Size x="17" y="21"/>
+				<Anchors>
+					<Anchor point="CENTER" relativeKey="$parent.checkButton" x="0" y="0"/>
+				</Anchors>
+				<Layers>
+					<Layer level="ARTWORK">
+						<Texture atlas="LFG-lock" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="CENTER" x="0" y="0"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+			</Frame>
+			
+			<Frame parentKey="alert" hidden="true">
+				<Size x="28" y="28"/>
+				<Anchors>
+					<Anchor point="TOPRIGHT" x="5" y="5"/>
+				</Anchors>
+				<Layers>
+					<Layer level="ARTWORK">
+						<Texture file="Interface\DialogFrame\UI-Dialog-Icon-AlertNew" setAllPoints="true"/>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnLoad function="RaiseFrameLevel"/>
+				</Scripts>					
+			</Frame>
 		</Frames>
 		<Scripts>
-			<OnEnter>
-				<!--Warning: The Leader button overrides this.-->
-				GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
-				GameTooltip:SetText(_G["ROLE_DESCRIPTION"..self:GetID()], nil, nil, nil, nil, 1);
-				if ( self.permDisabled ) then
-					GameTooltip:AddLine(YOUR_CLASS_MAY_NOT_PERFORM_ROLE, 1, 0, 0, 1);
-				elseif ( self.disabledTooltip and not self:IsEnabled() ) then
-					GameTooltip:AddLine(self.disabledTooltip, 1, 0, 0, 1);
-				end
-				GameTooltip:Show();
-				LFGFrameRoleCheckButton_OnEnter(self);
-			</OnEnter>
+			<OnLoad function="LFGRoleButtonTemplate_OnLoad"/>
+			<OnEnter function="LFGRoleButtonTemplate_OnEnter"/> <!--Warning: The Leader button overrides this.-->
 			<OnClick>
-				if ( self.checkButton:IsEnabled() == 1 ) then
+				if ( self.checkButton:IsEnabled() ) then
 					self.checkButton:Click();
 				end
 			</OnClick>
@@ -106,9 +127,7 @@
 					</Layer>
 				</Layers>
 				<Scripts>
-					<OnEnter>
-						LFGRoleIconIncentive_OnEnter(self);
-					</OnEnter>
+					<OnEnter function="LFGRoleIconIncentive_OnEnter"/>
 					<OnLeave function="GameTooltip_Hide"/>
 				</Scripts>
 			</Frame>
@@ -128,10 +147,7 @@
 					</Anchors>
 					<TexCoords left="0.0" right="0.5" top="0" bottom="0.625"/>
 				</Texture>
-				<FontString name="$parentInstanceLevel" inherits="GameFontNormal" justifyH="LEFT" parentKey="level">
-					<Size>
-						<AbsDimension x="60" y="16"/>
-					</Size>
+				<FontString name="$parentInstanceLevel" inherits="GameFontNormal" justifyH="RIGHT" parentKey="level">
 					<Anchors>
 						<Anchor point="RIGHT" x="0" y="0"/>
 					</Anchors>
@@ -151,7 +167,7 @@
 					<TexCoords left="0" right="0.71875" top="0" bottom="0.875"/>
 				</Texture>
 			</Layer>
-		</Layers>					
+		</Layers>
 		<Frames>
 			<CheckButton name="$parentEnableButton" parentKey="enableButton">
 				<Size x="20" y="20"/>
@@ -162,7 +178,7 @@
 				<PushedTexture file="Interface\Buttons\UI-CheckBox-Down"/>
 				<HighlightTexture file="Interface\Buttons\UI-CheckBox-Highlight" alphaMode="ADD"/>
 				<CheckedTexture file="Interface\Buttons\UI-CheckBox-Check"/>
-				<DisabledCheckedTexture file="Interface\Buttons\UI-CheckBox-Check-Disabled"/>	
+				<DisabledCheckedTexture file="Interface\Buttons\UI-CheckBox-Check-Disabled"/>
 			</CheckButton>
 			<Button name="$parentExpandOrCollapseButton" parentKey="expandOrCollapseButton">
 				<Size x="13" y="13"/>
@@ -361,7 +377,7 @@
 								self.ready.statusIcon:Hide();
 							</OnLoad>
 						</Scripts>
-					</Frame>					
+					</Frame>
 				</Frames>
 			</Frame>
 			<Frame name="LFGDungeonReadyDialog" setAllPoints="true" toplevel="true" enableMouse="true">
@@ -576,7 +592,7 @@
 			</OnEvent>
 			<OnShow>
 				LFGDungeonReadyPopup_Update();
-				
+
 				--Request new lock info (which comes with which rewards we're getting) in case the rewards changed.
 				RequestLFDPlayerLockInfo();
 				RequestLFDPartyLockInfo();
@@ -598,7 +614,7 @@
 			<OnEnter>
 				GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
 				GameTooltip:SetText(format(LFG_CALL_TO_ARMS, _G[self.role]), 1, 1, 1);
-				GameTooltip:AddLine(LFG_CALL_TO_ARMS_EXPLANATION, nil, nil, nil, 1);
+				GameTooltip:AddLine(LFG_CALL_TO_ARMS_EXPLANATION, nil, nil, nil, true);
 				GameTooltip:Show();
 			</OnEnter>
 			<OnLeave function="GameTooltip_Hide"/>
@@ -683,20 +699,9 @@
 						<Anchor point="TOPLEFT" relativeTo="$parentRewardsLabel" relativePoint="BOTTOMLEFT" x="0" y="-5"/>
 					</Anchors>
 				</FontString>
-				<FontString name="$parentPUGDescription" inherits="QuestFont" justifyH="LEFT" parentKey="pugDescription" text="LFD_RANDOM_REWARD_PUG_EXPLANATION">
-					<Size x="280" y="0"/>
-					<Anchors>
-						<Anchor point="TOPLEFT" relativeTo="$parentRewardsLabel" relativePoint="BOTTOMLEFT" x="0" y="-5"/>
-					</Anchors>
-				</FontString>
-				<FontString name="$parentMoneyLabel" inherits="QuestFont" justifyH="LEFT" parentKey="moneyLabel" text="MONEY_COLON">
-					<Anchors>
-						<Anchor point="TOPLEFT" relativeTo="$parentPUGDescription" relativePoint="BOTTOMLEFT" x="20" y="-10"/>
-					</Anchors>
-				</FontString>
 				<FontString name="$parentXPLabel" inherits="QuestFont" justifyH="LEFT" parentKey="xpLabel" text="EXPERIENCE_COLON">
 					<Anchors>
-						<Anchor point="TOPLEFT" relativeTo="$parentMoneyLabel" relativePoint="BOTTOMLEFT" x="0" y="-5"/>
+						<Anchor point="TOPLEFT" relativeTo="$parentRewardsDescription" relativePoint="BOTTOMLEFT" x="0" y="-5"/>
 					</Anchors>
 				</FontString>
 				<FontString name="$parentXPAmount" inherits="NumberFontNormalLarge" justifyH="LEFT" parentKey="xpAmount">
@@ -704,61 +709,29 @@
 						<Anchor point="LEFT" relativeTo="$parentXPLabel" relativePoint="RIGHT" x="10" y="0"/>
 					</Anchors>
 				</FontString>
-						
+
 				<!--Texture file="Interface\LFGFrame\UI-LFG-BACKGROUND-QUESTPAPER" setAllPoints="true"/-->
 			</Layer>
 		</Layers>
 		<Frames>
 			<Button name="$parentItem1" inherits="LFGRewardsLootTemplate" id="1">
 				<Anchors>
-					<Anchor point="TOPLEFT" relativeTo="$parentRewardsDescription" relativePoint="BOTTOMLEFT" x="0" y="-10"/>
+					<Anchor point="TOPLEFT" relativeTo="$parentRewardsDescription" relativePoint="BOTTOMLEFT" x="0" y="-8"/>
 				</Anchors>
 			</Button>
-			<Frame name="$parentMoneyFrame" inherits="MoneyFrameTemplate" parentKey="moneyFrame">
-				<Anchors>
-					<Anchor point="LEFT" relativeTo="$parentMoneyLabel" relativePoint="RIGHT" x="10" y="0"/>
-				</Anchors>
+			<Frame name="$parentMoneyReward" inherits="LargeItemButtonTemplate" parentKey="MoneyReward" hidden="true">
 				<Scripts>
 					<OnLoad>
-						SmallMoneyFrame_OnLoad(self);
-						MoneyFrame_SetType(self, "STATIC");
+						self.Icon:SetTexture("Interface\\Icons\\inv_misc_coin_01");
+						self.Name:SetHeight(4);
 					</OnLoad>
-				</Scripts>
-			</Frame>
-			<Frame name="$parentBonusValor" parentKey="BonusValor" hidden="true">
-				<Size x="280" y="36"/>
-				<Anchors>
-					<Anchor point="TOPLEFT" relativeTo="$parentXPLabel" relativePoint="BOTTOMLEFT" x="10" y="-7"/>
-				</Anchors>
-				<Layers>
-					<Layer level="OVERLAY">
-						<Texture parentKey="Border" file="Interface\LFGFrame\UI-LFG-ICON-REWARDRING">
-							<Size x="36" y="36"/>
-							<Anchors>
-								<Anchor point="LEFT" />
-							</Anchors>
-							<TexCoords left="0" right="0.675" top="0" bottom="0.675"/>
-						</Texture>
-					</Layer>
-					<Layer level="ARTWORK">
-						<Texture parentKey="Icon">
-							<Size x="27" y="27"/>
-							<Anchors>
-								<Anchor point="CENTER" relativeKey="$parent.Border" x="-3" y="3"/>
-							</Anchors>
-						</Texture>
-						<FontString parentKey="BonusText" inherits="QuestFont" justifyH="LEFT">
-							<Size x="245" y="0"/>
-							<Anchors>
-								<Anchor point="LEFT" relativeKey="$parent.Border" relativePoint="RIGHT" x="-5"/>
-							</Anchors>
-						</FontString>
-					</Layer>
-				</Layers>
-				<Scripts>
-					<OnLoad>
-						SetPortraitToTexture(self.Icon, "Interface\\Icons\\pvecurrency-valor")
-					</OnLoad>
+					<OnEnter>
+						GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+						GameTooltip:SetText(LFG_TOOLTIP_MONEY_REWARD, 1, 1, 1);
+					</OnEnter>
+					<OnLeave>
+						GameTooltip:Hide();
+					</OnLeave>
 				</Scripts>
 			</Frame>
 			<Frame name="$parentRandomList" parentKey="randomList">
@@ -888,38 +861,32 @@
 			</Layer>
 		</Layers>
 		<Frames>
-			<Button name="$parentRoleButtonTank" inherits="LFGRoleButtonTemplate" id="2">
+			<Button name="$parentRoleButtonTank" inherits="LFGRoleButtonTemplate" parentArray="RoleButtons" id="1">
 				<Size x="70" y="70"/>
+				<KeyValues>
+					<KeyValue key="role" value="TANK" type="string"/>
+				</KeyValues>
 				<Anchors>
 					<Anchor point="TOPLEFT" x="35" y="-55"/>
 				</Anchors>
-				<Scripts>
-					<OnLoad>
-						self:GetNormalTexture():SetTexCoord(GetTexCoordsForRole("TANK"));
-					</OnLoad>
-				</Scripts>
 			</Button>
-			<Button name="$parentRoleButtonHealer" inherits="LFGRoleButtonTemplate" id="3">
+			<Button name="$parentRoleButtonHealer" inherits="LFGRoleButtonTemplate" parentArray="RoleButtons" id="2">
 				<Size x="70" y="70"/>
+				<KeyValues>
+					<KeyValue key="role" value="HEALER" type="string"/>
+				</KeyValues>
 				<Anchors>
 					<Anchor point="LEFT" relativeTo="$parentRoleButtonTank" relativePoint="RIGHT" x="15" y="0"/>
 				</Anchors>
-				<Scripts>
-					<OnLoad>
-						self:GetNormalTexture():SetTexCoord(GetTexCoordsForRole("HEALER"));
-					</OnLoad>
-				</Scripts>
 			</Button>
-			<Button name="$parentRoleButtonDPS" inherits="LFGRoleButtonTemplate" id="1">
+			<Button name="$parentRoleButtonDPS" inherits="LFGRoleButtonTemplate" parentArray="RoleButtons" id="3">
 				<Size x="70" y="70"/>
+				<KeyValues>
+					<KeyValue key="role" value="DAMAGER" type="string"/>
+				</KeyValues>
 				<Anchors>
 					<Anchor point="LEFT" relativeTo="$parentRoleButtonHealer" relativePoint="RIGHT" x="15" y="0"/>
 				</Anchors>
-				<Scripts>
-					<OnLoad>
-						self:GetNormalTexture():SetTexCoord(GetTexCoordsForRole("DAMAGER"));
-					</OnLoad>
-				</Scripts>
 			</Button>
 			<Button name="$parentAcceptButton" inherits="UIPanelButtonTemplate" text="ACCEPT" motionScriptsWhileDisabled="true">
 				<Size x="115" y="22"/>
@@ -931,7 +898,7 @@
 					<OnEnter>
 						if ( not self:IsEnabled() ) then
 							GameTooltip:SetOwner(self, "ANCHOR_BOTTOMRIGHT");
-							GameTooltip:SetText(ERR_LFG_NO_ROLES_SELECTED, 1, 0, 0, 1, 1);
+							GameTooltip:SetText(ERR_LFG_NO_ROLES_SELECTED, 1, 0, 0, 1, true);
 						end
 					</OnEnter>
 					<OnLeave>
@@ -951,9 +918,9 @@
 		</Frames>
 		<Scripts>
 			<OnLoad>
-				LFGInvitePopupRoleButtonTank.checkButton.onClick = LFGInvitePopup_UpdateAcceptButton;
-				LFGInvitePopupRoleButtonHealer.checkButton.onClick = LFGInvitePopup_UpdateAcceptButton;
-				LFGInvitePopupRoleButtonDPS.checkButton.onClick = LFGInvitePopup_UpdateAcceptButton;
+				LFGInvitePopupRoleButtonTank.checkButton.onClick = LFGInvitePopupCheckButton_OnClick;
+				LFGInvitePopupRoleButtonHealer.checkButton.onClick = LFGInvitePopupCheckButton_OnClick;
+				LFGInvitePopupRoleButtonDPS.checkButton.onClick = LFGInvitePopupCheckButton_OnClick;
 			</OnLoad>
 			<OnShow>
 				PlaySound("igPlayerInvite");
@@ -1229,7 +1196,7 @@
 				<Scripts>
 					<OnClick>
 						StaticPopup_Hide("LFG_OFFER_CONTINUE");
-						PartyLFGStartBackfill();											
+						PartyLFGStartBackfill();
 					</OnClick>
 				</Scripts>
 			</Button>

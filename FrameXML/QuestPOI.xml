@@ -3,119 +3,108 @@
 	
 	<Script file="QuestPOI.lua"/>
 	
-	<Button name="QuestPOITemplate" hidden="true" virtual="true">					
-		<Size>
-			<AbsDimension x="32" y="32"/>
-		</Size>
-		<HitRectInsets>
-			<AbsInset left="8" right="8" top="8" bottom="8"/>
-		</HitRectInsets>		
+	<Button name="QuestPOINumericTemplate" hidden="true" virtual="true">
+		<Size x="20" y="20"/>
 		<Layers>
 			<Layer level="BACKGROUND">
-				<Texture file="Interface\WorldMap\UI-QuestPoi-IconGlow.tga" alphaMode="ADD" hidden="true" parentKey="selectionGlow">
-					<Size>
-						<AbsDimension x="50" y="50"/>
-					</Size>										
+				<Texture parentKey="Glow" file="Interface\WorldMap\UI-QuestPoi-IconGlow.tga" alphaMode="ADD" hidden="true">
+					<Size x="50" y="50"/>
 					<Anchors>
-						<Anchor point="CENTER">
-							<Offset>
-								<AbsDimension x="0" y="0"/>
-							</Offset>								
-						</Anchor>
+						<Anchor point="CENTER"/>
 					</Anchors>
 				</Texture>				
 			</Layer>
-			<Layer level="ARTWORK">
-				<Texture name="$parentIconNumber" file="Interface\WorldMap\UI-QuestPoi-NumberIcons.tga" parentKey="number">
-					<Size>
-						<AbsDimension x="32" y="32"/>
-					</Size>			
+			<Layer level="ARTWORK" textureSubLevel="1">
+				<Texture parentKey="Number" file="Interface\WorldMap\UI-QuestPoi-NumberIcons.tga">
+					<Size x="32" y="32"/>
 					<Anchors>
-						<Anchor point="CENTER">
-							<Offset>
-								<AbsDimension x="0" y="0"/>
-							</Offset>
-						</Anchor>
+						<Anchor point="CENTER"/>
 					</Anchors>
-				</Texture>
-				<Texture name="$parentIconTurnin" file="Interface\WorldMap\UI-WorldMap-QuestIcon.tga" parentKey="turnin" hidden="true">
-					<Size>
-						<AbsDimension x="24" y="24"/>
-					</Size>
-					<Anchors>
-						<Anchor point="CENTER" relativeTo="$parentIconNumber">
-							<Offset>
-								<AbsDimension x="-1" y="0"/>
-							</Offset>
-						</Anchor>
-					</Anchors>
-					<TexCoords left="0.0" right="0.50" top="0.0" bottom="0.50" />
 				</Texture>
 			</Layer>
 		</Layers>
 		<Scripts>
-			<OnLoad>
-				self.normalTexture:SetDrawLayer("BORDER");
-				self.pushedTexture:SetDrawLayer("BORDER");
-			</OnLoad>
-			<OnMouseDown function="QuestPOIButton_OnMouseDown" />
-			<OnMouseUp function="QuestPOIButton_OnMouseUp" />
+			<OnMouseDown function="QuestPOIButton_OnMouseDown"/>
+			<OnMouseUp function="QuestPOIButton_OnMouseUp"/>
+			<OnClick function="QuestPOIButton_OnClick"/>
 		</Scripts>
-		<NormalTexture file="Interface\WorldMap\UI-QuestPoi-NumberIcons.tga" parentKey="normalTexture">
-			<TexCoords left="0.875" right="1" top="0.875" bottom="1" />
-		</NormalTexture>
-		<HighlightTexture file="Interface\WorldMap\UI-QuestPoi-NumberIcons.tga" alphaMode="ADD" parentKey="highlightTexture">
-			<TexCoords left="0.625" right=".750" top="0.875" bottom="1" />
-		</HighlightTexture>
-		<PushedTexture file="Interface\WorldMap\UI-QuestPoi-NumberIcons.tga" alphaMode="BLEND" parentKey="pushedTexture">
-			<TexCoords left="0.750" right=".875" top="0.875" bottom="1" />
-		</PushedTexture>
-	</Button>	
-	<Button name="QuestPOICompletedTemplate" hidden="true" virtual="true">					
-		<Size>
-			<AbsDimension x="32" y="32"/>
-		</Size>
-		<HitRectInsets>
-			<AbsInset left="12" right="12" top="8" bottom="8"/>
-		</HitRectInsets>
-		<Layers>
-			<Layer level="BACKGROUND">
-				<Texture file="Interface\WorldMap\UI-QuestPoi-IconGlow.tga" alphaMode="ADD" hidden="true" parentKey="selectionGlow">
-					<Size>
-						<AbsDimension x="50" y="50"/>
-					</Size>										
-					<Anchors>
-						<Anchor point="CENTER">
-							<Offset>
-								<AbsDimension x="0" y="0"/>
-							</Offset>								
-						</Anchor>
-					</Anchors>
-				</Texture>				
-			</Layer>
-		</Layers>
-		<Scripts>
-			<OnMouseDown>
-				self.highlightTexture:SetPoint("CENTER", 1, -1);
-			</OnMouseDown>
-			<OnMouseUp>
-				self.highlightTexture:SetPoint("CENTER", 0, 0);
-			</OnMouseUp>
-		</Scripts>
-		<NormalTexture file="Interface\WorldMap\UI-WorldMap-QuestIcon.tga" parentKey="normalTexture">
-			<TexCoords left="0.0" right="0.5" top="0.0" bottom="0.5" />
-		</NormalTexture>
-		<HighlightTexture file="Interface\WorldMap\UI-WorldMap-QuestIcon.tga" parentKey="highlightTexture">
-			<Size>
-				<AbsDimension x="32" y="32"/>
-			</Size>
+		<NormalTexture parentKey="NormalTexture" file="Interface\WorldMap\UI-QuestPoi-NumberIcons.tga">
+			<Size x="32" y="32"/>
 			<Anchors>
-				<Anchor point="CENTER" />
+				<Anchor point="CENTER"/>
+			</Anchors>	
+			<TexCoords left="0.875" right="1" top="0.875" bottom="1"/>
+		</NormalTexture>
+		<HighlightTexture parentKey="HighlightTexture" file="Interface\WorldMap\UI-QuestPoi-NumberIcons.tga" alphaMode="ADD">
+			<Size x="32" y="32"/>
+			<Anchors>
+				<Anchor point="CENTER"/>
 			</Anchors>
-			<TexCoords left="0.5" right="1" top="0.0" bottom="0.5" />
+			<TexCoords left="0.625" right=".750" top="0.375" bottom="0.5"/>
 		</HighlightTexture>
-		<PushedTexture file="Interface\WorldMap\UI-WorldMap-QuestIcon.tga" parentKey="pushedTexture">
-			<TexCoords left="0.0" right="0.5" top="0.5" bottom="1.0" />
+		<PushedTexture parentKey="PushedTexture" file="Interface\WorldMap\UI-QuestPoi-NumberIcons.tga" alphaMode="BLEND">
+			<Size x="32" y="32"/>
+			<Anchors>
+				<Anchor point="CENTER"/>
+			</Anchors>			
+			<TexCoords left="0.750" right=".875" top="0.875" bottom="1"/>
 		</PushedTexture>
+	</Button>
+	<Button name="QuestPOICompletedTemplate" hidden="true" virtual="true">
+		<Size x="20" y="20"/>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="Glow" file="Interface\WorldMap\UI-QuestPoi-IconGlow.tga" alphaMode="ADD" hidden="true">
+					<Size x="50" y="50"/>
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="ARTWORK" textureSubLevel="1">
+				<Texture parentKey="Icon" file="Interface\WorldMap\UI-WorldMap-QuestIcon.tga">
+					<Size x="24" y="24"/>
+					<Anchors>
+						<Anchor point="CENTER" x="-1" y="0"/>
+					</Anchors>
+					<TexCoords left="0.0" right="0.50" top="0.0" bottom="0.50"/>
+				</Texture>
+			</Layer>
+			<Layer level="HIGHLIGHT">
+				<Texture parentKey="FullHighlightTexture" file="Interface\WorldMap\UI-QuestPoi-NumberIcons.tga" alphaMode="ADD">
+					<Size x="32" y="32"/>
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+					<TexCoords left="0.625" right=".750" top="0.375" bottom="0.5"/>
+				</Texture>
+				<Texture parentKey="IconHighlightTexture" file="Interface\WorldMap\UI-WorldMap-QuestIcon.tga" hidden="true">
+					<Size x="32" y="32"/>
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent.Icon"/>
+					</Anchors>
+					<TexCoords left="0.5" right="1" top="0.0" bottom="0.5"/>
+				</Texture>				
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnMouseDown function="QuestPOIButton_OnMouseDown"/>
+			<OnMouseUp function="QuestPOIButton_OnMouseUp"/>
+			<OnClick function="QuestPOIButton_OnClick"/>			
+		</Scripts>
+		<NormalTexture parentKey="NormalTexture" file="Interface\WorldMap\UI-QuestPoi-NumberIcons.tga">
+			<Size x="32" y="32"/>
+			<Anchors>
+				<Anchor point="CENTER"/>
+			</Anchors>			
+			<TexCoords left="0.875" right="1" top="0.875" bottom="1"/>
+		</NormalTexture>
+		<PushedTexture parentKey="PushedTexture" file="Interface\WorldMap\UI-QuestPoi-NumberIcons.tga" alphaMode="BLEND">
+			<Size x="32" y="32"/>
+			<Anchors>
+				<Anchor point="CENTER"/>
+			</Anchors>		
+			<TexCoords left="0.750" right=".875" top="0.875" bottom="1"/>
+		</PushedTexture>		
 	</Button>
 </Ui>

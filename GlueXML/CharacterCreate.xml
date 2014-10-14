@@ -409,13 +409,13 @@
 		</Layers>
 		<Scripts>
 			<OnMouseDown>
-				if( self:IsEnabled() == 1 ) then
+				if( self:IsEnabled() ) then
 					_G[self:GetName().."BevelEdge"]:SetPoint("CENTER", self, "CENTER", 2, -2);
 					_G[self:GetName().."Shadow"]:SetSize(70, 70);
 				end
 			</OnMouseDown>
 			<OnMouseUp>
-				if( self:IsEnabled() == 1 ) then
+				if( self:IsEnabled() ) then
 					_G[self:GetName().."BevelEdge"]:SetPoint("CENTER", self, "CENTER", 0, 0);
 					_G[self:GetName().."Shadow"]:SetSize(76, 76);
 				end
@@ -524,13 +524,13 @@
 		</Layers>
 		<Scripts>
 			<OnMouseDown>
-				if( self:IsEnabled() == 1 ) then
+				if( self:IsEnabled() ) then
 					_G[self:GetName().."BevelEdge"]:SetPoint("CENTER", self, "CENTER", 2, -2);
 					_G[self:GetName().."Shadow"]:SetSize(63, 63);
 				end
 			</OnMouseDown>
 			<OnMouseUp>
-				if( self:IsEnabled() == 1 ) then
+				if( self:IsEnabled() ) then
 					_G[self:GetName().."BevelEdge"]:SetPoint("CENTER", self, "CENTER", 0, 0);
 					_G[self:GetName().."Shadow"]:SetSize(68, 68);
 				end
@@ -1000,13 +1000,13 @@
 		</Layers>
 		<Scripts>
 			<OnMouseDown>
-				if( self:IsEnabled() == 1 ) then
+				if( self:IsEnabled() ) then
 					_G[self:GetName().."BevelEdge"]:SetPoint("CENTER", self, "CENTER", 2, -2);
 					_G[self:GetName().."Shadow"]:SetSize(52, 52);
 				end
 			</OnMouseDown>
 			<OnMouseUp>
-				if( self:IsEnabled() == 1 ) then
+				if( self:IsEnabled() ) then
 					_G[self:GetName().."BevelEdge"]:SetPoint("CENTER", self, "CENTER", 0, 0);
 					_G[self:GetName().."Shadow"]:SetSize(58, 58);
 				end
@@ -1950,7 +1950,7 @@
 								if ( GetSelectedSex() ~= SEX_MALE ) then
 									SetCharacterGender(SEX_MALE);
 								else
-									self:SetChecked(1);
+									self:SetChecked(true);
 								end
 							</OnClick>
 							<OnEnter>
@@ -1973,7 +1973,7 @@
 								if ( GetSelectedSex() ~= SEX_FEMALE ) then
 									SetCharacterGender(SEX_FEMALE);
 								else
-									self:SetChecked(1);
+									self:SetChecked(true);
 								end
 							</OnClick>
 							<OnEnter>

@@ -23,6 +23,7 @@ local WaitingOnConfirmation = false;
 local WaitingOnConfirmationTime = 0;
 local ProcessAnimPlayed = false;
 local NumUpgradeDistributions = 0;
+local JustOrderedBoost = false;
 
 --Imports
 Import("C_PurchaseAPI");
@@ -31,6 +32,7 @@ Import("C_SharedCharacterServices");
 Import("C_AuthChallenge");
 Import("CreateForbiddenFrame");
 Import("IsGMClient");
+Import("HideGMOnly");
 Import("math");
 Import("pairs");
 Import("select");
@@ -148,6 +150,8 @@ Import("CHARACTER_UPGRADE_LOG_OUT_NOW");
 Import("CHARACTER_UPGRADE_POPUP_LATER");
 Import("CHARACTER_UPGRADE_READY");
 Import("CHARACTER_UPGRADE_READY_DESCRIPTION");
+Import("FREE_CHARACTER_UPGRADE_READY");
+Import("FREE_CHARACTER_UPGRADE_READY_DESCRIPTION");
 
 Import("OKAY");
 Import("LARGE_NUMBER_SEPERATOR");
@@ -608,6 +612,17 @@ function StoreFrame_UpdateCard(card,entryID,discountReset)
 	card.NormalPrice:SetText(currencyFormat(normalDollars, normalCents));
 	card.ProductName:SetText(name);
 	
+	if (card == StoreFrame.SplashSingle) then
+		card.ProductName:SetFontObject("GameFontNormalWTF2");
+
+		-- nop, but makes :IsTruncated() work below
+		card.ProductName:GetWidth();
+
+		if (card.ProductName:IsTruncated()) then
+			card.ProductName:SetFontObject("GameFontNormalHuge3");
+		end
+	end
+	
 	if (card.Description) then
 		card.Description:SetText(description);
 	end
@@ -912,6 +927,9 @@ function StoreFrame_OnLoad(self)
 	if ( errorID ) then
 		StoreFrame_OnError(self, errorID, true, internalErr);
 	end
+
+	self.variablesLoaded = false;
+	self.distributionsUpdated = false;
 end
 
 local JustFinishedOrdering = false;
@@ -952,22 +970,24 @@ function StoreFrame_OnEvent(self, event, ...)
 		StoreFrame_OnError(self, err, false, internalErr);
 		StoreFrame_UpdateActivePanel(self);
 	elseif ( event == "PRODUCT_DISTRIBUTIONS_UPDATED" ) then
-		if (C_SharedCharacterServices.IsPurchaseIDPendingUpgrade() and self:IsShown() and StoreStateDriverFrame.NoticeTextTimer:IsPlaying()) then
-			if (IsOnGlueScreen()) then
+		if (JustOrderedBoost) then
+			if (IsOnGlueScreen() and not _G.CharacterSelect.undeleting) then
 				self:Hide();
 				_G.CharacterUpgradeFlow:SetTarget(false);
 				_G.CharSelectServicesFlowFrame:Show();
 				_G.CharacterServicesMaster_SetFlow(_G.CharacterServicesMaster, _G.CharacterUpgradeFlow);
-			else
+			elseif (not IsOnGlueScreen()) then
 				self:Hide();
 				ServicesLogoutPopup.Background.Title:SetText(CHARACTER_UPGRADE_READY);
 				ServicesLogoutPopup.Background.Description:SetText(CHARACTER_UPGRADE_READY_DESCRIPTION);
 				ServicesLogoutPopup:Show();
 			end
+			JustOrderedBoost = false;
 		end
 	elseif ( event == "AUTH_CHALLENGE_FINISHED" ) then
 		if (not C_AuthChallenge.DidChallengeSucceed()) then
 			JustOrderedProduct = false;
+			JustOreredBoost = false;
 		else
 			StoreStateDriverFrame.NoticeTextTimer:Play();
 		end
@@ -1062,6 +1082,8 @@ function StoreFrame_OnAttributeChanged(self, name, value)
 		end
 	elseif ( name == "previewframeshown" ) then
 		StoreFrame_UpdateCoverState();
+	elseif ( name == "checkforfree" ) then
+		StoreFrame_CheckForFree(self, value);
 	end
 end
 
@@ -1070,7 +1092,7 @@ function StoreFrame_OnError(self, errorID, needsAck, internalErr)
 	if ( not info ) then
 		info = errorData[LE_STORE_ERROR_OTHER];
 	end
-	if ( IsGMClient() ) then
+	if ( IsGMClient() and not HideGMOnly() ) then
 		StoreFrame_ShowError(self, info.title.." ("..internalErr..")", info.msg, info.link, needsAck);
 	else
 		StoreFrame_ShowError(self, info.title, info.msg, info.link, needsAck);
@@ -1244,6 +1266,22 @@ function StoreFrame_ShowPreview(name, modelID)
 	StoreProductCard_UpdateAllStates();
 end
 
+function StoreFrame_CheckForFree(self, event)
+	if (event == "VARIABLES_LOADED") then
+		self.variablesLoaded = true;
+	end
+	if (event == "PRODUCT_DISTRIBUTIONS_UPDATED") then
+		self.distributionsUpdated = true;
+	end
+	if (self.variablesLoaded and self.distributionsUpdated and select(2,C_SharedCharacterServices.HasFreeDistribution()) and not C_SharedCharacterServices.HasSeenPopup() and not IsOnGlueScreen()) then
+		C_SharedCharacterServices.SetPopupSeen(true);
+		self:Hide();
+		ServicesLogoutPopup.Background.Title:SetText(FREE_CHARACTER_UPGRADE_READY);
+		ServicesLogoutPopup.Background.Description:SetText(FREE_CHARACTER_UPGRADE_READY_DESCRIPTION);
+		ServicesLogoutPopup:Show();
+	end
+end
+
 function StoreFramePrevPageButton_OnClick(self)
 	selectedPageNum = selectedPageNum - 1;
 	selectedEntryID = nil;
@@ -1285,7 +1323,7 @@ function StoreConfirmationFrame_SetNotice(self, icon, name, dollars, cents, wall
 	local middleHeight = ConfirmationFrameMiddleHeight;
 	local frameHeight = ConfirmationFrameHeight;
 
-	if (currency == CURRENCY_EUR or currency == CURRENCY_RUB or currency == CURRENCY_GBP or currency == CURRENCY_BRL) then
+	if (currency == CURRENCY_EUR or currency == CURRENCY_RUB or currency == CURRENCY_GBP or currency == CURRENCY_BRL or (IsOnGlueScreen() and currency == CURRENCY_KRW and _G.GetLocale() ~= "koKR")) then
 		middleHeight = ConfirmationFrameMiddleHeightEur;
 		frameHeight = ConfirmationFrameHeightEur;
 	else
@@ -1357,6 +1395,8 @@ end
 
 local FinalPriceDollars;
 local FinalPriceCents;
+local IsUpgrade;
+
 function StoreConfirmationFrame_Update(self)
 	local productID, walletName = C_PurchaseAPI.GetConfirmationInfo();
 	if ( not productID ) then
@@ -1370,6 +1410,7 @@ function StoreConfirmationFrame_Update(self)
 		finalIcon = "Interface\\Icons\\INV_Misc_Note_02";
 	end
 	StoreConfirmationFrame_SetNotice(self, finalIcon, name, currentDollars, currentCents, walletName, upgrade);
+	IsUpgrade = upgrade;
 
 	local info = currencyInfo();
 	self.BrowseNotice:SetText(info.browseNotice);
@@ -1427,6 +1468,7 @@ function StoreConfirmationFinalBuy_OnClick(self)
 	
 	if ( C_PurchaseAPI.PurchaseProductConfirm(true, FinalPriceDollars, FinalPriceCents) ) then
 		JustOrderedProduct = true;
+		JustOrderedBoost = IsUpgrade;
 		StoreStateDriverFrame.NoticeTextTimer:Play();
 		PlaySound("UI_igStore_ConfirmPurchase_Button");
 	else
@@ -1448,7 +1490,7 @@ function StoreProductCard_UpdateState(card)
 		local enableHighlight = card:GetID() ~= selectedEntryID and not isRotating;
 		card.HighlightTexture:SetAlpha(enableHighlight and 1 or 0);
 		if (not card.Description and card:IsMouseOver()) then
-			if (isRotating or forceHide) then
+			if (isRotating) then
 				StoreTooltip:Hide()
 			else
 				local point, rpoint, xoffset;

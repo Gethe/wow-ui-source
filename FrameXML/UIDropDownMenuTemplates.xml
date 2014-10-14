@@ -112,7 +112,7 @@
 				</Scripts>
 				<NormalTexture file="Interface\ChatFrame\ChatFrameExpandArrow"/>
 			</Button>
-			<Button name="$parentInvisibleButton" hidden="true">
+			<Button name="$parentInvisibleButton" hidden="true" parentKey="invisibleButton">
 				<Anchors>
 					<Anchor point="TOPLEFT"/>
 					<Anchor point="BOTTOMLEFT"/>
@@ -131,7 +131,7 @@
 							if ( parent.tooltipOnButton ) then
 								GameTooltip:SetOwner(parent, "ANCHOR_RIGHT");
 								GameTooltip:AddLine(parent.tooltipTitle, 1.0, 1.0, 1.0);
-								GameTooltip:AddLine(parent.tooltipText, nil, nil, nil, 1);
+								GameTooltip:AddLine(parent.tooltipText, nil, nil, nil, true);
 								GameTooltip:Show();
 							else
 								GameTooltip_AddNewbieTip(parent, parent.tooltipTitle, 1.0, 1.0, 1.0, parent.tooltipText, 1);
@@ -146,7 +146,7 @@
 			</Button>
 		</Frames>
 		<Scripts>
-			<OnLoad>				
+			<OnLoad>		
 				self:SetFrameLevel(self:GetParent():GetFrameLevel()+2);
 			</OnLoad>
 			<OnClick>
@@ -168,7 +168,7 @@
 					if ( self.tooltipOnButton ) then
 						GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
 						GameTooltip:AddLine(self.tooltipTitle, 1.0, 1.0, 1.0);
-						GameTooltip:AddLine(self.tooltipText);
+						GameTooltip:AddLine(self.tooltipText, nil, nil, nil, true);
 						GameTooltip:Show();
 					else
 						GameTooltip_AddNewbieTip(self, self.tooltipTitle, 1.0, 1.0, 1.0, self.tooltipText, 1);
@@ -180,6 +180,12 @@
 				UIDropDownMenu_StartCounting(self:GetParent());
 				GameTooltip:Hide();
 			</OnLeave>
+			<OnEnable>
+				self.invisibleButton:Hide();
+			</OnEnable>
+			<OnDisable>
+				self.invisibleButton:Show();
+			</OnDisable>
 		</Scripts>
 		<ButtonText name="$parentNormalText">
 			<Anchors>

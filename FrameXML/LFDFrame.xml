@@ -1,6 +1,25 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\FrameXML\UI.xsd">
 	<Script file="LFDFrame.lua"/>
+	<Button name="LFDRoleButtonTemplate" inherits="LFGRoleButtonWithBackgroundAndRewardTemplate" virtual="true">
+		<Scripts>
+			<OnLoad>
+				self.background:SetTexCoord(GetBackgroundTexCoordsForRole(self.role));
+				self.background:SetAlpha(0.6);
+				self.checkButton.onClick = LFDFrameRoleCheckButton_OnClick;
+				LFGRoleButtonTemplate_OnLoad(self);
+			</OnLoad>
+			<OnEnter function="LFDRoleButton_OnEnter"/>
+		</Scripts>
+	</Button>
+	<Button name="LFDRoleCheckPopupButtonTemplate" inherits="LFGRoleButtonTemplate" virtual="true">
+		<Scripts>
+			<OnLoad>
+				self.checkButton.onClick = LFDFramePopupRoleCheckButton_OnClick;
+				LFGRoleButtonTemplate_OnLoad(self);
+			</OnLoad>
+		</Scripts>
+	</Button>
 	<Frame name="LFDFrameDungeonChoiceTemplate" enableMouse="true" inherits="LFGSpecificChoiceTemplate" virtual="true">
 		<Scripts>
 			<OnLoad>
@@ -27,70 +46,53 @@
 		</Backdrop>
 		<Layers>
 			<Layer level="ARTWORK">
-				<FontString inherits="GameFontHighlight" justifyH="CENTER" text="CONFIRM_YOUR_ROLE">
+				<FontString parentKey="Text" inherits="GameFontHighlight" justifyH="CENTER" text="CONFIRM_YOUR_ROLE">
+					<Size x="266" y="0"/>
 					<Anchors>
-						<Anchor point="TOP">
-							<Offset>
-								<AbsDimension x="0" y="-15"/>
-							</Offset>
-						</Anchor>
+						<Anchor point="TOP" x="0" y="-15"/>
 					</Anchors>
 				</FontString>
 			</Layer>
 		</Layers>
 		<Frames>
-			<Button name="$parentRoleButtonTank" inherits="LFGRoleButtonTemplate" id="2">
-				<Size>
-					<AbsDimension x="70" y="70"/>
-				</Size>
+			<Button name="$parentRoleButtonTank" inherits="LFDRoleCheckPopupButtonTemplate" id="1">
+				<Size x="70" y="70"/>
+				<KeyValues>
+					<KeyValue key="role" value="TANK" type="string"/>
+				</KeyValues>
 				<Anchors>
-					<Anchor point="TOPLEFT">
-						<Offset>
-							<AbsDimension x="35" y="-35"/>
-						</Offset>
-					</Anchor>
+					<Anchor point="TOP" relativeKey="$parent.Text" relativePoint="BOTTOM" x="0" y="-8"/>
+					<Anchor point="LEFT" x="35" y="0"/>
 				</Anchors>
 				<Scripts>
-					<OnLoad>
-						self:GetNormalTexture():SetTexCoord(GetTexCoordsForRole("TANK"));
-					</OnLoad>
+					<OnEnter function="LFDPopupRoleCheckButton_OnEnter"/>
 				</Scripts>
 			</Button>
-			<Button name="$parentRoleButtonHealer" inherits="LFGRoleButtonTemplate" id="3">
-				<Size>
-					<AbsDimension x="70" y="70"/>
-				</Size>
+			<Button name="$parentRoleButtonHealer" inherits="LFDRoleCheckPopupButtonTemplate" id="2">
+				<Size x="70" y="70"/>
+				<KeyValues>
+					<KeyValue key="role" value="HEALER" type="string"/>
+				</KeyValues>
 				<Anchors>
-					<Anchor point="LEFT" relativeTo="$parentRoleButtonTank" relativePoint="RIGHT">
-						<Offset>
-							<AbsDimension x="15" y="0"/>
-						</Offset>
-					</Anchor>
+					<Anchor point="LEFT" relativeTo="$parentRoleButtonTank" relativePoint="RIGHT" x="15" y="0"/>
 				</Anchors>
 				<Scripts>
-					<OnLoad>
-						self:GetNormalTexture():SetTexCoord(GetTexCoordsForRole("HEALER"));
-					</OnLoad>
+					<OnEnter function="LFDPopupRoleCheckButton_OnEnter"/>
 				</Scripts>
 			</Button>
-			<Button name="$parentRoleButtonDPS" inherits="LFGRoleButtonTemplate" id="1">
-				<Size>
-					<AbsDimension x="70" y="70"/>
-				</Size>
+			<Button name="$parentRoleButtonDPS" inherits="LFDRoleCheckPopupButtonTemplate" id="3">
+				<Size x="70" y="70"/>
+				<KeyValues>
+					<KeyValue key="role" value="DAMAGER" type="string"/>
+				</KeyValues>
 				<Anchors>
-					<Anchor point="LEFT" relativeTo="$parentRoleButtonHealer" relativePoint="RIGHT">
-						<Offset>
-							<AbsDimension x="15" y="0"/>
-						</Offset>
-					</Anchor>
+					<Anchor point="LEFT" relativeTo="$parentRoleButtonHealer" relativePoint="RIGHT" x="15" y="0"/>
 				</Anchors>
 				<Scripts>
-					<OnLoad>
-						self:GetNormalTexture():SetTexCoord(GetTexCoordsForRole("DAMAGER"));
-					</OnLoad>
+					<OnEnter function="LFDPopupRoleCheckButton_OnEnter"/>
 				</Scripts>
 			</Button>
-			<Button name="$parentAcceptButton" inherits="UIPanelButtonTemplate" text="ACCEPT">
+			<Button name="$parentAcceptButton" inherits="UIPanelButtonTemplate" text="ACCEPT" motionScriptsWhileDisabled="true">
 				<Size>
 					<AbsDimension x="115" y="22"/>
 				</Size>
@@ -103,6 +105,13 @@
 				</Anchors>
 				<Scripts>
 					<OnClick function="LFDRoleCheckPopupAccept_OnClick"/>
+					<OnEnter>
+						if ( self.tooltipText ) then
+							GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+							GameTooltip:SetText(self.tooltipText, nil, nil, nil, nil, true);
+							GameTooltip:Show();
+						end
+					</OnEnter>
 				</Scripts>
 			</Button>
 			<Button name="$parentDeclineButton" inherits="UIPanelButtonTemplate" text="DECLINE">
@@ -215,7 +224,10 @@
 					</Layer>
 				</Layers>
 				<Frames>
-					<Button name="$parentRoleButtonTank" inherits="LFGRoleButtonWithBackgroundAndRewardTemplate" id="2">
+					<Button name="$parentRoleButtonTank" inherits="LFDRoleButtonTemplate" id="1">
+						<KeyValues>
+							<KeyValue key="role" value="TANK" type="string"/>
+						</KeyValues>
 						<Anchors>
 							<Anchor point="BOTTOMLEFT">
 								<Offset>
@@ -223,16 +235,11 @@
 								</Offset>
 							</Anchor>
 						</Anchors>
-						<Scripts>
-							<OnLoad>
-								self:GetNormalTexture():SetTexCoord(GetTexCoordsForRole("TANK"));
-								self.background:SetTexCoord(GetBackgroundTexCoordsForRole("TANK"));
-								self.background:SetAlpha(0.6);
-								self.checkButton.onClick = LFDFrameRoleCheckButton_OnClick;
-							</OnLoad>
-						</Scripts>
 					</Button>
-					<Button name="$parentRoleButtonHealer" inherits="LFGRoleButtonWithBackgroundAndRewardTemplate" id="3">
+					<Button name="$parentRoleButtonHealer" inherits="LFDRoleButtonTemplate" id="2">
+						<KeyValues>
+							<KeyValue key="role" value="HEALER" type="string"/>
+						</KeyValues>
 						<Anchors>
 							<Anchor point="LEFT" relativeTo="$parentRoleButtonTank" relativePoint="RIGHT">
 								<Offset>
@@ -240,16 +247,11 @@
 								</Offset>
 							</Anchor>
 						</Anchors>
-						<Scripts>
-							<OnLoad>
-								self:GetNormalTexture():SetTexCoord(GetTexCoordsForRole("HEALER"));
-								self.background:SetTexCoord(GetBackgroundTexCoordsForRole("HEALER"));
-								self.background:SetAlpha(0.4);
-								self.checkButton.onClick = LFDFrameRoleCheckButton_OnClick;
-							</OnLoad>
-						</Scripts>
 					</Button>
-					<Button name="$parentRoleButtonDPS" inherits="LFGRoleButtonWithBackgroundAndRewardTemplate" id="1">
+					<Button name="$parentRoleButtonDPS" inherits="LFDRoleButtonTemplate" id="3">
+						<KeyValues>
+							<KeyValue key="role" value="DAMAGER" type="string"/>
+						</KeyValues>
 						<Anchors>
 							<Anchor point="LEFT" relativeTo="$parentRoleButtonHealer" relativePoint="RIGHT">
 								<Offset>
@@ -257,14 +259,6 @@
 								</Offset>
 							</Anchor>
 						</Anchors>
-						<Scripts>
-							<OnLoad>
-								self:GetNormalTexture():SetTexCoord(GetTexCoordsForRole("DAMAGER"));
-								self.background:SetTexCoord(GetBackgroundTexCoordsForRole("DAMAGER"));
-								self.background:SetAlpha(0.6);
-								self.checkButton.onClick = LFDFrameRoleCheckButton_OnClick;
-							</OnLoad>
-						</Scripts>
 					</Button>
 					<Button name="$parentRoleButtonLeader" inherits="LFGRoleButtonTemplate" id="4">
 						<Anchors>
@@ -281,7 +275,7 @@
 							</OnLoad>
 							<OnEnter>
 								GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
-								GameTooltip:SetText(GUIDE_TOOLTIP, nil, nil, nil, nil, 1);
+								GameTooltip:SetText(GUIDE_TOOLTIP, nil, nil, nil, nil, true);
 								LFGFrameRoleCheckButton_OnEnter(self);
 							</OnEnter>
 						</Scripts>
@@ -595,12 +589,10 @@
 							</ScrollFrame>
 						</Frames>
 						<Scripts>
-							<OnShow>
-								LFDQueueFrame_Update();
-							</OnShow>
+							<OnShow function="LFDQueueFrame_Update"/>
 						</Scripts>
 					</Frame>
-					<Button name="$parentFindGroupButton" inherits="MagicButtonTemplate" text="FIND_A_GROUP">
+					<Button name="$parentFindGroupButton" inherits="MagicButtonTemplate" text="FIND_A_GROUP" motionScriptsWhileDisabled="true">
 						<Size>
 							<AbsDimension x="135" y="22"/>
 						</Size>
@@ -620,6 +612,14 @@
 									LFDQueueFrame_Join();
 								end
 							</OnClick>
+							<OnEnter>
+								if ( self.tooltip ) then
+									GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+									GameTooltip:SetText(self.tooltip, NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b, 1, true);
+									GameTooltip:Show();
+								end
+							</OnEnter>
+							<OnLeave function="GameTooltip_Hide"/>
 						</Scripts>
 					</Button>
 					<Frame name="$parentPartyBackfill" parentKey="PartyBackfill" inherits="LFGBackfillCoverTemplate">

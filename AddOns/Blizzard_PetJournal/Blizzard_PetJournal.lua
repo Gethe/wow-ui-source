@@ -8,6 +8,14 @@ PET_ACHIEVEMENT_CATEGORY = 15117;
 local MAX_PET_LEVEL = 25;
 local PLAYER_MOUNT_LEVEL = 20;
 local HEAL_PET_SPELL = 125439;
+local SUMMON_RANDOM_FAVORITE_MOUNT_SPELL = 150544;
+local TOYS_PER_PAGE = 18;
+
+local MOUNT_FACTION_TEXTURES = {
+	[0] = "MountJournalIcons-Horde",
+	[1] = "MountJournalIcons-Alliance"
+};
+
 local UNLOCK_REQUIREMENTS = {
 	[1] = {requirement = "SPELL", id = "119467"},
 	[2] = {requirement = "ACHIEVEMENT", id = "7433"},
@@ -55,6 +63,7 @@ StaticPopupDialogs["BATTLE_PET_PUT_IN_CAGE"] = {
 	button2 = CANCEL,
 	maxLetters = 30,
 	OnAccept = function(self)
+		PetJournal_SetPendingCage(self.data);
 		C_PetJournal.CagePetByID(self.data);
 		if (PetJournalPetCard.petID == self.data) then
 			PetJournal_ShowPetCard(1);
@@ -84,7 +93,7 @@ StaticPopupDialogs["BATTLE_PET_RELEASE"] = {
 };
 
 function PetJournalUtil_GetDisplayName(petID)
-	local speciesID, customName, level, xp, maxXp, displayID, isFavorite, petName, petIcon, petType, creatureID = C_PetJournal.GetPetInfoByPetID(petID);
+	local _, customName, _, _, _, _, _, petName = C_PetJournal.GetPetInfoByPetID(petID);
 	if ( customName ) then
 		return customName;
 	else
@@ -103,9 +112,18 @@ function PetJournalParent_UpdateSelectedTab(self)
 	if ( selected == 1 ) then
 		MountJournal:Show();
 		PetJournal:Hide();
-	else
+		ToyBox:Hide();
+		PetJournalParentTitleText:SetText(MOUNTS);
+	elseif (selected == 2 ) then
 		MountJournal:Hide();
 		PetJournal:Show();
+		ToyBox:Hide();
+		PetJournalParentTitleText:SetText(PET_JOURNAL);
+	else
+		MountJournal:Hide();
+		PetJournal:Hide();
+		ToyBox:Show();
+		PetJournalParentTitleText:SetText(TOY_BOX);
 	end
 end
 
@@ -125,6 +143,7 @@ function PetJournal_OnLoad(self)
 	self:RegisterEvent("PET_JOURNAL_LIST_UPDATE");
 	self:RegisterEvent("PET_JOURNAL_PET_DELETED");
 	self:RegisterEvent("PET_JOURNAL_PETS_HEALED");
+	self:RegisterEvent("PET_JOURNAL_CAGE_FAILED");
 	self:RegisterEvent("BATTLE_PET_CURSOR_CLEAR");
 	self:RegisterEvent("COMPANION_UPDATE");
 	self:RegisterEvent("PET_BATTLE_LEVEL_CHANGED");
@@ -140,7 +159,6 @@ function PetJournal_OnLoad(self)
 end
 
 function PetJournal_OnShow(self)
-	PlaySound("igCharacterInfoOpen");
 	PetJournal_UpdatePetList();
 	PetJournal_UpdatePetLoadOut();
 	PetJournal_UpdatePetCard(PetJournalPetCard);
@@ -165,7 +183,6 @@ end
 
 function PetJournal_OnHide(self)
 	self:UnregisterEvent("ACHIEVEMENT_EARNED");
-	PlaySound("igCharacterInfoClose");
 	PetJournal.SpellSelect:Hide();
 	HelpPlate_Hide();
 end
@@ -176,6 +193,9 @@ function PetJournal_OnEvent(self, event, ...)
 		PetJournal_UpdatePetLoadOut();
 	elseif event == "PET_JOURNAL_PET_DELETED" then
 		local petID = ...;
+		if (PetJournal_IsPendingCage(petID)) then
+			PetJournal_ClearPendingCage();
+		end
 		PetJournal_UpdatePetList();
 		PetJournal_UpdatePetLoadOut();
 		if(PetJournalPetCard.petID == petID) then
@@ -184,6 +204,8 @@ function PetJournal_OnEvent(self, event, ...)
 		PetJournal_FindPetCardIndex();
 		PetJournal_UpdatePetCard(PetJournalPetCard);
 		PetJournal_HidePetDropdown();
+	elseif event == "PET_JOURNAL_CAGE_FAILED" then
+		PetJournal_ClearPendingCage();
 	elseif event == "PET_JOURNAL_PETS_HEALED" then
 		PetJournal_UpdatePetLoadOut();
 	elseif event == "PET_JOURNAL_LIST_UPDATE" then
@@ -334,7 +356,7 @@ function PetJournalHealPetButton_OnEvent(self, event, ...)
 end
 
 function PetJournalHealPetButton_UpdateCooldown(self)
-	local cooldown = _G[self:GetName().."Cooldown"];
+	local cooldown = self.cooldown;
 	local start, duration, enable = GetSpellCooldown(self.spellID);
 	CooldownFrame_SetTimer(cooldown, start, duration, enable);
 end
@@ -343,13 +365,13 @@ function PetJournalHealPetButton_OnEnter(self)
 	GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
 	GameTooltip:SetSpellByID(self.spellID);
 	if (not IsSpellKnown(self.spellID)) then
-		GameTooltip:AddLine(PET_BATTLE_HEAL_SPELL_UNKNOWN, RED_FONT_COLOR.r, RED_FONT_COLOR.g, RED_FONT_COLOR.b, 1);
+		GameTooltip:AddLine(PET_BATTLE_HEAL_SPELL_UNKNOWN, RED_FONT_COLOR.r, RED_FONT_COLOR.g, RED_FONT_COLOR.b, true);
 		GameTooltip:Show();
 	elseif (not C_PetJournal.IsJournalUnlocked()) then
-		GameTooltip:AddLine(PET_JOURNAL_HEAL_SPELL_LOCKED, RED_FONT_COLOR.r, RED_FONT_COLOR.g, RED_FONT_COLOR.b, 1);
+		GameTooltip:AddLine(PET_JOURNAL_HEAL_SPELL_LOCKED, RED_FONT_COLOR.r, RED_FONT_COLOR.g, RED_FONT_COLOR.b, true);
 		GameTooltip:Show();
 	elseif (C_PetBattles.IsInBattle()) then
-		GameTooltip:AddLine(PET_JOURNAL_HEAL_SPELL_IN_BATTLE, RED_FONT_COLOR.r, RED_FONT_COLOR.g, RED_FONT_COLOR.b, 1);
+		GameTooltip:AddLine(PET_JOURNAL_HEAL_SPELL_IN_BATTLE, RED_FONT_COLOR.r, RED_FONT_COLOR.g, RED_FONT_COLOR.b, true);
 		GameTooltip:Show();
 	end
 	self.UpdateTooltip = PetJournalHealPetButton_OnEnter;
@@ -366,7 +388,7 @@ end
 
 function PetJournal_UpdatePetAbility(abilityFrame, abilityID, petID)
 	--Get the info for the pet that has this ability
-	local speciesID, customName, level, xp, maxXp, displayID, isFavorite, petName, petIcon, petType, creatureID = C_PetJournal.GetPetInfoByPetID(petID);
+	local speciesID, customName, level, xp, maxXp, displayID, isFavorite, petName, petIcon, petType = C_PetJournal.GetPetInfoByPetID(petID);
 
 	local requiredLevel = PetJournalLoadout_GetRequiredLevel(abilityFrame:GetParent(), abilityID);
 
@@ -401,7 +423,7 @@ function PetJournal_ShowPetSelect(self)
 	local spellIndex2 = spellIndex1 + 3;
 
 	--Get the info for the pet that has this ability
-	local speciesID, customName, level, xp, maxXp, displayID, isFavorite, petName, petIcon, petType, creatureID = C_PetJournal.GetPetInfoByPetID(slotFrame.petID);
+	local speciesID, customName, level, xp, maxXp, displayID, isFavorite, petName, petIcon, petType = C_PetJournal.GetPetInfoByPetID(slotFrame.petID);
 	
 	if PetJournal.SpellSelect:IsShown() then 
 		if PetJournal.SpellSelect.slotIndex == slotIndex and 
@@ -557,7 +579,7 @@ function PetJournal_UpdatePetLoadOut()
 			loadoutPlate.petTypeIcon:Hide();
 			loadoutPlate.petID = nil;
 		else -- not locked and petID is not nil
-			local speciesID, customName, level, xp, maxXp, displayID, isFavorite, name, icon, petType, creatureID = C_PetJournal.GetPetInfoByPetID(petID);
+			local speciesID, customName, level, xp, maxXp, displayID, isFavorite, name, icon, petType = C_PetJournal.GetPetInfoByPetID(petID);
 			C_PetJournal.GetPetAbilityList(speciesID, loadoutPlate.abilities, loadoutPlate.abilityLevels);	--Read ability/ability levels into the correct tables
 
 			--Find out how many abilities are usable due to level
@@ -643,23 +665,12 @@ function PetJournal_UpdatePetLoadOut()
 			loadoutPlate.isDead:SetShown(health <= 0);
 			
 			loadoutPlate.model:Show();
-			local modelChanged = false;
-			if ( displayID ~= 0 ) then
-				if ( displayID ~= loadoutPlate.displayID ) then
-					loadoutPlate.creatureID = nil;
-					loadoutPlate.displayID = displayID;
-					loadoutPlate.model:SetDisplayInfo(displayID);
-					loadoutPlate.model:SetDoBlend(false);
-					modelChanged = true;
-				end
-			elseif ( creatureID ~= 0 ) then
-				if ( creatureID ~= loadoutPlate.creatureID ) then
-					loadoutPlate.creatureID = creatureID;
-					loadoutPlate.displayID = nil;
-					loadoutPlate.model:SetCreature(creatureID);
-					loadoutPlate.model:SetDoBlend(false);
-					modelChanged = true;
-				end
+			local modelChanged = false;			
+			if ( displayID ~= loadoutPlate.displayID ) then
+				loadoutPlate.displayID = displayID;
+				loadoutPlate.model:SetDisplayInfo(displayID);
+				loadoutPlate.model:SetDoBlend(false);
+				modelChanged = true;
 			end
 			local isDead = health <= 0;
 			if ( modelChanged or isDead ~= loadoutPlate.model.wasDead ) then
@@ -734,7 +745,7 @@ function PetJournal_UpdatePetList()
 		pet = petButtons[i];
 		index = offset + i;
 		if index <= numPets then
-			local petID, speciesID, isOwned, customName, level, favorite, isRevoked, name, icon, petType, creatureID, sourceText, description, isWildPet, canBattle = C_PetJournal.GetPetInfoByIndex(index);
+			local petID, speciesID, isOwned, customName, level, favorite, isRevoked, name, icon, petType, _, _, _, _, canBattle = C_PetJournal.GetPetInfoByIndex(index);
 
 			if customName then
 				pet.name:SetText(customName);
@@ -762,10 +773,10 @@ function PetJournal_UpdatePetList()
 				pet.dragButton.level:SetShown(canBattle);
 				pet.dragButton.level:SetText(level);
 				
-				pet.icon:SetDesaturated(0);
+				pet.icon:SetDesaturated(false);
 				pet.name:SetFontObject("GameFontNormal");
 				pet.petTypeIcon:SetShown(canBattle);
-				pet.petTypeIcon:SetDesaturated(0);
+				pet.petTypeIcon:SetDesaturated(false);
 				pet.dragButton:Enable();
 				pet.iconBorder:Show();
 				pet.iconBorder:SetVertexColor(ITEM_QUALITY_COLORS[rarity-1].r, ITEM_QUALITY_COLORS[rarity-1].g, ITEM_QUALITY_COLORS[rarity-1].b);
@@ -774,22 +785,22 @@ function PetJournal_UpdatePetList()
 				else
 					pet.isDead:Hide();
 				end
-				if(isRevoked == true) then
+				if(isRevoked) then
 					pet.dragButton.levelBG:Hide();
 					pet.dragButton.level:Hide();
 					pet.iconBorder:Hide();
-					pet.icon:SetDesaturated(1);
-					pet.petTypeIcon:SetDesaturated(1);
+					pet.icon:SetDesaturated(true);
+					pet.petTypeIcon:SetDesaturated(true);
 					pet.dragButton:Disable();
 				end
 			else
 				pet.dragButton.levelBG:Hide();
 				pet.dragButton.level:Hide();
-				pet.icon:SetDesaturated(1);
+				pet.icon:SetDesaturated(true);
 				pet.iconBorder:Hide();
 				pet.name:SetFontObject("GameFontDisable");
 				pet.petTypeIcon:SetShown(canBattle);
-				pet.petTypeIcon:SetDesaturated(1);
+				pet.petTypeIcon:SetDesaturated(true);
 				pet.dragButton:Disable();
 				pet.isDead:Hide();
 			end
@@ -819,7 +830,6 @@ function PetJournal_UpdatePetList()
 				local start, duration, enable = C_PetJournal.GetPetCooldownByGUID(pet.petID);
 				if (start) then
 					CooldownFrame_SetTimer(pet.dragButton.Cooldown, start, duration, enable);
-					pet.dragButton.Cooldown:SetBlingDuration(0);
 				end
 			end
 		else
@@ -833,13 +843,8 @@ end
 
 
 function PetJournal_OnSearchTextChanged(self)
-	local text = self:GetText();
-	if text == SEARCH then
-		C_PetJournal.SetSearchFilter("");
-		return;
-	end
-	
-	C_PetJournal.SetSearchFilter(text);
+	SearchBoxTemplate_OnTextChanged(self);
+	C_PetJournal.SetSearchFilter(self:GetText());
 end
 
 function PetJournalListItem_OnClick(self, button)
@@ -1055,7 +1060,9 @@ function PetJournal_UpdatePetCard(self)
 		self.model:Hide();
 		self.shadows:Hide();
 		
-		self.AbilitiesBG:Hide();
+		self.AbilitiesBG1:Hide();
+		self.AbilitiesBG2:Hide();
+		self.AbilitiesBG3:Hide();
 		self.CannotBattleText:Hide();
 		for i=1,NUM_PET_ABILITIES do
 			self["spell"..i]:Hide();
@@ -1124,7 +1131,7 @@ function PetJournal_UpdatePetCard(self)
 		end
 	else
 		speciesID = PetJournalPetCard.speciesID;
-		name, icon, petType, creatureID, sourceText, description, isWild, canBattle, tradable, unique = C_PetJournal.GetPetInfoBySpeciesID(PetJournalPetCard.speciesID);
+		name, icon, petType, creatureID, sourceText, description, isWild, canBattle, tradable, unique, _, displayID = C_PetJournal.GetPetInfoBySpeciesID(PetJournalPetCard.speciesID);
 		level = 1;
 		self.PetInfo.level:Hide();
 		self.PetInfo.levelBG:Hide();
@@ -1180,22 +1187,11 @@ function PetJournal_UpdatePetCard(self)
 	self.model:Show();
 	self.shadows:Show();
 	local modelChanged = false;
-	if ( displayID and displayID ~= 0 ) then
-		if ( displayID ~= self.displayID ) then
-			self.creatureID = nil;
-			self.displayID = displayID;
-			self.model:SetDisplayInfo(displayID);
-			self.model:SetDoBlend(false);
-			modelChanged = true;
-		end
-	elseif ( creatureID ~= 0 ) then
-		if ( creatureID ~= self.creatureID ) then
-			self.creatureID = creatureID;
-			self.displayID = nil;
-			self.model:SetCreature(creatureID);
-			self.model:SetDoBlend(false);
-			modelChanged = true;
-		end
+	if ( displayID ~= self.displayID ) then
+		self.displayID = displayID;
+		self.model:SetDisplayInfo(displayID);
+		self.model:SetDoBlend(false);
+		modelChanged = true;
 	end
 	if ( modelChanged or self.model.wasDead ~= isDead ) then
 		if ( isDead ) then
@@ -1206,7 +1202,9 @@ function PetJournal_UpdatePetCard(self)
 		self.model.wasDead = isDead;
 	end
 	
-	self.AbilitiesBG:SetShown(canBattle);
+	self.AbilitiesBG1:SetShown(canBattle);
+	self.AbilitiesBG2:SetShown(canBattle);
+	self.AbilitiesBG3:SetShown(canBattle);
 	self.CannotBattleText:SetShown(not canBattle);
 	
 	--Update pet abilites
@@ -1236,6 +1234,20 @@ function PetJournal_UpdatePetCard(self)
 	end
 end
 
+function PetJournal_SetPendingCage(petID)
+	local self = PetJournal;
+	self.pendingCage = petID;
+end
+
+function PetJournal_ClearPendingCage()
+	local self = PetJournal;
+	self.pendingCage = nil;
+end
+
+function PetJournal_IsPendingCage(petID)
+	local self = PetJournal;
+	return self.pendingCage and self.pendingCage == petID;
+end
 
 function GetPetTypeTexture(petType) 
 	if PET_TYPE_SUFFIX[petType] then
@@ -1270,16 +1282,6 @@ function PetJournalFilterDropDown_Initialize(self, level)
 		info.isNotRadio = true;
 		UIDropDownMenu_AddButton(info, level)
 		
-		info.text = FAVORITES_FILTER
-		info.func = 	function(_, _, _, value)
-							C_PetJournal.SetFlagFilter(LE_PET_JOURNAL_FLAG_FAVORITES, value);
-						end 
-		info.disabled = not info.checked or info.checked ~= true;
-		info.checked = not C_PetJournal.IsFlagFiltered(LE_PET_JOURNAL_FLAG_FAVORITES);
-		info.isNotRadio = true;
-		info.leftPadding = 16;
-		UIDropDownMenu_AddButton(info, level)
-		info.leftPadding = 0;
 		info.disabled = nil;
 
 		info.text = NOT_COLLECTED
@@ -1560,7 +1562,7 @@ function PET_JOURNAL_ABILITY_INFO:GetPetType(target)
 		GMError("No species id found");
 		return 1;
 	end
-	local name, icon, petType, creatureID, sourceText, description, isWild, canBattle, tradable = C_PetJournal.GetPetInfoBySpeciesID(self.speciesID);
+	local _, _, petType = C_PetJournal.GetPetInfoBySpeciesID(self.speciesID);
 	return petType;
 end
 
@@ -1640,7 +1642,6 @@ end
 
 function PetJournalPetCount_OnEnter(self)
 	GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
-	GameTooltip:SetMinimumWidth(150);
 	GameTooltip:SetText(BATTLE_PETS_TOTAL_PETS, 1, 1, 1);
 	GameTooltip:AddLine(BATTLE_PETS_TOTAL_PETS_TOOLTIP, nil, nil, nil, true);
 	GameTooltip:Show();
@@ -1661,7 +1662,6 @@ end
 
 function PetJournalFindBattle_OnEnter(self)
 	GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
-	GameTooltip:SetMinimumWidth(150);
 	GameTooltip:SetText(FIND_BATTLE, 1, 1, 1);
 	GameTooltip:AddLine(BATTLE_PETS_FIND_BATTLE_TOOLTIP, nil, nil, nil, true);
 	
@@ -1677,7 +1677,6 @@ end
 function PetJournalAchievementStatus_OnEnter(self)
 	PetJournal.AchievementStatus.highlight:Show();
 	GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
-	GameTooltip:SetMinimumWidth(150);
 	GameTooltip:SetText(BATTLE_PETS_ACHIEVEMENT, 1, 1, 1);
 	GameTooltip:AddLine(BATTLE_PETS_ACHIEVEMENT_TOOLTIP, nil, nil, nil, true);
 	GameTooltip:Show();
@@ -1685,7 +1684,6 @@ end
 
 function PetJournalSummonButton_OnEnter(self)
 	GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
-	GameTooltip:SetMinimumWidth(150);
 	GameTooltip:SetText(self:GetText(), 1, 1, 1);
 	GameTooltip:AddLine(BATTLE_PETS_SUMMON_TOOLTIP, nil, nil, nil, true);
 	GameTooltip:Show();
@@ -1719,34 +1717,89 @@ end
 ---------------------------------
 ---------Mount Journal-----------
 ---------------------------------
+
+function MountJournal_GetNumMounts()
+	return C_MountJournal.GetNumMounts();
+end
+
+function MountJournal_GetMountInfo(index)
+	return C_MountJournal.GetMountInfo(index);
+end
+
+function MountJournal_GetMountInfoExtra(index)
+	return C_MountJournal.GetMountInfoExtra(index);
+end
+
+function MountJournal_Pickup(index)
+	return C_MountJournal.Pickup(index);
+end
+
+function MountJournal_Dismiss()
+	return C_MountJournal.Dismiss();
+end
+
+function MountJournal_Summon(index)
+	return C_MountJournal.Summon(index);
+end
+
+function MountJournal_SetIsFavorite(index,value)
+	C_MountJournal.SetIsFavorite(index, value);
+	MountJournal_DirtyList(MountJournal);
+	MountJournal_UpdateMountList();
+end
+
+function MountJournal_GetIsFavorite(index)
+	return C_MountJournal.GetIsFavorite(index);
+end
+
+function MountJournal_GetCollectedFilterSetting(flag)
+	return C_MountJournal.GetCollectedFilterSetting(flag);
+end
+
+function MountJournal_SetCollectedFilterSetting(flag,value)
+	C_MountJournal.SetCollectedFilterSetting(flag,value);
+	MountJournal_DirtyList(MountJournal);
+end
+
 function MountJournal_OnLoad(self)
 	self:RegisterEvent("COMPANION_LEARNED");
 	self:RegisterEvent("COMPANION_UNLEARNED");
 	self:RegisterEvent("COMPANION_UPDATE");
+	self:RegisterEvent("MOUNT_JOURNAL_USABILITY_CHANGED");
 	self.ListScrollFrame.update = MountJournal_UpdateMountList;
 	self.ListScrollFrame.scrollBar.doNotHide = true;
 	HybridScrollFrame_CreateButtons(self.ListScrollFrame, "MountListButtonTemplate", 44, 0);
+	UIDropDownMenu_Initialize(self.mountOptionsMenu, MountOptionsMenu_Init, "MENU");
+
+	MountJournal_InitializeFilter();
 end
 
 function MountJournal_OnEvent(self, event, ...)
-	if ( event == "COMPANION_LEARNED" or event == "COMPANION_UNLEARNED" or event == "COMPANION_UPDATE" ) then
+	if ( event == "MOUNT_JOURNAL_USABILITY_CHANGED" or event == "COMPANION_LEARNED" or event == "COMPANION_UNLEARNED" or event == "COMPANION_UPDATE" ) then
 		local companionType = ...;
 		if ( not companionType or companionType == "MOUNT" ) then
 			if ( event ~= "COMPANION_UPDATE" ) then
 				--Companion updates don't change who's on our list.
 				MountJournal_DirtyList(self);
 			end
-			MountJournal_UpdateMountList();
-			MountJournal_UpdateMountDisplay();
+
+			if (self:IsVisible()) then
+				MountJournal_UpdateMountList();
+				MountJournal_UpdateMountDisplay();
+			end
 		end
 	end
 end
 
 function MountJournal_OnShow(self)
-	if ( not MountJournal_FindSelectedIndex() ) then
+	MountJournal_UpdateMountList();
+	local index = MountJournal_FindSelectedIndex();
+	if ( not index and MountJournal.cachedMounts and #MountJournal.cachedMounts > 0 ) then
+		MountJournal_Select(MountJournal.cachedMounts[1]);
+	elseif (not index) then
 		MountJournal_Select(1);
 	end
-	MountJournal_UpdateMountList();
+	MountJournal_UpdateMountDisplay();
 	SetPortraitToTexture(PetJournalParentPortrait,"Interface\\Icons\\MountJournalPortrait");
 end
 
@@ -1759,26 +1812,74 @@ function MountJournal_UpdateCachedList(self)
 		return;
 	end
 	self.cachedMounts = {};
+	self.sortVal = {};
+	self.numOwned = 0;
 
-	for i=1, GetNumCompanions("MOUNT") do
-		if ( MountJournal_MountMatchesFilter(self, i) ) then
+	for i=1, MountJournal_GetNumMounts() do
+		local creatureName, spellID, icon, active, isUsable, sourceType, isFavorite, _, _, hideOnChar, isCollected = MountJournal_GetMountInfo(i);
+
+		if ( hideOnChar ~= true and MountJournal_MountMatchesFilter(self, creatureName, sourceType, isCollected ) ) then
 			self.cachedMounts[#self.cachedMounts + 1] = i;
+			self.sortVal[i] = MountJournal_GetMountSortVal(self, isUsable, sourceType, isFavorite, isCollected);
+		end
+		if (isCollected and hideOnChar ~= true) then
+			self.numOwned = self.numOwned + 1;
 		end
 	end
+
+	local comparison = function(index1, index2)
+		return MountJournal_SortComparison(self, index1, index2);
+	end
+
+	table.sort(self.cachedMounts, comparison);
+	self.sortVal = {};
+
 	self.dirtyList = false;
 end
 
-function MountJournal_MountMatchesFilter(self, index)
-	if ( not self.searchString ) then
-		return true;
+function MountJournal_GetMountSortVal(self, isUsable, sourceType, isFavorite, isCollected)
+	local sortOrder = 3;
+	if (isFavorite) then
+		sortOrder = 1
+	elseif (isCollected) then
+		sortOrder = 2
 	end
 
-	local creatureID, creatureName, spellID, icon, active = GetCompanionInfo("MOUNT", index);
-	if ( string.find(string.lower(creatureName), self.searchString, 1, true) ) then
+	return sortOrder;
+end
+
+function MountJournal_SortComparison(self, index1, index2)
+	local sortTest1 = self.sortVal[index1];
+	local sortTest2 = self.sortVal[index2];
+
+	local sortVal = sortTest1 - sortTest2;
+	if (sortVal < 0) then
 		return true;
+	elseif (sortVal == 0) then
+		return (index1 < index2);	-- from C side elements are alphabetically sorted
+	else
+		return false;
+	end
+end
+
+function MountJournal_MountMatchesFilter(self, name, sourceType, collected)
+	if ( self.searchString ) then
+		if ( string.find(string.lower(name), self.searchString, 1, true) ) then
+			return true;
+		else
+			return false;
+		end
 	end
 
-	return false;
+	if ( not MountJournal_GetCollectedFilterSetting(LE_MOUNT_JOURNAL_FILTER_COLLECTED) and collected ) then
+		return false;
+	end
+
+	if ( not MountJournal_GetCollectedFilterSetting(LE_MOUNT_JOURNAL_FILTER_NOT_COLLECTED) and not collected ) then
+		return false;
+	end
+
+	return MountJournal_IsSourceNotFiltered(sourceType);
 end
 
 function MountJournal_UpdateMountList()
@@ -1788,7 +1889,7 @@ function MountJournal_UpdateMountList()
 	local offset = HybridScrollFrame_GetOffset(scrollFrame);
 	local buttons = scrollFrame.buttons;
 
-	local numMounts = GetNumCompanions("MOUNT");
+	local numMounts = MountJournal_GetNumMounts();
 
 	local showMounts = true;
 	local playerLevel = UnitLevel("player");
@@ -1805,14 +1906,15 @@ function MountJournal_UpdateMountList()
 		local displayIndex = i + offset;
 		if ( displayIndex <= #MountJournal.cachedMounts and showMounts ) then
 			local index = MountJournal.cachedMounts[displayIndex];
-			local creatureID, creatureName, spellID, icon, active = GetCompanionInfo("MOUNT", index);
+			local creatureName, spellID, icon, active, isUsable, sourceType, isFavorite, isFactionSpecific, faction, _, isCollected = MountJournal_GetMountInfo(index);
+
 			button.name:SetText(creatureName);
 			button.icon:SetTexture(icon);
 			button.index = index;
 			button.spellID = spellID;
 
 			button.active = active;
-			if ( active and playerLevel >= PLAYER_MOUNT_LEVEL) then
+			if (active) then
 				button.DragButton.ActiveTexture:Show();
 			else
 				button.DragButton.ActiveTexture:Hide();
@@ -1826,19 +1928,44 @@ function MountJournal_UpdateMountList()
 				button.selected = false;
 				button.selectedTexture:Hide();
 			end
-			button:SetEnabled(1);
-			if (playerLevel >= PLAYER_MOUNT_LEVEL) then
-				button.DragButton:SetEnabled(1);
+			button:SetEnabled(true);
+			button.unusable:Hide();
+			button.iconBorder:Hide();
+			button.background:SetVertexColor(1, 1, 1, 1);
+			if (isUsable) then
+				button.DragButton:SetEnabled(true);
 				button.additionalText = nil;
-				button.icon:SetDesaturated(0);
+				button.icon:SetDesaturated(false);
 				button.icon:SetAlpha(1.0);
 				button.name:SetFontObject("GameFontNormal");				
 			else
-				button.DragButton:SetEnabled(0);
-				button.additionalText = MOUNT_JOURNAL_CANT_USE;
-				button.icon:SetDesaturated(1);
-				button.icon:SetAlpha(.5);
-				button.name:SetFontObject("GameFontDisable");				
+				if (isCollected) then
+					button.unusable:Show();
+					button.DragButton:SetEnabled(true);
+					button.name:SetFontObject("GameFontNormal");
+					button.icon:SetAlpha(0.75);
+					button.additionalText = nil;
+					button.background:SetVertexColor(1, 0, 0, 1);
+				else
+					button.icon:SetDesaturated(true);
+					button.DragButton:SetEnabled(false);
+					button.icon:SetAlpha(0.25);
+					button.additionalText = nil;
+					button.name:SetFontObject("GameFontDisable");
+				end			
+			end
+
+			if ( isFavorite ) then
+				button.favorite:Show();
+			else
+				button.favorite:Hide();
+			end
+
+			if ( isFactionSpecific ) then
+				button.factionIcon:SetAtlas(MOUNT_FACTION_TEXTURES[faction],true);
+				button.factionIcon:Show();
+			else
+				button.factionIcon:Hide();
 			end
 
 			if ( button.showingTooltip ) then
@@ -1850,52 +1977,74 @@ function MountJournal_UpdateMountList()
 			button.index = nil;
 			button.spellID = 0;
 			button.selected = false;
+			button.unusable:Hide();
 			button.DragButton.ActiveTexture:Hide();
 			button.selectedTexture:Hide();
-			button:SetEnabled(0);
-			button.DragButton:SetEnabled(0);
-			button.icon:SetDesaturated(1);
+			button:SetEnabled(false);
+			button.DragButton:SetEnabled(false);
+			button.icon:SetDesaturated(true);
 			button.icon:SetAlpha(0.5);
+			button.favorite:Hide();
+			button.factionIcon:Hide();
+			button.background:SetVertexColor(1, 1, 1, 1);
+			button.iconBorder:Hide();
 		end
 	end
 
 	local totalHeight = #MountJournal.cachedMounts * MOUNT_BUTTON_HEIGHT;
 	HybridScrollFrame_Update(scrollFrame, totalHeight, scrollFrame:GetHeight());
-	MountJournal.MountCount.Count:SetText(numMounts);
+	MountJournal.MountCount.Count:SetText(MountJournal.numOwned);
 	if ( not showMounts ) then
 		MountJournal.selectedSpellID = 0;
 		MountJournal_UpdateMountDisplay();
 		MountJournal.MountCount.Count:SetText(0);
 	end
 	if ( playerLevel >= PLAYER_MOUNT_LEVEL and numMounts > 0) then
-		MountJournal.MountButton:SetEnabled(1);
+		MountJournal.MountButton:SetEnabled(true);
 	else
-		MountJournal.MountButton:SetEnabled(0);
+		MountJournal.MountButton:SetEnabled(false);
 	end
 end
 
 function MountJournalMountButton_UpdateTooltip(self)
-	GameTooltip:SetSpellByID(self.spellID);
-	if (self.additionalText) then
-		GameTooltip:AddLine(self.additionalText, 1, 0.1, 0.1, true);
-		GameTooltip:Show();
-	end
+	GameTooltip:SetMountBySpellID(self.spellID);
 end
 
 function MountJournal_UpdateMountDisplay()
 	local index = MountJournal_FindSelectedIndex();
 
 	if ( index ) then
-		local creatureID, creatureName, spellID, icon, active = GetCompanionInfo("MOUNT", index);
+		local creatureName, spellID, icon, active, isUsable, sourceType = MountJournal_GetMountInfo(index);
 		if ( MountJournal.MountDisplay.lastDisplayed ~= spellID ) then
-			MountJournal.MountDisplay.Name:SetText(creatureName);
-			MountJournal.MountDisplay.ModelFrame:SetCreature(creatureID);
+			local creatureDisplayID, descriptionText, sourceText, isSelfMount = MountJournal_GetMountInfoExtra(index);
+
+			MountJournal.MountDisplay.InfoButton.Name:SetText(creatureName);
+			MountJournal.MountDisplay.InfoButton.Icon:SetTexture(icon);
+			
+			MountJournal.MountDisplay.InfoButton.Source:SetText(sourceText);
+			MountJournal.MountDisplay.InfoButton.Lore:SetText(descriptionText)
+
 			MountJournal.MountDisplay.lastDisplayed = spellID;
+
+			if (creatureDisplayID == 0) then
+				local raceID = UnitRace("player");
+				local gender = UnitSex("player");
+				MountJournal.MountDisplay.ModelFrame:SetCustomRace(raceID, gender);
+			else
+				MountJournal.MountDisplay.ModelFrame:SetDisplayInfo(creatureDisplayID);
+			end
+
+			-- mount self idle animation
+			if (isSelfMount) then
+				MountJournal.MountDisplay.ModelFrame:SetDoBlend(false);
+				MountJournal.MountDisplay.ModelFrame:SetAnimation(618, -1); -- MountSelfIdle
+			end
+
 		end
 
-		MountJournal.MountDisplay.Name:Show();
 		MountJournal.MountDisplay.ModelFrame:Show();
 		MountJournal.MountDisplay.YesMountsTex:Show();
+		MountJournal.MountDisplay.InfoButton:Show();
 		MountJournal.MountDisplay.NoMountsTex:Hide();
 		MountJournal.MountDisplay.NoMounts:Hide();
 
@@ -1905,7 +2054,7 @@ function MountJournal_UpdateMountDisplay()
 			MountJournal.MountButton:SetText(MOUNT);
 		end
 	else
-		MountJournal.MountDisplay.Name:Hide();
+		MountJournal.MountDisplay.InfoButton:Hide();
 		MountJournal.MountDisplay.ModelFrame:Hide();
 		MountJournal.MountDisplay.YesMountsTex:Hide();
 		MountJournal.MountDisplay.NoMountsTex:Show();
@@ -1916,8 +2065,8 @@ end
 function MountJournal_FindSelectedIndex()
 	local selectedSpellID = MountJournal.selectedSpellID;
 	if ( selectedSpellID ) then
-		for i=1, GetNumCompanions("MOUNT") do
-			local creatureID, creatureName, spellID, icon, active = GetCompanionInfo("MOUNT", i);
+		for i=1, MountJournal_GetNumMounts() do
+			local creatureName, spellID, icon, active = MountJournal_GetMountInfo(i);
 			if ( spellID == selectedSpellID ) then
 				return i;
 			end
@@ -1928,8 +2077,9 @@ function MountJournal_FindSelectedIndex()
 end
 
 function MountJournal_Select(index)
-	local creatureID, creatureName, spellID, icon, active = GetCompanionInfo("MOUNT", index);
+	local creatureName, spellID, icon, active = MountJournal_GetMountInfo(index);
 	MountJournal.selectedSpellID = spellID;
+	MountJournal_HideMountDropdown();
 	MountJournal_UpdateMountList();
 	MountJournal_UpdateMountDisplay();
 end
@@ -1938,14 +2088,61 @@ function MountJournal_GetSelectedSpellID()
 	return MountJournal.selectedSpellID;
 end
 
+function MountJournal_CollectAvailableFilters()
+	MountJournal.baseFilterTypes = {};
+	local numSources = C_PetJournal.GetNumPetSources();
+
+	for i = 1, numSources do
+		MountJournal.baseFilterTypes[i] = false
+	end
+	for i = 1, MountJournal_GetNumMounts() do
+		local sourceType = select(6,MountJournal_GetMountInfo(i))
+		MountJournal.baseFilterTypes[sourceType] = true;
+	end
+end
+
+function MountJournal_InitializeFilter()
+	MountJournal.filterTypes = {};
+	MountJournal_AddAllSources();
+end
+
+function MountJournal_AddAllSources()
+	local numSources = C_PetJournal.GetNumPetSources();
+	for i=1,numSources do
+		MountJournal.filterTypes[i] = true
+	end
+
+	MountJournal_DirtyList(MountJournal);
+end
+
+function MountJournal_ClearAllSources()
+	local numSources = C_PetJournal.GetNumPetSources();
+	for i=1,numSources do
+		MountJournal.filterTypes[i] = false
+	end
+	MountJournal_DirtyList(MountJournal);
+end
+
+function MountJournal_IsSourceNotFiltered(sourceType)
+	if ( not MountJournal.filterTypes or (sourceType == 0) ) then
+		return true;
+	end
+	return MountJournal.filterTypes[sourceType]
+end
+
+function MountJournal_SetSourceFilter(sourceType,value)
+	MountJournal.filterTypes[sourceType] = value;
+	MountJournal_DirtyList(MountJournal);
+end
+
 function MountJournalMountButton_OnClick(self)
 	local index = MountJournal_FindSelectedIndex();
 	if ( index ) then
-		local creatureID, creatureName, spellID, icon, active = GetCompanionInfo("MOUNT", index);
+		local creatureName, spellID, icon, active = MountJournal_GetMountInfo(index);
 		if ( active ) then
-			DismissCompanion("MOUNT");
+			MountJournal_Dismiss();
 		else
-			CallCompanion("MOUNT", index);
+			MountJournal_Summon(index);
 		end
 	end
 end
@@ -1953,10 +2150,9 @@ end
 function MountListDragButton_OnClick(self, button)
 	local parent = self:GetParent();
 	if ( button ~= "LeftButton" ) then
-		if ( parent.active ) then
-			DismissCompanion("MOUNT");
-		else
-			CallCompanion("MOUNT", parent.index);
+		local _, _, _, _, _, _, _, _, _, _, isCollected = MountJournal_GetMountInfo(parent.index);
+		if isCollected then
+			MountJournal_ShowMountDropdown(parent.index, self, 0, 0);
 		end
 	elseif ( IsModifiedClick("CHATLINK") ) then
 		local id = parent.spellID;
@@ -1968,16 +2164,15 @@ function MountListDragButton_OnClick(self, button)
 			ChatEdit_InsertLink(spellLink);
 		end
 	else
-		PickupCompanion("MOUNT", parent.index);
+		MountJournal_Pickup(parent.index);
 	end
 end
 
 function MountListItem_OnClick(self, button)
 	if ( button ~= "LeftButton" ) then
-		if ( self.active ) then
-			DismissCompanion("MOUNT");
-		else
-			CallCompanion("MOUNT", self.index);
+		local _, _, _, _, _, _, _, _, _, _, isCollected = MountJournal_GetMountInfo(self.index);
+		if isCollected then
+			MountJournal_ShowMountDropdown(self.index, self, 0, 0);
 		end
 	elseif ( IsModifiedClick("CHATLINK") ) then
 		local id = self.spellID;
@@ -1994,9 +2189,11 @@ function MountListItem_OnClick(self, button)
 end
 
 function MountJournal_OnSearchTextChanged(self)
+	SearchBoxTemplate_OnTextChanged(self);
+
 	local text = self:GetText();
 	local oldText = MountJournal.searchString;
-	if ( text == "" or text == SEARCH ) then
+	if ( text == "" ) then
 		MountJournal.searchString = nil;
 	else
 		MountJournal.searchString = string.lower(text);
@@ -2005,5 +2202,624 @@ function MountJournal_OnSearchTextChanged(self)
 	if ( oldText ~= MountJournal.searchString ) then
 		MountJournal_DirtyList(MountJournal);
 		MountJournal_UpdateMountList(MountJournal);
+	end
+end
+
+function MountJournalFilterDropDown_OnLoad(self)
+	UIDropDownMenu_Initialize(self, MountJournalFilterDropDown_Initialize, "MENU");
+end
+
+function MountJournalFilterDropDown_Initialize(self, level)
+	local info = UIDropDownMenu_CreateInfo();
+	info.keepShownOnClick = true;	
+
+	if level == 1 then
+		info.text = COLLECTED
+		info.func = function(_, _, _, value)
+						MountJournal_SetCollectedFilterSetting(LE_MOUNT_JOURNAL_FILTER_COLLECTED,value);
+						MountJournal_UpdateMountList();
+					end 
+		info.checked = MountJournal_GetCollectedFilterSetting(LE_MOUNT_JOURNAL_FILTER_COLLECTED);
+		info.isNotRadio = true;
+		UIDropDownMenu_AddButton(info, level)
+
+		info.text = NOT_COLLECTED
+		info.func = function(_, _, _, value)
+						MountJournal_SetCollectedFilterSetting(LE_MOUNT_JOURNAL_FILTER_NOT_COLLECTED,value);
+						MountJournal_UpdateMountList();
+					end 
+		info.checked = MountJournal_GetCollectedFilterSetting(LE_MOUNT_JOURNAL_FILTER_NOT_COLLECTED);
+		info.isNotRadio = true;
+		UIDropDownMenu_AddButton(info, level)
+	
+		info.checked = 	nil;
+		info.isNotRadio = nil;
+		info.func =  nil;
+		info.hasArrow = true;
+		info.notCheckable = true;
+		
+		info.text = SOURCES;
+		info.value = 1;
+		UIDropDownMenu_AddButton(info, level)
+	else --if level == 2 then
+		info.hasArrow = false;
+		info.isNotRadio = true;
+		info.notCheckable = true;
+			
+		info.text = CHECK_ALL
+		info.func = function()
+						MountJournal_AddAllSources();
+						UIDropDownMenu_Refresh(MountJournalFilterDropDown, 1, 2);
+						MountJournal_UpdateMountList();
+					end
+		UIDropDownMenu_AddButton(info, level)
+		
+		info.text = UNCHECK_ALL
+		info.func = function()
+						MountJournal_ClearAllSources();
+						UIDropDownMenu_Refresh(MountJournalFilterDropDown, 1, 2);
+						MountJournal_UpdateMountList();
+					end
+		UIDropDownMenu_AddButton(info, level)
+
+		info.notCheckable = false;
+		MountJournal_CollectAvailableFilters();
+		local numSources = C_PetJournal.GetNumPetSources();
+		for i=1,numSources do
+			if ( MountJournal.baseFilterTypes[i] ) then
+				info.text = _G["BATTLE_PET_SOURCE_"..i];
+				info.func = function(_, _, _, value)
+								MountJournal_SetSourceFilter(i,value);
+								MountJournal_UpdateMountList();
+							end
+				info.checked = function() return MountJournal_IsSourceNotFiltered(i) end;
+				UIDropDownMenu_AddButton(info, level);
+			end
+		end
+	end
+end
+
+function MountJournalSummonRandomFavoriteButton_OnLoad(self)
+	self.spellID = SUMMON_RANDOM_FAVORITE_MOUNT_SPELL;
+	local spellName, spellSubname, spellIcon = GetSpellInfo(self.spellID);
+	self.texture:SetTexture(spellIcon);
+	-- Use the global string instead of the spellName from the db here so that we can have custom newlines in the string
+	self.spellname:SetText(MOUNT_JOURNAL_SUMMON_RANDOM_FAVORITE_MOUNT);
+	self:RegisterForDrag("LeftButton");
+end
+
+function MountJournalSummonRandomFavoriteButton_OnClick(self)
+	MountJournal_Summon(0);
+end
+
+function MountJournalSummonRandomFavoriteButton_OnDragStart(self)
+	MountJournal_Pickup(0);
+end
+
+function MountJournalSummonRandomFavoriteButton_OnEnter(self)
+	GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+	GameTooltip:SetMountBySpellID(self.spellID);
+end
+
+function MountOptionsMenu_Init(self, level)
+	local info = UIDropDownMenu_CreateInfo();
+	info.notCheckable = true;
+		
+	info.text = BATTLE_PET_SUMMON;
+	info.func = function() MountJournal_Summon(MountJournal.menuMountID) end
+	if (MountJournal.menuMountID and MountJournal.active) then
+		info.text = PET_DISMISS;
+		info.func = function() MountJournal_Dismiss() end
+	end
+	if ( MountJournal.menuMountID and MountJournal.menuIsUsable ) then
+		info.disabled = false;
+	else
+		info.disabled = true;
+	end
+	UIDropDownMenu_AddButton(info, level);
+	info.disabled = nil;
+
+	local canFavorite = false;
+	local isFavorite = false;
+	if (MountJournal.menuMountID) then
+		 isFavorite, canFavorite = MountJournal_GetIsFavorite(MountJournal.menuMountID);
+	end
+
+	if (isFavorite) then
+		info.text = BATTLE_PET_UNFAVORITE;
+		info.func = function() 
+			MountJournal_SetIsFavorite(MountJournal.menuMountID, false);
+		end
+	else
+		info.text = BATTLE_PET_FAVORITE;
+		info.func = function() 
+			MountJournal_SetIsFavorite(MountJournal.menuMountID, true); 
+		end
+	end
+
+	if (canFavorite) then
+		info.disabled = false;
+	else
+		info.disabled = true;
+	end
+
+	UIDropDownMenu_AddButton(info, level);
+	info.disabled = nil;
+	
+	info.text = CANCEL
+	info.func = nil
+	UIDropDownMenu_AddButton(info, level)
+end
+
+function MountJournal_ShowMountDropdown(index, anchorTo, offsetX, offsetY)
+	if (index) then
+		MountJournal.menuMountID = index;
+		local active, isUsable = select(4, MountJournal_GetMountInfo(index));
+		MountJournal.active = active;
+		MountJournal.menuIsUsable = isUsable;
+	else
+		return;
+	end
+	ToggleDropDownMenu(1, nil, MountJournal.mountOptionsMenu, anchorTo, offsetX, offsetY);
+end
+
+function MountJournal_HideMountDropdown()
+	if (UIDropDownMenu_GetCurrentDropDown() == MountJournal.mountOptionsMenu) then
+		HideDropDownMenu(1);
+	end
+end
+
+function ToyBox_OnLoad(self)
+	ToyBox.currentPage = 1;
+	ToyBox.firstCollectedToyID = 0; -- used to track which toy gets the favorite helpbox
+	ToyBox.newToys = {};
+
+	ToyBox_UpdatePages();
+	ToyBox_UpdateProgressBar();
+
+	UIDropDownMenu_Initialize(self.toyOptionsMenu, ToyBoxOptionsMenu_Init, "MENU");
+
+	self:RegisterEvent("TOYS_UPDATED");
+end
+
+function ToyBox_OnHide(self)
+end
+
+function ToyBox_OnEvent(self, event, itemID, new)
+	if ( event == "TOYS_UPDATED" ) then		
+		ToyBox_UpdatePages();
+		ToyBox_UpdateProgressBar();
+		ToyBox_UpdateButtons();
+
+		-- if this is the first toy we've ever collected, show the UI alert
+		if(C_ToyBox.GetNumLearnedDisplayedToys() <= 1 and new == 1) then			
+			ToyBoxMicroButtonAlert:Show();			
+			PetJournalParent_SetTab(PetJournalParent, 3);
+		end
+
+		if (new == 1) then
+			ToyBox.newToys[itemID] = 1;
+		end
+	end
+end
+
+function ToyBox_OnShow(self)
+	if(C_ToyBox.HasFavorites()) then 
+		SetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_TOYBOX_FAVORITE, true);
+		ToyBoxFavoriteHelpBox:Hide();
+	end
+
+	SetPortraitToTexture(PetJournalParentPortrait,"Interface\\Icons\\Trade_Archaeology_ChestofTinyGlassAnimals");	
+	C_ToyBox.FilterToys();
+	ToyBox_UpdatePages();	
+	ToyBox_UpdateProgressBar();
+	ToyBox_UpdateButtons();
+	ToyBoxMicroButtonAlert:Hide();
+end
+
+function ToyBox_OnMouseWheel(self, value, scrollBar)
+	SetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_TOYBOX_MOUSEWHEEL_PAGING, true);
+	ToyBoxMousewheelPagingHelpBox:Hide();
+	if(value > 0) then
+		ToyBoxPrevPageButton_OnClick()		
+	else
+		ToyBoxNextPageButton_OnClick()
+	end
+end
+
+function ToyBoxOptionsMenu_Init(self, level)
+	local info = UIDropDownMenu_CreateInfo();
+	info.notCheckable = true;
+	info.disabled = nil;
+
+	local isFavorite = ToyBox.menuItemID and C_ToyBox.GetIsFavorite(ToyBox.menuItemID);
+
+	if (isFavorite) then
+		info.text = BATTLE_PET_UNFAVORITE;
+		info.func = function() 
+			C_ToyBox.SetIsFavorite(ToyBox.menuItemID, false);
+		end
+	else
+		info.text = BATTLE_PET_FAVORITE;
+		info.func = function() 
+			C_ToyBox.SetIsFavorite(ToyBox.menuItemID, true);
+			SetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_TOYBOX_FAVORITE, true);
+			ToyBoxFavoriteHelpBox:Hide();
+		end
+	end
+
+	UIDropDownMenu_AddButton(info, level);
+	info.disabled = nil;
+	
+	info.text = CANCEL
+	info.func = nil
+	UIDropDownMenu_AddButton(info, level)
+end
+
+function ToyBox_ShowToyDropdown(itemID, anchorTo, offsetX, offsetY)	
+	ToyBox.menuItemID = itemID;
+	ToggleDropDownMenu(1, nil, ToyBox.toyOptionsMenu, anchorTo, offsetX, offsetY);
+end
+
+function ToyBox_HideToyDropdown()
+	if (UIDropDownMenu_GetCurrentDropDown() == ToyBox.toyOptionsMenu) then
+		HideDropDownMenu(1);
+	end
+end
+
+function ToySpellButton_OnLoad(self) 
+	self:RegisterForDrag("LeftButton");
+	self:RegisterForClicks("LeftButtonUp", "RightButtonUp");
+end
+
+function ToySpellButton_OnEvent(self, event, ...)
+	if ( event == "SPELLS_CHANGED" or event == "UPDATE_SHAPESHIFT_FORM" ) then
+		ToySpellButton_UpdateButton(self);
+	elseif ( event == "SPELL_UPDATE_COOLDOWN" ) then
+		ToySpellButton_UpdateCooldown(self);
+		-- Update tooltip
+		if ( GameTooltip:GetOwner() == self ) then
+			ToySpellButton_OnEnter(self);
+		end
+	elseif (event == "TOYS_UPDATED") then
+		ToySpellButton_UpdateButton(self);
+	end
+end
+
+function ToySpellButton_OnShow(self)
+	self:RegisterEvent("SPELLS_CHANGED");
+	self:RegisterEvent("SPELL_UPDATE_COOLDOWN");
+	self:RegisterEvent("UPDATE_SHAPESHIFT_FORM");
+	self:RegisterEvent("TOYS_UPDATED");
+
+	ToySpellButton_UpdateButton(self);
+end
+
+function ToySpellButton_OnHide(self)
+	self:UnregisterEvent("SPELLS_CHANGED");
+	self:UnregisterEvent("SPELL_UPDATE_COOLDOWN");
+	self:UnregisterEvent("UPDATE_SHAPESHIFT_FORM");
+	self:UnregisterEvent("TOYS_UPDATED");	
+end
+
+function ToySpellButton_OnEnter(self)
+	GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+	if ( GameTooltip:SetToyByItemID(self.itemID) ) then
+		self.UpdateTooltip = ToySpellButton_OnEnter;
+	else
+		self.UpdateTooltip = nil;
+	end
+
+	if(ToyBox.newToys[self.itemID] ~= nil) then
+		ToyBox.newToys[self.itemID] = nil;
+		ToySpellButton_UpdateButton(self);
+	end
+end
+
+function ToySpellButton_OnClick(self, button)
+	if ( button ~= "LeftButton" ) then
+		if (PlayerHasToy(self.itemID)) then
+			ToyBox_ShowToyDropdown(self.itemID, self, 0, 0);
+		end
+	else
+		UseToy(self.itemID);
+	end
+end
+
+function ToySpellButton_OnModifiedClick(self, button) 
+	if ( IsModifiedClick("CHATLINK") ) then
+		local itemLink = C_ToyBox.GetToyLink(self.itemID);
+		if ( itemLink ) then
+			ChatEdit_InsertLink(itemLink);
+		end
+	end
+end
+
+function ToySpellButton_OnDrag(self) 	
+	C_ToyBox.PickupToyBoxItem(self.itemID);
+end
+
+function ToySpellButton_UpdateCooldown(self)
+	if (self.itemID == -1 or self.itemID == nil) then
+		return;
+	end
+
+	local cooldown = self.cooldown;
+	local start, duration, enable = GetItemCooldown(self.itemID);
+	if (cooldown and start and duration) then
+		if (enable) then
+			cooldown:Hide();
+		else
+			cooldown:Show();
+		end
+		CooldownFrame_SetTimer(cooldown, start, duration, enable);
+	else
+		cooldown:Hide();
+	end
+end
+
+function ToySpellButton_UpdateButton(self)
+
+	local itemIndex = (ToyBox_GetCurrentPage() - 1) * TOYS_PER_PAGE + self:GetID();
+	self.itemID = C_ToyBox.GetToyFromIndex(itemIndex);
+
+	local name = self:GetName();
+	local toyString = _G[name.."ToyName"];
+	local toyNewString = _G[name.."ToyNew"];
+	local toyNewGlow = _G[name.."ToyNewGlow"];
+	local iconTexture = _G[name.."IconTexture"];
+	local iconTextureUncollected = _G[name.."IconTextureUncollected"];
+	local slotFrameCollected = _G[name.."SlotFrameCollected"];
+	local slotFrameUncollected = _G[name.."SlotFrameUncollected"];
+	local slotFrameUncollectedInnerGlow = _G[name.."SlotFrameUncollectedInnerGlow"];
+	local iconFavoriteTexture = _G[name.."CooldownWrapperSlotFavorite"];
+
+	if (self.itemID == -1) then	
+		self:Hide();		
+		return;
+	end
+
+	self:Show();
+
+	local itemID, toyName, icon = C_ToyBox.GetToyInfo(self.itemID);
+
+	if (itemID == nil) then
+		return;
+	end
+
+	if string.len(toyName) == 0 then
+		toyName = itemID;
+	end
+
+	iconTexture:SetTexture(icon);
+	iconTextureUncollected:SetTexture(icon);
+	iconTextureUncollected:SetDesaturated(true);
+	slotFrameUncollectedInnerGlow:SetAlpha(0.18);
+	iconTextureUncollected:SetAlpha(0.18);
+	toyString:SetText(toyName);	
+	toyString:Show();
+
+	if (ToyBox.newToys[self.itemID] ~= nil) then
+		toyNewString:Show();
+		toyNewGlow:Show();
+	else
+		toyNewString:Hide();
+		toyNewGlow:Hide();
+	end
+
+	if (C_ToyBox.GetIsFavorite(itemID)) then
+		iconFavoriteTexture:Show();
+	else
+		iconFavoriteTexture:Hide();
+	end
+
+	if (PlayerHasToy(self.itemID)) then
+		iconTexture:Show();
+		iconTextureUncollected:Hide();
+		toyString:SetTextColor(1, 0.82, 0, 1);
+		toyString:SetShadowColor(0, 0, 0, 1);
+		slotFrameCollected:Show();
+		slotFrameUncollected:Hide();
+		slotFrameUncollectedInnerGlow:Hide();
+
+		if(ToyBox.firstCollectedToyID == 0) then
+			ToyBox.firstCollectedToyID = self.itemID;
+		end
+
+		if (ToyBox.firstCollectedToyID == self.itemID and not ToyBoxFavoriteHelpBox:IsVisible() and not GetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_TOYBOX_FAVORITE)) then
+			ToyBoxFavoriteHelpBox:Show();
+			ToyBoxFavoriteHelpBox:SetPoint("TOPLEFT", self, "BOTTOMLEFT", -5, -20);
+		end
+	else
+		iconTexture:Hide();
+		iconTextureUncollected:Show();
+		toyString:SetTextColor(0.33, 0.27, 0.20, 1);
+		toyString:SetShadowColor(0, 0, 0, 0.33);
+		slotFrameCollected:Hide();
+		slotFrameUncollected:Show();		
+		slotFrameUncollectedInnerGlow:Show();
+	end
+
+	ToySpellButton_UpdateCooldown(self);
+end
+
+function ToyBox_GetCurrentPage()
+	if (ToyBox.currentPage == nil) then ToyBox.currentPage = 1 end;
+
+	return ToyBox.currentPage;
+end
+
+function ToyBox_UpdateButtons()
+	ToyBoxFavoriteHelpBox:Hide();
+	for i = 1,TOYS_PER_PAGE do
+	    local button = _G["ToySpellButton"..i];
+		ToySpellButton_UpdateButton(button);
+	end	
+end
+
+function ToyBox_UpdatePages()
+
+	local maxPages = 1 + math.floor( math.max((C_ToyBox.GetNumFilteredToys() - 1), 0)/ TOYS_PER_PAGE);
+	if ( maxPages == nil or maxPages == 0 ) then
+		return;
+	end
+	if ( ToyBox.currentPage > maxPages ) then
+		ToyBox.currentPage = maxPages;
+		if ( ToyBox.currentPage == 1 ) then
+			ToyBoxPrevPageButton:Disable();
+		else
+			ToyBoxPrevPageButton:Enable();
+		end
+		if ( ToyBox.currentPage == maxPages ) then
+			ToyBoxNextPageButton:Disable();
+		else
+			ToyBoxNextPageButton:Enable();
+		end
+	end
+	if ( ToyBox.currentPage == 1 ) then
+		ToyBoxPrevPageButton:Disable();
+	else
+		ToyBoxPrevPageButton:Enable();
+	end
+	if ( ToyBox.currentPage == maxPages ) then
+		ToyBoxNextPageButton:Disable();
+	else
+		ToyBoxNextPageButton:Enable();
+	end
+
+	ToyBoxPageText:SetFormattedText(COLLECTION_PAGE_NUMBER, ToyBox.currentPage, maxPages);
+end
+
+function ToyBox_UpdateProgressBar()
+	local maxProgress = C_ToyBox.GetNumTotalDisplayedToys();
+	local currentProgress = C_ToyBox.GetNumLearnedDisplayedToys();
+
+	ToyBoxProgressBar:SetMinMaxValues(0, maxProgress);
+	ToyBoxProgressBar:SetValue(currentProgress);
+
+	ToyBoxProgressBar.text:SetFormattedText(TOY_PROGRESS_FORMAT, currentProgress, maxProgress);
+end
+
+function ToyBoxPrevPageButton_OnClick()
+	if (ToyBox.currentPage > 1) then
+		PlaySound("igAbiliityPageTurn");
+		ToyBox.currentPage = math.max(1, ToyBox.currentPage - 1);
+		ToyBox_UpdatePages();
+		ToyBox_UpdateButtons();
+	end
+end
+
+function ToyBoxNextPageButton_OnClick()
+	local maxPages = 1 + math.floor( math.max((C_ToyBox.GetNumFilteredToys() - 1), 0)/ TOYS_PER_PAGE);
+	if (ToyBox.currentPage < maxPages) then
+		-- show the mousewheel tip after the player's advanced a few pages
+		if(ToyBox.currentPage > 2) then
+			if(not GetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_TOYBOX_MOUSEWHEEL_PAGING) and GetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_TOYBOX_FAVORITE)) then
+				ToyBoxMousewheelPagingHelpBox:Show();
+			end
+		end
+
+		PlaySound("igAbiliityPageTurn");
+		ToyBox.currentPage = ToyBox.currentPage + 1;
+		ToyBox_UpdatePages();
+		ToyBox_UpdateButtons();
+	end
+end
+
+function ToyBox_OnSearchTextChanged(self)
+	SearchBoxTemplate_OnTextChanged(self);
+	local oldText = ToyBox.searchString;
+	ToyBox.searchString = self:GetText();
+
+	if ( oldText ~= ToyBox.searchString ) then		
+		ToyBox.firstCollectedToyID = 0;
+		C_ToyBox.SetFilterString(ToyBox.searchString);
+		ToyBox_UpdatePages();
+		ToyBox_UpdateButtons();
+	end
+end
+
+function ToyBoxFilterDropDown_OnLoad(self)
+	UIDropDownMenu_Initialize(self, ToyBoxFilterDropDown_Initialize, "MENU");
+end
+
+function ToyBoxFilterDropDown_Initialize(self, level)
+	local info = UIDropDownMenu_CreateInfo();
+	info.keepShownOnClick = true;	
+
+	if level == 1 then
+		info.text = COLLECTED
+		info.func = function(_, _, _, value)
+						ToyBox.firstCollectedToyID = 0;
+						C_ToyBox.SetFilterCollected(value);
+						ToyBox_UpdatePages();
+						ToyBox_UpdateButtons();
+					end 
+		info.checked = C_ToyBox.GetFilterCollected();
+		info.isNotRadio = true;
+		UIDropDownMenu_AddButton(info, level)
+
+		info.text = NOT_COLLECTED
+		info.func = function(_, _, _, value)
+						ToyBox.firstCollectedToyID = 0;
+						C_ToyBox.SetFilterUncollected(value);
+						ToyBox_UpdatePages();
+						ToyBox_UpdateButtons();
+					end 
+		info.checked = C_ToyBox.GetFilterUncollected();
+		info.isNotRadio = true;
+		UIDropDownMenu_AddButton(info, level)
+
+		info.checked = 	nil;
+		info.isNotRadio = nil;
+		info.func =  nil;
+		info.hasArrow = true;
+		info.notCheckable = true;
+
+		info.text = SOURCES
+		info.value = 1;
+		UIDropDownMenu_AddButton(info, level)
+	else
+		if UIDROPDOWNMENU_MENU_VALUE == 1 then
+			info.hasArrow = false;
+			info.isNotRadio = true;
+			info.notCheckable = true;				
+		
+			info.text = CHECK_ALL
+			info.func = function()
+							ToyBox.firstCollectedToyID = 0;
+							C_ToyBox.ClearAllSourceTypesFiltered();
+							UIDropDownMenu_Refresh(ToyBoxFilterDropDown, 1, 2);
+							ToyBox_UpdatePages();
+							ToyBox_UpdateButtons();
+						end
+			UIDropDownMenu_AddButton(info, level)
+			
+			info.text = UNCHECK_ALL
+			info.func = function()
+							ToyBox.firstCollectedToyID = 0;
+							C_ToyBox.SetAllSourceTypesFiltered();
+							UIDropDownMenu_Refresh(ToyBoxFilterDropDown, 1, 2);
+							ToyBox_UpdatePages();
+							ToyBox_UpdateButtons();
+						end
+			UIDropDownMenu_AddButton(info, level)
+		
+			info.notCheckable = false;
+			local numSources = C_PetJournal.GetNumPetSources();
+			for i=1,numSources do
+				if (i == 1 or i == 2 or i == 3 or i == 4 or i == 7 or i == 8) then -- Drop/Quest/Vendor/Profession/WorldEvent/Promotion
+					info.text = _G["BATTLE_PET_SOURCE_"..i];
+					info.func = function(_, _, _, value)
+								ToyBox.firstCollectedToyID = 0;
+								C_ToyBox.SetFilterSourceType(i, value);
+								ToyBox_UpdatePages();
+								ToyBox_UpdateButtons();
+							end
+					info.checked = function() return not C_ToyBox.IsSourceTypeFiltered(i) end;
+					UIDropDownMenu_AddButton(info, level);
+				end
+			end
+		end
 	end
 end

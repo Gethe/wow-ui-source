@@ -53,6 +53,7 @@ COMBAT_TEXT_TYPE_INFO["SPELL_RESIST"] = {r = 0.79, g = 0.3, b = 0.85, var = "COM
 COMBAT_TEXT_TYPE_INFO["SPELL_BLOCK"] = {r = 1, g = 1, b = 1, var = "COMBAT_TEXT_SHOW_RESISTANCES"};
 COMBAT_TEXT_TYPE_INFO["SPELL_ABSORB"] = {r = 0.79, g = 0.3, b = 0.85, var = "COMBAT_TEXT_SHOW_RESISTANCES"};
 COMBAT_TEXT_TYPE_INFO["PERIODIC_HEAL"] = {r = 0.1, g = 1, b = 0.1, show = 1};
+COMBAT_TEXT_TYPE_INFO["PERIODIC_HEAL_CRIT"] = {r = 0.1, g = 1, b = 0.1, show = 1};
 COMBAT_TEXT_TYPE_INFO["ENERGIZE"] = {r = 0.1, g = 0.1, b = 1, var = "COMBAT_TEXT_SHOW_ENERGIZE"};
 COMBAT_TEXT_TYPE_INFO["PERIODIC_ENERGIZE"] = {r = 0.1, g = 0.1, b = 1, var = "COMBAT_TEXT_SHOW_PERIODIC_ENERGIZE"};
 COMBAT_TEXT_TYPE_INFO["SPELL_CAST"] = {r = 0.1, g = 1, b = 0.1, show = 1};
@@ -235,7 +236,7 @@ function CombatText_OnEvent(self, event, ...)
 		else
 			message = "+"..BreakUpLargeNumbers(arg3).." "..format(ABSORB_TRAILER, arg4);
 		end
-	elseif ( messageType == "HEAL_CRIT" ) then
+	elseif ( messageType == "HEAL_CRIT" or messageType == "PERIODIC_HEAL_CRIT" ) then
 		displayType = "crit";
 		if ( COMBAT_TEXT_SHOW_FRIENDLY_NAMES == "1" and UnitName(self.unit) ~= data ) then
 			message = "+"..BreakUpLargeNumbers(arg3).." ["..data.."]";
@@ -260,7 +261,8 @@ function CombatText_OnEvent(self, event, ...)
 			or arg3 == "ENERGY"
 			or arg3 == "RUNIC_POWER"
 			or arg3 == "SOUL_SHARDS"
-			or arg3 == "CHI" ) then
+			or arg3 == "CHI"
+			or arg3 == "DEMONIC_FURY") then
 			message = data.." ".._G[arg3];
 			info = PowerBarColor[arg3];
 		elseif ( arg3 == "HOLY_POWER" ) then

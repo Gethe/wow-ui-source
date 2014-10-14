@@ -321,6 +321,7 @@ function CompactUnitFrameProfiles_GetAutoActivationState()
 	return true, numPlayers, profileType, enemyType;
 end
 
+local checkAutoActivationTimer;
 function CompactUnitFrameProfiles_CheckAutoActivation()
 	--We only want to adjust the profile when you 1) Zone or 2) change specs. We don't want to automatically
 	--change the profile when you are in the uninstanced world.
@@ -332,11 +333,17 @@ function CompactUnitFrameProfiles_CheckAutoActivation()
 	local success, numPlayers, activationType, enemyType = CompactUnitFrameProfiles_GetAutoActivationState();
 	
 	if ( not success ) then
-		--We didn't have all the relevent info yet. Update again soon.
-		AnimTimerFrameUpdateActiveRaidProfileGroup:Play();
+		--We didn't have all the relevant info yet. Update again soon.
+		if ( checkAutoActivationTimer ) then
+			checkAutoActivationTimer:Cancel();
+		end
+		checkAutoActivationTimer = C_Timer.NewTimer(3, CompactUnitFrameProfiles_CheckAutoActivation);
 		return;
 	else
-		AnimTimerFrameUpdateActiveRaidProfileGroup:Stop();
+		if ( checkAutoActivationTimer ) then
+			checkAutoActivationTimer:Cancel();
+			checkAutoActivationTimer = nil;
+		end
 	end
 		
 	local spec = GetActiveSpecGroup();
@@ -531,7 +538,7 @@ function CompactUnitFrameProfilesCheckButton_OnClick(self, button)
 	else
 		PlaySound("igMainMenuOptionCheckBoxOff");
 	end
-	SetRaidProfileOption(CompactUnitFrameProfiles.selectedProfile, self.optionName, not not self:GetChecked());
+	SetRaidProfileOption(CompactUnitFrameProfiles.selectedProfile, self.optionName, self:GetChecked());
 	CompactUnitFrameProfiles_ApplyCurrentSettings();
 	CompactUnitFrameProfiles_UpdateCurrentPanel();
 end

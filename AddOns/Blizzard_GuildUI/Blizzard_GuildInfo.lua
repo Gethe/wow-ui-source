@@ -163,8 +163,9 @@ function GuildInfoFrame_UpdateChallenges()
 	local numChallenges = GetNumGuildChallenges();
 	for i = 1, numChallenges do
 		local index, current, max = GetGuildChallengeInfo(i);
-		local frame = _G["GuildInfoFrameInfoChallenge"..i];
+		local frame = _G["GuildInfoFrameInfoChallenge"..index];
 		if ( frame ) then
+			frame.dataIndex = i;
 			if ( current == max ) then
 				frame.count:Hide();
 				frame.check:Show();
@@ -195,19 +196,19 @@ function GuildInfoFrameRecruitment_OnLoad(self)
 	GuildRecruitmentCommentFrame:SetHeight(72);
 	
 	-- defaults until data is retrieved
-	GuildRecruitmentLevelAnyButton:SetChecked(1);
+	GuildRecruitmentLevelAnyButton:SetChecked(true);
 	GuildRecruitmentListGuildButton:Disable();
 end
 
 function GuildRecruitmentLevelButton_OnClick(index, userClick)
 	local param;
 	if ( index == 1 ) then
-		GuildRecruitmentLevelAnyButton:SetChecked(1);
-		GuildRecruitmentLevelMaxButton:SetChecked(nil);
+		GuildRecruitmentLevelAnyButton:SetChecked(true);
+		GuildRecruitmentLevelMaxButton:SetChecked(false);
 		param = LFGUILD_PARAM_ANY_LEVEL;
 	elseif ( index == 2 ) then
-		GuildRecruitmentLevelAnyButton:SetChecked(nil);
-		GuildRecruitmentLevelMaxButton:SetChecked(1);
+		GuildRecruitmentLevelAnyButton:SetChecked(false);
+		GuildRecruitmentLevelMaxButton:SetChecked(true);
 		param = LFGUILD_PARAM_MAX_LEVEL;
 	end
 	if ( userClick ) then
@@ -273,7 +274,7 @@ function GuildRecruitmentCheckButton_OnEnter(self)
 	if ( interestType ) then
 		GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
 		GameTooltip:SetText(_G["GUILD_INTEREST_"..interestType]);
-		GameTooltip:AddLine(_G["GUILD_INTEREST_"..interestType.."_TOOLTIP"], 1, 1, 1, 1, 1);
+		GameTooltip:AddLine(_G["GUILD_INTEREST_"..interestType.."_TOOLTIP"], 1, 1, 1, true);
 		GameTooltip:Show();
 	end
 end
@@ -435,12 +436,12 @@ function GuildRecruitmentApplicant_ShowTooltip(self)
 	if ( bRaid ) then buf = buf.."\n"..QUEST_DASH..GUILD_INTEREST_RAID; end
 	if ( bPvP ) then buf = buf.."\n"..QUEST_DASH..GUILD_INTEREST_PVP; end
 	if ( bRP ) then buf = buf.."\n"..QUEST_DASH..GUILD_INTEREST_RP; end	
-	GameTooltip:AddLine(GUILD_INTEREST..HIGHLIGHT_FONT_COLOR_CODE..buf);
+	GameTooltip:AddLine(GUILD_INTEREST..HIGHLIGHT_FONT_COLOR_CODE..buf..FONT_COLOR_CODE_CLOSE);
 	-- availability
 	buf = "";
 	if ( bWeekdays ) then buf = buf.."\n"..QUEST_DASH..GUILD_AVAILABILITY_WEEKDAYS; end
 	if ( bWeekends ) then buf = buf.."\n"..QUEST_DASH..GUILD_AVAILABILITY_WEEKENDS; end
-	GameTooltip:AddLine(GUILD_AVAILABILITY..HIGHLIGHT_FONT_COLOR_CODE..buf);
+	GameTooltip:AddLine(GUILD_AVAILABILITY..HIGHLIGHT_FONT_COLOR_CODE..buf..FONT_COLOR_CODE_CLOSE);
 	
 	GameTooltip:Show();
 end

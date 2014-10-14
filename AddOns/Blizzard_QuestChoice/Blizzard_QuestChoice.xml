@@ -250,12 +250,6 @@ size=512,512
 						<Anchor point="TOP" y="14"/>
 					</Anchors>
 				</Texture>
-				<FontString parentKey="OptionText" inherits="GameFontBlack" justifyH="LEFT" justifyV="TOP">
-					<Size x="200" y="0"/>
-					<Anchors>
-						<Anchor point="TOP" y="-103"/>
-					</Anchors>
-				</FontString>
 			</Layer>
 		</Layers>
 		<Frames>
@@ -264,15 +258,16 @@ size=512,512
 				<Anchors>
 					<Anchor point="BOTTOM"/>
 				</Anchors>
+				<ButtonText name="$parentText" parentKey="Text">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="4" y="0"/>
+						<Anchor point="BOTTOMRIGHT" x="-4" y="0"/>
+					</Anchors>
+				</ButtonText>
 				<Scripts>
-					<OnClick>
-						PlaySound("igMainMenuOptionCheckBoxOn");
-						local parent = self:GetParent();
-						if (parent.optID) then
-							SendQuestChoiceResponse(parent.optID);
-							HideUIPanel(QuestChoiceFrame);
-						end
-					</OnClick>
+					<OnClick function="QuestChoiceFrameOptionButton_OnClick"/>
+					<OnEnter function="QuestChoiceFrameOptionButton_OnEnter"/>
+					<OnLeave function="QuestChoiceFrameOptionButton_OnLeave"/>
 				</Scripts>
 			</Button>
 			<Frame parentKey="Rewards" inherits="QuestChoiceRewardsTemplate">
@@ -280,11 +275,25 @@ size=512,512
 					<Anchor point="BOTTOM" relativeKey="$parent.OptionButton" relativePoint="TOP" y="5"/>
 				</Anchors>
 			</Frame>
+			<SimpleHTML parentKey="OptionText">
+				<Size x="200" y="140"/>
+				<Anchors>
+					<Anchor point="TOP" y="-103"/>
+				</Anchors>
+				<Scripts>
+					<OnHyperlinkClick>
+						SetItemRef(link, text, button, self);
+					</OnHyperlinkClick>
+					<OnHyperlinkEnter function="QuestChoiceFrame_OnHyperlinkEnter"/>
+					<OnHyperlinkLeave function="GameTooltip_Hide"/>
+				</Scripts>
+				<FontString inherits="GameFontBlack" justifyH="LEFT" justifyV="TOP"/>
+			</SimpleHTML>
 		</Frames>
 	</Button>
 	
 	<Frame name="QuestChoiceFrame" frameStrata="HIGH" hidden="true" enableMouse="true" parent="UIParent" toplevel="true">
-		<Size x="523" y="440"/>
+		<Size x="600" y="480"/>
 		<Anchors>
 			<Anchor point="CENTER" />
 		</Anchors>
@@ -435,12 +444,12 @@ size=512,512
 		<Frames>
 			<Frame name="$parentOption1" parentKey="Option1" inherits="QuestChoiceOptionTemplate">
 				<Anchors>
-					<Anchor point="TOPLEFT" relativeKey="$parent.QuestionFrameLeft" relativePoint="BOTTOMLEFT" x="4" y="0" />
+					<Anchor point="TOPLEFT" relativeKey="$parent.QuestionFrameLeft" relativePoint="BOTTOMLEFT" x="24" y="-20" />
 				</Anchors>
 			</Frame>
 			<Frame name="$parentOption2" parentKey="Option2" inherits="QuestChoiceOptionTemplate">
 				<Anchors>
-					<Anchor point="TOPLEFT" relativeKey="$parent.Option1" relativePoint="TOPRIGHT" x="10" />
+					<Anchor point="TOPLEFT" relativeKey="$parent.Option1" relativePoint="TOPRIGHT" x="47" />
 				</Anchors>
 			</Frame>
 			<Button parentKey="CloseButton" inherits="UIPanelCloseButton">
@@ -454,6 +463,7 @@ size=512,512
 				self:RegisterEvent("QUEST_CHOICE_UPDATE");
 				self:RegisterEvent("PLAYER_ENTERING_WORLD");
 				self:RegisterEvent("PLAYER_DEAD");
+				self:RegisterEvent("QUEST_CHOICE_CLOSE");
 				QuestChoiceFrame_Update(self);
 			</OnLoad>
 			<OnEvent function="QuestChoiceFrame_OnEvent"/>
@@ -462,6 +472,8 @@ size=512,512
 			</OnShow>
 			<OnHide>
 				PlaySound("igQuestListClose");
+				CloseQuestChoice();
+				StaticPopup_Hide("CONFIRM_GORGROND_GARRISON_CHOICE");
 			</OnHide>
 		</Scripts>
 	</Frame>

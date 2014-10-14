@@ -45,14 +45,14 @@
 			<OnEnter>
 				<!--Warning: The Leader button overrides this.-->
 				GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
-				GameTooltip:SetText(_G["ROLE_DESCRIPTION"..self:GetID()], nil, nil, nil, nil, 1);
+				GameTooltip:SetText(_G["ROLE_DESCRIPTION"..self:GetID()], nil, nil, nil, nil, true);
 				if ( self.permDisabled ) then
-					GameTooltip:AddLine(YOUR_CLASS_MAY_NOT_PERFORM_ROLE, 1, 0, 0, 1);
+					GameTooltip:AddLine(YOUR_CLASS_MAY_NOT_PERFORM_ROLE, 1, 0, 0, true);
 				end
 				GameTooltip:Show();
 			</OnEnter>
 			<OnClick>
-				if ( self.checkButton:IsEnabled() == 1 ) then
+				if ( self.checkButton:IsEnabled() ) then
 					self.checkButton:Click();
 				end
 			</OnClick>
@@ -126,6 +126,7 @@
 				</Anchors>
 				<Scripts>
 					<OnLoad>
+						self.permDisabledTip = YOUR_CLASS_MAY_NOT_PERFORM_ROLE;
 						self:GetNormalTexture():SetTexCoord(GetTexCoordsForRole("TANK"));
 						self.role = "TANK";
 					</OnLoad>
@@ -144,6 +145,7 @@
 				</Anchors>
 				<Scripts>
 					<OnLoad>
+						self.permDisabledTip = YOUR_CLASS_MAY_NOT_PERFORM_ROLE;
 						self:GetNormalTexture():SetTexCoord(GetTexCoordsForRole("HEALER"));
 						self.role = "HEALER";
 					</OnLoad>
@@ -162,6 +164,7 @@
 				</Anchors>
 				<Scripts>
 					<OnLoad>
+						self.permDisabledTip = YOUR_CLASS_MAY_NOT_PERFORM_ROLE;
 						self:GetNormalTexture():SetTexCoord(GetTexCoordsForRole("DAMAGER"));
 						self.role = "DAMAGER";
 					</OnLoad>

@@ -763,7 +763,7 @@
 										local accountName = GetSavedAccountName();
 										if ( accountName ~= "" and accountName ~= self:GetText() ) then
 											SetSavedAccountName("");
-											AccountLoginSaveAccountName:SetChecked(0);
+											AccountLoginSaveAccountName:SetChecked(false);
 										end
 										if ( self:GetText() ~= "" ) then
 											AccountLoginAccountEditFill:Hide();
@@ -981,9 +981,9 @@
 								<Scripts>
 									<OnLoad>
 										if ( GetSavedAccountName() ~= "" ) then
-											self:SetChecked(1);
+											self:SetChecked(true);
 										else
-											self:SetChecked(0);
+											self:SetChecked(false);
 										end
 									</OnLoad>
 									<OnClick>
@@ -1967,9 +1967,9 @@
 										<Scripts>
 											<OnLoad>
 												if ( GetSavedAccountListSSO() ~= "" ) then
-													self:SetChecked(1);
+													self:SetChecked(true);
 												else
-													self:SetChecked(0);
+													self:SetChecked(false);
 												end
 											</OnLoad>
 											<OnClick>
@@ -2154,7 +2154,7 @@
 						</Anchors>
 						<Scripts>
 							<OnClick>
-								AccountLogin_SurveyNotificationDone(0);
+								AccountLogin_SurveyNotificationDone(false);
 								self:GetParent():Hide();
 							</OnClick>
 							<OnLoad>
@@ -2175,7 +2175,7 @@
 								self:SetWidth(200);
 							</OnLoad>
 							<OnClick>
-								AccountLogin_SurveyNotificationDone(1);
+								AccountLogin_SurveyNotificationDone(true);
 								self:GetParent():Hide();
 							</OnClick>
 						</Scripts>
@@ -2416,19 +2416,17 @@
 		
 		<Layers>
 			<Layer level="OVERLAY">
-				<Texture name="$parentPlayButton" file="Interface\Glues\Common\cinematicbuttons" parentKey="PlayButton">
+				<Texture name="$parentPlayButton" atlas="StreamCinematic-PlayButton" parentKey="PlayButton">
 					<Size x="43" y="43"/>
 					<Anchors>
 						<Anchor point="RIGHT" x="-5" y="1"/>
 					</Anchors>
-					<TexCoords left="0.78515625" right="0.86914063" top="0.00781250" bottom="0.09179688"/>
 				</Texture>
-				<Texture name="$parentDownloadIcon" file="Interface\Glues\Common\cinematicbuttons" parentKey="DownloadIcon">
+				<Texture name="$parentDownloadIcon" atlas="StreamCinematic-DownloadIcon" parentKey="DownloadIcon">
 					<Size x="43" y="43"/>
 					<Anchors>
 						<Anchor point="RIGHT" x="-5" y="1"/>
 					</Anchors>
-					<TexCoords left="0.69726563" right="0.78125000" top="0.00781250" bottom="0.09179688"/>
 				</Texture>
 			</Layer>
 		</Layers>
@@ -2480,13 +2478,12 @@
 				</Anchors>
 				<Layers>
 					<Layer level="BACKGROUND">
-						<Texture name="$parentBg" file="Interface\Glues\Common\cinematicbuttons">
+						<Texture name="$parentBg" atlas="StreamCinematic-ProgressBarBG">
 							<Size x="8" y="4"/>
 							<Anchors>
 								<Anchor point="TOPLEFT" y="1"/>
 								<Anchor point="TOPRIGHT" y="1"/>
 							</Anchors>
-							<TexCoords left="0.69726563" right="0.71289063" top="0.09570313" bottom="0.10351563"/>
 						</Texture>
 					</Layer>
 				</Layers>
@@ -2518,8 +2515,10 @@
 		<NormalFont style="GlueFontNormalExtraSmall"/>
 		<HighlightFont style="GlueFontHighlightExtraSmall"/>
 		<DisabledFont style="GlueFontDisableExtraSmall"/>
-		<HighlightTexture file="Interface\Glues\Common\cinematicbuttons" alphaMode="ADD">
-			<TexCoords left="0.00195313" right="0.34570313" top="0.63281250" bottom="0.78515625"/>
+		<HighlightTexture atlas="StreamCinematic-Highlight" alphaMode="ADD">
+			<TexCoords>
+				<Rect ULx="1" ULy="0" URx="1" URy="1" LLx="0" LLy="0" LRx="0" LRy="1" />
+			</TexCoords>
 		</HighlightTexture>
 		<ButtonText>
 			<Size x="176" y="0"/>
@@ -2581,60 +2580,48 @@
 				<Anchors>
 					<Anchor point="TOP" x="0" y="-44"/>
 				</Anchors>
-				<NormalTexture file="Interface\Glues\Common\cinematicbuttons">
-					<TexCoords left="0.00195313" right="0.34570313" top="0.47656250" bottom="0.62890625"/>
-				</NormalTexture>
-				<PushedTexture file="Interface\Glues\Common\cinematicbuttons">
-					<TexCoords left="0.00195313" right="0.34570313" top="0.32031250" bottom="0.47265625"/>
-				</PushedTexture>
+				<NormalTexture atlas="StreamCinematic-Classic-Up" />
+				<PushedTexture atlas="StreamCinematic-Classic-Down" />
 			</Button>
 			<Button name="CinematicsButton2" inherits="CinematicsButtonTemplate" text="BURNING_CRUSADE" hidden="true" id="2">
 				<Size x="176" y="78"/>
 				<Anchors>
 					<Anchor point="TOP" relativeTo="CinematicsButton1" relativePoint="BOTTOM" x="0" y="-8"/>
 				</Anchors>
-				<NormalTexture file="Interface\Glues\Common\cinematicbuttons">
-					<TexCoords left="0.34960938" right="0.69335938" top="0.00781250" bottom="0.16015625"/>	
-				</NormalTexture>
-				<PushedTexture file="Interface\Glues\Common\cinematicbuttons">
-					<TexCoords left="0.00195313" right="0.34570313" top="0.00781250" bottom="0.16015625"/>
-				</PushedTexture>
+				<NormalTexture atlas="StreamCinematic-BC-Up" />
+				<PushedTexture atlas="StreamCinematic-BC-Down" />
 			</Button>
 			<Button name="CinematicsButton3" inherits="CinematicsButtonTemplate" text="WRATH_OF_THE_LICH_KING" hidden="true" id="3">
 				<Size x="176" y="78"/>
 				<Anchors>
 					<Anchor point="TOP" relativeTo="CinematicsButton2" relativePoint="BOTTOM" x="0" y="-8"/>
 				</Anchors>
-				<NormalTexture file="Interface\Glues\Common\cinematicbuttons">
-					<TexCoords left="0.34960938" right="0.69335938" top="0.32031250" bottom="0.47265625"/>
-				</NormalTexture>
-				<PushedTexture file="Interface\Glues\Common\cinematicbuttons">
-					<TexCoords left="0.00195313" right="0.34570313" top="0.78906250" bottom="0.94140625"/>
-				</PushedTexture>
+				<NormalTexture atlas="StreamCinematic-LK-Up" />
+				<PushedTexture atlas="StreamCinematic-LK-Down" />
 			</Button>
 			<Button name="CinematicsButton4" inherits="CinematicsButtonTemplate" text="CATACLYSM" hidden="true" id="4">
 				<Size x="176" y="78"/>
 				<Anchors>
 					<Anchor point="TOP" relativeTo="CinematicsButton3" relativePoint="BOTTOM" x="0" y="-8"/>
 				</Anchors>
-				<NormalTexture file="Interface\Glues\Common\cinematicbuttons">
-					<TexCoords left="0.34960938" right="0.69335938" top="0.16406250" bottom="0.31640625"/>
-				</NormalTexture>
-				<PushedTexture file="Interface\Glues\Common\cinematicbuttons">
-					<TexCoords left="0.00195313" right="0.34570313" top="0.16406250" bottom="0.31640625"/>
-				</PushedTexture>
+				<NormalTexture atlas="StreamCinematic-CC-Up" />
+				<PushedTexture atlas="StreamCinematic-CC-Down" />
 			</Button>
 			<Button name="CinematicsButton5" inherits="CinematicsButtonTemplate" text="MISTS_OF_PANDARIA" hidden="true" id="5">
 				<Size x="176" y="78"/>
 				<Anchors>
 					<Anchor point="TOP" relativeTo="CinematicsButton4" relativePoint="BOTTOM" x="0" y="-8"/>
 				</Anchors>
-				<NormalTexture file="Interface\Glues\Common\cinematicbuttons">
-					<TexCoords left="0.34960938" right="0.69335938" top="0.63281250" bottom="0.78515625"/>
-				</NormalTexture>
-				<PushedTexture file="Interface\Glues\Common\cinematicbuttons">
-					<TexCoords left="0.34960938" right="0.69335938" top="0.47656250" bottom="0.62890625"/>
-				</PushedTexture>
+				<NormalTexture atlas="StreamCinematic-MOP-Up" />
+				<PushedTexture atlas="StreamCinematic-MOP-Down" />
+			</Button>
+			<Button name="CinematicsButton6" inherits="CinematicsButtonTemplate" text="WARLORDS_OF_DRAENOR" hidden="true" id="6">
+				<Size x="176" y="78"/>
+				<Anchors>
+					<Anchor point="TOP" relativeTo="CinematicsButton5" relativePoint="BOTTOM" x="0" y="-8"/>
+				</Anchors>
+				<NormalTexture atlas="StreamCinematic-WOD-Up" />
+				<PushedTexture atlas="StreamCinematic-WOD-Down" />
 			</Button>
 			<CheckButton name="CinematicSubtitlesCheckBox" inherits="GlueCheckButtonTemplate">
 				<Size x="20" y="20"/>

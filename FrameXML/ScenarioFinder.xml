@@ -19,7 +19,7 @@
 			<Layer level="BORDER">
 				<Texture name="$parentTopTileStreaks" inherits="_UI-Frame-TopTileStreaks" parentKey="TopTileStreaks">
 					<Anchors>
-						<Anchor point="TOPLEFT" x="0" y="-21"/>
+						<Anchor point="TOPLEFT" x="-5" y="-21"/>
 						<Anchor point="TOPRIGHT" x="-2" y="-21"/>
 					</Anchors>
 				</Texture>
@@ -441,7 +441,7 @@
 							</OnHide>
 						</Scripts>
 					</Frame>
-					<Button name="$parentFindGroupButton" inherits="MagicButtonTemplate" text="FIND_A_GROUP">
+					<Button name="$parentFindGroupButton" inherits="MagicButtonTemplate" text="FIND_A_GROUP" motionScriptsWhileDisabled="true">
 						<Size>
 							<AbsDimension x="135" y="22"/>
 						</Size>
@@ -461,6 +461,14 @@
 									ScenarioQueueFrame_Join();
 								end
 							</OnClick>
+							<OnEnter>
+								if ( self.tooltip ) then
+									GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+									GameTooltip:SetText(self.tooltip, NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b, 1, true);
+									GameTooltip:Show();
+								end
+							</OnEnter>
+							<OnLeave function="GameTooltip_Hide"/>
 						</Scripts>
 					</Button>
 				</Frames>

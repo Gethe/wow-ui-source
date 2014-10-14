@@ -3,11 +3,16 @@ GlueStrings.lua
 GlueFonts.xml
 GlueFontStyles.xml
 GlueFontStyleOverrides.xml
+..\SharedXML\SharedFonts.xml
+..\SharedXML\SharedFontStyles.xml
 GlueLocalization.xml
 ## add new files after here
 
+## add C namespace augmentations here
+..\SharedXML\C_TimerAugment.lua
+
 ..\SharedXML\SharedUIPanelTemplates.xml
-..\FrameXML\Util.lua
+..\SharedXML\Util.lua
 GlueBasicControls.xml
 GlueParent.xml
 GlueButtons.xml
@@ -18,7 +23,7 @@ GlueTooltip.xml
 GlueSplash.xml
 ServerAlert.xml
 RealmList.xml
-AddonList.xml
+..\SharedXML\AddonList.xml
 AccountLogin.xml
 DesignerMenu.xml
 OptionsFrameTemplates.xml
@@ -37,7 +42,7 @@ SecurityMatrix.xml
 TrialConvert.xml
 GlueOptions.xml
 VideoOptionsFrame.xml
-..\FrameXML\VideoOptionsPanels.xml
+..\SharedXML\VideoOptionsPanels.xml
 AudioOptionsFrame.xml
 AudioOptionsPanels.xml
 StarterEditionPopUp.xml

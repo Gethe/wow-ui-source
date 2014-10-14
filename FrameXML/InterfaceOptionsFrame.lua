@@ -384,12 +384,12 @@ end
 function InterfaceOptionsFrame_OnShow (self)
 	--Refresh the two category lists and display the "Controls" group of options if nothing is selected.
 	InterfaceCategoryList_Update();
+	InterfaceOptionsOptionsFrame_RefreshCategories();
 	InterfaceAddOnsList_Update();
 	if ( not InterfaceOptionsFramePanelContainer.displayedPanel ) then
 		InterfaceOptionsFrame_OpenToCategory(CONTROLS_LABEL);
 	end
 	--Refresh the categories to pick up changes made while the options frame was hidden.
-	InterfaceOptionsOptionsFrame_RefreshCategories();
 	InterfaceOptionsOptionsFrame_RefreshAddOns();
 end
 

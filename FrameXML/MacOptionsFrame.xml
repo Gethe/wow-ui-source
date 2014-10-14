@@ -126,7 +126,7 @@
 							<OnEnter>
 								if(UIDropDownMenu_IsEnabled(MacOptionsFrameResolutionDropDown)) then
 									GameTooltip:SetOwner(self, "ANCHOR_TOPRIGHT");
-									GameTooltip:SetText(MOVIE_RECORDING_RESOLUTION_TOOLTIP, nil, nil, nil, nil, 1);
+									GameTooltip:SetText(MOVIE_RECORDING_RESOLUTION_TOOLTIP, nil, nil, nil, nil, true);
 								end
 							</OnEnter>
 							<OnLeave function="GameTooltip_Hide"/>
@@ -159,7 +159,7 @@
 							<OnEnter>
 								if(UIDropDownMenu_IsEnabled(MacOptionsFrameFramerateDropDown)) then
 									GameTooltip:SetOwner(self, "ANCHOR_TOPRIGHT");
-									GameTooltip:SetText(MOVIE_RECORDING_FRAMERATE_TOOLTIP, nil, nil, nil, nil, 1);
+									GameTooltip:SetText(MOVIE_RECORDING_FRAMERATE_TOOLTIP, nil, nil, nil, nil, true);
 								end
 							</OnEnter>
 							<OnLeave function="GameTooltip_Hide"/>
@@ -192,7 +192,7 @@
 							<OnEnter>
 								if(UIDropDownMenu_IsEnabled(MacOptionsFrameCodecDropDown)) then
 									GameTooltip:SetOwner(self, "ANCHOR_TOPRIGHT");
-									GameTooltip:SetText(MOVIE_RECORDING_CODEC_TOOLTIP, nil, nil, nil, nil, 1);
+									GameTooltip:SetText(MOVIE_RECORDING_CODEC_TOOLTIP, nil, nil, nil, nil, true);
 								end
 							</OnEnter>
 							<OnLeave function="GameTooltip_Hide"/>
@@ -231,7 +231,7 @@
 									end
 								else
 									PlaySound("igMainMenuOptionCheckBoxOff");
-									MacOptionsFrameCheckButton3:SetChecked(0);
+									MacOptionsFrameCheckButton3:SetChecked(false);
 									MacOptionsFrame_DisableCheckBox(MacOptionsFrameCheckButton3);
 								end
 							</OnClick>	
@@ -343,7 +343,7 @@
 						<Scripts>
 							<OnEnter>
 								GameTooltip:SetOwner(self, "ANCHOR_TOPRIGHT");
-								GameTooltip:SetText(MOVIE_RECORDING_COMPRESS_TOOLTIP, nil, nil, nil, nil, 1);
+								GameTooltip:SetText(MOVIE_RECORDING_COMPRESS_TOOLTIP, nil, nil, nil, nil, true);
 							</OnEnter>
 							<OnLeave function="GameTooltip_Hide"/>
 							<OnClick>
@@ -367,7 +367,7 @@
 							<OnEnter>
 								if ( MovieRecording_IsSupported() ) then
 									GameTooltip:SetOwner(self, "ANCHOR_TOPRIGHT");
-									GameTooltip:SetText(MOVIE_RECORDING_TIME_TOOLTIP, nil, nil, nil, nil, 1);
+									GameTooltip:SetText(MOVIE_RECORDING_TIME_TOOLTIP, nil, nil, nil, nil, true);
 								end
 							</OnEnter>
 							<OnLeave function="GameTooltip_Hide"/>
@@ -388,7 +388,7 @@
 							<OnEnter>
 								if ( MovieRecording_IsSupported() ) then
 									GameTooltip:SetOwner(self, "ANCHOR_TOPRIGHT");
-									GameTooltip:SetText(MOVIE_RECORDING_DATA_RATE_TOOLTIP, nil, nil, nil, nil, 1);
+									GameTooltip:SetText(MOVIE_RECORDING_DATA_RATE_TOOLTIP, nil, nil, nil, nil, true);
 								end
 							</OnEnter>
 							<OnLeave function="GameTooltip_Hide"/>

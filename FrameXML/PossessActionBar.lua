@@ -37,7 +37,7 @@ function PossessBar_UpdateState ()
 		cooldown = _G["PossessButton"..i.."Cooldown"];
 		cooldown:Hide();
 
-		button:SetChecked(nil);
+		button:SetChecked(false);
 		icon:SetVertexColor(1.0, 1.0, 1.0);
 
 		if ( enabled ) then
@@ -51,7 +51,7 @@ function PossessBar_UpdateState ()
 end
 
 function PossessButton_OnClick (self)
-	self:SetChecked(nil);
+	self:SetChecked(false);
 
 	local id = self:GetID();
 	if ( id == POSSESS_CANCEL_SLOT ) then

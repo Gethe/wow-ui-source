@@ -133,15 +133,15 @@
 				end
 				local tracked = AchievementButton_ToggleTracking(self:GetParent().id);
 				if ( not tracked ) then
-					self:SetChecked(0);
+					self:SetChecked(false);
 				end
 			</OnClick>
 			<OnEnter>
 				GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
 				if ( self:GetChecked() ) then
-					GameTooltip:SetText(UNTRACK_ACHIEVEMENT_TOOLTIP, nil, nil, nil, nil, 1);
+					GameTooltip:SetText(UNTRACK_ACHIEVEMENT_TOOLTIP, nil, nil, nil, nil, true);
 				else
-					GameTooltip:SetText(TRACK_ACHIEVEMENT_TOOLTIP, nil, nil, nil, nil, 1);
+					GameTooltip:SetText(TRACK_ACHIEVEMENT_TOOLTIP, nil, nil, nil, nil, true);
 				end
 			</OnEnter>
 			<OnLeave>
@@ -326,7 +326,7 @@
 				</Texture>
 			</Layer>
 			<Layer level="ARTWORK">
-				<Texture name="$parentShield" file="Interface\AchievementFrame\UI-Achievement-Progressive-Shield">
+				<Texture name="$parentShield" file="Interface\AchievementFrame\UI-Achievement-Progressive-Shield" parentKey="shield">
 					<Anchors>
 						<Anchor point="TOPLEFT" x="12" y="-12"/>
 						<Anchor point="BOTTOMRIGHT" x="16" y="-16"/>
@@ -350,7 +350,7 @@
 					GameTooltip:AddDoubleLine(self.name, self.date, nil, nil, nil, .5, .5, .5);
 				end
 				if ( self.desc ) then
-					GameTooltip:AddLine(self.desc, 1, 1, 1, 1);
+					GameTooltip:AddLine(self.desc, 1, 1, 1, true);
 				end
 				if ( self.numCriteria ) then
 					if ( self.numCriteria > 30 ) then
@@ -576,7 +576,7 @@
 				end
 			</OnEnter>
 			<OnLeave>
-				GameTooltip:SetMinimumWidth(0, 0);
+				GameTooltip:SetMinimumWidth(0, false);
 				GameTooltip:Hide();
 			</OnLeave>
 		</Scripts>
@@ -1450,7 +1450,7 @@
 						local tooltip = self.tooltip;
 						if ( tooltip ) then
 							GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
-							GameTooltip:SetText(tooltip, nil, nil, nil, nil, 1);
+							GameTooltip:SetText(tooltip, nil, nil, nil, nil, true);
 						end
 					</OnEnter>
 					<OnLeave>
@@ -2023,7 +2023,7 @@
 							</StatusBar>							
 							<StatusBar name="$parentCategory1" inherits="AchievementFrameSummaryCategoryTemplate" id="92">	
 								<Anchors>
-									<Anchor point="TOPLEFT" relativeTo="$parentStatusBar" relativePoint="BOTTOMLEFT" x="0" y="-24"/>
+									<Anchor point="TOPLEFT" relativeTo="$parentStatusBar" relativePoint="BOTTOMLEFT" x="0" y="-13"/>
 								</Anchors>
 							</StatusBar>
 							<StatusBar name="$parentCategory2" inherits="AchievementFrameSummaryCategoryTemplate" id="96">	
@@ -2033,7 +2033,7 @@
 							</StatusBar>
 							<StatusBar name="$parentCategory3" inherits="AchievementFrameSummaryCategoryTemplate" id="97">	
 								<Anchors>
-									<Anchor point="TOPLEFT" relativeTo="$parentCategory1" relativePoint="BOTTOMLEFT" x="0" y="-14"/>
+									<Anchor point="TOPLEFT" relativeTo="$parentCategory1" relativePoint="BOTTOMLEFT" x="0" y="-10"/>
 								</Anchors>							
 							</StatusBar>
 							<StatusBar name="$parentCategory4" inherits="AchievementFrameSummaryCategoryTemplate" id="95">	
@@ -2043,32 +2043,42 @@
 							</StatusBar>
 							<StatusBar name="$parentCategory5" inherits="AchievementFrameSummaryCategoryTemplate" id="168">	
 								<Anchors>
-									<Anchor point="TOPLEFT" relativeTo="$parentCategory3" relativePoint="BOTTOMLEFT" x="0" y="-14"/>
+									<Anchor point="TOPLEFT" relativeTo="$parentCategory3" relativePoint="BOTTOMLEFT" x="0" y="-10"/>
 								</Anchors>						
 							</StatusBar>
-							<StatusBar name="$parentCategory6" inherits="AchievementFrameSummaryCategoryTemplate" id="15165">	
+							<StatusBar name="$parentCategory6" inherits="AchievementFrameSummaryCategoryTemplate" id="169">	
 								<Anchors>
 									<Anchor point="TOPLEFT" relativeTo="$parentCategory5" relativePoint="TOPRIGHT" x="20" y="0"/>
 								</Anchors>
 							</StatusBar>
-							<StatusBar name="$parentCategory7" inherits="AchievementFrameSummaryCategoryTemplate" id="169">	
+							<StatusBar name="$parentCategory7" inherits="AchievementFrameSummaryCategoryTemplate" id="201">	
 								<Anchors>
-									<Anchor point="TOPLEFT" relativeTo="$parentCategory5" relativePoint="BOTTOMLEFT" x="0" y="-14"/>
+									<Anchor point="TOPLEFT" relativeTo="$parentCategory5" relativePoint="BOTTOMLEFT" x="0" y="-10"/>
 								</Anchors>							
 							</StatusBar>
-							<StatusBar name="$parentCategory8" inherits="AchievementFrameSummaryCategoryTemplate" id="201">	
+							<StatusBar name="$parentCategory8" inherits="AchievementFrameSummaryCategoryTemplate" id="15165">	
 								<Anchors>
 									<Anchor point="TOPLEFT" relativeTo="$parentCategory7" relativePoint="TOPRIGHT" x="20" y="0"/>
 								</Anchors>							
 							</StatusBar>
 							<StatusBar name="$parentCategory9" inherits="AchievementFrameSummaryCategoryTemplate" id="155">	
 								<Anchors>
-									<Anchor point="TOPLEFT" relativeTo="$parentCategory7" relativePoint="BOTTOMLEFT" x="0" y="-14"/>
+									<Anchor point="TOPLEFT" relativeTo="$parentCategory7" relativePoint="BOTTOMLEFT" x="0" y="-10"/>
 								</Anchors>							
 							</StatusBar>
 							<StatusBar name="$parentCategory10" inherits="AchievementFrameSummaryCategoryTemplate" id="15117">	
 								<Anchors>
 									<Anchor point="TOPLEFT" relativeTo="$parentCategory9" relativePoint="TOPRIGHT" x="20" y="0"/>
+								</Anchors>							
+							</StatusBar>
+							<StatusBar name="$parentCategory11" inherits="AchievementFrameSummaryCategoryTemplate" id="15246">	
+								<Anchors>
+									<Anchor point="TOPLEFT" relativeTo="$parentCategory9" relativePoint="BOTTOMLEFT" x="0" y="-10"/>
+								</Anchors>							
+							</StatusBar>
+							<StatusBar name="$parentCategory12" inherits="AchievementFrameSummaryCategoryTemplate" id="15237">	
+								<Anchors>
+									<Anchor point="TOPLEFT" relativeTo="$parentCategory11" relativePoint="TOPRIGHT" x="20" y="0"/>
 								</Anchors>							
 							</StatusBar>	
 						</Frames>

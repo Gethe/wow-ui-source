@@ -358,7 +358,7 @@
 					MOVING_CHATFRAME = chatFrame;
 				elseif ( chatFrame.isDocked ) then
 					FCF_UnDockFrame(chatFrame);
-					FCF_SetLocked(chatFrame, nil);
+					FCF_SetLocked(chatFrame, false);
 					local chatTab = _G[chatFrame:GetName().."Tab"];
 					local x,y = chatTab:GetCenter();
 					x = x - (chatTab:GetWidth()/2);
@@ -579,7 +579,7 @@
 				_G[name.."ButtonFrameBottomButton"]:Show();
 				_G[name.."ButtonFrameDownButton"]:Show();
 				_G[name.."ButtonFrameUpButton"]:Show();
-				SetChatWindowShown(self:GetID(), 1);
+				SetChatWindowShown(self:GetID(), true);
 				FCF_StopAlertFlash(self);
 			</OnShow>
 			<OnHide>
@@ -590,7 +590,7 @@
 					_G[name.."ButtonFrameDownButton"]:Hide();
 					_G[name.."ButtonFrameUpButton"]:Hide();
 					if ( not self.minimized ) then
-						SetChatWindowShown(self:GetID(), nil);
+						SetChatWindowShown(self:GetID(), false);
 					end
 				end
 			</OnHide>

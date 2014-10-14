@@ -179,7 +179,7 @@
 
 	
 	
-	<Button name="HelpFrameButtonTemplate" virtual="true">
+	<Button name="HelpFrameButtonTemplate" motionScriptsWhileDisabled="true" virtual="true">
 		<Size x="174" y="54"/>
 		<Layers>
 			<Layer level="OVERLAY">
@@ -200,7 +200,6 @@
 		</Layers>
 		<Scripts>
 			<OnLoad>
-				
 				local data = HelpFrameNavTbl[self:GetID()];
 				if data.icon  then
 					self.icon:SetTexture(data.icon);
@@ -210,10 +209,19 @@
 					self:SetText(data.text);
 				end
 				
-				self.tooltipText = data.tooltipTex;
+				self.tooltip = data.tooltipTex;
 				self.newbieText = data.newbieText;
 				data.button = self;
+				HelpFrame_SetButtonEnabled(self, true);
 			</OnLoad>
+			<OnEnter>
+				if (self.tooltip) then
+					GameTooltip:SetOwner(self, "ANCHOR_CURSOR_RIGHT");
+					GameTooltip:SetText(self.tooltip, HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b);
+					GameTooltip:Show();
+				end
+			</OnEnter>
+			<OnLeave function="GameTooltip_Hide" />
 			<OnMouseDown>
 				if self:IsEnabled() then
 					self.icon:SetPoint("LEFT", 4, -1);	
@@ -1658,7 +1666,7 @@
 							<Anchor point="CENTER" relativeTo="$parentScrollFrame" x="0" y="20"/>
 						</Anchors>
 						<Frames>
-							<Frame name="$parentErrorFrame" inherits="TranslucentFrameTemplate" enableMouse="true" hidden="true">
+							<Frame name="$parentErrorFrame" frameStrata="DIALOG" inherits="TranslucentFrameTemplate" enableMouse="true" hidden="true">
 								<Size x="350" y="230"/>
 								<Anchors>
 									<Anchor point="CENTER" relativeTo="$parentScrollFrame" x="0" y="20"/>

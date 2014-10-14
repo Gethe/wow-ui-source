@@ -184,13 +184,13 @@ function PetStable_Update(updateModel)
 		PetStable_UpdateSlot(button, petSlot);
 		if (IsSpellKnown(CALL_PET_SPELL_IDS[i]) or GetStablePetInfo(petSlot)) then
 			button:Enable();
-			button.Background:SetDesaturated(nil);
-			button.Border:SetDesaturated(nil);
+			button.Background:SetDesaturated(false);
+			button.Border:SetDesaturated(false);
 			button.LockIcon:Hide();
 		else
 			button:Disable();
-			button.Background:SetDesaturated(1);
-			button.Border:SetDesaturated(1);
+			button.Background:SetDesaturated(true);
+			button.Border:SetDesaturated(true);
 			button.LockIcon:Show();
 		end
 	end

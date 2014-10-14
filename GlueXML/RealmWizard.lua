@@ -39,9 +39,9 @@ function RealmWizard_UpdateCategories(...)
 			buttonText:SetText(select(categoryIndex, ...));
 			button.categoryIndex = categoryIndex;
 			if ( categoryIndex == RealmWizard.selectedCategory ) then
-				button:SetChecked(1);
+				button:SetChecked(true);
 			else
-				button:SetChecked(nil);
+				button:SetChecked(false);
 			end
 			button:Show();
 			numCategoriesShown = numCategoriesShown + 1;

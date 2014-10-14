@@ -77,8 +77,8 @@ function TransmogrifyFrame_OnEvent(self, event, ...)
 		local slot, hasItem = ...;
 		if ( slot == INVSLOT_TABARD or slot == INVSLOT_BODY ) then
 			if ( hasItem ) then
-				local itemID = GetInventoryItemID("player", slot);
-				TransmogrifyModelFrame:TryOn(itemID);
+				local itemID, itemAppearanceModID = GetInventoryItemID("player", slot);
+				TransmogrifyModelFrame:TryOn(itemID, nil, itemAppearanceModID);
 			else
 				TransmogrifyModelFrame:UndressSlot(slot);
 			end
@@ -267,7 +267,7 @@ function TransmogrifySlotButton_OnEnter(self)
 		GameTooltip:SetText(slotName);
 		local errorMsg = _G["TRANSMOGRIFY_INVALID_REASON"..cannotTransmogrifyReason];
 		if ( errorMsg ) then
-			GameTooltip:AddLine(errorMsg, RED_FONT_COLOR.r, RED_FONT_COLOR.g, RED_FONT_COLOR.b, 1, 1);
+			GameTooltip:AddLine(errorMsg, RED_FONT_COLOR.r, RED_FONT_COLOR.g, RED_FONT_COLOR.b, true);
 		end
 		GameTooltip:Show();
 	else
@@ -319,7 +319,7 @@ function TransmogrifyFrame_UpdateApplyButton()
 end
 
 function TransmogrifyFrame_UpdateSlotButton(button)
-	local isTransmogrified, canTransmogrify, cannotTransmogrifyReason, hasPending, hasUndo, visibleItemID, textureName = GetTransmogrifySlotInfo(button.id);
+	local isTransmogrified, canTransmogrify, cannotTransmogrifyReason, hasPending, hasUndo, visibleItemID, textureName, visibleItemAppearanceModID = GetTransmogrifySlotInfo(button.id);
 	local hasChange = hasPending or hasUndo;
 
 	if ( canTransmogrify ) then
@@ -388,7 +388,7 @@ function TransmogrifyFrame_UpdateSlotButton(button)
 			elseif ( button.id == INVSLOT_OFFHAND ) then
 				slot = "offhand";
 			end
-			TransmogrifyModelFrame:TryOn(visibleItemID, slot);
+			TransmogrifyModelFrame:TryOn(visibleItemID, slot, visibleItemAppearanceModID);
 		else
 			if ( button.id == INVSLOT_RANGED ) then
 				-- clear both hands
@@ -403,9 +403,9 @@ end
 
 function TransmogrifyItemFlyoutButton_OnClick(self)
 	if ( self.location ) then
-		local player, bank, bags, voidStorage, slot, bag = EquipmentManager_UnpackLocation(self.location);
+		local player, bank, bags, voidStorage, slot, bag, tab, voidSlot = EquipmentManager_UnpackLocation(self.location);
 		if ( voidStorage ) then
-			UseVoidItemForTransmogrify(slot, EquipmentFlyoutFrame.button.id);
+			UseVoidItemForTransmogrify(tab, voidSlot, EquipmentFlyoutFrame.button.id);
 		elseif ( bag ) then
 			UseItemForTransmogrify(bag, slot, EquipmentFlyoutFrame.button.id);
 		else

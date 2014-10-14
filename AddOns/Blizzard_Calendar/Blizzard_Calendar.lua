@@ -1833,7 +1833,7 @@ function CalendarFilterDropDown_Initialize(self)
 end
 
 function CalendarFilterDropDown_OnClick(self)
-	SetCVar(CALENDAR_FILTER_CVARS[self:GetID()].cvar, UIDropDownMenuButton_GetChecked(self));
+	SetCVar(CALENDAR_FILTER_CVARS[self:GetID()].cvar, UIDropDownMenuButton_GetChecked(self) and "1" or "0");
 	CalendarFrame_Update();
 end
 
@@ -2504,23 +2504,6 @@ function CalendarDayButtonMoreEventsButton_OnLeave(self)
 end
 
 function CalendarDayButtonMoreEventsButton_OnClick(self, button)
---[[
-	local dayButton = self:GetParent();
-	local dayChanged = CalendarFrame.selectedDayButton ~= dayButton;
-
-	CalendarDayButton_Click(dayButton);
-
-	if ( button == "LeftButton" ) then
-		CalendarEventPickerFrame_Toggle(dayButton);
-	elseif ( button == "RightButton" ) then
-		local flags = CALENDAR_CONTEXTMENU_FLAG_SHOWDAY;
-		if ( dayChanged ) then
-			CalendarContextMenu_Show(self, CalendarDayContextMenu_Initialize, "cursor", 3, -3, flags, dayButton);
-		else
-			CalendarContextMenu_Toggle(self, CalendarDayContextMenu_Initialize, "cursor", 3, -3, flags, dayButton);
-		end
-	end
---]]
 	local dayButton = self:GetParent();
 
 	if ( button == "LeftButton" ) then
@@ -2530,25 +2513,10 @@ function CalendarDayButtonMoreEventsButton_OnClick(self, button)
 		local dayChanged = CalendarFrame.selectedDayButton ~= dayButton;
 
 		local flags = CALENDAR_CONTEXTMENU_FLAG_SHOWDAY;
-		if ( firstEventButton ) then
-			local eventChanged =
-				CalendarContextMenu.eventButton ~= self or
-				CalendarContextMenu.dayButton ~= dayButton;
-
-			local flags = CALENDAR_CONTEXTMENU_FLAG_SHOWDAY + CALENDAR_CONTEXTMENU_FLAG_SHOWEVENT;
-			if ( eventChanged ) then
-				CalendarContextMenu_Show(self, CalendarDayContextMenu_Initialize, "cursor", 3, -3, flags, dayButton, self);
-			else
-				CalendarContextMenu_Toggle(self, CalendarDayContextMenu_Initialize, "cursor", 3, -3, flags, dayButton, self);
-			end
-			flags = flags + CALENDAR_CONTEXTMENU_FLAG_SHOWEVENT;
-
+		if ( dayChanged ) then
+			CalendarContextMenu_Show(self, CalendarDayContextMenu_Initialize, "cursor", 3, -3, flags, dayButton);
 		else
-			if ( dayChanged ) then
-				CalendarContextMenu_Show(self, CalendarDayContextMenu_Initialize, "cursor", 3, -3, flags, dayButton);
-			else
-				CalendarContextMenu_Toggle(self, CalendarDayContextMenu_Initialize, "cursor", 3, -3, flags, dayButton);
-			end
+			CalendarContextMenu_Toggle(self, CalendarDayContextMenu_Initialize, "cursor", 3, -3, flags, dayButton);
 		end
 	end
 
@@ -2839,13 +2807,8 @@ function CalendarEventInviteList_AnchorSortButtons(inviteList)
 	local inviteButtonName = inviteButton:GetName();
 
 	local nameSortButton = inviteList.sortButtons.name;
-	if ( inviteList.partyMode ) then
-		local inviteName = _G[inviteButtonName.."Name"];
-		nameSortButton:SetPoint("LEFT", inviteName, "LEFT");
-	else
-		local invitePartyIcon = _G[inviteButtonName.."PartyIcon"];
-		nameSortButton:SetPoint("LEFT", invitePartyIcon, "LEFT");
-	end
+	local invitePartyIcon = _G[inviteButtonName.."PartyIcon"];
+	nameSortButton:SetPoint("LEFT", invitePartyIcon, "LEFT");
 
 	local classSortButton = inviteList.sortButtons.class;
 	local inviteClass = _G[inviteButtonName.."Class"];
@@ -3083,9 +3046,9 @@ end
 function CalendarViewEventAcceptButton_OnEnter(self)
 	GameTooltip:SetOwner(self, "ANCHOR_LEFT");
 	if ( CalendarViewEventFrame.inviteType == CALENDAR_INVITETYPE_SIGNUP ) then
-		GameTooltip:SetText(CALENDAR_TOOLTIP_SIGNUPBUTTON, nil, nil, nil, nil, 1);
+		GameTooltip:SetText(CALENDAR_TOOLTIP_SIGNUPBUTTON, nil, nil, nil, nil, true);
 	else
-		GameTooltip:SetText(CALENDAR_TOOLTIP_AVAILABLEBUTTON, nil, nil, nil, nil, 1);
+		GameTooltip:SetText(CALENDAR_TOOLTIP_AVAILABLEBUTTON, nil, nil, nil, nil, true);
 	end
 	GameTooltip:Show();
 	--GameTooltip_AddNewbieTip(self, nil, 1.0, 1.0, 1.0, CALENDAR_TOOLTIP_AVAILABLEBUTTON, 1);
@@ -3101,7 +3064,7 @@ end
 
 function CalendarViewEventTentativeButton_OnEnter(self)
 	GameTooltip:SetOwner(self, "ANCHOR_LEFT");
-	GameTooltip:SetText(CALENDAR_TOOLTIP_TENTATIVEBUTTON, nil, nil, nil, nil, 1);
+	GameTooltip:SetText(CALENDAR_TOOLTIP_TENTATIVEBUTTON, nil, nil, nil, nil, true);
 	GameTooltip:Show();
 	--GameTooltip_AddNewbieTip(self, nil, 1.0, 1.0, 1.0, CALENDAR_TOOLTIP_TENTATIVEBUTTON, 1);
 end
@@ -3112,7 +3075,7 @@ end
 
 function CalendarViewEventDeclineButton_OnEnter(self)
 	GameTooltip:SetOwner(self, "ANCHOR_LEFT");
-	GameTooltip:SetText(CALENDAR_TOOLTIP_DECLINEBUTTON, nil, nil, nil, nil, 1);
+	GameTooltip:SetText(CALENDAR_TOOLTIP_DECLINEBUTTON, nil, nil, nil, nil, true);
 	GameTooltip:Show();
 	--GameTooltip_AddNewbieTip(self, nil, 1.0, 1.0, 1.0, CALENDAR_TOOLTIP_DECLINEBUTTON, 1);
 end
@@ -3124,9 +3087,9 @@ end
 function CalendarViewEventRemoveButton_OnEnter(self)
 	GameTooltip:SetOwner(self, "ANCHOR_LEFT");
 	if ( CalendarViewEventFrame.inviteType == CALENDAR_INVITETYPE_SIGNUP ) then
-		GameTooltip:SetText(CALENDAR_TOOLTIP_REMOVESIGNUPBUTTON, nil, nil, nil, nil, 1);
+		GameTooltip:SetText(CALENDAR_TOOLTIP_REMOVESIGNUPBUTTON, nil, nil, nil, nil, true);
 	else
-		GameTooltip:SetText(CALENDAR_TOOLTIP_REMOVEBUTTON, nil, nil, nil, nil, 1);
+		GameTooltip:SetText(CALENDAR_TOOLTIP_REMOVEBUTTON, nil, nil, nil, nil, true);
 	end
 	GameTooltip:Show();
 	--GameTooltip_AddNewbieTip(self, nil, 1.0, 1.0, 1.0, CALENDAR_TOOLTIP_REMOVEBUTTON, 1);
@@ -3236,9 +3199,6 @@ function CalendarViewEvent_SetEventButtons(inviteType, calendarType)
 end
 
 function CalendarViewEventInviteList_Update(inviteType, calendarType)
---	CalendarViewEventInviteList.partyMode = IsInGroup(LE_PARTY_CATEGORY_HOME);
-	CalendarViewEventInviteList.partyMode = false;
-
 	if ( _CalendarFrame_IsSignUpEvent(calendarType, inviteType) ) then
 		-- expand the event list so there is not so much empty space around the buttons
 		CalendarViewEventDivider:SetPoint("TOPLEFT", CalendarViewEventDivider:GetParent(), "TOPLEFT", 10, -30);
@@ -3298,17 +3258,7 @@ function CalendarViewEventInviteListScrollFrame_Update()
 				buttonModIcon:SetTexture();
 				buttonModIcon:Hide();
 			end
---[[
-			-- setup party status
-			buttonPartyIcon = _G[buttonName.."PartyIcon"];
-			if ( not CalendarViewEventInviteList.partyMode or not UnitInParty(name) or not UnitInRaid(name) ) then
-				buttonPartyIcon:Hide();
-			else
-				buttonPartyIcon:Show();
-				-- the party icon overrides the mod icon
-				buttonModIcon:Hide();
-			end
---]]
+
 			-- setup name
 			-- NOTE: classFilename could be invalid when a character is being transferred
 			local classColor = (classFilename and RAID_CLASS_COLORS[classFilename]) or NORMAL_FONT_COLOR;
@@ -3326,15 +3276,10 @@ function CalendarViewEventInviteListScrollFrame_Update()
 			buttonStatus:SetTextColor(inviteStatusInfo.color.r, inviteStatusInfo.color.g, inviteStatusInfo.color.b);
 
 			-- fixup anchors
-			if ( CalendarViewEventInviteList.partyMode ) then
-				buttonNameString:SetPoint("LEFT", buttonPartyIcon, "RIGHT");
-				--buttonClass:SetPoint("LEFT", buttonNameString, "RIGHT", -buttonPartyIcon:GetWidth(), 0);
-			elseif ( buttonModIcon:IsShown() ) then
+			if ( buttonModIcon:IsShown() ) then
 				buttonNameString:SetPoint("LEFT", buttonModIcon, "RIGHT");
-				--buttonClass:SetPoint("LEFT", buttonNameString, "RIGHT", -buttonModIcon:GetWidth(), 0);
 			else
 				buttonNameString:SetPoint("LEFT", button, "LEFT");
-				--buttonClass:SetPoint("LEFT", buttonNameString, "RIGHT", 0, 0);
 			end
 
 			-- set the selected button
@@ -4013,9 +3958,6 @@ function CalendarCreateEvent_SetLockEvent()
 end
 
 function CalendarCreateEventInviteList_Update()
---	CalendarCreateEventInviteList.partyMode = CalendarCreateEventFrame.mode == "edit" and IsInRaid(LE_PARTY_CATEGORY_HOME);
-	CalendarCreateEventInviteList.partyMode = false;
-
 	CalendarCreateEventInviteListScrollFrame_Update();
 	CalendarEventInviteList_AnchorSortButtons(CalendarCreateEventInviteList);
 	CalendarEventInviteList_UpdateSortButtons(CalendarCreateEventInviteList);
@@ -4066,17 +4008,7 @@ function CalendarCreateEventInviteListScrollFrame_Update()
 				buttonModIcon:SetTexture();
 				buttonModIcon:Hide();
 			end
---[[
-			-- setup party status
-			buttonPartyIcon = _G[buttonName.."PartyIcon"];
-			if ( not CalendarCreateEventInviteList.partyMode or not UnitInParty(name) or not UnitInRaid(name) ) then
-				buttonPartyIcon:Hide();
-			else
-				buttonPartyIcon:Show();
-				-- the party icon overrides the mod icon
-				buttonModIcon:Hide();
-			end
---]]
+
 			-- setup name
 			-- NOTE: classFilename could be invalid when a character is being transferred
 			local classColor = (classFilename and RAID_CLASS_COLORS[classFilename]) or NORMAL_FONT_COLOR;
@@ -4094,15 +4026,10 @@ function CalendarCreateEventInviteListScrollFrame_Update()
 			buttonStatus:SetTextColor(inviteStatusInfo.color.r, inviteStatusInfo.color.g, inviteStatusInfo.color.b);
 
 			-- fixup anchors
-			if ( CalendarCreateEventInviteList.partyMode ) then
-				buttonNameString:SetPoint("LEFT", buttonPartyIcon, "RIGHT");
-				--buttonClass:SetPoint("LEFT", buttonNameString, "RIGHT", -buttonPartyIcon:GetWidth(), 0);
-			elseif ( buttonModIcon:IsShown() ) then
+			if ( buttonModIcon:IsShown() ) then
 				buttonNameString:SetPoint("LEFT", buttonModIcon, "RIGHT");
-				--buttonClass:SetPoint("LEFT", buttonNameString, "RIGHT", -buttonModIcon:GetWidth(), 0);
 			else
 				buttonNameString:SetPoint("LEFT", button, "LEFT");
-				--buttonClass:SetPoint("LEFT", buttonNameString, "RIGHT", 0, 0);
 			end
 
 			-- set the selected button
@@ -4421,9 +4348,9 @@ end
 function CalendarCreateEventRaidInviteButton_OnEnter(self)
 	GameTooltip:SetOwner(self, "ANCHOR_LEFT");
 	if ( IsInRaid(LE_PARTY_CATEGORY_HOME) or GetNumGroupMembers(LE_PARTY_CATEGORY_HOME) + self.inviteCount > MAX_PARTY_MEMBERS + 1) then
-		GameTooltip:SetText(CALENDAR_TOOLTIP_INVITEMEMBERS_BUTTON_RAID, nil, nil, nil, nil, 1);
+		GameTooltip:SetText(CALENDAR_TOOLTIP_INVITEMEMBERS_BUTTON_RAID, nil, nil, nil, nil, true);
 	else
-		GameTooltip:SetText(CALENDAR_TOOLTIP_INVITEMEMBERS_BUTTON_PARTY, nil, nil, nil, nil, 1);
+		GameTooltip:SetText(CALENDAR_TOOLTIP_INVITEMEMBERS_BUTTON_PARTY, nil, nil, nil, nil, true);
 	end
 	GameTooltip:Show();
 	--GameTooltip_AddNewbieTip(self, nil, 1.0, 1.0, 1.0, CALENDAR_TOOLTIP_INVITETORAID_BUTTON, 1);
@@ -5220,7 +5147,7 @@ function CalendarClassButton_OnEnter(self)
 	-- TODO: set detailed counts info
 	local classData = CalendarClassData[self.class];
 	GameTooltip:SetOwner(self, "ANCHOR_LEFT");
-	GameTooltip:SetText(classData.name, nil, nil, nil, nil, 1);
+	GameTooltip:SetText(classData.name, nil, nil, nil, nil, true);
 	GameTooltip:Show();
 end
 --[[
@@ -5267,16 +5194,16 @@ end
 
 function CalendarClassTotalsButtonOnEnterDummy_OnEnter(self)
 	GameTooltip:SetOwner(self, "ANCHOR_LEFT");
-	GameTooltip:SetText(CALENDAR_TOOLTIP_INVITE_TOTALS, nil, nil, nil, nil, 1);
+	GameTooltip:SetText(CALENDAR_TOOLTIP_INVITE_TOTALS, nil, nil, nil, nil, true);
 	GameTooltip:Show();
 end
 
 function CalendarClassTotalsButton_OnEnter(self)
 	GameTooltip:SetOwner(self, "ANCHOR_LEFT");
 	if ( CalendarEventGetNumInvites() > MAX_PARTY_MEMBERS + 1 ) then
-		GameTooltip:SetText(CALENDAR_TOOLTIP_INVITEMEMBERS_BUTTON_RAID, nil, nil, nil, nil, 1);
+		GameTooltip:SetText(CALENDAR_TOOLTIP_INVITEMEMBERS_BUTTON_RAID, nil, nil, nil, nil, true);
 	else
-		GameTooltip:SetText(CALENDAR_TOOLTIP_INVITEMEMBERS_BUTTON_PARTY, nil, nil, nil, nil, 1);
+		GameTooltip:SetText(CALENDAR_TOOLTIP_INVITEMEMBERS_BUTTON_PARTY, nil, nil, nil, nil, true);
 	end
 	GameTooltip:Show();
 end
@@ -5333,7 +5260,7 @@ end
 
 function CalendarClassTotalsButton_OnEnter(self)
 	GameTooltip:SetOwner(self, "ANCHOR_LEFT");
-	GameTooltip:SetText(CALENDAR_TOOLTIP_INVITE_TOTALS, nil, nil, nil, nil, 1);
+	GameTooltip:SetText(CALENDAR_TOOLTIP_INVITE_TOTALS, nil, nil, nil, nil, true);
 	GameTooltip:Show();
 end
 

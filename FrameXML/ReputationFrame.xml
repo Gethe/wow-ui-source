@@ -21,7 +21,7 @@
 			</Layer>
 			<Layer level="OVERLAY">
 				<FontString name="$parentFactionName" inherits="GameFontHighlightSmall" justifyH="LEFT">
-					<Size x="135" y="10"/>
+					<Size x="135" y="10"/> <!--This is resized in Lua-->
 				</FontString>
 			</Layer>
 		</Layers>
@@ -52,7 +52,7 @@
 				</CheckedTexture>
 				<Animations>
 					<AnimationGroup parentKey="GlowAnim" looping="BOUNCE">
-						<Alpha targetKey="$parent.$parent.Glow" change="-0.75" duration="1.0" smoothing="IN_OUT" order="1"/>
+						<Alpha childKey="Glow" change="-0.75" duration="1.0" smoothing="IN_OUT" order="1"/>
 						<Scripts>
 							<OnPlay>
 								self.loopsRemaining = 5;
@@ -270,6 +270,10 @@
 				_G[self:GetName().."ReputationBarHighlight2"]:Show();
 				if ( self.friendshipID ) then
 					ShowFriendshipReputationTooltip(self.friendshipID, self, "ANCHOR_BOTTOMRIGHT");
+				elseif (_G[self:GetName().."FactionName"]:IsTruncated()) then
+					GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+					GameTooltip:SetText(_G[self:GetName().."FactionName"]:GetText(), nil, nil, nil, nil, true);
+					GameTooltip:Show();
 				end
 			</OnEnter>
 			<OnLeave>
@@ -649,7 +653,7 @@
 							</OnClick>
 							<OnEnter>
 								GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
-								GameTooltip:SetText(REPUTATION_AT_WAR_DESCRIPTION, nil, nil, nil, nil, 1);
+								GameTooltip:SetText(REPUTATION_AT_WAR_DESCRIPTION, nil, nil, nil, nil, true);
 							</OnEnter>
 							<OnLeave function="GameTooltip_Hide"/>
 						</Scripts>
@@ -699,7 +703,7 @@
 							</OnClick>
 							<OnEnter>
 								GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
-								GameTooltip:SetText(REPUTATION_MOVE_TO_INACTIVE, nil, nil, nil, nil, 1);
+								GameTooltip:SetText(REPUTATION_MOVE_TO_INACTIVE, nil, nil, nil, nil, true);
 							</OnEnter>
 							<OnLeave function="GameTooltip_Hide"/>
 						</Scripts>
@@ -734,7 +738,7 @@
 							</OnClick>
 							<OnEnter>
 								GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
-								GameTooltip:SetText(REPUTATION_SHOW_AS_XP, nil, nil, nil, nil, 1);
+								GameTooltip:SetText(REPUTATION_SHOW_AS_XP, nil, nil, nil, nil, true);
 							</OnEnter>
 							<OnLeave function="GameTooltip_Hide"/>
 						</Scripts>
@@ -768,7 +772,7 @@
 							</OnClick>
 							<OnEnter>
 								GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
-								GameTooltip:SetText(SET_FACTION_LFG_BONUS_REP_TOOLTIP, nil, nil, nil, nil, 1);
+								GameTooltip:SetText(SET_FACTION_LFG_BONUS_REP_TOOLTIP, nil, nil, nil, nil, true);
 							</OnEnter>
 							<OnLeave function="GameTooltip_Hide"/>
 						</Scripts>

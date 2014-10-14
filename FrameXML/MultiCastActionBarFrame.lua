@@ -900,9 +900,9 @@ end
 
 function MultiCastSpellButton_UpdateState(self)
 	if ( IsCurrentSpell(self.spellId) ) then
-		self:SetChecked(1);
+		self:SetChecked(true);
 	else
-		self:SetChecked(nil);
+		self:SetChecked(false);
 	end
 end
 

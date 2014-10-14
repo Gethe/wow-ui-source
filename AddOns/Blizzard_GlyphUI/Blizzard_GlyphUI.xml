@@ -369,7 +369,7 @@
 					</OnShow>
 					<OnEnterPressed function="EditBox_ClearFocus"/>
 					<OnEscapePressed function="EditBox_ClearFocus"/>
-					<OnTextChanged function="GlyphFrame_OnTextChanged"/>
+					<OnTextChanged function="GlyphFrameSearchBox_OnTextChanged"/>
 					<OnEditFocusLost>
 						self:HighlightText(0, 0);
 						if ( self:GetText() == "" ) then

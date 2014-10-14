@@ -59,22 +59,16 @@
 			<AbsValue val="14"/>
 		</FontHeight>
 	</Font>
-	<Font name="SystemFont_Shadow_Large_Outline" font="Fonts\FRIZQT__.TTF" outline="NORMAL" virtual="true">
-		<Shadow>
-			<Offset>
-				<AbsDimension x="1" y="-1"/>
-			</Offset>
-			<Color r="0" g="0" b="0"/>
-		</Shadow>
-		<FontHeight>
-			<AbsValue val="16"/>
-		</FontHeight>
-	</Font>
 	<Font name="SystemFont_Huge1" font="Fonts\FRIZQT__.TTF" virtual="true">
 		<FontHeight>
 			<AbsValue val="20"/>
 		</FontHeight>
 	</Font>
+	<Font name="SystemFont_Huge1_Outline" font="Fonts\FRIZQT__.TTF" outline="NORMAL" virtual="true">
+		<FontHeight>
+			<AbsValue val="20"/>
+		</FontHeight>
+	</Font>	
 	<Font name="SystemFont_OutlineThick_Huge2" font="Fonts\FRIZQT__.TTF" outline="THICK" virtual="true">
 		<FontHeight>
 			<AbsValue val="22"/>
@@ -90,7 +84,19 @@
 			<AbsValue val="32"/>
 		</FontHeight>
 	</Font>
-
+	
+	<!-- This font is used as a way to localize numbers (in some locations.) -->
+	<Font name="NumberFont_GameNormal" font="Fonts\FRIZQT__.TTF" virtual="true">
+		<Shadow>
+			<Offset>
+				<AbsDimension x="1" y="-1"/>
+			</Offset>
+			<Color r="0" g="0" b="0"/>
+		</Shadow>
+		<FontHeight>
+			<AbsValue val="10"/>
+		</FontHeight>
+	</Font>
 	<Font name="NumberFont_Shadow_Small" font="Fonts\ARIALN.TTF" virtual="true">
 		<Shadow>
 			<Offset>
@@ -139,6 +145,11 @@
 		</FontHeight>
 	</Font>
 
+	<Font name="QuestFont_Huge" font="Fonts\MORPHEUS.ttf" virtual="true">
+		<FontHeight>
+			<AbsValue val="18"/>
+		</FontHeight>
+	</Font>	
 	<Font name="QuestFont_Shadow_Huge" font="Fonts\MORPHEUS.ttf" virtual="true">
 		<Shadow>
 			<Offset>
@@ -150,9 +161,50 @@
 			<AbsValue val="18"/>
 		</FontHeight>
 	</Font>
+	<Font name="QuestFont_Outline_Huge" font="Fonts\MORPHEUS.ttf" outline="NORMAL" virtual="true">
+		<FontHeight>
+			<AbsValue val="18"/>
+		</FontHeight>
+	</Font>
 	<Font name="QuestFont_Super_Huge" font="Fonts\MORPHEUS.ttf" virtual="true">
 		<FontHeight>
 			<AbsValue val="24"/>
+		</FontHeight>
+		<Color r="1" g=".82" b="0"/>
+	</Font>
+	<Font name="QuestFont_Super_Huge_Outline" font="Fonts\MORPHEUS.ttf" outline="NORMAL" virtual="true">
+		<FontHeight>
+			<AbsValue val="24"/>
+		</FontHeight>
+		<Color r="1" g=".82" b="0"/>
+	</Font>	
+	<Font name="SplashHeaderFont" font="Fonts\MORPHEUS.ttf" virtual="true">
+		<FontHeight>
+			<AbsValue val="24"/>
+		</FontHeight>
+		<Shadow>
+			<Offset>
+				<AbsDimension x="1" y="-2"/>
+			</Offset>
+			<Color r="0" g="0" b="0"/>
+		</Shadow>		
+		<Color r="1" g=".82" b="0"/>
+	</Font>
+	<Font name="Game18Font" font="Fonts\FRIZQT__.ttf" virtual="true">
+		<FontHeight val="18"/>
+	</Font>
+	<Font name="Game24Font" font="Fonts\FRIZQT__.ttf" virtual="true">
+		<FontHeight val="24"/>
+	</Font>
+	<Font name="Game27Font" font="Fonts\FRIZQT__.ttf" virtual="true">
+		<FontHeight val="27"/>
+	</Font>
+	<Font name="Game32Font" font="Fonts\FRIZQT__.ttf" virtual="true">
+		<FontHeight val="32"/>
+	</Font>	
+	<Font name="QuestFont_Enormous" font="Fonts\MORPHEUS.ttf" virtual="true">
+		<FontHeight>
+			<AbsValue val="30"/>
 		</FontHeight>
 		<Color r="1" g=".82" b="0"/>
 	</Font>
@@ -293,6 +345,17 @@
 	<Font name="ChatBubbleFont" font="Fonts\FRIZQT__.TTF" virtual="true">
 		<FontHeight>
 			<AbsValue val="13"/>
+		</FontHeight>
+	</Font>
+
+	<Font name="Game24Font" font="Fonts\FRIZQT__.TTF" virtual="true">
+		<FontHeight>
+			<AbsValue val="24"/>
+		</FontHeight>
+	</Font>
+	<Font name="Game30Font" font="Fonts\FRIZQT__.TTF" virtual="true">
+		<FontHeight>
+			<AbsValue val="30"/>
 		</FontHeight>
 	</Font>
 </Ui>

@@ -1,7 +1,7 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/ ..\FrameXML\UI.xsd">
 <!-- ENGLISH -->
-	<Screen name="WoWTitleScreen" BGColor="0,0,0">
-		<LCDBitmap name="WOWTITLEBG" id="0" type="texture" data="Interface\GLUES\COMMON\Glues-WoW-MPLogo.BLP" miplevel="1" alpha="0">
+	<Screen name="WoWTitleScreen" BGColor="75,26,0">
+		<LCDBitmap name="WOWTITLEBG" id="0" type="texture" data="Interface\GLUES\COMMON\Glues-WoW-WODLOGO.BLP" miplevel="1" alpha="1">
 			<Origin x="0" y="40"/>
 			<Size x="320" y="160" />
 		</LCDBitmap>

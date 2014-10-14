@@ -59,7 +59,7 @@
 		</Scripts>
 		<NormalTexture file="Interface\TargetingFrame\UI-RaidTargetingIcons"/>
 	</Button>
-	<Frame name="CompactRaidFrameManager" enableMouse="true" hidden="true" parent="UIParent">
+	<Frame name="CompactRaidFrameManager" enableMouse="true" frameStrata="LOW" hidden="true" parent="UIParent">
 		<Size x="200" y="140"/>
 		<Anchors>
 			<Anchor point="TOPLEFT" relativeTo="UIParent" relativePoint="TOPLEFT" x="7" y="-140"/>
@@ -462,42 +462,42 @@
 					<Frame name="$parentRaidMarkers" parentKey="raidMarkers" hidden="true">
 						<Size x="200" y="50"/>
 						<Frames>
-							<Button name="$parentRaidMarker1" inherits="CRFManagerRaidIconButtonTemplate" id="1">
+							<Button name="$parentRaidMarker1" inherits="CRFManagerRaidIconButtonTemplate" id="8">
 								<Anchors>
 									<Anchor point="TOPLEFT" relativeTo="$parent" relativePoint="TOPLEFT" x="25" y="0"/>
 								</Anchors>
 							</Button>
-							<Button name="$parentRaidMarker2" inherits="CRFManagerRaidIconButtonTemplate" id="2">
+							<Button name="$parentRaidMarker2" inherits="CRFManagerRaidIconButtonTemplate" id="7">
 								<Anchors>
 									<Anchor point="LEFT" relativeTo="$parentRaidMarker1" relativePoint="RIGHT" x="8" y="0"/>
 								</Anchors>
 							</Button>
-							<Button name="$parentRaidMarker3" inherits="CRFManagerRaidIconButtonTemplate" id="3">
+							<Button name="$parentRaidMarker3" inherits="CRFManagerRaidIconButtonTemplate" id="6">
 								<Anchors>
 									<Anchor point="LEFT" relativeTo="$parentRaidMarker2" relativePoint="RIGHT" x="8" y="0"/>
 								</Anchors>
 							</Button>
-							<Button name="$parentRaidMarker4" inherits="CRFManagerRaidIconButtonTemplate" id="4">
+							<Button name="$parentRaidMarker4" inherits="CRFManagerRaidIconButtonTemplate" id="5">
 								<Anchors>
 									<Anchor point="LEFT" relativeTo="$parentRaidMarker3" relativePoint="RIGHT" x="8" y="0"/>
 								</Anchors>
 							</Button>
-							<Button name="$parentRaidMarker5" inherits="CRFManagerRaidIconButtonTemplate" id="5">
+							<Button name="$parentRaidMarker5" inherits="CRFManagerRaidIconButtonTemplate" id="4">
 								<Anchors>
 									<Anchor point="LEFT" relativeTo="$parentRaidMarker4" relativePoint="RIGHT" x="8" y="0"/>
 								</Anchors>
 							</Button>
-							<Button name="$parentRaidMarker6" inherits="CRFManagerRaidIconButtonTemplate" id="6">
+							<Button name="$parentRaidMarker6" inherits="CRFManagerRaidIconButtonTemplate" id="3">
 								<Anchors>
 									<Anchor point="TOPLEFT" relativeTo="$parentRaidMarker1" relativePoint="BOTTOMLEFT" x="0" y="-2"/>
 								</Anchors>
 							</Button>
-							<Button name="$parentRaidMarker7" inherits="CRFManagerRaidIconButtonTemplate" id="7">
+							<Button name="$parentRaidMarker7" inherits="CRFManagerRaidIconButtonTemplate" id="2">
 								<Anchors>
 									<Anchor point="LEFT" relativeTo="$parentRaidMarker6" relativePoint="RIGHT" x="8" y="0"/>
 								</Anchors>
 							</Button>
-							<Button name="$parentRaidMarker8" inherits="CRFManagerRaidIconButtonTemplate" id="8">
+							<Button name="$parentRaidMarker8" inherits="CRFManagerRaidIconButtonTemplate" id="1">
 								<Anchors>
 									<Anchor point="LEFT" relativeTo="$parentRaidMarker7" relativePoint="RIGHT" x="8" y="0"/>
 								</Anchors>
@@ -560,30 +560,12 @@
 									</Frame>
 								</Frames>
 								<Scripts>
-									<OnMouseDown>
-										if ( self:IsEnabled() ) then
-											self:GetNormalTexture():SetPoint("CENTER", self, "CENTER", 1, -2);
-											local name = self:GetName();
-											_G[name.."Left"]:SetTexture("Interface\\Buttons\\UI-Silver-Button-Down");
-											_G[name.."Middle"]:SetTexture("Interface\\Buttons\\UI-Silver-Button-Down");
-											_G[name.."Right"]:SetTexture("Interface\\Buttons\\UI-Silver-Button-Down");
-										end
-									</OnMouseDown>
-									<OnMouseUp>
-										if ( self:IsEnabled() ) then
-											self:GetNormalTexture():SetPoint("CENTER", self, "CENTER", 0, -1);
-											local name = self:GetName();
-											_G[name.."Left"]:SetTexture("Interface\\Buttons\\UI-Silver-Button-Up");
-											_G[name.."Middle"]:SetTexture("Interface\\Buttons\\UI-Silver-Button-Up");
-											_G[name.."Right"]:SetTexture("Interface\\Buttons\\UI-Silver-Button-Up");
-										end
-									</OnMouseUp>
 									<OnClick>
 										PlaySound("igMainMenuOptionCheckBoxOn");
 										ToggleDropDownMenu(1, nil, self.dropDown, self:GetName(), 0, 0);
 									</OnClick>
 								</Scripts>
-								<NormalTexture file="Interface\RaidFrame\Raid-WorldPing">
+								<NormalTexture parentKey="Icon" file="Interface\RaidFrame\Raid-WorldPing">
 									<Size x="14" y ="14"/>
 									<Anchors>
 										<Anchor point="CENTER" x="0" y="-1"/>
@@ -621,7 +603,7 @@
 								GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
 								GameTooltip:SetText(ALL_ASSIST_DESCRIPTION, nil, nil, nil, nil, true);
 								if ( not self:IsEnabled() ) then
-									GameTooltip:AddLine(ALL_ASSIST_NOT_LEADER_ERROR, RED_FONT_COLOR.r, RED_FONT_COLOR.g, RED_FONT_COLOR.b, 1);
+									GameTooltip:AddLine(ALL_ASSIST_NOT_LEADER_ERROR, RED_FONT_COLOR.r, RED_FONT_COLOR.g, RED_FONT_COLOR.b, true);
 								end
 								GameTooltip:Show();
 							</OnEnter>

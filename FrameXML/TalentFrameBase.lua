@@ -1,11 +1,8 @@
-MAX_NUM_TALENT_TIERS = 6;
-NUM_TALENT_COLUMNS = 3;
-
-
 
 MAX_TALENT_GROUPS = 2;
 MAX_TALENT_TABS = 4;
-MAX_NUM_TALENTS = 18;
+MAX_TALENT_TIERS = 7;
+NUM_TALENT_COLUMNS = 3;
 
 DEFAULT_TALENT_SPEC = "spec1";
 DEFAULT_TALENT_TAB = 1;
@@ -16,13 +13,7 @@ local huge = math.huge;
 local rshift = bit.rshift;
 
 function TalentFrame_Load(TalentFrame)
-	TalentFrame.TALENT_BRANCH_ARRAY={};
-	for i=1, MAX_NUM_TALENT_TIERS do
-		TalentFrame.TALENT_BRANCH_ARRAY[i] = {};
-		for j=1, NUM_TALENT_COLUMNS do
-			TalentFrame.TALENT_BRANCH_ARRAY[i][j] = {id=nil, up=0, left=0, right=0, down=0, leftArrow=0, rightArrow=0, topArrow=0};
-		end
-	end
+
 end
 
 function TalentFrame_Clear(TalentFrame)
@@ -46,12 +37,6 @@ function TalentFrame_Update(TalentFrame, talentUnit)
 		return;
 	end
 
-	local numTalents = GetNumTalents(TalentFrame.inspect);
-	-- Just a reminder error if there are more talents than available buttons
-	if ( numTalents > MAX_NUM_TALENTS ) then
-		message("Too many talents in talent frame!");
-	end
-
 	-- have to disable stuff if not active talent group
 	local disable;
 	if ( TalentFrame.inspect ) then
@@ -64,22 +49,19 @@ function TalentFrame_Update(TalentFrame, talentUnit)
 		TalentFrame.bg:SetDesaturated(disable);
 	end
 	
-	local classDisplayName, class, classID;
-	if( TalentFrame.inspect ) then
-		 classDisplayName, class, classID = UnitClass(talentUnit); 
-	end
-	
-	local rowAvailable = true;
 	local numTalentSelections = 0;
-	for i=1, MAX_NUM_TALENTS do
-		if ( i <= numTalents ) then
+	for tier=1, MAX_TALENT_TIERS do
+		local talentRow = TalentFrame["tier"..tier];
+		local rowAvailable = true;
+		for column=1, NUM_TALENT_COLUMNS do
 			-- Set the button info
-			local name, iconTexture, tier, column, selected, available = GetTalentInfo(i, TalentFrame.inspect, TalentFrame.talentGroup, talentUnit, classID);
-			local button = TalentFrame["tier"..tier]["talent"..column];
-			local talentRow = TalentFrame["tier"..tier];
+			local talentID, name, iconTexture, selected, available = GetTalentInfo(tier, column, TalentFrame.talentGroup, TalentFrame.inspect, talentUnit);
+			local button = talentRow["talent"..column];
+			button.tier = tier;
+			button.column = column;
 			
-			if (button and name and tier <= MAX_NUM_TALENT_TIERS) then
-				button:SetID(i);
+			if (button and name) then
+				button:SetID(talentID);
 
 				SetItemButtonTexture(button, iconTexture);
 				if(button.name ~= nil) then
@@ -114,7 +96,7 @@ function TalentFrame_Update(TalentFrame, talentUnit)
 					else
 						SetDesaturation(button.icon, false);
 						button.highlight:SetAlpha(1);
-						if ( talentRow.selectionId == i ) then
+						if ( talentRow.selectionId == talentID ) then
 							button.learnSelection:Show();
 							numTalentSelections = numTalentSelections + 1;
 						else
@@ -127,17 +109,14 @@ function TalentFrame_Update(TalentFrame, talentUnit)
 			elseif (button) then
 				button:Hide();
 			end
-
-			-- do tier level number after every row
-			if(talentRow.level ~= nil) then
-				if ( mod(i, NUM_TALENT_COLUMNS) == 0 ) then
-					if ( rowAvailable ) then
-						talentRow.level:SetTextColor(1, 0.82, 0);
-					else
-						talentRow.level:SetTextColor(0.5, 0.5, 0.5);
-					end
-					rowAvailable = true;
-				end
+		end
+		
+		-- do tier level number after every row
+		if(talentRow.level ~= nil) then
+			if ( rowAvailable ) then
+				talentRow.level:SetTextColor(1, 0.82, 0);
+			else
+				talentRow.level:SetTextColor(0.5, 0.5, 0.5);
 			end
 		end
 	end
@@ -169,10 +148,11 @@ function TalentFrame_UpdateSpecInfoCache(cache, inspect, pet, talentGroup)
 
 	local numTabs = GetNumSpecializations(inspect);
 	cache.numTabs = numTabs;
+	local sex = pet and UnitSex("pet") or UnitSex("player");
 	for i = 1, MAX_TALENT_TABS do
 		cache[i] = cache[i] or { };
 		if ( i <= numTabs ) then
-			local id, name, description, icon, background = GetSpecializationInfo(i, inspect);
+			local id, name, description, icon, background = GetSpecializationInfo(i, inspect, nil, nil, sex);
 
 			-- cache the info we care about
 			cache[i].name = name;

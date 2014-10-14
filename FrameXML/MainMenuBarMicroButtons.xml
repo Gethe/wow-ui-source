@@ -35,6 +35,11 @@
 	</Button>
 	<Frame name="MicroButtonAlertTemplate" inherits="GlowBoxTemplate" parent="UIParent" enableMouse="true" hidden="true" frameStrata="DIALOG" frameLevel="2" topLevel="true" virtual="true">
 		<Size x="220" y="100"/>
+		<!--KeyValues>
+			Optional
+			<KeyValue key="label" value="DISPLAY_STRING" type="global"/>
+			<KeyValue key="tutorialIndex" value="LE_FRAME_TUTORIAL_X" type="global"/>
+		</KeyValues-->
 		<Layers>
 			<Layer level="OVERLAY">
 				<FontString parentKey="Text" inherits="GameFontHighlightLeft" justifyV="TOP">
@@ -53,6 +58,10 @@
 				<Scripts>
 					<OnClick>
 						self:GetParent():Hide();
+						local tutIdx = self:GetParent().tutorialIndex;
+						if ( tutIdx ) then
+							SetCVarBitfield("closedInfoFrames", tutIdx, true);
+						end
 					</OnClick>
 				</Scripts>
 			</Button>
@@ -66,6 +75,9 @@
 			<OnLoad function="MicroButtonAlert_OnLoad"/>
 			<OnShow>
 				self:SetHeight(self.Text:GetHeight()+42);
+				if ( self.tutorialIndex and GetCVarBitfield("closedInfoFrames", self.tutorialIndex) ) then
+					self:Hide();
+				end
 			</OnShow>
 		</Scripts>
 	</Frame>
@@ -129,7 +141,7 @@
 		<Anchors>
 			<Anchor point="BOTTOMLEFT" relativeTo="CharacterMicroButton" relativePoint="BOTTOMRIGHT">
 				<Offset>
-					<AbsDimension x="-3" y="0"/>
+					<AbsDimension x="-2" y="0"/>
 				</Offset>
 			</Anchor>
 		</Anchors>
@@ -150,7 +162,7 @@
 		<Anchors>
 			<Anchor point="BOTTOMLEFT" relativeTo="SpellbookMicroButton" relativePoint="BOTTOMRIGHT">
 				<Offset>
-					<AbsDimension x="-3" y="0"/>
+					<AbsDimension x="-2" y="0"/>
 				</Offset>
 			</Anchor>
 		</Anchors>
@@ -164,9 +176,8 @@
 				self:RegisterEvent("PLAYER_LEVEL_UP");
 				self:RegisterEvent("UPDATE_BINDINGS");
 				self:RegisterEvent("PLAYER_TALENT_UPDATE");
-				if (IsBlizzCon()) then
-					self:Disable();
-				end
+				self:RegisterEvent("PLAYER_SPECIALIZATION_CHANGED");
+				self:RegisterEvent("PLAYER_CHARACTER_UPGRADE_TALENT_COUNT_CHANGED");
 			</OnLoad>
 			<OnClick function="ToggleTalentFrame"/>
 			<OnEvent function="TalentMicroButton_OnEvent"/>
@@ -176,7 +187,7 @@
 		<Anchors>
 			<Anchor point="BOTTOMLEFT" relativeTo="TalentMicroButton" relativePoint="BOTTOMRIGHT">
 				<Offset>
-					<AbsDimension x="-3" y="0"/>
+					<AbsDimension x="-2" y="0"/>
 				</Offset>
 			</Anchor>
 		</Anchors>
@@ -189,6 +200,9 @@
 				self.tooltipText = MicroButtonTooltipText(ACHIEVEMENT_BUTTON, "TOGGLEACHIEVEMENT");
 				self.newbieText = NEWBIE_TOOLTIP_ACHIEVEMENT;
 				self.minLevel = 10;	--Just used for display. But we know that it will become available by level 10 due to the level 10 achievement.
+				if (IsBlizzCon()) then
+					self:Disable();
+				end
 			</OnLoad>
 			<OnEvent function="AchievementMicroButton_OnEvent"/>
 			<OnClick> 
@@ -200,7 +214,7 @@
 		<Anchors>
 			<Anchor point="BOTTOMLEFT" relativeTo="AchievementMicroButton" relativePoint="BOTTOMRIGHT">
 				<Offset>
-					<AbsDimension x="-3" y="0"/>
+					<AbsDimension x="-2" y="0"/>
 				</Offset>
 			</Anchor>
 		</Anchors>
@@ -214,7 +228,7 @@
 				self.tooltipText = MicroButtonTooltipText(QUESTLOG_BUTTON, "TOGGLEQUESTLOG");
 			</OnEvent>
 			<OnClick>
-				ToggleFrame(QuestLogFrame);
+				ToggleQuestLog();
 			</OnClick>
 		</Scripts>
 	</Button>
@@ -222,7 +236,7 @@
 		<Anchors>
 			<Anchor point="BOTTOMLEFT" relativeTo="QuestLogMicroButton" relativePoint="BOTTOMRIGHT">
 				<Offset>
-					<AbsDimension x="-3" y="0"/>
+					<AbsDimension x="-2" y="0"/>
 				</Offset>
 			</Anchor>
 		</Anchors>
@@ -279,107 +293,11 @@
 			</OnClick>
 		</Scripts>
 	</Button>
-	<Button name="PVPMicroButton" inherits="MainMenuBarMicroButton" parent="UIParent">
+	<Button name="LFDMicroButton" inherits="MainMenuBarMicroButton" parent="UIParent">
 		<Anchors>
 			<Anchor point="BOTTOMLEFT" relativeTo="GuildMicroButton" relativePoint="BOTTOMRIGHT">
 				<Offset>
-					<AbsDimension x="-3" y="0"/>
-				</Offset>
-			</Anchor>
-		</Anchors>
-		<Layers>
-			<Layer level="OVERLAY">
-                <Texture name="$parentTexture" parentKey="texture">
-                    <Size>
-                        <AbsDimension x="36" y="36"/>
-                    </Size>
-                    <Anchors>
-                        <Anchor point="TOP">
-                            <Offset>
-                                <AbsDimension x="6" y="-30"/>
-                            </Offset>
-                        </Anchor>
-                    </Anchors>
-                </Texture>
-            </Layer>
-		</Layers>
-		<Scripts>
-			<OnLoad>
-				self:RegisterEvent("UPDATE_BINDINGS");
-				self:RegisterEvent("NEUTRAL_FACTION_SELECT_RESULT");
-				
-				self:SetNormalTexture("Interface\\Buttons\\UI-MicroButtonCharacter-Up");
-				self:SetPushedTexture("Interface\\Buttons\\UI-MicroButtonCharacter-Down");
-				self:SetHighlightTexture("Interface\\Buttons\\UI-MicroButton-Hilight");
-				self.factionGroup = UnitFactionGroup("player");
-				if ( self.factionGroup and self.factionGroup ~= "Neutral" ) then
-					_G[self:GetName().."Texture"]:SetTexture("Interface\\TargetingFrame\\UI-PVP-"..self.factionGroup);
-				end
-				self.tooltipText = MicroButtonTooltipText(PLAYER_V_PLAYER, "TOGGLECHARACTER4");
-				self.newbieText = NEWBIE_TOOLTIP_PVP;
-				self.minLevel = SHOW_PVP_LEVEL;
-				if (IsBlizzCon()) then
-					self:Disable();
-				end
-			</OnLoad>
-			<OnEvent>
-				if (IsBlizzCon()) then
-					return;
-				end
-				self.tooltipText = MicroButtonTooltipText(PLAYER_V_PLAYER, "TOGGLECHARACTER4");
-				self.newbieText = NEWBIE_TOOLTIP_PVP;
-				self.factionGroup = nil;
-				self.factionGroup = UnitFactionGroup("player");
-				if ( self.factionGroup and self.factionGroup ~= "Neutral" ) then
-					_G[self:GetName().."Texture"]:SetTexture("Interface\\TargetingFrame\\UI-PVP-"..self.factionGroup);
-				end
-				UpdateMicroButtons();
-			</OnEvent>
-			<OnMouseDown>
-				if ( self:IsEnabled() ~= 0 ) then
-					if ( self.down ) then
-						self.down = nil;
-						TogglePVPUI();
-						return;
-					end
-					PVPMicroButton_SetPushed();
-					self.down = 1;
-				end
-			</OnMouseDown>
-			<OnMouseUp>
-				if ( self:IsEnabled() ~= 0 ) then
-					if ( self.down ) then
-						self.down = nil;
-						if ( self:IsMouseOver() ) then
-							TogglePVPUI();
-						end
-						UpdateMicroButtons();
-						return;
-					end
-					if ( self:GetButtonState() == "NORMAL" ) then
-						PVPMicroButton_SetPushed();
-						self.down = 1;
-					else
-						PVPMicroButton_SetNormal();
-						self.down = 1;
-					end
-				end
-			</OnMouseUp>
-			<OnEnable>
-				self:SetAlpha(1);
-				SetDesaturation(self.texture, false);
-			</OnEnable>
-			<OnDisable>
-				self:SetAlpha(0.5);
-				SetDesaturation(self.texture, true);
-			</OnDisable>
-		</Scripts>
-	</Button>
-	<Button name="LFDMicroButton" inherits="MainMenuBarMicroButton" parent="UIParent">
-		<Anchors>
-			<Anchor point="BOTTOMLEFT" relativeTo="PVPMicroButton" relativePoint="BOTTOMRIGHT">
-				<Offset>
-					<AbsDimension x="-3" y="0"/>
+					<AbsDimension x="-2" y="0"/>
 				</Offset>
 			</Anchor>
 		</Anchors>
@@ -387,9 +305,9 @@
 			<OnLoad>
 				LoadMicroButtonTextures(self, "LFG");
 				SetDesaturation(self:GetDisabledTexture(), true);
-				self.tooltipText = MicroButtonTooltipText(DUNGEONS_BUTTON, "TOGGLELFGPARENT");
+				self.tooltipText = MicroButtonTooltipText(DUNGEONS_BUTTON, "TOGGLEGROUPFINDER");
 				self.newbieText = NEWBIE_TOOLTIP_LFGPARENT;
-				self.minLevel = SHOW_LFD_LEVEL;
+				self.minLevel = math.min(SHOW_LFD_LEVEL, SHOW_PVP_LEVEL);
 				if (IsBlizzCon()) then
 					self:Disable();
 				end
@@ -398,7 +316,7 @@
 				if (IsBlizzCon()) then
 					return;
 				end
-				self.tooltipText = MicroButtonTooltipText(DUNGEONS_BUTTON, "TOGGLELFGPARENT");
+				self.tooltipText = MicroButtonTooltipText(DUNGEONS_BUTTON, "TOGGLEGROUPFINDER");
 				self.newbieText = NEWBIE_TOOLTIP_LFGPARENT;
 				UpdateMicroButtons();
 			</OnEvent>
@@ -411,7 +329,7 @@
 		<Anchors>
 			<Anchor point="BOTTOMLEFT" relativeTo="LFDMicroButton" relativePoint="BOTTOMRIGHT">
 				<Offset>
-					<AbsDimension x="-3" y="0"/>
+					<AbsDimension x="-2" y="0"/>
 				</Offset>
 			</Anchor>
 		</Anchors>
@@ -419,11 +337,11 @@
 			<OnLoad>
 				LoadMicroButtonTextures(self, "Mounts");
 				SetDesaturation(self:GetDisabledTexture(), true);
-				self.tooltipText = MicroButtonTooltipText(MOUNTS_AND_PETS, "TOGGLEPETJOURNAL");
+				self.tooltipText = MicroButtonTooltipText(COLLECTIONS, "TOGGLECOLLECTIONS");
 				self.newbieText = NEWBIE_TOOLTIP_MOUNTS_AND_PETS;
 			</OnLoad>
 			<OnEvent>
-				self.tooltipText = MicroButtonTooltipText(MOUNTS_AND_PETS, "TOGGLEPETJOURNAL");
+				self.tooltipText = MicroButtonTooltipText(COLLECTIONS, "TOGGLECOLLECTIONS");
 				self.newbieText = NEWBIE_TOOLTIP_MOUNTS_AND_PETS;
 				UpdateMicroButtons();
 			</OnEvent>
@@ -436,7 +354,7 @@
 		<Anchors>
 			<Anchor point="BOTTOMLEFT" relativeTo="CompanionsMicroButton" relativePoint="BOTTOMRIGHT">
 				<Offset>
-					<AbsDimension x="-3" y="0"/>
+					<AbsDimension x="-2" y="0"/>
 				</Offset>
 			</Anchor>
 		</Anchors>
@@ -468,7 +386,7 @@
 		<Anchors>
 			<Anchor point="BOTTOMLEFT" relativeTo="EJMicroButton" relativePoint="BOTTOMRIGHT">
 				<Offset>
-					<AbsDimension x="-3" y="0"/>
+					<AbsDimension x="-2" y="0"/>
 				</Offset>
 			</Anchor>
 		</Anchors>
@@ -477,9 +395,15 @@
 				LoadMicroButtonTextures(self, "BStore");
 				self.tooltipText = BLIZZARD_STORE;
 				self:RegisterEvent("STORE_STATUS_CHANGED");
+				if (IsBlizzCon()) then
+					self:Disable();
+				end
 			</OnLoad>
 			<OnEvent>
 				UpdateMicroButtons();
+				if (IsBlizzCon()) then
+					self:Disable();
+				end
 			</OnEvent>
 			<OnClick function="ToggleStoreUI"/>
 		</Scripts>
@@ -488,7 +412,7 @@
 		<Anchors>
 			<Anchor point="BOTTOMLEFT" relativeTo="EJMicroButton" relativePoint="BOTTOMRIGHT">
 				<Offset>
-					<AbsDimension x="-3" y="0"/>
+					<AbsDimension x="-2" y="0"/>
 				</Offset>
 			</Anchor>
 		</Anchors>
@@ -640,7 +564,7 @@
 		<Anchors>
 			<Anchor point="BOTTOMLEFT" relativeTo="MainMenuMicroButton" relativePoint="BOTTOMRIGHT">
 				<Offset>
-					<AbsDimension x="-3" y="0"/>
+					<AbsDimension x="-2" y="0"/>
 				</Offset>
 			</Anchor>
 		</Anchors>
@@ -649,6 +573,9 @@
 				LoadMicroButtonTextures(self, "Help");
 				self.tooltipText = HELP_BUTTON;
 				self.newbieText = NEWBIE_TOOLTIP_HELP;
+				if (IsBlizzCon()) then
+					self:Disable();
+				end
 			</OnLoad>
 			<OnClick function="ToggleHelpFrame"/>
 		</Scripts>
@@ -673,6 +600,40 @@
 			<OnLoad>
 				MicroButtonAlert_OnLoad(self);
 				self.Text:SetText(COMPANIONS_MICRO_BUTTON_NEW_BATTLE_SLOT);
+			</OnLoad>
+		</Scripts>
+	</Frame>
+	<Frame name="LFDMicroButtonAlert" inherits="MicroButtonAlertTemplate">
+		<Anchors>
+			<Anchor point="BOTTOM" relativeTo="LFDMicroButton" relativePoint="TOP" x="0" y="-8"/>
+		</Anchors>
+		<Scripts>
+			<OnLoad>
+				MicroButtonAlert_OnLoad(self);
+				self.Text:SetText(LFG_MICRO_BUTTON_SPEC_TUTORIAL);
+			</OnLoad>
+		</Scripts>
+	</Frame>
+	<Frame name="CollectionsMicroButtonAlert" inherits="MicroButtonAlertTemplate">
+		<Anchors>
+			<Anchor point="BOTTOM" relativeTo="CompanionsMicroButton" relativePoint="TOP" x="0" y="-8"/>
+		</Anchors>
+		<Scripts>
+			<OnLoad>
+				MicroButtonAlert_OnLoad(self);
+				self.Text:SetText(COLLECTIONS_MICRO_BUTTON_SPEC_TUTORIAL);
+			</OnLoad>
+		</Scripts>
+	</Frame>
+	<Frame name="ToyBoxMicroButtonAlert" inherits="MicroButtonAlertTemplate">
+		<Anchors>
+			<Anchor point="BOTTOM" relativeTo="CompanionsMicroButton" relativePoint="TOP" x="0" y="-8"/>
+		</Anchors>
+		<Scripts>
+			<OnLoad>
+				MicroButtonAlert_OnLoad(self);
+				self.Text:SetText(TOYBOX_MICRO_BUTTON_SPEC_TUTORIAL);
+				self:SetHeight(CollectionsMicroButtonAlert.Text:GetHeight()+42);
 			</OnLoad>
 		</Scripts>
 	</Frame>

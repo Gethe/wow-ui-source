@@ -186,6 +186,9 @@
 		<Anchors>
 			<Anchor point="CENTER" x="0" y="-75"/>
 		</Anchors>
+		<HitRectInsets>
+			<AbsInset left="8" right="5" top="3" bottom="3"/>
+		</HitRectInsets>
 		<Layers>
 			<Layer level="BORDER">
 				<Texture file="Interface\TimeManager\ClockBackground" setAllPoints="true">
@@ -193,7 +196,7 @@
 				</Texture>
 			</Layer>
 			<Layer level="ARTWORK">
-				<FontString name="TimeManagerClockTicker" inherits="GameFontHighlightSmall">
+				<FontString name="TimeManagerClockTicker" inherits="WhiteNormalNumberFont">
 					<Anchors>
 						<Anchor point="CENTER" x="3" y="1"/>
 					</Anchors>

@@ -1,20 +1,17 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\FrameXML\UI.xsd">
 	<Script file="MainMenuBarBagButtons.lua"/>
-	<Frame name="ItemAnimTemplate" virtual="true" alpha="1">
+	<Frame name="ItemAnimTemplate" virtual="true">
 		<Animations>
-			<AnimationGroup target="$parentAnimIcon" parentKey="flyin">
-				<Scale target="$parentAnimIcon" scaleX=".125" scaleY=".125" duration=".2" order="3"/>
-				<Scale target="$parentAnimIcon" scaleX="2" scaleY="2" duration=".5" order="2"/>
-				<Alpha target="$parentAnimIcon" change="1" duration=".25" order="2"/>
-				<Path target="$parentAnimIcon" curve="SMOOTH" duration=".5" order="2">
+			<AnimationGroup parentKey="flyin">
+				<Scale childKey="animIcon" fromScaleX="0.125" fromScaleY="0.125" toScaleX="1" toScaleY="1" duration="1" order="1"/>
+				<Alpha childKey="animIcon" fromAlpha="0" toAlpha="1" duration="1" order="1"/>
+				<Path childKey="animIcon" curve="SMOOTH" duration="1" order="1">
 					<ControlPoints>
 						<ControlPoint offsetX="-15" offsetY="30"/>
 						<ControlPoint offsetX="-75" offsetY="60"/>
 					</ControlPoints>
 				</Path>
-				<Scale target="$parentAnimIcon" scaleX=".5" scaleY=".5" duration="0" order="1"/>
-				<Alpha target="$parentAnimIcon" change="-1" duration="0" order="1"/>
 				<Scripts>
 					<OnPlay>
 						local iconFrame = self:GetParent();
@@ -32,26 +29,19 @@
 		</Animations>
 		<Layers>
 			<Layer level="OVERLAY">
-				<Texture name="$parentAnimIcon" parentKey="animIcon" setAllPoints="true">
-				</Texture>
+				<Texture  parentKey="animIcon" setAllPoints="true"/>
 			</Layer>
 		</Layers>
 		<Scripts>
-			<OnLoad>
-				ItemAnim_OnLoad(self); 
-				--need to call this from the inheriting frame if it has an OnLoad
-			</OnLoad>
-			<OnEvent>
-				ItemAnim_OnEvent(self, event, ...);
-				--also might need to call this from inheriting frame
-			</OnEvent>
+			<OnLoad function="ItemAnim_OnLoad"/>
+			<OnEvent function="ItemAnim_OnEvent"/>
 		</Scripts>
 	</Frame>
-	<CheckButton name="BagSlotButtonTemplate" inherits="ItemButtonTemplate,ItemAnimTemplate" virtual="true">
+	<CheckButton name="BagSlotButtonTemplate" inherits="ItemButtonTemplate, ItemAnimTemplate" virtual="true">
 		<Size x="30" y="30"/>
 		<Scripts>
 			<OnLoad>
-				ItemAnim_OnLoad(self);
+				ItemAnim_OnLoad(self)
 				PaperDollItemSlotButton_OnLoad(self);
 				self:RegisterEvent("BAG_UPDATE_DELAYED");
 				self:RegisterEvent("INVENTORY_SEARCH_UPDATE");
@@ -59,6 +49,7 @@
 				self.UpdateTooltip = BagSlotButton_OnEnter;
 				_G[self:GetName().."NormalTexture"]:SetWidth(50);
 				_G[self:GetName().."NormalTexture"]:SetHeight(50);
+				self.IconBorder:SetSize(30, 30);
 				_G[self:GetName().."Count"]:SetPoint("BOTTOMRIGHT", -2, 2);
 				self.maxDisplayCount = 999;
 			</OnLoad>
@@ -105,7 +96,7 @@
 		</Scripts>
 		<CheckedTexture alphaMode="ADD" file="Interface\Buttons\CheckButtonHilight"/>
 	</CheckButton>
-	<CheckButton name="MainMenuBarBackpackButton" inherits="ItemButtonTemplate,ItemAnimTemplate" parent="MainMenuBarArtFrame" id="0">
+	<CheckButton name="MainMenuBarBackpackButton" inherits="ItemButtonTemplate, ItemAnimTemplate" parent="MainMenuBarArtFrame" id="0">
 		<Size>
 			<AbsDimension x="30" y="30"/>
 		</Size>
@@ -118,7 +109,7 @@
 		</Anchors>
 		<Scripts>
 			<OnLoad>
-				ItemAnim_OnLoad(self);
+				ItemAnim_OnLoad(self)
 				self:RegisterForClicks("LeftButtonUp", "RightButtonUp");
 				MainMenuBarBackpackButtonIconTexture:SetTexture("Interface\\Buttons\\Button-Backpack-Up");
 				self:RegisterEvent("PLAYER_ENTERING_WORLD");

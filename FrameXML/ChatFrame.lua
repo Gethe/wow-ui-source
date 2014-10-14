@@ -902,9 +902,6 @@ local function ExecuteCastSequence(sequence, target)
 	else
 		CastSpellByName(spell, target);
 	end
-	if ( spell == "" ) then
-		SetNextCastSequence(sequence, entry);
-	end
 end
 
 function QueryCastSequence(sequence)
@@ -1057,6 +1054,36 @@ function SecureCmdUseItem(name, bag, slot, target)
 	end
 end
 
+--These functions are terrible, but they support legacy slash commands.
+function ValueToBoolean(valueToCheck, defaultValue, defaultReturn)
+	if ( type(valueToCheck) == "nil" ) then
+		return false;
+	elseif ( type(valueToCheck) == "boolean" ) then
+		return valueToCheck;
+	elseif ( type(valueToCheck) == "number" ) then
+		return valueToCheck ~= 0;
+	elseif ( type(valueToCheck) == "string" ) then
+		return StringToBoolean(valueToCheck, defaultReturn);
+	else
+		return defaultReturn;
+	end
+end
+
+function StringToBoolean(stringToCheck, defaultReturn)
+	stringToCheck = string.lower(stringToCheck);
+	local firstChar = string.sub(stringToCheck, 1, 1);
+	
+	if ( firstChar == "0" or firstChar == "n" or firstChar == "f" or stringToCheck == "off" or stringToCheck == "disabled" ) then
+		return false;
+	elseif ( firstChar == "1" or firstChar == "2" or firstChar == "3" or firstChar == "4" or firstChar == "5" or
+				firstChar == "6" or firstChar == "7" or firstChar == "8" or firstChar == "9" or firstChar == "y" or
+				firstChar == "t" or stringToCheck == "on" or stringToCheck == "enabled" ) then
+		return true;
+	end
+	
+	return defaultReturn;
+end
+
 SecureCmdList["STARTATTACK"] = function(msg)
 	local action, target = SecureCmdOptionParse(msg);
 	if ( action ) then
@@ -1073,7 +1100,21 @@ SecureCmdList["STOPATTACK"] = function(msg)
 	end
 end
 
+-- We want to prefer spells for /cast and items for /use but we can use either
 SecureCmdList["CAST"] = function(msg)
+    local action, target = SecureCmdOptionParse(msg);
+    if ( action ) then
+    	local spell = GetSpellInfo(action)
+		local name, bag, slot = SecureCmdItemParse(action);
+		if ( spell ) then
+			CastSpellByName(action, target);
+		elseif ( slot or GetItemInfo(name) ) then
+			SecureCmdUseItem(name, bag, slot, target);
+		end
+    end
+end
+
+SecureCmdList["USE"] = function(msg)
     local action, target = SecureCmdOptionParse(msg);
     if ( action ) then
 		local name, bag, slot = SecureCmdItemParse(action);
@@ -1084,7 +1125,6 @@ SecureCmdList["CAST"] = function(msg)
 		end
     end
 end
-SecureCmdList["USE"] = SecureCmdList["CAST"];
 
 SecureCmdList["CASTRANDOM"] = function(msg)
     local actions, target = SecureCmdOptionParse(msg);
@@ -1238,49 +1278,49 @@ SecureCmdList["TARGET_EXACT"] = function(msg)
 		if ( not target or target == "target" ) then
 			target = action;
 		end
-		TargetUnit(target, 1);
+		TargetUnit(target, true);
 	end
 end
 
 SecureCmdList["TARGET_NEAREST_ENEMY"] = function(msg)
 	local action = SecureCmdOptionParse(msg);
 	if ( action ) then
-		TargetNearestEnemy(action);
+		TargetNearestEnemy(ValueToBoolean(action, false));
 	end
 end
 
 SecureCmdList["TARGET_NEAREST_ENEMY_PLAYER"] = function(msg)
 	local action = SecureCmdOptionParse(msg);
 	if ( action ) then
-		TargetNearestEnemyPlayer(action);
+		TargetNearestEnemyPlayer(ValueToBoolean(action, false));
 	end
 end
 
 SecureCmdList["TARGET_NEAREST_FRIEND"] = function(msg)
-	local action = SecureCmdOptionParse(msg);
+	local action = SecureCmdOptionParse(msg);	
 	if ( action ) then
-		TargetNearestFriend(action);
+		TargetNearestFriend(ValueToBoolean(action, false));
 	end
 end
 
 SecureCmdList["TARGET_NEAREST_FRIEND_PLAYER"] = function(msg)
 	local action = SecureCmdOptionParse(msg);
 	if ( action ) then
-		TargetNearestFriendPlayer(action);
+		TargetNearestFriendPlayer(ValueToBoolean(action, false));
 	end
 end
 
 SecureCmdList["TARGET_NEAREST_PARTY"] = function(msg)
 	local action = SecureCmdOptionParse(msg);
 	if ( action ) then
-		TargetNearestPartyMember(action);
+		TargetNearestPartyMember(ValueToBoolean(action, false));
 	end
 end
 
 SecureCmdList["TARGET_NEAREST_RAID"] = function(msg)
 	local action = SecureCmdOptionParse(msg);
 	if ( action ) then
-		TargetNearestRaidMember(action);
+		TargetNearestRaidMember(ValueToBoolean(action, false));
 	end
 end
 
@@ -1557,6 +1597,21 @@ SecureCmdList["DISMISSBATTLEPET"] = function(msg)
 		if ( petID ) then
 			C_PetJournal.SummonPetByGUID(petID);
 		end
+	end
+end
+
+SecureCmdList["PET_DISMISS"] = function(msg)
+	if ( PetCanBeAbandoned() ) then
+		CastSpellByID(HUNTER_DISMISS_PET);
+	else
+		PetDismiss();
+	end
+end
+
+SecureCmdList["USE_TOY"] = function(msg)
+	local toyName = SecureCmdOptionParse(msg);
+	if ( toyName and toyName ~= "" ) then
+		UseToyByName(toyName)
 	end
 end
 
@@ -2144,12 +2199,8 @@ SlashCmdList["DUNGEONS"] = function(msg)
 	ToggleLFDParentFrame();
 end
 
-SlashCmdList["RAIDBROWSER"] = function(msg)
-	ToggleRaidBrowser();
-end
-
 SlashCmdList["BENCHMARK"] = function(msg)
-	SetTaxiBenchmarkMode(msg);
+	SetTaxiBenchmarkMode(ValueToBoolean(msg), true);
 end
 
 SlashCmdList["DISMOUNT"] = function(msg)
@@ -2302,9 +2353,20 @@ end
 
 
 SlashCmdList["WARGAME"] = function(msg)
-	local area = msg;
-	if area and area == "" then area = nil end 
-	StartWarGame("target", area );
+	-- Parameters are (playername, area, isTournamentMode). Since the player name can be multiple words,
+	-- we pass in theses parameters as a whitespace delimited string and let the C side tokenize it
+	StartWarGameByName(msg);
+end
+
+SlashCmdList["SPECTATOR_WARGAME"] = function(msg)
+	local target1, target2, size, area, isTournamentMode = strmatch(msg, "^([^%s]+)%s+([^%s]+)%s+([^%s]+)%s*([^%s]*)%s*([^%s]*)")
+	if (not target1 or not target2 or not size) then
+		return;
+	end
+	local presenceID1 = BNet_GetPresenceID(target1);
+	local presenceID2 = BNet_GetPresenceID(target2);
+	if (area == "" or area == "nil" or area == "0") then area = nil end 
+	StartSpectatorWarGame(presenceID1 or target1, presenceID2 or target2, size, area, ValueToBoolean(isTournamentMode));
 end
 
 SlashCmdList["GUILDFINDER"] = function(msg)
@@ -2421,6 +2483,7 @@ function ChatFrame_OnLoad(self)
 	self:RegisterEvent("BN_DISCONNECTED");
 	self:RegisterEvent("PLAYER_REPORT_SUBMITTED");
 	self:RegisterEvent("NEUTRAL_FACTION_SELECT_RESULT");
+	self:RegisterEvent("CHARACTER_UPGRADE_SPELL_TIER_SET");
 	self.tellTimer = GetTime();
 	self.channelList = {};
 	self.zoneChannelList = {};
@@ -2722,6 +2785,12 @@ function ChatFrame_SystemEventHandler(self, event, ...)
 		if (arg1 == "pet" and UnitName("pet") ~= UNKNOWNOBJECT) then
 			LevelUpDisplay_ChatPrint(self, UnitLevel("pet"), LEVEL_UP_TYPE_PET);
 		end
+	elseif ( event == "CHARACTER_UPGRADE_SPELL_TIER_SET" ) then
+		local tierIndex = ...;
+		if (tierIndex > 0) then
+			LevelUpDisplay_ChatPrint(self, tierIndex, LEVEL_UP_TYPE_SPELL_BUCKET);
+		end
+		return true;
 	elseif ( event == "CHARACTER_POINTS_CHANGED" ) then
 		local arg1 = ...;
 		local info = ChatTypeInfo["SYSTEM"];
@@ -2831,7 +2900,12 @@ end
 
 function ChatFrame_MessageEventHandler(self, event, ...)
 	if ( strsub(event, 1, 8) == "CHAT_MSG" ) then
-		local arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10, arg11, arg12, arg13, arg14 = ...;
+		local arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10, arg11, arg12, arg13, arg14, arg15, arg16 = ...;
+		if (arg16) then
+			-- hiding sender in letterbox: do NOT even show in chat window (only shows in cinematic frame)
+			return true;
+		end
+
 		local type = strsub(event, 10);
 		local info = ChatTypeInfo[type];
 		
@@ -2985,10 +3059,6 @@ function ChatFrame_MessageEventHandler(self, event, ...)
 			if ( not globalstring ) then
 				globalstring = _G["CHAT_"..arg1.."_NOTICE"];
 			end
-			if ( arg10 > 0 ) then
-				arg4 = arg4.." "..arg10;
-			end
-			
 			local accessID = ChatHistory_GetAccessID(Chat_GetChatCategory(type), arg8);
 			local typeID = ChatHistory_GetAccessID(infoType, arg8, arg12);
 			self:AddMessage(format(globalstring, arg8, arg4), info.r, info.g, info.b, info.id, false, accessID, typeID);
@@ -3003,6 +3073,8 @@ function ChatFrame_MessageEventHandler(self, event, ...)
 		elseif ( type == "BN_CONVERSATION_LIST" ) then
 			local channelLink = format(CHAT_BN_CONVERSATION_GET_LINK, arg8, MAX_WOW_CHAT_CHANNELS + arg8);
 			local message = format(CHAT_BN_CONVERSATION_LIST, channelLink, arg1);
+			local accessID = ChatHistory_GetAccessID(Chat_GetChatCategory(type), arg8);
+			local typeID = ChatHistory_GetAccessID(infoType, arg8, arg12);
 			self:AddMessage(message, info.r, info.g, info.b, info.id, false, accessID, typeID);
 		elseif ( type == "BN_INLINE_TOAST_ALERT" ) then	
 			if ( arg1 == "FRIEND_OFFLINE" and not BNet_ShouldProcessOfflineEvents() ) then
@@ -4467,7 +4539,7 @@ function ChatMenu_Yell(self)
 end
 
 function ChatMenu_Whisper(self)
-	local editBox = ChatFrame_OpenChat(SLASH_SMART_WHISPER1.." ", chatFrame);
+	local editBox = ChatFrame_OpenChat(SLASH_SMART_WHISPER1.." ");
 	editBox:SetText(SLASH_SMART_WHISPER1.." "..editBox:GetText());
 end
 
@@ -4793,7 +4865,7 @@ function Chat_GetColoredChatName(chatType, chatTarget)
 		local info = ChatTypeInfo["CHANNEL"..chatTarget];
 		local colorString = format("|cff%02x%02x%02x", info.r * 255, info.g * 255, info.b * 255);
 		local chanNum, channelName = GetChannelName(chatTarget);
-		return format("%s|Hchannel:channel:%d|h[%d. %s]|h", colorString, chanNum, chanNum, gsub(channelName, "%s%-%s.*", ""));	--The gsub removes zone-specific markings (e.g. "General - Ironforge" to "General")
+		return format("%s|Hchannel:channel:%d|h[%d. %s]|h|r", colorString, chanNum, chanNum, gsub(channelName, "%s%-%s.*", ""));	--The gsub removes zone-specific markings (e.g. "General - Ironforge" to "General")
 	elseif ( chatType == "WHISPER" ) then
 		local info = ChatTypeInfo["WHISPER"];
 		local colorString = format("|cff%02x%02x%02x", info.r * 255, info.g * 255, info.b * 255);

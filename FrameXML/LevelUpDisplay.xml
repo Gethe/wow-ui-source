@@ -123,6 +123,13 @@
 						<Anchor point="LEFT" relativeTo="$parentRarityIcon" relativePoint="RIGHT" x="2" y="0"/>
 					</Anchors>
 				</FontString>
+
+				<!-- Spell bucket -->
+				<FontString parentKey="middleName" inherits="GameFontNormalLarge" justifyH="LEFT">
+					<Anchors>
+						<Anchor point="LEFT" relativeKey="$parent.icon" relativePoint="RIGHT" x="10" y="0"/>
+					</Anchors>
+				</FontString>
 			</Layer>
 			<Layer level="OVERLAY">
 				<Texture name="$parentIconBorder" parentKey="iconBorder" file="Interface\Common\WhiteIconFrame" hidden="true">
@@ -149,8 +156,176 @@
 		</Layers>
 	</Frame>
 
+	<Frame name="LevelUpDraenorTalentTemplate" virtual="true">
+		<Animations>
+			<AnimationGroup parentKey="sideAnimIn">
+				<Alpha change="1" duration="0.4" order="2"/>
+				<Scripts>
+					<OnFinished>
+						LevelUpDisplaySide_AnimStep(LevelUpDisplaySide);
+					</OnFinished>
+				</Scripts>
+			</AnimationGroup>
+			<AnimationGroup parentKey="showAnim">
+				<Alpha change="1" duration="0.4" order="1" />
+				<Alpha change="0" duration="0.87" order="1">
+					<Scripts>
+						<OnPlay>
+							self:SetScript("OnUpdate", LevelUpDraenorTalent_SpinnerUpdate);
+						</OnPlay>
+						<OnStop>
+							self:SetScript("OnUpdate", nil);
+						</OnStop>
+						<OnFinished>
+							self:SetScript("OnUpdate", nil);
+						</OnFinished>
+					</Scripts>
+				</Alpha>
+				<Alpha duration="0" smoothing="IN" order="1" change="1" childKey="LeftCap"/>
+				<Alpha duration="0" smoothing="IN" order="1" change="1" childKey="RightCap"/>
+				<Alpha startDelay="0.5" duration="0.37" smoothing="IN" order="1" change="-1" childKey="SpinningPlateLeft"/>
+				<Alpha startDelay="0.5" duration="0.37" smoothing="IN" order="1" change="-1" childKey="SpinningPlateRight"/>
+				<Alpha startDelay="0.87" duration="0.01" order="1" change="-1" childKey="LeftCap"/>
+				<Alpha startDelay="0.87" duration="0.01" order="1" change="-1" childKey="RightCap"/>
+				<Alpha targetKey="$parent.$parent.Icon" startDelay="0.53" smoothing="IN_OUT" duration="0.4" order="1" change="1"/>
+                <Translation targetKey="$parent.$parent.Icon" startDelay="0.53" smoothing="IN_OUT" duration="0.4" order="1" offsetX="-240"/>
+                <Alpha childKey="book" startDelay="0.07" duration="0.27" order="2" change="1"/>
+                <Alpha childKey="book2" startDelay="0.07" smoothing="IN_OUT" duration="0.27" order="2" change="1"/>
+                <Alpha childKey="book2" smoothing="IN" duration="0.73" order="3" change="-1"/>
+                <Alpha childKey="Icon2" startDelay="0.07" smoothing="IN_OUT" duration="0.27" order="2" change="1"/>
+                <Alpha childKey="Icon2" smoothing="IN" duration="0.73" order="3" change="-1"/>
+                <Alpha childKey="spelltext" startDelay="0.07" duration="0.27" order="2" change="1"/>
+                <Translation startDelay="0.66" smoothing="IN_OUT" duration="0.54" order="4" offsetX="-289"/>
+                <Alpha startDelay="0.66" smoothing="IN" duration="0.27" order="4" change="-0.2"/>
+                <Alpha startDelay="0.93" smoothing="OUT" duration="0.27" order="4" change="0.2"/>
+                <Alpha childKey="descriptionshadow" startDelay="0.07" smoothing="IN_OUT" duration="0.5" order="5" change="1"/>
+                <Alpha childKey="descriptiontext" startDelay="0.07" smoothing="IN_OUT" duration="0.5" order="5" change="1"/>
+                <Alpha startDelay="10.23" smoothing="OUT" duration="0.6" order="6" change="-1"/>
+				<Scripts>
+					<OnFinished>
+						LevelUpDisplay_AnimStep(LevelUpDisplay, false);
+					</OnFinished>
+				</Scripts>
+			</AnimationGroup>
+		</Animations>
+		<Size x="230" y="44"/>
+		<Layers>
+			<Layer level="BORDER">
+				<Texture parentKey="Backplate" atlas="minortalents-backplate" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="BOTTOM"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="descriptionshadow" hidden="false" alpha="0" atlas="minortalents-descriptionshadow" useAtlasSize="true">
+                    <Anchors>
+                        <Anchor point="TOP" relativePoint="BOTTOM" relativeKey="$parent.Backplate"/>
+                    </Anchors>
+                </Texture>
+			</Layer>
+			<Layer level="ARTWORK">
+				<Texture parentKey="SpinningPlateLeft" atlas="_minortalents-iconspinner" alpha="1">
+					<Size x="222" y="45"/>
+					<Anchors>
+						<Anchor point="LEFT" x="8" y="12"/>
+					</Anchors>
+					<TexCoords left="0" right="0.43359375" top="0" bottom="1"/>
+				</Texture>
+				<Texture parentKey="SpinningPlateRight" atlas="_minortalents-iconspinner" hidden="true" alpha="1">
+					<Size x="1" y="45"/>
+					<Anchors>
+						<Anchor point="LEFT" relativeKey="$parent.SpinningPlateLeft" relativePoint="RIGHT"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="Icon" alpha="0">
+					<Size x="38" y="38"/>
+					<Anchors>
+						<Anchor point="CENTER" x="120" y="12"/>
+					</Anchors>
+				</Texture>
+				<FontString inherits="GameFontNormalLarge" text="LEVEL_UP_DRAENOR_TALENT">
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent.Backplate" x="0" y="1"/>
+					</Anchors>
+					<Color r="0.0" g="1.0" b="0.0"/>
+				</FontString>
+				<FontString parentKey="spelltext" inherits="GameFontNormalLarge" alpha="0">
+                    <Anchors>
+                        <Anchor point="LEFT"  relativeKey="$parent.Icon" relativePoint="RIGHT" x="-230" y="0"/>
+                    </Anchors>
+                </FontString>
+				<FontString parentKey="descriptiontext" inherits="GameFontNormalSmall2" alpha="0" justifyV="TOP">
+					<Size x="256" y="0"/>
+					<Anchors>
+						<Anchor point="TOP" relativePoint="TOP" relativeKey="$parent.descriptionshadow" y="-16"/>
+					</Anchors>
+					<Color r="1" b="1" g="1"/>
+				</FontString>
+			</Layer>
+            <Layer level="ARTWORK" textureSubLevel="1">
+                <Texture parentKey="Icon2" hidden="false" alpha="0" alphaMode="ADD">
+                   <Size x="38" y="38"/>
+                    <Anchors>
+                        <Anchor point="CENTER" relativeKey="$parent.Icon" x="-240" y="0"/>
+                    </Anchors>
+                </Texture>
+            </Layer>
+            <Layer level="ARTWORK" textureSubLevel="2">
+				<Texture parentKey="LeftCap" atlas="minortalents-iconcover" useAtlasSize="true" alpha="0">
+					<Anchors>
+						<Anchor point="LEFT" relativeKey="$parent.SpinningPlateLeft" relativePoint="LEFT"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="RightCap" atlas="minortalents-iconcover" useAtlasSize="true" alpha="0">
+					<Anchors>
+						<Anchor point="RIGHT" relativeKey="$parent.SpinningPlateRight" relativePoint="RIGHT"/>
+					</Anchors>
+					<TexCoords left="1.0" right="0.0" top="0.0" bottom="1.0"/>
+				</Texture>
+			</Layer>
+			<Layer level="OVERLAY">
+				<Texture parentKey="book" atlas="minortalents-icon-book" alpha="0">
+					<Size x="22" y="22"/>
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent.Icon" relativePoint="BOTTOMLEFT" x="-242" y="2"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="OVERLAY" textureSubLevel="1">
+				<Texture parentKey="book2" alpha="0" alphaMode="ADD" atlas="minortalents-icon-book">
+                    <Size x="22" y="22"/>
+                    <Anchors>
+                        <Anchor relativeKey="$parent.book"/>
+                    </Anchors>
+                </Texture>
+            </Layer>
+		</Layers>
+		<Scripts>
+			<OnLoad function="LevelUpDraenorTalent_OnLoad"/>
+		</Scripts>
+	</Frame>
 
-	<Frame name="LevelUpDisplay" toplevel="true" parent="UIParent" hidden="true">
+	<Frame name="SpellBucketSpellTemplate" parentArray="BucketIcons" virtual="true">
+		<Size x="56" y="56"/>
+		<Layers>
+			<Layer level="ARTWORK">
+				<Texture parentKey="icon">
+					<Size x="36" y="36"/>
+					<Anchors>
+						<Anchor point="TOP"/>
+					</Anchors>
+				</Texture>
+			
+				<FontString  parentKey="name" inherits="GameFontNormalSmall" justifyH="CENTER" justifyV="TOP" wordwrap="true">
+					<Size x="56" y="20"/>
+					<Anchors>
+						<Anchor point="TOP" relativeKey="$parent.icon" relativePoint="BOTTOM" x="0" y="-4"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+	</Frame>
+
+	<Frame name="LevelUpDisplay" toplevel="true" parent="UIParent" hidden="true" frameStrata="HIGH">
 		<Animations>
 			<AnimationGroup parentKey="hideAnim">
 				<Alpha change="-1" duration="1.0" order="1" />
@@ -218,6 +393,9 @@
 							<Scale scaleX="1000.0" scaleY="1.0" duration="0.5" order="2"/>
 							<Scripts>
 								<OnPlay>
+									LevelUpDisplayBlackBg:Show();
+									LevelUpDisplayGLine:Show();
+									LevelUpDisplayGLine2:Show();
 									LevelUpDisplayGLine2.grow:Play();
 									LevelUpDisplayBlackBg.grow:Play();
 								</OnPlay>
@@ -342,35 +520,31 @@
 				</Animations>
 				<Layers>
 					<Layer level="BACKGROUND">
-						<Texture file="Interface\Scenarios\ScenariosParts" alphaMode="ADD" alpha="0.3">
-							<Size x="249" y="31"/>
+						<Texture atlas="Banner-BgFiligree" useAtlasSize="true" alphaMode="ADD" alpha="0.3">
 							<Anchors>
 								<Anchor point="BOTTOM" relativePoint="TOP" x="0" y="-6"/>
 							</Anchors>
-							<TexCoords left="0.00195313" right="0.48828125" top="0.41796875" bottom="0.47851563"/>
 						</Texture>
-						<Texture file="Interface\Scenarios\ScenariosParts" alphaMode="ADD" alpha="0.3">
-							<Size x="249" y="31"/>
+						<Texture atlas="Banner-BgFiligree" useAtlasSize="true" alphaMode="ADD" alpha="0.3">
 							<Anchors>
 								<Anchor point="TOP" relativePoint="BOTTOM" x="0" y="0"/>
 							</Anchors>
-							<TexCoords left="0.00195313" right="0.48828125" bottom="0.41796875" top="0.47851563"/>
+							<TexCoords left="0" right="1" bottom="0" top="1"/>
 						</Texture>
 					</Layer>
 					<Layer level="BORDER">
-						<Texture file="Interface\Scenarios\ScenariosParts">
+						<Texture atlas="Banner-FiligreeShadow">
 							<Size x="480" y="35"/>
 							<Anchors>
 								<Anchor point="BOTTOM" relativePoint="TOP" x="0" y="-6"/>
 							</Anchors>
-							<TexCoords left="0.00195313" right="0.74804688" top="0.00195313" bottom="0.07031250"/>							
 						</Texture>
-						<Texture file="Interface\Scenarios\ScenariosParts">
+						<Texture atlas="Banner-FiligreeShadow">
 							<Size x="480" y="35"/>
 							<Anchors>
 								<Anchor point="TOP" relativePoint="BOTTOM" x="0" y="0"/>
 							</Anchors>
-							<TexCoords left="0.00195313" right="0.74804688" bottom="0.00195313" top="0.07031250"/>
+							<TexCoords left="0" right="1" bottom="0" top="1"/>
 						</Texture>
 					</Layer>
 				</Layers>
@@ -378,19 +552,16 @@
 			<Frame parentKey="scenarioFiligree" setAllPoints="true" hidden="true">
 				<Layers>
 					<Layer level="OVERLAY">
-						<Texture file="Interface\Scenarios\ScenariosParts">
-							<Size x="61" y="19"/>
+						<Texture atlas="Banner-SmallFiligree" useAtlasSize="true">
 							<Anchors>
 								<Anchor point="TOP" x="0" y="4"/>
 							</Anchors>
-							<TexCoords left="0.75195313" right="0.87109375" top="0.00195313" bottom="0.03906250"/>
 						</Texture>
-						<Texture file="Interface\Scenarios\ScenariosParts">
-							<Size x="61" y="19"/>
+						<Texture atlas="Banner-SmallFiligree" useAtlasSize="true">
 							<Anchors>
 								<Anchor point="BOTTOM" x="0" y="-10"/>
 							</Anchors>
-							<TexCoords left="0.75195313" right="0.87109375" bottom="0.00195313" top="0.03906250"/>
+							<TexCoords left="0" right="1" bottom="0" top="1"/>
 						</Texture>
 					</Layer>
 				</Layers>
@@ -444,37 +615,33 @@
 				</Animations>
 				<Layers>
 					<Layer level="BACKGROUND">
-						<Texture parentKey="MedalFlare" file="Interface\Challenges\challenges-main">
-							<Size x="222" y="106"/>
+						<Texture parentKey="MedalFlare" atlas="challenges-bannershine" useAtlasSize="true">
 							<Anchors>
 								<Anchor point="BOTTOM" relativePoint="TOP" x="0" y="-8"/>
 							</Anchors>
-							<TexCoords left="0.71972656" right="0.93652344" top="0.00195313" bottom="0.20898438"/>
 						</Texture>
 					</Layer>
 					<Layer level="BORDER">
-						<Texture file="Interface\Scenarios\ScenariosParts">
+						<Texture atlas="Banner-FiligreeShadow">
 							<Size x="480" y="35"/>
 							<Anchors>
 								<Anchor point="BOTTOM" relativePoint="TOP" x="0" y="-6"/>
 							</Anchors>
-							<TexCoords left="0.00195313" right="0.74804688" top="0.00195313" bottom="0.07031250"/>
 						</Texture>
-						<Texture file="Interface\Scenarios\ScenariosParts">
+						<Texture atlas="Banner-FiligreeShadow">
 							<Size x="480" y="35"/>
 							<Anchors>
 								<Anchor point="TOP" relativePoint="BOTTOM" x="0" y="0"/>
 							</Anchors>
-							<TexCoords left="0.00195313" right="0.74804688" bottom="0.00195313" top="0.07031250"/>
+							<TexCoords left="0" right="1" bottom="0" top="1"/>
 						</Texture>
 					</Layer>
 					<Layer level="OVERLAY">
-						<Texture parentKey="BottomFiligree" file="Interface\Scenarios\ScenariosParts">
-							<Size x="61" y="19"/>
+						<Texture parentKey="BottomFiligree" atlas="Banner-SmallFiligree" useAtlasSize="true">
 							<Anchors>
 								<Anchor point="BOTTOM" x="0" y="-10"/>
 							</Anchors>
-							<TexCoords left="0.75195313" right="0.87109375" bottom="0.00195313" top="0.03906250"/>
+							<TexCoords left="0" right="1" bottom="0" top="1"/>
 						</Texture>
 						<Texture parentKey="MedalIcon">
 							<Size x="102" y="102"/>
@@ -485,7 +652,73 @@
 					</Layer>
 				</Layers>
 			</Frame>
+			<Frame parentKey="SpellBucketFrame" setAllPoints="true" alpha="0">
+				<Animations>
+					<AnimationGroup parentKey="bucketUnlocked">
+						<Alpha change="1" duration="0.7" startDelay="1.5" endDelay="2.5" order="1"/>
+						<Alpha change="-1" duration="0.5" order="2"/>
+						<Scripts>
+							<OnPlay>
+								LevelUpDisplayGLine.grow:Play();
+							</OnPlay>
+							<OnFinished>
+								LevelUpDisplay_AnimStep(LevelUpDisplay, false);
+							</OnFinished>
+						</Scripts>
+					</AnimationGroup>
+				</Animations>
+				<Size x="230" y="44"/>
+				<Frames>
+					<Frame parentKey="SpellBucketDisplay" setAllPoints="true">
+						<Layers>
+							<Layer level="ARTWORK">
+								<FontString parentKey="Name" inherits="GameFontNormal" justifyH="CENTER">
+									<Size x="0" y="20"/>
+									<Anchors>
+										<Anchor point="TOP" x="0" y="-14"/>
+									</Anchors>
+								</FontString>
+							</Layer>
+						</Layers>
+						<Frames>
+							<Frame inherits="SpellBucketSpellTemplate"/>
+						</Frames>
+					</Frame>
+					<Frame parentKey="AllAbilitiesUnlocked" setAllPoints="true">
+						<Layers>
+							<Layer level="ARTWORK">
+								<Texture name="$parentIcon" parentKey="icon">
+									<Size x="36" y="36"/>
+									<Anchors>
+										<Anchor point="CENTER" x="-96" y="0"/>
+									</Anchors>
+								</Texture>
+							
+								<FontString name="$parentName" inherits="GameFontNormalLarge" justifyH="LEFT" parentKey="name" text="SPELL_BUCKET_ALL_ABILITIES_UNLOCKED">
+									<Anchors>
+										<Anchor point="LEFT"  relativeTo="$parentIcon" relativePoint="RIGHT" x="10" y="0"/>
+									</Anchors>
+									<Color r="0" g="1" b="0"/>
+								</FontString>
+							</Layer>
+							<Layer level="OVERLAY" textureSubLevel="2">
+								<Texture name="$parentSubIcon" parentKey="subIcon" file="Interface\LevelUp\LevelUpTex">
+									<Size x="22" y="22"/>
+									<Anchors>
+										<Anchor point="CENTER" relativeTo="$parentIcon" relativePoint="BOTTOMLEFT" x="2" y="2"/>
+									</Anchors>
+								</Texture>
+							</Layer>
+						</Layers>
+					</Frame>
+				</Frames>
+			</Frame>
 			<Frame name="$parentSpellFrame" inherits="LevelUpSkillTemplate" parentKey="spellFrame" alpha="0">
+				<Anchors>
+					<Anchor point="BOTTOM" x="0" y="5"/>
+				</Anchors>
+			</Frame>
+			<Frame parentKey="DraenorTalentFrame" inherits="LevelUpDraenorTalentTemplate" alpha="0">
 				<Anchors>
 					<Anchor point="BOTTOM" x="0" y="5"/>
 				</Anchors>
@@ -558,6 +791,16 @@
 				<FontString inherits="SystemFont_Shadow_Large" justifyH="CENTER" parentKey="reachedText">
 					<Anchors>
 						<Anchor point="BOTTOM" relativeTo="$parentLevel" relativePoint="TOP" x="0" y="5"/>
+					</Anchors>
+				</FontString>
+				<FontString parentKey="spellBucketName" inherits="GameFontNormalLarge" justifyH="CENTER" hidden="true">
+					<Anchors>
+						<Anchor point="BOTTOM" relativeTo="$parentGoldBg" relativePoint="BOTTOM" x="0" y="5"/>
+					</Anchors>
+				</FontString>
+				<FontString parentKey="abilitiesUnlocked" inherits="GameFontHighlight" justifyH="CENTER" text="SPELL_BUCKET_ABILITIES_UNLOCKED" hidden="true">
+					<Anchors>
+						<Anchor point="BOTTOM" relativeKey="$parent.spellBucketName" relativePoint="TOP" x="0" y="5"/>
 					</Anchors>
 				</FontString>
 			</Layer>

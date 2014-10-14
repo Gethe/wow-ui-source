@@ -55,7 +55,7 @@
 		</Size>
 		<Layers>
 			<Layer level="ARTWORK">
-				<FontString name="$parentText" inherits="GameFontHighlightSmall">
+				<FontString parentKey="Text" name="$parentText" inherits="GameFontHighlightSmall">
 					<Anchors>
 						<Anchor point="TOP" relativePoint="BOTTOM" x="0" y="0"/>
 					</Anchors>
@@ -93,15 +93,15 @@
 		<Scripts>
 			<OnEnter>
 				GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
-				GameTooltip:SetText(_G["ROLE_DESCRIPTION"..self:GetID()], nil, nil, nil, nil, 1);
+				GameTooltip:SetText(_G["ROLE_DESCRIPTION"..self:GetID()], nil, nil, nil, nil, true);
 				if ( self.permDisabled ) then
-					GameTooltip:AddLine(YOUR_CLASS_MAY_NOT_PERFORM_ROLE, 1, 0, 0, 1);
+					GameTooltip:AddLine(YOUR_CLASS_MAY_NOT_PERFORM_ROLE, 1, 0, 0, true);
 				end
 				GameTooltip:Show();
 				LFGFrameRoleCheckButton_OnEnter(self);
 			</OnEnter>
 			<OnClick>
-				if ( self.checkButton:IsEnabled() == 1 ) then
+				if ( self.checkButton:IsEnabled()) then
 					self.checkButton:Click();
 				end
 			</OnClick>
@@ -212,20 +212,6 @@
 					<Color r="1.0" g="1.0" b="0.45"/>
 				</FontString>
 			</Layer>
-			<Layer level="ARTWORK" textureSubLevel="3">
-				<Texture name="$parentLevelRing" inherits="TalentHeader-PointCircle-Gold" parentKey="PointsSpentBgGold">
-					<Size x="27" y="27"/>
-					<Anchors>
-						<Anchor point="BOTTOMRIGHT" relativeTo="$parentRing" relativePoint="BOTTOMRIGHT" x="6" y="3"/>
-					</Anchors>
-				</Texture>
-				<FontString name="$parentLevelText" inherits="ChatFontSmall" parentKey="level">
-					<Anchors>
-						<Anchor point="CENTER" relativeTo="$parentLevelRing" x="0" y="0"/>
-					</Anchors>
-					<Color r="1.0" g="0.82" b="0.0"/>
-				</FontString>
-			</Layer>
 		</Layers>
 		<Frames>
 			<Frame name="$parentPending" parentKey="pendingFrame" setAllPoints="true" hidden="true" enableMouse="true">
@@ -293,14 +279,14 @@
 		<Layers>
 			<Layer level="ARTWORK">
 				<FontString name="$parentGuildName" inherits="GameFontNormal" justifyH="LEFT" parentKey="name">
-					<Size x="200" y="12"/>
+					<Size x="176" y="12"/>
 					<Anchors>
 						<Anchor point="LEFT" x="12" y="0"/>
 					</Anchors>
 				</FontString>
 				<FontString name="$parentTimeLeft" inherits="GameFontHighlightSmall" parentKey="timeLeft">
 					<Anchors>
-						<Anchor point="RIGHT" x="-40" y="0"/>
+						<Anchor point="RIGHT" x="-32" y="0"/>
 					</Anchors>
 				</FontString>
 			</Layer>
@@ -982,7 +968,7 @@
 -->
 	<Frame name="GuildFinderRequestMembershipFrame" parent="UIParent" hidden="true" frameStrata="DIALOG">
 		<Size>
-			<AbsDimension x="328" y="192"/>
+			<AbsDimension x="328" y="174"/>
 		</Size>
 		<Anchors>
 			<Anchor point="CENTER"/>
@@ -1011,11 +997,6 @@
 						<Anchor point="TOP" relativeTo="$parentTitle" relativePoint="BOTTOM" x="0" y="-12"/>
 					</Anchors>
 					<Color r="0.1" g="1" b="0.1"/>
-				</FontString>
-				<FontString name="$parentGuildLevel" inherits="GameFontHighlightSmall">
-					<Anchors>
-						<Anchor point="TOP" relativeTo="$parentGuildName" relativePoint="BOTTOM" x="0" y="-4"/>
-					</Anchors>
 				</FontString>
 			</Layer>
 		</Layers>
