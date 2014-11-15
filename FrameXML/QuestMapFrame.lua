@@ -285,7 +285,7 @@ function QuestMapFrame_ReturnFromQuestDetails()
 	if ( QuestMapFrame.DetailsFrame.mapID == -1 ) then
 		SetMapZoom(QuestMapFrame.DetailsFrame.continent);
 	elseif ( QuestMapFrame.DetailsFrame.mapID ) then
-		SetMapByID(QuestMapFrame.DetailsFrame.mapID, QuestMapFrame.DetailsFrame.dungeonFloor);
+		SetMapByID(QuestMapFrame.DetailsFrame.mapID);
 		if ( QuestMapFrame.DetailsFrame.dungeonFloor ~= 0 ) then
 			SetDungeonMapLevel(QuestMapFrame.DetailsFrame.dungeonFloor);
 		end

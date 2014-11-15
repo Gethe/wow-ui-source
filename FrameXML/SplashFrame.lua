@@ -352,11 +352,12 @@ end
 
 function SplashFrame_Close()
 	local frame = SplashFrame;
-	HideUIPanel(frame);
-
 	local tag = frame.tag;
 	local questID = SPLASH_SCREENS[tag].questID;
-	if( tag and questID and ShouldShowStartButton(questID) and ShouldEnableStartButton(questID) ) then
+	local showQuestDialog = tag and questID and frame.StartButton:IsShown() and frame.StartButton:IsEnabled();
+	HideUIPanel(frame);
+	
+	if( showQuestDialog ) then
 		OpenQuestDialog();
 	end	
 	

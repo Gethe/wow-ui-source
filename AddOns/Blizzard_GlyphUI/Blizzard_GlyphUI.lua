@@ -417,6 +417,7 @@ end
 
 function GlyphFrameFilter_Modify(self, arg1)
 	ToggleGlyphFilter(arg1);
+	GlyphFrame_DirtyList(GlyphFrame);
 	GlyphFrame_UpdateGlyphList ();
 end 
 
@@ -594,6 +595,7 @@ end
 function GlyphFrameHeader_OnClick (self, button)
 	PlaySound("igMainMenuOptionCheckBoxOn");
 	ToggleGlyphFilter(self.filter);
+	GlyphFrame_DirtyList(GlyphFrame);
 	GlyphFrame_UpdateGlyphList ();
 end
 

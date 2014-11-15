@@ -451,7 +451,7 @@ function WorldMapFrame_OnUserChangedSuperTrackedQuest(questID)
 	if ( WorldMapFrame:IsShown() ) then
 		local mapID, floorNumber = GetQuestWorldMapAreaID(questID);
 		if ( mapID ~= 0 ) then
-			SetMapByID(mapID, floorNumber);
+			SetMapByID(mapID);
 			if ( floorNumber ~= 0 ) then
 				SetDungeonMapLevel(floorNumber);
 			end

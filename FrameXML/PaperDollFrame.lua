@@ -1621,7 +1621,7 @@ function PaperDollFrame_IgnoreSlotsForSet (setName)
 			EquipmentManagerIgnoreSlotForSave(slot);
 			itemSlotButtons[slot].ignored = true;
 		else
-			EquipmentManagerClearIgnoredSlotsForSave(slot);
+			EquipmentManagerUnignoreSlotForSave(slot);
 			itemSlotButtons[slot].ignored = false;
 		end
 		PaperDollItemSlotButton_Update(itemSlotButtons[slot]);

@@ -34,7 +34,7 @@ if ( InGlue() ) then
 		button1 = OKAY,
 		button2 = CANCEL,
 		OnAccept = function()
-			SetAddonVersionCheck(0);
+			SetAddonVersionCheck(false);
 		end,
 		OnCancel = function()
 			AddonDialog_Show("ADDONS_OUT_OF_DATE");
@@ -513,6 +513,7 @@ function AddonList_DisableOutOfDate()
 		end
 	end
 	SaveAddOns();
+	AddonList_Update();
 end
 
 function AddonListCharacterDropDown_OnClick(self)

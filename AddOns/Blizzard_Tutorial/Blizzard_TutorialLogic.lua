@@ -2476,6 +2476,14 @@ function Class_TrainingQuest:LeashTrainingDummies()
 end
 
 function Class_TrainingQuest:PointAtButton()
+
+	-- check to see if the quest has already been completed (if the player is smart, they can actually complete it out of range before it's pointed at)
+	local trainingQuestData = NPE_QuestManager.Data[TutorialHelper:GetTrainingQuest()];
+	if (trainingQuestData and trainingQuestData:AreObjectivesComplete()) then
+		self:Interrupt(self);
+		return;
+	end
+
 	local spellID = TutorialHelper:FilterByClass(TutorialData.TrainingQuestAbility);
 
 	local button = TutorialHelper:GetActionButtonBySpellID(spellID);

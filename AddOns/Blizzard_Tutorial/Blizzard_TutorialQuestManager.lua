@@ -14,6 +14,11 @@ function QuestData:initialize(questID, questTitle)
 end
 
 -- ------------------------------------------------------------------------------------------------------------
+function QuestData:AreObjectivesComplete()
+	return self.Time_ObjectivesComplete ~= nil;
+end
+
+-- ------------------------------------------------------------------------------------------------------------
 function QuestData:ObjectivesComplete()
 	self.Time_ObjectivesComplete = GetTime();
 end
