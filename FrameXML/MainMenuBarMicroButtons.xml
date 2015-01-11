@@ -307,7 +307,7 @@
 				SetDesaturation(self:GetDisabledTexture(), true);
 				self.tooltipText = MicroButtonTooltipText(DUNGEONS_BUTTON, "TOGGLEGROUPFINDER");
 				self.newbieText = NEWBIE_TOOLTIP_LFGPARENT;
-				self.minLevel = SHOW_LFD_LEVEL;
+				self.minLevel = math.min(SHOW_LFD_LEVEL, SHOW_PVP_LEVEL);
 				if (IsBlizzCon()) then
 					self:Disable();
 				end

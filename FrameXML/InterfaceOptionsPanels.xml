@@ -4048,6 +4048,7 @@
 					<OnLoad>
 						self.type = CONTROLTYPE_CHECKBOX;
 						self.cvar = "showTutorials";
+						self.defaultValue = "1";
 						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
 					</OnLoad>
 				</Scripts>
@@ -4152,13 +4153,15 @@
 					</OnShow>
 					<OnClick>
 						PlaySound("gsTitleOptionOK");
-						SetCVar("closedInfoFrames",""); -- reset the help plates too
+						SetCVar("closedInfoFrames", ""); -- reset the help plates too
+						SetCVar("showNPETutorials", "1");
 						ResetTutorials();
 						TutorialFrame_ClearQueue();
 						local tutorialsCheckButton = _G[self:GetParent():GetName() .. "ShowTutorials"];
 						if ( not tutorialsCheckButton:GetChecked() ) then
 							tutorialsCheckButton:Click()
 						end
+						NPETutorial_AttemptToBegin();
 						TriggerTutorial(1);
 						self:Disable();
 					</OnClick>
@@ -4168,11 +4171,7 @@
 			</Button>
 		</Frames>
 		<Scripts>
-			<OnLoad>
-				self.name = HELP_LABEL;
-				self.options = HelpPanelOptions;
-				InterfaceOptionsPanel_OnLoad(self);
-			</OnLoad>
+			<OnLoad function="InterfaceOptionsHelpPanel_OnLoad"/>
 		</Scripts>
 	</Frame>
 </Ui>

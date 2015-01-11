@@ -127,15 +127,9 @@
 				<Frames>
 					<Button name="AddonDialogButton1" inherits="UIPanelButtonTemplate" id="1">
 						<Size x="120" y="22"/>
-						<Scripts>
-							<OnClick function="AddonDialog_OnClick"/>
-						</Scripts>
 					</Button>
 					<Button name="AddonDialogButton2" inherits="UIPanelButtonTemplate" id="2">
 						<Size x="120" y="22"/>
-						<Scripts>
-							<OnClick function="AddonDialog_OnClick"/>
-						</Scripts>
 					</Button>
 				</Frames>
 			</Frame>

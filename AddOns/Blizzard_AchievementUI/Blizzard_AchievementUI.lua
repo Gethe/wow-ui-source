@@ -30,7 +30,7 @@ local ACHIEVEMENTUI_FONTHEIGHT;						-- set in AchievementButton_OnLoad
 local ACHIEVEMENTUI_MAX_LINES_COLLAPSED = 3;		-- can show 3 lines of text when achievement is collapsed
 
 ACHIEVEMENTUI_DEFAULTSUMMARYACHIEVEMENTS = {6, 503, 116, 545, 1017};
-ACHIEVEMENTUI_SUMMARYCATEGORIES = {92, 96, 97, 95, 168, 169, 201, 155, 15117, 15165};
+ACHIEVEMENTUI_SUMMARYCATEGORIES = {92, 96, 97, 95, 168, 169, 201, 155, 15117, 15165, 15246, 15237};
 ACHIEVEMENTUI_DEFAULTGUILDSUMMARYACHIEVEMENTS = {4943, 4860, 4989, 4947};
 ACHIEVEMENTUI_GUILDSUMMARYCATEGORIES = {15088, 15077, 15078, 15079, 15080, 15089};
 
@@ -2181,7 +2181,7 @@ function AchievementFrameSummary_ToggleView()
 		end
 	end
 	-- categories
-	for i = 1, 10 do
+	for i = 1, 12 do
 		local statusBar = _G["AchievementFrameSummaryCategoriesCategory"..i];
 		if ( tCategories[i] ) then
 			local categoryName = GetCategoryInfo(tCategories[i]);

@@ -907,7 +907,7 @@ function QueueStatusDropDown_AddLFGButtons(info, category)
 			info.text = LEAVE_QUEUE;
 			info.func = wrapFunc(RejectProposal);
 			info.arg1 = category;
-			info.disabled = (submode == "unempowered");
+			info.disabled = false;
 			UIDropDownMenu_AddButton(info);
 		end
 	end

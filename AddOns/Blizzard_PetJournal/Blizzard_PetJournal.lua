@@ -93,7 +93,7 @@ StaticPopupDialogs["BATTLE_PET_RELEASE"] = {
 };
 
 function PetJournalUtil_GetDisplayName(petID)
-	local speciesID, customName, level, xp, maxXp, displayID, isFavorite, petName, petIcon, petType, creatureID = C_PetJournal.GetPetInfoByPetID(petID);
+	local _, customName, _, _, _, _, _, petName = C_PetJournal.GetPetInfoByPetID(petID);
 	if ( customName ) then
 		return customName;
 	else
@@ -745,7 +745,7 @@ function PetJournal_UpdatePetList()
 		pet = petButtons[i];
 		index = offset + i;
 		if index <= numPets then
-			local petID, speciesID, isOwned, customName, level, favorite, isRevoked, name, icon, petType, creatureID, sourceText, description, isWildPet, canBattle = C_PetJournal.GetPetInfoByIndex(index);
+			local petID, speciesID, isOwned, customName, level, favorite, isRevoked, name, icon, petType, _, _, _, _, canBattle = C_PetJournal.GetPetInfoByIndex(index);
 
 			if customName then
 				pet.name:SetText(customName);
@@ -785,7 +785,7 @@ function PetJournal_UpdatePetList()
 				else
 					pet.isDead:Hide();
 				end
-				if(isRevoked == true) then
+				if(isRevoked) then
 					pet.dragButton.levelBG:Hide();
 					pet.dragButton.level:Hide();
 					pet.iconBorder:Hide();
@@ -843,13 +843,8 @@ end
 
 
 function PetJournal_OnSearchTextChanged(self)
-	local text = self:GetText();
-	if text == SEARCH then
-		C_PetJournal.SetSearchFilter("");
-		return;
-	end
-	
-	C_PetJournal.SetSearchFilter(text);
+	SearchBoxTemplate_OnTextChanged(self);
+	C_PetJournal.SetSearchFilter(self:GetText());
 end
 
 function PetJournalListItem_OnClick(self, button)
@@ -1136,7 +1131,7 @@ function PetJournal_UpdatePetCard(self)
 		end
 	else
 		speciesID = PetJournalPetCard.speciesID;
-		name, icon, petType, creatureID, sourceText, description, isWild, canBattle, tradable, unique = C_PetJournal.GetPetInfoBySpeciesID(PetJournalPetCard.speciesID);
+		name, icon, petType, creatureID, sourceText, description, isWild, canBattle, tradable, unique, _, displayID = C_PetJournal.GetPetInfoBySpeciesID(PetJournalPetCard.speciesID);
 		level = 1;
 		self.PetInfo.level:Hide();
 		self.PetInfo.levelBG:Hide();
@@ -1567,7 +1562,7 @@ function PET_JOURNAL_ABILITY_INFO:GetPetType(target)
 		GMError("No species id found");
 		return 1;
 	end
-	local name, icon, petType, creatureID, sourceText, description, isWild, canBattle, tradable = C_PetJournal.GetPetInfoBySpeciesID(self.speciesID);
+	local _, _, petType = C_PetJournal.GetPetInfoBySpeciesID(self.speciesID);
 	return petType;
 end
 
@@ -2194,9 +2189,11 @@ function MountListItem_OnClick(self, button)
 end
 
 function MountJournal_OnSearchTextChanged(self)
+	SearchBoxTemplate_OnTextChanged(self);
+
 	local text = self:GetText();
 	local oldText = MountJournal.searchString;
-	if ( text == "" or text == SEARCH ) then
+	if ( text == "" ) then
 		MountJournal.searchString = nil;
 	else
 		MountJournal.searchString = string.lower(text);
@@ -2322,7 +2319,11 @@ function MountOptionsMenu_Init(self, level)
 	UIDropDownMenu_AddButton(info, level);
 	info.disabled = nil;
 
-	local isFavorite = MountJournal.menuMountID and MountJournal_GetIsFavorite(MountJournal.menuMountID);
+	local canFavorite = false;
+	local isFavorite = false;
+	if (MountJournal.menuMountID) then
+		 isFavorite, canFavorite = MountJournal_GetIsFavorite(MountJournal.menuMountID);
+	end
 
 	if (isFavorite) then
 		info.text = BATTLE_PET_UNFAVORITE;
@@ -2334,6 +2335,12 @@ function MountOptionsMenu_Init(self, level)
 		info.func = function() 
 			MountJournal_SetIsFavorite(MountJournal.menuMountID, true); 
 		end
+	end
+
+	if (canFavorite) then
+		info.disabled = false;
+	else
+		info.disabled = true;
 	end
 
 	UIDropDownMenu_AddButton(info, level);
@@ -2576,6 +2583,10 @@ function ToySpellButton_UpdateButton(self)
 
 	local itemID, toyName, icon = C_ToyBox.GetToyInfo(self.itemID);
 
+	if (itemID == nil) then
+		return;
+	end
+
 	if string.len(toyName) == 0 then
 		toyName = itemID;
 	end
@@ -2690,35 +2701,35 @@ function ToyBox_UpdateProgressBar()
 end
 
 function ToyBoxPrevPageButton_OnClick()
-	PlaySound("igAbiliityPageTurn");
-	ToyBox.currentPage = math.max(1, ToyBox.currentPage - 1);
-	ToyBox_UpdatePages();
-	ToyBox_UpdateButtons();
+	if (ToyBox.currentPage > 1) then
+		PlaySound("igAbiliityPageTurn");
+		ToyBox.currentPage = math.max(1, ToyBox.currentPage - 1);
+		ToyBox_UpdatePages();
+		ToyBox_UpdateButtons();
+	end
 end
 
 function ToyBoxNextPageButton_OnClick()
-	
-	-- show the mousewheel tip after the player's advanced a few pages
-	if(ToyBox.currentPage > 2) then
-		if(not GetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_TOYBOX_MOUSEWHEEL_PAGING) and GetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_TOYBOX_FAVORITE)) then
-			ToyBoxMousewheelPagingHelpBox:Show();
+	local maxPages = 1 + math.floor( math.max((C_ToyBox.GetNumFilteredToys() - 1), 0)/ TOYS_PER_PAGE);
+	if (ToyBox.currentPage < maxPages) then
+		-- show the mousewheel tip after the player's advanced a few pages
+		if(ToyBox.currentPage > 2) then
+			if(not GetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_TOYBOX_MOUSEWHEEL_PAGING) and GetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_TOYBOX_FAVORITE)) then
+				ToyBoxMousewheelPagingHelpBox:Show();
+			end
 		end
-	end
 
-	PlaySound("igAbiliityPageTurn");
-	ToyBox.currentPage = ToyBox.currentPage + 1;
-	ToyBox_UpdatePages();
-	ToyBox_UpdateButtons();
+		PlaySound("igAbiliityPageTurn");
+		ToyBox.currentPage = ToyBox.currentPage + 1;
+		ToyBox_UpdatePages();
+		ToyBox_UpdateButtons();
+	end
 end
 
 function ToyBox_OnSearchTextChanged(self)
-	local text = self:GetText();
+	SearchBoxTemplate_OnTextChanged(self);
 	local oldText = ToyBox.searchString;
-	if ( text == "" or text == SEARCH ) then
-		ToyBox.searchString = "";
-	else
-		ToyBox.searchString = text;
-	end
+	ToyBox.searchString = self:GetText();
 
 	if ( oldText ~= ToyBox.searchString ) then		
 		ToyBox.firstCollectedToyID = 0;

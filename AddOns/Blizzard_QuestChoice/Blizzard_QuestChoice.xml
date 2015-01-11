@@ -258,15 +258,16 @@ size=512,512
 				<Anchors>
 					<Anchor point="BOTTOM"/>
 				</Anchors>
+				<ButtonText name="$parentText" parentKey="Text">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="4" y="0"/>
+						<Anchor point="BOTTOMRIGHT" x="-4" y="0"/>
+					</Anchors>
+				</ButtonText>
 				<Scripts>
-					<OnClick>
-						PlaySound("igMainMenuOptionCheckBoxOn");
-						local parent = self:GetParent();
-						if (parent.optID) then
-							SendQuestChoiceResponse(parent.optID);
-							HideUIPanel(QuestChoiceFrame);
-						end
-					</OnClick>
+					<OnClick function="QuestChoiceFrameOptionButton_OnClick"/>
+					<OnEnter function="QuestChoiceFrameOptionButton_OnEnter"/>
+					<OnLeave function="QuestChoiceFrameOptionButton_OnLeave"/>
 				</Scripts>
 			</Button>
 			<Frame parentKey="Rewards" inherits="QuestChoiceRewardsTemplate">
@@ -472,6 +473,7 @@ size=512,512
 			<OnHide>
 				PlaySound("igQuestListClose");
 				CloseQuestChoice();
+				StaticPopup_Hide("CONFIRM_GORGROND_GARRISON_CHOICE");
 			</OnHide>
 		</Scripts>
 	</Frame>

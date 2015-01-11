@@ -614,6 +614,17 @@ end
 function InterfaceOptionsDisplayPanelOutline_Initialize()
 	local selectedValue = UIDropDownMenu_GetSelectedValue(InterfaceOptionsDisplayPanelOutlineDropDown);
 	local info = UIDropDownMenu_CreateInfo();
+
+	info.text = OBJECT_NPC_OUTLINE_DISABLED;
+	info.func = InterfaceOptionsDisplayPanelOutlineDropDown_OnClick;
+	info.value = "0";
+	if ( info.value == selectedValue ) then
+		info.checked = 1;
+	else
+		info.checked = nil;
+	end
+	UIDropDownMenu_AddButton(info);
+
 	info.text = OBJECT_NPC_OUTLINE_MODE_ONE;
 	info.func = InterfaceOptionsDisplayPanelOutlineDropDown_OnClick;
 	info.value = "1";
@@ -2201,3 +2212,32 @@ HelpPanelOptions = {
 	colorblindMode = { text = "USE_COLORBLIND_MODE" },
 	enableMovePad = { text = "MOVE_PAD" },
 }
+
+function InterfaceOptionsHelpPanel_OnLoad(self)
+	self.name = HELP_LABEL;
+	self.options = HelpPanelOptions;
+	InterfaceOptionsPanel_OnLoad(self);
+
+	self:SetScript("OnEvent", InterfaceOptionsHelpPanel_OnEvent);
+	self:RegisterEvent("CVAR_UPDATE");
+	self:RegisterEvent("NPE_TUTORIAL_UPDATE");
+end
+
+function InterfaceOptionsHelpPanel_OnEvent(self, event, ...)
+	local loadNPE = false;
+	if ( event == "CVAR_UPDATE" ) then
+		local cVarName = ...;
+		loadNPE = cVarName == "SHOW_TUTORIALS";
+	elseif ( event == "NPE_TUTORIAL_UPDATE" ) then
+		loadNPE = true;
+	end
+	
+	if ( loadNPE ) then
+		if ( GetCVarBool("showTutorials") and GetCVarBool("showNPETutorials") ) then
+			NPETutorial_AttemptToBegin(event);
+		elseif ( NewPlayerExperience ) then
+			NewPlayerExperience:Shutdown();
+		end
+	end
+	BlizzardOptionsPanel_OnEvent(self, event, ...);
+end

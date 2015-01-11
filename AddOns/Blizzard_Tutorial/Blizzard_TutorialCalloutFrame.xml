@@ -1,0 +1,17 @@
+﻿<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	<Script file="Blizzard_TutorialCalloutFrame.lua" />
+	<Frame name="NPE_TutorialCallout" virtual="true" hidden="true" frameStrata="FULLSCREEN_DIALOG">
+		<Frames>
+			<Frame parentKey="Animator" setAllPoints="true">
+				<Animations>
+					<AnimationGroup parentKey="Anim_Pulse" looping="BOUNCE">
+						<Alpha fromAlpha="0.25" toAlpha="1" duration="0.5"/>
+					</AnimationGroup>
+				</Animations>
+				<Backdrop edgeFile="Interface\TutorialFrame\UI-TutorialFrame-CalloutGlow" alphaMode="ADD">
+					<EdgeSize val="16"/>
+				</Backdrop>
+			</Frame>
+		</Frames>
+	</Frame>
+</Ui>

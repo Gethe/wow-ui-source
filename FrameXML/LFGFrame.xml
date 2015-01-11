@@ -734,42 +734,6 @@
 					</OnLeave>
 				</Scripts>
 			</Frame>
-			<Frame name="$parentBonusValor" parentKey="BonusValor" hidden="true">
-				<Size x="280" y="36"/>
-				<Anchors>
-					<Anchor point="TOPLEFT" relativeTo="$parentXPLabel" relativePoint="BOTTOMLEFT" x="10" y="-7"/>
-				</Anchors>
-				<Layers>
-					<Layer level="OVERLAY">
-						<Texture parentKey="Border" file="Interface\LFGFrame\UI-LFG-ICON-REWARDRING">
-							<Size x="36" y="36"/>
-							<Anchors>
-								<Anchor point="LEFT" />
-							</Anchors>
-							<TexCoords left="0" right="0.675" top="0" bottom="0.675"/>
-						</Texture>
-					</Layer>
-					<Layer level="ARTWORK">
-						<Texture parentKey="Icon">
-							<Size x="27" y="27"/>
-							<Anchors>
-								<Anchor point="CENTER" relativeKey="$parent.Border" x="-3" y="3"/>
-							</Anchors>
-						</Texture>
-						<FontString parentKey="BonusText" inherits="QuestFont" justifyH="LEFT">
-							<Size x="245" y="0"/>
-							<Anchors>
-								<Anchor point="LEFT" relativeKey="$parent.Border" relativePoint="RIGHT" x="-5"/>
-							</Anchors>
-						</FontString>
-					</Layer>
-				</Layers>
-				<Scripts>
-					<OnLoad>
-						SetPortraitToTexture(self.Icon, "Interface\\Icons\\pvecurrency-valor")
-					</OnLoad>
-				</Scripts>
-			</Frame>
 			<Frame name="$parentRandomList" parentKey="randomList">
 				<Size x="18" y="18"/>
 				<Anchors>

@@ -937,7 +937,7 @@ end
 function ObjectiveTracker_CancelSlideBlock(block)
 	block:SetScript("OnUpdate", nil);
 	local slideData = block.slideData;
-	if( slidaData ) then
+	if( slideData ) then
 		block:SetHeight(slideData.startHeight);
 		if ( slideData.scroll ) then
 			block:UpdateScrollChildRect();

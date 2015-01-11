@@ -54,7 +54,6 @@
 ----
 
 local CHARACTER_UPGRADE_CREATE_CHARACTER = false;
-local CHARACTER_UPGRADE_WAITING_ON_COMPLETE = false;
 
 local UPGRADE_MAX_LEVEL = 90;
 local UPGRADE_BONUS_LEVEL = 60;
@@ -184,9 +183,11 @@ function CharacterServicesMaster_UpdateServiceButton()
 	local showPopup = false;
 	local hasFree = false;
 	local hasPaid = false;
-	if (C_CharacterServices.HasFreeDistribution()) then
+	if (C_SharedCharacterServices.HasFreeDistribution()) then
 		hasFree = true;
-		if (not C_CharacterServices.HasSeenPopup()) then
+		local currencyID = C_PurchaseAPI.GetCurrencyID();
+		local shouldShow = not select(2, C_SharedCharacterServices.HasFreeDistribution());
+		if (not C_SharedCharacterServices.HasSeenPopup() and shouldShow) then
 			showPopup = true;
 		end
 	end
@@ -252,7 +253,6 @@ function CharacterServicesMaster_OnLoad(self)
 	
 	self:RegisterEvent("PRODUCT_DISTRIBUTIONS_UPDATED");
 	self:RegisterEvent("CHARACTER_UPGRADE_STARTED");
-	self:RegisterEvent("CHARACTER_UPGRADE_COMPLETE");
 end
 
 local completedGuid;
@@ -263,33 +263,36 @@ function CharacterServicesMaster_OnEvent(self, event, ...)
 	elseif (event == "CHARACTER_UPGRADE_STARTED") then
 		UpdateCharacterList(true);
 		UpdateCharacterSelection(CharacterSelect);
-	elseif (event == "CHARACTER_UPGRADE_COMPLETE") then
-		completedGuid = ...;
-		CHARACTER_UPGRADE_WAITING_ON_COMPLETE = true;
 	end
 end
 
 function CharacterServicesMaster_OnCharacterListUpdate()
-	if (CHARACTER_UPGRADE_CREATE_CHARACTER or C_CharacterServices.GetStartAutomatically()) then
+	if (CharacterServicesMaster.waitingForLevelUp) then
+		C_CharacterServices.ApplyLevelUp();
+		CharacterServicesMaster.waitingForLevelUp = false;
+	elseif (CHARACTER_UPGRADE_CREATE_CHARACTER or C_CharacterServices.GetStartAutomatically()) then
 		CharSelectServicesFlowFrame:Show();
 		CharacterServicesMaster_SetFlow(CharacterServicesMaster, CharacterUpgradeFlow);
 		CHARACTER_UPGRADE_CREATE_CHARACTER = false;
 		C_SharedCharacterServices.SetStartAutomatically(false);
-	elseif (CHARACTER_UPGRADE_WAITING_ON_COMPLETE) then
+	elseif (C_CharacterServices.HasQueuedUpgrade()) then
+		local guid = C_CharacterServices.GetQueuedUpgradeGUID();
+
 		local num = math.min(GetNumCharacters(), MAX_CHARACTERS_DISPLAYED);
 
 		for i = 1, num do
-			if (select(14, GetCharacterInfo(GetCharIDFromIndex(i))) == completedGuid) then
+			if (select(14, GetCharacterInfo(GetCharIDFromIndex(i + CHARACTER_LIST_OFFSET))) == guid) then
 				local button = _G["CharSelectCharacterButton"..i];
 				CharacterSelectButton_OnClick(button);
 				button.selection:Show();
-				C_CharacterServices.ApplyLevelUp();
 				UpdateCharacterSelection(CharacterSelect);
+				GetCharacterListUpdate();
+				CharacterServicesMaster.waitingForLevelUp = true;
 				break;
 			end
 		end
 
-		CHARACTER_UPGRADE_WAITING_ON_COMPLETE = false;
+		C_CharacterServices.ClearQueuedUpgrade();
 	end
 end
 
@@ -430,6 +433,22 @@ function CharacterServicesMasterFinishButton_OnClick(self)
 	else
 		PlaySound("igMainMenuOptionCheckBoxOn");
 	end
+end
+
+function CharacterServicesTokenWoDFree_OnEnter(self)
+	local title, desc;
+	if (select(2, C_SharedCharacterServices.HasFreeDistribution())) then
+		title = CHARACTER_UPGRADE_WOD_TOKEN_TITLE_ASIA;
+		desc = CHARACTER_UPGRADE_WOD_TOKEN_DESCRIPTION_ASIA;
+	else
+		title = CHARACTER_UPGRADE_WOD_TOKEN_TITLE;
+		desc = CHARACTER_UPGRADE_WOD_TOKEN_DESCRIPTION;
+	end
+	self.Highlight:Show();
+	GlueTooltip:SetOwner(self, "ANCHOR_LEFT");
+	GlueTooltip:AddLine(title, 1.0, 1.0, 1.0);
+	GlueTooltip:AddLine(desc, nil, nil, nil, 1, 1);
+	GlueTooltip:Show();
 end
 
 function CharacterServicesFlowPrototype:BuildResults(steps)
@@ -629,6 +648,8 @@ local function replaceScripts(button)
 	button:SetScript("OnMouseUp", nil);
 	button.upButton:SetScript("OnClick", nil);
 	button.downButton:SetScript("OnClick", nil);
+	button:SetScript("OnEnter", nil);
+	button:SetScript("OnLeave", nil);
 end
 
 local function resetScripts(button)
@@ -650,6 +671,17 @@ local function resetScripts(button)
 		PlaySound("igMainMenuOptionCheckBoxOn");
 		local index = self:GetParent().index;
 		MoveCharacter(index, index + 1);
+	end);
+	button:SetScript("OnEnter", function(self)
+		if ( self.selection:IsShown() ) then
+			CharacterSelectButton_ShowMoveButtons(self);
+		end
+	end);
+	button:SetScript("OnLeave", function(self)
+		if ( self.upButton:IsShown() and not (self.upButton:IsMouseOver() or self.downButton:IsMouseOver()) ) then
+			self.upButton:Hide();
+			self.downButton:Hide();
+		end
 	end);
 	button:SetScript("OnMouseUp", CharacterSelectButton_OnDragStop);
 end
@@ -689,11 +721,14 @@ function CharacterUpgradeCharacterSelectBlock:Initialize(results)
 			self.index = CharacterSelect.selectedIndex;
 			self.charid = GetCharIDFromIndex(CharacterSelect.selectedIndex + CHARACTER_LIST_OFFSET);
 			self.playerguid = select(14, GetCharacterInfo(self.charid));
+			local button = _G["CharSelectCharacterButton"..num];
+			replaceScripts(button);
 			CharacterServicesMaster_Update();
 			return;
 		end
 	end
 
+	CharacterSelect_SaveCharacterOrder();
 	-- Set up the GlowBox around the show characters
 	self.frame.ControlsFrame.GlowBox:SetHeight(58 * num);
 	if (CharacterSelectCharacterFrame.scrollBar:IsShown()) then

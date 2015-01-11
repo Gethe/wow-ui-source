@@ -676,6 +676,7 @@ function HonorFrameBonusFrame_Update()
 	button.bgID = battleGroundID;
 	local hasData, canQueue, bgName, battleGroundID, hasWon, winHonorAmount, winConquestAmount, lossHonorAmount, lossConquestAmount, minLevel, maxLevel = GetHolidayBGInfo();
 	if ( hasData ) then
+		HonorFrame.BonusFrame.RewardHeader:Show();
 		-- cap conquest to total earnable
 		if ( arenaReward < winConquestAmount ) then
 			winConquestAmount = arenaReward
@@ -712,7 +713,9 @@ function HonorFrameBonusFrame_Update()
 	else
 		HonorFrame.BonusFrame.BattlegroundReward1:Hide();
 		HonorFrame.BonusFrame.BattlegroundReward2:Hide();
-		HonorFrame.BonusFrame.DefaultBattlegroundReward:Show();
+		local shown = UnitLevel("player") >= 100;
+		HonorFrame.BonusFrame.DefaultBattlegroundReward:SetShown(shown);
+		HonorFrame.BonusFrame.RewardHeader:SetShown(shown);
 	end
 	
 	-- arena pvp

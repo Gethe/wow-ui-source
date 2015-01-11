@@ -898,7 +898,7 @@
 					<CheckButton name="ExactMatchCheckButton" inherits="UICheckButtonTemplate">
 						<Size x="24" y="24"/>
 						<Anchors>
-							<Anchor point="TOPLEFT" x="75" y="-75"/>
+							<Anchor point="TOPLEFT" x="25" y="-75"/>
 						</Anchors>
 						<Scripts>
 							<OnLoad>

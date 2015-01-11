@@ -313,6 +313,9 @@ function UIParent_OnLoad(self)
 	self:RegisterEvent("GARRISON_SHOW_LANDING_PAGE");
 	self:RegisterEvent("GARRISON_MONUMENT_SHOW_UI");
 	self:RegisterEvent("GARRISON_RECRUITMENT_NPC_OPENED");
+
+	-- Shop (for Asia promotion)
+	self:RegisterEvent("PRODUCT_DISTRIBUTIONS_UPDATED");
 end
 
 
@@ -479,6 +482,29 @@ function MovePad_LoadUI()
 end
 ]]
 
+function Tutorial_LoadUI()
+	if ( GetTutorialsEnabled() and UnitLevel("player") < NPE_TUTORIAL_COMPLETE_LEVEL ) then
+		UIParentLoadAddOn("Blizzard_Tutorial");
+	end
+end
+
+local playerEnteredWorld = false;
+local varsLoaded = false;
+function NPETutorial_AttemptToBegin(event)
+	if ( NewPlayerExperience and not NewPlayerExperience.IsActive ) then
+		NewPlayerExperience:Begin();
+		return;
+	end
+	if( event == "PLAYER_ENTERING_WORLD" ) then
+		playerEnteredWorld = true;
+	elseif ( event == "VARIABLES_LOADED" ) then
+		varsLoaded = true;
+	end
+	if ( playerEnteredWorld and varsLoaded ) then
+		Tutorial_LoadUI();
+	end
+end
+
 function ShowMacroFrame()
 	MacroFrame_LoadUI();
 	if ( MacroFrame_Show ) then
@@ -622,7 +648,7 @@ function ToggleLFDParentFrame()
 		return;
 	end
 
-	if ( UnitLevel("player") >= SHOW_LFD_LEVEL ) then
+	if ( UnitLevel("player") >= math.min(SHOW_LFD_LEVEL,SHOW_PVP_LEVEL) ) then
 		PVEFrame_ToggleFrame("GroupFinderFrame", LFDParentFrame);
 	end
 end
@@ -713,7 +739,7 @@ function TogglePVPUI()
 		return;
 	end
 	
-	if ( UnitLevel("player") >= SHOW_LFD_LEVEL ) then
+	if ( UnitLevel("player") >= math.min(SHOW_LFD_LEVEL,SHOW_PVP_LEVEL) ) then
 		PVEFrame_ToggleFrame("PVPUIFrame", nil);
 	end
 end
@@ -794,6 +820,10 @@ function UIParent_OnEvent(self, event, ...)
 			GMChatFrameEditBox:SetAttribute("chatType", "WHISPER");
 		end
 		TargetFrame_OnVariablesLoaded();
+		
+		NPETutorial_AttemptToBegin(event);
+		
+		StoreFrame_CheckForFree(event);
 	elseif ( event == "PLAYER_LOGIN" ) then
 		TimeManager_LoadUI();
 		-- You can override this if you want a Combat Log replacement
@@ -992,6 +1022,8 @@ function UIParent_OnEvent(self, event, ...)
 		for i=1, #pendingLootRollIDs do
 			GroupLootFrame_OpenNewFrame(pendingLootRollIDs[i], GetLootRollTimeLeft(pendingLootRollIDs[i]));
 		end
+		
+		NPETutorial_AttemptToBegin(event);
 	elseif ( event == "GROUP_ROSTER_UPDATE" ) then
 		-- Hide/Show party member frames
 		RaidOptionsFrame_UpdatePartyFrames();
@@ -1495,6 +1527,8 @@ function UIParent_OnEvent(self, event, ...)
 			Garrison_LoadUI();
 		end
 		ShowUIPanel(GarrisonRecruiterFrame);
+	elseif ( event == "PRODUCT_DISTRIBUTIONS_UPDATED" ) then
+		StoreFrame_CheckForFree(event);
 	end
 end
 

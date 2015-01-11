@@ -52,7 +52,7 @@ function EclipseBar_Update(self)
 	
 	self.PowerText:SetText(abs(power));
 	
-	local xpos =  ECLIPSE_BAR_TRAVEL*(power/maxPower)
+	local xpos = ECLIPSE_BAR_TRAVEL * (power / maxPower);
 	self.Marker:SetPoint("CENTER", xpos, 0);
 end
 
@@ -68,15 +68,6 @@ function EclipseBar_OnLoad(self)
 end
 
 function EclipseBar_OnShow(self)
-
-	local direction = GetEclipseDirection();
-	if (not direction or direction == "none") then
-		self.Marker:SetAtlas("DruidEclipse-Diamond");
-	else
-		self.Marker:SetAtlas("DruidEclipse-Arrow");
-		self.Marker:SetTexCoord(unpack(ECLIPSE_MARKER_COORDS[direction]));
-	end
-	
 	local hasLunarEclipse = false;
 	local hasSolarEclipse = false;
 	
@@ -129,6 +120,7 @@ function EclipseBar_OnShow(self)
 	self.hasSolarEclipse = hasSolarEclipse;
 	
 	EclipseBar_Update(self);
+	EclipseBar_SetDirection(self, GetEclipseDirection());
 end
 
 function EclipseBar_SetGlow(self, icon)
@@ -221,6 +213,15 @@ function EclipseBar_CheckBuffs(self)
 	self.hasSolarEclipse = hasSolarEclipse;
 end 
 
+function EclipseBar_SetDirection(self, direction)
+	if not direction or direction == "none" then
+		self.Marker:SetAtlas("DruidEclipse-Diamond");
+	else
+		self.Marker:SetAtlas("DruidEclipse-Arrow");
+		self.Marker:SetTexCoord(unpack(ECLIPSE_MARKER_COORDS[direction]));
+	end
+end
+
 function EclipseBar_OnEvent(self, event, ...)
 	if (event == "UNIT_AURA") then
 		local arg1 = ...;
@@ -228,13 +229,8 @@ function EclipseBar_OnEvent(self, event, ...)
 			EclipseBar_CheckBuffs(self);
 		end
 	elseif (event == "ECLIPSE_DIRECTION_CHANGE") then
-		local status = ...;
-		if (status == "none") then
-			self.Marker:SetAtlas("DruidEclipse-Diamond");
-		else
-			self.Marker:SetAtlas("DruidEclipse-Arrow");
-			self.Marker:SetTexCoord(unpack(ECLIPSE_MARKER_COORDS[status]));
-		end
+		local direction = ...;
+		EclipseBar_SetDirection(self, direction);
 	else
 		EclipseBar_UpdateShown(self);
 	end

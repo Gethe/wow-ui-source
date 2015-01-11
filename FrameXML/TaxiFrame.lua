@@ -165,7 +165,7 @@ function DrawOneHopLines()
 	local numLines = 0;
 	local numSingleHops = 0;
 	for i=1, numNodes  do
-		if ( GetNumRoutes(i) == 1 ) then
+		if ( GetNumRoutes(i) == 1 and TaxiNodeGetType(i) ~= "NONE" ) then
 			numSingleHops = numSingleHops + 1;
 			numLines = numLines + 1;
 			if ( numLines > NUM_TAXI_ROUTES ) then

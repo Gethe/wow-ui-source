@@ -14,7 +14,7 @@ VideoData["Graphics_Quality"]={
 				Graphics_GroundClutterDropDown = VIDEO_OPTIONS_LOW,
 				Graphics_ShadowsDropDown = VIDEO_OPTIONS_LOW,
 				Graphics_TextureResolutionDropDown = VIDEO_OPTIONS_LOW,
-				Graphics_FilteringDropDown = VIDEO_OPTIONS_BILINEAR,
+				Graphics_FilteringDropDown = VIDEO_OPTIONS_TRILINEAR,
 				Graphics_LiquidDetailDropDown = VIDEO_OPTIONS_LOW,
 				Graphics_SunshaftsDropDown = VIDEO_OPTIONS_DISABLED,
 				Graphics_ProjectedTexturesDropDown = VIDEO_OPTIONS_DISABLED,
@@ -32,7 +32,7 @@ VideoData["Graphics_Quality"]={
 				Graphics_GroundClutterDropDown = VIDEO_OPTIONS_FAIR,
 				Graphics_ShadowsDropDown = VIDEO_OPTIONS_FAIR,
 				Graphics_TextureResolutionDropDown = VIDEO_OPTIONS_FAIR,
-				Graphics_FilteringDropDown = VIDEO_OPTIONS_TRILINEAR,
+				Graphics_FilteringDropDown = VIDEO_OPTIONS_2XANISOTROPIC,
 				Graphics_LiquidDetailDropDown = VIDEO_OPTIONS_FAIR,
 				Graphics_SunshaftsDropDown = VIDEO_OPTIONS_DISABLED,
 				Graphics_ProjectedTexturesDropDown = VIDEO_OPTIONS_DISABLED,
@@ -203,7 +203,7 @@ VideoData["RaidGraphics_Quality"].data = {
 			RaidGraphics_GroundClutterDropDown = VIDEO_OPTIONS_LOW,
 			RaidGraphics_ShadowsDropDown = VIDEO_OPTIONS_LOW,
 			RaidGraphics_TextureResolutionDropDown = VIDEO_OPTIONS_LOW,
-			RaidGraphics_FilteringDropDown = VIDEO_OPTIONS_BILINEAR,
+			RaidGraphics_FilteringDropDown = VIDEO_OPTIONS_TRILINEAR,
 			RaidGraphics_LiquidDetailDropDown = VIDEO_OPTIONS_LOW,
 			RaidGraphics_SunshaftsDropDown = VIDEO_OPTIONS_DISABLED,
 			RaidGraphics_ProjectedTexturesDropDown = VIDEO_OPTIONS_DISABLED,
@@ -221,7 +221,7 @@ VideoData["RaidGraphics_Quality"].data = {
 			RaidGraphics_GroundClutterDropDown = VIDEO_OPTIONS_FAIR,
 			RaidGraphics_ShadowsDropDown = VIDEO_OPTIONS_FAIR,
 			RaidGraphics_TextureResolutionDropDown = VIDEO_OPTIONS_FAIR,
-			RaidGraphics_FilteringDropDown = VIDEO_OPTIONS_TRILINEAR,
+			RaidGraphics_FilteringDropDown = VIDEO_OPTIONS_2XANISOTROPIC,
 			RaidGraphics_LiquidDetailDropDown = VIDEO_OPTIONS_FAIR,
 			RaidGraphics_SunshaftsDropDown = VIDEO_OPTIONS_DISABLED,
 			RaidGraphics_ProjectedTexturesDropDown = VIDEO_OPTIONS_DISABLED,
@@ -566,13 +566,13 @@ VideoData["Display_AntiAliasingDropDown"]={
 		[2] = {
 			text = ANTIALIASING_FXAA_LOW,
 			cvars =	{
-				ffxAntiAliasingMode = 2,
+				ffxAntiAliasingMode = 1,
 			},
 		},
 		[3] = {
 			text = ANTIALIASING_FXAA_HIGH,
 			cvars =	{
-				ffxAntiAliasingMode = 1,
+				ffxAntiAliasingMode = 2,
 			},
 		},
 		[4] = {
@@ -592,13 +592,13 @@ VideoData["Display_AntiAliasingDropDown"]={
 		[2] = {
 			text = ANTIALIASING_FXAA_LOW,
 			cvars =	{
-				ffxAntiAliasingMode = 2,
+				ffxAntiAliasingMode = 1,
 			},
 		},
 		[3] = {
 			text = ANTIALIASING_FXAA_HIGH,
 			cvars =	{
-				ffxAntiAliasingMode = 1,
+				ffxAntiAliasingMode = 2,
 			},
 		},
 	},
@@ -1839,6 +1839,7 @@ VideoData["Advanced_StereoEnabled"]={
 
 VideoData["Advanced_ShowHDModels"]={
 	name = SHOW_HD_MODELS_TEXT;
+	tooltip = OPTION_TOOLTIP_SHOW_HD_MODELS,
 }
 
 -------------------------------------------------------------------------------------------------------

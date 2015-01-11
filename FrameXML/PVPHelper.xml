@@ -73,7 +73,7 @@
 				<Scripts>
 					<OnClick>
 						PlaySound("igCharacterInfoTab");
-						StaticPopupSpecial_Hide(PVPFrameReadyPopup);
+						StaticPopupSpecial_Hide(PVPFramePopup);
 					</OnClick>
 				</Scripts>
 				<NormalTexture file="Interface\Buttons\UI-Panel-HideButton-Up"/>
@@ -353,9 +353,9 @@
 					</Layer>
 					<Layer level="ARTWORK">
 						<FontString name="$parentName" inherits="GameFontNormalLarge" justifyH="CENTER" parentKey="name">
-							<Size x="300" y="20"/>
+							<Size x="280" y="0"/>
 							<Anchors>
-								<Anchor point="TOP" x="0" y="-13"/>
+								<Anchor point="BOTTOM" relativeKey="$parent.underline" relativePoint="TOP" x="0" y="-30"/>
 							</Anchors>
 						</FontString>
 						<FontString name="$parentStatusText" inherits="GameFontNormal" justifyH="CENTER" parentKey="statusText">

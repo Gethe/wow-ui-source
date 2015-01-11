@@ -1,7 +1,7 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\FrameXML\UI.xsd">
 
-	<EditBox name="SearchBoxTemplate" inherits="InputBoxTemplate" autoFocus="false" virtual="true">
+	<EditBox name="SearchBoxTemplate" inherits="InputBoxInstructionsTemplate" autoFocus="false" virtual="true">
 		<Layers>
 			<Layer level="OVERLAY">
 				<Texture name="$parentSearchIcon" file="Interface\Common\UI-Searchbox-Icon" parentKey="searchIcon">
@@ -39,33 +39,23 @@
 					</OnLeave>
 					<OnMouseDown>
 						if self:IsEnabled() then
-							self.texture:SetPoint("TOPLEFT", 1, -1);
+							self.texture:SetPoint("TOPLEFT", self, "TOPLEFT", 1, -1);
 						end
 					</OnMouseDown>
 					<OnMouseUp>
-						self.texture:SetPoint("TOPLEFT", 0, 0);
+						self.texture:SetPoint("TOPLEFT", self, "TOPLEFT", 0, 0);
 					</OnMouseUp>
-					<OnClick>
-						PlaySound("igMainMenuOptionCheckBoxOn");
-						local editBox = self:GetParent();
-						if editBox.clearFunc then
-							editBox.clearFunc(editBox);
-						end
-						
-						editBox:SetText("");
-						if not editBox:HasFocus() then
-							editBox:GetScript("OnEditFocusLost")(editBox);
-						end
-						editBox:ClearFocus();
-					</OnClick>
+					<OnClick function="SearchBoxTemplateClearButton_OnClick"/>
 				</Scripts>
 			</Button>
 		</Frames>
 		<Scripts>
 			<OnLoad function="SearchBoxTemplate_OnLoad"/>
 			<OnEscapePressed function="EditBox_ClearFocus"/>
+			<OnEnterPressed function="EditBox_ClearFocus"/>
 			<OnEditFocusLost function="SearchBoxTemplate_OnEditFocusLost"/>
 			<OnEditFocusGained function="SearchBoxTemplate_OnEditFocusGained"/>
+			<OnTextChanged function="SearchBoxTemplate_OnTextChanged"/>
 		</Scripts>
 	</EditBox>
 	<EditBox name="BagSearchBoxTemplate" inherits="SearchBoxTemplate" autoFocus="false" virtual="true">
@@ -73,9 +63,6 @@
 			<OnHide function="BagSearch_OnHide"/>
 			<OnTextChanged function="BagSearch_OnTextChanged"/>
 			<OnChar function="BagSearch_OnChar"/>
-			<OnEnterPressed function="EditBox_ClearFocus"/>
-			<OnEditFocusLost function="BagSearch_OnEditFocusLost"/>
-			<OnEditFocusGained function="BagSearch_OnEditFocusGained"/>
 		</Scripts>
 	</EditBox>
 	<CheckButton name="UICheckButtonTemplate" virtual="true">

@@ -1381,6 +1381,7 @@
 				<Scripts>
 					<OnEnterPressed function="EncounterJournal_ShowFullSearch"/>
 					<OnTextChanged function="EncounterJournal_OnSearchTextChanged"/>
+					<OnEditFocusLost function="EncounterJournal_OnSearchFocusLost"/>
 				</Scripts>
 			</EditBox>
 			<Frame name="$parentSearchResults" parentKey="searchResults" hidden="true">

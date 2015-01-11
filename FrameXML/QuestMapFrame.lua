@@ -220,7 +220,7 @@ function QuestMapFrame_ShowQuestDetails(questID)
 	
 	local mapID, floorNumber = GetQuestWorldMapAreaID(questID);
 	if ( mapID ~= 0 ) then
-		SetMapByID(mapID, floorNumber);
+		SetMapByID(mapID);
 		if ( floorNumber ~= 0 ) then
 			SetDungeonMapLevel(floorNumber);
 		end
@@ -285,7 +285,7 @@ function QuestMapFrame_ReturnFromQuestDetails()
 	if ( QuestMapFrame.DetailsFrame.mapID == -1 ) then
 		SetMapZoom(QuestMapFrame.DetailsFrame.continent);
 	elseif ( QuestMapFrame.DetailsFrame.mapID ) then
-		SetMapByID(QuestMapFrame.DetailsFrame.mapID, QuestMapFrame.DetailsFrame.dungeonFloor);
+		SetMapByID(QuestMapFrame.DetailsFrame.mapID);
 		if ( QuestMapFrame.DetailsFrame.dungeonFloor ~= 0 ) then
 			SetDungeonMapLevel(QuestMapFrame.DetailsFrame.dungeonFloor);
 		end
@@ -850,7 +850,11 @@ function QuestMapLogTitleButton_OnEnter(self)
 
 	-- description
 	if ( isComplete and isComplete > 0 ) then
-		GameTooltip:AddLine(GetQuestLogCompletionText(self.questLogIndex), 1, 1, 1, true);
+		if ( IsBreadcrumbQuest(self.questID) ) then
+			GameTooltip:AddLine(GetQuestLogCompletionText(self.questLogIndex), 1, 1, 1, true);
+		else
+			GameTooltip:AddLine(QUEST_WATCH_QUEST_READY, 1, 1, 1, true);
+		end
 		GameTooltip:AddLine(" ");
 	else
 		local needsSeparator = false;
@@ -1084,8 +1088,7 @@ end
 function QuestLogPopupDetailFrame_Show(questLogIndex)
 
 	local questID = select(8, GetQuestLogTitle(questLogIndex));
-
-	if ( QuestLogPopupDetailFrame.questID == questID ) then
+	if ( QuestLogPopupDetailFrame.questID == questID and QuestLogPopupDetailFrame:IsShown() ) then
 		HideUIPanel(QuestLogPopupDetailFrame);
 		return;
 	end

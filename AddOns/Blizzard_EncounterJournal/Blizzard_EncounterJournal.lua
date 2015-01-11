@@ -122,10 +122,6 @@ function EncounterJournal_OnLoad(self)
 
 	EJ_SetDifficulty(EJ_DIFFICULTIES[1].difficultyID);	-- default to 5-man normal
 	
-	EncounterJournal.searchBox.oldEditLost = EncounterJournal.searchBox:GetScript("OnEditFocusLost");
-	EncounterJournal.searchBox:SetScript("OnEditFocusLost", function(self) self:oldEditLost(); EncounterJournal_HideSearchPreview(); end);
-	EncounterJournal.searchBox.clearFunc = EncounterJournal_ClearSearch;
-	
 	
 	local homeData = {
 		name = HOME,
@@ -153,15 +149,14 @@ function EncounterJournal_OnShow(self)
 	--automatically navigate to the current dungeon if you are in one;
 	local instanceID = EJ_GetCurrentInstance();
 	local _, _, difficultyID = GetInstanceInfo();
-	if instanceID ~= 0 and (instanceID ~= EncounterJournal.lastInstance or difficultyID ~= EncounterJournal.difficultyID) then
-		EncounterJournal.difficultyID = difficultyID;
+	if instanceID ~= 0 and (instanceID ~= EncounterJournal.lastInstance or EJ_GetDifficulty() ~= difficultyID) then
 		EncounterJournal_ListInstances();
 		EncounterJournal_DisplayInstance(instanceID);
 		EncounterJournal.lastInstance = instanceID;
-		if ( EncounterJournal.difficultyID == 0 ) then
-			difficultyID = EJ_DIFFICULTIES[1].difficultyID; 	-- default to 5-man normal
+		-- try to set difficulty to current instance difficulty
+		if ( EJ_IsValidInstanceDifficulty(difficultyID) ) then
+			EJ_SetDifficulty(difficultyID);
 		end
-		EJ_SetDifficulty(EncounterJournal.difficultyID);
 	elseif ( EncounterJournal.queuedPortraitUpdate ) then
 		-- fixes portraits when switching between fullscreen and windowed mode
 		EncounterJournal_UpdatePortraits();
@@ -210,7 +205,6 @@ function EncounterJournal_OnEvent(self, event, ...)
 	elseif event == "EJ_DIFFICULTY_UPDATE" then
 		--fix the difficulty buttons
 		local newDifficultyID = ...;	
-		EncounterJournal.difficultyID = newDifficultyID;
 		for _, entry in pairs(EJ_DIFFICULTIES) do
 			if entry.difficultyID == newDifficultyID then
 				if (entry.size) then
@@ -442,7 +436,7 @@ function EncounterJournal_DisplayInstance(instanceID, noButton)
 		bossIndex = bossIndex + 1;
 		name, description, bossID, _, link = EJ_GetEncounterInfoByIndex(bossIndex);
 	end
-	
+
 	--disable model tab and abilities tab, no boss selected
 	EncounterJournal.encounter.info.modelTab:Disable();
 	EncounterJournal.encounter.info.modelTab:GetDisabledTexture():SetDesaturated(true);
@@ -473,7 +467,7 @@ function EncounterJournal_DisplayInstance(instanceID, noButton)
 	self.info.lootScroll:Hide();
 	self.info.rightShadow:Hide();
 	
-	if (self.info.tab < 4) then
+	if (self.info.tab < 3) then
 		self.info[EJ_Tabs[self.info.tab].button]:Click()
 	else
 		self.info.overviewTab:Click();
@@ -646,6 +640,11 @@ function EncounterJournal_DisplayCreature(self)
 		EncounterJournal.encounter.info.model.modelDisplayId:Show();
 		EncounterJournal.encounter.info.model.modelNameLabel:Show();
 		EncounterJournal.encounter.info.model.modelDisplayIdLabel:Show();
+		if (EncounterJournal.encounter.info.model.modelName:IsTruncated()) then
+			local pos = string.find(name, "\\[^\\]*$");
+			name = name:sub(1, pos - 1) .. "\\\n" .. name:sub(pos + 1);
+			EncounterJournal.encounter.info.model.modelName:SetText(name);
+		end
 	else
 		EncounterJournal.encounter.info.model.modelName:Hide();
 		EncounterJournal.encounter.info.model.modelDisplayId:Hide();
@@ -1684,10 +1683,12 @@ end
 
 
 function EncounterJournal_OnSearchTextChanged(self)
+	SearchBoxTemplate_OnTextChanged(self);
+
 	local text = self:GetText();
 	EncounterJournal_HideSearchPreview();
 		
-	if strlen(text) < EJ_MIN_CHARACTER_SEARCH or text == SEARCH then
+	if strlen(text) < EJ_MIN_CHARACTER_SEARCH then
 		EJ_ClearSearch();
 		EncounterJournal.searchResults:Hide();
 		return;
@@ -1729,6 +1730,10 @@ function EncounterJournal_OnSearchTextChanged(self)
 	end
 end
 
+function EncounterJournal_OnSearchFocusLost(self)
+	SearchBoxTemplate_OnEditFocusLost(self);
+	EncounterJournal_HideSearchPreview();
+end
 
 function EncounterJournal_OpenJournalLink(tag, jtype, id, difficultyID)
 	jtype = tonumber(jtype);

@@ -244,6 +244,7 @@
 				</Anchors>
 				<Scripts>
 					<OnClick>
+						PlaySound("igMainMenuOptionCheckBoxOn");
 						QuestMapQuestOptions_TrackQuest(self:GetParent().questID);
 					</OnClick>
 					<OnEnter>

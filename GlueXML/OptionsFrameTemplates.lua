@@ -151,6 +151,17 @@ function OptionsListButton_OnClick (self, mouseButton)
 	OptionsList_DisplayPanel(self.element);
 end
 
+function OptionsListButton_OnEnter (self)
+	if (self.text:IsTruncated()) then
+		GlueTooltip:SetOwner(self, "ANCHOR_RIGHT");
+		GlueTooltip:SetText(self:GetText(), NORMAL_FONT_COLOR[1], NORMAL_FONT_COLOR[2], NORMAL_FONT_COLOR[3], 1, true);
+	end
+end
+
+function OptionsListButton_OnLeave (self)
+	GlueTooltip:Hide();
+end
+
 function OptionsListButton_ToggleSubCategories (button)
 	local element = self.element;
 

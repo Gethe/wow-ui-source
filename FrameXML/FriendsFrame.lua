@@ -1828,6 +1828,9 @@ function FriendsFrameTooltip_Show(self)
 				FriendsFrameTooltip_SetLine(toonInfoString, nil, gameText);
 			end
 		end
+		if ( not headerSet ) then
+			FriendsTooltipOtherToons:Hide();
+		end
 	else
 		FriendsTooltipOtherToons:Hide();
 	end

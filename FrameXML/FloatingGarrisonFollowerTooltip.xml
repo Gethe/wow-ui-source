@@ -40,6 +40,12 @@ UI.xsd">
 					</Anchors>
 					<Color r="0.745" g="0.745" b="0.745" a="1"/>
 				</FontString>
+				<FontString parentKey="Quality" inherits="GameFontHighlightSmall" justifyH="LEFT">
+					<Size x="190" y="0"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" x="12" y="-72"/>
+					</Anchors>
+				</FontString>
 				<Texture parentKey="XPBar">
 					<Size x="180" y="4"/>
 					<Anchors>

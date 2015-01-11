@@ -228,7 +228,7 @@ function HelpFrame_OnEvent(self, event, ...)
 			-- the player does not have a ticket
 			haveTicket = false;
 			haveResponse = false;
-			if ( not TicketStatusFrame.hasGMSurvey ) then
+			if ( not TicketStatusFrame.hasGMSurvey and not TicketStatusFrame.hasWebTicket ) then
 				TicketStatusFrame:Hide();
 			end
 		end
@@ -1309,7 +1309,7 @@ function KnowledgeBase_SnapToTopIssues()
 			KnowledgeBase_ShowErrorFrame(HelpFrame.kbase, KBASE_ERROR_NO_RESULTS);
 		end
 	else
-		KBSetup_BeginLoading(KBASE_NUM_ARTICLES_PER_PAGE, 0);
+		--KBSetup_BeginLoading(KBASE_NUM_ARTICLES_PER_PAGE, 0);
 	end
 end
 

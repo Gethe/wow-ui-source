@@ -270,6 +270,10 @@
 				_G[self:GetName().."ReputationBarHighlight2"]:Show();
 				if ( self.friendshipID ) then
 					ShowFriendshipReputationTooltip(self.friendshipID, self, "ANCHOR_BOTTOMRIGHT");
+				elseif (_G[self:GetName().."FactionName"]:IsTruncated()) then
+					GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+					GameTooltip:SetText(_G[self:GetName().."FactionName"]:GetText(), nil, nil, nil, nil, true);
+					GameTooltip:Show();
 				end
 			</OnEnter>
 			<OnLeave>

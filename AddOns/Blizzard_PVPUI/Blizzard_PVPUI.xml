@@ -848,6 +848,9 @@
 										</Anchors>
 									</Frame>
 								</Frames>
+								<Scripts>
+									<OnShow function="HonorFrameBonusFrame_OnShow"/>
+								</Scripts>
 							</Frame>
 							<Button name="$parentSoloQueueButton" parentKey="SoloQueueButton" inherits="MagicButtonTemplate" text="BATTLEFIELD_JOIN" motionScriptsWhileDisabled="true">
 								<Size x="116" y="22"/>

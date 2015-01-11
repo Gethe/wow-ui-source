@@ -322,15 +322,17 @@ function VideoOptionsPanel_Cancel (self)
 end
 
 function VideoOptionsPanel_Default (self)
-	Graphics_Default(self);
-end
-
-function Graphics_Default (self)
-	SetDefaultVideoOptions(0);
 	for _, control in next, self.controls do
 		control.newValue = nil;
 		control.value = nil;
 	end
+end
+
+function Graphics_Default (self)
+	SetDefaultVideoOptions(0);
+	VideoOptionsPanel_Default( Display_);
+	VideoOptionsPanel_Default( Graphics_);
+	VideoOptionsPanel_Default( RaidGraphics_);
 	FinishChanges(self);
 end
 

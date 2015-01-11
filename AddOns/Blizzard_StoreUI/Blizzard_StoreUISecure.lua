@@ -150,6 +150,8 @@ Import("CHARACTER_UPGRADE_LOG_OUT_NOW");
 Import("CHARACTER_UPGRADE_POPUP_LATER");
 Import("CHARACTER_UPGRADE_READY");
 Import("CHARACTER_UPGRADE_READY_DESCRIPTION");
+Import("FREE_CHARACTER_UPGRADE_READY");
+Import("FREE_CHARACTER_UPGRADE_READY_DESCRIPTION");
 
 Import("OKAY");
 Import("LARGE_NUMBER_SEPERATOR");
@@ -925,6 +927,9 @@ function StoreFrame_OnLoad(self)
 	if ( errorID ) then
 		StoreFrame_OnError(self, errorID, true, internalErr);
 	end
+
+	self.variablesLoaded = false;
+	self.distributionsUpdated = false;
 end
 
 local JustFinishedOrdering = false;
@@ -1077,6 +1082,8 @@ function StoreFrame_OnAttributeChanged(self, name, value)
 		end
 	elseif ( name == "previewframeshown" ) then
 		StoreFrame_UpdateCoverState();
+	elseif ( name == "checkforfree" ) then
+		StoreFrame_CheckForFree(self, value);
 	end
 end
 
@@ -1257,6 +1264,22 @@ end
 function StoreFrame_ShowPreview(name, modelID)
 	Outbound.ShowPreview(name, modelID);
 	StoreProductCard_UpdateAllStates();
+end
+
+function StoreFrame_CheckForFree(self, event)
+	if (event == "VARIABLES_LOADED") then
+		self.variablesLoaded = true;
+	end
+	if (event == "PRODUCT_DISTRIBUTIONS_UPDATED") then
+		self.distributionsUpdated = true;
+	end
+	if (self.variablesLoaded and self.distributionsUpdated and select(2,C_SharedCharacterServices.HasFreeDistribution()) and not C_SharedCharacterServices.HasSeenPopup() and not IsOnGlueScreen()) then
+		C_SharedCharacterServices.SetPopupSeen(true);
+		self:Hide();
+		ServicesLogoutPopup.Background.Title:SetText(FREE_CHARACTER_UPGRADE_READY);
+		ServicesLogoutPopup.Background.Description:SetText(FREE_CHARACTER_UPGRADE_READY_DESCRIPTION);
+		ServicesLogoutPopup:Show();
+	end
 end
 
 function StoreFramePrevPageButton_OnClick(self)

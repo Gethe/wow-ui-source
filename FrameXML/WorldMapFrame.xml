@@ -867,9 +867,10 @@
 		</Anchors>		
 	</Frame>
 	<Button name="WorldMapTitleButton" parent="WorldMapFrame">
-		<Size x="544" y="22" />
+		<Size x="0" y="22" />
 		<Anchors>
 			<Anchor point="TOPLEFT" x="0" y="0" />
+			<Anchor point="TOPRIGHT" x="-46" y="0" />
 		</Anchors>
 		<Scripts>
 			<OnLoad function="WorldMapTitleButton_OnLoad" />

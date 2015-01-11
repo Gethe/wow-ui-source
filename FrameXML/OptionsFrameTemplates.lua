@@ -153,6 +153,17 @@ function OptionsListButton_OnClick (self, mouseButton)
 	OptionsList_DisplayPanel(self.element);
 end
 
+function OptionsListButton_OnEnter (self)
+	if (self.text:IsTruncated()) then
+		GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+		GameTooltip:SetText(self:GetText(), NORMAL_FONT_COLOR[1], NORMAL_FONT_COLOR[2], NORMAL_FONT_COLOR[3], 1, true);
+	end
+end
+
+function OptionsListButton_OnLeave (self)
+	GameTooltip:Hide();
+end
+
 function OptionsListButton_ToggleSubCategories (self)
 	local element = self.element;
 

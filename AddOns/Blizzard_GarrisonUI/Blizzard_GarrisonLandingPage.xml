@@ -151,8 +151,8 @@
 				</Texture>
 			</Layer>
 			<Layer level="ARTWORK">
-				<FontString parentKey="Name" inherits="GameFontHighlightMedium" justifyV="TOP" justifyH="CENTER">
-					<Size x="120" y="0"/>
+				<FontString parentKey="Name" inherits="GameFontNormal" justifyV="TOP" justifyH="CENTER">
+					<Size x="90" y="0"/>
 					<Anchors>
 						<Anchor point="TOP" relativePoint="BOTTOM" x="0" y="-5"/>
 					</Anchors>
@@ -160,7 +160,7 @@
 				</FontString>
 			</Layer>
 			<Layer level="OVERLAY">
-				<FontString parentKey="Count" inherits="GameFontHighlightLarge" justifyH="CENTER">
+				<FontString parentKey="Count" inherits="GameFontHighlightMedium" justifyH="CENTER">
 					<Anchors>
 						<Anchor point="BOTTOM" x="0" y="12"/>
 					</Anchors>
@@ -168,7 +168,7 @@
 			</Layer>
 		</Layers>
 		<Frames>
-			<Cooldown parentKey="Swipe" reverse="true">
+			<Cooldown parentKey="Swipe" reverse="true" hideCountdownNumbers="true">
 				<Size x="64" y="64"/>
 				<Anchors>
 					<Anchor point="CENTER"/>
@@ -183,7 +183,7 @@
 	</Frame>
 	
 	<Button name="GarrisonLandingPageTabTemplate" virtual="true">
-        <Size x="115" y="32"/>
+        <Size x="115" y="42"/>
         <Layers>
         	<Layer level="BACKGROUND">
 				<Texture parentKey="LeftDisabled" atlas="GarrLanding-Tab-Bottom-Selected-Left" useAtlasSize="true">
@@ -518,42 +518,47 @@
 					</Button>
 					<Frame parentArray="Shipments" inherits="GarrisonLandingPageReportShipmentStatusTemplate" hidden="true">
 						<Anchors>
-							<Anchor point="TOPLEFT" x="70" y="-100"/>
+							<Anchor point="TOPLEFT" x="60" y="-120"/>
 						</Anchors>
 					</Frame>
 					<Frame parentArray="Shipments" inherits="GarrisonLandingPageReportShipmentStatusTemplate" hidden="true">
 						<Anchors>
-							<Anchor point="TOPLEFT" x="230" y="-100"/>
+							<Anchor point="TOPLEFT" x="165" y="-120"/>
 						</Anchors>
 					</Frame>
 					<Frame parentArray="Shipments" inherits="GarrisonLandingPageReportShipmentStatusTemplate" hidden="true">
 						<Anchors>
-							<Anchor point="TOPLEFT" x="70" y="-205"/>
+							<Anchor point="TOPLEFT" x="270" y="-120"/>
 						</Anchors>
 					</Frame>
 					<Frame parentArray="Shipments" inherits="GarrisonLandingPageReportShipmentStatusTemplate" hidden="true">
 						<Anchors>
-							<Anchor point="TOPLEFT" x="230" y="-205"/>
+							<Anchor point="TOPLEFT" x="60" y="-250"/>
 						</Anchors>
 					</Frame>
 					<Frame parentArray="Shipments" inherits="GarrisonLandingPageReportShipmentStatusTemplate" hidden="true">
 						<Anchors>
-							<Anchor point="TOPLEFT" x="70" y="-310"/>
+							<Anchor point="TOPLEFT" x="165" y="-250"/>
 						</Anchors>
 					</Frame>
 					<Frame parentArray="Shipments" inherits="GarrisonLandingPageReportShipmentStatusTemplate" hidden="true">
 						<Anchors>
-							<Anchor point="TOPLEFT" x="230" y="-310"/>
+							<Anchor point="TOPLEFT" x="270" y="-250"/>
 						</Anchors>
 					</Frame>
 					<Frame parentArray="Shipments" inherits="GarrisonLandingPageReportShipmentStatusTemplate" hidden="true">
 						<Anchors>
-							<Anchor point="TOPLEFT" x="70" y="-415"/>
+							<Anchor point="TOPLEFT" x="60" y="-380"/>
 						</Anchors>
 					</Frame>
 					<Frame parentArray="Shipments" inherits="GarrisonLandingPageReportShipmentStatusTemplate" hidden="true">
 						<Anchors>
-							<Anchor point="TOPLEFT" x="230" y="-415"/>
+							<Anchor point="TOPLEFT" x="165" y="-380"/>
+						</Anchors>
+					</Frame>
+					<Frame parentArray="Shipments" inherits="GarrisonLandingPageReportShipmentStatusTemplate" hidden="true">
+						<Anchors>
+							<Anchor point="TOPLEFT" x="270" y="-380"/>
 						</Anchors>
 					</Frame>
 				</Frames>
@@ -669,12 +674,12 @@
 						</Texture>
 						<FontString parentKey="XPText" inherits="GameFontHighlightLarge2" justifyH="RIGHT">
 							<Anchors>
-								<Anchor point="TOPRIGHT" relativeKey="$parent.Class" relativePoint="TOPLEFT" x="-2" y="-12"/>
+								<Anchor point="TOPRIGHT" relativeKey="$parent.Class" relativePoint="TOPLEFT" x="-2" y="-8"/>
 							</Anchors>
 						</FontString>
 						<FontString parentKey="XPLabel" inherits="GameFontHighlight" justifyH="RIGHT" text="GARRISON_FOLLOWER_XP_STRING">
 							<Anchors>
-								<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Class" relativePoint="BOTTOMLEFT" y="6"/>
+								<Anchor point="TOPRIGHT" relativeKey="$parent.XPText" relativePoint="BOTTOMRIGHT" y="-4"/>
 							</Anchors>
 						</FontString>
 						<FontString parentKey="Name" inherits="GameFontHighlightLarge2" justifyH="LEFT">
@@ -691,15 +696,30 @@
 					</Layer>
 				</Layers>
 				<Frames>
+					<Frame parentKey="QualityFrame">
+						<Size x="10" y="10"/>
+						<Anchors>
+							<Anchor point="TOPLEFT" x="31" y="-79"/>
+						</Anchors>
+						<Layers>
+							<Layer level="OVERLAY">
+								<FontString parentKey="Text" inherits="GameFontHighlight" justifyH="LEFT">
+									<Anchors>
+										<Anchor point="TOPLEFT"/>
+									</Anchors>
+								</FontString>					
+							</Layer>
+						</Layers>
+					</Frame>
 					<Frame parentKey="PortraitFrame" inherits="GarrisonFollowerPortraitTemplate">
 						<Anchors>
 							<Anchor point="TOPLEFT" x="23" y="-10"/>
 						</Anchors>
 					</Frame>
 					<StatusBar parentKey="XPBar" inherits="GarrisonFollowerXPBarTemplate" enableMouse="true">
-						<Size x="370" y="5"/>
+						<Size x="370" y="9"/>
 						<Anchors>
-							<Anchor point="BOTTOMLEFT" relativeKey="$parent.PortraitFrame" relativePoint="BOTTOMRIGHT" x="7" y="5"/>
+							<Anchor point="BOTTOMLEFT" relativeKey="$parent.PortraitFrame" relativePoint="BOTTOMRIGHT" x="7" y="1"/>
 						</Anchors>
 						<Layers>
 							<Layer level="HIGHLIGHT">
@@ -711,7 +731,7 @@
 							</Layer>
 						</Layers>						
 					</StatusBar>
-					<CinematicModel parentKey="Model" inherits="ModelTemplate">
+					<CinematicModel parentKey="Model" inherits="ModelTemplate" hidden="true">
 						<Size x="325" y="300"/>
 						<Anchors>
 							<Anchor point="TOPLEFT" x="0" y="-74"/>
@@ -726,6 +746,9 @@
 							</Layer>
 						</Layers>
 						<Scripts>
+							<OnModelLoaded>
+								self:SetAlpha(1);
+							</OnModelLoaded>						
 							<OnShow>
 								self:SetTargetDistance(0);
 								self:SetFacing(.2);

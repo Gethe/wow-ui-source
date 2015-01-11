@@ -434,7 +434,7 @@
 				</Anchors>				
 			</Frame>
 			<Button parentKey="SpellFrame" inherits="SmallItemButtonTemplate, QuestInfoRewardSpellCodeTemplate" hidden="true"/>
-			<Frame parentKey="FollowerFrame" inherits="QuestInfoRewardFollowerTemplate"/>
+			<Button parentKey="FollowerFrame" inherits="QuestInfoRewardFollowerTemplate"/>
 			<Button name="$parentQuestInfoItem1" inherits="SmallItemButtonTemplate, QuestInfoRewardItemCodeTemplate" hidden="true" parentArray="RewardButtons"/>
 			<Button parentKey="XPFrame" inherits="SmallItemButtonTemplate" hidden="true"/>
 			<Button parentKey="MoneyFrame" inherits="SmallItemButtonTemplate" hidden="true"/>

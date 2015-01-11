@@ -1,7 +1,7 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\..\FrameXML\UI.xsd">
 	<Script file="Blizzard_CompactRaidFrameContainer.lua"/>
-	<Frame name="CompactRaidFrameContainer" frameStrata="LOW" parent="UIParent">
+	<Frame name="CompactRaidFrameContainer" parent="UIParent">
 		<Size x="1000" y="0"/>
 		<Frames>
 			<Frame name="$parentBorderFrame" parentKey="borderFrame">

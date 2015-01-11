@@ -437,7 +437,12 @@ function GuildBankFrame_UpdateTabs()
 		elseif ( i > numTabs ) then
 			tab:Hide();
 		else
-			iconTexture:SetTexture(icon);
+			local iconNumber = tonumber(icon);
+			if(iconNumber) then
+				iconTexture:SetToFileData(iconNumber);
+			else
+				iconTexture:SetTexture(icon);
+			end
 			tab:Show();
 			if ( isViewable ) then
 				tabButton.tooltip = name;
