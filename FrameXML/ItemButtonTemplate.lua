@@ -112,6 +112,8 @@ function HandleModifiedItemClick(link)
 		end
 		if ( ChatEdit_InsertLink(link) ) then
 			return true;
+		elseif ( SocialPostFrame and SocialPostFrame:IsShown() and SocialPostFrame_InsertLink(link) ) then
+			return true;
 		end
 	end
 	if ( IsModifiedClick("DRESSUP") ) then

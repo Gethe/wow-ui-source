@@ -1116,7 +1116,7 @@
 								<Anchor point="TOPRIGHT" x="-35" y="-20" />
 							</Anchors>
 						</Texture>
-						<FontString parentKey="RankLabel" inherits="GameFontHighlight" justifyH="CENTER" text="LEVEL">
+						<FontString parentKey="RankLabel" inherits="GameFontHighlight" justifyH="CENTER" text="GARRISON_TIER">
 							<Size x="64" y="0"/>
 							<Anchors>
 								<Anchor point="TOP" relativeKey="$parent.RankBadge" relativePoint="BOTTOM" y="5"/>

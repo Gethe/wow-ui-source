@@ -65,11 +65,23 @@ function MainMenuBar_OnEvent(self, event, ...)
 end
 
 function MainMenuBarVehicleLeaveButton_OnLoad(self)
+	self:RegisterEvent("PLAYER_ENTERING_WORLD");
 	self:RegisterEvent("UPDATE_BONUS_ACTIONBAR");
 	self:RegisterEvent("UPDATE_MULTI_CAST_ACTIONBAR");
 	self:RegisterEvent("UNIT_ENTERED_VEHICLE");
 	self:RegisterEvent("UNIT_EXITED_VEHICLE");
 	self:RegisterEvent("VEHICLE_UPDATE");
+end
+
+function MainMenuBarVehicleLeaveButton_OnEnter(self)
+	if ( UnitOnTaxi("player") ) then
+		GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+		GameTooltip:SetText(TAXI_CANCEL, 1, 1, 1);
+		GameTooltip:AddLine(TAXI_CANCEL_DESCRIPTION, NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b, true);
+		GameTooltip:Show();
+	else
+		GameTooltip_AddNewbieTip(self, LEAVE_VEHICLE, 1.0, 1.0, 1.0, nil);
+	end
 end
 
 function MainMenuBarVehicleLeaveButton_OnEvent(self, event, ...)
@@ -90,13 +102,29 @@ function MainMenuBarVehicleLeaveButton_Update()
 		end
 
 		MainMenuBarVehicleLeaveButton:Show();
+		MainMenuBarVehicleLeaveButton:Enable();
 		ShowPetActionBar(true);
 	else
+		MainMenuBarVehicleLeaveButton:SetHighlightTexture([[Interface\Buttons\ButtonHilight-Square]], "ADD");
+		MainMenuBarVehicleLeaveButton:UnlockHighlight();
 		MainMenuBarVehicleLeaveButton:Hide();
 		ShowPetActionBar(true);
 	end
 
 	UIParent_ManageFramePositions();
+end
+
+function MainMenuBarVehicleLeaveButton_OnClicked(self)
+	if ( UnitOnTaxi("player") ) then
+		TaxiRequestEarlyLanding();
+		
+		-- Show that the request for landing has been received.
+		self:Disable();
+		self:SetHighlightTexture([[Interface\Buttons\CheckButtonHilight]], "ADD");
+		self:LockHighlight();
+	else
+		VehicleExit();
+	end
 end
 
 function ExhaustionTick_OnLoad(self)

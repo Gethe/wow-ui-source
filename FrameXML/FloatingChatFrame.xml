@@ -402,7 +402,7 @@
 
 	<!-- ===============================================================================-->
 	<!-- Floating frame template-->
-	<ScrollingMessageFrame name="FloatingChatFrameTemplate" movable="true" enableMouse="false" resizable="true" inherits="ChatFrameTemplate,FloatingBorderedFrame" parent="UIParent" hidden="true" clampedToScreen="true" dontSavePosition="true" virtual="true">
+	<ScrollingMessageFrame name="FloatingChatFrameTemplate" movable="true" enableMouse="false" resizable="true" inherits="ChatFrameTemplate,FloatingBorderedFrame" parent="UIParent" hidden="true" clampedToScreen="true" dontSavePosition="true" frameLevel="5" virtual="true">
 		<Size x="430" y="120"/>
 		<Anchors>
 			<Anchor point="BOTTOMLEFT" x="100" y="100"/>

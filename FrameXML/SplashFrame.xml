@@ -79,7 +79,7 @@
 						<Anchor point="BOTTOM" x="164" y="183"/>
 					</Anchors>
 				</FontString>
-				<FontString parentKey="RightTitle" inherits="Game32Font">
+				<FontString parentKey="RightTitle" inherits="Game32Font" justifyV="BOTTOM">
 					<Anchors>
 						<Anchor point="BOTTOM" relativeKey="$parent.RightDescription" relativePoint="TOP" x="0" y="10"/>
 					</Anchors>

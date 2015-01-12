@@ -1753,13 +1753,13 @@ function UnitPopup_OnClick (self)
 	elseif ( button == "PET_RENAME" ) then
 		StaticPopup_Show("RENAME_PET");
 	elseif ( button == "PET_SHOW_IN_JOURNAL" ) then
-		if (not PetJournalParent) then
-			PetJournal_LoadUI();
+		if (not CollectionsJournal) then
+			CollectionsJournal_LoadUI();
 		end
-		if (not PetJournalParent:IsShown()) then
-			ShowUIPanel(PetJournalParent);
+		if (not CollectionsJournal:IsShown()) then
+			ShowUIPanel(CollectionsJournal);
 		end
-		PetJournalParent_SetTab(PetJournalParent, 2);
+		CollectionsJournal_SetTab(CollectionsJournal, 2);
 		PetJournal_SelectSpecies(PetJournal, UnitBattlePetSpeciesID(unit));
 	elseif ( button == "FREE_FOR_ALL" ) then
 		SetLootMethod("freeforall");

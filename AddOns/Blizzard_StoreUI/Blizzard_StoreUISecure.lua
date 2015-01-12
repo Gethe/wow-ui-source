@@ -1007,6 +1007,18 @@ function StoreFrame_OnShow(self)
 	PlaySound("UI_igStore_WindowOpen_Button");
 end
 
+function StoreFrame_OnMouseWheel(self, value)
+	if ( value > 0 ) then
+		if ( self.PrevPageButton:IsShown() and self.PrevPageButton:IsEnabled() ) then
+			StoreFramePrevPageButton_OnClick(self.PrevPageButton);
+		end
+	else
+		if ( self.NextPageButton:IsShown() and self.NextPageButton:IsEnabled() ) then
+			StoreFrameNextPageButton_OnClick(self.NextPageButton);
+		end	
+	end
+end
+
 function StoreFrame_UpdateBuyButton()
 	local self = StoreFrame;
 	local info = currencyInfo();

@@ -1262,6 +1262,7 @@ StaticPopupDialogs["DEATH"] = {
 	text = DEATH_RELEASE_TIMER,
 	button1 = DEATH_RELEASE,
 	button2 = USE_SOULSTONE,
+	button3 = DEATH_RECAP,
 	OnShow = function(self)
 		self.timeleft = GetReleaseTimeRemaining();
 		local text = HasSoulstone();
@@ -1274,6 +1275,11 @@ StaticPopupDialogs["DEATH"] = {
 		elseif ( self.timeleft == -1 ) then
 			self.text:SetText(DEATH_RELEASE_NOTIMER);
 		end
+	end,
+	OnHide = function(self)
+		self.button3:SetScript("OnEnter", nil );
+		self.button3:SetScript("OnLeave", nil);
+		self.button3:SetMotionScriptsWhileDisabled(false);
 	end,
 	OnAccept = function(self)
 		if ( IsActiveBattlefieldArena() ) then
@@ -1303,6 +1309,9 @@ StaticPopupDialogs["DEATH"] = {
 			end
 		end
 	end,
+	OnAlt = function()
+		OpenDeathRecapUI();
+	end,
 	OnUpdate = function(self, elapsed)
 		if ( IsFalling() and not IsOutOfBounds()) then
 			self.button1:Disable();
@@ -1328,15 +1337,32 @@ StaticPopupDialogs["DEATH"] = {
 		else
 			self.button2:Disable();
 		end
+		
+		if ( DeathRecap_HasEvents() ) then
+			self.button3:Enable();
+			self.button3:SetScript("OnEnter", nil );
+			self.button3:SetScript("OnLeave", nil);
+		else
+			self.button3:Disable();
+			self.button3:SetMotionScriptsWhileDisabled(true);
+			self.button3:SetScript("OnEnter", function(self)
+				GameTooltip:SetOwner(self, "ANCHOR_BOTTOMRIGHT");
+				GameTooltip:SetText(DEATH_RECAP_UNAVAILABLE);
+				GameTooltip:Show();
+			end );
+			self.button3:SetScript("OnLeave", GameTooltip_Hide);
+		end
 	end,
 	DisplayButton2 = function(self)
 		return HasSoulstone();
 	end,
+
 	timeout = 0,
 	whileDead = 1,
 	interruptCinematic = 1,
 	notClosableByLogout = 1,
 	noCancelOnReuse = 1,
+	noCloseOnAlt = true,
 	cancels = "RECOVER_CORPSE"
 };
 StaticPopupDialogs["RESURRECT"] = {
@@ -3352,6 +3378,19 @@ StaticPopupDialogs["LFG_LIST_ENTRY_EXPIRED_TIMEOUT"] = {
 	whileDead = 1,
 };
 
+StaticPopupDialogs["CONFIRM_FOLLOWER_UPGRADE"] = {
+	text = CONFIRM_GARRISON_FOLLOWER_UPGRADE,
+	button1 = YES,
+	button2 = NO,
+	OnAccept = function(self)
+		C_Garrison.CastSpellOnFollower(self.data);
+	end,
+	showAlert = 1,
+	timeout = 0,
+	exclusive = 1,
+	hideOnEscape = 1
+};
+
 function StaticPopup_FindVisible(which, data)
 	local info = StaticPopupDialogs[which];
 	if ( not info ) then
@@ -3956,7 +3995,7 @@ function StaticPopup_OnClick(dialog, index)
 		end
 	end
 
-	if ( hide and (which == dialog.which) ) then
+	if ( hide and (which == dialog.which) and ( index ~= 3 or not info.noCloseOnAlt) ) then
 		-- can dialog.which change inside one of the On* functions???
 		dialog:Hide();
 	end

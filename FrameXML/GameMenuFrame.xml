@@ -116,18 +116,6 @@
 					</OnClick>
 				</Scripts>
 			</Button>
-			<Button name="GameMenuButtonMacOptions" inherits="GameMenuButtonTemplate" text="MAC_OPTIONS">
-				<Anchors>
-					<Anchor point="TOP" relativeTo="GameMenuButtonOptions" relativePoint="BOTTOM" x="0" y="-1"/>
-				</Anchors>
-				<Scripts>
-					<OnClick>
-						PlaySound("igMainMenuOption");
-						HideUIPanel(GameMenuFrame);
-						ShowUIPanel(MacOptionsFrame);
-					</OnClick>
-				</Scripts>
-			</Button>
 			<Button name="GameMenuButtonKeybindings" inherits="GameMenuButtonTemplate" text="KEY_BINDINGS">
 				<Anchors>
 					<Anchor point="TOP" relativeTo="GameMenuButtonUIOptions" relativePoint="BOTTOM" x="0" y="-1"/>

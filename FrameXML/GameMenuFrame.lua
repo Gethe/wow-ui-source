@@ -8,14 +8,7 @@ end
 
 function GameMenuFrame_UpdateVisibleButtons(self)
 	local height = 292;
-	if ( IsMacClient() ) then
-		height = height + 20;
-		GameMenuButtonMacOptions:Show();
-		GameMenuButtonUIOptions:SetPoint("TOP", GameMenuButtonMacOptions, "BOTTOM", 0, -1);
-	else
-		GameMenuButtonMacOptions:Hide();
-		GameMenuButtonUIOptions:SetPoint("TOP", GameMenuButtonOptions, "BOTTOM", 0, -1);
-	end
+	GameMenuButtonUIOptions:SetPoint("TOP", GameMenuButtonOptions, "BOTTOM", 0, -1);
 
 	if ( C_StorePublic.IsEnabled() ) then
 		height = height + 20;
@@ -50,8 +43,8 @@ function GameMenuFrame_UpdateVisibleButtons(self)
 end
 
 function GameMenuFrame_UpdateStoreButtonState(self)
-	if ( IsTrialAccount() ) then
-		self.disabledTooltip = ERR_GUILD_TRIAL_ACCOUNT;
+	if ( GameLimitedMode_IsActive() ) then
+		self.disabledTooltip = GameLimitedMode_GetString("ERR_RESTRICTED_ACCOUNT");
 		self:Disable();
 	elseif ( C_StorePublic.IsDisabledByParentalControls() ) then
 		self.disabledTooltip = BLIZZARD_STORE_ERROR_PARENTAL_CONTROLS;

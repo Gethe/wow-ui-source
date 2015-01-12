@@ -676,7 +676,8 @@
 								</FontString>
 								<FontString name="TradeSkillSkillCooldown" inherits="GameFontRedSmall">
 									<Anchors>
-										<Anchor point="TOPLEFT" relativeTo="TradeSkillRequirementLabel" relativePoint="BOTTOMLEFT" x="0" y="0"/>
+										<Anchor point="LEFT" relativeTo="TradeSkillRequirementLabel" relativePoint="LEFT" x="0" y="0"/>
+										<Anchor point="TOP" relativeTo="TradeSkillRequirementText" relativePoint="BOTTOM" x="0" y="0"/>
 									</Anchors>
 								</FontString>
 								<Texture name="TradeSkillDetailHeaderLeft" file="Interface\ClassTrainerFrame\UI-ClassTrainer-DetailHeaderLeft">
@@ -815,72 +816,16 @@
 				<BarTexture name="$parentBar" file="Interface\PaperDollInfoFrame\UI-Character-Skills-Bar" />
 				<BarColor r="0.25" g="0.25" b="0.75" />
 			</StatusBar>
-			<EditBox name="$parentSearchBox" autoFocus="false">
+			<EditBox name="$parentSearchBox" autoFocus="false" inherits="SearchBoxTemplate">
 				<Size x="180" y="20"/>
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeTo="TradeSkillRankFrame" relativePoint="BOTTOMLEFT" x="8" y="-9"/>
 				</Anchors>
-				<Layers>
-					<Layer level="BACKGROUND">
-						<Texture name="$parentLeft" file="Interface\Common\Common-Input-Border">
-							<Size x="8" y="20"/>
-							<Anchors>
-								<Anchor point="TOPLEFT" x="-5" y="0"/>
-							</Anchors>
-							<TexCoords left="0" right="0.0625" top="0" bottom="0.625"/>
-						</Texture>
-						<Texture name="$parentRight" file="Interface\Common\Common-Input-Border">
-							<Size x="8" y="20"/>
-							<Anchors>
-								<Anchor point="RIGHT" x="0" y="0"/>
-							</Anchors>
-							<TexCoords left="0.9375" right="1.0" top="0" bottom="0.625"/>
-						</Texture>
-						<Texture name="$parentMiddle" file="Interface\Common\Common-Input-Border">
-							<Size x="0" y="20"/>
-							<Anchors>
-								<Anchor point="LEFT" relativeTo="$parentLeft" relativePoint="RIGHT"/>
-								<Anchor point="RIGHT" relativeTo="$parentRight" relativePoint="LEFT"/>
-							</Anchors>
-							<TexCoords left="0.0625" right="0.9375" top="0" bottom="0.625"/>
-						</Texture>
-					</Layer>
-					<Layer level="OVERLAY">
-						<Texture name="$parentSearchIcon" file="Interface\Common\UI-Searchbox-Icon">
-							<Size x="14" y="14"/>
-							<Anchors>
-								<Anchor point="LEFT" y="-2"/>
-							</Anchors>
-							<Color r="0.7" g="0.7" b="0.7" />
-						</Texture>
-					</Layer>
-				</Layers>
 				<Scripts>
 					<OnShow>
-						self:SetText(SEARCH);
-						self:SetFontObject("GameFontDisable");
-						TradeSkillFrameSearchBoxSearchIcon:SetVertexColor(0.6, 0.6, 0.6);
-						self:SetTextInsets(16, 0, 0, 0);
+						self.clearButton:Click();
 					</OnShow>
-					<OnEnterPressed function="EditBox_ClearFocus"/>
-					<OnEscapePressed function="EditBox_ClearFocus"/>
-					<OnTextChanged function="TradeSkillSearch_OnTextChanged"/>
-					<OnEditFocusLost>
-						self:HighlightText(0, 0);
-						if ( self:GetText() == "" ) then
-							self:SetText(SEARCH);
-							self:SetFontObject("GameFontDisable");
-							TradeSkillFrameSearchBoxSearchIcon:SetVertexColor(0.6, 0.6, 0.6);
-						end
-					</OnEditFocusLost>
-					<OnEditFocusGained>
-						self:HighlightText();
-						if ( self:GetText() == SEARCH ) then
-							--self:SetText("");
-							self:SetFontObject("ChatFontSmall");
-							TradeSkillFrameSearchBoxSearchIcon:SetVertexColor(1.0, 1.0, 1.0);
-						end
-					</OnEditFocusGained>
+					<OnTextChanged function="TradeSkillSearch_OnTextChanged" inherit="prepend"/>
 				</Scripts>
 			</EditBox>
 			<Frame name="TradeSkillFilterFrame" >

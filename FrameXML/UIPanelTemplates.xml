@@ -1709,6 +1709,58 @@
 		</Layers>
 	</Frame>
 
+	<!-- Similar to InsetFrameTemplate3, but without the dark background -->
+	<Frame name="InsetFrameTemplate4" virtual="true">
+		<Layers>
+			<Layer level="BORDER">
+				<Texture parentKey="BorderTopRight" atlas="GeneralFrame-InsetFrame-TopRight" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="TOPRIGHT"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="BorderBottomRight" atlas="GeneralFrame-InsetFrame-BottomRight" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="BOTTOMRIGHT"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="BorderRightMiddle" atlas="!GeneralFrame-InsetFrame-Right" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="TOP" relativeKey="$parent.BorderTopRight" relativePoint="BOTTOM"/>
+						<Anchor point="BOTTOM" relativeKey="$parent.BorderBottomRight" relativePoint="TOP"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="BorderTopLeft" atlas="GeneralFrame-InsetFrame-TopLeft" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="TOPLEFT"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="BorderBottomLeft" atlas="GeneralFrame-InsetFrame-BottomLeft" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="BOTTOMLEFT"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="BorderLeftMiddle" atlas="!GeneralFrame-InsetFrame-Left" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.BorderTopLeft" relativePoint="BOTTOMLEFT"/>
+						<Anchor point="BOTTOMLEFT" relativeKey="$parent.BorderBottomLeft" relativePoint="TOPLEFT"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="BorderTopMiddle" atlas="_GeneralFrame-InsetFrame-Top" useAtlasSize="true">
+					<Anchors>								
+						<Anchor point="RIGHT" relativeKey="$parent.BorderTopRight" relativePoint="LEFT"/>
+						<Anchor point="LEFT" relativeKey="$parent.BorderTopLeft" relativePoint="RIGHT"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="BorderBottomMiddle" atlas="_GeneralFrame-InsetFrame-Bottom" useAtlasSize="true">
+					<Anchors>								
+						<Anchor point="RIGHT" relativeKey="$parent.BorderBottomRight" relativePoint="LEFT"/>
+						<Anchor point="LEFT" relativeKey="$parent.BorderBottomLeft" relativePoint="RIGHT"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+	</Frame>
+
 <!--
 *******************************************************************************
     EtherealFrameTemplate
@@ -2553,21 +2605,7 @@
 							self.nextEditBox:SetFocus();
 						end
 					</OnTabPressed>
-					<OnTextChanged>
-						local scrollFrame = self:GetParent();
-						ScrollingEdit_OnTextChanged(self, scrollFrame);
-						if ( self:GetText() ~= "" ) then
-							self.Instructions:Hide();
-						else
-							self.Instructions:Show();
-						end
-						scrollFrame.CharCount:SetText(self:GetMaxLetters() - self:GetNumLetters());
-						if ( scrollFrame.ScrollBar:IsShown() ) then
-							scrollFrame.CharCount:SetPoint("BOTTOMRIGHT", -17, 0);
-						else
-							scrollFrame.CharCount:SetPoint("BOTTOMRIGHT", 0, 0);
-						end
-					</OnTextChanged> 
+					<OnTextChanged function="InputScrollFrame_OnTextChanged"/>
 					<OnCursorChanged function="ScrollingEdit_OnCursorChanged"/>
 					<OnUpdate>
 						ScrollingEdit_OnUpdate(self, elapsed, self:GetParent());

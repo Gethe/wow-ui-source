@@ -142,7 +142,12 @@ function GuildControlUI_BankTabPermissions_Update(self)
 			button:Show();
 			local ownedTab = button.owned;
 			ownedTab.tabName:SetText(name);	
-			ownedTab.tabIcon:SetTexture(icon);
+			local iconNumber = tonumber(icon);
+			if(iconNumber) then
+				ownedTab.tabIcon:SetToFileData(iconNumber);
+			else
+				ownedTab.tabIcon:SetTexture(icon);
+			end			
 			ownedTab.viewCB:SetChecked(isViewable);
 			ownedTab.infoCB:SetChecked(editText);
 			ownedTab.depositCB:SetChecked(canDeposit);

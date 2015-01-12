@@ -91,7 +91,7 @@
 				</Scripts>
 			</CheckButton>	
 			<Frame name="$parentPlayback" inherits="OptionsBoxTemplate">
-				<Size x="186" y="298"/>
+				<Size x="186" y="316"/>
 				<Anchors>
 					<Anchor point="TOPLEFT">
 						<Offset x="16" y="-116"/>
@@ -119,7 +119,7 @@
 					</OnLoad>
 				</Scripts>
 			</CheckButton>				
-			<CheckButton name="$parentErrorSpeech" inherits="AudioOptionsSmallCheckButtonTemplate">
+			<CheckButton name="$parentPetSounds" inherits="AudioOptionsSmallCheckButtonTemplate">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeTo="$parentSoundEffects" relativePoint="BOTTOMLEFT">
 						<Offset x="8" y="4"/>
@@ -128,15 +128,15 @@
 				<Scripts>
 					<OnLoad>
 						self.type = CONTROLTYPE_CHECKBOX;
-						self.cvar = "Sound_EnableErrorSpeech";
+						self.cvar = "Sound_EnablePetSounds";
 						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
 						BlizzardOptionsPanel_SetupDependentControl(AudioOptionsSoundPanelSoundEffects, self);
 					</OnLoad>
 				</Scripts>
-			</CheckButton>	
+			</CheckButton>
 			<CheckButton name="$parentEmoteSounds" inherits="AudioOptionsSmallCheckButtonTemplate">
 				<Anchors>
-					<Anchor point="TOPLEFT" relativeTo="$parentErrorSpeech" relativePoint="BOTTOMLEFT">
+					<Anchor point="TOPLEFT" relativeTo="$parentPetSounds" relativePoint="BOTTOMLEFT">
 						<Offset x="0" y="4"/>
 					</Anchor>
 				</Anchors>
@@ -149,24 +149,9 @@
 					</OnLoad>
 				</Scripts>
 			</CheckButton>
-			<CheckButton name="$parentPetSounds" inherits="AudioOptionsSmallCheckButtonTemplate">
-				<Anchors>
-					<Anchor point="TOPLEFT" relativeTo="$parentEmoteSounds" relativePoint="BOTTOMLEFT">
-						<Offset x="0" y="4"/>
-					</Anchor>
-				</Anchors>
-				<Scripts>
-					<OnLoad>
-						self.type = CONTROLTYPE_CHECKBOX;
-						self.cvar = "Sound_EnablePetSounds";
-						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
-						BlizzardOptionsPanel_SetupDependentControl(AudioOptionsSoundPanelSoundEffects, self);
-					</OnLoad>
-				</Scripts>
-			</CheckButton>	
 			<CheckButton name="$parentMusic" inherits="AudioOptionsSmallCheckButtonTemplate">
 				<Anchors>
-					<Anchor point="TOPLEFT" relativeTo="$parentPetSounds" relativePoint="BOTTOMLEFT">
+					<Anchor point="TOPLEFT" relativeTo="$parentEmoteSounds" relativePoint="BOTTOMLEFT">
 						<Offset x="-8" y="2"/>
 					</Anchor>
 				</Anchors>
@@ -221,11 +206,40 @@
 						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
 					</OnLoad>
 				</Scripts>
-			</CheckButton>			
-			<CheckButton name="$parentSoundInBG" inherits="AudioOptionsSmallCheckButtonTemplate">
+			</CheckButton>
+			<CheckButton name="$parentDialogSounds" inherits="AudioOptionsSmallCheckButtonTemplate">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeTo="$parentAmbientSounds" relativePoint="BOTTOMLEFT">
 						<Offset x="0" y="2"/>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						self.type = CONTROLTYPE_CHECKBOX;
+						self.cvar = "Sound_EnableDialog";
+						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
+					</OnLoad>
+				</Scripts>
+			</CheckButton>
+			<CheckButton name="$parentErrorSpeech" inherits="AudioOptionsSmallCheckButtonTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentDialogSounds" relativePoint="BOTTOMLEFT">
+						<Offset x="8" y="4"/>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						self.type = CONTROLTYPE_CHECKBOX;
+						self.cvar = "Sound_EnableErrorSpeech";
+						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
+						BlizzardOptionsPanel_SetupDependentControl(AudioOptionsSoundPanelDialogSounds, self);
+					</OnLoad>
+				</Scripts>
+			</CheckButton>
+			<CheckButton name="$parentSoundInBG" inherits="AudioOptionsSmallCheckButtonTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentErrorSpeech" relativePoint="BOTTOMLEFT">
+						<Offset x="-8" y="2"/>
 					</Anchor>
 				</Anchors>
 				<Scripts>
@@ -664,6 +678,10 @@
 							if ( self.tooltipText ) then
 								GlueTooltip:SetOwner(self);
 								GlueTooltip:SetText(self.tooltipText, nil, nil, nil, nil, true);
+							end
+							if (not AudioOptionsSoundPanelDialogSounds:GetChecked()) then
+								GlueTooltip:AddLine(MUTED, 1.0, 0.0, 0.0, 1.0, true);
+								GlueTooltip:Show();
 							end
 						end
 					</OnEnter>

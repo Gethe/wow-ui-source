@@ -380,10 +380,10 @@
 						ShowTextStatusBarText(self);
 						--ExhaustionTick.timer = 1;
 						local label = XPBAR_LABEL;
-						if IsTrialAccount() then
+						if ( GameLimitedMode_IsActive() ) then
 							local rLevel = GetRestrictedAccountData();
 							if UnitLevel("player") >= rLevel then
-								label = label.." "..RED_FONT_COLOR_CODE..TRIAL_CAPPED.."|r";
+								label = label.." "..RED_FONT_COLOR_CODE..GameLimitedMode_GetString("CAP_REACHED").."|r";
 							end
 						end
 						

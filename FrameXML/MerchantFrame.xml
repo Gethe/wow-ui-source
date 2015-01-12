@@ -572,6 +572,7 @@
 			<OnReceiveDrag>
 				MerchantItemButton_OnClick(self, "LeftButton");
 			</OnReceiveDrag>
+			<OnMouseWheel function="MerchantFrame_OnMouseWheel"/>
 		</Scripts>
 	</Frame>
 </Ui>

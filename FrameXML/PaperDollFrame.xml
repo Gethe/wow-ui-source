@@ -502,9 +502,9 @@
 			</Frame>
 		
 			<ScrollFrame name="PaperDollTitlesPane" inherits="HybridScrollFrameTemplate" hidden="true">
+				<Size x="172" y="354"/>
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeTo="CharacterFrameInsetRight" x="4" y="-4"/>
-					<Anchor point="BOTTOMRIGHT" relativeTo="CharacterFrameInsetRight" x="-27" y="2"/>
 				</Anchors>
 				<Frames>
 					<Slider name="$parentScrollBar" inherits="HybridScrollBarTemplate" parentKey="scrollBar">
@@ -525,16 +525,15 @@
 						PaperDollTitlesPane_OnLoad(self);
 					</OnLoad>
 					<OnShow>
-						HybridScrollFrame_CreateButtons(PaperDollTitlesPane, "PlayerTitleButtonTemplate");
 						PaperDollTitlesPane_Update();
 					</OnShow>
 				</Scripts>
 			</ScrollFrame>
 			
 			<ScrollFrame name="PaperDollEquipmentManagerPane" inherits="HybridScrollFrameTemplate" hidden="true">
+				<Size x="172" y="354"/>
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeTo="CharacterFrameInsetRight" x="4" y="-4"/>
-					<Anchor point="BOTTOMRIGHT" relativeTo="CharacterFrameInsetRight" x="-27" y="2"/>
 				</Anchors>
 				<Frames>
 					<Button name="$parentEquipSet" text="EQUIPSET_EQUIP" parentKey="EquipSet" inherits="UIPanelButtonTemplate">

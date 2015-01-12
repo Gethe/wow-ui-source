@@ -400,54 +400,32 @@
 							<Layer level="ARTWORK">
 								<FontString name="$parentLow2" inherits="OptionsFontSmall" text="VIDEO_QUALITY_LABEL1">
 									<Anchors>
-										<Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT">
-											<Offset>
-												<AbsDimension x="1" y="3"/>
-											</Offset>
-										</Anchor>
+										<Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" x="5" y="3"/>
 									</Anchors>
 								</FontString>
-								<FontString name="$parentFair" inherits="OptionsFontSmall" text="VIDEO_QUALITY_LABEL2">
+								<FontString name="$parentFair" inherits="OptionsFontSmall" text="VIDEO_QUALITY_LABEL2" justifyH="CENTER">
 									<Anchors>
-										<Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT">
-											<Offset>
-												<AbsDimension x="140" y="3"/>
-											</Offset>
-										</Anchor>
+										<Anchor point="TOP" relativePoint="BOTTOMLEFT" x="147" y="3"/>
 									</Anchors>
 								</FontString>
 								<FontString name="Graphics_RightQualityLabel" inherits="OptionsFontHighlight" text="CUSTOM" >
 									<Anchors>
-										<Anchor point="BOTTOMLEFT" relativePoint="TOPLEFT">
-											<Offset x="256" y="0"/>
-										</Anchor>
+										<Anchor point="BOTTOMLEFT" relativePoint="TOPLEFT" x="256" y="0"/>
 									</Anchors>
 								</FontString>
-								<FontString name="$parentMed" inherits="OptionsFontSmall" text="VIDEO_QUALITY_LABEL3">
+								<FontString name="$parentMed" inherits="OptionsFontSmall" text="VIDEO_QUALITY_LABEL3" justifyH="CENTER">
 									<Anchors>
-										<Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT">
-											<Offset>
-												<AbsDimension x="265" y="3"/>
-											</Offset>
-										</Anchor>
+										<Anchor point="TOP" relativePoint="BOTTOMLEFT" x="276" y="3"/>
 									</Anchors>
 								</FontString>
-								<FontString name="$parentHigh2" inherits="OptionsFontSmall" text="VIDEO_QUALITY_LABEL4">
+								<FontString name="$parentHigh2" inherits="OptionsFontSmall" text="VIDEO_QUALITY_LABEL4" justifyH="CENTER">
 									<Anchors>
-										<Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT">
-											<Offset>
-												<AbsDimension x="400" y="3"/>
-											</Offset>
-										</Anchor>
+										<Anchor point="TOP" relativePoint="BOTTOMLEFT" x="406" y="3"/>
 									</Anchors>
 								</FontString>
-								<FontString name="$parentUltra" inherits="OptionsFontSmall" text="VIDEO_QUALITY_LABEL5">
+								<FontString name="$parentUltra" inherits="OptionsFontSmall" text="VIDEO_QUALITY_LABEL5" justifyH="RIGHT">
 									<Anchors>
-										<Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT">
-											<Offset>
-												<AbsDimension x="535" y="3"/>
-											</Offset>
-										</Anchor>
+										<Anchor point="TOPRIGHT" relativePoint="BOTTOMLEFT" x="555" y="3"/>
 									</Anchors>
 								</FontString>
 							</Layer>
@@ -766,54 +744,32 @@
 							<Layer level="ARTWORK">
 								<FontString name="$parentLow2" inherits="OptionsFontSmall" text="VIDEO_QUALITY_LABEL1">
 									<Anchors>
-										<Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT">
-											<Offset>
-												<AbsDimension x="1" y="3"/>
-											</Offset>
-										</Anchor>
+										<Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" x="5" y="3"/>
 									</Anchors>
 								</FontString>
-								<FontString name="$parentFair" inherits="OptionsFontSmall" text="VIDEO_QUALITY_LABEL2">
+								<FontString name="$parentFair" inherits="OptionsFontSmall" text="VIDEO_QUALITY_LABEL2" justifyH="CENTER">
 									<Anchors>
-										<Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT">
-											<Offset>
-												<AbsDimension x="140" y="3"/>
-											</Offset>
-										</Anchor>
+										<Anchor point="TOP" relativePoint="BOTTOMLEFT" x="147" y="3"/>
 									</Anchors>
 								</FontString>
 								<FontString name="RaidGraphics_RightQualityLabel" inherits="OptionsFontHighlight" text="CUSTOM" >
 									<Anchors>
-										<Anchor point="BOTTOMLEFT" relativePoint="TOPLEFT">
-											<Offset x="256" y="0"/>
-										</Anchor>
+										<Anchor point="BOTTOMLEFT" relativePoint="TOPLEFT" x="256" y="0"/>
 									</Anchors>
 								</FontString>
-								<FontString name="$parentMed" inherits="OptionsFontSmall" text="VIDEO_QUALITY_LABEL3">
+								<FontString name="$parentMed" inherits="OptionsFontSmall" text="VIDEO_QUALITY_LABEL3" justifyH="CENTER">
 									<Anchors>
-										<Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT">
-											<Offset>
-												<AbsDimension x="265" y="3"/>
-											</Offset>
-										</Anchor>
+										<Anchor point="TOP" relativePoint="BOTTOMLEFT" x="276" y="3"/>
 									</Anchors>
 								</FontString>
-								<FontString name="$parentHigh2" inherits="OptionsFontSmall" text="VIDEO_QUALITY_LABEL4">
+								<FontString name="$parentHigh2" inherits="OptionsFontSmall" text="VIDEO_QUALITY_LABEL4" justifyH="CENTER">
 									<Anchors>
-										<Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT">
-											<Offset>
-												<AbsDimension x="400" y="3"/>
-											</Offset>
-										</Anchor>
+										<Anchor point="TOP" relativePoint="BOTTOMLEFT" x="406" y="3"/>
 									</Anchors>
 								</FontString>
-								<FontString name="$parentUltra" inherits="OptionsFontSmall" text="VIDEO_QUALITY_LABEL5">
+								<FontString name="$parentUltra" inherits="OptionsFontSmall" text="VIDEO_QUALITY_LABEL5" justifyH="RIGHT">
 									<Anchors>
-										<Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT">
-											<Offset>
-												<AbsDimension x="535" y="3"/>
-											</Offset>
-										</Anchor>
+										<Anchor point="TOPRIGHT" relativePoint="BOTTOMLEFT" x="555" y="3"/>
 									</Anchors>
 								</FontString>
 							</Layer>
@@ -1059,7 +1015,10 @@
 						PanelTemplates_TabResize(self, 0);
 						_G[self:GetName().."HighlightTexture"]:SetWidth(self:GetTextWidth() + 31);
 					</OnLoad>
-					<OnClick function="GraphicsOptions_SelectBase"/>
+					<OnClick>
+						GraphicsOptions_SelectBase()
+						PlaySound("igMainMenuOptionCheckBoxOn");
+					</OnClick>
 				</Scripts>
 			</Button>
 
@@ -1073,7 +1032,10 @@
 						PanelTemplates_TabResize(self, 0);
 						_G[self:GetName().."HighlightTexture"]:SetWidth(self:GetTextWidth() + 31);
 					</OnLoad>
-					<OnClick function="GraphicsOptions_SelectRaid"/>
+					<OnClick>
+						GraphicsOptions_SelectRaid()
+						PlaySound("igMainMenuOptionCheckBoxOn");
+					</OnClick>
 				</Scripts>
 			</Button>
 

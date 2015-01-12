@@ -1,170 +1,765 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\FrameXML\UI.xsd">
-	<Font name="SystemFont_Tiny" font="Fonts\FRIZQT__.TTF" virtual="true">
-		<FontHeight>
-			<AbsValue val="9"/>
-		</FontHeight>
-	</Font>
-	<Font name="SystemFont_Shadow_Small" font="Fonts\FRIZQT__.TTF" virtual="true">
-		<Shadow>
-			<Offset>
-				<AbsDimension x="1" y="-1"/>
-			</Offset>
-			<Color r="0" g="0" b="0"/>
-		</Shadow>
-		<FontHeight>
-			<AbsValue val="10"/>
-		</FontHeight>
-	</Font>
-	<Font name="SystemFont_Small2" font="Fonts\FRIZQT__.TTF" virtual="true">
-		<FontHeight>
-			<AbsValue val="11"/>
-		</FontHeight>
-	</Font>
-	<Font name="SystemFont_Shadow_Small2" font="Fonts\FRIZQT__.TTF" virtual="true">
-		<Shadow>
-			<Offset>
-				<AbsDimension x="1" y="-1"/>
-			</Offset>
-			<Color r="0" g="0" b="0"/>
-		</Shadow>
-		<FontHeight>
-			<AbsValue val="11"/>
-		</FontHeight>
-	</Font>	
-	<Font name="SystemFont_Shadow_Med1_Outline" font="Fonts\FRIZQT__.TTF" outline="NORMAL" virtual="true">
-		<Shadow>
-			<Offset>
-				<AbsDimension x="1" y="-1"/>
-			</Offset>
-			<Color r="0" g="0" b="0"/>
-		</Shadow>
-		<FontHeight>
-			<AbsValue val="12"/>
-		</FontHeight>
-	</Font>
-	<Font name="SystemFont_Shadow_Med1" font="Fonts\FRIZQT__.TTF" virtual="true">
-		<Shadow>
-			<Offset>
-				<AbsDimension x="1" y="-1"/>
-			</Offset>
-			<Color r="0" g="0" b="0"/>
-		</Shadow>
-		<FontHeight>
-			<AbsValue val="12"/>
-		</FontHeight>
-	</Font>
-	<Font name="QuestFont_Large" font="Fonts\MORPHEUS.ttf" virtual="true">
-		<FontHeight>
-			<AbsValue val="15"/>
-		</FontHeight>
-	</Font>
-	<Font name="SystemFont_Large" font="Fonts\FRIZQT__.TTF" virtual="true">
-		<FontHeight>
-			<AbsValue val="16"/>
-		</FontHeight>
-	</Font>
-	<Font name="SystemFont_Shadow_Large_Outline" font="Fonts\FRIZQT__.TTF" outline="NORMAL" virtual="true">
-		<Shadow>
-			<Offset>
-				<AbsDimension x="1" y="-1"/>
-			</Offset>
-			<Color r="0" g="0" b="0"/>
-		</Shadow>
-		<FontHeight>
-			<AbsValue val="16"/>
-		</FontHeight>
-	</Font>
-	<Font name="SystemFont_Shadow_Med2" font="Fonts\FRIZQT__.TTF" virtual="true">
-		<Shadow>
-			<Offset>
-				<AbsDimension x="1" y="-1"/>
-			</Offset>
-			<Color r="0" g="0" b="0"/>
-		</Shadow>
-		<FontHeight>
-			<AbsValue val="14"/>
-		</FontHeight>
-	</Font>
-	<Font name="SystemFont_Shadow_Large" font="Fonts\FRIZQT__.TTF" virtual="true">
-		<Shadow>
-			<Offset>
-				<AbsDimension x="1" y="-1"/>
-			</Offset>
-			<Color r="0" g="0" b="0"/>
-		</Shadow>
-		<FontHeight>
-			<AbsValue val="16"/>
-		</FontHeight>
-	</Font>
-	<Font name="SystemFont_Shadow_Large2" font="Fonts\FRIZQT__.TTF" virtual="true">
-		<Shadow>
-			<Offset>
-				<AbsDimension x="1" y="-1"/>
-			</Offset>
-			<Color r="0" g="0" b="0"/>
-		</Shadow>
-		<FontHeight>
-			<AbsValue val="18"/>
-		</FontHeight>
-	</Font>	
-	<Font name="SystemFont_Shadow_Huge1" font="Fonts\FRIZQT__.TTF" virtual="true">
-		<Shadow>
-			<Offset>
-				<AbsDimension x="1" y="-1"/>
-			</Offset>
-			<Color r="0" g="0" b="0"/>
-		</Shadow>
-		<FontHeight>
-			<AbsValue val="20"/>
-		</FontHeight>
-	</Font>	
-	<Font name="SystemFont_Shadow_Huge2" font="Fonts\FRIZQT__.TTF" outline="NORMAL" virtual="true">
-		<Shadow>
-			<Offset>
-				<AbsDimension x="1" y="-1"/>
-			</Offset>
-			<Color r="0" g="0" b="0"/>
-		</Shadow>
-		<FontHeight>
-			<AbsValue val="24"/>
-		</FontHeight>
-	</Font>	
-	<Font name="SystemFont_Shadow_Huge3" font="Fonts\FRIZQT__.TTF" virtual="true">
-		<Shadow>
-			<Offset>
-				<AbsDimension x="1" y="-1"/>
-			</Offset>
-			<Color r="0" g="0" b="0"/>
-		</Shadow>
-		<FontHeight>
-			<AbsValue val="25"/>
-		</FontHeight>
-	</Font>	
-	<Font name="SystemFont_Shadow_Outline_Huge2" font="Fonts\FRIZQT__.TTF" outline="NORMAL" virtual="true">
-		<Shadow>
-			<Offset>
-				<AbsDimension x="2" y="-2"/>
-			</Offset>
-			<Color r="0" g="0" b="0"/>
-		</Shadow>
-		<FontHeight>
-			<AbsValue val="22"/>
-		</FontHeight>
-	</Font>	
-	<Font name="SystemFont_Med1" font="Fonts\FRIZQT__.TTF" virtual="true">
-		<FontHeight>
-			<AbsValue val="12"/>
-		</FontHeight>
-	</Font>
-	<Font name="SystemFont_OutlineThick_WTF2" font="Fonts\FRIZQT__.TTF" virtual="true">
-		<FontHeight>
-			<AbsValue val="36"/>
-		</FontHeight>
-	</Font>	
-	<Font name="GameTooltipHeader" font="Fonts\FRIZQT__.TTF" virtual="true">
-		<FontHeight>
-			<AbsValue val="14"/>
-		</FontHeight>
-	</Font>	
+
+	<FontFamily  name="SystemFont_Tiny" virtual="true">
+		<Member alphabet="roman">
+			<Font font="Fonts\FRIZQT__.TTF" height="9"/>
+		</Member>
+		<Member alphabet="korean">
+			<Font name="SystemFont_Tiny" font="Fonts\2002.ttf" height="10"/>
+		</Member>
+		<Member alphabet="simplifiedchinese">
+			<Font name="SystemFont_Tiny" font="Fonts\ARKai_T.ttf" height="9"/>
+		</Member>
+		<Member alphabet="traditionalchinese">
+			<Font name="SystemFont_Tiny" font="Fonts\blei00d.TTF" height="9"/>
+		</Member>
+		<Member alphabet="russian">
+			<Font name="SystemFont_Tiny" font="Fonts\FRIZQT___CYR.TTF" height="9"/>
+		</Member>
+	</FontFamily>
+
+	<FontFamily name="SystemFont_Shadow_Small" virtual="true">
+		<Member alphabet="roman">
+			<Font font="Fonts\FRIZQT__.TTF" height="10">
+				<Shadow>
+					<Offset>
+						<AbsDimension x="1" y="-1"/>
+					</Offset>
+					<Color r="0" g="0" b="0"/>
+				</Shadow>
+			</Font>
+		</Member>
+		<Member alphabet="korean">
+			<Font name="SystemFont_Shadow_Small" font="Fonts\2002.TTF" height="11">
+				<Shadow>
+					<Offset>
+						<AbsDimension x="1" y="-1"/>
+					</Offset>
+					<Color r="0" g="0" b="0"/>
+				</Shadow>
+			</Font>
+		</Member>
+		<Member alphabet="simplifiedchinese">
+			<Font name="SystemFont_Shadow_Small" font="Fonts\ARKai_T.ttf" height="15">
+				<Shadow>
+					<Offset>
+						<AbsDimension x="1" y="-1"/>
+					</Offset>
+					<Color r="0" g="0" b="0"/>
+				</Shadow>
+			</Font>
+		</Member>
+		<Member alphabet="traditionalchinese">
+			<Font name="SystemFont_Shadow_Small" font="Fonts\blei00d.TTF" height="15">
+				<Shadow>
+					<Offset>
+						<AbsDimension x="1" y="-1"/>
+					</Offset>
+					<Color r="0" g="0" b="0"/>
+				</Shadow>
+			</Font>
+		</Member>
+		<Member alphabet="russian">
+			<Font name="SystemFont_Shadow_Small" font="Fonts\FRIZQT___CYR.TTF" height="10">
+				<Shadow>
+					<Offset>
+						<AbsDimension x="1" y="-1"/>
+					</Offset>
+					<Color r="0" g="0" b="0"/>
+				</Shadow>
+			</Font>
+		</Member>
+	</FontFamily>
+
+	<FontFamily name="SystemFont_Small2" virtual="true">
+		<Member alphabet="roman">
+			<Font font ="Fonts\FRIZQT__.TTF" height="11"/>
+		</Member>
+		<Member alphabet="korean">
+			<Font name="SystemFont_Small2" font="Fonts\2002.TTF" height="11"/>
+		</Member>
+		<Member alphabet="simplifiedchinese">
+			<Font name="SystemFont_Small2" font="Fonts\ARKai_T.TTF" height="13"/>
+		</Member>
+		<Member alphabet="traditionalchinese">
+			<Font name="SystemFont_Small2" font="Fonts\blei00d.TTF" height="11"/>
+		</Member>
+		<Member alphabet="russian">
+			<Font name="SystemFont_Small2" font="Fonts\FRIZQT___CYR.TTF" height="11"/>
+		</Member>
+	</FontFamily>
+
+	<FontFamily name="SystemFont_Shadow_Small2" virtual="true">
+		<Member alphabet="roman">
+			<Font font="Fonts\FRIZQT__.TTF" height="11">
+				<Shadow>
+					<Offset>
+						<AbsDimension x="1" y="-1"/>
+					</Offset>
+					<Color r="0" g="0" b="0"/>
+				</Shadow>
+			</Font>
+		</Member>
+		<Member alphabet="korean">
+			<Font name="SystemFont_Shadow_Small2" font="Fonts\2002.TTF" height="11">
+				<Shadow>
+					<Offset>
+						<AbsDimension x="1" y="-1"/>
+					</Offset>
+					<Color r="0" g="0" b="0"/>
+				</Shadow>
+			</Font>
+		</Member>
+		<Member alphabet="simplifiedchinese">
+			<Font name="SystemFont_Shadow_Small2" font="Fonts\ARKai_T.TTF" height="13">
+				<Shadow>
+					<Offset>
+						<AbsDimension x="1" y="-1"/>
+					</Offset>
+					<Color r="0" g="0" b="0"/>
+				</Shadow>
+			</Font>
+		</Member>
+		<Member alphabet="traditionalchinese">
+			<Font name="SystemFont_Shadow_Small2" font="Fonts\blei00d.TTF" height="11">
+				<Shadow>
+					<Offset>
+						<AbsDimension x="1" y="-1"/>
+					</Offset>
+					<Color r="0" g="0" b="0"/>
+				</Shadow>
+			</Font>
+		</Member>
+		<Member alphabet="russian">
+			<Font name="SystemFont_Shadow_Small2" font="Fonts\FRIZQT___CYR.TTF" height="11">
+				<Shadow>
+					<Offset>
+						<AbsDimension x="1" y="-1"/>
+					</Offset>
+					<Color r="0" g="0" b="0"/>
+				</Shadow>
+			</Font>
+		</Member>
+	</FontFamily>
+
+	<FontFamily name="SystemFont_Shadow_Med1_Outline" virtual="true">
+		<Member alphabet="roman">
+			<Font font="Fonts\FRIZQT__.TTF" height="12" outline="NORMAL">
+				<Shadow>
+					<Offset>
+						<AbsDimension x="1" y="-1"/>
+					</Offset>
+					<Color r="0" g="0" b="0"/>
+				</Shadow>
+			</Font>
+		</Member>
+		<Member alphabet="korean">
+			<Font name="SystemFont_Shadow_Med1_Outline" font="Fonts\2002.TTF" height="12" outline="NORMAL">
+				<Shadow>
+					<Offset>
+						<AbsDimension x="1" y="-1"/>
+					</Offset>
+					<Color r="0" g="0" b="0"/>
+				</Shadow>
+			</Font>
+		</Member>
+		<Member alphabet="simplifiedchinese">
+			<Font name="SystemFont_Shadow_Med1_Outline" font="Fonts\ARKai_T.ttf" height="15" outline="NORMAL">
+				<Shadow>
+					<Offset>
+						<AbsDimension x="1" y="-1"/>
+					</Offset>
+					<Color r="0" g="0" b="0"/>
+				</Shadow>
+			</Font>
+		</Member>
+		<Member alphabet="traditionalchinese">
+			<Font name="SystemFont_Shadow_Med1_Outline" font="Fonts\blei00d.TTF" height="15" outline="NORMAL">
+				<Shadow>
+					<Offset>
+						<AbsDimension x="1" y="-1"/>
+					</Offset>
+					<Color r="0" g="0" b="0"/>
+				</Shadow>
+			</Font>
+		</Member>
+		<Member alphabet="russian">
+			<Font name="SystemFont_Shadow_Med1_Outline" font="Fonts\FRIZQT___CYR.TTF" height="12" outline="NORMAL">
+				<Shadow>
+					<Offset>
+						<AbsDimension x="1" y="-1"/>
+					</Offset>
+					<Color r="0" g="0" b="0"/>
+				</Shadow>
+			</Font>
+		</Member>
+	</FontFamily>
+
+	<FontFamily name="SystemFont_Shadow_Med1" virtual="true">
+		<Member alphabet="roman">
+			<Font font="Fonts\FRIZQT__.TTF" height="12">
+				<Shadow>
+					<Offset>
+						<AbsDimension x="1" y="-1"/>
+					</Offset>
+					<Color r="0" g="0" b="0"/>
+				</Shadow>
+			</Font>
+		</Member>
+		<Member alphabet="korean">
+			<Font name="SystemFont_Shadow_Med1" font="Fonts\2002.TTF" height="12">
+				<Shadow>
+					<Offset>
+						<AbsDimension x="1" y="-1"/>
+					</Offset>
+					<Color r="0" g="0" b="0"/>
+				</Shadow>
+			</Font>
+		</Member>
+		<Member alphabet="simplifiedchinese">
+			<Font name="SystemFont_Shadow_Med1" font="Fonts\ARKai_T.ttf" height="15">
+				<Shadow>
+					<Offset>
+						<AbsDimension x="1" y="-1"/>
+					</Offset>
+					<Color r="0" g="0" b="0"/>
+				</Shadow>
+			</Font>
+		</Member>
+		<Member alphabet="traditionalchinese">
+			<Font name="SystemFont_Shadow_Med1" font="Fonts\blei00d.TTF" height="15">
+				<Shadow>
+					<Offset>
+						<AbsDimension x="1" y="-1"/>
+					</Offset>
+					<Color r="0" g="0" b="0"/>
+				</Shadow>
+			</Font>
+		</Member>
+		<Member alphabet="russian">
+			<Font name="SystemFont_Shadow_Med1" font="Fonts\FRIZQT___CYR.TTF" height="12">
+				<Shadow>
+					<Offset>
+						<AbsDimension x="1" y="-1"/>
+					</Offset>
+					<Color r="0" g="0" b="0"/>
+				</Shadow>
+			</Font>
+		</Member>
+	</FontFamily>
+
+	<FontFamily name="QuestFont_Large" virtual="true">
+		<Member alphabet="roman">
+			<Font font="Fonts\MORPHEUS.ttf" height="15"/>
+		</Member>
+		<Member alphabet="korean">
+			<Font name="QuestFont_Large" font="Fonts\K_Pagetext.ttf" height="12" spacing="8"/>
+		</Member>
+		<Member alphabet="simplifiedchinese">
+			<Font name="QuestFont_Large" font="Fonts\ARKai_T.ttf" height="15"/>
+		</Member>
+		<Member alphabet="traditionalchinese">
+			<Font name="QuestFont_Large" font="Fonts\blei00d.ttf" height="15"/>
+		</Member>
+		<Member alphabet="russian">
+			<Font name="QuestFont_Large" font="Fonts\MORPHEUS_CYR.TTF" height="15"/>
+		</Member>
+	</FontFamily>
+
+	<FontFamily name="SystemFont_Large" virtual="true">
+		<Member alphabet="roman">
+			<Font font="Fonts\FRIZQT__.TTF" height="16"/>
+		</Member>
+		<Member alphabet="korean">
+			<Font name="SystemFont_Large" font="Fonts\2002.TTF" height="14"/>
+		</Member>
+		<Member alphabet="simplifiedchinese">
+			<Font name="SystemFont_Large" font="Fonts\ARKai_T.ttf" height="13"/>
+		</Member>
+		<Member alphabet="traditionalchinese">
+			<Font name="SystemFont_Large" font="Fonts\blei00d.TTF" height="13"/>
+		</Member>
+		<Member alphabet="russian">
+			<Font name="SystemFont_Large" font="Fonts\FRIZQT___CYR.TTF" height="16"/>
+		</Member>
+	</FontFamily>
+
+	<FontFamily name="SystemFont_Shadow_Large_Outline" virtual="true">
+		<Member alphabet="roman">
+			<Font font="Fonts\FRIZQT__.TTF" height="16" outline="NORMAL">
+				<Shadow>
+					<Offset>
+						<AbsDimension x="1" y="-1"/>
+					</Offset>
+					<Color r="0" g="0" b="0"/>
+				</Shadow>
+			</Font>
+		</Member>
+		<Member alphabet="korean">
+			<Font name="SystemFont_Shadow_Large_Outline" font="Fonts\2002.TTF" height="14" outline="NORMAL">
+				<Shadow>
+					<Offset>
+						<AbsDimension x="1" y="-1"/>
+					</Offset>
+					<Color r="0" g="0" b="0"/>
+				</Shadow>
+			</Font>
+		</Member>
+		<Member alphabet="simplifiedchinese">
+			<Font name="SystemFont_Shadow_Large_Outline" font="Fonts\ARKai_T.ttf" height="17" outline="NORMAL">
+				<Shadow>
+					<Offset>
+						<AbsDimension x="1" y="-1"/>
+					</Offset>
+					<Color r="0" g="0" b="0"/>
+				</Shadow>
+			</Font>
+		</Member>
+		<Member alphabet="traditionalchinese">
+			<Font name="SystemFont_Shadow_Large_Outline" font="Fonts\blei00d.TTF" height="17" outline="NORMAL">
+				<Shadow>
+					<Offset>
+						<AbsDimension x="1" y="-1"/>
+					</Offset>
+					<Color r="0" g="0" b="0"/>
+				</Shadow>
+			</Font>
+		</Member>
+		<Member alphabet="russian">
+			<Font name="SystemFont_Shadow_Large_Outline" font="Fonts\FRIZQT___CYR.TTF" height="16" outline="NORMAL">
+				<Shadow>
+					<Offset>
+						<AbsDimension x="1" y="-1"/>
+					</Offset>
+					<Color r="0" g="0" b="0"/>
+				</Shadow>
+			</Font>
+		</Member>
+	</FontFamily>
+
+	<FontFamily name="SystemFont_Shadow_Med2" virtual="true">
+		<Member alphabet="roman">
+			<Font font="Fonts\FRIZQT__.TTF" height="14">
+				<Shadow>
+					<Offset>
+						<AbsDimension x="1" y="-1"/>
+					</Offset>
+					<Color r="0" g="0" b="0"/>
+				</Shadow>
+			</Font>
+		</Member>
+		<Member alphabet="korean">
+			<Font name="SystemFont_Shadow_Med2" font="Fonts\2002.TTF" height="13">
+				<Shadow>
+					<Offset>
+						<AbsDimension x="1" y="-1"/>
+					</Offset>
+					<Color r="0" g="0" b="0"/>
+				</Shadow>
+			</Font>
+		</Member>
+		<Member alphabet="simplifiedchinese">
+			<Font name="SystemFont_Shadow_Med2" font="Fonts\ARKai_T.ttf" height="16">
+				<Shadow>
+					<Offset>
+						<AbsDimension x="1" y="-1"/>
+					</Offset>
+					<Color r="0" g="0" b="0"/>
+				</Shadow>
+			</Font>
+		</Member>
+		<Member alphabet="traditionalchinese">
+			<Font name="SystemFont_Shadow_Med2" font="Fonts\blei00d.TTF" height="16">
+				<Shadow>
+					<Offset>
+						<AbsDimension x="1" y="-1"/>
+					</Offset>
+					<Color r="0" g="0" b="0"/>
+				</Shadow>
+			</Font>
+		</Member>
+		<Member alphabet="russian">
+			<Font name="SystemFont_Shadow_Med2" font="Fonts\FRIZQT___CYR.TTF" height="14">
+				<Shadow>
+					<Offset>
+						<AbsDimension x="1" y="-1"/>
+					</Offset>
+					<Color r="0" g="0" b="0"/>
+				</Shadow>
+			</Font>
+		</Member>
+	</FontFamily>
+
+	<FontFamily name="SystemFont_Shadow_Large" virtual="true">
+		<Member alphabet="roman">
+			<Font font="Fonts\FRIZQT__.TTF" height="16">
+				<Shadow>
+					<Offset>
+						<AbsDimension x="1" y="-1"/>
+					</Offset>
+					<Color r="0" g="0" b="0"/>
+				</Shadow>
+			</Font>
+		</Member>
+		<Member alphabet="korean">
+			<Font name="SystemFont_Shadow_Large" font="Fonts\2002.TTF" height="14">
+				<Shadow>
+					<Offset>
+						<AbsDimension x="1" y="-1"/>
+					</Offset>
+					<Color r="0" g="0" b="0"/>
+				</Shadow>
+			</Font>
+		</Member>
+		<Member alphabet="simplifiedchinese">
+			<Font name="SystemFont_Shadow_Large" font="Fonts\ARKai_T.ttf" height="17">
+				<Shadow>
+					<Offset>
+						<AbsDimension x="1" y="-1"/>
+					</Offset>
+					<Color r="0" g="0" b="0"/>
+				</Shadow>
+			</Font>
+		</Member>
+		<Member alphabet="traditionalchinese">
+			<Font name="SystemFont_Shadow_Large" font="Fonts\blei00d.TTF" height="17">
+				<Shadow>
+					<Offset>
+						<AbsDimension x="1" y="-1"/>
+					</Offset>
+					<Color r="0" g="0" b="0"/>
+				</Shadow>
+			</Font>
+		</Member>
+		<Member alphabet="russian">
+			<Font name="SystemFont_Shadow_Large" font="Fonts\FRIZQT___CYR.TTF" height="16">
+				<Shadow>
+					<Offset>
+						<AbsDimension x="1" y="-1"/>
+					</Offset>
+					<Color r="0" g="0" b="0"/>
+				</Shadow>
+			</Font>
+		</Member>
+	</FontFamily>
+
+	<FontFamily name="SystemFont_Shadow_Large2" virtual="true">
+		<Member alphabet="roman">
+			<Font font="Fonts\FRIZQT__.TTF" height="18">
+				<Shadow>
+					<Offset>
+						<AbsDimension x="1" y="-1"/>
+					</Offset>
+					<Color r="0" g="0" b="0"/>
+				</Shadow>
+			</Font>
+		</Member>
+		<Member alphabet="korean">
+			<Font name="SystemFont_Shadow_Large2" font="Fonts\2002.TTF" height="16">
+				<Shadow>
+					<Offset>
+						<AbsDimension x="1" y="-1"/>
+					</Offset>
+					<Color r="0" g="0" b="0"/>
+				</Shadow>
+			</Font>
+		</Member>
+		<Member alphabet="simplifiedchinese">
+			<Font name="SystemFont_Shadow_Large2" font="Fonts\ARKai_T.TTF" height="19">
+				<Shadow>
+					<Offset>
+						<AbsDimension x="1" y="-1"/>
+					</Offset>
+					<Color r="0" g="0" b="0"/>
+				</Shadow>
+			</Font>
+		</Member>
+		<Member alphabet="traditionalchinese">
+			<Font name="SystemFont_Shadow_Large2" font="Fonts\blei00d.TTF" height="18">
+				<Shadow>
+					<Offset>
+						<AbsDimension x="1" y="-1"/>
+					</Offset>
+					<Color r="0" g="0" b="0"/>
+				</Shadow>
+			</Font>
+		</Member>
+		<Member alphabet="russian">
+			<Font name="SystemFont_Shadow_Large2" font="Fonts\FRIZQT___CYR.TTF" height="18">
+				<Shadow>
+					<Offset>
+						<AbsDimension x="1" y="-1"/>
+					</Offset>
+					<Color r="0" g="0" b="0"/>
+				</Shadow>
+			</Font>
+		</Member>
+	</FontFamily>
+
+	<FontFamily name="SystemFont_Shadow_Huge1" virtual="true">
+		<Member alphabet="roman">
+			<Font font="Fonts\FRIZQT__.TTF" height="20">
+				<Shadow>
+					<Offset>
+						<AbsDimension x="1" y="-1"/>
+					</Offset>
+					<Color r="0" g="0" b="0"/>
+				</Shadow>
+			</Font>
+		</Member>
+		<Member alphabet="korean">
+			<Font name="SystemFont_Shadow_Huge1" font="Fonts\2002.TTF" height="20">
+				<Shadow>
+					<Offset>
+						<AbsDimension x="1" y="-1"/>
+					</Offset>
+					<Color r="0" g="0" b="0"/>
+				</Shadow>
+			</Font>
+		</Member>
+		<Member alphabet="simplifiedchinese">
+			<Font name="SystemFont_Shadow_Huge1" font="Fonts\ARKai_T.ttf" height="20">
+				<Shadow>
+					<Offset>
+						<AbsDimension x="1" y="-1"/>
+					</Offset>
+					<Color r="0" g="0" b="0"/>
+				</Shadow>
+			</Font>
+		</Member>
+		<Member alphabet="traditionalchinese">
+			<Font name="SystemFont_Shadow_Huge1" font="Fonts\blei00d.TTF" height="20">
+				<Shadow>
+					<Offset>
+						<AbsDimension x="1" y="-1"/>
+					</Offset>
+					<Color r="0" g="0" b="0"/>
+				</Shadow>
+			</Font>
+		</Member>
+		<Member alphabet="russian">
+			<Font name="SystemFont_Shadow_Huge1" font="Fonts\FRIZQT___CYR.TTF" height="20">
+				<Shadow>
+					<Offset>
+						<AbsDimension x="1" y="-1"/>
+					</Offset>
+					<Color r="0" g="0" b="0"/>
+				</Shadow>
+			</Font>
+		</Member>
+	</FontFamily>
+
+	<FontFamily name="SystemFont_Shadow_Huge2" virtual="true">
+		<Member alphabet="roman">
+			<Font font="Fonts\FRIZQT__.TTF" height="24" outline="NORMAL">
+				<Shadow>
+					<Offset>
+						<AbsDimension x="1" y="-1"/>
+					</Offset>
+					<Color r="0" g="0" b="0"/>
+				</Shadow>
+			</Font>
+		</Member>
+		<Member alphabet="korean">
+			<Font name="SystemFont_Shadow_Huge2" font="Fonts\K_Pagetext.TTF" height="24" outline="NORMAL">
+				<Shadow>
+					<Offset>
+						<AbsDimension x="1" y="-1"/>
+					</Offset>
+					<Color r="0" g="0" b="0"/>
+				</Shadow>
+			</Font>
+		</Member>
+		<Member alphabet="simplifiedchinese">
+			<Font name="SystemFont_Shadow_Huge2" font="Fonts\ARKai_T.TTF" height="24" outline="NORMAL">
+				<Shadow>
+					<Offset>
+						<AbsDimension x="1" y="-1"/>
+					</Offset>
+					<Color r="0" g="0" b="0"/>
+				</Shadow>
+			</Font>
+		</Member>
+		<Member alphabet="traditionalchinese">
+			<Font name="SystemFont_Shadow_Huge2" font="Fonts\blei00d.TTF"  height="24" outline="NORMAL">
+				<Shadow>
+					<Offset>
+						<AbsDimension x="1" y="-1"/>
+					</Offset>
+					<Color r="0" g="0" b="0"/>
+				</Shadow>
+			</Font>
+		</Member>
+		<Member alphabet="russian">
+			<Font name="SystemFont_Shadow_Huge2" font="Fonts\FRIZQT___CYR.TTF" height="24" outline="NORMAL">
+				<Shadow>
+					<Offset>
+						<AbsDimension x="1" y="-1"/>
+					</Offset>
+					<Color r="0" g="0" b="0"/>
+				</Shadow>
+			</Font>
+		</Member>
+	</FontFamily>
+
+	<FontFamily name="SystemFont_Shadow_Huge3" virtual="true">
+		<Member alphabet="roman">
+			<Font font="Fonts\FRIZQT__.TTF" height="25">
+				<Shadow>
+					<Offset>
+						<AbsDimension x="1" y="-1"/>
+					</Offset>
+					<Color r="0" g="0" b="0"/>
+				</Shadow>
+			</Font>
+		</Member>
+		<Member alphabet="korean">
+			<Font name="SystemFont_Shadow_Huge3" font="Fonts\2002.TTF" height="25">
+				<Shadow>
+					<Offset>
+						<AbsDimension x="1" y="-1"/>
+					</Offset>
+					<Color r="0" g="0" b="0"/>
+				</Shadow>
+			</Font>
+		</Member>
+		<Member alphabet="simplifiedchinese">
+			<Font name="SystemFont_Shadow_Huge3" font="Fonts\ARKai_T.ttf" height="25">
+				<Shadow>
+					<Offset>
+						<AbsDimension x="1" y="-1"/>
+					</Offset>
+					<Color r="0" g="0" b="0"/>
+				</Shadow>
+			</Font>
+		</Member>
+		<Member alphabet="traditionalchinese">
+			<Font name="SystemFont_Shadow_Huge3" font="Fonts\blei00d.TTF" height="25">
+				<Shadow>
+					<Offset>
+						<AbsDimension x="1" y="-1"/>
+					</Offset>
+					<Color r="0" g="0" b="0"/>
+				</Shadow>
+			</Font>
+		</Member>
+		<Member alphabet="russian">
+			<Font name="SystemFont_Shadow_Huge3" font="Fonts\FRIZQT___CYR.TTF" height="25">
+				<Shadow>
+					<Offset>
+						<AbsDimension x="1" y="-1"/>
+					</Offset>
+					<Color r="0" g="0" b="0"/>
+				</Shadow>
+			</Font>
+		</Member>
+	</FontFamily>
+
+	<FontFamily name="SystemFont_Shadow_Outline_Huge2" virtual="true">
+		<Member alphabet="roman">
+			<Font font="Fonts\FRIZQT__.TTF" height="22" outline="NORMAL">
+				<Shadow>
+					<Offset>
+						<AbsDimension x="2" y="-2"/>
+					</Offset>
+					<Color r="0" g="0" b="0"/>
+				</Shadow>
+			</Font>
+		</Member>
+		<Member alphabet="korean">
+			<Font name="SystemFont_Shadow_Outline_Huge2" font="Fonts\2002.TTF" height="22" outline="NORMAL">
+				<Shadow>
+					<Offset>
+						<AbsDimension x="2" y="-2"/>
+					</Offset>
+					<Color r="0" g="0" b="0"/>
+				</Shadow>
+			</Font>
+		</Member>
+		<Member alphabet="simplifiedchinese">
+			<Font name="SystemFont_Shadow_Outline_Huge2" font="Fonts\ARKai_T.ttf" height="22" outline="NORMAL">
+				<Shadow>
+					<Offset>
+						<AbsDimension x="2" y="-2"/>
+					</Offset>
+					<Color r="0" g="0" b="0"/>
+				</Shadow>
+			</Font>
+		</Member>
+		<Member alphabet="traditionalchinese">
+			<Font name="SystemFont_Shadow_Outline_Huge2" font="Fonts\blei00d.TTF"  height="25" outline="NORMAL">
+				<Shadow>
+					<Offset>
+						<AbsDimension x="2" y="-2"/>
+					</Offset>
+					<Color r="0" g="0" b="0"/>
+				</Shadow>
+			</Font>
+		</Member>
+		<Member alphabet="russian">
+			<Font name="SystemFont_Shadow_Outline_Huge2" font="Fonts\FRIZQT___CYR.TTF" height="22" outline="NORMAL">
+				<Shadow>
+					<Offset>
+						<AbsDimension x="2" y="-2"/>
+					</Offset>
+					<Color r="0" g="0" b="0"/>
+				</Shadow>
+			</Font>
+		</Member>
+	</FontFamily>
+
+	<FontFamily name="SystemFont_Med1" virtual="true">
+		<Member alphabet="roman">
+			<Font font="Fonts\FRIZQT__.TTF" height="12"/>
+		</Member>
+		<Member alphabet="korean">
+			<Font name="SystemFont_Med1" font="Fonts\2002.TTF" height="13"/>
+		</Member>
+		<Member alphabet="simplifiedchinese">
+			<Font name="SystemFont_Med1" font="Fonts\ARKai_T.ttf" height="13"/>
+		</Member>
+		<Member alphabet="traditionalchinese">
+			<Font name="SystemFont_Med1" font="Fonts\blei00d.TTF" height="13"/>
+		</Member>
+		<Member alphabet="russian">
+			<Font name="SystemFont_Med1" font="Fonts\FRIZQT___CYR.TTF" height="12"/>
+		</Member>
+	</FontFamily>
+
+	<FontFamily name="SystemFont_OutlineThick_WTF2" virtual="true">
+		<Member alphabet="roman">
+			<Font font="Fonts\FRIZQT__.TTF" height="36"/>
+		</Member>
+		<Member alphabet="korean">
+			<Font name="SystemFont_OutlineThick_WTF2" font="Fonts\K_Pagetext.TTF" height="106"/>
+		</Member>
+		<Member alphabet="simplifiedchinese">
+			<Font name="SystemFont_OutlineThick_WTF2" font="Fonts\ARKai_T.TTF" height="116"/>
+		</Member>
+		<Member alphabet="traditionalchinese">
+			<Font name="SystemFont_OutlineThick_WTF2" font="Fonts\blei00d.TTF" height="116"/>
+		</Member>
+		<Member alphabet="russian">
+			<Font name="SystemFont_OutlineThick_WTF2" font="Fonts\FRIZQT___CYR.TTF" height="36"/>
+		</Member>
+	</FontFamily>
+
+	<FontFamily name="GameTooltipHeader" virtual="true">
+		<Member alphabet="roman">
+			<Font font="Fonts\FRIZQT__.TTF" height="14"/>
+		</Member>
+		<Member alphabet="korean">
+			<Font name="GameTooltipHeader" font="Fonts\2002.TTF" height="12"/>
+		</Member>
+		<Member alphabet="simplifiedchinese">
+			<Font name="GameTooltipHeader" font="Fonts\ARKai_T.ttf" height="16"/>
+		</Member>
+		<Member alphabet="traditionalchinese">
+			<Font name="GameTooltipHeader" font="Fonts\blei00d.TTF" height="16"/>
+		</Member>
+		<Member alphabet="russian">
+			<Font name="GameTooltipHeader" font="Fonts\FRIZQT___CYR.TTF" height="14"/>
+		</Member>
+	</FontFamily>
 </Ui>

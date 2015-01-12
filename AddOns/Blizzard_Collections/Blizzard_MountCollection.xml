@@ -1,0 +1,365 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\FrameXML\UI.xsd">
+	<Script file="Blizzard_MountCollection.lua"/>
+
+    <Button name="MountListButtonTemplate" motionScriptsWhileDisabled="true" virtual="true">
+        <Size x="208" y="46"/>
+        <Layers>
+            <Layer level="BACKGROUND">
+                <Texture atlas="PetList-ButtonBackground" parentKey="background"/>
+            </Layer>
+            <Layer level="BORDER">
+                <Texture parentKey="icon">
+                    <Size x="38" y="38"/>
+                    <Anchors>
+                        <Anchor point="LEFT" x="-42" y="0"/>
+                    </Anchors>
+                </Texture>
+                <Texture parentKey="factionIcon">
+                    <Anchors>
+                        <Anchor point="BOTTOMRIGHT" x="-1" y="1"/>
+                    </Anchors>
+                    <Size x="90" y="44"/>
+                </Texture>
+            </Layer>
+            <Layer level="ARTWORK" textureSubLevel="-1">
+                <Texture parentKey="iconBorder" file="Interface\Common\WhiteIconFrame" hidden="true">
+                    <Anchors>
+                        <Anchor point="TOPLEFT" relativePoint="TOPLEFT" relativeKey="$parent.icon"/>
+                        <Anchor point="BOTTOMRIGHT" relativePoint="BOTTOMRIGHT" relativeKey="$parent.icon"/>
+                    </Anchors>
+                </Texture>
+            </Layer>
+            <Layer level="OVERLAY">
+                <FontString parentKey="name" inherits="GameFontNormal" justifyH="LEFT">
+                    <Size x="147" y="25"/>
+                    <Anchors>
+                        <Anchor point="TOPLEFT" relativePoint="TOPRIGHT" relativeKey="$parent.icon" x="10" y="-5"/>
+                    </Anchors>
+                </FontString>
+                <Texture parentKey="favorite" atlas="PetJournal-FavoritesIcon" useAtlasSize="true">
+                    <Anchors>
+                        <Anchor point="TOPLEFT" relativeKey="$parent.icon" x="-8" y="8"/>
+                    </Anchors>
+                </Texture>
+                <Texture parentKey="unusable" hidden="true">
+                    <Size x="38" y="38"/>
+                    <Anchors>
+                        <Anchor point="LEFT" x="-42" y="0"/>
+                    </Anchors>
+                    <Color r="1" g="0" b="0" a="0.2"/>
+                </Texture>
+            </Layer>
+            <Layer level="OVERLAY" textureSubLevel="1">
+                <Texture parentKey="selectedTexture" atlas="PetList-ButtonSelect" hidden="true"/>
+            </Layer>
+        </Layers>
+        <Frames>
+            <Button parentKey="DragButton" motionScriptsWhileDisabled="true">
+                <Size x="40" y="40"/>
+                <Anchors>
+                    <Anchor point="CENTER" relativeKey="$parent.icon" x="0" y="0"/>
+                </Anchors>
+                <Layers>
+                    <Layer level="OVERLAY">
+                        <Texture file="Interface\Buttons\CheckButtonHilight" parentKey="ActiveTexture" alphaMode="ADD"/>
+                    </Layer>
+                </Layers>
+                <HighlightTexture name="$parentHighlight" file="Interface\Buttons\ButtonHilight-Square" alphaMode="ADD"/>
+                <Scripts>
+                    <OnClick function="MountListDragButton_OnClick"/>
+                    <OnEnter>
+                        GameTooltip:SetOwner(self, "ANCHOR_LEFT");
+                        local spellID = self:GetParent().spellID;
+                        if (spellID) then
+                            MountJournalMountButton_UpdateTooltip(self:GetParent());
+                            self.showingTooltip = true;
+                        end
+                    </OnEnter>
+                    <OnLeave>
+                        GameTooltip:Hide();
+                        self.showingTooltip = false;
+                    </OnLeave>
+                    <OnLoad>
+                        self:RegisterForClicks("LeftButtonUp", "RightButtonUp");
+                        self:RegisterForDrag("LeftButton");
+                    </OnLoad>
+                    <OnDragStart>
+                        MountJournal_Pickup(self:GetParent().index);
+                    </OnDragStart>
+                </Scripts>
+            </Button>
+        </Frames>
+        <HighlightTexture atlas="PetList-ButtonHighlight"/>
+        <Scripts>
+            <OnLoad>
+                self:RegisterForClicks("LeftButtonUp", "RightButtonUp");
+            </OnLoad>
+            <OnClick function="MountListItem_OnClick"/>
+        </Scripts>
+    </Button>
+
+	<Frame name="MountJournal" parent="CollectionsJournal" setAllPoints="true">
+		<Frames>
+			<Button name="$parentSummonRandomFavoriteButton" parentKey="SummonRandomFavoriteButton" inherits="SecureFrameTemplate">
+				<Size>
+					<AbsDimension x="33" y="33"/>
+				</Size>
+				<Anchors>
+					<Anchor point="CENTER" relativePoint="TOPRIGHT" x="-24" y="-42"/>
+				</Anchors>
+				<Layers>
+					<Layer level="ARTWORK">
+						<Texture name="$parentIconTexture" parentKey="texture" file="Interface/ICONS/ACHIEVEMENT_GUILDPERK_MOUNTUP" setAllPoints="true"/>
+					</Layer>
+					<Layer level="OVERLAY">
+						<Texture parentKey="BlackCover" setAllPoints="true" hidden="true">
+							<Color r="0" g="0" b="0" a="0.6"/>
+						</Texture>
+					</Layer>
+					<Layer level="OVERLAY" textureSubLevel="1">
+						<Texture name="$parentBorder" inherits="ActionBarFlyoutButton-IconFrame">
+							<Size x="35" y="35"/>
+							<Anchors>
+								<Anchor point="CENTER"/>
+							</Anchors>
+						</Texture>
+						<Texture name="$parentLockIcon" parentKey="LockIcon" file="Interface\PetBattles\PetBattle-LockIcon" setAllPoints="true" hidden="true"/>
+						<FontString name="$parentSpellName" inherits="GameFontNormal" maxLines="2" justifyH="RIGHT" parentKey="spellname" text="Summon Random Favorite Mount">
+							<Size x="170" y="0"/>
+							<Color r="1" g="1" b="1"/>
+							<Anchors>
+								<Anchor point="RIGHT" relativePoint="LEFT" relativeTo="$parentBorder" x="-2" y="0"/>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnLoad function="MountJournalSummonRandomFavoriteButton_OnLoad"/>
+					<OnClick function="MountJournalSummonRandomFavoriteButton_OnClick"/>
+					<OnDragStart function="MountJournalSummonRandomFavoriteButton_OnDragStart"/>
+					<OnEnter function="MountJournalSummonRandomFavoriteButton_OnEnter"/>
+					<OnLeave>
+						GameTooltip:Hide();
+					</OnLeave>
+				</Scripts>
+				<PushedTexture file="Interface\Buttons\UI-Quickslot-Depress"/>
+				<HighlightTexture name="$parentHighlight" file="Interface\Buttons\ButtonHilight-Square" alphaMode="ADD"/>
+			</Button>	
+			<Frame parentKey="LeftInset" useParentLevel="true" inherits="InsetFrameTemplate">
+				<Size x="260" y="496"/>
+				<Anchors>
+					<Anchor point="TOPLEFT" x="4" y="-60" />
+					<Anchor point="BOTTOMLEFT" x="4" y="26" />
+				</Anchors>
+			</Frame>
+			<Frame parentKey="RightInset" useParentLevel="true" inherits="InsetFrameTemplate">
+				<Anchors>
+					<Anchor point="TOPRIGHT" x="-6" y="-60" />
+					<Anchor point="BOTTOMLEFT" relativeKey="$parent.LeftInset" relativePoint="BOTTOMRIGHT" x="20" y="0"/>
+				</Anchors>
+			</Frame>
+			<EditBox name="$parentSearchBox" inherits="SearchBoxTemplate" parentKey="searchBox" letters="40">
+				<Size x="145" y="20"/>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.LeftInset" x="15" y="-9"/>
+				</Anchors>
+				<Scripts>
+					<OnTextChanged function="MountJournal_OnSearchTextChanged"/>
+				</Scripts>
+			</EditBox>
+			<Button name="$parentFilterButton" inherits="UIMenuButtonStretchTemplate" text="FILTER">
+				<Size x="93" y="22"/>
+				<Anchors>
+					<Anchor point="TOPRIGHT" relativeKey="$parent.LeftInset" x="-5" y="-9"/>
+				</Anchors>
+				<Layers>
+					<Layer level="ARTWORK">
+						<Texture parentKey="Icon" file="Interface\ChatFrame\ChatFrameExpandArrow">
+							<Size x="10" y="12"/>
+							<Anchors>
+								<Anchor point="RIGHT" relativeKey="$parent.Right" relativePoint="RIGHT" x="-5"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnClick> 
+						PlaySound("igMainMenuOptionCheckBoxOn");
+						ToggleDropDownMenu(1, nil, MountJournalFilterDropDown, "MountJournalFilterButton", 74, 15);
+					</OnClick>	
+				</Scripts>						
+			</Button>
+			<Frame name="$parentFilterDropDown" inherits="UIDropDownMenuTemplate">
+				<Scripts>
+					<OnLoad function="MountJournalFilterDropDown_OnLoad"/>
+				</Scripts>
+			</Frame>
+			<Frame parentKey="MountCount" useParentLevel="true" inherits="InsetFrameTemplate3">
+				<Size x="130" y="20"/>
+				<Anchors>
+					<Anchor point="TOPLEFT" x="70" y="-35"/>
+				</Anchors>
+				<Layers>
+					<Layer level="ARTWORK">
+						<FontString parentKey="Count" inherits="GameFontHighlightSmall" justifyH="RIGHT">
+							<Anchors>
+								<Anchor point="RIGHT" x="-10" y="0"/>
+							</Anchors>
+						</FontString>
+						<FontString parentKey="Label" inherits="GameFontNormalSmall" text="TOTAL_MOUNTS" justifyH="LEFT">
+							<Anchors>
+								<Anchor point="LEFT" x="10" y="0"/>
+								<Anchor point="RIGHT" relativeKey="$parent.Count" relativePoint="LEFT" x="-3" y="0"/>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+			</Frame>
+			<Frame parentKey="MountDisplay">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.RightInset" relativePoint="TOPLEFT" x="3" y="-3"/>
+					<Anchor point="BOTTOMRIGHT" relativeKey="$parent.RightInset" relativePoint="BOTTOMRIGHT" x="-3" y="3"/>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<Texture parentKey="YesMountsTex" file="Interface\PetBattles\MountJournal-BG" setAllPoints="true">
+							<TexCoords left="0" right="0.78515625" top="0" bottom="1"/>	
+						</Texture>
+						<Texture parentKey="NoMountsTex" file="Interface\PetBattles\MountJournal-NoMounts" setAllPoints="true" hidden="true">
+							<TexCoords left="0" right="0.78515625" top="0" bottom="1"/>	
+						</Texture>
+					</Layer>
+					<Layer level="OVERLAY">
+						<FontString parentKey="NoMounts" inherits="GameFontHighlightLarge" JustifyH="CENTER" text="ERR_NO_RIDING_SKILL">
+							<Size x="280" y="80"/>
+							<Anchors>
+								<Anchor point="CENTER" x="0" y="0"/>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+				<Frames>
+					<Frame parentKey="ShadowOverlay" inherits="ShadowOverlayTemplate" useParentLevel="true" setAllPoints="true"/>
+					<Button parentKey="InfoButton" motionScriptsWhileDisabled="true">
+						<Size x="208" y="46"/>
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeKey="$parent" relativePoint="TOPLEFT" x="6" y="-6"/>
+						</Anchors>
+						<Layers>
+							<Layer level="BORDER">
+								<Texture name="$parentIcon" parentKey="Icon">
+									<Size x="38" y="38"/>
+									<Anchors>
+										<Anchor point="LEFT" x="20" y="-20"/>
+									</Anchors>
+								</Texture>
+							</Layer>
+							<Layer level="OVERLAY">
+								<FontString name="$parentName" inherits="GameFontHighlightLarge" justifyH="LEFT" justifyV="CENTER" parentKey="Name">
+									<Size x="300" y="35"/>
+									<Anchors>
+										<Anchor point="LEFT" relativePoint="RIGHT" relativeTo="$parentIcon" x="10" y="0"/>
+									</Anchors>
+								</FontString>
+								<FontString name="$parentSource" inherits="GameFontHighlight" justifyH="LEFT" parentKey="Source">
+									<Size x="345" y="0"/>
+									<Anchors>
+										<Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" relativeTo="$parentIcon" x="0" y="-6"/>
+									</Anchors>
+								</FontString>
+								<FontString name="$parentLore" inherits="GameFontNormal" justifyH="LEFT" parentKey="Lore">
+									<Size x="345" y="0"/>
+									<Anchors>
+										<Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" relativeKey="$parent.Source"/>
+									</Anchors>
+								</FontString>
+							</Layer>
+						</Layers>
+					</Button>
+					<PlayerModel parentKey="ModelFrame" useParentLevel="true" inherits="ModelWithZoomTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeKey="$parent" relativePoint="TOPLEFT" x="0" y="-160"/>
+							<Anchor point="BOTTOMRIGHT" relativeKey="$parent" x="0" y="0"/>
+						</Anchors>
+						<Frames>
+							<Button parentKey="RotateLeftButton">
+								<Size x="35" y="35"/>
+								<Anchors>
+									<Anchor point="TOPRIGHT" relativeKey="$parent" relativePoint="BOTTOM" x="-5" y="50"/>
+								</Anchors>
+								<Scripts>
+									<OnLoad>
+										self:RegisterForClicks("LeftButtonDown", "LeftButtonUp");
+									</OnLoad>
+									<OnClick>
+										Model_RotateLeft(self:GetParent());
+									</OnClick>
+								</Scripts>
+								<NormalTexture file="Interface\Buttons\UI-RotationLeft-Button-Up"/>
+								<PushedTexture file="Interface\Buttons\UI-RotationLeft-Button-Down"/>
+								<HighlightTexture file="Interface\Buttons\ButtonHilight-Round" alphaMode="ADD"/>
+							</Button>
+							<Button parentKey="RotateRightButton">
+								<Size>
+									<AbsDimension x="35" y="35"/>
+								</Size>
+								<Anchors>
+									<Anchor point="TOPLEFT" relativeKey="$parent" relativePoint="BOTTOM" x="5" y="50"/>
+								</Anchors>
+								<Scripts>
+									<OnLoad>
+										self:RegisterForClicks("LeftButtonDown", "LeftButtonUp");
+									</OnLoad>
+									<OnClick>
+										Model_RotateRight(self:GetParent());
+									</OnClick>
+								</Scripts>
+								<NormalTexture file="Interface\Buttons\UI-RotationRight-Button-Up"/>
+								<PushedTexture file="Interface\Buttons\UI-RotationRight-Button-Down"/>
+								<HighlightTexture file="Interface\Buttons\ButtonHilight-Round" alphaMode="ADD"/>
+							</Button>
+						</Frames>
+					</PlayerModel>
+				</Frames>
+
+			</Frame>
+			<!--Name needed for HybridScrollFrameTemplate-->
+			<ScrollFrame name="$parentListScrollFrame" parentKey="ListScrollFrame" inherits="HybridScrollFrameTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.LeftInset" x="3" y="-36"/>
+					<Anchor point="BOTTOMRIGHT" relativeKey="$parent.LeftInset" x="-2" y="5"/>
+				</Anchors>
+				<Frames>
+					<Slider name="$parentScrollBar" inherits="HybridScrollBarTrimTemplate" parentKey="scrollBar">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" x="4" y="20"/>
+							<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMRIGHT" x="4" y="11"/>
+						</Anchors>
+						<Scripts>
+							<OnLoad>
+								self.trackBG:Show();
+								self.trackBG:SetVertexColor(0, 0, 0, 0.75);
+							</OnLoad>
+						</Scripts>
+					</Slider>
+				</Frames>
+			</ScrollFrame>
+			<Button parentKey="MountButton" name="$parentMountButton" inherits="MagicButtonTemplate" text="MOUNT">
+				<Size x="140" y="22"/>
+				<Anchors>
+					<Anchor point="BOTTOMLEFT"/>
+				</Anchors>
+				<Scripts>
+					<OnClick function="MountJournalMountButton_OnClick"/>
+				</Scripts>
+			</Button>
+			<Frame name="$parentMountOptionsMenu" inherits="UIDropDownMenuTemplate" enableMouse="true" parentKey="mountOptionsMenu"/>
+		</Frames>
+		<Scripts>
+			<OnLoad function="MountJournal_OnLoad"/>
+			<OnEvent function="MountJournal_OnEvent"/>
+			<OnShow function="MountJournal_OnShow"/>
+		</Scripts>
+	</Frame>
+</Ui>

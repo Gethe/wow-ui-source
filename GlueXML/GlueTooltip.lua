@@ -13,16 +13,44 @@ function GlueTooltip_OnLoad(self)
 	self.defaultColor = NORMAL_FONT_COLOR;
 end
 
--- TODO: It would be nice if the syntax for this matched GameTooltip
-function GlueTooltip_SetOwner(self, owner, xOffset, yOffset, myPoint, ownerPoint)
+function GlueTooltip_SetOwner(self, owner, anchor, xOffset, yOffset )
 	if ( not self or not owner) then
 		return;
 	end
+	self.owner = owner;
+	anchor = anchor or "ANCHOR_LEFT";
 	xOffset = xOffset or 0;
 	yOffset = yOffset or 0;
-	myPoint = myPoint or "BOTTOMLEFT";
-	ownerPoint = ownerPoint or "TOPRIGHT";
-	self.owner = owner;
+	
+	GlueTooltip:ClearAllPoints();
+	-- mimic what tooltip does ingame
+	local myPoint, ownerPoint;
+	if ( anchor == "ANCHOR_LEFT" ) then
+		myPoint = "BOTTOMRIGHT";
+		ownerPoint = "TOPLEFT";
+	elseif ( anchor == "ANCHOR_RIGHT" ) then
+		myPoint = "BOTTOMLEFT";
+		ownerPoint = "TOPRIGHT";
+	elseif ( anchor == "ANCHOR_BOTTOMLEFT" ) then
+		myPoint = "TOPRIGHT";
+		ownerPoint = "BOTTOMLEFT";
+	elseif ( anchor == "ANCHOR_BOTTOM" ) then
+		myPoint = "ANCHOR_TOP";
+		ownerPoint = "ANCHOR_BOTTOM";
+	elseif ( anchor == "ANCHOR_BOTTOMRIGHT" ) then
+		myPoint = "TOPLEFT";
+		ownerPoint = "BOTTOMRIGHT";
+	elseif ( anchor == "ANCHOR_TOPLEFT" ) then
+		myPoint = "BOTTOMLEFT";
+		ownerPoint = "TOPLEFT";
+	elseif ( anchor == "ANCHOR_TOP" ) then
+		myPoint = "BOTTOM";
+		ownerPoint = "TOP";
+	elseif ( anchor == "ANCHOR_TOPRIGHT" ) then
+		myPoint = "BOTTOMRIGHT";
+		ownerPoint = "TOPRIGHT";
+	end
+
 	self:SetPoint(myPoint, owner, ownerPoint, xOffset, yOffset);
 	self:Show();
 end

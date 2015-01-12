@@ -19,7 +19,7 @@
 			</AnimationGroup>
 		</Animations>
 		<Layers>
-			<Layer level="ARTWORK" textureSubLevel="1">
+			<Layer level="OVERLAY" textureSubLevel="1">
 				<Texture name="$parentIconQuestTexture">
 					<Size>
 						<AbsDimension x="37" y="38"/>
@@ -191,7 +191,7 @@
 				<Anchors>
 					<Anchor point="TOPRIGHT" relativeTo="$parent" relativePoint="TOPRIGHT">
 						<Offset>
-							<AbsDimension x="-2" y="-227"/>
+							<AbsDimension x="-2" y="-231"/>
 						</Offset>
 					</Anchor>
 				</Anchors>
@@ -294,9 +294,7 @@
 								GameTooltip:AppendText(" "..NORMAL_FONT_COLOR_CODE.."("..binding..")"..FONT_COLOR_CODE_CLOSE);
 							end
 						end
-						if (self:GetID() == 0 or not IsInventoryItemProfessionBag("player", ContainerIDToInventoryID(self:GetID()))) then
-							GameTooltip:AddLine(CLICK_BAG_SETTINGS);
-						end
+						GameTooltip:AddLine(CLICK_BAG_SETTINGS);
 						GameTooltip:Show();
 					</OnEnter>
 					<OnLeave>
@@ -304,9 +302,6 @@
 						GameTooltip:Hide();
 					</OnLeave>
 					<OnClick>
-						if (self:GetID() ~= 0 and IsInventoryItemProfessionBag("player", ContainerIDToInventoryID(self:GetID()))) then
-							return;
-						end
 						local parent = self:GetParent();
 						PlaySound("igMainMenuOptionCheckBoxOn");
 						ToggleDropDownMenu(1, nil, parent.FilterDropDown, self, 0, 0);
@@ -411,7 +406,7 @@
 	<Frame name="ContainerFrame13" inherits="ContainerFrameTemplate" parent="UIParent" id="100" hidden="true"/>
 
 	<EditBox name="BagItemSearchBox" inherits="BagSearchBoxTemplate" parent="ContainerFrame1" letters="15" hidden="true">
-		<Size x="100" y="18"/>
+		<Size x="96" y="18"/>
 	</EditBox>
 
 	<Button name="BagItemAutoSortButton" parent="ContainerFrame1" hidden="true">

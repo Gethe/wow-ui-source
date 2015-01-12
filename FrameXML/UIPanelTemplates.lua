@@ -336,6 +336,22 @@ function InputScrollFrame_OnLoad(self)
 	self.CharCount:SetShown(not self.hideCharCount);
 end
 
+function InputScrollFrame_OnTextChanged(self)
+	local scrollFrame = self:GetParent();
+	ScrollingEdit_OnTextChanged(self, scrollFrame);
+	if ( self:GetText() ~= "" ) then
+		self.Instructions:Hide();
+	else
+		self.Instructions:Show();
+	end
+	scrollFrame.CharCount:SetText(self:GetMaxLetters() - self:GetNumLetters());
+	if ( scrollFrame.ScrollBar:IsShown() ) then
+		scrollFrame.CharCount:SetPoint("BOTTOMRIGHT", -17, 0);
+	else
+		scrollFrame.CharCount:SetPoint("BOTTOMRIGHT", 0, 0);
+	end
+end
+
 --Radio button functions
 function SetCheckButtonIsRadio(button, isRadio)
 	if ( isRadio ) then

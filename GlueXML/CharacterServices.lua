@@ -676,12 +676,22 @@ local function resetScripts(button)
 		if ( self.selection:IsShown() ) then
 			CharacterSelectButton_ShowMoveButtons(self);
 		end
+		if ( self.isVeteranLocked ) then
+			GlueTooltip:SetText(CHARSELECT_CHAR_LIMITED, nil, nil, nil, nil, true);
+			GlueTooltip:Show();
+			GlueTooltip:SetOwner(self, "ANCHOR_BOTTOMLEFT", -16, 16);
+			CharSelectAccountUpgradeButtonPointerFrame:Show();
+			CharSelectAccountUpgradeButtonGlow:Show();
+		end
 	end);
 	button:SetScript("OnLeave", function(self)
 		if ( self.upButton:IsShown() and not (self.upButton:IsMouseOver() or self.downButton:IsMouseOver()) ) then
 			self.upButton:Hide();
 			self.downButton:Hide();
 		end
+		CharSelectAccountUpgradeButtonPointerFrame:Hide();
+		CharSelectAccountUpgradeButtonGlow:Hide();
+		GlueTooltip:Hide();
 	end);
 	button:SetScript("OnMouseUp", CharacterSelectButton_OnDragStop);
 end

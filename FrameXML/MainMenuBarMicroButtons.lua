@@ -8,7 +8,7 @@ MICRO_BUTTONS = {
 	"GuildMicroButton",
 	"LFDMicroButton",
 	"EJMicroButton",
-	"CompanionsMicroButton",
+	"CollectionsMicroButton",
 	"MainMenuMicroButton",
 	"HelpMicroButton",
 	"StoreMicroButton",
@@ -128,7 +128,7 @@ function UpdateMicroButtons()
 	end
 
 	GuildMicroButton_UpdateTabard();
-	if ( IsTrialAccount() or factionGroup == "Neutral" ) then
+	if ( IsTrialAccount() or (IsVeteranTrialAccount() and not IsInGuild()) or factionGroup == "Neutral" ) then
 		GuildMicroButton:Disable();
 	elseif ( ( GuildFrame and GuildFrame:IsShown() ) or ( LookingForGuildFrame and LookingForGuildFrame:IsShown() ) ) then
 		GuildMicroButton:Enable();
@@ -183,12 +183,12 @@ function UpdateMicroButtons()
 		EJMicroButton:SetButtonState("NORMAL");
 	end
 
-	if ( PetJournalParent and PetJournalParent:IsShown() ) then
-		CompanionsMicroButton:Enable();
-		CompanionsMicroButton:SetButtonState("PUSHED", true);
+	if ( CollectionsJournal and CollectionsJournal:IsShown() ) then
+		CollectionsMicroButton:Enable();
+		CollectionsMicroButton:SetButtonState("PUSHED", true);
 	else
-		CompanionsMicroButton:Enable();
-		CompanionsMicroButton:SetButtonState("NORMAL");
+		CollectionsMicroButton:Enable();
+		CollectionsMicroButton:SetButtonState("NORMAL");
 	end
 
 	if ( StoreFrame and StoreFrame_IsShown() ) then
@@ -207,8 +207,8 @@ function UpdateMicroButtons()
 		StoreMicroButton:Hide();
 	end
 
-	if ( IsTrialAccount() ) then
-		StoreMicroButton.disabledTooltip = ERR_GUILD_TRIAL_ACCOUNT;
+	if ( GameLimitedMode_IsActive() ) then
+		StoreMicroButton.disabledTooltip = GameLimitedMode_GetString("ERR_FEATURE_RESTRICTED");
 		StoreMicroButton:Disable();
 	elseif ( C_StorePublic.IsDisabledByParentalControls() ) then
 		StoreMicroButton.disabledTooltip = BLIZZARD_STORE_ERROR_PARENTAL_CONTROLS;
@@ -327,29 +327,31 @@ function MainMenuMicroButton_SetNormal()
 	MainMenuMicroButton:SetButtonState("NORMAL");
 end
 
+function MainMenuMicroButton_ShowAlert(alert, text, tutorialIndex)
+	alert.Text:SetText(text);
+	alert:SetHeight(alert.Text:GetHeight()+42);
+	alert.tutorialIndex = tutorialIndex;
+	alert:Show();
+
+	return alert:IsShown();
+end
+
 --Talent button specific functions
 function TalentMicroButton_OnEvent(self, event, ...)
 	if ( event == "PLAYER_LEVEL_UP" ) then
 		local level = ...;
 		if (level == SHOW_SPEC_LEVEL) then
 			MicroButtonPulse(self);
-			TalentMicroButtonAlert.Text:SetText(TALENT_MICRO_BUTTON_SPEC_TUTORIAL);
-			TalentMicroButtonAlert:SetHeight(TalentMicroButtonAlert.Text:GetHeight()+42);
-			TalentMicroButtonAlert:Show();
+			MainMenuMicroButton_ShowAlert(TalentMicroButtonAlert, TALENT_MICRO_BUTTON_SPEC_TUTORIAL);
 		elseif (level == SHOW_TALENT_LEVEL) then
 			MicroButtonPulse(self);
-			TalentMicroButtonAlert.Text:SetText(TALENT_MICRO_BUTTON_TALENT_TUTORIAL);
-			TalentMicroButtonAlert:SetHeight(TalentMicroButtonAlert.Text:GetHeight()+42);
-			TalentMicroButtonAlert:Show();
+			MainMenuMicroButton_ShowAlert(TalentMicroButtonAlert, TALENT_MICRO_BUTTON_TALENT_TUTORIAL);
 		end
 	elseif ( event == "PLAYER_SPECIALIZATION_CHANGED") then
 		-- If we just unspecced, and we have unspent talent points, it's probably spec-specific talents that were just wiped.  Show the tutorial box.
 		local unit = ...;
 		if(unit == "player" and GetSpecialization() == nil and GetNumUnspentTalents() > 0) then
-			TalentMicroButtonAlert.Text:SetText(TALENT_MICRO_BUTTON_UNSPENT_TALENTS);
-			TalentMicroButtonAlert:SetHeight(TalentMicroButtonAlert.Text:GetHeight()+42);
-			TalentMicroButtonAlert:SetHeight(TalentMicroButtonAlert.Text:GetHeight()+42);
-			TalentMicroButtonAlert:Show();
+			MainMenuMicroButton_ShowAlert(TalentMicroButtonAlert, TALENT_MICRO_BUTTON_UNSPENT_TALENTS);
 		end
 	elseif ( event == "PLAYER_TALENT_UPDATE" or event == "NEUTRAL_FACTION_SELECT_RESULT" ) then
 		UpdateMicroButtons();
@@ -369,14 +371,48 @@ function TalentMicroButton_OnEvent(self, event, ...)
 		local prev, current = ...;
 		if ( prev == 0 and current > 0 ) then
 			MicroButtonPulse(self);
-			TalentMicroButtonAlert.Text:SetText(TALENT_MICRO_BUTTON_TALENT_TUTORIAL);
-			TalentMicroButtonAlert:SetHeight(TalentMicroButtonAlert.Text:GetHeight()+42);
-			TalentMicroButtonAlert:Show();
+			MainMenuMicroButton_ShowAlert(TalentMicroButtonAlert, TALENT_MICRO_BUTTON_TALENT_TUTORIAL);
 		elseif ( prev ~= current ) then
 			MicroButtonPulse(self);
-			TalentMicroButtonAlert.Text:SetText(TALENT_MICRO_BUTTON_UNSPENT_TALENTS);
-			TalentMicroButtonAlert:SetHeight(TalentMicroButtonAlert.Text:GetHeight()+42);
-			TalentMicroButtonAlert:Show();
+			MainMenuMicroButton_ShowAlert(TalentMicroButtonAlert, TALENT_MICRO_BUTTON_UNSPENT_TALENTS);
+		end
+	end
+end
+
+do
+	local function SafeSetCollectionJournalTab(tab)
+		if CollectionsJournal_SetTab then
+			CollectionsJournal_SetTab(CollectionsJournal, tab);
+		else
+			SetCVar("petJournalTab", tab);
+		end
+	end
+
+	function CollectionsMicroButton_OnEvent(self, event, ...)
+		if ( event == "HEIRLOOMS_UPDATED" ) then
+			local itemID, updateReason = ...;
+			if itemID and updateReason == "NEW" then
+				if MainMenuMicroButton_ShowAlert(CollectionsMicroButtonAlert, HEIRLOOMS_MICRO_BUTTON_SPEC_TUTORIAL, LE_FRAME_TUTORIAL_HEIRLOOM_JOURNAL) then
+					MicroButtonPulse(self);
+					SafeSetCollectionJournalTab(4);
+				end
+			end
+		elseif ( event == "PET_JOURNAL_NEW_BATTLE_SLOT" ) then
+			MicroButtonPulse(self);
+			MainMenuMicroButton_ShowAlert(CollectionsMicroButtonAlert, COMPANIONS_MICRO_BUTTON_NEW_BATTLE_SLOT);
+			SafeSetCollectionJournalTab(2);
+		elseif ( event == "TOYS_UPDATED" ) then
+			local itemID, new = ...;
+			if itemID and new then		
+				if MainMenuMicroButton_ShowAlert(CollectionsMicroButtonAlert, TOYBOX_MICRO_BUTTON_SPEC_TUTORIAL, LE_FRAME_TUTORIAL_TOYBOX) then
+					MicroButtonPulse(self);
+					SafeSetCollectionJournalTab(3);
+				end
+			end
+		else
+			self.tooltipText = MicroButtonTooltipText(COLLECTIONS, "TOGGLECOLLECTIONS");
+			self.newbieText = NEWBIE_TOOLTIP_MOUNTS_AND_PETS;
+			UpdateMicroButtons();
 		end
 	end
 end
@@ -388,4 +424,3 @@ function MicroButtonAlert_OnLoad(self)
 		self.Text:SetText(self.label);
 	end
 end
-

@@ -249,7 +249,7 @@ function TradeSkillFrame_Update()
 		skillButtonLockedIcon = _G["TradeSkillSkill"..buttonIndex.."LockedIcon"];
 		if ( skillIndex <= numTradeSkills ) then
 			--turn on the multiskill icon
-			if not isTradeSkillGuild and not isNPCCrafting and numSkillUps > 1 and skillType=="optimal" then
+			if not isTradeSkillGuild and not isNPCCrafting and numSkillUps > 1 and skillType=="optimal" and not displayAsUnavailable then
 				skillButtonNumSkillUps:Show();
 				skillButtonNumSkillUpsText:SetText(numSkillUps);
 				usedWidth = TRADE_SKILL_SKILLUP_TEXT_WIDTH;
@@ -533,15 +533,14 @@ function TradeSkillFrame_SetSelection(id)
 				SetItemButtonTextureVertexColor(reagent, 1.0, 1.0, 1.0);
 				name:SetTextColor(HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b);
 			end
-			if ( playerReagentCount >= 100 ) then
-				playerReagentCount = "*";
-			end
-			count:SetText(playerReagentCount.." /"..reagentCount);
+
+			local playerReagentCountAbbreviated = AbbreviateNumbers(playerReagentCount);
+			count:SetFormattedText(TRADESKILL_REAGENT_COUNT, playerReagentCountAbbreviated, reagentCount);
 			--fix text overflow when the reagent count is too high
 			if (math.floor(count:GetStringWidth()) > math.floor(reagent.Icon:GetWidth() + .5)) then 
 			--round count width down because the leftmost number can overflow slightly without looking bad
 			--round icon width because it should always be an int, but sometimes it's a slightly off float
-				count:SetText(playerReagentCount.."\n/"..reagentCount);
+				count:SetText(playerReagentCountAbbreviated.."\n/"..reagentCount);
 			end
 		end
 	end
@@ -570,6 +569,16 @@ function TradeSkillFrame_SetSelection(id)
 	else
 		TradeSkillCreateButton:Disable();
 		TradeSkillCreateAllButton:Disable();
+	end
+	
+	local numTopLines = TradeSkillRequirementText:GetNumLines();
+	if ( TradeSkillSkillCooldown:GetText() ) then
+		numTopLines = numTopLines + 1;
+	end
+	if ( numTopLines > 2 ) then
+		TradeSkillDescription:SetPoint("TOPLEFT", 5, -30 - (10 * numTopLines));
+	else
+		TradeSkillDescription:SetPoint("TOPLEFT", 5, -50);
 	end
 	
 	if ( GetTradeSkillDescription(id) ) then
@@ -625,11 +634,11 @@ function TradeSkillFrame_SetSelection(id)
 			TradeSkillRankFrameSkillRank:SetFormattedText(TRADESKILL_RANK, skillLineRank, skillLineMaxRank);
 		end
 		
-		if IsTrialAccount() then
+		if ( GameLimitedMode_IsActive() ) then
 			local _, _, profCap = GetRestrictedAccountData();
 			if skillLineRank >= profCap then
 				local text = TradeSkillRankFrameSkillRank:GetText();
-				text = text.." "..RED_FONT_COLOR_CODE..TRIAL_CAPPED
+				text = text.." "..RED_FONT_COLOR_CODE..GameLimitedMode_GetString("CAP_REACHED");
 				TradeSkillRankFrameSkillRank:SetText(text);
 			end
 		end
@@ -715,11 +724,6 @@ end
 function TradeSkillSearch_OnTextChanged(self)
 	local text = self:GetText();
 	
-	if ( text == SEARCH ) then
-		SetTradeSkillItemNameFilter("");
-		return;
-	end
-
 	local minLevel, maxLevel;
 	local approxLevel = strmatch(text, "^~(%d+)");
 	if ( approxLevel ) then

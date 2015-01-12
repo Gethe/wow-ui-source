@@ -174,7 +174,7 @@
 				<Scripts>
 					<OnEnter>
 						GameTooltip:SetOwner(self, "ANCHOR_BOTTOM");
-						GameTooltip:AddLine(TRIAL_CAPPED, 1, 0.1, 0.1);
+						GameTooltip:AddLine(GameLimitedMode_GetString("CAP_REACHED"), 1, 0.1, 0.1);
 						GameTooltip:Show();
 					</OnEnter>
 					<OnLeave>

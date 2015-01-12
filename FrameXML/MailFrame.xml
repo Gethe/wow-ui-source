@@ -937,6 +937,7 @@
 				PlaySound("igCharacterInfoClose");
 				SetSendMailShowing(false);
 			</OnHide>
+			<OnMouseWheel function="MailFrame_OnMouseWheel"/>
 		</Scripts>
 	</Frame>
 <!-- Stationery Popup -->	

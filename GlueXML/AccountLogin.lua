@@ -4,7 +4,7 @@ MAX_PIN_LENGTH = 10;
 IS_LOGGING_IN = false;
 
 function AccountLogin_OnLoad(self)
-	TOSFrame.noticeType = "EULA";
+	TOSFrame.noticeType = "TERMINATION";
 
 	self:RegisterEvent("SHOW_SURVEY_NOTIFICATION");
 	self:RegisterEvent("CLIENT_ACCOUNT_MISMATCH");
@@ -51,7 +51,7 @@ function AccountLogin_OnShow(self)
 	PlayGlueMusic(EXPANSION_GLUE_MUSIC[displayedExpansionLevel]);
 	PlayGlueAmbience(EXPANSION_GLUE_AMBIENCE[displayedExpansionLevel], 4.0);
 
-	-- Try to show the EULA or the TOS
+	-- Try to show the Termination and other legal notices
 	AccountLogin_ShowUserAgreements();
 	
 	local serverName = GetServerName();
@@ -122,9 +122,7 @@ function AccountLogin_OnKeyDown(key)
 			AccountLogin_Exit();
 		end
 	elseif ( key == "ENTER" ) then
-		if ( not TOSAccepted() ) then
-			return;
-		elseif ( TOSFrame:IsShown() or ConnectionHelpFrame:IsShown() ) then
+		if ( TOSFrame:IsShown() or ConnectionHelpFrame:IsShown() ) then
 			return;
 		elseif ( SurveyNotificationFrame:IsShown() ) then
 			AccountLogin_SurveyNotificationDone(true);
@@ -255,13 +253,16 @@ function AccountLogin_TOS()
 	if ( not GlueDialog:IsShown() ) then
 		PlaySound("gsLoginNewAccount");
 		AccountLoginUI:Hide();
-		AccountLogin_HideAllUserAgreements();
-		TOSFrame:Show();
-		TOSScrollFrameScrollBar:SetValue(0);		
-		TOSScrollFrame:Show();
-		TOSFrameTitle:SetText(TOS_FRAME_TITLE);
-		TOSText:Show();
 		CinematicsFrame:Hide();
+		AccountLogin_HideAllUserAgreements();
+
+		TOSFrame.noticeType = "TERMINATION";
+		TOSFrameTitle:SetText(TOS_FRAME_TITLE);
+		TOSFrameTitle:SetText(TERMINATION_WITHOUT_NOTICE_FRAME_TITLE);
+		TOSFrameHeader:SetWidth(TOSFrameTitle:GetWidth());
+		TerminationScrollFrame:Show();
+		TerminationText:Show();
+		TOSFrame:Show();
 	end
 end
 
@@ -324,12 +325,8 @@ function AccountLogin_SurveyNotificationDone(accepted)
 end
 
 function AccountLogin_HideAllUserAgreements()
-	TOSScrollFrame:Hide();
-	EULAScrollFrame:Hide();
 	TerminationScrollFrame:Hide();
 	ScanningScrollFrame:Hide();
-	TOSText:Hide();
-	EULAText:Hide();
 	TerminationText:Hide();
 	ScanningText:Hide();
 end
@@ -337,31 +334,7 @@ end
 function AccountLogin_ShowUserAgreements()
 	AccountLogin_HideAllUserAgreements();
 	KoreanRatings:Hide();
-	if ( not EULAAccepted() ) then
-		if ( ShowEULANotice() ) then
-			TOSNotice:SetText(EULA_NOTICE);
-			TOSNotice:Show();
-		end
-		AccountLoginUI:Hide();
-		TOSFrame.noticeType = "EULA";
-		TOSFrameTitle:SetText(EULA_FRAME_TITLE);
-		TOSFrameHeader:SetWidth(TOSFrameTitle:GetWidth());
-		EULAScrollFrame:Show();
-		EULAText:Show();
-		TOSFrame:Show();
-	elseif ( not TOSAccepted() ) then
-		if ( ShowTOSNotice() ) then
-			TOSNotice:SetText(TOS_NOTICE);
-			TOSNotice:Show();
-		end
-		AccountLoginUI:Hide();
-		TOSFrame.noticeType = "TOS";
-		TOSFrameTitle:SetText(TOS_FRAME_TITLE);
-		TOSFrameHeader:SetWidth(TOSFrameTitle:GetWidth());
-		TOSScrollFrame:Show();
-		TOSText:Show();
-		TOSFrame:Show();
-	elseif ( not TerminationWithoutNoticeAccepted() and SHOW_TERMINATION_WITHOUT_NOTICE_AGREEMENT ) then
+	if ( not TerminationWithoutNoticeAccepted() and SHOW_TERMINATION_WITHOUT_NOTICE_AGREEMENT ) then
 		if ( ShowTerminationWithoutNoticeNotice() ) then
 			TOSNotice:SetText(TERMINATION_WITHOUT_NOTICE_NOTICE);
 			TOSNotice:Show();
@@ -407,21 +380,6 @@ function AccountLogin_ShowUserAgreements()
 	end
 end
 
-function AccountLogin_UpdateAcceptButton(scrollFrame, isAcceptedFunc, noticeType)
-	local scrollbar = _G[scrollFrame:GetName().."ScrollBar"];
-	local min, max = scrollbar:GetMinMaxValues();
-
-	-- HACK: scrollbars do not handle max properly
-	-- DO NOT CHANGE - without speaking to Mikros/Barris/Thompson
-	if (scrollbar:GetValue() >= max - 20) then
-		TOSAccept:Enable();
-	else
-		if ( not isAcceptedFunc() and TOSFrame.noticeType == noticeType ) then
-			TOSAccept:Disable();
-		end
-	end
-end
-
 function AccountLogin_UpdateLoginType()
 	if ( IsLauncherLogin() ) then
 		if ( IS_LOGGING_IN or (AUTO_LOGIN_TIMER >= 0 and not IsLauncherLoginAutoAttempted()) ) then
@@ -464,7 +422,15 @@ function AccountLogin_UpdateLoginType()
 		AccountLoginNormalLoginFrame:Show();
 		AccountLoginLauncherLoginFrame:Hide();
 
-		AccountLoginTOSButton:Show();
+		if ( SHOW_TERMINATION_WITHOUT_NOTICE_AGREEMENT ) then
+			AccountLoginTOSButton:SetPoint("BOTTOM", AccountLoginExitButton, "TOP", 0, 80);
+			AccountLoginCreditsButton:SetPoint("BOTTOM", AccountLoginTOSButton, "TOP", 0, -2);
+			AccountLoginTOSButton:Show();
+		else
+			AccountLoginTOSButton:Hide();
+			AccountLoginCreditsButton:SetPoint("BOTTOM", AccountLoginExitButton, "TOP", 0, 80);
+		end
+		
 		AccountLoginCreditsButton:Show();
 		AccountLoginCinematicsButton:Show();
 		AccountLoginCreateAccountButton:Show();

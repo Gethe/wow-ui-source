@@ -1692,6 +1692,7 @@
 					PlaySound("UI_igStore_WindowClose_Button");
 				</OnHide>
 				<OnAttributeChanged function="StoreFrame_OnAttributeChanged" />
+				<OnMouseWheel function="StoreFrame_OnMouseWheel" />
 			</Scripts>
 		</Frame>
 		<Frame name="StoreConfirmationFrame" frameStrata="FULLSCREEN_DIALOG" topLevel="true" parent="StoreFrame" inherits="GoldBorderFrameTemplate" hidden="true">

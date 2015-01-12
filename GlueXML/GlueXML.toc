@@ -2,9 +2,6 @@
 GlueStrings.lua
 GlueFonts.xml
 GlueFontStyles.xml
-GlueFontStyleOverrides.xml
-..\SharedXML\SharedFonts.xml
-..\SharedXML\SharedFontStyles.xml
 GlueLocalization.xml
 ## add new files after here
 

@@ -57,6 +57,7 @@ LFG_INSTANCE_INVALID_CODES = { --Any other codes are unspecified conditions (e.g
 	"AREA_NOT_EXPLORED",
 	nil,	--Wrong faction
 	"NO_VALID_ROLES",
+    "ENGAGED_IN_PVP",
 	[1001] = "LEVEL_TOO_LOW",
 	[1002] = "LEVEL_TOO_HIGH",
 	[1022] = "QUEST_NOT_COMPLETED",
@@ -85,6 +86,7 @@ function LFGEventFrame_OnLoad(self)
 	
 	self:RegisterEvent("LFG_OFFER_CONTINUE");
 	self:RegisterEvent("LFG_ROLE_CHECK_ROLE_CHOSEN");
+	self:RegisterEvent("LFG_READY_CHECK_PLAYER_IS_READY");
 	
 	self:RegisterEvent("LFG_PROPOSAL_UPDATE");
 	self:RegisterEvent("LFG_PROPOSAL_SHOW");
@@ -190,6 +192,9 @@ function LFGEventFrame_OnEvent(self, event, ...)
 		end
 		assert(roleList);
 		ChatFrame_DisplaySystemMessageInPrimary(string.format(LFG_ROLE_CHECK_ROLE_CHOSEN, player, roleList));
+	elseif ( event == "LFG_READY_CHECK_PLAYER_IS_READY" ) then
+		local player = ...;
+		ChatFrame_DisplaySystemMessageInPrimary(string.format(LFG_READY_CHECK_PLAYER_IS_READY, player));
 	elseif ( event == "VARIABLES_LOADED" ) then
 		LFG_UpdateAllRoleCheckboxes();
 	elseif ( event == "LFG_ROLE_UPDATE" ) then

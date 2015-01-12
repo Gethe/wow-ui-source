@@ -5,6 +5,7 @@ MAX_LFG_LIST_APPLICATIONS = 5;
 MAX_LFG_LIST_SEARCH_AUTOCOMPLETE_ENTRIES = 6;
 MAX_LFG_LIST_GROUP_DROPDOWN_ENTRIES = 10;
 LFG_LIST_DELISTED_FONT_COLOR = {r=0.3, g=0.3, b=0.3};
+LFG_LIST_COMMENT_FONT_COLOR = {r=0.6, g=0.6, b=0.6};
 
 ACTIVITY_RETURN_VALUES = {
 	fullName = 1,
@@ -279,7 +280,7 @@ end
 
 function LFGListNothingAvailable_Update(self)
 	if ( IsRestrictedAccount() ) then
-		self.Label:SetText(ERR_RESTRICTED_ACCOUNT_LFG_LIST);
+		self.Label:SetText(GameLimitedMode_GetString("ERR_RESTRICTED_ACCOUNT_LFG_LIST"));
 	elseif ( C_LFGList.HasActivityList() ) then
 		self.Label:SetText(NO_LFG_LIST_AVAILABLE);
 	else
@@ -965,6 +966,7 @@ function LFGListApplicationViewer_UpdateGroupData(self)
 
 	local data = GetGroupMemberCounts();
 	data.DAMAGER = data.DAMAGER + data.NOROLE; --People without a role count as damage
+	data.NOROLE = 0;
 	LFGListGroupDataDisplay_Update(self.DataDisplay, activityID, data);
 end
 
@@ -1036,7 +1038,7 @@ function LFGListApplicationViewer_UpdateAvailability(self)
 
 	if ( IsRestrictedAccount() ) then
 		self.EditButton:Disable();
-		self.EditButton.tooltip = ERR_RESTRICTED_ACCOUNT_LFG_LIST;
+		self.EditButton.tooltip = GameLimitedMode_GetString("ERR_RESTRICTED_ACCOUNT_LFG_LIST");
 	else
 		self.EditButton:Enable();
 		self.EditButton.tooltip = nil;
@@ -1254,11 +1256,11 @@ function LFGListApplicationViewer_UpdateApplicantMember(member, appID, memberIdx
 	else
 		local role1 = tank and "TANK" or (healer and "HEALER" or (damage and "DAMAGER"));
 		local role2 = (tank and healer and "HEALER") or ((tank or healer) and damage and "DAMAGER");
-		member.RoleIcon1:GetNormalTexture():SetTexCoord(GetTexCoordsForRoleSmallCircle(role1));
-		member.RoleIcon1:GetHighlightTexture():SetTexCoord(GetTexCoordsForRoleSmallCircle(role1));
+		member.RoleIcon1:GetNormalTexture():SetAtlas(LFG_LIST_GROUP_DATA_ATLASES[role1]);
+		member.RoleIcon1:GetHighlightTexture():SetAtlas(LFG_LIST_GROUP_DATA_ATLASES[role1]);
 		if ( role2 ) then
-			member.RoleIcon2:GetNormalTexture():SetTexCoord(GetTexCoordsForRoleSmallCircle(role2));
-			member.RoleIcon2:GetHighlightTexture():SetTexCoord(GetTexCoordsForRoleSmallCircle(role2));
+			member.RoleIcon2:GetNormalTexture():SetAtlas(LFG_LIST_GROUP_DATA_ATLASES[role2]);
+			member.RoleIcon2:GetHighlightTexture():SetAtlas(LFG_LIST_GROUP_DATA_ATLASES[role2]);
 		end
 		member.RoleIcon1:SetEnabled(not noTouchy and role1 ~= assignedRole);
 		member.RoleIcon1:SetAlpha(role1 == assignedRole and 1 or 0.3);
@@ -1328,7 +1330,7 @@ function LFGListApplicantMember_OnEnter(self)
 	GameTooltip:AddLine(string.format(LFG_LIST_ITEM_LEVEL_CURRENT, itemLevel), 1, 1, 1);
 	if ( comment and comment ~= "" ) then
 		GameTooltip:AddLine(" ");
-		GameTooltip:AddLine(string.format(LFG_LIST_COMMENT_FORMAT, comment), GRAY_FONT_COLOR.r, GRAY_FONT_COLOR.g, GRAY_FONT_COLOR.b, true);
+		GameTooltip:AddLine(string.format(LFG_LIST_COMMENT_FORMAT, comment), LFG_LIST_COMMENT_FONT_COLOR.r, LFG_LIST_COMMENT_FONT_COLOR.g, LFG_LIST_COMMENT_FONT_COLOR.b, true);
 	end
 
 	--Add statistics
@@ -1930,7 +1932,7 @@ function LFGListSearchEntry_OnEnter(self)
 	GameTooltip:SetText(name, 1, 1, 1, true);
 	GameTooltip:AddLine(activityName);
 	if ( comment ~= "" ) then
-		GameTooltip:AddLine(string.format(LFG_LIST_COMMENT_FORMAT, comment), GRAY_FONT_COLOR.r, GRAY_FONT_COLOR.g, GRAY_FONT_COLOR.b, true);
+		GameTooltip:AddLine(string.format(LFG_LIST_COMMENT_FORMAT, comment), LFG_LIST_COMMENT_FONT_COLOR.r, LFG_LIST_COMMENT_FONT_COLOR.g, LFG_LIST_COMMENT_FONT_COLOR.b, true);
 	end
 	GameTooltip:AddLine(" ");
 	if ( iLvl > 0 ) then
@@ -2250,22 +2252,32 @@ function LFGListGroupDataDisplay_Update(self, activityID, displayData, disabled)
 	if ( displayType == LE_LFG_LIST_DISPLAY_TYPE_ROLE_COUNT ) then
 		self.RoleCount:Show();
 		self.Enumerate:Hide();
+		self.PlayerCount:Hide();
 		LFGListGroupDataDisplayRoleCount_Update(self.RoleCount, displayData, disabled);
 	elseif ( displayType == LE_LFG_LIST_DISPLAY_TYPE_ROLE_ENUMERATE ) then
 		self.RoleCount:Hide();
 		self.Enumerate:Show();
+		self.PlayerCount:Hide();
 		LFGListGroupDataDisplayEnumerate_Update(self.Enumerate, maxPlayers, displayData, disabled, LFG_LIST_GROUP_DATA_ROLE_ORDER);
 	elseif ( displayType == LE_LFG_LIST_DISPLAY_TYPE_CLASS_ENUMERATE ) then
 		self.RoleCount:Hide();
 		self.Enumerate:Show();
+		self.PlayerCount:Hide();
 		LFGListGroupDataDisplayEnumerate_Update(self.Enumerate, maxPlayers, displayData, disabled, LFG_LIST_GROUP_DATA_CLASS_ORDER);
+	elseif ( displayType == LE_LFG_LIST_DISPLAY_TYPE_PLAYER_COUNT ) then
+		self.RoleCount:Hide();
+		self.Enumerate:Hide();
+		self.PlayerCount:Show();
+		LFGListGroupDataDisplayPlayerCount_Update(self.PlayerCount, displayData, disabled);
 	elseif ( displayType == LE_LFG_LIST_DISPLAY_TYPE_HIDE_ALL ) then
 		self.RoleCount:Hide();
 		self.Enumerate:Hide();
+		self.PlayerCount:Hide();
 	else
 		GMError("Unknown display type");
 		self.RoleCount:Hide();
 		self.Enumerate:Hide();
+		self.PlayerCount:Hide();
 	end
 end
 
@@ -2284,9 +2296,9 @@ function LFGListGroupDataDisplayRoleCount_Update(self, displayData, disabled)
 	self.TankIcon:SetDesaturated(disabled);
 	self.HealerIcon:SetDesaturated(disabled);
 	self.DamagerIcon:SetDesaturated(disabled);
-	self.TankIcon:SetAlpha(disabled and 0.5 or 1.0);
-	self.HealerIcon:SetAlpha(disabled and 0.5 or 1.0);
-	self.DamagerIcon:SetAlpha(disabled and 0.5 or 1.0);
+	self.TankIcon:SetAlpha(disabled and 0.5 or 0.70);
+	self.HealerIcon:SetAlpha(disabled and 0.5 or 0.70);
+	self.DamagerIcon:SetAlpha(disabled and 0.5 or 0.70);
 end
 
 function LFGListGroupDataDisplayEnumerate_Update(self, numPlayers, displayData, disabled, iconOrder)
@@ -2305,7 +2317,7 @@ function LFGListGroupDataDisplayEnumerate_Update(self, numPlayers, displayData, 
 	local iconIndex = numPlayers;
 	for i=1, #iconOrder do
 		for j=1, displayData[iconOrder[i]] do
-			self.Icons[iconIndex]:SetAtlas(LFG_LIST_GROUP_DATA_ATLASES[iconOrder[i]], true);
+			self.Icons[iconIndex]:SetAtlas(LFG_LIST_GROUP_DATA_ATLASES[iconOrder[i]], false);
 			iconIndex = iconIndex - 1;
 			if ( iconIndex < 1 ) then
 				return;
@@ -2314,8 +2326,18 @@ function LFGListGroupDataDisplayEnumerate_Update(self, numPlayers, displayData, 
 	end
 
 	for i=1, iconIndex do
-		self.Icons[i]:SetAtlas("groupfinder-icon-emptyslot", true);
+		self.Icons[i]:SetAtlas("groupfinder-icon-emptyslot", false);
 	end
+end
+
+function LFGListGroupDataDisplayPlayerCount_Update(self, displayData, disabled)
+	local numPlayers = displayData.TANK + displayData.HEALER + displayData.DAMAGER + displayData.NOROLE;
+
+	local color = disabled and LFG_LIST_DELISTED_FONT_COLOR or HIGHLIGHT_FONT_COLOR;
+	self.Count:SetText(numPlayers);
+	self.Count:SetTextColor(color.r, color.g, color.b);
+	self.Icon:SetDesaturated(disabled);
+	self.Icon:SetAlpha(disabled and 0.5 or 1);
 end
 
 -------------------------------------------------------

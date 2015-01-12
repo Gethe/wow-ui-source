@@ -552,94 +552,95 @@ VideoData["Display_VerticalSyncDropDown"]={
 }
 
 -------------------------------------------------------------------------------------------------------
+local function GenerateMSAAData(data, ...)
+	for i = 1, select("#", ...), 2 do
+		local msaaQuality, sampleCount = select(i, ...);
+		data[#data + 1] = {
+			text = ANTIALIASING_MSAA_FORMAT:format(sampleCount),
+			cvars =	{
+				ffxAntiAliasingMode = 0,
+				RenderScale = 1,
+				MSAAQuality = msaaQuality,
+			},
+		};
+	end
+end
+
+local function GenerateAntiAliasingDropDownData()
+	local data = {};
+	local fxaa, cmaa = AntiAliasingSupported();
+
+	data[#data + 1] = {
+		text = VIDEO_OPTIONS_NONE,
+		cvars =	{
+			ffxAntiAliasingMode = 0,
+			RenderScale = 1,
+			MSAAQuality = 0,
+		},
+	};
+
+	if fxaa then
+		data[#data + 1] = {
+			text = ANTIALIASING_FXAA_LOW,
+			cvars =	{
+				ffxAntiAliasingMode = 1,
+				RenderScale = 1,
+				MSAAQuality = 0,
+			},
+		};
+
+		data[#data + 1] = {
+			text = ANTIALIASING_FXAA_HIGH,
+			cvars =	{
+				ffxAntiAliasingMode = 2,
+				RenderScale = 1,
+				MSAAQuality = 0,
+			},
+		};
+	end
+
+	if cmaa then
+		data[#data + 1] = {
+			text = ANTIALIASING_CMAA,
+			cvars =	{
+				ffxAntiAliasingMode = 3,
+				RenderScale = 1,
+				MSAAQuality = 0,
+			},
+		};
+	end
+
+	GenerateMSAAData(data, MultiSampleAntiAliasingSupported());
+
+	data[#data + 1] = {
+		text = ANTIALIASING_SSAA,
+		cvars =	{
+			ffxAntiAliasingMode = 0,
+			RenderScale = 2,
+			MSAAQuality = 0,
+		},
+	};
+
+	if cmaa then
+		data[#data + 1] = {
+			text = ANTIALIASING_SSAA_CMAA,
+			cvars =	{
+				ffxAntiAliasingMode = 3,
+				RenderScale = 2,
+				MSAAQuality = 0,
+			},
+		};
+	end
+
+	return data;
+end
+
 VideoData["Display_AntiAliasingDropDown"]={
 	name = ANTIALIASING;
 	description = OPTION_TOOLTIP_ANTIALIASING,
-	
-	dataA = {
-		[1] = {
-			text = VIDEO_OPTIONS_NONE,
-			cvars =	{
-				ffxAntiAliasingMode = 0,
-			},
-		},
-		[2] = {
-			text = ANTIALIASING_FXAA_LOW,
-			cvars =	{
-				ffxAntiAliasingMode = 1,
-			},
-		},
-		[3] = {
-			text = ANTIALIASING_FXAA_HIGH,
-			cvars =	{
-				ffxAntiAliasingMode = 2,
-			},
-		},
-		[4] = {
-			text = ANTIALIASING_CMAA,
-			cvars =	{
-				ffxAntiAliasingMode = 3,
-			},
-		},
-	},
-	dataB = {
-		[1] = {
-			text = VIDEO_OPTIONS_NONE,
-			cvars =	{
-				ffxAntiAliasingMode = 0,
-			},
-		},
-		[2] = {
-			text = ANTIALIASING_FXAA_LOW,
-			cvars =	{
-				ffxAntiAliasingMode = 1,
-			},
-		},
-		[3] = {
-			text = ANTIALIASING_FXAA_HIGH,
-			cvars =	{
-				ffxAntiAliasingMode = 2,
-			},
-		},
-	},
-	dataC = {
-		[1] = {
-			text = VIDEO_OPTIONS_NONE,
-			cvars =	{
-				ffxAntiAliasingMode = 0,
-			},
-		},
-		[4] = {
-			text = ANTIALIASING_CMAA,
-			cvars =	{
-				ffxAntiAliasingMode = 3,
-			},
-		},
-	},
-	dataD = {
-		[1] = {
-			text = VIDEO_OPTIONS_NONE,
-			cvars =	{
-				ffxAntiAliasingMode = 0,
-			},
-		},
-	},
 	onload =
 		function(self)
-			self.data = self.dataA;
-		end,
-	onrefresh =
-		function(self)
-			local fxaa, cmaa = AntiAliasingSupported();
-			if(fxaa and cmaa) then
-				self.data = self.dataA;
-			elseif(fxaa) then
-				self.data = self.dataB;
-			elseif(cmaa) then
-				self.data = self.dataC;
-			else
-				self.data = self.dataD;
-			end
+			self.data = GenerateAntiAliasingDropDownData();
 		end,
 }
 
@@ -1057,6 +1058,23 @@ VideoData["Graphics_SSAODropDown"]={
 			},
 		},
 	},
+
+	hbaoOption = {
+		text = VIDEO_OPTIONS_HBAO,
+		cvars =	{
+			ssao = 3,
+		},
+	},
+
+	onrefresh = function(self)
+		local hbaoSupported = SSAOSupported();
+		if hbaoSupported then
+			self.data[4] = self.hbaoOption;
+		else
+			self.data[4] = nil;
+		end
+	end,
+
 	dependent = {
 		"Graphics_Quality",
 	},
@@ -1087,6 +1105,23 @@ VideoData["RaidGraphics_SSAODropDown"]={
 			},
 		},
 	},
+
+	hbaoOption = {
+		text = VIDEO_OPTIONS_HBAO,
+		cvars =	{
+			raidSSAO = 3,
+		},
+	},
+
+	onrefresh = function(self)
+		local hbaoSupported = SSAOSupported();
+		if hbaoSupported then
+			self.data[4] = self.hbaoOption;
+		else
+			self.data[4] = nil;
+		end
+	end,
+
 	dependent = {
 		"RaidGraphics_Quality",
 	},

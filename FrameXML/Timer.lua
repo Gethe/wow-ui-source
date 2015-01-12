@@ -111,7 +111,7 @@ function TimerTracker_OnEvent(self, event, ...)
 		for a,timer in pairs(self.timerList) do
 			timer.time = nil;
 			timer.type = nil;
-			timer.isFree = nil;
+			timer.isFree = true;
 			timer:SetScript("OnUpdate", nil);
 			timer.fadeBarOut:Stop();
 			timer.fadeBarIn:Stop();

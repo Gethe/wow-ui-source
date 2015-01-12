@@ -50,7 +50,7 @@ function QUEST_TRACKER_MODULE:SetBlockHeader(block, text, questLogIndex, isQuest
 			itemButton:SetPoint("TOPRIGHT", block, -2, 1);
 			itemButton:Show();
 		end
-		itemButton.questLogIndex = questLogIndex;
+		itemButton:SetID(questLogIndex);
 		itemButton.charges = charges;
 		itemButton.rangeTimer = -1;
 		SetItemButtonTexture(itemButton, item);
@@ -81,7 +81,7 @@ function QUEST_TRACKER_MODULE:OnBlockHeaderClick(block, mouseButton)
 	elseif ( mouseButton ~= "RightButton" ) then
 		CloseDropDownMenus();
 		if ( IsModifiedClick("QUESTWATCHTOGGLE") ) then
-			QuestObjectiveTracker_UntrackQuest(_, block.questLogIndex);
+			QuestObjectiveTracker_UntrackQuest(nil, block.questLogIndex);
 		else
 			if ( IsQuestComplete(block.id) and GetQuestLogIsAutoComplete(block.questLogIndex) ) then
 				AutoQuestPopupTracker_RemovePopUp(block.id);
@@ -150,13 +150,13 @@ function QuestObjectiveItem_OnUpdate(self, elapsed)
 	if ( rangeTimer ) then	
 		rangeTimer = rangeTimer - elapsed;		
 		if ( rangeTimer <= 0 ) then
-			local link, item, charges, showItemWhenComplete = GetQuestLogSpecialItemInfo(self.questLogIndex);
+			local link, item, charges, showItemWhenComplete = GetQuestLogSpecialItemInfo(self:GetID());
 			if ( not charges or charges ~= self.charges ) then
 				ObjectiveTracker_Update(OBJECTIVE_TRACKER_UPDATE_MODULE_QUEST);
 				return;
 			end
 			local count = self.HotKey;
-			local valid = IsQuestLogSpecialItemInRange(self.questLogIndex);
+			local valid = IsQuestLogSpecialItemInRange(self:GetID());
 			if ( valid == 0 ) then
 				count:Show();
 				count:SetVertexColor(1.0, 0.1, 0.1);
@@ -185,22 +185,22 @@ end
 
 function QuestObjectiveItem_OnEnter(self)
 	GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
-	GameTooltip:SetQuestLogSpecialItem(self.questLogIndex);
+	GameTooltip:SetQuestLogSpecialItem(self:GetID());
 end
 		
 function QuestObjectiveItem_OnClick(self, button)
 	if ( IsModifiedClick("CHATLINK") and ChatEdit_GetActiveWindow() ) then
-		local link, item, charges, showItemWhenComplete = GetQuestLogSpecialItemInfo(self.questLogIndex);
+		local link, item, charges, showItemWhenComplete = GetQuestLogSpecialItemInfo(self:GetID());
 		if ( link ) then
 			ChatEdit_InsertLink(link);
 		end
 	else
-		UseQuestLogSpecialItem(self.questLogIndex);
+		UseQuestLogSpecialItem(self:GetID());
 	end
 end
 
 function QuestObjectiveItem_UpdateCooldown(itemButton)
-	local start, duration, enable = GetQuestLogSpecialItemCooldown(itemButton.questLogIndex);
+	local start, duration, enable = GetQuestLogSpecialItemCooldown(itemButton:GetID());
 	if ( start ) then
 		CooldownFrame_SetTimer(itemButton.Cooldown, start, duration, enable);
 		if ( duration > 0 and enable == 0 ) then

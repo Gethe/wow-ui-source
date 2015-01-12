@@ -235,13 +235,21 @@ GlueDialogTypes["REALM_LIST_CANCEL"] = {
 
 GlueDialogTypes["QUEUED_WITH_FCM"] = {
 	text = "",
-	button1 = CANCEL,
+	button1 = CHANGE_REALM,
 	button2 = QUEUE_FCM_BUTTON,
 	OnAccept = function()
-		StatusDialogClick();
+		RequestRealmList(true);
 	end,
 	OnCancel = function()
 		LaunchURL(QUEUE_FCM_URL)
+	end,
+}
+
+GlueDialogTypes["QUEUED_NORMAL"] = {
+	text = "",
+	button1 = CHANGE_REALM,
+	OnAccept = function()
+		RequestRealmList(true);
 	end,
 }
 
@@ -532,6 +540,16 @@ GlueDialogTypes["REALM_TOURNAMENT_WARNING"] = {
 	text = REALM_TYPE_TOURNAMENT_WARNING,
 	button1 = OKAY,
 	button2 = nil,
+}
+
+GlueDialogTypes["REALMLIST_NOT_CONNECTED_TO_BATTLENET"] = {
+	text = REALMLIST_NOT_CONNECTED_TO_BATTLENET,
+	button1 = OKAY,
+	button2 = CANCEL,
+	OnAccept = function()
+		DisconnectFromServer();
+		SetGlueScreen("login");
+	end,
 }
 
 function GlueDialog_Show(which, text, data, errorNumber)

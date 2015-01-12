@@ -120,8 +120,6 @@ function EncounterJournal_OnLoad(self)
 	self.searchResults.scrollFrame.scrollBar.doNotHide = true;
 	HybridScrollFrame_CreateButtons(self.searchResults.scrollFrame, "EncounterSearchLGTemplate", 0, 0);
 
-	EJ_SetDifficulty(EJ_DIFFICULTIES[1].difficultyID);	-- default to 5-man normal
-	
 	
 	local homeData = {
 		name = HOME,
@@ -137,6 +135,7 @@ function EncounterJournal_OnLoad(self)
 	EncounterJournal.instanceSelect.currTab = 1;
 	EncounterJournal_ListInstances();
 	
+	EncounterJournal_UpdateDifficulty( EJ_GetDifficulty() );	
 	
 	UIDropDownMenu_Initialize(self.encounter.info.lootScroll.lootFilter, EncounterJournal_InitLootFilter, "MENU");
 end
@@ -204,22 +203,25 @@ function EncounterJournal_OnEvent(self, event, ...)
 		end
 	elseif event == "EJ_DIFFICULTY_UPDATE" then
 		--fix the difficulty buttons
-		local newDifficultyID = ...;	
-		for _, entry in pairs(EJ_DIFFICULTIES) do
-			if entry.difficultyID == newDifficultyID then
-				if (entry.size) then
-					EncounterJournal.encounter.info.difficulty:SetFormattedText(ENCOUNTER_JOURNAL_DIFF_TEXT, entry.size, entry.prefix);
-				else
-					EncounterJournal.encounter.info.difficulty:SetText(entry.prefix);
-				end
-				EncounterJournal_Refresh();
-				break;
-			end
-		end
+		EncounterJournal_UpdateDifficulty(...);
 	elseif event == "UNIT_PORTRAIT_UPDATE" then
 		local unit = ...;
 		if not unit then
 			EncounterJournal_UpdatePortraits();
+		end
+	end
+end
+
+function EncounterJournal_UpdateDifficulty(newDifficultyID)
+	for _, entry in pairs(EJ_DIFFICULTIES) do
+		if entry.difficultyID == newDifficultyID then
+			if (entry.size) then
+				EncounterJournal.encounter.info.difficulty:SetFormattedText(ENCOUNTER_JOURNAL_DIFF_TEXT, entry.size, entry.prefix);
+			else
+				EncounterJournal.encounter.info.difficulty:SetText(entry.prefix);
+			end
+			EncounterJournal_Refresh();
+			break;
 		end
 	end
 end
@@ -1326,6 +1328,7 @@ function EncounterJournal_ClearDetails()
 	EncounterJournal.encounter.infoFrame.description:SetText("");
 	EncounterJournal.encounter.info.encounterTitle:SetText("");
 	
+	EncounterJournal.encounter.info.overviewScroll.ScrollBar:SetValue(0);
 	EncounterJournal.encounter.info.lootScroll.scrollBar:SetValue(0);
 	EncounterJournal.encounter.info.detailsScroll.ScrollBar:SetValue(0);
 	EncounterJournal.encounter.info.bossesScroll.ScrollBar:SetValue(0);

@@ -41,7 +41,7 @@ function MailFrame_OnLoad(self)
 	MoneyInputFrame_SetNextFocus(SendMailMoney, SendMailNameEditBox);
 	MoneyFrame_SetMaxDisplayWidth(SendMailMoneyFrame, 160);
 	
-	if IsTrialAccount() then
+	if (GameLimitedMode_IsActive()) then
 		MailFrameTab2:Hide();
 		self.trialError:Show();
 	end
@@ -104,6 +104,18 @@ function MailFrame_OnEvent(self, event, ...)
 	elseif ( event == "MAIL_UNLOCK_SEND_ITEMS") then
 		SendMailFrameLockSendMail:Hide();
 		StaticPopup_Hide("CONFIRM_MAIL_ITEM_UNREFUNDABLE");
+	end
+end
+
+function MailFrame_OnMouseWheel(self, value)
+	if ( value > 0 ) then
+		if ( InboxPrevPageButton:IsEnabled() ) then
+			InboxPrevPage();
+		end
+	else
+		if ( InboxNextPageButton:IsEnabled() ) then
+			InboxNextPage();
+		end	
 	end
 end
 

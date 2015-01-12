@@ -2267,7 +2267,7 @@ function CombatLog_OnEvent(filterSettings, timestamp, event, hideCaster, sourceG
 				
 				-- Result String
 				if ( missType == "ABSORB" ) then
-					resultStr = CombatLog_String_DamageResultString( resisted, blocked, select(6,...), critical, glancing, crushing, overhealing, textMode, spellId, overkill );
+					resultStr = CombatLog_String_DamageResultString( resisted, blocked, select(7,...), critical, glancing, crushing, overhealing, textMode, spellId, overkill );
 				else
 					resultStr = _G["ACTION_SPELL_PERIODIC_MISSED_"..missType];
 				end
@@ -2483,7 +2483,7 @@ function CombatLog_OnEvent(filterSettings, timestamp, event, hideCaster, sourceG
 			valueEnabled = false;
 			schoolEnabled = false;
 			
-			unconsciousOnDeath = select(4, ...);
+			unconsciousOnDeath = select(5, ...);
 		elseif ( event == "SPELL_DURABILITY_DAMAGE" ) then
 			-- Disable appropriate sections
 			resultEnabled = false;
@@ -2687,7 +2687,7 @@ function CombatLog_OnEvent(filterSettings, timestamp, event, hideCaster, sourceG
 		valueEnabled = false;
 		spellEnabled = false;
 		
-		unconsciousOnDeath = ...;
+		unconsciousOnDeath = select(5, ...);
 	elseif ( event == "ENCHANT_APPLIED" ) then	
 		-- Get the enchant name, item id and item name
 		spellName, itemId, itemName = ...;
@@ -2721,9 +2721,14 @@ function CombatLog_OnEvent(filterSettings, timestamp, event, hideCaster, sourceG
 		spellEnabled = false;
 		valueEnabled = false;
 		
-		unconsciousOnDeath = ...;
+		local recapID;
+		recapID, unconsciousOnDeath = ...;
+		
+		if ( recapID >= 0 ) then
+			return GetDeathRecapLink(recapID), 1, 1, 1;
+		end		
 	elseif ( event == "ENVIRONMENTAL_DAMAGE" ) then
-		--Environemental Type, Damage standard
+		--Environmental Type, Damage standard
 		environmentalType, amount, overkill, school, resisted, blocked, absorbed, critical, glancing, crushing = ...
 		environmentalType = string.upper(environmentalType);
 		

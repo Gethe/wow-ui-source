@@ -39,6 +39,7 @@ function GarrisonCapacitiveDisplayFrame_Update(self, success, maxShipments, plot
 
 		local available = maxShipments - numPending;
 
+		self.available = available;
 		display.ShipmentIconFrame.itemId = nil;
 		
 		
@@ -73,13 +74,13 @@ function GarrisonCapacitiveDisplayFrame_Update(self, success, maxShipments, plot
 				reagent.Icon:SetVertexColor(0.5, 0.5, 0.5);
 				reagent.Name:SetTextColor(GRAY_FONT_COLOR.r, GRAY_FONT_COLOR.g, GRAY_FONT_COLOR.b);
 				hasReagents = false;
+				self.available = 0;
 			else
 				reagent.Icon:SetVertexColor(1.0, 1.0, 1.0);
 				reagent.Name:SetTextColor(HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b);
+				self.available = min(self.available, floor(quantity/needed));
 			end
-			if ( quantity >= 100 ) then
-				quantity = "*";
-			end
+			quantity = AbbreviateNumbers(quantity);
 			reagent.Count:SetText(quantity.." /"..needed);
 			--fix text overflow when the reagent count is too high
 			if (math.floor(reagent.Count:GetStringWidth()) > math.floor(reagent.Icon:GetWidth() + .5)) then 
@@ -116,13 +117,13 @@ function GarrisonCapacitiveDisplayFrame_Update(self, success, maxShipments, plot
 					reagent.Icon:SetVertexColor(0.5, 0.5, 0.5);
 					reagent.Name:SetTextColor(GRAY_FONT_COLOR.r, GRAY_FONT_COLOR.g, GRAY_FONT_COLOR.b);
 					hasReagents = false;
+					self.available = 0;
 				else
 					reagent.Icon:SetVertexColor(1.0, 1.0, 1.0);
 					reagent.Name:SetTextColor(HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b);
+					self.available = min(self.available, floor(quantity / currencyNeeded));
 				end
-				if ( quantity >= 100 ) then
-					quantity = "*";
-				end
+				quantity = AbbreviateNumbers(quantity);
 				reagent.Count:SetText(quantity.." /"..currencyNeeded);
 				--fix text overflow when the reagent count is too high
 				if (math.floor(reagent.Count:GetStringWidth()) > math.floor(reagent.Icon:GetWidth() + .5)) then 
@@ -186,8 +187,21 @@ function GarrisonCapacitiveDisplayFrame_Update(self, success, maxShipments, plot
 			end
 		end
 
+		display.Description:ClearAllPoints();
+		if (numPending > 0) then
+			local lastTimeRemaining = select(6, C_Garrison.GetPendingShipmentInfo(numPending));
+			display.Description:SetPoint("TOPLEFT", display.LastComplete, "BOTTOMLEFT", 0, -12);
+			display.LastComplete:SetText(CAPACITANCE_ALL_COMPLETE:format(SecondsToTime(lastTimeRemaining, false, true, 1)));
+			display.LastComplete:Show();
+		else
+			display.LastComplete:Hide();
+			display.Description:SetPoint("TOPLEFT", display.IconBG, "BOTTOMLEFT", -48, -12);
+		end
+
 		display.ShipmentIconFrame.Icon:SetTexture(texture);
 		display.ShipmentIconFrame.itemId = itemID;
+
+		self.CreateAllWorkOrdersButton:SetEnabled(self.available > 0);
 
 		ShowUIPanel(GarrisonCapacitiveDisplayFrame);
 	end
@@ -226,6 +240,7 @@ end
 
 function GarrisonCapacitiveDisplayFrame_OnShow(self)
 	PlaySound("UI_Garrison_Shipments_Window_Open");
+	self.Count:SetNumber(1);
 end
 
 function GarrisonCapacitiveDisplayFrame_OnHide(self)
@@ -238,6 +253,35 @@ function GarrisonCapacitiveDisplayFrame_OnHide(self)
 end
 
 function GarrisonCapacitiveStartWorkOrder_OnClick(self)
-	C_Garrison.RequestShipmentCreation();
+	C_Garrison.RequestShipmentCreation(GarrisonCapacitiveDisplayFrame.requested);
 	PlaySound("UI_Garrison_Start_Work_Order");
+	GarrisonCapacitiveDisplayFrame.Count:SetNumber(1);
+end
+
+function GarrisonCapacitiveCreateAllWorkOrders_OnClick(self)
+	local available = GarrisonCapacitiveDisplayFrame.available;
+	if (available and available > 0) then
+		C_Garrison.RequestShipmentCreation(available);
+		PlaySound("UI_Garrison_Start_Work_Order");
+	end
+	GarrisonCapacitiveDisplayFrame.Count:SetNumber(1);
+end
+
+function GarrisonCapacitiveDisplayFrameIncrement_OnClick()
+	local self = GarrisonCapacitiveDisplayFrame;
+	if ( self.Count:GetNumber() < self.available ) then
+		self.Count:SetNumber(self.Count:GetNumber() + 1);
+	end
+end
+
+function GarrisonCapacitiveDisplayFrameDecrement_OnClick()
+	local self = GarrisonCapacitiveDisplayFrame;
+	if ( self.Count:GetNumber() > 1 ) then
+		self.Count:SetNumber(self.Count:GetNumber() - 1);
+	end
+end
+
+function GarrisonCapacitiveDisplay_SetRequestedNumber(num)
+	local self = GarrisonCapacitiveDisplayFrame;
+	self.requested = max(1, min(num, self.available));
 end

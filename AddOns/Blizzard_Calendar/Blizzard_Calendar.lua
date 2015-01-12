@@ -1160,6 +1160,18 @@ function CalendarFrame_OnHide(self)
 	PlaySound("igSpellBookClose");
 end
 
+function CalendarFrame_OnMouseWheel(self, value)
+	if ( value > 0 ) then
+		if ( CalendarPrevMonthButton:IsEnabled() ) then
+			CalendarPrevMonthButton_OnClick();
+		end
+	else
+		if ( CalendarNextMonthButton:IsEnabled() ) then
+			CalendarNextMonthButton_OnClick();
+		end	
+	end
+end
+
 function CalendarFrame_InitWeekday(index)
 	local backgroundName = "CalendarWeekday"..index.."Background";
 	local background = _G[backgroundName];

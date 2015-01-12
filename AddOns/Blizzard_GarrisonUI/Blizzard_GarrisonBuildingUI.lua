@@ -1179,7 +1179,7 @@ function GarrisonBuilding_ShowLevelTooltip(name, plotID, buildingID, anchor)
 	end
 		
 	for i = 1, GARRISON_MAX_BUILDING_LEVEL do
-		Tooltip["Rank"..i]:SetFormattedText(GARRISON_CURRENT_LEVEL, i);
+		Tooltip["Rank"..i]:SetFormattedText(GARRISON_BUILDING_LEVEL_TOOLTIP_TEXT, i);
 	end
 
 	if (not upgrades or #upgrades == 0) then

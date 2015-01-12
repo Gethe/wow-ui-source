@@ -419,6 +419,11 @@ function WorldMapFrame_OnEvent(self, event, ...)
 			--WorldMapBlobFrame:SetScale(WORLDMAP_QUESTLIST_SIZE);
 			--ScenarioPOIFrame:SetScale(WORLDMAP_FULLMAP_SIZE);	--If we ever need to add objectives on the map itself we should adjust this value
 		end
+		if ( GetCVarBool("digSites") ) then
+			WorldMapArchaeologyDigSites:Show();
+		else
+			WorldMapArchaeologyDigSites:Hide();
+		end
 	elseif ( event == "GROUP_ROSTER_UPDATE" ) then
 		if ( self:IsShown() ) then
 			WorldMapFrame_UpdateUnits("WorldMapRaid", "WorldMapParty");
@@ -2687,11 +2692,6 @@ function WorldMapTrackingOptionsDropDown_Initialize()
 			info.tooltipText = OPTION_TOOLTIP_SHOW_DIG_SITES_ON_MAP;
 			info.tooltipOnButton = OPTION_TOOLTIP_SHOW_DIG_SITES_ON_MAP;
 			UIDropDownMenu_AddButton(info);
-			if showDig then
-				WorldMapArchaeologyDigSites:Show();
-			else
-				WorldMapArchaeologyDigSites:Hide();
-			end
 		end
 		
 		local showTamers = GetCVarBool("showTamers");

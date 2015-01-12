@@ -27,11 +27,6 @@ local ErrorCodes =
 	VRN_MACOS_UNSUPPORTED,
 	VRN_WINDOWS_UNSUPPORTED,
 	VRN_WINDOWS_32BIT,
-	VRN_NEEDS_MACOS_10_5_5,
-	VRN_NEEDS_MACOS_10_5_7,
-	VRN_NEEDS_MACOS_10_5_8,
-	VRN_NEEDS_MACOS_10_6_4,
-	VRN_NEEDS_MACOS_10_6_5,
 	VRN_GPU_DRIVER,
 };
 
@@ -535,7 +530,7 @@ function GraphicsOptions_SelectBase()
 	Graphics_:Show();
 	GraphicsButton:SetFrameLevel( Graphics_:GetFrameLevel() + 1 );
 
-	if ( GetCVarBool("RAIDsettingsEnabled") or Display_RaidSettingsEnabledCheckBox:GetChecked() ) then
+	if ( Display_RaidSettingsEnabledCheckBox:GetChecked() ) then
 		PanelTemplates_DeselectTab(RaidButton);
 	else
 		PanelTemplates_SetDisabledTabState(RaidButton);

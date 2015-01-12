@@ -69,6 +69,18 @@ function MerchantFrame_OnHide(self)
 	PlaySound("igCharacterInfoClose");
 end
 
+function MerchantFrame_OnMouseWheel(self, value)
+	if ( value > 0 ) then
+		if ( MerchantPrevPageButton:IsShown() and MerchantPrevPageButton:IsEnabled() ) then
+			MerchantPrevPageButton_OnClick();
+		end
+	else
+		if ( MerchantNextPageButton:IsShown() and MerchantNextPageButton:IsEnabled() ) then
+			MerchantNextPageButton_OnClick();
+		end	
+	end
+end
+
 function MerchantFrame_Update()
 	MerchantFrame_UpdateFilterString()
 	if ( MerchantFrame.selectedTab == 1 ) then

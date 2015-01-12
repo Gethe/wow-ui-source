@@ -5,10 +5,10 @@ StaticPopupDialogs["EXTERNAL_LINK"] = {
 	button3 = BROWSER_COPY_LINK,
 	button2 = CANCEL,
 	OnAccept = function(self, data)
-		HelpBrowser:OpenExternalLink();
+		data.browser:OpenExternalLink();
 	end,
-	OnAlt = function(self)
-		HelpBrowser:CopyExternalLink();
+	OnAlt = function(self, data)
+		data.browser:CopyExternalLink();
 	end,
 	OnShow = function(self)
 		

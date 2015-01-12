@@ -209,13 +209,13 @@
 			<EditBox name="BankItemSearchBox" inherits="BagSearchBoxTemplate" letters="15">
 	            <Size x="110" y="20"/>
 	            <Anchors>
-		            <Anchor point="TOPRIGHT" x="-44" y="-33"/>
+		            <Anchor point="TOPRIGHT" x="-48" y="-33"/>
 	            </Anchors>
             </EditBox>
             
             <Button name="BankItemAutoSortButton" inherits="BankAutoSortButtonTemplate">
 	            <Anchors>
-		            <Anchor point="LEFT" relativeTo="BankItemSearchBox" relativePoint="RIGHT" x="4" y="-1"/>
+		            <Anchor point="LEFT" relativeTo="BankItemSearchBox" relativePoint="RIGHT" x="8" y="-1"/>
 	            </Anchors>
 	            <Scripts>
 		            <OnClick function="BankFrame_AutoSortButtonOnClick"/>

@@ -556,7 +556,7 @@
 							</Anchor>
 						</Anchors>
 					</Button>
-					<EditBox name="BrowseName" autoFocus="false" inherits="InputBoxTemplate">
+					<EditBox name="BrowseName" autoFocus="false" inherits="SearchBoxTemplate">
 						<Size>
 							<AbsDimension x="140" y="16"/>
 						</Size>
@@ -575,7 +575,7 @@
 									BrowseMinLevel:SetFocus();
 								end
 							</OnTabPressed>
-							<OnEnterPressed>
+							<OnEnterPressed inherit="append">
 								AuctionFrameBrowse_Search();
 								self:ClearFocus();
 							</OnEnterPressed>

@@ -679,26 +679,50 @@ function DebugTooltip_OnLoad(self)
 	self.statusBar2Text = getglobal(self:GetName().."StatusBar2Text");
 end
 
-function FrameStackTooltip_Toggle (showHidden)
+function FrameStackTooltip_Toggle (showHidden, showRegions)
 	local tooltip = _G["FrameStackTooltip"];
 	if ( tooltip:IsVisible() ) then
 		tooltip:Hide();
+		FrameStackHighlight:Hide();
 	else
 		tooltip:SetOwner(UIParent, "ANCHOR_NONE");
 		tooltip:SetPoint("BOTTOMRIGHT", UIParent, "BOTTOMRIGHT", -CONTAINER_OFFSET_X - 13, CONTAINER_OFFSET_Y);
 		tooltip.default = 1;
+		tooltip.showRegions = showRegions;
 		tooltip.showHidden = showHidden;
-		tooltip:SetFrameStack(showHidden);
+		tooltip:SetFrameStack(showHidden, showRegions);
 	end
 end
 
 FRAMESTACK_UPDATE_TIME = .1
 local _timeSinceLast = 0
+local _altKeyDown = false
 function FrameStackTooltip_OnUpdate (self, elapsed)
+	local highlightIndexChanged = 0;
+	if ( _altKeyDown ~= IsAltKeyDown() ) then
+		_altKeyDown = not _altKeyDown;
+		if ( _altKeyDown ) then
+			if ( IsRightAltKeyDown() ) then
+				highlightIndexChanged = -1;
+			else
+				highlightIndexChanged = 1;
+			end
+		end
+	end
+
 	_timeSinceLast = _timeSinceLast - elapsed;
-	if ( _timeSinceLast <= 0 ) then
+	if ( _timeSinceLast <= 0 or highlightIndexChanged ~= 0 ) then
 		_timeSinceLast = FRAMESTACK_UPDATE_TIME;
-		self:SetFrameStack(self.showHidden);
+		local highlightFrame = self:SetFrameStack(self.showHidden, self.showRegions, highlightIndexChanged);
+
+		FrameStackHighlight:ClearAllPoints();
+		if (highlightFrame) then
+			FrameStackHighlight:SetPoint("BOTTOMLEFT", highlightFrame);
+			FrameStackHighlight:SetPoint("TOPRIGHT", highlightFrame);
+			FrameStackHighlight:Show();
+		else
+			FrameStackHighlight:Hide();
+		end
 	end
 end
 

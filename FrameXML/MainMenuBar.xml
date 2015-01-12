@@ -154,10 +154,10 @@
 						ShowTextStatusBarText(self);
 						ExhaustionTick.timer = 1;
 						local label = XPBAR_LABEL;
-						if IsTrialAccount() then
+						if (GameLimitedMode_IsActive()) then
 							local rLevel = GetRestrictedAccountData();
 							if UnitLevel("player") >= rLevel then
-								label = label.." "..RED_FONT_COLOR_CODE..TRIAL_CAPPED.."|r";
+								label = label.." "..RED_FONT_COLOR_CODE..GameLimitedMode_GetString("CAP_REACHED").."|r";
 							end
 						end
 						
@@ -345,7 +345,7 @@
 					<OnEvent function="MainMenuBar_OnEvent"/>
 				</Scripts>
 			</Frame>
-			<Button name="MainMenuBarVehicleLeaveButton" hidden="true">
+			<Button name="MainMenuBarVehicleLeaveButton" hidden="true" motionScriptsWhileDisabled="true">
 				<Size>
 					<AbsDimension x="32" y="32"/>
 				</Size>
@@ -359,10 +359,8 @@
 				<Scripts>
 					<OnLoad function="MainMenuBarVehicleLeaveButton_OnLoad"/>
 					<OnEvent function="MainMenuBarVehicleLeaveButton_OnEvent"/>
-					<OnClick function="VehicleExit"/>
-					<OnEnter>
-						GameTooltip_AddNewbieTip(self, LEAVE_VEHICLE, 1.0, 1.0, 1.0, nil);
-					</OnEnter>
+					<OnClick function="MainMenuBarVehicleLeaveButton_OnClicked"/>
+					<OnEnter function="MainMenuBarVehicleLeaveButton_OnEnter"/>
 					<OnLeave function="GameTooltip_Hide"/>
 				</Scripts>
 				<NormalTexture file="Interface\Vehicles\UI-Vehicles-Button-Exit-Up">
@@ -371,9 +369,7 @@
 				<PushedTexture file="Interface\Vehicles\UI-Vehicles-Button-Exit-Down">
 					<TexCoords left="0.140625" right="0.859375" top="0.140625" bottom="0.859375"/>
 				</PushedTexture>
-				<HighlightTexture alphaMode="ADD" file="Interface\Vehicles\UI-Vehicles-Button-Highlight">
-					<TexCoords left="0.130625" right="0.879375" top="0.130625" bottom="0.879375"/>
-				</HighlightTexture>
+				<HighlightTexture parentKey="Highlight" alphaMode="ADD" file="Interface\Buttons\ButtonHilight-Square"/>
 			</Button>
 		</Frames>
 		<Scripts>

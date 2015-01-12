@@ -31,7 +31,7 @@ local ACHIEVEMENTUI_MAX_LINES_COLLAPSED = 3;		-- can show 3 lines of text when a
 
 ACHIEVEMENTUI_DEFAULTSUMMARYACHIEVEMENTS = {6, 503, 116, 545, 1017};
 ACHIEVEMENTUI_SUMMARYCATEGORIES = {92, 96, 97, 95, 168, 169, 201, 155, 15117, 15165, 15246, 15237};
-ACHIEVEMENTUI_DEFAULTGUILDSUMMARYACHIEVEMENTS = {4943, 4860, 4989, 4947};
+ACHIEVEMENTUI_DEFAULTGUILDSUMMARYACHIEVEMENTS = {5362, 4860, 4989, 4947};
 ACHIEVEMENTUI_GUILDSUMMARYCATEGORIES = {15088, 15077, 15078, 15079, 15080, 15089};
 
 ACHIEVEMENT_CATEGORY_NORMAL_R = 0;
@@ -85,7 +85,7 @@ end
 
 -- [[ AchievementFrame ]] --
 
-function AchievementFrame_ToggleAchievementFrame(toggleStatFrame)
+function AchievementFrame_ToggleAchievementFrame(toggleStatFrame, toggleGuildView)
 	AchievementFrameComparison:Hide();
 	AchievementFrameTab_OnClick = AchievementFrameBaseTab_OnClick;
 	if ( not toggleStatFrame ) then
@@ -94,7 +94,11 @@ function AchievementFrame_ToggleAchievementFrame(toggleStatFrame)
 		else
 			AchievementFrame_SetTabs();
 			ShowUIPanel(AchievementFrame);
-			AchievementFrameTab_OnClick(1);
+			if ( toggleGuildView ) then
+				AchievementFrameTab_OnClick(2);
+			else
+				AchievementFrameTab_OnClick(1);
+			end
 		end
 		return;
 	end
@@ -909,31 +913,35 @@ function AchievementFrameAchievements_ClearSelection ()
 	AchievementFrameAchievements.selection = nil;
 end
 
+function AchievementFrameAchievements_SetupButton(button)
+	local name = button:GetName();
+	-- reset button info to get proper saturation/desaturation
+	button.completed = nil;
+	button.id = nil;
+	-- title
+	button.titleBar:SetAlpha(0.8);
+	-- icon frame
+	button.icon.frame:SetTexture("Interface\\AchievementFrame\\UI-Achievement-IconFrame");
+	button.icon.frame:SetTexCoord(0, 0.5625, 0, 0.5625);
+	button.icon.frame:SetPoint("CENTER", -1, 2);
+	-- tsunami
+	local tsunami = _G[name.."BottomTsunami1"];
+	tsunami:SetTexture("Interface\\AchievementFrame\\UI-Achievement-Borders");
+	tsunami:SetTexCoord(0, 0.72265, 0.51953125, 0.58203125);
+	tsunami:SetAlpha(0.35);
+	local tsunami = _G[name.."TopTsunami1"];
+	tsunami:SetTexture("Interface\\AchievementFrame\\UI-Achievement-Borders");
+	tsunami:SetTexCoord(0.72265, 0, 0.58203125, 0.51953125);
+	tsunami:SetAlpha(0.3);
+	-- glow
+	button.glow:SetTexCoord(0, 1, 0.00390625, 0.25390625);
+end
+
 function AchievementFrameAchievements_ToggleView()
 	if ( AchievementFrameAchievements.guildView ) then
 		AchievementFrameAchievements.guildView = nil;
 		for _, button in next, AchievementFrameAchievementsContainer.buttons do
-			local name = button:GetName();
-			-- reset button info to get proper saturation/desaturation
-			button.completed = nil;
-			button.id = nil;
-			-- title
-			button.titleBar:SetAlpha(0.8);
-			-- icon frame
-			button.icon.frame:SetTexture("Interface\\AchievementFrame\\UI-Achievement-IconFrame");
-			button.icon.frame:SetTexCoord(0, 0.5625, 0, 0.5625);
-			button.icon.frame:SetPoint("CENTER", -1, 2);
-			-- tsunami
-			local tsunami = _G[name.."BottomTsunami1"];
-			tsunami:SetTexture("Interface\\AchievementFrame\\UI-Achievement-Borders");
-			tsunami:SetTexCoord(0, 0.72265, 0.51953125, 0.58203125);
-			tsunami:SetAlpha(0.35);
-			local tsunami = _G[name.."TopTsunami1"];
-			tsunami:SetTexture("Interface\\AchievementFrame\\UI-Achievement-Borders");
-			tsunami:SetTexCoord(0.72265, 0, 0.58203125, 0.51953125);
-			tsunami:SetAlpha(0.3);
-			-- glow
-			button.glow:SetTexCoord(0, 1, 0.00390625, 0.25390625);
+			AchievementFrameAchievements_SetupButton(button);
 		end
 	else
 		AchievementFrameAchievements.guildView = true;
@@ -1161,10 +1169,12 @@ end
 
 function AchievementButton_OnClick (self, button, down, ignoreModifiers)
 	if(IsModifiedClick() and not ignoreModifiers) then
-		if ( IsModifiedClick("CHATLINK") and ChatEdit_GetActiveWindow() ) then
+		if ( IsModifiedClick("CHATLINK") ) then
 			local achievementLink = GetAchievementLink(self.id);
-			if ( achievementLink ) then
+			if ( ChatEdit_GetActiveWindow() and achievementLink ) then
 				ChatEdit_InsertLink(achievementLink);
+			elseif ( SocialPostFrame and SocialPostFrame:IsShown() and achievementLink ) then
+				SocialPostFrame_InsertLink(achievementLink);
 			end
 		elseif ( IsModifiedClick("QUESTWATCHTOGGLE") ) then
 			AchievementButton_ToggleTracking(self.id);
@@ -1218,7 +1228,7 @@ function AchievementButton_ToggleTracking (id)
 	return true;
 end
 	
-function AchievementButton_DisplayAchievement (button, category, achievement, selectionID)
+function AchievementButton_DisplayAchievement (button, category, achievement, selectionID, renderOffScreen)
 	local id, name, points, completed, month, day, year, description, flags, icon, rewardText, isGuild, wasEarnedByMe, earnedBy = GetAchievementInfo(category, achievement);
 	
 	if ( not id ) then
@@ -1323,7 +1333,7 @@ function AchievementButton_DisplayAchievement (button, category, achievement, se
 		achievements.selectionIndex = button.index;
 		button.selected = true;
 		button.highlight:Show();
-		local height = AchievementButton_DisplayObjectives(button, button.id, button.completed);
+		local height = AchievementButton_DisplayObjectives(button, button.id, button.completed, renderOffScreen);
 		if ( height == ACHIEVEMENTBUTTON_COLLAPSEDHEIGHT ) then
 			button:Collapse();
 		else
@@ -1360,7 +1370,7 @@ function AchievementButton_ResetObjectives ()
 	AchievementFrameAchievementsObjectives:Hide();
 end
 
-function AchievementButton_DisplayObjectives (button, id, completed)
+function AchievementButton_DisplayObjectives (button, id, completed, renderOffScreen)
 	local objectives = AchievementFrameAchievementsObjectives;
 	local topAnchor = button.hiddenDescription;
 	objectives:ClearAllPoints();
@@ -1368,7 +1378,7 @@ function AchievementButton_DisplayObjectives (button, id, completed)
 	objectives:Show();
 	objectives.completed = completed;
 	local height = ACHIEVEMENTBUTTON_COLLAPSEDHEIGHT;
-	if ( objectives.id == id ) then
+	if ( objectives.id == id and not renderOffScreen ) then
 		local ACHIEVEMENTMODE_CRITERIA = 1;
 		if ( objectives.mode == ACHIEVEMENTMODE_CRITERIA ) then
 			if ( objectives:GetHeight() > 0 ) then
@@ -1385,7 +1395,10 @@ function AchievementButton_DisplayObjectives (button, id, completed)
 		AchievementButton_ResetProgressBars();
 		AchievementButton_ResetMiniAchievements();
 		AchievementButton_ResetMetas();
-		AchievementObjectives_DisplayProgressiveAchievement(objectives, id);
+		-- Don't show previous achievements when we render this offscreeen
+		if ( not renderOffScreen ) then
+			AchievementObjectives_DisplayProgressiveAchievement(objectives, id);
+		end
 		objectives:SetPoint("TOP", topAnchor, "BOTTOM", 0, -8);
 	else
 		objectives:SetHeight(0);
@@ -1412,7 +1425,10 @@ function AchievementButton_DisplayObjectives (button, id, completed)
 		end
 	end
 	
-	objectives.id = id;
+	-- Don't cache if we are rendering offscreen
+	if (not renderOffScreen) then
+		objectives.id = id;
+	end
 	return height;
 end
 

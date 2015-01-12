@@ -2,10 +2,16 @@
 ..\FrameXML\UI.xsd">
 	<!-- This function is called when a script error occurs -->
 	<Script>
+		DEBUGLOCALS_LEVEL = 4;
 		function _ERRORMESSAGE(message)
 			debuginfo();
+			
 			if ( not ScriptErrors:IsShown() ) then
-				ScriptErrors_Message:SetText(message);
+				local ERROR_FORMAT = [[|cffffd200Message:|r|cffffffff %s|r|n|cffffd200Stack:|r|cffffffff %s|r]];
+				local stack = debugstack(DEBUGLOCALS_LEVEL);
+				text = string.format( ERROR_FORMAT, message, stack);
+				
+				ScriptErrors.ScrollFrame.Text:SetText(text);
 				ScriptErrors:Show();
 			end
 			return message;
@@ -82,24 +88,40 @@
 	</Frame>
 	<!-- This is the general scripting error dialog -->
 	<Frame name="ScriptErrors" inherits="DialogBoxFrame">
-		<Size>
-			<AbsDimension x="384" y="128"/>
-		</Size>
+		<Size x="400" y="280"/>
 		<Layers>
 			<Layer level="ARTWORK">
-				<FontString name="ScriptErrors_Message" inherits="GlueFontRedLarge" justifyH="CENTER" justifyV="TOP" nonspacewrap="true">
-					<Size>
-						<AbsDimension x="360" y="0"/>
-					</Size>
+				<FontString parentKey="title" inherits="GameFontNormal" text="ERROR">
 					<Anchors>
-						<Anchor point="TOP">
-							<Offset>
-								<AbsDimension x="0" y="-16"/>
-							</Offset>
-						</Anchor>
+						<Anchor point="TOPLEFT" x="12" y="-16"/>
+						<Anchor point="BOTTOMRIGHT" relativePoint="TOPRIGHT" x="-32" y="-28"/>
 					</Anchors>
 				</FontString>
 			</Layer>
 		</Layers>
+		<Frames>
+			<ScrollFrame name="$parentScrollFrame" parentKey="ScrollFrame" inherits="UIPanelScrollFrameTemplate">
+				<Size x="343" y="194"/>
+				<Anchors>
+					<Anchor point="TOP" x="-8" y="-32"/>
+				</Anchors>
+				<ScrollChild>
+					<EditBox name="$parentText" parentKey="Text" multiLine="true" letters="4000" autoFocus="false">
+						<Size x="343" y="194"/>
+						<Scripts>
+							<OnCursorChanged function="ScrollingEdit_OnCursorChanged"/>
+							<OnUpdate>
+								ScrollingEdit_OnUpdate(self, elapsed, self:GetParent());
+							</OnUpdate>
+							<OnEditFocusGained>
+								self:HighlightText(0);
+							</OnEditFocusGained>
+							<OnEscapePressed function="EditBox_ClearFocus"/>
+						</Scripts>
+						<FontString inherits="GameFontHighlightSmall"/>
+					</EditBox>
+				</ScrollChild>
+			</ScrollFrame>
+		</Frames>
 	</Frame>
 </Ui>
