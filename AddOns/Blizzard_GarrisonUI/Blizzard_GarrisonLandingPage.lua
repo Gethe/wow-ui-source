@@ -506,8 +506,10 @@ function GarrisonLandingPageReportMission_OnEnter(self, button)
 		GameTooltip:SetText(item.name);
 		GameTooltip:AddLine(string.format(GARRISON_MISSION_TOOLTIP_NUM_REQUIRED_FOLLOWERS, item.numFollowers), 1, 1, 1);
 		GarrisonMissionButton_AddThreatsToTooltip(item.missionID);
-		GameTooltip:AddLine(GARRISON_MISSION_AVAILABILITY);
-		GameTooltip:AddLine(item.offerTimeRemaining, 1, 1, 1);
+		if (item.isRare) then
+			GameTooltip:AddLine(GARRISON_MISSION_AVAILABILITY);
+			GameTooltip:AddLine(item.offerTimeRemaining, 1, 1, 1);
+		end
 		if not C_Garrison.IsOnGarrisonMap() then
 			GameTooltip:AddLine(" ");
 			GameTooltip:AddLine(GARRISON_MISSION_TOOLTIP_RETURN_TO_START, nil, nil, nil, 1);

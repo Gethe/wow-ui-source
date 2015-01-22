@@ -105,18 +105,6 @@ end
 -- Functions to show the window in various states. 
 --------------------------------------------------------------------------------
 
-function SocialPostFrame_ToggleShow(text)
-	if (text == "") then
-		SocialPostFrame:SetShown(not SocialPostFrame:IsShown());
-	else
-		SocialPostFrame:Show();
-	end
-	if (SocialPostFrame:IsShown()) then
-		SocialPostFrame_SetDefaultView();
-		SocialPostFrame.SocialMessageFrame.EditBox:SetText(text);
-	end
-end
-
 function SocialPostFrame_ShowAchievement(achievementID, earned)
 	SocialPostFrame:Show();
 	SocialPrefillAchievementText(achievementID, earned);
@@ -124,7 +112,6 @@ end
 
 function SocialPostFrame_ShowItem(itemID, creationContext, earned)
 	SocialPostFrame:Show();
-	SocialPostFrame_SetDefaultView();
 	SocialPrefillItemText(itemID, earned, creationContext);
 end
 
@@ -469,7 +456,6 @@ function SocialPrefillAchievementText(achievementID, earned, name)
 
 	-- Show image frame with achievement image rendered off screen
 	SocialRenderAchievement(achievementID);
-	SocialPostFrame_SetAchievementView(achievementID);
 end
 
 function SocialRenderAchievement(achievementID)
@@ -483,12 +469,21 @@ function SocialRenderAchievement(achievementID)
 	button.tracked:Hide();
 	button.plusMinus:Hide();
 	button.check:Hide();
-	
-	-- Take a snapshot of the achievement frame offscreen so that we can use it as a texture
-	SOCIAL_ACHIEVEMENT_OFFSCREEN_ID = OffScreenFrame:TakeSnapshot();
-	-- Now that we have a snapshot of the offscreen rendered frame, refresh the achievement frame.
-	-- This is necessary so that mini achievements, progress bars, etc. are still rendered.
-	AchievementFrameAchievements_Update();
+
+	-- Set an OnUpdate function to get a snapshot of the achievement after 2 frames. This is necessary
+	-- because the progressbar updates data in its OnLayerUpdate() function, which gets called after the
+	-- first time that this OnUpdate() script function gets called.
+	button.frameCount = 1;
+	button:SetScript("OnUpdate", function(self)
+		if (self.frameCount < 2) then
+			self.frameCount = self.frameCount + 1;
+		else
+			-- Take a snapshot of the achievement frame offscreen so that we can use it as a texture
+			SOCIAL_ACHIEVEMENT_OFFSCREEN_ID = OffScreenFrame:TakeSnapshot();
+			SocialPostFrame_SetAchievementView(achievementID);
+			button:SetScript("OnUpdate", nil);
+		end
+	end);
 end
 
 function SocialAchievementButton_OnClick(self)
@@ -568,6 +563,8 @@ function SocialPrefillItemText(itemID, earned, creationContext, name, quality)
 	SocialPostFrame.SocialMessageFrame.EditBox:SetText(text);
 	SocialPostFrame.SocialMessageFrame.EditBox:HighlightText(0, prefillTextLength);
 	SocialPostFrame.SocialMessageFrame.EditBox:SetCursorPosition(prefillTextLength);
+	
+	SocialPostFrame_SetDefaultView();
 end
 
 function SocialItemButton_OnClick(self)

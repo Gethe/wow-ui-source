@@ -72,7 +72,13 @@ UI.xsd">
 						<Anchor point="TOPLEFT" relativePoint="TOPLEFT" x="15" y="-85" />
 					</Anchors>
 				</FontString>
-				
+
+				<FontString parentKey="UnderBiased" inherits="GameFontNormal" justifyH="LEFT" wordwrap="true">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativePoint="TOPLEFT" x="15" y="-85" />
+						<Anchor point="TOPRIGHT" relativePoint="TOPRIGHT" x="-15" y="-85" />
+					</Anchors>
+				</FontString>
 			</Layer>			
 		</Layers>
 		

@@ -32,12 +32,12 @@ end
 
 function ProductChoiceFrame_OnMouseWheel(self, value)
 	if ( value > 0 ) then
-		if ( self.PrevPageButton:IsShown() and self.PrevPageButton:IsEnabled() ) then
-			ProductChoiceFrame_PageClick(self.PrevPageButton, false);
+		if ( self.Inset.PrevPageButton:IsShown() and self.Inset.PrevPageButton:IsEnabled() ) then
+			ProductChoiceFrame_PageClick(self.Inset.PrevPageButton, false);
 		end
 	else
-		if ( self.NextPageButton:IsShown() and self.NextPageButton:IsEnabled() ) then
-			ProductChoiceFrame_PageClick(self.NextPageButton, true);
+		if ( self.Inset.NextPageButton:IsShown() and self.Inset.NextPageButton:IsEnabled() ) then
+			ProductChoiceFrame_PageClick(self.Inset.NextPageButton, true);
 		end	
 	end
 end

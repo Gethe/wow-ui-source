@@ -210,8 +210,6 @@ end
 function GarrisonCapacitiveDisplayFrame_OnEvent(self, event, ...)
 	if (event == "SHIPMENT_CRAFTER_OPENED") then
 		self.containerID = ...;
-
-		C_Garrison.RequestShipmentInfo();
 	elseif (event == "SHIPMENT_CRAFTER_INFO") then
 		local success, _, maxShipments, plotID = ...;
 

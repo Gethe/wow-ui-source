@@ -8,6 +8,7 @@ function MerchantFrame_OnLoad(self)
 	self:RegisterEvent("MERCHANT_CLOSED");
 	self:RegisterEvent("MERCHANT_SHOW");
 	self:RegisterEvent("GUILDBANK_UPDATE_MONEY");
+	self:RegisterEvent("HEIRLOOMS_UPDATED");
 	self:RegisterForDrag("LeftButton");
 	self.page = 1;
 	-- Tab Handling code
@@ -40,6 +41,11 @@ function MerchantFrame_OnEvent(self, event, ...)
 		MerchantFrame_UpdateRepairButtons();
 	elseif ( event == "CURRENCY_DISPLAY_UPDATE" ) then
 		MerchantFrame_UpdateCurrencyAmounts();
+	elseif ( event == "HEIRLOOMS_UPDATED" ) then
+		local itemID, updateReason = ...;
+		if itemID and updateReason == "NEW" then
+			MerchantFrame_Update();
+		end
 	end
 end
 
@@ -150,9 +156,19 @@ function MerchantFrame_UpdateMerchantInfo()
 			itemButton.hasItem = true;
 			itemButton:SetID(index);
 			itemButton:Show();
-			if ( numAvailable == 0 ) then
+
+			local merchantItemID = GetMerchantItemID(index);
+
+			local isHeirloom = merchantItemID and C_Heirloom.IsItemHeirloom(merchantItemID);
+			local isKnownHeirloom = isHeirloom and C_Heirloom.PlayerHasHeirloom(merchantItemID);
+
+			local tintRed = not isUsable and not isHeirloom;
+			
+			SetItemButtonDesaturated(itemButton, isKnownHeirloom);
+
+			if ( numAvailable == 0 or isKnownHeirloom ) then
 				-- If not available and not usable
-				if ( not isUsable ) then
+				if ( tintRed ) then
 					SetItemButtonNameFrameVertexColor(merchantButton, 0.5, 0, 0);
 					SetItemButtonSlotVertexColor(merchantButton, 0.5, 0, 0);
 					SetItemButtonTextureVertexColor(itemButton, 0.5, 0, 0);
@@ -164,7 +180,7 @@ function MerchantFrame_UpdateMerchantInfo()
 					SetItemButtonNormalTextureVertexColor(itemButton,0.5, 0.5, 0.5);
 				end
 				
-			elseif ( not isUsable ) then
+			elseif ( tintRed ) then
 				SetItemButtonNameFrameVertexColor(merchantButton, 1.0, 0, 0);
 				SetItemButtonSlotVertexColor(merchantButton, 1.0, 0, 0);
 				SetItemButtonTextureVertexColor(itemButton, 0.9, 0, 0);

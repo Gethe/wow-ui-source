@@ -24,3 +24,15 @@ end
 function Social_SetDefaultView()
 	SocialPostFrame:SetAttribute("viewmode", "default");
 end
+
+function Social_ToggleShow(text)
+	if (text == "") then
+		Social_SetShown(not Social_IsShown());
+	else
+		Social_SetShown(true);
+	end
+	if (Social_IsShown()) then
+		Social_SetDefaultView();
+		Social_SetText(text);
+	end
+end

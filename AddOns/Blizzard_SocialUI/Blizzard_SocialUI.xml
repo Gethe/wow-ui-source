@@ -209,7 +209,7 @@
 		</Frames>
 	</OffScreenFrame>
 	
-	<Frame name="SocialPostFrame" hidden="true" parent="UIParent" toplevel="true" movable="true" enableMouse="true" inherits="BasicFrameTemplate">
+	<Frame name="SocialPostFrame" hidden="true" parent="UIParent" frameStrata="HIGH" toplevel="true" movable="true" enableMouse="true" inherits="BasicFrameTemplate">
 		<Size x="388" y="190"/>
 		<Anchors>
 			<Anchor point="CENTER"/>

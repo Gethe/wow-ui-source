@@ -2408,7 +2408,7 @@ SlashCmdList["SHARE"] = function(msg)
 			end
 			UIParentLoadAddOn("Blizzard_SocialUI");
 		end
-		SocialPostFrame_ToggleShow(msg);
+		Social_ToggleShow(msg);
 	end
 end
 
@@ -3034,8 +3034,9 @@ function ChatFrame_MessageEventHandler(self, event, ...)
 		     type == "OPENING" or type == "TRADESKILLS" or type == "PET_INFO" or type == "TARGETICONS" or type == "BN_WHISPER_PLAYER_OFFLINE") then
 			self:AddMessage(arg1, info.r, info.g, info.b, info.id);
 		elseif (type == "LOOT") then
-			-- Append [Share] hyperlink if this is a valid social item
-			if (C_Social.IsSocialEnabled()) then
+			-- Append [Share] hyperlink if this is a valid social item and you are the looter.
+			-- arg5 contains the name of the player who looted
+			if (C_Social.IsSocialEnabled() and UnitName("player") == arg5) then
 				local itemID, creationContext = GetItemInfoFromHyperlink(arg1);
 				if (itemID and C_Social.GetLastItem() == itemID) then
 					arg1 = arg1 .. " " .. Social_GetShareItemLink(itemID, creationContext, true);

@@ -981,7 +981,7 @@
 				
 				self.StopBanner = function(self)
 					self.Anim:Stop();
-					self.Hide();
+					self:Hide();
 				end
 				
 				self:RegisterEvent("BOSS_KILL");

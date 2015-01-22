@@ -247,7 +247,7 @@
 				</Texture>
 			</Layer>
 			<Layer level="ARTWORK">
-				<Texture atlas="GarrMission_EncounterAbilityBorder-Lg" useAtlasSize="true">
+				<Texture parentKey="Border" atlas="GarrMission_EncounterAbilityBorder-Lg" useAtlasSize="true">
 					<Anchors>
 						<Anchor point="CENTER"/>
 					</Anchors>
@@ -377,7 +377,7 @@
 					GameTooltip:SetItemByID(self.itemID);
 					return;
 				end
-				if (self.currencyID) then
+				if (self.currencyID and self.currencyID ~= 0) then
 					GameTooltip:SetCurrencyByID(self.currencyID);
 					return;
 				end
@@ -392,15 +392,74 @@
 			<OnLeave function="GameTooltip_Hide"/>
 		</Scripts>
 	</Frame>
-	
-	<Button name="GarrisonMissionListButtonTemplate" virtual="true">
-		<Size x="832" y="80"/>
+
+	<Frame name="GarrisonMissionListButtonNewHighlightTemplate" virtual="true" hidden="true">
 		<Animations>
 			<AnimationGroup parentKey="NewMissionGlowAnim" setToFinalAlpha="true" looping="REPEAT">
 				<Alpha childKey="Select" duration="0.4" order="1" fromAlpha="0" toAlpha="1"/>
 				<Alpha childKey="Select" startDelay="0.6" duration="1" order="1" fromAlpha="1" toAlpha="0"/>
 			</AnimationGroup>
 		</Animations>
+		<Layers>
+			<Layer level="OVERLAY">
+				<Texture parentKey="SelectT" atlas="_GarrMission_TopBorder-Select" useAtlasSize="true" horizTile="true">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="21" y="4"/>
+						<Anchor point="TOPRIGHT" x="-22" y="4"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="SelectB" atlas="_GarrMission_TopBorder-Select" useAtlasSize="true" horizTile="true">
+					<Anchors>
+						<Anchor point="BOTTOMLEFT" x="21" y="-4"/>
+						<Anchor point="BOTTOMRIGHT" x="-22" y="-4"/>
+					</Anchors>
+					<TexCoords left="0.0" right="1.0" top="1.0" bottom="0.0"/>
+				</Texture>
+				<Texture parentKey="SelectTL" atlas="GarrMission_TopBorderCorner-Select" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="-5" y="4"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="SelectTR" atlas="GarrMission_TopBorderCorner-Select" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="TOPRIGHT" x="4" y="4"/>
+					</Anchors>
+					<TexCoords left="1.0" right="0.0" top="0.0" bottom="1.0"/>
+				</Texture>
+				<Texture parentKey="SelectBL" atlas="GarrMission_TopBorderCorner-Select" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="BOTTOMLEFT" x="-5" y="-4"/>
+					</Anchors>
+					<TexCoords left="0.0" right="1.0" top="1.0" bottom="0.0"/>
+				</Texture>
+				<Texture parentKey="SelectBR" atlas="GarrMission_TopBorderCorner-Select" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="BOTTOMRIGHT" x="4" y="-4"/>
+					</Anchors>
+					<TexCoords left="1.0" right="0.0" top="1.0" bottom="0.0"/>
+				</Texture>
+			</Layer>
+			<Layer level="OVERLAY" textureSubLevel="1">
+				<Texture parentKey="Select" atlas="GarrMission_ListGlow-Select" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="TOPLEFT" y="0"/>
+						<Anchor point="TOPRIGHT" y="0"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnShow>
+				self.NewMissionGlowAnim:Play();
+			</OnShow>
+			<OnHide>
+				self.NewMissionGlowAnim:Stop();
+			</OnHide>
+		</Scripts>
+	</Frame>
+
+	<Button name="GarrisonMissionListButtonTemplate" virtual="true">
+		<Size x="832" y="80"/>
 		<Layers>
 			<Layer level="BACKGROUND">
 				<Texture atlas="GarrMission_MissionParchment" useAtlasSize="true" vertTile="true" horizTile="true">
@@ -548,52 +607,6 @@
 					<Color r="0.8" g="0.8" b="0.8"/>
 				</FontString>
 			</Layer>
-			<Layer level="OVERLAY">
-				<Texture parentKey="SelectT" atlas="_GarrMission_TopBorder-Select" useAtlasSize="true" horizTile="true">
-					<Anchors>
-						<Anchor point="TOPLEFT" x="21" y="4"/>
-						<Anchor point="TOPRIGHT" x="-22" y="4"/>
-					</Anchors>
-				</Texture>
-				<Texture parentKey="SelectB" atlas="_GarrMission_TopBorder-Select" useAtlasSize="true" horizTile="true">
-					<Anchors>
-						<Anchor point="BOTTOMLEFT" x="21" y="-4"/>
-						<Anchor point="BOTTOMRIGHT" x="-22" y="-4"/>
-					</Anchors>
-					<TexCoords left="0.0" right="1.0" top="1.0" bottom="0.0"/>
-				</Texture>
-				<Texture parentKey="SelectTL" atlas="GarrMission_TopBorderCorner-Select" useAtlasSize="true">
-					<Anchors>
-						<Anchor point="TOPLEFT" x="-5" y="4"/>
-					</Anchors>
-				</Texture>
-				<Texture parentKey="SelectTR" atlas="GarrMission_TopBorderCorner-Select" useAtlasSize="true">
-					<Anchors>
-						<Anchor point="TOPRIGHT" x="4" y="4"/>
-					</Anchors>
-					<TexCoords left="1.0" right="0.0" top="0.0" bottom="1.0"/>
-				</Texture>
-				<Texture parentKey="SelectBL" atlas="GarrMission_TopBorderCorner-Select" useAtlasSize="true">
-					<Anchors>
-						<Anchor point="BOTTOMLEFT" x="-5" y="-4"/>
-					</Anchors>
-					<TexCoords left="0.0" right="1.0" top="1.0" bottom="0.0"/>
-				</Texture>
-				<Texture parentKey="SelectBR" atlas="GarrMission_TopBorderCorner-Select" useAtlasSize="true">
-					<Anchors>
-						<Anchor point="BOTTOMRIGHT" x="4" y="-4"/>
-					</Anchors>
-					<TexCoords left="1.0" right="0.0" top="1.0" bottom="0.0"/>
-				</Texture>
-			</Layer>
-			<Layer level="OVERLAY" textureSubLevel="1">
-				<Texture parentKey="Select" atlas="GarrMission_ListGlow-Select" useAtlasSize="true">
-					<Anchors>
-						<Anchor point="TOPLEFT" y="0"/>
-						<Anchor point="TOPRIGHT" y="0"/>
-					</Anchors>
-				</Texture>
-			</Layer>
 			<Layer level="HIGHLIGHT">
 				<Texture parentKey="HighlightT" atlas="_GarrMission_TopBorder-Highlight" useAtlasSize="true" horizTile="true">
 					<Anchors>
@@ -661,9 +674,6 @@
 			<OnClick function="GarrisonMissionButton_OnClick"/>
 			<OnEnter function="GarrisonMissionButton_OnEnter"/>
 			<OnLeave function="GameTooltip_Hide"/>
-			<OnShow>
-				self.NewMissionGlowAnim:Play();
-			</OnShow>
 		</Scripts>
 	</Button>
 	
@@ -744,7 +754,7 @@
 					GameTooltip:SetItemByID(self.itemID);
 					return;
 				end
-				if (self.currencyID) then
+				if (self.currencyID and self.currencyID ~= 0) then
 					GameTooltip:SetCurrencyByID(self.currencyID);
 					return;
 				end				
@@ -1019,6 +1029,16 @@
 				<Anchors>
 					<Anchor point="LEFT"/>
 				</Anchors>
+				<Layers>
+					<Layer level="OVERLAY" textureSubLevel="3">
+						<Texture parentKey="Caution" file="Interface\DialogFrame\UI-Dialog-Icon-AlertNew" hidden="true">
+							<Anchors>
+								<Anchor point="BOTTOMRIGHT" x="1" y="14"/>
+							</Anchors>
+							<Size x="20" y="20"/>
+						</Texture>
+					</Layer>
+				</Layers>
 			</Frame>
 			<Frame parentArray="Counters" inherits="GarrisonMissionAbilityLargeCounterTemplate" hidden="true">
 				<Anchors>
@@ -1104,13 +1124,25 @@
 
 	<Frame name="GarrisonMissionEnemyMechanicTemplate" inherits="GarrisonMissionMechanicTemplate, GarrisonMissionCheckTemplate" virtual="true"/>
 	
-	<Frame name="GarrisonMissionEnemyLargeMechanicTemplate" inherits="GarrisonMissionLargeMechanicTemplate, GarrisonMissionCheckTemplate" virtual="true">
+	<Button name="GarrisonMissionEnemyLargeMechanicTemplate" inherits="GarrisonMissionLargeMechanicTemplate, GarrisonMissionCheckTemplate" virtual="true" enableMouse="true">
 		<Scripts>
 			<OnLoad>
 				self.Check:SetPoint("TOPLEFT", self.CheckGlow, "TOPLEFT", 14, -14);
 			</OnLoad>
+			<OnMouseDown>
+				self.Icon:SetPoint("CENTER", 1, -1);
+				self.Border:SetPoint("CENTER", 1, -1);
+			</OnMouseDown>
+			<OnMouseUp>
+				self.Icon:SetPoint("CENTER", 0, 0);
+				self.Border:SetPoint("CENTER", 0, 0);
+			</OnMouseUp>
+			<OnClick>
+				PlaySound("igMainMenuOptionCheckBoxOn");
+				GarrisonMissionFrame.FollowerList.SearchBox:SetText(self.info.name);
+			</OnClick>
 		</Scripts>
-	</Frame>
+	</Button>
 
 	<Frame name="GarrisonMissionPageEnemyTemplate" virtual="true">
 		<Size x="53" y="53"/>
@@ -1130,7 +1162,7 @@
 					<Anchor point="TOP"/>
 				</Anchors>
 			</Frame>
-			<Frame parentArray="Mechanics" inherits="GarrisonMissionEnemyLargeMechanicTemplate"/>
+			<Button parentArray="Mechanics" inherits="GarrisonMissionEnemyLargeMechanicTemplate"/>
 		</Frames>
 	</Frame>
 	
@@ -1944,8 +1976,11 @@
 						<Frames>
 							<Button parentKey="CloseButton" inherits="UIPanelCloseButtonNoScripts">
 								<Anchors>
-									<Anchor point="TOPRIGHT" x="1" y="3"/>
+									<Anchor point="TOPRIGHT" x="4" y="6"/>
 								</Anchors>
+								<Size>
+									<AbsDimension x="40" y="40"/>
+								</Size>
 								<Scripts>
 									<OnClick>
 										PlaySound("UI_Garrison_CommandTable_MissionClose");
@@ -2197,11 +2232,25 @@
 											<Anchor point="LEFT" relativeKey="$parent.Reward1" relativePoint="RIGHT" x="6" y="0"/>
 										</Anchors>
 									</Frame>
+									<Frame parentKey="MissionXPTooltipHitBox">
+										<Anchors>
+											<Anchor point="TOPLEFT" relativeKey="$parent.MissionXP"/>
+											<Anchor point="BOTTOMRIGHT" relativeKey="$parent.MissionXP"/>
+										</Anchors>
+										<Scripts>
+											<OnEnter>
+												if (self:GetParent().MissionXP.hasBonusBaseXP) then
+													GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+													GameTooltip:SetText(GARRISON_MISSION_BONUS_BASE_XP_TOOLTIP, nil, nil, nil, nil, true);
+												end
+											</OnEnter>
+											<OnLeave function="GameTooltip_Hide"/>
+										</Scripts>
+									</Frame>
 									<Frame parentKey="TooltipHitBox">
 										<Anchors>
-											<Anchor point="TOP" relativeKey="$parent.Chance"/>
+											<Anchor point="TOPLEFT" relativeKey="$parent.Chance"/>
 											<Anchor point="BOTTOMRIGHT" relativeKey="$parent.ChanceLabel"/>
-											<Anchor point="BOTTOMLEFT" relativeKey="$parent.ChanceLabel"/>
 										</Anchors>
 										<Scripts>
 											<OnEnter>
@@ -3288,20 +3337,10 @@
 
 	<Frame name="GarrisonMissionListTooltipThreatsFrame">
 		<Size x="0" y="26"/>
-		<Layers>
-			<Layer level="ARTWORK">
-				<Texture parentKey="EnvIcon">
-					<Size x="20" y="20"/>
-					<Anchors>
-						<Anchor point="TOPLEFT" x="0" y="-4"/>
-					</Anchors>
-				</Texture>
-			</Layer>
-		</Layers>
 		<Frames>
 			<Frame parentArray="Threats" inherits="GarrisonAbilityCounterWithCheckTemplate">
 				<Anchors>
-					<Anchor point="LEFT" relativeKey="$parent.EnvIcon" relativePoint="RIGHT" x="9" y="0"/>
+					<Anchor point="TOPLEFT" x="0" y="-4"/>
 				</Anchors>
 			</Frame>
 		</Frames>

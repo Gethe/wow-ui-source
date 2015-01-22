@@ -627,13 +627,13 @@
 			<OnClick function="LootWonAlertFrame_OnClick"/>
 		</Scripts>
 	</Button>
-	<Frame name="BonusRollMoneyWonFrame" inherits="MoneyWonAlertFrameTemplate">
+	<Button name="BonusRollMoneyWonFrame" inherits="MoneyWonAlertFrameTemplate">
 		<Scripts>
 			<OnHide>
 				GroupLootContainer_RemoveFrame(GroupLootContainer, self);
 			</OnHide>
 		</Scripts>
-	</Frame>
+	</Button>
 
 	<Button name="MissingLootButtonTemplate" inherits="ItemButtonTemplate" virtual="true">	
 		<Layers>

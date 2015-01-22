@@ -135,6 +135,7 @@ function HeirloomsMixin:OnLoad()
 	self.heirloomHeaderFrames = {};
 
 	self.heirloomLayoutData = {};
+	self.itemIDsInCurrentLayout = {};
 
 	self.validSourceTypes = {};
 
@@ -152,6 +153,10 @@ function HeirloomsMixin:OnHeirloomsUpdated(itemID, updateReason)
 		-- Single item update
 		if updateReason == "NEW" then
 			self.newHeirlooms[itemID] = true;
+			if self.itemIDsInCurrentLayout[itemID] then
+				self.numKnownHeirlooms = self.numKnownHeirlooms + 1;
+				self:UpdateProgressBar();
+			end
 		elseif updateReason == "UPGRADE" then
 			self.upgradedHeirlooms[itemID] = true;
 		end
@@ -201,6 +206,7 @@ function HeirloomsMixin:RebuildLayoutData()
 	self.needsDataRebuilt = false;
 
 	self.heirloomLayoutData = {};
+	self.itemIDsInCurrentLayout = {};
 
 	self.numKnownHeirlooms = 0;
 	self.numPossibleHeirlooms = 0;
@@ -301,6 +307,8 @@ function HeirloomsMixin:SortHeirloomsIntoEquipmentBuckets()
 					self.numKnownHeirlooms = self.numKnownHeirlooms + 1;
 				end
 				self.numPossibleHeirlooms = self.numPossibleHeirlooms + 1;
+
+				self.itemIDsInCurrentLayout[itemID] = true;
 			end
 		end
 	end
@@ -567,7 +575,7 @@ function HeirloomsMixin:UpdateButton(button)
 			button.levelBackground:SetAtlas("collections-levelplate-black", true);
 			button.level:SetFontObject("GameFontWhiteSmall");
 
-			button.pendingUpgradeGlow:SetShown(C_Heirloom.IsPendingHeirloomUpgrade());
+			button.pendingUpgradeGlow:SetShown(C_Heirloom.CanHeirloomUpgradeFromPending(button.itemID));
 
 			self:ConsiderShowingUpgradeTutorial(button);
 		end

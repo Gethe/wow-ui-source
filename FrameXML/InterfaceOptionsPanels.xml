@@ -4455,9 +4455,11 @@
 					<OnValueChanged>
 						BlizzardOptionsPanel_SetCVarSafe(self.cvar, value);
 						self.Label:SetFormattedText(PERCENTAGE_STRING, math.floor(value * 100));
+						self.value = value;
 					</OnValueChanged>
 					<OnShow>
-						self:SetValue(BlizzardOptionsPanel_GetCVarSafe(self.cvar));
+						self.oldValue = BlizzardOptionsPanel_GetCVarSafe(self.cvar);
+						self:SetValue(self.oldValue);
 
 						if BlizzardOptionsPanel_GetCVarSafe("colorblindSimulator") == 0 then
 							self:Disable();

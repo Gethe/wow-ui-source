@@ -488,7 +488,17 @@ do
 	parserEnv.SimpleDamage = function(...) return parserEnv.points(...) * parserEnv.AttackBonus(); end;
 	parserEnv.StandardDamage = function(...)
 		local turnIndex, effectIndex, abilityID = ...;
-		return parserEnv.FormatDamage(parserEnv.SimpleDamage(...), abilityID);
+		local damage = parserEnv.SimpleDamage(...);
+		if ( not abilityID ) then
+			abilityID = parsedAbilityInfo:GetAbilityID();
+		end
+		local variance = C_PetBattles.GetAbilityEffectInfo(abilityID, turnIndex, effectIndex, "variance");
+		if( variance ) then
+			variance = variance/200 * damage;
+			return string.format(BATTLE_PET_VARIANCE_STR, parserEnv.FormatDamage(damage-variance, abilityID), parserEnv.FormatDamage(damage+variance, abilityID));
+		else
+			return parserEnv.FormatDamage(damage, abilityID);
+		end
 	end;
 	parserEnv.FormatDamage = function(baseDamage, abilityID, affected)
 		if ( not affected ) then

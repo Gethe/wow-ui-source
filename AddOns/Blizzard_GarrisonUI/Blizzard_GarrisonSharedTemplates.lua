@@ -1,6 +1,8 @@
 GARRISON_FOLLOWER_BUSY_COLOR = { 0, 0.06, 0.22, 0.44 };
 GARRISON_FOLLOWER_INACTIVE_COLOR = { 0.22, 0.06, 0, 0.44 };
 
+local minFollowersForThreatCountersFrame = 10;
+
 ---------------------------------------------------------------------------------
 --- Follower List                                                             ---
 ---------------------------------------------------------------------------------
@@ -39,7 +41,10 @@ function GarrisonFollowerList_OnShow(self)
 			-- empty page
 			GarrisonFollowerPage_ShowFollower(followerTab,0);
 		end
-	end	
+	end
+	if (C_Garrison.GetNumFollowers() >= minFollowersForThreatCountersFrame) then
+		GarrisonThreatCountersFrame:Show();
+	end
 end
 
 function GarrisonFollowerList_OnHide(self)
@@ -54,6 +59,12 @@ function GarrisonFollowerList_OnEvent(self, event, ...)
 		
 		GarrisonFollowerList_DirtyList(self.FollowerList);
 		GarrisonFollowerList_UpdateFollowers(self.FollowerList);
+
+		if (C_Garrison.GetNumFollowers() >= minFollowersForThreatCountersFrame) then
+			GarrisonThreatCountersFrame:Show();
+		end
+
+		GarrisonThreatCountersFrame:Show();
 		return true;
 	elseif (event == "GARRISON_FOLLOWER_REMOVED") then
 		if (self.FollowerTab and self.FollowerTab.followerID and not C_Garrison.GetFollowerInfo(self.FollowerTab.followerID) and self.FollowerList.followers) then
@@ -166,7 +177,9 @@ function GarrisonFollowerList_Update(self)
 	local numButtons = #buttons;
 	local showCounters = followerFrame.FollowerList.showCounters;
 	local canExpand = followerFrame.FollowerList.canExpand;
-
+	local mentorLevel = GarrisonMissionFrame and GarrisonMissionFrame.MissionTab.MissionPage.mentorLevel or 0;
+	local mentorItemLevel = GarrisonMissionFrame and GarrisonMissionFrame.MissionTab.MissionPage.mentorItemLevel or 0;
+					
 	for i = 1, numButtons do
 		local button = buttons[i];
 		local index = offset + i; -- adjust index
@@ -207,7 +220,11 @@ function GarrisonFollowerList_Update(self)
 					button.BusyFrame.Texture:SetTexture(unpack(GARRISON_FOLLOWER_BUSY_COLOR));
 					-- get time remaining for follower
 					if ( follower.status == GARRISON_FOLLOWER_ON_MISSION ) then
-						button.Status:SetText(C_Garrison.GetFollowerMissionTimeLeft(follower.followerID));
+						if (follower.level == GARRISON_FOLLOWER_MAX_LEVEL) then
+							button.Status:SetText(C_Garrison.GetFollowerMissionTimeLeft(follower.followerID));
+						else
+							button.Status:SetFormattedText(GARRISON_FOLLOWER_ON_MISSION_WITH_DURATION, C_Garrison.GetFollowerMissionTimeLeft(follower.followerID));
+						end
 					end
 				else
 					button.PortraitFrame.PortraitRingCover:Hide();
@@ -494,6 +511,11 @@ function GarrisonFollowerList_SortFollowers(self)
 	local followerCounters = GarrisonMissionFrame.followerCounters;
 	local followerTraits = GarrisonMissionFrame.followerTraits;
 	local checkAbilities = followerCounters and followerTraits and GarrisonMissionFrame.MissionTab:IsVisible();
+	local mentorLevel, mentorItemLevel = 0, 0;
+	if ( checkAbilities ) then
+		mentorLevel = GarrisonMissionFrame.MissionTab.MissionPage.mentorLevel or 0;
+		mentorItemLevel = GarrisonMissionFrame.MissionTab.MissionPage.mentorItemLevel or 0;
+	end
 	local comparison = function(index1, index2)
 		local follower1 = followers[index1];
 		local follower2 = followers[index2];
@@ -522,11 +544,15 @@ function GarrisonFollowerList_SortFollowers(self)
 		end
 
 		-- sorting: level > item level > (num counters for mission) > (num traits for mission) > quality > name
-		if ( follower1.level ~= follower2.level ) then
-			return follower1.level > follower2.level;
+		local follower1Level = max(follower1.level, mentorLevel);
+		local follower2Level = max(follower2.level, mentorLevel);
+		if ( follower1Level ~= follower2Level ) then
+			return follower1Level > follower2Level;
 		end
-		if ( follower1.level == GARRISON_FOLLOWER_MAX_LEVEL and follower1.iLevel ~= follower2.iLevel ) then		-- only checking follower 1 because follower 2 has same level at this point
-			return follower1.iLevel > follower2.iLevel;
+		local follower1ItemLevel = max(follower1.iLevel, mentorItemLevel);
+		local follower2ItemLevel = max(follower2.iLevel, mentorItemLevel);
+		if ( follower1Level == GARRISON_FOLLOWER_MAX_LEVEL and follower1ItemLevel ~= follower2ItemLevel ) then		-- only checking follower 1 because follower 2 has same level at this point
+			return follower1ItemLevel > follower2ItemLevel;
 		end
 		if ( checkAbilities and not status1 and follower1.isCollected ) then		-- only checking follower 1 because follower 2 has same status and collected-ness at this point
 			local numCounters1 = followerCounters[follower1.followerID] and #followerCounters[follower1.followerID] or 0;
@@ -974,4 +1000,10 @@ function GarrisonThreatCountersFrame_Update(self)
 	for i = 1, #self.ThreatsList do
 		self.ThreatsList[i].Count:SetText(C_Garrison.GetNumFollowersForMechanic(self.ThreatsList[i].id));
 	end
+end
+
+function GarrisonThreatCounter_OnEnter(self)
+	GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+	local text = string.format(GARRISON_THREAT_COUNTER_TOOLTIP, C_Garrison.GetNumFollowersForMechanic(self.id), self.name);
+	GameTooltip:SetText(text, nil, nil, nil, nil, true);
 end

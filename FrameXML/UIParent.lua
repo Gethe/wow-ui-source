@@ -1612,7 +1612,6 @@ function UIParent_OnEvent(self, event, ...)
 		if (not GarrisonCapacitiveDisplayFrame) then
 			Garrison_LoadUI();
 		end
-		C_Garrison.RequestShipmentInfo();
 	elseif ( event == "GARRISON_TRADESKILL_NPC_CLOSED" ) then
 		if ( TradeSkillFrame ) then
 			HideUIPanel(TradeSkillFrame);

@@ -3,15 +3,17 @@
 
 <Script file="AlertFrames.lua"/>
 
-<Frame name="AlertFrameTemplate" virtual="true">
+<Button name="AlertFrameTemplate" virtual="true">
 	<Scripts>
+		<OnLoad function="AlertFrameTemplate_OnLoad"/>
 		<OnEnter function="AlertFrame_StopOutAnimation"/>
 		<OnLeave function="AlertFrame_ResumeOutAnimation"/>
 		<OnHide function="AlertFrame_FixAnchors"/>
+		<OnClick function="AlertFrame_OnClick"/>
 	</Scripts>
-</Frame>
+</Button>
 
-<Frame name="DungeonCompletionAlertFrameRewardTemplate" virtual="true">
+<Button name="DungeonCompletionAlertFrameRewardTemplate" virtual="true">
 	<Size x="36" y="36"/>
 	<Layers>
 		<Layer level="ARTWORK">
@@ -34,15 +36,15 @@
 		<OnEnter function="DungeonCompletionAlertFrameReward_OnEnter"/>
 		<OnLeave function="DungeonCompletionAlertFrameReward_OnLeave"/>
 	</Scripts>
-</Frame>
-<Frame name="ChallengeModeAlertFrameRewardTemplate" virtual="true" inherits="DungeonCompletionAlertFrameRewardTemplate">
+</Button>
+<Button name="ChallengeModeAlertFrameRewardTemplate" virtual="true" inherits="DungeonCompletionAlertFrameRewardTemplate">
 	<Scripts>
 		<OnEnter function="ChallengeModeAlertFrameReward_OnEnter"/>
 		<OnLeave function="ChallengeModeAlertFrameReward_OnLeave"/>
 	</Scripts>
-</Frame>
+</Button>
 
-<Frame name="DungeonCompletionAlertFrameTemplate" parent="UIParent" hidden="true" frameStrata="DIALOG" virtual="true" inherits="AlertFrameTemplate">
+<Button name="DungeonCompletionAlertFrameTemplate" parent="UIParent" hidden="true" frameStrata="DIALOG" virtual="true" inherits="AlertFrameTemplate">
 	<Size x="336" y="80"/>
 	<Anchors>
 		<Anchor point="BOTTOM" x="0" y="128"/>
@@ -182,9 +184,9 @@
 		</Frame>
 	</Frames>
 	<Scripts>
-		<OnLoad function="DungeonCompletionAlertFrame_OnLoad"/>
+		<OnLoad inherit="prepend" function="DungeonCompletionAlertFrame_OnLoad"/>
 	</Scripts>
-</Frame>
+</Button>
 
 <Button name="AchievementAlertFrameTemplate" parent="UIParent" hidden="true" frameStrata="DIALOG" virtual="true" inherits="AlertFrameTemplate">
 	<Size x="300" y="88"/>
@@ -367,9 +369,6 @@
 		</Frame>
 	</Frames>
 	<Scripts>
-		<OnLoad>
-			AchievementAlertFrame_OnLoad(self);
-		</OnLoad>
 		<OnClick>
 			AchievementAlertFrame_OnClick(self, button, down);
 		</OnClick>
@@ -500,7 +499,6 @@
 		</Frame>
 	</Frames>
 	<Scripts>
-		<OnLoad function="AchievementAlertFrame_OnLoad"/>
 		<OnClick function="AchievementAlertFrame_OnClick"/>
 	</Scripts>
 </Button>
@@ -733,10 +731,13 @@
 		</Frame>
 	</Frames>
 	<Scripts>
-		<OnLoad>
+		<OnLoad inherit="prepend">
 			self.glow = self.glowFrame.glow;
 		</OnLoad>
 		<OnClick>
+			if ( AlertFrame_OnClick(self, button, down) ) then
+				return;
+			end
 			PVEFrame_ToggleFrame("ChallengesFrame", self.mapID);
 		</OnClick>
 	</Scripts>
@@ -850,7 +851,7 @@
 		</Frame>
 	</Frames>
 	<Scripts>
-		<OnLoad>
+		<OnLoad inherit="prepend">
 			self.glow = self.glowFrame.glow;
 		</OnLoad>
 	</Scripts>
@@ -1047,7 +1048,7 @@
 		</Layer>		
 	</Layers>
 	<Scripts>
-		<OnLoad>
+		<OnLoad inherit="prepend">
 			self.UpdateTooltip = LootAlertFrame_OnEnter;
 		</OnLoad>
 		<OnEnter>
@@ -1224,7 +1225,7 @@
 		</AnimationGroup>
 	</Animations>
 	<Scripts>
-		<OnLoad>
+		<OnLoad inherit="prepend">
 			self.UpdateTooltip = LootAlertFrame_OnEnter;
 		</OnLoad>	
 		<OnEnter>
@@ -1247,7 +1248,7 @@
 
 <Button name="MoneyWonAlertFrame1" inherits="MoneyWonAlertFrameTemplate">
 	<Scripts>
-		<OnLoad>
+		<OnLoad inherit="prepend">
 			table.insert(MONEY_WON_ALERT_FRAMES, self);
 		</OnLoad>
 	</Scripts>

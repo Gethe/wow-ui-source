@@ -881,9 +881,21 @@
 				<Color r="1" g=".82" b="0"/>
 			</Font>
 		</Member>
-		<Member alphabet="korean"></Member>
-		<Member alphabet="simplifiedchinese"></Member>
-		<Member alphabet="traditionalchinese"></Member>
+		<Member alphabet="korean">
+			<Font font="Fonts\K_Pagetext.ttf" height="30" outline="NORMAL">
+				<Color r="1" g=".82" b="0"/>
+			</Font>
+		</Member>
+		<Member alphabet="simplifiedchinese">
+			<Font font="Fonts\ARKai_T.ttf" height="30" outline="NORMAL">
+				<Color r="1" g=".82" b="0"/>
+			</Font>
+		</Member>
+		<Member alphabet="traditionalchinese">
+			<Font font="Fonts\blei00d.ttf" height="30" outline="NORMAL">
+				<Color r="1" g=".82" b="0"/>
+			</Font>
+		</Member>
 		<Member alphabet="russian">
 			<Font font="Fonts\MORPHEUS_CYR.ttf" height="30">
 				<Color r="1" g=".82" b="0"/>

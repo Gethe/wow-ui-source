@@ -259,7 +259,7 @@
 		<HighlightFont style="GameFontHighlightSmall"/>
 		<DisabledFont style="GameFontHighlightSmall"/>
     </Button>
-	<Frame name="AchievementFrameAchievementsObjectives">
+	<Frame name="AchievementFrameAchievementsObjectivesTemplate" virtual="true">
 		<Layers>
 			<Layer level="ARTWORK">
 				<FontString name="$parentReputationCriteria" inherits="GameFontNormalSmall" parentKey="repCriteria">
@@ -271,6 +271,8 @@
 			</Layer>
 		</Layers>
 	</Frame>
+	<Frame name="AchievementFrameAchievementsObjectives" inherits="AchievementFrameAchievementsObjectivesTemplate" />
+	<Frame name="AchievementFrameAchievementsObjectivesOffScreen" inherits="AchievementFrameAchievementsObjectivesTemplate" />
 	<Frame name="AchievementGuildTabardTemplate" hidden="true" virtual="true">
 		<Size x="72" y="128"/>
 		<Layers>

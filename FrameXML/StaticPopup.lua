@@ -748,7 +748,8 @@ StaticPopupDialogs["BFMGR_INVITED_TO_ENTER"] = {
 	timeoutInformationalOnly = 1;
 	whileDead = 1,
 	hideOnEscape = 1,
-	multiple = 1
+	multiple = 1,
+	sound = "PVPTHROUGHQUEUE",
 };
 
 StaticPopupDialogs["BFMGR_EJECT_PENDING"] = {

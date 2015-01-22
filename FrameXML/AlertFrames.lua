@@ -117,6 +117,11 @@ function AlertFrame_AnimateIn(frame)
 	end
 end
 
+-- [[ AlertFrameTemplate functions ]] --
+function AlertFrameTemplate_OnLoad(self)
+	self:RegisterForClicks("LeftButtonUp", "RightButtonUp");
+end
+
 function AlertFrame_StopOutAnimation(frame)
 	frame.waitAndAnimOut:Stop();
 	frame.waitAndAnimOut.animOut:SetStartDelay(1);
@@ -124,6 +129,23 @@ end
 
 function AlertFrame_ResumeOutAnimation(frame)
 	frame.waitAndAnimOut:Play();
+end
+
+function AlertFrame_OnClick(self, button, down)
+	if ( button == "RightButton" ) then
+		self.animIn:Stop();
+		if ( self.glow ) then
+			self.glow.animIn:Stop();
+		end
+		if ( self.shine ) then
+			self.shine.animIn:Stop();
+		end
+		self.waitAndAnimOut:Stop();
+		self:Hide();
+		return true;
+	end
+	
+	return false;
 end
 
 -- [[ Anchoring ]] --
@@ -310,7 +332,10 @@ function GuildChallengeAlertFrame_ShowAlert(...)
 	AlertFrame_FixAnchors();
 end
 
-function GuildChallengeAlertFrame_OnClick(self)
+function GuildChallengeAlertFrame_OnClick(self, button, down)
+	if( AlertFrame_OnClick(self, button, down) ) then
+		return;
+	end
 	if ( not GuildFrame or not GuildFrame:IsShown() ) then
 		ToggleGuildFrame();
 	end
@@ -598,10 +623,6 @@ function ChallengeModeAlertFrameReward_OnLeave(frame)
 end
 
 -- [[ AchievementAlertFrame ]] --
-function AchievementAlertFrame_OnLoad (self)
-	self:RegisterForClicks("LeftButtonUp");
-end
-
 function AchievementAlertFrame_IsPaused()
 	return C_PetBattles.IsInBattle();
 end
@@ -831,7 +852,11 @@ function CriteriaAlertFrame_GetAlertFrame()
 	return nil;
 end
 
-function AchievementAlertFrame_OnClick (self)
+function AchievementAlertFrame_OnClick (self, button, down)
+	if( AlertFrame_OnClick(self, button, down) ) then
+		return;
+	end
+	
 	local id = self.id;
 	if ( not id ) then
 		return;
@@ -973,7 +998,10 @@ function LootWonAlertFrame_SetUp(self, itemLink, quantity, rollType, roll, specI
 	PlaySoundKitID(31578);	--UI_EpicLoot_Toast
 end
 
-function LootWonAlertFrame_OnClick(self)
+function LootWonAlertFrame_OnClick(self, button, down)
+	if( AlertFrame_OnClick(self, button, down) ) then
+		return;
+	end
 	if (self.isCurrency) then 
 		return;
 	end
@@ -1039,7 +1067,10 @@ function LootUpgradeFrame_SetUp(self, itemLink, quantity, specID, baseQuality)
 	PlaySoundKitID(31578);	--UI_EpicLoot_Toast
 end
 
-function LootUpgradeFrame_OnClick(self)
+function LootUpgradeFrame_OnClick(self, button, down)
+	if( AlertFrame_OnClick(self, button, down) ) then
+		return;
+	end
 	local bag = SearchBagsForItemLink(self.hyperlink);
 	if (bag >= 0) then
 		OpenBag(bag);
@@ -1102,7 +1133,10 @@ function StorePurchaseAlertFrame_ShowAlert(icon, name, itemID)
 	PlaySound("UI_igStore_PurchaseDelivered_Toast_01");
 end
 
-function StorePurchaseAlertFrame_OnClick(self)
+function StorePurchaseAlertFrame_OnClick(self, button, down)
+	if( AlertFrame_OnClick(self, button, down) ) then
+		return;
+	end
 	local slot = SearchBagsForItem(self.itemID);
 	if (slot >= 0) then
 		OpenBag(slot);
@@ -1203,7 +1237,10 @@ function GarrisonFollowerAlertFrame_ShowAlert(followerID, name, displayID, level
 	PlaySound("UI_Garrison_Toast_FollowerGained");
 end
 
-function GarrisonFollowerAlertFrame_OnEnter(self)
+function GarrisonFollowerAlertFrame_OnEnter(self, button, down)
+	if( AlertFrame_OnClick(self, button, down) ) then
+		return;
+	end
 	AlertFrame_StopOutAnimation(self);
 	
 	local link = C_Garrison.GetFollowerLink(self.followerID);
@@ -1220,7 +1257,10 @@ function GarrisonFollowerAlertFrame_OnLeave(self)
 	AlertFrame_ResumeOutAnimation(self);
 end
 
-function GarrisonAlertFrame_OnClick(self)
+function GarrisonAlertFrame_OnClick(self, button, down)
+	if( AlertFrame_OnClick(self, button, down) ) then
+		return;
+	end
 	self:Hide();
 	if (not GarrisonLandingPage) then
 		Garrison_LoadUI();

@@ -494,7 +494,7 @@
 						<Anchor point="BOTTOM" x="5" y="-3"/>
 					</Anchors>
 				</Texture>
-				<FontString parentKey="TimeLeft" inherits="NumberFontNormalSmall">
+				<FontString parentKey="TimeLeft" inherits="GameFontHighlightSmall">
 					<Anchors>
 						<Anchor point="BOTTOM" relativeKey="$parent" x="0" y="-17"/>
 					</Anchors>
@@ -512,9 +512,9 @@
 	<Button name="GarrisonThreatCounterTemplate" inherits="GarrisonAbilityCounterTemplate" virtual="true" enableMouse="true">
 		<Layers>
 			<Layer level="OVERLAY">
-				<FontString parentKey="Count" inherits="NumberFontNormal">
+				<FontString parentKey="Count" inherits="GameFontHighlightSmall">
 					<Anchors>
-						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Icon"/>
+						<Anchor point="BOTTOM" x="1" y="-15" relativeKey="$parent"/>
 					</Anchors>
 				</FontString>
 			</Layer>
@@ -531,17 +531,25 @@
 			</OnMouseUp>
 			<OnClick>
 				PlaySound("igMainMenuOptionCheckBoxOn");
-				self:GetParent():GetParent():GetParent().FollowerList.SearchBox:SetText(self.name);
+				local searchBox = self:GetParent():GetParent():GetParent().FollowerList.SearchBox;
+				local searchString = searchBox:GetText();
+				if (searchString == self.name) then
+					searchBox:SetText("");
+				else
+					searchBox:SetText(self.name);
+				end
 			</OnClick>
+			<OnEnter function="GarrisonThreatCounter_OnEnter"/>
+			<OnLeave function="GameTooltip_Hide"/>
 		</Scripts>
 	</Button>
 	
-	<Frame name="GarrisonThreatCountersFrame">
+	<Frame name="GarrisonThreatCountersFrame" hidden="true">
 		<Size x="10" y="10"/>
 		<Frames>
 			<Button parentArray="ThreatsList" inherits="GarrisonThreatCounterTemplate">
 				<Anchors>
-					<Anchor point="TOPRIGHT"/>
+					<Anchor point="TOPRIGHT" x="0" y="7"/>
 				</Anchors>
 			</Button>
 		</Frames>

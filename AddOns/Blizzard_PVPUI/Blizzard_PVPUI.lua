@@ -128,6 +128,19 @@ function PVPUIFrame_UpdateSelectedRoles()
 	HonorFrame.RoleInset.DPSIcon.checkButton:SetChecked(dps);
 end
 
+function PVPRewardTemplate_OnEnter(self)
+	GameTooltip:SetOwner(self);
+	if (self.isCurrency) then
+		GameTooltip:SetCurrencyTokenByID(self.itemID);
+	else
+		GameTooltip:SetItemByID(self.itemID);
+	end
+	GameTooltip:Show();
+end
+
+function PVPRewardTemplate_OnLeave(self)
+	GameTooltip_Hide();
+end
 ---------------------------------------------------------------
 -- CATEGORY FRAME
 ---------------------------------------------------------------
@@ -244,6 +257,46 @@ function PVPQueueFrame_UpdateCurrencies(self)
 	self.CategoryButton1.CurrencyDisplay.Amount:SetText(currencyAmount);
 	_, currencyAmount = GetCurrencyInfo(CONQUEST_CURRENCY);
 	self.CategoryButton2.CurrencyDisplay.Amount:SetText(currencyAmount);
+	
+	-- Random Battleground Reward
+	local numRewards = GetNumRandomBGRewards();
+	local rewardFrame = HonorFrame.BonusFrame.DefaultBattlegroundReward;
+	for i = 1, numRewards do
+		local reward = rewardFrame.Rewards[i];
+		if ( not reward ) then
+			reward = CreateFrame("FRAME", "Reward"..i, rewardFrame, "PVPRewardTemplate");
+			reward:SetPoint("RIGHT", rewardFrame.Rewards[i-1], "LEFT", -2, 0);
+		end
+		local id, name, texture, quantity, isCurrency = GetRandomBGRewardByIndex(i);
+		reward.Icon:SetTexture(texture);
+		reward.itemID = id;
+		reward.isCurrency = isCurrency;
+		reward:Show();
+	end
+	
+	for i = numRewards+1, #rewardFrame.Rewards do
+		rewardFrame.Rewards[i]:Hide();
+	end
+	
+	-- Arena Skirmish Reward
+	local numRewards = GetNumArenaSkirmishRewards();
+	local rewardFrame = HonorFrame.BonusFrame.ArenaSkirmishReward;
+	for i = 1, numRewards do
+		local reward = rewardFrame.Rewards[i];
+		if ( not reward ) then
+			reward = CreateFrame("FRAME", "Reward"..i, rewardFrame, "PVPRewardTemplate");
+			reward:SetPoint("RIGHT", rewardFrame.Rewards[i-1], "LEFT", -2, 0);
+		end
+		local id, name, texture, quantity, isCurrency = GetArenaSkirmishRewardByIndex(i);
+		reward.Icon:SetTexture(texture);
+		reward.itemID = id;
+		reward.isCurrency = isCurrency;
+		reward:Show();
+	end
+	
+	for i = numRewards+1, #rewardFrame.Rewards do
+		rewardFrame.Rewards[i]:Hide();
+	end
 end
 
 function PVPQueueFrame_OnShow(self)
@@ -713,9 +766,8 @@ function HonorFrameBonusFrame_Update()
 	else
 		HonorFrame.BonusFrame.BattlegroundReward1:Hide();
 		HonorFrame.BonusFrame.BattlegroundReward2:Hide();
-		local shown = UnitLevel("player") >= 100;
-		HonorFrame.BonusFrame.DefaultBattlegroundReward:SetShown(shown);
-		HonorFrame.BonusFrame.RewardHeader:SetShown(shown);
+		HonorFrame.BonusFrame.DefaultBattlegroundReward:Show();
+		HonorFrame.BonusFrame.RewardHeader:Show();
 	end
 	
 	-- arena pvp

@@ -118,6 +118,7 @@ function GarrisonFollowerTooltipTemplate_SetGarrisonFollower(tooltipFrame, data)
 	local spacingBetweenLabelAndFirstAbility = 8;		-- distance between the "Abilities" label and the first ability below it
 	local spacingBetweenNameAndDescription = 4;			-- must match the XML ability template setting
 	local spacingBetweenDescriptionAndDetails = 8;		-- must match the XML ability template setting
+	local spacingBeforeUnderBiasedString = 10;
 
 	local tooltipFrameHeight = tooltipFrameHeightBase;
 	tooltipFrame:SetSize(260, tooltipFrameHeight);
@@ -263,6 +264,26 @@ function GarrisonFollowerTooltipTemplate_SetGarrisonFollower(tooltipFrame, data)
 
 	if ( not detailed ) then
 		tooltipFrameHeight = tooltipFrameHeight + abilityOffset;
+	end
+
+	if ( data.underBiased ) then
+		if ( data.quality >= LE_ITEM_QUALITY_EPIC ) then
+			tooltipFrame.UnderBiased:SetText(GARRISON_FOLLOWER_BELOW_LEVEL_MAX_XP_TOOLTIP);
+		else
+			tooltipFrame.UnderBiased:SetText(GARRISON_FOLLOWER_BELOW_LEVEL_TOOLTIP);
+		end
+
+		if ( traitCount > 0 ) then
+			tooltipFrame.UnderBiased:SetPoint("TOPLEFT", tooltipFrame.Traits[traitCount], "BOTTOMLEFT", 0, -spacingBeforeUnderBiasedString);
+		elseif ( abilityCount > 0 ) then
+			tooltipFrame.UnderBiased:SetPoint("TOPLEFT", tooltipFrame.Abilities[abilityCount], "BOTTOMLEFT", 0, -spacingBeforeUnderBiasedString);
+		else
+			tooltipFrame.UnderBiased:SetPoint("TOPLEFT", tooltipFrame.AbilitiesLabel, "TOPLEFT", 0, -spacingBeforeUnderBiasedString);
+		end
+		tooltipFrame.UnderBiased:Show();
+		tooltipFrameHeight = tooltipFrameHeight + spacingBeforeUnderBiasedString + tooltipFrame.UnderBiased:GetHeight();
+	else
+		tooltipFrame.UnderBiased:Hide();
 	end
 
 	tooltipFrame:SetSize(260, tooltipFrameHeight + 10);

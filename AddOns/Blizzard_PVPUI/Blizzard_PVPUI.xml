@@ -435,6 +435,19 @@
 		</Scripts>
 	</Button>
 	
+	<Frame name="PVPRewardTemplate" parentArray="Rewards" virtual="true">
+		<Size x="16" y="16"/>
+		<Layers>
+			<Layer level="ARTWORK">
+				<Texture parentKey="Icon"/>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnEnter function="PVPRewardTemplate_OnEnter"/>
+			<OnLeave function="PVPRewardTemplate_OnLeave"/>
+		</Scripts>
+	</Frame>
+	
 	<Frame name="PVPUIFrame" setAllPoints="true" parent="PVEFrame" hidden="true">
 		<Size x="563" y="428"/>
 		<Anchors>
@@ -700,7 +713,7 @@
 										</FontString>
 										<FontString parentKey="RewardHeader" inherits="GameFontWhiteSmall" text="REWARD_FOR_PVP_COMPETING">
 											<Anchors>
-												<Anchor point="BOTTOMRIGHT" relativeKey="$parent.BattlegroundHeader" x="-40" y="41"/>
+												<Anchor point="BOTTOMRIGHT" relativeKey="$parent.BattlegroundHeader" x="-40" y="42"/>
 											</Anchors>
 										</FontString>
 									</Layer>
@@ -814,27 +827,39 @@
 										</Anchors>
 									</Frame>
 									<Frame parentKey="DefaultBattlegroundReward" hidden="true" enableMouse="true">
-										<Size x="10" y="10"/>
+										<Size x="54" y="16"/>
 										<Anchors>
-											<Anchor point="TOPRIGHT" relativeKey="$parent.RewardHeader" relativePoint="TOPRIGHT" x="8" y="4"/>
+											<Anchor point="TOPRIGHT" relativeKey="$parent.RewardHeader" relativePoint="BOTTOMRIGHT" x="0" y="-3"/>
+										</Anchors>
+										<Frames>
+											<Frame parentKey="Reward1" inherits="PVPRewardTemplate" hidden="true">										
+												<Anchors>
+													<Anchor point="RIGHT"/>
+												</Anchors>
+											</Frame>
+										</Frames>
+									</Frame>
+									<Frame parentKey="ArenaSkirmishReward" hidden="false" enableMouse="true">
+										<Size x="54" y="32"/>
+										<Anchors>
+											<Anchor point="TOPRIGHT" relativeKey="$parent.WorldPVPHeader" relativePoint="TOPRIGHT" x="-8" y="-7"/>
 										</Anchors>
 										<Layers>
 											<Layer level="ARTWORK">
-												<FontString parentKey="Text" inherits="GameFontHighlight" text="BATTLEGROUND_BONUS_REWARD">
+												<FontString parentKey="RewardHeader" inherits="GameFontWhiteSmall" text="REWARD_FOR_PVP_COMPETING">
 													<Anchors>
-														<Anchor point="BOTTOMRIGHT" x="-8" y="4"/>
+														<Anchor point="TOPRIGHT" x="0" y="0"/>
 													</Anchors>
 												</FontString>
 											</Layer>
 										</Layers>
-										<Scripts>
-											<OnLoad>
-												self:SetHeight(self.Text:GetHeight() + self:GetParent().RewardHeader:GetHeight() + 8);
-												self:SetWidth(math.max(self.Text:GetWidth(), self:GetParent().RewardHeader:GetWidth()) + 12);
-											</OnLoad>
-											<OnEnter function="DefaultBattlegroundReward_ShowTooltip"/>
-											<OnLeave function="DefaultBattlegroundReward_HideTooltip"/>
-										</Scripts>
+										<Frames>
+											<Frame parentKey="Reward1" inherits="PVPRewardTemplate" hidden="true">										
+												<Anchors>
+													<Anchor point="RIGHT" x="0" y="-5"/>
+												</Anchors>
+											</Frame>
+										</Frames>
 									</Frame>
 									<Frame parentKey="BattlegroundReward2" inherits="PVPCurrencyRewardTemplate">
 										<Anchors>
