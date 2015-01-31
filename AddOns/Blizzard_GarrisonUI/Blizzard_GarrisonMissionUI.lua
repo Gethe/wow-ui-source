@@ -601,16 +601,6 @@ function GarrisonMissionList_Update()
 			else
 				button.Summary:SetFormattedText(PARENS_TEMPLATE, mission.duration);
 			end
-			if ( button.Title:GetWidth() + button.Summary:GetWidth() + 8 < 655 - mission.numRewards * 65 ) then
-				button.Title:SetPoint("LEFT", 165, 0);
-				button.Summary:ClearAllPoints();
-				button.Summary:SetPoint("BOTTOMLEFT", button.Title, "BOTTOMRIGHT", 8, 0);
-			else
-				button.Title:SetPoint("LEFT", 165, 10);
-				button.Title:SetWidth(655 - mission.numRewards * 65);
-				button.Summary:ClearAllPoints();
-				button.Summary:SetPoint("TOPLEFT", button.Title, "BOTTOMLEFT", 0, -4);	
-			end
 			if ( mission.locPrefix ) then
 				button.LocBG:Show();
 				button.LocBG:SetAtlas(mission.locPrefix.."-List");
@@ -647,6 +637,16 @@ function GarrisonMissionList_Update()
 			else
 				button.Overlay:Hide();
 			end
+			if ( button.Title:GetWidth() + button.Summary:GetWidth() + 8 < 655 - mission.numRewards * 65 ) then
+				button.Title:SetPoint("LEFT", 165, 0);
+				button.Summary:ClearAllPoints();
+				button.Summary:SetPoint("BOTTOMLEFT", button.Title, "BOTTOMRIGHT", 8, 0);
+			else
+				button.Title:SetPoint("LEFT", 165, 10);
+				button.Title:SetWidth(655 - mission.numRewards * 65);
+				button.Summary:ClearAllPoints();
+				button.Summary:SetPoint("TOPLEFT", button.Title, "BOTTOMLEFT", 0, -4);	
+			end			
 			button.MissionType:SetAtlas(mission.typeAtlas);
 			GarrisonMissionButton_SetRewards(button, mission.rewards, mission.numRewards);
 			button:Show();
@@ -798,11 +798,9 @@ function GarrisonMissionButton_SetInProgressTooltip(missionInfo, showRewards)
 	else
 		GameTooltip:AddLine(format(GARRISON_MISSION_LEVEL_TOOLTIP, missionInfo.level), 1, 1, 1);
 	end
-	-- time
+	-- completed?
 	if(missionInfo.isComplete) then
 		GameTooltip:AddLine(COMPLETE, 1, 1, 1);
-	else
-		GameTooltip:AddLine(tostring(missionInfo.timeLeft), 1, 1, 1);
 	end
 	-- success chance
 	local successChance = C_Garrison.GetMissionSuccessChance(missionInfo.missionID);
@@ -1005,7 +1003,11 @@ end
 
 function GarrisonMissionPageFollowerFrame_OnMouseUp(self, button)
 	if ( button == "RightButton" ) then
-		GarrisonMissionPage_ClearFollower(self, true);
+		if ( self.info ) then
+			GarrisonMissionPage_ClearFollower(self, true);
+		else
+			MISSION_PAGE_FRAME.CloseButton:Click();
+		end
 	end
 end
 

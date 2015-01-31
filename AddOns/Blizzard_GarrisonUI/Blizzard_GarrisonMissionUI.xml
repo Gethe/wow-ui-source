@@ -1817,7 +1817,7 @@
 									<Anchor point="BOTTOMRIGHT" relativePoint="TOPRIGHT"/>
 								</Anchors>
 							</Frame>
-							<Frame parentKey="CompleteDialog" enableMouse="true" frameStrata="HIGH" hidden="true">
+							<Frame parentKey="CompleteDialog" topLevel="true" enableMouse="true" hidden="true">
 								<Size x="956" y="637"/>
 								<Anchors>
 									<Anchor point="TOPLEFT" x="-33" y="43"/>

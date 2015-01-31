@@ -677,9 +677,9 @@ local function resetScripts(button)
 			CharacterSelectButton_ShowMoveButtons(self);
 		end
 		if ( self.isVeteranLocked ) then
-			GlueTooltip:SetText(CHARSELECT_CHAR_LIMITED, nil, nil, nil, nil, true);
+			GlueTooltip:SetText(CHARSELECT_CHAR_LIMITED_TOOLTIP, nil, nil, nil, nil, true);
 			GlueTooltip:Show();
-			GlueTooltip:SetOwner(self, "ANCHOR_BOTTOMLEFT", -16, 16);
+			GlueTooltip:SetOwner(self, "ANCHOR_LEFT", -16, -5);
 			CharSelectAccountUpgradeButtonPointerFrame:Show();
 			CharSelectAccountUpgradeButtonGlow:Show();
 		end

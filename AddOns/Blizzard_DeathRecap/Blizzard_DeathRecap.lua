@@ -78,7 +78,7 @@ function DeathRecapFrame_OpenRecap( recapID )
 		if( not evtData.hideCaster ) then
 			dmgInfo.caster = evtData.sourceName or COMBATLOG_UNKNOWN_UNIT
 		else
-			dmgInfo.caster = "";
+			dmgInfo.caster = nil;
 		end
 		dmgInfo.school = evtData.school;
 		
@@ -130,10 +130,12 @@ function DeathRecapFrame_Amount_OnEnter(self)
 		GameTooltip:AddLine(format(DEATH_RECAP_DAMAGE_TT, valueStr, self.dmgExtraStr), 1, 0, 0, true);
 	end
 	
-	if( self.spellName and self.caster ) then
-		GameTooltip:AddLine(format(DEATH_RECAP_CAST_BY_TT, self.spellName, self.caster), 1, 1, 1, true );
-	elseif( self.spellName ) then
-		GameTooltip:AddLine(self.spellName, 1, 1, 1, true );
+	if( self.spellName ) then
+		if( self.caster and #self.caster > 0 ) then
+			GameTooltip:AddLine(format(DEATH_RECAP_CAST_BY_TT, self.spellName, self.caster), 1, 1, 1, true );
+		else
+			GameTooltip:AddLine(self.spellName, 1, 1, 1, true );
+		end
 	end
 	
 	local seconds = -floor((self.timestamp - DeathRecapFrame.DeathTimeStamp)*10)/10;

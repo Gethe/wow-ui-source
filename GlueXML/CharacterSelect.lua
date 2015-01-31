@@ -818,7 +818,7 @@ end
 function CharacterSelect_EnterWorld()
 	CharacterSelect_SaveCharacterOrder();
 	PlaySound("gsCharacterSelectionEnterWorld");
-	local locked = select(20,GetCharacterInfo(GetCharIDFromIndex(GetCharacterSelection())));
+	local locked = select(20,GetCharacterInfo(GetCharacterSelection()));
 	if ( locked ) then
 		return;
 	end
@@ -1432,7 +1432,7 @@ function CharacterSelect_UpdateButtonState()
 	local undeleting = CharacterSelect.undeleting;
 	local undeleteEnabled, undeleteOnCooldown = GetCharacterUndeleteStatus();
 
-	local boostInProgress,_, locked = select(18, GetCharacterInfo(GetCharIDFromIndex(GetCharacterSelection())));
+	local boostInProgress,_, locked = select(18, GetCharacterInfo(GetCharacterSelection()));
 	CharSelectEnterWorldButton:SetEnabled(servicesEnabled and not undeleting and not boostInProgress and not locked );
 	CharacterSelectBackButton:SetEnabled(servicesEnabled and not undeleting and not boostInProgress);
 	CharacterSelectDeleteButton:SetEnabled(servicesEnabled and not undeleting);

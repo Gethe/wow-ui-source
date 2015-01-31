@@ -100,7 +100,8 @@
 			<Frame parentKey="PlayerCount" setAllPoints="true">
 				<Layers>
 					<Layer level="ARTWORK">
-						<Texture parentKey="Icon" atlas="groupfinder-waitdot" useAtlasSize="true">
+						<Texture parentKey="Icon" atlas="groupfinder-waitdot">
+							<Size x="14" y="13"/>
 							<Anchors>
 								<Anchor point="RIGHT" relativeKey="$parent" relativePoint="RIGHT" x="-12" y="0"/>
 							</Anchors>
@@ -1194,7 +1195,7 @@
 						</Anchors>
 						<Scripts>
 							<OnEnter>
-								if ( self.RoleCount:IsShown() ) then
+								if ( self.RoleCount:IsShown() or self.PlayerCount:IsShown() ) then
 									GameTooltip:SetOwner(self, "ANCHOR_TOP");
 									GameTooltip:SetText(string.format(LFG_LIST_MEMBER_COUNT, GetNumGroupMembers(LE_PARTY_CATEGORY_HOME)));
 									GameTooltip:Show();
@@ -1214,7 +1215,7 @@
 							<AbsInset left="0" right="-130" top="0" bottom="0"/>
 						</HitRectInsets>
 						<Anchors>
-							<Anchor point="BOTTOMLEFT" relativeKey="$parent.InfoBackground" relativePoint="BOTTOMLEFT" x="12" y="8"/>
+							<Anchor point="BOTTOMLEFT" relativeKey="$parent.InfoBackground" relativePoint="BOTTOMLEFT" x="12" y="10"/>
 						</Anchors>
 						<Layers>
 							<Layer level="ARTWORK">
@@ -1385,17 +1386,20 @@
 										<Anchor point="CENTER" x="0" y="20"/>
 									</Anchors>
 								</FontString>
-								<Texture parentKey="Waitdot2" hidden="false" alpha="0" atlas="groupfinder-waitdot" useAtlasSize="true">
+								<Texture parentKey="Waitdot2" hidden="false" alpha="0" atlas="groupfinder-waitdot">
+									<Size x="13" y="13"/>
 									<Anchors>
 										<Anchor point="TOP" relativeKey="$parent.Label" relativePoint="BOTTOM" x="0" y="-16"/>
 									</Anchors>
 								</Texture>
-								<Texture parentKey="Waitdot1" hidden="false" alpha="0" atlas="groupfinder-waitdot" useAtlasSize="true">
+								<Texture parentKey="Waitdot1" hidden="false" alpha="0" atlas="groupfinder-waitdot">
+									<Size x="13" y="13"/>
 									<Anchors>
 										<Anchor point="CENTER" relativeKey="$parent.Waitdot2" x="-16" y="0"/>
 									</Anchors>
 								</Texture>
-								<Texture parentKey="Waitdot3" hidden="false" alpha="0" atlas="groupfinder-waitdot" useAtlasSize="true">
+								<Texture parentKey="Waitdot3" hidden="false" alpha="0" atlas="groupfinder-waitdot">
+									<Size x="13" y="13"/>
 									<Anchors>
 										<Anchor point="CENTER" relativeKey="$parent.Waitdot2" x="16" y="0"/>
 									</Anchors>

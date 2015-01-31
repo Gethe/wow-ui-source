@@ -1141,7 +1141,8 @@ function PaperDollFrame_SetCritChance(statFrame, unit)
 	statFrame.tooltip = HIGHLIGHT_FONT_COLOR_CODE..format(PAPERDOLLFRAME_TOOLTIP_FORMAT, STAT_CRITICAL_STRIKE).." "..critChance..FONT_COLOR_CODE_CLOSE;
 	if (GetCritChanceProvidesParryEffect()) then
 		local critChance = GetCombatRatingBonus(rating);
-		statFrame.tooltip2 = format(CR_CRIT_PARRY_RATING_TOOLTIP, BreakUpLargeNumbers(GetCombatRating(rating)), critChance, critChance);
+		local critRating = GetCombatRating(rating);
+		statFrame.tooltip2 = format(CR_CRIT_PARRY_RATING_TOOLTIP, BreakUpLargeNumbers(critRating), critChance, GetCombatRatingBonusForCombatRatingValue(CR_PARRY, critRating));
 	else
 		statFrame.tooltip2 = format(CR_CRIT_TOOLTIP, BreakUpLargeNumbers(GetCombatRating(rating)), GetCombatRatingBonus(rating));
 	end

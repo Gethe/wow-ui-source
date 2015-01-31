@@ -122,7 +122,7 @@ function LFGListFrame_OnEvent(self, event, ...)
 			local autoAccept = select(8, C_LFGList.GetActiveEntryInfo());
 			local numPings = nil;
 			if ( not isLeader ) then
-				numPings = 3;
+				numPings = 6;
 			end
 			--Non-leaders don't get another ping until they open the panel or we reset the count to 0
 			if ( isLeader or not self.stopAssistPings ) then

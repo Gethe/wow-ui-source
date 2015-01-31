@@ -1297,6 +1297,26 @@ StaticPopupDialogs["DEATH"] = {
 		elseif ( self.timeleft == -1 ) then
 			self.text:SetText(DEATH_RELEASE_NOTIMER);
 		end
+		if ( not self.UpdateRecapButton ) then
+			self.UpdateRecapButton = function( self )
+				if ( DeathRecap_HasEvents() ) then
+					self.button3:Enable();
+					self.button3:SetScript("OnEnter", nil );
+					self.button3:SetScript("OnLeave", nil);
+				else
+					self.button3:Disable();
+					self.button3:SetMotionScriptsWhileDisabled(true);
+					self.button3:SetScript("OnEnter", function(self)
+						GameTooltip:SetOwner(self, "ANCHOR_BOTTOMRIGHT");
+						GameTooltip:SetText(DEATH_RECAP_UNAVAILABLE);
+						GameTooltip:Show();
+					end );
+					self.button3:SetScript("OnLeave", GameTooltip_Hide);
+				end
+			end
+		end
+		
+		self:UpdateRecapButton();
 	end,
 	OnHide = function(self)
 		self.button3:SetScript("OnEnter", nil );
@@ -1360,19 +1380,8 @@ StaticPopupDialogs["DEATH"] = {
 			self.button2:Disable();
 		end
 		
-		if ( DeathRecap_HasEvents() ) then
-			self.button3:Enable();
-			self.button3:SetScript("OnEnter", nil );
-			self.button3:SetScript("OnLeave", nil);
-		else
-			self.button3:Disable();
-			self.button3:SetMotionScriptsWhileDisabled(true);
-			self.button3:SetScript("OnEnter", function(self)
-				GameTooltip:SetOwner(self, "ANCHOR_BOTTOMRIGHT");
-				GameTooltip:SetText(DEATH_RECAP_UNAVAILABLE);
-				GameTooltip:Show();
-			end );
-			self.button3:SetScript("OnLeave", GameTooltip_Hide);
+		if ( self.UpdateRecapButton) then
+			self:UpdateRecapButton();
 		end
 	end,
 	DisplayButton2 = function(self)

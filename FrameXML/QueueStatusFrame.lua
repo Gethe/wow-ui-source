@@ -51,8 +51,9 @@ function QueueStatusMinimapButton_OnShow(self)
 	self.Eye:SetFrameLevel(self:GetFrameLevel() - 1);
 end
 
-function QueueStatusMinimapButton_SetGlowLock(self, lock, enabled, count)
-	self.glowLocks[lock] = enabled and (count or true);
+--Will play the sound numPingSounds times (or forever if nil)
+function QueueStatusMinimapButton_SetGlowLock(self, lock, enabled, numPingSounds)
+	self.glowLocks[lock] = enabled and (numPingSounds or -1);
 	QueueStatusMinimapButton_UpdateGlow(self);
 end
 
@@ -74,21 +75,22 @@ function QueueStatusMinimapButton_UpdateGlow(self)
 end
 
 function QueueStatusMinimapButton_OnGlowPulse(self)
-	local updateGlow = false;
+	local playSounds = false;
 	for k, v in pairs(self.glowLocks) do
 		if ( type(v) == "number" ) then
-			if ( v <= 1 ) then
-				self.glowLocks[k] = false;
-				updateGlow = true;
-			else
+			-- < 0 means play sounds forever
+			-- > 0 means play sounds n times
+			-- == 0 means no longer playing sounds
+			if ( v < 0 ) then
+				playSounds = true;
+			elseif ( v > 0 ) then
 				self.glowLocks[k] = v - 1;
+				playSounds = true;
 			end
 		end
 	end
 
-	if ( updateGlow ) then
-		QueueStatusMinimapButton_UpdateGlow(self);
-	end
+	return playSounds;
 end
 
 ----------------------------------------------
