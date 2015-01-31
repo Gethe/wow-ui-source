@@ -153,14 +153,16 @@ function MerchantFrame_UpdateMerchantInfo()
 				merchantMoney:Show();
 			end
 
-			itemButton.hasItem = true;
-			itemButton:SetID(index);
-			itemButton:Show();
-
 			local merchantItemID = GetMerchantItemID(index);
 
 			local isHeirloom = merchantItemID and C_Heirloom.IsItemHeirloom(merchantItemID);
 			local isKnownHeirloom = isHeirloom and C_Heirloom.PlayerHasHeirloom(merchantItemID);
+
+			itemButton.showNonrefundablePrompt = isHeirloom;
+
+			itemButton.hasItem = true;
+			itemButton:SetID(index);
+			itemButton:Show();
 
 			local tintRed = not isUsable and not isHeirloom;
 			
@@ -396,6 +398,8 @@ function MerchantItemButton_OnLoad(self)
 	self.SplitStack = function(button, split)
 		if ( button.extendedCost ) then
 			MerchantFrame_ConfirmExtendedItemCost(button, split)
+		elseif ( button.showNonrefundablePrompt ) then
+			MerchantFrame_ConfirmExtendedItemCost(button, split)
 		elseif ( split > 0 ) then
 			BuyMerchantItem(button:GetID(), split);
 		end
@@ -423,11 +427,15 @@ function MerchantItemButton_OnClick(self, button)
 			PickupMerchantItem(self:GetID());
 			if ( self.extendedCost ) then
 				MerchantFrame.extendedCost = self;
+			elseif ( self.showNonrefundablePrompt ) then
+				MerchantFrame.extendedCost = self;
 			elseif ( self.price and self.price >= MERCHANT_HIGH_PRICE_COST ) then
 				MerchantFrame.highPrice = self;
 			end
 		else
 			if ( self.extendedCost ) then
+				MerchantFrame_ConfirmExtendedItemCost(self);
+			elseif ( self.showNonrefundablePrompt ) then
 				MerchantFrame_ConfirmExtendedItemCost(self);
 			elseif ( self.price and self.price >= MERCHANT_HIGH_PRICE_COST ) then
 				MerchantFrame_ConfirmHighCostItem(self);
@@ -496,7 +504,7 @@ LIST_DELIMITER = ", "
 function MerchantFrame_ConfirmExtendedItemCost(itemButton, numToPurchase)
 	local index = itemButton:GetID();
 	local itemsString;
-	if ( GetMerchantItemCostInfo(index) == 0 ) then
+	if ( GetMerchantItemCostInfo(index) == 0 and not itemButton.showNonrefundablePrompt) then
 		BuyMerchantItem( itemButton:GetID(), numToPurchase );
 		return;
 	end
@@ -527,10 +535,12 @@ function MerchantFrame_ConfirmExtendedItemCost(itemButton, numToPurchase)
 			else
 				itemsString = " |T"..itemTexture..":0:0:0:-1|t "..format(CURRENCY_QUANTITY_TEMPLATE, costItemCount, currencyName);
 			end
-		end
+		elseif (itemButton.showNonrefundablePrompt) then
+			itemsString = GetMoneyString(itemButton.price)
+		end		
 	end
 	
-	if ( not usingCurrency and maxQuality <= LE_ITEM_QUALITY_UNCOMMON ) then
+	if ( not usingCurrency and maxQuality <= LE_ITEM_QUALITY_UNCOMMON and not itemButton.showNonrefundablePrompt) then
 		BuyMerchantItem( itemButton:GetID(), numToPurchase );
 		return;
 	end
@@ -565,9 +575,15 @@ function MerchantFrame_ConfirmExtendedItemCost(itemButton, numToPurchase)
 		specText = "";
 	end
 	
-	StaticPopup_Show("CONFIRM_PURCHASE_TOKEN_ITEM", itemsString, specText, 
-						{["texture"] = itemButton.texture, ["name"] = itemName, ["color"] = {r, g, b, 1}, 
-						["link"] = itemButton.link, ["index"] = index, ["count"] = numToPurchase});
+	if (itemButton.showNonrefundablePrompt) then
+		StaticPopup_Show("CONFIRM_PURCHASE_NONREFUNDABLE_ITEM", itemsString, specText, 
+							{["texture"] = itemButton.texture, ["name"] = itemName, ["color"] = {r, g, b, 1}, 
+							["link"] = itemButton.link, ["index"] = index, ["count"] = numToPurchase});
+	else
+		StaticPopup_Show("CONFIRM_PURCHASE_TOKEN_ITEM", itemsString, specText, 
+							{["texture"] = itemButton.texture, ["name"] = itemName, ["color"] = {r, g, b, 1}, 
+							["link"] = itemButton.link, ["index"] = index, ["count"] = numToPurchase});
+	end
 end
 
 function MerchantFrame_ResetRefundItem()

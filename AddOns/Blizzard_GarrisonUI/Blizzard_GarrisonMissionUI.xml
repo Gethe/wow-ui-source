@@ -1951,6 +1951,7 @@
 							<OnLoad function="GarrisonMissionList_OnLoad"/>
 							<OnShow function="GarrisonMissionList_OnShow"/>
 							<OnHide function="GarrisonMissionList_OnHide"/>
+							<OnUpdate function="GarrisonMissionList_OnUpdate"/>
 						</Scripts>
 					</Frame>
 					<Button parentKey="MissionPage" inherits="GarrisonMissionPageBaseTemplate" hidden="true">
@@ -2384,6 +2385,7 @@
 							<OnEvent function="GarrisonMissionPage_OnEvent"/>
 							<OnShow function="GarrisonMissionPage_OnShow"/>
 							<OnHide function="GarrisonMissionPage_OnHide"/>
+							<OnUpdate function="GarrisonMissionPage_OnUpdate"/>
 							<OnClick>
 								self.CloseButton:Click();
 							</OnClick>

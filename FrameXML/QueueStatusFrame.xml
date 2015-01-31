@@ -165,6 +165,7 @@
 				<Scripts>
 					<OnLoop>
 						PlaySound("UI_GroupFinderReceiveApplication");
+						QueueStatusMinimapButton_OnGlowPulse(self:GetParent());
 					</OnLoop>
 				</Scripts>
 			</AnimationGroup>

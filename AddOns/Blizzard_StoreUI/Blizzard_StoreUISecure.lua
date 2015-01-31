@@ -1699,7 +1699,7 @@ function StoreProductCard_SetModel(self, modelID, owned)
 	end
 
 	self.Model:Show();
-	self.Shadows:Show();
+	self.Shadows:SetShown(self ~= StoreFrame.SplashSingle);
 	if (cardModels[self] ~= modelID) then
 		self.Model:SetDisplayInfo(modelID);
 		self.Model:SetDoBlend(false);
@@ -1892,12 +1892,13 @@ function StoreTooltip_Show(name, description)
 	
 	-- 10 pixel buffer between top, 10 between name and description, 10 between description and bottom
 	local nheight, dheight = self.ProductName:GetHeight(), self.Description:GetHeight();
-	local buffer = 10;
+	local buffer = 11;
 
-	local bufferCount = 3;
+	local bufferCount = 2;
 	if (not description or description == "") then
-		bufferCount = 2;
 		dheight = 0;
+	else
+		dheight = dheight + 2;
 	end
 
 	local width = math.max(self.ProductName:GetStringWidth(), self.Description:GetStringWidth());

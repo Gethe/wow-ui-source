@@ -4428,15 +4428,6 @@
 				<Anchors>
 					<Anchor point="TOPRIGHT" relativeKey="$parent.ColorblindFilterExamples" x="-76" y="-45" />
 				</Anchors>
-				<Layers>
-					<Layer level="ARTWORK">
-						<FontString parentKey="Label" inherits="GameFontNormalSmall">
-							<Anchors>
-								<Anchor point="LEFT" relativePoint="RIGHT" x="2" y="1" />
-							</Anchors>
-						</FontString>
-					</Layer>
-				</Layers>
 				<Scripts>
 					<OnLoad>
 						local name = self:GetName();

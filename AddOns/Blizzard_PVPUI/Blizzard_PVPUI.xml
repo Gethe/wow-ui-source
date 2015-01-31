@@ -436,7 +436,7 @@
 	</Button>
 	
 	<Frame name="PVPRewardTemplate" parentArray="Rewards" virtual="true">
-		<Size x="16" y="16"/>
+		<Size x="23" y="23"/>
 		<Layers>
 			<Layer level="ARTWORK">
 				<Texture parentKey="Icon"/>
@@ -701,7 +701,7 @@
 										</Texture>
 									</Layer>
 									<Layer level="ARTWORK">
-										<FontString inherits="QuestTitleFontBlackShadow" text="BATTLEGROUNDS">
+										<FontString parentKey="BGTitle" inherits="QuestTitleFontBlackShadow" text="BATTLEGROUNDS">
 											<Anchors>
 												<Anchor point="TOPLEFT" relativeKey="$parent.BattlegroundHeader" x="7" y="-10"/>
 											</Anchors>
@@ -711,18 +711,13 @@
 												<Anchor point="TOPLEFT" relativeKey="$parent.WorldPVPHeader" x="7" y="-10"/>
 											</Anchors>
 										</FontString>
-										<FontString parentKey="RewardHeader" inherits="GameFontWhiteSmall" text="REWARD_FOR_PVP_COMPETING">
-											<Anchors>
-												<Anchor point="BOTTOMRIGHT" relativeKey="$parent.BattlegroundHeader" x="-40" y="42"/>
-											</Anchors>
-										</FontString>
 									</Layer>
 								</Layers>
 								<Frames>
 									<Button parentKey="DiceButton">
 										<Size x="23" y="23"/>
 										<Anchors>
-											<Anchor point="TOPRIGHT" relativeKey="$parent.BattlegroundHeader" relativePoint="TOPRIGHT" x="-4" y="-5"/>
+											<Anchor point="LEFT" relativeKey="$parent.BGTitle" relativePoint="RIGHT" x="6" y="0"/>
 										</Anchors>
 										<Layers>
 											<Layer level="OVERLAY">
@@ -829,7 +824,7 @@
 									<Frame parentKey="DefaultBattlegroundReward" hidden="true" enableMouse="true">
 										<Size x="54" y="16"/>
 										<Anchors>
-											<Anchor point="TOPRIGHT" relativeKey="$parent.RewardHeader" relativePoint="BOTTOMRIGHT" x="0" y="-3"/>
+											<Anchor point="TOPRIGHT" relativeKey="$parent.BattlegroundHeader" relativePoint="TOPRIGHT" x="-8" y="-9"/>
 										</Anchors>
 										<Frames>
 											<Frame parentKey="Reward1" inherits="PVPRewardTemplate" hidden="true">										
@@ -842,15 +837,10 @@
 									<Frame parentKey="ArenaSkirmishReward" hidden="false" enableMouse="true">
 										<Size x="54" y="32"/>
 										<Anchors>
-											<Anchor point="TOPRIGHT" relativeKey="$parent.WorldPVPHeader" relativePoint="TOPRIGHT" x="-8" y="-7"/>
+											<Anchor point="TOPRIGHT" relativeKey="$parent.WorldPVPHeader" relativePoint="TOPRIGHT" x="-8" y="0"/>
 										</Anchors>
 										<Layers>
 											<Layer level="ARTWORK">
-												<FontString parentKey="RewardHeader" inherits="GameFontWhiteSmall" text="REWARD_FOR_PVP_COMPETING">
-													<Anchors>
-														<Anchor point="TOPRIGHT" x="0" y="0"/>
-													</Anchors>
-												</FontString>
 											</Layer>
 										</Layers>
 										<Frames>

@@ -121,7 +121,7 @@
 		</Scripts>
 	</Frame>
 
-	<Frame name="GarrisonCapacitiveDisplayFrame" parent="UIParent" inherits="ButtonFrameTemplate" hidden="true">
+	<Frame name="GarrisonCapacitiveDisplayFrame" parent="UIParent" inherits="ButtonFrameTemplate" hidden="true" enableMouse="true">
 		<Anchors>
 			<Anchor point="TOPLEFT" x="28" y="-108"/>
 		</Anchors>

@@ -863,6 +863,8 @@ function UIParent_OnEvent(self, event, ...)
 			end
 		end
 	elseif ( event == "VARIABLES_LOADED" ) then
+		UIParent.variablesLoaded = true;
+		
 		LocalizeFrames();
 		if ( WorldStateFrame_CanShowBattlefieldMinimap() ) then
 			if ( not BattlefieldMinimap ) then
@@ -4228,9 +4230,9 @@ function TrialAccountCapReached_Inform(capType)
 	
 	local info = ChatTypeInfo.SYSTEM;
 	if ( capType == "level" ) then
-		DEFAULT_CHAT_FRAME:AddMessage(GameLimitedMode_GetString("CAPPED_LEVEL_VETERAN"), info.r, info.g, info.b);
+		DEFAULT_CHAT_FRAME:AddMessage(GameLimitedMode_GetString("CAPPED_LEVEL"), info.r, info.g, info.b);
 	elseif ( capType == "money" ) then
-		DEFAULT_CHAT_FRAME:AddMessage(GameLimitedMode_GetString("CAPPED_MONEY_VETERAN"), info.r, info.g, info.b);
+		DEFAULT_CHAT_FRAME:AddMessage(GameLimitedMode_GetString("CAPPED_MONEY"), info.r, info.g, info.b);
 	end
 	displayedCapMessage = true;
 end

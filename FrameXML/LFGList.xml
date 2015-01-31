@@ -1208,6 +1208,39 @@
 							<Anchor point="LEFT" relativeKey="$parent.EntryName" relativePoint="RIGHT" x="5" y="-1"/>
 						</Anchors>
 					</Frame>
+					<CheckButton parentKey="AutoAcceptButton">
+						<Size x="22" y="22"/>
+						<HitRectInsets>
+							<AbsInset left="0" right="-130" top="0" bottom="0"/>
+						</HitRectInsets>
+						<Anchors>
+							<Anchor point="BOTTOMLEFT" relativeKey="$parent.InfoBackground" relativePoint="BOTTOMLEFT" x="12" y="8"/>
+						</Anchors>
+						<Layers>
+							<Layer level="ARTWORK">
+								<FontString parentKey="Label" inherits="GameFontHighlightSmall" justifyH="LEFT" text="LFG_LIST_AUTO_ACCEPT">
+									<Anchors>
+										<Anchor point="LEFT" relativeKey="$parent" relativePoint="RIGHT" x="2" y="0"/>
+									</Anchors>
+								</FontString>
+							</Layer>
+						</Layers>
+						<Scripts>
+							<OnClick>
+								if ( self:GetChecked() ) then
+									PlaySound("igMainMenuOptionCheckBoxOn");
+								else
+									PlaySound("igMainMenuOptionCheckBoxOff");
+								end
+								LFGListUtil_SetAutoAccept(self:GetChecked());
+							</OnClick>
+						</Scripts>
+						<NormalTexture file="Interface\Buttons\UI-CheckBox-Up"/>
+						<PushedTexture file="Interface\Buttons\UI-CheckBox-Down"/>
+						<HighlightTexture file="Interface\Buttons\UI-CheckBox-Highlight" alphaMode="ADD"/>
+						<CheckedTexture file="Interface\Buttons\UI-CheckBox-Check"/>
+						<DisabledCheckedTexture file="Interface\Buttons\UI-CheckBox-Check-Disabled"/>	
+					</CheckButton>
 					<Frame parentKey="Inset" useParentLevel="true" inherits="InsetFrameTemplate">
 						<Size x="215" y="496"/>
 						<Anchors>

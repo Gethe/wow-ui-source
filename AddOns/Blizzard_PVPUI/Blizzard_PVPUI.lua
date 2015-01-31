@@ -130,11 +130,7 @@ end
 
 function PVPRewardTemplate_OnEnter(self)
 	GameTooltip:SetOwner(self);
-	if (self.isCurrency) then
-		GameTooltip:SetCurrencyTokenByID(self.itemID);
-	else
-		GameTooltip:SetItemByID(self.itemID);
-	end
+	GameTooltip:SetPvPReward(self.itemID, self.isCurrency);
 	GameTooltip:Show();
 end
 
@@ -377,6 +373,8 @@ function HonorFrame_OnLoad(self)
 			BlacklistIDs[mapID] = true;
 		end
 	end
+	
+	self.BonusFrame.BGTitle:SetWidth(self.BonusFrame.BGTitle:GetStringWidth());
 
 	self:RegisterEvent("PLAYER_ENTERING_WORLD");
 	self:RegisterEvent("PVPQUEUE_ANYWHERE_SHOW");
@@ -386,6 +384,12 @@ function HonorFrame_OnLoad(self)
 	self:RegisterEvent("PVP_REWARDS_UPDATE");
 	self:RegisterEvent("LFG_LIST_ACTIVE_ENTRY_UPDATE");
 	self:RegisterEvent("LFG_LIST_SEARCH_RESULT_UPDATED");
+	
+	if( UIParent.variablesLoaded ) then
+		HonorFrame_UpdateBlackList();
+	else
+		self:RegisterEvent("VARIABLES_LOADED");
+	end
 end
 
 function HonorFrame_OnEvent(self, event, ...)
@@ -403,6 +407,18 @@ function HonorFrame_OnEvent(self, event, ...)
 		RequestRandomBattlegroundInstanceInfo();
 	elseif ( event == "LFG_LIST_ACTIVE_ENTRY_UPDATE" or event == "LFG_LIST_SEARCH_RESULT_UPDATED" ) then
 		HonorFrame_UpdateQueueButtons();
+	elseif ( event == "VARIABLES_LOADED" ) then
+		HonorFrame_UpdateBlackList();
+	end
+end
+
+function HonorFrame_UpdateBlackList()
+	for i = 1, GetNumBattlegroundTypes() do
+		local localizedName, canEnter, isHoliday, isRandom, battleGroundID, mapDescription, BGMapID, maxPlayers = GetBattlegroundInfo(i);
+		if ( BGMapID and BlacklistIDs[BGMapID] and (not canEnter or isRandom) ) then
+			ClearBlacklistMap(BGMapID);
+			BlacklistIDs[BGMapID] = nil;
+		end
 	end
 end
 
@@ -729,7 +745,6 @@ function HonorFrameBonusFrame_Update()
 	button.bgID = battleGroundID;
 	local hasData, canQueue, bgName, battleGroundID, hasWon, winHonorAmount, winConquestAmount, lossHonorAmount, lossConquestAmount, minLevel, maxLevel = GetHolidayBGInfo();
 	if ( hasData ) then
-		HonorFrame.BonusFrame.RewardHeader:Show();
 		-- cap conquest to total earnable
 		if ( arenaReward < winConquestAmount ) then
 			winConquestAmount = arenaReward
@@ -767,7 +782,6 @@ function HonorFrameBonusFrame_Update()
 		HonorFrame.BonusFrame.BattlegroundReward1:Hide();
 		HonorFrame.BonusFrame.BattlegroundReward2:Hide();
 		HonorFrame.BonusFrame.DefaultBattlegroundReward:Show();
-		HonorFrame.BonusFrame.RewardHeader:Show();
 	end
 	
 	-- arena pvp

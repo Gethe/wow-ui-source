@@ -51,8 +51,8 @@ function QueueStatusMinimapButton_OnShow(self)
 	self.Eye:SetFrameLevel(self:GetFrameLevel() - 1);
 end
 
-function QueueStatusMinimapButton_SetGlowLock(self, lock, enabled)
-	self.glowLocks[lock] = enabled;
+function QueueStatusMinimapButton_SetGlowLock(self, lock, enabled, count)
+	self.glowLocks[lock] = enabled and (count or true);
 	QueueStatusMinimapButton_UpdateGlow(self);
 end
 
@@ -70,6 +70,24 @@ function QueueStatusMinimapButton_UpdateGlow(self)
 		self.EyeHighlightAnim:Play();
 	else
 		self.EyeHighlightAnim:Stop();
+	end
+end
+
+function QueueStatusMinimapButton_OnGlowPulse(self)
+	local updateGlow = false;
+	for k, v in pairs(self.glowLocks) do
+		if ( type(v) == "number" ) then
+			if ( v <= 1 ) then
+				self.glowLocks[k] = false;
+				updateGlow = true;
+			else
+				self.glowLocks[k] = v - 1;
+			end
+		end
+	end
+
+	if ( updateGlow ) then
+		QueueStatusMinimapButton_UpdateGlow(self);
 	end
 end
 
@@ -438,12 +456,12 @@ function QueueStatusEntry_SetUpPvPReadyCheck(entry)
 end
 
 function QueueStatusEntry_SetUpWorldPvP(entry, idx)
-	local status, mapName, queueID, expireTime, averageWaitTime, queuedTime = GetWorldPVPQueueStatus(idx);
+	local status, mapName, queueID, expireTime, averageWaitTime, queuedTime, suspended = GetWorldPVPQueueStatus(idx);
 	if ( status == "queued" ) then
-		if ( averageWaitTime > 0 or queuedTime > 0 ) then
-			QueueStatusEntry_SetFullDisplay(entry, mapName, queuedTime / 1000, averageWaitTime / 1000);
+		if ( suspended ) then
+			QueueStatusEntry_SetMinimalDisplay(entry, mapName, QUEUED_STATUS_SUSPENDED);
 		else
-			QueueStatusEntry_SetMinimalDisplay(entry, mapName, QUEUED_STATUS_QUEUED);
+			QueueStatusEntry_SetFullDisplay(entry, mapName, queuedTime / 1000, averageWaitTime / 1000);
 		end
 	elseif ( status == "confirm" ) then
 		QueueStatusEntry_SetMinimalDisplay(entry, mapName, QUEUED_STATUS_PROPOSAL);

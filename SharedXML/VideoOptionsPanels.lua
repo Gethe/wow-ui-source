@@ -92,7 +92,7 @@ function Graphics_PrepareTooltip(self)
 			local validity = {GetToolTipInfo(1, #cvar_data - 1, unpack(cvar_data) )};
 			local index = 1;
 			for cvar_value, valid in pairs(table) do
-				self.validity[cvar_name][cvar_value] = validity[index];
+				self.validity[cvar_name][cvar_value] = validity[index] or 0;
 				index = index + 1;
 			end
 		end
@@ -673,8 +673,8 @@ end
 local function LoadVideoData(self)
 	local name = self:GetName()
 	if not VideoData[name] then
-		message(name);
-		return
+		message(("Missing VideoData for %q"):format(name));
+		return;
 	end
 	
 	-- preload the base data
@@ -877,6 +877,7 @@ end
 
 AdvancedPanelOptions = {
 	hdPlayerModels = { text = "SHOW_HD_MODELS_TEXT" },
+	msaaAlphaTest = { text = "MULTISAMPLE_ALPHA_TEST" },
 }
 
 function Advanced_OnLoad (self)
@@ -897,7 +898,7 @@ function Advanced_OnLoad (self)
 		_G[name .. "StereoHeaderUnderline"]:Hide();
 	end
 	if ( IsMacClient() ) then
-		Advanced_UIScaleSlider:SetPoint("TOPLEFT", Advanced_HardwareCursorDropDown, "BOTTOMLEFT", -90, -20);
+		Advanced_UIScaleSlider:SetPoint("TOPLEFT", Advanced_ResampleQualityDropDown, "BOTTOMLEFT", -90, -20);
 		Advanced_GraphicsAPIDropDown:Hide();
 	end
 end

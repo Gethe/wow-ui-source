@@ -70,6 +70,7 @@ function GarrisonLandingPageReport_OnLoad(self)
 	GarrisonLandingPageReportList_Update();
 	self:RegisterEvent("GARRISON_LANDINGPAGE_SHIPMENTS");
 	self:RegisterEvent("GARRISON_MISSION_LIST_UPDATE");
+	self:RegisterEvent("GARRISON_SHIPMENT_RECEIVED");
 	
 	self.List.listScroll:SetScript("OnMouseWheel", function(self, ...) HybridScrollFrame_OnMouseWheel(self, ...); GarrisonLandingPageReportList_UpdateMouseOverTooltip(self); end);
 end
@@ -97,6 +98,8 @@ function GarrisonLandingPageReport_OnEvent(self, event)
 		GarrisonLandingPageReport_GetShipments(self);
 	elseif ( event == "GARRISON_MISSION_LIST_UPDATE" ) then
 		GarrisonLandingPageReportList_UpdateItems();
+	elseif ( event == "GARRISON_SHIPMENT_RECEIVED" ) then
+		C_Garrison.RequestLandingPageShipmentInfo();
 	end
 end
 
@@ -305,12 +308,6 @@ function GarrisonLandingPageReportList_UpdateAvailable()
 					if ( reward.quantity > 1 ) then
 						Reward.Quantity:SetText(reward.quantity);
 						Reward.Quantity:Show();
-					else
-						local _, _, _, itemLevel = GetItemInfo(reward.itemID);
-						if ( itemLevel and itemLevel > 1 ) then
-							Reward.Quantity:SetText(itemLevel);
-							Reward.Quantity:Show();
-						end
 					end					
 				else
 					Reward.itemID = nil;

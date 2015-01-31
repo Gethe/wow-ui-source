@@ -241,6 +241,27 @@ StaticPopupDialogs["CONFIRM_PURCHASE_TOKEN_ITEM"] = {
 	hasItemFrame = 1,
 }
 
+StaticPopupDialogs["CONFIRM_PURCHASE_NONREFUNDABLE_ITEM"] = {
+	text = CONFIRM_PURCHASE_NONREFUNDABLE_ITEM,
+	button1 = YES,
+	button2 = NO,
+	OnAccept = function()
+		BuyMerchantItem(MerchantFrame.itemIndex, MerchantFrame.count);
+	end,
+	OnCancel = function()
+
+	end,
+	OnShow = function()
+
+	end,
+	OnHide = function()
+
+	end,
+	timeout = 0,
+	hideOnEscape = 1,
+	hasItemFrame = 1,
+}
+
 StaticPopupDialogs["CONFIRM_UPGRADE_ITEM"] = {
 	text = CONFIRM_UPGRADE_ITEM,
 	button1 = YES,
@@ -2230,6 +2251,18 @@ StaticPopupDialogs["CONVERT_TO_RAID"] = {
 	OnAccept = function(self, data)
 		ConvertToRaid();
 		InviteUnit(data);
+	end,
+	timeout = 0,
+	exclusive = 1,
+	hideOnEscape = 1,
+	showAlert = 1
+};
+StaticPopupDialogs["LFG_LIST_AUTO_ACCEPT_CONVERT_TO_RAID"] = {
+	text = CONVERT_TO_RAID_LABEL,
+	button1 = CONVERT,
+	button2 = CANCEL,
+	OnAccept = function(self, data)
+		ConvertToRaid();
 	end,
 	timeout = 0,
 	exclusive = 1,

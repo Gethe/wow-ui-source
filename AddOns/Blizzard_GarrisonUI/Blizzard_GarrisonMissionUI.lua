@@ -515,7 +515,6 @@ function GarrisonMissionList_SetTab(self)
 	else
 		list.showInProgress = true;
 		GarrisonMissonListTab_SetSelected(list.Tab1, false);
-		list:SetScript("OnUpdate", GarrisonMissionFrame_OnUpdate);
 	end
 	GarrisonMissonListTab_SetSelected(self, true);
 	GarrisonMissionList_UpdateMissions();
@@ -550,22 +549,20 @@ function GarrisonMissionList_UpdateMissions()
 	GarrisonMissionList_Update();
 end
 
-function GarrisonMissionFrame_OnUpdate()
-	local self = GarrisonMissionFrame.MissionTab.MissionList;
+function GarrisonMissionList_OnUpdate(self)
 	if (self.showInProgress) then
 		C_Garrison.GetInProgressMissions(self.inProgressMissions);
 		self.Tab2:SetText(WINTERGRASP_IN_PROGRESS.." - "..#self.inProgressMissions)
-		
-		if( #self.inProgressMissions == 0) then
-			self:SetScript("OnUpdate", nil);
-		end
+		GarrisonMissionList_Update();
 	else
-		self.availableMissions = C_Garrison.GetAvailableMissions();
-		Garrison_SortMissions(self.availableMissions);
-		self.Tab1:SetText(AVAILABLE.." - "..#self.availableMissions)
-		self:SetScript("OnUpdate", nil);
+		local timeNow = GetTime();
+		for i = 1, #self.availableMissions do
+			if ( self.availableMissions[i].offerEndTime and self.availableMissions[i].offerEndTime <= timeNow ) then
+				GarrisonMissionList_UpdateMissions();
+				break;
+			end
+		end
 	end
-	GarrisonMissionList_Update();
 end
 
 function GarrisonMissionList_Update()
@@ -868,7 +865,8 @@ function GarrisonMission_DetermineCounterableThreats(missionID)
 								threats.worker[counterMechanicID] = (threats.worker[counterMechanicID] or 0) + 1;
 							end
 						else
-							if ( bias >= 0.0 ) then
+							local isFullCounter = C_Garrison.IsMechanicFullyCountered(missionID, follower.followerID, counterMechanicID, abilities[j].id);
+							if ( isFullCounter ) then
 								threats.full[counterMechanicID] = (threats.full[counterMechanicID] or 0) + 1;
 							else
 								threats.partial[counterMechanicID] = (threats.partial[counterMechanicID] or 0) + 1;
@@ -1051,6 +1049,14 @@ function GarrisonMissionPage_OnHide(self)
 	GarrisonMissionFrame.FollowerList.showCounters = false;
 	GarrisonMissionFrame.FollowerList.canExpand = false;
 	GarrisonMissionFrame.FollowerList.showUncollected = true;
+end
+
+function GarrisonMissionPage_OnUpdate(self)
+	if ( self.missionInfo.offerEndTime and self.missionInfo.offerEndTime <= GetTime() ) then
+		-- mission expired
+		GarrisonMissionFrame_ClearMouse();
+		self.CloseButton:Click();
+	end
 end
 
 function GarrisonMissionPage_ShowMission(missionInfo)
@@ -1897,11 +1903,8 @@ function GarrisonMissionMechanicFollowerCounter_OnEnter(self)
 end
 
 function GarrisonMissionMechanicFollowerCounter_OnLeave(self)
-	if ( self.info and self.info.traitID ) then
-		GarrisonFollowerAbilityTooltip:Hide();
-	else
-		GarrisonMissionMechanicFollowerCounterTooltip:Hide();
-	end
+	GarrisonFollowerAbilityTooltip:Hide();
+	GarrisonMissionMechanicFollowerCounterTooltip:Hide();
 end
 
 ---------------------------------------------------------------------------------
@@ -2177,9 +2180,7 @@ end
 
 function GarrisonMissionComplete_SetFollowerLevel(followerFrame, level, quality, currXP, maxXP)
 	local maxLevel = GarrisonMissionFrame.followerMaxLevel;
-	local maxQuality = GarrisonMissionFrame.followerMaxQuality;
 	level = min(level, maxLevel);
-	quality = min(quality, maxQuality);
 	if ( maxXP and maxXP > 0 ) then
 		followerFrame.XP:SetMinMaxValues(0, maxXP);
 		followerFrame.XP:SetValue(currXP);
@@ -2787,6 +2788,8 @@ function GarrisonMissionComplete_AnimXPBarOnFinish(xpBar)
 			-- at max level progress the quality
 			nextLevel = xpBar.level;
 			nextQuality = xpBar.quality + 1;
+			-- and cap it to the max attainable via xp	
+			quality = min(quality, GarrisonMissionFrame.followerMaxQuality);
 		else
 			nextLevel = xpBar.level + 1;
 			nextQuality = xpBar.quality;

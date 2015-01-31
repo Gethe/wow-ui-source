@@ -572,40 +572,36 @@ VideoData["Display_VerticalSyncDropDown"]={
 }
 
 -------------------------------------------------------------------------------------------------------
-local function GenerateMSAAData(data, ...)
-	for i = 1, select("#", ...), 2 do
-		local msaaQuality, sampleCount = select(i, ...);
-		data[#data + 1] = {
-			text = ANTIALIASING_MSAA_FORMAT:format(sampleCount),
-			cvars =	{
-				ffxAntiAliasingMode = 0,
-				RenderScale = 1,
-				MSAAQuality = msaaQuality,
-			},
-		};
+local function GenerateMSAAData(data, advanced, ...)
+	local lastSampleCount;
+	for i = 1, select("#", ...), 3 do
+		local msaaQuality, sampleCount, coverageCount = select(i, ...);
+
+		if advanced or sampleCount ~= lastSampleCount then
+			data[#data + 1] = {
+				text = advanced and ADVANCED_ANTIALIASING_MSAA_FORMAT:format(sampleCount, coverageCount) or ANTIALIASING_MSAA_FORMAT:format(sampleCount),
+				cvars =	{
+					ffxAntiAliasingMode = not advanced and 0 or nil,
+					RenderScale = not advanced and 1 or nil,
+					MSAAQuality = msaaQuality,
+				},
+			};
+
+			lastSampleCount = sampleCount;
+		end
 	end
 end
 
-local function GenerateAntiAliasingDropDownData()
-	local data = {};
+local function GenerateFFXAntiAliasingData(data, advanced)
 	local fxaa, cmaa = AntiAliasingSupported();
-
-	data[#data + 1] = {
-		text = VIDEO_OPTIONS_NONE,
-		cvars =	{
-			ffxAntiAliasingMode = 0,
-			RenderScale = 1,
-			MSAAQuality = 0,
-		},
-	};
 
 	if fxaa then
 		data[#data + 1] = {
 			text = ANTIALIASING_FXAA_LOW,
 			cvars =	{
 				ffxAntiAliasingMode = 1,
-				RenderScale = 1,
-				MSAAQuality = 0,
+				RenderScale = not advanced and 1 or nil,
+				MSAAQuality = not advanced and 0 or nil,
 			},
 		};
 
@@ -613,8 +609,8 @@ local function GenerateAntiAliasingDropDownData()
 			text = ANTIALIASING_FXAA_HIGH,
 			cvars =	{
 				ffxAntiAliasingMode = 2,
-				RenderScale = 1,
-				MSAAQuality = 0,
+				RenderScale = not advanced and 1 or nil,
+				MSAAQuality = not advanced and 0 or nil,
 			},
 		};
 	end
@@ -624,13 +620,30 @@ local function GenerateAntiAliasingDropDownData()
 			text = ANTIALIASING_CMAA,
 			cvars =	{
 				ffxAntiAliasingMode = 3,
-				RenderScale = 1,
-				MSAAQuality = 0,
+				RenderScale = not advanced and 1 or nil,
+				MSAAQuality = not advanced and 0 or nil,
 			},
 		};
 	end
 
-	GenerateMSAAData(data, MultiSampleAntiAliasingSupported());
+	return fxaa, cmaa;
+end
+
+local function GenerateAntiAliasingDropDownData()
+	local data = {};
+	
+	data[#data + 1] = {
+		text = VIDEO_OPTIONS_NONE,
+		cvars =	{
+			ffxAntiAliasingMode = 0,
+			RenderScale = 1,
+			MSAAQuality = 0,
+		},
+	};
+
+	local fxaa, cmaa = GenerateFFXAntiAliasingData(data, false);
+
+	GenerateMSAAData(data, false, MultiSampleAntiAliasingSupported());
 
 	data[#data + 1] = {
 		text = ANTIALIASING_SSAA,
@@ -1059,43 +1072,33 @@ VideoData["Graphics_SSAODropDown"]={
 	description = OPTION_TOOLTIP_SSAO,
 
 	data = {
-		[1] = {
+		{
 			text = VIDEO_OPTIONS_DISABLED,
 			cvars =	{
 				ssao = 0,
 			},
 		},
-		[2] = {
+		{
 			text = VIDEO_OPTIONS_LOW,
 			cvars =	{
 				ssao = 1,
 			},
 		},
-		[3] = {
+		{
 			text = VIDEO_OPTIONS_HIGH,
 			cvars =	{
 				ssao = 2,
 			},
 		},
-	},
+		{
+			text = VIDEO_OPTIONS_ULTRA,
+			cvars =	{
+				ssao = 3,
+			},
 
-	hbaoOption = {
-		text = VIDEO_OPTIONS_ULTRA,
-		cvars =	{
-			ssao = 3,
+			tooltip = VIDEO_OPTIONS_SSAO_ULTRA,
 		},
-
-		tooltip = VIDEO_OPTIONS_SSAO_ULTRA,
 	},
-
-	onrefresh = function(self)
-		local hbaoSupported = SSAOSupported();
-		if hbaoSupported then
-			self.data[4] = self.hbaoOption;
-		else
-			self.data[4] = nil;
-		end
-	end,
 
 	dependent = {
 		"Graphics_Quality",
@@ -1108,42 +1111,32 @@ VideoData["RaidGraphics_SSAODropDown"]={
 	description = OPTION_TOOLTIP_SSAO,
 
 	data = {
-		[1] = {
+		{
 			text = VIDEO_OPTIONS_DISABLED,
 			cvars =	{
 				raidSSAO = 0,
 			},
 		},
-		[2] = {
+		{
 			text = VIDEO_OPTIONS_LOW,
 			cvars =	{
 				raidSSAO = 1,
 			},
 		},
-		[3] = {
+		{
 			text = VIDEO_OPTIONS_HIGH,
 			cvars =	{
 				raidSSAO = 2,
 			},
 		},
-	},
-
-	hbaoOption = {
-		text = VIDEO_OPTIONS_ULTRA,
-		cvars =	{
-			raidSSAO = 3,
+		{
+			text = VIDEO_OPTIONS_ULTRA,
+			cvars =	{
+				raidSSAO = 3,
+			},
+			tooltip = VIDEO_OPTIONS_SSAO_ULTRA,
 		},
-		tooltip = VIDEO_OPTIONS_SSAO_ULTRA,
 	},
-
-	onrefresh = function(self)
-		local hbaoSupported = SSAOSupported();
-		if hbaoSupported then
-			self.data[4] = self.hbaoOption;
-		else
-			self.data[4] = nil;
-		end
-	end,
 
 	dependent = {
 		"RaidGraphics_Quality",
@@ -1723,21 +1716,21 @@ VideoData["Graphics_LightingQualityDropDown"]={
 		[1] = {
 			text = VIDEO_OPTIONS_LOW,
 			cvars =	{
-				LightMode = GetDefaultVideoQualityOption("LightMode", 1, 1),
+				LightMode = GetDefaultVideoQualityOption("LightMode", 1, 0),
 			},
 			tooltip = VIDEO_OPTIONS_LIGHTING_QUALITY_LOW,
 		},
 		[2] = {
 			text = VIDEO_OPTIONS_MEDIUM,
 			cvars =	{
-				LightMode = GetDefaultVideoQualityOption("LightMode", 2, 2),
+				LightMode = GetDefaultVideoQualityOption("LightMode", 2, 1),
 			},
 			tooltip = VIDEO_OPTIONS_LIGHTING_QUALITY_MEDIUM,
 		},
 		[3] = {
 			text = VIDEO_OPTIONS_HIGH,
 			cvars =	{
-				LightMode = GetDefaultVideoQualityOption("LightMode", 3, 3),
+				LightMode = GetDefaultVideoQualityOption("LightMode", 3, 2),
 			},
 			tooltip = VIDEO_OPTIONS_LIGHTING_QUALITY_HIGH,
 		},
@@ -1756,21 +1749,21 @@ VideoData["RaidGraphics_LightingQualityDropDown"]={
 		[1] = {
 			text = VIDEO_OPTIONS_LOW,
 			cvars =	{
-				RAIDLightMode = GetDefaultVideoQualityOption("RAIDLightMode", 1, 1, true),
+				RAIDLightMode = GetDefaultVideoQualityOption("RAIDLightMode", 1, 0, true),
 			},
 			tooltip = VIDEO_OPTIONS_LIGHTING_QUALITY_LOW,
 		},
 		[2] = {
 			text = VIDEO_OPTIONS_MEDIUM,
 			cvars =	{
-				RAIDLightMode = GetDefaultVideoQualityOption("RAIDLightMode", 2, 2, true),
+				RAIDLightMode = GetDefaultVideoQualityOption("RAIDLightMode", 2, 1, true),
 			},
 			tooltip = VIDEO_OPTIONS_LIGHTING_QUALITY_MEDIUM,
 		},
 		[3] = {
 			text = VIDEO_OPTIONS_HIGH,
 			cvars =	{
-				RAIDLightMode = GetDefaultVideoQualityOption("RAIDLightMode", 3, 3, true),
+				RAIDLightMode = GetDefaultVideoQualityOption("RAIDLightMode", 3, 2, true),
 			},
 			tooltip = VIDEO_OPTIONS_LIGHTING_QUALITY_HIGH,
 		},
@@ -1904,6 +1897,62 @@ VideoData["Advanced_HardwareCursorDropDown"]={
 	restart = true,
 }
 
+VideoData["Advanced_MultisampleAntiAliasingDropDown"]={
+	name = MULTISAMPLE_ANTIALIASING;
+	description = OPTION_TOOLTIP_ADVANCED_MSAA,
+	onload =
+		function(self)
+			self.data = {
+				{
+					text = VIDEO_OPTIONS_NONE,
+					cvars =	{
+						MSAAQuality = 0,
+					},
+				},
+			};
+
+			GenerateMSAAData(self.data, true, MultiSampleAntiAliasingSupported());
+		end,
+}
+
+VideoData["Advanced_PostProcessAntiAliasingDropDown"]={
+	name = POSTPROCESS_ANTI_ALIASING;
+	description = OPTION_TOOLTIP_ADVANCED_PPAA,
+	onload =
+		function(self)
+			self.data = {
+				{
+					text = VIDEO_OPTIONS_NONE,
+					cvars =	{
+						ffxAntiAliasingMode = 0,
+					},
+				}
+			};
+
+			GenerateFFXAntiAliasingData(self.data, true);
+		end,
+}
+
+VideoData["Advanced_ResampleQualityDropDown"]={
+	name = RESAMPLE_QUALITY;
+	description = OPTION_TOOLTIP_RESAMPLE_QUALITY,
+
+	data = {
+		{
+			text = RESAMPLE_QUALITY_BILINEAR,
+			cvars =	{
+				resampleQuality = 0,
+			},
+		},
+		{
+			text = RESAMPLE_QUALITY_BICUBIC,
+			cvars =	{
+				resampleQuality = 1,
+			},
+		},
+	},
+}
+
 VideoData["Advanced_MaxFPSSlider"]={
 	name = MAXFPS;
 	tooltip = OPTION_MAXFPS,
@@ -1955,7 +2004,6 @@ VideoData["Advanced_GammaSlider"]={
 			if((IsMacClient() and not Display_DisplayModeDropDown:fullscreenmode()) or (not IsMacClient() and Display_DisplayModeDropDown:windowedmode())) then
 				self:Hide();
 				checkbox:Hide();
-				Advanced_ShowHDModels:SetPoint("TOPLEFT", Advanced_MaxFPSBKCheckBox, "BOTTOMLEFT", 0, -20);
 			else
 				self:Show();
 				checkbox:Show();
@@ -1965,7 +2013,6 @@ VideoData["Advanced_GammaSlider"]={
 				else
 					VideoOptions_Enable(self);
 				end
-				Advanced_ShowHDModels:SetPoint("TOPLEFT", checkbox, "BOTTOMLEFT", 0, -35);
 			end
 		end,
 	initialize = function(self)
@@ -2018,6 +2065,16 @@ VideoData["Advanced_StereoEnabled"]={
 VideoData["Advanced_ShowHDModels"]={
 	name = SHOW_HD_MODELS_TEXT;
 	tooltip = OPTION_TOOLTIP_SHOW_HD_MODELS,
+}
+
+VideoData["Advanced_MultisampleAlphaTest"]={
+	name = MULTISAMPLE_ALPHA_TEST,
+	tooltip = OPTION_TOOLTIP_MULTISAMPLE_ALPHA_TEST,
+}
+
+VideoData["Advanced_RenderScaleSlider"]={
+	name = RENDER_SCALE;
+	tooltip = OPTION_TOOLTIP_RENDER_SCALE,
 }
 
 -------------------------------------------------------------------------------------------------------

@@ -194,7 +194,7 @@
 		</Scripts>
 	</Frame>
 	
-	<OffScreenFrame name="OffScreenFrame" parent="UIParent">
+	<OffScreenFrame name="OffScreenFrame">
 		<Size x="1024" y="1024"/>
 		<Anchors>
 			<Anchor point="TOPRIGHT" relativePoint="TOPLEFT" />

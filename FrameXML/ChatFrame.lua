@@ -3090,8 +3090,12 @@ function ChatFrame_MessageEventHandler(self, event, ...)
 			end
 		elseif (type == "CHANNEL_NOTICE") then
 			local globalstring = _G["CHAT_"..arg1.."_NOTICE_BN"];
-			if ( not globalstring ) then
-				globalstring = _G["CHAT_"..arg1.."_NOTICE"];
+			if( arg1 == "TRIAL_RESTRICTED" ) then
+				globalstring = GameLimitedMode_GetString("CHAT_TRIAL_RESTRICTED_NOTICE");
+			else
+				if ( not globalstring ) then
+					globalstring = _G["CHAT_"..arg1.."_NOTICE"];
+				end
 			end
 			local accessID = ChatHistory_GetAccessID(Chat_GetChatCategory(type), arg8);
 			local typeID = ChatHistory_GetAccessID(infoType, arg8, arg12);

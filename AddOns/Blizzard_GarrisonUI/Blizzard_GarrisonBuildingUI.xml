@@ -980,7 +980,7 @@
 									<OnEnter>
 										self.texture:SetAlpha(1.0);
 										GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
-										GameTooltip:SetText(REMOVE);
+										GameTooltip:SetText(REMOVE_FOLLOWER);
 									</OnEnter>
 									<OnLeave>
 										self.texture:SetAlpha(0.75);

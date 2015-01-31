@@ -278,6 +278,12 @@
 								</FontString>
 							</Layer>
 						</Layers>
+						<Scripts>
+							<OnShow>
+								self.selectedID = nil;
+								Graphics_ControlRefreshValue(self);
+							</OnShow>
+						</Scripts>
 					</Frame>
 					
 					<Frame name="$parentVerticalSyncDropDown" inherits="VideoOptionsDropDownMenuTemplate" id="10">
@@ -1193,9 +1199,71 @@
 					</Layer>
 				</Layers>
 			</Frame>
-			<Frame name="$parentGraphicsAPIDropDown" inherits="VideoOptionsDropDownMenuTemplate" id="16">
+			<Frame name="$parentMultisampleAntiAliasingDropDown" inherits="VideoOptionsDropDownMenuTemplate" id="15">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeTo="$parentHardwareCursorDropDown" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="0" y="-8"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<FontString name="$parentLabel" inherits="OptionsFontSmall" text="MULTISAMPLE_ANTI_ALIASING" >
+							<Anchors>
+								<Anchor point="RIGHT" relativePoint="LEFT"/>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnShow>
+						self.selectedID = nil;
+						Graphics_ControlRefreshValue(self);
+					</OnShow>
+				</Scripts>
+			</Frame>
+			<Frame name="$parentPostProcessAntiAliasingDropDown" inherits="VideoOptionsDropDownMenuTemplate" id="15">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentMultisampleAntiAliasingDropDown" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="0" y="-8"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<FontString name="$parentLabel" inherits="OptionsFontSmall" text="POSTPROCESS_ANTI_ALIASING_ABREV" >
+							<Anchors>
+								<Anchor point="RIGHT" relativePoint="LEFT"/>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnShow>
+						self.selectedID = nil;
+						Graphics_ControlRefreshValue(self);
+					</OnShow>
+				</Scripts>
+			</Frame>
+			<Frame name="$parentResampleQualityDropDown" inherits="VideoOptionsDropDownMenuTemplate" id="16">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentPostProcessAntiAliasingDropDown" relativePoint="BOTTOMLEFT" x="0" y="-8" />
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<FontString name="$parentLabel" inherits="OptionsFontSmall" text="RESAMPLE_QUALITY" >
+							<Anchors>
+								<Anchor point="RIGHT" relativePoint="LEFT"/>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+			</Frame>
+			<Frame name="$parentGraphicsAPIDropDown" inherits="VideoOptionsDropDownMenuTemplate" id="16">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentResampleQualityDropDown" relativePoint="BOTTOMLEFT">
 						<Offset>
 							<AbsDimension x="0" y="-8"/>
 						</Offset>
@@ -1304,8 +1372,8 @@
 			</CheckButton>
 			<!-- column B -->
 
-			<Slider name="$parentMaxFPSSlider" inherits="VideoOptionsSliderTemplate" minValue="8" maxValue="200" valueStep="5" obeyStepOnDrag="true">
-				<Size x="10" y="17"/>
+			<Slider name="$parentMaxFPSSlider" inherits="VideoOptionsSliderTemplate" minValue="8" maxValue="200" valueStep="1" obeyStepOnDrag="true">
+				<Size x="180" y="17"/>
 				<Anchors>
 					<Anchor point="LEFT" relativeTo="$parentBufferingDropDown" relativePoint="RIGHT">
 						<Offset x="80" y="-5"/>
@@ -1313,8 +1381,6 @@
 				</Anchors>
 				<Scripts>		
 					<OnLoad>
-						local width = 2 * (Display_VerticalSyncDropDown:GetWidth() - 25 - 25)
-						self:SetWidth(width);
 						local name = self:GetName();
 						self.type = CONTROLTYPE_SLIDER;
 						self.cvar = "maxfps";
@@ -1333,11 +1399,13 @@
 						
 						_G[name.."Text"]:SetFontObject("OptionsFontSmall");
 						_G[name.."Text"]:SetText(MAXFPS);
+						
+						_G[name.."High"]:Hide();
 
-						local minValue = "8";
-						local maxValue = "200";
-						_G[name.."Low"]:SetText(minValue);
-						_G[name.."High"]:SetText(maxValue);
+						self.Label = _G[name.."Low"];
+						self.Label:ClearAllPoints();
+						self.Label:SetPoint("LEFT", self, "RIGHT", 3, 2);
+
 						VideoOptionsSlider_OnLoad(self);
 					</OnLoad>
 					<OnValueChanged>
@@ -1345,6 +1413,7 @@
 							Graphics_EnableApply(self);
 							self.newValue = value;
 						end
+						self.Label:SetFormattedText(FPS_FORMAT, value);
 					</OnValueChanged>
 				</Scripts>
 			</Slider>
@@ -1374,8 +1443,8 @@
 					</OnClick>
 				</Scripts>
 			</CheckButton>
-			<Slider name="$parentMaxFPSBKSlider" inherits="VideoOptionsSliderTemplate" minValue="8" maxValue="200" valueStep="5" obeyStepOnDrag="true">
-				<Size x="10" y="17"/>
+			<Slider name="$parentMaxFPSBKSlider" inherits="VideoOptionsSliderTemplate" minValue="8" maxValue="200" valueStep="1" obeyStepOnDrag="true">
+				<Size x="180" y="17"/>
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeTo="$parentMaxFPSSlider" relativePoint="BOTTOMLEFT">
 						<Offset x="0" y="-25"/>
@@ -1383,8 +1452,6 @@
 				</Anchors>
 				<Scripts>
 					<OnLoad>
-						local width = 2 * (Display_VerticalSyncDropDown:GetWidth() - 25 - 25)
-						self:SetWidth(width);
 						local name = self:GetName();
 						self.type = CONTROLTYPE_SLIDER;
 						self.cvar = "maxfpsbk";
@@ -1401,10 +1468,11 @@
 							end;
 						_G[name.."Text"]:SetFontObject("OptionsFontSmall");
 						_G[name.."Text"]:SetText(MAXFPSBK);
-						local minValue = "8";
-						local maxValue = "200";
-						_G[name.."Low"]:SetText(minValue);
-						_G[name.."High"]:SetText(maxValue);
+						_G[name.."High"]:Hide();
+
+						self.Label = _G[name.."Low"];
+						self.Label:ClearAllPoints();
+						self.Label:SetPoint("LEFT", self, "RIGHT", 3, 2);
 						VideoOptionsSlider_OnLoad(self);
 					</OnLoad>
 					<OnValueChanged>
@@ -1412,6 +1480,7 @@
 							Graphics_EnableApply(self);
 							self.newValue = value;
 						end
+						self.Label:SetFormattedText(FPS_FORMAT, value);
 					</OnValueChanged>
 				</Scripts>
 			</Slider>   
@@ -1441,12 +1510,89 @@
 					</OnClick>
 				</Scripts>
 			</CheckButton>
+			<CheckButton name="$parentShowHDModels" inherits="VideoOptionsSmallCheckButtonTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentMaxFPSBKSlider" relativePoint="BOTTOMLEFT" x="-25" y="-20"/>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						self.type = CONTROLTYPE_CHECKBOX;
+						self.cvar = "hdPlayerModels";
+						self.name = SHOW_HD_MODELS_TEXT;
+						self.tooltip = OPTION_TOOLTIP_SHOW_HD_MODELS;
+						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
+					</OnLoad>
+				</Scripts>
+			</CheckButton>
+			<CheckButton name="$parentMultisampleAlphaTest" inherits="VideoOptionsSmallCheckButtonTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentShowHDModels" relativePoint="BOTTOMLEFT" x="0" y="-20"/>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						self.type = CONTROLTYPE_CHECKBOX;
+						self.cvar = "msaaAlphaTest";
+						self.name = MULTISAMPLE_ALPHA_TEST;
+						self.tooltip = OPTION_TOOLTIP_MULTISAMPLE_ALPHA_TEST;
+						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
+					</OnLoad>
+				</Scripts>
+			</CheckButton>
+			<Slider name="$parentRenderScaleSlider" inherits="VideoOptionsSliderTemplate" minValue=".5" maxValue="2.0" valueStep=".05" obeyStepOnDrag="true">
+				<Size x="180" y="17"/>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentMultisampleAlphaTest" relativePoint="BOTTOMLEFT">
+						<Offset x="25" y="-25"/>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						local name = self:GetName();
+						self.type = CONTROLTYPE_SLIDER;
+						self.cvar = "RenderScale";
+						
+						self.tooltip = OPTION_TOOLTIP_RENDER_SCALE;
+						self.name = RENDER_SCALE;
+						
+						self.SetDisplayValue = self.SetValue;
+						
+						self.SetValue = function(self, value)
+							self:SetDisplayValue(value);
+							
+							if self:IsVisible() then
+								BlizzardOptionsPanel_SetCVarSafe(self.cvar, value);
+							end
+						end
+							
+						self.GetCurrentValue = function(self)
+							return BlizzardOptionsPanel_GetCVarSafe(self.cvar);
+						end;
+							
+						_G[name.."Text"]:SetFontObject("OptionsFontSmall");
+						_G[name.."Text"]:SetText(RENDER_SCALE);
+						_G[name.."High"]:Hide();
+
+						self.Label = _G[name.."Low"];
+						self.Label:ClearAllPoints();
+						self.Label:SetPoint("LEFT", self, "RIGHT", 3, 2);
+						VideoOptionsSlider_OnLoad(self);
+					</OnLoad>
+					<OnValueChanged>
+						if(userInput) then
+							Graphics_EnableApply(self);
+							self.newValue = value;
+						end
+						self.Label:SetFormattedText(PERCENTAGE_STRING, math.floor((value * 100) + .5));
+					</OnValueChanged>
+					<OnShow>
+						self:SetDisplayValue(self:GetCurrentValue());
+					</OnShow>
+				</Scripts>
+			</Slider>
 			<Slider name="$parentGammaSlider" inherits="VideoOptionsSliderTemplate" minValue="-0.5" maxValue="0.5" defaultValue="0" valueStep=".1">
 				<Size x="10" y="17"/>
 				<Anchors>
-					<Anchor point="TOPLEFT" relativeTo="$parentMaxFPSBKSlider" relativePoint="BOTTOMLEFT">
-						<Offset x="0" y="-25"/>
-					</Anchor>
+					<Anchor point="TOPLEFT" relativeTo="$parentRenderScaleSlider" relativePoint="BOTTOMLEFT" x="0" y="-25" />
 				</Anchors>
 				<Layers>
 					<Layer level="ARTWORK">
@@ -1472,6 +1618,7 @@
 							SetGamma(value);
 						end
 						self.GetCurrentValue = function (self) return GetGamma(); end;
+						
 						_G[self:GetName().."Text"]:SetFontObject("OptionsFontSmall");
 						_G[self:GetName().."Text"]:SetText(GAMMA);
 						_G[self:GetName().."Low"]:SetText("-");
@@ -1500,31 +1647,17 @@
 						self:onclick();
 					</OnClick>
 				</Scripts>
-			</CheckButton>		
-			<CheckButton name="$parentShowHDModels" inherits="VideoOptionsSmallCheckButtonTemplate">
-				<Anchors>
-					<Anchor point="TOPLEFT" relativeTo="$parentDesktopGamma" relativePoint="BOTTOMLEFT" x="0" y="-20"/>
-				</Anchors>
-				<Scripts>
-					<OnLoad>
-						self.type = CONTROLTYPE_CHECKBOX;
-						self.cvar = "hdPlayerModels";
-						self.name = SHOW_HD_MODELS_TEXT;
-						self.tooltip = OPTION_TOOLTIP_SHOW_HD_MODELS;
-						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
-					</OnLoad>
-				</Scripts>
 			</CheckButton>
 		</Frames>
 
-			<!-- stereo -->
+		<!-- stereo -->
 		<Layers>
 			<Layer level="ARTWORK">
 				<FontString name="$parentStereoHeader" text="STEREO_VIDEO_LABEL" inherits="OptionsFontHighlight" justifyH="LEFT" justifyV="TOP">
 					<Anchors>
 						<Anchor point="TOPLEFT">
 							<Offset>
-								<AbsDimension x="16" y="-256"/>
+								<AbsDimension x="16" y="-356"/>
 							</Offset>
 						</Anchor>
 					</Anchors>

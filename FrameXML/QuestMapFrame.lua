@@ -980,8 +980,8 @@ function QuestMapLog_ShowStoryTooltip(self)
 	for i = 1, #tooltip.Lines do
 		tooltip.Lines[i]:Hide();
 	end
-	for i = 1, #tooltip.CheckMarks do
-		tooltip.CheckMarks[i]:Hide();
+	for _, checkMark in pairs(tooltip.CheckMarks) do
+		checkMark:Hide();
 	end
 	
 	local numCriteria = GetAchievementNumCriteria(storyID);

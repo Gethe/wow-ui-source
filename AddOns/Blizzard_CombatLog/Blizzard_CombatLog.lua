@@ -2709,6 +2709,14 @@ function CombatLog_OnEvent(filterSettings, timestamp, event, hideCaster, sourceG
 		sourceEnabled = false;
 		
 	elseif ( event == "UNIT_DIED" or event == "UNIT_DESTROYED" or event == "UNIT_DISSIPATES" ) then
+		local recapID;
+		recapID, unconsciousOnDeath = ...;
+		-- handle death recaps
+		if ( destGUID == UnitGUID("player") ) then
+			local lineColor = COMBATLOG_DEFAULT_COLORS.unitColoring[COMBATLOG_FILTER_MINE];
+			return GetDeathRecapLink(recapID), lineColor.r, lineColor.g, lineColor.b;
+		end
+		
 		-- Swap Source with Dest
 		sourceName = destName;
 		sourceGUID = destGUID;
@@ -2721,12 +2729,6 @@ function CombatLog_OnEvent(filterSettings, timestamp, event, hideCaster, sourceG
 		spellEnabled = false;
 		valueEnabled = false;
 		
-		local recapID;
-		recapID, unconsciousOnDeath = ...;
-		
-		if ( recapID >= 0 ) then
-			return GetDeathRecapLink(recapID), 1, 1, 1;
-		end		
 	elseif ( event == "ENVIRONMENTAL_DAMAGE" ) then
 		--Environmental Type, Damage standard
 		environmentalType, amount, overkill, school, resisted, blocked, absorbed, critical, glancing, crushing = ...
