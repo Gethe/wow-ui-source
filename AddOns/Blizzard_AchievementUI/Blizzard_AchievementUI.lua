@@ -1078,6 +1078,7 @@ function AchievementButton_Expand (self, height)
 		end
 		if ( self.completed ) then
 			self.tabard:Show();
+			self.shield:SetFrameLevel(self.tabard:GetFrameLevel() + 1);
 			SetLargeGuildTabardTextures("player", self.tabard.emblem, self.tabard.background, self.tabard.border);
 		end
 		self.guildCornerL:Show();
@@ -1169,18 +1170,21 @@ end
 
 function AchievementButton_OnClick (self, button, down, ignoreModifiers)
 	if(IsModifiedClick() and not ignoreModifiers) then
+		local handled = nil;
 		if ( IsModifiedClick("CHATLINK") ) then
 			local achievementLink = GetAchievementLink(self.id);
 			if ( ChatEdit_GetActiveWindow() and achievementLink ) then
 				ChatEdit_InsertLink(achievementLink);
+				handled = true;
 			elseif ( SocialPostFrame and SocialPostFrame:IsShown() and achievementLink ) then
 				SocialPostFrame_InsertLink(achievementLink);
+				handled = true;
 			end
-		elseif ( IsModifiedClick("QUESTWATCHTOGGLE") ) then
+		end
+		if ( not handled and IsModifiedClick("QUESTWATCHTOGGLE") ) then
 			AchievementButton_ToggleTracking(self.id);
 		end
-		
-		return;
+		return;		
 	end
 
 	if ( self.selected ) then

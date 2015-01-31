@@ -19,6 +19,8 @@ function HeirloomsJournal_OnEvent(self, event, ...)
 		self:OnHeirloomsUpdated(...);
 	elseif event == "HEIRLOOM_UPGRADE_TARGETING_CHANGED" then
 		self:RefreshViewIfVisible();
+	elseif event == "INVENTORY_SEARCH_UPDATE" then
+		self:FullRefreshIfVisible();
 	end
 end
 
@@ -65,32 +67,27 @@ function HeirloomsJournal_UpdateButton(self)
 	self:GetParent():GetParent():UpdateButton(self);
 end
 
-function HeirloomsJournal_OnSearchTextChanged(self)
-	SearchBoxTemplate_OnTextChanged(self);
-	self:GetParent():OnSearchTextChanged(self:GetText());
-end
-
 function HeirloomsJournalSpellButton_OnEnter(self)
 	GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
-	if GameTooltip:SetHeirloomByItemID(self.itemID) then
-		self.UpdateTooltip = HeirloomsJournalSpellButton_OnEnter;
-	else
-		self.UpdateTooltip = nil;
-	end
+	GameTooltip:SetHeirloomByItemID(self.itemID);
+
+	self.UpdateTooltip = HeirloomsJournalSpellButton_OnEnter;
 
 	if self:GetParent():GetParent():ClearNewStatus(self.itemID) then
 		HeirloomsJournal_UpdateButton(self);
+	end
+
+	if IsModifiedClick("DRESSUP") then
+		ShowInspectCursor();
+	else
+		ResetCursor();
 	end
 end
 
 function HeirloomsJournalSpellButton_OnClick(self, button)
 	if IsModifiedClick() then
-		if IsModifiedClick("CHATLINK") then
-			local itemLink = C_Heirloom.GetHeirloomLink(self.itemID);
-			if itemLink  then
-				ChatEdit_InsertLink(itemLink);
-			end
-		end
+		local itemLink = C_Heirloom.GetHeirloomLink(self.itemID);
+		HandleModifiedItemClick(itemLink);
 	else
 		if SpellCanTargetItemID() then
 			if C_Heirloom.IsPendingHeirloomUpgrade() then
@@ -146,6 +143,7 @@ function HeirloomsMixin:OnLoad()
 
 	self:RegisterEvent("HEIRLOOMS_UPDATED");
 	self:RegisterEvent("HEIRLOOM_UPGRADE_TARGETING_CHANGED");
+	self:RegisterEvent("INVENTORY_SEARCH_UPDATE");
 end
 
 function HeirloomsMixin:OnHeirloomsUpdated(itemID, updateReason)
@@ -164,16 +162,6 @@ function HeirloomsMixin:OnHeirloomsUpdated(itemID, updateReason)
 		self:RefreshViewIfVisible();
 	else
 		-- Full update
-		self:FullRefreshIfVisible();
-	end
-end
-
-function HeirloomsMixin:OnSearchTextChanged(searchString)
-	searchString = searchString:lower();
-
-	if self.searchString ~= searchString then
-		self.searchString = searchString;
-
 		self:FullRefreshIfVisible();
 	end
 end
@@ -232,8 +220,8 @@ local function GetHeirloomCategoryFromInvType(invType)
 	elseif invType == "INVTYPE_WEAPON" or invType == "INVTYPE_SHIELD" or invType == "INVTYPE_RANGED" or invType == "INVTYPE_RANGED" or invType == "INVTYPE_2HWEAPON" or invType == "INVTYPE_RELIC"
 		or invType == "INVTYPE_WEAPONMAINHAND" or invType == "INVTYPE_WEAPONOFFHAND" or invType == "INVTYPE_HOLDABLE" or invType == "INVTYPE_THROWN" or invType == "INVTYPE_RANGEDRIGHT" then
 		return HEIRLOOMS_CATEGORY_WEAPON;
-	elseif invType == "INVTYPE_FINGER" or invType == "INVTYPE_TRINKET" then
-		return HEIRLOOMS_CATEGORY_TRINKETS_AND_RINGS;
+	elseif invType == "INVTYPE_FINGER" or invType == "INVTYPE_TRINKET" or invType == "INVTYPE_NECK" then
+		return HEIRLOOMS_CATEGORY_TRINKETS_RINGS_AND_NECKLACES;
 	end
 
 	return nil;
@@ -248,16 +236,6 @@ function HeirloomsMixin:DoesHeirloomItemIDPassCollectionFilters(itemID)
 
 	return (C_Heirloom.GetCollectedHeirloomFilter() and isKnown) 
 		or (C_Heirloom.GetUncollectedHeirloomFilter() and not isKnown);
-end
-
-function HeirloomsMixin:DoesHeirloomNameMatchSearchFilter(name)
-	if name then
-		if self.searchString == nil or #self.searchString == 0 then
-			return true;
-		end
-		return name:lower():match(self.searchString) ~= nil;
-	end
-	return false;
 end
 
 function HeirloomsMixin:DoesHeirloomMatchClassAndSpecFilters(itemID)
@@ -283,7 +261,7 @@ function HeirloomsMixin:SortHeirloomsIntoEquipmentBuckets()
 	for i = 1, C_Heirloom.GetNumHeirlooms() do
 		local itemID = C_Heirloom.GetHeirloomItemIDFromIndex(i);
 		
-		local name, itemEquipLoc, isPvP, itemTexture, upgradeLevel, source, effectiveLevel, minLevel, maxLevel = C_Heirloom.GetHeirloomInfo(itemID);
+		local name, itemEquipLoc, isPvP, itemTexture, upgradeLevel, source, searchFiltered, effectiveLevel, minLevel, maxLevel = C_Heirloom.GetHeirloomInfo(itemID);
 		local category = GetHeirloomCategoryFromInvType(itemEquipLoc);
 		if category then
 			-- Only show source filters for heirlooms that actually have that source
@@ -293,7 +271,7 @@ function HeirloomsMixin:SortHeirloomsIntoEquipmentBuckets()
 
 			if self:DoesHeirloomMatchClassAndSpecFilters(itemID) then
 				if (not source or not self:IsSourceFiltered(source)) and self:DoesHeirloomItemIDPassCollectionFilters(itemID) then
-					if self:DoesHeirloomNameMatchSearchFilter(name) then
+					if not searchFiltered then
 						if not equipBuckets[category] then
 							equipBuckets[category] = {};
 						end
@@ -356,7 +334,7 @@ local ITEM_EQUIP_SLOT_SORT_ORDER = {
 	HEIRLOOMS_CATEGORY_CHEST,
 	HEIRLOOMS_CATEGORY_LEGS,
 	HEIRLOOMS_CATEGORY_WEAPON,
-	HEIRLOOMS_CATEGORY_TRINKETS_AND_RINGS,
+	HEIRLOOMS_CATEGORY_TRINKETS_RINGS_AND_NECKLACES,
 }
 
 local NEW_ROW_OPCODE = -1; -- Used to indicate that the layout should move to the next row
@@ -522,7 +500,7 @@ function HeirloomsMixin:RefreshView()
 end
 
 function HeirloomsMixin:UpdateButton(button)
-	local name, itemEquipLoc, isPvP, itemTexture, upgradeLevel, source, effectiveLevel, minLevel, maxLevel = C_Heirloom.GetHeirloomInfo(button.itemID);
+	local name, itemEquipLoc, isPvP, itemTexture, upgradeLevel, source, searchFiltered, effectiveLevel, minLevel, maxLevel = C_Heirloom.GetHeirloomInfo(button.itemID);
 
 	button.iconTexture:SetTexture(itemTexture);
 	button.iconTextureUncollected:SetTexture(itemTexture);

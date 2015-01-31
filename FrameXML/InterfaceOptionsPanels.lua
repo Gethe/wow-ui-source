@@ -573,47 +573,57 @@ function InterfaceOptionsDisplayPanelPreviewTalentChanges_SetFunc()
 	end
 end
 
-function InterfaceOptionsDisplayPanelOutlineDropDown_OnEvent (self, event, ...)
-	if ( event == "VARIABLES_LOADED" ) then
-		self.cvar = "Outline";
+local function IsOutlineModeAllowed()
+	local _, instanceType = IsInInstance()
+	if ( instanceType == "raid" or instanceType == "pvp" ) then
+		return GetCVarBool("RaidOutlineEngineMode");
+	end
+	return GetCVarBool("OutlineEngineMode");
+end
 
-		local isOutlineModeSupported = IsOutlineModeSupported();
+function InterfaceOptionsDisplayPanelOutlineDropDown_OnShow(self)
+	self.cvar = "Outline";
 
-		local value = isOutlineModeSupported and GetCVar(self.cvar) or "0";
-		self.defaultValue = isOutlineModeSupported and GetCVarDefault(self.cvar) or "0";
-		self.value = value;
-		self.oldValue = value;
+	local isOutlineModeSupported = IsOutlineModeSupported();
+	local isOutlineModeAllowed = IsOutlineModeAllowed();
+	local canOutlineModeBeTurnedOn = isOutlineModeSupported and isOutlineModeAllowed;
 
-		UIDropDownMenu_SetWidth(self, 180);
-		UIDropDownMenu_Initialize(self, InterfaceOptionsDisplayPanelOutline_Initialize);
-		UIDropDownMenu_SetSelectedValue(self, value);
+	local value = canOutlineModeBeTurnedOn and GetCVar(self.cvar) or "0";
+	self.defaultValue = canOutlineModeBeTurnedOn and GetCVarDefault(self.cvar) or "0";
+	self.value = value;
+	self.oldValue = value;
 
-		self.SetValue = 
-			function (self, value)
-				self.value = value;
-				if ( isOutlineModeSupported ) then
-					SetCVar(self.cvar, self.value);
-				end
-				UIDropDownMenu_SetSelectedValue(self, self.value);
+	UIDropDownMenu_SetWidth(self, 180);
+	UIDropDownMenu_Initialize(self, InterfaceOptionsDisplayPanelOutline_Initialize);
+	UIDropDownMenu_SetSelectedValue(self, value);
+
+	self.SetValue = 
+		function (self, value)
+			self.value = value;
+			if ( canOutlineModeBeTurnedOn ) then
+				SetCVar(self.cvar, self.value);
 			end
-		self.GetValue =
-			function (self)
-				return UIDropDownMenu_GetSelectedValue(self);
-			end
-		self.RefreshValue =
-			function (self)
-				UIDropDownMenu_Initialize(self, InterfaceOptionsDisplayPanelOutline_Initialize);
-				UIDropDownMenu_SetSelectedValue(self, self.value);
-			end
-
-		if ( isOutlineModeSupported ) then
-			self.tooltip = OPTION_TOOLTIP_OBJECT_NPC_OUTLINE;
-		else
-			self.tooltip = OPTION_TOOLTIP_OBJECT_NPC_OUTLINE_NOT_SUPPORTED;
-			UIDropDownMenu_DisableDropDown(self);
+			UIDropDownMenu_SetSelectedValue(self, self.value);
 		end
-			
-		self:UnregisterEvent(event);
+	self.GetValue =
+		function (self)
+			return UIDropDownMenu_GetSelectedValue(self);
+		end
+	self.RefreshValue =
+		function (self)
+			UIDropDownMenu_Initialize(self, InterfaceOptionsDisplayPanelOutline_Initialize);
+			UIDropDownMenu_SetSelectedValue(self, self.value);
+		end
+
+	if ( canOutlineModeBeTurnedOn ) then
+		self.tooltip = OPTION_TOOLTIP_OBJECT_NPC_OUTLINE;
+		UIDropDownMenu_EnableDropDown(self);
+	elseif ( not isOutlineModeSupported ) then
+		self.tooltip = OPTION_TOOLTIP_OBJECT_NPC_OUTLINE_NOT_SUPPORTED;
+		UIDropDownMenu_DisableDropDown(self);
+	elseif ( not isOutlineModeAllowed ) then
+		self.tooltip = OPTION_TOOLTIP_OBJECT_NPC_OUTLINE_NOT_ALLOWED;
+		UIDropDownMenu_DisableDropDown(self);
 	end
 end
 
@@ -635,7 +645,7 @@ function InterfaceOptionsDisplayPanelOutline_Initialize()
 	end
 	UIDropDownMenu_AddButton(info);
 
-	if ( not IsOutlineModeSupported() ) then
+	if ( not IsOutlineModeSupported() or not IsOutlineModeAllowed() ) then
 		return;
 	end
 
@@ -1245,7 +1255,8 @@ function Twitter_Update()
 	else
 		panel.TwitterLoginButton:SetText(SOCIAL_TWITTER_SIGN_IN);
 	end
-	
+	panel.TwitterLoginButton:SetWidth(panel.TwitterLoginButton:GetTextWidth() + 30);
+
 	panel.EnableTwitter.LoginStatus:SetText(statusText);
 end
 

@@ -1118,14 +1118,13 @@
 					<OnLoad>
 						self.type = CONTROLTYPE_DROPDOWN;
 						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
-						self:RegisterEvent("VARIABLES_LOADED");
 					</OnLoad>
 					<OnEnter>
 						GameTooltip:SetOwner(self, "ANCHOR_TOPRIGHT");
 						GameTooltip:SetText(self.tooltip, nil, nil, nil, nil, true);
 					</OnEnter>
-					<OnEvent function="InterfaceOptionsDisplayPanelOutlineDropDown_OnEvent"/>
 					<OnLeave function="GameTooltip_Hide"/>
+					<OnShow function="InterfaceOptionsDisplayPanelOutlineDropDown_OnShow"/>
 				</Scripts>
 			</Frame>					
 			<CheckButton name="$parentShowFreeBagSpace" inherits="InterfaceOptionsCheckButtonTemplate">

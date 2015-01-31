@@ -436,6 +436,11 @@ function GarrisonFollowerListButton_OnClick(self, button)
 	if ( button == "LeftButton" ) then
 		PlaySound("UI_Garrison_CommandTable_SelectFollower");
 		followerFrame.selectedFollower = self.id;
+
+		if ( self.isCollected and followerFrame.FollowerList.canCastSpellsOnFollowers and SpellCanTargetGarrisonFollower() ) then
+			GarrisonFollower_DisplayUpgradeConfirmation(self.id);
+		end
+		
 		if ( followerFrame.FollowerList.canExpand ) then
 			if ( self.isCollected ) then
 				if (followerFrame.FollowerList.expandedFollower == self.id) then
@@ -900,6 +905,10 @@ function GarrisonFollowerPageModelUpgrade_Update(self)
 		local followerID = self:GetParent().followerID;
 		local followerInfo = followerID and C_Garrison.GetFollowerInfo(followerID);
 		if ( followerInfo and followerInfo.isCollected and followerInfo.status ~= GARRISON_FOLLOWER_ON_MISSION ) then
+			local isMaxLevel = (followerInfo.level == GARRISON_FOLLOWER_MAX_LEVEL);
+			self.Text:SetShown(isMaxLevel);
+			self.Icon:SetShown(isMaxLevel);
+			self.TextInvalid:SetShown(not isMaxLevel);
 			self:Show();
 			return;
 		end
@@ -907,6 +916,28 @@ function GarrisonFollowerPageModelUpgrade_Update(self)
 	self:Hide();
 end
 
+function GarrisionFollowerPageUpgradeTarget_OnLoad(self)
+	self:SetFrameLevel(self:GetParent():GetFrameLevel() + 5);
+	self:RegisterEvent("CURRENT_SPELL_CAST_CHANGED");
+end
+
+function GarrisionFollowerPageUpgradeTarget_OnEvent(self, event)
+	if (event == "CURRENT_SPELL_CAST_CHANGED") then
+		self:SetShown( SpellCanTargetGarrisonFollower() );
+	end
+end
+
+function GarrisonFollower_DisplayUpgradeConfirmation(followerID)
+	local followerInfo = followerID and C_Garrison.GetFollowerInfo(followerID);
+	if ( followerInfo and followerInfo.isCollected and followerInfo.status ~= GARRISON_FOLLOWER_ON_MISSION and followerInfo.level == GARRISON_FOLLOWER_MAX_LEVEL ) then
+		local name = ITEM_QUALITY_COLORS[followerInfo.quality].hex..followerInfo.name..FONT_COLOR_CODE_CLOSE;
+		StaticPopup_Show("CONFIRM_FOLLOWER_UPGRADE", name, nil, followerID);
+	end
+end
+
+function GarrisionFollowerPageUpgradeTarget_OnClick(self, button)
+	GarrisonFollower_DisplayUpgradeConfirmation(self:GetParent().followerID);
+end
 ---------------------------------------------------------------------------------
 --- Mission Sorting                                                           ---
 ---------------------------------------------------------------------------------

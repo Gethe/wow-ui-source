@@ -1017,21 +1017,33 @@
 								</Anchors>
 							</Frame>
 							<Button parentKey="Arena2v2" inherits="PVPConquestButtonTemplate" id="1">
+								<KeyValues>
+									 <KeyValue key="toolTipTitle" value="ARENA_BATTLES_2V2" type="global"/>
+								</KeyValues>
 								<Anchors>
 									<Anchor point="TOP" relativeKey="$parent.ArenaHeader" relativePoint="BOTTOM" y="20"/>
 								</Anchors>
 							</Button>
 							<Button parentKey="Arena3v3" inherits="PVPConquestButtonTemplate" id="2">
+								<KeyValues>
+									 <KeyValue key="toolTipTitle" value="ARENA_BATTLES_3V3" type="global"/>
+								</KeyValues>
 								<Anchors>
 									<Anchor point="TOP" relativeKey="$parent.Arena2v2" relativePoint="BOTTOM" y="0"/>
 								</Anchors>
 							</Button>
 							<Button parentKey="Arena5v5" inherits="PVPConquestButtonTemplate" id="3">
+								<KeyValues>
+									 <KeyValue key="toolTipTitle" value="ARENA_BATTLES_5V5" type="global"/>
+								</KeyValues>
 								<Anchors>
 									<Anchor point="TOP" relativeKey="$parent.Arena3v3" relativePoint="BOTTOM" y="0"/>
 								</Anchors>
 							</Button>
 							<Button parentKey="RatedBG" inherits="PVPConquestButtonTemplate" id="4">
+								<KeyValues>
+									 <KeyValue key="toolTipTitle" value="PVP_RATED_BATTLEGROUNDS" type="global"/>
+								</KeyValues>
 								<Anchors>
 									<Anchor point="TOP" relativeKey="$parent.RatedBGHeader" relativePoint="BOTTOM" y="20"/>
 								</Anchors>
@@ -1311,7 +1323,7 @@
 	</Frame>
 	
 	<Frame name="ConquestTooltip" parent="UIParent" frameStrata="TOOLTIP" hidden="true" clampedToScreen="true">
-		<Size x="200" y="196"/>
+		<Size x="200" y="225"/>
 		<Backdrop bgFile="Interface\Tooltips\UI-Tooltip-Background" edgeFile="Interface\Tooltips\UI-Tooltip-Border" tile="true">
 			<Color r="0" b="0" g="0"/>
 			<EdgeSize>
@@ -1326,9 +1338,14 @@
 		</Backdrop>
 		<Layers>
 			<Layer level="ARTWORK">
-				<FontString parentKey="WeeklyLabel" inherits="GameFontNormalMed3" text="ARENA_WEEKLY_STATS">
+				<FontString parentKey="Title" inherits="GameFontNormalMed3">
 					<Anchors>
 						<Anchor point="TOPLEFT" x="15" y="-15"/>
+					</Anchors>
+				</FontString>
+				<FontString parentKey="WeeklyLabel" inherits="GameFontNormalMed3" text="ARENA_WEEKLY_STATS">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.Title" relativePoint="BOTTOMLEFT" x="0" y="-13"/>
 					</Anchors>
 				</FontString>
 				<FontString parentKey="WeeklyBest" inherits="GameFontHighlight" text="">

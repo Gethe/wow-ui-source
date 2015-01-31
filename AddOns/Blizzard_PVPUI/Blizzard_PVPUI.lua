@@ -1106,6 +1106,8 @@ function ConquestFrameButton_OnEnter(self)
 	
 	local rating, seasonBest, weeklyBest, seasonPlayed, seasonWon, weeklyPlayed, weeklyWon, cap = GetPersonalRatedInfo(self.id);
 	
+	tooltip.Title:SetText(self.toolTipTitle);
+	
 	tooltip.WeeklyBest:SetText(PVP_BEST_RATING..weeklyBest);
 	tooltip.WeeklyGamesWon:SetText(PVP_GAMES_WON..weeklyWon);
 	tooltip.WeeklyGamesPlayed:SetText(PVP_GAMES_PLAYED..weeklyPlayed);
@@ -1116,9 +1118,9 @@ function ConquestFrameButton_OnEnter(self)
 
 	tooltip.ProjectedCap:SetText(cap);
 	
-	local maxWidth = max(tooltip.WeeklyBest:GetStringWidth(), tooltip.WeeklyGamesPlayed:GetStringWidth(),
-						tooltip.SeasonBest:GetStringWidth(), tooltip.SeasonGamesPlayed:GetStringWidth(),
-						tooltip.ProjectedCapLabel:GetStringWidth());
+	local maxWidth = max(tooltip.Title:GetStringWidth(),tooltip.WeeklyBest:GetStringWidth(),
+						tooltip.WeeklyGamesPlayed:GetStringWidth(),	tooltip.SeasonBest:GetStringWidth(),
+						tooltip.SeasonGamesPlayed:GetStringWidth(), tooltip.ProjectedCapLabel:GetStringWidth());
 	
 	tooltip:SetWidth(maxWidth + CONQUEST_TOOLTIP_PADDING);
 	tooltip:SetPoint("TOPLEFT", self, "TOPRIGHT", 0, 0);

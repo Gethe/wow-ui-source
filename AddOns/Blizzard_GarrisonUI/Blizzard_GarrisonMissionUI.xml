@@ -2549,7 +2549,18 @@
 								self:SetFrameLevel(self:GetParent().Model:GetFrameLevel() + 1);
 							</OnLoad>
 						</Scripts>
-					</Frame>					
+					</Frame>
+					<Button parentKey="UpgradeClickTarget" hidden="true">
+						<Anchors>
+							<Anchor point="TOPLEFT"/>
+							<Anchor point="BOTTOMRIGHT"/>
+						</Anchors>
+						<Scripts>
+							<OnLoad function="GarrisionFollowerPageUpgradeTarget_OnLoad"/>
+							<OnEvent function="GarrisionFollowerPageUpgradeTarget_OnEvent"/>
+							<OnClick function="GarrisionFollowerPageUpgradeTarget_OnClick"/>
+						</Scripts>
+					</Button>
 					<Frame parentKey="Source">
 						<Size x="230" y="80"/>
 						<Anchors>

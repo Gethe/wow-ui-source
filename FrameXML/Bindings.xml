@@ -1080,11 +1080,9 @@
 		if ( UIParent:IsShown() ) then
 			securecall("CloseMenus");
 			securecall("CloseAllWindows");
-			UIParent:Hide();
 			SetUIVisibility(false);
 			ActionStatus_DisplayMessage(format(UI_HIDDEN, GetBindingText(GetBindingKey("TOGGLEUI"))))
 		else
-			UIParent:Show();
 			SetUIVisibility(true);
 		end
 	</Binding>

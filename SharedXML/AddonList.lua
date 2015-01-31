@@ -598,11 +598,3 @@ function AddonTooltip_Update(owner)
 	end
 	AddonTooltip:Show()
 end
-
-function AddonTooltip_SetOwner(self, anchor, xOffset, yOffset)
-	if ( InGlue() ) then
-		AddonTooltip:SetOwner(self, xOffset, yOffset)
-	else
-		AddonTooltip:SetOwner(self, anchor, xOffset, yOffset)
-	end
-end

@@ -314,6 +314,11 @@ end
 function SocialScreenshotButton_ShowTooltip(button, width, height)
 	-- Calculate how much space we need to fit the screenshot
 	local ssWidth, ssHeight = CalculateScreenshotSize(width, height, SOCIAL_SCREENSHOT_TOOLTIP_MAX_WIDTH, SOCIAL_SCREENSHOT_TOOLTIP_MAX_HEIGHT);
+	local tooltipTitleWidth = SocialScreenshotTooltip.Title:GetWidth();
+	if ( tooltipTitleWidth > ssWidth ) then
+		ssHeight = ssHeight * tooltipTitleWidth / ssWidth;
+		ssWidth = tooltipTitleWidth;
+	end
 	SocialScreenshotTooltip:SetSize(ssWidth + 20, ssHeight + 44);
 	SocialScreenshotTooltip:SetPoint("TOPLEFT", button, "BOTTOMLEFT", 5, -12);
 	SocialScreenshotTooltip:Show();

@@ -43,6 +43,7 @@ ITEM_SEARCHBAR_LIST = {
 	"GuildItemSearchBox",
 	"VoidItemSearchBox",
 	"BankItemSearchBox",
+	"HeirloomsJournalSearchBox",
 };
 
 function BagSearch_OnHide(self)

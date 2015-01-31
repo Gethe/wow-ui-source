@@ -131,8 +131,11 @@
 
 			<OnShow function="CollectionsSpellButton_OnShow"/>
 			<OnHide function="CollectionsSpellButton_OnHide"/>
-			
-			<OnLeave function="GameTooltip_Hide"/>
+
+			<OnLeave>
+				GameTooltip_Hide();
+				ResetCursor();
+			</OnLeave>
 		</Scripts>
 		<PushedTexture file="Interface\Buttons\UI-Quickslot-Depress">
 			<Size x="42" y="42"/>

@@ -628,6 +628,7 @@ function MerchantFrame_UpdateRepairButtons()
 			MerchantRepairText:ClearAllPoints();
 			MerchantRepairText:SetPoint("CENTER", MerchantFrame, "BOTTOMLEFT", 80, 68);
 			MerchantGuildBankRepairButton:Show();
+			MerchantFrame_UpdateGuildBankRepair();
 		else
 			MerchantRepairAllButton:SetWidth(36);
 			MerchantRepairAllButton:SetHeight(36);
@@ -643,6 +644,7 @@ function MerchantFrame_UpdateRepairButtons()
 		MerchantRepairText:Show();
 		MerchantRepairAllButton:Show();
 		MerchantRepairItemButton:Show();
+		MerchantFrame_UpdateCanRepairAll();
 	else
 		MerchantRepairText:Hide();
 		MerchantRepairAllButton:Hide();

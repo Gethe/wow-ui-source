@@ -26,7 +26,7 @@
 		</Layers>
 	</Frame>
 
-	<CheckButton name="HeirloomSpellButtonTemplate" inherits="CollectionsSpellButtonTemplate" hidden="true" virtual="true">
+	<CheckButton name="HeirloomSpellButtonTemplate" inherits="CollectionsSpellButtonTemplate" hidden="true" motionScriptsWhileDisabled="true" virtual="true">
 		<Layers>
 			<Layer level="ARTWORK">
 				<FontString parentKey="special" inherits="GameFontNormalSmall" maxLines="1" justifyH="LEFT">
@@ -116,14 +116,11 @@
 		<Frames>
 			<StatusBar parentKey="progressBar" inherits="CollectionsProgressBarTemplate" />
 
-			<EditBox parentKey="searchBox" inherits="SearchBoxTemplate" letters="40">
+			<EditBox name="$parentSearchBox" parentKey="SearchBox" inherits="BagSearchBoxTemplate" letters="40">
 				<Size x="115" y="20"/>
 				<Anchors>
 					<Anchor point="TOPRIGHT" x="-107" y="-35"/>
 				</Anchors>
-				<Scripts>
-					<OnTextChanged function="HeirloomsJournal_OnSearchTextChanged"/>
-				</Scripts>
 			</EditBox>
 
 			<Button name="$parentFilterButton" inherits="UIMenuButtonStretchTemplate" text="FILTER">

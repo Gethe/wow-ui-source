@@ -245,9 +245,10 @@ function GarrisonMissionFrame_OnHide(self)
 end
 
 function GarrisonMissionFrame_ClearMouse()
-	if ( GarrisonFollowerPlacer:IsShown() ) then
+	if ( GarrisonFollowerPlacer.info ) then
 		GarrisonFollowerPlacer:Hide();
 		GarrisonFollowerPlacerFrame:Hide();
+		GarrisonFollowerPlacer.info = nil;
 		return true;
 	end
 	return false;
@@ -840,9 +841,58 @@ function GarrisonMissionButton_SetInProgressTooltip(missionInfo, showRewards)
 	end
 end
 
+function GarrisonMission_DetermineCounterableThreats(missionID)
+	local threats = {};
+	threats.full = {};
+	threats.partial = {};
+	threats.away = {};
+	threats.worker = {};
+
+	local followerList = C_Garrison.GetFollowers();
+	for i = 1, #followerList do
+		local follower = followerList[i];
+		if ( follower.isCollected and follower.status ~= GARRISON_FOLLOWER_INACTIVE ) then
+			local bias = C_Garrison.GetFollowerBiasForMission(missionID, follower.followerID);
+			if ( bias > -1.0 ) then
+				local abilities = C_Garrison.GetFollowerAbilities(follower.followerID);
+				for j = 1, #abilities do
+					for counterMechanicID in pairs(abilities[j].counters) do
+						if ( follower.status ) then
+							if ( follower.status == GARRISON_FOLLOWER_ON_MISSION ) then
+								local time = C_Garrison.GetFollowerMissionTimeLeftSeconds(follower.followerID);
+								if ( not threats.away[counterMechanicID] ) then
+									threats.away[counterMechanicID] = {};
+								end
+								table.insert(threats.away[counterMechanicID], time);
+							elseif ( follower.status == GARRISON_FOLLOWER_WORKING ) then
+								threats.worker[counterMechanicID] = (threats.worker[counterMechanicID] or 0) + 1;
+							end
+						else
+							if ( bias >= 0.0 ) then
+								threats.full[counterMechanicID] = (threats.full[counterMechanicID] or 0) + 1;
+							else
+								threats.partial[counterMechanicID] = (threats.partial[counterMechanicID] or 0) + 1;
+							end
+						end
+					end
+				end
+			end
+		end
+	end
+
+	for counter, times in pairs(threats.away) do
+		table.sort(times);
+	end
+	return threats;
+end
+
 function GarrisonMissionButton_AddThreatsToTooltip(missionID)
 	local location, xp, environment, environmentDesc, _, locPrefix, isExhausting, enemies = C_Garrison.GetMissionInfo(missionID);
 	local numThreats = 0;
+
+	-- Make a list of all the threats that we can counter.
+	local counterableThreats = GarrisonMission_DetermineCounterableThreats(missionID);
+
 	for i = 1, #enemies do
 		local enemy = enemies[i];
 		for mechanicID, mechanic in pairs(enemy.mechanics) do
@@ -855,7 +905,7 @@ function GarrisonMissionButton_AddThreatsToTooltip(missionID)
 			end
 			threatFrame.Icon:SetTexture(mechanic.icon);
 			threatFrame:Show();
-			GarrisonMissionButton_CheckTooltipThreat(threatFrame, missionID, mechanicID);
+			GarrisonMissionButton_CheckTooltipThreat(threatFrame, missionID, mechanicID, counterableThreats);
 		end
 	end
 
@@ -899,57 +949,59 @@ function GarrisonMissionButton_AddThreatsToTooltip(missionID)
 	end
 end
 
-function GarrisonMissionButton_CheckTooltipThreat(threatFrame, missionID, mechanicID)
-	local followerList = C_Garrison.GetFollowers();
-	local haveUnavailableWorking = false;
-	local haveUnavailableAway = false;
-	local unavailableTime = 0;
-	local unavailableFollowerID;
+function GarrisonMission_GetDurationStringCompact(time)
 
+	local s_minute = 60;
+	local s_hour = s_minute * 60;
+	local s_day = s_hour * 24;
+
+	local str;
+	if (time >= s_day) then
+		time = ((time - 1) / s_day) + 1;
+		return string.format(COOLDOWN_DURATION_DAYS, time);
+	elseif (time >= s_hour) then
+		time = ((time - 1) / s_hour) + 1;
+		return string.format(COOLDOWN_DURATION_HOURS, time);
+	else
+		time = ((time - 1) / s_minute) + 1;
+		return string.format(COOLDOWN_DURATION_MIN, time);
+	end
+end
+
+function GarrisonMissionButton_CheckTooltipThreat(threatFrame, missionID, mechanicID, counterableThreats)
 	threatFrame.Check:Hide();
 	threatFrame.Away:Hide();
 	threatFrame.Working:Hide();
 	threatFrame.TimeLeft:Hide();
---	threatFrame:SetWidth(20);
 
-	for i = 1, #followerList do
-		local follower = followerList[i];
-		if ( follower.isCollected and follower.status ~= GARRISON_FOLLOWER_INACTIVE and C_Garrison.GetFollowerBiasForMission(missionID, follower.followerID) > -1 ) then
-			local abilities = C_Garrison.GetFollowerAbilities(follower.followerID);
-			local mechanicFound = false;
-			for j = 1, #abilities do
-				for counterMechanicID in pairs(abilities[j].counters) do
-					if ( counterMechanicID == mechanicID ) then
-						mechanicFound = true;
-						if ( follower.status ) then
-							if ( follower.status == GARRISON_FOLLOWER_ON_MISSION ) then
-								local time = C_Garrison.GetFollowerMissionTimeLeftSeconds(follower.followerID);
-								if ( not haveUnavailableAway or time < unavailableTime) then
-									unavailableTime = time;
-									unavailableFollowerID = follower.followerID;
-								end
-								haveUnavailableAway = true;
-							elseif ( follower.status == GARRISON_FOLLOWER_WORKING ) then
-								haveUnavailableWorking = true;
-							end
-						else
-							threatFrame.Check:Show();
-							return;
-						end
-					end
-				end
-				if ( mechanicFound ) then
-					break;
-				end
-			end
-		end
+	-- We remove threat counters from counterableThreats as they are used.
+
+	if ( counterableThreats.full[mechanicID] and counterableThreats.full[mechanicID] > 0 ) then
+		counterableThreats.full[mechanicID] = counterableThreats.full[mechanicID] - 1;
+		threatFrame.Check:SetAtlas("GarrMission_CounterCheck", true);
+		threatFrame.Check:Show();
+		return;
 	end
-	if ( haveUnavailableAway ) then
+
+	if ( counterableThreats.partial[mechanicID] and counterableThreats.partial[mechanicID] > 0 ) then
+		counterableThreats.partial[mechanicID] = counterableThreats.partial[mechanicID] - 1;
+		threatFrame.Check:SetAtlas("GarrMission_CounterHalfCheck", true);
+		threatFrame.Check:Show();
+		return;
+	end
+
+	if ( counterableThreats.away[mechanicID] and #counterableThreats.away[mechanicID] > 0 ) then
+		local soonestTime = table.remove(counterableThreats.away[mechanicID], 1);
 		threatFrame.Away:Show();
 		threatFrame.TimeLeft:Show();
-		threatFrame.TimeLeft:SetText(C_Garrison.GetFollowerMissionTimeLeft(unavailableFollowerID, true));
-	elseif ( haveUnavailableWorking ) then
+		threatFrame.TimeLeft:SetText(GarrisonMission_GetDurationStringCompact(soonestTime));
+		return;
+	end
+
+	if ( counterableThreats.worker[mechanicID] and counterableThreats.worker[mechanicID] > 0 ) then
+		counterableThreats.worker[mechanicID] = counterableThreats.worker[mechanicID] - 1;
 		threatFrame.Working:Show();
+		return;
 	end
 end
 
@@ -1700,7 +1752,7 @@ function GarrisonFollowerPlacerFrame_OnClick(self, button)
 	if ( button == "LeftButton" ) then
 		for i = 1, #MISSION_PAGE_FRAME.Followers do
 			local followerFrame = MISSION_PAGE_FRAME.Followers[i];
-			if ( followerFrame:IsMouseOver() ) then
+			if ( followerFrame:IsShown() and followerFrame:IsMouseOver() ) then
 				GarrisonMissionPage_SetFollower(followerFrame, GarrisonFollowerPlacer.info);
 			end
 		end
@@ -1723,6 +1775,9 @@ function GarrisonMissionPageFollowerFrame_OnDragStart(self)
 end
 
 function GarrisonMissionPageFollowerFrame_OnDragStop(self)
+	if ( not GarrisonFollowerPlacer.info ) then
+		return;
+	end
 	GarrisonFollowerPlacerFrame:Show();
 end
 

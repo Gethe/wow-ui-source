@@ -19,7 +19,9 @@ VideoData["Graphics_Quality"]={
 				Graphics_SunshaftsDropDown = VIDEO_OPTIONS_DISABLED,
 				Graphics_ProjectedTexturesDropDown = VIDEO_OPTIONS_DISABLED,
 				Graphics_SSAODropDown = VIDEO_OPTIONS_DISABLED,
-				Graphics_RefractionDropDown = VIDEO_OPTIONS_DISABLED
+				Graphics_DepthEffectsDropDown = VIDEO_OPTIONS_DISABLED,
+				Graphics_LightingQualityDropDown = VIDEO_OPTIONS_LOW,
+				Graphics_OutlineModeDropDown = VIDEO_OPTIONS_DISABLED,
 			},
 		},
 		[2] = {
@@ -37,7 +39,9 @@ VideoData["Graphics_Quality"]={
 				Graphics_SunshaftsDropDown = VIDEO_OPTIONS_DISABLED,
 				Graphics_ProjectedTexturesDropDown = VIDEO_OPTIONS_DISABLED,
 				Graphics_SSAODropDown = VIDEO_OPTIONS_DISABLED,
-				Graphics_RefractionDropDown = VIDEO_OPTIONS_DISABLED
+				Graphics_DepthEffectsDropDown = VIDEO_OPTIONS_DISABLED,
+				Graphics_LightingQualityDropDown = VIDEO_OPTIONS_LOW,
+				Graphics_OutlineModeDropDown = VIDEO_OPTIONS_DISABLED,
 			},
 		},
 		[3] = {
@@ -55,7 +59,9 @@ VideoData["Graphics_Quality"]={
 				Graphics_SunshaftsDropDown = VIDEO_OPTIONS_LOW,
 				Graphics_ProjectedTexturesDropDown = VIDEO_OPTIONS_ENABLED,
 				Graphics_SSAODropDown = VIDEO_OPTIONS_LOW,
-				Graphics_RefractionDropDown = VIDEO_OPTIONS_LOW
+				Graphics_DepthEffectsDropDown = VIDEO_OPTIONS_LOW,
+				Graphics_LightingQualityDropDown = VIDEO_OPTIONS_MEDIUM,
+				Graphics_OutlineModeDropDown = VIDEO_OPTIONS_ALLOWED,
 			},
 		},
 		[4] = {
@@ -73,7 +79,9 @@ VideoData["Graphics_Quality"]={
 				Graphics_SunshaftsDropDown = VIDEO_OPTIONS_HIGH,
 				Graphics_ProjectedTexturesDropDown = VIDEO_OPTIONS_ENABLED,
 				Graphics_SSAODropDown = VIDEO_OPTIONS_LOW,
-				Graphics_RefractionDropDown = VIDEO_OPTIONS_HIGH
+				Graphics_DepthEffectsDropDown = VIDEO_OPTIONS_HIGH,
+				Graphics_LightingQualityDropDown = VIDEO_OPTIONS_HIGH,
+				Graphics_OutlineModeDropDown = VIDEO_OPTIONS_ALLOWED,
 			},
 		},
 		[5] = {
@@ -92,7 +100,9 @@ VideoData["Graphics_Quality"]={
 				Graphics_SunshaftsDropDown = VIDEO_OPTIONS_HIGH,
 				Graphics_ProjectedTexturesDropDown = VIDEO_OPTIONS_ENABLED,
 				Graphics_SSAODropDown = VIDEO_OPTIONS_HIGH,
-				Graphics_RefractionDropDown = VIDEO_OPTIONS_HIGH
+				Graphics_DepthEffectsDropDown = VIDEO_OPTIONS_HIGH,
+				Graphics_LightingQualityDropDown = VIDEO_OPTIONS_HIGH,
+				Graphics_OutlineModeDropDown = VIDEO_OPTIONS_ALLOWED,
 			},
 		},
 	},
@@ -208,7 +218,9 @@ VideoData["RaidGraphics_Quality"].data = {
 			RaidGraphics_SunshaftsDropDown = VIDEO_OPTIONS_DISABLED,
 			RaidGraphics_ProjectedTexturesDropDown = VIDEO_OPTIONS_DISABLED,
 			RaidGraphics_SSAODropDown = VIDEO_OPTIONS_DISABLED,
-			RaidGraphics_RefractionDropDown = VIDEO_OPTIONS_DISABLED
+			RaidGraphics_DepthEffectsDropDown = VIDEO_OPTIONS_DISABLED,
+			RaidGraphics_LightingQualityDropDown = VIDEO_OPTIONS_LOW,
+			RaidGraphics_OutlineModeDropDown = VIDEO_OPTIONS_DISABLED,
 		},
 	},
 	[2] = {
@@ -226,7 +238,9 @@ VideoData["RaidGraphics_Quality"].data = {
 			RaidGraphics_SunshaftsDropDown = VIDEO_OPTIONS_DISABLED,
 			RaidGraphics_ProjectedTexturesDropDown = VIDEO_OPTIONS_DISABLED,
 			RaidGraphics_SSAODropDown = VIDEO_OPTIONS_DISABLED,
-			RaidGraphics_RefractionDropDown = VIDEO_OPTIONS_DISABLED
+			RaidGraphics_DepthEffectsDropDown = VIDEO_OPTIONS_DISABLED,
+			RaidGraphics_LightingQualityDropDown = VIDEO_OPTIONS_LOW,
+			RaidGraphics_OutlineModeDropDown = VIDEO_OPTIONS_DISABLED,
 		},
 	},
 	[3] = {
@@ -244,7 +258,9 @@ VideoData["RaidGraphics_Quality"].data = {
 			RaidGraphics_SunshaftsDropDown = VIDEO_OPTIONS_LOW,
 			RaidGraphics_ProjectedTexturesDropDown = VIDEO_OPTIONS_ENABLED,
 			RaidGraphics_SSAODropDown = VIDEO_OPTIONS_LOW,
-			RaidGraphics_RefractionDropDown = VIDEO_OPTIONS_LOW
+			RaidGraphics_DepthEffectsDropDown = VIDEO_OPTIONS_LOW,
+			RaidGraphics_LightingQualityDropDown = VIDEO_OPTIONS_MEDIUM,
+			RaidGraphics_OutlineModeDropDown = VIDEO_OPTIONS_ALLOWED,
 		},
 	},
 	[4] = {
@@ -262,7 +278,9 @@ VideoData["RaidGraphics_Quality"].data = {
 			RaidGraphics_SunshaftsDropDown = VIDEO_OPTIONS_HIGH,
 			RaidGraphics_ProjectedTexturesDropDown = VIDEO_OPTIONS_ENABLED,
 			RaidGraphics_SSAODropDown = VIDEO_OPTIONS_LOW,
-			RaidGraphics_RefractionDropDown = VIDEO_OPTIONS_HIGH
+			RaidGraphics_DepthEffectsDropDown = VIDEO_OPTIONS_HIGH,
+			RaidGraphics_LightingQualityDropDown = VIDEO_OPTIONS_HIGH,
+			RaidGraphics_OutlineModeDropDown = VIDEO_OPTIONS_ALLOWED,
 		},
 	},
 	[5] = {
@@ -280,7 +298,9 @@ VideoData["RaidGraphics_Quality"].data = {
 			RaidGraphics_SunshaftsDropDown = VIDEO_OPTIONS_HIGH,
 			RaidGraphics_ProjectedTexturesDropDown = VIDEO_OPTIONS_ENABLED,
 			RaidGraphics_SSAODropDown = VIDEO_OPTIONS_HIGH,
-			RaidGraphics_RefractionDropDown = VIDEO_OPTIONS_HIGH
+			RaidGraphics_DepthEffectsDropDown = VIDEO_OPTIONS_HIGH,
+			RaidGraphics_LightingQualityDropDown = VIDEO_OPTIONS_HIGH,
+			RaidGraphics_OutlineModeDropDown = VIDEO_OPTIONS_ALLOWED,
 		},
 	},
 };
@@ -1060,10 +1080,12 @@ VideoData["Graphics_SSAODropDown"]={
 	},
 
 	hbaoOption = {
-		text = VIDEO_OPTIONS_HBAO,
+		text = VIDEO_OPTIONS_ULTRA,
 		cvars =	{
 			ssao = 3,
 		},
+
+		tooltip = VIDEO_OPTIONS_SSAO_ULTRA,
 	},
 
 	onrefresh = function(self)
@@ -1107,10 +1129,11 @@ VideoData["RaidGraphics_SSAODropDown"]={
 	},
 
 	hbaoOption = {
-		text = VIDEO_OPTIONS_HBAO,
+		text = VIDEO_OPTIONS_ULTRA,
 		cvars =	{
 			raidSSAO = 3,
 		},
+		tooltip = VIDEO_OPTIONS_SSAO_ULTRA,
 	},
 
 	onrefresh = function(self)
@@ -1621,31 +1644,34 @@ VideoData["RaidGraphics_SunshaftsDropDown"]={
 }
 
 -------------------------------------------------------------------------------------------------------
-VideoData["Graphics_RefractionDropDown"]={
-	name = REFRACTION;
-	description = OPTION_TOOLTIP_REFRACTION,
+VideoData["Graphics_DepthEffectsDropDown"]={
+	name = DEPTH_EFFECTS;
+	description = OPTION_TOOLTIP_DEPTH_EFFECTS,
 
 	data = {
 		[1] = {
 			text = VIDEO_OPTIONS_DISABLED,
 			cvars =	{
 				refraction = 0,
+				DepthBasedOpacity = 0,
 			},
---			tooltip = VIDEO_OPTIONS_REFRACTION_DISABLED,
+			tooltip = VIDEO_OPTIONS_DEPTH_EFFECTS_DISABLED,
 		},
 		[2] = {
 			text = VIDEO_OPTIONS_LOW,
 			cvars =	{
 				refraction = GetDefaultVideoQualityOption("refraction", 2, 1),
+				DepthBasedOpacity = GetDefaultVideoQualityOption("DepthBasedOpacity", 2, 1),
 			},
---			tooltip = VIDEO_OPTIONS_REFRACTION_LOW,
+			tooltip = VIDEO_OPTIONS_DEPTH_EFFECTS_LOW,
 		},
 		[3] = {
 			text = VIDEO_OPTIONS_HIGH,
 			cvars =	{
 				refraction = GetDefaultVideoQualityOption("refraction", 3, 2),
+				DepthBasedOpacity = GetDefaultVideoQualityOption("DepthBasedOpacity", 3, 1),
 			},
---			tooltip = VIDEO_OPTIONS_REFRACTION_HIGH,
+			tooltip = VIDEO_OPTIONS_DEPTH_EFFECTS_HIGH,
 		},
 	},
 	dependent = {
@@ -1653,35 +1679,152 @@ VideoData["Graphics_RefractionDropDown"]={
 	},
 }
 
-VideoData["RaidGraphics_RefractionDropDown"]={
-	name = REFRACTION;
-	description = OPTION_TOOLTIP_REFRACTION,
+VideoData["RaidGraphics_DepthEffectsDropDown"]={
+	name = DEPTH_EFFECTS;
+	description = OPTION_TOOLTIP_DEPTH_EFFECTS,
 
 	data = {
 		[1] = {
 			text = VIDEO_OPTIONS_DISABLED,
 			cvars =	{
 				raidRefraction = 0,
+				raidDepthBasedOpacity = 0,
 			},
---			tooltip = VIDEO_OPTIONS_REFRACTION_DISABLED,
+			tooltip = VIDEO_OPTIONS_DEPTH_EFFECTS_DISABLED,
 		},
 		[2] = {
 			text = VIDEO_OPTIONS_LOW,
 			cvars =	{
 				raidRefraction = GetDefaultVideoQualityOption("raidRefraction", 2, 1, true),
+				raidDepthBasedOpacity = GetDefaultVideoQualityOption("raidDepthBasedOpacity", 2, 1, true),
 			},
---			tooltip = VIDEO_OPTIONS_REFRACTION_LOW,
+			tooltip = VIDEO_OPTIONS_DEPTH_EFFECTS_LOW,
 		},
 		[3] = {
 			text = VIDEO_OPTIONS_HIGH,
 			cvars =	{
 				raidRefraction = GetDefaultVideoQualityOption("raidRefraction", 3, 2, true),
+				raidDepthBasedOpacity = GetDefaultVideoQualityOption("raidDepthBasedOpacity", 3, 1, true),
 			},
---			tooltip = VIDEO_OPTIONS_REFRACTION_HIGH,
+			tooltip = VIDEO_OPTIONS_DEPTH_EFFECTS_HIGH,
 		},
 	},
 	dependent = {
 		"RaidGraphics_Quality",
+	},
+}
+
+-------------------------------------------------------------------------------------------------------
+VideoData["Graphics_LightingQualityDropDown"]={
+	name = LIGHTING_QUALITY;
+	description = OPTION_TOOLTIP_LIGHTING_QUALITY,
+
+	data = {
+		[1] = {
+			text = VIDEO_OPTIONS_LOW,
+			cvars =	{
+				LightMode = GetDefaultVideoQualityOption("LightMode", 1, 1),
+			},
+			tooltip = VIDEO_OPTIONS_LIGHTING_QUALITY_LOW,
+		},
+		[2] = {
+			text = VIDEO_OPTIONS_MEDIUM,
+			cvars =	{
+				LightMode = GetDefaultVideoQualityOption("LightMode", 2, 2),
+			},
+			tooltip = VIDEO_OPTIONS_LIGHTING_QUALITY_MEDIUM,
+		},
+		[3] = {
+			text = VIDEO_OPTIONS_HIGH,
+			cvars =	{
+				LightMode = GetDefaultVideoQualityOption("LightMode", 3, 3),
+			},
+			tooltip = VIDEO_OPTIONS_LIGHTING_QUALITY_HIGH,
+		},
+	},
+	dependent = {
+		"Graphics_Quality",
+	},
+}
+
+-------------------------------------------------------------------------------------------------------
+VideoData["RaidGraphics_LightingQualityDropDown"]={
+	name = LIGHTING_QUALITY;
+	description = OPTION_TOOLTIP_LIGHTING_QUALITY,
+
+	data = {
+		[1] = {
+			text = VIDEO_OPTIONS_LOW,
+			cvars =	{
+				RAIDLightMode = GetDefaultVideoQualityOption("RAIDLightMode", 1, 1, true),
+			},
+			tooltip = VIDEO_OPTIONS_LIGHTING_QUALITY_LOW,
+		},
+		[2] = {
+			text = VIDEO_OPTIONS_MEDIUM,
+			cvars =	{
+				RAIDLightMode = GetDefaultVideoQualityOption("RAIDLightMode", 2, 2, true),
+			},
+			tooltip = VIDEO_OPTIONS_LIGHTING_QUALITY_MEDIUM,
+		},
+		[3] = {
+			text = VIDEO_OPTIONS_HIGH,
+			cvars =	{
+				RAIDLightMode = GetDefaultVideoQualityOption("RAIDLightMode", 3, 3, true),
+			},
+			tooltip = VIDEO_OPTIONS_LIGHTING_QUALITY_HIGH,
+		},
+	},
+	dependent = {
+		"Graphics_Quality",
+	},
+}
+
+-------------------------------------------------------------------------------------------------------
+VideoData["Graphics_OutlineModeDropDown"]={
+	name = OUTLINE_MODE;
+	description = OPTION_TOOLTIP_OUTLINE_MODE,
+
+	data = {
+		[1] = {
+			text = VIDEO_OPTIONS_DISABLED,
+			cvars =	{
+				OutlineEngineMode = GetDefaultVideoQualityOption("OutlineEngineMode", 1, 0),
+			},
+		},
+		[2] = {
+			text = VIDEO_OPTIONS_ALLOWED,
+			cvars =	{
+				OutlineEngineMode = GetDefaultVideoQualityOption("OutlineEngineMode", 2, 1),
+			},
+		},
+	},
+	dependent = {
+		"Graphics_Quality",
+	},
+}
+
+-------------------------------------------------------------------------------------------------------
+VideoData["RaidGraphics_OutlineModeDropDown"]={
+	name = OUTLINE_MODE;
+	description = OPTION_TOOLTIP_OUTLINE_MODE,
+
+	data = {
+		[1] = {
+			text = VIDEO_OPTIONS_DISABLED,
+			cvars =	{
+				RaidOutlineEngineMode = GetDefaultVideoQualityOption("RaidOutlineEngineMode", 1, 0, true),
+			},
+		},
+		[2] = {
+			text = VIDEO_OPTIONS_ALLOWED,
+			cvars =	{
+				RaidOutlineEngineMode = GetDefaultVideoQualityOption("RaidOutlineEngineMode", 2, 1, true),
+			},
+		},
+	},
+	dependent = {
+		"Graphics_Quality",
 	},
 }
 

@@ -663,6 +663,7 @@
 				<Size x="470" y="565"/>
 				<Anchors>
 					<Anchor point="TOPRIGHT" x="-25" y="-85"/>
+					<Anchor point="BOTTOM" x="0" y="0"/>
 				</Anchors>
 				<KeyValues>
 					<KeyValue key="isLandingPage" value="true" type="boolean"/>
@@ -718,6 +719,17 @@
 					</Layer>
 				</Layers>
 				<Frames>
+					<Button parentKey="UpgradeClickTarget" hidden="true">
+						<Anchors>
+							<Anchor point="TOPLEFT"/>
+							<Anchor point="BOTTOMRIGHT"/>
+						</Anchors>
+						<Scripts>
+							<OnLoad function="GarrisionFollowerPageUpgradeTarget_OnLoad"/>
+							<OnEvent function="GarrisionFollowerPageUpgradeTarget_OnEvent"/>
+							<OnClick function="GarrisionFollowerPageUpgradeTarget_OnClick"/>
+						</Scripts>
+					</Button>
 					<Frame parentKey="QualityFrame">
 						<Size x="10" y="10"/>
 						<Anchors>

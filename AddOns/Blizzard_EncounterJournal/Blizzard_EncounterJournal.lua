@@ -1168,13 +1168,13 @@ function EncounterJournal_ToggleHeaders(self, doNotShift)
 					local overview = self.overviews[i];
 					if (overview.sectionID == self.linkSection) then
 						overview.expanded = false;
-						EncounterJournal_ToggleHeaders(overview);
+							EncounterJournal_ToggleHeaders(overview);
 						overview.cbCount = 0;
 						overview.flashAnim:Play();
 						overview:SetScript("OnUpdate", EncounterJournal_FocusSectionCallback);
 					else
 						overview.expanded = true;
-						EncounterJournal_ToggleHeaders(overview);
+							EncounterJournal_ToggleHeaders(overview);
 						overview.flashAnim:Stop();
 						overview:SetScript("OnUpdate", nil);
 					end
@@ -1757,13 +1757,7 @@ function EncounterJournal_OpenJournal(difficultyID, instanceID, encounterID, sec
 			if sectionID then
 				if (EncounterJournal_CheckForOverview(sectionID)) then
 					EncounterJournal.encounter.overviewFrame.linkSection = sectionID;
-					EncounterJournal.encounter.info.overviewTab:Click();
 				else
-					if (EncounterJournal_SearchForOverview(instanceID)) then
-						EncounterJournal.encounter.info.bossTab:Click();
-					else
-						EncounterJournal.encounter.info.overviewTab:Click();
-					end
 					local sectionPath = {EJ_GetSectionPath(sectionID)};
 					for _, id in pairs(sectionPath) do
 						EJ_section_openTable[id] = true;
@@ -1771,9 +1765,13 @@ function EncounterJournal_OpenJournal(difficultyID, instanceID, encounterID, sec
 				end
 			end
 			
-			
 			EncounterJournal_DisplayEncounter(encounterID);
 			if sectionID then
+				if (EncounterJournal_CheckForOverview(sectionID) or not EncounterJournal_SearchForOverview(instanceID)) then
+					EncounterJournal.encounter.info.overviewTab:Click();
+				else
+					EncounterJournal.encounter.info.bossTab:Click();
+				end
 				EncounterJournal_FocusSection(sectionID);
 			elseif itemID then
 				EncounterJournal.encounter.info.lootTab:Click();

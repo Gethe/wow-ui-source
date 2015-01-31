@@ -327,6 +327,7 @@
 							<Anchor point="BOTTOMLEFT" x="0" y="22"/>
 						</Anchors>
 						<Scripts>
+							<OnLoad> self:SetWidth(self:GetTextWidth() + 30); </OnLoad>
 							<OnClick function="SocialRemoveImageButton_OnClick"/>
 						</Scripts>
 					</Button>
@@ -336,6 +337,7 @@
 							<Anchor point="BOTTOMRIGHT" x="0" y="22"/>
 						</Anchors>
 						<Scripts>
+							<OnLoad> self:SetWidth(self:GetTextWidth() + 30); </OnLoad>
 							<OnClick function="SocialCropScreenshotButton_OnClick"/>
 						</Scripts>
 					</Button>
@@ -345,6 +347,7 @@
 							<Anchor point="BOTTOMRIGHT" relativePoint="BOTTOMRIGHT" x="0" y="22"/>
 						</Anchors>
 						<Scripts>
+							<OnLoad> self:SetWidth(self:GetTextWidth() + 30); </OnLoad>
 							<OnClick function="SocialCropCancelButton_OnClick"/>
 						</Scripts>
 					</Button>
@@ -354,6 +357,7 @@
 							<Anchor point="RIGHT" relativeKey="$parent.CropCancelButton" relativePoint="LEFT" x="-10" y="0"/>
 						</Anchors>
 						<Scripts>
+							<OnLoad> self:SetWidth(self:GetTextWidth() + 30); </OnLoad>
 							<OnClick function="SocialCropSaveButton_OnClick"/>
 						</Scripts>
 					</Button>
@@ -426,7 +430,7 @@
 				</Scripts>
 			</Button>
 			<!-- Post tweet button -->
-			<Button parentKey="PostButton" inherits="UIPanelButtonTemplate" text="SOCIAL_TWITTER_POST_TITLE" motionScriptsWhileDisabled="true">
+			<Button parentKey="PostButton" inherits="UIPanelButtonTemplate" text="SOCIAL_TWITTER_POST_BUTTON" motionScriptsWhileDisabled="true">
 				<Size x="100" y="21"/>
 				<Anchors>
 					<Anchor point="TOPRIGHT" relativeKey="$parent.SocialMessageFrame" relativePoint="BOTTOMRIGHT" x="7" y="-32"/>

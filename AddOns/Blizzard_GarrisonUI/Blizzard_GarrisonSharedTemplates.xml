@@ -440,6 +440,13 @@
 					</Anchors>
 					<Color r="0.1" g="1" b="0.1"/>
 				</FontString>
+				<FontString parentKey="TextInvalid" inherits="GameFontNormal" textwrap="true" text="GARRISON_FOLLOWER_UPGRADE_REQUIRES_MAX_LEVEL">
+					<Size x="200" y="40"/>
+					<Anchors>
+						<Anchor point="TOP"/>
+					</Anchors>
+					<Color r="1" g="0.1" b="0.1"/>
+				</FontString>
 				<Texture parentKey="Icon" file="Interface\PetBattles\BattleBar-AbilityBadge-Strong">
 					<Anchors>
 						<Anchor point="RIGHT" relativeKey="$parent.Text" relativePoint="LEFT" x="-4" y="0"/>

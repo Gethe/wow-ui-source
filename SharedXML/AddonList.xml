@@ -34,7 +34,7 @@
 				</Anchors>
 				<Scripts>
 					<OnEnter>
-						AddonTooltip_SetOwner(self, "ANCHOR_RIGHT", -270, 0);
+						AddonTooltip:SetOwner(self, "ANCHOR_RIGHT", -270, 0);
 						AddonTooltip:SetText(self.tooltip);
 						AddonTooltip:Show();
 					</OnEnter>
@@ -58,7 +58,7 @@
 					</OnClick>
 					<OnEnter>
 						if ( self.tooltip ) then
-							AddonTooltip_SetOwner(self, "ANCHOR_RIGHT", -270, 0)
+							AddonTooltip:SetOwner(self, "ANCHOR_RIGHT", -270, 0)
 							AddonTooltip:SetText(self.tooltip);
 							AddonTooltip:Show();
 						end
@@ -87,7 +87,7 @@
 		</Frames>
 		<Scripts>
 			<OnEnter>
-				AddonTooltip_SetOwner(self, "ANCHOR_RIGHT", -270, 0)
+				AddonTooltip:SetOwner(self, "ANCHOR_RIGHT", -270, 0)
 				AddonTooltip_Update(self);
 				AddonTooltip:Show();
 			</OnEnter>
