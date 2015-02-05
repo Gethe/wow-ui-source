@@ -1177,26 +1177,26 @@
 
 				<Texture name="$parentGlowTop" inherits="_HelpPlateBox-Glow-Top" parentKey="GlowTop" alphaMode="ADD">
 					<Anchors>
-						<Anchor point="TOPLEFT" relativeTo="$parentGlowTopLeft" relativePoint="TOPRIGHT"/>
-						<Anchor point="TOPRIGHT" relativeTo="$parentGlowTopRight" relativePoint="TOPLEFT"/>
+						<Anchor point="TOPLEFT" relativeKey="$parent.GlowTopLeft" relativePoint="TOPRIGHT"/>
+						<Anchor point="TOPRIGHT" relativeKey="$parent.GlowTopRight" relativePoint="TOPLEFT"/>
 					</Anchors>
 				</Texture>
 				<Texture name="$parentGlowBottom" inherits="_HelpPlateBox-Glow-Bottom" parentKey="GlowBottom" alphaMode="ADD">
 					<Anchors>
-						<Anchor point="BOTTOMLEFT" relativeTo="$parentGlowBottomLeft" relativePoint="BOTTOMRIGHT"/>
-						<Anchor point="BOTTOMRIGHT" relativeTo="$parentGlowBottomRight" relativePoint="BOTTOMLEFT"/>
+						<Anchor point="BOTTOMLEFT" relativeKey="$parent.GlowBottomLeft" relativePoint="BOTTOMRIGHT"/>
+						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.GlowBottomRight" relativePoint="BOTTOMLEFT"/>
 					</Anchors>
 				</Texture>
 				<Texture name="$parentGlowLeft" inherits="!HelpPlateBox-Glow-Left" parentKey="GlowLeft" alphaMode="ADD">
 					<Anchors>
-						<Anchor point="TOPLEFT" relativeTo="$parentGlowTopLeft" relativePoint="BOTTOMLEFT"/>
-						<Anchor point="BOTTOMLEFT" relativeTo="$parentGlowBottomLeft" relativePoint="TOPLEFT"/>
+						<Anchor point="TOPLEFT" relativeKey="$parent.GlowTopLeft" relativePoint="BOTTOMLEFT"/>
+						<Anchor point="BOTTOMLEFT" relativeKey="$parent.GlowBottomLeft" relativePoint="TOPLEFT"/>
 					</Anchors>
 				</Texture>
 				<Texture name="$parentGlowRight" inherits="!HelpPlateBox-Glow-Right" parentKey="GlowRight" alphaMode="ADD">
 					<Anchors>
-						<Anchor point="TOPRIGHT" relativeTo="$parentGlowTopRight" relativePoint="BOTTOMRIGHT"/>
-						<Anchor point="BOTTOMRIGHT" relativeTo="$parentGlowBottomRight" relativePoint="TOPRIGHT"/>
+						<Anchor point="TOPRIGHT" relativeKey="$parent.GlowTopRight" relativePoint="BOTTOMRIGHT"/>
+						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.GlowBottomRight" relativePoint="TOPRIGHT"/>
 					</Anchors>
 				</Texture>	
 			</Layer>
@@ -1226,26 +1226,26 @@
 
 				<Texture name="$parentShadowTop" inherits="_HelpPlateBox-Shadow-Top" parentKey="ShadowTop" >
 					<Anchors>
-						<Anchor point="TOPLEFT" relativeTo="$parentShadowTopLeft" relativePoint="TOPRIGHT"/>
-						<Anchor point="TOPRIGHT" relativeTo="$parentShadowTopRight" relativePoint="TOPLEFT"/>
+						<Anchor point="TOPLEFT" relativeKey="$parent.ShadowTopLeft" relativePoint="TOPRIGHT"/>
+						<Anchor point="TOPRIGHT" relativeKey="$parent.ShadowTopRight" relativePoint="TOPLEFT"/>
 					</Anchors>
 				</Texture>
 				<Texture name="$parentShadowBottom" inherits="_HelpPlateBox-Shadow-Bottom" parentKey="ShadowBottom" >
 					<Anchors>
-						<Anchor point="BOTTOMLEFT" relativeTo="$parentShadowBottomLeft" relativePoint="BOTTOMRIGHT"/>
-						<Anchor point="BOTTOMRIGHT" relativeTo="$parentShadowBottomRight" relativePoint="BOTTOMLEFT"/>
+						<Anchor point="BOTTOMLEFT" relativeKey="$parent.ShadowBottomLeft" relativePoint="BOTTOMRIGHT"/>
+						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.ShadowBottomRight" relativePoint="BOTTOMLEFT"/>
 					</Anchors>
 				</Texture>
 				<Texture name="$parentShadowLeft" inherits="!HelpPlateBox-Shadow-Left" parentKey="ShadowLeft" >
 					<Anchors>
-						<Anchor point="TOPLEFT" relativeTo="$parentShadowTopLeft" relativePoint="BOTTOMLEFT"/>
-						<Anchor point="BOTTOMLEFT" relativeTo="$parentShadowBottomLeft" relativePoint="TOPLEFT"/>
+						<Anchor point="TOPLEFT" relativeKey="$parent.ShadowTopLeft" relativePoint="BOTTOMLEFT"/>
+						<Anchor point="BOTTOMLEFT" relativeKey="$parent.ShadowBottomLeft" relativePoint="TOPLEFT"/>
 					</Anchors>
 				</Texture>
 				<Texture name="$parentShadowRight" inherits="!HelpPlateBox-Shadow-Right" parentKey="ShadowRight" >
 					<Anchors>
-						<Anchor point="TOPRIGHT" relativeTo="$parentShadowTopRight" relativePoint="BOTTOMRIGHT"/>
-						<Anchor point="BOTTOMRIGHT" relativeTo="$parentShadowBottomRight" relativePoint="TOPRIGHT"/>
+						<Anchor point="TOPRIGHT" relativeKey="$parent.ShadowTopRight" relativePoint="BOTTOMRIGHT"/>
+						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.ShadowBottomRight" relativePoint="TOPRIGHT"/>
 					</Anchors>
 				</Texture>	
 			</Layer>

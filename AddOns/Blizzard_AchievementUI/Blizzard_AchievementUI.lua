@@ -2411,6 +2411,17 @@ function AchievementFrameSummaryAchievement_SetGuildTextures(button)
 end
 
 function AchievementFrameSummaryAchievement_OnClick(self)
+	if ( IsModifiedClick("CHATLINK") ) then
+		local achievementLink = GetAchievementLink(self.id);
+		if ( ChatEdit_GetActiveWindow() and achievementLink ) then
+			ChatEdit_InsertLink(achievementLink);
+			return;
+		elseif ( SocialPostFrame and SocialPostFrame:IsShown() and achievementLink ) then
+			SocialPostFrame_InsertLink(achievementLink);
+			return;
+		end
+	end
+
 	local id = self.id
 	local nextID, completed = GetNextAchievement(id);
 	if ( nextID and completed ) then

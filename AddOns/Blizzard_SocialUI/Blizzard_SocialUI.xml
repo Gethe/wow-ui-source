@@ -194,7 +194,7 @@
 		</Scripts>
 	</Frame>
 	
-	<OffScreenFrame name="OffScreenFrame">
+	<OffScreenFrame name="OffScreenFrame" hidden="true">
 		<Size x="1024" y="1024"/>
 		<Anchors>
 			<Anchor point="TOPRIGHT" relativePoint="TOPLEFT" />
@@ -207,6 +207,13 @@
 				<Size x="496" y="142"/>
 			</Button>
 		</Frames>
+		<Scripts>
+			<OnShow>
+				if (self.UsesNPOT()) then
+					self:SetAllPoints();
+				end
+			</OnShow>
+		</Scripts>
 	</OffScreenFrame>
 	
 	<Frame name="SocialPostFrame" hidden="true" parent="UIParent" frameStrata="HIGH" toplevel="true" movable="true" enableMouse="true" inherits="BasicFrameTemplate">

@@ -1716,21 +1716,21 @@ VideoData["Graphics_LightingQualityDropDown"]={
 		[1] = {
 			text = VIDEO_OPTIONS_LOW,
 			cvars =	{
-				LightMode = GetDefaultVideoQualityOption("LightMode", 1, 0),
+				LightMode = GetDefaultVideoQualityOption("LightMode", 0, 0),
 			},
 			tooltip = VIDEO_OPTIONS_LIGHTING_QUALITY_LOW,
 		},
 		[2] = {
 			text = VIDEO_OPTIONS_MEDIUM,
 			cvars =	{
-				LightMode = GetDefaultVideoQualityOption("LightMode", 2, 1),
+				LightMode = GetDefaultVideoQualityOption("LightMode", 1, 1),
 			},
 			tooltip = VIDEO_OPTIONS_LIGHTING_QUALITY_MEDIUM,
 		},
 		[3] = {
 			text = VIDEO_OPTIONS_HIGH,
 			cvars =	{
-				LightMode = GetDefaultVideoQualityOption("LightMode", 3, 2),
+				LightMode = GetDefaultVideoQualityOption("LightMode", 2, 2),
 			},
 			tooltip = VIDEO_OPTIONS_LIGHTING_QUALITY_HIGH,
 		},
@@ -1749,21 +1749,21 @@ VideoData["RaidGraphics_LightingQualityDropDown"]={
 		[1] = {
 			text = VIDEO_OPTIONS_LOW,
 			cvars =	{
-				RAIDLightMode = GetDefaultVideoQualityOption("RAIDLightMode", 1, 0, true),
+				RAIDLightMode = GetDefaultVideoQualityOption("RAIDLightMode", 0, 0, true),
 			},
 			tooltip = VIDEO_OPTIONS_LIGHTING_QUALITY_LOW,
 		},
 		[2] = {
 			text = VIDEO_OPTIONS_MEDIUM,
 			cvars =	{
-				RAIDLightMode = GetDefaultVideoQualityOption("RAIDLightMode", 2, 1, true),
+				RAIDLightMode = GetDefaultVideoQualityOption("RAIDLightMode", 1, 1, true),
 			},
 			tooltip = VIDEO_OPTIONS_LIGHTING_QUALITY_MEDIUM,
 		},
 		[3] = {
 			text = VIDEO_OPTIONS_HIGH,
 			cvars =	{
-				RAIDLightMode = GetDefaultVideoQualityOption("RAIDLightMode", 3, 2, true),
+				RAIDLightMode = GetDefaultVideoQualityOption("RAIDLightMode", 2, 2, true),
 			},
 			tooltip = VIDEO_OPTIONS_LIGHTING_QUALITY_HIGH,
 		},

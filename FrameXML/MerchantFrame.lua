@@ -535,9 +535,14 @@ function MerchantFrame_ConfirmExtendedItemCost(itemButton, numToPurchase)
 			else
 				itemsString = " |T"..itemTexture..":0:0:0:-1|t "..format(CURRENCY_QUANTITY_TEMPLATE, costItemCount, currencyName);
 			end
-		elseif (itemButton.showNonrefundablePrompt) then
-			itemsString = GetMoneyString(itemButton.price)
 		end		
+	end
+	if ( itemButton.showNonrefundablePrompt and itemButton.price ) then
+		if ( itemsString ) then
+			itemsString = itemsString .. LIST_DELIMITER .. GetMoneyString(itemButton.price);
+		else
+			itemsString = GetMoneyString(itemButton.price);
+		end
 	end
 	
 	if ( not usingCurrency and maxQuality <= LE_ITEM_QUALITY_UNCOMMON and not itemButton.showNonrefundablePrompt) then

@@ -862,8 +862,9 @@
 								</Layers>
 								<Scripts>
 									<OnEnter>
+										local _, _, _, _, _, maxCount = GetArchaeologyRaceInfo(ArchaeologyFrame.artifactPage.raceID);
 										GameTooltip:SetOwner(self, "ANCHOR_BOTTOMRIGHT");
-										GameTooltip:AddLine(ARCHAEOLOGY_POJECTBAR_TOOLTIP, HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b, true);
+										GameTooltip:AddLine(format(ARCHAEOLOGY_POJECTBAR_TOOLTIP, maxCount), HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b, true);
 										GameTooltip:Show();
 									</OnEnter>
 									<OnLeave>

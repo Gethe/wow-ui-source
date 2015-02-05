@@ -138,9 +138,9 @@ function DeathRecapFrame_Amount_OnEnter(self)
 		end
 	end
 	
-	local seconds = -floor((self.timestamp - DeathRecapFrame.DeathTimeStamp)*10)/10;
+	local seconds = DeathRecapFrame.DeathTimeStamp - self.timestamp;
 	if ( seconds > 0 ) then
-		GameTooltip:AddLine( format(DEATH_RECAP_CURR_HP_TT, seconds, self.hpPercent), 1, 0.824, 0, true );
+		GameTooltip:AddLine( format(DEATH_RECAP_CURR_HP_TT, format("%.1F", seconds), self.hpPercent), 1, 0.824, 0, true );
 	else
 		GameTooltip:AddLine( format(DEATH_RECAP_DEATH_TT, self.hpPercent), 1, 0.824, 0, true );
 	end

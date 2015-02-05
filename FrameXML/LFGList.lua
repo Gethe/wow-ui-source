@@ -2262,6 +2262,8 @@ function LFGListInviteDialog_Show(self, resultID)
 	end
 
 	StaticPopupSpecial_Show(self);
+
+	PlaySound("ReadyCheck");
 end
 
 function LFGListInviteDialog_UpdateOfflineNotice(self)

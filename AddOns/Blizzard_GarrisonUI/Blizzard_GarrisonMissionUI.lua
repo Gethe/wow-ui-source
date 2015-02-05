@@ -2791,7 +2791,7 @@ function GarrisonMissionComplete_AnimXPBarOnFinish(xpBar)
 			nextLevel = xpBar.level;
 			nextQuality = xpBar.quality + 1;
 			-- and cap it to the max attainable via xp	
-			quality = min(quality, GarrisonMissionFrame.followerMaxQuality);
+			nextQuality = min(nextQuality, GarrisonMissionFrame.followerMaxQuality);
 		else
 			nextLevel = xpBar.level + 1;
 			nextQuality = xpBar.quality;

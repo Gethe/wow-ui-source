@@ -1811,6 +1811,8 @@ local function CombatLog_String_PowerType(powerType, amount, alternatePowerType)
 		return RAGE;
 	elseif ( powerType == SPELL_POWER_ENERGY ) then
 		return ENERGY;
+	elseif ( powerType == SPELL_POWER_COMBO_POINTS ) then
+		return COMBO_POINTS;
 	elseif ( powerType == SPELL_POWER_FOCUS ) then
 		return FOCUS;
 	elseif ( powerType == SPELL_POWER_RUNES ) then
@@ -3292,7 +3294,7 @@ _G.CombatLog_OnEvent = CombatLog_OnEvent
 function CombatLog_AddEvent(...)
 	if ( DEBUG ) then
 		local info = ChatTypeInfo["COMBAT_MISC_INFO"];
-		local timestamp, event, srcGUID, srcName, srcFlags, dstGUID, dstName, dstFlags = ...
+		local timestamp, event, hideCaster, srcGUID, srcName, srcFlags, dstGUID, dstName, dstFlags = ...
 		local message = format("%s, %s, %s, 0x%x, %s, %s, 0x%x",
 				       --date("%H:%M:%S", timestamp), 
 		                       event,
@@ -3300,7 +3302,7 @@ function CombatLog_AddEvent(...)
 		                       dstGUID, dstName or "nil", dstFlags);
 		
 		for i = 9, select("#", ...) do
-			message = message..", "..(select(i, ...) or "nil");
+			message = message..", "..tostring(select(i, ...));
 		end
 		ChatFrame1:AddMessage(message, info.r, info.g, info.b);
 	end
@@ -3332,7 +3334,7 @@ function(self, event, ...)
 					       dstGUID, dstName or "nil", dstFlags);
 			
 			for i = 9, select("#", ...) do
-				message = message..", "..(select(i, ...) or "nil");
+				message = message..", "..tostring(select(i, ...));
 			end
 			ChatFrame1:AddMessage(message);
 			--COMBATLOG:AddMessage(message);

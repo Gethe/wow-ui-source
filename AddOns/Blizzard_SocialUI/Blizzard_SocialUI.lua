@@ -465,6 +465,9 @@ end
 
 function SocialRenderAchievement(achievementID)
 	local button = OffScreenFrame.OffscreenAchievement;
+	if ( not IsAddOnLoaded("Blizzard_AchievementUI") ) then
+		UIParentLoadAddOn("Blizzard_AchievementUI");
+	end
 	AchievementFrameAchievements_SetupButton(button);
 	
 	-- Set button to collapsed state so that AchievementButton_DisplayAchievement() expands
@@ -479,12 +482,14 @@ function SocialRenderAchievement(achievementID)
 	-- because the progressbar updates data in its OnLayerUpdate() function, which gets called after the
 	-- first time that this OnUpdate() script function gets called.
 	button.frameCount = 1;
+	OffScreenFrame:Show();
 	button:SetScript("OnUpdate", function(self)
 		if (self.frameCount < 2) then
 			self.frameCount = self.frameCount + 1;
 		else
 			-- Take a snapshot of the achievement frame offscreen so that we can use it as a texture
 			SOCIAL_ACHIEVEMENT_OFFSCREEN_ID = OffScreenFrame:TakeSnapshot();
+			OffScreenFrame:Hide();
 			SocialPostFrame_SetAchievementView(achievementID);
 			button:SetScript("OnUpdate", nil);
 		end
@@ -588,7 +593,7 @@ function SocialItemButton_OnEnter(self)
 		GameTooltip:AddLine(" ");
 		local r, g, b, colorString = GetItemQualityColor(quality);
 		GameTooltip:AddLine(format("|c%s%s|r", colorString, name));
-		GameTooltip:AddLine(format("Item Level %d", level));
+		GameTooltip:AddLine(format(ITEM_LEVEL, level));
 	else
 		GameTooltip:SetText(SOCIAL_ITEM_PREFILL_NONE);
 	end

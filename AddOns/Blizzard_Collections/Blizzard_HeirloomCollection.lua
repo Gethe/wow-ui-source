@@ -146,20 +146,29 @@ function HeirloomsMixin:OnLoad()
 	self:RegisterEvent("INVENTORY_SEARCH_UPDATE");
 end
 
-function HeirloomsMixin:OnHeirloomsUpdated(itemID, updateReason)
+function HeirloomsMixin:OnHeirloomsUpdated(itemID, updateReason, ...)
 	if itemID then
 		-- Single item update
+		local requiresFullUpdate = false;
 		if updateReason == "NEW" then
+			local wasHidden = ...;
+
 			self.newHeirlooms[itemID] = true;
 			if self.itemIDsInCurrentLayout[itemID] then
 				self.numKnownHeirlooms = self.numKnownHeirlooms + 1;
 				self:UpdateProgressBar();
 			end
+			
+			requiresFullUpdate = wasHidden;
 		elseif updateReason == "UPGRADE" then
 			self.upgradedHeirlooms[itemID] = true;
 		end
 
-		self:RefreshViewIfVisible();
+		if requiresFullUpdate then
+			self:FullRefreshIfVisible();
+		else
+			self:RefreshViewIfVisible();
+		end
 	else
 		-- Full update
 		self:FullRefreshIfVisible();
@@ -490,10 +499,66 @@ function HeirloomsMixin:LayoutCurrentPage()
 	self.navigationFrame.pageText:SetFormattedText(COLLECTION_PAGE_NUMBER, self.currentPage, self:GetMaxPages());
 end
 
+
+function HeirloomsMixin:FindClosestUpgradeablePage()
+	for i = 1, #self.heirloomLayoutData do
+		local pageToCheck = ((self.currentPage - 1) + (i - 1)) % #self.heirloomLayoutData + 1;
+
+		local pageLayoutData = self.heirloomLayoutData[pageToCheck];
+		if pageLayoutData then
+			for _, layoutData in ipairs(pageLayoutData) do
+				if layoutData ~= NEW_ROW_OPCODE and type(layoutData) ~= "string" then
+					if C_Heirloom.CanHeirloomUpgradeFromPending(layoutData) then
+						return pageToCheck;
+					end
+				end
+			end
+		end
+	end
+
+	return nil;
+end
+
 function HeirloomsMixin:RefreshView()
 	self.needsRefresh = false;
 
 	self:RebuildLayoutData();
+
+	if C_Heirloom.IsPendingHeirloomUpgrade() then
+		-- Try to find an upgradeable heirloom and switch to that page
+		local closestUpgradeablePage = self:FindClosestUpgradeablePage();
+		if closestUpgradeablePage then
+			self.currentPage = closestUpgradeablePage;
+		else
+			--Unable to locate an upgradeable item
+			if self.classFilter ~= NO_CLASS_FILTER or self.specFilter ~= NO_SPEC_FILTER then
+				-- A filter is set, would we be able to find one if we removed filters?
+				local oldClassFilter = self.classFilter;
+				local oldSpecFilter = self.specFilter;
+
+				self.classFilter = NO_CLASS_FILTER;
+				self.specFilter = NO_SPEC_FILTER;
+
+				self.needsDataRebuilt = true;
+				self:RebuildLayoutData();
+
+				closestUpgradeablePage = self:FindClosestUpgradeablePage();
+				if closestUpgradeablePage then
+					-- Found one without filtering, apply this new filter
+					self.currentPage = closestUpgradeablePage;
+					self:UpdateClassFilterDropDownText();
+				else
+					-- Still nothing, reset the filter and just stick to the current page
+					self.classFilter = oldClassFilter;
+					self.specFilter = oldSpecFilter;
+
+					self.needsDataRebuilt = true;
+					self:RebuildLayoutData();
+				end
+			end
+		end
+	end
+
 	self:LayoutCurrentPage();
 	
 	self:UpdateProgressBar();
