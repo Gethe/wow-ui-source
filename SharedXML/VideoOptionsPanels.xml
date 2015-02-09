@@ -1223,9 +1223,27 @@
 					</OnShow>
 				</Scripts>
 			</Frame>
-			<Frame name="$parentPostProcessAntiAliasingDropDown" inherits="VideoOptionsDropDownMenuTemplate" id="15">
+			<Frame name="$parentMultisampleAlphaTest" inherits="VideoOptionsDropDownMenuTemplate" id="16">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeTo="$parentMultisampleAntiAliasingDropDown" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="0" y="-8"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<FontString name="$parentLabel" inherits="OptionsFontSmall" text="MULTISAMPLE_ALPHA_TEST" >
+							<Anchors>
+								<Anchor point="RIGHT" relativePoint="LEFT"/>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+			</Frame>
+			<Frame name="$parentPostProcessAntiAliasingDropDown" inherits="VideoOptionsDropDownMenuTemplate" id="15">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentMultisampleAlphaTest" relativePoint="BOTTOMLEFT">
 						<Offset>
 							<AbsDimension x="0" y="-8"/>
 						</Offset>
@@ -1524,29 +1542,17 @@
 					</OnLoad>
 				</Scripts>
 			</CheckButton>
-			<CheckButton name="$parentMultisampleAlphaTest" inherits="VideoOptionsSmallCheckButtonTemplate">
-				<Anchors>
-					<Anchor point="TOPLEFT" relativeTo="$parentShowHDModels" relativePoint="BOTTOMLEFT" x="0" y="-20"/>
-				</Anchors>
-				<Scripts>
-					<OnLoad>
-						self.type = CONTROLTYPE_CHECKBOX;
-						self.cvar = "msaaAlphaTest";
-						self.name = MULTISAMPLE_ALPHA_TEST;
-						self.tooltip = OPTION_TOOLTIP_MULTISAMPLE_ALPHA_TEST;
-						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
-					</OnLoad>
-				</Scripts>
-			</CheckButton>
-			<Slider name="$parentRenderScaleSlider" inherits="VideoOptionsSliderTemplate" minValue=".5" maxValue="2.0" valueStep=".05" obeyStepOnDrag="true">
+			<Slider name="$parentRenderScaleSlider" inherits="VideoOptionsSliderTemplate" valueStep=".05" obeyStepOnDrag="true">
 				<Size x="180" y="17"/>
 				<Anchors>
-					<Anchor point="TOPLEFT" relativeTo="$parentMultisampleAlphaTest" relativePoint="BOTTOMLEFT">
+					<Anchor point="TOPLEFT" relativeTo="$parentShowHDModels" relativePoint="BOTTOMLEFT">
 						<Offset x="25" y="-25"/>
 					</Anchor>
 				</Anchors>
 				<Scripts>
 					<OnLoad>
+						self:SetMinMaxValues(.5, GetMaxRenderScale());
+						
 						local name = self:GetName();
 						self.type = CONTROLTYPE_SLIDER;
 						self.cvar = "RenderScale";

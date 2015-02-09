@@ -1503,6 +1503,11 @@
 				</Anchors>
 				<Layers>
 					<Layer level="OVERLAY">
+						<Texture parentKey="Logo" atlas="WoWShare-TwitterLogo" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="LEFT" relativePoint="RIGHT" x="2" y="1"/>
+							</Anchors>						
+						</Texture>
 						<FontString parentKey="LoginStatus" inherits="GameFontHighlight" justifyH="LEFT" justifyV="MIDDLE" text="SOCIAL_TWITTER_STATUS_NOT_CONNECTED">
 							<Anchors>
 								<Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" x="28" y="-6"/>
@@ -1517,6 +1522,7 @@
 						self.setFunc = Twitter_SetEnabled;
 						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
 						self.Text:SetWidth(180);
+						self.Text:SetPoint("LEFT", self, "RIGHT", 18, 1);
 					</OnLoad>
 				</Scripts>
 			</CheckButton>

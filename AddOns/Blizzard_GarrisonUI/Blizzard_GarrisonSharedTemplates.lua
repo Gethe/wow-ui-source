@@ -905,10 +905,10 @@ function GarrisonFollowerPageModelUpgrade_Update(self)
 		local followerID = self:GetParent().followerID;
 		local followerInfo = followerID and C_Garrison.GetFollowerInfo(followerID);
 		if ( followerInfo and followerInfo.isCollected and followerInfo.status ~= GARRISON_FOLLOWER_ON_MISSION ) then
-			local isMaxLevel = (followerInfo.level == GARRISON_FOLLOWER_MAX_LEVEL);
-			self.Text:SetShown(isMaxLevel);
-			self.Icon:SetShown(isMaxLevel);
-			self.TextInvalid:SetShown(not isMaxLevel);
+			local isValidTarget = (followerInfo.level == GARRISON_FOLLOWER_MAX_LEVEL or not C_Garrison.TargetSpellHasFollowerItemLevelUpgrade());
+			self.Text:SetShown(isValidTarget);
+			self.Icon:SetShown(isValidTarget);
+			self.TextInvalid:SetShown(not isValidTarget);
 			self:Show();
 			return;
 		end
@@ -929,7 +929,7 @@ end
 
 function GarrisonFollower_DisplayUpgradeConfirmation(followerID)
 	local followerInfo = followerID and C_Garrison.GetFollowerInfo(followerID);
-	if ( followerInfo and followerInfo.isCollected and followerInfo.status ~= GARRISON_FOLLOWER_ON_MISSION and followerInfo.level == GARRISON_FOLLOWER_MAX_LEVEL ) then
+	if ( followerInfo and followerInfo.isCollected and followerInfo.status ~= GARRISON_FOLLOWER_ON_MISSION and (followerInfo.level == GARRISON_FOLLOWER_MAX_LEVEL or not C_Garrison.TargetSpellHasFollowerItemLevelUpgrade()) ) then
 		local name = ITEM_QUALITY_COLORS[followerInfo.quality].hex..followerInfo.name..FONT_COLOR_CODE_CLOSE;
 		StaticPopup_Show("CONFIRM_FOLLOWER_UPGRADE", name, nil, followerID);
 	end

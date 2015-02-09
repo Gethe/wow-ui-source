@@ -1252,14 +1252,6 @@ function AccountUpgradePanel_Update(isExpanded)
 		CharacterSelectLogo:Hide();
 	end
 
-	--We don't want to show the upgrade panel in Asian countries for now.
-	if ( NEVER_SHOW_UPGRADE ) then
-		CharSelectAccountUpgradePanel:Hide();
-		CharSelectAccountUpgradeButton:Hide();
-		CharSelectAccountUpgradeMiniPanel:Hide();
-		return;
-	end
-
 	if ( (not GameLimitedMode_IsActive() and not CanUpgradeExpansion()) or not ACCOUNT_UPGRADE_FEATURES[tag] ) then
 		CharSelectAccountUpgradePanel:Hide();
 		CharSelectAccountUpgradeButton:Hide();

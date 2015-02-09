@@ -438,12 +438,17 @@
 			</Button>
 			<!-- Post tweet button -->
 			<Button parentKey="PostButton" inherits="UIPanelButtonTemplate" text="SOCIAL_TWITTER_POST_BUTTON" motionScriptsWhileDisabled="true">
-				<Size x="100" y="21"/>
+				<Size x="100" y="27"/>
 				<Anchors>
-					<Anchor point="TOPRIGHT" relativeKey="$parent.SocialMessageFrame" relativePoint="BOTTOMRIGHT" x="7" y="-32"/>
+					<Anchor point="TOPRIGHT" relativeKey="$parent.SocialMessageFrame" relativePoint="BOTTOMRIGHT" x="7" y="-29"/>
 				</Anchors>
 				<Layers>
 					<Layer level="OVERLAY">
+						<Texture parentKey="Logo" atlas="WoWShare-TwitterLogo" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="LEFT"/>
+							</Anchors>						
+						</Texture>						
 						<FontString parentKey="CharsLeftString" inherits="GameFontNormalLarge" text="140">
 							<Anchors>
 								<Anchor point="BOTTOMRIGHT" relativePoint="BOTTOMLEFT" x="-10" y="2"/>
@@ -452,9 +457,22 @@
 					</Layer>
 				</Layers>
 				<Scripts>
+					<OnLoad>
+						local fontString = self:GetFontString();
+						-- 4 pixel space between icon and text
+						fontString:SetPoint("CENTER", (self.Logo:GetWidth() + 4) / 2, 0);
+						self.Logo:ClearAllPoints();
+						self.Logo:SetPoint("RIGHT", fontString, "LEFT", -4, 0);
+					</OnLoad>
 					<OnClick function="SocialPostButton_OnClick"/>
 					<OnEnter function="SocialPostButton_OnEnter"/>
 					<OnLeave function="SocialPostButton_OnLeave"/>
+					<OnMouseUp>
+						self.Logo:SetPoint("RIGHT", self:GetFontString(), "LEFT", -4, 0);
+					</OnMouseUp>
+					<OnMouseDown>
+						self.Logo:SetPoint("RIGHT", self:GetFontString(), "LEFT", -2, -1);
+					</OnMouseDown>
 				</Scripts>
 			</Button>
 		</Frames>

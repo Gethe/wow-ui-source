@@ -877,7 +877,6 @@ end
 
 AdvancedPanelOptions = {
 	hdPlayerModels = { text = "SHOW_HD_MODELS_TEXT" },
-	msaaAlphaTest = { text = "MULTISAMPLE_ALPHA_TEST" },
 }
 
 function Advanced_OnLoad (self)

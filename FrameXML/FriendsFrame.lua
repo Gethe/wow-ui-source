@@ -1728,7 +1728,7 @@ function FriendsFrameTooltip_Show(self)
 				anchor = FriendsFrameTooltip_SetLine(FriendsTooltipToon1Info, nil, string.format(FRIENDS_TOOLTIP_WOW_INFO_TEMPLATE, zoneName, realmName), -4);
 			else
 				if ( isOnline ) then
-					toonName = BNet_GetValidatedCharacterName(toonName, battleTag, client);
+					toonName = BNet_GetValidatedCharacterName(toonName, battleTag, client) or "";
 				end
 				FriendsFrameTooltip_SetLine(FriendsTooltipToon1Name, nil, toonName);			
 				anchor = FriendsFrameTooltip_SetLine(FriendsTooltipToon1Info, nil, gameText, -4);
@@ -1825,7 +1825,7 @@ function FriendsFrameTooltip_Show(self)
 					gameText = zoneName;
 				else
 					if ( isOnline ) then
-						toonName = BNet_GetValidatedCharacterName(toonName, battleTag, client);
+						toonName = BNet_GetValidatedCharacterName(toonName, battleTag, client) or "";
 					end
 					text = text..toonName;
 				end

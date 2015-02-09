@@ -201,7 +201,9 @@ function GarrisonCapacitiveDisplayFrame_Update(self, success, maxShipments, plot
 		display.ShipmentIconFrame.Icon:SetTexture(texture);
 		display.ShipmentIconFrame.itemId = itemID;
 
-		self.CreateAllWorkOrdersButton:SetEnabled(self.available > 0);
+		local onQuest = C_Garrison.IsOnShipmentQuestForNPC();
+
+		self.CreateAllWorkOrdersButton:SetEnabled(self.available > 0 and not onQuest);
 
 		ShowUIPanel(GarrisonCapacitiveDisplayFrame);
 	end

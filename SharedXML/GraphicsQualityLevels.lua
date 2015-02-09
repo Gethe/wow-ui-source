@@ -645,16 +645,20 @@ local function GenerateAntiAliasingDropDownData()
 
 	GenerateMSAAData(data, false, MultiSampleAntiAliasingSupported());
 
-	data[#data + 1] = {
-		text = ANTIALIASING_SSAA,
-		cvars =	{
-			ffxAntiAliasingMode = 0,
-			RenderScale = 2,
-			MSAAQuality = 0,
-		},
-	};
+	local ssaa2x = GetMaxRenderScale() >= 2.0;
 
-	if cmaa then
+	if ssaa2x then
+		data[#data + 1] = {
+			text = ANTIALIASING_SSAA,
+			cvars =	{
+				ffxAntiAliasingMode = 0,
+				RenderScale = 2,
+				MSAAQuality = 0,
+			},
+		};
+	end
+
+	if cmaa and ssaa2x then
 		data[#data + 1] = {
 			text = ANTIALIASING_SSAA_CMAA,
 			cvars =	{
@@ -1642,7 +1646,7 @@ VideoData["Graphics_DepthEffectsDropDown"]={
 	description = OPTION_TOOLTIP_DEPTH_EFFECTS,
 
 	data = {
-		[1] = {
+		{
 			text = VIDEO_OPTIONS_DISABLED,
 			cvars =	{
 				refraction = 0,
@@ -1650,19 +1654,27 @@ VideoData["Graphics_DepthEffectsDropDown"]={
 			},
 			tooltip = VIDEO_OPTIONS_DEPTH_EFFECTS_DISABLED,
 		},
-		[2] = {
+		{
 			text = VIDEO_OPTIONS_LOW,
 			cvars =	{
-				refraction = GetDefaultVideoQualityOption("refraction", 2, 1),
-				DepthBasedOpacity = GetDefaultVideoQualityOption("DepthBasedOpacity", 2, 1),
+				refraction = 0,
+				DepthBasedOpacity = 1,
 			},
 			tooltip = VIDEO_OPTIONS_DEPTH_EFFECTS_LOW,
 		},
-		[3] = {
+		{
+			text = VIDEO_OPTIONS_MEDIUM,
+			cvars =	{
+				refraction = 1,
+				DepthBasedOpacity = 1,
+			},
+			tooltip = VIDEO_OPTIONS_DEPTH_EFFECTS_MEDIUM,
+		},
+		{
 			text = VIDEO_OPTIONS_HIGH,
 			cvars =	{
-				refraction = GetDefaultVideoQualityOption("refraction", 3, 2),
-				DepthBasedOpacity = GetDefaultVideoQualityOption("DepthBasedOpacity", 3, 1),
+				refraction = 2,
+				DepthBasedOpacity = 1,
 			},
 			tooltip = VIDEO_OPTIONS_DEPTH_EFFECTS_HIGH,
 		},
@@ -1677,27 +1689,35 @@ VideoData["RaidGraphics_DepthEffectsDropDown"]={
 	description = OPTION_TOOLTIP_DEPTH_EFFECTS,
 
 	data = {
-		[1] = {
+		{
 			text = VIDEO_OPTIONS_DISABLED,
 			cvars =	{
-				raidRefraction = 0,
-				raidDepthBasedOpacity = 0,
+				refraction = 0,
+				DepthBasedOpacity = 0,
 			},
 			tooltip = VIDEO_OPTIONS_DEPTH_EFFECTS_DISABLED,
 		},
-		[2] = {
+		{
 			text = VIDEO_OPTIONS_LOW,
 			cvars =	{
-				raidRefraction = GetDefaultVideoQualityOption("raidRefraction", 2, 1, true),
-				raidDepthBasedOpacity = GetDefaultVideoQualityOption("raidDepthBasedOpacity", 2, 1, true),
+				refraction = 0,
+				DepthBasedOpacity = 1,
 			},
 			tooltip = VIDEO_OPTIONS_DEPTH_EFFECTS_LOW,
 		},
-		[3] = {
+		{
+			text = VIDEO_OPTIONS_MEDIUM,
+			cvars =	{
+				refraction = 1,
+				DepthBasedOpacity = 1,
+			},
+			tooltip = VIDEO_OPTIONS_DEPTH_EFFECTS_MEDIUM,
+		},
+		{
 			text = VIDEO_OPTIONS_HIGH,
 			cvars =	{
-				raidRefraction = GetDefaultVideoQualityOption("raidRefraction", 3, 2, true),
-				raidDepthBasedOpacity = GetDefaultVideoQualityOption("raidDepthBasedOpacity", 3, 1, true),
+				refraction = 2,
+				DepthBasedOpacity = 1,
 			},
 			tooltip = VIDEO_OPTIONS_DEPTH_EFFECTS_HIGH,
 		},
@@ -1782,13 +1802,13 @@ VideoData["Graphics_OutlineModeDropDown"]={
 		[1] = {
 			text = VIDEO_OPTIONS_DISABLED,
 			cvars =	{
-				OutlineEngineMode = GetDefaultVideoQualityOption("OutlineEngineMode", 1, 0),
+				OutlineEngineMode = 0,
 			},
 		},
 		[2] = {
 			text = VIDEO_OPTIONS_ALLOWED,
 			cvars =	{
-				OutlineEngineMode = GetDefaultVideoQualityOption("OutlineEngineMode", 2, 1),
+				OutlineEngineMode = 1,
 			},
 		},
 	},
@@ -1806,13 +1826,13 @@ VideoData["RaidGraphics_OutlineModeDropDown"]={
 		[1] = {
 			text = VIDEO_OPTIONS_DISABLED,
 			cvars =	{
-				RaidOutlineEngineMode = GetDefaultVideoQualityOption("RaidOutlineEngineMode", 1, 0, true),
+				RaidOutlineEngineMode = 0,
 			},
 		},
 		[2] = {
 			text = VIDEO_OPTIONS_ALLOWED,
 			cvars =	{
-				RaidOutlineEngineMode = GetDefaultVideoQualityOption("RaidOutlineEngineMode", 2, 1, true),
+				RaidOutlineEngineMode = 1,
 			},
 		},
 	},
@@ -2070,6 +2090,21 @@ VideoData["Advanced_ShowHDModels"]={
 VideoData["Advanced_MultisampleAlphaTest"]={
 	name = MULTISAMPLE_ALPHA_TEST,
 	tooltip = OPTION_TOOLTIP_MULTISAMPLE_ALPHA_TEST,
+
+	data = {
+		{
+			text = VIDEO_OPTIONS_DISABLED,
+			cvars =	{
+				msaaAlphaTest = 0,
+			},
+		},
+		{
+			text = VIDEO_OPTIONS_ENABLED,
+			cvars =	{
+				msaaAlphaTest = 1,
+			},
+		},
+	},
 }
 
 VideoData["Advanced_RenderScaleSlider"]={
