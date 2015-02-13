@@ -1551,6 +1551,7 @@ function UIParent_OnEvent(self, event, ...)
 			if ( not CollectionsJournal ) then
 				CollectionsJournal_LoadUI();
 			end
+			HeirloomsJournal:SetFindClosestUpgradeablePage(isPendingHeirloomUpgrade);
 			ShowUIPanel(CollectionsJournal);
 			CollectionsJournal_SetTab(CollectionsJournal, 4);
 		end

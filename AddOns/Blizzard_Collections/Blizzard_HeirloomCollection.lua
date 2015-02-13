@@ -18,6 +18,8 @@ function HeirloomsJournal_OnEvent(self, event, ...)
 	if event == "HEIRLOOMS_UPDATED" then
 		self:OnHeirloomsUpdated(...);
 	elseif event == "HEIRLOOM_UPGRADE_TARGETING_CHANGED" then
+		local isPendingHeirloomUpgrade = ...;
+		self:SetFindClosestUpgradeablePage(isPendingHeirloomUpgrade);
 		self:RefreshViewIfVisible();
 	elseif event == "INVENTORY_SEARCH_UPDATE" then
 		self:FullRefreshIfVisible();
@@ -181,6 +183,10 @@ function HeirloomsMixin:ClearNewStatus(itemID)
 		return true;
 	end
 	return false;
+end
+
+function HeirloomsMixin:SetFindClosestUpgradeablePage(findClosestUpgradeablePage)
+	self.findClosestUpgradeablePage = findClosestUpgradeablePage;
 end
 
 function HeirloomsMixin:FullRefreshIfVisible()
@@ -524,7 +530,9 @@ function HeirloomsMixin:RefreshView()
 
 	self:RebuildLayoutData();
 
-	if C_Heirloom.IsPendingHeirloomUpgrade() then
+	if self.findClosestUpgradeablePage then
+		self.findClosestUpgradeablePage = false;
+
 		-- Try to find an upgradeable heirloom and switch to that page
 		local closestUpgradeablePage = self:FindClosestUpgradeablePage();
 		if closestUpgradeablePage then

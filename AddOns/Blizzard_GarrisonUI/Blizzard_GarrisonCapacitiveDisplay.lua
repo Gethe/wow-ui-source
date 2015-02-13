@@ -37,6 +37,11 @@ function GarrisonCapacitiveDisplayFrame_Update(self, success, maxShipments, plot
 			return;
 		end
 
+		if ( C_Garrison.IsOnShipmentQuestForNPC() ) then
+			maxShipments = 1;
+			self.maxShipments = 1;
+		end
+
 		local available = maxShipments - numPending;
 
 		self.available = available;
@@ -201,9 +206,7 @@ function GarrisonCapacitiveDisplayFrame_Update(self, success, maxShipments, plot
 		display.ShipmentIconFrame.Icon:SetTexture(texture);
 		display.ShipmentIconFrame.itemId = itemID;
 
-		local onQuest = C_Garrison.IsOnShipmentQuestForNPC();
-
-		self.CreateAllWorkOrdersButton:SetEnabled(self.available > 0 and not onQuest);
+		self.CreateAllWorkOrdersButton:SetEnabled(self.available > 0);
 
 		ShowUIPanel(GarrisonCapacitiveDisplayFrame);
 	end

@@ -288,11 +288,6 @@ function MountJournal_UpdateMountList()
 		MountJournal_UpdateMountDisplay();
 		MountJournal.MountCount.Count:SetText(0);
 	end
-	if ( playerLevel >= PLAYER_MOUNT_LEVEL and numMounts > 0) then
-		MountJournal.MountButton:SetEnabled(true);
-	else
-		MountJournal.MountButton:SetEnabled(false);
-	end
 end
 
 function MountJournalMountButton_UpdateTooltip(self)
@@ -342,12 +337,15 @@ function MountJournal_UpdateMountDisplay()
 		else
 			MountJournal.MountButton:SetText(MOUNT);
 		end
+
+		MountJournal.MountButton:SetEnabled(isUsable);
 	else
 		MountJournal.MountDisplay.InfoButton:Hide();
 		MountJournal.MountDisplay.ModelFrame:Hide();
 		MountJournal.MountDisplay.YesMountsTex:Hide();
 		MountJournal.MountDisplay.NoMountsTex:Show();
 		MountJournal.MountDisplay.NoMounts:Show();
+		MountJournal.MountButton:SetEnabled(false);
 	end
 end
 

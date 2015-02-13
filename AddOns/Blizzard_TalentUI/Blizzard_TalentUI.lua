@@ -495,10 +495,6 @@ function PlayerTalentFrame_OnEvent(self, event, ...)
 			PlayerTalentFrame_RefreshClearInfo();
 		end
 	end
-	
-	if ( event == "ACTIVE_TALENT_GROUP_CHANGED" ) then
-		ActionBarController_ResetToDefault();
-	end
 end
 
 function PlayerTalentFrame_ShowTalentTab()
