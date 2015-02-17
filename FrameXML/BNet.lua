@@ -548,7 +548,7 @@ end
 
 -- if we don't have a character name or it's for HotS, use the battletag
 function BNet_GetValidatedCharacterName(toonName, battleTag, client)
-	if ( not toonName or client == BNET_CLIENT_HEROES ) then
+	if ( not toonName or toonName == "" or client == BNET_CLIENT_HEROES ) then
 		if ( battleTag and battleTag ~= "" ) then
 			local symbol = string.find(battleTag, "#");
 			if ( symbol ) then

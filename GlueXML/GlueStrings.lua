@@ -242,10 +242,10 @@ BLIZZARD_STORE_LICENSE_ACK_TEXT_AUD = "User Acknowledgment:  By clicking the Buy
 BLIZZARD_STORE_LICENSE_ACK_TEXT_BRL = "User Acknowledgment:  By clicking the Buy Now button below, I acknowledge that I have read and agree to the |HurlIndex:14|h|cff71d5ffTerms of Sale|r|h and |HurlIndex:15|h|cff71d5ffPrivacy Policy|r|h, and I confirm this purchase.";
 BLIZZARD_STORE_LICENSE_ACK_TEXT_CLP = "User Acknowledgment:  By clicking the Buy Now button below, I acknowledge that I have read and agree to the |HurlIndex:14|h|cff71d5ffTerms of Sale|r|h and |HurlIndex:15|h|cff71d5ffPrivacy Policy|r|h, and I confirm this purchase.";
 BLIZZARD_STORE_LICENSE_ACK_TEXT_CN = "User Acknowledgment:  By clicking the Buy Now button below, I acknowledge that I have read and agree to the |HurlIndex:18|h|cff71d5ffTerms of Sale|r|h and |HurlIndex:19|h|cff71d5ffPrivacy Policy|r|h, and I confirm this purchase.";
-BLIZZARD_STORE_LICENSE_ACK_TEXT_EUR = "User Acknowledgment:  By clicking the Pay Now button below, I acknowledge that I have read and agree to the |HurlIndex:16|h|cff71d5ffTerms of Sale|r|h and |HurlIndex:17|h|cff71d5ffPrivacy Policy|r|h, and I confirm this purchase.";
-BLIZZARD_STORE_LICENSE_ACK_TEXT_GBP = "User Acknowledgment:  By clicking the Pay Now button below, I acknowledge that I have read and agree to the |HurlIndex:16|h|cff71d5ffTerms of Sale|r|h and |HurlIndex:17|h|cff71d5ffPrivacy Policy|r|h, and I confirm this purchase.";
+BLIZZARD_STORE_LICENSE_ACK_TEXT_EUR = "By clicking Pay Now, you agree to the |HurlIndex:16|h|cff71d5ffTerms of Sale|r|h, and to the immediate delivery of your order. You will lose the right to withdraw your order once the delivery process has started.";
+BLIZZARD_STORE_LICENSE_ACK_TEXT_GBP = "By clicking Pay Now, you agree to the |HurlIndex:16|h|cff71d5ffTerms of Sale|r|h, and to the immediate delivery of your order. You will lose the right to withdraw your order once the delivery process has started.";
 BLIZZARD_STORE_LICENSE_ACK_TEXT_MXN = "User Acknowledgment:  By clicking the Buy Now button below, I acknowledge that I have read and agree to the |HurlIndex:14|h|cff71d5ffTerms of Sale|r|h and |HurlIndex:15|h|cff71d5ffPrivacy Policy|r|h, and I confirm this purchase.";
-BLIZZARD_STORE_LICENSE_ACK_TEXT_RUB = "User Acknowledgment:  By clicking the Pay Now button below, I acknowledge that I have read and agree to the |HurlIndex:16|h|cff71d5ffTerms of Sale|r|h and |HurlIndex:17|h|cff71d5ffPrivacy Policy|r|h, and I confirm this purchase.";
+BLIZZARD_STORE_LICENSE_ACK_TEXT_RUB = "By clicking Pay Now, you agree to the |HurlIndex:16|h|cff71d5ffTerms of Sale|r|h, and to the immediate delivery of your order. You will lose the right to withdraw your order once the delivery process has started.";
 BLIZZARD_STORE_LICENSE_ACK_TEXT_TW = "User Acknowledgment:  By clicking the Buy Now button below, I acknowledge that I have read and agree to the |HurlIndex:10|h|cff71d5ffTerms of Sale|r|h and |HurlIndex:20|h|cff71d5ffPrivacy Policy|r|h, and I confirm this purchase.";
 BLIZZARD_STORE_LICENSE_ACK_TEXT_USD = "User Acknowledgment:  By clicking the Buy Now button below, I acknowledge that I have read and agree to the |HurlIndex:14|h|cff71d5ffTerms of Sale|r|h and |HurlIndex:15|h|cff71d5ffPrivacy Policy|r|h, and I confirm this purchase.";
 BLIZZARD_STORE_LOADING = "Loading";
@@ -1319,6 +1319,7 @@ VISITABLE_URL19 = "http://nydus.battle.net/WoW/%s/client/legal/privacy-policy?ta
 VISITABLE_URL2 = "http://enUS.nydus.battle.net/WOW/enUS/client/trial_restriction_error_1?region=US&accountName=%s";
 VISITABLE_URL20 = "http://nydus.battle.net/WoW/%s/client/legal/privacy-policy?targetRegion=TW";
 VISITABLE_URL21 = "https://nydus.battle.net/WoW/%s/client/choose-payment-method?targetRegion=EU";
+VISITABLE_URL22 = "http://nydus.battle.net/WoW/enUS/client/subscription-setup?targetRegion=US";
 VISITABLE_URL3 = "http://enus.nydus.battle.net/wow/enUS/client/item-restoration";
 VISITABLE_URL4 = "http://enUS.nydus.battle.net/wow/enUS/client/challenge/%d/%d";
 VISITABLE_URL5 = "https://us.battle.net/support/en/games/wow?loc";

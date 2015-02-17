@@ -510,7 +510,7 @@ end
 
 function ReactivateAccount()
 	PlaySound("gsLoginNewAccount");
-	LoadURLIndex(2);
+	LoadURLIndex(22);
 end
 
 function SetLoginScreenModel(model)

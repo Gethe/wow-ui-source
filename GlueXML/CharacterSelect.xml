@@ -435,7 +435,11 @@
 								end
 							</OnEvent>
 							<OnClick>
-								UpgradeAccount();
+								if ( IsVeteranTrialAccount() ) then
+									ReactivateAccount();
+								else
+									UpgradeAccount();
+								end
 							</OnClick>
 						</Scripts>
 					</Button>

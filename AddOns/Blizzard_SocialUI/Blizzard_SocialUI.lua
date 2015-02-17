@@ -465,9 +465,6 @@ end
 
 function SocialRenderAchievement(achievementID)
 	local button = OffScreenFrame.OffscreenAchievement;
-	if ( not IsAddOnLoaded("Blizzard_AchievementUI") ) then
-		UIParentLoadAddOn("Blizzard_AchievementUI");
-	end
 	AchievementFrameAchievements_SetupButton(button);
 	
 	-- Set button to collapsed state so that AchievementButton_DisplayAchievement() expands

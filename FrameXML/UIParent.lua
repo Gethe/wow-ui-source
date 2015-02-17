@@ -380,6 +380,11 @@ function RaidFrame_LoadUI()
 	UIParentLoadAddOn("Blizzard_RaidUI");
 end
 
+function SocialFrame_LoadUI()
+	AchievementFrame_LoadUI();
+	UIParentLoadAddOn("Blizzard_SocialUI");
+end
+
 function TalentFrame_LoadUI()
 	UIParentLoadAddOn("Blizzard_TalentUI");
 end

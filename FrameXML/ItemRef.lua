@@ -245,17 +245,17 @@ function SetItemRef(link, text, button, chatFrame)
 		return;
 	elseif ( strsub(link, 1, 7) == "sharess" ) then
 		local _, index = strsplit(":", link);
-		LoadSocialAddon();
+		SocialFrame_LoadUI();
 		SocialPostFrame_ShowScreenshot(tonumber(index));
 		return;
 	elseif ( strsub(link, 1, 12) == "shareachieve" ) then
 		local _, achievementID, earned = strsplit(":", link);
-		LoadSocialAddon();
+		SocialFrame_LoadUI();
 		SocialPostFrame_ShowAchievement(tonumber(achievementID), StringToBoolean(earned));
 		return;
 	elseif ( strsub(link, 1, 9) == "shareitem" ) then
 		local itemID, earned, creationContext = link:match("shareitem:(%d+):(%d+):(.*)");
-		LoadSocialAddon();
+		SocialFrame_LoadUI();
 		SocialPostFrame_ShowItem(itemID, creationContext, StringToBoolean(earned));
 		return;
 	end
@@ -269,12 +269,6 @@ function SetItemRef(link, text, button, chatFrame)
 			ItemRefTooltip:SetOwner(UIParent, "ANCHOR_PRESERVE");
 		end
 		ItemRefTooltip:SetHyperlink(link);
-	end
-end
-
-function LoadSocialAddon()
-	if ( not IsAddOnLoaded("Blizzard_SocialUI") ) then
-		UIParentLoadAddOn("Blizzard_SocialUI");
 	end
 end
 
