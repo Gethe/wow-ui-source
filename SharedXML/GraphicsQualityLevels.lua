@@ -2067,7 +2067,7 @@ VideoData["Advanced_ShowHDModels"]={
 
 VideoData["Advanced_MultisampleAlphaTest"]={
 	name = MULTISAMPLE_ALPHA_TEST,
-	tooltip = OPTION_TOOLTIP_MULTISAMPLE_ALPHA_TEST,
+	description = OPTION_TOOLTIP_MULTISAMPLE_ALPHA_TEST,
 
 	data = {
 		{

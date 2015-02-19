@@ -3124,7 +3124,7 @@ function ChatFrame_MessageEventHandler(self, event, ...)
 			elseif ( arg1 == "FRIEND_ONLINE" or arg1 == "FRIEND_OFFLINE") then
 				local hasFocus, toonName, client, realmName, realmID, faction, race, class, guild, zoneName, level, gameText = BNGetToonInfo(arg13);
 				if (toonName and toonName ~= "" and client and client ~= "") then
-					local _, _, battleTag = BNGetFriendInfo(arg13);
+					local _, _, battleTag = BNGetFriendInfoByID(arg13);
 					toonName = BNet_GetValidatedCharacterName(toonName, battleTag, client) or "";
 					local toonNameText = BNet_GetClientEmbeddedTexture(client, 14)..toonName;
 					local playerLink = format("|HBNplayer:%s:%s:%s:%s:%s|h[%s] (%s)|h", arg2, arg13, arg11, Chat_GetChatCategory(type), 0, arg2, toonNameText);
