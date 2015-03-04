@@ -160,7 +160,7 @@
 				<Texture name="$parentVertRightBorder" parentKey="vertRightBorder" vertTile="true" forceAlpha="true"/>
 			</Layer>
 			<Layer level="ARTWORK">
-				<FontString name="$parentName" inherits="GameFontHighlightSmall" parentKey="name"/>
+				<FontString name="$parentName" inherits="GameFontHighlightSmall" parentKey="name" wordwrap="false"/>
 				<FontString name="$parentStatusText" inherits="GameFontDisable" parentKey="statusText"/>
 				<Texture name="$parentRoleIcon" hidden="true" parentKey="roleIcon"/>
 				<Texture name="$parentAggroHighlight" parentKey="aggroHighlight"/>
