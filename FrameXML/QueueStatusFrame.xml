@@ -164,7 +164,9 @@
 				<Alpha childKey="Highlight" startDelay="0.1" smoothing="NONE" duration="1.0" order="1" fromAlpha="1" toAlpha="0"/>
 				<Scripts>
 					<OnLoop>
-						PlaySound("UI_GroupFinderReceiveApplication");
+						if ( QueueStatusMinimapButton_OnGlowPulse(self:GetParent()) ) then
+							PlaySound("UI_GroupFinderReceiveApplication");
+						end
 					</OnLoop>
 				</Scripts>
 			</AnimationGroup>

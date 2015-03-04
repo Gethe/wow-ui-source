@@ -68,6 +68,8 @@ function WorldStateAlwaysUpFrame_OnLoad(self)
 	self:RegisterEvent("BATTLEGROUND_POINTS_UPDATE");
 	self:RegisterEvent("LFG_ROLE_CHECK_DECLINED");
 	self:RegisterEvent("LFG_ROLE_CHECK_SHOW");
+	self:RegisterEvent("LFG_READY_CHECK_DECLINED");
+	self:RegisterEvent("LFG_READY_CHECK_SHOW");
 
 	FILTERED_BG_CHAT_ADD = {};
 	FILTERED_BG_CHAT_SUBTRACT = {};
@@ -114,9 +116,9 @@ function WorldStateAlwaysUpFrame_OnEvent(self, event, ...)
 	elseif ( event == "PLAYER_ENTERING_BATTLEGROUND" ) then
 		WorldStateAlwaysUpFrame_StartBGChatFilter(self);
 		WorldStateScoreFrameQueueButton:Enable();
-	elseif ( event == "LFG_ROLE_CHECK_DECLINED" ) then
+	elseif ( event == "LFG_ROLE_CHECK_DECLINED" or event == "LFG_READY_CHECK_DECLINED" ) then
 		WorldStateScoreFrameQueueButton:Enable();
-	elseif ( event == "LFG_ROLE_CHECK_SHOW" ) then	
+	elseif ( event == "LFG_ROLE_CHECK_SHOW" or event == "LFG_READY_CHECK_SHOW" ) then	
 		WorldStateScoreFrameQueueButton:Disable();
 	else
 		WorldStateAlwaysUpFrame_Update();

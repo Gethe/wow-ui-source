@@ -96,7 +96,7 @@ local DISPLAY_DATA = {
 		imageData1 = {file ="Interface\\TutorialFrame\\UI-TutorialFrame-DudeParty", align = "TOP", xOff = -50, yOff = -63},
 		imageData2 = {file ="Interface\\TutorialFrame\\UI-TutorialFrame-GloveCursor", layer = "OVERLAY", align = "TOP", xOff = 40, yOff = -90},
 		mouseData = {image = "RightClick", align = "TOP", xOff = 110, yOff = -65},
-		npe = true,
+		notNPE = true,
 	},
 	
 	[20] = { --TUTORIAL_BUYING_ITEMS
@@ -106,7 +106,7 @@ local DISPLAY_DATA = {
 		imageData1 = {file ="Interface\\TutorialFrame\\UI-TutorialFrame-LootCursor", align = "TOP", xOff = 0, yOff = -60},
 		imageData2 = {file ="Interface\\TutorialFrame\\UI-TutorialFrame-TheDude", align = "TOP", xOff = -40, yOff = -10},
 		mouseData = {image = "RightClick", align = "TOP", xOff = 80, yOff = -40},
-		npe = true,
+		notNPE = true,
 	},
 	
 	[22] = { --TUTORIAL_FRIENDS
@@ -114,7 +114,7 @@ local DISPLAY_DATA = {
 		anchorData = {align = "RIGHT", xOff = -25, yOff = -150},
 		callOut	= {parent = "FriendsMicroButton", align = "TOPLEFT", xOff = -4, yOff = 6, width = 38, height = 45},
 		textBox = {topLeft_xOff = 33, topLeft_yOff = -75, bottomRight_xOff = -29, bottomRight_yOff = 35},
-		npe = true,
+		notNPE = true,
 	},
 	
 	[27] = { --TUTORIAL_FATIGUE
@@ -129,7 +129,7 @@ local DISPLAY_DATA = {
 		anchorData = {align = "LEFT", xOff = 15, yOff = 30},
 		textBox = {topLeft_xOff = 33, topLeft_yOff = -135, bottomRight_xOff = -29, bottomRight_yOff = 35},
 		mouseData = {image = "RightClick", align = "TOP", xOff = 10, yOff = -35},
-		npe = true,
+		notNPE = true,
 	},
 	
 	[30] = { --TUTORIAL_INNS
@@ -137,7 +137,7 @@ local DISPLAY_DATA = {
 		anchorData = {align = "LEFT", xOff = 15, yOff = 150},
 		callOut	= {parent = "PlayerFrame", align = "TOPLEFT", xOff = 32, yOff = -4, width = 85, height = 85},
 		textBox = {topLeft_xOff = 33, topLeft_yOff = -75, bottomRight_xOff = -29, bottomRight_yOff = 35},
-		npe = true,
+		notNPE = true,
 	},
 
 	[32] = { --TUTORIAL_PVP
@@ -145,7 +145,7 @@ local DISPLAY_DATA = {
 		anchorData = {align = "LEFT", xOff = 15, yOff = 150},
 		callOut	= {parent = "PlayerFrame", align = "TOPLEFT", xOff = 34, yOff = -6, width = 78, height = 78},
 		textBox = {topLeft_xOff = 33, topLeft_yOff = -75, bottomRight_xOff = -29, bottomRight_yOff = 35},
-		npe = true,
+		notNPE = true,
 	},	
 	
 	
@@ -166,7 +166,7 @@ local DISPLAY_DATA = {
 		imageData1 = {file ="Interface\\TutorialFrame\\UI-TutorialFrame-TrainerCursor", align = "TOP", xOff = 0, yOff = -60},
 		imageData2 = {file ="Interface\\TutorialFrame\\UI-TutorialFrame-TheDude", align = "TOP", xOff = -40, yOff = -10},
 		mouseData = {image = "RightClick", align = "TOP", xOff = 80, yOff = -40},
-		npe = true,
+		notNPE = true,
 	},
 
 	
@@ -262,7 +262,7 @@ local DISPLAY_DATA = {
 };
 local DisplayDataFallback = {
 	unused = true;
-	npe = false,
+	notNPE = false,
 	tileHeight = 0,
 };
 setmetatable( DISPLAY_DATA, {__index = function () return DisplayDataFallback end });
@@ -441,7 +441,7 @@ function TutorialFrame_Update(currentTutorial)
 		return;
 	end
 
-	if ( displayData.npe and NewPlayerExperience and NewPlayerExperience:GetIsActive() ) then
+	if ( displayData.notNPE and NewPlayerExperience and NewPlayerExperience:GetIsActive() ) then
 		return;
 	end
 	
@@ -741,6 +741,16 @@ end
 function TutorialFrame_NewTutorial(tutorialID, forceShow)
 	if(forceShow) then
 		TutorialFrame_Update(tutorialID);
+		return;
+	end
+
+	local displayData = DISPLAY_DATA[ tutorialID ];
+	if ( not displayData or displayData.unused ) then
+		FlagTutorial(tutorialID);
+		return;
+	end
+	
+	if ( displayData.notNPE and NewPlayerExperience and NewPlayerExperience:GetIsActive() ) then
 		return;
 	end
 	

@@ -3,15 +3,17 @@
 
 <Script file="AlertFrames.lua"/>
 
-<Frame name="AlertFrameTemplate" virtual="true">
+<Button name="AlertFrameTemplate" virtual="true">
 	<Scripts>
+		<OnLoad function="AlertFrameTemplate_OnLoad"/>
 		<OnEnter function="AlertFrame_StopOutAnimation"/>
 		<OnLeave function="AlertFrame_ResumeOutAnimation"/>
 		<OnHide function="AlertFrame_FixAnchors"/>
+		<OnClick function="AlertFrame_OnClick"/>
 	</Scripts>
-</Frame>
+</Button>
 
-<Frame name="DungeonCompletionAlertFrameRewardTemplate" virtual="true">
+<Button name="DungeonCompletionAlertFrameRewardTemplate" virtual="true">
 	<Size x="36" y="36"/>
 	<Layers>
 		<Layer level="ARTWORK">
@@ -34,15 +36,15 @@
 		<OnEnter function="DungeonCompletionAlertFrameReward_OnEnter"/>
 		<OnLeave function="DungeonCompletionAlertFrameReward_OnLeave"/>
 	</Scripts>
-</Frame>
-<Frame name="ChallengeModeAlertFrameRewardTemplate" virtual="true" inherits="DungeonCompletionAlertFrameRewardTemplate">
+</Button>
+<Button name="ChallengeModeAlertFrameRewardTemplate" virtual="true" inherits="DungeonCompletionAlertFrameRewardTemplate">
 	<Scripts>
 		<OnEnter function="ChallengeModeAlertFrameReward_OnEnter"/>
 		<OnLeave function="ChallengeModeAlertFrameReward_OnLeave"/>
 	</Scripts>
-</Frame>
+</Button>
 
-<Frame name="DungeonCompletionAlertFrameTemplate" parent="UIParent" hidden="true" frameStrata="DIALOG" virtual="true" inherits="AlertFrameTemplate">
+<Button name="DungeonCompletionAlertFrameTemplate" parent="UIParent" hidden="true" frameStrata="DIALOG" virtual="true" inherits="AlertFrameTemplate">
 	<Size x="336" y="80"/>
 	<Anchors>
 		<Anchor point="BOTTOM" x="0" y="128"/>
@@ -182,9 +184,9 @@
 		</Frame>
 	</Frames>
 	<Scripts>
-		<OnLoad function="DungeonCompletionAlertFrame_OnLoad"/>
+		<OnLoad inherit="prepend" function="DungeonCompletionAlertFrame_OnLoad"/>
 	</Scripts>
-</Frame>
+</Button>
 
 <Button name="AchievementAlertFrameTemplate" parent="UIParent" hidden="true" frameStrata="DIALOG" virtual="true" inherits="AlertFrameTemplate">
 	<Size x="300" y="88"/>
@@ -367,9 +369,6 @@
 		</Frame>
 	</Frames>
 	<Scripts>
-		<OnLoad>
-			AchievementAlertFrame_OnLoad(self);
-		</OnLoad>
 		<OnClick>
 			AchievementAlertFrame_OnClick(self, button, down);
 		</OnClick>
@@ -500,7 +499,6 @@
 		</Frame>
 	</Frames>
 	<Scripts>
-		<OnLoad function="AchievementAlertFrame_OnLoad"/>
 		<OnClick function="AchievementAlertFrame_OnClick"/>
 	</Scripts>
 </Button>
@@ -733,10 +731,13 @@
 		</Frame>
 	</Frames>
 	<Scripts>
-		<OnLoad>
+		<OnLoad inherit="prepend">
 			self.glow = self.glowFrame.glow;
 		</OnLoad>
 		<OnClick>
+			if ( AlertFrame_OnClick(self, button, down) ) then
+				return;
+			end
 			PVEFrame_ToggleFrame("ChallengesFrame", self.mapID);
 		</OnClick>
 	</Scripts>
@@ -850,7 +851,7 @@
 		</Frame>
 	</Frames>
 	<Scripts>
-		<OnLoad>
+		<OnLoad inherit="prepend">
 			self.glow = self.glowFrame.glow;
 		</OnLoad>
 	</Scripts>
@@ -1047,11 +1048,12 @@
 		</Layer>		
 	</Layers>
 	<Scripts>
+		<OnLoad inherit="prepend">
+			self.UpdateTooltip = LootAlertFrame_OnEnter;
+		</OnLoad>
 		<OnEnter>
 			AlertFrame_StopOutAnimation(self);
-			GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
-			GameTooltip:SetHyperlink(self.hyperlink);
-			GameTooltip:Show();
+			LootAlertFrame_OnEnter(self);
 		</OnEnter>
 		<OnLeave>
 			AlertFrame_ResumeOutAnimation(self);
@@ -1137,7 +1139,7 @@
 			</Texture>
 		</Layer>
 		<Layer level="ARTWORK" textureSubLevel="1">
-			<FontString parentKey="TitleText" inherits="GameFontNormal" justifyH="LEFT" text="Item Upgrade!">
+			<FontString parentKey="TitleText" inherits="GameFontNormal" justifyH="LEFT">
 				<Size x="148" y="16"/>
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeKey="$parent.BaseQualityBorder" relativePoint="TOPRIGHT" x="28" y="-1"/>
@@ -1223,11 +1225,12 @@
 		</AnimationGroup>
 	</Animations>
 	<Scripts>
+		<OnLoad inherit="prepend">
+			self.UpdateTooltip = LootAlertFrame_OnEnter;
+		</OnLoad>	
 		<OnEnter>
 			AlertFrame_StopOutAnimation(self);
-			GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
-			GameTooltip:SetHyperlink(self.hyperlink);
-			GameTooltip:Show();
+			LootAlertFrame_OnEnter(self);
 		</OnEnter>
 		<OnLeave>
 			AlertFrame_ResumeOutAnimation(self);
@@ -1245,7 +1248,7 @@
 
 <Button name="MoneyWonAlertFrame1" inherits="MoneyWonAlertFrameTemplate">
 	<Scripts>
-		<OnLoad>
+		<OnLoad inherit="prepend">
 			table.insert(MONEY_WON_ALERT_FRAMES, self);
 		</OnLoad>
 	</Scripts>
@@ -1473,7 +1476,7 @@
 		<Layer level="ARTWORK">
 			<FontString parentKey="Title" inherits="GameFontNormalSmall" text="GARRISON_UPDATE">
 				<Anchors>
-					<Anchor point="TOP" x="18" y="-18"/>
+					<Anchor point="TOP" x="23" y="-18"/>
 				</Anchors>
 			</FontString>
 			<FontString parentKey="Name" inherits="GameFontHighlight" text="Blacksmith Foundry Completed">
@@ -1527,7 +1530,130 @@
 	</Scripts>
 </Button>
 
-<Button name="GarrisonMissionAlertFrame" parent="UIParent" hidden="true" frameStrata="DIALOG" inherits="AlertFrameTemplate">
+	<Button name="GarrisonRandomMissionAlertFrame" parent="UIParent" hidden="true" frameStrata="DIALOG" inherits="AlertFrameTemplate">
+		<Size x="317" y="82"/>
+		<Anchors>
+			<Anchor point="BOTTOM" x="0" y="170"/>
+		</Anchors>
+		<Animations>
+			<AnimationGroup name="$parentAnimIn" parentKey="animIn">
+				<Alpha change="-1" duration="0" order="1"/>
+				<Alpha change="1" duration="0.2" order="2"/>
+			</AnimationGroup>
+			<AnimationGroup name="$parentWaitAndAnimOut" parentKey="waitAndAnimOut">
+				<Alpha startDelay="4.05" change="-1" duration="1.5" parentKey="animOut">
+					<Scripts>
+						<OnFinished>
+							self:GetRegionParent():Hide();
+						</OnFinished>
+					</Scripts>
+				</Alpha>
+			</AnimationGroup>
+		</Animations>
+		<Layers>
+			<Layer level="BACKGROUND" textureSubLevel="1">
+				<Texture parentKey="Background" atlas="Garr_MissionToast" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="BACKGROUND" textureSubLevel="2">
+				<Texture parentKey="Blank" atlas="Garr_MissionToast-Blank" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="BOTTOM" x="8" y="13"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="BACKGROUND" textureSubLevel="4">
+				<Texture parentKey="IconBG" atlas="Garr_MissionToast-IconBG" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="LEFT" x="10" y="0"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="BACKGROUND" textureSubLevel="3">
+				<Texture parentKey="MissionType" atlas="GarrMission_MissionIcon-Combat" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="14" y="-8"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="ARTWORK">
+				<FontString inherits="SystemFont_Med3" text="GARRISON_MISSION_ADDED_TOAST1">
+					<Anchors>
+						<Anchor point="TOP" x="20" y="-18"/>
+					</Anchors>
+					<Color r="1.0" g="0.82" b="0.0"/>
+				</FontString>
+				<FontString inherits="Game24Font" text="GARRISON_MISSION_ADDED_TOAST2">
+					<Anchors>
+						<Anchor point="TOP" x="20" y="-34"/>
+					</Anchors>
+					<Color r="1.0" g="0.82" b="0.0"/>
+				</FontString>
+				<FontString parentKey="Level" inherits="Game24Font">
+					<Anchors>
+						<Anchor point="TOP" x="-115" y="-14"/>
+					</Anchors>
+					<Color r="0.82" g="0.69" b="0.53"/>
+				</FontString>
+				<FontString parentKey="ItemLevel" inherits="InvoiceFont_Small">
+					<Anchors>
+						<Anchor point="TOP" x="-115" y="-37"/>
+					</Anchors>
+					<Color r="0.82" g="0.69" b="0.53"/>
+				</FontString>
+				<FontString parentKey="Rare" inherits="MailFont_Large" text="GARRISON_MISSION_RARE">
+					<Anchors>
+						<Anchor point="TOP" x="-115" y="-48"/>
+					</Anchors>
+					<Color r="0.098" g="0.537" b="0.969" a="1"/>
+				</FontString>
+			</Layer>
+			<Layer level="OVERLAY">
+				<Texture name="$parentGlow" file="Interface\AchievementFrame\UI-Achievement-Alert-Glow" alphaMode="ADD" hidden="true" parentKey="glow">
+					<Size x="400" y="171"/>
+					<Anchors>
+						<Anchor point="CENTER" x="0" y="0"/>
+					</Anchors>
+					<Animations>
+						<AnimationGroup name="$parentAnimIn" parentKey="animIn">
+							<Alpha change="1" duration="0.2" order="1"/>
+							<Alpha change="-1" duration="0.5" order="2"/>
+							<Scripts>
+								<OnFinished>
+									self:GetParent():Hide();
+								</OnFinished>
+							</Scripts>
+						</AnimationGroup>
+					</Animations>
+					<TexCoords left="0" right="0.78125" top="0" bottom="0.66796875"/>
+				</Texture>
+				<Texture name="$parentShine" file="Interface\AchievementFrame\UI-Achievement-Alert-Glow" alphaMode="ADD" hidden="true" parentKey="shine">
+					<Size x="67" y="72"/>
+					<Anchors>
+						<Anchor point="BOTTOMLEFT" x="0" y="8"/>
+					</Anchors>
+					<Animations>
+						<AnimationGroup name="$parentAnimIn" parentKey="animIn">
+							<Alpha change="1" duration="0.2" order="1"/>
+							<Translation offsetX="200" offsetY="0" duration="0.85" order="2"/>
+							<Alpha startDelay="0.35" change="-1" duration="0.5" order="2"/>
+							<Scripts>
+								<OnFinished>
+									self:GetParent():Hide();
+								</OnFinished>
+							</Scripts>
+						</AnimationGroup>
+					</Animations>
+					<TexCoords left="0.78125" right="0.912109375" top="0" bottom="0.28125"/>
+				</Texture>
+			</Layer>
+		</Layers>
+	</Button>
+
+	<Button name="GarrisonMissionAlertFrame" parent="UIParent" hidden="true" frameStrata="DIALOG" inherits="AlertFrameTemplate">
 	<Size x="317" y="82"/>
 	<Anchors>
 		<Anchor point="BOTTOM" x="0" y="170"/>

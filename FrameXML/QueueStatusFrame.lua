@@ -51,8 +51,9 @@ function QueueStatusMinimapButton_OnShow(self)
 	self.Eye:SetFrameLevel(self:GetFrameLevel() - 1);
 end
 
-function QueueStatusMinimapButton_SetGlowLock(self, lock, enabled)
-	self.glowLocks[lock] = enabled;
+--Will play the sound numPingSounds times (or forever if nil)
+function QueueStatusMinimapButton_SetGlowLock(self, lock, enabled, numPingSounds)
+	self.glowLocks[lock] = enabled and (numPingSounds or -1);
 	QueueStatusMinimapButton_UpdateGlow(self);
 end
 
@@ -73,6 +74,25 @@ function QueueStatusMinimapButton_UpdateGlow(self)
 	end
 end
 
+function QueueStatusMinimapButton_OnGlowPulse(self)
+	local playSounds = false;
+	for k, v in pairs(self.glowLocks) do
+		if ( type(v) == "number" ) then
+			-- < 0 means play sounds forever
+			-- > 0 means play sounds n times
+			-- == 0 means no longer playing sounds
+			if ( v < 0 ) then
+				playSounds = true;
+			elseif ( v > 0 ) then
+				self.glowLocks[k] = v - 1;
+				playSounds = true;
+			end
+		end
+	end
+
+	return playSounds;
+end
+
 ----------------------------------------------
 ------------QueueStatusFrame------------------
 ----------------------------------------------
@@ -84,6 +104,7 @@ function QueueStatusFrame_OnLoad(self)
 	--For LFG
 	self:RegisterEvent("LFG_UPDATE");
 	self:RegisterEvent("LFG_ROLE_CHECK_UPDATE");
+	self:RegisterEvent("LFG_READY_CHECK_UPDATE");
 	self:RegisterEvent("LFG_PROPOSAL_UPDATE");
 	self:RegisterEvent("LFG_PROPOSAL_FAILED");
 	self:RegisterEvent("LFG_PROPOSAL_SUCCEEDED");
@@ -106,6 +127,7 @@ function QueueStatusFrame_OnLoad(self)
 	self:RegisterEvent("ZONE_CHANGED_NEW_AREA");
 	self:RegisterEvent("ZONE_CHANGED");
 	self:RegisterEvent("BATTLEFIELD_MGR_QUEUE_REQUEST_RESPONSE");
+	self:RegisterEvent("BATTLEFIELD_MGR_QUEUE_STATUS_UPDATE");
 	self:RegisterEvent("BATTLEFIELD_MGR_EJECT_PENDING");
 	self:RegisterEvent("BATTLEFIELD_MGR_EJECTED");
 	self:RegisterEvent("BATTLEFIELD_MGR_QUEUE_INVITE");
@@ -189,10 +211,22 @@ function QueueStatusFrame_Update(self)
 	end
 
 	local inProgress, _, _, _, _, isBattleground = GetLFGRoleUpdate();
+
 	--Try PvP Role Check
 	if ( inProgress and isBattleground ) then
 		local entry = QueueStatusFrame_GetEntry(self, nextEntry);
 		QueueStatusEntry_SetUpPVPRoleCheck(entry);
+		entry:Show();
+		totalHeight = totalHeight + entry:GetHeight();
+		nextEntry = nextEntry + 1;
+	end
+
+	local readyCheckInProgress, readyCheckIsBattleground = GetLFGReadyCheckUpdate();
+
+	-- Try PvP Ready Check
+	if ( readyCheckInProgress and readyCheckIsBattleground ) then
+		local entry = QueueStatusFrame_GetEntry(self, nextEntry);
+		QueueStatusEntry_SetUpPvPReadyCheck(entry);
 		entry:Show();
 		totalHeight = totalHeight + entry:GetHeight();
 		nextEntry = nextEntry + 1;
@@ -418,11 +452,19 @@ function QueueStatusEntry_SetUpPVPRoleCheck(entry)
 	QueueStatusEntry_SetMinimalDisplay(entry, queueName, QUEUED_STATUS_ROLE_CHECK_IN_PROGRESS);
 end
 
+function QueueStatusEntry_SetUpPvPReadyCheck(entry)
+	local queueName = GetLFGReadyCheckUpdateBattlegroundInfo();
+	QueueStatusEntry_SetMinimalDisplay(entry, queueName, QUEUED_STATUS_READY_CHECK_IN_PROGRESS);
+end
+
 function QueueStatusEntry_SetUpWorldPvP(entry, idx)
-	local status, mapName, queueID = GetWorldPVPQueueStatus(idx);
+	local status, mapName, queueID, expireTime, averageWaitTime, queuedTime, suspended = GetWorldPVPQueueStatus(idx);
 	if ( status == "queued" ) then
-		--We have no wait time (or any related information) for world PvP queues
-		QueueStatusEntry_SetMinimalDisplay(entry, mapName, QUEUED_STATUS_QUEUED);
+		if ( suspended ) then
+			QueueStatusEntry_SetMinimalDisplay(entry, mapName, QUEUED_STATUS_SUSPENDED);
+		else
+			QueueStatusEntry_SetFullDisplay(entry, mapName, queuedTime / 1000, averageWaitTime / 1000);
+		end
 	elseif ( status == "confirm" ) then
 		QueueStatusEntry_SetMinimalDisplay(entry, mapName, QUEUED_STATUS_PROPOSAL);
 	elseif ( status == "active" ) then
@@ -788,7 +830,7 @@ function QueueStatusDropDown_AddBattlefieldButtons(info, idx)
 	elseif ( status == "active" ) then
 		local inArena = IsActiveBattlefieldArena();
 
-		if ( not inArena or GetBattlefieldWinner() or CommentatorGetMode() > 0) then
+		if ( not inArena or GetBattlefieldWinner() or C_Commentator.GetMode() > 0) then
 			info.text = TOGGLE_SCOREBOARD;
 			info.func = wrapFunc(ToggleWorldStateScoreFrame);
 			info.arg1 = nil;

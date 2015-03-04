@@ -1,9 +1,0 @@
-## Interface: 60000
-## Title: Blizzard Companion Journal
-## Notes:  Pet and Mount Journal
-## Secure: 1
-## Author: Blizzard Entertainment
-## Version: 1.0
-## LoadOnDemand: 1
-Blizzard_PetJournal.xml
-Localization.lua

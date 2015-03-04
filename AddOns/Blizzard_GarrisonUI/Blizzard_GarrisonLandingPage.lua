@@ -34,7 +34,8 @@ function GarrisonLandingPage_OnShow(self)
 	else
 		self.InvasionBadge:Hide();
 	end
-	
+	GarrisonThreatCountersFrame:SetParent(self.FollowerTab);
+	GarrisonThreatCountersFrame:SetPoint("TOPRIGHT", -152, 30);
 	PlaySound("UI_Garrison_GarrisonReport_Open");
 end
 
@@ -69,6 +70,9 @@ function GarrisonLandingPageReport_OnLoad(self)
 	GarrisonLandingPageReportList_Update();
 	self:RegisterEvent("GARRISON_LANDINGPAGE_SHIPMENTS");
 	self:RegisterEvent("GARRISON_MISSION_LIST_UPDATE");
+	self:RegisterEvent("GARRISON_SHIPMENT_RECEIVED");
+	
+	self.List.listScroll:SetScript("OnMouseWheel", function(self, ...) HybridScrollFrame_OnMouseWheel(self, ...); GarrisonLandingPageReportList_UpdateMouseOverTooltip(self); end);
 end
 
 function GarrisonLandingPageReport_OnShow(self)
@@ -94,6 +98,8 @@ function GarrisonLandingPageReport_OnEvent(self, event)
 		GarrisonLandingPageReport_GetShipments(self);
 	elseif ( event == "GARRISON_MISSION_LIST_UPDATE" ) then
 		GarrisonLandingPageReportList_UpdateItems();
+	elseif ( event == "GARRISON_SHIPMENT_RECEIVED" ) then
+		C_Garrison.RequestLandingPageShipmentInfo();
 	end
 end
 
@@ -123,7 +129,7 @@ function GarrisonLandingPageReport_GetShipments(self)
 			if ( not shipment ) then
 				return;
 			end
-			if ( name ) then
+			if ( name and shipmentCapacity > 0 ) then
 				SetPortraitToTexture(shipment.Icon, texture);
 				shipment.Icon:SetDesaturated(true);
 				shipment.Name:SetText(name);
@@ -299,6 +305,10 @@ function GarrisonLandingPageReportList_UpdateAvailable()
 					Reward.itemID = reward.itemID;
 					local _, _, _, _, _, _, _, _, _, itemTexture = GetItemInfo(reward.itemID);
 					Reward.Icon:SetTexture(itemTexture);
+					if ( reward.quantity > 1 ) then
+						Reward.Quantity:SetText(reward.quantity);
+						Reward.Quantity:Show();
+					end					
 				else
 					Reward.itemID = nil;
 					Reward.Icon:SetTexture(reward.icon);
@@ -306,6 +316,8 @@ function GarrisonLandingPageReportList_UpdateAvailable()
 					if (reward.currencyID and reward.quantity) then
 						if (reward.currencyID == 0) then
 							Reward.tooltip = GetMoneyString(reward.quantity);
+							Reward.Quantity:SetText(BreakUpLargeNumbers(floor(reward.quantity / COPPER_PER_GOLD)));
+							Reward.Quantity:Show();
 						else
 							local _, _, currencyTexture = GetCurrencyInfo(reward.currencyID);
 							Reward.tooltip = BreakUpLargeNumbers(reward.quantity).." |T"..currencyTexture..":0:0:0:-1|t ";
@@ -314,6 +326,10 @@ function GarrisonLandingPageReportList_UpdateAvailable()
 						end
 					else
 						Reward.tooltip = reward.tooltip;
+						if ( reward.followerXP ) then
+							Reward.Quantity:SetText(GarrisonLandingPageReportList_FormatXPNumbers(reward.followerXP));
+							Reward.Quantity:Show();
+						end		
 					end
 				end
 				Reward:Show();
@@ -324,7 +340,7 @@ function GarrisonLandingPageReportList_UpdateAvailable()
 			end
 			
 			-- Set title width based on number of rewards
-			local titleWidth = 334 - ((index - 1)* 42);
+			local titleWidth = 334 - ((index - 1)* 44);
 			button.Title:SetWidth(titleWidth);
 			
 			button.Status:Hide();
@@ -338,6 +354,22 @@ function GarrisonLandingPageReportList_UpdateAvailable()
 	local totalHeight = numItems * scrollFrame.buttonHeight;
 	local displayedHeight = numButtons * scrollFrame.buttonHeight;
 	HybridScrollFrame_Update(scrollFrame, totalHeight, displayedHeight);
+end
+
+function GarrisonLandingPageReportList_FormatXPNumbers(value)
+	local strLen = strlen(value);
+	if ( strLen > 4 ) then
+		value = value / FIRST_NUMBER_CAP_VALUE;
+		if ( value%1 == 0 ) then
+			-- integer
+			return value..FIRST_NUMBER_CAP;
+		else
+			-- float
+			return string.format("%.1F", value)..FIRST_NUMBER_CAP;
+		end
+	else
+		return BreakUpLargeNumbers(value);
+	end
 end
 
 function GarrisonLandingPageReportList_Update()
@@ -409,25 +441,38 @@ function GarrisonLandingPageReportList_Update()
 	return stopUpdate;
 end
 
+function GarrisonLandingPageReportList_UpdateMouseOverTooltip(self)
+	local buttons = self.buttons;
+	for i = 1, #buttons do
+		if ( buttons[i]:IsMouseOver() ) then
+			GarrisonLandingPageReportMission_OnEnter(buttons[i]);
+			break;
+		end
+	end
+end
+
 function GarrisonLandingPageReportMission_OnClick(self, button)
-	if ( IsModifiedClick("CHATLINK") ) then
-		local items = GarrisonLandingPageReport.List.items or {};
-		if GarrisonLandingPageReport.selectedTab == GarrisonLandingPageReport.Available then
-			items = GarrisonLandingPageReport.List.AvailableItems or {};
-		end
 	
-		local item = items[self.id];
+	local items = GarrisonLandingPageReport.List.items or {};
+	if GarrisonLandingPageReport.selectedTab == GarrisonLandingPageReport.Available then
+		items = GarrisonLandingPageReport.List.AvailableItems or {};
+	end
 
-		-- non mission entries have no link capability
-		if not item.missionID then
-			return;
-		end
+	local item = items[self.id];
 
+	-- non mission entries have no click capability
+	if not item.missionID then
+		return;
+	end
+
+	if ( IsModifiedClick("CHATLINK") ) then
 		local missionLink = C_Garrison.GetMissionLink(item.missionID);
 		if (missionLink) then
 			ChatEdit_InsertLink(missionLink);
 			return;
 		end
+	elseif ( C_Garrison.CastSpellOnMission(item.missionID) ) then
+		return;
 	end
 end
 
@@ -440,53 +485,28 @@ function GarrisonLandingPageReportMission_OnEnter(self, button)
 	
 	local item = items[self.id];
 	
-	GameTooltip:SetText(item.name);
-
-	if(item.isBuilding or GarrisonLandingPageReport.selectedTab == GarrisonLandingPageReport.InProgress) then
-		if (item.isBuilding) then
-			GameTooltip:AddLine(string.format(GARRISON_BUILDING_LEVEL_LABEL_TOOLTIP, item.buildingLevel), 1, 1, 1);
-		end
-		
+	if ( item.isBuilding ) then
+		GameTooltip:SetText(item.name);
+		GameTooltip:AddLine(string.format(GARRISON_BUILDING_LEVEL_LABEL_TOOLTIP, item.buildingLevel), 1, 1, 1);
 		if(item.isComplete) then
 			GameTooltip:AddLine(COMPLETE, 1, 1, 1);
 		else
 			GameTooltip:AddLine(tostring(item.timeLeft), 1, 1, 1);
 		end
-		
-		--This is all the information buildings have.
-		if (item.isBuilding) then
-			GameTooltip:Show();
-			return;
-		end
+		GameTooltip:Show();
+		return;
+	end
 
-		GameTooltip:AddLine(" ");
-
-		if (item.followers ~= nil) then
-			GameTooltip:AddLine(GARRISON_FOLLOWERS);
-			for i=1, #(item.followers) do
-				GameTooltip:AddLine(C_Garrison.GetFollowerName(item.followers[i]), 1, 1, 1);
-			end
-			GameTooltip:AddLine(" ");
-		end
-
-		GameTooltip:AddLine(REWARDS);
-		for id, reward in pairs(item.rewards) do
-			if (reward.quality) then
-				GameTooltip:AddLine(ITEM_QUALITY_COLORS[reward.quality + 1].hex..reward.title..FONT_COLOR_CODE_CLOSE);
-			elseif (reward.itemID) then 
-				local itemName, _, itemRarity, _, _, _, _, _, _, itemTexture = GetItemInfo(reward.itemID);
-				if itemName then
-					GameTooltip:AddLine(ITEM_QUALITY_COLORS[itemRarity].hex..itemName..FONT_COLOR_CODE_CLOSE);
-				end
-			elseif (reward.followerXP) then
-				GameTooltip:AddLine(reward.title, 1, 1, 1);
-			else
-				GameTooltip:AddLine(reward.title, 1, 1, 1);
-			end
-		end
+	if ( GarrisonLandingPageReport.selectedTab == GarrisonLandingPageReport.InProgress ) then
+		GarrisonMissionButton_SetInProgressTooltip(item, true);
 	else
+		GameTooltip:SetText(item.name);
 		GameTooltip:AddLine(string.format(GARRISON_MISSION_TOOLTIP_NUM_REQUIRED_FOLLOWERS, item.numFollowers), 1, 1, 1);
-		GarrisonMissionButton_AddThreatsToTooltip(item.missionID);		
+		GarrisonMissionButton_AddThreatsToTooltip(item.missionID);
+		if (item.isRare) then
+			GameTooltip:AddLine(GARRISON_MISSION_AVAILABILITY);
+			GameTooltip:AddLine(item.offerTimeRemaining, 1, 1, 1);
+		end
 		if not C_Garrison.IsOnGarrisonMap() then
 			GameTooltip:AddLine(" ");
 			GameTooltip:AddLine(GARRISON_MISSION_TOOLTIP_RETURN_TO_START, nil, nil, nil, 1);

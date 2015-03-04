@@ -92,6 +92,7 @@ SEX_FEMALE = 3;
 --Logos
 EXPANSION_LOGOS = {
 	TRIAL = "Interface\\Glues\\Common\\Glues-WoW-StarterLogo",
+	VETERAN = "Interface\\Glues\\Common\\GLUES-WOW-WODLOGO",
 	[1] = "Interface\\Glues\\Common\\Glues-WoW-ClassicLogo",
 	[2] = "Interface\\Glues\\Common\\Glues-WoW-WotLKLogo",
 	[3] = "Interface\\Glues\\Common\\Glues-WoW-CCLogo",
@@ -103,6 +104,7 @@ EXPANSION_LOGOS = {
 --Login Screen Ambience
 EXPANSION_GLUE_AMBIENCE = {
 	TRIAL = "GlueScreenIntro",
+	VETERAN = "GlueScreenIntro",
 	[1] = "GlueScreenIntro",
 	[2] = "GlueScreenIntro",
 	[3] = "GlueScreenIntro",
@@ -113,6 +115,7 @@ EXPANSION_GLUE_AMBIENCE = {
 --Music
 EXPANSION_GLUE_MUSIC = {
 	TRIAL = "GS_Cataclysm",
+	VETERAN = "GS_Cataclysm",
 	[1] = "MUS_1.0_MainTitle_Original",
 	[2] = "GS_Cataclysm",
 	[3] = "GS_Cataclysm",
@@ -123,6 +126,7 @@ EXPANSION_GLUE_MUSIC = {
 --Backgrounds
 EXPANSION_HIGH_RES_BG = {
 	TRIAL = "Interface\\Glues\\Models\\UI_MainMenu_Cataclysm\\UI_MainMenu_Cataclysm.m2",
+	VETERAN = "Interface\\Glues\\Models\\UI_MainMenu_Cataclysm\\UI_MainMenu_Warlords.m2",
 	[1] = "Interface\\Glues\\Models\\UI_MAINMENU\\UI_MainMenu.m2",
 	[2] = "Interface\\Glues\\Models\\UI_MainMenu_Cataclysm\\UI_MainMenu_Cataclysm.m2",
 	[3] = "Interface\\Glues\\Models\\UI_MainMenu_Cataclysm\\UI_MainMenu_Cataclysm.m2",
@@ -132,6 +136,7 @@ EXPANSION_HIGH_RES_BG = {
 
 EXPANSION_LOW_RES_BG = {
 	TRIAL =  "Interface\\Glues\\Models\\UI_MainMenu_Cata_LowBandwidth\\UI_MainMenu_Cata_LowBandwidth.m2",
+	VETERAN =  "Interface\\Glues\\Models\\UI_MainMenu_Cata_LowBandwidth\\UI_MainMenu_Warlords_LowBandwidth.m2",
 	[1] =  "Interface\\Glues\\Models\\UI_MAINMENU\\UI_MainMenu.m2",
 	[2] =  "Interface\\Glues\\Models\\UI_MainMenu_Cata_LowBandwidth\\UI_MainMenu_Cata_LowBandwidth.m2",
 	[3] =  "Interface\\Glues\\Models\\UI_MainMenu_Cata_LowBandwidth\\UI_MainMenu_Cata_LowBandwidth.m2",
@@ -501,6 +506,11 @@ end
 function UpgradeAccount()
 	PlaySound("gsLoginNewAccount");
 	LoadURLIndex(2);
+end
+
+function ReactivateAccount()
+	PlaySound("gsLoginNewAccount");
+	LoadURLIndex(22);
 end
 
 function SetLoginScreenModel(model)

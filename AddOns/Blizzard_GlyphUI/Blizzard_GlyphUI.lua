@@ -404,11 +404,6 @@ end
 function GlyphFrameSearchBox_OnTextChanged(self)
 	local text = self:GetText();
 	
-	if ( text == SEARCH ) then
-		SetGlyphNameFilter("");
-		return;
-	end
-	
 	SetGlyphNameFilter(text);
 	GlyphFrame_DirtyList(self:GetParent());
 	GlyphFrame_UpdateGlyphList();

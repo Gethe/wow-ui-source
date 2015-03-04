@@ -239,6 +239,25 @@ function SetItemRef(link, text, button, chatFrame)
 			FloatingGarrisonMission_Toggle(tonumber(garrMissionID));
 		end
 		return;
+	elseif ( strsub(link, 1, 5) == "death" ) then
+		local _, id = strsplit(":", link);
+		OpenDeathRecapUI(id);
+		return;
+	elseif ( strsub(link, 1, 7) == "sharess" ) then
+		local _, index = strsplit(":", link);
+		SocialFrame_LoadUI();
+		SocialPostFrame_ShowScreenshot(tonumber(index));
+		return;
+	elseif ( strsub(link, 1, 12) == "shareachieve" ) then
+		local _, achievementID, earned = strsplit(":", link);
+		SocialFrame_LoadUI();
+		SocialPostFrame_ShowAchievement(tonumber(achievementID), StringToBoolean(earned));
+		return;
+	elseif ( strsub(link, 1, 9) == "shareitem" ) then
+		local itemID, earned, creationContext = link:match("shareitem:(%d+):(%d+):(.*)");
+		SocialFrame_LoadUI();
+		SocialPostFrame_ShowItem(itemID, creationContext, StringToBoolean(earned));
+		return;
 	end
 
 	if ( IsModifiedClick() ) then

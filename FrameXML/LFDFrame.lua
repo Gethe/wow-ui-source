@@ -28,6 +28,8 @@ function LFDFrame_OnLoad(self)
 	self:RegisterEvent("PLAYER_ENTERING_WORLD");
 	self:RegisterEvent("LFG_ROLE_CHECK_SHOW");
 	self:RegisterEvent("LFG_ROLE_CHECK_HIDE");
+	self:RegisterEvent("LFG_READY_CHECK_SHOW");
+	self:RegisterEvent("LFG_READY_CHECK_HIDE");
 	self:RegisterEvent("LFG_BOOT_PROPOSAL_UPDATE");
 	self:RegisterEvent("VOTE_KICK_REASON_NEEDED");
 	self:RegisterEvent("LFG_UPDATE_RANDOM_INFO");
@@ -56,6 +58,18 @@ function LFDFrame_OnEvent(self, event, ...)
 	elseif ( event == "LFG_ROLE_CHECK_HIDE" ) then
 		StaticPopupSpecial_Hide(LFDRoleCheckPopup);
 		LFDQueueFrameSpecificList_Update();
+	elseif ( event == "LFG_READY_CHECK_SHOW" ) then
+		local _, readyCheckBgQueue = GetLFGReadyCheckUpdate();
+		local displayName;
+		if ( readyCheckBgQueue ) then
+			displayName = GetLFGReadyCheckUpdateBattlegroundInfo();
+		else
+			displayName = UNKNOWN;
+		end
+		LFDReadyCheckPopup.Text:SetFormattedText(CONFIRM_YOU_ARE_READY, displayName);
+		StaticPopupSpecial_Show(LFDReadyCheckPopup);
+	elseif ( event == "LFG_READY_CHECK_HIDE" ) then
+		StaticPopupSpecial_Hide(LFDReadyCheckPopup);
 	elseif ( event == "LFG_BOOT_PROPOSAL_UPDATE" ) then
 		local voteInProgress, didVote, myVote, targetName, totalVotes, bootVotes, timeLeft, reason = GetLFGBootProposal();
 		if ( voteInProgress and not didVote and targetName ) then

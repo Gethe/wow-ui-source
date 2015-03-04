@@ -83,7 +83,7 @@
 				<Anchors>
 					<Anchor point="LEFT" relativeTo="StanceButton1" relativePoint="RIGHT">
 						<Offset>
-							<AbsDimension x="8" y="0"/>
+							<AbsDimension x="7" y="0"/>
 						</Offset>
 					</Anchor>
 				</Anchors>

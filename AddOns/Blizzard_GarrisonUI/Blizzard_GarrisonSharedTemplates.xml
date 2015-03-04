@@ -430,10 +430,140 @@
 		</Scripts>
 	</Frame>
 	
+	<Frame name="GarrisonFollowerModelUpgradeTemplate" hidden="true" virtual="true">
+		<Size x="10" y="10"/>
+		<Layers>
+			<Layer level="ARTWORK">
+				<FontString parentKey="Text" inherits="GameFontNormal" text="GARRISON_FOLLOWER_CLICK_UPGRADE_PROMPT">
+					<Anchors>
+						<Anchor point="TOP"/>
+					</Anchors>
+					<Color r="0.1" g="1" b="0.1"/>
+				</FontString>
+				<FontString parentKey="TextInvalid" inherits="GameFontNormal" textwrap="true" text="GARRISON_FOLLOWER_UPGRADE_REQUIRES_MAX_LEVEL">
+					<Size x="200" y="40"/>
+					<Anchors>
+						<Anchor point="TOP"/>
+					</Anchors>
+					<Color r="1" g="0.1" b="0.1"/>
+				</FontString>
+				<Texture parentKey="Icon" file="Interface\PetBattles\BattleBar-AbilityBadge-Strong">
+					<Anchors>
+						<Anchor point="RIGHT" relativeKey="$parent.Text" relativePoint="LEFT" x="-4" y="0"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnLoad function="GarrisonFollowerPageModelUpgrade_OnLoad"/>
+			<OnEvent function="GarrisonFollowerPageModelUpgrade_OnEvent"/>
+		</Scripts>
+	</Frame>
+
 	<Frame name="GarrisonTruncationFrame">
 		<Scripts>
 			<OnEnter function="GarrisonTruncationFrame_OnEnter"/>
 			<OnLeave function="GarrisonTruncationFrame_OnLeave"/>
 		</Scripts>
 	</Frame>
+
+	<Frame name="GarrisonAbilityCounterTemplate" virtual="true">
+		<Size x="20" y="20"/>
+		<Layers>
+			<Layer level="ARTWORK" textureSubLevel="-1">
+				<Texture parentKey="Icon">
+					<Size x="20" y="20"/>
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="ARTWORK">
+				<Texture parentKey="Border" atlas="GarrMission_EncounterAbilityBorder" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+	</Frame>
+
+	<Frame name="GarrisonAbilityCounterWithCheckTemplate" inherits="GarrisonAbilityCounterTemplate" virtual="true">
+		<Layers>
+			<Layer level="OVERLAY">
+				<Texture parentKey="Check" atlas="GarrMission_CounterCheck" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="BOTTOM" x="8" y="-6"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="Away" atlas="GarrMission_MissionTooltipAway" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="BOTTOM" x="5" y="-3"/>
+					</Anchors>
+				</Texture>
+				<FontString parentKey="TimeLeft" inherits="GameFontHighlightSmall">
+					<Anchors>
+						<Anchor point="BOTTOM" relativeKey="$parent" x="0" y="-17"/>
+					</Anchors>
+					<Color r="0.27" g="0.6" b="0.83"/>
+				</FontString>
+				<Texture parentKey="Working" atlas="GarrMission_MissionTooltipWorking" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="BOTTOM" x="5" y="-3"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+	</Frame>
+
+	<Button name="GarrisonThreatCounterTemplate" inherits="GarrisonAbilityCounterTemplate" virtual="true" enableMouse="true">
+		<Layers>
+			<Layer level="OVERLAY">
+				<FontString parentKey="Count" inherits="GameFontHighlightSmall">
+					<Anchors>
+						<Anchor point="BOTTOM" x="1" y="-15" relativeKey="$parent"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<HighlightTexture alphaMode="ADD" file="Interface\Buttons\ButtonHilight-Square"/>
+		<Scripts>
+			<OnMouseDown>
+				self.Icon:SetPoint("CENTER", 1, -1);
+				self.Border:SetPoint("CENTER", 1, -1);
+			</OnMouseDown>
+			<OnMouseUp>
+				self.Icon:SetPoint("CENTER", 0, 0);
+				self.Border:SetPoint("CENTER", 0, 0);
+			</OnMouseUp>
+			<OnClick>
+				PlaySound("igMainMenuOptionCheckBoxOn");
+				local searchBox = self:GetParent():GetParent():GetParent().FollowerList.SearchBox;
+				local searchString = searchBox:GetText();
+				if (searchString == self.name) then
+					searchBox:SetText("");
+				else
+					searchBox:SetText(self.name);
+				end
+			</OnClick>
+			<OnEnter function="GarrisonThreatCounter_OnEnter"/>
+			<OnLeave function="GameTooltip_Hide"/>
+		</Scripts>
+	</Button>
+	
+	<Frame name="GarrisonThreatCountersFrame" hidden="true">
+		<Size x="10" y="10"/>
+		<Frames>
+			<Button parentArray="ThreatsList" inherits="GarrisonThreatCounterTemplate">
+				<Anchors>
+					<Anchor point="TOPRIGHT" x="0" y="7"/>
+				</Anchors>
+			</Button>
+		</Frames>
+		<Scripts>
+			<OnLoad function="GarrisonThreatCountersFrame_OnLoad"/>
+			<OnEvent function="GarrisonThreatCountersFrame_OnEvent"/>
+			<OnShow function="GarrisonThreatCountersFrame_Update"/>
+		</Scripts>
+	</Frame>	
 </Ui>

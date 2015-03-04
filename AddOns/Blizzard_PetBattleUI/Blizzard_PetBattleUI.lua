@@ -1208,13 +1208,13 @@ function PetBattleUnitFrameDropDown_Initialize(self)
 	
 	info.text = PET_SHOW_IN_JOURNAL;
 	info.func = function ()
-					if (not PetJournalParent) then
-						PetJournal_LoadUI();
+					if (not CollectionsJournal) then
+						CollectionsJournal_LoadUI();
 					end
-					if (not PetJournalParent:IsShown()) then
-						ShowUIPanel(PetJournalParent);
+					if (not CollectionsJournal:IsShown()) then
+						ShowUIPanel(CollectionsJournal);
 					end
-					PetJournalParent_SetTab(PetJournalParent, 2);
+					CollectionsJournal_SetTab(CollectionsJournal, 2);
 					PetJournal_SelectSpecies(PetJournal, self.speciesID);
 				end
 	UIDropDownMenu_AddButton(info);

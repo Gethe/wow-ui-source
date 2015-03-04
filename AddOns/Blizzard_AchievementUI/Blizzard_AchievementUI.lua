@@ -31,7 +31,7 @@ local ACHIEVEMENTUI_MAX_LINES_COLLAPSED = 3;		-- can show 3 lines of text when a
 
 ACHIEVEMENTUI_DEFAULTSUMMARYACHIEVEMENTS = {6, 503, 116, 545, 1017};
 ACHIEVEMENTUI_SUMMARYCATEGORIES = {92, 96, 97, 95, 168, 169, 201, 155, 15117, 15165, 15246, 15237};
-ACHIEVEMENTUI_DEFAULTGUILDSUMMARYACHIEVEMENTS = {4943, 4860, 4989, 4947};
+ACHIEVEMENTUI_DEFAULTGUILDSUMMARYACHIEVEMENTS = {5362, 4860, 4989, 4947};
 ACHIEVEMENTUI_GUILDSUMMARYCATEGORIES = {15088, 15077, 15078, 15079, 15080, 15089};
 
 ACHIEVEMENT_CATEGORY_NORMAL_R = 0;
@@ -85,7 +85,7 @@ end
 
 -- [[ AchievementFrame ]] --
 
-function AchievementFrame_ToggleAchievementFrame(toggleStatFrame)
+function AchievementFrame_ToggleAchievementFrame(toggleStatFrame, toggleGuildView)
 	AchievementFrameComparison:Hide();
 	AchievementFrameTab_OnClick = AchievementFrameBaseTab_OnClick;
 	if ( not toggleStatFrame ) then
@@ -94,7 +94,11 @@ function AchievementFrame_ToggleAchievementFrame(toggleStatFrame)
 		else
 			AchievementFrame_SetTabs();
 			ShowUIPanel(AchievementFrame);
-			AchievementFrameTab_OnClick(1);
+			if ( toggleGuildView ) then
+				AchievementFrameTab_OnClick(2);
+			else
+				AchievementFrameTab_OnClick(1);
+			end
 		end
 		return;
 	end
@@ -909,31 +913,35 @@ function AchievementFrameAchievements_ClearSelection ()
 	AchievementFrameAchievements.selection = nil;
 end
 
+function AchievementFrameAchievements_SetupButton(button)
+	local name = button:GetName();
+	-- reset button info to get proper saturation/desaturation
+	button.completed = nil;
+	button.id = nil;
+	-- title
+	button.titleBar:SetAlpha(0.8);
+	-- icon frame
+	button.icon.frame:SetTexture("Interface\\AchievementFrame\\UI-Achievement-IconFrame");
+	button.icon.frame:SetTexCoord(0, 0.5625, 0, 0.5625);
+	button.icon.frame:SetPoint("CENTER", -1, 2);
+	-- tsunami
+	local tsunami = _G[name.."BottomTsunami1"];
+	tsunami:SetTexture("Interface\\AchievementFrame\\UI-Achievement-Borders");
+	tsunami:SetTexCoord(0, 0.72265, 0.51953125, 0.58203125);
+	tsunami:SetAlpha(0.35);
+	local tsunami = _G[name.."TopTsunami1"];
+	tsunami:SetTexture("Interface\\AchievementFrame\\UI-Achievement-Borders");
+	tsunami:SetTexCoord(0.72265, 0, 0.58203125, 0.51953125);
+	tsunami:SetAlpha(0.3);
+	-- glow
+	button.glow:SetTexCoord(0, 1, 0.00390625, 0.25390625);
+end
+
 function AchievementFrameAchievements_ToggleView()
 	if ( AchievementFrameAchievements.guildView ) then
 		AchievementFrameAchievements.guildView = nil;
 		for _, button in next, AchievementFrameAchievementsContainer.buttons do
-			local name = button:GetName();
-			-- reset button info to get proper saturation/desaturation
-			button.completed = nil;
-			button.id = nil;
-			-- title
-			button.titleBar:SetAlpha(0.8);
-			-- icon frame
-			button.icon.frame:SetTexture("Interface\\AchievementFrame\\UI-Achievement-IconFrame");
-			button.icon.frame:SetTexCoord(0, 0.5625, 0, 0.5625);
-			button.icon.frame:SetPoint("CENTER", -1, 2);
-			-- tsunami
-			local tsunami = _G[name.."BottomTsunami1"];
-			tsunami:SetTexture("Interface\\AchievementFrame\\UI-Achievement-Borders");
-			tsunami:SetTexCoord(0, 0.72265, 0.51953125, 0.58203125);
-			tsunami:SetAlpha(0.35);
-			local tsunami = _G[name.."TopTsunami1"];
-			tsunami:SetTexture("Interface\\AchievementFrame\\UI-Achievement-Borders");
-			tsunami:SetTexCoord(0.72265, 0, 0.58203125, 0.51953125);
-			tsunami:SetAlpha(0.3);
-			-- glow
-			button.glow:SetTexCoord(0, 1, 0.00390625, 0.25390625);
+			AchievementFrameAchievements_SetupButton(button);
 		end
 	else
 		AchievementFrameAchievements.guildView = true;
@@ -1070,6 +1078,7 @@ function AchievementButton_Expand (self, height)
 		end
 		if ( self.completed ) then
 			self.tabard:Show();
+			self.shield:SetFrameLevel(self.tabard:GetFrameLevel() + 1);
 			SetLargeGuildTabardTextures("player", self.tabard.emblem, self.tabard.background, self.tabard.border);
 		end
 		self.guildCornerL:Show();
@@ -1161,16 +1170,21 @@ end
 
 function AchievementButton_OnClick (self, button, down, ignoreModifiers)
 	if(IsModifiedClick() and not ignoreModifiers) then
-		if ( IsModifiedClick("CHATLINK") and ChatEdit_GetActiveWindow() ) then
+		local handled = nil;
+		if ( IsModifiedClick("CHATLINK") ) then
 			local achievementLink = GetAchievementLink(self.id);
-			if ( achievementLink ) then
+			if ( ChatEdit_GetActiveWindow() and achievementLink ) then
 				ChatEdit_InsertLink(achievementLink);
+				handled = true;
+			elseif ( SocialPostFrame and SocialPostFrame:IsShown() and achievementLink ) then
+				SocialPostFrame_InsertLink(achievementLink);
+				handled = true;
 			end
-		elseif ( IsModifiedClick("QUESTWATCHTOGGLE") ) then
+		end
+		if ( not handled and IsModifiedClick("QUESTWATCHTOGGLE") ) then
 			AchievementButton_ToggleTracking(self.id);
 		end
-		
-		return;
+		return;		
 	end
 
 	if ( self.selected ) then
@@ -1218,7 +1232,7 @@ function AchievementButton_ToggleTracking (id)
 	return true;
 end
 	
-function AchievementButton_DisplayAchievement (button, category, achievement, selectionID)
+function AchievementButton_DisplayAchievement (button, category, achievement, selectionID, renderOffScreen)
 	local id, name, points, completed, month, day, year, description, flags, icon, rewardText, isGuild, wasEarnedByMe, earnedBy = GetAchievementInfo(category, achievement);
 	
 	if ( not id ) then
@@ -1323,7 +1337,7 @@ function AchievementButton_DisplayAchievement (button, category, achievement, se
 		achievements.selectionIndex = button.index;
 		button.selected = true;
 		button.highlight:Show();
-		local height = AchievementButton_DisplayObjectives(button, button.id, button.completed);
+		local height = AchievementButton_DisplayObjectives(button, button.id, button.completed, renderOffScreen);
 		if ( height == ACHIEVEMENTBUTTON_COLLAPSEDHEIGHT ) then
 			button:Collapse();
 		else
@@ -1360,15 +1374,18 @@ function AchievementButton_ResetObjectives ()
 	AchievementFrameAchievementsObjectives:Hide();
 end
 
-function AchievementButton_DisplayObjectives (button, id, completed)
+function AchievementButton_DisplayObjectives (button, id, completed, renderOffScreen)
 	local objectives = AchievementFrameAchievementsObjectives;
+	if (renderOffScreen) then
+		objectives = AchievementFrameAchievementsObjectivesOffScreen;
+	end
 	local topAnchor = button.hiddenDescription;
 	objectives:ClearAllPoints();
 	objectives:SetParent(button);
 	objectives:Show();
 	objectives.completed = completed;
 	local height = ACHIEVEMENTBUTTON_COLLAPSEDHEIGHT;
-	if ( objectives.id == id ) then
+	if ( objectives.id == id and not renderOffScreen ) then
 		local ACHIEVEMENTMODE_CRITERIA = 1;
 		if ( objectives.mode == ACHIEVEMENTMODE_CRITERIA ) then
 			if ( objectives:GetHeight() > 0 ) then
@@ -1381,19 +1398,22 @@ function AchievementButton_DisplayObjectives (button, id, completed)
 		end
 	elseif ( completed and GetPreviousAchievement(id) ) then
 		objectives:SetHeight(0);
-		AchievementButton_ResetCriteria();
-		AchievementButton_ResetProgressBars();
-		AchievementButton_ResetMiniAchievements();
-		AchievementButton_ResetMetas();
-		AchievementObjectives_DisplayProgressiveAchievement(objectives, id);
+		AchievementButton_ResetCriteria(renderOffScreen);
+		AchievementButton_ResetProgressBars(renderOffScreen);
+		AchievementButton_ResetMiniAchievements(renderOffScreen);
+		AchievementButton_ResetMetas(renderOffScreen);
+		-- Don't show previous achievements when we render this offscreeen
+		if ( not renderOffScreen ) then
+			AchievementObjectives_DisplayProgressiveAchievement(objectives, id);
+		end
 		objectives:SetPoint("TOP", topAnchor, "BOTTOM", 0, -8);
 	else
 		objectives:SetHeight(0);
-		AchievementButton_ResetCriteria();
-		AchievementButton_ResetProgressBars();
-		AchievementButton_ResetMiniAchievements();
-		AchievementButton_ResetMetas();
-		AchievementObjectives_DisplayCriteria(objectives, id);
+		AchievementButton_ResetCriteria(renderOffScreen);
+		AchievementButton_ResetProgressBars(renderOffScreen);
+		AchievementButton_ResetMiniAchievements(renderOffScreen);
+		AchievementButton_ResetMetas(renderOffScreen);
+		AchievementObjectives_DisplayCriteria(objectives, id, renderOffScreen);
 		if ( objectives:GetHeight() > 0 ) then
 			objectives:SetPoint("TOP", topAnchor, "BOTTOM", 0, -8);
 			objectives:SetPoint("LEFT", "$parentIcon", "RIGHT", -5, -25);
@@ -1412,7 +1432,10 @@ function AchievementButton_DisplayObjectives (button, id, completed)
 		end
 	end
 	
-	objectives.id = id;
+	-- Don't cache if we are rendering offscreen
+	if (not renderOffScreen) then
+		objectives.id = id;
+	end
 	return height;
 end
 
@@ -1436,22 +1459,33 @@ function AchievementButton_ResetTable (t)
 end
 
 local criteriaTable = {}
+local criteriaTableOffScreen = {};
 
-function AchievementButton_ResetCriteria ()
-	AchievementFrameAchievementsObjectives.repCriteria:Hide();
-	AchievementButton_ResetTable(criteriaTable);
+function AchievementButton_ResetCriteria (renderOffScreen)
+	if (renderOffScreen) then
+		AchievementFrameAchievementsObjectivesOffScreen.repCriteria:Hide();
+		AchievementButton_ResetTable(criteriaTableOffScreen);
+	else
+		AchievementFrameAchievementsObjectives.repCriteria:Hide();
+		AchievementButton_ResetTable(criteriaTable);
+	end
 end
 
-function AchievementButton_GetCriteria (index)
-	local criteriaTable = criteriaTable;
-	
-	if ( criteriaTable[index] ) then
-		return criteriaTable[index];
+function AchievementButton_GetCriteria (index, renderOffScreen)
+	local criTable = criteriaTable;
+	local offscreenName = "";
+	if (renderOffScreen) then
+		criTable = criteriaTableOffScreen;
+		offscreenName = "OffScreen";
 	end
 	
-	local frame = CreateFrame("FRAME", "AchievementFrameCriteria" .. index, AchievementFrameAchievements, "AchievementCriteriaTemplate");
+	if ( criTable[index] ) then
+		return criTable[index];
+	end
+	
+	local frame = CreateFrame("FRAME", "AchievementFrameCriteria" .. offscreenName .. index, AchievementFrameAchievements, "AchievementCriteriaTemplate");
 	AchievementFrame_LocalizeCriteria(frame);
-	criteriaTable[index] = frame;
+	criTable[index] = frame;
 	
 	return frame;
 end
@@ -1459,8 +1493,11 @@ end
 -- The smallest table in WoW.
 local miniTable = {}
 
-function AchievementButton_ResetMiniAchievements ()
-	AchievementButton_ResetTable(miniTable);
+function AchievementButton_ResetMiniAchievements (renderOffScreen)
+	-- We don't render mini achievements offscreen, so don't reset it if renderOffScreen is true
+	if (not renderOffScreen) then
+		AchievementButton_ResetTable(miniTable);
+	end
 end
 
 function AchievementButton_GetMiniAchievement (index)
@@ -1477,42 +1514,62 @@ function AchievementButton_GetMiniAchievement (index)
 end
 
 local progressBarTable = {};
+local progressBarTableOffScreen = {};
 
-function AchievementButton_ResetProgressBars ()
-	AchievementButton_ResetTable(progressBarTable);
+function AchievementButton_ResetProgressBars (renderOffScreen)
+	if (renderOffScreen) then
+		AchievementButton_ResetTable(progressBarTableOffScreen);
+	else
+		AchievementButton_ResetTable(progressBarTable);
+	end
 end
 
-function AchievementButton_GetProgressBar (index)
-	local progressBarTable = progressBarTable;
-	if ( progressBarTable[index] ) then
-		return progressBarTable[index];
+function AchievementButton_GetProgressBar (index, renderOffScreen)
+	local pgTable = progressBarTable;
+	local offscreenName = "";
+	if (renderOffScreen) then
+		pgTable = progressBarTableOffScreen;
+		offscreenName = "OffScreen";
+	end
+	if ( pgTable[index] ) then
+		return pgTable[index];
 	end
 	
-	local frame = CreateFrame("STATUSBAR", "AchievementFrameProgressBar" .. index, AchievementFrameAchievements, "AchievementProgressBarTemplate");
+	local frame = CreateFrame("STATUSBAR", "AchievementFrameProgressBar" .. offscreenName .. index, AchievementFrameAchievements, "AchievementProgressBarTemplate");
 	AchievementButton_LocalizeProgressBar(frame);
-	progressBarTable[index] = frame;
+	pgTable[index] = frame;
 	
 	return frame;
 end
 
 local metaCriteriaTable = {};
+local metaCriteriaTableOffScreen = {};
 
-function AchievementButton_ResetMetas ()
-	AchievementButton_ResetTable(metaCriteriaTable);
+function AchievementButton_ResetMetas (renderOffScreen)
+	if (renderOffScreen) then
+		AchievementButton_ResetTable(metaCriteriaTableOffScreen);
+	else
+		AchievementButton_ResetTable(metaCriteriaTable);
+	end
 end
 
-function AchievementButton_GetMeta (index)
-	local metaCriteriaTable = metaCriteriaTable;
-	if ( not metaCriteriaTable[index] ) then
-		local frame = CreateFrame("BUTTON", "AchievementFrameMeta" .. index, AchievementFrameAchievements, "MetaCriteriaTemplate");
+function AchievementButton_GetMeta (index, renderOffScreen)
+	local mcTable = metaCriteriaTable;
+	local offscreenName = "";
+	if (renderOffScreen) then
+		mcTable = metaCriteriaTableOffScreen;
+		offscreenName = "OffScreen";
+	end
+	if ( not mcTable[index] ) then
+		local frame = CreateFrame("BUTTON", "AchievementFrameMeta" .. offscreenName .. index, AchievementFrameAchievements, "MetaCriteriaTemplate");
 		AchievementButton_LocalizeMetaAchievement(frame);
-		metaCriteriaTable[index] = frame;
+		mcTable[index] = frame;
 	end
 
-	if ( metaCriteriaTable[index].guildView ~= IN_GUILD_VIEW ) then
-		AchievementButton_ToggleMetaView(metaCriteriaTable[index]);
+	if ( mcTable[index].guildView ~= IN_GUILD_VIEW ) then
+		AchievementButton_ToggleMetaView(mcTable[index]);
 	end
-	return metaCriteriaTable[index];
+	return mcTable[index];
 end
 
 function AchievementButton_ToggleMetaView(frame)
@@ -1678,7 +1735,7 @@ function AchievementFrame_SetFilter(value)
 	end
 end
 
-function AchievementObjectives_DisplayCriteria (objectivesFrame, id)
+function AchievementObjectives_DisplayCriteria (objectivesFrame, id, renderOffScreen)
 	if ( not id ) then
 		return;
 	end
@@ -1715,7 +1772,7 @@ function AchievementObjectives_DisplayCriteria (objectivesFrame, id)
 	
 	-- text check width
 	if ( not objectivesFrame.textCheckWidth ) then
-		local criteria = AchievementButton_GetCriteria(1);
+		local criteria = AchievementButton_GetCriteria(1, renderOffScreen);
 		criteria.name:SetText("- ");
 		objectivesFrame.textCheckWidth = criteria.name:GetStringWidth();
 	end
@@ -1732,14 +1789,14 @@ function AchievementObjectives_DisplayCriteria (objectivesFrame, id)
 		
 		if ( criteriaType == CRITERIA_TYPE_ACHIEVEMENT and assetID ) then
 			metas = metas + 1;
-			local metaCriteria = AchievementButton_GetMeta(metas);
+			local metaCriteria = AchievementButton_GetMeta(metas, renderOffScreen);
 			
 			if ( metas == 1 ) then
 				metaCriteria:SetPoint("TOP", objectivesFrame, "TOP", 0, -4 + initialOffset);
 				numRows = numRows + 2;
 			elseif ( math.fmod(metas, 2) == 0 ) then
 				yPos = -((metas/2 - 1) * 28) - 8;
-				metaCriteriaTable[metas-1]:SetPoint("TOPLEFT", objectivesFrame, "TOPLEFT", 20, yPos + initialOffset);
+				AchievementButton_GetMeta(metas-1, renderOffScreen):SetPoint("TOPLEFT", objectivesFrame, "TOPLEFT", 20, yPos + initialOffset);
 				metaCriteria:SetPoint("TOPLEFT", objectivesFrame, "TOPLEFT", 210, yPos + initialOffset);
 			else
 				metaCriteria:SetPoint("TOPLEFT", objectivesFrame, "TOPLEFT", 20, -(math.ceil(metas/2 - 1) * 28) - 8 + initialOffset);
@@ -1785,12 +1842,12 @@ function AchievementObjectives_DisplayCriteria (objectivesFrame, id)
 		elseif ( bit.band(flags, EVALUATION_TREE_FLAG_PROGRESS_BAR) == EVALUATION_TREE_FLAG_PROGRESS_BAR ) then
 			-- Display this criteria as a progress bar!
 			progressBars = progressBars + 1;
-			local progressBar = AchievementButton_GetProgressBar(progressBars);
+			local progressBar = AchievementButton_GetProgressBar(progressBars, renderOffScreen);
 			
 			if ( progressBars == 1 ) then
 				progressBar:SetPoint("TOP", objectivesFrame, "TOP", 4, -4 + initialOffset);
 			else
-				progressBar:SetPoint("TOP", progressBarTable[progressBars-1], "BOTTOM", 0, 0);
+				progressBar:SetPoint("TOP", AchievementButton_GetProgressBar(progressBars-1, renderOffScreen), "BOTTOM", 0, 0);
 			end
 			
 			progressBar.text:SetText(string.format("%s", quantityString));
@@ -1803,7 +1860,7 @@ function AchievementObjectives_DisplayCriteria (objectivesFrame, id)
 			numRows = numRows + 1;
 		else
 			textStrings = textStrings + 1;
-			local criteria = AchievementButton_GetCriteria(textStrings);
+			local criteria = AchievementButton_GetCriteria(textStrings, renderOffScreen);
 			criteria:ClearAllPoints();
 			if ( textStrings == 1 ) then
 				if ( numCriteria == 1 ) then
@@ -1813,7 +1870,7 @@ function AchievementObjectives_DisplayCriteria (objectivesFrame, id)
 				end
 				
 			else
-				criteria:SetPoint("TOPLEFT", criteriaTable[textStrings-1], "BOTTOMLEFT", 0, 0);
+				criteria:SetPoint("TOPLEFT", AchievementButton_GetCriteria(textStrings-1, renderOffScreen), "BOTTOMLEFT", 0, 0);
 			end
 			
 			if ( objectivesFrame.completed and completed ) then
@@ -1858,12 +1915,13 @@ function AchievementObjectives_DisplayCriteria (objectivesFrame, id)
 
 	if ( textStrings > 0 and progressBars > 0 ) then
 		-- If we have text criteria and progressBar criteria, display the progressBar criteria first and position the textStrings under them.
-		criteriaTable[1]:ClearAllPoints();
+		local criTable = AchievementButton_GetCriteria(1, renderOffScreen);
+		criTable:ClearAllPoints();
 		if ( textStrings == 1 ) then
-			criteriaTable[1]:SetPoint("TOP", progressBarTable[progressBars], "BOTTOM", -14, -4);
+			criTable:SetPoint("TOP", AchievementButton_GetProgressBar(progressBars, renderOffScreen), "BOTTOM", -14, -4);
 		else
-			criteriaTable[1]:SetPoint("TOP", progressBarTable[progressBars], "BOTTOM", 0, -4);
-			criteriaTable[1]:SetPoint("LEFT", objectivesFrame, "LEFT", 0, 0);
+			criTable:SetPoint("TOP", AchievementButton_GetProgressBar(progressBars, renderOffScreen), "BOTTOM", 0, -4);
+			criTable:SetPoint("LEFT", objectivesFrame, "LEFT", 0, 0);
 		end		
 	elseif ( textStrings > 1 ) then
 		-- Figure out if we can make multiple columns worth of criteria instead of one long one
@@ -1875,8 +1933,8 @@ function AchievementObjectives_DisplayCriteria (objectivesFrame, id)
 			forceColumns = true;
 			-- if top right criteria would run into the achievement shield, move them all down 1 row
 			-- this assumes description is 1 or 2 lines, otherwise this wouldn't be a problem
-			if ( criteriaTable[2].name:GetStringWidth() > FORCE_COLUMNS_RIGHT_COLUMN_SPACE and progressBars == 0 ) then
-				initialOffset = initialOffset - criteriaTable[2]:GetHeight();
+			if ( AchievementButton_GetCriteria(2, renderOffScreen).name:GetStringWidth() > FORCE_COLUMNS_RIGHT_COLUMN_SPACE and progressBars == 0 ) then
+				initialOffset = initialOffset - AchievementButton_GetCriteria(2, renderOffScreen):GetHeight();
 				extraRows = extraRows + 1;
 			end
 		end	
@@ -1884,7 +1942,11 @@ function AchievementObjectives_DisplayCriteria (objectivesFrame, id)
 			local step;
 			local rows = 1;
 			local position = 0;
-			for i=1, #criteriaTable do
+			local criTable = criteriaTable;
+			if (renderOffScreen) then
+				criTable = criteriaTableOffScreen;
+			end
+			for i=1, #criTable do
 				position = position + 1;
 				if ( position > numColumns ) then
 					position = position - numColumns;
@@ -1892,7 +1954,7 @@ function AchievementObjectives_DisplayCriteria (objectivesFrame, id)
 				end
 				
 				if ( rows == 1 ) then
-					criteriaTable[i]:ClearAllPoints();
+					criTable[i]:ClearAllPoints();
 					local xOffset = 0;
 					if ( forceColumns ) then
 						if ( position == 1 ) then
@@ -1901,10 +1963,10 @@ function AchievementObjectives_DisplayCriteria (objectivesFrame, id)
 							xOffset = FORCE_COLUMNS_RIGHT_OFFSET;
 						end
 					end
-					criteriaTable[i]:SetPoint("TOPLEFT", objectivesFrame, "TOPLEFT", (position - 1)*(ACHIEVEMENTUI_MAXCONTENTWIDTH/numColumns) + xOffset, initialOffset);
+					criTable[i]:SetPoint("TOPLEFT", objectivesFrame, "TOPLEFT", (position - 1)*(ACHIEVEMENTUI_MAXCONTENTWIDTH/numColumns) + xOffset, initialOffset);
 				else
-					criteriaTable[i]:ClearAllPoints();
-					criteriaTable[i]:SetPoint("TOPLEFT", criteriaTable[position + ((rows - 2) * numColumns)], "BOTTOMLEFT", 0, 0);
+					criTable[i]:ClearAllPoints();
+					criTable[i]:SetPoint("TOPLEFT", criTable[position + ((rows - 2) * numColumns)], "BOTTOMLEFT", 0, 0);
 				end
 			end
 			numRows = ceil(numRows/numColumns);
@@ -2349,6 +2411,17 @@ function AchievementFrameSummaryAchievement_SetGuildTextures(button)
 end
 
 function AchievementFrameSummaryAchievement_OnClick(self)
+	if ( IsModifiedClick("CHATLINK") ) then
+		local achievementLink = GetAchievementLink(self.id);
+		if ( ChatEdit_GetActiveWindow() and achievementLink ) then
+			ChatEdit_InsertLink(achievementLink);
+			return;
+		elseif ( SocialPostFrame and SocialPostFrame:IsShown() and achievementLink ) then
+			SocialPostFrame_InsertLink(achievementLink);
+			return;
+		end
+	end
+
 	local id = self.id
 	local nextID, completed = GetNextAchievement(id);
 	if ( nextID and completed ) then

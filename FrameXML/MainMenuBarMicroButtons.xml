@@ -91,20 +91,20 @@
 		</Anchors>
 		<Layers>
 			<Layer level="OVERLAY">
-                <Texture name="MicroButtonPortrait">
-                    <Size>
-                        <AbsDimension x="18" y="25"/>
-                    </Size>
-                    <Anchors>
-                        <Anchor point="TOP">
-                            <Offset>
-                                <AbsDimension x="0" y="-28"/>
-                            </Offset>
-                        </Anchor>
-                    </Anchors>
+				<Texture name="MicroButtonPortrait">
+					<Size>
+						<AbsDimension x="18" y="25"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOP">
+							<Offset>
+								<AbsDimension x="0" y="-28"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
 					<TexCoords left="0.2" right="0.8" top="0.0666" bottom="0.9"/>
-                </Texture>
-            </Layer>
+				</Texture>
+			</Layer>
 		</Layers>
 		<Scripts>
 			<OnLoad function="CharacterMicroButton_OnLoad"/>
@@ -171,7 +171,7 @@
 				LoadMicroButtonTextures(self, "Talents");
 				self.tooltipText = MicroButtonTooltipText(TALENTS_BUTTON, "TOGGLETALENTS");
 				self.newbieText = NEWBIE_TOOLTIP_TALENTS;
-				
+
 				self.minLevel = SHOW_SPEC_LEVEL;
 				self:RegisterEvent("PLAYER_LEVEL_UP");
 				self:RegisterEvent("UPDATE_BINDINGS");
@@ -279,9 +279,9 @@
 				self:RegisterEvent("PLAYER_GUILD_UPDATE");
 				self:RegisterEvent("NEUTRAL_FACTION_SELECT_RESULT");
 				GuildMicroButton_UpdateTabard(true);
-				if ( IsTrialAccount() ) then
+				if ( IsTrialAccount() or (IsVeteranTrialAccount() and not IsInGuild()) ) then
 					self:Disable();
-					self.disabledTooltip = ERR_RESTRICTED_ACCOUNT;
+					self.disabledTooltip = GameLimitedMode_GetString("ERR_RESTRICTED_ACCOUNT");
 				end
 				if (IsBlizzCon()) then
 					self:Disable();
@@ -325,7 +325,7 @@
 			</OnClick>
 		</Scripts>
 	</Button>
-	<Button name="CompanionsMicroButton" inherits="MainMenuBarMicroButton" parent="UIParent">
+	<Button name="CollectionsMicroButton" inherits="MainMenuBarMicroButton" parent="UIParent">
 		<Anchors>
 			<Anchor point="BOTTOMLEFT" relativeTo="LFDMicroButton" relativePoint="BOTTOMRIGHT">
 				<Offset>
@@ -339,20 +339,20 @@
 				SetDesaturation(self:GetDisabledTexture(), true);
 				self.tooltipText = MicroButtonTooltipText(COLLECTIONS, "TOGGLECOLLECTIONS");
 				self.newbieText = NEWBIE_TOOLTIP_MOUNTS_AND_PETS;
+
+				self:RegisterEvent("HEIRLOOMS_UPDATED");
+				self:RegisterEvent("PET_JOURNAL_NEW_BATTLE_SLOT");
+				self:RegisterEvent("TOYS_UPDATED");
 			</OnLoad>
-			<OnEvent>
-				self.tooltipText = MicroButtonTooltipText(COLLECTIONS, "TOGGLECOLLECTIONS");
-				self.newbieText = NEWBIE_TOOLTIP_MOUNTS_AND_PETS;
-				UpdateMicroButtons();
-			</OnEvent>
 			<OnClick>
-				TogglePetJournal();
+				ToggleCollectionsJournal();
 			</OnClick>
+			<OnEvent function="CollectionsMicroButton_OnEvent" />
 		</Scripts>
 	</Button>
 	<Button name="EJMicroButton" inherits="MainMenuBarMicroButton" parent="UIParent">
 		<Anchors>
-			<Anchor point="BOTTOMLEFT" relativeTo="CompanionsMicroButton" relativePoint="BOTTOMRIGHT">
+			<Anchor point="BOTTOMLEFT" relativeTo="CollectionsMicroButton" relativePoint="BOTTOMRIGHT">
 				<Offset>
 					<AbsDimension x="-2" y="0"/>
 				</Offset>
@@ -592,14 +592,13 @@
 			</OnLoad>
 		</Scripts>
 	</Frame>
-	<Frame name="CompanionsMicroButtonAlert" inherits="MicroButtonAlertTemplate">
+	<Frame name="CollectionsMicroButtonAlert" inherits="MicroButtonAlertTemplate">
 		<Anchors>
-			<Anchor point="BOTTOM" relativeTo="CompanionsMicroButton" relativePoint="TOP" x="0" y="-8"/>
+			<Anchor point="BOTTOM" relativeTo="CollectionsMicroButton" relativePoint="TOP" x="0" y="-8"/>
 		</Anchors>
 		<Scripts>
 			<OnLoad>
 				MicroButtonAlert_OnLoad(self);
-				self.Text:SetText(COMPANIONS_MICRO_BUTTON_NEW_BATTLE_SLOT);
 			</OnLoad>
 		</Scripts>
 	</Frame>
@@ -611,29 +610,6 @@
 			<OnLoad>
 				MicroButtonAlert_OnLoad(self);
 				self.Text:SetText(LFG_MICRO_BUTTON_SPEC_TUTORIAL);
-			</OnLoad>
-		</Scripts>
-	</Frame>
-	<Frame name="CollectionsMicroButtonAlert" inherits="MicroButtonAlertTemplate">
-		<Anchors>
-			<Anchor point="BOTTOM" relativeTo="CompanionsMicroButton" relativePoint="TOP" x="0" y="-8"/>
-		</Anchors>
-		<Scripts>
-			<OnLoad>
-				MicroButtonAlert_OnLoad(self);
-				self.Text:SetText(COLLECTIONS_MICRO_BUTTON_SPEC_TUTORIAL);
-			</OnLoad>
-		</Scripts>
-	</Frame>
-	<Frame name="ToyBoxMicroButtonAlert" inherits="MicroButtonAlertTemplate">
-		<Anchors>
-			<Anchor point="BOTTOM" relativeTo="CompanionsMicroButton" relativePoint="TOP" x="0" y="-8"/>
-		</Anchors>
-		<Scripts>
-			<OnLoad>
-				MicroButtonAlert_OnLoad(self);
-				self.Text:SetText(TOYBOX_MICRO_BUTTON_SPEC_TUTORIAL);
-				self:SetHeight(CollectionsMicroButtonAlert.Text:GetHeight()+42);
 			</OnLoad>
 		</Scripts>
 	</Frame>

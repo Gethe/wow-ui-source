@@ -1692,6 +1692,7 @@
 					PlaySound("UI_igStore_WindowClose_Button");
 				</OnHide>
 				<OnAttributeChanged function="StoreFrame_OnAttributeChanged" />
+				<OnMouseWheel function="StoreFrame_OnMouseWheel" />
 			</Scripts>
 		</Frame>
 		<Frame name="StoreConfirmationFrame" frameStrata="FULLSCREEN_DIALOG" topLevel="true" parent="StoreFrame" inherits="GoldBorderFrameTemplate" hidden="true">
@@ -1873,13 +1874,13 @@
 					<FontString parentKey="ProductName" inherits="GameTooltipHeaderText" justifyH="LEFT">
 						<Size x="230" y="0"/>
 						<Anchors>
-							<Anchor point="TOPLEFT" x="10" y="-10" />
+							<Anchor point="TOPLEFT" x="10" y="-11" />
 						</Anchors>
 					</FontString>
 					<FontString parentKey="Description" inherits="GameFontNormal" justifyH="LEFT">
 						<Size x="230" y="0"/>
 						<Anchors>
-							<Anchor point="TOPLEFT" relativeKey="$parent.ProductName" relativePoint="BOTTOMLEFT" x="0" y="-10" />
+							<Anchor point="TOPLEFT" relativeKey="$parent.ProductName" relativePoint="BOTTOMLEFT" x="0" y="-2" />
 						</Anchors>
 					</FontString>
 				</Layer>

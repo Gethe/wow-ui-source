@@ -1169,17 +1169,17 @@ function GarrisonBuilding_ShowLevelTooltip(name, plotID, buildingID, anchor)
 		Tooltip.FollowerText:SetText(nil);
 		Tooltip.Rank1:SetPoint("TOPLEFT", Tooltip.Name, "BOTTOMLEFT", 0, -10);
 	end
-	local _, rank, currencyID, currencyQty, goldQty, buildTime, needsPlan, upgrades, canUpgrade;
+	local _, rank, currencyID, currencyQty, goldQty, buildTime, needsPlan, upgrades, canUpgrade, underConstruction, canActivate;
 	local locked = plotID and GarrisonBuildingFrame.plots[plotID].locked;
 	local owned = plotID and not locked;
 	if (owned) then
-		_, _, _, _, _, rank, currencyID, currencyQty, goldQty, buildTime, needsPlan, _, _, upgrades, canUpgrade = C_Garrison.GetOwnedBuildingInfo(plotID);
+		_, _, _, _, _, rank, currencyID, currencyQty, goldQty, buildTime, needsPlan, _, _, upgrades, canUpgrade, _, _, _, _, _, underConstruction, _, _, _, canActivate = C_Garrison.GetOwnedBuildingInfo(plotID);
 	else
 		_, _, _, _, _, rank, currencyID, currencyQty, goldQty, buildTime, needsPlan, _, _, upgrades, canUpgrade = C_Garrison.GetBuildingInfo(buildingID);
 	end
 		
 	for i = 1, GARRISON_MAX_BUILDING_LEVEL do
-		Tooltip["Rank"..i]:SetFormattedText(GARRISON_CURRENT_LEVEL, i);
+		Tooltip["Rank"..i]:SetFormattedText(GARRISON_BUILDING_LEVEL_TOOLTIP_TEXT, i);
 	end
 
 	if (not upgrades or #upgrades == 0) then
@@ -1191,7 +1191,10 @@ function GarrisonBuilding_ShowLevelTooltip(name, plotID, buildingID, anchor)
 	Tooltip.Rank3Tooltip:SetVertexColor(0.5, 0.5, 0.5, 1);
 	if (owned) then
 		for i=1, rank do
-			Tooltip["Rank"..i.."Tooltip"]:SetVertexColor(1, 1, 1, 1);
+			-- Note: If the building is under construction or not yet activated, the player only receives the benefit of the building ranks below the current rank
+			if(i < rank or not(underConstruction or canActivate)) then
+				Tooltip["Rank"..i.."Tooltip"]:SetVertexColor(1, 1, 1, 1);
+			end
 		end
 	end
 	

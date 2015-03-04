@@ -165,6 +165,63 @@
 			</OnShow>
 		</Scripts>
 	</Frame>
+	<Frame name="LFDReadyCheckPopup" parent="UIParent" frameStrata="DIALOG" hidden="true">
+		<Size x="306" y="100"/>
+		<Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background" edgeFile="Interface\DialogFrame\UI-DialogBox-Border" tile="true">
+			<BackgroundInsets>
+				<AbsInset left="11" right="12" top="12" bottom="11"/>
+			</BackgroundInsets>
+			<TileSize>
+				<AbsValue val="32"/>
+			</TileSize>
+			<EdgeSize>
+				<AbsValue val="32"/>
+			</EdgeSize>
+		</Backdrop>
+		<Layers>
+			<Layer level="ARTWORK">
+				<FontString parentKey="Text" inherits="GameFontHighlight" justifyV="MIDDLE">
+					<Size x="240" y="0"/>
+					<Anchors>
+						<Anchor point="CENTER" relativePoint="TOP" x="0" y="-35"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Button parentKey="YesButton" inherits="UIPanelButtonTemplate" text="READY">
+				<Size x="119" y="24"/>
+				<Anchors>
+					<Anchor point="TOPRIGHT" relativePoint="TOP" x="-7" y="-55"/>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						PlaySound("igMainMenuOptionCheckBoxOn");
+						CompleteLFGReadyCheck(true);
+						LFDReadyCheckPopup:Hide();
+					</OnClick>
+				</Scripts>
+			</Button>
+			<Button parentKey="NoButton" inherits="UIPanelButtonTemplate" text="NOT_READY">
+				<Size x="119" y="24"/>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativePoint="TOP" x="7" y="-55"/>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						PlaySound("igMainMenuOptionCheckBoxOn");
+						CompleteLFGReadyCheck(false);
+						LFDReadyCheckPopup:Hide();
+					</OnClick>
+				</Scripts>
+			</Button>
+		</Frames>
+		<Scripts>
+			<OnShow>
+				PlaySound("ReadyCheck");
+			</OnShow>
+		</Scripts>
+	</Frame>
 	<Frame name="LFDParentFrame" toplevel="true" hidden="true" parent="GroupFinderFrame" useParentLevel="true">
 		<Size x="338" y="428"/>
 		<Anchors>

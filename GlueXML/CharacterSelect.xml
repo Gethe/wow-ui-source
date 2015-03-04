@@ -138,12 +138,22 @@
 				if ( self.selection:IsShown() ) then
 					CharacterSelectButton_ShowMoveButtons(self);
 				end
+				if ( self.isVeteranLocked ) then
+					GlueTooltip:SetText(CHARSELECT_CHAR_LIMITED_TOOLTIP, nil, nil, nil, nil, true);
+					GlueTooltip:Show();
+					GlueTooltip:SetOwner(self, "ANCHOR_LEFT", -16, -5);
+					CharSelectAccountUpgradeButtonPointerFrame:Show();
+					CharSelectAccountUpgradeButtonGlow:Show();
+				end
 			</OnEnter>
 			<OnLeave>
 				if ( self.upButton:IsShown() and not (self.upButton:IsMouseOver() or self.downButton:IsMouseOver()) ) then
 					self.upButton:Hide();
 					self.downButton:Hide();
 				end
+				CharSelectAccountUpgradeButtonPointerFrame:Hide();
+				CharSelectAccountUpgradeButtonGlow:Hide();
+				GlueTooltip:Hide();
 			</OnLeave>
 		</Scripts>
 		<HighlightTexture file="Interface\Glues\CharacterSelect\Glue-CharacterSelect-Hover" alphaMode="ADD">
@@ -162,7 +172,7 @@
 				CharacterSelect_PaidServiceOnClick(self, button, down, self.serviceType);
 			</OnClick>
 			<OnEnter>
-				GlueTooltip:SetOwner(self);
+				GlueTooltip:SetOwner(self, "ANCHOR_LEFT", 4, -8);
 				if ( self:IsEnabled() ) then
 					GlueTooltip:SetText(self.tooltip, 1.0, 1.0, 1.0);
 				else
@@ -353,6 +363,7 @@
 									</Anchors>
 									<TexCoords left="0.14843750" right="0.96093750" top="0.00390625" bottom="0.28515625"/>
 								</Texture>
+								<Texture name="$parentGlow" inherits="UIPanelButtonHighlightTexture" hidden="true"/>
 							</Layer>
 						</Layers>
 						<Frames>
@@ -383,6 +394,35 @@
 								<DisabledTexture file="Interface\ChatFrame\UI-ChatIcon-ScrollDown-Disabled"/>
 								<HighlightTexture file="Interface\Buttons\UI-Common-MouseHilight" alphaMode="ADD"/>
 							</Button>
+							<Frame name="$parentPointerFrame" parentKey="PointerFrame" hidden="true">
+								<Size x="64" y="64" />
+								<Anchors>
+									<Anchor point="LEFT" relativePoint="RIGHT" x="32" y="0"/>
+								</Anchors>
+								<Layers>
+									<Layer level="BACKGROUND">
+										<Texture atlas="NPE_ArrowLeft" />
+									</Layer>
+									<Layer level="OVERLAY">
+										<Texture atlas="NPE_ArrowLeftGlow" alpha="0.75" alphaMode="ADD"/>
+									</Layer>
+								</Layers>
+								<Animations>
+									<AnimationGroup parentKey="Anim">
+										<Translation offsetX="-50" duration="1" order="1" smoothing="OUT"/>
+										<Alpha change="1" duration="0.1" order="1"/>
+										<Alpha change="-1" duration="0.9" startDelay="0.1" order="1" smoothing="IN"/>
+										<Scripts>
+											<OnLoad>
+												self:Play();
+											</OnLoad>
+											<OnFinished>
+												self:Play();
+											</OnFinished>
+										</Scripts>
+									</AnimationGroup>
+								</Animations>
+							</Frame>
 						</Frames>
 						<Scripts>
 							<OnLoad>
@@ -395,7 +435,11 @@
 								end
 							</OnEvent>
 							<OnClick>
-								UpgradeAccount();
+								if ( IsVeteranTrialAccount() ) then
+									ReactivateAccount();
+								else
+									UpgradeAccount();
+								end
 							</OnClick>
 						</Scripts>
 					</Button>
@@ -483,7 +527,7 @@
 							</Frame>
 						</Frames>
 					</Frame>
-					<Button name="CharSelectEnterWorldButton" inherits="GlueButtonTemplate" text="ENTER_WORLD">
+					<Button name="CharSelectEnterWorldButton" inherits="GlueButtonTemplate" text="ENTER_WORLD" motionScriptsWhileDisabled="true">
 						<Size>
 							<AbsDimension x="200" y="60"/>
 						</Size>
@@ -497,6 +541,20 @@
 							<OnUpdate>
 								CharacterSelect_DeathKnightSwap(self);
 							</OnUpdate>
+							<OnEnter>
+								if ( not self:IsEnabled() and GetNumCharacters() > 0 ) then
+									-- selected character is locked while in veteran trial
+									GlueTooltip:SetOwner(self, "ANCHOR_RIGHT", -16, -13);
+									GlueTooltip:SetText(CHARSELECT_CHAR_LIMITED_TOOLTIP, nil, nil, nil, nil, true);
+									CharSelectAccountUpgradeButtonPointerFrame:Show();
+									CharSelectAccountUpgradeButtonGlow:Show();
+								end
+							</OnEnter>
+							<OnLeave>
+								CharSelectAccountUpgradeButtonPointerFrame:Hide();
+								CharSelectAccountUpgradeButtonGlow:Hide();
+								GlueTooltip:Hide();
+							</OnLeave>
 						</Scripts>
 					</Button>
 					<Button name="CharacterSelectRotateLeft">
@@ -645,29 +703,30 @@
 								self.Logo:ClearAllPoints();
 								self.Logo:SetPoint("RIGHT", fontString, "LEFT", -2, 0);
 							</OnLoad>
-							<OnClick function="ToggleStoreUI"/>
+							<OnClick function="ToggleStoreUI"/>	
 							<OnMouseDown>
 								local fontString = self:GetFontString();
 								self.Logo:SetPoint("RIGHT", fontString, "LEFT", -1, -2);
+								self.down = true;
 							</OnMouseDown>
 							<OnMouseUp>
 								local fontString = self:GetFontString();
 								self.Logo:SetPoint("RIGHT", fontString, "LEFT", -2, 0);
+								self.down = false;
 							</OnMouseUp>
 							<OnEnable>
-								self.Left:SetTexture("Interface\\Buttons\\UI-DialogBox-goldbutton-up-left");
-								self.Middle:SetTexture("Interface\\Buttons\\UI-DialogBox-goldbutton-up-middle");
-								self.Right:SetTexture("Interface\\Buttons\\UI-DialogBox-goldbutton-up-right");
 								self.Logo:SetDesaturated(false);
 								self.Logo:SetAlpha(1);
 							</OnEnable>
 							<OnDisable>
-								self.Left:SetTexture("Interface\\Buttons\\UI-DialogBox-goldbutton-disabled-left");
-								self.Middle:SetTexture("Interface\\Buttons\\UI-DialogBox-goldbutton-disabled-middle");
-								self.Right:SetTexture("Interface\\Buttons\\UI-DialogBox-goldbutton-disabled-right");
 								self.Logo:SetDesaturated(true);
 								self.Logo:SetAlpha(0.4);
-							</OnDisable>	
+							</OnDisable>
+							<OnUpdate>
+								CharacterSelectGoldPanelButton_DeathKnightSwap(self);
+							</OnUpdate>
+							<!-- We need to override the templates script because it will reset our textures. -->
+							<OnShow/>
 						</Scripts>
 					</Button>					
 					<Button name="CopyCharacterButton" inherits="GlueButtonSmallTemplate" hidden="true" text="COPY_CHARACTER">
@@ -753,6 +812,17 @@
 								</FontString>
 							</Layer>
 						</Layers>
+						<Backdrop bgFile="Interface\Glues\Common\Glue-Tooltip-Background" edgeFile="Interface\Glues\Common\Glue-Tooltip-Border" tile="true">
+							<BackgroundInsets>
+								<AbsInset left="10" right="5" top="4" bottom="9"/>
+							</BackgroundInsets>
+							<TileSize>
+								<AbsValue val="16"/>
+							</TileSize>
+							<EdgeSize>
+								<AbsValue val="16"/>
+							</EdgeSize>
+						</Backdrop>
 						<Frames>
 							<Slider name="$parentScrollBar" parentKey="scrollBar" inherits="GlueScrollBarTemplate" hidden="true">
 								<Anchors>
@@ -883,41 +953,23 @@
 								<Scripts>
 									<OnLoad>
 										self:SetWidth(self:GetTextWidth() + 50);
-										if ( not self:IsEnabled() ) then
-											CharacterSelectPanelButton_DeathKnightSwap(self, "Interface\\Glues\\Common\\Glue-Panel-Button-Disabled");
-										end
 									</OnLoad>
 									<OnMouseDown>
 										self.down = true;
-										if ( self:IsEnabled() ) then
-											CharacterSelectPanelButton_DeathKnightSwap(self, "Interface\\Glues\\Common\\Glue-Panel-Button-Down");
-										end
 									</OnMouseDown>
 									<OnMouseUp>
 										self.down = false;
-										if ( self:IsEnabled() ) then
-											CharacterSelectPanelButton_DeathKnightSwap(self, "Interface\\Glues\\Common\\Glue-Panel-Button-Up");
-										end
 									</OnMouseUp>
-									<OnShow>
-										self.down = false;
-										if ( self:IsEnabled() ) then
-											-- we need to reset our textures just in case we were hidden before a mouse up fired
-											CharacterSelectPanelButton_DeathKnightSwap(self, "Interface\\Glues\\Common\\Glue-Panel-Button-Up");
-										end
-									</OnShow>
-									<OnDisable>
-										CharacterSelectPanelButton_DeathKnightSwap(self, "Interface\\Glues\\Common\\Glue-Panel-Button-Disabled");
-									</OnDisable>
-									<OnEnable>
-										CharacterSelectPanelButton_DeathKnightSwap(self, "Interface\\Glues\\Common\\Glue-Panel-Button-Up");
-									</OnEnable>
 									<OnUpdate>
 										CharacterSelectPanelButton_DeathKnightSwap(self);
 									</OnUpdate>
 									<OnClick>
 										CharacterSelect_SelectCharacter(self:GetID());
 									</OnClick>
+									<!-- We need to override the templates script because it will reset our textures. -->
+									<OnShow/>
+									<OnEnable/>
+									<OnDisable/>
 								</Scripts>
 							</Button>
 							<Button name="CharSelectBackToActiveButton" inherits="GlueButtonSmallTemplate" hidden="true" text="CANCEL">
@@ -964,39 +1016,19 @@
 										PlaySound("igMainMenuOptionCheckBoxOn");
 										CharacterSelect_StartCharacterUndelete();
 									</OnClick>
-									<OnLoad>
-										if ( not self:IsEnabled() ) then
-											CharacterSelectPanelButton_DeathKnightSwap(self, "Interface\\Glues\\Common\\Glue-Panel-Button-Disabled");
-										end
-									</OnLoad>
 									<OnMouseDown>
 										self.down = true;
-										if ( self:IsEnabled() ) then
-											CharacterSelectPanelButton_DeathKnightSwap(self, "Interface\\Glues\\Common\\Glue-Panel-Button-Down");
-										end
 									</OnMouseDown>
 									<OnMouseUp>
 										self.down = false;
-										if ( self:IsEnabled() ) then
-											CharacterSelectPanelButton_DeathKnightSwap(self, "Interface\\Glues\\Common\\Glue-Panel-Button-Up");
-										end
 									</OnMouseUp>
-									<OnShow>
-										self.down = false;
-										if ( self:IsEnabled() ) then
-											-- we need to reset our textures just in case we were hidden before a mouse up fired
-											CharacterSelectPanelButton_DeathKnightSwap(self, "Interface\\Glues\\Common\\Glue-Panel-Button-Up");
-										end
-									</OnShow>
-									<OnDisable>
-										CharacterSelectPanelButton_DeathKnightSwap(self, "Interface\\Glues\\Common\\Glue-Panel-Button-Disabled");
-									</OnDisable>
-									<OnEnable>
-										CharacterSelectPanelButton_DeathKnightSwap(self, "Interface\\Glues\\Common\\Glue-Panel-Button-Up");
-									</OnEnable>
 									<OnUpdate>
 										CharacterSelectPanelButton_DeathKnightSwap(self);
 									</OnUpdate>
+									<!-- We need to override the templates script because it will reset our textures. -->
+									<OnShow/>
+									<OnEnable/>
+									<OnDisable/>
 								</Scripts>
 							</Button>
 							<Button name="CharSelectPaidService1" inherits="CharSelectPaidServiceTemplate" id="1">
@@ -1122,17 +1154,6 @@
 								</Anchors>
 							</Button>
 						</Frames>
-						<Backdrop bgFile="Interface\Glues\Common\Glue-Tooltip-Background" edgeFile="Interface\Glues\Common\Glue-Tooltip-Border" tile="true">
-							<BackgroundInsets>
-								<AbsInset left="10" right="5" top="4" bottom="9"/>
-							</BackgroundInsets>
-							<TileSize>
-								<AbsValue val="16"/>
-							</TileSize>
-							<EdgeSize>
-								<AbsValue val="16"/>
-							</EdgeSize>
-						</Backdrop>
 						<Scripts>
 							<OnMouseWheel>
 								self.scrollBar:SetValue(self.scrollBar:GetValue() - delta);
@@ -1546,6 +1567,9 @@
 								</Anchors>
 								<Scripts>
 									<OnClick function="CharacterServicesMasterBackButton_OnClick"/>
+									<OnUpdate>
+		 								CharacterSelect_DeathKnightSwap(self);
+									</OnUpdate>
 								</Scripts>
 							</Button>
 							<Button parentKey="NextButton" inherits="GlueButtonSmallTemplate" text="NEXT" hidden="true">
@@ -1572,6 +1596,9 @@
 								</Layers>
 								<Scripts>
 									<OnClick function="CharacterServicesMasterNextButton_OnClick"/>
+									<OnUpdate>
+		 								CharacterSelect_DeathKnightSwap(self);
+									</OnUpdate>
 									<OnSizeChanged>
 										self.Flash:SetSize(self:GetWidth()*1.06, self:GetHeight()*1.15);
 									</OnSizeChanged>
@@ -1584,6 +1611,22 @@
 								</Anchors>
 								<Scripts>
 									<OnClick function="CharacterServicesMasterFinishButton_OnClick"/>
+									<OnLoad>
+										self.Text:SetPoint("BOTTOM", 0, 12);
+									</OnLoad>
+									<OnMouseDown>
+										self.down = true;
+									</OnMouseDown>
+									<OnMouseUp>
+										self.down = false;
+									</OnMouseUp>
+									<OnUpdate>
+										CharacterSelectGoldPanelButton_DeathKnightSwap(self);
+									</OnUpdate>
+									<!-- We need to override the templates script because it will reset our textures. -->
+									<OnShow/>
+									<OnEnable/>
+									<OnDisable/>
 								</Scripts>
 							</Button>
 							<Frame name="CharacterUpgradeSecondChanceWarningFrame" frameStrata="DIALOG" hidden="true">
@@ -2297,6 +2340,8 @@
 				<Scripts>
 					<OnLoad function="CopyCharacterEditBox_OnLoad"/>
 					<OnShow function="CopyCharacterEditBox_OnShow"/>
+					<OnEnterPressed function="CopyCharacterEditBox_OnEnterPressed"/>
+					<OnTabPressed function="CopyCharacterRealmNameEditBox_OnTabPressed"/>
 				</Scripts>
 				<FontString inherits="CharCopyEditBoxFont"/>
 			</EditBox>
@@ -2318,6 +2363,8 @@
 				<Scripts>
 					<OnLoad function="CopyCharacterEditBox_OnLoad"/>
 					<OnShow function="CopyCharacterEditBox_OnShow"/>
+					<OnEnterPressed function="CopyCharacterEditBox_OnEnterPressed"/>
+					<OnTabPressed function="CopyCharacterCharacterNameEditBox_OnTabPressed"/>
 				</Scripts>
 				<FontString inherits="CharCopyEditBoxFont"/>
 			</EditBox>

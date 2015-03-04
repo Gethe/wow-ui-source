@@ -43,6 +43,7 @@ ITEM_SEARCHBAR_LIST = {
 	"GuildItemSearchBox",
 	"VoidItemSearchBox",
 	"BankItemSearchBox",
+	"HeirloomsJournalSearchBox",
 };
 
 function BagSearch_OnHide(self)
@@ -334,6 +335,22 @@ function InputScrollFrame_OnLoad(self)
 	self.EditBox.Instructions:SetText(self.instructions);
 	self.EditBox.Instructions:SetWidth(self:GetWidth());
 	self.CharCount:SetShown(not self.hideCharCount);
+end
+
+function InputScrollFrame_OnTextChanged(self)
+	local scrollFrame = self:GetParent();
+	ScrollingEdit_OnTextChanged(self, scrollFrame);
+	if ( self:GetText() ~= "" ) then
+		self.Instructions:Hide();
+	else
+		self.Instructions:Show();
+	end
+	scrollFrame.CharCount:SetText(self:GetMaxLetters() - self:GetNumLetters());
+	if ( scrollFrame.ScrollBar:IsShown() ) then
+		scrollFrame.CharCount:SetPoint("BOTTOMRIGHT", -17, 0);
+	else
+		scrollFrame.CharCount:SetPoint("BOTTOMRIGHT", 0, 0);
+	end
 end
 
 --Radio button functions

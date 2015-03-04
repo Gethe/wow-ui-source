@@ -502,7 +502,7 @@
 							<Anchor point="TOPLEFT" relativeTo="$parentRace11" relativePoint="TOPRIGHT" x="13"/>
 						</Anchors>
 					</Button>
-					<Button name="$parentPrevPageButton"  inherits="UIPanelSquareButton" parentKey="prevPageButon">
+					<Button name="$parentPrevPageButton"  inherits="UIPanelSquareButton" parentKey="prevPageButton">
 						<Anchors>
 							<Anchor point="LEFT" relativeTo="$parentPageText" relativePoint="RIGHT" x="8"/>
 						</Anchors>
@@ -512,11 +512,10 @@
 							</OnLoad>
 							<OnClick>
 								ArchaeologyFrameSummary_PageClick(self, false);
-								PlaySound("igSpellBookOpen");
 							</OnClick>
 						</Scripts>
 					</Button>
-					<Button name="$parentNextPageButton"  inherits="UIPanelSquareButton" parentKey="nextPageButon">
+					<Button name="$parentNextPageButton"  inherits="UIPanelSquareButton" parentKey="nextPageButton">
 						<Anchors>
 							<Anchor point="LEFT" relativeTo="$parentPrevPageButton" relativePoint="RIGHT" x="8" y="0"/>
 						</Anchors>
@@ -526,7 +525,6 @@
 							</OnLoad>
 							<OnClick>
 								ArchaeologyFrameSummary_PageClick(self, true);
-								PlaySound("igSpellBookOpen");
 							</OnClick>
 						</Scripts>
 					</Button>
@@ -681,7 +679,7 @@
 							<Anchor point="TOP" relativeTo="$parentArtifact10" relativePoint="BOTTOM" x="0" y="-15"/>
 						</Anchors>
 					</Button>
-					<Button name="$parentPrevPageButton"  inherits="UIPanelSquareButton" parentKey="prevPageButon">
+					<Button name="$parentPrevPageButton"  inherits="UIPanelSquareButton" parentKey="prevPageButton">
 						<Anchors>
 							<Anchor point="LEFT" relativeTo="$parentPageText" relativePoint="RIGHT" x="8"/>
 						</Anchors>
@@ -691,11 +689,10 @@
 							</OnLoad>
 							<OnClick>
 								ArchaeologyFrame_PageClick(self, false);
-								PlaySound("igSpellBookOpen");
 							</OnClick>
 						</Scripts>
 					</Button>
-					<Button name="$parentNextPageButton"  inherits="UIPanelSquareButton" parentKey="nextPageButon">
+					<Button name="$parentNextPageButton"  inherits="UIPanelSquareButton" parentKey="nextPageButton">
 						<Anchors>
 							<Anchor point="LEFT" relativeTo="$parentPrevPageButton" relativePoint="RIGHT" x="8" y="0"/>
 						</Anchors>
@@ -705,7 +702,6 @@
 							</OnLoad>
 							<OnClick>
 								ArchaeologyFrame_PageClick(self, true);
-								PlaySound("igSpellBookOpen");
 							</OnClick>
 						</Scripts>
 					</Button>
@@ -866,8 +862,9 @@
 								</Layers>
 								<Scripts>
 									<OnEnter>
+										local _, _, _, _, _, maxCount = GetArchaeologyRaceInfo(ArchaeologyFrame.artifactPage.raceID);
 										GameTooltip:SetOwner(self, "ANCHOR_BOTTOMRIGHT");
-										GameTooltip:AddLine(ARCHAEOLOGY_POJECTBAR_TOOLTIP, HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b, true);
+										GameTooltip:AddLine(format(ARCHAEOLOGY_POJECTBAR_TOOLTIP, maxCount), HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b, true);
 										GameTooltip:Show();
 									</OnEnter>
 									<OnLeave>
@@ -1025,6 +1022,7 @@
 			<OnEvent function="ArchaeologyFrame_OnEvent"/>
 			<OnShow function="ArchaeologyFrame_OnShow"/>
 			<OnHide function="ArchaeologyFrame_OnHide"/>
+			<OnMouseWheel function="ArchaeologyFrame_OnMouseWheel"/>
 		</Scripts>
 	</Frame>
 </Ui>

@@ -1,0 +1,14 @@
+## Interface: 60100
+## Title: Blizzard Collections
+## Notes: Collections
+## Secure: 1
+## Author: Blizzard Entertainment
+## Version: 1.0
+## LoadOnDemand: 1
+Blizzard_CollectionTemplates.xml
+Blizzard_Collections.xml
+Blizzard_MountCollection.xml
+Blizzard_PetCollection.xml
+Blizzard_ToyBox.xml
+Blizzard_HeirloomCollection.xml
+Localization.lua

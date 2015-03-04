@@ -537,7 +537,7 @@
 				</Backdrop>
 				<Layers>
 					<Layer level="ARTWORK">
-						<FontString name="ReputationDetailFactionName" inherits="GameFontNormal" justifyH="LEFT">
+						<FontString name="ReputationDetailFactionName" inherits="GameFontNormal" justifyH="LEFT" nonspacewrap="true">
 							<Size>
 								<AbsDimension x="160" y="0"/>
 							</Size>

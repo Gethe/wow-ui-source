@@ -233,11 +233,13 @@ function GuildNewsButton_OnEnter(self)
 	GuildNewsFrame.activeButton = self;
 	GuildNewsBossModel:Hide();
 	GameTooltip:Hide();
-	local newsType = self.newsType;	
+	local newsType = self.newsType;
+	self.UpdateTooltip = nil;
 	if ( newsType == NEWS_ITEM_LOOTED or newsType == NEWS_ITEM_CRAFTED or newsType == NEWS_ITEM_PURCHASED ) then
 		GuildNewsButton_AnchorTooltip(self);
 		local _, _, _, _, text2, _, _, _ = GetGuildNewsInfo(self.index);
 		GameTooltip:SetHyperlink(text2);
+		self.UpdateTooltip = GuildNewsButton_OnEnter;
 	elseif ( newsType == NEWS_PLAYER_ACHIEVEMENT or newsType == NEWS_GUILD_ACHIEVEMENT ) then
 		local achievementId = self.id;
 		local _, name, _, _, _, _, _, description = GetAchievementInfo(achievementId);
@@ -360,6 +362,7 @@ function GuildNewsDropDown_Initialize(self)
 		info.func = GuildFrame_LinkItem;
 		info.text = GUILD_NEWS_LINK_ITEM;
 		info.arg1 = id;
+		info.arg2 = text2;	-- text2 has the hyperlink text
 		UIDropDownMenu_AddButton(info, UIDROPDOWN_MENU_LEVEL);
 	end
 	if ( CanEditMOTD() ) then

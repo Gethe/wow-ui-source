@@ -68,6 +68,18 @@ function PetStable_OnEvent(self, event, ...)
 	end
 end
 
+function PetStable_OnMouseWheel(self, value)
+	if ( value > 0 ) then
+		if ( PetStablePrevPageButton:IsEnabled() ) then
+			PetStable_PrevPage(PetStablePrevPageButton);
+		end
+	else
+		if ( PetStableNextPageButton:IsEnabled() ) then
+			PetStable_NextPage(PetStableNextPageButton);
+		end	
+	end
+end
+
 function PetStable_UpdateSlot(button, petSlot)
 
 	local icon, name, level, family, talent = GetStablePetInfo(petSlot);
@@ -232,7 +244,8 @@ function PetStable_Update(updateModel)
 	PetStableCurrentPage:SetFormattedText(MERCHANT_PAGE_NUMBER, PetStableFrame.page, NUM_PET_STABLE_PAGES);
 end
 
-function PetStable_PrevPage()
+function PetStable_PrevPage(self)
+	self:SetButtonState("NORMAL");
 	local page = PetStableFrame.page-1;
 	if (page ~= PetStableFrame.page and page > 0 and page <= NUM_PET_STABLE_PAGES) then
 		PetStableFrame.page = page;
@@ -240,7 +253,8 @@ function PetStable_PrevPage()
 	end
 end
 
-function PetStable_NextPage()
+function PetStable_NextPage(self)
+	self:SetButtonState("NORMAL");
 	local page = PetStableFrame.page+1;
 	if (page ~= PetStableFrame.page and page > 0 and page <= NUM_PET_STABLE_PAGES) then
 		PetStableFrame.page = page;

@@ -100,7 +100,7 @@
 			</OnClick>
 			<OnEnter>
 				if (self.tooltip) then
-					GlueTooltip:SetOwner(self, "ANCHOR_TOP");
+					GlueTooltip:SetOwner(self, "ANCHOR_BOTTOMRIGHT", 48, -4);
 					GlueTooltip:AddLine(self.tooltip, NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b, 1, true);
 					GlueTooltip:Show();
 				end
@@ -197,7 +197,7 @@
 		</Layers>
 		<Scripts>
 			<OnEnter>
-				GlueTooltip:SetOwner(self, -260);
+				GlueTooltip:SetOwner(self, "ANCHOR_RIGHT", -260, 0);
 				GlueTooltip:AddLine(CHARACTER_UPGRADE_PROCESSING, 1.0, 1.0, 1.0);
 				GlueTooltip:AddLine(CHARACTER_SERVICES_PLEASE_WAIT, nil, nil, nil, 1, 1);
 				GlueTooltip:Show();
@@ -361,7 +361,7 @@
 				</Layers>
 				<Scripts>
 					<OnEnter>
-						GlueTooltip:SetOwner(self, -60);
+						GlueTooltip:SetOwner(self, "ANCHOR_RIGHT", -60);
 						GlueTooltip:AddLine(CHARACTER_UPGRADE_PROFESSION_BOOST, 1, 1, 1, 1, true);
 						GlueTooltip:Show();
 					</OnEnter>

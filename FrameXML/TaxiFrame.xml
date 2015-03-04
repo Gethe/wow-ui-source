@@ -13,7 +13,7 @@
 				TaxiNodeOnButtonEnter(self, motion);
 			</OnEnter>
             <OnLeave>
-				GameTooltip:Hide();
+				TaxiNodeOnButtonLeave(self, motion);
 			</OnLeave>
  			<OnClick>
 				TakeTaxiNode(self:GetID());

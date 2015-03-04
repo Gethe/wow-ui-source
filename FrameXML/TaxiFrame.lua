@@ -6,13 +6,22 @@ NUM_TAXI_ROUTES = 0;
 
 TaxiButtonTypes = { };
 TaxiButtonTypes["CURRENT"] = {
-	file = "Interface\\TaxiFrame\\UI-Taxi-Icon-Green"
+	file = "Interface\\TaxiFrame\\UI-Taxi-Icon-Green",
+	highlightBrightness = 0
+
 }
 TaxiButtonTypes["REACHABLE"] = {
-	file = "Interface\\TaxiFrame\\UI-Taxi-Icon-White"
+	file = "Interface\\TaxiFrame\\UI-Taxi-Icon-White",
+	highlightBrightness = 1
 }
 TaxiButtonTypes["DISTANT"] = {
-	file = "Interface\\TaxiFrame\\UI-Taxi-Icon-Yellow"
+	file = "Interface\\TaxiFrame\\UI-Taxi-Icon-Nub",
+	highlightBrightness = 0
+}
+TaxiButtonTypes["UNREACHABLE"] = {
+	file = "Interface\\TaxiFrame\\UI-Taxi-Icon-White",
+	hoverFile = "Interface\\TaxiFrame\\UI-Taxi-Icon-Red",
+	highlightBrightness = 0
 }
 
 local taxiNodePositions = {};
@@ -60,16 +69,22 @@ function TaxiFrame_OnEvent(self, event, ...)
 				-- check if we are obscuring a previous placement (eg: Ebon Hold and Light's Hope Chapel)
 				if ( numValidFlightNodes > 1 ) then
 					for checkNode = 1, index - 1 do
-						local checkX = taxiNodePositions[checkNode].x;
-						local checkY = taxiNodePositions[checkNode].y;
-						if ( taxiNodePositions[checkNode].x ) then
-							local distX = taxiNodePositions[index].x - checkX;
-							local distY = taxiNodePositions[index].y - checkY;
-							local distSq = distX*distX + distY*distY;
-							if ( distSq < TAXI_BUTTON_MIN_DIST * TAXI_BUTTON_MIN_DIST ) then
-								local scale = TAXI_BUTTON_MIN_DIST / sqrt(distSq);
-								taxiNodePositions[index].x = checkX + distX*scale;
-								taxiNodePositions[index].y = checkY + distY*scale;
+						-- Don't let distant nodes push around non-distant nodes
+						if ( type == "DISTANT" or TaxiNodeGetType(checkNode) ~= "DISTANT" ) then
+							local checkX = taxiNodePositions[checkNode].x;
+							local checkY = taxiNodePositions[checkNode].y;
+							if ( checkX ) then
+								local distX = currX - checkX;
+								local distY = currY - checkY;
+								local distSq = distX*distX + distY*distY;
+								if ( distSq < TAXI_BUTTON_MIN_DIST * TAXI_BUTTON_MIN_DIST ) then
+									local scale = TAXI_BUTTON_MIN_DIST;
+									if ( distSq > 0 ) then
+										scale = TAXI_BUTTON_MIN_DIST / sqrt(distSq);
+									end
+									taxiNodePositions[index].x = checkX + distX*scale;
+									taxiNodePositions[index].y = checkY + distY*scale;
+								end
 							end
 						end
 					end
@@ -78,13 +93,19 @@ function TaxiFrame_OnEvent(self, event, ...)
 				button:ClearAllPoints();
 				button:SetPoint("CENTER", self.InsetBg, "BOTTOMLEFT", floor(taxiNodePositions[index].x+.5), floor(taxiNodePositions[index].y+.5));
 				button:SetNormalTexture(TaxiButtonTypes[type].file);
-				button:Show();
+				local texture = button:GetHighlightTexture();
+				texture:SetAlpha(TaxiButtonTypes[type].highlightBrightness);
+				if ( type == "DISTANT" ) then
+					button:Hide(); -- We'll only show them when a path is going through them (or directly connected to current location)
+				else
+					button:Show();
+				end
 			else
 				button:Hide();
 			end
 		end
 	
-		-- Hide remaining nodes
+		-- Hide any remaining nodes
 		for index = num_nodes+1, NUM_TAXI_BUTTONS, 1 do
 			local button = _G["TaxiButton"..index];
 			button:Hide();
@@ -111,19 +132,32 @@ function TaxiNodeOnButtonEnter(button)
 	local index = button:GetID();
 	GameTooltip:SetOwner(button, "ANCHOR_RIGHT");
 	GameTooltip:AddLine(TaxiNodeName(index), nil, nil, nil, true);
-	
+
 	-- Setup variables
+	local numNodes = NumTaxiNodes();
 	local numRoutes = GetNumRoutes(index);
 	local line;
 	local sX, sY, dX, dY;
 	local w = TAXI_MAP_WIDTH;
 	local h = TAXI_MAP_HEIGHT;
-	
 	local type = TaxiNodeGetType(index);
+
+	-- if not on a distant node...
+	if ( type ~= "DISTANT" ) then
+		-- ...start off with all distant nodes hidden
+		for i=1, numNodes  do
+			local currType = TaxiNodeGetType(i);
+			if ( currType == "DISTANT" ) then
+				local button = _G["TaxiButton"..i];
+				button:Hide();
+			end
+		end
+	end
+	
 	if ( type == "REACHABLE" ) then
 		SetTooltipMoney(GameTooltip, TaxiNodeCost(button:GetID()));
-		TaxiNodeSetCurrent(index);
 
+		-- Show the path to this node
 		if ( numRoutes > NUM_TAXI_ROUTES ) then
 			for i = NUM_TAXI_ROUTES+1, numRoutes do
 				line = TaxiRouteMap:CreateTexture("TaxiRoute"..i, "BACKGROUND");
@@ -135,28 +169,52 @@ function TaxiNodeOnButtonEnter(button)
 		for i=1, NUM_TAXI_ROUTES do
 			line = _G["TaxiRoute"..i];
 			if ( i <= numRoutes ) then
-				local slot = TaxiGetNodeSlot(index, i, true);
-				sX = taxiNodePositions[slot].x;
-				sY = taxiNodePositions[slot].y;
-				slot = TaxiGetNodeSlot(index, i, false);
-				dX = taxiNodePositions[slot].x;
-				dY = taxiNodePositions[slot].y;
+				local srcSlot = TaxiGetNodeSlot(index, i, true);
+				sX = taxiNodePositions[srcSlot].x;
+				sY = taxiNodePositions[srcSlot].y;
+				local dstSlot = TaxiGetNodeSlot(index, i, false);
+				dX = taxiNodePositions[dstSlot].x;
+				dY = taxiNodePositions[dstSlot].y;
 				DrawRouteLine(line, "TaxiRouteMap", sX, sY, dX, dY, 32);
 				line:Show();
+
+				local type = TaxiNodeGetType(dstSlot);
+				if ( type == "DISTANT" ) then
+					local button = _G["TaxiButton"..dstSlot];
+					button:Show();
+				end
 			else
 				line:Hide();
 			end
 		end
+	elseif ( type == "UNREACHABLE" ) then
+		-- Show error state when unreachable node is hovered over
+		button:SetNormalTexture(TaxiButtonTypes[type].hoverFile);
+		local texture = button:GetHighlightTexture();
+		texture:SetAlpha(TaxiButtonTypes[type].highlightBrightness);
+		for i=1, NUM_TAXI_ROUTES do
+			line = _G["TaxiRoute"..i];
+			line:Hide();
+		end
 	elseif ( type == "CURRENT" ) then
 		GameTooltip:AddLine(TAXINODEYOUAREHERE, 1.0, 1.0, 1.0, true);
-		DrawOneHopLines();
+		DrawOneHopLines(button.parent);
 	end
 
 	GameTooltip:Show();
 end
 
+function TaxiNodeOnButtonLeave(button) 
+	GameTooltip:Hide();
+
+	local index = button:GetID();
+	local type = TaxiNodeGetType(index);
+	-- Don't leave it with the hover icon (if it had one)
+	button:SetNormalTexture(TaxiButtonTypes[type].file);
+end
+
 -- Draw all flightpaths within one hop of current location
-function DrawOneHopLines()
+function DrawOneHopLines(self)
 	local line;
 	local sX, sY, dX, dY;
 	local w = TAXI_MAP_WIDTH;
@@ -165,7 +223,8 @@ function DrawOneHopLines()
 	local numLines = 0;
 	local numSingleHops = 0;
 	for i=1, numNodes  do
-		if ( GetNumRoutes(i) == 1 and TaxiNodeGetType(i) ~= "NONE" ) then
+		local type = TaxiNodeGetType(i);
+		if ( (type == "REACHABLE") and TaxiIsDirectFlight(i) ) then
 			numSingleHops = numSingleHops + 1;
 			numLines = numLines + 1;
 			if ( numLines > NUM_TAXI_ROUTES ) then
@@ -176,15 +235,19 @@ function DrawOneHopLines()
 				line = _G["TaxiRoute"..numLines];
 			end
 			if ( line ) then
-				local slot = TaxiGetNodeSlot(i, 1, true);
-				sX = taxiNodePositions[slot].x;
-				sY = taxiNodePositions[slot].y;
-				slot = TaxiGetNodeSlot(i, 1, false);
-				dX = taxiNodePositions[slot].x;
-				dY = taxiNodePositions[slot].y;
+				local srcSlot = TaxiGetNodeSlot(i, 1, true);
+				sX = taxiNodePositions[srcSlot].x;
+				sY = taxiNodePositions[srcSlot].y;
+				local dstSlot = TaxiGetNodeSlot(i, 1, false);
+				dX = taxiNodePositions[dstSlot].x;
+				dY = taxiNodePositions[dstSlot].y;
 				DrawRouteLine(line, "TaxiRouteMap", sX, sY, dX, dY, 32);
 				line:Show();
 			end
+		elseif ( type == "DISTANT" ) then
+			numSingleHops = numSingleHops + 1;
+			local button = _G["TaxiButton"..i];
+			button:Hide();
 		end
 	end
 	for i=numLines+1, NUM_TAXI_ROUTES do

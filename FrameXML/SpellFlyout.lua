@@ -68,12 +68,7 @@ function SpellFlyoutButton_SetTooltip(self)
 end
 
 function SpellFlyoutButton_UpdateCooldown(self)
-	local cooldown = _G[self:GetName().."Cooldown"];
-	local start, duration, enable = GetSpellCooldown(self.spellID);
-	CooldownFrame_SetTimer(cooldown, start, duration, enable);
-	-- loss of control cooldown
-	start, duration = GetSpellLossOfControlCooldown(self.spellID);
-	self.cooldown:SetCooldown(start, duration);
+	ActionButton_UpdateCooldown(self);
 end
 
 function SpellFlyoutButton_UpdateState(self)

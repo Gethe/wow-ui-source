@@ -199,6 +199,13 @@ function GuildPointFrame_OnLeave(self)
 	GameTooltip:Hide();
 end
 
+function GuildPointFrame_OnMouseUp(self)
+	if ( IsInGuild() and CanShowAchievementUI() ) then
+		AchievementFrame_LoadUI();
+		AchievementFrame_ToggleAchievementFrame(false, true);
+	end
+end
+
 --****** Common Functions *******************************************************
 
 function GuildFrame_OpenAchievement(button, achievementID)
@@ -330,6 +337,8 @@ function GuildFrame_TabClicked(self)
 	elseif ( tabIndex == 3 ) then -- Perks
 		ButtonFrameTemplate_HideButtonBar(GuildFrame);
 		GuildFrame_ShowPanel("GuildPerksFrame");
+		GuildFrameInset:SetPoint("TOPLEFT", 4, -65);
+		GuildFrameInset:SetPoint("BOTTOMRIGHT", -7, 26);
 		GuildPointFrame:Show();
 		GuildFactionFrame:Hide();
 		updateRosterCount = true;
@@ -415,11 +424,6 @@ function GuildPerksFrame_OnLoad(self)
 end
 
 function GuildPerksFrame_OnShow(self)
-	-- inset stuff
-	GuildFrameInset:SetPoint("TOPLEFT", 4, -65);
-	
-	GuildFrameInset:SetPoint("BOTTOMRIGHT", -7, 170);
-	
 	GuildPerks_Update();
 end
 

@@ -1015,16 +1015,19 @@
 	</Binding>
 	
 	<Binding name="TOGGLECOLLECTIONS" header="BLANK14" category="BINDING_HEADER_INTERFACE">
-		TogglePetJournal();
+		ToggleCollectionsJournal();
 	</Binding>
 	<Binding name="TOGGLECOLLECTIONSMOUNTJOURNAL" category="BINDING_HEADER_INTERFACE">
-		TogglePetJournal(1);
+		ToggleCollectionsJournal(1);
 	</Binding>
 	<Binding name="TOGGLECOLLECTIONSPETJOURNAL" category="BINDING_HEADER_INTERFACE">
-		TogglePetJournal(2);
+		ToggleCollectionsJournal(2);
 	</Binding>
 	<Binding name="TOGGLECOLLECTIONSTOYBOX" category="BINDING_HEADER_INTERFACE">
-		TogglePetJournal(3);
+		ToggleCollectionsJournal(3);
+	</Binding>
+	<Binding name="TOGGLECOLLECTIONSHEIRLOOM" category="BINDING_HEADER_INTERFACE">
+		ToggleCollectionsJournal(4);
 	</Binding>
 	
 	<Binding name="TOGGLEENCOUNTERJOURNAL" header="BLANK15" category="BINDING_HEADER_INTERFACE">
@@ -1077,11 +1080,9 @@
 		if ( UIParent:IsShown() ) then
 			securecall("CloseMenus");
 			securecall("CloseAllWindows");
-			UIParent:Hide();
 			SetUIVisibility(false);
 			ActionStatus_DisplayMessage(format(UI_HIDDEN, GetBindingText(GetBindingKey("TOGGLEUI"))))
 		else
-			UIParent:Show();
 			SetUIVisibility(true);
 		end
 	</Binding>
@@ -1140,7 +1141,7 @@
 	</Binding>
 	<!-- Commentator Mode Bindings -->
 	<Binding name="TOGGLECOMMENTATOR" hidden="true" debug="true" category="BINDING_HEADER_DEBUG">
-		ToggleCommentatorMode();
+		C_Commentator.ToggleMode();
 	</Binding>
 
 	<!-- Camera key bindings header="CAMERA" -->

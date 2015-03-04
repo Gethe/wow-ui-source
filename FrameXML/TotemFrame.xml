@@ -39,7 +39,7 @@
 					</Layer>
 				</Layers>
 				<Frames>
-					<Cooldown name="$parentCooldown" inherits="CooldownFrameTemplate" reverse="true"/>
+					<Cooldown name="$parentCooldown" inherits="CooldownFrameTemplate" hideCountdownNumbers="true" reverse="true"/>
 				</Frames>
 			</Frame>
 			<Frame>

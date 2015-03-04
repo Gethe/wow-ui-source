@@ -499,7 +499,7 @@
 		<Scripts>
 			<OnEnter>
 				GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
-				GameTooltip:SetText(TRIAL_CAPPED, RED_FONT_COLOR.r, RED_FONT_COLOR.b, RED_FONT_COLOR.b);
+				GameTooltip:SetText(GameLimitedMode_GetString("CAP_REACHED"), RED_FONT_COLOR.r, RED_FONT_COLOR.b, RED_FONT_COLOR.b);
 			</OnEnter>
 			<OnLeave>
 				GameTooltip:Hide();

@@ -32,7 +32,7 @@
 		<HighlightTexture file="Interface\PaperDollInfoFrame\UI-Character-Tab-Highlight" alphaMode="ADD"/>
 		<ButtonText name="$parentNormalText">
 			<Size>
-				<AbsDimension x="115" y="8"/>
+				<AbsDimension x="125" y="8"/>
 			</Size>
 			<Anchors>
 				<Anchor point="LEFT">

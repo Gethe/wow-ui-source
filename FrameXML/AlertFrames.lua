@@ -22,6 +22,7 @@ function AlertFrame_OnLoad (self)
 	self:RegisterEvent("GARRISON_BUILDING_ACTIVATABLE");
 	self:RegisterEvent("GARRISON_MISSION_FINISHED");
 	self:RegisterEvent("GARRISON_FOLLOWER_ADDED");
+	self:RegisterEvent("GARRISON_RANDOM_MISSION_ADDED");
 end
 
 function AlertFrame_OnEvent (self, event, ...)
@@ -70,9 +71,8 @@ function AlertFrame_OnEvent (self, event, ...)
 			LootWonAlertFrame_ShowAlert(itemLink, quantity, nil, nil, specID, false, true);
 		elseif ( typeIdentifier == "money" ) then
 			MoneyWonAlertFrame_ShowAlert(quantity);
-		elseif ( (isPersonal == true) and (typeIdentifier == "currency") ) then
-			-- only toast currency for personal loot
-			LootWonAlertFrame_ShowAlert(itemLink, quantity, nil, nil, specID, false, true);
+		elseif ( typeIdentifier == "currency" ) then
+			LootWonAlertFrame_ShowAlert(itemLink, quantity, nil, nil, specID, true, true);
 		end
 	elseif ( event == "SHOW_LOOT_TOAST_UPGRADE") then
 		local itemLink, quantity, specID, sex, baseQuality, isPersonal = ...;
@@ -86,10 +86,14 @@ function AlertFrame_OnEvent (self, event, ...)
 		local name = ...;
 		GarrisonBuildingAlertFrame_ShowAlert(name);
 	elseif ( event == "GARRISON_MISSION_FINISHED" ) then
-		GarrisonMissionAlertFrame_ShowAlert(...);
+		if ( not GarrisonMissionFrame or not GarrisonMissionFrame:IsShown() ) then
+			GarrisonMissionAlertFrame_ShowAlert(...);
+		end
 	elseif ( event == "GARRISON_FOLLOWER_ADDED" ) then
 		local followerID, name, displayID, level, quality, isUpgraded = ...;
 		GarrisonFollowerAlertFrame_ShowAlert(followerID, name, displayID, level, quality, isUpgraded);
+	elseif ( event == "GARRISON_RANDOM_MISSION_ADDED" ) then
+		GarrisonRandomMissionAlertFrame_ShowAlert(...);
 	end
 end
 
@@ -113,6 +117,11 @@ function AlertFrame_AnimateIn(frame)
 	end
 end
 
+-- [[ AlertFrameTemplate functions ]] --
+function AlertFrameTemplate_OnLoad(self)
+	self:RegisterForClicks("LeftButtonUp", "RightButtonUp");
+end
+
 function AlertFrame_StopOutAnimation(frame)
 	frame.waitAndAnimOut:Stop();
 	frame.waitAndAnimOut.animOut:SetStartDelay(1);
@@ -120,6 +129,23 @@ end
 
 function AlertFrame_ResumeOutAnimation(frame)
 	frame.waitAndAnimOut:Play();
+end
+
+function AlertFrame_OnClick(self, button, down)
+	if ( button == "RightButton" ) then
+		self.animIn:Stop();
+		if ( self.glow ) then
+			self.glow.animIn:Stop();
+		end
+		if ( self.shine ) then
+			self.shine.animIn:Stop();
+		end
+		self.waitAndAnimOut:Stop();
+		self:Hide();
+		return true;
+	end
+	
+	return false;
 end
 
 -- [[ Anchoring ]] --
@@ -306,7 +332,10 @@ function GuildChallengeAlertFrame_ShowAlert(...)
 	AlertFrame_FixAnchors();
 end
 
-function GuildChallengeAlertFrame_OnClick(self)
+function GuildChallengeAlertFrame_OnClick(self, button, down)
+	if( AlertFrame_OnClick(self, button, down) ) then
+		return;
+	end
 	if ( not GuildFrame or not GuildFrame:IsShown() ) then
 		ToggleGuildFrame();
 	end
@@ -594,10 +623,6 @@ function ChallengeModeAlertFrameReward_OnLeave(frame)
 end
 
 -- [[ AchievementAlertFrame ]] --
-function AchievementAlertFrame_OnLoad (self)
-	self:RegisterForClicks("LeftButtonUp");
-end
-
 function AchievementAlertFrame_IsPaused()
 	return C_PetBattles.IsInBattle();
 end
@@ -633,7 +658,17 @@ function AchievementAlertFrame_ShowAlert (achievementID, alreadyEarned)
 		DELAYED_ACHIEVEMENT_ALERTS[#DELAYED_ACHIEVEMENT_ALERTS + 1] = {achievementID, alreadyEarned};
 		return false;
 	end
+
+	AchievementAlertFrame_SetUp(frame, achievementID, alreadyEarned);
+
+	AlertFrame_AnimateIn(frame);
 	
+	AlertFrame_FixAnchors();
+
+	return true;
+end
+	
+function AchievementAlertFrame_SetUp(frame, achievementID, alreadyEarned)
 	local _, name, points, completed, month, day, year, description, flags, icon, rewardText, isGuildAch, wasEarnedByMe, earnedBy = GetAchievementInfo(achievementID);
 	
 	
@@ -744,11 +779,6 @@ function AchievementAlertFrame_ShowAlert (achievementID, alreadyEarned)
 	_G[frameName.."IconTexture"]:SetTexture(icon);
 	
 	frame.id = achievementID;
-	
-	AlertFrame_AnimateIn(frame);
-	
-	AlertFrame_FixAnchors();
-
 	return true;
 end
 
@@ -822,7 +852,11 @@ function CriteriaAlertFrame_GetAlertFrame()
 	return nil;
 end
 
-function AchievementAlertFrame_OnClick (self)
+function AchievementAlertFrame_OnClick (self, button, down)
+	if( AlertFrame_OnClick(self, button, down) ) then
+		return;
+	end
+	
 	local id = self.id;
 	if ( not id ) then
 		return;
@@ -839,6 +873,13 @@ function AchievementAlertFrame_OnClick (self)
 	end
 	
 	AchievementFrame_SelectAchievement(id)
+end
+
+-- [[ LootAlertFrame shared ]] --
+function LootAlertFrame_OnEnter(self)
+	GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+	GameTooltip:SetHyperlink(self.hyperlink);
+	GameTooltip:Show();
 end
 
 -- [[ LootWonAlertFrameTemplate ]] --
@@ -928,8 +969,7 @@ function LootWonAlertFrame_SetUp(self, itemLink, quantity, rollType, roll, specI
 	local color = ITEM_QUALITY_COLORS[itemRarity];
 	self.ItemName:SetVertexColor(color.r, color.g, color.b);
 	self.IconBorder:SetTexCoord(unpack(LOOT_BORDER_QUALITY_COORDS[itemRarity] or LOOT_BORDER_QUALITY_COORDS[LE_ITEM_QUALITY_UNCOMMON]));
-	
-	if ( specID and specID > 0 and lootSource ~= LOOT_SOURCE_GARRISON_CACHE ) then
+	if ( specID and specID > 0 and not isCurrency ) then
 		local id, name, description, texture, background, role, class = GetSpecializationInfoByID(specID);
 		self.SpecIcon:SetTexture(texture);
 		self.SpecIcon:Show();
@@ -958,11 +998,14 @@ function LootWonAlertFrame_SetUp(self, itemLink, quantity, rollType, roll, specI
 	PlaySoundKitID(31578);	--UI_EpicLoot_Toast
 end
 
-function LootWonAlertFrame_OnClick(self)
+function LootWonAlertFrame_OnClick(self, button, down)
+	if( AlertFrame_OnClick(self, button, down) ) then
+		return;
+	end
 	if (self.isCurrency) then 
 		return;
 	end
-	local itemID = GetItemIDFromHyperlink(self.hyperlink);
+	local itemID = GetItemInfoFromHyperlink(self.hyperlink);
 	local slot = SearchBagsForItem(itemID);
 	if (slot >= 0) then
 		OpenBag(slot);
@@ -1024,7 +1067,10 @@ function LootUpgradeFrame_SetUp(self, itemLink, quantity, specID, baseQuality)
 	PlaySoundKitID(31578);	--UI_EpicLoot_Toast
 end
 
-function LootUpgradeFrame_OnClick(self)
+function LootUpgradeFrame_OnClick(self, button, down)
+	if( AlertFrame_OnClick(self, button, down) ) then
+		return;
+	end
 	local bag = SearchBagsForItemLink(self.hyperlink);
 	if (bag >= 0) then
 		OpenBag(bag);
@@ -1087,7 +1133,10 @@ function StorePurchaseAlertFrame_ShowAlert(icon, name, itemID)
 	PlaySound("UI_igStore_PurchaseDelivered_Toast_01");
 end
 
-function StorePurchaseAlertFrame_OnClick(self)
+function StorePurchaseAlertFrame_OnClick(self, button, down)
+	if( AlertFrame_OnClick(self, button, down) ) then
+		return;
+	end
 	local slot = SearchBagsForItem(self.itemID);
 	if (slot >= 0) then
 		OpenBag(slot);
@@ -1110,6 +1159,33 @@ function GarrisonMissionAlertFrame_ShowAlert(missionID)
 	GarrisonMissionAlertFrame.Name:SetText(missionInfo.name);
 	GarrisonMissionAlertFrame.MissionType:SetAtlas(missionInfo.typeAtlas);
 	AlertFrame_AnimateIn(GarrisonMissionAlertFrame);
+	AlertFrame_FixAnchors();
+	PlaySound("UI_Garrison_Toast_MissionComplete");
+end
+
+-- [[ GarrisonRandomMissionAlertFrame ]] --
+function GarrisonRandomMissionAlertFrame_ShowAlert(missionID)
+	local missionInfo = C_Garrison.GetBasicMissionInfo(missionID);
+	GarrisonRandomMissionAlertFrame.Level:SetText(missionInfo.level);
+	GarrisonRandomMissionAlertFrame.ItemLevel:SetText("(" .. missionInfo.iLevel .. ")");
+	if (missionInfo.iLevel ~= 0 and missionInfo.isRare) then
+		GarrisonRandomMissionAlertFrame.Level:SetPoint("TOP", "$parent", "TOP", -115, -14);
+		GarrisonRandomMissionAlertFrame.ItemLevel:SetPoint("TOP", "$parent", "TOP", -115, -37);
+		GarrisonRandomMissionAlertFrame.Rare:SetPoint("TOP", "$parent", "TOP", -115, -48);
+	elseif (missionInfo.isRare) then
+		GarrisonRandomMissionAlertFrame.Level:SetPoint("TOP", "$parent", "TOP", -115, -19);
+		GarrisonRandomMissionAlertFrame.Rare:SetPoint("TOP", "$parent", "TOP", -115, -45);
+	elseif (missionInfo.iLevel ~= 0) then
+		GarrisonRandomMissionAlertFrame.Level:SetPoint("TOP", "$parent", "TOP", -115, -19);
+		GarrisonRandomMissionAlertFrame.ItemLevel:SetPoint("TOP", "$parent", "TOP", -115, -45);
+	else
+		GarrisonRandomMissionAlertFrame.Level:SetPoint("TOP", "$parent", "TOP", -115, -28);
+	end
+
+	GarrisonRandomMissionAlertFrame.ItemLevel:SetShown(missionInfo.iLevel ~= 0);
+	GarrisonRandomMissionAlertFrame.Rare:SetShown(missionInfo.isRare);
+
+	AlertFrame_AnimateIn(GarrisonRandomMissionAlertFrame);
 	AlertFrame_FixAnchors();
 	PlaySound("UI_Garrison_Toast_MissionComplete");
 end
@@ -1161,7 +1237,10 @@ function GarrisonFollowerAlertFrame_ShowAlert(followerID, name, displayID, level
 	PlaySound("UI_Garrison_Toast_FollowerGained");
 end
 
-function GarrisonFollowerAlertFrame_OnEnter(self)
+function GarrisonFollowerAlertFrame_OnEnter(self, button, down)
+	if( AlertFrame_OnClick(self, button, down) ) then
+		return;
+	end
 	AlertFrame_StopOutAnimation(self);
 	
 	local link = C_Garrison.GetFollowerLink(self.followerID);
@@ -1178,7 +1257,10 @@ function GarrisonFollowerAlertFrame_OnLeave(self)
 	AlertFrame_ResumeOutAnimation(self);
 end
 
-function GarrisonAlertFrame_OnClick(self)
+function GarrisonAlertFrame_OnClick(self, button, down)
+	if( AlertFrame_OnClick(self, button, down) ) then
+		return;
+	end
 	self:Hide();
 	if (not GarrisonLandingPage) then
 		Garrison_LoadUI();

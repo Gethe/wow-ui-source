@@ -6,6 +6,7 @@ function RealmList_OnLoad(self)
 	self:RegisterEvent("OPEN_REALM_LIST");
 	self.currentRealm = nil;
 	self.offset = 0;
+	self.selectedCategory = 1;
 end
 
 function RealmList_OnEvent(self, event)
@@ -19,11 +20,6 @@ function RealmList_OnEvent(self, event)
 end
 
 function RealmListUpdate()
-	-- Just for the first time the frame is loaded
-	if ( not RealmList.selectedCategory ) then
-		RealmList.selectedCategory = 1;
-	end
-	
 	-- Set the refresh timer
 	RealmList.refreshTime = RealmListUpdateRate();
 
@@ -362,15 +358,14 @@ function RealmList_OnShow(self)
 
 	RequestRealmList();
 	
+	-- create tabs if they have not been created yet
+	RealmList_UpdateTabs(GetRealmCategories());
+	
 	self.refreshTime = RealmListUpdateRate();
-	local selectedCategory = GetSelectedCategory();
-	if ( selectedCategory == 0 ) then
-		selectedCategory = 1;
-	end
-	local button = _G["RealmListTab"..selectedCategory];
+	local button = _G["RealmListTab"..GetSelectedCategory()];
 	if ( button ) then
 		RealmListTab_OnClick(button);
-		GlueTemplates_SetTab(RealmList, selectedCategory);
+		GlueTemplates_SetTab(RealmList, RealmList.selectedCategory);
 	end
 end
 

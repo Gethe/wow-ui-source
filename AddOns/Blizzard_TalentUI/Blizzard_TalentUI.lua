@@ -456,21 +456,15 @@ function PlayerTalentFrame_OnHide()
 	
 	local selection = PlayerTalentFrame_GetTalentSelections();
 	if ( not GetSpecialization() ) then
-		TalentMicroButtonAlert.Text:SetText(TALENT_MICRO_BUTTON_NO_SPEC);
-		TalentMicroButtonAlert:SetHeight(TalentMicroButtonAlert.Text:GetHeight()+42);
-		TalentMicroButtonAlert:Show();
+		MainMenuMicroButton_ShowAlert(TalentMicroButtonAlert, TALENT_MICRO_BUTTON_NO_SPEC);
 		StaticPopup_Hide("CONFIRM_LEARN_SPEC");
 	elseif ( selection ) then
 		local id, name, iconTexture, selected, available = GetTalentInfoByID(selection, activeSpec);
 		if (available) then
-			TalentMicroButtonAlert.Text:SetText(TALENT_MICRO_BUTTON_UNSAVED_CHANGES);
-			TalentMicroButtonAlert:SetHeight(TalentMicroButtonAlert.Text:GetHeight()+42);
-			TalentMicroButtonAlert:Show();
+			MainMenuMicroButton_ShowAlert(TalentMicroButtonAlert, TALENT_MICRO_BUTTON_UNSAVED_CHANGES);
 		end
 	elseif ( GetNumUnspentTalents() > 0 and not ShouldHideTalentsTab() ) then
-		TalentMicroButtonAlert.Text:SetText(TALENT_MICRO_BUTTON_UNSPENT_TALENTS);
-		TalentMicroButtonAlert:SetHeight(TalentMicroButtonAlert.Text:GetHeight()+42);
-		TalentMicroButtonAlert:Show();
+		MainMenuMicroButton_ShowAlert(TalentMicroButtonAlert, TALENT_MICRO_BUTTON_UNSPENT_TALENTS);
 	end
 end
 
@@ -500,10 +494,6 @@ function PlayerTalentFrame_OnEvent(self, event, ...)
 		elseif (event == "BAG_UPDATE_DELAYED") then
 			PlayerTalentFrame_RefreshClearInfo();
 		end
-	end
-	
-	if ( event == "ACTIVE_TALENT_GROUP_CHANGED" ) then
-		ActionBarController_ResetToDefault();
 	end
 end
 

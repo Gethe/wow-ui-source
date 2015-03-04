@@ -898,7 +898,7 @@ function QuestMapLogTitleButton_OnEnter(self)
 			--Add the header line if this the first party member found that is on the quest.
 			if ( partyMembersOnQuest == 0 ) then
 				GameTooltip:AddLine(" ");
-				GameTooltip:AddLine("Nearby party members that are on this quest: ");
+				GameTooltip:AddLine(PARTY_QUEST_STATUS_ON);
 			end
 			partyMembersOnQuest = partyMembersOnQuest + 1;
 			GameTooltip:AddLine(LIGHTYELLOW_FONT_COLOR_CODE..GetUnitName("party"..i, true)..FONT_COLOR_CODE_CLOSE);
@@ -979,6 +979,9 @@ function QuestMapLog_ShowStoryTooltip(self)
 	-- Clear out old quest criteria
 	for i = 1, #tooltip.Lines do
 		tooltip.Lines[i]:Hide();
+	end
+	for _, checkMark in pairs(tooltip.CheckMarks) do
+		checkMark:Hide();
 	end
 	
 	local numCriteria = GetAchievementNumCriteria(storyID);

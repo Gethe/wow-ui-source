@@ -980,7 +980,7 @@
 									<OnEnter>
 										self.texture:SetAlpha(1.0);
 										GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
-										GameTooltip:SetText(REMOVE);
+										GameTooltip:SetText(REMOVE_FOLLOWER);
 									</OnEnter>
 									<OnLeave>
 										self.texture:SetAlpha(0.75);
@@ -1116,7 +1116,7 @@
 								<Anchor point="TOPRIGHT" x="-35" y="-20" />
 							</Anchors>
 						</Texture>
-						<FontString parentKey="RankLabel" inherits="GameFontHighlight" justifyH="CENTER" text="LEVEL">
+						<FontString parentKey="RankLabel" inherits="GameFontHighlight" justifyH="CENTER" text="GARRISON_TIER">
 							<Size x="64" y="0"/>
 							<Anchors>
 								<Anchor point="TOP" relativeKey="$parent.RankBadge" relativePoint="BOTTOM" y="5"/>

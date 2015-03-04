@@ -30,6 +30,18 @@ function ProductChoiceFrame_OnShow(self)
 	end
 end
 
+function ProductChoiceFrame_OnMouseWheel(self, value)
+	if ( value > 0 ) then
+		if ( self.Inset.PrevPageButton:IsShown() and self.Inset.PrevPageButton:IsEnabled() ) then
+			ProductChoiceFrame_PageClick(self.Inset.PrevPageButton, false);
+		end
+	else
+		if ( self.Inset.NextPageButton:IsShown() and self.Inset.NextPageButton:IsEnabled() ) then
+			ProductChoiceFrame_PageClick(self.Inset.NextPageButton, true);
+		end	
+	end
+end
+
 function ProductChoiceFrame_OnFriendsListShown()
 	if ( ProductChoiceFrame.mainAlertFrame ) then
 		ProductChoiceFrame.mainAlertFrame:Hide();
@@ -210,6 +222,7 @@ function ProductChoiceFrame_ShowConfirmation(confirmationFrame, choiceID, data)
 end
 
 function ProductChoiceFrame_PageClick(self, advance)
+	PlaySound("igSpellBookOpen");
 	local frame = ProductChoiceFrame;
 	frame.selectedData = nil;
 	if (advance) then

@@ -117,7 +117,7 @@
 			<OnEnter>
 				if ( self:IsEnabled() ) then
 					if ( self.tooltipText ) then
-						GlueTooltip:SetOwner(self, 0, 0, self.tooltipPoint, self.tooltipOwnerPoint);
+						GlueTooltip:SetOwner(self, self.tooltipPoint, self.tooltipOwnerPoint);
 						GlueTooltip:SetText(self.tooltipText, nil, nil, nil, nil, true);
 					end
 					if ( self.tooltipRequirement ) then

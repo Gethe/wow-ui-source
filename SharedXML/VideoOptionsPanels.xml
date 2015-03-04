@@ -278,6 +278,12 @@
 								</FontString>
 							</Layer>
 						</Layers>
+						<Scripts>
+							<OnShow>
+								self.selectedID = nil;
+								Graphics_ControlRefreshValue(self);
+							</OnShow>
+						</Scripts>
 					</Frame>
 					
 					<Frame name="$parentVerticalSyncDropDown" inherits="VideoOptionsDropDownMenuTemplate" id="10">
@@ -338,7 +344,7 @@
 					<Layer level="ARTWORK">
 						<FontString name="$parentTexturesHeader" text="TEXTURES_SUBHEADER" inherits="OptionsFontHighlight" justifyH="LEFT" justifyV="TOP">
 							<Anchors>
-								<Anchor point="TOPLEFT" x="40" y="-74"/>
+								<Anchor point="TOPLEFT" x="40" y="-62"/>
 							</Anchors>
 						</FontString>
 						<Texture name="$parentTexturesHeaderUnderline" inherits="videoSubUnderline" hidden="false" >
@@ -400,54 +406,32 @@
 							<Layer level="ARTWORK">
 								<FontString name="$parentLow2" inherits="OptionsFontSmall" text="VIDEO_QUALITY_LABEL1">
 									<Anchors>
-										<Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT">
-											<Offset>
-												<AbsDimension x="1" y="3"/>
-											</Offset>
-										</Anchor>
+										<Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" x="5" y="3"/>
 									</Anchors>
 								</FontString>
-								<FontString name="$parentFair" inherits="OptionsFontSmall" text="VIDEO_QUALITY_LABEL2">
+								<FontString name="$parentFair" inherits="OptionsFontSmall" text="VIDEO_QUALITY_LABEL2" justifyH="CENTER">
 									<Anchors>
-										<Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT">
-											<Offset>
-												<AbsDimension x="140" y="3"/>
-											</Offset>
-										</Anchor>
+										<Anchor point="TOP" relativePoint="BOTTOMLEFT" x="147" y="3"/>
 									</Anchors>
 								</FontString>
 								<FontString name="Graphics_RightQualityLabel" inherits="OptionsFontHighlight" text="CUSTOM" >
 									<Anchors>
-										<Anchor point="BOTTOMLEFT" relativePoint="TOPLEFT">
-											<Offset x="256" y="0"/>
-										</Anchor>
+										<Anchor point="BOTTOMLEFT" relativePoint="TOPLEFT" x="256" y="0"/>
 									</Anchors>
 								</FontString>
-								<FontString name="$parentMed" inherits="OptionsFontSmall" text="VIDEO_QUALITY_LABEL3">
+								<FontString name="$parentMed" inherits="OptionsFontSmall" text="VIDEO_QUALITY_LABEL3" justifyH="CENTER">
 									<Anchors>
-										<Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT">
-											<Offset>
-												<AbsDimension x="265" y="3"/>
-											</Offset>
-										</Anchor>
+										<Anchor point="TOP" relativePoint="BOTTOMLEFT" x="276" y="3"/>
 									</Anchors>
 								</FontString>
-								<FontString name="$parentHigh2" inherits="OptionsFontSmall" text="VIDEO_QUALITY_LABEL4">
+								<FontString name="$parentHigh2" inherits="OptionsFontSmall" text="VIDEO_QUALITY_LABEL4" justifyH="CENTER">
 									<Anchors>
-										<Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT">
-											<Offset>
-												<AbsDimension x="400" y="3"/>
-											</Offset>
-										</Anchor>
+										<Anchor point="TOP" relativePoint="BOTTOMLEFT" x="406" y="3"/>
 									</Anchors>
 								</FontString>
-								<FontString name="$parentUltra" inherits="OptionsFontSmall" text="VIDEO_QUALITY_LABEL5">
+								<FontString name="$parentUltra" inherits="OptionsFontSmall" text="VIDEO_QUALITY_LABEL5" justifyH="RIGHT">
 									<Anchors>
-										<Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT">
-											<Offset>
-												<AbsDimension x="535" y="3"/>
-											</Offset>
-										</Anchor>
+										<Anchor point="TOPRIGHT" relativePoint="BOTTOMLEFT" x="555" y="3"/>
 									</Anchors>
 								</FontString>
 							</Layer>
@@ -658,13 +642,43 @@
 						</Layers>
 					</Frame>
 
-					<Frame name="$parentRefractionDropDown" inherits="VideoOptionsDropDownMenuTemplate" id="15">
+					<Frame name="$parentDepthEffectsDropDown" inherits="VideoOptionsDropDownMenuTemplate" id="15">
 						<Anchors>
 							<Anchor point="TOPLEFT" relativeTo="$parentSSAODropDown" relativePoint="BOTTOMLEFT"/>
 						</Anchors>
 						<Layers>
 							<Layer level="BACKGROUND">
-								<FontString name="$parentLabel" inherits="OptionsFontSmall" text="REFRACTION">
+								<FontString name="$parentLabel" inherits="OptionsFontSmall" text="DEPTH_EFFECTS">
+									<Anchors>
+										<Anchor point="RIGHT" relativePoint="LEFT"/>
+									</Anchors>
+								</FontString>
+							</Layer>
+						</Layers>
+					</Frame>
+
+					<Frame name="$parentLightingQualityDropDown" inherits="VideoOptionsDropDownMenuTemplate" id="15">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="$parentDepthEffectsDropDown" relativePoint="BOTTOMLEFT"/>
+						</Anchors>
+						<Layers>
+							<Layer level="BACKGROUND">
+								<FontString name="$parentLabel" inherits="OptionsFontSmall" text="LIGHTING_QUALITY">
+									<Anchors>
+										<Anchor point="RIGHT" relativePoint="LEFT"/>
+									</Anchors>
+								</FontString>
+							</Layer>
+						</Layers>
+					</Frame>
+
+					<Frame name="$parentOutlineModeDropDown" inherits="VideoOptionsDropDownMenuTemplate" id="15">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="$parentLightingQualityDropDown" relativePoint="BOTTOMLEFT"/>
+						</Anchors>
+						<Layers>
+							<Layer level="BACKGROUND">
+								<FontString name="$parentLabel" inherits="OptionsFontSmall" text="OUTLINE_MODE">
 									<Anchors>
 										<Anchor point="RIGHT" relativePoint="LEFT"/>
 									</Anchors>
@@ -703,7 +717,7 @@
 
 						<FontString name="$parentTexturesHeader" text="TEXTURES_SUBHEADER" inherits="OptionsFontHighlight" justifyH="LEFT" justifyV="TOP">
 							<Anchors>
-								<Anchor point="TOPLEFT" x="40" y="-74"/>
+								<Anchor point="TOPLEFT" x="40" y="-62"/>
 							</Anchors>
 						</FontString>
 						<Texture name="$parentTexturesHeaderUnderline" inherits="videoSubUnderline" hidden="false" >
@@ -766,54 +780,32 @@
 							<Layer level="ARTWORK">
 								<FontString name="$parentLow2" inherits="OptionsFontSmall" text="VIDEO_QUALITY_LABEL1">
 									<Anchors>
-										<Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT">
-											<Offset>
-												<AbsDimension x="1" y="3"/>
-											</Offset>
-										</Anchor>
+										<Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" x="5" y="3"/>
 									</Anchors>
 								</FontString>
-								<FontString name="$parentFair" inherits="OptionsFontSmall" text="VIDEO_QUALITY_LABEL2">
+								<FontString name="$parentFair" inherits="OptionsFontSmall" text="VIDEO_QUALITY_LABEL2" justifyH="CENTER">
 									<Anchors>
-										<Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT">
-											<Offset>
-												<AbsDimension x="140" y="3"/>
-											</Offset>
-										</Anchor>
+										<Anchor point="TOP" relativePoint="BOTTOMLEFT" x="147" y="3"/>
 									</Anchors>
 								</FontString>
 								<FontString name="RaidGraphics_RightQualityLabel" inherits="OptionsFontHighlight" text="CUSTOM" >
 									<Anchors>
-										<Anchor point="BOTTOMLEFT" relativePoint="TOPLEFT">
-											<Offset x="256" y="0"/>
-										</Anchor>
+										<Anchor point="BOTTOMLEFT" relativePoint="TOPLEFT" x="256" y="0"/>
 									</Anchors>
 								</FontString>
-								<FontString name="$parentMed" inherits="OptionsFontSmall" text="VIDEO_QUALITY_LABEL3">
+								<FontString name="$parentMed" inherits="OptionsFontSmall" text="VIDEO_QUALITY_LABEL3" justifyH="CENTER">
 									<Anchors>
-										<Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT">
-											<Offset>
-												<AbsDimension x="265" y="3"/>
-											</Offset>
-										</Anchor>
+										<Anchor point="TOP" relativePoint="BOTTOMLEFT" x="276" y="3"/>
 									</Anchors>
 								</FontString>
-								<FontString name="$parentHigh2" inherits="OptionsFontSmall" text="VIDEO_QUALITY_LABEL4">
+								<FontString name="$parentHigh2" inherits="OptionsFontSmall" text="VIDEO_QUALITY_LABEL4" justifyH="CENTER">
 									<Anchors>
-										<Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT">
-											<Offset>
-												<AbsDimension x="400" y="3"/>
-											</Offset>
-										</Anchor>
+										<Anchor point="TOP" relativePoint="BOTTOMLEFT" x="406" y="3"/>
 									</Anchors>
 								</FontString>
-								<FontString name="$parentUltra" inherits="OptionsFontSmall" text="VIDEO_QUALITY_LABEL5">
+								<FontString name="$parentUltra" inherits="OptionsFontSmall" text="VIDEO_QUALITY_LABEL5" justifyH="RIGHT">
 									<Anchors>
-										<Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT">
-											<Offset>
-												<AbsDimension x="535" y="3"/>
-											</Offset>
-										</Anchor>
+										<Anchor point="TOPRIGHT" relativePoint="BOTTOMLEFT" x="555" y="3"/>
 									</Anchors>
 								</FontString>
 							</Layer>
@@ -1026,13 +1018,43 @@
 						</Layers>
 					</Frame>
 
-					<Frame name="$parentRefractionDropDown" inherits="VideoOptionsDropDownMenuTemplate" id="15">
+					<Frame name="$parentDepthEffectsDropDown" inherits="VideoOptionsDropDownMenuTemplate" id="15">
 						<Anchors>
 							<Anchor point="TOPLEFT" relativeTo="$parentSSAODropDown" relativePoint="BOTTOMLEFT"/>
 						</Anchors>
 						<Layers>
 							<Layer level="BACKGROUND">
-								<FontString name="$parentLabel" inherits="OptionsFontSmall" text="REFRACTION">
+								<FontString name="$parentLabel" inherits="OptionsFontSmall" text="DEPTH_EFFECTS">
+									<Anchors>
+										<Anchor point="RIGHT" relativePoint="LEFT"/>
+									</Anchors>
+								</FontString>
+							</Layer>
+						</Layers>
+					</Frame>
+
+					<Frame name="$parentLightingQualityDropDown" inherits="VideoOptionsDropDownMenuTemplate" id="15">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="$parentDepthEffectsDropDown" relativePoint="BOTTOMLEFT"/>
+						</Anchors>
+						<Layers>
+							<Layer level="BACKGROUND">
+								<FontString name="$parentLabel" inherits="OptionsFontSmall" text="LIGHTING_QUALITY">
+									<Anchors>
+										<Anchor point="RIGHT" relativePoint="LEFT"/>
+									</Anchors>
+								</FontString>
+							</Layer>
+						</Layers>
+					</Frame>
+
+					<Frame name="$parentOutlineModeDropDown" inherits="VideoOptionsDropDownMenuTemplate" id="15">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="$parentLightingQualityDropDown" relativePoint="BOTTOMLEFT"/>
+						</Anchors>
+						<Layers>
+							<Layer level="BACKGROUND">
+								<FontString name="$parentLabel" inherits="OptionsFontSmall" text="OUTLINE_MODE">
 									<Anchors>
 										<Anchor point="RIGHT" relativePoint="LEFT"/>
 									</Anchors>
@@ -1059,7 +1081,10 @@
 						PanelTemplates_TabResize(self, 0);
 						_G[self:GetName().."HighlightTexture"]:SetWidth(self:GetTextWidth() + 31);
 					</OnLoad>
-					<OnClick function="GraphicsOptions_SelectBase"/>
+					<OnClick>
+						GraphicsOptions_SelectBase()
+						PlaySound("igMainMenuOptionCheckBoxOn");
+					</OnClick>
 				</Scripts>
 			</Button>
 
@@ -1073,7 +1098,10 @@
 						PanelTemplates_TabResize(self, 0);
 						_G[self:GetName().."HighlightTexture"]:SetWidth(self:GetTextWidth() + 31);
 					</OnLoad>
-					<OnClick function="GraphicsOptions_SelectRaid"/>
+					<OnClick>
+						GraphicsOptions_SelectRaid()
+						PlaySound("igMainMenuOptionCheckBoxOn");
+					</OnClick>
 				</Scripts>
 			</Button>
 
@@ -1171,9 +1199,89 @@
 					</Layer>
 				</Layers>
 			</Frame>
-			<Frame name="$parentGraphicsAPIDropDown" inherits="VideoOptionsDropDownMenuTemplate" id="16">
+			<Frame name="$parentMultisampleAntiAliasingDropDown" inherits="VideoOptionsDropDownMenuTemplate" id="15">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeTo="$parentHardwareCursorDropDown" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="0" y="-8"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<FontString name="$parentLabel" inherits="OptionsFontSmall" text="MULTISAMPLE_ANTI_ALIASING" >
+							<Anchors>
+								<Anchor point="RIGHT" relativePoint="LEFT"/>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnShow>
+						self.selectedID = nil;
+						Graphics_ControlRefreshValue(self);
+					</OnShow>
+				</Scripts>
+			</Frame>
+			<Frame name="$parentMultisampleAlphaTest" inherits="VideoOptionsDropDownMenuTemplate" id="16">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentMultisampleAntiAliasingDropDown" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="0" y="-8"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<FontString name="$parentLabel" inherits="OptionsFontSmall" text="MULTISAMPLE_ALPHA_TEST" >
+							<Anchors>
+								<Anchor point="RIGHT" relativePoint="LEFT"/>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+			</Frame>
+			<Frame name="$parentPostProcessAntiAliasingDropDown" inherits="VideoOptionsDropDownMenuTemplate" id="15">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentMultisampleAlphaTest" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="0" y="-8"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<FontString name="$parentLabel" inherits="OptionsFontSmall" text="POSTPROCESS_ANTI_ALIASING_ABREV" >
+							<Anchors>
+								<Anchor point="RIGHT" relativePoint="LEFT"/>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnShow>
+						self.selectedID = nil;
+						Graphics_ControlRefreshValue(self);
+					</OnShow>
+				</Scripts>
+			</Frame>
+			<Frame name="$parentResampleQualityDropDown" inherits="VideoOptionsDropDownMenuTemplate" id="16">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentPostProcessAntiAliasingDropDown" relativePoint="BOTTOMLEFT" x="0" y="-8" />
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<FontString name="$parentLabel" inherits="OptionsFontSmall" text="RESAMPLE_QUALITY" >
+							<Anchors>
+								<Anchor point="RIGHT" relativePoint="LEFT"/>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+			</Frame>
+			<Frame name="$parentGraphicsAPIDropDown" inherits="VideoOptionsDropDownMenuTemplate" id="16">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentResampleQualityDropDown" relativePoint="BOTTOMLEFT">
 						<Offset>
 							<AbsDimension x="0" y="-8"/>
 						</Offset>
@@ -1282,8 +1390,8 @@
 			</CheckButton>
 			<!-- column B -->
 
-			<Slider name="$parentMaxFPSSlider" inherits="VideoOptionsSliderTemplate" minValue="8" maxValue="200" valueStep="5" obeyStepOnDrag="true">
-				<Size x="10" y="17"/>
+			<Slider name="$parentMaxFPSSlider" inherits="VideoOptionsSliderTemplate" minValue="8" maxValue="200" valueStep="1" obeyStepOnDrag="true">
+				<Size x="180" y="17"/>
 				<Anchors>
 					<Anchor point="LEFT" relativeTo="$parentBufferingDropDown" relativePoint="RIGHT">
 						<Offset x="80" y="-5"/>
@@ -1291,8 +1399,6 @@
 				</Anchors>
 				<Scripts>		
 					<OnLoad>
-						local width = 2 * (Display_VerticalSyncDropDown:GetWidth() - 25 - 25)
-						self:SetWidth(width);
 						local name = self:GetName();
 						self.type = CONTROLTYPE_SLIDER;
 						self.cvar = "maxfps";
@@ -1311,11 +1417,13 @@
 						
 						_G[name.."Text"]:SetFontObject("OptionsFontSmall");
 						_G[name.."Text"]:SetText(MAXFPS);
+						
+						_G[name.."High"]:Hide();
 
-						local minValue = "8";
-						local maxValue = "200";
-						_G[name.."Low"]:SetText(minValue);
-						_G[name.."High"]:SetText(maxValue);
+						self.Label = _G[name.."Low"];
+						self.Label:ClearAllPoints();
+						self.Label:SetPoint("LEFT", self, "RIGHT", 3, 2);
+
 						VideoOptionsSlider_OnLoad(self);
 					</OnLoad>
 					<OnValueChanged>
@@ -1323,6 +1431,7 @@
 							Graphics_EnableApply(self);
 							self.newValue = value;
 						end
+						self.Label:SetFormattedText(FPS_FORMAT, value);
 					</OnValueChanged>
 				</Scripts>
 			</Slider>
@@ -1352,8 +1461,8 @@
 					</OnClick>
 				</Scripts>
 			</CheckButton>
-			<Slider name="$parentMaxFPSBKSlider" inherits="VideoOptionsSliderTemplate" minValue="8" maxValue="200" valueStep="5" obeyStepOnDrag="true">
-				<Size x="10" y="17"/>
+			<Slider name="$parentMaxFPSBKSlider" inherits="VideoOptionsSliderTemplate" minValue="8" maxValue="200" valueStep="1" obeyStepOnDrag="true">
+				<Size x="180" y="17"/>
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeTo="$parentMaxFPSSlider" relativePoint="BOTTOMLEFT">
 						<Offset x="0" y="-25"/>
@@ -1361,8 +1470,6 @@
 				</Anchors>
 				<Scripts>
 					<OnLoad>
-						local width = 2 * (Display_VerticalSyncDropDown:GetWidth() - 25 - 25)
-						self:SetWidth(width);
 						local name = self:GetName();
 						self.type = CONTROLTYPE_SLIDER;
 						self.cvar = "maxfpsbk";
@@ -1379,10 +1486,11 @@
 							end;
 						_G[name.."Text"]:SetFontObject("OptionsFontSmall");
 						_G[name.."Text"]:SetText(MAXFPSBK);
-						local minValue = "8";
-						local maxValue = "200";
-						_G[name.."Low"]:SetText(minValue);
-						_G[name.."High"]:SetText(maxValue);
+						_G[name.."High"]:Hide();
+
+						self.Label = _G[name.."Low"];
+						self.Label:ClearAllPoints();
+						self.Label:SetPoint("LEFT", self, "RIGHT", 3, 2);
 						VideoOptionsSlider_OnLoad(self);
 					</OnLoad>
 					<OnValueChanged>
@@ -1390,6 +1498,7 @@
 							Graphics_EnableApply(self);
 							self.newValue = value;
 						end
+						self.Label:SetFormattedText(FPS_FORMAT, value);
 					</OnValueChanged>
 				</Scripts>
 			</Slider>   
@@ -1419,12 +1528,77 @@
 					</OnClick>
 				</Scripts>
 			</CheckButton>
+			<CheckButton name="$parentShowHDModels" inherits="VideoOptionsSmallCheckButtonTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentMaxFPSBKSlider" relativePoint="BOTTOMLEFT" x="-25" y="-20"/>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						self.type = CONTROLTYPE_CHECKBOX;
+						self.cvar = "hdPlayerModels";
+						self.name = SHOW_HD_MODELS_TEXT;
+						self.tooltip = OPTION_TOOLTIP_SHOW_HD_MODELS;
+						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
+					</OnLoad>
+				</Scripts>
+			</CheckButton>
+			<Slider name="$parentRenderScaleSlider" inherits="VideoOptionsSliderTemplate" valueStep=".05" obeyStepOnDrag="true">
+				<Size x="180" y="17"/>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentShowHDModels" relativePoint="BOTTOMLEFT">
+						<Offset x="25" y="-25"/>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						self:SetMinMaxValues(.5, GetMaxRenderScale());
+						
+						local name = self:GetName();
+						self.type = CONTROLTYPE_SLIDER;
+						self.cvar = "RenderScale";
+						
+						self.tooltip = OPTION_TOOLTIP_RENDER_SCALE;
+						self.name = RENDER_SCALE;
+						
+						self.SetDisplayValue = self.SetValue;
+						
+						self.SetValue = function(self, value)
+							self:SetDisplayValue(value);
+							
+							if self:IsVisible() then
+								BlizzardOptionsPanel_SetCVarSafe(self.cvar, value);
+							end
+						end
+							
+						self.GetCurrentValue = function(self)
+							return BlizzardOptionsPanel_GetCVarSafe(self.cvar);
+						end;
+							
+						_G[name.."Text"]:SetFontObject("OptionsFontSmall");
+						_G[name.."Text"]:SetText(RENDER_SCALE);
+						_G[name.."High"]:Hide();
+
+						self.Label = _G[name.."Low"];
+						self.Label:ClearAllPoints();
+						self.Label:SetPoint("LEFT", self, "RIGHT", 3, 2);
+						VideoOptionsSlider_OnLoad(self);
+					</OnLoad>
+					<OnValueChanged>
+						if(userInput) then
+							Graphics_EnableApply(self);
+							self.newValue = value;
+						end
+						self.Label:SetFormattedText(PERCENTAGE_STRING, math.floor((value * 100) + .5));
+					</OnValueChanged>
+					<OnShow>
+						self:SetDisplayValue(self:GetCurrentValue());
+					</OnShow>
+				</Scripts>
+			</Slider>
 			<Slider name="$parentGammaSlider" inherits="VideoOptionsSliderTemplate" minValue="-0.5" maxValue="0.5" defaultValue="0" valueStep=".1">
 				<Size x="10" y="17"/>
 				<Anchors>
-					<Anchor point="TOPLEFT" relativeTo="$parentMaxFPSBKSlider" relativePoint="BOTTOMLEFT">
-						<Offset x="0" y="-25"/>
-					</Anchor>
+					<Anchor point="TOPLEFT" relativeTo="$parentRenderScaleSlider" relativePoint="BOTTOMLEFT" x="0" y="-25" />
 				</Anchors>
 				<Layers>
 					<Layer level="ARTWORK">
@@ -1450,6 +1624,7 @@
 							SetGamma(value);
 						end
 						self.GetCurrentValue = function (self) return GetGamma(); end;
+						
 						_G[self:GetName().."Text"]:SetFontObject("OptionsFontSmall");
 						_G[self:GetName().."Text"]:SetText(GAMMA);
 						_G[self:GetName().."Low"]:SetText("-");
@@ -1478,31 +1653,17 @@
 						self:onclick();
 					</OnClick>
 				</Scripts>
-			</CheckButton>		
-			<CheckButton name="$parentShowHDModels" inherits="VideoOptionsSmallCheckButtonTemplate">
-				<Anchors>
-					<Anchor point="TOPLEFT" relativeTo="$parentDesktopGamma" relativePoint="BOTTOMLEFT" x="0" y="-20"/>
-				</Anchors>
-				<Scripts>
-					<OnLoad>
-						self.type = CONTROLTYPE_CHECKBOX;
-						self.cvar = "hdPlayerModels";
-						self.name = SHOW_HD_MODELS_TEXT;
-						self.tooltip = OPTION_TOOLTIP_SHOW_HD_MODELS;
-						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
-					</OnLoad>
-				</Scripts>
 			</CheckButton>
 		</Frames>
 
-			<!-- stereo -->
+		<!-- stereo -->
 		<Layers>
 			<Layer level="ARTWORK">
 				<FontString name="$parentStereoHeader" text="STEREO_VIDEO_LABEL" inherits="OptionsFontHighlight" justifyH="LEFT" justifyV="TOP">
 					<Anchors>
 						<Anchor point="TOPLEFT">
 							<Offset>
-								<AbsDimension x="16" y="-256"/>
+								<AbsDimension x="16" y="-410"/>
 							</Offset>
 						</Anchor>
 					</Anchors>

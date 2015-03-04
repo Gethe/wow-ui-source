@@ -654,7 +654,6 @@ do
 end
 
 local CALENDAR_FILTER_CVARS = {
-	{text = CALENDAR_FILTER_BATTLEGROUND,		cvar = "calendarShowBattlegrounds"	},
 	{text = CALENDAR_FILTER_DARKMOON,			cvar = "calendarShowDarkmoon"		},
 	{text = CALENDAR_FILTER_RAID_LOCKOUTS,		cvar = "calendarShowLockouts"		},
 	{text = CALENDAR_FILTER_RAID_RESETS,		cvar = "calendarShowResets"			},
@@ -1158,6 +1157,18 @@ function CalendarFrame_OnHide(self)
 	end
 
 	PlaySound("igSpellBookClose");
+end
+
+function CalendarFrame_OnMouseWheel(self, value)
+	if ( value > 0 ) then
+		if ( CalendarPrevMonthButton:IsEnabled() ) then
+			CalendarPrevMonthButton_OnClick();
+		end
+	else
+		if ( CalendarNextMonthButton:IsEnabled() ) then
+			CalendarNextMonthButton_OnClick();
+		end	
+	end
 end
 
 function CalendarFrame_InitWeekday(index)

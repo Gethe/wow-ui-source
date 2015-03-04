@@ -222,7 +222,7 @@
 			</OnLoad>
 			<OnEnter>
 				if (self.major) then
-					GlueTooltip:SetOwner(self, -50, 0);
+					GlueTooltip:SetOwner(self, "ANCHOR_RIGHT", -50, 0);
 					GlueTooltip:SetText(self.major.."."..self.minor.."."..self.revision.."  "..self.build.." Type: "..self.type);
 				end
 			</OnEnter>
@@ -379,7 +379,7 @@
 										SortRealms("name");
 									</OnClick>
 									<OnEnter>
-										GlueTooltip:SetOwner(self, -325, 0);
+										GlueTooltip:SetOwner(self, "ANCHOR_RIGHT", -325, 0);
 										GlueTooltip:SetText(REALMLIST_REALMNAME_TOOLTIP);
 									</OnEnter>
 									<OnLeave>
@@ -403,7 +403,7 @@
 										SortRealms("mode");
 									</OnClick>
 									<OnEnter>
-										GlueTooltip:SetOwner(self, -200, 0);
+										GlueTooltip:SetOwner(self, "ANCHOR_RIGHT", -200, 0);
 										GlueTooltip:SetText(REALMLIST_TYPE_TOOLTIP);
 									</OnEnter>
 									<OnLeave>
@@ -427,7 +427,7 @@
 										SortRealms("characters");
 									</OnClick>
 									<OnEnter>
-										GlueTooltip:SetOwner(self, -165, 0);
+										GlueTooltip:SetOwner(self, "ANCHOR_RIGHT", -165, 0);
 										GlueTooltip:SetText(REALMLIST_NUMCHARACTERS_TOOLTIP);
 									</OnEnter>
 									<OnLeave>
@@ -451,7 +451,7 @@
 										SortRealms("load");
 									</OnClick>
 									<OnEnter>
-										GlueTooltip:SetOwner(self, -280, 0);
+										GlueTooltip:SetOwner(self, "ANCHOR_RIGHT", -280, 0);
 										GlueTooltip:SetText(REALMLIST_POPULATION_TOOLTIP);
 									</OnEnter>
 									<OnLeave>

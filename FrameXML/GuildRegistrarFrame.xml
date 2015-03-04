@@ -165,7 +165,7 @@
 								GuildRegistrar_PurchaseCharter();
 							</OnClick>
 							<OnShow>
-								if IsTrialAccount() then
+								if (GameLimitedMode_IsActive()) then
 									self.tooltip = RED_FONT_COLOR_CODE..TRIAL_RESTRICTED..FONT_COLOR_CODE_CLOSE;
 									self:Disable();
 								else

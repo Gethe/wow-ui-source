@@ -234,6 +234,10 @@ function CharacterSelect_OnHide(self)
 		StoreFrame:Hide();
 	end
 	CopyCharacterFrame:Hide();
+	if (AddonDialog:IsShown()) then
+		AddonDialog:Hide();
+		HasShownAddonOutOfDateDialog = false;
+	end
 end
 
 function CharacterSelect_SaveCharacterOrder()
@@ -473,15 +477,6 @@ function CharacterSelect_UpdateModel(self)
 	self:AdvanceTime();
 end
 
-function UpdateCharacterSelectEnterWorldDeleteButtons()
-	local guid, _, _, _, boostInProgress = select(14,GetCharacterInfo(GetCharIDFromIndex(CharacterSelect.selectedIndex+CHARACTER_LIST_OFFSET)));
-	CharSelectEnterWorldButton:SetEnabled(not boostInProgress);
-	CharacterSelectDeleteButton:SetEnabled(not boostInProgress);
-	
-	-- now check for the services flow (ie character upgrade)
-	CharacterSelect_UpdateButtonState();
-end
-
 function UpdateCharacterSelection(self)
 	local button, paidServiceButton;
 
@@ -516,7 +511,7 @@ function UpdateCharacterSelection(self)
 				paidServiceButton:Show();
 			end
 
-			UpdateCharacterSelectEnterWorldDeleteButtons();
+			CharacterSelect_UpdateButtonState();
 		end
 	end
 end
@@ -566,22 +561,24 @@ function UpdateCharacterList(skipSelect)
 	end
 
 	local debugText = numChars..": ";
-	
 	for i=1, numChars, 1 do
-		local name, race, class, classFileName, classID, level, zone, sex, ghost, PCC, PRC, PFC, PRCDisabled, guid, _, _, _, boostInProgress = GetCharacterInfo(GetCharIDFromIndex(i+CHARACTER_LIST_OFFSET));
+		local name, race, class, classFileName, classID, level, zone, sex, ghost, PCC, PRC, PFC, PRCDisabled, guid, _, _, _, boostInProgress, _, locked = GetCharacterInfo(GetCharIDFromIndex(i+CHARACTER_LIST_OFFSET));
 		local button = _G["CharSelectCharacterButton"..index];
+		button.isVeteranLocked = false;
 		if ( name ) then
 			if ( not zone ) then
 				zone = "";
 			end
-
 			_G["CharSelectCharacterButton"..index.."ButtonTextName"]:SetText(name);
 			if (boostInProgress) then
 				_G["CharSelectCharacterButton"..index.."ButtonTextInfo"]:SetText(CHARACTER_UPGRADE_PROCESSING);
 				_G["CharSelectCharacterButton"..index.."ButtonTextLocation"]:SetFontObject("GlueFontHighlightSmall");
 				_G["CharSelectCharacterButton"..index.."ButtonTextLocation"]:SetText(CHARACTER_UPGRADE_CHARACTER_LIST_LABEL);
 			else
-				if( ghost ) then
+				if ( locked ) then
+					_G["CharSelectCharacterButton"..index.."ButtonTextInfo"]:SetFormattedText(CHARACTER_SELECT_INFO..CHARSELECT_CHAR_INACTIVE_CHAR, level, class);
+					button.isVeteranLocked = true;
+				elseif( ghost ) then
 					_G["CharSelectCharacterButton"..index.."ButtonTextInfo"]:SetFormattedText(CHARACTER_SELECT_INFO_GHOST, level, class);
 				elseif ( CharacterSelect.undeleting ) then
 					_G["CharSelectCharacterButton"..index.."ButtonTextInfo"]:SetFormattedText(CHARACTER_SELECT_INFO_DELETED, level, class);
@@ -661,7 +658,7 @@ function UpdateCharacterList(skipSelect)
 		CharacterSelectDeleteButton:Disable();
 		CharSelectEnterWorldButton:Disable();
 	else
-		UpdateCharacterSelectEnterWorldDeleteButtons();
+		CharacterSelect_UpdateButtonState();
 	end
 
 	CharacterSelect_UpdateStoreButton();
@@ -736,6 +733,9 @@ function CharacterSelectButton_OnClick(self)
 	local id = self:GetID() + CHARACTER_LIST_OFFSET;
 	if ( id ~= CharacterSelect.selectedIndex ) then
 		CharacterSelect_SelectCharacter(id);
+		if ( self.isVeteranLocked ) then
+			return;
+		end
 	end
 end
 
@@ -743,6 +743,9 @@ function CharacterSelectButton_OnDoubleClick(self)
 	local id = self:GetID() + CHARACTER_LIST_OFFSET;
 	if ( id ~= CharacterSelect.selectedIndex ) then
 		CharacterSelect_SelectCharacter(id);
+		if ( self.isVeteranLocked ) then
+			return;
+		end
 	end
 	if (not CharacterSelect.undeleting) then
 		CharacterSelect_EnterWorld();
@@ -815,6 +818,10 @@ end
 function CharacterSelect_EnterWorld()
 	CharacterSelect_SaveCharacterOrder();
 	PlaySound("gsCharacterSelectionEnterWorld");
+	local locked = select(20,GetCharacterInfo(GetCharacterSelection()));
+	if ( locked ) then
+		return;
+	end
 	StopGlueAmbience();
 	EnterWorld();
 end
@@ -928,35 +935,34 @@ end
 
 function CharacterSelect_DeathKnightSwap(self)
 	local deathKnightTag = "DEATHKNIGHT";
-	if ( CharacterSelect.currentBGTag == deathKnightTag ) then
-		if (self.currentBGTag ~= deathKnightTag) then
-			self.currentBGTag = deathKnightTag;
-			self:SetNormalTexture("Interface\\Glues\\Common\\Glue-Panel-Button-Up-Blue");
-			self:SetPushedTexture("Interface\\Glues\\Common\\Glue-Panel-Button-Down-Blue");
-			self:SetHighlightTexture("Interface\\Glues\\Common\\Glue-Panel-Button-Highlight-Blue");
+		if ( CharacterSelect.currentBGTag == deathKnightTag ) then
+			if (self.currentBGTag ~= deathKnightTag) then
+				self.currentBGTag = deathKnightTag;
+				self:SetNormalTexture("Interface\\Glues\\Common\\Glue-Panel-Button-Up-Blue");
+				self:SetPushedTexture("Interface\\Glues\\Common\\Glue-Panel-Button-Down-Blue");
+				self:SetHighlightTexture("Interface\\Glues\\Common\\Glue-Panel-Button-Highlight-Blue");
+			end
+		else
+			if (self.currentBGTag == deathKnightTag) then
+				self.currentBGTag = nil;
+				self:SetNormalTexture("Interface\\Glues\\Common\\Glue-Panel-Button-Up");
+				self:SetPushedTexture("Interface\\Glues\\Common\\Glue-Panel-Button-Down");
+				self:SetHighlightTexture("Interface\\Glues\\Common\\Glue-Panel-Button-Highlight");
+			end
 		end
-	else
-		if (self.currentBGTag == deathKnightTag) then
-			self.currentBGTag = nil;
-			self:SetNormalTexture("Interface\\Glues\\Common\\Glue-Panel-Button-Up");
-			self:SetPushedTexture("Interface\\Glues\\Common\\Glue-Panel-Button-Down");
-			self:SetHighlightTexture("Interface\\Glues\\Common\\Glue-Panel-Button-Highlight");
-		end
-	end
 end
 
 
-function CharacterSelectPanelButton_DeathKnightSwap(self, textureBase)
-	if (not textureBase) then
-		if ( not self:IsEnabled() ) then
-			textureBase = "Interface\\Glues\\Common\\Glue-Panel-Button-Disabled";
-		elseif ( self.down ) then
-			textureBase = "Interface\\Glues\\Common\\Glue-Panel-Button-Down";
-		else
-			textureBase = "Interface\\Glues\\Common\\Glue-Panel-Button-Up";
-		end
+function CharacterSelectPanelButton_DeathKnightSwap(self)
+	local textureBase;
+	if ( not self:IsEnabled() ) then
+		textureBase = "Interface\\Glues\\Common\\Glue-Panel-Button-Disabled";
+	elseif ( self.down ) then
+		textureBase = "Interface\\Glues\\Common\\Glue-Panel-Button-Down";
+	else
+		textureBase = "Interface\\Glues\\Common\\Glue-Panel-Button-Up";
 	end
-		
+
 	local deathKnightTag = "DEATHKNIGHT";
 	if ( CharacterSelect.currentBGTag == deathKnightTag ) then
 		if (self.currentBGTag ~= deathKnightTag or self.texture ~= textureBase) then
@@ -981,6 +987,52 @@ function CharacterSelectPanelButton_DeathKnightSwap(self, textureBase)
 			self.Left:SetTexture(textureBase);
 			self.Middle:SetTexture(textureBase);
 			self.Right:SetTexture(textureBase);
+			self:SetHighlightTexture("Interface\\Glues\\Common\\Glue-Panel-Button-Highlight");
+		end
+	end
+end
+
+function CharacterSelectGoldPanelButton_DeathKnightSwap(self)
+	local state;
+	if ( not self:IsEnabled() ) then
+		state = "disabled";
+	elseif ( self.down ) then
+		state = "down";
+	else
+		state = "up";
+	end
+
+	local deathKnightTag = "DEATHKNIGHT";
+	if ( CharacterSelect.currentBGTag == deathKnightTag ) then
+		if (self.currentBGTag ~= deathKnightTag or self.state ~= state) then
+			self.currentBGTag = deathKnightTag;
+			self.state = state;
+
+			if (state == "disabled") then
+				local textureBase = "Interface\\Buttons\\UI-DialogBox-goldbutton-disabled";
+
+				self.Left:SetTexture(textureBase.."-left");
+				self.Middle:SetTexture(textureBase.."-middle");
+				self.Right:SetTexture(textureBase.."-right");
+			else
+				local textureBase = "UI-DialogBox-goldbutton-" .. state;
+
+				self.Left:SetAtlas(textureBase.."-left-blue");
+				self.Middle:SetAtlas(textureBase.."-middle-blue");
+				self.Right:SetAtlas(textureBase.."-right-blue");
+			end
+			self:SetHighlightTexture("Interface\\Glues\\Common\\Glue-Panel-Button-Highlight-Blue");
+		end
+	else
+		if (self.currentBGTag == deathKnightTag or self.state ~= state) then
+			self.currentBGTag = nil;
+			self.state = state;
+
+			local textureBase = "Interface\\Buttons\\UI-DialogBox-goldbutton-" .. state;
+
+			self.Left:SetTexture(textureBase.."-left");
+			self.Middle:SetTexture(textureBase.."-middle");
+			self.Right:SetTexture(textureBase.."-right");
 			self:SetHighlightTexture("Interface\\Glues\\Common\\Glue-Panel-Button-Highlight");
 		end
 	end
@@ -1143,6 +1195,11 @@ end
 
 
 ACCOUNT_UPGRADE_FEATURES = {
+	VETERAN = { [1] = { icon = "Interface\\Icons\\achievement_bg_returnxflags_def_wsg", text = VETERAN_FEATURE_1 },
+		  [2] = { icon = "Interface\\Icons\\achievement_reputation_01", text = VETERAN_FEATURE_2 },
+		  [3] = { icon = "Interface\\Icons\\spell_holy_surgeoflight", text = VETERAN_FEATURE_3 },
+		  logo = "Interface\\Glues\\Common\\Glues-WoW-WODLOGO",
+		  banner = "accountupgradebanner-wod"},
 	[1] =	{ [1] = { icon = "Interface\\Icons\\achievement_level_85", text = UPGRADE_FEATURE_7 },
 		  [2] = { icon = "Interface\\Icons\\achievement_firelands raid_ragnaros", text = UPGRADE_FEATURE_8 },
 		  [3] = { icon = "Interface\\Icons\\Ability_Mount_CelestialHorse", text = UPGRADE_FEATURE_9 },
@@ -1173,12 +1230,19 @@ function AccountUpgradePanel_Update(isExpanded)
 		-- Trial users have the starter edition logo with an upgrade banner that brings you to the lowest expansion level available.
 		tag = max(GetAccountExpansionLevel(), GetExpansionLevel()) - 1;
 		logoTag = "TRIAL";
+		CharSelectAccountUpgradeButton:SetText(UPGRADE);
+	elseif ( IsVeteranTrialAccount() ) then
+		-- Trial users have the starter edition logo with an upgrade banner that brings you to the lowest expansion level available.
+		tag = "VETERAN";
+		logoTag = "VETERAN";
+		CharSelectAccountUpgradeButton:SetText(REACTIVATE_ACCOUNT_NOW);
 	else
 		tag = min(GetClientDisplayExpansionLevel(), max(GetAccountExpansionLevel(), GetExpansionLevel()));
 		logoTag = tag;
 		if ( IsExpansionTrial() ) then
 			tag = tag - 1;
 		end
+		CharSelectAccountUpgradeButton:SetText(UPGRADE);
 	end
 
 	if ( EXPANSION_LOGOS[logoTag] ) then
@@ -1188,15 +1252,7 @@ function AccountUpgradePanel_Update(isExpanded)
 		CharacterSelectLogo:Hide();
 	end
 
-	--We don't want to show the upgrade panel in Asian countries for now.
-	if ( NEVER_SHOW_UPGRADE ) then
-		CharSelectAccountUpgradePanel:Hide();
-		CharSelectAccountUpgradeButton:Hide();
-		CharSelectAccountUpgradeMiniPanel:Hide();
-		return;
-	end
-
-	if ( (not IsTrialAccount() and not CanUpgradeExpansion()) or not ACCOUNT_UPGRADE_FEATURES[tag] ) then
+	if ( (not GameLimitedMode_IsActive() and not CanUpgradeExpansion()) or not ACCOUNT_UPGRADE_FEATURES[tag] ) then
 		CharSelectAccountUpgradePanel:Hide();
 		CharSelectAccountUpgradeButton:Hide();
 		CharSelectAccountUpgradeMiniPanel:Hide();
@@ -1254,7 +1310,7 @@ function AccountUpgradePanel_UpdateExpandState()
 	if ( CharacterSelectServerAlertFrame:IsShown() ) then
 		CharSelectAccountUpgradeButton.isExpanded = false;
 		CharSelectAccountUpgradeButton.expandCollapseButton:Hide();
-	elseif ( IsTrialAccount() ) then
+	elseif ( GameLimitedMode_IsActive() ) then
 		CharSelectAccountUpgradeButton.isExpanded = true;
 		CharSelectAccountUpgradeButton.expandCollapseButton:Show();
 		CharSelectAccountUpgradeButton.expandCollapseButton:Disable();
@@ -1356,7 +1412,7 @@ function CharacterSelect_ActivateFactionChange()
 end
 
 function CharacterSelect_UpdateStoreButton()
-	if ( C_StorePublic.IsEnabled() and not C_StorePublic.IsDisabledByParentalControls() and GetNumCharacters() > 0 and not IsTrialAccount()) then
+	if ( C_StorePublic.IsEnabled() and not C_StorePublic.IsDisabledByParentalControls() and GetNumCharacters() > 0 and not GameLimitedMode_IsActive() ) then
 		StoreButton:Show();
 	else
 		StoreButton:Hide();
@@ -1367,9 +1423,10 @@ function CharacterSelect_UpdateButtonState()
 	local servicesEnabled = not CharSelectServicesFlowFrame:IsShown();
 	local undeleting = CharacterSelect.undeleting;
 	local undeleteEnabled, undeleteOnCooldown = GetCharacterUndeleteStatus();
-	
-	CharSelectEnterWorldButton:SetEnabled(servicesEnabled and not undeleting);
-	CharacterSelectBackButton:SetEnabled(servicesEnabled and not undeleting);
+
+	local boostInProgress,_, locked = select(18, GetCharacterInfo(GetCharacterSelection()));
+	CharSelectEnterWorldButton:SetEnabled(servicesEnabled and not undeleting and not boostInProgress and not locked );
+	CharacterSelectBackButton:SetEnabled(servicesEnabled and not undeleting and not boostInProgress);
 	CharacterSelectDeleteButton:SetEnabled(servicesEnabled and not undeleting);
 	CharSelectChangeRealmButton:SetEnabled(servicesEnabled and not undeleting);
 	CharSelectUndeleteCharacterButton:SetEnabled(servicesEnabled and undeleteEnabled and not undeleteOnCooldown);
@@ -1619,6 +1676,7 @@ function CopyCharacterFrame_OnShow(self)
 		RequestAccountCharacters(GlueDropDownMenu_GetSelectedValue(CopyCharacterFrame.RegionID));
 	elseif ( CopyAccountCharactersAllowed() == 1) then
 		self.RealmName:Show();
+		self.RealmName:SetFocus();
 		self.CharacterName:Show();
 		self.SearchButton:Show();
 	end
@@ -1722,4 +1780,16 @@ end
 
 function CopyCharacterEditBox_OnShow(self)
 	self:SetText("");
+end
+
+function CopyCharacterEditBox_OnEnterPressed(self)
+	self:GetParent().SearchButton:Click();
+end
+
+function CopyCharacterRealmNameEditBox_OnTabPressed(self)
+	self:GetParent().CharacterName:SetFocus();
+end
+
+function CopyCharacterCharacterNameEditBox_OnTabPressed(self)
+	self:GetParent().RealmName:SetFocus();
 end

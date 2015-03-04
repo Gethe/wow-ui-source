@@ -3,7 +3,7 @@
 	<Script file="Blizzard_GarrisonLandingPage.lua"/>
 	
 	<Frame name="GarrisonLandingPageReportMissionRewardTemplate" enableMouse="true" virtual="true">
-		<Size x="32" y="32"/>
+		<Size x="38" y="38"/>
 		<Layers>
 			<Layer level="BACKGROUND">
 				<Texture atlas="GarrLanding_RewardsShadow" useAtlasSize="true">
@@ -14,7 +14,7 @@
 			</Layer>
 			<Layer level="ARTWORK">
 				<Texture parentKey="Icon">
-					<Size x="30" y="30"/>
+					<Size x="36" y="36"/>
 					<Anchors>
 						<Anchor point="CENTER"/>
 					</Anchors>
@@ -23,7 +23,7 @@
 			<Layer level="ARTWORK" textureSubLevel="1">
 				<FontString parentKey="Quantity" inherits="NumberFontNormalSmall">
 					<Anchors>
-						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Icon"/>
+						<Anchor point="BOTTOMRIGHT" x="4" relativeKey="$parent.Icon"/>
 					</Anchors>
 				</FontString>
 			</Layer>
@@ -154,7 +154,7 @@
 				<FontString parentKey="Name" inherits="GameFontNormal" justifyV="TOP" justifyH="CENTER">
 					<Size x="90" y="0"/>
 					<Anchors>
-						<Anchor point="TOP" relativePoint="BOTTOM" x="0" y="-5"/>
+						<Anchor point="TOP" relativePoint="BOTTOM" x="0" y="-2"/>
 					</Anchors>
 					<Color r=".75" g=".75" b=".73"/>
 				</FontString>
@@ -174,6 +174,12 @@
 					<Anchor point="CENTER"/>
 				</Anchors>
 				<SwipeTexture file="Interface\Garrison\GarrLanding-TradeskillTimerFill"/>
+				<Scripts>
+					<OnCoolDownDone>
+						-- update via event
+						C_Garrison.RequestLandingPageShipmentInfo();
+					</OnCoolDownDone>
+				</Scripts>
 			</Cooldown>
 		</Frames>
 		<Scripts>
@@ -518,49 +524,64 @@
 					</Button>
 					<Frame parentArray="Shipments" inherits="GarrisonLandingPageReportShipmentStatusTemplate" hidden="true">
 						<Anchors>
-							<Anchor point="TOPLEFT" x="60" y="-120"/>
+							<Anchor point="TOPLEFT" x="60" y="-105"/>
 						</Anchors>
 					</Frame>
 					<Frame parentArray="Shipments" inherits="GarrisonLandingPageReportShipmentStatusTemplate" hidden="true">
 						<Anchors>
-							<Anchor point="TOPLEFT" x="165" y="-120"/>
+							<Anchor point="TOPLEFT" x="165" y="-105"/>
 						</Anchors>
 					</Frame>
 					<Frame parentArray="Shipments" inherits="GarrisonLandingPageReportShipmentStatusTemplate" hidden="true">
 						<Anchors>
-							<Anchor point="TOPLEFT" x="270" y="-120"/>
+							<Anchor point="TOPLEFT" x="270" y="-105"/>
 						</Anchors>
 					</Frame>
 					<Frame parentArray="Shipments" inherits="GarrisonLandingPageReportShipmentStatusTemplate" hidden="true">
 						<Anchors>
-							<Anchor point="TOPLEFT" x="60" y="-250"/>
+							<Anchor point="TOPLEFT" x="60" y="-205"/>
 						</Anchors>
 					</Frame>
 					<Frame parentArray="Shipments" inherits="GarrisonLandingPageReportShipmentStatusTemplate" hidden="true">
 						<Anchors>
-							<Anchor point="TOPLEFT" x="165" y="-250"/>
+							<Anchor point="TOPLEFT" x="165" y="-205"/>
 						</Anchors>
 					</Frame>
 					<Frame parentArray="Shipments" inherits="GarrisonLandingPageReportShipmentStatusTemplate" hidden="true">
 						<Anchors>
-							<Anchor point="TOPLEFT" x="270" y="-250"/>
+							<Anchor point="TOPLEFT" x="270" y="-205"/>
 						</Anchors>
 					</Frame>
 					<Frame parentArray="Shipments" inherits="GarrisonLandingPageReportShipmentStatusTemplate" hidden="true">
 						<Anchors>
-							<Anchor point="TOPLEFT" x="60" y="-380"/>
+							<Anchor point="TOPLEFT" x="60" y="-305"/>
 						</Anchors>
 					</Frame>
 					<Frame parentArray="Shipments" inherits="GarrisonLandingPageReportShipmentStatusTemplate" hidden="true">
 						<Anchors>
-							<Anchor point="TOPLEFT" x="165" y="-380"/>
+							<Anchor point="TOPLEFT" x="165" y="-305"/>
 						</Anchors>
 					</Frame>
 					<Frame parentArray="Shipments" inherits="GarrisonLandingPageReportShipmentStatusTemplate" hidden="true">
 						<Anchors>
-							<Anchor point="TOPLEFT" x="270" y="-380"/>
+							<Anchor point="TOPLEFT" x="270" y="-305"/>
 						</Anchors>
 					</Frame>
+					<Frame parentArray="Shipments" inherits="GarrisonLandingPageReportShipmentStatusTemplate" hidden="true">
+						<Anchors>
+							<Anchor point="TOPLEFT" x="60" y="-405"/>
+						</Anchors>
+					</Frame>
+					<Frame parentArray="Shipments" inherits="GarrisonLandingPageReportShipmentStatusTemplate" hidden="true">
+						<Anchors>
+							<Anchor point="TOPLEFT" x="165" y="-405"/>
+						</Anchors>
+					</Frame>
+					<Frame parentArray="Shipments" inherits="GarrisonLandingPageReportShipmentStatusTemplate" hidden="true">
+						<Anchors>
+							<Anchor point="TOPLEFT" x="270" y="-405"/>
+						</Anchors>
+					</Frame>					
 				</Frames>
 				<Scripts>
 					<OnLoad function="GarrisonLandingPageReport_OnLoad"/>
@@ -642,6 +663,7 @@
 				<Size x="470" y="565"/>
 				<Anchors>
 					<Anchor point="TOPRIGHT" x="-25" y="-85"/>
+					<Anchor point="BOTTOM" x="0" y="0"/>
 				</Anchors>
 				<KeyValues>
 					<KeyValue key="isLandingPage" value="true" type="boolean"/>
@@ -683,6 +705,7 @@
 							</Anchors>
 						</FontString>
 						<FontString parentKey="Name" inherits="GameFontHighlightLarge2" justifyH="LEFT">
+							<Size x="0" y="18"/>
 							<Anchors>
 								<Anchor point="TOPLEFT" x="84" y="-16"/>
 								<Anchor point="RIGHT" relativeKey="$parent.XPText" relativePoint="LEFT" x="-8" y="0"/>
@@ -696,6 +719,17 @@
 					</Layer>
 				</Layers>
 				<Frames>
+					<Button parentKey="UpgradeClickTarget" hidden="true">
+						<Anchors>
+							<Anchor point="TOPLEFT"/>
+							<Anchor point="BOTTOMRIGHT"/>
+						</Anchors>
+						<Scripts>
+							<OnLoad function="GarrisionFollowerPageUpgradeTarget_OnLoad"/>
+							<OnEvent function="GarrisionFollowerPageUpgradeTarget_OnEvent"/>
+							<OnClick function="GarrisionFollowerPageUpgradeTarget_OnClick"/>
+						</Scripts>
+					</Button>
 					<Frame parentKey="QualityFrame">
 						<Size x="10" y="10"/>
 						<Anchors>
@@ -745,6 +779,13 @@
 								</Texture>
 							</Layer>
 						</Layers>
+						<Frames>
+							<Frame parentKey="UpgradeFrame" inherits="GarrisonFollowerModelUpgradeTemplate">
+								<Anchors>
+									<Anchor point="BOTTOM" x="0" y="0"/>
+								</Anchors>
+							</Frame>
+						</Frames>
 						<Scripts>
 							<OnModelLoaded>
 								self:SetAlpha(1);
@@ -754,6 +795,8 @@
 								self:SetFacing(.2);
 								GarrisonMission_SetFollowerModelItems(self);
 							</OnShow>
+							<OnMouseDown function="GarrisonFollowerPageModel_OnMouseDown"/>
+							<OnMouseUp function="GarrisonFollowerPageModel_OnMouseUp"/>
 						</Scripts>
 					</CinematicModel>
 					<Frame parentKey="AbilitiesFrame" setAllPoints="true">

@@ -500,6 +500,7 @@
 			<OnEvent function="CalendarFrame_OnEvent"/>
 			<OnShow function="CalendarFrame_OnShow"/>
 			<OnHide function="CalendarFrame_OnHide"/>
+			<OnMouseWheel function="CalendarFrame_OnMouseWheel"/>
 		</Scripts>
 	</Frame>
 

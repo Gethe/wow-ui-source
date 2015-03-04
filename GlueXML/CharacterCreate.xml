@@ -470,7 +470,7 @@
 		<Scripts>
 			<OnEnter>
 				if ( self.tooltip ) then
-					CharacterCreateTooltip:SetOwner(self, -3, -5);
+					CharacterCreateTooltip:SetOwner(self, "ANCHOR_RIGHT", -3, -5);
 					CharacterCreateTooltip:SetText(self.tooltip);
 				end
 			</OnEnter>
@@ -608,7 +608,7 @@
 			</OnClick>
 			<OnEnter>
 				if ( self.tooltip ) then
-					CharacterCreateTooltip:SetOwner(self, -3, -5);
+					CharacterCreateTooltip:SetOwner(self, "ANCHOR_RIGHT", -3, -5);
 					CharacterCreateTooltip:SetText(self.tooltip);
 				end
 			</OnEnter>
@@ -1954,7 +1954,7 @@
 								end
 							</OnClick>
 							<OnEnter>
-								CharacterCreateTooltip:SetOwner(self, -3, -5);
+								CharacterCreateTooltip:SetOwner(self, "ANCHOR_RIGHT", -3, -5);
 								CharacterCreateTooltip:SetText(MALE);
 							</OnEnter>
 						</Scripts>
@@ -1977,7 +1977,7 @@
 								end
 							</OnClick>
 							<OnEnter>
-								CharacterCreateTooltip:SetOwner(self, -3, -5);
+								CharacterCreateTooltip:SetOwner(self, "ANCHOR_RIGHT", -3, -5);
 								CharacterCreateTooltip:SetText(FEMALE);
 							</OnEnter>
 						</Scripts>

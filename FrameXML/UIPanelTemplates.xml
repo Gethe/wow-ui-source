@@ -1177,26 +1177,26 @@
 
 				<Texture name="$parentGlowTop" inherits="_HelpPlateBox-Glow-Top" parentKey="GlowTop" alphaMode="ADD">
 					<Anchors>
-						<Anchor point="TOPLEFT" relativeTo="$parentGlowTopLeft" relativePoint="TOPRIGHT"/>
-						<Anchor point="TOPRIGHT" relativeTo="$parentGlowTopRight" relativePoint="TOPLEFT"/>
+						<Anchor point="TOPLEFT" relativeKey="$parent.GlowTopLeft" relativePoint="TOPRIGHT"/>
+						<Anchor point="TOPRIGHT" relativeKey="$parent.GlowTopRight" relativePoint="TOPLEFT"/>
 					</Anchors>
 				</Texture>
 				<Texture name="$parentGlowBottom" inherits="_HelpPlateBox-Glow-Bottom" parentKey="GlowBottom" alphaMode="ADD">
 					<Anchors>
-						<Anchor point="BOTTOMLEFT" relativeTo="$parentGlowBottomLeft" relativePoint="BOTTOMRIGHT"/>
-						<Anchor point="BOTTOMRIGHT" relativeTo="$parentGlowBottomRight" relativePoint="BOTTOMLEFT"/>
+						<Anchor point="BOTTOMLEFT" relativeKey="$parent.GlowBottomLeft" relativePoint="BOTTOMRIGHT"/>
+						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.GlowBottomRight" relativePoint="BOTTOMLEFT"/>
 					</Anchors>
 				</Texture>
 				<Texture name="$parentGlowLeft" inherits="!HelpPlateBox-Glow-Left" parentKey="GlowLeft" alphaMode="ADD">
 					<Anchors>
-						<Anchor point="TOPLEFT" relativeTo="$parentGlowTopLeft" relativePoint="BOTTOMLEFT"/>
-						<Anchor point="BOTTOMLEFT" relativeTo="$parentGlowBottomLeft" relativePoint="TOPLEFT"/>
+						<Anchor point="TOPLEFT" relativeKey="$parent.GlowTopLeft" relativePoint="BOTTOMLEFT"/>
+						<Anchor point="BOTTOMLEFT" relativeKey="$parent.GlowBottomLeft" relativePoint="TOPLEFT"/>
 					</Anchors>
 				</Texture>
 				<Texture name="$parentGlowRight" inherits="!HelpPlateBox-Glow-Right" parentKey="GlowRight" alphaMode="ADD">
 					<Anchors>
-						<Anchor point="TOPRIGHT" relativeTo="$parentGlowTopRight" relativePoint="BOTTOMRIGHT"/>
-						<Anchor point="BOTTOMRIGHT" relativeTo="$parentGlowBottomRight" relativePoint="TOPRIGHT"/>
+						<Anchor point="TOPRIGHT" relativeKey="$parent.GlowTopRight" relativePoint="BOTTOMRIGHT"/>
+						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.GlowBottomRight" relativePoint="TOPRIGHT"/>
 					</Anchors>
 				</Texture>	
 			</Layer>
@@ -1226,26 +1226,26 @@
 
 				<Texture name="$parentShadowTop" inherits="_HelpPlateBox-Shadow-Top" parentKey="ShadowTop" >
 					<Anchors>
-						<Anchor point="TOPLEFT" relativeTo="$parentShadowTopLeft" relativePoint="TOPRIGHT"/>
-						<Anchor point="TOPRIGHT" relativeTo="$parentShadowTopRight" relativePoint="TOPLEFT"/>
+						<Anchor point="TOPLEFT" relativeKey="$parent.ShadowTopLeft" relativePoint="TOPRIGHT"/>
+						<Anchor point="TOPRIGHT" relativeKey="$parent.ShadowTopRight" relativePoint="TOPLEFT"/>
 					</Anchors>
 				</Texture>
 				<Texture name="$parentShadowBottom" inherits="_HelpPlateBox-Shadow-Bottom" parentKey="ShadowBottom" >
 					<Anchors>
-						<Anchor point="BOTTOMLEFT" relativeTo="$parentShadowBottomLeft" relativePoint="BOTTOMRIGHT"/>
-						<Anchor point="BOTTOMRIGHT" relativeTo="$parentShadowBottomRight" relativePoint="BOTTOMLEFT"/>
+						<Anchor point="BOTTOMLEFT" relativeKey="$parent.ShadowBottomLeft" relativePoint="BOTTOMRIGHT"/>
+						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.ShadowBottomRight" relativePoint="BOTTOMLEFT"/>
 					</Anchors>
 				</Texture>
 				<Texture name="$parentShadowLeft" inherits="!HelpPlateBox-Shadow-Left" parentKey="ShadowLeft" >
 					<Anchors>
-						<Anchor point="TOPLEFT" relativeTo="$parentShadowTopLeft" relativePoint="BOTTOMLEFT"/>
-						<Anchor point="BOTTOMLEFT" relativeTo="$parentShadowBottomLeft" relativePoint="TOPLEFT"/>
+						<Anchor point="TOPLEFT" relativeKey="$parent.ShadowTopLeft" relativePoint="BOTTOMLEFT"/>
+						<Anchor point="BOTTOMLEFT" relativeKey="$parent.ShadowBottomLeft" relativePoint="TOPLEFT"/>
 					</Anchors>
 				</Texture>
 				<Texture name="$parentShadowRight" inherits="!HelpPlateBox-Shadow-Right" parentKey="ShadowRight" >
 					<Anchors>
-						<Anchor point="TOPRIGHT" relativeTo="$parentShadowTopRight" relativePoint="BOTTOMRIGHT"/>
-						<Anchor point="BOTTOMRIGHT" relativeTo="$parentShadowBottomRight" relativePoint="TOPRIGHT"/>
+						<Anchor point="TOPRIGHT" relativeKey="$parent.ShadowTopRight" relativePoint="BOTTOMRIGHT"/>
+						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.ShadowBottomRight" relativePoint="TOPRIGHT"/>
 					</Anchors>
 				</Texture>	
 			</Layer>
@@ -1704,6 +1704,58 @@
 						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.BorderBottomRight" relativePoint="TOPLEFT"/>
 					</Anchors>
 					<TexCoords left="0.0625" right="0.9375" top="0.25" bottom="0.375"/>
+				</Texture>
+			</Layer>
+		</Layers>
+	</Frame>
+
+	<!-- Similar to InsetFrameTemplate3, but without the dark background -->
+	<Frame name="InsetFrameTemplate4" virtual="true">
+		<Layers>
+			<Layer level="BORDER">
+				<Texture parentKey="BorderTopRight" atlas="GeneralFrame-InsetFrame-TopRight" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="TOPRIGHT"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="BorderBottomRight" atlas="GeneralFrame-InsetFrame-BottomRight" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="BOTTOMRIGHT"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="BorderRightMiddle" atlas="!GeneralFrame-InsetFrame-Right" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="TOP" relativeKey="$parent.BorderTopRight" relativePoint="BOTTOM"/>
+						<Anchor point="BOTTOM" relativeKey="$parent.BorderBottomRight" relativePoint="TOP"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="BorderTopLeft" atlas="GeneralFrame-InsetFrame-TopLeft" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="TOPLEFT"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="BorderBottomLeft" atlas="GeneralFrame-InsetFrame-BottomLeft" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="BOTTOMLEFT"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="BorderLeftMiddle" atlas="!GeneralFrame-InsetFrame-Left" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.BorderTopLeft" relativePoint="BOTTOMLEFT"/>
+						<Anchor point="BOTTOMLEFT" relativeKey="$parent.BorderBottomLeft" relativePoint="TOPLEFT"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="BorderTopMiddle" atlas="_GeneralFrame-InsetFrame-Top" useAtlasSize="true">
+					<Anchors>								
+						<Anchor point="RIGHT" relativeKey="$parent.BorderTopRight" relativePoint="LEFT"/>
+						<Anchor point="LEFT" relativeKey="$parent.BorderTopLeft" relativePoint="RIGHT"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="BorderBottomMiddle" atlas="_GeneralFrame-InsetFrame-Bottom" useAtlasSize="true">
+					<Anchors>								
+						<Anchor point="RIGHT" relativeKey="$parent.BorderBottomRight" relativePoint="LEFT"/>
+						<Anchor point="LEFT" relativeKey="$parent.BorderBottomLeft" relativePoint="RIGHT"/>
+					</Anchors>
 				</Texture>
 			</Layer>
 		</Layers>
@@ -2553,21 +2605,7 @@
 							self.nextEditBox:SetFocus();
 						end
 					</OnTabPressed>
-					<OnTextChanged>
-						local scrollFrame = self:GetParent();
-						ScrollingEdit_OnTextChanged(self, scrollFrame);
-						if ( self:GetText() ~= "" ) then
-							self.Instructions:Hide();
-						else
-							self.Instructions:Show();
-						end
-						scrollFrame.CharCount:SetText(self:GetMaxLetters() - self:GetNumLetters());
-						if ( scrollFrame.ScrollBar:IsShown() ) then
-							scrollFrame.CharCount:SetPoint("BOTTOMRIGHT", -17, 0);
-						else
-							scrollFrame.CharCount:SetPoint("BOTTOMRIGHT", 0, 0);
-						end
-					</OnTextChanged> 
+					<OnTextChanged function="InputScrollFrame_OnTextChanged"/>
 					<OnCursorChanged function="ScrollingEdit_OnCursorChanged"/>
 					<OnUpdate>
 						ScrollingEdit_OnUpdate(self, elapsed, self:GetParent());

@@ -568,7 +568,7 @@
 		</Frames>
 		<Scripts>
 			<OnExternalLink>
-				StaticPopup_Show("EXTERNAL_LINK", url, nil, {url=url});
+				StaticPopup_Show("EXTERNAL_LINK", url, nil, {url=url, browser=self});
 			</OnExternalLink>
 			<OnEscapePressed>
 				self:ClearFocus();

@@ -379,6 +379,9 @@ function PaperDollFrame_OnLoad (self)
 		verticalAnchorY = 0,
 	};
 	
+	if( GameLimitedMode_IsActive() ) then
+		CharacterTrialLevelErrorText:SetText(GameLimitedMode_GetString("CAPPED_LEVEL"));
+	end
 end
 
 function PaperDoll_IsEquippedSlot (slot)
@@ -494,7 +497,7 @@ function PaperDollFrame_SetLevel()
 	end
 	
 	local showTrialCap = false;
-	if (IsTrialAccount()) then
+	if (GameLimitedMode_IsActive()) then
 		local rLevel = GetRestrictedAccountData();
 		if (UnitLevel("player") >= rLevel) then
 			showTrialCap = true;
@@ -732,7 +735,7 @@ function PaperDollFrame_SetStat(statFrame, unit, statIndex)
 			local _, isNegatedForSpec = GetUnitManaRegenRateFromSpirit("player");
 			local _, regen = GetManaRegen();
 			if ( UnitHasMana("player") and not isNegatedForSpec ) then
-				regen = floor( regen * 5.0 );
+				regen = BreakUpLargeNumbers( floor( regen * 5.0 ) );
 				statFrame.tooltip2 = format(MANA_REGEN_FROM_SPIRIT, regen);
 			else
 				statFrame.tooltip2 = STAT_NO_BENEFIT_TOOLTIP;
@@ -890,19 +893,21 @@ function PaperDollFrame_SetResilience(statFrame, unit)
 	statFrame:Show();
 end
 
+local function GetAppropriateDamage(unit)
+	if IsRangedWeapon() then
+		local attackTime, minDamage, maxDamage, bonusPos, bonusNeg, percent = UnitRangedDamage(unit);
+		return minDamage, maxDamage, nil, nil, 0, 0, percent;
+	else
+		return UnitDamage(unit);
+	end
+end
+
 function PaperDollFrame_SetDamage(statFrame, unit)
 	_G[statFrame:GetName().."Label"]:SetText(format(STAT_FORMAT, DAMAGE));
 	local text = _G[statFrame:GetName().."StatText"];
 	local speed, offhandSpeed = UnitAttackSpeed(unit);
-	
-	local minDamage;
-	local maxDamage; 
-	local minOffHandDamage;
-	local maxOffHandDamage; 
-	local physicalBonusPos;
-	local physicalBonusNeg;
-	local percent;
-	minDamage, maxDamage, minOffHandDamage, maxOffHandDamage, physicalBonusPos, physicalBonusNeg, percent = UnitDamage(unit);
+	local minDamage, maxDamage, minOffHandDamage, maxOffHandDamage, physicalBonusPos, physicalBonusNeg, percent = GetAppropriateDamage(unit);
+
 	local displayMin = max(floor(minDamage),1);
 	local displayMinLarge = BreakUpLargeNumbers(displayMin);
 	local displayMax = max(ceil(maxDamage),1);
@@ -962,7 +967,7 @@ function PaperDollFrame_SetDamage(statFrame, unit)
 	statFrame.unit = unit;
 	
 	-- If there's an offhand speed then add the offhand info to the tooltip
-	if ( offhandSpeed ) then
+	if ( offhandSpeed and minOffHandDamage and maxOffHandDamage ) then
 		minOffHandDamage = (minOffHandDamage / percent) - physicalBonusPos - physicalBonusNeg;
 		maxOffHandDamage = (maxOffHandDamage / percent) - physicalBonusPos - physicalBonusNeg;
 
@@ -1136,7 +1141,8 @@ function PaperDollFrame_SetCritChance(statFrame, unit)
 	statFrame.tooltip = HIGHLIGHT_FONT_COLOR_CODE..format(PAPERDOLLFRAME_TOOLTIP_FORMAT, STAT_CRITICAL_STRIKE).." "..critChance..FONT_COLOR_CODE_CLOSE;
 	if (GetCritChanceProvidesParryEffect()) then
 		local critChance = GetCombatRatingBonus(rating);
-		statFrame.tooltip2 = format(CR_CRIT_PARRY_RATING_TOOLTIP, BreakUpLargeNumbers(GetCombatRating(rating)), critChance, critChance);
+		local critRating = GetCombatRating(rating);
+		statFrame.tooltip2 = format(CR_CRIT_PARRY_RATING_TOOLTIP, BreakUpLargeNumbers(critRating), critChance, GetCombatRatingBonusForCombatRatingValue(CR_PARRY, critRating));
 	else
 		statFrame.tooltip2 = format(CR_CRIT_TOOLTIP, BreakUpLargeNumbers(GetCombatRating(rating)), GetCombatRatingBonus(rating));
 	end
@@ -2779,7 +2785,6 @@ function PaperDollEquipmentManagerPane_OnUpdate(self)
 end
 
 function PaperDollEquipmentManagerPane_OnShow(self)
-	HybridScrollFrame_CreateButtons(PaperDollEquipmentManagerPane, "GearSetButtonTemplate");
 	PaperDollEquipmentManagerPane_Update();
 	EquipmentFlyoutPopoutButton_ShowAll();
 end

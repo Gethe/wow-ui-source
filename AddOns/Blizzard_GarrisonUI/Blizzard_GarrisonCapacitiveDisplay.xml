@@ -121,7 +121,7 @@
 		</Scripts>
 	</Frame>
 
-	<Frame name="GarrisonCapacitiveDisplayFrame" parent="UIParent" inherits="ButtonFrameTemplate" hidden="true">
+	<Frame name="GarrisonCapacitiveDisplayFrame" parent="UIParent" inherits="ButtonFrameTemplate" hidden="true" enableMouse="true">
 		<Anchors>
 			<Anchor point="TOPLEFT" x="28" y="-108"/>
 		</Anchors>
@@ -141,10 +141,16 @@
 						</Texture>
 					</Layer>
 					<Layer level="ARTWORK" textureSubLevel="1">
-						<FontString parentKey="Description" inherits="GameFontHighlight" justifyH="LEFT">
+						<FontString parentKey="LastComplete" inherits="GameFontNormalSmall" justifyH="LEFT">
 							<Size x="296" y="0"/>
 							<Anchors>
 								<Anchor point="TOPLEFT" relativeKey="$parent.IconBG" relativePoint="BOTTOMLEFT" x="-48" y="-12"/>
+							</Anchors>
+						</FontString>
+						<FontString parentKey="Description" inherits="GameFontHighlight" justifyH="LEFT">
+							<Size x="296" y="0"/>
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeKey="$parent.LastComplete" relativePoint="BOTTOMLEFT" x="0" y="-12"/>
 							</Anchors>
 						</FontString>
 						<FontString parentKey="Reagents" inherits="GameFontNormalSmall" text="SPELL_REAGENTS">
@@ -154,7 +160,7 @@
 						</FontString>
 						<FontString parentKey="FollowerActive" inherits="GameFontNormal" text="CAPACITANCE_FOLLOWER_BONUS_ACTIVE" hidden="true">
 							<Anchors>
-								<Anchor point="BOTTOMLEFT" relativeTo="GarrisonCapacitiveDisplayFrame" relativePoint="BOTTOMLEFT" x="8" y="8"/>
+								<Anchor point="TOPLEFT" relativeTo="GarrisonCapacitiveDisplayFrame" relativePoint="TOPLEFT" x="60" y="-28"/>
 							</Anchors>
 						</FontString>
 					</Layer>
@@ -238,6 +244,93 @@
 				<Scripts>
 					<OnClick function="GarrisonCapacitiveStartWorkOrder_OnClick"/>
 				</Scripts>
+			</Button>
+			<Button parentKey="CreateAllWorkOrdersButton" inherits="MagicButtonTemplate" text="CREATE_ALL">
+				<Size x="80" y="22"/>
+				<Anchors>
+					<Anchor point="BOTTOMLEFT"/>
+				</Anchors>
+				<Scripts>
+					<OnClick function="GarrisonCapacitiveCreateAllWorkOrders_OnClick"/>
+				</Scripts>
+			</Button>
+			<Button parentKey="DecrementButton">
+				<Size x="23" y="22"/>
+				<Anchors>
+					<Anchor point="LEFT" relativeKey="$parent.CreateAllWorkOrdersButton" relativePoint="RIGHT" x="3" y="0"/>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						GarrisonCapacitiveDisplayFrameDecrement_OnClick();
+						self:GetParent().Count:ClearFocus();
+					</OnClick>
+				</Scripts>
+				<NormalTexture file="Interface\Buttons\UI-SpellbookIcon-PrevPage-Up"/>
+				<PushedTexture file="Interface\Buttons\UI-SpellbookIcon-PrevPage-Down"/>
+				<DisabledTexture file="Interface\Buttons\UI-SpellbookIcon-PrevPage-Disabled"/>
+				<HighlightTexture file="Interface\Buttons\UI-Common-MouseHilight" alphaMode="ADD"/>
+			</Button>
+			<EditBox parentKey="Count" letters="3" numeric="true" autoFocus="false">
+				<Size x="31" y="20"/>
+				<Anchors>
+					<Anchor point="LEFT" relativeKey="$parent.DecrementButton" relativePoint="RIGHT" x="4" y="0"/>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<Texture name="$parentLeft" file="Interface\Common\Common-Input-Border">
+							<Size x="8" y="20"/>
+							<Anchors>
+								<Anchor point="TOPLEFT" x="-5" y="0"/>
+							</Anchors>
+							<TexCoords left="0" right="0.0625" top="0" bottom="0.625"/>
+						</Texture>
+						<Texture name="$parentRight" file="Interface\Common\Common-Input-Border">
+							<Size x="8" y="20"/>
+							<Anchors>
+								<Anchor point="RIGHT" x="0" y="0"/>
+							</Anchors>
+							<TexCoords left="0.9375" right="1.0" top="0" bottom="0.625"/>
+						</Texture>
+						<Texture name="$parentMiddle" file="Interface\Common\Common-Input-Border">
+							<Size x="10" y="20"/>
+							<Anchors>
+								<Anchor point="LEFT" relativeTo="$parentLeft" relativePoint="RIGHT"/>
+								<Anchor point="RIGHT" relativeTo="$parentRight" relativePoint="LEFT"/>
+							</Anchors>
+							<TexCoords left="0.0625" right="0.9375" top="0" bottom="0.625"/>
+						</Texture>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnEnterPressed function="EditBox_ClearFocus"/>
+					<OnEscapePressed function="EditBox_ClearFocus"/>
+					<OnTextChanged>
+						if ( self:GetText() == "0" ) then
+							self:SetText("1");
+						end
+						local number = max(self:GetNumber(), 1);
+						GarrisonCapacitiveDisplay_SetRequestedNumber(number);
+					</OnTextChanged> 
+					<OnEditFocusLost function="EditBox_ClearHighlight"/>
+					<OnEditFocusGained function="EditBox_HighlightText"/>
+				</Scripts>
+				<FontString inherits="ChatFontNormal"/>
+			</EditBox>
+			<Button parentKey="IncrementButton">
+				<Size x="23" y="22"/>
+				<Anchors>
+					<Anchor point="RIGHT" relativeKey="$parent.StartWorkOrderButton" relativePoint="LEFT" x="-3" y="0"/>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						GarrisonCapacitiveDisplayFrameIncrement_OnClick();
+						self:GetParent().Count:ClearFocus();
+					</OnClick>
+				</Scripts>
+				<NormalTexture file="Interface\Buttons\UI-SpellbookIcon-NextPage-Up"/>
+				<PushedTexture file="Interface\Buttons\UI-SpellbookIcon-NextPage-Down"/>
+				<DisabledTexture file="Interface\Buttons\UI-SpellbookIcon-NextPage-Disabled"/>
+				<HighlightTexture file="Interface\Buttons\UI-Common-MouseHilight" alphaMode="ADD"/>
 			</Button>
 		</Frames>
 		<Scripts>

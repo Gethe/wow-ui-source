@@ -573,37 +573,57 @@ function InterfaceOptionsDisplayPanelPreviewTalentChanges_SetFunc()
 	end
 end
 
-function InterfaceOptionsDisplayPanelOutlineDropDown_OnEvent (self, event, ...)
-	if ( event == "VARIABLES_LOADED" ) then
-		self.cvar = "Outline";
+local function IsOutlineModeAllowed()
+	local _, instanceType = IsInInstance()
+	if ( instanceType == "raid" or instanceType == "pvp" ) then
+		return GetCVarBool("RaidOutlineEngineMode");
+	end
+	return GetCVarBool("OutlineEngineMode");
+end
 
-		local value = GetCVar(self.cvar);
-		self.defaultValue = GetCVarDefault(self.cvar);
-		self.value = value;
-		self.oldValue = value;
-		self.tooltip = OPTION_TOOLTIP_OBJECT_NPC_OUTLINE;
+function InterfaceOptionsDisplayPanelOutlineDropDown_OnShow(self)
+	self.cvar = "Outline";
 
-		UIDropDownMenu_SetWidth(self, 180);
-		UIDropDownMenu_Initialize(self, InterfaceOptionsDisplayPanelOutline_Initialize);
-		UIDropDownMenu_SetSelectedValue(self, value);
+	local isOutlineModeSupported = IsOutlineModeSupported();
+	local isOutlineModeAllowed = IsOutlineModeAllowed();
+	local canOutlineModeBeTurnedOn = isOutlineModeSupported and isOutlineModeAllowed;
 
-		self.SetValue = 
-			function (self, value)
-				self.value = value;
+	local value = canOutlineModeBeTurnedOn and GetCVar(self.cvar) or "0";
+	self.defaultValue = canOutlineModeBeTurnedOn and GetCVarDefault(self.cvar) or "0";
+	self.value = value;
+	self.oldValue = value;
+
+	UIDropDownMenu_SetWidth(self, 180);
+	UIDropDownMenu_Initialize(self, InterfaceOptionsDisplayPanelOutline_Initialize);
+	UIDropDownMenu_SetSelectedValue(self, value);
+
+	self.SetValue = 
+		function (self, value)
+			self.value = value;
+			if ( canOutlineModeBeTurnedOn ) then
 				SetCVar(self.cvar, self.value);
-				UIDropDownMenu_SetSelectedValue(self, self.value);
 			end
-		self.GetValue =
-			function (self)
-				return UIDropDownMenu_GetSelectedValue(self);
-			end
-		self.RefreshValue =
-			function (self)
-				UIDropDownMenu_Initialize(self, InterfaceOptionsDisplayPanelOutline_Initialize);
-				UIDropDownMenu_SetSelectedValue(self, self.value);
-			end
-			
-		self:UnregisterEvent(event);
+			UIDropDownMenu_SetSelectedValue(self, self.value);
+		end
+	self.GetValue =
+		function (self)
+			return UIDropDownMenu_GetSelectedValue(self);
+		end
+	self.RefreshValue =
+		function (self)
+			UIDropDownMenu_Initialize(self, InterfaceOptionsDisplayPanelOutline_Initialize);
+			UIDropDownMenu_SetSelectedValue(self, self.value);
+		end
+
+	if ( canOutlineModeBeTurnedOn ) then
+		self.tooltip = OPTION_TOOLTIP_OBJECT_NPC_OUTLINE;
+		UIDropDownMenu_EnableDropDown(self);
+	elseif ( not isOutlineModeSupported ) then
+		self.tooltip = OPTION_TOOLTIP_OBJECT_NPC_OUTLINE_NOT_SUPPORTED;
+		UIDropDownMenu_DisableDropDown(self);
+	elseif ( not isOutlineModeAllowed ) then
+		self.tooltip = OPTION_TOOLTIP_OBJECT_NPC_OUTLINE_NOT_ALLOWED;
+		UIDropDownMenu_DisableDropDown(self);
 	end
 end
 
@@ -624,6 +644,10 @@ function InterfaceOptionsDisplayPanelOutline_Initialize()
 		info.checked = nil;
 	end
 	UIDropDownMenu_AddButton(info);
+
+	if ( not IsOutlineModeSupported() or not IsOutlineModeAllowed() ) then
+		return;
+	end
 
 	info.text = OBJECT_NPC_OUTLINE_MODE_ONE;
 	info.func = InterfaceOptionsDisplayPanelOutlineDropDown_OnClick;
@@ -753,6 +777,11 @@ end
 
 -- [[ Social Options Panel ]] --
 
+TwitterData = {
+	linked = false,
+	screenName = nil
+}	
+
 SocialPanelOptions = {
 	profanityFilter = { text = "PROFANITY_FILTER" },	--The tooltip text is also directly set in InterfaceOptionsSocialPanelProfanityFilter_UpdateDisplay
 	chatBubbles = { text="CHAT_BUBBLES_TEXT" },
@@ -763,6 +792,7 @@ SocialPanelOptions = {
 	showChatIcons = { text="SHOW_CHAT_ICONS" },	
 	wholeChatWindowClickable = { text = "CHAT_WHOLE_WINDOW_CLICKABLE" },
 	chatMouseScroll = { text = "CHAT_MOUSE_WHEEL_SCROLL" },
+	enableTwitter = { text = "SOCIAL_ENABLE_TWITTER_FUNCTIONALITY" },
 }
 
 function InterfaceOptionsSocialPanel_OnLoad (self)
@@ -785,9 +815,18 @@ function InterfaceOptionsSocialPanel_OnLoad (self)
 
 	self:RegisterEvent("BN_DISCONNECTED");
 	self:RegisterEvent("BN_CONNECTED");
+	self:RegisterEvent("TWITTER_STATUS_UPDATE");
+	self:RegisterEvent("TWITTER_LINK_RESULT");
 	self:SetScript("OnEvent", InterfaceOptionsSocialPanel_OnEvent);
+	
+	-- Send an event to the server to request Twitter status and enable social UI if checked
+	C_Social.TwitterCheckStatus();
 end
 
+function InterfaceOptionsSocialPanel_OnHide(self)
+	SocialBrowserFrame:Hide();
+end
+	
 function InterfaceOptionsSocialPanel_OnEvent(self, event, ...)
 	BlizzardOptionsPanel_OnEvent(self, event, ...);
 
@@ -799,6 +838,28 @@ function InterfaceOptionsSocialPanel_OnEvent(self, event, ...)
 		InterfaceOptionsSocialPanelProfanityFilter_UpdateDisplay();
 	elseif ( event == "BN_DISCONNECTED" or event == "BN_CONNECTED" ) then
 		InterfaceOptionsSocialPanelProfanityFilter_UpdateDisplay();
+	elseif ( event == "TWITTER_STATUS_UPDATE" ) then
+		local enabled, linked, screenName = ...;
+		if (enabled) then
+			self.EnableTwitter:Show();
+			self.TwitterLoginButton:Show();
+			TwitterData["linked"] = linked;
+			if (linked) then
+				TwitterData["screenName"] = "@" .. screenName;
+			end
+			Twitter_Update();
+		end
+	elseif ( event == "TWITTER_LINK_RESULT" ) then
+		local linked, screenName, errorMsg = ...;
+		SocialBrowserFrame:Hide();
+		TwitterData["linked"] = linked;
+		if (linked) then
+			TwitterData["screenName"] = "@" .. screenName;
+			UIErrorsFrame:AddMessage(SOCIAL_TWITTER_CONNECT_SUCCESS_MESSAGE, 1.0, 1.0, 0.0, 1.0);
+		else
+			UIErrorsFrame:AddMessage(SOCIAL_TWITTER_CONNECT_FAIL_MESSAGE, 1.0, 0.1, 0.1, 1.0);
+		end
+		Twitter_Update();
 	end
 end
 
@@ -1168,6 +1229,45 @@ end
 
 function InterfaceOptionsSocialPanelTimestamps_OnClick(self)
 	InterfaceOptionsSocialPanelTimestamps:SetValue(self.value);
+end
+
+-- [[ Twitter options ]] --
+
+function Twitter_GetLoginStatus()
+	local statusText = (GRAY_FONT_COLOR_CODE .. SOCIAL_TWITTER_STATUS_NOT_CONNECTED .. FONT_COLOR_CODE_CLOSE);
+	if (TwitterData["linked"]) then
+		statusText = (GREEN_FONT_COLOR_CODE .. format(SOCIAL_TWITTER_STATUS_CONNECTED, TwitterData["screenName"]) .. FONT_COLOR_CODE_CLOSE);	
+	end
+	return TwitterData["linked"], statusText;
+end
+
+function Twitter_SetEnabled(value)
+	local enabled = (value == "1");
+	InterfaceOptionsSocialPanel.TwitterLoginButton:SetEnabled(enabled);
+end
+
+function Twitter_Update()
+	local linked, statusText = Twitter_GetLoginStatus();
+	local panel = InterfaceOptionsSocialPanel;
+
+	if (linked) then
+		panel.TwitterLoginButton:SetText(SOCIAL_TWITTER_DISCONNECT);
+	else
+		panel.TwitterLoginButton:SetText(SOCIAL_TWITTER_SIGN_IN);
+	end
+	panel.TwitterLoginButton:SetWidth(panel.TwitterLoginButton:GetTextWidth() + 30);
+
+	panel.EnableTwitter.LoginStatus:SetText(statusText);
+end
+
+function Twitter_LoginButton_OnClick(self)
+	if (TwitterData["linked"]) then
+		C_Social.TwitterDisconnect();
+	else
+		SocialBrowserFrame:Show();
+		C_Social.TwitterConnect();
+	end
+	Twitter_Update();
 end
 
 -- [[ ActionBars Options Panel ]] --
@@ -2209,7 +2309,6 @@ HelpPanelOptions = {
 	showGameTips = { text = "SHOW_TIPOFTHEDAY_TEXT" },
 	UberTooltips = { text = "USE_UBERTOOLTIPS" },
 	scriptErrors = { text = "SHOW_LUA_ERRORS" },
-	colorblindMode = { text = "USE_COLORBLIND_MODE" },
 	enableMovePad = { text = "MOVE_PAD" },
 }
 
@@ -2240,4 +2339,94 @@ function InterfaceOptionsHelpPanel_OnEvent(self, event, ...)
 		end
 	end
 	BlizzardOptionsPanel_OnEvent(self, event, ...);
+end
+
+-- [[ Accessibility Options Panel ]] --
+
+AccessibilityPanelOptions = {
+	enableMovePad = { text = "MOVE_PAD" },
+	colorblindMode = { text = "USE_COLORBLIND_MODE" },
+	colorblindWeaknessFactor = { text = "ADJUST_COLORBLIND_STRENGTH", minValue = 0.05, maxValue = 1.0, valueStep = 0.05 },
+	colorblindSimulator = { text = "COLORBLIND_FILTER" },
+}
+
+function InterfaceOptionsAccessibilityPanel_OnLoad(self)
+	self.name = ACCESSIBILITY_LABEL;
+	self.options = AccessibilityPanelOptions;
+	InterfaceOptionsPanel_OnLoad(self);
+
+	self:SetScript("OnEvent", InterfaceOptionsAccessibilityPanel_OnEvent);
+end
+
+function InterfaceOptionsAccessibilityPanel_OnEvent(self, event, ...)
+	BlizzardOptionsPanel_OnEvent(self, event, ...);
+end
+
+function InterfaceOptionsAccessibilityPanelColorFilterDropDown_OnEvent(self, event, ...)
+	if ( event == "PLAYER_ENTERING_WORLD" ) then
+		self.cvar = "colorblindSimulator";
+
+		local value = BlizzardOptionsPanel_GetCVarSafe(self.cvar);
+		self.defaultValue = GetCVarDefault(self.cvar);
+		self.value = value;
+		self.oldValue = value;
+
+		UIDropDownMenu_SetWidth(self, 130);
+		UIDropDownMenu_Initialize(self,InterfaceOptionsAccessibilityPanelColorFilterDropDown_Initialize);
+		UIDropDownMenu_SetSelectedValue(self, value);
+
+		function self:SetValue(value)
+			self.value = value;
+			BlizzardOptionsPanel_SetCVarSafe(self.cvar, value);
+			UIDropDownMenu_SetSelectedValue(self, value);
+
+			if self.value == 0 then
+				InterfaceOptionsAccessibilityPanelColorblindStrengthSlider:Disable();
+			else
+				InterfaceOptionsAccessibilityPanelColorblindStrengthSlider:Enable();
+			end
+		end
+
+		function self:GetValue()
+			return UIDropDownMenu_GetSelectedValue(self);
+		end
+
+		function self:RefreshValue()
+			UIDropDownMenu_Initialize(self, InterfaceOptionsAccessibilityPanelColorFilterDropDown_Initialize);
+			UIDropDownMenu_SetSelectedValue(self, self.value);
+		end
+			
+		self:UnregisterEvent(event);
+	end
+end
+
+function InterfaceOptionsAccessibilityPanelColorFilterDropDown_Initialize()
+	local selectedValue = UIDropDownMenu_GetSelectedValue(InterfaceOptionsAccessibilityPanelColorFilterDropDown);
+	local info = UIDropDownMenu_CreateInfo();
+
+	info.func = InterfaceOptionsAccessibilityPanelColorFilterDropDown_OnClick;
+
+	info.text = COLORBLIND_OPTION_NONE;
+	info.value = 0;
+	info.checked = info.value == selectedValue;
+	UIDropDownMenu_AddButton(info);
+
+	info.text = COLORBLIND_OPTION_PROTANOPIA;
+	info.value = 1;
+	info.checked = info.value == selectedValue;
+	UIDropDownMenu_AddButton(info);
+
+	info.text = COLORBLIND_OPTION_DEUTERANOPIA;
+	info.value = 2;
+	info.checked = info.value == selectedValue;
+	UIDropDownMenu_AddButton(info);
+
+	info.text = COLORBLIND_OPTION_TRITANOPIA;
+	info.value = 3;
+	info.checked = info.value == selectedValue;
+	UIDropDownMenu_AddButton(info);
+end
+
+function InterfaceOptionsAccessibilityPanelColorFilterDropDown_OnClick(self)
+	InterfaceOptionsAccessibilityPanelColorFilterDropDown:SetValue(self.value);
 end

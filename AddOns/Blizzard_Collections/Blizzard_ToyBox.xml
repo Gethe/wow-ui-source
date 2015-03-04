@@ -1,0 +1,284 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\FrameXML\UI.xsd">
+	<Script file="Blizzard_ToyBox.lua"/>
+	
+	<CheckButton name="ToySpellButtonTemplate" inherits="CollectionsSpellButtonTemplate" virtual="true">
+		<Scripts>
+			<OnLoad>
+				CollectionsSpellButton_OnLoad(self, ToySpellButton_UpdateButton)
+			</OnLoad>
+			
+			<OnClick>
+				if ( IsModifiedClick() ) then
+					ToySpellButton_OnModifiedClick(self, button);
+				elseif (not self.isPassive) then
+					ToySpellButton_OnClick(self, button);
+				end
+			</OnClick>
+			
+			<OnShow function="ToySpellButton_OnShow"/>
+			<OnHide function="ToySpellButton_OnHide"/>
+			
+			<OnDragStart function="ToySpellButton_OnDrag"/>
+			<OnReceiveDrag function="ToySpellButton_OnDrag"/>
+			
+			<OnEnter function="ToySpellButton_OnEnter"/>
+		</Scripts>
+	</CheckButton>
+
+	<Frame name="ToyBox" parent="CollectionsJournal" setAllPoints="true" hidden="true">
+		<Frames>
+			<StatusBar parentKey="progressBar" inherits="CollectionsProgressBarTemplate" />
+			
+			<!-- Searching -->
+			<EditBox parentKey="searchBox" inherits="SearchBoxTemplate" letters="40">
+				<Size x="115" y="20"/>
+				<Anchors>
+					<Anchor point="TOPRIGHT" x="-107" y="-35"/>
+				</Anchors>
+				<Scripts>
+					<OnTextChanged function="ToyBox_OnSearchTextChanged"/>
+				</Scripts>
+			</EditBox>
+			<Button name="$parentFilterButton" inherits="UIMenuButtonStretchTemplate" text="FILTER">
+				<Size x="93" y="22"/>
+				<Anchors>
+					<Anchor point="TOPRIGHT" x="-12" y="-34"/>
+				</Anchors>
+				<Layers>
+					<Layer level="ARTWORK">
+						<Texture parentKey="Icon" file="Interface\ChatFrame\ChatFrameExpandArrow">
+							<Size x="10" y="12"/>
+							<Anchors>
+								<Anchor point="RIGHT" relativeKey="$parent.Right" relativePoint="RIGHT" x="-5"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnClick>
+						PlaySound("igMainMenuOptionCheckBoxOn");
+						ToggleDropDownMenu(1, nil, ToyBoxFilterDropDown, "ToyBoxFilterButton", 74, 15);
+					</OnClick>
+				</Scripts>
+			</Button>
+			<Frame name="$parentFilterDropDown" inherits="UIDropDownMenuTemplate">
+				<Scripts>
+					<OnLoad function="ToyBoxFilterDropDown_OnLoad"/>
+				</Scripts>
+			</Frame>
+
+			<Frame parentKey="favoriteHelpBox" inherits="GlowBoxTemplate" hidden="false" frameStrata="DIALOG" >
+				<Size x="220" y="65"/>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativePoint="BOTTOMRIGHT" x="0" y="0"/>
+				</Anchors>
+				<Layers>
+					<Layer level="ARTWORK">
+						<FontString parentKey="BigText" inherits="GameFontHighlight" text="TOYBOX_FAVORITE_HELP" justifyH="LEFT">
+							<Size x="176" y="0"/>
+							<Anchors>
+								<Anchor point="TOP" x="-10" y="-12"/>
+							</Anchors>
+						</FontString>
+						<Texture parentKey="ArrowUp" inherits="HelpPlateArrowUP">
+							<Size x="53" y="21"/>
+							<Anchors>
+								<Anchor point="BOTTOM" relativePoint="TOPLEFT" x="37" y="-3"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+					<Layer level="BORDER">
+						<Texture parentKey="ArrowGlowUp" inherits="HelpPlateArrow-GlowUP" alphaMode="ADD" alpha="0.5">
+							<Size x="53" y="21"/>
+							<Anchors>
+								<Anchor point="BOTTOM" relativePoint="TOPLEFT" x="37" y="-3"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+				<Frames>
+					<Button parentKey="CloseButton" inherits="UIPanelCloseButton">
+						<Anchors>
+							<Anchor point="TOPRIGHT" x="6" y="6"/>
+						</Anchors>
+						<Scripts>
+							<OnClick>
+								self:GetParent():Hide();
+								SetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_TOYBOX_FAVORITE, true);
+							</OnClick>
+						</Scripts>
+					</Button>
+				</Frames>
+				<Scripts>
+					<OnLoad>
+						self:SetHeight(self.BigText:GetHeight() + 29);
+					</OnLoad>
+				</Scripts>
+			</Frame>
+
+			<Frame parentKey="mousewheelPagingHelpBox" inherits="GlowBoxTemplate" hidden="true" frameStrata="DIALOG" >
+				<Size x="220" y="65"/>
+				<Anchors>
+					<Anchor point="BOTTOMRIGHT" relativeTo="ToyBox" relativePoint="BOTTOMRIGHT" x="-30" y="30"/>
+				</Anchors>
+				<Layers>
+					<Layer level="ARTWORK">
+						<FontString parentKey="BigText" inherits="GameFontHighlight" text="TOYBOX_MOUSEWHEEL_PAGING_HELP" justifyH="LEFT">
+							<Size x="176" y="0"/>
+							<Anchors>
+								<Anchor point="TOP" x="-10" y="-12"/>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+				<Frames>
+					<Button parentKey="CloseButton" inherits="UIPanelCloseButton">
+						<Anchors>
+							<Anchor point="TOPRIGHT" x="6" y="6"/>
+						</Anchors>
+						<Scripts>
+							<OnClick>
+								self:GetParent():Hide();
+								SetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_TOYBOX_MOUSEWHEEL_PAGING, true);
+							</OnClick>
+						</Scripts>
+					</Button>
+				</Frames>
+			</Frame>
+
+			<Frame parentKey="iconsFrame" inherits="CollectionsBackgroundTemplate">
+				<Layers>
+					<Layer level="BORDER" textureSubLevel="1">
+						<Texture parentKey="watermark" atlas="collections-watermark-toy" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="BOTTOMRIGHT" relativePoint="BOTTOMRIGHT" x="-25" y="17"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+				<!-- Toy Buttons -->
+				<Frames>
+					<CheckButton parentKey="spellButton1" inherits="ToySpellButtonTemplate" id="1">
+						<Anchors>
+							<Anchor point="TOPLEFT" x="40" y="-53" />
+						</Anchors>
+					</CheckButton>
+					<CheckButton parentKey="spellButton2" inherits="ToySpellButtonTemplate" id="2">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeKey="$parent.spellButton1" x="208" y="0" />
+						</Anchors>
+					</CheckButton>
+					<CheckButton parentKey="spellButton3" inherits="ToySpellButtonTemplate" id="3">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeKey="$parent.spellButton2" x="208" y="0" />
+						</Anchors>
+					</CheckButton>
+					<CheckButton parentKey="spellButton4" inherits="ToySpellButtonTemplate" id="4">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeKey="$parent.spellButton1" relativePoint="BOTTOMLEFT" x="0" y="-16" />
+						</Anchors>
+					</CheckButton>
+					<CheckButton parentKey="spellButton5" inherits="ToySpellButtonTemplate" id="5">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeKey="$parent.spellButton4" x="208" y="0" />
+						</Anchors>
+					</CheckButton>
+					<CheckButton parentKey="spellButton6" inherits="ToySpellButtonTemplate" id="6">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeKey="$parent.spellButton5" x="208" y="0" />
+						</Anchors>
+					</CheckButton>
+					<CheckButton parentKey="spellButton7" inherits="ToySpellButtonTemplate" id="7">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeKey="$parent.spellButton4" relativePoint="BOTTOMLEFT" x="0" y="-16" />
+						</Anchors>
+					</CheckButton>
+					<CheckButton parentKey="spellButton8" inherits="ToySpellButtonTemplate" id="8">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeKey="$parent.spellButton7" x="208" y="0" />
+						</Anchors>
+					</CheckButton>
+					<CheckButton parentKey="spellButton9" inherits="ToySpellButtonTemplate" id="9">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeKey="$parent.spellButton8" x="208" y="0" />
+						</Anchors>
+					</CheckButton>
+					<CheckButton parentKey="spellButton10" inherits="ToySpellButtonTemplate" id="10">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeKey="$parent.spellButton7" relativePoint="BOTTOMLEFT" x="0" y="-16" />
+						</Anchors>
+					</CheckButton>
+					<CheckButton parentKey="spellButton11" inherits="ToySpellButtonTemplate" id="11">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeKey="$parent.spellButton10" x="208" y="0" />
+						</Anchors>
+					</CheckButton>
+					<CheckButton parentKey="spellButton12" inherits="ToySpellButtonTemplate" id="12">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeKey="$parent.spellButton11" x="208" y="0" />
+						</Anchors>
+					</CheckButton>
+					<CheckButton parentKey="spellButton13" inherits="ToySpellButtonTemplate" id="13">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeKey="$parent.spellButton10" relativePoint="BOTTOMLEFT" x="0" y="-16" />
+						</Anchors>
+					</CheckButton>
+					<CheckButton parentKey="spellButton14" inherits="ToySpellButtonTemplate" id="14">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeKey="$parent.spellButton13" x="208" y="0" />
+						</Anchors>
+					</CheckButton>
+					<CheckButton parentKey="spellButton15" inherits="ToySpellButtonTemplate" id="15">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeKey="$parent.spellButton14"  x="208" y="0" />
+						</Anchors>
+					</CheckButton>
+					<CheckButton parentKey="spellButton16" inherits="ToySpellButtonTemplate" id="16">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeKey="$parent.spellButton13" relativePoint="BOTTOMLEFT" x="0" y="-16" />
+						</Anchors>
+					</CheckButton>
+					<CheckButton parentKey="spellButton17" inherits="ToySpellButtonTemplate" id="17">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeKey="$parent.spellButton16" x="208" y="0" />
+						</Anchors>
+					</CheckButton>
+					<CheckButton parentKey="spellButton18" inherits="ToySpellButtonTemplate" id="18">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeKey="$parent.spellButton17" x="208" y="0" />
+						</Anchors>
+					</CheckButton>
+				</Frames>
+			</Frame>
+
+			<!-- Paging -->
+			<Frame parentKey="navigationFrame" setAllPoints="true">
+				<Layers>
+					<Layer level="OVERLAY">
+						<FontString parentKey="pageText" inherits="CollectionsPageTextTemplate" />
+					</Layer>
+				</Layers>
+				<Frames>
+					<Button parentKey="prevPageButton" inherits="CollectionsPrevPageButton">
+						<Scripts>
+							<OnClick function="ToyBoxPrevPageButton_OnClick"/>
+						</Scripts>
+					</Button>
+					<Button parentKey="nextPageButton" inherits="CollectionsNextPageButton">
+						<Scripts>
+							<OnClick function="ToyBoxNextPageButton_OnClick"/>
+						</Scripts>
+					</Button>
+				</Frames>
+			</Frame>
+			<Frame name="$parentToyOptionsMenu" inherits="UIDropDownMenuTemplate" enableMouse="true" parentKey="toyOptionsMenu"/>
+		</Frames>
+		<Scripts>
+			<OnLoad function="ToyBox_OnLoad"/>
+			<OnEvent function="ToyBox_OnEvent"/>
+			<OnShow function="ToyBox_OnShow"/>
+			<OnMouseWheel function="ToyBox_OnMouseWheel"/>
+		</Scripts>
+	</Frame>
+</Ui>

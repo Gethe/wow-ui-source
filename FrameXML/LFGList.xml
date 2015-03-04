@@ -22,7 +22,8 @@
 			<Frame parentKey="RoleCount" setAllPoints="true">
 				<Layers>
 					<Layer level="ARTWORK">
-						<Texture parentKey="DamagerIcon" atlas="groupfinder-icon-role-large-dps" useAtlasSize="true">
+						<Texture parentKey="DamagerIcon" atlas="groupfinder-icon-role-large-dps">
+							<Size x="17" y="17"/>
 							<Anchors>
 								<Anchor point="RIGHT" x="-11" y="0"/>
 							</Anchors>
@@ -33,7 +34,8 @@
 								<Anchor point="RIGHT" relativeKey="$parent.DamagerIcon" relativePoint="LEFT" x="-1" y="0"/>
 							</Anchors>
 						</FontString>
-						<Texture parentKey="HealerIcon" atlas="groupfinder-icon-role-large-heal" useAtlasSize="true">
+						<Texture parentKey="HealerIcon" atlas="groupfinder-icon-role-large-heal">
+							<Size x="17" y="17"/>
 							<Anchors>
 								<Anchor point="RIGHT" relativeKey="$parent.DamagerCount" relativePoint="LEFT" x="-4" y="0"/>
 							</Anchors>
@@ -44,7 +46,8 @@
 								<Anchor point="RIGHT" relativeKey="$parent.HealerIcon" relativePoint="LEFT" x="-1" y="0"/>
 							</Anchors>
 						</FontString>
-						<Texture parentKey="TankIcon" atlas="groupfinder-icon-role-large-tank" useAtlasSize="true">
+						<Texture parentKey="TankIcon" atlas="groupfinder-icon-role-large-tank">
+							<Size x="17" y="17"/>
 							<Anchors>
 								<Anchor point="RIGHT" relativeKey="$parent.HealerCount" relativePoint="LEFT" x="-4" y="0"/>
 							</Anchors>
@@ -61,31 +64,54 @@
 			<Frame parentKey="Enumerate" setAllPoints="true">
 				<Layers>
 					<Layer level="ARTWORK">
-						<Texture parentKey="Icon1" parentArray="Icons" atlas="groupfinder-icon-role-large-tank" useAtlasSize="true">
+						<Texture parentKey="Icon1" parentArray="Icons" atlas="groupfinder-icon-role-large-tank">
+							<Size x="18" y="18"/>
 							<Anchors>
 								<Anchor point="RIGHT" relativeKey="$parent" relativePoint="RIGHT" x="-12" y="0"/>
 							</Anchors>
 						</Texture>
-						<Texture parentKey="Icon2" parentArray="Icons" atlas="groupfinder-icon-role-large-tank" useAtlasSize="true">
+						<Texture parentKey="Icon2" parentArray="Icons" atlas="groupfinder-icon-role-large-tank">
+							<Size x="18" y="18"/>
 							<Anchors>
 								<Anchor point="CENTER" relativeKey="$parent.Icon1" relativePoint="CENTER" x="-18" y="0"/>
 							</Anchors>
 						</Texture>
-						<Texture parentKey="Icon3" parentArray="Icons" atlas="groupfinder-icon-role-large-tank" useAtlasSize="true">
+						<Texture parentKey="Icon3" parentArray="Icons" atlas="groupfinder-icon-role-large-tank">
+							<Size x="18" y="18"/>
 							<Anchors>
 								<Anchor point="CENTER" relativeKey="$parent.Icon2" relativePoint="CENTER" x="-18" y="0"/>
 							</Anchors>
 						</Texture>
-						<Texture parentKey="Icon4" parentArray="Icons" atlas="groupfinder-icon-role-large-tank" useAtlasSize="true">
+						<Texture parentKey="Icon4" parentArray="Icons" atlas="groupfinder-icon-role-large-tank">
+							<Size x="18" y="18"/>
 							<Anchors>
 								<Anchor point="CENTER" relativeKey="$parent.Icon3" relativePoint="CENTER" x="-18" y="0"/>
 							</Anchors>
 						</Texture>
-						<Texture parentKey="Icon5" parentArray="Icons" atlas="groupfinder-icon-role-large-tank" useAtlasSize="true">
+						<Texture parentKey="Icon5" parentArray="Icons" atlas="groupfinder-icon-role-large-tank">
+							<Size x="18" y="18"/>
 							<Anchors>
 								<Anchor point="CENTER" relativeKey="$parent.Icon4" relativePoint="CENTER" x="-18" y="0"/>
 							</Anchors>
 						</Texture>
+					</Layer>
+				</Layers>
+			</Frame>
+			<Frame parentKey="PlayerCount" setAllPoints="true">
+				<Layers>
+					<Layer level="ARTWORK">
+						<Texture parentKey="Icon" atlas="groupfinder-waitdot">
+							<Size x="14" y="13"/>
+							<Anchors>
+								<Anchor point="RIGHT" relativeKey="$parent" relativePoint="RIGHT" x="-12" y="0"/>
+							</Anchors>
+						</Texture>
+						<FontString parentKey="Count" inherits="GameFontHighlightSmall" justifyH="CENTER">
+							<Size x="17" y="14"/>
+							<Anchors>
+								<Anchor point="RIGHT" relativeKey="$parent.Icon" relativePoint="LEFT" x="-1" y="0"/>
+							</Anchors>
+						</FontString>
 					</Layer>
 				</Layers>
 			</Frame>
@@ -185,12 +211,12 @@
 				</Scripts>
 			</Frame>
 			<Button parentKey="RoleIcon1">
-				<Size x="19" y="19"/>
+				<Size x="18" y="18"/>
 				<Anchors>
-					<Anchor point="LEFT" x="116" y="-2"/>
+					<Anchor point="LEFT" x="116" y="0"/>
 				</Anchors>
-				<NormalTexture file="Interface\LFGFrame\UI-LFG-ICON-PORTRAITROLES"/>
-				<HighlightTexture file="Interface\LFGFrame\UI-LFG-ICON-PORTRAITROLES" alphaMode="ADD"/>
+				<NormalTexture/>
+				<HighlightTexture alphaMode="ADD"/>
 				<Scripts>
 					<OnClick>
 						PlaySound("igMainMenuOptionCheckBoxOn");
@@ -199,12 +225,12 @@
 				</Scripts>
 			</Button>
 			<Button parentKey="RoleIcon2">
-				<Size x="19" y="19"/>
+				<Size x="18" y="18"/>
 				<Anchors>
 					<Anchor point="LEFT" relativeKey="$parent.RoleIcon1" relativePoint="RIGHT" x="3" y="0"/>
 				</Anchors>
-				<NormalTexture file="Interface\LFGFrame\UI-LFG-ICON-PORTRAITROLES"/>
-				<HighlightTexture file="Interface\LFGFrame\UI-LFG-ICON-PORTRAITROLES" alphaMode="ADD"/>
+				<NormalTexture/>
+				<HighlightTexture alphaMode="ADD"/>
 				<Scripts>
 					<OnClick>
 						PlaySound("igMainMenuOptionCheckBoxOn");
@@ -1155,7 +1181,7 @@
 									GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
 									GameTooltip:SetText(self.activityName, HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b);
 									if ( self.comment ~= "" ) then
-										GameTooltip:AddLine(string.format(LFG_LIST_IN_QUOTES, self.comment), GRAY_FONT_COLOR.r, GRAY_FONT_COLOR.g, GRAY_FONT_COLOR.b, true);
+										GameTooltip:AddLine(string.format(LFG_LIST_IN_QUOTES, self.comment), LFG_LIST_COMMENT_FONT_COLOR.r, LFG_LIST_COMMENT_FONT_COLOR.g, LFG_LIST_COMMENT_FONT_COLOR.b, true);
 									end
 									GameTooltip:Show();
 								end
@@ -1169,7 +1195,7 @@
 						</Anchors>
 						<Scripts>
 							<OnEnter>
-								if ( self.RoleCount:IsShown() ) then
+								if ( self.RoleCount:IsShown() or self.PlayerCount:IsShown() ) then
 									GameTooltip:SetOwner(self, "ANCHOR_TOP");
 									GameTooltip:SetText(string.format(LFG_LIST_MEMBER_COUNT, GetNumGroupMembers(LE_PARTY_CATEGORY_HOME)));
 									GameTooltip:Show();
@@ -1183,6 +1209,39 @@
 							<Anchor point="LEFT" relativeKey="$parent.EntryName" relativePoint="RIGHT" x="5" y="-1"/>
 						</Anchors>
 					</Frame>
+					<CheckButton parentKey="AutoAcceptButton">
+						<Size x="22" y="22"/>
+						<HitRectInsets>
+							<AbsInset left="0" right="-130" top="0" bottom="0"/>
+						</HitRectInsets>
+						<Anchors>
+							<Anchor point="BOTTOMLEFT" relativeKey="$parent.InfoBackground" relativePoint="BOTTOMLEFT" x="12" y="10"/>
+						</Anchors>
+						<Layers>
+							<Layer level="ARTWORK">
+								<FontString parentKey="Label" inherits="GameFontHighlightSmall" justifyH="LEFT" text="LFG_LIST_AUTO_ACCEPT">
+									<Anchors>
+										<Anchor point="LEFT" relativeKey="$parent" relativePoint="RIGHT" x="2" y="0"/>
+									</Anchors>
+								</FontString>
+							</Layer>
+						</Layers>
+						<Scripts>
+							<OnClick>
+								if ( self:GetChecked() ) then
+									PlaySound("igMainMenuOptionCheckBoxOn");
+								else
+									PlaySound("igMainMenuOptionCheckBoxOff");
+								end
+								LFGListUtil_SetAutoAccept(self:GetChecked());
+							</OnClick>
+						</Scripts>
+						<NormalTexture file="Interface\Buttons\UI-CheckBox-Up"/>
+						<PushedTexture file="Interface\Buttons\UI-CheckBox-Down"/>
+						<HighlightTexture file="Interface\Buttons\UI-CheckBox-Highlight" alphaMode="ADD"/>
+						<CheckedTexture file="Interface\Buttons\UI-CheckBox-Check"/>
+						<DisabledCheckedTexture file="Interface\Buttons\UI-CheckBox-Check-Disabled"/>	
+					</CheckButton>
 					<Frame parentKey="Inset" useParentLevel="true" inherits="InsetFrameTemplate">
 						<Size x="215" y="496"/>
 						<Anchors>
@@ -1327,17 +1386,20 @@
 										<Anchor point="CENTER" x="0" y="20"/>
 									</Anchors>
 								</FontString>
-								<Texture parentKey="Waitdot2" hidden="false" alpha="0" atlas="groupfinder-waitdot" useAtlasSize="true">
+								<Texture parentKey="Waitdot2" hidden="false" alpha="0" atlas="groupfinder-waitdot">
+									<Size x="13" y="13"/>
 									<Anchors>
 										<Anchor point="TOP" relativeKey="$parent.Label" relativePoint="BOTTOM" x="0" y="-16"/>
 									</Anchors>
 								</Texture>
-								<Texture parentKey="Waitdot1" hidden="false" alpha="0" atlas="groupfinder-waitdot" useAtlasSize="true">
+								<Texture parentKey="Waitdot1" hidden="false" alpha="0" atlas="groupfinder-waitdot">
+									<Size x="13" y="13"/>
 									<Anchors>
 										<Anchor point="CENTER" relativeKey="$parent.Waitdot2" x="-16" y="0"/>
 									</Anchors>
 								</Texture>
-								<Texture parentKey="Waitdot3" hidden="false" alpha="0" atlas="groupfinder-waitdot" useAtlasSize="true">
+								<Texture parentKey="Waitdot3" hidden="false" alpha="0" atlas="groupfinder-waitdot">
+									<Size x="13" y="13"/>
 									<Anchors>
 										<Anchor point="CENTER" relativeKey="$parent.Waitdot2" x="16" y="0"/>
 									</Anchors>

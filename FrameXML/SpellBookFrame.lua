@@ -1015,12 +1015,12 @@ function FormatProfession(frame, index)
 			frame.statusBar.capRight:Hide();
 		end
 		-- trial cap
-		if IsTrialAccount() then
+		if ( GameLimitedMode_IsActive() ) then
 			local _, _, profCap = GetRestrictedAccountData();
 			if rank >= profCap then
 				frame.statusBar.capped:Show();
 				frame.statusBar.rankText:SetTextColor(RED_FONT_COLOR.r, RED_FONT_COLOR.g, RED_FONT_COLOR.b);
-				frame.statusBar.tooltip = RED_FONT_COLOR_CODE..TRIAL_CAPPED..FONT_COLOR_CODE_CLOSE;
+				frame.statusBar.tooltip = RED_FONT_COLOR_CODE..GameLimitedMode_GetString("CAP_REACHED")..FONT_COLOR_CODE_CLOSE;
 			else
 				frame.statusBar.capped:Hide();
 				frame.statusBar.rankText:SetTextColor(HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b);
@@ -1089,6 +1089,8 @@ function SpellBook_UpdateProfTab()
 	FormatProfession(SecondaryProfession2, fish);
 	FormatProfession(SecondaryProfession3, cook);
 	FormatProfession(SecondaryProfession4, firstAid);
+	SpellBookPage1:SetDesaturated(false);
+	SpellBookPage2:SetDesaturated(false);	
 end
 
 

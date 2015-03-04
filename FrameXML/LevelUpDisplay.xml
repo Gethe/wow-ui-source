@@ -1,6 +1,7 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\FrameXML\UI.xsd">
 	<Script file="LevelUpDisplay.lua"/>
+	<Script file="TopBannerManager.lua"/>
 
 
 
@@ -822,4 +823,175 @@
 		</Scripts>
 	</Button>
 	
+	
+	
+	
+	<Frame name="BossBanner" parent="UIParent" hidden="true" alpha="1">
+		<Size x="128" y="128"/>
+		<Anchors>
+			<Anchor point="TOP" x="0" y="-120"/>
+		</Anchors>
+		<Layers>
+			<Layer level="BORDER">
+				<Texture parentKey="Banner" hidden="false" alpha="0" alphaMode="BLEND" atlas="BossBanner-BgBanner" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent.SkullCircle" x="0" y="-42"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="BannerGlow" hidden="false" alpha="0" alphaMode="ADD" atlas="BossBanner-BgBanner" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent.SkullCircle" x="0" y="-42"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="ARTWORK">
+				<Texture parentKey="BottomFillagree" hidden="false" alpha="0" alphaMode="BLEND" atlas="BossBanner-BottomFillagree" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent.TopFillagree" x="0" y="-70"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="SkullSpikes" hidden="false" alpha="0" alphaMode="BLEND" atlas="BossBanner-SkullSpikes" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent.SkullCircle" x="-1" y="6"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="RightFillagree" hidden="false" alpha="0" alphaMode="BLEND" atlas="BossBanner-RightFillagree" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent.SkullCircle" x="10" y="6"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="LeftFillagree" hidden="false" alpha="0" alphaMode="BLEND" atlas="BossBanner-LeftFillagree" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent.SkullCircle" x="-10" y="6"/>
+					</Anchors>
+				</Texture>
+				<FontString parentKey="Title" inherits="QuestFont_Enormous" alpha="0" alphaMode="BLEND" text="BOSS_YOU_DEGEATED">
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent.Banner" x="0" y="0"/>
+					</Anchors>
+					<Color r="1" g="0" b="0"/>
+				</FontString>
+				
+				<FontString parentKey="SubTitle" inherits="GameFontNormalLarge" alpha="0" alphaMode="BLEND" text="BOSS_KILL_SUBTITLE">
+					<Anchors>
+						<Anchor point="TOP" relativeKey="$parent.BottomFillagree" relativePoint="BOTTOM" x="0" y="0"/>
+					</Anchors>
+					<Color r="1" g="0" b="0"/>
+				</FontString>
+			</Layer>
+			<Layer level="OVERLAY">
+				<Texture parentKey="SkullCircle" hidden="false" alpha="0" alphaMode="BLEND" atlas="BossBanner-SkullCircle" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent.None"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="RedFlash" hidden="false" alpha="0" alphaMode="ADD" atlas="BossBanner-RedFlash" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent.SkullCircle" x="0" y="3"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="OVERLAY" textureSubLevel="2">
+				<Texture parentKey="XLeft" hidden="false" alpha="0" alphaMode="BLEND" atlas="GarrMission_EncounterBar-Xleft" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent.SkullCircle" x="-1" y="0"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="OVERLAY" textureSubLevel="3">
+				<Texture parentKey="Xright" hidden="false" alpha="0" alphaMode="BLEND" atlas="GarrMission_EncounterBar-Xright" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent.SkullCircle" x="-1" y="0"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Animations>
+			<AnimationGroup parentKey="Anim" setToFinalAlpha="true">
+				<Scale childKey="SkullCircle" duration="0.15" order="1" fromScaleX="5" fromScaleY="5" toScaleX="1" toScaleY="1"/>
+				<Alpha childKey="SkullCircle" duration="0.1" order="1" fromAlpha="0" toAlpha="1"/>
+				<Alpha childKey="Banner" startDelay="0.2" duration="0.25" order="2" fromAlpha="0" toAlpha="1"/>
+				<Scale childKey="Banner" startDelay="0.1" duration="0.3" order="2" fromScaleX="0.1" fromScaleY="1" toScaleX="1" toScaleY="1"/>
+				<Alpha childKey="BottomFillagree" duration="0.15" order="2" fromAlpha="0" toAlpha="1"/>
+				<Alpha childKey="RedFlash" duration="0.15" order="2" fromAlpha="0" toAlpha="1"/>
+				<Scale childKey="RedFlash" duration="0.2" order="2" fromScaleX="0.5" fromScaleY="0.5" toScaleX="1.15" toScaleY="1.15"/>
+				<Alpha childKey="RedFlash" startDelay="0.25" duration="0.5" order="2" fromAlpha="1" toAlpha="0"/>
+				<Scale childKey="SkullSpikes" startDelay="0.1" duration="0.1" order="2" fromScaleX="0.5" fromScaleY="0.5" toScaleX="1" toScaleY="1"/>
+				<Alpha childKey="SkullSpikes" duration="0.1" order="2" fromAlpha="0" toAlpha="1"/>
+				<Alpha childKey="RightFillagree" duration="0.1" order="2" fromAlpha="0" toAlpha="1"/>
+				<Translation childKey="RightFillagree" startDelay="0.15" duration="0.15" order="2" offsetX="37" offsetY="0"/>
+				<Scale childKey="RightFillagree" startDelay="0.15" duration="0.15" order="2" fromScaleX="0.5" fromScaleY="0.5" toScaleX="1" toScaleY="1">
+					<Origin point="BOTTOMLEFT">
+						<Offset x="0" y="0"/>
+					</Origin>
+				</Scale>
+				<Alpha childKey="LeftFillagree" duration="0.1" order="2" fromAlpha="0" toAlpha="1"/>
+				<Translation childKey="LeftFillagree" startDelay="0.15" duration="0.15" order="2" offsetX="-37" offsetY="0"/>
+				<Scale childKey="LeftFillagree" startDelay="0.15" duration="0.15" order="2" fromScaleX="0.5" fromScaleY="0.5" toScaleX="1" toScaleY="1">
+					<Origin point="BOTTOMRIGHT">
+						<Offset x="0" y="0"/>
+					</Origin>
+				</Scale>
+				<Alpha childKey="BannerGlow" startDelay="0.9" duration="0.25" order="2" fromAlpha="0" toAlpha="1"/>
+				<Scale childKey="BannerGlow" startDelay="0.9" duration="0.5" order="2" fromScaleX="0.5" fromScaleY="1" toScaleX="1.6" toScaleY="1"/>
+				<Alpha childKey="BannerGlow" startDelay="1.1" duration="0.6" order="2" fromAlpha="1" toAlpha="0"/>
+				<Alpha childKey="XLeft" startDelay="0.8" duration="0.1" order="2" fromAlpha="0" toAlpha="1"/>
+				<Scale childKey="XLeft" startDelay="0.8" duration="0.15" order="2" fromScaleX="5" fromScaleY="5" toScaleX="1" toScaleY="1"/>
+				<Alpha childKey="Xright" startDelay="0.9" duration="0.1" order="2" fromAlpha="0" toAlpha="1"/>
+				<Scale childKey="Xright" startDelay="0.9" duration="0.15" order="2" fromScaleX="5" fromScaleY="5" toScaleX="1" toScaleY="1"/>
+				<Alpha childKey="Banner" startDelay="2" duration="0.5" order="3" fromAlpha="1" toAlpha="0"/>
+				<Alpha childKey="SkullCircle" startDelay="2" duration="0.5" order="3" fromAlpha="1" toAlpha="0"/>
+				<Alpha childKey="BottomFillagree" startDelay="2" duration="0.5" order="3" fromAlpha="1" toAlpha="0"/>
+				<Alpha childKey="SkullSpikes" startDelay="2" duration="0.5" order="3" fromAlpha="1" toAlpha="0"/>
+				<Alpha childKey="RightFillagree" startDelay="2" duration="0.5" order="3" fromAlpha="1" toAlpha="0"/>
+				<Alpha childKey="LeftFillagree" startDelay="2" duration="0.5" order="3" fromAlpha="1" toAlpha="0"/>
+				<Alpha childKey="XLeft" startDelay="2" duration="0.5" order="3" fromAlpha="1" toAlpha="0"/>
+				<Alpha childKey="Xright" startDelay="2" duration="0.5" order="3" fromAlpha="1" toAlpha="0"/>
+				
+				<Alpha childKey="Title" startDelay="0.0" duration="0.05" order="1" fromAlpha="0" toAlpha="0"/>
+				<Alpha childKey="Title" startDelay="0.2" duration="0.25" order="2" fromAlpha="0" toAlpha="1"/>
+				<Alpha childKey="Title" startDelay="2" duration="0.5" order="3" fromAlpha="1" toAlpha="0"/>
+				<Alpha childKey="SubTitle" startDelay="0.0" duration="0.05" order="1" fromAlpha="0" toAlpha="0"/>
+				<Alpha childKey="SubTitle" startDelay="0.2" duration="0.25" order="2" fromAlpha="0" toAlpha="1"/>
+				<Alpha childKey="SubTitle" startDelay="2" duration="0.5" order="3" fromAlpha="1" toAlpha="0"/>
+				<Scripts>
+					<OnFinished>
+						self:GetParent():Hide();
+						TopBannerManager_BannerFinished();
+					</OnFinished>
+				</Scripts>
+			</AnimationGroup>
+		</Animations>
+		<Scripts>
+			<OnLoad>
+				RegisterCVar("PraiseTheSun");
+				self.PlayBanner = function(self, data)
+					if ( data ) then
+						if ( GetCVarBool("PraiseTheSun") ) then
+							self.Title:SetText(BOSS_YOU_DEFEATED);
+							self.SubTitle:Hide();
+						else
+							self.Title:SetText(data.name);
+							self.SubTitle:Show();
+						end
+						self:Show();
+						self.Anim:Play();
+					end
+				end
+				
+				self.StopBanner = function(self)
+					self.Anim:Stop();
+					self:Hide();
+				end
+				
+				self:RegisterEvent("BOSS_KILL");
+			</OnLoad>
+			<OnEvent>
+				if ( event == "BOSS_KILL" ) then
+					local id, name = ...;
+					TopBannerManager_Show(self, { id = id, name = name });
+				end
+			</OnEvent>
+		</Scripts>
+	</Frame>	
 </Ui>

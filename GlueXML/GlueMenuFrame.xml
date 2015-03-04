@@ -103,5 +103,8 @@
 				</Scripts>
 			</Button>
 		</Frames>
+		<Scripts>
+			<OnShow function = "GlueMenuFrame_OnShow"/>
+		</Scripts>
 	</Frame>
 </Ui>

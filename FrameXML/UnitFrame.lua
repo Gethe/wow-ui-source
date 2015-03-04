@@ -709,7 +709,7 @@ function UnitFrame_UpdateThreatIndicator(indicator, numericIndicator, unit)
 						display = UnitThreatPercentageOfLead(indicator.feedbackUnit, indicator.unit);
 					end
 					if ( display and display ~= 0 ) then
-						numericIndicator.text:SetText(format("%d", display).."%");
+						numericIndicator.text:SetText(format("%1.0f", display).."%");
 						numericIndicator.bg:SetVertexColor(GetThreatStatusColor(status));
 						numericIndicator:Show();
 					else

@@ -11,7 +11,7 @@ VISIBLE_CONTAINER_SPACING = 3;
 CONTAINER_OFFSET_Y = 70;
 CONTAINER_OFFSET_X = 0;
 CONTAINER_SCALE = 0.75;
-BACKPACK_HEIGHT = 251;
+BACKPACK_HEIGHT = 255;
 
 FRAME_THAT_OPENED_BAGS = nil;
 
@@ -445,11 +445,11 @@ function ContainerFrame_Update(frame)
 	--Update Searchbox and sort button
 	if ( id == 0 ) then
 		BagItemSearchBox:SetParent(frame);
-		BagItemSearchBox:SetPoint("TOPLEFT", frame, "TOPLEFT", 54, -35);
+		BagItemSearchBox:SetPoint("TOPLEFT", frame, "TOPLEFT", 54, -37);
 		BagItemSearchBox.anchorBag = frame;
 		BagItemSearchBox:Show();
 		BagItemAutoSortButton:SetParent(frame);
-		BagItemAutoSortButton:SetPoint("TOPRIGHT", frame, "TOPRIGHT", -9, -32);
+		BagItemAutoSortButton:SetPoint("TOPRIGHT", frame, "TOPRIGHT", -9, -34);
 		BagItemAutoSortButton:Show();
 	elseif ( BagItemSearchBox.anchorBag == frame ) then
 		BagItemSearchBox:ClearAllPoints();
@@ -783,7 +783,7 @@ function ContainerFrame_GenerateFrame(frame, size, id)
 			if ( i == 1 ) then
 				-- Anchor the first item differently if its the backpack frame
 				if ( id == 0 ) then
-					itemButton:SetPoint("BOTTOMRIGHT", name, "TOPRIGHT", -12, -221);
+					itemButton:SetPoint("BOTTOMRIGHT", name, "TOPRIGHT", -12, -225);
 				else
 					itemButton:SetPoint("BOTTOMRIGHT", name, "BOTTOMRIGHT", -12, 9);
 				end
@@ -966,7 +966,7 @@ function ContainerFrameItemButton_OnClick(self, button)
 
 	if ( button == "LeftButton" ) then
 		local type, money = GetCursorInfo();
-		if ( SpellCanTargetItem() ) then
+		if ( SpellCanTargetItem() or SpellCanTargetItemID() ) then
 			-- Target the spell with the selected item
 			UseContainerItem(self:GetParent():GetID(), self:GetID());
 		elseif ( type == "guildbankmoney" ) then
@@ -1205,9 +1205,13 @@ function ContainerFrameFilterDropDown_Initialize(self, level)
 	local frame = self:GetParent();
 	local id = frame:GetID();
 	
+	if (id > NUM_BAG_SLOTS + NUM_BANKBAGSLOTS) then
+		return;
+	end
+
 	local info = UIDropDownMenu_CreateInfo();	
 
-	if (id > 0) then -- The actual bank has ID -1, backpack has ID 0, we want to make sure we're looking at a regular or bank bag
+	if (id > 0 and not IsInventoryItemProfessionBag("player", ContainerIDToInventoryID(id))) then -- The actual bank has ID -1, backpack has ID 0, we want to make sure we're looking at a regular or bank bag
 		info.text = BAG_FILTER_ASSIGN_TO;
 		info.isTitle = 1;
 		info.notCheckable = 1;

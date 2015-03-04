@@ -1416,9 +1416,8 @@ function FriendsFrame_UpdateFriends()
 				local characterName = toonName;
 				if ( presenceName ) then
 					nameText = presenceName;
-					-- if no character name but we have a BattleTag, use that
-					if ( isOnline and not characterName and battleTag ) then
-						characterName = battleTag;
+					if ( isOnline ) then
+						characterName = BNet_GetValidatedCharacterName(characterName, battleTag, client);
 					end
 				else
 					nameText = UNKNOWN;				
@@ -1728,7 +1727,10 @@ function FriendsFrameTooltip_Show(self)
 				FriendsFrameTooltip_SetLine(FriendsTooltipToon1Name, nil, text);
 				anchor = FriendsFrameTooltip_SetLine(FriendsTooltipToon1Info, nil, string.format(FRIENDS_TOOLTIP_WOW_INFO_TEMPLATE, zoneName, realmName), -4);
 			else
-				FriendsFrameTooltip_SetLine(FriendsTooltipToon1Name, nil, toonName);
+				if ( isOnline ) then
+					toonName = BNet_GetValidatedCharacterName(toonName, battleTag, client) or "";
+				end
+				FriendsFrameTooltip_SetLine(FriendsTooltipToon1Name, nil, toonName);			
 				anchor = FriendsFrameTooltip_SetLine(FriendsTooltipToon1Info, nil, gameText, -4);
 			end
 		else
@@ -1822,6 +1824,9 @@ function FriendsFrameTooltip_Show(self)
 					end
 					gameText = zoneName;
 				else
+					if ( isOnline ) then
+						toonName = BNet_GetValidatedCharacterName(toonName, battleTag, client) or "";
+					end
 					text = text..toonName;
 				end
 				FriendsFrameTooltip_SetLine(toonNameString, nil, text);

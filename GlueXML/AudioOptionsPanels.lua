@@ -98,6 +98,7 @@ SoundPanelOptions = {
 	Sound_EnableAmbience = { text = "ENABLE_AMBIENCE" },
 	Sound_EnableSFX = { text = "ENABLE_SOUNDFX" },
 	Sound_EnableAllSound = { text = "ENABLE_SOUND" },
+	Sound_EnableDialog = { text = "ENABLE_DIALOG" },
 	Sound_ListenerAtCharacter = { text = "ENABLE_SOUND_AT_CHARACTER" },
 	Sound_EnableEmoteSounds = { text = "ENABLE_EMOTE_SOUNDS" },
 	Sound_EnablePetSounds = { text = "ENABLE_PET_SOUNDS" },

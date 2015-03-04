@@ -382,10 +382,7 @@
 					<OnLoad>
 						SquareButton_SetIcon(self, "RIGHT");
 					</OnLoad>
-					<OnClick>
-						self:SetButtonState("NORMAL");
-						PetStable_NextPage();
-					</OnClick>
+					<OnClick function="PetStable_NextPage"/>
 				</Scripts>
 			</Button>
 			<Button name="PetStablePrevPageButton" inherits="UIPanelSquareButton">
@@ -406,10 +403,7 @@
 					<OnLoad>
 						SquareButton_SetIcon(self, "LEFT");
 					</OnLoad>
-					<OnClick>
-						self:SetButtonState("NORMAL");
-						PetStable_PrevPage();
-					</OnClick>
+					<OnClick function="PetStable_PrevPage"/>
 				</Scripts>
 			</Button>
 		</Frames>
@@ -427,6 +421,7 @@
 				end
 			</OnHide>
 			<OnEvent function="PetStable_OnEvent"/>
+			<OnMouseWheel function="PetStable_OnMouseWheel"/>
 		</Scripts>
 	</Frame>
 </Ui>

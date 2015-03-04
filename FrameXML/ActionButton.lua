@@ -454,8 +454,15 @@ function ActionButton_UpdateCount (self)
 end
 
 function ActionButton_UpdateCooldown (self)
-	local locStart, locDuration = GetActionLossOfControlCooldown(self.action);
-	local start, duration, enable, charges, maxCharges = GetActionCooldown(self.action);
+	local locStart, locDuration;
+	local start, duration, enable, charges, maxCharges;
+	if ( self.spellID ) then
+		locStart, locDuration = GetSpellLossOfControlCooldown(self.spellID);
+		start, duration, enable, charges, maxCharges = GetSpellCooldown(self.spellID);
+	else
+		locStart, locDuration = GetActionLossOfControlCooldown(self.action);
+		start, duration, enable, charges, maxCharges = GetActionCooldown(self.action);
+	end
 
 	if ( (locStart + locDuration) > (start + duration) ) then
 		if ( self.cooldown.currentCooldownType ~= COOLDOWN_TYPE_LOSS_OF_CONTROL ) then

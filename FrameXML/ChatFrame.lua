@@ -2329,11 +2329,15 @@ end
 
 SlashCmdList["FRAMESTACK"] = function(msg)
 	UIParentLoadAddOn("Blizzard_DebugTools");
-	if(msg == tostring(true)) then
-		FrameStackTooltip_Toggle(true);
-	else
-		FrameStackTooltip_Toggle();
+	local showHiddenArg, showRegionsArg = strmatch(msg, "^%s*(%S+)%s+(%S+)%s*$");
+	if ( not showHiddenArg or not showRegionsArg ) then 
+		showHiddenArg = strmatch(msg, "^%s*(%S+)%s*$");
+		showRegionsArg = "1";
 	end
+	local showHidden = showHiddenArg == "true" or showHiddenArg == "1";
+	local showRegions = showRegions == "true" or showRegionsArg == "1";
+
+	FrameStackTooltip_Toggle(showHidden, showRegions);
 end
 
 SlashCmdList["EVENTTRACE"] = function(msg)
@@ -2370,8 +2374,8 @@ SlashCmdList["SPECTATOR_WARGAME"] = function(msg)
 end
 
 SlashCmdList["GUILDFINDER"] = function(msg)
-	if ( IsTrialAccount() ) then
-		UIErrorsFrame:AddMessage(ERR_RESTRICTED_ACCOUNT, 1.0, 0.1, 0.1, 1.0);
+	if ( GameLimitedMode_IsActive() ) then
+		UIErrorsFrame:AddMessage(GameLimitedMode_GetString("ERR_RESTRICTED_ACCOUNT"), 1.0, 0.1, 0.1, 1.0);
 	else
 		ToggleGuildFinder();
 	end
@@ -2393,6 +2397,14 @@ end
 
 SlashCmdList["RAIDFINDER"] = function(msg)
 	PVEFrame_ToggleFrame("GroupFinderFrame", RaidFinderFrame);
+end
+
+SlashCmdList["SHARE"] = function(msg)
+	-- Allow if any social platforms are enabled (currently only Twitter)
+	if (C_Social.IsSocialEnabled()) then
+		SocialFrame_LoadUI();
+		Social_ToggleShow(msg);
+	end
 end
 
 function ChatFrame_SetupListProxyTable(list)
@@ -3013,8 +3025,18 @@ function ChatFrame_MessageEventHandler(self, event, ...)
 			end
 		end
 	
-		if ( type == "SYSTEM" or type == "SKILL" or type == "LOOT" or type == "CURRENCY" or type == "MONEY" or
+		if ( type == "SYSTEM" or type == "SKILL" or type == "CURRENCY" or type == "MONEY" or
 		     type == "OPENING" or type == "TRADESKILLS" or type == "PET_INFO" or type == "TARGETICONS" or type == "BN_WHISPER_PLAYER_OFFLINE") then
+			self:AddMessage(arg1, info.r, info.g, info.b, info.id);
+		elseif (type == "LOOT") then
+			-- Append [Share] hyperlink if this is a valid social item and you are the looter.
+			-- arg5 contains the name of the player who looted
+			if (C_Social.IsSocialEnabled() and UnitName("player") == arg5) then
+				local itemID, creationContext = GetItemInfoFromHyperlink(arg1);
+				if (itemID and C_Social.GetLastItem() == itemID) then
+					arg1 = arg1 .. " " .. Social_GetShareItemLink(itemID, creationContext, true);
+				end
+			end
 			self:AddMessage(arg1, info.r, info.g, info.b, info.id);
 		elseif ( strsub(type,1,7) == "COMBAT_" ) then
 			self:AddMessage(arg1, info.r, info.g, info.b, info.id);
@@ -3023,6 +3045,13 @@ function ChatFrame_MessageEventHandler(self, event, ...)
 		elseif ( strsub(type,1,10) == "BG_SYSTEM_" ) then
 			self:AddMessage(arg1, info.r, info.g, info.b, info.id);
 		elseif ( strsub(type,1,11) == "ACHIEVEMENT" ) then
+			-- Append [Share] hyperlink
+			if (arg12 == UnitGUID("player") and C_Social.IsSocialEnabled()) then
+				local achieveID = GetAchievementInfoFromHyperlink(arg1);
+				if (achieveID) then
+					arg1 = arg1 .. " " .. Social_GetShareAchievementLink(achieveID, true);
+				end
+			end
 			self:AddMessage(format(arg1, "|Hplayer:"..arg2.."|h".."["..coloredName.."]".."|h"), info.r, info.g, info.b, info.id);
 		elseif ( strsub(type,1,18) == "GUILD_ACHIEVEMENT" ) then
 			self:AddMessage(format(arg1, "|Hplayer:"..arg2.."|h".."["..coloredName.."]".."|h"), info.r, info.g, info.b, info.id);
@@ -3031,7 +3060,7 @@ function ChatFrame_MessageEventHandler(self, event, ...)
 		elseif ( type == "FILTERED" ) then
 			self:AddMessage(format(CHAT_FILTERED, arg2), info.r, info.g, info.b, info.id);
 		elseif ( type == "RESTRICTED" ) then
-			self:AddMessage(CHAT_RESTRICTED, info.r, info.g, info.b, info.id);
+			self:AddMessage(GameLimitedMode_GetString("CHAT_RESTRICTED"), info.r, info.g, info.b, info.id);
 		elseif ( type == "CHANNEL_LIST") then
 			if(channelLength > 0) then
 				self:AddMessage(format(_G["CHAT_"..type.."_GET"]..arg1, tonumber(arg8), arg4), info.r, info.g, info.b, info.id);
@@ -3056,8 +3085,12 @@ function ChatFrame_MessageEventHandler(self, event, ...)
 			end
 		elseif (type == "CHANNEL_NOTICE") then
 			local globalstring = _G["CHAT_"..arg1.."_NOTICE_BN"];
-			if ( not globalstring ) then
-				globalstring = _G["CHAT_"..arg1.."_NOTICE"];
+			if( arg1 == "TRIAL_RESTRICTED" ) then
+				globalstring = GameLimitedMode_GetString("CHAT_TRIAL_RESTRICTED_NOTICE");
+			else
+				if ( not globalstring ) then
+					globalstring = _G["CHAT_"..arg1.."_NOTICE"];
+				end
 			end
 			local accessID = ChatHistory_GetAccessID(Chat_GetChatCategory(type), arg8);
 			local typeID = ChatHistory_GetAccessID(infoType, arg8, arg12);
@@ -3091,6 +3124,8 @@ function ChatFrame_MessageEventHandler(self, event, ...)
 			elseif ( arg1 == "FRIEND_ONLINE" or arg1 == "FRIEND_OFFLINE") then
 				local hasFocus, toonName, client, realmName, realmID, faction, race, class, guild, zoneName, level, gameText = BNGetToonInfo(arg13);
 				if (toonName and toonName ~= "" and client and client ~= "") then
+					local _, _, battleTag = BNGetFriendInfoByID(arg13);
+					toonName = BNet_GetValidatedCharacterName(toonName, battleTag, client) or "";
 					local toonNameText = BNet_GetClientEmbeddedTexture(client, 14)..toonName;
 					local playerLink = format("|HBNplayer:%s:%s:%s:%s:%s|h[%s] (%s)|h", arg2, arg13, arg11, Chat_GetChatCategory(type), 0, arg2, toonNameText);
 					message = format(globalstring, playerLink);
@@ -4875,4 +4910,36 @@ function Chat_GetColoredChatName(chatType, chatTarget)
 		local colorString = format("|cff%02x%02x%02x", info.r * 255, info.g * 255, info.b * 255);
 		return format("%s|Hchannel:%s|h[%s]|h|r", colorString, chatType, _G[chatType]);
 	end
+end
+
+
+--------------------------------------------------------------------------------
+-- Social share link functions
+--------------------------------------------------------------------------------
+
+SHARE_ICON_COLOR = "ffffd200";
+SHARE_ICON_TEXT = "|TInterface\\ChatFrame\\UI-ChatIcon-Share:18:18|t";
+
+function Social_GetShareItemLink(itemID, creationContext, earned)
+	if (creationContext == nil) then
+		creationContext = "";
+	end
+	local earnedNum = 0;
+	if (earned) then
+		earnedNum = 1;
+	end
+	return format("|c%s|Hshareitem:%d:%d:%s|h%s|h|r", SHARE_ICON_COLOR, itemID, earnedNum, creationContext, SHARE_ICON_TEXT);
+end
+
+function Social_GetShareAchievementLink(achievementID, earned)
+	local earnedNum = 0;
+	if (earned) then
+		earnedNum = 1;
+	end
+	return format("|c%s|Hshareachieve:%d:%d|h%s|h|r", SHARE_ICON_COLOR, achievementID, earnedNum, SHARE_ICON_TEXT);
+end
+
+function Social_GetShareScreenshotLink()
+	local index = C_Social.GetLastScreenshot();
+	return format("|c%s|Hsharess:%d|h%s|h|r", SHARE_ICON_COLOR, index, SHARE_ICON_TEXT);
 end

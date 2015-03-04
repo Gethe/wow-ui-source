@@ -878,14 +878,12 @@
 					<Layer level="ARTWORK">
 						<FontString name="GuildRecruitmentLevelAnyText" inherits="GameFontHighlightSmall" text="GUILD_RECRUITMENT_ANYLEVEL">
 							<Anchors>
-								<Anchor point="TOP" x="0" y="-26"/>
-								<Anchor point="LEFT" relativeTo="GuildRecruitmentQuestText"/>
+								<Anchor point="TOPLEFT" x="31" y="-26"/>
 							</Anchors>
 						</FontString>
 						<FontString name="GuildRecruitmentLevelMaxText" inherits="GameFontHighlightSmall" text="GUILD_RECRUITMENT_MAXLEVEL">
 							<Anchors>
-								<Anchor point="TOP" x="0" y="-26"/>
-								<Anchor point="LEFT" relativeTo="GuildRecruitmentDungeonText"/>
+								<Anchor point="TOPLEFT" relativePoint="TOP" x="-8" y="-26"/>
 							</Anchors>
 						</FontString>
 					</Layer>

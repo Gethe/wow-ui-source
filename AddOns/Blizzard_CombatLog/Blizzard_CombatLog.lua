@@ -1811,6 +1811,8 @@ local function CombatLog_String_PowerType(powerType, amount, alternatePowerType)
 		return RAGE;
 	elseif ( powerType == SPELL_POWER_ENERGY ) then
 		return ENERGY;
+	elseif ( powerType == SPELL_POWER_COMBO_POINTS ) then
+		return COMBO_POINTS;
 	elseif ( powerType == SPELL_POWER_FOCUS ) then
 		return FOCUS;
 	elseif ( powerType == SPELL_POWER_RUNES ) then
@@ -2267,7 +2269,7 @@ function CombatLog_OnEvent(filterSettings, timestamp, event, hideCaster, sourceG
 				
 				-- Result String
 				if ( missType == "ABSORB" ) then
-					resultStr = CombatLog_String_DamageResultString( resisted, blocked, select(6,...), critical, glancing, crushing, overhealing, textMode, spellId, overkill );
+					resultStr = CombatLog_String_DamageResultString( resisted, blocked, select(7,...), critical, glancing, crushing, overhealing, textMode, spellId, overkill );
 				else
 					resultStr = _G["ACTION_SPELL_PERIODIC_MISSED_"..missType];
 				end
@@ -2483,7 +2485,7 @@ function CombatLog_OnEvent(filterSettings, timestamp, event, hideCaster, sourceG
 			valueEnabled = false;
 			schoolEnabled = false;
 			
-			unconsciousOnDeath = select(4, ...);
+			unconsciousOnDeath = select(5, ...);
 		elseif ( event == "SPELL_DURABILITY_DAMAGE" ) then
 			-- Disable appropriate sections
 			resultEnabled = false;
@@ -2687,7 +2689,7 @@ function CombatLog_OnEvent(filterSettings, timestamp, event, hideCaster, sourceG
 		valueEnabled = false;
 		spellEnabled = false;
 		
-		unconsciousOnDeath = ...;
+		unconsciousOnDeath = select(5, ...);
 	elseif ( event == "ENCHANT_APPLIED" ) then	
 		-- Get the enchant name, item id and item name
 		spellName, itemId, itemName = ...;
@@ -2709,6 +2711,14 @@ function CombatLog_OnEvent(filterSettings, timestamp, event, hideCaster, sourceG
 		sourceEnabled = false;
 		
 	elseif ( event == "UNIT_DIED" or event == "UNIT_DESTROYED" or event == "UNIT_DISSIPATES" ) then
+		local recapID;
+		recapID, unconsciousOnDeath = ...;
+		-- handle death recaps
+		if ( destGUID == UnitGUID("player") ) then
+			local lineColor = COMBATLOG_DEFAULT_COLORS.unitColoring[COMBATLOG_FILTER_MINE];
+			return GetDeathRecapLink(recapID), lineColor.r, lineColor.g, lineColor.b;
+		end
+		
 		-- Swap Source with Dest
 		sourceName = destName;
 		sourceGUID = destGUID;
@@ -2721,9 +2731,8 @@ function CombatLog_OnEvent(filterSettings, timestamp, event, hideCaster, sourceG
 		spellEnabled = false;
 		valueEnabled = false;
 		
-		unconsciousOnDeath = ...;
 	elseif ( event == "ENVIRONMENTAL_DAMAGE" ) then
-		--Environemental Type, Damage standard
+		--Environmental Type, Damage standard
 		environmentalType, amount, overkill, school, resisted, blocked, absorbed, critical, glancing, crushing = ...
 		environmentalType = string.upper(environmentalType);
 		
@@ -3285,7 +3294,7 @@ _G.CombatLog_OnEvent = CombatLog_OnEvent
 function CombatLog_AddEvent(...)
 	if ( DEBUG ) then
 		local info = ChatTypeInfo["COMBAT_MISC_INFO"];
-		local timestamp, event, srcGUID, srcName, srcFlags, dstGUID, dstName, dstFlags = ...
+		local timestamp, event, hideCaster, srcGUID, srcName, srcFlags, dstGUID, dstName, dstFlags = ...
 		local message = format("%s, %s, %s, 0x%x, %s, %s, 0x%x",
 				       --date("%H:%M:%S", timestamp), 
 		                       event,
@@ -3293,7 +3302,7 @@ function CombatLog_AddEvent(...)
 		                       dstGUID, dstName or "nil", dstFlags);
 		
 		for i = 9, select("#", ...) do
-			message = message..", "..(select(i, ...) or "nil");
+			message = message..", "..tostring(select(i, ...));
 		end
 		ChatFrame1:AddMessage(message, info.r, info.g, info.b);
 	end
@@ -3325,7 +3334,7 @@ function(self, event, ...)
 					       dstGUID, dstName or "nil", dstFlags);
 			
 			for i = 9, select("#", ...) do
-				message = message..", "..(select(i, ...) or "nil");
+				message = message..", "..tostring(select(i, ...));
 			end
 			ChatFrame1:AddMessage(message);
 			--COMBATLOG:AddMessage(message);

@@ -306,26 +306,32 @@ function LevelUpDisplay_OnLoad(self)
 	self:RegisterEvent("PET_BATTLE_LEVEL_CHANGED");
 	self:RegisterEvent("PET_BATTLE_CAPTURED");
 	self:RegisterEvent("PET_BATTLE_LOOT_RECEIVED");
-	self:RegisterEvent("LOADING_SCREEN_ENABLED");
-	self:RegisterEvent("LOADING_SCREEN_DISABLED");
 	self:RegisterEvent("GARRISON_BUILDING_ACTIVATED");
 	self:RegisterEvent("CHARACTER_UPGRADE_SPELL_TIER_SET");
 	self.currSpell = 0;
+	
+	self.PlayBanner = function(self, data)
+		self.type = data.type;
+		LevelUpDisplay_StartDisplay(self, data.unlockList);
+	end
+	
+	self.StopBanner = function(self)
+		LevelUpDisplay_StopAllAnims(self);
+		self:Hide();	--We'll restart this toast on PLAYER_ENTERING_WORLD
+		self.currSpell = 0;
+	end
+	
+	self.ResumeBanner = function(self, data)
+		self.type = data.type;
+		LevelUpDisplay_StartDisplay(self, data.unlockList);
+	end
 end
 
 
 
 function LevelUpDisplay_OnEvent(self, event, ...)
 	local arg1 = ...;
-	if event == "LOADING_SCREEN_ENABLED" then
-		LevelUpDisplay_StopAllAnims(self);
-		self:Hide();	--We'll restart this toast on PLAYER_ENTERING_WORLD
-		self.currSpell = 0;
-	elseif event == "LOADING_SCREEN_DISABLED" then
-		if ( self.type ) then
-			LevelUpDisplay_Start(self, self.unlockList);
-		end
-	elseif event ==  "PLAYER_LEVEL_UP" then
+	if event == "PLAYER_LEVEL_UP" then
 		local level = ...
 		self.level = level;
 		self.type = LEVEL_UP_TYPE_CHARACTER;
@@ -754,7 +760,20 @@ function LevelUpDisplay_Show(self)
 	LevelUpDisplay_Start(self, nil);
 end
 
+function LevelUpDisplay_IsExclusiveQueued( currBanner, queuedBanner )
+	if( currBanner.frame ~= LevelUpDisplay or queuedBanner.frame ~= LevelUpDisplay ) then
+		return false;
+	end	
+	-- A banner of the same type is queued. Don't requeue.
+	return currBanner.type == queuedBanner.type;
+end
+
 function LevelUpDisplay_Start(self, beginUnlockList)
+	TopBannerManager_Show(LevelUpDisplay, {type = self.type, unlockList = beginUnlockList}
+										,	LevelUpDisplay_IsExclusiveQueued);
+end
+
+function LevelUpDisplay_StartDisplay(self, beginUnlockList)
 	if ( self:IsShown() ) then
 		return;
 	end
@@ -769,7 +788,9 @@ function LevelUpDisplay_Start(self, beginUnlockList)
 	self:Show();
 	ZoneTextFrame:Hide();	--LevelUpDisplay is more important than zoning text
 	SubZoneTextFrame:Hide();
-	
+	self.challengeModeBits.MedalFlare:Hide();
+	self.challengeModeBits.MedalIcon:Hide();
+	self.challengeModeBits.BottomFiligree:Hide();	
 	local playAnim;
 	if  self.currSpell == 0 then
 		local unlockList = beginUnlockList;
@@ -812,9 +833,6 @@ function LevelUpDisplay_Start(self, beginUnlockList)
 				-- no medal earned, still a record time for player
 				self.challengeModeFrame.MedalEarned:SetText(CHALLENGE_MODE_NEW_RECORD);
 				self.challengeModeFrame.RecordTime:SetText(GetTimeStringFromSeconds(self.recordTime / 1000));
-				self.challengeModeBits.MedalFlare:Hide();
-				self.challengeModeBits.MedalIcon:Hide();
-				self.challengeModeBits.BottomFiligree:Hide();
 			end
 			PlaySound("UI_Challenges_NewRecord");
 			LevelUpDisplay:SetPoint("TOP", 0, -190);
@@ -1131,7 +1149,7 @@ function LevelUpDisplay_AnimOut(self, fast)
 	end
 end
 
-function LevelUpDisplay_AnimOutFinished(anim)
+function LevelUpDisplay_AnimOutFinished()
 	local parent = LevelUpDisplay;
 	if ( parent.extraFrame ) then
 		parent.extraFrame:Hide();
@@ -1141,6 +1159,8 @@ function LevelUpDisplay_AnimOutFinished(anim)
 	--In case we had to queue something up while fading
 	if ( parent.queuedType ) then
 		LevelUpDisplay_Show(parent);
+	else
+		TopBannerManager_BannerFinished();
 	end
 end
 

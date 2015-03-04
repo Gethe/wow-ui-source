@@ -38,6 +38,9 @@ function ActionBarController_OnLoad(self)
 	-- MultiBarBottomLeft
 	self:RegisterEvent("ACTIONBAR_SHOW_BOTTOMLEFT");
 	
+	-- Misc
+	self:RegisterEvent("PET_BATTLE_CLOSE");
+	
 	CURRENT_ACTION_BAR_STATE = LE_ACTIONBAR_STATE_MAIN;
 end
 
@@ -85,6 +88,10 @@ function ActionBarController_OnEvent(self, event, ...)
 		InterfaceOptionsActionBarsPanelBottomLeft.value = nil;
 		MultiActionBar_Update();
 		UIParent_ManageFramePositions();
+	end
+	
+	if ( event == "PET_BATTLE_CLOSE" ) then
+		ValidateActionBarTransition();
 	end
 end
 

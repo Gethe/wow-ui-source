@@ -35,7 +35,7 @@ UIPanelWindows["PVPBannerFrame"] =				{ area = "left",			pushable = 1};
 UIPanelWindows["PetStableFrame"] =				{ area = "left",			pushable = 0};
 UIPanelWindows["PVEFrame"] =					{ area = "left",			pushable = 1, 	whileDead = 1, width = 563};
 UIPanelWindows["EncounterJournal"] =			{ area = "left",			pushable = 0, 	whileDead = 1, width = 830};
-UIPanelWindows["PetJournalParent"] =			{ area = "left",			pushable = 0, 	whileDead = 1, width = 830};
+UIPanelWindows["CollectionsJournal"] =			{ area = "left",			pushable = 0, 	whileDead = 1, width = 830};
 UIPanelWindows["TradeFrame"] =					{ area = "left",			pushable = 1};
 UIPanelWindows["LootFrame"] =					{ area = "left",			pushable = 7};
 UIPanelWindows["MerchantFrame"] =				{ area = "left",			pushable = 0};
@@ -53,7 +53,7 @@ UIPanelWindows["ItemTextFrame"] =				{ area = "left",			pushable = 0};
 UIPanelWindows["FriendsFrame"] =				{ area = "left",			pushable = 0,	whileDead = 1 };
 UIPanelWindows["RaidParentFrame"] =				{ area = "left",			pushable = 1,	whileDead = 1 };
 UIPanelWindows["RaidBrowserFrame"] =			{ area = "left",			pushable = 1,	};
-
+UIPanelWindows["DeathRecapFrame"] =				{ area = "center",			pushable = 0,	whileDead = 1, allowOtherPanels = 1};
 
 -- Frames NOT using the new Templates
 UIPanelWindows["WorldMapFrame"] =				{ area = "full",			pushable = 0, 		xoffset = -16, 		yoffset = 12,	whileDead = 1 };
@@ -225,6 +225,9 @@ function UIParent_OnLoad(self)
 	self:RegisterEvent("SPELL_CONFIRMATION_TIMEOUT");
 	self:RegisterEvent("SAVED_VARIABLES_TOO_LARGE");
 	self:RegisterEvent("AUTH_CHALLENGE_UI_INVALID");
+	
+	self:RegisterEvent("LOADING_SCREEN_ENABLED");
+	self:RegisterEvent("LOADING_SCREEN_DISABLED");
 
 	-- Events for auction UI handling
 	self:RegisterEvent("AUCTION_HOUSE_SHOW");
@@ -293,9 +296,13 @@ function UIParent_OnLoad(self)
 	-- Events for item upgrades
 	self:RegisterEvent("ITEM_UPGRADE_MASTER_OPENED");
 	self:RegisterEvent("ITEM_UPGRADE_MASTER_CLOSED");
-
-	-- Events for Pet Journal
-	self:RegisterEvent("PET_JOURNAL_NEW_BATTLE_SLOT");
+	
+	-- Events for Toy Box
+	self:RegisterEvent("TOYS_UPDATED");
+	
+	-- Events for Heirlooms Journal
+	self:RegisterEvent("HEIRLOOM_UPGRADE_TARGETING_CHANGED");
+	self:RegisterEvent("HEIRLOOMS_UPDATED");
 	
 	-- Events for Quest Choice
 	self:RegisterEvent("QUEST_CHOICE_UPDATE");
@@ -371,6 +378,11 @@ end
 
 function RaidFrame_LoadUI()
 	UIParentLoadAddOn("Blizzard_RaidUI");
+end
+
+function SocialFrame_LoadUI()
+	AchievementFrame_LoadUI();
+	UIParentLoadAddOn("Blizzard_SocialUI");
 end
 
 function TalentFrame_LoadUI()
@@ -452,8 +464,8 @@ function EncounterJournal_LoadUI()
 	UIParentLoadAddOn("Blizzard_EncounterJournal");
 end
 
-function PetJournal_LoadUI()
-	UIParentLoadAddOn("Blizzard_PetJournal");
+function CollectionsJournal_LoadUI()
+	UIParentLoadAddOn("Blizzard_Collections");
 end
 
 function BlackMarket_LoadUI()
@@ -486,6 +498,10 @@ function Tutorial_LoadUI()
 	if ( GetTutorialsEnabled() and UnitLevel("player") < NPE_TUTORIAL_COMPLETE_LEVEL ) then
 		UIParentLoadAddOn("Blizzard_Tutorial");
 	end
+end
+
+function DeathRecap_LoadUI()
+	UIParentLoadAddOn("Blizzard_DeathRecap");
 end
 
 local playerEnteredWorld = false;
@@ -608,8 +624,8 @@ function ToggleGuildFrame()
 		return;
 	end
 
-	if ( IsTrialAccount() ) then
-		UIErrorsFrame:AddMessage(ERR_RESTRICTED_ACCOUNT, 1.0, 0.1, 0.1, 1.0);
+	if ( IsTrialAccount() or (IsVeteranTrialAccount() and not IsInGuild()) ) then
+		UIErrorsFrame:AddMessage(GameLimitedMode_GetString("ERR_RESTRICTED_ACCOUNT"), 1.0, 0.1, 0.1, 1.0);
 		return;
 	end
 	if ( IsInGuild() ) then
@@ -715,21 +731,21 @@ function ToggleEncounterJournal()
 end
 
 
-function TogglePetJournal(whichFrame)
-	if ( not PetJournalParent ) then
-		PetJournal_LoadUI();
+function ToggleCollectionsJournal(whichFrame)
+	if ( not CollectionsJournal ) then
+		CollectionsJournal_LoadUI();
 	end
-	if ( PetJournalParent ) then
+	if ( CollectionsJournal ) then
 		if ( whichFrame ) then
 			-- if the request tab is being shown, close window
-			if ( PetJournalParent:IsShown() and whichFrame == PanelTemplates_GetSelectedTab(PetJournalParent) ) then
-				HideUIPanel(PetJournalParent);
+			if ( CollectionsJournal:IsShown() and whichFrame == PanelTemplates_GetSelectedTab(CollectionsJournal) ) then
+				HideUIPanel(CollectionsJournal);
 			else
-				ShowUIPanel(PetJournalParent);
-				PetJournalParent_SetTab(PetJournalParent, whichFrame);
+				ShowUIPanel(CollectionsJournal);
+				CollectionsJournal_SetTab(CollectionsJournal, whichFrame);
 			end
 		else
-			ToggleFrame(PetJournalParent);
+			ToggleFrame(CollectionsJournal);
 		end
 	end
 end
@@ -773,6 +789,13 @@ function ToggleGarrisonMissionUI()
 	GarrisonMissionFrame_ToggleFrame();
 end
 
+function OpenDeathRecapUI(id)
+	if (not DeathRecapFrame) then
+		DeathRecap_LoadUI();
+	end
+	DeathRecapFrame_OpenRecap(id);
+end
+
 function InspectUnit(unit)
 	if (IsBlizzCon()) then
 		return;
@@ -788,14 +811,65 @@ end
 -- UIParent_OnEvent --
 function UIParent_OnEvent(self, event, ...)
 	local arg1, arg2, arg3, arg4, arg5, arg6 = ...;
-	if ( event == "CURRENT_SPELL_CAST_CHANGED" and #StaticPopup_DisplayedFrames > 0 ) then
-		if ( arg1 ) then
-			StaticPopup_Hide("BIND_ENCHANT");
-			StaticPopup_Hide("REPLACE_ENCHANT");
+	if ( event == "CURRENT_SPELL_CAST_CHANGED" ) then
+		if ( SpellCanTargetGarrisonFollower() ) then
+			if ( not GarrisonLandingPage ) then
+				Garrison_LoadUI();
+			end
+			-- if the mission UI is already open, go with that
+			if ( GarrisonMissionFrame:IsShown() ) then
+				if ( PanelTemplates_GetSelectedTab(GarrisonMissionFrame) ~= 2 ) then
+					GarrisonMissionFrame_SelectTab(2);
+				end
+			else
+				if ( not GarrisonLandingPage:IsShown()) then
+					ShowUIPanel(GarrisonLandingPage);
+				end
+				-- switch to the followers tab
+				if ( PanelTemplates_GetSelectedTab(GarrisonLandingPage) ~= 2 ) then
+					GarrisonLandingPageTab_OnClick(GarrisonLandingPageTab2);
+				end
+			end
 		end
-		StaticPopup_Hide("TRADE_REPLACE_ENCHANT");
-		StaticPopup_Hide("END_BOUND_TRADEABLE");
+		if ( SpellCanTargetGarrisonMission() ) then
+			if ( not GarrisonLandingPage ) then
+				Garrison_LoadUI();
+			end
+			-- if the mission UI is already open, go with that
+			if ( GarrisonMissionFrame:IsShown() ) then
+				if ( PanelTemplates_GetSelectedTab(GarrisonMissionFrame) ~= 1 ) then
+					GarrisonMissionFrame_SelectTab(1);
+				end
+				if ( PanelTemplates_GetSelectedTab(GarrisonMissionFrame.MissionTab.MissionList) ~= 2 ) then
+					GarrisonMissionList_SetTab(GarrisonMissionFrame.MissionTab.MissionList.Tab2);
+				end
+			else
+				if ( not GarrisonLandingPage:IsShown()) then
+					ShowUIPanel(GarrisonLandingPage);
+				end
+				-- switch to the mission tab
+				if ( PanelTemplates_GetSelectedTab(GarrisonLandingPage) ~= 1 ) then
+					GarrisonLandingPageTab_OnClick(GarrisonLandingPageTab1);
+				end
+				if ( PanelTemplates_GetSelectedTab(GarrisonLandingPageReport) ~= GarrisonLandingPageReport.InProgress ) then
+					GarrisonLandingPageReport_SetTab(GarrisonLandingPageReport.InProgress);
+				end
+			end
+		end
+		if ( #StaticPopup_DisplayedFrames > 0 ) then
+			if ( arg1 ) then
+				StaticPopup_Hide("BIND_ENCHANT");
+				StaticPopup_Hide("REPLACE_ENCHANT");
+			end
+			StaticPopup_Hide("TRADE_REPLACE_ENCHANT");
+			StaticPopup_Hide("END_BOUND_TRADEABLE");
+			if ( not SpellCanTargetGarrisonFollower() ) then
+				StaticPopup_Hide("CONFIRM_FOLLOWER_UPGRADE");
+			end
+		end
 	elseif ( event == "VARIABLES_LOADED" ) then
+		UIParent.variablesLoaded = true;
+		
 		LocalizeFrames();
 		if ( WorldStateFrame_CanShowBattlefieldMinimap() ) then
 			if ( not BattlefieldMinimap ) then
@@ -933,8 +1007,8 @@ function UIParent_OnEvent(self, event, ...)
 	elseif ( event == "CONFIRM_BEFORE_USE" ) then
 		StaticPopup_Show("CONFIM_BEFORE_USE");
 	elseif ( event == "DELETE_ITEM_CONFIRM" ) then
-		-- Check quality
-		if ( arg2 >= 3 ) then
+		-- Check quality, ignore heirlooms
+		if ( arg2 >= LE_ITEM_QUALITY_RARE and arg2 ~= LE_ITEM_QUALITY_HEIRLOOM ) then
 			if (arg4 == 1) then -- quest item?
 				StaticPopup_Show("DELETE_GOOD_QUEST_ITEM", arg1);
 			else
@@ -1459,10 +1533,44 @@ function UIParent_OnEvent(self, event, ...)
 			ItemUpgradeFrame_Hide();
 		end
 
-	-- Events for Pet Journal
-	elseif ( event == "PET_JOURNAL_NEW_BATTLE_SLOT" ) then
-		CompanionsMicroButtonAlert:Show();
-		MicroButtonPulse(CompanionsMicroButton);
+	-- Events for Toy Box
+	elseif ( event == "TOYS_UPDATED" ) then
+		if ( not CollectionsJournal ) then
+			local itemID, new = ...;
+			if ( itemID and new ) then
+				-- Toy box isn't loaded, save that this itemid is new in this session incase the journal is opened later
+				if not self.newToys then
+					self.newToys = {};
+				end
+				self.newToys[itemID] = true;
+
+				self.mostRecentCollectedToyID = itemID;
+				SetCVar("petJournalTab", 3);
+			end
+		end
+
+	-- Events for Heirloom Journal
+	elseif ( event == "HEIRLOOM_UPGRADE_TARGETING_CHANGED" ) then
+		local isPendingHeirloomUpgrade = ...;
+		if ( isPendingHeirloomUpgrade ) then
+			if ( not CollectionsJournal ) then
+				CollectionsJournal_LoadUI();
+			end
+			HeirloomsJournal:SetFindClosestUpgradeablePage(isPendingHeirloomUpgrade);
+			ShowUIPanel(CollectionsJournal);
+			CollectionsJournal_SetTab(CollectionsJournal, 4);
+		end
+	elseif ( event == "HEIRLOOMS_UPDATED" ) then
+		if ( not CollectionsJournal ) then
+			local itemID, updateReason = ...;
+			if ( itemID and updateReason == "NEW" ) then
+				-- Heirloom journal isn't loaded, save that this itemid is new in this session incase the journal is opened later
+				if not self.newHeirlooms then
+					self.newHeirlooms = {};
+				end
+				self.newHeirlooms[itemID] = true;
+			end
+		end
 		
 	-- Quest Choice trigger event
 	
@@ -1512,7 +1620,6 @@ function UIParent_OnEvent(self, event, ...)
 		if (not GarrisonCapacitiveDisplayFrame) then
 			Garrison_LoadUI();
 		end
-		C_Garrison.RequestShipmentInfo();
 	elseif ( event == "GARRISON_TRADESKILL_NPC_CLOSED" ) then
 		if ( TradeSkillFrame ) then
 			HideUIPanel(TradeSkillFrame);
@@ -1529,6 +1636,10 @@ function UIParent_OnEvent(self, event, ...)
 		ShowUIPanel(GarrisonRecruiterFrame);
 	elseif ( event == "PRODUCT_DISTRIBUTIONS_UPDATED" ) then
 		StoreFrame_CheckForFree(event);
+	elseif event == "LOADING_SCREEN_ENABLED" then
+		TopBannerManager_LoadingScreenEnabled();
+	elseif event == "LOADING_SCREEN_DISABLED" then
+		TopBannerManager_LoadingScreenDisabled()
 	end
 end
 
@@ -2408,7 +2519,7 @@ function FramePositionDelegate:UIParentManageFramePositions()
 	if ( rightActionBars > 0 ) then
 		anchorY = min(anchorY, buffsAnchorY);
 	end
-	if ( ObjectiveTrackerFrame ) then
+	if ( ObjectiveTrackerFrame and not ObjectiveTrackerFrame:IsUserPlaced() ) then
 		local numArenaOpponents = GetNumArenaOpponents();
 		if ( ArenaEnemyFrames and ArenaEnemyFrames:IsShown() and (numArenaOpponents > 0) ) then
 			ObjectiveTrackerFrame:ClearAllPoints();
@@ -3290,6 +3401,12 @@ function BuildMultilineTooltip(globalStringName, tooltip, r, g, b)
 	end
 end
 
+function GetScaledCursorPosition()
+	local uiScale = UIParent:GetScale();
+	local x, y = GetCursorPosition();
+	return x / uiScale, y / uiScale;
+end
+
 function MouseIsOver(region, topOffset, bottomOffset, leftOffset, rightOffset)
 	return region:IsMouseOver(topOffset, bottomOffset, leftOffset, rightOffset);
 end
@@ -3336,8 +3453,12 @@ function ToggleGameMenu()
 		VideoOptionsFrameCancel:Click();
 	elseif ( AudioOptionsFrame:IsShown() ) then
 		AudioOptionsFrameCancel:Click();
+	elseif ( SocialBrowserFrame and SocialBrowserFrame:IsShown() ) then
+		SocialBrowserFrame:Hide();
 	elseif ( InterfaceOptionsFrame:IsShown() ) then
 		InterfaceOptionsFrameCancel:Click();
+	elseif ( SocialPostFrame and SocialPostFrame:IsShown() ) then
+		SocialPostFrame:Hide();
 	elseif ( TimeManagerFrame and TimeManagerFrame:IsShown() ) then
 		TimeManagerFrameCloseButton:Click();
 	elseif ( MultiCastFlyoutFrame:IsShown() ) then
@@ -3349,6 +3470,8 @@ function ToggleGameMenu()
 	elseif ( CloseCalendarMenus and securecall("CloseCalendarMenus") ) then
 	elseif ( CloseGuildMenus and securecall("CloseGuildMenus") ) then
 	elseif ( GarrisonMissionFrame_ClearMouse and securecall("GarrisonMissionFrame_ClearMouse") ) then
+	elseif ( GarrisonMissionFrame and GarrisonMissionFrame.MissionTab and GarrisonMissionFrame.MissionTab.MissionPage and GarrisonMissionFrame.MissionTab.MissionPage:IsShown() ) then
+		GarrisonMissionFrame.MissionTab.MissionPage.CloseButton:Click();
 	elseif ( SpellStopCasting() ) then
 	elseif ( SpellStopTargeting() ) then
 	elseif ( securecall("CloseAllWindows") ) then
@@ -4106,16 +4229,16 @@ end
 
 local displayedCapMessage = false;
 function TrialAccountCapReached_Inform(capType)
-	if ( displayedCapMessage or not IsTrialAccount() ) then
+	if ( displayedCapMessage or not GameLimitedMode_IsActive() ) then
 		return;
 	end
 	
 	
 	local info = ChatTypeInfo.SYSTEM;
 	if ( capType == "level" ) then
-		DEFAULT_CHAT_FRAME:AddMessage(TRIAL_ACCOUNT_LEVEL_CAP_REACHED, info.r, info.g, info.b);
+		DEFAULT_CHAT_FRAME:AddMessage(GameLimitedMode_GetString("CAPPED_LEVEL"), info.r, info.g, info.b);
 	elseif ( capType == "money" ) then
-		DEFAULT_CHAT_FRAME:AddMessage(TRIAL_ACCOUNT_MONEY_CAP_REACHED, info.r, info.g, info.b);
+		DEFAULT_CHAT_FRAME:AddMessage(GameLimitedMode_GetString("CAPPED_MONEY"), info.r, info.g, info.b);
 	end
 	displayedCapMessage = true;
 end
@@ -4131,6 +4254,26 @@ function AbbreviateLargeNumbers(value)
 		retString = BreakUpLargeNumbers(value);
 	end
 	return retString;
+end
+
+NUMBER_ABBREVIATION_DATA = {
+	-- Order these from largest to smallest
+	-- (significandDivisor and fractionDivisor should multiply to be equal to breakpoint)
+	{ breakpoint = 100000000,	abbreviation = SECOND_NUMBER_CAP_NO_SPACE,	significandDivisor = 1000000,	fractionDivisor = 1 },
+	{ breakpoint = 10000000,	abbreviation = SECOND_NUMBER_CAP_NO_SPACE,	significandDivisor = 100000,	fractionDivisor = 10 },
+	{ breakpoint = 1000000,		abbreviation = SECOND_NUMBER_CAP_NO_SPACE,	significandDivisor = 10000,		fractionDivisor = 100 },
+	{ breakpoint = 10000,		abbreviation = FIRST_NUMBER_CAP_NO_SPACE,	significandDivisor = 100,		fractionDivisor = 10 },
+	{ breakpoint = 1000,		abbreviation = FIRST_NUMBER_CAP_NO_SPACE,	significandDivisor = 10,		fractionDivisor = 100 },
+}
+
+function AbbreviateNumbers(value)
+	for i, data in ipairs(NUMBER_ABBREVIATION_DATA) do
+		if value >= data.breakpoint then
+			local finalValue = math.floor(value / data.significandDivisor) / data.fractionDivisor;
+			return finalValue .. data.abbreviation;
+		end
+	end
+	return tostring(value);
 end
 
 function GetTimeStringFromSeconds(timeAmount, hasMS, dropZeroHours)

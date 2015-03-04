@@ -364,9 +364,12 @@
 											<Frame name="WorldMapFlag1" inherits="WorldMapFlagTemplate" id="1"/>
 											<Frame name="WorldMapFlag2" inherits="WorldMapFlagTemplate" id="2"/>
 											<Frame name="WorldMapFlag3" inherits="WorldMapFlagTemplate" id="3"/>
-											<Frame name="WorldMapFlag4" inherits="WorldMapFlagTemplate" id="4"/>
-											<Frame name="WorldMapCorpse" inherits="WorldMapCorpseTemplate"/>
+											<Frame name="WorldMapFlag4" inherits="WorldMapFlagTemplate" id="4"/>											
+											<Frame name="WorldMapCorpse" inherits="WorldMapCorpseTemplate">
+												<Size x="24" y="24"/>
+											</Frame>
 											<Frame name="WorldMapDeathRelease" inherits="WorldMapCorpseTemplate">
+												<Size x="24" y="24"/>
 												<Scripts>
 													<OnEnter>
 														local x, y = self:GetCenter();

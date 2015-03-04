@@ -106,6 +106,24 @@
 		</xs:restriction>
 	</xs:simpleType>
 
+	<xs:simpleType name="SCRIPTINHERITTYPE">
+		<xs:restriction base="xs:NMTOKEN">
+			<xs:enumeration value="prepend"/>
+			<xs:enumeration value="append"/>
+			<xs:enumeration value="none"/>
+		</xs:restriction>
+	</xs:simpleType>
+
+	<xs:simpleType name="FONTALPHABET">
+		<xs:restriction base="xs:NMTOKEN">
+			<xs:enumeration value="roman"/>
+			<xs:enumeration value="korean"/>
+			<xs:enumeration value="simplifiedchinese"/>
+			<xs:enumeration value="traditionalchinese"/>
+			<xs:enumeration value="russian"/>
+		</xs:restriction>
+	</xs:simpleType>
+
 	<xs:element name="AbsValue">
 		<xs:complexType>
 			<xs:attribute name="val" type="xs:int" use="required"/>
@@ -320,6 +338,7 @@
 		<xs:simpleContent>
 			<xs:extension base="xs:string">
 				<xs:attribute name="function" type="xs:string"/>
+				<xs:attribute name="inherit" type="SCRIPTINHERITTYPE" use="optional" default="none"/>
 			</xs:extension>
 		</xs:simpleContent>
 	</xs:complexType>
@@ -341,6 +360,7 @@
 		<xs:attribute name="monochrome" type="xs:boolean" default="false"/>
 		<xs:attribute name="justifyV" type="JUSTIFYVTYPE" default="MIDDLE"/>
 		<xs:attribute name="justifyH" type="JUSTIFYHTYPE" default="CENTER"/>
+		<xs:attribute name="height" type="xs:float"/>
 	</xs:complexType>
 
 	<xs:element name="Font">
@@ -351,6 +371,25 @@
 		</xs:complexType>
 	</xs:element>
 
+	<xs:complexType name="FontMemberType">
+		<xs:sequence minOccurs="1" maxOccurs="1">
+			<xs:element name="Font" type="FontType"/>
+		</xs:sequence>
+		<xs:attribute name="alphabet" type="FONTALPHABET" use="required"/>
+	</xs:complexType>
+	
+	<xs:complexType name="FontFamilyType">
+		<xs:sequence>
+			<xs:choice maxOccurs="unbounded">
+				<xs:element name="Member" type="FontMemberType"/>
+			</xs:choice>
+		</xs:sequence>
+		<xs:attribute name="name" type="xs:string" use="required"/>
+		<xs:attribute name="virtual" type="xs:boolean" default="false"/>
+	</xs:complexType>
+
+	<xs:element name="FontFamily" type="FontFamilyType"/>
+	
 	<xs:complexType name="LayoutFrameType">
 		<xs:sequence minOccurs="0">
 			<xs:choice maxOccurs="unbounded">
@@ -442,6 +481,8 @@
 				<xs:attribute name="nonBlocking" type="xs:boolean" default="false"/>
 				<xs:attribute name="horizTile" type="xs:boolean" default="false"/>
 				<xs:attribute name="vertTile" type="xs:boolean" default="false"/>
+				<xs:attribute name="atlas" type="xs:string"/>
+				<xs:attribute name="useAtlasSize" type="xs:boolean"/>
 			</xs:extension>
 		</xs:complexContent>
 	</xs:complexType>
@@ -823,6 +864,7 @@
 						</xs:complexType>
 					</xs:element>
 					<xs:element ref="Font" minOccurs="0" maxOccurs="unbounded"/>
+					<xs:element ref="FontFamily" minOccurs="0" maxOccurs="unbounded"/>
 					<xs:element ref="LayoutFrame" minOccurs="0" maxOccurs="unbounded"/>
 					<xs:element ref="Animation" minOccurs="0" maxOccurs="unbounded"/>
 					<xs:element ref="AnimationGroup" minOccurs="0" maxOccurs="unbounded"/>

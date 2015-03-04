@@ -163,7 +163,7 @@ function GroupFinderFrame_EvaluateButtonVisibility(self, level)
 
 	if ( level < SHOW_LFD_LEVEL ) then
 		GroupFinderFrameButton_SetEnabled(self.groupButton1, false);
-		self.groupButton1.tooltip = self.groupButton3.tooltip or format(FEATURE_BECOMES_AVAILABLE_AT_LEVEL, SHOW_LFD_LEVEL);
+		self.groupButton1.tooltip = self.groupButton1.tooltip or format(FEATURE_BECOMES_AVAILABLE_AT_LEVEL, SHOW_LFD_LEVEL);
 	else
 		self.groupButton1.tooltip = nil;
 		GroupFinderFrameButton_SetEnabled(self.groupButton1, true);

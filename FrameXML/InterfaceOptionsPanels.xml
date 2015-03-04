@@ -1118,16 +1118,13 @@
 					<OnLoad>
 						self.type = CONTROLTYPE_DROPDOWN;
 						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
-						self:RegisterEvent("VARIABLES_LOADED");
 					</OnLoad>
 					<OnEnter>
-						if ( not self.isDisabled ) then
-							GameTooltip:SetOwner(self, "ANCHOR_TOPRIGHT");
-							GameTooltip:SetText(self.tooltip, nil, nil, nil, nil, true);
-						end
+						GameTooltip:SetOwner(self, "ANCHOR_TOPRIGHT");
+						GameTooltip:SetText(self.tooltip, nil, nil, nil, nil, true);
 					</OnEnter>
-					<OnEvent function="InterfaceOptionsDisplayPanelOutlineDropDown_OnEvent"/>
 					<OnLeave function="GameTooltip_Hide"/>
+					<OnShow function="InterfaceOptionsDisplayPanelOutlineDropDown_OnShow"/>
 				</Scripts>
 			</Frame>					
 			<CheckButton name="$parentShowFreeBagSpace" inherits="InterfaceOptionsCheckButtonTemplate">
@@ -1496,6 +1493,52 @@
 					</OnLoad>
 				</Scripts>
 			</CheckButton>
+			<CheckButton name="$parentEnableTwitter" parentKey="EnableTwitter" inherits="InterfaceOptionsCheckButtonTemplate" hidden="true">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentChatMouseScroll" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="0" y="-8"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Layers>
+					<Layer level="OVERLAY">
+						<Texture parentKey="Logo" atlas="WoWShare-TwitterLogo" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="LEFT" relativePoint="RIGHT" x="2" y="1"/>
+							</Anchors>						
+						</Texture>
+						<FontString parentKey="LoginStatus" inherits="GameFontHighlight" justifyH="LEFT" justifyV="MIDDLE" text="SOCIAL_TWITTER_STATUS_NOT_CONNECTED">
+							<Anchors>
+								<Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" x="28" y="-6"/>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnLoad>
+						self.type = CONTROLTYPE_CHECKBOX;
+						self.cvar = "enableTwitter";
+						self.setFunc = Twitter_SetEnabled;
+						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
+						self.Text:SetWidth(180);
+						self.Text:SetPoint("LEFT", self, "RIGHT", 18, 1);
+					</OnLoad>
+				</Scripts>
+			</CheckButton>
+			<Button name="$parentTwitterLoginButton" parentKey="TwitterLoginButton" inherits="UIPanelButtonTemplate" text="SOCIAL_TWITTER_SIGN_IN"  hidden="true">
+				<Size x="100" y="21"/>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.EnableTwitter.LoginStatus" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="0" y="-8"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick function="Twitter_LoginButton_OnClick"/>
+				</Scripts>
+			</Button>
 			<Frame name="$parentChatStyle" inherits="UIDropDownMenuTemplate" enableMouse="true">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeTo="$parentProfanityFilter" relativePoint="TOPRIGHT">
@@ -1690,6 +1733,8 @@
 		</Frames>
 		<Scripts>
 			<OnLoad function="InterfaceOptionsSocialPanel_OnLoad"/>
+			<OnShow function="Twitter_Update"/>
+			<OnHide function="InterfaceOptionsSocialPanel_OnHide"/>
 			<OnEvent function="InterfaceOptionsSocialPanel_OnEvent"/>
 		</Scripts>	
 	</Frame>
@@ -4085,53 +4130,6 @@
 					</OnLoad>
 				</Scripts>
 			</CheckButton>				
-			<CheckButton name="$parentColorblindMode" inherits="InterfaceOptionsCheckButtonTemplate">
-				<Anchors>
-					<Anchor point="TOPLEFT" relativeTo="$parentShowLuaErrors" relativePoint="BOTTOMLEFT">
-						<Offset>
-							<AbsDimension x="0" y="-8"/>
-						</Offset>
-					</Anchor>
-				</Anchors>
-				<Scripts>
-					<OnLoad>		
-						self.type = CONTROLTYPE_CHECKBOX;
-						self.cvar = "colorblindMode";
-						self.uvar = "ENABLE_COLORBLIND_MODE";
-						self.setFunc = function() ObjectiveTracker_Update(); if ( IsAddOnLoaded("Blizzard_AchievementUI") ) then AchievementFrame_ForceUpdate(); end end;
-						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
-					</OnLoad>
-				</Scripts>
-			</CheckButton>
-			<CheckButton name="$parentMovePad" inherits="InterfaceOptionsCheckButtonTemplate">
-				<Anchors>
-					<Anchor point="TOPLEFT" relativeTo="$parentColorblindMode" relativePoint="BOTTOMLEFT">
-						<Offset>
-							<AbsDimension x="0" y="-8"/>
-						</Offset>
-					</Anchor>
-				</Anchors>
-				<Scripts>
-					<OnLoad>		
-						self.type = CONTROLTYPE_CHECKBOX;
-						self.cvar = "enableMovePad"
-						self.SetDisplayValue = self.SetValue;
-						self.setFunc = function(value)
-							if ( value == "1" ) then
-								UIParentLoadAddOn("Blizzard_MovePad");
-								MovePadFrame:Show();
-							elseif(IsAddOnLoaded("Blizzard_MovePad")) then
-								MovePadFrame:Hide();
-							end
-						end
-						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
-						self:RegisterEvent("VARIABLES_LOADED");
-					</OnLoad>
-					<OnEvent>
-						self.setFunc(GetCVar(self.cvar));
-					</OnEvent>
-				</Scripts>
-			</CheckButton>
 			<Button name="$parentResetTutorials" inherits="UIPanelButtonTemplate" text="RESET_TUTORIALS">
 				<Size>
 					<AbsDimension x="128" y="22"/>
@@ -4170,8 +4168,337 @@
 				<HighlightFont style="GameFontHighlightSmall"/>				
 			</Button>
 		</Frames>
+		<Layers>
+			<Layer level="ARTWORK">
+				<FontString parentKey="AccessibilityMovedLabel" text="HELP_OPTIONS_MOVED" inherits="GameFontHighlight" justifyH="LEFT">
+					<Size x="550" />
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="$parentShowLuaErrors" relativePoint="BOTTOMLEFT" x="9" y="-15" />
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
 		<Scripts>
 			<OnLoad function="InterfaceOptionsHelpPanel_OnLoad"/>
 		</Scripts>
 	</Frame>
+
+	<!-- Accessibility panel -->
+
+	<Texture name="ColorblindExampleIconTemplate" virtual="true">
+		<Size x="54" y="54" />
+		<TexCoords left=".140625" right=".859375" top=".140625" bottom=".859375"/>
+	</Texture>
+
+	<Frame name="InterfaceOptionsAccessibilityPanel" hidden="true" parent="InterfaceOptionsFramePanelContainer">
+		<Layers>
+			<Layer level="ARTWORK">
+				<FontString name="$parentTitle" text="ACCESSIBILITY_LABEL" inherits="GameFontNormalLarge" justifyH="LEFT" justifyV="TOP">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="16" y="-16" />
+					</Anchors>
+				</FontString>
+				<FontString name="$parentSubText" text="ACCESSIBILITY_SUBTEXT" inherits="GameFontHighlightSmall" nonspacewrap="true" maxLines="3" justifyH="LEFT" justifyV="TOP">
+					<Size y="32" x="0" />
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="$parentTitle" relativePoint="BOTTOMLEFT" x="0" y="-8" />
+						<Anchor point="RIGHT" x="-32" y="0" />
+					</Anchors>
+				</FontString>
+				
+				<FontString parentKey="ColorblindFiltersTitle" text="COLORBLIND_FILTERS_TITLE" inherits="GameFontNormal" justifyH="LEFT" justifyV="TOP">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="18" y="-170" />
+					</Anchors>
+				</FontString>
+
+				<Texture parentKey="ColorblindFiltersSeparator">
+					<Size x="600" y="1"/>
+					<Anchors>
+						<Anchor point="LEFT" relativePoint="TOPLEFT" x="10" y="-190"/>
+					</Anchors>
+					<Color r="0.25" g="0.25" b="0.25"/>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Frames>
+			<CheckButton name="$parentMovePad" parentKey="MovePad" inherits="InterfaceOptionsCheckButtonTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentSubText" relativePoint="BOTTOMLEFT" x="-2" y="-8" />
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						self.type = CONTROLTYPE_CHECKBOX;
+						self.cvar = "enableMovePad"
+						self.SetDisplayValue = self.SetValue;
+						self.setFunc = function(value)
+							if ( value == "1" ) then
+								UIParentLoadAddOn("Blizzard_MovePad");
+								MovePadFrame:Show();
+							elseif(IsAddOnLoaded("Blizzard_MovePad")) then
+								MovePadFrame:Hide();
+							end
+						end
+						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
+						self:RegisterEvent("VARIABLES_LOADED");
+					</OnLoad>
+					<OnEvent>
+						self.setFunc(GetCVar(self.cvar));
+					</OnEvent>
+				</Scripts>
+			</CheckButton>
+
+			<CheckButton name="$parentColorblindMode" parentKey="ColorblindMode" inherits="InterfaceOptionsCheckButtonTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.MovePad" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="0" y="-8"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						self.type = CONTROLTYPE_CHECKBOX;
+						self.cvar = "colorblindMode";
+						self.uvar = "ENABLE_COLORBLIND_MODE";
+						self.setFunc = function() ObjectiveTracker_Update(); if ( IsAddOnLoaded("Blizzard_AchievementUI") ) then AchievementFrame_ForceUpdate(); end end;
+						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
+					</OnLoad>
+				</Scripts>
+			</CheckButton>
+
+			<Frame parentKey="ColorblindFilterExamples">
+				<Size x="580" y="280" />
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.ColorblindFiltersSeparator" relativePoint="BOTTOMLEFT" x="30" y="-16" />
+				</Anchors>
+				<Layers>
+					<Layer level="ARTWORK">
+						<FontString parentKey="Instructions" text="COLORBLIND_OPTIONS_INSTRUCTIONS" inherits="GameFontHighlight" justifyH="LEFT">
+							<Size x="550" />
+							<Anchors>
+								<Anchor point="TOPLEFT" />
+							</Anchors>
+						</FontString>
+
+						<Texture parentKey="ColorWheel" atlas="colorblind-colorwheel" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="BOTTOMRIGHT" x="-60" y="45" />
+							</Anchors>
+						</Texture>
+
+						<Texture parentKey="Hostile" atlas="colorblind-bar-red" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="BOTTOMLEFT" x="5" y="155" />
+							</Anchors>
+						</Texture>
+						<FontString parentKey="HostileLabel" text="COLORBLIND_HOSTILE" inherits="OptionsFontSmall">
+							<Anchors>
+								<Anchor point="BOTTOMLEFT" relativeKey="$parent.Hostile" relativePoint="TOPLEFT" x="5" y="3" />
+							</Anchors>
+							<Color r="0.5" g="0.5" b="0.5"/>
+						</FontString>
+
+						<Texture parentKey="Neutral" atlas="colorblind-bar-yellow" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeKey="$parent.Hostile" relativePoint="BOTTOMLEFT" y="-30" />
+							</Anchors>
+						</Texture>
+						<FontString parentKey="NeutralLabel" text="COLORBLIND_NEUTRAL" inherits="OptionsFontSmall">
+							<Anchors>
+								<Anchor point="BOTTOMLEFT" relativeKey="$parent.Neutral" relativePoint="TOPLEFT" x="5" y="3" />
+							</Anchors>
+							<Color r="0.5" g="0.5" b="0.5"/>
+						</FontString>
+
+						<Texture parentKey="Friendly" atlas="colorblind-bar-green" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeKey="$parent.Neutral" relativePoint="BOTTOMLEFT" y="-30" />
+							</Anchors>
+						</Texture>
+						<FontString parentKey="FriendlyLabel" text="COLORBLIND_FRIENDLY" inherits="OptionsFontSmall">
+							<Anchors>
+								<Anchor point="BOTTOMLEFT" relativeKey="$parent.Friendly" relativePoint="TOPLEFT" x="5" y="3" />
+							</Anchors>
+							<Color r="0.5" g="0.5" b="0.5"/>
+						</FontString>
+
+						<Texture parentKey="ExampleIcon1" file="Interface\Icons\Achievement_Character_Nightelf_Female" inherits="ColorblindExampleIconTemplate">
+							<Anchors>
+								<Anchor point="BOTTOM" x="-110" y="125" />
+							</Anchors>
+						</Texture>
+
+						<Texture parentKey="ExampleIcon2" file="Interface\Icons\Achievement_Character_Dwarf_Male" inherits="ColorblindExampleIconTemplate">
+							<Anchors>
+								<Anchor point="LEFT" relativeKey="$parent.ExampleIcon1" relativePoint="RIGHT" x="10" />
+							</Anchors>
+						</Texture>
+
+						<Texture parentKey="ExampleIcon3" file="Interface\Icons\Achievement_Character_Troll_Male" inherits="ColorblindExampleIconTemplate">
+							<Anchors>
+								<Anchor point="LEFT" relativeKey="$parent.ExampleIcon2" relativePoint="RIGHT" x="10" />
+							</Anchors>
+						</Texture>
+
+						<Texture parentKey="ExampleIcon4" file="Interface\Icons\ClassIcon_Monk" inherits="ColorblindExampleIconTemplate">
+							<Anchors>
+								<Anchor point="TOP" relativeKey="$parent.ExampleIcon1" relativePoint="BOTTOM" y="-10" />
+							</Anchors>
+						</Texture>
+
+						<Texture parentKey="ExampleIcon5" file="Interface\Icons\Spell_Shadow_Metamorphosis" inherits="ColorblindExampleIconTemplate">
+							<Anchors>
+								<Anchor point="LEFT" relativeKey="$parent.ExampleIcon4" relativePoint="RIGHT" x="10" />
+							</Anchors>
+						</Texture>
+
+						<Texture parentKey="ExampleIcon6" file="Interface\Icons\Ability_Hunter_Camouflage" inherits="ColorblindExampleIconTemplate">
+							<Anchors>
+								<Anchor point="LEFT" relativeKey="$parent.ExampleIcon5" relativePoint="RIGHT" x="10" />
+							</Anchors>
+						</Texture>
+					</Layer>
+					<Layer level="BACKGROUND">
+						<Texture parentKey="ExampleIcon1Border">
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeKey="$parent.ExampleIcon1" x="-1" y="1" />
+								<Anchor point="BOTTOMRIGHT" relativeKey="$parent.ExampleIcon1" x="1" y="-1" />
+							</Anchors>
+							<Color r=".214" g=".214" b=".214" />
+						</Texture>
+						<Texture parentKey="ExampleIcon2Border">
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeKey="$parent.ExampleIcon2" x="-1" y="1" />
+								<Anchor point="BOTTOMRIGHT" relativeKey="$parent.ExampleIcon2" x="1" y="-1" />
+							</Anchors>
+							<Color r=".214" g=".214" b=".214" />
+						</Texture>
+						<Texture parentKey="ExampleIcon3Border">
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeKey="$parent.ExampleIcon3" x="-1" y="1" />
+								<Anchor point="BOTTOMRIGHT" relativeKey="$parent.ExampleIcon3" x="1" y="-1" />
+							</Anchors>
+							<Color r=".214" g=".214" b=".214" />
+						</Texture>
+						<Texture parentKey="ExampleIcon4Border">
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeKey="$parent.ExampleIcon4" x="-1" y="1" />
+								<Anchor point="BOTTOMRIGHT" relativeKey="$parent.ExampleIcon4" x="1" y="-1" />
+							</Anchors>
+							<Color r=".214" g=".214" b=".214" />
+						</Texture>
+						<Texture parentKey="ExampleIcon5Border">
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeKey="$parent.ExampleIcon5" x="-1" y="1" />
+								<Anchor point="BOTTOMRIGHT" relativeKey="$parent.ExampleIcon5" x="1" y="-1" />
+							</Anchors>
+							<Color r=".214" g=".214" b=".214" />
+						</Texture>
+						<Texture parentKey="ExampleIcon6Border">
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeKey="$parent.ExampleIcon6" x="-1" y="1" />
+								<Anchor point="BOTTOMRIGHT" relativeKey="$parent.ExampleIcon6" x="1" y="-1" />
+							</Anchors>
+							<Color r=".214" g=".214" b=".214" />
+						</Texture>
+					</Layer>
+				</Layers>
+			</Frame>
+
+			<Frame name="$parentColorFilterDropDown" parentKey="ColorblindFilterDropDown" inherits="UIDropDownMenuTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.ColorblindFilterExamples" x="83" y="-36" />
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<FontString name="$parentLabel" inherits="OptionsFontSmall" text="COLORBLIND_FILTER">
+							<Anchors>
+								<Anchor point="RIGHT" relativePoint="LEFT"/>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnLoad>
+						self.type = CONTROLTYPE_DROPDOWN;
+						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
+						self:RegisterEvent("PLAYER_ENTERING_WORLD");
+					</OnLoad>
+					<OnEvent function="InterfaceOptionsAccessibilityPanelColorFilterDropDown_OnEvent"/>
+				</Scripts>
+			</Frame>
+
+			<Slider name="$parentColorblindStrengthSlider" inherits="OptionsSliderTemplate" obeyStepOnDrag="true">
+				<Size x="200" y="17"/>
+				<Anchors>
+					<Anchor point="TOPRIGHT" relativeKey="$parent.ColorblindFilterExamples" x="-76" y="-45" />
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						local name = self:GetName();
+						self.type = CONTROLTYPE_SLIDER;
+						self.cvar = "colorblindWeaknessFactor";
+
+						_G[name.."High"]:Hide();
+
+						self.Label = _G[name.."Low"];
+						self.Label:ClearAllPoints();
+						self.Label:SetPoint("LEFT", self, "RIGHT", 3, 2);
+
+						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
+					</OnLoad>
+					<OnValueChanged>
+						BlizzardOptionsPanel_SetCVarSafe(self.cvar, value);
+						self.Label:SetFormattedText(PERCENTAGE_STRING, math.floor(value * 100));
+						self.value = value;
+					</OnValueChanged>
+					<OnShow>
+						self.oldValue = BlizzardOptionsPanel_GetCVarSafe(self.cvar);
+						self:SetValue(self.oldValue);
+
+						if BlizzardOptionsPanel_GetCVarSafe("colorblindSimulator") == 0 then
+							self:Disable();
+						else
+							self:Enable();
+						end
+					</OnShow>
+				</Scripts>
+			</Slider>
+		</Frames>
+		<Scripts>
+			<OnLoad function="InterfaceOptionsAccessibilityPanel_OnLoad"/>
+		</Scripts>
+	</Frame>
+
+	<!-- Social Browser Frame -->
+	
+	<Frame name="SocialBrowserFrame" frameStrata="HIGH" toplevel="true" hidden="true" enableMouse="true" parent="InterfaceOptionsFrame" inherits="BasicFrameTemplate">
+		<Size x="666" y="630"/>
+		<Anchors>
+			<Anchor point="CENTER"/>
+		</Anchors>
+		<Frames>
+			<Browser name="SocialBrowser" toplevel="true" IMEFont="ChatFontNormal">
+				<Size x="660" y="606"/>
+				<Anchors>
+					<Anchor point="BOTTOM" x="-1" y="3"/>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						C_Social.RegisterSocialBrowser(self);
+					</OnLoad>
+					<OnShow> PlaySound("igMainMenuOpen"); </OnShow>
+					<OnHide> PlaySound("igMainMenuClose"); </OnHide>
+					<OnExternalLink>
+						StaticPopup_Show("EXTERNAL_LINK", url, nil, {url=url, browser=self});
+					</OnExternalLink>
+					<OnEscapePressed>
+						self:ClearFocus();
+					</OnEscapePressed>
+				</Scripts>
+			</Browser>
+		</Frames>
+	</Frame>
+	
 </Ui>

@@ -18,7 +18,7 @@ MoneyTypeInfo["PLAYER"] = {
 	UpdateFunc = function(self)
 		local money = (GetMoney() - GetCursorMoney() - GetPlayerTradeMoney());
 		if self.trialErrorButton then
-			if IsTrialAccount() then
+			if ( GameLimitedMode_IsActive() ) then
 				local _, rMoney = GetRestrictedAccountData();
 				if money >= rMoney then
 					self.trialErrorButton:Show();

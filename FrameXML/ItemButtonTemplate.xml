@@ -29,10 +29,12 @@
 					</Anchors>
 				</FontString>
 			</Layer>
-			<Layer level="OVERLAY">
+			<Layer level="OVERLAY" textureSubLevel="2">
 				<Texture name="$parentSearchOverlay" parentKey="searchOverlay" setAllPoints="true" hidden="true">
 					<Color r="0" g="0" b="0" a="0.8"/>
 				</Texture>
+			</Layer>
+			<Layer level="OVERLAY">
 				<Texture parentKey="IconBorder" file="Interface\Common\WhiteIconFrame" hidden="true">
 					<Size x="37" y="37"/>
 					<Anchors>

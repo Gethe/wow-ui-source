@@ -653,7 +653,7 @@ function SecureActionButton_OnClick(self, button, down)
     end
 
     -- Target predefined item, if we just cast a spell that targets an item
-    if ( SpellCanTargetItem() ) then
+    if ( SpellCanTargetItem() or SpellCanTargetItemID() ) then
         local bag = SecureButton_GetModifiedAttribute(self, "target-bag", button);
         local slot = SecureButton_GetModifiedAttribute(self, "target-slot", button);
         if ( slot ) then

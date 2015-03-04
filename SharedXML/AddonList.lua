@@ -16,7 +16,8 @@ local UIDropDownMenu_SetSelectedValue = UIDropDownMenu_SetSelectedValue
 
 if ( InGlue() ) then
 	AddonDialogTypes = { };
-
+	HasShownAddonOutOfDateDialog = false;
+	
 	AddonDialogTypes["ADDONS_OUT_OF_DATE"] = {
 		text = ADDONS_OUT_OF_DATE,
 		button1 = DISABLE_ADDONS,
@@ -143,6 +144,9 @@ else
 end
 
 function AddonList_HasAnyChanged()
+	if (AddonList.outOfDate and not IsAddonVersionCheckEnabled() or (not AddonList.outOfDate and IsAddonVersionCheckEnabled() and AddonList_HasOutOfDate())) then
+		return true;
+	end
 	for i=1,GetNumAddOns() do
 		local character = nil;
 		if (not InGlue()) then
@@ -223,8 +227,13 @@ function AddonList_OnLoad(self)
 		value = true
 		self.startStatus = {};
 		self.shouldReload = false;
+		self.outOfDate = IsAddonVersionCheckEnabled() and AddonList_HasOutOfDate();
+		self.outOfDateIndexes = {};
 		for i=1,GetNumAddOns() do
 			self.startStatus[i] = (GetAddOnEnableState(UnitName("player"), i) > 0);
+			if (select(5, GetAddOnInfo(i)) == "INTERFACE_VERSION") then
+				tinsert(self.outOfDateIndexes, i);
+			end
 		end
 	end
 	local drop = CreateFrame("Frame", "AddonCharacterDropDown", self, template)
@@ -320,14 +329,16 @@ function AddonList_Update()
 			end
 			_G["AddonListEntry"..i.."Security"].tooltip = _G["ADDON_"..security];
 			string = _G["AddonListEntry"..i.."Status"];
-			if ( not enabled and reason ) then
+			if ( not loadable and reason ) then
 				string:SetText(_G["ADDON_"..reason]);
 			else
 				string:SetText("");
 			end
 
 			if ( not InGlue() ) then
-				if ( enabled ~= AddonList.startStatus[addonIndex] and reason ~= "DEP_DISABLED" ) then
+				if ( enabled ~= AddonList.startStatus[addonIndex] and reason ~= "DEP_DISABLED" or 
+					(reason ~= "INTERFACE_VERSION" and tContains(AddonList.outOfDateIndexes, addonIndex)) or 
+					(reason == "INTERFACE_VERSION" and not tContains(AddonList.outOfDateIndexes, addonIndex))) then
 					if ( enabled ) then
 						-- special case for loadable on demand addons
 						if ( AddonList_IsAddOnLoadOnDemand(addonIndex) ) then
@@ -352,10 +363,6 @@ function AddonList_Update()
 
 	-- ScrollFrame stuff
 	FauxScrollFrame_Update(AddonListScrollFrame, numEntrys, MAX_ADDONS_DISPLAYED, ADDON_BUTTON_HEIGHT);
-
-	if ( not IsAddonVersionCheckEnabled() ) then
-		AddonList_DisableOutOfDate()
-	end
 
 	if ( not InGlue() ) then
 		if ( AddonList_HasAnyChanged() ) then
@@ -509,11 +516,10 @@ function AddonList_DisableOutOfDate()
 		end
 		local enabled = (GetAddOnEnableState(character , i) > 0);
 		if ( enabled and not loadable and reason == "INTERFACE_VERSION" ) then
-			DisableAddOn(i);
+			DisableAddOn(i, true);			
 		end
 	end
 	SaveAddOns();
-	AddonList_Update();
 end
 
 function AddonListCharacterDropDown_OnClick(self)
@@ -591,12 +597,4 @@ function AddonTooltip_Update(owner)
 		AddonTooltip:AddLine(AddonTooltip_BuildDeps(GetAddOnDependencies(owner:GetID())));
 	end
 	AddonTooltip:Show()
-end
-
-function AddonTooltip_SetOwner(self, anchor, xOffset, yOffset)
-	if ( InGlue() ) then
-		AddonTooltip:SetOwner(self, xOffset, yOffset)
-	else
-		AddonTooltip:SetOwner(self, anchor, xOffset, yOffset)
-	end
 end

@@ -8,6 +8,7 @@ function MerchantFrame_OnLoad(self)
 	self:RegisterEvent("MERCHANT_CLOSED");
 	self:RegisterEvent("MERCHANT_SHOW");
 	self:RegisterEvent("GUILDBANK_UPDATE_MONEY");
+	self:RegisterEvent("HEIRLOOMS_UPDATED");
 	self:RegisterForDrag("LeftButton");
 	self.page = 1;
 	-- Tab Handling code
@@ -40,6 +41,11 @@ function MerchantFrame_OnEvent(self, event, ...)
 		MerchantFrame_UpdateRepairButtons();
 	elseif ( event == "CURRENCY_DISPLAY_UPDATE" ) then
 		MerchantFrame_UpdateCurrencyAmounts();
+	elseif ( event == "HEIRLOOMS_UPDATED" ) then
+		local itemID, updateReason = ...;
+		if itemID and updateReason == "NEW" then
+			MerchantFrame_Update();
+		end
 	end
 end
 
@@ -67,6 +73,18 @@ function MerchantFrame_OnHide(self)
 	StaticPopup_Hide("CONFIRM_REFUND_MAX_HONOR");
 	StaticPopup_Hide("CONFIRM_REFUND_MAX_ARENA_POINTS");
 	PlaySound("igCharacterInfoClose");
+end
+
+function MerchantFrame_OnMouseWheel(self, value)
+	if ( value > 0 ) then
+		if ( MerchantPrevPageButton:IsShown() and MerchantPrevPageButton:IsEnabled() ) then
+			MerchantPrevPageButton_OnClick();
+		end
+	else
+		if ( MerchantNextPageButton:IsShown() and MerchantNextPageButton:IsEnabled() ) then
+			MerchantNextPageButton_OnClick();
+		end	
+	end
 end
 
 function MerchantFrame_Update()
@@ -135,12 +153,24 @@ function MerchantFrame_UpdateMerchantInfo()
 				merchantMoney:Show();
 			end
 
+			local merchantItemID = GetMerchantItemID(index);
+
+			local isHeirloom = merchantItemID and C_Heirloom.IsItemHeirloom(merchantItemID);
+			local isKnownHeirloom = isHeirloom and C_Heirloom.PlayerHasHeirloom(merchantItemID);
+
+			itemButton.showNonrefundablePrompt = isHeirloom;
+
 			itemButton.hasItem = true;
 			itemButton:SetID(index);
 			itemButton:Show();
-			if ( numAvailable == 0 ) then
+
+			local tintRed = not isUsable and not isHeirloom;
+			
+			SetItemButtonDesaturated(itemButton, isKnownHeirloom);
+
+			if ( numAvailable == 0 or isKnownHeirloom ) then
 				-- If not available and not usable
-				if ( not isUsable ) then
+				if ( tintRed ) then
 					SetItemButtonNameFrameVertexColor(merchantButton, 0.5, 0, 0);
 					SetItemButtonSlotVertexColor(merchantButton, 0.5, 0, 0);
 					SetItemButtonTextureVertexColor(itemButton, 0.5, 0, 0);
@@ -152,7 +182,7 @@ function MerchantFrame_UpdateMerchantInfo()
 					SetItemButtonNormalTextureVertexColor(itemButton,0.5, 0.5, 0.5);
 				end
 				
-			elseif ( not isUsable ) then
+			elseif ( tintRed ) then
 				SetItemButtonNameFrameVertexColor(merchantButton, 1.0, 0, 0);
 				SetItemButtonSlotVertexColor(merchantButton, 1.0, 0, 0);
 				SetItemButtonTextureVertexColor(itemButton, 0.9, 0, 0);
@@ -368,6 +398,8 @@ function MerchantItemButton_OnLoad(self)
 	self.SplitStack = function(button, split)
 		if ( button.extendedCost ) then
 			MerchantFrame_ConfirmExtendedItemCost(button, split)
+		elseif ( button.showNonrefundablePrompt ) then
+			MerchantFrame_ConfirmExtendedItemCost(button, split)
 		elseif ( split > 0 ) then
 			BuyMerchantItem(button:GetID(), split);
 		end
@@ -395,11 +427,15 @@ function MerchantItemButton_OnClick(self, button)
 			PickupMerchantItem(self:GetID());
 			if ( self.extendedCost ) then
 				MerchantFrame.extendedCost = self;
+			elseif ( self.showNonrefundablePrompt ) then
+				MerchantFrame.extendedCost = self;
 			elseif ( self.price and self.price >= MERCHANT_HIGH_PRICE_COST ) then
 				MerchantFrame.highPrice = self;
 			end
 		else
 			if ( self.extendedCost ) then
+				MerchantFrame_ConfirmExtendedItemCost(self);
+			elseif ( self.showNonrefundablePrompt ) then
 				MerchantFrame_ConfirmExtendedItemCost(self);
 			elseif ( self.price and self.price >= MERCHANT_HIGH_PRICE_COST ) then
 				MerchantFrame_ConfirmHighCostItem(self);
@@ -468,7 +504,7 @@ LIST_DELIMITER = ", "
 function MerchantFrame_ConfirmExtendedItemCost(itemButton, numToPurchase)
 	local index = itemButton:GetID();
 	local itemsString;
-	if ( GetMerchantItemCostInfo(index) == 0 ) then
+	if ( GetMerchantItemCostInfo(index) == 0 and not itemButton.showNonrefundablePrompt) then
 		BuyMerchantItem( itemButton:GetID(), numToPurchase );
 		return;
 	end
@@ -499,10 +535,17 @@ function MerchantFrame_ConfirmExtendedItemCost(itemButton, numToPurchase)
 			else
 				itemsString = " |T"..itemTexture..":0:0:0:-1|t "..format(CURRENCY_QUANTITY_TEMPLATE, costItemCount, currencyName);
 			end
+		end		
+	end
+	if ( itemButton.showNonrefundablePrompt and itemButton.price ) then
+		if ( itemsString ) then
+			itemsString = itemsString .. LIST_DELIMITER .. GetMoneyString(itemButton.price);
+		else
+			itemsString = GetMoneyString(itemButton.price);
 		end
 	end
 	
-	if ( not usingCurrency and maxQuality <= LE_ITEM_QUALITY_UNCOMMON ) then
+	if ( not usingCurrency and maxQuality <= LE_ITEM_QUALITY_UNCOMMON and not itemButton.showNonrefundablePrompt) then
 		BuyMerchantItem( itemButton:GetID(), numToPurchase );
 		return;
 	end
@@ -537,9 +580,15 @@ function MerchantFrame_ConfirmExtendedItemCost(itemButton, numToPurchase)
 		specText = "";
 	end
 	
-	StaticPopup_Show("CONFIRM_PURCHASE_TOKEN_ITEM", itemsString, specText, 
-						{["texture"] = itemButton.texture, ["name"] = itemName, ["color"] = {r, g, b, 1}, 
-						["link"] = itemButton.link, ["index"] = index, ["count"] = numToPurchase});
+	if (itemButton.showNonrefundablePrompt) then
+		StaticPopup_Show("CONFIRM_PURCHASE_NONREFUNDABLE_ITEM", itemsString, specText, 
+							{["texture"] = itemButton.texture, ["name"] = itemName, ["color"] = {r, g, b, 1}, 
+							["link"] = itemButton.link, ["index"] = index, ["count"] = numToPurchase});
+	else
+		StaticPopup_Show("CONFIRM_PURCHASE_TOKEN_ITEM", itemsString, specText, 
+							{["texture"] = itemButton.texture, ["name"] = itemName, ["color"] = {r, g, b, 1}, 
+							["link"] = itemButton.link, ["index"] = index, ["count"] = numToPurchase});
+	end
 end
 
 function MerchantFrame_ResetRefundItem()
@@ -600,6 +649,7 @@ function MerchantFrame_UpdateRepairButtons()
 			MerchantRepairText:ClearAllPoints();
 			MerchantRepairText:SetPoint("CENTER", MerchantFrame, "BOTTOMLEFT", 80, 68);
 			MerchantGuildBankRepairButton:Show();
+			MerchantFrame_UpdateGuildBankRepair();
 		else
 			MerchantRepairAllButton:SetWidth(36);
 			MerchantRepairAllButton:SetHeight(36);
@@ -615,6 +665,7 @@ function MerchantFrame_UpdateRepairButtons()
 		MerchantRepairText:Show();
 		MerchantRepairAllButton:Show();
 		MerchantRepairItemButton:Show();
+		MerchantFrame_UpdateCanRepairAll();
 	else
 		MerchantRepairText:Hide();
 		MerchantRepairAllButton:Hide();

@@ -274,7 +274,6 @@
 						<Scripts>
 							<OnClick>
 								ProductChoiceFrame_PageClick(self, false);
-								PlaySound("igSpellBookOpen");
 							</OnClick>
 						</Scripts>
 						<NormalTexture file="Interface\Buttons\UI-SpellbookIcon-PrevPage-Up" />
@@ -290,7 +289,6 @@
 						<Scripts>
 							<OnClick>
 								ProductChoiceFrame_PageClick(self, true);
-								PlaySound("igSpellBookOpen");
 							</OnClick>
 						</Scripts>
 						<NormalTexture file="Interface\Buttons\UI-SpellbookIcon-NextPage-Up" />
@@ -308,6 +306,7 @@
 			<OnHide>
 				PlaySound("igCharacterInfoClose");
 			</OnHide>
+			<OnMouseWheel function="ProductChoiceFrame_OnMouseWheel"/>
 		</Scripts>
 	</Frame>
 </Ui>

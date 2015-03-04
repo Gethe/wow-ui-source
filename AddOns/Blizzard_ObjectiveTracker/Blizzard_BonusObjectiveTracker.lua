@@ -29,8 +29,8 @@ function BONUS_OBJECTIVE_TRACKER_MODULE:OnFreeBlock(block)
 			rewardsFrame:Hide();
 			rewardsFrame.Anim:Stop();
 			rewardsFrame.id = nil;
-			for i = 1, #rewardsFrame.rewards do
-				rewardsFrame.rewards[i].Anim:Stop();	
+			for i = 1, #rewardsFrame.Rewards do
+				rewardsFrame.Rewards[i].Anim:Stop();
 			end
 		end
 	end
@@ -101,7 +101,7 @@ function BonusObjectiveTracker_OnBlockLeave(block)
 end
 
 function BonusObjectiveTracker_OnEvent(self, event, ...)
-	if ( event == "CRITERIA_COMPLETE" ) then
+	if ( event == "CRITERIA_COMPLETE" and not ObjectiveTrackerFrame.collapsed ) then
 		local id = ...;
 		if( id > 0 ) then
 			local tblBonusSteps = C_Scenario.GetBonusSteps();

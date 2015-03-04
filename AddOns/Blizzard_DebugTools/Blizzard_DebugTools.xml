@@ -366,4 +366,14 @@
 			<OnLoad function="DebugTooltip_OnLoad"/>
 		</Scripts>
 	</GameTooltip>
+
+	<Frame name="FrameStackHighlight" frameStrata="TOOLTIP">
+		<Layers>
+			<Layer level="ARTWORK">
+				<Texture name="$parentTexture"> 
+					<Color r="0.0" g="0.8" b="0.0" a=".4"/>
+				</Texture>
+			</Layer>
+		</Layers>
+	</Frame>
 </Ui>

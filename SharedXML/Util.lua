@@ -107,6 +107,32 @@ function CopyTable(settings)
 	return copy;
 end
 
-function GetItemIDFromHyperlink(link)
-	return tonumber(link:match("|Hitem:(%d+)"));
+function GetItemInfoFromHyperlink(link)
+	local hyperlink = link:match("|Hitem:.-|h");
+	if (hyperlink) then
+		local itemID, creationContext = GetItemCreationContext(hyperlink);
+		return tonumber(itemID), creationContext;
+	else
+		return nil;
+	end
+end
+
+function GetAchievementInfoFromHyperlink(link)
+	return tonumber(link:match("|Hachievement:(%d+)"));
+end
+
+----------------------------------
+-- TRIAL/VETERAN FUCNCTIONS
+----------------------------------
+function GameLimitedMode_IsActive()
+	return IsTrialAccount() or IsVeteranTrialAccount();
+end
+
+function GameLimitedMode_GetString( text )
+	if ( IsVeteranTrialAccount() ) then
+		text = text.."_VETERAN";
+	else
+		text = text.."_TRIAL";
+	end
+	return _G[text];
 end
