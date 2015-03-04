@@ -125,7 +125,7 @@ UIMenus = {
 	"DropDownList2",
 };
 
-NUM_ITEM_QUALITIES = 7;
+NUM_ITEM_QUALITIES = 8;
 
 ITEM_QUALITY_COLORS = { };
 for i = -1, NUM_ITEM_QUALITIES do
@@ -3457,8 +3457,8 @@ function ToggleGameMenu()
 		SocialBrowserFrame:Hide();
 	elseif ( InterfaceOptionsFrame:IsShown() ) then
 		InterfaceOptionsFrameCancel:Click();
-	elseif ( SocialPostFrame and SocialPostFrame:IsShown() ) then
-		SocialPostFrame:Hide();
+	elseif ( SocialPostFrame and Social_IsShown() ) then
+		Social_SetShown(false);
 	elseif ( TimeManagerFrame and TimeManagerFrame:IsShown() ) then
 		TimeManagerFrameCloseButton:Click();
 	elseif ( MultiCastFlyoutFrame:IsShown() ) then

@@ -246,17 +246,17 @@ function SetItemRef(link, text, button, chatFrame)
 	elseif ( strsub(link, 1, 7) == "sharess" ) then
 		local _, index = strsplit(":", link);
 		SocialFrame_LoadUI();
-		SocialPostFrame_ShowScreenshot(tonumber(index));
+		Social_ShowScreenshot(tonumber(index));
 		return;
 	elseif ( strsub(link, 1, 12) == "shareachieve" ) then
 		local _, achievementID, earned = strsplit(":", link);
 		SocialFrame_LoadUI();
-		SocialPostFrame_ShowAchievement(tonumber(achievementID), StringToBoolean(earned));
+		Social_ShowAchievement(tonumber(achievementID), StringToBoolean(earned));
 		return;
 	elseif ( strsub(link, 1, 9) == "shareitem" ) then
 		local itemID, earned, creationContext = link:match("shareitem:(%d+):(%d+):(.*)");
 		SocialFrame_LoadUI();
-		SocialPostFrame_ShowItem(itemID, creationContext, StringToBoolean(earned));
+		Social_ShowItem(itemID, creationContext, StringToBoolean(earned));
 		return;
 	end
 

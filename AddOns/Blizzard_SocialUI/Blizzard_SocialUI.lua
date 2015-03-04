@@ -97,6 +97,14 @@ function SocialPostFrame_OnAttributeChanged(self, name, value)
 		else
 			SocialPostFrame_SetDefaultView();
 		end
+	elseif (name == "achievementview") then
+		SocialPostFrame_ShowAchievement(value, self:GetAttribute("earned"));
+	elseif (name == "itemview") then
+		SocialPostFrame_ShowItem(value, self:GetAttribute("creationcontext"), self:GetAttribute("earned"));
+	elseif (name == "screenshotview") then
+		SocialPostFrame_ShowScreenshot(value);
+	elseif (name == "insertlink") then
+		SocialPostFrame_InsertLink(value);
 	end
 end
 

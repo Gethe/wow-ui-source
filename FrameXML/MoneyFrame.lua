@@ -7,10 +7,6 @@ MONEY_BUTTON_SPACING_SMALL = -4;
 
 MONEY_TEXT_VADJUST = 0;
 
-COPPER_PER_SILVER = 100;
-SILVER_PER_GOLD = 100;
-COPPER_PER_GOLD = COPPER_PER_SILVER * SILVER_PER_GOLD;
-
 COIN_BUTTON_WIDTH = 32;
 
 MoneyTypeInfo = { };
@@ -312,7 +308,7 @@ local function CreateMoneyButtonNormalTexture (button, iconWidth)
 	return texture;
 end
 
-function MoneyFrame_Update(frameName, money)
+function MoneyFrame_Update(frameName, money, forceShow)
 	local frame;
 	if ( type(frameName) == "table" ) then
 		frame = frameName;
@@ -446,7 +442,7 @@ function MoneyFrame_Update(frameName, money)
 	-- Used if we're not showing lower denominations
 	silverButton:ClearAllPoints();
 	local hideCopper = true;
-	if ( (copper > 0 or showLowerDenominations or info.showSmallerCoins == "Backpack") and not truncateCopper) then
+	if ( (copper > 0 or showLowerDenominations or info.showSmallerCoins == "Backpack" or forceShow) and not truncateCopper) then
 		hideCopper = false;
 		-- Exception if showLowerDenominations and fixedWidth
 		if ( showLowerDenominations and info.fixedWidth ) then
@@ -646,35 +642,4 @@ function GetDenominationsFromCopper(money)
 	return GetCoinText(money, " ");
 end
 
-function GetMoneyString(money)
-	local goldString, silverString, copperString;
-	local gold = floor(money / (COPPER_PER_SILVER * SILVER_PER_GOLD));
-	local silver = floor((money - (gold * COPPER_PER_SILVER * SILVER_PER_GOLD)) / COPPER_PER_SILVER);
-	local copper = mod(money, COPPER_PER_SILVER);
-	
-	if ( ENABLE_COLORBLIND_MODE == "1" ) then
-		goldString = gold..GOLD_AMOUNT_SYMBOL;
-		silverString = silver..SILVER_AMOUNT_SYMBOL;
-		copperString = copper..COPPER_AMOUNT_SYMBOL;
-	else
-		goldString = format(GOLD_AMOUNT_TEXTURE, gold, 0, 0);
-		silverString = format(SILVER_AMOUNT_TEXTURE, silver, 0, 0);
-		copperString = format(COPPER_AMOUNT_TEXTURE, copper, 0, 0);
-	end
-	
-	local moneyString = "";
-	local separator = "";	
-	if ( gold > 0 ) then
-		moneyString = goldString;
-		separator = " ";
-	end
-	if ( silver > 0 ) then
-		moneyString = moneyString..separator..silverString;
-		separator = " ";
-	end
-	if ( copper > 0 or moneyString == "" ) then
-		moneyString = moneyString..separator..copperString;
-	end
-	
-	return moneyString;
-end
+

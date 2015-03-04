@@ -30,6 +30,7 @@ Import("C_PurchaseAPI");
 Import("C_PetJournal");
 Import("C_SharedCharacterServices");
 Import("C_AuthChallenge");
+Import("C_WowTokenPublic");
 Import("CreateForbiddenFrame");
 Import("IsGMClient");
 Import("HideGMOnly");
@@ -144,6 +145,8 @@ Import("BLIZZARD_STORE_PROCESSING");
 Import("BLIZZARD_STORE_BEING_PROCESSED_CHECK_BACK_LATER");
 Import("BLIZZARD_STORE_PURCHASE_SENT");
 Import("BLIZZARD_STORE_YOU_ALREADY_OWN_THIS");
+Import("BLIZZARD_STORE_TOKEN_CURRENT_MARKET_PRICE");
+Import("ENABLE_COLORBLIND_MODE");
 Import("TOOLTIP_DEFAULT_COLOR");
 Import("TOOLTIP_DEFAULT_BACKGROUND_COLOR");
 Import("CHARACTER_UPGRADE_LOG_OUT_NOW");
@@ -156,6 +159,15 @@ Import("FREE_CHARACTER_UPGRADE_READY_DESCRIPTION");
 Import("OKAY");
 Import("LARGE_NUMBER_SEPERATOR");
 Import("DECIMAL_SEPERATOR");
+Import("GOLD_AMOUNT_SYMBOL");
+Import("GOLD_AMOUNT_TEXTURE");
+Import("GOLD_AMOUNT_TEXTURE_STRING");
+Import("SILVER_AMOUNT_SYMBOL");
+Import("SILVER_AMOUNT_TEXTURE");
+Import("SILVER_AMOUNT_TEXTURE_STRING");
+Import("COPPER_AMOUNT_SYMBOL");
+Import("COPPER_AMOUNT_TEXTURE");
+Import("COPPER_AMOUNT_TEXTURE_STRING");
 
 --Lua enums
 Import("LE_STORE_ERROR_INVALID_PAYMENT_METHOD");
@@ -193,6 +205,9 @@ local BATTLEPAY_SPLASH_BANNER_TEXT_FEATURED = 0;
 local BATTLEPAY_SPLASH_BANNER_TEXT_DISCOUNT = 1;
 local BATTLEPAY_SPLASH_BANNER_TEXT_NEW = 2;
 local STORETOOLTIP_MAX_WIDTH = 250;
+local COPPER_PER_SILVER = 100;
+local SILVER_PER_GOLD = 100;
+local COPPER_PER_GOLD = COPPER_PER_SILVER * SILVER_PER_GOLD;
 
 local PI = math.pi;
 
@@ -284,6 +299,50 @@ end
 
 local function currencyFormatBeta(dollars, cents)
 	return BLIZZARD_STORE_CURRENCY_BETA:format(formatCurrency(dollars, cents, true));
+end
+
+-- This is copied from WowTokenUI.lua 
+function GetSecureMoneyString(money, separateThousands)
+	local goldString, silverString, copperString;
+	local floor = math.floor;
+
+	local gold = floor(money / (COPPER_PER_SILVER * SILVER_PER_GOLD));
+	local silver = floor((money - (gold * COPPER_PER_SILVER * SILVER_PER_GOLD)) / COPPER_PER_SILVER);
+	local copper = money % COPPER_PER_SILVER;
+
+	if ( ENABLE_COLORBLIND_MODE == "1" ) then
+		if (separateThousands) then
+			goldString = formatLargeNumber(gold)..GOLD_AMOUNT_SYMBOL;
+		else
+			goldString = gold..GOLD_AMOUNT_SYMBOL;
+		end
+		silverString = silver..SILVER_AMOUNT_SYMBOL;
+		copperString = copper..COPPER_AMOUNT_SYMBOL;
+	else
+		if (separateThousands) then
+			goldString = GOLD_AMOUNT_TEXTURE_STRING:format(formatLargeNumber(gold), 0, 0);
+		else
+			goldString = GOLD_AMOUNT_TEXTURE:format(gold, 0, 0);
+		end
+		silverString = SILVER_AMOUNT_TEXTURE:format(silver, 0, 0);
+		copperString = COPPER_AMOUNT_TEXTURE:format(copper, 0, 0);
+	end
+	
+	local moneyString = "";
+	local separator = "";
+	if ( gold > 0 ) then
+		moneyString = goldString;
+		separator = " ";
+	end
+	if ( silver > 0 ) then
+		moneyString = moneyString..separator..silverString;
+		separator = " ";
+	end
+	if ( copper > 0 or moneyString == "" ) then
+		moneyString = moneyString..separator..copperString;
+	end
+	
+	return moneyString;
 end
 
 ----------
@@ -1516,11 +1575,11 @@ function StoreProductCard_UpdateState(card)
 					xoffset = -4;
 				end
 				local entryID = card:GetID();
-				local name, description = select(10,C_PurchaseAPI.GetEntryInfo(entryID));
+				local name, description, _, _, _, token = select(10,C_PurchaseAPI.GetEntryInfo(entryID));
 				
 				StoreTooltip:ClearAllPoints();
 				StoreTooltip:SetPoint(point, card, rpoint, xoffset, 0);
-				StoreTooltip_Show(name, description);
+				StoreTooltip_Show(name, description, token);
 			end
 		end
 	end
@@ -1884,10 +1943,20 @@ function StoreTooltip_OnLoad(self)
 	self:SetBackdropColor(TOOLTIP_DEFAULT_BACKGROUND_COLOR.r, TOOLTIP_DEFAULT_BACKGROUND_COLOR.g, TOOLTIP_DEFAULT_BACKGROUND_COLOR.b, 0.9);
 end
 
-function StoreTooltip_Show(name, description)
+function StoreTooltip_Show(name, description, token)
 	local self = StoreTooltip;
+	STORETOOLTIP_MAX_WIDTH = token and 300 or 250;
+	local stringMaxWidth = STORETOOLTIP_MAX_WIDTH - 20;
+	self.ProductName:SetWidth(stringMaxWidth);
+	self.Description:SetWidth(stringMaxWidth);
+
 	self:Show();
 	StoreTooltip.ProductName:SetText(name);
+
+	if (token) then
+		local price = C_WowTokenPublic.GetCurrentMarketPrice();
+		description = description .. BLIZZARD_STORE_TOKEN_CURRENT_MARKET_PRICE:format(GetSecureMoneyString(price));
+	end
 	StoreTooltip.Description:SetText(description);
 	
 	-- 10 pixel buffer between top, 10 between name and description, 10 between description and bottom

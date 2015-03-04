@@ -1,0 +1,297 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\FrameXML\UI.xsd">
+	<Script file="AccountReactivate.lua"/>
+	
+	<Frame name="ReactivateDialogBackground" virtual="true" >
+		<Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background" edgeFile="Interface\DialogFrame\UI-DialogBox-Border" tile="true">
+			<BackgroundInsets>
+				<AbsInset left="11" right="12" top="12" bottom="11"/>
+			</BackgroundInsets>
+			<TileSize>
+				<AbsValue val="32"/>
+			</TileSize>
+			<EdgeSize>
+				<AbsValue val="32"/>
+			</EdgeSize>
+		</Backdrop>
+	</Frame>
+	
+	<!-- Player has enough tokens or gold. -->
+	<Frame name="ReactivateAccountDialog" topLevel="true" parent="GlueParent" enableMouse="true" frameStrata="DIALOG" hidden="true" inherits="ReactivateDialogBackground">
+		<Size x="450" y="64"/>
+		<Anchors>
+			<Anchor point="BOTTOM" x="0" y="192"/>
+		</Anchors>
+		<Layers>
+			<Layer level="ARTWORK">
+				<FontString parentKey="Title" inherits="GlueFontNormalLarge" text="ACCOUNT_REACTIVATE_GOLD_TITLE">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="32" y="-24"/>
+						<Anchor point="BOTTOMRIGHT" x="-32" y="-40" relativePoint="TOPRIGHT"/>
+					</Anchors>
+				</FontString>
+				<FontString parentKey="Description" inherits="GlueFontNormal" text="ACCOUNT_REACTIVATE_GOLD_DESC" justifyV="TOP">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.Title" relativePoint="BOTTOMLEFT" x="0" y="-20"/>
+						<Anchor point="TOPRIGHT" relativeKey="$parent.Title" relativePoint="BOTTOMRIGHT" x="0" y="-20"/>
+					</Anchors>
+					<Color r="1" g="1" b="1"/>
+				</FontString>
+				<FontString parentKey="ButtonDivider" inherits="GlueFontNormal" text="ACCOUNT_REACTIVATE_BUTTON_DIVIDER">
+					<Size x="400" y="12"/>
+					<Anchors>
+						<Anchor point="TOP" relativeKey="$parent.Description" relativePoint="BOTTOM" x="0" y="-64"/>
+					</Anchors>
+					<Color r="0.5" g="0.5" b="0.5"/>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Button parentKey="Accept" inherits="GluePanelButtonTemplate" text="ACCOUNT_REACTIVATE_ACCEPT">
+				<Size x="320" y="48"/>
+				<Anchors>
+					<Anchor point="BOTTOM" relativeKey="$parent.ButtonDivider" relativePoint="TOP" x="0" y="-4"/>
+				</Anchors>
+				<Scripts>
+					<OnClick function="ReactivateAccountDialog_OnAccept"/>
+				</Scripts>
+			</Button>
+			<Button parentKey="Reactivate" inherits="GluePanelButtonTemplate" text="ACCOUNT_REACTIVATE_SUBSCRIPTION">
+				<Size x="320" y="48"/>
+				<Anchors>
+					<Anchor point="TOP" relativeKey="$parent.ButtonDivider" relativePoint="BOTTOM" x="0" y="-4"/>
+				</Anchors>
+				<Scripts>
+					<OnClick function="AccountReactivate_ReactivateNow"/>
+				</Scripts>
+			</Button>
+		</Frames>
+		<Scripts>
+			<OnLoad function="ReactivateAccountDialog_OnLoad"/>
+			<OnEvent function="ReactivateAccountDialog_OnEvent"/>
+		</Scripts>
+	</Frame>
+	
+	<Frame name="AccountReactivationSuccessDialog" topLevel="true" parent="GlueParent" enableMouse="true" frameStrata="DIALOG" hidden="true" inherits="ReactivateDialogBackground">
+		<Size x="450" y="64"/>
+		<Anchors>
+			<Anchor point="CENTER" x="0" y="64"/>
+		</Anchors>
+		<Layers>
+			<Layer level="ARTWORK">
+				<Texture parentKey="Icon" file="Interface\Store\Store-Main">
+					<Size x="67" y="67"/>
+					<Anchors>
+						<Anchor point="TOP" x="0" y="-23"/>
+					</Anchors>
+					<TexCoords left="0.92382813" right="0.98925781" top="0.37207031" bottom="0.43750000"/>	
+				</Texture>
+
+				<FontString parentKey="Title" inherits="GlueFontNormalLarge" text="ACCOUNT_REACTIVATE_SUCCESS">
+					<Size x="400" y="0"/>
+					<Anchors>
+						<Anchor point="TOP" x="0" y="-16" relativeKey="$parent.Icon" relativePoint="BOTTOM"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Button parentKey="Okay" inherits="GlueDialogButtonTemplate" text="OKAY">
+				<Anchors>
+					<Anchor point="BOTTOM" x="0" y="24"/>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						self:GetParent():Hide();
+						PlaySound("gsTitleOptionOK");
+						GetCharacterListUpdate();
+					</OnClick> 
+				</Scripts>
+			</Button>
+		</Frames>
+		<Scripts>
+			<OnLoad>
+				self:SetHeight( 60 + self.Icon:GetHeight() + 6 + self.Title:GetHeight() + 4 + self.Okay:GetHeight() + 20 );
+			</OnLoad>
+		</Scripts>
+	</Frame>
+		
+	<Frame name="GoldReactivateConfirmationDialog" topLevel="true" parent="GlueParent" enableMouse="true" frameStrata="DIALOG" hidden="true" inherits="ReactivateDialogBackground">
+		<Size x="450" y="64"/>
+		<Anchors>
+			<Anchor point="CENTER" x="0" y="64"/>
+		</Anchors>
+		<Layers>
+			<Layer level="ARTWORK">
+				<FontString parentKey="Title" inherits="GlueFontNormalLarge" text="ACCOUNT_REACTIVATE_CONFIRMATION">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="32" y="-24"/>
+						<Anchor point="BOTTOMRIGHT" x="-32" y="-40" relativePoint="TOPRIGHT"/>
+					</Anchors>
+				</FontString>
+				<FontString parentKey="Description" inherits="GlueFontNormal" text="ACCOUNT_REACTIVATE_DESC" justifyV="TOP">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.Title" relativePoint="BOTTOMLEFT" x="0" y="-20"/>
+						<Anchor point="TOPRIGHT" relativeKey="$parent.Title" relativePoint="BOTTOMRIGHT" x="0" y="-20"/>
+					</Anchors>
+					<Color r="1" g="1" b="1"/>
+				</FontString>
+				<FontString parentKey="Expires" inherits="GlueFontNormal" text="ACCOUNT_REACTIVATE_EXPIRATION">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.Description" relativePoint="BOTTOMLEFT" x="0" y="-20"/>
+						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Description" relativePoint="BOTTOMRIGHT"  x="0" y="-34"/>
+					</Anchors>
+				</FontString>
+				<FontString parentKey="Price" inherits="GlueFontNormal" text="ACCOUNT_REACTIVATE_GOLD_PRICE">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.Expires" relativePoint="BOTTOMLEFT" x="0" y="-28"/>
+						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Expires" relativePoint="BOTTOMRIGHT"  x="0" y="-34"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Button parentKey="Accept" inherits="GlueDialogButtonTemplate" text="ACCEPT">
+				<Size x="192" y="44"/>
+				<Anchors>
+					<Anchor point="BOTTOMRIGHT" relativePoint="BOTTOM" x="-6" y="20"/>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						PlaySound("gsTitleOptionOK");
+						C_WowTokenSecure.ConfirmBuyToken();
+						self:GetParent():Hide();
+					</OnClick> 
+				</Scripts>
+			</Button>
+			<Button parentKey="Cancel" inherits="GlueDialogButtonTemplate" text="CANCEL">
+				<Size x="192" y="44"/>
+				<Anchors>
+					<Anchor point="LEFT" relativeKey="$parent.Accept" relativePoint="RIGHT" x="13" y="0"/>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						PlaySound("gsTitleOptionExit");
+						self:GetParent():Hide();
+						ReactivateAccountDialog_Open();
+					</OnClick>
+				</Scripts>
+			</Button>
+		</Frames>
+		<Scripts>
+			<OnLoad>
+				self:SetHeight( 60 + self.Description:GetHeight() + 96 + self.Accept:GetHeight() + 20 );
+			</OnLoad>
+		</Scripts>
+	</Frame>
+			
+	<Frame name="TokenReactivateConfirmationDialog" topLevel="true" parent="GlueParent" enableMouse="true" frameStrata="DIALOG" hidden="true" inherits="ReactivateDialogBackground">
+		<Size x="450" y="64"/>
+		<Anchors>
+			<Anchor point="CENTER" x="0" y="64"/>
+		</Anchors>
+		<Layers>
+			<Layer level="ARTWORK">
+				<FontString parentKey="Title" inherits="GlueFontNormalLarge" text="ACCOUNT_REACTIVATE_CONFIRMATION">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="32" y="-32"/>
+						<Anchor point="BOTTOMRIGHT" x="-32" y="-48" relativePoint="TOPRIGHT"/>
+					</Anchors>
+				</FontString>
+				<FontString parentKey="Description" inherits="GlueFontNormal" text="ACCOUNT_REACTIVATE_DESC" justifyV="TOP">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.Title" relativePoint="BOTTOMLEFT" x="0" y="-20"/>
+						<Anchor point="TOPRIGHT" relativeKey="$parent.Title" relativePoint="BOTTOMRIGHT" x="0" y="-20"/>
+					</Anchors>
+					<Color r="1" g="1" b="1"/>
+				</FontString>
+				<FontString parentKey="Expires" inherits="GlueFontNormal" text="ACCOUNT_REACTIVATE_EXPIRATION">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.Description" relativePoint="BOTTOMLEFT" x="0" y="-20"/>
+						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Description" relativePoint="BOTTOMRIGHT"  x="0" y="-28"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Button parentKey="Accept" inherits="GlueDialogButtonTemplate" text="ACCEPT">
+				<Size x="192" y="44"/>
+				<Anchors>
+					<Anchor point="TOPRIGHT" relativeKey="$parent.Expires" relativePoint="BOTTOM" x="-6" y="-20"/>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						PlaySound("gsTitleOptionOK");
+						self:GetParent():Hide();
+						C_WowTokenSecure.RedeemTokenConfirm();
+					</OnClick> 
+				</Scripts>
+			</Button>
+			<Button parentKey="Cancel" inherits="GlueDialogButtonTemplate" text="CANCEL">
+				<Size x="192" y="44"/>
+				<Anchors>
+					<Anchor point="LEFT" relativeKey="$parent.Accept" relativePoint="RIGHT" x="13" y="0"/>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						PlaySound("gsTitleOptionExit");
+						self:GetParent():Hide();
+						ReactivateAccountDialog_Open();
+					</OnClick>
+				</Scripts>
+			</Button>
+		</Frames>
+		<Scripts>
+			<OnLoad>
+				self:SetHeight( 64 + self.Description:GetHeight() + 56 + self.Accept:GetHeight() + 16 );
+			</OnLoad>
+		</Scripts>
+	</Frame>
+	
+	<!-- Not Enough Gold and no tokens. Display if attempt to login with a greater than level 20 character/ -->
+	<Frame name="SubscriptionRequestDialog" topLevel="true" parent="GlueParent" enableMouse="true" frameStrata="DIALOG" hidden="true" inherits="ReactivateDialogBackground">
+		<Size x="450" y="64"/>
+		<Anchors>
+			<Anchor point="CENTER" x="0" y="64"/>
+		</Anchors>
+		<Layers>
+			<Layer level="ARTWORK">
+				<FontString parentKey="Text" inherits="GlueFontNormalLarge" text="ACCOUNT_REACTIVATE_TEXT">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="32" y="-24"/>
+						<Anchor point="TOPRIGHT" x="-32" y="-24"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Button parentKey="Accept" inherits="GlueDialogButtonTemplate" text="REACTIVATE_ACCOUNT_NOW">
+				<Size x="250" y="44"/>
+				<Anchors>
+					<Anchor point="TOPRIGHT" relativeKey="$parent.Text"  relativePoint="BOTTOM" x="48" y="-16"/>
+				</Anchors>
+				<Scripts>
+					<OnClick function="AccountReactivate_ReactivateNow"/>
+				</Scripts>
+			</Button>
+			<Button parentKey="Cancel" inherits="GlueDialogButtonTemplate" text="ACCOUNT_REACTIVATE_CANCEL">
+				<Size x="160" y="44"/>
+				<Anchors>
+					<Anchor point="LEFT" relativeKey="$parent.Accept" relativePoint="RIGHT" x="-8" y="0"/>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						PlaySound("gsTitleOptionExit");
+						self:GetParent():Hide();
+						ReactivateAccountDialog_Open();
+					</OnClick>
+				</Scripts>
+			</Button>
+		</Frames>
+		<Scripts>
+			<OnLoad>
+				self:SetHeight(self.Text:GetHeight() + 16 + self.Accept:GetHeight() + 40);
+			</OnLoad>
+		</Scripts>
+	</Frame>
+</Ui>

@@ -36,3 +36,22 @@ function Social_ToggleShow(text)
 		Social_SetText(text);
 	end
 end
+
+function Social_ShowScreenshot(index)
+	SocialPostFrame:SetAttribute("screenshotview", index);
+end
+
+function Social_ShowAchievement(achievementID, earned)
+	SocialPostFrame:SetAttribute("earned", earned);
+	SocialPostFrame:SetAttribute("achievementview", achievementID);
+end
+
+function Social_ShowItem(itemID, creationContext, earned)
+	SocialPostFrame:SetAttribute("creationcontext", creationContext);
+	SocialPostFrame:SetAttribute("earned", earned);
+	SocialPostFrame:SetAttribute("itemview", itemID);
+end
+
+function Social_InsertLink(link)
+	SocialPostFrame:SetAttribute("insertlink", link);
+end

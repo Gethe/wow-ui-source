@@ -527,7 +527,7 @@
 							</Frame>
 						</Frames>
 					</Frame>
-					<Button name="CharSelectEnterWorldButton" inherits="GlueButtonTemplate" text="ENTER_WORLD" motionScriptsWhileDisabled="true">
+					<Button name="CharSelectEnterWorldButton" inherits="GlueButtonTemplate" text="ENTER_WORLD">
 						<Size>
 							<AbsDimension x="200" y="60"/>
 						</Size>
@@ -541,20 +541,6 @@
 							<OnUpdate>
 								CharacterSelect_DeathKnightSwap(self);
 							</OnUpdate>
-							<OnEnter>
-								if ( not self:IsEnabled() and GetNumCharacters() > 0 ) then
-									-- selected character is locked while in veteran trial
-									GlueTooltip:SetOwner(self, "ANCHOR_RIGHT", -16, -13);
-									GlueTooltip:SetText(CHARSELECT_CHAR_LIMITED_TOOLTIP, nil, nil, nil, nil, true);
-									CharSelectAccountUpgradeButtonPointerFrame:Show();
-									CharSelectAccountUpgradeButtonGlow:Show();
-								end
-							</OnEnter>
-							<OnLeave>
-								CharSelectAccountUpgradeButtonPointerFrame:Hide();
-								CharSelectAccountUpgradeButtonGlow:Hide();
-								GlueTooltip:Hide();
-							</OnLeave>
 						</Scripts>
 					</Button>
 					<Button name="CharacterSelectRotateLeft">

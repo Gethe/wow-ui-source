@@ -27,6 +27,9 @@ BLIZZCON_IS_A_GO = false;
 
 local STORE_IS_LOADED = false;
 local ADDON_LIST_RECEIVED = false;
+CAN_BUY_RESULT_FOUND = false;
+MARKET_PRICE_UPDATED = false;
+TOKEN_COUNT_UPDATED = false;
 
 function CharacterSelect_OnLoad(self)
 	CharacterSelectModel:SetSequence(0);
@@ -46,6 +49,9 @@ function CharacterSelect_OnLoad(self)
 	self:RegisterEvent("STORE_STATUS_CHANGED");
 	self:RegisterEvent("CHARACTER_UNDELETE_STATUS_CHANGED");
 	self:RegisterEvent("CHARACTER_UNDELETE_FINISHED");
+	self:RegisterEvent("TOKEN_CAN_VETERAN_BUY_UPDATE");
+	self:RegisterEvent("TOKEN_DISTRIBUTIONS_UPDATED");
+	self:RegisterEvent("TOKEN_MARKET_PRICE_UPDATED");
 
 	-- CharacterSelect:SetModel("Interface\\Glues\\Models\\UI_Orc\\UI_Orc.m2");
 
@@ -212,6 +218,8 @@ function CharacterSelect_OnShow()
 		LoadAddOn("Blizzard_AuthChallengeUI");
 		STORE_IS_LOADED = true;
 	end
+	
+	CharacterSelect_CheckVeteranStatus();
 end
 
 function CharacterSelect_OnHide(self)
@@ -238,6 +246,8 @@ function CharacterSelect_OnHide(self)
 		AddonDialog:Hide();
 		HasShownAddonOutOfDateDialog = false;
 	end
+
+	AccountReactivate_CloseDialogs();
 end
 
 function CharacterSelect_SaveCharacterOrder()
@@ -468,6 +478,23 @@ function CharacterSelect_OnEvent(self, event, ...)
 			else
 				self.undeleteFailed = "other";
 			end
+		end
+	elseif ( event == "TOKEN_DISTRIBUTIONS_UPDATED" ) then
+		local result = ...;
+		-- TODO: Use lua enum
+		if (result == 1) then
+			TOKEN_COUNT_UPDATED = true;
+			CharacterSelect_CheckVeteranStatus();
+		end
+	elseif ( event == "TOKEN_CAN_VETERAN_BUY_UPDATE" ) then
+		CAN_BUY_RESULT_FOUND = true;
+		CharacterSelect_CheckVeteranStatus();
+	elseif ( event == "TOKEN_MARKET_PRICE_UPDATED" ) then
+		local result = ...;
+		-- TODO: Use lua enum
+		if (result == 1) then
+			MARKET_PRICE_UPDATED = true;
+			CharacterSelect_CheckVeteranStatus();
 		end
 	end
 end
@@ -734,7 +761,7 @@ function CharacterSelectButton_OnClick(self)
 	if ( id ~= CharacterSelect.selectedIndex ) then
 		CharacterSelect_SelectCharacter(id);
 		if ( self.isVeteranLocked ) then
-			return;
+			SubscriptionRequestDialog_Open();
 		end
 	end
 end
@@ -743,9 +770,6 @@ function CharacterSelectButton_OnDoubleClick(self)
 	local id = self:GetID() + CHARACTER_LIST_OFFSET;
 	if ( id ~= CharacterSelect.selectedIndex ) then
 		CharacterSelect_SelectCharacter(id);
-		if ( self.isVeteranLocked ) then
-			return;
-		end
 	end
 	if (not CharacterSelect.undeleting) then
 		CharacterSelect_EnterWorld();
@@ -820,6 +844,7 @@ function CharacterSelect_EnterWorld()
 	PlaySound("gsCharacterSelectionEnterWorld");
 	local locked = select(20,GetCharacterInfo(GetCharacterSelection()));
 	if ( locked ) then
+		SubscriptionRequestDialog_Open();
 		return;
 	end
 	StopGlueAmbience();
@@ -1193,6 +1218,9 @@ function GetIndexFromCharID(charID)
 	return 0;
 end
 
+VETERAN_FEATURE_1 = "Continue where you left off!"
+VETERAN_FEATURE_2 = "Reunite with your friends!"
+VETERAN_FEATURE_3 = "Revive your hero"
 
 ACCOUNT_UPGRADE_FEATURES = {
 	VETERAN = { [1] = { icon = "Interface\\Icons\\achievement_bg_returnxflags_def_wsg", text = VETERAN_FEATURE_1 },
@@ -1216,6 +1244,11 @@ ACCOUNT_UPGRADE_FEATURES = {
 		  logo = "Interface\\Glues\\Common\\Glues-WoW-MPLogo",
 		  banner = "accountupgradebanner-mop"},
 	[4] =	{ [1] = { icon = "Interface\\Icons\\UI_Promotion_CharacterBoost", text = UPGRADE_FEATURE_13 },
+		  [2] = { icon = "Interface\\Icons\\Achievement_Level_100", text = UPGRADE_FEATURE_14 },
+		  [3] = { icon = "Interface\\Icons\\UI_Promotion_Garrisons", text = UPGRADE_FEATURE_15 },
+		  logo = "Interface\\Glues\\Common\\Glues-WoW-WODLOGO",
+		  banner = "accountupgradebanner-wod"},
+	[5] =	{ [1] = { icon = "Interface\\Icons\\UI_Promotion_CharacterBoost", text = UPGRADE_FEATURE_13 },
 		  [2] = { icon = "Interface\\Icons\\Achievement_Level_100", text = UPGRADE_FEATURE_14 },
 		  [3] = { icon = "Interface\\Icons\\UI_Promotion_Garrisons", text = UPGRADE_FEATURE_15 },
 		  logo = "Interface\\Glues\\Common\\Glues-WoW-WODLOGO",
@@ -1419,13 +1452,29 @@ function CharacterSelect_UpdateStoreButton()
 	end
 end
 
+function CharacterSelect_CheckVeteranStatus()
+	if (IsVeteranTrialAccount() and TOKEN_COUNT_UPDATED and (C_WowTokenGlue.GetTokenCount() > 0 or CAN_BUY_RESULT_FOUND and MARKET_PRICE_UPDATED)) then
+		ReactivateAccountDialog_Open();
+	elseif (IsVeteranTrialAccount()) then
+		if (not TOKEN_COUNT_UPDATED) then
+			C_WowTokenPublic.UpdateTokenCount();
+		end
+		if (not CAN_BUY_RESULT_FOUND and TOKEN_COUNT_UPDATED) then
+			C_WowTokenGlue.CheckVeteranTokenEligibility();
+		end
+		if (not MARKET_PRICE_UPDATED and CAN_BUY_RESULT_FOUND) then
+			C_WowTokenPublic.UpdateMarketPrice();
+		end
+	end
+end
+
 function CharacterSelect_UpdateButtonState()
 	local servicesEnabled = not CharSelectServicesFlowFrame:IsShown();
 	local undeleting = CharacterSelect.undeleting;
 	local undeleteEnabled, undeleteOnCooldown = GetCharacterUndeleteStatus();
 
-	local boostInProgress,_, locked = select(18, GetCharacterInfo(GetCharacterSelection()));
-	CharSelectEnterWorldButton:SetEnabled(servicesEnabled and not undeleting and not boostInProgress and not locked );
+	local boostInProgress = select(18,GetCharacterInfo(GetCharacterSelection()));
+	CharSelectEnterWorldButton:SetEnabled(servicesEnabled and not undeleting and not boostInProgress);
 	CharacterSelectBackButton:SetEnabled(servicesEnabled and not undeleting and not boostInProgress);
 	CharacterSelectDeleteButton:SetEnabled(servicesEnabled and not undeleting);
 	CharSelectChangeRealmButton:SetEnabled(servicesEnabled and not undeleting);
