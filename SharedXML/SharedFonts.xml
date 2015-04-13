@@ -550,6 +550,24 @@
 		</Member>
 	</FontFamily>
 
+	<FontFamily name="SystemFont_Huge2" virtual="true">
+		<Member alphabet="roman">
+			<Font font="Fonts\FRIZQT__.TTF" height="24"/>
+		</Member>
+		<Member alphabet="korean">
+			<Font name="SystemFont_Shadow_Huge2" font="Fonts\K_Pagetext.TTF" height="24"/>
+		</Member>
+		<Member alphabet="simplifiedchinese">
+			<Font name="SystemFont_Huge2" font="Fonts\ARKai_T.TTF" height="24"/>
+		</Member>
+		<Member alphabet="traditionalchinese">
+			<Font name="SystemFont_Huge2" font="Fonts\blei00d.TTF"  height="24"/>
+		</Member>
+		<Member alphabet="russian">
+			<Font name="SystemFont_Huge2" font="Fonts\FRIZQT___CYR.TTF" height="24"/>
+		</Member>
+	</FontFamily>
+
 	<FontFamily name="SystemFont_Shadow_Huge2" virtual="true">
 		<Member alphabet="roman">
 			<Font font="Fonts\FRIZQT__.TTF" height="24" outline="NORMAL">

@@ -1176,8 +1176,8 @@ function AchievementButton_OnClick (self, button, down, ignoreModifiers)
 			if ( ChatEdit_GetActiveWindow() and achievementLink ) then
 				ChatEdit_InsertLink(achievementLink);
 				handled = true;
-			elseif ( SocialPostFrame and SocialPostFrame:IsShown() and achievementLink ) then
-				SocialPostFrame_InsertLink(achievementLink);
+			elseif ( SocialPostFrame and Social_IsShown() and achievementLink ) then
+				Social_InsertLink(achievementLink);
 				handled = true;
 			end
 		end
@@ -2416,8 +2416,8 @@ function AchievementFrameSummaryAchievement_OnClick(self)
 		if ( ChatEdit_GetActiveWindow() and achievementLink ) then
 			ChatEdit_InsertLink(achievementLink);
 			return;
-		elseif ( SocialPostFrame and SocialPostFrame:IsShown() and achievementLink ) then
-			SocialPostFrame_InsertLink(achievementLink);
+		elseif ( SocialPostFrame and Social_IsShown() and achievementLink ) then
+			Social_InsertLink(achievementLink);
 			return;
 		end
 	end

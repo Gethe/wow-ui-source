@@ -1,0 +1,6 @@
+## Interface: 60100
+## Title: Blizzard WoW Token UI
+## Secure: 1
+## LoadOnDemand: 0
+Blizzard_WowTokenUI.xml
+Blizzard_WowTokenUIInsecure.xml

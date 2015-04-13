@@ -97,6 +97,14 @@ function SocialPostFrame_OnAttributeChanged(self, name, value)
 		else
 			SocialPostFrame_SetDefaultView();
 		end
+	elseif (name == "achievementview") then
+		SocialPostFrame_ShowAchievement(value, self:GetAttribute("earned"));
+	elseif (name == "itemview") then
+		SocialPostFrame_ShowItem(value, self:GetAttribute("creationcontext"), self:GetAttribute("earned"));
+	elseif (name == "screenshotview") then
+		SocialPostFrame_ShowScreenshot(value);
+	elseif (name == "insertlink") then
+		SocialPostFrame_InsertLink(value);
 	end
 end
 
@@ -198,16 +206,23 @@ function SocialPostButton_OnClick(self)
 	-- clicks the Tweet button, make sure we don't call any functions that they can do a secure hook on
 	-- between the beginning of this function and the call to tweet the message.
 	local text = self:GetParent().SocialMessageFrame.EditBox:GetDisplayText();
+	local rawText = self:GetParent().SocialMessageFrame.EditBox:GetText();
+	local usedCustomText = (not SocialPostFrame.lastPrefilledText) or (SocialPostFrame.lastPrefilledText ~= rawText);
 	if ((SocialPostFrame.ImageFrame:IsShown() or (text and text ~= "")) and self.tempEnabled) then
 		if (SocialPostFrame.ImageFrame:IsShown()) then
 			if (SocialPostFrame.ImageFrame.type == SOCIAL_IMAGE_TYPE_ACHIEVEMENT) then
 				local width, height = OffScreenFrame.OffscreenAchievement:GetSize();
-				C_Social.TwitterPostAchievement(text, width, height, SOCIAL_ACHIEVEMENT_OFFSCREEN_ID, OffScreenFrame);
+				C_Social.TwitterPostAchievement(text, width, height, SOCIAL_ACHIEVEMENT_OFFSCREEN_ID, OffScreenFrame, SocialPostFrame.lastAchievementID, usedCustomText);
 			elseif (SocialPostFrame.ImageFrame.type == SOCIAL_IMAGE_TYPE_SCREENSHOT) then
-				C_Social.TwitterPostScreenshot(text, SocialPostFrame.screenshotIndex, SocialPostFrame.ImageFrame.TextureFrame.Texture);
+				C_Social.TwitterPostScreenshot(text, SocialPostFrame.screenshotIndex, SocialPostFrame.ImageFrame.TextureFrame.Texture, usedCustomText);
 			end
 		else
-			C_Social.TwitterPostMessage(text);
+			local itemID = nil;
+			local hasItemLink = SocialPostFrame.lastItemLink and string.find(rawText, SocialPostFrame.lastItemLink);
+			if ( hasItemLink ) then
+				itemID = SocialPostFrame.lastItemID;
+			end
+			C_Social.TwitterPostMessage(text, itemID, usedCustomText);
 		end
 		SocialPostFrame:Hide();
 		SocialPostFrame.SocialMessageFrame.EditBox:SetText("");
@@ -356,6 +371,7 @@ function SocialPrefillScreenshotText(index)
 		SocialPostFrame.SocialMessageFrame.EditBox:SetText(text);
 		SocialPostFrame.SocialMessageFrame.EditBox:HighlightText(0, prefillTextLength);
 		SocialPostFrame.SocialMessageFrame.EditBox:SetCursorPosition(prefillTextLength);
+		SocialPostFrame.lastPrefilledText = text;
 		SocialPostFrame_SetScreenshotView(index, width, height);
 	else
 		SocialPostFrame_SetDefaultView();
@@ -458,6 +474,8 @@ function SocialPrefillAchievementText(achievementID, earned, name)
 	SocialPostFrame.SocialMessageFrame.EditBox:SetText(prefillText);
 	SocialPostFrame.SocialMessageFrame.EditBox:HighlightText(0, prefillTextLength);
 	SocialPostFrame.SocialMessageFrame.EditBox:SetCursorPosition(prefillTextLength);
+	SocialPostFrame.lastAchievementID = achievementID;
+	SocialPostFrame.lastPrefilledText = prefillText;
 
 	-- Show image frame with achievement image rendered off screen
 	SocialRenderAchievement(achievementID);
@@ -570,6 +588,9 @@ function SocialPrefillItemText(itemID, earned, creationContext, name, quality)
 	SocialPostFrame.SocialMessageFrame.EditBox:SetText(text);
 	SocialPostFrame.SocialMessageFrame.EditBox:HighlightText(0, prefillTextLength);
 	SocialPostFrame.SocialMessageFrame.EditBox:SetCursorPosition(prefillTextLength);
+	SocialPostFrame.lastItemLink = armoryLink;
+	SocialPostFrame.lastItemID = itemID;
+	SocialPostFrame.lastPrefilledText = prefillText;
 	
 	SocialPostFrame_SetDefaultView();
 end

@@ -14,12 +14,24 @@
 	</Font>
 	<Font name="GameFontHighlightHuge" inherits="GameFontNormalHuge" virtual="true">
 		<Color r="1.0" g="1.0" b="1.0"/>
+	</Font>
+	<Font name="GameFontDisableHuge" inherits="GameFontNormalHuge" virtual="true">
+		<Color r="0.5" g="0.5" b="0.5"/>
 	</Font>	
 	<Font name="GameFontNormalSmall" inherits="SystemFont_Shadow_Small" virtual="true">
 		<Color r="1.0" g="0.82" b="0"/>
 	</Font>
 	<Font name="GameFontWhiteTiny" inherits="SystemFont_Tiny" virtual="true">
 		<Color r="1.0" g="1.0" b="1.0"/>
+	</Font>
+	<Font name="GameFontNormalMed1" inherits="SystemFont_Med2" virtual="true">
+		<Shadow>
+			<Offset>
+				<AbsDimension x="1" y="-1"/>
+			</Offset>
+			<Color r="0" g="0" b="0"/>
+		</Shadow>
+		<Color r="1.0" g="0.82" b="0"/>
 	</Font>
 	<Font name="GameFontNormalMed2" inherits="SystemFont_Shadow_Med2" virtual="true">
 		<Color r="1.0" g="0.82" b="0"/>
@@ -54,6 +66,9 @@
 	<Font name="GameFontRed" inherits="GameFontNormal" virtual="true">
 		<Color r="1.0" g="0.1" b="0.1"/>
 	</Font>
+	<Font name="GameFontGreen" inherits="GameFontNormal" virtual="true">
+		<Color r="0" g="1.0" b="0"/>
+	</Font>
 	<Font name="GameFontBlack" inherits="SystemFont_Med1" virtual="true">
 		<Color r="0" g="0" b="0"/>
 	</Font>
@@ -84,6 +99,9 @@
 		<Color r="1.0" g="0.82" b="0"/>
 	</Font>
 	<Font name="GameFontNormalWTF2" inherits="SystemFont_OutlineThick_WTF2" virtual="true">
+		<Color r="1.0" g="0.82" b="0"/>
+	</Font>
+	<Font name="GameFontNormalHuge2" inherits="SystemFont_Huge2" virtual="true">
 		<Color r="1.0" g="0.82" b="0"/>
 	</Font>
 	<Font name="GameFontNormalShadowHuge2" inherits="SystemFont_Shadow_Huge2" virtual="true">

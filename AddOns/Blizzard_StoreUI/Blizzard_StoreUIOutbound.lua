@@ -19,3 +19,11 @@ end
 function Outbound.Logout()
 	securecall("Logout");
 end
+
+function Outbound.SetItemTooltip(itemID, left, top, point)
+	securecall("StoreSetItemTooltip", itemID, left, top, point);
+end
+
+function Outbound.ClearItemTooltip()
+	securecall("GameTooltip_Hide");
+end

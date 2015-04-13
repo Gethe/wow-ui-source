@@ -119,6 +119,95 @@
 			</Anchors>
 		</HighlightTexture>
 	</Button>
+	<Button name="WowTokenLogColumnHeaderTemplate" virtual="true">
+		<Size x="10" y="24"/>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="Left" file="Interface\FriendsFrame\WhoFrame-ColumnTabs">
+					<Size x="5" y="24"/>
+					<Anchors>
+						<Anchor point="TOPLEFT"/>
+					</Anchors>
+					<TexCoords left="0" right="0.078125" top="0" bottom="0.75"/>
+				</Texture>
+				<Texture parentKey="Right" file="Interface\FriendsFrame\WhoFrame-ColumnTabs">
+					<Size x="4" y="24"/>
+					<Anchors>
+						<Anchor point="RIGHT"/>
+					</Anchors>
+					<TexCoords left="0.90625" right="0.96875" top="0" bottom="0.75"/>
+				</Texture>
+				<Texture parentKey="Middle" file="Interface\FriendsFrame\WhoFrame-ColumnTabs">
+					<Size x="0" y="24"/>
+					<Anchors>
+						<Anchor point="LEFT" relativeKey="$parent.Left" relativePoint="RIGHT"/>
+						<Anchor point="RIGHT" relativeKey="$parent.Right" relativePoint="LEFT"/>
+					</Anchors>
+					<TexCoords left="0.078125" right="0.90625" top="0" bottom="0.75"/>
+				</Texture>
+			</Layer>
+		</Layers>
+		<ButtonText parentKey="Label">
+			<Anchors>
+				<Anchor point="LEFT" x="8" y="2"/>
+			</Anchors>
+		</ButtonText>
+		<NormalFont style="GameFontHighlightSmall"/>
+		<HighlightTexture parentKey="HighlightTexture" file="Interface\PaperDollInfoFrame\UI-Character-Tab-Highlight" alphaMode="ADD">
+			<Anchors>
+				<Anchor point="TOPLEFT" relativeKey="$parent.Left" x="-2" y="5"/>
+				<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Right" x="2" y="-7"/>
+			</Anchors>
+		</HighlightTexture>
+	</Button>
+	<Button name="WowTokenLogButtonTemplate" parentArray="LogButtons" hidden="true" registerForClicks="LeftButtonUp,RightButtonUp" motionScriptsWhileDisabled="true" virtual="true">
+		<Size x="544" y="28"/>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="BG" setAllPoints="true">
+					<Color r="0.8" b="0.8" g="0.8" a="0"/>
+				</Texture>
+			</Layer>
+			<Layer level="ARTWORK">
+				<FontString parentKey="Date" inherits="GameFontHighlight" justifyH="LEFT">
+					<Size x="95" y="28"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" x="9" y="0"/>
+					</Anchors>
+				</FontString>
+				<FontString parentKey="ItemName" inherits="GameFontHighlight" justifyH="CENTER">
+					<Size x="190" y="28"/>
+					<Anchors>
+						<Anchor point="LEFT" relativeKey="$parent.Date" relativePoint="RIGHT" x="0" y="0"/>
+					</Anchors>
+				</FontString>
+				<Texture parentKey="ItemIcon">
+					<Size x="16" y="16"/>
+					<Anchors>
+						<Anchor point="RIGHT" relativeKey="$parent.ItemName" relativePoint="LEFT" x="38" y="0"/>
+					</Anchors>
+				</Texture>
+				<FontString parentKey="TransactionType" inherits="GameFontHighlight" justifyH="CENTER">
+					<Size x="150" y="28"/>
+					<Anchors>
+						<Anchor point="LEFT" relativeKey="$parent.ItemName" relativePoint="RIGHT" x="0" y="0"/>
+					</Anchors>
+				</FontString>
+				<FontString parentKey="Price" inherits="GameFontHighlight" justifyH="RIGHT">
+					<Size x="80" y="28"/>
+					<Anchors>
+						<Anchor point="LEFT" relativeKey="$parent.TransactionType" relativePoint="RIGHT" x="0" y="0"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<HighlightTexture file="Interface\QuestFrame\UI-QuestTitleHighlight" alphaMode="ADD">
+			<Size x="564" y="28"/>
+			<Anchors>
+				<Anchor point="TOP" x="5" y="-2"/>
+			</Anchors>
+		</HighlightTexture>
+	</Button>
 	<Button name="BrowseButtonTemplate" hidden="false" virtual="true">
 		<Size>
 			<AbsDimension x="597" y="37"/>
@@ -598,7 +687,7 @@
 						if ( IsModifiedClick() ) then
 							if ( not HandleModifiedItemClick(GetAuctionItemLink("bidder", self:GetParent():GetID() + FauxScrollFrame_GetOffset(BidScrollFrame))) ) then
 								if ( IsModifiedClick("DRESSUP") ) then
-									DressUpBattlePet(GetAuctionItemBattlePetInfo("bidder", self:GetParent():GetID() + FauxScrollFrame_GetOffset(BrowseScrollFrame)));
+									DressUpBattlePet(GetAuctionItemBattlePetInfo("bidder", self:GetParent():GetID() + FauxScrollFrame_GetOffset(BidScrollFrame)));
 								end
 							end
 						else
@@ -702,7 +791,7 @@
 				if ( IsModifiedClick() ) then
 					if ( not HandleModifiedItemClick(GetAuctionItemLink("bidder", self:GetID() + FauxScrollFrame_GetOffset(BidScrollFrame))) ) then
 						if ( IsModifiedClick("DRESSUP") ) then
-							DressUpBattlePet(GetAuctionItemBattlePetInfo("bidder", self:GetParent():GetID() + FauxScrollFrame_GetOffset(BrowseScrollFrame)));
+							DressUpBattlePet(GetAuctionItemBattlePetInfo("bidder", self:GetID() + FauxScrollFrame_GetOffset(BidScrollFrame)));
 						end
 					end
 				else
@@ -834,11 +923,11 @@
 				<Scripts>
 					<OnEnter>
 						self:GetParent():LockHighlight();
-						AuctionFrameItem_OnEnter(self, "owner", self:GetParent():GetID() + FauxScrollFrame_GetOffset(AuctionsScrollFrame));
+						AuctionFrameItem_OnEnter(self, "owner", self:GetParent():GetID() + GetEffectiveAuctionsScrollFrameOffset());
 					</OnEnter>
 					<OnLeave>
 						local selected = GetSelectedAuctionItem("owner");
-						if ( selected and ( selected == ( self:GetParent():GetID() + FauxScrollFrame_GetOffset(AuctionsScrollFrame) ) ) ) then
+						if ( selected and ( selected == ( self:GetParent():GetID() + GetEffectiveAuctionsScrollFrameOffset() ) ) ) then
 							<!-- Do nothing -->
 						else
 							self:GetParent():UnlockHighlight();
@@ -848,9 +937,9 @@
 					</OnLeave>
 					<OnClick>
 						if ( IsModifiedClick() ) then
-							if ( not HandleModifiedItemClick(GetAuctionItemLink("owner", self:GetParent():GetID() + FauxScrollFrame_GetOffset(AuctionsScrollFrame))) ) then
+							if ( not HandleModifiedItemClick(GetAuctionItemLink("owner", self:GetParent():GetID() + GetEffectiveAuctionsScrollFrameOffset())) ) then
 								if ( IsModifiedClick("DRESSUP") ) then
-									DressUpBattlePet(GetAuctionItemBattlePetInfo("owner", self:GetParent():GetID() + FauxScrollFrame_GetOffset(BrowseScrollFrame)));
+									DressUpBattlePet(GetAuctionItemBattlePetInfo("owner", self:GetParent():GetID() + GetEffectiveAuctionsScrollFrameOffset()));
 								end
 							end
 						else
@@ -859,7 +948,7 @@
 					</OnClick>
 					<OnUpdate>
 						if ( GameTooltip:IsOwned(self) ) then
-							AuctionFrameItem_OnEnter(self, "owner", self:GetParent():GetID() + FauxScrollFrame_GetOffset(AuctionsScrollFrame));
+							AuctionFrameItem_OnEnter(self, "owner", self:GetParent():GetID() + GetEffectiveAuctionsScrollFrameOffset());
 						end
 					</OnUpdate>
 				</Scripts>
@@ -909,7 +998,7 @@
 					</OnEnter>
 					<OnLeave>
 						local selected = GetSelectedAuctionItem("owner");
-						if ( selected and ( selected == ( self:GetParent():GetID() + FauxScrollFrame_GetOffset(AuctionsScrollFrame) ) ) ) then
+						if ( selected and ( selected == ( self:GetParent():GetID() + GetEffectiveAuctionsScrollFrameOffset() ) ) ) then
 							<!-- Do nothing -->
 						else
 							self:GetParent():UnlockHighlight();
@@ -1010,9 +1099,9 @@
 		<Scripts>
 			<OnClick>
 				if ( IsModifiedClick() ) then
-					if ( not HandleModifiedItemClick(GetAuctionItemLink("owner", self:GetID() + FauxScrollFrame_GetOffset(AuctionsScrollFrame))) ) then
+					if ( not HandleModifiedItemClick(GetAuctionItemLink("owner", self:GetID() + GetEffectiveAuctionsScrollFrameOffset())) ) then
 						if ( IsModifiedClick("DRESSUP") ) then
-							DressUpBattlePet(GetAuctionItemBattlePetInfo("owner", self:GetParent():GetID() + FauxScrollFrame_GetOffset(BrowseScrollFrame)));
+							DressUpBattlePet(GetAuctionItemBattlePetInfo("owner", self:GetID() + GetEffectiveAuctionsScrollFrameOffset()));
 						end
 					end
 				else
