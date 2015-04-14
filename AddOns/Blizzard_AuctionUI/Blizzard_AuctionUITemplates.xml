@@ -687,7 +687,7 @@
 						if ( IsModifiedClick() ) then
 							if ( not HandleModifiedItemClick(GetAuctionItemLink("bidder", self:GetParent():GetID() + FauxScrollFrame_GetOffset(BidScrollFrame))) ) then
 								if ( IsModifiedClick("DRESSUP") ) then
-									DressUpBattlePet(GetAuctionItemBattlePetInfo("bidder", self:GetParent():GetID() + FauxScrollFrame_GetOffset(BrowseScrollFrame)));
+									DressUpBattlePet(GetAuctionItemBattlePetInfo("bidder", self:GetParent():GetID() + FauxScrollFrame_GetOffset(BidScrollFrame)));
 								end
 							end
 						else
@@ -791,7 +791,7 @@
 				if ( IsModifiedClick() ) then
 					if ( not HandleModifiedItemClick(GetAuctionItemLink("bidder", self:GetID() + FauxScrollFrame_GetOffset(BidScrollFrame))) ) then
 						if ( IsModifiedClick("DRESSUP") ) then
-							DressUpBattlePet(GetAuctionItemBattlePetInfo("bidder", self:GetParent():GetID() + FauxScrollFrame_GetOffset(BrowseScrollFrame)));
+							DressUpBattlePet(GetAuctionItemBattlePetInfo("bidder", self:GetID() + FauxScrollFrame_GetOffset(BidScrollFrame)));
 						end
 					end
 				else
@@ -923,11 +923,11 @@
 				<Scripts>
 					<OnEnter>
 						self:GetParent():LockHighlight();
-						AuctionFrameItem_OnEnter(self, "owner", self:GetParent():GetID() + FauxScrollFrame_GetOffset(AuctionsScrollFrame));
+						AuctionFrameItem_OnEnter(self, "owner", self:GetParent():GetID() + GetEffectiveAuctionsScrollFrameOffset());
 					</OnEnter>
 					<OnLeave>
 						local selected = GetSelectedAuctionItem("owner");
-						if ( selected and ( selected == ( self:GetParent():GetID() + FauxScrollFrame_GetOffset(AuctionsScrollFrame) ) ) ) then
+						if ( selected and ( selected == ( self:GetParent():GetID() + GetEffectiveAuctionsScrollFrameOffset() ) ) ) then
 							<!-- Do nothing -->
 						else
 							self:GetParent():UnlockHighlight();
@@ -937,9 +937,9 @@
 					</OnLeave>
 					<OnClick>
 						if ( IsModifiedClick() ) then
-							if ( not HandleModifiedItemClick(GetAuctionItemLink("owner", self:GetParent():GetID() + FauxScrollFrame_GetOffset(AuctionsScrollFrame))) ) then
+							if ( not HandleModifiedItemClick(GetAuctionItemLink("owner", self:GetParent():GetID() + GetEffectiveAuctionsScrollFrameOffset())) ) then
 								if ( IsModifiedClick("DRESSUP") ) then
-									DressUpBattlePet(GetAuctionItemBattlePetInfo("owner", self:GetParent():GetID() + FauxScrollFrame_GetOffset(BrowseScrollFrame)));
+									DressUpBattlePet(GetAuctionItemBattlePetInfo("owner", self:GetParent():GetID() + GetEffectiveAuctionsScrollFrameOffset()));
 								end
 							end
 						else
@@ -948,7 +948,7 @@
 					</OnClick>
 					<OnUpdate>
 						if ( GameTooltip:IsOwned(self) ) then
-							AuctionFrameItem_OnEnter(self, "owner", self:GetParent():GetID() + FauxScrollFrame_GetOffset(AuctionsScrollFrame));
+							AuctionFrameItem_OnEnter(self, "owner", self:GetParent():GetID() + GetEffectiveAuctionsScrollFrameOffset());
 						end
 					</OnUpdate>
 				</Scripts>
@@ -998,7 +998,7 @@
 					</OnEnter>
 					<OnLeave>
 						local selected = GetSelectedAuctionItem("owner");
-						if ( selected and ( selected == ( self:GetParent():GetID() + FauxScrollFrame_GetOffset(AuctionsScrollFrame) ) ) ) then
+						if ( selected and ( selected == ( self:GetParent():GetID() + GetEffectiveAuctionsScrollFrameOffset() ) ) ) then
 							<!-- Do nothing -->
 						else
 							self:GetParent():UnlockHighlight();
@@ -1099,9 +1099,9 @@
 		<Scripts>
 			<OnClick>
 				if ( IsModifiedClick() ) then
-					if ( not HandleModifiedItemClick(GetAuctionItemLink("owner", self:GetID() + FauxScrollFrame_GetOffset(AuctionsScrollFrame))) ) then
+					if ( not HandleModifiedItemClick(GetAuctionItemLink("owner", self:GetID() + GetEffectiveAuctionsScrollFrameOffset())) ) then
 						if ( IsModifiedClick("DRESSUP") ) then
-							DressUpBattlePet(GetAuctionItemBattlePetInfo("owner", self:GetParent():GetID() + FauxScrollFrame_GetOffset(BrowseScrollFrame)));
+							DressUpBattlePet(GetAuctionItemBattlePetInfo("owner", self:GetID() + GetEffectiveAuctionsScrollFrameOffset()));
 						end
 					end
 				else

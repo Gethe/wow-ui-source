@@ -30,6 +30,7 @@ Import("C_PurchaseAPI");
 Import("C_PetJournal");
 Import("C_SharedCharacterServices");
 Import("C_AuthChallenge");
+Import("C_Timer");
 Import("C_WowTokenPublic");
 Import("CreateForbiddenFrame");
 Import("IsGMClient");
@@ -135,6 +136,8 @@ Import("BLIZZARD_STORE_ERROR_TITLE_PARENTAL_CONTROLS");
 Import("BLIZZARD_STORE_ERROR_MESSAGE_PARENTAL_CONTROLS");
 Import("BLIZZARD_STORE_ERROR_TITLE_PURCHASE_DENIED");
 Import("BLIZZARD_STORE_ERROR_MESSAGE_PURCHASE_DENIED");
+Import("BLIZZARD_STORE_ERROR_TITLE_CONSUMABLE_TOKEN_OWNED");
+Import("BLIZZARD_STORE_ERROR_MESSAGE_CONSUMABLE_TOKEN_OWNED");
 Import("BLIZZARD_STORE_DISCOUNT_TEXT_FORMAT");
 Import("BLIZZARD_STORE_PAGE_NUMBER");
 Import("BLIZZARD_STORE_SPLASH_BANNER_DISCOUNT_FORMAT");
@@ -146,6 +149,8 @@ Import("BLIZZARD_STORE_BEING_PROCESSED_CHECK_BACK_LATER");
 Import("BLIZZARD_STORE_PURCHASE_SENT");
 Import("BLIZZARD_STORE_YOU_ALREADY_OWN_THIS");
 Import("BLIZZARD_STORE_TOKEN_CURRENT_MARKET_PRICE");
+Import("BLIZZARD_STORE_TOKEN_DESC_30_DAYS");
+Import("BLIZZARD_STORE_TOKEN_DESC_2700_MINUTES");
 Import("ENABLE_COLORBLIND_MODE");
 Import("TOOLTIP_DEFAULT_COLOR");
 Import("TOOLTIP_DEFAULT_BACKGROUND_COLOR");
@@ -155,7 +160,8 @@ Import("CHARACTER_UPGRADE_READY");
 Import("CHARACTER_UPGRADE_READY_DESCRIPTION");
 Import("FREE_CHARACTER_UPGRADE_READY");
 Import("FREE_CHARACTER_UPGRADE_READY_DESCRIPTION");
-
+Import("TOKEN_CURRENT_AUCTION_VALUE");
+Import("TOKEN_MARKET_PRICE_NOT_AVAILABLE");
 Import("OKAY");
 Import("LARGE_NUMBER_SEPERATOR");
 Import("DECIMAL_SEPERATOR");
@@ -168,6 +174,7 @@ Import("SILVER_AMOUNT_TEXTURE_STRING");
 Import("COPPER_AMOUNT_SYMBOL");
 Import("COPPER_AMOUNT_TEXTURE");
 Import("COPPER_AMOUNT_TEXTURE_STRING");
+Import("SPELL_FAILED_TOO_MANY_OF_ITEM");
 
 --Lua enums
 Import("LE_STORE_ERROR_INVALID_PAYMENT_METHOD");
@@ -179,6 +186,11 @@ Import("LE_STORE_ERROR_OTHER");
 Import("LE_STORE_ERROR_ALREADY_OWNED");
 Import("LE_STORE_ERROR_PARENTAL_CONTROLS_NO_PURCHASE");
 Import("LE_STORE_ERROR_PURCHASE_DENIED");
+Import("LE_STORE_ERROR_CONSUMABLE_TOKEN_OWNED");
+Import("LE_STORE_ERROR_TOO_MANY_TOKENS");
+Import("LE_TOKEN_RESULT_SUCCESS");
+Import("LE_CONSUMABLE_TOKEN_REDEEM_FOR_SUB_AMOUNT_30_DAYS");
+Import("LE_CONSUMABLE_TOKEN_REDEEM_FOR_SUB_AMOUNT_2700_MINUTES");
 
 --Data
 local CURRENCY_UNKNOWN = 0;
@@ -204,11 +216,10 @@ local BATTLEPAY_GROUP_DISPLAY_SPLASH = 1;
 local BATTLEPAY_SPLASH_BANNER_TEXT_FEATURED = 0;
 local BATTLEPAY_SPLASH_BANNER_TEXT_DISCOUNT = 1;
 local BATTLEPAY_SPLASH_BANNER_TEXT_NEW = 2;
-local STORETOOLTIP_MAX_WIDTH = 250;
 local COPPER_PER_SILVER = 100;
 local SILVER_PER_GOLD = 100;
 local COPPER_PER_GOLD = COPPER_PER_SILVER * SILVER_PER_GOLD;
-
+local WOW_TOKEN_CATEGORY_ID = 30;
 local PI = math.pi;
 
 local currencyMult = 100;
@@ -216,6 +227,7 @@ local currencyMult = 100;
 local selectedCategoryID;
 local selectedEntryID;
 local selectedPageNum = 1;
+local TokenMarketPriceAvailable = false;
 
 --DECIMAL_SEPERATOR = ",";
 --LARGE_NUMBER_SEPERATOR = ".";
@@ -562,7 +574,15 @@ local errorData = {
 	[LE_STORE_ERROR_PURCHASE_DENIED] = {
 		title = BLIZZARD_STORE_ERROR_TITLE_PURCHASE_DENIED,
 		msg = BLIZZARD_STORE_ERROR_MESSAGE_PURCHASE_DENIED,
-	}	
+	},
+	[LE_STORE_ERROR_CONSUMABLE_TOKEN_OWNED] = {
+		title = BLIZZARD_STORE_ERROR_TITLE_CONSUMABLE_TOKEN_OWNED,
+		msg = BLIZZARD_STORE_ERROR_MESSAGE_CONSUMABLE_TOKEN_OWNED,
+	},
+	[LE_STORE_ERROR_TOO_MANY_TOKENS] = {
+		title = BLIZZARD_STORE_ERROR_TITLE_CONSUMABLE_TOKEN_OWNED,
+		msg = SPELL_FAILED_TOO_MANY_OF_ITEM,
+	},
 };
 
 local tooltipSides = {};
@@ -577,7 +597,7 @@ local function getIndex(tbl, value)
 end
 
 function StoreFrame_UpdateCard(card,entryID,discountReset)
-	local productID, _, bannerType, alreadyOwned, normalDollars, normalCents, currentDollars, currentCents, buyableHere, name, description, displayID, texture, upgrade = C_PurchaseAPI.GetEntryInfo(entryID);
+	local productID, _, bannerType, alreadyOwned, normalDollars, normalCents, currentDollars, currentCents, buyableHere, name, description, displayID, texture, upgrade, isToken, itemID = C_PurchaseAPI.GetEntryInfo(entryID);
 	StoreProductCard_ResetCornerPieces(card);
 
 	local info = currencyInfo();
@@ -680,9 +700,44 @@ function StoreFrame_UpdateCard(card,entryID,discountReset)
 		if (card.ProductName:IsTruncated()) then
 			card.ProductName:SetFontObject("GameFontNormalHuge3");
 		end
+
+		if (isToken) then
+			if (TokenMarketPriceAvailable) then
+				card.CurrentMarketPrice:SetText(TOKEN_CURRENT_AUCTION_VALUE:format(GetSecureMoneyString(C_WowTokenPublic.GetCurrentMarketPrice(), true)));
+			else
+				card.CurrentMarketPrice:SetText(TOKEN_CURRENT_AUCTION_VALUE:format(TOKEN_MARKET_PRICE_NOT_AVAILABLE));
+			end
+			card.CurrentPrice:ClearAllPoints();
+			card.CurrentPrice:SetPoint("TOPLEFT", card.CurrentMarketPrice, "BOTTOMLEFT", 0, -28);
+			card.NormalPrice:ClearAllPoints();
+			card.NormalPrice:SetPoint("TOPLEFT", card.CurrentMarketPrice, "BOTTOMLEFT", 0, -28);
+			card.CurrentMarketPrice:Show();
+		else
+			card.CurrentMarketPrice:Hide();
+			card.CurrentPrice:ClearAllPoints();
+			card.CurrentPrice:SetPoint("TOPLEFT", card.Description, "BOTTOMLEFT", 0, -28);
+			card.NormalPrice:ClearAllPoints();
+			card.NormalPrice:SetPoint("TOPLEFT", card.Description, "BOTTOMLEFT", 0, -28);
+		end
+
+		if (discount) then
+			card.BuyButton:ClearAllPoints();
+			card.BuyButton:SetPoint("TOPLEFT", card.NormalPrice, "BOTTOMLEFT", 0, -20);
+		else
+			card.BuyButton:ClearAllPoints();
+			card.BuyButton:SetPoint("TOPLEFT", card.CurrentPrice, "BOTTOMLEFT", 0, -20);
+		end
 	end
 	
 	if (card.Description) then
+		if (isToken) then
+			local redeemIndex = select(3, C_WowTokenPublic.GetCommerceSystemStatus());
+			if (redeemIndex == LE_CONSUMABLE_TOKEN_REDEEM_FOR_SUB_AMOUNT_30_DAYS) then
+				description = BLIZZARD_STORE_TOKEN_DESC_30_DAYS;
+			elseif (redeemIndex == LE_CONSUMABLE_TOKEN_REDEEM_FOR_SUB_AMOUNT_2700_MINUTES) then
+				description = BLIZZARD_STORE_TOKEN_DESC_2700_MINUTES;
+			end
+		end
 		card.Description:SetText(description);
 	end
 
@@ -693,7 +748,7 @@ function StoreFrame_UpdateCard(card,entryID,discountReset)
 		if (not icon) then
 			icon = "Interface\\Icons\\INV_Misc_Note_02";
 		end
-		StoreProductCard_ShowIcon(card, icon);
+		StoreProductCard_ShowIcon(card, icon, itemID);
 	end
 
 	if (discount) then
@@ -769,7 +824,7 @@ function StoreFrame_SetSplashCategory()
 	local isThreeSplash = #products >= 3;
 
 	StoreFrame_CheckAndUpdateEntryID(true, isThreeSplash);
-
+	
 	if (isThreeSplash) then
 		self.SplashSingle:Hide();
 		StoreFrame_UpdateCard(self.SplashPrimary, products[1]);
@@ -847,6 +902,7 @@ function StoreFrame_SetCategory()
 	else
 		StoreFrame_SetNormalCategory();
 	end
+	StoreFrame_CheckMarketPriceUpdates();
 end
 
 function StoreFrame_CreateCards(self, num, numPerRow)
@@ -921,6 +977,8 @@ function StoreFrame_OnLoad(self)
 	self:RegisterEvent("STORE_PURCHASE_ERROR");
 	self:RegisterEvent("STORE_ORDER_INITIATION_FAILED");
 	self:RegisterEvent("AUTH_CHALLENGE_FINISHED");
+	self:RegisterEvent("TOKEN_MARKET_PRICE_UPDATED");
+	self:RegisterEvent("TOKEN_STATUS_CHANGED");
 
 	-- We have to call this from CharacterSelect on the glue screen because the addon engine will load
 	-- the store addon more than once if we try to make it ondemand, forcing us to load it before we
@@ -1050,12 +1108,21 @@ function StoreFrame_OnEvent(self, event, ...)
 		else
 			StoreStateDriverFrame.NoticeTextTimer:Play();
 		end
+	elseif ( event == "TOKEN_MARKET_PRICE_UPDATED" ) then
+		local result = ...;
+		TokenMarketPriceAvailable = result == LE_TOKEN_RESULT_SUCCESS;
+		if (selectedCategoryID == WOW_TOKEN_CATEGORY_ID) then
+			StoreFrame_SetCategory();
+		end
+	elseif ( event == "TOKEN_STATUS_CHANGED" ) then
+		StoreFrame_CheckMarketPriceUpdates();
 	end
 end
 
 function StoreFrame_OnShow(self)
 	JustFinishedOrdering = false;
 	C_PurchaseAPI.GetProductList();
+	C_WowTokenPublic.UpdateMarketPrice();
 	self:SetAttribute("isshown", true);
 	StoreFrame_UpdateActivePanel(self);
 	if ( not IsOnGlueScreen() ) then
@@ -1155,6 +1222,11 @@ function StoreFrame_OnAttributeChanged(self, name, value)
 		StoreFrame_UpdateCoverState();
 	elseif ( name == "checkforfree" ) then
 		StoreFrame_CheckForFree(self, value);
+	elseif ( name == "settokencategory" ) then
+		StoreFrame_UpdateCategories(StoreFrame);
+		selectedPageNum = 1;
+		selectedCategoryID = WOW_TOKEN_CATEGORY_ID;
+		StoreFrame_SetCategory();
 	end
 end
 
@@ -1181,7 +1253,7 @@ function StoreFrame_UpdateActivePanel(self)
 		if (StoreStateDriverFrame.NoticeTextTimer:IsPlaying()) then --Even if we don't have every list, if we know we have something in progress, we can display that.
 			progressText = BLIZZARD_STORE_PROCESSING
 		else
-			progressText = BLIZZARD_STORE_CHECK_BACK_LATER
+			progressText = BLIZZARD_STORE_BEING_PROCESSED_CHECK_BACK_LATER
 		end
 		StoreFrame_SetAlert(self, BLIZZARD_STORE_TRANSACTION_IN_PROGRESS, progressText);
 	elseif ( JustFinishedOrdering ) then
@@ -1575,11 +1647,11 @@ function StoreProductCard_UpdateState(card)
 					xoffset = -4;
 				end
 				local entryID = card:GetID();
-				local name, description, _, _, _, token = select(10,C_PurchaseAPI.GetEntryInfo(entryID));
+				local name, description, _, _, _, isToken = select(10,C_PurchaseAPI.GetEntryInfo(entryID));
 				
 				StoreTooltip:ClearAllPoints();
 				StoreTooltip:SetPoint(point, card, rpoint, xoffset, 0);
-				StoreTooltip_Show(name, description, token);
+				StoreTooltip_Show(name, description, isToken);
 			end
 		end
 	end
@@ -1746,6 +1818,7 @@ local cardModels = {}
 function StoreProductCard_SetModel(self, modelID, owned)
 	self.IconBorder:Hide();
 	self.Icon:Hide();
+	self.InvisibleMouseOverFrame:Hide();
 
 	if (self.GlowSpin) then
 		self.GlowSpin:Hide();
@@ -1778,7 +1851,7 @@ function StoreProductCard_SetModel(self, modelID, owned)
 	end
 end
 
-function StoreProductCard_ShowIcon(self, icon)
+function StoreProductCard_ShowIcon(self, icon, itemID)
 	self.Model:Hide();
 	self.Shadows:Hide();
 	
@@ -1788,6 +1861,11 @@ function StoreProductCard_ShowIcon(self, icon)
 
 	self.IconBorder:Show();
 	self.Icon:Show();
+	if (itemID) then
+		self.InvisibleMouseOverFrame:Show();
+	else
+		self.InvisibleMouseOverFrame:Hide();
+	end
 
 	SetPortraitToTexture(self.Icon, icon);
 	if (self == StoreFrame.SplashSingle) then
@@ -1885,6 +1963,37 @@ function StoreProductCardCheckmark_OnEnter(self)
 	end
 end
 
+function StoreProductCardItem_OnEnter(self)
+	local card = self:GetParent();
+	StoreProductCard_OnEnter(card);
+	local entryID = card:GetID();
+	local itemID = select(16, C_PurchaseAPI.GetEntryInfo(entryID));
+
+	local x, y, point;
+
+	if (card == StoreFrame.SplashSingle or card == StoreFrame.SplashPrimary) then
+		x = card.Icon:GetLeft();
+		y = card.Icon:GetTop();
+		point = "BOTTOMRIGHT";
+	elseif (tooltipSides[card] == "LEFT") then
+		x = card:GetLeft() + 4;
+		y = card:GetTop();
+		point = "BOTTOMRIGHT";
+	else
+		x = card:GetRight() - 4;
+		y = card:GetTop();
+		point = "BOTTOMLEFT";
+	end
+	StoreTooltip:Hide();
+	Outbound.SetItemTooltip(itemID, x, y, point);
+end
+
+function StoreProductCardItem_OnLeave(self)
+	StoreProductCard_OnLeave(self:GetParent());
+	StoreProductCard_UpdateState(self:GetParent());
+	Outbound.ClearItemTooltip();
+end
+
 function StoreProductCardCheckmark_OnLeave(self)
 	if ( not self:GetParent():IsMouseOver() ) then
 		StoreProductCard_OnLeave(self:GetParent());
@@ -1943,9 +2052,9 @@ function StoreTooltip_OnLoad(self)
 	self:SetBackdropColor(TOOLTIP_DEFAULT_BACKGROUND_COLOR.r, TOOLTIP_DEFAULT_BACKGROUND_COLOR.g, TOOLTIP_DEFAULT_BACKGROUND_COLOR.b, 0.9);
 end
 
-function StoreTooltip_Show(name, description, token)
+function StoreTooltip_Show(name, description, isToken)
 	local self = StoreTooltip;
-	STORETOOLTIP_MAX_WIDTH = token and 300 or 250;
+	local STORETOOLTIP_MAX_WIDTH = isToken and 300 or 250;
 	local stringMaxWidth = STORETOOLTIP_MAX_WIDTH - 20;
 	self.ProductName:SetWidth(stringMaxWidth);
 	self.Description:SetWidth(stringMaxWidth);
@@ -1953,9 +2062,13 @@ function StoreTooltip_Show(name, description, token)
 	self:Show();
 	StoreTooltip.ProductName:SetText(name);
 
-	if (token) then
-		local price = C_WowTokenPublic.GetCurrentMarketPrice();
-		description = description .. BLIZZARD_STORE_TOKEN_CURRENT_MARKET_PRICE:format(GetSecureMoneyString(price));
+	if (isToken) then
+		if (TokenMarketPriceAvailable) then
+			local price = C_WowTokenPublic.GetCurrentMarketPrice();
+			description = description .. BLIZZARD_STORE_TOKEN_CURRENT_MARKET_PRICE:format(GetSecureMoneyString(price));
+		else
+			description = description .. BLIZZARD_STORE_TOKEN_CURRENT_MARKET_PRICE:format(TOKEN_MARKET_PRICE_NOT_AVAILABLE);
+		end
 	end
 	StoreTooltip.Description:SetText(description);
 	
@@ -2030,4 +2143,62 @@ end
 function ServicesLogoutPopupCancelButton_OnClick(self)
 	PlaySound("igMainMenuOptionCheckBoxOn");
 	ServicesLogoutPopup:Hide();
+end
+
+--------------------------------------
+local priceUpdateTimer, currentPollTimeSeconds;
+
+------------------------------------------------------------------------------------------------------------------------------------------------------
+-- This code is replicated from C_TimerAugment.lua to ensure that the timers are secure.
+------------------------------------------------------------------------------------------------------------------------------------------------------
+--Cancels a ticker or timer. May be safely called within the ticker's callback in which
+--case the ticker simply won't be started again.
+--Cancel is guaranteed to be idempotent.
+function SecureCancelTicker(ticker)
+	ticker._cancelled = true;
+end
+
+function NewSecureTicker(duration, callback, iterations)
+	local ticker = {};
+	ticker._remainingIterations = iterations;
+	ticker._callback = function()
+		if ( not ticker._cancelled ) then
+			callback(ticker);
+
+			--Make sure we weren't cancelled during the callback
+			if ( not ticker._cancelled ) then
+				if ( ticker._remainingIterations ) then
+					ticker._remainingIterations = ticker._remainingIterations - 1;
+				end
+				if ( not ticker._remainingIterations or ticker._remainingIterations > 0 ) then
+					C_Timer.After(duration, ticker._callback);
+				end
+			end
+		end
+	end;
+
+	C_Timer.After(duration, ticker._callback);
+	return ticker;
+end
+
+function StoreFrame_UpdateMarketPrice()
+	C_WowTokenPublic.UpdateMarketPrice();
+end
+
+function StoreFrame_CheckMarketPriceUpdates()
+	if (StoreFrame:IsShown() and selectedCategoryID == WOW_TOKEN_CATEGORY_ID) then
+		C_WowTokenPublic.UpdateMarketPrice();
+		local _, pollTimeSeconds = C_WowTokenPublic.GetCommerceSystemStatus();
+		if (not priceUpdateTimer or pollTimeSeconds ~= currentPollTimeSeconds) then
+			if (priceUpdateTimer) then
+				SecureCancelTicker(priceUpdateTimer);
+			end
+			priceUpdateTimer = NewSecureTicker(pollTimeSeconds, StoreFrame_UpdateMarketPrice);
+			currentPollTimeSeconds = pollTimeSeconds;
+		end
+	else
+		if (priceUpdateTimer) then
+			SecureCancelTicker(priceUpdateTimer);
+		end
+	end
 end

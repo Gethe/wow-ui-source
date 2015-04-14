@@ -1,8 +1,80 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\FrameXML\UI.xsd">
+	<Script file="Blizzard_WowTokenUIInbound.lua" />
 	<Script file="Blizzard_WowTokenUI.lua"/>
+	<Script file="Blizzard_WowTokenUIOutbound.lua"/>
 	<ScopedModifier forbidden="true" scriptsUseGivenEnv="true">
-		<Frame name="WowTokenRedemptionFrame" inherits="PortraitFrameTemplateNoCloseButton" frameStrata="DIALOG" parent="UIParent" hidden="true">
+		<Button name="WowTokenButtonTemplate" virtual="true">
+			<Size x="40" y="22" />
+			<Layers>
+				<Layer level="BACKGROUND">
+					<Texture parentKey="Left" file="Interface\Buttons\UI-Panel-Button-Up">
+						<Size x="12" y="22" />
+						<Anchors>
+							<Anchor point="TOPLEFT" />
+							<Anchor point="BOTTOMLEFT" />
+						</Anchors>
+						<TexCoords left="0" right="0.09375" top="0" bottom="0.6875" />
+					</Texture>
+					<Texture parentKey="Right" file="Interface\Buttons\UI-Panel-Button-Up">
+						<Size x="12" y="22" />
+						<Anchors>
+							<Anchor point="TOPRIGHT" />
+							<Anchor point="BOTTOMRIGHT" />
+						</Anchors>
+						<TexCoords left="0.53125" right="0.625" top="0" bottom="0.6875" />
+					</Texture>
+					<Texture parentKey="Middle" file="Interface\Buttons\UI-Panel-Button-Up">
+						<Size x="12" y="22" />
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeKey="$parent.Left" relativePoint="TOPRIGHT" />
+							<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Right" relativePoint="BOTTOMLEFT" />
+						</Anchors>
+						<TexCoords left="0.09375" right="0.53125" top="0" bottom="0.6875" />
+					</Texture>
+				</Layer>
+			</Layers>
+			<Scripts>
+				<OnLoad>
+					if ( not self:IsEnabled() ) then
+						self.Left:SetTexture("Interface\\Buttons\\UI-Panel-Button-Disabled");
+						self.Middle:SetTexture("Interface\\Buttons\\UI-Panel-Button-Disabled");
+						self.Right:SetTexture("Interface\\Buttons\\UI-Panel-Button-Disabled");
+					end
+				</OnLoad>
+				<OnMouseDown>
+					if ( self:IsEnabled() ) then
+						self.Left:SetTexture("Interface\\Buttons\\UI-Panel-Button-Down");
+						self.Middle:SetTexture("Interface\\Buttons\\UI-Panel-Button-Down");
+						self.Right:SetTexture("Interface\\Buttons\\UI-Panel-Button-Down");
+					end
+				</OnMouseDown>
+				<OnMouseUp>
+					if ( self:IsEnabled() ) then
+						self.Left:SetTexture("Interface\\Buttons\\UI-Panel-Button-Up");
+						self.Middle:SetTexture("Interface\\Buttons\\UI-Panel-Button-Up");
+						self.Right:SetTexture("Interface\\Buttons\\UI-Panel-Button-Up");
+					end
+				</OnMouseUp>
+				<OnShow function="StoreButton_OnShow" />
+				<OnDisable>
+					self.Left:SetTexture("Interface\\Buttons\\UI-Panel-Button-Disabled");
+					self.Middle:SetTexture("Interface\\Buttons\\UI-Panel-Button-Disabled");
+					self.Right:SetTexture("Interface\\Buttons\\UI-Panel-Button-Disabled");
+				</OnDisable>
+				<OnEnable>
+					self.Left:SetTexture("Interface\\Buttons\\UI-Panel-Button-Up");
+					self.Middle:SetTexture("Interface\\Buttons\\UI-Panel-Button-Up");
+					self.Right:SetTexture("Interface\\Buttons\\UI-Panel-Button-Up");
+				</OnEnable>
+			</Scripts>
+			<ButtonText parentKey="Text" />
+			<NormalFont style="GameFontNormal"/>
+			<HighlightFont style="GameFontHighlight"/>
+			<DisabledFont style="GameFontDisable"/>
+			<HighlightTexture inherits="UIPanelButtonHighlightTexture" />
+		</Button>
+		<Frame name="WowTokenRedemptionFrame" inherits="PortraitFrameTemplateNoCloseButton" frameStrata="DIALOG" parent="UIParent" enableMouse="true" hidden="true">
 			<Size x="325" y="450"/>
 			<!-- Anchored to the screen as a whole in lua -->
 			<Layers>
@@ -41,37 +113,50 @@
 						<Layer level="ARTWORK">
 							<FontString parentKey="Title" inherits="GameFontNormalHuge" text="TOKEN_REDEEM_GAME_TIME_TITLE">
 								<Anchors>
-									<Anchor point="TOP" x="0" y="-16"/>
+									<Anchor point="TOP" x="0" y="-20"/>
 								</Anchors>
 							</FontString>
 							<Texture parentKey="Image" atlas="token-choice-wow" useAtlasSize="true">
 								<Anchors>
-									<Anchor point="TOP" relativeKey="$parent.Title" relativePoint="BOTTOM" x="0" y="-12"/>
+									<Anchor point="TOP" relativeKey="$parent.Title" relativePoint="BOTTOM" x="3" y="-19"/>
 								</Anchors>
 							</Texture>
 							<FontString parentKey="Description" inherits="GameFontHighlight" text="TOKEN_REDEEM_GAME_TIME_DESCRIPTION">
 								<Size x="280" y="0"/>
 								<Anchors>
-									<Anchor point="TOP" y="-174"/>
+									<Anchor point="TOP" y="-191"/>
 								</Anchors>
 							</FontString>
-							<FontString parentKey="Format" inherits="GameFontNormal" hidden="true">
+							<FontString parentKey="Format" inherits="GameFontNormal">
 								<Size x="280" y="0"/>
 								<Anchors>
-									<Anchor point="TOP" x="0" y="-230"/>
+									<Anchor point="TOP" x="0" y="-247"/>
 								</Anchors>
 							</FontString>
 						</Layer>
 					</Layers>
 					<Frames>
-						<Button parentKey="RedeemButton" inherits="UIPanelButtonTemplate" text="TOKEN_REDEEM_GAME_TIME_BUTTON_LABEL" id="1">
+						<Frame parentKey="Spinner" inherits="LoadingSpinnerTemplate" hidden="true">
+							<Anchors>
+								<Anchor point="TOP" x="0" y="-235"/>
+							</Anchors>
+							<Scripts>
+								<OnLoad>
+									self.Anim:Play();
+								</OnLoad>
+							</Scripts>
+						</Frame>
+						<Button parentKey="RedeemButton" inherits="WowTokenButtonTemplate" text="TOKEN_REDEEM_GAME_TIME_BUTTON_LABEL" id="1">
 							<Size x="234" y="28"/>
 							<Anchors>
-								<Anchor point="BOTTOM" x="0" y="24"/>
+								<Anchor point="BOTTOM" x="0" y="20"/>
 							</Anchors>
 							<Scripts>
 								<OnClick function="WowTokenRedemptionRedeemButton_OnClick"/>
 							</Scripts>
+							<NormalFont style="GameFontNormalLarge" />
+							<HighlightFont style="GameFontHighlightLarge" />
+							<DisabledFont style="GameFontDisableLarge" />
 						</Button>
 					</Frames>
 				</Frame>
@@ -79,9 +164,10 @@
 			<Scripts>
 				<OnLoad function="WowTokenRedemptionFrame_OnLoad"/>
 				<OnEvent function="WowTokenRedemptionFrame_OnEvent"/>
+				<OnAttributeChanged function="WowTokenRedemptionFrame_OnAttributeChanged"/>
 			</Scripts>
 		</Frame>
-		<Frame name="WowTokenDialog" parent="UIParent" frameStrata="DIALOG" toplevel="true" enableMouse="false" hidden="true">
+		<Frame name="WowTokenDialog" parent="UIParent" frameStrata="DIALOG" toplevel="true" enableMouse="true" hidden="true">
 			<Size x="434" y="216" />
 			<!-- Anchors are set by the dialogs in lua -->
 			<Backdrop edgeFile="Interface\DialogFrame\UI-DialogBox-Border" tile="true">
@@ -118,18 +204,18 @@
 					</Texture>
 				</Layer>
 				<Layer level="ARTWORK">
-					<FontString parentKey="Title" inherits="GameFontNormalLarge" text="Complete!">
+					<FontString parentKey="Title" inherits="GameFontNormalLarge">
 						<Anchors>
 							<Anchor point="TOP" relativeKey="$parent.CompletionIcon" relativePoint="BOTTOM" x="0" y="-12"/>
 						</Anchors>
 					</FontString>
-					<FontString parentKey="Description" inherits="GameFontHighlight" text="30 days of game time will be added to your World of Warcraft account.  You will receive a confirmation email shortly.">
+					<FontString parentKey="Description" inherits="GameFontHighlight">
 						<Size x="0" y="0"/>
 						<Anchors>
 							<Anchor point="TOP" relativeKey="$parent.Title" relativePoint="BOTTOM" x="0" y="-16"/>
 						</Anchors>
 					</FontString>
-					<FontString parentKey="ConfirmationDesc" inherits="GameFontNormal" text="Current Account Expiration Date: |cffffffff4/28/14|r|nNew Expiration Date: |cffffffff5/28/14|r" hidden="true">
+					<FontString parentKey="ConfirmationDesc" inherits="GameFontNormal" hidden="true">
 						<Size x="0" y="0"/>
 						<Anchors>
 							<Anchor point="TOP" relativeKey="$parent.Description" relativePoint="BOTTOM" x="0" y="-16"/>
@@ -137,13 +223,23 @@
 					</FontString>
 					<FontString parentKey="CautionText" inherits="GameFontRed" hidden="true">
 						<Anchors>
-							<Anchor point="TOPRIGHT" x="-16" y="-16"/>
+							<Anchor point="BOTTOM" x="0" y="23"/>
 						</Anchors>
 					</FontString>
 				</Layer>
 			</Layers>
 			<Frames>
-				<Button parentKey="Button1" inherits="UIPanelButtonTemplate" text="OK" id="1">
+				<Frame parentKey="Spinner" inherits="LoadingSpinnerTemplate" hidden="true">
+					<Anchors>
+						<Anchor point="BOTTOM" x="0" y="16"/>
+					</Anchors>
+					<Scripts>
+						<OnLoad>
+							self.Anim:Play();
+						</OnLoad>
+					</Scripts>
+				</Frame>
+				<Button parentKey="Button1" inherits="WowTokenButtonTemplate" text="OK" id="1">
 					<Size x="120" y="22"/>
 					<Anchors>
 						<Anchor point="BOTTOM" x="0" y="16"/>
@@ -152,7 +248,7 @@
 						<OnClick function="WowTokenDialogButton_OnClick"/>
 					</Scripts>
 				</Button>
-				<Button parentKey="Button2" inherits="UIPanelButtonTemplate" hidden="true" id="2">
+				<Button parentKey="Button2" inherits="WowTokenButtonTemplate" hidden="true" id="2">
 					<Size x="120" y="22"/>
 					<Anchors>
 						<Anchor point="BOTTOMLEFT" relativePoint="BOTTOM" x="8" y="16"/>
@@ -163,18 +259,10 @@
 				</Button>
 			</Frames>
 			<Scripts>
-				<OnShow>
-					if (self.dialog and self.dialog.onShow) then
-						self.dialog.onShow(self);
-					end
-				</OnShow>
-				<OnHide>
-					if (self.dialog and self.dialog.onHide) then
-						self.dialog.onHide(self);
-					end
-				</OnHide>
 				<OnLoad function="WowTokenDialog_OnLoad"/>
 				<OnEvent function="WowTokenDialog_OnEvent"/>
+				<OnShow function="WowTokenDialog_OnShow"/>
+				<OnHide function="WowTokenDialog_OnHide"/>
 			</Scripts>
 		</Frame>
 	</ScopedModifier>

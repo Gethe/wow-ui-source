@@ -323,6 +323,8 @@ function UIParent_OnLoad(self)
 
 	-- Shop (for Asia promotion)
 	self:RegisterEvent("PRODUCT_DISTRIBUTIONS_UPDATED");
+
+	self:RegisterEvent("TOKEN_AUCTION_SOLD");
 end
 
 
@@ -1636,10 +1638,26 @@ function UIParent_OnEvent(self, event, ...)
 		ShowUIPanel(GarrisonRecruiterFrame);
 	elseif ( event == "PRODUCT_DISTRIBUTIONS_UPDATED" ) then
 		StoreFrame_CheckForFree(event);
-	elseif event == "LOADING_SCREEN_ENABLED" then
+	elseif ( event == "LOADING_SCREEN_ENABLED" ) then
 		TopBannerManager_LoadingScreenEnabled();
-	elseif event == "LOADING_SCREEN_DISABLED" then
+	elseif ( event == "LOADING_SCREEN_DISABLED" ) then
 		TopBannerManager_LoadingScreenDisabled()
+	elseif ( event == "TOKEN_AUCTION_SOLD" ) then
+		local info = ChatTypeInfo["SYSTEM"];
+		local itemName = GetItemInfo(WOW_TOKEN_ITEM_ID);
+		if (itemName) then
+			DEFAULT_CHAT_FRAME:AddMessage(ERR_AUCTION_SOLD_S:format(itemName), info.r, info.g, info.b, info.id);
+		else
+			self:RegisterEvent("GET_ITEM_INFO_RECEIVED");
+		end
+	elseif ( event == "GET_ITEM_INFO_RECEIVED" ) then
+		local itemID = ...;
+		if (itemID == WOW_TOKEN_ITEM_ID) then
+			local info = ChatTypeInfo["SYSTEM"];
+			local itemName = GetItemInfo(WOW_TOKEN_ITEM_ID);
+			DEFAULT_CHAT_FRAME:AddMessage(ERR_AUCTION_SOLD_S:format(itemName), info.r, info.g, info.b, info.id);
+			self:UnregisterEvent("GET_ITEM_INFO_RECEIVED");
+		end
 	end
 end
 
@@ -3443,6 +3461,7 @@ function ToggleGameMenu()
 	elseif ( ModelPreviewFrame:IsShown() ) then
 		ModelPreviewFrame:Hide();
 	elseif ( StoreFrame_EscapePressed and StoreFrame_EscapePressed() ) then
+	elseif ( WowTokenRedemptionFrame_EscapePressed and WowTokenRedemptionFrame_EscapePressed() ) then
 	elseif ( securecall("StaticPopup_EscapePressed") ) then
 	elseif ( GameMenuFrame:IsShown() ) then
 		PlaySound("igMainMenuQuit");

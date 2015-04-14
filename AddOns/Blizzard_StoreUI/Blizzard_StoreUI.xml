@@ -492,6 +492,16 @@
 						</OnShow>
 					</Scripts>
 				</Button>
+				<Frame parentKey="InvisibleMouseOverFrame" enableMouse="true" hidden="true">
+					<Size x="63" y="63" />
+					<Anchors>
+						<Anchor point="TOP" x="0" y="-36" />
+					</Anchors>
+					<Scripts>
+						<OnEnter function="StoreProductCardItem_OnEnter"/>
+						<OnLeave function="StoreProductCardItem_OnLeave"/>
+					</Scripts>
+				</Frame>
 				<Frame parentKey="Checkmark" hidden="true">
 					<Size x="27" y="27"/>
 					<Anchors>
@@ -566,6 +576,13 @@
 							<Anchor point="TOPLEFT" relativeKey="$parent.ProductName" relativePoint="BOTTOMLEFT" x="0" y="-16" />
 						</Anchors>
 						<Color r="1" g="0.84" b="0.55" />
+					</FontString>
+					<FontString parentKey="CurrentMarketPrice" inherits="SystemFont_Shadow_Med2" justifyH="LEFT" hidden="true">
+						<Size x="340" y="0"/>
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeKey="$parent.Description" relativePoint="BOTTOMLEFT" x="0" y="-28" />
+						</Anchors>
+						<Color r=".733" g=".588" b=".31"/>
 					</FontString>
 					<FontString parentKey="CurrentPrice" inherits="GameFontNormalHugeOutline" >
 						<Anchors>
@@ -675,6 +692,16 @@
 						<OnUpdate function="StoreProductCardModel_OnUpdate" />
 					</Scripts>
 				</PlayerModel>
+				<Frame parentKey="InvisibleMouseOverFrame" enableMouse="true" hidden="true">
+					<Size x="68" y="68" />
+					<Anchors>
+						<Anchor point="TOPLEFT" x="86" y="-96" />
+					</Anchors>
+					<Scripts>
+						<OnEnter function="StoreProductCardItem_OnEnter"/>
+						<OnLeave function="StoreProductCardItem_OnLeave"/>
+					</Scripts>
+				</Frame>
 				<Button parentKey="BuyButton" inherits="StoreButtonTemplate">
 					<Size x="140" y="30" />
 					<Anchors>
@@ -907,6 +934,16 @@
 						<OnUpdate function="StoreProductCardModel_OnUpdate" />
 					</Scripts>
 				</PlayerModel>
+				<Frame parentKey="InvisibleMouseOverFrame" enableMouse="true" hidden="true">
+					<Size x="70" y="70" />
+					<Anchors>
+						<Anchor point="TOPLEFT" x="88" y="-76" />
+					</Anchors>
+					<Scripts>
+						<OnEnter function="StoreProductCardItem_OnEnter"/>
+						<OnLeave function="StoreProductCardItem_OnLeave"/>
+					</Scripts>
+				</Frame>
 				<Button parentKey="Magnifier" hidden="true">
 					<Size x="31" y="35" />
 					<Anchors>
@@ -1095,6 +1132,16 @@
 						</OnShow>
 					</Scripts>
 				</Button>
+				<Frame parentKey="InvisibleMouseOverFrame" enableMouse="true" hidden="true">
+					<Size x="80" y="81"/>
+					<Anchors>
+						<Anchor point="CENTER" x="-72" y="1" />
+					</Anchors>
+					<Scripts>
+						<OnEnter function="StoreProductCardItem_OnEnter"/>
+						<OnLeave function="StoreProductCardItem_OnLeave"/>
+					</Scripts>
+				</Frame>
 				<Frame parentKey="Checkmark" hidden="true">
 					<Size x="27" y="27"/>
 					<Anchors>

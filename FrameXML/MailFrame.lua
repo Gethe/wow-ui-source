@@ -496,13 +496,15 @@ function OpenMail_Update()
 
 	-- Is an invoice
 	if ( isInvoice ) then
-		local invoiceType, itemName, playerName, bid, buyout, deposit, consignment, moneyDelay, etaHour, etaMin, count = GetInboxInvoiceInfo(InboxFrame.openMailID);
+		local invoiceType, itemName, playerName, bid, buyout, deposit, consignment, moneyDelay, etaHour, etaMin, count, commerceAuction = GetInboxInvoiceInfo(InboxFrame.openMailID);
 		if ( playerName ) then
 			-- Setup based on whether player is the buyer or the seller
 			local buyMode;
 			if ( count and count > 1 ) then
 				itemName = format(AUCTION_MAIL_ITEM_STACK, itemName, count);
 			end
+			OpenMailInvoicePurchaser:SetShown(not commerceAuction);
+			OpenMailInvoiceBuyMode:SetShown(not commerceAuction);
 			if ( invoiceType == "buyer" ) then
 				if ( bid == buyout ) then
 					buyMode = "("..BUYOUT..")";
