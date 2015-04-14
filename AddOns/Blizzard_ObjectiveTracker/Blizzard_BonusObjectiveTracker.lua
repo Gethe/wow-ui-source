@@ -150,7 +150,7 @@ function BonusObjectiveTracker_AddReward(questID, block, xp, money)
 		data.objectives = { };
 		local isInArea, isOnMap, numObjectives = GetTaskInfo(questID);
 		for objectiveIndex = 1, numObjectives do
-			local text, objectiveType, finished = GetQuestObjectiveInfo(questID, objectiveIndex);
+			local text, objectiveType, finished = GetQuestObjectiveInfo(questID, objectiveIndex, true);
 			tinsert(data.objectives, text);
 			data.objectiveType = objectiveType;
 		end
@@ -408,7 +408,7 @@ local function InternalGetQuestObjectiveInfo(questID, objectiveIndex)
 	if ( COMPLETED_BONUS_DATA[questID] ) then
 		return COMPLETED_BONUS_DATA[questID].objectives[objectiveIndex], COMPLETED_BONUS_DATA[questID].objectiveType, true;
 	else
-		return GetQuestObjectiveInfo(questID, objectiveIndex);
+		return GetQuestObjectiveInfo(questID, objectiveIndex, false);
 	end
 end
 

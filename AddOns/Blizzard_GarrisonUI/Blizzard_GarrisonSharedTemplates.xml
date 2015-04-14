@@ -5,7 +5,7 @@
 	<Frame name="GarrisonUITemplate" inherits="BaseBasicFrameTemplate" virtual="true">
 		<Layers>
 			<Layer level="BACKGROUND" textureSubLevel="-1">
-				<Texture atlas="Garr_WoodFrame-BackgroundTile" horizTile="true" vertTile="true">
+				<Texture parentKey="BackgroundTile" atlas="Garr_WoodFrame-BackgroundTile" horizTile="true" vertTile="true">
 					<Anchors>
 						<Anchor point="TOPLEFT"/>
 						<Anchor point="BOTTOMRIGHT"/>
@@ -565,5 +565,24 @@
 			<OnEvent function="GarrisonThreatCountersFrame_OnEvent"/>
 			<OnShow function="GarrisonThreatCountersFrame_Update"/>
 		</Scripts>
-	</Frame>	
+	</Frame>
+	
+	<Frame name="GarrisonConfirmFollowerAbilityUpgradeFrame" hidden="true">
+		<Size x="200" y="40"/>
+		<Layers>
+			<Layer level="ARTWORK">
+				<FontString parentKey="Name" inherits="GameFontHighlight">
+					<Anchors>
+						<Anchor point="CENTER" x="12" y="0"/>
+					</Anchors>
+				</FontString>
+				<Texture parentKey="Icon">
+					<Size x="20" y="20"/>
+					<Anchors>
+						<Anchor point="RIGHT" relativeKey="$parent.Name" relativePoint="LEFT" x="-4" y="0"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+	</Frame>
 </Ui>

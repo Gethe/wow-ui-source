@@ -112,7 +112,7 @@
 		</Scripts>
 	</CheckButton>
 	
-	<Frame name="HeirloomsJournal" parent="CollectionsJournal" setAllPoints="true" hidden="true">
+	<Frame name="HeirloomsJournal" parent="CollectionsJournal" mixin="HeirloomsMixin" setAllPoints="true" hidden="true">
 		<Frames>
 			<StatusBar parentKey="progressBar" inherits="CollectionsProgressBarTemplate" />
 
@@ -242,7 +242,9 @@
 			</Frame>
 		</Frames>
 		<Scripts>
-			<OnLoad function="HeirloomsJournal_OnLoad"/>
+			<OnLoad>
+				self:OnLoad();
+			</OnLoad>
 			<OnEvent function="HeirloomsJournal_OnEvent"/>
 			<OnShow function="HeirloomsJournal_OnShow"/>
 			<OnMouseWheel function="HeirloomsJournal_OnMouseWheel"/>

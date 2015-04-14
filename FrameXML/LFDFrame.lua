@@ -35,6 +35,7 @@ function LFDFrame_OnLoad(self)
 	self:RegisterEvent("LFG_UPDATE_RANDOM_INFO");
 	self:RegisterEvent("LFG_OPEN_FROM_GOSSIP");
 	self:RegisterEvent("UPDATE_EXPANSION_LEVEL");
+	self:RegisterEvent("AJ_DUNGEON_ACTION");
 	
 	ButtonFrameTemplate_HideAttic(self);
 	self.Inset:SetPoint("TOPLEFT", self, "BOTTOMLEFT", 2, 284);
@@ -93,15 +94,37 @@ function LFDFrame_OnEvent(self, event, ...)
 		end
 	elseif ( event == "LFG_OPEN_FROM_GOSSIP" ) then
 		local dungeonID = ...;
+		LFDFrame_DisplayDungeonByID(dungeonID);
 		PVEFrame_ShowFrame("GroupFinderFrame", LFDParentFrame);
-		LFDQueueFrame_SetType(dungeonID);
 	elseif ( event == "UPDATE_EXPANSION_LEVEL" ) then
 		EXPANSION_LEVEL = GetExpansionLevel();
+	elseif ( event == "AJ_DUNGEON_ACTION" ) then
+		local id = ...;
+		if ( id ) then
+			LFDFrame_DisplayDungeonByID(id);
+			local categoryID = DungeonAppearsInRandomLFD(id);	
+			if ( categoryID ~= LE_LFG_CATEGORY_LFD ) then
+				LFGDungeonList_DisableEntries();
+				LFGDungeonList_SetDungeonEnabled(id, true);
+				LFGListUpdateHeaderEnabledAndLockedStates(LFDDungeonList, LFGEnabledList, LFDHiddenByCollapseList);
+			end
+		end
+		PVEFrame_ShowFrame("GroupFinderFrame", LFDParentFrame);
 	end
 end
 
 function LFDFrame_OnShow(self)
 	LFGBackfillCover_Update(LFDQueueFrame.PartyBackfill, true);
+end
+
+function LFDFrame_DisplayDungeonByID(dungeonID)
+	if ( DungeonAppearsInRandomLFD(dungeonID) ) then
+		LFDQueueFrame_SetType(dungeonID);
+	else
+		LFDQueueFrame_SetType("specific");
+	end
+	
+	return typeID;
 end
 
 --Role-related functions

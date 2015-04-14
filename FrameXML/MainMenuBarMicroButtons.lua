@@ -417,6 +417,59 @@ do
 	end
 end
 
+-- Encounter Journal
+function EJMicroButton_OnLoad(self)
+	LoadMicroButtonTextures(self, "EJ");
+	SetDesaturation(self:GetDisabledTexture(), true);
+	self.tooltipText = MicroButtonTooltipText(ENCOUNTER_JOURNAL, "TOGGLEENCOUNTERJOURNAL");
+	self.newbieText = NEWBIE_TOOLTIP_ENCOUNTER_JOURNAL;
+	self.minLevel = SHOW_LFD_LEVEL;
+	if (IsBlizzCon()) then
+		self:Disable();
+	end
+	
+	--events that can trigger a refresh of the adventure journal
+	self:RegisterEvent("UNIT_LEVEL");
+	self:RegisterEvent("QUEST_ACCEPTED");
+	self:RegisterEvent("QUEST_REMOVED");
+	self:RegisterEvent("PLAYER_AVG_ITEM_LEVEL_UPDATE");
+	
+	C_AdventureJournal.UpdateSuggestions();
+end
+
+function EJMicroButton_OnEvent(self, event, ...)
+	local arg1 = ...
+	if( event == "UPDATE_BINDINGS" ) then
+		self.tooltipText = MicroButtonTooltipText(ADVENTURE_JOURNAL, "TOGGLEENCOUNTERJOURNAL");
+		self.newbieText = NEWBIE_TOOLTIP_ENCOUNTER_JOURNAL;
+		if (IsBlizzCon()) then
+			return;
+		end
+		UpdateMicroButtons();
+	elseif ( event == "UNIT_LEVEL" and arg1 == "player" ) then		
+		EJMicroButton_UpdateAlert();
+	elseif ( event == "QUEST_ACCEPTED" or event == "QUEST_REMOVED" ) then
+		EJMicroButton_UpdateAlert();
+	elseif event == "PLAYER_AVG_ITEM_LEVEL_UPDATE" then
+		local playerLevel = UnitLevel("player");
+		if ( playerLevel == MAX_PLAYER_LEVEL_TABLE[GetExpansionLevel()]) then
+			EJMicroButton_UpdateAlert();
+		end
+	end
+end
+
+function EJMicroButton_UpdateAlert()
+	if ( C_AdventureJournal.UpdateSuggestions() ) then
+		EJMicroButton.Flash:Show();
+		EJMicroButton.Alert:Show();
+	end
+end
+
+function EJMicroButton_ClearAlert()
+	EJMicroButton.Flash:Hide();
+	EJMicroButton.Alert:Hide();
+end
+
 --Micro Button alerts
 function MicroButtonAlert_OnLoad(self)
 	self.Text:SetSpacing(4);

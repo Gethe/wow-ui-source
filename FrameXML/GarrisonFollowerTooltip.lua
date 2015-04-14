@@ -1,6 +1,6 @@
 local GARRISON_FOLLOWER_TOOLTIP = {};
          
-function GarrisonFollowerTooltip_Show(garrisonFollowerID, collected, quality, level, xp, levelxp, itemLevel, ability1, ability2, ability3, ability4, trait1, trait2, trait3, trait4, noAbilityDescriptions, underBiased)
+function GarrisonFollowerTooltip_Show(garrisonFollowerID, collected, quality, level, xp, levelxp, itemLevel, ability1, ability2, ability3, ability4, trait1, trait2, trait3, trait4, noAbilityDescriptions, underBiased, tooltipFrame, xpWidth)
 	GARRISON_FOLLOWER_TOOLTIP.garrisonFollowerID = garrisonFollowerID;
 	GARRISON_FOLLOWER_TOOLTIP.collected = collected;
 	GARRISON_FOLLOWER_TOOLTIP.hyperlink = false;
@@ -24,9 +24,12 @@ function GarrisonFollowerTooltip_Show(garrisonFollowerID, collected, quality, le
 	GARRISON_FOLLOWER_TOOLTIP.noAbilityDescriptions = noAbilityDescriptions;
 	GARRISON_FOLLOWER_TOOLTIP.underBiased = underBiased;
 
-	GarrisonFollowerTooltipTemplate_SetGarrisonFollower(GarrisonFollowerTooltip, GARRISON_FOLLOWER_TOOLTIP);
+	if (not tooltipFrame) then
+		tooltipFrame = GarrisonFollowerTooltip;
+	end
 
-	GarrisonFollowerTooltip:Show();
+	GarrisonFollowerTooltipTemplate_SetGarrisonFollower(tooltipFrame, GARRISON_FOLLOWER_TOOLTIP, xpWidth);
+	tooltipFrame:Show();
 end
 
 

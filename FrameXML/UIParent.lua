@@ -63,6 +63,7 @@ UIPanelWindows["WorldStateScoreFrame"] =		{ area = "center",			pushable = 0, 		x
 UIPanelWindows["QuestChoiceFrame"] =			{ area = "center",			pushable = 0, 		xoffset = -16, 		yoffset = 12,	whileDead = 0, allowOtherPanels = 1 };
 UIPanelWindows["GarrisonBuildingFrame"] =		{ area = "center",			pushable = 0,		whileDead = 1, 		width = 1002, 	allowOtherPanels = 1};
 UIPanelWindows["GarrisonMissionFrame"] =		{ area = "center",			pushable = 0,		whileDead = 1, 		checkFit = 1,	allowOtherPanels = 1, extraWidth = 20,	extraHeight = 100 };
+UIPanelWindows["GarrisonShipyardFrame"] =		{ area = "center",			pushable = 0,		whileDead = 1, 		checkFit = 1,	allowOtherPanels = 1, extraWidth = 20,	extraHeight = 100 };
 UIPanelWindows["GarrisonLandingPage"] =			{ area = "center",			pushable = 0,		whileDead = 1, 		width = 800, 	allowOtherPanels = 1};
 UIPanelWindows["GarrisonMonumentFrame"] =		{ area = "center",			pushable = 0,		whileDead = 1, 		width = 333, 	allowOtherPanels = 1};
 UIPanelWindows["GarrisonRecruiterFrame"] =		{ area = "left",			pushable = 0};
@@ -315,6 +316,8 @@ function UIParent_OnLoad(self)
 	self:RegisterEvent("GARRISON_ARCHITECT_CLOSED");
 	self:RegisterEvent("GARRISON_MISSION_NPC_OPENED");
 	self:RegisterEvent("GARRISON_MISSION_NPC_CLOSED");
+	self:RegisterEvent("GARRISON_SHIPYARD_NPC_OPENED");
+	self:RegisterEvent("GARRISON_SHIPYARD_NPC_CLOSED");
 	self:RegisterEvent("SHIPMENT_CRAFTER_OPENED");
 	self:RegisterEvent("GARRISON_TRADESKILL_NPC_CLOSED");
 	self:RegisterEvent("GARRISON_SHOW_LANDING_PAGE");
@@ -820,7 +823,7 @@ function UIParent_OnEvent(self, event, ...)
 			end
 			-- if the mission UI is already open, go with that
 			if ( GarrisonMissionFrame:IsShown() ) then
-				if ( PanelTemplates_GetSelectedTab(GarrisonMissionFrame) ~= 2 ) then
+				if ( (not C_Garrison.TargetSpellHasFollowerTemporaryAbility() or not GarrisonMissionPage_HasMission()) and PanelTemplates_GetSelectedTab(GarrisonMissionFrame) ~= 2 ) then
 					GarrisonMissionFrame_SelectTab(2);
 				end
 			else
@@ -867,6 +870,7 @@ function UIParent_OnEvent(self, event, ...)
 			StaticPopup_Hide("END_BOUND_TRADEABLE");
 			if ( not SpellCanTargetGarrisonFollower() ) then
 				StaticPopup_Hide("CONFIRM_FOLLOWER_UPGRADE");
+				StaticPopup_Hide("CONFIRM_FOLLOWER_TEMPORARY_ABILITY");
 			end
 		end
 	elseif ( event == "VARIABLES_LOADED" ) then
@@ -1617,6 +1621,15 @@ function UIParent_OnEvent(self, event, ...)
 	elseif ( event == "GARRISON_MISSION_NPC_CLOSED" ) then
 		if ( GarrisonMissionFrame ) then
 			HideUIPanel(GarrisonMissionFrame);
+		end
+	elseif ( event == "GARRISON_SHIPYARD_NPC_OPENED") then
+		if (not GarrisonShipyardFrame) then
+			Garrison_LoadUI();
+		end
+		ShowUIPanel(GarrisonShipyardFrame);
+	elseif ( event == "GARRISON_SHIPYARD_NPC_CLOSED" ) then
+		if ( GarrisonShipyardFrame ) then
+			HideUIPanel(GarrisonShipyardFrame);
 		end
 	elseif ( event == "SHIPMENT_CRAFTER_OPENED" ) then
 		if (not GarrisonCapacitiveDisplayFrame) then
@@ -3489,8 +3502,11 @@ function ToggleGameMenu()
 	elseif ( CloseCalendarMenus and securecall("CloseCalendarMenus") ) then
 	elseif ( CloseGuildMenus and securecall("CloseGuildMenus") ) then
 	elseif ( GarrisonMissionFrame_ClearMouse and securecall("GarrisonMissionFrame_ClearMouse") ) then
-	elseif ( GarrisonMissionFrame and GarrisonMissionFrame.MissionTab and GarrisonMissionFrame.MissionTab.MissionPage and GarrisonMissionFrame.MissionTab.MissionPage:IsShown() ) then
+	elseif ( GarrisonMissionFrame and GarrisonMissionFrame.MissionTab and GarrisonMissionFrame.MissionTab.MissionPage and GarrisonMissionFrame.MissionTab.MissionPage:IsVisible() ) then
 		GarrisonMissionFrame.MissionTab.MissionPage.CloseButton:Click();
+	elseif ( GarrisonShipyardFrame_ClearMouse and securecall("GarrisonShipyardFrame_ClearMouse") ) then
+	elseif ( GarrisonShipyardFrame and GarrisonShipyardFrame.MissionTab and GarrisonShipyardFrame.MissionTab.MissionPage and GarrisonShipyardFrame.MissionTab.MissionPage:IsVisible() ) then
+		GarrisonShipyardFrame.MissionTab.MissionPage.CloseButton:Click();
 	elseif ( SpellStopCasting() ) then
 	elseif ( SpellStopTargeting() ) then
 	elseif ( securecall("CloseAllWindows") ) then

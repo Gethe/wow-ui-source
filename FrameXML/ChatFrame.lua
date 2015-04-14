@@ -3281,6 +3281,7 @@ function ChatFrame_MessageEventHandler(self, event, ...)
 			end
 			self.tellTimer = GetTime() + CHAT_TELL_ALERT_TIME;
 			--FCF_FlashTab(self);
+			FlashClientIcon();
 		end
 		
 		if ( not self:IsShown() ) then

@@ -28,7 +28,6 @@ BLIZZCON_IS_A_GO = false;
 local STORE_IS_LOADED = false;
 local ADDON_LIST_RECEIVED = false;
 CAN_BUY_RESULT_FOUND = false;
-MARKET_PRICE_UPDATED = false;
 TOKEN_COUNT_UPDATED = false;
 
 function CharacterSelect_OnLoad(self)
@@ -78,6 +77,8 @@ end
 function CharacterSelect_OnShow()
 	DebugLog("Select_OnShow");
 	CHARACTER_LIST_OFFSET = 0;
+	CharacterSelect_ResetVeteranStatus();
+
 	-- request account data times from the server (so we know if we should refresh keybindings, etc...)
 	CheckCharacterUndeleteCooldown();
 	
@@ -493,7 +494,6 @@ function CharacterSelect_OnEvent(self, event, ...)
 		CharacterSelect_CheckVeteranStatus();
 	elseif ( event == "TOKEN_MARKET_PRICE_UPDATED" ) then
 		local result = ...;
-		MARKET_PRICE_UPDATED = result;
 		CharacterSelect_CheckVeteranStatus();
 	end
 end
@@ -689,6 +689,9 @@ function UpdateCharacterList(skipSelect)
 
 	CharacterSelect_UpdateStoreButton();
 
+	CharacterSelect_ResetVeteranStatus();
+	CharacterSelect_CheckVeteranStatus();
+
 	CharacterSelect.createIndex = 0;
 
 	CharSelectCreateCharacterButton:Hide();
@@ -823,7 +826,7 @@ function CharacterSelect_SelectCharacter(index, noCreate)
 		local charID = GetCharIDFromIndex(index);
 		SelectCharacter(charID);
 
-		if (not MARKET_PRICE_UPDATED or MARKET_PRICE_UPDATED == LE_TOKEN_RESULT_ERROR_DISABLED) then
+		if (not C_WowTokenPublic.GetCurrentMarketPrice()) then
 			AccountReactivate_RecheckEligibility();
 		end
 		ReactivateAccountDialog_Open();
@@ -1468,8 +1471,17 @@ GlueDialogTypes["TOKEN_GAME_TIME_OPTION_NOT_AVAILABLE"] = {
 	escapeHides = true,
 }
 
+function CharacterSelect_HasVeteranEligibilityInfo()
+	return TOKEN_COUNT_UPDATED and ((C_WowTokenGlue.GetTokenCount() > 0 or CAN_BUY_RESULT_FOUND) and C_WowTokenPublic.GetCurrentMarketPrice());
+end
+
+function CharacterSelect_ResetVeteranStatus()
+	CAN_BUY_RESULT_FOUND = false;
+	TOKEN_COUNT_UPDATED = false;
+end
+
 function CharacterSelect_CheckVeteranStatus()
-	if (IsVeteranTrialAccount() and TOKEN_COUNT_UPDATED and ((C_WowTokenGlue.GetTokenCount() > 0 or CAN_BUY_RESULT_FOUND) and MARKET_PRICE_UPDATED)) then
+	if (IsVeteranTrialAccount() and CharacterSelect_HasVeteranEligibilityInfo()) then
 		ReactivateAccountDialog_Open();
 	elseif (IsVeteranTrialAccount()) then
 		if (not TOKEN_COUNT_UPDATED) then
@@ -1478,7 +1490,7 @@ function CharacterSelect_CheckVeteranStatus()
 		if (not CAN_BUY_RESULT_FOUND and TOKEN_COUNT_UPDATED) then
 			C_WowTokenGlue.CheckVeteranTokenEligibility();
 		end
-		if (not MARKET_PRICE_UPDATED and CAN_BUY_RESULT_FOUND) then
+		if (not C_WowTokenPublic.GetCurrentMarketPrice() and CAN_BUY_RESULT_FOUND) then
 			C_WowTokenPublic.UpdateMarketPrice();
 		end
 	end

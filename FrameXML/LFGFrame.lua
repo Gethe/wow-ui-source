@@ -58,6 +58,7 @@ LFG_INSTANCE_INVALID_CODES = { --Any other codes are unspecified conditions (e.g
 	nil,	--Wrong faction
 	"NO_VALID_ROLES",
     "ENGAGED_IN_PVP",
+    "NO_SPEC",
 	[1001] = "LEVEL_TOO_LOW",
 	[1002] = "LEVEL_TOO_HIGH",
 	[1022] = "QUEST_NOT_COMPLETED",
@@ -1905,6 +1906,13 @@ function LFGDungeonList_SetHeaderCollapsed(button, dungeonList, hiddenByCollapse
 	end
 end
 
+function LFGDungeonList_DisableEntries()
+	LFGDungeonList_Setup();
+	for id,_ in pairs(LFGEnabledList) do
+		LFGDungeonList_SetDungeonEnabled(id, false);
+	end
+end
+
 function LFGDungeonList_SetDungeonEnabled(dungeonID, isEnabled)
 	SetLFGDungeonEnabled(dungeonID, isEnabled);
 	LFGEnabledList[dungeonID] = isEnabled;
@@ -2141,9 +2149,9 @@ function LFGDungeonListCheckButton_OnClick(button, category, dungeonList, hidden
 end
 
 function LFG_IsRandomDungeonDisplayable(id)
-	local name, typeID, subtypeID, minLevel, maxLevel, _, _, _, expansionLevel = GetLFGDungeonInfo(id);
+	local name, typeID, subtypeID, minLevel, maxLevel, _, _, _, expansionLevel, _, _, _, _, _, _, _, _, isTimewalker = GetLFGDungeonInfo(id);
 	local myLevel = UnitLevel("player");
-	return myLevel >= minLevel and myLevel <= maxLevel and EXPANSION_LEVEL >= expansionLevel;
+	return ((myLevel >= minLevel and myLevel <= maxLevel and EXPANSION_LEVEL >= expansionLevel) or isTimewalker);
 end
 
 function LFGRandomList_OnEnter(self)

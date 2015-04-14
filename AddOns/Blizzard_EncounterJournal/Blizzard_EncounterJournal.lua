@@ -88,7 +88,7 @@ local INSTANCE_LOOT_BUTTON_HEIGHT = 64;
 
 
 function EncounterJournal_OnLoad(self)
-	EncounterJournalTitleText:SetText(ENCOUNTER_JOURNAL);
+	EncounterJournalTitleText:SetText(ADVENTURE_JOURNAL);
 	SetPortraitToTexture(EncounterJournalPortrait,"Interface\\EncounterJournal\\UI-EJ-PortraitIcon");
 	self:RegisterEvent("EJ_LOOT_DATA_RECIEVED");
 	self:RegisterEvent("EJ_DIFFICULTY_UPDATE");
@@ -123,7 +123,16 @@ function EncounterJournal_OnLoad(self)
 	
 	local homeData = {
 		name = HOME,
-		OnClick = EncounterJournal_ListInstances,
+		OnClick = function()
+			if ( not EncounterJournal.instanceSelect.suggestTab:IsEnabled() ) then
+				local instanceSelect = EncounterJournal.instanceSelect;
+				NavBar_Reset(EncounterJournal.navBar);			
+				EJSuggestTab_OnClick( instanceSelect.suggestTab );
+				UIDropDownMenu_SetText(instanceSelect.tierDropDown, EJ_GetTierInfo(EJ_GetCurrentTier()));
+			else
+				EncounterJournal_ListInstances();
+			end
+		end,
 	}
 	NavBar_Initialize(self.navBar, "NavButtonTemplate", homeData, self.navBar.home, self.navBar.overflow);
 	
@@ -138,6 +147,9 @@ function EncounterJournal_OnLoad(self)
 	EncounterJournal_UpdateDifficulty( EJ_GetDifficulty() );	
 	
 	UIDropDownMenu_Initialize(self.encounter.info.lootScroll.lootFilter, EncounterJournal_InitLootFilter, "MENU");
+	
+	-- set the suggestion panel frame to open by default
+	EJSuggestTab_OnClick( EncounterJournal.instanceSelect.suggestTab );
 end
 
 function EncounterJournal_OnShow(self)
@@ -147,9 +159,13 @@ function EncounterJournal_OnShow(self)
 	
 	--automatically navigate to the current dungeon if you are in one;
 	local instanceID = EJ_GetCurrentInstance();
-	local _, _, difficultyID = GetInstanceInfo();
-	if instanceID ~= 0 and (instanceID ~= EncounterJournal.lastInstance or EJ_GetDifficulty() ~= difficultyID) then
-		EncounterJournal_ListInstances();
+	local _, instanceType, difficultyID = GetInstanceInfo();
+	if( instanceType == "none" and EncounterJournal.lastInstance ~= 0 ) then
+		EJSuggestTab_OnClick(EncounterJournal.instanceSelect.suggestTab);
+		EncounterJournal.lastInstance = 0;
+	elseif ( instanceID ~= 0 and instanceType ~= "none" and (instanceID ~= EncounterJournal.lastInstance or EJ_GetDifficulty() ~= difficultyID) ) then
+		EJDungeonTab_OnClick(EncounterJournal.instanceSelect.dungeonsTab);
+
 		EncounterJournal_DisplayInstance(instanceID);
 		EncounterJournal.lastInstance = instanceID;
 		-- try to set difficulty to current instance difficulty
@@ -265,25 +281,35 @@ end
 
 local infiniteLoopPolice = false; --design migh make a tier that has no instances at all sigh
 function EncounterJournal_ListInstances()
+	EJHideSuggestPanel();
+	
 	local tierName = EJ_GetTierInfo(EJ_GetCurrentTier());
-	EncounterJournal.instanceSelect.tier:SetText(tierName);
+	local instanceSelect = EncounterJournal.instanceSelect;
+	UIDropDownMenu_SetText(instanceSelect.tierDropDown, tierName);
 	NavBar_Reset(EncounterJournal.navBar);
 	EncounterJournal.encounter:Hide();
-	EncounterJournal.instanceSelect:Show();
-	local showRaid = not EncounterJournal.instanceSelect.raidsTab:IsEnabled();
+	instanceSelect:Show();
+	local showRaid = not instanceSelect.raidsTab:IsEnabled();
 	
-
-	local self = EncounterJournal.instanceSelect.scroll.child;
+	local self = instanceSelect.scroll.child;
 	local index = 1;
 	local instanceID, name, description, _, buttonImage, _, _, link = EJ_GetInstanceByIndex(index, showRaid);
 	local instanceButton;
 	
+	if ( not instanceSelect.suggestTab:IsEnabled() ) then
+		local text = EJ_GetInstanceByIndex(1, not showRaid);
+		local show = (not instanceID and not infiniteLoopPolice) or not text;
+		local nextTab = mod(instanceSelect.currTab, 2) + 1;
+		instanceSelect.tabs[nextTab].grayBox:SetShown(show);
+		return;
+	end
+	
 	--No instances in this tab
 	if not instanceID and not infiniteLoopPolice then
 		--disable this tab and select the other one.
-		local nextTab = mod(EncounterJournal.instanceSelect.currTab, 2) + 1;
-		EncounterJournal.instanceSelect.tabs[EncounterJournal.instanceSelect.currTab].grayBox:Show();
-		EncounterJournal.instanceSelect.tabs[nextTab]:Click();
+		local nextTab = mod(instanceSelect.currTab, 2) + 1;
+		instanceSelect.tabs[instanceSelect.currTab].grayBox:Show();
+		instanceSelect.tabs[nextTab]:Click();
 		infiniteLoopPolice = true;
 		EncounterJournal_ListInstances()
 		return;
@@ -331,8 +357,8 @@ function EncounterJournal_ListInstances()
 	--No instances in the other tab
 	if not instanceText then
 		--disable the other tab.
-		local nextTab = mod(EncounterJournal.instanceSelect.currTab, 2) + 1;
-		EncounterJournal.instanceSelect.tabs[nextTab].grayBox:Show();
+		local nextTab = mod(instanceSelect.currTab, 2) + 1;
+		instanceSelect.tabs[nextTab].grayBox:Show();
 	end
 end
 
@@ -1748,6 +1774,7 @@ end
 
 
 function EncounterJournal_OpenJournal(difficultyID, instanceID, encounterID, sectionID, creatureID, itemID, tierIndex)
+	EJHideSuggestPanel();
 	ShowUIPanel(EncounterJournal);
 	if instanceID then
 		NavBar_Reset(EncounterJournal.navBar);
@@ -1823,6 +1850,7 @@ function EJRaidTab_OnClick(self)
 	dungeonsTab:Enable();
 	dungeonsTab:GetFontString():SetTextColor(HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b);
 	dungeonsTab.selectedGlow:Hide();
+	
 	EncounterJournal_ListInstances();
 	PlaySound("igMainMenuOptionCheckBoxOn");
 end
@@ -1840,8 +1868,78 @@ function EJDungeonTab_OnClick(self)
 	raidsTab:Enable();
 	raidsTab:GetFontString():SetTextColor(HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b);
 	raidsTab.selectedGlow:Hide();
+	
 	EncounterJournal_ListInstances();
 	PlaySound("igMainMenuOptionCheckBoxOn");
+end
+
+function EJSuggestTab_OnClick(self)
+	self:GetParent().currTab = 3;
+	
+	self:Disable();
+	self:GetFontString():SetTextColor(NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b);
+
+	local dungeonsTab = self:GetParent().dungeonsTab;
+	dungeonsTab:Enable();
+	dungeonsTab:GetFontString():SetTextColor(HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b);
+	dungeonsTab.selectedGlow:Hide();
+
+	local raidsTab = self:GetParent().raidsTab;
+	raidsTab:Enable();
+	raidsTab:GetFontString():SetTextColor(HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b);
+	raidsTab.selectedGlow:Hide();
+	EncounterJournal.suggestFrame:Show();
+	
+	UIDropDownMenu_DisableDropDown(self:GetParent().tierDropDown);
+
+	-- Setup background
+	local tierData = EJ_TIER_DATA[EJ_GetCurrentTier()];
+	self.selectedGlow:SetVertexColor(tierData.r, tierData.g, tierData.b);
+	self.selectedGlow:Show();	
+	self:GetParent().bg:SetTexture(tierData.backgroundTexture);
+	self:GetParent().raidsTab.selectedGlow:SetVertexColor(tierData.r, tierData.g, tierData.b);
+	self:GetParent().dungeonsTab.selectedGlow:SetVertexColor(tierData.r, tierData.g, tierData.b);	
+	self:GetParent():Show();
+	
+	EncounterJournal.encounter:Hide();
+	
+	EncounterJournal.suggestFrame:Show();
+	self:GetParent().scroll:Hide();
+
+	-- Hide instance buttons
+	local index = 1;
+	local panel = EncounterJournal.instanceSelect.scroll.child;
+	instanceButton = panel["instance"..index];
+	while instanceButton do
+		instanceButton:Hide();
+		index = index + 1;
+		instanceButton = panel["instance"..index];
+	end
+	
+	EncounterJournal.encounter:Hide();
+	PlaySound("igMainMenuOptionCheckBoxOn");
+end
+
+function EJHideSuggestPanel()
+	local instanceSelect = EncounterJournal.instanceSelect;
+	local suggestTab = instanceSelect.suggestTab;
+	if ( not suggestTab:IsEnabled() or EncounterJournal.suggestFrame:IsShown() ) then
+		suggestTab:Enable();
+		suggestTab:GetFontString():SetTextColor(HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b);
+		suggestTab.selectedGlow:Hide();
+		EncounterJournal.suggestFrame:Hide();
+		
+		local tierDropDown = instanceSelect.tierDropDown;
+		UIDropDownMenu_EnableDropDown(tierDropDown);
+
+		local tierData = EJ_TIER_DATA[EJ_GetCurrentTier()];
+		instanceSelect.bg:SetTexture(tierData.backgroundTexture);
+		instanceSelect.raidsTab.selectedGlow:SetVertexColor(tierData.r, tierData.g, tierData.b);
+		instanceSelect.dungeonsTab.selectedGlow:SetVertexColor(tierData.r, tierData.g, tierData.b);
+		instanceSelect.scroll:Show();
+	
+		EncounterJournal.suggestFrame:Hide();
+	end
 end
 
 function EJTierDropDown_OnLoad(self)
@@ -1863,15 +1961,18 @@ function EJTierDropDown_Initialize(self, level)
 end
 
 
-function EncounterJournal_TierDropDown_Select(self, tier)
+function EncounterJournal_TierDropDown_Select(_, tier)
 	EJ_SelectTier(tier);
-	EncounterJournal.instanceSelect.tabs[1].grayBox:Hide();
-	EncounterJournal.instanceSelect.tabs[2].grayBox:Hide();
+	local instanceSelect = EncounterJournal.instanceSelect;
+	instanceSelect.tabs[1].grayBox:Hide();
+	instanceSelect.tabs[2].grayBox:Hide();
 
 	local tierData = EJ_TIER_DATA[tier];
-	EncounterJournal.instanceSelect.bg:SetTexture(tierData.backgroundTexture);
-	EncounterJournal.instanceSelect.raidsTab.selectedGlow:SetVertexColor(tierData.r, tierData.g, tierData.b);
-	EncounterJournal.instanceSelect.dungeonsTab.selectedGlow:SetVertexColor(tierData.r, tierData.g, tierData.b);
+	instanceSelect.bg:SetTexture(tierData.backgroundTexture);
+	instanceSelect.raidsTab.selectedGlow:SetVertexColor(tierData.r, tierData.g, tierData.b);
+	instanceSelect.dungeonsTab.selectedGlow:SetVertexColor(tierData.r, tierData.g, tierData.b);
+	
+	UIDropDownMenu_SetText(instanceSelect.tierDropDown, EJ_GetTierInfo(EJ_GetCurrentTier()));
 	
 	EncounterJournal_ListInstances();
 end
@@ -2020,4 +2121,436 @@ function EJNAV_ListEncounter(self, index)
 	--local navBar = self:GetParent();
 	local name = EJ_GetEncounterInfoByIndex(index);
 	return name, EJNAV_SelectEncounter;
+end
+
+-------------------------------------------------
+--------------Suggestion Panel Func--------------
+-------------------------------------------------
+
+function EJSuggestFrame_OnLoad(self)
+	C_AdventureJournal.UpdateSuggestions();
+	self.suggestions = {};
+	
+	self:RegisterEvent("AJ_REWARD_DATA_RECIEVED");
+	self:RegisterEvent("AJ_REFRESH_DISPLAY");
+end
+
+function EJSuggestFrame_OnEvent(self, event, ...)
+	if ( event == "AJ_REFRESH_DISPLAY" ) then
+		EJSuggestFrame_RefreshDisplay();
+	elseif ( event == "AJ_REWARD_DATA_RECIEVED" ) then
+		EJSuggestFrame_RefreshRewards()
+	end
+end
+
+function EJSuggestFrame_OnShow(self)
+	EJMicroButton_ClearAlert();
+	
+	C_AdventureJournal.UpdateSuggestions();
+	EJSuggestFrame_RefreshDisplay();
+end
+
+local function UpdateSuggestionReward(suggestion)
+	local reward = C_AdventureJournal.GetReward( suggestion.index );
+	suggestion.reward.data = reward;
+	if ( reward ) then
+		local texture = reward.itemIcon or reward.currencyIcon or 
+						"Interface\\Icons\\achievement_guildperk_mobilebanking";
+		suggestion.reward.icon:SetTexture(texture);
+		suggestion.reward.icon:SetMask("Interface\\CharacterFrame\\TempPortraitAlphaMask");
+		suggestion.reward:Show();
+	end
+end
+
+function EJSuggestFrame_RefreshDisplay()
+	local self = EncounterJournal.suggestFrame;
+	C_AdventureJournal.GetSuggestions(self.suggestions);
+	
+	-- hide all the display info
+	for i = 1, 3 do 
+		local suggestion = self["Suggestion"..i];
+		suggestion.centerDisplay:Hide();
+		if ( i == 1 ) then
+			-- the left suggestion's button isn't on the centerDisplay frame
+			suggestion.button:Hide();
+		else
+			suggestion.centerDisplay.button:Hide();
+		end
+		suggestion.reward:Hide();
+		suggestion.icon:Hide();
+		suggestion.iconRing:Hide();
+	end
+	
+	-- setup the primary suggestion display
+	if ( #self.suggestions > 0 ) then
+		local suggestion = self.Suggestion1;
+		local data = self.suggestions[1];
+		
+		suggestion.centerDisplay:SetHeight(suggestion:GetHeight());
+		suggestion.centerDisplay:Show();
+		suggestion.centerDisplay.title:SetHeight(0);
+		suggestion.centerDisplay.description:SetHeight(0);
+		suggestion.centerDisplay.title:SetText(data.title);
+		suggestion.centerDisplay.description:SetText(data.description);
+
+		-- find largest font that will not go past 2 lines
+		local titleFonts = {
+			"DestinyFontHuge",		-- 32pt font
+			"QuestFont_Enormous",	-- 30pt font
+			"SplashHeaderFont",		-- 28pt font
+		};
+		for i = 1, #titleFonts do
+			suggestion.centerDisplay.title:SetFontObject(titleFonts[i]);
+			local numLines = suggestion.centerDisplay.title:GetNumLines();
+			if ( numLines <= 2 ) then
+				break;
+			end
+		end
+		
+		-- resize the title to be 2 lines at most
+		local numLines = min(2, suggestion.centerDisplay.title:GetNumLines());
+		fontHeight = select(2, suggestion.centerDisplay.title:GetFont());
+		suggestion.centerDisplay.title:SetHeight(numLines * fontHeight);
+		suggestion.centerDisplay.description:SetHeight(suggestion.centerDisplay.description:GetStringHeight());
+		
+		-- adjust the center display to keep the text centered	
+		local top = suggestion.centerDisplay.title:GetTop();
+		local bottom = suggestion.centerDisplay.description:GetBottom();
+		suggestion.centerDisplay:SetHeight(top - bottom);
+		
+		if ( data.buttonText and #data.buttonText > 0 ) then
+			suggestion.button:SetText( data.buttonText );
+			
+			local btnWidth = max( suggestion.button:GetTextWidth()+32, 150 );
+			btnWidth = min( btnWidth, suggestion.centerDisplay:GetWidth() );
+			suggestion.button:SetWidth( btnWidth );
+			suggestion.button:Show();
+		end
+
+		suggestion.icon:Show();
+		suggestion.iconRing:Show();
+		if ( data.iconPath ) then
+			suggestion.icon:SetTexture(data.iconPath);
+			suggestion.icon:SetMask("Interface\\CharacterFrame\\TempPortraitAlphaMask");
+		else
+			suggestion.icon:SetTexture("INTERFACE\\ICONS\\INV_MISC_QUESTIONMARK.BLP");
+			suggestion.icon:SetMask("Interface\\CharacterFrame\\TempPortraitAlphaMask");
+		end
+		
+		UpdateSuggestionReward(suggestion);
+	end
+
+	-- setup secondary suggestions display
+	if ( #self.suggestions > 1 ) then	
+		local titleFonts = {
+			"QuestFont_Huge", 	-- 18pt font
+			"Fancy16Font",		-- 16pt font
+		};
+		local descriptionFonts = {
+			"SystemFont_Med1",	-- 12pt font
+			"SystemFont_Small", -- 10pt font
+		};
+		local minTitleIndex = 1;
+		local minDescIndex = 1;
+		
+		for i = 2, #self.suggestions do 
+			local suggestion = self["Suggestion"..i];
+			if ( not suggestion ) then 
+				break;
+			end
+			
+			suggestion.centerDisplay:Show();
+			
+			local data = self.suggestions[i];			
+			suggestion.centerDisplay.title:SetHeight(0);
+			suggestion.centerDisplay.description:SetHeight(0);
+			suggestion.centerDisplay.title:SetText(data.title);
+			suggestion.centerDisplay.description:SetText(data.description);
+			
+			-- find largest font that will not truncate the title
+			for fontIndex = minTitleIndex, #titleFonts do
+				suggestion.centerDisplay.title:SetFontObject(titleFonts[fontIndex]);
+				minTitleIndex = fontIndex
+				if (not suggestion.centerDisplay.title:IsTruncated()) then
+					break;
+				end
+			end
+			
+			-- find largest font that will not go past 4 lines
+			for fontIndex = minDescIndex, #descriptionFonts do
+				suggestion.centerDisplay.description:SetFontObject(descriptionFonts[fontIndex]);
+				minDescIndex = fontIndex;
+				if ( suggestion.centerDisplay.description:GetNumLines() <= 4 ) then
+					break;
+				end
+			end
+			
+			if ( data.buttonText and #data.buttonText > 0 ) then
+				suggestion.centerDisplay.button:SetText( data.buttonText );
+				
+				local btnWidth = max(suggestion.centerDisplay.button:GetTextWidth()+24, 116);
+				btnWidth = min( btnWidth, suggestion.centerDisplay:GetWidth() );
+				suggestion.centerDisplay.button:SetWidth( btnWidth );
+				suggestion.centerDisplay.button:Show();
+			end
+
+			suggestion.icon:Show();
+			suggestion.iconRing:Show();
+			if ( data.iconPath ) then
+				suggestion.icon:SetTexture(data.iconPath);
+				suggestion.icon:SetMask("Interface\\CharacterFrame\\TempPortraitAlphaMask");
+			else
+				suggestion.icon:SetTexture("INTERFACE\\ICONS\\INV_MISC_QUESTIONMARK.BLP");
+				suggestion.icon:SetMask("Interface\\CharacterFrame\\TempPortraitAlphaMask");
+			end
+			
+			UpdateSuggestionReward(suggestion);
+		end
+		-- set the fonts to be the same for both right side sections
+		-- adjust the center display to keep the text centered
+		for i = 2, #self.suggestions do 
+			local suggestion = self["Suggestion"..i];
+			suggestion.centerDisplay:SetHeight(suggestion:GetHeight());
+			
+			suggestion.centerDisplay.title:SetFontObject(titleFonts[minTitleIndex]);
+			suggestion.centerDisplay.description:SetFontObject(descriptionFonts[minDescIndex]);
+			local fontHeight = select(2, suggestion.centerDisplay.title:GetFont());
+			suggestion.centerDisplay.title:SetHeight(fontHeight);		
+			local numLines = min(4, suggestion.centerDisplay.description:GetNumLines());
+			fontHeight = select(2, suggestion.centerDisplay.description:GetFont());
+			suggestion.centerDisplay.description:SetHeight(numLines * fontHeight);
+			
+			-- adjust the center display to keep the text centered	
+			local top = suggestion.centerDisplay.title:GetTop();
+			local bottom = suggestion.centerDisplay.description:GetBottom();
+			
+			if ( suggestion.centerDisplay.button:IsShown() ) then
+				bottom = suggestion.centerDisplay.button:GetBottom();
+			end
+			
+			suggestion.centerDisplay:SetHeight(top - bottom);
+		end
+	end
+end
+
+function EJSuggestFrame_RefreshRewards()
+	for i = 1, 3 do 
+		local suggestion = EncounterJournal.suggestFrame["Suggestion"..i];
+		suggestion.reward:Hide();
+		UpdateSuggestionReward(suggestion);
+	end
+end
+
+function EJSuggestFrame_OnClick(self)
+	C_AdventureJournal.ActivateEntry(self.index);
+end
+
+function AdventureJournal_RewardEnter(self)
+	local rewardData = self.data;
+	if ( rewardData ) then
+		local frame = EncounterJournalTooltip;
+		frame:SetPoint("BOTTOMLEFT", self, "TOPRIGHT", 0, 0);
+		frame.clickText:Hide();
+		
+		local suggestion = EncounterJournal.suggestFrame.suggestions[self:GetParent().index];
+		
+		local rewardHeaderText;
+		if ( rewardData.rewardDesc ) then
+			rewardHeaderText = rewardData.rewardDesc;
+		elseif ( suggestion.ej_instanceID ) then
+			local difficultyStr = "";
+			if ( suggestion.difficultyID > 1 ) then
+				for i=1, #EJ_DIFFICULTIES do
+					local entry = EJ_DIFFICULTIES[i];
+					if ( EJ_DIFFICULTIES[i].difficultyID == suggestion.difficultyID ) then
+						difficultyStr = EJ_DIFFICULTIES[i].prefix;
+						break;
+					end
+				end
+				rewardHeaderText = format(AJ_LFG_REWARD_DIFFICULTY_TEXT, suggestion.title, difficultyStr, rewardData.itemLevel or 0);
+			else
+				rewardHeaderText = format(AJ_LFG_REWARD_DEFAULT_TEXT, suggestion.title, rewardData.itemLevel or 0);
+			end
+			
+			if( rewardData.itemID ) then
+				rewardHeaderText = rewardHeaderText..AJ_SAMPLE_REWARD_TEXT;
+			end
+		end
+		
+		frame.headerText:SetHeight(0);
+		if ( rewardHeaderText and #rewardHeaderText > 0 ) then
+			frame.headerText:Show();
+			frame.headerText:SetText(rewardHeaderText);
+			frame.headerText:SetHeight(frame.headerText:GetStringHeight());
+			frame.Item1:SetPoint("TOPLEFT", frame.headerText, "BOTTOMLEFT", 0, -14);
+		else
+			frame.headerText:Hide();
+			frame.Item1:SetPoint("TOPLEFT", 14, -14);
+		end
+		
+		if ( rewardData.itemID and rewardData.currencyType ) then
+			local itemName, _, quality = GetItemInfo(rewardData.itemID);
+			frame.Item1.text:SetText(itemName);
+			frame.Item1.text:Show();
+			frame.Item1.icon:SetTexture(rewardData.itemIcon);
+			frame.Item1.tooltip:Hide();
+			frame.Item1:SetSize(256, 28);
+			frame.Item1:Show();
+
+			if ( rewardData.itemQuantity and rewardData.itemQuantity > 1 ) then
+				frame.Item1.Count:SetText(rewardData.itemQuantity);
+				frame.Item1.Count:Show();
+			else
+				frame.Item1.Count:Hide();
+			end
+
+			if (quality > LE_ITEM_QUALITY_COMMON and BAG_ITEM_QUALITY_COLORS[quality]) then
+				frame.Item1.IconBorder:Show();
+				frame.Item1.IconBorder:SetVertexColor(BAG_ITEM_QUALITY_COLORS[quality].r, BAG_ITEM_QUALITY_COLORS[quality].g, BAG_ITEM_QUALITY_COLORS[quality].b);
+				frame.Item1.text:SetTextColor(BAG_ITEM_QUALITY_COLORS[quality].r, BAG_ITEM_QUALITY_COLORS[quality].g, BAG_ITEM_QUALITY_COLORS[quality].b);
+			else
+				frame.Item1.IconBorder:Hide();
+			end
+
+			local currencyName, amount, currencyTexture, _, _, _, _, quality = GetCurrencyInfo(rewardData.currencyType);
+			frame.Item2.icon:SetTexture(currencyTexture);
+			frame.Item2.text:SetText(currencyName);			
+			frame.Item2:Show();
+			if (quality > LE_ITEM_QUALITY_COMMON and BAG_ITEM_QUALITY_COLORS[quality]) then
+				frame.Item2.IconBorder:Show();
+				frame.Item2.IconBorder:SetVertexColor(BAG_ITEM_QUALITY_COLORS[quality].r, BAG_ITEM_QUALITY_COLORS[quality].g, BAG_ITEM_QUALITY_COLORS[quality].b);
+				frame.Item2.text:SetTextColor(BAG_ITEM_QUALITY_COLORS[quality].r, BAG_ITEM_QUALITY_COLORS[quality].g, BAG_ITEM_QUALITY_COLORS[quality].b);
+			else
+				frame.Item2.IconBorder:Hide();
+			end
+			
+			if ( rewardData.currencyQuantity and rewardData.currencyQuantity > 1 ) then
+				frame.Item2.Count:SetText(rewardData.currencyQuantity);
+				frame.Item2.Count:Show();
+			else
+				frame.Item2.Count:Hide();
+			end
+			local height = 100;
+			if ( frame.headerText:IsShown() ) then
+				height = height + frame.headerText:GetHeight();
+			end
+			frame:SetSize(256, height);
+		elseif ( rewardData.itemID or rewardData.currencyType ) then
+			frame.Item2:Hide();
+			frame.Item1:Show();
+			frame.Item1.text:Hide();
+			
+			local tooltip = frame.Item1.tooltip;
+			tooltip:SetOwner(frame.Item1, "ANCHOR_NONE");
+			if ( rewardData.itemID ) then
+				tooltip:SetHyperlink(rewardData.itemLink);
+			
+				local quality = select(3, GetItemInfo(rewardData.itemID));
+				if (quality > LE_ITEM_QUALITY_COMMON and BAG_ITEM_QUALITY_COLORS[quality]) then
+					frame.Item1.IconBorder:Show();
+					frame.Item1.IconBorder:SetVertexColor(BAG_ITEM_QUALITY_COLORS[quality].r, BAG_ITEM_QUALITY_COLORS[quality].g, BAG_ITEM_QUALITY_COLORS[quality].b);
+				else
+					frame.Item1.IconBorder:Hide();
+				end
+				
+				if ( rewardData.itemQuantity and rewardData.itemQuantity > 1 ) then
+					frame.Item1.Count:SetText(rewardData.itemQuantity);
+					frame.Item1.Count:Show();
+				else
+					frame.Item1.Count:Hide();
+				end
+				
+				self:SetScript("OnUpdate", EncounterJournal_AJ_OnUpdate);
+				frame.Item1.icon:SetTexture(rewardData.itemIcon);
+			elseif ( rewardData.currencyType ) then
+				tooltip:SetCurrencyByID(rewardData.currencyType);
+				
+				local quality = select(8, GetCurrencyInfo(rewardData.currencyType));
+				if (quality > LE_ITEM_QUALITY_COMMON and BAG_ITEM_QUALITY_COLORS[quality]) then
+					frame.Item1.IconBorder:Show();
+					frame.Item1.IconBorder:SetVertexColor(BAG_ITEM_QUALITY_COLORS[quality].r, BAG_ITEM_QUALITY_COLORS[quality].g, BAG_ITEM_QUALITY_COLORS[quality].b);
+				else
+					frame.Item1.IconBorder:Hide();
+				end
+				
+				if ( rewardData.currencyQuantity and rewardData.currencyQuantity > 1 ) then
+					frame.Item1.Count:SetText(rewardData.currencyQuantity);
+					frame.Item1.Count:Show();
+				else
+					frame.Item1.Count:Hide();
+				end
+				
+				frame.Item1.icon:SetTexture(rewardData.currencyIcon);
+			end
+			
+			tooltip:SetPoint("TOPLEFT", frame.Item1.icon, "TOPRIGHT", 0, 10);
+			tooltip:Show();
+			
+			frame.Item1:SetSize(tooltip:GetWidth()+59, tooltip:GetHeight());
+
+			local height = tooltip:GetHeight() + 6;
+			if ( frame.headerText:IsShown() ) then
+				height = height + frame.headerText:GetHeight() + 14;
+			end
+			if (rewardData.isRewardTable) then
+				frame.clickText:Show();
+				height = height + 26;
+			end
+			
+			frame:SetSize(tooltip:GetWidth()+54, height);
+		elseif ( frame.headerText:IsShown() ) then
+			frame:SetSize(256, frame.headerText:GetStringHeight()+30);
+			frame.Item1:Hide();
+			frame.Item2:Hide();
+		else
+			return;
+		end
+		frame:Show();
+	end
+end
+
+function EncounterJournal_AJ_OnUpdate(self)
+	local frame = EncounterJournalTooltip;
+	local tooltip = frame.Item1.tooltip;
+	
+	if ( IsModifiedClick("COMPAREITEMS") or
+			 (GetCVarBool("alwaysCompareItems") and not IsEquippedItem(self.itemID)) ) then
+		GameTooltip_ShowCompareItem( tooltip, frame );
+	else
+		ShoppingTooltip1:Hide();
+		ShoppingTooltip2:Hide();
+	end
+end
+
+function AdventureJournal_RewardLeave(self)
+	EncounterJournalTooltip:Hide();
+	self:SetScript("OnUpdate", nil);
+	ResetCursor();
+end
+
+function AdventureJournal_OnMouseDown(self)
+	local index = self:GetParent().index;
+	local data = EncounterJournal.suggestFrame.suggestions[index];
+	if ( data.ej_instanceID ) then
+		EJDungeonTab_OnClick(EncounterJournal.instanceSelect.dungeonsTab);
+
+		EncounterJournal_DisplayInstance(data.ej_instanceID);
+		EncounterJournal.lastInstance = instanceID;
+		-- try to set difficulty to current instance difficulty
+		if ( EJ_IsValidInstanceDifficulty(data.difficultyID) ) then
+			EJ_SetDifficulty(data.difficultyID);
+		end
+		
+		-- select the loot tab
+		local self = EncounterJournal.encounter;
+		self.info[EJ_Tabs[2].button]:Click();
+	elseif ( data.isRandomDungeon ) then
+		EJDungeonTab_OnClick(EncounterJournal.instanceSelect.dungeonsTab);
+		EncounterJournal_TierDropDown_Select(nil, data.expansionLevel);
+	end
+end
+
+function EncounterJournalTooltip_OnLoad(self)
+	self:SetBackdropBorderColor(TOOLTIP_DEFAULT_COLOR.r, TOOLTIP_DEFAULT_COLOR.g, TOOLTIP_DEFAULT_COLOR.b);
+	self:SetBackdropColor(TOOLTIP_DEFAULT_BACKGROUND_COLOR.r, TOOLTIP_DEFAULT_BACKGROUND_COLOR.g, TOOLTIP_DEFAULT_BACKGROUND_COLOR.b);
 end

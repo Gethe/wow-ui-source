@@ -435,6 +435,7 @@
 								end
 							</OnEvent>
 							<OnClick>
+								PlaySound("gsTitleOptionOK");
 								if ( IsVeteranTrialAccount() ) then
 									SubscriptionRequestDialog_Open();
 								else

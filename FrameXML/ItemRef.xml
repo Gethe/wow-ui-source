@@ -58,7 +58,7 @@
 			</OnLoad>
 			<OnTooltipSetItem>
 				if ( IsModifiedClick("COMPAREITEMS") and self:IsMouseOver()) then
-					GameTooltip_ShowCompareItem(self, true);
+					GameTooltip_ShowCompareItem(self);
 					self.comparing = true;
 				end
 			</OnTooltipSetItem>
@@ -69,7 +69,7 @@
 				self:StopMovingOrSizing();
 				ValidateFramePosition(self);
 				if ( IsModifiedClick("COMPAREITEMS") ) then --We do this to choose where the comparison is shown
-					GameTooltip_ShowCompareItem(self, true);
+					GameTooltip_ShowCompareItem(self);
 					self.comparing = true;
 				end
 			</OnDragStop> 

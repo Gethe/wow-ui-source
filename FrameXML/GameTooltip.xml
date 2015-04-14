@@ -25,7 +25,7 @@
 			<OnTooltipSetItem>
 				if ( IsModifiedClick("COMPAREITEMS") or
 				     (GetCVarBool("alwaysCompareItems") and not self:IsEquippedItem()) ) then
-					GameTooltip_ShowCompareItem(self, true);
+					GameTooltip_ShowCompareItem(self);
 				else
 					local shoppingTooltip1, shoppingTooltip2 = unpack(self.shoppingTooltips);
 					shoppingTooltip1:Hide();

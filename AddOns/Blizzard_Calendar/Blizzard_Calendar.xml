@@ -1084,10 +1084,10 @@
 					</Anchor>
 				</Anchors>
 			</Frame>
-			<Frame name="CalendarCreateEventRepeatOptionDropDown" inherits="UIDropDownMenuTemplate" hidden="true">
+			<Frame name="CalendarCreateEventDifficultyOptionDropDown" inherits="UIDropDownMenuTemplate">
 				<Anchors>
 					<Anchor point="TOPLEFT">
-						<Offset x="180" y="-114"/>
+						<Offset x="160" y="-114"/>
 					</Anchor>
 				</Anchors>
 			</Frame>

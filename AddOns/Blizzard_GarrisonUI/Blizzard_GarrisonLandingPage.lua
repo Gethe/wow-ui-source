@@ -10,7 +10,7 @@ GARRISON_MISSION_TYPE_FONT_COLOR	=	{r=0.8, g=0.7, b=0.53};
 --- Main Frame                                                                ---
 ---------------------------------------------------------------------------------
 function GarrisonLandingPage_OnLoad(self)
-	GarrisonFollowerList_OnLoad(self)
+	GarrisonFollowerList_OnLoad(self, LE_FOLLOWER_TYPE_GARRISON_6_0)
 
 	PanelTemplates_SetNumTabs(self, 2);
 	self.selectedTab = 1;
@@ -41,6 +41,9 @@ end
 
 function GarrisonLandingPage_OnHide(self)
 	PlaySound("UI_Garrison_GarrisonReport_Close");
+	StaticPopup_Hide("CONFIRM_FOLLOWER_TEMPORARY_ABILITY");
+	StaticPopup_Hide("CONFIRM_FOLLOWER_UPGRADE");
+	StaticPopup_Hide("CONFIRM_FOLLOWER_ABILITY_UPGRADE");
 end
 
 function GarrisonLandingPage_OnEvent(self, event, ...)
@@ -252,7 +255,7 @@ end
 
 function GarrisonLandingPageReportList_UpdateItems()
 	GarrisonLandingPageReport.List.items = C_Garrison.GetLandingPageItems();
-	GarrisonLandingPageReport.List.AvailableItems = C_Garrison.GetAvailableMissions();
+	GarrisonLandingPageReport.List.AvailableItems = C_Garrison.GetAvailableMissions(LE_FOLLOWER_TYPE_GARRISON_6_0);
 	Garrison_SortMissions(GarrisonLandingPageReport.List.AvailableItems);
 	GarrisonLandingPageReport.InProgress.Text:SetFormattedText(GARRISON_LANDING_IN_PROGRESS, #GarrisonLandingPageReport.List.items);
 	GarrisonLandingPageReport.Available.Text:SetFormattedText(GARRISON_LANDING_AVAILABLE, #GarrisonLandingPageReport.List.AvailableItems);
@@ -484,6 +487,9 @@ function GarrisonLandingPageReportMission_OnEnter(self, button)
 	end
 	
 	local item = items[self.id];
+	if (not item) then
+		return;
+	end
 	
 	if ( item.isBuilding ) then
 		GameTooltip:SetText(item.name);
@@ -502,7 +508,7 @@ function GarrisonLandingPageReportMission_OnEnter(self, button)
 	else
 		GameTooltip:SetText(item.name);
 		GameTooltip:AddLine(string.format(GARRISON_MISSION_TOOLTIP_NUM_REQUIRED_FOLLOWERS, item.numFollowers), 1, 1, 1);
-		GarrisonMissionButton_AddThreatsToTooltip(item.missionID);
+		GarrisonMissionButton_AddThreatsToTooltip(item.missionID, LE_FOLLOWER_TYPE_GARRISON_6_0);
 		if (item.isRare) then
 			GameTooltip:AddLine(GARRISON_MISSION_AVAILABILITY);
 			GameTooltip:AddLine(item.offerTimeRemaining, 1, 1, 1);

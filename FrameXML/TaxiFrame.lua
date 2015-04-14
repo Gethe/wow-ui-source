@@ -209,8 +209,10 @@ function TaxiNodeOnButtonLeave(button)
 
 	local index = button:GetID();
 	local type = TaxiNodeGetType(index);
-	-- Don't leave it with the hover icon (if it had one)
-	button:SetNormalTexture(TaxiButtonTypes[type].file);
+	if TaxiButtonTypes[type] then
+		-- Don't leave it with the hover icon (if it had one)
+		button:SetNormalTexture(TaxiButtonTypes[type].file);
+	end
 end
 
 -- Draw all flightpaths within one hop of current location

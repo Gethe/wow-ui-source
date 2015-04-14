@@ -45,7 +45,7 @@ function GarrisonFollowerTooltip_OnLoad(self)
 	self:SetBackdropColor(TOOLTIP_DEFAULT_BACKGROUND_COLOR.r, TOOLTIP_DEFAULT_BACKGROUND_COLOR.g, TOOLTIP_DEFAULT_BACKGROUND_COLOR.b);
 end
 
-function GarrisonFollowerTooltipTemplate_SetGarrisonFollower(tooltipFrame, data)
+function GarrisonFollowerTooltipTemplate_SetGarrisonFollower(tooltipFrame, data, xpWidth)
 	tooltipFrame.garrisonFollowerID = data.garrisonFollowerID;
 	tooltipFrame.name = data.name;
 	tooltipFrame.Name:SetText(data.name);
@@ -84,7 +84,10 @@ function GarrisonFollowerTooltipTemplate_SetGarrisonFollower(tooltipFrame, data)
 			tooltipFrame.XP:SetFormattedText(GARRISON_FOLLOWER_TOOLTIP_XP, data.levelxp - data.xp);
 		end
 		tooltipFrame.XP:Show();
-		tooltipFrame.XPBar:SetWidth((data.xp / data.levelxp) * GARRISON_FOLLOWER_TOOLTIP_FULL_XP_WIDTH);
+		if (not xpWidth) then
+			xpWidth = GARRISON_FOLLOWER_TOOLTIP_FULL_XP_WIDTH;
+		end
+		tooltipFrame.XPBar:SetWidth((data.xp / data.levelxp) * xpWidth);
 		if (data.xp == 0) then
 			tooltipFrame.XPBar:Hide()
 		else

@@ -6,14 +6,6 @@ local VIEW_MODE_CLASS = 2; -- Only shows items valid for the selected class/spec
 
 HeirloomsMixin = {}
 
-function HeirloomsJournal_OnLoad(self)
-	for k, v in pairs(HeirloomsMixin) do
-		self[k] = v;
-	end
-
-	self:OnLoad();
-end
-
 function HeirloomsJournal_OnEvent(self, event, ...)
 	if event == "HEIRLOOMS_UPDATED" then
 		self:OnHeirloomsUpdated(...);

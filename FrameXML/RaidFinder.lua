@@ -2,6 +2,7 @@ MAX_RAID_FINDER_COOLDOWN_NAMES = 8;
 
 function RaidFinderFrame_OnLoad(self)
 	self:RegisterEvent("LFG_LOCK_INFO_RECEIVED");
+	self:RegisterEvent("AJ_RAID_ACTION");
 end
 
 function RaidFinderFrame_OnEvent(self, event, ...)
@@ -12,6 +13,8 @@ function RaidFinderFrame_OnEvent(self, event, ...)
 			--UIDropDownMenu_SetSelectedValue(RaidFinderQueueFrameSelectionDropDown, RaidFinderQueueFrame.raid);
 		end
 		RaidFinderFrame_UpdateAvailability();
+	elseif ( event == "AJ_RAID_ACTION" ) then
+		PVEFrame_ShowFrame("GroupFinderFrame", RaidFinderFrame);
 	end
 end
 

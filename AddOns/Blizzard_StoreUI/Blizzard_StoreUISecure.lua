@@ -138,6 +138,7 @@ Import("BLIZZARD_STORE_ERROR_TITLE_PURCHASE_DENIED");
 Import("BLIZZARD_STORE_ERROR_MESSAGE_PURCHASE_DENIED");
 Import("BLIZZARD_STORE_ERROR_TITLE_CONSUMABLE_TOKEN_OWNED");
 Import("BLIZZARD_STORE_ERROR_MESSAGE_CONSUMABLE_TOKEN_OWNED");
+Import("BLIZZARD_STORE_ERROR_ITEM_UNAVAILABLE");
 Import("BLIZZARD_STORE_DISCOUNT_TEXT_FORMAT");
 Import("BLIZZARD_STORE_PAGE_NUMBER");
 Import("BLIZZARD_STORE_SPLASH_BANNER_DISCOUNT_FORMAT");
@@ -188,7 +189,7 @@ Import("LE_STORE_ERROR_PARENTAL_CONTROLS_NO_PURCHASE");
 Import("LE_STORE_ERROR_PURCHASE_DENIED");
 Import("LE_STORE_ERROR_CONSUMABLE_TOKEN_OWNED");
 Import("LE_STORE_ERROR_TOO_MANY_TOKENS");
-Import("LE_TOKEN_RESULT_SUCCESS");
+Import("LE_STORE_ERROR_ITEM_UNAVAILABLE");
 Import("LE_CONSUMABLE_TOKEN_REDEEM_FOR_SUB_AMOUNT_30_DAYS");
 Import("LE_CONSUMABLE_TOKEN_REDEEM_FOR_SUB_AMOUNT_2700_MINUTES");
 
@@ -227,7 +228,6 @@ local currencyMult = 100;
 local selectedCategoryID;
 local selectedEntryID;
 local selectedPageNum = 1;
-local TokenMarketPriceAvailable = false;
 
 --DECIMAL_SEPERATOR = ",";
 --LARGE_NUMBER_SEPERATOR = ".";
@@ -583,6 +583,10 @@ local errorData = {
 		title = BLIZZARD_STORE_ERROR_TITLE_CONSUMABLE_TOKEN_OWNED,
 		msg = SPELL_FAILED_TOO_MANY_OF_ITEM,
 	},
+	[LE_STORE_ERROR_ITEM_UNAVAILABLE] = {
+		title = BLIZZARD_STORE_ERROR_TITLE_CONSUMABLE_TOKEN_OWNED,
+		msg = BLIZZARD_STORE_ERROR_ITEM_UNAVAILABLE,
+	},
 };
 
 local tooltipSides = {};
@@ -702,8 +706,9 @@ function StoreFrame_UpdateCard(card,entryID,discountReset)
 		end
 
 		if (isToken) then
-			if (TokenMarketPriceAvailable) then
-				card.CurrentMarketPrice:SetText(TOKEN_CURRENT_AUCTION_VALUE:format(GetSecureMoneyString(C_WowTokenPublic.GetCurrentMarketPrice(), true)));
+			local price = C_WowTokenPublic.GetCurrentMarketPrice();
+			if (price) then
+				card.CurrentMarketPrice:SetText(TOKEN_CURRENT_AUCTION_VALUE:format(GetSecureMoneyString(price, true)));
 			else
 				card.CurrentMarketPrice:SetText(TOKEN_CURRENT_AUCTION_VALUE:format(TOKEN_MARKET_PRICE_NOT_AVAILABLE));
 			end
@@ -1110,7 +1115,6 @@ function StoreFrame_OnEvent(self, event, ...)
 		end
 	elseif ( event == "TOKEN_MARKET_PRICE_UPDATED" ) then
 		local result = ...;
-		TokenMarketPriceAvailable = result == LE_TOKEN_RESULT_SUCCESS;
 		if (selectedCategoryID == WOW_TOKEN_CATEGORY_ID) then
 			StoreFrame_SetCategory();
 		end
@@ -2063,8 +2067,8 @@ function StoreTooltip_Show(name, description, isToken)
 	StoreTooltip.ProductName:SetText(name);
 
 	if (isToken) then
-		if (TokenMarketPriceAvailable) then
-			local price = C_WowTokenPublic.GetCurrentMarketPrice();
+		local price = C_WowTokenPublic.GetCurrentMarketPrice();
+		if (price) then
 			description = description .. BLIZZARD_STORE_TOKEN_CURRENT_MARKET_PRICE:format(GetSecureMoneyString(price));
 		else
 			description = description .. BLIZZARD_STORE_TOKEN_CURRENT_MARKET_PRICE:format(TOKEN_MARKET_PRICE_NOT_AVAILABLE);

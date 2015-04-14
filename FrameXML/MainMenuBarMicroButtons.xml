@@ -358,28 +358,23 @@
 				</Offset>
 			</Anchor>
 		</Anchors>
+		<Frames>
+			<Frame parentKey="Alert" hidden="true">
+				<Size x="28" y="28"/>
+				<Anchors>
+					<Anchor point="RIGHT" x="8" y="2"/>
+				</Anchors>
+				<Layers>
+					<Layer level="OVERLAY" setAllPoints="true">
+						<Texture  atlas="adventureguide-microbutton-alert"/>
+					</Layer>
+				</Layers>
+			</Frame>
+		</Frames>
 		<Scripts>
-			<OnLoad>
-				LoadMicroButtonTextures(self, "EJ");
-				SetDesaturation(self:GetDisabledTexture(), true);
-				self.tooltipText = MicroButtonTooltipText(ENCOUNTER_JOURNAL, "TOGGLEENCOUNTERJOURNAL");
-				self.newbieText = NEWBIE_TOOLTIP_ENCOUNTER_JOURNAL;
-				self.minLevel = SHOW_LFD_LEVEL;
-				if (IsBlizzCon()) then
-					self:Disable();
-				end
-			</OnLoad>
-			<OnEvent>
-				self.tooltipText = MicroButtonTooltipText(ENCOUNTER_JOURNAL, "TOGGLEENCOUNTERJOURNAL");
-				self.newbieText = NEWBIE_TOOLTIP_ENCOUNTER_JOURNAL;
-				if (IsBlizzCon()) then
-					return;
-				end
-				UpdateMicroButtons();
-			</OnEvent>
-			<OnClick>
-				ToggleEncounterJournal();
-			</OnClick>
+			<OnLoad function="EJMicroButton_OnLoad"/>
+			<OnEvent function="EJMicroButton_OnEvent"/>
+			<OnClick function="ToggleEncounterJournal"/>
 		</Scripts>
 	</Button>
 	<Button name="StoreMicroButton" inherits="MainMenuBarMicroButton" parent="UIParent" hidden="true">

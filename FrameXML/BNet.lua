@@ -69,9 +69,9 @@ function BNet_GetPresenceID(name)
 		return id;
 	end
 	local _, numBNetOnline = BNGetNumFriends();
-	for i=1, numBNetOnline do
-		local presenceID, _, _, _, toonName, toonID = BNGetFriendInfo(i);
-		if (strlower(name) == strlower(toonName)) then
+	for i = 1, numBNetOnline do
+		local presenceID, presenceName, battleTag, isBattleTagPresence, toonName, toonID = BNGetFriendInfo(i);
+		if ( strcmputf8i(name, toonName) == 0 or strcmputf8i(name, battleTag) == 0 ) then
 			return presenceID;
 		end
 	end	

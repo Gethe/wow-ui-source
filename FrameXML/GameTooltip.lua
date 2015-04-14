@@ -259,9 +259,13 @@ function GameTooltip_AddNewbieTip(frame, normalText, r, g, b, newbieText, noNorm
 	end
 end
 
-function GameTooltip_ShowCompareItem(self)
+function GameTooltip_ShowCompareItem(self, anchorFrame)
 	if ( not self ) then
 		self = GameTooltip;
+	end
+	
+	if( not anchorFrame ) then
+		anchorFrame = self;
 	end
 	
 	if ( self.needsReset ) then
@@ -278,8 +282,8 @@ function GameTooltip_ShowCompareItem(self)
 	
 	-- find correct side
 	local rightDist = 0;
-	local leftPos = self:GetLeft();
-	local rightPos = self:GetRight();
+	local leftPos = anchorFrame:GetLeft();
+	local rightPos = anchorFrame:GetRight();
 	if ( not rightPos ) then
 		rightPos = 0;
 	end
@@ -316,9 +320,9 @@ function GameTooltip_ShowCompareItem(self)
 		shoppingTooltip2:SetOwner(self, "ANCHOR_NONE");
 		shoppingTooltip2:ClearAllPoints();
 		if ( side and side == "left" ) then
-			shoppingTooltip2:SetPoint("TOPRIGHT", self, "TOPLEFT", 0, -10);
+			shoppingTooltip2:SetPoint("TOPRIGHT", anchorFrame, "TOPLEFT", 0, -10);
 		else
-			shoppingTooltip2:SetPoint("TOPLEFT", self, "TOPRIGHT", 0, -10);
+			shoppingTooltip2:SetPoint("TOPLEFT", anchorFrame, "TOPRIGHT", 0, -10);
 		end
 		
 		shoppingTooltip1:SetOwner(self, "ANCHOR_NONE");
@@ -334,9 +338,9 @@ function GameTooltip_ShowCompareItem(self)
 		shoppingTooltip1:ClearAllPoints();
 		
 		if ( side and side == "left" ) then
-			shoppingTooltip1:SetPoint("TOPRIGHT", self, "TOPLEFT", 0, -10);
+			shoppingTooltip1:SetPoint("TOPRIGHT", anchorFrame, "TOPLEFT", 0, -10);
 		else
-			shoppingTooltip1:SetPoint("TOPLEFT", self, "TOPRIGHT", 0, -10);
+			shoppingTooltip1:SetPoint("TOPLEFT", anchorFrame, "TOPRIGHT", 0, -10);
 		end
 
 		shoppingTooltip2:Hide();

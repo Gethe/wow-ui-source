@@ -406,9 +406,14 @@
 						</Anchors>
 						<Layers>
 							<Layer level="ARTWORK">
-								<FontString parentKey="BuyoutPrice" inherits="GameFontNormalLarge">
+								<FontString parentKey="BuyoutLabel" inherits="GameFontNormalLarge" text="TOKEN_CURRENT_BUYOUT_PRICE" justifyH="RIGHT">
 									<Anchors>
-										<Anchor point="BOTTOM" x="0" y="117"/>
+										<Anchor point="BOTTOMRIGHT"  relativePoint="BOTTOM" x="-2" y="117"/>
+									</Anchors>
+								</FontString>
+								<FontString parentKey="BuyoutPrice" inherits="NumberFontNormalLarge" justifyH="LEFT">
+									<Anchors>
+										<Anchor point="BOTTOMLEFT" relativePoint="BOTTOM" x="2" y="117"/>
 									</Anchors>
 								</FontString>
 							</Layer>
@@ -729,7 +734,7 @@
 						<Scripts>
 							<OnLoad function="BrowseWowTokenResults_OnLoad"/>
 							<OnEvent function="BrowseWowTokenResults_OnEvent"/>
-							<OnShow function="BrowseWowTokenResults_Update"/>
+							<OnShow function="BrowseWowTokenResults_OnShow"/>
 						</Scripts>
 					</Frame>
 					<Button name="BrowseQualitySort" inherits="AuctionSortButtonTemplate" text="RARITY">
@@ -2168,7 +2173,7 @@
 										<Anchor point="TOPLEFT" x="6" y="-28"/>
 									</Anchors>
 								</FontString>
-								<FontString parentKey="MarketPrice" inherits="GameFontHighlight" justifyH="LEFT">
+								<FontString parentKey="MarketPrice" inherits="NumberFontNormal" justifyH="LEFT">
 									<Anchors>
 										<Anchor point="TOPLEFT" relativeKey="$parent.BuyoutPriceLabel" relativePoint="BOTTOMLEFT" x="12" y="-6"/>
 									</Anchors>
@@ -2301,9 +2306,9 @@
 				PlaySound("AuctionWindowClose");
 				StaticPopup_Hide("BUYOUT_AUCTION");
 				StaticPopup_Hide("CANCEL_AUCTION");
+				WowTokenGameTimeTutorial:Hide();
 				CloseSideDressUpFrame(self);
 				SetAuctionsTabShowing(false);
-				AuctionWowToken_CancelUpdateTicker();
 				CloseAuctionHouse();
 			</OnHide>
 		</Scripts>

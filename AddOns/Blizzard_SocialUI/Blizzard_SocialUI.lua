@@ -367,7 +367,7 @@ function SocialPrefillScreenshotText(index)
 	local valid, width, height = C_Social.GetScreenshotByIndex(index);
 	if (valid) then
 		local text = SOCIAL_SCREENSHOT_PREFILL_TEXT;
-		local prefillTextLength = strlenutf8(SOCIAL_SCREENSHOT_PREFILL_TEXT);
+		local prefillTextLength = strlen(SOCIAL_SCREENSHOT_PREFILL_TEXT);
 		SocialPostFrame.SocialMessageFrame.EditBox:SetText(text);
 		SocialPostFrame.SocialMessageFrame.EditBox:HighlightText(0, prefillTextLength);
 		SocialPostFrame.SocialMessageFrame.EditBox:SetCursorPosition(prefillTextLength);
@@ -470,7 +470,7 @@ function SocialPrefillAchievementText(achievementID, earned, name)
 		prefillText = format(SOCIAL_ACHIEVEMENT_PREFILL_TEXT_GENERIC, achievementNameColored);
 	end
 
-	local prefillTextLength = strlenutf8(prefillText);
+	local prefillTextLength = strlen(prefillText);
 	SocialPostFrame.SocialMessageFrame.EditBox:SetText(prefillText);
 	SocialPostFrame.SocialMessageFrame.EditBox:HighlightText(0, prefillTextLength);
 	SocialPostFrame.SocialMessageFrame.EditBox:SetCursorPosition(prefillTextLength);
@@ -584,7 +584,7 @@ function SocialPrefillItemText(itemID, earned, creationContext, name, quality)
 	local armoryLink = format(linkFormatStr, itemID, creationContext);
 	local text = format(SOCIAL_ITEM_PREFILL_TEXT_ALL, prefillText, itemNameColored, armoryLink);
 	
-	local prefillTextLength = strlenutf8(prefillText);
+	local prefillTextLength = strlen(prefillText);
 	SocialPostFrame.SocialMessageFrame.EditBox:SetText(text);
 	SocialPostFrame.SocialMessageFrame.EditBox:HighlightText(0, prefillTextLength);
 	SocialPostFrame.SocialMessageFrame.EditBox:SetCursorPosition(prefillTextLength);

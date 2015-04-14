@@ -2397,6 +2397,23 @@ function InterfaceOptionsAccessibilityPanelColorFilterDropDown_OnEvent(self, eve
 		end
 			
 		self:UnregisterEvent(event);
+		
+		-- create and set colorblind item quality display string
+		local self = InterfaceOptionsAccessibilityPanel;
+		local qualityIdTable = {2,3,4,5,7}; -- UNCOMMON, RARE, EPIC, LEGENDARY, HEIRLOOM
+		local examples = self.ColorblindFilterExamples;
+		for i = 1, #qualityIdTable do
+			local fontstring = examples.ItemQuality[i];
+			if ( not fontstring ) then
+				fontstring = examples:CreateFontString(nil, "ARTWORK", "ColorblindItemQualityTemplate");
+				fontstring:SetPoint("TOPLEFT", examples.ItemQuality[i-1], "TOPRIGHT", 8, 0);
+			end
+			
+			local qualityId = qualityIdTable[i];
+			fontstring:SetText(_G["ITEM_QUALITY"..qualityId.."_DESC"]);
+			local color = ITEM_QUALITY_COLORS[qualityId];
+			fontstring:SetTextColor(color.r, color.g, color.b);
+		end
 	end
 end
 

@@ -1,0 +1,1261 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\FrameXML\UI.xsd">
+	<Script file="Blizzard_GarrisonShipyardUI.lua"/>
+	
+	<!-- This represents one of the naval mission icons on the naval map -->
+	<Button name="GarrisonShipyardMapMissionTemplate" virtual="true">
+		<Size x="64" y="64"/>
+		<NormalTexture parentKey="Icon" atlas="BoatMissionIcon-Combat-Map" useAtlasSize="true"/>
+		<HighlightTexture parentKey="HighlightIcon" atlas="BoatMissionIcon-Combat-Map" useAtlasSize="true" alpha="0.3" alphaMode="ADD"/>
+		<Layers>
+			<Layer level="OVERLAY" textureSubLevel="2">
+				<Texture parentKey="InProgressIcon" atlas="ShipMissionIcon-Combat-MapBadge" useAtlasSize="true" hidden="true">
+					<Anchors>
+						<Anchor point="BOTTOMLEFT" x="10" y="10"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="ARTWORK" textureSubLevel="-1">
+				<Texture parentKey="GlowRing" hidden="true" alpha="0.01" alphaMode="BLEND" atlas="ShipMission-RedGlowRing" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="CENTER" x="0" y="-14"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Frames>
+			<!-- The item reward icon which has its own tooltip -->
+			<Frame parentKey="RewardFrame" hidden="true">
+				<Size x="22" y="22"/>
+				<Anchors>
+					<Anchor point="BOTTOMRIGHT" x="-8" y="8"/>
+				</Anchors>
+				<Layers>
+					<Layer level="OVERLAY" textureSubLevel="1">
+						<Texture parentKey="Icon">
+							<Size x="22" y="22"/>
+						</Texture>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnEnter>
+						GameTooltip:SetOwner(self, "ANCHOR_CURSOR_RIGHT");
+						if (self.itemID) then
+							GameTooltip:SetItemByID(self.itemID);
+						end
+					</OnEnter>
+					<OnLeave function="GameTooltip_Hide"/>
+				</Scripts>
+			</Frame>
+		</Frames>
+		<Animations>
+			<AnimationGroup parentKey="InProgressBoatPulseAnim" setToFinalAlpha="true" looping="REPEAT">
+				<Alpha childKey="GlowRing" duration="0.25" order="1" fromAlpha="0" toAlpha="1"/>
+				<Scale childKey="GlowRing" duration="1" order="1" fromScaleX="0.15" fromScaleY="0.05" toScaleX="1.15" toScaleY="0.75"/>
+				<Alpha childKey="GlowRing" startDelay="0.5" duration="0.75" order="1" fromAlpha="1" toAlpha="0"/>
+			</AnimationGroup>
+		</Animations>
+		<Scripts>
+			<OnClick function="GarrisonShipyardMapMission_OnClick"/>
+			<OnEnter function="GarrisonShipyardMapMission_OnEnter"/>
+			<OnLeave function="GarrisonShipyardMapMission_OnLeave"/>
+		</Scripts>
+	</Button>
+	
+	<Frame name="GarrisonShipyardMissionPageBaseTemplate" virtual="true">
+		<Size x="556" y="584"/>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture atlas="ShipMissionParchment-Tile" vertTile="true" horizTile="true" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="3"/>
+						<Anchor point="BOTTOMRIGHT" x="-3"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="BORDER">
+				<Texture atlas="!ShipMission_Bg-Edge" vertTile="true" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="-10"/>
+						<Anchor point="BOTTOMLEFT"  x="-10"/>
+					</Anchors>
+				</Texture>
+				<Texture atlas="!ShipMission_Bg-Edge" vertTile="true" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="TOPRIGHT" x="10"/>
+						<Anchor point="BOTTOMRIGHT" x="10"/>
+					</Anchors>
+					<TexCoords left="1.0" right="0.0" top="0.0" bottom="1.0"/>
+				</Texture>
+			</Layer>
+			<Layer level="BORDER" textureSubLevel="1">
+				<Texture atlas="!ShipMission_Bg-DarkEdge" vertTile="true" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="-3"/>
+						<Anchor point="BOTTOMLEFT"  x="-3"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="BORDER" textureSubLevel="2">
+				<Texture atlas="ShipMission_Bg-DarkEdgeCorner" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="BOTTOMLEFT" x="-12"/>
+					</Anchors>
+				</Texture>
+				<Texture atlas="ShipMission_Bg-DarkEdgeCorner" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="BOTTOMRIGHT" x="10"/>
+					</Anchors>
+					<TexCoords left="1.0" right="0.0" top="0.0" bottom="1.0"/>
+				</Texture>
+			</Layer>
+			<Layer level="BORDER" textureSubLevel="3">
+				<Texture atlas="_ShipMission_Bg-BottomEdge" horizTile="true" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="BOTTOMLEFT" x="5"/>
+						<Anchor point="BOTTOMRIGHT" x="-5"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="BORDER" textureSubLevel="4">
+				<Texture atlas="_ShipMission_TopBorder" useAtlasSize="true" horizTile="true">
+					<Anchors>
+						<Anchor point="BOTTOMLEFT" x="20" y="-4"/>
+						<Anchor point="BOTTOMRIGHT" x="-20" y="-4"/>
+					</Anchors>
+					<TexCoords left="0.0" right="1.0" top="1.0" bottom="0.0"/>
+				</Texture>
+			</Layer>
+			<Layer level="BORDER" textureSubLevel="5">
+				<Texture atlas="ShipMission_TopBorderCorner" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="BOTTOMLEFT" x="-5" y="-4"/>
+					</Anchors>
+					<TexCoords left="0.0" right="1.0" top="1.0" bottom="0.0"/>
+				</Texture>
+				<Texture atlas="ShipMission_TopBorderCorner" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="BOTTOMRIGHT" x="4" y="-4"/>
+					</Anchors>
+					<TexCoords left="1.0" right="0.0" top="1.0" bottom="0.0"/>
+				</Texture>
+			</Layer>
+		</Layers>
+	</Frame>
+	
+	<Frame name="GarrisonShipyardTopBorderTemplate" virtual="true">
+		<Layers>
+			<Layer level="OVERLAY" textureSubLevel="6">
+				<Texture atlas="_ShipMission_TopBorder" useAtlasSize="true" horizTile="true">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="20" y="4"/>
+						<Anchor point="TOPRIGHT" x="-20" y="4"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="OVERLAY" textureSubLevel="7">
+				<Texture atlas="ShipMission_TopBorderCorner" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="-5" y="4"/>
+					</Anchors>
+				</Texture>
+				<Texture atlas="ShipMission_TopBorderCorner" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="TOPRIGHT" x="4" y="4"/>
+					</Anchors>
+					<TexCoords left="1.0" right="0.0" top="0.0" bottom="1.0"/>
+				</Texture>
+			</Layer>
+		</Layers>
+	</Frame>
+	
+	<Frame name="GarrisonShipyardMissionRewardsFrameTemplate" virtual="true">
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture atlas="ShipMission_RewardsBG-Desaturate">
+					<Anchors>
+						<Anchor point="TOPLEFT"/>
+						<Anchor point="BOTTOMRIGHT"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="BORDER">
+				<Texture atlas="!ShipMission_RewardsBorder-Left-Desaturate" vertTile="true" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="-10"/>
+						<Anchor point="BOTTOMLEFT" x="-10"/>
+					</Anchors>
+				</Texture>
+				<Texture atlas="!ShipMission_RewardsBorder-Left-Desaturate" vertTile="true" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="TOPRIGHT" x="10"/>
+						<Anchor point="BOTTOMRIGHT" x="10"/>
+					</Anchors>
+					<TexCoords left="1.0" right="0.0" top="0.0" bottom="1.0"/>
+				</Texture>
+				<Texture atlas="_ShipMission_RewardsBorder-Top-Desaturate" horizTile="true" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="TOPLEFT" y="11"/>
+						<Anchor point="TOPRIGHT" y="11"/>
+					</Anchors>
+				</Texture>
+				<Texture atlas="_ShipMission_RewardsBorder-Top-Desaturate" horizTile="true" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="BOTTOMLEFT" y="-10"/>
+						<Anchor point="BOTTOMRIGHT" y="-10"/>
+					</Anchors>
+					<TexCoords left="0.0" right="1.0" top="1.0" bottom="0.0"/>
+				</Texture>
+			</Layer>
+			<Layer level="BORDER" textureSubLevel="1">
+				<Texture atlas="ShipMission_RewardsBorder-Corner-Desaturate" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="-10" y="11"/>
+					</Anchors>
+				</Texture>
+				<Texture atlas="ShipMission_RewardsBorder-Corner-Desaturate" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="TOPRIGHT" x="10" y="11"/>
+					</Anchors>
+					<TexCoords left="1.0" right="0.0" top="0.0" bottom="1.0"/>
+				</Texture>
+				<Texture atlas="ShipMission_RewardsBorder-Corner-Desaturate" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="BOTTOMLEFT" x="-10" y="-11"/>
+					</Anchors>
+					<TexCoords left="0.0" right="1.0" top="1.0" bottom="0.0"/>
+				</Texture>
+				<Texture atlas="ShipMission_RewardsBorder-Corner-Desaturate" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="BOTTOMRIGHT" x="10" y="-11"/>
+					</Anchors>
+					<TexCoords left="1.0" right="0.0" top="1.0" bottom="0.0"/>
+				</Texture>
+			</Layer>
+		</Layers>
+	</Frame>
+	
+	<Frame name="ShipyardMissionPageTemplate" inherits="GarrisonShipyardMissionPageBaseTemplate, MissionPageTemplate" virtual="true">
+		<Layers>
+			<Layer level="ARTWORK">
+				<Texture parentKey="ButtonFrame" atlas="ShipMission_MissionCostStartButtonBg" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="BOTTOM" x="0" y="-22"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="OVERLAY">
+				<Texture atlas="ShipMission_LocationCover-Side" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="TOPLEFT"/>
+					</Anchors>
+				</Texture>
+				<Texture atlas="ShipMission_LocationCover-Side" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="TOPRIGHT"/>
+					</Anchors>
+					<TexCoords left="1.0" right="0.0" top="0.0" bottom="1.0"/>
+				</Texture>
+				<Texture atlas="_ShipMission_LocationCover-Bottom" useAtlasSize="true" horizTile="true">
+					<Anchors>
+						<Anchor point="BOTTOMLEFT" y="333"/>
+						<Anchor point="BOTTOMRIGHT" y="333"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="OVERLAY" textureSubLevel="4">
+				<Texture parentKey="IconBG" atlas="ShipMission_IconLevelBG" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="TOPLEFT" y="-1"/>
+					</Anchors>
+					<Color r="0" g="0" b="0" a="0.55"/>
+				</Texture>
+			</Layer>
+			<Layer level="OVERLAY" textureSubLevel="5">
+				<Texture parentKey="MissionType" atlas="ShipMissionIcon-Combat-Mission" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="12" y="-2"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="OVERLAY" textureSubLevel="6">
+				<Texture atlas="_ShipMission_TopBorder" useAtlasSize="true" horizTile="true">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="20" y="4"/>
+						<Anchor point="TOPRIGHT" x="-20" y="4"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="OVERLAY" textureSubLevel="7">
+				<Texture atlas="ShipMission_TopBorderCorner" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="-5" y="4"/>
+					</Anchors>
+				</Texture>
+				<Texture atlas="ShipMission_TopBorderCorner" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="TOPRIGHT" x="4" y="4"/>
+					</Anchors>
+					<TexCoords left="1.0" right="0.0" top="0.0" bottom="1.0"/>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Frame parentKey="RewardsFrame" inherits="GarrisonShipyardMissionRewardsFrameTemplate, GarrisonMissionPageRewardTemplate">
+			</Frame>
+		</Frames>
+	</Frame>
+			
+	<Frame name="GarrisonShipMissionFollowerTemplate" virtual="true">
+		<Size x="152" y="128"/>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="Portrait" atlas="ShipMission_FollowerBG" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="BOTTOM"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="OVERLAY" textureSubLevel="2">
+				<Texture parentKey="Highlight" hidden="false" alpha="0" alphaMode="ADD" atlas="ShipMission_FollowerBG-Glow" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="BOTTOM"/>
+					</Anchors>
+				</Texture>
+				<FontString parentKey="Name" inherits="GameFontNormal" justifyV="TOP" wordwrap="true" hidden="true">
+					<Size x="152" y="26"/>
+					<Anchors>
+						<Anchor point="TOP" relativePoint="BOTTOM" relativeKey="$parent.Portrait" x="0" y="-8"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Frame parentArray="Counters" inherits="GarrisonMissionAbilityCounterTemplate" hidden="true">
+				<Anchors>
+					<Anchor point="BOTTOM" x="0" y="0"/>
+				</Anchors>
+			</Frame>
+		</Frames>
+		<Animations>
+			<AnimationGroup parentKey="PulseAnim" setToFinalAlpha="true" looping="REPEAT">
+				<Alpha childKey="Highlight" duration="0.5" order="1" fromAlpha="0.5" toAlpha="1"/>
+				<Alpha childKey="Highlight" startDelay="1" duration="0.5" order="1" fromAlpha="1" toAlpha="0.5"/>
+			</AnimationGroup>
+		</Animations>
+		<Scripts>
+			<OnLoad>
+				self:RegisterForDrag("LeftButton");
+			</OnLoad>
+			<OnDragStart function="GarrisonShipMissionPageFollowerFrame_OnDragStart"/>
+			<OnDragStop function="GarrisonShipMissionPageFollowerFrame_OnDragStop"/>
+			<OnReceiveDrag function="GarrisonShipMissionPageFollowerFrame_OnReceiveDrag"/>
+			<OnEnter function="GarrisonShipMissionPageFollowerFrame_OnEnter"/>
+			<OnLeave function="GarrisonShipMissionPageFollowerFrame_OnLeave"/>
+			<OnMouseUp function="GarrisonShipMissionPageFollowerFrame_OnMouseUp"/>
+		</Scripts>
+	</Frame>
+
+	<Frame name="GarrisonShipMissionCompleteFollowerTemplate" virtual="true">
+		<Size x="152" y="128"/>
+		<Layers>
+			<Layer level="ARTWORK">
+				<Texture parentKey="Portrait" atlas="Ships_CargoShip-Portrait" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="BOTTOM"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="OVERLAY" textureSubLevel="2">
+				<FontString parentKey="Name" inherits="GameFontNormal" justifyV="TOP" wordwrap="true">
+					<Size x="152" y="26"/>
+					<Anchors>
+						<Anchor point="TOP" relativePoint="BOTTOM" x="0" y="-8"/>
+					</Anchors>
+				</FontString>
+				<FontString parentKey="SurvivedText" inherits="Game18Font" text="GARRISON_SHIPYARD_SHIP_SURVIVED">
+					<Anchors>
+						<Anchor point="CENTER" x="0" y="-20"/>
+					</Anchors>
+					<Shadow>
+						<Offset x="1" y="-1"/>
+						<Color r="0" g="0" b="0"/>
+					</Shadow>
+					<Color r="0.1" g="1" b="0.1" a="0"/>
+				</FontString>
+				<FontString parentKey="DestroyedText" inherits="Game18Font" text="GARRISON_SHIPYARD_SHIP_DESTROYED">
+					<Anchors>
+						<Anchor point="CENTER" x="0" y="10"/>
+					</Anchors>
+					<Shadow>
+						<Offset x="1" y="-1"/>
+						<Color r="0" g="0" b="0"/>
+					</Shadow>		
+					<Color r="1" g="0.1" b="0.1" a="0"/>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Frames>
+			<StatusBar parentKey="XP" inherits="GarrisonFollowerXPBarTemplate">
+				<Size x="103" y="9"/>
+				<Anchors>
+					<Anchor point="BOTTOM" x="0" y="-2"/>
+				</Anchors>
+			</StatusBar>
+			<Frame parentKey="XPGain" inherits="GarrisonFollowerXPGainTemplate" hidden="true">
+				<Anchors>
+					<Anchor point="BOTTOM" relativePoint="TOP" x="0" y="-25"/>
+				</Anchors>
+			</Frame>
+			<Frame parentKey="LevelUpFrame" hidden="true" inherits="GarrisonFollowerLevelUpTemplate">
+				<Anchors>
+					<Anchor point="BOTTOM" x="16" y="-23"/>
+				</Anchors>
+			</Frame>
+			<CinematicModel parentKey="BoatDeathAnimations" facingLeft="true" inherits="GarrisonCinematicModelBaseTemplate">
+				<Size x="250" y="250"/>
+				<Anchors>
+					<Anchor point="CENTER"/>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						GarrisonCinematicModelBase_OnLoad(self);
+						self:SetFrameLevel(self:GetParent():GetFrameLevel() + 1);
+						self:Show();
+						self:SetDisplayInfo(11686); <!-- 11686 is invisible stalker -->
+					</OnLoad>
+					<OnModelLoaded function="GarrisonMissionComplete_OnModelLoaded"/>
+				</Scripts>
+			</CinematicModel>
+		</Frames>		
+		<Animations>
+			<AnimationGroup parentKey="SurvivedAnim" setToFinalAlpha="true">
+				<Alpha parentKey="WaitAlpha" childKey="SurvivedText" duration="0.1" order="1" fromAlpha="0" toAlpha="0"/>
+				<Alpha childKey="SurvivedText" duration="0.1" order="2" fromAlpha="0" toAlpha="1"/>
+				<Translation childKey="SurvivedText" duration="1.1" order="2" offsetX="0" offsetY="50"/>
+				<Alpha childKey="SurvivedText" startDelay="0.7" duration="0.25" order="2" fromAlpha="1" toAlpha="0"/>
+			</AnimationGroup>
+			<AnimationGroup parentKey="DestroyedAnim" setToFinalAlpha="true">
+				<Alpha parentKey="WaitAlpha" childKey="DestroyedText" duration="0.1" order="1" fromAlpha="0" toAlpha="0"/>
+				<Alpha childKey="DestroyedText" duration="0.2" order="2" fromAlpha="0" toAlpha="1"/>
+				<Translation childKey="DestroyedText" duration="1.0" order="2" offsetX="0" offsetY="-70"/>
+				<Alpha childKey="Portrait" smoothing="OUT" duration="0.86" order="2" fromAlpha="1" toAlpha="0"/>
+				<Alpha childKey="XP" smoothing="OUT" startDelay="0.1" duration="0.1" order="2" fromAlpha="1" toAlpha="0"/>
+				<Translation childKey="Portrait" duration="0.06" order="2" offsetX="-5" offsetY="-2"/>
+				<Translation childKey="Portrait" startDelay="0.06" duration="0.13" order="2" offsetX="10" offsetY="-2"/>
+				<Translation childKey="Portrait" startDelay="0.19" duration="0.13" order="2" offsetX="-10" offsetY="-2"/>
+				<Translation childKey="Portrait" startDelay="0.32" smoothing="OUT" duration="0.65" order="2" offsetX="6" offsetY="-15"/>
+				<Scripts>
+					<OnFinished>
+						self:GetParent().DestroyedText:SetPoint("CENTER", 0, -60);
+					</OnFinished>
+				</Scripts>
+			</AnimationGroup>
+		</Animations>
+	</Frame>
+
+	<Frame name="GarrisonShipMissionCompleteEnemyTemplate" virtual="true">
+		<Size x="152" y="128"/>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="Portrait" atlas="Ships_EnemyCarrier-Portrait" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="BOTTOM"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="OVERLAY">
+				<FontString parentKey="Name" inherits="GameFontHighlight" wordwrap="true">
+					<Size x="152" y="30"/>
+					<Anchors>
+						<Anchor point="BOTTOM" relativePoint="TOP" relativeKey="$parent.Portrait" x="0" y="-50"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Frame parentKey="CheckFrame" inherits="GarrisonEncounterPortraitCheckTemplate">
+				<Anchors>
+					<Anchor point="CENTER"/>
+				</Anchors>
+			</Frame>
+			<Frame parentKey="MechanicsFrame">
+				<Size x="20" y="20"/>
+				<Frames>
+					<Frame parentArray="Mechanics" inherits="GarrisonMissionEnemyMechanicTemplate">
+						<Anchors>
+							<Anchor point="LEFT"/>
+						</Anchors>
+					</Frame>
+				</Frames>
+			</Frame>
+		</Frames>
+	</Frame>
+
+	<Frame name="GarrisonShipMissionEnemyTemplate" virtual="true">
+		<Size x="152" y="128"/>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="Portrait" atlas="Ships_EnemyCarrier-Portrait" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="BOTTOM"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="OVERLAY">
+				<FontString parentKey="Name" inherits="GameFontHighlight" wordwrap="true">
+					<Size x="152" y="30"/>
+					<Anchors>
+						<Anchor point="BOTTOM" relativePoint="TOP" relativeKey="$parent.Portrait" x="0" y="-50"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Button parentArray="Mechanics" inherits="GarrisonMissionEnemyLargeMechanicTemplate"/>
+		</Frames>
+	</Frame>
+	
+	<Frame name="GarrisonShipFollowerListTemplateHeader" inherits="GarrisonBaseInfoBoxTemplate" virtual="true">
+		<Size x="305" y="535"/>
+		<Layers>
+			<Layer level="BORDER" textureSubLevel="7">
+				<Texture parentKey="HeaderLeft" atlas="GarrMission_ParchmentHeader-End" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="BOTTOMLEFT" relativePoint="TOPLEFT" x="12" y="-8"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="HeaderRight" atlas="GarrMission_ParchmentHeader-End" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="BOTTOMRIGHT" relativePoint="TOPRIGHT" x="-28" y="-8"/>
+					</Anchors>
+					<TexCoords left="1.0" right="0.0" top="0.0" bottom="1.0"/>
+				</Texture>
+			</Layer>
+			<Layer level="BORDER" textureSubLevel="6">
+				<Texture atlas="_GarrMission_ParchmentHeader-Mid" useAtlasSize="true" horizTile="true">
+					<Anchors>
+						<Anchor point="LEFT" relativeKey="$parent.HeaderLeft" relativePoint="RIGHT" x="-35"/>
+						<Anchor point="RIGHT" relativeKey="$parent.HeaderRight" relativePoint="LEFT" x="35"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers> 
+		<Frames>
+			<ScrollFrame name="$parentListScrollFrame" parentKey="listScroll" inherits="HybridScrollFrameTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" x="5" y="-6"/>
+					<Anchor point="BOTTOMRIGHT" x="-3" y="8"/>
+				</Anchors>
+				<Frames>
+					<Slider name="$parentScrollBar" inherits="HybridScrollBarTrimTemplate" parentKey="scrollBar">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" x="-20" y="-12"/>
+							<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMRIGHT" x="-20" y="12"/>
+						</Anchors>
+						<KeyValues>
+							<KeyValue key="colorRed" value="1.0" type="number"/>
+							<KeyValue key="colorGreen" value="1.0" type="number"/>
+							<KeyValue key="colorBlue" value="1.0" type="number"/>
+						</KeyValues>
+						<Scripts>
+							<OnLoad>
+								self.trackBG:Show();
+								self.trackBG:SetVertexColor(0, 0, 0, 0.75);
+								self.doNotHide = true;
+								
+								self.Top:SetVertexColor(self.colorRed, self.colorGreen, self.colorBlue);
+								self.Bottom:SetVertexColor(self.colorRed, self.colorGreen, self.colorBlue);
+								self.Middle:SetVertexColor(self.colorRed, self.colorGreen, self.colorBlue);
+								self.thumbTexture:SetVertexColor(self.colorRed, self.colorGreen, self.colorBlue);
+								
+								self.UpButton.Normal:SetVertexColor(self.colorRed, self.colorGreen, self.colorBlue);
+								self.UpButton.Pushed:SetVertexColor(self.colorRed, self.colorGreen, self.colorBlue);
+								self.UpButton.Disabled:SetVertexColor(self.colorRed, self.colorGreen, self.colorBlue);
+								self.UpButton.Highlight:SetVertexColor(self.colorRed, self.colorGreen, self.colorBlue);
+								
+								self.DownButton.Normal:SetVertexColor(self.colorRed, self.colorGreen, self.colorBlue);
+								self.DownButton.Pushed:SetVertexColor(self.colorRed, self.colorGreen, self.colorBlue);
+								self.DownButton.Disabled:SetVertexColor(self.colorRed, self.colorGreen, self.colorBlue);
+								self.DownButton.Highlight:SetVertexColor(self.colorRed, self.colorGreen, self.colorBlue);
+							</OnLoad>
+						</Scripts>
+					</Slider>
+				</Frames>
+			</ScrollFrame>
+		</Frames>
+	</Frame>
+
+	<Button name="GarrisonShipFollowerButtonTemplate" virtual="true">
+		<Size x="255" y="80"/>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="BG" atlas="ShipMission_FollowerListButton" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="TOPLEFT"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="ARTWORK" textureSubLevel="0">
+				<Texture parentKey="Portrait" atlas="Ships_CargoShip-List" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="LEFT"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="ARTWORK" textureSubLevel="1">
+				<Texture parentKey="Quality" atlas="ShipMission_BoatRarity-Epic" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="BOTTOMLEFT" x="0" y="2"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="ARTWORK" textureSubLevel="2">
+				<Texture parentKey="XPBar">
+					<Size x="228" y="4"/>
+					<Anchors>
+						<Anchor point="BOTTOMLEFT" relativeKey="$parent.BG" x="24" y="2"/>
+					</Anchors>
+					<Color r="0.212" g="0" b="0.337" a="1"/>
+				</Texture>
+			</Layer>
+			<Layer level="OVERLAY" textureSubLevel="3">
+				<Texture parentKey="Selection" atlas="ShipMission_FollowerListButton-Select" useAtlasSize="true" hidden="true">
+					<Anchors>
+						<Anchor point="TOPLEFT"/>
+					</Anchors>
+				</Texture>
+				<FontString parentKey="BoatName" inherits="GameFontHighlight" text="Swamp Donkey" justifyH="RIGHT">
+					<Size x="255" y="0"/>
+					<Anchors>
+						<Anchor point="TOPRIGHT" x="-4" y="-43"/>
+					</Anchors>
+				</FontString>
+				<FontString parentKey="BoatType" inherits="GameFontDisable" text="Carrier" justifyH="RIGHT">
+					<Size x="255" y="0"/>
+					<Anchors>
+						<Anchor point="TOPRIGHT" relativeKey="$parent.BoatName" relativePoint="BOTTOMRIGHT" x="0" y="-4"/>
+					</Anchors>
+				</FontString>
+				<FontString parentKey="Status" inherits="GameFontHighlightSmall" text="In Party" justifyH="LEFT">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="5" y="-6"/>
+					</Anchors>
+					<Color r="0.698" g="0.941" b="1" a="1"/>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Frame parentArray="Counters" inherits="GarrisonMissionAbilityCounterTemplate" hidden="true">
+				<Anchors>
+					<Anchor point="TOPRIGHT" x="-8" y="-4"/>
+				</Anchors>
+			</Frame>
+			<Frame parentKey="BusyFrame" hidden="true">
+				<Anchors>
+					<Anchor point="TOPLEFT"/>
+					<Anchor point="BOTTOMRIGHT"/>
+				</Anchors>			
+				<Layers>
+					<Layer level="ARTWORK">
+						<Texture parentKey="Texture" setAllPoints="true">
+							<Color r="0" g="0.06" b="0.22" a="0.44"/>
+						</Texture>
+					</Layer>
+				</Layers>
+			</Frame>
+		</Frames>
+		<HighlightTexture atlas="ShipMission_FollowerListButton-Highlight" useAtlasSize="true">
+			<Anchors>
+				<Anchor point="TOPLEFT"/>
+			</Anchors>
+		</HighlightTexture>
+		<Scripts>
+			<OnLoad>
+				self:RegisterForClicks("LeftButtonUp");
+				self:RegisterForDrag("LeftButton");
+			</OnLoad>
+			<OnClick>
+				if ( IsModifiedClick() ) then
+					GarrisonFollowerListButton_OnModifiedClick(self, button);
+				else
+					GarrisonShipFollowerListButton_OnClick(self, button);
+				end
+			</OnClick>
+			<OnDragStart function="GarrisonShipFollowerListButton_OnDragStart"/>
+			<OnDragStop function="GarrisonShipFollowerListButton_OnDragStop"/>
+		</Scripts>
+	</Button>
+	
+	<Frame name="GarrisonShipFollowerPlacer" hidden="true" parent="UIParent" frameStrata="HIGH">
+		<Size x="152" y="80"/>
+		<Layers>
+			<Layer level="ARTWORK" textureSubLevel="0">
+				<Texture parentKey="Portrait" atlas="Ships_CargoShip-List" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="LEFT"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+	</Frame>
+	
+	<Frame name="GarrisonShipFollowerTooltip" inherits="GarrisonFollowerTooltipTemplate" movable="false" toplevel="true">
+		<Size x="260" y="122"/>
+		<Anchors>
+			<Anchor point="BOTTOM" x="0" y="80"/>
+		</Anchors>
+		<Scripts>
+			<OnLoad>
+				self.Portrait:Hide();
+				self.Class:Hide();
+				self.Name:SetPoint("LEFT", self, "TOPLEFT", 15, -20);
+				self.ClassSpecName:SetPoint("TOPLEFT", self, "TOPLEFT", 15, -35);
+				self.XPBarBackground:SetWidth(231);
+				self.XPBarBackground:SetPoint("TOPLEFT", self, "TOPLEFT", 15, -55);
+				self.XPBar:SetPoint("TOPLEFT", self, "TOPLEFT", 15, -55);
+			</OnLoad>
+		</Scripts>
+	</Frame>
+	
+	<Frame name="GarrisonShipyardMissionCompleteStageTemplate" inherits="GarrisonMissionStageTemplate, GarrisonMissionCompleteStageTemplate" virtual="true">
+		<Frames>
+			<Frame parentKey="EncountersFrame">
+				<Size x="556" y="285"/>
+				<Anchors>
+					<Anchor point="TOP"/>
+				</Anchors>
+				<Animations>
+					<AnimationGroup parentKey="FadeOut">
+						<Alpha fromAlpha="1" toAlpha="0" duration=".5" order="1"/>
+						<Scripts>
+							<OnFinished>
+								self:GetParent():Hide();
+								self:GetParent():SetAlpha(1);
+							</OnFinished>
+						</Scripts>
+					</AnimationGroup>
+				</Animations>
+				<Frames>
+					<Frame parentKey="Encounter1" parentArray="Encounters" inherits="GarrisonShipMissionCompleteEnemyTemplate"/>
+					<Frame parentKey="Encounter2" parentArray="Encounters" inherits="GarrisonShipMissionCompleteEnemyTemplate">
+						<Anchors>
+							<Anchor point="LEFT" relativeKey="$parent.Encounter1" relativePoint="RIGHT" x="17" y="0"/>
+						</Anchors>
+					</Frame>
+					<Frame parentKey="Encounter3" parentArray="Encounters" inherits="GarrisonShipMissionCompleteEnemyTemplate">
+						<Anchors>
+							<Anchor point="LEFT" relativeKey="$parent.Encounter2" relativePoint="RIGHT" x="17" y="0"/>
+						</Anchors>									
+					</Frame>
+				</Frames>
+				<Scripts>
+					<OnLoad>
+						self:SetFrameLevel(self:GetParent():GetFrameLevel() + 3);
+					</OnLoad>
+				</Scripts>
+			</Frame>
+			<Frame parentKey="FollowersFrame">
+				<Size x="556" y="285"/>
+				<Anchors>
+					<Anchor point="TOP"/>
+				</Anchors>
+				<Animations>
+					<AnimationGroup parentKey="FadeIn" setToFinalAlpha="true">
+						<Alpha fromAlpha="0" toAlpha="1" duration=".5" order="1"/>
+					</AnimationGroup>
+				</Animations>
+				<Frames>
+					<Frame parentKey="Follower1" parentArray="Followers" inherits="GarrisonShipMissionCompleteFollowerTemplate">
+						<Anchors>
+							<Anchor point="LEFT" relativePoint="TOPLEFT" x="33" y="-106"/>
+						</Anchors>
+					</Frame>
+					<Frame parentKey="Follower2" parentArray="Followers" inherits="GarrisonShipMissionCompleteFollowerTemplate">
+						<Anchors>
+							<Anchor point="LEFT" relativeKey="$parent.Follower1" relativePoint="RIGHT" x="17"/>
+						</Anchors>
+					</Frame>
+					<Frame parentKey="Follower3" parentArray="Followers" inherits="GarrisonShipMissionCompleteFollowerTemplate">
+						<Anchors>
+							<Anchor point="LEFT" relativeKey="$parent.Follower2" relativePoint="RIGHT" x="17"/>
+						</Anchors>
+					</Frame>
+				</Frames>
+				<Scripts>
+					<OnLoad>
+						self:SetFrameLevel(self:GetParent():GetFrameLevel() + 3);
+					</OnLoad>
+				</Scripts>
+			</Frame>
+			<Frame parentKey="MissionInfo">
+				<Size x="556" y="285"/>
+				<Anchors>
+					<Anchor point="TOP"/>
+				</Anchors>
+				<Layers>
+					<Layer level="ARTWORK">
+						<Texture atlas="ShipMission_LocationCover-Side" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="TOPLEFT"/>
+								<Anchor point="BOTTOMLEFT"/>
+							</Anchors>
+						</Texture>
+						<Texture atlas="ShipMission_LocationCover-Side" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="TOPRIGHT"/>
+								<Anchor point="BOTTOMRIGHT"/>
+							</Anchors>
+							<TexCoords left="1.0" right="0.0" top="0.0" bottom="1.0"/>
+						</Texture>
+						<Texture atlas="_ShipMission_LocationCover-Bottom" useAtlasSize="true" horizTile="true">
+							<Anchors>
+								<Anchor point="BOTTOMLEFT" y="-17"/>
+								<Anchor point="BOTTOMRIGHT" y="-17"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+					<Layer level="OVERLAY" textureSubLevel="3">
+						<Texture parentKey="Header">
+							<Anchors>
+								<Anchor point="TOPLEFT" x="0" y="0"/>
+								<Anchor point="BOTTOMRIGHT" relativePoint="TOPRIGHT" x="0" y="-66"/>
+							</Anchors>
+							<Color r="0" g="0" b="0" a=".35"/>
+						</Texture>
+					</Layer>
+					<Layer level="OVERLAY" textureSubLevel="4">
+						<Texture parentKey="IconBG" atlas="ShipMission_IconLevelBG" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="TOPLEFT" y="-1"/>
+							</Anchors>
+							<Color r="0" g="0" b="0" a="0.55"/>
+						</Texture>
+					</Layer>
+					<Layer level="OVERLAY" textureSubLevel="5">										
+						<Texture parentKey="MissionType" atlas="ShipMission_MissionIcon-Combat" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="TOPLEFT" x="12" y="-2"/>
+							</Anchors>
+						</Texture>
+						<FontString parentKey="Title" inherits="QuestFont_Super_Huge" justifyH="LEFT" maxLines="1">
+							<Size x="430" y="0"/>
+							<Shadow>
+								<Offset x="1" y="-1"/>
+							</Shadow>
+							<Anchors>
+								<Anchor point="LEFT" relativeKey="$parent.Header" x="98" y="0"/>
+							</Anchors>
+							<Color r="1" g="1" b="1"/>
+						</FontString>
+					</Layer>
+					<Layer level="OVERLAY" textureSubLevel="6">
+						<Texture atlas="_ShipMission_TopBorder" useAtlasSize="true" horizTile="true">
+							<Anchors>
+								<Anchor point="TOPLEFT" x="20" y="4"/>
+								<Anchor point="TOPRIGHT" x="-20" y="4"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+					<Layer level="OVERLAY" textureSubLevel="7">
+						<Texture atlas="ShipMission_TopBorderCorner" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="TOPLEFT" x="-5" y="4"/>
+							</Anchors>
+						</Texture>
+						<Texture atlas="ShipMission_TopBorderCorner" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="TOPRIGHT" x="4" y="4"/>
+							</Anchors>
+							<TexCoords left="1.0" right="0.0" top="0.0" bottom="1.0"/>
+						</Texture>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnLoad>
+						self:SetFrameLevel(self:GetParent():GetFrameLevel() + 3);
+					</OnLoad>
+				</Scripts>
+			</Frame>
+		</Frames>
+	</Frame>
+
+	<Frame name="FogFrameTemplate" hidden="true" virtual="true">
+		<Size x="452" y="306"/>
+		<Layers>
+			<Layer level="OVERLAY" textureSubLevel="1">
+				<Texture parentKey="FogTexture" atlas="NavalMap-OpenWaters-Fog" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="OVERLAY" textureSubLevel="2">
+				<Texture parentKey="HighlightTexture" atlas="NavalMap-OpenWaters-Highlight" hidden="true" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			
+			<Layer level="ARTWORK">
+				<Texture parentKey="HighlightAnimTexture" hidden="false" alpha="0.01" alphaMode="BLEND" atlas="NavalMap-OpenWatersHighlight" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent.None"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="OVERLAY">
+				<Texture parentKey="FogAnimTexture" hidden="false" alpha="0.01" alphaMode="BLEND" atlas="NavalMap-OpenWaters-Fog" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent.None"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="HighlightGlowAnimTexture" hidden="false" alpha="0.01" alphaMode="ADD" atlas="NavalMap-OpenWaters-Highlight" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent.None"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Animations>
+			<AnimationGroup parentKey="MapFogFadeOutAnim" setToFinalAlpha="true">
+				<Scale parentKey="ScaleAnim" childKey="FogAnimTexture" duration="0.5" order="1" fromScaleX="1" fromScaleY="1" toScaleX="1.2" toScaleY="1.2">
+					<Origin point="TOPLEFT">
+						<Offset x="0" y="0"/>
+					</Origin>
+				</Scale>
+				<Alpha childKey="HighlightAnimTexture" duration="0.15" order="1" fromAlpha="0" toAlpha="1"/>
+				<Alpha childKey="HighlightAnimTexture" duration="1" order="1" fromAlpha="1" toAlpha="0"/>
+				<Alpha childKey="FogAnimTexture" duration="1" order="1" fromAlpha="1" toAlpha="0"/>
+				<Alpha childKey="HighlightGlowAnimTexture" duration="0.25" order="1" fromAlpha="0" toAlpha="0.75"/>
+				<Alpha childKey="HighlightGlowAnimTexture" startDelay="0.25" duration="1" order="1" fromAlpha="0.75" toAlpha="0"/>
+				<Scripts>
+					<OnFinished function="GarrisonShipyardMap_ResetFogFrame"/>
+				</Scripts>
+			</AnimationGroup>
+		</Animations>
+		<Scripts>
+			<OnLoad>
+				self:SetFrameLevel(self:GetParent():GetFrameLevel() + 3);
+			</OnLoad>
+			<OnUpdate>
+				<!-- We need to manually show the highlight texture so that the ship mission buttons on
+					 the map can still consume the mouse enter events -->
+				local shown =  self.FogTexture:IsShown() and
+							   not self:GetParent():GetParent():GetParent().MissionComplete:IsShown() and
+							   not self:GetParent().CompleteDialog:IsShown() and
+							   self:IsMouseOver();
+				self.HighlightTexture:SetShown(shown);
+			</OnUpdate>
+		</Scripts>
+	</Frame>
+	
+	<Frame name="GarrisonShipyardFrame" inherits="GarrisonMissionFrameTemplate" mixin="GarrisonMission,GarrisonShipyardMission">
+		<Size x="962" y="662"/>
+		<Anchors>
+			<Anchor point="CENTER"/>
+		</Anchors>
+		<Layers>
+			<Layer level="BACKGROUND" textureSubLevel="-1">
+				<Texture parentKey="BackgroundTile" atlas="Garr_WoodFrame-BackgroundTile" horizTile="true" vertTile="true">
+					<Anchors>
+						<Anchor point="TOPLEFT"/>
+						<Anchor point="BOTTOMRIGHT"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Frames>
+		
+			<!-- Naval Map tab button -->
+			<Button name="$parentTab1" inherits="GarrisonMissionFrameTabTemplate" id="1" text="GARRISON_NAVAL_MAP">
+				<Anchors>
+					<Anchor point="BOTTOMLEFT" x="11" y="-42"/>
+				</Anchors>
+			</Button>
+			
+			<!-- Fleet tab button -->
+			<Button name="$parentTab2" inherits="GarrisonMissionFrameTabTemplate" id="2" text="GARRISON_FLEET">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="$parentTab1" relativePoint="RIGHT" x="-5" y="0"/>
+				</Anchors>	
+			</Button>
+			
+			<!-- List of ships -->
+			<Frame parentKey="FollowerList" name="$parentFollowers" inherits="GarrisonShipFollowerListTemplateHeader" hidden="true">
+				<Size x="305" y="535"/>			
+				<Anchors>
+					<Anchor point="TOPLEFT" x="33" y="-64"/>
+				</Anchors>
+				<KeyValues>
+					 <KeyValue key="showUncollected" value="false" type="boolean"/>
+					 <KeyValue key="canCastSpellsOnFollowers" value="false" type="boolean"/>
+					 <KeyValue key="showCounters" value="true" type="boolean"/>
+					 <KeyValue key="canExpand" value="false" type="boolean"/>
+				</KeyValues>
+				<Anchors>
+					<Anchor point="TOPLEFT" x="33" y="-64"/>
+				</Anchors>
+				<Frames>
+					<Frame parentKey="MaterialFrame" inherits="MaterialFrameTemplate">
+						<Size x="316" y="43"/>
+						<Anchors>
+							<Anchor point="TOP" relativePoint="BOTTOM" y="8"/>
+						</Anchors>
+						<Scripts>
+							<OnLoad>
+								self.Icon:SetAtlas("ShipMission_CurrencyIcon-Oil", false);
+							</OnLoad>
+						</Scripts>
+					</Frame>
+					<EditBox parentKey="SearchBox" inherits="SearchBoxTemplate" letters="40">
+						<Size x="236" y="20"/>
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeKey="$parent.HeaderLeft" x="17" y="-10"/>
+						</Anchors>
+						<Scripts>
+							<OnTextChanged function="GarrisonFollowListEditBox_OnTextChanged"/>
+						</Scripts>
+					</EditBox>
+				</Frames>
+				<Scripts>
+					<!--
+					<OnShow function="GarrisonFollowerList_OnShow"/>
+					<OnHide function="GarrisonFollowerList_OnHide"/>
+					-->
+				</Scripts>
+			</Frame>
+			
+			<!-- Naval Map tab frame -->
+			<Frame parentKey="MissionTab" setAllPoints="true" useParentLevel="true">
+				<Frames>
+					<Frame parentKey="MissionList" setAllPoints="true" useParentLevel="true">
+						<Layers>
+							<Layer level="BACKGROUND" textureSubLevel="0">
+								<Texture parentKey="MapTexture" atlas="NavalMap01" useAtlasSize="true">
+									<Anchors>
+										<Anchor point="CENTER"/>
+									</Anchors>
+								</Texture>
+							</Layer>
+						</Layers>
+						<Frames>
+							
+							<!-- Fog overlays -->
+							<Frame parentKey="FogFrame1" parentArray="FogFrames" inherits="FogFrameTemplate"/>
+							<Frame parentKey="FogFrame2" parentArray="FogFrames" inherits="FogFrameTemplate"/>
+							<Frame parentKey="FogFrame3" parentArray="FogFrames" inherits="FogFrameTemplate"/>
+							
+							<Frame parentKey="CompleteDialog" topLevel="true" enableMouse="true" hidden="true">
+								<Size x="956" y="637"/>
+								<Anchors>
+									<Anchor point="TOPLEFT" x="2" y="-22"/>
+								</Anchors>
+								<Layers>
+									<Layer level="BACKGROUND">
+										<Texture setAllPoints="true">
+											<Color r="0" g="0" b="0" a="0.8"/>
+										</Texture>
+									</Layer>
+								</Layers>
+								<Frames>
+									<Frame parentKey="BorderFrame" inherits="GarrisonShipyardMissionPageBaseTemplate, GarrisonMissionCompleteDialogTemplate, GarrisonShipyardTopBorderTemplate">
+										<Scripts>
+											<OnLoad>
+												self.Model.Title:SetText(GARRISON_SHIPYARD_MISSION_REPORT);
+												self.Stage.LocBack:SetAtlas("_GarrMissionLocation-TannanSea-Back", true);
+												self.Stage.LocMid:SetAtlas("_GarrMissionLocation-TannanSea-Mid", true);
+												self.Stage.LocFore:SetAtlas("_GarrMissionLocation-TannanSea-Fore", true);
+											</OnLoad>
+										</Scripts>
+									</Frame>
+								</Frames>
+							</Frame>
+						</Frames>
+						<Scripts>
+							<OnLoad function="GarrisonShipyardMap_OnLoad"/>
+							<OnEvent function="GarrisonShipyardMap_OnEvent"/>
+							<OnShow function="GarrisonShipyardMap_OnShow"/>
+							<OnHide function="GarrisonShipyardMap_OnHide"/>
+							<OnUpdate function="GarrisonShipyardMap_OnUpdate"/>
+						</Scripts>
+					</Frame>
+					<Button parentKey="MissionPage" inherits="ShipyardMissionPageTemplate" hidden="true">
+						<Frames>
+							<Frame parentKey="DangerousMissionFrame">
+								<Size x="400" y="18"/>
+								<Anchors>
+									<Anchor point="TOPLEFT" x="5" y="-87"/>
+								</Anchors>
+								<Layers>
+									<Layer level="OVERLAY">
+										<Texture parentKey="DangerousSkull" atlas="ShipMission_DangerousSkull" useAtlasSize="true">
+											<Anchors>
+												<Anchor point="TOPLEFT"/>
+											</Anchors>
+										</Texture>
+										<FontString inherits="GameFontRed" text="GARRISON_SHIPYARD_DANGEROUS_MISSION_LABEL" justifyH="LEFT">
+											<Size x="300" y="0"/>
+											<Anchors>
+												<Anchor point="LEFT" relativeKey="$parent.DangerousSkull" relativePoint="RIGHT" x="5"/>
+											</Anchors>
+										</FontString>
+									</Layer>
+								</Layers>
+								<Scripts>
+									<OnEnter>
+										GameTooltip:SetOwner(self, "ANCHOR_TOPLEFT", 50, -102);
+										GameTooltip:AddLine(GARRISON_SHIPYARD_DANGEROUS_MISSION_TOOLTIP_TITLE);
+										GameTooltip:AddLine(GARRISON_SHIPYARD_DANGEROUS_MISSION_TOOLTIP_TEXT, 1, 1, 1, true);
+										GameTooltip:Show();
+									</OnEnter>
+									<OnLeave function="GameTooltip_Hide"/>
+								</Scripts>
+							</Frame>
+							<Frame parentKey="Enemy1" parentArray="Enemies" inherits="GarrisonShipMissionEnemyTemplate">
+								<Anchors>
+									<Anchor point="TOPLEFT" x="31" y="-83"/>
+								</Anchors>
+							</Frame>
+							<Frame parentKey="Enemy2" parentArray="Enemies" inherits="GarrisonShipMissionEnemyTemplate">
+								<Anchors>
+									<Anchor point="LEFT" relativeKey="$parent.Enemy1" relativePoint="RIGHT" x="17"/>
+								</Anchors>
+							</Frame>
+							<Frame parentKey="Enemy3" parentArray="Enemies" inherits="GarrisonShipMissionEnemyTemplate">
+								<Anchors>
+									<Anchor point="LEFT" relativeKey="$parent.Enemy2" relativePoint="RIGHT" x="17"/>
+								</Anchors>
+							</Frame>
+							<Frame parentKey="Follower1" parentArray="Followers" inherits="GarrisonShipMissionFollowerTemplate">
+								<Anchors>
+									<Anchor point="TOPLEFT" x="31" y="-206"/>
+								</Anchors>
+							</Frame>
+							<Frame parentKey="Follower2" parentArray="Followers" inherits="GarrisonShipMissionFollowerTemplate">
+								<Anchors>
+									<Anchor point="LEFT" relativeKey="$parent.Follower1" relativePoint="RIGHT" x="17"/>
+								</Anchors>
+							</Frame>
+							<Frame parentKey="Follower3" parentArray="Followers" inherits="GarrisonShipMissionFollowerTemplate">
+								<Anchors>
+									<Anchor point="LEFT" relativeKey="$parent.Follower2" relativePoint="RIGHT" x="17"/>
+								</Anchors>
+							</Frame>
+						</Frames>
+						<Scripts>
+							<OnLoad function="GarrisonShipyardMissionPage_OnLoad"/>
+							<OnEvent function="GarrisonShipyardMissionPage_OnEvent"/>
+							<OnShow function="GarrisonShipyardMissionPage_OnShow"/>
+							<OnHide function="GarrisonShipyardMissionPage_OnHide"/>
+							<OnUpdate function="GarrisonShipyardMissionPage_OnUpdate"/>
+							<OnClick>
+								self.CloseButton:Click();
+							</OnClick>
+						</Scripts>
+					</Button>
+					<!-- TODO need all 6? -->
+					<PlayerModel parentArray="MissionCompletePreloadModels" inherits="MissionCompletePreloadModelTemplate"/>
+					<PlayerModel parentArray="MissionCompletePreloadModels" inherits="MissionCompletePreloadModelTemplate"/>
+					<PlayerModel parentArray="MissionCompletePreloadModels" inherits="MissionCompletePreloadModelTemplate"/>
+					<PlayerModel parentArray="MissionCompletePreloadModels" inherits="MissionCompletePreloadModelTemplate"/>
+					<PlayerModel parentArray="MissionCompletePreloadModels" inherits="MissionCompletePreloadModelTemplate"/>
+					<PlayerModel parentArray="MissionCompletePreloadModels" inherits="MissionCompletePreloadModelTemplate"/>
+				</Frames>
+			</Frame>
+			
+			<!-- Fleet tab frame -->
+			<Frame parentKey="FollowerTab" inherits="GarrisonMissionBaseFrameTemplate" hidden="true">
+				<Size x="580" y="565"/>
+				<Anchors>
+					<Anchor point="TOPRIGHT" x="-35" y="-64"/>
+				</Anchors>
+				<Layers>
+					<Layer level="BORDER" textureSubLevel="3">
+						<Texture parentKey="HeaderBG" atlas="GarrMission_FollowerPageHeaderBG">
+							<Anchors>
+								<Anchor point="TOPLEFT" y="-5"/>
+								<Anchor point="BOTTOMRIGHT" relativePoint="TOPRIGHT" y="-83"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+					<Layer level="ARTWORK">
+						<FontString parentKey="NumFollowers" inherits="GameFontNormalMed3" justifyH="LEFT">
+							<Anchors>
+								<Anchor point="BOTTOMLEFT" relativePoint="TOPLEFT" y="12"/>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+			</Frame>
+			
+			<!-- Mission Complete Frames -->
+			<Frame parentKey="MissionCompleteBackground" enableMouse="true" frameStrata="HIGH" hidden="true">
+				<Size x="956" y="637"/>
+				<Anchors>
+					<Anchor point="TOPLEFT" x="2" y="-22"/>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<Texture setAllPoints="true">
+							<Color r="0" g="0" b="0" a="0.8"/>
+						</Texture>
+					</Layer>
+				</Layers>
+			</Frame>
+			<Frame parentKey="MissionComplete" inherits="GarrisonShipyardMissionPageBaseTemplate, GarrisonMissionCompleteTemplate" frameStrata="HIGH" hidden="true" mixin="GarrisonMissionComplete,GarrisonShipyardMissionComplete">
+				<Frames>
+					<Frame parentKey="Stage" inherits="GarrisonShipyardMissionCompleteStageTemplate">
+						<Anchors>
+							<Anchor point="TOP"/>
+						</Anchors>
+					</Frame>		
+					<Frame parentKey="BonusRewards" inherits="GarrisonShipyardMissionRewardsFrameTemplate, GarrisonMissionBonusRewardsTemplate">
+						<Anchors>
+							<Anchor point="BOTTOM" y="40"/>
+						</Anchors>
+					</Frame>
+					<Frame parentKey="ChanceFrame" inherits="GarrisonMissionChanceFrameTemplate">
+						<Anchors>
+							<Anchor point="BOTTOM" relativeKey="$parent.BonusRewards" relativePoint="TOP" x="0" y="0"/>
+						</Anchors>
+					</Frame>
+				</Frames>
+			</Frame>
+		
+			<!-- Border frame contains the wooden frame around the dialog. This needs to be a separate frame
+			     for the shipyard UI so that we can raise the frame level above the fog -->
+			<Frame parentKey="BorderFrame" inherits="GarrisonUITemplate" setAllPoints="true">
+				<Frames>
+					<Button parentKey="CloseButton2" inherits="UIPanelCloseButtonNoScripts">
+						<Anchors>
+							<Anchor point="TOPRIGHT" relativePoint="TOPRIGHT">
+								<Offset x="4" y="5"/>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnClick>
+								HideUIPanel(self:GetParent():GetParent());
+							</OnClick>
+						</Scripts>
+					</Button>
+				</Frames>
+				<Scripts>
+					<OnLoad>
+						self.CloseButton:Hide();
+						self.BackgroundTile:Hide();
+						self:SetFrameLevel(self:GetParent().MissionTab.MissionList.FogFrame1:GetFrameLevel() + 1);
+					</OnLoad>
+				</Scripts>
+			</Frame>
+
+		</Frames>
+		<Scripts>
+			<OnShow function="GarrisonShipyardFrame_OnShow"/>
+			<OnEvent function="GarrisonShipyardFrame_OnEvent"/>
+			<OnHide function="GarrisonShipyardFrame_OnHide"/>
+		</Scripts>
+	</Frame>
+	
+</Ui>

@@ -129,7 +129,7 @@ function GarrisonBuildingFrame_OnLoad(self)
 	
 	GarrisonBuildingFrame_UpdateCurrency();
 	
-	GarrisonFollowerList_OnLoad(self);
+	GarrisonFollowerList_OnLoad(self, LE_FOLLOWER_TYPE_GARRISON_6_0);
 	local buttons = self.FollowerList.listScroll.buttons
 	for i = 1, #buttons do
 		buttons[i]:SetScript("OnClick", GarrisonBuildingFollowerButton_OnClick);

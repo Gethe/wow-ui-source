@@ -61,6 +61,18 @@ function BlackMarketFrame_OnShow(self)
 	self.HotDeal:Hide();
 	C_BlackMarket.RequestItems();
 	MoneyInputFrame_SetCopper(BlackMarketBidPrice, 0);
+	if( C_BlackMarket.IsViewOnly() ) then
+		BlackMarketFrame.BidButton:Hide();
+		BlackMarketBidPrice:Hide();
+		BlackMarketMoneyFrame:Hide();
+		BlackMarketFrame.MoneyFrameBorder:Hide();
+	else
+		BlackMarketFrame.BidButton:Show();
+		BlackMarketBidPrice:Show();
+		BlackMarketMoneyFrame:Show();
+		BlackMarketFrame.MoneyFrameBorder:Show();
+	end
+
 	BlackMarketFrame.BidButton:Disable();
 	PlaySound("AuctionWindowOpen");
 end
