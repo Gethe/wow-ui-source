@@ -1072,7 +1072,7 @@
 	</Frame>
 	
 	<Frame name="AdventureJournal_SecondaryTemplate" virtual="true">
-		<Size x="325" y="152"/>
+		<Size x="345" y="152"/>
 		<Layers>
 			<Layer level="BACKGROUND">
 				<Texture parentKey="bg" atlas="adventureguide-pane-small"/>
@@ -1096,29 +1096,39 @@
 		</Layers>
 		<Frames>
 			<Frame parentKey="centerDisplay">
-				<Size x="240" y="152"/>
+				<Size x="260" y="152"/>
 				<Anchors>
 					<Anchor point="LEFT" x="70" y="2"/>
 				</Anchors>
-				<Layers>
-					<Layer level="ARTWORK">								
-						<FontString parentKey="title" font="QuestFont_Huge" justifyH="left" justifyV="top" wordwrap="false">
-							<Size x="240" y="0"/>
-							<Anchors>
-								<Anchor point="TOPLEFT" x="0" y="0"/>
-							</Anchors>
-							<Color r="0" g="0" b="0"/>
-						</FontString>
-						<FontString parentKey="description" font="SystemFont_Med1" justifyH="left" justifyV="top" wordwrap="true">
-							<Size x="240" y="0"/>
-							<Anchors>
-								<Anchor point="TOPLEFT" relativeKey="$parent.title" relativePoint="BOTTOMLEFT" x="0" y="-4"/>
-							</Anchors>
-							<Color r="0.2824" g="0.0157" b="0.0157"/>
-						</FontString>
-					</Layer>
-				</Layers>
 				<Frames>
+					<Frame parentKey="title">
+							<Size x="260" y="0"/>
+						<Anchors>
+							<Anchor point="TOPLEFT" x="0" y="0"/>
+						</Anchors>
+						<Layers>
+							<Layer level="ARTWORK">								
+								<FontString parentKey="text" font="QuestFont_Huge" justifyH="left" justifyV="top" wordwrap="false">
+									<Size x="240" y="0"/>
+									<Color r="0" g="0" b="0"/>
+								</FontString>
+							</Layer>
+						</Layers>
+					</Frame>
+					<Frame parentKey="description">
+							<Size x="260" y="0"/>
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeKey="$parent.title" relativePoint="BOTTOMLEFT" x="0" y="-4"/>
+						</Anchors>
+						<Layers>
+							<Layer level="ARTWORK">								
+								<FontString parentKey="text" font="SystemFont_Med1" justifyH="left" justifyV="top" wordwrap="true">
+									<Size x="240" y="0"/>
+									<Color r="0.2824" g="0.0157" b="0.0157"/>
+								</FontString>
+							</Layer>
+						</Layers>
+					</Frame>
 					<Button parentKey="button" inherits="UIPanelButtonTemplate">
 						<Size x="116" y="24"/>
 						<Anchors>
@@ -1133,7 +1143,7 @@
 			<Frame parentKey="reward">
 				<Size x="26" y="26"/>
 				<Anchors>
-					<Anchor point="BOTTOMRIGHT" relativeKey="$parent.icon" x="4" y="-4"/>
+					<Anchor point="BOTTOMRIGHT" relativeKey="$parent.icon" x="2" y="-7"/>
 				</Anchors>
 				<Layers>
 					<Layer level="ARTWORK">
@@ -2646,12 +2656,12 @@
 				</Anchors>
 				<Frames>
 					<Frame parentKey="Suggestion1">
-						<Size x="376" y="351"/>
+						<Size x="335" y="324"/>
 						<KeyValues>
 							<KeyValue key="index" value="1" type="number"/>
 						</KeyValues>
 						<Anchors>
-							<Anchor point="TOPLEFT" x="13" y="-27" />
+							<Anchor point="TOPLEFT" x="26" y="-25" />
 						</Anchors>
 						<Layers>
 							<Layer level="BACKGROUND">
@@ -2661,7 +2671,7 @@
 								<Texture parentKey="icon" mask="Interface\\CharacterFrame\\TempPortraitAlphaMask">
 									<Size x="64" y="64"/>
 									<Anchors>
-										<Anchor point="TOP" x="4" y="1" />
+										<Anchor point="TOPLEFT" x="135" y="1" />
 									</Anchors>
 								</Texture>
 							</Layer>
@@ -2676,21 +2686,21 @@
 						</Layers>
 						<Frames>
 							<Frame parentKey="centerDisplay">
-								<Size x="284" y="351"/>
+								<Size x="264" y="351"/>
 								<Anchors>
-									<Anchor point="CENTER" x="5" y="32"/>
+									<Anchor point="CENTER" x="0" y="12"/>
 								</Anchors>
 								<Layers>
 									<Layer level="ARTWORK">								
 										<FontString parentKey="title" font="DestinyFontHuge" justifyH="center" justifyV="top">
-											<Size x="284" y="0"/>
+											<Size x="264" y="0"/>
 											<Anchors>
 												<Anchor point="TOPLEFT" x="0" y="0"/>
 											</Anchors>
 											<Color r="0" g="0" b="0"/>
 										</FontString>
 										<FontString parentKey="description" font="SystemFont_Med3" justifyH="center" justifyV="top">
-											<Size x="284" y="0"/>
+											<Size x="264" y="0"/>
 											<Anchors>
 												<Anchor point="TOPLEFT" relativeKey="$parent.title" relativePoint="BOTTOMLEFT" x="0" y="-8"/>
 											</Anchors>
@@ -2702,7 +2712,7 @@
 							<Button parentKey="button" inherits="UIPanelButtonTemplate">
 								<Size x="116" y="28"/>
 								<Anchors>
-									<Anchor point="BOTTOM" x="0" y="97"/>
+									<Anchor point="BOTTOM" x="0" y="57"/>
 								</Anchors>
 								<Scripts>
 									<OnClick function="EJSuggestFrame_OnClick"/>
@@ -2719,7 +2729,7 @@
 							<Frame parentKey="reward" enableMouse="true">
 								<Size x="26" y="26"/>
 								<Anchors>
-									<Anchor point="BOTTOMRIGHT" relativeKey="$parent.icon" x="4" y="-4"/>
+									<Anchor point="BOTTOMRIGHT" relativeKey="$parent.icon" x="2" y="-7"/>
 								</Anchors>
 								<Layers>
 									<Layer level="ARTWORK">
@@ -2750,16 +2760,16 @@
 						</Scripts>
 					</Frame>
 					<Frame parentKey="Suggestion2" inherits="AdventureJournal_SecondaryTemplate">
-						<Size x="325" y="152"/>
+						<Size x="345" y="152"/>
 						<KeyValues>
 							<KeyValue key="index" value="2" type="number"/>
 						</KeyValues>
 						<Anchors>
-							<Anchor point="TOPLEFT" relativePoint="TOP" x="21" y="-29" />
+							<Anchor point="TOPLEFT" relativePoint="TOP" x="1" y="-30" />
 						</Anchors>
 					</Frame>
 					<Frame parentKey="Suggestion3" inherits="AdventureJournal_SecondaryTemplate">
-						<Size x="325" y="152"/>
+						<Size x="345" y="152"/>
 						<Anchors>
 							<Anchor point="TOPLEFT" relativeKey="$parent.Suggestion2" relativePoint="BOTTOMLEFT" x="0" y="-15" />
 						</Anchors>
@@ -2795,18 +2805,18 @@
 		</Anchors>
 		<Layers>
 			<Layer level="ARTWORK">
-				<FontString name="$parentHeaderText" parentKey="headerText" inherits="GameTooltipText" justifyV="Top">
+				<FontString name="$parentHeaderText" parentKey="headerText" inherits="GameFontNormalMed1" justifyV="TOP" justifyH="LEFT">
 					<Size x="256" y="0"/>
 					<Anchors>
-						<Anchor point="TOPLEFT" x="14" y="-14"/>
-						<Anchor point="RIGHT" x="-10" y="0"/>
+						<Anchor point="TOPLEFT" x="11" y="-10"/>
+						<Anchor point="RIGHT" x="-11" y="0"/>
 					</Anchors>
 					<Color r="1.0" g="0.82" b="0"/>
 				</FontString>
 				<FontString name="$parentClickText" parentKey="clickText" inherits="GameTooltipText" text="AJ_REWARD_CLICK_TEXT" visible="false">
 					<Anchors>
-						<Anchor point="BOTTOMLEFT" x="18" y="14"/>
-						<Anchor point="TOPRIGHT" relativePoint="BOTTOMRIGHT" x="-10" y="30"/>
+						<Anchor point="BOTTOMLEFT" x="11" y="2"/>
+						<Anchor point="TOPRIGHT" relativePoint="BOTTOMRIGHT" x="-11" y="30"/>
 					</Anchors>
 					<Color r="0.5" g="0.5" b="0.5"/>
 				</FontString>

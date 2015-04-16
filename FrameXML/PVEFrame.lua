@@ -29,7 +29,8 @@ function PVEFrame_OnEvent(self, event, ...)
 	elseif ( event == "AJ_PVP_SKIRMISH_ACTION" ) then
 		PVEFrame_ShowFrame("PVPUIFrame", "HonorFrame");
 		HonorFrame_SetType("bonus");
-		HonorFrame.BonusFrame.Arena1Button:Click();
+		
+		HonorFrameBonusFrame_SelectButton(HonorFrame.BonusFrame.Arena1Button);
 	elseif ( event == "AJ_PVE_LFG_ACTION" ) then
 		PVEFrame_ShowFrame("GroupFinderFrame", "LFGListPVEStub");
 	elseif ( event == "AJ_PVP_LFG_ACTION" ) then
@@ -37,7 +38,8 @@ function PVEFrame_OnEvent(self, event, ...)
 	elseif ( event == "AJ_PVP_RBG_ACTION" ) then
 		PVEFrame_ShowFrame("PVPUIFrame", "HonorFrame");
 		HonorFrame_SetType("bonus");
-		HonorFrame.BonusFrame.RandomBGButton:Click();
+		
+		HonorFrameBonusFrame_SelectButton(HonorFrame.BonusFrame.RandomBGButton);
 	end
 end
 

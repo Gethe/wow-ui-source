@@ -551,7 +551,7 @@
 		</Scripts>
 	</Button>
 	
-	<Frame name="GarrisonThreatCountersFrame" hidden="true">
+	<Frame name="GarrisonThreatCountersFrameTemplate" virtual="true">
 		<Size x="10" y="10"/>
 		<Frames>
 			<Button parentArray="ThreatsList" inherits="GarrisonThreatCounterTemplate">
@@ -566,6 +566,8 @@
 			<OnShow function="GarrisonThreatCountersFrame_Update"/>
 		</Scripts>
 	</Frame>
+	
+	<Frame name="GarrisonThreatCountersFrame" inherits="GarrisonThreatCountersFrameTemplate" hidden="true"/>
 	
 	<Frame name="GarrisonConfirmFollowerAbilityUpgradeFrame" hidden="true">
 		<Size x="200" y="40"/>

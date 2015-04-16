@@ -591,7 +591,7 @@
 				</Scripts>
 			</Frame>
 
-			<Frame parentKey="FollowerList" hidden="true">
+			<Frame parentKey="FollowerList" hidden="true" mixin="GarrisonFollowerList">
 				<Size x="299" y="388"/>
 				<KeyValues>
 					 <KeyValue key="showUncollected" value="true" type="boolean"/>
@@ -655,8 +655,8 @@
 					</ScrollFrame>
 				</Frames>
 				<Scripts>
-					<OnShow function="GarrisonFollowerList_OnShow"/>
-					<OnHide function="GarrisonFollowerList_OnHide"/>
+					<OnShow>self:OnShow();</OnShow>
+					<OnHide>self:OnHide();</OnHide>
 				</Scripts>
 			</Frame>
 			<Frame parentKey="FollowerTab">

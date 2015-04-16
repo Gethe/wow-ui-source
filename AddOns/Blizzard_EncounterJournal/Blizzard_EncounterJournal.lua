@@ -82,6 +82,14 @@ local EJ_TIER_DATA =
 	[6] = { backgroundTexture = "Interface\\ENCOUNTERJOURNAL\\UI-EJ-WarlordsofDraenor", r = 0.82, g = 0.55, b = 0.1 },
 }
 
+ExpansionEnumToEJTierDataTableId = {
+	[EXPANSION_LEVEL_CLASSIC] = 1,
+	[EXPANSION_LEVEL_BURNING_CRUSADE] = 2,
+	[EXPANSION_LEVEL_WRATH_OF_THE_LICH_KING] = 3,
+	[EXPANSION_LEVEL_CATACLYSM] = 4,
+	[EXPANSION_LEVEL_MISTS_OF_PANDARIA] = 5,
+	[EXPANSION_LEVEL_WARLORDS_OF_DRAENOR] = 6,
+}
 
 local BOSS_LOOT_BUTTON_HEIGHT = 45;
 local INSTANCE_LOOT_BUTTON_HEIGHT = 64;
@@ -164,7 +172,7 @@ function EncounterJournal_OnShow(self)
 		EJSuggestTab_OnClick(EncounterJournal.instanceSelect.suggestTab);
 		EncounterJournal.lastInstance = 0;
 	elseif ( instanceID ~= 0 and instanceType ~= "none" and (instanceID ~= EncounterJournal.lastInstance or EJ_GetDifficulty() ~= difficultyID) ) then
-		EJDungeonTab_OnClick(EncounterJournal.instanceSelect.dungeonsTab);
+		EJDungeonTab_Select();
 
 		EncounterJournal_DisplayInstance(instanceID);
 		EncounterJournal.lastInstance = instanceID;
@@ -192,6 +200,9 @@ function EncounterJournal_OnShow(self)
 	end
 
 	local tierData = EJ_TIER_DATA[EJ_GetCurrentTier()];
+	if ( not EncounterJournal.instanceSelect.suggestTab:IsEnabled() or EncounterJournal.suggestFrame:IsShown() ) then
+		tierData = EJ_TIER_DATA[EJSuggestTab_GetPlayerTierIndex()];
+	end
 	EncounterJournal.instanceSelect.bg:SetTexture(tierData.backgroundTexture);
 	EncounterJournal.instanceSelect.raidsTab.selectedGlow:SetVertexColor(tierData.r, tierData.g, tierData.b);
 	EncounterJournal.instanceSelect.dungeonsTab.selectedGlow:SetVertexColor(tierData.r, tierData.g, tierData.b);
@@ -1856,6 +1867,11 @@ function EJRaidTab_OnClick(self)
 end
 
 function EJDungeonTab_OnClick(self)
+	EJDungeonTab_Select();
+end
+
+function EJDungeonTab_Select()
+	local self = EncounterJournal.instanceSelect.dungeonsTab;
 	self:GetParent().currTab = 1;
 	
 	self:Disable();
@@ -1871,6 +1887,20 @@ function EJDungeonTab_OnClick(self)
 	
 	EncounterJournal_ListInstances();
 	PlaySound("igMainMenuOptionCheckBoxOn");
+end
+
+function EJSuggestTab_GetPlayerTierIndex()
+	local playerLevel = UnitLevel("player");	
+	local expansionId = LE_EXPANSION_LEVEL_CURRENT;
+	local minDiff = MAX_PLAYER_LEVEL_TABLE[LE_EXPANSION_LEVEL_CURRENT];
+	for tierId, tierLevel in pairs(MAX_PLAYER_LEVEL_TABLE) do
+		local diff = tierLevel - playerLevel;
+		if ( diff > 0 and diff < minDiff ) then
+			expansionId = tierId;
+			minDiff = diff;
+		end
+	end
+	return ExpansionEnumToEJTierDataTableId[expansionId];
 end
 
 function EJSuggestTab_OnClick(self)
@@ -1893,7 +1923,7 @@ function EJSuggestTab_OnClick(self)
 	UIDropDownMenu_DisableDropDown(self:GetParent().tierDropDown);
 
 	-- Setup background
-	local tierData = EJ_TIER_DATA[EJ_GetCurrentTier()];
+	local tierData = EJ_TIER_DATA[EJSuggestTab_GetPlayerTierIndex()];
 	self.selectedGlow:SetVertexColor(tierData.r, tierData.g, tierData.b);
 	self.selectedGlow:Show();	
 	self:GetParent().bg:SetTexture(tierData.backgroundTexture);
@@ -2162,6 +2192,22 @@ local function UpdateSuggestionReward(suggestion)
 	end
 end
 
+AdventureJournal_LeftTitleFonts = {
+	"DestinyFontHuge",		-- 32pt font
+	"QuestFont_Enormous",	-- 30pt font
+	"SplashHeaderFont",		-- 24pt font
+};
+
+local AdventureJournal_RightTitleFonts = {
+	"QuestFont_Huge", 	-- 18pt font
+	"Fancy16Font",		-- 16pt font
+};
+
+local AdventureJournal_RightDescriptionFonts = {
+	"SystemFont_Med1",	-- 12pt font
+	-- "SystemFont_Small", -- 10pt font
+};
+
 function EJSuggestFrame_RefreshDisplay()
 	local self = EncounterJournal.suggestFrame;
 	C_AdventureJournal.GetSuggestions(self.suggestions);
@@ -2194,15 +2240,10 @@ function EJSuggestFrame_RefreshDisplay()
 		suggestion.centerDisplay.description:SetText(data.description);
 
 		-- find largest font that will not go past 2 lines
-		local titleFonts = {
-			"DestinyFontHuge",		-- 32pt font
-			"QuestFont_Enormous",	-- 30pt font
-			"SplashHeaderFont",		-- 28pt font
-		};
-		for i = 1, #titleFonts do
-			suggestion.centerDisplay.title:SetFontObject(titleFonts[i]);
+		for i = 1, #AdventureJournal_LeftTitleFonts do
+			suggestion.centerDisplay.title:SetFontObject(AdventureJournal_LeftTitleFonts[i]);
 			local numLines = suggestion.centerDisplay.title:GetNumLines();
-			if ( numLines <= 2 ) then
+			if ( numLines <= 2 and not suggestion.centerDisplay.title:IsTruncated() ) then
 				break;
 			end
 		end
@@ -2221,7 +2262,7 @@ function EJSuggestFrame_RefreshDisplay()
 		if ( data.buttonText and #data.buttonText > 0 ) then
 			suggestion.button:SetText( data.buttonText );
 			
-			local btnWidth = max( suggestion.button:GetTextWidth()+32, 150 );
+			local btnWidth = max( suggestion.button:GetTextWidth()+42, 150 );
 			btnWidth = min( btnWidth, suggestion.centerDisplay:GetWidth() );
 			suggestion.button:SetWidth( btnWidth );
 			suggestion.button:Show();
@@ -2242,14 +2283,6 @@ function EJSuggestFrame_RefreshDisplay()
 
 	-- setup secondary suggestions display
 	if ( #self.suggestions > 1 ) then	
-		local titleFonts = {
-			"QuestFont_Huge", 	-- 18pt font
-			"Fancy16Font",		-- 16pt font
-		};
-		local descriptionFonts = {
-			"SystemFont_Med1",	-- 12pt font
-			"SystemFont_Small", -- 10pt font
-		};
 		local minTitleIndex = 1;
 		local minDescIndex = 1;
 		
@@ -2261,26 +2294,27 @@ function EJSuggestFrame_RefreshDisplay()
 			
 			suggestion.centerDisplay:Show();
 			
-			local data = self.suggestions[i];			
-			suggestion.centerDisplay.title:SetHeight(0);
-			suggestion.centerDisplay.description:SetHeight(0);
-			suggestion.centerDisplay.title:SetText(data.title);
-			suggestion.centerDisplay.description:SetText(data.description);
+			local data = self.suggestions[i];
+			suggestion.centerDisplay.title.text:SetHeight(0);
+			suggestion.centerDisplay.description.text:SetHeight(0);
+			suggestion.centerDisplay.title.text:SetText(data.title);
+			suggestion.centerDisplay.description.text:SetText(data.description);
 			
 			-- find largest font that will not truncate the title
-			for fontIndex = minTitleIndex, #titleFonts do
-				suggestion.centerDisplay.title:SetFontObject(titleFonts[fontIndex]);
+			for fontIndex = minTitleIndex, #AdventureJournal_RightTitleFonts do
+				suggestion.centerDisplay.title.text:SetFontObject(AdventureJournal_RightTitleFonts[fontIndex]);
 				minTitleIndex = fontIndex
-				if (not suggestion.centerDisplay.title:IsTruncated()) then
+				if (not suggestion.centerDisplay.title.text:IsTruncated()) then
 					break;
 				end
 			end
 			
 			-- find largest font that will not go past 4 lines
-			for fontIndex = minDescIndex, #descriptionFonts do
-				suggestion.centerDisplay.description:SetFontObject(descriptionFonts[fontIndex]);
+			for fontIndex = minDescIndex, #AdventureJournal_RightDescriptionFonts do
+				suggestion.centerDisplay.description.text:SetFontObject(AdventureJournal_RightDescriptionFonts[fontIndex]);
 				minDescIndex = fontIndex;
-				if ( suggestion.centerDisplay.description:GetNumLines() <= 4 ) then
+				if ( suggestion.centerDisplay.description.text:GetNumLines() <= 4 and
+						not suggestion.centerDisplay.description.text:IsTruncated() ) then
 					break;
 				end
 			end
@@ -2288,7 +2322,7 @@ function EJSuggestFrame_RefreshDisplay()
 			if ( data.buttonText and #data.buttonText > 0 ) then
 				suggestion.centerDisplay.button:SetText( data.buttonText );
 				
-				local btnWidth = max(suggestion.centerDisplay.button:GetTextWidth()+24, 116);
+				local btnWidth = max(suggestion.centerDisplay.button:GetTextWidth()+42, 116);
 				btnWidth = min( btnWidth, suggestion.centerDisplay:GetWidth() );
 				suggestion.centerDisplay.button:SetWidth( btnWidth );
 				suggestion.centerDisplay.button:Show();
@@ -2312,25 +2346,44 @@ function EJSuggestFrame_RefreshDisplay()
 			local suggestion = self["Suggestion"..i];
 			suggestion.centerDisplay:SetHeight(suggestion:GetHeight());
 			
-			suggestion.centerDisplay.title:SetFontObject(titleFonts[minTitleIndex]);
-			suggestion.centerDisplay.description:SetFontObject(descriptionFonts[minDescIndex]);
-			local fontHeight = select(2, suggestion.centerDisplay.title:GetFont());
-			suggestion.centerDisplay.title:SetHeight(fontHeight);		
-			local numLines = min(4, suggestion.centerDisplay.description:GetNumLines());
-			fontHeight = select(2, suggestion.centerDisplay.description:GetFont());
+			local title = suggestion.centerDisplay.title;
+			title.text:SetFontObject(AdventureJournal_RightTitleFonts[minTitleIndex]);
+			suggestion.centerDisplay.description.text:SetFontObject(AdventureJournal_RightDescriptionFonts[minDescIndex]);
+			local fontHeight = select(2, title.text:GetFont());
+			title:SetHeight(fontHeight);		
+			local numLines = min(4, suggestion.centerDisplay.description.text:GetNumLines());
+			fontHeight = select(2, suggestion.centerDisplay.description.text:GetFont());
 			suggestion.centerDisplay.description:SetHeight(numLines * fontHeight);
 			
 			-- adjust the center display to keep the text centered	
-			local top = suggestion.centerDisplay.title:GetTop();
+			local top = title:GetTop();
 			local bottom = suggestion.centerDisplay.description:GetBottom();
-			
 			if ( suggestion.centerDisplay.button:IsShown() ) then
-				bottom = suggestion.centerDisplay.button:GetBottom();
+				local botTemp = suggestion.centerDisplay.button:GetBottom();
+				if ( botTemp ) then
+					bottom = botTemp;
+				else
+					bottom = bottom + 30;
+				end
+			end
+			
+			if ( title.text:IsTruncated() ) then
+				title:SetScript("OnEnter", EJSuggestFrame_SuggestionTitleOnEnter);
+				title:SetScript("OnLeave", GameTooltip_Hide);
+			else
+				title:SetScript("OnEnter", nil);
+				title:SetScript("OnLeave", nil);
 			end
 			
 			suggestion.centerDisplay:SetHeight(top - bottom);
 		end
 	end
+end
+
+function EJSuggestFrame_SuggestionTitleOnEnter(self)
+	GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+	GameTooltip:SetText(self.text:GetText(), 1, 1, 1, 1, true);
+	GameTooltip:Show();
 end
 
 function EJSuggestFrame_RefreshRewards()
@@ -2377,17 +2430,6 @@ function AdventureJournal_RewardEnter(self)
 			end
 		end
 		
-		frame.headerText:SetHeight(0);
-		if ( rewardHeaderText and #rewardHeaderText > 0 ) then
-			frame.headerText:Show();
-			frame.headerText:SetText(rewardHeaderText);
-			frame.headerText:SetHeight(frame.headerText:GetStringHeight());
-			frame.Item1:SetPoint("TOPLEFT", frame.headerText, "BOTTOMLEFT", 0, -14);
-		else
-			frame.headerText:Hide();
-			frame.Item1:SetPoint("TOPLEFT", 14, -14);
-		end
-		
 		if ( rewardData.itemID and rewardData.currencyType ) then
 			local itemName, _, quality = GetItemInfo(rewardData.itemID);
 			frame.Item1.text:SetText(itemName);
@@ -2431,10 +2473,23 @@ function AdventureJournal_RewardEnter(self)
 				frame.Item2.Count:Hide();
 			end
 			local height = 100;
-			if ( frame.headerText:IsShown() ) then
+			
+			frame:SetWidth(256);
+			
+			frame.headerText:SetHeight(0);
+			if ( rewardHeaderText and rewardHeaderText == "" ) then
+				frame.headerText:SetWidth(frame:GetWidth());
+				frame.headerText:Show();
+				frame.headerText:SetText(rewardHeaderText);
+				frame.headerText:SetHeight(frame.headerText:GetStringHeight());
+				frame.Item1:SetPoint("TOPLEFT", frame.headerText, "BOTTOMLEFT", 0, -16);
 				height = height + frame.headerText:GetHeight();
+			else
+				frame.headerText:Hide();
+				frame.Item1:SetPoint("TOPLEFT", 11, -10);
 			end
-			frame:SetSize(256, height);
+			
+			frame:SetHeight(height);
 		elseif ( rewardData.itemID or rewardData.currencyType ) then
 			frame.Item2:Hide();
 			frame.Item1:Show();
@@ -2483,10 +2538,24 @@ function AdventureJournal_RewardEnter(self)
 				frame.Item1.icon:SetTexture(rewardData.currencyIcon);
 			end
 			
+			frame:SetWidth(tooltip:GetWidth()+54);
+			
+			frame.headerText:SetHeight(0);
+			if ( rewardHeaderText and rewardHeaderText == "" ) then
+				frame.headerText:SetWidth(frame:GetWidth());
+				frame.headerText:Show();
+				frame.headerText:SetText(rewardHeaderText);
+				frame.headerText:SetHeight(frame.headerText:GetStringHeight());
+				frame.Item1:SetPoint("TOPLEFT", frame.headerText, "BOTTOMLEFT", 0, -16);
+			else
+				frame.headerText:Hide();
+				frame.Item1:SetPoint("TOPLEFT", 11, -10);
+			end
+			
 			tooltip:SetPoint("TOPLEFT", frame.Item1.icon, "TOPRIGHT", 0, 10);
 			tooltip:Show();
 			
-			frame.Item1:SetSize(tooltip:GetWidth()+59, tooltip:GetHeight());
+			frame.Item1:SetSize(tooltip:GetWidth()+54, tooltip:GetHeight());
 
 			local height = tooltip:GetHeight() + 6;
 			if ( frame.headerText:IsShown() ) then
@@ -2494,14 +2563,26 @@ function AdventureJournal_RewardEnter(self)
 			end
 			if (rewardData.isRewardTable) then
 				frame.clickText:Show();
-				height = height + 26;
+				height = height + 24;
 			end
 			
-			frame:SetSize(tooltip:GetWidth()+54, height);
+			frame:SetHeight(height);
 		elseif ( frame.headerText:IsShown() ) then
 			frame:SetSize(256, frame.headerText:GetStringHeight()+30);
 			frame.Item1:Hide();
 			frame.Item2:Hide();
+			
+			frame.headerText:SetHeight(0);
+			if ( rewardHeaderText and rewardHeaderText == "" ) then
+				frame.headerText:SetWidth(frame:GetWidth());
+				frame.headerText:Show();
+				frame.headerText:SetText(rewardHeaderText);
+				frame.headerText:SetHeight(frame.headerText:GetStringHeight());
+				frame.Item1:SetPoint("TOPLEFT", frame.headerText, "BOTTOMLEFT", 0, -16);
+			else
+				frame.headerText:Hide();
+				frame.Item1:SetPoint("TOPLEFT", 11, -10);
+			end
 		else
 			return;
 		end
@@ -2532,7 +2613,7 @@ function AdventureJournal_OnMouseDown(self)
 	local index = self:GetParent().index;
 	local data = EncounterJournal.suggestFrame.suggestions[index];
 	if ( data.ej_instanceID ) then
-		EJDungeonTab_OnClick(EncounterJournal.instanceSelect.dungeonsTab);
+		EJDungeonTab_Select();
 
 		EncounterJournal_DisplayInstance(data.ej_instanceID);
 		EncounterJournal.lastInstance = instanceID;
@@ -2545,7 +2626,7 @@ function AdventureJournal_OnMouseDown(self)
 		local self = EncounterJournal.encounter;
 		self.info[EJ_Tabs[2].button]:Click();
 	elseif ( data.isRandomDungeon ) then
-		EJDungeonTab_OnClick(EncounterJournal.instanceSelect.dungeonsTab);
+		EJDungeonTab_Select();
 		EncounterJournal_TierDropDown_Select(nil, data.expansionLevel);
 	end
 end

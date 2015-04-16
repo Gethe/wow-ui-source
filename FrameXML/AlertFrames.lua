@@ -90,8 +90,12 @@ function AlertFrame_OnEvent (self, event, ...)
 			GarrisonMissionAlertFrame_ShowAlert(...);
 		end
 	elseif ( event == "GARRISON_FOLLOWER_ADDED" ) then
-		local followerID, name, displayID, level, quality, isUpgraded = ...;
-		GarrisonFollowerAlertFrame_ShowAlert(followerID, name, displayID, level, quality, isUpgraded);
+		local followerID, name, displayID, level, quality, isUpgraded, texPrefix, followerType = ...;
+		if (followerType == LE_FOLLOWER_TYPE_GARRISON_6_0) then
+			GarrisonFollowerAlertFrame_ShowAlert(followerID, name, displayID, level, quality, isUpgraded);
+		else
+			GarrisonShipAlertFrame_ShowAlert(followerID, name, texPrefix, level, quality, isUpgraded);
+		end
 	elseif ( event == "GARRISON_RANDOM_MISSION_ADDED" ) then
 		GarrisonRandomMissionAlertFrame_ShowAlert(...);
 	end
@@ -1196,16 +1200,37 @@ GARRISON_FOLLOWER_QUALITY_TEXTURE_SUFFIXES = {
 	[LE_ITEM_QUALITY_EPIC] = "Epic",
 	[LE_ITEM_QUALITY_RARE] = "Rare",
 }
-function GarrisonFollowerAlertFrame_ShowAlert(followerID, name, displayID, level, quality, isUpgraded)
-	GarrisonFollowerAlertFrame.followerID = followerID;
-	GarrisonFollowerAlertFrame.Name:SetText(name);
+
+function GarrisonFollowerAlertFrame_Setup(frame, followerID, name, quality, isUpgraded)
+	frame.followerID = followerID;
+	frame.Name:SetText(name);
 	local texSuffix = GARRISON_FOLLOWER_QUALITY_TEXTURE_SUFFIXES[quality]
 	if (texSuffix) then
-		GarrisonFollowerAlertFrame.FollowerBG:SetAtlas("Garr_FollowerToast-"..texSuffix, true);
-		GarrisonFollowerAlertFrame.FollowerBG:Show();
+		frame.FollowerBG:SetAtlas("Garr_FollowerToast-"..texSuffix, true);
+		frame.FollowerBG:Show();
 	else
-		GarrisonFollowerAlertFrame.FollowerBG:Hide();
+		frame.FollowerBG:Hide();
 	end
+	
+	frame.ArrowsAnim:Stop();
+	if ( isUpgraded ) then
+		local upgradeTexture = LOOTUPGRADEFRAME_QUALITY_TEXTURES[quality] or LOOTUPGRADEFRAME_QUALITY_TEXTURES[LE_ITEM_QUALITY_UNCOMMON];
+		for i = 1, frame.Arrows.numArrows do
+			frame.Arrows["Arrow"..i]:SetAtlas(upgradeTexture.arrow, true);
+		end
+		frame.DieIcon:Show();
+		frame.ArrowsAnim:Play();
+	else
+		frame.DieIcon:Hide();
+	end
+
+	AlertFrame_AnimateIn(frame);
+	
+	AlertFrame_FixAnchors();
+	PlaySound("UI_Garrison_Toast_FollowerGained");
+end
+
+function GarrisonFollowerAlertFrame_ShowAlert(followerID, name, displayID, level, quality, isUpgraded)
 	SetPortraitTexture(GarrisonFollowerAlertFrame.PortraitFrame.Portrait, displayID);
 	GarrisonFollowerAlertFrame.PortraitFrame.Level:SetText(level);
 	local color = BAG_ITEM_QUALITY_COLORS[quality];
@@ -1216,25 +1241,24 @@ function GarrisonFollowerAlertFrame_ShowAlert(followerID, name, displayID, level
 		GarrisonFollowerAlertFrame.PortraitFrame.LevelBorder:SetVertexColor(1, 1, 1);
 		GarrisonFollowerAlertFrame.PortraitFrame.PortraitRingQuality:SetVertexColor(1, 1, 1);
 	end
-	
-	GarrisonFollowerAlertFrame.ArrowsAnim:Stop();	
 	if ( isUpgraded ) then
-		local upgradeTexture = LOOTUPGRADEFRAME_QUALITY_TEXTURES[quality] or LOOTUPGRADEFRAME_QUALITY_TEXTURES[LE_ITEM_QUALITY_UNCOMMON];
-		for i = 1, GarrisonFollowerAlertFrame.Arrows.numArrows do
-			GarrisonFollowerAlertFrame.Arrows["Arrow"..i]:SetAtlas(upgradeTexture.arrow, true);
-		end
 		GarrisonFollowerAlertFrame.Title:SetText(GARRISON_FOLLOWER_ADDED_UPGRADED_TOAST);
-		GarrisonFollowerAlertFrame.DieIcon:Show();
-		GarrisonFollowerAlertFrame.ArrowsAnim:Play();
 	else
 		GarrisonFollowerAlertFrame.Title:SetText(GARRISON_FOLLOWER_ADDED_TOAST);
-		GarrisonFollowerAlertFrame.DieIcon:Hide();
 	end
-
-	AlertFrame_AnimateIn(GarrisonFollowerAlertFrame);
 	
-	AlertFrame_FixAnchors();
-	PlaySound("UI_Garrison_Toast_FollowerGained");
+	GarrisonFollowerAlertFrame_Setup(GarrisonFollowerAlertFrame, followerID, name, quality, isUpgraded);
+end
+
+function GarrisonShipAlertFrame_ShowAlert(followerID, name, texPrefix, level, quality, isUpgraded)
+	local mapAtlas = texPrefix .. "-Map";
+	GarrisonShipAlertFrame.Portrait:SetAtlas(mapAtlas, false);
+	if ( isUpgraded ) then
+		GarrisonShipAlertFrame.Title:SetText(GARRISON_SHIPYARD_FOLLOWER_ADDED_UPGRADED_TOAST);
+	else
+		GarrisonShipAlertFrame.Title:SetText(GARRISON_SHIPYARD_FOLLOWER_ADDED_TOAST);
+	end
+	GarrisonFollowerAlertFrame_Setup(GarrisonShipAlertFrame, followerID, name, quality, isUpgraded);
 end
 
 function GarrisonFollowerAlertFrame_OnEnter(self, button, down)
@@ -1254,6 +1278,7 @@ end
 
 function GarrisonFollowerAlertFrame_OnLeave(self)
 	GarrisonFollowerTooltip:Hide();
+	GarrisonShipyardFollowerTooltip:Hide();
 	AlertFrame_ResumeOutAnimation(self);
 end
 

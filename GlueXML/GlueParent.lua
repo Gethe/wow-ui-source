@@ -20,13 +20,13 @@ GlueScreenInfo["credits"]		= "CreditsFrame";
 GlueScreenInfo["options"]		= "OptionsFrame";
 
 CharModelFogInfo = { };
+CharModelFogInfo["SCOURGE"] = { r=0, g=0.22, b=0.22, far=26 };
 --[[
 CharModelFogInfo["HUMAN"] = { r=0.8, g=0.65, b=0.73, far=222 };
 CharModelFogInfo["ORC"] = { r=0.5, g=0.5, b=0.5, far=270 };
 CharModelFogInfo["DWARF"] = { r=0.85, g=0.88, b=1.0, far=500 };
 CharModelFogInfo["NIGHTELF"] = { r=0.25, g=0.22, b=0.55, far=611 };
 CharModelFogInfo["TAUREN"] = { r=1.0, g=0.61, b=0.42, far=153 };
-CharModelFogInfo["SCOURGE"] = { r=0, g=0.22, b=0.22, far=26 };
 CharModelFogInfo["CHARACTERSELECT"] = { r=0.8, g=0.65, b=0.73, far=222 };
 ]]
 

@@ -180,7 +180,14 @@ function UpdateMicroButtons()
 	if ( EncounterJournal and EncounterJournal:IsShown() ) then
 		EJMicroButton:SetButtonState("PUSHED", true);
 	else
-		EJMicroButton:SetButtonState("NORMAL");
+		if ( playerLevel < EJMicroButton.minLevel or factionGroup == "Neutral" ) then
+			EJMicroButton:Disable();
+			EJMicroButton_ClearAlert();
+		else
+			EJMicroButton:Enable();
+			EJMicroButton:SetButtonState("NORMAL");
+			EJMicroButton_UpdateAlert();
+		end
 	end
 
 	if ( CollectionsJournal and CollectionsJournal:IsShown() ) then
@@ -423,7 +430,7 @@ function EJMicroButton_OnLoad(self)
 	SetDesaturation(self:GetDisabledTexture(), true);
 	self.tooltipText = MicroButtonTooltipText(ENCOUNTER_JOURNAL, "TOGGLEENCOUNTERJOURNAL");
 	self.newbieText = NEWBIE_TOOLTIP_ENCOUNTER_JOURNAL;
-	self.minLevel = SHOW_LFD_LEVEL;
+	self.minLevel = SHOW_EJ_LEVEL;
 	if (IsBlizzCon()) then
 		self:Disable();
 	end
@@ -459,7 +466,7 @@ function EJMicroButton_OnEvent(self, event, ...)
 end
 
 function EJMicroButton_UpdateAlert()
-	if ( C_AdventureJournal.UpdateSuggestions() ) then
+	if ( EJMicroButton:IsEnabled() and C_AdventureJournal.UpdateSuggestions() ) then
 		EJMicroButton.Flash:Show();
 		EJMicroButton.Alert:Show();
 	end

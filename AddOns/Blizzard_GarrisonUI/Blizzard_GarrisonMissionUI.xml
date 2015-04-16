@@ -1924,7 +1924,7 @@
 					<Anchor point="LEFT" relativeTo="$parentTab1" relativePoint="RIGHT" x="-5" y="0"/>
 				</Anchors>		
 			</Button>
-			<Frame parentKey="FollowerList" inherits="GarrisonListTemplateHeader" name="$parentFollowers" hidden="true">
+			<Frame parentKey="FollowerList" inherits="GarrisonListTemplateHeader" name="$parentFollowers" hidden="true" mixin="GarrisonFollowerList">
 				<Size x="305" y="535"/>
 				<KeyValues>
 					 <KeyValue key="showUncollected" value="true" type="boolean"/>
@@ -1958,8 +1958,8 @@
 					</Frame>
 				</Frames>
 				<Scripts>
-					<OnShow function="GarrisonFollowerList_OnShow"/>
-					<OnHide function="GarrisonFollowerList_OnHide"/>
+					<OnShow>self:OnShow();</OnShow>
+					<OnHide>self:OnHide();</OnHide>
 				</Scripts>
 			</Frame>
 			<Frame parentKey="MissionTab" setAllPoints="true" useParentLevel="true">

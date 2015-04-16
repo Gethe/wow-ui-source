@@ -487,7 +487,7 @@ function ActionButton_UpdateCooldown (self)
 			self.cooldown:SetScript("OnCooldownDone", ActionButton_OnCooldownDone );
 		end
 		
-		if ( maxCharges > 0 and charges < maxCharges ) then
+		if ( charges and maxCharges and maxCharges > 0 and charges < maxCharges ) then
 			StartChargeCooldown(self, chargeStart, chargeDuration);
 		end
 		

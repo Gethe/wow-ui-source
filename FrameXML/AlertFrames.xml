@@ -1762,7 +1762,7 @@
 	</Scripts>
 </Button>
 
-<Button name="GarrisonFollowerAlertFrame" parent="UIParent" hidden="true" frameStrata="DIALOG" inherits="AlertFrameTemplate">
+<Button name="GarrisonFollowerAlertFrameTemplate" parent="UIParent" hidden="true" frameStrata="DIALOG" inherits="AlertFrameTemplate" virtual="true">
 	<Size x="317" y="82"/>
 	<Anchors>
 		<Anchor point="BOTTOM" x="0" y="170"/>
@@ -1873,6 +1873,49 @@
 		</Layer>		
 	</Layers>
 	<Frames>
+		<Frame parentKey="Arrows" setAllPoints="true">
+			<KeyValues>
+				<KeyValue key="numArrows" value="5" type="number"/>
+			</KeyValues>
+			<Layers>
+				<Layer level="ARTWORK">
+					<Texture parentKey="Arrow1" inherits="LootUpgradeFrame_ArrowTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT" x="32" y="-30"/>
+						</Anchors>
+					</Texture>
+					<Texture parentKey="Arrow2" inherits="LootUpgradeFrame_ArrowTemplate">
+						<Anchors>
+							<Anchor point="CENTER" relativeKey="$parent.Arrow1" x="16" y="0"/>
+						</Anchors>
+					</Texture>
+					<Texture parentKey="Arrow3" inherits="LootUpgradeFrame_ArrowTemplate">
+						<Anchors>
+							<Anchor point="CENTER" relativeKey="$parent.Arrow1" x="-16" y="0"/>
+						</Anchors>
+					</Texture>
+					<Texture parentKey="Arrow4" inherits="LootUpgradeFrame_ArrowTemplate">
+						<Anchors>
+							<Anchor point="CENTER" relativeKey="$parent.Arrow1" x="5" y="0"/>
+						</Anchors>
+					</Texture>
+					<Texture parentKey="Arrow5" inherits="LootUpgradeFrame_ArrowTemplate">
+						<Anchors>
+							<Anchor point="CENTER" relativeKey="$parent.Arrow1" x="-12" y="0"/>
+						</Anchors>
+					</Texture>
+				</Layer>
+			</Layers>
+		</Frame>
+	</Frames>
+	<Scripts>
+		<OnEnter function="GarrisonFollowerAlertFrame_OnEnter"/>
+		<OnLeave function="GarrisonFollowerAlertFrame_OnLeave"/>
+	</Scripts>
+</Button>
+
+<Button name="GarrisonFollowerAlertFrame" inherits="GarrisonFollowerAlertFrameTemplate">
+	<Frames>
 		<Frame parentKey="PortraitFrame">
 			<Size x="52" y="60"/>
 			<Anchors>
@@ -1917,45 +1960,20 @@
 				</Layer>
 			</Layers>
 		</Frame>
-		<Frame parentKey="Arrows" setAllPoints="true">
-			<KeyValues>
-				<KeyValue key="numArrows" value="5" type="number"/>
-			</KeyValues>
-			<Layers>
-				<Layer level="ARTWORK">
-					<Texture parentKey="Arrow1" inherits="LootUpgradeFrame_ArrowTemplate">
-						<Anchors>
-							<Anchor point="TOPLEFT" x="32" y="-30"/>
-						</Anchors>
-					</Texture>
-					<Texture parentKey="Arrow2" inherits="LootUpgradeFrame_ArrowTemplate">
-						<Anchors>
-							<Anchor point="CENTER" relativeKey="$parent.Arrow1" x="16" y="0"/>
-						</Anchors>
-					</Texture>
-					<Texture parentKey="Arrow3" inherits="LootUpgradeFrame_ArrowTemplate">
-						<Anchors>
-							<Anchor point="CENTER" relativeKey="$parent.Arrow1" x="-16" y="0"/>
-						</Anchors>
-					</Texture>
-					<Texture parentKey="Arrow4" inherits="LootUpgradeFrame_ArrowTemplate">
-						<Anchors>
-							<Anchor point="CENTER" relativeKey="$parent.Arrow1" x="5" y="0"/>
-						</Anchors>
-					</Texture>
-					<Texture parentKey="Arrow5" inherits="LootUpgradeFrame_ArrowTemplate">
-						<Anchors>
-							<Anchor point="CENTER" relativeKey="$parent.Arrow1" x="-12" y="0"/>
-						</Anchors>
-					</Texture>					
-				</Layer>
-			</Layers>
-		</Frame>
 	</Frames>
-	<Scripts>
-		<OnEnter function="GarrisonFollowerAlertFrame_OnEnter"/>
-		<OnLeave function="GarrisonFollowerAlertFrame_OnLeave"/>
-	</Scripts>
+</Button>
+
+<Button name="GarrisonShipAlertFrame" inherits="GarrisonFollowerAlertFrameTemplate">
+	<Layers>
+		<Layer level="BORDER">
+			<Texture parentKey="Portrait" atlas="Ships_Dreadnaught-Map" useAtlasSize="false">
+				<Size x="64" y="64"/>
+				<Anchors>
+					<Anchor point="LEFT" x="8"/>
+				</Anchors>
+			</Texture>
+		</Layer>
+	</Layers>
 </Button>
 
 <Frame name="AlertFrame" parent="UIParent" hidden="true">

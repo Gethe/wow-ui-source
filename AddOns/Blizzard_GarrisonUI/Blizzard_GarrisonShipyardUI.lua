@@ -20,6 +20,18 @@ StaticPopupDialogs["DANGEROUS_MISSIONS"] = {
 	hideOnEscape = 1
 };
 
+StaticPopupDialogs["CONFIRM_SHIP_EQUIPMENT"] = {
+	text = "%s",
+	button1 = YES,
+	button2 = NO,
+	OnAccept = function(self)
+		C_Garrison.CastSpellOnFollowerAbility(self.data.followerID, self.data.abilityID);
+	end,
+	timeout = 0,
+	exclusive = 1,
+	hideOnEscape = 1
+};
+
 ---------------------------------------------------------------------------------
 --- Garrison Shipyard Mixin Functions                                         ---
 ---------------------------------------------------------------------------------
@@ -31,9 +43,7 @@ function GarrisonShipyardMission:OnLoadMainFrame()
 	GarrisonMission.OnLoadMainFrame(self);
 
 	self.BorderFrame.TitleText:SetText(GARRISON_SHIPYARD_TITLE);
-	
-	GarrisonFollowerList_OnLoad(self, self:GetFollowerType(), "GarrisonShipFollowerButtonTemplate", 12)
-
+	self.FollowerList:Load(self:GetFollowerType());
 	self:UpdateCurrency();
 	self.MissionComplete.pendingFogLift = {};
 	
@@ -50,10 +60,8 @@ function GarrisonShipyardMission:OnLoadMainFrame()
 		dialogBorderFrame.Model:SetPosition(0.2, .75, -0.7);
 	end
 	self:RegisterEvent("CURRENCY_DISPLAY_UPDATE");
-	--self:RegisterEvent("GARRISON_MISSION_STARTED");
 	self:RegisterEvent("GARRISON_MISSION_FINISHED");
-	--self:RegisterEvent("GET_ITEM_INFO_RECEIVED");
-	--self:RegisterEvent("CURRENT_SPELL_CAST_CHANGED");
+	self:RegisterEvent("CURRENT_SPELL_CAST_CHANGED");
 end
 
 function GarrisonShipyardMission:UpdateCurrency()
@@ -77,7 +85,6 @@ function GarrisonShipyardMission:OnClickMission(missionInfo)
 		return;
 	end
 	
-	--GarrisonShipyardMap_UpdateMissions();
 	self.MissionTab.MissionList:Hide();
 	self.MissionTab.MissionPage:Show();
 	
@@ -162,68 +169,6 @@ function GarrisonShipyardMission:OnClickStartMissionButtonConfirm()
 	if (not GarrisonMission.OnClickStartMissionButton(self)) then
 		return;
 	end
-end
-
-function GarrisonShipyardMission:UpdateFollowerData()
-	local followers = self.FollowerList.followers;
-	local followersList = self.FollowerList.followersList;
-	local numFollowers = #followersList;
-	local scrollFrame = self.FollowerList.listScroll;
-	local offset = HybridScrollFrame_GetOffset(scrollFrame);
-	local buttons = scrollFrame.buttons;
-	local numButtons = #buttons;
-	
-	for i = 1, numButtons do
-		local button = buttons[i];
-		local index = offset + i; -- adjust index
-		if ( index <= numFollowers) then
-			local follower = followers[followersList[index]];
-			button.isCollected = true;
-			button.id = follower.followerID;
-			button.info = follower;
-			self:SetFollowerPortrait(button, follower, nil, true);
-			button.BoatName:SetText(format(GARRISON_SHIPYARD_SHIP_NAME, follower.name));
-			button.BoatType:SetText(follower.className);
-			button.Status:SetText(follower.status);
-			button.Selection:SetShown(button.id == self.selectedFollower);
-			
-			if (follower.quality == LE_ITEM_QUALITY_EPIC) then
-				button.Quality:SetAtlas("ShipMission_BoatRarity-Epic", true);
-			elseif (follower.quality == LE_ITEM_QUALITY_RARE) then
-				button.Quality:SetAtlas("ShipMission_BoatRarity-Rare", true);
-			else
-				button.Quality:SetAtlas("ShipMission_BoatRarity-Uncommon", true);
-			end
-			
-			if (follower.status) then
-				button.BusyFrame:Show();
-				button.BusyFrame.Texture:SetTexture(unpack(GARRISON_FOLLOWER_BUSY_COLOR));
-			else
-				button.BusyFrame:Hide();
-			end
-		
-			local color = ITEM_QUALITY_COLORS[follower.quality];
-			button.BoatName:SetTextColor(color.r, color.g, color.b);
-			if (follower.xp == 0 or follower.levelXP == 0) then 
-				button.XPBar:Hide();
-			else
-				button.XPBar:Show();
-				button.XPBar:SetWidth((follower.xp/follower.levelXP) * 228);
-			end
-
-			GarrisonFollowerButton_UpdateCounters(self, button, follower, self.FollowerList.showCounters, self.lastUpdate);
-		
-			button:Show();
-		else
-			button:Hide();
-		end
-	end
-	
-	local totalHeight = numFollowers * scrollFrame.buttonHeight;
-	local displayedHeight = numButtons * scrollFrame.buttonHeight;
-	HybridScrollFrame_Update(scrollFrame, totalHeight, displayedHeight);
-
-	self.lastUpdate = GetTime();
 end
 
 function GarrisonShipyardMission:AssignFollowerToMission(frame, info)
@@ -567,15 +512,12 @@ function GarrisonShipyardFrame_OnEvent(self, event, ...)
 		GarrisonFollowerList_OnEvent(self, event, ...);
 	elseif (event == "GARRISON_MISSION_FINISHED") then
 		self:CheckCompleteMissions();
-	-- TODO more events
+	elseif ( event == "CURRENT_SPELL_CAST_CHANGED" ) then
+		GarrisonFollowerList_OnEvent(self, event, ...);
 	end
 end
 
 function GarrisonShipyardFrame_OnShow(self)
-	--[[
-	GarrisonThreatCountersFrame:SetParent(self.FollowerTab);
-	GarrisonThreatCountersFrame:SetPoint("TOPRIGHT", -12, 30);
-	]]--
 	self:CheckCompleteMissions(true);
 	PlaySound("UI_Garrison_CommandTable_Open");
 end
@@ -586,15 +528,10 @@ function GarrisonShipyardFrame_OnHide(self)
 	end
 	self:ClearMouse();
 	self:HideCompleteMissions(true);
-	--[[
-		C_Garrison.CloseMissionNPC();
-		HelpPlate_Hide();
-		MissionCompletePreload_Cancel(self);
-		StaticPopup_Hide("DEACTIVATE_FOLLOWER");
-		StaticPopup_Hide("ACTIVATE_FOLLOWER");
-
-		GarrisonMissionList_Update();
-	]]--
+	C_Garrison.CloseMissionNPC();
+	MissionCompletePreload_Cancel(self);
+	StaticPopup_Hide("DANGEROUS_MISSIONS");
+	StaticPopup_Hide("CONFIRM_SHIP_EQUIPMENT");
 	PlaySound("UI_Garrison_CommandTable_Close");
 end
 
@@ -697,6 +634,8 @@ function GarrisonShipyardMap_UpdateMissions()
 			frame = CreateFrame("BUTTON", "GarrisonShipyardMapMission" .. i, self, "GarrisonShipyardMapMissionTemplate");
 			self.missionFrames[i] = frame;
 		end
+
+		GarrisonShipyardMap_SetupFog(self, mission.offeredGarrMissionTextureID);
 		
 		-- If we have a siegebreaker mission that cannot be started, hide it
 		if (mission.offeredGarrMissionTextureID ~= 0 and not mission.inProgress and not mission.canStart) then
@@ -711,8 +650,6 @@ function GarrisonShipyardMap_UpdateMissions()
 			frame.RewardFrame:Hide();
 			
 			local mapAtlas = mission.typePrefix;
-			
-			GarrisonShipyardMap_SetupFog(self, mission.offeredGarrMissionTextureID);
 				
 			if (mission.inProgress) then
 				local followerInfo = C_Garrison.GetFollowerInfo(mission.followers[1]);
@@ -791,7 +728,7 @@ function GarrisonShipyardMapMission_OnEnter(self, button)
 	else
 		GameTooltip:AddLine(self.info.description, 1, 1, 1, true);
 		GameTooltip:AddLine(" ");
-		GameTooltip:AddLine(string.format(GARRISON_MISSION_TOOLTIP_NUM_REQUIRED_FOLLOWERS, self.info.numFollowers), 1, 1, 1);
+		GameTooltip:AddLine(string.format(GARRISON_SHIPYARD_MISSION_TOOLTIP_NUM_REQUIRED_FOLLOWERS, self.info.numFollowers), 1, 1, 1);
 		local timeString = NORMAL_FONT_COLOR_CODE .. TIME_LABEL .. FONT_COLOR_CODE_CLOSE .. " ";
 		timeString = timeString .. HIGHLIGHT_FONT_COLOR_CODE .. self.info.duration .. FONT_COLOR_CODE_CLOSE;
 		GameTooltip:AddLine(timeString);
@@ -900,17 +837,7 @@ function GarrisonShipyardMissionPage_UpdatePortraitPulse(missionPage)
 		local followerFrame = missionPage.Followers[i];
 		if ( followerFrame.info ) then
 			followerFrame.PulseAnim:Stop();
-			-- TODO if we need the code below, maybe put this into a common base function and remove from garrisonmissionui.lua
-			--[[
-			if ( C_Garrison.CanSpellTargetFollowerIDWithAddAbility(followerFrame.info.followerID) ) then
-				followerFrame.PortraitFrame.SpellTargetHighlight:Show();
-			else
-				followerFrame.PortraitFrame.SpellTargetHighlight:Hide();
-			end
-			]]--
 		else
-			--followerFrame.PortraitFrame.SpellTargetHighlight:Hide();
-
 			if ( pulsed ) then
 				followerFrame.PulseAnim:Stop();
 			else
@@ -923,18 +850,321 @@ end
 
 
 ---------------------------------------------------------------------------------
+--- Garrison Shipyard Follower List Mixin Functions                           ---
+---------------------------------------------------------------------------------
+
+GarrisonShipyardFollowerList = {};
+
+function GarrisonShipyardFollowerList:Load(followerType)
+	self.minFollowersForThreatCountersFrame = 1;
+	self.followerCountString = GARRISON_SHIPYARD_FOLLOWER_COUNT;
+	self:Setup(self:GetParent(), followerType, "GarrisonShipFollowerButtonTemplate", 12);
+end
+
+function GarrisonShipyardFollowerList:StopAnimations()
+	local followerFrame = self:GetParent().FollowerTab;
+	for i = 1, #followerFrame.EquipmentFrame.Equipment do
+		GarrisonShipEquipment_StopAnimations(followerFrame.EquipmentFrame.Equipment[i]);
+	end
+end
+
+function GarrisonShipyardFollowerList:ShowThreatCountersFrame()
+	self:GetParent().FollowerTab.ThreatCountersFrame:Show();
+end
+
+function GarrisonShipyardFollowerList:ShowFollower(followerID)
+	local self = self:GetParent().FollowerTab;
+	local lastUpdate = self.lastUpdate;
+	local mainFrame = self:GetParent();
+	local followerInfo = C_Garrison.GetFollowerInfo(followerID);
+	if (followerInfo) then
+		self.followerID = followerID;
+		self.NoFollowersLabel:Hide();
+		self.Portrait:Show();
+		self.Model:SetAlpha(0);
+		GarrisonMission_SetFollowerModel(self.Model, followerInfo.followerID, followerInfo.displayID);
+		if (followerInfo.displayHeight) then
+			self.Model:SetHeightFactor(followerInfo.displayHeight);
+		end
+		if (followerInfo.displayScale) then
+			self.Model:InitializeCamera(followerInfo.displayScale);
+		end
+	else
+		self.followerID = nil;
+		self.NoFollowersLabel:Show();
+		followerInfo = { };
+		followerInfo.quality = 1;
+		followerInfo.abilities = { };
+		self.Portrait:Hide();
+		self.Model:ClearModel();
+	end
+
+	local atlas = followerInfo.texPrefix .. "-List";
+	self.Portrait:SetAtlas(atlas, false);
+	local color = ITEM_QUALITY_COLORS[followerInfo.quality];
+	self.BoatName:SetText(format(GARRISON_SHIPYARD_SHIP_NAME, followerInfo.name));
+	self.BoatName:SetVertexColor(color.r, color.g, color.b);
+	self.BoatType:SetText(followerInfo.className);
+	
+	-- Follower cannot be upgraded anymore
+	if (followerInfo.level == GARRISON_FOLLOWER_MAX_LEVEL and followerInfo.quality >= GARRISON_FOLLOWER_MAX_UPGRADE_QUALITY) then
+		self.XPLabel:Hide();
+		self.XPBar:Hide();
+		self.XPText:Hide();
+		self.XPText:SetText("");
+	else
+		self.XPLabel:SetText(GARRISON_FOLLOWER_XP_UPGRADE_STRING);
+		self.XPLabel:SetWidth(0);
+		self.XPLabel:SetFontObject("GameFontHighlight");
+		self.XPLabel:SetPoint("TOPRIGHT", self.XPText, "BOTTOMRIGHT", 0, 0);
+		self.XPLabel:Show();
+		-- If the XPLabel text does not fit within 100 pixels, shrink the font. If it wraps to 2 lines, move the text up.
+		if (self.XPLabel:GetWidth() > 100) then
+			self.XPLabel:SetWidth(100);
+			self.XPLabel:SetFontObject("GameFontWhiteSmall");
+			if (self.XPLabel:GetNumLines() > 1) then
+				self.XPLabel:SetPoint("TOPRIGHT", self.XPText, "BOTTOMRIGHT", -1, 0);
+			end
+		end
+		self.XPBar:Show();
+		self.XPBar:SetMinMaxValues(0, followerInfo.levelXP);
+		self.XPBar.Label:SetFormattedText(GARRISON_FOLLOWER_XP_BAR_LABEL, BreakUpLargeNumbers(followerInfo.xp), BreakUpLargeNumbers(followerInfo.levelXP));
+		self.XPBar:SetValue(followerInfo.xp);
+		local xpLeft = followerInfo.levelXP - followerInfo.xp;
+		self.XPText:SetText(format(GARRISON_FOLLOWER_XP_LEFT, xpLeft));
+		self.XPText:Show();
+	end
+	GarrisonTruncationFrame_Check(self.BoatName);
+
+	if ( ENABLE_COLORBLIND_MODE == "1" ) then
+		self.QualityFrame:Show();
+		self.QualityFrame.Text:SetText(_G["ITEM_QUALITY"..followerInfo.quality.."_DESC"]);
+	else
+		self.QualityFrame:Hide();
+	end
+	
+	if (not followerInfo.abilities) then
+		followerInfo.abilities = C_Garrison.GetFollowerAbilities(followerID);
+	end
+
+	for i=1, #self.Traits do
+		self.Traits[i].abilityID = nil;
+		self.Traits[i].Counter:Hide();
+	end
+	for i=1, #self.EquipmentFrame.Equipment do
+		self.EquipmentFrame.Equipment[i].abilityID = nil;
+		self.EquipmentFrame.Equipment[i].Icon:Hide();
+		self.EquipmentFrame.Equipment[i].Counter:Hide();
+		self.EquipmentFrame.Equipment[i].ValidSpellHighlight:Hide();
+	end
+	self.EquipmentFrame.Equipment1.Lock:SetShown(followerInfo.quality < LE_ITEM_QUALITY_RARE);
+	self.EquipmentFrame.Equipment2.Lock:SetShown(followerInfo.quality < LE_ITEM_QUALITY_EPIC);
+
+	local traitIndex = 1;
+	local equipmentIndex = 1;
+	for i=1, #followerInfo.abilities do
+		local ability = followerInfo.abilities[i];
+		if (ability.isTrait) then
+			if (traitIndex <= #self.Traits) then
+				local trait = self.Traits[traitIndex];
+				trait.abilityID = ability.id;
+				trait.Portrait:SetTexture(ability.icon);
+				for id, counter in pairs(ability.counters) do
+					trait.Counter.Icon:SetTexture(counter.icon);
+					trait.Counter.tooltip = counter.name;
+					trait.Counter.mainFrame = mainFrame;
+					trait.Counter.info = counter;
+					trait.Counter:Show();
+					break;
+				end
+			end
+			traitIndex = traitIndex + 1;
+		else
+			if (equipmentIndex <= #self.EquipmentFrame.Equipment) then
+				local equipment = self.EquipmentFrame.Equipment[equipmentIndex];
+				equipment.abilityID = ability.id;
+				if (ability.icon) then
+					equipment.Icon:SetTexture(ability.icon);
+					equipment.Icon:Show();
+					for id, counter in pairs(ability.counters) do
+						equipment.Counter.Icon:SetTexture(counter.icon);
+						equipment.Counter.tooltip = counter.name;
+						equipment.Counter.mainFrame = mainFrame;
+						equipment.Counter.info = counter;
+						equipment.Counter:Show();
+						break;
+					end
+					
+					if (followerInfo.isCollected and GarrisonFollowerAbilities_IsNew(lastUpdate, followerID, ability.id, GARRISON_FOLLOWER_ABILITY_TYPE_ABILITY)) then
+						equipment.EquipAnim:Play();
+					else
+						GarrisonShipEquipment_StopAnimations(equipment);
+					end
+				else
+					equipment.Icon:Hide();
+					if (followerInfo.status ~= GARRISON_FOLLOWER_WORKING and followerInfo.status ~= GARRISON_FOLLOWER_IN_PARTY and
+						SpellCanTargetGarrisonFollowerAbility(followerID, ability.id) ) then
+						equipment.ValidSpellHighlight:Show();
+					end
+				end
+			end
+			equipmentIndex = equipmentIndex + 1;
+		end
+	end
+	
+	self.lastUpdate = self:IsShown() and GetTime() or nil;
+end
+
+function GarrisonShipyardFollowerList:UpdateData()
+	local mainFrame = self:GetParent();
+	local followers = self.followers;
+	local followersList = self.followersList;
+	local numFollowers = #followersList;
+	local scrollFrame = self.listScroll;
+	local offset = HybridScrollFrame_GetOffset(scrollFrame);
+	local buttons = scrollFrame.buttons;
+	local numButtons = #buttons;
+	
+	for i = 1, numButtons do
+		local button = buttons[i];
+		local index = offset + i; -- adjust index
+		if ( index <= numFollowers) then
+			local follower = followers[followersList[index]];
+			button.isCollected = true;
+			button.id = follower.followerID;
+			button.info = follower;
+			mainFrame:SetFollowerPortrait(button, follower, nil, true);
+			button.BoatName:SetText(format(GARRISON_SHIPYARD_SHIP_NAME, follower.name));
+			button.BoatType:SetText(follower.className);
+			button.Status:SetText(follower.status);
+			button.Selection:SetShown(button.id == mainFrame.selectedFollower);
+			
+			if (follower.quality == LE_ITEM_QUALITY_EPIC) then
+				button.Quality:SetAtlas("ShipMission_BoatRarity-Epic", true);
+			elseif (follower.quality == LE_ITEM_QUALITY_RARE) then
+				button.Quality:SetAtlas("ShipMission_BoatRarity-Rare", true);
+			else
+				button.Quality:SetAtlas("ShipMission_BoatRarity-Uncommon", true);
+			end
+			
+			if (follower.status) then
+				button.BusyFrame:Show();
+				button.BusyFrame.Texture:SetTexture(unpack(GARRISON_FOLLOWER_BUSY_COLOR));
+			else
+				button.BusyFrame:Hide();
+			end
+		
+			local color = ITEM_QUALITY_COLORS[follower.quality];
+			button.BoatName:SetTextColor(color.r, color.g, color.b);
+			if (follower.xp == 0 or follower.levelXP == 0) then 
+				button.XPBar:Hide();
+			else
+				button.XPBar:Show();
+				button.XPBar:SetWidth((follower.xp/follower.levelXP) * 228);
+			end
+
+			GarrisonFollowerButton_UpdateCounters(mainFrame, button, follower, self.showCounters, mainFrame.lastUpdate);
+		
+			button:Show();
+		else
+			button:Hide();
+		end
+	end
+	
+	local totalHeight = numFollowers * scrollFrame.buttonHeight;
+	local displayedHeight = numButtons * scrollFrame.buttonHeight;
+	HybridScrollFrame_Update(scrollFrame, totalHeight, displayedHeight);
+
+	self.lastUpdate = GetTime();
+end
+
+
+---------------------------------------------------------------------------------
 --- Ship Follower List                                                        ---
 ---------------------------------------------------------------------------------
 
 function GarrisonShipFollowerListButton_OnClick(self, button)
-	local followerFrame = self:GetParent():GetParent().followerFrame;
+	local mainFrame = self:GetParent():GetParent().followerFrame;
 	PlaySound("UI_Garrison_CommandTable_SelectFollower");
-	followerFrame.selectedFollower = self.id;
+	mainFrame.selectedFollower = self.id;
 
-	GarrisonUpdateFollowerData(followerFrame);
-	--if ( followerFrame.FollowerTab ) then
-	--	GarrisonFollowerPage_ShowFollower(followerFrame.FollowerTab, self.id);
-	--end
+	mainFrame.FollowerList:UpdateData();
+	mainFrame.FollowerList:ShowFollower(self.id);
+end
+
+function GarrisonShipTrait_OnClick(self, button)
+	if ( IsModifiedClick("CHATLINK") ) then
+		local abilityLink = C_Garrison.GetFollowerAbilityLink(self.abilityID);
+		if (abilityLink) then
+			ChatEdit_InsertLink(abilityLink);
+		end
+	end
+end
+
+function GarrisonShipTrait_OnEnter(self)
+	GarrisonFollowerAbilityTooltip:ClearAllPoints();
+	GarrisonFollowerAbilityTooltip:SetPoint("TOPLEFT", self, "BOTTOMRIGHT");
+	GarrisonFollowerAbilityTooltip_Show(self.abilityID);
+end
+
+function GarrisonShipTrait_OnHide(self)
+	GarrisonFollowerAbilityTooltip:Hide();
+end
+
+function GarrisonShipEquipment_StopAnimations(frame)
+	if (frame.EquipAnim:IsPlaying()) then
+		frame.EquipAnim:Stop();
+	end
+end
+
+function GarrisonShipEquipment_OnClick(self, button)
+	if ( IsModifiedClick("CHATLINK") and self.Icon:IsShown() ) then
+		local abilityLink = C_Garrison.GetFollowerAbilityLink(self.abilityID);
+		if (abilityLink) then
+			ChatEdit_InsertLink(abilityLink);
+		end
+	elseif (self.abilityID) then
+		local followerList = self:GetParent():GetParent():GetParent().FollowerList;
+		if ( button == "LeftButton" and followerList.canCastSpellsOnFollowers and SpellCanTargetGarrisonFollowerAbility(self.abilityID) ) then
+			local followerID = self:GetParent():GetParent().followerID;
+			local followerInfo = followerID and C_Garrison.GetFollowerInfo(followerID);
+			if ( not followerInfo or not followerInfo.isCollected or followerInfo.status == GARRISON_FOLLOWER_ON_MISSION or followerInfo.status == GARRISON_FOLLOWER_WORKING ) then
+				return;
+			end
+			
+			local popupData = {};
+			popupData.followerID = followerID;
+			popupData.abilityID = self.abilityID;
+			local text = format(GARRISON_SHIPYARD_CONFIRM_EQUIPMENT, GetEquipmentNameFromSpell());
+			StaticPopup_Show("CONFIRM_SHIP_EQUIPMENT", text, nil, popupData);
+		end	
+	end
+end
+
+function GarrisonShipEquipment_OnEnter(self)
+	if (self.Lock:IsShown()) then
+		GameTooltip:SetOwner(self, "ANCHOR_BOTTOMRIGHT");
+		GameTooltip:SetText(GARRISON_SHIPYARD_EQUIPMENT_UPGRADE_SLOT);
+		if (self.quality == "rare") then
+			GameTooltip:AddLine(GARRISON_SHIPYARD_EQUIPMENT_RARE_SLOT_TOOLTIP, 1, 1, 1, true);
+		else
+			GameTooltip:AddLine(GARRISON_SHIPYARD_EQUIPMENT_EPIC_SLOT_TOOLTIP, 1, 1, 1, true);
+		end
+		GameTooltip:Show();
+	elseif (self.Icon:IsShown() and self.abilityID) then
+		GarrisonFollowerAbilityTooltip:ClearAllPoints();
+		GarrisonFollowerAbilityTooltip:SetPoint("TOPLEFT", self, "BOTTOMRIGHT");
+		GarrisonFollowerAbilityTooltip_Show(self.abilityID);
+	else
+		GameTooltip:SetOwner(self, "ANCHOR_BOTTOMRIGHT");
+		GameTooltip:SetText(GARRISON_SHIPYARD_EQUIPMENT_EMPTY_SLOT_TOOLTIP);
+		GameTooltip:Show();
+	end
+end
+
+function GarrisonShipEquipment_OnHide(self)
+	GameTooltip_Hide();
+	GarrisonFollowerAbilityTooltip:Hide();
 end
 
 function GarrisonShipFollowerListButton_OnDragStart(self, button)
@@ -980,9 +1210,9 @@ function GarrisonShipMissionPageFollowerFrame_OnEnter(self)
 	local xp = C_Garrison.GetFollowerXP(self.info.followerID);
 	local levelXp = C_Garrison.GetFollowerLevelXP(self.info.followerID);
 		
-	GarrisonShipFollowerTooltip:ClearAllPoints();
-	GarrisonShipFollowerTooltip:SetPoint("TOPLEFT", self, "BOTTOMRIGHT", -50, -30);	
-	GarrisonFollowerTooltip_Show(self.info.garrFollowerID, 
+	GarrisonShipyardFollowerTooltip:ClearAllPoints();
+	GarrisonShipyardFollowerTooltip:SetPoint("TOPLEFT", self, "BOTTOMRIGHT", -50, -30);	
+	GarrisonFollowerTooltip_Show(self.info.garrFollowerID,
 		self.info.isCollected,
 		C_Garrison.GetFollowerQuality(self.info.followerID),
 		C_Garrison.GetFollowerLevel(self.info.followerID), 
@@ -999,11 +1229,11 @@ function GarrisonShipMissionPageFollowerFrame_OnEnter(self)
 		C_Garrison.GetFollowerTraitAtIndex(self.info.followerID, 4),
 		true,
 		C_Garrison.GetFollowerBiasForMission(self:GetParent().missionInfo.missionID, self.info.followerID) < 0.0,
-		GarrisonShipFollowerTooltip,
+		GarrisonShipyardFollowerTooltip,
 		231
 		);
 end
 
 function GarrisonShipMissionPageFollowerFrame_OnLeave(self)
-	GarrisonShipFollowerTooltip:Hide();
+	GarrisonShipyardFollowerTooltip:Hide();
 end

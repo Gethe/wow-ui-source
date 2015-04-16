@@ -620,7 +620,7 @@
 				</Layers>
 			</Frame>
 			
-			<Frame parentKey="FollowerList" inherits="GarrisonListTemplateHeader" name="$parentFollowers" hidden="true" frameStrata="HIGH">
+			<Frame parentKey="FollowerList" inherits="GarrisonListTemplateHeader" name="$parentFollowers" hidden="true" frameStrata="HIGH" mixin="GarrisonFollowerList">
 				<Size x="305" y="565"/>
 				<Anchors>
 					<Anchor point="BOTTOMLEFT" x="33" y="34"/>

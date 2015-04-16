@@ -625,7 +625,7 @@
 						<Anchor point="TOPLEFT"/>
 					</Anchors>
 				</Texture>
-				<FontString parentKey="BoatName" inherits="GameFontHighlight" text="Swamp Donkey" justifyH="RIGHT">
+				<FontString parentKey="BoatName" inherits="GameFontHighlight" text="Carrier" justifyH="RIGHT">
 					<Size x="255" y="0"/>
 					<Anchors>
 						<Anchor point="TOPRIGHT" x="-4" y="-43"/>
@@ -698,24 +698,6 @@
 				</Texture>
 			</Layer>
 		</Layers>
-	</Frame>
-	
-	<Frame name="GarrisonShipFollowerTooltip" inherits="GarrisonFollowerTooltipTemplate" movable="false" toplevel="true">
-		<Size x="260" y="122"/>
-		<Anchors>
-			<Anchor point="BOTTOM" x="0" y="80"/>
-		</Anchors>
-		<Scripts>
-			<OnLoad>
-				self.Portrait:Hide();
-				self.Class:Hide();
-				self.Name:SetPoint("LEFT", self, "TOPLEFT", 15, -20);
-				self.ClassSpecName:SetPoint("TOPLEFT", self, "TOPLEFT", 15, -35);
-				self.XPBarBackground:SetWidth(231);
-				self.XPBarBackground:SetPoint("TOPLEFT", self, "TOPLEFT", 15, -55);
-				self.XPBar:SetPoint("TOPLEFT", self, "TOPLEFT", 15, -55);
-			</OnLoad>
-		</Scripts>
 	</Frame>
 	
 	<Frame name="GarrisonShipyardMissionCompleteStageTemplate" inherits="GarrisonMissionStageTemplate, GarrisonMissionCompleteStageTemplate" virtual="true">
@@ -951,6 +933,346 @@
 		</Scripts>
 	</Frame>
 	
+	<Button name="GarrisonShipTraitTemplate" virtual="true">
+		<Size x="70" y="92"/>
+		<Layers>
+			<Layer level="OVERLAY" textureSubLevel="0">
+				<Texture parentKey="Portrait">
+					<Size x="64" y="64"/>
+					<Anchors>
+						<Anchor point="TOP" x="0" y="-24"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="OVERLAY" textureSubLevel="1">
+				<Texture parentKey="Border" atlas="ShipMission_ShipFollower-TypeFrame" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent.Portrait"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Frame parentKey="Counter" inherits="GarrisonMissionLargeMechanicTemplate" hidden="true">
+				<Anchors>
+					<Anchor point="TOP" relativeKey="$parent.Border" relativePoint="BOTTOM" x="0" y="-5"/>
+				</Anchors>
+			</Frame>
+		</Frames>
+		<Scripts>
+			<OnClick function="GarrisonShipTrait_OnClick"/>
+			<OnEnter function="GarrisonShipTrait_OnEnter"/>
+			<OnLeave function="GarrisonShipTrait_OnHide"/>
+		</Scripts>
+	</Button>
+	
+	<Button name="GarrisonShipEquipmentTemplate" virtual="true">
+		<Size x="78" y="78"/>
+		<!--
+		<KeyValues>
+			 <KeyValue key="quality" value="rare" type="string"/>
+		</KeyValues>
+		-->
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture atlas="ShipMission_ShipFollower-EquipmentBG" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="TOPLEFT"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="BORDER" textureSubLevel="0">
+				<Texture parentKey="Icon">
+					<Size x="64" y="64"/>
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="BORDER" textureSubLevel="1">
+				<Texture parentKey="Border" atlas="ShipMission_ShipFollower-EquipmentFrame" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="TOPLEFT"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="ARTWORK">
+				<Texture parentKey="EquipGlow" hidden="false" alpha="0.01" alphaMode="ADD" atlas="GarrMission-AbilityHighlight" useAtlasSize="false">
+					<Size x="90" y="90"/>
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent.Icon"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="OVERLAY">
+				<Texture parentKey="ValidSpellHighlight" atlas="GarrMission-AbilityHighlight" useAtlasSize="false" hidden="true">
+					<Size x="90" y="90"/>
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Animations>
+			<AnimationGroup parentKey="EquipAnim" setToFinalAlpha="true">
+				<Alpha childKey="EquipGlow" smoothing="IN" duration="0.25" order="1" fromAlpha="0" toAlpha="1"/>
+				<Scale childKey="EquipGlow" duration="0.25" order="1" fromScaleX="0.8" fromScaleY="0.8" toScaleX="1.4" toScaleY="1.4"/>
+				<Alpha childKey="EquipGlow" startDelay="0.2" duration="0.5" order="1" fromAlpha="1" toAlpha="0"/>
+				<Scripts>
+					<OnFinished>
+						self:GetParent():GetParent():GetParent().lastUpdate = GetTime();
+					</OnFinished>
+				</Scripts>
+			</AnimationGroup>
+		</Animations>
+		<Frames>
+			<Frame parentKey="Counter" inherits="GarrisonMissionLargeMechanicTemplate" hidden="true">
+				<Anchors>
+					<Anchor point="TOP" relativeKey="$parent.Border" relativePoint="BOTTOM" x="0" y="-5"/>
+				</Anchors>
+			</Frame>
+		</Frames>
+		<Scripts>
+			<OnClick function="GarrisonShipEquipment_OnClick"/>
+			<OnEnter function="GarrisonShipEquipment_OnEnter"/>
+			<OnLeave function="GarrisonShipEquipment_OnHide"/>
+		</Scripts>
+	</Button>
+	
+	<Frame name="GarrisonShipyardFollowerTabTemplate" inherits="GarrisonBaseInfoBoxTemplate" virtual="true">
+		<Size x="580" y="565"/>
+		<Anchors>
+			<Anchor point="TOPRIGHT" x="-35" y="-64"/>
+		</Anchors>
+		<Layers>	
+			<Layer level="BORDER" textureSubLevel="3">
+				<Texture atlas="_Garr_InfoBoxBorder-Top" horizTile="true" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="BOTTOMLEFT"/>
+						<Anchor point="BOTTOMRIGHT"/>
+					</Anchors>
+					<TexCoords left="0.0" right="1.0" top="1.0" bottom="0.0"/>
+				</Texture>
+			</Layer>
+			<Layer level="BORDER" textureSubLevel="4">
+				<Texture atlas="Garr_InfoBoxBorder-Corner" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="BOTTOMLEFT"/>
+					</Anchors>
+					<TexCoords left="0.0" right="1.0" top="1.0" bottom="0.0"/>
+				</Texture>
+				<Texture atlas="Garr_InfoBoxBorder-Corner" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="BOTTOMRIGHT"/>
+					</Anchors>
+					<TexCoords left="1.0" right="0.0" top="1.0" bottom="0.0"/>
+				</Texture>
+			</Layer>
+			<Layer level="ARTWORK">
+				<FontString parentKey="NoFollowersLabel" inherits="GameFontNormalLarge2" text="GARRISON_NO_SELECTED_SHIP_FOLLOWER" hidden="true">
+					<Size x="500" y="0"/>
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+			<Layer level="BORDER" textureSubLevel="3">
+				<Texture parentKey="HeaderBG" atlas="GarrMission_FollowerPageHeaderBG">
+					<Anchors>
+						<Anchor point="TOPLEFT" y="-5"/>
+						<Anchor point="BOTTOMRIGHT" relativePoint="TOPRIGHT" y="-99"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="ARTWORK">
+				<FontString parentKey="NumFollowers" inherits="GameFontNormalMed3" justifyH="LEFT">
+					<Anchors>
+						<Anchor point="BOTTOMLEFT" relativePoint="TOPLEFT" y="12"/>
+					</Anchors>
+				</FontString>
+				<FontString parentKey="XPText" inherits="GameFontHighlightLarge2" justifyH="RIGHT" text="3500 XP">
+					<Anchors>
+						<Anchor point="TOPRIGHT" x="-10" y="-36"/>
+					</Anchors>
+				</FontString>
+				<FontString parentKey="XPLabel" inherits="GameFontHighlight" justifyH="RIGHT" text="GARRISON_FOLLOWER_XP_STRING">
+					<Anchors>
+						<Anchor point="TOPRIGHT" relativeKey="$parent.XPText" relativePoint="BOTTOMRIGHT" y="0"/>
+					</Anchors>
+				</FontString>
+				<Texture parentKey="Portrait" atlas="Ships_CargoShip-List" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.HeaderBG" x="10" y="-6"/>
+					</Anchors>
+				</Texture>
+				<FontString parentKey="BoatName" inherits="GameFontHighlightLarge2" justifyH="LEFT" text="Carrier">
+					<Size x="0" y="18"/>
+					<Anchors>
+						<Anchor point="LEFT" relativeKey="$parent.Portrait" relativePoint="RIGHT" x="6" y="15"/>
+					</Anchors>
+				</FontString>
+				<FontString parentKey="BoatType" inherits="GameFontDisable" justifyH="LEFT" text="Transport">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.BoatName" relativePoint="BOTTOMLEFT" x="14" y="-2"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+			<Layer level="ARTWORK" textureSubLevel="1">
+				<Texture parentKey="Quality" atlas="ShipMission_BoatRarity-Epic" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="BOTTOMLEFT" relativeKey="$parent.HeaderBG" x="10" y="9"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Frame parentKey="QualityFrame">
+				<Size x="10" y="10"/>
+				<Anchors>
+					<Anchor point="TOPLEFT" x="20" y="-90"/>
+				</Anchors>
+				<Layers>
+					<Layer level="OVERLAY">
+						<FontString parentKey="Text" inherits="GameFontHighlight" justifyH="LEFT">
+							<Anchors>
+								<Anchor point="TOPLEFT"/>
+							</Anchors>
+						</FontString>					
+					</Layer>
+				</Layers>
+			</Frame>
+			<StatusBar parentKey="XPBar" inherits="GarrisonFollowerXPBarTemplate" enableMouse="true">
+				<Size x="520" y="9"/>
+				<Anchors>
+					<Anchor point="BOTTOMRIGHT" relativeKey="$parent.HeaderBG" x="-12" y="15"/>
+				</Anchors>
+				<Layers>
+					<Layer level="HIGHLIGHT">
+						<FontString parentKey="Label" inherits="NumberFontNormalLarge">
+							<Anchors>
+								<Anchor point="CENTER"/>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+			</StatusBar>
+			<CinematicModel parentKey="Model" inherits="ModelTemplate">
+				<Size x="570" y="340"/>
+				<Anchors>
+					<Anchor point="TOP" x="0" y="-94"/>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<Texture atlas="GarrFollower-Shadow" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="BOTTOM" x="0" y="-35"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnModelLoaded>
+						self:SetAlpha(1);
+					</OnModelLoaded>
+					<OnShow>
+						self:SetTargetDistance(0);
+						self:SetFacing(.2);
+						GarrisonMission_SetFollowerModelItems(self);
+					</OnShow>
+					<OnMouseDown function="GarrisonFollowerPageModel_OnMouseDown"/>
+					<OnMouseUp function="GarrisonFollowerPageModel_OnMouseUp"/>	
+				</Scripts>
+			</CinematicModel>
+			<Button parentKey="Trait1" parentArray="Traits" inherits="GarrisonShipTraitTemplate">
+				<Anchors>
+					<Anchor point="BOTTOMLEFT" x="70" y="59"/>
+				</Anchors>
+				<Layers>
+					<Layer level="OVERLAY" textureSubLevel="0">
+						<FontString parentKey="Name" inherits="GameFontNormalMed1" text="GARRISON_SHIPYARD_FOLLOWER_TYPE">
+							<Anchors>
+								<Anchor point="TOP"/>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+			</Button>
+			<Button parentKey="Trait2" parentArray="Traits" inherits="GarrisonShipTraitTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativeKey="$parent.Trait1" relativePoint="RIGHT" x="20" y="0"/>
+				</Anchors>
+				<Layers>
+					<Layer level="OVERLAY" textureSubLevel="0">
+						<FontString parentKey="Name" inherits="GameFontNormalMed1" text="GARRISON_SHIPYARD_FOLLOWER_CREW">
+							<Anchors>
+								<Anchor point="TOP"/>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+			</Button>
+			<Frame parentKey="EquipmentFrame">
+				<Size x="196" y="96"/>
+				<Anchors>
+					<Anchor point="BOTTOMLEFT" x="300" y="55"/>
+				</Anchors>
+				<Layers>
+					<Layer level="OVERLAY">
+						<FontString parentKey="EquipmentTitle" inherits="GameFontNormalMed1" text="GARRISON_SHIPYARD_FOLLOWER_EQUIPMENT_SLOTS">
+							<Anchors>
+								<Anchor point="TOP"/>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+				<Frames>
+					<Button parentKey="Equipment1" parentArray="Equipment" inherits="GarrisonShipEquipmentTemplate">
+						<Anchors>
+							<Anchor point="BOTTOMLEFT"/>
+						</Anchors>
+						<KeyValues>
+							 <KeyValue key="quality" value="rare" type="string"/>
+						</KeyValues>
+						<Layers>
+							<Layer level="OVERLAY" textureSubLevel="1">
+								<Texture parentKey="Lock" atlas="ShipMission_ShipFollower-Lock-Rare" useAtlasSize="true">
+									<Anchors>
+										<Anchor point="CENTER"/>
+									</Anchors>
+								</Texture>
+							</Layer>
+						</Layers>
+					</Button>
+					<Button parentKey="Equipment2" parentArray="Equipment" inherits="GarrisonShipEquipmentTemplate">
+						<Anchors>
+							<Anchor point="LEFT" relativeKey="$parent.Equipment1" relativePoint="RIGHT" x="30"/>
+						</Anchors>
+						<KeyValues>
+							 <KeyValue key="quality" value="epic" type="string"/>
+						</KeyValues>
+						<Layers>
+							<Layer level="OVERLAY" textureSubLevel="1">
+								<Texture parentKey="Lock" atlas="ShipMission_ShipFollower-Lock-Epic" useAtlasSize="true">
+									<Anchors>
+										<Anchor point="CENTER"/>
+									</Anchors>
+								</Texture>
+							</Layer>
+						</Layers>
+					</Button>
+				</Frames>
+			</Frame>
+			<Frame parentKey="ThreatCountersFrame" inherits="GarrisonThreatCountersFrameTemplate" hidden="true">
+				<Anchors>
+					<Anchor point="TOPRIGHT" x="-12" y="30"/>
+				</Anchors>
+				<Scripts>
+					<OnLoad>GarrisonThreatCountersFrame_OnLoad(self, LE_FOLLOWER_TYPE_SHIPYARD_6_2, GARRISON_SHIPYARD_THREAT_COUNTER_TOOLTIP);</OnLoad>
+				</Scripts>
+			</Frame>
+		</Frames>
+	</Frame>
+	
 	<Frame name="GarrisonShipyardFrame" inherits="GarrisonMissionFrameTemplate" mixin="GarrisonMission,GarrisonShipyardMission">
 		<Size x="962" y="662"/>
 		<Anchors>
@@ -983,14 +1305,14 @@
 			</Button>
 			
 			<!-- List of ships -->
-			<Frame parentKey="FollowerList" name="$parentFollowers" inherits="GarrisonShipFollowerListTemplateHeader" hidden="true">
+			<Frame parentKey="FollowerList" name="$parentFollowers" inherits="GarrisonShipFollowerListTemplateHeader" hidden="true" mixin="GarrisonFollowerList, GarrisonShipyardFollowerList">
 				<Size x="305" y="535"/>			
 				<Anchors>
 					<Anchor point="TOPLEFT" x="33" y="-64"/>
 				</Anchors>
 				<KeyValues>
 					 <KeyValue key="showUncollected" value="false" type="boolean"/>
-					 <KeyValue key="canCastSpellsOnFollowers" value="false" type="boolean"/>
+					 <KeyValue key="canCastSpellsOnFollowers" value="true" type="boolean"/>
 					 <KeyValue key="showCounters" value="true" type="boolean"/>
 					 <KeyValue key="canExpand" value="false" type="boolean"/>
 				</KeyValues>
@@ -1020,10 +1342,8 @@
 					</EditBox>
 				</Frames>
 				<Scripts>
-					<!--
-					<OnShow function="GarrisonFollowerList_OnShow"/>
-					<OnHide function="GarrisonFollowerList_OnHide"/>
-					-->
+					<OnShow>self:OnShow();</OnShow>
+					<OnHide>self:OnHide();</OnHide>
 				</Scripts>
 			</Frame>
 			
@@ -1166,28 +1486,7 @@
 			</Frame>
 			
 			<!-- Fleet tab frame -->
-			<Frame parentKey="FollowerTab" inherits="GarrisonMissionBaseFrameTemplate" hidden="true">
-				<Size x="580" y="565"/>
-				<Anchors>
-					<Anchor point="TOPRIGHT" x="-35" y="-64"/>
-				</Anchors>
-				<Layers>
-					<Layer level="BORDER" textureSubLevel="3">
-						<Texture parentKey="HeaderBG" atlas="GarrMission_FollowerPageHeaderBG">
-							<Anchors>
-								<Anchor point="TOPLEFT" y="-5"/>
-								<Anchor point="BOTTOMRIGHT" relativePoint="TOPRIGHT" y="-83"/>
-							</Anchors>
-						</Texture>
-					</Layer>
-					<Layer level="ARTWORK">
-						<FontString parentKey="NumFollowers" inherits="GameFontNormalMed3" justifyH="LEFT">
-							<Anchors>
-								<Anchor point="BOTTOMLEFT" relativePoint="TOPLEFT" y="12"/>
-							</Anchors>
-						</FontString>
-					</Layer>
-				</Layers>
+			<Frame parentKey="FollowerTab" inherits="GarrisonShipyardFollowerTabTemplate" hidden="true">
 			</Frame>
 			
 			<!-- Mission Complete Frames -->

@@ -21,4 +21,14 @@ UI.xsd">
 			</OnLoad>
 		</Scripts>
 	</Frame>
+	<Frame name="GarrisonShipyardFollowerTooltip" inherits="GarrisonShipyardFollowerTooltipTemplate" movable="false" toplevel="true">
+		<Size x="260" y="122"/>
+		<Anchors>
+			<Anchor point="BOTTOM" x="0" y="80"/>
+		</Anchors>
+		<Scripts>
+			<OnLoad>
+			</OnLoad>
+		</Scripts>
+	</Frame>
 </Ui>

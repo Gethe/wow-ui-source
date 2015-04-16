@@ -116,6 +116,7 @@ UISpecialFrames = {
 	"ScrollOfResurrectionSelectionFrame",
 	"FloatingPetBattleAbilityTooltip",
 	"FloatingGarrisonFollowerTooltip",
+	"FloatingGarrisonShipyardFollowerTooltip"
 };
 
 UIMenus = {
@@ -724,6 +725,10 @@ end
 
 function ToggleEncounterJournal()
 	if (IsBlizzCon()) then
+		return;
+	end
+	
+	if ( UnitLevel("player") < SHOW_EJ_LEVEL ) then
 		return;
 	end
 

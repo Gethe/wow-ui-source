@@ -21,8 +21,7 @@ function GarrisonFollowerMission:OnLoadMainFrame()
 	self.TitleText:SetText(GARRISON_MISSIONS_TITLE);
 	self.FollowerTab.ItemWeapon.Name:SetText(WEAPON);
 	self.FollowerTab.ItemArmor.Name:SetText(ARMOR);
-
-	GarrisonFollowerList_OnLoad(self, self:GetFollowerType());
+	self.FollowerList:Load(self:GetFollowerType());
 
 	self:UpdateCurrency();
 	
@@ -1168,12 +1167,16 @@ end
 ---------------------------------------------------------------------------------
 function GarrisonFollowerListButton_OnDragStart(self, button)
 	local mainFrame = self:GetParent():GetParent():GetParent():GetParent();
-	mainFrame:OnDragStartFollowerButton(GarrisonFollowerPlacer, self, 24);
+	if (mainFrame.OnDragStartFollowerButton) then
+		mainFrame:OnDragStartFollowerButton(GarrisonFollowerPlacer, self, 24);
+	end
 end
 
 function GarrisonFollowerListButton_OnDragStop(self)
 	local mainFrame = self:GetParent():GetParent():GetParent():GetParent();
-	mainFrame:OnDragStopFollowerButton(GarrisonFollowerPlacer);
+	if (mainFrame.OnDragStopFollowerButton) then
+		mainFrame:OnDragStopFollowerButton(GarrisonFollowerPlacer);
+	end
 end
 
 function GarrisonMissionPageFollowerFrame_OnDragStart(self)

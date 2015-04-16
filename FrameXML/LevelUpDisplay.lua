@@ -1432,6 +1432,7 @@ function BossBanner_AnimSwitch(self, entry)
 	if ( next(self.pendingLoot) ) then
 		-- we have loot
 		self.AnimSwitch:Play();
+		PlaySound("UI_Personal_Loot_Banner");
 		entry.duration = 0.5;
 	else
 		entry.duration = 0;
@@ -1631,6 +1632,7 @@ function BossBanner_Play(self, data)
 			self.SubTitle:Hide();
 			self:Show();
 			BossBanner_BeginAnims(self, BB_STATE_LOOT_EXPAND);
+			PlaySound("UI_Personal_Loot_Banner");
 		end
 	end
 end
