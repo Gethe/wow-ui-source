@@ -359,7 +359,7 @@
 			</Anchor>
 		</Anchors>
 		<Frames>
-			<Frame parentKey="Alert" hidden="true">
+			<Frame parentKey="NewAdventureNotice" hidden="true">
 				<Size x="28" y="28"/>
 				<Anchors>
 					<Anchor point="RIGHT" x="8" y="2"/>
@@ -605,6 +605,17 @@
 			<OnLoad>
 				MicroButtonAlert_OnLoad(self);
 				self.Text:SetText(LFG_MICRO_BUTTON_SPEC_TUTORIAL);
+			</OnLoad>
+		</Scripts>
+	</Frame>
+	<Frame name="EJMicroButtonAlert" inherits="MicroButtonAlertTemplate">
+		<Anchors>
+			<Anchor point="BOTTOM" relativeTo="EJMicroButton" relativePoint="TOP" x="0" y="-8"/>
+		</Anchors>
+		<Scripts>
+			<OnLoad>
+				MicroButtonAlert_OnLoad(self);
+				self.Text:SetText(AJ_MICRO_BUTTON_ALERT_TEXT);
 			</OnLoad>
 		</Scripts>
 	</Frame>

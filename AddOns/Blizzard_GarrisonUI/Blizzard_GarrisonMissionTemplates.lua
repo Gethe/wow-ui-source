@@ -184,7 +184,6 @@ function GarrisonMission:SetEnemies(frame, enemies, numFollowers, mechanicYOffse
 		numVisibleEnemies = numVisibleEnemies + 1;
 		local enemy = enemies[i];
 		Frame.Name:SetText(enemy.name);
-		--GarrisonEnemyPortait_Set(Frame.PortraitFrame.Portrait, enemy.portraitFileDataID);
 		local numMechs = 0;
 		for id, mechanic in pairs(enemy.mechanics) do
 			numMechs = numMechs + 1;	
@@ -650,7 +649,7 @@ function GarrisonMission:MissionCompleteInitialize(missionList, index)
 	self:SetMissionCompleteNumEncounters(stage.EncountersFrame, #encounters);
 	for i=1, #encounters do
 		local encounter = stage.EncountersFrame.Encounters[i];
-		encounter.Name:SetText(encounters[i].name);
+		self:SetEnemyName(encounter, encounters[i].name);
 		encounter.portraitFileDataID = encounters[i].portraitFileDataID;
 		self:SetEnemyPortrait(encounter, encounters[i], encounter.Elite, #enemies[i].mechanics);
 	end

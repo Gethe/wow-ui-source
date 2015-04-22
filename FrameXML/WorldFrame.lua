@@ -99,33 +99,31 @@ end
 
 ACTION_STATUS_FADETIME = 2.0;
 
-function TakeScreenshot()
-	if ( ActionStatus:IsShown() ) then
-		ActionStatus:Hide();
-	end
-	Screenshot();
-end
-
 function ActionStatus_OnLoad(self)
+	self:RegisterEvent("SCREENSHOT_STARTED");
 	self:RegisterEvent("SCREENSHOT_SUCCEEDED");
 	self:RegisterEvent("SCREENSHOT_FAILED");
 end
 
 function ActionStatus_OnEvent(self, event, ...)
-	self.startTime = GetTime();
-	self:SetAlpha(1.0);
-	if ( event == "SCREENSHOT_SUCCEEDED" ) then
-		ActionStatus_DisplayMessage(SCREENSHOT_SUCCESS, true);
-		-- Append [Share] hyperlink
-		if ( C_Social.IsSocialEnabled() ) then
-			local screenshotText = SCREENSHOT_SUCCESS .. " " .. Social_GetShareScreenshotLink();
-			DEFAULT_CHAT_FRAME:AddMessage(screenshotText, YELLOW_FONT_COLOR.r, YELLOW_FONT_COLOR.g, YELLOW_FONT_COLOR.b);
+	if ( event == "SCREENSHOT_STARTED" ) then
+		self:Hide();
+	else
+		self.startTime = GetTime();
+		self:SetAlpha(1.0);
+		if ( event == "SCREENSHOT_SUCCEEDED" ) then
+			ActionStatus_DisplayMessage(SCREENSHOT_SUCCESS, true);
+			-- Append [Share] hyperlink
+			if ( C_Social.IsSocialEnabled() ) then
+				local screenshotText = SCREENSHOT_SUCCESS .. " " .. Social_GetShareScreenshotLink();
+				DEFAULT_CHAT_FRAME:AddMessage(screenshotText, YELLOW_FONT_COLOR.r, YELLOW_FONT_COLOR.g, YELLOW_FONT_COLOR.b);
+			end
 		end
+		if ( event == "SCREENSHOT_FAILED" ) then
+			ActionStatus_DisplayMessage(SCREENSHOT_FAILURE, true);
+		end
+		self:Show();
 	end
-	if ( event == "SCREENSHOT_FAILED" ) then
-		ActionStatus_DisplayMessage(SCREENSHOT_FAILURE, true);
-	end
-	self:Show();
 end
 
 function ActionStatus_DisplayMessage(text, ignoreNewbieTooltipSetting)

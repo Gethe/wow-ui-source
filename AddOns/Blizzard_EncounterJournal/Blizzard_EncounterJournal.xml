@@ -1161,9 +1161,9 @@
 					</Layer>
 				</Layers>
 				<Scripts>
-					<OnEnter function="AdventureJournal_RewardEnter"/>
-					<OnLeave function="AdventureJournal_RewardLeave"/>
-					<OnMouseDown function="AdventureJournal_OnMouseDown"/>
+					<OnEnter function="AdventureJournal_Reward_OnEnter"/>
+					<OnLeave function="AdventureJournal_Reward_OnLeave"/>
+					<OnMouseDown function="AdventureJournal_Reward_OnMouseDown"/>
 				</Scripts>
 			</Frame>
 		</Frames>
@@ -1251,7 +1251,7 @@
 		</Scripts>
 	</Button>
 
-	<Button name="EncounterTierTabTemplate" virtual="true">
+	<Button name="EncounterTierTabTemplate" virtual="true" parentArray="Tabs">
 		<Size x="120" y="36"/>	
 		<HitRectInsets>
 			<AbsInset left="-12" right="-12" top="0" bottom="0"/>
@@ -1675,27 +1675,36 @@
 				</Layers>
 				<Frames>
 					<Button name="$parentSuggestTab" inherits="EncounterTierTabTemplate" text="AJ_SUGGESTED_CONTENT_TAB" parentKey="suggestTab">
+						<KeyValues>
+ 							<KeyValue key="id" value="1" type="number"/>
+ 						</KeyValues>
 						<Anchors>
 							<Anchor point="BOTTOMLEFT" relativePoint="TOPLEFT" x="25" y="-45"/>
 						</Anchors>
 						<Scripts>
-							<OnClick function="EJSuggestTab_OnClick"/>
+							<OnClick function="EJ_ContentTab_OnClick"/>
 						</Scripts>
 					</Button>
 					<Button name="$parentDungeonTab" inherits="EncounterTierTabTemplate" text="DUNGEONS" parentKey="dungeonsTab">
+						<KeyValues>
+ 							<KeyValue key="id" value="2" type="number"/>
+ 						</KeyValues>
 						<Anchors>
 							<Anchor point="BOTTOMLEFT" relativeTo="$parentSuggestTab" relativePoint="BOTTOMRIGHT" x="35" y="0"/>
 						</Anchors>
 						<Scripts>
-							<OnClick function="EJDungeonTab_OnClick"/>
+							<OnClick function="EJ_ContentTab_OnClick"/>
 						</Scripts>
 					</Button>
 					<Button name="$parentRaidTab" inherits="EncounterTierTabTemplate" text="RAIDS" parentKey="raidsTab">
+						<KeyValues>
+ 							<KeyValue key="id" value="3" type="number"/>
+ 						</KeyValues>
 						<Anchors>
 							<Anchor point="BOTTOMLEFT" relativeTo="$parentDungeonTab" relativePoint="BOTTOMRIGHT" x="35" y="0"/>
 						</Anchors>
 						<Scripts>
-							<OnClick function="EJRaidTab_OnClick"/>
+							<OnClick function="EJ_ContentTab_OnClick"/>
 						</Scripts>
 					</Button>
 					<Frame name="$parentTierDropDown" parentKey="tierDropDown" inherits="UIDropDownMenuTemplate">
@@ -2747,9 +2756,9 @@
 									</Layer>
 								</Layers>
 								<Scripts>
-									<OnEnter function="AdventureJournal_RewardEnter"/>
-									<OnLeave function="AdventureJournal_RewardLeave"/>
-									<OnMouseDown function="AdventureJournal_OnMouseDown"/>
+									<OnEnter function="AdventureJournal_Reward_OnEnter"/>
+									<OnLeave function="AdventureJournal_Reward_OnLeave"/>
+									<OnMouseDown function="AdventureJournal_Reward_OnMouseDown"/>
 								</Scripts>
 							</Frame>
 						</Frames>
@@ -2806,10 +2815,9 @@
 		<Layers>
 			<Layer level="ARTWORK">
 				<FontString name="$parentHeaderText" parentKey="headerText" inherits="GameFontNormalMed1" justifyV="TOP" justifyH="LEFT">
-					<Size x="256" y="0"/>
 					<Anchors>
 						<Anchor point="TOPLEFT" x="11" y="-10"/>
-						<Anchor point="RIGHT" x="-11" y="0"/>
+						<Anchor point="TOPRIGHT" x="-11" y="-10"/>
 					</Anchors>
 					<Color r="1.0" g="0.82" b="0"/>
 				</FontString>

@@ -160,7 +160,7 @@ function TargetFrame_OnEvent (self, event, ...)
 		TargetFrame_UpdateRaidTargetIcon(self);
 		CloseDropDownMenus();
 
-		if ( UnitExists(self.unit) ) then
+		if ( UnitExists(self.unit) and not IsReplacingUnit()) then
 			if ( UnitIsEnemy(self.unit, "player") ) then
 				PlaySound("igCreatureAggroSelect");
 			elseif ( UnitIsFriend("player", self.unit) ) then

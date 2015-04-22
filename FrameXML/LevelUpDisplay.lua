@@ -1654,10 +1654,12 @@ function BossBanner_OnAnimOutFinished(self)
 	banner.SkullSpikes:SetAlpha(0);
 	banner.RightFillagree:SetAlpha(0);
 	banner.LeftFillagree:SetAlpha(0);
-	banner.XLeft:SetAlpha(0);
-	banner.Xright:SetAlpha(0);
 	banner.Title:SetAlpha(0);
 	banner.SubTitle:SetAlpha(0);
+	banner.FlashBurst:SetAlpha(0);
+	banner.FlashBurstLeft:SetAlpha(0);
+	banner.FlashBurstCenter:SetAlpha(0);
+	banner.RedFlash:SetAlpha(0);
 	for i = 1, #banner.LootFrames do
 		banner.LootFrames[i]:Hide();
 	end

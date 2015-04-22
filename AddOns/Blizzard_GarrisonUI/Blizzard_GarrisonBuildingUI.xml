@@ -88,7 +88,7 @@
 					<TexCoords left="1.0" right="0.0" top="1.0" bottom="0.0"/>
 				</Texture>
 			</Layer>
-			<Layer level="BORDER" textureSubLevel="3">
+			<Layer level="BORDER" textureSubLevel="4">
 				<Texture atlas="_Garr_InfoBoxBorder-Top" horizTile="true" useAtlasSize="true">
 					<Anchors>
 						<Anchor point="TOPLEFT"/>
@@ -109,7 +109,7 @@
 					<TexCoords left="1.0" right="0.0" top="0.0" bottom="1.0"/>
 				</Texture>
 			</Layer>
-			<Layer level="BORDER" textureSubLevel="4">
+			<Layer level="BORDER" textureSubLevel="5">
 				<Texture atlas="Garr_InfoBoxBorder-Corner" useAtlasSize="true">
 					<Anchors>
 						<Anchor point="TOPLEFT"/>

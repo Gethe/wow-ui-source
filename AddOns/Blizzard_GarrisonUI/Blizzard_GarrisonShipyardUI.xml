@@ -457,10 +457,23 @@
 	<Frame name="GarrisonShipMissionCompleteEnemyTemplate" virtual="true">
 		<Size x="152" y="128"/>
 		<Layers>
+			<Layer level="BORDER">
+				<Texture parentKey="PortraitRing" atlas="GarrMission_EncounterBar-PortraitRing" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="BOTTOM" x="0" y="15"/>
+					</Anchors>
+				</Texture>
+			</Layer>
 			<Layer level="BACKGROUND">
 				<Texture parentKey="Portrait" atlas="Ships_EnemyCarrier-Portrait" useAtlasSize="true">
 					<Anchors>
 						<Anchor point="BOTTOM"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="PortraitIcon">
+					<Size x="50" y="50"/>
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent.PortraitRing"/>
 					</Anchors>
 				</Texture>
 			</Layer>
@@ -484,7 +497,7 @@
 				<Frames>
 					<Frame parentArray="Mechanics" inherits="GarrisonMissionEnemyMechanicTemplate">
 						<Anchors>
-							<Anchor point="LEFT"/>
+							<Anchor point="LEFT" x="0" y="10"/>
 						</Anchors>
 					</Frame>
 				</Frames>
@@ -495,10 +508,23 @@
 	<Frame name="GarrisonShipMissionEnemyTemplate" virtual="true">
 		<Size x="152" y="128"/>
 		<Layers>
+			<Layer level="BORDER">
+				<Texture parentKey="PortraitRing" atlas="GarrMission_EncounterBar-PortraitRing" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="BOTTOM" x="0" y="15"/>
+					</Anchors>
+				</Texture>
+			</Layer>
 			<Layer level="BACKGROUND">
 				<Texture parentKey="Portrait" atlas="Ships_EnemyCarrier-Portrait" useAtlasSize="true">
 					<Anchors>
 						<Anchor point="BOTTOM"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="PortraitIcon">
+					<Size x="50" y="50"/>
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent.PortraitRing"/>
 					</Anchors>
 				</Texture>
 			</Layer>
@@ -539,6 +565,14 @@
 						<Anchor point="RIGHT" relativeKey="$parent.HeaderRight" relativePoint="LEFT" x="35"/>
 					</Anchors>
 				</Texture>
+			</Layer>
+			<Layer level="OVERLAY">
+				<FontString parentKey="NoShipsLabel" inherits="GameFontNormalLarge2" text="GARRISON_SHIPYARD_NO_SHIPS" hidden="true">
+					<Size x="290" y="0"/>
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</FontString>
 			</Layer>
 		</Layers> 
 		<Frames>
@@ -1045,7 +1079,7 @@
 			<Anchor point="TOPRIGHT" x="-35" y="-64"/>
 		</Anchors>
 		<Layers>	
-			<Layer level="BORDER" textureSubLevel="3">
+			<Layer level="BORDER" textureSubLevel="4">
 				<Texture atlas="_Garr_InfoBoxBorder-Top" horizTile="true" useAtlasSize="true">
 					<Anchors>
 						<Anchor point="BOTTOMLEFT"/>
@@ -1054,7 +1088,7 @@
 					<TexCoords left="0.0" right="1.0" top="1.0" bottom="0.0"/>
 				</Texture>
 			</Layer>
-			<Layer level="BORDER" textureSubLevel="4">
+			<Layer level="BORDER" textureSubLevel="5">
 				<Texture atlas="Garr_InfoBoxBorder-Corner" useAtlasSize="true">
 					<Anchors>
 						<Anchor point="BOTTOMLEFT"/>
@@ -1067,14 +1101,6 @@
 					</Anchors>
 					<TexCoords left="1.0" right="0.0" top="1.0" bottom="0.0"/>
 				</Texture>
-			</Layer>
-			<Layer level="ARTWORK">
-				<FontString parentKey="NoFollowersLabel" inherits="GameFontNormalLarge2" text="GARRISON_NO_SELECTED_SHIP_FOLLOWER" hidden="true">
-					<Size x="500" y="0"/>
-					<Anchors>
-						<Anchor point="CENTER"/>
-					</Anchors>
-				</FontString>
 			</Layer>
 			<Layer level="BORDER" textureSubLevel="3">
 				<Texture parentKey="HeaderBG" atlas="GarrMission_FollowerPageHeaderBG">
@@ -1298,10 +1324,20 @@
 			</Button>
 			
 			<!-- Fleet tab button -->
-			<Button name="$parentTab2" inherits="GarrisonMissionFrameTabTemplate" id="2" text="GARRISON_FLEET">
+			<Button name="$parentTab2" inherits="GarrisonMissionFrameTabTemplate" id="2" text="GARRISON_FLEET" motionScriptsWhileDisabled="true">
 				<Anchors>
 					<Anchor point="LEFT" relativeTo="$parentTab1" relativePoint="RIGHT" x="-5" y="0"/>
-				</Anchors>	
+				</Anchors>
+				<Scripts>
+					<OnEnter>
+						if (self.isDisabled) then
+							GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+							GameTooltip:SetText(GARRISON_SHIPYARD_NO_SHIPS_TOOLTIP, nil, nil, nil, nil, true);
+							GameTooltip:Show();
+						end
+					</OnEnter>
+					<OnLeave function="GameTooltip_Hide"/>
+				</Scripts>
 			</Button>
 			
 			<!-- List of ships -->

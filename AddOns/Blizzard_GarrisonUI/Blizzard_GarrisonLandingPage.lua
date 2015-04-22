@@ -255,7 +255,7 @@ end
 
 function GarrisonLandingPageReportList_UpdateItems()
 	GarrisonLandingPageReport.List.items = C_Garrison.GetLandingPageItems();
-	GarrisonLandingPageReport.List.AvailableItems = C_Garrison.GetAvailableMissions(LE_FOLLOWER_TYPE_GARRISON_6_0);
+	GarrisonLandingPageReport.List.AvailableItems = C_Garrison.GetAvailableMissions();
 	Garrison_SortMissions(GarrisonLandingPageReport.List.AvailableItems);
 	GarrisonLandingPageReport.InProgress.Text:SetFormattedText(GARRISON_LANDING_IN_PROGRESS, #GarrisonLandingPageReport.List.items);
 	GarrisonLandingPageReport.Available.Text:SetFormattedText(GARRISON_LANDING_AVAILABLE, #GarrisonLandingPageReport.List.AvailableItems);
@@ -504,10 +504,18 @@ function GarrisonLandingPageReportMission_OnEnter(self, button)
 	end
 
 	if ( GarrisonLandingPageReport.selectedTab == GarrisonLandingPageReport.InProgress ) then
-		GarrisonMissionButton_SetInProgressTooltip(item, true);
+		if (item.followerTypeID == LE_FOLLOWER_TYPE_GARRISON_6_0) then
+			GarrisonMissionButton_SetInProgressTooltip(item, true);
+		elseif (item.followerTypeID == LE_FOLLOWER_TYPE_SHIPYARD_6_2) then
+			GarrisonShipyardMapMission_SetTooltip(item, true);
+		end
 	else
 		GameTooltip:SetText(item.name);
-		GameTooltip:AddLine(string.format(GARRISON_MISSION_TOOLTIP_NUM_REQUIRED_FOLLOWERS, item.numFollowers), 1, 1, 1);
+		if (item.followerTypeID == LE_FOLLOWER_TYPE_GARRISON_6_0) then
+			GameTooltip:AddLine(string.format(GARRISON_MISSION_TOOLTIP_NUM_REQUIRED_FOLLOWERS, item.numFollowers), 1, 1, 1);
+		elseif (item.followerTypeID == LE_FOLLOWER_TYPE_SHIPYARD_6_2) then
+			GameTooltip:AddLine(string.format(GARRISON_SHIPYARD_MISSION_TOOLTIP_NUM_REQUIRED_FOLLOWERS, item.numFollowers), 1, 1, 1);
+		end
 		GarrisonMissionButton_AddThreatsToTooltip(item.missionID, LE_FOLLOWER_TYPE_GARRISON_6_0);
 		if (item.isRare) then
 			GameTooltip:AddLine(GARRISON_MISSION_AVAILABILITY);

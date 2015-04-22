@@ -56,9 +56,9 @@ function AlertFrame_OnEvent (self, event, ...)
 		local itemLink, quantity, rollType, roll = ...;
 		LootWonAlertFrame_ShowAlert(itemLink, quantity, rollType, roll);
 	elseif ( event == "SHOW_LOOT_TOAST" ) then
-		local typeIdentifier, itemLink, quantity, specID, sex, isPersonal, lootSource = ...;
+		local typeIdentifier, itemLink, quantity, specID, sex, isPersonal, lootSource, lessAwesome = ...;
 		if ( typeIdentifier == "item" ) then
-			LootWonAlertFrame_ShowAlert(itemLink, quantity, nil, nil, specID);
+			LootWonAlertFrame_ShowAlert(itemLink, quantity, nil, nil, specID, nil, nil, nil, lessAwesome);
 		elseif ( typeIdentifier == "money" ) then
 			MoneyWonAlertFrame_ShowAlert(quantity);
 		elseif ( (isPersonal == true) and (typeIdentifier == "currency") ) then
@@ -66,17 +66,17 @@ function AlertFrame_OnEvent (self, event, ...)
 			LootWonAlertFrame_ShowAlert(itemLink, quantity, nil, nil, specID, true, false, lootSource);
 		end
 	elseif ( event == "SHOW_PVP_FACTION_LOOT_TOAST" ) then
-		local typeIdentifier, itemLink, quantity, specID, sex, isPersonal = ...;
+		local typeIdentifier, itemLink, quantity, specID, sex, isPersonal, lessAwesome = ...;
 		if ( typeIdentifier == "item" ) then
-			LootWonAlertFrame_ShowAlert(itemLink, quantity, nil, nil, specID, false, true);
+			LootWonAlertFrame_ShowAlert(itemLink, quantity, nil, nil, specID, false, true, nil, lessAwesome);
 		elseif ( typeIdentifier == "money" ) then
 			MoneyWonAlertFrame_ShowAlert(quantity);
 		elseif ( typeIdentifier == "currency" ) then
 			LootWonAlertFrame_ShowAlert(itemLink, quantity, nil, nil, specID, true, true);
 		end
 	elseif ( event == "SHOW_LOOT_TOAST_UPGRADE") then
-		local itemLink, quantity, specID, sex, baseQuality, isPersonal = ...;
-		LootUpgradeFrame_ShowAlert(itemLink, quantity, specID, baseQuality);
+		local itemLink, quantity, specID, sex, baseQuality, isPersonal, lessAwesome = ...;
+		LootUpgradeFrame_ShowAlert(itemLink, quantity, specID, baseQuality, nil, nil, lessAwesome);
 	elseif ( event == "PET_BATTLE_CLOSE" ) then
 		AchievementAlertFrame_FireDelayedAlerts();
 	elseif ( event == "STORE_PRODUCT_DELIVERED" ) then
@@ -105,9 +105,14 @@ function AlertFrame_AnimateIn(frame)
 	frame:Show();
 	frame.animIn:Play();
 	if ( frame.glow ) then
-		frame.glow:Show();
-		frame.glow.animIn:Play();
+		if frame.glow.suppressGlow then
+			frame.glow:Hide();
+		else
+			frame.glow:Show();
+			frame.glow.animIn:Play();
+		end
 	end
+	
 	if ( frame.shine ) then
 		frame.shine:Show();
 		frame.shine.animIn:Play();
@@ -889,11 +894,12 @@ end
 -- [[ LootWonAlertFrameTemplate ]] --
 LOOTWONALERTFRAME_VALUES={
 	Default = { bgOffsetX=0, bgOffsetY=0, labelOffsetX=7, labelOffsetY=5, labelText=YOU_WON_LABEL, glowAtlas="loottoast-glow"},
+	LessAwesome = { bgOffsetX=0, bgOffsetY=0, labelOffsetX=7, labelOffsetY=5, labelText=YOU_WON_LABEL, bgAtlas="LootToast-LessAwesome"},
 	GarrisonCache = { bgOffsetX=-4, bgOffsetY=0, labelOffsetX=7, labelOffsetY=1, labelText=GARRISON_CACHE, glowAtlas="CacheToast-Glow", bgAtlas="CacheToast", noIconBorder=true, iconUnderBG=true},
 	Horde = { bgOffsetX=-1, bgOffsetY=-1, labelOffsetX=7, labelOffsetY=3, labelText=YOU_EARNED_LABEL, pvpAtlas="loottoast-bg-horde", glowAtlas="loottoast-glow"},
 	Alliance = { bgOffsetX=-1, bgOffsetY=-1, labelOffsetX=7, labelOffsetY=3, labelText=YOU_EARNED_LABEL, pvpAtlas="loottoast-bg-alliance", glowAtlas="loottoast-glow"},
 }
-function LootWonAlertFrame_ShowAlert(itemLink, quantity, rollType, roll, specID, isCurrency, showFactionBG, lootSource)
+function LootWonAlertFrame_ShowAlert(itemLink, quantity, rollType, roll, specID, isCurrency, showFactionBG, lootSource, lessAwesome)
 	local frame;
 	for i=1, #LOOT_WON_ALERT_FRAMES do
 		local lootWon = LOOT_WON_ALERT_FRAMES[i];
@@ -908,7 +914,7 @@ function LootWonAlertFrame_ShowAlert(itemLink, quantity, rollType, roll, specID,
 		table.insert(LOOT_WON_ALERT_FRAMES, frame);
 	end
 
-	LootWonAlertFrame_SetUp(frame, itemLink, quantity, rollType, roll, specID, isCurrency, showFactionBG, lootSource);
+	LootWonAlertFrame_SetUp(frame, itemLink, quantity, rollType, roll, specID, isCurrency, showFactionBG, lootSource, lessAwesome);
 	AlertFrame_AnimateIn(frame);
 	AlertFrame_FixAnchors();
 end
@@ -916,7 +922,7 @@ end
 local LOOT_SOURCE_GARRISON_CACHE = 10;
 
 -- NOTE - This may also be called for an externally created frame. (E.g. bonus roll has its own frame)
-function LootWonAlertFrame_SetUp(self, itemLink, quantity, rollType, roll, specID, isCurrency, showFactionBG, lootSource)
+function LootWonAlertFrame_SetUp(self, itemLink, quantity, rollType, roll, specID, isCurrency, showFactionBG, lootSource, lessAwesome)
 	local itemName, itemHyperLink, itemRarity, itemTexture;
 	if (isCurrency == true) then
 		itemName, _, itemTexture, _, _, _, _, itemRarity = GetCurrencyInfo(itemLink);
@@ -942,6 +948,8 @@ function LootWonAlertFrame_SetUp(self, itemLink, quantity, rollType, roll, specI
 	else
 		if ( lootSource == LOOT_SOURCE_GARRISON_CACHE ) then
 			windowInfo = LOOTWONALERTFRAME_VALUES["GarrisonCache"];
+		elseif ( lessAwesome ) then
+			windowInfo = LOOTWONALERTFRAME_VALUES["LessAwesome"];
 		end
 		if ( windowInfo.bgAtlas ) then
 			self.Background:Hide();
@@ -955,7 +963,13 @@ function LootWonAlertFrame_SetUp(self, itemLink, quantity, rollType, roll, specI
 		end
 		self.PvPBackground:Hide();
 	end
-	self.glow:SetAtlas(windowInfo.glowAtlas);
+	if windowInfo.glowAtlas then
+		self.glow:SetAtlas(windowInfo.glowAtlas);
+		self.glow.suppressGlow = nil;
+	else
+		self.glow.suppressGlow = true;
+	end
+	
 	self.IconBorder:SetShown(not windowInfo.noIconBorder);
 	if ( windowInfo.iconUnderBG ) then
 		self.Icon:SetDrawLayer("BACKGROUND");

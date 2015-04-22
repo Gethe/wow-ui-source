@@ -1021,16 +1021,28 @@
 				</FontString>
 			</Layer>
 			<Layer level="OVERLAY" textureSubLevel="2">
-				<Texture parentKey="XLeft" hidden="false" alpha="0" alphaMode="BLEND" atlas="GarrMission_EncounterBar-Xleft" useAtlasSize="true">
+				<Texture parentKey="FlashBurst" hidden="false" alpha="0.01" alphaMode="ADD" atlas="BossBanner-RedLightning" useAtlasSize="true">
 					<Anchors>
-						<Anchor point="CENTER" relativeKey="$parent.SkullCircle" x="-1" y="0"/>
+						<Anchor point="CENTER" relativeKey="$parent.SkullSpikes" x="15" y="-4"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="FlashBurstLeft" hidden="false" alpha="0.01" alphaMode="ADD" atlas="BossBanner-RedLightning" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent.SkullSpikes" x="-15" y="-4"/>
 					</Anchors>
 				</Texture>
 			</Layer>
 			<Layer level="OVERLAY" textureSubLevel="3">
-				<Texture parentKey="Xright" hidden="false" alpha="0" alphaMode="BLEND" atlas="GarrMission_EncounterBar-Xright" useAtlasSize="true">
+				<Texture parentKey="FlashBurstCenter" hidden="false" alpha="0.01" alphaMode="ADD" atlas="BossBanner-RedLightning" useAtlasSize="true">
 					<Anchors>
-						<Anchor point="CENTER" relativeKey="$parent.SkullCircle" x="-1" y="0"/>
+						<Anchor point="CENTER" relativeKey="$parent.SkullSpikes"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="OVERLAY" textureSubLevel="4">
+				<Texture parentKey="RedFlash" hidden="false" alpha="0.01" alphaMode="ADD" atlas="BossBanner-RedFlash" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent.SkullSpikes" x="1" y="-4"/>
 					</Anchors>
 				</Texture>
 			</Layer>
@@ -1053,9 +1065,6 @@
 				<Alpha childKey="BannerMiddle" startDelay="0.2" duration="0.25" order="2" fromAlpha="0" toAlpha="1"/>
 				<Scale childKey="BannerMiddle" startDelay="0.1" duration="0.3" order="2" fromScaleX="0.1" fromScaleY="1" toScaleX="1" toScaleY="1"/>				
 				<Alpha childKey="BottomFillagree" duration="0.15" order="2" fromAlpha="0" toAlpha="1"/>
-				<Alpha childKey="RedFlash" duration="0.15" order="2" fromAlpha="0" toAlpha="1"/>
-				<Scale childKey="RedFlash" duration="0.2" order="2" fromScaleX="0.5" fromScaleY="0.5" toScaleX="1.15" toScaleY="1.15"/>
-				<Alpha childKey="RedFlash" startDelay="0.25" duration="0.5" order="2" fromAlpha="1" toAlpha="0"/>
 				<Scale childKey="SkullSpikes" startDelay="0.1" duration="0.1" order="2" fromScaleX="0.5" fromScaleY="0.5" toScaleX="1" toScaleY="1"/>
 				<Alpha childKey="SkullSpikes" duration="0.1" order="2" fromAlpha="0" toAlpha="1"/>
 				<Alpha childKey="RightFillagree" duration="0.1" order="2" fromAlpha="0" toAlpha="1"/>
@@ -1080,13 +1089,33 @@
 				<Alpha childKey="BannerBottomGlow" startDelay="1.1" duration="0.6" order="2" fromAlpha="1" toAlpha="0"/>
 				<Alpha childKey="BannerMiddleGlow" startDelay="0.9" duration="0.25" order="2" fromAlpha="0" toAlpha="1"/>
 				<Scale childKey="BannerMiddleGlow" startDelay="0.9" duration="0.5" order="2" fromScaleX="0.5" fromScaleY="1" toScaleX="1.6" toScaleY="1"/>
-				<Alpha childKey="BannerMiddleGlow" startDelay="1.1" duration="0.6" order="2" fromAlpha="1" toAlpha="0"/>				
-				<Alpha childKey="XLeft" startDelay="0.8" duration="0.1" order="2" fromAlpha="0" toAlpha="1"/>
-				<Scale childKey="XLeft" startDelay="0.8" duration="0.15" order="2" fromScaleX="5" fromScaleY="5" toScaleX="1" toScaleY="1"/>
-				<Alpha childKey="Xright" startDelay="0.9" duration="0.1" order="2" fromAlpha="0" toAlpha="1"/>
-				<Scale childKey="Xright" startDelay="0.9" duration="0.15" order="2" fromScaleX="5" fromScaleY="5" toScaleX="1" toScaleY="1"/>				
+				<Alpha childKey="BannerMiddleGlow" startDelay="1.1" duration="0.6" order="2" fromAlpha="1" toAlpha="0"/>							
 				<Alpha childKey="Title" startDelay="0.2" duration="0.25" order="2" fromAlpha="0" toAlpha="1"/>
 				<Alpha childKey="SubTitle" startDelay="0.2" duration="0.25" order="2" fromAlpha="0" toAlpha="1"/>
+
+				<Alpha childKey="RedFlash" duration="0.1" order="2" fromAlpha="0" toAlpha="1"/>
+				<Scale childKey="RedFlash" smoothing="IN" duration="0.25" order="2" fromScaleX="2.5" fromScaleY="2.5" toScaleX="1" toScaleY="1"/>
+				<Alpha childKey="RedFlash" startDelay="0.25" duration="0.5" order="2" fromAlpha="1" toAlpha="0"/>
+				<Alpha childKey="FlashBurst" startDelay="0.25" duration="0.25" order="2" fromAlpha="0" toAlpha="1"/>
+				<Scale childKey="FlashBurst" startDelay="0.25" duration="0.4" order="2" fromScaleX="1" fromScaleY="0.75" toScaleX="1.25" toScaleY="0.75">
+					<Origin point="LEFT">
+						<Offset x="0" y="0"/>
+					</Origin>
+				</Scale>
+				<Translation childKey="FlashBurst" startDelay="0.25" duration="0.5" order="2" offsetX="10" offsetY="0"/>
+				<Alpha childKey="FlashBurst" startDelay="0.25" duration="0.4" order="2" fromAlpha="1" toAlpha="0"/>
+				<Alpha childKey="FlashBurstLeft" startDelay="0.25" duration="0.25" order="2" fromAlpha="0" toAlpha="1"/>
+				<Scale childKey="FlashBurstLeft" startDelay="0.25" duration="0.5" order="2" fromScaleX="1" fromScaleY="0.75" toScaleX="1.25" toScaleY="0.75">
+					<Origin point="RIGHT">
+						<Offset x="0" y="0"/>
+					</Origin>
+				</Scale>
+				<Translation childKey="FlashBurstLeft" startDelay="0.25" duration="0.5" order="2" offsetX="-10" offsetY="0"/>
+				<Alpha childKey="FlashBurstLeft" startDelay="0.25" duration="0.5" order="2" fromAlpha="1" toAlpha="0"/>
+				<Alpha childKey="FlashBurstCenter" startDelay="0.25" duration="0.25" order="2" fromAlpha="0" toAlpha="1"/>
+				<Scale childKey="FlashBurstCenter" startDelay="0.25" duration="0.5" order="2" fromScaleX="1" fromScaleY="1" toScaleX="1.25" toScaleY="1.25"/>
+				<Alpha childKey="FlashBurstCenter" startDelay="0.25" duration="0.5" order="2" fromAlpha="1" toAlpha="0"/>
+				
 				<Scripts>
 					<OnPlay>
 						local banner = self:GetParent();
@@ -1104,9 +1133,7 @@
 			<AnimationGroup parentKey="AnimSwitch" setToFinalAlpha="true">
 				<Alpha childKey="SkullCircle" duration="0.5" order="1" fromAlpha="1" toAlpha="0"/>
 				<Alpha childKey="Title" duration="0.25" order="1" fromAlpha="1" toAlpha="0"/>	
-				<Alpha childKey="SubTitle" duration="0.25" order="1" fromAlpha="1" toAlpha="0"/>	
-				<Alpha childKey="XLeft" duration="0.01" order="1" fromAlpha="1" toAlpha="0"/>
-				<Alpha childKey="Xright" duration="0.01" order="1" fromAlpha="1" toAlpha="0"/>				
+				<Alpha childKey="SubTitle" duration="0.25" order="1" fromAlpha="1" toAlpha="0"/>				
 				<Alpha childKey="LootCircle" duration="0.5" order="1" fromAlpha="0" toAlpha="1"/>
 			</AnimationGroup>
 			<AnimationGroup parentKey="AnimOut">

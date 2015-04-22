@@ -14,6 +14,7 @@ MICRO_BUTTONS = {
 	"StoreMicroButton",
 	}
 
+EJ_ALERT_TIME_DIFF = 60*60*24*7*2; -- 2 weeks
 
 function LoadMicroButtonTextures(self, name)
 	self:RegisterForClicks("LeftButtonUp", "RightButtonUp");
@@ -182,11 +183,10 @@ function UpdateMicroButtons()
 	else
 		if ( playerLevel < EJMicroButton.minLevel or factionGroup == "Neutral" ) then
 			EJMicroButton:Disable();
-			EJMicroButton_ClearAlert();
+			EJMicroButton_ClearNewAdventureNotice();
 		else
 			EJMicroButton:Enable();
 			EJMicroButton:SetButtonState("NORMAL");
-			EJMicroButton_UpdateAlert();
 		end
 	end
 
@@ -440,6 +440,7 @@ function EJMicroButton_OnLoad(self)
 	self:RegisterEvent("QUEST_ACCEPTED");
 	self:RegisterEvent("QUEST_REMOVED");
 	self:RegisterEvent("PLAYER_AVG_ITEM_LEVEL_UPDATE");
+	self:RegisterEvent("VARIABLES_LOADED");
 	
 	C_AdventureJournal.UpdateSuggestions();
 end
@@ -453,28 +454,35 @@ function EJMicroButton_OnEvent(self, event, ...)
 			return;
 		end
 		UpdateMicroButtons();
+	elseif( event == "VARIABLES_LOADED" ) then
+		if ( GetServerTime() - tonumber(GetCVar("advJournalLastOpened")) > EJ_ALERT_TIME_DIFF ) then
+			EJMicroButtonAlert:Show();
+			MicroButtonPulse(EJMicroButton);
+		end
 	elseif ( event == "UNIT_LEVEL" and arg1 == "player" ) then		
-		EJMicroButton_UpdateAlert();
+		EJMicroButton_UpdateNewAdventureNotice();
 	elseif ( event == "QUEST_ACCEPTED" or event == "QUEST_REMOVED" ) then
-		EJMicroButton_UpdateAlert();
+		EJMicroButton_UpdateNewAdventureNotice();
 	elseif event == "PLAYER_AVG_ITEM_LEVEL_UPDATE" then
 		local playerLevel = UnitLevel("player");
 		if ( playerLevel == MAX_PLAYER_LEVEL_TABLE[GetExpansionLevel()]) then
-			EJMicroButton_UpdateAlert();
+			EJMicroButton_UpdateNewAdventureNotice();
 		end
 	end
 end
 
-function EJMicroButton_UpdateAlert()
+function EJMicroButton_UpdateNewAdventureNotice()
 	if ( EJMicroButton:IsEnabled() and C_AdventureJournal.UpdateSuggestions() ) then
-		EJMicroButton.Flash:Show();
-		EJMicroButton.Alert:Show();
+		if( not EncounterJournal or not EncounterJournal:IsShown() ) then
+			EJMicroButton.Flash:Show();
+			EJMicroButton.NewAdventureNotice:Show();
+		end
 	end
 end
 
-function EJMicroButton_ClearAlert()
+function EJMicroButton_ClearNewAdventureNotice()
 	EJMicroButton.Flash:Hide();
-	EJMicroButton.Alert:Hide();
+	EJMicroButton.NewAdventureNotice:Hide();
 end
 
 --Micro Button alerts

@@ -171,6 +171,10 @@ function GarrisonFollowerMission:UpdateMissionData(frame)
 	GarrisonMissionPage_UpdateEmptyString();
 end
 
+function GarrisonFollowerMission:SetEnemyName(portraitFrame, name)
+	portraitFrame.Name:SetText(name);
+end
+
 function GarrisonFollowerMission:SetEnemyPortrait(portraitFrame, enemy, eliteFrame, numMechs)
 	GarrisonEnemyPortait_Set(portraitFrame.Portrait, enemy.portraitFileDataID);
 	
