@@ -824,6 +824,7 @@ function GarrisonFollowerList:ShowFollower(followerID)
 		if ( followerInfo.isCollected and GarrisonFollowerAbilities_IsNew(lastUpdate, followerInfo.followerID, ability.id, GARRISON_FOLLOWER_ABILITY_TYPE_TRAIT) ) then			
 			if ( ability.temporary ) then
 				abilityFrame.LargeAbilityFeedbackGlowAnim:Play();
+				PlaySoundKitID(51324);
 			else
 				abilityFrame.IconButton.Icon:SetAlpha(0);
 				abilityFrame.IconButton.OldIcon:SetAlpha(1);
@@ -1045,8 +1046,8 @@ function GarrisonFollowerPageAbility_OnClick(self, button)
 		end
 	else
 		local followerList = self:GetParent():GetParent():GetParent():GetParent().FollowerList;
-		if ( button == "LeftButton" and followerList.canCastSpellsOnFollowers and SpellCanTargetGarrisonFollowerAbility(self.abilityID) ) then
-			local followerID = self:GetParent():GetParent():GetParent().followerID;
+		local followerID = self:GetParent():GetParent():GetParent().followerID;	
+		if ( button == "LeftButton" and followerList.canCastSpellsOnFollowers and SpellCanTargetGarrisonFollowerAbility(followerID, self.abilityID) ) then
 			local followerInfo = followerID and C_Garrison.GetFollowerInfo(followerID);
 			if ( not followerInfo or not followerInfo.isCollected or followerInfo.status == GARRISON_FOLLOWER_ON_MISSION or followerInfo.status == GARRISON_FOLLOWER_WORKING ) then
 				return;
@@ -1081,6 +1082,10 @@ end
 
 function Garrison_SortMissions(missionsList)
 	local comparison = function(mission1, mission2)
+		if ( mission1.followerTypeID ~= mission2.followerTypeID ) then
+			return mission1.followerTypeID > mission2.followerTypeID;
+		end
+		
 		if ( mission1.level ~= mission2.level ) then
 			return mission1.level > mission2.level;
 		end

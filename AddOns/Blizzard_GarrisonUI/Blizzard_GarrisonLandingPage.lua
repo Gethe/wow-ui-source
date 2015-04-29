@@ -289,7 +289,11 @@ function GarrisonLandingPageReportList_UpdateAvailable()
 			local item = items[index];
 			button.id = index;
 
-			button.BG:SetAtlas("GarrLanding-Mission-InProgress", true);
+			if (item.followerTypeID == LE_FOLLOWER_TYPE_SHIPYARD_6_2) then
+				button.BG:SetAtlas("GarrLanding-ShipMission-InProgress", true);
+			else
+				button.BG:SetAtlas("GarrLanding-Mission-InProgress", true);
+			end
 			button.Title:SetText(item.name);
 			button.MissionType:SetTextColor(GARRISON_MISSION_TYPE_FONT_COLOR.r, GARRISON_MISSION_TYPE_FONT_COLOR.g, GARRISON_MISSION_TYPE_FONT_COLOR.b);
 			if ( item.durationSeconds >= GARRISON_LONG_MISSION_TIME ) then
@@ -401,6 +405,8 @@ function GarrisonLandingPageReportList_Update()
 			if (item.isBuilding) then
 				bgName = "GarrLanding-Building-";
 				button.Status:SetText(GARRISON_LANDING_STATUS_BUILDING);
+			elseif (item.followerTypeID == LE_FOLLOWER_TYPE_SHIPYARD_6_2) then
+				bgName = "GarrLanding-ShipMission-";
 			else
 				bgName = "GarrLanding-Mission-";
 			end
@@ -480,7 +486,9 @@ function GarrisonLandingPageReportMission_OnClick(self, button)
 end
 
 function GarrisonLandingPageReportMission_OnEnter(self, button)
-	GameTooltip:SetOwner(self, "ANCHOR_CURSOR_RIGHT");
+	GameTooltip:SetOwner(self, "ANCHOR_NONE");
+	GameTooltip:SetPoint("LEFT", self, "RIGHT", 0, 0);
+	
 	local items = GarrisonLandingPageReport.List.items or {};
 	if GarrisonLandingPageReport.selectedTab == GarrisonLandingPageReport.Available then
 	    items = GarrisonLandingPageReport.List.AvailableItems or {};
@@ -507,7 +515,10 @@ function GarrisonLandingPageReportMission_OnEnter(self, button)
 		if (item.followerTypeID == LE_FOLLOWER_TYPE_GARRISON_6_0) then
 			GarrisonMissionButton_SetInProgressTooltip(item, true);
 		elseif (item.followerTypeID == LE_FOLLOWER_TYPE_SHIPYARD_6_2) then
+			GarrisonShipyardMapMissionTooltip:ClearAllPoints();
+			GarrisonShipyardMapMissionTooltip:SetPoint("LEFT", self, "RIGHT", 0, 0);
 			GarrisonShipyardMapMission_SetTooltip(item, true);
+			return;
 		end
 	else
 		GameTooltip:SetText(item.name);
@@ -528,4 +539,9 @@ function GarrisonLandingPageReportMission_OnEnter(self, button)
 	end
 
 	GameTooltip:Show();
+end
+
+function GarrisonLandingPageReportMission_OnLeave(self)
+	GarrisonShipyardMapMissionTooltip:Hide();
+	GameTooltip_Hide(self);
 end

@@ -110,7 +110,7 @@
 		</Frames>
 		<Scripts>
 			<OnEnter function="GarrisonLandingPageReportMission_OnEnter"/>
-			<OnLeave function="GameTooltip_Hide"/>
+			<OnLeave function="GarrisonLandingPageReportMission_OnLeave"/>
 			<OnClick function="GarrisonLandingPageReportMission_OnClick"/>
 		</Scripts>
 	</Button>

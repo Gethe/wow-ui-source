@@ -552,6 +552,20 @@ GlueDialogTypes["REALMLIST_NOT_CONNECTED_TO_BATTLENET"] = {
 	end,
 }
 
+GlueDialogTypes["BOOST_NOT_RECOMMEND_SPEC_WARNING"] = {
+	text = BOOST_NOT_RECOMMEND_SPEC_WARNING,
+	button1 = OKAY,
+	button2 = CANCEL,
+	OnAccept = function()
+		CharacterServicesMaster_Advance();
+	end,
+	OnCancel = function()
+		local master = CharacterServicesMaster;
+		master.flow:Rewind(master);
+	end,
+}
+
+
 function GlueDialog_Show(which, text, data, errorNumber)
 	local dialogInfo = GlueDialogTypes[which];
 	-- Pick a free dialog to use

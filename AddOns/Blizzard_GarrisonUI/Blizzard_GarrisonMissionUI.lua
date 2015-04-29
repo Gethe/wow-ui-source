@@ -1288,6 +1288,11 @@ function GarrisonFollowerMissionComplete:AnimLine(entry)
 	end
 end
 
+function GarrisonFollowerMissionComplete:AnimModels(entry)
+	local currentAnim = self.animInfo[self.encounterIndex];
+	GarrisonMissionComplete.AnimModels(self, entry, LE_PAN_NONE_RANGED, currentAnim.movementType or LE_PAN_NONE);
+end
+
 function GarrisonFollowerMissionComplete:AnimPortrait(entry)
 	local encounter = self.Stage.EncountersFrame.Encounters[self.encounterIndex];
 	if ( self.currentMission.succeeded ) then
@@ -1373,7 +1378,7 @@ end
 local ANIMATION_CONTROL = {
 	[1] = { duration = nil,		onStartFunc = GarrisonFollowerMissionComplete.AnimLine },			-- line between encounters
 	[2] = { duration = nil,		onStartFunc = GarrisonMissionComplete.AnimCheckModels },			-- check that models are loaded
-	[3] = { duration = nil,		onStartFunc = GarrisonMissionComplete.AnimModels },					-- model fight
+	[3] = { duration = nil,		onStartFunc = GarrisonFollowerMissionComplete.AnimModels },					-- model fight
 	[4] = { duration = nil,		onStartFunc = GarrisonMissionComplete.AnimPlayImpactSound },		-- impact sound when follower hits
 	[5] = { duration = 0.45,	onStartFunc = GarrisonFollowerMissionComplete.AnimPortrait },		-- X over portrait
 	[6] = { duration = nil,		onStartFunc = GarrisonFollowerMissionComplete.AnimCheckEncounters },		-- evaluate whether to do next encounter or move on

@@ -1082,7 +1082,7 @@
 				<Scripts>
 					<OnLoad>
 						GarrisonCinematicModelBase_OnLoad(self);
-						self:SetFrameLevel(self:GetParent():GetFrameLevel() + 1);
+						self:SetFrameLevel(self:GetParent():GetFrameLevel() + 2);
 					</OnLoad>
 					<OnModelLoaded function="GarrisonMissionComplete_OnModelLoaded"/>
 				</Scripts>

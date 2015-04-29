@@ -650,7 +650,7 @@ function GarrisonMission:MissionCompleteInitialize(missionList, index)
 	for i=1, #encounters do
 		local encounter = stage.EncountersFrame.Encounters[i];
 		self:SetEnemyName(encounter, encounters[i].name);
-		encounter.portraitFileDataID = encounters[i].portraitFileDataID;
+		encounter.displayID = encounters[i].displayID;
 		self:SetEnemyPortrait(encounter, encounters[i], encounter.Elite, #enemies[i].mechanics);
 	end
 
@@ -900,7 +900,7 @@ function GarrisonMissionComplete:ShowRewards()
 	local index = 1;
 	for id, reward in pairs(currentMission.rewards) do
 		if (not bonusRewards.Rewards[index]) then
-			bonusRewards.Rewards[index] = CreateFrame("Frame", nil, bonusRewards, "GarrisonMissionPageRewardTemplate");
+			bonusRewards.Rewards[index] = CreateFrame("Frame", nil, bonusRewards, "GarrisonMissionRewardEffectsTemplate");
 			bonusRewards.Rewards[index]:SetPoint("RIGHT", bonusRewards.Rewards[index-1], "LEFT", -9, 0);
 		end
 		local Reward = bonusRewards.Rewards[index];
@@ -1018,7 +1018,7 @@ end
 
 GARRISON_ANIMATION_LENGTH = 1;
 
-function GarrisonMissionComplete:AnimModels(entry)
+function GarrisonMissionComplete:AnimModels(entry, failPanType, successPanType, startPositionScale, speedMultiplier)
 	self.animNumModelHolds = nil;
 	local modelLeft = self.Stage.ModelLeft;
 	local modelRight = self.Stage.ModelRight;
@@ -1036,9 +1036,9 @@ function GarrisonMissionComplete:AnimModels(entry)
 		modelLeft:SetHeightFactor(currentAnim.height or 0.5);
 		if ( self.currentMission.failedEncounter == self.encounterIndex ) then
 			-- always same pose on fail
-			modelLeft:StartPan(LE_PAN_NONE_RANGED, GARRISON_ANIMATION_LENGTH, true, currentAnim.castID);
+			modelLeft:StartPan(failPanType, GARRISON_ANIMATION_LENGTH, true, currentAnim.castID, startPositionScale, speedMultiplier);
 		else
-			modelLeft:StartPan(currentAnim.movementType or LE_PAN_NONE, GARRISON_ANIMATION_LENGTH, true, currentAnim.castID);
+			modelLeft:StartPan(successPanType, GARRISON_ANIMATION_LENGTH, true, currentAnim.castID, startPositionScale, speedMultiplier);
 			if ( currentAnim.impactSoundID ) then
 				currentAnim.playImpactSound = true;
 			end
@@ -1786,7 +1786,7 @@ function GarrisonMission_DetermineCounterableThreats(missionID, followerType)
 	return threats;
 end
 
-function GarrisonMissionButton_AddThreatsToTooltip(missionID, followerType)
+function GarrisonMissionButton_AddThreatsToTooltip(missionID, followerType, noGameTooltip)
 	local location, xp, environment, environmentDesc, _, locPrefix, isExhausting, enemies = C_Garrison.GetMissionInfo(missionID);
 	local numThreats = 0;
 
@@ -1841,12 +1841,13 @@ function GarrisonMissionButton_AddThreatsToTooltip(missionID, followerType)
 	end
 	GarrisonMissionListTooltipThreatsFrame:SetWidth(threatsFrameWidth);
 	GarrisonMissionListTooltipThreatsFrame:SetHeight(threatsFrameHeight);
-	if ( numThreats > 0 ) then
+	if ( numThreats > 0 and not noGameTooltip) then
 		local usedHeight = GameTooltip_InsertFrame(GameTooltip, GarrisonMissionListTooltipThreatsFrame);
 		GarrisonMissionListTooltipThreatsFrame:SetHeight(usedHeight);
 	else
 		GarrisonMissionListTooltipThreatsFrame:Hide();
 	end
+	return numThreats;
 end
 
 function GarrisonMission_GetDurationStringCompact(time)

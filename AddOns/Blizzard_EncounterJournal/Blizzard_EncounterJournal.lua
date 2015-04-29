@@ -22,6 +22,8 @@ local EJ_NUM_INSTANCE_PER_ROW = 4;
 local EJ_LORE_MAX_HEIGHT = 97;
 local EJ_MAX_SECTION_MOVE = 320;
 
+AJ_MAX_NUM_SUGGESTIONS = 3;
+
 -- Priority list for *not my spec*
 local overviewPriorities = {
 	[1] = "DAMAGER",
@@ -2144,9 +2146,7 @@ end
 -------------------------------------------------
 --------------Suggestion Panel Func--------------
 -------------------------------------------------
-
 function EJSuggestFrame_OnLoad(self)
-	C_AdventureJournal.UpdateSuggestions();
 	self.suggestions = {};
 	
 	self:RegisterEvent("AJ_REWARD_DATA_RECIEVED");
@@ -2206,9 +2206,9 @@ function EJSuggestFrame_RefreshDisplay()
 	
 	local self = EncounterJournal.suggestFrame;
 	C_AdventureJournal.GetSuggestions(self.suggestions);
-	
+
 	-- hide all the display info
-	for i = 1, 3 do 
+	for i = 1, AJ_MAX_NUM_SUGGESTIONS do 
 		local suggestion = self["Suggestion"..i];
 		suggestion.centerDisplay:Hide();
 		if ( i == 1 ) then
@@ -2222,6 +2222,7 @@ function EJSuggestFrame_RefreshDisplay()
 		suggestion.iconRing:Hide();
 	end
 	
+	local showCycleBtn = C_AdventureJournal.GetNumAvailableSuggestions() > AJ_MAX_NUM_SUGGESTIONS;
 	-- setup the primary suggestion display
 	if ( #self.suggestions > 0 ) then
 		local suggestion = self.Suggestion1;
@@ -2273,6 +2274,8 @@ function EJSuggestFrame_RefreshDisplay()
 			suggestion.icon:SetMask("Interface\\CharacterFrame\\TempPortraitAlphaMask");
 		end
 		
+		suggestion.cycleButton:SetShown(showCycleBtn);
+		
 		EJSuggestFrame_UpdateRewards(suggestion);
 	end
 
@@ -2290,8 +2293,6 @@ function EJSuggestFrame_RefreshDisplay()
 			suggestion.centerDisplay:Show();
 			
 			local data = self.suggestions[i];
-			suggestion.centerDisplay.title.text:SetHeight(0);
-			suggestion.centerDisplay.description.text:SetHeight(0);
 			suggestion.centerDisplay.title.text:SetText(data.title);
 			suggestion.centerDisplay.description.text:SetText(data.description);
 			
@@ -2334,6 +2335,8 @@ function EJSuggestFrame_RefreshDisplay()
 			end
 			
 			EJSuggestFrame_UpdateRewards(suggestion);
+			
+			suggestion.cycleButton:SetShown(showCycleBtn);
 		end
 		-- set the fonts to be the same for both right side sections
 		-- adjust the center display to keep the text centered
@@ -2354,12 +2357,7 @@ function EJSuggestFrame_RefreshDisplay()
 			local top = title:GetTop();
 			local bottom = suggestion.centerDisplay.description:GetBottom();
 			if ( suggestion.centerDisplay.button:IsShown() ) then
-				local botTemp = suggestion.centerDisplay.button:GetBottom();
-				if ( botTemp ) then
-					bottom = botTemp;
-				else
-					bottom = bottom + 30;
-				end
+				bottom = suggestion.centerDisplay.button:GetBottom();
 			end
 			
 			if ( title.text:IsTruncated() ) then
@@ -2382,7 +2380,7 @@ function EJSuggestFrame_SuggestionTitleOnEnter(self)
 end
 
 function EJSuggestFrame_RefreshRewards()
-	for i = 1, 3 do 
+	for i = 1, AJ_MAX_NUM_SUGGESTIONS do 
 		local suggestion = EncounterJournal.suggestFrame["Suggestion"..i];
 		suggestion.reward:Hide();
 		EJSuggestFrame_UpdateRewards(suggestion);
@@ -2557,20 +2555,14 @@ function AdventureJournal_Reward_OnEnter(self)
 			end
 			
 			frame:SetHeight(height);
-		elseif ( frame.headerText:IsShown() ) then
+		elseif ( rewardHeaderText and rewardHeaderText ~= "" ) then
 			frame:SetWidth(256);
 			frame.Item1:Hide();
 			frame.Item2:Hide();
 			
-			if ( rewardHeaderText and rewardHeaderText ~= "" ) then
-				frame.headerText:SetText(rewardHeaderText);
-				frame.headerText:Show();
-				frame.Item1:SetPoint("TOPLEFT", frame.headerText, "BOTTOMLEFT", 0, -16);
-			else
-				frame.headerText:Hide();
-				frame.Item1:SetPoint("TOPLEFT", 11, -10);
-			end
-			frame:SetHeight(frame.headerText:GetStringHeight());
+			frame.headerText:SetText(rewardHeaderText);
+			frame:SetHeight(frame.headerText:GetStringHeight()+20); -- add padding for tooltip border
+			frame.headerText:Show();
 		else
 			return;
 		end

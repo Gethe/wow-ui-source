@@ -1072,7 +1072,7 @@
 	</Frame>
 	
 	<Frame name="AdventureJournal_SecondaryTemplate" virtual="true">
-		<Size x="345" y="152"/>
+		<Size x="344" y="161"/>
 		<Layers>
 			<Layer level="BACKGROUND">
 				<Texture parentKey="bg" atlas="adventureguide-pane-small"/>
@@ -1098,32 +1098,32 @@
 			<Frame parentKey="centerDisplay">
 				<Size x="260" y="152"/>
 				<Anchors>
-					<Anchor point="LEFT" x="70" y="2"/>
+					<Anchor point="LEFT" x="70" y="1"/>
 				</Anchors>
 				<Frames>
 					<Frame parentKey="title">
-							<Size x="260" y="0"/>
+						<Size x="260" y="1"/>
 						<Anchors>
 							<Anchor point="TOPLEFT" x="0" y="0"/>
 						</Anchors>
 						<Layers>
 							<Layer level="ARTWORK">								
 								<FontString parentKey="text" font="QuestFont_Huge" justifyH="left" justifyV="top" wordwrap="false">
-									<Size x="240" y="0"/>
+									<Size x="260" y="0"/>
 									<Color r="0" g="0" b="0"/>
 								</FontString>
 							</Layer>
 						</Layers>
 					</Frame>
 					<Frame parentKey="description">
-							<Size x="260" y="0"/>
+						<Size x="260" y="1"/>
 						<Anchors>
 							<Anchor point="TOPLEFT" relativeKey="$parent.title" relativePoint="BOTTOMLEFT" x="0" y="-4"/>
 						</Anchors>
 						<Layers>
 							<Layer level="ARTWORK">								
 								<FontString parentKey="text" font="SystemFont_Med1" justifyH="left" justifyV="top" wordwrap="true">
-									<Size x="240" y="0"/>
+									<Size x="260" y="0"/>
 									<Color r="0.2824" g="0.0157" b="0.0157"/>
 								</FontString>
 							</Layer>
@@ -1166,6 +1166,16 @@
 					<OnMouseDown function="AdventureJournal_Reward_OnMouseDown"/>
 				</Scripts>
 			</Frame>
+			<Button name="$parentCycleButton" inherits="UIPanelCloseButton" parentKey="cycleButton">
+				<Anchors>
+					<Anchor point="TOPRIGHT" x="-4" y="-4"/>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						C_AdventureJournal.CycleEntry(self:GetParent().index);
+					</OnClick>
+				</Scripts>
+			</Button>
 		</Frames>
 		<Scripts>
 			<OnLoad>
@@ -2665,12 +2675,12 @@
 				</Anchors>
 				<Frames>
 					<Frame parentKey="Suggestion1">
-						<Size x="335" y="324"/>
+						<Size x="335" y="337"/>
 						<KeyValues>
 							<KeyValue key="index" value="1" type="number"/>
 						</KeyValues>
 						<Anchors>
-							<Anchor point="TOPLEFT" x="26" y="-25" />
+							<Anchor point="TOPLEFT" x="28" y="-18" />
 						</Anchors>
 						<Layers>
 							<Layer level="BACKGROUND">
@@ -2680,7 +2690,7 @@
 								<Texture parentKey="icon" mask="Interface\\CharacterFrame\\TempPortraitAlphaMask">
 									<Size x="64" y="64"/>
 									<Anchors>
-										<Anchor point="TOPLEFT" x="135" y="1" />
+										<Anchor point="TOPLEFT" x="135" y="-2" />
 									</Anchors>
 								</Texture>
 							</Layer>
@@ -2761,6 +2771,16 @@
 									<OnMouseDown function="AdventureJournal_Reward_OnMouseDown"/>
 								</Scripts>
 							</Frame>
+							<Button name="$parentCycleButton" inherits="UIPanelCloseButton" parentKey="cycleButton">
+								<Anchors>
+									<Anchor point="TOPRIGHT" x="-7" y="-6"/>
+								</Anchors>
+								<Scripts>
+									<OnClick>
+										C_AdventureJournal.CycleEntry(self:GetParent().index);
+									</OnClick>
+								</Scripts>
+							</Button>
 						</Frames>
 						<Scripts>
 							<OnLoad>
@@ -2769,18 +2789,18 @@
 						</Scripts>
 					</Frame>
 					<Frame parentKey="Suggestion2" inherits="AdventureJournal_SecondaryTemplate">
-						<Size x="345" y="152"/>
+						<Size x="344" y="161"/>
 						<KeyValues>
 							<KeyValue key="index" value="2" type="number"/>
 						</KeyValues>
 						<Anchors>
-							<Anchor point="TOPLEFT" relativePoint="TOP" x="1" y="-30" />
+							<Anchor point="TOPLEFT" relativePoint="TOP" x="1" y="-22" />
 						</Anchors>
 					</Frame>
 					<Frame parentKey="Suggestion3" inherits="AdventureJournal_SecondaryTemplate">
-						<Size x="345" y="152"/>
+						<Size x="344" y="161"/>
 						<Anchors>
-							<Anchor point="TOPLEFT" relativeKey="$parent.Suggestion2" relativePoint="BOTTOMLEFT" x="0" y="-15" />
+							<Anchor point="TOPLEFT" relativeKey="$parent.Suggestion2" relativePoint="BOTTOMLEFT" x="0" y="-11" />
 						</Anchors>
 						<KeyValues>
 							<KeyValue key="index" value="3" type="number"/>

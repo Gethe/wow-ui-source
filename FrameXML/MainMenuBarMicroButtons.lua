@@ -434,15 +434,14 @@ function EJMicroButton_OnLoad(self)
 	if (IsBlizzCon()) then
 		self:Disable();
 	end
-	
+
 	--events that can trigger a refresh of the adventure journal
 	self:RegisterEvent("UNIT_LEVEL");
 	self:RegisterEvent("QUEST_ACCEPTED");
 	self:RegisterEvent("QUEST_REMOVED");
 	self:RegisterEvent("PLAYER_AVG_ITEM_LEVEL_UPDATE");
 	self:RegisterEvent("VARIABLES_LOADED");
-	
-	C_AdventureJournal.UpdateSuggestions();
+	self:RegisterEvent("PLAYER_ENTERING_WORLD");
 end
 
 function EJMicroButton_OnEvent(self, event, ...)
@@ -455,10 +454,13 @@ function EJMicroButton_OnEvent(self, event, ...)
 		end
 		UpdateMicroButtons();
 	elseif( event == "VARIABLES_LOADED" ) then
-		if ( GetServerTime() - tonumber(GetCVar("advJournalLastOpened")) > EJ_ALERT_TIME_DIFF ) then
+		if ( UnitLevel("player") >= EJMicroButton.minLevel and UnitFactionGroup("player") ~= "Neutral" and
+		 GetServerTime() - tonumber(GetCVar("advJournalLastOpened")) > EJ_ALERT_TIME_DIFF ) then
 			EJMicroButtonAlert:Show();
 			MicroButtonPulse(EJMicroButton);
 		end
+	elseif ( event == "PLAYER_ENTERING_WORLD" ) then
+		C_AdventureJournal.UpdateSuggestions();	
 	elseif ( event == "UNIT_LEVEL" and arg1 == "player" ) then		
 		EJMicroButton_UpdateNewAdventureNotice();
 	elseif ( event == "QUEST_ACCEPTED" or event == "QUEST_REMOVED" ) then

@@ -283,6 +283,9 @@ function UIParent_OnLoad(self)
 	self:RegisterEvent("TRANSMOGRIFY_OPEN");
 	self:RegisterEvent("TRANSMOGRIFY_CLOSE");
 
+	-- Events for Adventure Journal
+	self:RegisterEvent("AJ_OPEN");
+
 	-- Events for void storage
 	self:RegisterEvent("VOID_STORAGE_OPEN");
 	self:RegisterEvent("VOID_STORAGE_CLOSE");
@@ -1502,6 +1505,10 @@ function UIParent_OnEvent(self, event, ...)
 			TransmogrifyFrame_Hide();
 		end
 
+	-- Events for adventure journal
+	elseif ( event == "AJ_OPEN" ) then
+		ToggleEncounterJournal()
+
 	-- Events for Void Storage UI handling
 	elseif ( event == "VOID_STORAGE_OPEN" ) then
 		VoidStorage_LoadUI();
@@ -1812,6 +1819,10 @@ function UIParent_ManageFramePosition(index, value, yOffsetFrames, xOffsetFrames
 	-- the bottom right bar shown and not the bottom left
 	if ( hasBottomEitherFlag and hasBottomRight and hasPetBar and not hasBottomLeft ) then
 		yOffset = yOffset - (value["pet"] or 0);
+	end
+
+	if ( value["overrideY"] ) then
+		yOffset = value["overrideY"];
 	end
 
 	-- Iterate through frames that affect x offsets
@@ -2364,15 +2375,8 @@ function FramePositionDelegate:UIParentManageFramePositions()
 			tinsert(yOffsetFrames, "tutorialAlert");
 		end
 		if ( PlayerPowerBarAlt:IsShown() ) then
-			local insert = true;
-			if ( PlayerPowerBarAlt.counterBar:IsShown() ) then
-				local _, _, anchorTop = UnitAlternatePowerCounterInfo(PlayerPowerBarAlt.unit);
-				if (anchorTop) then
-					insert = false;
-				end
-			end
-
-			if (insert) then
+			local anchorTop = select(10, UnitAlternatePowerInfo(PlayerPowerBarAlt.unit));
+			if ( not anchorTop ) then
 				tinsert(yOffsetFrames, "playerPowerBarAlt");
 			end
 		end
@@ -2393,7 +2397,12 @@ function FramePositionDelegate:UIParentManageFramePositions()
 		UIPARENT_MANAGED_FRAME_POSITIONS["TutorialFrameAlertButton"].yOffset = -30;
 	end
 	
-	
+	if ( PlayerPowerBarAlt:IsShown() and select(10, UnitAlternatePowerInfo(PlayerPowerBarAlt.unit)) ) then
+		UIPARENT_MANAGED_FRAME_POSITIONS["PlayerPowerBarAlt"].overrideY = UIParent:GetTop() - PlayerPowerBarAlt:GetHeight() - 20;
+	else
+		UIPARENT_MANAGED_FRAME_POSITIONS["PlayerPowerBarAlt"].overrideY = nil;
+	end
+
 	-- Iterate through frames and set anchors according to the flags set
 	for index, value in pairs(UIPARENT_MANAGED_FRAME_POSITIONS) do
 		if ( value.playerPowerBarAlt ) then
@@ -2572,15 +2581,6 @@ function FramePositionDelegate:UIParentManageFramePositions()
 		ObjectiveTrackerFrame:SetPoint("BOTTOMRIGHT", "UIParent", "BOTTOMRIGHT", -OBJTRACKER_OFFSET_X, CONTAINER_OFFSET_Y);
 	end
 
-	-- PlayerPowerBarAlt hack for counters
-	if ( PlayerPowerBarAlt and PlayerPowerBarAlt.counterBar:IsShown() ) then
-		local _, _, anchorTop = UnitAlternatePowerCounterInfo(PlayerPowerBarAlt.unit);
-		if (anchorTop) then
-			PlayerPowerBarAlt:ClearAllPoints();
-			PlayerPowerBarAlt:SetPoint("TOP", 0, -20);
-		end
-	end
-	
 	-- Update chat dock since the dock could have moved
 	FCF_DockUpdate();
 	UpdateContainerFrameAnchors();

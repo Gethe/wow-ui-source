@@ -59,3 +59,7 @@ function TopBannerManager_BannerFinished()
 		TopBannerMgr.currentBanner = nil;
 	end
 end
+
+function TopBannerManager_IsIdle()
+	return TopBannerMgr.currentBanner == nil;
+end
