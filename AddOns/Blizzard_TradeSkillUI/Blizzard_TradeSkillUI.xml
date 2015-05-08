@@ -669,12 +669,13 @@
 									</Anchors>
 								</FontString>
 								<FontString name="TradeSkillRequirementText" inherits="GameFontHighlightSmall" justifyV="TOP" justifyH="LEFT">
-									<Size x="180" y="0"/>
+									<!-- width set in OnLoad -->
 									<Anchors>
 										<Anchor point="TOPLEFT" relativeTo="TradeSkillRequirementLabel" relativePoint="TOPRIGHT" x="4" y="0"/>
 									</Anchors>
 								</FontString>
-								<FontString name="TradeSkillSkillCooldown" inherits="GameFontRedSmall">
+								<FontString name="TradeSkillSkillCooldown" inherits="GameFontRedSmall" justifyH="LEFT">
+									<Size x="240" y="0"/>
 									<Anchors>
 										<Anchor point="LEFT" relativeTo="TradeSkillRequirementLabel" relativePoint="LEFT" x="0" y="0"/>
 										<Anchor point="TOP" relativeTo="TradeSkillRequirementText" relativePoint="BOTTOM" x="0" y="0"/>
@@ -969,6 +970,7 @@
 				self:RegisterEvent("GUILD_RECIPE_KNOWN_BY_MEMBERS");
 				self:RegisterEvent("DISPLAY_SIZE_CHANGED");
 				TradeSkillFrameInset:SetPoint("TOPLEFT", 4, -81);
+				TradeSkillRequirementText:SetWidth(236 - TradeSkillRequirementLabel:GetWidth());
 				self.filterTbl = {hasMaterials = false, hasSkillUp = false, subClassValue = -1, slotValue = -1 };
 				TradeSkillSetFilter(-1, -1);
 			</OnLoad>

@@ -445,7 +445,7 @@ function GarrisonMission:RemoveFollowerFromMission(frame, updateValues)
 	GarrisonMissionPage_SetCounters(missionFrame.Followers, missionFrame.Enemies, missionFrame.missionInfo.missionID);
 end
 
-function GarrisonMission:UpdateMissionParty(followers)
+function GarrisonMission:UpdateMissionParty(followers, counterTemplate)
 	-- Update follower level and portrait color in case they have changed
 	for followerIndex = 1, #followers do
 		local followerFrame = followers[followerIndex];
@@ -461,7 +461,7 @@ function GarrisonMission:UpdateMissionParty(followers)
 			if (counters) then
 				for i = 1, #counters do
 					if (not followerFrame.Counters[i]) then
-						followerFrame.Counters[i] = CreateFrame("Frame", nil, followerFrame, "GarrisonMissionAbilityLargeCounterTemplate");
+						followerFrame.Counters[i] = CreateFrame("Frame", nil, followerFrame, counterTemplate);
 						followerFrame.Counters[i]:SetPoint("LEFT", followerFrame.Counters[i-1], "RIGHT", 16, 0);
 					end
 					local Counter = followerFrame.Counters[i];
@@ -659,11 +659,12 @@ function GarrisonMission:MissionCompleteInitialize(missionList, index)
 	for i=1, #mission.followers do
 		local follower = stage.FollowersFrame.Followers[i];
 		local name, displayID, level, quality, currXP, maxXP, height, scale, movementType, impactDelay, castID, 
-			  castSoundID, impactID, impactSoundID, targetImpactID, targetImpactSoundID, classAtlas, portraitIconID = 
+			  castSoundID, impactID, impactSoundID, targetImpactID, targetImpactSoundID, classAtlas, portraitIconID, texPrefix = 
 					C_Garrison.GetFollowerMissionCompleteInfo(mission.followers[i]);
 		follower.followerID = mission.followers[i];
-		frame:SetFollowerData(follower, name, classAtlas, portraitIconID);
+		frame:SetFollowerData(follower, name, classAtlas, portraitIconID, texPrefix);
 		frame:SetFollowerLevel(follower, level, quality, currXP, maxXP);
+
 		stage.followers[i] = { displayID = displayID, height = height, scale = scale, followerID = mission.followers[i] };
 		if (encounters[i]) then --cannot have more animations than encounters
 			frame.animInfo[i] = { 	displayID = displayID,

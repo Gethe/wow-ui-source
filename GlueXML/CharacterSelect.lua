@@ -826,7 +826,8 @@ function CharacterSelect_SelectCharacter(index, noCreate)
 		local charID = GetCharIDFromIndex(index);
 		SelectCharacter(charID);
 
-		if (not C_WowTokenPublic.GetCurrentMarketPrice()) then
+		if (not C_WowTokenPublic.GetCurrentMarketPrice() or 
+			not CAN_BUY_RESULT_FOUND or (CAN_BUY_RESULT_FOUND ~= LE_TOKEN_RESULT_ERROR_SUCCESS and CAN_BUY_RESULT_FOUND ~= LE_TOKEN_RESULT_ERROR_SUCCESS_NO) ) then
 			AccountReactivate_RecheckEligibility();
 		end
 		ReactivateAccountDialog_Open();

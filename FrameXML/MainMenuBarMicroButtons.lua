@@ -367,7 +367,7 @@ function TalentMicroButton_OnEvent(self, event, ...)
 		-- Small hack: GetNumSpecializations should return 0 if talents haven't been initialized yet
 		if (not self.receivedUpdate and GetNumSpecializations(false) > 0) then
 			self.receivedUpdate = true;
-			local shouldPulseForTalents = GetNumUnspentTalents() > 0 and not ShouldHideTalentsTab();
+			local shouldPulseForTalents = GetNumUnspentTalents() > 0 and not AreTalentsLocked();
 			if (UnitLevel("player") >= SHOW_SPEC_LEVEL and (not GetSpecialization() or shouldPulseForTalents)) then
 				MicroButtonPulse(self);
 			end

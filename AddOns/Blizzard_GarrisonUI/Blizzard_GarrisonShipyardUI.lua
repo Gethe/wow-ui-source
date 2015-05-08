@@ -54,9 +54,9 @@ function GarrisonShipyardMission:OnLoadMainFrame()
 		local dialogBorderFrame = self.MissionTab.MissionList.CompleteDialog.BorderFrame;
 		dialogBorderFrame.Model:SetDisplayInfo(44158);
 		dialogBorderFrame.Model:SetPosition(0.2, 1.35, -0.5);
-		dialogBorderFrame.Stage.LocBack:SetAtlas("_GarrMissionLocation-TannanSea-Back", true);
-		dialogBorderFrame.Stage.LocMid:SetAtlas("_GarrMissionLocation-TannanSea-Mid", true);
-		dialogBorderFrame.Stage.LocFore:SetAtlas("_GarrMissionLocation-TannanSea-Fore", true);
+		dialogBorderFrame.Stage.LocBack:SetAtlas("_GarrMissionLocation-FrostfireSea-Back", true);
+		dialogBorderFrame.Stage.LocMid:SetAtlas("_GarrMissionLocation-FrostfireSea-Mid", true);
+		dialogBorderFrame.Stage.LocFore:SetAtlas("_GarrMissionLocation-FrostfireSea-Fore", true);
 	else
 		local dialogBorderFrame = self.MissionTab.MissionList.CompleteDialog.BorderFrame;
 		dialogBorderFrame.Model:SetDisplayInfo(53831);
@@ -208,8 +208,11 @@ function GarrisonShipyardMission:AssignFollowerToMission(frame, info)
 	end
 	
 	self:SetFollowerPortrait(frame, info, nil, false);
+	local color = ITEM_QUALITY_COLORS[info.quality];
 	frame.Name:SetText(format(GARRISON_SHIPYARD_SHIP_NAME, info.name));
+	frame.Name:SetTextColor(color.r, color.g, color.b);
 	frame.Name:Show();
+	frame.NameBG:Show();
 end
 
 function GarrisonShipyardMission:RemoveFollowerFromMission(frame, updateValues)
@@ -217,6 +220,22 @@ function GarrisonShipyardMission:RemoveFollowerFromMission(frame, updateValues)
 	
 	frame.Portrait:SetAtlas("ShipMission_FollowerBG", true);
 	frame.Name:Hide();
+	frame.NameBG:Hide();
+end
+
+function GarrisonShipyardMission:UpdateMissionParty(followers)
+	GarrisonMission.UpdateMissionParty(self, followers, "GarrisonMissionAbilityCounterTemplate");
+	for followerIndex = 1, #followers do
+		local followerFrame = followers[followerIndex];
+		if ( followerFrame.info ) then
+			local counters = self.followerCounters and followerFrame.info and self.followerCounters[followerFrame.info.followerID] or nil;
+			-- Move left counter so that all counters are centered
+			if (counters and #counters > 1) then
+				local offset = (#counters - 1) * 8 + (#counters - 1) * followerFrame.Counters[1]:GetWidth() / 2;
+				followerFrame.Counters[1]:SetPoint("BOTTOM", -offset, 0);
+			end
+		end
+	end
 end
 
 function GarrisonShipyardFrame_ClearMouse()
@@ -382,11 +401,6 @@ function GarrisonShipyardMissionComplete:AnimFollowersIn(entry)
 		followersFrame.Follower1:SetPoint("LEFT", followersFrame, "TOPLEFT", 33, -206);
 		followersFrame.Follower2:SetPoint("LEFT", followersFrame.Follower1, "RIGHT", 17, 0);
 	end
-	
-	for i=1, #mission.followers do
-		local followerInfo = C_Garrison.GetFollowerInfo(mission.followers[i]);
-		self:GetParent():SetFollowerPortrait(followersFrame.Followers[i], followerInfo, nil, false);
-	end
 
 	followersFrame.FadeIn:Stop();
 	followersFrame.FadeIn:Play();
@@ -511,8 +525,12 @@ function GarrisonShipyardMissionComplete:BeginAnims(animIndex, missionID)
 	end
 end
 
-function GarrisonShipyardMissionComplete:SetFollowerData(follower, name, classAtlas, portraitIconID)
+function GarrisonShipyardMissionComplete:SetFollowerData(follower, name, classAtlas, portraitIconID, texPrefix)
 	follower.Name:SetText(format(GARRISON_SHIPYARD_SHIP_NAME, name));
+	if (texPrefix) then
+		local followerInfo = {texPrefix=texPrefix};
+		self:GetParent():SetFollowerPortrait(follower, followerInfo, nil, false);
+	end
 end
 
 function GarrisonShipyardMissionComplete:SetFollowerLevel(followerFrame, level, quality, currXP, maxXP)
@@ -525,6 +543,8 @@ function GarrisonShipyardMissionComplete:SetFollowerLevel(followerFrame, level, 
 	end
 	followerFrame.XP.level = level;
 	followerFrame.XP.quality = quality;
+	local color = ITEM_QUALITY_COLORS[quality];
+	followerFrame.Name:SetTextColor(color.r, color.g, color.b);
 end
 
 function GarrisonShipyardMissionComplete:DetermineFailedEncounter(missionID, succeeded, followerDeaths)
@@ -656,6 +676,7 @@ local fogData =
 
 function GarrisonShipyardMap_SetupFog(self, siegeBreakerFrame, offeredGarrMissionTextureID)
 	if (offeredGarrMissionTextureID and offeredGarrMissionTextureID ~= 0) then
+		siegeBreakerFrame:SetFrameLevel(self.FogFrames[1]:GetFrameLevel() + 1); -- Set siegebreaker mission above fog
 		for i=1, #self.FogFrames do
 			-- Skip if we are already showing this fog
 			if (self.FogFrames[i].offeredGarrMissionTextureID == offeredGarrMissionTextureID and self.FogFrames[i]:IsShown()) then
@@ -685,8 +706,6 @@ function GarrisonShipyardMap_SetupFog(self, siegeBreakerFrame, offeredGarrMissio
 				fogFrame:SetPoint(anchorPoint, self.MapTexture, anchorPoint, 0, 0);
 				fogFrame:SetSize(fogFrame.FogTexture:GetSize());
 				fogFrame:Show();
-				
-				siegeBreakerFrame:SetFrameLevel(fogFrame:GetFrameLevel() + 1); -- Set siegebreaker mission above fog
 				break;
 			end
 		end
@@ -875,6 +894,7 @@ function GarrisonShipyardMapMission_SetTooltip(info, inProgress)
 	tooltipFrame.ItemTooltip:Hide();
 	tooltipFrame.Reward:Hide();
 	GarrisonShipyardMapMission_AnchorToBottomWidget(tooltipFrame.RewardString, 0, -12);
+	bottomPosition = tooltipFrame.RewardString:GetBottom();
 	
 	for id, reward in pairs(info.rewards) do
 		if (reward.itemID) then
@@ -1005,6 +1025,7 @@ function GarrisonShipyardMissionPage_OnLoad(self)
 	
 	self.BuffsFrame:SetPoint("BOTTOM", 0, 178);
 	self.BuffsFrame.BuffsTitle:SetText(GARRISON_SHIPYARD_MISSION_PARTY_BUFFS);
+	self.BuffsFrame.BuffsBG:SetAtlas("ShipMission_PartyBuffsBG");
 	self.RewardsFrame.MissionXP:SetPoint("BOTTOM", self.RewardsFrame, "TOP", 0, 4);
 end
 

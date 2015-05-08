@@ -36,11 +36,13 @@ Import("CreateForbiddenFrame");
 Import("IsGMClient");
 Import("HideGMOnly");
 Import("math");
+Import("table");
 Import("pairs");
 Import("select");
 Import("tostring");
 Import("tonumber");
 Import("unpack");
+Import("wipe");
 Import("LoadURLIndex");
 Import("GetContainerNumFreeSlots");
 Import("GetCursorPosition");
@@ -48,6 +50,8 @@ Import("PlaySound");
 Import("SetPortraitToTexture");
 Import("BACKPACK_CONTAINER");
 Import("NUM_BAG_SLOTS");
+Import("RAID_CLASS_COLORS");
+Import("CLASS_ICON_TCOORDS");
 Import("IsModifiedClick");
 Import("GetTime");
 Import("UnitAffectingCombat");
@@ -162,9 +166,20 @@ Import("CHARACTER_UPGRADE_READY");
 Import("CHARACTER_UPGRADE_READY_DESCRIPTION");
 Import("FREE_CHARACTER_UPGRADE_READY");
 Import("FREE_CHARACTER_UPGRADE_READY_DESCRIPTION");
+Import("VAS_SELECT_CHARACTER_DISABLED");
+Import("VAS_SELECT_CHARACTER");
+Import("VAS_CHARACTER_LABEL");
+Import("VAS_SELECT_REALM");
+Import("VAS_REALM_LABEL");
+Import("VAS_CHARACTER_SELECTION_DESCRIPTION");
+Import("VAS_SELECTED_CHARACTER_DESCRIPTION");
+Import("VAS_NEW_CHARACTER_NAME_LABEL");
+Import("VAS_NAME_CHANGE_TOOLTIP");
 Import("TOKEN_CURRENT_AUCTION_VALUE");
 Import("TOKEN_MARKET_PRICE_NOT_AVAILABLE");
 Import("OKAY");
+Import("CONTINUE");
+Import("OPTIONS");
 Import("LARGE_NUMBER_SEPERATOR");
 Import("DECIMAL_SEPERATOR");
 Import("GOLD_AMOUNT_SYMBOL");
@@ -190,6 +205,10 @@ Import("LE_STORE_ERROR_PURCHASE_DENIED");
 Import("LE_STORE_ERROR_CONSUMABLE_TOKEN_OWNED");
 Import("LE_STORE_ERROR_TOO_MANY_TOKENS");
 Import("LE_STORE_ERROR_ITEM_UNAVAILABLE");
+Import("LE_VAS_SERVICE_NAME_CHANGE");
+Import("LE_VAS_SERVICE_APPEARANCE_CHANGE");
+Import("LE_VAS_SERVICE_FACTION_CHANGE");
+Import("LE_VAS_SERVICE_RACE_CHANGE");
 Import("LE_CONSUMABLE_TOKEN_REDEEM_FOR_SUB_AMOUNT_30_DAYS");
 Import("LE_CONSUMABLE_TOKEN_REDEEM_FOR_SUB_AMOUNT_2700_MINUTES");
 
@@ -1184,7 +1203,9 @@ end
 
 function StoreFrame_UpdateCoverState()
 	local self = StoreFrame;
-	if (StoreConfirmationFrame and StoreConfirmationFrame:IsShown() ) then
+	if (StoreConfirmationFrame and StoreConfirmationFrame:IsShown()) then
+		self.Cover:Show();
+	elseif (StoreVASValidationFrame and StoreVASValidationFrame:IsShown()) then
 		self.Cover:Show();
 	elseif (self.Notice:IsShown()) then
 		self.Cover:Show();
@@ -1449,6 +1470,7 @@ local ConfirmationFrameHeight = 556;
 local ConfirmationFrameMiddleHeight = 200;
 local ConfirmationFrameHeightEur = 596;
 local ConfirmationFrameMiddleHeightEur = 240;
+local VASServiceType = nil;
 
 ------------------------------------------
 function StoreConfirmationFrame_OnLoad(self)
@@ -1456,8 +1478,8 @@ function StoreConfirmationFrame_OnLoad(self)
 	self.ProductName:SetShadowColor(0, 0, 0, 0);
 
 	self.Title:SetText(BLIZZARD_STORE_CONFIRMATION_TITLE);
-	self.TotalLabel:SetText(BLIZZARD_STORE_FINAL_PRICE_LABEL);
-
+	self.NoticeFrame.TotalLabel:SetText(BLIZZARD_STORE_FINAL_PRICE_LABEL);
+	
 	self.LicenseAcceptText:SetTextColor(0.8, 0.8, 0.8);
 
 	self.NoticeFrame.Notice:SetSpacing(6);
@@ -1482,7 +1504,7 @@ function StoreConfirmationFrame_SetNotice(self, icon, name, dollars, cents, wall
 
 	self.ParchmentMiddle:SetHeight(middleHeight);
 	SetPortraitToTexture(self.Icon, icon);
-
+	
 	self.ProductName:SetText(name);
 	self.NoticeFrame.Notice:ClearAllPoints();
 	self.NoticeFrame.Notice:SetPoint("TOP", 0, 100);
@@ -1509,7 +1531,7 @@ function StoreConfirmationFrame_SetNotice(self, icon, name, dollars, cents, wall
 	end
 	self.NoticeFrame.Notice:SetText(notice);
 	self.NoticeFrame:Show();
-	self.Price:SetText(format(dollars, cents));
+	self.NoticeFrame.Price:SetText(format(dollars, cents));
 
 	self:ClearAllPoints();
 	self:SetPoint("CENTER", 0, 18);
@@ -1560,8 +1582,8 @@ function StoreConfirmationFrame_Update(self)
 	IsUpgrade = upgrade;
 
 	local info = currencyInfo();
-	self.BrowseNotice:SetText(info.browseNotice);
-	self.BrowseNotice:SetShown(not info.hideConfirmationBrowseNotice);
+	self.NoticeFrame.BrowseNotice:SetText(info.browseNotice);
+	self.NoticeFrame.BrowseNotice:SetShown(not info.hideConfirmationBrowseNotice);
 
 	if ( info.licenseAcceptText and info.licenseAcceptText ~= "" ) then
 		self.LicenseAcceptText:SetText(info.licenseAcceptText, true);
@@ -1591,10 +1613,10 @@ function StoreConfirmationFrame_Update(self)
 	FinalPriceDollars = currentDollars;
 	FinalPriceCents = currentCents;
 
-	if (self.Price:GetLeft() < self.TotalLabel:GetRight()) then
-		self.Price:SetFontObject("GameFontNormalLargeOutline");
+	if (self.NoticeFrame.Price:GetLeft() < self.NoticeFrame.TotalLabel:GetRight()) then
+		self.NoticeFrame.Price:SetFontObject("GameFontNormalLargeOutline");
 	else
-		self.Price:SetFontObject("GameFontNormalShadowHuge2");
+		self.NoticeFrame.Price:SetFontObject("GameFontNormalShadowHuge2");
 	end
 
 	self:Show();
@@ -1624,6 +1646,78 @@ function StoreConfirmationFinalBuy_OnClick(self)
 	end
 	StoreFrame_UpdateActivePanel(StoreFrame);
 	StoreConfirmationFrame:Hide();
+end
+
+-------------------------------
+function StoreVASValidationFrame_OnLoad(self)
+	self.ProductName:SetTextColor(0, 0, 0);
+	self.ProductName:SetShadowColor(0, 0, 0, 0);
+
+	self.Title:SetText(OPTIONS);
+	self.CharacterSelectionFrame.ContinueButton:SetText(CONTINUE);
+	self.CharacterSelectionFrame.RealmSelector.Label:SetText(VAS_REALM_LABEL);
+	self.CharacterSelectionFrame.CharacterSelector.Label:SetText(VAS_CHARACTER_LABEL);
+	self.CharacterSelectionFrame.NewCharacterName.Label:SetText(VAS_NEW_CHARACTER_NAME_LABEL);
+	if (IsOnGlueScreen()) then
+		self.CharacterSelectionFrame.NewCharacterName:SetFontObject("GlueEditBoxFont");
+	end
+	
+	self:RegisterEvent("STORE_CHARACTER_LIST_RECEIVED");
+end
+
+local SelectedRealm = nil;
+local SelectedCharacter = nil;
+
+function StoreVASValidationFrame_SetVASStart(self)
+	local productID = C_PurchaseAPI.GetEntryInfo(selectedEntryID);
+	local _, _, _, currentDollars, currentCents, _, name, _, displayID, texture, upgrade, _, _, isVasService, vasServiceType = C_PurchaseAPI.GetProductInfo(productID);
+
+	local finalIcon = texture;
+	if ( not finalIcon ) then
+		finalIcon = "Interface\\Icons\\INV_Misc_Note_02";
+	end
+	SetPortraitToTexture(self.Icon, finalIcon);
+	self.ProductName:SetText(name);
+
+	VASServiceType = vasServiceType;
+
+	SelectedRealm = nil;
+	SelectedCharacter = nil;
+	self.CharacterSelectionFrame.ContinueButton:Disable();
+	self.CharacterSelectionFrame.RealmSelector.Text:SetText(VAS_SELECT_REALM);
+	self.CharacterSelectionFrame.CharacterSelector.Text:SetText(VAS_SELECT_CHARACTER_DISABLED);
+	self.CharacterSelectionFrame.CharacterSelector.Button:Disable();
+	self.CharacterSelectionFrame.NewCharacterName:Hide();
+	self.CharacterSelectionFrame.ClassIcon:Hide();
+	self.CharacterSelectionFrame.SelectedCharacterFrame:Hide();
+	self.CharacterSelectionFrame.SelectedCharacterName:Hide();
+	self.CharacterSelectionFrame.SelectedCharacterDescription:Hide();
+	self.CharacterSelectionFrame:Show();
+
+	self:ClearAllPoints();
+	self:SetPoint("CENTER", 0, 18);
+
+	self:Show();
+end
+
+function StoreVASValidationFrame_OnEvent(self, event, ...)
+	if ( event == "STORE_CHARACTER_LIST_RECEIVED" ) then
+		WaitingOnConfirmation = false;
+		StoreFrame_UpdateActivePanel(StoreFrame);
+		if ( StoreFrame:IsShown() ) then
+			StoreVASValidationFrame_SetVASStart(self);
+			self:Raise();
+		end
+	end
+end
+
+function StoreVASValidationFrame_OnShow(self)
+	StoreFrame_UpdateCoverState();
+	self:Raise();
+end
+
+function StoreVASValidationFrame_OnHide(self)
+	StoreFrame_UpdateCoverState();
 end
 
 -------------------------------
@@ -2131,6 +2225,191 @@ function StoreGoldButton_OnShow(self)
 	self.Text:SetPoint("CENTER", 0, 3);
 end
 
+------------------------------------
+local InfoCache = {};
+local InfoCallback = nil;
+local lists = {};
+
+-- Very simple dropdown.  infoTable contains infoEntries containing text and value, the callback is what is called when a button is clicked.  
+function StoreDropDown_SetDropdown(frame, infoTable, callback)
+	local buttonHeight = 16;
+	local spacing = 4;
+	local maxWidth = 0;
+	local n = #infoTable;
+
+	wipe(InfoCache);
+	
+	for list, _ in pairs(lists) do
+		list:Hide();
+	end
+
+	-- TODO:  See if this still needed, it likely isn't.
+	if (not lists[frame.List]) then
+		lists[frame.List] = frame.List:GetWidth();
+	else
+		frame.List:SetWidth(lists[frame.List]);
+	end
+
+	local w = lists[frame.List];
+	frame.List:SetHeight(32 + spacing*(n-1) + buttonHeight*n);
+	for i = 1, n do
+		local info = infoTable[i];
+
+		local button;
+		if (not frame.List.Buttons[i]) then
+			button = CreateForbiddenFrame("Button", nil, frame.List, "StoreDropDownMenuButtonTemplate", i);
+			StoreDropDownMenuMenuButton_OnLoad(button);
+			button:SetPoint("TOPLEFT", frame.List.Buttons[i-1], "BOTTOMLEFT", 0, -4);
+		else
+			button = frame.List.Buttons[i];
+		end
+
+		button:SetText(info.text);
+		local width = math.max(w - spacing*6, button.NormalText:GetStringWidth() + spacing*4 + 15);
+		maxWidth = math.max(maxWidth, width);
+		button:SetHeight(buttonHeight);
+
+		if (info.checked) then
+			button.Check:Show();
+			button.UnCheck:Hide();
+		else
+			button.UnCheck:Show();
+			button.Check:Hide();
+		end
+		button:Show();
+		InfoCache[i] = info.value;
+	end
+
+	for i = 1, n do
+		frame.List.Buttons[i]:SetWidth(maxWidth);
+	end
+
+	-- TODO:  Add horizontalPadding and verticalPadding for use in the math here
+	frame.List:SetWidth(maxWidth + spacing*6);
+	InfoCallback = callback;
+	for i = n + 1, #frame.List.Buttons do
+		if (frame.List.Buttons[i]) then
+			frame.List.Buttons[i]:Hide();
+		end
+	end
+
+	frame.List:Show();
+end
+
+function StoreDropDownMenu_OnHide(self)
+	wipe(InfoCache);
+	InfoCallback = nil;
+end
+
+function StoreDropDownMenuMenuButton_OnLoad(self)	
+	self:SetFrameLevel(self:GetParent():GetFrameLevel()+2);
+	self:SetScript("OnClick", StoreDropDownMenuMenuButton_OnClick);
+end
+
+function StoreDropDownMenuMenuButton_OnClick(self, button)
+	if (not InfoCache or not InfoCallback) then
+		-- This should not happen, it means our cache was cleared while the frame was opened.
+		-- We probably want a GMError here.
+		self:GetParent():Hide();
+		return;
+	end
+
+	local value = InfoCache[self:GetID()];
+	InfoCallback(value);
+	self:GetParent():Hide();
+end
+
+------------------------------------
+function VASCharacterSelectionRealmSelector_Callback(value)
+	SelectedRealm = value;
+	SelectedCharacter = nil;
+	local frame = StoreVASValidationFrame.CharacterSelectionFrame;
+	frame.RealmSelector.Text:SetText(value);
+	frame.CharacterSelector.Text:SetText(VAS_SELECT_CHARACTER);
+	frame.CharacterSelector.Button:Enable();
+	frame.ClassIcon:Hide();
+	frame.SelectedCharacterName:Hide();
+	frame.SelectedCharacterDescription:Hide();
+	frame.SelectedCharacterFrame:Hide();
+	frame.NewCharacterName:SetText("");
+	frame.ContinueButton:Disable();
+	frame.NewCharacterName:Hide();
+end
+
+function VASCharacterSelectionCharacterSelector_Callback(value)
+	SelectedCharacter = value;
+
+	local frame = StoreVASValidationFrame.CharacterSelectionFrame;
+	local characters = C_PurchaseAPI.GetCharactersForRealm(SelectedRealm);
+	local character = characters[SelectedCharacter];
+	frame.CharacterSelector.Text:SetText(VAS_CHARACTER_SELECTION_DESCRIPTION:format(RAID_CLASS_COLORS[character.classFileName].colorStr, character.name, character.level, character.className));
+	frame.SelectedCharacterFrame:Show();
+	frame.ClassIcon:SetTexCoord(unpack(CLASS_ICON_TCOORDS[character.classFileName]));
+	frame.ClassIcon:Show();
+	frame.SelectedCharacterName:SetText(character.name);
+	frame.SelectedCharacterName:Show();
+	frame.SelectedCharacterDescription:SetText(VAS_SELECTED_CHARACTER_DESCRIPTION:format(character.level, character.raceName, character.className));
+	frame.SelectedCharacterDescription:Show();
+
+	if (VASServiceType == LE_VAS_SERVICE_NAME_CHANGE) then
+		frame.NewCharacterName:SetText("");
+		frame.NewCharacterName:Show();
+		frame.ContinueButton:Disable();
+	else
+		frame.ContinueButton:Enable();
+	end
+end
+
+function VASCharacterSelectionRealmSelector_OnClick(self)
+	if (self:GetParent().List:IsShown()) then
+		self:GetParent().List:Hide();
+		return;
+	end
+
+	local realms = C_PurchaseAPI.GetRealmList();
+
+	local infoTable = {};
+	for i = 1, #realms do
+		infoTable[#infoTable+1] = {text=realms[i], value=realms[i], checked=(SelectedRealm == realms[i])};
+	end
+
+	StoreDropDown_SetDropdown(self:GetParent(), infoTable, VASCharacterSelectionRealmSelector_Callback);
+end
+
+function VASCharacterSelectionCharacterSelector_OnClick(self)
+	if (self:GetParent().List:IsShown()) then
+		self:GetParent().List:Hide();
+		return;
+	end
+
+	if (not SelectedRealm) then
+		-- This should not happen, it means you have no realm selected.
+		return;
+	end
+
+	local infoTable = {};
+	local characters = C_PurchaseAPI.GetCharactersForRealm(SelectedRealm);
+	for i = 1, #characters do
+		local character = characters[i];
+		local str = VAS_CHARACTER_SELECTION_DESCRIPTION:format(RAID_CLASS_COLORS[character.classFileName].colorStr, character.name, character.level, character.className);
+		infoTable[#infoTable+1] = {text=str, value=i, checked=(SelectedCharacter == i)};
+	end
+
+	StoreDropDown_SetDropdown(self:GetParent(), infoTable, VASCharacterSelectionCharacterSelector_Callback);
+end
+
+function VASCharacterSelectionContinueButton_OnClick(self)
+	-- TODO
+	--[[
+	* For name change:  Send character and name for validation
+	* For others:  Send character for validation]]
+end
+
+function VASCharacterSelectionNewCharacterName_OnEnter(self)
+ 	StoreTooltip:ClearAllPoints();
+	StoreTooltip:SetPoint("BOTTOMLEFT", self, "TOPRIGHT");
+	StoreTooltip_Show("", VAS_NAME_CHANGE_TOOLTIP);
+end
 ------------------------------------
 function ServicesLogoutPopup_OnLoad(self)
 	self.ConfirmButton:SetText(CHARACTER_UPGRADE_LOG_OUT_NOW);

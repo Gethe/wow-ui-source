@@ -260,6 +260,10 @@ function GarrisonFollowerMission:RemoveFollowerFromMission(frame, updateValues)
 	end
 end
 
+function GarrisonFollowerMission:UpdateMissionParty(followers)
+	GarrisonMission.UpdateMissionParty(self, followers, "GarrisonMissionAbilityLargeCounterTemplate");
+end
+
 function GarrisonFollowerMission:ClearMouse()
 	GarrisonMissionFrame_ClearMouse();
 end

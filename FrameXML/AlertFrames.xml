@@ -1653,7 +1653,7 @@
 		</Layers>
 	</Button>
 
-	<Button name="GarrisonMissionAlertFrame" parent="UIParent" hidden="true" frameStrata="DIALOG" inherits="AlertFrameTemplate">
+	<Button name="GarrisonMissionAlertFrameTemplate" parent="UIParent" hidden="true" frameStrata="DIALOG" inherits="AlertFrameTemplate" virtual="true">
 	<Size x="317" y="82"/>
 	<Anchors>
 		<Anchor point="BOTTOM" x="0" y="170"/>
@@ -1674,30 +1674,10 @@
 		</AnimationGroup>
 	</Animations>
 	<Layers>
-		<Layer level="BACKGROUND">
-			<Texture atlas="Garr_MissionToast" useAtlasSize="true">
-				<Anchors>
-					<Anchor point="CENTER"/>
-				</Anchors>
-			</Texture>
-		</Layer>
-		<Layer level="BORDER" textureSubLevel="2">
-			<Texture parentKey="IconBG" atlas="Garr_MissionToast-IconBG" useAtlasSize="true">
-				<Anchors>
-					<Anchor point="LEFT" x="10" y="0"/>
-				</Anchors>
-			</Texture>
-		</Layer>
 		<Layer level="ARTWORK">
 			<FontString parentKey="Title" inherits="GameFontNormalSmall" text="GARRISON_MISSION_COMPLETE">
 				<Anchors>
 					<Anchor point="TOP" x="20" y="-18"/>
-				</Anchors>
-			</FontString>
-			<FontString parentKey="Name" inherits="GameFontHighlight">
-				<Size x="196" y="10"/>		
-				<Anchors>
-					<Anchor point="TOP" relativeKey="$parent.Title" relativePoint="BOTTOM" y="-10"/>
 				</Anchors>
 			</FontString>
 			<Texture parentKey="MissionType" atlas="GarrMission_MissionIcon-Combat" useAtlasSize="true">
@@ -1800,13 +1780,6 @@
 		</AnimationGroup>
 	</Animations>
 	<Layers>
-		<Layer level="BACKGROUND">
-			<Texture atlas="Garr_MissionToast" useAtlasSize="true">
-				<Anchors>
-					<Anchor point="CENTER"/>
-				</Anchors>
-			</Texture>
-		</Layer>
 		<Layer level="BORDER">
 			<Texture parentKey="FollowerBG" atlas="Garr_FollowerToast-Epic" useAtlasSize="true" hidden="true">
 				<Anchors>
@@ -1815,16 +1788,6 @@
 			</Texture>
 		</Layer>
 		<Layer level="ARTWORK">
-			<FontString parentKey="Title" inherits="GameFontNormalSmall" text="GARRISON_FOLLOWER_ADDED_TOAST">
-				<Anchors>
-					<Anchor point="TOP" x="20" y="-18"/>
-				</Anchors>
-			</FontString>
-			<FontString parentKey="Name" inherits="GameFontHighlight">
-				<Anchors>
-					<Anchor point="TOP" relativeKey="$parent.Title" relativePoint="BOTTOM" y="-10"/>
-				</Anchors>
-			</FontString>
 			<Texture parentKey="DieIcon" file="Interface\Buttons\UI-GroupLoot-Dice-Up" hidden="true">
 				<Size x="22" y="22"/>
 				<Anchors>
@@ -1915,6 +1878,27 @@
 </Button>
 
 <Button name="GarrisonFollowerAlertFrame" inherits="GarrisonFollowerAlertFrameTemplate">
+	<Layers>
+		<Layer level="BACKGROUND">
+			<Texture atlas="Garr_MissionToast" useAtlasSize="true">
+				<Anchors>
+					<Anchor point="CENTER"/>
+				</Anchors>
+			</Texture>
+		</Layer>
+		<Layer level="ARTWORK">
+			<FontString parentKey="Title" inherits="GameFontNormalSmall" text="GARRISON_FOLLOWER_ADDED_TOAST">
+				<Anchors>
+					<Anchor point="TOP" x="20" y="-18"/>
+				</Anchors>
+			</FontString>
+			<FontString parentKey="Name" inherits="GameFontHighlight">
+				<Anchors>
+					<Anchor point="TOP" relativeKey="$parent.Title" relativePoint="BOTTOM" y="-10"/>
+				</Anchors>
+			</FontString>
+		</Layer>
+	</Layers>
 	<Frames>
 		<Frame parentKey="PortraitFrame">
 			<Size x="52" y="60"/>
@@ -1963,15 +1947,87 @@
 	</Frames>
 </Button>
 
-<Button name="GarrisonShipAlertFrame" inherits="GarrisonFollowerAlertFrameTemplate">
+<Button name="GarrisonShipFollowerAlertFrame" inherits="GarrisonFollowerAlertFrameTemplate">
 	<Layers>
-		<Layer level="BORDER">
-			<Texture parentKey="Portrait" atlas="Ships_Dreadnaught-Map" useAtlasSize="false">
-				<Size x="64" y="64"/>
+		<Layer level="BACKGROUND">
+			<Texture parentKey="Background" atlas="ShipMission_Toast" useAtlasSize="true">
 				<Anchors>
-					<Anchor point="LEFT" x="8"/>
+					<Anchor point="CENTER"/>
 				</Anchors>
 			</Texture>
+		</Layer>
+		<Layer level="BORDER">
+			<Texture parentKey="Portrait" atlas="Ships_Dreadnaught-List" useAtlasSize="false">
+				<Size x="115" y="60"/>
+				<Anchors>
+					<Anchor point="LEFT" x="10"/>
+				</Anchors>
+			</Texture>
+		</Layer>
+		<Layer level="ARTWORK">
+			<FontString parentKey="Title" inherits="GameFontNormalSmall" text="GARRISON_FOLLOWER_ADDED_TOAST">
+				<Anchors>
+					<Anchor point="TOP" x="45" y="-18"/>
+				</Anchors>
+			</FontString>
+			<FontString parentKey="Name" inherits="GameFontHighlight">
+				<Anchors>
+					<Anchor point="TOP" relativeKey="$parent.Title" relativePoint="BOTTOM" y="-8"/>
+				</Anchors>
+			</FontString>
+			<FontString parentKey="Class" inherits="GameFontNormalSmall">
+				<Anchors>
+					<Anchor point="TOP" relativeKey="$parent.Name" relativePoint="BOTTOM" y="-3"/>
+				</Anchors>
+				<Color r="0.5" g="0.5" b="0.5"/>
+			</FontString>
+		</Layer>
+	</Layers>
+</Button>
+
+<Button name="GarrisonMissionAlertFrame" inherits="GarrisonMissionAlertFrameTemplate">
+	<Layers>
+		<Layer level="BACKGROUND">
+			<Texture parentKey="Background" atlas="Garr_MissionToast" useAtlasSize="true">
+				<Anchors>
+					<Anchor point="CENTER"/>
+				</Anchors>
+			</Texture>
+		</Layer>
+		<Layer level="BORDER" textureSubLevel="2">
+			<Texture parentKey="IconBG" atlas="Garr_MissionToast-IconBG" useAtlasSize="true">
+				<Anchors>
+					<Anchor point="LEFT" x="10" y="0"/>
+				</Anchors>
+			</Texture>
+		</Layer>
+		<Layer level="ARTWORK">
+			<FontString parentKey="Name" inherits="GameFontHighlight">
+				<Size x="196" y="10"/>		
+				<Anchors>
+					<Anchor point="TOP" x="20" y="-39"/>
+				</Anchors>
+			</FontString>
+		</Layer>
+	</Layers>
+</Button>
+
+<Button name="GarrisonShipMissionAlertFrame" inherits="GarrisonMissionAlertFrameTemplate">
+	<Layers>
+		<Layer level="BACKGROUND">
+			<Texture parentKey="Background" atlas="ShipMission_Toast" useAtlasSize="true">
+				<Anchors>
+					<Anchor point="CENTER"/>
+				</Anchors>
+			</Texture>
+		</Layer>
+		<Layer level="ARTWORK">
+			<FontString parentKey="Name" inherits="GameFontHighlight">
+				<Size x="196" y="10"/>		
+				<Anchors>
+					<Anchor point="TOP" x="20" y="-44"/>
+				</Anchors>
+			</FontString>
 		</Layer>
 	</Layers>
 </Button>

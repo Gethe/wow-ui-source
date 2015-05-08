@@ -79,31 +79,25 @@ SPLASH_SCREENS = {
 					},
 				},
 				-- 2 : 6.0
-	["NEW"] =	{	id = 3, -- 6.1
+	["NEW"] =	{	id = 4, -- 6.2
 					expansion = LE_EXPANSION_WARLORDS_OF_DRAENOR,
 					questID = nil,			
-					leftTex = "splash-610-topleft",
-					rightTex = "splash-610-right",
-					bottomTex = "splash-610-botleft",
+					leftTex = "splash-620-topleft",
+					rightTex = "splash-620-right",
+					bottomTex = "splash-620-botleft",
 					header = SPLASH_NEW_HEADER,
-					label = SPLASH_NEW_6_1_LABEL,
-					feature1Title = SPLASH_NEW_6_1_FEATURE1_TITLE,
-					feature1Desc = SPLASH_NEW_6_1_FEATURE1_DESC,
-					feature2Title = SPLASH_NEW_6_1_FEATURE2_TITLE,
-					feature2Desc = SPLASH_NEW_6_1_FEATURE2_DESC,
-					rightTitle = SPLASH_NEW_6_1_RIGHT_TITLE,
-					rightDesc = SPLASH_NEW_6_1_RIGHT_DESC,
+					label = SPLASH_NEW_6_2_LABEL,
+					feature1Title = SPLASH_NEW_6_2_FEATURE1_TITLE,
+					feature1Desc = SPLASH_NEW_6_2_FEATURE1_DESC,
+					feature2Title = SPLASH_NEW_6_2_FEATURE2_TITLE,
+					feature2Desc = SPLASH_NEW_6_2_FEATURE2_DESC,
+					rightTitle = SPLASH_NEW_6_2_RIGHT_TITLE,
+					rightDesc = SPLASH_NEW_6_2_RIGHT_DESC,
 					cVar="splashScreenNormal",
 					hideStartButton = true;
 					features = {
-						[1] = { EnterFunc = function()
-									MainMenuMicroButton_ShowAlert(CollectionsMicroButtonAlert, HEIRLOOMS_JOURNAL_TUTORIAL_TAB)
-									MicroButtonPulse(CollectionsMicroButton);
-								end,
-								LeaveFunc = function()
-									CollectionsMicroButtonAlert:Hide();
-									MicroButtonPulseStop(CollectionsMicroButton);
-								end,
+						[1] = { EnterFunc = function() end,
+								LeaveFunc = function() end,
 								},
 						[2] = { EnterFunc = function() end,
 								LeaveFunc = function() end,

@@ -900,11 +900,13 @@ function LevelUpDisplay_StartDisplay(self, beginUnlockList)
 						self:SetHeight(70);
 					else
 						local num, isTalents;
-						if (spells) then
+						if (spells and #spells > 0) then
 							num = #spells;
-						else
+						elseif (talentTier > 0) then
 							num = NUM_TALENT_COLUMNS;
 							isTalents = true;
+						else
+							return;
 						end
 						if (num > 5) then
 							num = 5;

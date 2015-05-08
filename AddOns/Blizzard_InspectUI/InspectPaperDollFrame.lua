@@ -27,7 +27,7 @@ function InspectPaperDollFrame_SetLevel()
 		return;
 	end
 
-	local unit, level, sex = InspectFrame.unit, UnitLevel(InspectFrame.unit), UnitSex(InspectFrame.unit);
+	local unit, level, effectiveLevel, sex = InspectFrame.unit, UnitLevel(InspectFrame.unit), UnitEffectiveLevel(InspectFrame.unit), UnitSex(InspectFrame.unit);
 	local specID = GetInspectSpecialization(InspectFrame.unit);
 	
 	local classDisplayName, class = UnitClass(InspectFrame.unit); 
@@ -38,8 +38,10 @@ function InspectPaperDollFrame_SetLevel()
 		_, specName = GetSpecializationInfoByID(specID, sex);
 	end
 	
-	if ( level == -1 ) then
+	if ( level == -1 or effectiveLevel == -1 ) then
 		level = "??";
+	elseif ( effectiveLevel ~= level ) then
+		level = EFFECTIVE_LEVEL_FORMAT:format(effectiveLevel, level);
 	end
 	
 	if (specName and specName ~= "") then

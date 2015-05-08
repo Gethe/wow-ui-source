@@ -77,6 +77,12 @@ GlueDialogTypes["TOKEN_ERROR_HAS_OCCURRED"] = {
 	escapeHides = true,
 }
 
+GlueDialogTypes["TOKEN_NONE_FOR_SALE"] = {
+	text = TOKEN_NONE_FOR_SALE,
+	button1 = OKAY,
+	escapeHides = true,
+}
+
 function ReactivateAccountDialog_OnEvent(self, event, ...)
 	if (event == "TOKEN_BUY_CONFIRM_REQUIRED") then
 		local dialog = GoldReactivateConfirmationDialog;
@@ -153,6 +159,7 @@ function ReactivateAccountDialog_OnEvent(self, event, ...)
 			end
 			return;
 		end
+		C_WowTokenGlue.CheckVeteranTokenEligibility();
 		if (ReactivateAccountDialog:IsShown()) then
 			ReactivateAccountDialog_Open();
 		elseif (SubscriptionRequestDialog:IsShown()) then
@@ -161,7 +168,11 @@ function ReactivateAccountDialog_OnEvent(self, event, ...)
 	elseif (event == "TOKEN_BUY_RESULT") then
 		local result = ...;
 		if (result ~= LE_TOKEN_RESULT_SUCCESS) then
-			GlueDialog_Show("TOKEN_ERROR_HAS_OCCURRED");
+			if (result == LE_TOKEN_RESULT_ERROR_NONE_FOR_SALE) then
+				GlueDialog_Show("TOKEN_NONE_FOR_SALE");
+			else
+				GlueDialog_Show("TOKEN_ERROR_HAS_OCCURRED");
+			end
 			if (AccountReactivationInProgressDialog:IsShown()) then
 				AccountReactivationInProgressDialog:Hide();
 			end
@@ -172,8 +183,6 @@ end
 
 function ReactivateAccountDialog_CanOpen()
 	if (AccountReactivationInProgressDialog:IsShown()) then
-		return false;
-	elseif (not select(20, GetCharacterInfo(GetCharacterSelection()))) then
 		return false;
 	elseif (not C_WowTokenPublic.GetCommerceSystemStatus()) then
 		return false;
@@ -210,7 +219,7 @@ function ReactivateAccountDialog_Open()
 		end
 		self.Accept:SetText(ACCOUNT_REACTIVATE_TOKEN_ACCEPT);
 		self:Show();
-	elseif (C_WowTokenGlue.CanVeteranBuy()) then
+	elseif (C_WowTokenGlue.CanVeteranBuy() or CAN_BUY_RESULT_FOUND == LE_TOKEN_RESULT_ERROR_NONE_FOR_SALE) then
 		self.redeem = false;
 		self.Title:SetText(ACCOUNT_REACTIVATE_GOLD_TITLE);
 		if (redeemIndex == LE_CONSUMABLE_TOKEN_REDEEM_FOR_SUB_AMOUNT_30_DAYS) then
@@ -221,7 +230,12 @@ function ReactivateAccountDialog_Open()
 			self.Accept:SetText(ACCOUNT_REACTIVATE_ACCEPT_MINUTES:format(GetMoneyString(C_WowTokenPublic.GetCurrentMarketPrice(), true)));
 		end
 		ReactivateAccount_CreatePriceUpdateTicker();
-		self.Accept:SetEnabled(C_WowTokenPublic.GetCurrentMarketPrice() > 0);
+		self.Accept:SetEnabled(C_WowTokenPublic.GetCurrentMarketPrice() > 0 and CAN_BUY_RESULT_FOUND == LE_TOKEN_RESULT_SUCCESS);
+		if (CAN_BUY_RESULT_FOUND == LE_TOKEN_RESULT_ERROR_NONE_FOR_SALE) then
+			self.Accept.tooltip = TOKEN_NONE_FOR_SALE;
+		else
+			self.Accept.tooltip = nil;
+		end
 		self:Show();
 	else
 		self:Hide();

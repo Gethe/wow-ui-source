@@ -236,6 +236,8 @@ function PlayerTalentFrame_Toggle(suggestedTalentGroup)
 			PlayerTalentTab_OnClick(_G["PlayerTalentFrameTab"..TALENTS_TAB]);
 		elseif ( selectedTab ) then
 			PlayerTalentTab_OnClick(_G["PlayerTalentFrameTab"..selectedTab]);
+		elseif ( AreTalentsLocked() ) then
+			PlayerTalentTab_OnClick(_G["PlayerTalentFrameTab"..SPECIALIZATION_TAB]);
 		else
 			PlayerTalentTab_OnClick(_G["PlayerTalentFrameTab"..TALENTS_TAB]);
 		end
@@ -463,7 +465,7 @@ function PlayerTalentFrame_OnHide()
 		if (available) then
 			MainMenuMicroButton_ShowAlert(TalentMicroButtonAlert, TALENT_MICRO_BUTTON_UNSAVED_CHANGES);
 		end
-	elseif ( GetNumUnspentTalents() > 0 and not ShouldHideTalentsTab() ) then
+	elseif ( GetNumUnspentTalents() > 0 and not AreTalentsLocked() ) then
 		MainMenuMicroButton_ShowAlert(TalentMicroButtonAlert, TALENT_MICRO_BUTTON_UNSPENT_TALENTS);
 	end
 end
@@ -913,7 +915,7 @@ function PlayerTalentFrame_UpdateTabs(playerLevel)
 	talentTabWidthCache[TALENTS_TAB] = 0;
 	tab = _G["PlayerTalentFrameTab"..TALENTS_TAB];
 	if ( tab ) then
-		if ( meetsTalentLevel and not ShouldHideTalentsTab() ) then
+		if ( meetsTalentLevel ) then
 			tab:Show();
 			firstShownTab = firstShownTab or tab;
 			PanelTemplates_TabResize(tab, 0);
@@ -929,7 +931,7 @@ function PlayerTalentFrame_UpdateTabs(playerLevel)
 	local meetsGlyphLevel = playerLevel >= SHOW_INSCRIPTION_LEVEL;
 	tab = _G["PlayerTalentFrameTab"..GLYPH_TAB];
 	if ( tab ) then
-		if ( meetsGlyphLevel and not IsCharacterNewlyBoosted() ) then
+		if ( meetsGlyphLevel ) then
 			tab:Show();
 			firstShownTab = firstShownTab or tab;
 			PanelTemplates_TabResize(tab, 0);
@@ -1488,22 +1490,42 @@ function PlayerTalentFrame_UpdateSpecFrame(self, spec)
 		frame.spellID = bonuses[i];
 		frame.extraTooltip = nil;
 		frame.isPet = self.isPet;
-		local level = GetSpellLevelLearned(bonuses[i]);
-		if ( level and level > UnitLevel("player") ) then
-			frame.subText:SetFormattedText(SPELLBOOK_AVAILABLE_AT, level);
-		else
-			frame.subText:SetText("");
-		end
-		if ( disable ) then
-			frame.disabled = true;
-			frame.icon:SetDesaturated(true);
-			frame.ring:SetDesaturated(true);
-			frame.subText:SetTextColor(0.75, 0.75, 0.75);
-		else
+		
+		local isKnown = IsSpellKnownOrOverridesKnown(bonuses[i]);
+		if ( not isKnown and IsCharacterNewlyBoosted() and not disable ) then
 			frame.disabled = false;
-			frame.icon:SetDesaturated(false);
+			frame.icon:SetDesaturated(true);
+			frame.icon:SetAlpha(0.5);
 			frame.ring:SetDesaturated(false);
 			frame.subText:SetTextColor(0.25, 0.1484375, 0.02);
+			frame.subText:SetText(BOOSTED_CHAR_SPELL_TEMPLOCK);
+		else
+			frame.icon:SetAlpha(1);
+			local level = GetSpellLevelLearned(bonuses[i]);
+			local spellLocked = level and level > UnitLevel("player");
+			if ( spellLocked ) then
+				frame.subText:SetFormattedText(SPELLBOOK_AVAILABLE_AT, level);
+			else
+				frame.subText:SetText("");
+			end
+			if ( disable ) then
+				frame.disabled = true;
+				frame.icon:SetDesaturated(true);
+				frame.icon:SetAlpha(1);
+				frame.ring:SetDesaturated(true);
+				frame.subText:SetTextColor(0.75, 0.75, 0.75);
+			else
+				frame.disabled = false;
+				if ( spellLocked ) then
+					frame.icon:SetDesaturated(true);
+					frame.icon:SetAlpha(0.5);
+				else
+					frame.icon:SetDesaturated(false);
+					frame.icon:SetAlpha(1);
+				end
+				frame.ring:SetDesaturated(false);
+				frame.subText:SetTextColor(0.25, 0.1484375, 0.02);
+			end
 		end
 		frame:Show();
 		index = index + 1;
@@ -1525,4 +1547,21 @@ function PlayerTalentFrameTalents_OnLoad(self)
 	for i=1, MAX_TALENT_TIERS do
 		self["tier"..i].level:SetText(talentLevels[i]);
 	end
+end
+
+function PlayerTalentFrameTalents_OnShow(self)
+	local playerLevel = UnitLevel("player");
+	if ( playerLevel >= SHOW_TALENT_LEVEL and AreTalentsLocked() ) then
+		PlayerTalentFrameLockInfo:Show();
+		PlayerTalentFrameLockInfo.Title:SetText(TALENTS_FRAME_TALENT_LOCK_TITLE);
+		PlayerTalentFrameLockInfo.Text:SetText(TALENTS_FRAME_TALENT_LOCK_DESC)
+		PlayerTalentFrameTalentsTutorialButton:Hide();
+	else
+		PlayerTalentFrameLockInfo:Hide();
+		PlayerTalentFrameTalentsTutorialButton:Show();
+	end
+end
+
+function PlayerTalentFrameTalents_OnHide(self)
+	PlayerTalentFrameLockInfo:Hide();
 end

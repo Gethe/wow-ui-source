@@ -573,7 +573,7 @@ function TradeSkillFrame_SetSelection(id)
 	
 	local numTopLines = TradeSkillRequirementText:GetNumLines();
 	if ( TradeSkillSkillCooldown:GetText() ) then
-		numTopLines = numTopLines + 1;
+		numTopLines = numTopLines + TradeSkillSkillCooldown:GetNumLines();
 	end
 	if ( numTopLines > 2 ) then
 		TradeSkillDescription:SetPoint("TOPLEFT", 5, -30 - (10 * numTopLines));

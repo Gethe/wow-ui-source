@@ -1016,7 +1016,7 @@ function GarrisonBuildingFollowerList_OnShow(self)
 		tinsert(self.followersList, i);
 	end	
 	GarrisonFollowerList_SortFollowers(self);
-	GarrisonFollowerList_Update(self:GetParent());
+	self:UpdateData();
 	
 	if (#self.followers == 0) then
 		GarrisonBuildingFrame.FollowerList.NoFollowerText:Show();

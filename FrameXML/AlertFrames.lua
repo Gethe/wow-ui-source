@@ -86,15 +86,21 @@ function AlertFrame_OnEvent (self, event, ...)
 		local name = ...;
 		GarrisonBuildingAlertFrame_ShowAlert(name);
 	elseif ( event == "GARRISON_MISSION_FINISHED" ) then
-		if ( not GarrisonMissionFrame or not GarrisonMissionFrame:IsShown() ) then
+		local validInstance = false;
+		local _, instanceType = GetInstanceInfo();
+		if ( instanceType == "none" or C_Garrison.IsOnGarrisonMap() ) then
+			validInstance = true;
+		end
+		-- toast only if not in an instance (except for garrison), and mission frame is not shown, and not in combat
+		if ( validInstance and (not GarrisonMissionFrame or not GarrisonMissionFrame:IsShown()) and not UnitAffectingCombat("player") ) then
 			GarrisonMissionAlertFrame_ShowAlert(...);
 		end
 	elseif ( event == "GARRISON_FOLLOWER_ADDED" ) then
-		local followerID, name, displayID, level, quality, isUpgraded, texPrefix, followerType = ...;
+		local followerID, name, class, displayID, level, quality, isUpgraded, texPrefix, followerType = ...;
 		if (followerType == LE_FOLLOWER_TYPE_GARRISON_6_0) then
 			GarrisonFollowerAlertFrame_ShowAlert(followerID, name, displayID, level, quality, isUpgraded);
 		else
-			GarrisonShipAlertFrame_ShowAlert(followerID, name, texPrefix, level, quality, isUpgraded);
+			GarrisonShipFollowerAlertFrame_ShowAlert(followerID, name, class, texPrefix, level, quality, isUpgraded);
 		end
 	elseif ( event == "GARRISON_RANDOM_MISSION_ADDED" ) then
 		GarrisonRandomMissionAlertFrame_ShowAlert(...);
@@ -174,7 +180,9 @@ function AlertFrame_FixAnchors()
 	alertAnchor = AlertFrame_SetDigsiteCompleteToastFrameAnchors(alertAnchor);
 	alertAnchor = AlertFrame_SetGarrisonBuildingAlertFrameAnchors(alertAnchor);
 	alertAnchor = AlertFrame_SetGarrisonMissionAlertFrameAnchors(alertAnchor);
+	alertAnchor = AlertFrame_SetGarrisonShipMissionAlertFrameAnchors(alertAnchor);
 	alertAnchor = AlertFrame_SetGarrisonFollowerAlertFrameAnchors(alertAnchor);
+	alertAnchor = AlertFrame_SetGarrisonShipFollowerAlertFrameAnchors(alertAnchor);
 end
 
 function AlertFrame_SetLootAnchors(alertAnchor)
@@ -323,10 +331,26 @@ function AlertFrame_SetGarrisonMissionAlertFrameAnchors(alertAnchor)
 	return alertAnchor;
 end
 
+function AlertFrame_SetGarrisonShipMissionAlertFrameAnchors(alertAnchor)
+	if ( GarrisonShipMissionAlertFrame and GarrisonShipMissionAlertFrame:IsShown() ) then
+		GarrisonShipMissionAlertFrame:SetPoint("BOTTOM", alertAnchor, "TOP", 0, 10);
+		alertAnchor = GarrisonShipMissionAlertFrame;
+	end
+	return alertAnchor;
+end
+
 function AlertFrame_SetGarrisonFollowerAlertFrameAnchors(alertAnchor)
 	if ( GarrisonFollowerAlertFrame and GarrisonFollowerAlertFrame:IsShown() ) then
 		GarrisonFollowerAlertFrame:SetPoint("BOTTOM", alertAnchor, "TOP", 0, 10);
 		alertAnchor = GarrisonFollowerAlertFrame;
+	end
+	return alertAnchor;
+end
+
+function AlertFrame_SetGarrisonShipFollowerAlertFrameAnchors(alertAnchor)
+	if ( GarrisonShipFollowerAlertFrame and GarrisonShipFollowerAlertFrame:IsShown() ) then
+		GarrisonShipFollowerAlertFrame:SetPoint("BOTTOM", alertAnchor, "TOP", 0, 10);
+		alertAnchor = GarrisonShipFollowerAlertFrame;
 	end
 	return alertAnchor;
 end
@@ -1013,7 +1037,11 @@ function LootWonAlertFrame_SetUp(self, itemLink, quantity, rollType, roll, specI
 	end
 
 	self.hyperlink = itemHyperLink;
-	PlaySoundKitID(31578);	--UI_EpicLoot_Toast
+	if ( lessAwesome ) then
+		PlaySoundKitID(51402);	--UI_Raid_Loot_Toast_Lesser_Item_Won
+	else
+		PlaySoundKitID(31578);	--UI_EpicLoot_Toast
+	end
 end
 
 function LootWonAlertFrame_OnClick(self, button, down)
@@ -1174,9 +1202,13 @@ end
 function GarrisonMissionAlertFrame_ShowAlert(missionID)
 	GarrisonLandingPageMinimapButton.MinimapLoopPulseAnim:Play();
 	local missionInfo = C_Garrison.GetBasicMissionInfo(missionID);
-	GarrisonMissionAlertFrame.Name:SetText(missionInfo.name);
-	GarrisonMissionAlertFrame.MissionType:SetAtlas(missionInfo.typeAtlas);
-	AlertFrame_AnimateIn(GarrisonMissionAlertFrame);
+	local alertFrame = GarrisonMissionAlertFrame;
+	if (missionInfo.followerTypeID == LE_FOLLOWER_TYPE_SHIPYARD_6_2) then
+		alertFrame = GarrisonShipMissionAlertFrame;
+	end
+	alertFrame.Name:SetText(missionInfo.name);
+	alertFrame.MissionType:SetAtlas(missionInfo.typeAtlas);
+	AlertFrame_AnimateIn(alertFrame);
 	AlertFrame_FixAnchors();
 	PlaySound("UI_Garrison_Toast_MissionComplete");
 end
@@ -1264,15 +1296,18 @@ function GarrisonFollowerAlertFrame_ShowAlert(followerID, name, displayID, level
 	GarrisonFollowerAlertFrame_Setup(GarrisonFollowerAlertFrame, followerID, name, quality, isUpgraded);
 end
 
-function GarrisonShipAlertFrame_ShowAlert(followerID, name, texPrefix, level, quality, isUpgraded)
-	local mapAtlas = texPrefix .. "-Map";
-	GarrisonShipAlertFrame.Portrait:SetAtlas(mapAtlas, false);
+function GarrisonShipFollowerAlertFrame_ShowAlert(followerID, name, class, texPrefix, level, quality, isUpgraded)
+	local mapAtlas = texPrefix .. "-List";
+	GarrisonShipFollowerAlertFrame.Portrait:SetAtlas(mapAtlas, false);
+	local color = ITEM_QUALITY_COLORS[quality];
+	GarrisonShipFollowerAlertFrame.Name:SetTextColor(color.r, color.g, color.b);
 	if ( isUpgraded ) then
-		GarrisonShipAlertFrame.Title:SetText(GARRISON_SHIPYARD_FOLLOWER_ADDED_UPGRADED_TOAST);
+		GarrisonShipFollowerAlertFrame.Title:SetText(GARRISON_SHIPYARD_FOLLOWER_ADDED_UPGRADED_TOAST);
 	else
-		GarrisonShipAlertFrame.Title:SetText(GARRISON_SHIPYARD_FOLLOWER_ADDED_TOAST);
+		GarrisonShipFollowerAlertFrame.Title:SetText(GARRISON_SHIPYARD_FOLLOWER_ADDED_TOAST);
 	end
-	GarrisonFollowerAlertFrame_Setup(GarrisonShipAlertFrame, followerID, name, quality, isUpgraded);
+	GarrisonShipFollowerAlertFrame.Class:SetText(class);
+	GarrisonFollowerAlertFrame_Setup(GarrisonShipFollowerAlertFrame, followerID, name, 0, isUpgraded);
 end
 
 function GarrisonFollowerAlertFrame_OnEnter(self, button, down)

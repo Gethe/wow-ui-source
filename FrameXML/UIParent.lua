@@ -1507,8 +1507,13 @@ function UIParent_OnEvent(self, event, ...)
 
 	-- Events for adventure journal
 	elseif ( event == "AJ_OPEN" ) then
-		ToggleEncounterJournal()
-
+		if (not IsBlizzCon() and UnitLevel("player") >= SHOW_EJ_LEVEL) then
+			if ( not EncounterJournal ) then
+				EncounterJournal_LoadUI();
+			end
+			ShowUIPanel(EncounterJournal);
+			EJSuggestFrame_OpenFrame();
+		end
 	-- Events for Void Storage UI handling
 	elseif ( event == "VOID_STORAGE_OPEN" ) then
 		VoidStorage_LoadUI();
@@ -3854,6 +3859,10 @@ end
 
 function GetQuestDifficultyColor(level)
 	return GetRelativeDifficultyColor(UnitLevel("player"), level);
+end
+
+function GetCreatureDifficultyColor(level)
+	return GetRelativeDifficultyColor(UnitEffectiveLevel("player"), level);
 end
 
 --How difficult is this challenge for this unit?

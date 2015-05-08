@@ -490,10 +490,17 @@ function PaperDollFrame_SetLevel()
 		_, specName = GetSpecializationInfo(primaryTalentTree, nil, nil, nil, UnitSex("player"));
 	end
 	
+	local level = UnitLevel("player");
+	local effectiveLevel = UnitEffectiveLevel("player");
+
+	if ( effectiveLevel ~= level ) then
+		level = EFFECTIVE_LEVEL_FORMAT:format(effectiveLevel, level);
+	end
+
 	if (specName and specName ~= "") then
-		CharacterLevelText:SetFormattedText(PLAYER_LEVEL, UnitLevel("player"), classColorString, specName, classDisplayName);
+		CharacterLevelText:SetFormattedText(PLAYER_LEVEL, level, classColorString, specName, classDisplayName);
 	else
-		CharacterLevelText:SetFormattedText(PLAYER_LEVEL_NO_SPEC, UnitLevel("player"), classColorString, classDisplayName);
+		CharacterLevelText:SetFormattedText(PLAYER_LEVEL_NO_SPEC, level, classColorString, classDisplayName);
 	end
 	
 	local showTrialCap = false;
@@ -783,7 +790,7 @@ function PaperDollFrame_SetArmor(statFrame, unit)
 	_G[statFrame:GetName().."Label"]:SetText(format(STAT_FORMAT, ARMOR));
 	local text = _G[statFrame:GetName().."StatText"];
 
-    local bonusArmor = UnitBonusArmor(unit)
+    local bonusArmor = UnitBonusArmor(unit);
     local nonBonusArmor = effectiveArmor - bonusArmor;
 
     if ( nonBonusArmor < baselineArmor) then
@@ -791,8 +798,8 @@ function PaperDollFrame_SetArmor(statFrame, unit)
     end
 
 	PaperDollFrame_SetLabelAndText(statFrame, STAT_ARMOR, effectiveArmor, false);
-    local baseArmorReduction = PaperDollFrame_GetArmorReduction(baselineArmor, UnitLevel(unit));
-    local armorReduction = PaperDollFrame_GetArmorReduction(effectiveArmor, UnitLevel(unit));
+    local baseArmorReduction = PaperDollFrame_GetArmorReduction(baselineArmor, UnitEffectiveLevel(unit));
+    local armorReduction = PaperDollFrame_GetArmorReduction(effectiveArmor, UnitEffectiveLevel(unit));
 	
 	statFrame.tooltip = HIGHLIGHT_FONT_COLOR_CODE..format(PAPERDOLLFRAME_TOOLTIP_FORMAT, ARMOR).." "..string.format("%s", effectiveArmor)..FONT_COLOR_CODE_CLOSE;
 	statFrame.tooltip2 = format(STAT_ARMOR_BASE_TOOLTIP, baseArmorReduction);
@@ -820,7 +827,7 @@ function PaperDollFrame_SetBonusArmor(statFrame, unit)
 	local bonusArmor, isNegatedForSpec = UnitBonusArmor(unit);
 
 	PaperDollFrame_SetLabelAndText(statFrame, STAT_BONUS_ARMOR, bonusArmor, false);
-	local armorReduction = PaperDollFrame_GetArmorReduction(effectiveArmor, UnitLevel(unit));
+	local armorReduction = PaperDollFrame_GetArmorReduction(effectiveArmor, UnitEffectiveLevel(unit));
 	statFrame.tooltip = HIGHLIGHT_FONT_COLOR_CODE..format(PAPERDOLLFRAME_TOOLTIP_FORMAT, BONUS_ARMOR).." "..string.format("%s", bonusArmor)..FONT_COLOR_CODE_CLOSE;
 
 	local hasAura, percent = GetBladedArmorEffect();

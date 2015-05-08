@@ -48,7 +48,9 @@ end
 
 function GarrisonFollowerList:OnShow()
 	local followerTab = self:GetParent().FollowerTab;
-	followerTab.lastUpdate = GetTime();
+	if (followerTab) then
+		followerTab.lastUpdate = GetTime();
+	end
 	self:StopAnimations();
 
 	GarrisonFollowerList_DirtyList(self);
@@ -74,8 +76,10 @@ end
 
 function GarrisonFollowerList:StopAnimations()
 	local followerFrame = self:GetParent().FollowerTab;
-	for i = 1, #followerFrame.AbilitiesFrame.Abilities do
-		GarrisonFollowerPageAbility_StopAnimations(followerFrame.AbilitiesFrame.Abilities[i]);
+	if (followerFrame) then
+		for i = 1, #followerFrame.AbilitiesFrame.Abilities do
+			GarrisonFollowerPageAbility_StopAnimations(followerFrame.AbilitiesFrame.Abilities[i]);
+		end
 	end
 end
 

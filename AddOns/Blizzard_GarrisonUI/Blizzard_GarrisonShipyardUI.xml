@@ -550,6 +550,13 @@
 					</Anchors>
 				</FontString>
 			</Layer>
+			<Layer level="ARTWORK">
+				<Texture parentKey="NameBG" atlas="ShipMission_NameBG" useAtlasSize="true" hidden="true">
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent.Name" relativePoint="CENTER" x="0" y="6"/>
+					</Anchors>
+				</Texture>
+			</Layer>
 		</Layers>
 		<Frames>
 			<Frame parentArray="Counters" inherits="GarrisonMissionAbilityCounterTemplate" hidden="true">
@@ -614,6 +621,13 @@
 					</Shadow>		
 					<Color r="1" g="0.1" b="0.1" a="0"/>
 				</FontString>
+			</Layer>
+			<Layer level="ARTWORK">
+				<Texture parentKey="NameBG" atlas="ShipMission_NameBG" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent.Name" relativePoint="CENTER" x="0" y="6"/>
+					</Anchors>
+				</Texture>
 			</Layer>
 		</Layers>
 		<Frames>

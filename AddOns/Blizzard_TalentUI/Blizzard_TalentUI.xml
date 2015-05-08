@@ -24,7 +24,7 @@
 					</Anchors>
 				</FontString>
 				<FontString name="$parentSubText" inherits="GameFontBlack" justifyH="LEFT" justifyV="TOP" parentKey="subText">
-					<Size x="136" y="24"/>
+					<Size x="116" y="36"/>
 					<Anchors>
 						<Anchor point="TOPLEFT" relativeTo="$parentName" relativePoint="BOTTOMLEFT" x="0" y="-2"/>
 					</Anchors>
@@ -1049,7 +1049,128 @@
 		</Frames>
 		<Scripts>
 			<OnLoad function="PlayerTalentFrameTalents_OnLoad"/>
+			<OnShow function="PlayerTalentFrameTalents_OnShow"/>
+			<OnHide function="PlayerTalentFrameTalents_OnHide"/>
 		</Scripts>
 	</Frame>
 	
+	<Frame name="PlayerTalentFrameLockInfo" parent="PlayerTalentFrame" hidden="true" enableMouse="true">
+		<Anchors>
+			<Anchor point="TOPLEFT" relativeTo="PlayerTalentFrameBg" x="0" y="0"/>
+			<Anchor point="BOTTOMRIGHT" relativeTo="PlayerTalentFrameBg" x="-2" y="0"/>
+		</Anchors>
+		<Layers>
+			<Layer level="BACKGROUNDBORDER">
+				<Texture name="$parentBottomLeftInner" file="Interface\GuildBankFrame\Corners" >
+					<Size x="32" y="32"/>
+					<Anchors>
+						<Anchor point="BOTTOMLEFT" x="0" y="0"/>
+					</Anchors>
+					<TexCoords left="0.01562500" right="0.51562500" top="0.00390625" bottom="0.12890625"/>	
+					<Color r="1" g="1" b="1" a="0.75"/>
+				</Texture>
+				<Texture name="$parentBottomRightInner" file="Interface\GuildBankFrame\Corners" >
+					<Size x="32" y="32"/>	
+					<Anchors>
+						<Anchor point="BOTTOMRIGHT" x="0" y="0"/>
+					</Anchors>
+					<TexCoords left="0.01562500" right="0.51562500" top="0.13671875" bottom="0.26171875"/>	
+					<Color r="1" g="1" b="1" a="0.75"/>
+				</Texture>
+				<Texture name="$parentTopRightInner" file="Interface\GuildBankFrame\Corners"  >
+					<Size x="32" y="32"/>
+					<Anchors>
+						<Anchor point="TOPRIGHT" x="0" y="0"/>
+					</Anchors>
+					<TexCoords left="0.01562500" right="0.51562500" top="0.26953125" bottom="0.39453125"/>	
+					<Color r="1" g="1" b="1" a="0.75"/>
+				</Texture>
+				<Texture name="$parentTopLeftInner" file="Interface\GuildBankFrame\Corners">
+					<Size x="32" y="32"/>	
+					<Anchors>
+						<Anchor point="TOPLEFT" x="0" y="0"/>
+					</Anchors>
+					<TexCoords left="0.01562500" right="0.51562500" top="0.40234375" bottom="0.52734375"/>	
+					<Color r="1" g="1" b="1" a="0.75"/>
+				</Texture>
+				<Texture name="$parentLeftInner" file="Interface\GuildBankFrame\VertTile" vertTile="true">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="$parentTopLeftInner" relativePoint="BOTTOMLEFT" x="-3"/>
+						<Anchor point="BOTTOMLEFT" relativeTo="$parentBottomLeftInner" relativePoint="TOPLEFT" x="-3"/>
+					</Anchors>
+					<Color r="1" g="1" b="1" a="0.75"/>
+				</Texture>
+				<Texture name="$parentRightInner" file="Interface\GuildBankFrame\VertTile" vertTile="true">
+					<Anchors>
+						<Anchor point="TOPRIGHT" relativeTo="$parentTopRightInner" relativePoint="BOTTOMRIGHT" x="4"/>
+						<Anchor point="BOTTOMRIGHT" relativeTo="$parentBottomRightInner" relativePoint="TOPRIGHT" x="4"/>
+					</Anchors>
+					<Color r="1" g="1" b="1" a="0.75"/>
+				</Texture>
+				<Texture name="$parentTopInner" file="Interface\GuildBankFrame\HorizTile" horizTile="true">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="$parentTopLeftInner" relativePoint="TOPRIGHT" y="3"/>
+						<Anchor point="TOPRIGHT" relativeTo="$parentTopRightInner" relativePoint="TOPLEFT" y="3"/>
+					</Anchors>
+					<Color r="1" g="1" b="1" a="0.75"/>
+				</Texture>
+				<Texture name="$parentBottomInner" file="Interface\GuildBankFrame\HorizTile" horizTile="true">
+					<Anchors>
+						<Anchor point="BOTTOMLEFT" relativeTo="$parentBottomLeftInner" relativePoint="BOTTOMRIGHT" y="-5"/>
+						<Anchor point="BOTTOMRIGHT" relativeTo="$parentBottomRightInner" relativePoint="BOTTOMLEFT" y="-5"/>
+					</Anchors>
+					<Color r="1" g="1" b="1" a="0.75"/>
+				</Texture>
+			</Layer>
+			<Layer level="BACKGROUND">
+				<Texture name="$parentBlackBG">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="$parentTopLeftInner" x="4" y="-4"/>
+						<Anchor point="BOTTOMRIGHT" relativeTo="$parentBottomRightInner" x="-4" y="3"/>
+					</Anchors>
+					<Color r="0" g="0" b="0" a="0.75"/>
+				</Texture>
+			</Layer>
+			<Layer level="ARTWORK">
+				<FontString name="$parentText" parentKey="Text" inherits="GameFontHighlightMedium" justifyV="BOTTOM">
+					<Size x="512" y="32"/>
+					<Anchors>
+						<Anchor point="BOTTOM" relativePoint="CENTER" x="0" y="-8"/>
+					</Anchors>
+				</FontString>
+				<FontString name="$parentTitle" parentKey="Title" inherits="QuestFont_Enormous" justifyV="BOTTOM">
+					<Size x="384" y="0"/>
+					<Anchors>
+						<Anchor point="BOTTOM" relativeTo="$parentText" relativePoint="TOP" x="0" y="8"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+			<Layer level="OVERLAY" textureSubLevel="-1">
+				<Texture name="$parentPortrait" parentKey="Portrait">
+					<Size x="60" y="60"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="PlayerTalentFramePortrait"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="OVERLAY">
+				<Texture name="$parentPortraitFrame" inherits="UI-Frame-Portrait" parentKey="PortraitFrame">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.Portrait" x="-8" y="4"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnLoad>
+				self:SetFrameLevel(self:GetFrameLevel()+3);
+				self:EnableMouseWheel(true);
+				
+				local class = select(2, UnitClass("player"));
+				self.Portrait:SetTexture("Interface\\TargetingFrame\\UI-Classes-Circles");
+				self.Portrait:SetTexCoord(unpack(CLASS_ICON_TCOORDS[strupper(class)]));
+			</OnLoad>
+			<OnMouseWheel function="nop"/>
+		</Scripts>
+	</Frame>
 </Ui>

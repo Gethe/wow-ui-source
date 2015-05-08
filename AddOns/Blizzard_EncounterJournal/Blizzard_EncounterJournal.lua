@@ -137,8 +137,7 @@ function EncounterJournal_OnLoad(self)
 		name = HOME,
 		OnClick = function()
 			if ( not EncounterJournal.instanceSelect.suggestTab:IsEnabled() ) then
-				NavBar_Reset(EncounterJournal.navBar);
-				EJ_ContentTab_Select( EncounterJournal.instanceSelect.suggestTab.id );
+				EJSuggestFrame_OpenFrame();
 			else
 				EncounterJournal_ListInstances();
 			end
@@ -2168,6 +2167,11 @@ function EJSuggestFrame_OnShow(self)
 	EJSuggestFrame_RefreshDisplay();
 end
 
+function EJSuggestFrame_OpenFrame()
+	EJ_ContentTab_Select(EncounterJournal.instanceSelect.suggestTab.id);
+	NavBar_Reset(EncounterJournal.navBar);
+end
+
 function EJSuggestFrame_UpdateRewards(suggestion)
 	local reward = C_AdventureJournal.GetReward( suggestion.index );
 	suggestion.reward.data = reward;
@@ -2183,7 +2187,7 @@ end
 AdventureJournal_LeftTitleFonts = {
 	"DestinyFontHuge",		-- 32pt font
 	"QuestFont_Enormous",	-- 30pt font
-	"SplashHeaderFont",		-- 24pt font
+	"QuestFont_Super_Huge",	-- 24pt font
 };
 
 local AdventureJournal_RightTitleFonts = {

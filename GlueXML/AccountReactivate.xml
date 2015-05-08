@@ -51,13 +51,23 @@
 			</Layer>
 		</Layers>
 		<Frames>
-			<Button parentKey="Accept" inherits="GlueDialogButtonTemplate" text="ACCOUNT_REACTIVATE_ACCEPT">
+			<Button parentKey="Accept" inherits="GlueDialogButtonTemplate" text="ACCOUNT_REACTIVATE_ACCEPT" motionScriptsWhileDisabled="true">
 				<Size x="320" y="48"/>
 				<Anchors>
 					<Anchor point="TOP" relativeKey="$parent.Description" relativePoint="BOTTOM" x="0" y="-4"/>
 				</Anchors>
 				<Scripts>
 					<OnClick function="ReactivateAccountDialog_OnReactivate"/>
+					<OnEnter>
+						if (self.tooltip) then
+							GlueTooltip:SetOwner(self, "ANCHOR_RIGHT", -28, -8);
+							GlueTooltip:SetText(self.tooltip, nil, nil, nil, nil, true);
+							GlueTooltip:Show();
+						end
+					</OnEnter>
+					<OnLeave>
+						GlueTooltip:Hide();
+					</OnLeave>
 				</Scripts>
 			</Button>
 		</Frames>
