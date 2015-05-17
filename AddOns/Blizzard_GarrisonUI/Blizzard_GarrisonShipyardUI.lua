@@ -32,6 +32,38 @@ StaticPopupDialogs["CONFIRM_SHIP_EQUIPMENT"] = {
 	hideOnEscape = 1
 };
 
+StaticPopupDialogs["GARRISON_SHIP_RENAME"] = {
+	text = GARRISON_SHIP_RENAME_LABEL,
+	button1 = ACCEPT,
+	button3 = GARRISON_SHIP_RENAME_DEFAULT_LABEL,
+	button2 = CANCEL,
+	hasEditBox = 1,
+	maxLetters = 24,
+	OnAccept = function(self)
+		local text = self.editBox:GetText();
+		C_Garrison.RenameFollower(self.data, text);
+	end,
+	OnAlt = function(self)
+		C_Garrison.RenameFollower(self.data, "");
+	end,
+	EditBoxOnEnterPressed = function(self)
+		local parent = self:GetParent();
+		local text = parent.editBox:GetText();
+		C_Garrison.RenameFollower(parent.data, text);
+		parent:Hide();
+	end,
+	OnShow = function(self)
+		self.editBox:SetFocus();
+	end,
+	OnHide = function(self)
+		ChatEdit_FocusActiveWindow();
+		self.editBox:SetText("");
+	end,
+	timeout = 0,
+	exclusive = 1,
+	hideOnEscape = 1
+};
+
 ---------------------------------------------------------------------------------
 --- Garrison Shipyard Mixin Functions                                         ---
 ---------------------------------------------------------------------------------
@@ -84,6 +116,9 @@ function GarrisonShipyardMission:SelectTab(id)
 	else
 		self.BorderFrame.TitleText:SetText(GARRISON_SHIPYARD_FLEET_TITLE);
 	end
+	if ( UIDropDownMenu_GetCurrentDropDown() == GarrisonShipyardFollowerOptionDropDown ) then
+		CloseDropDownMenus();
+	end
 end
 
 function GarrisonShipyardMission:CheckFollowerCount()
@@ -133,8 +168,45 @@ function GarrisonShipyardMission:SetPartySize(frame, size, numEnemies)
 	end
 end
 
+function GarrisonShipyardMission:SortEnemies(enemies)
+	local comparison = function(enemy1, enemy2)
+		local enemy1PortraitID = enemy1.portraitFileDataID or 0;
+		local enemy2PortraitID = enemy2.portraitFileDataID or 0;
+		return enemy1PortraitID > enemy2PortraitID;
+	end
+
+	table.sort(enemies, comparison);
+end
+
+function GarrisonShipyardMission:SortMechanics(mechanics)
+	local comparison = function(mechanic1, mechanic2)
+		return mechanic1.factor > mechanic2.factor;
+	end
+	
+	local keys = {}
+	for key in pairs(mechanics) do
+		table.insert(keys, key)
+	end
+
+	table.sort(keys, function(a, b)
+		return comparison(mechanics[a], mechanics[b])
+	end)
+	
+	return keys;
+end
+
 function GarrisonShipyardMission:SetEnemies(frame, enemies, numFollowers)
+	self:SortEnemies(enemies);
 	local numVisibleEnemies = GarrisonMission.SetEnemies(self, frame, enemies, numFollowers, 0);
+
+	for i=1, #enemies do
+		local Frame = frame.Enemies[i];
+		if ( not Frame ) then
+			break;
+		end
+		local enemy = enemies[i];
+		GarrisonShipyardMission:SetLowFactorMechanics(Frame, enemy);
+	end
 
 	if ( numVisibleEnemies == 1 ) then
 		frame.Enemy1:SetPoint("TOPLEFT", 200, -83);
@@ -153,6 +225,21 @@ function GarrisonShipyardMission:UpdateMissionData(frame)
 end
 
 function GarrisonShipyardMission:SetEnemyName(portraitFrame, name)
+end
+
+function GarrisonShipyardMission:SetLowFactorMechanics(frame, enemy)
+	local numMechs = 0;
+	local sortedKeys = self:SortMechanics(enemy.mechanics);
+	for _, id in ipairs(sortedKeys) do
+		local mechanic = enemy.mechanics[id];
+		numMechs = numMechs + 1;	
+		local Mechanic = frame.Mechanics[numMechs];
+		if (mechanic.factor > 300) then
+			Mechanic.Border:SetAtlas("GarrMission_EncounterAbilityBorder");
+		else
+			Mechanic.Border:SetAtlas("GarrMission_WeakEncounterAbilityBorder-Lg");
+		end
+	end
 end
 
 function GarrisonShipyardMission:SetEnemyPortrait(portraitFrame, enemy, eliteFrame, numMechs)
@@ -200,6 +287,7 @@ function GarrisonShipyardMission:OnClickStartMissionButtonConfirm()
 	if (not GarrisonMission.OnClickStartMissionButton(self)) then
 		return;
 	end
+	PlaySound("UI_Garrison_Shipyard_Start_Mission");
 end
 
 function GarrisonShipyardMission:AssignFollowerToMission(frame, info)
@@ -207,6 +295,17 @@ function GarrisonShipyardMission:AssignFollowerToMission(frame, info)
 		return;
 	end
 	
+	if ( info.classSpec == 53 or info.classSpec == 58 ) then
+		PlaySound("UI_Garrison_Shipyard_Place_LandingCraft");
+	elseif ( info.classSpec == 54 or info.classSpec == 59 ) then
+		PlaySound("UI_Garrison_Shipyard_Place_Dreadnought");
+	elseif ( info.classSpec == 55 or info.classSpec == 60 ) then
+		PlaySound("UI_Garrison_Shipyard_Place_Carrier");
+	elseif ( info.classSpec == 56 or info.classSpec == 61 ) then
+		PlaySound("UI_Garrison_Shipyard_Place_Galleon");
+	elseif ( info.classSpec == 57 or info.classSpec == 62 ) then
+		PlaySound("UI_Garrison_Shipyard_Place_Submarine");
+	end
 	self:SetFollowerPortrait(frame, info, nil, false);
 	local color = ITEM_QUALITY_COLORS[info.quality];
 	frame.Name:SetText(format(GARRISON_SHIPYARD_SHIP_NAME, info.name));
@@ -268,20 +367,24 @@ function GarrisonShipyardMission:MissionCompleteInitialize(missionList, index)
 		return;
 	end
 	
-	local destroyAnim, destroySound, surviveAnim, surviveSound = C_Garrison.GetShipDeathAnimInfo();
+	local destroyAnim, destroySound, surviveAnim, surviveSound, saveAnim, saveSound = C_Garrison.GetShipDeathAnimInfo();
 	self.MissionComplete.destroyAnim = destroyAnim;
 	self.MissionComplete.destroySound = destroySound;
 	self.MissionComplete.surviveAnim = surviveAnim;
 	self.MissionComplete.surviveSound = surviveSound;
+	self.MissionComplete.saveAnim = saveAnim;
+	self.MissionComplete.saveSound = saveSound;
 	
 	-- In the future, it would be nice if a designer could setup this camera in data
 	self.MissionComplete.destroyCamPos = {0.7, -5.9, -1.3};
 	self.MissionComplete.surviveCamPos = {-2.2, -9.5, -0.5};
+	self.MissionComplete.saveCamPos = {0.7, -5.9, -1.3};
 end
 
 function GarrisonShipyardMission:CloseMissionComplete()
 	GarrisonMission.CloseMissionComplete(self);
 	self:CheckPendingFogLift();
+	self:CheckPendingBonusAreaAdded();
 end
 
 function GarrisonShipyardMission:CheckPendingFogLift()
@@ -299,6 +402,24 @@ function GarrisonShipyardMission:CheckPendingFogLift()
 				fogFrames[j].offeredGarrMissionTextureID = nil;
 				
 				table.remove(self.MissionComplete.pendingFogLift, i);
+				break;
+			end
+		end
+	end
+end
+
+function GarrisonShipyardMission:CheckPendingBonusAreaAdded()
+	if (self.MissionTab.MissionList.CompleteDialog:IsShown() or self.MissionComplete:IsShown()) then
+		return;
+	end
+	
+	-- Check if we completed any missions that cause the fog to lift. If so, lift the fog
+	local missionList = self.MissionTab.MissionList;
+	for i=#missionList.pendingBonusArea, 1, -1 do
+		for j=1, #missionList.bonusFrames do
+			if (missionList.pendingBonusArea[i] == missionList.bonusFrames[j].bonusAbilityID) then
+				missionList.bonusFrames[j].BonusAreaAddedAnim:Play();
+				table.remove(missionList.pendingBonusArea, i);
 				break;
 			end
 		end
@@ -359,6 +480,11 @@ function GarrisonShipyardMissionComplete:AnimPortrait(entry)
 	local encountersFrame = self.Stage.EncountersFrame;
 	for i = 1, #encountersFrame.enemies do
 		local encounter = self.Stage.EncountersFrame.Encounters[i];
+		if (encounter.Portrait:IsShown()) then
+			encounter.CheckFrame:SetPoint("CENTER", encounter.Portrait, "CENTER");
+		else
+			encounter.CheckFrame:SetPoint("CENTER", encounter.PortraitIcon, "CENTER");
+		end
 		if ( self.currentMission.succeeded ) then
 			encounter.CheckFrame.SuccessAnim:Play();
 		else
@@ -378,7 +504,9 @@ function GarrisonShipyardMissionComplete:AnimPortrait(entry)
 end
 
 function GarrisonShipyardMissionComplete:AnimFollowersIn(entry)
-	self.Stage.EncountersFrame.FadeOut:Play();
+	if ( not self.skipAnimations ) then
+		self.Stage.EncountersFrame.FadeOut:Play();
+	end
 	
 	local missionList = self.completeMissions;
 	local mission = missionList[self.currentIndex];
@@ -403,13 +531,24 @@ function GarrisonShipyardMissionComplete:AnimFollowersIn(entry)
 	end
 
 	followersFrame.FadeIn:Stop();
-	followersFrame.FadeIn:Play();
-	
+	if ( self.skipAnimations ) then
+		followersFrame:SetAlpha(1);
+	else
+		followersFrame.FadeIn:Play();
+	end
 	-- preload next set
 	local nextIndex = self.currentIndex + 1;
 	local missionList = self.completeMissions;
 	if ( missionList[nextIndex] ) then
 		MissionCompletePreload_LoadMission(self:GetParent(), missionList[nextIndex].missionID);
+	end
+	
+	if ( entry ) then
+		if ( self.skipAnimations ) then
+			entry.duration = 0;
+		else
+			entry.duration = 0.5;
+		end
 	end
 end
 
@@ -425,6 +564,12 @@ function GarrisonShipyardMissionComplete:PlayExplosionAnim(followerFrame)
 	PlaySoundKitID(self.destroySound);
 end
 
+function GarrisonShipyardMissionComplete:PlaySavedAnim(followerFrame)
+	followerFrame.BoatDeathAnimations:SetCameraPosition(self.saveCamPos[1], self.saveCamPos[2], self.saveCamPos[3]);
+	followerFrame.BoatDeathAnimations:SetSpellVisualKit(self.saveAnim);
+	PlaySoundKitID(self.saveSound);
+end
+
 function GarrisonShipyardMissionComplete:AnimBoatDeath(entry)
 	if (self.currentMission.succeeded) then
 		entry.duration = 0;
@@ -435,7 +580,7 @@ function GarrisonShipyardMissionComplete:AnimBoatDeath(entry)
 			if (followerFrame.state == LE_FOLLOWER_MISSION_COMPLETE_STATE_ALIVE) then
 				self:PlaySplashAnim(followerFrame);
 			else
-				self:PlayExplosionAnim(followerFrame);
+				self:PlaySavedAnim(followerFrame);
 			end
 			followerFrame.SurvivedAnim:Play();
 			self:CheckAndShowFollowerXP(self.currentMission.followers[self.boatDeathIndex]);
@@ -443,8 +588,20 @@ function GarrisonShipyardMissionComplete:AnimBoatDeath(entry)
 			self:PlayExplosionAnim(followerFrame);
 			followerFrame.DestroyedAnim:Play();
 		end
-		entry.duration = 1.5;
+		if (self.skipAnimations) then
+			entry.duration = 0;
+		else
+			entry.duration = 1.5;
+		end
 	end
+end
+
+function GarrisonShipyardMissionComplete:ShowEncounterMechanics(encountersFrame, mechanicsFrame, encounterIndex)
+	local numMechs, playCounteredSound = GarrisonMissionComplete.ShowEncounterMechanics(self, encountersFrame, mechanicsFrame, encounterIndex);
+	
+	GarrisonShipyardMission:SetLowFactorMechanics(mechanicsFrame, encountersFrame.enemies[encounterIndex]);
+	
+	return numMechs, playCounteredSound;
 end
 
 function GarrisonShipyardMissionComplete:AnimCheckBoatDeath(entry)
@@ -458,6 +615,14 @@ function GarrisonShipyardMissionComplete:AnimCheckBoatDeath(entry)
 	end
 end
 
+function GarrisonShipyardMissionComplete:AnimSkipWait(entry)
+	if ( self.skipAnimations ) then
+		entry.duration = 1.75;
+	else
+		entry.duration = 0;
+	end
+end
+
 -- if duration is nil it will be set in the onStart function
 -- duration is irrelevant for the last entry
 local SHIPYARD_ANIMATION_CONTROL = {
@@ -468,9 +633,12 @@ local SHIPYARD_ANIMATION_CONTROL = {
 	[5] = { duration = 0.45,	onStartFunc = GarrisonShipyardMissionComplete.AnimPortrait },		-- X over portrait
 	[6] = { duration = 0.75,	onStartFunc = GarrisonMissionComplete.AnimRewards },				-- reward panel
 	[7] = { duration = 0,		onStartFunc = GarrisonMissionComplete.AnimLockBurst },				-- explode the lock if mission successful	
-	[8] = { duration = 0.5,		onStartFunc = GarrisonShipyardMissionComplete.AnimFollowersIn },	-- show all the mission followers
-	[9] = { duration = nil,		onStartFunc = GarrisonShipyardMissionComplete.AnimBoatDeath },		-- boat death
-	[10] = { duration = 0,		onStartFunc = GarrisonShipyardMissionComplete.AnimCheckBoatDeath },	-- check if there are more boat deaths to check
+	[8] = { duration = 0,		onStartFunc = GarrisonMissionComplete.AnimCleanUp },				-- clean up any model anims
+	[9] = { duration = nil,		onStartFunc = GarrisonShipyardMissionComplete.AnimFollowersIn },	-- show all the mission followers
+	[10] = { duration = nil,	onStartFunc = GarrisonShipyardMissionComplete.AnimBoatDeath },		-- boat death
+	[11] = { duration = 0,		onStartFunc = GarrisonShipyardMissionComplete.AnimCheckBoatDeath },	-- check if there are more boat deaths to check
+	[12] = { duration = nil,	onStartFunc = GarrisonShipyardMissionComplete.AnimSkipWait },		-- wait if we're in skip mode
+	[13] = { duration = 0,		onStartFunc = GarrisonMissionComplete.AnimSkipNext },				-- click Next button if we're in skip mode	
 };
 
 function GarrisonShipyardMissionComplete:SetAnimationControl()
@@ -625,15 +793,22 @@ end
 function GarrisonShipyardMap_OnLoad(self)
 	self.missions = {};
 	self.missionFrames = {};
+	self.bonusFrames = {};
+	self.pendingBonusArea = {};
 	
 	self:RegisterEvent("GARRISON_MISSION_LIST_UPDATE");
 	self:RegisterEvent("GARRISON_RANDOM_MISSION_ADDED");
 	self:RegisterEvent("GARRISON_MISSION_STARTED");
+	self:RegisterEvent("GARRISON_MISSION_AREA_BONUS_ADDED");
 end
 
 function GarrisonShipyardMap_OnEvent(self, event, ...)
-	if (event == "GARRISON_MISSION_LIST_UPDATE" or event == "GARRISON_RANDOM_MISSION_ADDED") then
+	if (event == "GARRISON_MISSION_LIST_UPDATE" or event == "GARRISON_RANDOM_MISSION_ADDED" or event == "GARRISON_MISSION_AREA_BONUS_ADDED") then
 		GarrisonShipyardMap_UpdateMissions();
+		if (event == "GARRISON_MISSION_AREA_BONUS_ADDED") then
+			local bonusAbilityID = ...;
+			table.insert(self.pendingBonusArea, bonusAbilityID);
+		end
 	elseif (event == "GARRISON_MISSION_STARTED") then
 		local missionID = ...;
 		for i=1, #self.missionFrames do
@@ -650,10 +825,25 @@ function GarrisonShipyardMap_OnShow(self)
 	GarrisonShipyardMap_UpdateMissions();
 	self:GetParent():GetParent().FollowerList:Hide();
 	self:GetParent():GetParent():CheckPendingFogLift();
+	self:GetParent():GetParent():CheckPendingBonusAreaAdded();
 end
 
 function GarrisonShipyardMap_OnHide(self)
 	GarrisonShipFollowerPlacer:SetScript("OnUpdate", nil);
+end
+
+function GarrisonBonusEffectFrame_Set(frame, icon, name, description)
+	frame.Icon:SetTexture(icon);
+	frame.Name:SetText(name);
+	frame.Description:SetText(description);
+	frame:SetHeight(frame.Name:GetHeight() + frame.Description:GetHeight() + frame.yspacing);
+end
+
+function GarrisonBonusArea_Set(bonusArea, timeLeftStr, timeLeft, icon, name, description)
+	bonusArea.TimeLeft:SetFormattedText(timeLeftStr, SecondsToTime(timeLeft));
+	GarrisonBonusEffectFrame_Set(bonusArea.BonusEffectFrame, icon, name, description);
+	bonusArea:SetHeight(bonusArea.Title:GetHeight() + bonusArea.TimeLeft:GetHeight() + bonusArea.BonusEffectFrame:GetHeight() + bonusArea.yspacing);
+	bonusArea:Show();
 end
 
 function GarrisonShipyardMap_OnUpdate(self)
@@ -662,7 +852,70 @@ function GarrisonShipyardMap_OnUpdate(self)
 		if ( self.missions[i].offerEndTime and self.missions[i].offerEndTime <= timeNow ) then
 			GarrisonShipyardMap_UpdateMissions();
 			break;
+		elseif ( self.missions[i].inProgress ) then
+			GarrisonShipyardMap_UpdateMissionTime(self.missionFrames[i]);
 		end
+	end
+	
+	-- Don't show tooltip if mousing over a mission
+	if (GarrisonShipyardMapMissionTooltip:IsShown()) then
+		GarrisonBonusAreaTooltip:Hide();
+		return;
+	end
+	
+	-- Check to see if mouse is in one or more bonus area circles
+	local cursorX, cursorY = GetCursorPosition();
+	cursorX = cursorX / UIParent:GetScale();
+	cursorY = cursorY / UIParent:GetScale();
+	
+	local bonusAreaTooltipIndex = 1;
+	local tooltipHeight = 0;
+	GarrisonBonusAreaTooltip:ClearAllPoints();
+	
+	for i=1, #self.bonusFrames do
+		local bonusFrame = self.bonusFrames[i];
+		
+		if (bonusFrame:IsShown()) then
+			-- Remove bonus area if expired and refresh map
+			if(bonusFrame.startTime + bonusFrame.duration < time()) then
+				bonusFrame:SetScript("OnUpdate", nil);
+				bonusFrame:Hide();
+				GarrisonBonusAreaTooltip:Hide();
+				GarrisonShipyardMap_UpdateMissions();
+				return;
+			end
+			
+			local centerX = bonusFrame:GetLeft() + bonusFrame.radius;
+			local centerY = bonusFrame:GetTop() - bonusFrame.radius;
+			local xDiff = cursorX - centerX;
+			local yDiff = cursorY - centerY;
+			local distSquared = xDiff * xDiff + yDiff * yDiff;
+			
+			local tooltip = GarrisonBonusAreaTooltip;
+			local bonusArea = tooltip.BonusAreas[bonusAreaTooltipIndex];
+			if (distSquared < (bonusFrame.radius * bonusFrame.radius)) then
+				if (not bonusArea) then
+					bonusArea = CreateFrame("FRAME", "GarrisonBonusAreaTooltipFrame" .. bonusAreaTooltipIndex, tooltip, "GarrisonBonusAreaTooltipFrameTemplate");
+					bonusArea:SetPoint("TOPLEFT", tooltip.BonusAreas[bonusAreaTooltipIndex - 1], "BOTTOMLEFT");
+					tooltip.BonusAreas[bonusAreaTooltipIndex] = bonusArea;
+				end
+				tooltip:SetPoint("BOTTOMLEFT", bonusFrame, "TOP", 15, 0);
+				
+				local timeLeftSeconds = bonusFrame.startTime - time() + bonusFrame.duration;
+				GarrisonBonusArea_Set(bonusArea, GARRISON_BONUS_EFFECT_TIME_LEFT, timeLeftSeconds, bonusFrame.icon, bonusFrame.name, bonusFrame.description);
+				tooltipHeight = tooltipHeight + bonusArea:GetHeight();
+				bonusAreaTooltipIndex = bonusAreaTooltipIndex + 1;
+			end
+		end
+	end
+	for i=bonusAreaTooltipIndex, #GarrisonBonusAreaTooltip.BonusAreas do
+		GarrisonBonusAreaTooltip.BonusAreas[i]:Hide();
+	end
+	if (tooltipHeight > 0) then
+		GarrisonBonusAreaTooltip:SetHeight(tooltipHeight);
+		GarrisonBonusAreaTooltip:Show();
+	else
+		GarrisonBonusAreaTooltip:Hide();
 	end
 end
 
@@ -710,7 +963,7 @@ function GarrisonShipyardMap_SetupFog(self, siegeBreakerFrame, offeredGarrMissio
 			end
 		end
 	else
-		siegeBreakerFrame:SetFrameLevel(self.FogFrames[1]:GetFrameLevel() - 1); -- Set regular missions below fog
+		siegeBreakerFrame:SetFrameLevel(self.FogFrames[1]:GetFrameLevel() - 2); -- Set regular missions below fog and bonus circles
 	end
 end
 
@@ -730,6 +983,39 @@ function GarrisonShipyardMap_OnFogFrameUpdate(self)
 	else
 		self.missionFrame.FogHighlight:Hide();
 		self.missionFrame.SiegeBreakerHighlightAnim:Stop();
+	end
+end
+
+function GarrisonShipyardMap_UpdateMissionTime(frame)
+	local timeLeftSec = frame.info.missionEndTime - GetServerTime();
+	if ( timeLeftSec > 0 ) then
+		frame.TimerText:SetText(SecondsToTime(timeLeftSec, false, false, 1));
+	else
+		frame.TimerText:SetText(format(D_SECONDS, 0));
+	end
+	
+	if( timeLeftSec > 1800 ) then -- 30 minutes
+		frame.TimerText:SetTextColor(1,1,1); -- white
+	else
+		frame.TimerText:SetTextColor(0.1765, 1, 0.0549); -- green
+	end
+end
+
+function GarrisonShipyardMap_SetupBonus(self, missionFrame, mission)
+	if (mission.type == "Ship-Bonus") then
+		missionFrame.bonusRewardArea = true;
+		for id, reward in pairs(mission.rewards) do
+			local posX = reward.posX or 0;
+			local posY = reward.posY or 0;
+			posY = posY * -1;
+			missionFrame.BonusAreaEffect:SetAtlas(reward.textureAtlas, true);
+			missionFrame.BonusAreaEffect:ClearAllPoints();
+			missionFrame.BonusAreaEffect:SetPoint("CENTER", self.MapTexture, "TOPLEFT", posX, posY);
+			break;
+		end
+	else
+		missionFrame.bonusRewardArea = nil;
+		missionFrame.BonusAreaEffect:Hide();
 	end
 end
 
@@ -754,14 +1040,14 @@ function GarrisonShipyardMap_UpdateMissions()
 		end
 
 		GarrisonShipyardMap_SetupFog(self, frame, mission.offeredGarrMissionTextureID);
+		GarrisonShipyardMap_SetupBonus(self, frame, mission);
 		
 		-- If we have a siegebreaker mission that cannot be started, hide it
 		if (mission.offeredGarrMissionTextureID ~= 0 and not mission.inProgress and not mission.canStart) then
 			frame:Hide();
 		else
-			local mapWidth, mapHeight = GarrisonShipyardFrame.MissionTab.MissionList.MapTexture:GetSize();
-			mission.mapPosX = mission.mapPosX * mapWidth;
-			mission.mapPosY = mission.mapPosY * -mapHeight;
+			mission.mapPosX = mission.mapPosX;
+			mission.mapPosY = -mission.mapPosY;
 			frame:SetPoint("CENTER", self.MapTexture, "TOPLEFT", mission.mapPosX, mission.mapPosY);
 			frame.info = mission;
 			frame:SetHitRectInsets(10, 10, 10, 10);
@@ -777,8 +1063,14 @@ function GarrisonShipyardMap_UpdateMissions()
 				frame.FogHighlight:SetAtlas(inProgressAtlas, true);
 				frame.InProgressIcon:SetAtlas(mapAtlas, true);
 				frame.InProgressIcon:Show();
+				frame.TimerBG:Show();
+				frame.TimerText:Show();
+				GarrisonShipyardMap_UpdateMissionTime(frame);
 				frame.GlowRing:Show();
 				frame.InProgressBoatPulseAnim:Play();
+				frame.RareMissionAnim:Stop();
+				frame.BonusMissionPulse:Stop();
+				frame.BonusMissionAnim:Stop();
 				frame:SetSize(94, 94);
 			else
 				mapAtlas = mapAtlas .. "-Map";
@@ -786,6 +1078,8 @@ function GarrisonShipyardMap_UpdateMissions()
 				frame.HighlightIcon:SetAtlas(mapAtlas, true);
 				frame.FogHighlight:SetAtlas(mapAtlas, true);
 				frame.InProgressIcon:Hide();
+				frame.TimerBG:Hide();
+				frame.TimerText:Hide();
 				frame.GlowRing:Hide();
 				frame.InProgressBoatPulseAnim:Stop();
 				if (mission.isRare) then
@@ -793,6 +1087,17 @@ function GarrisonShipyardMap_UpdateMissions()
 				else
 					frame.RareMissionAnim:Stop();
 				end
+				if (frame.bonusRewardArea) then
+					frame.BonusMissionPulse:Play();
+				else
+					frame.BonusMissionPulse:Stop();
+				end
+				if (mission.hasBonusEffect) then
+					frame.BonusMissionAnim:Play();
+				else
+					frame.BonusMissionAnim:Stop();
+				end
+					
 				frame:SetSize(64, 64);
 			end
 			
@@ -803,6 +1108,51 @@ function GarrisonShipyardMap_UpdateMissions()
 	-- Hide the rest of the frames that we have cached but are not used
 	for j = #self.missions + 1, #self.missionFrames do
 		self.missionFrames[j]:Hide();
+	end
+	
+	GarrisonShipyardMap_UpdateBonusEffects();
+end
+
+function GarrisonShipyardMap_UpdateBonusEffects()
+	local self = GarrisonShipyardFrame.MissionTab.MissionList;
+	self.bonusEffects = C_Garrison.GetAllBonusAbilityEffects(LE_FOLLOWER_TYPE_SHIPYARD_6_2);
+	for i=1, #self.bonusEffects do
+		local bonus = self.bonusEffects[i];
+			
+		-- Cache bonus effect frames
+		local bonusFrame = self.bonusFrames[i];
+		if (not bonusFrame) then
+			bonusFrame = CreateFrame("FRAME", "GarrisonShipyardBonusAreaFrame" .. i, self, "GarrisonShipyardBonusAreaFrameTemplate");
+			self.bonusFrames[i] = bonusFrame;
+		end
+		
+		bonusFrame.CircleTexture:SetAtlas(bonus.textureAtlas, true);
+		bonusFrame.CirclePulse:SetAtlas(bonus.textureAtlas, true);
+		bonusFrame.CirclePulse:Show();
+		bonusFrame.CircleTexture:SetAlpha(0.5);
+		if (bonus.textureAtlas == "NavalMap-SmallBonusCircle") then
+			bonusFrame.CircleGlowTrails:SetSize(144, 144);
+		else
+			bonusFrame.CircleGlowTrails:SetSize(190, 190);
+		end
+		bonusFrame:SetSize(bonusFrame.CircleTexture:GetSize());
+		bonusFrame.icon = bonus.icon;
+		bonusFrame.bonusAbilityID = bonus.bonusAbilityID;
+		bonusFrame.startTime = bonus.startTime;
+		bonusFrame.duration = bonus.duration;
+		bonusFrame.radius = bonus.radius;
+		bonusFrame.name = bonus.name;
+		bonusFrame.description = bonus.description;
+		bonusFrame:SetPoint("CENTER", self.MapTexture, "TOPLEFT", bonus.posX, -bonus.posY);
+		bonusFrame:SetFrameLevel(self.FogFrames[1]:GetFrameLevel() - 1);
+		bonusFrame.CircleGlowTrails:Show();
+		bonusFrame.BonusMissionAnim:Play();
+		bonusFrame:Show();
+	end
+	
+	-- Hide the rest of the frames that we have cached but are not used
+	for i = #self.bonusEffects + 1, #self.bonusFrames do
+		self.bonusFrames[i]:Hide();
 	end
 end
 
@@ -827,15 +1177,94 @@ function GarrisonShipyardMapMission_OnEnter(self, button)
 	GarrisonShipyardMapMissionTooltip:ClearAllPoints();
 	GarrisonShipyardMapMissionTooltip:SetPoint("BOTTOMLEFT", self, "TOPRIGHT", -10, -10);
 	GarrisonShipyardMapMission_SetTooltip(self.info, self.info.inProgress);
+	
+	-- If this is a bonus mission, show the bonus area
+	if (self.bonusRewardArea) then
+		self.BonusAreaEffect:Show();
+	end
+end
+
+function GarrisonShipyardMapMission_UpdateTooltipSize(self)
+	local tooltipFrame = self;
+	--
+	-- Calculate the width
+	--
+	local tooltipWidth = 0;
+
+	if (tooltipFrame.ItemTooltip:IsShown()) then
+		tooltipWidth = max(tooltipWidth,  tooltipFrame.ItemTooltip.Tooltip:GetWidth() + 54);
+	end
+
+	if (GarrisonMissionListTooltipThreatsFrame:IsShown()) then
+		tooltipWidth = max(tooltipWidth, GarrisonMissionListTooltipThreatsFrame:GetWidth());
+	end
+
+	local textNaturalWrapWidth = 250;
+	if (tooltipWidth < textNaturalWrapWidth) then
+		local maxTextWidth = 0;
+
+		for i=1, #tooltipFrame.Ships do
+			if (tooltipFrame.Ships[i]:IsShown()) then
+				maxTextWidth = max(maxTextWidth, tooltipFrame.Ships[i]:GetStringWidth() + 20);
+			end
+		end
+		for i=1, #tooltipFrame.Lines do
+			if (tooltipFrame.Lines[i]:IsShown()) then
+				maxTextWidth = max(maxTextWidth, tooltipFrame.Lines[i]:GetStringWidth() + 20);
+			end
+		end
+		for i=1, #tooltipFrame.BonusEffects do
+			if (tooltipFrame.BonusEffects[i]:IsShown()) then
+				maxTextWidth = max(maxTextWidth, tooltipFrame.BonusEffects[i].Name:GetStringWidth() + 52); -- 52 to accomodate margins and icon
+				maxTextWidth = max(maxTextWidth, tooltipFrame.BonusEffects[i].Description:GetStringWidth() + 52);
+			end
+		end
+	
+		-- cap the width based on the strings to textNaturalWrapWidth
+		maxTextWidth = min(maxTextWidth, textNaturalWrapWidth);
+		tooltipWidth = max(maxTextWidth, tooltipWidth);
+	end
+
+	GarrisonShipyardMapMission_SetTooltipWidth(tooltipFrame, tooltipWidth);
+
+	--
+	-- Calculate the height:
+	--
+	local tooltipHeight = 10; -- bottom border
+	for i=1, #tooltipFrame.Ships do
+		if (tooltipFrame.Ships[i]:IsShown()) then
+			tooltipHeight = tooltipHeight + tooltipFrame.Ships[i]:GetHeight() + tooltipFrame.Ships[i].yspacing;
+		end
+	end
+	for i=1, #tooltipFrame.Lines do
+		if (tooltipFrame.Lines[i]:IsShown()) then
+			tooltipHeight = tooltipHeight + tooltipFrame.Lines[i]:GetHeight() + tooltipFrame.Lines[i].yspacing;
+		end
+	end
+	if (tooltipFrame.ItemTooltip:IsShown()) then
+		tooltipHeight = tooltipHeight + tooltipFrame.ItemTooltip:GetHeight() + tooltipFrame.ItemTooltip.yspacing;
+	end
+	for i=1, #tooltipFrame.BonusEffects do
+		if (tooltipFrame.BonusEffects[i]:IsShown()) then
+			tooltipHeight = tooltipHeight + tooltipFrame.BonusEffects[i]:GetHeight() + tooltipFrame.BonusEffects[i].yspacing;
+		end
+	end
+	if (tooltipFrame.BonusReward:IsShown()) then
+		tooltipHeight = tooltipHeight + tooltipFrame.BonusReward:GetHeight() + tooltipFrame.BonusReward.yspacing;
+	end
+	if (GarrisonMissionListTooltipThreatsFrame:IsShown()) then
+		tooltipHeight = tooltipHeight + GarrisonMissionListTooltipThreatsFrame:GetHeight() + GarrisonMissionListTooltipThreatsFrame.yspacing;
+	end
+
+	tooltipFrame:SetHeight(tooltipHeight);
 end
 
 function GarrisonShipyardMapMission_SetTooltip(info, inProgress)
 	local tooltipFrame = GarrisonShipyardMapMissionTooltip;
-	GarrisonShipyardMapMission_SetTooltipWidth(tooltipFrame, 250);
 	tooltipFrame.Name:SetText(info.name);
 	GarrisonShipyardMapMission_SetBottomWidget(tooltipFrame.Name);
-	local bottomPosition = 0;
 	
+	tooltipFrame.RareMission:SetShown(info.isRare);
 	tooltipFrame.InProgress:SetShown(inProgress);
 	tooltipFrame.InProgressTimeLeft:SetShown(inProgress);
 	tooltipFrame.SuccessChance:SetShown(inProgress);
@@ -845,10 +1274,16 @@ function GarrisonShipyardMapMission_SetTooltip(info, inProgress)
 	tooltipFrame.MissionExpires:SetShown(not inProgress);
 	tooltipFrame.TimeRemaining:SetShown(not inProgress);
 	
+	GarrisonShipyardMapMission_SetBottomWidget(tooltipFrame.Name);
+	if (info.isRare) then
+		GarrisonShipyardMapMission_AnchorToBottomWidget(tooltipFrame.RareMission, 0, -tooltipFrame.RareMission.yspacing);
+		GarrisonShipyardMapMission_SetBottomWidget(tooltipFrame.RareMission);
+	end
 	if (inProgress) then
+		GarrisonShipyardMapMission_AnchorToBottomWidget(tooltipFrame.InProgress, 0, -tooltipFrame.InProgress.yspacing);
+		local missionInfo = C_Garrison.GetBasicMissionInfo(info.missionID);
 		GarrisonMissionListTooltipThreatsFrame:Hide();
 		
-		local missionInfo = C_Garrison.GetBasicMissionInfo(info.missionID);
 		local timeLeft = missionInfo.timeLeft;
 		tooltipFrame.InProgressTimeLeft:SetText(format(GARRISON_SHIPYARD_MISSION_INPROGRESS_TIMELEFT, timeLeft));
 		GarrisonShipyardMapMission_SetBottomWidget(tooltipFrame.InProgressTimeLeft);
@@ -861,6 +1296,7 @@ function GarrisonShipyardMapMission_SetTooltip(info, inProgress)
 			tooltipFrame.SuccessChance:Hide();
 		end
 	else
+		GarrisonShipyardMapMission_AnchorToBottomWidget(tooltipFrame.Description, 0, -tooltipFrame.Description.yspacing);
 		tooltipFrame.Description:SetText(info.description);
 		
 		tooltipFrame.NumFollowers:SetText(string.format(GARRISON_SHIPYARD_MISSION_TOOLTIP_NUM_REQUIRED_FOLLOWERS, info.numFollowers));
@@ -874,13 +1310,14 @@ function GarrisonShipyardMapMission_SetTooltip(info, inProgress)
 		if (numThreats > 0) then
 			GarrisonMissionListTooltipThreatsFrame:SetParent(tooltipFrame);
 			GarrisonMissionListTooltipThreatsFrame:ClearAllPoints();
-			GarrisonMissionListTooltipThreatsFrame:SetPoint("TOPLEFT", tooltipFrame.MissionDuration, "BOTTOMLEFT", 2, -3);
+			GarrisonMissionListTooltipThreatsFrame:SetPoint("TOPLEFT", tooltipFrame.MissionDuration, "BOTTOMLEFT", 2, -12);
+			GarrisonMissionListTooltipThreatsFrame.yspacing = 12;
 			GarrisonMissionListTooltipThreatsFrame:Show();
 			GarrisonShipyardMapMission_SetBottomWidget(GarrisonMissionListTooltipThreatsFrame, -2, 0);
 		end
 		
 		if (info.isRare) then
-			GarrisonShipyardMapMission_AnchorToBottomWidget(tooltipFrame.MissionExpires, 0, -12);
+			GarrisonShipyardMapMission_AnchorToBottomWidget(tooltipFrame.MissionExpires, 0, -tooltipFrame.MissionExpires.yspacing);
 			tooltipFrame.MissionExpires:Show();
 			tooltipFrame.TimeRemaining:SetText(info.offerTimeRemaining);
 			tooltipFrame.TimeRemaining:Show();
@@ -891,93 +1328,91 @@ function GarrisonShipyardMapMission_SetTooltip(info, inProgress)
 		end
 	end
 	
+	tooltipFrame.BonusReward:Hide();
 	tooltipFrame.ItemTooltip:Hide();
 	tooltipFrame.Reward:Hide();
-	GarrisonShipyardMapMission_AnchorToBottomWidget(tooltipFrame.RewardString, 0, -12);
-	bottomPosition = tooltipFrame.RewardString:GetBottom();
+	GarrisonShipyardMapMission_AnchorToBottomWidget(tooltipFrame.RewardString, 0, -tooltipFrame.RewardString.yspacing);
+	GarrisonShipyardMapMission_SetBottomWidget(tooltipFrame.RewardString);
 	
 	for id, reward in pairs(info.rewards) do
-		if (reward.itemID) then
-			local itemName, _, itemRarity, _, _, _, _, _, _, itemTexture = GetItemInfo(reward.itemID);
-			local itemFrame = tooltipFrame.ItemTooltip;
-			itemFrame:Show();
-			itemFrame.Tooltip:SetOwner(itemFrame, "ANCHOR_NONE");
-			itemFrame.Tooltip:SetItemByID(reward.itemID);
-			if (itemRarity and itemRarity > LE_ITEM_QUALITY_COMMON and BAG_ITEM_QUALITY_COLORS[itemRarity]) then
-				itemFrame.IconBorder:Show();
-				itemFrame.IconBorder:SetVertexColor(BAG_ITEM_QUALITY_COLORS[itemRarity].r, BAG_ITEM_QUALITY_COLORS[itemRarity].g, BAG_ITEM_QUALITY_COLORS[itemRarity].b);
-			else
-				itemFrame.IconBorder:Hide();
-			end
-			itemFrame.Count:Hide();
-			itemFrame.Icon:SetTexture(itemTexture);
-			itemFrame.Tooltip:SetPoint("TOPLEFT", itemFrame.Icon, "TOPRIGHT", 0, 10);
-			itemFrame.Tooltip:Show();
-			itemFrame:SetSize(itemFrame.Tooltip:GetWidth() + 54, itemFrame.Tooltip:GetHeight());
-			GarrisonShipyardMapMission_SetTooltipWidth(tooltipFrame, itemFrame.Tooltip:GetWidth() + 54);
-			GarrisonShipyardMapMission_SetBottomWidget(itemFrame, -6, 24);
-			bottomPosition = itemFrame:GetBottom() + 12; -- extra padding for game tooltip
+		if (reward.bonusAbilityID) then
+			tooltipFrame.BonusReward.Icon:SetTexture(reward.icon);
+			tooltipFrame.BonusReward.Name:SetText(reward.name);
+			tooltipFrame.BonusReward.Description:SetText(reward.description);
+			tooltipFrame.BonusReward:Show();
+			tooltipFrame.BonusReward:SetHeight(tooltipFrame.BonusReward.Icon:GetTop() - tooltipFrame.BonusReward.Description:GetBottom());
+			GarrisonShipyardMapMission_SetBottomWidget(tooltipFrame.BonusReward);
+		elseif (reward.itemID) then
+			EmbeddedItemTooltip_SetItemByID(tooltipFrame.ItemTooltip, reward.itemID);
+			GarrisonShipyardMapMission_SetBottomWidget(tooltipFrame.ItemTooltip, -6, 0);
 		elseif (reward.followerXP) then
 			tooltipFrame.Reward:SetText(format(GARRISON_REWARD_XP_FORMAT, BreakUpLargeNumbers(reward.followerXP)));
 			tooltipFrame.Reward:Show();
 			GarrisonShipyardMapMission_SetBottomWidget(tooltipFrame.Reward);
-			bottomPosition = tooltipFrame.Reward:GetBottom();
 		elseif (reward.currencyID ~= 0) then
 			local _, _, currencyTexture = GetCurrencyInfo(reward.currencyID);
 			tooltipFrame.Reward:SetText(reward.quantity .. " |T" .. currencyTexture .. ":0:0:0:0|t");
 			tooltipFrame.Reward:Show();
 			GarrisonShipyardMapMission_SetBottomWidget(tooltipFrame.Reward);
-			bottomPosition = tooltipFrame.Reward:GetBottom();
 		elseif (reward.currencyID == 0) then
 			tooltipFrame.Reward:SetText(GetMoneyString(reward.quantity));
 			tooltipFrame.Reward:Show();
 			GarrisonShipyardMapMission_SetBottomWidget(tooltipFrame.Reward);
-			bottomPosition = tooltipFrame.Reward:GetBottom();
 		end
 		break;
 	end
 	
-	tooltipFrame.ReturnToGarrison:Hide();
+	local bonusEffects = C_Garrison.GetMissionBonusAbilityEffects(info.missionID);
+	if (#bonusEffects > 0) then
+		GarrisonShipyardMapMission_AnchorToBottomWidget(tooltipFrame.BonusTitle, 0, -tooltipFrame.BonusTitle.yspacing);
+		tooltipFrame.BonusTitle:Show();
+		GarrisonShipyardMapMission_SetBottomWidget(tooltipFrame.BonusTitle);
+	else
+		tooltipFrame.BonusTitle:Hide();
+	end
+	for i=1, #bonusEffects do
+		local effectFrame = tooltipFrame.BonusEffects[i];
+		if (not effectFrame) then
+			effectFrame = CreateFrame("FRAME", "GarrisonBonusEffectTooltip" .. i, tooltipFrame, "GarrisonBonusEffectFrameTemplate");
+			tooltipFrame.BonusEffects[i] = effectFrame;
+		end
+		GarrisonShipyardMapMission_AnchorToBottomWidget(effectFrame, 3, -effectFrame.yspacing);
+		effectFrame.Icon:SetTexture(bonusEffects[i].icon);
+		effectFrame.Name:SetText(bonusEffects[i].name);
+		effectFrame.Description:SetText(bonusEffects[i].description);
+		effectFrame:Show();
+		GarrisonShipyardMapMission_SetBottomWidget(effectFrame, -3);
+	end
+	for i=#bonusEffects + 1, #tooltipFrame.BonusEffects do
+		tooltipFrame.BonusEffects[i]:Hide();
+	end
+	
 	tooltipFrame.ShipsString:Hide();
 	for i=1, #tooltipFrame.Ships do
 		tooltipFrame.Ships[i]:Hide();
 	end
 	if (inProgress) then
 		if (info.followers ~= nil) then
-			GarrisonShipyardMapMission_AnchorToBottomWidget(tooltipFrame.ShipsString, 0, -12);
+			GarrisonShipyardMapMission_AnchorToBottomWidget(tooltipFrame.ShipsString, 0, -tooltipFrame.ShipsString.yspacing);
 			tooltipFrame.ShipsString:Show();
 			for i=1, #(info.followers) do
 				tooltipFrame.Ships[i]:SetText(format(GARRISON_SHIPYARD_SHIP_NAME, C_Garrison.GetFollowerName(info.followers[i])));
 				GarrisonShipyardMapMission_SetBottomWidget(tooltipFrame.Ships[i]);
 				tooltipFrame.Ships[i]:Show();
-				bottomPosition = tooltipFrame.Ships[i]:GetBottom();
 			end
 		end
-	elseif (not C_Garrison.IsOnGarrisonMap()) then
-		GarrisonShipyardMapMission_AnchorToBottomWidget(tooltipFrame.ReturnToGarrison, 0, -12);
-		tooltipFrame.ReturnToGarrison:Show();
-		bottomPosition = tooltipFrame.ReturnToGarrison:GetBottom();
 	end
 	
-	if (not tooltipFrame.ItemTooltip:IsShown()) then
-		local maxWidth = 0;
-		for i=1, #tooltipFrame.Ships do
-			if (tooltipFrame.Ships[i]:IsShown() and tooltipFrame.Ships[i]:GetStringWidth() > maxWidth) then
-				maxWidth = tooltipFrame.Ships[i]:GetStringWidth();
-			end
-		end
-		for i=1, #tooltipFrame.Lines do
-			if (tooltipFrame.Lines[i]:IsShown() and tooltipFrame.Lines[i]:GetStringWidth() > maxWidth) then
-				maxWidth = tooltipFrame.Lines[i]:GetStringWidth();
-			end
-		end
-		if (GarrisonMissionListTooltipThreatsFrame:IsShown() and GarrisonMissionListTooltipThreatsFrame:GetWidth() > maxWidth) then
-			maxWidth = GarrisonMissionListTooltipThreatsFrame:GetWidth();
-		end
-		tooltipFrame:SetWidth(min(maxWidth + 20, 250));
+	if (info.canStart) then
+		tooltipFrame.SiegebreakerWarning:Hide();
+	else
+		tooltipFrame.SiegebreakerWarning:Show();
+		GarrisonShipyardMapMission_AnchorToBottomWidget(tooltipFrame.SiegebreakerWarning, 0, -tooltipFrame.SiegebreakerWarning.yspacing);
+		GarrisonShipyardMapMission_SetBottomWidget(tooltipFrame.SiegebreakerWarning);
 	end
 
-	tooltipFrame:SetHeight(tooltipFrame.Name:GetTop() - bottomPosition + 20); --20 pixel padding for borders
+	GarrisonShipyardMapMission_UpdateTooltipSize(tooltipFrame);
+
 	tooltipFrame:Show();
 end
 
@@ -989,20 +1424,21 @@ function GarrisonShipyardMapMission_SetTooltipWidth(tooltip, width)
 	for i=1, #tooltip.Lines do
 		tooltip.Lines[i]:SetWidth(width - 20);
 	end
+	for i=1, #tooltip.BonusEffects do
+		local bonusEffect = tooltip.BonusEffects[i];
+		bonusEffect.Name:SetWidth(width - 52);
+		bonusEffect.Description:SetWidth(width - 52);
+		bonusEffect:SetSize(width - 20, bonusEffect.Name:GetHeight() + bonusEffect.Description:GetHeight() + 8);
+		--bonusEffect:SetHeight(bonusEffect.Icon:GetTop() - bonusEffect.Description:GetBottom());
+	end
 end
 
 local bottomWidget = {};
 
 function GarrisonShipyardMapMission_SetBottomWidget(widget, x, y)
-	if (not x) then
-		x = 0;
-	end
-	if (not y) then
-		y = 0;
-	end
 	bottomWidget.widget = widget;
-	bottomWidget.x = x;
-	bottomWidget.y = y;
+	bottomWidget.x = x or 0;
+	bottomWidget.y = y or 0;
 end
 
 function GarrisonShipyardMapMission_AnchorToBottomWidget(widget, x, y)
@@ -1011,6 +1447,9 @@ end
 
 function GarrisonShipyardMapMission_OnLeave(self, button)
 	GarrisonShipyardMapMissionTooltip:Hide();
+	if (self.bonusRewardArea) then
+		self.BonusAreaEffect:Hide();
+	end
 end
 
 
@@ -1322,10 +1761,19 @@ end
 function GarrisonShipFollowerListButton_OnClick(self, button)
 	local mainFrame = self:GetParent():GetParent().followerFrame;
 	PlaySound("UI_Garrison_CommandTable_SelectFollower");
-	mainFrame.selectedFollower = self.id;
 
-	mainFrame.FollowerList:UpdateData();
-	mainFrame.FollowerList:ShowFollower(self.id);
+	if (button == "LeftButton") then
+		mainFrame.selectedFollower = self.id;
+
+		mainFrame.FollowerList:UpdateData();
+		mainFrame.FollowerList:ShowFollower(self.id);
+	elseif (button == "RightButton") then
+		if ( GarrisonShipyardFollowerOptionDropDown.followerID ~= self.id ) then
+			CloseDropDownMenus();
+		end
+		GarrisonShipyardFollowerOptionDropDown.followerID = self.id;
+		ToggleDropDownMenu(1, nil, GarrisonShipyardFollowerOptionDropDown, "cursor", 0, 0);
+	end
 end
 
 function GarrisonShipTrait_OnClick(self, button)
@@ -1472,4 +1920,21 @@ end
 
 function GarrisonShipMissionPageFollowerFrame_OnLeave(self)
 	GarrisonShipyardFollowerTooltip:Hide();
+end
+
+---------------------------------------------------------------------------------
+--- Ship Renaming                                                             ---
+---------------------------------------------------------------------------------
+
+function GarrisonShipOptionsMenu_Initialize(self, level)
+	local info = UIDropDownMenu_CreateInfo();
+	info.notCheckable = true;
+		
+	info.text = GARRISON_SHIP_RENAME;
+	info.func = 	function() StaticPopup_Show("GARRISON_SHIP_RENAME", nil, nil, GarrisonShipyardFollowerOptionDropDown.followerID); end 
+	UIDropDownMenu_AddButton(info, level);
+	
+	info.text = CANCEL
+	info.func = nil
+	UIDropDownMenu_AddButton(info, level)
 end

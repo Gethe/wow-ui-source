@@ -33,6 +33,7 @@
 --  :SkipIf() - Skip this block if a certain result is present
 --  :OnSkip() - If you have a SkipIf() then OnSkip() will perform any actions you need if you are skipped.
 --  :ShowPopupIf() - If you have a .Popup, then ShowPopupIf will perform a check if the popup should appear.
+--  :GetPopupText() - If you have a .Popup, then GetPopupText fetch the text to display.
 --
 -- The following members must be present on a block:
 --  .Back - Show the back button on the flow frame.
@@ -418,7 +419,11 @@ function CharacterServicesMasterNextButton_OnClick(self)
 	local master = CharacterServicesMaster;
 	if ( master.currentBlock.Popup and 
 		( not master.currentBlock.ShowPopupIf or master.currentBlock:ShowPopupIf() )) then
-		GlueDialog_Show(master.currentBlock.Popup);
+		local text;
+		if ( master.currentBlock.GetPopupText ) then
+			text = master.currentBlock:GetPopupText();
+		end
+		GlueDialog_Show(master.currentBlock.Popup, text);
 		return;
 	end
 	
@@ -996,6 +1001,10 @@ end
 function CharacterUpgradeSpecSelectBlock:ShowPopupIf()
 	local role = select(6, GetSpecializationInfoForSpecID(self.selected));
 	return role == "HEALER";
+end
+
+function CharacterUpgradeSpecSelectBlock:GetPopupText()
+	return string.format(BOOST_NOT_RECOMMEND_SPEC_WARNING, GetSpecializationNameForSpecID(self.selected));
 end
 
 function CharacterUpgradeSelectSpecRadioButton_OnClick(self, button, down)

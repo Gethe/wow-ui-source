@@ -682,6 +682,9 @@
 						</Anchors>
 					</Texture>
 				</Layer>
+				<Layer level="OVERLAY" textureSubLevel="1">
+					<Texture parentKey="DisabledOverlay" atlas="shop-card-darkcover" setAllPoints="true" hidden="true" alpha=".55"/>
+				</Layer>
 			</Layers>
 			<Frames>
 				<PlayerModel parentKey="Model" creature="12257" hidden="true">

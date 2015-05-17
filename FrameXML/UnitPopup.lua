@@ -930,7 +930,7 @@ function UnitPopup_HideButtons ()
 				UnitPopupShown[UIDROPDOWNMENU_MENU_LEVEL][index] = 0;
 			end
 		elseif ( value == "INSTANCE_LEAVE" ) then
-			if ( inParty == 0 or not IsInGroup(LE_PARTY_CATEGORY_INSTANCE) or instanceType == "pvp" or instanceType == "arena" ) then
+			if ( inParty == 0 or not IsInGroup(LE_PARTY_CATEGORY_INSTANCE) or IsPartyWorldPVP() or instanceType == "pvp" or instanceType == "arena" ) then
 				UnitPopupShown[UIDROPDOWNMENU_MENU_LEVEL][index] = 0;
 			end
 		elseif ( value == "FREE_FOR_ALL" ) then

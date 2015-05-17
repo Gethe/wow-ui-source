@@ -454,10 +454,16 @@ function EJMicroButton_OnEvent(self, event, ...)
 		end
 		UpdateMicroButtons();
 	elseif( event == "VARIABLES_LOADED" ) then
-		if ( UnitLevel("player") >= EJMicroButton.minLevel and UnitFactionGroup("player") ~= "Neutral" and
-		 GetServerTime() - tonumber(GetCVar("advJournalLastOpened")) > EJ_ALERT_TIME_DIFF ) then
-			EJMicroButtonAlert:Show();
-			MicroButtonPulse(EJMicroButton);
+		local lastTimeOpened = tonumber(GetCVar("advJournalLastOpened"));
+		if ( UnitLevel("player") >= EJMicroButton.minLevel and UnitFactionGroup("player") ~= "Neutral" ) then		
+			if ( GetServerTime() - lastTimeOpened > EJ_ALERT_TIME_DIFF ) then
+				EJMicroButtonAlert:Show();
+				MicroButtonPulse(EJMicroButton);
+			end
+		
+			if ( lastTimeOpened ~= 0 ) then
+				SetCVar("advJournalLastOpened", GetServerTime() );
+			end
 		end
 	elseif ( event == "PLAYER_ENTERING_WORLD" ) then
 		C_AdventureJournal.UpdateSuggestions();	

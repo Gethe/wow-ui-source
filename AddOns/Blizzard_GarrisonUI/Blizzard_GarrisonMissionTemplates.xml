@@ -176,25 +176,8 @@
 			</AnimationGroup>
 		</Animations>
 		<Scripts>
-			<OnEnter>
-				GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
-				if (self.itemID) then
-					GameTooltip:SetItemByID(self.itemID);
-					return;
-				end
-				if (self.currencyID and self.currencyID ~= 0) then
-					GameTooltip:SetCurrencyByID(self.currencyID);
-					return;
-				end				
-				if (self.title) then
-					GameTooltip:SetText(self.title);
-				end
-				if (self.tooltip) then
-					GameTooltip:AddLine(self.tooltip, 1, 1, 1, true);
-				end
-				GameTooltip:Show();
-			</OnEnter>
-			<OnLeave function="GameTooltip_Hide"/>
+			<OnEnter function="GarrisonMissionPage_RewardOnEnter"/>
+			<OnLeave function="GarrisonMissionPage_RewardOnLeave"/>
 		</Scripts>
 	</Frame>
 	
@@ -751,6 +734,12 @@
 							</Anchors>
 							<Color r="0.8" g="0.8" b="0.8"/>
 						</FontString>
+						<FontString inherits="GameFontHighlight" text="GARRISON_SKIP_ANIMATION_LABEL">
+							<Anchors>
+								<Anchor point="BOTTOM" x="315" y="8"/>
+							</Anchors>
+							<Color r="0.8" g="0.8" b="0.8"/>
+						</FontString>
 					</Layer>
 				</Layers>
 			</CinematicModel>
@@ -772,6 +761,16 @@
 				</Scripts>
 			</Frame>
 		</Frames>
+		<Scripts>
+			<OnKeyDown>
+				if ( key == "SPACE" ) then
+					self:SetPropagateKeyboardInput(false);
+					self.ViewButton:Click();
+				else
+					self:SetPropagateKeyboardInput(true);
+				end
+			</OnKeyDown>
+		</Scripts>
 	</Frame>
 	
 	<CinematicModel name="GarrisonMissionCompleteModelTemplate" virtual="true" inherits="GarrisonCinematicModelBaseTemplate">
@@ -1198,6 +1197,9 @@
 		<Scripts>
 			<OnLoad function="GarrisonMissionComplete_OnLoad"/>
 			<OnEvent function="GarrisonMissionComplete_OnEvent"/>
+			<OnKeyDown>
+				GarrisonMissionComplete.OnSkipKeyPressed(self, key);
+			</OnKeyDown>
 		</Scripts>
 	</Frame>
 

@@ -172,7 +172,9 @@ function EncounterJournal_OnLoad(self)
 end
 
 function EncounterJournal_OnShow(self)
-	SetCVar("advJournalLastOpened", GetServerTime() );
+	if ( tonumber(GetCVar("advJournalLastOpened")) == 0 ) then
+		SetCVar("advJournalLastOpened", GetServerTime() );
+	end
 	EJMicroButtonAlert:Hide();
 	MicroButtonPulseStop(EJMicroButton);		
 	
@@ -2173,11 +2175,14 @@ function EJSuggestFrame_OpenFrame()
 end
 
 function EJSuggestFrame_UpdateRewards(suggestion)
-	local reward = C_AdventureJournal.GetReward( suggestion.index );
-	suggestion.reward.data = reward;
-	if ( reward ) then
-		local texture = reward.itemIcon or reward.currencyIcon or 
+	local rewardData = C_AdventureJournal.GetReward( suggestion.index );
+	suggestion.reward.data = rewardData;
+	if ( rewardData ) then
+		local texture = rewardData.itemIcon or rewardData.currencyIcon or 
 						"Interface\\Icons\\achievement_guildperk_mobilebanking";
+		if ( rewardData.isRewardTable ) then
+			texture = "Interface\\Icons\\achievement_guildperk_mobilebanking";
+		end
 		suggestion.reward.icon:SetTexture(texture);
 		suggestion.reward.icon:SetMask("Interface\\CharacterFrame\\TempPortraitAlphaMask");
 		suggestion.reward:Show();
@@ -2226,7 +2231,6 @@ function EJSuggestFrame_RefreshDisplay()
 		suggestion.iconRing:Hide();
 	end
 	
-	local showCycleBtn = C_AdventureJournal.GetNumAvailableSuggestions() > AJ_MAX_NUM_SUGGESTIONS;
 	-- setup the primary suggestion display
 	if ( #self.suggestions > 0 ) then
 		local suggestion = self.Suggestion1;
@@ -2250,8 +2254,8 @@ function EJSuggestFrame_RefreshDisplay()
 		
 		-- resize the title to be 2 lines at most
 		local numLines = min(2, suggestion.centerDisplay.title:GetNumLines());
-		fontHeight = select(2, suggestion.centerDisplay.title:GetFont());
-		suggestion.centerDisplay.title:SetHeight(numLines * fontHeight);
+		local fontHeight = select(2, suggestion.centerDisplay.title:GetFont());
+		suggestion.centerDisplay.title:SetHeight(numLines * fontHeight + 2);
 		suggestion.centerDisplay.description:SetHeight(suggestion.centerDisplay.description:GetStringHeight());
 		
 		-- adjust the center display to keep the text centered	
@@ -2278,9 +2282,14 @@ function EJSuggestFrame_RefreshDisplay()
 			suggestion.icon:SetMask("Interface\\CharacterFrame\\TempPortraitAlphaMask");
 		end
 		
-		suggestion.cycleButton:SetShown(showCycleBtn);
+		suggestion.prevButton:SetEnabled(C_AdventureJournal.GetPrimaryOffset() > 0);
+		suggestion.nextButton:SetEnabled(C_AdventureJournal.GetPrimaryOffset() < C_AdventureJournal.GetNumAvailableSuggestions()-1);
 		
 		EJSuggestFrame_UpdateRewards(suggestion);
+	else
+		local suggestion = self.Suggestion1;
+		suggestion.prevButton:SetEnabled(false);
+		suggestion.nextButton:SetEnabled(false);
 	end
 
 	-- setup secondary suggestions display
@@ -2339,8 +2348,6 @@ function EJSuggestFrame_RefreshDisplay()
 			end
 			
 			EJSuggestFrame_UpdateRewards(suggestion);
-			
-			suggestion.cycleButton:SetShown(showCycleBtn);
 		end
 		-- set the fonts to be the same for both right side sections
 		-- adjust the center display to keep the text centered
@@ -2349,27 +2356,36 @@ function EJSuggestFrame_RefreshDisplay()
 			suggestion.centerDisplay:SetHeight(suggestion:GetHeight());
 			
 			local title = suggestion.centerDisplay.title;
+			local description = suggestion.centerDisplay.description;
 			title.text:SetFontObject(AdventureJournal_RightTitleFonts[minTitleIndex]);
-			suggestion.centerDisplay.description.text:SetFontObject(AdventureJournal_RightDescriptionFonts[minDescIndex]);
+			description.text:SetFontObject(AdventureJournal_RightDescriptionFonts[minDescIndex]);
 			local fontHeight = select(2, title.text:GetFont());
 			title:SetHeight(fontHeight);		
-			local numLines = min(4, suggestion.centerDisplay.description.text:GetNumLines());
-			fontHeight = select(2, suggestion.centerDisplay.description.text:GetFont());
-			suggestion.centerDisplay.description:SetHeight(numLines * fontHeight);
+			local numLines = min(4, description.text:GetNumLines());
+			fontHeight = select(2, description.text:GetFont());
+			description:SetHeight(numLines * fontHeight);
 			
 			-- adjust the center display to keep the text centered	
 			local top = title:GetTop();
-			local bottom = suggestion.centerDisplay.description:GetBottom();
+			local bottom = description:GetBottom();
 			if ( suggestion.centerDisplay.button:IsShown() ) then
 				bottom = suggestion.centerDisplay.button:GetBottom();
 			end
 			
 			if ( title.text:IsTruncated() ) then
-				title:SetScript("OnEnter", EJSuggestFrame_SuggestionTitleOnEnter);
+				title:SetScript("OnEnter", EJSuggestFrame_SuggestionTextOnEnter);
 				title:SetScript("OnLeave", GameTooltip_Hide);
 			else
 				title:SetScript("OnEnter", nil);
 				title:SetScript("OnLeave", nil);
+			end
+			
+			if ( description.text:IsTruncated() ) then
+				description:SetScript("OnEnter", EJSuggestFrame_SuggestionTextOnEnter);
+				description:SetScript("OnLeave", GameTooltip_Hide);
+			else
+				description:SetScript("OnEnter", nil);
+				description:SetScript("OnLeave", nil);
 			end
 			
 			suggestion.centerDisplay:SetHeight(top - bottom);
@@ -2377,7 +2393,7 @@ function EJSuggestFrame_RefreshDisplay()
 	end
 end
 
-function EJSuggestFrame_SuggestionTitleOnEnter(self)
+function EJSuggestFrame_SuggestionTextOnEnter(self)
 	GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
 	GameTooltip:SetText(self.text:GetText(), 1, 1, 1, 1, true);
 	GameTooltip:Show();
@@ -2423,13 +2439,13 @@ function AdventureJournal_Reward_OnEnter(self)
 				rewardHeaderText = format(AJ_LFG_REWARD_DEFAULT_TEXT, suggestion.title, rewardData.itemLevel or 0);
 			end
 			
-			if( rewardData.itemID ) then
+			if( rewardData.itemLink ) then
 				rewardHeaderText = rewardHeaderText..AJ_SAMPLE_REWARD_TEXT;
 			end
 		end
 		
-		if ( rewardData.itemID and rewardData.currencyType ) then
-			local itemName, _, quality = GetItemInfo(rewardData.itemID);
+		if ( rewardData.itemLink and rewardData.currencyType ) then
+			local itemName, _, quality = GetItemInfo(rewardData.itemLink);
 			frame.Item1.text:SetText(itemName);
 			frame.Item1.text:Show();
 			frame.Item1.icon:SetTexture(rewardData.itemIcon);
@@ -2485,17 +2501,17 @@ function AdventureJournal_Reward_OnEnter(self)
 			end
 			
 			frame:SetHeight(height);
-		elseif ( rewardData.itemID or rewardData.currencyType ) then
+		elseif ( rewardData.itemLink or rewardData.currencyType ) then
 			frame.Item2:Hide();
 			frame.Item1:Show();
 			frame.Item1.text:Hide();
 			
 			local tooltip = frame.Item1.tooltip;
 			tooltip:SetOwner(frame.Item1, "ANCHOR_NONE");
-			if ( rewardData.itemID ) then
+			if ( rewardData.itemLink ) then
 				tooltip:SetHyperlink(rewardData.itemLink);
 			
-				local quality = select(3, GetItemInfo(rewardData.itemID));
+				local quality = select(3, GetItemInfo(rewardData.itemLink));
 				if (quality > LE_ITEM_QUALITY_COMMON and BAG_ITEM_QUALITY_COLORS[quality]) then
 					frame.Item1.IconBorder:Show();
 					frame.Item1.IconBorder:SetVertexColor(BAG_ITEM_QUALITY_COLORS[quality].r, BAG_ITEM_QUALITY_COLORS[quality].g, BAG_ITEM_QUALITY_COLORS[quality].b);
@@ -2555,6 +2571,7 @@ function AdventureJournal_Reward_OnEnter(self)
 			end
 			if (rewardData.isRewardTable) then
 				frame.clickText:Show();
+				self.iconRingHighlight:Show();
 				height = height + 24;
 			end
 			
@@ -2591,6 +2608,8 @@ function AdventureJournal_Reward_OnLeave(self)
 	EncounterJournalTooltip:Hide();
 	self:SetScript("OnUpdate", nil);
 	ResetCursor();
+	
+	self.iconRingHighlight:Hide();
 end
 
 function AdventureJournal_Reward_OnMouseDown(self)

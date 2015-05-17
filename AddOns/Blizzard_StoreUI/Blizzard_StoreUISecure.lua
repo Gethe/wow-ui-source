@@ -157,6 +157,7 @@ Import("BLIZZARD_STORE_YOU_ALREADY_OWN_THIS");
 Import("BLIZZARD_STORE_TOKEN_CURRENT_MARKET_PRICE");
 Import("BLIZZARD_STORE_TOKEN_DESC_30_DAYS");
 Import("BLIZZARD_STORE_TOKEN_DESC_2700_MINUTES");
+Import("BLIZZARD_STORE_LOG_OUT_TO_PURCHASE_THIS_PRODUCT");
 Import("ENABLE_COLORBLIND_MODE");
 Import("TOOLTIP_DEFAULT_COLOR");
 Import("TOOLTIP_DEFAULT_BACKGROUND_COLOR");
@@ -620,7 +621,7 @@ local function getIndex(tbl, value)
 end
 
 function StoreFrame_UpdateCard(card,entryID,discountReset)
-	local productID, _, bannerType, alreadyOwned, normalDollars, normalCents, currentDollars, currentCents, buyableHere, name, description, displayID, texture, upgrade, isToken, itemID = C_PurchaseAPI.GetEntryInfo(entryID);
+	local productID, _, bannerType, alreadyOwned, normalDollars, normalCents, currentDollars, currentCents, buyableHere, name, description, displayID, texture, upgrade, isToken, itemID, isVasService = C_PurchaseAPI.GetEntryInfo(entryID);
 	StoreProductCard_ResetCornerPieces(card);
 
 	local info = currencyInfo();
@@ -786,8 +787,6 @@ function StoreFrame_UpdateCard(card,entryID,discountReset)
 
 	if (card.BuyButton) then
 		card.BuyButton:SetEnabled(buyableHere);
-	else
-		card.Card:SetDesaturated(not buyableHere);
 	end
 
 	card:SetID(entryID);
@@ -798,6 +797,10 @@ function StoreFrame_UpdateCard(card,entryID,discountReset)
 		card.BannerFadeIn:Show();
 	end
 	
+	if (card.DisabledOverlay) then
+		card.DisabledOverlay:SetShown(isVasService and not IsOnGlueScreen());
+	end
+
 	card:Show();
 end
 
@@ -1663,6 +1666,7 @@ function StoreVASValidationFrame_OnLoad(self)
 	end
 	
 	self:RegisterEvent("STORE_CHARACTER_LIST_RECEIVED");
+	self:RegisterEvent("STORE_VAS_PURCHASE_RESULT_RECEIVED");
 end
 
 local SelectedRealm = nil;
@@ -1708,6 +1712,15 @@ function StoreVASValidationFrame_OnEvent(self, event, ...)
 			StoreVASValidationFrame_SetVASStart(self);
 			self:Raise();
 		end
+	elseif ( event == "STORE_VAS_PURCHASE_RESULT_RECEIVED" ) then
+		WaitingOnConfirmation = false;
+		StoreFrame_UpdateActivePanel(StoreFrame);
+		local results = C_PurchaseAPI.GetVASResults();
+		-- TEMP
+		_G.print("Number of results returned", #results);
+		for i = 1, #results do
+			_G.print(("Result %d:"):format(i), results[i]);
+		end
 	end
 end
 
@@ -1728,7 +1741,7 @@ function StoreProductCard_UpdateState(card)
 	if (card:GetID() == 0 or not card:IsShown()) then return end;
 
 	if (card.HighlightTexture) then
-		local enableHighlight = card:GetID() ~= selectedEntryID and not isRotating;
+		local enableHighlight = card:GetID() ~= selectedEntryID and not isRotating and (not select(17,C_PurchaseAPI.GetEntryInfo(card:GetID())) or IsOnGlueScreen());
 		card.HighlightTexture:SetAlpha(enableHighlight and 1 or 0);
 		if (not card.Description and card:IsMouseOver()) then
 			if (isRotating) then
@@ -1749,6 +1762,10 @@ function StoreProductCard_UpdateState(card)
 				
 				StoreTooltip:ClearAllPoints();
 				StoreTooltip:SetPoint(point, card, rpoint, xoffset, 0);
+				if (select(17,C_PurchaseAPI.GetEntryInfo(card:GetID())) and not IsOnGlueScreen()) then
+					name = "";
+					description = BLIZZARD_STORE_LOG_OUT_TO_PURCHASE_THIS_PRODUCT;
+				end
 				StoreTooltip_Show(name, description, isToken);
 			end
 		end
@@ -1775,11 +1792,13 @@ function StoreProductCard_UpdateAllStates()
 end
 
 function StoreProductCard_OnEnter(self)
-	if (self.HighlightTexture) then
-		self.HighlightTexture:SetShown(selectedEntryID ~= self:GetID());
-	end
-	if (self.Magnifier and self.Model:IsShown() and self ~= StoreFrame.SplashSingle) then
-		self.Magnifier:Show();
+	if (not select(17,C_PurchaseAPI.GetEntryInfo(self:GetID())) or IsOnGlueScreen()) then
+		if (self.HighlightTexture) then
+			self.HighlightTexture:SetShown(selectedEntryID ~= self:GetID());
+		end
+		if (self.Magnifier and self.Model:IsShown() and self ~= StoreFrame.SplashSingle) then
+			self.Magnifier:Show();
+		end
 	end
 	StoreProductCard_UpdateState(self);
 end
@@ -1794,11 +1813,11 @@ function StoreProductCard_OnLeave(self)
 	StoreTooltip:Hide();
 end
 
-local function updateSelected(self, card)
-	card.SelectedTexture:SetShown(card:GetID() == self:GetID());
-end
-
 function StoreProductCard_OnClick(self,button,down)
+	if (select(17,C_PurchaseAPI.GetEntryInfo(self:GetID())) and not IsOnGlueScreen()) then
+		return;
+	end
+
 	local showPreview;
 	if ( IsOnGlueScreen() ) then
 		showPreview = _G.IsControlKeyDown();
@@ -2175,6 +2194,14 @@ function StoreTooltip_Show(name, description, isToken)
 	local buffer = 11;
 
 	local bufferCount = 2;
+	if (not name or name == "") then
+		self.Description:ClearAllPoints();
+		self.Description:SetPoint("TOPLEFT", 10, -11);
+	else
+		self.Description:ClearAllPoints();
+		self.Description:SetPoint("TOPLEFT", self.ProductName, "BOTTOMLEFT", 0, -2);
+	end
+	
 	if (not description or description == "") then
 		dheight = 0;
 	else
@@ -2399,10 +2426,32 @@ function VASCharacterSelectionCharacterSelector_OnClick(self)
 end
 
 function VASCharacterSelectionContinueButton_OnClick(self)
-	-- TODO
-	--[[
-	* For name change:  Send character and name for validation
-	* For others:  Send character for validation]]
+	if (not SelectedRealm or not SelectedCharacter) then
+		-- This should not happen, as this button should be disabled unless you have both selected.
+		return;
+	end
+
+	local characters = C_PurchaseAPI.GetCharactersForRealm(SelectedRealm);
+
+	if (not characters[SelectedCharacter]) then
+		-- This should not happen
+		return;
+	end
+
+	local productID, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, isVasService = C_PurchaseAPI.GetEntryInfo(selectedEntryID);
+
+	if (not isVasService) then
+		-- Um, how did we get to thie frame if this wasnt a vas service?
+		return;
+	end
+
+	local newName = self:GetParent().NewCharacterName:GetText();
+	if ( C_PurchaseAPI.PurchaseVASProduct(productID, characters[SelectedCharacter].guid, newName) ) then
+		WaitingOnConfirmation = true;
+		WaitingOnConfirmationTime = GetTime();
+		self:GetParent():GetParent():Hide();
+		StoreFrame_UpdateActivePanel(StoreFrame);
+	end
 end
 
 function VASCharacterSelectionNewCharacterName_OnEnter(self)

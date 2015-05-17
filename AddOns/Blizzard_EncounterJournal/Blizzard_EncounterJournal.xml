@@ -1122,7 +1122,7 @@
 						</Anchors>
 						<Layers>
 							<Layer level="ARTWORK">								
-								<FontString parentKey="text" font="SystemFont_Med1" justifyH="left" justifyV="top" wordwrap="true">
+								<FontString parentKey="text" font="SystemFont_Med1" justifyH="left" justifyV="top" wordwrap="true" maxLines="4">
 									<Size x="260" y="0"/>
 									<Color r="0.2824" g="0.0157" b="0.0157"/>
 								</FontString>
@@ -1158,6 +1158,13 @@
 								<Anchor point="CENTER" relativeKey="$parent.rewardIcon"/>
 							</Anchors>
 						</Texture>
+						<Texture parentKey="iconRingHighlight" atlas="adventureguide-rewardring" hidden="true" alphaMode="ADD">
+							<Size x="48" y="48"/>
+							<Anchors>
+								<Anchor point="CENTER" relativeKey="$parent.rewardIcon"/>
+							</Anchors>
+							<Color r="1" g="1" b="1" a="0.25"/>
+						</Texture>
 					</Layer>
 				</Layers>
 				<Scripts>
@@ -1166,16 +1173,6 @@
 					<OnMouseDown function="AdventureJournal_Reward_OnMouseDown"/>
 				</Scripts>
 			</Frame>
-			<Button name="$parentCycleButton" inherits="UIPanelCloseButton" parentKey="cycleButton">
-				<Anchors>
-					<Anchor point="TOPRIGHT" x="-4" y="-4"/>
-				</Anchors>
-				<Scripts>
-					<OnClick>
-						C_AdventureJournal.CycleEntry(self:GetParent().index);
-					</OnClick>
-				</Scripts>
-			</Button>
 		</Frames>
 		<Scripts>
 			<OnLoad>
@@ -2718,7 +2715,7 @@
 											</Anchors>
 											<Color r="0" g="0" b="0"/>
 										</FontString>
-										<FontString parentKey="description" font="SystemFont_Med3" justifyH="center" justifyV="top">
+										<FontString parentKey="description" font="GameTooltipHeader" justifyH="center" justifyV="top">
 											<Size x="264" y="0"/>
 											<Anchors>
 												<Anchor point="TOPLEFT" relativeKey="$parent.title" relativePoint="BOTTOMLEFT" x="0" y="-8"/>
@@ -2729,9 +2726,9 @@
 								</Layers>
 							</Frame>
 							<Button parentKey="button" inherits="UIPanelButtonTemplate">
-								<Size x="116" y="28"/>
+								<Size x="116" y="32"/>
 								<Anchors>
-									<Anchor point="BOTTOM" x="0" y="57"/>
+									<Anchor point="BOTTOM" x="0" y="31"/>
 								</Anchors>
 								<Scripts>
 									<OnClick function="EJSuggestFrame_OnClick"/>
@@ -2748,38 +2745,78 @@
 							<Frame parentKey="reward" enableMouse="true">
 								<Size x="26" y="26"/>
 								<Anchors>
-									<Anchor point="BOTTOMRIGHT" relativeKey="$parent.icon" x="2" y="-7"/>
+									<Anchor point="BOTTOM" x="0" y="72"/>
 								</Anchors>
 								<Layers>
 									<Layer level="ARTWORK">
 										<Texture parentKey="icon" mask="Interface\\CharacterFrame\\TempPortraitAlphaMask">
 											<Size x="26" y="26"/>
+											<Anchors>
+												<Anchor point="RIGHT" x="-11" y="0"/>
+											</Anchors>
 										</Texture>
+										<FontString parentKey="text" font="SystemFont_Med3" justifyH="right" justifyV="center" text="Reward:">
+											<Size x="0" y="0"/>
+											<Anchors>
+												<Anchor point="RIGHT" relativeKey="$parent.icon" relativePoint="LEFT" x="-12" y="0"/>
+											</Anchors>
+											<Color r="0.2824" g="0.0157" b="0.0157"/>
+										</FontString>
 									</Layer>
 									<Layer level="OVERLAY">
 										<Texture parentKey="iconRing" atlas="adventureguide-rewardring">
 											<Size x="48" y="48"/>
 											<Anchors>
-												<Anchor point="CENTER" relativeKey="$parent.rewardIcon"/>
+												<Anchor point="CENTER" relativeKey="$parent.icon"/>
 											</Anchors>
+										</Texture>
+										<Texture parentKey="iconRingHighlight" atlas="adventureguide-rewardring" hidden="true" alphaMode="ADD">
+											<Size x="48" y="48"/>
+											<Anchors>
+												<Anchor point="CENTER" relativeKey="$parent.icon"/>
+											</Anchors>
+											<Color r="1" g="1" b="1" a="0.25"/>
 										</Texture>
 									</Layer>
 								</Layers>
 								<Scripts>
+									<OnLoad>
+										self:SetWidth( self.iconRing:GetRight() - self.text:GetLeft() );
+									</OnLoad>
 									<OnEnter function="AdventureJournal_Reward_OnEnter"/>
 									<OnLeave function="AdventureJournal_Reward_OnLeave"/>
 									<OnMouseDown function="AdventureJournal_Reward_OnMouseDown"/>
 								</Scripts>
 							</Frame>
-							<Button name="$parentCycleButton" inherits="UIPanelCloseButton" parentKey="cycleButton">
+							<Button name="$parentPrevButton" parentKey="prevButton">
+								<Size x="32" y="32"/>
 								<Anchors>
-									<Anchor point="TOPRIGHT" x="-7" y="-6"/>
+									<Anchor point="BOTTOMLEFT" x="16" y="12"/>
 								</Anchors>
 								<Scripts>
 									<OnClick>
-										C_AdventureJournal.CycleEntry(self:GetParent().index);
+										C_AdventureJournal.SetPrimaryOffset(C_AdventureJournal.GetPrimaryOffset()-1);
 									</OnClick>
 								</Scripts>
+								<NormalTexture file="Interface\Buttons\UI-SpellbookIcon-PrevPage-Up"/>
+								<PushedTexture file="Interface\Buttons\UI-SpellbookIcon-PrevPage-Down"/>
+								<DisabledTexture file="Interface\Buttons\UI-SpellbookIcon-PrevPage-Disabled"/>
+								<HighlightTexture file="Interface\Buttons\UI-Common-MouseHilight" alphaMode="ADD"/>
+							</Button>
+							<Button name="$parentNextButton" parentKey="nextButton">
+								<Size x="32" y="32"/>
+								<Anchors>
+									<Anchor point="BOTTOMRIGHT" x="-16" y="12"/>
+								</Anchors>
+								<Scripts>
+									<OnClick>
+										C_AdventureJournal.SetPrimaryOffset(C_AdventureJournal.GetPrimaryOffset()+1);
+									</OnClick>
+								</Scripts>
+								<NormalTexture file="Interface\Buttons\UI-SpellbookIcon-NextPage-Up"/>
+								<PushedTexture file="Interface\Buttons\UI-SpellbookIcon-NextPage-Down"/>
+								<DisabledTexture file="Interface\Buttons\UI-SpellbookIcon-NextPage-Disabled"/>
+								<HighlightTexture file="Interface\Buttons\UI-Common-MouseHilight" alphaMode="ADD"/>
 							</Button>
 						</Frames>
 						<Scripts>

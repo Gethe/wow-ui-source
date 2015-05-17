@@ -401,3 +401,32 @@ function GameTooltip_HideResetCursor()
 	GameTooltip:Hide();
 	ResetCursor();
 end
+
+function EmbeddedItemTooltip_OnTooltipSetItem(self)
+	if (not self.itemTextureSet) then
+		local _, _, _, _, _, _, _, _, _, itemTexture = GetItemInfo(self.id);
+		if (itemTexture) then
+			self.Icon:SetTexture(itemTexture);
+		end
+	end
+end
+
+
+function EmbeddedItemTooltip_SetItemByID(self, id)
+	self.id = id;
+	local itemName, _, itemRarity, _, _, _, _, _, _, itemTexture = GetItemInfo(id);
+	self:Show();
+	self.Tooltip:SetOwner(self, "ANCHOR_NONE");
+	self.Tooltip:SetItemByID(id);
+	if (itemRarity and itemRarity > LE_ITEM_QUALITY_COMMON and BAG_ITEM_QUALITY_COLORS[itemRarity]) then
+		self.IconBorder:Show();
+		self.IconBorder:SetVertexColor(BAG_ITEM_QUALITY_COLORS[itemRarity].r, BAG_ITEM_QUALITY_COLORS[itemRarity].g, BAG_ITEM_QUALITY_COLORS[itemRarity].b);
+	else
+		self.IconBorder:Hide();
+	end
+	self.Count:Hide();
+	self.Icon:SetTexture(itemTexture);
+	self.itemTextureSet = (itemTexture ~= nil);
+	self.Tooltip:SetPoint("TOPLEFT", self.Icon, "TOPRIGHT", 0, 10);
+	self.Tooltip:Show();
+end

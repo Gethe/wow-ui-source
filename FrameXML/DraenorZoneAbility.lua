@@ -109,7 +109,7 @@ function DraenorZoneAbilityFrame_Update(self)
 	local start, duration, enable = GetSpellCooldown(name);
 	
 	if (usesCharges and charges < maxCharges) then
-		StartChargeCooldown(self.SpellButton.cooldown, chargeStart, chargeDuration, enable);
+		StartChargeCooldown(self.SpellButton.Cooldown, chargeStart, chargeDuration, enable);
 	end
 	if (start) then
 		CooldownFrame_SetTimer(self.SpellButton.Cooldown, start, duration, enable);

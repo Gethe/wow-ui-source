@@ -11,13 +11,15 @@
 			<Layer level="OVERLAY" textureSubLevel="2">
 				<Texture parentKey="InProgressIcon" atlas="ShipMissionIcon-Combat-MapBadge" useAtlasSize="true" hidden="true">
 					<Anchors>
-						<Anchor point="BOTTOMLEFT" x="10" y="10"/>
+						<Anchor point="TOPLEFT" x="11" y="-65"/>
 					</Anchors>
 				</Texture>
 				<Texture parentKey="FogHighlight" atlas="BoatMissionIcon-Combat-Map" useAtlasSize="true" alpha="0.3" alphaMode="ADD" hidden="true">
 					<Anchors>
 						<Anchor point="CENTER"/>
 					</Anchors>
+				</Texture>
+				<Texture parentKey="BonusAreaEffect" hidden="true">
 				</Texture>
 			</Layer>
 			
@@ -28,6 +30,19 @@
 						<Anchor point="CENTER" x="0" y="-14"/>
 					</Anchors>
 				</Texture>
+			</Layer>
+			
+			<Layer level="ARTWORK" textureSubLevel="1">
+				<Texture parentKey="TimerBG" atlas="ShipMission-TimerBG" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="LEFT" relativeKey="$parent.InProgressIcon" relativePoint="CENTER" x="10" y="0"/>
+					</Anchors>
+				</Texture>
+				<FontString parentKey="TimerText" inherits="GameFontHighlightSmall">
+					<Anchors>
+						<Anchor point="LEFT" relativeKey="$parent.TimerBG" x="8" y="0"/>
+					</Anchors>
+				</FontString>
 			</Layer>
 			
 			<!-- Textures for SiegeBreakerHighlightAnim -->
@@ -86,25 +101,38 @@
 					<Color r="0.4156862745098" g="0.69019607843137" b="1"/>
 				</Texture>
 			</Layer>
+			
+			<!-- Textures for BonusMissionPulse -->
 			<Layer level="OVERLAY">
-				<Texture parentKey="BlueFlare1" hidden="false" alpha="0.01" alphaMode="ADD" atlas="GarrisonFX_BlueFlare" useAtlasSize="true">
+				<Texture parentKey="StarBurst" hidden="false" alpha="0.01" alphaMode="ADD" atlas="GarrisonFX-StarBurst" useAtlasSize="true">
 					<Anchors>
-						<Anchor point="CENTER" x="0" y="-6"/>
+						<Anchor point="CENTER" relativeKey="$parent.None"/>
 					</Anchors>
 				</Texture>
-				<Texture parentKey="BlueFlare2" hidden="false" alpha="0.01" alphaMode="ADD" atlas="GarrisonFX_BlueFlare" useAtlasSize="true">
+				<Texture parentKey="Circle" hidden="false" alpha="0.01" alphaMode="ADD" atlas="NavalMap-SmallBonusCircle" useAtlasSize="true">
 					<Anchors>
-						<Anchor point="CENTER" x="0" y="6"/>
+						<Anchor point="CENTER" relativeKey="$parent.None"/>
 					</Anchors>
 				</Texture>
 			</Layer>
 			
+			<!-- Textures for BonusMissionAnim -->
+			<Layer level="ARTWORK">
+				<Texture parentKey="Glow" hidden="false" alpha="0.01" alphaMode="ADD" atlas="BonusChest-CircleGlow">
+					<Size x="80" y="80"/>
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent.None"/>
+					</Anchors>
+					<Color r="1" g="0.95294117647059" b="0.56470588235294"/>
+				</Texture>
+			</Layer>
 		</Layers>
 		<Animations>
 			<AnimationGroup parentKey="InProgressBoatPulseAnim" setToFinalAlpha="true" looping="REPEAT">
 				<Alpha childKey="GlowRing" duration="0.25" order="1" fromAlpha="0" toAlpha="1"/>
-				<Scale childKey="GlowRing" duration="1" order="1" fromScaleX="0.15" fromScaleY="0.05" toScaleX="1.15" toScaleY="0.75"/>
+				<Scale order="1" duration="1" childKey="GlowRing" toScaleY="0.75" toScaleX="1.15" fromScaleY="0.05" fromScaleX="0.15" smoothing="OUT"/>
 				<Alpha childKey="GlowRing" startDelay="0.5" duration="0.75" order="1" fromAlpha="1" toAlpha="0"/>
+				<Alpha childKey="GlowRing" startDelay="1.25" duration="1.25" order="1" fromAlpha="0" toAlpha="0"/>
 			</AnimationGroup>
 			<AnimationGroup parentKey="SiegeBreakerHighlightAnim" setToFinalAlpha="true" looping="REPEAT">
 				<Alpha childKey="YellowSpikeGlow" duration="0.25" order="1" fromAlpha="0" toAlpha="1"/>
@@ -136,16 +164,22 @@
 				<Alpha childKey="YellowGlow" startDelay="0.5" smoothing="OUT" duration="1" order="1" fromAlpha="1" toAlpha="0"/>
 			</AnimationGroup>
 			<AnimationGroup parentKey="RareMissionAnim" setToFinalAlpha="true" looping="REPEAT">
-				<Alpha childKey="BlueFlare1" smoothing="NONE" duration="0.4" order="1" fromAlpha="0" toAlpha="1"/>
-				<Scale childKey="BlueFlare1" smoothing="NONE" duration="0.4" order="1" fromScaleX="0.5" fromScaleY="0.5" toScaleX="0.75" toScaleY="0.75"/>
-				<Alpha childKey="BlueFlare1" startDelay="0.4" smoothing="NONE" duration="0.4" order="1" fromAlpha="1" toAlpha="0"/>
-				<Alpha childKey="BlueFlare2" startDelay="0.4" smoothing="NONE" duration="0.4" order="1" fromAlpha="0" toAlpha="1"/>
-				<Scale childKey="BlueFlare2" startDelay="0.4" smoothing="NONE" duration="0.4" order="1" fromScaleX="0.5" fromScaleY="0.5" toScaleX="0.75" toScaleY="0.75"/>
-				<Alpha childKey="BlueFlare2" startDelay="0.8" smoothing="NONE" duration="0.4" order="1" fromAlpha="1" toAlpha="0"/>
 				<Alpha childKey="BgGlow" duration="1" order="1" fromAlpha="0.5" toAlpha="1"/>
 				<Alpha childKey="BgGlow" startDelay="1" duration="0.7" order="1" fromAlpha="1" toAlpha="0.5"/>
 				<Scale childKey="BgGlow" duration="1" order="1" fromScaleX="1" fromScaleY="1" toScaleX="1.25" toScaleY="1.25"/>
 				<Scale childKey="BgGlow" startDelay="1" duration="0.4" order="1" fromScaleX="1" fromScaleY="1" toScaleX="0.8" toScaleY="0.8"/>
+			</AnimationGroup>
+			<AnimationGroup parentKey="BonusMissionPulse" setToFinalAlpha="true" looping="REPEAT">
+				<Alpha childKey="StarBurst" duration="0.5" order="1" fromAlpha="0" toAlpha="1"/>
+				<Scale childKey="StarBurst" duration="0.75" order="1" fromScaleX="0.5" fromScaleY="0.5" toScaleX="0.75" toScaleY="0.75"/>
+				<Alpha childKey="StarBurst" startDelay="0.75" duration="1" order="1" fromAlpha="1" toAlpha="0"/>
+				<Alpha childKey="Circle" startDelay="0.5" duration="0.5" order="1" fromAlpha="0" toAlpha="0.5"/>
+				<Scale childKey="Circle" startDelay="0.5" duration="2.25" order="1" fromScaleX="0.4" fromScaleY="0.4" toScaleX="0.4" toScaleY="0.4"/>
+				<Alpha childKey="Circle" startDelay="1.25" duration="1" order="1" fromAlpha="0.5" toAlpha="0"/>
+			</AnimationGroup>
+			<AnimationGroup parentKey="BonusMissionAnim" setToFinalAlpha="true" looping="REPEAT">
+				<Alpha childKey="Glow" duration="1" order="1" fromAlpha="0" toAlpha="0.75"/>
+				<Alpha childKey="Glow" startDelay="1" duration="1.5" order="1" fromAlpha="0.75" toAlpha="0"/>
 			</AnimationGroup>
 		</Animations>
 		<Scripts>
@@ -154,6 +188,126 @@
 			<OnLeave function="GarrisonShipyardMapMission_OnLeave"/>
 		</Scripts>
 	</Button>
+	
+	<Frame name="GarrisonShipyardBonusAreaFrameTemplate" virtual="true" hidden="true">
+		<Size x="132" y="132"/>
+		<NormalTexture parentKey="Icon" atlas="BoatMissionIcon-Combat-Map" useAtlasSize="true"/>
+		<HighlightTexture parentKey="HighlightIcon" atlas="BoatMissionIcon-Combat-Map" useAtlasSize="true" alpha="0.3" alphaMode="ADD"/>
+		<Layers>
+			<Layer level="OVERLAY" textureSubLevel="0">
+				<Texture parentKey="CircleTexture" alpha="1" alphaMode="BLEND" atlas="NavalMap-SmallBonusCircle" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+				<!-- Textures for BonusMissionAnim -->
+				<Texture parentKey="CircleGlowTrails" alpha="1" alphaMode="ADD" atlas="NavalMap-CircleGlowTrails" useAtlasSize="true" hidden="true">
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+				<!-- Textures for BonusAreaAddedAnim -->
+				<Texture parentKey="CirclePulse" alpha="0.01" alphaMode="ADD" atlas="NavalMap-SmallBonusCircle" useAtlasSize="true" hidden="true">
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Animations>
+			<AnimationGroup parentKey="BonusMissionAnim" setToFinalAlpha="true" looping="REPEAT">
+				<Rotation childKey="CircleGlowTrails" duration="10" order="1" degrees="-360"/>
+			</AnimationGroup>
+			<AnimationGroup parentKey="BonusAreaAddedAnim" setToFinalAlpha="true">
+				<Alpha childKey="CircleTexture" duration="0.25" order="1" fromAlpha="0" toAlpha="0.5"/>
+				<Alpha childKey="CirclePulse" duration="0.25" order="1" fromAlpha="0" toAlpha="1"/>
+				<Scale childKey="CirclePulse" duration="0.75" order="1" fromScaleX="1.05" fromScaleY="1.05" toScaleX="0.9" toScaleY="0.9"/>
+				<Rotation childKey="CirclePulse" duration="0.75" order="1" degrees="-20"/>
+				<Alpha childKey="CirclePulse" startDelay="0.25" duration="0.5" order="1" fromAlpha="1" toAlpha="0"/>
+			</AnimationGroup>
+		</Animations>
+	</Frame>
+	
+	<Frame name="GarrisonBonusEffectFrameTemplate" virtual="true">
+		<Size x="230" y="1"/>
+		<Layers>
+			<Layer level="OVERLAY">
+				<Texture parentKey="Icon">
+					<Size x="24" y="24"/>
+					<Anchors>
+						<Anchor point="TOPLEFT"/>
+					</Anchors>
+				</Texture>
+				<FontString parentKey="Name" inherits="GameFontNormal" justifyH="LEFT" wordwrap="true">
+					<Size x="198" y="0"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.Icon" relativePoint="TOPRIGHT" x="8" y="-5"/>
+					</Anchors>
+				</FontString>
+				<FontString parentKey="Description" inherits="GameFontHighlight" justifyH="LEFT" wordwrap="true">
+					<Size x="198" y="0"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.Name" relativePoint="BOTTOMLEFT" x="0" y="-3"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<KeyValues>
+			<KeyValue key="yspacing" value="8" type="number"/>
+		</KeyValues>
+	</Frame>
+	
+	<Frame name="GarrisonBonusAreaTooltipFrameTemplate" virtual="true">
+		<Size x="250" y="1"/>
+		<Layers>
+			<Layer level="OVERLAY">
+				<FontString parentKey="Title" inherits="GameFontNormalMed2" justifyH="LEFT" wordwrap="true" text="GARRISON_BONUS_AREA_TITLE">
+					<Size x="230" y="0"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" x="10" y="-10"/>
+					</Anchors>
+				</FontString>
+				<FontString parentKey="TimeLeft" inherits="GameFontHighlight" justifyH="LEFT" wordwrap="true">
+					<Size x="230" y="0"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.Title" relativePoint="BOTTOMLEFT" x="0" y="-5"/>
+					</Anchors>
+				</FontString>
+			</Layer>	
+		</Layers>
+		<Frames>
+			<Frame parentKey="BonusEffectFrame" inherits="GarrisonBonusEffectFrameTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.TimeLeft" relativePoint="BOTTOMLEFT" x="0" y="-8"/>
+				</Anchors>
+			</Frame>
+		</Frames>
+		<KeyValues>
+			<KeyValue key="yspacing" value="33" type="number"/>
+		</KeyValues>
+	</Frame>
+	
+	<Frame name="GarrisonBonusAreaTooltip" parent="UIParent" frameStrata="TOOLTIP" clampedToScreen="true" hidden="true">
+		<Size x="250" y="1"/>
+		<Backdrop bgFile="Interface\Tooltips\UI-Tooltip-Background" edgeFile="Interface\Tooltips\UI-Tooltip-Border" tile="true">
+			<EdgeSize val="16"/>
+			<TileSize val="16"/>
+			<BackgroundInsets left="5" right="5" top="5" bottom="5"/>
+		</Backdrop>
+		<Frames>
+			<Frame parentKey="BonusArea" parentArray="BonusAreas" inherits="GarrisonBonusAreaTooltipFrameTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT"/>
+				</Anchors>
+			</Frame>
+		</Frames>
+		<Scripts>
+			<OnLoad>
+				self:SetBackdropBorderColor(TOOLTIP_DEFAULT_COLOR.r, TOOLTIP_DEFAULT_COLOR.g, TOOLTIP_DEFAULT_COLOR.b);
+				self:SetBackdropColor(TOOLTIP_DEFAULT_BACKGROUND_COLOR.r, TOOLTIP_DEFAULT_BACKGROUND_COLOR.g, TOOLTIP_DEFAULT_BACKGROUND_COLOR.b);
+			</OnLoad>
+		</Scripts>
+	</Frame>
 	
 	<Frame name="GarrisonShipyardMapMissionTooltip" parent="UIParent" frameStrata="TOOLTIP" clampedToScreen="true" hidden="true">
 		<Size x="250" y="256"/>
@@ -168,102 +322,151 @@
 		<Layers>
 			<Layer level="OVERLAY">
 				<FontString parentKey="Name" parentArray="Lines" inherits="GameFontNormalMed2" justifyH="LEFT" wordwrap="true">
-					<Size x="230" y="0"/>
 					<Anchors>
 						<Anchor point="TOPLEFT" x="10" y="-10"/>
 					</Anchors>
+					<KeyValues>
+						<KeyValue key="yspacing" value="10" type="number"/>
+					</KeyValues>
 				</FontString>
-				<FontString parentKey="Description" parentArray="Lines" inherits="GameFontHighlight" justifyH="LEFT" wordwrap="true">
-					<Size x="230" y="0"/>
+				<FontString parentKey="RareMission" parentArray="Lines" inherits="GameFontNormalMed2" justifyH="LEFT" wordwrap="true" text="GARRISON_SHIPYARD_MISSION_RARE">
 					<Anchors>
 						<Anchor point="TOPLEFT" relativeKey="$parent.Name" relativePoint="BOTTOMLEFT" x="0" y="-3"/>
 					</Anchors>
+					<KeyValues>
+						<KeyValue key="yspacing" value="3" type="number"/>
+					</KeyValues>
+					<Color r="0.098" g="0.537" b="0.969" a="1"/>
+				</FontString>
+				<FontString parentKey="Description" parentArray="Lines" inherits="GameFontHighlight" justifyH="LEFT" wordwrap="true">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.RareMission" relativePoint="BOTTOMLEFT" x="0" y="-3"/>
+					</Anchors>
+					<KeyValues>
+						<KeyValue key="yspacing" value="3" type="number"/>
+					</KeyValues>
 				</FontString>
 				<FontString parentKey="NumFollowers" parentArray="Lines" inherits="GameFontHighlight" justifyH="LEFT" wordwrap="true">
-					<Size x="230" y="0"/>
 					<Anchors>
 						<Anchor point="TOPLEFT" relativeKey="$parent.Description" relativePoint="BOTTOMLEFT" x="0" y="-12"/>
 					</Anchors>
+					<KeyValues>
+						<KeyValue key="yspacing" value="12" type="number"/>
+					</KeyValues>
 				</FontString>
 				<FontString parentKey="MissionDuration" parentArray="Lines" inherits="GameFontHighlight" justifyH="LEFT" wordwrap="true">
-					<Size x="230" y="0"/>
 					<Anchors>
 						<Anchor point="TOPLEFT" relativeKey="$parent.NumFollowers" relativePoint="BOTTOMLEFT" x="0" y="-3"/>
 					</Anchors>
+					<KeyValues>
+						<KeyValue key="yspacing" value="3" type="number"/>
+					</KeyValues>
 				</FontString>
 				<FontString parentKey="MissionExpires" parentArray="Lines" inherits="GameFontNormal" justifyH="LEFT" wordwrap="true" text="GARRISON_MISSION_AVAILABILITY" hidden="true">
-					<Size x="230" y="0"/>
 					<Anchors>
 						<Anchor point="TOPLEFT" relativeKey="$parent.MissionDuration" relativePoint="BOTTOMLEFT" x="0" y="-12"/>
 					</Anchors>
+					<KeyValues>
+						<KeyValue key="yspacing" value="12" type="number"/>
+					</KeyValues>
 				</FontString>
 				<FontString parentKey="TimeRemaining" parentArray="Lines" inherits="GameFontHighlight" justifyH="LEFT" wordwrap="true" hidden="true">
-					<Size x="230" y="0"/>
 					<Anchors>
 						<Anchor point="TOPLEFT" relativeKey="$parent.MissionExpires" relativePoint="BOTTOMLEFT" x="0" y="-3"/>
 					</Anchors>
+					<KeyValues>
+						<KeyValue key="yspacing" value="3" type="number"/>
+					</KeyValues>
 				</FontString>
 				<FontString parentKey="RewardString" parentArray="Lines" inherits="GameFontNormal" justifyH="LEFT" wordwrap="true" text="GARRISON_SHIPYARD_MISSION_REWARD">
-					<Size x="230" y="0"/>
 					<Anchors>
 						<Anchor point="TOPLEFT" relativeKey="$parent.MissionDuration" relativePoint="BOTTOMLEFT" x="0" y="-12"/>
 					</Anchors>
+					<KeyValues>
+						<KeyValue key="yspacing" value="12" type="number"/>
+					</KeyValues>
 				</FontString>
 				<FontString parentKey="Reward" parentArray="Lines" inherits="GameFontHighlight" justifyH="LEFT" wordwrap="true">
-					<Size x="230" y="0"/>
 					<Anchors>
 						<Anchor point="TOPLEFT" relativeKey="$parent.RewardString" relativePoint="BOTTOMLEFT" x="0" y="-3"/>
 					</Anchors>
+					<KeyValues>
+						<KeyValue key="yspacing" value="3" type="number"/>
+					</KeyValues>
 				</FontString>
-				
-				<FontString parentKey="InProgress" parentArray="Lines" inherits="GameFontHighlight" justifyH="LEFT" wordwrap="true" text="GARRISON_SHIPYARD_MSSION_INPROGRESS_TOOLTIP">
-					<Size x="230" y="0"/>
-					<Anchors>
-						<Anchor point="TOPLEFT" relativeKey="$parent.Name" relativePoint="BOTTOMLEFT" x="0" y="-3"/>
-					</Anchors>
-				</FontString>
-				<FontString parentKey="InProgressTimeLeft" parentArray="Lines" inherits="GameFontHighlight" justifyH="LEFT" wordwrap="true">
-					<Size x="230" y="0"/>
-					<Anchors>
-						<Anchor point="TOPLEFT" relativeKey="$parent.InProgress" relativePoint="BOTTOMLEFT" x="0" y="-3"/>
-					</Anchors>
-				</FontString>
-				<FontString parentKey="SuccessChance" parentArray="Lines" inherits="GameFontHighlight" justifyH="LEFT" wordwrap="true">
-					<Size x="230" y="0"/>
-					<Anchors>
-						<Anchor point="TOPLEFT" relativeKey="$parent.InProgressTimeLeft" relativePoint="BOTTOMLEFT" x="0" y="-3"/>
-					</Anchors>
-				</FontString>
-				<FontString parentKey="ShipsString" parentArray="Lines" inherits="GameFontNormal" justifyH="LEFT" wordwrap="true" text="GARRISON_SHIPYARD_FOLLOWERS">
-					<Size x="230" y="0"/>
-					<Anchors>
-						<Anchor point="TOPLEFT" relativeKey="$parent.SuccessChance" relativePoint="BOTTOMLEFT" x="0" y="-3"/>
-					</Anchors>
-				</FontString>
-				<FontString parentKey="Ship1" parentArray="Ships" inherits="GameFontHighlight" justifyH="LEFT" wordwrap="true">
-					<Size x="230" y="0"/>
-					<Anchors>
-						<Anchor point="TOPLEFT" relativeKey="$parent.ShipsString" relativePoint="BOTTOMLEFT" x="0" y="-3"/>
-					</Anchors>
-				</FontString>
-				<FontString parentKey="Ship2" parentArray="Ships" inherits="GameFontHighlight" justifyH="LEFT" wordwrap="true">
-					<Size x="230" y="0"/>
-					<Anchors>
-						<Anchor point="TOPLEFT" relativeKey="$parent.Ship1" relativePoint="BOTTOMLEFT" x="0" y="-3"/>
-					</Anchors>
-				</FontString>
-				<FontString parentKey="Ship3" parentArray="Ships" inherits="GameFontHighlight" justifyH="LEFT" wordwrap="true">
-					<Size x="230" y="0"/>
-					<Anchors>
-						<Anchor point="TOPLEFT" relativeKey="$parent.Ship2" relativePoint="BOTTOMLEFT" x="0" y="-3"/>
-					</Anchors>
-				</FontString>
-				
-				<FontString parentKey="ReturnToGarrison" parentArray="Lines" inherits="GameFontNormal" justifyH="LEFT" wordwrap="true" text="GARRISON_MISSION_TOOLTIP_RETURN_TO_START">
-					<Size x="230" y="0"/>
+				<FontString parentKey="BonusTitle" parentArray="Lines" inherits="GameFontNormal" justifyH="LEFT" wordwrap="true" text="GARRISON_ACTIVE_BONUSES">
 					<Anchors>
 						<Anchor point="TOPLEFT" relativeKey="$parent.Reward" relativePoint="BOTTOMLEFT" x="0" y="-12"/>
 					</Anchors>
+					<KeyValues>
+						<KeyValue key="yspacing" value="12" type="number"/>
+					</KeyValues>
+				</FontString>
+				<FontString parentKey="SiegebreakerWarning" parentArray="Lines" inherits="GameFontNormalLeftRed" justifyH="LEFT" wordwrap="true" text="GARRISON_SHIPYARD_MISSION_COMPLETE_SIEGEBREAKER_TOOLTIP">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.Reward" relativePoint="BOTTOMLEFT" x="0" y="-8" hidden="true"/>
+					</Anchors>
+					<KeyValues>
+						<KeyValue key="yspacing" value="8" type="number"/>
+					</KeyValues>
+				</FontString>
+
+
+				<FontString parentKey="InProgress" parentArray="Lines" inherits="GameFontHighlight" justifyH="LEFT" wordwrap="true" text="GARRISON_SHIPYARD_MSSION_INPROGRESS_TOOLTIP">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.Name" relativePoint="BOTTOMLEFT" x="0" y="-3"/>
+					</Anchors>
+					<KeyValues>
+						<KeyValue key="yspacing" value="3" type="number"/>
+					</KeyValues>
+				</FontString>
+				<FontString parentKey="InProgressTimeLeft" parentArray="Lines" inherits="GameFontHighlight" justifyH="LEFT" wordwrap="true">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.InProgress" relativePoint="BOTTOMLEFT" x="0" y="-3"/>
+					</Anchors>
+					<KeyValues>
+						<KeyValue key="yspacing" value="3" type="number"/>
+					</KeyValues>
+				</FontString>
+				<FontString parentKey="SuccessChance" parentArray="Lines" inherits="GameFontHighlight" justifyH="LEFT" wordwrap="true">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.InProgressTimeLeft" relativePoint="BOTTOMLEFT" x="0" y="-3"/>
+					</Anchors>
+					<KeyValues>
+						<KeyValue key="yspacing" value="3" type="number"/>
+					</KeyValues>
+				</FontString>
+				<FontString parentKey="ShipsString" parentArray="Lines" inherits="GameFontNormal" justifyH="LEFT" wordwrap="true" text="GARRISON_SHIPYARD_FOLLOWERS">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.SuccessChance" relativePoint="BOTTOMLEFT" x="0" y="-3"/>
+					</Anchors>
+					<KeyValues>
+						<KeyValue key="yspacing" value="3" type="number"/>
+					</KeyValues>
+				</FontString>
+				<FontString parentKey="Ship1" parentArray="Ships" inherits="GameFontHighlight" justifyH="LEFT" wordwrap="true">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.ShipsString" relativePoint="BOTTOMLEFT" x="0" y="-3"/>
+					</Anchors>
+					<KeyValues>
+						<KeyValue key="yspacing" value="3" type="number"/>
+					</KeyValues>
+				</FontString>
+				<FontString parentKey="Ship2" parentArray="Ships" inherits="GameFontHighlight" justifyH="LEFT" wordwrap="true">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.Ship1" relativePoint="BOTTOMLEFT" x="0" y="-3"/>
+					</Anchors>
+					<KeyValues>
+						<KeyValue key="yspacing" value="3" type="number"/>
+					</KeyValues>
+				</FontString>
+				<FontString parentKey="Ship3" parentArray="Ships" inherits="GameFontHighlight" justifyH="LEFT" wordwrap="true">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.Ship2" relativePoint="BOTTOMLEFT" x="0" y="-3"/>
+					</Anchors>
+					<KeyValues>
+						<KeyValue key="yspacing" value="3" type="number"/>
+					</KeyValues>
 				</FontString>
 			</Layer>
 		</Layers>
@@ -273,6 +476,30 @@
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeKey="$parent.RewardString" relativePoint="BOTTOMLEFT" x="6" y="-8"/>
 				</Anchors>
+				<KeyValues>
+					<KeyValue key="yspacing" value="8" type="number"/>
+				</KeyValues>
+				<Scripts>
+					<OnSizeChanged inherit="prepend">
+						GarrisonShipyardMapMission_UpdateTooltipSize(self:GetParent());
+					</OnSizeChanged>
+				</Scripts>
+			</Frame>
+			<Frame parentKey="BonusEffect" parentArray="BonusEffects" inherits="GarrisonBonusEffectFrameTemplate" hidden="true">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.BonusTitle" relativePoint="BOTTOMLEFT" x="0" y="-8"/>
+				</Anchors>
+				<KeyValues>
+					<KeyValue key="yspacing" value="8" type="number"/>
+				</KeyValues>
+			</Frame>
+			<Frame parentKey="BonusReward" inherits="GarrisonBonusEffectFrameTemplate" hidden="true">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.RewardString" relativePoint="BOTTOMLEFT" x="0" y="-8"/>
+				</Anchors>
+				<KeyValues>
+					<KeyValue key="yspacing" value="8" type="number"/>
+				</KeyValues>
 			</Frame>
 		</Frames>
 		<Scripts>
@@ -644,7 +871,7 @@
 			</Frame>
 			<Frame parentKey="LevelUpFrame" hidden="true" inherits="GarrisonFollowerLevelUpTemplate">
 				<Anchors>
-					<Anchor point="BOTTOM" x="16" y="-23"/>
+					<Anchor point="BOTTOM" x="0" y="-23"/>
 				</Anchors>
 			</Frame>
 			<CinematicModel parentKey="BoatDeathAnimations" facingLeft="true" inherits="GarrisonCinematicModelBaseTemplate">
@@ -941,7 +1168,7 @@
 		</HighlightTexture>
 		<Scripts>
 			<OnLoad>
-				self:RegisterForClicks("LeftButtonUp");
+				self:RegisterForClicks("LeftButtonUp", "RightButtonUp");
 				self:RegisterForDrag("LeftButton");
 			</OnLoad>
 			<OnClick>
@@ -1181,7 +1408,7 @@
 		</Animations>
 		<Scripts>
 			<OnLoad>
-				self:SetFrameLevel(self:GetParent():GetFrameLevel() + 3);
+				self:SetFrameLevel(self:GetParent():GetFrameLevel() + 4);
 			</OnLoad>
 			<OnUpdate function="GarrisonShipyardMap_OnFogFrameUpdate"/>
 		</Scripts>
@@ -1354,7 +1581,7 @@
 				<FontString parentKey="BoatName" inherits="GameFontHighlightLarge2" justifyH="LEFT" text="Carrier">
 					<Size x="0" y="18"/>
 					<Anchors>
-						<Anchor point="LEFT" relativeKey="$parent.Portrait" relativePoint="RIGHT" x="6" y="15"/>
+						<Anchor point="LEFT" relativeKey="$parent.Portrait" relativePoint="RIGHT" x="-19" y="15"/>
 					</Anchors>
 				</FontString>
 				<FontString parentKey="BoatType" inherits="GameFontDisable" justifyH="LEFT" text="Transport">
@@ -1596,6 +1823,13 @@
 							<OnTextChanged function="GarrisonFollowListEditBox_OnTextChanged"/>
 						</Scripts>
 					</EditBox>
+					<Frame name="GarrisonShipyardFollowerOptionDropDown" inherits="UIDropDownMenuTemplate">
+						<Scripts>
+							<OnLoad>
+								UIDropDownMenu_Initialize(self, GarrisonShipOptionsMenu_Initialize, "MENU");
+							</OnLoad>
+						</Scripts>
+					</Frame>
 				</Frames>
 				<Scripts>
 					<OnShow>self:OnShow();</OnShow>

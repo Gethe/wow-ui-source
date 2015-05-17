@@ -914,6 +914,9 @@
 
 <Button name="LootWonAlertFrameTemplate" parent="UIParent" hidden="true" frameStrata="DIALOG" virtual="true" inherits="AlertFrameTemplate">
 	<Size x="276" y="96"/>
+	<KeyValues>
+		<KeyValue key="numArrows" value="5" type="number"/>
+	</KeyValues>
 	<Animations>
 		<AnimationGroup name="$parentAnimIn" parentKey="animIn">
 			<Alpha change="-1" duration="0" order="1"/>
@@ -927,6 +930,23 @@
 					</OnFinished>
 				</Scripts>
 			</Alpha>
+		</AnimationGroup>
+		<AnimationGroup parentKey="animArrows" setToFinalAlpha="true">
+			<Alpha childKey="Arrow1" startDelay="0" smoothing="IN" duration="0.2" order="1" fromAlpha="0" toAlpha="1"/>
+			<Alpha childKey="Arrow1" startDelay="0.3" smoothing="OUT" duration="0.2" order="1" fromAlpha="1" toAlpha="0"/>
+			<Translation childKey="Arrow1" startDelay="0" duration="0.5" order="1" offsetX="0" offsetY="60"/>
+			<Alpha childKey="Arrow2" startDelay="0.1" smoothing="IN" duration="0.2" order="1" fromAlpha="0" toAlpha="1"/>
+			<Alpha childKey="Arrow2" startDelay="0.4" smoothing="OUT" duration="0.2" order="1" fromAlpha="1" toAlpha="0"/>
+			<Translation childKey="Arrow2" startDelay="0.1" duration="0.5" order="1" offsetX="0" offsetY="60"/>
+			<Alpha childKey="Arrow3" startDelay="0.2" smoothing="IN" duration="0.2" order="1" fromAlpha="0" toAlpha="1"/>
+			<Alpha childKey="Arrow3" startDelay="0.5" smoothing="OUT" duration="0.2" order="1" fromAlpha="1" toAlpha="0"/>
+			<Translation childKey="Arrow3" startDelay="0.2" duration="0.5" order="1" offsetX="0" offsetY="60"/>
+			<Alpha childKey="Arrow4" startDelay="0.4" smoothing="IN" duration="0.2" order="1" fromAlpha="0" toAlpha="1"/>
+			<Alpha childKey="Arrow4" startDelay="0.7" smoothing="OUT" duration="0.2" order="1" fromAlpha="1" toAlpha="0"/>
+			<Translation childKey="Arrow4" startDelay="0.4" duration="0.5" order="1" offsetX="0" offsetY="60"/>
+			<Alpha childKey="Arrow5" startDelay="0.6" smoothing="IN" duration="0.2" order="1" fromAlpha="0" toAlpha="1"/>
+			<Alpha childKey="Arrow5" startDelay="0.9" smoothing="OUT" duration="0.2" order="1" fromAlpha="1" toAlpha="0"/>
+			<Translation childKey="Arrow5" startDelay="0.6" duration="0.5" order="1" offsetX="0" offsetY="60" endDelay="360000"/>
 		</AnimationGroup>
 	</Animations>
 	<Layers>
@@ -1001,6 +1021,31 @@
 			<Texture parentKey="SpecRing" file="Interface/Minimap/MiniMap-TrackingBorder">
 				<Anchors>
 					<Anchor point="TOPLEFT" x="0" y="0"/>
+				</Anchors>
+			</Texture>
+			<Texture parentKey="Arrow1" inherits="LootUpgradeFrame_ArrowTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.Background" x="39" y="-45"/>
+				</Anchors>
+			</Texture>
+			<Texture parentKey="Arrow2" inherits="LootUpgradeFrame_ArrowTemplate">
+				<Anchors>
+					<Anchor point="CENTER" relativeKey="$parent.Arrow1" x="16" y="0"/>
+				</Anchors>
+			</Texture>
+			<Texture parentKey="Arrow3" inherits="LootUpgradeFrame_ArrowTemplate">
+				<Anchors>
+					<Anchor point="CENTER" relativeKey="$parent.Arrow1" x="-16" y="0"/>
+				</Anchors>
+			</Texture>
+			<Texture parentKey="Arrow4" inherits="LootUpgradeFrame_ArrowTemplate">
+				<Anchors>
+					<Anchor point="CENTER" relativeKey="$parent.Arrow1" x="5" y="0"/>
+				</Anchors>
+			</Texture>
+			<Texture parentKey="Arrow5" inherits="LootUpgradeFrame_ArrowTemplate">
+				<Anchors>
+					<Anchor point="CENTER" relativeKey="$parent.Arrow1" x="-12" y="0"/>
 				</Anchors>
 			</Texture>
 		</Layer>
@@ -1791,7 +1836,7 @@
 			<Texture parentKey="DieIcon" file="Interface\Buttons\UI-GroupLoot-Dice-Up" hidden="true">
 				<Size x="22" y="22"/>
 				<Anchors>
-					<Anchor point="RIGHT" relativeKey="$parent.Title" relativePoint="LEFT" x="-4" y="0"/>
+					<!-- Anchors set in Lua -->
 				</Anchors>
 			</Texture>
 		</Layer>

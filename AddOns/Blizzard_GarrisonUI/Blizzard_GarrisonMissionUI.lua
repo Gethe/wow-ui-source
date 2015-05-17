@@ -207,7 +207,7 @@ function GarrisonFollowerMission:OnClickStartMissionButton()
 	if (not GarrisonMission.OnClickStartMissionButton(self)) then
 		return;
 	end
-
+	PlaySound("UI_Garrison_CommandTable_MissionStart");
 	if (not GetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_GARRISON_LANDING)) then
 		GarrisonLandingPageTutorialBox:Show();
 	end
@@ -218,6 +218,7 @@ function GarrisonFollowerMission:AssignFollowerToMission(frame, info)
 		return;
 	end
 
+	PlaySound("UI_Garrison_CommandTable_AssignFollower");
 	frame.Name:Show();
 	frame.Name:SetText(info.name);
 	if (frame.Class) then
@@ -1355,13 +1356,25 @@ function GarrisonFollowerMissionComplete:AnimFollowersIn(entry)
 	self:SetupEnding(numFollowers);
 	local stage = self.Stage;
 	if (stage.ModelLeft:IsShown()) then
-		stage.ModelLeft.FadeIn:Play();		-- no OnFinished
+		if ( self.skipAnimations ) then
+			stage.ModelLeft:SetAlpha(1);
+		else
+			stage.ModelLeft.FadeIn:Play();		-- no OnFinished
+		end
 	end
 	if (stage.ModelRight:IsShown()) then
-		stage.ModelRight.FadeIn:Play();		-- no OnFinished
+		if ( self.skipAnimations ) then
+			stage.ModelRight:SetAlpha(1);
+		else	
+			stage.ModelRight.FadeIn:Play();		-- no OnFinished
+		end
 	end
 	if (stage.ModelMiddle:IsShown()) then
-		stage.ModelMiddle.FadeIn:Play();	-- no OnFinished
+		if ( self.skipAnimations ) then
+			stage.ModelMiddle:SetAlpha(1);
+		else	
+			stage.ModelMiddle.FadeIn:Play();	-- no OnFinished
+		end
 	end
 	for i = 1, numFollowers do
 		local followerFrame = stage.FollowersFrame.Followers[i];
@@ -1369,16 +1382,29 @@ function GarrisonFollowerMissionComplete:AnimFollowersIn(entry)
 		followerFrame.LevelUpFrame:Hide();
 	end
 	stage.FollowersFrame.FadeIn:Stop();
-	stage.FollowersFrame.FadeIn:Play();
+	if ( self.skipAnimations ) then
+		stage.FollowersFrame:SetAlpha(1);
+	else
+		stage.FollowersFrame.FadeIn:Play();
+	end
 	-- preload next set
 	local nextIndex = self.currentIndex + 1;
 	if ( missionList[nextIndex] ) then
 		MissionCompletePreload_LoadMission(self:GetParent(), missionList[nextIndex].missionID);
 	end
+	
+	if ( entry ) then
+		if ( self.skipAnimations ) then
+			entry.duration = 0;
+		else
+			entry.duration = 0.5;
+		end
+	end
 end
 
 -- if duration is nil it will be set in the onStart function
 -- duration is irrelevant for the last entry
+-- WARNING: If you're going to alter this, make sure OnSkipKeyPressed still works
 local ANIMATION_CONTROL = {
 	[1] = { duration = nil,		onStartFunc = GarrisonFollowerMissionComplete.AnimLine },			-- line between encounters
 	[2] = { duration = nil,		onStartFunc = GarrisonMissionComplete.AnimCheckModels },			-- check that models are loaded
@@ -1387,9 +1413,12 @@ local ANIMATION_CONTROL = {
 	[5] = { duration = 0.45,	onStartFunc = GarrisonFollowerMissionComplete.AnimPortrait },		-- X over portrait
 	[6] = { duration = nil,		onStartFunc = GarrisonFollowerMissionComplete.AnimCheckEncounters },		-- evaluate whether to do next encounter or move on
 	[7] = { duration = 0.75,	onStartFunc = GarrisonMissionComplete.AnimRewards },				-- reward panel
-	[8] = { duration = 0,		onStartFunc = GarrisonMissionComplete.AnimLockBurst },				-- explode the lock if mission successful	
-	[9] = { duration = 0.5,		onStartFunc = GarrisonFollowerMissionComplete.AnimFollowersIn },			-- show all the mission followers
-	[10] = { duration = 0,		onStartFunc = GarrisonMissionComplete.AnimXP },						-- follower xp
+	[8] = { duration = 0,		onStartFunc = GarrisonMissionComplete.AnimLockBurst },				-- explode the lock if mission successful		
+	[9] = { duration = 0,		onStartFunc = GarrisonMissionComplete.AnimCleanUp },				-- clean up any model anims
+	[10] = { duration = nil,	onStartFunc = GarrisonFollowerMissionComplete.AnimFollowersIn },	-- show all the mission followers
+	[11] = { duration = 0,		onStartFunc = GarrisonMissionComplete.AnimXP },						-- follower xp
+	[12] = { duration = nil,	onStartFunc = GarrisonMissionComplete.AnimSkipWait },				-- wait if we're in skip mode
+	[13] = { duration = 0,		onStartFunc = GarrisonMissionComplete.AnimSkipNext },				-- click Next button if we're in skip mode
 };
 
 function GarrisonFollowerMissionComplete:SetAnimationControl()

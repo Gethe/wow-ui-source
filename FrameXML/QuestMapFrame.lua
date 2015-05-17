@@ -1066,9 +1066,6 @@ function GetZoneStoryID()
 	{
 		-- Frostfire Ridge
 		["941-Horde"] = {8671, 941},
-		-- Tanaan Jungle
-		["945-Alliance"] = {8921, 945},
-		["945-Horde"] = {8922, 945},
 		-- Talador
 		["946-Alliance"] = {8920, 946},
 		["946-Horde"] = {8919, 946},

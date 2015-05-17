@@ -411,7 +411,7 @@ function PaperDollFrame_OnEvent (self, event, ...)
 	local unit = ...;
 	if ( event == "PLAYER_ENTERING_WORLD" or
 		event == "UNIT_MODEL_CHANGED" and unit == "player" ) then
-		CharacterModelFrame:SetUnit("player");
+		CharacterModelFrame:SetUnit("player", false);
 		return;
 	elseif ( event == "KNOWN_TITLES_UPDATE" or (event == "UNIT_NAME_UPDATE" and unit == "player")) then
 		if (PaperDollTitlesPane:IsShown()) then

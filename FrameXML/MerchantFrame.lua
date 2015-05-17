@@ -505,7 +505,11 @@ function MerchantFrame_ConfirmExtendedItemCost(itemButton, numToPurchase)
 	local index = itemButton:GetID();
 	local itemsString;
 	if ( GetMerchantItemCostInfo(index) == 0 and not itemButton.showNonrefundablePrompt) then
-		BuyMerchantItem( itemButton:GetID(), numToPurchase );
+		if ( itemButton.price and itemButton.price >= MERCHANT_HIGH_PRICE_COST ) then
+			MerchantFrame_ConfirmHighCostItem(itemButton);
+		else
+			BuyMerchantItem( itemButton:GetID(), numToPurchase );
+		end
 		return;
 	end
 	

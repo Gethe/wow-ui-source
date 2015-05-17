@@ -2367,8 +2367,15 @@ SlashCmdList["SPECTATOR_WARGAME"] = function(msg)
 	if (not target1 or not target2 or not size) then
 		return;
 	end
+
 	local presenceID1 = BNet_GetPresenceID(target1);
+	if not presenceID1 then
+		ConsolePrint("Failed to find StartSpectatorWarGame target1:", target1);
+	end
 	local presenceID2 = BNet_GetPresenceID(target2);
+	if not presenceID2 then
+		ConsolePrint("Failed to find StartSpectatorWarGame target2:", target2);
+	end
 	if (area == "" or area == "nil" or area == "0") then area = nil end 
 	StartSpectatorWarGame(presenceID1 or target1, presenceID2 or target2, size, area, ValueToBoolean(isTournamentMode));
 end
@@ -3054,7 +3061,14 @@ function ChatFrame_MessageEventHandler(self, event, ...)
 			end
 			self:AddMessage(format(arg1, "|Hplayer:"..arg2.."|h".."["..coloredName.."]".."|h"), info.r, info.g, info.b, info.id);
 		elseif ( strsub(type,1,18) == "GUILD_ACHIEVEMENT" ) then
-			self:AddMessage(format(arg1, "|Hplayer:"..arg2.."|h".."["..coloredName.."]".."|h"), info.r, info.g, info.b, info.id);
+			local message = format(arg1, "|Hplayer:"..arg2.."|h".."["..coloredName.."]".."|h");
+			if (C_Social.IsSocialEnabled()) then
+				local achieveID = GetAchievementInfoFromHyperlink(arg1);
+				if (achieveID) then
+					message = message .. " " .. Social_GetShareAchievementLink(achieveID, true);
+				end
+			end
+			self:AddMessage(message, info.r, info.g, info.b, info.id);
 		elseif ( type == "IGNORED" ) then
 			self:AddMessage(format(CHAT_IGNORED, arg2), info.r, info.g, info.b, info.id);
 		elseif ( type == "FILTERED" ) then

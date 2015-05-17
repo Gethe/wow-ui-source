@@ -7,6 +7,16 @@ ACHIEVEMENT_ID_INDEX = 1;
 OLD_ACHIEVEMENT_INDEX = 2;
 MAX_QUEUED_ACHIEVEMENT_TOASTS = 6;
 
+-- [[ LootWonAlertFrameTemplate ]] --
+LOOTWONALERTFRAME_VALUES={
+	Default = { bgOffsetX=0, bgOffsetY=0, labelOffsetX=7, labelOffsetY=5, labelText=YOU_WON_LABEL, glowAtlas="loottoast-glow"},
+	Upgraded = { bgOffsetX=0, bgOffsetY=0, labelOffsetX=7, labelOffsetY=5, labelText=ITEM_UPGRADED_LABEL, glowAtlas="loottoast-glow"},
+	LessAwesome = { bgOffsetX=0, bgOffsetY=0, labelOffsetX=7, labelOffsetY=5, labelText=YOU_WON_LABEL, bgAtlas="LootToast-LessAwesome"},
+	GarrisonCache = { bgOffsetX=-4, bgOffsetY=0, labelOffsetX=7, labelOffsetY=1, labelText=GARRISON_CACHE, glowAtlas="CacheToast-Glow", bgAtlas="CacheToast", noIconBorder=true, iconUnderBG=true},
+	Horde = { bgOffsetX=-1, bgOffsetY=-1, labelOffsetX=7, labelOffsetY=3, labelText=YOU_EARNED_LABEL, pvpAtlas="loottoast-bg-horde", glowAtlas="loottoast-glow"},
+	Alliance = { bgOffsetX=-1, bgOffsetY=-1, labelOffsetX=7, labelOffsetY=3, labelText=YOU_EARNED_LABEL, pvpAtlas="loottoast-bg-alliance", glowAtlas="loottoast-glow"},
+}
+
 function AlertFrame_OnLoad (self)
 	self:RegisterEvent("ACHIEVEMENT_EARNED");
 	self:RegisterEvent("CRITERIA_EARNED");
@@ -53,12 +63,12 @@ function AlertFrame_OnEvent (self, event, ...)
 	elseif ( event == "CHALLENGE_MODE_COMPLETED" ) then
 		ChallengeModeAlertFrame_ShowAlert();
 	elseif ( event == "LOOT_ITEM_ROLL_WON" ) then
-		local itemLink, quantity, rollType, roll = ...;
-		LootWonAlertFrame_ShowAlert(itemLink, quantity, rollType, roll);
+		local itemLink, quantity, rollType, roll, isUpgraded = ...;
+		LootWonAlertFrame_ShowAlert(itemLink, quantity, rollType, roll, nil, nil, nil, nil, nil, isUpgraded);
 	elseif ( event == "SHOW_LOOT_TOAST" ) then
-		local typeIdentifier, itemLink, quantity, specID, sex, isPersonal, lootSource, lessAwesome = ...;
+		local typeIdentifier, itemLink, quantity, specID, sex, isPersonal, lootSource, lessAwesome, isUpgraded = ...;
 		if ( typeIdentifier == "item" ) then
-			LootWonAlertFrame_ShowAlert(itemLink, quantity, nil, nil, specID, nil, nil, nil, lessAwesome);
+			LootWonAlertFrame_ShowAlert(itemLink, quantity, nil, nil, specID, nil, nil, nil, lessAwesome, isUpgraded);
 		elseif ( typeIdentifier == "money" ) then
 			MoneyWonAlertFrame_ShowAlert(quantity);
 		elseif ( (isPersonal == true) and (typeIdentifier == "currency") ) then
@@ -915,15 +925,7 @@ function LootAlertFrame_OnEnter(self)
 	GameTooltip:Show();
 end
 
--- [[ LootWonAlertFrameTemplate ]] --
-LOOTWONALERTFRAME_VALUES={
-	Default = { bgOffsetX=0, bgOffsetY=0, labelOffsetX=7, labelOffsetY=5, labelText=YOU_WON_LABEL, glowAtlas="loottoast-glow"},
-	LessAwesome = { bgOffsetX=0, bgOffsetY=0, labelOffsetX=7, labelOffsetY=5, labelText=YOU_WON_LABEL, bgAtlas="LootToast-LessAwesome"},
-	GarrisonCache = { bgOffsetX=-4, bgOffsetY=0, labelOffsetX=7, labelOffsetY=1, labelText=GARRISON_CACHE, glowAtlas="CacheToast-Glow", bgAtlas="CacheToast", noIconBorder=true, iconUnderBG=true},
-	Horde = { bgOffsetX=-1, bgOffsetY=-1, labelOffsetX=7, labelOffsetY=3, labelText=YOU_EARNED_LABEL, pvpAtlas="loottoast-bg-horde", glowAtlas="loottoast-glow"},
-	Alliance = { bgOffsetX=-1, bgOffsetY=-1, labelOffsetX=7, labelOffsetY=3, labelText=YOU_EARNED_LABEL, pvpAtlas="loottoast-bg-alliance", glowAtlas="loottoast-glow"},
-}
-function LootWonAlertFrame_ShowAlert(itemLink, quantity, rollType, roll, specID, isCurrency, showFactionBG, lootSource, lessAwesome)
+function LootWonAlertFrame_ShowAlert(itemLink, quantity, rollType, roll, specID, isCurrency, showFactionBG, lootSource, lessAwesome, isUpgraded)
 	local frame;
 	for i=1, #LOOT_WON_ALERT_FRAMES do
 		local lootWon = LOOT_WON_ALERT_FRAMES[i];
@@ -938,15 +940,23 @@ function LootWonAlertFrame_ShowAlert(itemLink, quantity, rollType, roll, specID,
 		table.insert(LOOT_WON_ALERT_FRAMES, frame);
 	end
 
-	LootWonAlertFrame_SetUp(frame, itemLink, quantity, rollType, roll, specID, isCurrency, showFactionBG, lootSource, lessAwesome);
+	LootWonAlertFrame_SetUp(frame, itemLink, quantity, rollType, roll, specID, isCurrency, showFactionBG, lootSource, lessAwesome, isUpgraded);
 	AlertFrame_AnimateIn(frame);
 	AlertFrame_FixAnchors();
 end
 
 local LOOT_SOURCE_GARRISON_CACHE = 10;
 
+-- [[ LootUpgradeFrameTemplate ]] --
+LOOTUPGRADEFRAME_QUALITY_TEXTURES = {
+	[LE_ITEM_QUALITY_UNCOMMON]	= {border = "loottoast-itemborder-green",	arrow = "loottoast-arrow-green"},
+	[LE_ITEM_QUALITY_RARE]		= {border = "loottoast-itemborder-blue",	arrow = "loottoast-arrow-blue"},
+	[LE_ITEM_QUALITY_EPIC]		= {border = "loottoast-itemborder-purple",	arrow = "loottoast-arrow-purple"},
+	[LE_ITEM_QUALITY_LEGENDARY]	= {border = "loottoast-itemborder-orange",	arrow = "loottoast-arrow-orange"},
+}
+
 -- NOTE - This may also be called for an externally created frame. (E.g. bonus roll has its own frame)
-function LootWonAlertFrame_SetUp(self, itemLink, quantity, rollType, roll, specID, isCurrency, showFactionBG, lootSource, lessAwesome)
+function LootWonAlertFrame_SetUp(self, itemLink, quantity, rollType, roll, specID, isCurrency, showFactionBG, lootSource, lessAwesome, isUpgraded)
 	local itemName, itemHyperLink, itemRarity, itemTexture;
 	if (isCurrency == true) then
 		itemName, _, itemTexture, _, _, _, _, itemRarity = GetCurrencyInfo(itemLink);
@@ -974,6 +984,8 @@ function LootWonAlertFrame_SetUp(self, itemLink, quantity, rollType, roll, specI
 			windowInfo = LOOTWONALERTFRAME_VALUES["GarrisonCache"];
 		elseif ( lessAwesome ) then
 			windowInfo = LOOTWONALERTFRAME_VALUES["LessAwesome"];
+		elseif ( isUpgraded ) then
+			windowInfo = LOOTWONALERTFRAME_VALUES["Upgraded"];
 		end
 		if ( windowInfo.bgAtlas ) then
 			self.Background:Hide();
@@ -1036,6 +1048,20 @@ function LootWonAlertFrame_SetUp(self, itemLink, quantity, rollType, roll, specI
 		self.RollValue:Hide();
 	end
 
+	-- item upgraded?
+	self.animArrows:Stop();
+	if ( isUpgraded ) then
+		local upgradeTexture = LOOTUPGRADEFRAME_QUALITY_TEXTURES[itemRarity] or LOOTUPGRADEFRAME_QUALITY_TEXTURES[LE_ITEM_QUALITY_UNCOMMON];
+		for i = 1, self.numArrows do
+			self["Arrow"..i]:SetAtlas(upgradeTexture.arrow, true);
+		end
+		self.animArrows:Play();
+	else
+		for i = 1, self.numArrows do
+			self["Arrow"..i]:SetAlpha(0);
+		end	
+	end
+	
 	self.hyperlink = itemHyperLink;
 	if ( lessAwesome ) then
 		PlaySoundKitID(51402);	--UI_Raid_Loot_Toast_Lesser_Item_Won
@@ -1058,13 +1084,6 @@ function LootWonAlertFrame_OnClick(self, button, down)
 	end
 end
 
--- [[ LootUpgradeFrameTemplate ]] --
-LOOTUPGRADEFRAME_QUALITY_TEXTURES = {
-	[LE_ITEM_QUALITY_UNCOMMON]	= {border = "loottoast-itemborder-green",	arrow = "loottoast-arrow-green"},
-	[LE_ITEM_QUALITY_RARE]		= {border = "loottoast-itemborder-blue",	arrow = "loottoast-arrow-blue"},
-	[LE_ITEM_QUALITY_EPIC]		= {border = "loottoast-itemborder-purple",	arrow = "loottoast-arrow-purple"},
-	[LE_ITEM_QUALITY_LEGENDARY]	= {border = "loottoast-itemborder-orange",	arrow = "loottoast-arrow-orange"},
-}
 function LootUpgradeFrame_ShowAlert(itemLink, quantity, specID, baseQuality)
 	local frame;
 	for i=1, #LOOT_UPGRADE_ALERT_FRAMES do
@@ -1264,6 +1283,9 @@ function GarrisonFollowerAlertFrame_Setup(frame, followerID, name, quality, isUp
 		for i = 1, frame.Arrows.numArrows do
 			frame.Arrows["Arrow"..i]:SetAtlas(upgradeTexture.arrow, true);
 		end
+
+		frame.DieIcon:ClearAllPoints();
+		frame.DieIcon:SetPoint("RIGHT", frame.Title, "LEFT", -4, 0);
 		frame.DieIcon:Show();
 		frame.ArrowsAnim:Play();
 	else

@@ -445,7 +445,7 @@
 					</Anchors>
 					<Color r="1" g="1" b="1"/>
 				</FontString>				
-				<FontString parentKey="BonusLabel" inherits="GameFontHighlightLarge" text="Bonus Objective" alpha="0">
+				<FontString parentKey="BonusLabel" inherits="GameFontHighlightLarge" text="BONUS_OBJECTIVE_BANNER" alpha="0">
 					<Anchors>
 						<Anchor point="TOP" relativeKey="$parent.Title" relativePoint="BOTTOM" x="0" y="-7"/>
 					</Anchors>				

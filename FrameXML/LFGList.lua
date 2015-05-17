@@ -2818,14 +2818,18 @@ function LFGListUtil_GetActiveQueueMessage(isApplication)
 	for category=1, NUM_LE_LFG_CATEGORYS do
 		local mode = GetLFGMode(category);
 		if ( mode ) then
-			return mode == "lfgparty" and CANNOT_DO_THIS_IN_LFG_PARTY or CANNOT_DO_THIS_IN_PVE_QUEUE;
+			if ( mode == "lfgparty" ) then
+				return CANNOT_DO_THIS_IN_LFG_PARTY;
+			elseif ( mode == "rolecheck" or (mode and not isApplication) ) then
+				return CANNOT_DO_THIS_IN_PVE_QUEUE;
+			end
 		end
 	end
 
 	--Check PvP role check
 	local inProgress, _, _, _, _, isBattleground = GetLFGRoleUpdate();
-	if ( inProgress and isBattleground ) then
-		return CANNOT_DO_THIS_IN_PVP_QUEUE;
+	if ( inProgress ) then
+		return isBattleground and CANNOT_DO_THIS_WHILE_PVP_QUEUING or CANNOT_DO_THIS_WHILE_PVE_QUEUING;
 	end
 
 	for i=1, GetMaxBattlefieldID() do
