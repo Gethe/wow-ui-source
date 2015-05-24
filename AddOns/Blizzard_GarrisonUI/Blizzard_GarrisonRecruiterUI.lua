@@ -271,7 +271,7 @@ function GarrisonRecruitSelectFrame_OnLoad(self)
 end
 
 function GarrisonRecruitSelectFrame_OnEvent(self, event, ...)
-	GarrisonFollowerList_OnEvent(self, event, ...);
+	GarrisonFollowerList_OnEvent(self.FollowerList, event, ...);
 	if(event == "GARRISON_RECRUIT_FOLLOWER_RESULT")then
 		-- post event for recruiting follower
 		HideUIPanel(GarrisonRecruitSelectFrame);

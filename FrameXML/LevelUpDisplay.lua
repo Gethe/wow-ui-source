@@ -1478,7 +1478,7 @@ function BossBanner_AnimLootInsert(self, entry)
 end
 
 function BossBanner_ConfigureLootFrame(lootFrame, data)
-	local itemName, itemLink, itemRarity, _, _, _, _, _, _, itemTexture = GetItemInfo(data.itemID);
+	local itemName, itemLink, itemRarity, _, _, _, _, _, _, itemTexture = GetItemInfo(data.itemLink);
 	lootFrame.ItemName:SetText(itemName);
 	local rarityColor = ITEM_QUALITY_COLORS[itemRarity];
 	lootFrame.ItemName:SetTextColor(rarityColor.r, rarityColor.g, rarityColor.b);

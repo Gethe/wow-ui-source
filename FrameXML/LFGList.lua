@@ -308,7 +308,7 @@ end
 
 function LFGListNothingAvailable_Update(self)
 	if ( IsRestrictedAccount() ) then
-		self.Label:SetText(GameLimitedMode_GetString("ERR_RESTRICTED_ACCOUNT_LFG_LIST"));
+		self.Label:SetText(ERR_RESTRICTED_ACCOUNT_LFG_LIST_TRIAL);
 	elseif ( C_LFGList.HasActivityList() ) then
 		self.Label:SetText(NO_LFG_LIST_AVAILABLE);
 	else
@@ -1085,7 +1085,7 @@ function LFGListApplicationViewer_UpdateAvailability(self)
 
 	if ( IsRestrictedAccount() ) then
 		self.EditButton:Disable();
-		self.EditButton.tooltip = GameLimitedMode_GetString("ERR_RESTRICTED_ACCOUNT_LFG_LIST");
+		self.EditButton.tooltip = ERR_RESTRICTED_ACCOUNT_LFG_LIST_TRIAL;
 	else
 		self.EditButton:Enable();
 		self.EditButton.tooltip = nil;

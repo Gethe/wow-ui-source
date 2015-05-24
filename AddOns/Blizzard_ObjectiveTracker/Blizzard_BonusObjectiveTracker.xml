@@ -196,7 +196,7 @@
 			<StatusBar parentKey="Bar" drawLayer="BACKGROUND" minValue="0" maxValue="100" defaultValue="0">
 				<Size x="191" y="17"/>
 				<Anchors>
-					<Anchor point="TOPLEFT" x="10" y="-11"/>
+					<Anchor point="LEFT" x="10" y="0"/>
 				</Anchors>
 				<Layers>
 					<Layer level="ARTWORK">
@@ -207,12 +207,12 @@
 						</Texture>
 						<Texture parentKey="IconBG" atlas="bonusobjectives-bar-ring" useAtlasSize="true">
 							<Anchors>
-								<Anchor point="RIGHT" relativeKey="$parent.BarFrame"/>
+								<Anchor point="RIGHT" relativeKey="$parent.BarFrame" x="0" y="0"/>
 							</Anchors>
 						</Texture>
-						<FontString parentKey="Label" inherits="GameFontHighlightMedium" justifyH="LEFT">
+						<FontString parentKey="Label" inherits="GameFontHighlightMedium" justifyH="CENTER">
 						  <Anchors>
-							<Anchor point="CENTER" x="4" y="0"/>
+							<Anchor point="CENTER" x="-1" y="-1"/>
 						  </Anchors>
 						</FontString>
 					</Layer>

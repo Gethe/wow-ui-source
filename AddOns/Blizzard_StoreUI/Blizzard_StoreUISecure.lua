@@ -55,6 +55,7 @@ Import("CLASS_ICON_TCOORDS");
 Import("IsModifiedClick");
 Import("GetTime");
 Import("UnitAffectingCombat");
+Import("GetCVar");
 
 --GlobalStrings
 Import("BLIZZARD_STORE");
@@ -158,7 +159,6 @@ Import("BLIZZARD_STORE_TOKEN_CURRENT_MARKET_PRICE");
 Import("BLIZZARD_STORE_TOKEN_DESC_30_DAYS");
 Import("BLIZZARD_STORE_TOKEN_DESC_2700_MINUTES");
 Import("BLIZZARD_STORE_LOG_OUT_TO_PURCHASE_THIS_PRODUCT");
-Import("ENABLE_COLORBLIND_MODE");
 Import("TOOLTIP_DEFAULT_COLOR");
 Import("TOOLTIP_DEFAULT_BACKGROUND_COLOR");
 Import("CHARACTER_UPGRADE_LOG_OUT_NOW");
@@ -176,6 +176,13 @@ Import("VAS_CHARACTER_SELECTION_DESCRIPTION");
 Import("VAS_SELECTED_CHARACTER_DESCRIPTION");
 Import("VAS_NEW_CHARACTER_NAME_LABEL");
 Import("VAS_NAME_CHANGE_TOOLTIP");
+Import("VAS_NAME_CHANGE_CONFIRMATION");
+Import("VAS_APPEARANCE_CHANGE_CONFIRMATION");
+Import("VAS_FACTION_CHANGE_CONFIRMATION");
+Import("VAS_RACE_CHANGE_CONFIRMATION");
+Import("VAS_RACE_CHANGE_VALIDATION_DESCRIPTION");
+Import("VAS_FACTION_CHANGE_VALIDATION_DESCRIPTION");
+Import("VAS_RACE_CHANGE_INELIGIBLE");
 Import("TOKEN_CURRENT_AUCTION_VALUE");
 Import("TOKEN_MARKET_PRICE_NOT_AVAILABLE");
 Import("OKAY");
@@ -192,6 +199,10 @@ Import("SILVER_AMOUNT_TEXTURE_STRING");
 Import("COPPER_AMOUNT_SYMBOL");
 Import("COPPER_AMOUNT_TEXTURE");
 Import("COPPER_AMOUNT_TEXTURE_STRING");
+Import("FACTION_HORDE");
+Import("FACTION_ALLIANCE");
+Import("LIST_DELIMITER");
+
 
 --Lua enums
 Import("LE_STORE_ERROR_INVALID_PAYMENT_METHOD");
@@ -342,7 +353,7 @@ function GetSecureMoneyString(money, separateThousands)
 	local silver = floor((money - (gold * COPPER_PER_SILVER * SILVER_PER_GOLD)) / COPPER_PER_SILVER);
 	local copper = money % COPPER_PER_SILVER;
 
-	if ( ENABLE_COLORBLIND_MODE == "1" ) then
+	if ( GetCVar("colorblindMode") == "1" ) then
 		if (separateThousands) then
 			goldString = formatLargeNumber(gold)..GOLD_AMOUNT_SYMBOL;
 		else
@@ -607,6 +618,11 @@ local errorData = {
 		title = BLIZZARD_STORE_ERROR_TITLE_CONSUMABLE_TOKEN_OWNED,
 		msg = BLIZZARD_STORE_ERROR_ITEM_UNAVAILABLE,
 	},
+};
+
+local factionColors = { 
+	[0] = "ffe50d12", 
+	[1] = "ff4a54e8",
 };
 
 local tooltipSides = {};
@@ -1275,7 +1291,12 @@ function StoreFrame_UpdateActivePanel(self)
 		StoreFrame_HideAlert(self);
 		StoreFrame_HidePurchaseSent(self);
 	elseif ( WaitingOnConfirmation ) then
-		StoreFrame_SetAlert(self, BLIZZARD_STORE_CONNECTING, BLIZZARD_STORE_PLEASE_WAIT);
+		if (StoreVASValidationFrame and StoreVASValidationFrame:IsShown()) then
+			StoreVASValidationFrame.CharacterSelectionFrame.ContinueButton:Hide();
+			StoreVASValidationFrame.CharacterSelectionFrame.Spinner:Show();
+		else
+			StoreFrame_SetAlert(self, BLIZZARD_STORE_CONNECTING, BLIZZARD_STORE_PLEASE_WAIT);
+		end
 	elseif ( JustOrderedProduct or C_PurchaseAPI.HasPurchaseInProgress() ) then
 		local progressText;
 		if (StoreStateDriverFrame.NoticeTextTimer:IsPlaying()) then --Even if we don't have every list, if we know we have something in progress, we can display that.
@@ -1303,6 +1324,9 @@ function StoreFrame_UpdateActivePanel(self)
 	else
 		StoreFrame_HideAlert(self);
 		StoreFrame_HidePurchaseSent(self);
+		if (StoreVASValidationFrame and StoreVASValidationFrame:IsShown()) then
+			StoreVASValidationFrame.CharacterSelectionFrame.Spinner:Hide();
+		end
 		local info = currencyInfo();
 		self.BrowseNotice:SetText(info.browseNotice);
 	end
@@ -1474,6 +1498,10 @@ local ConfirmationFrameMiddleHeight = 200;
 local ConfirmationFrameHeightEur = 596;
 local ConfirmationFrameMiddleHeightEur = 240;
 local VASServiceType = nil;
+local SelectedRealm = nil;
+local SelectedCharacter = nil;
+local NewCharacterName = nil;
+local StoreDropdownLists = {};
 
 ------------------------------------------
 function StoreConfirmationFrame_OnLoad(self)
@@ -1490,7 +1518,7 @@ function StoreConfirmationFrame_OnLoad(self)
 	self:RegisterEvent("STORE_CONFIRM_PURCHASE");
 end
 
-function StoreConfirmationFrame_SetNotice(self, icon, name, dollars, cents, walletName, upgrade)
+function StoreConfirmationFrame_SetNotice(self, icon, name, dollars, cents, walletName, upgrade, vasService)
 	local currency = C_PurchaseAPI.GetCurrencyID();
 	local middleHeight = ConfirmationFrameMiddleHeight;
 	local frameHeight = ConfirmationFrameHeight;
@@ -1517,6 +1545,24 @@ function StoreConfirmationFrame_SetNotice(self, icon, name, dollars, cents, wall
 	
 	if (upgrade) then
 		notice = info.servicesConfirmationNotice;
+	elseif (vasService) then
+		local characters = C_PurchaseAPI.GetCharactersForRealm(SelectedRealm);
+		local character = characters[SelectedCharacter];
+		if (VASServiceType == LE_VAS_SERVICE_NAME_CHANGE) then
+			notice = VAS_NAME_CHANGE_CONFIRMATION:format(character.name, NewCharacterName);
+		elseif (VASServiceType == LE_VAS_SERVICE_FACTION_CHANGE) then
+			local newFaction;
+			if (character.faction == 0) then
+				newFaction = FACTION_ALLIANCE;
+			elseif (character.faction == 1) then
+				newFaction = FACTION_HORDE;
+			end
+			notice = VAS_FACTION_CHANGE_CONFIRMATION:format(character.name, SelectedRealm, newFaction);
+		elseif (VASServiceType == LE_VAS_SERVICE_RACE_CHANGE) then
+			notice = VAS_RACE_CHANGE_CONFIRMATION:format(character.name, SelectedRealm);
+		elseif (VASServiceType == LE_VAS_SERVICE_APPEARANCE_CHANGE) then
+			notice = VAS_APPEARANCE_CHANGE_CONFIRMATION:format(character.name, SelectedRealm);
+		end
 	else
 		notice = info.confirmationNotice;
 	end
@@ -1544,6 +1590,7 @@ function StoreConfirmationFrame_OnEvent(self, event, ...)
 	if ( event == "STORE_CONFIRM_PURCHASE" ) then
 		WaitingOnConfirmation = false;
 		StoreFrame_UpdateActivePanel(StoreFrame);
+		StoreVASValidationFrame:Hide();
 		if ( StoreFrame:IsShown() ) then
 			StoreConfirmationFrame_Update(self);
 			self:Raise();
@@ -1575,13 +1622,13 @@ function StoreConfirmationFrame_Update(self)
 		self:Hide(); --May want to show an error message
 		return;
 	end
-	local _, _, _, currentDollars, currentCents, _, name, _, displayID, texture, upgrade = C_PurchaseAPI.GetProductInfo(productID);
+	local _, _, _, currentDollars, currentCents, _, name, _, displayID, texture, upgrade, _, _, isVasService = C_PurchaseAPI.GetProductInfo(productID);
 
 	local finalIcon = texture;
 	if ( not finalIcon ) then
 		finalIcon = "Interface\\Icons\\INV_Misc_Note_02";
 	end
-	StoreConfirmationFrame_SetNotice(self, finalIcon, name, currentDollars, currentCents, walletName, upgrade);
+	StoreConfirmationFrame_SetNotice(self, finalIcon, name, currentDollars, currentCents, walletName, upgrade, isVasService);
 	IsUpgrade = upgrade;
 
 	local info = currencyInfo();
@@ -1669,9 +1716,6 @@ function StoreVASValidationFrame_OnLoad(self)
 	self:RegisterEvent("STORE_VAS_PURCHASE_RESULT_RECEIVED");
 end
 
-local SelectedRealm = nil;
-local SelectedCharacter = nil;
-
 function StoreVASValidationFrame_SetVASStart(self)
 	local productID = C_PurchaseAPI.GetEntryInfo(selectedEntryID);
 	local _, _, _, currentDollars, currentCents, _, name, _, displayID, texture, upgrade, _, _, isVasService, vasServiceType = C_PurchaseAPI.GetProductInfo(productID);
@@ -1687,7 +1731,13 @@ function StoreVASValidationFrame_SetVASStart(self)
 
 	SelectedRealm = nil;
 	SelectedCharacter = nil;
+	for list, _ in pairs(StoreDropdownLists) do
+		list:Hide();
+	end
+	
 	self.CharacterSelectionFrame.ContinueButton:Disable();
+	self.CharacterSelectionFrame.ContinueButton:Show();
+	self.CharacterSelectionFrame.Spinner:Hide();
 	self.CharacterSelectionFrame.RealmSelector.Text:SetText(VAS_SELECT_REALM);
 	self.CharacterSelectionFrame.CharacterSelector.Text:SetText(VAS_SELECT_CHARACTER_DISABLED);
 	self.CharacterSelectionFrame.CharacterSelector.Button:Disable();
@@ -1696,6 +1746,7 @@ function StoreVASValidationFrame_SetVASStart(self)
 	self.CharacterSelectionFrame.SelectedCharacterFrame:Hide();
 	self.CharacterSelectionFrame.SelectedCharacterName:Hide();
 	self.CharacterSelectionFrame.SelectedCharacterDescription:Hide();
+	self.CharacterSelectionFrame.ValidationDescription:Hide();
 	self.CharacterSelectionFrame:Show();
 
 	self:ClearAllPoints();
@@ -1721,6 +1772,7 @@ function StoreVASValidationFrame_OnEvent(self, event, ...)
 		for i = 1, #results do
 			_G.print(("Result %d:"):format(i), results[i]);
 		end
+		self:Hide();
 	end
 end
 
@@ -2255,30 +2307,25 @@ end
 ------------------------------------
 local InfoCache = {};
 local InfoCallback = nil;
-local lists = {};
 
 -- Very simple dropdown.  infoTable contains infoEntries containing text and value, the callback is what is called when a button is clicked.  
 function StoreDropDown_SetDropdown(frame, infoTable, callback)
 	local buttonHeight = 16;
 	local spacing = 4;
-	local maxWidth = 0;
+	local padding = 32;
 	local n = #infoTable;
 
 	wipe(InfoCache);
 	
-	for list, _ in pairs(lists) do
+	for list, _ in pairs(StoreDropdownLists) do
 		list:Hide();
 	end
 
-	-- TODO:  See if this still needed, it likely isn't.
-	if (not lists[frame.List]) then
-		lists[frame.List] = frame.List:GetWidth();
-	else
-		frame.List:SetWidth(lists[frame.List]);
+	if (not StoreDropdownLists[frame.List]) then
+		StoreDropdownLists[frame.List] = true;
 	end
 
-	local w = lists[frame.List];
-	frame.List:SetHeight(32 + spacing*(n-1) + buttonHeight*n);
+	frame.List:SetHeight(padding + spacing*(n-1) + buttonHeight*n);
 	for i = 1, n do
 		local info = infoTable[i];
 
@@ -2292,8 +2339,7 @@ function StoreDropDown_SetDropdown(frame, infoTable, callback)
 		end
 
 		button:SetText(info.text);
-		local width = math.max(w - spacing*6, button.NormalText:GetStringWidth() + spacing*4 + 15);
-		maxWidth = math.max(maxWidth, width);
+		button:SetWidth(frame.List:GetWidth() - padding);
 		button:SetHeight(buttonHeight);
 
 		if (info.checked) then
@@ -2307,12 +2353,6 @@ function StoreDropDown_SetDropdown(frame, infoTable, callback)
 		InfoCache[i] = info.value;
 	end
 
-	for i = 1, n do
-		frame.List.Buttons[i]:SetWidth(maxWidth);
-	end
-
-	-- TODO:  Add horizontalPadding and verticalPadding for use in the math here
-	frame.List:SetWidth(maxWidth + spacing*6);
 	InfoCallback = callback;
 	for i = n + 1, #frame.List.Buttons do
 		if (frame.List.Buttons[i]) then
@@ -2383,6 +2423,41 @@ function VASCharacterSelectionCharacterSelector_Callback(value)
 		frame.NewCharacterName:Show();
 		frame.ContinueButton:Disable();
 	else
+		if (VASServiceType == LE_VAS_SERVICE_RACE_CHANGE) then
+			local races = C_PurchaseAPI.GetEligibleRacesForRaceChange(character.guid);
+
+			if (not races or #races == 0) then
+				frame.ValidationDescription:SetText(VAS_RACE_CHANGE_INELIGIBLE);
+				frame.ValidationDescription:Show();
+				frame.ContinueButton:Disable();
+				return;
+			end
+
+			local str = races[1];
+			for i=2,#races do
+				str = LIST_DELIMITER:format(str, races[i]);
+			end
+			frame.ValidationDescription:SetText(VAS_RACE_CHANGE_VALIDATION_DESCRIPTION:format(factionColors[character.faction], str));
+			frame.ValidationDescription:Show();
+		elseif (VASServiceType == LE_VAS_SERVICE_FACTION_CHANGE) then
+			local str, nf;
+
+			if (character.faction == 0) then
+				str = FACTION_ALLIANCE;
+				nf = 1;
+			elseif (character.faction == 1) then
+				str = FACTION_HORDE;
+				nf = 0;
+			end
+			if (not str) then
+				frame.ValidationDescription:SetText(VAS_RACE_CHANGE_INELIGIBLE);
+				frame.ValidationDescription:Show();
+				frame.ContinueButton:Disable();
+				return;
+			end
+			frame.ValidationDescription:SetText(VAS_FACTION_CHANGE_VALIDATION_DESCRIPTION:format(factionColors[nf], str));
+			frame.ValidationDescription:Show();
+		end
 		frame.ContinueButton:Enable();
 	end
 end
@@ -2445,11 +2520,10 @@ function VASCharacterSelectionContinueButton_OnClick(self)
 		return;
 	end
 
-	local newName = self:GetParent().NewCharacterName:GetText();
-	if ( C_PurchaseAPI.PurchaseVASProduct(productID, characters[SelectedCharacter].guid, newName) ) then
+	NewCharacterName = self:GetParent().NewCharacterName:GetText();
+	if ( C_PurchaseAPI.PurchaseVASProduct(productID, characters[SelectedCharacter].guid, NewCharacterName) ) then
 		WaitingOnConfirmation = true;
 		WaitingOnConfirmationTime = GetTime();
-		self:GetParent():GetParent():Hide();
 		StoreFrame_UpdateActivePanel(StoreFrame);
 	end
 end

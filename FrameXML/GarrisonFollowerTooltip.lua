@@ -41,8 +41,8 @@ function GarrisonFollowerTooltip_Show(garrisonFollowerID, collected, quality, le
 end
 
 
-function GarrisonFollowerAbilityTooltip_Show(garrFollowerAbilityID)
-	GarrisonFollowerAbilityTooltipTemplate_SetAbility(GarrisonFollowerAbilityTooltip, garrFollowerAbilityID);
+function GarrisonFollowerAbilityTooltip_Show(garrFollowerAbilityID, followerTypeID)
+	GarrisonFollowerAbilityTooltipTemplate_SetAbility(GarrisonFollowerAbilityTooltip, garrFollowerAbilityID, followerTypeID);
 	
 	GarrisonFollowerAbilityTooltip:Show();
 end

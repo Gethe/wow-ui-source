@@ -141,7 +141,7 @@
 			<OnEnter>
 				GarrisonFollowerAbilityTooltip:ClearAllPoints();
 				GarrisonFollowerAbilityTooltip:SetPoint("TOPLEFT", self, "BOTTOMRIGHT");
-				GarrisonFollowerAbilityTooltip_Show(self.abilityID);
+				GarrisonFollowerAbilityTooltip_Show(self.abilityID, LE_FOLLOWER_TYPE_GARRISON_6_0);
 			</OnEnter>
 			<OnLeave>
 				GarrisonFollowerAbilityTooltip:Hide();
@@ -255,7 +255,7 @@
 					<OnEnter>
 						GarrisonFollowerAbilityTooltip:ClearAllPoints();
 						GarrisonFollowerAbilityTooltip:SetPoint("TOPLEFT", self, "BOTTOMRIGHT");
-						GarrisonFollowerAbilityTooltip_Show(self.abilityID);
+						GarrisonFollowerAbilityTooltip_Show(self.abilityID, LE_FOLLOWER_TYPE_GARRISON_6_0);
 					</OnEnter>
 					<OnLeave>
 						GarrisonFollowerAbilityTooltip:Hide();
@@ -1198,12 +1198,6 @@
 						<Anchors>
 							<Anchor point="BOTTOM" x="0" y="12"/>
 						</Anchors>
-						<Scripts>
-							<OnClick>
-								PlaySound("igMainMenuOptionCheckBoxOn");
-								GarrisonMissionFrame_CheckTutorials(true);
-							</OnClick>
-						</Scripts>
 					</Button>
 				</Frames>
 			</Frame>				

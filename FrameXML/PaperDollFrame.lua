@@ -380,7 +380,7 @@ function PaperDollFrame_OnLoad (self)
 	};
 	
 	if( GameLimitedMode_IsActive() ) then
-		CharacterTrialLevelErrorText:SetText(GameLimitedMode_GetString("CAPPED_LEVEL"));
+		CharacterTrialLevelErrorText:SetText(CAPPED_LEVEL_TRIAL);
 	end
 end
 

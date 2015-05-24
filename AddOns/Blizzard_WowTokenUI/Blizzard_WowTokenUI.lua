@@ -26,6 +26,7 @@ Import("date");
 Import("time");
 Import("type");
 Import("PlaySound");
+Import("GetCVar");
 Import("TOKEN_REDEEM_LABEL"); 
 Import("TOKEN_REDEEM_GAME_TIME_TITLE"); 
 Import("TOKEN_REDEEM_GAME_TIME_DESCRIPTION"); 
@@ -74,7 +75,6 @@ Import("OKAY");
 Import("LARGE_NUMBER_SEPERATOR");
 Import("DECIMAL_SEPERATOR");
 Import("CREATE_AUCTION");
-Import("ENABLE_COLORBLIND_MODE");
 Import("WEEKS_ABBR");
 Import("DAYS_ABBR");
 Import("HOURS_ABBR");
@@ -243,7 +243,7 @@ function GetSecureMoneyString(money, separateThousands)
 	local silver = floor((money - (gold * COPPER_PER_SILVER * SILVER_PER_GOLD)) / COPPER_PER_SILVER);
 	local copper = money % COPPER_PER_SILVER;
 
-	if ( ENABLE_COLORBLIND_MODE == "1" ) then
+	if ( GetCVar("colorblindMode") == "1" ) then
 		if (separateThousands) then
 			goldString = formatLargeNumber(gold)..GOLD_AMOUNT_SYMBOL;
 		else

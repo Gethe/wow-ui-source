@@ -556,7 +556,7 @@
 														self.Logo:ClearAllPoints();
 														self.Logo:SetPoint("RIGHT", fontString, "LEFT", -2, 0);
 														if (GameLimitedMode_IsActive()) then
-															self.tooltip = GameLimitedMode_GetString("ERR_FEATURE_RESTRICTED");
+															self.tooltip = ERR_FEATURE_RESTRICTED_TRIAL;
 															self:Disable();
 														else
 															self.tooltip = nil;

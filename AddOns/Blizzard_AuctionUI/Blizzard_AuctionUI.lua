@@ -1088,7 +1088,7 @@ function BrowseWowTokenResults_OnEvent(self, event, ...)
 		elseif (result == LE_TOKEN_RESULT_ERROR_TOO_MANY_TOKENS) then
 			UIErrorsFrame:AddMessage(SPELL_FAILED_TOO_MANY_OF_ITEM, 1.0, 0.1, 0.1, 1.0);
 		elseif (result == LE_TOKEN_RESULT_ERROR_TRIAL_RESTRICTED) then
-			UIErrorsFrame:AddMessage(GameLimitedMode_GetString("ERR_RESTRICTED_ACCOUNT"), 1.0, 0.1, 0.1, 1.0);
+			UIErrorsFrame:AddMessage(ERR_RESTRICTED_ACCOUNT_TRIAL, 1.0, 0.1, 0.1, 1.0);
 		elseif (result ~= LE_TOKEN_RESULT_SUCCESS) then
 			UIErrorsFrame:AddMessage(ERR_AUCTION_DATABASE_ERROR, 1.0, 0.1, 0.1, 1.0);
 		else

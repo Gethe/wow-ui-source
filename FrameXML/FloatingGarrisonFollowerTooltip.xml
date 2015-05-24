@@ -344,6 +344,7 @@ UI.xsd">
 					</Anchors>
 				</Texture>
 				<FontString parentKey="Name" inherits="GameFontNormal" justifyH="LEFT">
+					<Size x="190" y="0"/>
 					<Anchors>
 						<Anchor point="LEFT" relativeKey="$parent.Icon" relativePoint="RIGHT" x="6"/>
 					</Anchors>
@@ -377,8 +378,6 @@ UI.xsd">
 
 			</Layer>
 		</Layers>
-		<Scripts>
-		</Scripts>
 	</Frame>
 
 

@@ -11,23 +11,39 @@ GARRISON_MISSION_TYPE_FONT_COLOR	=	{r=0.8, g=0.7, b=0.53};
 ---------------------------------------------------------------------------------
 function GarrisonLandingPage_OnLoad(self)
 	self.FollowerList:Load(LE_FOLLOWER_TYPE_GARRISON_6_0);
+	self.ShipFollowerList:Load(LE_FOLLOWER_TYPE_SHIPYARD_6_2);
 
-	PanelTemplates_SetNumTabs(self, 2);
 	self.selectedTab = 1;
+	
+	GarrisonLandingPage.Report:Show();
+	GarrisonLandingPage.FollowerList:Hide();
+	GarrisonLandingPage.FollowerTab:Hide();
+	GarrisonLandingPage.ShipFollowerList:Hide();
+	GarrisonLandingPage.ShipFollowerTab:Hide();
+end
+
+function GarrisonLandingPage_UpdateTabs(self)
+	local numTabs = 2;
+	if (C_Garrison.HasShipyard()) then
+		numTabs = 3;
+		self.FleetTab:Show();
+	end
+	PanelTemplates_SetNumTabs(self, numTabs);
 	PanelTemplates_UpdateTabs(self);
 	
-	if ( PanelTemplates_GetSelectedTab(self) == 1 ) then
-		GarrisonLandingPage.Report:Show();
-		GarrisonLandingPage.FollowerList:Hide();
-		GarrisonLandingPage.FollowerTab:Hide();
+	local fleetCount = C_Garrison.GetNumFollowers(LE_FOLLOWER_TYPE_SHIPYARD_6_2);
+	if (fleetCount == 0) then
+		if (PanelTemplates_GetSelectedTab(self) == self.FleetTab:GetID()) then
+			GarrisonLandingPageTab_SetTab(self.ReportTab);
+		end
+		PanelTemplates_DisableTab(self, 3);
 	else
-		GarrisonLandingPage.Report:Hide();
-		GarrisonLandingPage.FollowerList:Show();
-		GarrisonLandingPage.FollowerTab:Show();
+		PanelTemplates_EnableTab(self, 3);
 	end
 end
 
 function GarrisonLandingPage_OnShow(self)
+	GarrisonLandingPage_UpdateTabs(self);
 	if (C_Garrison.IsInvasionAvailable()) then
 		self.InvasionBadge:Show();
 		self.InvasionBadge.InvasionBadgeAnim:Play();
@@ -46,22 +62,32 @@ function GarrisonLandingPage_OnHide(self)
 	StaticPopup_Hide("CONFIRM_FOLLOWER_ABILITY_UPGRADE");
 end
 
-function GarrisonLandingPage_OnEvent(self, event, ...)
-	GarrisonFollowerList_OnEvent(self, event, ...);
-end
-
 function GarrisonLandingPageTab_OnClick(self)
 	PlaySound("UI_Garrison_Nav_Tabs");
+	GarrisonLandingPageTab_SetTab(self);
+end
+
+function GarrisonLandingPageTab_SetTab(self)
 	local id = self:GetID();
 	PanelTemplates_SetTab(GarrisonLandingPage, id);
 	if ( id == 1 ) then
 		GarrisonLandingPage.Report:Show();
 		GarrisonLandingPage.FollowerList:Hide();
 		GarrisonLandingPage.FollowerTab:Hide();
-	else
+		GarrisonLandingPage.ShipFollowerList:Hide();
+		GarrisonLandingPage.ShipFollowerTab:Hide();
+	elseif ( id == 2 ) then
 		GarrisonLandingPage.Report:Hide();
 		GarrisonLandingPage.FollowerList:Show();
 		GarrisonLandingPage.FollowerTab:Show();
+		GarrisonLandingPage.ShipFollowerList:Hide();
+		GarrisonLandingPage.ShipFollowerTab:Hide();
+	else
+		GarrisonLandingPage.Report:Hide();
+		GarrisonLandingPage.FollowerList:Hide();
+		GarrisonLandingPage.FollowerTab:Hide();
+		GarrisonLandingPage.ShipFollowerList:Show();
+		GarrisonLandingPage.ShipFollowerTab:Show();
 	end
 end
 
@@ -544,4 +570,18 @@ end
 function GarrisonLandingPageReportMission_OnLeave(self)
 	GarrisonShipyardMapMissionTooltip:Hide();
 	GameTooltip_Hide(self);
+end
+
+---------------------------------------------------------------------------------
+--- Garrison Landing Page Ship Follower List Mixin Functions                  ---
+---------------------------------------------------------------------------------
+
+GarrisonLandingShipFollowerList = {};
+
+function GarrisonLandingShipFollowerList:Load(followerType)
+	GarrisonShipyardFollowerList.Load(self, followerType, self:GetParent().ShipFollowerTab);
+end
+
+function GarrisonLandingShipFollowerList:ShowFollower(followerID)
+	GarrisonShipyardFollowerList.ShowFollower(self, followerID, true);
 end

@@ -2421,7 +2421,7 @@ function AdventureJournal_Reward_OnEnter(self)
 		
 		local suggestion = EncounterJournal.suggestFrame.suggestions[self:GetParent().index];
 		
-		local rewardHeaderText;
+		local rewardHeaderText = "";
 		if ( rewardData.rewardDesc ) then
 			rewardHeaderText = rewardData.rewardDesc;
 		elseif ( rewardData.isRewardTable ) then
@@ -2434,9 +2434,17 @@ function AdventureJournal_Reward_OnEnter(self)
 						break;
 					end
 				end
-				rewardHeaderText = format(AJ_LFG_REWARD_DIFFICULTY_TEXT, suggestion.title, difficultyStr, rewardData.itemLevel or 0);
+				if( rewardData.itemLevel ) then
+					rewardHeaderText = format(AJ_LFG_REWARD_DIFFICULTY_TEXT, suggestion.title, difficultyStr, rewardData.itemLevel);
+				elseif ( rewardData.minItemLevel ) then
+					rewardHeaderText = format(AJ_LFG_REWARD_DIFFICULTY_IRANGE_TEXT, suggestion.title, difficultyStr, rewardData.minItemLevel, rewardData.maxItemLevel);
+				end
 			else
-				rewardHeaderText = format(AJ_LFG_REWARD_DEFAULT_TEXT, suggestion.title, rewardData.itemLevel or 0);
+				if( rewardData.itemLevel ) then
+					rewardHeaderText = format(AJ_LFG_REWARD_DEFAULT_TEXT, suggestion.title, rewardData.itemLevel);
+				elseif ( rewardData.minItemLevel ) then
+					rewardHeaderText = format(AJ_LFG_REWARD_DEFAULT_IRANGE_TEXT, suggestion.title, rewardData.minItemLevel, rewardData.maxItemLevel);
+				end
 			end
 			
 			if( rewardData.itemLink ) then

@@ -98,8 +98,8 @@ function GarrisonShipyardMission:OnLoadMainFrame()
 		dialogBorderFrame.Stage.LocFore:SetAtlas("_GarrMissionLocation-ShadowmoonSea-Fore", true);
 	end
 	self:RegisterEvent("CURRENCY_DISPLAY_UPDATE");
+	self:RegisterEvent("GARRISON_FOLLOWER_XP_CHANGED");
 	self:RegisterEvent("GARRISON_MISSION_FINISHED");
-	self:RegisterEvent("CURRENT_SPELL_CAST_CHANGED");
 end
 
 function GarrisonShipyardMission:UpdateCurrency()
@@ -197,7 +197,7 @@ end
 
 function GarrisonShipyardMission:SetEnemies(frame, enemies, numFollowers)
 	self:SortEnemies(enemies);
-	local numVisibleEnemies = GarrisonMission.SetEnemies(self, frame, enemies, numFollowers, 0);
+	local numVisibleEnemies = GarrisonMission.SetEnemies(self, frame, enemies, numFollowers, 0, LE_FOLLOWER_TYPE_SHIPYARD_6_2 );
 
 	for i=1, #enemies do
 		local Frame = frame.Enemies[i];
@@ -234,7 +234,7 @@ function GarrisonShipyardMission:SetLowFactorMechanics(frame, enemy)
 		local mechanic = enemy.mechanics[id];
 		numMechs = numMechs + 1;	
 		local Mechanic = frame.Mechanics[numMechs];
-		if (mechanic.factor > 300) then
+		if ( mechanic.factor > GARRISON_HIGH_THREAT_VALUE ) then
 			Mechanic.Border:SetAtlas("GarrMission_EncounterAbilityBorder");
 		else
 			Mechanic.Border:SetAtlas("GarrMission_WeakEncounterAbilityBorder-Lg");
@@ -329,9 +329,24 @@ function GarrisonShipyardMission:UpdateMissionParty(followers)
 		if ( followerFrame.info ) then
 			local counters = self.followerCounters and followerFrame.info and self.followerCounters[followerFrame.info.followerID] or nil;
 			-- Move left counter so that all counters are centered
-			if (counters and #counters > 1) then
-				local offset = (#counters - 1) * 8 + (#counters - 1) * followerFrame.Counters[1]:GetWidth() / 2;
-				followerFrame.Counters[1]:SetPoint("BOTTOM", -offset, 0);
+			if ( counters ) then
+				if ( #counters > 1 ) then
+					table.sort(counters, function(left, right) 
+						if ( not left.factor ) then error("?") end
+						return left.factor > right.factor; 
+					end)
+					local offset = (#counters - 1) * 8 + (#counters - 1) * followerFrame.Counters[1]:GetWidth() / 2;
+					followerFrame.Counters[1]:SetPoint("BOTTOM", -offset, 0);
+				end 
+				for i = 1, #counters do
+					local Counter = followerFrame.Counters[i];
+					Counter.followerTypeID = LE_FOLLOWER_TYPE_SHIPYARD_6_2;
+					if ( Counter.info.factor > GARRISON_HIGH_THREAT_VALUE ) then
+						Counter.Border:SetAtlas("GarrMission_EncounterAbilityBorder");
+					else
+						Counter.Border:SetAtlas("GarrMission_WeakEncounterAbilityBorder");
+					end
+				end
 			end
 		end
 	end
@@ -385,6 +400,7 @@ function GarrisonShipyardMission:CloseMissionComplete()
 	GarrisonMission.CloseMissionComplete(self);
 	self:CheckPendingFogLift();
 	self:CheckPendingBonusAreaAdded();
+	GarrisonShipyardMap_CheckTutorials();
 end
 
 function GarrisonShipyardMission:CheckPendingFogLift()
@@ -751,19 +767,12 @@ end
 function GarrisonShipyardFrame_OnEvent(self, event, ...)
 	if (event == "CURRENCY_DISPLAY_UPDATE") then
 		self:UpdateCurrency();
-	elseif (event == "GARRISON_FOLLOWER_LIST_UPDATE" or event == "GARRISON_FOLLOWER_XP_CHANGED" or event == "GARRISON_FOLLOWER_REMOVED") then
 		-- follower could have leveled at mission page, need to recheck counters
-		if ( event == "GARRISON_FOLLOWER_XP_CHANGED" and self.MissionTab.MissionPage:IsShown() and self.MissionTab.MissionPage.missionInfo ) then
+	elseif (event == "GARRISON_FOLLOWER_XP_CHANGED" and self.MissionTab.MissionPage:IsShown() and self.MissionTab.MissionPage.missionInfo ) then
 			self.followerCounters = C_Garrison.GetBuffedFollowersForMission(self.MissionTab.MissionPage.missionInfo.missionID);
 			self.followerTraits = C_Garrison.GetFollowersTraitsForMission(self.MissionTab.MissionPage.missionInfo.missionID);	
-		end
-		GarrisonFollowerList_OnEvent(self, event, ...);
-	elseif ( event == "GARRISON_FOLLOWER_UPGRADED" ) then
-		GarrisonFollowerList_OnEvent(self, event, ...);
 	elseif (event == "GARRISON_MISSION_FINISHED") then
 		self:CheckCompleteMissions();
-	elseif ( event == "CURRENT_SPELL_CAST_CHANGED" ) then
-		GarrisonFollowerList_OnEvent(self, event, ...);
 	end
 end
 
@@ -826,6 +835,7 @@ function GarrisonShipyardMap_OnShow(self)
 	self:GetParent():GetParent().FollowerList:Hide();
 	self:GetParent():GetParent():CheckPendingFogLift();
 	self:GetParent():GetParent():CheckPendingBonusAreaAdded();
+	GarrisonShipyardMap_CheckTutorials();
 end
 
 function GarrisonShipyardMap_OnHide(self)
@@ -1111,6 +1121,61 @@ function GarrisonShipyardMap_UpdateMissions()
 	end
 	
 	GarrisonShipyardMap_UpdateBonusEffects();
+end
+
+function GarrisonMissionFrame_OnClickShipyardTutorialButton(self)
+	PlaySound("igMainMenuOptionCheckBoxOn");
+	GarrisonShipyardMap_CheckTutorials();
+end
+
+function GarrisonShipyardMap_ShowTutorial(missionFrame, text)
+	local tutorialFrame = GarrisonMissionTutorialFrame;
+	tutorialFrame.GlowBox.Button:SetScript("OnClick", GarrisonMissionFrame_OnClickShipyardTutorialButton);
+	tutorialFrame:SetParent(GarrisonShipyardFrame.MissionTab.MissionList);
+	tutorialFrame:SetFrameStrata("DIALOG");
+	tutorialFrame:SetPoint("TOPLEFT", GarrisonShipyardFrame, 0, -21);
+	tutorialFrame:SetPoint("BOTTOMRIGHT", GarrisonShipyardFrame);
+
+	local height = 58;	-- button height + top and bottom padding + spacing between text and button
+	local glowBox = tutorialFrame.GlowBox;
+	glowBox.BigText:SetText(text);
+	height = height + glowBox.BigText:GetHeight();
+	glowBox.SmallText:Hide();
+	glowBox:SetHeight(height);
+	glowBox:ClearAllPoints();
+	glowBox:SetPoint("BOTTOM", missionFrame, "TOP", 0, 16);
+	glowBox.ArrowUp:Hide();
+	glowBox.ArrowGlowUp:Hide();
+	glowBox.ArrowDown:Show();
+	glowBox.ArrowGlowDown:Show();
+	tutorialFrame:Show();
+end
+
+function GarrisonShipyardMap_CheckTutorials()
+	local missionList = GarrisonShipyardFrame.MissionTab.MissionList;
+	if (missionList.CompleteDialog:IsShown() or GarrisonShipyardFrame.MissionComplete:IsShown()) then
+		return;
+	end
+	for i = 1, #missionList.missions do
+		local mission = missionList.missions[i];
+		local missionFrame = missionList.missionFrames[i];
+		
+		if ( tonumber(GetCVar("shipyardMissionTutorialFirst")) == 0 ) then
+			GarrisonShipyardMap_ShowTutorial(missionFrame, GARRISON_SHIPYARD_MISSION_TUTORIAL_FIRST);
+			SetCVar("shipyardMissionTutorialFirst", 1);
+			return;
+		elseif ( mission.offeredGarrMissionTextureID and mission.offeredGarrMissionTextureID ~= 0 and
+			 tonumber(GetCVar("shipyardMissionTutorialBlockade")) == 0 ) then
+			GarrisonShipyardMap_ShowTutorial(missionFrame, GARRISON_SHIPYARD_MISSION_TUTORIAL_BLOCKADE);
+			SetCVar("shipyardMissionTutorialBlockade", 1);
+			return;
+		elseif ( missionFrame.bonusRewardArea and tonumber(GetCVar("shipyardMissionTutorialAreaBuff")) == 0 ) then
+			GarrisonShipyardMap_ShowTutorial(missionFrame, GARRISON_SHIPYARD_MISSION_TUTORIAL_AREABUFF);
+			SetCVar("shipyardMissionTutorialAreaBuff", 1);
+			return;
+		end
+	end
+	GarrisonMissionTutorialFrame:Hide();
 end
 
 function GarrisonShipyardMap_UpdateBonusEffects()
@@ -1403,7 +1468,7 @@ function GarrisonShipyardMapMission_SetTooltip(info, inProgress)
 		end
 	end
 	
-	if (info.canStart) then
+	if (info.canStart or inProgress) then
 		tooltipFrame.SiegebreakerWarning:Hide();
 	else
 		tooltipFrame.SiegebreakerWarning:Show();
@@ -1478,6 +1543,8 @@ function GarrisonShipyardMissionPage_OnEvent(self, event, ...)
 			mainFrame.followerTraits = C_Garrison.GetFollowersTraitsForMission(missionID);
 			GarrisonFollowerList_UpdateFollowers(mainFrame.FollowerList);
 			mainFrame:UpdateMissionData(self);
+			mainFrame:UpdateMissionParty(self.Followers);
+			GarrisonMissionPage_SetCounters(self.Followers, self.Enemies, self.missionInfo.missionID);
 			return;
 		end
 	end
@@ -1529,25 +1596,27 @@ end
 
 GarrisonShipyardFollowerList = {};
 
-function GarrisonShipyardFollowerList:Load(followerType)
+function GarrisonShipyardFollowerList:Load(followerType, followerTab)
 	self.minFollowersForThreatCountersFrame = 1;
 	self.followerCountString = GARRISON_SHIPYARD_FOLLOWER_COUNT;
+	self.followerTab = followerTab or self:GetParent().FollowerTab;
+	self.followerTab.followerList = self;
 	self:Setup(self:GetParent(), followerType, "GarrisonShipFollowerButtonTemplate", 12);
 end
 
 function GarrisonShipyardFollowerList:StopAnimations()
-	local followerFrame = self:GetParent().FollowerTab;
+	local followerFrame = self.followerTab;
 	for i = 1, #followerFrame.EquipmentFrame.Equipment do
 		GarrisonShipEquipment_StopAnimations(followerFrame.EquipmentFrame.Equipment[i]);
 	end
 end
 
 function GarrisonShipyardFollowerList:ShowThreatCountersFrame()
-	self:GetParent().FollowerTab.ThreatCountersFrame:Show();
+	self.followerTab.ThreatCountersFrame:Show();
 end
 
-function GarrisonShipyardFollowerList:ShowFollower(followerID)
-	local self = self:GetParent().FollowerTab;
+function GarrisonShipyardFollowerList:ShowFollower(followerID, hideCounters)
+	local self = self.followerTab;
 	local lastUpdate = self.lastUpdate;
 	local mainFrame = self:GetParent();
 	local followerInfo = C_Garrison.GetFollowerInfo(followerID);
@@ -1579,6 +1648,8 @@ function GarrisonShipyardFollowerList:ShowFollower(followerID)
 		self.Quality:SetAtlas("ShipMission_BoatRarity-Uncommon", true);
 	end
 	
+	self.XPText:SetPoint("TOPRIGHT", self, -10, -36);
+
 	-- Follower cannot be upgraded anymore
 	if (followerInfo.level == GARRISON_FOLLOWER_MAX_LEVEL and followerInfo.quality >= GARRISON_FOLLOWER_MAX_UPGRADE_QUALITY) then
 		self.XPLabel:Hide();
@@ -1596,7 +1667,7 @@ function GarrisonShipyardFollowerList:ShowFollower(followerID)
 			self.XPLabel:SetWidth(100);
 			self.XPLabel:SetFontObject("GameFontWhiteSmall");
 			if (self.XPLabel:GetNumLines() > 1) then
-				self.XPLabel:SetPoint("TOPRIGHT", self.XPText, "BOTTOMRIGHT", -1, 0);
+				self.XPText:SetPoint("TOPRIGHT", self, -10, -30);
 			end
 		end
 		self.XPBar:Show();
@@ -1642,13 +1713,22 @@ function GarrisonShipyardFollowerList:ShowFollower(followerID)
 				local trait = self.Traits[traitIndex];
 				trait.abilityID = ability.id;
 				trait.Portrait:SetTexture(ability.icon);
-				for id, counter in pairs(ability.counters) do
-					trait.Counter.Icon:SetTexture(counter.icon);
-					trait.Counter.tooltip = counter.name;
-					trait.Counter.mainFrame = mainFrame;
-					trait.Counter.info = counter;
-					trait.Counter:Show();
-					break;
+				trait.followerTypeID = followerInfo.followerTypeID
+				if (not hideCounters) then
+					for id, counter in pairs(ability.counters) do
+						trait.Counter.Icon:SetTexture(counter.icon);
+						trait.Counter.tooltip = counter.name;
+						trait.Counter.mainFrame = mainFrame;
+						trait.Counter.info = counter;
+						trait.Counter:Show();
+						
+						if (counter.factor > GARRISON_HIGH_THREAT_VALUE) then
+							trait.Counter.Border:SetAtlas("GarrMission_EncounterAbilityBorder-Lg");
+						else
+							trait.Counter.Border:SetAtlas("GarrMission_WeakEncounterAbilityBorder-Lg");
+						end
+						break;
+					end
 				end
 			end
 			traitIndex = traitIndex + 1;
@@ -1656,16 +1736,26 @@ function GarrisonShipyardFollowerList:ShowFollower(followerID)
 			if (equipmentIndex <= #self.EquipmentFrame.Equipment) then
 				local equipment = self.EquipmentFrame.Equipment[equipmentIndex];
 				equipment.abilityID = ability.id;
+				equipment.followerTypeID = followerInfo.followerTypeID
 				if (ability.icon) then
 					equipment.Icon:SetTexture(ability.icon);
 					equipment.Icon:Show();
-					for id, counter in pairs(ability.counters) do
-						equipment.Counter.Icon:SetTexture(counter.icon);
-						equipment.Counter.tooltip = counter.name;
-						equipment.Counter.mainFrame = mainFrame;
-						equipment.Counter.info = counter;
-						equipment.Counter:Show();
-						break;
+					if (not hideCounters) then
+						for id, counter in pairs(ability.counters) do
+							equipment.Counter.Icon:SetTexture(counter.icon);
+							equipment.Counter.tooltip = counter.name;
+							equipment.Counter.mainFrame = mainFrame;
+							equipment.Counter.info = counter;
+							equipment.Counter:Show();
+							
+							if (counter.factor > GARRISON_HIGH_THREAT_VALUE) then
+								equipment.Counter.Border:SetAtlas("GarrMission_EncounterAbilityBorder-Lg");
+							else
+								equipment.Counter.Border:SetAtlas("GarrMission_WeakEncounterAbilityBorder-Lg");
+							end
+							
+							break;
+						end
 					end
 					
 					if (followerInfo.isCollected and GarrisonFollowerAbilities_IsNew(lastUpdate, followerID, ability.id, GARRISON_FOLLOWER_ABILITY_TYPE_ABILITY)) then
@@ -1708,7 +1798,7 @@ function GarrisonShipyardFollowerList:UpdateData()
 			button.isCollected = true;
 			button.id = follower.followerID;
 			button.info = follower;
-			mainFrame:SetFollowerPortrait(button, follower, nil, true);
+			button.Portrait:SetAtlas(follower.texPrefix .. "-List", true);
 			button.BoatName:SetText(format(GARRISON_SHIPYARD_SHIP_NAME, follower.name));
 			button.BoatType:SetText(follower.className);
 			button.Status:SetText(follower.status);
@@ -1760,14 +1850,15 @@ end
 
 function GarrisonShipFollowerListButton_OnClick(self, button)
 	local mainFrame = self:GetParent():GetParent().followerFrame;
+	local followerList = self:GetParent():GetParent():GetParent();
 	PlaySound("UI_Garrison_CommandTable_SelectFollower");
 
 	if (button == "LeftButton") then
 		mainFrame.selectedFollower = self.id;
 
-		mainFrame.FollowerList:UpdateData();
-		mainFrame.FollowerList:ShowFollower(self.id);
-	elseif (button == "RightButton") then
+		followerList:UpdateData();
+		followerList:ShowFollower(self.id);
+	elseif (button == "RightButton" and not followerList.isLandingPage) then
 		if ( GarrisonShipyardFollowerOptionDropDown.followerID ~= self.id ) then
 			CloseDropDownMenus();
 		end
@@ -1788,7 +1879,7 @@ end
 function GarrisonShipTrait_OnEnter(self)
 	GarrisonFollowerAbilityTooltip:ClearAllPoints();
 	GarrisonFollowerAbilityTooltip:SetPoint("TOPLEFT", self, "BOTTOMRIGHT");
-	GarrisonFollowerAbilityTooltip_Show(self.abilityID);
+	GarrisonFollowerAbilityTooltip_Show(self.abilityID, LE_FOLLOWER_TYPE_SHIPYARD_6_2);
 end
 
 function GarrisonShipTrait_OnHide(self)
@@ -1809,8 +1900,11 @@ function GarrisonShipEquipment_OnClick(self, button)
 		end
 	elseif (self.abilityID) then
 		local followerList = self:GetParent():GetParent():GetParent().FollowerList;
-		if ( button == "LeftButton" and followerList.canCastSpellsOnFollowers and SpellCanTargetGarrisonFollowerAbility(self.abilityID) ) then
+		if ( button == "LeftButton" and followerList.canCastSpellsOnFollowers ) then
 			local followerID = self:GetParent():GetParent().followerID;
+			if ( not SpellCanTargetGarrisonFollowerAbility(followerID, self.abilityID) ) then
+				return;
+			end
 			local followerInfo = followerID and C_Garrison.GetFollowerInfo(followerID);
 			if ( not followerInfo or not followerInfo.isCollected or followerInfo.status == GARRISON_FOLLOWER_ON_MISSION or followerInfo.status == GARRISON_FOLLOWER_WORKING ) then
 				return;
@@ -1838,7 +1932,7 @@ function GarrisonShipEquipment_OnEnter(self)
 	elseif (self.Icon:IsShown() and self.abilityID) then
 		GarrisonFollowerAbilityTooltip:ClearAllPoints();
 		GarrisonFollowerAbilityTooltip:SetPoint("TOPLEFT", self, "BOTTOMRIGHT");
-		GarrisonFollowerAbilityTooltip_Show(self.abilityID);
+		GarrisonFollowerAbilityTooltip_Show(self.abilityID, LE_FOLLOWER_TYPE_SHIPYARD_6_2);
 	else
 		GameTooltip:SetOwner(self, "ANCHOR_BOTTOMRIGHT");
 		GameTooltip:SetText(GARRISON_SHIPYARD_EQUIPMENT_EMPTY_SLOT_TOOLTIP);

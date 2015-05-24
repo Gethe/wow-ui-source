@@ -44,7 +44,7 @@ end
 
 function GameMenuFrame_UpdateStoreButtonState(self)
 	if ( GameLimitedMode_IsActive() ) then
-		self.disabledTooltip = GameLimitedMode_GetString("ERR_RESTRICTED_ACCOUNT");
+		self.disabledTooltip = ERR_RESTRICTED_ACCOUNT_TRIAL;
 		self:Disable();
 	elseif ( C_StorePublic.IsDisabledByParentalControls() ) then
 		self.disabledTooltip = BLIZZARD_STORE_ERROR_PARENTAL_CONTROLS;

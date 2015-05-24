@@ -91,6 +91,7 @@ retain("C_Timer");
 retain("IsModifiedClick");
 retain("GetTime");
 retain("UnitAffectingCombat");
+retain("GetCVar");
 
 --For auth challenge
 take("C_AuthChallenge");
@@ -217,6 +218,13 @@ take("VAS_CHARACTER_SELECTION_DESCRIPTION");
 take("VAS_SELECTED_CHARACTER_DESCRIPTION");
 take("VAS_NEW_CHARACTER_NAME_LABEL");
 take("VAS_NAME_CHANGE_TOOLTIP");
+take("VAS_NAME_CHANGE_CONFIRMATION");
+take("VAS_APPEARANCE_CHANGE_CONFIRMATION");
+take("VAS_FACTION_CHANGE_CONFIRMATION");
+take("VAS_RACE_CHANGE_CONFIRMATION");
+take("VAS_RACE_CHANGE_VALIDATION_DESCRIPTION");
+take("VAS_FACTION_CHANGE_VALIDATION_DESCRIPTION");
+take("VAS_RACE_CHANGE_INELIGIBLE");
 
 -- For Battle.net Token
 if ( IsGMClient() ) then
@@ -277,12 +285,14 @@ retain("LARGE_NUMBER_SEPERATOR");
 retain("DECIMAL_SEPERATOR");
 retain("TOOLTIP_DEFAULT_COLOR");
 retain("TOOLTIP_DEFAULT_BACKGROUND_COLOR");
-retain("ENABLE_COLORBLIND_MODE");
 retain("ACCEPT");
 retain("CANCEL");
 retain("CREATE_AUCTION");
 retain("CONTINUE");
 retain("OPTIONS");
+retain("FACTION_HORDE");
+retain("FACTION_ALLIANCE");
+retain("LIST_DELIMITER");
 
 take("BLIZZARD_CHALLENGE_SUBMIT");
 take("BLIZZARD_CHALLENGE_CANCEL");

@@ -496,7 +496,8 @@ VideoData["Display_ResolutionDropDown"]={
 	},
 	onrefresh =
 	function(self)
-		if(Display_DisplayModeDropDown:windowedmode() and Display_DisplayModeDropDown:fullscreenmode()) then
+		if(Display_DisplayModeDropDown:windowedmode() and Display_DisplayModeDropDown:fullscreenmode() and
+            not IsMacClient()) then
 			VideoOptions_Disable(self);
 		else
 			VideoOptions_Enable(self);

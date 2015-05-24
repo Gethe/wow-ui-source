@@ -64,6 +64,7 @@ function GarrisonFollowerMission:OnLoadMainFrame()
 	self:RegisterEvent("GET_ITEM_INFO_RECEIVED");
 	self:RegisterEvent("GARRISON_RANDOM_MISSION_ADDED");
 	self:RegisterEvent("CURRENT_SPELL_CAST_CHANGED");
+	self:RegisterEvent("GARRISON_FOLLOWER_XP_CHANGED");
 end
 
 function GarrisonFollowerMission:UpdateCurrency()
@@ -144,7 +145,7 @@ function GarrisonFollowerMission:SetPartySize(frame, size, numEnemies)
 end
 
 function GarrisonFollowerMission:SetEnemies(frame, enemies, numFollowers)
-	local numVisibleEnemies = GarrisonMission.SetEnemies(self, frame, enemies, numFollowers, -16);
+	local numVisibleEnemies = GarrisonMission.SetEnemies(self, frame, enemies, numFollowers, -16, LE_FOLLOWER_TYPE_GARRISON_6_0);
 	
 	if ( numVisibleEnemies == 1 ) then
 		if ( numFollowers == 1 ) then
@@ -402,6 +403,11 @@ local tutorials = {
 	[8] = { text1 = GARRISON_MISSION_TUTORIAL9, xOffset = 536, yOffset = -474, downArrow = true, parent = "MissionPage" },	
 }
 
+function GarrisonMissionFrame_OnClickMissionTutorialButton(self)
+	PlaySound("igMainMenuOptionCheckBoxOn");
+	GarrisonMissionFrame_CheckTutorials(true);
+end
+
 function GarrisonMissionFrame_CheckTutorials(advance)
 	local lastTutorial = tonumber(GetCVar("lastGarrisonMissionTutorial"));
 	if ( lastTutorial ) then
@@ -410,6 +416,7 @@ function GarrisonMissionFrame_CheckTutorials(advance)
 			SetCVar("lastGarrisonMissionTutorial", lastTutorial);
 		end
 		local tutorialFrame = GarrisonMissionTutorialFrame;
+		tutorialFrame.GlowBox.Button:SetScript("OnClick", GarrisonMissionFrame_OnClickMissionTutorialButton);
 		if ( lastTutorial >= #tutorials ) then
 			tutorialFrame:Hide();
 		else
@@ -468,13 +475,10 @@ end
 function GarrisonMissionFrame_OnEvent(self, event, ...)
 	if (event == "GARRISON_MISSION_LIST_UPDATE") then
 		GarrisonMissionList_UpdateMissions();
-	elseif (event == "GARRISON_FOLLOWER_LIST_UPDATE" or event == "GARRISON_FOLLOWER_XP_CHANGED" or event == "GARRISON_FOLLOWER_REMOVED") then
+	elseif (event == "GARRISON_FOLLOWER_XP_CHANGED" and MISSION_PAGE_FRAME:IsShown() and MISSION_PAGE_FRAME.missionInfo ) then
 		-- follower could have leveled at mission page, need to recheck counters
-		if ( event == "GARRISON_FOLLOWER_XP_CHANGED" and MISSION_PAGE_FRAME:IsShown() and MISSION_PAGE_FRAME.missionInfo ) then
-			GarrisonMissionFrame.followerCounters = C_Garrison.GetBuffedFollowersForMission(MISSION_PAGE_FRAME.missionInfo.missionID);
-			GarrisonMissionFrame.followerTraits = C_Garrison.GetFollowersTraitsForMission(MISSION_PAGE_FRAME.missionInfo.missionID);	
-		end
-		GarrisonFollowerList_OnEvent(self, event, ...);
+		GarrisonMissionFrame.followerCounters = C_Garrison.GetBuffedFollowersForMission(MISSION_PAGE_FRAME.missionInfo.missionID);
+		GarrisonMissionFrame.followerTraits = C_Garrison.GetFollowersTraitsForMission(MISSION_PAGE_FRAME.missionInfo.missionID);	
 	elseif (event == "CURRENCY_DISPLAY_UPDATE") then
 		self:UpdateCurrency();
 	elseif (event == "GARRISON_MISSION_STARTED") then
@@ -487,8 +491,6 @@ function GarrisonMissionFrame_OnEvent(self, event, ...)
 		self:CheckCompleteMissions();
 	elseif ( event == "GET_ITEM_INFO_RECEIVED" ) then
 		GarrisonMissionFrame_UpdateRewards(self, ...);
-	elseif ( event == "GARRISON_FOLLOWER_UPGRADED" ) then
-		GarrisonFollowerList_OnEvent(self, event, ...);
 	elseif ( event == "GARRISON_RANDOM_MISSION_ADDED" ) then
 		GarrisonMissionFrame_RandomMissionAdded(self, ...);
 	elseif ( event == "CURRENT_SPELL_CAST_CHANGED" ) then
@@ -499,7 +501,6 @@ function GarrisonMissionFrame_OnEvent(self, event, ...)
 			self.isTargettingGarrisonFollower = false;
 			GarrisonMissionPage_UpdatePortraitPulse(MISSION_PAGE_FRAME);
 		end
-		GarrisonFollowerList_OnEvent(self, event, ...);
 	end
 end
 
@@ -1048,6 +1049,8 @@ function GarrisonMissionPage_OnEvent(self, event)
 			local mentorLevel, mentorItemLevel = C_Garrison.GetPartyMentorLevels(self.missionInfo.missionID);
 			self.mentorLevel = mentorLevel;
 			self.mentorItemLevel = mentorItemLevel;
+			mainFrame.followerCounters = C_Garrison.GetBuffedFollowersForMission(self.missionInfo.missionID)
+			mainFrame.followerTraits = C_Garrison.GetFollowersTraitsForMission(self.missionInfo.missionID);			
 		else
 			self.mentorLevel = nil;
 			self.mentorItemLevel = nil;
@@ -1056,11 +1059,9 @@ function GarrisonMissionPage_OnEvent(self, event)
 
 		if ( self.missionInfo ) then
 			local missionID = self.missionInfo.missionID;
-			mainFrame.followerCounters = C_Garrison.GetBuffedFollowersForMission(missionID)
-			mainFrame.followerTraits = C_Garrison.GetFollowersTraitsForMission(missionID);
 			GarrisonFollowerList_UpdateFollowers(mainFrame.FollowerList);
 			mainFrame:UpdateMissionData(self);
-
+			GarrisonMissionPage_SetCounters(self.Followers, self.Enemies, self.missionInfo.missionID);
 			return;
 		end
 	end
@@ -1165,10 +1166,6 @@ function GarrisonMissionPage_ClearCounters(enemiesFrame)
 			frame.Mechanics[j].Check:Hide();
 		end
 	end
-end
-
-function GarrisonMissionPage_HasMission()
-	return MISSION_PAGE_FRAME:IsShown() and MISSION_PAGE_FRAME.missionInfo ~= nil;
 end
 
 ---------------------------------------------------------------------------------

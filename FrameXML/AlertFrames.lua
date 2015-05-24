@@ -1065,6 +1065,8 @@ function LootWonAlertFrame_SetUp(self, itemLink, quantity, rollType, roll, specI
 	self.hyperlink = itemHyperLink;
 	if ( lessAwesome ) then
 		PlaySoundKitID(51402);	--UI_Raid_Loot_Toast_Lesser_Item_Won
+	elseif ( isUpgraded ) then
+		PlaySoundKitID(51561);	-- UI_Warforged_Item_Loot_Toast
 	else
 		PlaySoundKitID(31578);	--UI_EpicLoot_Toast
 	end

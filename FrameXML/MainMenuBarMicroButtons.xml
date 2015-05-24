@@ -281,7 +281,7 @@
 				GuildMicroButton_UpdateTabard(true);
 				if ( IsTrialAccount() or (IsVeteranTrialAccount() and not IsInGuild()) ) then
 					self:Disable();
-					self.disabledTooltip = GameLimitedMode_GetString("ERR_RESTRICTED_ACCOUNT");
+					self.disabledTooltip = ERR_RESTRICTED_ACCOUNT_TRIAL;
 				end
 				if (IsBlizzCon()) then
 					self:Disable();

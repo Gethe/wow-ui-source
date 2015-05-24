@@ -699,7 +699,6 @@ function VideoOptionsDropDown_OnLoad(self)
 	self.needrefresh = false;
 	self.initialize = self.initialize or 
 		function (self, level)
-			self.newValue = nil;
 			if(self.tablerefresh) then
 				self.tooltiprefresh = true;
 				self.table = {};

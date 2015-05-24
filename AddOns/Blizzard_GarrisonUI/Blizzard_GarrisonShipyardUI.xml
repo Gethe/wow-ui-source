@@ -1456,7 +1456,7 @@
 		-->
 		<Layers>
 			<Layer level="BACKGROUND">
-				<Texture atlas="ShipMission_ShipFollower-EquipmentBG" useAtlasSize="true">
+				<Texture parentKey="BG" atlas="ShipMission_ShipFollower-EquipmentBG" useAtlasSize="true">
 					<Anchors>
 						<Anchor point="TOPLEFT"/>
 					</Anchors>
@@ -1857,7 +1857,7 @@
 							<Frame parentKey="FogFrame2" parentArray="FogFrames" inherits="FogFrameTemplate"/>
 							<Frame parentKey="FogFrame3" parentArray="FogFrames" inherits="FogFrameTemplate"/>
 							
-							<Frame parentKey="CompleteDialog" topLevel="true" enableMouse="true" hidden="true">
+							<Frame parentKey="CompleteDialog" frameStrata="DIALOG" enableMouse="true" hidden="true">
 								<Size x="956" y="637"/>
 								<Anchors>
 									<Anchor point="TOPLEFT" x="2" y="-22"/>

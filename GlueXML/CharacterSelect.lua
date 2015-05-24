@@ -193,7 +193,7 @@ function CharacterSelect_OnShow()
 	RealmSplitCurrentChoice:Hide();
 
 	--Clear out the addons selected item
-	GlueDropDownMenu_SetSelectedValue(AddonCharacterDropDown, ALL);
+	GlueDropDownMenu_SetSelectedValue(AddonCharacterDropDown, true);
 
 	AccountUpgradePanel_Update(CharSelectAccountUpgradeButton.isExpanded);
 

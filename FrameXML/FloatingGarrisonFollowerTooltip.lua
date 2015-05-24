@@ -168,6 +168,7 @@ function GarrisonFollowerTooltipTemplate_SetGarrisonFollower(tooltipFrame, data,
 				
 		local Ability = tooltipFrame.Abilities[i];
 		GarrisonFollowerTooltipTemplate_SetAbility(Ability, abilities[i], detailed);
+		Ability.CounterIconBorder:SetAtlas("GarrMission_EncounterAbilityBorder-Lg");
 		tooltipFrameHeight = tooltipFrameHeight + Ability:GetHeight();
 	end
 		
@@ -343,6 +344,13 @@ function GarrisonFollowerTooltipTemplate_SetShipyardFollower(tooltipFrame, data,
 		GarrisonFollowerTooltipTemplate_SetAbility(property, properties[i], detailed);
 		tooltipFrameHeight = tooltipFrameHeight + abilityOffset;
 		tooltipFrameHeight = tooltipFrameHeight + property:GetHeight();
+		
+		local abilityCounterFactor = select(4, C_Garrison.GetFollowerAbilityCounterMechanicInfo(properties[i]));
+		if ( not abilityCounterFactor or abilityCounterFactor > GARRISON_HIGH_THREAT_VALUE ) then
+			property.CounterIconBorder:SetAtlas("GarrMission_EncounterAbilityBorder-Lg");
+		else
+			property.CounterIconBorder:SetAtlas("GarrMission_WeakEncounterAbilityBorder-Lg");
+		end
 	end
 
 	tooltipFrame:SetSize(260, tooltipFrameHeight + 10);
@@ -403,10 +411,10 @@ function FloatingGarrisonFollowerAbility_Toggle(garrFollowerAbilityID)
 end
 
 function FloatingGarrisonFollowerAbility_Show(garrFollowerAbilityID)
-	GarrisonFollowerAbilityTooltipTemplate_SetAbility(FloatingGarrisonFollowerAbilityTooltip, garrFollowerAbilityID)
+	GarrisonFollowerAbilityTooltipTemplate_SetAbility(FloatingGarrisonFollowerAbilityTooltip, garrFollowerAbilityID, LE_FOLLOWER_TYPE_GARRISON_6_0)
 end
 
-function GarrisonFollowerAbilityTooltipTemplate_SetAbility(tooltipFrame, garrFollowerAbilityID)
+function GarrisonFollowerAbilityTooltipTemplate_SetAbility(tooltipFrame, garrFollowerAbilityID, followerTypeID)
 	if (garrFollowerAbilityID and garrFollowerAbilityID > 0)  then
 		tooltipFrame.garrFollowerAbilityID = garrFollowerAbilityID;
 		tooltipFrame:Show();
@@ -431,7 +439,7 @@ function GarrisonFollowerAbilityTooltipTemplate_SetAbility(tooltipFrame, garrFol
 		tooltipFrame.Description:SetText(description);
 		tooltipFrame:SetHeight(tooltipFrame:GetHeight() + tooltipFrame.Description:GetHeight() + spacingBetweenNameAndDescription);
 		
-		local abilityCounterMechanicID, abilityCounterMechanicName, abilityCounterMechanicIcon = C_Garrison.GetFollowerAbilityCounterMechanicInfo(garrFollowerAbilityID);
+		local abilityCounterMechanicID, abilityCounterMechanicName, abilityCounterMechanicIcon, abilityCounterFactor = C_Garrison.GetFollowerAbilityCounterMechanicInfo(garrFollowerAbilityID);
 		if (abilityCounterMechanicName and abilityCounterMechanicIcon) then
 			tooltipFrame.Details:Show();
 			tooltipFrame.Details:SetFormattedText(GARRISON_ABILITY_COUNTERS_FORMAT, abilityCounterMechanicName);
@@ -440,6 +448,11 @@ function GarrisonFollowerAbilityTooltipTemplate_SetAbility(tooltipFrame, garrFol
 			tooltipFrame.CounterIcon:SetMask("Interface\\CharacterFrame\\TempPortraitAlphaMask");
 			tooltipFrame.CounterIcon:Show();
 			tooltipFrame.CounterIconBorder:Show();
+			if ( abilityCounterFactor <= GARRISON_HIGH_THREAT_VALUE and followerTypeID == LE_FOLLOWER_TYPE_SHIPYARD_6_2 ) then
+				tooltipFrame.CounterIconBorder:SetAtlas("GarrMission_WeakEncounterAbilityBorder-Lg");
+			else
+				tooltipFrame.CounterIconBorder:SetAtlas("GarrMission_EncounterAbilityBorder-Lg");
+			end
 		else
 			tooltipFrame.Details:Hide();
 			tooltipFrame.CounterIcon:Hide();
@@ -483,6 +496,8 @@ function FloatingGarrisonMission_Show(garrMissionID)
 			end
 		elseif (reward.followerXP) then
 			rewardText = rewardText..reward.title;
+		elseif (reward.bonusAbilityID) then
+			rewardText = rewardText..reward.name;
 		else
 			rewardText = rewardText..reward.title;
 		end

@@ -157,7 +157,7 @@
 						if (GameLimitedMode_IsActive()) then
 							local rLevel = GetRestrictedAccountData();
 							if UnitLevel("player") >= rLevel then
-								label = label.." "..RED_FONT_COLOR_CODE..GameLimitedMode_GetString("CAP_REACHED").."|r";
+								label = label.." "..RED_FONT_COLOR_CODE..CAP_REACHED_TRIAL.."|r";
 							end
 						end
 						

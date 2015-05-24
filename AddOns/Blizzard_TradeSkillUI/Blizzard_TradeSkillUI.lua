@@ -638,7 +638,7 @@ function TradeSkillFrame_SetSelection(id)
 			local _, _, profCap = GetRestrictedAccountData();
 			if skillLineRank >= profCap then
 				local text = TradeSkillRankFrameSkillRank:GetText();
-				text = text.." "..RED_FONT_COLOR_CODE..GameLimitedMode_GetString("CAP_REACHED");
+				text = text.." "..RED_FONT_COLOR_CODE..CAP_REACHED_TRIAL;
 				TradeSkillRankFrameSkillRank:SetText(text);
 			end
 		end

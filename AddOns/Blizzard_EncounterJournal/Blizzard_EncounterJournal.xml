@@ -1116,14 +1116,14 @@
 						</Layers>
 					</Frame>
 					<Frame parentKey="description">
-						<Size x="260" y="1"/>
+						<Size x="240" y="1"/>
 						<Anchors>
 							<Anchor point="TOPLEFT" relativeKey="$parent.title" relativePoint="BOTTOMLEFT" x="0" y="-4"/>
 						</Anchors>
 						<Layers>
 							<Layer level="ARTWORK">								
 								<FontString parentKey="text" font="SystemFont_Med1" justifyH="left" justifyV="top" wordwrap="true" maxLines="4">
-									<Size x="260" y="0"/>
+									<Size x="240" y="0"/>
 									<Color r="0.2824" g="0.0157" b="0.0157"/>
 								</FontString>
 							</Layer>
@@ -1141,27 +1141,27 @@
 				</Frames>
 			</Frame>
 			<Frame parentKey="reward">
-				<Size x="26" y="26"/>
+				<Size x="30" y="30"/>
 				<Anchors>
-					<Anchor point="BOTTOMRIGHT" relativeKey="$parent.icon" x="2" y="-7"/>
+					<Anchor point="BOTTOMRIGHT" relativeKey="$parent.icon" x="4" y="-9"/>
 				</Anchors>
 				<Layers>
 					<Layer level="ARTWORK">
 						<Texture parentKey="icon" mask="Interface\\CharacterFrame\\TempPortraitAlphaMask">
-							<Size x="26" y="26"/>
+							<Size x="30" y="30"/>
 						</Texture>
 					</Layer>
 					<Layer level="OVERLAY">
 						<Texture parentKey="iconRing" atlas="adventureguide-rewardring">
 							<Size x="48" y="48"/>
 							<Anchors>
-								<Anchor point="CENTER" relativeKey="$parent.rewardIcon"/>
+								<Anchor point="CENTER" relativeKey="$parent.icon"/>
 							</Anchors>
 						</Texture>
 						<Texture parentKey="iconRingHighlight" atlas="adventureguide-rewardring" hidden="true" alphaMode="ADD">
 							<Size x="48" y="48"/>
 							<Anchors>
-								<Anchor point="CENTER" relativeKey="$parent.rewardIcon"/>
+								<Anchor point="CENTER" relativeKey="$parent.iconRing"/>
 							</Anchors>
 							<Color r="1" g="1" b="1" a="0.25"/>
 						</Texture>
@@ -2704,7 +2704,7 @@
 							<Frame parentKey="centerDisplay">
 								<Size x="264" y="351"/>
 								<Anchors>
-									<Anchor point="CENTER" x="0" y="12"/>
+									<Anchor point="CENTER" x="0" y="24"/>
 								</Anchors>
 								<Layers>
 									<Layer level="ARTWORK">								
@@ -2743,19 +2743,19 @@
 								<HighlightTexture inherits="UIPanelButtonHighlightTexture"/>
 							</Button>
 							<Frame parentKey="reward" enableMouse="true">
-								<Size x="26" y="26"/>
+								<Size x="30" y="30"/>
 								<Anchors>
 									<Anchor point="BOTTOM" x="0" y="72"/>
 								</Anchors>
 								<Layers>
 									<Layer level="ARTWORK">
 										<Texture parentKey="icon" mask="Interface\\CharacterFrame\\TempPortraitAlphaMask">
-											<Size x="26" y="26"/>
+											<Size x="30" y="30"/>
 											<Anchors>
-												<Anchor point="RIGHT" x="-11" y="0"/>
+												<Anchor point="RIGHT" x="-7" y="0"/>
 											</Anchors>
 										</Texture>
-										<FontString parentKey="text" font="SystemFont_Med3" justifyH="right" justifyV="center" text="Reward:">
+										<FontString parentKey="text" font="SystemFont_Med3" justifyH="right" justifyV="center" text="AJ_PRIMARY_REWARD_TEXT">
 											<Size x="0" y="0"/>
 											<Anchors>
 												<Anchor point="RIGHT" relativeKey="$parent.icon" relativePoint="LEFT" x="-12" y="0"/>
@@ -2773,7 +2773,7 @@
 										<Texture parentKey="iconRingHighlight" atlas="adventureguide-rewardring" hidden="true" alphaMode="ADD">
 											<Size x="48" y="48"/>
 											<Anchors>
-												<Anchor point="CENTER" relativeKey="$parent.icon"/>
+												<Anchor point="CENTER" relativeKey="$parent.iconRing"/>
 											</Anchors>
 											<Color r="1" g="1" b="1" a="0.25"/>
 										</Texture>
@@ -2796,6 +2796,7 @@
 								<Scripts>
 									<OnClick>
 										C_AdventureJournal.SetPrimaryOffset(C_AdventureJournal.GetPrimaryOffset()-1);
+										PlaySoundKitID(858); -- igMainMenuOptionFaerTab
 									</OnClick>
 								</Scripts>
 								<NormalTexture file="Interface\Buttons\UI-SpellbookIcon-PrevPage-Up"/>
@@ -2811,6 +2812,7 @@
 								<Scripts>
 									<OnClick>
 										C_AdventureJournal.SetPrimaryOffset(C_AdventureJournal.GetPrimaryOffset()+1);
+										PlaySoundKitID(858); --igMainMenuOptionFaerTab
 									</OnClick>
 								</Scripts>
 								<NormalTexture file="Interface\Buttons\UI-SpellbookIcon-NextPage-Up"/>

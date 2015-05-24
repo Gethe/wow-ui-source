@@ -1173,7 +1173,10 @@
 					<Anchor point="BOTTOM" y="-8"/>
 				</Anchors>
 				<Scripts>
-					<OnClick function="GarrisonMissionCompleteNextButton_OnClick"/>
+					<OnClick>
+						PlaySound("UI_Garrison_CommandTable_Nav_Next");
+						self:GetParent():GetParent():NextMission();
+					</OnClick>
 				</Scripts>
 			</Button>
 			<Frame parentKey="LoadingFrame" inherits="LoadingSpinnerTemplate" hidden="true">
@@ -1376,7 +1379,7 @@
 				</Texture>
 			</Layer>
 			<Layer level="ARTWORK">
-				<Texture atlas="GarrMission_EncounterAbilityBorder" useAtlasSize="true">
+				<Texture parentKey="Border" atlas="GarrMission_EncounterAbilityBorder" useAtlasSize="true">
 					<Anchors>
 						<Anchor point="CENTER" relativeKey="$parent.Icon"/>
 					</Anchors>
@@ -1421,7 +1424,7 @@
 						<Anchor point="TOPLEFT" y="-15" relativeKey="$parent.Title"/>
 					</Anchors>
 				</FontString>
-				<Texture atlas="GarrMission_EncounterAbilityBorder" useAtlasSize="true">
+				<Texture parentKey="Border" atlas="GarrMission_EncounterAbilityBorder" useAtlasSize="true">
 					<Anchors>
 						<Anchor point="CENTER" relativeKey="$parent.Icon"/>
 					</Anchors>

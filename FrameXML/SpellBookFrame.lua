@@ -78,29 +78,6 @@ function ToggleSpellBook(bookType)
 			SetCVarBitfield( "closedInfoFrames", tutorial, true );
 		end
 	end
-	
-	-- if boosted, find the first locked spell and display a tip next to it
-	if ( bookType == BOOKTYPE_SPELL and IsCharacterNewlyBoosted() and not GetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_BOOSTED_SPELL_BOOK) ) then
-		local spellSlot;
-		for i = 1, SPELLS_PER_PAGE do
-			local spellBtn = _G["SpellButton" .. i];
-			local slotType = select(2,SpellBook_GetSpellBookSlot(spellBtn));
-			if (slotType == "FUTURESPELL") then
-				if ( not spellSlot or spellBtn:GetID() < spellSlot:GetID() ) then
-					spellSlot = spellBtn;
-				end
-			end
-		end
-		
-		if ( spellSlot ) then
-			SpellLockedTooltip:Show();
-			SpellLockedTooltip:SetPoint("LEFT", spellSlot, "RIGHT", 16, 0);
-		else
-			SetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_BOOSTED_SPELL_BOOK, true);
-		end
-	else
-		SpellLockedTooltip:Hide();
-	end
 end
 
 function SpellBookFrame_GetTutorialEnum()
@@ -206,6 +183,29 @@ function SpellBookFrame_OnShow(self)
 
 	SpellBookFrame_PlayOpenSound();
 	MicroButtonPulseStop(SpellbookMicroButton);
+	
+	-- if boosted, find the first locked spell and display a tip next to it
+	if ( SpellBookFrame.bookType == BOOKTYPE_SPELL and IsCharacterNewlyBoosted() and not GetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_BOOSTED_SPELL_BOOK) ) then
+		local spellSlot;
+		for i = 1, SPELLS_PER_PAGE do
+			local spellBtn = _G["SpellButton" .. i];
+			local slotType = select(2,SpellBook_GetSpellBookSlot(spellBtn));
+			if (slotType == "FUTURESPELL") then
+				if ( not spellSlot or spellBtn:GetID() < spellSlot:GetID() ) then
+					spellSlot = spellBtn;
+				end
+			end
+		end
+		
+		if ( spellSlot ) then
+			SpellLockedTooltip:Show();
+			SpellLockedTooltip:SetPoint("LEFT", spellSlot, "RIGHT", 16, 0);
+		else
+			SetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_BOOSTED_SPELL_BOOK, true);
+		end
+	else
+		SpellLockedTooltip:Hide();
+	end
 end
 
 function SpellBookFrame_Update()
@@ -1058,7 +1058,7 @@ function FormatProfession(frame, index)
 			if rank >= profCap then
 				frame.statusBar.capped:Show();
 				frame.statusBar.rankText:SetTextColor(RED_FONT_COLOR.r, RED_FONT_COLOR.g, RED_FONT_COLOR.b);
-				frame.statusBar.tooltip = RED_FONT_COLOR_CODE..GameLimitedMode_GetString("CAP_REACHED")..FONT_COLOR_CODE_CLOSE;
+				frame.statusBar.tooltip = RED_FONT_COLOR_CODE..CAP_REACHED_TRIAL..FONT_COLOR_CODE_CLOSE;
 			else
 				frame.statusBar.capped:Hide();
 				frame.statusBar.rankText:SetTextColor(HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b);
