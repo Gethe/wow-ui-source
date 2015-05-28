@@ -563,12 +563,7 @@
 						if ( self:GetText() ~= "" ) then
 							parent.CheckButton:SetChecked(true);
 						end
-						if ( parent.validateFunc ) then
-							parent.warningText = parent.validateFunc(self:GetText());
-							parent.WarningFrame:SetShown(parent.warningText);
-							parent.CheckButton:SetShown(not parent.warningText);
-						end
-						LFGListEntryCreation_UpdateValidState(self:GetParent():GetParent());
+						LFGListRequirement_Validate(parent, self:GetText());
 						InputBoxInstructions_OnTextChanged(self);
 					</OnTextChanged>
 					<OnEditFocusLost>

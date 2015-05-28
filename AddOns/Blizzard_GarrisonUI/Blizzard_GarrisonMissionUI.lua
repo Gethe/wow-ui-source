@@ -896,6 +896,14 @@ end
 
 function GarrisonMissionButton_SetRewards(self, rewards, numRewards)
 	if (numRewards > 0) then
+		local currencyMultipliers = nil;
+		local goldMultiplier = nil;
+		if (self.info.inProgress) then
+			currencyMultipliers, goldMultiplier = select(8, C_Garrison.GetPartyMissionInfo(self.info.missionID));
+		else
+			currencyMultipliers = {};
+		end
+
 		local index = 1;
 		for id, reward in pairs(rewards) do
 			if (not self.Rewards[index]) then
@@ -918,13 +926,20 @@ function GarrisonMissionButton_SetRewards(self, rewards, numRewards)
 				Reward.Icon:SetTexture(reward.icon);
 				Reward.title = reward.title
 				if (reward.currencyID and reward.quantity) then
+					local quantity = reward.quantity;
 					if (reward.currencyID == 0) then
-						Reward.tooltip = GetMoneyString(reward.quantity);
-						Reward.Quantity:SetText(BreakUpLargeNumbers(floor(reward.quantity / COPPER_PER_GOLD)));
+						if (goldMultiplier ~= nil) then
+							quantity = quantity * goldMultiplier;
+						end
+						Reward.tooltip = GetMoneyString(quantity);
+						Reward.Quantity:SetText(BreakUpLargeNumbers(floor(quantity / COPPER_PER_GOLD)));
 						Reward.Quantity:Show();
 					else
+						if (currencyMultipliers[reward.currencyID] ~= nil) then
+							quantity = quantity * currencyMultipliers[reward.currencyID];
+						end
 						Reward.currencyID = reward.currencyID;
-						Reward.Quantity:SetText(reward.quantity);
+						Reward.Quantity:SetText(quantity);
 						Reward.Quantity:Show();
 					end
 				else

@@ -167,8 +167,33 @@ function EncounterJournal_OnLoad(self)
 	end
 	
 	-- set the suggestion panel frame to open by default
-	instanceSelect.suggestTab:Disable();
-	EncounterJournal.suggestFrame:Show();
+	EJSuggestFrame_OpenFrame();
+end
+function EncounterJournal_HasChangedContext(instanceID, instanceType)
+	if ( instanceType == "none" ) then
+		-- we've gone from a dungeon to the open world
+		return EncounterJournal.lastInstance ~= nil;
+	elseif ( instanceID ~= 0 and (instanceID ~= EncounterJournal.lastInstance or EJ_GetDifficulty() ~= difficultyID) ) then
+		-- dungeon or difficulty has changed
+		return true;
+	end	
+	return false;
+end
+
+function EncounterJournal_ResetDisplay(instanceID, instanceType, difficultyID)
+	if ( instanceType == "none" ) then
+		EncounterJournal.lastInstance = nil;
+		EJSuggestFrame_OpenFrame();
+	else
+		EJ_ContentTab_Select(EncounterJournal.instanceSelect.dungeonsTab.id); 
+
+		EncounterJournal_DisplayInstance(instanceID);
+		EncounterJournal.lastInstance = instanceID;
+		-- try to set difficulty to current instance difficulty
+		if ( EJ_IsValidInstanceDifficulty(difficultyID) ) then
+			EJ_SetDifficulty(difficultyID);
+		end
+	end
 end
 
 function EncounterJournal_OnShow(self)
@@ -187,18 +212,8 @@ function EncounterJournal_OnShow(self)
 	--automatically navigate to the current dungeon if you are in one;
 	local instanceID = EJ_GetCurrentInstance();
 	local _, instanceType, difficultyID = GetInstanceInfo();
-	if( instanceType == "none" and EncounterJournal.lastInstance ~= 0 ) then
-		EJ_ContentTab_Select(instanceSelect.suggestTab.id);
-		EncounterJournal.lastInstance = 0;
-	elseif ( instanceID ~= 0 and instanceType ~= "none" and (instanceID ~= EncounterJournal.lastInstance or EJ_GetDifficulty() ~= difficultyID) ) then
-		EJ_ContentTab_Select(instanceSelect.dungeonsTab.id); 
-
-		EncounterJournal_DisplayInstance(instanceID);
-		EncounterJournal.lastInstance = instanceID;
-		-- try to set difficulty to current instance difficulty
-		if ( EJ_IsValidInstanceDifficulty(difficultyID) ) then
-			EJ_SetDifficulty(difficultyID);
-		end
+	if ( EncounterJournal_HasChangedContext(instanceID, instanceType) ) then
+		EncounterJournal_ResetDisplay(instanceID, instanceType, difficultyID);
 	elseif ( EncounterJournal.queuedPortraitUpdate ) then
 		-- fixes portraits when switching between fullscreen and windowed mode
 		EncounterJournal_UpdatePortraits();
@@ -2426,7 +2441,7 @@ function AdventureJournal_Reward_OnEnter(self)
 			rewardHeaderText = rewardData.rewardDesc;
 		elseif ( rewardData.isRewardTable ) then
 			local difficultyStr = "";
-			if ( suggestion.difficultyID and suggestion.difficultyID > 1 ) then
+			if ( not suggestion.hideDifficulty and suggestion.difficultyID and suggestion.difficultyID > 1 ) then
 				for i=1, #EJ_DIFFICULTIES do
 					local entry = EJ_DIFFICULTIES[i];
 					if ( EJ_DIFFICULTIES[i].difficultyID == suggestion.difficultyID ) then
@@ -2625,7 +2640,6 @@ function AdventureJournal_Reward_OnMouseDown(self)
 	local data = EncounterJournal.suggestFrame.suggestions[index];
 	if ( data.ej_instanceID ) then
 		EncounterJournal_DisplayInstance(data.ej_instanceID);
-		EncounterJournal.lastInstance = instanceID;
 		-- try to set difficulty to current instance difficulty
 		if ( EJ_IsValidInstanceDifficulty(data.difficultyID) ) then
 			EJ_SetDifficulty(data.difficultyID);

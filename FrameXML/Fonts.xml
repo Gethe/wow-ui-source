@@ -882,17 +882,17 @@
 			</Font>
 		</Member>
 		<Member alphabet="korean">
-			<Font font="Fonts\K_Pagetext.ttf" height="30" outline="NORMAL">
+			<Font font="Fonts\K_Pagetext.ttf" height="30">
 				<Color r="1" g=".82" b="0"/>
 			</Font>
 		</Member>
 		<Member alphabet="simplifiedchinese">
-			<Font font="Fonts\ARKai_T.ttf" height="30" outline="NORMAL">
+			<Font font="Fonts\ARKai_T.ttf" height="30">
 				<Color r="1" g=".82" b="0"/>
 			</Font>
 		</Member>
 		<Member alphabet="traditionalchinese">
-			<Font font="Fonts\blei00d.ttf" height="30" outline="NORMAL">
+			<Font font="Fonts\blei00d.ttf" height="30">
 				<Color r="1" g=".82" b="0"/>
 			</Font>
 		</Member>

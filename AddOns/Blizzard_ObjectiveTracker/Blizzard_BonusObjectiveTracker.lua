@@ -879,6 +879,7 @@ end
 
 function ObjectiveTrackerBonusBannerFrame_OnLoad(self)
 	self.PlayBanner = ObjectiveTrackerBonusBannerFrame_PlayBanner;
+	self.StopBanner = ObjectiveTrackerBonusBannerFrame_StopBanner;
 end
 
 function ObjectiveTrackerBonusBannerFrame_PlayBanner(self, questID)
@@ -917,6 +918,11 @@ function ObjectiveTrackerBonusBannerFrame_PlayBanner(self, questID)
 	BANNER_BONUS_OBJECTIVE_ID = questID;
 	-- timer to put the bonus objective in the tracker
 	C_Timer.After(2.66, function() ObjectiveTracker_Update(OBJECTIVE_TRACKER_UPDATE_TASK_ADDED, BANNER_BONUS_OBJECTIVE_ID); end);
+end
+
+function ObjectiveTrackerBonusBannerFrame_StopBanner(self)
+	self.Anim:Stop();
+	self:Hide();
 end
 
 function ObjectiveTrackerBonusBannerFrame_OnAnimFinished()

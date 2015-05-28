@@ -281,20 +281,8 @@ function CharacterServicesMaster_OnCharacterListUpdate()
 	elseif (C_CharacterServices.HasQueuedUpgrade()) then
 		local guid = C_CharacterServices.GetQueuedUpgradeGUID();
 
-		local num = math.min(GetNumCharacters(), MAX_CHARACTERS_DISPLAYED);
-
-		for i = 1, num do
-			if (select(14, GetCharacterInfo(GetCharIDFromIndex(i + CHARACTER_LIST_OFFSET))) == guid) then
-				local button = _G["CharSelectCharacterButton"..i];
-				CharacterSelectButton_OnClick(button);
-				button.selection:Show();
-				UpdateCharacterSelection(CharacterSelect);
-				GetCharacterListUpdate();
-				CharacterServicesMaster.waitingForLevelUp = true;
-				break;
-			end
-		end
-
+	  	CharacterServicesMaster.waitingForLevelUp = CharacterSelect_SelectCharacterByGUID(guid);
+	
 		C_CharacterServices.ClearQueuedUpgrade();
 	end
 end

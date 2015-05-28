@@ -1194,7 +1194,7 @@ local GLYPH_SLOTS = {
 SecureCmdList["CASTGLYPH"] = function(msg)
 	local action = SecureCmdOptionParse(msg);
 	if ( action ) then
-		local glyph, slot = strmatch(action, "^(%S+)%s+(%S+)$");
+		local glyph, slot = strmatch(action, "^(.+)%s+(%S+)$");
 		slot = (slot and GLYPH_SLOTS[slot]) or tonumber(slot);
 		local glyphID = tonumber(glyph);
 		if ( glyphID and slot ) then
@@ -2904,6 +2904,10 @@ function RemoveExtraSpaces(str)
 	return string.gsub(str, "     +", "    ");	--Replace all instances of 5+ spaces with only 4 spaces.
 end
 
+function RemoveNewlines(str)
+	return string.gsub(str, "\n", "");
+end
+
 function ChatFrame_DisplayGMOTD(frame, gmotd)
 	if ( gmotd and (strlen(gmotd) > 0) ) then
 		local info = ChatTypeInfo["GUILD"];
@@ -3155,6 +3159,7 @@ function ChatFrame_MessageEventHandler(self, event, ...)
 		elseif ( type == "BN_INLINE_TOAST_BROADCAST" ) then
 			if ( arg1 ~= "" ) then
 				arg1 = RemoveExtraSpaces(arg1);
+				arg1 = RemoveNewlines(arg1);
 				local playerLink = format("|HBNplayer:%s:%s:%s:%s:%s|h[%s]|h", arg2, arg13, arg11, Chat_GetChatCategory(type), 0, arg2);
 				self:AddMessage(format(BN_INLINE_TOAST_BROADCAST, playerLink, arg1), info.r, info.g, info.b, info.id);
 			end

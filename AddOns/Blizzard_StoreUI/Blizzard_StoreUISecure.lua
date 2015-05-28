@@ -183,6 +183,7 @@ Import("VAS_RACE_CHANGE_CONFIRMATION");
 Import("VAS_RACE_CHANGE_VALIDATION_DESCRIPTION");
 Import("VAS_FACTION_CHANGE_VALIDATION_DESCRIPTION");
 Import("VAS_RACE_CHANGE_INELIGIBLE");
+Import("VAS_APPEARANCE_CHANGE_VALIDATION_DESCRIPTION");
 Import("TOKEN_CURRENT_AUCTION_VALUE");
 Import("TOKEN_MARKET_PRICE_NOT_AVAILABLE");
 Import("OKAY");
@@ -1713,7 +1714,8 @@ function StoreVASValidationFrame_OnLoad(self)
 	end
 	
 	self:RegisterEvent("STORE_CHARACTER_LIST_RECEIVED");
-	self:RegisterEvent("STORE_VAS_PURCHASE_RESULT_RECEIVED");
+	self:RegisterEvent("STORE_VAS_PURCHASE_RESULT_ERROR");
+	self:RegisterEvent("STORE_VAS_PURCHASE_COMPLETE");
 end
 
 function StoreVASValidationFrame_SetVASStart(self)
@@ -1734,13 +1736,19 @@ function StoreVASValidationFrame_SetVASStart(self)
 	for list, _ in pairs(StoreDropdownLists) do
 		list:Hide();
 	end
-	
+
 	self.CharacterSelectionFrame.ContinueButton:Disable();
 	self.CharacterSelectionFrame.ContinueButton:Show();
 	self.CharacterSelectionFrame.Spinner:Hide();
-	self.CharacterSelectionFrame.RealmSelector.Text:SetText(VAS_SELECT_REALM);
-	self.CharacterSelectionFrame.CharacterSelector.Text:SetText(VAS_SELECT_CHARACTER_DISABLED);
-	self.CharacterSelectionFrame.CharacterSelector.Button:Disable();
+	if (IsOnGlueScreen()) then
+		SelectedRealm = _G.GetServerName();
+	else
+		SelectedRealm = GetRealmName();
+	end
+
+	self.CharacterSelectionFrame.RealmSelector.Text:SetText(SelectedRealm);
+	self.CharacterSelectionFrame.CharacterSelector.Text:SetText(VAS_SELECT_CHARACTER);
+	self.CharacterSelectionFrame.CharacterSelector.Button:Enable();
 	self.CharacterSelectionFrame.NewCharacterName:Hide();
 	self.CharacterSelectionFrame.ClassIcon:Hide();
 	self.CharacterSelectionFrame.SelectedCharacterFrame:Hide();
@@ -1763,16 +1771,24 @@ function StoreVASValidationFrame_OnEvent(self, event, ...)
 			StoreVASValidationFrame_SetVASStart(self);
 			self:Raise();
 		end
-	elseif ( event == "STORE_VAS_PURCHASE_RESULT_RECEIVED" ) then
+	elseif ( event == "STORE_VAS_PURCHASE_RESULT_ERROR" ) then
 		WaitingOnConfirmation = false;
 		StoreFrame_UpdateActivePanel(StoreFrame);
-		local results = C_PurchaseAPI.GetVASResults();
+		local errors = C_PurchaseAPI.GetVASErrors();
 		-- TEMP
-		_G.print("Number of results returned", #results);
-		for i = 1, #results do
-			_G.print(("Result %d:"):format(i), results[i]);
+		_G.print("Number of errors returned", #errors);
+		for i = 1, #errors do
+			_G.print(("Error %d:"):format(i), errors[i]);
 		end
 		self:Hide();
+	elseif ( event == "STORE_VAS_PURCHASE_COMPLETE" ) then
+		if (IsOnGlueScreen()) then
+			self:GetParent():Hide();
+
+			local productID, guid, realmName = C_PurchaseAPI.GetVASCompletionInfo();
+			local name = select(7, C_PurchaseAPI.GetProductInfo(productID));
+			_G.ShowGlueDialog((_G.BLIZZARD_STORE_VAS_PRODUCT_READY):format(name), guid, realmName);
+		end
 	end
 end
 
@@ -2440,14 +2456,14 @@ function VASCharacterSelectionCharacterSelector_Callback(value)
 			frame.ValidationDescription:SetText(VAS_RACE_CHANGE_VALIDATION_DESCRIPTION:format(factionColors[character.faction], str));
 			frame.ValidationDescription:Show();
 		elseif (VASServiceType == LE_VAS_SERVICE_FACTION_CHANGE) then
-			local str, nf;
+			local str, newfaction;
 
 			if (character.faction == 0) then
 				str = FACTION_ALLIANCE;
-				nf = 1;
+				newfaction = 1;
 			elseif (character.faction == 1) then
 				str = FACTION_HORDE;
-				nf = 0;
+				newfaction = 0;
 			end
 			if (not str) then
 				frame.ValidationDescription:SetText(VAS_RACE_CHANGE_INELIGIBLE);
@@ -2455,7 +2471,10 @@ function VASCharacterSelectionCharacterSelector_Callback(value)
 				frame.ContinueButton:Disable();
 				return;
 			end
-			frame.ValidationDescription:SetText(VAS_FACTION_CHANGE_VALIDATION_DESCRIPTION:format(factionColors[nf], str));
+			frame.ValidationDescription:SetText(VAS_FACTION_CHANGE_VALIDATION_DESCRIPTION:format(factionColors[newfaction], str));
+			frame.ValidationDescription:Show();
+		elseif (VASServiceType == LE_VAS_SERVICE_APPEARANCE_CHANGE) then
+			frame.ValidationDescription:SetText(VAS_APPEARANCE_CHANGE_VALIDATION_DESCRIPTION);
 			frame.ValidationDescription:Show();
 		end
 		frame.ContinueButton:Enable();

@@ -1469,16 +1469,20 @@ function PaperDollFrame_SetItemLevel(statFrame, unit)
 	end
 	_G[statFrame:GetName().."Label"]:SetText(format(STAT_FORMAT, STAT_AVERAGE_ITEM_LEVEL));
 	local text = _G[statFrame:GetName().."StatText"];
-	local avgItemLevel, avgItemLevelEquipped = GetAverageItemLevel();
+	local avgItemLevel, avgItemLevelEquipped, avgItemLevelPvP = GetAverageItemLevel();
 	avgItemLevel = floor(avgItemLevel);
 	avgItemLevelEquipped = floor(avgItemLevelEquipped);
 	text:SetText(avgItemLevelEquipped .. " / " .. avgItemLevel);
 	statFrame.tooltip = HIGHLIGHT_FONT_COLOR_CODE..format(PAPERDOLLFRAME_TOOLTIP_FORMAT, STAT_AVERAGE_ITEM_LEVEL).." "..avgItemLevel;
-	if (avgItemLevelEquipped ~= avgItemLevel) then
+	if ( avgItemLevelEquipped ~= avgItemLevel ) then
 		statFrame.tooltip = statFrame.tooltip .. "  " .. format(STAT_AVERAGE_ITEM_LEVEL_EQUIPPED, avgItemLevelEquipped);
 	end
 	statFrame.tooltip = statFrame.tooltip .. FONT_COLOR_CODE_CLOSE;
 	statFrame.tooltip2 = STAT_AVERAGE_ITEM_LEVEL_TOOLTIP;
+
+	if ( avgItemLevel ~= avgItemLevelPvP ) then
+		statFrame.tooltip2 = statFrame.tooltip2.."\n\n"..STAT_AVERAGE_PVP_ITEM_LEVEL:format(avgItemLevelPvP);
+	end
 end
 
 function MovementSpeed_OnEnter(statFrame)

@@ -174,7 +174,7 @@ UI.xsd">
 				<FontString parentKey="Quality" inherits="GameFontHighlightSmall" justifyH="LEFT">
 					<Size x="190" y="0"/>
 					<Anchors>
-						<Anchor point="TOPLEFT" x="12" y="-72"/>
+						<Anchor point="TOPLEFT" x="15" y="-50"/>
 					</Anchors>
 				</FontString>
 				<Texture parentKey="XPBar">
@@ -233,6 +233,7 @@ UI.xsd">
 					</Anchors>
 				</Texture>
 				<FontString parentKey="Name" inherits="GameFontNormal" justifyH="LEFT">
+					<Size x="200" y="0"/>
 					<Anchors>
 						<Anchor point="LEFT" relativeKey="$parent.Icon" relativePoint="RIGHT" x="2"/>
 					</Anchors>

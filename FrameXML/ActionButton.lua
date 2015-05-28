@@ -315,6 +315,10 @@ function ActionButton_Update (self)
 		else
 			buttonCooldown:Hide();
 		end
+
+		if(self.chargeCooldown) then
+			EndChargeCooldown(self.chargeCooldown);
+		end
 	end
 
 	-- Add a green border if button is an equipped item

@@ -396,6 +396,9 @@
 	</Button>
 	
 	<Frame name="MaterialFrameTemplate" virtual="true">
+		<KeyValues>
+			<KeyValue key="currencyType" value="824" type="number"/>
+		</KeyValues>
 		<Layers>
 			<Layer level="BACKGROUND">
 				<Texture atlas="Garr_Mission_MaterialFrame" useAtlasSize="true" setAllPoints="true"/>
@@ -423,7 +426,7 @@
 		<Scripts>
 			<OnEnter>
 				GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
-				GameTooltip:SetCurrencyTokenByID(GARRISON_CURRENCY);
+				GameTooltip:SetCurrencyTokenByID(self.currencyType);
 				GameTooltip:Show();
 			</OnEnter>
 			<OnLeave function="GameTooltip_Hide"/>

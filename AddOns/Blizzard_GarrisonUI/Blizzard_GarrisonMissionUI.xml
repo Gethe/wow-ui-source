@@ -1685,6 +1685,11 @@
 		</Layers>
 		<Frames>
 			<Frame parentKey="RewardsFrame" inherits="GarrisonFollowerMissionRewardsFrameTemplate, GarrisonMissionPageRewardTemplate">
+				<Scripts>
+					<OnLoad>
+						self.tooltipText = GARRISON_MISSION_CHANCE_TOOLTIP_TEXT;
+					</OnLoad>
+				</Scripts>
 			</Frame>
 		</Frames>
 	</Frame>

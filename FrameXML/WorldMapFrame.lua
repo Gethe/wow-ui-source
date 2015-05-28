@@ -1201,8 +1201,8 @@ function TaskPOI_OnEnter(self)
 			if ( money > 0 ) then
 				SetTooltipMoney(WorldMapTooltip, money, nil);
 			end		
-			WorldMapTooltip:Show();
 		end
+		WorldMapTooltip:Show();
 	end
 end
 

@@ -446,6 +446,8 @@ function GlueDropDownMenu_Refresh(frame, useValue)
 				local icon = _G[frame:GetName().."Icon"];
 				if (button.iconOnly and icon and button.icon) then
 					GlueDropDownMenu_SetIconImage(icon, button.icon, button.iconInfo);
+					-- clear text, it may have been set with VIDEO_QUALITY_LABEL6 below
+					GlueDropDownMenu_SetText(frame, nil);
 				elseif ( useValue ) then
 					GlueDropDownMenu_SetText(frame, button.value);
 					icon:Hide();

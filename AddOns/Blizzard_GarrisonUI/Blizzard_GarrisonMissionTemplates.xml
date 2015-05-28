@@ -80,16 +80,8 @@
 				self.deselectedTextY = 2;
 				self.selectedTextY = 2;
 			</OnLoad>
-			<OnEnter>
-				self.LeftHighlight:Show();
-				self.MiddleHighlight:Show();
-				self.RightHighlight:Show();
-			</OnEnter>
-			<OnLeave>
-				self.LeftHighlight:Hide();
-				self.MiddleHighlight:Hide();
-				self.RightHighlight:Hide();
-			</OnLeave>
+			<OnEnter function="GarrisonMissionFrameTab_OnEnter"/>
+			<OnLeave function="GarrisonMissionFrameTab_OnLeave"/>
 			<OnShow>
 				PanelTemplates_TabResize(self, 10);
 			</OnShow>
@@ -268,7 +260,7 @@
 						local missionID = self:GetParent():GetParent().missionInfo.missionID;
 						GameTooltip:AddLine(string.format(GARRISON_MISSION_PERCENT_CHANCE, C_Garrison.GetRewardChance(missionID)), HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b);
 						GameTooltip:AddLine(" ");
-						GameTooltip:AddLine(GARRISON_MISSION_CHANCE_TOOLTIP_TEXT, NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b, 1, 1);
+						GameTooltip:AddLine(self:GetParent().tooltipText, NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b, 1, 1);
 						GameTooltip:Show();
 					</OnEnter>
 					<OnLeave function="GameTooltip_Hide"/>

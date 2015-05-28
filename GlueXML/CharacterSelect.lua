@@ -333,6 +333,10 @@ function CharacterSelect_OnUpdate(self, elapsed)
 	if ( C_CharacterServices.HasQueuedUpgrade() ) then
 		CharacterServicesMaster_OnCharacterListUpdate();
 	end
+
+	if (StoreFrame_WaitingForUpdate()) then
+		StoreFrame_OnCharacterListUpdate();
+	end
 end
 
 function CharacterSelect_OnKeyDown(self,key)
@@ -531,7 +535,10 @@ function UpdateCharacterSelection(self)
 				CharacterSelectButton_ShowMoveButtons(button);
 			end
 			if ( self.undeleting ) then
+				paidServiceButton.GoldBorder:Hide();
+				paidServiceButton.VASIcon:Hide();
 				paidServiceButton.texture:SetTexCoord(.5, 1, .5, 1);
+				paidServiceButton.texture:Show();
 				paidServiceButton.tooltip = UNDELETE_SERVICE_TOOLTIP;
 				paidServiceButton.disabledTooltip = nil;
 				paidServiceButton:Show();
@@ -629,18 +636,27 @@ function UpdateCharacterList(skipSelect)
 			paidServiceButton:Hide();
 		elseif ( PFC ) then
 			serviceType = PAID_FACTION_CHANGE;
-			paidServiceButton.texture:SetTexCoord(0, 0.5, 0.5, 1);
+			paidServiceButton.GoldBorder:Show();
+			paidServiceButton.VASIcon:SetTexture("Interface\\Icons\\VAS_FactionChange");
+			paidServiceButton.VASIcon:Show();
+			paidServiceButton.texture:Hide();
 			paidServiceButton.tooltip = PAID_FACTION_CHANGE_TOOLTIP;
 			paidServiceButton.disabledTooltip = nil;
 		elseif ( PRC ) then
 			serviceType = PAID_RACE_CHANGE;
-			paidServiceButton.texture:SetTexCoord(0.5, 1, 0, 0.5);
+			paidServiceButton.GoldBorder:Show();
+			paidServiceButton.VASIcon:SetTexture("Interface\\Icons\\VAS_RaceChange");
+			paidServiceButton.VASIcon:Show();
+			paidServiceButton.texture:Hide();
 			disableService = PRCDisabled;
 			paidServiceButton.tooltip = PAID_RACE_CHANGE_TOOLTIP;
 			paidServiceButton.disabledTooltip = PAID_RACE_CHANGE_DISABLED_TOOLTIP;
 		elseif ( PCC ) then
 			serviceType = PAID_CHARACTER_CUSTOMIZATION;
-			paidServiceButton.texture:SetTexCoord(0, 0.5, 0, 0.5);
+			paidServiceButton.GoldBorder:Show();
+			paidServiceButton.VASIcon:SetTexture("Interface\\Icons\\VAS_AppearanceChange");
+			paidServiceButton.VASIcon:Show();
+			paidServiceButton.texture:Hide();
 			paidServiceButton.tooltip = PAID_CHARACTER_CUSTOMIZE_TOOLTIP;
 			paidServiceButton.disabledTooltip = nil;
 		end
@@ -651,8 +667,12 @@ function UpdateCharacterList(skipSelect)
 			if ( disableService ) then
 				paidServiceButton:Disable();
 				paidServiceButton.texture:SetDesaturated(true);
+				paidServiceButton.GoldBorder:SetDesaturated(true);
+				paidServiceButton.VASIcon:SetDesaturated(true);
 			elseif ( not paidServiceButton:IsEnabled() ) then
 				paidServiceButton.texture:SetDesaturated(false);
+				paidServiceButton.GoldBorder:SetDesaturated(false);
+				paidServiceButton.VASIcon:SetDesaturated(false);
 				paidServiceButton:Enable();
 			end
 		else
@@ -666,11 +686,15 @@ function UpdateCharacterList(skipSelect)
 				button.buttonText.name:SetPoint("TOPLEFT", MOVING_TEXT_OFFSET, -5);
 				button:LockHighlight();
 				paidServiceButton.texture:SetVertexColor(1, 1, 1);
+				paidServiceButton.GoldBorder:SetVertexColor(1, 1, 1);
+				paidServiceButton.VASIcon:SetVertexColor(1, 1, 1);
 			else
 				button:SetAlpha(0.6);
 				button.buttonText.name:SetPoint("TOPLEFT", DEFAULT_TEXT_OFFSET, -5);
 				button:UnlockHighlight();
 				paidServiceButton.texture:SetVertexColor(0.35, 0.35, 0.35);
+				paidServiceButton.GoldBorder:SetVertexColor(0.35, 0.35, 0.35);
+				paidServiceButton.VASIcon:SetVertexColor(0.35, 0.35, 0.35);
 			end
 		end
 		
@@ -834,6 +858,24 @@ function CharacterSelect_SelectCharacter(index, noCreate)
 		local backgroundFileName = GetSelectBackgroundModel(charID);
 		CharacterSelect.currentBGTag = SetBackgroundModel(CharacterSelectModel, backgroundFileName);
 	end
+end
+
+
+function CharacterSelect_SelectCharacterByGUID(guid)
+	local num = math.min(GetNumCharacters(), MAX_CHARACTERS_DISPLAYED);
+
+	for i = 1, num do
+		if (select(14, GetCharacterInfo(GetCharIDFromIndex(i + CHARACTER_LIST_OFFSET))) == guid) then
+			local button = _G["CharSelectCharacterButton"..i];
+			CharacterSelectButton_OnClick(button);
+			button.selection:Show();
+			UpdateCharacterSelection(CharacterSelect);
+			GetCharacterListUpdate();
+			return true;
+		end
+	end
+
+	return false;
 end
 
 function CharacterDeleteDialog_OnShow()

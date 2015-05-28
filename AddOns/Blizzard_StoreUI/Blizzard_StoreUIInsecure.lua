@@ -25,3 +25,37 @@ end
 function HidePreviewFrame()
 	ModelPreviewFrame:Hide();
 end
+
+if (InGlue()) then
+	VASCharacterGUID = nil;
+	GlueDialogTypes["VAS_PRODUCT_DELIVERED"] = {
+		button1 = OKAY,
+		escapeHides = true,
+		OnAccept = function()
+			local data = GlueDialog.data;
+
+			if (GetServerName() ~= data.realmName) then
+				C_StoreGlue.ChangeRealmByCharacterGUID(data.guid);
+			else
+				UpdateCharacterList(true);
+			end
+
+			VASCharacterGUID = data.guid;
+		end
+	}
+
+	function StoreFrame_WaitingForUpdate()
+		return VASCharacterGUID ~= nil;
+	end
+
+	function StoreFrame_OnCharacterListUpdate()
+		if (VASCharacterGUID) then
+			CharacterSelect_SelectCharacterByGUID(VASCharacterGUID);
+		end
+		VASCharacterGUID = nil;
+	end
+
+	function ShowGlueDialog(text, guid, realmName)
+		GlueDialog_Show("VAS_PRODUCT_DELIVERED", text, { ["guid"] = guid, ["realmName"] = realmName });
+	end
+end

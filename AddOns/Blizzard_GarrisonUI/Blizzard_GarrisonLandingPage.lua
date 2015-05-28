@@ -42,6 +42,18 @@ function GarrisonLandingPage_UpdateTabs(self)
 	end
 end
 
+function GarrisonLandingPageTab_OnEnter(self)
+	self.LeftHighlight:Show();
+	self.MiddleHighlight:Show();
+	self.RightHighlight:Show();
+end
+
+function GarrisonLandingPageTab_OnLeave(self)
+	self.LeftHighlight:Hide();
+	self.MiddleHighlight:Hide();
+	self.RightHighlight:Hide();
+end
+
 function GarrisonLandingPage_OnShow(self)
 	GarrisonLandingPage_UpdateTabs(self);
 	if (C_Garrison.IsInvasionAvailable()) then

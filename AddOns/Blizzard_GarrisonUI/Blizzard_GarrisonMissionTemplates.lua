@@ -167,6 +167,8 @@ function GarrisonMission:ShowMission(missionInfo)
 	
 	self.followerCounters = C_Garrison.GetBuffedFollowersForMission(missionInfo.missionID)
 	self.followerTraits = C_Garrison.GetFollowersTraitsForMission(missionInfo.missionID);
+	
+	GarrisonMissionPage_SetCounters(frame.Followers, frame.Enemies, frame.missionInfo.missionID);
 end
 
 function GarrisonMission:SetPartySize(frame, size, numEnemies)
@@ -363,7 +365,7 @@ function GarrisonMission:UpdateMissionData(frame)
 	frame.lastUpdate = GetTime();
 end
 
-function GarrisonMission:UpdateStartButton(missionPage)
+function GarrisonMission:UpdateStartButton(missionPage, partyNotFullText)
 	local missionInfo = missionPage.missionInfo;
 	if ( not missionPage.missionInfo or not missionPage:IsVisible() ) then
 		return;
@@ -384,7 +386,7 @@ function GarrisonMission:UpdateStartButton(missionPage)
 	end
 
 	if ( not disableError and C_Garrison.GetNumFollowersOnMission(missionPage.missionInfo.missionID) < missionPage.missionInfo.numFollowers ) then
-		disableError = GARRISON_PARTY_NOT_FULL_TOOLTIP;
+		disableError = partyNotFullText or GARRISON_PARTY_NOT_FULL_TOOLTIP;
 	end
 
 	local startButton = missionPage.StartMissionButton;
@@ -1497,6 +1499,18 @@ end
 --- Common Functions                                                          ---
 ---------------------------------------------------------------------------------
 
+function GarrisonMissionFrameTab_OnEnter(self)
+	self.LeftHighlight:Show();
+	self.MiddleHighlight:Show();
+	self.RightHighlight:Show();
+end
+
+function GarrisonMissionFrameTab_OnLeave(self)
+	self.LeftHighlight:Hide();
+	self.MiddleHighlight:Hide();
+	self.RightHighlight:Hide();
+end
+
 function GarrisonMissionFrame_SetItemRewardDetails(frame)
 	local itemName, _, itemRarity, _, _, _, _, _, _, itemTexture = GetItemInfo(frame.itemID);
 	frame.Icon:SetTexture(itemTexture);
@@ -1667,6 +1681,14 @@ function GarrisonMissionPage_SetCounters(Followers, Enemies, missionID)
 					end
 				end
 			end
+		end
+	end
+	
+	local bonusEffects = C_Garrison.GetMissionBonusAbilityEffects(missionID);
+	for i = 1, #bonusEffects do
+		local mechanicTypeID = bonusEffects[i].mechanicTypeID;
+		if(mechanic ~= 0) then
+			GarrisonMissionPage_CheckCounter(Enemies, mechanicTypeID);
 		end
 	end
 	
@@ -1939,6 +1961,11 @@ function GarrisonMissionMechanicFollowerCounter_OnEnter(self)
 	local tooltip = GarrisonMissionMechanicFollowerCounterTooltip;
 	tooltip.Icon:SetTexture(self.info.icon);
 	tooltip.Name:SetText(self.info.name);
+	if (self.followerTypeID == LE_FOLLOWER_TYPE_SHIPYARD_6_2) then
+		tooltip.Subtitle:SetText(GARRISON_SHIP_CAN_COUNTER);
+	else
+		tooltip.Subtitle:SetText(GARRISON_FOLLOWER_CAN_COUNTER);
+	end
 	local height = tooltip.Title:GetHeight() + tooltip.Subtitle:GetHeight() + tooltip.Icon:GetHeight() + 28; --height of icon plus padding around it and at the bottom
 
 	if (self.info.showCounters) then
@@ -2009,6 +2036,14 @@ function GarrisonMission_DetermineCounterableThreats(missionID, followerType)
 					end
 				end
 			end
+		end
+	end
+	
+	local bonusEffects = C_Garrison.GetMissionBonusAbilityEffects(missionID);
+	for i = 1, #bonusEffects do
+		local mechanicTypeID = bonusEffects[i].mechanicTypeID;
+		if(mechanicTypeID ~= 0) then
+			threats.full[mechanicTypeID] = (threats.full[mechanicTypeID] or 0) + 1;
 		end
 	end
 

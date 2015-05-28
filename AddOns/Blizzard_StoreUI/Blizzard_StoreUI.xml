@@ -2297,7 +2297,7 @@
 								</OnLoad>
 							</Scripts>
 						</Frame>
-						<EditBox parentKey="NewCharacterName" inherits="StoreEditBoxTemplate">
+						<EditBox parentKey="NewCharacterName" letters="12" inherits="StoreEditBoxTemplate">
 							<Size x="170" y="22"/>
 							<Anchors>
 								<Anchor point="TOPLEFT" relativeKey="$parent.SelectedCharacterFrame" relativePoint="BOTTOMLEFT" x="16" y="-24"/>

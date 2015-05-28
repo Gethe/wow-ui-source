@@ -805,6 +805,14 @@ StaticPopupDialogs["BFMGR_PLAYER_LOW_LEVEL"] = {
 	whileDead = 1,
 };
 
+StaticPopupDialogs["BFMGR_PLAYER_NOT_WHILE_IN_RAID"] = {
+	text = WORLD_PVP_NOT_WHILE_IN_RAID,
+	button1 = OKAY,
+	showAlert = 1,
+	timeout = 0,
+	whileDead = 1,
+};
+
 StaticPopupDialogs["CONFIRM_GUILD_LEAVE"] = {
 	text = CONFIRM_GUILD_LEAVE,
 	button1 = ACCEPT,
@@ -3422,7 +3430,7 @@ StaticPopupDialogs["LFG_LIST_ENTRY_EXPIRED_TIMEOUT"] = {
 };
 
 StaticPopupDialogs["CONFIRM_FOLLOWER_UPGRADE"] = {
-	text = CONFIRM_GARRISON_FOLLOWER_UPGRADE,
+	text = "%s",
 	button1 = YES,
 	button2 = NO,
 	OnAccept = function(self)
