@@ -424,7 +424,7 @@
 						<TexCoords left="0" right="0.1953125" top="0" bottom="1"/>
 					</Texture>
 					<Texture parentKey="Middle" file="Interface\Glues\CharacterCreate\CharacterCreate-LabelFrame">
-						<Size x="155" y="64"/>
+						<Size x="125" y="64"/>
 						<Anchors>
 							<Anchor point="LEFT" relativeKey="$parent.Left" relativePoint="RIGHT"/>
 						</Anchors>
@@ -438,7 +438,7 @@
 						<TexCoords left="0.8046875" right="1" top="0" bottom="1"/>
 					</Texture>
 					<FontString parentKey="Text" inherits="GameFontHighlightSmall" wordwrap="false" justifyH="LEFT">
-						<Size x="0" y="10"/>
+						<Size x="110" y="10"/>
 						<Anchors>
 							<Anchor point="LEFT" relativeKey="$parent.Left" x="27" y="2"/>
 						</Anchors>
@@ -1956,6 +1956,7 @@
 						Outbound.UpdateMicroButtons();
 					end
 
+					StoreVASValidationFrame:Hide();
 					PlaySound("UI_igStore_WindowClose_Button");
 				</OnHide>
 				<OnAttributeChanged function="StoreFrame_OnAttributeChanged" />
@@ -2139,7 +2140,7 @@
 			</Scripts>
 		</Frame>
 		<Frame name="StoreVASValidationFrame" frameStrata="FULLSCREEN_DIALOG" topLevel="true" parent="StoreFrame" inherits="GoldBorderFrameTemplate" hidden="true">
-			<Size x="403" y="556" />
+			<Size x="403" y="626" />
 			<Layers>
 				<Layer level="BACKGROUND">
 					<Texture parentKey="ParchmentMiddle" file="Interface\Store\receipt-parchment-middle" horizTile="true">
@@ -2174,12 +2175,12 @@
 					</Texture>
 				</Layer>
 				<Layer level="ARTWORK">
-					<Texture inherits="store-receipt-line">
+					<Texture parentKey="TopLine" inherits="store-receipt-line">
 						<Anchors>
 							<Anchor point="TOP" relativeKey="$parent.ParchmentMiddle" relativePoint="TOP" x="0" y="-116"/>
 						</Anchors>
 					</Texture>
-					<Texture inherits="store-receipt-line">
+					<Texture parentKey="BottomLine" inherits="store-receipt-line">
 						<Size x="350" y="3" />
 						<Anchors>
 							<Anchor point="BOTTOM" relativeKey="$parent.ParchmentMiddle" relativePoint="BOTTOM" x="0" y="80"/>
@@ -2214,6 +2215,13 @@
 							<Anchor point="TOP" x="0" y="-16" />
 						</Anchors>
 					</FontString>
+					<FontString parentKey="ProductDescription" inherits="GameTooltipHeaderText" wordwrap="true" justifyH="LEFT">
+						<Size x="280" y="0"/>
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeKey="$parent.Icon" relativePoint="BOTTOMLEFT" x="8" y="-30"/>
+						</Anchors>
+						<Color r="0" b="0" g="0"/>
+					</FontString>
 				</Layer>
 			</Layers>
 			<Frames>
@@ -2226,7 +2234,7 @@
 						<Layer level="ARTWORK" textureSubLevel="1">
 							<Texture parentKey="SelectedCharacterFrame" atlas="vas-receipt-selectedcharbg" useatlassize="true">
 								<Anchors>
-									<Anchor point="BOTTOM" x="0" y="190" />
+									<Anchor point="BOTTOM" x="0" y="230" />
 								</Anchors>
 							</Texture>
 							<FontString parentKey="SelectedCharacterName" inherits="GameFontNormalHugeOutline2">
@@ -2256,10 +2264,37 @@
 						</Layer>
 					</Layers>
 					<Frames>
-						<Frame parentKey="RealmSelector" inherits="StoreDropDownMenuTemplate" enableMouse="true">
-							<Size x="300" y="22"/>
+						<Frame parentKey="ChangeIconFrame" hidden="true">
+							<Size x="302" y="46"/>
 							<Anchors>
-								<Anchor point="BOTTOMLEFT" relativeKey="$parent.SelectedCharacterFrame" relativePoint="TOPLEFT" x="-8" y="90"/>
+								<Anchor point="TOPLEFT" relativeKey="$parent.SelectedCharacterFrame" relativePoint="BOTTOMLEFT" x="0" y="-4"/>
+							</Anchors>
+							<Layers>
+								<Layer level="BACKGROUND">
+									<Texture atlas="vas-receipt-greenbg" useAtlasSize="true">
+										<Anchors>
+											<Anchor point="CENTER"/>
+										</Anchors>
+									</Texture>
+								</Layer>
+								<Layer level="ARTWORK">
+									<Texture atlas="vas-receipt-icon-horde" useAtlasSize="true" parentKey="FromTex" parentArray="Textures" hidden="true">
+										<Anchors>
+											<Anchor point="LEFT"/>
+										</Anchors>
+									</Texture>
+									<Texture atlas="vas-receipt-brownarrow" useAtlasSize="true" parentArray="Textures" hidden="true">
+										<Anchors>
+											<Anchor point="LEFT" relativeKey="$parent.FromTex" relativePoint="RIGHT" x="4" y="0"/>
+										</Anchors>
+									</Texture>
+								</Layer>
+							</Layers>
+						</Frame>
+						<Frame parentKey="RealmSelector" inherits="StoreDropDownMenuTemplate" enableMouse="true">
+							<Size x="150" y="22"/>
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeKey="$parent.$parent.ProductDescription" relativePoint="BOTTOMLEFT" x="-16" y="-30"/>
 							</Anchors>
 							<Scripts>
 								<OnLoad>
@@ -2268,9 +2303,9 @@
 							</Scripts>
 						</Frame>
 						<Frame parentKey="CharacterSelector" inherits="StoreDropDownMenuTemplate" enableMouse="true">
-							<Size x="300" y="22"/>
+							<Size x="150" y="22"/>
 							<Anchors>
-								<Anchor point="TOPLEFT" relativeKey="$parent.RealmSelector" relativePoint="BOTTOMLEFT" x="0" y="-30"/>
+								<Anchor point="LEFT" relativeKey="$parent.RealmSelector" relativePoint="RIGHT" x="0" y="0"/>
 							</Anchors>
 							<Scripts>
 								<OnLoad>
@@ -2279,7 +2314,7 @@
 							</Scripts>
 						</Frame>
 						<Button parentKey="ContinueButton" inherits="StoreButtonTemplate" enableMouse="true">
-							<Size x="140" y="30" />
+							<Size x="120" y="30" />
 							<Anchors>
 								<Anchor point="BOTTOM" x="0" y="26" />
 							</Anchors>

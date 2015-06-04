@@ -594,6 +594,10 @@ function GarrisonLandingShipFollowerList:Load(followerType)
 	GarrisonShipyardFollowerList.Load(self, followerType, self:GetParent().ShipFollowerTab);
 end
 
+function GarrisonLandingShipFollowerList:UpdateValidSpellHighlight(followerID, followerInfo)
+	GarrisonShipyardFollowerList.UpdateValidSpellHighlight(self, followerID, followerInfo, true);
+end
+
 function GarrisonLandingShipFollowerList:ShowFollower(followerID)
 	GarrisonShipyardFollowerList.ShowFollower(self, followerID, true);
 end

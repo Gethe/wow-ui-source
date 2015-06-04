@@ -315,7 +315,7 @@
 			<OnEnter function="OptionsListButton_OnEnter"/>
 			<OnLeave function="OptionsListButton_OnLeave"/>
 		</Scripts>
-		<ButtonText name="$parentText" justifyH="LEFT" />
+		<ButtonText name="$parentText" justifyH="LEFT" wordwrap="false"/>
 		<NormalFont style="GameFontNormal"/>
 		<HighlightFont style="GameFontHighlight"/>
 		<HighlightTexture file="Interface\QuestFrame\UI-QuestLogTitleHighlight" alphaMode="ADD">

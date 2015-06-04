@@ -1216,7 +1216,8 @@ function GarrisonMissionComplete:OnSkipKeyPressed(key)
 		-- checking for animIndex to see if animations have started
 		if ( animIndex and not self.skipAnimations ) then
 			self.skipAnimations = true;
-			if ( animIndex < self:FindAnimIndexFor(self.AnimFollowersIn) ) then
+			local followersInAnimIndex = self:FindAnimIndexFor(self.AnimFollowersIn);
+			if ( animIndex < followersInAnimIndex ) then
 				-- STATE: animating through fights or rewards
 				-- play sounds if we haven't yet
 				local playSound = (animIndex < self:FindAnimIndexFor(GarrisonMissionComplete.AnimRewards));
@@ -1298,6 +1299,8 @@ function GarrisonMissionComplete:OnSkipKeyPressed(key)
 						-- STATE: still processing boat death
 						if ( animIndex == checkBoatDeathAnimIndex ) then
 							-- don't do anything here, it's gonna loop anyway if there are boats left
+						elseif ( animIndex == followersInAnimIndex ) then
+							self:BeginAnims(self:FindAnimIndexFor(self.AnimBoatDeath) - 1);
 						else
 							-- force next evaluation now
 							self:BeginAnims(checkBoatDeathAnimIndex - 1);

@@ -92,6 +92,7 @@ retain("IsModifiedClick");
 retain("GetTime");
 retain("UnitAffectingCombat");
 retain("GetCVar");
+retain("GMError");
 
 --For auth challenge
 take("C_AuthChallenge");

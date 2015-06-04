@@ -2706,24 +2706,36 @@
 								<Anchors>
 									<Anchor point="CENTER" x="0" y="24"/>
 								</Anchors>
-								<Layers>
-									<Layer level="ARTWORK">								
-										<FontString parentKey="title" font="DestinyFontHuge" justifyH="center" justifyV="top">
-											<Size x="264" y="0"/>
-											<Anchors>
-												<Anchor point="TOPLEFT" x="0" y="0"/>
-											</Anchors>
-											<Color r="0" g="0" b="0"/>
-										</FontString>
-										<FontString parentKey="description" font="GameTooltipHeader" justifyH="center" justifyV="top">
-											<Size x="264" y="0"/>
-											<Anchors>
-												<Anchor point="TOPLEFT" relativeKey="$parent.title" relativePoint="BOTTOMLEFT" x="0" y="-8"/>
-											</Anchors>
-											<Color r="0.2824" g="0.0157" b="0.0157"/>
-										</FontString>
-									</Layer>
-								</Layers>
+								<Frames>
+									<Frame parentKey="title">
+										<Size x="264" y="0"/>
+										<Anchors>
+											<Anchor point="TOPLEFT" x="0" y="0"/>
+										</Anchors>
+										<Layers>
+											<Layer level="ARTWORK">								
+												<FontString parentKey="text" font="DestinyFontHuge" justifyH="center" justifyV="top" maxLines="2">
+													<Size x="264" y="0"/>
+													<Color r="0" g="0" b="0"/>
+												</FontString>
+											</Layer>
+										</Layers>
+									</Frame>
+									<Frame parentKey="description">
+										<Size x="264" y="0"/>
+										<Anchors>
+											<Anchor point="TOPLEFT" relativeKey="$parent.title" relativePoint="BOTTOMLEFT" x="0" y="-8"/>
+										</Anchors>
+										<Layers>
+											<Layer level="ARTWORK">								
+												<FontString parentKey="text" font="GameTooltipHeader" justifyH="center" justifyV="top">
+													<Size x="264" y="0"/>
+													<Color r="0.2824" g="0.0157" b="0.0157"/>
+												</FontString>
+											</Layer>
+										</Layers>
+									</Frame>
+								</Frames>
 							</Frame>
 							<Button parentKey="button" inherits="UIPanelButtonTemplate">
 								<Size x="116" y="32"/>
@@ -2873,7 +2885,7 @@
 		</Anchors>
 		<Layers>
 			<Layer level="ARTWORK">
-				<FontString name="$parentHeaderText" parentKey="headerText" inherits="GameFontNormalMed1" justifyV="TOP" justifyH="LEFT">
+				<FontString name="$parentHeaderText" parentKey="headerText" inherits="GameTooltipText" justifyV="TOP" justifyH="LEFT">
 					<Anchors>
 						<Anchor point="TOPLEFT" x="11" y="-10"/>
 						<Anchor point="TOPRIGHT" x="-11" y="-10"/>

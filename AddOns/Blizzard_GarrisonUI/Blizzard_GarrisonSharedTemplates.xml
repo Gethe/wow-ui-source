@@ -541,7 +541,8 @@
 			</OnMouseUp>
 			<OnClick>
 				PlaySound("igMainMenuOptionCheckBoxOn");
-				local searchBox = self:GetParent():GetParent():GetParent().FollowerList.SearchBox;
+				local frame = self:GetParent();
+				local searchBox = frame:GetParent():GetParent()[frame.listName].SearchBox;
 				local searchString = searchBox:GetText();
 				if (searchString == self.name) then
 					searchBox:SetText("");
@@ -556,6 +557,9 @@
 	
 	<Frame name="GarrisonThreatCountersFrameTemplate" virtual="true">
 		<Size x="10" y="10"/>
+		<KeyValues>
+			 <KeyValue key="listName" value="FollowerList" type="string"/>
+		</KeyValues>
 		<Frames>
 			<Button parentArray="ThreatsList" inherits="GarrisonThreatCounterTemplate">
 				<Anchors>

@@ -56,6 +56,7 @@ Import("IsModifiedClick");
 Import("GetTime");
 Import("UnitAffectingCombat");
 Import("GetCVar");
+Import("GMError");
 
 --GlobalStrings
 Import("BLIZZARD_STORE");
@@ -1712,15 +1713,15 @@ function StoreVASValidationFrame_OnLoad(self)
 	if (IsOnGlueScreen()) then
 		self.CharacterSelectionFrame.NewCharacterName:SetFontObject("GlueEditBoxFont");
 	end
-	
+
 	self:RegisterEvent("STORE_CHARACTER_LIST_RECEIVED");
-	self:RegisterEvent("STORE_VAS_PURCHASE_RESULT_ERROR");
+	self:RegisterEvent("STORE_VAS_PURCHASE_ERROR");
 	self:RegisterEvent("STORE_VAS_PURCHASE_COMPLETE");
 end
 
 function StoreVASValidationFrame_SetVASStart(self)
 	local productID = C_PurchaseAPI.GetEntryInfo(selectedEntryID);
-	local _, _, _, currentDollars, currentCents, _, name, _, displayID, texture, upgrade, _, _, isVasService, vasServiceType = C_PurchaseAPI.GetProductInfo(productID);
+	local _, _, _, currentDollars, currentCents, _, name, description, displayID, texture, upgrade, _, _, isVasService, vasServiceType = C_PurchaseAPI.GetProductInfo(productID);
 
 	local finalIcon = texture;
 	if ( not finalIcon ) then
@@ -1728,10 +1729,10 @@ function StoreVASValidationFrame_SetVASStart(self)
 	end
 	SetPortraitToTexture(self.Icon, finalIcon);
 	self.ProductName:SetText(name);
+	self.ProductDescription:SetText(description);
 
 	VASServiceType = vasServiceType;
 
-	SelectedRealm = nil;
 	SelectedCharacter = nil;
 	for list, _ in pairs(StoreDropdownLists) do
 		list:Hide();
@@ -1755,10 +1756,11 @@ function StoreVASValidationFrame_SetVASStart(self)
 	self.CharacterSelectionFrame.SelectedCharacterName:Hide();
 	self.CharacterSelectionFrame.SelectedCharacterDescription:Hide();
 	self.CharacterSelectionFrame.ValidationDescription:Hide();
+	self.CharacterSelectionFrame.ChangeIconFrame:Hide();
 	self.CharacterSelectionFrame:Show();
 
 	self:ClearAllPoints();
-	self:SetPoint("CENTER", 0, 18);
+	self:SetPoint("CENTER", 0, 0);
 
 	self:Show();
 end
@@ -1771,7 +1773,7 @@ function StoreVASValidationFrame_OnEvent(self, event, ...)
 			StoreVASValidationFrame_SetVASStart(self);
 			self:Raise();
 		end
-	elseif ( event == "STORE_VAS_PURCHASE_RESULT_ERROR" ) then
+	elseif ( event == "STORE_VAS_PURCHASE_ERROR" ) then
 		WaitingOnConfirmation = false;
 		StoreFrame_UpdateActivePanel(StoreFrame);
 		local errors = C_PurchaseAPI.GetVASErrors();
@@ -2327,8 +2329,9 @@ local InfoCallback = nil;
 -- Very simple dropdown.  infoTable contains infoEntries containing text and value, the callback is what is called when a button is clicked.  
 function StoreDropDown_SetDropdown(frame, infoTable, callback)
 	local buttonHeight = 16;
-	local spacing = 4;
-	local padding = 32;
+	local spacing = 0;
+	local verticalPadding = 32;
+	local horizontalPadding = 24;
 	local n = #infoTable;
 
 	wipe(InfoCache);
@@ -2341,7 +2344,7 @@ function StoreDropDown_SetDropdown(frame, infoTable, callback)
 		StoreDropdownLists[frame.List] = true;
 	end
 
-	frame.List:SetHeight(padding + spacing*(n-1) + buttonHeight*n);
+	frame.List:SetHeight(verticalPadding + spacing*(n-1) + buttonHeight*n);
 	for i = 1, n do
 		local info = infoTable[i];
 
@@ -2349,13 +2352,13 @@ function StoreDropDown_SetDropdown(frame, infoTable, callback)
 		if (not frame.List.Buttons[i]) then
 			button = CreateForbiddenFrame("Button", nil, frame.List, "StoreDropDownMenuButtonTemplate", i);
 			StoreDropDownMenuMenuButton_OnLoad(button);
-			button:SetPoint("TOPLEFT", frame.List.Buttons[i-1], "BOTTOMLEFT", 0, -4);
+			button:SetPoint("TOPLEFT", frame.List.Buttons[i-1], "BOTTOMLEFT", 0, -spacing);
 		else
 			button = frame.List.Buttons[i];
 		end
 
 		button:SetText(info.text);
-		button:SetWidth(frame.List:GetWidth() - padding);
+		button:SetWidth(frame.List:GetWidth() - horizontalPadding);
 		button:SetHeight(buttonHeight);
 
 		if (info.checked) then
@@ -2393,6 +2396,7 @@ function StoreDropDownMenuMenuButton_OnClick(self, button)
 	if (not InfoCache or not InfoCallback) then
 		-- This should not happen, it means our cache was cleared while the frame was opened.
 		-- We probably want a GMError here.
+		GMError("StoreDropDown cache was cleared while the frame was shown.");
 		self:GetParent():Hide();
 		return;
 	end
@@ -2419,19 +2423,57 @@ function VASCharacterSelectionRealmSelector_Callback(value)
 	frame.NewCharacterName:Hide();
 end
 
+function VASCharacterSelectionChangeIconFrame_SetIcons(from, to)
+	local frame = StoreVASValidationFrame.CharacterSelectionFrame.ChangeIconFrame;
+	local spacing = 4;
+
+	local fromTex = frame.Textures[1];
+	fromTex:SetAtlas("vas-receipt-icon-"..from, true);
+	fromTex:Show();
+
+	local arrowTex = frame.Textures[2];
+	arrowTex:Show();
+
+	local width = fromTex:GetWidth() + arrowTex:GetWidth() + spacing; -- This is the width of the fromTex and the arrow before adding the "to" textures.
+
+	local toCount = #to;
+	for i = 1, toCount do
+		local toTex = frame.Textures[i+2];
+		if (not toTex) then
+			toTex = frame:CreateTexture(nil, "ARTWORK");
+			toTex:SetPoint("LEFT", frame.Textures[i+1], "RIGHT", spacing, 0);
+			frame.Textures[i+2] = toTex;
+		end
+		toTex:SetAtlas("vas-receipt-icon-"..to[i], true);
+		toTex:Show();
+		width = width + toTex:GetWidth() + spacing;
+	end
+
+	for i = toCount + 3, #frame.Textures do
+		frame.Textures[i]:Hide();
+	end
+
+	fromTex:SetPoint("LEFT", frame, "CENTER", -(width/2), 0);
+	frame:Show();
+end
+
 function VASCharacterSelectionCharacterSelector_Callback(value)
 	SelectedCharacter = value;
 
 	local frame = StoreVASValidationFrame.CharacterSelectionFrame;
 	local characters = C_PurchaseAPI.GetCharactersForRealm(SelectedRealm);
 	local character = characters[SelectedCharacter];
-	frame.CharacterSelector.Text:SetText(VAS_CHARACTER_SELECTION_DESCRIPTION:format(RAID_CLASS_COLORS[character.classFileName].colorStr, character.name, character.level, character.className));
+	local level = character.level;
+	if (level == 0) then
+		level = 1;
+	end
+	frame.CharacterSelector.Text:SetText(VAS_CHARACTER_SELECTION_DESCRIPTION:format(RAID_CLASS_COLORS[character.classFileName].colorStr, character.name, level, character.className));
 	frame.SelectedCharacterFrame:Show();
 	frame.ClassIcon:SetTexCoord(unpack(CLASS_ICON_TCOORDS[character.classFileName]));
 	frame.ClassIcon:Show();
 	frame.SelectedCharacterName:SetText(character.name);
 	frame.SelectedCharacterName:Show();
-	frame.SelectedCharacterDescription:SetText(VAS_SELECTED_CHARACTER_DESCRIPTION:format(character.level, character.raceName, character.className));
+	frame.SelectedCharacterDescription:SetText(VAS_SELECTED_CHARACTER_DESCRIPTION:format(level, character.raceName, character.className));
 	frame.SelectedCharacterDescription:Show();
 
 	if (VASServiceType == LE_VAS_SERVICE_NAME_CHANGE) then
@@ -2439,44 +2481,66 @@ function VASCharacterSelectionCharacterSelector_Callback(value)
 		frame.NewCharacterName:Show();
 		frame.ContinueButton:Disable();
 	else
+		local bottomWidget = frame.SelectedCharacterFrame;
 		if (VASServiceType == LE_VAS_SERVICE_RACE_CHANGE) then
 			local races = C_PurchaseAPI.GetEligibleRacesForRaceChange(character.guid);
 
 			if (not races or #races == 0) then
+				frame.ChangeIconFrame:Hide();
+				frame.ValidationDescription:ClearAllPoints();
+				frame.ValidationDescription:SetPoint("TOPLEFT", frame.SelectedCharacterFrame, "BOTTOMLEFT", 8, -16);
 				frame.ValidationDescription:SetText(VAS_RACE_CHANGE_INELIGIBLE);
 				frame.ValidationDescription:Show();
 				frame.ContinueButton:Disable();
 				return;
 			end
 
-			local str = races[1];
-			for i=2,#races do
-				str = LIST_DELIMITER:format(str, races[i]);
+			local genderPrefix;
+			if (character.sex == 0) then
+				genderPrefix = "male-";
+			else
+				genderPrefix = "female-";
 			end
-			frame.ValidationDescription:SetText(VAS_RACE_CHANGE_VALIDATION_DESCRIPTION:format(factionColors[character.faction], str));
+			bottomWidget = frame.ChangeIconFrame;
+			local to = {};
+			for i=1,#races do
+				to[i] = genderPrefix..races[i];
+			end
+			VASCharacterSelectionChangeIconFrame_SetIcons(genderPrefix..character.raceFileName, to);
+			
+			frame.ValidationDescription:SetText(VAS_RACE_CHANGE_VALIDATION_DESCRIPTION);
 			frame.ValidationDescription:Show();
 		elseif (VASServiceType == LE_VAS_SERVICE_FACTION_CHANGE) then
 			local str, newfaction;
 
+			local from, to;
 			if (character.faction == 0) then
-				str = FACTION_ALLIANCE;
-				newfaction = 1;
+				from = "horde";
+				to = "alliance";
 			elseif (character.faction == 1) then
-				str = FACTION_HORDE;
-				newfaction = 0;
-			end
-			if (not str) then
+				from = "alliance";
+				to = "horde";
+			else
+				frame.ChangeIconFrame:Hide();
+				frame.ValidationDescription:ClearAllPoints();
+				frame.ValidationDescription:SetPoint("TOPLEFT", frame.SelectedCharacterFrame, "BOTTOMLEFT", 8, -16);
+				frame.ValidationDescription:SetText(VAS_RACE_CHANGE_INELIGIBLE);
 				frame.ValidationDescription:SetText(VAS_RACE_CHANGE_INELIGIBLE);
 				frame.ValidationDescription:Show();
 				frame.ContinueButton:Disable();
 				return;
 			end
-			frame.ValidationDescription:SetText(VAS_FACTION_CHANGE_VALIDATION_DESCRIPTION:format(factionColors[newfaction], str));
+			bottomWidget = frame.ChangeIconFrame;
+			VASCharacterSelectionChangeIconFrame_SetIcons(from, {to});
+
+			frame.ValidationDescription:SetText(VAS_FACTION_CHANGE_VALIDATION_DESCRIPTION);
 			frame.ValidationDescription:Show();
 		elseif (VASServiceType == LE_VAS_SERVICE_APPEARANCE_CHANGE) then
 			frame.ValidationDescription:SetText(VAS_APPEARANCE_CHANGE_VALIDATION_DESCRIPTION);
 			frame.ValidationDescription:Show();
 		end
+		frame.ValidationDescription:ClearAllPoints();
+		frame.ValidationDescription:SetPoint("TOPLEFT", bottomWidget, "BOTTOMLEFT", 8, -16);
 		frame.ContinueButton:Enable();
 	end
 end
@@ -2512,7 +2576,11 @@ function VASCharacterSelectionCharacterSelector_OnClick(self)
 	local characters = C_PurchaseAPI.GetCharactersForRealm(SelectedRealm);
 	for i = 1, #characters do
 		local character = characters[i];
-		local str = VAS_CHARACTER_SELECTION_DESCRIPTION:format(RAID_CLASS_COLORS[character.classFileName].colorStr, character.name, character.level, character.className);
+		local level = character.level;
+		if (level == 0) then
+			level = 1;
+		end
+		local str = VAS_CHARACTER_SELECTION_DESCRIPTION:format(RAID_CLASS_COLORS[character.classFileName].colorStr, character.name, level, character.className);
 		infoTable[#infoTable+1] = {text=str, value=i, checked=(SelectedCharacter == i)};
 	end
 

@@ -1522,6 +1522,7 @@
 			<OnClick function="GarrisonShipEquipment_OnClick"/>
 			<OnEnter function="GarrisonShipEquipment_OnEnter"/>
 			<OnLeave function="GarrisonShipEquipment_OnHide"/>
+			<OnReceiveDrag function="GarrisonShipEquipment_OnReceiveDrag"/>
 		</Scripts>
 	</Button>
 	
@@ -1568,14 +1569,14 @@
 						<Anchor point="BOTTOMLEFT" relativePoint="TOPLEFT" y="12"/>
 					</Anchors>
 				</FontString>
-				<FontString parentKey="XPText" inherits="GameFontHighlightLarge2" justifyH="RIGHT" text="3500 XP">
-					<Anchors>
-						<Anchor point="TOPRIGHT" x="-10" y="-36"/>
-					</Anchors>
-				</FontString>
 				<FontString parentKey="XPLabel" inherits="GameFontHighlight" justifyH="RIGHT" text="GARRISON_FOLLOWER_XP_STRING">
 					<Anchors>
-						<Anchor point="TOPRIGHT" relativeKey="$parent.XPText" relativePoint="BOTTOMRIGHT" y="0"/>
+						<Anchor point="BOTTOMRIGHT" relativePoint="TOPRIGHT" x="-12" y="-68"/>
+					</Anchors>
+				</FontString>
+				<FontString parentKey="XPText" inherits="GameFontHighlightLarge2" justifyH="RIGHT">
+					<Anchors>
+						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.XPLabel" relativePoint="TOPRIGHT" x="0" y="2"/>
 					</Anchors>
 				</FontString>
 				<Texture parentKey="Portrait" atlas="Ships_CargoShip-List" useAtlasSize="true">

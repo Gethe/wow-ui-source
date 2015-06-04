@@ -934,14 +934,14 @@
 								<Anchor point="TOPRIGHT" relativeKey="$parent.FollowerText" relativePoint="BOTTOMRIGHT" x="0" y="0"/>
 							</Anchors>
 						</FontString>
-						<FontString parentKey="XPText" inherits="GameFontHighlightLarge2" justifyH="RIGHT" text="3500 XP">
-							<Anchors>
-								<Anchor point="TOPRIGHT" x="-18" y="-22"/>
-							</Anchors>
-						</FontString>
 						<FontString parentKey="XPLabel" inherits="GameFontHighlight" justifyH="RIGHT" text="GARRISON_FOLLOWER_XP_STRING">
 							<Anchors>
-								<Anchor point="TOPRIGHT" relativeKey="$parent.XPText" relativePoint="BOTTOMRIGHT" y="0"/>
+								<Anchor point="BOTTOMRIGHT" relativePoint="TOPRIGHT" x="-18" y="-53"/>
+							</Anchors>
+						</FontString>
+						<FontString parentKey="XPText" inherits="GameFontHighlightLarge2" justifyH="RIGHT">
+							<Anchors>
+								<Anchor point="BOTTOMRIGHT" relativeKey="$parent.XPLabel" relativePoint="TOPRIGHT" x="0" y="2"/>
 							</Anchors>
 						</FontString>
 						<Texture parentKey="Portrait" atlas="Ships_CargoShip-List" useAtlasSize="false">
@@ -990,7 +990,7 @@
 					<StatusBar parentKey="XPBar" inherits="GarrisonFollowerXPBarTemplate" enableMouse="true">
 						<Size x="370" y="9"/>
 						<Anchors>
-							<Anchor point="TOPRIGHT" relativeKey="$parent.XPLabel" relativePoint="BOTTOMRIGHT" y="-8"/>
+							<Anchor point="TOPRIGHT" x="-18" y="-60"/>
 						</Anchors>
 						<Layers>
 							<Layer level="HIGHLIGHT">
@@ -1148,6 +1148,9 @@
 						</Frames>
 					</Frame>
 					<Frame parentKey="ThreatCountersFrame" inherits="GarrisonThreatCountersFrameTemplate" hidden="true">
+						<KeyValues>
+							 <KeyValue key="listName" value="ShipFollowerList" type="string"/>
+						</KeyValues>
 						<Anchors>
 							<Anchor point="TOPLEFT" x="340" y="30"/>
 						</Anchors>

@@ -1054,24 +1054,6 @@
 							<OnLeave function="GameTooltip_Hide"/>
 						</Scripts>
 					</CheckButton>
-					<Button name="BrowseSearchButton" inherits="UIPanelButtonTemplate" text="SEARCH">
-						<Size>
-							<AbsDimension x="80" y="22"/>
-						</Size>
-						<Anchors>
-							<Anchor point="TOPRIGHT">
-								<Offset>
-									<AbsDimension x="-18" y="-35"/>
-								</Offset>
-							</Anchor>
-						</Anchors>
-						<Scripts>
-							<OnClick>
-								AuctionFrameBrowse_Search();
-							</OnClick>
-							<OnUpdate function="BrowseSearchButton_OnUpdate"/>
-						</Scripts>
-					</Button>
 					<Button name="BrowseResetButton" inherits="UIPanelButtonTemplate" text="RESET">
 						<Size>
 							<AbsDimension x="80" y="22"/>
@@ -1082,6 +1064,20 @@
 						<Scripts>
 							<OnClick function="AuctionFrameBrowse_Reset"/>
 							<OnUpdate function="BrowseResetButton_OnUpdate"/>
+						</Scripts>
+					</Button>
+					<Button name="BrowseSearchButton" inherits="UIPanelButtonTemplate" text="SEARCH">
+						<Size>
+							<AbsDimension x="80" y="22"/>
+						</Size>
+						<Anchors>
+							<Anchor point="TOPRIGHT" relativeTo="BrowseResetButton" relativePoint="TOPLEFT" x="-5" y="0"/>
+						</Anchors>
+						<Scripts>
+							<OnClick>
+								AuctionFrameBrowse_Search();
+							</OnClick>
+							<OnUpdate function="BrowseSearchButton_OnUpdate"/>
 						</Scripts>
 					</Button>
 					<Button name="BrowsePrevPageButton">

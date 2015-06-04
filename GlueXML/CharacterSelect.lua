@@ -602,18 +602,23 @@ function UpdateCharacterList(skipSelect)
 			if ( not zone ) then
 				zone = "";
 			end
-			_G["CharSelectCharacterButton"..index.."ButtonTextName"]:SetText(name);
+			if ( CharacterSelect.undeleting ) then
+				_G["CharSelectCharacterButton"..index.."ButtonTextName"]:SetFormattedText(CHARACTER_SELECT_NAME_DELETED, name);
+			elseif ( locked ) then
+				_G["CharSelectCharacterButton"..index.."ButtonTextName"]:SetText(name..CHARSELECT_CHAR_INACTIVE_CHAR);
+			else
+				_G["CharSelectCharacterButton"..index.."ButtonTextName"]:SetText(name);
+			end
 			if (boostInProgress) then
 				_G["CharSelectCharacterButton"..index.."ButtonTextInfo"]:SetText(CHARACTER_UPGRADE_PROCESSING);
 				_G["CharSelectCharacterButton"..index.."ButtonTextLocation"]:SetFontObject("GlueFontHighlightSmall");
 				_G["CharSelectCharacterButton"..index.."ButtonTextLocation"]:SetText(CHARACTER_UPGRADE_CHARACTER_LIST_LABEL);
 			else
-				if ( CharacterSelect.undeleting ) then
-					_G["CharSelectCharacterButton"..index.."ButtonTextInfo"]:SetFormattedText(CHARACTER_SELECT_INFO_DELETED, level, class);
-				elseif ( locked ) then
-					_G["CharSelectCharacterButton"..index.."ButtonTextInfo"]:SetFormattedText(CHARACTER_SELECT_INFO..CHARSELECT_CHAR_INACTIVE_CHAR, level, class);
+				
+				if ( locked ) then
 					button.isVeteranLocked = true;
-				elseif( ghost ) then
+				end
+				if( ghost ) then
 					_G["CharSelectCharacterButton"..index.."ButtonTextInfo"]:SetFormattedText(CHARACTER_SELECT_INFO_GHOST, level, class);
 				else
 					_G["CharSelectCharacterButton"..index.."ButtonTextInfo"]:SetFormattedText(CHARACTER_SELECT_INFO, level, class);
