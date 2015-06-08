@@ -383,7 +383,7 @@
 					</Backdrop>
 				</Frame>
 				<Layers>
-					<Layer layer="BACKGROUND">
+					<Layer level="BACKGROUND">
 						<Texture>
 							<Anchors>
 								<Anchor point="TOPLEFT" x="11" y="-12"/>
@@ -1393,7 +1393,7 @@
 		<Button name="StoreCategoryTemplate" virtual="true">
 			<Size x="176" y="38" />
 			<Layers>
-				<Layer layer="BACKGROUND">
+				<Layer level="BACKGROUND">
 					<Texture parentKey="Category" inherits="store-category" setAllPoints="true"/>
 				</Layer>
 				<Layer level="ARTWORK">
@@ -1586,14 +1586,14 @@
 			<Size x="800" y="537" />
 			<!--Anchored to the screen as a whole in Lua-->
 			<Layers>
-				<Layer layer="ARTWORK">
+				<Layer level="ARTWORK">
 					<FontString parentKey="PageText" inherits="GameFontHighlight" justifyH="RIGHT">
 						<Anchors>
 							<Anchor point="BOTTOMRIGHT" x="-98" y="46" />
 						</Anchors>
 					</FontString>
 				</Layer>
-				<Layer layer="OVERLAY">
+				<Layer level="OVERLAY">
 					<FontString parentKey="BrowseNotice" inherits="GameFontHighlightSmall2" justifyH="CENTERED" justifyV="TOP">
 						<Size x="180" y="40" />
 						<Anchors>
@@ -1622,7 +1622,7 @@
 						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.LeftInset" relativePoint="BOTTOMRIGHT" x="-3" y="3" />
 					</Anchors>
 					<Layers>
-						<Layer layer="BACKGROUND">
+						<Layer level="BACKGROUND">
 							<Texture inherits="store-category-bg" setAllPoints="true" />
 						</Layer>
 					</Layers>
@@ -1963,7 +1963,7 @@
 				<OnMouseWheel function="StoreFrame_OnMouseWheel" />
 			</Scripts>
 		</Frame>
-		<Frame name="StoreConfirmationFrame" frameStrata="FULLSCREEN_DIALOG" topLevel="true" parent="StoreFrame" inherits="GoldBorderFrameTemplate" hidden="true">
+		<Frame name="StoreConfirmationFrame" frameStrata="FULLSCREEN_DIALOG" topLevel="true" parent="StoreFrame" inherits="GoldBorderFrameTemplate" clampedToScreen="true" hidden="true">
 			<Size x="403" y="556" />
 			<Layers>
 				<Layer level="BACKGROUND">
@@ -2054,20 +2054,20 @@
 			</Layers>
 			<Frames>
 				<Frame parentKey="NoticeFrame">
-					<Size x="300" y="300" />
+					<Size x="400" y="300" />
 					<Anchors>
-						<Anchor point="TOP" relativeKey="$parent.ParchmentMiddle" relativePoint="TOP" x="0" y="-246" />
+						<Anchor point="TOP" x="0" y="-128" />
 					</Anchors>
 					<Layers>
 						<Layer level="ARTWORK">
 							<FontString parentKey="TotalLabel" inherits="GameFontBlackMedium">
 								<Anchors>
-									<Anchor point="BOTTOM" x="-115" y="174" />
+									<Anchor point="BOTTOM" x="-115" y="20" />
 								</Anchors>
 							</FontString>
 							<FontString parentKey="Price" inherits="GameFontNormalShadowHuge2">
 								<Anchors>
-									<Anchor point="BOTTOMRIGHT" relativePoint="BOTTOMRIGHT" x="-50" y="174"/>
+									<Anchor point="BOTTOMRIGHT" x="-50" y="20"/>
 								</Anchors>
 							</FontString>
 							<FontString parentKey="BrowseNotice" inherits="GameFontHighlightSmall2" justifyV="TOP">
@@ -2082,7 +2082,7 @@
 						<SimpleHTML parentKey="Notice">
 							<Size x="260" y="240"/>
 							<Anchors>
-								<Anchor point="TOP"/>
+								<Anchor point="TOP" x="0" y="-30"/>
 							</Anchors>
 							<Scripts>
 								<OnHyperlinkClick>

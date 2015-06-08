@@ -15,7 +15,7 @@
 			</EdgeSize>
 		</Backdrop>
 		<Layers>
-			<Layer layer="BACKGROUND">
+			<Layer level="BACKGROUND">
 				<Texture>
 					<Anchors>
 						<Anchor point="TOPLEFT" x="4" y="-4"/>
@@ -146,7 +146,7 @@
 					</Anchors>
 				</FontString>
 			</Layer>
-			<Layer layer="OVERLAY">
+			<Layer level="OVERLAY">
 				<FontString parentKey="Price" inherits="GlueFontNormal">
 					<Anchors>
 						<Anchor point="TOPLEFT" relativeKey="$parent.Expires" relativePoint="BOTTOMLEFT" x="0" y="-28"/>

@@ -915,19 +915,21 @@ function PaperDollFrame_SetDamage(statFrame, unit)
 	local speed, offhandSpeed = UnitAttackSpeed(unit);
 	local minDamage, maxDamage, minOffHandDamage, maxOffHandDamage, physicalBonusPos, physicalBonusNeg, percent = GetAppropriateDamage(unit);
 
+	-- remove decimal points for display values
 	local displayMin = max(floor(minDamage),1);
 	local displayMinLarge = BreakUpLargeNumbers(displayMin);
 	local displayMax = max(ceil(maxDamage),1);
 	local displayMaxLarge = BreakUpLargeNumbers(displayMax);
-	
 
+	-- calculate base damage
 	minDamage = (minDamage / percent) - physicalBonusPos - physicalBonusNeg;
 	maxDamage = (maxDamage / percent) - physicalBonusPos - physicalBonusNeg;
 
 	local baseDamage = (minDamage + maxDamage) * 0.5;
 	local fullDamage = (baseDamage + physicalBonusPos + physicalBonusNeg) * percent;
 	local totalBonus = (fullDamage - baseDamage);
-	local damageTooltip = displayMinLarge.." - "..displayMaxLarge;
+	-- set tooltip text with base damage
+	local damageTooltip = BreakUpLargeNumbers(max(floor(minDamage),1)).." - "..BreakUpLargeNumbers(max(ceil(maxDamage),1));
 	
 	local colorPos = "|cff20ff20";
 	local colorNeg = "|cffff2020";
@@ -944,7 +946,7 @@ function PaperDollFrame_SetDamage(statFrame, unit)
 			text:SetText(displayMinLarge.."-"..displayMaxLarge);
 		end
 	else
-		
+		-- set bonus color and display
 		local color;
 		if ( totalBonus > 0 ) then
 			color = colorPos;

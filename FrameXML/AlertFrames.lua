@@ -1279,7 +1279,7 @@ function GarrisonFollowerAlertFrame_Setup(frame, followerID, name, quality, isUp
 		frame.FollowerBG:Hide();
 	end
 	
-	frame.ArrowsAnim:Stop();
+	frame.Arrows.ArrowsAnim:Stop();
 	if ( isUpgraded ) then
 		local upgradeTexture = LOOTUPGRADEFRAME_QUALITY_TEXTURES[quality] or LOOTUPGRADEFRAME_QUALITY_TEXTURES[LE_ITEM_QUALITY_UNCOMMON];
 		for i = 1, frame.Arrows.numArrows do
@@ -1289,7 +1289,7 @@ function GarrisonFollowerAlertFrame_Setup(frame, followerID, name, quality, isUp
 		frame.DieIcon:ClearAllPoints();
 		frame.DieIcon:SetPoint("RIGHT", frame.Title, "LEFT", -4, 0);
 		frame.DieIcon:Show();
-		frame.ArrowsAnim:Play();
+		frame.Arrows.ArrowsAnim:Play();
 	else
 		frame.DieIcon:Hide();
 	end
@@ -1301,7 +1301,7 @@ function GarrisonFollowerAlertFrame_Setup(frame, followerID, name, quality, isUp
 end
 
 function GarrisonFollowerAlertFrame_ShowAlert(followerID, name, displayID, level, quality, isUpgraded)
-	SetPortraitTexture(GarrisonFollowerAlertFrame.PortraitFrame.Portrait, displayID);
+	GarrisonFollowerAlertFrame.PortraitFrame.Portrait:SetToFileData(C_Garrison.GetFollowerPortraitIconID(followerID));
 	GarrisonFollowerAlertFrame.PortraitFrame.Level:SetText(level);
 	local color = BAG_ITEM_QUALITY_COLORS[quality];
 	if (color) then

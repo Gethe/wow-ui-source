@@ -1796,24 +1796,6 @@
 		<AnimationGroup name="$parentAnimIn" parentKey="animIn">
 			<Alpha fromAlpha="0" toAlpha="1" duration="0.2" order="1"/>
 		</AnimationGroup>
-		<AnimationGroup parentKey="ArrowsAnim">
-			<Alpha childKey="Arrows.Arrow1" startDelay="0.9" smoothing="IN" duration="0.2" order="1" fromAlpha="0" toAlpha="1"/>
-			<Alpha childKey="Arrows.Arrow1" startDelay="1.2" smoothing="OUT" duration="0.2" order="1" fromAlpha="1" toAlpha="0"/>
-			<Translation childKey="Arrows.Arrow1" startDelay="0.9" duration="0.5" order="1" offsetX="0" offsetY="60"/>
-			<Alpha childKey="Arrows.Arrow2" startDelay="1" smoothing="IN" duration="0.2" order="1" fromAlpha="0" toAlpha="1"/>
-			<Alpha childKey="Arrows.Arrow2" startDelay="1.3" smoothing="OUT" duration="0.2" order="1" fromAlpha="1" toAlpha="0"/>
-			<Translation childKey="Arrows.Arrow2" startDelay="1" duration="0.5" order="1" offsetX="0" offsetY="60"/>			
-			<Alpha childKey="Arrows.Arrow3" startDelay="1.1" smoothing="IN" duration="0.2" order="1" fromAlpha="0" toAlpha="1"/>
-			<Alpha childKey="Arrows.Arrow3" startDelay="1.4" smoothing="OUT" duration="0.2" order="1" fromAlpha="1" toAlpha="0"/>
-			<Translation childKey="Arrows.Arrow3" startDelay="1.1" duration="0.5" order="1" offsetX="0" offsetY="60"/>
-			<Alpha childKey="Arrows.Arrow4" startDelay="1.3" smoothing="IN" duration="0.2" order="1" fromAlpha="0" toAlpha="1"/>
-			<Alpha childKey="Arrows.Arrow4" startDelay="1.6" smoothing="OUT" duration="0.2" order="1" fromAlpha="1" toAlpha="0"/>
-			<Translation childKey="Arrows.Arrow4" startDelay="1.3" duration="0.5" order="1" offsetX="0" offsetY="60"/>
-			<Alpha childKey="Arrows.Arrow5" startDelay="1.5" smoothing="IN" duration="0.2" order="1" fromAlpha="0" toAlpha="1"/>
-			<Alpha childKey="Arrows.Arrow5" startDelay="1.8" smoothing="OUT" duration="0.2" order="1" fromAlpha="1" toAlpha="0"/>
-			<Translation childKey="Arrows.Arrow5" startDelay="1.5" duration="0.5" order="1" offsetX="0" offsetY="60"/>
-			<Alpha startDelay="3.05" duration="1.5" order="2" fromAlpha="1" toAlpha="0"/>
-		</AnimationGroup>
 		<AnimationGroup name="$parentWaitAndAnimOut" parentKey="waitAndAnimOut">
 			<Alpha startDelay="4.05" change="-1" duration="1.5" parentKey="animOut">
 				<Scripts>
@@ -1914,6 +1896,25 @@
 					</Texture>
 				</Layer>
 			</Layers>
+			<Animations>
+				<AnimationGroup parentKey="ArrowsAnim">
+					<Alpha childKey="Arrow1" startDelay="0.9" smoothing="IN" duration="0.2" order="1" fromAlpha="0" toAlpha="1"/>
+					<Alpha childKey="Arrow1" startDelay="1.2" smoothing="OUT" duration="0.2" order="1" fromAlpha="1" toAlpha="0"/>
+					<Translation childKey="Arrow1" startDelay="0.9" duration="0.5" order="1" offsetX="0" offsetY="60"/>
+					<Alpha childKey="Arrow2" startDelay="1" smoothing="IN" duration="0.2" order="1" fromAlpha="0" toAlpha="1"/>
+					<Alpha childKey="Arrow2" startDelay="1.3" smoothing="OUT" duration="0.2" order="1" fromAlpha="1" toAlpha="0"/>
+					<Translation childKey="Arrow2" startDelay="1" duration="0.5" order="1" offsetX="0" offsetY="60"/>			
+					<Alpha childKey="Arrow3" startDelay="1.1" smoothing="IN" duration="0.2" order="1" fromAlpha="0" toAlpha="1"/>
+					<Alpha childKey="Arrow3" startDelay="1.4" smoothing="OUT" duration="0.2" order="1" fromAlpha="1" toAlpha="0"/>
+					<Translation childKey="Arrow3" startDelay="1.1" duration="0.5" order="1" offsetX="0" offsetY="60"/>
+					<Alpha childKey="Arrow4" startDelay="1.3" smoothing="IN" duration="0.2" order="1" fromAlpha="0" toAlpha="1"/>
+					<Alpha childKey="Arrow4" startDelay="1.6" smoothing="OUT" duration="0.2" order="1" fromAlpha="1" toAlpha="0"/>
+					<Translation childKey="Arrow4" startDelay="1.3" duration="0.5" order="1" offsetX="0" offsetY="60"/>
+					<Alpha childKey="Arrow5" startDelay="1.5" smoothing="IN" duration="0.2" order="1" fromAlpha="0" toAlpha="1"/>
+					<Alpha childKey="Arrow5" startDelay="1.8" smoothing="OUT" duration="0.2" order="1" fromAlpha="1" toAlpha="0"/>
+					<Translation childKey="Arrow5" startDelay="1.5" duration="0.5" order="1" offsetX="0" offsetY="60"/>
+				</AnimationGroup>
+			</Animations>
 		</Frame>
 	</Frames>
 	<Scripts>

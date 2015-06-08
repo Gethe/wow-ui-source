@@ -174,7 +174,7 @@ function EncounterJournal_HasChangedContext(instanceID, instanceType, difficulty
 	if ( instanceType == "none" ) then
 		-- we've gone from a dungeon to the open world
 		return EncounterJournal.lastInstance ~= nil;
-	elseif ( instanceID ~= 0 and (instanceID ~= EncounterJournal.lastInstance or EJ_GetDifficulty() ~= difficultyID) ) then
+	elseif ( instanceID ~= 0 and (instanceID ~= EncounterJournal.lastInstance or EncounterJournal.lastDifficulty ~= difficultyID) ) then
 		-- dungeon or difficulty has changed
 		return true;
 	end	
@@ -184,6 +184,7 @@ end
 function EncounterJournal_ResetDisplay(instanceID, instanceType, difficultyID)
 	if ( instanceType == "none" ) then
 		EncounterJournal.lastInstance = nil;
+		EncounterJournal.lastDifficulty = nil;
 		EJSuggestFrame_OpenFrame();
 	else
 		EJ_ContentTab_Select(EncounterJournal.instanceSelect.dungeonsTab.id); 
@@ -194,6 +195,7 @@ function EncounterJournal_ResetDisplay(instanceID, instanceType, difficultyID)
 		if ( EJ_IsValidInstanceDifficulty(difficultyID) ) then
 			EJ_SetDifficulty(difficultyID);
 		end
+		EncounterJournal.lastDifficulty = difficultyID;
 	end
 end
 

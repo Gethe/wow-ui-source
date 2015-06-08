@@ -14,7 +14,9 @@ function RaidFinderFrame_OnEvent(self, event, ...)
 		end
 		RaidFinderFrame_UpdateAvailability();
 	elseif ( event == "AJ_RAID_ACTION" ) then
+		local raidID = ...;
 		PVEFrame_ShowFrame("GroupFinderFrame", RaidFinderFrame);
+		RaidFinderQueueFrame_SetRaid(raidID);
 	end
 end
 

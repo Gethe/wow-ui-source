@@ -129,11 +129,13 @@ function GarrisonFollowerList_OnEvent(self, event, ...)
 			end
 		end
 	elseif (event == "CURRENT_SPELL_CAST_CHANGED" or event == "CURSOR_UPDATE") then
-		if (self.followerTab and self.followerTab.followerID and self:IsShown()) then
+		if (self.followerTab and self.followerTab.followerID and self:IsVisible()) then
 			local followerID = self.followerTab.followerID;
 			local followerInfo = C_Garrison.GetFollowerInfo(followerID);
-			followerInfo.abilities = C_Garrison.GetFollowerAbilities(followerID);
-			self:UpdateValidSpellHighlight(followerID, followerInfo);
+			if (followerInfo) then
+				followerInfo.abilities = C_Garrison.GetFollowerAbilities(followerID);
+				self:UpdateValidSpellHighlight(followerID, followerInfo);
+			end
 		end
 	end
 
@@ -324,9 +326,9 @@ function GarrisonFollowerList:UpdateData()
 			GarrisonFollowerButton_UpdateCounters(self:GetParent(), button, follower, showCounters, followerFrame.lastUpdate);
 
 			if (canExpand and button.id == self.expandedFollower and button.id == followerFrame.selectedFollower) then
-				GarrisonFollowerButton_Expand(button, self);
+				self:ExpandButton(button, self);
 			else
-				GarrisonFollowerButton_Collapse(button);
+				self:CollapseButton(button);
 			end
 			if ( button.id == followerFrame.selectedFollower ) then
 				button.Selection:Show();
@@ -441,46 +443,53 @@ function GarrisonFollowerButton_SetCounterButton(button, followerID, index, info
 	counter:Show();
 end
 
-function GarrisonFollowerButton_Expand(self, followerListFrame)
-	if ( not self.isCollected ) then
+function GarrisonFollowerList:ExpandButton(button, followerListFrame)
+	local abHeight = self:ExpandButtonAbilities(button, false);
+	if (abHeight == -1) then
 		return;
 	end
+	
+	button.UpArrow:Show();
+	button.DownArrow:Hide();
+	button:SetHeight(51 + abHeight);
+	followerListFrame.expandedFollowerHeight = 51 + abHeight + 6;
+end
 
-	self.UpArrow:Show();
-	self.DownArrow:Hide();
+function GarrisonFollowerList:ExpandButtonAbilities(button, traitsFirst)
+	if ( not button.isCollected ) then
+		return -1;
+	end
+
 	local abHeight = 0;
-	if (not self.info.abilities) then
-		self.info.abilities = C_Garrison.GetFollowerAbilities(self.info.followerID);
+	if (not button.info.abilities) then
+		button.info.abilities = C_Garrison.GetFollowerAbilities(button.info.followerID);
 	end
 
 	local buttonCount = 0;
-	-- abilities
-	for i=1, #self.info.abilities do
-		if ( not self.info.abilities[i].isTrait ) then
+	for i=1, #button.info.abilities do
+		if ( traitsFirst == button.info.abilities[i].isTrait and button.info.abilities[i].icon ) then
 			buttonCount = buttonCount + 1;
-			abHeight = abHeight + GarrisonFollowerButton_AddAbility(self, buttonCount, self.info.abilities[i]);			
+			abHeight = abHeight + GarrisonFollowerButton_AddAbility(button, buttonCount, button.info.abilities[i]);			
 		end
 	end
-	-- traits
-	for i=1, #self.info.abilities do
-		if ( self.info.abilities[i].isTrait ) then
+	for i=1, #button.info.abilities do
+		if ( traitsFirst ~= button.info.abilities[i].isTrait and button.info.abilities[i].icon ) then
 			buttonCount = buttonCount + 1;
-			abHeight = abHeight + GarrisonFollowerButton_AddAbility(self, buttonCount, self.info.abilities[i]);			
+			abHeight = abHeight + GarrisonFollowerButton_AddAbility(button, buttonCount, button.info.abilities[i]);			
 		end
 	end
 
-	for i=(#self.info.abilities + 1), #self.Abilities do
-		self.Abilities[i]:Hide();
+	for i=(#button.info.abilities + 1), #button.Abilities do
+		button.Abilities[i]:Hide();
 	end
 	if (abHeight > 0) then
 		abHeight = abHeight + 8;
-		self.AbilitiesBG:Show();
-		self.AbilitiesBG:SetHeight(abHeight);
+		button.AbilitiesBG:Show();
+		button.AbilitiesBG:SetHeight(abHeight);
 	else
-		self.AbilitiesBG:Hide();
+		button.AbilitiesBG:Hide();
 	end
-	self:SetHeight(51 + abHeight);
-	followerListFrame.expandedFollowerHeight = 51 + abHeight + 6;
+	return abHeight;
 end
 
 function GarrisonFollowerButton_AddAbility(self, index, ability)
@@ -497,14 +506,18 @@ function GarrisonFollowerButton_AddAbility(self, index, ability)
 	return Ability:GetHeight() + 3;
 end
 
-function GarrisonFollowerButton_Collapse(self)
-	self.UpArrow:Hide();
-	self.DownArrow:Show();
-	self.AbilitiesBG:Hide();
-	for i=1, #self.Abilities do
-		self.Abilities[i]:Hide();
+function GarrisonFollowerList:CollapseButton(button)
+	self:CollapseButtonAbilities(button);
+	button.UpArrow:Hide();
+	button.DownArrow:Show();
+	button:SetHeight(56);
+end
+
+function GarrisonFollowerList:CollapseButtonAbilities(button)
+	button.AbilitiesBG:Hide();
+	for i=1, #button.Abilities do
+		button.Abilities[i]:Hide();
 	end
-	self:SetHeight(56);
 end
 
 function GarrisonFollowerListButton_OnClick(self, button)
@@ -525,8 +538,6 @@ function GarrisonFollowerListButton_OnClick(self, button)
 					PlaySound("UI_Garrison_CommandTable_FollowerAbilityClose");
 				else
 					followerList.expandedFollower = self.id;
-					-- expand button now to get height
-					GarrisonFollowerButton_Expand(self, followerFrame.FollowerList);
 					PlaySound("UI_Garrison_CommandTable_FollowerAbilityOpen");
 				end
 			else

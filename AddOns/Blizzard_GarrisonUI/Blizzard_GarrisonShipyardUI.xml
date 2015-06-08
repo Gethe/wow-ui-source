@@ -11,7 +11,7 @@
 			<Layer level="OVERLAY" textureSubLevel="2">
 				<Texture parentKey="InProgressIcon" atlas="ShipMissionIcon-Combat-MapBadge" useAtlasSize="true" hidden="true">
 					<Anchors>
-						<Anchor point="TOPLEFT" x="11" y="-65"/>
+						<Anchor point="TOPLEFT" x="2" y="-45"/>
 					</Anchors>
 				</Texture>
 				<Texture parentKey="FogHighlight" atlas="BoatMissionIcon-Combat-Map" useAtlasSize="true" alpha="0.3" alphaMode="ADD" hidden="true">
@@ -1097,17 +1097,25 @@
 					</Anchors>
 				</Texture>
 			</Layer>
+			<Layer level="BACKGROUND" textureSubLevel="-1">
+				<Texture parentKey="AbilitiesBG" atlas="GarrMission_FollowerListButton" hidden="true">
+					<Size x="232" y="0"/>
+					<Anchors>
+						<Anchor point="TOPRIGHT" relativeKey="$parent.BG" relativePoint="BOTTOMRIGHT" y="5"/>
+					</Anchors>
+				</Texture>
+			</Layer>
 			<Layer level="ARTWORK" textureSubLevel="0">
 				<Texture parentKey="Portrait" atlas="Ships_CargoShip-List" useAtlasSize="true">
 					<Anchors>
-						<Anchor point="LEFT"/>
+						<Anchor point="TOPLEFT"/>
 					</Anchors>
 				</Texture>
 			</Layer>
 			<Layer level="ARTWORK" textureSubLevel="1">
 				<Texture parentKey="Quality" atlas="ShipMission_BoatRarity-Epic" useAtlasSize="true">
 					<Anchors>
-						<Anchor point="BOTTOMLEFT" x="0" y="2"/>
+						<Anchor point="BOTTOMLEFT" relativeKey="$parent.Portrait" relativePoint="BOTTOMLEFT" x="0" y="2"/>
 					</Anchors>
 				</Texture>
 			</Layer>
@@ -1150,6 +1158,11 @@
 			<Frame parentArray="Counters" inherits="GarrisonMissionAbilityCounterTemplate" hidden="true">
 				<Anchors>
 					<Anchor point="TOPRIGHT" x="-8" y="-4"/>
+				</Anchors>
+			</Frame>
+			<Frame parentArray="Abilities" inherits="GarrisonFollowerListButtonAbilityTemplate" hidden="true">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.AbilitiesBG" x="2" y="-9"/>
 				</Anchors>
 			</Frame>
 			<Frame parentKey="BusyFrame" hidden="true">

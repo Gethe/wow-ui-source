@@ -53,7 +53,7 @@
 			<Font font="Fonts\FRIZQT__.TTF" height="10" outline="NORMAL"/>
 		</Member>
 		<Member alphabet="korean">
-			<Font font="Fonts\2002.TTF" height="13" outline="NORMAL"/>
+			<Font font="Fonts\2002.TTF" height="10" outline="NORMAL"/>
 		</Member>
 		<Member alphabet="simplifiedchinese">
 			<Font font="Fonts\ARKai_C.ttf" height="12" outline="NORMAL"/>

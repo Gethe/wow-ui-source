@@ -43,6 +43,7 @@ Import("tostring");
 Import("tonumber");
 Import("unpack");
 Import("wipe");
+Import("type");
 Import("LoadURLIndex");
 Import("GetContainerNumFreeSlots");
 Import("GetCursorPosition");
@@ -89,6 +90,8 @@ Import("BLIZZARD_STORE_CONFIRMATION_EUR");
 Import("BLIZZARD_STORE_CONFIRMATION_SERVICES");
 Import("BLIZZARD_STORE_CONFIRMATION_SERVICES_TEST");
 Import("BLIZZARD_STORE_CONFIRMATION_SERVICES_EUR");
+Import("BLIZZARD_STORE_CONFIRMATION_VAS_NAME_CHANGE");
+Import("BLIZZARD_STORE_CONFIRMATION_VAS_NAME_CHANGE_EUR");
 Import("BLIZZARD_STORE_BROWSE_TEST_CURRENCY");
 Import("BLIZZARD_STORE_BATTLE_NET_BALANCE");
 Import("BLIZZARD_STORE_CURRENCY_FORMAT_USD");
@@ -146,6 +149,26 @@ Import("BLIZZARD_STORE_ERROR_TITLE_CONSUMABLE_TOKEN_OWNED");
 Import("BLIZZARD_STORE_ERROR_MESSAGE_CONSUMABLE_TOKEN_OWNED");
 Import("BLIZZARD_STORE_ERROR_ITEM_UNAVAILABLE");
 Import("BLIZZARD_STORE_ERROR_YOU_OWN_TOO_MANY_OF_THIS");
+Import("BLIZZARD_STORE_VAS_ERROR_REALM_NOT_ELIGIBLE");
+Import("BLIZZARD_STORE_VAS_ERROR_CANNOT_MOVE_GUILDMASTER");
+Import("BLIZZARD_STORE_VAS_ERROR_DUPLICATE_CHARACTER_NAME");
+Import("BLIZZARD_STORE_VAS_ERROR_HAS_MAIL");
+Import("BLIZZARD_STORE_VAS_ERROR_UNDER_MIN_LEVEL_REQ");
+Import("BLIZZARD_STORE_VAS_ERROR_TOO_MUCH_MONEY_FOR_LEVEL");
+Import("BLIZZARD_STORE_VAS_ERROR_HAS_AUCTIONS");
+Import("BLIZZARD_STORE_VAS_ERROR_NAME_NOT_AVAILABLE");
+Import("BLIZZARD_STORE_VAS_ERROR_LAST_RENAME_TOO_RECENT");
+Import("BLIZZARD_STORE_VAS_ERROR_CUSTOMIZE_ALREADY_REQUESTED");
+Import("BLIZZARD_STORE_VAS_ERROR_LAST_CUSTOMIZE_TOO_SOON");
+Import("BLIZZARD_STORE_VAS_ERROR_FACTION_CHANGE_TOO_SOON");
+Import("BLIZZARD_STORE_VAS_ERROR_RACE_CLASS_COMBO_INELIGIBLE");
+Import("BLIZZARD_STORE_VAS_ERROR_INELIGIBLE_MAP_ID");
+Import("BLIZZARD_STORE_VAS_ERROR_BATTLEPAY_DELIVERY_PENDING");
+Import("BLIZZARD_STORE_VAS_ERROR_HAS_WOW_TOKEN");
+Import("BLIZZARD_STORE_VAS_ERROR_CHARACTER_LOCKED");
+Import("BLIZZARD_STORE_VAS_ERROR_LAST_SAVE_TOO_RECENT");
+Import("BLIZZARD_STORE_VAS_ERROR_OTHER");
+Import("BLIZZARD_STORE_VAS_ERROR_LABEL");
 Import("BLIZZARD_STORE_DISCOUNT_TEXT_FORMAT");
 Import("BLIZZARD_STORE_PAGE_NUMBER");
 Import("BLIZZARD_STORE_SPLASH_BANNER_DISCOUNT_FORMAT");
@@ -183,7 +206,6 @@ Import("VAS_FACTION_CHANGE_CONFIRMATION");
 Import("VAS_RACE_CHANGE_CONFIRMATION");
 Import("VAS_RACE_CHANGE_VALIDATION_DESCRIPTION");
 Import("VAS_FACTION_CHANGE_VALIDATION_DESCRIPTION");
-Import("VAS_RACE_CHANGE_INELIGIBLE");
 Import("VAS_APPEARANCE_CHANGE_VALIDATION_DESCRIPTION");
 Import("TOKEN_CURRENT_AUCTION_VALUE");
 Import("TOKEN_MARKET_PRICE_NOT_AVAILABLE");
@@ -223,6 +245,24 @@ Import("LE_VAS_SERVICE_NAME_CHANGE");
 Import("LE_VAS_SERVICE_APPEARANCE_CHANGE");
 Import("LE_VAS_SERVICE_FACTION_CHANGE");
 Import("LE_VAS_SERVICE_RACE_CHANGE");
+Import("LE_VAS_ERROR_REALM_NOT_ELIGIBLE");
+Import("LE_VAS_ERROR_CANNOT_MOVE_GUILDMASTER");
+Import("LE_VAS_ERROR_DUPLICATE_CHARACTER_NAME");
+Import("LE_VAS_ERROR_HAS_MAIL");
+Import("LE_VAS_ERROR_UNDER_MIN_LEVEL_REQ");
+Import("LE_VAS_ERROR_TOO_MUCH_MONEY_FOR_LEVEL");
+Import("LE_VAS_ERROR_HAS_AUCTIONS");
+Import("LE_VAS_ERROR_NAME_NOT_AVAILABLE");
+Import("LE_VAS_ERROR_LAST_RENAME_TOO_RECENT");
+Import("LE_VAS_ERROR_CUSTOMIZE_ALREADY_REQUESTED");
+Import("LE_VAS_ERROR_LAST_CUSTOMIZE_TOO_RECENT");
+Import("LE_VAS_ERROR_FACTION_CHANGE_TOO_SOON");
+Import("LE_VAS_ERROR_RACE_CLASS_COMBO_INELIGIBLE");
+Import("LE_VAS_ERROR_INELIGIBLE_MAP_ID");
+Import("LE_VAS_ERROR_BATTLEPAY_DELIVERY_PENDING");
+Import("LE_VAS_ERROR_HAS_WOW_TOKEN");
+Import("LE_VAS_ERROR_CHAR_LOCKED");
+Import("LE_VAS_ERROR_LAST_SAVE_TOO_RECENT");
 Import("LE_CONSUMABLE_TOKEN_REDEEM_FOR_SUB_AMOUNT_30_DAYS");
 Import("LE_CONSUMABLE_TOKEN_REDEEM_FOR_SUB_AMOUNT_2700_MINUTES");
 
@@ -347,7 +387,7 @@ local function currencyFormatBeta(dollars, cents)
 end
 
 -- This is copied from WowTokenUI.lua 
-function GetSecureMoneyString(money, separateThousands)
+function GetSecureMoneyString(money, separateThousands, forceColorBlind)
 	local goldString, silverString, copperString;
 	local floor = math.floor;
 
@@ -355,7 +395,7 @@ function GetSecureMoneyString(money, separateThousands)
 	local silver = floor((money - (gold * COPPER_PER_SILVER * SILVER_PER_GOLD)) / COPPER_PER_SILVER);
 	local copper = money % COPPER_PER_SILVER;
 
-	if ( GetCVar("colorblindMode") == "1" ) then
+	if ( (not IsOnGlueScreen() and GetCVar("colorblindMode") == "1" ) or forceColorBlind ) then
 		if (separateThousands) then
 			goldString = formatLargeNumber(gold)..GOLD_AMOUNT_SYMBOL;
 		else
@@ -409,6 +449,7 @@ local currencySpecific = {
 		browseNotice = BLIZZARD_STORE_PLUS_TAX,
 		confirmationNotice = BLIZZARD_STORE_CONFIRMATION_GENERIC,
 		servicesConfirmationNotice = BLIZZARD_STORE_CONFIRMATION_SERVICES,
+		vasNameChangeConfirmationNotice = BLIZZARD_STORE_CONFIRMATION_VAS_NAME_CHANGE,
 		licenseAcceptText = BLIZZARD_STORE_LICENSE_ACK_TEXT_USD,
 		paymentMethodText = BLIZZARD_STORE_PAYMENT_METHOD,
 		paymentMethodSubtext = BLIZZARD_STORE_PAYMENT_METHOD_EXTRA,
@@ -420,6 +461,7 @@ local currencySpecific = {
 		browseNotice = BLIZZARD_STORE_BROWSE_EUR,
 		confirmationNotice = BLIZZARD_STORE_CONFIRMATION_EUR,
 		servicesConfirmationNotice = BLIZZARD_STORE_CONFIRMATION_SERVICES_EUR,
+		vasNameChangeConfirmationNotice = BLIZZARD_STORE_CONFIRMATION_VAS_NAME_CHANGE_EUR,
 		licenseAcceptText = BLIZZARD_STORE_LICENSE_ACK_TEXT_GBP,
 		paymentMethodText = BLIZZARD_STORE_PAYMENT_METHOD,
 		paymentMethodSubtext = BLIZZARD_STORE_PAYMENT_METHOD_EXTRA,
@@ -434,6 +476,7 @@ local currencySpecific = {
 		browseNotice = BLIZZARD_STORE_BROWSE_BATTLE_COINS_KR,
 		confirmationNotice = BLIZZARD_STORE_SECOND_CHANCE_KR,
 		servicesConfirmationNotice = BLIZZARD_STORE_SECOND_CHANCE_KR,
+		vasNameChangeConfirmationNotice = BLIZZARD_STORE_CONFIRMATION_VAS_NAME_CHANGE,
 		browseWarning = BLIZZARD_STORE_SECOND_CHANCE_KR,
 		paymentMethodText = "",
 		paymentMethodSubtext = "",
@@ -448,6 +491,7 @@ local currencySpecific = {
 		browseNotice = BLIZZARD_STORE_BROWSE_EUR,
 		confirmationNotice = BLIZZARD_STORE_CONFIRMATION_EUR,
 		servicesConfirmationNotice = BLIZZARD_STORE_CONFIRMATION_SERVICES_EUR,
+		vasNameChangeConfirmationNotice = BLIZZARD_STORE_CONFIRMATION_VAS_NAME_CHANGE_EUR,
 		licenseAcceptText = BLIZZARD_STORE_LICENSE_ACK_TEXT_EUR,
 		paymentMethodText = BLIZZARD_STORE_PAYMENT_METHOD,
 		paymentMethodSubtext = BLIZZARD_STORE_PAYMENT_METHOD_EXTRA,
@@ -462,6 +506,7 @@ local currencySpecific = {
 		browseNotice = BLIZZARD_STORE_BROWSE_EUR,
 		confirmationNotice = BLIZZARD_STORE_CONFIRMATION_EUR,
 		servicesConfirmationNotice = BLIZZARD_STORE_CONFIRMATION_SERVICES_EUR,
+		vasNameChangeConfirmationNotice = BLIZZARD_STORE_CONFIRMATION_VAS_NAME_CHANGE_EUR,
 		licenseAcceptText = BLIZZARD_STORE_LICENSE_ACK_TEXT_RUB,
 		paymentMethodText = BLIZZARD_STORE_PAYMENT_METHOD,
 		paymentMethodSubtext = BLIZZARD_STORE_PAYMENT_METHOD_EXTRA,
@@ -476,6 +521,7 @@ local currencySpecific = {
 		browseNotice = BLIZZARD_STORE_PLUS_TAX,
 		confirmationNotice = BLIZZARD_STORE_CONFIRMATION_GENERIC,
 		servicesConfirmationNotice = BLIZZARD_STORE_CONFIRMATION_SERVICES,
+		vasNameChangeConfirmationNotice = BLIZZARD_STORE_CONFIRMATION_VAS_NAME_CHANGE,
 		licenseAcceptText = BLIZZARD_STORE_LICENSE_ACK_TEXT_ARS,
 		paymentMethodText = BLIZZARD_STORE_PAYMENT_METHOD,
 		paymentMethodSubtext = BLIZZARD_STORE_PAYMENT_METHOD_EXTRA,
@@ -487,6 +533,7 @@ local currencySpecific = {
 		browseNotice = BLIZZARD_STORE_PLUS_TAX,
 		confirmationNotice = BLIZZARD_STORE_CONFIRMATION_GENERIC,
 		servicesConfirmationNotice = BLIZZARD_STORE_CONFIRMATION_SERVICES,
+		vasNameChangeConfirmationNotice = BLIZZARD_STORE_CONFIRMATION_VAS_NAME_CHANGE,
 		licenseAcceptText = BLIZZARD_STORE_LICENSE_ACK_TEXT_CLP,
 		paymentMethodText = BLIZZARD_STORE_PAYMENT_METHOD,
 		paymentMethodSubtext = BLIZZARD_STORE_PAYMENT_METHOD_EXTRA,
@@ -498,6 +545,7 @@ local currencySpecific = {
 		browseNotice = BLIZZARD_STORE_PLUS_TAX,
 		confirmationNotice = BLIZZARD_STORE_CONFIRMATION_GENERIC,
 		servicesConfirmationNotice = BLIZZARD_STORE_CONFIRMATION_SERVICES,
+		vasNameChangeConfirmationNotice = BLIZZARD_STORE_CONFIRMATION_VAS_NAME_CHANGE,
 		licenseAcceptText = BLIZZARD_STORE_LICENSE_ACK_TEXT_MXN,
 		paymentMethodText = BLIZZARD_STORE_PAYMENT_METHOD,
 		paymentMethodSubtext = BLIZZARD_STORE_PAYMENT_METHOD_EXTRA,
@@ -509,6 +557,7 @@ local currencySpecific = {
 		browseNotice = BLIZZARD_STORE_PLUS_TAX,
 		confirmationNotice = BLIZZARD_STORE_CONFIRMATION_GENERIC,
 		servicesConfirmationNotice = BLIZZARD_STORE_CONFIRMATION_SERVICES,
+		vasNameChangeConfirmationNotice = BLIZZARD_STORE_CONFIRMATION_VAS_NAME_CHANGE,
 		licenseAcceptText = BLIZZARD_STORE_LICENSE_ACK_TEXT_BRL,
 		paymentMethodText = BLIZZARD_STORE_PAYMENT_METHOD,
 		paymentMethodSubtext = BLIZZARD_STORE_PAYMENT_METHOD_EXTRA,
@@ -520,6 +569,7 @@ local currencySpecific = {
 		browseNotice = BLIZZARD_STORE_PLUS_TAX,
 		confirmationNotice = BLIZZARD_STORE_CONFIRMATION_GENERIC,
 		servicesConfirmationNotice = BLIZZARD_STORE_CONFIRMATION_SERVICES,
+		vasNameChangeConfirmationNotice = BLIZZARD_STORE_CONFIRMATION_VAS_NAME_CHANGE,
 		licenseAcceptText = BLIZZARD_STORE_LICENSE_ACK_TEXT_AUD,
 		paymentMethodText = BLIZZARD_STORE_PAYMENT_METHOD,
 		paymentMethodSubtext = BLIZZARD_STORE_PAYMENT_METHOD_EXTRA,
@@ -531,6 +581,7 @@ local currencySpecific = {
 		browseNotice = BLIZZARD_STORE_BROWSE_BATTLE_COINS_CN,
 		confirmationNotice = BLIZZARD_STORE_CONFIRMATION_GENERIC,
 		servicesConfirmationNotice = BLIZZARD_STORE_CONFIRMATION_SERVICES,
+		vasNameChangeConfirmationNotice = BLIZZARD_STORE_CONFIRMATION_VAS_NAME_CHANGE,
 		licenseAcceptText = BLIZZARD_STORE_LICENSE_ACK_TEXT_CN,
 		paymentMethodText = "",
 		paymentMethodSubtext = "",
@@ -543,6 +594,7 @@ local currencySpecific = {
 		browseNotice = "",
 		confirmationNotice = BLIZZARD_STORE_CONFIRMATION_GENERIC,
 		servicesConfirmationNotice = BLIZZARD_STORE_CONFIRMATION_SERVICES,
+		vasNameChangeConfirmationNotice = BLIZZARD_STORE_CONFIRMATION_VAS_NAME_CHANGE,
 		licenseAcceptText = BLIZZARD_STORE_LICENSE_ACK_TEXT_TW,
 		paymentMethodText = "",
 		paymentMethodSubtext = "",
@@ -554,6 +606,7 @@ local currencySpecific = {
 		browseNotice = BLIZZARD_STORE_BROWSE_TEST_CURRENCY,
 		confirmationNotice = BLIZZARD_STORE_CONFIRMATION_TEST,
 		servicesConfirmationNotice = BLIZZARD_STORE_CONFIRMATION_SERVICES_TEST,
+		vasNameChangeConfirmationNotice = BLIZZARD_STORE_CONFIRMATION_SERVICES_TEST,
 		paymentMethodText = BLIZZARD_STORE_CONFIRMATION_TEST,
 		paymentMethodSubtext = "",
 		browseHasStar = true,
@@ -619,6 +672,77 @@ local errorData = {
 	[LE_STORE_ERROR_ITEM_UNAVAILABLE] = {
 		title = BLIZZARD_STORE_ERROR_TITLE_CONSUMABLE_TOKEN_OWNED,
 		msg = BLIZZARD_STORE_ERROR_ITEM_UNAVAILABLE,
+	},
+};
+
+--VAS Error message data
+local vasErrorData = {
+	[LE_VAS_ERROR_REALM_NOT_ELIGIBLE] = {
+		msg = BLIZZARD_STORE_VAS_ERROR_REALM_NOT_ELIGIBLE,
+	},
+	[LE_VAS_ERROR_CANNOT_MOVE_GUILDMASTER] = {
+		msg = BLIZZARD_STORE_VAS_ERROR_CANNOT_MOVE_GUILDMASTER,
+	},
+	[LE_VAS_ERROR_DUPLICATE_CHARACTER_NAME] = {
+		msg = BLIZZARD_STORE_VAS_ERROR_DUPLICATE_CHARACTER_NAME,
+	},
+	[LE_VAS_ERROR_HAS_MAIL] = {
+		msg = BLIZZARD_STORE_VAS_ERROR_HAS_MAIL,
+	},
+	[LE_VAS_ERROR_UNDER_MIN_LEVEL_REQ] = {
+		msg = BLIZZARD_STORE_VAS_ERROR_UNDER_MIN_LEVEL_REQ,
+	},
+	[LE_VAS_ERROR_TOO_MUCH_MONEY_FOR_LEVEL] = {
+		msg = function(character)
+			local str = "";
+			if (character.level > 80) then
+				str = GetSecureMoneyString(50000 * COPPER_PER_SILVER * SILVER_PER_GOLD, true, true);
+			elseif (character.level > 70) then
+				str = GetSecureMoneyString(20000 * COPPER_PER_SILVER * SILVER_PER_GOLD, true, true);
+			elseif (character.level > 50) then
+				str = GetSecureMoneyString(5000 * COPPER_PER_SILVER * SILVER_PER_GOLD, true, true);
+			elseif (character.level > 30) then
+				str = GetSecureMoneyString(1000 * COPPER_PER_SILVER * SILVER_PER_GOLD, true, true);
+			elseif (character.level >= 10) then
+				str = GetSecureMoneyString(300 * COPPER_PER_SILVER * SILVER_PER_GOLD, true, true);
+			end
+			return BLIZZARD_STORE_VAS_ERROR_TOO_MUCH_MONEY_FOR_LEVEL:format(str);
+		end
+	},
+	[LE_VAS_ERROR_HAS_AUCTIONS] = {
+		msg = BLIZZARD_STORE_VAS_ERROR_HAS_AUCTIONS,
+	},
+	[LE_VAS_ERROR_NAME_NOT_AVAILABLE] = {
+		msg = BLIZZARD_STORE_VAS_ERROR_NAME_NOT_AVAILABLE,
+	},
+	[LE_VAS_ERROR_LAST_RENAME_TOO_RECENT] = {
+		msg = BLIZZARD_STORE_VAS_ERROR_LAST_RENAME_TOO_RECENT,
+	},
+	[LE_VAS_ERROR_CUSTOMIZE_ALREADY_REQUESTED] = {
+		msg = BLIZZARD_STORE_VAS_ERROR_CUSTOMIZE_ALREADY_REQUESTED,
+	},
+	[LE_VAS_ERROR_FACTION_CHANGE_TOO_SOON] = {
+		msg = BLIZZARD_STORE_VAS_ERROR_FACTION_CHANGE_TOO_SOON,
+	},
+	[LE_VAS_ERROR_RACE_CLASS_COMBO_INELIGIBLE] = { --We should still handle this one even though we shortcut it in case something slips through
+		msg = BLIZZARD_STORE_VAS_ERROR_RACE_CLASS_COMBO_INELIGIBLE,
+	},
+	[LE_VAS_ERROR_INELIGIBLE_MAP_ID] = {
+		msg = BLIZZARD_STORE_VAS_ERROR_INELIGIBLE_MAP_ID,
+	},
+	[LE_VAS_ERROR_BATTLEPAY_DELIVERY_PENDING] = {
+		msg = BLIZZARD_STORE_VAS_ERROR_BATTLEPAY_DELIVERY_PENDING,
+	},
+	[LE_VAS_ERROR_HAS_WOW_TOKEN] = {
+		msg = BLIZZARD_STORE_VAS_ERROR_HAS_WOW_TOKEN,
+	},
+	[LE_VAS_ERROR_CHAR_LOCKED] = {
+		msg = BLIZZARD_STORE_VAS_ERROR_CHARACTER_LOCKED,
+		notUserFixable = true,
+	},
+	[LE_VAS_ERROR_LAST_SAVE_TOO_RECENT] = {
+		msg = BLIZZARD_STORE_VAS_ERROR_LAST_SAVE_TOO_RECENT,
+		notUserFixable = true,
 	},
 };
 
@@ -1495,10 +1619,6 @@ function StoreFrameNextPageButton_OnClick(self)
 	PlaySound("UI_igStore_PageNav_Button");
 end
 
-local ConfirmationFrameHeight = 556;
-local ConfirmationFrameMiddleHeight = 200;
-local ConfirmationFrameHeightEur = 596;
-local ConfirmationFrameMiddleHeightEur = 240;
 local VASServiceType = nil;
 local SelectedRealm = nil;
 local SelectedCharacter = nil;
@@ -1522,25 +1642,10 @@ end
 
 function StoreConfirmationFrame_SetNotice(self, icon, name, dollars, cents, walletName, upgrade, vasService)
 	local currency = C_PurchaseAPI.GetCurrencyID();
-	local middleHeight = ConfirmationFrameMiddleHeight;
-	local frameHeight = ConfirmationFrameHeight;
 
-	if (currency == CURRENCY_EUR or currency == CURRENCY_RUB or currency == CURRENCY_GBP or currency == CURRENCY_BRL or (IsOnGlueScreen() and currency == CURRENCY_KRW and _G.GetLocale() ~= "koKR")) then
-		middleHeight = ConfirmationFrameMiddleHeightEur;
-		frameHeight = ConfirmationFrameHeightEur;
-	else
-		middleHeight = ConfirmationFrameMiddleHeight;
-		frameHeight = ConfirmationFrameHeight;
-	end
-
-	self:SetHeight(frameHeight);
-
-	self.ParchmentMiddle:SetHeight(middleHeight);
 	SetPortraitToTexture(self.Icon, icon);
 	
-	self.ProductName:SetText(name);
-	self.NoticeFrame.Notice:ClearAllPoints();
-	self.NoticeFrame.Notice:SetPoint("TOP", 0, 100);
+	self.ProductName:SetText(name);	
 	local info = currencyInfo();
 	local format = info.formatLong;
 	local notice;
@@ -1550,8 +1655,10 @@ function StoreConfirmationFrame_SetNotice(self, icon, name, dollars, cents, wall
 	elseif (vasService) then
 		local characters = C_PurchaseAPI.GetCharactersForRealm(SelectedRealm);
 		local character = characters[SelectedCharacter];
+		local confirmationNotice;
 		if (VASServiceType == LE_VAS_SERVICE_NAME_CHANGE) then
 			notice = VAS_NAME_CHANGE_CONFIRMATION:format(character.name, NewCharacterName);
+			confirmationNotice = info.vasNameChangeConfirmationNotice;
 		elseif (VASServiceType == LE_VAS_SERVICE_FACTION_CHANGE) then
 			local newFaction;
 			if (character.faction == 0) then
@@ -1560,11 +1667,15 @@ function StoreConfirmationFrame_SetNotice(self, icon, name, dollars, cents, wall
 				newFaction = FACTION_HORDE;
 			end
 			notice = VAS_FACTION_CHANGE_CONFIRMATION:format(character.name, SelectedRealm, newFaction);
+			confirmationNotice = info.servicesConfirmationNotice;
 		elseif (VASServiceType == LE_VAS_SERVICE_RACE_CHANGE) then
 			notice = VAS_RACE_CHANGE_CONFIRMATION:format(character.name, SelectedRealm);
+			confirmationNotice = info.servicesConfirmationNotice;
 		elseif (VASServiceType == LE_VAS_SERVICE_APPEARANCE_CHANGE) then
 			notice = VAS_APPEARANCE_CHANGE_CONFIRMATION:format(character.name, SelectedRealm);
+			confirmationNotice = info.servicesConfirmationNotice;
 		end
+		notice = notice .. "|n|n" .. confirmationNotice;
 	else
 		notice = info.confirmationNotice;
 	end
@@ -1664,6 +1775,10 @@ function StoreConfirmationFrame_Update(self)
 
 	FinalPriceDollars = currentDollars;
 	FinalPriceCents = currentCents;
+
+	local height = 370 + self.NoticeFrame.Notice:GetContentHeight() + 35;
+	self:SetHeight(height);
+	self.NoticeFrame:SetHeight(120 + self.NoticeFrame.Notice:GetContentHeight());
 
 	if (self.NoticeFrame.Price:GetLeft() < self.NoticeFrame.TotalLabel:GetRight()) then
 		self.NoticeFrame.Price:SetFontObject("GameFontNormalLargeOutline");
@@ -1765,6 +1880,18 @@ function StoreVASValidationFrame_SetVASStart(self)
 	self:Show();
 end
 
+function StoreVASValidationFrame_AppendError(desc, errorID, character)
+	local errorData = vasErrorData[errorID];
+	local str;
+	if (type(errorData.msg) == "function") then
+		str = errorData.msg(character);
+	else
+		str = errorData.msg;
+	end
+
+	return desc .. "|n|n" .. str;
+end
+
 function StoreVASValidationFrame_OnEvent(self, event, ...)
 	if ( event == "STORE_CHARACTER_LIST_RECEIVED" ) then
 		WaitingOnConfirmation = false;
@@ -1776,13 +1903,43 @@ function StoreVASValidationFrame_OnEvent(self, event, ...)
 	elseif ( event == "STORE_VAS_PURCHASE_ERROR" ) then
 		WaitingOnConfirmation = false;
 		StoreFrame_UpdateActivePanel(StoreFrame);
-		local errors = C_PurchaseAPI.GetVASErrors();
-		-- TEMP
-		_G.print("Number of errors returned", #errors);
-		for i = 1, #errors do
-			_G.print(("Error %d:"):format(i), errors[i]);
+		if ( StoreFrame:IsShown() and StoreVASValidationFrame:IsShown() ) then
+			local errors = C_PurchaseAPI.GetVASErrors();
+			local characters = C_PurchaseAPI.GetCharactersForRealm(SelectedRealm);
+			local character = characters[SelectedCharacter];
+			local frame = self.CharacterSelectionFrame;
+			local hasOther = false;
+			local hasNonUserFixable = false;
+			for i = 1, #errors do
+				if (not vasErrorData[errors[i]]) then
+					hasOther = true;
+				elseif (vasErrorData[errors[i]].notUserFixable) then
+					hasNonUserFixable = true;
+				end
+			end
+
+			local desc = BLIZZARD_STORE_VAS_ERROR_LABEL;
+			if (hasOther) then
+				desc = BLIZZARD_STORE_VAS_ERROR_OTHER;
+			elseif (hasNonUserFixable) then
+				for i = 1, #errors do
+					if (vasErrorData[errors[i]].notUserFixable) then
+						desc = StoreVASValidationFrame_AppendError(desc, errors[i], character);
+					end
+				end
+			else
+				for i = 1, #errors do
+					desc = StoreVASValidationFrame_AppendError(desc, errors[i], character);
+				end
+			end
+			frame.ChangeIconFrame:Hide();
+			frame.ValidationDescription:ClearAllPoints();
+			frame.ValidationDescription:SetPoint("TOPLEFT", frame.SelectedCharacterFrame, "BOTTOMLEFT", 8, -16);
+			frame.ValidationDescription:SetTextColor(1.0, 0.1, 0.1);
+			frame.ValidationDescription:SetText(desc);
+			StoreVASValidationFrame.CharacterSelectionFrame.ContinueButton:Show();
+			StoreVASValidationFrame.CharacterSelectionFrame.ContinueButton:Disable();
 		end
-		self:Hide();
 	elseif ( event == "STORE_VAS_PURCHASE_COMPLETE" ) then
 		if (IsOnGlueScreen()) then
 			self:GetParent():Hide();
@@ -2475,10 +2632,12 @@ function VASCharacterSelectionCharacterSelector_Callback(value)
 	frame.SelectedCharacterName:Show();
 	frame.SelectedCharacterDescription:SetText(VAS_SELECTED_CHARACTER_DESCRIPTION:format(level, character.raceName, character.className));
 	frame.SelectedCharacterDescription:Show();
+	frame.ValidationDescription:SetTextColor(0, 0, 0);
 
 	if (VASServiceType == LE_VAS_SERVICE_NAME_CHANGE) then
 		frame.NewCharacterName:SetText("");
 		frame.NewCharacterName:Show();
+		frame.NewCharacterName:SetFocus();
 		frame.ContinueButton:Disable();
 	else
 		local bottomWidget = frame.SelectedCharacterFrame;
@@ -2489,7 +2648,8 @@ function VASCharacterSelectionCharacterSelector_Callback(value)
 				frame.ChangeIconFrame:Hide();
 				frame.ValidationDescription:ClearAllPoints();
 				frame.ValidationDescription:SetPoint("TOPLEFT", frame.SelectedCharacterFrame, "BOTTOMLEFT", 8, -16);
-				frame.ValidationDescription:SetText(VAS_RACE_CHANGE_INELIGIBLE);
+				frame.ValidationDescription:SetTextColor(1.0, 0.1, 0.1);
+				frame.ValidationDescription:SetText(StoreVASValidationFrame_AppendError(BLIZZARD_STORE_VAS_ERROR_LABEL, LE_VAS_ERROR_RACE_CLASS_COMBO_INELIGIBLE, character));
 				frame.ValidationDescription:Show();
 				frame.ContinueButton:Disable();
 				return;
@@ -2524,8 +2684,8 @@ function VASCharacterSelectionCharacterSelector_Callback(value)
 				frame.ChangeIconFrame:Hide();
 				frame.ValidationDescription:ClearAllPoints();
 				frame.ValidationDescription:SetPoint("TOPLEFT", frame.SelectedCharacterFrame, "BOTTOMLEFT", 8, -16);
-				frame.ValidationDescription:SetText(VAS_RACE_CHANGE_INELIGIBLE);
-				frame.ValidationDescription:SetText(VAS_RACE_CHANGE_INELIGIBLE);
+				frame.ValidationDescription:SetTextColor(1.0, 0.1, 0.1);
+				frame.ValidationDescription:SetText(StoreVASValidationFrame_AppendError(BLIZZARD_STORE_VAS_ERROR_LABEL, LE_VAS_ERROR_RACE_CLASS_COMBO_INELIGIBLE, character));
 				frame.ValidationDescription:Show();
 				frame.ContinueButton:Disable();
 				return;

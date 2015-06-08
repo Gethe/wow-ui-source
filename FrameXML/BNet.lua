@@ -178,14 +178,14 @@ function BNToastFrame_Show()
 		BNToastFrameDoubleLine:Show();
 		BNToastFrameDoubleLine:SetFormattedText(BN_TOAST_PENDING_INVITES, toastData);
 	elseif ( toastType == BN_TOAST_TYPE_ONLINE ) then
-		local presenceID, presenceName = BNGetFriendInfoByID(toastData);
+		local presenceID, presenceName, battleTag, isBattleTagPresence, toonName, toonID, client = BNGetFriendInfoByID(toastData);
 		-- don't display a toast if we didn't get the data in time
 		if ( not presenceName ) then
 			return;
 		end
 		
-		local _, toonName, client = BNGetToonInfo(presenceID);
 		if (toonName and toonName ~= "") then
+			toonName = BNet_GetValidatedCharacterName(toonName, battleTag, client);
 			toonName = BNet_GetClientEmbeddedTexture(client, 14, 14, 0, -1)..toonName;
 			middleLine:SetFormattedText(toonName);
 			middleLine:SetTextColor(FRIENDS_BNET_NAME_COLOR.r, FRIENDS_BNET_NAME_COLOR.g, FRIENDS_BNET_NAME_COLOR.b);

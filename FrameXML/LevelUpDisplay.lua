@@ -1640,7 +1640,9 @@ function BossBanner_Play(self, data)
 end
 
 function BossBanner_Stop(self)
-	self.Anim:Stop();
+	self.AnimIn:Stop();
+	self.AnimSwitch:Stop();
+	self.AnimOut:Stop();
 	self:Hide();
 end
 

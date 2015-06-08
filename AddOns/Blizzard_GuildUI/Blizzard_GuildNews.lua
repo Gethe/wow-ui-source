@@ -15,7 +15,6 @@ local GUILD_EVENT_TEXTURES = {
 	[CALENDAR_EVENTTYPE_PVP]		= "Interface\\Calendar\\UI-Calendar-Event-PVP",
 	[CALENDAR_EVENTTYPE_MEETING]	= "Interface\\Calendar\\MeetingIcon",
 	[CALENDAR_EVENTTYPE_OTHER]		= "Interface\\Calendar\\UI-Calendar-Event-Other",
-	--[CALENDAR_EVENTTYPE_HEROIC_DUNGEON]	= "Interface\\LFGFrame\\LFGIcon-",
 };
 local GUILD_EVENT_TEXTURE_PATH = "Interface\\LFGFrame\\LFGIcon-";
 

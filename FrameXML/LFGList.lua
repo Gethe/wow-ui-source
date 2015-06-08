@@ -1501,6 +1501,25 @@ function LFGListSearchPanel_OnShow(self)
 	LFGListSearchPanel_UpdateResultList(self);
 	LFGListSearchPanel_UpdateResults(self);
 	--LFGListSearchPanel_UpdateButtonStatus(self); --Called by UpdateResults
+	
+	local availableLanguages = C_LFGList.GetAvailableLanguageSearchFilter();
+	local defaultLanguages = C_LFGList.GetDefaultLanguageSearchFilter();
+
+	local canChangeLanguages = false;
+	for i=1, #availableLanguages do
+		if ( not defaultLanguages[availableLanguages[i]] ) then
+			canChangeLanguages = true;
+			break;
+		end
+	end
+
+	if ( canChangeLanguages ) then
+		self.SearchBox:SetWidth(228);
+		self.FilterButton:Show();
+	else
+		self.SearchBox:SetWidth(319);
+		self.FilterButton:Hide();
+	end
 end
 
 function LFGListSearchPanel_Clear(self)
@@ -1522,7 +1541,8 @@ end
 
 function LFGListSearchPanel_DoSearch(self)
 	local searchText = self.SearchBox:GetText();
-	C_LFGList.Search(self.categoryID, searchText, self.filters, self.preferredFilters);
+	local languages = C_LFGList.GetLanguageSearchFilter();
+	C_LFGList.Search(self.categoryID, searchText, self.filters, self.preferredFilters, languages);
 	self.searching = true;
 	self.searchFailed = false;
 	self.selectedResult = nil;
@@ -2773,6 +2793,24 @@ function LFGListUtil_GetApplicantMemberMenu(applicantID, memberIdx)
 	LFG_LIST_APPLICANT_MEMBER_MENU[4].arg2 = applicantID;
 	LFG_LIST_APPLICANT_MEMBER_MENU[4].disabled = not name;
 	return LFG_LIST_APPLICANT_MEMBER_MENU;
+end
+
+function LFGListUtil_InitializeLangaugeFilter(dropdown)
+	local info = UIDropDownMenu_CreateInfo();
+	local languages = C_LFGList.GetAvailableLanguageSearchFilter();
+	local enabled = C_LFGList.GetLanguageSearchFilter();
+	local defaults = C_LFGList.GetDefaultLanguageSearchFilter();
+	local entry = UIDropDownMenu_CreateInfo();
+	for i=1, #languages do
+		local lang = languages[i];
+		entry.text = _G["LFG_LIST_LANGUAGE_"..string.upper(lang)];
+		entry.checked = enabled[lang] or defaults[lang];
+		entry.disabled = defaults[lang];
+		entry.isNotRadio = true;
+		entry.keepShownOnClick = true;
+		entry.func = function(self,_,_,checked) enabled[lang] = checked; C_LFGList.SaveLanguageSearchFilter(enabled); end
+		UIDropDownMenu_AddButton(entry);
+	end
 end
 
 function LFGListUtil_OpenBestWindow(toggle)

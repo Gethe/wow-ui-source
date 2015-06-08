@@ -3442,7 +3442,6 @@ local function Blizzard_CombatLog_AdjustCombatLogHeight()
 end
 
 -- On Load
-local hooksSet = false
 function Blizzard_CombatLog_QuickButtonFrame_OnLoad(self)
 	self:RegisterEvent("ADDON_LOADED");
 	
@@ -3463,21 +3462,18 @@ function Blizzard_CombatLog_QuickButtonFrame_OnLoad(self)
 	local show, hide = COMBATLOG:GetScript("OnShow"), COMBATLOG:GetScript("OnHide")
 	COMBATLOG:SetScript("OnShow", function(self)
 		CombatLogQuickButtonFrame_Custom:Show()
-		--Blizzard_CombatLog_AdjustCombatLogHeight()
+
 		COMBATLOG:RegisterEvent("COMBAT_LOG_EVENT");
-		-- select a filter for the user only the first time it's shown
-		if ( not self.loaded ) then
-			Blizzard_CombatLog_QuickButton_OnClick(Blizzard_CombatLog_Filters.currentFilter);
-			self.loaded = true;
-		end
+
+		Blizzard_CombatLog_QuickButton_OnClick(Blizzard_CombatLog_Filters.currentFilter);
 		return show and show(self)
 	end)
 	COMBATLOG:SetScript("OnHide", function(self)
 		CombatLogQuickButtonFrame_Custom:Hide()
-		-- Blizzard_CombatLog_AdjustCombatLogHeight()
+
 		COMBATLOG:UnregisterEvent("COMBAT_LOG_EVENT");
 		return hide and hide(self)
-	end)	
+	end)
 	if ( COMBATLOG:IsShown() ) then
 		COMBATLOG:RegisterEvent("COMBAT_LOG_EVENT");
 	end

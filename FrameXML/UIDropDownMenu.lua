@@ -446,6 +446,18 @@ function UIDropDownMenu_AddButton(info, level)
 
 
 	if not info.notCheckable then 
+		if ( info.disabled ) then
+			_G[listFrameName.."Button"..index.."Check"]:SetDesaturated(true);
+			_G[listFrameName.."Button"..index.."Check"]:SetAlpha(0.5);
+			_G[listFrameName.."Button"..index.."UnCheck"]:SetDesaturated(true);
+			_G[listFrameName.."Button"..index.."UnCheck"]:SetAlpha(0.5);
+		else
+			_G[listFrameName.."Button"..index.."Check"]:SetDesaturated(false);
+			_G[listFrameName.."Button"..index.."Check"]:SetAlpha(1);
+			_G[listFrameName.."Button"..index.."UnCheck"]:SetDesaturated(false);
+			_G[listFrameName.."Button"..index.."UnCheck"]:SetAlpha(1);
+		end
+
 		if info.isNotRadio then
 			_G[listFrameName.."Button"..index.."Check"]:SetTexCoord(0.0, 0.5, 0.0, 0.5);
 			_G[listFrameName.."Button"..index.."UnCheck"]:SetTexCoord(0.5, 1.0, 0.0, 0.5);

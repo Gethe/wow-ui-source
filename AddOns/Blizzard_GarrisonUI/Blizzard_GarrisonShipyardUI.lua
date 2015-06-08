@@ -68,6 +68,25 @@ StaticPopupDialogs["GARRISON_SHIP_RENAME"] = {
 	hideOnEscape = 1
 };
 
+StaticPopupDialogs["GARRISON_SHIP_DECOMMISSION"] = {
+	text = "",
+	button1 = YES,
+	button2 = NO,
+	OnAccept = function(self)
+		C_Garrison.RemoveFollower(self.data.followerID, true);
+		PlaySoundKitID(51871);
+	end,
+	OnShow = function(self)
+		local quality = C_Garrison.GetFollowerQuality(self.data.followerID);
+		local name = ITEM_QUALITY_COLORS[quality].hex..C_Garrison.GetFollowerName(self.data.followerID)..FONT_COLOR_CODE_CLOSE;
+		self.text:SetFormattedText(GARRISON_SHIP_DECOMMISSION_CONFIRMATION, name);
+	end,
+	showAlert = 1,
+	timeout = 0,
+	exclusive = 1,
+	hideOnEscape = 1
+};
+
 ---------------------------------------------------------------------------------
 --- Garrison Shipyard Mixin Functions                                         ---
 ---------------------------------------------------------------------------------
@@ -694,6 +713,8 @@ function GarrisonShipyardMissionComplete:BeginAnims(animIndex, missionID)
 		follower.XP:SetAlpha(1);
 		follower.SurvivedText:SetAlpha(0);
 		follower.DestroyedText:SetAlpha(0);
+		follower.SurvivedAnim:Stop();
+		follower.DestroyedAnim:Stop();
 		if (follower.state == LE_FOLLOWER_MISSION_COMPLETE_STATE_ALIVE) then
 			follower.DestroyedText:Hide();
 			follower.SurvivedText:SetText(GARRISON_SHIPYARD_SHIP_SURVIVED);
@@ -1042,6 +1063,65 @@ function GarrisonShipyardMap_SetupBonus(self, missionFrame, mission)
 	end
 end
 
+function GarrisonShipyardMap_SetClampedPosition(frame, mission, moveX, moveY)
+	mission.adjustedPosX = mission.adjustedPosX + moveX;
+	mission.adjustedPosY = mission.adjustedPosY + moveY;
+	local mapTexture = GarrisonShipyardFrame.MissionTab.MissionList.MapTexture;
+	
+	-- Clamp adjusted coordinates to within 40 pixels of the border
+	if (mission.adjustedPosX < 40) then
+		mission.adjustedPosX = 40;
+	elseif (mission.adjustedPosX > mapTexture:GetWidth() - 40) then
+		mission.adjustedPosX = mapTexture:GetWidth() - 40;
+	end
+	if (mission.adjustedPosY > -40) then
+		mission.adjustedPosY = -40;
+	elseif (mission.adjustedPosY < -(mapTexture:GetHeight() - 40)) then
+		mission.adjustedPosY = -(mapTexture:GetHeight() - 40);
+	end
+	frame:SetPoint("CENTER", mapTexture, "TOPLEFT", mission.adjustedPosX, mission.adjustedPosY);
+end
+
+-- For each mission, loop through all other missions. For any mission that overlaps with
+-- my location, move both missions away from each other
+function GarrisonShipyardMap_AdjustMissionPositions()
+	local self = GarrisonShipyardFrame.MissionTab.MissionList;
+	-- Missions can overlap by up to distBuffer before we push them away from each other
+	local distBuffer = 10;
+	local distBufferSquared = distBuffer * distBuffer;
+	for i = 1, #self.missions do
+		local frameA = self.missionFrames[i];
+		if (frameA:IsShown()) then
+			local missionA = self.missions[i];
+			local radiusA = frameA:GetWidth() / 2;
+			for j = 1, #self.missions do
+				local frameB = self.missionFrames[j];
+				if (i ~= j and frameB:IsShown()) then
+					local missionB = self.missions[j];
+					local distX = missionB.adjustedPosX - missionA.adjustedPosX;
+					local distY = missionB.adjustedPosY - missionA.adjustedPosY;
+					local distSquared = distX * distX + distY * distY;
+					
+					local radiusB = frameB:GetWidth() / 2;
+					local minDistSquared = (radiusA + radiusB) * (radiusA + radiusB);
+					if (distSquared + distBufferSquared < minDistSquared) then
+						local minDist = math.sqrt(minDistSquared);
+						local dist = math.sqrt(distSquared);
+						-- We want to move each frame by half the amount that they overlap, minus the buffer space
+						local distToMove = (minDist - dist - distBuffer / 2) / 2;
+					
+						-- Unit vector from center of frameA to center of frameB
+						local vectorX = distX / dist;
+						local vectorY = distY / dist;
+						GarrisonShipyardMap_SetClampedPosition(frameA, missionA, -vectorX * distToMove, -vectorY * distToMove);
+						GarrisonShipyardMap_SetClampedPosition(frameB, missionB, vectorX * distToMove, vectorY * distToMove);
+					end
+				end
+			end
+		end
+	end
+end
+
 function GarrisonShipyardMap_UpdateMissions()
 	local self = GarrisonShipyardFrame.MissionTab.MissionList;
 
@@ -1071,6 +1151,8 @@ function GarrisonShipyardMap_UpdateMissions()
 		else
 			mission.mapPosX = mission.mapPosX;
 			mission.mapPosY = -mission.mapPosY;
+			mission.adjustedPosX = mission.mapPosX;
+			mission.adjustedPosY = mission.mapPosY;
 			frame:SetPoint("CENTER", self.MapTexture, "TOPLEFT", mission.mapPosX, mission.mapPosY);
 			frame.info = mission;
 			frame:SetHitRectInsets(10, 10, 10, 10);
@@ -1095,7 +1177,7 @@ function GarrisonShipyardMap_UpdateMissions()
 				frame.RareMissionAnim:Stop();
 				frame.BonusMissionPulse:Stop();
 				frame.BonusMissionAnim:Stop();
-				frame:SetSize(94, 94);
+				frame:SetSize(83, 72);
 			else
 				mapAtlas = mapAtlas .. "-Map";
 				frame.Icon:SetAtlas(mapAtlas, true);
@@ -1128,6 +1210,8 @@ function GarrisonShipyardMap_UpdateMissions()
 			frame:Show();
 		end
 	end
+	
+	GarrisonShipyardMap_AdjustMissionPositions();
 
 	-- Hide the rest of the frames that we have cached but are not used
 	for j = #self.missions + 1, #self.missionFrames do
@@ -1584,12 +1668,15 @@ end
 function GarrisonShipyardMissionPage_OnShow(self)
 	local mainFrame = self:GetParent():GetParent();
 	mainFrame.FollowerList.showCounters = true;
+	mainFrame.FollowerList.canExpand = true;
 	mainFrame.FollowerList:Show();
 	mainFrame:UpdateStartButton(self);
 end
 
 function GarrisonShipyardMissionPage_OnHide(self)
+	local mainFrame = self:GetParent():GetParent();
 	self:GetParent():GetParent().FollowerList.showCounters = false;
+	mainFrame.FollowerList.canExpand = false;
 	self.lastUpdate = nil;
 end
 
@@ -1869,6 +1956,12 @@ function GarrisonShipyardFollowerList:UpdateData()
 				button.XPBar:Show();
 				button.XPBar:SetWidth((follower.xp/follower.levelXP) * 228);
 			end
+			
+			if (self.canExpand and button.id == self.expandedFollower and button.id == mainFrame.selectedFollower) then
+				self:ExpandButton(button, self);
+			else
+				self:CollapseButton(button);
+			end
 
 			GarrisonFollowerButton_UpdateCounters(mainFrame, button, follower, self.showCounters, mainFrame.lastUpdate);
 		
@@ -1878,13 +1971,29 @@ function GarrisonShipyardFollowerList:UpdateData()
 		end
 	end
 	
-	local totalHeight = numFollowers * scrollFrame.buttonHeight;
+	local extraHeight = 0;
+	if ( self.expandedFollower ) then
+		extraHeight = self.expandedFollowerHeight - scrollFrame.buttonHeight;
+	else
+		extraHeight = 0;
+	end
+	local totalHeight = numFollowers * scrollFrame.buttonHeight + extraHeight;
 	local displayedHeight = numButtons * scrollFrame.buttonHeight;
 	HybridScrollFrame_Update(scrollFrame, totalHeight, displayedHeight);
 
 	self.lastUpdate = GetTime();
 end
 
+function GarrisonShipyardFollowerList:ExpandButton(button, followerListFrame)
+	local abHeight = self:ExpandButtonAbilities(button, true);
+	button:SetHeight(75 + abHeight);
+	followerListFrame.expandedFollowerHeight = 75 + abHeight + 6;
+end
+
+function GarrisonShipyardFollowerList:CollapseButton(button)
+	self:CollapseButtonAbilities(button);
+	button:SetHeight(80);
+end
 
 ---------------------------------------------------------------------------------
 --- Ship Follower List                                                        ---
@@ -1897,6 +2006,18 @@ function GarrisonShipFollowerListButton_OnClick(self, button)
 
 	if (button == "LeftButton") then
 		mainFrame.selectedFollower = self.id;
+
+		if (followerList.canExpand) then
+			if (followerList.expandedFollower == self.id) then
+				followerList.expandedFollower = nil;
+				PlaySound("UI_Garrison_CommandTable_FollowerAbilityClose");
+			else
+				followerList.expandedFollower = self.id;
+				PlaySound("UI_Garrison_CommandTable_FollowerAbilityOpen");
+			end
+		elseif (followerList.expandedFollower ~= self.id ) then
+			followerList.expandedFollower = nil;
+		end
 
 		followerList:UpdateData();
 		followerList:ShowFollower(self.id);
@@ -2095,10 +2216,32 @@ function GarrisonShipOptionsMenu_Initialize(self, level)
 	info.notCheckable = true;
 		
 	info.text = GARRISON_SHIP_RENAME;
-	info.func = 	function() StaticPopup_Show("GARRISON_SHIP_RENAME", nil, nil, GarrisonShipyardFollowerOptionDropDown.followerID); end 
+	info.func = 	function() StaticPopup_Show("GARRISON_SHIP_RENAME", nil, nil, self.followerID); end 
+	UIDropDownMenu_AddButton(info, level);
+
+	info.text = GARRISON_SHIP_DECOMMISSION;
+	local data = {};
+	data.followerID = self.followerID;
+	info.func = 	function() StaticPopup_Show("GARRISON_SHIP_DECOMMISSION", nil, nil, data); end 
+	local followerStatus = self.followerID and C_Garrison.GetFollowerStatus(self.followerID);
+	if ( followerStatus == GARRISON_FOLLOWER_ON_MISSION ) then
+		info.disabled = 1;
+		info.tooltipWhileDisabled = 1;
+		info.tooltipTitle = GARRISON_SHIP_DECOMMISSION;
+		info.tooltipText = GARRISON_SHIP_CANNOT_DECOMMISSION_ON_MISSION;
+		info.tooltipOnButton = 1;
+	elseif ( C_Garrison.GetNumFollowers(LE_FOLLOWER_TYPE_SHIPYARD_6_2) <  C_Garrison.GetFollowerSoftCap(LE_FOLLOWER_TYPE_SHIPYARD_6_2) ) then
+		info.disabled = 1;
+		info.tooltipWhileDisabled = 1;
+		info.tooltipTitle = GARRISON_SHIP_DECOMMISSION;
+		info.tooltipText = GARRISON_SHIP_CANNOT_DECOMMISSION_UNTIL_FULL;
+		info.tooltipOnButton = 1;
+	end
 	UIDropDownMenu_AddButton(info, level);
 	
 	info.text = CANCEL
 	info.func = nil
+	info.tooltipTitle = nil;
+	info.disabled = nil;
 	UIDropDownMenu_AddButton(info, level)
 end

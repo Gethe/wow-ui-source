@@ -588,10 +588,6 @@ local CALENDAR_CALENDARTYPE_COLORS = {
 local CALENDAR_EVENTTYPE_TEXTURE_PATHS = {
 	[CALENDAR_EVENTTYPE_RAID]		= "Interface\\LFGFrame\\LFGIcon-",
 	[CALENDAR_EVENTTYPE_DUNGEON]	= "Interface\\LFGFrame\\LFGIcon-",
---	[CALENDAR_EVENTTYPE_PVP]		= "",
---	[CALENDAR_EVENTTYPE_MEETING]	= "",
---	[CALENDAR_EVENTTYPE_OTHER]		= "",
-	[CALENDAR_EVENTTYPE_HEROIC_DUNGEON] = "Interface\\LFGFrame\\LFGIcon-",
 };
 local CALENDAR_EVENTTYPE_TEXTURES = {
 	[CALENDAR_EVENTTYPE_RAID]		= "Interface\\LFGFrame\\LFGIcon-Raid",
@@ -599,7 +595,6 @@ local CALENDAR_EVENTTYPE_TEXTURES = {
 	[CALENDAR_EVENTTYPE_PVP]		= "Interface\\Calendar\\UI-Calendar-Event-PVP",
 	[CALENDAR_EVENTTYPE_MEETING]	= "Interface\\Calendar\\MeetingIcon",
 	[CALENDAR_EVENTTYPE_OTHER]		= "Interface\\Calendar\\UI-Calendar-Event-Other",
-	[CALENDAR_EVENTTYPE_HEROIC_DUNGEON] = "Interface\\LFGFrame\\LFGIcon-Dungeon",
 };
 local CALENDAR_EVENTTYPE_TCOORDS = {
 	[CALENDAR_EVENTTYPE_RAID] = {
@@ -627,12 +622,6 @@ local CALENDAR_EVENTTYPE_TCOORDS = {
 		bottom	= 1.0,
 	},
 	[CALENDAR_EVENTTYPE_OTHER] = {
-		left	= 0.0,
-		right	= 1.0,
-		top		= 0.0,
-		bottom	= 1.0,
-	},
-	[CALENDAR_EVENTTYPE_HEROIC_DUNGEON] = {
 		left	= 0.0,
 		right	= 1.0,
 		top		= 0.0,
@@ -812,7 +801,7 @@ local function _CalendarFrame_CacheEventTextures_Internal(eventType, ...)
 		return false;
 	end
 
-	local overlappingMapIDs = eventType == CALENDAR_EVENTTYPE_RAID and {} or nil;
+	local overlappingMapIDs = (eventType == CALENDAR_EVENTTYPE_RAID or eventType == CALENDAR_EVENTTYPE_DUNGEON) and {};
 
 	local cacheIndex = 1;
 	for textureIndex = 1, numTextures do
@@ -820,20 +809,28 @@ local function _CalendarFrame_CacheEventTextures_Internal(eventType, ...)
 			CalendarEventTextureCache[cacheIndex] = { };
 		end
 
-		local title, texture, expansionLevel, difficultyName, mapID, isLFR = select((textureIndex - 1) * STRIDE + 1, ...);
+		local title, texture, expansionLevel, difficultyID, mapID, isLFR = select((textureIndex - 1) * STRIDE + 1, ...);
+		local difficultyName, instanceType, isHeroic, isChallengeMode, displayHeroic, displayMythic, toggleDifficultyID = GetDifficultyInfo(difficultyID);
+		if not difficultyName then
+			difficultyName = "";
+		end
 
 		if overlappingMapIDs and overlappingMapIDs[mapID] then
 			-- Already exists a map, collapse the difficulty
 			local firstCacheIndex = overlappingMapIDs[mapID];
 			local cacheEntry = CalendarEventTextureCache[firstCacheIndex];
-			if not cacheEntry.difficulties then
-				cacheEntry.difficulties = { { textureIndex = cacheEntry.textureIndex, difficultyName = cacheEntry.difficultyName } };
-			end
 
 			if cacheEntry.isLFR and not isLFR then
 				-- Prefer a non-LFR name over a LFR name
 				cacheEntry.title = title;
 				cacheEntry.isLFR = nil;
+			end
+
+			if cacheEntry.displayHeroic or cacheEntry.displayMythic and (not displayHeroic and not displayMythic) then
+				-- Prefer normal difficulty name over higher difficulty
+				cacheEntry.title = title;
+				cacheEntry.displayHeroic = nil;
+				cacheEntry.displayMythic = nil;
 			end
 
 			table.insert(cacheEntry.difficulties, { textureIndex = textureIndex, difficultyName = difficultyName });
@@ -844,9 +841,14 @@ local function _CalendarFrame_CacheEventTextures_Internal(eventType, ...)
 			CalendarEventTextureCache[cacheIndex].expansionLevel = expansionLevel;
 			CalendarEventTextureCache[cacheIndex].difficultyName = difficultyName;
 			CalendarEventTextureCache[cacheIndex].isLFR = isLFR;
+			CalendarEventTextureCache[cacheIndex].displayHeroic = displayHeroic;
+			CalendarEventTextureCache[cacheIndex].displayMythic = displayMythic;
 
-			if overlappingMapIDs and not overlappingMapIDs[mapID] then
-				overlappingMapIDs[mapID] = cacheIndex;
+			if overlappingMapIDs then
+				if not overlappingMapIDs[mapID] then
+					overlappingMapIDs[mapID] = cacheIndex;
+				end
+				CalendarEventTextureCache[cacheIndex].difficulties = { { textureIndex = textureIndex, difficultyName = difficultyName } };
 			end
 
 			cacheIndex = cacheIndex + 1;
@@ -3733,7 +3735,7 @@ end
 
 function CalendarCreateEventTypeDropDown_OnClick(self)
 	local eventType = self.value;
-	if ( eventType == CALENDAR_EVENTTYPE_DUNGEON or eventType == CALENDAR_EVENTTYPE_RAID or eventType == CALENDAR_EVENTTYPE_HEROIC_DUNGEON ) then
+	if ( eventType == CALENDAR_EVENTTYPE_DUNGEON or eventType == CALENDAR_EVENTTYPE_RAID ) then
 		CalendarTexturePickerFrame_Show(eventType);
 	else
 		CalendarCreateEventFrame.selectedTextureIndex = nil;
@@ -3754,7 +3756,7 @@ function CalendarCreateEvent_UpdateEventType()
 	local eventType = CalendarCreateEventFrame.selectedEventType;
 	local textureIndex = CalendarCreateEventFrame.selectedTextureIndex;
 	local eventTex, difficultyInfo = _CalendarFrame_GetEventTexture(textureIndex, eventType);
-	if ( eventTex and difficultyInfo ) then
+	if ( eventTex and difficultyInfo and difficultyInfo.difficultyName ~= "") then
 		UIDropDownMenu_Initialize(CalendarCreateEventDifficultyOptionDropDown, CalendarCreateEventDifficultyOptionDropDown_Initialize);
 		UIDropDownMenu_SetSelectedValue(CalendarCreateEventDifficultyOptionDropDown, difficultyInfo.difficultyName);
 		CalendarCreateEventDifficultyOptionDropDown:Show();

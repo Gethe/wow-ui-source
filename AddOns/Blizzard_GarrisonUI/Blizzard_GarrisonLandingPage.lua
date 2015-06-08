@@ -565,7 +565,7 @@ function GarrisonLandingPageReportMission_OnEnter(self, button)
 		elseif (item.followerTypeID == LE_FOLLOWER_TYPE_SHIPYARD_6_2) then
 			GameTooltip:AddLine(string.format(GARRISON_SHIPYARD_MISSION_TOOLTIP_NUM_REQUIRED_FOLLOWERS, item.numFollowers), 1, 1, 1);
 		end
-		GarrisonMissionButton_AddThreatsToTooltip(item.missionID, LE_FOLLOWER_TYPE_GARRISON_6_0);
+		GarrisonMissionButton_AddThreatsToTooltip(item.missionID, item.followerTypeID);
 		if (item.isRare) then
 			GameTooltip:AddLine(GARRISON_MISSION_AVAILABILITY);
 			GameTooltip:AddLine(item.offerTimeRemaining, 1, 1, 1);
