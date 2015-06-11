@@ -328,6 +328,7 @@ end
 function LFG_UpdateFramesIfShown()
 	if ( LFDParentFrame:IsVisible() ) then
 		LFDQueueFrame_Update();
+		LFDQueueFrameRandom_UpdateFrame();
 	end
 	if ( LFRParentFrame:IsVisible() ) then
 		LFRQueueFrame_Update();
@@ -903,18 +904,20 @@ function LFGDungeonReadyDialog_UpdateRewards(dungeonID, role)
 		end
 	end
 
-	for shortageIndex = 1, LFG_ROLE_NUM_SHORTAGE_TYPES do
-		local eligible, forTank, forHealer, forDamage, itemCount = GetLFGRoleShortageRewards(dungeonID, shortageIndex);
-		if ( eligible and ((role == "TANK" and forTank) or (role == "HEALER" and forHealer) or (role == "DAMAGER" and forDamage)) ) then
-			for rewardIndex=1, itemCount do
-				local frame = _G["LFGDungeonReadyDialogRewardsFrameReward"..frameID];
-				if ( not frame ) then
-					frame = CreateFrame("FRAME", "LFGDungeonReadyDialogRewardsFrameReward"..frameID, LFGDungeonReadyDialogRewardsFrame, "LFGDungeonReadyRewardTemplate");
-					frame:SetID(frameID);
-					LFD_MAX_REWARDS = frameID;
+	if ( not IsInGroup(LE_PARTY_CATEGORY_HOME) ) then
+		for shortageIndex = 1, LFG_ROLE_NUM_SHORTAGE_TYPES do
+			local eligible, forTank, forHealer, forDamage, itemCount = GetLFGRoleShortageRewards(dungeonID, shortageIndex);
+			if ( eligible and ((role == "TANK" and forTank) or (role == "HEALER" and forHealer) or (role == "DAMAGER" and forDamage)) ) then
+				for rewardIndex=1, itemCount do
+					local frame = _G["LFGDungeonReadyDialogRewardsFrameReward"..frameID];
+					if ( not frame ) then
+						frame = CreateFrame("FRAME", "LFGDungeonReadyDialogRewardsFrameReward"..frameID, LFGDungeonReadyDialogRewardsFrame, "LFGDungeonReadyRewardTemplate");
+						frame:SetID(frameID);
+						LFD_MAX_REWARDS = frameID;
+					end
+					LFGDungeonReadyDialogReward_SetReward(frame, dungeonID, rewardIndex, "shortage", shortageIndex);
+					frameID = frameID + 1;
 				end
-				LFGDungeonReadyDialogReward_SetReward(frame, dungeonID, rewardIndex, "shortage", shortageIndex);
-				frameID = frameID + 1;
 			end
 		end
 	end
@@ -1359,13 +1362,15 @@ function LFGRewardsFrame_UpdateFrame(parentFrame, dungeonID, background)
 		end
 	end
 	
-	for shortageIndex=1, LFG_ROLE_NUM_SHORTAGE_TYPES do
-		local eligible, forTank, forHealer, forDamage, itemCount = GetLFGRoleShortageRewards(dungeonID, shortageIndex);
-		if ( eligible and ((tankChecked and forTank) or (healerChecked and forHealer) or (damageChecked and forDamage)) ) then
-			for rewardIndex=1, itemCount do
-				local name, texture, numItems = GetLFGDungeonShortageRewardInfo(dungeonID, shortageIndex, rewardIndex);
-				lastFrame = LFGRewardsFrame_SetItemButton(parentFrame, dungeonID, itemButtonIndex, rewardIndex, name, texture, numItems, shortageIndex, forTank, forHealer, forDamage);
-				itemButtonIndex = itemButtonIndex + 1;
+	if ( not IsInGroup(LE_PARTY_CATEGORY_HOME) ) then
+		for shortageIndex=1, LFG_ROLE_NUM_SHORTAGE_TYPES do
+			local eligible, forTank, forHealer, forDamage, itemCount = GetLFGRoleShortageRewards(dungeonID, shortageIndex);
+			if ( eligible and ((tankChecked and forTank) or (healerChecked and forHealer) or (damageChecked and forDamage)) ) then
+				for rewardIndex=1, itemCount do
+					local name, texture, numItems = GetLFGDungeonShortageRewardInfo(dungeonID, shortageIndex, rewardIndex);
+					lastFrame = LFGRewardsFrame_SetItemButton(parentFrame, dungeonID, itemButtonIndex, rewardIndex, name, texture, numItems, shortageIndex, forTank, forHealer, forDamage);
+					itemButtonIndex = itemButtonIndex + 1;
+				end
 			end
 		end
 	end

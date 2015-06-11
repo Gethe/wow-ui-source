@@ -63,6 +63,9 @@
 	<Font name="GameFontBlackMedium" inherits="SystemFont_Med3" virtual="true">
 		<Color r="0" g="0" b="0"/>
 	</Font>	
+	<Font name="GameFontBlackSmall" inherits="SystemFont_Small" virtual="true">
+		<Color r="0" g="0" b="0"/>
+	</Font>
 	<Font name="GameFontRed" inherits="GameFontNormal" virtual="true">
 		<Color r="1.0" g="0.1" b="0.1"/>
 	</Font>

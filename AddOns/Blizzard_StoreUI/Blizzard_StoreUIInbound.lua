@@ -23,3 +23,14 @@ end
 function StoreFrame_SetTokenCategory()
 	StoreFrame:SetAttribute("settokencategory");
 end
+
+if (InGlue()) then
+	function StoreFrame_GetVASErrorMessage(guid, errorList)
+		local data = {};
+		data.guid = guid;
+		data.errors = errorList;
+		data.realmName = GetServerName();
+		StoreFrame:SetAttribute("getvaserrormessage", data);
+		return StoreFrame:GetAttribute("vaserrormessageresult");
+	end
+end

@@ -418,6 +418,13 @@ function CharacterServicesMasterNextButton_OnClick(self)
 	CharacterServicesMaster_Advance();
 end
 
+function CharacterServicesProcessingIcon_OnEnter(self)
+	GlueTooltip:SetOwner(self, "ANCHOR_LEFT", -20, 0);
+	GlueTooltip:AddLine(self.tooltip, 1.0, 1.0, 1.0);
+	GlueTooltip:AddLine(self.tooltip2, nil, nil, nil, 1, 1);
+	GlueTooltip:Show();		
+end
+
 function CharacterServicesMaster_Advance()
 	local master = CharacterServicesMaster;
 	master.blockComplete = true;

@@ -199,12 +199,7 @@
 			</Layer>
 		</Layers>
 		<Scripts>
-			<OnEnter>
-				GlueTooltip:SetOwner(self, "ANCHOR_RIGHT", -260, 0);
-				GlueTooltip:AddLine(CHARACTER_UPGRADE_PROCESSING, 1.0, 1.0, 1.0);
-				GlueTooltip:AddLine(CHARACTER_SERVICES_PLEASE_WAIT, nil, nil, nil, 1, 1);
-				GlueTooltip:Show();
-			</OnEnter>
+			<OnEnter function="CharacterServicesProcessingIcon_OnEnter"/>
 			<OnLeave>
 				GlueTooltip:Hide();
 			</OnLeave>

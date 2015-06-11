@@ -1134,14 +1134,14 @@
 						<Anchor point="TOPLEFT" x="0" y="-1"/>
 					</Anchors>
 				</Texture>
-				<FontString parentKey="BoatName" inherits="GameFontHighlight" text="Carrier" justifyH="RIGHT">
-					<Size x="255" y="0"/>
+				<FontString parentKey="BoatName" inherits="GameFontHighlight" text="Carrier" justifyH="RIGHT" wordwrap="false">
+					<Size x="250" y="0"/>
 					<Anchors>
 						<Anchor point="TOPRIGHT" x="-4" y="-43"/>
 					</Anchors>
 				</FontString>
 				<FontString parentKey="BoatType" inherits="GameFontDisable" text="Carrier" justifyH="RIGHT">
-					<Size x="255" y="0"/>
+					<Size x="250" y="0"/>
 					<Anchors>
 						<Anchor point="TOPRIGHT" relativeKey="$parent.BoatName" relativePoint="BOTTOMRIGHT" x="0" y="-4"/>
 					</Anchors>
@@ -1598,7 +1598,7 @@
 					</Anchors>
 				</Texture>
 				<FontString parentKey="BoatName" inherits="GameFontHighlightLarge2" justifyH="LEFT" text="Carrier">
-					<Size x="0" y="18"/>
+					<Size x="334" y="18"/>
 					<Anchors>
 						<Anchor point="LEFT" relativeKey="$parent.Portrait" relativePoint="RIGHT" x="-19" y="15"/>
 					</Anchors>
@@ -1917,36 +1917,6 @@
 					</Frame>
 					<Button parentKey="MissionPage" inherits="ShipyardMissionPageTemplate" hidden="true">
 						<Frames>
-							<Frame parentKey="DangerousMissionFrame">
-								<Size x="400" y="18"/>
-								<Anchors>
-									<Anchor point="TOPLEFT" x="5" y="-87"/>
-								</Anchors>
-								<Layers>
-									<Layer level="OVERLAY">
-										<Texture parentKey="DangerousSkull" atlas="ShipMission_DangerousSkull" useAtlasSize="true">
-											<Anchors>
-												<Anchor point="TOPLEFT"/>
-											</Anchors>
-										</Texture>
-										<FontString inherits="GameFontRed" text="GARRISON_SHIPYARD_DANGEROUS_MISSION_LABEL" justifyH="LEFT">
-											<Size x="300" y="0"/>
-											<Anchors>
-												<Anchor point="LEFT" relativeKey="$parent.DangerousSkull" relativePoint="RIGHT" x="5"/>
-											</Anchors>
-										</FontString>
-									</Layer>
-								</Layers>
-								<Scripts>
-									<OnEnter>
-										GameTooltip:SetOwner(self, "ANCHOR_TOPLEFT", 50, -102);
-										GameTooltip:AddLine(GARRISON_SHIPYARD_DANGEROUS_MISSION_TOOLTIP_TITLE);
-										GameTooltip:AddLine(GARRISON_SHIPYARD_DANGEROUS_MISSION_TOOLTIP_TEXT, 1, 1, 1, true);
-										GameTooltip:Show();
-									</OnEnter>
-									<OnLeave function="GameTooltip_Hide"/>
-								</Scripts>
-							</Frame>
 							<Frame parentKey="Enemy1" parentArray="Enemies" inherits="GarrisonShipMissionEnemyTemplate">
 								<Anchors>
 									<Anchor point="TOPLEFT" x="31" y="-83"/>

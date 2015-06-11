@@ -447,9 +447,10 @@ function GarrisonFollowerAbilityTooltipTemplate_SetAbility(tooltipFrame, garrFol
 		
 		local abilityCounterMechanicID, abilityCounterMechanicName, abilityCounterMechanicIcon, abilityCounterFactor = C_Garrison.GetFollowerAbilityCounterMechanicInfo(garrFollowerAbilityID);
 		if (abilityCounterMechanicName and abilityCounterMechanicIcon) then
+			tooltipFrame.CountersLabel:Show();
 			tooltipFrame.Details:Show();
-			tooltipFrame.Details:SetFormattedText(GARRISON_ABILITY_COUNTERS_FORMAT, abilityCounterMechanicName);
-			tooltipFrame:SetHeight(tooltipFrame:GetHeight() + tooltipFrame.Details:GetHeight() + spacingBetweenDescriptionAndDetails);
+			tooltipFrame.Details:SetText(abilityCounterMechanicName);
+			tooltipFrame:SetHeight(tooltipFrame:GetHeight() + tooltipFrame.Details:GetHeight() + tooltipFrame.CountersLabel:GetHeight() + spacingBetweenDescriptionAndDetails * 2);
 			tooltipFrame.CounterIcon:SetTexture(abilityCounterMechanicIcon);
 			tooltipFrame.CounterIcon:SetMask("Interface\\CharacterFrame\\TempPortraitAlphaMask");
 			tooltipFrame.CounterIcon:Show();
@@ -460,6 +461,7 @@ function GarrisonFollowerAbilityTooltipTemplate_SetAbility(tooltipFrame, garrFol
 				tooltipFrame.CounterIconBorder:SetAtlas("GarrMission_EncounterAbilityBorder-Lg");
 			end
 		else
+			tooltipFrame.CountersLabel:Hide();
 			tooltipFrame.Details:Hide();
 			tooltipFrame.CounterIcon:Hide();
 			tooltipFrame.CounterIconBorder:Hide();

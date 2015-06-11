@@ -1246,6 +1246,7 @@
 				<Translation duration="1" offsetY="20" order="2"/>
 				<Alpha startDelay="0.5" fromAlpha="1" toAlpha="0" duration=".5" order="2"/>
 				<Scripts>
+					<OnStop function="GarrisonMissionComplete_AnimXPGainOnStop"/>
 					<OnFinished function="GarrisonMissionComplete_AnimXPGainOnFinish"/>
 				</Scripts>
 			</AnimationGroup>
@@ -1339,6 +1340,9 @@
 				<Translation childKey="LevelupGlow" duration="0.75" order="1" offsetX="0" offsetY="30"/>
 				<Alpha duration="0.5" order="2" change="-1"/>
 				<Scripts>
+					<OnStop>
+						self:GetParent():Hide();
+					</OnStop>
 					<OnFinished>
 						self:GetParent():Hide();
 					</OnFinished>

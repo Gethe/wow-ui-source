@@ -51,6 +51,7 @@ function CharacterSelect_OnLoad(self)
 	self:RegisterEvent("TOKEN_CAN_VETERAN_BUY_UPDATE");
 	self:RegisterEvent("TOKEN_DISTRIBUTIONS_UPDATED");
 	self:RegisterEvent("TOKEN_MARKET_PRICE_UPDATED");
+	self:RegisterEvent("VAS_CHARACTER_STATE_CHANGED");
 
 	-- CharacterSelect:SetModel("Interface\\Glues\\Models\\UI_Orc\\UI_Orc.m2");
 
@@ -206,13 +207,13 @@ function CharacterSelect_OnShow()
 	
 	PlayersOnServer_Update();
 
-	PromotionFrame_AwaitingPromotion();
-	
 	CharacterSelect_UpdateStoreButton();
 
 	CharacterServicesMaster_UpdateServiceButton();
 
 	C_PurchaseAPI.GetPurchaseList();
+	C_PurchaseAPI.GetProductList();
+	C_StoreGlue.UpdateVASPurchaseStates();
 
 	local loaded = LoadAddOn("Blizzard_StoreUI")
 	if (loaded) then
@@ -330,11 +331,11 @@ function CharacterSelect_OnUpdate(self, elapsed)
 		end
 	end
 
-	if ( C_CharacterServices.HasQueuedUpgrade() ) then
+	if ( C_CharacterServices.HasQueuedUpgrade() or C_StoreGlue.GetVASProductReady() ) then
 		CharacterServicesMaster_OnCharacterListUpdate();
 	end
 
-	if (StoreFrame_WaitingForUpdate()) then
+	if (StoreFrame_WaitingForCharacterListUpdate()) then
 		StoreFrame_OnCharacterListUpdate();
 	end
 end
@@ -385,6 +386,8 @@ function CharacterSelect_OnEvent(self, event, ...)
 		end
 		UpdateAddonButton();
 	elseif ( event == "CHARACTER_LIST_UPDATE" ) then
+		PromotionFrame_AwaitingPromotion();
+	
 		local listSize = ...;
 		if ( listSize ) then
 			table.wipe(translationTable);
@@ -499,6 +502,8 @@ function CharacterSelect_OnEvent(self, event, ...)
 	elseif ( event == "TOKEN_MARKET_PRICE_UPDATED" ) then
 		local result = ...;
 		CharacterSelect_CheckVeteranStatus();
+	elseif (event == "VAS_CHARACTER_STATE_CHANGED") then
+		UpdateCharacterList();
 	end
 end
 
@@ -559,7 +564,9 @@ function UpdateCharacterList(skipSelect)
 		CharacterSelect.undeleteChanged = false;
 	end
 
-	if (numChars < MAX_CHARACTERS_PER_REALM or numChars > MAX_CHARACTERS_DISPLAYED_BASE) then
+	if ( numChars < MAX_CHARACTERS_PER_REALM or
+		( (CharacterSelect.undeleting and numChars >= MAX_CHARACTERS_DISPLAYED_BASE) or
+		numChars > MAX_CHARACTERS_DISPLAYED_BASE) ) then
 		if (MAX_CHARACTERS_DISPLAYED == MAX_CHARACTERS_DISPLAYED_BASE) then
 			MAX_CHARACTERS_DISPLAYED = MAX_CHARACTERS_DISPLAYED_BASE - 1;
 		end
@@ -596,6 +603,7 @@ function UpdateCharacterList(skipSelect)
 	local debugText = numChars..": ";
 	for i=1, numChars, 1 do
 		local name, race, class, classFileName, classID, level, zone, sex, ghost, PCC, PRC, PFC, PRCDisabled, guid, _, _, _, boostInProgress, _, locked = GetCharacterInfo(GetCharIDFromIndex(i+CHARACTER_LIST_OFFSET));
+		local _, vasServiceState, vasServiceErrors = C_StoreGlue.GetVASPurchaseStateInfo(guid);
 		local button = _G["CharSelectCharacterButton"..index];
 		button.isVeteranLocked = false;
 		if ( name ) then
@@ -635,8 +643,27 @@ function UpdateCharacterList(skipSelect)
 		local upgradeIcon = _G["CharacterServicesProcessingIcon"..index];
 		upgradeIcon:Hide();
 		local serviceType, disableService;
-		if (boostInProgress) then
+		if (vasServiceState == LE_VAS_PURCHASE_STATE_PAYMENT_PENDING) then
 			upgradeIcon:Show();
+			upgradeIcon.tooltip = CHARACTER_UPGRADE_PROCESSING;
+			upgradeIcon.tooltip2 = CHARACTER_STATE_ORDER_PROCESSING;
+		elseif (vasServiceState == LE_VAS_PURCHASE_STATE_APPLYING_LICENSE and vasServiceErrors) then
+			local info = StoreFrame_GetVASErrorMessage(guid, vasServiceErrors);
+			if (info) then
+				upgradeIcon:Show();
+				local tooltip;
+				if (info.other) then
+					tooltip = VAS_ERROR_ERROR_HAS_OCCURRED;
+				else
+					tooltip = VAS_ERROR_ADDRESS_THESE_ISSUES;
+				end
+				upgradeIcon.tooltip = "|cffffd200" .. tooltip .. "|r";
+				upgradeIcon.tooltip2 = "|cffff2020" .. info.desc .. "|r";
+			end
+		elseif (boostInProgress) then
+			upgradeIcon:Show();
+			upgradeIcon.tooltip = CHARACTER_UPGRADE_PROCESSING;
+			upgradeIcon.tooltip2 = CHARACTER_SERVICES_PLEASE_WAIT;
 		elseif ( CharacterSelect.undeleting ) then
 			paidServiceButton:Hide();
 		elseif ( PFC ) then

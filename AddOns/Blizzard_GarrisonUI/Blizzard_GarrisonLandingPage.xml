@@ -658,7 +658,7 @@
 				</Scripts>
 			</Frame>
 
-			<Frame parentKey="FollowerList" inherits="GarrisonLandingPageFollowerListTemplate" mixin="GarrisonFollowerList">
+			<Frame name="GarrisonLandingPageFollowerList" parentKey="FollowerList" inherits="GarrisonLandingPageFollowerListTemplate" mixin="GarrisonFollowerList">
 				<KeyValues>
 					 <KeyValue key="showUncollected" value="true" type="boolean"/>
 					 <KeyValue key="canCastSpellsOnFollowers" value="true" type="boolean"/>
@@ -878,7 +878,7 @@
 					</Frame>
 				</Frames>
 			</Frame>
-			<Frame parentKey="ShipFollowerList" inherits="GarrisonLandingPageFollowerListTemplate" mixin="GarrisonFollowerList, GarrisonShipyardFollowerList, GarrisonLandingShipFollowerList">
+			<Frame name="GarrisonLandingPageShipFollowerList" parentKey="ShipFollowerList" inherits="GarrisonLandingPageFollowerListTemplate" mixin="GarrisonFollowerList, GarrisonShipyardFollowerList, GarrisonLandingShipFollowerList">
 				<KeyValues>
 					 <KeyValue key="showUncollected" value="false" type="boolean"/>
 					 <KeyValue key="canCastSpellsOnFollowers" value="true" type="boolean"/>
@@ -951,7 +951,7 @@
 							</Anchors>
 						</Texture>
 						<FontString parentKey="BoatName" inherits="GameFontNormalLarge" justifyH="LEFT" text="Carrier">
-							<Size x="0" y="18"/>
+							<Size x="242" y="18"/>
 							<Anchors>
 								<Anchor point="LEFT" relativeKey="$parent.Portrait" relativePoint="RIGHT" x="-19" y="12"/>
 							</Anchors>

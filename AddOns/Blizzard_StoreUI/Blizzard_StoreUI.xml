@@ -1495,6 +1495,7 @@
 					</Anchors>
 					<Scripts>
 						<OnClick>
+							PlaySound("UI_igStore_Cancel_Button");
 							self:GetParent():Hide();
 						</OnClick>
 					</Scripts>
@@ -2183,7 +2184,7 @@
 					<Texture parentKey="BottomLine" inherits="store-receipt-line">
 						<Size x="350" y="3" />
 						<Anchors>
-							<Anchor point="BOTTOM" relativeKey="$parent.ParchmentMiddle" relativePoint="BOTTOM" x="0" y="80"/>
+							<Anchor point="BOTTOM" relativeKey="$parent.ParchmentMiddle" relativePoint="BOTTOM" x="0" y="120"/>
 						</Anchors>
 					</Texture>
 				</Layer>
@@ -2225,6 +2226,21 @@
 				</Layer>
 			</Layers>
 			<Frames>
+				<SimpleHTML parentKey="Disclaimer">
+					<Size x="360" y="40"/>
+					<Anchors>
+						<Anchor point="TOP" relativeKey="$parent.BottomLine" relativePoint="BOTTOM" x="0" y="-4"/>
+					</Anchors>
+					<Scripts>
+						<OnHyperlinkClick>
+							local linkType, index = (":"):split(link);
+							if ( linkType == "urlIndex" ) then
+								LoadURLIndex(tonumber(index));
+							end
+						</OnHyperlinkClick>
+					</Scripts>
+					<FontString inherits="GameFontBlackSmall" />
+				</SimpleHTML>
 				<Frame parentKey="CharacterSelectionFrame" useParentLevel="true">
 					<Anchors>
 						<Anchor point="TOPLEFT" x="0" y="-116"/>
@@ -2339,6 +2355,7 @@
 							</Anchors>
 							<Scripts>
 								<OnTextChanged>
+									self:GetParent().ValidationDescription:Hide();
 									self:GetParent().ContinueButton:SetEnabled(self:GetText() ~= "");
 								</OnTextChanged>
 								<OnEnter function="VASCharacterSelectionNewCharacterName_OnEnter"/>

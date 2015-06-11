@@ -92,6 +92,7 @@ Import("BLIZZARD_STORE_CONFIRMATION_SERVICES_TEST");
 Import("BLIZZARD_STORE_CONFIRMATION_SERVICES_EUR");
 Import("BLIZZARD_STORE_CONFIRMATION_VAS_NAME_CHANGE");
 Import("BLIZZARD_STORE_CONFIRMATION_VAS_NAME_CHANGE_EUR");
+Import("BLIZZARD_STORE_CONFIRMATION_VAS_NAME_CHANGE_KR");
 Import("BLIZZARD_STORE_BROWSE_TEST_CURRENCY");
 Import("BLIZZARD_STORE_BATTLE_NET_BALANCE");
 Import("BLIZZARD_STORE_CURRENCY_FORMAT_USD");
@@ -183,6 +184,13 @@ Import("BLIZZARD_STORE_TOKEN_CURRENT_MARKET_PRICE");
 Import("BLIZZARD_STORE_TOKEN_DESC_30_DAYS");
 Import("BLIZZARD_STORE_TOKEN_DESC_2700_MINUTES");
 Import("BLIZZARD_STORE_LOG_OUT_TO_PURCHASE_THIS_PRODUCT");
+Import("BLIZZARD_STORE_PRODUCT_IS_READY");
+Import("BLIZZARD_STORE_VAS_SERVICE_READY_DESCRIPTION");
+Import("BLIZZARD_STORE_NAME_CHANGE_READY_DESCRIPTION");
+Import("BLIZZARD_STORE_DISCLAIMER_FACTION_CHANGE");
+Import("BLIZZARD_STORE_DISCLAIMER_RACE_CHANGE");
+Import("BLIZZARD_STORE_DISCLAIMER_APPEARANCE_CHANGE");
+Import("BLIZZARD_STORE_DISCLAIMER_NAME_CHANGE");
 Import("TOOLTIP_DEFAULT_COLOR");
 Import("TOOLTIP_DEFAULT_BACKGROUND_COLOR");
 Import("CHARACTER_UPGRADE_LOG_OUT_NOW");
@@ -476,7 +484,7 @@ local currencySpecific = {
 		browseNotice = BLIZZARD_STORE_BROWSE_BATTLE_COINS_KR,
 		confirmationNotice = BLIZZARD_STORE_SECOND_CHANCE_KR,
 		servicesConfirmationNotice = BLIZZARD_STORE_SECOND_CHANCE_KR,
-		vasNameChangeConfirmationNotice = BLIZZARD_STORE_CONFIRMATION_VAS_NAME_CHANGE,
+		vasNameChangeConfirmationNotice = BLIZZARD_STORE_CONFIRMATION_VAS_NAME_CHANGE_KR,
 		browseWarning = BLIZZARD_STORE_SECOND_CHANCE_KR,
 		paymentMethodText = "",
 		paymentMethodSubtext = "",
@@ -743,6 +751,22 @@ local vasErrorData = {
 	[LE_VAS_ERROR_LAST_SAVE_TOO_RECENT] = {
 		msg = BLIZZARD_STORE_VAS_ERROR_LAST_SAVE_TOO_RECENT,
 		notUserFixable = true,
+	},
+};
+
+-- Disclaimers for VAS products on the validation frame.
+local vasDisclaimerData = {
+	[LE_VAS_SERVICE_FACTION_CHANGE] = {
+		disclaimer = BLIZZARD_STORE_DISCLAIMER_FACTION_CHANGE,
+	},
+	[LE_VAS_SERVICE_RACE_CHANGE] = {
+		disclaimer = BLIZZARD_STORE_DISCLAIMER_RACE_CHANGE,
+	},
+	[LE_VAS_SERVICE_APPEARANCE_CHANGE] = {
+		disclaimer = BLIZZARD_STORE_DISCLAIMER_APPEARANCE_CHANGE,
+	},
+	[LE_VAS_SERVICE_NAME_CHANGE] = {
+		disclaimer = BLIZZARD_STORE_DISCLAIMER_NAME_CHANGE,
 	},
 };
 
@@ -1266,6 +1290,8 @@ function StoreFrame_OnEvent(self, event, ...)
 				self:Hide();
 				ServicesLogoutPopup.Background.Title:SetText(CHARACTER_UPGRADE_READY);
 				ServicesLogoutPopup.Background.Description:SetText(CHARACTER_UPGRADE_READY_DESCRIPTION);
+				ServicesLogoutPopup.forBoost = true;
+				ServicesLogoutPopup.forVasService = false;
 				ServicesLogoutPopup:Show();
 			end
 			JustOrderedBoost = false;
@@ -1397,6 +1423,43 @@ function StoreFrame_OnAttributeChanged(self, name, value)
 		selectedPageNum = 1;
 		selectedCategoryID = WOW_TOKEN_CATEGORY_ID;
 		StoreFrame_SetCategory();
+	elseif ( name == "getvaserrormessage" ) then
+		if (IsOnGlueScreen()) then
+			self:SetAttribute("vaserrormessageresult", nil);
+			local data = value;
+			local character = C_PurchaseAPI.GetCharacterInfoByGUID(data.guid);
+			if (not character) then
+				-- Either this character is not on this realm or we have bogus data somewhere.  were not going to parse this error either way
+				return;
+			end
+			local errors = data.errors;
+			local hasOther = false;
+			local hasNonUserFixable = false;
+			for i = 1, #errors do
+				if (not vasErrorData[errors[i]]) then
+					hasOther = true;
+				elseif (vasErrorData[errors[i]].notUserFixable) then
+					hasNonUserFixable = true;
+				end
+			end
+
+			desc = "";
+			if (hasOther) then
+				desc = BLIZZARD_STORE_VAS_ERROR_OTHER;
+			elseif (hasNonUserFixable) then
+				for i = 1, #errors do
+					if (vasErrorData[errors[i]].notUserFixable) then
+						desc = StoreVASValidationFrame_AppendError(desc, errors[i], character);
+					end
+				end
+			else
+				for i = 1, #errors do
+					desc = StoreVASValidationFrame_AppendError(desc, errors[i], character);
+				end
+			end
+
+			self:SetAttribute("vaserrormessageresult", { other = hasOther or hasNonUserFixable, desc = desc });
+		end
 	end
 end
 
@@ -1525,6 +1588,9 @@ function StoreFrame_ShowError(self, title, desc, urlIndex, needsAck)
 
 	if ( StoreConfirmationFrame ) then
 		StoreConfirmationFrame:Raise(); --Make sure the confirmation is above this error frame.
+	end
+	if ( StoreVASValidationFrame and StoreVASValidationFrame:IsShown() ) then
+		StoreVASValidationFrame:Hide();
 	end
 end
 
@@ -1846,6 +1912,11 @@ function StoreVASValidationFrame_SetVASStart(self)
 	self.ProductName:SetText(name);
 	self.ProductDescription:SetText(description);
 
+	if (vasDisclaimerData[vasServiceType]) then
+		self.Disclaimer:SetText("<html><body><p align=\"center\">"..vasDisclaimerData[vasServiceType].disclaimer.."</p></body></html>");
+		self.Disclaimer:Show();
+	end
+	
 	VASServiceType = vasServiceType;
 
 	SelectedCharacter = nil;
@@ -1889,7 +1960,8 @@ function StoreVASValidationFrame_AppendError(desc, errorID, character)
 		str = errorData.msg;
 	end
 
-	return desc .. "|n|n" .. str;
+	local sep = desc ~= "" and "|n|n" or "";
+	return desc .. sep .. str;
 end
 
 function StoreVASValidationFrame_OnEvent(self, event, ...)
@@ -1941,12 +2013,24 @@ function StoreVASValidationFrame_OnEvent(self, event, ...)
 			StoreVASValidationFrame.CharacterSelectionFrame.ContinueButton:Disable();
 		end
 	elseif ( event == "STORE_VAS_PURCHASE_COMPLETE" ) then
+		local productID, guid, realmName = C_PurchaseAPI.GetVASCompletionInfo();
+		local name, _, _, _, _, _, _, _, vasServiceType = select(7, C_PurchaseAPI.GetProductInfo(productID));
 		if (IsOnGlueScreen()) then
+			self:GetParent():Hide();	
+			_G.StoreFrame_ShowGlueDialog((_G.BLIZZARD_STORE_VAS_PRODUCT_READY):format(name), guid, realmName);
+		else
 			self:GetParent():Hide();
-
-			local productID, guid, realmName = C_PurchaseAPI.GetVASCompletionInfo();
-			local name = select(7, C_PurchaseAPI.GetProductInfo(productID));
-			_G.ShowGlueDialog((_G.BLIZZARD_STORE_VAS_PRODUCT_READY):format(name), guid, realmName);
+			ServicesLogoutPopup.Background.Title:SetText(BLIZZARD_STORE_PRODUCT_IS_READY:format(name));
+			local desc;
+			if (vasServiceType == LE_VAS_SERVICE_NAME_CHANGE) then
+				desc = BLIZZARD_STORE_NAME_CHANGE_READY_DESCRIPTION;
+			else
+				desc = BLIZZARD_STORE_VAS_SERVICE_READY_DESCRIPTION;
+			end
+			ServicesLogoutPopup.Background.Description:SetText(desc);
+			ServicesLogoutPopup.forVasService = true;
+			ServicesLogoutPopup.forBoost = false;
+			ServicesLogoutPopup:Show();
 		end
 	end
 end
@@ -2550,6 +2634,7 @@ function StoreDropDownMenuMenuButton_OnLoad(self)
 end
 
 function StoreDropDownMenuMenuButton_OnClick(self, button)
+	PlaySound("UChatScrollButton");
 	if (not InfoCache or not InfoCallback) then
 		-- This should not happen, it means our cache was cleared while the frame was opened.
 		-- We probably want a GMError here.
@@ -2638,6 +2723,7 @@ function VASCharacterSelectionCharacterSelector_Callback(value)
 		frame.NewCharacterName:SetText("");
 		frame.NewCharacterName:Show();
 		frame.NewCharacterName:SetFocus();
+		bottomWidget = frame.NewCharacterName;
 		frame.ContinueButton:Disable();
 	else
 		local bottomWidget = frame.SelectedCharacterFrame;
@@ -2699,13 +2785,15 @@ function VASCharacterSelectionCharacterSelector_Callback(value)
 			frame.ValidationDescription:SetText(VAS_APPEARANCE_CHANGE_VALIDATION_DESCRIPTION);
 			frame.ValidationDescription:Show();
 		end
-		frame.ValidationDescription:ClearAllPoints();
-		frame.ValidationDescription:SetPoint("TOPLEFT", bottomWidget, "BOTTOMLEFT", 8, -16);
 		frame.ContinueButton:Enable();
 	end
+	frame.ValidationDescription:ClearAllPoints();
+	frame.ValidationDescription:SetPoint("TOPLEFT", bottomWidget, "BOTTOMLEFT", 8, -16);
 end
 
 function VASCharacterSelectionRealmSelector_OnClick(self)
+	PlaySound("igMainMenuOptionCheckBoxOn");
+	
 	if (self:GetParent().List:IsShown()) then
 		self:GetParent().List:Hide();
 		return;
@@ -2722,6 +2810,8 @@ function VASCharacterSelectionRealmSelector_OnClick(self)
 end
 
 function VASCharacterSelectionCharacterSelector_OnClick(self)
+	PlaySound("igMainMenuOptionCheckBoxOn");
+	
 	if (self:GetParent().List:IsShown()) then
 		self:GetParent().List:Hide();
 		return;
@@ -2748,6 +2838,8 @@ function VASCharacterSelectionCharacterSelector_OnClick(self)
 end
 
 function VASCharacterSelectionContinueButton_OnClick(self)
+	PlaySound("igMainMenuOptionCheckBoxOn");
+
 	if (not SelectedRealm or not SelectedCharacter) then
 		-- This should not happen, as this button should be disabled unless you have both selected.
 		return;
@@ -2768,7 +2860,16 @@ function VASCharacterSelectionContinueButton_OnClick(self)
 	end
 
 	NewCharacterName = self:GetParent().NewCharacterName:GetText();
-	if ( C_PurchaseAPI.PurchaseVASProduct(productID, characters[SelectedCharacter].guid, NewCharacterName) ) then
+	
+	-- Glue screen only
+	local valid, reason = _G.IsCharacterNameValid(NewCharacterName);
+
+	if (not valid) then
+		self:GetParent().ValidationDescription:SetTextColor(1.0, 0.1, 0.1);
+		self:GetParent().ValidationDescription:SetText(BLIZZARD_STORE_VAS_ERROR_LABEL.."|n|n- ".._G[reason]);
+		self:GetParent().ValidationDescription:Show();
+		self:GetParent().ContinueButton:Disable();
+	elseif ( C_PurchaseAPI.PurchaseVASProduct(productID, characters[SelectedCharacter].guid, NewCharacterName) ) then
 		WaitingOnConfirmation = true;
 		WaitingOnConfirmationTime = GetTime();
 		StoreFrame_UpdateActivePanel(StoreFrame);
@@ -2787,7 +2888,13 @@ function ServicesLogoutPopup_OnLoad(self)
 end
 
 function ServicesLogoutPopupConfirmButton_OnClick(self)
-	C_SharedCharacterServices.SetStartAutomatically(true);
+	if (self.forBoost) then
+		C_SharedCharacterServices.SetStartAutomatically(true);
+	elseif (self.forVasService) then
+		C_PurchaseAPI.SetVASProductReady(true);
+	end
+	ServicesLogoutPopup.forBoost = false;
+	ServicesLogoutPopup.forVasService = false;
 	PlaySound("igMainMenuLogout");
 	Outbound.Logout();
 	ServicesLogoutPopup:Hide();

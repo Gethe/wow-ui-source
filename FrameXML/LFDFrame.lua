@@ -161,17 +161,19 @@ function LFDQueueFrame_UpdateRoleButtons()
 							 [3]={count=0, alert=false}} -- dps
 	if ( type(dungeonID) == "number" ) then
 		tankLocked, healerLocked, dpsLocked = GetLFDRoleRestrictions(dungeonID);
-		for i=1, LFG_ROLE_NUM_SHORTAGE_TYPES do
-			local eligible, forTank, forHealer, forDamage, itemCount, money, xp = GetLFGRoleShortageRewards(dungeonID, i);
-			if ( eligible and (itemCount ~= 0 or money ~= 0 or xp ~= 0) ) then	--Only show the icon if there is actually a reward.
-				if ( forTank ) then
-					LFG_SetRoleIconIncentive(LFDQueueFrameRoleButtonTank, i);
-				end
-				if ( forHealer ) then
-					LFG_SetRoleIconIncentive(LFDQueueFrameRoleButtonHealer, i);
-				end
-				if ( forDamage ) then
-					LFG_SetRoleIconIncentive(LFDQueueFrameRoleButtonDPS, i);
+		if ( not IsInGroup(LE_PARTY_CATEGORY_HOME) ) then
+			for i=1, LFG_ROLE_NUM_SHORTAGE_TYPES do
+				local eligible, forTank, forHealer, forDamage, itemCount, money, xp = GetLFGRoleShortageRewards(dungeonID, i);
+				if ( eligible and (itemCount ~= 0 or money ~= 0 or xp ~= 0) ) then	--Only show the icon if there is actually a reward.
+					if ( forTank ) then
+						LFG_SetRoleIconIncentive(LFDQueueFrameRoleButtonTank, i);
+					end
+					if ( forHealer ) then
+						LFG_SetRoleIconIncentive(LFDQueueFrameRoleButtonHealer, i);
+					end
+					if ( forDamage ) then
+						LFG_SetRoleIconIncentive(LFDQueueFrameRoleButtonDPS, i);
+					end
 				end
 			end
 		end

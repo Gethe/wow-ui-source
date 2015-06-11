@@ -715,6 +715,8 @@ function GarrisonShipyardMissionComplete:BeginAnims(animIndex, missionID)
 		follower.DestroyedText:SetAlpha(0);
 		follower.SurvivedAnim:Stop();
 		follower.DestroyedAnim:Stop();
+		follower.XPGain.FadeIn:Stop();
+		follower.LevelUpFrame.Anim:Stop();
 		if (follower.state == LE_FOLLOWER_MISSION_COMPLETE_STATE_ALIVE) then
 			follower.DestroyedText:Hide();
 			follower.SurvivedText:SetText(GARRISON_SHIPYARD_SHIP_SURVIVED);

@@ -1491,6 +1491,11 @@ function GarrisonMissionComplete:OnFollowerXPFinished(followerFrame)
 	end
 end
 
+function GarrisonMissionComplete_AnimXPGainOnStop(self)
+	local followerFrame = self:GetParent():GetParent();
+	followerFrame.activeAnims = followerFrame.activeAnims - 1;
+end
+
 function GarrisonMissionComplete_AnimXPGainOnFinish(self)
 	local followerFrame = self:GetParent():GetParent();
 	local missionCompleteFrame = followerFrame:GetParent():GetParent():GetParent();

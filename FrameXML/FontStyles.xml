@@ -48,9 +48,6 @@
 	<Font name="GameFontGreen" inherits="GameFontNormal" virtual="true">
 		<Color r="0.1" g="1.0" b="0.1"/>
 	</Font>
-	<Font name="GameFontBlackSmall" inherits="SystemFont_Small" virtual="true">
-		<Color r="0" g="0" b="0"/>
-	</Font>
 	<Font name="GameFontBlackTiny" inherits="SystemFont_Tiny" virtual="true">
 		<Color r="0" g="0" b="0"/>
 	</Font>
