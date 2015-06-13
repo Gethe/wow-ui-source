@@ -72,6 +72,7 @@ function GarrisonLandingPage_OnHide(self)
 	StaticPopup_Hide("CONFIRM_FOLLOWER_TEMPORARY_ABILITY");
 	StaticPopup_Hide("CONFIRM_FOLLOWER_UPGRADE");
 	StaticPopup_Hide("CONFIRM_FOLLOWER_ABILITY_UPGRADE");
+	GarrisonBonusAreaTooltip:Hide();
 end
 
 function GarrisonLandingPageTab_OnClick(self)
@@ -346,6 +347,11 @@ function GarrisonLandingPageReportList_UpdateAvailable()
 			for id, reward in pairs(item.rewards) do
 				local Reward = button.Rewards[index];
 				Reward.Quantity:Hide();
+				Reward.bonusAbilityID = nil;
+				Reward.bonusAbilityDuration = nil;
+				Reward.bonusAbilityIcon = nil;
+				Reward.bonusAbilityName = nil;
+				Reward.bonusAbilityDescription = nil;
 				if (reward.itemID) then
 					Reward.itemID = reward.itemID;
 					local _, _, _, _, _, _, _, _, _, itemTexture = GetItemInfo(reward.itemID);
@@ -369,6 +375,12 @@ function GarrisonLandingPageReportList_UpdateAvailable()
 							Reward.Quantity:SetText(reward.quantity);
 							Reward.Quantity:Show();
 						end
+					elseif (reward.bonusAbilityID) then
+						Reward.bonusAbilityID = reward.bonusAbilityID;
+						Reward.bonusAbilityDuration = reward.duration;
+						Reward.bonusAbilityIcon = reward.icon;
+						Reward.bonusAbilityName = reward.name;
+						Reward.bonusAbilityDescription = reward.description;
 					else
 						Reward.tooltip = reward.tooltip;
 						if ( reward.followerXP ) then
@@ -570,7 +582,12 @@ function GarrisonLandingPageReportMission_OnEnter(self, button)
 			GameTooltip:AddLine(GARRISON_MISSION_AVAILABILITY);
 			GameTooltip:AddLine(item.offerTimeRemaining, 1, 1, 1);
 		end
-		if not C_Garrison.IsOnGarrisonMap() then
+		if (item.followerTypeID == LE_FOLLOWER_TYPE_SHIPYARD_6_2) then
+			if (not C_Garrison.IsOnShipyardMap()) then
+				GameTooltip:AddLine(" ");
+				GameTooltip:AddLine(GARRISON_SHIPYARD_MISSION_TOOLTIP_RETURN_TO_START, nil, nil, nil, 1);
+			end
+		elseif not C_Garrison.IsOnGarrisonMap() then
 			GameTooltip:AddLine(" ");
 			GameTooltip:AddLine(GARRISON_MISSION_TOOLTIP_RETURN_TO_START, nil, nil, nil, 1);
 		end
@@ -581,6 +598,37 @@ end
 
 function GarrisonLandingPageReportMission_OnLeave(self)
 	GarrisonShipyardMapMissionTooltip:Hide();
+	GameTooltip_Hide(self);
+end
+
+function GarrisonLandingPageReportMissionReward_OnEnter(self)
+	if (self.bonusAbilityID) then
+		local tooltip = GarrisonBonusAreaTooltip;
+		GarrisonBonusArea_Set(tooltip.BonusArea, GARRISON_BONUS_EFFECT_TIME_ACTIVE, self.bonusAbilityDuration, self.bonusAbilityIcon, self.bonusAbilityName, self.bonusAbilityDescription);
+		
+		tooltip:ClearAllPoints();
+		tooltip:SetPoint("BOTTOMLEFT", self, "TOPRIGHT");
+		tooltip:SetHeight(tooltip.BonusArea:GetHeight());
+		tooltip:Show();
+		return;
+	else
+		GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+		if (self.itemID) then
+			GameTooltip:SetItemByID(self.itemID);
+			return;
+		end
+		if (self.title) then
+			GameTooltip:SetText(self.title);
+		end
+		if (self.tooltip) then
+			GameTooltip:AddLine(self.tooltip, 1, 1, 1, true);
+		end
+		GameTooltip:Show();
+	end
+end
+
+function GarrisonLandingPageReportMissionReward_OnLeave(self)
+	GarrisonBonusAreaTooltip:Hide();
 	GameTooltip_Hide(self);
 end
 

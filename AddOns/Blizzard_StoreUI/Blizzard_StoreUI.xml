@@ -2227,9 +2227,9 @@
 			</Layers>
 			<Frames>
 				<SimpleHTML parentKey="Disclaimer">
-					<Size x="360" y="40"/>
+					<Size x="340" y="40"/>
 					<Anchors>
-						<Anchor point="TOP" relativeKey="$parent.BottomLine" relativePoint="BOTTOM" x="0" y="-4"/>
+						<Anchor point="TOP" relativeKey="$parent.BottomLine" relativePoint="BOTTOM" x="0" y="-9"/>
 					</Anchors>
 					<Scripts>
 						<OnHyperlinkClick>
@@ -2310,7 +2310,7 @@
 						<Frame parentKey="RealmSelector" inherits="StoreDropDownMenuTemplate" enableMouse="true">
 							<Size x="150" y="22"/>
 							<Anchors>
-								<Anchor point="TOPLEFT" relativeKey="$parent.$parent.ProductDescription" relativePoint="BOTTOMLEFT" x="-16" y="-30"/>
+								<Anchor point="TOPLEFT" relativeKey="$parent.$parent.ProductDescription" relativePoint="BOTTOMLEFT" x="-16" y="-38"/>
 							</Anchors>
 							<Scripts>
 								<OnLoad>

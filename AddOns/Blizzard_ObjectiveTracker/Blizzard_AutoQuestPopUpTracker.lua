@@ -28,6 +28,13 @@ local SLIDE_DATA = { startHeight = 0, endHeight = 68, duration = 0.4, onFinishFu
 
 function AUTO_QUEST_POPUP_TRACKER_MODULE:Update()
 	if( SplashFrame:IsShown() ) then
+		for i = 1, GetNumAutoQuestPopUps() do
+			local questID = GetAutoQuestPopUp(i);
+			local block = AUTO_QUEST_POPUP_TRACKER_MODULE:GetExistingBlock(questID);
+			if ( block ) then
+				block:Hide();
+			end
+		end
 		return;
 	end
 

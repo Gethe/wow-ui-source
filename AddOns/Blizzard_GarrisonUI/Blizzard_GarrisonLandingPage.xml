@@ -29,21 +29,8 @@
 			</Layer>
 		</Layers>
 		<Scripts>
-			<OnEnter>
-				GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
-				if (self.itemID) then
-					GameTooltip:SetItemByID(self.itemID);
-					return;
-				end
-				if (self.title) then
-					GameTooltip:SetText(self.title);
-				end
-				if (self.tooltip) then
-					GameTooltip:AddLine(self.tooltip, 1, 1, 1, true);
-				end
-				GameTooltip:Show();
-			</OnEnter>
-			<OnLeave function="GameTooltip_Hide"/>
+			<OnEnter function="GarrisonLandingPageReportMissionReward_OnEnter"/>
+			<OnLeave function="GarrisonLandingPageReportMissionReward_OnLeave"/>
 		</Scripts>
 	</Frame>
 
@@ -1029,7 +1016,6 @@
 							</OnModelLoaded>
 							<OnShow>
 								self:SetTargetDistance(0);
-								self:SetFacing(.2);
 								GarrisonMission_SetFollowerModelItems(self);
 							</OnShow>
 							<OnMouseDown function="GarrisonFollowerPageModel_OnMouseDown"/>

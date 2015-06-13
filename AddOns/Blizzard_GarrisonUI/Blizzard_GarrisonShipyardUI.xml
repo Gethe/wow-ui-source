@@ -93,7 +93,7 @@
 			</Layer>
 			
 			<!-- Textures for RareMissionAnim -->
-			<Layer level="ARTWORK">
+			<Layer level="ARTWORK" textureSubLevel="-1">
 				<Texture parentKey="BgGlow" hidden="false" alpha="0.01" alphaMode="BLEND" atlas="BonusChest-CircleGlow" useAtlasSize="true">
 					<Anchors>
 						<Anchor point="CENTER"/>
@@ -1668,7 +1668,6 @@
 					</OnModelLoaded>
 					<OnShow>
 						self:SetTargetDistance(0);
-						self:SetFacing(.2);
 						GarrisonMission_SetFollowerModelItems(self);
 					</OnShow>
 					<OnMouseDown function="GarrisonFollowerPageModel_OnMouseDown"/>

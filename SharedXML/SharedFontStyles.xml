@@ -95,6 +95,9 @@
 	<Font name="GameFontHighlightSmall2" inherits="SystemFont_Small2" virtual="true">
 		<Color r="1.0" g="1.0" b="1.0"/>
 	</Font>
+	<Font name="GameFontBlackSmall2" inherits="SystemFont_Small2" virtual="true">
+		<Color r="0.0" g="0.0" b="0.0"/>
+	</Font>
 	<Font name="GameFontNormalSmall2" inherits="SystemFont_Shadow_Small2" virtual="true">
 		<Color r="1.0" g="0.82" b="0"/>
 	</Font>

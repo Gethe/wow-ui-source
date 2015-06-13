@@ -603,7 +603,7 @@ function UpdateCharacterList(skipSelect)
 	local debugText = numChars..": ";
 	for i=1, numChars, 1 do
 		local name, race, class, classFileName, classID, level, zone, sex, ghost, PCC, PRC, PFC, PRCDisabled, guid, _, _, _, boostInProgress, _, locked = GetCharacterInfo(GetCharIDFromIndex(i+CHARACTER_LIST_OFFSET));
-		local _, vasServiceState, vasServiceErrors = C_StoreGlue.GetVASPurchaseStateInfo(guid);
+		local productID, vasServiceState, vasServiceErrors = C_StoreGlue.GetVASPurchaseStateInfo(guid);
 		local button = _G["CharSelectCharacterButton"..index];
 		button.isVeteranLocked = false;
 		if ( name ) then
@@ -617,12 +617,19 @@ function UpdateCharacterList(skipSelect)
 			else
 				_G["CharSelectCharacterButton"..index.."ButtonTextName"]:SetText(name);
 			end
-			if (boostInProgress) then
+			if (vasServiceState == LE_VAS_PURCHASE_STATE_APPLYING_LICENSE and vasServiceErrors) then
+				local name = select(7, C_PurchaseAPI.GetProductInfo(productID));
+				_G["CharSelectCharacterButton"..index.."ButtonTextInfo"]:SetText("|cffff2020"..VAS_ERROR_ERROR_HAS_OCCURRED.."|r");
+				_G["CharSelectCharacterButton"..index.."ButtonTextLocation"]:SetText("|cffff2020"..name.."|r");
+			elseif (vasServiceState == LE_VAS_PURCHASE_STATE_PROCESSING_FACTION_CHANGE) then
+				_G["CharSelectCharacterButton"..index.."ButtonTextInfo"]:SetText(CHARACTER_UPGRADE_PROCESSING);
+				_G["CharSelectCharacterButton"..index.."ButtonTextLocation"]:SetFontObject("GlueFontHighlightSmall");
+				_G["CharSelectCharacterButton"..index.."ButtonTextLocation"]:SetText(FACTION_CHANGE_CHARACTER_LIST_LABEL);
+			elseif (boostInProgress) then
 				_G["CharSelectCharacterButton"..index.."ButtonTextInfo"]:SetText(CHARACTER_UPGRADE_PROCESSING);
 				_G["CharSelectCharacterButton"..index.."ButtonTextLocation"]:SetFontObject("GlueFontHighlightSmall");
 				_G["CharSelectCharacterButton"..index.."ButtonTextLocation"]:SetText(CHARACTER_UPGRADE_CHARACTER_LIST_LABEL);
 			else
-				
 				if ( locked ) then
 					button.isVeteranLocked = true;
 				end
@@ -660,7 +667,7 @@ function UpdateCharacterList(skipSelect)
 				upgradeIcon.tooltip = "|cffffd200" .. tooltip .. "|r";
 				upgradeIcon.tooltip2 = "|cffff2020" .. info.desc .. "|r";
 			end
-		elseif (boostInProgress) then
+		elseif (boostInProgress or vasServiceState == LE_VAS_PURCHASE_STATE_PROCESSING_FACTION_CHANGE) then
 			upgradeIcon:Show();
 			upgradeIcon.tooltip = CHARACTER_UPGRADE_PROCESSING;
 			upgradeIcon.tooltip2 = CHARACTER_SERVICES_PLEASE_WAIT;

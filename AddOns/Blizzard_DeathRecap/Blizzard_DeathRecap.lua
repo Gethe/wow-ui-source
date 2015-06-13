@@ -115,7 +115,7 @@ function DeathRecapFrame_Spell_OnEnter(self)
 	if ( self.spellId ) then 
 		GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
 		GameTooltip:SetMinimumWidth(256, true);
-		GameTooltip:SetSpellByID(self.spellId);
+		GameTooltip:SetSpellByID(self.spellId, false, false, false, -1, true);
 		GameTooltip:Show();
 	end
 end

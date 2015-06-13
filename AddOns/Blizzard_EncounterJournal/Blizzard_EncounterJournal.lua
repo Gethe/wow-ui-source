@@ -1431,7 +1431,7 @@ function EncounterJournal_OnHyperlinkEnter(self, link, text, hyperlinkButton)
 		local _, _, spellID = string.find(link, "(%d+)");
 		if ( spellID ) then
 			GameTooltip:SetOwner(hyperlinkButton, "ANCHOR_RIGHT");
-			GameTooltip:SetSpellByID(spellID, false, false, false, EJ_GetDifficulty());
+			GameTooltip:SetSpellByID(spellID, false, false, false, EJ_GetDifficulty(), true);
 		end
 	end
 end
