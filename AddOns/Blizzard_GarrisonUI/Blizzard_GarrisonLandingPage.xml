@@ -1003,13 +1003,6 @@
 								</Texture>
 							</Layer>
 						</Layers>
-						<Frames>
-							<Frame parentKey="UpgradeFrame" inherits="GarrisonFollowerModelUpgradeTemplate">
-								<Anchors>
-									<Anchor point="BOTTOM" x="0" y="0"/>
-								</Anchors>
-							</Frame>
-						</Frames>
 						<Scripts>
 							<OnModelLoaded>
 								self:SetAlpha(1);
@@ -1018,8 +1011,8 @@
 								self:SetTargetDistance(0);
 								GarrisonMission_SetFollowerModelItems(self);
 							</OnShow>
-							<OnMouseDown function="GarrisonFollowerPageModel_OnMouseDown"/>
-							<OnMouseUp function="GarrisonFollowerPageModel_OnMouseUp"/>
+							<OnMouseDown function="Model_OnMouseDown"/>
+							<OnMouseUp function="Model_OnMouseUp"/>
 						</Scripts>
 					</CinematicModel>
 					<Button parentKey="Trait1" parentArray="Traits" inherits="GarrisonShipTraitTemplate">

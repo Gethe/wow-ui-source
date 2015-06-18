@@ -193,13 +193,13 @@
 						<Anchor point="LEFT" x="-75" y="7"/>
 					</Anchors>
 				</Texture>
+			</Layer>
+			<Layer level="OVERLAY">
 				<FontString parentKey="MissionXP" inherits="SystemFont_Huge1">
 					<Anchors>
 						<Anchor point="BOTTOM" relativePoint="TOP" x="0" y="12"/>
 					</Anchors>											
 				</FontString>
-			</Layer>
-			<Layer level="OVERLAY">
 				<FontString parentKey="Chance" inherits="ZoneTextFont">
 					<Anchors>
 						<Anchor point="CENTER" relativeKey="$parent.Chest" x="-9" y="-6"/>

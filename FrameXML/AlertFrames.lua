@@ -45,13 +45,13 @@ function AlertFrame_OnEvent (self, event, ...)
 		
 		AchievementAlertFrame_ShowAlert(id, alreadyEarned);
 	elseif ( event == "CRITERIA_EARNED" ) then
-		local id, criteria = ...;
+		local id, criteriaString = ...;
 		
 		if ( not AchievementFrame ) then
 			AchievementFrame_LoadUI();
 		end
 		
-		CriteriaAlertFrame_ShowAlert(id, criteria);
+		CriteriaAlertFrame_ShowAlert(id, criteriaString);
 	elseif ( event == "LFG_COMPLETION_REWARD" ) then
 		if ( C_Scenario.IsInScenario() and not C_Scenario.TreatScenarioAsDungeon() ) then
 			ScenarioAlertFrame_ShowAlert();
@@ -848,7 +848,7 @@ function AchievementAlertFrame_GetAlertFrame()
 	return nil;
 end
 
-function CriteriaAlertFrame_ShowAlert (achievementID, criteriaID)
+function CriteriaAlertFrame_ShowAlert (achievementID, criteriaString)
 	local frame = CriteriaAlertFrame_GetAlertFrame();
 	if ( not frame ) then
 		-- We ran out of frames! Bail!
@@ -856,7 +856,6 @@ function CriteriaAlertFrame_ShowAlert (achievementID, criteriaID)
 	end
 	
 	local _, name, points, completed, month, day, year, description, flags, icon, rewardText, isGuildAch = GetAchievementInfo(achievementID);
-	local criteriaString = GetAchievementCriteriaInfoByID(achievementID, criteriaID);
 	
 	local frameName = frame:GetName();
 	local displayName = _G[frameName.."Name"];

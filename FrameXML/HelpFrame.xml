@@ -1168,6 +1168,22 @@
 							</OnClick>
 						</Scripts>
 					</Button>
+					<Button name="GMChatOpenLog" inherits="GameMenuButtonTemplate" text="GM_CHAT_OPEN">
+						<Size x="250" y="22"/>
+						<Anchors>
+							<Anchor point="TOPRIGHT" x="-12" y="-12"/>
+						</Anchors>
+						<Scripts>
+							<OnLoad>
+								self:SetWidth(self:GetTextWidth()+40);
+								self:Disable()
+							</OnLoad>
+							<OnClick>
+								GMChatFrame_Show();
+								HideUIPanel(HelpFrame);
+							</OnClick>
+						</Scripts>
+					</Button>
 				</Frames>
 				<Scripts>
 					<OnLoad>

@@ -36,7 +36,7 @@ function CharacterSelect_OnLoad(self)
 
 	self.createIndex = 0;
 	self.selectedIndex = 0;
-	self.selectLast = 0;
+	self.selectLast = false;
 	self.currentBGTag = nil;
 	self:RegisterEvent("ADDON_LIST_UPDATE");
 	self:RegisterEvent("CHARACTER_LIST_UPDATE");
@@ -215,10 +215,9 @@ function CharacterSelect_OnShow()
 	C_PurchaseAPI.GetProductList();
 	C_StoreGlue.UpdateVASPurchaseStates();
 
-	local loaded = LoadAddOn("Blizzard_StoreUI")
-	if (loaded) then
-		LoadAddOn("Blizzard_AuthChallengeUI");
-		STORE_IS_LOADED = true;
+	if (not STORE_IS_LOADED) then
+		STORE_IS_LOADED = LoadAddOn("Blizzard_StoreUI")
+		LoadAddOn("Blizzard_AuthChallengeUI");		
 	end
 	
 	CharacterSelect_CheckVeteranStatus();
@@ -335,7 +334,7 @@ function CharacterSelect_OnUpdate(self, elapsed)
 		CharacterServicesMaster_OnCharacterListUpdate();
 	end
 
-	if (StoreFrame_WaitingForCharacterListUpdate()) then
+	if (STORE_IS_LOADED and StoreFrame_WaitingForCharacterListUpdate()) then
 		StoreFrame_OnCharacterListUpdate();
 	end
 end
@@ -379,10 +378,9 @@ function CharacterSelect_OnEvent(self, event, ...)
 	if ( event == "ADDON_LIST_UPDATE" ) then
 		ADDON_LIST_RECEIVED = true;
 		if (not STORE_IS_LOADED) then
+			STORE_IS_LOADED = LoadAddOn("Blizzard_StoreUI");
 			LoadAddOn("Blizzard_AuthChallengeUI");
-			LoadAddOn("Blizzard_StoreUI");
 			CharacterSelect_UpdateStoreButton();
-			STORE_IS_LOADED = true;
 		end
 		UpdateAddonButton();
 	elseif ( event == "CHARACTER_LIST_UPDATE" ) then
@@ -435,7 +433,7 @@ function CharacterSelect_OnEvent(self, event, ...)
 		end
 		UpdateCharacterSelection(self);
 	elseif ( event == "SELECT_LAST_CHARACTER" ) then
-		self.selectLast = 1;
+		self.selectLast = true;
 	elseif ( event == "SELECT_FIRST_CHARACTER" ) then
 		CHARACTER_LIST_OFFSET = 0;
 		CharacterSelect_SelectCharacter(1, 1);
@@ -503,7 +501,9 @@ function CharacterSelect_OnEvent(self, event, ...)
 		local result = ...;
 		CharacterSelect_CheckVeteranStatus();
 	elseif (event == "VAS_CHARACTER_STATE_CHANGED") then
-		UpdateCharacterList();
+		if ( not IsCharacterListUpdatePending() ) then
+			UpdateCharacterList();
+		end
 	end
 end
 
@@ -574,10 +574,11 @@ function UpdateCharacterList(skipSelect)
 		MAX_CHARACTERS_DISPLAYED = MAX_CHARACTERS_DISPLAYED_BASE;
 	end
 
-	if ( CharacterSelect.selectLast == 1 ) then
+	-- select the last("newest") character
+	if ( CharacterSelect.selectLast ) then
 		CHARACTER_LIST_OFFSET = max(numChars - MAX_CHARACTERS_DISPLAYED, 0);
 		CharacterSelect.selectedIndex = numChars;
-		CharacterSelect.selectLast = 0;
+		CharacterSelect.selectLast = false;
 	end
 
 	if ( CharacterSelect.undeleteGuid ) then
@@ -655,18 +656,27 @@ function UpdateCharacterList(skipSelect)
 			upgradeIcon.tooltip = CHARACTER_UPGRADE_PROCESSING;
 			upgradeIcon.tooltip2 = CHARACTER_STATE_ORDER_PROCESSING;
 		elseif (vasServiceState == LE_VAS_PURCHASE_STATE_APPLYING_LICENSE and vasServiceErrors) then
-			local info = StoreFrame_GetVASErrorMessage(guid, vasServiceErrors);
-			if (info) then
-				upgradeIcon:Show();
-				local tooltip;
-				if (info.other) then
-					tooltip = VAS_ERROR_ERROR_HAS_OCCURRED;
+			upgradeIcon:Show();
+			local tooltip, desc;
+			if (STORE_IS_LOADED) then
+				local info = StoreFrame_GetVASErrorMessage(guid, vasServiceErrors);
+				if (info) then
+					if (info.other) then
+						tooltip = VAS_ERROR_ERROR_HAS_OCCURRED;
+					else
+						tooltip = VAS_ERROR_ADDRESS_THESE_ISSUES;
+					end
+					desc = info.desc;
 				else
-					tooltip = VAS_ERROR_ADDRESS_THESE_ISSUES;
+					tooltip = VAS_ERROR_ERROR_HAS_OCCURRED;
+					desc = BLIZZARD_STORE_VAS_ERROR_OTHER;
 				end
-				upgradeIcon.tooltip = "|cffffd200" .. tooltip .. "|r";
-				upgradeIcon.tooltip2 = "|cffff2020" .. info.desc .. "|r";
+			else
+				tooltip = VAS_ERROR_ERROR_HAS_OCCURRED;
+				desc = BLIZZARD_STORE_VAS_ERROR_OTHER;
 			end
+			upgradeIcon.tooltip = "|cffffd200" .. tooltip .. "|r";
+			upgradeIcon.tooltip2 = "|cffff2020" .. desc .. "|r";
 		elseif (boostInProgress or vasServiceState == LE_VAS_PURCHASE_STATE_PROCESSING_FACTION_CHANGE) then
 			upgradeIcon:Show();
 			upgradeIcon.tooltip = CHARACTER_UPGRADE_PROCESSING;
@@ -1495,13 +1505,16 @@ function CharacterTemplatesFrameDropDown_Initialize()
 end
 
 function ToggleStoreUI()
-	local wasShown = StoreFrame_IsShown();
-	if ( not wasShown ) then
-		--We weren't showing, now we are. We should hide all other panels.
+	if (STORE_IS_LOADED) then
+		local wasShown = StoreFrame_IsShown();
+		if ( not wasShown ) then
+			--We weren't showing, now we are. We should hide all other panels.
 			-- not sure if anything is needed here at the gluescreen
+		end
+		StoreFrame_SetShown(not wasShown);
 	end
-	StoreFrame_SetShown(not wasShown);
 end
+
 function CharacterTemplatesFrameDropDown_OnClick(button)
 	GlueDropDownMenu_SetSelectedID(CharacterTemplatesFrameDropDown, button:GetID());
 end

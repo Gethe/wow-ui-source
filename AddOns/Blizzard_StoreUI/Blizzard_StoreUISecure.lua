@@ -24,6 +24,7 @@ local WaitingOnConfirmationTime = 0;
 local ProcessAnimPlayed = false;
 local NumUpgradeDistributions = 0;
 local JustOrderedBoost = false;
+local VASReady = false;
 
 --Imports
 Import("C_PurchaseAPI");
@@ -1723,6 +1724,9 @@ end
 
 function StoreFramePurchaseSentOkayButton_OnClick(self)
 	StoreFrame_HidePurchaseSent(StoreFrame);
+	if (VASReady) then
+		StoreVASValidationFrame_OnVasProductComplete(StoreVASValidationFrame);
+	end
 end
 
 local ActiveURLIndex = nil;
@@ -2119,7 +2123,7 @@ function StoreVASValidationFrame_SetVASStart(self)
 	self.CharacterSelectionFrame.ValidationDescription:Hide();
 	self.CharacterSelectionFrame.ChangeIconFrame:Hide();
 	self.CharacterSelectionFrame:Show();
-
+	
 	self:ClearAllPoints();
 	self:SetPoint("CENTER", 0, 0);
 
@@ -2180,35 +2184,48 @@ function StoreVASValidationFrame_OnEvent(self, event, ...)
 				end
 			end
 			frame.ChangeIconFrame:Hide();
-			frame.ValidationDescription:ClearAllPoints();
-			frame.ValidationDescription:SetPoint("TOPLEFT", frame.SelectedCharacterFrame, "BOTTOMLEFT", 8, -8);
+			if (VASServiceType ~= LE_VAS_SERVICE_NAME_CHANGE) then
+				frame.ValidationDescription:ClearAllPoints();
+				frame.ValidationDescription:SetPoint("TOPLEFT", frame.SelectedCharacterFrame, "BOTTOMLEFT", 8, -8);
+			else
+				frame.ValidationDescription:ClearAllPoints();
+				frame.ValidationDescription:SetPoint("TOPLEFT", frame.NewCharacterName, "BOTTOMLEFT", -5, -6);
+			end
 			frame.ValidationDescription:SetFontObject("GameFontBlackSmall2");
 			frame.ValidationDescription:SetTextColor(1.0, 0.1, 0.1);
 			frame.ValidationDescription:SetText(desc);
+			frame.ValidationDescription:Show();
 			StoreVASValidationFrame.CharacterSelectionFrame.ContinueButton:Show();
 			StoreVASValidationFrame.CharacterSelectionFrame.ContinueButton:Disable();
 		end
 	elseif ( event == "STORE_VAS_PURCHASE_COMPLETE" ) then
-		local productID, guid, realmName = C_PurchaseAPI.GetVASCompletionInfo();
-		local name, _, _, _, _, _, _, _, vasServiceType = select(7, C_PurchaseAPI.GetProductInfo(productID));
-		if (IsOnGlueScreen()) then
-			self:GetParent():Hide();	
-			_G.StoreFrame_ShowGlueDialog((_G.BLIZZARD_STORE_VAS_PRODUCT_READY):format(name), guid, realmName);
-		else
-			self:GetParent():Hide();
-			ServicesLogoutPopup.Background.Title:SetText(BLIZZARD_STORE_PRODUCT_IS_READY:format(name));
-			local desc;
-			if (vasServiceType == LE_VAS_SERVICE_NAME_CHANGE) then
-				desc = BLIZZARD_STORE_NAME_CHANGE_READY_DESCRIPTION;
-			else
-				desc = BLIZZARD_STORE_VAS_SERVICE_READY_DESCRIPTION;
-			end
-			ServicesLogoutPopup.Background.Description:SetText(desc);
-			ServicesLogoutPopup.forVasService = true;
-			ServicesLogoutPopup.forBoost = false;
-			ServicesLogoutPopup:Show();
-		end
+		VASReady = true;
+		JustFinishedOrdering = true;
+		StoreFrame_UpdateActivePanel(StoreFrame);
 	end
+end
+
+function StoreVASValidationFrame_OnVasProductComplete(self)
+	local productID, guid, realmName = C_PurchaseAPI.GetVASCompletionInfo();
+	local name, _, _, _, _, _, _, _, vasServiceType = select(7, C_PurchaseAPI.GetProductInfo(productID));
+	if (IsOnGlueScreen()) then
+		self:GetParent():Hide();	
+		_G.StoreFrame_ShowGlueDialog((_G.BLIZZARD_STORE_VAS_PRODUCT_READY):format(name), guid, realmName);
+	else
+		self:GetParent():Hide();
+		ServicesLogoutPopup.Background.Title:SetText(BLIZZARD_STORE_PRODUCT_IS_READY:format(name));
+		local desc;
+		if (vasServiceType == LE_VAS_SERVICE_NAME_CHANGE) then
+			desc = BLIZZARD_STORE_NAME_CHANGE_READY_DESCRIPTION;
+		else
+			desc = BLIZZARD_STORE_VAS_SERVICE_READY_DESCRIPTION;
+		end
+		ServicesLogoutPopup.Background.Description:SetText(desc);
+		ServicesLogoutPopup.forVasService = true;
+		ServicesLogoutPopup.forBoost = false;
+		ServicesLogoutPopup:Show();
+	end
+	VASReady = false;
 end
 
 function StoreVASValidationFrame_OnShow(self)
@@ -3046,7 +3063,6 @@ function VASCharacterSelectionContinueButton_OnClick(self)
 		NewCharacterName = self:GetParent().NewCharacterName:GetText();
 
 		local valid, reason = _G.IsCharacterNameValid(NewCharacterName);
-
 		if ( not valid) then
 			self:GetParent().ValidationDescription:SetFontObject("GameFontBlackSmall2");
 			self:GetParent().ValidationDescription:SetTextColor(1.0, 0.1, 0.1);
