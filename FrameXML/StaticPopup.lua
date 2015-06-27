@@ -805,6 +805,14 @@ StaticPopupDialogs["BFMGR_PLAYER_LOW_LEVEL"] = {
 	whileDead = 1,
 };
 
+StaticPopupDialogs["BFMGR_PLAYER_NOT_WHILE_IN_RAID"] = {
+	text = WORLD_PVP_NOT_WHILE_IN_RAID,
+	button1 = OKAY,
+	showAlert = 1,
+	timeout = 0,
+	whileDead = 1,
+};
+
 StaticPopupDialogs["CONFIRM_GUILD_LEAVE"] = {
 	text = CONFIRM_GUILD_LEAVE,
 	button1 = ACCEPT,
@@ -3422,7 +3430,32 @@ StaticPopupDialogs["LFG_LIST_ENTRY_EXPIRED_TIMEOUT"] = {
 };
 
 StaticPopupDialogs["CONFIRM_FOLLOWER_UPGRADE"] = {
-	text = CONFIRM_GARRISON_FOLLOWER_UPGRADE,
+	text = "%s",
+	button1 = YES,
+	button2 = NO,
+	OnAccept = function(self)
+		C_Garrison.CastSpellOnFollower(self.data);
+	end,
+	showAlert = 1,
+	timeout = 0,
+	exclusive = 1,
+	hideOnEscape = 1
+};
+
+StaticPopupDialogs["CONFIRM_FOLLOWER_ABILITY_UPGRADE"] = {
+	text = "%s",
+	button1 = YES,
+	button2 = NO,
+	OnAccept = function(self)
+		C_Garrison.CastSpellOnFollowerAbility(self.data.followerID, self.data.abilityID);
+	end,
+	timeout = 0,
+	exclusive = 1,
+	hideOnEscape = 1
+};
+
+StaticPopupDialogs["CONFIRM_FOLLOWER_TEMPORARY_ABILITY"] = {
+	text = CONFIRM_GARRISON_FOLLOWER_TEMPORARY_ABILITY,
 	button1 = YES,
 	button2 = NO,
 	OnAccept = function(self)
@@ -3473,6 +3506,9 @@ function StaticPopup_Resize(dialog, which)
 	elseif ( which == "GUILD_IMPEACH" ) then
 		width = 375;
 	end
+	if ( dialog.insertedFrame ) then
+		width = max(width, dialog.insertedFrame:GetWidth());
+	end
 	if ( width > maxWidthSoFar )  then
 		dialog:SetWidth(width);
 		dialog.maxWidthSoFar = width;
@@ -3489,6 +3525,9 @@ function StaticPopup_Resize(dialog, which)
 	elseif ( info.hasMoneyInputFrame ) then
 		height = height + 22;
 	end
+	if ( dialog.insertedFrame ) then
+		height = height + dialog.insertedFrame:GetHeight();
+	end	
 	if ( info.hasItemFrame ) then
 		height = height + 64;
 	end
@@ -3500,7 +3539,7 @@ function StaticPopup_Resize(dialog, which)
 end
 
 local tempButtonLocs = {};	--So we don't make a new table each time.
-function StaticPopup_Show(which, text_arg1, text_arg2, data)
+function StaticPopup_Show(which, text_arg1, text_arg2, data, insertedFrame)
 	local info = StaticPopupDialogs[which];
 	if ( not info ) then
 		return nil;
@@ -3724,6 +3763,15 @@ function StaticPopup_Show(which, text_arg1, text_arg2, data)
 	dialog.hideOnEscape = info.hideOnEscape;
 	dialog.exclusive = info.exclusive;
 	dialog.enterClicksFirstButton = info.enterClicksFirstButton;
+	dialog.insertedFrame = insertedFrame;
+	if ( insertedFrame ) then
+		insertedFrame:SetParent(dialog);
+		insertedFrame:ClearAllPoints();
+		insertedFrame:SetPoint("TOP", text, "BOTTOM");
+		insertedFrame:Show();
+		_G[dialog:GetName().."MoneyFrame"]:SetPoint("TOP", insertedFrame, "BOTTOM");
+		_G[dialog:GetName().."MoneyInputFrame"]:SetPoint("TOP", insertedFrame, "BOTTOM");
+	end
 	-- Clear out data
 	dialog.data = data;
 
@@ -4008,6 +4056,13 @@ function StaticPopup_OnHide(self)
 	self.extraFrame:Hide();
 	if ( dialog.enterClicksFirstButton ) then
 		self:SetScript("OnKeyDown", nil);
+	end
+	if ( self.insertedFrame ) then
+		self.insertedFrame:Hide();
+		self.insertedFrame:SetParent(nil);
+		local text = _G[self:GetName().."Text"];
+		_G[self:GetName().."MoneyFrame"]:SetPoint("TOP", text, "BOTTOM", 0, -5);
+		_G[self:GetName().."MoneyInputFrame"]:SetPoint("TOP", text, "BOTTOM", 0, -5);
 	end
 end
 

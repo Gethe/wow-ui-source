@@ -71,8 +71,14 @@ end
 function PlayerFrame_Update ()
 	if ( UnitExists("player") ) then
 		local level = UnitLevel(PlayerFrame.unit);
-		PlayerFrame_UpdateLevelTextAnchor(level);
-		PlayerLevelText:SetText(level);
+		local effectiveLevel = UnitEffectiveLevel(PlayerFrame.unit);
+		if ( effectiveLevel ~= level ) then
+			PlayerLevelText:SetVertexColor(0.1, 1.0, 0.1, 1.0);
+		else
+			PlayerLevelText:SetVertexColor(1.0, 0.82, 0.0, 1.0);
+		end
+		PlayerFrame_UpdateLevelTextAnchor(effectiveLevel);
+		PlayerLevelText:SetText(effectiveLevel);
 		PlayerFrame_UpdatePartyLeader();
 		PlayerFrame_UpdatePvPStatus();
 		PlayerFrame_UpdateStatus();

@@ -914,6 +914,9 @@
 
 <Button name="LootWonAlertFrameTemplate" parent="UIParent" hidden="true" frameStrata="DIALOG" virtual="true" inherits="AlertFrameTemplate">
 	<Size x="276" y="96"/>
+	<KeyValues>
+		<KeyValue key="numArrows" value="5" type="number"/>
+	</KeyValues>
 	<Animations>
 		<AnimationGroup name="$parentAnimIn" parentKey="animIn">
 			<Alpha change="-1" duration="0" order="1"/>
@@ -927,6 +930,23 @@
 					</OnFinished>
 				</Scripts>
 			</Alpha>
+		</AnimationGroup>
+		<AnimationGroup parentKey="animArrows" setToFinalAlpha="true">
+			<Alpha childKey="Arrow1" startDelay="0" smoothing="IN" duration="0.2" order="1" fromAlpha="0" toAlpha="1"/>
+			<Alpha childKey="Arrow1" startDelay="0.3" smoothing="OUT" duration="0.2" order="1" fromAlpha="1" toAlpha="0"/>
+			<Translation childKey="Arrow1" startDelay="0" duration="0.5" order="1" offsetX="0" offsetY="60"/>
+			<Alpha childKey="Arrow2" startDelay="0.1" smoothing="IN" duration="0.2" order="1" fromAlpha="0" toAlpha="1"/>
+			<Alpha childKey="Arrow2" startDelay="0.4" smoothing="OUT" duration="0.2" order="1" fromAlpha="1" toAlpha="0"/>
+			<Translation childKey="Arrow2" startDelay="0.1" duration="0.5" order="1" offsetX="0" offsetY="60"/>
+			<Alpha childKey="Arrow3" startDelay="0.2" smoothing="IN" duration="0.2" order="1" fromAlpha="0" toAlpha="1"/>
+			<Alpha childKey="Arrow3" startDelay="0.5" smoothing="OUT" duration="0.2" order="1" fromAlpha="1" toAlpha="0"/>
+			<Translation childKey="Arrow3" startDelay="0.2" duration="0.5" order="1" offsetX="0" offsetY="60"/>
+			<Alpha childKey="Arrow4" startDelay="0.4" smoothing="IN" duration="0.2" order="1" fromAlpha="0" toAlpha="1"/>
+			<Alpha childKey="Arrow4" startDelay="0.7" smoothing="OUT" duration="0.2" order="1" fromAlpha="1" toAlpha="0"/>
+			<Translation childKey="Arrow4" startDelay="0.4" duration="0.5" order="1" offsetX="0" offsetY="60"/>
+			<Alpha childKey="Arrow5" startDelay="0.6" smoothing="IN" duration="0.2" order="1" fromAlpha="0" toAlpha="1"/>
+			<Alpha childKey="Arrow5" startDelay="0.9" smoothing="OUT" duration="0.2" order="1" fromAlpha="1" toAlpha="0"/>
+			<Translation childKey="Arrow5" startDelay="0.6" duration="0.5" order="1" offsetX="0" offsetY="60" endDelay="360000"/>
 		</AnimationGroup>
 	</Animations>
 	<Layers>
@@ -1001,6 +1021,31 @@
 			<Texture parentKey="SpecRing" file="Interface/Minimap/MiniMap-TrackingBorder">
 				<Anchors>
 					<Anchor point="TOPLEFT" x="0" y="0"/>
+				</Anchors>
+			</Texture>
+			<Texture parentKey="Arrow1" inherits="LootUpgradeFrame_ArrowTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.Background" x="39" y="-45"/>
+				</Anchors>
+			</Texture>
+			<Texture parentKey="Arrow2" inherits="LootUpgradeFrame_ArrowTemplate">
+				<Anchors>
+					<Anchor point="CENTER" relativeKey="$parent.Arrow1" x="16" y="0"/>
+				</Anchors>
+			</Texture>
+			<Texture parentKey="Arrow3" inherits="LootUpgradeFrame_ArrowTemplate">
+				<Anchors>
+					<Anchor point="CENTER" relativeKey="$parent.Arrow1" x="-16" y="0"/>
+				</Anchors>
+			</Texture>
+			<Texture parentKey="Arrow4" inherits="LootUpgradeFrame_ArrowTemplate">
+				<Anchors>
+					<Anchor point="CENTER" relativeKey="$parent.Arrow1" x="5" y="0"/>
+				</Anchors>
+			</Texture>
+			<Texture parentKey="Arrow5" inherits="LootUpgradeFrame_ArrowTemplate">
+				<Anchors>
+					<Anchor point="CENTER" relativeKey="$parent.Arrow1" x="-12" y="0"/>
 				</Anchors>
 			</Texture>
 		</Layer>
@@ -1653,7 +1698,7 @@
 		</Layers>
 	</Button>
 
-	<Button name="GarrisonMissionAlertFrame" parent="UIParent" hidden="true" frameStrata="DIALOG" inherits="AlertFrameTemplate">
+	<Button name="GarrisonMissionAlertFrameTemplate" parent="UIParent" hidden="true" frameStrata="DIALOG" inherits="AlertFrameTemplate" virtual="true">
 	<Size x="317" y="82"/>
 	<Anchors>
 		<Anchor point="BOTTOM" x="0" y="170"/>
@@ -1674,30 +1719,10 @@
 		</AnimationGroup>
 	</Animations>
 	<Layers>
-		<Layer level="BACKGROUND">
-			<Texture atlas="Garr_MissionToast" useAtlasSize="true">
-				<Anchors>
-					<Anchor point="CENTER"/>
-				</Anchors>
-			</Texture>
-		</Layer>
-		<Layer level="BORDER" textureSubLevel="2">
-			<Texture parentKey="IconBG" atlas="Garr_MissionToast-IconBG" useAtlasSize="true">
-				<Anchors>
-					<Anchor point="LEFT" x="10" y="0"/>
-				</Anchors>
-			</Texture>
-		</Layer>
 		<Layer level="ARTWORK">
 			<FontString parentKey="Title" inherits="GameFontNormalSmall" text="GARRISON_MISSION_COMPLETE">
 				<Anchors>
 					<Anchor point="TOP" x="20" y="-18"/>
-				</Anchors>
-			</FontString>
-			<FontString parentKey="Name" inherits="GameFontHighlight">
-				<Size x="196" y="10"/>		
-				<Anchors>
-					<Anchor point="TOP" relativeKey="$parent.Title" relativePoint="BOTTOM" y="-10"/>
 				</Anchors>
 			</FontString>
 			<Texture parentKey="MissionType" atlas="GarrMission_MissionIcon-Combat" useAtlasSize="true">
@@ -1762,7 +1787,7 @@
 	</Scripts>
 </Button>
 
-<Button name="GarrisonFollowerAlertFrame" parent="UIParent" hidden="true" frameStrata="DIALOG" inherits="AlertFrameTemplate">
+<Button name="GarrisonFollowerAlertFrameTemplate" parent="UIParent" hidden="true" frameStrata="DIALOG" inherits="AlertFrameTemplate" virtual="true">
 	<Size x="317" y="82"/>
 	<Anchors>
 		<Anchor point="BOTTOM" x="0" y="170"/>
@@ -1770,24 +1795,6 @@
 	<Animations>
 		<AnimationGroup name="$parentAnimIn" parentKey="animIn">
 			<Alpha fromAlpha="0" toAlpha="1" duration="0.2" order="1"/>
-		</AnimationGroup>
-		<AnimationGroup parentKey="ArrowsAnim">
-			<Alpha childKey="Arrows.Arrow1" startDelay="0.9" smoothing="IN" duration="0.2" order="1" fromAlpha="0" toAlpha="1"/>
-			<Alpha childKey="Arrows.Arrow1" startDelay="1.2" smoothing="OUT" duration="0.2" order="1" fromAlpha="1" toAlpha="0"/>
-			<Translation childKey="Arrows.Arrow1" startDelay="0.9" duration="0.5" order="1" offsetX="0" offsetY="60"/>
-			<Alpha childKey="Arrows.Arrow2" startDelay="1" smoothing="IN" duration="0.2" order="1" fromAlpha="0" toAlpha="1"/>
-			<Alpha childKey="Arrows.Arrow2" startDelay="1.3" smoothing="OUT" duration="0.2" order="1" fromAlpha="1" toAlpha="0"/>
-			<Translation childKey="Arrows.Arrow2" startDelay="1" duration="0.5" order="1" offsetX="0" offsetY="60"/>			
-			<Alpha childKey="Arrows.Arrow3" startDelay="1.1" smoothing="IN" duration="0.2" order="1" fromAlpha="0" toAlpha="1"/>
-			<Alpha childKey="Arrows.Arrow3" startDelay="1.4" smoothing="OUT" duration="0.2" order="1" fromAlpha="1" toAlpha="0"/>
-			<Translation childKey="Arrows.Arrow3" startDelay="1.1" duration="0.5" order="1" offsetX="0" offsetY="60"/>
-			<Alpha childKey="Arrows.Arrow4" startDelay="1.3" smoothing="IN" duration="0.2" order="1" fromAlpha="0" toAlpha="1"/>
-			<Alpha childKey="Arrows.Arrow4" startDelay="1.6" smoothing="OUT" duration="0.2" order="1" fromAlpha="1" toAlpha="0"/>
-			<Translation childKey="Arrows.Arrow4" startDelay="1.3" duration="0.5" order="1" offsetX="0" offsetY="60"/>
-			<Alpha childKey="Arrows.Arrow5" startDelay="1.5" smoothing="IN" duration="0.2" order="1" fromAlpha="0" toAlpha="1"/>
-			<Alpha childKey="Arrows.Arrow5" startDelay="1.8" smoothing="OUT" duration="0.2" order="1" fromAlpha="1" toAlpha="0"/>
-			<Translation childKey="Arrows.Arrow5" startDelay="1.5" duration="0.5" order="1" offsetX="0" offsetY="60"/>
-			<Alpha startDelay="3.05" duration="1.5" order="2" fromAlpha="1" toAlpha="0"/>
 		</AnimationGroup>
 		<AnimationGroup name="$parentWaitAndAnimOut" parentKey="waitAndAnimOut">
 			<Alpha startDelay="4.05" change="-1" duration="1.5" parentKey="animOut">
@@ -1800,13 +1807,6 @@
 		</AnimationGroup>
 	</Animations>
 	<Layers>
-		<Layer level="BACKGROUND">
-			<Texture atlas="Garr_MissionToast" useAtlasSize="true">
-				<Anchors>
-					<Anchor point="CENTER"/>
-				</Anchors>
-			</Texture>
-		</Layer>
 		<Layer level="BORDER">
 			<Texture parentKey="FollowerBG" atlas="Garr_FollowerToast-Epic" useAtlasSize="true" hidden="true">
 				<Anchors>
@@ -1815,20 +1815,10 @@
 			</Texture>
 		</Layer>
 		<Layer level="ARTWORK">
-			<FontString parentKey="Title" inherits="GameFontNormalSmall" text="GARRISON_FOLLOWER_ADDED_TOAST">
-				<Anchors>
-					<Anchor point="TOP" x="20" y="-18"/>
-				</Anchors>
-			</FontString>
-			<FontString parentKey="Name" inherits="GameFontHighlight">
-				<Anchors>
-					<Anchor point="TOP" relativeKey="$parent.Title" relativePoint="BOTTOM" y="-10"/>
-				</Anchors>
-			</FontString>
 			<Texture parentKey="DieIcon" file="Interface\Buttons\UI-GroupLoot-Dice-Up" hidden="true">
 				<Size x="22" y="22"/>
 				<Anchors>
-					<Anchor point="RIGHT" relativeKey="$parent.Title" relativePoint="LEFT" x="-4" y="0"/>
+					<!-- Anchors set in Lua -->
 				</Anchors>
 			</Texture>
 		</Layer>
@@ -1871,6 +1861,89 @@
 				<TexCoords left="0.78125" right="0.912109375" top="0" bottom="0.28125"/>
 			</Texture>
 		</Layer>		
+	</Layers>
+	<Frames>
+		<Frame parentKey="Arrows" setAllPoints="true">
+			<KeyValues>
+				<KeyValue key="numArrows" value="5" type="number"/>
+			</KeyValues>
+			<Layers>
+				<Layer level="ARTWORK">
+					<Texture parentKey="Arrow1" inherits="LootUpgradeFrame_ArrowTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT" x="32" y="-30"/>
+						</Anchors>
+					</Texture>
+					<Texture parentKey="Arrow2" inherits="LootUpgradeFrame_ArrowTemplate">
+						<Anchors>
+							<Anchor point="CENTER" relativeKey="$parent.Arrow1" x="16" y="0"/>
+						</Anchors>
+					</Texture>
+					<Texture parentKey="Arrow3" inherits="LootUpgradeFrame_ArrowTemplate">
+						<Anchors>
+							<Anchor point="CENTER" relativeKey="$parent.Arrow1" x="-16" y="0"/>
+						</Anchors>
+					</Texture>
+					<Texture parentKey="Arrow4" inherits="LootUpgradeFrame_ArrowTemplate">
+						<Anchors>
+							<Anchor point="CENTER" relativeKey="$parent.Arrow1" x="5" y="0"/>
+						</Anchors>
+					</Texture>
+					<Texture parentKey="Arrow5" inherits="LootUpgradeFrame_ArrowTemplate">
+						<Anchors>
+							<Anchor point="CENTER" relativeKey="$parent.Arrow1" x="-12" y="0"/>
+						</Anchors>
+					</Texture>
+				</Layer>
+			</Layers>
+			<Animations>
+				<AnimationGroup parentKey="ArrowsAnim">
+					<Alpha childKey="Arrow1" startDelay="0.9" smoothing="IN" duration="0.2" order="1" fromAlpha="0" toAlpha="1"/>
+					<Alpha childKey="Arrow1" startDelay="1.2" smoothing="OUT" duration="0.2" order="1" fromAlpha="1" toAlpha="0"/>
+					<Translation childKey="Arrow1" startDelay="0.9" duration="0.5" order="1" offsetX="0" offsetY="60"/>
+					<Alpha childKey="Arrow2" startDelay="1" smoothing="IN" duration="0.2" order="1" fromAlpha="0" toAlpha="1"/>
+					<Alpha childKey="Arrow2" startDelay="1.3" smoothing="OUT" duration="0.2" order="1" fromAlpha="1" toAlpha="0"/>
+					<Translation childKey="Arrow2" startDelay="1" duration="0.5" order="1" offsetX="0" offsetY="60"/>			
+					<Alpha childKey="Arrow3" startDelay="1.1" smoothing="IN" duration="0.2" order="1" fromAlpha="0" toAlpha="1"/>
+					<Alpha childKey="Arrow3" startDelay="1.4" smoothing="OUT" duration="0.2" order="1" fromAlpha="1" toAlpha="0"/>
+					<Translation childKey="Arrow3" startDelay="1.1" duration="0.5" order="1" offsetX="0" offsetY="60"/>
+					<Alpha childKey="Arrow4" startDelay="1.3" smoothing="IN" duration="0.2" order="1" fromAlpha="0" toAlpha="1"/>
+					<Alpha childKey="Arrow4" startDelay="1.6" smoothing="OUT" duration="0.2" order="1" fromAlpha="1" toAlpha="0"/>
+					<Translation childKey="Arrow4" startDelay="1.3" duration="0.5" order="1" offsetX="0" offsetY="60"/>
+					<Alpha childKey="Arrow5" startDelay="1.5" smoothing="IN" duration="0.2" order="1" fromAlpha="0" toAlpha="1"/>
+					<Alpha childKey="Arrow5" startDelay="1.8" smoothing="OUT" duration="0.2" order="1" fromAlpha="1" toAlpha="0"/>
+					<Translation childKey="Arrow5" startDelay="1.5" duration="0.5" order="1" offsetX="0" offsetY="60"/>
+				</AnimationGroup>
+			</Animations>
+		</Frame>
+	</Frames>
+	<Scripts>
+		<OnEnter function="GarrisonFollowerAlertFrame_OnEnter"/>
+		<OnLeave function="GarrisonFollowerAlertFrame_OnLeave"/>
+	</Scripts>
+</Button>
+
+<Button name="GarrisonFollowerAlertFrame" inherits="GarrisonFollowerAlertFrameTemplate">
+	<Layers>
+		<Layer level="BACKGROUND">
+			<Texture atlas="Garr_MissionToast" useAtlasSize="true">
+				<Anchors>
+					<Anchor point="CENTER"/>
+				</Anchors>
+			</Texture>
+		</Layer>
+		<Layer level="ARTWORK">
+			<FontString parentKey="Title" inherits="GameFontNormalSmall" text="GARRISON_FOLLOWER_ADDED_TOAST">
+				<Anchors>
+					<Anchor point="TOP" x="20" y="-18"/>
+				</Anchors>
+			</FontString>
+			<FontString parentKey="Name" inherits="GameFontHighlight">
+				<Anchors>
+					<Anchor point="TOP" relativeKey="$parent.Title" relativePoint="BOTTOM" y="-10"/>
+				</Anchors>
+			</FontString>
+		</Layer>
 	</Layers>
 	<Frames>
 		<Frame parentKey="PortraitFrame">
@@ -1917,45 +1990,92 @@
 				</Layer>
 			</Layers>
 		</Frame>
-		<Frame parentKey="Arrows" setAllPoints="true">
-			<KeyValues>
-				<KeyValue key="numArrows" value="5" type="number"/>
-			</KeyValues>
-			<Layers>
-				<Layer level="ARTWORK">
-					<Texture parentKey="Arrow1" inherits="LootUpgradeFrame_ArrowTemplate">
-						<Anchors>
-							<Anchor point="TOPLEFT" x="32" y="-30"/>
-						</Anchors>
-					</Texture>
-					<Texture parentKey="Arrow2" inherits="LootUpgradeFrame_ArrowTemplate">
-						<Anchors>
-							<Anchor point="CENTER" relativeKey="$parent.Arrow1" x="16" y="0"/>
-						</Anchors>
-					</Texture>
-					<Texture parentKey="Arrow3" inherits="LootUpgradeFrame_ArrowTemplate">
-						<Anchors>
-							<Anchor point="CENTER" relativeKey="$parent.Arrow1" x="-16" y="0"/>
-						</Anchors>
-					</Texture>
-					<Texture parentKey="Arrow4" inherits="LootUpgradeFrame_ArrowTemplate">
-						<Anchors>
-							<Anchor point="CENTER" relativeKey="$parent.Arrow1" x="5" y="0"/>
-						</Anchors>
-					</Texture>
-					<Texture parentKey="Arrow5" inherits="LootUpgradeFrame_ArrowTemplate">
-						<Anchors>
-							<Anchor point="CENTER" relativeKey="$parent.Arrow1" x="-12" y="0"/>
-						</Anchors>
-					</Texture>					
-				</Layer>
-			</Layers>
-		</Frame>
 	</Frames>
-	<Scripts>
-		<OnEnter function="GarrisonFollowerAlertFrame_OnEnter"/>
-		<OnLeave function="GarrisonFollowerAlertFrame_OnLeave"/>
-	</Scripts>
+</Button>
+
+<Button name="GarrisonShipFollowerAlertFrame" inherits="GarrisonFollowerAlertFrameTemplate">
+	<Layers>
+		<Layer level="BACKGROUND">
+			<Texture parentKey="Background" atlas="ShipMission_Toast" useAtlasSize="true">
+				<Anchors>
+					<Anchor point="CENTER"/>
+				</Anchors>
+			</Texture>
+		</Layer>
+		<Layer level="BORDER">
+			<Texture parentKey="Portrait" atlas="Ships_Dreadnaught-List" useAtlasSize="false">
+				<Size x="115" y="60"/>
+				<Anchors>
+					<Anchor point="LEFT" x="10"/>
+				</Anchors>
+			</Texture>
+		</Layer>
+		<Layer level="ARTWORK">
+			<FontString parentKey="Title" inherits="GameFontNormalSmall" text="GARRISON_FOLLOWER_ADDED_TOAST">
+				<Anchors>
+					<Anchor point="TOP" x="45" y="-18"/>
+				</Anchors>
+			</FontString>
+			<FontString parentKey="Name" inherits="GameFontHighlight">
+				<Anchors>
+					<Anchor point="TOP" relativeKey="$parent.Title" relativePoint="BOTTOM" y="-8"/>
+				</Anchors>
+			</FontString>
+			<FontString parentKey="Class" inherits="GameFontNormalSmall">
+				<Anchors>
+					<Anchor point="TOP" relativeKey="$parent.Name" relativePoint="BOTTOM" y="-3"/>
+				</Anchors>
+				<Color r="0.5" g="0.5" b="0.5"/>
+			</FontString>
+		</Layer>
+	</Layers>
+</Button>
+
+<Button name="GarrisonMissionAlertFrame" inherits="GarrisonMissionAlertFrameTemplate">
+	<Layers>
+		<Layer level="BACKGROUND">
+			<Texture parentKey="Background" atlas="Garr_MissionToast" useAtlasSize="true">
+				<Anchors>
+					<Anchor point="CENTER"/>
+				</Anchors>
+			</Texture>
+		</Layer>
+		<Layer level="BORDER" textureSubLevel="2">
+			<Texture parentKey="IconBG" atlas="Garr_MissionToast-IconBG" useAtlasSize="true">
+				<Anchors>
+					<Anchor point="LEFT" x="10" y="0"/>
+				</Anchors>
+			</Texture>
+		</Layer>
+		<Layer level="ARTWORK">
+			<FontString parentKey="Name" inherits="GameFontHighlight">
+				<Size x="196" y="10"/>		
+				<Anchors>
+					<Anchor point="TOP" x="20" y="-39"/>
+				</Anchors>
+			</FontString>
+		</Layer>
+	</Layers>
+</Button>
+
+<Button name="GarrisonShipMissionAlertFrame" inherits="GarrisonMissionAlertFrameTemplate">
+	<Layers>
+		<Layer level="BACKGROUND">
+			<Texture parentKey="Background" atlas="ShipMission_Toast" useAtlasSize="true">
+				<Anchors>
+					<Anchor point="CENTER"/>
+				</Anchors>
+			</Texture>
+		</Layer>
+		<Layer level="ARTWORK">
+			<FontString parentKey="Name" inherits="GameFontHighlight">
+				<Size x="196" y="10"/>		
+				<Anchors>
+					<Anchor point="TOP" x="20" y="-44"/>
+				</Anchors>
+			</FontString>
+		</Layer>
+	</Layers>
 </Button>
 
 <Frame name="AlertFrame" parent="UIParent" hidden="true">

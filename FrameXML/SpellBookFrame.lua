@@ -183,6 +183,29 @@ function SpellBookFrame_OnShow(self)
 
 	SpellBookFrame_PlayOpenSound();
 	MicroButtonPulseStop(SpellbookMicroButton);
+	
+	-- if boosted, find the first locked spell and display a tip next to it
+	if ( SpellBookFrame.bookType == BOOKTYPE_SPELL and IsCharacterNewlyBoosted() and not GetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_BOOSTED_SPELL_BOOK) ) then
+		local spellSlot;
+		for i = 1, SPELLS_PER_PAGE do
+			local spellBtn = _G["SpellButton" .. i];
+			local slotType = select(2,SpellBook_GetSpellBookSlot(spellBtn));
+			if (slotType == "FUTURESPELL") then
+				if ( not spellSlot or spellBtn:GetID() < spellSlot:GetID() ) then
+					spellSlot = spellBtn;
+				end
+			end
+		end
+		
+		if ( spellSlot ) then
+			SpellLockedTooltip:Show();
+			SpellLockedTooltip:SetPoint("LEFT", spellSlot, "RIGHT", 16, 0);
+		else
+			SetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_BOOSTED_SPELL_BOOK, true);
+		end
+	else
+		SpellLockedTooltip:Hide();
+	end
 end
 
 function SpellBookFrame_Update()
@@ -360,6 +383,8 @@ function SpellBookFrame_OnHide(self)
 
 	-- Hide multibar slots
 	MultiActionBar_HideAllGrids();
+	
+	SpellLockedTooltip:Hide();
 	
 	-- Do this last, it can cause taint.
 	UpdateMicroButtons();
@@ -681,7 +706,20 @@ function SpellButton_UpdateButton(self)
 		self.IconTextureBg:Show();
 		iconTexture:SetAlpha(0.5);
 		iconTexture:SetDesaturated(true);
-		if (level and level > UnitLevel("player")) then
+		if (IsCharacterNewlyBoosted()) then
+			self.SeeTrainerString:Hide();
+			self.UnlearnedFrame:Show();
+			self.TrainFrame:Hide();
+			self.TrainTextBackground:Hide();
+			self.TrainBook:Hide();
+			self.RequiredLevelString:Show();
+			self.RequiredLevelString:SetText(BOOSTED_CHAR_SPELL_TEMPLOCK);
+			self.RequiredLevelString:SetTextColor(0.25, 0.12, 0);
+			self.SpellName:SetTextColor(0.25, 0.12, 0);
+			self.SpellSubName:SetTextColor(0.25, 0.12, 0);
+			self.SpellName:SetShadowOffset(0, 0);
+			self.SpellName:SetPoint("LEFT", self, "RIGHT", 8, 6);
+		elseif (level and level > UnitLevel("player")) then
 			self.SeeTrainerString:Hide();
 			self.RequiredLevelString:Show();
 			self.RequiredLevelString:SetFormattedText(SPELLBOOK_AVAILABLE_AT, level);
@@ -1020,7 +1058,7 @@ function FormatProfession(frame, index)
 			if rank >= profCap then
 				frame.statusBar.capped:Show();
 				frame.statusBar.rankText:SetTextColor(RED_FONT_COLOR.r, RED_FONT_COLOR.g, RED_FONT_COLOR.b);
-				frame.statusBar.tooltip = RED_FONT_COLOR_CODE..GameLimitedMode_GetString("CAP_REACHED")..FONT_COLOR_CODE_CLOSE;
+				frame.statusBar.tooltip = RED_FONT_COLOR_CODE..CAP_REACHED_TRIAL..FONT_COLOR_CODE_CLOSE;
 			else
 				frame.statusBar.capped:Hide();
 				frame.statusBar.rankText:SetTextColor(HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b);
@@ -1282,31 +1320,45 @@ function SpellBook_UpdateCoreAbilitiesTab()
 			local level = GetSpellLevelLearned(abilityList[i]);
 			local showLevel = (level and level > UnitLevel("player"));
 			local isPassive = IsPassiveSpell(abilityList[i]);
+			local isKnown = IsSpellKnownOrOverridesKnown(abilityList[i]);
 			
 			button.spellID = abilityList[i];
 			button.Name:SetText(name);
 			button.InfoText:SetText(_G[SPEC_CORE_ABILITY_TEXT[specID].."_CORE_ABILITY_"..i]);
 
 			button.iconTexture:SetTexture(icon);
-			button.iconTexture:SetDesaturated(showLevel or desaturate);
 			
-			button.ActiveTexture:SetShown(not showLevel and not isPassive);
-			button.ActiveTexture:SetDesaturated(desaturate);
-			button.FutureTexture:SetShown(showLevel);
-			button.FutureTexture:SetDesaturated(desaturate);
-			button.EmptySlot:SetDesaturated(desaturate);
-			button.draggable = draggable and not isPassive and not showLevel;
+			if ( not isKnown and IsCharacterNewlyBoosted() and not desaturate ) then
+				button.ActiveTexture:Hide();
+				button.RequiredLevel:SetText(BOOSTED_CHAR_SPELL_TEMPLOCK);
+				button.iconTexture:SetAlpha(0.5);
+				button.iconTexture:SetDesaturated(true);
+				button.FutureTexture:Show();
+				button.FutureTexture:SetDesaturated(false);
+				button.EmptySlot:SetDesaturated(false);
+				button.draggable = false;
+			else
+				button.iconTexture:SetDesaturated(showLevel or desaturate);
+				button.iconTexture:SetAlpha(1);
+				
+				button.ActiveTexture:SetShown(not showLevel and not isPassive);
+				button.ActiveTexture:SetDesaturated(desaturate);
+				button.FutureTexture:SetShown(showLevel);
+				button.FutureTexture:SetDesaturated(desaturate);
+				button.EmptySlot:SetDesaturated(desaturate);
+				button.draggable = draggable and not isPassive and not showLevel;
 			
-			if ( showLevel ) then
-				button.RequiredLevel:SetFormattedText(SPELLBOOK_AVAILABLE_AT, level);
-			else
-				button.RequiredLevel:SetText("");
-			end
-	
-			if ( showLevel or isPassive ) then
-				button.highlightTexture:SetTexture("Interface\\Buttons\\UI-PassiveHighlight");
-			else
-				button.highlightTexture:SetTexture("Interface\\Buttons\\ButtonHilight-Square");
+				if ( showLevel ) then
+					button.RequiredLevel:SetFormattedText(SPELLBOOK_AVAILABLE_AT, level);
+				else
+					button.RequiredLevel:SetText("");
+				end
+		
+				if ( showLevel or isPassive ) then
+					button.highlightTexture:SetTexture("Interface\\Buttons\\UI-PassiveHighlight");
+				else
+					button.highlightTexture:SetTexture("Interface\\Buttons\\ButtonHilight-Square");
+				end
 			end
 	
 			button:Show();

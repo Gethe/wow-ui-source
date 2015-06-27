@@ -563,12 +563,7 @@
 						if ( self:GetText() ~= "" ) then
 							parent.CheckButton:SetChecked(true);
 						end
-						if ( parent.validateFunc ) then
-							parent.warningText = parent.validateFunc(self:GetText());
-							parent.WarningFrame:SetShown(parent.warningText);
-							parent.CheckButton:SetShown(not parent.warningText);
-						end
-						LFGListEntryCreation_UpdateValidState(self:GetParent():GetParent());
+						LFGListRequirement_Validate(parent, self:GetText());
 						InputBoxInstructions_OnTextChanged(self);
 					</OnTextChanged>
 					<OnEditFocusLost>
@@ -948,6 +943,35 @@
 							</OnEditFocusLost>
 						</Scripts>
 					</EditBox>
+					<Button parentKey="FilterButton" inherits="UIMenuButtonStretchTemplate" text="FILTER">
+						<Size x="93" y="22"/>
+						<Anchors>
+							<Anchor point="LEFT" relativeKey="$parent.SearchBox" relativePoint="RIGHT" x="2" y="0"/>
+						</Anchors>
+						<Layers>
+							<Layer level="ARTWORK">
+								<Texture parentKey="Icon" file="Interface\ChatFrame\ChatFrameExpandArrow">
+									<Size x="10" y="12"/>
+									<Anchors>
+										<Anchor point="RIGHT" relativeKey="$parent.Right" relativePoint="RIGHT" x="-5"/>
+									</Anchors>
+								</Texture>
+							</Layer>
+						</Layers>
+						<Scripts>
+							<OnClick> 
+								PlaySound("igMainMenuOptionCheckBoxOn");
+								ToggleDropDownMenu(1, nil, LFGListLanguageFilterDropDownFrame, self, 0, -2, "MENU");
+							</OnClick>	
+						</Scripts>
+					</Button>
+					<Frame name="LFGListLanguageFilterDropDownFrame" inherits="UIDropDownMenuTemplate">
+						<Scripts>
+							<OnLoad>
+								UIDropDownMenu_Initialize(self, LFGListUtil_InitializeLangaugeFilter, "MENU");
+							</OnLoad>
+						</Scripts>
+					</Frame>
 					<Frame parentKey="AutoCompleteFrame" frameLevel="20">
 						<Size x="0" y="30"/>
 						<Anchors>

@@ -1,5 +1,5 @@
 # Do not delete the following line!
-## Interface: 60100
+## Interface: 60200
 GlobalStrings.lua
 Constants.lua
 Localization.xml

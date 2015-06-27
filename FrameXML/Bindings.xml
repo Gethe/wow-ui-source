@@ -1090,7 +1090,7 @@
 		ToggleFramerate();
 	</Binding>
 	<Binding name="SCREENSHOT" category="BINDING_HEADER_MISC">
-		TakeScreenshot();
+		Screenshot();
 	</Binding>
 	<Binding name="ITEMCOMPARISONCYCLING" category="BINDING_HEADER_MISC">
 		GameTooltip_CycleSecondaryComparedItem(GameTooltip);

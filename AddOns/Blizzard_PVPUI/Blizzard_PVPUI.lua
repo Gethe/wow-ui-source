@@ -724,7 +724,6 @@ ARENA_DATA = {
 	{ id = 5, name=SKIRMISH_3V3  }
 }
 function HonorFrameBonusFrame_Update()
-	local playerLevel = UnitLevel("player");
 	local englishFaction = UnitFactionGroup("player");
 	local selectButton = nil;
 	local _, _, _, _, _, _, _, _, arenaReward, ratedBGReward = GetPVPRewards();

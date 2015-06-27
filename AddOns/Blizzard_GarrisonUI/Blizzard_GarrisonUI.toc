@@ -1,12 +1,14 @@
-## Interface: 60100
+## Interface: 60200
 ## Title: Blizzard Garrison UI
 ## Secure: 1
 ## Author: Blizzard Entertainment
 ## Version: 1.0
 ## LoadOnDemand: 1
 Blizzard_GarrisonSharedTemplates.xml
+Blizzard_GarrisonMissionTemplates.xml
 Blizzard_GarrisonBuildingUI.xml
 Blizzard_GarrisonMissionUI.xml
+Blizzard_GarrisonShipyardUI.xml
 Blizzard_GarrisonLandingPage.xml
 Blizzard_GarrisonCapacitiveDisplay.xml
 Blizzard_GarrisonMonumentUI.xml

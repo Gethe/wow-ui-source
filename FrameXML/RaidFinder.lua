@@ -2,6 +2,8 @@ MAX_RAID_FINDER_COOLDOWN_NAMES = 8;
 
 function RaidFinderFrame_OnLoad(self)
 	self:RegisterEvent("LFG_LOCK_INFO_RECEIVED");
+	self:RegisterEvent("AJ_RAID_ACTION");
+	self:RegisterEvent("GROUP_ROSTER_UPDATE");
 end
 
 function RaidFinderFrame_OnEvent(self, event, ...)
@@ -12,6 +14,14 @@ function RaidFinderFrame_OnEvent(self, event, ...)
 			--UIDropDownMenu_SetSelectedValue(RaidFinderQueueFrameSelectionDropDown, RaidFinderQueueFrame.raid);
 		end
 		RaidFinderFrame_UpdateAvailability();
+	elseif ( event == "AJ_RAID_ACTION" ) then
+		local raidID = ...;
+		PVEFrame_ShowFrame("GroupFinderFrame", RaidFinderFrame);
+		RaidFinderQueueFrame_SetRaid(raidID);
+	elseif ( event == "GROUP_ROSTER_UPDATE" ) then
+		if ( self:IsVisible() ) then
+			RaidFinderQueueFrame_UpdateRoles();
+		end
 	end
 end
 
@@ -242,17 +252,19 @@ function RaidFinderQueueFrame_UpdateRoles()
 	LFG_SetRoleIconIncentive(RaidFinderQueueFrameRoleButtonDPS, nil);
 	
 	if ( type(dungeonID) == "number" ) then
-		for i=1, LFG_ROLE_NUM_SHORTAGE_TYPES do
-			local eligible, forTank, forHealer, forDamage, itemCount, money, xp = GetLFGRoleShortageRewards(dungeonID, i);
-			if ( eligible and (itemCount ~= 0 or money ~= 0 or xp ~= 0) ) then	--Only show the icon if there is actually a reward.
-				if ( forTank ) then
-					LFG_SetRoleIconIncentive(RaidFinderQueueFrameRoleButtonTank, i);
-				end
-				if ( forHealer ) then
-					LFG_SetRoleIconIncentive(RaidFinderQueueFrameRoleButtonHealer, i);
-				end
-				if ( forDamage ) then
-					LFG_SetRoleIconIncentive(RaidFinderQueueFrameRoleButtonDPS, i);
+		if ( not IsInGroup(LE_PARTY_CATEGORY_HOME) ) then
+			for i=1, LFG_ROLE_NUM_SHORTAGE_TYPES do
+				local eligible, forTank, forHealer, forDamage, itemCount, money, xp = GetLFGRoleShortageRewards(dungeonID, i);
+				if ( eligible and (itemCount ~= 0 or money ~= 0 or xp ~= 0) ) then	--Only show the icon if there is actually a reward.
+					if ( forTank ) then
+						LFG_SetRoleIconIncentive(RaidFinderQueueFrameRoleButtonTank, i);
+					end
+					if ( forHealer ) then
+						LFG_SetRoleIconIncentive(RaidFinderQueueFrameRoleButtonHealer, i);
+					end
+					if ( forDamage ) then
+						LFG_SetRoleIconIncentive(RaidFinderQueueFrameRoleButtonDPS, i);
+					end
 				end
 			end
 		end
@@ -322,9 +334,7 @@ function RaidFinderFrameFindRaidButton_Update()
 
 	--Disable the button if the person is active in LFGList
 	local lfgListDisabled;
-	if ( select(2,C_LFGList.GetNumApplications()) > 0 ) then
-		lfgListDisabled = CANNOT_DO_THIS_WITH_LFGLIST_APP;
-	elseif ( C_LFGList.GetActiveEntryInfo() ) then
+	if ( C_LFGList.GetActiveEntryInfo() ) then
 		lfgListDisabled = CANNOT_DO_THIS_WHILE_LFGLIST_LISTED;
 	end
 

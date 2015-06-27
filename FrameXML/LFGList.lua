@@ -308,7 +308,7 @@ end
 
 function LFGListNothingAvailable_Update(self)
 	if ( IsRestrictedAccount() ) then
-		self.Label:SetText(GameLimitedMode_GetString("ERR_RESTRICTED_ACCOUNT_LFG_LIST"));
+		self.Label:SetText(ERR_RESTRICTED_ACCOUNT_LFG_LIST_TRIAL);
 	elseif ( C_LFGList.HasActivityList() ) then
 		self.Label:SetText(NO_LFG_LIST_AVAILABLE);
 	else
@@ -580,7 +580,7 @@ function LFGListEntryCreation_Select(self, filters, categoryID, groupID, activit
 	UIDropDownMenu_SetText(self.CategoryDropDown, LFGListUtil_GetDecoratedCategoryName(categoryName, filters, false));
 
 	--Update the activity dropdown
-	local _, shortName, _, _, iLevel = C_LFGList.GetActivityInfo(activityID);
+	local _, shortName, _, _, iLevel, _, _, _, _, _, usePVPItemLevel = C_LFGList.GetActivityInfo(activityID);
 	UIDropDownMenu_SetText(self.ActivityDropDown, shortName);
 
 	--Update the group dropdown. If the group dropdown is showing an activity, hide the activity dropdown
@@ -590,11 +590,22 @@ function LFGListEntryCreation_Select(self, filters, categoryID, groupID, activit
 	self.GroupDropDown:SetShown(not autoChoose);
 
 	--Update the recommended item level box
+	self.ItemLevel.usePVPItemLevel = usePVPItemLevel;
 	if ( iLevel ~= 0 ) then
 		self.ItemLevel.EditBox.Instructions:SetFormattedText(LFG_LIST_RECOMMENDED_ILVL, iLevel);
+	elseif ( usePVPItemLevel ) then
+		self.ItemLevel.EditBox.Instructions:SetText(LFG_LIST_ITEM_LEVEL_INSTR_PVP_SHORT);
 	else
 		self.ItemLevel.EditBox.Instructions:SetText(LFG_LIST_ITEM_LEVEL_INSTR_SHORT);
 	end
+
+	if ( usePVPItemLevel ) then
+		self.ItemLevel.Label:SetText(LFG_LIST_ITEM_LEVEL_PVP_REQ);
+	else
+		self.ItemLevel.Label:SetText(LFG_LIST_ITEM_LEVEL_REQ);
+	end
+
+	LFGListRequirement_Validate(self.ItemLevel, self.ItemLevel.EditBox:GetText());
 	LFGListEntryCreation_UpdateValidState(self);
 end
 
@@ -1085,7 +1096,7 @@ function LFGListApplicationViewer_UpdateAvailability(self)
 
 	if ( IsRestrictedAccount() ) then
 		self.EditButton:Disable();
-		self.EditButton.tooltip = GameLimitedMode_GetString("ERR_RESTRICTED_ACCOUNT_LFG_LIST");
+		self.EditButton.tooltip = ERR_RESTRICTED_ACCOUNT_LFG_LIST_TRIAL;
 	else
 		self.EditButton:Enable();
 		self.EditButton.tooltip = nil;
@@ -1362,6 +1373,13 @@ function LFGListApplicantMember_OnEnter(self)
 	local applicantID = self:GetParent().applicantID;
 	local memberIdx = self.memberIdx;
 	
+	local active, activityID = C_LFGList.GetActiveEntryInfo();
+	if ( not active ) then
+		return;
+	end
+
+
+	local usePVPItemLevel = select(11, C_LFGList.GetActivityInfo(activityID));
 	local id, status, pendingStatus, numMembers, isNew, comment = C_LFGList.GetApplicantInfo(applicantID);
 	local name, class, localizedClass, level, itemLevel, tank, healer, damage, assignedRole = C_LFGList.GetApplicantMemberInfo(applicantID, memberIdx);
 
@@ -1374,7 +1392,7 @@ function LFGListApplicantMember_OnEnter(self)
 	else
 		GameTooltip:SetText(" ");	--Just make it empty until we get the name update
 	end
-	GameTooltip:AddLine(string.format(LFG_LIST_ITEM_LEVEL_CURRENT, itemLevel), 1, 1, 1);
+	GameTooltip:AddLine(string.format(usePVPItemLevel and LFG_LIST_ITEM_LEVEL_CURRENT_PVP or LFG_LIST_ITEM_LEVEL_CURRENT, itemLevel), 1, 1, 1);
 	if ( comment and comment ~= "" ) then
 		GameTooltip:AddLine(" ");
 		GameTooltip:AddLine(string.format(LFG_LIST_COMMENT_FORMAT, comment), LFG_LIST_COMMENT_FONT_COLOR.r, LFG_LIST_COMMENT_FONT_COLOR.g, LFG_LIST_COMMENT_FONT_COLOR.b, true);
@@ -1483,6 +1501,25 @@ function LFGListSearchPanel_OnShow(self)
 	LFGListSearchPanel_UpdateResultList(self);
 	LFGListSearchPanel_UpdateResults(self);
 	--LFGListSearchPanel_UpdateButtonStatus(self); --Called by UpdateResults
+	
+	local availableLanguages = C_LFGList.GetAvailableLanguageSearchFilter();
+	local defaultLanguages = C_LFGList.GetDefaultLanguageSearchFilter();
+
+	local canChangeLanguages = false;
+	for i=1, #availableLanguages do
+		if ( not defaultLanguages[availableLanguages[i]] ) then
+			canChangeLanguages = true;
+			break;
+		end
+	end
+
+	if ( canChangeLanguages ) then
+		self.SearchBox:SetWidth(228);
+		self.FilterButton:Show();
+	else
+		self.SearchBox:SetWidth(319);
+		self.FilterButton:Hide();
+	end
 end
 
 function LFGListSearchPanel_Clear(self)
@@ -1504,7 +1541,8 @@ end
 
 function LFGListSearchPanel_DoSearch(self)
 	local searchText = self.SearchBox:GetText();
-	C_LFGList.Search(self.categoryID, searchText, self.filters, self.preferredFilters);
+	local languages = C_LFGList.GetLanguageSearchFilter();
+	C_LFGList.Search(self.categoryID, searchText, self.filters, self.preferredFilters, languages);
 	self.searching = true;
 	self.searchFailed = false;
 	self.selectedResult = nil;
@@ -2415,20 +2453,33 @@ function LFGListEditBox_OnTabPressed(self)
 end
 
 -------------------------------------------------------
+----------Requirement functions
+-------------------------------------------------------
+function LFGListRequirement_Validate(self, text)
+	if ( self.validateFunc ) then
+		self.warningText = self:validateFunc(text);
+		self.WarningFrame:SetShown(self.warningText);
+		self.CheckButton:SetShown(not self.warningText);
+	end
+	LFGListEntryCreation_UpdateValidState(self:GetParent());
+end
+
+-------------------------------------------------------
 ----------Utility functions
 -------------------------------------------------------
 function LFGListUtil_AugmentWithBest(filters, categoryID, groupID, activityID)
 	local myNumMembers = math.max(GetNumGroupMembers(LE_PARTY_CATEGORY_HOME), 1);
-	local myItemLevel = GetAverageItemLevel();
+	local myItemLevel, _, myItemLevelPvP = GetAverageItemLevel();
 	if ( not activityID ) then
 		--Find the best activity by iLevel and recommended flag
 		local activities = C_LFGList.GetAvailableActivities(categoryID, groupID, filters);
 		local bestItemLevel, bestRecommended, bestCurrentArea, bestMinLevel, bestMaxPlayers;
 		for i=1, #activities do
-			local fullName, shortName, categoryID, groupID, iLevel, filters, minLevel, maxPlayers = C_LFGList.GetActivityInfo(activities[i]);
+			local fullName, shortName, categoryID, groupID, iLevel, filters, minLevel, maxPlayers, displayType, orderIndex, usePVPItemLevel = C_LFGList.GetActivityInfo(activities[i]);
 			local isRecommended = bit.band(filters, LE_LFG_LIST_FILTER_RECOMMENDED) ~= 0;
 			local currentArea = C_LFGList.GetActivityInfoExpensive(activities[i]);
 
+			local usedItemLevel = usePVPItemLevel and myItemLevelPvP or myItemLevel;
 			local isBetter = false;
 			if ( not activityID ) then
 				isBetter = true;
@@ -2439,9 +2490,9 @@ function LFGListUtil_AugmentWithBest(filters, categoryID, groupID, activityID)
 			elseif ( bestMinLevel ~= minLevel ) then
 				isBetter = minLevel > bestMinLevel;
 			elseif ( iLevel ~= bestItemLevel ) then
-				isBetter = (iLevel > bestItemLevel and iLevel <= myItemLevel) or
-							(iLevel <= myItemLevel and bestItemLevel > myItemLevel) or 
-							(iLevel < bestItemLevel and iLevel > myItemLevel);
+				isBetter = (iLevel > bestItemLevel and iLevel <= usedItemLevel) or
+							(iLevel <= usedItemLevel and bestItemLevel > usedItemLevel) or 
+							(iLevel < bestItemLevel and iLevel > usedItemLevel);
 			elseif ( (myNumMembers < maxPlayers) ~= (myNumMembers < bestMaxPlayers) ) then
 				isBetter = myNumMembers < maxPlayers;
 			end
@@ -2494,9 +2545,11 @@ function LFGListUtil_SetUpDropDown(context, dropdown, populateFunc, onClickFunc)
 	UIDropDownMenu_SetAnchor(dropdown, -20, 7, "TOPRIGHT", dropdown, "BOTTOMRIGHT");
 end
 
-function LFGListUtil_ValidateLevelReq(text)
-	if ( text ~= "" and tonumber(text) > GetAverageItemLevel() ) then
-		return LFG_LIST_ILVL_ABOVE_YOURS
+function LFGListUtil_ValidateLevelReq(self, text)
+	local myItemLevel, _, myItemLevelPvP = GetAverageItemLevel();
+	local iLevel = self.usePVPItemLevel and myItemLevelPvP or myItemLevel;
+	if ( text ~= "" and tonumber(text) > iLevel ) then
+		return LFG_LIST_ILVL_ABOVE_YOURS;
 	end
 end
 
@@ -2742,6 +2795,24 @@ function LFGListUtil_GetApplicantMemberMenu(applicantID, memberIdx)
 	return LFG_LIST_APPLICANT_MEMBER_MENU;
 end
 
+function LFGListUtil_InitializeLangaugeFilter(dropdown)
+	local info = UIDropDownMenu_CreateInfo();
+	local languages = C_LFGList.GetAvailableLanguageSearchFilter();
+	local enabled = C_LFGList.GetLanguageSearchFilter();
+	local defaults = C_LFGList.GetDefaultLanguageSearchFilter();
+	local entry = UIDropDownMenu_CreateInfo();
+	for i=1, #languages do
+		local lang = languages[i];
+		entry.text = _G["LFG_LIST_LANGUAGE_"..string.upper(lang)];
+		entry.checked = enabled[lang] or defaults[lang];
+		entry.disabled = defaults[lang];
+		entry.isNotRadio = true;
+		entry.keepShownOnClick = true;
+		entry.func = function(self,_,_,checked) enabled[lang] = checked; C_LFGList.SaveLanguageSearchFilter(enabled); end
+		UIDropDownMenu_AddButton(entry);
+	end
+end
+
 function LFGListUtil_OpenBestWindow(toggle)
 	local func = toggle and PVEFrame_ToggleFrame or PVEFrame_ShowFrame;
 	local active, activityID, ilvl, name, comment, voiceChat = C_LFGList.GetActiveEntryInfo();
@@ -2765,20 +2836,23 @@ function LFGListUtil_OpenBestWindow(toggle)
 end
 
 function LFGListUtil_SortActivitiesByRelevancyCB(id1, id2)
-	local fullName1, _, _, _, iLevel1, _, minLevel1 = C_LFGList.GetActivityInfo(id1);
-	local fullName2, _, _, _, iLevel2, _, minLevel2 = C_LFGList.GetActivityInfo(id2);
+	local fullName1, _, _, _, iLevel1, _, minLevel1, _, _, _, usePVPItemLevel1 = C_LFGList.GetActivityInfo(id1);
+	local fullName2, _, _, _, iLevel2, _, minLevel2, _, _, _, usePVPItemLevel2 = C_LFGList.GetActivityInfo(id2);
 
 	if ( minLevel1 ~= minLevel2 ) then
 		return minLevel1 > minLevel2;
 	elseif ( iLevel1 ~= iLevel2 ) then
-		local myILevel = GetAverageItemLevel();
+		local myILevel, _, myILevelPvP = GetAverageItemLevel();
+
+		local myILevel1 = usePVPItemLevel1 and myILevelPvP or myILevel;
+		local myILevel2 = usePVPItemLevel2 and myILevelPvP or myILevel;
 		
-		if ( (iLevel1 <= myILevel) ~= (iLevel2 <= myILevel) ) then
+		if ( (iLevel1 <= myILevel1) ~= (iLevel2 <= myILevel2) ) then
 			--If one is below our item level and the other above, choose the one we meet
-			return iLevel1 < myILevel;
+			return iLevel1 < myILevel1;
 		else
 			--If both are above or both are below, choose the one closest to our iLevel
-			return math.abs(iLevel1 - myILevel) < math.abs(iLevel2 - myILevel);
+			return math.abs(iLevel1 - myILevel1) < math.abs(iLevel2 - myILevel2);
 		end
 	else
 		return strcmputf8i(fullName1, fullName2) < 0;
@@ -2818,14 +2892,18 @@ function LFGListUtil_GetActiveQueueMessage(isApplication)
 	for category=1, NUM_LE_LFG_CATEGORYS do
 		local mode = GetLFGMode(category);
 		if ( mode ) then
-			return mode == "lfgparty" and CANNOT_DO_THIS_IN_LFG_PARTY or CANNOT_DO_THIS_IN_PVE_QUEUE;
+			if ( mode == "lfgparty" ) then
+				return CANNOT_DO_THIS_IN_LFG_PARTY;
+			elseif ( mode == "rolecheck" or (mode and not isApplication) ) then
+				return CANNOT_DO_THIS_IN_PVE_QUEUE;
+			end
 		end
 	end
 
 	--Check PvP role check
 	local inProgress, _, _, _, _, isBattleground = GetLFGRoleUpdate();
-	if ( inProgress and isBattleground ) then
-		return CANNOT_DO_THIS_IN_PVP_QUEUE;
+	if ( inProgress ) then
+		return isBattleground and CANNOT_DO_THIS_WHILE_PVP_QUEUING or CANNOT_DO_THIS_WHILE_PVE_QUEUING;
 	end
 
 	for i=1, GetMaxBattlefieldID() do

@@ -288,6 +288,7 @@
 				UpdateMicroButtons();
 				PlaySound("igCharacterInfoClose");
 			</OnHide>
+			<OnEvent function="PVEFrame_OnEvent"/>
 		</Scripts>
 	</Frame>
 </Ui>

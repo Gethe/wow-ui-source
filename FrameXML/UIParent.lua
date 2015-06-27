@@ -63,7 +63,8 @@ UIPanelWindows["WorldStateScoreFrame"] =		{ area = "center",			pushable = 0, 		x
 UIPanelWindows["QuestChoiceFrame"] =			{ area = "center",			pushable = 0, 		xoffset = -16, 		yoffset = 12,	whileDead = 0, allowOtherPanels = 1 };
 UIPanelWindows["GarrisonBuildingFrame"] =		{ area = "center",			pushable = 0,		whileDead = 1, 		width = 1002, 	allowOtherPanels = 1};
 UIPanelWindows["GarrisonMissionFrame"] =		{ area = "center",			pushable = 0,		whileDead = 1, 		checkFit = 1,	allowOtherPanels = 1, extraWidth = 20,	extraHeight = 100 };
-UIPanelWindows["GarrisonLandingPage"] =			{ area = "center",			pushable = 0,		whileDead = 1, 		width = 800, 	allowOtherPanels = 1};
+UIPanelWindows["GarrisonShipyardFrame"] =		{ area = "center",			pushable = 0,		whileDead = 1, 		checkFit = 1,	allowOtherPanels = 1, extraWidth = 20,	extraHeight = 100 };
+UIPanelWindows["GarrisonLandingPage"] =			{ area = "left",			pushable = 1,		whileDead = 1, 		width = 830, 	yoffset = 9,	allowOtherPanels = 1};
 UIPanelWindows["GarrisonMonumentFrame"] =		{ area = "center",			pushable = 0,		whileDead = 1, 		width = 333, 	allowOtherPanels = 1};
 UIPanelWindows["GarrisonRecruiterFrame"] =		{ area = "left",			pushable = 0};
 UIPanelWindows["GarrisonRecruitSelectFrame"] =	{ area = "center",			pushable = 0};
@@ -115,6 +116,7 @@ UISpecialFrames = {
 	"ScrollOfResurrectionSelectionFrame",
 	"FloatingPetBattleAbilityTooltip",
 	"FloatingGarrisonFollowerTooltip",
+	"FloatingGarrisonShipyardFollowerTooltip"
 };
 
 UIMenus = {
@@ -281,6 +283,9 @@ function UIParent_OnLoad(self)
 	self:RegisterEvent("TRANSMOGRIFY_OPEN");
 	self:RegisterEvent("TRANSMOGRIFY_CLOSE");
 
+	-- Events for Adventure Journal
+	self:RegisterEvent("AJ_OPEN");
+
 	-- Events for void storage
 	self:RegisterEvent("VOID_STORAGE_OPEN");
 	self:RegisterEvent("VOID_STORAGE_CLOSE");
@@ -315,6 +320,8 @@ function UIParent_OnLoad(self)
 	self:RegisterEvent("GARRISON_ARCHITECT_CLOSED");
 	self:RegisterEvent("GARRISON_MISSION_NPC_OPENED");
 	self:RegisterEvent("GARRISON_MISSION_NPC_CLOSED");
+	self:RegisterEvent("GARRISON_SHIPYARD_NPC_OPENED");
+	self:RegisterEvent("GARRISON_SHIPYARD_NPC_CLOSED");
 	self:RegisterEvent("SHIPMENT_CRAFTER_OPENED");
 	self:RegisterEvent("GARRISON_TRADESKILL_NPC_CLOSED");
 	self:RegisterEvent("GARRISON_SHOW_LANDING_PAGE");
@@ -627,7 +634,7 @@ function ToggleGuildFrame()
 	end
 
 	if ( IsTrialAccount() or (IsVeteranTrialAccount() and not IsInGuild()) ) then
-		UIErrorsFrame:AddMessage(GameLimitedMode_GetString("ERR_RESTRICTED_ACCOUNT"), 1.0, 0.1, 0.1, 1.0);
+		UIErrorsFrame:AddMessage(ERR_RESTRICTED_ACCOUNT_TRIAL, 1.0, 0.1, 0.1, 1.0);
 		return;
 	end
 	if ( IsInGuild() ) then
@@ -723,6 +730,10 @@ function ToggleEncounterJournal()
 	if (IsBlizzCon()) then
 		return;
 	end
+	
+	if ( UnitLevel("player") < SHOW_EJ_LEVEL ) then
+		return;
+	end
 
 	if ( not EncounterJournal ) then
 		EncounterJournal_LoadUI();
@@ -814,22 +825,29 @@ end
 function UIParent_OnEvent(self, event, ...)
 	local arg1, arg2, arg3, arg4, arg5, arg6 = ...;
 	if ( event == "CURRENT_SPELL_CAST_CHANGED" ) then
-		if ( SpellCanTargetGarrisonFollower() ) then
+		if ( SpellCanTargetGarrisonFollower() or SpellCanTargetGarrisonFollowerAbility(0, 0) ) then
 			if ( not GarrisonLandingPage ) then
 				Garrison_LoadUI();
 			end
+			local frame = GarrisonMissionFrame;
+			local landingPageTabIndex = 2;
+			local followerTypeID = GetFollowerTypeIDFromSpell();
+			if ( followerTypeID == LE_FOLLOWER_TYPE_SHIPYARD_6_2 ) then
+				frame = GarrisonShipyardFrame;
+				landingPageTabIndex = 3;
+			end
 			-- if the mission UI is already open, go with that
-			if ( GarrisonMissionFrame:IsShown() ) then
-				if ( PanelTemplates_GetSelectedTab(GarrisonMissionFrame) ~= 2 ) then
-					GarrisonMissionFrame_SelectTab(2);
+			if ( frame:IsShown() ) then
+				if ( (not C_Garrison.TargetSpellHasFollowerTemporaryAbility() or not frame:HasMission()) and PanelTemplates_GetSelectedTab(frame) ~= 2 ) then
+					frame:SelectTab(2)
 				end
 			else
 				if ( not GarrisonLandingPage:IsShown()) then
 					ShowUIPanel(GarrisonLandingPage);
 				end
 				-- switch to the followers tab
-				if ( PanelTemplates_GetSelectedTab(GarrisonLandingPage) ~= 2 ) then
-					GarrisonLandingPageTab_OnClick(GarrisonLandingPageTab2);
+				if ( PanelTemplates_GetSelectedTab(GarrisonLandingPage) ~= landingPageTabIndex ) then
+					GarrisonLandingPageTab_SetTab(_G["GarrisonLandingPageTab"..landingPageTabIndex]);
 				end
 			end
 		end
@@ -851,7 +869,7 @@ function UIParent_OnEvent(self, event, ...)
 				end
 				-- switch to the mission tab
 				if ( PanelTemplates_GetSelectedTab(GarrisonLandingPage) ~= 1 ) then
-					GarrisonLandingPageTab_OnClick(GarrisonLandingPageTab1);
+					GarrisonLandingPageTab_SetTab(GarrisonLandingPageTab1);
 				end
 				if ( PanelTemplates_GetSelectedTab(GarrisonLandingPageReport) ~= GarrisonLandingPageReport.InProgress ) then
 					GarrisonLandingPageReport_SetTab(GarrisonLandingPageReport.InProgress);
@@ -867,6 +885,7 @@ function UIParent_OnEvent(self, event, ...)
 			StaticPopup_Hide("END_BOUND_TRADEABLE");
 			if ( not SpellCanTargetGarrisonFollower() ) then
 				StaticPopup_Hide("CONFIRM_FOLLOWER_UPGRADE");
+				StaticPopup_Hide("CONFIRM_FOLLOWER_TEMPORARY_ABILITY");
 			end
 		end
 	elseif ( event == "VARIABLES_LOADED" ) then
@@ -1493,6 +1512,15 @@ function UIParent_OnEvent(self, event, ...)
 			TransmogrifyFrame_Hide();
 		end
 
+	-- Events for adventure journal
+	elseif ( event == "AJ_OPEN" ) then
+		if (not IsBlizzCon() and UnitLevel("player") >= SHOW_EJ_LEVEL) then
+			if ( not EncounterJournal ) then
+				EncounterJournal_LoadUI();
+			end
+			ShowUIPanel(EncounterJournal);
+			EJSuggestFrame_OpenFrame();
+		end
 	-- Events for Void Storage UI handling
 	elseif ( event == "VOID_STORAGE_OPEN" ) then
 		VoidStorage_LoadUI();
@@ -1618,6 +1646,15 @@ function UIParent_OnEvent(self, event, ...)
 		if ( GarrisonMissionFrame ) then
 			HideUIPanel(GarrisonMissionFrame);
 		end
+	elseif ( event == "GARRISON_SHIPYARD_NPC_OPENED") then
+		if (not GarrisonShipyardFrame) then
+			Garrison_LoadUI();
+		end
+		ShowUIPanel(GarrisonShipyardFrame);
+	elseif ( event == "GARRISON_SHIPYARD_NPC_CLOSED" ) then
+		if ( GarrisonShipyardFrame ) then
+			HideUIPanel(GarrisonShipyardFrame);
+		end
 	elseif ( event == "SHIPMENT_CRAFTER_OPENED" ) then
 		if (not GarrisonCapacitiveDisplayFrame) then
 			Garrison_LoadUI();
@@ -1694,6 +1731,11 @@ function UpdateMenuBarTop ()
 	end
 end
 
+UIPARENT_ALTERNATE_FRAME_POSITIONS = {
+	["PlayerPowerBarAlt_Bottom"] = {baseY = true, yOffset = 40, bottomEither = actionBarOffset, overrideActionBar = overrideActionBarTop, petBattleFrame = petBattleTop, bonusActionBar = 1, pet = 1, reputation = 1, tutorialAlert = 1, extraActionBarFrame = 1, draenorZoneAbilityFrame = 1};
+	["PlayerPowerBarAlt_Top"] = {baseY = -30, anchorTo = "UIParent", point = "TOP", rpoint = "TOP"};
+}
+
 UIPARENT_MANAGED_FRAME_POSITIONS = {
 	--Items with baseY set to "true" are positioned based on the value of menuBarTop and their offset needs to be repeatedly evaluated as menuBarTop can change. 
 	--"yOffset" gets added to the value of "baseY", which is used for values based on menuBarTop.
@@ -1706,7 +1748,7 @@ UIPARENT_MANAGED_FRAME_POSITIONS = {
 	["FramerateLabel"] = {baseY = true, bottomEither = actionBarOffset, overrideActionBar = overrideActionBarTop, petBattleFrame = petBattleTop, bonusActionBar = 1, pet = 1, reputation = 1, playerPowerBarAlt = 1, extraActionBarFrame = 1};
 	["ArcheologyDigsiteProgressBar"] = {baseY = true, yOffset = 40, bottomEither = actionBarOffset, overrideActionBar = overrideActionBarTop, petBattleFrame = petBattleTop, bonusActionBar = 1, pet = 1, reputation = 1, tutorialAlert = 1, playerPowerBarAlt = 1, extraActionBarFrame = 1, draenorZoneAbilityFrame = 1, castingBar = 1};
 	["CastingBarFrame"] = {baseY = true, yOffset = 40, bottomEither = actionBarOffset, overrideActionBar = overrideActionBarTop, petBattleFrame = petBattleTop, bonusActionBar = 1, pet = 1, reputation = 1, tutorialAlert = 1, playerPowerBarAlt = 1, extraActionBarFrame = 1, draenorZoneAbilityFrame = 1};
-	["PlayerPowerBarAlt"] = {baseY = true, yOffset = 40, bottomEither = actionBarOffset, overrideActionBar = overrideActionBarTop, petBattleFrame = petBattleTop, bonusActionBar = 1, pet = 1, reputation = 1, tutorialAlert = 1, extraActionBarFrame = 1, draenorZoneAbilityFrame = 1};
+	["PlayerPowerBarAlt"] = UIPARENT_ALTERNATE_FRAME_POSITIONS["PlayerPowerBarAlt_Bottom"];
 	["ExtraActionBarFrame"] = {baseY = true, yOffset = 40, bottomEither = actionBarOffset, overrideActionBar = overrideActionBarTop, petBattleFrame = petBattleTop, bonusActionBar = 1, pet = 1, reputation = 1, tutorialAlert = 1};
 	["DraenorZoneAbilityFrame"] = {baseY = true, yOffset = 100, bottomEither = actionBarOffset, overrideActionBar = overrideActionBarTop, petBattleFrame = petBattleTop, bonusActionBar = 1, pet = 1, reputation = 1, tutorialAlert = 1, extraActionBarFrame = 1};
 	["ChatFrame1"] = {baseY = true, yOffset = 40, bottomLeft = actionBarOffset-8, justBottomRightAndStance = actionBarOffset, overrideActionBar = overrideActionBarTop, petBattleFrame = petBattleTop, bonusActionBar = 1, pet = 1, reputation = 1, maxLevel = 1, point = "BOTTOMLEFT", rpoint = "BOTTOMLEFT", xOffset = 32};
@@ -2306,6 +2348,14 @@ function FramePositionDelegate:UIParentManageFramePositions()
 	-- Set up flags
 	local hasBottomLeft, hasBottomRight, hasPetBar;
 	
+	if ( PlayerPowerBarAlt:IsShown() and select(10, UnitAlternatePowerInfo(PlayerPowerBarAlt.unit)) ) then
+		PlayerPowerBarAlt:ClearAllPoints();
+		UIPARENT_MANAGED_FRAME_POSITIONS["PlayerPowerBarAlt"] = UIPARENT_ALTERNATE_FRAME_POSITIONS["PlayerPowerBarAlt_Top"];
+	else
+		PlayerPowerBarAlt:ClearAllPoints();
+		UIPARENT_MANAGED_FRAME_POSITIONS["PlayerPowerBarAlt"] = UIPARENT_ALTERNATE_FRAME_POSITIONS["PlayerPowerBarAlt_Bottom"];
+	end
+	
 	if ( OverrideActionBar and OverrideActionBar:IsShown() ) then
 		tinsert(yOffsetFrames, "overrideActionBar");
 	elseif ( PetBattleFrame and PetBattleFrame:IsShown() ) then
@@ -2346,15 +2396,8 @@ function FramePositionDelegate:UIParentManageFramePositions()
 			tinsert(yOffsetFrames, "tutorialAlert");
 		end
 		if ( PlayerPowerBarAlt:IsShown() ) then
-			local insert = true;
-			if ( PlayerPowerBarAlt.counterBar:IsShown() ) then
-				local _, _, anchorTop = UnitAlternatePowerCounterInfo(PlayerPowerBarAlt.unit);
-				if (anchorTop) then
-					insert = false;
-				end
-			end
-
-			if (insert) then
+			local anchorTop = select(10, UnitAlternatePowerInfo(PlayerPowerBarAlt.unit));
+			if ( not anchorTop ) then
 				tinsert(yOffsetFrames, "playerPowerBarAlt");
 			end
 		end
@@ -2374,8 +2417,7 @@ function FramePositionDelegate:UIParentManageFramePositions()
 	else
 		UIPARENT_MANAGED_FRAME_POSITIONS["TutorialFrameAlertButton"].yOffset = -30;
 	end
-	
-	
+
 	-- Iterate through frames and set anchors according to the flags set
 	for index, value in pairs(UIPARENT_MANAGED_FRAME_POSITIONS) do
 		if ( value.playerPowerBarAlt ) then
@@ -2554,15 +2596,6 @@ function FramePositionDelegate:UIParentManageFramePositions()
 		ObjectiveTrackerFrame:SetPoint("BOTTOMRIGHT", "UIParent", "BOTTOMRIGHT", -OBJTRACKER_OFFSET_X, CONTAINER_OFFSET_Y);
 	end
 
-	-- PlayerPowerBarAlt hack for counters
-	if ( PlayerPowerBarAlt and PlayerPowerBarAlt.counterBar:IsShown() ) then
-		local _, _, anchorTop = UnitAlternatePowerCounterInfo(PlayerPowerBarAlt.unit);
-		if (anchorTop) then
-			PlayerPowerBarAlt:ClearAllPoints();
-			PlayerPowerBarAlt:SetPoint("TOP", 0, -20);
-		end
-	end
-	
 	-- Update chat dock since the dock could have moved
 	FCF_DockUpdate();
 	UpdateContainerFrameAnchors();
@@ -3489,8 +3522,11 @@ function ToggleGameMenu()
 	elseif ( CloseCalendarMenus and securecall("CloseCalendarMenus") ) then
 	elseif ( CloseGuildMenus and securecall("CloseGuildMenus") ) then
 	elseif ( GarrisonMissionFrame_ClearMouse and securecall("GarrisonMissionFrame_ClearMouse") ) then
-	elseif ( GarrisonMissionFrame and GarrisonMissionFrame.MissionTab and GarrisonMissionFrame.MissionTab.MissionPage and GarrisonMissionFrame.MissionTab.MissionPage:IsShown() ) then
+	elseif ( GarrisonMissionFrame and GarrisonMissionFrame.MissionTab and GarrisonMissionFrame.MissionTab.MissionPage and GarrisonMissionFrame.MissionTab.MissionPage:IsVisible() ) then
 		GarrisonMissionFrame.MissionTab.MissionPage.CloseButton:Click();
+	elseif ( GarrisonShipyardFrame_ClearMouse and securecall("GarrisonShipyardFrame_ClearMouse") ) then
+	elseif ( GarrisonShipyardFrame and GarrisonShipyardFrame.MissionTab and GarrisonShipyardFrame.MissionTab.MissionPage and GarrisonShipyardFrame.MissionTab.MissionPage:IsVisible() ) then
+		GarrisonShipyardFrame.MissionTab.MissionPage.CloseButton:Click();
 	elseif ( SpellStopCasting() ) then
 	elseif ( SpellStopTargeting() ) then
 	elseif ( securecall("CloseAllWindows") ) then
@@ -3833,6 +3869,10 @@ end
 
 function GetQuestDifficultyColor(level)
 	return GetRelativeDifficultyColor(UnitLevel("player"), level);
+end
+
+function GetCreatureDifficultyColor(level)
+	return GetRelativeDifficultyColor(UnitEffectiveLevel("player"), level);
 end
 
 --How difficult is this challenge for this unit?
@@ -4255,9 +4295,9 @@ function TrialAccountCapReached_Inform(capType)
 	
 	local info = ChatTypeInfo.SYSTEM;
 	if ( capType == "level" ) then
-		DEFAULT_CHAT_FRAME:AddMessage(GameLimitedMode_GetString("CAPPED_LEVEL"), info.r, info.g, info.b);
+		DEFAULT_CHAT_FRAME:AddMessage(CAPPED_LEVEL_TRIAL, info.r, info.g, info.b);
 	elseif ( capType == "money" ) then
-		DEFAULT_CHAT_FRAME:AddMessage(GameLimitedMode_GetString("CAPPED_MONEY"), info.r, info.g, info.b);
+		DEFAULT_CHAT_FRAME:AddMessage(CAPPED_MONEY_TRIAL, info.r, info.g, info.b);
 	end
 	displayedCapMessage = true;
 end

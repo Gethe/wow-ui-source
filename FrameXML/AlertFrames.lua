@@ -7,6 +7,16 @@ ACHIEVEMENT_ID_INDEX = 1;
 OLD_ACHIEVEMENT_INDEX = 2;
 MAX_QUEUED_ACHIEVEMENT_TOASTS = 6;
 
+-- [[ LootWonAlertFrameTemplate ]] --
+LOOTWONALERTFRAME_VALUES={
+	Default = { bgOffsetX=0, bgOffsetY=0, labelOffsetX=7, labelOffsetY=5, labelText=YOU_WON_LABEL, glowAtlas="loottoast-glow"},
+	Upgraded = { bgOffsetX=0, bgOffsetY=0, labelOffsetX=7, labelOffsetY=5, labelText=ITEM_UPGRADED_LABEL, bgAtlas="LootToast-MoreAwesome", glowAtlas="loottoast-glow"},
+	LessAwesome = { bgOffsetX=0, bgOffsetY=0, labelOffsetX=7, labelOffsetY=5, labelText=YOU_WON_LABEL, bgAtlas="LootToast-LessAwesome"},
+	GarrisonCache = { bgOffsetX=-4, bgOffsetY=0, labelOffsetX=7, labelOffsetY=1, labelText=GARRISON_CACHE, glowAtlas="CacheToast-Glow", bgAtlas="CacheToast", noIconBorder=true, iconUnderBG=true},
+	Horde = { bgOffsetX=-1, bgOffsetY=-1, labelOffsetX=7, labelOffsetY=3, labelText=YOU_EARNED_LABEL, pvpAtlas="loottoast-bg-horde", glowAtlas="loottoast-glow"},
+	Alliance = { bgOffsetX=-1, bgOffsetY=-1, labelOffsetX=7, labelOffsetY=3, labelText=YOU_EARNED_LABEL, pvpAtlas="loottoast-bg-alliance", glowAtlas="loottoast-glow"},
+}
+
 function AlertFrame_OnLoad (self)
 	self:RegisterEvent("ACHIEVEMENT_EARNED");
 	self:RegisterEvent("CRITERIA_EARNED");
@@ -35,13 +45,13 @@ function AlertFrame_OnEvent (self, event, ...)
 		
 		AchievementAlertFrame_ShowAlert(id, alreadyEarned);
 	elseif ( event == "CRITERIA_EARNED" ) then
-		local id, criteria = ...;
+		local id, criteriaString = ...;
 		
 		if ( not AchievementFrame ) then
 			AchievementFrame_LoadUI();
 		end
 		
-		CriteriaAlertFrame_ShowAlert(id, criteria);
+		CriteriaAlertFrame_ShowAlert(id, criteriaString);
 	elseif ( event == "LFG_COMPLETION_REWARD" ) then
 		if ( C_Scenario.IsInScenario() and not C_Scenario.TreatScenarioAsDungeon() ) then
 			ScenarioAlertFrame_ShowAlert();
@@ -53,12 +63,12 @@ function AlertFrame_OnEvent (self, event, ...)
 	elseif ( event == "CHALLENGE_MODE_COMPLETED" ) then
 		ChallengeModeAlertFrame_ShowAlert();
 	elseif ( event == "LOOT_ITEM_ROLL_WON" ) then
-		local itemLink, quantity, rollType, roll = ...;
-		LootWonAlertFrame_ShowAlert(itemLink, quantity, rollType, roll);
+		local itemLink, quantity, rollType, roll, isUpgraded = ...;
+		LootWonAlertFrame_ShowAlert(itemLink, quantity, rollType, roll, nil, nil, nil, nil, nil, isUpgraded);
 	elseif ( event == "SHOW_LOOT_TOAST" ) then
-		local typeIdentifier, itemLink, quantity, specID, sex, isPersonal, lootSource = ...;
+		local typeIdentifier, itemLink, quantity, specID, sex, isPersonal, lootSource, lessAwesome, isUpgraded = ...;
 		if ( typeIdentifier == "item" ) then
-			LootWonAlertFrame_ShowAlert(itemLink, quantity, nil, nil, specID);
+			LootWonAlertFrame_ShowAlert(itemLink, quantity, nil, nil, specID, nil, nil, nil, lessAwesome, isUpgraded);
 		elseif ( typeIdentifier == "money" ) then
 			MoneyWonAlertFrame_ShowAlert(quantity);
 		elseif ( (isPersonal == true) and (typeIdentifier == "currency") ) then
@@ -66,17 +76,17 @@ function AlertFrame_OnEvent (self, event, ...)
 			LootWonAlertFrame_ShowAlert(itemLink, quantity, nil, nil, specID, true, false, lootSource);
 		end
 	elseif ( event == "SHOW_PVP_FACTION_LOOT_TOAST" ) then
-		local typeIdentifier, itemLink, quantity, specID, sex, isPersonal = ...;
+		local typeIdentifier, itemLink, quantity, specID, sex, isPersonal, lessAwesome = ...;
 		if ( typeIdentifier == "item" ) then
-			LootWonAlertFrame_ShowAlert(itemLink, quantity, nil, nil, specID, false, true);
+			LootWonAlertFrame_ShowAlert(itemLink, quantity, nil, nil, specID, false, true, nil, lessAwesome);
 		elseif ( typeIdentifier == "money" ) then
 			MoneyWonAlertFrame_ShowAlert(quantity);
 		elseif ( typeIdentifier == "currency" ) then
 			LootWonAlertFrame_ShowAlert(itemLink, quantity, nil, nil, specID, true, true);
 		end
 	elseif ( event == "SHOW_LOOT_TOAST_UPGRADE") then
-		local itemLink, quantity, specID, sex, baseQuality, isPersonal = ...;
-		LootUpgradeFrame_ShowAlert(itemLink, quantity, specID, baseQuality);
+		local itemLink, quantity, specID, sex, baseQuality, isPersonal, lessAwesome = ...;
+		LootUpgradeFrame_ShowAlert(itemLink, quantity, specID, baseQuality, nil, nil, lessAwesome);
 	elseif ( event == "PET_BATTLE_CLOSE" ) then
 		AchievementAlertFrame_FireDelayedAlerts();
 	elseif ( event == "STORE_PRODUCT_DELIVERED" ) then
@@ -86,12 +96,22 @@ function AlertFrame_OnEvent (self, event, ...)
 		local name = ...;
 		GarrisonBuildingAlertFrame_ShowAlert(name);
 	elseif ( event == "GARRISON_MISSION_FINISHED" ) then
-		if ( not GarrisonMissionFrame or not GarrisonMissionFrame:IsShown() ) then
+		local validInstance = false;
+		local _, instanceType = GetInstanceInfo();
+		if ( instanceType == "none" or C_Garrison.IsOnGarrisonMap() ) then
+			validInstance = true;
+		end
+		-- toast only if not in an instance (except for garrison), and mission frame is not shown, and not in combat
+		if ( validInstance and (not GarrisonMissionFrame or not GarrisonMissionFrame:IsShown()) and not UnitAffectingCombat("player") ) then
 			GarrisonMissionAlertFrame_ShowAlert(...);
 		end
 	elseif ( event == "GARRISON_FOLLOWER_ADDED" ) then
-		local followerID, name, displayID, level, quality, isUpgraded = ...;
-		GarrisonFollowerAlertFrame_ShowAlert(followerID, name, displayID, level, quality, isUpgraded);
+		local followerID, name, class, displayID, level, quality, isUpgraded, texPrefix, followerType = ...;
+		if (followerType == LE_FOLLOWER_TYPE_GARRISON_6_0) then
+			GarrisonFollowerAlertFrame_ShowAlert(followerID, name, displayID, level, quality, isUpgraded);
+		else
+			GarrisonShipFollowerAlertFrame_ShowAlert(followerID, name, class, texPrefix, level, quality, isUpgraded);
+		end
 	elseif ( event == "GARRISON_RANDOM_MISSION_ADDED" ) then
 		GarrisonRandomMissionAlertFrame_ShowAlert(...);
 	end
@@ -101,9 +121,14 @@ function AlertFrame_AnimateIn(frame)
 	frame:Show();
 	frame.animIn:Play();
 	if ( frame.glow ) then
-		frame.glow:Show();
-		frame.glow.animIn:Play();
+		if frame.glow.suppressGlow then
+			frame.glow:Hide();
+		else
+			frame.glow:Show();
+			frame.glow.animIn:Play();
+		end
 	end
+	
 	if ( frame.shine ) then
 		frame.shine:Show();
 		frame.shine.animIn:Play();
@@ -165,7 +190,9 @@ function AlertFrame_FixAnchors()
 	alertAnchor = AlertFrame_SetDigsiteCompleteToastFrameAnchors(alertAnchor);
 	alertAnchor = AlertFrame_SetGarrisonBuildingAlertFrameAnchors(alertAnchor);
 	alertAnchor = AlertFrame_SetGarrisonMissionAlertFrameAnchors(alertAnchor);
+	alertAnchor = AlertFrame_SetGarrisonShipMissionAlertFrameAnchors(alertAnchor);
 	alertAnchor = AlertFrame_SetGarrisonFollowerAlertFrameAnchors(alertAnchor);
+	alertAnchor = AlertFrame_SetGarrisonShipFollowerAlertFrameAnchors(alertAnchor);
 end
 
 function AlertFrame_SetLootAnchors(alertAnchor)
@@ -314,10 +341,26 @@ function AlertFrame_SetGarrisonMissionAlertFrameAnchors(alertAnchor)
 	return alertAnchor;
 end
 
+function AlertFrame_SetGarrisonShipMissionAlertFrameAnchors(alertAnchor)
+	if ( GarrisonShipMissionAlertFrame and GarrisonShipMissionAlertFrame:IsShown() ) then
+		GarrisonShipMissionAlertFrame:SetPoint("BOTTOM", alertAnchor, "TOP", 0, 10);
+		alertAnchor = GarrisonShipMissionAlertFrame;
+	end
+	return alertAnchor;
+end
+
 function AlertFrame_SetGarrisonFollowerAlertFrameAnchors(alertAnchor)
 	if ( GarrisonFollowerAlertFrame and GarrisonFollowerAlertFrame:IsShown() ) then
 		GarrisonFollowerAlertFrame:SetPoint("BOTTOM", alertAnchor, "TOP", 0, 10);
 		alertAnchor = GarrisonFollowerAlertFrame;
+	end
+	return alertAnchor;
+end
+
+function AlertFrame_SetGarrisonShipFollowerAlertFrameAnchors(alertAnchor)
+	if ( GarrisonShipFollowerAlertFrame and GarrisonShipFollowerAlertFrame:IsShown() ) then
+		GarrisonShipFollowerAlertFrame:SetPoint("BOTTOM", alertAnchor, "TOP", 0, 10);
+		alertAnchor = GarrisonShipFollowerAlertFrame;
 	end
 	return alertAnchor;
 end
@@ -805,7 +848,7 @@ function AchievementAlertFrame_GetAlertFrame()
 	return nil;
 end
 
-function CriteriaAlertFrame_ShowAlert (achievementID, criteriaID)
+function CriteriaAlertFrame_ShowAlert (achievementID, criteriaString)
 	local frame = CriteriaAlertFrame_GetAlertFrame();
 	if ( not frame ) then
 		-- We ran out of frames! Bail!
@@ -813,7 +856,6 @@ function CriteriaAlertFrame_ShowAlert (achievementID, criteriaID)
 	end
 	
 	local _, name, points, completed, month, day, year, description, flags, icon, rewardText, isGuildAch = GetAchievementInfo(achievementID);
-	local criteriaString = GetAchievementCriteriaInfoByID(achievementID, criteriaID);
 	
 	local frameName = frame:GetName();
 	local displayName = _G[frameName.."Name"];
@@ -882,14 +924,7 @@ function LootAlertFrame_OnEnter(self)
 	GameTooltip:Show();
 end
 
--- [[ LootWonAlertFrameTemplate ]] --
-LOOTWONALERTFRAME_VALUES={
-	Default = { bgOffsetX=0, bgOffsetY=0, labelOffsetX=7, labelOffsetY=5, labelText=YOU_WON_LABEL, glowAtlas="loottoast-glow"},
-	GarrisonCache = { bgOffsetX=-4, bgOffsetY=0, labelOffsetX=7, labelOffsetY=1, labelText=GARRISON_CACHE, glowAtlas="CacheToast-Glow", bgAtlas="CacheToast", noIconBorder=true, iconUnderBG=true},
-	Horde = { bgOffsetX=-1, bgOffsetY=-1, labelOffsetX=7, labelOffsetY=3, labelText=YOU_EARNED_LABEL, pvpAtlas="loottoast-bg-horde", glowAtlas="loottoast-glow"},
-	Alliance = { bgOffsetX=-1, bgOffsetY=-1, labelOffsetX=7, labelOffsetY=3, labelText=YOU_EARNED_LABEL, pvpAtlas="loottoast-bg-alliance", glowAtlas="loottoast-glow"},
-}
-function LootWonAlertFrame_ShowAlert(itemLink, quantity, rollType, roll, specID, isCurrency, showFactionBG, lootSource)
+function LootWonAlertFrame_ShowAlert(itemLink, quantity, rollType, roll, specID, isCurrency, showFactionBG, lootSource, lessAwesome, isUpgraded)
 	local frame;
 	for i=1, #LOOT_WON_ALERT_FRAMES do
 		local lootWon = LOOT_WON_ALERT_FRAMES[i];
@@ -904,15 +939,23 @@ function LootWonAlertFrame_ShowAlert(itemLink, quantity, rollType, roll, specID,
 		table.insert(LOOT_WON_ALERT_FRAMES, frame);
 	end
 
-	LootWonAlertFrame_SetUp(frame, itemLink, quantity, rollType, roll, specID, isCurrency, showFactionBG, lootSource);
+	LootWonAlertFrame_SetUp(frame, itemLink, quantity, rollType, roll, specID, isCurrency, showFactionBG, lootSource, lessAwesome, isUpgraded);
 	AlertFrame_AnimateIn(frame);
 	AlertFrame_FixAnchors();
 end
 
 local LOOT_SOURCE_GARRISON_CACHE = 10;
 
+-- [[ LootUpgradeFrameTemplate ]] --
+LOOTUPGRADEFRAME_QUALITY_TEXTURES = {
+	[LE_ITEM_QUALITY_UNCOMMON]	= {border = "loottoast-itemborder-green",	arrow = "loottoast-arrow-green"},
+	[LE_ITEM_QUALITY_RARE]		= {border = "loottoast-itemborder-blue",	arrow = "loottoast-arrow-blue"},
+	[LE_ITEM_QUALITY_EPIC]		= {border = "loottoast-itemborder-purple",	arrow = "loottoast-arrow-purple"},
+	[LE_ITEM_QUALITY_LEGENDARY]	= {border = "loottoast-itemborder-orange",	arrow = "loottoast-arrow-orange"},
+}
+
 -- NOTE - This may also be called for an externally created frame. (E.g. bonus roll has its own frame)
-function LootWonAlertFrame_SetUp(self, itemLink, quantity, rollType, roll, specID, isCurrency, showFactionBG, lootSource)
+function LootWonAlertFrame_SetUp(self, itemLink, quantity, rollType, roll, specID, isCurrency, showFactionBG, lootSource, lessAwesome, isUpgraded)
 	local itemName, itemHyperLink, itemRarity, itemTexture;
 	if (isCurrency == true) then
 		itemName, _, itemTexture, _, _, _, _, itemRarity = GetCurrencyInfo(itemLink);
@@ -938,6 +981,10 @@ function LootWonAlertFrame_SetUp(self, itemLink, quantity, rollType, roll, specI
 	else
 		if ( lootSource == LOOT_SOURCE_GARRISON_CACHE ) then
 			windowInfo = LOOTWONALERTFRAME_VALUES["GarrisonCache"];
+		elseif ( lessAwesome ) then
+			windowInfo = LOOTWONALERTFRAME_VALUES["LessAwesome"];
+		elseif ( isUpgraded ) then
+			windowInfo = LOOTWONALERTFRAME_VALUES["Upgraded"];
 		end
 		if ( windowInfo.bgAtlas ) then
 			self.Background:Hide();
@@ -951,7 +998,13 @@ function LootWonAlertFrame_SetUp(self, itemLink, quantity, rollType, roll, specI
 		end
 		self.PvPBackground:Hide();
 	end
-	self.glow:SetAtlas(windowInfo.glowAtlas);
+	if windowInfo.glowAtlas then
+		self.glow:SetAtlas(windowInfo.glowAtlas);
+		self.glow.suppressGlow = nil;
+	else
+		self.glow.suppressGlow = true;
+	end
+	
 	self.IconBorder:SetShown(not windowInfo.noIconBorder);
 	if ( windowInfo.iconUnderBG ) then
 		self.Icon:SetDrawLayer("BACKGROUND");
@@ -994,8 +1047,28 @@ function LootWonAlertFrame_SetUp(self, itemLink, quantity, rollType, roll, specI
 		self.RollValue:Hide();
 	end
 
+	-- item upgraded?
+	self.animArrows:Stop();
+	if ( isUpgraded ) then
+		local upgradeTexture = LOOTUPGRADEFRAME_QUALITY_TEXTURES[itemRarity] or LOOTUPGRADEFRAME_QUALITY_TEXTURES[LE_ITEM_QUALITY_UNCOMMON];
+		for i = 1, self.numArrows do
+			self["Arrow"..i]:SetAtlas(upgradeTexture.arrow, true);
+		end
+		self.animArrows:Play();
+	else
+		for i = 1, self.numArrows do
+			self["Arrow"..i]:SetAlpha(0);
+		end	
+	end
+	
 	self.hyperlink = itemHyperLink;
-	PlaySoundKitID(31578);	--UI_EpicLoot_Toast
+	if ( lessAwesome ) then
+		PlaySoundKitID(51402);	--UI_Raid_Loot_Toast_Lesser_Item_Won
+	elseif ( isUpgraded ) then
+		PlaySoundKitID(51561);	-- UI_Warforged_Item_Loot_Toast
+	else
+		PlaySoundKitID(31578);	--UI_EpicLoot_Toast
+	end
 end
 
 function LootWonAlertFrame_OnClick(self, button, down)
@@ -1012,13 +1085,6 @@ function LootWonAlertFrame_OnClick(self, button, down)
 	end
 end
 
--- [[ LootUpgradeFrameTemplate ]] --
-LOOTUPGRADEFRAME_QUALITY_TEXTURES = {
-	[LE_ITEM_QUALITY_UNCOMMON]	= {border = "loottoast-itemborder-green",	arrow = "loottoast-arrow-green"},
-	[LE_ITEM_QUALITY_RARE]		= {border = "loottoast-itemborder-blue",	arrow = "loottoast-arrow-blue"},
-	[LE_ITEM_QUALITY_EPIC]		= {border = "loottoast-itemborder-purple",	arrow = "loottoast-arrow-purple"},
-	[LE_ITEM_QUALITY_LEGENDARY]	= {border = "loottoast-itemborder-orange",	arrow = "loottoast-arrow-orange"},
-}
 function LootUpgradeFrame_ShowAlert(itemLink, quantity, specID, baseQuality)
 	local frame;
 	for i=1, #LOOT_UPGRADE_ALERT_FRAMES do
@@ -1156,9 +1222,13 @@ end
 function GarrisonMissionAlertFrame_ShowAlert(missionID)
 	GarrisonLandingPageMinimapButton.MinimapLoopPulseAnim:Play();
 	local missionInfo = C_Garrison.GetBasicMissionInfo(missionID);
-	GarrisonMissionAlertFrame.Name:SetText(missionInfo.name);
-	GarrisonMissionAlertFrame.MissionType:SetAtlas(missionInfo.typeAtlas);
-	AlertFrame_AnimateIn(GarrisonMissionAlertFrame);
+	local alertFrame = GarrisonMissionAlertFrame;
+	if (missionInfo.followerTypeID == LE_FOLLOWER_TYPE_SHIPYARD_6_2) then
+		alertFrame = GarrisonShipMissionAlertFrame;
+	end
+	alertFrame.Name:SetText(missionInfo.name);
+	alertFrame.MissionType:SetAtlas(missionInfo.typeAtlas);
+	AlertFrame_AnimateIn(alertFrame);
 	AlertFrame_FixAnchors();
 	PlaySound("UI_Garrison_Toast_MissionComplete");
 end
@@ -1196,17 +1266,41 @@ GARRISON_FOLLOWER_QUALITY_TEXTURE_SUFFIXES = {
 	[LE_ITEM_QUALITY_EPIC] = "Epic",
 	[LE_ITEM_QUALITY_RARE] = "Rare",
 }
-function GarrisonFollowerAlertFrame_ShowAlert(followerID, name, displayID, level, quality, isUpgraded)
-	GarrisonFollowerAlertFrame.followerID = followerID;
-	GarrisonFollowerAlertFrame.Name:SetText(name);
+
+function GarrisonFollowerAlertFrame_Setup(frame, followerID, name, quality, isUpgraded)
+	frame.followerID = followerID;
+	frame.Name:SetText(name);
 	local texSuffix = GARRISON_FOLLOWER_QUALITY_TEXTURE_SUFFIXES[quality]
 	if (texSuffix) then
-		GarrisonFollowerAlertFrame.FollowerBG:SetAtlas("Garr_FollowerToast-"..texSuffix, true);
-		GarrisonFollowerAlertFrame.FollowerBG:Show();
+		frame.FollowerBG:SetAtlas("Garr_FollowerToast-"..texSuffix, true);
+		frame.FollowerBG:Show();
 	else
-		GarrisonFollowerAlertFrame.FollowerBG:Hide();
+		frame.FollowerBG:Hide();
 	end
-	SetPortraitTexture(GarrisonFollowerAlertFrame.PortraitFrame.Portrait, displayID);
+	
+	frame.Arrows.ArrowsAnim:Stop();
+	if ( isUpgraded ) then
+		local upgradeTexture = LOOTUPGRADEFRAME_QUALITY_TEXTURES[quality] or LOOTUPGRADEFRAME_QUALITY_TEXTURES[LE_ITEM_QUALITY_UNCOMMON];
+		for i = 1, frame.Arrows.numArrows do
+			frame.Arrows["Arrow"..i]:SetAtlas(upgradeTexture.arrow, true);
+		end
+
+		frame.DieIcon:ClearAllPoints();
+		frame.DieIcon:SetPoint("RIGHT", frame.Title, "LEFT", -4, 0);
+		frame.DieIcon:Show();
+		frame.Arrows.ArrowsAnim:Play();
+	else
+		frame.DieIcon:Hide();
+	end
+
+	AlertFrame_AnimateIn(frame);
+	
+	AlertFrame_FixAnchors();
+	PlaySound("UI_Garrison_Toast_FollowerGained");
+end
+
+function GarrisonFollowerAlertFrame_ShowAlert(followerID, name, displayID, level, quality, isUpgraded)
+	GarrisonFollowerAlertFrame.PortraitFrame.Portrait:SetToFileData(C_Garrison.GetFollowerPortraitIconID(followerID));
 	GarrisonFollowerAlertFrame.PortraitFrame.Level:SetText(level);
 	local color = BAG_ITEM_QUALITY_COLORS[quality];
 	if (color) then
@@ -1216,25 +1310,27 @@ function GarrisonFollowerAlertFrame_ShowAlert(followerID, name, displayID, level
 		GarrisonFollowerAlertFrame.PortraitFrame.LevelBorder:SetVertexColor(1, 1, 1);
 		GarrisonFollowerAlertFrame.PortraitFrame.PortraitRingQuality:SetVertexColor(1, 1, 1);
 	end
-	
-	GarrisonFollowerAlertFrame.ArrowsAnim:Stop();	
 	if ( isUpgraded ) then
-		local upgradeTexture = LOOTUPGRADEFRAME_QUALITY_TEXTURES[quality] or LOOTUPGRADEFRAME_QUALITY_TEXTURES[LE_ITEM_QUALITY_UNCOMMON];
-		for i = 1, GarrisonFollowerAlertFrame.Arrows.numArrows do
-			GarrisonFollowerAlertFrame.Arrows["Arrow"..i]:SetAtlas(upgradeTexture.arrow, true);
-		end
 		GarrisonFollowerAlertFrame.Title:SetText(GARRISON_FOLLOWER_ADDED_UPGRADED_TOAST);
-		GarrisonFollowerAlertFrame.DieIcon:Show();
-		GarrisonFollowerAlertFrame.ArrowsAnim:Play();
 	else
 		GarrisonFollowerAlertFrame.Title:SetText(GARRISON_FOLLOWER_ADDED_TOAST);
-		GarrisonFollowerAlertFrame.DieIcon:Hide();
 	end
-
-	AlertFrame_AnimateIn(GarrisonFollowerAlertFrame);
 	
-	AlertFrame_FixAnchors();
-	PlaySound("UI_Garrison_Toast_FollowerGained");
+	GarrisonFollowerAlertFrame_Setup(GarrisonFollowerAlertFrame, followerID, name, quality, isUpgraded);
+end
+
+function GarrisonShipFollowerAlertFrame_ShowAlert(followerID, name, class, texPrefix, level, quality, isUpgraded)
+	local mapAtlas = texPrefix .. "-List";
+	GarrisonShipFollowerAlertFrame.Portrait:SetAtlas(mapAtlas, false);
+	local color = ITEM_QUALITY_COLORS[quality];
+	GarrisonShipFollowerAlertFrame.Name:SetTextColor(color.r, color.g, color.b);
+	if ( isUpgraded ) then
+		GarrisonShipFollowerAlertFrame.Title:SetText(GARRISON_SHIPYARD_FOLLOWER_ADDED_UPGRADED_TOAST);
+	else
+		GarrisonShipFollowerAlertFrame.Title:SetText(GARRISON_SHIPYARD_FOLLOWER_ADDED_TOAST);
+	end
+	GarrisonShipFollowerAlertFrame.Class:SetText(class);
+	GarrisonFollowerAlertFrame_Setup(GarrisonShipFollowerAlertFrame, followerID, name, 0, isUpgraded);
 end
 
 function GarrisonFollowerAlertFrame_OnEnter(self, button, down)
@@ -1254,6 +1350,7 @@ end
 
 function GarrisonFollowerAlertFrame_OnLeave(self)
 	GarrisonFollowerTooltip:Hide();
+	GarrisonShipyardFollowerTooltip:Hide();
 	AlertFrame_ResumeOutAnimation(self);
 end
 

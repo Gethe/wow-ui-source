@@ -72,19 +72,22 @@
 					</Anchors>
 				</Texture>
 				<FontString parentKey="SpecName" inherits="GameFontNormalLarge" justifyH="LEFT">
-					<Size>
-						<AbsDimension x="150" y="0"/>
-					</Size>
+					<Size x="150" y="0"/>
 					<Anchors>
 						<Anchor point="TOPLEFT" relativeKey="$parent.Frame" relativePoint="TOPRIGHT" x="6" y="-8"/>
 					</Anchors>
 				</FontString>
-				<FontString parentKey="RoleName" inherits="GameFontNormal" justifyH="LEFT">
-					<Size>
-						<AbsDimension x="75" y="0"/>
-					</Size>
+				<FontString parentKey="Recommended" inherits="GameFontNormal" justifyH="LEFT" text="CHAR_SPEC_RECOMMENEDED">
+					<Size x="150" y="0"/>
 					<Anchors>
-						<Anchor point="BOTTOMLEFT" relativeKey="$parent.Frame" relativePoint="BOTTOMRIGHT" x="6" y="6"/>
+						<Anchor point="TOPLEFT" relativeKey="$parent.SpecName" relativePoint="BOTTOMLEFT" x="0" y="0"/>
+					</Anchors>
+					<Color r="0.1172" g="1.0" b="0.0"/>
+				</FontString>
+				<FontString parentKey="RoleName" inherits="GameFontNormal" justifyH="LEFT">
+					<Size x="75" y="0"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.SpecName" relativePoint="BOTTOMLEFT" x="0" y="0"/>
 					</Anchors>
 					<Color r="0.5" g="0.5" b="0.5"/>
 				</FontString>
@@ -196,12 +199,7 @@
 			</Layer>
 		</Layers>
 		<Scripts>
-			<OnEnter>
-				GlueTooltip:SetOwner(self, "ANCHOR_RIGHT", -260, 0);
-				GlueTooltip:AddLine(CHARACTER_UPGRADE_PROCESSING, 1.0, 1.0, 1.0);
-				GlueTooltip:AddLine(CHARACTER_SERVICES_PLEASE_WAIT, nil, nil, nil, 1, 1);
-				GlueTooltip:Show();
-			</OnEnter>
+			<OnEnter function="CharacterServicesProcessingIcon_OnEnter"/>
 			<OnLeave>
 				GlueTooltip:Hide();
 			</OnLeave>

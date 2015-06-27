@@ -221,9 +221,7 @@ function ScenarioQueueFrameFindGroupButton_Update()
 
 	--Disable the button if the person is active in LFGList
 	local lfgListDisabled;
-	if ( select(2,C_LFGList.GetNumApplications()) > 0 ) then
-		lfgListDisabled = CANNOT_DO_THIS_WITH_LFGLIST_APP;
-	elseif ( C_LFGList.GetActiveEntryInfo() ) then
+	if ( C_LFGList.GetActiveEntryInfo() ) then
 		lfgListDisabled = CANNOT_DO_THIS_WHILE_LFGLIST_LISTED;
 	end
 

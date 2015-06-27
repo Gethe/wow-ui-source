@@ -63,6 +63,9 @@
 	<Font name="GameFontBlackMedium" inherits="SystemFont_Med3" virtual="true">
 		<Color r="0" g="0" b="0"/>
 	</Font>	
+	<Font name="GameFontBlackSmall" inherits="SystemFont_Small" virtual="true">
+		<Color r="0" g="0" b="0"/>
+	</Font>
 	<Font name="GameFontRed" inherits="GameFontNormal" virtual="true">
 		<Color r="1.0" g="0.1" b="0.1"/>
 	</Font>
@@ -91,6 +94,9 @@
 	<Font name="GameFontDisableSmallLeft" inherits="GameFontDisableSmall" justifyH="LEFT" virtual="true"/>	
 	<Font name="GameFontHighlightSmall2" inherits="SystemFont_Small2" virtual="true">
 		<Color r="1.0" g="1.0" b="1.0"/>
+	</Font>
+	<Font name="GameFontBlackSmall2" inherits="SystemFont_Small2" virtual="true">
+		<Color r="0.0" g="0.0" b="0.0"/>
 	</Font>
 	<Font name="GameFontNormalSmall2" inherits="SystemFont_Shadow_Small2" virtual="true">
 		<Color r="1.0" g="0.82" b="0"/>

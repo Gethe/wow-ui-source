@@ -351,7 +351,7 @@
 		<TexCoords left="0.359375" right="0.99609375" top="0.8525390625" bottom="0.880859375"/>
 	</Texture>
 
-	<Button name="EncounterInstanceButtonTemplate" virtual="true">
+	<Button name="EncounterInstanceButtonTemplate" hidden="true" parentArray="InstanceButtons" virtual="true">
 		<Size x="174" y="96"/>
 		<Layers>
 			<Layer level="BACKGROUND">
@@ -1071,6 +1071,116 @@
 		</Scripts>
 	</Frame>
 	
+	<Frame name="AdventureJournal_SecondaryTemplate" virtual="true">
+		<Size x="344" y="161"/>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="bg" atlas="adventureguide-pane-small"/>
+			</Layer>
+			<Layer level="ARTWORK">
+				<Texture parentKey="icon">
+					<Size x="64" y="64"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" x="-10" y="-2" />
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="OVERLAY">
+				<Texture parentKey="iconRing" atlas="adventureguide-ring">
+					<Size x="94" y="95"/>
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent.icon"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Frame parentKey="centerDisplay">
+				<Size x="260" y="152"/>
+				<Anchors>
+					<Anchor point="LEFT" x="70" y="1"/>
+				</Anchors>
+				<Frames>
+					<Frame parentKey="title">
+						<Size x="260" y="1"/>
+						<Anchors>
+							<Anchor point="TOPLEFT" x="0" y="0"/>
+						</Anchors>
+						<Layers>
+							<Layer level="ARTWORK">								
+								<FontString parentKey="text" font="QuestFont_Huge" justifyH="left" justifyV="top" wordwrap="false">
+									<Size x="260" y="0"/>
+									<Color r="0" g="0" b="0"/>
+								</FontString>
+							</Layer>
+						</Layers>
+					</Frame>
+					<Frame parentKey="description">
+						<Size x="240" y="1"/>
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeKey="$parent.title" relativePoint="BOTTOMLEFT" x="0" y="-4"/>
+						</Anchors>
+						<Layers>
+							<Layer level="ARTWORK">								
+								<FontString parentKey="text" font="SystemFont_Med1" justifyH="left" justifyV="top" wordwrap="true" maxLines="4">
+									<Size x="240" y="0"/>
+									<Color r="0.2824" g="0.0157" b="0.0157"/>
+								</FontString>
+							</Layer>
+						</Layers>
+					</Frame>
+					<Button parentKey="button" inherits="UIPanelButtonTemplate">
+						<Size x="116" y="24"/>
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeKey="$parent.description" relativePoint="BOTTOMLEFT" x="0" y="-6" />
+						</Anchors>
+						<Scripts>
+							<OnClick function="EJSuggestFrame_OnClick"/>
+						</Scripts>
+					</Button>
+				</Frames>
+			</Frame>
+			<Frame parentKey="reward">
+				<Size x="30" y="30"/>
+				<Anchors>
+					<Anchor point="BOTTOMRIGHT" relativeKey="$parent.icon" x="4" y="-9"/>
+				</Anchors>
+				<Layers>
+					<Layer level="ARTWORK">
+						<Texture parentKey="icon" mask="Interface\\CharacterFrame\\TempPortraitAlphaMask">
+							<Size x="30" y="30"/>
+						</Texture>
+					</Layer>
+					<Layer level="OVERLAY">
+						<Texture parentKey="iconRing" atlas="adventureguide-rewardring">
+							<Size x="48" y="48"/>
+							<Anchors>
+								<Anchor point="CENTER" relativeKey="$parent.icon"/>
+							</Anchors>
+						</Texture>
+						<Texture parentKey="iconRingHighlight" atlas="adventureguide-rewardring" hidden="true" alphaMode="ADD">
+							<Size x="48" y="48"/>
+							<Anchors>
+								<Anchor point="CENTER" relativeKey="$parent.iconRing"/>
+							</Anchors>
+							<Color r="1" g="1" b="1" a="0.25"/>
+						</Texture>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnEnter function="AdventureJournal_Reward_OnEnter"/>
+					<OnLeave function="AdventureJournal_Reward_OnLeave"/>
+					<OnMouseDown function="AdventureJournal_Reward_OnMouseDown"/>
+				</Scripts>
+			</Frame>
+		</Frames>
+		<Scripts>
+			<OnLoad>
+				self.centerDisplay.button.index = self.index;
+			</OnLoad>
+		</Scripts>
+	</Frame>
+	
 	<Button name="EncounterItemTemplate" virtual="true">
 		<Size x="321" y="45"/>
 		<Layers>
@@ -1148,7 +1258,7 @@
 		</Scripts>
 	</Button>
 
-	<Button name="EncounterTierTabTemplate" virtual="true">
+	<Button name="EncounterTierTabTemplate" virtual="true" parentArray="Tabs">
 		<Size x="120" y="36"/>	
 		<HitRectInsets>
 			<AbsInset left="-12" right="-12" top="0" bottom="0"/>
@@ -1223,16 +1333,16 @@
 		</Layers>
 		<Frames>
 			<Frame enableMouse="true" parentKey="grayBox" hidden="true">
-				<Size x="140" y="55"/>	
 				<Anchors>
-					<Anchor point="BOTTOM"/>
+					<Anchor point="TOPLEFT" x="-10" y="19"/>
+					<Anchor point="BOTTOMRIGHT" x="10" y="0"/>
 				</Anchors>
 				<Layers>
 					<Layer level="BACKGROUND">
 						<Texture>
-							<Size x="134" y="26"/>	
 							<Anchors>
-								<Anchor point="BOTTOM"/>
+								<Anchor point="TOPLEFT" x="3" y="-25"/>
+								<Anchor point="BOTTOMRIGHT" x="-3" y="0"/>
 							</Anchors>
 							<Color a="0.6"/>
 						</Texture>
@@ -1250,6 +1360,7 @@
 			<OnLoad>
 				self.storedHeight = self:GetHeight();
 				self:SetHeight(self.storedHeight-4);
+				self:SetWidth(max(self:GetTextWidth()+20, 120));
 			</OnLoad>
 			<OnEnable>
 				self.leftSelect:Hide();
@@ -1568,52 +1679,52 @@
 							</Anchors>
 						</Texture>
 					</Layer>
-					<Layer level="OVERLAY">
-						<FontString name="$parentTier" inherits="QuestFont_Super_Huge" text="EXPANSION_NAME3" justifyH="LEFT" parentKey="tier">
-							<Size x="0" y="0"/>
-							<Anchors>
-								<Anchor point="TOPLEFT" x="10" y="-15"/>
-							</Anchors>
-							<Color r="0.961" g="0.824" b="0.412"/>
-						</FontString>
-					</Layer>
 				</Layers>
 				<Frames>
-					<Button name="$parentRaidTab" inherits="EncounterTierTabTemplate" text="RAIDS" parentKey="raidsTab">
+					<Button name="$parentSuggestTab" inherits="EncounterTierTabTemplate" text="AJ_SUGGESTED_CONTENT_TAB" parentKey="suggestTab">
+						<KeyValues>
+ 							<KeyValue key="id" value="1" type="number"/>
+ 						</KeyValues>
 						<Anchors>
-							<Anchor point="BOTTOMRIGHT" relativePoint="TOPRIGHT" x="-35" y="-45"/>
+							<Anchor point="BOTTOMLEFT" relativePoint="TOPLEFT" x="25" y="-45"/>
 						</Anchors>
 						<Scripts>
-							<OnClick function="EJRaidTab_OnClick"/>
+							<OnClick function="EJ_ContentTab_OnClick"/>
 						</Scripts>
 					</Button>
 					<Button name="$parentDungeonTab" inherits="EncounterTierTabTemplate" text="DUNGEONS" parentKey="dungeonsTab">
+						<KeyValues>
+ 							<KeyValue key="id" value="2" type="number"/>
+ 						</KeyValues>
 						<Anchors>
-							<Anchor point="BOTTOMRIGHT" relativeTo="$parentRaidTab" relativePoint="BOTTOMLEFT" x="-35" y="0"/>
+							<Anchor point="BOTTOMLEFT" relativeTo="$parentSuggestTab" relativePoint="BOTTOMRIGHT" x="35" y="0"/>
 						</Anchors>
 						<Scripts>
-							<OnClick function="EJDungeonTab_OnClick"/>
+							<OnClick function="EJ_ContentTab_OnClick"/>
 						</Scripts>
 					</Button>
-					<Button name="$parentScrollDownButton" inherits="UIPanelScrollDownButtonTemplate">
-						<Size x="32" y="32"/>
+					<Button name="$parentRaidTab" inherits="EncounterTierTabTemplate" text="RAIDS" parentKey="raidsTab">
+						<KeyValues>
+ 							<KeyValue key="id" value="3" type="number"/>
+ 						</KeyValues>
 						<Anchors>
-							<Anchor point="LEFT" relativeTo="$parentTier" relativePoint="RIGHT" x="10" y="0"/>
+							<Anchor point="BOTTOMLEFT" relativeTo="$parentDungeonTab" relativePoint="BOTTOMRIGHT" x="35" y="0"/>
 						</Anchors>
 						<Scripts>
-							<OnClick> 
-								PlaySound("igMainMenuOptionCheckBoxOn");
-								ToggleDropDownMenu(1, nil, EJTierDropDown, self:GetName(), 74, 15);
-							</OnClick>
+							<OnClick function="EJ_ContentTab_OnClick"/>
 						</Scripts>
-						<NormalTexture file="Interface\ChatFrame\UI-ChatIcon-ScrollDown-Up"/>
-						<PushedTexture file="Interface\ChatFrame\UI-ChatIcon-ScrollDown-Down"/>
-						<DisabledTexture file="Interface\ChatFrame\UI-ChatIcon-ScrollDown-Disabled"/>
-						<HighlightTexture file="Interface\Buttons\UI-Common-MouseHilight" alphaMode="ADD"/>
 					</Button>
-					<Frame name="EJTierDropDown" inherits="UIDropDownMenuTemplate">
+					<Frame name="$parentTierDropDown" parentKey="tierDropDown" inherits="UIDropDownMenuTemplate">
+						<Size x="156" y="32"/>
+						<Anchors>
+							<Anchor point="TOPRIGHT" x="0" y="-10"/>
+						</Anchors>
 						<Scripts>
-							<OnLoad function="EJTierDropDown_OnLoad"/>
+							<OnShow>
+								UIDropDownMenu_SetWidth(self, 156);
+								UIDropDownMenu_JustifyText(self, "LEFT");
+								UIDropDownMenu_Initialize(self, EJTierDropDown_Initialize);
+							</OnShow>
 						</Scripts>
 					</Frame>
 					<ScrollFrame name="$parentScrollFrame" parentKey="scroll" inherits="UIPanelScrollFrameCodeTemplate">
@@ -1850,7 +1961,8 @@
 									<OnClick function="EncounterJournalInstanceButton_OnClick"/>
 								</Scripts>
 							</Button>
-							<Button name="$parentOverviewTab" inherits="EncounterTabTemplate" useParentLevel="true" parentKey="overviewTab" id="1">								<Anchors>
+							<Button name="$parentOverviewTab" inherits="EncounterTabTemplate" useParentLevel="true" parentKey="overviewTab" id="1">
+								<Anchors>
 									<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" x="-12" y="-35"/>
 								</Anchors>
 								<Layers>
@@ -2552,6 +2664,206 @@
 					</Frame>
 				</Frames>
 			</Frame>
+			
+			<Frame name="$parentSuggestFrame" setAllPoints="true" parentKey="suggestFrame" hidden="true" useParentLevel="true">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentInset" x="5" y="-51" />
+					<Anchor point="BOTTOMRIGHT" relativeTo="$parentInset" x="-3" y="0"/>
+				</Anchors>
+				<Frames>
+					<Frame parentKey="Suggestion1">
+						<Size x="335" y="337"/>
+						<KeyValues>
+							<KeyValue key="index" value="1" type="number"/>
+						</KeyValues>
+						<Anchors>
+							<Anchor point="TOPLEFT" x="28" y="-18" />
+						</Anchors>
+						<Layers>
+							<Layer level="BACKGROUND">
+								<Texture parentKey="bg" atlas="adventureguide-pane-large"/>
+							</Layer>
+							<Layer level="ARTWORK">
+								<Texture parentKey="icon" mask="Interface\\CharacterFrame\\TempPortraitAlphaMask">
+									<Size x="64" y="64"/>
+									<Anchors>
+										<Anchor point="TOPLEFT" x="135" y="-2" />
+									</Anchors>
+								</Texture>
+							</Layer>
+							<Layer level="OVERLAY">
+								<Texture parentKey="iconRing" atlas="adventureguide-ring">
+									<Size x="94" y="95"/>
+									<Anchors>
+										<Anchor point="CENTER" relativeKey="$parent.icon"/>
+									</Anchors>
+								</Texture>
+							</Layer>
+						</Layers>
+						<Frames>
+							<Frame parentKey="centerDisplay">
+								<Size x="264" y="351"/>
+								<Anchors>
+									<Anchor point="CENTER" x="0" y="24"/>
+								</Anchors>
+								<Frames>
+									<Frame parentKey="title">
+										<Size x="264" y="0"/>
+										<Anchors>
+											<Anchor point="TOPLEFT" x="0" y="0"/>
+										</Anchors>
+										<Layers>
+											<Layer level="ARTWORK">								
+												<FontString parentKey="text" font="DestinyFontHuge" justifyH="center" justifyV="top" maxLines="2">
+													<Size x="264" y="0"/>
+													<Color r="0" g="0" b="0"/>
+												</FontString>
+											</Layer>
+										</Layers>
+									</Frame>
+									<Frame parentKey="description">
+										<Size x="264" y="0"/>
+										<Anchors>
+											<Anchor point="TOPLEFT" relativeKey="$parent.title" relativePoint="BOTTOMLEFT" x="0" y="-8"/>
+										</Anchors>
+										<Layers>
+											<Layer level="ARTWORK">								
+												<FontString parentKey="text" font="GameTooltipHeader" justifyH="center" justifyV="top">
+													<Size x="264" y="0"/>
+													<Color r="0.2824" g="0.0157" b="0.0157"/>
+												</FontString>
+											</Layer>
+										</Layers>
+									</Frame>
+								</Frames>
+							</Frame>
+							<Button parentKey="button" inherits="UIPanelButtonTemplate">
+								<Size x="116" y="32"/>
+								<Anchors>
+									<Anchor point="BOTTOM" x="0" y="31"/>
+								</Anchors>
+								<Scripts>
+									<OnClick function="EJSuggestFrame_OnClick"/>
+								</Scripts>
+								<NormalFont style="GameFontNormalLarge">
+									<Color r="0.827" g="0.659" b="0.463"/>
+								</NormalFont>
+								<HighlightFont style="GameFontNormalLarge">
+									<Color r="0.973" g="0.902" b="0.581"/>
+								</HighlightFont>
+								<DisabledFont style="GameFontHighlightMedium"/>
+								<HighlightTexture inherits="UIPanelButtonHighlightTexture"/>
+							</Button>
+							<Frame parentKey="reward" enableMouse="true">
+								<Size x="30" y="30"/>
+								<Anchors>
+									<Anchor point="BOTTOM" x="0" y="72"/>
+								</Anchors>
+								<Layers>
+									<Layer level="ARTWORK">
+										<Texture parentKey="icon" mask="Interface\\CharacterFrame\\TempPortraitAlphaMask">
+											<Size x="30" y="30"/>
+											<Anchors>
+												<Anchor point="RIGHT" x="-7" y="0"/>
+											</Anchors>
+										</Texture>
+										<FontString parentKey="text" font="SystemFont_Med3" justifyH="right" justifyV="center" text="AJ_PRIMARY_REWARD_TEXT">
+											<Size x="0" y="0"/>
+											<Anchors>
+												<Anchor point="RIGHT" relativeKey="$parent.icon" relativePoint="LEFT" x="-12" y="0"/>
+											</Anchors>
+											<Color r="0.2824" g="0.0157" b="0.0157"/>
+										</FontString>
+									</Layer>
+									<Layer level="OVERLAY">
+										<Texture parentKey="iconRing" atlas="adventureguide-rewardring">
+											<Size x="48" y="48"/>
+											<Anchors>
+												<Anchor point="CENTER" relativeKey="$parent.icon"/>
+											</Anchors>
+										</Texture>
+										<Texture parentKey="iconRingHighlight" atlas="adventureguide-rewardring" hidden="true" alphaMode="ADD">
+											<Size x="48" y="48"/>
+											<Anchors>
+												<Anchor point="CENTER" relativeKey="$parent.iconRing"/>
+											</Anchors>
+											<Color r="1" g="1" b="1" a="0.25"/>
+										</Texture>
+									</Layer>
+								</Layers>
+								<Scripts>
+									<OnLoad>
+										self:SetWidth( self.iconRing:GetRight() - self.text:GetLeft() );
+									</OnLoad>
+									<OnEnter function="AdventureJournal_Reward_OnEnter"/>
+									<OnLeave function="AdventureJournal_Reward_OnLeave"/>
+									<OnMouseDown function="AdventureJournal_Reward_OnMouseDown"/>
+								</Scripts>
+							</Frame>
+							<Button name="$parentPrevButton" parentKey="prevButton">
+								<Size x="32" y="32"/>
+								<Anchors>
+									<Anchor point="BOTTOMLEFT" x="16" y="12"/>
+								</Anchors>
+								<Scripts>
+									<OnClick>
+										C_AdventureJournal.SetPrimaryOffset(C_AdventureJournal.GetPrimaryOffset()-1);
+										PlaySoundKitID(858); -- igMainMenuOptionFaerTab
+									</OnClick>
+								</Scripts>
+								<NormalTexture file="Interface\Buttons\UI-SpellbookIcon-PrevPage-Up"/>
+								<PushedTexture file="Interface\Buttons\UI-SpellbookIcon-PrevPage-Down"/>
+								<DisabledTexture file="Interface\Buttons\UI-SpellbookIcon-PrevPage-Disabled"/>
+								<HighlightTexture file="Interface\Buttons\UI-Common-MouseHilight" alphaMode="ADD"/>
+							</Button>
+							<Button name="$parentNextButton" parentKey="nextButton">
+								<Size x="32" y="32"/>
+								<Anchors>
+									<Anchor point="BOTTOMRIGHT" x="-16" y="12"/>
+								</Anchors>
+								<Scripts>
+									<OnClick>
+										C_AdventureJournal.SetPrimaryOffset(C_AdventureJournal.GetPrimaryOffset()+1);
+										PlaySoundKitID(858); --igMainMenuOptionFaerTab
+									</OnClick>
+								</Scripts>
+								<NormalTexture file="Interface\Buttons\UI-SpellbookIcon-NextPage-Up"/>
+								<PushedTexture file="Interface\Buttons\UI-SpellbookIcon-NextPage-Down"/>
+								<DisabledTexture file="Interface\Buttons\UI-SpellbookIcon-NextPage-Disabled"/>
+								<HighlightTexture file="Interface\Buttons\UI-Common-MouseHilight" alphaMode="ADD"/>
+							</Button>
+						</Frames>
+						<Scripts>
+							<OnLoad>
+								self.button.index = self.index;
+							</OnLoad>
+						</Scripts>
+					</Frame>
+					<Frame parentKey="Suggestion2" inherits="AdventureJournal_SecondaryTemplate">
+						<Size x="344" y="161"/>
+						<KeyValues>
+							<KeyValue key="index" value="2" type="number"/>
+						</KeyValues>
+						<Anchors>
+							<Anchor point="TOPLEFT" relativePoint="TOP" x="1" y="-22" />
+						</Anchors>
+					</Frame>
+					<Frame parentKey="Suggestion3" inherits="AdventureJournal_SecondaryTemplate">
+						<Size x="344" y="161"/>
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeKey="$parent.Suggestion2" relativePoint="BOTTOMLEFT" x="0" y="-11" />
+						</Anchors>
+						<KeyValues>
+							<KeyValue key="index" value="3" type="number"/>
+						</KeyValues>
+					</Frame>
+				</Frames>
+				<Scripts>
+					<OnLoad function="EJSuggestFrame_OnLoad"/>
+					<OnEvent function="EJSuggestFrame_OnEvent"/>
+					<OnShow function="EJSuggestFrame_OnShow"/>
+				</Scripts>
+			</Frame>
 		</Frames>
 		<Scripts>
 			<OnShow function="EncounterJournal_OnShow"/>
@@ -2559,5 +2871,125 @@
 			<OnLoad function="EncounterJournal_OnLoad"/>
 			<OnEvent function="EncounterJournal_OnEvent"/>
 		</Scripts>
+	</Frame>
+	
+	<Frame name="EncounterJournalTooltip" parent="UIParent" frameStrata="TOOLTIP" clampedToScreen="true" hidden="true">
+		<Size x="128" y="256"/>
+		<Backdrop bgFile="Interface\Tooltips\UI-Tooltip-Background" edgeFile="Interface\Tooltips\UI-Tooltip-Border" tile="true">
+			<EdgeSize val="16"/>
+			<TileSize val="16"/>
+			<BackgroundInsets left="5" right="5" top="5" bottom="5"/>
+		</Backdrop>
+		<Anchors>
+			<Anchor point="CENTER"/>
+		</Anchors>
+		<Layers>
+			<Layer level="ARTWORK">
+				<FontString name="$parentHeaderText" parentKey="headerText" inherits="GameTooltipText" justifyV="TOP" justifyH="LEFT">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="11" y="-10"/>
+						<Anchor point="TOPRIGHT" x="-11" y="-10"/>
+					</Anchors>
+					<Color r="1.0" g="0.82" b="0"/>
+				</FontString>
+				<FontString name="$parentClickText" parentKey="clickText" inherits="GameTooltipText" text="AJ_REWARD_CLICK_TEXT" visible="false">
+					<Anchors>
+						<Anchor point="BOTTOMLEFT" x="11" y="2"/>
+						<Anchor point="TOPRIGHT" relativePoint="BOTTOMRIGHT" x="-11" y="30"/>
+					</Anchors>
+					<Color r="0.5" g="0.5" b="0.5"/>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Frame name="$parentItem1" parentKey="Item1">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.headerText" relativePoint="BOTTOMLEFT" x="0" y="-14"/>
+				</Anchors>
+				<Layers>
+					<Layer level="ARTWORK">
+						<Texture parentKey="icon">
+							<Size x="28" y="28"/>
+							<Anchors>
+								<Anchor point="TOPLEFT"/>
+							</Anchors>
+						</Texture>
+						<FontString name="$parentCount" inherits="NumberFontNormalSmall" justifyH="RIGHT" hidden="true" parentKey="Count">
+							<Anchors>
+								<Anchor point="BOTTOMRIGHT" relativeKey="$parent.icon" x="5" y="2"/>
+							</Anchors>
+						</FontString>
+						<FontString name="$parentText" parentKey="text" inherits="GameTooltipText" justifyV="CENTER">
+							<Size x="128" y="28"/>
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeKey="$parent.icon" relativePoint="TOPRIGHT" x="8" y="0"/>
+								<Anchor point="RIGHT" x="-10" y="0"/>
+							</Anchors>
+						</FontString>
+					</Layer>
+					<Layer level="OVERLAY">
+						<Texture parentKey="IconBorder" file="Interface\Common\WhiteIconFrame" hidden="true">
+							<Size x="28" y="28"/>
+							<Anchors>
+								<Anchor point="CENTER" relativeKey="$parent.icon"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+				<Frames>
+					<GameTooltip name="$parentTooltip" parentKey="tooltip" inherits="GameTooltipTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeKey="$parent.icon" relativePoint="TOPRIGHT" x="0" y="10"/>
+						</Anchors>
+						<Scripts>
+							<OnLoad inherit="prepend">
+								self:SetBackdrop(nil);
+								self.shoppingTooltips = { ShoppingTooltip1, ShoppingTooltip2 };
+							</OnLoad>
+						</Scripts>
+					</GameTooltip>
+				</Frames>
+			</Frame>
+			<Frame name="$parentItem2" parentKey="Item2" hidden="true">
+				<Size x="0" y="28"/>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.Item1" relativePoint="BOTTOMLEFT" x="0" y="-6"/>
+					<Anchor point="TOPRIGHT" relativeKey="$parent.Item1" relativePoint="BOTTOMRIGHT" x="0" y="-6"/>
+				</Anchors>
+				<Layers>
+					<Layer level="ARTWORK">
+						<Texture parentKey="icon">
+							<Size x="28" y="28"/>
+							<Anchors>
+								<Anchor point="TOPLEFT"/>
+							</Anchors>
+						</Texture>
+						<FontString name="$parentCount" inherits="NumberFontNormalSmall" justifyH="RIGHT" hidden="true" parentKey="Count">
+							<Anchors>
+								<Anchor point="BOTTOMRIGHT" relativeKey="$parent.icon" x="5" y="2"/>
+							</Anchors>
+						</FontString>
+						<FontString name="$parentText" parentKey="text" inherits="GameTooltipText" justifyV="CENTER">
+							<Size x="0" y="28"/>
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeKey="$parent.icon" relativePoint="TOPRIGHT" x="8" y="0"/>
+								<Anchor point="RIGHT" x="0" y="0"/>
+							</Anchors>
+						</FontString>
+					</Layer>
+					<Layer level="OVERLAY">
+						<Texture parentKey="IconBorder" file="Interface\Common\WhiteIconFrame" hidden="true">
+							<Size x="28" y="2"/>
+							<Anchors>
+								<Anchor point="CENTER" relativeKey="$parent.icon"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+			</Frame>
+		</Frames>
+		<Scripts>
+			<OnLoad function="EncounterJournalTooltip_OnLoad"/>
+		</Scripts>					
 	</Frame>
 </Ui>

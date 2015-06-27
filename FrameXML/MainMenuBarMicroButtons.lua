@@ -14,6 +14,7 @@ MICRO_BUTTONS = {
 	"StoreMicroButton",
 	}
 
+EJ_ALERT_TIME_DIFF = 60*60*24*7*2; -- 2 weeks
 
 function LoadMicroButtonTextures(self, name)
 	self:RegisterForClicks("LeftButtonUp", "RightButtonUp");
@@ -180,7 +181,13 @@ function UpdateMicroButtons()
 	if ( EncounterJournal and EncounterJournal:IsShown() ) then
 		EJMicroButton:SetButtonState("PUSHED", true);
 	else
-		EJMicroButton:SetButtonState("NORMAL");
+		if ( playerLevel < EJMicroButton.minLevel or factionGroup == "Neutral" ) then
+			EJMicroButton:Disable();
+			EJMicroButton_ClearNewAdventureNotice();
+		else
+			EJMicroButton:Enable();
+			EJMicroButton:SetButtonState("NORMAL");
+		end
 	end
 
 	if ( CollectionsJournal and CollectionsJournal:IsShown() ) then
@@ -208,7 +215,7 @@ function UpdateMicroButtons()
 	end
 
 	if ( GameLimitedMode_IsActive() ) then
-		StoreMicroButton.disabledTooltip = GameLimitedMode_GetString("ERR_FEATURE_RESTRICTED");
+		StoreMicroButton.disabledTooltip = ERR_FEATURE_RESTRICTED_TRIAL;
 		StoreMicroButton:Disable();
 	elseif ( C_StorePublic.IsDisabledByParentalControls() ) then
 		StoreMicroButton.disabledTooltip = BLIZZARD_STORE_ERROR_PARENTAL_CONTROLS;
@@ -360,7 +367,7 @@ function TalentMicroButton_OnEvent(self, event, ...)
 		-- Small hack: GetNumSpecializations should return 0 if talents haven't been initialized yet
 		if (not self.receivedUpdate and GetNumSpecializations(false) > 0) then
 			self.receivedUpdate = true;
-			local shouldPulseForTalents = GetNumUnspentTalents() > 0 and not ShouldHideTalentsTab();
+			local shouldPulseForTalents = GetNumUnspentTalents() > 0 and not AreTalentsLocked();
 			if (UnitLevel("player") >= SHOW_SPEC_LEVEL and (not GetSpecialization() or shouldPulseForTalents)) then
 				MicroButtonPulse(self);
 			end
@@ -415,6 +422,75 @@ do
 			UpdateMicroButtons();
 		end
 	end
+end
+
+-- Encounter Journal
+function EJMicroButton_OnLoad(self)
+	LoadMicroButtonTextures(self, "EJ");
+	SetDesaturation(self:GetDisabledTexture(), true);
+	self.tooltipText = MicroButtonTooltipText(ENCOUNTER_JOURNAL, "TOGGLEENCOUNTERJOURNAL");
+	self.newbieText = NEWBIE_TOOLTIP_ENCOUNTER_JOURNAL;
+	self.minLevel = SHOW_EJ_LEVEL;
+	if (IsBlizzCon()) then
+		self:Disable();
+	end
+
+	--events that can trigger a refresh of the adventure journal
+	self:RegisterEvent("UNIT_LEVEL");
+	self:RegisterEvent("QUEST_ACCEPTED");
+	self:RegisterEvent("QUEST_REMOVED");
+	self:RegisterEvent("PLAYER_AVG_ITEM_LEVEL_UPDATE");
+	self:RegisterEvent("VARIABLES_LOADED");
+	self:RegisterEvent("PLAYER_ENTERING_WORLD");
+end
+
+function EJMicroButton_OnEvent(self, event, ...)
+	local arg1 = ...
+	if( event == "UPDATE_BINDINGS" ) then
+		self.tooltipText = MicroButtonTooltipText(ADVENTURE_JOURNAL, "TOGGLEENCOUNTERJOURNAL");
+		self.newbieText = NEWBIE_TOOLTIP_ENCOUNTER_JOURNAL;
+		if (IsBlizzCon()) then
+			return;
+		end
+		UpdateMicroButtons();
+	elseif( event == "VARIABLES_LOADED" ) then
+		local lastTimeOpened = tonumber(GetCVar("advJournalLastOpened"));
+		if ( UnitLevel("player") >= EJMicroButton.minLevel and UnitFactionGroup("player") ~= "Neutral" ) then		
+			if ( GetServerTime() - lastTimeOpened > EJ_ALERT_TIME_DIFF ) then
+				EJMicroButtonAlert:Show();
+				MicroButtonPulse(EJMicroButton);
+			end
+		
+			if ( lastTimeOpened ~= 0 ) then
+				SetCVar("advJournalLastOpened", GetServerTime() );
+			end
+		end
+	elseif ( event == "PLAYER_ENTERING_WORLD" ) then
+		C_AdventureJournal.UpdateSuggestions();	
+	elseif ( event == "UNIT_LEVEL" and arg1 == "player" ) then		
+		EJMicroButton_UpdateNewAdventureNotice();
+	elseif ( event == "QUEST_ACCEPTED" or event == "QUEST_REMOVED" ) then
+		EJMicroButton_UpdateNewAdventureNotice();
+	elseif event == "PLAYER_AVG_ITEM_LEVEL_UPDATE" then
+		local playerLevel = UnitLevel("player");
+		if ( playerLevel == MAX_PLAYER_LEVEL_TABLE[GetExpansionLevel()]) then
+			EJMicroButton_UpdateNewAdventureNotice();
+		end
+	end
+end
+
+function EJMicroButton_UpdateNewAdventureNotice()
+	if ( EJMicroButton:IsEnabled() and C_AdventureJournal.UpdateSuggestions() ) then
+		if( not EncounterJournal or not EncounterJournal:IsShown() ) then
+			EJMicroButton.Flash:Show();
+			EJMicroButton.NewAdventureNotice:Show();
+		end
+	end
+end
+
+function EJMicroButton_ClearNewAdventureNotice()
+	EJMicroButton.Flash:Hide();
+	EJMicroButton.NewAdventureNotice:Hide();
 end
 
 --Micro Button alerts

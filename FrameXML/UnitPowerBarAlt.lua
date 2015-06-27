@@ -143,11 +143,11 @@ function UnitPowerBarAlt_HidePills(self)
 end
 
 function UnitPowerBarAlt_SetUp(self, barID)
-	local barType, minPower, startInset, endInset, smooth, hideFromOthers, showOnRaid, opaqueSpark, opaqueFlash, powerName, powerTooltip, costString;
+	local barType, minPower, startInset, endInset, smooth, hideFromOthers, showOnRaid, opaqueSpark, opaqueFlash, anchorTop, powerName, powerTooltip, costString;
 	if ( barID ) then
-		barType, minPower, startInset, endInset, smooth, hideFromOthers, showOnRaid, opaqueSpark, opaqueFlash, powerName, powerTooltip, costString = GetAlternatePowerInfoByID(barID);
+		barType, minPower, startInset, endInset, smooth, hideFromOthers, showOnRaid, opaqueSpark, opaqueFlash, anchorTop, powerName, powerTooltip, costString = GetAlternatePowerInfoByID(barID);
 	else
-		barType, minPower, startInset, endInset, smooth, hideFromOthers, showOnRaid, opaqueSpark, opaqueFlash, powerName, powerTooltip, costString, barID = UnitAlternatePowerInfo(self.unit);
+		barType, minPower, startInset, endInset, smooth, hideFromOthers, showOnRaid, opaqueSpark, opaqueFlash, anchorTop, powerName, powerTooltip, costString, barID = UnitAlternatePowerInfo(self.unit);
 	end
 	
 	self.startInset = startInset;
@@ -159,6 +159,9 @@ function UnitPowerBarAlt_SetUp(self, barID)
 	local sizeInfo = ALT_POWER_BAR_PLAYER_SIZES[barType];
 	if ( barID == DOUBLE_SIZE_FIST_BAR and self.scale == 1 ) then --Double the player's own power bar for task 55676
 		sizeInfo = ALT_POWER_BAR_PLAYER_SIZES.doubleCircular;
+	end
+	if ( anchorTop ) then
+		self.scale = 0.5;
 	end
 	self:SetSize(sizeInfo.x * self.scale, sizeInfo.y * self.scale);
 	
@@ -513,17 +516,17 @@ local COUNTERBAR_SLASH_INDEX = 10;
 
 
 function CounterBar_SetUp(self)
-	local useFactional, animNumbers, anchorTop = UnitAlternatePowerCounterInfo(self.unit);
+	local useFactional, animNumbers = UnitAlternatePowerCounterInfo(self.unit);
 
 	local maxValue = UnitPowerMax(self.unit, ALTERNATE_POWER_INDEX);
-	CounterBar_SetStyle(self, useFactional, anchorTop, animNumbers, maxValue);
+	CounterBar_SetStyle(self, useFactional, animNumbers, maxValue);
 	self:RegisterEvent("UNIT_POWER");
 	self:RegisterEvent("UNIT_MAXPOWER");
 	self:Show();
 end
 
 
-function CounterBar_SetStyle(self, useFactional, anchorTop, animNumbers, maxValue)
+function CounterBar_SetStyle(self, useFactional, animNumbers, maxValue)
 	
 	local texturePath, r, g, b;
 	--Set Textures
@@ -786,9 +789,9 @@ function PlayerBuffTimerManager_UpdateTimers(self)
 			local timer = PlayerBuffTimerManager_GetTimer(barType);
 			timer.timerIndex = index;
 			if ( timer.isCounter ) then
-				local useFactional, animNumbers, anchorTop = UnitAlternatePowerCounterInfo("player");
+				local useFactional, animNumbers = UnitAlternatePowerCounterInfo("player");
 
-				CounterBar_SetStyle(timer, useFactional, animNumbers, anchorTop, duration);
+				CounterBar_SetStyle(timer, useFactional, animNumbers, duration);
 			else
 				UnitPowerBarAlt_TearDown(timer);
 				UnitPowerBarAlt_SetUp(timer, barID);

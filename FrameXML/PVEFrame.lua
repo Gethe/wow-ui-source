@@ -10,8 +10,37 @@ local panels = {
 function PVEFrame_OnLoad(self)
 	RaiseFrameLevel(self.shadows);
 	PanelTemplates_SetNumTabs(self, #panels);
+
+	self:RegisterEvent("AJ_PVP_ACTION");
+	self:RegisterEvent("AJ_PVP_SKIRMISH_ACTION");
+	self:RegisterEvent("AJ_PVE_LFG_ACTION");
+	self:RegisterEvent("AJ_PVP_LFG_ACTION");
+	self:RegisterEvent("AJ_PVP_RBG_ACTION");
 	
 	self.maxTabWidth = (self:GetWidth() - 19) / #panels;
+end
+
+function PVEFrame_OnEvent(self, event, ...)
+	if ( event == "AJ_PVP_ACTION" ) then
+		local id = ...;
+		PVEFrame_ShowFrame("PVPUIFrame", "HonorFrame");
+		HonorFrameSpecificList_FindAndSelectBattleground(id);
+		HonorFrame_SetType("specific");
+	elseif ( event == "AJ_PVP_SKIRMISH_ACTION" ) then
+		PVEFrame_ShowFrame("PVPUIFrame", "HonorFrame");
+		HonorFrame_SetType("bonus");
+		
+		HonorFrameBonusFrame_SelectButton(HonorFrame.BonusFrame.Arena1Button);
+	elseif ( event == "AJ_PVE_LFG_ACTION" ) then
+		PVEFrame_ShowFrame("GroupFinderFrame", "LFGListPVEStub");
+	elseif ( event == "AJ_PVP_LFG_ACTION" ) then
+		PVEFrame_ShowFrame("PVPUIFrame", "LFGListPVPStub");
+	elseif ( event == "AJ_PVP_RBG_ACTION" ) then
+		PVEFrame_ShowFrame("PVPUIFrame", "HonorFrame");
+		HonorFrame_SetType("bonus");
+		
+		HonorFrameBonusFrame_SelectButton(HonorFrame.BonusFrame.RandomBGButton);
+	end
 end
 
 function PVEFrame_ToggleFrame(sidePanelName, selection)

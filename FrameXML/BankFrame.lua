@@ -15,10 +15,9 @@ function BankFrameBaseButton_OnLoad (self)
 end
 
 function BankFrameItemButton_OnLoad (self) 
-	local container = self:GetParent():GetID();
 	BankFrameBaseButton_OnLoad (self);
 	self.SplitStack = function(button, split)
-		SplitContainerItem(container, button:GetID(), split);
+		SplitContainerItem(button:GetParent():GetID(), button:GetID(), split);
 	end
 end
 

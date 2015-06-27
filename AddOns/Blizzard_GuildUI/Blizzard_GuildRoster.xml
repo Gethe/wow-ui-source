@@ -69,12 +69,12 @@
 						<Anchor point="LEFT" x="0" y="0"/>
 					</Anchors>
 				</FontString>
-				<FontString name="$parentBarLabel" inherits="GameFontHighlightSmall" wordwrap="false" justifyH="RIGHT" hidden="true" parentKey="barLabel">
+				<FontString name="$parentBarLabel" inherits="GameFontHighlightSmall" wordwrap="false" justifyH="LEFT" hidden="true" parentKey="barLabel">
 					<Size>
 						<AbsDimension x="40" y="10"/>
 					</Size>
 					<Anchors>
-						<Anchor point="LEFT" x="146" y="0"/>
+						<Anchor point="LEFT" relativeTo="$parentString2" relativePoint="RIGHT" x="5" y="0"/>
 					</Anchors>
 				</FontString>
 			</Layer>

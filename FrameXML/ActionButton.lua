@@ -315,6 +315,10 @@ function ActionButton_Update (self)
 		else
 			buttonCooldown:Hide();
 		end
+
+		if(self.chargeCooldown) then
+			EndChargeCooldown(self.chargeCooldown);
+		end
 	end
 
 	-- Add a green border if button is an equipped item
@@ -455,13 +459,15 @@ end
 
 function ActionButton_UpdateCooldown (self)
 	local locStart, locDuration;
-	local start, duration, enable, charges, maxCharges;
+	local start, duration, enable, charges, maxCharges, chargeStart, chargeDuration;
 	if ( self.spellID ) then
 		locStart, locDuration = GetSpellLossOfControlCooldown(self.spellID);
-		start, duration, enable, charges, maxCharges = GetSpellCooldown(self.spellID);
+		start, duration, enable = GetSpellCooldown(self.spellID);
+		charges, maxCharges, chargeStart, chargeDuration = GetSpellCharges(self.spellID);
 	else
 		locStart, locDuration = GetActionLossOfControlCooldown(self.action);
-		start, duration, enable, charges, maxCharges = GetActionCooldown(self.action);
+		start, duration, enable = GetActionCooldown(self.action);
+		charges, maxCharges, chargeStart, chargeDuration = GetActionCharges(self.action);
 	end
 
 	if ( (locStart + locDuration) > (start + duration) ) then
@@ -472,7 +478,7 @@ function ActionButton_UpdateCooldown (self)
 			self.cooldown.currentCooldownType = COOLDOWN_TYPE_LOSS_OF_CONTROL;
 		end
 		
-		CooldownFrame_SetTimer(self.cooldown, locStart, locDuration, 1, nil, nil, true);
+		CooldownFrame_SetTimer(self.cooldown, locStart, locDuration, 1, true);
 	else
 		if ( self.cooldown.currentCooldownType ~= COOLDOWN_TYPE_NORMAL ) then
 			self.cooldown:SetEdgeTexture("Interface\\Cooldown\\edge");
@@ -484,7 +490,12 @@ function ActionButton_UpdateCooldown (self)
 		if( locStart > 0 ) then
 			self.cooldown:SetScript("OnCooldownDone", ActionButton_OnCooldownDone );
 		end
-		CooldownFrame_SetTimer(self.cooldown, start, duration, enable, charges, maxCharges);
+		
+		if ( charges and maxCharges and maxCharges > 0 and charges < maxCharges ) then
+			StartChargeCooldown(self, chargeStart, chargeDuration);
+		end
+		
+		CooldownFrame_SetTimer(self.cooldown, start, duration, enable);
 	end
 end
 
@@ -492,6 +503,43 @@ function ActionButton_OnCooldownDone(self)
 	self:SetScript("OnCooldownDone", nil);
 	ActionButton_UpdateCooldown(self:GetParent());
 end
+
+-- Charge Cooldown stuff
+local ExtraChargeCooldowns = {}
+local numExtraChargeCooldowns = 0;
+
+function EndChargeCooldown(self)
+	self:Hide();
+	self:SetParent(UIParent);
+	self.parent.chargeCooldown = nil;
+	self.parent = nil;
+	tinsert(ExtraChargeCooldowns, self);
+end
+
+function StartChargeCooldown(parent, chargeStart, chargeDuration)
+	if ( not parent.chargeCooldown ) then
+		local cooldown = tremove(ExtraChargeCooldowns);
+		if( not cooldown ) then
+			numExtraChargeCooldowns = numExtraChargeCooldowns + 1;
+			cooldown = CreateFrame("Cooldown", "ChargeCooldown"..numExtraChargeCooldowns, parent, "CooldownFrameTemplate");
+			cooldown:SetScript("OnCooldownDone", EndChargeCooldown );
+			cooldown:SetHideCountdownNumbers(true);
+			cooldown:SetDrawEdge(true);
+			cooldown:SetDrawSwipe(false);
+		end
+		cooldown:SetParent(parent);
+		cooldown:SetAllPoints(parent);
+		cooldown:SetFrameStrata("TOOLTIP");
+		cooldown:Show();
+		parent.chargeCooldown = cooldown;
+		cooldown.parent = parent;
+	end
+	parent.chargeCooldown:SetCooldown(chargeStart, chargeDuration);
+	if ( chargeStart == 0 ) then
+		EndChargeCooldown(parent.chargeCooldown);
+	end
+end
+
 
 --Overlay stuff
 local unusedOverlayGlows = {};

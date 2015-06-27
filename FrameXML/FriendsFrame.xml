@@ -913,7 +913,7 @@ TRAVEL PASS
 											</OnLoad>
 										</Scripts>
 										<ScrollChild>
-											<EditBox parentKey="EditBox" multiLine="true" letters="127" countInvisibleLetters="true" autoFocus="false">
+											<EditBox parentKey="EditBox" multiLine="false" letters="127" countInvisibleLetters="true" autoFocus="false">
 												<Size x="256" y="1"/>
 												<Layers>
 													<Layer level="BORDER">

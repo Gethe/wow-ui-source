@@ -197,9 +197,6 @@
 		</Scripts>
 	</Frame>
 	<Frame name="PlayerPowerBarAlt" parent="UIParent" inherits="UnitPowerBarAltTemplate">
-		<Anchors>
-			<Anchor point="CENTER"/>
-		</Anchors>
 		<Scripts>
 			<OnLoad>
 				self.isPlayerBar = true;

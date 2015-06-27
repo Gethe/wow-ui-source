@@ -1194,7 +1194,7 @@ local GLYPH_SLOTS = {
 SecureCmdList["CASTGLYPH"] = function(msg)
 	local action = SecureCmdOptionParse(msg);
 	if ( action ) then
-		local glyph, slot = strmatch(action, "^(%S+)%s+(%S+)$");
+		local glyph, slot = strmatch(action, "^(.+)%s+(%S+)$");
 		slot = (slot and GLYPH_SLOTS[slot]) or tonumber(slot);
 		local glyphID = tonumber(glyph);
 		if ( glyphID and slot ) then
@@ -2220,12 +2220,12 @@ SlashCmdList["RESETCHAT"] = function(msg)
 end
 
 SlashCmdList["ENABLE_ADDONS"] = function(msg)
-	EnableAllAddOns();
+	EnableAllAddOns(msg);
 	ReloadUI();
 end
 
 SlashCmdList["DISABLE_ADDONS"] = function(msg)
-	DisableAllAddOns();
+	DisableAllAddOns(msg);
 	ReloadUI();
 end
 
@@ -2367,15 +2367,22 @@ SlashCmdList["SPECTATOR_WARGAME"] = function(msg)
 	if (not target1 or not target2 or not size) then
 		return;
 	end
+
 	local presenceID1 = BNet_GetPresenceID(target1);
+	if not presenceID1 then
+		ConsolePrint("Failed to find StartSpectatorWarGame target1:", target1);
+	end
 	local presenceID2 = BNet_GetPresenceID(target2);
+	if not presenceID2 then
+		ConsolePrint("Failed to find StartSpectatorWarGame target2:", target2);
+	end
 	if (area == "" or area == "nil" or area == "0") then area = nil end 
 	StartSpectatorWarGame(presenceID1 or target1, presenceID2 or target2, size, area, ValueToBoolean(isTournamentMode));
 end
 
 SlashCmdList["GUILDFINDER"] = function(msg)
 	if ( GameLimitedMode_IsActive() ) then
-		UIErrorsFrame:AddMessage(GameLimitedMode_GetString("ERR_RESTRICTED_ACCOUNT"), 1.0, 0.1, 0.1, 1.0);
+		UIErrorsFrame:AddMessage(ERR_RESTRICTED_ACCOUNT_TRIAL, 1.0, 0.1, 0.1, 1.0);
 	else
 		ToggleGuildFinder();
 	end
@@ -2897,6 +2904,10 @@ function RemoveExtraSpaces(str)
 	return string.gsub(str, "     +", "    ");	--Replace all instances of 5+ spaces with only 4 spaces.
 end
 
+function RemoveNewlines(str)
+	return string.gsub(str, "\n", "");
+end
+
 function ChatFrame_DisplayGMOTD(frame, gmotd)
 	if ( gmotd and (strlen(gmotd) > 0) ) then
 		local info = ChatTypeInfo["GUILD"];
@@ -3054,13 +3065,20 @@ function ChatFrame_MessageEventHandler(self, event, ...)
 			end
 			self:AddMessage(format(arg1, "|Hplayer:"..arg2.."|h".."["..coloredName.."]".."|h"), info.r, info.g, info.b, info.id);
 		elseif ( strsub(type,1,18) == "GUILD_ACHIEVEMENT" ) then
-			self:AddMessage(format(arg1, "|Hplayer:"..arg2.."|h".."["..coloredName.."]".."|h"), info.r, info.g, info.b, info.id);
+			local message = format(arg1, "|Hplayer:"..arg2.."|h".."["..coloredName.."]".."|h");
+			if (C_Social.IsSocialEnabled()) then
+				local achieveID = GetAchievementInfoFromHyperlink(arg1);
+				if (achieveID) then
+					message = message .. " " .. Social_GetShareAchievementLink(achieveID, true);
+				end
+			end
+			self:AddMessage(message, info.r, info.g, info.b, info.id);
 		elseif ( type == "IGNORED" ) then
 			self:AddMessage(format(CHAT_IGNORED, arg2), info.r, info.g, info.b, info.id);
 		elseif ( type == "FILTERED" ) then
 			self:AddMessage(format(CHAT_FILTERED, arg2), info.r, info.g, info.b, info.id);
 		elseif ( type == "RESTRICTED" ) then
-			self:AddMessage(GameLimitedMode_GetString("CHAT_RESTRICTED"), info.r, info.g, info.b, info.id);
+			self:AddMessage(CHAT_RESTRICTED_TRIAL, info.r, info.g, info.b, info.id);
 		elseif ( type == "CHANNEL_LIST") then
 			if(channelLength > 0) then
 				self:AddMessage(format(_G["CHAT_"..type.."_GET"]..arg1, tonumber(arg8), arg4), info.r, info.g, info.b, info.id);
@@ -3086,7 +3104,7 @@ function ChatFrame_MessageEventHandler(self, event, ...)
 		elseif (type == "CHANNEL_NOTICE") then
 			local globalstring = _G["CHAT_"..arg1.."_NOTICE_BN"];
 			if( arg1 == "TRIAL_RESTRICTED" ) then
-				globalstring = GameLimitedMode_GetString("CHAT_TRIAL_RESTRICTED_NOTICE");
+				globalstring = CHAT_TRIAL_RESTRICTED_NOTICE_TRIAL;
 			else
 				if ( not globalstring ) then
 					globalstring = _G["CHAT_"..arg1.."_NOTICE"];
@@ -3141,6 +3159,7 @@ function ChatFrame_MessageEventHandler(self, event, ...)
 		elseif ( type == "BN_INLINE_TOAST_BROADCAST" ) then
 			if ( arg1 ~= "" ) then
 				arg1 = RemoveExtraSpaces(arg1);
+				arg1 = RemoveNewlines(arg1);
 				local playerLink = format("|HBNplayer:%s:%s:%s:%s:%s|h[%s]|h", arg2, arg13, arg11, Chat_GetChatCategory(type), 0, arg2);
 				self:AddMessage(format(BN_INLINE_TOAST_BROADCAST, playerLink, arg1), info.r, info.g, info.b, info.id);
 			end
@@ -3281,6 +3300,7 @@ function ChatFrame_MessageEventHandler(self, event, ...)
 			end
 			self.tellTimer = GetTime() + CHAT_TELL_ALERT_TIME;
 			--FCF_FlashTab(self);
+			FlashClientIcon();
 		end
 		
 		if ( not self:IsShown() ) then

@@ -186,11 +186,25 @@ function GameLimitedMode_IsActive()
 	return IsTrialAccount() or IsVeteranTrialAccount();
 end
 
-function GameLimitedMode_GetString( text )
-	if ( IsVeteranTrialAccount() ) then
-		text = text.."_VETERAN";
-	else
-		text = text.."_TRIAL";
+function TriStateCheckbox_SetState(checked, checkButton)
+	local checkedTexture = _G[checkButton:GetName().."CheckedTexture"];
+	if ( not checkedTexture ) then
+		message("Can't find checked texture");
 	end
-	return _G[text];
+	if ( not checked or checked == 0 ) then
+		-- nil or 0 means not checked
+		checkButton:SetChecked(false);
+		checkButton.state = 0;
+	elseif ( checked == 2 ) then
+		-- 2 is a normal
+		checkButton:SetChecked(true);
+		checkedTexture:SetVertexColor(1, 1, 1);
+		checkedTexture:SetDesaturated(false);
+		checkButton.state = 2;
+	else
+		-- 1 is a gray check
+		checkButton:SetChecked(true);
+		checkedTexture:SetDesaturated(true);
+		checkButton.state = 1;
+	end
 end

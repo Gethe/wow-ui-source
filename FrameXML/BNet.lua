@@ -69,9 +69,9 @@ function BNet_GetPresenceID(name)
 		return id;
 	end
 	local _, numBNetOnline = BNGetNumFriends();
-	for i=1, numBNetOnline do
-		local presenceID, _, _, _, toonName, toonID = BNGetFriendInfo(i);
-		if (strlower(name) == strlower(toonName)) then
+	for i = 1, numBNetOnline do
+		local presenceID, presenceName, battleTag, isBattleTagPresence, toonName, toonID = BNGetFriendInfo(i);
+		if ( (toonName and strcmputf8i(name, toonName) == 0) or (battleTag and strcmputf8i(name, battleTag) == 0) ) then
 			return presenceID;
 		end
 	end	
@@ -178,14 +178,14 @@ function BNToastFrame_Show()
 		BNToastFrameDoubleLine:Show();
 		BNToastFrameDoubleLine:SetFormattedText(BN_TOAST_PENDING_INVITES, toastData);
 	elseif ( toastType == BN_TOAST_TYPE_ONLINE ) then
-		local presenceID, presenceName = BNGetFriendInfoByID(toastData);
+		local presenceID, presenceName, battleTag, isBattleTagPresence, toonName, toonID, client = BNGetFriendInfoByID(toastData);
 		-- don't display a toast if we didn't get the data in time
 		if ( not presenceName ) then
 			return;
 		end
 		
-		local _, toonName, client = BNGetToonInfo(presenceID);
 		if (toonName and toonName ~= "") then
+			toonName = BNet_GetValidatedCharacterName(toonName, battleTag, client);
 			toonName = BNet_GetClientEmbeddedTexture(client, 14, 14, 0, -1)..toonName;
 			middleLine:SetFormattedText(toonName);
 			middleLine:SetTextColor(FRIENDS_BNET_NAME_COLOR.r, FRIENDS_BNET_NAME_COLOR.g, FRIENDS_BNET_NAME_COLOR.b);

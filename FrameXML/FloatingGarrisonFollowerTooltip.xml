@@ -146,6 +146,81 @@ UI.xsd">
 		</Scripts>
 	</Frame>
 
+	<Frame name="GarrisonShipyardFollowerTooltipTemplate" parent="UIParent" frameStrata="TOOLTIP" clampedToScreen="true" virtual="true" hidden="true" inherits="TooltipBorderedFrameTemplate">
+		<Size x="260" y="80"/>
+		<Layers>
+			<Layer level="BACKGROUND" textureSubLevel="2">
+				<Texture parentKey="XPBarBackground">
+					<Size x="231" y="4"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativePoint="TOPLEFT" x="15" y="-55"/>
+					</Anchors>
+					<Color r="0.1" g="0.1" b="0.1" a="1"/>
+				</Texture>
+			</Layer>
+			<Layer level="ARTWORK">
+				<FontString parentKey="Name" inherits="GameFontNormal" justifyH="LEFT">
+					<Size x="140" y="0"/>
+					<Anchors>
+						<Anchor point="LEFT" relativePoint="TOPLEFT" x="15" y="-20"/>
+					</Anchors>
+				</FontString>
+				<FontString parentKey="ClassSpecName" inherits="GameFontHighlightSmall" justifyH="LEFT">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativePoint="TOPLEFT" x="15" y="-35"/>
+					</Anchors>
+					<Color r="1" g="1" b="1" a="1"/>
+				</FontString>
+				<FontString parentKey="Quality" inherits="GameFontHighlightSmall" justifyH="LEFT">
+					<Size x="190" y="0"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" x="15" y="-50"/>
+					</Anchors>
+				</FontString>
+				<Texture parentKey="XPBar">
+					<Size x="231" y="4"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativePoint="TOPLEFT" x="15" y="-55"/>
+					</Anchors>
+					<Color r="0.212" g="0" b="0.337" a="1"/>
+				</Texture>				
+				<FontString parentKey="XP" inherits="GameFontHighlightSmall" justifyH="CENTER">
+					<Size x="231"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.XPBar" relativePoint="BOTTOMLEFT" y="-3"/>
+					</Anchors>
+					<Color r="1" g="1" b="1" a="1"/>
+				</FontString>
+			</Layer>			
+		</Layers>
+		
+		<Frames>
+			<Frame parentKey="Property1" parentArray="Properties" inherits="GarrisonFollowerAbilityTemplate" hidden="true">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.ClassSpecName" x="2" y="-10" relativePoint="BOTTOMLEFT"/>
+				</Anchors>
+			</Frame>
+			<Frame parentKey="Property2" parentArray="Properties" inherits="GarrisonFollowerAbilityTemplate" hidden="true">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.Property1" x="0" y="-10" relativePoint="BOTTOMLEFT"/>
+				</Anchors>
+			</Frame>
+			<Frame parentKey="Property3" parentArray="Properties" inherits="GarrisonFollowerAbilityTemplate" hidden="true">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.Property2" x="0" y="-10" relativePoint="BOTTOMLEFT"/>
+				</Anchors>
+			</Frame>
+			<Frame parentKey="Property4" parentArray="Properties" inherits="GarrisonFollowerAbilityTemplate" hidden="true">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.Property3" x="0" y="-10" relativePoint="BOTTOMLEFT"/>
+				</Anchors>
+			</Frame>
+		</Frames>
+		<Scripts>
+			<OnLoad function="GarrisonFollowerTooltip_OnLoad"/>
+		</Scripts>
+	</Frame>
+
 
 	<Frame name="GarrisonFollowerAbilityTemplate" virtual="true">
 		<Size x="200" y="20"/>
@@ -158,6 +233,7 @@ UI.xsd">
 					</Anchors>
 				</Texture>
 				<FontString parentKey="Name" inherits="GameFontNormal" justifyH="LEFT">
+					<Size x="200" y="0"/>
 					<Anchors>
 						<Anchor point="LEFT" relativeKey="$parent.Icon" relativePoint="RIGHT" x="2"/>
 					</Anchors>
@@ -226,6 +302,37 @@ UI.xsd">
 		</Scripts>
 	</Frame>
 
+	<Frame name="FloatingGarrisonShipyardFollowerTooltip" inherits="GarrisonShipyardFollowerTooltipTemplate" movable="true" toplevel="true">
+		<Size x="260" y="150"/>
+		<Anchors>
+			<Anchor point="BOTTOM" x="0" y="80"/>
+		</Anchors>
+		<Frames>
+			<Button parentKey="CloseButton">
+				<Size x="32" y="32"/>
+				<Anchors>
+					<Anchor point="TOPRIGHT" x="1" y="0"/>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						self:GetParent():Hide();
+					</OnClick>
+				</Scripts>
+				<NormalTexture file="Interface\Buttons\UI-Panel-MinimizeButton-Up"/>
+				<PushedTexture file="Interface\Buttons\UI-Panel-MinimizeButton-Down"/>
+				<HighlightTexture file="Interface\Buttons\UI-Panel-MinimizeButton-Highlight" alphaMode="ADD"/>
+			</Button>
+		</Frames>
+		<Scripts>
+			<OnMouseDown>
+				self:StartMoving();
+			</OnMouseDown>
+			<OnMouseUp>
+				self:StopMovingOrSizing();
+			</OnMouseUp>
+		</Scripts>
+	</Frame>
+
 
 	<Frame name="GarrisonFollowerAbilityTooltipTemplate"  parent="UIParent" frameStrata="TOOLTIP" clampedToScreen="true" virtual="true" hidden="true" inherits="TooltipBorderedFrameTemplate">
 		<Size x="240" y="40"/>
@@ -238,6 +345,7 @@ UI.xsd">
 					</Anchors>
 				</Texture>
 				<FontString parentKey="Name" inherits="GameFontNormal" justifyH="LEFT">
+					<Size x="190" y="0"/>
 					<Anchors>
 						<Anchor point="LEFT" relativeKey="$parent.Icon" relativePoint="RIGHT" x="6"/>
 					</Anchors>
@@ -248,10 +356,17 @@ UI.xsd">
 						<Anchor point="TOPLEFT" relativeKey="$parent.Name" relativePoint="BOTTOMLEFT" x="0" y="-4"/>
 					</Anchors>
 				</FontString>
+				<FontString parentKey="CountersLabel" inherits="GameFontHighlight" justifyH="LEFT" text="GARRISON_ABILITY_COUNTERS">
+					<Size x="190" y="0"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.Description" relativePoint="BOTTOMLEFT" x="0" y="-8"/>
+					</Anchors>
+					<Color r="0.698" g="0.941" b="1" a="1"/>
+				</FontString>
 				<Texture parentKey="CounterIcon">
 					<Size x="16" y="16"/>
 					<Anchors>
-						<Anchor point="TOPLEFT" relativeKey="$parent.Description" relativePoint="BOTTOMLEFT" x="0" y="-8"/>
+						<Anchor point="TOPLEFT" relativeKey="$parent.CountersLabel" relativePoint="BOTTOMLEFT" x="4" y="-8"/>
 					</Anchors>
 				</Texture>
 				<FontString parentKey="Details" inherits="GameFontHighlight" justifyH="LEFT">
@@ -259,9 +374,7 @@ UI.xsd">
 					<Anchors>
 						<Anchor point="TOPLEFT" relativeKey="$parent.CounterIcon" relativePoint="TOPRIGHT" x="8" y="-1"/>
 					</Anchors>
-					<Color r="0.698" g="0.941" b="1" a="1"/>
 				</FontString>
-				
 				<Texture atlas="GarrMission_EncounterAbilityBorder" useAtlasSize="true" parentKey="CounterIconBorder" hidden="true">
 					<Size x="15" y="15"/>
 					<Anchors>
@@ -271,8 +384,6 @@ UI.xsd">
 
 			</Layer>
 		</Layers>
-		<Scripts>
-		</Scripts>
 	</Frame>
 
 

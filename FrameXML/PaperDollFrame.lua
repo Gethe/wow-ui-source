@@ -380,7 +380,7 @@ function PaperDollFrame_OnLoad (self)
 	};
 	
 	if( GameLimitedMode_IsActive() ) then
-		CharacterTrialLevelErrorText:SetText(GameLimitedMode_GetString("CAPPED_LEVEL"));
+		CharacterTrialLevelErrorText:SetText(CAPPED_LEVEL_TRIAL);
 	end
 end
 
@@ -411,7 +411,7 @@ function PaperDollFrame_OnEvent (self, event, ...)
 	local unit = ...;
 	if ( event == "PLAYER_ENTERING_WORLD" or
 		event == "UNIT_MODEL_CHANGED" and unit == "player" ) then
-		CharacterModelFrame:SetUnit("player");
+		CharacterModelFrame:SetUnit("player", false);
 		return;
 	elseif ( event == "KNOWN_TITLES_UPDATE" or (event == "UNIT_NAME_UPDATE" and unit == "player")) then
 		if (PaperDollTitlesPane:IsShown()) then
@@ -490,10 +490,17 @@ function PaperDollFrame_SetLevel()
 		_, specName = GetSpecializationInfo(primaryTalentTree, nil, nil, nil, UnitSex("player"));
 	end
 	
+	local level = UnitLevel("player");
+	local effectiveLevel = UnitEffectiveLevel("player");
+
+	if ( effectiveLevel ~= level ) then
+		level = EFFECTIVE_LEVEL_FORMAT:format(effectiveLevel, level);
+	end
+
 	if (specName and specName ~= "") then
-		CharacterLevelText:SetFormattedText(PLAYER_LEVEL, UnitLevel("player"), classColorString, specName, classDisplayName);
+		CharacterLevelText:SetFormattedText(PLAYER_LEVEL, level, classColorString, specName, classDisplayName);
 	else
-		CharacterLevelText:SetFormattedText(PLAYER_LEVEL_NO_SPEC, UnitLevel("player"), classColorString, classDisplayName);
+		CharacterLevelText:SetFormattedText(PLAYER_LEVEL_NO_SPEC, level, classColorString, classDisplayName);
 	end
 	
 	local showTrialCap = false;
@@ -783,7 +790,7 @@ function PaperDollFrame_SetArmor(statFrame, unit)
 	_G[statFrame:GetName().."Label"]:SetText(format(STAT_FORMAT, ARMOR));
 	local text = _G[statFrame:GetName().."StatText"];
 
-    local bonusArmor = UnitBonusArmor(unit)
+    local bonusArmor = UnitBonusArmor(unit);
     local nonBonusArmor = effectiveArmor - bonusArmor;
 
     if ( nonBonusArmor < baselineArmor) then
@@ -791,8 +798,8 @@ function PaperDollFrame_SetArmor(statFrame, unit)
     end
 
 	PaperDollFrame_SetLabelAndText(statFrame, STAT_ARMOR, effectiveArmor, false);
-    local baseArmorReduction = PaperDollFrame_GetArmorReduction(baselineArmor, UnitLevel(unit));
-    local armorReduction = PaperDollFrame_GetArmorReduction(effectiveArmor, UnitLevel(unit));
+    local baseArmorReduction = PaperDollFrame_GetArmorReduction(baselineArmor, UnitEffectiveLevel(unit));
+    local armorReduction = PaperDollFrame_GetArmorReduction(effectiveArmor, UnitEffectiveLevel(unit));
 	
 	statFrame.tooltip = HIGHLIGHT_FONT_COLOR_CODE..format(PAPERDOLLFRAME_TOOLTIP_FORMAT, ARMOR).." "..string.format("%s", effectiveArmor)..FONT_COLOR_CODE_CLOSE;
 	statFrame.tooltip2 = format(STAT_ARMOR_BASE_TOOLTIP, baseArmorReduction);
@@ -820,7 +827,7 @@ function PaperDollFrame_SetBonusArmor(statFrame, unit)
 	local bonusArmor, isNegatedForSpec = UnitBonusArmor(unit);
 
 	PaperDollFrame_SetLabelAndText(statFrame, STAT_BONUS_ARMOR, bonusArmor, false);
-	local armorReduction = PaperDollFrame_GetArmorReduction(effectiveArmor, UnitLevel(unit));
+	local armorReduction = PaperDollFrame_GetArmorReduction(effectiveArmor, UnitEffectiveLevel(unit));
 	statFrame.tooltip = HIGHLIGHT_FONT_COLOR_CODE..format(PAPERDOLLFRAME_TOOLTIP_FORMAT, BONUS_ARMOR).." "..string.format("%s", bonusArmor)..FONT_COLOR_CODE_CLOSE;
 
 	local hasAura, percent = GetBladedArmorEffect();
@@ -908,19 +915,21 @@ function PaperDollFrame_SetDamage(statFrame, unit)
 	local speed, offhandSpeed = UnitAttackSpeed(unit);
 	local minDamage, maxDamage, minOffHandDamage, maxOffHandDamage, physicalBonusPos, physicalBonusNeg, percent = GetAppropriateDamage(unit);
 
+	-- remove decimal points for display values
 	local displayMin = max(floor(minDamage),1);
 	local displayMinLarge = BreakUpLargeNumbers(displayMin);
 	local displayMax = max(ceil(maxDamage),1);
 	local displayMaxLarge = BreakUpLargeNumbers(displayMax);
-	
 
+	-- calculate base damage
 	minDamage = (minDamage / percent) - physicalBonusPos - physicalBonusNeg;
 	maxDamage = (maxDamage / percent) - physicalBonusPos - physicalBonusNeg;
 
 	local baseDamage = (minDamage + maxDamage) * 0.5;
 	local fullDamage = (baseDamage + physicalBonusPos + physicalBonusNeg) * percent;
 	local totalBonus = (fullDamage - baseDamage);
-	local damageTooltip = displayMinLarge.." - "..displayMaxLarge;
+	-- set tooltip text with base damage
+	local damageTooltip = BreakUpLargeNumbers(max(floor(minDamage),1)).." - "..BreakUpLargeNumbers(max(ceil(maxDamage),1));
 	
 	local colorPos = "|cff20ff20";
 	local colorNeg = "|cffff2020";
@@ -937,7 +946,7 @@ function PaperDollFrame_SetDamage(statFrame, unit)
 			text:SetText(displayMinLarge.."-"..displayMaxLarge);
 		end
 	else
-		
+		-- set bonus color and display
 		local color;
 		if ( totalBonus > 0 ) then
 			color = colorPos;
@@ -1462,16 +1471,20 @@ function PaperDollFrame_SetItemLevel(statFrame, unit)
 	end
 	_G[statFrame:GetName().."Label"]:SetText(format(STAT_FORMAT, STAT_AVERAGE_ITEM_LEVEL));
 	local text = _G[statFrame:GetName().."StatText"];
-	local avgItemLevel, avgItemLevelEquipped = GetAverageItemLevel();
+	local avgItemLevel, avgItemLevelEquipped, avgItemLevelPvP = GetAverageItemLevel();
 	avgItemLevel = floor(avgItemLevel);
 	avgItemLevelEquipped = floor(avgItemLevelEquipped);
 	text:SetText(avgItemLevelEquipped .. " / " .. avgItemLevel);
 	statFrame.tooltip = HIGHLIGHT_FONT_COLOR_CODE..format(PAPERDOLLFRAME_TOOLTIP_FORMAT, STAT_AVERAGE_ITEM_LEVEL).." "..avgItemLevel;
-	if (avgItemLevelEquipped ~= avgItemLevel) then
+	if ( avgItemLevelEquipped ~= avgItemLevel ) then
 		statFrame.tooltip = statFrame.tooltip .. "  " .. format(STAT_AVERAGE_ITEM_LEVEL_EQUIPPED, avgItemLevelEquipped);
 	end
 	statFrame.tooltip = statFrame.tooltip .. FONT_COLOR_CODE_CLOSE;
 	statFrame.tooltip2 = STAT_AVERAGE_ITEM_LEVEL_TOOLTIP;
+
+	if ( avgItemLevel ~= avgItemLevelPvP ) then
+		statFrame.tooltip2 = statFrame.tooltip2.."\n\n"..STAT_AVERAGE_PVP_ITEM_LEVEL:format(avgItemLevelPvP);
+	end
 end
 
 function MovementSpeed_OnEnter(statFrame)

@@ -153,7 +153,7 @@ end
 
 function MountJournal_MountMatchesFilter(self, name, sourceType, collected)
 	if ( self.searchString ) then
-		if ( string.find(string.lower(name), self.searchString, 1, true) ) then
+		if ( string.find(CaseAccentInsensitiveParse(name), self.searchString, 1, true) ) then
 			return true;
 		else
 			return false;
@@ -483,7 +483,7 @@ function MountJournal_OnSearchTextChanged(self)
 	if ( text == "" ) then
 		MountJournal.searchString = nil;
 	else
-		MountJournal.searchString = string.lower(text);
+		MountJournal.searchString = CaseAccentInsensitiveParse(text);
 	end
 
 	if ( oldText ~= MountJournal.searchString ) then

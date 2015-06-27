@@ -573,7 +573,7 @@ function TradeSkillFrame_SetSelection(id)
 	
 	local numTopLines = TradeSkillRequirementText:GetNumLines();
 	if ( TradeSkillSkillCooldown:GetText() ) then
-		numTopLines = numTopLines + 1;
+		numTopLines = numTopLines + TradeSkillSkillCooldown:GetNumLines();
 	end
 	if ( numTopLines > 2 ) then
 		TradeSkillDescription:SetPoint("TOPLEFT", 5, -30 - (10 * numTopLines));
@@ -638,7 +638,7 @@ function TradeSkillFrame_SetSelection(id)
 			local _, _, profCap = GetRestrictedAccountData();
 			if skillLineRank >= profCap then
 				local text = TradeSkillRankFrameSkillRank:GetText();
-				text = text.." "..RED_FONT_COLOR_CODE..GameLimitedMode_GetString("CAP_REACHED");
+				text = text.." "..RED_FONT_COLOR_CODE..CAP_REACHED_TRIAL;
 				TradeSkillRankFrameSkillRank:SetText(text);
 			end
 		end

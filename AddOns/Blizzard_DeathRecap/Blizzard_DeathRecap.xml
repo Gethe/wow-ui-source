@@ -241,7 +241,7 @@
 					<Anchor point="BOTTOM" relativeKey="$parent.Recap4" relativePoint="TOP" x="0" y="14"/>
 				</Anchors>
 			</Frame>
-			<Button key="CloseButton" inherits="UIPanelButtonTemplate" text="CLOSE">
+			<Button parentKey="CloseButton" inherits="UIPanelButtonTemplate" text="CLOSE">
 				<Size x="144" y="21"/>
 				<Anchors>
 					<Anchor Point="BOTTOM" x="0" y="15"/>

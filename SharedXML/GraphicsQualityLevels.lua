@@ -39,9 +39,9 @@ VideoData["Graphics_Quality"]={
 				Graphics_SunshaftsDropDown = VIDEO_OPTIONS_DISABLED,
 				Graphics_ProjectedTexturesDropDown = VIDEO_OPTIONS_DISABLED,
 				Graphics_SSAODropDown = VIDEO_OPTIONS_DISABLED,
-				Graphics_DepthEffectsDropDown = VIDEO_OPTIONS_DISABLED,
-				Graphics_LightingQualityDropDown = VIDEO_OPTIONS_LOW,
-				Graphics_OutlineModeDropDown = VIDEO_OPTIONS_DISABLED,
+				Graphics_DepthEffectsDropDown = VIDEO_OPTIONS_LOW,
+				Graphics_LightingQualityDropDown = VIDEO_OPTIONS_MEDIUM,
+				Graphics_OutlineModeDropDown = VIDEO_OPTIONS_ALLOWED,
 			},
 		},
 		[3] = {
@@ -59,8 +59,8 @@ VideoData["Graphics_Quality"]={
 				Graphics_SunshaftsDropDown = VIDEO_OPTIONS_LOW,
 				Graphics_ProjectedTexturesDropDown = VIDEO_OPTIONS_ENABLED,
 				Graphics_SSAODropDown = VIDEO_OPTIONS_LOW,
-				Graphics_DepthEffectsDropDown = VIDEO_OPTIONS_LOW,
-				Graphics_LightingQualityDropDown = VIDEO_OPTIONS_MEDIUM,
+				Graphics_DepthEffectsDropDown = VIDEO_OPTIONS_MEDIUM,
+				Graphics_LightingQualityDropDown = VIDEO_OPTIONS_HIGH,
 				Graphics_OutlineModeDropDown = VIDEO_OPTIONS_ALLOWED,
 			},
 		},
@@ -89,7 +89,6 @@ VideoData["Graphics_Quality"]={
 			tooltip = VIDEO_QUALITY_SUBTEXT5,
 			notify = {
 				Graphics_ViewDistanceDropDown = VIDEO_OPTIONS_ULTRA,
-				Graphics_TextureResolutionDropDown = VIDEO_OPTIONS_HIGH,
 				Graphics_ParticleDensityDropDown = VIDEO_OPTIONS_HIGH,
 				Graphics_EnvironmentalDetailDropDown = VIDEO_OPTIONS_ULTRA,
 				Graphics_GroundClutterDropDown = VIDEO_OPTIONS_ULTRA,
@@ -238,9 +237,9 @@ VideoData["RaidGraphics_Quality"].data = {
 			RaidGraphics_SunshaftsDropDown = VIDEO_OPTIONS_DISABLED,
 			RaidGraphics_ProjectedTexturesDropDown = VIDEO_OPTIONS_DISABLED,
 			RaidGraphics_SSAODropDown = VIDEO_OPTIONS_DISABLED,
-			RaidGraphics_DepthEffectsDropDown = VIDEO_OPTIONS_DISABLED,
-			RaidGraphics_LightingQualityDropDown = VIDEO_OPTIONS_LOW,
-			RaidGraphics_OutlineModeDropDown = VIDEO_OPTIONS_DISABLED,
+			RaidGraphics_DepthEffectsDropDown = VIDEO_OPTIONS_LOW,
+			RaidGraphics_LightingQualityDropDown = VIDEO_OPTIONS_MEDIUM,
+			RaidGraphics_OutlineModeDropDown = VIDEO_OPTIONS_ALLOWED,
 		},
 	},
 	[3] = {
@@ -258,8 +257,8 @@ VideoData["RaidGraphics_Quality"].data = {
 			RaidGraphics_SunshaftsDropDown = VIDEO_OPTIONS_LOW,
 			RaidGraphics_ProjectedTexturesDropDown = VIDEO_OPTIONS_ENABLED,
 			RaidGraphics_SSAODropDown = VIDEO_OPTIONS_LOW,
-			RaidGraphics_DepthEffectsDropDown = VIDEO_OPTIONS_LOW,
-			RaidGraphics_LightingQualityDropDown = VIDEO_OPTIONS_MEDIUM,
+			RaidGraphics_DepthEffectsDropDown = VIDEO_OPTIONS_MEDIUM,
+			RaidGraphics_LightingQualityDropDown = VIDEO_OPTIONS_HIGH,
 			RaidGraphics_OutlineModeDropDown = VIDEO_OPTIONS_ALLOWED,
 		},
 	},
@@ -277,7 +276,7 @@ VideoData["RaidGraphics_Quality"].data = {
 			RaidGraphics_LiquidDetailDropDown = VIDEO_OPTIONS_MEDIUM,
 			RaidGraphics_SunshaftsDropDown = VIDEO_OPTIONS_HIGH,
 			RaidGraphics_ProjectedTexturesDropDown = VIDEO_OPTIONS_ENABLED,
-			RaidGraphics_SSAODropDown = VIDEO_OPTIONS_LOW,
+			RaidGraphics_SSAODropDown = VIDEO_OPTIONS_HIGH,
 			RaidGraphics_DepthEffectsDropDown = VIDEO_OPTIONS_HIGH,
 			RaidGraphics_LightingQualityDropDown = VIDEO_OPTIONS_HIGH,
 			RaidGraphics_OutlineModeDropDown = VIDEO_OPTIONS_ALLOWED,
@@ -497,7 +496,8 @@ VideoData["Display_ResolutionDropDown"]={
 	},
 	onrefresh =
 	function(self)
-		if(Display_DisplayModeDropDown:windowedmode() and Display_DisplayModeDropDown:fullscreenmode()) then
+		if(Display_DisplayModeDropDown:windowedmode() and Display_DisplayModeDropDown:fullscreenmode() and
+            not IsMacClient()) then
 			VideoOptions_Disable(self);
 		else
 			VideoOptions_Enable(self);
@@ -1754,14 +1754,14 @@ VideoData["RaidGraphics_LightingQualityDropDown"]={
 		[2] = {
 			text = VIDEO_OPTIONS_MEDIUM,
 			cvars =	{
-				RAIDlightMode = GetDefaultVideoQualityOption("RAIDlightMode", 2, 1, true),
+				RAIDlightMode = GetDefaultVideoQualityOption("RAIDlightMode", 1, 1, true),
 			},
 			tooltip = VIDEO_OPTIONS_LIGHTING_QUALITY_MEDIUM,
 		},
 		[3] = {
 			text = VIDEO_OPTIONS_HIGH,
 			cvars =	{
-				RAIDlightMode = GetDefaultVideoQualityOption("RAIDlightMode", 3, 2, true),
+				RAIDlightMode = GetDefaultVideoQualityOption("RAIDlightMode", 2, 2, true),
 			},
 			tooltip = VIDEO_OPTIONS_LIGHTING_QUALITY_HIGH,
 		},

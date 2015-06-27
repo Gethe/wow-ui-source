@@ -15,7 +15,7 @@
 			</EdgeSize>
 		</Backdrop>
 		<Layers>
-			<Layer layer="BACKGROUND">
+			<Layer level="BACKGROUND">
 				<Texture>
 					<Anchors>
 						<Anchor point="TOPLEFT" x="4" y="-4"/>
@@ -28,7 +28,7 @@
 	</Frame>
 	
 	<!-- Player has enough tokens or gold. -->
-	<Frame name="ReactivateAccountDialog" topLevel="true" parent="GlueParent" enableMouse="true" frameStrata="DIALOG" hidden="true" inherits="ReactivateDialogBackground">
+	<Frame name="ReactivateAccountDialog" topLevel="true" parent="CharacterSelect" enableMouse="true" frameStrata="DIALOG" hidden="true" inherits="ReactivateDialogBackground">
 		<Size x="450" y="64"/>
 		<Anchors>
 			<Anchor point="BOTTOM" x="0" y="167"/>
@@ -51,16 +51,23 @@
 			</Layer>
 		</Layers>
 		<Frames>
-			<Button parentKey="Accept" inherits="GluePanelButtonTemplate" text="ACCOUNT_REACTIVATE_ACCEPT">
+			<Button parentKey="Accept" inherits="GlueDialogButtonTemplate" text="ACCOUNT_REACTIVATE_ACCEPT" motionScriptsWhileDisabled="true">
 				<Size x="320" y="48"/>
 				<Anchors>
 					<Anchor point="TOP" relativeKey="$parent.Description" relativePoint="BOTTOM" x="0" y="-4"/>
 				</Anchors>
-				<NormalFont style="GlueFontNormal"/>
-				<HighlightFont style="GlueFontHighlight"/>
-				<DisabledFont style="GlueFontDisable"/>
 				<Scripts>
 					<OnClick function="ReactivateAccountDialog_OnReactivate"/>
+					<OnEnter>
+						if (self.tooltip) then
+							GlueTooltip:SetOwner(self, "ANCHOR_RIGHT", -28, -8);
+							GlueTooltip:SetText(self.tooltip, nil, nil, nil, nil, true);
+							GlueTooltip:Show();
+						end
+					</OnEnter>
+					<OnLeave>
+						GlueTooltip:Hide();
+					</OnLeave>
 				</Scripts>
 			</Button>
 		</Frames>
@@ -70,7 +77,7 @@
 		</Scripts>
 	</Frame>
 	
-	<Frame name="AccountReactivationInProgressDialog" topLevel="true" parent="GlueParent" enableMouse="true" frameStrata="DIALOG" hidden="true" inherits="ReactivateDialogBackground">
+	<Frame name="AccountReactivationInProgressDialog" topLevel="true" parent="CharacterSelect" enableMouse="true" frameStrata="DIALOG" hidden="true" inherits="ReactivateDialogBackground">
 		<Size x="350" y="64"/>
 		<Anchors>
 			<Anchor point="CENTER" x="0" y="140"/>
@@ -112,7 +119,7 @@
 		</Scripts>
 	</Frame>
 		
-	<Frame name="GoldReactivateConfirmationDialog" topLevel="true" parent="GlueParent" enableMouse="true" frameStrata="DIALOG" hidden="true" inherits="ReactivateDialogBackground">
+	<Frame name="GoldReactivateConfirmationDialog" topLevel="true" parent="CharacterSelect" enableMouse="true" frameStrata="DIALOG" hidden="true" inherits="ReactivateDialogBackground">
 		<Size x="450" y="64"/>
 		<Anchors>
 			<Anchor point="TOP" x="0" y="-150"/>
@@ -139,7 +146,7 @@
 					</Anchors>
 				</FontString>
 			</Layer>
-			<Layer layer="OVERLAY">
+			<Layer level="OVERLAY">
 				<FontString parentKey="Price" inherits="GlueFontNormal">
 					<Anchors>
 						<Anchor point="TOPLEFT" relativeKey="$parent.Expires" relativePoint="BOTTOMLEFT" x="0" y="-28"/>
@@ -209,7 +216,7 @@
 		</Scripts>
 	</Frame>
 			
-	<Frame name="TokenReactivateConfirmationDialog" topLevel="true" parent="GlueParent" enableMouse="true" frameStrata="DIALOG" hidden="true" inherits="ReactivateDialogBackground">
+	<Frame name="TokenReactivateConfirmationDialog" topLevel="true" parent="CharacterSelect" enableMouse="true" frameStrata="DIALOG" hidden="true" inherits="ReactivateDialogBackground">
 		<Size x="450" y="64"/>
 		<Anchors>
 			<Anchor point="CENTER" x="0" y="64"/>
@@ -281,7 +288,7 @@
 	</Frame>
 	
 	<!-- Not Enough Gold and no tokens. Display if attempt to login with a greater than level 20 character/ -->
-	<Frame name="SubscriptionRequestDialog" topLevel="true" parent="GlueParent" enableMouse="true" frameStrata="DIALOG" hidden="true" inherits="ReactivateDialogBackground">
+	<Frame name="SubscriptionRequestDialog" topLevel="true" parent="CharacterSelect" enableMouse="true" frameStrata="DIALOG" hidden="true" inherits="ReactivateDialogBackground">
 		<Size x="450" y="64"/>
 		<Anchors>
 			<Anchor point="CENTER" x="0" y="64"/>

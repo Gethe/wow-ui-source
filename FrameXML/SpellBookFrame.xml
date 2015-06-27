@@ -499,7 +499,7 @@
 		<Scripts>
 			<OnEnter>
 				GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
-				GameTooltip:SetText(GameLimitedMode_GetString("CAP_REACHED"), RED_FONT_COLOR.r, RED_FONT_COLOR.b, RED_FONT_COLOR.b);
+				GameTooltip:SetText(CAP_REACHED_TRIAL, RED_FONT_COLOR.r, RED_FONT_COLOR.b, RED_FONT_COLOR.b);
 			</OnEnter>
 			<OnLeave>
 				GameTooltip:Hide();
@@ -1390,6 +1390,60 @@
 			<OnShow function="SpellBookFrame_OnShow"/>
 			<OnHide function="SpellBookFrame_OnHide"/>
 			<OnMouseWheel function="SpellBookFrame_OnMouseWheel"/>
+		</Scripts>
+	</Frame>
+	
+	<Frame name="SpellLockedTooltip" inherits="GlowBoxTemplate" parent="UIParent" hidden="true" frameStrata="FULLSCREEN_DIALOG" frameLevel="2">
+		<Size x="220" y="100"/>
+		<Layers>
+			<Layer level="OVERLAY">
+				<FontString parentKey="Text" inherits="GameFontHighlightLeft">
+					<Size x="188" y="0"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" x="15" y="-15"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+			<Layer level="ARTWORK">
+				<Texture parentKey="ArrowGlowRIGHT" inherits="HelpPlateArrow-GlowDOWN" alphaMode="ADD" alpha="0.5">
+					<Size x="53" y="21"/>
+					<Anchors>
+						<Anchor point="RIGHT" relativePoint="LEFT" x="3" y="0"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="BORDER">
+				<Texture parentKey="ArrowRIGHT" inherits="HelpPlateArrowDOWN">
+					<Size x="53" y="21"/>
+					<Anchors>
+						<Anchor point="RIGHT" relativePoint="LEFT" x="3" y="0"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Button parentKey="CloseButton" inherits="UIPanelCloseButton">
+				<Anchors>
+					<Anchor point="TOPRIGHT" x="6" y="6"/>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						self:GetParent():Hide();
+						SetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_BOOSTED_SPELL_BOOK, true);
+					</OnClick>
+				</Scripts>
+			</Button>
+		</Frames>
+		<Scripts>
+			<OnLoad>
+				self.Text:SetSpacing(4);
+				self.Text:SetText(BOOSTED_CHAR_LOCKED_SPELL_TIP);
+				SetClampedTextureRotation(self.ArrowRIGHT, 90);
+				SetClampedTextureRotation(self.ArrowGlowRIGHT, 90);
+			</OnLoad>
+			<OnShow>
+				self:SetHeight(self.Text:GetHeight()+30);
+			</OnShow>
 		</Scripts>
 	</Frame>
 </Ui>

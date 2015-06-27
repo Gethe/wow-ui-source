@@ -259,9 +259,13 @@ function GameTooltip_AddNewbieTip(frame, normalText, r, g, b, newbieText, noNorm
 	end
 end
 
-function GameTooltip_ShowCompareItem(self)
+function GameTooltip_ShowCompareItem(self, anchorFrame)
 	if ( not self ) then
 		self = GameTooltip;
+	end
+	
+	if( not anchorFrame ) then
+		anchorFrame = self;
 	end
 	
 	if ( self.needsReset ) then
@@ -278,8 +282,8 @@ function GameTooltip_ShowCompareItem(self)
 	
 	-- find correct side
 	local rightDist = 0;
-	local leftPos = self:GetLeft();
-	local rightPos = self:GetRight();
+	local leftPos = anchorFrame:GetLeft();
+	local rightPos = anchorFrame:GetRight();
 	if ( not rightPos ) then
 		rightPos = 0;
 	end
@@ -316,9 +320,9 @@ function GameTooltip_ShowCompareItem(self)
 		shoppingTooltip2:SetOwner(self, "ANCHOR_NONE");
 		shoppingTooltip2:ClearAllPoints();
 		if ( side and side == "left" ) then
-			shoppingTooltip2:SetPoint("TOPRIGHT", self, "TOPLEFT", 0, -10);
+			shoppingTooltip2:SetPoint("TOPRIGHT", anchorFrame, "TOPLEFT", 0, -10);
 		else
-			shoppingTooltip2:SetPoint("TOPLEFT", self, "TOPRIGHT", 0, -10);
+			shoppingTooltip2:SetPoint("TOPLEFT", anchorFrame, "TOPRIGHT", 0, -10);
 		end
 		
 		shoppingTooltip1:SetOwner(self, "ANCHOR_NONE");
@@ -334,9 +338,9 @@ function GameTooltip_ShowCompareItem(self)
 		shoppingTooltip1:ClearAllPoints();
 		
 		if ( side and side == "left" ) then
-			shoppingTooltip1:SetPoint("TOPRIGHT", self, "TOPLEFT", 0, -10);
+			shoppingTooltip1:SetPoint("TOPRIGHT", anchorFrame, "TOPLEFT", 0, -10);
 		else
-			shoppingTooltip1:SetPoint("TOPLEFT", self, "TOPRIGHT", 0, -10);
+			shoppingTooltip1:SetPoint("TOPLEFT", anchorFrame, "TOPRIGHT", 0, -10);
 		end
 
 		shoppingTooltip2:Hide();
@@ -396,4 +400,33 @@ end
 function GameTooltip_HideResetCursor()
 	GameTooltip:Hide();
 	ResetCursor();
+end
+
+function EmbeddedItemTooltip_OnTooltipSetItem(self)
+	if (not self.itemTextureSet) then
+		local _, _, _, _, _, _, _, _, _, itemTexture = GetItemInfo(self.id);
+		if (itemTexture) then
+			self.Icon:SetTexture(itemTexture);
+		end
+	end
+end
+
+
+function EmbeddedItemTooltip_SetItemByID(self, id)
+	self.id = id;
+	local itemName, _, itemRarity, _, _, _, _, _, _, itemTexture = GetItemInfo(id);
+	self:Show();
+	self.Tooltip:SetOwner(self, "ANCHOR_NONE");
+	self.Tooltip:SetItemByID(id);
+	if (itemRarity and itemRarity > LE_ITEM_QUALITY_COMMON and BAG_ITEM_QUALITY_COLORS[itemRarity]) then
+		self.IconBorder:Show();
+		self.IconBorder:SetVertexColor(BAG_ITEM_QUALITY_COLORS[itemRarity].r, BAG_ITEM_QUALITY_COLORS[itemRarity].g, BAG_ITEM_QUALITY_COLORS[itemRarity].b);
+	else
+		self.IconBorder:Hide();
+	end
+	self.Count:Hide();
+	self.Icon:SetTexture(itemTexture);
+	self.itemTextureSet = (itemTexture ~= nil);
+	self.Tooltip:SetPoint("TOPLEFT", self.Icon, "TOPRIGHT", 0, 10);
+	self.Tooltip:Show();
 end

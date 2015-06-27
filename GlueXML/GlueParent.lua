@@ -20,21 +20,23 @@ GlueScreenInfo["credits"]		= "CreditsFrame";
 GlueScreenInfo["options"]		= "OptionsFrame";
 
 CharModelFogInfo = { };
+CharModelFogInfo["SCOURGE"] = { r=0, g=0.22, b=0.22, far=26 };
+--[[
 CharModelFogInfo["HUMAN"] = { r=0.8, g=0.65, b=0.73, far=222 };
 CharModelFogInfo["ORC"] = { r=0.5, g=0.5, b=0.5, far=270 };
 CharModelFogInfo["DWARF"] = { r=0.85, g=0.88, b=1.0, far=500 };
 CharModelFogInfo["NIGHTELF"] = { r=0.25, g=0.22, b=0.55, far=611 };
 CharModelFogInfo["TAUREN"] = { r=1.0, g=0.61, b=0.42, far=153 };
-CharModelFogInfo["SCOURGE"] = { r=0, g=0.22, b=0.22, far=26 };
 CharModelFogInfo["CHARACTERSELECT"] = { r=0.8, g=0.65, b=0.73, far=222 };
+]]
 
 CharModelGlowInfo = { };
-CharModelGlowInfo["WORGEN"] = 0.0;
+--[[CharModelGlowInfo["WORGEN"] = 0.0;
 CharModelGlowInfo["GOBLIN"] = 0.0;
 CharModelGlowInfo["HUMAN"] = 0.15;
 CharModelGlowInfo["DWARF"] = 0.15;
 CharModelGlowInfo["CHARACTERSELECT"] = 0.3;
-
+]]
 GlueAmbienceTracks = { };
 GlueAmbienceTracks["HUMAN"] = "AMB_GlueScreen_Human";
 GlueAmbienceTracks["ORC"] = "AMB_GlueScreen_Orc";
@@ -246,7 +248,7 @@ function GlueParent_OnEvent(event, arg1, arg2, arg3)
 	elseif ( event == "DISCONNECTED_FROM_SERVER" ) then
 		TokenEntry_Cancel(TokenEnterDialog);
 		SetGlueScreen("login");
-		GlueDialog_Show(arg1);
+		GlueDialog_Show(arg1, arg2);
 		AddonList:Hide();
 	elseif ( event == "GET_PREFERRED_REALM_INFO" ) then
 		if( arg1 == 1) then
@@ -469,29 +471,6 @@ function MinutesToTime(mins, hideDays)
 		count = count + 1;
 	end
 	return time;
-end
-
-function TriStateCheckbox_SetState(checked, checkButton)
-	local checkedTexture = _G[checkButton:GetName().."CheckedTexture"];
-	if ( not checkedTexture ) then
-		message("Can't find checked texture");
-	end
-	if ( not checked or checked == 0 ) then
-		-- nil or 0 means not checked
-		checkButton:SetChecked(false);
-		checkButton.state = 0;
-	elseif ( checked == 2 ) then
-		-- 2 is a normal
-		checkButton:SetChecked(true);
-		checkedTexture:SetVertexColor(1, 1, 1);
-		checkedTexture:SetDesaturated(false);
-		checkButton.state = 2;
-	else
-		-- 1 is a gray check
-		checkButton:SetChecked(true);
-		checkedTexture:SetDesaturated(true);
-		checkButton.state = 1;
-	end
 end
 
 function SetStateRequestInfo( choice )

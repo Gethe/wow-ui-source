@@ -15,6 +15,9 @@ BONUS_OBJECTIVE_TRACKER_MODULE.blockPadding = 3;	-- need some extra room so scro
 
 local COMPLETED_BONUS_DATA = { };
 local COMPLETED_SUPERSEDED_BONUS_OBJECTIVES = { };
+-- this is to track which bonus objective is playing in the banner and shouldn't be in the tracker yet
+-- if multiple bonus objectives are added at the same time, only one will be in the banner 
+local BANNER_BONUS_OBJECTIVE_ID;
 
 function BONUS_OBJECTIVE_TRACKER_MODULE:OnFreeBlock(block)
 	if ( block.state == "LEAVING" ) then
@@ -150,7 +153,7 @@ function BonusObjectiveTracker_AddReward(questID, block, xp, money)
 		data.objectives = { };
 		local isInArea, isOnMap, numObjectives = GetTaskInfo(questID);
 		for objectiveIndex = 1, numObjectives do
-			local text, objectiveType, finished = GetQuestObjectiveInfo(questID, objectiveIndex);
+			local text, objectiveType, finished = GetQuestObjectiveInfo(questID, objectiveIndex, true);
 			tinsert(data.objectives, text);
 			data.objectiveType = objectiveType;
 		end
@@ -375,6 +378,12 @@ end
 
 local function InternalGetTasksTable()
 	local tasks = GetTasksTable();
+	for i = 1, #tasks do
+		if ( tasks[i] == BANNER_BONUS_OBJECTIVE_ID ) then
+			tremove(tasks, i);
+			break;
+		end
+	end
 	for questID, data in pairs(COMPLETED_BONUS_DATA) do
 		if ( questID > 0 ) then
 			local found = false;
@@ -408,7 +417,7 @@ local function InternalGetQuestObjectiveInfo(questID, objectiveIndex)
 	if ( COMPLETED_BONUS_DATA[questID] ) then
 		return COMPLETED_BONUS_DATA[questID].objectives[objectiveIndex], COMPLETED_BONUS_DATA[questID].objectiveType, true;
 	else
-		return GetQuestObjectiveInfo(questID, objectiveIndex);
+		return GetQuestObjectiveInfo(questID, objectiveIndex, false);
 	end
 end
 
@@ -580,7 +589,10 @@ local function UpdateQuestBonusObjectives(BlocksFrame)
 					end
 				end
 				if ( objectiveType == "progressbar" ) then
-					BONUS_OBJECTIVE_TRACKER_MODULE:AddProgressBar(block, block.currentLine, questID, finished);
+					local progressBar = BONUS_OBJECTIVE_TRACKER_MODULE:AddProgressBar(block, block.currentLine, questID, finished);
+					if ( OBJECTIVE_TRACKER_UPDATE_REASON == OBJECTIVE_TRACKER_UPDATE_TASK_ADDED ) then
+						progressBar.Bar.AnimIn:Play();
+					end
 				end
 			end
 			-- first line is either going to display the nub or the check
@@ -634,7 +646,17 @@ function BONUS_OBJECTIVE_TRACKER_MODULE:Update()
 	if ( SCENARIO_TRACKER_MODULE.BlocksFrame.slidingAction and BONUS_OBJECTIVE_TRACKER_MODULE.contentsHeight == 0 ) then
 		return;
 	end
-	
+
+	if ( OBJECTIVE_TRACKER_UPDATE_REASON == OBJECTIVE_TRACKER_UPDATE_TASK_ADDED ) then
+		if ( BANNER_BONUS_OBJECTIVE_ID == OBJECTIVE_TRACKER_UPDATE_ID ) then
+			-- we just finished the banner for this, clear the data so the block displays
+			BANNER_BONUS_OBJECTIVE_ID = nil;
+		elseif ( not BONUS_OBJECTIVE_TRACKER_MODULE:GetExistingBlock(OBJECTIVE_TRACKER_UPDATE_ID) and TopBannerManager_IsIdle() ) then
+			-- if we don't already have a block for this and there's no other banner playing we should do the banner
+			TopBannerManager_Show(ObjectiveTrackerBonusBannerFrame, OBJECTIVE_TRACKER_UPDATE_ID);
+		end
+	end
+
 	BONUS_OBJECTIVE_TRACKER_MODULE:BeginLayout();
 
 	UpdateScenarioBonusObjectives(BlocksFrame);
@@ -736,11 +758,34 @@ function BONUS_OBJECTIVE_TRACKER_MODULE:AddProgressBar(block, line, questID, fin
 		self.usedProgressBars[block][line] = progressBar;
 		progressBar:RegisterEvent("QUEST_LOG_UPDATE");
 		progressBar:Show();
-		progressBar.Bar.Label:Hide();
 		-- initialize to the right values
 		progressBar.questID = questID;
 		if( not finished ) then
 			BonusObjectiveTrackerProgressBar_SetValue( progressBar, GetQuestProgressBarPercent(questID) );
+		end
+		-- reward icon; try the first item
+		local _, texture = GetQuestLogRewardInfo(1, questID);
+		-- next, currency
+		if ( not texture and GetNumQuestLogRewardCurrencies(questID) > 0 ) then
+			_, texture = GetQuestLogRewardCurrencyInfo(1, questID);
+		end
+		-- money?
+		if ( not texture and GetQuestLogRewardMoney(questID) > 0 ) then
+			texture = "Interface\\Icons\\inv_misc_coin_02";
+		end
+		-- xp
+		if ( not texture and GetQuestLogRewardXP(questID) > 0 and UnitLevel("player") < MAX_PLAYER_LEVEL ) then
+			texture = "Interface\\Icons\\xp_icon";
+		end
+		if ( not texture ) then
+			progressBar.Bar.Icon:Hide();
+			progressBar.Bar.IconBG:Hide();
+			progressBar.Bar.BarGlow:SetAtlas("bonusobjectives-bar-glow", true);
+		else
+			progressBar.Bar.Icon:SetTexture(texture);
+			progressBar.Bar.Icon:Show();
+			progressBar.Bar.IconBG:Show();
+			progressBar.Bar.BarGlow:SetAtlas("bonusobjectives-bar-glow-ring", true);
 		end
 	end	
 	-- anchor the status bar
@@ -775,6 +820,7 @@ function BONUS_OBJECTIVE_TRACKER_MODULE:FreeProgressBar(block, line)
 		progressBar.finished = nil;
 		progressBar.AnimValue = nil;
 		progressBar:UnregisterEvent("QUEST_LOG_UPDATE");
+		progressBar.Bar.AnimIn:Stop();
 	end
 end
 
@@ -825,4 +871,60 @@ function BonusObjectiveTrackerProgressBar_PlayFlareAnim(progressBar, delta)
 	end
 	
 	barFlare.FlareAnim:Play();
+end
+
+-- *****************************************************************************************************
+-- ***** BONUS OBJECTIVE BANNER
+-- *****************************************************************************************************
+
+function ObjectiveTrackerBonusBannerFrame_OnLoad(self)
+	self.PlayBanner = ObjectiveTrackerBonusBannerFrame_PlayBanner;
+	self.StopBanner = ObjectiveTrackerBonusBannerFrame_StopBanner;
+end
+
+function ObjectiveTrackerBonusBannerFrame_PlayBanner(self, questID)
+	-- quest title
+	local questTitle = GetQuestLogTitle(GetQuestLogIndexByID(questID));
+	local colon = string.find(questTitle, ":");
+	if ( colon ) then
+		questTitle = string.sub(questTitle, colon + 1);
+		-- remove leading spaces
+		questTitle = gsub(questTitle, "^%s*", "");
+	end
+	self.Title:SetText(questTitle);
+	self.TitleFlash:SetText(questTitle);
+	-- offsets for anims
+	local trackerFrame = ObjectiveTrackerFrame;
+	local xOffset = trackerFrame:GetLeft() - self:GetRight();
+	local height = 0;
+	for i = 1, #trackerFrame.MODULES do
+		height = height + (trackerFrame.MODULES[i].oldContentsHeight or trackerFrame.MODULES[i].contentsHeight or 0);
+		if ( trackerFrame.MODULES[i] == QUEST_TRACKER_MODULE ) then
+			break;
+		end
+	end
+	local yOffset = trackerFrame:GetTop() - height - self:GetTop() + 64;
+	self.Anim.BG1Translation:SetOffset(xOffset, yOffset);
+	self.Anim.TitleTranslation:SetOffset(xOffset, yOffset);
+	self.Anim.BonusLabelTranslation:SetOffset(xOffset, yOffset);
+	self.Anim.IconTranslation:SetOffset(xOffset, yOffset);
+	-- hide zone text as it's very likely to be up
+	ZoneTextString:SetText("");
+	SubZoneTextString:SetText("");
+	-- show and play
+	self:Show();
+	self.Anim:Stop();
+	self.Anim:Play();
+	BANNER_BONUS_OBJECTIVE_ID = questID;
+	-- timer to put the bonus objective in the tracker
+	C_Timer.After(2.66, function() ObjectiveTracker_Update(OBJECTIVE_TRACKER_UPDATE_TASK_ADDED, BANNER_BONUS_OBJECTIVE_ID); end);
+end
+
+function ObjectiveTrackerBonusBannerFrame_StopBanner(self)
+	self.Anim:Stop();
+	self:Hide();
+end
+
+function ObjectiveTrackerBonusBannerFrame_OnAnimFinished()
+	TopBannerManager_BannerFinished();
 end

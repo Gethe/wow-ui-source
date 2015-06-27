@@ -25,7 +25,7 @@
 			<OnTooltipSetItem>
 				if ( IsModifiedClick("COMPAREITEMS") or
 				     (GetCVarBool("alwaysCompareItems") and not self:IsEquippedItem()) ) then
-					GameTooltip_ShowCompareItem(self, true);
+					GameTooltip_ShowCompareItem(self);
 				else
 					local shoppingTooltip1, shoppingTooltip2 = unpack(self.shoppingTooltips);
 					shoppingTooltip1:Hide();
@@ -86,5 +86,58 @@
 				self:SetWidth(SmallTextTooltipText:GetWidth() + 20);
 			</OnShow>
 		</Scripts>
+	</Frame>
+	<Frame name="EmbeddedItemTooltip" virtual="true">
+		<Size x="100" y="100"/>
+		<Layers>
+			<Layer level="ARTWORK">
+				<Texture parentKey="Icon">
+					<Size x="28" y="28"/>
+					<Anchors>
+						<Anchor point="TOPLEFT"/>
+					</Anchors>
+				</Texture>
+				<FontString parentKey="Count" inherits="NumberFontNormalSmall" justifyH="RIGHT" hidden="true">
+					<Anchors>
+						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Icon" x="5" y="2"/>
+					</Anchors>
+				</FontString>
+				<FontString parentKey="Text" inherits="GameTooltipText" justifyV="MIDDLE">
+					<Size x="128" y="28"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.Icon" relativePoint="TOPRIGHT" x="8" y="0"/>
+						<Anchor point="RIGHT" x="-10" y="0"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+			<Layer level="OVERLAY">
+				<Texture parentKey="IconBorder" file="Interface\Common\WhiteIconFrame" hidden="true">
+					<Size x="28" y="28"/>
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent.Icon"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Frames>
+			<GameTooltip name="$parentTooltip" parentKey="Tooltip" inherits="GameTooltipTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.Icon" relativePoint="TOPRIGHT" x="0" y="10"/>
+				</Anchors>
+				<Scripts>
+					<OnLoad inherit="prepend">
+						self:SetBackdrop(nil);
+					</OnLoad>
+					<OnSizeChanged>
+						local itemTooltipExtraBorderHeight = 22;
+						self:GetParent():SetSize(self:GetWidth() + self:GetParent().Icon:GetWidth(), self:GetHeight() - itemTooltipExtraBorderHeight);
+					</OnSizeChanged>
+					<OnTooltipSetItem>
+						local embeddedItemTooltip = self:GetParent();
+						EmbeddedItemTooltip_OnTooltipSetItem(embeddedItemTooltip);
+					</OnTooltipSetItem>
+				</Scripts>
+			</GameTooltip>
+		</Frames>
 	</Frame>
 </Ui>

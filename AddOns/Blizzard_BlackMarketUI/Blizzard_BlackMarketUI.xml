@@ -173,6 +173,15 @@
 							</Anchors>
 						</FontString>
 					</Layer>
+					<Layer level="OVERLAY">
+						<Texture parentKey="IconBorder" file="Interface\Common\WhiteIconFrame" hidden="true">
+							<Size x="34" y="34"/>
+							<Anchors>
+								<Anchor point="CENTER" x="0" y="0"/>
+							</Anchors>
+							<Color r="0" g="0.8" b="1"/>
+						</Texture>
+					</Layer>
 				</Layers>
 				<Scripts>
 					<OnEnter>
@@ -678,6 +687,15 @@
 										<Anchor point="TOPLEFT" x="0" y="-2"/>
 									</Anchors>
 								</FontString>
+							</Layer>
+							<Layer level="OVERLAY">
+								<Texture parentKey="IconBorder" file="Interface\Common\WhiteIconFrame" hidden="true">
+									<Size x="35" y="35"/>
+									<Anchors>
+										<Anchor point="CENTER" x="0" y="0"/>
+									</Anchors>
+									<Color r="0" g="0.8" b="1"/>
+								</Texture>
 							</Layer>
 						</Layers>
 						<Scripts>

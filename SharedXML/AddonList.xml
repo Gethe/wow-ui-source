@@ -218,10 +218,7 @@
 					<Anchor point="BOTTOMLEFT"/>
 				</Anchors>
 				<Scripts>
-					<OnClick>
-						EnableAllAddOns();
-						AddonList_Update();
-					</OnClick>
+					<OnClick function="AddonList_EnableAll"/>
 				</Scripts>
 			</Button>
 			<Button name="$parentDisableAllButton" inherits="MagicButtonTemplate" parentKey="DisableAllButton" text="DISABLE_ALL_ADDONS">
@@ -230,10 +227,7 @@
 					<Anchor point="TOPLEFT" relativeTo="$parentEnableAllButton" relativePoint="TOPRIGHT" x="0" y="0"/>
 				</Anchors>
 				<Scripts>
-					<OnClick>
-						DisableAllAddOns();
-						AddonList_Update();
-					</OnClick>
+					<OnClick function="AddonList_DisableAll"/>
 				</Scripts>
 			</Button>
 			<Button name="AddonListEntry1" inherits="AddonListEntryTemplate" id="1">

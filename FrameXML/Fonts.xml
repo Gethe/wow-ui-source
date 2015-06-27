@@ -30,30 +30,12 @@
 		NAMEPLATE_SPELLCAST_FONT = "GameFontWhiteTiny";
 	</Script>
 
-	<FontFamily name="SystemFont_Small" virtual="true">
-		<Member alphabet="roman">
-			<Font font="Fonts\FRIZQT__.TTF" height="10"/>
-		</Member>
-		<Member alphabet="korean">
-			<Font font="Fonts\2002.TTF" height="13"/>
-		</Member>
-		<Member alphabet="simplifiedchinese">
-			<Font font="Fonts\ARKai_T.ttf" height="12"/>
-		</Member>
-		<Member alphabet="traditionalchinese">
-			<Font font="Fonts\blei00d.TTF" height="10"/>
-		</Member>
-		<Member alphabet="russian">
-			<Font font="Fonts\FRIZQT___CYR.TTF" height="10"/>
-		</Member>
-	</FontFamily>
-
 	<FontFamily name="SystemFont_Outline_Small" virtual="true">
 		<Member alphabet="roman">
 			<Font font="Fonts\FRIZQT__.TTF" height="10" outline="NORMAL"/>
 		</Member>
 		<Member alphabet="korean">
-			<Font font="Fonts\2002.TTF" height="13" outline="NORMAL"/>
+			<Font font="Fonts\2002.TTF" height="10" outline="NORMAL"/>
 		</Member>
 		<Member alphabet="simplifiedchinese">
 			<Font font="Fonts\ARKai_C.ttf" height="12" outline="NORMAL"/>
@@ -882,17 +864,17 @@
 			</Font>
 		</Member>
 		<Member alphabet="korean">
-			<Font font="Fonts\K_Pagetext.ttf" height="30" outline="NORMAL">
+			<Font font="Fonts\K_Pagetext.ttf" height="30">
 				<Color r="1" g=".82" b="0"/>
 			</Font>
 		</Member>
 		<Member alphabet="simplifiedchinese">
-			<Font font="Fonts\ARKai_T.ttf" height="30" outline="NORMAL">
+			<Font font="Fonts\ARKai_T.ttf" height="30">
 				<Color r="1" g=".82" b="0"/>
 			</Font>
 		</Member>
 		<Member alphabet="traditionalchinese">
-			<Font font="Fonts\blei00d.ttf" height="30" outline="NORMAL">
+			<Font font="Fonts\blei00d.ttf" height="30">
 				<Color r="1" g=".82" b="0"/>
 			</Font>
 		</Member>

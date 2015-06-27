@@ -1123,6 +1123,16 @@
 
 
 	<!-- Advanced Panel -->
+	<Frame name="AdvancedVideoOptionsDropDownMenuTemplate" inherits="VideoOptionsDropDownMenuTemplate" virtual="true">
+		<Scripts>
+			<OnShow>
+				self.selectedID = nil;
+				Graphics_ControlRefreshValue(self);
+			</OnShow>
+		</Scripts>
+	</Frame>
+
+
 	<Frame name="Advanced_" parent="VideoOptionsFramePanelContainer" hidden="true">
 		<Layers>
 			<Layer level="ARTWORK">
@@ -1147,7 +1157,7 @@
 			</Layer>
 		</Layers>
 		<Frames>
-			<Frame name="$parentBufferingDropDown" inherits="VideoOptionsDropDownMenuTemplate" id="15">
+			<Frame name="$parentBufferingDropDown" inherits="AdvancedVideoOptionsDropDownMenuTemplate" id="15">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeTo="$parentDisplayHeaderUnderline" relativePoint="BOTTOMLEFT">
 						<Offset x="120" y="-4"/>
@@ -1163,7 +1173,7 @@
 					</Layer>
 				</Layers>
 			</Frame>
-			<Frame name="$parentLagDropDown" inherits="VideoOptionsDropDownMenuTemplate" id="15">
+			<Frame name="$parentLagDropDown" inherits="AdvancedVideoOptionsDropDownMenuTemplate" id="15">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeTo="$parentBufferingDropDown" relativePoint="BOTTOMLEFT">
 						<Offset>
@@ -1181,7 +1191,7 @@
 					</Layer>
 				</Layers>
 			</Frame>
-			<Frame name="$parentHardwareCursorDropDown" inherits="VideoOptionsDropDownMenuTemplate" id="15">
+			<Frame name="$parentHardwareCursorDropDown" inherits="AdvancedVideoOptionsDropDownMenuTemplate" id="15">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeTo="$parentLagDropDown" relativePoint="BOTTOMLEFT">
 						<Offset>
@@ -1199,7 +1209,7 @@
 					</Layer>
 				</Layers>
 			</Frame>
-			<Frame name="$parentMultisampleAntiAliasingDropDown" inherits="VideoOptionsDropDownMenuTemplate" id="15">
+			<Frame name="$parentMultisampleAntiAliasingDropDown" inherits="AdvancedVideoOptionsDropDownMenuTemplate" id="15">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeTo="$parentHardwareCursorDropDown" relativePoint="BOTTOMLEFT">
 						<Offset>
@@ -1216,14 +1226,8 @@
 						</FontString>
 					</Layer>
 				</Layers>
-				<Scripts>
-					<OnShow>
-						self.selectedID = nil;
-						Graphics_ControlRefreshValue(self);
-					</OnShow>
-				</Scripts>
 			</Frame>
-			<Frame name="$parentMultisampleAlphaTest" inherits="VideoOptionsDropDownMenuTemplate" id="16">
+			<Frame name="$parentMultisampleAlphaTest" inherits="AdvancedVideoOptionsDropDownMenuTemplate" id="16">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeTo="$parentMultisampleAntiAliasingDropDown" relativePoint="BOTTOMLEFT">
 						<Offset>
@@ -1241,7 +1245,7 @@
 					</Layer>
 				</Layers>
 			</Frame>
-			<Frame name="$parentPostProcessAntiAliasingDropDown" inherits="VideoOptionsDropDownMenuTemplate" id="15">
+			<Frame name="$parentPostProcessAntiAliasingDropDown" inherits="AdvancedVideoOptionsDropDownMenuTemplate" id="15">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeTo="$parentMultisampleAlphaTest" relativePoint="BOTTOMLEFT">
 						<Offset>
@@ -1258,14 +1262,8 @@
 						</FontString>
 					</Layer>
 				</Layers>
-				<Scripts>
-					<OnShow>
-						self.selectedID = nil;
-						Graphics_ControlRefreshValue(self);
-					</OnShow>
-				</Scripts>
 			</Frame>
-			<Frame name="$parentResampleQualityDropDown" inherits="VideoOptionsDropDownMenuTemplate" id="16">
+			<Frame name="$parentResampleQualityDropDown" inherits="AdvancedVideoOptionsDropDownMenuTemplate" id="16">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeTo="$parentPostProcessAntiAliasingDropDown" relativePoint="BOTTOMLEFT" x="0" y="-8" />
 				</Anchors>
@@ -1279,7 +1277,7 @@
 					</Layer>
 				</Layers>
 			</Frame>
-			<Frame name="$parentGraphicsAPIDropDown" inherits="VideoOptionsDropDownMenuTemplate" id="16">
+			<Frame name="$parentGraphicsAPIDropDown" inherits="AdvancedVideoOptionsDropDownMenuTemplate" id="16">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeTo="$parentResampleQualityDropDown" relativePoint="BOTTOMLEFT">
 						<Offset>

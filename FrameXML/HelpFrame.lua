@@ -148,7 +148,6 @@ function HelpFrame_OnLoad(self)
 	self:RegisterEvent("GMSURVEY_DISPLAY");
 	self:RegisterEvent("GMRESPONSE_RECEIVED");
 	self:RegisterEvent("QUICK_TICKET_SYSTEM_STATUS");
-	self:RegisterEvent("ITEM_RESTORATION_BUTTON_STATUS");
 	self:RegisterEvent("QUICK_TICKET_THROTTLE_CHANGED");
 	self:RegisterEvent("SIMPLE_BROWSER_WEB_PROXY_FAILED");
 	self:RegisterEvent("SIMPLE_BROWSER_WEB_ERROR");
@@ -165,7 +164,6 @@ function HelpFrame_OnLoad(self)
 	self.Bg:SetVertTile(true);
 
 	HelpFrame_UpdateQuickTicketSystemStatus();
-	HelpFrame_UpdateItemRestorationButtonStatus();
 end
 
 function HelpFrame_OnShow(self)
@@ -232,7 +230,6 @@ function HelpFrame_OnEvent(self, event, ...)
 				TicketStatusFrame:Hide();
 			end
 		end
-		HelpFrame_SetTicketEntry();
 	elseif ( event == "GMRESPONSE_RECEIVED" ) then
 		local ticketDescription, response = ...;
 
@@ -247,19 +244,8 @@ function HelpFrame_OnEvent(self, event, ...)
 		TicketStatusTime:Hide();
 		TicketStatusFrame:Show();
 		TicketStatusFrame.hasGMSurvey = false;
-		HelpFrame_SetTicketButtonText(GM_RESPONSE_POPUP_VIEW_RESPONSE);
-		HelpFrameGMResponse_IssueText:SetText(ticketDescription);
-		HelpFrameGMResponse_GMText:SetText(response);
-		
-		-- update if at a ticket panel
-		if ( HelpFrame.selectedId == HELPFRAME_OPEN_TICKET or HelpFrame.selectedId == HELPFRAME_SUBMIT_TICKET ) then		
-			HelpFrame_SetFrameByKey(HELPFRAME_GM_RESPONSE);
-			HelpFrame_SetSelectedButton(HelpFrameButton6);
-		end
 	elseif ( event == "QUICK_TICKET_SYSTEM_STATUS" or event == "QUICK_TICKET_THROTTLE_CHANGED" ) then
 		HelpFrame_UpdateQuickTicketSystemStatus();
-	elseif ( event == "ITEM_RESTORATION_BUTTON_STATUS" ) then
-		HelpFrame_UpdateItemRestorationButtonStatus();
 	elseif ( event == "SIMPLE_BROWSER_WEB_PROXY_FAILED" ) then
 		StaticPopup_Show("WEB_PROXY_FAILED");
 	elseif ( event == "SIMPLE_BROWSER_WEB_ERROR" ) then
@@ -285,15 +271,6 @@ function HelpFrame_UpdateQuickTicketSystemStatus()
 	HelpFrame_UpdateSubsystemStatus(HELPFRAME_REPORT_ABUSE, GMEuropaComplaintsEnabled() and not GMQuickTicketSystemThrottled());
 	HelpFrame_UpdateSubsystemStatus(HELPFRAME_OPEN_TICKET, GMEuropaTicketsEnabled() and not GMQuickTicketSystemThrottled());
 	HelpFrame_UpdateSubsystemStatus(HELPFRAME_ACCOUNT_SECURITY, GMEuropaTicketsEnabled() and not GMQuickTicketSystemThrottled());
-end
-
-function HelpFrame_UpdateItemRestorationButtonStatus()
-	local enabled = GMItemRestorationButtonEnabled();
-	if ( enabled ) then
-		HelpFrameOpenTicketHelpItemRestoration:Show();
-	else
-		HelpFrameOpenTicketHelpItemRestoration:Hide();
-	end
 end
 
 function HelpFrame_ShowFrame(key)
@@ -336,7 +313,6 @@ end
 
 function HelpFrame_GMResponse_Acknowledge(markRead)
 	haveResponse = false;
-	HelpFrame_SetTicketEntry();
 	if ( markRead ) then
 		needMoreHelp = false;
 		GMResponseResolve();
@@ -352,11 +328,6 @@ end
 
 function HelpFrame_SetFrameByKey(key)
 	HelpBrowser:Hide();
-	-- if we're trying to open any ticket window and we have a GM response, override
-	if ( haveResponse and ( key == HELPFRAME_OPEN_TICKET or key == HELPFRAME_SUBMIT_TICKET ) ) then
-		key = HELPFRAME_GM_RESPONSE;
-		HelpFrame_SetSelectedButton(HelpFrameButton6);
-	end
 	local data = HelpFrameNavTbl[key];
 	if data.frame then
 		local showFrame = HelpFrame[data.frame];
@@ -391,25 +362,6 @@ function HelpFrame_SetTicketButtonText(text)
 	HelpFrame.button6:SetText(text);
 	HelpFrame.asec.ticketButton:SetText(text);
 	HelpFrame.ticketHelp.ticketButton:SetText(text);
-end
-
-function HelpFrame_SetTicketEntry()
-	-- don't do anything if we have a response
-	if ( not haveResponse ) then
-		local self = HelpFrame;
-		if ( haveTicket ) then
-			self.ticket.submitButton:SetText(EDIT_TICKET);
-			self.ticket.cancelButton:SetText(HELP_TICKET_ABANDON);
-			self.ticket.title:SetText(HELPFRAME_OPENTICKET_EDITTEXT);
-			HelpFrame_SetTicketButtonText(HELP_TICKET_EDIT);
-		else
-			HelpFrameOpenTicketEditBox:SetText("");
-			self.ticket.submitButton:SetText(SUBMIT);
-			self.ticket.cancelButton:SetText(CANCEL);
-			self.ticket.title:SetText(HELPFRAME_SUBMIT_TICKET_TITLE);
-			HelpFrame_SetTicketButtonText(HELP_TICKET_OPEN);
-		end
-	end
 end
 
 function HelpFrame_SetButtonEnabled(button, enabled)

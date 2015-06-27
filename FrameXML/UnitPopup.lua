@@ -80,7 +80,8 @@ UnitPopupButtons["REPORT_PET"] = { text = REPORT_PET_NAME, dist = 0 };
 UnitPopupButtons["DUNGEON_DIFFICULTY"] = { text = DUNGEON_DIFFICULTY, dist = 0,  nested = 1, defaultDifficultyID = 1 };
 UnitPopupButtons["DUNGEON_DIFFICULTY1"] = { text = PLAYER_DIFFICULTY1, dist = 0, checkable = 1, difficultyID = 1 };
 UnitPopupButtons["DUNGEON_DIFFICULTY2"] = { text = PLAYER_DIFFICULTY2, dist = 0, checkable = 1, difficultyID = 2 };
-UnitPopupButtons["DUNGEON_DIFFICULTY3"] = { text = PLAYER_DIFFICULTY5, dist = 0, checkable = 1, difficultyID = 8 };
+UnitPopupButtons["DUNGEON_DIFFICULTY3"] = { text = PLAYER_DIFFICULTY6, dist = 0, checkable = 1, difficultyID = 23 };
+UnitPopupButtons["DUNGEON_DIFFICULTY4"] = { text = PLAYER_DIFFICULTY5, dist = 0, checkable = 1, difficultyID = 8 };
 
 UnitPopupButtons["RAID_DIFFICULTY"] = { text = RAID_DIFFICULTY, dist = 0,  nested = 1, defaultDifficultyID = 14 };
 UnitPopupButtons["RAID_DIFFICULTY1"] = { text = PLAYER_DIFFICULTY1, dist = 0, checkable = 1, difficultyID = 14 };
@@ -232,7 +233,7 @@ UnitPopupMenus["LOOT_THRESHOLD"] = { "ITEM_QUALITY2_DESC", "ITEM_QUALITY3_DESC",
 UnitPopupMenus["SELECT_LOOT_SPECIALIZATION"] = { "LOOT_SPECIALIZATION_DEFAULT","LOOT_SPECIALIZATION_SPEC1", "LOOT_SPECIALIZATION_SPEC2", "LOOT_SPECIALIZATION_SPEC3", "LOOT_SPECIALIZATION_SPEC4"};
 UnitPopupMenus["OPT_OUT_LOOT_TITLE"] = { "OPT_OUT_LOOT_ENABLE", "OPT_OUT_LOOT_DISABLE"};
 UnitPopupMenus["REPORT_PLAYER"] = { "REPORT_SPAM", "REPORT_BAD_LANGUAGE", "REPORT_BAD_NAME", "REPORT_CHEATING" };
-UnitPopupMenus["DUNGEON_DIFFICULTY"] = { "DUNGEON_DIFFICULTY1", "DUNGEON_DIFFICULTY2", "DUNGEON_DIFFICULTY3" };
+UnitPopupMenus["DUNGEON_DIFFICULTY"] = { "DUNGEON_DIFFICULTY1", "DUNGEON_DIFFICULTY2", "DUNGEON_DIFFICULTY3", "DUNGEON_DIFFICULTY4" };
 UnitPopupMenus["RAID_DIFFICULTY"] = { "RAID_DIFFICULTY1", "RAID_DIFFICULTY2", "RAID_DIFFICULTY3", "LEGACY_RAID_SUBSECTION_TITLE", "LEGACY_RAID_DIFFICULTY1", "LEGACY_RAID_DIFFICULTY2" };
 UnitPopupMenus["BN_REPORT"] = { "BN_REPORT_SPAM", "BN_REPORT_ABUSE", "BN_REPORT_NAME" };
 UnitPopupMenus["MOVE_PLAYER_FRAME"] = { "UNLOCK_PLAYER_FRAME", "LOCK_PLAYER_FRAME", "RESET_PLAYER_FRAME_POSITION", "PLAYER_FRAME_SHOW_CASTBARS" };
@@ -929,7 +930,7 @@ function UnitPopup_HideButtons ()
 				UnitPopupShown[UIDROPDOWNMENU_MENU_LEVEL][index] = 0;
 			end
 		elseif ( value == "INSTANCE_LEAVE" ) then
-			if ( inParty == 0 or not IsInGroup(LE_PARTY_CATEGORY_INSTANCE) or instanceType == "pvp" or instanceType == "arena" ) then
+			if ( inParty == 0 or not IsInGroup(LE_PARTY_CATEGORY_INSTANCE) or IsPartyWorldPVP() or instanceType == "pvp" or instanceType == "arena" ) then
 				UnitPopupShown[UIDROPDOWNMENU_MENU_LEVEL][index] = 0;
 			end
 		elseif ( value == "FREE_FOR_ALL" ) then

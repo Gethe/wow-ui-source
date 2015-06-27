@@ -528,7 +528,7 @@ function RaidGroupFrame_UpdateLevel(id)
 	local unit = "raid"..id;
 	local buttonLevel = _G["RaidGroupButton"..id.."Level"];
 
-	buttonLevel:SetText(UnitLevel(unit));
+	buttonLevel:SetText(UnitEffectiveLevel(unit));
 end
 
 function RaidGroupFrame_UpdateHealth(id)

@@ -943,17 +943,17 @@
 	</Texture>
 	<Button name="UIPanelScrollUpButtonTemplate" virtual="true">
 		<Size x="18" y="16"/>
-		<NormalTexture inherits="UIPanelScrollBarButton" file="Interface\Buttons\UI-ScrollBar-ScrollUpButton-Up"/>
-		<PushedTexture inherits="UIPanelScrollBarButton" file="Interface\Buttons\UI-ScrollBar-ScrollUpButton-Down"/>
-		<DisabledTexture inherits="UIPanelScrollBarButton" file="Interface\Buttons\UI-ScrollBar-ScrollUpButton-Disabled"/>
-		<HighlightTexture inherits="UIPanelScrollBarButton" file="Interface\Buttons\UI-ScrollBar-ScrollUpButton-Highlight" alphaMode="ADD"/>
+		<NormalTexture parentKey="Normal" inherits="UIPanelScrollBarButton" file="Interface\Buttons\UI-ScrollBar-ScrollUpButton-Up"/>
+		<PushedTexture parentKey="Pushed" inherits="UIPanelScrollBarButton" file="Interface\Buttons\UI-ScrollBar-ScrollUpButton-Down"/>
+		<DisabledTexture parentKey="Disabled" inherits="UIPanelScrollBarButton" file="Interface\Buttons\UI-ScrollBar-ScrollUpButton-Disabled"/>
+		<HighlightTexture parentKey="Highlight" inherits="UIPanelScrollBarButton" file="Interface\Buttons\UI-ScrollBar-ScrollUpButton-Highlight" alphaMode="ADD"/>
 	</Button>
 	<Button name="UIPanelScrollDownButtonTemplate" virtual="true">
 		<Size x="18" y="16"/>
-		<NormalTexture inherits="UIPanelScrollBarButton" file="Interface\Buttons\UI-ScrollBar-ScrollDownButton-Up"/>
-		<PushedTexture inherits="UIPanelScrollBarButton" file="Interface\Buttons\UI-ScrollBar-ScrollDownButton-Down"/>
-		<DisabledTexture inherits="UIPanelScrollBarButton" file="Interface\Buttons\UI-ScrollBar-ScrollDownButton-Disabled"/>
-		<HighlightTexture inherits="UIPanelScrollBarButton" file="Interface\Buttons\UI-ScrollBar-ScrollDownButton-Highlight" alphaMode="ADD"/>
+		<NormalTexture parentKey="Normal" inherits="UIPanelScrollBarButton" file="Interface\Buttons\UI-ScrollBar-ScrollDownButton-Up"/>
+		<PushedTexture parentKey="Pushed" inherits="UIPanelScrollBarButton" file="Interface\Buttons\UI-ScrollBar-ScrollDownButton-Down"/>
+		<DisabledTexture parentKey="Disabled" inherits="UIPanelScrollBarButton" file="Interface\Buttons\UI-ScrollBar-ScrollDownButton-Disabled"/>
+		<HighlightTexture parentKey="Highlight" inherits="UIPanelScrollBarButton" file="Interface\Buttons\UI-ScrollBar-ScrollDownButton-Highlight" alphaMode="ADD"/>
 	</Button>
 	<Slider name="UIPanelScrollBarTemplate" virtual="true">
 		<Size x="16" y="0"/>
@@ -1476,4 +1476,39 @@
 			</Anchors>
 		</HighlightTexture>
     </Button>
+
+    <Frame name="LoadingSpinnerTemplate" virtual="true">
+		<Size x="48" y="48"/>
+		<Frames>
+			<Frame parentKey="BackgroundFrame" setAllPoints="true">
+				<Layers>
+					<Layer level="BACKGROUND">
+						<Texture parentKey="Background" file="Interface\COMMON\StreamBackground" setAllPoints="true">
+							<Color r="1" g="0.82" b="0"/>
+						</Texture>
+					</Layer>
+					<Layer level="ARTWORK">
+						<Texture parentKey="Framing" file="Interface\COMMON\StreamFrame" setAllPoints="true"/>
+					</Layer>
+				</Layers>
+			</Frame>					
+			<Frame parentKey="AnimFrame" setAllPoints="true">
+				<Layers>
+					<Layer level="BACKGROUND">
+						<Texture parentKey="Circle" file="Interface\COMMON\StreamCircle" setAllPoints="true">
+							<Color r="1" g="0.82" b="0"/>
+						</Texture>
+					</Layer>
+					<Layer level="OVERLAY">
+						<Texture parentKey="Spark" file="Interface\COMMON\StreamSpark" setAllPoints="true"/>
+					</Layer>
+				</Layers>
+			</Frame>
+		</Frames>
+		<Animations>
+			<AnimationGroup parentKey="Anim" looping="REPEAT">
+				<Rotation childKey="AnimFrame" order="1" duration="1" degrees="-360"/>
+			</AnimationGroup>
+		</Animations>
+	</Frame>
 </Ui>

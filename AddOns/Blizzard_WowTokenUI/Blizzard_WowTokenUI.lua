@@ -26,6 +26,7 @@ Import("date");
 Import("time");
 Import("type");
 Import("PlaySound");
+Import("GetCVar");
 Import("TOKEN_REDEEM_LABEL"); 
 Import("TOKEN_REDEEM_GAME_TIME_TITLE"); 
 Import("TOKEN_REDEEM_GAME_TIME_DESCRIPTION"); 
@@ -36,7 +37,8 @@ Import("TOKEN_CONFIRMATION_TITLE");
 Import("TOKEN_COMPLETE_TITLE"); 
 Import("TOKEN_CREATE_AUCTION_TITLE"); 
 Import("TOKEN_BUYOUT_AUCTION_TITLE"); 
-Import("TOKEN_CONFIRM_CREATE_AUCTION"); 
+Import("TOKEN_CONFIRM_CREATE_AUCTION");
+Import("TOKEN_CONFIRM_CREATE_AUCTION_LINE_2"); 
 Import("TOKEN_CONFIRM_GAME_TIME_DESCRIPTION");
 Import("TOKEN_CONFIRM_GAME_TIME_DESCRIPTION_MINUTES");
 Import("TOKEN_CONFIRM_GAME_TIME_EXPIRATION_CONFIRMATION_DESCRIPTION"); 
@@ -50,6 +52,7 @@ Import("TOKEN_REDEEM_GAME_TIME_BUTTON_LABEL_MINUTES");
 Import("TOKEN_REDEEM_GAME_TIME_DESCRIPTION_MINUTES");
 Import("TOKEN_TRANSACTION_IN_PROGRESS");
 Import("TOKEN_YOU_WILL_BE_LOGGED_OUT");
+Import("TOKEN_REDEMPTION_UNAVAILABLE");
 Import("BLIZZARD_STORE_TRANSACTION_IN_PROGRESS");
 
 Import("GOLD_AMOUNT_SYMBOL");
@@ -72,7 +75,6 @@ Import("OKAY");
 Import("LARGE_NUMBER_SEPERATOR");
 Import("DECIMAL_SEPERATOR");
 Import("CREATE_AUCTION");
-Import("ENABLE_COLORBLIND_MODE");
 Import("WEEKS_ABBR");
 Import("DAYS_ABBR");
 Import("HOURS_ABBR");
@@ -157,15 +159,16 @@ end
 
 function WowTokenRedemptionFrame_OnEvent(self, event, ...)
 	if (event == "TOKEN_REDEEM_FRAME_SHOW") then
+		self.Display.RedeemButton:Disable();
 		if (not C_WowTokenPublic.GetCommerceSystemStatus()) then
-			Outbound.RedeemFailed(LE_TOKEN_RESULT_ERROR_DISABLED);
-			C_WowTokenSecure.CancelRedeem();
-			return;
+			self.Display.Format:SetText(TOKEN_REDEMPTION_UNAVAILABLE);
+			self.Display.Spinner:Hide();
+		else
+			C_WowTokenPublic.UpdateTokenCount();
+			C_WowTokenSecure.GetRemainingGameTime();
+			self.Display.Format:Hide();
+			self.Display.Spinner:Show();
 		end
-		C_WowTokenPublic.UpdateTokenCount();
-		C_WowTokenSecure.GetRemainingGameTime();
-		self.Display.Format:Hide();
-		self.Display.Spinner:Show();
 		self:Show();
 	elseif (event == "TOKEN_REDEEM_GAME_TIME_UPDATED") then
 		if (RedeemIndex == LE_CONSUMABLE_TOKEN_REDEEM_FOR_SUB_AMOUNT_30_DAYS) then
@@ -178,6 +181,7 @@ function WowTokenRedemptionFrame_OnEvent(self, event, ...)
 		self.Display.Format:SetText(GetRedemptionString());
 		self.Display.Spinner:Hide();
 		self.Display.Format:Show();
+		self.Display.RedeemButton:Enable();
 	elseif (event == "TOKEN_STATUS_CHANGED") then
 		RedeemIndex = select(3, C_WowTokenPublic.GetCommerceSystemStatus());
 	end
@@ -201,6 +205,7 @@ end
 function WowTokenRedemptionRedeemButton_OnClick(self)
 	WowTokenRedemptionFrame:Hide();
 	C_WowTokenSecure.RedeemToken();
+	WowTokenDialog_SetDialog(WowTokenDialog, "WOW_TOKEN_REDEEM_CONFIRMATION");
 	PlaySound("igMainMenuOpen");
 end
 
@@ -238,7 +243,7 @@ function GetSecureMoneyString(money, separateThousands)
 	local silver = floor((money - (gold * COPPER_PER_SILVER * SILVER_PER_GOLD)) / COPPER_PER_SILVER);
 	local copper = money % COPPER_PER_SILVER;
 
-	if ( ENABLE_COLORBLIND_MODE == "1" ) then
+	if ( GetCVar("colorblindMode") == "1" ) then
 		if (separateThousands) then
 			goldString = formatLargeNumber(gold)..GOLD_AMOUNT_SYMBOL;
 		else
@@ -326,13 +331,14 @@ end
 
 -- These are file locals because we don't want to keep variables on the frame itself
 local currentDialog, currentDialogName, currentTicker, remainingDialogTime;
-local dialogs = {
+local dialogs;
+dialogs = {
 	["WOW_TOKEN_REDEEM_CONFIRMATION"] = {
 		completionIcon = false,
 		cautionIcon = true,
 		title = TOKEN_CONFIRMATION_TITLE,
 		description = { [LE_CONSUMABLE_TOKEN_REDEEM_FOR_SUB_AMOUNT_30_DAYS] = TOKEN_CONFIRM_GAME_TIME_DESCRIPTION, [LE_CONSUMABLE_TOKEN_REDEEM_FOR_SUB_AMOUNT_2700_MINUTES] = TOKEN_CONFIRM_GAME_TIME_DESCRIPTION_MINUTES },
-		confirmationDesc = GetRedemptionString,
+		confirmationDesc = nil, -- Now set in reaction to an event
 		additionalConfirmationDescription = function()
 			if (C_WowTokenSecure.WillKickFromWorld()) then
 				return "|n|n"..TOKEN_YOU_WILL_BE_LOGGED_OUT;
@@ -354,6 +360,11 @@ local dialogs = {
 		end,
 		button2 = CANCEL,
 		button2OnClick = function(self) self:Hide(); C_WowTokenSecure.CancelRedeem(); PlaySound("igMainMenuClose"); end,
+		onHide = function(self)
+			dialogs["WOW_TOKEN_REDEEM_CONFIRMATION"].spinner = true;
+			dialogs["WOW_TOKEN_REDEEM_CONFIRMATION"].confirmationDesc = nil;
+		end,
+		spinner = true,
 		point = { "CENTER", UIParent, "CENTER", 0, 240 },
 	};
 	["WOW_TOKEN_REDEEM_COMPLETION"] = {
@@ -378,8 +389,8 @@ local dialogs = {
 		cautionIcon = true,
 		title = TOKEN_CREATE_AUCTION_TITLE,
 		confirmationDesc = TOKEN_CONFIRM_CREATE_AUCTION,
-		formatConfirmationDesc = true,
-		confDescFormatArgs = function() return { GetSecureMoneyString(C_WowTokenPublic.GetGuaranteedPrice(), true), GetTimeLeftString() } end,
+		confirmationDescLine2 = function() return TOKEN_CONFIRM_CREATE_AUCTION_LINE_2:format(GetTimeLeftString()) end,
+		price = function() return GetSecureMoneyString(C_WowTokenPublic.GetGuaranteedPrice()); end,
 		button1 = CREATE_AUCTION,
 		button1OnClick = function(self) C_WowTokenSecure.ConfirmSellToken(true); self:Hide(); PlaySound("LOOTWINDOWCOINSOUND"); end,
 		button2 = CANCEL,
@@ -409,7 +420,7 @@ local dialogs = {
 		onShow = function(self)
 			self:SetAttribute("isauctiondialogshown", true);
 			self.Title:SetFontObject("GameFontHighlight");
-			self.ConfirmationDesc:SetFontObject("GameFontHighlight");
+			self.ConfirmationDesc:SetFontObject("NumberFontNormal");
 		end,
 		onHide = function(self)
 			self:SetAttribute("isauctiondialogshown", false);
@@ -431,6 +442,7 @@ local dialogs = {
 	["WOW_TOKEN_REDEEM_IN_PROGRESS"] = {
 		title = TOKEN_TRANSACTION_IN_PROGRESS,
 		spinner = true,
+		noButtons = true,
 		point = { "CENTER", UIParent, "CENTER", 0, 240 },
 	};
 };
@@ -470,8 +482,6 @@ function WowTokenDialog_SetDialog(self, dialogName)
 	if (dialog.confDescFormatArgs) then
 		confDescArgs = dialog.confDescFormatArgs();
 	end
-
-	self:Show();
 
 	local width = 256;
 	local height = dialog.baseHeight or 54;
@@ -550,16 +560,68 @@ function WowTokenDialog_SetDialog(self, dialogName)
 		self.ConfirmationDesc:Show();
 		height = height + spacing + self.ConfirmationDesc:GetHeight();
 		width = max(width, self.ConfirmationDesc:GetWidth());
+		local target = dialog.description and self.Description or self.Title;
+		if (dialog.price) then
+			self.PriceLabel:SetWidth(0);
+			self.ConfirmationDescLine2:ClearAllPoints();
+			self.ConfirmationDescLine2:SetPoint("TOP", target, "BOTTOM", 0, -40 + self.ConfirmationDesc:GetHeight());
+			if (type(dialog.price) == "function") then
+				self.PriceLabel:SetText(dialog.price());
+			else
+				self.PriceLabel:SetText(dialog.price);
+			end
+			self.PriceLabel:Show();
+			local totalWidth = self.ConfirmationDesc:GetWidth() + self.PriceLabel:GetWidth() + 2;
+			local confFinalWidth = self.ConfirmationDesc:GetWidth() + 1;
+			local confDescOffset = confFinalWidth - (totalWidth / 2);
+			self.ConfirmationDesc:ClearAllPoints();
+			self.ConfirmationDesc:SetPoint("TOPRIGHT", target, "BOTTOM", confDescOffset, -spacing);
+			self.ConfirmationDesc:SetJustifyH("RIGHT");
+		else
+			self.ConfirmationDesc:SetJustifyH("CENTER");
+			self.ConfirmationDesc:ClearAllPoints();
+			self.ConfirmationDesc:SetPoint("TOP", target, "BOTTOM", 0, -spacing);
+			self.ConfirmationDescLine2:ClearAllPoints();
+			self.ConfirmationDescLine2:SetPoint("TOP", self.ConfirmationDesc, "BOTTOM", 0, -12);
+			self.PriceLabel:Hide();
+		end
+		if (dialog.confirmationDescLine2) then
+			self.ConfirmationDescLine2:SetWidth(0);
+			if (type(dialog.confirmationDescLine2) == "function") then
+				self.ConfirmationDescLine2:SetText(dialog.confirmationDescLine2());
+			else
+				self.ConfirmationDescLine2:SetText(dialog.confirmationDescLine2);
+			end
+			self.ConfirmationDescLine2:SetWidth(min(maxStringWidth, self.ConfirmationDescLine2:GetWidth()));
+			self.ConfirmationDescLine2:Show();
+			height = height + self.ConfirmationDescLine2:GetHeight();
+			width = max(width, self.ConfirmationDescLine2:GetWidth());
+		else
+			self.ConfirmationDescLine2:Hide();
+		end
 	else
 		self.ConfirmationDesc:Hide();
+		self.PriceLabel:Hide();
+		self.ConfirmationDescLine2:Hide();
 	end
 
 	if (dialog.spinner) then
-		self.Button1:Hide();
-		self.Button2:Hide();
 		self.Spinner:Show();
+		self.Spinner:ClearAllPoints();
+		if (dialog.noButtons) then
+			self.Spinner:SetPoint("BOTTOM", 0, 16);
+		else
+			self.Spinner:SetPoint("BOTTOM", 0, 32);
+			height = height + 16;
+		end
 	else
 		self.Spinner:Hide();
+	end
+
+	if (dialog.noButtons) then
+		self.Button1:Hide();
+		self.Button2:Hide();
+	else
 		self.Button1:Show();
 	end
 
@@ -634,6 +696,8 @@ function WowTokenDialog_SetDialog(self, dialogName)
 			currentTicker = nil;
 		end
 	end
+
+	self:Show();
 end
 
 function WowTokenDialog_HideDialog(dialogName)
@@ -684,6 +748,12 @@ function WowTokenDialog_OnEvent(self, event, ...)
 		WowTokenDialog_SetDialog(self, "WOW_TOKEN_BUYOUT_AUCTION");
 		Outbound.AuctionWowTokenUpdate();
 	elseif (event == "TOKEN_REDEEM_CONFIRM_REQUIRED") then
+		if (currentDialogName ~= "WOW_TOKEN_REDEEM_CONFIRMATION") then
+			return;
+		end
+		self:Hide();
+		dialogs["WOW_TOKEN_REDEEM_CONFIRMATION"].spinner = false;
+		dialogs["WOW_TOKEN_REDEEM_CONFIRMATION"].confirmationDesc = GetRedemptionString;
 		WowTokenDialog_SetDialog(self, "WOW_TOKEN_REDEEM_CONFIRMATION");
 	elseif (event == "TOKEN_REDEEM_RESULT") then
 		local result = ...;

@@ -1155,12 +1155,6 @@
 								<Anchor point="TOPLEFT" relativeTo="$parentText1" relativePoint="BOTTOMLEFT" x="0" y="-25"/>
 							</Anchors>
 						</FontString>
-						<FontString name="$parentText3" inherits="GameFontHighlight" text="HELPFRAME_OPENTICKETINSTRUCTIONS_TEXT3" justifyH="LEFT">
-							<Size x="710" y="0"/>
-							<Anchors>
-								<Anchor point="TOPLEFT" relativeTo="$parentText2" relativePoint="BOTTOMLEFT" x="0" y="-25"/>
-							</Anchors>
-						</FontString>
 					</Layer>
 				</Layers>
 				<Frames>
@@ -1168,16 +1162,11 @@
 						<Anchors>
 							<Anchor point="BOTTOM" relativeTo="$parent" relativePoint="BOTTOM" x="0" y="10"/>
 						</Anchors>
-					</Button>
-					<Button name="$parentTopIssues" inherits="HelpFrameButtonTemplate" id="13">
-						<Anchors>
-							<Anchor point="BOTTOM" relativeTo="$parentOpenTicket" relativePoint="TOP" x="0" y="10"/>
-						</Anchors>
-					</Button>
-					<Button name="$parentItemRestoration" inherits="HelpFrameButtonTemplate" id="17">
-						<Anchors>
-							<Anchor point="BOTTOM" relativeTo="$parentTopIssues" relativePoint="TOP" x="0" y="10"/>
-						</Anchors>
+						<Scripts>
+							<OnClick>
+								StaticPopup_Show("CONFIRM_LAUNCH_URL", nil, nil, {index = 6});
+							</OnClick>
+						</Scripts>
 					</Button>
 					<Button name="GMChatOpenLog" inherits="GameMenuButtonTemplate" text="GM_CHAT_OPEN">
 						<Size x="250" y="22"/>

@@ -5,7 +5,7 @@
 	<Frame name="GarrisonUITemplate" inherits="BaseBasicFrameTemplate" virtual="true">
 		<Layers>
 			<Layer level="BACKGROUND" textureSubLevel="-1">
-				<Texture atlas="Garr_WoodFrame-BackgroundTile" horizTile="true" vertTile="true">
+				<Texture parentKey="BackgroundTile" atlas="Garr_WoodFrame-BackgroundTile" horizTile="true" vertTile="true">
 					<Anchors>
 						<Anchor point="TOPLEFT"/>
 						<Anchor point="BOTTOMRIGHT"/>
@@ -396,6 +396,9 @@
 	</Button>
 	
 	<Frame name="MaterialFrameTemplate" virtual="true">
+		<KeyValues>
+			<KeyValue key="currencyType" value="824" type="number"/>
+		</KeyValues>
 		<Layers>
 			<Layer level="BACKGROUND">
 				<Texture atlas="Garr_Mission_MaterialFrame" useAtlasSize="true" setAllPoints="true"/>
@@ -423,7 +426,7 @@
 		<Scripts>
 			<OnEnter>
 				GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
-				GameTooltip:SetCurrencyTokenByID(GARRISON_CURRENCY);
+				GameTooltip:SetCurrencyTokenByID(self.currencyType);
 				GameTooltip:Show();
 			</OnEnter>
 			<OnLeave function="GameTooltip_Hide"/>
@@ -538,7 +541,8 @@
 			</OnMouseUp>
 			<OnClick>
 				PlaySound("igMainMenuOptionCheckBoxOn");
-				local searchBox = self:GetParent():GetParent():GetParent().FollowerList.SearchBox;
+				local frame = self:GetParent();
+				local searchBox = frame:GetParent():GetParent()[frame.listName].SearchBox;
 				local searchString = searchBox:GetText();
 				if (searchString == self.name) then
 					searchBox:SetText("");
@@ -551,8 +555,11 @@
 		</Scripts>
 	</Button>
 	
-	<Frame name="GarrisonThreatCountersFrame" hidden="true">
+	<Frame name="GarrisonThreatCountersFrameTemplate" virtual="true">
 		<Size x="10" y="10"/>
+		<KeyValues>
+			 <KeyValue key="listName" value="FollowerList" type="string"/>
+		</KeyValues>
 		<Frames>
 			<Button parentArray="ThreatsList" inherits="GarrisonThreatCounterTemplate">
 				<Anchors>
@@ -565,5 +572,26 @@
 			<OnEvent function="GarrisonThreatCountersFrame_OnEvent"/>
 			<OnShow function="GarrisonThreatCountersFrame_Update"/>
 		</Scripts>
-	</Frame>	
+	</Frame>
+	
+	<Frame name="GarrisonThreatCountersFrame" inherits="GarrisonThreatCountersFrameTemplate" hidden="true"/>
+	
+	<Frame name="GarrisonConfirmFollowerAbilityUpgradeFrame" hidden="true">
+		<Size x="200" y="40"/>
+		<Layers>
+			<Layer level="ARTWORK">
+				<FontString parentKey="Name" inherits="GameFontHighlight">
+					<Anchors>
+						<Anchor point="CENTER" x="12" y="0"/>
+					</Anchors>
+				</FontString>
+				<Texture parentKey="Icon">
+					<Size x="20" y="20"/>
+					<Anchors>
+						<Anchor point="RIGHT" relativeKey="$parent.Name" relativePoint="LEFT" x="-4" y="0"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+	</Frame>
 </Ui>

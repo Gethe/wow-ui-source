@@ -403,6 +403,7 @@
 										<xs:element name="Offset" type="Dimension"/>
 									</xs:sequence>
 									<xs:attribute name="point" type="FRAMEPOINT" use="required"/>
+									<xs:attribute name="relativeKey" type="xs:string"/>
 									<xs:attribute name="relativeTo" type="xs:string"/>
 									<xs:attribute name="relativePoint" type="FRAMEPOINT"/>
 									<xs:attribute name="x" type="xs:float"/>

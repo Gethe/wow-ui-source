@@ -329,7 +329,7 @@ function CompactUnitFrame_UpdateHealth(frame)
 end
 
 local function CompactUnitFrame_GetDisplayedPowerID(frame)
-	local barType, minPower, startInset, endInset, smooth, hideFromOthers, showOnRaid, opaqueSpark, opaqueFlash, powerName, powerTooltip = UnitAlternatePowerInfo(frame.displayedUnit);
+	local barType, minPower, startInset, endInset, smooth, hideFromOthers, showOnRaid, opaqueSpark, opaqueFlash, anchorTop, powerName, powerTooltip = UnitAlternatePowerInfo(frame.displayedUnit);
 	if ( showOnRaid and (UnitInParty(frame.unit) or UnitInRaid(frame.unit)) ) then
 		return ALTERNATE_POWER_INDEX;
 	else
@@ -352,7 +352,7 @@ function CompactUnitFrame_UpdatePowerColor(frame)
 		r, g, b = 0.5, 0.5, 0.5;
 	else
 		--Set it to the proper power type color.
-		local barType, minPower, startInset, endInset, smooth, hideFromOthers, showOnRaid, opaqueSpark, opaqueFlash, powerName, powerTooltip = UnitAlternatePowerInfo(frame.unit);
+		local barType, minPower, startInset, endInset, smooth, hideFromOthers, showOnRaid, opaqueSpark, opaqueFlash, anchorTop, powerName, powerTooltip = UnitAlternatePowerInfo(frame.unit);
 		if ( showOnRaid ) then
 			r, g, b = 0.7, 0.7, 0.6;
 		else

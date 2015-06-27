@@ -88,6 +88,10 @@ function MerchantFrame_OnMouseWheel(self, value)
 end
 
 function MerchantFrame_Update()
+	if ( MerchantFrame.lastTab ~= MerchantFrame.selectedTab ) then
+		MerchantFrame_CloseStackSplitFrame();
+		MerchantFrame.lastTab = MerchantFrame.selectedTab;
+	end
 	MerchantFrame_UpdateFilterString()
 	if ( MerchantFrame.selectedTab == 1 ) then
 		MerchantFrame_UpdateMerchantInfo();
@@ -370,13 +374,27 @@ end
 function MerchantPrevPageButton_OnClick()
 	PlaySound("igMainMenuOptionCheckBoxOn");
 	MerchantFrame.page = MerchantFrame.page - 1;
+	MerchantFrame_CloseStackSplitFrame();
 	MerchantFrame_Update();
 end
 
 function MerchantNextPageButton_OnClick()
 	PlaySound("igMainMenuOptionCheckBoxOn");
 	MerchantFrame.page = MerchantFrame.page + 1;
+	MerchantFrame_CloseStackSplitFrame();
 	MerchantFrame_Update();
+end
+
+function MerchantFrame_CloseStackSplitFrame()
+	if ( StackSplitFrame:IsShown() ) then
+		local numButtons = max(MERCHANT_ITEMS_PER_PAGE, BUYBACK_ITEMS_PER_PAGE);
+		for i = 1, numButtons do
+			if ( StackSplitFrame.owner == _G["MerchantItem"..i.."ItemButton"] ) then
+				StackSplitFrameCancel_Click();
+				return;
+			end
+		end
+	end
 end
 
 function MerchantItemBuybackButton_OnLoad(self)
@@ -505,7 +523,11 @@ function MerchantFrame_ConfirmExtendedItemCost(itemButton, numToPurchase)
 	local index = itemButton:GetID();
 	local itemsString;
 	if ( GetMerchantItemCostInfo(index) == 0 and not itemButton.showNonrefundablePrompt) then
-		BuyMerchantItem( itemButton:GetID(), numToPurchase );
+		if ( itemButton.price and itemButton.price >= MERCHANT_HIGH_PRICE_COST ) then
+			MerchantFrame_ConfirmHighCostItem(itemButton);
+		else
+			BuyMerchantItem( itemButton:GetID(), numToPurchase );
+		end
 		return;
 	end
 	

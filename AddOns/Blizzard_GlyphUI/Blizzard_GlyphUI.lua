@@ -52,6 +52,14 @@ end
 
 
 function GlyphFrame_OnShow (self)
+	if ( IsCharacterNewlyBoosted() ) then
+		PlayerTalentFrameLockInfo:Show();
+		PlayerTalentFrameLockInfo.Title:SetText(TALENTS_FRAME_GLYPH_LOCK_TITLE);
+		PlayerTalentFrameLockInfo.Text:SetText(TALENTS_FRAME_GLYPH_LOCK_DESC);
+	else
+		PlayerTalentFrameLockInfo:Hide();
+	end
+	
 	GlyphFrame_Update(self);
 	ButtonFrameTemplate_HideAttic(PlayerTalentFrame);
 	PlayerTalentFrameInset:SetPoint("BOTTOMRIGHT",  -197,  PANEL_INSET_BOTTOM_BUTTON_OFFSET);
@@ -62,6 +70,7 @@ end
 
 function GlyphFrame_OnHide (self)
 	ButtonFrameTemplate_ShowButtonBar(PlayerTalentFrame);
+	PlayerTalentFrameLockInfo:Hide();
 --	PlayerTalentFrameActivateButton:SetPoint( "TOPRIGHT", -10, -30);
 end
 

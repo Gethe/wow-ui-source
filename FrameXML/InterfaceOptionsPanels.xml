@@ -4190,6 +4190,10 @@
 		<TexCoords left=".140625" right=".859375" top=".140625" bottom=".859375"/>
 	</Texture>
 
+	<FontString name="ColorblindItemQualityTemplate" parentArray="ItemQuality" inherits="OptionsFontSmall" justifyH="LEFT" justifyV="TOP" virtual="true">
+		<Size x="0" y="14"/>
+	</FontString>
+	
 	<Frame name="InterfaceOptionsAccessibilityPanel" hidden="true" parent="InterfaceOptionsFramePanelContainer">
 		<Layers>
 			<Layer level="ARTWORK">
@@ -4358,6 +4362,19 @@
 								<Anchor point="LEFT" relativeKey="$parent.ExampleIcon5" relativePoint="RIGHT" x="10" />
 							</Anchors>
 						</Texture>
+						
+						<FontString parentKey="ItemQualityText" text="COLORBLIND_ITEM_QUALITY" inherits="OptionsFontSmall" justifyH="LEFT">
+							<Size x="92" y="10"/>
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeKey="$parent.Friendly" relativePoint="BOTTOMLEFT" x="5" y="-16"/>
+							</Anchors>
+						</FontString>
+						
+						<FontString inherits="ColorblindItemQualityTemplate">
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeKey="$parent.ItemQualityText" relativePoint="BOTTOMLEFT" x="0" y="-10"/>
+							</Anchors>
+						</FontString>
 					</Layer>
 					<Layer level="BACKGROUND">
 						<Texture parentKey="ExampleIcon1Border">

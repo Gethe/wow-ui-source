@@ -281,7 +281,7 @@
 				GuildMicroButton_UpdateTabard(true);
 				if ( IsTrialAccount() or (IsVeteranTrialAccount() and not IsInGuild()) ) then
 					self:Disable();
-					self.disabledTooltip = GameLimitedMode_GetString("ERR_RESTRICTED_ACCOUNT");
+					self.disabledTooltip = ERR_RESTRICTED_ACCOUNT_TRIAL;
 				end
 				if (IsBlizzCon()) then
 					self:Disable();
@@ -358,28 +358,23 @@
 				</Offset>
 			</Anchor>
 		</Anchors>
+		<Frames>
+			<Frame parentKey="NewAdventureNotice" hidden="true">
+				<Size x="28" y="28"/>
+				<Anchors>
+					<Anchor point="RIGHT" x="8" y="2"/>
+				</Anchors>
+				<Layers>
+					<Layer level="OVERLAY" setAllPoints="true">
+						<Texture  atlas="adventureguide-microbutton-alert"/>
+					</Layer>
+				</Layers>
+			</Frame>
+		</Frames>
 		<Scripts>
-			<OnLoad>
-				LoadMicroButtonTextures(self, "EJ");
-				SetDesaturation(self:GetDisabledTexture(), true);
-				self.tooltipText = MicroButtonTooltipText(ENCOUNTER_JOURNAL, "TOGGLEENCOUNTERJOURNAL");
-				self.newbieText = NEWBIE_TOOLTIP_ENCOUNTER_JOURNAL;
-				self.minLevel = SHOW_LFD_LEVEL;
-				if (IsBlizzCon()) then
-					self:Disable();
-				end
-			</OnLoad>
-			<OnEvent>
-				self.tooltipText = MicroButtonTooltipText(ENCOUNTER_JOURNAL, "TOGGLEENCOUNTERJOURNAL");
-				self.newbieText = NEWBIE_TOOLTIP_ENCOUNTER_JOURNAL;
-				if (IsBlizzCon()) then
-					return;
-				end
-				UpdateMicroButtons();
-			</OnEvent>
-			<OnClick>
-				ToggleEncounterJournal();
-			</OnClick>
+			<OnLoad function="EJMicroButton_OnLoad"/>
+			<OnEvent function="EJMicroButton_OnEvent"/>
+			<OnClick function="ToggleEncounterJournal"/>
 		</Scripts>
 	</Button>
 	<Button name="StoreMicroButton" inherits="MainMenuBarMicroButton" parent="UIParent" hidden="true">
@@ -610,6 +605,17 @@
 			<OnLoad>
 				MicroButtonAlert_OnLoad(self);
 				self.Text:SetText(LFG_MICRO_BUTTON_SPEC_TUTORIAL);
+			</OnLoad>
+		</Scripts>
+	</Frame>
+	<Frame name="EJMicroButtonAlert" inherits="MicroButtonAlertTemplate">
+		<Anchors>
+			<Anchor point="BOTTOM" relativeTo="EJMicroButton" relativePoint="TOP" x="0" y="-8"/>
+		</Anchors>
+		<Scripts>
+			<OnLoad>
+				MicroButtonAlert_OnLoad(self);
+				self.Text:SetText(AJ_MICRO_BUTTON_ALERT_TEXT);
 			</OnLoad>
 		</Scripts>
 	</Frame>

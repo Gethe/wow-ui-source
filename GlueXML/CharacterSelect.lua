@@ -28,7 +28,6 @@ BLIZZCON_IS_A_GO = false;
 local STORE_IS_LOADED = false;
 local ADDON_LIST_RECEIVED = false;
 CAN_BUY_RESULT_FOUND = false;
-MARKET_PRICE_UPDATED = false;
 TOKEN_COUNT_UPDATED = false;
 
 function CharacterSelect_OnLoad(self)
@@ -37,7 +36,7 @@ function CharacterSelect_OnLoad(self)
 
 	self.createIndex = 0;
 	self.selectedIndex = 0;
-	self.selectLast = 0;
+	self.selectLast = false;
 	self.currentBGTag = nil;
 	self:RegisterEvent("ADDON_LIST_UPDATE");
 	self:RegisterEvent("CHARACTER_LIST_UPDATE");
@@ -52,6 +51,7 @@ function CharacterSelect_OnLoad(self)
 	self:RegisterEvent("TOKEN_CAN_VETERAN_BUY_UPDATE");
 	self:RegisterEvent("TOKEN_DISTRIBUTIONS_UPDATED");
 	self:RegisterEvent("TOKEN_MARKET_PRICE_UPDATED");
+	self:RegisterEvent("VAS_CHARACTER_STATE_CHANGED");
 
 	-- CharacterSelect:SetModel("Interface\\Glues\\Models\\UI_Orc\\UI_Orc.m2");
 
@@ -78,6 +78,8 @@ end
 function CharacterSelect_OnShow()
 	DebugLog("Select_OnShow");
 	CHARACTER_LIST_OFFSET = 0;
+	CharacterSelect_ResetVeteranStatus();
+
 	-- request account data times from the server (so we know if we should refresh keybindings, etc...)
 	CheckCharacterUndeleteCooldown();
 	
@@ -192,7 +194,7 @@ function CharacterSelect_OnShow()
 	RealmSplitCurrentChoice:Hide();
 
 	--Clear out the addons selected item
-	GlueDropDownMenu_SetSelectedValue(AddonCharacterDropDown, ALL);
+	GlueDropDownMenu_SetSelectedValue(AddonCharacterDropDown, true);
 
 	AccountUpgradePanel_Update(CharSelectAccountUpgradeButton.isExpanded);
 
@@ -205,18 +207,17 @@ function CharacterSelect_OnShow()
 	
 	PlayersOnServer_Update();
 
-	PromotionFrame_AwaitingPromotion();
-	
 	CharacterSelect_UpdateStoreButton();
 
 	CharacterServicesMaster_UpdateServiceButton();
 
 	C_PurchaseAPI.GetPurchaseList();
+	C_PurchaseAPI.GetProductList();
+	C_StoreGlue.UpdateVASPurchaseStates();
 
-	local loaded = LoadAddOn("Blizzard_StoreUI")
-	if (loaded) then
-		LoadAddOn("Blizzard_AuthChallengeUI");
-		STORE_IS_LOADED = true;
+	if (not STORE_IS_LOADED) then
+		STORE_IS_LOADED = LoadAddOn("Blizzard_StoreUI")
+		LoadAddOn("Blizzard_AuthChallengeUI");		
 	end
 	
 	CharacterSelect_CheckVeteranStatus();
@@ -329,8 +330,12 @@ function CharacterSelect_OnUpdate(self, elapsed)
 		end
 	end
 
-	if ( C_CharacterServices.HasQueuedUpgrade() ) then
+	if ( C_CharacterServices.HasQueuedUpgrade() or C_StoreGlue.GetVASProductReady() ) then
 		CharacterServicesMaster_OnCharacterListUpdate();
+	end
+
+	if (STORE_IS_LOADED and StoreFrame_WaitingForCharacterListUpdate()) then
+		StoreFrame_OnCharacterListUpdate();
 	end
 end
 
@@ -373,13 +378,14 @@ function CharacterSelect_OnEvent(self, event, ...)
 	if ( event == "ADDON_LIST_UPDATE" ) then
 		ADDON_LIST_RECEIVED = true;
 		if (not STORE_IS_LOADED) then
+			STORE_IS_LOADED = LoadAddOn("Blizzard_StoreUI");
 			LoadAddOn("Blizzard_AuthChallengeUI");
-			LoadAddOn("Blizzard_StoreUI");
 			CharacterSelect_UpdateStoreButton();
-			STORE_IS_LOADED = true;
 		end
 		UpdateAddonButton();
 	elseif ( event == "CHARACTER_LIST_UPDATE" ) then
+		PromotionFrame_AwaitingPromotion();
+	
 		local listSize = ...;
 		if ( listSize ) then
 			table.wipe(translationTable);
@@ -427,7 +433,7 @@ function CharacterSelect_OnEvent(self, event, ...)
 		end
 		UpdateCharacterSelection(self);
 	elseif ( event == "SELECT_LAST_CHARACTER" ) then
-		self.selectLast = 1;
+		self.selectLast = true;
 	elseif ( event == "SELECT_FIRST_CHARACTER" ) then
 		CHARACTER_LIST_OFFSET = 0;
 		CharacterSelect_SelectCharacter(1, 1);
@@ -493,8 +499,11 @@ function CharacterSelect_OnEvent(self, event, ...)
 		CharacterSelect_CheckVeteranStatus();
 	elseif ( event == "TOKEN_MARKET_PRICE_UPDATED" ) then
 		local result = ...;
-		MARKET_PRICE_UPDATED = result;
 		CharacterSelect_CheckVeteranStatus();
+	elseif (event == "VAS_CHARACTER_STATE_CHANGED") then
+		if ( not IsCharacterListUpdatePending() ) then
+			UpdateCharacterList();
+		end
 	end
 end
 
@@ -531,7 +540,10 @@ function UpdateCharacterSelection(self)
 				CharacterSelectButton_ShowMoveButtons(button);
 			end
 			if ( self.undeleting ) then
+				paidServiceButton.GoldBorder:Hide();
+				paidServiceButton.VASIcon:Hide();
 				paidServiceButton.texture:SetTexCoord(.5, 1, .5, 1);
+				paidServiceButton.texture:Show();
 				paidServiceButton.tooltip = UNDELETE_SERVICE_TOOLTIP;
 				paidServiceButton.disabledTooltip = nil;
 				paidServiceButton:Show();
@@ -552,7 +564,9 @@ function UpdateCharacterList(skipSelect)
 		CharacterSelect.undeleteChanged = false;
 	end
 
-	if (numChars < MAX_CHARACTERS_PER_REALM or numChars > MAX_CHARACTERS_DISPLAYED_BASE) then
+	if ( numChars < MAX_CHARACTERS_PER_REALM or
+		( (CharacterSelect.undeleting and numChars >= MAX_CHARACTERS_DISPLAYED_BASE) or
+		numChars > MAX_CHARACTERS_DISPLAYED_BASE) ) then
 		if (MAX_CHARACTERS_DISPLAYED == MAX_CHARACTERS_DISPLAYED_BASE) then
 			MAX_CHARACTERS_DISPLAYED = MAX_CHARACTERS_DISPLAYED_BASE - 1;
 		end
@@ -560,10 +574,11 @@ function UpdateCharacterList(skipSelect)
 		MAX_CHARACTERS_DISPLAYED = MAX_CHARACTERS_DISPLAYED_BASE;
 	end
 
-	if ( CharacterSelect.selectLast == 1 ) then
+	-- select the last("newest") character
+	if ( CharacterSelect.selectLast ) then
 		CHARACTER_LIST_OFFSET = max(numChars - MAX_CHARACTERS_DISPLAYED, 0);
 		CharacterSelect.selectedIndex = numChars;
-		CharacterSelect.selectLast = 0;
+		CharacterSelect.selectLast = false;
 	end
 
 	if ( CharacterSelect.undeleteGuid ) then
@@ -589,24 +604,37 @@ function UpdateCharacterList(skipSelect)
 	local debugText = numChars..": ";
 	for i=1, numChars, 1 do
 		local name, race, class, classFileName, classID, level, zone, sex, ghost, PCC, PRC, PFC, PRCDisabled, guid, _, _, _, boostInProgress, _, locked = GetCharacterInfo(GetCharIDFromIndex(i+CHARACTER_LIST_OFFSET));
+		local productID, vasServiceState, vasServiceErrors = C_StoreGlue.GetVASPurchaseStateInfo(guid);
 		local button = _G["CharSelectCharacterButton"..index];
 		button.isVeteranLocked = false;
 		if ( name ) then
 			if ( not zone ) then
 				zone = "";
 			end
-			_G["CharSelectCharacterButton"..index.."ButtonTextName"]:SetText(name);
-			if (boostInProgress) then
+			if ( CharacterSelect.undeleting ) then
+				_G["CharSelectCharacterButton"..index.."ButtonTextName"]:SetFormattedText(CHARACTER_SELECT_NAME_DELETED, name);
+			elseif ( locked ) then
+				_G["CharSelectCharacterButton"..index.."ButtonTextName"]:SetText(name..CHARSELECT_CHAR_INACTIVE_CHAR);
+			else
+				_G["CharSelectCharacterButton"..index.."ButtonTextName"]:SetText(name);
+			end
+			if (vasServiceState == LE_VAS_PURCHASE_STATE_APPLYING_LICENSE and vasServiceErrors) then
+				local name = select(7, C_PurchaseAPI.GetProductInfo(productID));
+				_G["CharSelectCharacterButton"..index.."ButtonTextInfo"]:SetText("|cffff2020"..VAS_ERROR_ERROR_HAS_OCCURRED.."|r");
+				_G["CharSelectCharacterButton"..index.."ButtonTextLocation"]:SetText("|cffff2020"..name.."|r");
+			elseif (vasServiceState == LE_VAS_PURCHASE_STATE_PROCESSING_FACTION_CHANGE) then
+				_G["CharSelectCharacterButton"..index.."ButtonTextInfo"]:SetText(CHARACTER_UPGRADE_PROCESSING);
+				_G["CharSelectCharacterButton"..index.."ButtonTextLocation"]:SetFontObject("GlueFontHighlightSmall");
+				_G["CharSelectCharacterButton"..index.."ButtonTextLocation"]:SetText(FACTION_CHANGE_CHARACTER_LIST_LABEL);
+			elseif (boostInProgress) then
 				_G["CharSelectCharacterButton"..index.."ButtonTextInfo"]:SetText(CHARACTER_UPGRADE_PROCESSING);
 				_G["CharSelectCharacterButton"..index.."ButtonTextLocation"]:SetFontObject("GlueFontHighlightSmall");
 				_G["CharSelectCharacterButton"..index.."ButtonTextLocation"]:SetText(CHARACTER_UPGRADE_CHARACTER_LIST_LABEL);
 			else
-				if ( CharacterSelect.undeleting ) then
-					_G["CharSelectCharacterButton"..index.."ButtonTextInfo"]:SetFormattedText(CHARACTER_SELECT_INFO_DELETED, level, class);
-				elseif ( locked ) then
-					_G["CharSelectCharacterButton"..index.."ButtonTextInfo"]:SetFormattedText(CHARACTER_SELECT_INFO..CHARSELECT_CHAR_INACTIVE_CHAR, level, class);
+				if ( locked ) then
 					button.isVeteranLocked = true;
-				elseif( ghost ) then
+				end
+				if( ghost ) then
 					_G["CharSelectCharacterButton"..index.."ButtonTextInfo"]:SetFormattedText(CHARACTER_SELECT_INFO_GHOST, level, class);
 				else
 					_G["CharSelectCharacterButton"..index.."ButtonTextInfo"]:SetFormattedText(CHARACTER_SELECT_INFO, level, class);
@@ -623,24 +651,61 @@ function UpdateCharacterList(skipSelect)
 		local upgradeIcon = _G["CharacterServicesProcessingIcon"..index];
 		upgradeIcon:Hide();
 		local serviceType, disableService;
-		if (boostInProgress) then
+		if (vasServiceState == LE_VAS_PURCHASE_STATE_PAYMENT_PENDING) then
 			upgradeIcon:Show();
+			upgradeIcon.tooltip = CHARACTER_UPGRADE_PROCESSING;
+			upgradeIcon.tooltip2 = CHARACTER_STATE_ORDER_PROCESSING;
+		elseif (vasServiceState == LE_VAS_PURCHASE_STATE_APPLYING_LICENSE and vasServiceErrors) then
+			upgradeIcon:Show();
+			local tooltip, desc;
+			if (STORE_IS_LOADED) then
+				local info = StoreFrame_GetVASErrorMessage(guid, vasServiceErrors);
+				if (info) then
+					if (info.other) then
+						tooltip = VAS_ERROR_ERROR_HAS_OCCURRED;
+					else
+						tooltip = VAS_ERROR_ADDRESS_THESE_ISSUES;
+					end
+					desc = info.desc;
+				else
+					tooltip = VAS_ERROR_ERROR_HAS_OCCURRED;
+					desc = BLIZZARD_STORE_VAS_ERROR_OTHER;
+				end
+			else
+				tooltip = VAS_ERROR_ERROR_HAS_OCCURRED;
+				desc = BLIZZARD_STORE_VAS_ERROR_OTHER;
+			end
+			upgradeIcon.tooltip = "|cffffd200" .. tooltip .. "|r";
+			upgradeIcon.tooltip2 = "|cffff2020" .. desc .. "|r";
+		elseif (boostInProgress or vasServiceState == LE_VAS_PURCHASE_STATE_PROCESSING_FACTION_CHANGE) then
+			upgradeIcon:Show();
+			upgradeIcon.tooltip = CHARACTER_UPGRADE_PROCESSING;
+			upgradeIcon.tooltip2 = CHARACTER_SERVICES_PLEASE_WAIT;
 		elseif ( CharacterSelect.undeleting ) then
 			paidServiceButton:Hide();
 		elseif ( PFC ) then
 			serviceType = PAID_FACTION_CHANGE;
-			paidServiceButton.texture:SetTexCoord(0, 0.5, 0.5, 1);
+			paidServiceButton.GoldBorder:Show();
+			paidServiceButton.VASIcon:SetTexture("Interface\\Icons\\VAS_FactionChange");
+			paidServiceButton.VASIcon:Show();
+			paidServiceButton.texture:Hide();
 			paidServiceButton.tooltip = PAID_FACTION_CHANGE_TOOLTIP;
 			paidServiceButton.disabledTooltip = nil;
 		elseif ( PRC ) then
 			serviceType = PAID_RACE_CHANGE;
-			paidServiceButton.texture:SetTexCoord(0.5, 1, 0, 0.5);
+			paidServiceButton.GoldBorder:Show();
+			paidServiceButton.VASIcon:SetTexture("Interface\\Icons\\VAS_RaceChange");
+			paidServiceButton.VASIcon:Show();
+			paidServiceButton.texture:Hide();
 			disableService = PRCDisabled;
 			paidServiceButton.tooltip = PAID_RACE_CHANGE_TOOLTIP;
 			paidServiceButton.disabledTooltip = PAID_RACE_CHANGE_DISABLED_TOOLTIP;
 		elseif ( PCC ) then
 			serviceType = PAID_CHARACTER_CUSTOMIZATION;
-			paidServiceButton.texture:SetTexCoord(0, 0.5, 0, 0.5);
+			paidServiceButton.GoldBorder:Show();
+			paidServiceButton.VASIcon:SetTexture("Interface\\Icons\\VAS_AppearanceChange");
+			paidServiceButton.VASIcon:Show();
+			paidServiceButton.texture:Hide();
 			paidServiceButton.tooltip = PAID_CHARACTER_CUSTOMIZE_TOOLTIP;
 			paidServiceButton.disabledTooltip = nil;
 		end
@@ -651,8 +716,12 @@ function UpdateCharacterList(skipSelect)
 			if ( disableService ) then
 				paidServiceButton:Disable();
 				paidServiceButton.texture:SetDesaturated(true);
+				paidServiceButton.GoldBorder:SetDesaturated(true);
+				paidServiceButton.VASIcon:SetDesaturated(true);
 			elseif ( not paidServiceButton:IsEnabled() ) then
 				paidServiceButton.texture:SetDesaturated(false);
+				paidServiceButton.GoldBorder:SetDesaturated(false);
+				paidServiceButton.VASIcon:SetDesaturated(false);
 				paidServiceButton:Enable();
 			end
 		else
@@ -666,11 +735,15 @@ function UpdateCharacterList(skipSelect)
 				button.buttonText.name:SetPoint("TOPLEFT", MOVING_TEXT_OFFSET, -5);
 				button:LockHighlight();
 				paidServiceButton.texture:SetVertexColor(1, 1, 1);
+				paidServiceButton.GoldBorder:SetVertexColor(1, 1, 1);
+				paidServiceButton.VASIcon:SetVertexColor(1, 1, 1);
 			else
 				button:SetAlpha(0.6);
 				button.buttonText.name:SetPoint("TOPLEFT", DEFAULT_TEXT_OFFSET, -5);
 				button:UnlockHighlight();
 				paidServiceButton.texture:SetVertexColor(0.35, 0.35, 0.35);
+				paidServiceButton.GoldBorder:SetVertexColor(0.35, 0.35, 0.35);
+				paidServiceButton.VASIcon:SetVertexColor(0.35, 0.35, 0.35);
 			end
 		end
 		
@@ -688,6 +761,9 @@ function UpdateCharacterList(skipSelect)
 	end
 
 	CharacterSelect_UpdateStoreButton();
+
+	CharacterSelect_ResetVeteranStatus();
+	CharacterSelect_CheckVeteranStatus();
 
 	CharacterSelect.createIndex = 0;
 
@@ -823,13 +899,32 @@ function CharacterSelect_SelectCharacter(index, noCreate)
 		local charID = GetCharIDFromIndex(index);
 		SelectCharacter(charID);
 
-		if (not MARKET_PRICE_UPDATED or MARKET_PRICE_UPDATED == LE_TOKEN_RESULT_ERROR_DISABLED) then
+		if (not C_WowTokenPublic.GetCurrentMarketPrice() or 
+			not CAN_BUY_RESULT_FOUND or (CAN_BUY_RESULT_FOUND ~= LE_TOKEN_RESULT_ERROR_SUCCESS and CAN_BUY_RESULT_FOUND ~= LE_TOKEN_RESULT_ERROR_SUCCESS_NO) ) then
 			AccountReactivate_RecheckEligibility();
 		end
 		ReactivateAccountDialog_Open();
 		local backgroundFileName = GetSelectBackgroundModel(charID);
 		CharacterSelect.currentBGTag = SetBackgroundModel(CharacterSelectModel, backgroundFileName);
 	end
+end
+
+
+function CharacterSelect_SelectCharacterByGUID(guid)
+	local num = math.min(GetNumCharacters(), MAX_CHARACTERS_DISPLAYED);
+
+	for i = 1, num do
+		if (select(14, GetCharacterInfo(GetCharIDFromIndex(i + CHARACTER_LIST_OFFSET))) == guid) then
+			local button = _G["CharSelectCharacterButton"..i];
+			CharacterSelectButton_OnClick(button);
+			button.selection:Show();
+			UpdateCharacterSelection(CharacterSelect);
+			GetCharacterListUpdate();
+			return true;
+		end
+	end
+
+	return false;
 end
 
 function CharacterDeleteDialog_OnShow()
@@ -1410,13 +1505,16 @@ function CharacterTemplatesFrameDropDown_Initialize()
 end
 
 function ToggleStoreUI()
-	local wasShown = StoreFrame_IsShown();
-	if ( not wasShown ) then
-		--We weren't showing, now we are. We should hide all other panels.
+	if (STORE_IS_LOADED) then
+		local wasShown = StoreFrame_IsShown();
+		if ( not wasShown ) then
+			--We weren't showing, now we are. We should hide all other panels.
 			-- not sure if anything is needed here at the gluescreen
+		end
+		StoreFrame_SetShown(not wasShown);
 	end
-	StoreFrame_SetShown(not wasShown);
 end
+
 function CharacterTemplatesFrameDropDown_OnClick(button)
 	GlueDropDownMenu_SetSelectedID(CharacterTemplatesFrameDropDown, button:GetID());
 end
@@ -1468,8 +1566,17 @@ GlueDialogTypes["TOKEN_GAME_TIME_OPTION_NOT_AVAILABLE"] = {
 	escapeHides = true,
 }
 
+function CharacterSelect_HasVeteranEligibilityInfo()
+	return TOKEN_COUNT_UPDATED and ((C_WowTokenGlue.GetTokenCount() > 0 or CAN_BUY_RESULT_FOUND) and C_WowTokenPublic.GetCurrentMarketPrice());
+end
+
+function CharacterSelect_ResetVeteranStatus()
+	CAN_BUY_RESULT_FOUND = false;
+	TOKEN_COUNT_UPDATED = false;
+end
+
 function CharacterSelect_CheckVeteranStatus()
-	if (IsVeteranTrialAccount() and TOKEN_COUNT_UPDATED and ((C_WowTokenGlue.GetTokenCount() > 0 or CAN_BUY_RESULT_FOUND) and MARKET_PRICE_UPDATED)) then
+	if (IsVeteranTrialAccount() and CharacterSelect_HasVeteranEligibilityInfo()) then
 		ReactivateAccountDialog_Open();
 	elseif (IsVeteranTrialAccount()) then
 		if (not TOKEN_COUNT_UPDATED) then
@@ -1478,7 +1585,7 @@ function CharacterSelect_CheckVeteranStatus()
 		if (not CAN_BUY_RESULT_FOUND and TOKEN_COUNT_UPDATED) then
 			C_WowTokenGlue.CheckVeteranTokenEligibility();
 		end
-		if (not MARKET_PRICE_UPDATED and CAN_BUY_RESULT_FOUND) then
+		if (not C_WowTokenPublic.GetCurrentMarketPrice() and CAN_BUY_RESULT_FOUND) then
 			C_WowTokenPublic.UpdateMarketPrice();
 		end
 	end

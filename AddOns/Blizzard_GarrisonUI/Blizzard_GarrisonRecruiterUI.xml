@@ -37,7 +37,7 @@
 				if ( self.abilityID ) then
 					GarrisonFollowerAbilityTooltip:ClearAllPoints();
 					GarrisonFollowerAbilityTooltip:SetPoint("TOPLEFT", self.Icon, "BOTTOMRIGHT");
-					GarrisonFollowerAbilityTooltip_Show(self.abilityID);
+					GarrisonFollowerAbilityTooltip_Show(self.abilityID, LE_FOLLOWER_TYPE_GARRISON_6_0);
 					return;
 				end
 			</OnEnter>
@@ -387,7 +387,7 @@
 			<Anchor point="CENTER"/>
 		</Anchors>
 		<Frames>
-			<Frame parentKey="FollowerList" inherits="GarrisonListTemplateHeader">
+			<Frame parentKey="FollowerList" inherits="GarrisonListTemplateHeader" mixin="GarrisonFollowerList">
 				<Size x="305" y="565"/>
 				<KeyValues>
 					 <KeyValue key="canExpand" value="true" type="boolean"/>
@@ -407,8 +407,8 @@
 					</EditBox>
 				</Frames>
 				<Scripts>
-					<OnShow function="GarrisonFollowerList_OnShow"/>
-					<OnHide function="GarrisonFollowerList_OnHide"/>
+					<OnShow>self:OnShow();</OnShow>
+					<OnHide>self:OnHide();</OnHide>
 				</Scripts>
 			</Frame>		
 			<Frame parentKey="FollowerSelection" inherits="GarrisonMissionBaseFrameTemplate">

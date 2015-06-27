@@ -221,6 +221,18 @@
 							<Anchor point="TOP" relativeKey="$parent.Description" relativePoint="BOTTOM" x="0" y="-16"/>
 						</Anchors>
 					</FontString>
+					<FontString parentKey="PriceLabel" inherits="NumberFontNormal" hidden="true" justifyH="LEFT">
+						<Size x="0" y="0"/>
+						<Anchors>
+							<Anchor point="LEFT" relativeKey="$parent.ConfirmationDesc" relativePoint="RIGHT" x="2" y="0"/>
+						</Anchors>
+					</FontString>
+					<FontString parentKey="ConfirmationDescLine2" inherits="GameFontNormal" hidden="true">
+						<Size x="0" y="0"/>
+						<Anchors>
+							<Anchor point="TOP" relativeKey="$parent.ConfirmationDesc" relativePoint="BOTTOM" x="0" y="-8"/>
+						</Anchors>
+					</FontString>
 					<FontString parentKey="CautionText" inherits="GameFontRed" hidden="true">
 						<Anchors>
 							<Anchor point="BOTTOM" x="0" y="23"/>

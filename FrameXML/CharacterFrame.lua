@@ -69,6 +69,9 @@ function CharacterFrame_OnLoad (self)
 	-- Tab Handling code
 	PanelTemplates_SetNumTabs(self, NUM_CHARACTERFRAME_TABS);
 	PanelTemplates_SetTab(self, 1);
+	
+	self.TitleText:SetMaxLines(1);
+	self.TitleText:SetHeight(13);
 end
 
 function CharacterFrame_UpdatePortrait()

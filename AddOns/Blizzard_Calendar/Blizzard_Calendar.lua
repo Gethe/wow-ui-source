@@ -133,7 +133,6 @@ local CALENDAR_CONTEXTMENU_FLAG_SHOWEVENT		= 0x02;
 local CALENDAR_CREATEEVENTFRAME_DEFAULT_TITLE			= CALENDAR_EVENT_NAME;
 local CALENDAR_CREATEEVENTFRAME_DEFAULT_DESCRIPTION		= CALENDAR_EVENT_DESCRIPTION;
 local CALENDAR_CREATEEVENTFRAME_DEFAULT_TYPE			= CALENDAR_EVENTTYPE_OTHER;
-local CALENDAR_CREATEEVENTFRAME_DEFAULT_REPEAT_OPTION	= 1;
 local CALENDAR_CREATEEVENTFRAME_DEFAULT_HOUR			= 12;		-- default is standard (not military) time
 local CALENDAR_CREATEEVENTFRAME_DEFAULT_MINUTE			= 0;
 local CALENDAR_CREATEEVENTFRAME_DEFAULT_AM				= true;
@@ -589,10 +588,6 @@ local CALENDAR_CALENDARTYPE_COLORS = {
 local CALENDAR_EVENTTYPE_TEXTURE_PATHS = {
 	[CALENDAR_EVENTTYPE_RAID]		= "Interface\\LFGFrame\\LFGIcon-",
 	[CALENDAR_EVENTTYPE_DUNGEON]	= "Interface\\LFGFrame\\LFGIcon-",
---	[CALENDAR_EVENTTYPE_PVP]		= "",
---	[CALENDAR_EVENTTYPE_MEETING]	= "",
---	[CALENDAR_EVENTTYPE_OTHER]		= "",
-	[CALENDAR_EVENTTYPE_HEROIC_DUNGEON] = "Interface\\LFGFrame\\LFGIcon-",
 };
 local CALENDAR_EVENTTYPE_TEXTURES = {
 	[CALENDAR_EVENTTYPE_RAID]		= "Interface\\LFGFrame\\LFGIcon-Raid",
@@ -600,7 +595,6 @@ local CALENDAR_EVENTTYPE_TEXTURES = {
 	[CALENDAR_EVENTTYPE_PVP]		= "Interface\\Calendar\\UI-Calendar-Event-PVP",
 	[CALENDAR_EVENTTYPE_MEETING]	= "Interface\\Calendar\\MeetingIcon",
 	[CALENDAR_EVENTTYPE_OTHER]		= "Interface\\Calendar\\UI-Calendar-Event-Other",
-	[CALENDAR_EVENTTYPE_HEROIC_DUNGEON] = "Interface\\LFGFrame\\LFGIcon-Dungeon",
 };
 local CALENDAR_EVENTTYPE_TCOORDS = {
 	[CALENDAR_EVENTTYPE_RAID] = {
@@ -628,12 +622,6 @@ local CALENDAR_EVENTTYPE_TCOORDS = {
 		bottom	= 1.0,
 	},
 	[CALENDAR_EVENTTYPE_OTHER] = {
-		left	= 0.0,
-		right	= 1.0,
-		top		= 0.0,
-		bottom	= 1.0,
-	},
-	[CALENDAR_EVENTTYPE_HEROIC_DUNGEON] = {
 		left	= 0.0,
 		right	= 1.0,
 		top		= 0.0,
@@ -669,6 +657,7 @@ local CalendarDayButtons = { };
 -- CalendarEventTextureCache gets updated whenever event type textures are requested (currently only
 -- the Dungeon and Raid event types have texture lists)
 local CalendarEventTextureCache = { };
+local CalendarEventTextureCacheType = nil;
 
 -- CalendarClassData gets updated whenever the current event's invite list is updated
 local CalendarClassData = { };
@@ -803,65 +792,101 @@ local function _CalendarFrame_CanRemoveEvent(modStatus, calendarType, inviteType
 		(calendarType == "PLAYER" or (calendarType == "GUILD_EVENT" and inviteType == CALENDAR_INVITETYPE_NORMAL));
 end
 
-local function _CalendarFrame_CacheEventTextures_Internal(...)
-	local numTextures = select("#", ...) / 4;
+local function _CalendarFrame_CacheEventTextures_Internal(eventType, ...)
+	wipe(CalendarEventTextureCache);
+
+	local STRIDE = 6;
+	local numTextures = select("#", ...) / STRIDE;
 	if ( numTextures <= 0 ) then
-		CalendarEventTextureCache.eventType = nil;
 		return false;
 	end
 
-	while ( #CalendarEventTextureCache > numTextures ) do
-		tremove(CalendarEventTextureCache);
-	end
+	local overlappingMapIDs = (eventType == CALENDAR_EVENTTYPE_RAID or eventType == CALENDAR_EVENTTYPE_DUNGEON) and {};
 
-	local param = 1;
 	local cacheIndex = 1;
 	for textureIndex = 1, numTextures do
 		if ( not CalendarEventTextureCache[cacheIndex] ) then
 			CalendarEventTextureCache[cacheIndex] = { };
 		end
 
-		-- insert texture
-		CalendarEventTextureCache[cacheIndex].textureIndex = textureIndex;
-		CalendarEventTextureCache[cacheIndex].title = select(param, ...);
-		param = param + 1;
-		CalendarEventTextureCache[cacheIndex].texture = select(param, ...);
-		param = param + 1;
-		CalendarEventTextureCache[cacheIndex].expansionLevel = select(param, ...);
-		param = param + 1;
-		CalendarEventTextureCache[cacheIndex].difficultyName = select(param, ...);
-		param = param + 1;
+		local title, texture, expansionLevel, difficultyID, mapID, isLFR = select((textureIndex - 1) * STRIDE + 1, ...);
+		local difficultyName, instanceType, isHeroic, isChallengeMode, displayHeroic, displayMythic, toggleDifficultyID = GetDifficultyInfo(difficultyID);
+		if not difficultyName then
+			difficultyName = "";
+		end
 
+		if overlappingMapIDs and overlappingMapIDs[mapID] then
+			-- Already exists a map, collapse the difficulty
+			local firstCacheIndex = overlappingMapIDs[mapID];
+			local cacheEntry = CalendarEventTextureCache[firstCacheIndex];
+
+			if cacheEntry.isLFR and not isLFR then
+				-- Prefer a non-LFR name over a LFR name
+				cacheEntry.title = title;
+				cacheEntry.isLFR = nil;
+			end
+
+			if cacheEntry.displayHeroic or cacheEntry.displayMythic and (not displayHeroic and not displayMythic) then
+				-- Prefer normal difficulty name over higher difficulty
+				cacheEntry.title = title;
+				cacheEntry.displayHeroic = nil;
+				cacheEntry.displayMythic = nil;
+			end
+
+			table.insert(cacheEntry.difficulties, { textureIndex = textureIndex, difficultyName = difficultyName });
+		else
+			CalendarEventTextureCache[cacheIndex].textureIndex = textureIndex;
+			CalendarEventTextureCache[cacheIndex].title = title;
+			CalendarEventTextureCache[cacheIndex].texture = texture;
+			CalendarEventTextureCache[cacheIndex].expansionLevel = expansionLevel;
+			CalendarEventTextureCache[cacheIndex].difficultyName = difficultyName;
+			CalendarEventTextureCache[cacheIndex].isLFR = isLFR;
+			CalendarEventTextureCache[cacheIndex].displayHeroic = displayHeroic;
+			CalendarEventTextureCache[cacheIndex].displayMythic = displayMythic;
+
+			if overlappingMapIDs then
+				if not overlappingMapIDs[mapID] then
+					overlappingMapIDs[mapID] = cacheIndex;
+				end
+				CalendarEventTextureCache[cacheIndex].difficulties = { { textureIndex = textureIndex, difficultyName = difficultyName } };
+			end
+
+			cacheIndex = cacheIndex + 1;
+		end
+	end
+
+	local cacheIndex = 1;
+	while cacheIndex < #CalendarEventTextureCache do
 		-- insert headers between expansion levels
 		local entry = CalendarEventTextureCache[cacheIndex];
 		local prevEntry = CalendarEventTextureCache[cacheIndex - 1];
-		if ( not prevEntry or (prevEntry and prevEntry.expansionLevel ~= entry.expansionLevel) ) then
+
+		if ( entry.expansionLevel and (not prevEntry or (prevEntry.expansionLevel and prevEntry.expansionLevel ~= entry.expansionLevel)) ) then
 			-- insert empty entry...
 			if ( prevEntry ) then
 				--...only if we had a previous entry
-				CalendarEventTextureCache[cacheIndex] = { };
+				table.insert(CalendarEventTextureCache, cacheIndex, {});
 				cacheIndex = cacheIndex + 1;
 			end
 			-- insert header
-			CalendarEventTextureCache[cacheIndex] = {
+			table.insert(CalendarEventTextureCache, cacheIndex, {
 				title = _G["EXPANSION_NAME"..entry.expansionLevel],
 				expansionLevel = entry.expansionLevel,
-			};
+			});
 			cacheIndex = cacheIndex + 1;
-			-- make the current entry the next entry
-			CalendarEventTextureCache[cacheIndex] = entry;
 		end
 
 		cacheIndex = cacheIndex + 1;
 	end
+
 	return true;
 end
 
 local function _CalendarFrame_CacheEventTextures(eventType)
-	if ( eventType ~= CalendarEventTextureCache.eventType ) then
-		CalendarEventTextureCache.eventType = eventType
+	if ( eventType ~= CalendarEventTextureCacheType ) then
+		CalendarEventTextureCacheType = eventType;
 		if ( eventType ) then
-			return _CalendarFrame_CacheEventTextures_Internal(CalendarEventGetTextures(eventType));
+			return  _CalendarFrame_CacheEventTextures_Internal(eventType, CalendarEventGetTextures(eventType));
 		end
 	end
 	return true;
@@ -873,6 +898,13 @@ local function _CalendarFrame_GetEventTexture(index, eventType)
 	end
 	for cacheIndex = 1, #CalendarEventTextureCache do
 		local entry = CalendarEventTextureCache[cacheIndex];
+		if ( entry.difficulties ) then
+			for i, difficultyInfo in ipairs(entry.difficulties) do
+				if difficultyInfo.textureIndex == index then
+					return entry, difficultyInfo;
+				end
+			end
+		end
 		if ( entry.textureIndex and index == entry.textureIndex ) then
 			return entry;
 		end
@@ -957,7 +989,8 @@ local function _CalendarFrame_InviteToRaid(maxInviteCount)
 		if ( name ~= playerName and not UnitInParty(name) and not UnitInRaid(name) and
 			 (inviteStatus == CALENDAR_INVITESTATUS_ACCEPTED or
 			 inviteStatus == CALENDAR_INVITESTATUS_CONFIRMED or
-			 inviteStatus == CALENDAR_INVITESTATUS_SIGNEDUP) ) then
+			 inviteStatus == CALENDAR_INVITESTATUS_SIGNEDUP or
+			 inviteStatus == CALENDAR_INVITESTATUS_TENTATIVE)  ) then
 			InviteToGroup(name);
 			inviteCount = inviteCount + 1;
 		end
@@ -974,7 +1007,8 @@ local function _CalendarFrame_GetInviteToRaidCount(maxInviteCount)
 		if ( not UnitInParty(name) and not UnitInRaid(name) and
 			 (inviteStatus == CALENDAR_INVITESTATUS_ACCEPTED or
 			 inviteStatus == CALENDAR_INVITESTATUS_CONFIRMED or
-			 inviteStatus == CALENDAR_INVITESTATUS_SIGNEDUP) ) then
+			 inviteStatus == CALENDAR_INVITESTATUS_SIGNEDUP or
+			 inviteStatus == CALENDAR_INVITESTATUS_TENTATIVE) ) then
 			inviteCount = inviteCount + 1;
 		end
 		i = i + 1;
@@ -2631,10 +2665,9 @@ function CalendarViewHolidayFrame_Update()
 	CalendarTitleFrame_SetText(CalendarViewHolidayTitleFrame, name);
 	CalendarViewHolidayDescription:SetText(description);
 	CalendarViewHolidayInfoTexture:SetTexture();
-	-- mschweitzer NOTE: we're going to use the default texture here until we can get real INFO art
+
 	local texture = CALENDAR_CALENDARTYPE_TEXTURES["HOLIDAY"]["INFO"];
 	local tcoords = CALENDAR_CALENDARTYPE_TCOORDS["HOLIDAY"];
---	local texture, tcoords = _CalendarFrame_GetTextureFile(texture, "HOLIDAY", "INFO", 0);
 	if ( texture ) then
 		CalendarViewHolidayInfoTexture:SetTexture(texture);
 		CalendarViewHolidayInfoTexture:SetTexCoord(tcoords.left, tcoords.right, tcoords.top, tcoords.bottom);
@@ -2967,11 +3000,11 @@ function CalendarViewEventFrame_Update()
 	CalendarViewEventIcon:SetTexture();
 	local tcoords = CALENDAR_EVENTTYPE_TCOORDS[eventType];
 	CalendarViewEventIcon:SetTexCoord(tcoords.left, tcoords.right, tcoords.top, tcoords.bottom);
-	local eventTex = _CalendarFrame_GetEventTexture(textureIndex, eventType);
+	local eventTex, difficultyInfo = _CalendarFrame_GetEventTexture(textureIndex, eventType);
 	if ( eventTex ) then
 		-- set the event type
 		local name = eventTex.title;
-		name = GetDungeonNameWithDifficulty(name, eventTex.difficultyName);
+		name = GetDungeonNameWithDifficulty(name, difficultyInfo and difficultyInfo.difficultyName or eventTex.difficultyName);
 		CalendarViewEventTypeName:SetFormattedText(CALENDAR_VIEW_EVENTTYPE, safeselect(eventType, CalendarEventGetTypes()), name);
 		-- set the eventTex texture
 		if ( eventTex.texture ~= "" ) then
@@ -3392,8 +3425,8 @@ function CalendarCreateEventFrame_OnLoad(self)
 	UIDropDownMenu_SetWidth(CalendarCreateEventMinuteDropDown, 30, 40);
 	UIDropDownMenu_Initialize(CalendarCreateEventAMPMDropDown, CalendarCreateEventAMPMDropDown_Initialize);
 	UIDropDownMenu_SetWidth(CalendarCreateEventAMPMDropDown, 40, 40);
-	UIDropDownMenu_Initialize(CalendarCreateEventRepeatOptionDropDown, CalendarCreateEventRepeatOptionDropDown_Initialize);
-	UIDropDownMenu_SetWidth(CalendarCreateEventRepeatOptionDropDown, 80);
+	UIDropDownMenu_Initialize(CalendarCreateEventDifficultyOptionDropDown, CalendarCreateEventDifficultyOptionDropDown_Initialize);
+	UIDropDownMenu_SetWidth(CalendarCreateEventDifficultyOptionDropDown, 100, 40);
 end
 
 function CalendarCreateEventFrame_OnEvent(self, event, ...)
@@ -3513,10 +3546,6 @@ function CalendarCreateEventFrame_Update()
 		CalendarCreateEventTexture_Update();
 		-- hide the creator
 		CalendarCreateEventCreatorName:Hide();
-		-- reset repeat option
-		CalendarCreateEventFrame.selectedRepeatOption = CALENDAR_CREATEEVENTFRAME_DEFAULT_REPEAT_OPTION;
-		CalendarCreateEvent_UpdateRepeatOption();
-		CalendarEventSetRepeatOption(CalendarCreateEventFrame.selectedRepeatOption);
 		local calendarType = CalendarEventGetCalendarType();
 		if ( calendarType == "GUILD_ANNOUNCEMENT" ) then
 			CalendarTitleFrame_SetText(CalendarCreateEventTitleFrame, CALENDAR_CREATE_ANNOUNCEMENT);
@@ -3597,9 +3626,6 @@ function CalendarCreateEventFrame_Update()
 		-- update the creator (must come after event texture)
 		CalendarCreateEventCreatorName:SetFormattedText(CALENDAR_EVENT_CREATORNAME, _CalendarFrame_SafeGetName(creator));
 		CalendarCreateEventCreatorName:Show();
-		-- update repeat option
-		CalendarCreateEventFrame.selectedRepeatOption = repeatOption;
-		CalendarCreateEvent_UpdateRepeatOption();
 		if ( calendarType == "GUILD_ANNOUNCEMENT" ) then
 			CalendarTitleFrame_SetText(CalendarCreateEventTitleFrame, CALENDAR_EDIT_ANNOUNCEMENT);
 			-- guild wide events don't have invites
@@ -3667,11 +3693,11 @@ function CalendarCreateEventTexture_Update()
 	CalendarCreateEventIcon:SetTexture();
 	local tcoords = CALENDAR_EVENTTYPE_TCOORDS[eventType];
 	CalendarCreateEventIcon:SetTexCoord(tcoords.left, tcoords.right, tcoords.top, tcoords.bottom);
-	local eventTex = _CalendarFrame_GetEventTexture(textureIndex, eventType);
+	local eventTex, difficultyInfo = _CalendarFrame_GetEventTexture(textureIndex, eventType);
 	if ( eventTex ) then
 		-- set the eventTex name since we have one
 		local name = eventTex.title;
-		CalendarCreateEventTextureName:SetText(GetDungeonNameWithDifficulty(name, eventTex.difficultyName));
+		CalendarCreateEventTextureName:SetText(GetDungeonNameWithDifficulty(name, difficultyInfo and difficultyInfo.difficultyName or eventTex.difficultyName));
 		CalendarCreateEventTextureName:Show();
 		-- set the eventTex texture
 		if ( eventTex.texture ~= "" ) then
@@ -3684,6 +3710,7 @@ function CalendarCreateEventTexture_Update()
 		CalendarCreateEventIcon:SetTexture(CALENDAR_EVENTTYPE_TEXTURES[eventType]);
 	end
 	-- need to update the creator name at this point since it is affected by the texture name
+	CalendarCreateEvent_UpdateEventType();
 	CalendarCreateEventCreatorName_Update();
 end
 
@@ -3708,14 +3735,14 @@ end
 
 function CalendarCreateEventTypeDropDown_OnClick(self)
 	local eventType = self.value;
-	if ( eventType == CALENDAR_EVENTTYPE_DUNGEON or eventType == CALENDAR_EVENTTYPE_RAID or eventType == CALENDAR_EVENTTYPE_HEROIC_DUNGEON ) then
+	if ( eventType == CALENDAR_EVENTTYPE_DUNGEON or eventType == CALENDAR_EVENTTYPE_RAID ) then
 		CalendarTexturePickerFrame_Show(eventType);
 	else
-		UIDropDownMenu_SetSelectedValue(CalendarCreateEventTypeDropDown, eventType);
-		CalendarCreateEventFrame.selectedEventType = eventType;
-		CalendarEventSetType(eventType);
-		-- NOTE: clear the texture selection for non-dungeon types since those don't have texture selections
 		CalendarCreateEventFrame.selectedTextureIndex = nil;
+		CalendarCreateEventFrame.selectedEventType = eventType;
+		CalendarCreateEvent_UpdateEventType();
+		CalendarEventSetType(eventType);
+
 		CalendarCreateEventTexture_Update();
 
 		CalendarCreateEventCreateButton_Update();
@@ -3725,39 +3752,34 @@ end
 function CalendarCreateEvent_UpdateEventType()
 	UIDropDownMenu_Initialize(CalendarCreateEventTypeDropDown, CalendarCreateEventTypeDropDown_Initialize);
 	UIDropDownMenu_SetSelectedValue(CalendarCreateEventTypeDropDown, CalendarCreateEventFrame.selectedEventType);
-end
 
-function CalendarCreateEventRepeatOptionDropDown_Initialize(self)
-	CalendarCreateEventTypeDropDown_InitRepeatOptions(self, CalendarEventGetRepeatOptions());
-end
-
-function CalendarCreateEventTypeDropDown_InitRepeatOptions(self, ...)
-	local info = UIDropDownMenu_CreateInfo();
-	for i = 1, select("#", ...) do
-		info.text = select(i, ...);
-		info.func = CalendarCreateEventRepeatOptionDropDown_OnClick;
-		if ( CalendarCreateEventFrame.selectedRepeatOption == i ) then
-			info.checked = 1;
-			UIDropDownMenu_SetText(self, info.text);
-		else
-			info.checked = nil;
-		end
-		UIDropDownMenu_AddButton(info);
+	local eventType = CalendarCreateEventFrame.selectedEventType;
+	local textureIndex = CalendarCreateEventFrame.selectedTextureIndex;
+	local eventTex, difficultyInfo = _CalendarFrame_GetEventTexture(textureIndex, eventType);
+	if ( eventTex and difficultyInfo and difficultyInfo.difficultyName ~= "") then
+		UIDropDownMenu_Initialize(CalendarCreateEventDifficultyOptionDropDown, CalendarCreateEventDifficultyOptionDropDown_Initialize);
+		UIDropDownMenu_SetSelectedValue(CalendarCreateEventDifficultyOptionDropDown, difficultyInfo.difficultyName);
+		CalendarCreateEventDifficultyOptionDropDown:Show();
+	else
+		CalendarCreateEventDifficultyOptionDropDown:Hide();
 	end
 end
 
-function CalendarCreateEventRepeatOptionDropDown_OnClick(self)
-	local id = self:GetID();
-	UIDropDownMenu_SetSelectedID(CalendarCreateEventRepeatOptionDropDown, id);
-	CalendarCreateEventFrame.selectedRepeatOption = id;
-	CalendarEventSetRepeatOption(id);
+function CalendarCreateEvent_SetSelectedIndex(selectedTextureIndex, eventType)
+	CalendarCreateEventFrame.selectedTextureIndex = selectedTextureIndex;
+	CalendarCreateEventFrame.selectedEventType = eventType;
+	if ( CalendarCreateEventFrame.selectedTextureIndex ) then
+		-- now that we've selected a texture, we can set the create event data
+		CalendarEventSetType(eventType);
+		CalendarEventSetTextureID(CalendarCreateEventFrame.selectedTextureIndex);
+		-- update the create event frame using our selection
+		CalendarCreateEventFrame.selectedEventType = eventType;
+		CalendarCreateEvent_UpdateEventType();
+		CalendarCreateEventTexture_Update();
+		CalendarTexturePickerFrame_Hide();
 
-	CalendarCreateEventCreateButton_Update();
-end
-
-function CalendarCreateEvent_UpdateRepeatOption()
-	UIDropDownMenu_Initialize(CalendarCreateEventRepeatOptionDropDown, CalendarCreateEventRepeatOptionDropDown_Initialize);
-	UIDropDownMenu_SetSelectedID(CalendarCreateEventRepeatOptionDropDown, CalendarCreateEventFrame.selectedRepeatOption);
+		CalendarCreateEventCreateButton_Update();
+	end
 end
 
 function CalendarCreateEventHourDropDown_Initialize(self)
@@ -3858,6 +3880,31 @@ function CalendarCreateEventAMPMDropDown_OnClick(self)
 	CalendarCreateEvent_SetEventTime();
 
 	CalendarCreateEventCreateButton_Update();
+end
+
+function CalendarCreateEventDifficultyOptionDropDown_Initialize(self)
+	local eventType = CalendarCreateEventFrame.selectedEventType;
+	local textureIndex = CalendarCreateEventFrame.selectedTextureIndex;
+	local eventTex = _CalendarFrame_GetEventTexture(textureIndex, eventType);
+	if ( eventTex ) then
+		local info = UIDropDownMenu_CreateInfo();
+		local alreadyAddedDifficulties = {};
+		for i, difficultyInfo in ipairs(eventTex.difficulties) do
+			if not alreadyAddedDifficulties[difficultyInfo.difficultyName] then
+				info.text = difficultyInfo.difficultyName;
+				info.arg1 = difficultyInfo.textureIndex;
+				info.func = CalendarCreateEventDifficultyOptionDropDown_OnClick;
+				info.checked = textureIndex == difficultyInfo.textureIndex or nil;
+				UIDropDownMenu_AddButton(info);
+
+				alreadyAddedDifficulties[difficultyInfo.difficultyName] = true;
+			end
+		end
+	end
+end
+
+function CalendarCreateEventDifficultyOptionDropDown_OnClick(self, textureIndex)
+	CalendarCreateEvent_SetSelectedIndex(textureIndex, CalendarCreateEventFrame.selectedEventType);
 end
 
 function CalendarCreateEvent_SetEventTime()
@@ -4974,7 +5021,7 @@ function CalendarTexturePickerScrollFrame_Update()
 
 				-- set the eventTex title
 				local name = eventTex.title;
-				buttonTitle:SetText(GetDungeonNameWithDifficulty(name, eventTex.difficultyName));
+				buttonTitle:SetText(GetDungeonNameWithDifficulty(name, eventTex.difficulties == nil and eventTex.difficultyName or ""));
 				buttonTitle:SetTextColor(NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b);
 				buttonTitle:ClearAllPoints();
 				buttonTitle:SetPoint("LEFT", buttonIcon, "RIGHT");
@@ -5026,20 +5073,7 @@ function CalendarTexturePickerScrollFrame_Update()
 end
 
 function CalendarTexturePickerAcceptButton_OnClick(self)
-	CalendarCreateEventFrame.selectedTextureIndex = CalendarTexturePickerFrame.selectedTextureIndex;
-	if ( CalendarCreateEventFrame.selectedTextureIndex ) then
-		-- now that we've selected a texture, we can set the create event data
-		local eventType = CalendarTexturePickerFrame.eventType;
-		CalendarEventSetType(eventType);
-		CalendarEventSetTextureID(CalendarCreateEventFrame.selectedTextureIndex);
-		-- update the create event frame using our selection
-		UIDropDownMenu_SetSelectedValue(CalendarCreateEventTypeDropDown, eventType);
-		CalendarCreateEventFrame.selectedEventType = eventType;
-		CalendarCreateEventTexture_Update();
-		CalendarTexturePickerFrame:Hide();
-
-		CalendarCreateEventCreateButton_Update();
-	end
+	CalendarCreateEvent_SetSelectedIndex(CalendarTexturePickerFrame.selectedTextureIndex, CalendarTexturePickerFrame.eventType);
 end
 
 function CalendarTexturePickerButton_OnLoad(self)

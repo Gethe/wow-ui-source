@@ -129,7 +129,7 @@ function GarrisonBuildingFrame_OnLoad(self)
 	
 	GarrisonBuildingFrame_UpdateCurrency();
 	
-	GarrisonFollowerList_OnLoad(self);
+	self.FollowerList:Load(LE_FOLLOWER_TYPE_GARRISON_6_0);
 	local buttons = self.FollowerList.listScroll.buttons
 	for i = 1, #buttons do
 		buttons[i]:SetScript("OnClick", GarrisonBuildingFollowerButton_OnClick);
@@ -1016,7 +1016,7 @@ function GarrisonBuildingFollowerList_OnShow(self)
 		tinsert(self.followersList, i);
 	end	
 	GarrisonFollowerList_SortFollowers(self);
-	GarrisonFollowerList_Update(self:GetParent());
+	self:UpdateData();
 	
 	if (#self.followers == 0) then
 		GarrisonBuildingFrame.FollowerList.NoFollowerText:Show();

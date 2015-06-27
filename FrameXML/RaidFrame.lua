@@ -262,7 +262,11 @@ function RaidInfoInstance_OnEnter(self)
 		GameTooltip:SetInstanceLockEncountersComplete(self:GetID());
 		GameTooltip:Show();
 	else
-		-- No tooltip for World Boss locks yet
+		local index = self:GetID() - GetNumSavedInstances();
+		local instanceName, instanceID, instanceReset = GetSavedWorldBossInfo(index);
+		GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+		GameTooltip:SetText(instanceName);
+		GameTooltip:Show();
 	end
 end
 

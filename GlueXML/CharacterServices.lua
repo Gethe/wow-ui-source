@@ -32,6 +32,8 @@
 --  :OnRewind() - This function is called in response to the flow:Rewind call if the block needs to handle any logic here.
 --  :SkipIf() - Skip this block if a certain result is present
 --  :OnSkip() - If you have a SkipIf() then OnSkip() will perform any actions you need if you are skipped.
+--  :ShowPopupIf() - If you have a .Popup, then ShowPopupIf will perform a check if the popup should appear.
+--  :GetPopupText() - If you have a .Popup, then GetPopupText fetch the text to display.
 --
 -- The following members must be present on a block:
 --  .Back - Show the back button on the flow frame.
@@ -48,6 +50,7 @@
 --    cause the master to change the flow controls.
 --  .SkipOnRewind - This tells the flow to ignore the :IsFinished() result when deciding where to rewind and instead skip this block.
 --  .ExtraOffset - May be set on a block by the flow for the master to add extra vertical offset to a block based on previous results.
+--  .Popup - May be set on a block to potentially show a popup before advancing to the next step.
 --
 -- However a block uses controls to gather data, once it has data and is finished it should call
 -- CharacterServicesMaster_Update() to advance the flow and button states.
@@ -155,7 +158,7 @@ local defaultProfessions = {
 };
 
 local CharacterUpgradeCharacterSelectBlock = { Back = false, Next = false, Finish = false, AutoAdvance = true, ActiveLabel = SELECT_CHARACTER_ACTIVE_LABEL, ResultsLabel = SELECT_CHARACTER_RESULTS_LABEL };
-local CharacterUpgradeSpecSelectBlock = { Back = true, Next = true, Finish = false, ActiveLabel = SELECT_SPEC_ACTIVE_LABEL, ResultsLabel = SELECT_SPEC_RESULTS_LABEL };
+local CharacterUpgradeSpecSelectBlock = { Back = true, Next = true, Finish = false, ActiveLabel = SELECT_SPEC_ACTIVE_LABEL, ResultsLabel = SELECT_SPEC_RESULTS_LABEL, Popup = "BOOST_NOT_RECOMMEND_SPEC_WARNING" };
 local CharacterUpgradeFactionSelectBlock = { Back = true, Next = true, Finish = false, ActiveLabel = SELECT_FACTION_ACTIVE_LABEL, ResultsLabel = SELECT_FACTION_RESULTS_LABEL };
 local CharacterUpgradeEndStep = { Back = true, Next = false, Finish = true, HiddenStep = true, SkipOnRewind = true };
 
@@ -278,20 +281,8 @@ function CharacterServicesMaster_OnCharacterListUpdate()
 	elseif (C_CharacterServices.HasQueuedUpgrade()) then
 		local guid = C_CharacterServices.GetQueuedUpgradeGUID();
 
-		local num = math.min(GetNumCharacters(), MAX_CHARACTERS_DISPLAYED);
-
-		for i = 1, num do
-			if (select(14, GetCharacterInfo(GetCharIDFromIndex(i + CHARACTER_LIST_OFFSET))) == guid) then
-				local button = _G["CharSelectCharacterButton"..i];
-				CharacterSelectButton_OnClick(button);
-				button.selection:Show();
-				UpdateCharacterSelection(CharacterSelect);
-				GetCharacterListUpdate();
-				CharacterServicesMaster.waitingForLevelUp = true;
-				break;
-			end
-		end
-
+	  	CharacterServicesMaster.waitingForLevelUp = CharacterSelect_SelectCharacterByGUID(guid);
+	
 		C_CharacterServices.ClearQueuedUpgrade();
 	end
 end
@@ -413,6 +404,28 @@ end
 
 function CharacterServicesMasterNextButton_OnClick(self)
 	PlaySound("igMainMenuOptionCheckBoxOn");
+	local master = CharacterServicesMaster;
+	if ( master.currentBlock.Popup and 
+		( not master.currentBlock.ShowPopupIf or master.currentBlock:ShowPopupIf() )) then
+		local text;
+		if ( master.currentBlock.GetPopupText ) then
+			text = master.currentBlock:GetPopupText();
+		end
+		GlueDialog_Show(master.currentBlock.Popup, text);
+		return;
+	end
+	
+	CharacterServicesMaster_Advance();
+end
+
+function CharacterServicesProcessingIcon_OnEnter(self)
+	GlueTooltip:SetOwner(self, "ANCHOR_LEFT", -20, 0);
+	GlueTooltip:AddLine(self.tooltip, 1.0, 1.0, 1.0);
+	GlueTooltip:AddLine(self.tooltip2, nil, nil, nil, 1, 1);
+	GlueTooltip:Show();		
+end
+
+function CharacterServicesMaster_Advance()
 	local master = CharacterServicesMaster;
 	master.blockComplete = true;
 	CharacterServicesMaster_Update();
@@ -943,12 +956,21 @@ function CharacterUpgradeSpecSelectBlock:Initialize(results)
 		end
 		local button = self.frame.ControlsFrame.SpecButtons[i];
 		if (i <= numSpecs ) then
-			local specID, name, description, icon, _, role  = GetSpecializationInfoForClassID(classID, i, sex);
+			local specID, name, description, icon, _, role, isRecommended  = GetSpecializationInfoForClassID(classID, i, sex);
 			button:SetID(specID);
 			button.SpecIcon:SetTexture(icon);
 			button.SpecName:SetText(name);
 			button.RoleIcon:SetTexCoord(GetTexCoordsForRole(role));
-			button.RoleName:SetText(_G[role]);
+			button.RoleName:SetText(_G["ROLE_"..role]);
+			if ( isRecommended ) then
+				button.SpecName:SetPoint("TOPLEFT", button.Frame, "TOPRIGHT", 6, -3);
+				button.Recommended:Show();
+				button.RoleName:SetPoint("TOPLEFT", button.Recommended, "BOTTOMLEFT");
+			else
+				button.SpecName:SetPoint("TOPLEFT", button.Frame, "TOPRIGHT", 6, -8);
+				button.Recommended:Hide();
+				button.RoleName:SetPoint("TOPLEFT", button.SpecName, "BOTTOMLEFT");
+			end
 			button:SetChecked(false);
 			button:Show();
 			button.tooltip = formatDescription(description, results);
@@ -969,6 +991,15 @@ end
 
 function CharacterUpgradeSpecSelectBlock:FormatResult()
 	return GetSpecializationNameForSpecID(self.selected);
+end
+
+function CharacterUpgradeSpecSelectBlock:ShowPopupIf()
+	local role = select(6, GetSpecializationInfoForSpecID(self.selected));
+	return role == "HEALER";
+end
+
+function CharacterUpgradeSpecSelectBlock:GetPopupText()
+	return string.format(BOOST_NOT_RECOMMEND_SPEC_WARNING, GetSpecializationNameForSpecID(self.selected));
 end
 
 function CharacterUpgradeSelectSpecRadioButton_OnClick(self, button, down)

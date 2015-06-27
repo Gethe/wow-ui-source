@@ -14,7 +14,8 @@ function QuestMapFrame_OnLoad(self)
 	self:RegisterEvent("QUEST_WATCH_UPDATE");
 	self:RegisterEvent("QUEST_ACCEPTED");
 	self:RegisterEvent("UNIT_QUEST_LOG_CHANGED");
-
+	self:RegisterEvent("AJ_QUEST_LOG_OPEN");
+	
 	QuestPOI_Initialize(QuestScrollFrame.Contents);
 	QuestMapQuestOptionsDropDown.questID = 0;		-- for QuestMapQuestOptionsDropDown_Initialize
 	UIDropDownMenu_Initialize(QuestMapQuestOptionsDropDown, QuestMapQuestOptionsDropDown_Initialize, "MENU");
@@ -91,6 +92,20 @@ function QuestMapFrame_OnEvent(self, event, ...)
 		end	
 	elseif ( event == "QUEST_ACCEPTED" ) then
 		TUTORIAL_QUEST_ACCEPTED = arg2;
+	elseif ( event == "AJ_QUEST_LOG_OPEN" ) then
+		ShowQuestLog();
+		local questIndex = GetQuestLogIndexByID(arg1)
+		local mapID, floorNumber = GetQuestWorldMapAreaID(arg1);
+		if ( questIndex > 0 ) then
+			QuestMapFrame_OpenToQuestDetails(arg1);
+		elseif ( mapID ~= 0 ) then
+			SetMapByID(mapID);
+			if ( floorNumber ~= 0 ) then
+				SetDungeonMapLevel(floorNumber);
+			end
+		elseif ( arg2 and arg2 > 0) then
+			SetMapByID(arg2);
+		end
 	end
 end
 
@@ -1051,9 +1066,6 @@ function GetZoneStoryID()
 	{
 		-- Frostfire Ridge
 		["941-Horde"] = {8671, 941},
-		-- Tanaan Jungle
-		["945-Alliance"] = {8921, 945},
-		["945-Horde"] = {8922, 945},
 		-- Talador
 		["946-Alliance"] = {8920, 946},
 		["946-Horde"] = {8919, 946},

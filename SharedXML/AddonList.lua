@@ -197,7 +197,7 @@ function AddonList_OnLoad(self)
 
 	self.offset = 0;
 
-	local template, value;
+	local template;
 	if ( InGlue() ) then
 		self:SetParent(GlueParent)
 		AddonDialog:SetParent(GlueParent)
@@ -218,13 +218,11 @@ function AddonList_OnLoad(self)
 		self:SetScript("OnKeyDown", AddonList_OnKeyDown)
 		self:SetFrameStrata("DIALOG")
 		template = "GlueDropDownMenuTemplate"
-		value = ALL
 	else
 		AddonDialog = nil;
 		self:SetParent(UIParent);
 		self:SetFrameStrata("HIGH");
 		template = "UIDropDownMenuTemplate"
-		value = true
 		self.startStatus = {};
 		self.shouldReload = false;
 		self.outOfDate = IsAddonVersionCheckEnabled() and AddonList_HasOutOfDate();
@@ -239,7 +237,7 @@ function AddonList_OnLoad(self)
 	local drop = CreateFrame("Frame", "AddonCharacterDropDown", self, template)
 	drop:SetPoint("TOPLEFT", 0, -30)
 	UIDropDownMenu_Initialize(drop, AddonListCharacterDropDown_Initialize);
-	UIDropDownMenu_SetSelectedValue(drop, value);
+	UIDropDownMenu_SetSelectedValue(drop, true);
 	AddonListScrollFrameScrollChildFrame:SetParent(AddonListScrollFrame);
 end
 
@@ -281,29 +279,25 @@ function AddonList_Update()
 		else
 			name, title, notes, loadable, reason, security = GetAddOnInfo(addonIndex);
 
-			local character = nil;
-			if (InGlue()) then
-				-- Get the character from the current list (nil is all characters)
-				character = UIDropDownMenu_GetSelectedValue(AddonCharacterDropDown);
-				if ( character == ALL ) then
-					character = nil;
-				end
-			else
-				character = UnitName("player");
+			-- Get the character from the current list (nil is all characters)
+			local character = UIDropDownMenu_GetSelectedValue(AddonCharacterDropDown);
+			if ( character == true ) then
+				character = nil;
 			end
+
 			checkbox = _G["AddonListEntry"..i.."Enabled"];
 			local checkboxState = GetAddOnEnableState(character, addonIndex);
-			enabled = (checkboxState > 0);
-
-			if (not InGlue()) then
-				checkbox:SetChecked(enabled);
+			if ( not InGlue() ) then
+				enabled = (GetAddOnEnableState(UnitName("player"), addonIndex) > 0);
 			else
-				TriStateCheckbox_SetState(checkboxState, checkbox);
-				if (checkboxState == 1 ) then
-					checkbox.AddonTooltip = ENABLED_FOR_SOME;
-				else
-					checkbox.AddonTooltip = nil;
-				end
+				enabled = (checkboxState > 0);
+			end
+
+			TriStateCheckbox_SetState(checkboxState, checkbox);
+			if (checkboxState == 1 ) then
+				checkbox.AddonTooltip = ENABLED_FOR_SOME;
+			else
+				checkbox.AddonTooltip = nil;
 			end
 
 			string = _G["AddonListEntry"..i.."Title"];
@@ -403,26 +397,25 @@ function AddonList_IsAddOnLoadOnDemand(index)
 end
 
 function AddonList_Enable(index, enabled)
-	local value
 
-	if ( InGlue() ) then
-		local character = UIDropDownMenu_GetSelectedValue(AddonCharacterDropDown);
-		local setForAll = false;
-		if ( character == ALL ) then
-			setForAll = true;
-			character = nil;
-		end
-		value = setForAll or character
-	else
-		value = UIDropDownMenu_GetSelectedValue(AddonCharacterDropDown)
-	end
+	local character = UIDropDownMenu_GetSelectedValue(AddonCharacterDropDown);
 	if ( enabled ) then
 		PlaySound("igMainMenuOptionCheckBoxOn");
-		EnableAddOn(index,value);
+		EnableAddOn(index,character);
 	else
 		PlaySound("igMainMenuOptionCheckBoxOff");
-		DisableAddOn(index,value);
+		DisableAddOn(index,character);
 	end
+	AddonList_Update();
+end
+
+function AddonList_EnableAll(self, button, down)
+	EnableAllAddOns(UIDropDownMenu_GetSelectedValue(AddonCharacterDropDown));
+	AddonList_Update();
+end
+
+function AddonList_DisableAll(self, button, down)
+	DisableAllAddOns(UIDropDownMenu_GetSelectedValue(AddonCharacterDropDown));
 	AddonList_Update();
 end
 
@@ -465,6 +458,8 @@ function AddonList_OnShow()
 	if ( InGlue() ) then
 		AddonListBackground:Show()
 	end
+	UIDropDownMenu_Initialize(AddonCharacterDropDown, AddonListCharacterDropDown_Initialize);
+	UIDropDownMenu_SetSelectedValue( AddonCharacterDropDown, UIDropDownMenu_GetSelectedValue(AddonCharacterDropDown) );
 	AddonList_Update();
 end
 
@@ -531,11 +526,7 @@ function AddonListCharacterDropDown_Initialize()
 	local selectedValue = UIDropDownMenu_GetSelectedValue(AddonCharacterDropDown);
 	local info = UIDropDownMenu_CreateInfo();
 	info.text = ALL;
-	if ( InGlue() ) then
-		info.value = ALL;
-	else
-		info.value = true;
-	end
+	info.value = true;
 	info.func = AddonListCharacterDropDown_OnClick;
 	if ( not selectedValue ) then
 		info.checked = 1;
@@ -556,7 +547,7 @@ function AddonListCharacterDropDown_Initialize()
 		end
 	else
 		info.text = UnitName("player")
-		info.value = false;
+		info.value = UnitName("player");
 		if ( selectedValue == info.value ) then
 			info.checked = 1;
 		else

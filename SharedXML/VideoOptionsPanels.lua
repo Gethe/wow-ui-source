@@ -250,7 +250,7 @@ local function FinishChanges(self)
 		VideoOptionsFrame.gxRestart = nil;
 		RestartGx();
 		-- reload some tables and redisplay
-		Graphics_DisplayModeDropDown.selectedID = nil; 							 	-- invalidates cached value
+		Display_DisplayModeDropDown.selectedID = nil; 							 	-- invalidates cached value
 		BlizzardOptionsPanel_RefreshControl(Display_DisplayModeDropDown);			-- hardware may not have set this, so we need to refresh
 
 		Display_ResolutionDropDown.tablerefresh = true;
@@ -353,7 +353,7 @@ function Graphics_TableSetValue(self, value)
 	end
 end
 -------------------------------------------------------------------------------------------------------
-function IsValid(self,index)
+local function IsValid(self,index)
 	if(index == nil) then
 		return false;
 	end
@@ -699,7 +699,6 @@ function VideoOptionsDropDown_OnLoad(self)
 	self.needrefresh = false;
 	self.initialize = self.initialize or 
 		function (self, level)
-			self.newValue = nil;
 			if(self.tablerefresh) then
 				self.tooltiprefresh = true;
 				self.table = {};

@@ -98,49 +98,53 @@ function GarrisonCapacitiveDisplayFrame_Update(self, success, maxShipments, plot
 	 	   	reagent:Show();
 	    end
 
-	    local currencyID, currencyNeeded = C_Garrison.GetShipmentReagentCurrencyInfo();
+		local currencyCount = C_Garrison.GetNumShipmentCurrencies();
+		local reagentCount = C_Garrison.GetNumShipmentReagents();
+		for currencyIndex = 1, currencyCount do
+			local currencyID, currencyNeeded = C_Garrison.GetShipmentReagentCurrencyInfo(currencyIndex);
 
-	    if (currencyID and currencyNeeded) then
-	    	local i = C_Garrison.GetNumShipmentReagents() + 1;
+			if (currencyID and currencyNeeded) then
+				local i = reagentCount + currencyIndex;
 
-	    	local reagent = reagents[i];
-	    	if (not reagent) then
-	    		reagent = CreateFrame("Button", nil, display, "GarrisonCapacitiveItemButtonTemplate");
-	    		reagent:SetID(i);
-	    		reagent:SetPoint("TOP", reagents[i-1], "BOTTOM", 0, -6);
-	    	end
-
-	    	local name, quantity, texture, _, _, _, _, quality = GetCurrencyInfo(currencyID);
-
-	    	-- If we don't have a name here the data is not set up correctly, but this prevents lua errors later.
-	    	if (name) then
-				reagent.Icon:SetTexture(texture);	    	
-				reagent.Name:SetText(name);
-				reagent.Name:SetTextColor(ITEM_QUALITY_COLORS[quality].r, ITEM_QUALITY_COLORS[quality].g, ITEM_QUALITY_COLORS[quality].b);
-				-- Grayout items
-				if ( quantity < currencyNeeded ) then
-					reagent.Icon:SetVertexColor(0.5, 0.5, 0.5);
-					reagent.Name:SetTextColor(GRAY_FONT_COLOR.r, GRAY_FONT_COLOR.g, GRAY_FONT_COLOR.b);
-					hasReagents = false;
-					self.available = 0;
-				else
-					reagent.Icon:SetVertexColor(1.0, 1.0, 1.0);
-					reagent.Name:SetTextColor(HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b);
-					self.available = min(self.available, floor(quantity / currencyNeeded));
+				local reagent = reagents[i];
+				if (not reagent) then
+					reagent = CreateFrame("Button", nil, display, "GarrisonCapacitiveItemButtonTemplate");
+					reagent:SetID(i);
+					reagent:SetPoint("TOP", reagents[i-1], "BOTTOM", 0, -6);
 				end
-				quantity = AbbreviateNumbers(quantity);
-				reagent.Count:SetText(quantity.." /"..currencyNeeded);
-				--fix text overflow when the reagent count is too high
-				if (math.floor(reagent.Count:GetStringWidth()) > math.floor(reagent.Icon:GetWidth() + .5)) then 
-				--round count width down because the leftmost number can overflow slightly without looking bad
-				--round icon width because it should always be an int, but sometimes it's a slightly off float
-					reagent.Count:SetText(quantity.."\n/"..currencyNeeded);
+
+				local name, quantity, texture, _, _, _, _, quality = GetCurrencyInfo(currencyID);
+
+				-- If we don't have a name here the data is not set up correctly, but this prevents lua errors later.
+				if (name) then
+					reagent.Icon:SetTexture(texture);	    	
+					reagent.Name:SetText(name);
+					reagent.Name:SetTextColor(ITEM_QUALITY_COLORS[quality].r, ITEM_QUALITY_COLORS[quality].g, ITEM_QUALITY_COLORS[quality].b);
+					-- Grayout items
+					if ( quantity < currencyNeeded ) then
+						reagent.Icon:SetVertexColor(0.5, 0.5, 0.5);
+						reagent.Name:SetTextColor(GRAY_FONT_COLOR.r, GRAY_FONT_COLOR.g, GRAY_FONT_COLOR.b);
+						hasReagents = false;
+						self.available = 0;
+					else
+						reagent.Icon:SetVertexColor(1.0, 1.0, 1.0);
+						reagent.Name:SetTextColor(HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b);
+						self.available = min(self.available, floor(quantity / currencyNeeded));
+					end
+					quantity = AbbreviateNumbers(quantity);
+					reagent.Count:SetText(quantity.." /"..currencyNeeded);
+					--fix text overflow when the reagent count is too high
+					if (math.floor(reagent.Count:GetStringWidth()) > math.floor(reagent.Icon:GetWidth() + .5)) then 
+					--round count width down because the leftmost number can overflow slightly without looking bad
+					--round icon width because it should always be an int, but sometimes it's a slightly off float
+						reagent.Count:SetText(quantity.."\n/"..currencyNeeded);
+					end
+					reagent.itemId = nil;
+					reagent.currencyID = currencyID;
+					reagent:Show();
 				end
-		 	   	reagent.itemId = nil;
-		 	   	reagent.currencyID = currencyID;
-		 	   	reagent:Show();
-		 	end
-	 	end
+			end
+		end
 
 	    local name, texture, quality, itemID, duration = C_Garrison.GetShipmentItemInfo();
 

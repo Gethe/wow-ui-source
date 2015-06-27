@@ -265,13 +265,13 @@ end
 --- GarrisonRecruitSelectFrame ---
 ----------------------------------
 function GarrisonRecruitSelectFrame_OnLoad(self)
-	GarrisonFollowerList_OnLoad(self);
+	self.FollowerList:Load(LE_FOLLOWER_TYPE_GARRISON_6_0);
 	self:RegisterEvent("GARRISON_RECRUIT_FOLLOWER_RESULT");
 	self:RegisterEvent("GARRISON_RECRUITMENT_FOLLOWERS_GENERATED");
 end
 
 function GarrisonRecruitSelectFrame_OnEvent(self, event, ...)
-	GarrisonFollowerList_OnEvent(self, event, ...);
+	GarrisonFollowerList_OnEvent(self.FollowerList, event, ...);
 	if(event == "GARRISON_RECRUIT_FOLLOWER_RESULT")then
 		-- post event for recruiting follower
 		HideUIPanel(GarrisonRecruitSelectFrame);

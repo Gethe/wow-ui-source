@@ -104,7 +104,7 @@ end
 function TargetFrame_Update (self)
 	-- This check is here so the frame will hide when the target goes away
 	-- even if some of the functions below are hooked by addons.
-	if ( not UnitExists(self.unit) ) then
+	if ( not UnitExists(self.unit) and not ShowBossFrameWhenUninteractable(self.unit) ) then
 		self:Hide();
 	else
 		self:Show();
@@ -160,7 +160,7 @@ function TargetFrame_OnEvent (self, event, ...)
 		TargetFrame_UpdateRaidTargetIcon(self);
 		CloseDropDownMenus();
 
-		if ( UnitExists(self.unit) ) then
+		if ( UnitExists(self.unit) and not IsReplacingUnit()) then
 			if ( UnitIsEnemy(self.unit, "player") ) then
 				PlaySound("igCreatureAggroSelect");
 			elseif ( UnitIsFriend("player", self.unit) ) then
@@ -261,7 +261,7 @@ function TargetFrame_OnHide (self)
 end
 
 function TargetFrame_CheckLevel (self)
-	local targetLevel = UnitLevel(self.unit);
+	local targetEffectiveLevel = UnitEffectiveLevel(self.unit);
 	
 	if ( UnitIsCorpse(self.unit) ) then
 		self.levelText:Hide();
@@ -272,21 +272,21 @@ function TargetFrame_CheckLevel (self)
 		self.levelText:SetText( petLevel );
 		self.levelText:Show();
 		self.highLevelTexture:Hide();
-	elseif ( targetLevel > 0 ) then
+	elseif ( targetEffectiveLevel > 0 ) then
 		-- Normal level target
-		self.levelText:SetText(targetLevel);
+		self.levelText:SetText(targetEffectiveLevel);
 		-- Color level number
 		if ( UnitCanAttack("player", self.unit) ) then
-			local color = GetQuestDifficultyColor(targetLevel);
+			local color = GetCreatureDifficultyColor(targetEffectiveLevel);
 			self.levelText:SetVertexColor(color.r, color.g, color.b);
 		else
 			self.levelText:SetVertexColor(1.0, 0.82, 0.0);
 		end
 		
 		if ( self.isBossFrame ) then
-			BossTargetFrame_UpdateLevelTextAnchor(self, targetLevel);
+			BossTargetFrame_UpdateLevelTextAnchor(self, targetEffectiveLevel);
 		else
-			TargetFrame_UpdateLevelTextAnchor(self, targetLevel);
+			TargetFrame_UpdateLevelTextAnchor(self, targetEffectiveLevel);
 		end
 		
 		self.levelText:Show();

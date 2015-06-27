@@ -278,6 +278,223 @@
 				<TexCoords left="0.25" right="0.5" top="0" bottom="1" />
 			</CheckedTexture>
 		</CheckButton>
+		<EditBox name="StoreEditBoxTemplate" autoFocus="false" virtual="true">
+			<Size x="150" y="20"/>
+			<Layers>
+				<Layer level="BACKGROUND" textureSubLevel="1">
+					<FontString parentKey="Label" inherits="GameFontBlack">
+						<Anchors>
+							<Anchor point="BOTTOMLEFT" relativePoint="TOPLEFT" x="-4" y="2"/>
+						</Anchors>
+					</FontString>
+					<Texture parentKey="Left" file="Interface\Common\Common-Input-Border">
+						<Size x="8" y="20"/>
+						<Anchors>
+							<Anchor point="LEFT" x="-5" y="0"/>
+						</Anchors>
+						<TexCoords left="0" right="0.0625" top="0" bottom="0.625"/>
+					</Texture>
+					<Texture parentKey="Right" file="Interface\Common\Common-Input-Border">
+						<Size x="8" y="20"/>
+						<Anchors>
+							<Anchor point="RIGHT"/>
+						</Anchors>
+						<TexCoords left="0.9375" right="1.0" top="0" bottom="0.625"/>
+					</Texture>
+					<Texture parentKey="Middle" file="Interface\Common\Common-Input-Border">
+						<Size  x="10" y="20"/>
+						<Anchors>
+							<Anchor point="LEFT" relativeKey="$parent.Left" relativePoint="RIGHT"/>
+							<Anchor point="RIGHT" relativeKey="$parent.Right" relativePoint="LEFT"/>
+						</Anchors>
+						<TexCoords left="0.0625" right="0.9375" top="0" bottom="0.625"/>
+					</Texture>
+				</Layer>
+				<Layer level="BACKGROUND">
+					<Texture>
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeKey="$parent.Left" x="2" y="-2"/>
+							<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Right" x="-2" y="2"/>
+						</Anchors>
+						<Color r="0" b="0" g="0" a=".8"/>
+					</Texture>
+				</Layer>
+			</Layers>
+			<Scripts>
+				<OnEscapePressed>
+					self:ClearFocus();
+				</OnEscapePressed>
+				<OnEditFocusLost>
+					self:HighlightText(0, 0);
+				</OnEditFocusLost>
+				<OnEditFocusGained>
+					self:HighlightText();
+				</OnEditFocusGained>
+			</Scripts>
+			<FontString inherits="ChatFontNormal"/>
+		</EditBox>
+		<Button name="StoreDropDownMenuButtonTemplate" virtual="true" parentArray="Buttons">
+			<Size x="100" y="16"/>
+			<Scripts>
+				<OnLoad function="StoreDropDownMenuMenuButton_OnLoad"/>
+			</Scripts>
+			<Layers>
+				<Layer level="ARTWORK">
+					<Texture parentKey="Check" file="Interface\Common\UI-DropDownRadioChecks" hidden="true">
+						<Size x="16" y="16"/>
+						<Anchors>
+							<Anchor point="LEFT" x="0" y="0"/>
+						</Anchors>
+						<TexCoords left="0" right="0.5" top="0.5" bottom="1.0"/>
+					</Texture>
+					<Texture parentKey="UnCheck" file="Interface\Common\UI-DropDownRadioChecks" hidden="true">
+						<Size x="16" y="16"/>
+						<Anchors>
+							<Anchor point="LEFT" x="0" y="0"/>
+						</Anchors>
+						<TexCoords left="0.5" right="1.0" top="0.5" bottom="1.0"/>
+					</Texture>
+				</Layer>
+			</Layers>
+			<ButtonText parentKey="NormalText">
+				<Size x="0" y="0"/>
+				<Anchors>
+					<Anchor point="LEFT" x="15" y="0"/>
+				</Anchors>
+			</ButtonText>
+			<HighlightTexture file="Interface\QuestFrame\UI-QuestTitleHighlight" alphaMode="ADD"/>
+			<NormalFont style="GameFontHighlightSmallLeft"/>
+			<HighlightFont style="GameFontHighlightSmallLeft"/>
+			<DisabledFont style="GameFontDisableSmallLeft"/>
+		</Button>
+		<Button name="StoreDropDownListTemplate" hidden="true" enableMouse="true" virtual="true" clampedToScreen="true">
+			<Frames>
+				<Frame parentKey="Backdrop" setAllPoints="true">
+					<Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background-Dark" edgeFile="Interface\DialogFrame\UI-DialogBox-Border" tile="true">
+						<BackgroundInsets>
+							<AbsInset left="11" right="12" top="12" bottom="9"/>
+						</BackgroundInsets>
+						<TileSize>
+							<AbsValue val="32"/>
+						</TileSize>
+						<EdgeSize>
+							<AbsValue val="32"/>
+						</EdgeSize>
+					</Backdrop>
+				</Frame>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<Texture>
+							<Anchors>
+								<Anchor point="TOPLEFT" x="11" y="-12"/>
+								<Anchor point="BOTTOMRIGHT" x="-12" y="9"/>
+							</Anchors>
+							<Color r="0" g="0" b="0" a="1"/>
+						</Texture>
+					</Layer>
+				</Layers>
+				<Button inherits="StoreDropDownMenuButtonTemplate" id="1">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="16" y="-16"/>
+					</Anchors>
+				</Button>
+			</Frames>
+			<Scripts>
+				<OnClick>
+					self:Hide();
+				</OnClick>
+			</Scripts>
+		</Button>
+		<Frame name="StoreDropDownMenuTemplate" virtual="true">
+			<Size x="40" y="32"/>
+			<Layers>
+				<Layer level="BACKGROUND">
+					<FontString parentKey="Label" inherits="GameFontBlack">
+						<Anchors>
+							<Anchor point="BOTTOMLEFT" relativePoint="TOPLEFT" x="16" y="3"/>
+						</Anchors>
+					</FontString>
+				</Layer>
+				<Layer level="ARTWORK">
+					<Texture parentKey="Left" file="Interface\Glues\CharacterCreate\CharacterCreate-LabelFrame">
+						<Size x="25" y="64"/>
+						<Anchors>
+							<Anchor point="TOPLEFT" x="0" y="17"/>
+						</Anchors>
+						<TexCoords left="0" right="0.1953125" top="0" bottom="1"/>
+					</Texture>
+					<Texture parentKey="Middle" file="Interface\Glues\CharacterCreate\CharacterCreate-LabelFrame">
+						<Size x="125" y="64"/>
+						<Anchors>
+							<Anchor point="LEFT" relativeKey="$parent.Left" relativePoint="RIGHT"/>
+						</Anchors>
+						<TexCoords left="0.1953125" right="0.8046875" top="0" bottom="1"/>
+					</Texture>
+					<Texture parentKey="Right" file="Interface\Glues\CharacterCreate\CharacterCreate-LabelFrame">
+						<Size x="25" y="64"/>
+						<Anchors>
+							<Anchor point="LEFT" relativeKey="$parent.Middle" relativePoint="RIGHT"/>
+						</Anchors>
+						<TexCoords left="0.8046875" right="1" top="0" bottom="1"/>
+					</Texture>
+					<FontString parentKey="Text" inherits="GameFontHighlightSmall" wordwrap="false" justifyH="LEFT">
+						<Size x="110" y="10"/>
+						<Anchors>
+							<Anchor point="LEFT" relativeKey="$parent.Left" x="27" y="2"/>
+						</Anchors>
+					</FontString>
+				</Layer>
+				<Layer level="OVERLAY">
+					<Texture parentKey="Icon" hidden="true">
+						<Size x="16" y="16"/>
+						<Anchors>
+							<Anchor point="LEFT" x="30" y="2"/>
+						</Anchors>
+					</Texture>
+				</Layer>
+			</Layers>
+			<Frames>
+				<Button parentKey="Button" motionScriptsWhileDisabled="true" >
+					<Size x="24" y="24"/>
+					<Anchors>
+						<Anchor point="TOPRIGHT" relativeKey="$parent.Right" x="-16" y="-18"/>
+					</Anchors>
+					<NormalTexture parentKey="NormalTexture" file="Interface\ChatFrame\UI-ChatIcon-ScrollDown-Up">
+						<Size x="24" y="24"/>
+						<Anchors>
+							<Anchor point="RIGHT"/>
+						</Anchors>
+					</NormalTexture>
+					<PushedTexture parentKey="PushedTexture" file="Interface\ChatFrame\UI-ChatIcon-ScrollDown-Down">
+						<Size x="24" y="24"/>
+						<Anchors>
+							<Anchor point="RIGHT"/>
+						</Anchors>
+					</PushedTexture>
+					<DisabledTexture parentKey="DisabledTexture" file="Interface\ChatFrame\UI-ChatIcon-ScrollDown-Disabled">
+						<Size x="24" y="24"/>
+						<Anchors>
+							<Anchor point="RIGHT"/>
+						</Anchors>
+					</DisabledTexture>
+					<HighlightTexture parentKey="HighlightTexture" file="Interface\Buttons\UI-Common-MouseHilight" alphaMode="ADD">
+						<Size x="24" y="24"/>
+						<Anchors>
+							<Anchor point="RIGHT"/>
+						</Anchors>
+					</HighlightTexture>
+				</Button>
+				<Button parentKey="List" inherits="StoreDropDownListTemplate" hidden="true">
+					<Size x="266" y="0"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" x="8" y="-8"/>
+					</Anchors>
+				</Button>
+			</Frames>
+			<Scripts>
+				<OnHide function="StoreDropDownMenu_OnHide"/>
+			</Scripts>
+		</Frame>
 		<Frame name="StoreInsetFrameTemplate" virtual="true">
 			<Size x="64" y="64" />
 			<Layers>
@@ -464,6 +681,9 @@
 							<Anchor point="BOTTOMRIGHT" relativeKey="$parent.NormalPrice" x="2" y="0"/>
 						</Anchors>
 					</Texture>
+				</Layer>
+				<Layer level="OVERLAY" textureSubLevel="1">
+					<Texture parentKey="DisabledOverlay" atlas="shop-card-darkcover" setAllPoints="true" hidden="true" alpha=".55"/>
 				</Layer>
 			</Layers>
 			<Frames>
@@ -1173,7 +1393,7 @@
 		<Button name="StoreCategoryTemplate" virtual="true">
 			<Size x="176" y="38" />
 			<Layers>
-				<Layer layer="BACKGROUND">
+				<Layer level="BACKGROUND">
 					<Texture parentKey="Category" inherits="store-category" setAllPoints="true"/>
 				</Layer>
 				<Layer level="ARTWORK">
@@ -1275,6 +1495,7 @@
 					</Anchors>
 					<Scripts>
 						<OnClick>
+							PlaySound("UI_igStore_Cancel_Button");
 							self:GetParent():Hide();
 						</OnClick>
 					</Scripts>
@@ -1366,14 +1587,14 @@
 			<Size x="800" y="537" />
 			<!--Anchored to the screen as a whole in Lua-->
 			<Layers>
-				<Layer layer="ARTWORK">
+				<Layer level="ARTWORK">
 					<FontString parentKey="PageText" inherits="GameFontHighlight" justifyH="RIGHT">
 						<Anchors>
 							<Anchor point="BOTTOMRIGHT" x="-98" y="46" />
 						</Anchors>
 					</FontString>
 				</Layer>
-				<Layer layer="OVERLAY">
+				<Layer level="OVERLAY">
 					<FontString parentKey="BrowseNotice" inherits="GameFontHighlightSmall2" justifyH="CENTERED" justifyV="TOP">
 						<Size x="180" y="40" />
 						<Anchors>
@@ -1402,7 +1623,7 @@
 						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.LeftInset" relativePoint="BOTTOMRIGHT" x="-3" y="3" />
 					</Anchors>
 					<Layers>
-						<Layer layer="BACKGROUND">
+						<Layer level="BACKGROUND">
 							<Texture inherits="store-category-bg" setAllPoints="true" />
 						</Layer>
 					</Layers>
@@ -1736,13 +1957,14 @@
 						Outbound.UpdateMicroButtons();
 					end
 
+					StoreVASValidationFrame:Hide();
 					PlaySound("UI_igStore_WindowClose_Button");
 				</OnHide>
 				<OnAttributeChanged function="StoreFrame_OnAttributeChanged" />
 				<OnMouseWheel function="StoreFrame_OnMouseWheel" />
 			</Scripts>
 		</Frame>
-		<Frame name="StoreConfirmationFrame" frameStrata="FULLSCREEN_DIALOG" topLevel="true" parent="StoreFrame" inherits="GoldBorderFrameTemplate" hidden="true">
+		<Frame name="StoreConfirmationFrame" frameStrata="FULLSCREEN_DIALOG" topLevel="true" parent="StoreFrame" inherits="GoldBorderFrameTemplate" clampedToScreen="true" hidden="true">
 			<Size x="403" y="556" />
 			<Layers>
 				<Layer level="BACKGROUND">
@@ -1829,35 +2051,39 @@
 							<Anchor point="TOP" x="0" y="-16" />
 						</Anchors>
 					</FontString>
-					<FontString parentKey="TotalLabel" inherits="GameFontBlackMedium">
-						<Anchors>
-							<Anchor point="BOTTOM" x="-115" y="174" />
-						</Anchors>
-					</FontString>
-					<FontString parentKey="Price" inherits="GameFontNormalShadowHuge2">
-						<Anchors>
-							<Anchor point="BOTTOMRIGHT" relativePoint="BOTTOMRIGHT" x="-50" y="174"/>
-						</Anchors>
-					</FontString>
-					<FontString parentKey="BrowseNotice" inherits="GameFontHighlightSmall2" justifyV="TOP">
-						<Anchors>
-							<Anchor point="TOPRIGHT" relativeKey="$parent.Price" relativePoint="BOTTOMRIGHT" x="0" y="-8" />
-						</Anchors>
-						<Color r="0" g="0" b="0"/>
-					</FontString>
 				</Layer>
 			</Layers>
 			<Frames>
 				<Frame parentKey="NoticeFrame">
-					<Size x="300" y="300" />
+					<Size x="400" y="300" />
 					<Anchors>
-						<Anchor point="TOP" relativeKey="$parent.ParchmentMiddle" relativePoint="TOP" x="0" y="-246" />
+						<Anchor point="TOP" x="0" y="-128" />
 					</Anchors>
+					<Layers>
+						<Layer level="ARTWORK">
+							<FontString parentKey="TotalLabel" inherits="GameFontBlackMedium">
+								<Anchors>
+									<Anchor point="BOTTOM" x="-115" y="20" />
+								</Anchors>
+							</FontString>
+							<FontString parentKey="Price" inherits="GameFontNormalShadowHuge2">
+								<Anchors>
+									<Anchor point="BOTTOMRIGHT" x="-50" y="20"/>
+								</Anchors>
+							</FontString>
+							<FontString parentKey="BrowseNotice" inherits="GameFontHighlightSmall2" justifyV="TOP">
+								<Anchors>
+									<Anchor point="TOPRIGHT" relativeKey="$parent.Price" relativePoint="BOTTOMRIGHT" x="0" y="-8" />
+								</Anchors>
+								<Color r="0" g="0" b="0"/>
+							</FontString>
+						</Layer>
+					</Layers>
 					<Frames>
 						<SimpleHTML parentKey="Notice">
 							<Size x="260" y="240"/>
 							<Anchors>
-								<Anchor point="TOP"/>
+								<Anchor point="TOP" x="0" y="-30"/>
 							</Anchors>
 							<Scripts>
 								<OnHyperlinkClick>
@@ -1914,7 +2140,241 @@
 				<OnEvent function="StoreConfirmationFrame_OnEvent" />
 			</Scripts>
 		</Frame>
-		<Frame name="StoreTooltip" inherits="TooltipBorderedFrameTemplate" frameStrata="FULLSCREEN_DIALOG" topLevel="true" parent="StoreFrame" clampedToScreen="true" hidden="true">
+		<Frame name="StoreVASValidationFrame" frameStrata="FULLSCREEN_DIALOG" topLevel="true" parent="StoreFrame" inherits="GoldBorderFrameTemplate" hidden="true">
+			<Size x="403" y="626" />
+			<Layers>
+				<Layer level="BACKGROUND">
+					<Texture parentKey="ParchmentMiddle" file="Interface\Store\receipt-parchment-middle" horizTile="true">
+						<Size x="376" y="0" />
+						<Anchors>
+							<Anchor point="TOP" x="0" y="-14"/>
+							<Anchor point="BOTTOM" x="0" y="0"/>
+						</Anchors>
+					</Texture>
+				</Layer>
+				<Layer level="BACKGROUND" textureSubLevel="1">
+					<Texture parentKey="AlphaLayer" alphaMode="ADD">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeKey="$parent.ParchmentMiddle" x="0" y="-116"/>
+							<Anchor point="BOTTOMRIGHT" relativeKey="$parent.ParchmentMiddle" x="0" y="62"/>
+						</Anchors>
+						<Color r="1" g="1" b="1" a="0.10" />
+					</Texture>
+				</Layer>
+				<Layer level="BORDER">
+					<Texture parentKey="ParchmentBottom" inherits="store-receipt-parchment-bottom">
+						<Anchors>
+							<Anchor point="BOTTOM" x="0" y="0" />
+						</Anchors>
+					</Texture>
+				</Layer>
+				<Layer level="BORDER" textureSubLevel="1">
+					<Texture parentKey="ParchmentTop" inherits="store-receipt-parchment-top">
+						<Anchors>
+							<Anchor point="TOP" x="0" y="-14" />
+						</Anchors>
+					</Texture>
+				</Layer>
+				<Layer level="ARTWORK">
+					<Texture parentKey="TopLine" inherits="store-receipt-line">
+						<Anchors>
+							<Anchor point="TOP" relativeKey="$parent.ParchmentMiddle" relativePoint="TOP" x="0" y="-116"/>
+						</Anchors>
+					</Texture>
+					<Texture parentKey="BottomLine" inherits="store-receipt-line">
+						<Size x="350" y="3" />
+						<Anchors>
+							<Anchor point="BOTTOM" relativeKey="$parent.ParchmentMiddle" relativePoint="BOTTOM" x="0" y="120"/>
+						</Anchors>
+					</Texture>
+				</Layer>
+				<Layer level="ARTWORK" textureSubLevel="1">
+					<Texture parentKey="Icon">
+						<Size x="63" y="63" />
+						<Anchors>
+							<Anchor point="TOP" x="-120" y="-66" />
+						</Anchors>
+					</Texture>
+				</Layer>
+				<Layer level="ARTWORK" textureSubLevel="2">
+					<Texture parentKey="IconBorder" inherits="store-itemicon-border-receipt">
+						<Anchors>
+							<Anchor point="TOP" x="-120" y="-64" />
+						</Anchors>
+					</Texture>
+				</Layer>
+				<Layer level="ARTWORK" textureSubLevel="3">
+					<FontString parentKey="ProductName" inherits="GameFontNormalLarge2" wordwrap="true" justifyH="LEFT">
+						<Size x="200" y="60" />
+						<Anchors>
+							<Anchor point="TOP" x="22" y="-67" />
+						</Anchors>
+					</FontString>
+					<FontString parentKey="Title" inherits="GameFontHighlight">
+						<Size x="150" y="20" />
+						<Anchors>
+							<Anchor point="TOP" x="0" y="-16" />
+						</Anchors>
+					</FontString>
+					<FontString parentKey="ProductDescription" inherits="GameTooltipHeaderText" wordwrap="true" justifyH="LEFT">
+						<Size x="280" y="0"/>
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeKey="$parent.Icon" relativePoint="BOTTOMLEFT" x="8" y="-30"/>
+						</Anchors>
+						<Color r="0" b="0" g="0"/>
+					</FontString>
+				</Layer>
+			</Layers>
+			<Frames>
+				<SimpleHTML parentKey="Disclaimer">
+					<Size x="340" y="40"/>
+					<Anchors>
+						<Anchor point="TOP" relativeKey="$parent.BottomLine" relativePoint="BOTTOM" x="0" y="-9"/>
+					</Anchors>
+					<Scripts>
+						<OnHyperlinkClick>
+							local linkType, index = (":"):split(link);
+							if ( linkType == "urlIndex" ) then
+								LoadURLIndex(tonumber(index));
+							end
+						</OnHyperlinkClick>
+					</Scripts>
+					<FontString inherits="GameFontBlackSmall" />
+				</SimpleHTML>
+				<Frame parentKey="CharacterSelectionFrame" useParentLevel="true">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="0" y="-116"/>
+						<Anchor point="BOTTOMRIGHT" x="0" y="16"/>
+					</Anchors>
+					<Layers>
+						<Layer level="ARTWORK" textureSubLevel="1">
+							<Texture parentKey="SelectedCharacterFrame" atlas="vas-receipt-selectedcharbg" useatlassize="true">
+								<Anchors>
+									<Anchor point="BOTTOM" x="0" y="230" />
+								</Anchors>
+							</Texture>
+							<FontString parentKey="SelectedCharacterName" inherits="GameFontNormalHugeOutline2">
+								<Anchors>
+									<Anchor point="TOPLEFT" relativeKey="$parent.SelectedCharacterFrame" relativePoint="TOPLEFT" x="72" y="-16"/>
+								</Anchors>
+							</FontString>
+							<FontString parentKey="SelectedCharacterDescription" inherits="GameFontHighlightSmall">
+								<Anchors>
+									<Anchor point="TOPLEFT" relativeKey="$parent.SelectedCharacterName" relativePoint="BOTTOMLEFT" x="0" y="-4"/>
+								</Anchors>
+							</FontString>
+							<FontString parentKey="ValidationDescription" inherits="GameFontBlack" hidden="true" justifyH="LEFT">
+								<Size x="300" y="0"/>
+								<Anchors>
+									<Anchor point="TOPLEFT" relativeKey="$parent.SelectedCharacterFrame" relativePoint="BOTTOMLEFT" x="0" y="-16"/>
+								</Anchors>
+							</FontString>
+						</Layer>
+						<Layer level="ARTWORK">
+							<Texture parentKey="ClassIcon" file="Interface\Glues\CharacterCreate\UI-CharacterCreate-Classes">
+								<Size x="48" y="48"/>
+								<Anchors>
+									<Anchor point="LEFT" relativeKey="$parent.SelectedCharacterFrame" relativePoint="LEFT" x="12" y="0"/>
+								</Anchors>
+							</Texture>
+						</Layer>
+					</Layers>
+					<Frames>
+						<Frame parentKey="ChangeIconFrame" hidden="true">
+							<Size x="302" y="46"/>
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeKey="$parent.SelectedCharacterFrame" relativePoint="BOTTOMLEFT" x="0" y="-4"/>
+							</Anchors>
+							<Layers>
+								<Layer level="BACKGROUND">
+									<Texture atlas="vas-receipt-greenbg" useAtlasSize="true">
+										<Anchors>
+											<Anchor point="CENTER"/>
+										</Anchors>
+									</Texture>
+								</Layer>
+								<Layer level="ARTWORK">
+									<Texture atlas="vas-receipt-icon-horde" useAtlasSize="true" parentKey="FromTex" parentArray="Textures" hidden="true">
+										<Anchors>
+											<Anchor point="LEFT"/>
+										</Anchors>
+									</Texture>
+									<Texture atlas="vas-receipt-brownarrow" useAtlasSize="true" parentArray="Textures" hidden="true">
+										<Anchors>
+											<Anchor point="LEFT" relativeKey="$parent.FromTex" relativePoint="RIGHT" x="4" y="0"/>
+										</Anchors>
+									</Texture>
+								</Layer>
+							</Layers>
+						</Frame>
+						<Frame parentKey="RealmSelector" inherits="StoreDropDownMenuTemplate" enableMouse="true">
+							<Size x="150" y="22"/>
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeKey="$parent.$parent.ProductDescription" relativePoint="BOTTOMLEFT" x="-16" y="-38"/>
+							</Anchors>
+							<Scripts>
+								<OnLoad>
+									self.Button:SetScript("OnClick", VASCharacterSelectionRealmSelector_OnClick);
+								</OnLoad>
+							</Scripts>
+						</Frame>
+						<Frame parentKey="CharacterSelector" inherits="StoreDropDownMenuTemplate" enableMouse="true">
+							<Size x="150" y="22"/>
+							<Anchors>
+								<Anchor point="LEFT" relativeKey="$parent.RealmSelector" relativePoint="RIGHT" x="0" y="0"/>
+							</Anchors>
+							<Scripts>
+								<OnLoad>
+									self.Button:SetScript("OnClick", VASCharacterSelectionCharacterSelector_OnClick);
+								</OnLoad>
+							</Scripts>
+						</Frame>
+						<Button parentKey="ContinueButton" inherits="StoreButtonTemplate" enableMouse="true">
+							<Size x="120" y="30" />
+							<Anchors>
+								<Anchor point="BOTTOM" x="0" y="26" />
+							</Anchors>
+							<Scripts>
+								<OnClick function="VASCharacterSelectionContinueButton_OnClick"/>
+							</Scripts>
+						</Button>
+						<Frame parentKey="Spinner" inherits="LoadingSpinnerTemplate" hidden="true">
+							<Anchors>
+								<Anchor point="BOTTOM" x="0" y="22" />
+							</Anchors>
+							<Scripts>
+								<OnLoad>
+									self.Anim:Play();
+								</OnLoad>
+							</Scripts>
+						</Frame>
+						<EditBox parentKey="NewCharacterName" letters="12" inherits="StoreEditBoxTemplate">
+							<Size x="170" y="22"/>
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeKey="$parent.SelectedCharacterFrame" relativePoint="BOTTOMLEFT" x="16" y="-24"/>
+							</Anchors>
+							<Scripts>
+								<OnTextChanged>
+									self:GetParent().ValidationDescription:Hide();
+									self:GetParent().ContinueButton:SetEnabled(self:GetText() ~= "");
+								</OnTextChanged>
+								<OnEnter function="VASCharacterSelectionNewCharacterName_OnEnter"/>
+								<OnLeave>
+									StoreTooltip:Hide();
+								</OnLeave>
+							</Scripts>
+						</EditBox>
+					</Frames>
+				</Frame>
+			</Frames>
+			<Scripts>
+				<OnLoad function="StoreVASValidationFrame_OnLoad"/>
+				<OnShow function="StoreVASValidationFrame_OnShow"/>
+				<OnHide function="StoreVASValidationFrame_OnHide"/>
+				<OnEvent function="StoreVASValidationFrame_OnEvent"/>
+			</Scripts>
+		</Frame>
+		<Frame name="StoreTooltip" inherits="TooltipBorderedFrameTemplate" frameStrata="TOOLTIP" topLevel="true" parent="StoreFrame" clampedToScreen="true" hidden="true">
 			<Size x="0" y="200" />
 			<Layers>
 				<Layer level="ARTWORK">
