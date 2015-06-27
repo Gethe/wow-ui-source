@@ -847,6 +847,7 @@ end
 function GarrisonShipyardMap_OnEvent(self, event, ...)
 	if (event == "GARRISON_MISSION_LIST_UPDATE" or event == "GARRISON_RANDOM_MISSION_ADDED" or event == "GARRISON_MISSION_AREA_BONUS_ADDED") then
 		GarrisonShipyardMap_UpdateMissions();
+		GarrisonShipyardMap_CheckTutorials();
 		if (event == "GARRISON_MISSION_AREA_BONUS_ADDED") then
 			local bonusAbilityID = ...;
 			table.insert(self.pendingBonusArea, bonusAbilityID);
@@ -873,6 +874,9 @@ function GarrisonShipyardMap_OnShow(self)
 end
 
 function GarrisonShipyardMap_OnHide(self)
+	if ( GarrisonMissionTutorialFrame:GetParent() == self ) then
+		GarrisonMissionTutorialFrame:Hide();
+	end
 	GarrisonShipFollowerPlacer:SetScript("OnUpdate", nil);
 end
 
@@ -1228,6 +1232,7 @@ end
 
 function GarrisonMissionFrame_OnClickShipyardTutorialButton(self)
 	PlaySound("igMainMenuOptionCheckBoxOn");
+	GarrisonMissionTutorialFrame:Hide();
 	GarrisonShipyardMap_CheckTutorials();
 end
 
@@ -1256,7 +1261,8 @@ end
 
 function GarrisonShipyardMap_CheckTutorials()
 	local missionList = GarrisonShipyardFrame.MissionTab.MissionList;
-	if (missionList.CompleteDialog:IsShown() or GarrisonShipyardFrame.MissionComplete:IsShown()) then
+	if ( missionList.CompleteDialog:IsShown() or GarrisonShipyardFrame.MissionComplete:IsShown() or
+		(GarrisonMissionTutorialFrame:GetParent() == missionList and GarrisonMissionTutorialFrame:IsShown()) ) then
 		return;
 	end
 	for i = 1, #missionList.missions do

@@ -471,6 +471,8 @@ function GarrisonLandingPageReportList_Update()
 				button.MissionType:SetTextColor(GARRISON_MISSION_TYPE_FONT_COLOR.r, GARRISON_MISSION_TYPE_FONT_COLOR.g, GARRISON_MISSION_TYPE_FONT_COLOR.b);
 				if (item.isBuilding) then
 					button.MissionType:SetText(GARRISON_BUILDING_IN_PROGRESS);
+				elseif ( item.followerTypeID == LE_FOLLOWER_TYPE_SHIPYARD_6_2 ) then
+					button.MissionType:SetText("");
 				else
 					button.MissionType:SetText(item.type);
 				end
