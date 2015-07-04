@@ -468,19 +468,17 @@ function EJMicroButton_OnEvent(self, event, ...)
 	elseif ( event == "PLAYER_ENTERING_WORLD" ) then
 		C_AdventureJournal.UpdateSuggestions();	
 	elseif ( event == "UNIT_LEVEL" and arg1 == "player" ) then		
-		EJMicroButton_UpdateNewAdventureNotice();
-	elseif ( event == "QUEST_ACCEPTED" or event == "QUEST_REMOVED" ) then
-		EJMicroButton_UpdateNewAdventureNotice();
+		EJMicroButton_UpdateNewAdventureNotice(true);
 	elseif event == "PLAYER_AVG_ITEM_LEVEL_UPDATE" then
 		local playerLevel = UnitLevel("player");
 		if ( playerLevel == MAX_PLAYER_LEVEL_TABLE[GetExpansionLevel()]) then
-			EJMicroButton_UpdateNewAdventureNotice();
+			EJMicroButton_UpdateNewAdventureNotice(false);
 		end
 	end
 end
 
-function EJMicroButton_UpdateNewAdventureNotice()
-	if ( EJMicroButton:IsEnabled() and C_AdventureJournal.UpdateSuggestions() ) then
+function EJMicroButton_UpdateNewAdventureNotice(levelUp)
+	if ( EJMicroButton:IsEnabled() and C_AdventureJournal.UpdateSuggestions(levelUp) ) then
 		if( not EncounterJournal or not EncounterJournal:IsShown() ) then
 			EJMicroButton.Flash:Show();
 			EJMicroButton.NewAdventureNotice:Show();

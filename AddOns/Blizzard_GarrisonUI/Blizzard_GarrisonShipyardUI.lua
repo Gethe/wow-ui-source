@@ -1751,7 +1751,7 @@ function GarrisonShipyardFollowerList:UpdateValidSpellHighlight(followerID, foll
 	for i=1, #followerInfo.abilities do
 		local ability = followerInfo.abilities[i];
 		if (not ability.isTrait) then
-			if (not ability.icon and index <= #followerTab.EquipmentFrame.Equipment) then
+			if (index <= #followerTab.EquipmentFrame.Equipment) then
 				local equipment = followerTab.EquipmentFrame.Equipment[index];
 				if (followerInfo.status ~= GARRISON_FOLLOWER_WORKING and followerInfo.status ~= GARRISON_FOLLOWER_ON_MISSION and
 					(SpellCanTargetGarrisonFollowerAbility(followerID, ability.id) or ItemCanTargetGarrisonFollowerAbility(followerID, ability.id))) then
