@@ -573,20 +573,24 @@ function MerchantFrame_ConfirmExtendedItemCost(itemButton, numToPurchase)
 	end
 	
 	
-	local itemName = "YOU HAVE FOUND A BUG!";
+	local itemName;
 	local itemQuality = 1;
 	local _;
 	local r, g, b = 1, 1, 1;
 	local specs = {};
 	if(itemButton.link) then
 		itemName, _, itemQuality = GetItemInfo(itemButton.link);
+	end
+
+	if ( itemName ) then
+		--It's an item
 		r, g, b = GetItemQualityColor(itemQuality); 
 		specs = GetItemSpecInfo(itemButton.link, specs);
-	elseif(itemName) then		-- This is the case for a currency, which don't support links yet
+	else
+		--Not an item. Could be currency or something. Just use what's on the button.
 		itemName = itemButton.name;
 		r, g, b = GetItemQualityColor(1); 
 	end
-	
 	local specText;
 	if (specs and #specs > 0) then
 		local specName, specIcon;
