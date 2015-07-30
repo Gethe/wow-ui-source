@@ -11092,6 +11092,7 @@ SPELL_FAILED_CUSTOM_ERROR_97 = "You already have the max number of volunteers.";
 SPELL_FAILED_CUSTOM_ERROR_98 = "Frostmourne has rendered you unable to resurrect.";
 SPELL_FAILED_CUSTOM_ERROR_99 = "You can't mount while affected by that shapeshift.";
 SPELL_FAILED_DAMAGE_IMMUNE = "You can't do that while you are immune";
+SPELL_FAILED_DRAENOR_RIDING_REQUIREMENT = "Requires Draenor Pathfinder skill.";
 SPELL_FAILED_EQUIPPED_ITEM = "Must have the proper item equipped";
 SPELL_FAILED_EQUIPPED_ITEM_CLASS = "Must have a %s equipped";
 SPELL_FAILED_EQUIPPED_ITEM_CLASS_MAINHAND = "Must have a %s equipped in the main hand";
