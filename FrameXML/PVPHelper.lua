@@ -64,7 +64,7 @@ function PVPHelperFrame_OnEvent(self, event, ...)
 		end
 		PVP_UpdateStatus();
 	elseif ( event == "BATTLEFIELD_MGR_EJECTED" ) then
-		local battleID, playerExited, relocated, battleActive, lowLevel, notWhileInRaid, areaName = ...;
+		local battleID, playerExited, relocated, battleActive, lowLevel, notWhileInRaid, deserter, areaName = ...;
 		StaticPopup_Hide("BFMGR_INVITED_TO_QUEUE");
 		StaticPopup_Hide("BFMGR_INVITED_TO_QUEUE_WARMUP");
 		StaticPopup_Hide("BFMGR_INVITED_TO_ENTER");
@@ -75,7 +75,9 @@ function PVPHelperFrame_OnEvent(self, event, ...)
 		elseif (playerExited and battleActive and not relocated) then
 			StaticPopup_Show("BFMGR_PLAYER_EXITED_BATTLE", areaName);
 		elseif(notWhileInRaid) then
-			StaticPopup_Show("BFMGR_PLAYER_NOT_WHILE_IN_RAID", areaName);			
+			StaticPopup_Show("BFMGR_PLAYER_NOT_WHILE_IN_RAID", areaName);
+		elseif(deserter) then
+			StaticPopup_Show("BFMGR_PLAYER_DESERTER", areaName);
 		end
 		PVP_UpdateStatus();
 	elseif ( event == "BATTLEFIELD_MGR_ENTERED" ) then

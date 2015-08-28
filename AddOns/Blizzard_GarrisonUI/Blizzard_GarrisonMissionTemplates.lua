@@ -703,10 +703,10 @@ function GarrisonMission:MissionCompleteInitialize(missionList, index)
 	for i=1, #mission.followers do
 		local follower = stage.FollowersFrame.Followers[i];
 		local name, displayID, level, quality, currXP, maxXP, height, scale, movementType, impactDelay, castID, 
-			  castSoundID, impactID, impactSoundID, targetImpactID, targetImpactSoundID, classAtlas, portraitIconID, texPrefix = 
+			  castSoundID, impactID, impactSoundID, targetImpactID, targetImpactSoundID, className, classAtlas, portraitIconID, texPrefix = 
 					C_Garrison.GetFollowerMissionCompleteInfo(mission.followers[i]);
 		follower.followerID = mission.followers[i];
-		frame:SetFollowerData(follower, name, classAtlas, portraitIconID, texPrefix);
+		frame:SetFollowerData(follower, name, className, classAtlas, portraitIconID, texPrefix);
 		frame:SetFollowerLevel(follower, level, quality, currXP, maxXP);
 
 		stage.followers[i] = { displayID = displayID, height = height, scale = scale, followerID = mission.followers[i] };

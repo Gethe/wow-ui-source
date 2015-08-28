@@ -1085,7 +1085,7 @@
 					</Anchors>
 				</FontString>
 				<FontString name="OpenMailSubject" inherits="GameFontNormalSmall" justifyH="LEFT" justifyV="TOP">
-					<Size x="225" y="16"/>
+					<Size x="225" y="0"/>
 					<Anchors>
 						<Anchor point="TOPLEFT" relativeTo="OpenMailSubjectLabel" relativePoint="TOPRIGHT" x="5" y="-4"/>
 					</Anchors>

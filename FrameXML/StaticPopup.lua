@@ -813,6 +813,14 @@ StaticPopupDialogs["BFMGR_PLAYER_NOT_WHILE_IN_RAID"] = {
 	whileDead = 1,
 };
 
+StaticPopupDialogs["BFMGR_PLAYER_DESERTER"] = {
+	text = WORLD_PVP_DESERTER,
+	button1 = OKAY,
+	showAlert = 1,
+	timeout = 0,
+	whileDead = 1,
+};
+
 StaticPopupDialogs["CONFIRM_GUILD_LEAVE"] = {
 	text = CONFIRM_GUILD_LEAVE,
 	button1 = ACCEPT,

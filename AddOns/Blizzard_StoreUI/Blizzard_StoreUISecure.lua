@@ -24,7 +24,9 @@ local WaitingOnConfirmationTime = 0;
 local ProcessAnimPlayed = false;
 local NumUpgradeDistributions = 0;
 local JustOrderedBoost = false;
+local BoostProduct = nil;
 local VASReady = false;
+local UnrevokeWaitingForProducts = false;
 
 --Imports
 Import("C_PurchaseAPI");
@@ -94,6 +96,8 @@ Import("BLIZZARD_STORE_CONFIRMATION_SERVICES_EUR");
 Import("BLIZZARD_STORE_CONFIRMATION_VAS_NAME_CHANGE");
 Import("BLIZZARD_STORE_CONFIRMATION_VAS_NAME_CHANGE_EUR");
 Import("BLIZZARD_STORE_CONFIRMATION_VAS_NAME_CHANGE_KR");
+Import("BLIZZARD_STORE_CONFIRMATION_OTHER");
+Import("BLIZZARD_STORE_CONFIRMATION_OTHER_EUR");
 Import("BLIZZARD_STORE_BROWSE_TEST_CURRENCY");
 Import("BLIZZARD_STORE_BATTLE_NET_BALANCE");
 Import("BLIZZARD_STORE_CURRENCY_FORMAT_USD");
@@ -196,6 +200,7 @@ Import("BLIZZARD_STORE_DISCLAIMER_FACTION_CHANGE_CN");
 Import("BLIZZARD_STORE_DISCLAIMER_RACE_CHANGE_CN");
 Import("BLIZZARD_STORE_DISCLAIMER_APPEARANCE_CHANGE_CN");
 Import("BLIZZARD_STORE_DISCLAIMER_NAME_CHANGE_CN");
+Import("BLIZZARD_STORE_BOOST_UNREVOKED_CONSUMPTION");
 Import("TOOLTIP_DEFAULT_COLOR");
 Import("TOOLTIP_DEFAULT_BACKGROUND_COLOR");
 Import("CHARACTER_UPGRADE_LOG_OUT_NOW");
@@ -307,6 +312,7 @@ local COPPER_PER_SILVER = 100;
 local SILVER_PER_GOLD = 100;
 local COPPER_PER_GOLD = COPPER_PER_SILVER * SILVER_PER_GOLD;
 local WOW_TOKEN_CATEGORY_ID = 30;
+local WOW_GAMES_CATEGORY_ID = 33;
 local PI = math.pi;
 
 local currencyMult = 100;
@@ -463,6 +469,7 @@ local currencySpecific = {
 		confirmationNotice = BLIZZARD_STORE_CONFIRMATION_GENERIC,
 		servicesConfirmationNotice = BLIZZARD_STORE_CONFIRMATION_SERVICES,
 		vasNameChangeConfirmationNotice = BLIZZARD_STORE_CONFIRMATION_VAS_NAME_CHANGE,
+		expansionConfirmationNotice = BLIZZARD_STORE_CONFIRMATION_OTHER,
 		licenseAcceptText = BLIZZARD_STORE_LICENSE_ACK_TEXT_USD,
 		paymentMethodText = BLIZZARD_STORE_PAYMENT_METHOD,
 		paymentMethodSubtext = BLIZZARD_STORE_PAYMENT_METHOD_EXTRA,
@@ -489,6 +496,7 @@ local currencySpecific = {
 		confirmationNotice = BLIZZARD_STORE_CONFIRMATION_EUR,
 		servicesConfirmationNotice = BLIZZARD_STORE_CONFIRMATION_SERVICES_EUR,
 		vasNameChangeConfirmationNotice = BLIZZARD_STORE_CONFIRMATION_VAS_NAME_CHANGE_EUR,
+		expansionConfirmationNotice = BLIZZARD_STORE_CONFIRMATION_OTHER_EUR,
 		licenseAcceptText = BLIZZARD_STORE_LICENSE_ACK_TEXT_GBP,
 		paymentMethodText = BLIZZARD_STORE_PAYMENT_METHOD,
 		paymentMethodSubtext = BLIZZARD_STORE_PAYMENT_METHOD_EXTRA,
@@ -518,6 +526,7 @@ local currencySpecific = {
 		confirmationNotice = BLIZZARD_STORE_SECOND_CHANCE_KR,
 		servicesConfirmationNotice = BLIZZARD_STORE_SECOND_CHANCE_KR,
 		vasNameChangeConfirmationNotice = BLIZZARD_STORE_CONFIRMATION_VAS_NAME_CHANGE_KR,
+		expansionConfirmationNotice = BLIZZARD_STORE_SECOND_CHANCE_KR,
 		browseWarning = BLIZZARD_STORE_SECOND_CHANCE_KR,
 		paymentMethodText = "",
 		paymentMethodSubtext = "",
@@ -547,6 +556,7 @@ local currencySpecific = {
 		confirmationNotice = BLIZZARD_STORE_CONFIRMATION_EUR,
 		servicesConfirmationNotice = BLIZZARD_STORE_CONFIRMATION_SERVICES_EUR,
 		vasNameChangeConfirmationNotice = BLIZZARD_STORE_CONFIRMATION_VAS_NAME_CHANGE_EUR,
+		expansionConfirmationNotice = BLIZZARD_STORE_CONFIRMATION_OTHER_EUR,
 		licenseAcceptText = BLIZZARD_STORE_LICENSE_ACK_TEXT_EUR,
 		paymentMethodText = BLIZZARD_STORE_PAYMENT_METHOD,
 		paymentMethodSubtext = BLIZZARD_STORE_PAYMENT_METHOD_EXTRA,
@@ -576,6 +586,7 @@ local currencySpecific = {
 		confirmationNotice = BLIZZARD_STORE_CONFIRMATION_EUR,
 		servicesConfirmationNotice = BLIZZARD_STORE_CONFIRMATION_SERVICES_EUR,
 		vasNameChangeConfirmationNotice = BLIZZARD_STORE_CONFIRMATION_VAS_NAME_CHANGE_EUR,
+		expansionConfirmationNotice = BLIZZARD_STORE_CONFIRMATION_OTHER_EUR,
 		licenseAcceptText = BLIZZARD_STORE_LICENSE_ACK_TEXT_RUB,
 		paymentMethodText = BLIZZARD_STORE_PAYMENT_METHOD,
 		paymentMethodSubtext = BLIZZARD_STORE_PAYMENT_METHOD_EXTRA,
@@ -605,6 +616,7 @@ local currencySpecific = {
 		confirmationNotice = BLIZZARD_STORE_CONFIRMATION_GENERIC,
 		servicesConfirmationNotice = BLIZZARD_STORE_CONFIRMATION_SERVICES,
 		vasNameChangeConfirmationNotice = BLIZZARD_STORE_CONFIRMATION_VAS_NAME_CHANGE,
+		expansionConfirmationNotice = BLIZZARD_STORE_CONFIRMATION_OTHER,
 		licenseAcceptText = BLIZZARD_STORE_LICENSE_ACK_TEXT_ARS,
 		paymentMethodText = BLIZZARD_STORE_PAYMENT_METHOD,
 		paymentMethodSubtext = BLIZZARD_STORE_PAYMENT_METHOD_EXTRA,
@@ -631,6 +643,7 @@ local currencySpecific = {
 		confirmationNotice = BLIZZARD_STORE_CONFIRMATION_GENERIC,
 		servicesConfirmationNotice = BLIZZARD_STORE_CONFIRMATION_SERVICES,
 		vasNameChangeConfirmationNotice = BLIZZARD_STORE_CONFIRMATION_VAS_NAME_CHANGE,
+		expansionConfirmationNotice = BLIZZARD_STORE_CONFIRMATION_OTHER,
 		licenseAcceptText = BLIZZARD_STORE_LICENSE_ACK_TEXT_CLP,
 		paymentMethodText = BLIZZARD_STORE_PAYMENT_METHOD,
 		paymentMethodSubtext = BLIZZARD_STORE_PAYMENT_METHOD_EXTRA,
@@ -657,6 +670,7 @@ local currencySpecific = {
 		confirmationNotice = BLIZZARD_STORE_CONFIRMATION_GENERIC,
 		servicesConfirmationNotice = BLIZZARD_STORE_CONFIRMATION_SERVICES,
 		vasNameChangeConfirmationNotice = BLIZZARD_STORE_CONFIRMATION_VAS_NAME_CHANGE,
+		expansionConfirmationNotice = BLIZZARD_STORE_CONFIRMATION_OTHER,
 		licenseAcceptText = BLIZZARD_STORE_LICENSE_ACK_TEXT_MXN,
 		paymentMethodText = BLIZZARD_STORE_PAYMENT_METHOD,
 		paymentMethodSubtext = BLIZZARD_STORE_PAYMENT_METHOD_EXTRA,
@@ -683,6 +697,7 @@ local currencySpecific = {
 		confirmationNotice = BLIZZARD_STORE_CONFIRMATION_GENERIC,
 		servicesConfirmationNotice = BLIZZARD_STORE_CONFIRMATION_SERVICES,
 		vasNameChangeConfirmationNotice = BLIZZARD_STORE_CONFIRMATION_VAS_NAME_CHANGE,
+		expansionConfirmationNotice = BLIZZARD_STORE_CONFIRMATION_OTHER,
 		licenseAcceptText = BLIZZARD_STORE_LICENSE_ACK_TEXT_BRL,
 		paymentMethodText = BLIZZARD_STORE_PAYMENT_METHOD,
 		paymentMethodSubtext = BLIZZARD_STORE_PAYMENT_METHOD_EXTRA,
@@ -709,6 +724,7 @@ local currencySpecific = {
 		confirmationNotice = BLIZZARD_STORE_CONFIRMATION_GENERIC,
 		servicesConfirmationNotice = BLIZZARD_STORE_CONFIRMATION_SERVICES,
 		vasNameChangeConfirmationNotice = BLIZZARD_STORE_CONFIRMATION_VAS_NAME_CHANGE,
+		expansionConfirmationNotice = BLIZZARD_STORE_CONFIRMATION_OTHER,
 		licenseAcceptText = BLIZZARD_STORE_LICENSE_ACK_TEXT_AUD,
 		paymentMethodText = BLIZZARD_STORE_PAYMENT_METHOD,
 		paymentMethodSubtext = BLIZZARD_STORE_PAYMENT_METHOD_EXTRA,
@@ -735,6 +751,7 @@ local currencySpecific = {
 		confirmationNotice = BLIZZARD_STORE_CONFIRMATION_GENERIC,
 		servicesConfirmationNotice = BLIZZARD_STORE_CONFIRMATION_SERVICES,
 		vasNameChangeConfirmationNotice = BLIZZARD_STORE_CONFIRMATION_VAS_NAME_CHANGE,
+		expansionConfirmationNotice = BLIZZARD_STORE_CONFIRMATION_OTHER,
 		licenseAcceptText = BLIZZARD_STORE_LICENSE_ACK_TEXT_CN,
 		paymentMethodText = "",
 		paymentMethodSubtext = "",
@@ -762,6 +779,7 @@ local currencySpecific = {
 		confirmationNotice = BLIZZARD_STORE_CONFIRMATION_GENERIC,
 		servicesConfirmationNotice = BLIZZARD_STORE_CONFIRMATION_SERVICES,
 		vasNameChangeConfirmationNotice = BLIZZARD_STORE_CONFIRMATION_VAS_NAME_CHANGE,
+		expansionConfirmationNotice = BLIZZARD_STORE_CONFIRMATION_OTHER,
 		licenseAcceptText = BLIZZARD_STORE_LICENSE_ACK_TEXT_TW,
 		paymentMethodText = "",
 		paymentMethodSubtext = "",
@@ -788,6 +806,7 @@ local currencySpecific = {
 		confirmationNotice = BLIZZARD_STORE_CONFIRMATION_TEST,
 		servicesConfirmationNotice = BLIZZARD_STORE_CONFIRMATION_SERVICES_TEST,
 		vasNameChangeConfirmationNotice = BLIZZARD_STORE_CONFIRMATION_SERVICES_TEST,
+		expansionConfirmationNotice = BLIZZARD_STORE_CONFIRMATION_TEST,
 		paymentMethodText = BLIZZARD_STORE_CONFIRMATION_TEST,
 		paymentMethodSubtext = "",
 		browseHasStar = true,
@@ -941,6 +960,32 @@ local vasErrorData = {
 	},
 };
 
+local deluxeMagnifiers = {
+	[170] = { -- Legion Deluxe Edition
+		[1] = {
+			x = 22,
+			y = -64,
+			modelID = 64585,
+		},
+		[2] = {
+			x = 72,
+			y = -64,
+			modelID = 64582,
+		},
+	},
+	[171] = { -- Legion Deluxe Edition Upgrade
+		[1] = {
+			x = 22,
+			y = -64,
+			modelID = 64585,
+		},
+		[2] = {
+			x = 72,
+			y = -64,
+			modelID = 64582,
+		},
+	},
+}
 
 local factionColors = { 
 	[0] = "ffe50d12", 
@@ -959,7 +1004,7 @@ local function getIndex(tbl, value)
 end
 
 function StoreFrame_UpdateCard(card,entryID,discountReset)
-	local productID, _, bannerType, alreadyOwned, normalDollars, normalCents, currentDollars, currentCents, buyableHere, name, description, displayID, texture, upgrade, isToken, itemID, isVasService = C_PurchaseAPI.GetEntryInfo(entryID);
+	local entryInfo = C_PurchaseAPI.GetEntryInfo(entryID);
 	StoreProductCard_ResetCornerPieces(card);
 
 	local info = currencyInfo();
@@ -979,9 +1024,9 @@ function StoreFrame_UpdateCard(card,entryID,discountReset)
 	local discountAmount, new, hot;
 	local discount = false;
 
-	if (currentDollars ~= normalDollars or currentCents ~= normalCents) then
-		local normalPrice = normalDollars + (normalCents/100);
-		local discountPrice = currentDollars + (currentCents/100);
+	if (entryInfo.currentDollars ~= entryInfo.normalDollars or entryInfo.currentCents ~= entryInfo.normalCents) then
+		local normalPrice = entryInfo.normalDollars + (entryInfo.normalCents/100);
+		local discountPrice = entryInfo.currentDollars + (entryInfo.currentCents/100);
 		local diff = normalPrice - discountPrice;
 		discountAmount = math.floor((diff/normalPrice) * 100);
 		discount = true;
@@ -1003,7 +1048,7 @@ function StoreFrame_UpdateCard(card,entryID,discountReset)
 		card.DiscountText:Hide();
 	end
 
-	if ( alreadyOwned ) then
+	if ( entryInfo.alreadyOwned ) then
 		card.Checkmark:Show();
 	elseif ( card.NewTexture and new ) then
 		card.NewTexture:Show();
@@ -1020,7 +1065,7 @@ function StoreFrame_UpdateCard(card,entryID,discountReset)
 		card.DiscountText:Show();
 	end
 
-	if (upgrade) then
+	if (entryInfo.isBoost) then
 		card.UpgradeArrow:Show();
 	else
 		card.UpgradeArrow:Hide();
@@ -1034,24 +1079,38 @@ function StoreFrame_UpdateCard(card,entryID,discountReset)
 		card.BuyButton:SetText(text);
 	end
 	
-	card.CurrentPrice:SetText(currencyFormat(currentDollars, currentCents));
+	card.CurrentPrice:SetText(currencyFormat(entryInfo.currentDollars, entryInfo.currentCents));
 
 	if ( card.SplashBannerText ) then
-		if ( bannerType == BATTLEPAY_SPLASH_BANNER_TEXT_NEW ) then
+		if ( entryInfo.bannerType == BATTLEPAY_SPLASH_BANNER_TEXT_NEW ) then
 			card.SplashBannerText:SetText(BLIZZARD_STORE_SPLASH_BANNER_NEW);
-		elseif ( bannerType == BATTLEPAY_SPLASH_BANNER_TEXT_DISCOUNT ) then
+		elseif ( entryInfo.bannerType == BATTLEPAY_SPLASH_BANNER_TEXT_DISCOUNT ) then
 			if ( discount ) then
 				card.SplashBannerText:SetText(BLIZZARD_STORE_SPLASH_BANNER_DISCOUNT_FORMAT:format(discountAmount));
 			else
 				card.SplashBannerText:SetText(BLIZZARD_STORE_SPLASH_BANNER_FEATURED);
 			end
-		elseif ( bannerType == BATTLEPAY_SPLASH_BANNER_TEXT_FEATURED ) then
+		elseif ( entryInfo.bannerType == BATTLEPAY_SPLASH_BANNER_TEXT_FEATURED ) then
 			card.SplashBannerText:SetText(BLIZZARD_STORE_SPLASH_BANNER_FEATURED);
 		end
 	end 
 
-	card.NormalPrice:SetText(currencyFormat(normalDollars, normalCents));
-	card.ProductName:SetText(name);
+	card.NormalPrice:SetText(currencyFormat(entryInfo.normalDollars, entryInfo.normalCents));
+	card.ProductName:SetText(entryInfo.name);
+	if (entryInfo.overrideTextColor) then
+		card.ProductName:SetTextColor(entryInfo.overrideTextColor.r, entryInfo.overrideTextColor.g, entryInfo.overrideTextColor.b);
+	else
+		card.ProductName:SetTextColor(1.0, 0.82, 0.0);
+	end
+	
+	if (entryInfo.overrideBackground) then
+		card.Card:SetTexCoord(0, 1, 0, 1);
+		card.Card:SetAtlas(entryInfo.overrideBackground, true);
+	else
+		card.Card:SetSize(146, 209);
+		card.Card:SetTexture("Interface\\Store\\Store-Main");
+		card.Card:SetTexCoord(0.18457031, 0.32714844, 0.64550781, 0.84960938);	
+	end
 	
 	if (card == StoreFrame.SplashSingle) then
 		card.ProductName:SetFontObject("GameFontNormalWTF2");
@@ -1063,7 +1122,7 @@ function StoreFrame_UpdateCard(card,entryID,discountReset)
 			card.ProductName:SetFontObject("GameFontNormalHuge3");
 		end
 
-		if (isToken) then
+		if (entryInfo.isWowToken) then
 			local price = C_WowTokenPublic.GetCurrentMarketPrice();
 			if (price) then
 				card.CurrentMarketPrice:SetText(TOKEN_CURRENT_AUCTION_VALUE:format(GetSecureMoneyString(price, true)));
@@ -1093,7 +1152,7 @@ function StoreFrame_UpdateCard(card,entryID,discountReset)
 	end
 	
 	if (card.Description) then
-		if (isToken) then
+		if (entryInfo.isWowToken) then
 			local redeemIndex = select(3, C_WowTokenPublic.GetCommerceSystemStatus());
 			if (redeemIndex == LE_CONSUMABLE_TOKEN_REDEEM_FOR_SUB_AMOUNT_30_DAYS) then
 				description = BLIZZARD_STORE_TOKEN_DESC_30_DAYS;
@@ -1101,21 +1160,21 @@ function StoreFrame_UpdateCard(card,entryID,discountReset)
 				description = BLIZZARD_STORE_TOKEN_DESC_2700_MINUTES;
 			end
 		end
-		card.Description:SetText(description);
+		card.Description:SetText(entryInfo.description);
 	end
 
-	if ( displayID ) then
-		StoreProductCard_SetModel(card, displayID, alreadyOwned);
+	if ( entryInfo.displayID ) then
+		StoreProductCard_SetModel(card, entryInfo.displayID, entryInfo.alreadyOwned);
 	else
-		local icon = texture;
+		local icon = entryInfo.texture;
 		if (not icon) then
 			icon = "Interface\\Icons\\INV_Misc_Note_02";
 		end
-		StoreProductCard_ShowIcon(card, icon, itemID);
+		StoreProductCard_ShowIcon(card, icon, entryInfo.itemID, entryInfo.overrideTexture);
 	end
 
 	if (discount) then
-		StoreProductCard_ShowDiscount(card, currencyFormat(currentDollars, currentCents), discountReset);
+		StoreProductCard_ShowDiscount(card, currencyFormat(entryInfo.currentDollars, entryInfo.currentCents), discountReset);
 	else
 		card.NormalPrice:Hide();
 		card.SalePrice:Hide();
@@ -1124,19 +1183,40 @@ function StoreFrame_UpdateCard(card,entryID,discountReset)
 	end
 
 	if (card.BuyButton) then
-		card.BuyButton:SetEnabled(buyableHere);
+		card.BuyButton:SetEnabled(entryInfo.buyableHere);
 	end
 
 	card:SetID(entryID);
 	StoreProductCard_UpdateState(card);
 
+	if (card.SpecialMagnifiers) then
+		for i = 1, #card.SpecialMagnifiers do
+			card.SpecialMagnifiers[i]:Hide();
+		end
+	end
+
+	if (deluxeMagnifiers[entryInfo.productID]) then
+		for i = 1, #deluxeMagnifiers[entryInfo.productID] do
+			local frame = card.SpecialMagnifiers and card.SpecialMagnifiers[i];
+			if (not frame) then
+				frame = CreateForbiddenFrame("Button", nil, card, "StoreProductCardSpecialMagnifierTemplate");
+				frame:SetScript("OnClick", StoreProductCardSpecialMagnifyingGlass_OnClick);
+				frame:SetScript("OnEnter", StoreProductCardSpecialMagnifyingGlass_OnEnter);
+				frame:SetScript("OnLeave", StoreProductCardSpecialMagnifyingGlass_OnLeave);	
+			end
+			frame:SetPoint("TOPLEFT", deluxeMagnifiers[entryInfo.productID][i].x, deluxeMagnifiers[entryInfo.productID][i].y);
+			frame:SetID(deluxeMagnifiers[entryInfo.productID][i].modelID);
+			frame:Show();
+		end
+	end
+	
 	if (card.BannerFadeIn and not card:IsShown()) then
 		card.BannerFadeIn.FadeAnim:Play();
 		card.BannerFadeIn:Show();
 	end
 	
 	if (card.DisabledOverlay) then
-		card.DisabledOverlay:SetShown(isVasService and not IsOnGlueScreen());
+		card.DisabledOverlay:SetShown(entryInfo.isVasService and not IsOnGlueScreen());
 	end
 
 	card:Show();
@@ -1344,6 +1424,7 @@ function StoreFrame_OnLoad(self)
 	self:RegisterEvent("AUTH_CHALLENGE_FINISHED");
 	self:RegisterEvent("TOKEN_MARKET_PRICE_UPDATED");
 	self:RegisterEvent("TOKEN_STATUS_CHANGED");
+	self:RegisterEvent("STORE_BOOST_AUTO_CONSUMED");
 
 	-- We have to call this from CharacterSelect on the glue screen because the addon engine will load
 	-- the store addon more than once if we try to make it ondemand, forcing us to load it before we
@@ -1384,7 +1465,7 @@ function StoreFrame_OnLoad(self)
 		background:SetTexture(0, 0, 0, 0.75);
 	end
 	self:SetPoint("CENTER", nil, "CENTER", 0, 20); --Intentionally not anchored to UIParent.
-
+	StoreDialog:SetPoint("CENTER", nil, "CENTER", 0, 40);
 	StoreFrame_CreateCards(self, NUM_STORE_PRODUCT_CARDS, NUM_STORE_PRODUCT_CARDS_PER_ROW);
 
 	StoreFrame.SplashSingle:Hide();
@@ -1434,7 +1515,18 @@ function StoreFrame_OnEvent(self, event, ...)
 			--FIXME - Not the right place to put this check, but I want to stop the error
 			StoreFrame_SetCategory();
 		end
-		StoreFrame_UpdateActivePanel(self);
+		if (UnrevokeWaitingForProducts) then
+			local productName = C_PurchaseAPI.GetUnrevokedBoostInfo();
+			if (productName and productName ~= "") then
+				StoreFrame:Hide();
+				StoreFrame_ShowUnrevokeConsumptionDialog();
+				UnrevokeWaitingForProducts = false;
+			else
+				StoreFrame_UpdateActivePanel(self);
+			end
+		else
+			StoreFrame_UpdateActivePanel(self);
+		end
 	elseif ( event == "STORE_PURCHASE_LIST_UPDATED" ) then
 		if (JustOrderedProduct) then
 			JustFinishedOrdering = true;
@@ -1453,20 +1545,7 @@ function StoreFrame_OnEvent(self, event, ...)
 		StoreFrame_UpdateActivePanel(self);
 	elseif ( event == "PRODUCT_DISTRIBUTIONS_UPDATED" ) then
 		if (JustOrderedBoost) then
-			if (IsOnGlueScreen() and not _G.CharacterSelect.undeleting) then
-				self:Hide();
-				_G.CharacterUpgradeFlow:SetTarget(false);
-				_G.CharSelectServicesFlowFrame:Show();
-				_G.CharacterServicesMaster_SetFlow(_G.CharacterServicesMaster, _G.CharacterUpgradeFlow);
-			elseif (not IsOnGlueScreen()) then
-				self:Hide();
-				ServicesLogoutPopup.Background.Title:SetText(CHARACTER_UPGRADE_READY);
-				ServicesLogoutPopup.Background.Description:SetText(CHARACTER_UPGRADE_READY_DESCRIPTION);
-				ServicesLogoutPopup.forBoost = true;
-				ServicesLogoutPopup.forVasService = false;
-				ServicesLogoutPopup:Show();
-			end
-			JustOrderedBoost = false;
+			StoreFrame_OnCharacterBoostDelivered(self);
 		end
 	elseif ( event == "AUTH_CHALLENGE_FINISHED" ) then
 		if (not C_AuthChallenge.DidChallengeSucceed()) then
@@ -1482,11 +1561,20 @@ function StoreFrame_OnEvent(self, event, ...)
 		end
 	elseif ( event == "TOKEN_STATUS_CHANGED" ) then
 		StoreFrame_CheckMarketPriceUpdates();
+	elseif ( event == "STORE_BOOST_AUTO_CONSUMED" ) then
+		local productName = C_PurchaseAPI.GetUnrevokedBoostInfo();
+
+		if (not productName or productName == "") then
+			-- This could happen if we hadn't shown the shop yet in this session.
+			C_PurchaseAPI.GetProductList();
+			UnrevokeWaitingForProducts = true;
+		else
+			StoreFrame_ShowUnrevokeConsumptionDialog();
+		end
 	end
 end
 
 function StoreFrame_OnShow(self)
-	JustFinishedOrdering = false;
 	C_PurchaseAPI.GetProductList();
 	C_WowTokenPublic.UpdateMarketPrice();
 	self:SetAttribute("isshown", true);
@@ -1509,6 +1597,25 @@ function StoreFrame_OnMouseWheel(self, value)
 			StoreFrameNextPageButton_OnClick(self.NextPageButton);
 		end	
 	end
+end
+
+function StoreFrame_OnCharacterBoostDelivered(self)
+	if (IsOnGlueScreen() and not _G.CharacterSelect.undeleting) then
+		self:Hide();
+		_G.CharacterUpgradeFlow:SetTarget(false);
+		_G.CharSelectServicesFlowFrame:Show();
+		_G.CharacterUpgradeFlow.data = _G.CharacterUpgrade_Items[BoostProduct].paid;
+		_G.CharacterServicesMaster_SetFlow(_G.CharacterServicesMaster, _G.CharacterUpgradeFlow);
+	elseif (not IsOnGlueScreen()) then
+		self:Hide();
+		ServicesLogoutPopup.Background.Title:SetText(CHARACTER_UPGRADE_READY);
+		ServicesLogoutPopup.Background.Description:SetText(CHARACTER_UPGRADE_READY_DESCRIPTION);
+		ServicesLogoutPopup.forBoost = true;
+		ServicesLogoutPopup.forVasService = false;
+		ServicesLogoutPopup:Show();
+	end
+	JustFinishedOrdering = false;
+	JustOrderedBoost = false;
 end
 
 function StoreFrame_UpdateBuyButton()
@@ -1595,6 +1702,11 @@ function StoreFrame_OnAttributeChanged(self, name, value)
 		selectedPageNum = 1;
 		selectedCategoryID = WOW_TOKEN_CATEGORY_ID;
 		StoreFrame_SetCategory();
+	elseif ( name == "setgamescategory" ) then
+		StoreFrame_UpdateCategories(StoreFrame);
+		selectedPageNum = 1;
+		selectedCategoryID = WOW_GAMES_CATEGORY_ID;
+		StoreFrame_SetCategory();
 	elseif ( name == "getvaserrormessage" ) then
 		if (IsOnGlueScreen()) then
 			self:SetAttribute("vaserrormessageresult", nil);
@@ -1667,7 +1779,6 @@ function StoreFrame_UpdateActivePanel(self)
 		end
 		StoreFrame_SetAlert(self, BLIZZARD_STORE_TRANSACTION_IN_PROGRESS, progressText);
 	elseif ( JustFinishedOrdering ) then
-		JustFinishedOrdering = false;
 		StoreFrame_HideAlert(self);
 		StoreFrame_ShowPurchaseSent(self);
 	elseif ( not C_PurchaseAPI.IsAvailable() ) then
@@ -1719,13 +1830,23 @@ function StoreFrame_ShowPurchaseSent(self)
 end
 
 function StoreFrame_HidePurchaseSent(self)
+	JustFinishedOrdering = false;
 	self.PurchaseSentFrame:Hide();
+end
+
+function StoreFrame_ShowUnrevokeConsumptionDialog()
+	local productName, characterName, realmName = C_PurchaseAPI.GetUnrevokedBoostInfo();
+
+	StoreDialog.Description:SetText(BLIZZARD_STORE_BOOST_UNREVOKED_CONSUMPTION:format(productName, characterName, realmName));
+	StoreDialog:Show();
 end
 
 function StoreFramePurchaseSentOkayButton_OnClick(self)
 	StoreFrame_HidePurchaseSent(StoreFrame);
 	if (VASReady) then
 		StoreVASValidationFrame_OnVasProductComplete(StoreVASValidationFrame);
+	elseif (JustOrderedBoost) then
+		StoreFrame_OnCharacterBoostDelivered(StoreFrame);
 	end
 end
 
@@ -1803,10 +1924,10 @@ function StoreFrameBuyButton_OnClick(self)
 end
 
 function StoreFrame_BeginPurchase(entryID)
-	local productID, _, _, alreadyOwned = C_PurchaseAPI.GetEntryInfo(entryID);
-	if ( alreadyOwned ) then
+	local entryInfo = C_PurchaseAPI.GetEntryInfo(entryID);
+	if ( entryInfo.alreadyOwned ) then
 		StoreFrame_OnError(StoreFrame, LE_STORE_ERROR_ALREADY_OWNED, false, "FakeOwned");
-	elseif ( C_PurchaseAPI.PurchaseProduct(productID) ) then
+	elseif ( C_PurchaseAPI.PurchaseProduct(entryInfo.productID) ) then
 		WaitingOnConfirmation = true;
 		WaitingOnConfirmationTime = GetTime();
 		StoreFrame_UpdateActivePanel(StoreFrame);
@@ -1835,8 +1956,8 @@ function StoreFrame_CheckForFree(self, event)
 	if (event == "PRODUCT_DISTRIBUTIONS_UPDATED") then
 		self.distributionsUpdated = true;
 	end
-	if (self.variablesLoaded and self.distributionsUpdated and select(2,C_SharedCharacterServices.HasFreeDistribution()) and not C_SharedCharacterServices.HasSeenPopup() and not IsOnGlueScreen()) then
-		C_SharedCharacterServices.SetPopupSeen(true);
+	if (self.variablesLoaded and self.distributionsUpdated and C_SharedCharacterServices.HasFreePromotionalUpgrade() and not C_SharedCharacterServices.HasSeenFreePromotionalUpgradePopup() and not IsOnGlueScreen()) then
+		C_SharedCharacterServices.SetPromotionalPopupSeen(true);
 		self:Hide();
 		ServicesLogoutPopup.Background.Title:SetText(FREE_CHARACTER_UPGRADE_READY);
 		ServicesLogoutPopup.Background.Description:SetText(FREE_CHARACTER_UPGRADE_READY_DESCRIPTION);
@@ -1881,11 +2002,12 @@ function StoreConfirmationFrame_OnLoad(self)
 	self:RegisterEvent("STORE_CONFIRM_PURCHASE");
 end
 
-function StoreConfirmationFrame_SetNotice(self, icon, name, dollars, cents, walletName, upgrade, vasService)
+function StoreConfirmationFrame_SetNotice(self, icon, name, dollars, cents, walletName, upgrade, vasService, expansion)
 	local currency = C_PurchaseAPI.GetCurrencyID();
 
 	SetPortraitToTexture(self.Icon, icon);
 	
+	name = name:gsub("|n", " ");
 	self.ProductName:SetText(name);	
 	local info = currencyInfo();
 	local format = info.formatLong;
@@ -1893,6 +2015,8 @@ function StoreConfirmationFrame_SetNotice(self, icon, name, dollars, cents, wall
 	
 	if (upgrade) then
 		notice = info.servicesConfirmationNotice;
+	elseif (expansion) then
+		notice = info.expansionConfirmationNotice;
 	elseif (vasService) then
 		local characters = C_PurchaseAPI.GetCharactersForRealm(SelectedRealm);
 		local character = characters[SelectedCharacter];
@@ -1976,15 +2100,17 @@ function StoreConfirmationFrame_Update(self)
 		self:Hide(); --May want to show an error message
 		return;
 	end
-	local _, _, _, currentDollars, currentCents, _, name, _, displayID, texture, upgrade, _, _, isVasService = C_PurchaseAPI.GetProductInfo(productID);
+	local productInfo = C_PurchaseAPI.GetProductInfo(productID);
 
-	local finalIcon = texture;
+	local finalIcon = productInfo.texture;
 	if ( not finalIcon ) then
 		finalIcon = "Interface\\Icons\\INV_Misc_Note_02";
 	end
-	StoreConfirmationFrame_SetNotice(self, finalIcon, name, currentDollars, currentCents, walletName, upgrade, isVasService);
-	IsUpgrade = upgrade;
-
+	StoreConfirmationFrame_SetNotice(self, finalIcon, productInfo.name, productInfo.currentDollars, productInfo.currentCents, walletName, productInfo.isBoost, productInfo.isVasService, productInfo.isExpansion);
+	IsUpgrade = productInfo.isBoost;
+	if (productInfo.isBoost) then
+		BoostProduct = productInfo.boostProduct;
+	end
 	local info = currencyInfo();
 	self.NoticeFrame.BrowseNotice:SetText(info.browseNotice);
 	self.NoticeFrame.BrowseNotice:SetShown(not info.hideConfirmationBrowseNotice);
@@ -2014,8 +2140,8 @@ function StoreConfirmationFrame_Update(self)
 	end	
 	self.BuyButton:SetText(text);
 
-	FinalPriceDollars = currentDollars;
-	FinalPriceCents = currentCents;
+	FinalPriceDollars = productInfo.currentDollars;
+	FinalPriceCents = productInfo.currentCents;
 
 	local height = 370 + self.NoticeFrame.Notice:GetContentHeight() + 35;
 	self:SetHeight(height);
@@ -2076,27 +2202,28 @@ function StoreVASValidationFrame_OnLoad(self)
 end
 
 function StoreVASValidationFrame_SetVASStart(self)
-	local productID = C_PurchaseAPI.GetEntryInfo(selectedEntryID);
-	local _, _, _, currentDollars, currentCents, _, name, description, displayID, texture, upgrade, _, _, isVasService, vasServiceType = C_PurchaseAPI.GetProductInfo(productID);
+	local entryInfo = C_PurchaseAPI.GetEntryInfo(selectedEntryID);
+	local productID = entryInfo.productID;
+	local productInfo = C_PurchaseAPI.GetProductInfo(productID);
 
-	local finalIcon = texture;
+	local finalIcon = productInfo.texture;
 	if ( not finalIcon ) then
 		finalIcon = "Interface\\Icons\\INV_Misc_Note_02";
 	end
 	SetPortraitToTexture(self.Icon, finalIcon);
-	self.ProductName:SetText(name);
-	self.ProductDescription:SetText(description);
+	self.ProductName:SetText(productInfo.name);
+	self.ProductDescription:SetText(productInfo.description);
 
 	local currencyInfo = currencyInfo();
 
 	local vasDisclaimerData = currencyInfo.vasDisclaimerData;
 
-	if (vasDisclaimerData and vasDisclaimerData[vasServiceType]) then
-		self.Disclaimer:SetText("<html><body><p align=\"center\">"..vasDisclaimerData[vasServiceType].disclaimer.."</p></body></html>");
+	if (vasDisclaimerData and vasDisclaimerData[productInfo.vasServiceType]) then
+		self.Disclaimer:SetText("<html><body><p align=\"center\">"..vasDisclaimerData[productInfo.vasServiceType].disclaimer.."</p></body></html>");
 		self.Disclaimer:Show();
 	end
 	
-	VASServiceType = vasServiceType;
+	VASServiceType = productInfo.vasServiceType;
 
 	SelectedCharacter = nil;
 	for list, _ in pairs(StoreDropdownLists) do
@@ -2199,23 +2326,27 @@ function StoreVASValidationFrame_OnEvent(self, event, ...)
 			StoreVASValidationFrame.CharacterSelectionFrame.ContinueButton:Disable();
 		end
 	elseif ( event == "STORE_VAS_PURCHASE_COMPLETE" ) then
-		VASReady = true;
-		JustFinishedOrdering = true;
-		StoreFrame_UpdateActivePanel(StoreFrame);
+		if (StoreFrame:IsShown()) then
+			VASReady = true;
+			JustFinishedOrdering = true;
+			StoreFrame_UpdateActivePanel(StoreFrame);
+		elseif (IsOnGlueScreen() and _G.CharacterSelect:IsVisible()) then
+			StoreVASValidationFrame_OnVasProductComplete(StoreVASValidationFrame);
+		end
 	end
 end
 
 function StoreVASValidationFrame_OnVasProductComplete(self)
 	local productID, guid, realmName = C_PurchaseAPI.GetVASCompletionInfo();
-	local name, _, _, _, _, _, _, _, vasServiceType = select(7, C_PurchaseAPI.GetProductInfo(productID));
+	local productInfo = C_PurchaseAPI.GetProductInfo(productID);
 	if (IsOnGlueScreen()) then
 		self:GetParent():Hide();	
-		_G.StoreFrame_ShowGlueDialog((_G.BLIZZARD_STORE_VAS_PRODUCT_READY):format(name), guid, realmName);
+		_G.StoreFrame_ShowGlueDialog((_G.BLIZZARD_STORE_VAS_PRODUCT_READY):format(productInfo.name), guid, realmName);
 	else
 		self:GetParent():Hide();
-		ServicesLogoutPopup.Background.Title:SetText(BLIZZARD_STORE_PRODUCT_IS_READY:format(name));
+		ServicesLogoutPopup.Background.Title:SetText(BLIZZARD_STORE_PRODUCT_IS_READY:format(productInfo.name));
 		local desc;
-		if (vasServiceType == LE_VAS_SERVICE_NAME_CHANGE) then
+		if (productInfo.vasServiceType == LE_VAS_SERVICE_NAME_CHANGE) then
 			desc = BLIZZARD_STORE_NAME_CHANGE_READY_DESCRIPTION;
 		else
 			desc = BLIZZARD_STORE_VAS_SERVICE_READY_DESCRIPTION;
@@ -2245,7 +2376,9 @@ function StoreProductCard_UpdateState(card)
 	if (card:GetID() == 0 or not card:IsShown()) then return end;
 
 	if (card.HighlightTexture) then
-		local enableHighlight = card:GetID() ~= selectedEntryID and not isRotating and (not select(17,C_PurchaseAPI.GetEntryInfo(card:GetID())) or IsOnGlueScreen());
+		local entryID = card:GetID();
+		local entryInfo = C_PurchaseAPI.GetEntryInfo(entryID);
+		local enableHighlight = card:GetID() ~= selectedEntryID and not isRotating and (not entryInfo.isVasService or IsOnGlueScreen());
 		card.HighlightTexture:SetAlpha(enableHighlight and 1 or 0);
 		if (not card.Description and card:IsMouseOver()) then
 			if (isRotating) then
@@ -2261,12 +2394,11 @@ function StoreProductCard_UpdateState(card)
 					rpoint ="TOPRIGHT";
 					xoffset = -4;
 				end
-				local entryID = card:GetID();
-				local name, description, _, _, _, isToken = select(10,C_PurchaseAPI.GetEntryInfo(entryID));
-				
+				local name = entryInfo.name:gsub("|n", " ");
+				local description = entryInfo.description;
 				StoreTooltip:ClearAllPoints();
 				StoreTooltip:SetPoint(point, card, rpoint, xoffset, 0);
-				if (select(17,C_PurchaseAPI.GetEntryInfo(card:GetID())) and not IsOnGlueScreen()) then
+				if (entryInfo.isVasService and not IsOnGlueScreen()) then
 					name = "";
 					description = BLIZZARD_STORE_LOG_OUT_TO_PURCHASE_THIS_PRODUCT;
 				end
@@ -2296,7 +2428,8 @@ function StoreProductCard_UpdateAllStates()
 end
 
 function StoreProductCard_OnEnter(self)
-	if (not select(17,C_PurchaseAPI.GetEntryInfo(self:GetID())) or IsOnGlueScreen()) then
+	local entryInfo = C_PurchaseAPI.GetEntryInfo(self:GetID());
+	if (not entryInfo.isVasService or IsOnGlueScreen()) then
 		if (self.HighlightTexture) then
 			self.HighlightTexture:SetShown(selectedEntryID ~= self:GetID());
 		end
@@ -2318,7 +2451,8 @@ function StoreProductCard_OnLeave(self)
 end
 
 function StoreProductCard_OnClick(self,button,down)
-	if (select(17,C_PurchaseAPI.GetEntryInfo(self:GetID())) and not IsOnGlueScreen()) then
+	local entryInfo = C_PurchaseAPI.GetEntryInfo(self:GetID());
+	if (entryInfo.isVasService and not IsOnGlueScreen()) then
 		return;
 	end
 
@@ -2329,9 +2463,8 @@ function StoreProductCard_OnClick(self,button,down)
 		showPreview = IsModifiedClick("DRESSUP");
 	end
 	if ( showPreview ) then
-		local name, _, modelID = select(10,C_PurchaseAPI.GetEntryInfo(self:GetID()));
-		if ( modelID ) then
-			StoreFrame_ShowPreview(name, modelID);
+		if ( entryInfo.modelID ) then
+			StoreFrame_ShowPreview(entryInfo.name, entryInfo.modelID);
 		end
 	else
 		selectedEntryID = self:GetID();
@@ -2472,7 +2605,7 @@ function StoreProductCard_SetModel(self, modelID, owned)
 	end
 end
 
-function StoreProductCard_ShowIcon(self, icon, itemID)
+function StoreProductCard_ShowIcon(self, icon, itemID, overrideTexture)
 	self.Model:Hide();
 	self.Shadows:Hide();
 	
@@ -2488,7 +2621,14 @@ function StoreProductCard_ShowIcon(self, icon, itemID)
 		self.InvisibleMouseOverFrame:Hide();
 	end
 
-	SetPortraitToTexture(self.Icon, icon);
+	if (not overrideTexture) then
+		self.Icon:SetSize(63, 63);
+		SetPortraitToTexture(self.Icon, icon);
+		self.IconBorder:Show();
+	else
+		self.Icon:SetAtlas(overrideTexture, true);
+		self.IconBorder:Hide();
+	end
 	if (self == StoreFrame.SplashSingle) then
 		self.Magnifier:Hide();
 	end
@@ -2561,8 +2701,26 @@ end
 function StoreProductCardMagnifyingGlass_OnClick(self, button, down)
 	local card = self:GetParent();
 	local entryID = card:GetID();
-	local name, _, modelID = select(10,C_PurchaseAPI.GetEntryInfo(entryID));
-	StoreFrame_ShowPreview(name, modelID);
+	local entryInfo = C_PurchaseAPI.GetEntryInfo(entryID);
+	StoreFrame_ShowPreview(entryInfo.name, entryInfo.displayID);
+end
+
+function StoreProductCardSpecialMagnifyingGlass_OnEnter(self)
+	self:SetAlpha(1);
+	StoreProductCard_OnEnter(self:GetParent());
+end
+
+function StoreProductCardSpecialMagnifyingGlass_OnLeave(self)
+	self:SetAlpha(0);
+	StoreProductCard_OnLeave(self:GetParent());
+end
+
+function StoreProductCardSpecialMagnifyingGlass_OnClick(self, button, down)
+	local card = self:GetParent();
+	local entryID = card:GetID();
+	local entryInfo = C_PurchaseAPI.GetEntryInfo(entryID);
+	local modelID = self:GetID();
+	StoreFrame_ShowPreview(entryInfo.name, modelID);
 end
 
 function StoreProductCardCheckmark_OnEnter(self)
@@ -2588,7 +2746,7 @@ function StoreProductCardItem_OnEnter(self)
 	local card = self:GetParent();
 	StoreProductCard_OnEnter(card);
 	local entryID = card:GetID();
-	local itemID = select(16, C_PurchaseAPI.GetEntryInfo(entryID));
+	local entryInfo = C_PurchaseAPI.GetEntryInfo(entryID);
 
 	local x, y, point;
 
@@ -2606,7 +2764,7 @@ function StoreProductCardItem_OnEnter(self)
 		point = "BOTTOMLEFT";
 	end
 	StoreTooltip:Hide();
-	Outbound.SetItemTooltip(itemID, x, y, point);
+	Outbound.SetItemTooltip(entryInfo.itemID, x, y, point);
 end
 
 function StoreProductCardItem_OnLeave(self)
@@ -3050,9 +3208,9 @@ function VASCharacterSelectionContinueButton_OnClick(self)
 		return;
 	end
 
-	local productID, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, isVasService = C_PurchaseAPI.GetEntryInfo(selectedEntryID);
+	local entryInfo = C_PurchaseAPI.GetEntryInfo(selectedEntryID);
 
-	if (not isVasService) then
+	if (not entryInfo.isVasService) then
 		-- Um, how did we get to thie frame if this wasnt a vas service?
 		return;
 	end
@@ -3073,7 +3231,7 @@ function VASCharacterSelectionContinueButton_OnClick(self)
 		end
 	end
 
-	if ( C_PurchaseAPI.PurchaseVASProduct(productID, characters[SelectedCharacter].guid, NewCharacterName) ) then
+	if ( C_PurchaseAPI.PurchaseVASProduct(entryInfo.productID, characters[SelectedCharacter].guid, NewCharacterName) ) then
 		WaitingOnConfirmation = true;
 		WaitingOnConfirmationTime = GetTime();
 		StoreFrame_UpdateActivePanel(StoreFrame);
@@ -3092,9 +3250,9 @@ function ServicesLogoutPopup_OnLoad(self)
 end
 
 function ServicesLogoutPopupConfirmButton_OnClick(self)
-	if (self.forBoost) then
-		C_SharedCharacterServices.SetStartAutomatically(true);
-	elseif (self.forVasService) then
+	if (ServicesLogoutPopup.forBoost) then
+		C_SharedCharacterServices.SetStartAutomatically(true, BoostProduct);
+	elseif (ServicesLogoutPopup.forVasService) then
 		C_PurchaseAPI.SetVASProductReady(true);
 	end
 	ServicesLogoutPopup.forBoost = false;

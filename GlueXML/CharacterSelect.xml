@@ -311,6 +311,126 @@
 			</OnLoad>
 		</Scripts>
 	</Frame>
+	
+	<Button name="CharacterBoostTemplate" parentArray="CharacterBoosts" frameLevel="3" hidden="true" virtual="true">
+		<Size x="59" y="60"/>
+		<Layers>
+			<Layer level="BORDER" textureSubLevel="3">
+				<Texture parentKey="Icon">
+					<Size x="48" y="48"/>
+					<Anchors>
+						<Anchor point="TOP" x="0" y="-4"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="ARTWORK">
+				<Texture parentKey="IconBorder" setAllPoints="true">
+					<Size x="59" y="60"/>
+					<Anchors>
+						<Anchor point="TOP"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="BORDER" textureSubLevel="2">
+				<Texture parentKey="Glow" inherits="services-ring-large-glow" alpha="0.8" hidden="true">
+					<Size x="196" y="193"/>	
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent.IconBorder" x="0" y="0"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="OVERLAY" textureSubLevel="1">
+				<Texture parentKey="Ring" file="Interface\Common\RingBorder" hidden="true">
+					<Size x="26" y="26"/>
+					<Anchors>
+						<Anchor point="BOTTOMRIGHT" x="1" y="2"/>
+					</Anchors>
+				</Texture>
+				<FontString parentKey="Number" inherits="GameTooltipHeaderText" hidden="true">
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent.Ring" relativePoint="CENTER" x="0" y="0"/>
+					</Anchors>
+					<Color r="1.0" g="0.82" b="0"/>
+				</FontString>
+			</Layer>
+			<Layer level="OVERLAY">
+				<Texture parentKey="NumberBackground" hidden="true">
+					<Size x="16" y="16"/>
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$Parent.Ring" relativePoint="CENTER"/>
+					</Anchors>
+					<Color r="0" g="0" b="0" a=".75"/>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Frame parentKey="GlowSpin" hidden="true">
+				<Size x="253" y="256"/>
+				<Anchors>
+					<Anchor point="CENTER" relativeKey="$parent.Glow" x="0" y="0"/>
+				</Anchors>
+				<Layers>
+					<Layer level="OVERLAY">
+						<Texture inherits="services-ring-large-glowspin" setAllPoints="true" alpha="0.09" alphaMode="ADD" />
+					</Layer>
+				</Layers>
+				<Animations>
+					<AnimationGroup parentKey="SpinAnim" looping="REPEAT">
+						<Rotation order="1" duration="15" degrees="-360" x="2" y="-4"/>
+					</AnimationGroup>
+				</Animations>
+			</Frame>
+			<Frame parentKey="GlowPulse" hidden="true">
+				<Size x="145" y="138"/>
+				<Anchors>
+					<Anchor point="CENTER" relativeKey="$parent.IconBorder"/>
+				</Anchors>
+				<Layers>
+					<Layer level="OVERLAY">
+						<Texture inherits="services-ring-large-glowpulse" setAllPoints="true" alpha=".75" alphaMode="ADD" />
+					</Layer>
+					<Layer level="OVERLAY" textureSubLevel="1">
+						<Texture inherits="services-ring-large-glowpulse" setAllPoints="true" alpha=".5" alphaMode="ADD" />
+					</Layer>
+				</Layers>
+				<Animations>
+					<AnimationGroup parentKey="PulseAnim" looping="BOUNCE">
+						<Alpha change="-1" duration="1.5" order="1"/>
+					</AnimationGroup>
+				</Animations>
+			</Frame>
+			<Frame parentKey="Highlight" hidden="true">
+				<Size x="72" y="60"/>
+				<Anchors>
+					<Anchor point="TOP"/>
+				</Anchors>
+				<Layers>
+					<Layer level="BORDER" textureSubLevel="2">
+						<Texture parentKey="Icon" atlas="services-ring" alpha="0.15" alphaMode="ADD">
+							<Size x="48" y="48" />
+							<Anchors>
+								<Anchor point="TOP" x="0" y="-4"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+					<Layer level="ARTWORK">
+						<Texture parentKey="IconBorder" atlas="services-ring" alpha="0.15" alphaMode="ADD">
+							<Size x="48" y="48" />
+							<Anchors>
+								<Anchor point="TOP" />
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+			</Frame>
+		</Frames>
+		<Scripts>
+			<OnClick function="CharacterServicesTokenBoost_OnClick"/>
+			<OnEnter function="CharacterServicesTokenBoost_OnEnter"/>
+			<OnLeave function="CharacterServicesTokenBoost_OnLeave"/>
+		</Scripts>
+	</Button>
+	
 	<Frame name="CharacterSelect" toplevel="true" parent="GlueParent" setAllPoints="true" enableKeyboard="true" hidden="true">
 		<Frames>
 			<Frame name="CharacterSelectUI" setAllPoints="true" enableMouse="true">
@@ -351,7 +471,7 @@
 						</Layers>
 					</Frame>
 					<Button name="CharSelectAccountUpgradeButton" inherits="GlueButtonTemplate" text="UPGRADE">
-						<Size x="203" y="72"/>
+						<Size x="239" y="72"/>
 						<Anchors>
 							<Anchor point="TOP" relativeTo="CharacterSelectLogo" relativePoint="BOTTOM" x="0" y="-10"/>
 						</Anchors>
@@ -360,21 +480,21 @@
 								<Texture name="$parentChains1" file="Interface\Glues\AccountUpgrade\golden-main">
 									<Size x="20" y="62"/>
 									<Anchors>
-										<Anchor point="BOTTOMLEFT" relativeTo="$parent" relativePoint="TOPLEFT" x="20" y="-15"/>
+										<Anchor point="BOTTOMLEFT" relativeTo="$parent" relativePoint="TOPLEFT" x="38" y="-15"/>
 									</Anchors>
 									<TexCoords left="0.148" right="0.227" top="0.508" bottom="0.777"/>
 								</Texture>
 								<Texture name="$parentChains2" file="Interface\Glues\AccountUpgrade\golden-main">
 									<Size x="20" y="62"/>
 									<Anchors>
-										<Anchor point="BOTTOMRIGHT" relativeTo="$parent" relativePoint="TOPRIGHT" x="-20" y="-15"/>
+										<Anchor point="BOTTOMRIGHT" relativeTo="$parent" relativePoint="TOPRIGHT" x="-38" y="-15"/>
 									</Anchors>
 									<TexCoords left="0.148" right="0.227" top="0.508" bottom="0.777"/>
 								</Texture>
 							</Layer>
 							<Layer level="OVERLAY">
 								<Texture name="$parentBorder" file="Interface\Glues\AccountUpgrade\golden-main">
-									<Size x="208" y="72"/>
+									<Size x="244" y="72"/>
 									<Anchors>
 										<Anchor point="CENTER" x="-2" y="3"/>
 									</Anchors>
@@ -387,7 +507,7 @@
 							<Button name="$parentExpandCollapseButton" parentKey="expandCollapseButton">
 								<Size x="32" y="32"/>
 								<Anchors>
-									<Anchor point="LEFT" relativeTo="$parent" relativePoint="RIGHT" x="-31" y="2"/>
+									<Anchor point="LEFT" relativeTo="$parent" relativePoint="RIGHT" x="-34" y="2"/>
 								</Anchors>
 								<Layers>
 									<Layer level="OVERLAY">
@@ -451,14 +571,7 @@
 									AccountUpgradePanel_UpdateExpandState();
 								end
 							</OnEvent>
-							<OnClick>
-								PlaySound("gsTitleOptionOK");
-								if ( IsVeteranTrialAccount() ) then
-									SubscriptionRequestDialog_Open();
-								else
-									UpgradeAccount();
-								end
-							</OnClick>
+							<OnClick function="CharSelectAccountUpgradeButton_OnClick"/>
 						</Scripts>
 					</Button>
 					<Frame name="CharSelectAccountUpgradeMiniPanel" inherits="UpgradeFrameBorderedTemplate">
@@ -482,7 +595,7 @@
 							</Layer>
 							<Layer level="OVERLAY">
 								<Texture name="$parentUpgradeLogo" parentKey="logo">
-									<Size x="128" y="64"/>
+									<Size x="154" y="77"/>
 									<Anchors>
 										<Anchor point="CENTER" relativeTo="$parent" relativePoint="BOTTOM" x="0" y="0"/>
 									</Anchors>
@@ -498,21 +611,21 @@
 					<Frame name="CharSelectAccountUpgradePanel" inherits="UpgradeFrameBorderedTemplate">
 						<Size x="200" y="250"/>
 						<Anchors>
-							<Anchor point="TOP" relativeTo="CharSelectAccountUpgradeButton" relativePoint="BOTTOM" x="0" y="-40"/>
+							<Anchor point="TOP" relativeTo="CharSelectAccountUpgradeButton" relativePoint="BOTTOM" x="0" y="-47"/>
 						</Anchors>
 						<Layers>
 							<Layer level="BACKGROUND" textureSubLevel="-1">
 								<Texture name="$parentChains1" file="Interface\Glues\AccountUpgrade\golden-main">
-									<Size x="20" y="62"/>
+									<Size x="20" y="67"/>
 									<Anchors>
-										<Anchor point="BOTTOMLEFT" relativeTo="$parent" relativePoint="TOPLEFT" x="18" y="-10"/>
+										<Anchor point="BOTTOMLEFT" relativeTo="$parent" relativePoint="TOPLEFT" x="18" y="-3"/>
 									</Anchors>
 									<TexCoords left="0.148" right="0.227" top="0.293" bottom="0.508"/>
 								</Texture>
 								<Texture name="$parentChains2" file="Interface\Glues\AccountUpgrade\golden-main">
-									<Size x="20" y="62"/>
+									<Size x="20" y="67"/>
 									<Anchors>
-										<Anchor point="BOTTOMRIGHT" relativeTo="$parent" relativePoint="TOPRIGHT" x="-18" y="-10"/>
+										<Anchor point="BOTTOMRIGHT" relativeTo="$parent" relativePoint="TOPRIGHT" x="-18" y="-3"/>
 									</Anchors>
 									<TexCoords left="0.148" right="0.227" top="0.293" bottom="0.508"/>
 								</Texture>
@@ -530,7 +643,7 @@
 							</Layer>
 							<Layer level="OVERLAY">
 								<Texture name="$parentUpgradeLogo" parentKey="logo">
-									<Size x="128" y="64"/>
+									<Size x="154" y="77"/>
 									<Anchors>
 										<Anchor point="CENTER" relativeTo="$parent" relativePoint="TOP" x="0" y="10"/>
 									</Anchors>
@@ -1176,341 +1289,92 @@
 							</Layer>
 						</Layers>
 					</Frame>
-					<Button name="CharacterServicesTokenWoDFree" frameLevel="3" hidden="true">
-						<Size x="72" y="68"/>
+
+					<Frame parentKey="WarningText" frameLevel="2" hidden="true">
+						<Size x="340" y="20"/>
 						<Anchors>
-							<Anchor point="TOPRIGHT" relativeTo="CharacterSelectCharacterFrame" relativePoint="TOPLEFT" x="-25" y="-20"/>
+							<Anchor point="TOP" relativeTo="CharacterSelectUI" relativePoint="TOP" x="-70" y="-20"/>
 						</Anchors>
 						<Layers>
-							<Layer level="BORDER" textureSubLevel="3">
-								<Texture parentKey="Icon">
-									<Size x="48" y="48" />
-									<Anchors>
-										<Anchor point="TOP" x="0" y="-4"/>
-									</Anchors>
-								</Texture>
-							</Layer>
 							<Layer level="ARTWORK">
-								<Texture parentKey="IconBorder" inherits="services-ring-wod">
-									<Anchors>
-										<Anchor point="TOP" />
-									</Anchors>
-								</Texture>
-							</Layer>
-							<Layer level="BORDER" textureSubLevel="2">
-								<Texture parentKey="Glow" inherits="services-ring-large-glow" alpha="0.8">
-									<Size x="196" y="193"/>	
-									<Anchors>
-										<Anchor point="CENTER" relativeKey="$parent.IconBorder" x="2" y="4"/>
-									</Anchors>
-								</Texture>
-							</Layer>
-						</Layers>
-						<Frames>
-							<Frame parentKey="GlowSpin" hidden="true">
-								<Size x="253" y="256"/>
-								<Anchors>
-									<Anchor point="CENTER" relativeKey="$parent.IconBorder" x="2" y="4"/>
-								</Anchors>
-								<Layers>
-									<Layer level="OVERLAY">
-										<Texture inherits="services-ring-large-glowspin" setAllPoints="true" alpha="0.09" alphaMode="ADD" />
-									</Layer>
-								</Layers>
-								<Animations>
-									<AnimationGroup parentKey="SpinAnim" looping="REPEAT">
-										<Rotation order="1" duration="15" degrees="-360" x="2" y="4"/>
-									</AnimationGroup>
-								</Animations>
-							</Frame>
-							<Frame parentKey="GlowPulse" hidden="true">
-								<Size x="145" y="138"/>
-								<Anchors>
-									<Anchor point="CENTER" relativeKey="$parent.IconBorder"/>
-								</Anchors>
-								<Layers>
-									<Layer level="OVERLAY">
-										<Texture inherits="services-ring-large-glowpulse" setAllPoints="true" alpha=".75" alphaMode="ADD" />
-									</Layer>
-									<Layer level="OVERLAY" textureSubLevel="1">
-										<Texture inherits="services-ring-large-glowpulse" setAllPoints="true" alpha=".5" alphaMode="ADD" />
-									</Layer>
-								</Layers>
-								<Animations>
-									<AnimationGroup parentKey="PulseAnim" looping="BOUNCE">
-										<Alpha change="-1" duration="1.5" order="1"/>
-									</AnimationGroup>
-								</Animations>
-							</Frame>
-							<Frame parentKey="Highlight" hidden="true">
-								<Size x="72" y="60"/>
-								<Anchors>
-									<Anchor point="TOP"/>
-								</Anchors>
-								<Layers>
-									<Layer level="BORDER" textureSubLevel="2">
-										<Texture parentKey="Icon" alpha="0.15" alphaMode="ADD">
-											<Size x="48" y="48" />
-											<Anchors>
-												<Anchor point="TOP" x="0" y="-4"/>
-											</Anchors>
-										</Texture>
-									</Layer>
-									<Layer level="ARTWORK">
-										<Texture parentKey="IconBorder" inherits="services-ring-wod" alpha="0.15" alphaMode="ADD">
-											<Anchors>
-												<Anchor point="TOP" />
-											</Anchors>
-										</Texture>
-									</Layer>
-								</Layers>
-							</Frame>
-							<Frame parentKey="PopupFrame" useParentLevel="true" hidden="true">
-								<Size x="400" y="215"/>
-								<Anchors>
-									<Anchor point="TOPRIGHT" relativePoint="CENTER" x="8" y="26"/>
-								</Anchors>
-								<Layers>
-									<Layer level="BACKGROUND">
-										<Texture file="Interface\Store\services-popup-bg" horizTile="true" vertTile="true">
-											<Anchors>
-												<Anchor point="TOPLEFT" x="5" y="-25" />
-												<Anchor point="BOTTOMRIGHT" x="-10" y="5" />
-											</Anchors>
-										</Texture>
-									</Layer>
-									<Layer level="BORDER" textureSubLevel="1">
-										<Texture parentKey="TopLeft" inherits="services-popup-topleft">
-											<Anchors>
-												<Anchor point="TOPLEFT" x="-2" y="0"/>
-											</Anchors>
-										</Texture>
-										<Texture parentKey="TopRight" inherits="services-popup-topright">
-											<Anchors>
-												<Anchor point="TOPRIGHT"/>
-											</Anchors>
-										</Texture>
-										<Texture parentKey="BottomLeft" inherits="services-popup-botleft">
-											<Anchors>
-												<Anchor point="BOTTOMLEFT"/>
-											</Anchors>
-										</Texture>
-										<Texture parentKey="BottomRight" inherits="services-popup-botright">
-											<Anchors>
-												<Anchor point="BOTTOMRIGHT"/>
-											</Anchors>
-										</Texture>
-									</Layer>
-									<Layer level="BORDER">
-										<Texture parentKey="Top" inherits="services-popup-top">
-											<Anchors>
-												<Anchor point="LEFT" relativeKey="$parent.TopLeft" relativePoint="RIGHT"/>
-												<Anchor point="RIGHT" relativeKey="$parent.TopRight" relativePoint="LEFT"/>
-											</Anchors>
-										</Texture>
-										<Texture parentKey="Bottom" inherits="services-popup-bot">
-											<Anchors>
-												<Anchor point="LEFT" relativeKey="$parent.BottomLeft" relativePoint="RIGHT"/>
-												<Anchor point="RIGHT" relativeKey="$parent.BottomRight" relativePoint="LEFT"/>
-											</Anchors>
-										</Texture>
-										<Texture parentKey="Left" file="Interface\Store\services-popup-left">
-											<Anchors>
-												<Anchor point="TOPLEFT" relativeKey="$parent.TopLeft" relativePoint="BOTTOMLEFT" x="2" y="0"/>
-												<Anchor point="BOTTOMLEFT" relativeKey="$parent.BottomLeft" relativePoint="TOPLEFT"/>
-											</Anchors>
-										</Texture>
-										<Texture parentKey="Right" file="Interface\Store\services-popup-right">
-											<Anchors>
-												<Anchor point="TOPRIGHT" relativeKey="$parent.TopRight" relativePoint="BOTTOMRIGHT"/>
-												<Anchor point="BOTTOMRIGHT" relativeKey="$parent.BottomRight" relativePoint="TOPRIGHT"/>
-											</Anchors>
-										</Texture>
-									</Layer>
-									<Layer level="ARTWORK">
-										<FontString parentKey="Title" inherits="GameFontNormalHugeOutline" text="CHARACTER_UPGRADE_FREE_CHARACTER_UPGRADE" justifyH="CENTER" justifyV="TOP">
-											<Size x="240" y="0"/>
-											<Anchors>
-												<Anchor point="TOP" x="0" y="-50"/>
-											</Anchors>
-										</FontString>
-										<FontString parentKey="Description" inherits="GameFontNormalMed2" text="CHARACTER_UPGRADE_FREE_CHARACTER_UPGRADE_DESCRIPTION" justifyH="CENTER" justivyV="TOP">
-											<Size x="380" y="0"/>
-											<Anchors>
-												<Anchor point="TOP" x="0" y="-110"/>
-											</Anchors>
-											<Color r="1" g="1" b="1"/>
-										</FontString>
-									</Layer>
-								</Layers>
-								<Frames>
-									<Button parentKey="GetStartedButton" inherits="GlueButtonSmallTemplate" text="CHARACTER_UPGRADE_POPUP_GET_STARTED">
-										<Size x="180" y="34"/>
-										<Anchors>
-											<Anchor point="BOTTOM" x="-50" y="20"/>
-										</Anchors>
-										<Scripts>
-											<OnClick>
-												PlaySound("igMainMenuOptionCheckBoxOn");
-												C_SharedCharacterServices.SetPopupSeen(true);
-												CharacterUpgradeFlow:SetTarget(true);
-												CharSelectServicesFlowFrame:Show();
-												CharacterServicesMaster_SetFlow(CharacterServicesMaster, CharacterUpgradeFlow);
-											</OnClick>
-										</Scripts>
-									</Button>
-									<Button parentKey="LaterButton" inherits="GlueButtonSmallTemplate" text="CHARACTER_UPGRADE_POPUP_LATER">
-										<Size x="100" y="34"/>
-										<Anchors>
-											<Anchor point="BOTTOM" x="80" y="20"/>
-										</Anchors>
-										<Scripts>
-											<OnClick>
-												PlaySound("igMainMenuOptionCheckBoxOn");
-												C_SharedCharacterServices.SetPopupSeen(true);
-												CharacterServicesMaster_UpdateServiceButton();
-											</OnClick>
-										</Scripts>
-									</Button>
-								</Frames>
-								<Scripts>
-									<OnLoad>
-										self.Description:SetSpacing(3);
-									</OnLoad>
-								</Scripts>
-							</Frame>
-						</Frames>
-						<Scripts>
-							<OnClick>
-								CharacterUpgradeFlow:SetTarget(true);
-								CharSelectServicesFlowFrame:Show();
-								CharacterServicesMaster_SetFlow(CharacterServicesMaster, CharacterUpgradeFlow);
-							</OnClick>
-							<OnEnter function="CharacterServicesTokenWoDFree_OnEnter"/>
-							<OnLeave>
-								self.Highlight:Hide();
-								GlueTooltip:Hide();
-							</OnLeave>
-							<OnShow>
-								SetPortraitToTexture(self.Icon, "Interface\\Icons\\achievement_level_90");
-								SetPortraitToTexture(self.Highlight.Icon, "Interface\\Icons\\achievement_level_90");
-							</OnShow>
-						</Scripts>
-					</Button>
-					<Button name="CharacterServicesTokenNormal" frameLevel="3" hidden="true">
-						<Size x="59" y="60"/>
-						<Anchors>
-							<Anchor point="TOPRIGHT" relativeTo="CharacterSelectCharacterFrame" relativePoint="TOPLEFT" x="-18" y="-2"/>
-						</Anchors>
-						<Layers>
-							<Layer level="BORDER">
-								<Texture parentKey="Icon">
-									<Size x="48" y="48" />
-									<Anchors>
-										<Anchor point="TOP" x="0" y="-4"/>
-									</Anchors>
-								</Texture>
-							</Layer>
-							<Layer level="ARTWORK">
-								<Texture parentKey="IconBorder" inherits="services-ring">
-									<Anchors>
-										<Anchor point="TOP" />
-									</Anchors>
-								</Texture>
-							</Layer>
-							<Layer level="OVERLAY" textureSubLevel="1">
-								<Texture parentKey="Ring" file="Interface\Common\RingBorder" hidden="true">
-									<Size x="26" y="26"/>
-									<Anchors>
-										<Anchor point="BOTTOMRIGHT" x="1" y="2"/>
-									</Anchors>
-								</Texture>
-								<FontString parentKey="Number" inherits="GameTooltipHeaderText" hidden="true">
-									<Anchors>
-										<Anchor point="CENTER" relativeKey="$parent.Ring" relativePoint="CENTER" x="0" y="0"/>
-									</Anchors>
-									<Color r="1.0" g="0.82" b="0"/>
+								<FontString parentKey="WarningString" inherits="GameFontNormalMed2" text="CHARACTER_UPGRADE_KRW_STATIC_WARNING" justifyV="TOP">
+									<Size x="340" y="0"/>
+									<Color r="1" g="1" b="1"/>
 								</FontString>
 							</Layer>
-							<Layer level="OVERLAY">
-								<Texture parentKey="NumberBackground">
-									<Size x="16" y="16"/>
+						</Layers>
+						<Scripts>
+							<OnLoad>
+								self:SetHeight(self.WarningString:GetHeight());
+							</OnLoad>
+						</Scripts>
+					</Frame>
+					
+					<Frame name="UpgradePopupFrame" frameLevel="3" hidden="true">
+						<Size x="430" y="250"/>
+						<Layers>
+							<Layer level="BACKGROUND">
+								<Texture parentKey="Top">
 									<Anchors>
-										<Anchor point="CENTER" relativeKey="$Parent.Ring" relativePoint="CENTER"/>
+										<Anchor point="TOPLEFT" x="0" y="0"/>
 									</Anchors>
-									<Color r="0" g="0" b="0" a=".75"/>
 								</Texture>
+								<Texture parentKey="Bottom">
+									<Size x="430" y="0"/>
+									<Anchors>
+										<Anchor point="BOTTOMLEFT" x="0" y="0"/>
+									</Anchors>
+								</Texture>
+								<Texture parentKey="Middle">
+									<Anchors>
+										<Anchor point="TOPLEFT" relativeKey="$parent.Top" relativePoint="BOTTOMLEFT" x="0" y="0"/>
+										<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Bottom" relativePoint="TOPRIGHT" x="0" y="0"/>
+									</Anchors>
+								</Texture>
+							</Layer>
+							<Layer level="ARTWORK">
+								<FontString parentKey="Title" inherits="GameFontNormalHugeOutline" justifyH="CENTER" justifyV="TOP">
+									<Size x="270" y="0"/>
+									<Anchors>
+										<Anchor point="TOP" x="0" y="-45"/>
+									</Anchors>
+								</FontString>
+								<FontString parentKey="Description" inherits="GameFontNormalMed2" justifyH="CENTER" justivyV="TOP">
+									<Size x="360" y="0"/>
+									<Anchors>
+										<Anchor point="TOP" relativeKey="$parent.Title" relativePoint="BOTTOM" x="0" y="-20"/>
+									</Anchors>
+									<Color r="1" g="1" b="1"/>
+								</FontString>
 							</Layer>
 						</Layers>
 						<Frames>
-							<Frame parentKey="WarningText" frameLevel="2" hidden="true">
-								<Size x="340" y="20"/>
+							<Button parentKey="GetStartedButton" inherits="GlueButtonSmallTemplate" text="CHARACTER_UPGRADE_POPUP_GET_STARTED">
+								<Size x="180" y="36"/>
 								<Anchors>
-									<Anchor point="TOP" relativeTo="CharacterSelectUI" relativePoint="TOP" x="-70" y="-20"/>
+									<Anchor point="TOP" relativeKey="$parent.Description" relativePoint="BOTTOM" x="-50" y="-20"/>
 								</Anchors>
-								<Layers>
-									<Layer level="ARTWORK">
-										<FontString parentKey="WarningString" inherits="GameFontNormalMed2" text="CHARACTER_UPGRADE_KRW_STATIC_WARNING" justifyV="TOP">
-											<Size x="340" y="0"/>
-											<Anchor point="TOP"/>
-											<Color r="1" g="1" b="1"/>
-										</FontString>
-									</Layer>
-								</Layers>
 								<Scripts>
-									<OnShow>
-										self:SetHeight(self.WarningString:GetHeight());
-									</OnShow>
+									<OnClick function="CharacterUpgradePopup_OnStartClick"/>
 								</Scripts>
-							</Frame>
-							<Frame parentKey="Highlight" hidden="true">
-								<Size x="59" y="60"/>
+							</Button>
+							<Button parentKey="LaterButton" inherits="GlueButtonSmallTemplate" text="CHARACTER_UPGRADE_POPUP_LATER">
+								<Size x="100" y="36"/>
 								<Anchors>
-									<Anchor point="TOP"/>
+									<Anchor point="TOP" relativeKey="$parent.Description" relativePoint="BOTTOM" x="80" y="-20"/>
 								</Anchors>
-								<Layers>
-									<Layer level="OVERLAY">
-										<Texture parentKey="Icon" alpha="0.15" alphaMode="ADD">
-											<Size x="48" y="48" />
-											<Anchors>
-												<Anchor point="TOP" x="0" y="-4"/>
-											</Anchors>
-										</Texture>
-									</Layer>
-									<Layer level="OVERLAY" textureSubLevel="1">
-										<Texture parentKey="IconBorder" inherits="services-ring" alpha="0.15" alphaMode="ADD">
-											<Anchors>
-												<Anchor point="TOP" />
-											</Anchors>
-										</Texture>
-									</Layer>
-								</Layers>
-							</Frame>
+								<Scripts>
+									<OnClick function="CharacterUpgradePopup_OnLaterClick"/>
+								</Scripts>
+							</Button>
 						</Frames>
 						<Scripts>
-							<OnClick>
-								CharacterUpgradeFlow:SetTarget(false);
-								CharSelectServicesFlowFrame:Show();
-								CharacterServicesMaster_SetFlow(CharacterServicesMaster, CharacterUpgradeFlow);
-							</OnClick>
-							<OnShow>
-								self.WarningText:SetShown (C_PurchaseAPI.GetCurrencyID() == CURRENCY_KRW);
-								SetPortraitToTexture(self.Icon, "Interface\\Icons\\achievement_level_90");
-								SetPortraitToTexture(self.Highlight.Icon, "Interface\\Icons\\achievement_level_90");
-							</OnShow>
-							<OnEnter>
-								self.Highlight:Show();
-				  				GlueTooltip:SetOwner(self, "ANCHOR_LEFT");
-				   				GlueTooltip:AddLine(CHARACTER_UPGRADE_TOKEN_TITLE, 1.0, 1.0, 1.0);
-				   				GlueTooltip:AddLine(CHARACTER_UPGRADE_TOKEN_DESCRIPTION, nil, nil, nil, 1, 1);
-				  				GlueTooltip:Show();
-							</OnEnter>
-							<OnLeave>
-								self.Highlight:Hide();
-								GlueTooltip:Hide();
-							</OnLeave>
+							<OnLoad>
+								self.Description:SetSpacing(3);
+							</OnLoad>
 						</Scripts>
-					</Button>
+					</Frame>
+				
 					<Frame name="CharSelectServicesFlowFrame" frameStrata="DIALOG" enableMouse="true" hidden="true">
 						<Size x="421" y="724"/>
 						<Anchors>

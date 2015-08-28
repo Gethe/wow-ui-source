@@ -1216,6 +1216,26 @@
 					</OnEvent>
 				</Scripts>
 			</CheckButton>
+			<CheckButton name="$parentAJAlerts" inherits="InterfaceOptionsCheckButtonTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentShowAccountAchievments" relativePoint="BOTTOMLEFT" x="0" y="-8"/>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						self.type = CONTROLTYPE_CHECKBOX;
+						self.Text:SetText(SHOW_ADVENTURE_JOURNAL_ALERTS);
+						self.tooltipText = OPTION_TOOLTIP_SHOW_ADVENTURE_JOURNAL_ALERTS;
+						self.defaultValue = "1";
+						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
+						
+						self.GetValue = function (self) return ( GetCVar("showAdventureJournalAlerts") ); end
+						self.SetValue = function (self, value)
+							SetCVar("showAdventureJournalAlerts", value );
+							EJMicroButton_UpdateAlerts(GetCVarBool("showAdventureJournalAlerts"));
+						end
+					</OnLoad>
+				</Scripts>
+			</CheckButton>
 		</Frames>
 		<Scripts>
 			<OnLoad function="InterfaceOptionsDisplayPanel_OnLoad"/>

@@ -430,6 +430,7 @@
 		<xs:attribute name="virtual" type="xs:boolean" default="false"/>
 		<xs:attribute name="setAllPoints" type="xs:boolean" default="false"/>
 		<xs:attribute name="hidden" type="xs:boolean" default="false"/>
+		<xs:attribute name="mixin" type="xs:string"/>
 	</xs:complexType>
 	<xs:element name="LayoutFrame" type="LayoutFrameType"/>
 
@@ -744,6 +745,7 @@
 						<xs:restriction base="xs:float"/>
 					</xs:simpleType>
 				</xs:attribute>
+				<xs:attribute name="drawLayer" type="ui:DRAWLAYER" default="ARTWORK"/>
 			</xs:extension>
 		</xs:complexContent>
 	</xs:complexType>

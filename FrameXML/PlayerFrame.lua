@@ -132,6 +132,16 @@ function PlayerFrame_UpdatePvPStatus()
 			PlaySound("igPVPUpdate");
 		end
 		PlayerPVPIcon:SetTexture("Interface\\TargetingFrame\\UI-PVP-"..factionGroup);
+
+		-- ugly special case handling for mercenary mode
+		if ( UnitIsMercenary("player") ) then
+			if ( factionGroup == "Horde" ) then
+				PlayerPVPIcon:SetTexture("Interface\\TargetingFrame\\UI-PVP-Alliance");
+			elseif ( factionGroup == "Alliance" ) then
+				PlayerPVPIcon:SetTexture("Interface\\TargetingFrame\\UI-PVP-Horde");
+			end
+		end
+		
 		PlayerPVPIcon:Show();
 
 		-- Setup newbie tooltip

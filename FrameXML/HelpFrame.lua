@@ -81,7 +81,7 @@ HelpFrameNavTbl[13] = {	text = KBASE_TOP_ISSUES,
 					};
 HelpFrameNavTbl[14] = {	text = HELP_TICKET_OPEN, -- HELP_TICKET_EDIT
 						icon ="Interface\\HelpFrame\\HelpIcon-OpenTicket",
-						frame = "ticket"
+						frame = "ticketHelp"
 					};
 					
 --THis needs implementing - CHaz
@@ -220,7 +220,6 @@ function HelpFrame_OnEvent(self, event, ...)
 		-- If there are args then the player has a ticket
 		if ( category and ticketDescription ) then
 			-- Has an open ticket
-			HelpFrameOpenTicketEditBox:SetText(ticketDescription);
 			haveTicket = true;
 		else
 			-- the player does not have a ticket
@@ -460,35 +459,21 @@ function HelpFrameStuckHearthstone_Update(self)
 end
 
 --
--- HelpFrameOpenTicket
+-- AccountSecurity
 --
 
-function HelpFrameOpenTicketCancel_OnClick()
-	GetGMTicket();
-	if haveTicket then
-		if not StaticPopup_Visible("HELP_TICKET_ABANDON_CONFIRM") then
-			StaticPopup_Show("HELP_TICKET_ABANDON_CONFIRM");
+function AccountSecurityOpenTicket_OnClick(self)
+	PlaySound("igMainMenuOptionCheckBoxOn");
+	if ( HelpBrowser:HasConnection() ) then
+		local data = HelpFrameNavTbl[self:GetID()];
+		if ( not data.noSelection ) then
+			HelpFrame_SetSelectedButton(self);
 		end
+		HelpFrame_SetFrameByKey(self:GetID());
 	else
-		HelpFrame_ShowFrame(HELPFRAME_OPEN_TICKET);
+		StaticPopup_Show("CONFIRM_LAUNCH_URL", nil, nil, {index = 6});
 	end
 end
-
-function HelpFrameOpenTicketSubmit_OnClick()
-	if ( needMoreHelp ) then
-		GMResponseNeedMoreHelp(HelpFrameOpenTicketEditBox:GetText());
-		needMoreHelp = false;
-	else
-		if ( haveTicket ) then
-			UpdateGMTicket(HelpFrameOpenTicketEditBox:GetText());
-		else
-			NewGMTicket(HelpFrameOpenTicketEditBox:GetText(), needResponse);
-			HelpOpenTicketButton.tutorial:Show();
-		end
-	end
-	HideUIPanel(HelpFrame);
-end
-
 
 --
 -- HelpFrameSubmitBug

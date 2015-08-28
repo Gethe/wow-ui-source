@@ -77,6 +77,23 @@ function BNet_GetPresenceID(name)
 	end	
 end
 
+function BNet_GetToonPresenceID(name)
+	local id = GetAutoCompletePresenceID(name);
+	if (id) then
+		local toonID = select(6, BNGetFriendInfoByID(id));
+		if( toonID ) then
+			return toonID;
+		end
+	end
+	local _, numBNetOnline = BNGetNumFriends();
+	for i = 1, numBNetOnline do
+		local battleTag, _, toonName, toonID = select(3, BNGetFriendInfo(i));
+		if ( (toonName and strcmputf8i(name, toonName) == 0) or (battleTag and strcmputf8i(name, battleTag) == 0) ) then
+			return toonID;
+		end
+	end	
+end
+
 -- BNET toast
 function BNToastFrame_OnEvent(self, event, arg1)
 	if ( event == "BN_FRIEND_ACCOUNT_ONLINE" ) then	

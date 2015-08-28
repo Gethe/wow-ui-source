@@ -764,10 +764,13 @@
 					</Layer>
 				</Layers>
 				<Frames>
-					<Button name="$parentOpenTicket" parentKey="ticketButton" inherits="HelpFrameButtonTemplate" id="14">
+					<Button name="$parentOpenTicket" parentKey="ticketButton" inherits="HelpFrameButtonTemplate" id="6">
 						<Anchors>
 							<Anchor point="BOTTOM" x="0" y="20"/>
 						</Anchors>
+						<Scripts>
+							<OnClick function="AccountSecurityOpenTicket_OnClick"/>
+						</Scripts>
 					</Button>
 				</Frames>
 				<Scripts>
@@ -1199,135 +1202,7 @@
 					</OnShow>
 				</Scripts>
 			</Frame>
-			<Frame name="$parentTicket" hidden="true" parentKey="ticket">
-				<Anchors>
-					<Anchor point="TOPLEFT" relativeTo="$parentMainInset" x="5" y="-5"/>
-					<Anchor point="BOTTOMRIGHT" relativeTo="$parentMainInset" x="-5" y="5"/>
-				</Anchors>
-				<Layers>
-					<Layer level="ARTWORK">
-						<FontString name="$parentTitle" parentKey="title" inherits="GameFontNormalLarge" text="HELPFRAME_SUBMIT_TICKET_TITLE" justifyH="LEFT">
-							<Size x="0" y="0"/>
-							<Anchors>
-								<Anchor point="TOPLEFT" x="15" y="-15"/>
-							</Anchors>
-						</FontString>
-						<FontString name="$parentText1" inherits="GameFontHighlight" text="HELPFRAME_OPENTICKET_TEXT" justifyH="LEFT">
-							<Size x="710" y="0"/>
-							<Anchors>
-								<Anchor point="TOPLEFT" relativeTo="$parentTitle" relativePoint="BOTTOMLEFT" x="0" y="-20"/>
-							</Anchors>
-						</FontString>
-					</Layer>
-				</Layers>
-				<Frames>
-					<Button name="$parentSubmit" inherits="GameMenuButtonTemplate" text="SUBMIT" parentKey="submitButton">
-						<Size x="160" y="30"/>
-						<Anchors>
-							<Anchor point="BOTTOM" x="-100" y="15"/>
-						</Anchors>
-						<Scripts>
-							<OnClick function="HelpFrameOpenTicketSubmit_OnClick"/>
-						</Scripts>
-					</Button>
-					<Button name="$parentCancel" inherits="GameMenuButtonTemplate" text="CANCEL" parentKey="cancelButton">
-						<Size x="160" y="30"/>
-						<Anchors>
-							<Anchor point="BOTTOM" x="100" y="15"/>
-						</Anchors>
-						<Scripts>
-							<OnClick function="HelpFrameOpenTicketCancel_OnClick"/>
-						</Scripts>
-					</Button>
-					<ScrollFrame name="$parentScrollFrame" inherits="UIPanelScrollFrameCodeTemplate">
-						<Size x="695" y="220"/>
-						<Anchors>
-							<Anchor point="BOTTOM" x="0" y="70"/>
-						</Anchors>
-						<Layers>
-							<Layer level="OVERLAY">
-								<FontString name="$parentCharacterCount" inherits="GameFontDisableLarge" parentKey="charCount">
-									<Anchors>
-										<Anchor point="BOTTOMRIGHT" x="-15" y="0"/>
-									</Anchors>
-								</FontString>
-							</Layer>
-						</Layers>
-						<Frames>
-							<Slider name="$parentScrollBar" inherits="UIPanelScrollBarTemplate" parentKey="ScrollBar">
-								<Anchors>
-									<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" x="-13" y="-16"/>
-									<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMRIGHT" x="-13" y="16"/>
-								</Anchors>
-							</Slider>
-						</Frames>
-						<ScrollChild>
-							<EditBox name="HelpFrameOpenTicketEditBox" multiLine="true" letters="500" autoFocus="false">
-								<Size x="420" y="220"/>
-								<Scripts>
-									<OnTextChanged>
-										ScrollingEdit_OnTextChanged(self, self:GetParent());
-										self:GetParent().charCount:SetText(self:GetMaxLetters() - self:GetNumLetters());
-										if self:GetNumLetters() > 0 then
-											self.submitButton:Enable();
-										end
-									</OnTextChanged>
-									<OnCursorChanged function="ScrollingEdit_OnCursorChanged"/>
-									<OnUpdate>
-										ScrollingEdit_OnUpdate(self, elapsed, self:GetParent());
-									</OnUpdate>
-									<OnEscapePressed function="EditBox_ClearFocus"/>
-									<OnShow function="EditBox_SetFocus"/>
-								</Scripts>
-								<FontString inherits="ChatFontNormal"/>
-							</EditBox>
-						</ScrollChild>
-					</ScrollFrame>
-					<Frame>
-						<Anchors>
-							<Anchor point="TOPLEFT" relativeTo="$parentScrollFrame" x="-7" y="7"/>
-							<Anchor point="BOTTOMRIGHT" relativeTo="$parentScrollFrame" x="7" y="-7"/>
-						</Anchors>
-						<Backdrop bgFile="Interface\Tooltips\UI-Tooltip-Background" edgeFile="Interface\Tooltips\UI-Tooltip-Border" tile="true">
-							<EdgeSize>
-								<AbsValue val="16"/>
-							</EdgeSize>
-							<TileSize>
-								<AbsValue val="16"/>
-							</TileSize>
-							<BackgroundInsets>
-								<AbsInset left="5" right="5" top="5" bottom="5"/>
-							</BackgroundInsets>
-						</Backdrop>
-						<Scripts>
-							<OnLoad>
-								self:SetBackdropBorderColor(TOOLTIP_DEFAULT_COLOR.r, TOOLTIP_DEFAULT_COLOR.g, TOOLTIP_DEFAULT_COLOR.b);
-								self:SetBackdropColor(0, 0, 0);
-							</OnLoad>
-						</Scripts>
-					</Frame>
-				</Frames>
-				<Scripts>
-					<OnLoad>
-						tinsert(HelpFrameWindows, self);
-						self.editbox = HelpFrameOpenTicketEditBox;
-						HelpFrameOpenTicketEditBox.submitButton = self.submitButton;
-					</OnLoad>
-					<OnShow>
-						if self.editbox:GetNumLetters() > 0 then
-							self.submitButton:Enable();
-						else
-							self.submitButton:Disable();
-						end
-						if (HelpBrowser:HasConnection()) then
-							HelpBrowser:Show();
-							HelpBrowser:NavigateHome("GMTicket");
-							HelpBrowser.homepage = "GMTicket";
-							self:Hide();
-						end
-					</OnShow>
-				</Scripts>
-			</Frame>
+
 			<Browser name="HelpBrowser" inherits="BrowserTemplate" >
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeTo="$parentMainInset" x="4" y="-2"/>

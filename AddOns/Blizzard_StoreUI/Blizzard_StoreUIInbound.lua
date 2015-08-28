@@ -24,6 +24,10 @@ function StoreFrame_SetTokenCategory()
 	StoreFrame:SetAttribute("settokencategory");
 end
 
+function StoreFrame_SetGamesCategory()
+	StoreFrame:SetAttribute("setgamescategory");
+end
+
 if (InGlue()) then
 	function StoreFrame_GetVASErrorMessage(guid, errorList)
 		local data = {};

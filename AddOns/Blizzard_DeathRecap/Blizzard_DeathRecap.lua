@@ -114,7 +114,6 @@ end
 function DeathRecapFrame_Spell_OnEnter(self)
 	if ( self.spellId ) then 
 		GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
-		GameTooltip:SetMinimumWidth(256, true);
 		GameTooltip:SetSpellByID(self.spellId, false, false, false, -1, true);
 		GameTooltip:Show();
 	end
@@ -122,12 +121,11 @@ end
 
 function DeathRecapFrame_Amount_OnEnter(self)
 	GameTooltip:SetOwner(self, "ANCHOR_LEFT");
-	GameTooltip:SetMinimumWidth(256, true);
 	GameTooltip:ClearLines();
 	if( self.amount ) then
 		local valueStr = self.school and format(TEXT_MODE_A_STRING_VALUE_SCHOOL, self.amount, CombatLog_String_SchoolString(self.school)) or
 						 self.amount;	
-		GameTooltip:AddLine(format(DEATH_RECAP_DAMAGE_TT, valueStr, self.dmgExtraStr), 1, 0, 0, true);
+		GameTooltip:AddLine(format(DEATH_RECAP_DAMAGE_TT, valueStr, self.dmgExtraStr), 1, 0, 0, false);
 	end
 	
 	if( self.spellName ) then
