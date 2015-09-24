@@ -9,7 +9,7 @@ HUNTER_TRACKING = 1;
 TOWNSFOLK = 2;
 
 GARRISON_ALERT_CONTEXT_BUILDING = 1;
-GARRISON_ALERT_CONTEXT_MISSION = 2;
+GARRISON_ALERT_CONTEXT_MISSION = { [LE_FOLLOWER_TYPE_GARRISON_6_0] = 2, [LE_FOLLOWER_TYPE_SHIPYARD_6_2] = 4 };
 GARRISON_ALERT_CONTEXT_INVASION = 3;
 
 LFG_EYE_TEXTURES = { };
@@ -505,6 +505,7 @@ function GarrisonLandingPageMinimapButton_OnLoad(self)
 	self:RegisterEvent("GARRISON_ARCHITECT_OPENED");
 	self:RegisterEvent("GARRISON_MISSION_FINISHED");
 	self:RegisterEvent("GARRISON_MISSION_NPC_OPENED");
+	self:RegisterEvent("GARRISON_SHIPYARD_NPC_OPENED");
 	self:RegisterEvent("GARRISON_INVASION_AVAILABLE");
 	self:RegisterEvent("GARRISON_INVASION_UNAVAILABLE");
 	self:RegisterEvent("SHIPMENT_UPDATE");
@@ -520,9 +521,12 @@ function GarrisonLandingPageMinimapButton_OnEvent(self, event, ...)
 	elseif ( event == "GARRISON_BUILDING_ACTIVATED" or event == "GARRISON_ARCHITECT_OPENED") then
 		GarrisonMinimap_HidePulse(self, GARRISON_ALERT_CONTEXT_BUILDING);
 	elseif ( event == "GARRISON_MISSION_FINISHED" ) then
-		GarrisonMinimapMission_ShowPulse(self);
+		local missionID = ...;
+		GarrisonMinimapMission_ShowPulse(self, missionID);
 	elseif ( event == "GARRISON_MISSION_NPC_OPENED" ) then
-		GarrisonMinimap_HidePulse(self, GARRISON_ALERT_CONTEXT_MISSION);
+		GarrisonMinimap_HidePulse(self, GARRISON_ALERT_CONTEXT_MISSION[LE_FOLLOWER_TYPE_GARRISON_6_0]);
+	elseif ( event == "GARRISON_SHIPYARD_NPC_OPENED" ) then
+		GarrisonMinimap_HidePulse(self, GARRISON_ALERT_CONTEXT_MISSION[LE_FOLLOWER_TYPE_SHIPYARD_6_2]);
 	elseif (event == "GARRISON_INVASION_AVAILABLE") then
 		GarrisonMinimapInvasion_ShowPulse(self);
 	elseif (event == "GARRISON_INVASION_UNAVAILABLE") then
@@ -600,8 +604,9 @@ function GarrisonMinimapBuilding_ShowPulse(self)
 	self.MinimapLoopPulseAnim:Play();
 end
 
-function GarrisonMinimapMission_ShowPulse(self)
-	GarrisonMinimap_SetPulseLock(self, GARRISON_ALERT_CONTEXT_MISSION, true);
+function GarrisonMinimapMission_ShowPulse(self, missionID)
+	local followerType = C_Garrison.GetFollowerTypeByMissionID(missionID);
+	GarrisonMinimap_SetPulseLock(self, GARRISON_ALERT_CONTEXT_MISSION[followerType], true);
 	self.MinimapLoopPulseAnim:Play();
 end
 

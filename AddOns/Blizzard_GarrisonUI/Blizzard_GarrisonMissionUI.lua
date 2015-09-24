@@ -1442,7 +1442,7 @@ function GarrisonFollowerMissionComplete:BeginAnims(animIndex)
 	self.encounterIndex = 1;
 end
 
-function GarrisonFollowerMissionComplete:SetFollowerData(follower, name, classAtlas, portraitIconID)
+function GarrisonFollowerMissionComplete:SetFollowerData(follower, name, className, classAtlas, portraitIconID)
 	GarrisonFollowerPortrait_Set(follower.PortraitFrame.Portrait, portraitIconID);
 	follower.Name:SetText(name);
 	follower.Class:SetAtlas(classAtlas);

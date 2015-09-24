@@ -1138,7 +1138,7 @@
 						<FontString parentKey="CannotBattleText" inherits="GameFontNormal" text="BATTLE_PET_CANNOT_BATTLE">
 							<Anchors>
 								<Anchor point="TOPLEFT" relativeTo="$parentAbilitiesBG1"/>
-								<Anchor point="BOTTOMRIGHT" relativeTo="$parentAbilitiesBG1"/>
+								<Anchor point="BOTTOMRIGHT" relativeTo="$parentAbilitiesBG3" x="-8" y="0"/>
 							</Anchors>
 						</FontString>
 					</Layer>

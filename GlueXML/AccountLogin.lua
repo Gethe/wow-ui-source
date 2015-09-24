@@ -1111,4 +1111,12 @@ function CheckSystemRequirements( previousCheck )
 		end
 		previousCheck = nil;
 	end
+
+	if ( not previousCheck or previousCheck == "DRIVER" ) then
+		if ( not WillShaderModelBeSupported() ) then
+			GlueDialog_Show("SHADER_MODEL_TO_BE_UNSUPPORTED");
+			return;
+		end
+		previousCheck = nil;
+	end
 end

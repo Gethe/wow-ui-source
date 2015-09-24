@@ -467,8 +467,10 @@ function OpenMail_Update()
 	if ( CanComplainInboxItem(InboxFrame.openMailID) ) then
 		OpenMailReportSpamButton:Enable();
 		OpenMailReportSpamButton:Show();
+		OpenMailSender:SetPoint("BOTTOMRIGHT", OpenMailReportSpamButton, "BOTTOMLEFT" , -5, 0);
 	else
 		OpenMailReportSpamButton:Hide();
+		OpenMailSender:SetPoint("BOTTOMRIGHT", OpenMailFrame, "TOPRIGHT" , -12, -54);
 	end
 
 	-- Setup mail item

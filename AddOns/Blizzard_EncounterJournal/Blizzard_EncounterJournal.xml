@@ -2665,7 +2665,7 @@
 				</Frames>
 			</Frame>
 			
-			<Frame name="$parentSuggestFrame" setAllPoints="true" parentKey="suggestFrame" hidden="true" useParentLevel="true">
+			<Frame name="$parentSuggestFrame" setAllPoints="true" parentKey="suggestFrame" enableMouse="true" hidden="true" useParentLevel="true">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeTo="$parentInset" x="5" y="-51" />
 					<Anchor point="BOTTOMRIGHT" relativeTo="$parentInset" x="-3" y="0"/>
@@ -2807,7 +2807,7 @@
 								</Anchors>
 								<Scripts>
 									<OnClick>
-										C_AdventureJournal.SetPrimaryOffset(C_AdventureJournal.GetPrimaryOffset()-1);
+										EJSuggestFrame_PrevSuggestion();
 										PlaySoundKitID(858); -- igMainMenuOptionFaerTab
 									</OnClick>
 								</Scripts>
@@ -2823,7 +2823,7 @@
 								</Anchors>
 								<Scripts>
 									<OnClick>
-										C_AdventureJournal.SetPrimaryOffset(C_AdventureJournal.GetPrimaryOffset()+1);
+										EJSuggestFrame_NextSuggestion();
 										PlaySoundKitID(858); --igMainMenuOptionFaerTab
 									</OnClick>
 								</Scripts>
@@ -2862,6 +2862,7 @@
 					<OnLoad function="EJSuggestFrame_OnLoad"/>
 					<OnEvent function="EJSuggestFrame_OnEvent"/>
 					<OnShow function="EJSuggestFrame_OnShow"/>
+					<OnMouseWheel function="EJSuggestFrame_OnMouseWheel"/>
 				</Scripts>
 			</Frame>
 		</Frames>

@@ -49,8 +49,6 @@ function SetItemRef(link, text, button, chatFrame)
 				end
 				if ( ChatEdit_GetActiveWindow() ) then
 					ChatEdit_InsertLink(name);
-				elseif ( HelpFrameOpenTicketEditBox:IsVisible() ) then
-					HelpFrameOpenTicketEditBox:Insert(name);
 				else
 					SendWho(WHO_TAG_EXACT..name);
 				end
@@ -109,8 +107,6 @@ function SetItemRef(link, text, button, chatFrame)
 				end
 				if ( ChatEdit_GetActiveWindow() ) then
 					ChatEdit_InsertLink(name);
-				elseif ( HelpFrameOpenTicketEditBox:IsVisible() ) then
-					HelpFrameOpenTicketEditBox:Insert(name);				
 				end
 				]]
 			elseif ( button == "RightButton" ) then

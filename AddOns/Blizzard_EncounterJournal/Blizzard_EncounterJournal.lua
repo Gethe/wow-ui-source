@@ -2187,6 +2187,28 @@ function EJSuggestFrame_OnShow(self)
 	EJSuggestFrame_RefreshDisplay();
 end
 
+function EJSuggestFrame_NextSuggestion()
+	if ( C_AdventureJournal.GetPrimaryOffset() < C_AdventureJournal.GetNumAvailableSuggestions()-1 ) then
+		C_AdventureJournal.SetPrimaryOffset(C_AdventureJournal.GetPrimaryOffset()+1);
+		PlaySound("igAbiliityPageTurn");
+	end
+end
+
+function EJSuggestFrame_PrevSuggestion()
+	if( C_AdventureJournal.GetPrimaryOffset() > 0 ) then
+		C_AdventureJournal.SetPrimaryOffset(C_AdventureJournal.GetPrimaryOffset()-1);
+		PlaySound("igAbiliityPageTurn");
+	end
+end
+
+function EJSuggestFrame_OnMouseWheel( self, value )
+	if ( value > 0 ) then
+		EJSuggestFrame_PrevSuggestion();
+	else 
+		EJSuggestFrame_NextSuggestion()
+	end
+end
+
 function EJSuggestFrame_OpenFrame()
 	EJ_ContentTab_Select(EncounterJournal.instanceSelect.suggestTab.id);
 	NavBar_Reset(EncounterJournal.navBar);

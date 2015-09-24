@@ -634,9 +634,8 @@ function GarrisonShipyardMissionComplete:AnimBoatDeath(entry)
 			self:PlayExplosionAnim(followerFrame);
 			followerFrame.DestroyedAnim:Play();
 			
-			--local shipColor = followerFrame.Name:GetTextColor();
 			local shipName = followerFrame.Name:GetText();
-			local destroyedMessage = format(GARRISON_FOLLOWER_SHIP_DESTROYED, shipName);
+			local destroyedMessage = format(GARRISON_FOLLOWER_SHIP_DESTROYED, shipName, followerFrame.shipType);
 			DEFAULT_CHAT_FRAME:AddMessage(destroyedMessage, YELLOW_FONT_COLOR.r, YELLOW_FONT_COLOR.g, YELLOW_FONT_COLOR.b);
 		end
 		if (self.skipAnimations) then
@@ -738,8 +737,9 @@ function GarrisonShipyardMissionComplete:BeginAnims(animIndex, missionID)
 	end
 end
 
-function GarrisonShipyardMissionComplete:SetFollowerData(follower, name, classAtlas, portraitIconID, texPrefix)
+function GarrisonShipyardMissionComplete:SetFollowerData(follower, name, className, classAtlas, portraitIconID, texPrefix)
 	follower.Name:SetText(format(GARRISON_SHIPYARD_SHIP_NAME, name));
+	follower.shipType = className;
 	if (follower.Name:GetNumLines() > 1) then
 		follower.NameBG:SetSize(132, 33);
 	else

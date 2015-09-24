@@ -178,7 +178,7 @@ function RaidInfoFrame_Update(scrollToSelected)
 				instanceName, instanceID, instanceReset, instanceDifficulty, locked, extended, instanceIDMostSig, isRaid, maxPlayers, difficultyName = GetSavedInstanceInfo(index);
 				frame.worldBossID = nil;
 				frame.instanceID = instanceID;
-				frame.longInstanceID = string.format("%x%x", instanceIDMostSig, instanceID);
+				frame.longInstanceID = string.format("%s_%s", instanceIDMostSig, instanceID);
 			else
 				instanceName, instanceID, instanceReset = GetSavedWorldBossInfo(index - savedInstances);
 				locked = true;
@@ -275,7 +275,7 @@ function RaidInfoFrame_UpdateSelectedIndex()
 		local savedInstances = GetNumSavedInstances();
 		for index=1, savedInstances do
 			local instanceName, instanceID, instanceReset, instanceDifficulty, locked, extended, instanceIDMostSig = GetSavedInstanceInfo(index);
-			if ( format("%x%x", instanceIDMostSig, instanceID) == RaidInfoFrame.selectedRaidID ) then
+			if ( string.format("%s_%s", instanceIDMostSig, instanceID) == RaidInfoFrame.selectedRaidID ) then
 				RaidInfoFrame.selectedIndex = index;
 				RaidInfoExtendButton:Enable();
 				if ( extended ) then

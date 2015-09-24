@@ -567,11 +567,24 @@
 				</Layer>
 			</Layers>
 		</Frame>
+		<Button name="StoreProductCardSpecialMagnifierTemplate" enableMouse="true" alpha="0" virtual="true" parentArray="SpecialMagnifiers">
+			<Size x="46" y="47" />
+			<NormalTexture atlas="shop-games-magnifyingglass" />
+			<Scripts>
+				<OnShow>
+					self:SetFrameLevel(self:GetParent().Model:GetFrameLevel()+1);
+				</OnShow>
+			</Scripts>
+		</Button>
 		<Button name="StoreProductCardTemplate" virtual="true" hidden="true">
 			<Size x="146" y="209" />
 			<Layers>
 				<Layer level="BACKGROUND">
-					<Texture parentKey="Card" inherits="store-card" setAllPoints="true"/>
+					<Texture parentKey="Card" inherits="store-card">
+						<Anchors>
+							<Anchor point="CENTER" x="0" y="0"/>
+						</Anchors>
+					</Texture>
 				</Layer>
 				<Layer level="BACKGROUND" textureSubLevel="2">
 					<Texture parentKey="Shadows" inherits="store-card-petshadow" hidden="true">
@@ -584,7 +597,7 @@
 					<Texture parentKey="Icon" hidden="true">
 						<Size x="63" y="63" />
 						<Anchors>
-							<Anchor point="TOP" x="0" y="-36" />
+							<Anchor point="CENTER" relativePoint="TOP" x="0" y="-66" />
 						</Anchors>
 					</Texture>
 				</Layer>
@@ -976,9 +989,9 @@
 						showPreview = IsModifiedClick("DRESSUP");
 					end
 					if ( showPreview ) then
-						local name, _, modelID = select(10,C_PurchaseAPI.GetEntryInfo(self:GetID()));
-						if ( modelID ) then
-							Outbound.ShowPreview(name, modelID);
+						local entryInfo = C_PurchaseAPI.GetEntryInfo(self:GetID());
+						if ( entryInfo.modelID ) then
+							Outbound.ShowPreview(entryInfo.name, entryInfo.modelID);
 						end
 					end
 				</OnClick>
@@ -1583,6 +1596,55 @@
 				</Frame>
 			</Frames>
 		</Frame>
+		<Frame name="StoreDialog" parent="UIParent" frameStrata="DIALOG" toplevel="true" enableMouse="true" hidden="true">
+			<Size x="434" y="100" />
+			<!-- Anchors are set in lua -->
+			<Backdrop edgeFile="Interface\DialogFrame\UI-DialogBox-Border" tile="true">
+				<TileSize>
+					<AbsValue val="32" />
+				</TileSize>
+				<EdgeSize>
+					<AbsValue val="32" />
+				</EdgeSize>
+			</Backdrop>
+			<Layers>
+				<Layer level="BACKGROUND">
+					<Texture>
+						<Anchors>
+							<Anchor point="TOPLEFT" x="5" y="-5" />
+							<Anchor point="BOTTOMRIGHT" x="-5" y="5" />
+						</Anchors>
+						<Color r="0" g="0" b="0" a="1" />
+					</Texture>
+				</Layer>
+				<Layer level="ARTWORK">
+					<FontString parentKey="Description" inherits="GameFontNormalMed2">
+						<Size x="400" y="0"/>
+						<Anchors>
+							<Anchor point="TOP" x="0" y="-26"/>
+						</Anchors>
+					</FontString>
+				</Layer>
+			</Layers>
+			<Frames>
+				<Button parentKey="Button1" inherits="StoreButtonTemplate" text="OKAY" id="1">
+					<Size x="120" y="22"/>
+					<Anchors>
+						<Anchor point="BOTTOM" x="0" y="16"/>
+					</Anchors>
+					<Scripts>
+						<OnClick>
+							self:GetParent():Hide();
+						</OnClick>
+					</Scripts>
+				</Button>
+			</Frames>
+			<Scripts>
+				<OnShow>
+					self:SetHeight(self.Description:GetHeight() + 80);
+				</OnShow>
+			</Scripts>
+		</Frame>
 		<Frame name="StoreFrame" frameStrata="FULLSCREEN_DIALOG" parent="UIParent" inherits="PortraitFrameTemplateNoCloseButton" enableMouse="true" hidden="true">
 			<Size x="800" y="537" />
 			<!--Anchored to the screen as a whole in Lua-->
@@ -2040,9 +2102,9 @@
 						</Anchors>
 					</Texture>
 					<FontString parentKey="ProductName" inherits="GameFontNormalLarge2" wordwrap="true" justifyH="LEFT">
-						<Size x="200" y="60" />
+						<Size x="260" y="60" />
 						<Anchors>
-							<Anchor point="TOP" x="22" y="-67" />
+							<Anchor point="TOPLEFT" x="124" y="-67" />
 						</Anchors>
 					</FontString>
 					<FontString parentKey="Title" inherits="GameFontHighlight">

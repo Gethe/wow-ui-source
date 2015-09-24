@@ -2368,16 +2368,16 @@ SlashCmdList["SPECTATOR_WARGAME"] = function(msg)
 		return;
 	end
 
-	local presenceID1 = BNet_GetPresenceID(target1);
-	if not presenceID1 then
+	local toonID1 = BNet_GetToonPresenceID(target1);
+	if not toonID1 then
 		ConsolePrint("Failed to find StartSpectatorWarGame target1:", target1);
 	end
-	local presenceID2 = BNet_GetPresenceID(target2);
-	if not presenceID2 then
+	local toonID2 = BNet_GetToonPresenceID(target2);
+	if not toonID2 then
 		ConsolePrint("Failed to find StartSpectatorWarGame target2:", target2);
 	end
 	if (area == "" or area == "nil" or area == "0") then area = nil end 
-	StartSpectatorWarGame(presenceID1 or target1, presenceID2 or target2, size, area, ValueToBoolean(isTournamentMode));
+	StartSpectatorWarGame(toonID1 or target1, toonID2 or target2, size, area, ValueToBoolean(isTournamentMode));
 end
 
 SlashCmdList["GUILDFINDER"] = function(msg)
@@ -2503,12 +2503,14 @@ function ChatFrame_OnLoad(self)
 	self:RegisterEvent("PLAYER_REPORT_SUBMITTED");
 	self:RegisterEvent("NEUTRAL_FACTION_SELECT_RESULT");
 	self:RegisterEvent("CHARACTER_UPGRADE_SPELL_TIER_SET");
+	self:RegisterEvent("ALTERNATIVE_DEFAULT_LANGUAGE_CHANGED");
 	self.tellTimer = GetTime();
 	self.channelList = {};
 	self.zoneChannelList = {};
 	self.messageTypeList = {};
 	
 	self.defaultLanguage = GetDefaultLanguage(); --If PLAYER_ENTERING_WORLD hasn't been called yet, this is nil, but it'll be fixed whent he event is fired.
+	self.alternativeDefaultLanguage = GetAlternativeDefaultLanguage();
 end
 
 function ChatFrame_RegisterForMessages(self, ...)
@@ -2724,9 +2726,14 @@ end
 function ChatFrame_ConfigEventHandler(self, event, ...)
 	if ( event == "PLAYER_ENTERING_WORLD" ) then
 		self.defaultLanguage = GetDefaultLanguage();
+		self.alternativeDefaultLanguage = GetAlternativeDefaultLanguage();
 		return true;
 	elseif ( event == "NEUTRAL_FACTION_SELECT_RESULT" ) then
 		self.defaultLanguage = GetDefaultLanguage();
+		self.alternativeDefaultLanguage = GetAlternativeDefaultLanguage();
+		return true;
+	elseif ( event == "ALTERNATIVE_DEFAULT_LANGUAGE_CHANGED" ) then		
+		self.alternativeDefaultLanguage = GetAlternativeDefaultLanguage();
 		return true;
 	elseif ( event == "UPDATE_CHAT_WINDOWS" ) then
 		local name, fontSize, r, g, b, a, shown, locked = FCF_GetChatWindowInfo(self:GetID());
@@ -2923,7 +2930,7 @@ end
 
 function ChatFrame_MessageEventHandler(self, event, ...)
 	if ( strsub(event, 1, 8) == "CHAT_MSG" ) then
-		local arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10, arg11, arg12, arg13, arg14, arg15, arg16 = ...;
+		local arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10, arg11, arg12, arg13, arg14, arg15, arg16, arg17 = ...;
 		if (arg16) then
 			-- hiding sender in letterbox: do NOT even show in chat window (only shows in cinematic frame)
 			return true;
@@ -3213,7 +3220,8 @@ function ChatFrame_MessageEventHandler(self, event, ...)
 			-- Search for icon links and replace them with texture links.
 			for tag in string.gmatch(arg1, "%b{}") do
 				local term = strlower(string.gsub(tag, "[{}]", ""));
-				if ( ICON_TAG_LIST[term] and ICON_LIST[ICON_TAG_LIST[term]] ) then
+				-- If arg17 is true, don't convert to raid icons
+				if ( not arg17 and ICON_TAG_LIST[term] and ICON_LIST[ICON_TAG_LIST[term]] ) then
 					arg1 = string.gsub(arg1, tag, ICON_LIST[ICON_TAG_LIST[term]] .. "0|t");
 				elseif ( GROUP_TAG_LIST[term] ) then
 					local groupIndex = GROUP_TAG_LIST[term];
@@ -3249,7 +3257,11 @@ function ChatFrame_MessageEventHandler(self, event, ...)
 				message = ChatFrame_GetMobileEmbeddedTexture(info.r, info.g, info.b)..message;
 			end
 			
-			if ( (strlen(arg3) > 0) and (arg3 ~= self.defaultLanguage) ) then
+			local relevantDefaultLanguage = self.defaultLanguage;
+			if ( (type == "SAY") or (type == "YELL") ) then
+				relevantDefaultLanguage = self.alternativeDefaultLanguage;
+			end
+			if ( (strlen(arg3) > 0) and (arg3 ~= relevantDefaultLanguage) ) then
 				local languageHeader = "["..arg3.."] ";
 				if ( showLink and (strlen(arg2) > 0) ) then
 					body = format(_G["CHAT_"..type.."_GET"]..languageHeader..message, pflag..playerLink.."["..coloredName.."]".."|h");

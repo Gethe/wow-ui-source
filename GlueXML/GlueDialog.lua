@@ -57,6 +57,17 @@ GlueDialogTypes["DRIVER_OUTOFDATE"] = {
 	end
 }
 
+GlueDialogTypes["SHADER_MODEL_TO_BE_UNSUPPORTED"] = {
+	text = SHADER_MODEL_TO_BE_UNSUPPORTED,
+	button1 = OKAY,
+	html = 1,
+	showAlert = 1,
+	escapeHides = true,
+	OnAccept = function ()
+		CheckSystemRequirements("SHADERMODEL_TOBEUNSUPPORTED");
+	end
+}
+
 GlueDialogTypes["ERROR_CINEMATIC"] = {
 	text = ERROR_CINEMATIC,
 	button1 = OKAY,

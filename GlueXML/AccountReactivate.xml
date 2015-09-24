@@ -28,7 +28,7 @@
 	</Frame>
 	
 	<!-- Player has enough tokens or gold. -->
-	<Frame name="ReactivateAccountDialog" topLevel="true" parent="CharacterSelect" enableMouse="true" frameStrata="DIALOG" hidden="true" inherits="ReactivateDialogBackground">
+	<Frame name="ReactivateAccountDialog" topLevel="true" parent="CharacterSelect" enableMouse="true" frameStrata="HIGH" hidden="true" inherits="ReactivateDialogBackground">
 		<Size x="450" y="64"/>
 		<Anchors>
 			<Anchor point="BOTTOM" x="0" y="167"/>
@@ -119,7 +119,7 @@
 		</Scripts>
 	</Frame>
 		
-	<Frame name="GoldReactivateConfirmationDialog" topLevel="true" parent="CharacterSelect" enableMouse="true" frameStrata="DIALOG" hidden="true" inherits="ReactivateDialogBackground">
+	<Frame name="GoldReactivateConfirmationDialog" topLevel="true" parent="CharacterSelect" enableMouse="true" frameStrata="HIGH" hidden="true" inherits="ReactivateDialogBackground">
 		<Size x="450" y="64"/>
 		<Anchors>
 			<Anchor point="TOP" x="0" y="-150"/>

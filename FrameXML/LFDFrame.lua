@@ -410,18 +410,18 @@ function LFDQueueFrame_SetType(value)	--"specific" for the list or the record id
 	if ( value == "specific" ) then
 		LFDQueueFrame_SetTypeSpecificDungeon();
 	else
-		local name, typeID, subtypeID, minLevel, maxLevel, recLevel, minRecLevel, maxRecLevel, expansionLevel, groupID, textureFilename, difficulty, maxPlayers, description, isHoliday = GetLFGDungeonInfo(value);
-		LFDQueueFrame_SetTypeRandomDungeon(isHoliday);
+		local name, typeID, subtypeID, minLevel, maxLevel, recLevel, minRecLevel, maxRecLevel, expansionLevel, groupID, textureFilename, difficulty, maxPlayers, description, isHoliday, _, _, isTimeWalker = GetLFGDungeonInfo(value);
+		LFDQueueFrame_SetTypeRandomDungeon(isHoliday and not isTimeWalker);
 		LFDQueueFrameRandom_UpdateFrame();
 	end
 	LFDQueueFrame_UpdateRoleButtons();
 end
 
-function LFDQueueFrame_SetTypeRandomDungeon(isHoliday)
+function LFDQueueFrame_SetTypeRandomDungeon(hideCooldown)
 	LFDQueueFrameBackground:SetTexture("Interface\\LFGFrame\\UI-LFG-BACKGROUND-QUESTPAPER")
 	LFDQueueFrameSpecific:Hide();
 	LFDQueueFrameRandom:Show();
-	LFGCooldownCover_ChangeSettings(LFDQueueFrame.CooldownFrame, true, not isHoliday);
+	LFGCooldownCover_ChangeSettings(LFDQueueFrame.CooldownFrame, true, not hideCooldown);
 end
 
 function LFDQueueFrame_SetTypeSpecificDungeon()

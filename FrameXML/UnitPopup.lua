@@ -1734,7 +1734,8 @@ function UnitPopup_OnClick (self)
 		local dialog = StaticPopup_Show("CONFIRM_GUILD_PROMOTE", fullname);
 		dialog.data = fullname;
 	elseif ( button == "GUILD_LEAVE" ) then
-		StaticPopup_Show("CONFIRM_GUILD_LEAVE", GetGuildInfo("player"));
+		local guildName = GetGuildInfo("player");
+		StaticPopup_Show("CONFIRM_GUILD_LEAVE", guildName);
 	elseif ( button == "LEAVE" ) then
 		LeaveParty();
 	elseif ( button == "INSTANCE_LEAVE" ) then
