@@ -233,6 +233,13 @@ function CharacterSelect_OnShow()
 	end
 	
 	CharacterSelect_CheckVeteranStatus();
+
+	if (C_StoreGlue.GetDisconnectOnLogout()) then
+		C_PurchaseAPI.SetDisconnectOnLogout(false);
+		DisconnectFromServer();
+		GlueDialog:Hide();
+		SetGlueScreen("login");
+	end	
 end
 
 function CharacterSelect_OnHide(self)

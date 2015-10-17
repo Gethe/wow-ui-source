@@ -1977,21 +1977,33 @@
 					<Anchors>
 						<Anchor point="TOPLEFT" relativeKey="$parent.RightInset" relativePoint="TOPLEFT" x="10" y="-10" />
 					</Anchors>
+					<KeyValues>
+						<KeyValue key="isSplash" value="true" type="boolean"/>
+					</KeyValues>
 				</Button>
 				<Button parentKey="SplashPrimary" inherits="StoreSplashPrimaryCardTemplate">
 					<Anchors>
 						<Anchor point="TOPLEFT" relativeKey="$parent.RightInset" relativePoint="TOPLEFT" x="10" y="-10" />
 					</Anchors>
+					<KeyValues>
+						<KeyValue key="isSplash" value="true" type="boolean"/>
+					</KeyValues>
 				</Button>
 				<Button parentKey="SplashSecondary1" inherits="StoreSplashSecondaryCardTemplate">
 					<Anchors>
 						<Anchor point="TOPLEFT" relativeKey="$parent.SplashPrimary" relativePoint="BOTTOMLEFT" x="0" y="-4" />
 					</Anchors>
+					<KeyValues>
+						<KeyValue key="isSplash" value="true" type="boolean"/>
+					</KeyValues>
 				</Button>
 				<Button parentKey="SplashSecondary2" inherits="StoreSplashSecondaryCardTemplate">
 					<Anchors>
 						<Anchor point="TOPRIGHT" relativeKey="$parent.SplashPrimary" relativePoint="BOTTOMRIGHT" x="0" y="-4" />
 					</Anchors>
+					<KeyValues>
+						<KeyValue key="isSplash" value="true" type="boolean"/>
+					</KeyValues>
 				</Button>
 				<Button parentArray="CategoryFrames" inherits="StoreCategoryTemplate">
 					<Anchors>

@@ -576,6 +576,15 @@ GlueDialogTypes["BOOST_NOT_RECOMMEND_SPEC_WARNING"] = {
 	end,
 }
 
+GlueDialogTypes["LEGION_PURCHASE_READY"] = {
+	text = BLIZZARD_STORE_LEGION_PURCHASE_READY_DESCRIPTION,
+	button1 = BLIZZARD_STORE_LOG_OUT_NOW,
+	button2 = CANCEL,
+	OnAccept = function()
+		DisconnectFromServer();
+		SetGlueScreen("login");
+	end,
+}
 
 function GlueDialog_Show(which, text, data, errorNumber)
 	local dialogInfo = GlueDialogTypes[which];
