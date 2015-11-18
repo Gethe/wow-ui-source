@@ -979,7 +979,7 @@
 			</Texture>
 		</Layer>
 		<Layer level="ARTWORK">
-			<Texture parentKey="IconBorder" file="Interface\LootFrame\LootToast">
+			<Texture parentKey="IconBorder" atlas="loottoast-itemborder-green">
 				<Size x="60" y="60"/>
 				<Anchors>
 					<Anchor point="CENTER" relativeKey="$parent.Icon" relativePoint="CENTER" x="0" y="0"/>

@@ -174,20 +174,18 @@
 	<Frame name="BonusRollFrameTemplate" parent="UIParent" frameLevel="5" toplevel="true" frameStrata="DIALOG" hidden="true" virtual="true">
 		<Size x="286" y="76"/>	
 		<Animations>
-			<AnimationGroup parentKey="StartRollAnim">
-				<Alpha change="-1" duration="0.25" order="1" childKey="PromptFrame"/>
-				<Alpha change="1" duration="0.25" order="1" childKey="RollingFrame"/>
+			<AnimationGroup parentKey="StartRollAnim" setToFinalAlpha="true">
+				<Alpha fromAlpha="1" toAlpha="0" duration="0.25" order="1" childKey="PromptFrame"/>
+				<Alpha fromAlpha="0" toAlpha="1" duration="0.25" order="1" childKey="RollingFrame"/>
 				<Scripts>
 					<OnPlay>
 						local parent = self:GetParent();
 						parent.RollingFrame:Show();
-						parent.RollingFrame:SetAlpha(0);
 						parent.PromptFrame:Show();
 						parent.PromptFrame:SetAlpha(1);
 					</OnPlay>
 					<OnFinished>
 						local parent = self:GetParent();
-						parent.RollingFrame:SetAlpha(1);
 						parent.PromptFrame:Hide();
 					</OnFinished>
 				</Scripts>
@@ -481,7 +479,7 @@
 								<Anchor point="BOTTOMRIGHT" x="-5" y="2"/>
 							</Anchors>
 						</FontString>
-						<Texture parentKey="Border" file="Interface\LootFrame\LootToast">
+						<Texture parentKey="Border" atlas="loottoast-itemborder-green">
 							<Size x="42" y="42"/>
 							<Anchors>
 								<Anchor point="CENTER" x="0" y="0"/>

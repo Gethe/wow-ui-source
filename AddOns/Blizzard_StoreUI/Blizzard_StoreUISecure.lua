@@ -24,6 +24,7 @@ local WaitingOnConfirmationTime = 0;
 local ProcessAnimPlayed = false;
 local NumUpgradeDistributions = 0;
 local JustOrderedBoost = false;
+local JustOrderedLegion = false;
 local BoostProduct = nil;
 local VASReady = false;
 local UnrevokeWaitingForProducts = false;
@@ -175,6 +176,8 @@ Import("BLIZZARD_STORE_VAS_ERROR_CHARACTER_LOCKED");
 Import("BLIZZARD_STORE_VAS_ERROR_LAST_SAVE_TOO_RECENT");
 Import("BLIZZARD_STORE_VAS_ERROR_OTHER");
 Import("BLIZZARD_STORE_VAS_ERROR_LABEL");
+Import("BLIZZARD_STORE_LEGION_PURCHASE_READY");
+Import("BLIZZARD_STORE_LEGION_PURCHASE_READY_DESCRIPTION");
 Import("BLIZZARD_STORE_DISCOUNT_TEXT_FORMAT");
 Import("BLIZZARD_STORE_PAGE_NUMBER");
 Import("BLIZZARD_STORE_SPLASH_BANNER_DISCOUNT_FORMAT");
@@ -960,28 +963,52 @@ local vasErrorData = {
 	},
 };
 
-local deluxeMagnifiers = {
+local specialMagnifiers = {
 	[170] = { -- Legion Deluxe Edition
 		[1] = {
-			x = 22,
-			y = -64,
+			["normal"] = {
+				x = 22,
+				y = -64,
+			},
+			["splashsingle"] = {
+				x = 72,
+				y = -130,
+			},
 			modelID = 64585,
 		},
 		[2] = {
-			x = 72,
-			y = -64,
+			["normal"] = {
+				x = 70,
+				y = -64,
+			},
+			["splashsingle"] = {
+				x = 120,
+				y = -130,
+			},
 			modelID = 64582,
 		},
 	},
 	[171] = { -- Legion Deluxe Edition Upgrade
 		[1] = {
-			x = 22,
-			y = -64,
+			["normal"] = {
+				x = 22,
+				y = -64,
+			},
+			["splashsingle"] = {
+				x = 72,
+				y = -130,
+			},
 			modelID = 64585,
 		},
 		[2] = {
-			x = 72,
-			y = -64,
+			["normal"] = {
+				x = 70,
+				y = -64,
+			},
+			["splashsingle"] = {
+				x = 120,
+				y = -130,
+			},
 			modelID = 64582,
 		},
 	},
@@ -1103,15 +1130,17 @@ function StoreFrame_UpdateCard(card,entryID,discountReset)
 		card.ProductName:SetTextColor(1.0, 0.82, 0.0);
 	end
 	
-	if (entryInfo.overrideBackground) then
-		card.Card:SetTexCoord(0, 1, 0, 1);
-		card.Card:SetAtlas(entryInfo.overrideBackground, true);
-	else
-		card.Card:SetSize(146, 209);
-		card.Card:SetTexture("Interface\\Store\\Store-Main");
-		card.Card:SetTexCoord(0.18457031, 0.32714844, 0.64550781, 0.84960938);	
+	if (not card.isSplash) then
+		if (entryInfo.overrideBackground) then
+			card.Card:SetTexCoord(0, 1, 0, 1);
+			card.Card:SetAtlas(entryInfo.overrideBackground, true);
+		else
+			card.Card:SetSize(146, 209);
+			card.Card:SetTexture("Interface\\Store\\Store-Main");
+			card.Card:SetTexCoord(0.18457031, 0.32714844, 0.64550781, 0.84960938);	
+		end
 	end
-	
+
 	if (card == StoreFrame.SplashSingle) then
 		card.ProductName:SetFontObject("GameFontNormalWTF2");
 
@@ -1152,6 +1181,7 @@ function StoreFrame_UpdateCard(card,entryID,discountReset)
 	end
 	
 	if (card.Description) then
+		local description = entryInfo.description;
 		if (entryInfo.isWowToken) then
 			local redeemIndex = select(3, C_WowTokenPublic.GetCommerceSystemStatus());
 			if (redeemIndex == LE_CONSUMABLE_TOKEN_REDEEM_FOR_SUB_AMOUNT_30_DAYS) then
@@ -1160,7 +1190,7 @@ function StoreFrame_UpdateCard(card,entryID,discountReset)
 				description = BLIZZARD_STORE_TOKEN_DESC_2700_MINUTES;
 			end
 		end
-		card.Description:SetText(entryInfo.description);
+		card.Description:SetText(description);
 	end
 
 	if ( entryInfo.displayID ) then
@@ -1195,8 +1225,8 @@ function StoreFrame_UpdateCard(card,entryID,discountReset)
 		end
 	end
 
-	if (deluxeMagnifiers[entryInfo.productID]) then
-		for i = 1, #deluxeMagnifiers[entryInfo.productID] do
+	if (specialMagnifiers[entryInfo.productID]) then
+		for i = 1, #specialMagnifiers[entryInfo.productID] do
 			local frame = card.SpecialMagnifiers and card.SpecialMagnifiers[i];
 			if (not frame) then
 				frame = CreateForbiddenFrame("Button", nil, card, "StoreProductCardSpecialMagnifierTemplate");
@@ -1204,9 +1234,18 @@ function StoreFrame_UpdateCard(card,entryID,discountReset)
 				frame:SetScript("OnEnter", StoreProductCardSpecialMagnifyingGlass_OnEnter);
 				frame:SetScript("OnLeave", StoreProductCardSpecialMagnifyingGlass_OnLeave);	
 			end
-			frame:SetPoint("TOPLEFT", deluxeMagnifiers[entryInfo.productID][i].x, deluxeMagnifiers[entryInfo.productID][i].y);
-			frame:SetID(deluxeMagnifiers[entryInfo.productID][i].modelID);
-			frame:Show();
+			local offsetType;
+			if (card == StoreFrame.SplashSingle) then
+				offsetType = "splashsingle";
+			elseif (not card.isSplash) then
+				offsetType = "normal";
+			end
+
+			if (offsetType) then
+				frame:SetPoint("TOPLEFT", specialMagnifiers[entryInfo.productID][i][offsetType].x, specialMagnifiers[entryInfo.productID][i][offsetType].y);
+				frame:SetID(specialMagnifiers[entryInfo.productID][i].modelID);
+				frame:Show();
+			end
 		end
 	end
 	
@@ -1550,7 +1589,7 @@ function StoreFrame_OnEvent(self, event, ...)
 	elseif ( event == "AUTH_CHALLENGE_FINISHED" ) then
 		if (not C_AuthChallenge.DidChallengeSucceed()) then
 			JustOrderedProduct = false;
-			JustOreredBoost = false;
+			JustOrderedBoost = false;
 		else
 			StoreStateDriverFrame.NoticeTextTimer:Play();
 		end
@@ -1612,10 +1651,27 @@ function StoreFrame_OnCharacterBoostDelivered(self)
 		ServicesLogoutPopup.Background.Description:SetText(CHARACTER_UPGRADE_READY_DESCRIPTION);
 		ServicesLogoutPopup.forBoost = true;
 		ServicesLogoutPopup.forVasService = false;
+		ServicesLogoutPopup.forLegion = false;
 		ServicesLogoutPopup:Show();
 	end
 	JustFinishedOrdering = false;
 	JustOrderedBoost = false;
+end
+
+function StoreFrame_OnLegionDelivered(self)
+	self:Hide();
+	if (IsOnGlueScreen()) then
+		_G.GlueDialog_Show("LEGION_PURCHASE_READY");
+	else
+		ServicesLogoutPopup.Background.Title:SetText(BLIZZARD_STORE_LEGION_PURCHASE_READY);
+		ServicesLogoutPopup.Background.Description:SetText(BLIZZARD_STORE_LEGION_PURCHASE_READY_DESCRIPTION);
+		ServicesLogoutPopup.forBoost = false;
+		ServicesLogoutPopup.forVasService = false;
+		ServicesLogoutPopup.forLegion = true;
+		ServicesLogoutPopup:Show();
+	end
+	JustFinishedOrdering = false;
+	JustOrderedLegion = false;
 end
 
 function StoreFrame_UpdateBuyButton()
@@ -1847,6 +1903,8 @@ function StoreFramePurchaseSentOkayButton_OnClick(self)
 		StoreVASValidationFrame_OnVasProductComplete(StoreVASValidationFrame);
 	elseif (JustOrderedBoost) then
 		StoreFrame_OnCharacterBoostDelivered(StoreFrame);
+	elseif (JustOrderedLegion) then
+		StoreFrame_OnLegionDelivered(StoreFrame);
 	end
 end
 
@@ -1931,6 +1989,11 @@ function StoreFrame_BeginPurchase(entryID)
 		WaitingOnConfirmation = true;
 		WaitingOnConfirmationTime = GetTime();
 		StoreFrame_UpdateActivePanel(StoreFrame);
+	else
+		local productInfo = C_PurchaseAPI.GetProductInfo(entryInfo.productID);
+		if (productInfo and productInfo.isExpansion) then
+			StoreFrame_OnError(StoreFrame, LE_STORE_ERROR_ALREADY_OWNED, false, "Expansion");
+		end
 	end
 end
 
@@ -2093,6 +2156,7 @@ end
 local FinalPriceDollars;
 local FinalPriceCents;
 local IsUpgrade;
+local IsLegion;
 
 function StoreConfirmationFrame_Update(self)
 	local productID, walletName = C_PurchaseAPI.GetConfirmationInfo();
@@ -2108,6 +2172,7 @@ function StoreConfirmationFrame_Update(self)
 	end
 	StoreConfirmationFrame_SetNotice(self, finalIcon, productInfo.name, productInfo.currentDollars, productInfo.currentCents, walletName, productInfo.isBoost, productInfo.isVasService, productInfo.isExpansion);
 	IsUpgrade = productInfo.isBoost;
+	IsLegion = productInfo.isExpansion;
 	if (productInfo.isBoost) then
 		BoostProduct = productInfo.boostProduct;
 	end
@@ -2172,6 +2237,7 @@ function StoreConfirmationFinalBuy_OnClick(self)
 	if ( C_PurchaseAPI.PurchaseProductConfirm(true, FinalPriceDollars, FinalPriceCents) ) then
 		JustOrderedProduct = true;
 		JustOrderedBoost = IsUpgrade;
+		JustOrderedLegion = IsLegion;
 		StoreStateDriverFrame.NoticeTextTimer:Play();
 		PlaySound("UI_igStore_ConfirmPurchase_Button");
 	else
@@ -2354,6 +2420,7 @@ function StoreVASValidationFrame_OnVasProductComplete(self)
 		ServicesLogoutPopup.Background.Description:SetText(desc);
 		ServicesLogoutPopup.forVasService = true;
 		ServicesLogoutPopup.forBoost = false;
+		ServicesLogoutPopup.forLegion = false;
 		ServicesLogoutPopup:Show();
 	end
 	VASReady = false;
@@ -2622,30 +2689,57 @@ function StoreProductCard_ShowIcon(self, icon, itemID, overrideTexture)
 	end
 
 	if (not overrideTexture) then
+		if (self == StoreFrame.SplashSingle) then
+			self.Icon:SetPoint("TOPLEFT", 86, -96);
+		end
 		self.Icon:SetSize(63, 63);
 		SetPortraitToTexture(self.Icon, icon);
 		self.IconBorder:Show();
 	else
 		self.Icon:SetAtlas(overrideTexture, true);
+		if (self == StoreFrame.SplashSingle) then
+			local adjustX, adjustY;
+			local width, height = self.Icon:GetSize();
+			if (width > 63) then
+				adjustX = -(width - 63);
+			else
+				adjustX = 63 - width;
+			end
+
+			if (height > 63) then
+				adjustY = height - 63;
+			else
+				adjustY = -(63 - height);
+			end
+
+			self.Icon:SetPoint("TOPLEFT", 86 + math.floor(adjustX / 2), -96 + math.floor(adjustY / 2));
+		end
 		self.IconBorder:Hide();
 	end
+
 	if (self == StoreFrame.SplashSingle) then
 		self.Magnifier:Hide();
 	end
 
-	if (self.GlowSpin) then
+	if (self.GlowSpin and not overrideTexture) then
 		self.GlowSpin.SpinAnim:Play();
 		self.GlowSpin:Show();
-	end
+	elseif (self.GlowSpin) then
+		self.GlowSpin.SpinAnim:Stop();
+		self.GlowSpin:Hide();
+	end	
 
-	if (self.GlowPulse) then
+	if (self.GlowPulse and not overrideTexture) then
 		self.GlowPulse.PulseAnim:Play();
 		self.GlowPulse:Show();
-	end
+	elseif (self.GlowPulse) then
+		self.GlowPulse.SpinAnim:Stop();
+		self.GlowPulse:Hide();
+	end	
 end
 
 function StoreProductCard_IsSplashPage(card)
-	return card == StoreFrame.SplashSingle or card == StoreFrame.SplashPrimary or card == StoreFrame.SplashSecondary1 or card == StoreFrame.SplashSecondary2;
+	return card.isSplash;
 end
 
 function StoreProductCard_ShowDiscount(card, discountText)
@@ -3254,9 +3348,12 @@ function ServicesLogoutPopupConfirmButton_OnClick(self)
 		C_SharedCharacterServices.SetStartAutomatically(true, BoostProduct);
 	elseif (ServicesLogoutPopup.forVasService) then
 		C_PurchaseAPI.SetVASProductReady(true);
+	elseif (ServicesLogoutPopup.forLegion) then
+		C_PurchaseAPI.SetDisconnectOnLogout(true);
 	end
 	ServicesLogoutPopup.forBoost = false;
 	ServicesLogoutPopup.forVasService = false;
+	ServicesLogoutPopup.forLegion = false;
 	PlaySound("igMainMenuLogout");
 	Outbound.Logout();
 	ServicesLogoutPopup:Hide();

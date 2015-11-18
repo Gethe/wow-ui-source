@@ -1,7 +1,7 @@
 
 local MIN_STORY_TOOLTIP_WIDTH = 240;
 
-local tooltipButton;
+--tooltipButton;
 
 function QuestMapFrame_OnLoad(self)
 	self:RegisterEvent("QUEST_LOG_UPDATE");
@@ -31,9 +31,6 @@ function QuestMapFrame_OnEvent(self, event, ...)
 			end
 		end
 
-		if ( tooltipButton ) then
-			QuestMapLogTitleButton_OnEnter(tooltipButton);
-		end
 		
 		local updateButtons = false;
 		if ( QuestLogPopupDetailFrame.questID ) then
@@ -58,6 +55,10 @@ function QuestMapFrame_OnEvent(self, event, ...)
 			QuestMapFrame_UpdateQuestDetailsButtons();
 		end
 		QuestMapFrame_UpdateAll();
+
+		if ( tooltipButton ) then
+			QuestMapLogTitleButton_OnEnter(tooltipButton);
+		end
 	elseif ( event == "QUEST_WATCH_UPDATE" ) then
 		if (not IsTutorialFlagged(11) and TUTORIAL_QUEST_TO_WATCH) then
 			local questID = select(8, GetQuestLogTitle(arg1));
@@ -794,6 +795,9 @@ function QuestMapLogHeaderButton_OnClick(self, button)
 end
 
 function QuestMapLogTitleButton_OnEnter(self)
+	--if (self.questLogIndex > GetNumQuestLogEntries()) then
+	--	return;
+	--end
 	-- do block highlight
 	local title, level, suggestedGroup, isHeader, isCollapsed, isComplete, frequency, questID, startEvent, displayQuestID, isOnMap, hasLocalPOI = GetQuestLogTitle(self.questLogIndex);
 	local _, difficultyHighlightColor = GetQuestDifficultyColor(level);

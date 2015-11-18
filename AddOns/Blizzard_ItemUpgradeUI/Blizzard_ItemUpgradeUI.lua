@@ -186,21 +186,32 @@ function ItemUpgradeFrame_UpdateStats(setStatsRight)
 	local index = 1;
 
 	local statAnchor;
-	for i = 1, #statsLeft, 2 do
+	for i = 1, #statsLeft, 3 do
 		local leftStat, rightStat = ItemUpgradeFrame_GetStatRow(index, true);
 		-- Update the left stat text field.
-		local name, value = statsLeft[i], statsLeft[i + 1];
-		leftStat.ItemLevelText:SetText(value);
-		leftStat.ItemText:SetText(name);
+		local name, value, active = statsLeft[i], statsLeft[i + 1], statsLeft[i + 2];
+		if (active) then
+			leftStat.ItemLevelText:SetText(value);
+			leftStat.ItemText:SetText(name);
+		else
+			leftStat.ItemLevelText:SetText(GRAY_FONT_COLOR_CODE..value..FONT_COLOR_CODE_CLOSE);
+			leftStat.ItemText:SetText(GRAY_FONT_COLOR_CODE..name..FONT_COLOR_CODE_CLOSE);
+		end
 		leftStat:Show();
 		
 		-- Update the right stat text field.
 		if ( setStatsRight ) then
-			local name, value = statsRight[i], statsRight[i + 1];
+			local name, value, active = statsRight[i], statsRight[i + 1], statsRight[i + 2];
 			local statInc = statsRight[i + 1] - statsLeft[i + 1];
-			rightStat.ItemIncText:SetText(GREEN_FONT_COLOR_CODE.."+"..statInc..FONT_COLOR_CODE_CLOSE);
-			rightStat.ItemLevelText:SetText(value);
-			rightStat.ItemText:SetText(name);
+			if (active) then
+				rightStat.ItemIncText:SetText(GREEN_FONT_COLOR_CODE.."+"..statInc..FONT_COLOR_CODE_CLOSE);
+				rightStat.ItemLevelText:SetText(value);
+				rightStat.ItemText:SetText(name);
+			else
+				rightStat.ItemIncText:SetText(GRAY_FONT_COLOR_CODE.."+"..statInc..FONT_COLOR_CODE_CLOSE);
+				rightStat.ItemLevelText:SetText(GRAY_FONT_COLOR_CODE..value..FONT_COLOR_CODE_CLOSE);
+				rightStat.ItemText:SetText(GRAY_FONT_COLOR_CODE..name..FONT_COLOR_CODE_CLOSE);
+			end
 			rightStat:Show();
 		else
 			rightStat:Hide();
@@ -220,7 +231,7 @@ function ItemUpgradeFrame_UpdateStats(setStatsRight)
 	-- effects
 	local effectIndex = 1;
 	for i = 1, GetNumItemUpgradeEffects() do
-		local row = ItemUpgradeFrame_GetEffectRow(i, index + effectIndex);
+		local row = ItemUpgradeFrame_GetEffectRow(i, index + effectIndex, setStatsRight);
 		if ( effectIndex == 1 ) then
 			row:ClearAllPoints();
 			if ( index == 1 ) then
@@ -294,10 +305,8 @@ function ItemUpgradeFrame_GetStatRow(index, tryAdd)
 		rightStat	= CreateFrame("FRAME", nil, ItemUpgradeFrame, "ItemUpgradeStatTemplateRight");
 		rightStat:SetPoint("TOP", ItemUpgradeFrame.RightStat[index - 1], "BOTTOM", 0, -1);
 		
-		if(mod(index, 2) == 1) then
-			leftStat.BG:Show();
-			rightStat.BG:Show();
-		end
+		leftStat.BG:SetShown(mod(index, 2) == 1);
+		rightStat.BG:SetShown(mod(index, 2) == 1);
 
 		ItemUpgradeFrame.LeftStat[index]	= leftStat;
 		ItemUpgradeFrame.RightStat[index]	= rightStat;
@@ -306,7 +315,7 @@ function ItemUpgradeFrame_GetStatRow(index, tryAdd)
 	return leftStat, rightStat;
 end
 
-function ItemUpgradeFrame_GetEffectRow(index, colorIndex)
+function ItemUpgradeFrame_GetEffectRow(index, colorIndex, showRight)
 	local row = ItemUpgradeFrame.EffectRow[index];
 	if ( not row ) then
 		row = CreateFrame("FRAME", nil, ItemUpgradeFrame, "ItemUpgradeEffectRowTemplate");
@@ -315,10 +324,8 @@ function ItemUpgradeFrame_GetEffectRow(index, colorIndex)
 		end
 		ItemUpgradeFrame.EffectRow[index] = row;
 	end
-	if(mod(colorIndex, 2) == 0) then
-		row.LeftBg:Show();
-		row.RightBg:Show();
-	end
+	row.LeftBg:SetShown(mod(colorIndex, 2) == 0);
+	row.RightBg:SetShown(showRight and mod(colorIndex, 2) == 0);
 	return row;
 end
 
