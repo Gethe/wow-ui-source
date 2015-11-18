@@ -231,7 +231,7 @@ function ItemUpgradeFrame_UpdateStats(setStatsRight)
 	-- effects
 	local effectIndex = 1;
 	for i = 1, GetNumItemUpgradeEffects() do
-		local row = ItemUpgradeFrame_GetEffectRow(i, index + effectIndex);
+		local row = ItemUpgradeFrame_GetEffectRow(i, index + effectIndex, setStatsRight);
 		if ( effectIndex == 1 ) then
 			row:ClearAllPoints();
 			if ( index == 1 ) then
@@ -315,7 +315,7 @@ function ItemUpgradeFrame_GetStatRow(index, tryAdd)
 	return leftStat, rightStat;
 end
 
-function ItemUpgradeFrame_GetEffectRow(index, colorIndex)
+function ItemUpgradeFrame_GetEffectRow(index, colorIndex, showRight)
 	local row = ItemUpgradeFrame.EffectRow[index];
 	if ( not row ) then
 		row = CreateFrame("FRAME", nil, ItemUpgradeFrame, "ItemUpgradeEffectRowTemplate");
@@ -325,7 +325,7 @@ function ItemUpgradeFrame_GetEffectRow(index, colorIndex)
 		ItemUpgradeFrame.EffectRow[index] = row;
 	end
 	row.LeftBg:SetShown(mod(colorIndex, 2) == 0);
-	row.RightBg:SetShown(mod(colorIndex, 2) == 0);
+	row.RightBg:SetShown(showRight and mod(colorIndex, 2) == 0);
 	return row;
 end
 

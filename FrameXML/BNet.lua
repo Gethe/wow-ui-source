@@ -24,6 +24,7 @@ BNET_CLIENT_D3 = "D3";
 BNET_CLIENT_WTCG = "WTCG";
 BNET_CLIENT_APP = "App";
 BNET_CLIENT_HEROES = "Hero";
+BNET_CLIENT_OVERWATCH = "Pro";
 BNET_CLIENT_CLNT = "CLNT";
 
 function BNet_OnLoad(self)
@@ -541,6 +542,8 @@ function BNet_GetClientEmbeddedTexture(client, width, height, xOffset, yOffset)
 		textureString = "WTCG";
 	elseif ( client == BNET_CLIENT_HEROES ) then
 		textureString = "HotS";
+	elseif ( client == BNET_CLIENT_OVERWATCH ) then
+		textureString = "Overwatch";
 	else
 		textureString = "Battlenet";
 	end
@@ -558,6 +561,8 @@ function BNet_GetClientTexture(client)
 		return "Interface\\FriendsFrame\\Battlenet-WTCGicon";
 	elseif ( client == BNET_CLIENT_HEROES ) then
 		return "Interface\\FriendsFrame\\Battlenet-HotSicon";
+	elseif ( client == BNET_CLIENT_OVERWATCH ) then
+		return "Interface\\FriendsFrame\\Battlenet-Overwatchicon";
 	else
 		return "Interface\\FriendsFrame\\Battlenet-Battleneticon";
 	end

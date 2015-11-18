@@ -513,8 +513,7 @@ function GroupLootFrame_OnShow(self)
 	end
 	
 	self.IconFrame.Icon:SetTexture(texture);
-	local borderTexCoord = LOOT_BORDER_QUALITY_COORDS[quality] or LOOT_BORDER_QUALITY_COORDS[LE_ITEM_QUALITY_UNCOMMON];
-	self.IconFrame.Border:SetTexCoord(unpack(borderTexCoord));
+	self.IconFrame.Border:SetAtlas(LOOT_BORDER_BY_QUALITY[quality] or LOOT_BORDER_BY_QUALITY[LE_ITEM_QUALITY_UNCOMMON]);
 	self.Name:SetText(name);
 	local color = ITEM_QUALITY_COLORS[quality];
 	self.Name:SetVertexColor(color.r, color.g, color.b);
@@ -597,6 +596,7 @@ function BonusRollFrame_StartBonusRoll(spellID, text, duration, currencyID)
 	frame.PromptFrame.Timer:SetValue(duration);
 	frame.PromptFrame.RollButton:Enable();
 	frame.PromptFrame:Show();
+	frame.PromptFrame:SetAlpha(1);
 	frame.RollingFrame:Hide();
 	
 	local specID = GetLootSpecialization();
