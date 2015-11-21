@@ -23,27 +23,22 @@ CreditsArtInfo[4][1] = {  file="Greymane City Map01", w=1024, h=512, offsetx=0, 
 CreditsArtInfo[5] = { path="Pandaria\\" };
 CreditsArtInfo[5][1] = { file="Mogu_BossConcept_New", w=1024, h=512, offsetx=0, offsety=0, maxAlpha=0.7 };
 CreditsArtInfo[6] = { path="Warlords\\" };
-CreditsArtInfo[6][1] = { file="Alliance_Garrison_Armory", w=1024, h=512, offsetx=0, offsety=0, maxAlpha=0.7 };
-CreditsArtInfo[6][2] = { file="Arrak_Forest_Dark", w=1024, h=512, offsetx=0, offsety=0, maxAlpha=0.7 };
-CreditsArtInfo[6][3] = { file="Arrak_Landscape", w=1024, h=512, offsetx=0, offsety=0, maxAlpha=0.7 };
-CreditsArtInfo[6][4] = { file="Arrak_Landscape_Color", w=1024, h=512, offsetx=0, offsety=0, maxAlpha=0.7 };
-CreditsArtInfo[6][5] = { file="Ashrand_zone_concept", w=1024, h=512, offsetx=0, offsety=0, maxAlpha=0.7 };
-CreditsArtInfo[6][6] = { file="BoilingPlains_BW", w=1024, h=512, offsetx=0, offsety=0, maxAlpha=0.7 };
-CreditsArtInfo[6][7] = { file="CE_Nagrand_Landscape", w=1024, h=512, offsetx=0, offsety=0, maxAlpha=0.7 };
-CreditsArtInfo[6][8] = { file="Frostwind_ConceptPainting_jlo", w=1024, h=512, offsetx=0, offsety=0, maxAlpha=0.7 };
-CreditsArtInfo[6][9] = { file="Shadowmoon_Color_jlo", w=1024, h=512, offsetx=0, offsety=0, maxAlpha=0.7 };
-CreditsArtInfo[6][10] = { file="Zangar", w=1024, h=512, offsetx=0, offsety=0, maxAlpha=0.7 };
-CreditsArtInfo[6][11] = { file="Zangar_UndertheSea", w=1024, h=512, offsetx=0, offsety=0, maxAlpha=0.7 };
-CreditsArtInfo[6][12] = { file="Alliance_Garrison_WorkShopv", w=1024, h=512, offsetx=0, offsety=0, maxAlpha=0.7 };
-CreditsArtInfo[6][13] = { file="Alliance_Garrison_LumberMill", w=1024, h=512, offsetx=0, offsety=0, maxAlpha=0.7 };
-CreditsArtInfo[6][14] = { file="Ashrand_zone_concept_B", w=1024, h=512, offsetx=0, offsety=0, maxAlpha=0.7 };
+CreditsArtInfo[6][1] = { file="Arrak_Forest_Dark", w=1024, h=512, offsetx=0, offsety=0, maxAlpha=0.7 };
+CreditsArtInfo[7] = {};
+CreditsArtInfo[7][1] = { file="Illidan", w=1024, h=512, offsetx=0, offsety=0, maxAlpha=0.7 };
+
+function CreditsFrame_OnLoad(self)
+	self.creditsType = 1;
+	self.maxCreditsType = 2;
+	CreditsFrame.returnTo = "login";
+end
 
 function CreditsFrame_OnShow(self)
 	CreditsFrame_Update(self);
 end
 
 function CreditsFrame_Update(self)
-	CreditsLogo:SetTexture(EXPANSION_LOGOS[CreditsFrame.creditsType-1]);
+	SetExpansionLogo(CreditsLogo, CreditsFrame.creditsType-1);
 
 	CreditsFrame_SetSpeed(CREDITS_SCROLL_RATE_PLAY);
 	CreditsScrollFrame:SetVerticalScroll(0);

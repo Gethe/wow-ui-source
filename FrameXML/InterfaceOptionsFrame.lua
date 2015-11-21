@@ -266,6 +266,21 @@ function InterfaceOptionsFrameDefaults_OnClick (self, button)
 	StaticPopup_Show("CONFIRM_RESET_INTERFACE_SETTINGS");
 end
 
+function InterfaceOptionsHelpPanelResetChat_OnClick ()
+	FCF_ResetAllWindows();
+end
+
+function InterfaceOptionsHelpPanelRedockChat_OnClick ()
+	FCF_RedockAllWindows();
+end
+
+function InterfaceOptionsHelpPanelChatFrameSettings_OnLoad (self)
+	local width = max(self.ChatDefaults:GetTextWidth(), self.RedockChat:GetTextWidth()) + 31;
+	self.ChatDefaults:SetWidth(width);
+	self.RedockChat:SetWidth(width);
+	self:SetWidth(width);
+end
+
 function InterfaceOptionsFrame_SetAllToDefaults ()
 	--Iterate through registered panels and run their default methods in a taint-safe fashion
 

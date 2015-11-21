@@ -103,7 +103,7 @@ function ActionBarController_UpdateAll(force)
 	
 	-- If we have a skinned vehicle bar or skinned override bar, display the OverrideActionBar
 	if ((HasVehicleActionBar() and UnitVehicleSkin("player") and UnitVehicleSkin("player") ~= "")
-	or (HasOverrideActionBar() and GetOverrideBarSkin() and GetOverrideBarSkin() ~= "")) then
+	or (HasOverrideActionBar() and GetOverrideBarSkin() and GetOverrideBarSkin() ~= 0)) then
 		-- For now, a vehicle has precedence over override bars (hopefully designers make it so these never conflict)
 		if (HasVehicleActionBar()) then
 			OverrideActionBar_Setup(UnitVehicleSkin("player"), GetVehicleBarIndex());

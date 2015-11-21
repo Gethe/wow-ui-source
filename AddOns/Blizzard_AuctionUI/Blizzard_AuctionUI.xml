@@ -1827,6 +1827,14 @@
 								</Texture>
 							</Layer>
 							<Layer level="OVERLAY">
+								<Texture parentKey="IconBorder" file="Interface\Common\WhiteIconFrame" hidden="true">
+									<Size x="37" y="37"/>
+									<Anchors>
+										<Anchor point="CENTER"/>
+									</Anchors>
+								</Texture>
+							</Layer>
+							<Layer level="OVERLAY">
 								<FontString name="$parentCount" inherits="NumberFontNormal" justifyH="RIGHT" hidden="true">
 									<Anchors>
 										<Anchor point="BOTTOMRIGHT" x="-5" y="2"/>

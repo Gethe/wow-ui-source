@@ -121,6 +121,7 @@ function PVP_UpdateStatus()
 				BATTLEFIELD_TIMER_THRESHOLD_INDEX = 1;
 				PREVIOUS_BATTLEFIELD_MOD = 0;
 			end
+			MainMenuBar_UpdateExperienceBars();
 		end
 	end
 end

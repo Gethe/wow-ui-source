@@ -320,7 +320,7 @@
 					</Layer>
 					<Layer level="OVERLAY">
 						<Texture parentKey="IconBorder" file="Interface\Common\WhiteIconFrame" hidden="true">
-							<Size x="37" y="37"/>
+							<Size x="32" y="32"/>
 							<Anchors>
 								<Anchor point="CENTER"/>
 							</Anchors>
@@ -661,7 +661,7 @@
 					</Layer>
 					<Layer level="OVERLAY">
 						<Texture parentKey="IconBorder" file="Interface\Common\WhiteIconFrame" hidden="true">
-							<Size x="37" y="37"/>
+							<Size x="32" y="32"/>
 							<Anchors>
 								<Anchor point="CENTER"/>
 							</Anchors>
@@ -913,7 +913,7 @@
 					</Layer>
 					<Layer level="OVERLAY">
 						<Texture parentKey="IconBorder" file="Interface\Common\WhiteIconFrame" hidden="true">
-							<Size x="37" y="37"/>
+							<Size x="32" y="32"/>
 							<Anchors>
 								<Anchor point="CENTER"/>
 							</Anchors>

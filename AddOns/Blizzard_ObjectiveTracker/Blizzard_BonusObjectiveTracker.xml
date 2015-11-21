@@ -3,14 +3,7 @@
 	
 	<Script file="Blizzard_BonusObjectiveTracker.lua"/>
 
-	<Frame name="BonusObjectiveTrackerLineTemplate" inherits="ObjectiveTrackerCheckLineTemplate" virtual="true">
-		<Animations>
-			<AnimationGroup parentKey="TranslationAnim">
-				<Translation childKey="Text" offsetX="-150" offsetY="0" duration="0.01" order="1"/>
-				<Translation childKey="Text" offsetX="150" offsetY="0" duration="3" order="2"/>
-			</AnimationGroup>
-		</Animations>
-	</Frame>
+	<Frame name="BonusObjectiveTrackerLineTemplate" inherits="ObjectiveTrackerCheckLineTemplate" virtual="true"/>
 	
 	<ScrollFrame name="BonusObjectiveTrackerBlockTemplate" hidden="true" virtual="true" alpha="0">
 		<Size x="240" y="10"/>
@@ -22,14 +15,14 @@
 		<Animations>
 			<AnimationGroup parentKey="AnimIn">
 				<Translation parentKey="TransOut" childKey="ScrollContents" offsetX="0" offsetY="0" duration="0.01" endDelay="0" order="1"/>
-				<Alpha change="1" duration="0.1" order="2"/>
+				<Alpha fromAlpha="0" toAlpha="1" duration="0.1" order="2"/>
 				<Translation parentKey="TransIn" childKey="ScrollContents" offsetX="0" offsetY="0" duration="0" order="2"/>
 				<Scripts>
 					<OnFinished function="BonusObjectiveTracker_OnBlockAnimInFinished"/>
 				</Scripts>						
 			</AnimationGroup>
 			<AnimationGroup parentKey="AnimOut">
-				<Alpha change="-1.0" duration="0.5" startDelay="3.5" order="1"/>
+				<Alpha fromAlpha="1" toAlpha="0" duration="0.5" startDelay="3.5" order="1"/>
 				<Scripts>
 					<OnFinished function="BonusObjectiveTracker_OnBlockAnimOutFinished"/>
 				</Scripts>
@@ -70,6 +63,12 @@
 						<Anchor point="LEFT" relativeKey="$parent.ItemIcon" relativePoint="RIGHT" x="6" y="0"/>
 					</Anchors>
 				</FontString>
+				<Texture parentKey="ItemOverlay" alpha="0">
+					<Size x="51" y="51"/>
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent.ItemIcon"/>
+					</Anchors>
+				</Texture>
 				<FontString parentKey="Count" alpha="0" inherits="NumberFontNormalSmall" justifyH="RIGHT">
 					<Anchors>
 						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.ItemIcon" x="5" y="2"/>
@@ -81,6 +80,8 @@
 			<AnimationGroup parentKey="Anim">
 				<Alpha childKey="ItemIcon" startDelay="0.95" duration="0.3" order="1" fromAlpha="0" toAlpha="1"/>
 				<Alpha childKey="ItemIcon" startDelay="2" duration="1" order="2" fromAlpha="1" toAlpha="0"/>
+				<Alpha childKey="ItemOverlay" startDelay="0.95" duration="0.3" order="1" fromAlpha="0" toAlpha="1"/>
+				<Alpha childKey="ItemOverlay" startDelay="2" duration="1" order="2" fromAlpha="1" toAlpha="0"/>
 				<Alpha childKey="Label" startDelay="0.95" duration="0.3" order="1" fromAlpha="0" toAlpha="1"/>
 				<Alpha childKey="Label" startDelay="2" duration="1" order="2" fromAlpha="1" toAlpha="0"/>
 				<Alpha childKey="Count" startDelay="0.95" duration="0.3" order="1" fromAlpha="0" toAlpha="1"/>
@@ -512,11 +513,11 @@
 		</Layers>
 		<Animations>
 			<AnimationGroup parentKey="ShadowAnim">
-				<Alpha childKey="TopShadow" change="1" duration="0.05" startDelay="0.05" order="1"/>
-				<Alpha childKey="BottomShadow" change="1" duration="0.05" order="2"/>
+				<Alpha childKey="TopShadow" fromAlpha="0" toAlpha="1" duration="0.05" startDelay="0.05" order="1"/>
+				<Alpha childKey="BottomShadow" fromAlpha="0" toAlpha="1" duration="0.05" order="2"/>
 				<Translation parentKey="TransAnim" childKey="BottomShadow" offsetX="0" offsetY="-100" duration="1" endDelay="1" order="3"/>
-				<Alpha childKey="TopShadow" change="-1" duration="0.2" order="4"/>
-				<Alpha childKey="BottomShadow" change="-1" duration="0.2" order="4"/>				
+				<Alpha childKey="TopShadow" fromAlpha="1" toAlpha="0" duration="0.2" order="4"/>
+				<Alpha childKey="BottomShadow" fromAlpha="1" toAlpha="0" duration="0.2" order="4"/>				
 			</AnimationGroup>
 		</Animations>
 		<Scripts>

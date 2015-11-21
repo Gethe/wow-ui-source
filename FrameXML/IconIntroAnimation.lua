@@ -13,15 +13,15 @@ function IconIntroTracker_OnEvent(self, event, ...)
 	if event == "SPELL_PUSHED_TO_ACTIONBAR" then
 		local spellID, slotIndex, slotPos = ...;
 		MarkNewActionHighlight(slotIndex, true);
-		
-		local page = math.floor(slotIndex / NUM_ACTIONBAR_BUTTONS) + 1;
+
+		local page = math.floor((slotIndex - 1) / NUM_ACTIONBAR_BUTTONS) + 1;
 		local currentPage = GetActionBarPage();
 		
 		local bonusBarIndex = GetBonusBarIndex();
 		if (HasBonusActionBar() and bonusBarIndex ~= 0) then
 			currentPage = bonusBarIndex;
 		end
-		
+
 		if (page ~= currentPage and page ~= MULTIBOTTOMLEFTINDEX) then
 			return;
 		end

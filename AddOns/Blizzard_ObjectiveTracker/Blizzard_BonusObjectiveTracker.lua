@@ -151,12 +151,14 @@ function BonusObjectiveTracker_AddReward(questID, block, xp, money)
 	if ( block.id > 0 ) then
 		data.posIndex = block.posIndex;
 		data.objectives = { };
-		local isInArea, isOnMap, numObjectives = GetTaskInfo(questID);
+		local isInArea, isOnMap, numObjectives, taskName, displayAsObjective = GetTaskInfo(questID);
 		for objectiveIndex = 1, numObjectives do
 			local text, objectiveType, finished = GetQuestObjectiveInfo(questID, objectiveIndex, true);
 			tinsert(data.objectives, text);
 			data.objectiveType = objectiveType;
 		end
+		data.taskName = taskName;
+		data.displayAsObjective = displayAsObjective;
 	end
 	-- save all the rewards
 	data.rewards = { };
@@ -168,6 +170,18 @@ function BonusObjectiveTracker_AddReward(questID, block, xp, money)
 		local t = { };
 		t.label = xp;
 		t.texture = "Interface\\Icons\\XP_Icon";
+		t.count = 0;
+		t.font = "NumberFontNormal";
+		tinsert(data.rewards, t);
+	end
+
+	local artifactXP = GetQuestLogRewardArtifactXP(questID);
+	if ( artifactXP > 0 ) then
+		local name, icon = C_ArtifactUI.GetArtifactXPRewardTargetInfo();
+		local t = { };
+		t.label = artifactXP;
+		t.texture = icon or "Interface\\Icons\\INV_Misc_QuestionMark";
+		t.overlay = "Interface\\Artifacts\\ArtifactPower-QuestBorder";
 		t.count = 0;
 		t.font = "NumberFontNormal";
 		tinsert(data.rewards, t);
@@ -253,6 +267,12 @@ function BonusObjectiveTracker_AnimateReward(block)
 			rewardItem.Label:SetFontObject(rewardData.font);
 			rewardItem.Label:SetText(rewardData.label);
 			rewardItem.ItemIcon:SetTexture(rewardData.texture);
+			if ( rewardData.overlay ) then
+				rewardItem.ItemOverlay:SetTexture(rewardData.overlay);
+				rewardItem.ItemOverlay:Show();
+			else
+				rewardItem.ItemOverlay:Hide();
+			end
 			rewardItem:Show();
 			if( rewardItem.Anim:IsPlaying() ) then
 				rewardItem.Anim:Stop();
@@ -320,7 +340,7 @@ function BonusObjectiveTracker_ShowRewardsTooltip(block)
 	end
 
 	if ( HaveQuestData(questID) and GetQuestLogRewardXP(questID) == 0 and GetNumQuestLogRewardCurrencies(questID) == 0
-								and GetNumQuestLogRewards(questID) == 0 and GetQuestLogRewardMoney(questID) == 0 ) then
+								and GetNumQuestLogRewards(questID) == 0 and GetQuestLogRewardMoney(questID) == 0 and GetQuestLogRewardArtifactXP(questID) == 0 ) then
 		GameTooltip:Hide();
 		return;
 	end
@@ -339,6 +359,10 @@ function BonusObjectiveTracker_ShowRewardsTooltip(block)
 		local xp = GetQuestLogRewardXP(questID);
 		if ( xp > 0 ) then
 			GameTooltip:AddLine(string.format(BONUS_OBJECTIVE_EXPERIENCE_FORMAT, xp), 1, 1, 1);
+		end
+		local artifactXP = GetQuestLogRewardArtifactXP(questID);
+		if ( artifactXP > 0 ) then
+			GameTooltip:AddLine(string.format(BONUS_OBJECTIVE_ARTIFACT_XP_FORMAT, artifactXP), 1, 1, 1);
 		end
 		-- currency		
 		local numQuestCurrencies = GetNumQuestLogRewardCurrencies(questID);
@@ -407,7 +431,7 @@ end
 
 local function InternalGetTaskInfo(questID)
 	if ( COMPLETED_BONUS_DATA[questID] ) then
-		return true, true, #COMPLETED_BONUS_DATA[questID].objectives;
+		return true, true, #COMPLETED_BONUS_DATA[questID].objectives, COMPLETED_BONUS_DATA[questID].taskName, COMPLETED_BONUS_DATA[questID].displayAsObjective;
 	else
 		return GetTaskInfo(questID);
 	end
@@ -560,15 +584,22 @@ local function UpdateQuestBonusObjectives(BlocksFrame)
 	local displayObjectiveHeader = false;
 	for i = 1, #tasksTable do
 		local questID = tasksTable[i];
-		local isInArea, isOnMap, numObjectives = InternalGetTaskInfo(questID);
+		local isInArea, isOnMap, numObjectives, taskName, displayAsObjective = InternalGetTaskInfo(questID);
 		-- show task if we're in the area or on the same map and we were displaying it before
 		local existingTask = BONUS_OBJECTIVE_TRACKER_MODULE:GetExistingBlock(questID);
 		if ( isInArea or ( isOnMap and existingTask ) ) then
 			local block = BONUS_OBJECTIVE_TRACKER_MODULE:GetBlock(questID);
+			-- module header?
+			if ( displayAsObjective ) then
+				BONUS_OBJECTIVE_TRACKER_MODULE.headerText = TRACKER_HEADER_OBJECTIVE;
+			end
+			-- block header? add it as objectiveIndex 0
+			if ( taskName ) then
+				BONUS_OBJECTIVE_TRACKER_MODULE:AddObjective(block, 0, taskName, nil, nil, nil, OBJECTIVE_TRACKER_COLOR["Header"]);
+			end
 			local taskFinished = true;
 			for objectiveIndex = 1, numObjectives do
-				local text, objectiveType, finished, displayAsObjective = InternalGetQuestObjectiveInfo(questID, objectiveIndex);
-				displayObjectiveHeader = displayObjectiveHeader or displayAsObjective;
+				local text, objectiveType, finished = InternalGetQuestObjectiveInfo(questID, objectiveIndex);
 				if ( text ) then
 					if ( finished ) then
 						local existingLine = block.lines[objectiveIndex];
@@ -596,7 +627,7 @@ local function UpdateQuestBonusObjectives(BlocksFrame)
 				end
 			end
 			-- first line is either going to display the nub or the check
-			local firstLine = block.lines[1];
+			local firstLine = block.lines[0] or block.lines[1];
 			if ( firstLine ) then
 				if ( taskFinished ) then
 					firstLine.Icon:SetAtlas("Tracker-Check", true);
@@ -633,9 +664,6 @@ local function UpdateQuestBonusObjectives(BlocksFrame)
 			end
 		end
 	end
-	if( displayObjectiveHeader ) then
-		BONUS_OBJECTIVE_TRACKER_MODULE.Header.Text:SetText(TRACKER_HEADER_OBJECTIVE);
-	end
 	if ( OBJECTIVE_TRACKER_UPDATE_REASON == OBJECTIVE_TRACKER_UPDATE_TASK_ADDED ) then
 		PlaySound("UI_Scenario_Stage_End");
 	end	
@@ -658,6 +686,7 @@ function BONUS_OBJECTIVE_TRACKER_MODULE:Update()
 	end
 
 	BONUS_OBJECTIVE_TRACKER_MODULE:BeginLayout();
+	BONUS_OBJECTIVE_TRACKER_MODULE.headerText = TRACKER_HEADER_BONUS_OBJECTIVES;
 
 	UpdateScenarioBonusObjectives(BlocksFrame);
 	UpdateQuestBonusObjectives(BlocksFrame);
@@ -666,6 +695,9 @@ function BONUS_OBJECTIVE_TRACKER_MODULE:Update()
 	end
 	
 	if ( BONUS_OBJECTIVE_TRACKER_MODULE.firstBlock ) then
+		-- update module header text (certain bonus objectives can force this to change)
+		BONUS_OBJECTIVE_TRACKER_MODULE.Header.Text:SetText(BONUS_OBJECTIVE_TRACKER_MODULE.headerText);
+		-- shadow anim
 		local shadowAnim = BONUS_OBJECTIVE_TRACKER_MODULE.Header.ShadowAnim;
 		if ( BONUS_OBJECTIVE_TRACKER_MODULE.Header.animating and not shadowAnim:IsPlaying() ) then
 			local distance = BONUS_OBJECTIVE_TRACKER_MODULE.contentsAnimHeight - 8;
@@ -765,7 +797,12 @@ function BONUS_OBJECTIVE_TRACKER_MODULE:AddProgressBar(block, line, questID, fin
 		end
 		-- reward icon; try the first item
 		local _, texture = GetQuestLogRewardInfo(1, questID);
-		-- next, currency
+		-- artifact xp
+		if ( not texture and GetQuestLogRewardArtifactXP(questID) > 0 ) then
+			local name, icon = C_ArtifactUI.GetArtifactXPRewardTargetInfo();
+			texture = icon or "Interface\\Icons\\INV_Misc_QuestionMark";
+		end
+		-- currency
 		if ( not texture and GetNumQuestLogRewardCurrencies(questID) > 0 ) then
 			_, texture = GetQuestLogRewardCurrencyInfo(1, questID);
 		end

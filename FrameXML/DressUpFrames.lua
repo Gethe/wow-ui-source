@@ -2,7 +2,20 @@ function DressUpItemLink(link)
 	if ( not link or not IsDressableItem(link) ) then
 		return false;
 	end
-	if ( SideDressUpFrame.parentFrame and SideDressUpFrame.parentFrame:IsShown() ) then
+	return DressUpLink(link);
+end
+
+function DressUpTrasmogLink(link)
+	if ( not link or strsub(link, 1, 16) ~= "transmogillusion" ) then
+		return false;
+	end
+	return DressUpLink(link);
+end
+
+function DressUpLink(link)
+	if ( WardrobeCollectionFrame and WardrobeCollectionFrame.PreviewFrame:IsVisible() ) then
+		WardrobeCollectionFramePreview_TryOn(link);
+	elseif ( SideDressUpFrame.parentFrame and SideDressUpFrame.parentFrame:IsShown() ) then
 		if ( not SideDressUpFrame:IsShown() or SideDressUpFrame.mode ~= "player" ) then
 			SideDressUpFrame.mode = "player";
 			SideDressUpFrame.ResetButton:Show();

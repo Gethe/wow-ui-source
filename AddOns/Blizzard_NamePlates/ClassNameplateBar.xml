@@ -1,0 +1,54 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\FrameXML\UI.xsd">
+  <Script file="ClassNameplateBar.lua"/>
+ 
+	<Frame name="ClassNameplateBarFrame" parentKey="NameplateBar" virtual="true">
+		<KeyValues>
+			<KeyValue key="layoutIndex" value="2"/>
+			<KeyValue key="align" value="center"/>
+		</KeyValues>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnEvent method="OnEvent"/>
+		</Scripts>
+	</Frame>
+	
+	<StatusBar name="ClassNameplateManaBarFrame" mixin="ClassNameplateBar, ClassNameplateManaBar">
+		<KeyValues>
+			<KeyValue key="layoutIndex" value="1"/>
+			<KeyValue key="align" value="center"/>
+		</KeyValues>
+		<Size x="86" y="4"/>
+		<Layers>
+			<Layer level="BACKGROUND" textureSubLevel="2">
+				<Texture parentKey="background" atlas="nameplates-playerhealth-background" useAtlasSize="false" setAllPoints="true">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="-2" y="1"/>
+						<Anchor point="BOTTOMRIGHT" x="2" y="-1"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<BarTexture parentKey="Texture" file="Interface\TargetingFrame\UI-TargetingFrame-BarFill"/>
+		<BarColor r="0" g="0" b="1"/>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnEvent method="OnEvent"/>
+		</Scripts>
+	</StatusBar>
+
+	<Frame name="NamePlateTargetResourceFrame" inherits="VerticalLayoutFrame">
+		<KeyValues>
+			<KeyValue key="spacing" value="4" type="number"/>
+		</KeyValues>
+	</Frame>
+
+	<Frame name="NamePlatePlayerResourceFrame" inherits="VerticalLayoutFrame">
+		<KeyValues>
+			<KeyValue key="spacing" value="4" type="number"/>
+		</KeyValues>
+	</Frame>
+
+</Ui>
+
+

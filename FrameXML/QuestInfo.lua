@@ -302,6 +302,7 @@ function QuestInfo_ShowRewards()
 	local skillPoints;
 	local skillIcon;
 	local xp;
+	local artifactXP;
 	local playerTitle;
 	local totalHeight = 0;
 	local rewardsFrame = QuestInfoFrame.rewardsFrame;
@@ -314,6 +315,7 @@ function QuestInfo_ShowRewards()
 		money = GetQuestLogRewardMoney();
 		skillName, skillIcon, skillPoints = GetQuestLogRewardSkillPoints();
 		xp = GetQuestLogRewardXP();
+		artifactXP = GetQuestLogRewardArtifactXP();
 		playerTitle = GetQuestLogRewardTitle();
 		ProcessQuestLogRewardFactions();
 		spellGetter = GetQuestLogRewardSpell;
@@ -324,6 +326,7 @@ function QuestInfo_ShowRewards()
 		money = GetRewardMoney();
 		skillName, skillIcon, skillPoints = GetRewardSkillPoints();
 		xp = GetRewardXP();
+		artifactXP = GetRewardArtifactXP();
 		playerTitle = GetRewardTitle();
 		spellGetter = GetRewardSpell;
 	end
@@ -336,7 +339,7 @@ function QuestInfo_ShowRewards()
 	end
 
 	local totalRewards = numQuestRewards + numQuestChoices + numQuestCurrencies;
-	if ( totalRewards == 0 and money == 0 and xp == 0 and not playerTitle and numQuestSpellRewards == 0 ) then
+	if ( totalRewards == 0 and money == 0 and xp == 0 and not playerTitle and numQuestSpellRewards == 0 and artifactXP == 0 ) then
 		rewardsFrame:Hide();
 		return nil;
 	end
@@ -344,6 +347,7 @@ function QuestInfo_ShowRewards()
 	-- Hide unused rewards
 	local rewardButtons = rewardsFrame.RewardButtons;
 	for i = totalRewards + 1, #rewardButtons do
+		rewardButtons[i]:ClearAllPoints();
 		rewardButtons[i]:Hide();
 	end
 	
@@ -353,9 +357,26 @@ function QuestInfo_ShowRewards()
 	
 	local totalHeight = rewardsFrame.Header:GetHeight();
 	local buttonHeight = rewardsFrame.RewardButtons[1]:GetHeight();
+
+	rewardsFrame.ArtifactXPFrame:ClearAllPoints();
+	if ( artifactXP > 0 ) then
+		local name, icon = C_ArtifactUI.GetArtifactXPRewardTargetInfo();
+		rewardsFrame.ArtifactXPFrame:SetPoint("TOPLEFT", lastFrame, "BOTTOMLEFT", 0, -REWARDS_SECTION_OFFSET);
+		rewardsFrame.ArtifactXPFrame.Name:SetText(BreakUpLargeNumbers(artifactXP));
+		rewardsFrame.ArtifactXPFrame.Icon:SetTexture(icon or "Interface\\Icons\\INV_Misc_QuestionMark");
+		rewardsFrame.ArtifactXPFrame:Show();
+
+		lastFrame = rewardsFrame.ArtifactXPFrame;
+		totalHeight = totalHeight + rewardsFrame.ArtifactXPFrame:GetHeight() + REWARDS_SECTION_OFFSET;
+	else
+		rewardsFrame.ArtifactXPFrame:Hide();
+	end
+
 	-- Setup choosable rewards
+	rewardsFrame.ItemChooseText:ClearAllPoints();
 	if ( numQuestChoices > 0 ) then
 		rewardsFrame.ItemChooseText:Show();
+		rewardsFrame.ItemChooseText:SetPoint("TOPLEFT", lastFrame, "BOTTOMLEFT", 0, -5);
 		
 		local index;
 		local baseIndex = rewardsCount;
@@ -412,6 +433,7 @@ function QuestInfo_ShowRewards()
 	end
 	
 	-- Setup spell rewards
+	rewardsFrame.SpellLearnText:ClearAllPoints();
 	if ( numQuestSpellRewards > 0 ) then
 		rewardsFrame.SpellLearnText:Show();
 		rewardsFrame.SpellLearnText:SetPoint("TOPLEFT", lastFrame, "BOTTOMLEFT", 0, -REWARDS_SECTION_OFFSET);

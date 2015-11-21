@@ -98,6 +98,25 @@ function SetItemButtonSlotVertexColor(button, r, g, b)
 	_G[button:GetName().."SlotTexture"]:SetVertexColor(r, g, b);
 end
 
+function SetItemButtonQuality(button, quality, itemIDOrLink)
+	if itemIDOrLink and IsArtifactRelicItem(itemIDOrLink) then
+		button.IconBorder:SetTexture([[Interface\Artifacts\RelicIconFrame]]);
+	else
+		button.IconBorder:SetTexture([[Interface\Common\WhiteIconFrame]]);
+	end
+
+	if quality then
+		if quality >= LE_ITEM_QUALITY_COMMON and BAG_ITEM_QUALITY_COLORS[quality] then
+			button.IconBorder:Show();
+			button.IconBorder:SetVertexColor(BAG_ITEM_QUALITY_COLORS[quality].r, BAG_ITEM_QUALITY_COLORS[quality].g, BAG_ITEM_QUALITY_COLORS[quality].b);
+		else
+			button.IconBorder:Hide();
+		end
+	else
+		button.IconBorder:Hide();
+	end
+end
+
 function HandleModifiedItemClick(link)
 	if ( not link ) then
 		return false;

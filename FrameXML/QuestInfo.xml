@@ -248,9 +248,6 @@
 				</FontString>
 				<FontString parentKey="ItemChooseText" inherits="QuestFont" text="REWARD_CHOICES" hidden="true" justifyH="LEFT">
 					<Size x="285" y="0"/>
-					<Anchors>
-						<Anchor point="TOPLEFT" relativeKey="$parent.Header" relativePoint="BOTTOMLEFT" x="0" y="-5"/>
-					</Anchors>
 				</FontString>
 				<FontString parentKey="ItemReceiveText" inherits="QuestFont" hidden="true" justifyH="LEFT" />
 				<FontString parentKey="SpellLearnText" inherits="QuestFont" hidden="true" justifyH="LEFT" />
@@ -332,6 +329,26 @@
 					</Layer>
 				</Layers>
 			</Frame>
+			<Button parentKey="ArtifactXPFrame" inherits="LargeItemButtonTemplate" hidden="true">
+				<Layers>
+					<Layer level="BORDER">
+						<Texture parentKey="Overlay" file="Interface\Artifacts\ArtifactPower-QuestBorder">
+							<Size x="64" y="64" />
+							<Anchors>
+								<Anchor point="CENTER" relativeKey="$parent.Icon" />
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnEnter>
+						GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+						GameTooltip:SetText(ARTIFACT_XP_REWARD, HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b, nil, true);
+					</OnEnter>
+
+					<OnLeave function="GameTooltip_Hide" />
+				</Scripts>
+			</Button>
 			<Frame parentKey="TitleFrame" name="QuestInfoPlayerTitleFrame">
 				<Size x="500" y="39"/>
 				<Layers>
@@ -437,6 +454,26 @@
 			<Button parentKey="FollowerFrame" inherits="QuestInfoRewardFollowerTemplate"/>
 			<Button name="$parentQuestInfoItem1" inherits="SmallItemButtonTemplate, QuestInfoRewardItemCodeTemplate" hidden="true" parentArray="RewardButtons"/>
 			<Button parentKey="XPFrame" inherits="SmallItemButtonTemplate" hidden="true"/>
+			<Button parentKey="ArtifactXPFrame" inherits="SmallItemButtonTemplate" hidden="true">
+				<Layers>
+					<Layer level="BORDER">
+						<Texture parentKey="Overlay" file="Interface\Artifacts\ArtifactPower-QuestBorder">
+							<Size x="49" y="49" />
+							<Anchors>
+								<Anchor point="CENTER" relativeKey="$parent.Icon" />
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnEnter>
+						GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+						GameTooltip:SetText(ARTIFACT_XP_REWARD, HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b, nil, true);
+					</OnEnter>
+
+					<OnLeave function="GameTooltip_Hide" />
+				</Scripts>
+			</Button>
 			<Button parentKey="MoneyFrame" inherits="SmallItemButtonTemplate" hidden="true"/>
 			<Button parentKey="SkillPointFrame" inherits="SmallItemButtonTemplate">
 				<Layers>
@@ -486,6 +523,7 @@
 				self.MoneyFrame.Name:SetFontObject("GameFontHighlight");
 				self.XPFrame.Icon:SetTexture("Interface\\Icons\\XP_Icon");
 				self.XPFrame.Name:SetFontObject("NumberFontNormal");
+				self.ArtifactXPFrame.Name:SetFontObject("NumberFontNormal");
 				self.TitleFrame.Icon:SetTexture("Interface\\Icons\\INV_Misc_Note_02");
 			</OnLoad>
 		</Scripts>

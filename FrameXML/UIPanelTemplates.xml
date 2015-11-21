@@ -7,7 +7,7 @@
 				<Texture name="$parentSearchIcon" file="Interface\Common\UI-Searchbox-Icon" parentKey="searchIcon">
 					<Size x="14" y="14"/>
 					<Anchors>
-						<Anchor point="LEFT" x="-" y="-2"/>
+						<Anchor point="LEFT" x="0" y="-2"/>
 					</Anchors>
 				</Texture>
 			</Layer>
@@ -1320,12 +1320,12 @@
 				<Texture parentKey="Top" parentArray="Textures" file="Interface\Common\ThinBorder2-Top">
 					<Anchors>
 						<Anchor point="TOPLEFT" relativeKey="$parent.TopLeft" relativePoint="TOPRIGHT"/>
-						<Anchor point="TOPRIGHT" relativeKey="$parent.TopRight" relativePoint="TOPLEFT"/>
+						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.TopRight" relativePoint="BOTTOMLEFT"/>
 					</Anchors>
 				</Texture>
 				<Texture parentKey="Bottom" parentArray="Textures" file="Interface\Common\ThinBorder2-Top">
 					<Anchors>
-						<Anchor point="BOTTOMLEFT" relativeKey="$parent.BottomLeft" relativePoint="BOTTOMRIGHT"/>
+						<Anchor point="TOPLEFT" relativeKey="$parent.BottomLeft" relativePoint="TOPRIGHT"/>
 						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.BottomRight" relativePoint="BOTTOMLEFT"/>
 					</Anchors>
 					<TexCoords left="0" right="1" top="1" bottom="0"/>
@@ -1334,12 +1334,12 @@
 				<Texture parentKey="Left" parentArray="Textures" file="Interface\Common\ThinBorder2-Left">
 					<Anchors>
 						<Anchor point="TOPLEFT" relativeKey="$parent.TopLeft" relativePoint="BOTTOMLEFT"/>
-						<Anchor point="BOTTOMLEFT" relativeKey="$parent.BottomLeft" relativePoint="TOPLEFT"/>
+						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.BottomLeft" relativePoint="TOPRIGHT"/>
 					</Anchors>
 				</Texture>
 				<Texture parentKey="Right" parentArray="Textures" file="Interface\Common\ThinBorder2-Left">
 					<Anchors>
-						<Anchor point="TOPRIGHT" relativeKey="$parent.TopRight" relativePoint="BOTTOMRIGHT"/>
+						<Anchor point="TOPLEFT" relativeKey="$parent.TopRight" relativePoint="BOTTOMLEFT"/>
 						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.BottomRight" relativePoint="TOPRIGHT"/>
 					</Anchors>
 					<TexCoords left="1" right="0" top="0" bottom="1"/>
@@ -1383,12 +1383,12 @@
 				<Texture parentKey="Top" parentArray="Textures" file="Interface\Common\GlowBorder-Top" alphaMode="ADD">
 					<Anchors>
 						<Anchor point="TOPLEFT" relativeKey="$parent.TopLeft" relativePoint="TOPRIGHT"/>
-						<Anchor point="TOPRIGHT" relativeKey="$parent.TopRight" relativePoint="TOPLEFT"/>
+						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.TopRight" relativePoint="BOTTOMLEFT"/>
 					</Anchors>
 				</Texture>
 				<Texture parentKey="Bottom" parentArray="Textures" file="Interface\Common\GlowBorder-Top" alphaMode="ADD">
 					<Anchors>
-						<Anchor point="BOTTOMLEFT" relativeKey="$parent.BottomLeft" relativePoint="BOTTOMRIGHT"/>
+						<Anchor point="TOPLEFT" relativeKey="$parent.BottomLeft" relativePoint="TOPRIGHT"/>
 						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.BottomRight" relativePoint="BOTTOMLEFT"/>
 					</Anchors>
 					<TexCoords left="0" right="1" top="1" bottom="0"/>
@@ -1397,12 +1397,12 @@
 				<Texture parentKey="Left" parentArray="Textures" file="Interface\Common\GlowBorder-Left" alphaMode="ADD">
 					<Anchors>
 						<Anchor point="TOPLEFT" relativeKey="$parent.TopLeft" relativePoint="BOTTOMLEFT"/>
-						<Anchor point="BOTTOMLEFT" relativeKey="$parent.BottomLeft" relativePoint="TOPLEFT"/>
+						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.BottomLeft" relativePoint="TOPRIGHT"/>
 					</Anchors>
 				</Texture>
 				<Texture parentKey="Right" parentArray="Textures" file="Interface\Common\GlowBorder-Left" alphaMode="ADD">
 					<Anchors>
-						<Anchor point="TOPRIGHT" relativeKey="$parent.TopRight" relativePoint="BOTTOMRIGHT"/>
+						<Anchor point="TOPLEFT" relativeKey="$parent.TopRight" relativePoint="BOTTOMLEFT"/>
 						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.BottomRight" relativePoint="TOPRIGHT"/>
 					</Anchors>
 					<TexCoords left="1" right="0" top="0" bottom="1"/>
@@ -2344,8 +2344,8 @@
 		</HighlightTexture>
 		<Animations>
 			<AnimationGroup parentKey="Pulse" looping="BOUNCE">
-				<Alpha target="$parentBigIPulse" change="-0.75" duration="1.0" smoothing="IN_OUT" order="1"/>
-				<Alpha target="$parentRingPulse" change="-0.5" duration="1.0" smoothing="IN_OUT" order="1"/>
+				<Alpha target="$parentBigIPulse" fromAlpha="0.75" toAlpha="0" duration="1.0" smoothing="IN_OUT" order="1"/>
+				<Alpha target="$parentRingPulse" fromAlpha="0.5" toAlpha="0" duration="1.0" smoothing="IN_OUT" order="1"/>
 			</AnimationGroup>
 		</Animations>
 	</Button>
@@ -2427,6 +2427,16 @@
 				</Texture>
 			</Layer>
 		</Layers>
+		<Animations>
+			<AnimationGroup parentKey="LingerAndFade">
+				<Alpha childKey="FadeOut" startDelay="5" fromAlpha="1" toAlpha="0" duration="1" smoothing="IN_OUT" order="2"/>
+				<Scripts>
+					<OnFinished>
+						self:GetParent():Hide();
+					</OnFinished>
+				</Scripts>
+			</AnimationGroup>
+		</Animations>
 		<Scripts>
 			<OnLoad>
 				self.Text:SetSpacing(4);
@@ -2444,10 +2454,12 @@
 	<Button name="HelpPlateButton" virtual="true" frameStrata="DIALOG" hidden="true">
 		<Size x="46" y="46"/>
 		<Layers>
+			<Layer level="ARTWORK">
+				<Texture parentKey="HelpI" hidden="false" alpha="1" alphaMode="BLEND" file="Interface\common\help-i"/>
+			</Layer>
 			<Layer level="OVERLAY">
-				<Texture parentKey="I" file="Interface\common\help-i" setallpoints="true"/>
-				<Texture parentKey="BigI" file="Interface\common\help-i" setallpoints="true" alphaMode="ADD" hidden="true"/>
-				<Texture parentKey="Ring" file="Interface\Minimap\UI-Minimap-ZoomButton-Highlight" setallpoints="true" alphaMode="ADD" hidden="true"/>
+				<Texture parentKey="HelpIGlow" hidden="false" alpha="1" alphaMode="ADD" file="Interface\common\help-i"/>
+				<Texture parentKey="BgGlow" hidden="false" alpha="1" alphaMode="ADD" file="Interface\Minimap\UI-Minimap-ZoomButton-Highlight"/>
 			</Layer>
 		</Layers>
 		<Scripts>
@@ -2463,9 +2475,11 @@
 			</Anchors>
 		</HighlightTexture>
 		<Animations>
-			<AnimationGroup parentKey="Pulse" looping="BOUNCE">
-				<Alpha childKey="BigI" change="-0.8" duration="0.5"/>
-				<Alpha childKey="Ring" change="-0.8" duration="0.5"/>
+			<AnimationGroup parentKey="Pulse" setToFinalAlpha="true" looping="REPEAT">
+				<Alpha childKey="HelpIGlow" duration="0.5" order="1" fromAlpha="0.25" toAlpha="1"/>
+				<Alpha childKey="HelpIGlow" startDelay="0.5" duration="1" order="1" fromAlpha="1" toAlpha="0.25"/>
+				<Alpha childKey="BgGlow" duration="0.5" order="1" fromAlpha="0.25" toAlpha="1"/>
+				<Alpha childKey="BgGlow" startDelay="0.5" duration="1" order="1" fromAlpha="1" toAlpha="0.25"/>
 			</AnimationGroup>
 		</Animations>
 	</Button>
@@ -2479,12 +2493,14 @@
 						<Anchor point="TOPLEFT" x="0" y="0"/>
 						<Anchor point="BOTTOMRIGHT" x="0" y="0"/>
 					</Anchors>
-					<Color r="0" g="0" b="0" a="0.7"/>
+					<Color r="0" g="0" b="0" a="0.4"/>
 				</Texture>
 			</Layer>
 		</Layers>
 		<Scripts>
 			<OnLoad function="HelpPlateBox_OnLoad"/>
+			<OnEnter function="HelpPlateBox_OnEnter"/>
+			<OnLeave function="HelpPlateBox_OnLeave"/>
 		</Scripts>
 	</Frame>
 	
@@ -2571,17 +2587,11 @@
 				</FontString>
 			</Layer>
 		</Layers>
-		<Frames>
-			<Button parentKey="FocusButton" setAllPoints="true">
-				<Scripts>
-					<OnClick>
-						self:GetParent().EditBox:SetFocus();
-					</OnClick>
-				</Scripts>
-			</Button>
-		</Frames>
 		<Scripts>
 			<OnLoad function="InputScrollFrame_OnLoad"/>
+			<OnMouseDown>
+				self.EditBox:SetFocus();
+			</OnMouseDown>
 		</Scripts>
 		<ScrollChild>
 			<EditBox parentKey="EditBox" multiLine="true" countInvisibleLetters="true" autoFocus="false">
@@ -2613,12 +2623,6 @@
 					<OnEscapePressed>
 						self:ClearFocus();
 					</OnEscapePressed>
-					<OnEditFocusGained>
-						self:GetParent().FocusButton:Hide();
-					</OnEditFocusGained>
-					<OnEditFocusLost>
-						self:GetParent().FocusButton:Show();
-					</OnEditFocusLost>
 				</Scripts>
 				<FontString inherits="GameFontHighlightSmall"/>
 			</EditBox>

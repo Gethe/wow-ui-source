@@ -32,6 +32,11 @@ function QuestFrame_OnEvent(self, event, ...)
 		QuestFrameGreetingPanel:Hide();
 		QuestFrameGreetingPanel:Show();
 	elseif ( event == "QUEST_DETAIL" ) then
+		if ( QuestIsFromAdventureMap() ) then
+			HideUIPanel(QuestLogPopupDetailFrame);
+			return;
+		end
+
 		if ( QuestGetAutoAccept() and QuestIsFromAreaTrigger()) then
 			if (AutoQuestPopupTracker_AddPopUp(GetQuestID(), "OFFER")) then
 				PlayAutoAcceptQuestSound();

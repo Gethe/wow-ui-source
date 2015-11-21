@@ -272,31 +272,34 @@ end
 
 -- Scrollframe functions
 function ScrollFrame_OnLoad(self)
-	_G[self:GetName().."ScrollBarScrollDownButton"]:Disable();
-	_G[self:GetName().."ScrollBarScrollUpButton"]:Disable();
-
-	local scrollbar = _G[self:GetName().."ScrollBar"];
+	local scrollbar = self.ScrollBar or _G[self:GetName().."ScrollBar"];
 	scrollbar:SetMinMaxValues(0, 0);
 	scrollbar:SetValue(0);
 	self.offset = 0;
+
+	local scrollDownButton = scrollbar.ScrollDownButton or _G[scrollbar:GetName().."ScrollDownButton"];
+	local scrollUpButton = scrollbar.ScrollUpButton or _G[scrollbar:GetName().."ScrollUpButton"];
+
+	scrollDownButton:Disable();
+	scrollUpButton:Disable();
 	
 	if ( self.scrollBarHideable ) then
-		_G[self:GetName().."ScrollBar"]:Hide();
-		_G[scrollbar:GetName().."ScrollDownButton"]:Hide();
-		_G[scrollbar:GetName().."ScrollUpButton"]:Hide();
+		scrollbar:Hide();
+		scrollDownButton:Hide();
+		scrollUpButton:Hide();
 	else
-		_G[scrollbar:GetName().."ScrollDownButton"]:Disable();
-		_G[scrollbar:GetName().."ScrollUpButton"]:Disable();
-		_G[scrollbar:GetName().."ScrollDownButton"]:Show();
-		_G[scrollbar:GetName().."ScrollUpButton"]:Show();
+		scrollDownButton:Disable();
+		scrollUpButton:Disable();
+		scrollDownButton:Show();
+		scrollUpButton:Show();
 	end
 	if ( self.noScrollThumb ) then
-		_G[scrollbar:GetName().."ThumbTexture"]:Hide();
+		(scrollbar.ThumbTexture or _G[scrollbar:GetName().."ThumbTexture"]):Hide();
 	end
 end
 
 function ScrollFrameTemplate_OnMouseWheel(self, value, scrollBar)
-	scrollBar = scrollBar or _G[self:GetName() .. "ScrollBar"];
+	scrollBar = scrollBar or self.ScrollBar or _G[self:GetName() .. "ScrollBar"];
 	local scrollStep = scrollBar.scrollStep or scrollBar:GetHeight() / 2
 	if ( value > 0 ) then
 		scrollBar:SetValue(scrollBar:GetValue() - scrollStep);
@@ -306,7 +309,8 @@ function ScrollFrameTemplate_OnMouseWheel(self, value, scrollBar)
 end
 
 function ScrollFrame_OnScrollRangeChanged(self, xrange, yrange)
-	local scrollbar = self.ScrollBar or _G[self:GetName().."ScrollBar"];
+	local name = self:GetName();
+	local scrollbar = self.ScrollBar or _G[name.."ScrollBar"];
 	if ( not yrange ) then
 		yrange = self:GetVerticalScrollRange();
 	end
@@ -316,40 +320,45 @@ function ScrollFrame_OnScrollRangeChanged(self, xrange, yrange)
 	end
 	scrollbar:SetMinMaxValues(0, yrange);
 	scrollbar:SetValue(value);
+
+	local scrollDownButton = scrollbar.ScrollDownButton or _G[scrollbar:GetName().."ScrollDownButton"];
+	local scrollUpButton = scrollbar.ScrollUpButton or _G[scrollbar:GetName().."ScrollUpButton"];
+	local thumbTexture = scrollbar.ThumbTexture or _G[scrollbar:GetName().."ThumbTexture"];
+
 	if ( floor(yrange) == 0 ) then
 		if ( self.scrollBarHideable ) then
-			_G[self:GetName().."ScrollBar"]:Hide();
-			_G[scrollbar:GetName().."ScrollDownButton"]:Hide();
-			_G[scrollbar:GetName().."ScrollUpButton"]:Hide();
-			_G[scrollbar:GetName().."ThumbTexture"]:Hide();
+			scrollbar:Hide();
+			scrollDownButton:Hide();
+			scrollUpButton:Hide();
+			thumbTexture:Hide();
 		else
-			_G[scrollbar:GetName().."ScrollDownButton"]:Disable();
-			_G[scrollbar:GetName().."ScrollUpButton"]:Disable();
-			_G[scrollbar:GetName().."ScrollDownButton"]:Show();
-			_G[scrollbar:GetName().."ScrollUpButton"]:Show();
+			scrollDownButton:Disable();
+			scrollUpButton:Disable();
+			scrollDownButton:Show();
+			scrollUpButton:Show();
 			if ( not self.noScrollThumb ) then
-				_G[scrollbar:GetName().."ThumbTexture"]:Show();
+				thumbTexture:Show();
 			end
 		end
 	else
-		_G[scrollbar:GetName().."ScrollDownButton"]:Show();
-		_G[scrollbar:GetName().."ScrollUpButton"]:Show();
-		_G[self:GetName().."ScrollBar"]:Show();
+		scrollDownButton:Show();
+		scrollUpButton:Show();
+		scrollbar:Show();
 		if ( not self.noScrollThumb ) then
-			_G[scrollbar:GetName().."ThumbTexture"]:Show();
+			thumbTexture:Show();
 		end
 		-- The 0.005 is to account for precision errors
 		if ( yrange - value > 0.005 ) then
-			_G[scrollbar:GetName().."ScrollDownButton"]:Enable();
+			scrollDownButton:Enable();
 		else
-			_G[scrollbar:GetName().."ScrollDownButton"]:Disable();
+			scrollDownButton:Disable();
 		end
 	end
 	
 	-- Hide/show scrollframe borders
-	local top = _G[self:GetName().."Top"];
-	local bottom = _G[self:GetName().."Bottom"];
-	local middle = _G[self:GetName().."Middle"];
+	local top = self.Top or name and _G[name.."Top"];
+	local bottom = self.Bottom or name and _G[name.."Bottom"];
+	local middle = self.Middle or name and _G[name.."Middle"];
 	if ( top and bottom and self.scrollBarHideable ) then
 		if ( self:GetVerticalScrollRange() == 0 ) then
 			top:Hide();

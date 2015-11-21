@@ -3,6 +3,59 @@
 	
 	<Script file="Blizzard_ScenarioObjectiveTracker.lua"/>
 
+	<Frame name="ScenarioSpellFrameTemplate" hidden="true" virtual="true">
+		<Size x="216" y="34"/>
+		<Layers>
+			<Layer level="ARTWORK">
+				<FontString parentKey="SpellName" inherits="GameFontHighlight" justifyH="LEFT">
+					<Size x="184" y="26"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" x="52" y="-4"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Button parentKey="SpellButton">
+				<Size x="26" y="26"/>
+				<Anchors>
+					<Anchor point="TOPLEFT" x="20" y="-4"/>
+				</Anchors>
+				<Layers>
+					<Layer level="BORDER">
+						<Texture parentKey="Icon">
+							<Size x="26" y="26"/>
+							<Anchors>
+								<Anchor point="TOPLEFT"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+				<Frames>
+					<Cooldown parentKey="Cooldown" inherits="CooldownFrameTemplate"/>
+				</Frames>
+				<NormalTexture parentKey="NormalTexture" file="Interface\Buttons\UI-Quickslot2">
+					<Size x="42" y="42"/>
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</NormalTexture>
+				<PushedTexture file="Interface\Buttons\UI-Quickslot-Depress"/>
+				<HighlightTexture file="Interface\Buttons\ButtonHilight-Square" alphaMode="ADD"/>
+				<Scripts>
+					<OnEnter function="ScenarioSpellButton_OnEnter"/>
+					<OnLeave function="GameTooltip_Hide"/>
+					<OnClick function="ScenarioSpellButton_OnClick"/>
+				</Scripts>
+			</Button>
+		</Frames>
+		<Animations>
+			<AnimationGroup parentKey="Fadein" setToFinalAlpha="true">
+				<Alpha duration="0.25" startDelay="0.1" order="1" fromAlpha="0" toAlpha="1"/>
+			</AnimationGroup>
+		</Animations>
+	</Frame>
+	
 	<ScrollFrame name="ScenarioBlocksFrame" parent="ObjectiveTrackerBlocksFrame" hidden="true">
 		<Size x="212" y="10"/>
 		<ScrollChild>
@@ -34,8 +87,8 @@
 									</Anchors>
 									<Animations>
 										<AnimationGroup parentKey="AlphaAnim">
-											<Alpha change="1" duration="0.266" order="1"/>
-											<Alpha endDelay="0.2" change="-1" duration="0.333" order="2"/>
+											<Alpha fromAlpha="0" toAlpha="1" duration="0.266" order="1"/>
+											<Alpha endDelay="0.2" fromAlpha="1" toAlpha="0" duration="0.333" order="2"/>
 										</AnimationGroup>
 									</Animations>
 								</Texture>
@@ -75,6 +128,35 @@
 								</FontString>
 							</Layer>
 						</Layers>
+						<Frames>
+							<Button parentKey="RewardButton" hidden="true">
+								<Size x="48" y="48"/>
+								<Anchors>
+									<Anchor point="BOTTOMRIGHT" x="50" y="-3"/>
+								</Anchors>
+								<Layers>
+									<Layer level="OVERLAY" textureSubLevel="1">
+										<Texture parentKey="RewardRing" atlas="legioninvasion-scenario-rewardring" useAtlasSize="true">
+											<Anchors>
+												<Anchor point="CENTER" relativeKey="$parent.RewardRing"/>
+											</Anchors>
+										</Texture>
+									</Layer>
+									<Layer level="OVERLAY" textureSubLevel="0">
+										<Texture parentKey="RewardIcon">
+											<Size x="29" y="29"/>
+											<Anchors>
+												<Anchor point="CENTER" relativeKey="$parent.RewardRing"/>
+											</Anchors>
+										</Texture>
+									</Layer>
+								</Layers>
+								<Scripts>
+									<OnEnter function="ScenarioRewardButton_OnEnter"/>
+									<OnLeave function="ScenarioRewardButton_OnLeave"/>
+								</Scripts>
+							</Button>
+						</Frames>
 						<Scripts>
 							<OnEnter function="ScenarioObjectiveStageBlock_OnEnter"/>
 							<OnLeave>
@@ -159,12 +241,12 @@
 								</Scripts>
 								<Animations>
 									<AnimationGroup parentKey="MedalGlowAnim">
-										<Alpha childKey="MedalGlow" change="1" duration="0.4" order="1"/>
-										<Alpha childKey="MedalGlow" change="-1" duration="2" order="2"/>
+										<Alpha childKey="MedalGlow" fromAlpha="0" toAlpha="1" duration="0.4" order="1"/>
+										<Alpha childKey="MedalGlow" fromAlpha="1" toAlpha="0" duration="2" order="2"/>
 									</AnimationGroup>
 									<AnimationGroup parentKey="MedalPulseAnim">
-										<Alpha childKey="MedalIcon" change="1" duration="0.25" order="1"/>
-										<Alpha childKey="MedalIcon" change="-1" endDelay=".5" duration="0.25" order="2"/>
+										<Alpha childKey="MedalIcon" fromAlpha="0" toAlpha="1" duration="0.25" order="1"/>
+										<Alpha childKey="MedalIcon" fromAlpha="1" toAlpha="0" endDelay=".5" duration="0.25" order="2"/>
 										<Scripts>
 											<OnFinished function="Scenario_ChallengeMode_MedalPulseAnim_OnFinished"/>
 										</Scripts>
@@ -264,12 +346,12 @@
 		</Anchors>
 		<Animations>
 			<AnimationGroup parentKey="CountdownAnim">
-				<Alpha childKey="BGAnim" change="1" duration="0.25" order="1"/>
-				<Alpha childKey="BGAnim" endDelay="0.45" change="-1" duration="0.3" order="2"/>
-				<Alpha childKey="BorderAnim" change="1" duration="0.25" order="1"/>
-				<Alpha childKey="BorderAnim" endDelay="0.45" change="-1" duration="0.3" order="2"/>
-				<Alpha childKey="Glow" change=".5" duration="0.25" order="1"/>
-				<Alpha childKey="Glow" endDelay="0.45" change="-.5" duration="0.3" order="2"/>
+				<Alpha childKey="BGAnim" fromAlpha="0" toAlpha="1" duration="0.25" order="1"/>
+				<Alpha childKey="BGAnim" endDelay="0.45" fromAlpha="1" toAlpha="0" duration="0.3" order="2"/>
+				<Alpha childKey="BorderAnim" fromAlpha="0" toAlpha="1" duration="0.25" order="1"/>
+				<Alpha childKey="BorderAnim" endDelay="0.45" fromAlpha="1" toAlpha="0" duration="0.3" order="2"/>
+				<Alpha childKey="Glow" duration="0.25" order="1" fromAlpha="0" toAlpha="0.5"/>
+				<Alpha childKey="Glow" endDelay="0.45" duration="0.3" order="2" fromAlpha="0.5" toAlpha="0"/>
 				<Scripts>
 					<OnFinished function="Scenario_ProvingGrounds_CountdownAnim_OnFinished"/>
 				</Scripts>
@@ -385,4 +467,56 @@
 			<OnUpdate function="ScenarioTimer_OnUpdate"/>
 		</Scripts>
 	</Frame>
+
+	<Frame name="ScenarioStepRewardTooltip" inherits="VerticalLayoutFrame" parent="UIParent" frameStrata="TOOLTIP" clampedToScreen="true" hidden="true">
+		<KeyValues>
+			<KeyValue key="fixedWidth" value="100" type="number"/>
+			<KeyValue key="expand" value="true" type="boolean"/> 
+			<KeyValue key="topPadding" value="10" type="number"/>
+			<KeyValue key="bottomPadding" value="12" type="number"/>
+			<KeyValue key="leftPadding" value="10" type="number"/>
+			<KeyValue key="rightPadding" value="10" type="number"/>
+			<KeyValue key="spacing" value="8" type="number"/>
+		</KeyValues>
+		<Backdrop bgFile="Interface\Tooltips\UI-Tooltip-Background" edgeFile="Interface\Tooltips\UI-Tooltip-Border" tile="true">
+			<EdgeSize val="16"/>
+			<TileSize val="16"/>
+			<BackgroundInsets left="5" right="5" top="5" bottom="5"/>
+		</Backdrop>
+		<Anchors>
+			<Anchor point="BOTTOMRIGHT"/>
+		</Anchors>
+		<Layers>
+			<Layer level="OVERLAY">
+				<FontString parentKey="Title" inherits="GameFontNormal" justifyH="LEFT" wordwrap="true" text="SCENARIO_INVASION_REWARD_TOOLTIP_TEXT">
+					<Size x="100" y="0"/>
+					<KeyValues>
+						<KeyValue key="layoutIndex" value="1" type="number"/>
+						<KeyValue key="expand" value="true" type="boolean"/> 
+					</KeyValues>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Frame parentKey="ItemTooltip" inherits="EmbeddedItemTooltip">
+				<KeyValues>
+					<KeyValue key="leftPadding" value="8" type="number"/>
+					<KeyValue key="layoutIndex" value="2" type="number"/>
+				</KeyValues>
+				<Size x="100" y="100"/>
+				<Scripts>
+					<OnSizeChanged inherit="prepend">
+						self:GetParent():Layout();
+					</OnSizeChanged>
+				</Scripts>
+			</Frame>
+		</Frames>
+		<Scripts>
+			<OnLoad>
+				self:SetBackdropBorderColor(TOOLTIP_DEFAULT_COLOR.r, TOOLTIP_DEFAULT_COLOR.g, TOOLTIP_DEFAULT_COLOR.b);
+				self:SetBackdropColor(TOOLTIP_DEFAULT_BACKGROUND_COLOR.r, TOOLTIP_DEFAULT_BACKGROUND_COLOR.g, TOOLTIP_DEFAULT_BACKGROUND_COLOR.b);
+			</OnLoad>
+		</Scripts>
+	</Frame>
+	
 </Ui>

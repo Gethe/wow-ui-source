@@ -18,7 +18,7 @@
 				</Texture>
 			</Layer>
 			<Layer level="ARTWORK">
-				<Texture name="$parentHighlight" file="Interface\ComboFrame\ComboPoint">
+				<Texture parentKey="Highlight" file="Interface\ComboFrame\ComboPoint">
 					<Size>
 						<AbsDimension x="8" y="16"/>
 					</Size>
@@ -33,7 +33,7 @@
 				</Texture>
 			</Layer>
 			<Layer level="OVERLAY">
-				<Texture name="$parentShine" file="Interface\ComboFrame\ComboPoint" alphaMode="ADD">
+				<Texture parentKey="Shine" file="Interface\ComboFrame\ComboPoint" alphaMode="ADD">
 					<Size>
 						<AbsDimension x="14" y="16"/>
 					</Size>
@@ -62,63 +62,54 @@
 			</Anchor>
 		</Anchors>
 		<Frames>
-			<Frame name="ComboPoint1" inherits="ComboPointTemplate">
+			<Frame name="ComboPoint1" parentArray="ComboPoints" inherits="ComboPointTemplate">
 				<Anchors>
-					<Anchor point="TOPRIGHT">
-						<Offset>
-							<AbsDimension x="0" y="0"/>
-						</Offset>
-					</Anchor>
+					<Anchor point="TOPRIGHT" x="-9" y="6"/>
 				</Anchors>
 			</Frame>
-			<Frame name="ComboPoint2" inherits="ComboPointTemplate">
+			<Frame name="ComboPoint2" parentArray="ComboPoints" inherits="ComboPointTemplate">
 				<Anchors>
-					<Anchor point="TOP" relativeTo="ComboPoint1" relativePoint="BOTTOM">
-						<Offset>
-							<AbsDimension x="7" y="4"/>
-						</Offset>
-					</Anchor>
+					<Anchor point="TOPRIGHT" x="0" y="0"/>
 				</Anchors>
 			</Frame>
-			<Frame name="ComboPoint3" inherits="ComboPointTemplate">
+			<Frame name="ComboPoint3" parentArray="ComboPoints" inherits="ComboPointTemplate">
 				<Anchors>
-					<Anchor point="TOP" relativeTo="ComboPoint2" relativePoint="BOTTOM">
-						<Offset>
-							<AbsDimension x="5" y="2"/>
-						</Offset>
-					</Anchor>
+					<Anchor point="TOPRIGHT" x="7" y="-8"/>
 				</Anchors>
 			</Frame>
-			<Frame name="ComboPoint4" inherits="ComboPointTemplate">
+			<Frame name="ComboPoint4" parentArray="ComboPoints" inherits="ComboPointTemplate">
 				<Anchors>
-					<Anchor point="TOP" relativeTo="ComboPoint3" relativePoint="BOTTOM">
-						<Offset>
-							<AbsDimension x="2" y="1"/>
-						</Offset>
-					</Anchor>
+					<Anchor point="TOPRIGHT" x="12" y="-19"/>
 				</Anchors>
 			</Frame>
-			<Frame name="ComboPoint5" inherits="ComboPointTemplate">
-				<Size>
-					<AbsDimension x="15" y="18"/>
-				</Size>
+			<Frame name="ComboPoint5" parentArray="ComboPoints" inherits="ComboPointTemplate">
 				<Anchors>
-					<Anchor point="TOP" relativeTo="ComboPoint4" relativePoint="BOTTOM">
-						<Offset>
-							<AbsDimension x="0" y="1"/>
-						</Offset>
-					</Anchor>
+					<Anchor point="TOPRIGHT" x="14" y="-30"/>
+				</Anchors>
+			</Frame>
+			<Frame name="ComboPoint6" parentArray="ComboPoints" inherits="ComboPointTemplate">
+				<Anchors>
+					<Anchor point="TOPRIGHT" x="12" y="-41"/>
+				</Anchors>
+			</Frame>
+			<Frame name="ComboPoint7" parentArray="ComboPoints" inherits="ComboPointTemplate" alpha="0.6">
+				<Anchors>
+					<Anchor point="TOPRIGHT" x="24" y="-33"/>
+				</Anchors>
+			</Frame>
+			<Frame name="ComboPoint8" parentArray="ComboPoints" inherits="ComboPointTemplate" alpha="0.6">
+				<Anchors>
+					<Anchor point="TOPRIGHT" x="24" y="-22"/>
+				</Anchors>
+			</Frame>
+			<Frame name="ComboPoint9" parentArray="ComboPoints" inherits="ComboPointTemplate" alpha="0.6">
+				<Anchors>
+					<Anchor point="TOPRIGHT" x="20" y="-12"/>
 				</Anchors>
 			</Frame>
 		</Frames>
 		<Scripts>
-			<OnLoad>
-				self:RegisterEvent("PLAYER_TARGET_CHANGED");
-				self:RegisterEvent("UNIT_COMBO_POINTS");
-				-- init alpha
-				ComboPoint1Highlight:SetAlpha(0);
-				ComboPoint1Shine:SetAlpha(0);
-			</OnLoad>
+			<OnLoad function="ComboFrame_OnLoad"/>
 			<OnEvent function="ComboFrame_OnEvent"/>
 		</Scripts>
 	</Frame>

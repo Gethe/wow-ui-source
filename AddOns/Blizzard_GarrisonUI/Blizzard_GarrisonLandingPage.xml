@@ -26,6 +26,12 @@
 						<Anchor point="BOTTOMRIGHT" x="4" relativeKey="$parent.Icon"/>
 					</Anchors>
 				</FontString>
+				<Texture parentKey="IconBorder" file="Interface\Common\WhiteIconFrame">
+					<Size x="36" y="36"/>
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent.Icon"/>
+					</Anchors>
+				</Texture>
 			</Layer>
 		</Layers>
 		<Scripts>
@@ -820,7 +826,14 @@
 							</Layer>
 						</Layers>
 						<Frames>
-							<Frame parentArray="Abilities" inherits="GarrisonFollowerPageAbilityTemplate" hidden="true"/>
+							<Frame parentArray="Abilities" inherits="GarrisonFollowerPageAbilityTemplate" hidden="true">
+								<Scripts>
+									<OnShow>
+										local followerList = self:GetParent():GetParent():GetParent().FollowerList;
+										self.followerTypeID = followerList.followerType;
+									</OnShow>
+								</Scripts>
+							</Frame>
 							<Frame parentArray="Counters" inherits="GarrisonMissionAbilityCounterTemplate" hidden="true"/>
 						</Frames>
 						<Scripts>

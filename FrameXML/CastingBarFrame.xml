@@ -83,7 +83,7 @@
 		</Layers>
 		<Scripts>
 			<OnLoad>
-				CastingBarFrame_OnLoad(self, "player", true, false);
+				CastingBarFrame_OnLoad(self, nil, true, false);
 			</OnLoad>
 			<OnEvent>
 				CastingBarFrame_OnEvent(self, event, ...);
@@ -171,7 +171,7 @@
 		</Layers>
 		<Scripts>
 			<OnLoad>
-				CastingBarFrame_OnLoad(self, "player", true, false);
+				CastingBarFrame_OnLoad(self, nil, true, false);
 			</OnLoad>
 			<OnEvent>
 				CastingBarFrame_OnEvent(self, event, ...);
@@ -187,15 +187,14 @@
 		<BarColor r="1.0" g="0.7" b="0.0"/>
 	</StatusBar>
 	<StatusBar name="CastingBarFrame" toplevel="true" parent="UIParent" hidden="true" inherits="CastingBarFrameTemplate" frameStrata="HIGH">
-		<Size>
-			<AbsDimension x="195" y="13"/>
-		</Size>
+		<Size x="195" y="13" />
 		<Anchors>
-			<Anchor point="BOTTOM">
-				<Offset>
-					<AbsDimension x="0" y="55"/>
-				</Offset>
-			</Anchor>
+			<Anchor point="BOTTOM" x="0" y="55" />
 		</Anchors>
+		<Scripts>
+			<OnLoad>
+				CastingBarFrame_OnLoad(self, "player", true, false);
+			</OnLoad>
+		</Scripts>
 	</StatusBar>
 </Ui>

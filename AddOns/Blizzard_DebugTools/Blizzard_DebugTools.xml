@@ -352,7 +352,7 @@
 		</Scripts>
 	</Frame>
 	
-	<GameTooltip name="FrameStackTooltip" frameStrata="TOOLTIP" hidden="true" parent="WorldFrame" inherits="GameTooltipTemplate">
+	<GameTooltip name="FrameStackTooltip" frameStrata="TOOLTIP" hidden="true" inherits="GameTooltipTemplate">
 		<Scripts>
 			<OnLoad function="DebugTooltip_OnLoad"/>
 			<OnShow function="FrameStackTooltip_OnShow"/>

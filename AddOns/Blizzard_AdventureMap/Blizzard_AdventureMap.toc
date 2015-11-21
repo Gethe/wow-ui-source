@@ -1,0 +1,19 @@
+## Interface: 70000
+## Title: Blizzard Adventure Map UI
+## Secure: 1
+## Author: Blizzard Entertainment
+## RequiredDep: Blizzard_GarrisonTemplates
+## LoadOnDemand: 1
+
+Blizzard_AdventureMapUtils.lua
+
+AM_DataProviderBase.lua
+AM_ZoneLabelDataProvider.xml
+AM_ZoneSummaryDataProvider.xml
+AM_QuestDialog.xml
+AM_QuestChoiceDataProvider.xml
+AM_QuestOfferDataProvider.xml
+AM_MissionDataProvider.xml
+
+Blizzard_AdventureMapInset.xml
+Blizzard_AdventureMap.xml

@@ -85,7 +85,7 @@
                         self:RegisterForDrag("LeftButton");
                     </OnLoad>
                     <OnDragStart>
-                        MountJournal_Pickup(self:GetParent().index);
+                        C_MountJournal.Pickup(self:GetParent().index);
                     </OnDragStart>
                 </Scripts>
             </Button>
@@ -166,6 +166,7 @@
 				</Anchors>
 				<Scripts>
 					<OnTextChanged function="MountJournal_OnSearchTextChanged"/>
+					<OnHide function="MountJournal_ClearSearch"/>
 				</Scripts>
 			</EditBox>
 			<Button name="$parentFilterButton" inherits="UIMenuButtonStretchTemplate" text="FILTER">

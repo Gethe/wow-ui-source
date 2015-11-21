@@ -893,7 +893,7 @@ function MasterLooterFrame_UpdatePlayers()
 					playerFrame:SetPoint("TOP", MasterLooterFrame["player"..(buttonIndex - 1)], "BOTTOM", 0, 0);
 				end
 				if ( mod(row, 2) == 0 ) then
-					playerFrame.Bg:SetTexture(0, 0, 0, 0);
+					playerFrame.Bg:SetColorTexture(0, 0, 0, 0);
 				end
 			end
 			-- set up button

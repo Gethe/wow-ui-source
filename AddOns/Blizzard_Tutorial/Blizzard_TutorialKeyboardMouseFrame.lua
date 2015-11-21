@@ -124,7 +124,7 @@ function NPE_TutorialKeyboardMouseFrame:MainFrame_OnHide()
 
 	if (wasShown) then
 		self.PointerFrameID = NPE_TutorialPointerFrame:Show(NPE_SHOWINTERFACEHELP, "DOWN", self.HelpFrame.btnOpen, 0, -10);
-		C_Timer.After(10, function() NPE_TutorialPointerFrame:Hide(self.PointerFrameID) end);
+		C_Timer.After(5, function() NPE_TutorialPointerFrame:Hide(self.PointerFrameID) end);
 	end
 end
 

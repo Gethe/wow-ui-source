@@ -9,7 +9,7 @@ HUNTER_TRACKING = 1;
 TOWNSFOLK = 2;
 
 GARRISON_ALERT_CONTEXT_BUILDING = 1;
-GARRISON_ALERT_CONTEXT_MISSION = { [LE_FOLLOWER_TYPE_GARRISON_6_0] = 2, [LE_FOLLOWER_TYPE_SHIPYARD_6_2] = 4 };
+GARRISON_ALERT_CONTEXT_MISSION = { [LE_FOLLOWER_TYPE_GARRISON_6_0] = 2, [LE_FOLLOWER_TYPE_SHIPYARD_6_2] = 4, [LE_FOLLOWER_TYPE_GARRISON_7_0] = 5 };
 GARRISON_ALERT_CONTEXT_INVASION = 3;
 
 LFG_EYE_TEXTURES = { };
@@ -521,10 +521,13 @@ function GarrisonLandingPageMinimapButton_OnEvent(self, event, ...)
 	elseif ( event == "GARRISON_BUILDING_ACTIVATED" or event == "GARRISON_ARCHITECT_OPENED") then
 		GarrisonMinimap_HidePulse(self, GARRISON_ALERT_CONTEXT_BUILDING);
 	elseif ( event == "GARRISON_MISSION_FINISHED" ) then
-		local missionID = ...;
-		GarrisonMinimapMission_ShowPulse(self, missionID);
+		local followerType = ...;
+		GarrisonMinimapMission_ShowPulse(self, followerType);
 	elseif ( event == "GARRISON_MISSION_NPC_OPENED" ) then
-		GarrisonMinimap_HidePulse(self, GARRISON_ALERT_CONTEXT_MISSION[LE_FOLLOWER_TYPE_GARRISON_6_0]);
+		local followerType = ...;
+		if followerType == LE_FOLLOWER_TYPE_GARRISON_6_0 then
+			GarrisonMinimap_HidePulse(self, GARRISON_ALERT_CONTEXT_MISSION[LE_FOLLOWER_TYPE_GARRISON_6_0]);
+		end
 	elseif ( event == "GARRISON_SHIPYARD_NPC_OPENED" ) then
 		GarrisonMinimap_HidePulse(self, GARRISON_ALERT_CONTEXT_MISSION[LE_FOLLOWER_TYPE_SHIPYARD_6_2]);
 	elseif (event == "GARRISON_INVASION_AVAILABLE") then
@@ -604,8 +607,7 @@ function GarrisonMinimapBuilding_ShowPulse(self)
 	self.MinimapLoopPulseAnim:Play();
 end
 
-function GarrisonMinimapMission_ShowPulse(self, missionID)
-	local followerType = C_Garrison.GetFollowerTypeByMissionID(missionID);
+function GarrisonMinimapMission_ShowPulse(self, followerType)
 	GarrisonMinimap_SetPulseLock(self, GARRISON_ALERT_CONTEXT_MISSION[followerType], true);
 	self.MinimapLoopPulseAnim:Play();
 end

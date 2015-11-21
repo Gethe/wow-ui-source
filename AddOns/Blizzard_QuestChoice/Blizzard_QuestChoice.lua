@@ -1,4 +1,3 @@
-MAX_NUM_OPTIONS = 2;
 CURRENCY_SPACING = 5;
 CURRENCY_HEIGHT = 20;
 MAX_CURRENCIES = 3;
@@ -25,6 +24,32 @@ StaticPopupDialogs["CONFIRM_GORGROND_GARRISON_CHOICE"] = {
 	whileDead = 1,
 	showAlert = 1,	
 }
+
+StaticPopupDialogs["CONFIRM_PLAYER_CHOICE"] = {
+	text = "%s",
+	button1 = OKAY,
+	button2 = CANCEL,
+	OnAccept = function(self)
+		SendQuestChoiceResponse(self.data);
+		HideUIPanel(QuestChoiceFrame);
+	end,
+	hideOnEscape = 1,
+	timeout = 0,
+	exclusive = 1,
+	whileDead = 1,	
+}
+
+function QuestChoiceFrame_OnLoad(self)
+	self.defaultLeftPadding = self.leftPadding;
+	self.defaultRightPadding = self.rightPadding;
+	self.defaultSpacing = self.spacing;
+	
+	self:RegisterEvent("QUEST_CHOICE_UPDATE");
+	self:RegisterEvent("PLAYER_ENTERING_WORLD");
+	self:RegisterEvent("PLAYER_DEAD");
+	self:RegisterEvent("QUEST_CHOICE_CLOSE");
+	QuestChoiceFrame_Update(self);
+end
 
 function QuestChoiceFrame_OnEvent(self, event) 
 	if (event == "QUEST_CHOICE_UPDATE") then
@@ -62,6 +87,8 @@ function QuestChoiceFrameOptionButton_OnClick(self)
 	if ( parent.optID ) then
 		if ( IsInGroup() and (QuestChoiceFrame.choiceID == GORGROND_GARRISON_ALLIANCE_CHOICE or QuestChoiceFrame.choiceID == GORGROND_GARRISON_HORDE_CHOICE) ) then
 			StaticPopup_Show("CONFIRM_GORGROND_GARRISON_CHOICE", nil, nil, parent.optID);
+		elseif ( parent.confirmationText ) then
+			StaticPopup_Show("CONFIRM_PLAYER_CHOICE", parent.confirmationText, nil, parent.optID);
 		else
 			SendQuestChoiceResponse(parent.optID);
 			HideUIPanel(QuestChoiceFrame);
@@ -92,15 +119,22 @@ function QuestChoiceFrame_Update(self)
 	self.QuestionText:SetText(questionText);
 	
 	for i=1, numOptions do
-		local optID, buttonText, description, artFile = GetQuestChoiceOptionInfo(i);
+		local optID, buttonText, description, header, artFile, confirmationText = GetQuestChoiceOptionInfo(i);
 		local option = QuestChoiceFrame["Option"..i];
 		option.optID = optID;
 		option.OptionButton:SetText(buttonText);
 		option.OptionText:SetText(description);
+		if header and #header > 0 then
+			option.Header:Show();
+			option.Header.Text:SetText(header);
+		else
+			option.Header:Hide();
+		end
 		option.Artwork:SetTexture(artFile);
+		option.confirmationText = confirmationText;
 	end
-	
-	QuestChoiceFrame_ShowRewards()
+
+	QuestChoiceFrame_ShowRewards(numOptions)
 	
 	--make window taller if there is too much stuff
 	local maxHeight = INIT_OPTION_HEIGHT;
@@ -108,6 +142,9 @@ function QuestChoiceFrame_Update(self)
 	for i=1, numOptions do
 		local option = QuestChoiceFrame["Option"..i];
 		currHeight = OPTION_STATIC_HEIGHT;
+		if option.Header:IsShown() then
+			currHeight = currHeight + 36;
+		end
 		currHeight = currHeight + option.OptionText:GetContentHeight();
 		currHeight = currHeight + option.Rewards:GetHeight();
 		maxHeight = max(currHeight, maxHeight);
@@ -119,27 +156,39 @@ function QuestChoiceFrame_Update(self)
 	local heightDiff = maxHeight - INIT_OPTION_HEIGHT;
 	heightDiff = max(heightDiff, 0);
 	QuestChoiceFrame:SetHeight(INIT_WINDOW_HEIGHT + heightDiff);
+	for i = 1, #QuestChoiceFrame.Options do
+		QuestChoiceFrame.Options[i]:SetShown(i <= numOptions);
+	end
+	if (numOptions == 4) then
+		QuestChoiceFrame.leftPadding = 50;
+		QuestChoiceFrame.rightPadding = 50;
+		QuestChoiceFrame.spacing = 20;
+	else
+		QuestChoiceFrame.leftPadding = self.defaultLeftPadding;
+		QuestChoiceFrame.rightPadding = self.defaultRightPadding;
+		QuestChoiceFrame.spacing = self.defaultSpacing;
+	end
+	self:Layout();
 end
 
-function QuestChoiceFrame_ShowRewards()
-	local rewardFrame, height;
-	local title, skillID, skillPoints, money, xp, numItems, numCurrencies, numChoices, numReps;
-	local itemID, name, texture, quantity, itemFrame;
-	local currID, factionID;
-	
-	for i=1, MAX_NUM_OPTIONS do
-		rewardFrame = QuestChoiceFrame["Option"..i].Rewards;
-		height = INIT_REWARDS_HEIGHT;
-		title, skillID, skillPoints, money, xp, numItems, numCurrencies, numChoices, numReps = GetQuestChoiceRewardInfo(i)
+function QuestChoiceFrame_ShowRewards(numOptions)
+	for i=1, numOptions do
+		local rewardFrame = QuestChoiceFrame["Option"..i].Rewards;
+		local height = INIT_REWARDS_HEIGHT;
+		local title, skillID, skillPoints, money, xp, numItems, numCurrencies, numChoices, numReps = GetQuestChoiceRewardInfo(i)
 		
 		if (numItems ~= 0) then
-			itemID, name, texture, quantity = GetQuestChoiceRewardItem(i, 1); --for now there is only ever 1 item by design
-			rewardFrame.Item.itemID = itemID;
-			rewardFrame.Item:Show();
-			rewardFrame.Item.Name:SetText(name)
-			SetItemButtonCount(rewardFrame.Item, quantity);
-			SetItemButtonTexture(rewardFrame.Item, texture);
-			height = height + rewardFrame.Item:GetHeight()
+			local itemID, name, texture, quantity, quality, itemLink = GetQuestChoiceRewardItem(i, 1); --for now there is only ever 1 item by design
+			if itemID then
+				rewardFrame.Item.itemID = itemID;
+				rewardFrame.Item:Show();
+				rewardFrame.Item.Name:SetText(name)
+				SetItemButtonCount(rewardFrame.Item, quantity);
+				SetItemButtonTexture(rewardFrame.Item, texture);
+				SetItemButtonQuality(rewardFrame.Item, quality, itemID);
+				rewardFrame.Item.itemLink = itemLink;
+				height = height + rewardFrame.Item:GetHeight()
+			end
 		else
 			rewardFrame.Item:Hide();
 		end
@@ -149,7 +198,7 @@ function QuestChoiceFrame_ShowRewards()
 			local totalWidth = 0;
 			for j=1, numCurrencies do
 				currency = rewardFrame.Currencies["Currency"..j];
-				currID, texture, quantity = GetQuestChoiceRewardCurrency(i, j); --there should only be one currency reward
+				local currID, texture, quantity = GetQuestChoiceRewardCurrency(i, j); --there should only be one currency reward
 				currency.currencyID = currID;
 				currency.Icon:SetTexture("Interface\\Icons\\"..texture);
 				currency.Quantity:SetText(quantity);
@@ -193,7 +242,7 @@ function QuestChoiceFrame_ShowRewards()
 			local factionFrame = repFrame.Faction;
 			local amountFrame = repFrame.Amount;
 			local dummyString = QuestChoiceFrame.DummyString;
-			factionID, quantity = GetQuestChoiceRewardFaction(i, 1); --there should only be one reputation reward
+			local factionID, quantity = GetQuestChoiceRewardFaction(i, 1); --there should only be one reputation reward
 			local factionName = format(REWARD_REPUTATION, GetFactionInfoByID(factionID));
 			dummyString:SetText(factionName);
 			factionFrame:SetText(factionName);
@@ -213,5 +262,31 @@ function QuestChoiceFrame_ShowRewards()
 			rewardFrame.ReputationsFrame:Hide();
 		end
 		rewardFrame:SetHeight(height);
+	end
+end
+
+function QuestChoiceFrame_OnItemEnter(self)
+	GameTooltip:SetOwner(self, "ANCHOR_CURSOR_RIGHT");
+	if GameTooltip:SetItemByID(self.itemID) then
+		self.UpdateTooltip = QuestChoiceFrame_OnItemEnter;
+	else
+		self.UpdateTooltip = nil;
+	end
+end
+
+function QuestChoiceFrame_OnItemUpdate(self)
+	if GameTooltip:IsOwned(self) then
+		if IsModifiedClick("DRESSUP") then
+			ShowInspectCursor();
+		else
+			ResetCursor();
+		end
+	end
+end
+
+function QuestChoiceFrame_OnItemModifiedClick(self, button)
+	local modifiedClick = IsModifiedClick();
+	if ( modifiedClick ) then
+		HandleModifiedItemClick(self.itemLink);
 	end
 end

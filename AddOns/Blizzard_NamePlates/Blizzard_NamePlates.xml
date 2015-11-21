@@ -1,0 +1,81 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\FrameXML\UI.xsd">
+	<Script file="Blizzard_NamePlates.lua" />
+
+	<Frame name="NamePlateDriverFrame" toplevel="true" mixin="NamePlateDriverMixin">
+		<Scripts>
+			<OnLoad method="OnLoad" />
+			<OnEvent method="OnEvent" />
+		</Scripts>
+	</Frame>
+	
+	<Frame name="NameplateBuffButtonTemplate" virtual="true" enableMouse="true" hidden="true">
+		<Size x="20" y="14"/>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="Border" setAllPoints="true">
+					<Color r="0" g="0" b="0"/>
+				</Texture>
+			</Layer>
+			<Layer level="ARTWORK">
+				<Texture parentKey="Icon">
+					<Size x="18" y="12"/>
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+					<TexCoords left="0.05" right="0.95" top="0.1" bottom="0.6"/>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Cooldown parentKey="Cooldown" inherits="CooldownFrameTemplate" hideCountdownNumbers="true" reverse="true" drawEdge="true" hidden="true">
+				<Anchors>
+					<Anchor point="CENTER" x="0" y="-1"/>
+				</Anchors>
+			</Cooldown>
+			<Frame parentKey="CountFrame" setAllPoints="true">
+				<Layers>
+					<Layer level="ARTWORK">
+						<FontString parentKey="Count" inherits="NumberFontNormalSmall" justifyH="RIGHT">
+							<Anchors>
+								<Anchor point="BOTTOMRIGHT" x="3" y="-2"/>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+			</Frame>
+		</Frames>
+		<Scripts>
+			<OnEnter>
+				GameTooltip:SetOwner(self, "ANCHOR_LEFT");
+				if (self:GetParent().filter == "HELPFUL") then
+					GameTooltip:SetUnitAura(self:GetParent().unit, self:GetID());
+				else
+					GameTooltip:SetUnitDebuff(self:GetParent().unit, self:GetID(), self:GetParent().filter);
+				end
+			</OnEnter>
+			<OnLeave>
+				GameTooltip:Hide();
+			</OnLeave>
+		</Scripts>
+	</Frame>
+
+	<Button name="NamePlateUnitFrameTemplate" parentKey="UnitFrame" setAllPoints="true" useParentLevel="true" virtual="true" inherits="CompactUnitFrameTemplate">
+		<Frames>
+			<StatusBar name="$parentCastBar" inherits="CompactUnitFrameCastBarTemplate" />
+			<Frame parentKey="BuffFrame" inherits="HorizontalLayoutFrame" mixin="NameplateBuffMixin">
+				<Anchors>
+					<Anchor point="LEFT" relativeKey="$parent.healthBar" x="-1"/>
+				</Anchors>
+				<KeyValues>
+					<KeyValue key="spacing" value="4" type="number"/>
+					<KeyValue key="fixedHeight" value="14" type="number"/>
+				</KeyValues>
+				<Scripts>
+					<OnLoad method="OnLoad"/>
+					<OnEvent method="OnEvent"/>
+				</Scripts>
+			</Frame>
+		</Frames>
+	</Button>
+</Ui>

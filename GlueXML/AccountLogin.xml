@@ -421,8 +421,424 @@
 			</OnHide>
 		</Scripts>
 	</Frame>
-	<ModelFFX name="AccountLogin" toplevel="true" parent="GlueParent" setAllPoints="true" enableKeyboard="true" hidden="true" fogNear="0" fogFar="1200" glow="0.08">
+
+	<Frame name="TokenEnterDialog" toplevel="true" parent="GlueParent" setAllPoints="true" hidden="true" enableMouse="true" enableKeyboard="true" frameStrata="FULLSCREEN_DIALOG">
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture setAllPoints="true">
+					<Color a="0.75" r="0" g="0" b="0"/>
+				</Texture>
+			</Layer>
+		</Layers>
 		<Frames>
+			<Frame name="$parentBackground">
+				<Size>
+					<AbsDimension x="372" y="200"/>
+				</Size>
+				<Anchors>
+					<Anchor point="CENTER">
+						<Offset>
+							<AbsDimension x="0" y="-20"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background" edgeFile="Interface\DialogFrame\UI-DialogBox-Border" tile="true">
+					<BackgroundInsets>
+						<AbsInset left="11" right="12" top="12" bottom="11"/>
+					</BackgroundInsets>
+					<TileSize>
+						<AbsValue val="32"/>
+					</TileSize>
+					<EdgeSize>
+						<AbsValue val="32"/>
+					</EdgeSize>
+				</Backdrop>
+				<Layers>
+					<Layer level="ARTWORK">
+						<FontString name="$parentTitle" inherits="GlueFontNormal" text="ENTER_AUTHCODE_TITLE">
+							<Anchors>
+								<Anchor point="TOP">
+									<Offset>
+										<AbsDimension x="0" y="-26"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+						<FontString name="$parentText" inherits="TOSFont"  text="ENTER_AUTHCODE_INFO">
+							<Anchors>
+								<Anchor point="TOP" relativeTo="TokenEnterDialogBackgroundTitle" relativePoint="BOTTOM">
+									<Offset>
+										<AbsDimension x="0" y="-16"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+				<Frames>
+					<EditBox name="$parentEdit" letters="16">
+						<Size>
+							<AbsDimension x="160" y="37"/>
+						</Size>
+						<Anchors>
+							<Anchor point="CENTER">
+								<Offset>
+									<AbsDimension x="0" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Layers>
+							<Layer level="BACKGROUND">
+								<FontString inherits="GlueFontNormal">
+									<Size>
+										<AbsDimension x="256" y="64"/>
+									</Size>
+									<Anchors>
+										<Anchor point="BOTTOM" relativePoint="TOP">
+											<Offset>
+												<AbsDimension x="0" y="-23"/>
+											</Offset>
+										</Anchor>
+									</Anchors>
+								</FontString>
+							</Layer>
+						</Layers>
+						<Backdrop bgFile="Interface\Tooltips\UI-Tooltip-Background" edgeFile="Interface\Glues\Common\Glue-Tooltip-Border" tile="true">
+							<BackgroundInsets>
+								<AbsInset left="10" right="5" top="4" bottom="9"/>
+							</BackgroundInsets>
+							<TileSize>
+								<AbsValue val="16"/>
+							</TileSize>
+							<EdgeSize>
+								<AbsValue val="16"/>
+							</EdgeSize>
+						</Backdrop>
+						<Scripts>
+							<OnEscapePressed>
+								TokenEntry_Cancel(self:GetParent());
+							</OnEscapePressed>
+							<OnEnterPressed>
+								TokenEntry_Okay(self:GetParent());
+							</OnEnterPressed>
+							<OnEditFocusLost>
+								self:HighlightText(0, 0);
+							</OnEditFocusLost>
+							<OnEditFocusGained>
+								self:HighlightText();
+							</OnEditFocusGained>
+						</Scripts>
+						<FontString inherits="GlueEditBoxFont"/>
+						<TextInsets>
+							<AbsInset left="15" bottom="5"/>
+						</TextInsets>
+					</EditBox>
+					<Button name="$parentOkayButton" inherits="GlueButtonTemplateBlue" text="OKAY">
+						<Anchors>
+							<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMLEFT">
+								<Offset>
+									<AbsDimension x="20" y="16"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnClick>
+								TokenEntry_Okay(self:GetParent());
+							</OnClick>
+						</Scripts>
+					</Button>
+					<Button name="$parentCancelButton" inherits="GlueButtonTemplateBlue" text="CANCEL">
+						<Anchors>
+							<Anchor point="LEFT" relativeTo="$parentOkayButton" relativePoint="RIGHT">
+								<Offset>
+									<AbsDimension x="0" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnClick>
+								TokenEntry_Cancel(self:GetParent());
+							</OnClick>
+						</Scripts>
+					</Button>
+				</Frames>
+			</Frame>
+		</Frames>
+		<Scripts>
+			<OnLoad>
+				TokenEntryOkayButton_OnLoad(self);
+			</OnLoad>
+			<OnEvent>
+				TokenEntryOkayButton_OnEvent(self, event);
+			</OnEvent>
+			<OnShow>
+				TokenEntryOkayButton_OnShow();
+			</OnShow>
+			<OnHide>
+				TokenEntryOkayButton_OnHide();
+			</OnHide>
+			<OnKeyDown>
+				TokenEntryOkayButton_OnKeyDown(self, key);
+			</OnKeyDown>
+		</Scripts>
+	</Frame>
+	<Frame name="WoWAccountSelectDialog" toplevel="true" parent="GlueParent" setAllPoints="true" hidden="true" enableMouse="true" enableKeyboard="true" frameStrata="FULLSCREEN_DIALOG">
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture setAllPoints="true">
+					<Color a="0.75" r="0" g="0" b="0"/>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Frame name="$parentBackground">
+				<Size>
+					<AbsDimension x="275" y="265"/>
+				</Size>
+				<Anchors>
+					<Anchor point="CENTER">
+						<Offset>
+							<AbsDimension x="0" y="-20"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background" edgeFile="Interface\DialogFrame\UI-DialogBox-Border" tile="true">
+					<BackgroundInsets>
+						<AbsInset left="11" right="12" top="12" bottom="11"/>
+					</BackgroundInsets>
+					<TileSize>
+						<AbsValue val="32"/>
+					</TileSize>
+					<EdgeSize>
+						<AbsValue val="32"/>
+					</EdgeSize>
+				</Backdrop>
+				<Layers>
+					<Layer level="ARTWORK">
+						<FontString name="$parentTitle" inherits="GlueFontNormal" text="WOW_ACCOUNTS">
+							<Anchors>
+								<Anchor point="TOPLEFT">
+									<Offset>
+										<AbsDimension x="20" y="-20"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+						<FontString name="$parentText" inherits="TOSFont"  text="SELECT_ACCOUNT">
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeTo="$parentTitle" relativePoint="BOTTOMLEFT">
+									<Offset>
+										<AbsDimension x="5" y="-4"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+						<FontString name="$parentSaveAccountText" inherits="GlueFontNormalSmall" text="SAVE_ACCOUNT_NAME">
+							<Anchors>
+								<Anchor point="BOTTOM" x="10" y="16"/>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+				<Frames>
+					<Frame name="$parentContainer">
+						<Anchors>
+							<Anchor point="TOPLEFT">
+								<Offset x="12" y="-52"/>
+							</Anchor>
+							<Anchor point="BOTTOMRIGHT">
+								<Offset x="-16" y="36"/>
+							</Anchor>
+						</Anchors>
+						<Backdrop edgeFile="Interface\Glues\Common\Glue-Tooltip-Border" tile="true">
+							<BackgroundInsets>
+								<AbsInset left="10" right="5" top="4" bottom="9"/>
+							</BackgroundInsets>
+							<TileSize>
+								<AbsValue val="16"/>
+							</TileSize>
+							<EdgeSize>
+								<AbsValue val="16"/>
+							</EdgeSize>
+						</Backdrop>
+						<Frames>
+							<Button name="$parentButton1" inherits="AccountNameButton">
+								<Anchors>
+									<Anchor point="TOPLEFT">
+										<Offset x="12" y="-6"/>
+									</Anchor>
+								</Anchors>
+							</Button>
+							<Button name="$parentButton2" inherits="AccountNameButton">
+								<Anchors>
+									<Anchor point="TOPLEFT" relativeTo="$parentButton1" relativePoint="BOTTOMLEFT">
+										<Offset x="0" y="0"/>
+									</Anchor>
+								</Anchors>
+							</Button>
+							<Button name="$parentButton3" inherits="AccountNameButton">
+								<Anchors>
+									<Anchor point="TOPLEFT" relativeTo="$parentButton2" relativePoint="BOTTOMLEFT">
+										<Offset x="0" y="0"/>
+									</Anchor>
+								</Anchors>
+							</Button>
+							<Button name="$parentButton4" inherits="AccountNameButton">
+								<Anchors>
+									<Anchor point="TOPLEFT" relativeTo="$parentButton3" relativePoint="BOTTOMLEFT">
+										<Offset x="0" y="0"/>
+									</Anchor>
+								</Anchors>
+							</Button>
+							<Button name="$parentButton5" inherits="AccountNameButton">
+								<Anchors>
+									<Anchor point="TOPLEFT" relativeTo="$parentButton4" relativePoint="BOTTOMLEFT">
+										<Offset x="0" y="0"/>
+									</Anchor>
+								</Anchors>
+							</Button>
+							<Button name="$parentButton6" inherits="AccountNameButton">
+								<Anchors>
+									<Anchor point="TOPLEFT" relativeTo="$parentButton5" relativePoint="BOTTOMLEFT">
+										<Offset x="0" y="0"/>
+									</Anchor>
+								</Anchors>
+							</Button>
+							<Button name="$parentButton7" inherits="AccountNameButton">
+								<Anchors>
+									<Anchor point="TOPLEFT" relativeTo="$parentButton6" relativePoint="BOTTOMLEFT">
+										<Offset x="0" y="0"/>
+									</Anchor>
+								</Anchors>
+							</Button>
+							<Button name="$parentButton8" inherits="AccountNameButton">
+								<Anchors>
+									<Anchor point="TOPLEFT" relativeTo="$parentButton7" relativePoint="BOTTOMLEFT">
+										<Offset x="0" y="0"/>
+									</Anchor>
+								</Anchors>
+							</Button>
+
+							<ScrollFrame name="$parentScrollFrame" inherits="GlueScrollFrameTemplate">
+								<Size>
+									<AbsDimension x="219" y="162"/>
+								</Size>
+								<Anchors>
+									<Anchor point="TOPLEFT">
+										<Offset x="0" y="-6"/>
+									</Anchor>
+								</Anchors>
+								<Scripts>
+									<OnVerticalScroll>
+										WoWAccountSelect_OnVerticalScroll(self, offset);
+									</OnVerticalScroll>
+								</Scripts>
+								<ScrollChild>
+									<Frame name="$parentScrollChildFrame">
+										<Size>
+											<AbsDimension x="510" y="395"/>
+										</Size>
+									</Frame>
+								</ScrollChild>
+							</ScrollFrame>
+						</Frames>
+					</Frame>
+					<Button name="$parentAcceptButton" inherits="GlueButtonTemplateBlue" text="ACCEPT">
+						<Size>
+							<AbsDimension x="125" y="37"/>
+						</Size>
+						<Anchors>
+							<Anchor point="BOTTOMLEFT">
+								<Offset>
+									<AbsDimension x="8" y="6"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnClick>
+								PlaySound("gsLoginChangeRealmOK");
+								WoWAccountSelect_Accept();
+							</OnClick>
+						</Scripts>
+					</Button>
+					<Button name="$parentCancelButton" inherits="GlueButtonTemplateBlue" text="CANCEL">
+						<Size>
+							<AbsDimension x="125" y="37"/>
+						</Size>
+						<Anchors>
+							<Anchor point="BOTTOMRIGHT">
+								<Offset>
+									<AbsDimension x="-8" y="6"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnClick>
+								PlaySound("gsLoginChangeRealmCancel");
+								WoWAccountSelect_OnCancel(WoWAccountSelectDialog);
+							</OnClick>
+						</Scripts>
+					</Button>
+					<CheckButton name="$parentSaveAccountButton">
+						<Size x="20" y="20"/>
+						<Anchors>
+							<Anchor point="RIGHT" relativeTo="$parentSaveAccountText" relativePoint="LEFT"/>
+						</Anchors>
+						<Scripts>
+							<OnLoad>
+								if ( GetSavedAccountListSSO() ~= "" ) then
+								self:SetChecked(true);
+								else
+								self:SetChecked(false);
+								end
+							</OnLoad>
+							<OnClick>
+								if ( self:GetChecked() ) then
+								PlaySound("igMainMenuOptionCheckBoxOff");
+								else
+								PlaySound("igMainMenuOptionCheckBoxOn");
+								end
+							</OnClick>
+						</Scripts>
+						<NormalTexture file="Interface\Buttons\UI-CheckBox-Up"/>
+						<PushedTexture file="Interface\Buttons\UI-CheckBox-Down"/>
+						<HighlightTexture file="Interface\Buttons\UI-CheckBox-Highlight" alphaMode="ADD"/>
+						<CheckedTexture file="Interface\Buttons\UI-CheckBox-Check"/>
+						<DisabledCheckedTexture file="Interface\Buttons\UI-CheckBox-Check-Disabled"/>
+					</CheckButton>
+				</Frames>
+			</Frame>
+		</Frames>
+		<Scripts>
+			<OnLoad>
+				WoWAccountSelect_OnLoad(self);
+			</OnLoad>
+			<OnEvent>
+				WoWAccountSelect_OnEvent(self, event, ...);
+			</OnEvent>
+			<OnKeyDown>
+				WoWAccountSelect_OnKeyDown(self, key);
+			</OnKeyDown>
+			<OnShow>
+				WoWAccountSelect_OnShow(self)
+			</OnShow>
+		</Scripts>
+	</Frame>
+	
+	<Frame name="AccountLogin" toplevel="true" parent="GlueParent" setAllPoints="true" enableKeyboard="true" hidden="true">
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="BlackLoginBackground">
+					<Color r="0" g="0" b="0" a="1"/>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Frames>
+			<MovieFrame name="LoginBackgroundMovie" setAllPoints="true" hidden="true">
+			</MovieFrame>
+			<ModelFFX name="LoginBackgroundModel" setAllPoints="true" hidden="true" fogNear="0" fogFar="1200" glow="0.08">
+				<FogColor r="0.25" g="0.06" b="0.015"/>
+			</ModelFFX>
 			<Frame name="AccountLoginUI" setAllPoints="true">
 				<Layers>
 					<Layer level="ARTWORK">
@@ -935,13 +1351,6 @@
 							</Anchor>
 						</Anchors>
 						<Scripts>
-							<OnShow>
-								if (IsBlizzCon()) then
-									self:Disable();
-								else
-									self:Enable();
-								end
-							</OnShow>
 							<OnClick>
 								AccountLogin_Options();
 							</OnClick>
@@ -1398,408 +1807,6 @@
 							</Frame>
 						</Frames>
 					</Frame>
-					<Frame name="TokenEnterDialog" toplevel="true" setAllPoints="true" hidden="true" enableMouse="true" enableKeyboard="true" frameStrata="FULLSCREEN_DIALOG">
-						<Layers>
-							<Layer level="BACKGROUND">
-								<Texture setAllPoints="true">
-									<Color a="0.75" r="0" g="0" b="0"/>
-								</Texture>
-							</Layer>
-						</Layers>
-						<Frames>
-							<Frame name="$parentBackground">
-								<Size>
-									<AbsDimension x="372" y="200"/>
-								</Size>
-								<Anchors>
-									<Anchor point="CENTER">
-										<Offset>
-											<AbsDimension x="0" y="-20"/>
-										</Offset>
-									</Anchor>
-								</Anchors>
-								<Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background" edgeFile="Interface\DialogFrame\UI-DialogBox-Border" tile="true">
-									<BackgroundInsets>
-										<AbsInset left="11" right="12" top="12" bottom="11"/>
-									</BackgroundInsets>
-									<TileSize>
-										<AbsValue val="32"/>
-									</TileSize>
-									<EdgeSize>
-										<AbsValue val="32"/>
-									</EdgeSize>
-								</Backdrop>
-								<Layers>
-									<Layer level="ARTWORK">
-										<FontString name="$parentTitle" inherits="GlueFontNormal" text="ENTER_AUTHCODE_TITLE">
-											<Anchors>
-												<Anchor point="TOP">
-													<Offset>
-														<AbsDimension x="0" y="-26"/>
-													</Offset>
-												</Anchor>
-											</Anchors>
-										</FontString>
-										<FontString name="$parentText" inherits="TOSFont"  text="ENTER_AUTHCODE_INFO">
-											<Anchors>
-												<Anchor point="TOP" relativeTo="TokenEnterDialogBackgroundTitle" relativePoint="BOTTOM">
-													<Offset>
-														<AbsDimension x="0" y="-16"/>
-													</Offset>
-												</Anchor>
-											</Anchors>
-										</FontString>
-									</Layer>
-								</Layers>
-								<Frames>
-									<EditBox name="$parentEdit" letters="16">
-										<Size>
-											<AbsDimension x="160" y="37"/>
-										</Size>
-										<Anchors>
-											<Anchor point="CENTER">
-												<Offset>
-													<AbsDimension x="0" y="0"/>
-												</Offset>
-											</Anchor>
-										</Anchors>
-										<Layers>
-											<Layer level="BACKGROUND">
-												<FontString inherits="GlueFontNormal">
-													<Size>
-														<AbsDimension x="256" y="64"/>
-													</Size>
-													<Anchors>
-														<Anchor point="BOTTOM" relativePoint="TOP">
-															<Offset>
-																<AbsDimension x="0" y="-23"/>
-															</Offset>
-														</Anchor>
-													</Anchors>
-												</FontString>
-											</Layer>
-										</Layers>
-										<Backdrop bgFile="Interface\Tooltips\UI-Tooltip-Background" edgeFile="Interface\Glues\Common\Glue-Tooltip-Border" tile="true">
-											<BackgroundInsets>
-												<AbsInset left="10" right="5" top="4" bottom="9"/>
-											</BackgroundInsets>
-											<TileSize>
-												<AbsValue val="16"/>
-											</TileSize>
-											<EdgeSize>
-												<AbsValue val="16"/>
-											</EdgeSize>
-										</Backdrop>
-										<Scripts>
-											<OnEscapePressed>
-												TokenEntry_Cancel(self:GetParent());
-											</OnEscapePressed>
-											<OnEnterPressed>
-												TokenEntry_Okay(self:GetParent());
-											</OnEnterPressed>
-											<OnEditFocusLost>
-												self:HighlightText(0, 0);
-											</OnEditFocusLost>
-											<OnEditFocusGained>
-												self:HighlightText();
-											</OnEditFocusGained>
-										</Scripts>
-										<FontString inherits="GlueEditBoxFont"/>
-										<TextInsets>
-											<AbsInset left="15" bottom="5"/>
-										</TextInsets>
-									</EditBox>
-									<Button name="$parentOkayButton" inherits="GlueButtonTemplateBlue" text="OKAY">
-										<Anchors>
-											<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMLEFT">
-												<Offset>
-													<AbsDimension x="20" y="16"/>
-												</Offset>
-											</Anchor>
-										</Anchors>
-										<Scripts>
-											<OnClick>
-												TokenEntry_Okay(self:GetParent());
-											</OnClick>
-										</Scripts>
-									</Button>
-									<Button name="$parentCancelButton" inherits="GlueButtonTemplateBlue" text="CANCEL">
-										<Anchors>
-											<Anchor point="LEFT" relativeTo="$parentOkayButton" relativePoint="RIGHT">
-												<Offset>
-													<AbsDimension x="0" y="0"/>
-												</Offset>
-											</Anchor>
-										</Anchors>
-										<Scripts>
-											<OnClick>
-												TokenEntry_Cancel(self:GetParent());
-											</OnClick>
-										</Scripts>
-									</Button>
-								</Frames>
-							</Frame>
-						</Frames>
-						<Scripts>
-							<OnLoad>
-								TokenEntryOkayButton_OnLoad(self);
-							</OnLoad>
-							<OnEvent>
-								TokenEntryOkayButton_OnEvent(self, event);
-							</OnEvent>
-							<OnShow>
-								TokenEntryOkayButton_OnShow();
-							</OnShow>
-							<OnHide>
-								TokenEntryOkayButton_OnHide();
-							</OnHide>
-							<OnKeyDown>
-								TokenEntryOkayButton_OnKeyDown(self, key);
-							</OnKeyDown>
-						</Scripts>
-					</Frame>
-					<Frame name="WoWAccountSelectDialog" toplevel="true" setAllPoints="true" hidden="true" enableMouse="true" enableKeyboard="true" frameStrata="FULLSCREEN_DIALOG">
-						<Layers>
-							<Layer level="BACKGROUND">
-								<Texture setAllPoints="true">
-									<Color a="0.75" r="0" g="0" b="0"/>
-								</Texture>
-							</Layer>
-						</Layers>
-						<Frames>
-							<Frame name="$parentBackground">
-								<Size>
-									<AbsDimension x="275" y="265"/>
-								</Size>
-								<Anchors>
-									<Anchor point="CENTER">
-										<Offset>
-											<AbsDimension x="0" y="-20"/>
-										</Offset>
-									</Anchor>
-								</Anchors>
-								<Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background" edgeFile="Interface\DialogFrame\UI-DialogBox-Border" tile="true">
-									<BackgroundInsets>
-										<AbsInset left="11" right="12" top="12" bottom="11"/>
-									</BackgroundInsets>
-									<TileSize>
-										<AbsValue val="32"/>
-									</TileSize>
-									<EdgeSize>
-										<AbsValue val="32"/>
-									</EdgeSize>
-								</Backdrop>
-								<Layers>
-									<Layer level="ARTWORK">
-										<FontString name="$parentTitle" inherits="GlueFontNormal" text="WOW_ACCOUNTS">
-											<Anchors>
-												<Anchor point="TOPLEFT">
-													<Offset>
-														<AbsDimension x="20" y="-20"/>
-													</Offset>
-												</Anchor>
-											</Anchors>
-										</FontString>
-										<FontString name="$parentText" inherits="TOSFont"  text="SELECT_ACCOUNT">
-											<Anchors>
-												<Anchor point="TOPLEFT" relativeTo="$parentTitle" relativePoint="BOTTOMLEFT">
-													<Offset>
-														<AbsDimension x="5" y="-4"/>
-													</Offset>
-												</Anchor>
-											</Anchors>
-										</FontString>
-										<FontString name="$parentSaveAccountText" inherits="GlueFontNormalSmall" text="SAVE_ACCOUNT_NAME">
-											<Anchors>
-												<Anchor point="BOTTOM" x="10" y="16"/>
-											</Anchors>
-										</FontString>
-									</Layer>
-								</Layers>
-								<Frames>
-									<Frame name="$parentContainer">
-										<Anchors>
-											<Anchor point="TOPLEFT">
-												<Offset x="12" y="-52"/>
-											</Anchor>
-											<Anchor point="BOTTOMRIGHT">
-												<Offset x="-16" y="36"/>
-											</Anchor>
-										</Anchors>
-										<Backdrop edgeFile="Interface\Glues\Common\Glue-Tooltip-Border" tile="true">
-											<BackgroundInsets>
-												<AbsInset left="10" right="5" top="4" bottom="9"/>
-											</BackgroundInsets>
-											<TileSize>
-												<AbsValue val="16"/>
-											</TileSize>
-											<EdgeSize>
-												<AbsValue val="16"/>
-											</EdgeSize>
-										</Backdrop>
-										<Frames>
-											<Button name="$parentButton1" inherits="AccountNameButton">
-												<Anchors>
-													<Anchor point="TOPLEFT">
-														<Offset x="12" y="-6"/>
-													</Anchor>
-												</Anchors>
-											</Button>
-											<Button name="$parentButton2" inherits="AccountNameButton">
-												<Anchors>
-													<Anchor point="TOPLEFT" relativeTo="$parentButton1" relativePoint="BOTTOMLEFT">
-														<Offset x="0" y="0"/>
-													</Anchor>
-												</Anchors>
-											</Button>
-											<Button name="$parentButton3" inherits="AccountNameButton">
-												<Anchors>
-													<Anchor point="TOPLEFT" relativeTo="$parentButton2" relativePoint="BOTTOMLEFT">
-														<Offset x="0" y="0"/>
-													</Anchor>
-												</Anchors>
-											</Button>
-											<Button name="$parentButton4" inherits="AccountNameButton">
-												<Anchors>
-													<Anchor point="TOPLEFT" relativeTo="$parentButton3" relativePoint="BOTTOMLEFT">
-														<Offset x="0" y="0"/>
-													</Anchor>
-												</Anchors>
-											</Button>
-											<Button name="$parentButton5" inherits="AccountNameButton">
-												<Anchors>
-													<Anchor point="TOPLEFT" relativeTo="$parentButton4" relativePoint="BOTTOMLEFT">
-														<Offset x="0" y="0"/>
-													</Anchor>
-												</Anchors>
-											</Button>
-											<Button name="$parentButton6" inherits="AccountNameButton">
-												<Anchors>
-													<Anchor point="TOPLEFT" relativeTo="$parentButton5" relativePoint="BOTTOMLEFT">
-														<Offset x="0" y="0"/>
-													</Anchor>
-												</Anchors>
-											</Button>
-											<Button name="$parentButton7" inherits="AccountNameButton">
-												<Anchors>
-													<Anchor point="TOPLEFT" relativeTo="$parentButton6" relativePoint="BOTTOMLEFT">
-														<Offset x="0" y="0"/>
-													</Anchor>
-												</Anchors>
-											</Button>
-											<Button name="$parentButton8" inherits="AccountNameButton">
-												<Anchors>
-													<Anchor point="TOPLEFT" relativeTo="$parentButton7" relativePoint="BOTTOMLEFT">
-														<Offset x="0" y="0"/>
-													</Anchor>
-												</Anchors>
-											</Button>
-										
-											<ScrollFrame name="$parentScrollFrame" inherits="GlueScrollFrameTemplate">
-												<Size>
-													<AbsDimension x="219" y="162"/>
-												</Size>
-												<Anchors>
-													<Anchor point="TOPLEFT">
-														<Offset x="0" y="-6"/>
-													</Anchor>
-												</Anchors>
-												<Scripts>
-													<OnVerticalScroll>
-														WoWAccountSelect_OnVerticalScroll(self, offset);
-													</OnVerticalScroll>
-												</Scripts>
-												<ScrollChild>
-													<Frame name="$parentScrollChildFrame">
-														<Size>
-															<AbsDimension x="510" y="395"/>
-														</Size>
-													</Frame>
-												</ScrollChild>
-											</ScrollFrame>
-										</Frames>
-									</Frame>
-									<Button name="$parentAcceptButton" inherits="GlueButtonTemplateBlue" text="ACCEPT">
-										<Size>
-											<AbsDimension x="125" y="37"/>
-										</Size>
-										<Anchors>
-											<Anchor point="BOTTOMLEFT">
-												<Offset>
-													<AbsDimension x="8" y="6"/>
-												</Offset>
-											</Anchor>
-										</Anchors>
-										<Scripts>
-											<OnClick>
-												PlaySound("gsLoginChangeRealmOK");
-												WoWAccountSelect_Accept();
-											</OnClick>
-										</Scripts>
-									</Button>
-									<Button name="$parentCancelButton" inherits="GlueButtonTemplateBlue" text="CANCEL">
-										<Size>
-											<AbsDimension x="125" y="37"/>
-										</Size>
-										<Anchors>
-											<Anchor point="BOTTOMRIGHT">
-												<Offset>
-													<AbsDimension x="-8" y="6"/>
-												</Offset>
-											</Anchor>
-										</Anchors>
-										<Scripts>
-											<OnClick>
-												PlaySound("gsLoginChangeRealmCancel");
-												WoWAccountSelect_OnCancel(WoWAccountSelectDialog);
-											</OnClick>
-										</Scripts>
-									</Button>
-									<CheckButton name="$parentSaveAccountButton">
-										<Size x="20" y="20"/>
-										<Anchors>
-											<Anchor point="RIGHT" relativeTo="$parentSaveAccountText" relativePoint="LEFT"/>
-										</Anchors>
-										<Scripts>
-											<OnLoad>
-												if ( GetSavedAccountListSSO() ~= "" ) then
-													self:SetChecked(true);
-												else
-													self:SetChecked(false);
-												end
-											</OnLoad>
-											<OnClick>
-												if ( self:GetChecked() ) then
-													PlaySound("igMainMenuOptionCheckBoxOff");
-												else
-													PlaySound("igMainMenuOptionCheckBoxOn");
-												end
-											</OnClick>
-										</Scripts>
-										<NormalTexture file="Interface\Buttons\UI-CheckBox-Up"/>
-										<PushedTexture file="Interface\Buttons\UI-CheckBox-Down"/>
-										<HighlightTexture file="Interface\Buttons\UI-CheckBox-Highlight" alphaMode="ADD"/>
-										<CheckedTexture file="Interface\Buttons\UI-CheckBox-Check"/>
-										<DisabledCheckedTexture file="Interface\Buttons\UI-CheckBox-Check-Disabled"/>
-									</CheckButton>
-								</Frames>
-							</Frame>
-						</Frames>
-						<Scripts>
-							<OnLoad>
-								WoWAccountSelect_OnLoad(self);
-							</OnLoad>
-							<OnEvent>
-								WoWAccountSelect_OnEvent(self, event, ...);
-							</OnEvent>
-							<OnKeyDown>
-								WoWAccountSelect_OnKeyDown(self, key);
-							</OnKeyDown>
-							<OnShow>
-								WoWAccountSelect_OnShow(self)
-							</OnShow>
-						</Scripts>
-					</Frame>
 				</Frames>
 				<Scripts>
 					<OnShow>
@@ -2204,8 +2211,7 @@
 				AccountLogin_OnEvent(event, ...);
 			</OnEvent>
 		</Scripts>
-		<FogColor r="0.25" g="0.06" b="0.015"/>
-	</ModelFFX>
+	</Frame>
 	
 	<Button name="CinematicsButtonTemplate" virtual="true">
 		<Size x="176" y="78"/>

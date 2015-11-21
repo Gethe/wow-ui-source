@@ -3,7 +3,7 @@ CHARACTER_SELECT_INITIAL_FACING = nil;
 
 CHARACTER_ROTATION_CONSTANT = 0.6;
 
-MAX_CHARACTERS_DISPLAYED = 11;
+MAX_CHARACTERS_DISPLAYED = 12;
 MAX_CHARACTERS_DISPLAYED_BASE = MAX_CHARACTERS_DISPLAYED;
 
 MAX_CHARACTERS_PER_REALM = 200; -- controled by the server now, so lets set it up high
@@ -22,8 +22,6 @@ CHARACTER_UNDELETE_COOLDOWN = 0;	-- in days
 CHARACTER_UNDELETE_COOLDOWN_REMAINING = 0; -- in days
 
 local translationTable = { };	-- for character reordering: key = button index, value = character ID
-
-BLIZZCON_IS_A_GO = false;
 
 local STORE_IS_LOADED = false;
 local ADDON_LIST_RECEIVED = false;
@@ -73,7 +71,7 @@ function CharacterSelect_OnLoad(self)
 
 	CHARACTER_LIST_OFFSET = 0;
 	if (not IsGMClient()) then
-		MAX_CHARACTERS_PER_REALM = 11;
+		MAX_CHARACTERS_PER_REALM = 12;
 	end
 end
 
@@ -198,10 +196,9 @@ function CharacterSelect_OnShow()
 	--Clear out the addons selected item
 	GlueDropDownMenu_SetSelectedValue(AddonCharacterDropDown, true);
 
-	-- update veteran logo and banner art
+	-- update banner art
 	local expansionLevel = min(GetClientDisplayExpansionLevel(), max(GetAccountExpansionLevel(), GetExpansionLevel()));
 	if ( expansionLevel > 0 ) then
-		EXPANSION_LOGOS["VETERAN"] = EXPANSION_LOGOS[expansionLevel]
 		expansionLevel = expansionLevel - 1; -- because the upgrade art is indexed as the previous expansion in ACCOUNT_UPGRADE_FEATURES
 		ACCOUNT_UPGRADE_FEATURES["VETERAN"].logo = ACCOUNT_UPGRADE_FEATURES[expansionLevel].logo;
 		ACCOUNT_UPGRADE_FEATURES["VETERAN"].atlasLogo = ACCOUNT_UPGRADE_FEATURES[expansionLevel].atlasLogo;
@@ -210,7 +207,7 @@ function CharacterSelect_OnShow()
 	
 	AccountUpgradePanel_Update(CharSelectAccountUpgradeButton.isExpanded);
 
-	if( IsBlizzCon() ) then
+	if( IsKioskModeEnabled() ) then
 		CharacterSelectUI:Hide();
 	end
 	
@@ -419,7 +416,11 @@ function CharacterSelect_OnEvent(self, event, ...)
 			self.undeleteNoCharacters = true;
 			return;
 		elseif (not CHARACTER_SELECT_BACK_FROM_CREATE and numChars == 0) then
-			SetGlueScreen("charcreate");
+			if (IsKioskModeEnabled()) then
+				SetGlueScreen("kioskmodesplash");
+			else
+				SetGlueScreen("charcreate");
+			end
 			return;
 		end
 		if (self.undeleteNoCharacters) then
@@ -430,11 +431,12 @@ function CharacterSelect_OnEvent(self, event, ...)
 		UpdateCharacterList();
 		UpdateAddonButton(true);
 		CharSelectCharacterName:SetText(GetCharacterInfo(GetCharIDFromIndex(self.selectedIndex)));
-		if (IsBlizzCon()) then
-			if (BLIZZCON_IS_A_GO) then
+		if (IsKioskModeEnabled()) then
+			if (KioskModeSplash_GetAutoEnterWorld()) then
 				EnterWorld();
 			else
-				SetGlueScreen("charcreate");
+				KioskDeleteAllCharacters();
+				SetGlueScreen("kioskmodesplash");
 			end
 		end
 		CharacterServicesMaster_OnCharacterListUpdate();
@@ -642,7 +644,7 @@ function UpdateCharacterList(skipSelect)
 			if (vasServiceState == LE_VAS_PURCHASE_STATE_APPLYING_LICENSE and vasServiceErrors) then
 				local productInfo = C_PurchaseAPI.GetProductInfo(productID);
 				_G["CharSelectCharacterButton"..index.."ButtonTextInfo"]:SetText("|cffff2020"..VAS_ERROR_ERROR_HAS_OCCURRED.."|r");
-				if (productInfo.name) then
+				if (productInfo and productInfo.name) then
 					_G["CharSelectCharacterButton"..index.."ButtonTextLocation"]:SetText("|cffff2020"..productInfo.name.."|r");
 				else
 					_G["CharSelectCharacterButton"..index.."ButtonTextLocation"]:SetText("");
@@ -1406,7 +1408,7 @@ ACCOUNT_UPGRADE_FEATURES = {
 		  [3] = { icon = "Interface\\Icons\\UI_Promotion_CharacterBoost", text = UPGRADE_FEATURE_18 },
 		  atlasLogo = "Glues-WoW-LegionLogo",
 		  banner = "accountupgradebanner-legion",
-		  buttonText = PRE_PURCHASE_EXPANSION,
+		  buttonText = UPGRADE,
 		  displayCheck = function()
 			return (GameLimitedMode_IsActive() or C_StoreGlue.IsExpansionPreorderInStore()) and max(GetAccountExpansionLevel(), GetExpansionLevel()) < 6;
 		  end,
@@ -1433,7 +1435,7 @@ function AccountUpgradePanel_GetExpansionTag(isExpanded)
 	elseif ( IsVeteranTrialAccount() ) then
 		-- Trial users have the starter edition logo with an upgrade banner that brings you to the lowest expansion level available.
 		tag = "VETERAN";
-		logoTag = "VETERAN";
+		logoTag = min(GetClientDisplayExpansionLevel(), max(GetAccountExpansionLevel(), GetExpansionLevel()));
 	else
 		tag = min(GetClientDisplayExpansionLevel(), max(GetAccountExpansionLevel(), GetExpansionLevel()));
 		logoTag = tag;
@@ -1448,7 +1450,7 @@ end
 function AccountUpgradePanel_Update(isExpanded)
 	local tag, logoTag = AccountUpgradePanel_GetExpansionTag();	
 	if ( EXPANSION_LOGOS[logoTag] ) then
-		CharacterSelectLogo:SetTexture(EXPANSION_LOGOS[logoTag]);
+		SetExpansionLogo(CharacterSelectLogo, logoTag);
 		CharacterSelectLogo:Show();
 	else
 		CharacterSelectLogo:Hide();
@@ -1636,7 +1638,7 @@ function CharacterSelect_IsStoreAvailable()
 end
 
 function CharacterSelect_UpdateStoreButton()
-	if ( CharacterSelect_IsStoreAvailable() ) then
+	if ( CharacterSelect_IsStoreAvailable() and not IsKioskModeEnabled()) then
 		StoreButton:Show();
 	else
 		StoreButton:Hide();
@@ -1686,7 +1688,7 @@ function CharacterSelect_UpdateButtonState()
 	CharacterSelectDeleteButton:SetEnabled(servicesEnabled and not undeleting and not redemptionInProgress);
 	CharSelectChangeRealmButton:SetEnabled(servicesEnabled and not undeleting and not redemptionInProgress);
 	CharSelectUndeleteCharacterButton:SetEnabled(servicesEnabled and undeleteEnabled and not undeleteOnCooldown and not redemptionInProgress);
-	CharacterSelectAddonsButton:SetEnabled(servicesEnabled and not undeleting and not redemptionInProgress);
+	CharacterSelectAddonsButton:SetEnabled(servicesEnabled and not undeleting and not redemptionInProgress and not IsKioskModeEnabled());
 	CopyCharacterButton:SetEnabled(servicesEnabled and not undeleting and not redemptionInProgress);
 	ActivateFactionChange:SetEnabled(servicesEnabled and not undeleting and not redemptionInProgress);
 	ActivateFactionChange.texture:SetDesaturated(not (servicesEnabled and not undeleting and not redemptionInProgress));

@@ -62,6 +62,14 @@ function KeyBindingFrame_OnLoad(self)
 	KeyBindingFrame_SetSelected(nil);
 	KeyBindingFrame_LoadCategories(self);
 	KeyBindingFrame_LoadKeyBindingButtons(self);
+	
+	self:RegisterEvent("ADDON_LOADED");
+end
+
+function KeyBindingFrame_OnEvent(self, event, ...)
+	if (event == "ADDON_LOADED") then
+		KeyBindingFrame_LoadCategories(self);
+	end
 end
 
 local defaultCategories = { BINDING_HEADER_MOVEMENT,
@@ -84,23 +92,25 @@ function KeyBindingFrame_LoadCategories(self)
 	OptionsList_ClearSelection(KeyBindingFrame.categoryList, KeyBindingFrame.categoryList.buttons);
 	
 	for i = 1, GetNumBindings() do
-		local commandName, category, binding1, binding2 = GetBinding(i, self.mode);
+		local commandName, category, hidden, binding1, binding2 = GetBinding(i, self.mode);
 		
-		if ( not category ) then
-			--If there is no category name for the category of this keyBinding, put this
-			--keyBinding into the default "Other" category.
-			category = BINDING_HEADER_OTHER;
-			
-			otherCategory = otherCategory or {};
-			
-			tinsert(otherCategory, i);
-		else
-			--Check for global string values for category names.
-			category = _G[category] or category;
-			
-			keyBindingCategories[category] = keyBindingCategories[category] or {};
-			
-			tinsert(keyBindingCategories[category], i);
+		if (not hidden) then
+			if ( not category ) then
+				--If there is no category name for the category of this keyBinding, put this
+				--keyBinding into the default "Other" category.
+				category = BINDING_HEADER_OTHER;
+				
+				otherCategory = otherCategory or {};
+				
+				tinsert(otherCategory, i);
+			else
+				--Check for global string values for category names.
+				category = _G[category] or category;
+				
+				keyBindingCategories[category] = keyBindingCategories[category] or {};
+				
+				tinsert(keyBindingCategories[category], i);
+			end
 		end
 	end
 	
@@ -212,7 +222,7 @@ function KeyBindingFrame_Update()
 			local keyBindingButton2 = keyBindingRow.key2Button;
 			local keyBindingDescription = keyBindingRow.description;
 			-- Set binding text
-			local commandName, category, binding1, binding2 = GetBinding(cntCategory[keyOffset], self.mode);
+			local commandName, category, hidden, binding1, binding2 = GetBinding(cntCategory[keyOffset], self.mode);
 			
 			-- Handle header
 			local headerText = keyBindingRow.header;

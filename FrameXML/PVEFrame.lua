@@ -44,7 +44,7 @@ function PVEFrame_OnEvent(self, event, ...)
 end
 
 function PVEFrame_ToggleFrame(sidePanelName, selection)
-	if ( UnitLevel("player") < math.min(SHOW_LFD_LEVEL,SHOW_PVP_LEVEL) ) then
+	if ( UnitLevel("player") < math.min(SHOW_LFD_LEVEL,SHOW_PVP_LEVEL) or IsKioskModeEnabled() ) then
 		return;
 	end
 	local self = PVEFrame;

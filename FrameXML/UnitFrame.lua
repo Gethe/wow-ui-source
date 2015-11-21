@@ -1,16 +1,62 @@
 
+function Priest_UpdateInsanityOverlay(manabar, info)
+	if (not manabar.OverlayFrame) then
+		return;
+	end
+	local barTexture = manabar:GetStatusBarTexture();
+	local overlayTexture = manabar.OverlayFrame.OverlayTexture;
+	if ( manabar.disconnected ) then
+		overlayTexture:SetAlpha(0);
+	else
+		-- Calculate whether overlay is shown; if it is, calculate its width
+		local manabarPixelPos = manabar.currValue / 100 * manabar:GetWidth();
+		if (manabarPixelPos > info.leftPos) then
+			overlayTexture:Show();
+		
+			if (manabar.currValue == 100) then
+				-- Show full texture at full alpha
+				overlayTexture:SetWidth(info.width);
+				overlayTexture:SetTexCoord(0, 1, 0, 1);
+				overlayTexture:SetAlpha(1);
+			else
+				-- Show a portion of the texture, and linearly scale alpha up to 1 when power level is at 90%
+				local overlayWidth = manabarPixelPos - info.leftPos;
+				local ninetyPercentWidth = (manabar:GetWidth() - info.leftPos) * 0.9;
+				overlayTexture:SetWidth(overlayWidth);
+				overlayTexture:SetTexCoord(0, overlayWidth / info.width, 0, 1);
+				overlayTexture:SetAlpha(overlayWidth / ninetyPercentWidth);
+			end
+		else
+			overlayTexture:Hide();
+		end
+	end
+end
+
+local InsanityOverlay = 
+{
+	atlas = "Priest-InsanityOverlay",
+	topOffset = 6,								-- Vertical offset of overlay texture from manabar
+	rightOffset = 9,							-- Horizontal offset of overlay texture off right side of manabar
+	updateFunc = Priest_UpdateInsanityOverlay;	-- This function gets called every time the power type value changes
+};
+
 PowerBarColor = {};
 PowerBarColor["MANA"] = { r = 0.00, g = 0.00, b = 1.00 };
-PowerBarColor["RAGE"] = { r = 1.00, g = 0.00, b = 0.00 };
-PowerBarColor["FOCUS"] = { r = 1.00, g = 0.50, b = 0.25 };
-PowerBarColor["ENERGY"] = { r = 1.00, g = 1.00, b = 0.00 };
-PowerBarColor["CHI"] = { r = 0.71, g = 1.0, b = 0.92 };
+PowerBarColor["RAGE"] = { r = 1.00, g = 0.00, b = 0.00, fullPowerAnim=true };
+PowerBarColor["FOCUS"] = { r = 1.00, g = 0.50, b = 0.25, fullPowerAnim=true };
+PowerBarColor["ENERGY"] = { r = 1.00, g = 1.00, b = 0.00, fullPowerAnim=true };
+PowerBarColor["COMBO_POINTS"] = { r = 1.00, g = 0.96, b = 0.41 };
 PowerBarColor["RUNES"] = { r = 0.50, g = 0.50, b = 0.50 };
 PowerBarColor["RUNIC_POWER"] = { r = 0.00, g = 0.82, b = 1.00 };
 PowerBarColor["SOUL_SHARDS"] = { r = 0.50, g = 0.32, b = 0.55 };
-PowerBarColor["ECLIPSE"] = { negative = { r = 0.30, g = 0.52, b = 0.90 },  positive = { r = 0.80, g = 0.82, b = 0.60 }};
+PowerBarColor["LUNAR_POWER"] = { r = 0.30, g = 0.52, b = 0.90, atlas="_Druid-LunarBar" };
 PowerBarColor["HOLY_POWER"] = { r = 0.95, g = 0.90, b = 0.60 };
-PowerBarColor["DEMONIC_FURY"] = { r = 0.50, g = 0.32, b = 0.55 };
+PowerBarColor["MAELSTROM"] = { r = 0.00, g = 0.50, b = 1.00, atlas = "_Shaman-MaelstromBar", fullPowerAnim=true };
+PowerBarColor["INSANITY"] = { r = 0.40, g = 0, b = 0.80, atlas = "_Priest-InsanityBar", overlayInfo=InsanityOverlay};
+PowerBarColor["CHI"] = { r = 0.71, g = 1.0, b = 0.92 };
+PowerBarColor["ARCANE_CHARGES"] = { r = 0.1, g = 0.1, b = 0.98 };	
+PowerBarColor["FURY"] = { r = 0.788, g = 0.259, b = 0.992, atlas = "_DemonHunter-DemonicFuryBar", fullPowerAnim=true };
+PowerBarColor["PAIN"] = { r = 1, g = 0, b = 0 };
 -- vehicle colors
 PowerBarColor["AMMOSLOT"] = { r = 0.80, g = 0.60, b = 0.00 };
 PowerBarColor["FUEL"] = { r = 0.0, g = 0.55, b = 0.5 };
@@ -26,8 +72,12 @@ PowerBarColor[4] = PowerBarColor["CHI"];
 PowerBarColor[5] = PowerBarColor["RUNES"];
 PowerBarColor[6] = PowerBarColor["RUNIC_POWER"];
 PowerBarColor[7] = PowerBarColor["SOUL_SHARDS"];
-PowerBarColor[8] = PowerBarColor["ECLIPSE"];
+PowerBarColor[8] = PowerBarColor["LUNAR_POWER"];
 PowerBarColor[9] = PowerBarColor["HOLY_POWER"];
+PowerBarColor[11] = PowerBarColor["MAELSTROM"];
+PowerBarColor[13] = PowerBarColor["INSANITY"];
+PowerBarColor[17] = PowerBarColor["FURY"];
+PowerBarColor[18] = PowerBarColor["PAIN"];
 
 --[[
 	This system uses "update" functions as OnUpdate, and OnEvent handlers.
@@ -427,7 +477,49 @@ function UnitFrameManaBar_UpdateType (manaBar)
 	local info = PowerBarColor[powerToken];
 	if ( info ) then
 		if ( not manaBar.lockColor ) then
-			manaBar:SetStatusBarColor(info.r, info.g, info.b);
+			local playerDeadOrGhost = (manaBar.unit == "player" and (UnitIsDead("player") or UnitIsGhost("player")));
+			if ( info.atlas ) then
+				manaBar:SetStatusBarAtlas(info.atlas);
+				manaBar:SetStatusBarColor(1, 1, 1);
+				manaBar:GetStatusBarTexture():SetDesaturated(playerDeadOrGhost);
+				manaBar:GetStatusBarTexture():SetAlpha(playerDeadOrGhost and 0.5 or 1);
+				
+				if ( info.overlayInfo and manaBar.OverlayFrame ) then
+					local overlayTexture = manaBar.OverlayFrame.OverlayTexture;
+					overlayTexture:SetAtlas(info.overlayInfo.atlas, false);
+					local _;
+					_, info.overlayInfo.width, info.overlayInfo.height = GetAtlasInfo(info.overlayInfo.atlas);
+					
+					info.overlayInfo.leftPos =  manaBar:GetWidth() - info.overlayInfo.width + info.overlayInfo.rightOffset;
+					overlayTexture:ClearAllPoints();
+					overlayTexture:SetPoint("TOPLEFT", manaBar, "TOPLEFT", info.overlayInfo.leftPos, info.overlayInfo.topOffset);
+					overlayTexture:SetHeight(info.overlayInfo.height);
+				elseif ( manaBar.OverlayTexture ) then
+					manaBar.OverlayTexture:Hide();
+				end
+			else
+				manaBar:SetStatusBarTexture("Interface\\TargetingFrame\\UI-StatusBar");
+				if ( playerDeadOrGhost ) then
+					manaBar:SetStatusBarColor(0.6, 0.6, 0.6, 0.5);
+				else
+					manaBar:SetStatusBarColor(info.r, info.g, info.b);
+				end
+			end
+			
+			if ( manaBar.FeedbackFrame ) then
+				manaBar.FeedbackFrame:Initialize(info, manaBar.unit, powerType);
+			end
+			
+			if ( manaBar.FullPowerFrame ) then
+				manaBar.FullPowerFrame.active = info.fullPowerAnim;
+				if ( info.fullPowerAnim ) then
+					manaBar.FullPowerFrame:RegisterEvent("PLAYER_REGEN_ENABLED");
+					manaBar.FullPowerFrame:SetScript("OnEvent", UnitFrameManaBar_FullPowerFrame_OnEvent);
+				else
+					manaBar.FullPowerFrame:UnregisterEvent("PLAYER_REGEN_ENABLED");
+					manaBar.FullPowerFrame:SetScript("OnEvent", nil);
+				end
+			end
 		end
 	else
 		if ( not altR) then
@@ -578,6 +670,7 @@ function UnitFrameManaBar_Initialize (unit, statusbar, statustext, frequentUpdat
 		return;
 	end
 	statusbar.unit = unit;
+	statusbar.texture = statusbar:GetStatusBarTexture();
 	SetTextStatusBarText(statusbar, statustext);
 	
 	statusbar.frequentUpdates = frequentUpdates;
@@ -591,6 +684,11 @@ function UnitFrameManaBar_Initialize (unit, statusbar, statustext, frequentUpdat
 	end
 	statusbar:RegisterEvent("UNIT_DISPLAYPOWER");
 	statusbar:RegisterUnitEvent("UNIT_MAXPOWER", unit);
+	if ( statusbar.unit == "player" ) then
+		statusbar:RegisterEvent("PLAYER_DEAD");
+		statusbar:RegisterEvent("PLAYER_ALIVE");
+		statusbar:RegisterEvent("PLAYER_UNGHOST");
+	end
 	statusbar:SetScript("OnEvent", UnitFrameManaBar_OnEvent);
 end
 
@@ -606,6 +704,8 @@ function UnitFrameManaBar_OnEvent(self, event, ...)
 			UnitFrameManaBar_RegisterDefaultEvents(self);
 			self:SetScript("OnUpdate", nil);
 		end
+	elseif ( event == "PLAYER_ALIVE"  or event == "PLAYER_DEAD" or event == "PLAYER_UNGHOST" ) then
+		UnitFrameManaBar_UpdateType(self);
 	else
 		if ( not self.ignoreNoUnit or UnitGUID(self.unit) ) then
 			UnitFrameManaBar_Update(self, ...);
@@ -613,14 +713,52 @@ function UnitFrameManaBar_OnEvent(self, event, ...)
 	end
 end
 
+function UnitFrameManaBar_FullPowerFrame_OnEvent(self, event, ...)
+	-- Fade out anims if they are playing and player goes out of combat
+	if ( event == "PLAYER_REGEN_ENABLED" ) then
+		if ( self.SpikeFrame.SpikeAnim:IsPlaying() or self.PulseFrame.PulseAnim:IsPlaying() ) then
+			self.FadeoutAnim:Play();
+		end
+	end
+end
+
+function UnitFrameManaBar_FullPowerStartAnim(self, oldValue, newValue)
+	local frame = self.FullPowerFrame;
+	-- If going to max and in combat, show alert/pulse animations
+	if ( newValue == frame.maxValue and UnitAffectingCombat("player") ) then
+		frame.FadeoutAnim:Stop();
+		frame:SetAlpha(1);
+		frame.PulseFrame.PulseAnim:Play();
+		frame.SpikeFrame.SpikeAnim:Play();
+	-- If going from max to less than max and anims are playing, fade out anims
+	elseif ( oldValue == frame.maxValue and (frame.PulseFrame.PulseAnim:IsPlaying() or frame.SpikeFrame.SpikeAnim:IsPlaying()) ) then
+		frame.FadeoutAnim:Play();
+	end
+
+end
+
 function UnitFrameManaBar_OnUpdate(self)
 	if ( not self.disconnected and not self.lockValues ) then
 		local currValue = UnitPower(self.unit, self.powerType);
 		if ( currValue ~= self.currValue ) then
 			if ( not self.ignoreNoUnit or UnitGUID(self.unit) ) then
+				if ( self.FeedbackFrame ) then
+					-- Only show anim if change is more than 10%
+					if ( math.abs(currValue - self.currValue) / self.FeedbackFrame.maxValue > 0.1 ) then
+						self.FeedbackFrame:StartFeedbackAnim(self.currValue or 0, currValue);
+					end
+				end
+				if ( self.FullPowerFrame and self.FullPowerFrame.active ) then
+					UnitFrameManaBar_FullPowerStartAnim(self, self.currValue or 0, currValue);
+				end
 				self:SetValue(currValue);
 				self.currValue = currValue;
 				TextStatusBar_UpdateTextString(self);
+				
+				local info = PowerBarColor[self.powerToken];
+				if ( info and info.overlayInfo and info.overlayInfo.updateFunc ) then
+					info.overlayInfo.updateFunc(self, info.overlayInfo);
+				end
 			end
 		end
 	end
@@ -638,7 +776,7 @@ function UnitFrameManaBar_Update(statusbar, unit)
 		local maxValue = UnitPowerMax(unit, statusbar.powerType);
 
 		statusbar:SetMinMaxValues(0, maxValue);
-
+		
 		statusbar.disconnected = not UnitIsConnected(unit);
 		if ( statusbar.disconnected ) then
 			statusbar:SetValue(maxValue);
@@ -648,8 +786,17 @@ function UnitFrameManaBar_Update(statusbar, unit)
 			end
 		else
 			local currValue = UnitPower(unit, statusbar.powerType);
+			if ( statusbar.FullPowerFrame ) then
+				statusbar.FullPowerFrame.maxValue = maxValue;
+			end
+
 			statusbar:SetValue(currValue);
 			statusbar.currValue = currValue;
+		end
+		
+		local info = PowerBarColor[statusbar.powerToken];
+		if ( info and info.overlayInfo and info.overlayInfo.updateFunc ) then
+			info.overlayInfo.updateFunc(statusbar, info.overlayInfo);
 		end
 	end
 	TextStatusBar_UpdateTextString(statusbar);

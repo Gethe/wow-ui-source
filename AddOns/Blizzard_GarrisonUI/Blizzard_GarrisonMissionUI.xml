@@ -9,7 +9,7 @@
 		</Scripts>
 	</CinematicModel>
 
-	<PlayerModel name="MissionCompletePreloadModelTemplate" frameStrata="LOW" virtual="true">
+	<PlayerModel name="MissionCompletePreloadModelTemplate" alpha="0" frameStrata="LOW" virtual="true">
 		<Size x="100" y="100"/>
 		<Anchors>
 			<Anchor point="TOPLEFT" x="10" y="-10"/>
@@ -122,6 +122,9 @@
 	
 	<Frame name="GarrisonFollowerListButtonAbilityTemplate" virtual="true">
 		<Size x="234" y="20"/>
+		<KeyValues>
+			<Keyvalue key="followerTypeID" value="1" type="number"/>
+		</KeyValues>
 		<Layers>
 			<Layer level="ARTWORK">
 				<Texture parentKey="Icon">
@@ -141,7 +144,7 @@
 			<OnEnter>
 				GarrisonFollowerAbilityTooltip:ClearAllPoints();
 				GarrisonFollowerAbilityTooltip:SetPoint("TOPLEFT", self, "BOTTOMRIGHT");
-				GarrisonFollowerAbilityTooltip_Show(self.abilityID, LE_FOLLOWER_TYPE_GARRISON_6_0);
+				GarrisonFollowerAbilityTooltip_Show(self.abilityID, self.followerTypeID);
 			</OnEnter>
 			<OnLeave>
 				GarrisonFollowerAbilityTooltip:Hide();
@@ -183,6 +186,9 @@
 
 	<Frame name="GarrisonFollowerPageAbilityTemplate" virtual="true">
 		<Size x="240" y="60"/>
+		<KeyValues>
+			<Keyvalue key="followerTypeID" value="1" type="number"/>
+		</KeyValues>
 		<Layers>
 			<Layer level="ARTWORK">
 				<FontString parentKey="Name" inherits="GameFontNormalLarge2" justifyH="LEFT" maxLines="1"/>
@@ -255,7 +261,7 @@
 					<OnEnter>
 						GarrisonFollowerAbilityTooltip:ClearAllPoints();
 						GarrisonFollowerAbilityTooltip:SetPoint("TOPLEFT", self, "BOTTOMRIGHT");
-						GarrisonFollowerAbilityTooltip_Show(self.abilityID, LE_FOLLOWER_TYPE_GARRISON_6_0);
+						GarrisonFollowerAbilityTooltip_Show(self.abilityID, self:GetParent().followerTypeID);
 					</OnEnter>
 					<OnLeave>
 						GarrisonFollowerAbilityTooltip:Hide();
@@ -333,6 +339,12 @@
 						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Icon"/>
 					</Anchors>
 				</FontString>
+				<Texture parentKey="IconBorder" file="Interface\Common\WhiteIconFrame">
+					<Size x="48" y="48"/>
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent.Icon"/>
+					</Anchors>
+				</Texture>
 			</Layer>
 		</Layers>
 		<Scripts>
@@ -1556,7 +1568,14 @@
 					</Layer>
 				</Layers>
 				<Frames>
-					<Frame parentArray="Abilities" inherits="GarrisonFollowerPageAbilityTemplate" hidden="true"/>
+					<Frame parentArray="Abilities" inherits="GarrisonFollowerPageAbilityTemplate" hidden="true">
+						<Scripts>
+							<OnShow>
+								local mainFrame = self:GetParent():GetParent():GetParent();
+								self.followerTypeID = mainFrame.followerTypeID;
+							</OnShow>
+						</Scripts>
+					</Frame>
 					<Frame parentArray="Counters" inherits="GarrisonMissionAbilityCounterTemplate" hidden="true"/>
 				</Frames>
 				<Scripts>
@@ -2076,14 +2095,9 @@
 				</Frames>
 			</Frame>
 		</Frames>
-		<Scripts>
-			<OnEvent function="GarrisonMissionFrame_OnEvent"/>
-			<OnShow function="GarrisonMissionFrame_OnShow"/>
-			<OnHide function="GarrisonMissionFrame_OnHide"/>
-		</Scripts>
 	</Frame>	
 
-	<Frame name="GarrisonFollowerPlacer" inherits="GarrisonFollowerPortraitTemplate" hidden="true" parent="UIParent" frameStrata="HIGH"/>
+	<Frame name="GarrisonFollowerPlacer" inherits="GarrisonFollowerPortraitTemplate" hidden="true" parent="UIParent" frameStrata="DIALOG"/>
 
 	<Frame name="GarrisonMissionListTooltipThreatsFrame">
 		<Size x="0" y="26"/>

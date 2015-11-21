@@ -1,0 +1,110 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\FrameXML\UI.xsd">
+	<Script file="KioskModeSplash.lua"/>
+
+	<Frame name="KioskModeSplash" toplevel="true" parent="GlueParent" setAllPoints="true" hidden="true">
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="BG" file="Interface\Glues\CharacterCreate\LegionSplash-BG" setAllPoints="true"/>
+			</Layer>
+			<Layer level="ARTWORK">
+				<Texture parentKey="Logo" atlas="LegionSplash-Logo">
+					<Size x="256" y="128"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" x="6" y="-6"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Button parentKey="DemonHunterChoice" enableMouse="true" id="1">
+				<Size x="521" y="411"/>
+				<Anchors>
+					<Anchor point="TOPRIGHT" x="-78" y="-40"/>
+				</Anchors>
+				<Layers>
+					<Layer level="ARTWORK">
+						<Texture parentKey="Splash" atlas="LegionSplash-DemonHunter">
+							<Size x="664" y="531"/>
+							<Anchors>
+								<Anchor point="CENTER" x="0" y="-8"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+					<Layer level="ARTWORK" textureSubLevel="1">
+						<Texture parentKey="Button" atlas="LegionSplash-DemonHunterButton">
+							<Size x="226" y="36"/>
+							<Anchors>
+								<Anchor point="CENTER" x="4" y="-123"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+					<Layer level="OVERLAY">
+						<Texture parentKey="Highlight" alpha="0.2" hidden="true">
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeKey="$parent.Button" x="4" y="-4"/>
+								<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Button" x="-4" y="4"/>
+							</Anchors>
+							<Color r="1" g="1" b="1"/>
+						</Texture>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnEnter>
+						self.Highlight:Show();
+					</OnEnter>
+					<OnLeave>
+						self.Highlight:Hide();
+					</OnLeave>
+					<OnClick function="KioskModeSplashChoice_OnClick"/>
+				</Scripts>
+			</Button>
+			<Button parentKey="NewCharacterChoice" id="2">
+				<Size x="513" y="190"/>
+				<Anchors>
+					<Anchor point="BOTTOMRIGHT" x="-71" y="36"/>
+				</Anchors>
+				<Layers>
+					<Layer level="ARTWORK">
+						<Texture parentKey="Splash" atlas="LegionSplash-NewCharacter">
+							<Size x="575" y="253"/>
+							<Anchors>
+								<Anchor point="CENTER"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+					<Layer level="ARTWORK" textureSubLevel="1">
+						<Texture parentKey="Button" atlas="LegionSplash-NewCharacterButton">
+							<Size x="269" y="36"/>
+							<Anchors>
+								<Anchor point="CENTER" x="-2" y="-48"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+					<Layer level="OVERLAY">
+						<Texture parentKey="Highlight" alpha="0.2" hidden="true">
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeKey="$parent.Button" x="4" y="-4"/>
+								<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Button" x="-4" y="4"/>
+							</Anchors>
+							<Color r="1" g="1" b="1"/>
+						</Texture>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnEnter>
+						self.Highlight:Show();
+					</OnEnter>
+					<OnLeave>
+						self.Highlight:Hide();
+					</OnLeave>
+					<OnClick function="KioskModeSplashChoice_OnClick"/>
+				</Scripts>
+			</Button>
+		</Frames>
+		<Scripts>
+			<OnLoad function="KioskModeSplash_OnLoad"/>
+			<OnShow function="KioskModeSplash_OnShow"/>
+		</Scripts>
+	</Frame>
+</Ui>

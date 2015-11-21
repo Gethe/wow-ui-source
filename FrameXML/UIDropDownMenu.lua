@@ -1013,6 +1013,9 @@ function UIDropDownMenu_OnHide(self)
 	end
 	CloseDropDownMenus(id+1);
 	OPEN_DROPDOWNMENUS[id] = nil;
+	if (id == 1) then
+		UIDROPDOWNMENU_OPEN_MENU = nil;
+	end
 end
 
 function UIDropDownMenu_SetWidth(frame, width, padding)

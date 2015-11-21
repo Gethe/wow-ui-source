@@ -10,6 +10,7 @@ function TradeFrame_OnLoad(self)
 	self:RegisterEvent("TRADE_PLAYER_ITEM_CHANGED");
 	self:RegisterEvent("TRADE_ACCEPT_UPDATE");
 	self:RegisterEvent("TRADE_POTENTIAL_BIND_ENCHANT");
+	self:RegisterEvent("TRADE_POTENTIAL_REMOVE_TRANSMOG");
 	TradeFrameInset:SetPoint("TOPLEFT", 4, -440);
 	TradeRecipientItemsInsetBg:SetAlpha(0.1);
 	TradeRecipientMoneyInsetBg:SetAlpha(0);
@@ -37,6 +38,7 @@ function TradeFrame_OnEvent(self, event, ...)
 	elseif ( event == "TRADE_CLOSED" ) then
 		HideUIPanel(self);
 		StaticPopup_Hide("TRADE_POTENTIAL_BIND_ENCHANT");
+		StaticPopup_Hide("TRADE_POTENTIAL_REMOVE_TRANSMOG");
 	elseif ( event == "TRADE_TARGET_ITEM_CHANGED" ) then
 		TradeFrame_UpdateTargetItem(arg1);
 	elseif ( event == "TRADE_PLAYER_ITEM_CHANGED" ) then
@@ -51,6 +53,8 @@ function TradeFrame_OnEvent(self, event, ...)
 		else
 			StaticPopup_Hide("TRADE_POTENTIAL_BIND_ENCHANT");
 		end
+	elseif ( event == "TRADE_POTENTIAL_REMOVE_TRANSMOG" ) then
+		StaticPopup_Show("TRADE_POTENTIAL_REMOVE_TRANSMOG", arg1, nil, arg2);
 	end
 end
 
@@ -70,7 +74,7 @@ function TradeFrame_Update()
 end
 
 function TradeFrame_UpdatePlayerItem(id)
-	local name, texture, numItems, isUsable, enchantment = GetTradePlayerItemInfo(id);
+	local name, texture, numItems, _, enchantment, canLoseTransmog = GetTradePlayerItemInfo(id);
 	local buttonText = _G["TradePlayerItem"..id.."Name"];
 	
 	-- See if its the enchant slot
@@ -95,6 +99,10 @@ function TradeFrame_UpdatePlayerItem(id)
 	else
 		tradeItemButton.hasItem = nil;
 	end
+	local _, dialog = StaticPopup_Visible("TRADE_POTENTIAL_REMOVE_TRANSMOG");
+	if ( dialog and dialog.data == id and not canLoseTransmog ) then
+		StaticPopup_Hide("TRADE_POTENTIAL_REMOVE_TRANSMOG");
+	end	
 end
 
 function TradeFrame_UpdateTargetItem(id)

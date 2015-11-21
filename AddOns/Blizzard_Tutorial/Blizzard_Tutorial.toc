@@ -1,7 +1,8 @@
 ## Author: Blizzard Entertainment
 ## Title: Blizzard Tutorial
-## Interface: 60200
+## Interface: 70000
 ## Secure: 1
+## RequiredDep: Blizzard_TutorialTemplates
 ## LoadOnDemand: 1
 # Inspired by the Newbie Assistant written by 网易
 
@@ -15,7 +16,6 @@ Blizzard_TutorialRacialData.lua
 Blizzard_TutorialKeyboardMouseFrame.xml
 Blizzard_TutorialCalloutFrame.xml
 Blizzard_TutorialMainFrame.xml
-Blizzard_TutorialPointerFrame.xml
 
 Blizzard_TutorialLogic.lua
 Blizzard_Tutorial.lua

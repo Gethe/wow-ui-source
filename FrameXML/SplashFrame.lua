@@ -190,6 +190,7 @@ end
 function SplashFrame_OnLoad(self)
 	self:RegisterEvent("PLAYER_ENTERING_WORLD");
 	self:RegisterEvent("VARIABLES_LOADED");
+	self:RegisterEvent("ZONE_CHANGED_NEW_AREA");
 end
 
 local function ShouldShowStartButton( questID )
@@ -216,24 +217,29 @@ local function ShouldEnableStartButton( questID )
 end
 
 function SplashFrame_OnEvent(self, event)
+	if ( IsKioskModeEnabled() ) then
+		return;
+	end
+
 	if( event == "QUEST_LOG_UPDATE" ) then
 		local tag = GetSplashFrameTag();
 		if( self:IsShown() and tag )then
 			SplashFrame_SetStartButtonDisplay( ShouldShowStartButton(SPLASH_SCREENS[tag].questID) );
 		end
-	else 
-		if( event == "PLAYER_ENTERING_WORLD" ) then
-			self:UnregisterEvent("PLAYER_ENTERING_WORLD");
-			self.playerEntered = true;
-		elseif( event == "VARIABLES_LOADED" ) then
-			self:UnregisterEvent("VARIABLES_LOADED");
-			self.varsLoaded = true;
-		end
-		if( self.playerEntered and self.varsLoaded ) then
-			local playerLevel = UnitLevel("player");
-			
-			--We don't want to show the splash screen for new players so we wait until they are 20 or higher.
-			if ( playerLevel < 20 ) then
+	elseif( event == "PLAYER_ENTERING_WORLD" ) then
+		self:UnregisterEvent("PLAYER_ENTERING_WORLD");
+		self.playerEntered = true;
+	elseif( event == "VARIABLES_LOADED" ) then
+		self:UnregisterEvent("VARIABLES_LOADED");
+		self.varsLoaded = true;
+	elseif( event == "ZONE_CHANGED_NEW_AREA" ) then
+		self:UnregisterEvent("ZONE_CHANGED_NEW_AREA");
+		self.zoneEntered = true;
+	end
+	
+	if( event == "PLAYER_ENTERING_WORLD" or event == "VARIABLES_LOADED" or event == "ZONE_CHANGED_NEW_AREA" ) then
+		if( self.playerEntered and self.varsLoaded and self.zoneEntered) then
+			if ( not SplashFrameCanBeShown() ) then
 				return;
 			end
 			
@@ -243,12 +249,10 @@ function SplashFrame_OnEvent(self, event)
 			if( lastScreenID >= SPLASH_SCREENS[tag].id ) then
 				return;
 			end	
-			
-			if ( tag ) then
-				SplashFrame_Open(tag);
-				SplashFrame.firstTimeViewed = true;
-				SetCVar(SPLASH_SCREENS[tag].cVar, SPLASH_SCREENS[tag].id); -- update cVar value;
-			end
+
+			SplashFrame_Open(tag);
+			SplashFrame.firstTimeViewed = true;
+			SetCVar(SPLASH_SCREENS[tag].cVar, SPLASH_SCREENS[tag].id); -- update cVar value;
 		end
 	end
 end

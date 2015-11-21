@@ -73,6 +73,13 @@ function MoveMicroButtons(anchor, anchorTo, relAnchor, x, y, isStacked)
 	UpdateMicroButtons();
 end
 
+function SetKioskTooltip(frame)
+	if (IsKioskModeEnabled()) then
+		frame.minLevel = nil;
+		frame.disabledTooltip = ERR_SYSTEM_DISABLED;
+	end
+end
+
 function UpdateMicroButtons()
 	local playerLevel = UnitLevel("player");
 	local factionGroup = UnitFactionGroup("player");
@@ -103,8 +110,11 @@ function UpdateMicroButtons()
 	if ( PlayerTalentFrame and PlayerTalentFrame:IsShown() ) then
 		TalentMicroButton:SetButtonState("PUSHED", true);
 	else
-		if ( playerLevel < SHOW_SPEC_LEVEL ) then
+		if ( playerLevel < SHOW_SPEC_LEVEL or (IsKioskModeEnabled() and select(2, UnitClass("player")) ~= "DEMONHUNTER") ) then
 			TalentMicroButton:Disable();
+			if (IsKioskModeEnabled()) then
+				SetKioskTooltip(TalentMicroButton);
+			end
 		else
 			TalentMicroButton:Enable();
 			TalentMicroButton:SetButtonState("NORMAL");
@@ -129,8 +139,11 @@ function UpdateMicroButtons()
 	end
 
 	GuildMicroButton_UpdateTabard();
-	if ( IsTrialAccount() or (IsVeteranTrialAccount() and not IsInGuild()) or factionGroup == "Neutral" ) then
+	if ( IsTrialAccount() or (IsVeteranTrialAccount() and not IsInGuild()) or factionGroup == "Neutral" or IsKioskModeEnabled() ) then
 		GuildMicroButton:Disable();
+		if (IsKioskModeEnabled()) then
+			SetKioskTooltip(GuildMicroButton);
+		end
 	elseif ( ( GuildFrame and GuildFrame:IsShown() ) or ( LookingForGuildFrame and LookingForGuildFrame:IsShown() ) ) then
 		GuildMicroButton:Enable();
 		GuildMicroButton:SetButtonState("PUSHED", true);
@@ -153,7 +166,10 @@ function UpdateMicroButtons()
 	if ( PVEFrame and PVEFrame:IsShown() ) then
 		LFDMicroButton:SetButtonState("PUSHED", true);
 	else
-		if ( playerLevel < LFDMicroButton.minLevel or factionGroup == "Neutral" ) then
+		if ( IsKioskModeEnabled() or playerLevel < LFDMicroButton.minLevel or factionGroup == "Neutral" ) then
+			if (IsKioskModeEnabled()) then
+				SetKioskTooltip(LFDMicroButton);
+			end
 			LFDMicroButton:Disable();
 		else
 			LFDMicroButton:Enable();
@@ -170,25 +186,18 @@ function UpdateMicroButtons()
 	if ( AchievementFrame and AchievementFrame:IsShown() ) then
 		AchievementMicroButton:SetButtonState("PUSHED", true);
 	else
-		if ( ( HasCompletedAnyAchievement() or IsInGuild() ) and CanShowAchievementUI() ) then
+		if ( ( HasCompletedAnyAchievement() or IsInGuild() ) and CanShowAchievementUI() and not IsKioskModeEnabled()  ) then
 			AchievementMicroButton:Enable();
 			AchievementMicroButton:SetButtonState("NORMAL");
 		else
+			if (IsKioskModeEnabled()) then
+				SetKioskTooltip(AchievementMicroButton);
+			end
 			AchievementMicroButton:Disable();
 		end
 	end
 	
-	if ( EncounterJournal and EncounterJournal:IsShown() ) then
-		EJMicroButton:SetButtonState("PUSHED", true);
-	else
-		if ( playerLevel < EJMicroButton.minLevel or factionGroup == "Neutral" ) then
-			EJMicroButton:Disable();
-			EJMicroButton_ClearNewAdventureNotice();
-		else
-			EJMicroButton:Enable();
-			EJMicroButton:SetButtonState("NORMAL");
-		end
-	end
+	EJMicroButton_UpdateDisplay();
 
 	if ( CollectionsJournal and CollectionsJournal:IsShown() ) then
 		CollectionsMicroButton:Enable();
@@ -220,6 +229,9 @@ function UpdateMicroButtons()
 	elseif ( C_StorePublic.IsDisabledByParentalControls() ) then
 		StoreMicroButton.disabledTooltip = BLIZZARD_STORE_ERROR_PARENTAL_CONTROLS;
 		StoreMicroButton:Disable();		
+	elseif ( IsKioskModeEnabled() ) then
+		StoreMicroButton.disabledTooltip = ERR_SYSTEM_DISABLED;
+		StoreMicroButton:Disable();
 	else
 		StoreMicroButton.disabledTooltip = nil;
 		StoreMicroButton:Enable();
@@ -235,7 +247,7 @@ function MicroButtonPulseStop(self)
 end
 
 function AchievementMicroButton_OnEvent(self, event, ...)
-	if (IsBlizzCon()) then
+	if (IsKioskModeEnabled()) then
 		return;
 	end
 
@@ -247,7 +259,7 @@ function AchievementMicroButton_OnEvent(self, event, ...)
 end
 
 function GuildMicroButton_OnEvent(self, event, ...)
-	if (IsBlizzCon()) then
+	if (IsKioskModeEnabled()) then
 		return;
 	end
 
@@ -345,6 +357,10 @@ end
 
 --Talent button specific functions
 function TalentMicroButton_OnEvent(self, event, ...)
+	if (IsKioskModeEnabled()) then
+		return;
+	end
+	
 	if ( event == "PLAYER_LEVEL_UP" ) then
 		local level = ...;
 		if (level == SHOW_SPEC_LEVEL) then
@@ -430,50 +446,66 @@ function EJMicroButton_OnLoad(self)
 	SetDesaturation(self:GetDisabledTexture(), true);
 	self.tooltipText = MicroButtonTooltipText(ENCOUNTER_JOURNAL, "TOGGLEENCOUNTERJOURNAL");
 	self.newbieText = NEWBIE_TOOLTIP_ENCOUNTER_JOURNAL;
-	self.minLevel = SHOW_EJ_LEVEL;
-	if (IsBlizzCon()) then
+	if (IsKioskModeEnabled()) then
 		self:Disable();
 	end
 
 	--events that can trigger a refresh of the adventure journal
 	self:RegisterEvent("VARIABLES_LOADED");
 	self:RegisterEvent("PLAYER_ENTERING_WORLD");
+	self:RegisterEvent("ZONE_CHANGED_NEW_AREA");
 end
 
 function EJMicroButton_OnEvent(self, event, ...)
+	if (IsKioskModeEnabled()) then
+		return;
+	end
+	
 	local arg1 = ...
 	if( event == "UPDATE_BINDINGS" ) then
 		self.tooltipText = MicroButtonTooltipText(ADVENTURE_JOURNAL, "TOGGLEENCOUNTERJOURNAL");
 		self.newbieText = NEWBIE_TOOLTIP_ENCOUNTER_JOURNAL;
-		if (IsBlizzCon()) then
-			return;
-		end
 		UpdateMicroButtons();
 	elseif( event == "VARIABLES_LOADED" ) then
-		local showAlert = GetCVarBool("showAdventureJournalAlerts");
-		if( showAlert ) then
-			local lastTimeOpened = tonumber(GetCVar("advJournalLastOpened"));
-			if ( UnitLevel("player") >= EJMicroButton.minLevel and UnitFactionGroup("player") ~= "Neutral" ) then		
-				if ( GetServerTime() - lastTimeOpened > EJ_ALERT_TIME_DIFF ) then
-					EJMicroButtonAlert:Show();
-					MicroButtonPulse(EJMicroButton);
-				end
-			
-				if ( lastTimeOpened ~= 0 ) then
-					SetCVar("advJournalLastOpened", GetServerTime() );
-				end
-			end
-			
-			EJMicroButton_UpdateAlerts(true);
-		end
+		self:UnregisterEvent("VARIABLES_LOADED");
+		self.varsLoaded = true;
 	elseif ( event == "PLAYER_ENTERING_WORLD" ) then
-		C_AdventureJournal.UpdateSuggestions();	
+		self:UnregisterEvent("PLAYER_ENTERING_WORLD");
+		self.playerEntered = true;
 	elseif ( event == "UNIT_LEVEL" and arg1 == "player" ) then		
 		EJMicroButton_UpdateNewAdventureNotice(true);
-	elseif event == "PLAYER_AVG_ITEM_LEVEL_UPDATE" then
+	elseif ( event == "PLAYER_AVG_ITEM_LEVEL_UPDATE" ) then
 		local playerLevel = UnitLevel("player");
 		if ( playerLevel == MAX_PLAYER_LEVEL_TABLE[GetExpansionLevel()]) then
 			EJMicroButton_UpdateNewAdventureNotice(false);
+		end
+	elseif ( event == "ZONE_CHANGED_NEW_AREA" ) then
+		self:UnregisterEvent("ZONE_CHANGED_NEW_AREA");
+		self.zoneEntered = true;
+	end
+	
+	if( event == "PLAYER_ENTERING_WORLD" or event == "VARIABLES_LOADED" or event == "ZONE_CHANGED_NEW_AREA" ) then
+		if( self.playerEntered and self.varsLoaded and self.zoneEntered) then
+			EJMicroButton_UpdateDisplay();
+			if( self:IsEnabled() ) then
+				C_AdventureJournal.UpdateSuggestions();
+				
+				local showAlert = GetCVarBool("showAdventureJournalAlerts");
+				if( showAlert ) then
+					-- display alert if the player hasn't opened the journal for a long time
+					local lastTimeOpened = tonumber(GetCVar("advJournalLastOpened"));
+					if ( GetServerTime() - lastTimeOpened > EJ_ALERT_TIME_DIFF ) then
+						EJMicroButtonAlert:Show();
+						MicroButtonPulse(EJMicroButton);
+					end
+
+					if ( lastTimeOpened ~= 0 ) then
+						SetCVar("advJournalLastOpened", GetServerTime() );
+					end
+					
+					EJMicroButton_UpdateAlerts(true);
+				end
+			end
 		end
 	end
 end
@@ -490,6 +522,27 @@ end
 function EJMicroButton_ClearNewAdventureNotice()
 	EJMicroButton.Flash:Hide();
 	EJMicroButton.NewAdventureNotice:Hide();
+end
+
+function EJMicroButton_UpdateDisplay()
+	local frame = EJMicroButton;
+	if ( EncounterJournal and EncounterJournal:IsShown() ) then
+		frame:SetButtonState("PUSHED", true);
+	else
+		local disabled = not C_AdventureJournal.CanBeShown();
+		if ( IsKioskModeEnabled() or disabled ) then
+			frame:Disable();
+			if (IsKioskModeEnabled()) then
+				SetKioskTooltip(frame);
+			elseif ( disabled ) then
+				frame.disabledTooltip = FEATURE_NOT_YET_AVAILABLE;
+			end
+			EJMicroButton_ClearNewAdventureNotice();
+		else
+			frame:Enable();
+			frame:SetButtonState("NORMAL");
+		end
+	end
 end
 
 function EJMicroButton_UpdateAlerts( flag )

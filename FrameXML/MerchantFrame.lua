@@ -9,6 +9,7 @@ function MerchantFrame_OnLoad(self)
 	self:RegisterEvent("MERCHANT_SHOW");
 	self:RegisterEvent("GUILDBANK_UPDATE_MONEY");
 	self:RegisterEvent("HEIRLOOMS_UPDATED");
+	self:RegisterEvent("MERCHANT_CONFIRM_TRADE_TIMER_REMOVAL");
 	self:RegisterForDrag("LeftButton");
 	self.page = 1;
 	-- Tab Handling code
@@ -26,6 +27,7 @@ function MerchantFrame_OnEvent(self, event, ...)
 		self.update = true;
 	elseif ( event == "MERCHANT_CLOSED" ) then
 		self:UnregisterEvent("CURRENCY_DISPLAY_UPDATE");
+		StaticPopup_Hide("CONFIRM_MERCHANT_TRADE_TIMER_REMOVAL");
 		HideUIPanel(self);
 	elseif ( event == "MERCHANT_SHOW" ) then
 		ShowUIPanel(self);
@@ -46,6 +48,9 @@ function MerchantFrame_OnEvent(self, event, ...)
 		if itemID and updateReason == "NEW" then
 			MerchantFrame_Update();
 		end
+	elseif ( event == "MERCHANT_CONFIRM_TRADE_TIMER_REMOVAL" ) then
+		local item = ...;
+		StaticPopup_Show("CONFIRM_MERCHANT_TRADE_TIMER_REMOVAL", item);
 	end
 end
 

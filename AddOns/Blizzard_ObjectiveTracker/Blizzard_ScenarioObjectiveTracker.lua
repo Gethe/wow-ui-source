@@ -1,7 +1,7 @@
 
 SCENARIO_CONTENT_TRACKER_MODULE = ObjectiveTracker_GetModuleInfoTable();
 SCENARIO_CONTENT_TRACKER_MODULE.updateReasonModule = OBJECTIVE_TRACKER_UPDATE_MODULE_SCENARIO;
-SCENARIO_CONTENT_TRACKER_MODULE.updateReasonEvents = OBJECTIVE_TRACKER_UPDATE_SCENARIO + OBJECTIVE_TRACKER_UPDATE_SCENARIO_NEW_STAGE;
+SCENARIO_CONTENT_TRACKER_MODULE.updateReasonEvents = OBJECTIVE_TRACKER_UPDATE_SCENARIO + OBJECTIVE_TRACKER_UPDATE_SCENARIO_NEW_STAGE + OBJECTIVE_TRACKER_UPDATE_SCENARIO_SPELLS;
 SCENARIO_CONTENT_TRACKER_MODULE:SetHeader(ObjectiveTrackerFrame.BlocksFrame.ScenarioHeader, TRACKER_HEADER_SCENARIO, nil);	-- never anim-in the header
 SCENARIO_CONTENT_TRACKER_MODULE.blockOffsetX = -20;
 SCENARIO_CONTENT_TRACKER_MODULE.fromHeaderOffsetY = -2;
@@ -51,6 +51,9 @@ function ScenarioBlocksFrame_OnFinishSlideIn()
 	ObjectiveTracker_Update(OBJECTIVE_TRACKER_UPDATE_SCENARIO);
 	ObjectiveTracker_Update(OBJECTIVE_TRACKER_UPDATE_SCENARIO_BONUS_DELAYED);
 end
+function ScenarioBlocksFrame_OnFinishSpellExpand()
+	SCENARIO_TRACKER_MODULE.BlocksFrame.slidingAction = nil;
+end
 
 function ScenarioBlocksFrame_OnFinishSlideOut()
 	SCENARIO_TRACKER_MODULE.BlocksFrame.slidingAction = nil;
@@ -65,6 +68,7 @@ end
 
 local SLIDE_IN_DATA = { startHeight = 1, endHeight = 0, duration = 0.4, scroll = true, onFinishFunc = ScenarioBlocksFrame_OnFinishSlideIn };
 local SLIDE_OUT_DATA = { startHeight = 0, endHeight = 1, duration = 0.4, scroll = true, startDelay =  0.8, endDelay = 0.6, onFinishFunc = ScenarioBlocksFrame_OnFinishSlideOut };
+local SPELL_EXPAND_DATA = { startHeight = 0, endHeight = 0, duration = 0.2, scroll = true, expanding = true, onFinishFunc = ScenarioBlocksFrame_OnFinishSpellExpand };
 
 function ScenarioBlocksFrame_SlideIn()
 	SCENARIO_TRACKER_MODULE.BlocksFrame.slidingAction = "IN";
@@ -76,14 +80,29 @@ function ScenarioBlocksFrame_SlideIn()
 	ObjectiveTracker_SlideBlock(SCENARIO_TRACKER_MODULE.BlocksFrame, SLIDE_IN_DATA);
 end
 
+function ScenarioSpells_SlideIn(objectiveBlock)
+	SCENARIO_TRACKER_MODULE.BlocksFrame.slidingAction = "IN";
+	SPELL_EXPAND_DATA.startHeight = objectiveBlock.heightBeforeSpells;
+	SPELL_EXPAND_DATA.endHeight = SCENARIO_TRACKER_MODULE.BlocksFrame.height;
+	ObjectiveTracker_SlideBlock(SCENARIO_TRACKER_MODULE.BlocksFrame, SPELL_EXPAND_DATA);
+	
+	-- Only fade in new spells
+	for i = 1, #objectiveBlock.spells do
+		if (objectiveBlock.spells[i]:IsShown() and objectiveBlock.spells[i].newSpell) then
+			objectiveBlock.spells[i]:SetAlpha(0);
+			objectiveBlock.spells[i].Fadein:Play();
+		end
+	end
+end
+
 function ScenarioBlocksFrame_SetupStageBlock(scenarioCompleted)
 	ScenarioStageBlock.Stage:Hide();
 	ScenarioStageBlock.Name:Hide();
 	ScenarioStageBlock.CompleteLabel:Show();
 	ScenarioObjectiveBlock:Hide();
 	if ( scenarioCompleted ) then
-		local _, _, _, flags = C_Scenario.GetInfo();
-		local dungeonDisplay = bit.band(flags, SCENARIO_FLAG_USE_DUNGEON_DISPLAY) == SCENARIO_FLAG_USE_DUNGEON_DISPLAY;
+		local scenarioType = select(10, C_Scenario.GetInfo());
+		local dungeonDisplay = (scenarioType == LE_SCENARIO_TYPE_USE_DUNGEON_DISPLAY);
 		if( dungeonDisplay ) then
 			ScenarioStageBlock.CompleteLabel:SetText(DUNGEON_COMPLETED);
 		else
@@ -134,6 +153,8 @@ function ScenarioBlocksFrame_OnLoad(self)
 	self:RegisterEvent("WORLD_STATE_TIMER_STOP");
 	self:RegisterEvent("PROVING_GROUNDS_SCORE_UPDATE");
 	self:RegisterEvent("SCENARIO_COMPLETED");
+	self:RegisterEvent("SPELL_UPDATE_COOLDOWN");
+	self:RegisterEvent("SCENARIO_REWARD_UPDATE");
 end
 
 function ScenarioBlocksFrame_OnEvent(self, event, ...)
@@ -153,6 +174,11 @@ function ScenarioBlocksFrame_OnEvent(self, event, ...)
 		if( ( xp > 0 and UnitLevel("player") < MAX_PLAYER_LEVEL ) or money > 0 ) then
 			ScenarioObjectiveTracker_AnimateReward( xp, money );
 		end
+	elseif (event == "SPELL_UPDATE_COOLDOWN") then
+		ScenarioSpellButtons_UpdateCooldowns();
+	elseif (event == "SCENARIO_REWARD_UPDATE") then
+		local scenarioType = select(10, C_Scenario.GetInfo());
+		ScenarioStage_CustomizeBlock(ScenarioStageBlock, scenarioType);
 	end
 end
 
@@ -479,6 +505,92 @@ function Scenario_ProvingGrounds_CountdownAnim_OnFinished(self)
 end
 
 -- *****************************************************************************************************
+-- ***** LEGION INVASION MODE
+-- *****************************************************************************************************
+
+function ScenarioRewardButton_OnEnter(self)
+	EmbeddedItemTooltip_SetItemByID(ScenarioStepRewardTooltip.ItemTooltip, self.rewardID);
+	ScenarioStepRewardTooltip:SetPoint("BOTTOMRIGHT", self, "TOPLEFT");
+	ScenarioStepRewardTooltip:Show();
+end
+
+function ScenarioRewardButton_OnLeave(self)
+	ScenarioStepRewardTooltip:Hide();
+end
+
+-- *****************************************************************************************************
+-- ***** SPELLS
+-- *****************************************************************************************************
+
+function ScenarioSpellButtons_UpdateCooldowns()
+	local objectiveBlock = ScenarioObjectiveBlock;
+	for i = 1, objectiveBlock.numSpells or 0 do
+		ScenarioSpellButton_UpdateCooldown(objectiveBlock.spells[i].SpellButton);
+	end
+end
+
+function ScenarioSpellButton_UpdateCooldown(spellButton)
+	local start, duration, enable = GetSpellCooldown(spellButton.spellID);
+	if ( start ) then
+		CooldownFrame_SetTimer(spellButton.Cooldown, start, duration, enable);
+		if ( duration > 0 and enable == 0 ) then
+			spellButton.Icon:SetVertexColor(0.4, 0.4, 0.4);
+		else
+			spellButton.Icon:SetVertexColor(1, 1, 1);
+		end
+	end
+end
+
+function ScenarioSpellButton_OnEnter(self)
+	GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+	GameTooltip:SetSpellByID(self.spellID);
+end
+
+function ScenarioSpellButton_OnClick(self, button)
+	CastSpellID(self.spellID);
+end
+
+function SCENARIO_CONTENT_TRACKER_MODULE:AddSpells(objectiveBlock, spellInfo)
+	if ( OBJECTIVE_TRACKER_UPDATE_REASON == OBJECTIVE_TRACKER_UPDATE_SCENARIO_SPELLS ) then
+		-- Calculate height of block with currently existing spells, so that we only slide in the new ones
+		objectiveBlock.heightBeforeSpells = objectiveBlock.height + SCENARIO_TRACKER_MODULE.BlocksFrame.contentsHeight;
+		if (objectiveBlock.spells) then
+			for i = 1, #objectiveBlock.spells do
+				if (objectiveBlock.spells[i]:IsShown()) then
+					objectiveBlock.heightBeforeSpells = objectiveBlock.heightBeforeSpells + objectiveBlock.spells[i]:GetHeight();
+				end
+			end
+		end
+	end;
+	local numSpells = 0;
+	if (spellInfo) then
+		numSpells = #spellInfo;
+	end
+	objectiveBlock.numSpells = numSpells;
+	if (not objectiveBlock.spells) then
+		objectiveBlock.spells = {};
+	end
+	for spellIndex = 1, numSpells do
+		local spellFrame = objectiveBlock.spells[spellIndex];
+		if (not spellFrame) then
+			spellFrame = CreateFrame("Frame", nil, objectiveBlock, "ScenarioSpellFrameTemplate");
+			objectiveBlock.spells[spellIndex] = spellFrame;
+		end
+		spellFrame.newSpell = not spellFrame:IsShown();
+		spellFrame:Show();
+		spellFrame.SpellName:SetText(spellInfo[spellIndex].spellName);
+		spellFrame.SpellButton.Icon:SetTexture(spellInfo[spellIndex].spellIcon);
+		spellFrame.SpellButton.spellID = spellInfo[spellIndex].spellID;
+		spellFrame:SetPoint("TOPLEFT", objectiveBlock.currentLine, "BOTTOMLEFT", 0, 0);
+		objectiveBlock.currentLine = spellFrame;
+		objectiveBlock.height = objectiveBlock.height + spellFrame:GetHeight();
+	end
+	for i = numSpells + 1, #objectiveBlock.spells do
+		objectiveBlock.spells[i]:Hide();
+	end
+end
+
+-- *****************************************************************************************************
 -- ***** UPDATE FUNCTIONS
 -- *****************************************************************************************************
 
@@ -494,8 +606,27 @@ function SCENARIO_CONTENT_TRACKER_MODULE:StaticReanchor()
 	end
 end
 
+function ScenarioStage_CustomizeBlock(stageBlock, scenarioType)
+	if (scenarioType == LE_SCENARIO_TYPE_LEGION_INVASION) then
+		stageBlock.Stage:SetTextColor(0.753, 1, 0);
+		stageBlock.NormalBG:SetAtlas("legioninvasion-ScenarioTrackerToast", true);
+		local name, texture, itemID = C_Scenario.GetScenarioLastStepRewardInfo();
+		if (texture ~= 0 and itemID ~= 0) then
+			stageBlock.RewardButton.RewardIcon:SetTexture(texture);
+			stageBlock.RewardButton.rewardID = itemID;
+			stageBlock.RewardButton:Show();
+		else
+			stageBlock.RewardButton:Hide();
+		end
+	else
+		stageBlock.Stage:SetTextColor(1, 0.914, 0.682);
+		stageBlock.NormalBG:SetAtlas("ScenarioTrackerToast", true);
+		stageBlock.RewardButton:Hide();
+	end
+end
+
 function SCENARIO_CONTENT_TRACKER_MODULE:Update()
-	local scenarioName, currentStage, numStages, flags, _, _, _, xp, money = C_Scenario.GetInfo();
+	local scenarioName, currentStage, numStages, flags, _, _, _, xp, money, scenarioType = C_Scenario.GetInfo();
 	local rewardsFrame = ObjectiveTrackerScenarioRewardsFrame;
 	if ( numStages == 0 ) then
 		ScenarioBlocksFrame_Hide();
@@ -521,10 +652,10 @@ function SCENARIO_CONTENT_TRACKER_MODULE:Update()
 	BlocksFrame.contentsHeight = 0;
 	SCENARIO_TRACKER_MODULE.contentsHeight = 0;
 
-	local stageName, stageDescription, numCriteria = C_Scenario.GetStepInfo();
-	local inChallengeMode = bit.band(flags, SCENARIO_FLAG_CHALLENGE_MODE) == SCENARIO_FLAG_CHALLENGE_MODE;
-	local inProvingGrounds = bit.band(flags, SCENARIO_FLAG_PROVING_GROUNDS) == SCENARIO_FLAG_PROVING_GROUNDS;
-	local dungeonDisplay = bit.band(flags, SCENARIO_FLAG_USE_DUNGEON_DISPLAY) == SCENARIO_FLAG_USE_DUNGEON_DISPLAY;
+	local stageName, stageDescription, numCriteria, _, _, _, numSpells, spellInfo = C_Scenario.GetStepInfo();
+	local inChallengeMode = (scenarioType == LE_SCENARIO_TYPE_CHALLENGE_MODE);
+	local inProvingGrounds = (scenarioType == LE_SCENARIO_TYPE_PROVING_GROUNDS);
+	local dungeonDisplay = (scenarioType == LE_SCENARIO_TYPE_USE_DUNGEON_DISPLAY);
 	local scenariocompleted = currentStage > numStages;
 
 	if ( scenariocompleted ) then
@@ -568,6 +699,7 @@ function SCENARIO_CONTENT_TRACKER_MODULE:Update()
 					stageBlock.Stage:SetPoint("TOPLEFT", 15, -18);
 				end
 			end
+			ScenarioStage_CustomizeBlock(stageBlock, scenarioType);
 		end	
 	end
 	BlocksFrame.scenarioName = scenarioName;
@@ -605,6 +737,8 @@ function SCENARIO_CONTENT_TRACKER_MODULE:Update()
 				SCENARIO_TRACKER_MODULE:FreeTimerBar(objectiveBlock, objectiveBlock.currentLine);
 			end
 		end
+		self:AddSpells(objectiveBlock, spellInfo);
+		
 		-- add the objective block
 		objectiveBlock:SetHeight(objectiveBlock.height);
 		if ( ObjectiveTracker_AddBlock(objectiveBlock) ) then
@@ -616,6 +750,7 @@ function SCENARIO_CONTENT_TRACKER_MODULE:Update()
 			stageBlock:Hide();
 		end
 	end
+	ScenarioSpellButtons_UpdateCooldowns();
 
 	-- add the scenario block
 	if ( BlocksFrame.currentBlock ) then
@@ -638,7 +773,9 @@ function SCENARIO_CONTENT_TRACKER_MODULE:Update()
 			-- play sound if not the first stage
 			if ( currentStage > 1 and currentStage <= numStages ) then
 				PlaySound("UI_Scenario_Stage_End");
-			end		
+			end
+		elseif ( OBJECTIVE_TRACKER_UPDATE_REASON == OBJECTIVE_TRACKER_UPDATE_SCENARIO_SPELLS ) then
+			ScenarioSpells_SlideIn(objectiveBlock);
 		end	
 		-- header
 		if ( inChallengeMode ) then

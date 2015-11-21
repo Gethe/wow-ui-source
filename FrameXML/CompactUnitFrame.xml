@@ -263,4 +263,45 @@
 			-->
 		</Scripts>
 	</Button>
+	<StatusBar name="CompactUnitFrameCastBarTemplate" parentKey="castBar" useParentLevel="true" hidden="true" virtual="true">
+		<Layers>
+			<Layer level="BACKGROUND" textureSubLevel="2">
+				<Texture name="$parentBackground" parentKey="background" setAllPoints="true"/>
+			</Layer>
+			<Layer level="ARTWORK">
+				<FontString name="$parentText" inherits="SystemFont_Shadow_Small" parentKey="text">
+					<Size x="0" y="16" />
+					<Anchors>
+						<Anchor point="CENTER" x="0" y="0"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+			<Layer level="OVERLAY">
+				<Texture name="$parentSpark" file="Interface\CastingBar\UI-CastingBar-Spark" alphaMode="ADD" parentKey="barSpark">
+					<Size x="16" y="16" />
+					<Anchors>
+						<Anchor point="CENTER" x="0" y="0"/>
+					</Anchors>
+				</Texture>
+				<Texture name="$parentBorderShield" hidden="true" atlas="nameplates-InterruptShield" parentKey="borderShield" forceAlpha="true">
+					<Size x="10" y="12" />
+					<Anchors>
+						<Anchor point="LEFT" x="-2" y="-1"/>
+					</Anchors>
+				</Texture>
+				
+				<Texture name="$parentFlash" file="Interface\TargetingFrame\UI-TargetingFrame-BarFill" alphaMode="ADD" parentKey="barFlash" />
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnLoad>
+				CastingBarFrame_OnLoad(self, nil, false, true);
+			</OnLoad>
+			<OnEvent function="CastingBarFrame_OnEvent" />
+			<OnUpdate function="CastingBarFrame_OnUpdate" />1
+			<OnShow function="CastingBarFrame_OnShow" />
+		</Scripts>
+		<BarTexture file="Interface\TargetingFrame\UI-StatusBar"/>
+		<BarColor r="1.0" g="0.7" b="0.0"/>
+	</StatusBar>
 </Ui>

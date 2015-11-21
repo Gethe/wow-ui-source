@@ -1,15 +1,17 @@
-GlueCreditsSoundKits = { };
+GlueCreditsSoundKits = { }; -- this is off by 1 with other "expansion" arrays
 GlueCreditsSoundKits[1] = "Menu-Credits01";
 GlueCreditsSoundKits[2] = "Menu-Credits02";
 GlueCreditsSoundKits[3] = "Menu-Credits03";
 GlueCreditsSoundKits[4] = "Menu-Credits04";
 GlueCreditsSoundKits[5] = "Menu-Credits05";
 GlueCreditsSoundKits[6] = "Menu-Credits06";
+GlueCreditsSoundKits[7] = "Menu-Credits07";
 
 
 GlueScreenInfo = { };
 GlueScreenInfo["login"]			= "AccountLogin";
 GlueScreenInfo["charselect"]	= "CharacterSelect";
+GlueScreenInfo["kioskmodesplash"] = "KioskModeSplash";
 GlueScreenInfo["realmwizard"]	= "RealmWizard";
 GlueScreenInfo["realmlist"]		= "RealmListUI";
 GlueScreenInfo["charcreate"]	= "CharacterCreate";
@@ -19,24 +21,6 @@ GlueScreenInfo["movie"]			= "MovieFrame";
 GlueScreenInfo["credits"]		= "CreditsFrame";
 GlueScreenInfo["options"]		= "OptionsFrame";
 
-CharModelFogInfo = { };
-CharModelFogInfo["SCOURGE"] = { r=0, g=0.22, b=0.22, far=26 };
---[[
-CharModelFogInfo["HUMAN"] = { r=0.8, g=0.65, b=0.73, far=222 };
-CharModelFogInfo["ORC"] = { r=0.5, g=0.5, b=0.5, far=270 };
-CharModelFogInfo["DWARF"] = { r=0.85, g=0.88, b=1.0, far=500 };
-CharModelFogInfo["NIGHTELF"] = { r=0.25, g=0.22, b=0.55, far=611 };
-CharModelFogInfo["TAUREN"] = { r=1.0, g=0.61, b=0.42, far=153 };
-CharModelFogInfo["CHARACTERSELECT"] = { r=0.8, g=0.65, b=0.73, far=222 };
-]]
-
-CharModelGlowInfo = { };
---[[CharModelGlowInfo["WORGEN"] = 0.0;
-CharModelGlowInfo["GOBLIN"] = 0.0;
-CharModelGlowInfo["HUMAN"] = 0.15;
-CharModelGlowInfo["DWARF"] = 0.15;
-CharModelGlowInfo["CHARACTERSELECT"] = 0.3;
-]]
 GlueAmbienceTracks = { };
 GlueAmbienceTracks["HUMAN"] = "AMB_GlueScreen_Human";
 GlueAmbienceTracks["ORC"] = "AMB_GlueScreen_Orc";
@@ -57,6 +41,7 @@ GlueAmbienceTracks["HORDE"] = "AMB_50_GlueScreen_HORDE";
 GlueAmbienceTracks["ALLIANCE"] = "AMB_50_GlueScreen_ALLIANCE";
 GlueAmbienceTracks["NEUTRAL"] = "AMB_50_GlueScreen_PANDAREN_NEUTRAL";
 GlueAmbienceTracks["PANDARENCHARACTERSELECT"] = "AMB_50_GlueScreen_PANDAREN_NEUTRAL";
+GlueAmbienceTracks["DEMONHUNTER"] = "AMB_GlueScreen_DemonHunter";
 
 -- indicies for adding lights ModelFFX:Add*Light
 LIGHT_LIVE  = 0;
@@ -93,13 +78,14 @@ SEX_FEMALE = 3;
 
 --Logos
 EXPANSION_LOGOS = {
-	TRIAL = "Interface\\Glues\\Common\\Glues-WoW-StarterLogo",
-	VETERAN = "Interface\\Glues\\Common\\GLUES-WOW-WODLOGO",
-	[1] = "Interface\\Glues\\Common\\Glues-WoW-ClassicLogo",
-	[2] = "Interface\\Glues\\Common\\Glues-WoW-WotLKLogo",
-	[3] = "Interface\\Glues\\Common\\Glues-WoW-CCLogo",
-	[4] = "Interface\\Glues\\Common\\Glues-WoW-MPLogo",
-	[5] = "Interface\\Glues\\Common\\GLUES-WOW-WODLOGO",
+	TRIAL = {texture="Interface\\Glues\\Common\\Glues-WoW-StarterLogo"},
+	[1] = {texture="Interface\\Glues\\Common\\Glues-WoW-ClassicLogo"},
+	[2] = {texture="Interface\\Glues\\Common\\Glues-WoW-WotLKLogo"},
+	[3] = {texture="Interface\\Glues\\Common\\Glues-WoW-CCLogo"},
+	[4] = {texture="Interface\\Glues\\Common\\Glues-WoW-MPLogo"},
+	[5] = {texture="Interface\\Glues\\Common\\GLUES-WOW-WODLOGO"},
+	-- logos after WoD should be atlas
+	[6] = {atlas="Glues-WoW-LegionLogo"},
 	--When adding entries to here, make sure to update the zhTW and zhCN localization files.
 };
 
@@ -112,6 +98,7 @@ EXPANSION_GLUE_AMBIENCE = {
 	[3] = "GlueScreenIntro",
 	[4] = "GlueScreenIntro",
 	[5] = "AMB_GlueScreen_WarlordsofDraenor",
+	[6] = "GlueScreenIntro", --FIXME
 }
 
 --Music
@@ -123,6 +110,7 @@ EXPANSION_GLUE_MUSIC = {
 	[3] = "GS_Cataclysm",
 	[4] = "MUS_50_HeartofPandaria_MainTitle",
 	[5] = "MUS_60_MainTitle",
+	[6] = "MUS_70_MainTitle",
 }
 
 --Backgrounds
@@ -134,6 +122,7 @@ EXPANSION_HIGH_RES_BG = {
 	[3] = "Interface\\Glues\\Models\\UI_MainMenu_Cataclysm\\UI_MainMenu_Cataclysm.m2",
 	[4] = "Interface\\Glues\\Models\\UI_MainMenu_Pandaria\\UI_MainMenu_Pandaria.m2",
 	[5] = "Interface\\Glues\\Models\\UI_MainMenu_Warlords\\UI_MainMenu_Warlords.m2",
+	[6] = "Interface\\Glues\\Models\\UI_MAINMENU\\UI_MainMenu.m2",   -- FIXME
 }
 
 EXPANSION_LOW_RES_BG = {
@@ -144,6 +133,7 @@ EXPANSION_LOW_RES_BG = {
 	[3] =  "Interface\\Glues\\Models\\UI_MainMenu_Cata_LowBandwidth\\UI_MainMenu_Cata_LowBandwidth.m2",
 	[4] =  "Interface\\Glues\\Models\\UI_MainMenu_LowBandwidth\\UI_MainMenu_LowBandwidth.m2",
 	[5] =  "Interface\\Glues\\Models\\UI_MainMenu_Warlords\\UI_MainMenu_Warlords_LowBandwidth.m2",
+	[6] =  "Interface\\Glues\\Models\\UI_MAINMENU\\UI_MainMenu.m2",   -- FIXME
 }
 
 --Credits titles
@@ -154,6 +144,7 @@ CREDITS_TITLES = { --Note: These are off by 1 from the other expansion tables
 	CREDITS_WOW_CC,
 	CREDITS_WOW_MOP,
 	CREDITS_WOW_WOD,
+	CREDITS_WOW_7,   -- FIXME
 }
 
 -- replace the C functions with local lua versions
@@ -211,18 +202,38 @@ function GetPendingGlueScreenName()
 	return PENDING_GLUE_SCREEN;
 end
 
-function GlueParent_OnLoad(self)
+function GlueParent_OnDisplaySizeChanged(self)
 	local width = GetScreenWidth();
 	local height = GetScreenHeight();
+
+	local minAspect = 5 / 4;
+	local maxAspect = 16 / 9;
 	
-	if ( width / height > 16 / 9) then
-		local maxWidth = height * 16 / 9;
+	if ( width / height > maxAspect ) then
+		local maxWidth = height * maxAspect;
 		local barWidth = ( width - maxWidth ) / 2;
+		self:SetScale(1);
 		self:ClearAllPoints();
 		self:SetPoint("TOPLEFT", barWidth, 0); 
 		self:SetPoint("BOTTOMRIGHT", -barWidth, 0);
+	elseif ( width / height < minAspect ) then
+		local maxHeight = width / minAspect;
+		local scale = (width / height) / minAspect;
+		local barHeight = ( height - maxHeight ) / (2 * scale);
+		self:SetScale(maxHeight/height);
+		self:ClearAllPoints();
+		self:SetPoint("TOPLEFT", 0, -barHeight);
+		self:SetPoint("BOTTOMRIGHT", 0, barHeight);
+	else
+		self:SetScale(1);
+		self:SetAllPoints();
 	end
+end
+
+function GlueParent_OnLoad(self)
 	
+	GlueParent_OnDisplaySizeChanged(self);
+
 	self:RegisterEvent("FRAMES_LOADED");
 	self:RegisterEvent("SET_GLUE_SCREEN");
 	self:RegisterEvent("START_GLUE_MUSIC");
@@ -232,6 +243,7 @@ function GlueParent_OnLoad(self)
 	self:RegisterEvent("ACCOUNT_MESSAGES_AVAILABLE");
 	self:RegisterEvent("ACCOUNT_MESSAGES_HEADERS_LOADED");
 	self:RegisterEvent("ACCOUNT_MESSAGES_BODY_LOADED");
+	self:RegisterEvent("DISPLAY_SIZE_CHANGED");
 	-- TODO: actually rename GlueParent to UIParent
 	UIParent = self;
 end
@@ -280,6 +292,8 @@ function GlueParent_OnEvent(event, arg1, arg2, arg3)
 		end
 	elseif ( event == "ACCOUNT_MESSAGES_BODY_LOADED" ) then
 		ACCOUNT_MSG_BODY_LOADED = true;
+	elseif ( event == "DISPLAY_SIZE_CHANGED" ) then
+		GlueParent_OnDisplaySizeChanged(GlueParent);
 	end
 end
 
@@ -363,24 +377,11 @@ function GlueFrameFadeRemoveFrame(frame)
 	GlueFrameRemoveFrame(frame, FADEFRAMES);
 end
 
-function SetLighting(model, race)
+function ResetLighting(model)
 	--model:SetSequence(0);
 	model:SetCamera(0);
-	local fogInfo = CharModelFogInfo[race];
-	if ( fogInfo ) then
-		model:SetFogColor(fogInfo.r, fogInfo.g, fogInfo.b);
-		model:SetFogNear(0);
-		model:SetFogFar(fogInfo.far);
-	else
-		model:ClearFog();
-    end
-
-    local glowInfo = CharModelGlowInfo[race];
-    if ( glowInfo ) then
-        model:SetGlow(glowInfo);
-    else
-        model:SetGlow(0.3);
-    end
+	model:ClearFog();
+	model:SetGlow(0.3);
 
     model:ResetLights();
 end
@@ -409,11 +410,7 @@ function SetBackgroundModel(model, path)
 	if ( GlueAmbienceTracks[nameupper] ) then
 		PlayGlueAmbience(GlueAmbienceTracks[nameupper], 4.0);
 	end
-	if ( ( model == CharacterSelectModel ) and ( string.find(model:GetModel(), 'lowres') == nil ) ) then
-		SetLighting(model, nameupper)
-	else
-		SetLighting(model, "DEFAULT")
-	end
+	ResetLighting(model);
 
 	return nameupper;
 end
@@ -501,7 +498,7 @@ function SetLoginScreenModel(model)
 	local highResBG = EXPANSION_HIGH_RES_BG[expansionLevel];
 	local background = GetLoginScreenBackground(highResBG, lowResBG);
 							
-	model:SetModel(background, 1);	
+	model:SetModel(background, true);	
 end
 
 function InGlue()
@@ -516,4 +513,12 @@ function GetTexCoordsByGrid(xOffset, yOffset, textureWidth, textureHeight, gridW
 	local widthPerGrid = gridWidth/textureWidth;
 	local heightPerGrid = gridHeight/textureHeight;
 	return (xOffset-1)*widthPerGrid, (xOffset)*widthPerGrid, (yOffset-1)*heightPerGrid, (yOffset)*heightPerGrid;
+end
+
+function SetExpansionLogo(texture, expansionLevel)
+	if ( EXPANSION_LOGOS[expansionLevel].texture ) then
+		texture:SetTexture(EXPANSION_LOGOS[expansionLevel].texture);
+	else
+		texture:SetAtlas(EXPANSION_LOGOS[expansionLevel].atlas);
+	end
 end

@@ -54,9 +54,9 @@
 				<Scale target="$parentGlow" scaleX="0.9259" scaleY="0.9259" duration="0.5" smoothing="IN_OUT" order="2"/>
 			</AnimationGroup>
 			<AnimationGroup parentKey="sunActivate">
-				<Alpha target="$parentSunBar" 		change="1" duration="0.6" order="1"/>
-				<Alpha target="$parentGlow" 		change="1" duration="0.6" order="1"/>
-				<Alpha target="$parentDarkMoon" 	change="1" duration="0.6" order="1"/>
+				<Alpha target="$parentSunBar" 		fromAlpha="0" toAlpha="1" duration="0.6" order="1"/>
+				<Alpha target="$parentGlow" 		fromAlpha="0" toAlpha="1" duration="0.6" order="1"/>
+				<Alpha target="$parentDarkMoon" 	fromAlpha="0" toAlpha="1" duration="0.6" order="1"/>
 				<Scripts>
 					<OnPlay>
 						self:GetParent().MoonBar:SetAlpha(0);
@@ -72,10 +72,10 @@
 				</Scripts>
 			</AnimationGroup>
 			<AnimationGroup parentKey="sunDeactivate">
-				<Alpha target="$parentSunBar"		change="-1" duration="2" order="1"/>
-				<Alpha target="$parentGlow" 		change="-1" duration="2" order="1"/>
-				<Alpha target="$parentDarkMoon"		change="-1" duration="2" order="1"/>
-				<Alpha target="$parentMoonCover"	change="-1" duration="2" order="1"/>
+				<Alpha target="$parentSunBar"		fromAlpha="1" toAlpha="0" duration="2" order="1"/>
+				<Alpha target="$parentGlow" 		fromAlpha="1" toAlpha="0" duration="2" order="1"/>
+				<Alpha target="$parentDarkMoon"		fromAlpha="1" toAlpha="0" duration="2" order="1"/>
+				<Alpha target="$parentMoonCover"	fromAlpha="1" toAlpha="0" duration="2" order="1"/>
 				<Scripts>
 					<OnPlay>
 						self:GetParent().pulse:Stop();
@@ -89,14 +89,14 @@
 				</Scripts>
 			</AnimationGroup>
 			<AnimationGroup parentKey="switchToSun">
-				<Alpha target="$parentMoonBar"		change="-1" duration="0.5" order="1"/>
-				<Alpha target="$parentGlow" 		change="-1" duration="0.5" order="1"/>
-				<Alpha target="$parentDarkSun"		change="-1" duration="0.5" order="1"/>
-				<Alpha target="$parentSunCover"		change="-1" duration="0.5" order="1"/>
-				<Alpha target="$parentSunBar" 		change="1" duration="0.5" order="2"/>
-				<Alpha target="$parentGlow" 		change="1" duration="0.5" order="2"/>
-				<Alpha target="$parentDarkMoon" 	change="1" duration="0.5" order="2"/>
-				<Alpha target="$parentMoonCover"	change="1" duration="0.5" order="2"/>
+				<Alpha target="$parentMoonBar"		fromAlpha="1" toAlpha="0" duration="0.5" order="1"/>
+				<Alpha target="$parentGlow" 		fromAlpha="1" toAlpha="0" duration="0.5" order="1"/>
+				<Alpha target="$parentDarkSun"		fromAlpha="1" toAlpha="0" duration="0.5" order="1"/>
+				<Alpha target="$parentSunCover"		fromAlpha="1" toAlpha="0" duration="0.5" order="1"/>
+				<Alpha target="$parentSunBar" 		fromAlpha="0" toAlpha="1" duration="0.5" order="2"/>
+				<Alpha target="$parentGlow" 		fromAlpha="0" toAlpha="1" duration="0.5" order="2"/>
+				<Alpha target="$parentDarkMoon" 	fromAlpha="0" toAlpha="1" duration="0.5" order="2"/>
+				<Alpha target="$parentMoonCover"	fromAlpha="0" toAlpha="1" duration="0.5" order="2"/>
 				<Scripts>
 					<OnPlay>
 						self:GetParent().Glow:SetAlpha(0);
@@ -115,9 +115,9 @@
 				</Scripts>
 			</AnimationGroup>
 			<AnimationGroup parentKey="moonActivate">
-				<Alpha target="$parentMoonBar" 	change="1" duration="0.6" order="1"/>
-				<Alpha target="$parentGlow" 	change="1" duration="0.6" order="1"/>
-				<Alpha target="$parentDarkSun" 	change="1" duration="0.6" order="1"/>
+				<Alpha target="$parentMoonBar" 	fromAlpha="0" toAlpha="1" duration="0.6" order="1"/>
+				<Alpha target="$parentGlow" 	fromAlpha="0" toAlpha="1" duration="0.6" order="1"/>
+				<Alpha target="$parentDarkSun" 	fromAlpha="0" toAlpha="1" duration="0.6" order="1"/>
 				<Scripts>
 					<OnPlay>
 						self:GetParent().SunBar:SetAlpha(0);
@@ -133,10 +133,10 @@
 				</Scripts>
 			</AnimationGroup>
 			<AnimationGroup parentKey="moonDeactivate">
-				<Alpha target="$parentMoonBar" 	change="-1" duration="2" order="1"/>
-				<Alpha target="$parentGlow" 	change="-1" duration="2" order="1"/>
-				<Alpha target="$parentDarkSun" 	change="-1" duration="2" order="1"/>
-				<Alpha target="$parentSunCover" change="-1" duration="2" order="1"/>
+				<Alpha target="$parentMoonBar" 	fromAlpha="1" toAlpha="0" duration="2" order="1"/>
+				<Alpha target="$parentGlow" 	fromAlpha="1" toAlpha="0" duration="2" order="1"/>
+				<Alpha target="$parentDarkSun" 	fromAlpha="1" toAlpha="0" duration="2" order="1"/>
+				<Alpha target="$parentSunCover" fromAlpha="1" toAlpha="0" duration="2" order="1"/>
 				<Scripts>
 					<OnPlay>
 						self:GetParent().pulse:Stop();
@@ -150,13 +150,13 @@
 				</Scripts>
 			</AnimationGroup>
 			<AnimationGroup parentKey="switchToMoon">
-				<Alpha target="$parentSunBar"		change="-1" duration="0.5" order="1"/>
-				<Alpha target="$parentDarkMoon"		change="-1" duration="0.5" order="1"/>
-				<Alpha target="$parentMoonCover"		change="-1" duration="0.5" order="1"/>
-				<Alpha target="$parentMoonBar" 		change="1" duration="0.5" order="2"/>
-				<Alpha target="$parentGlow" 		change="1" duration="0.5" order="2"/>
-				<Alpha target="$parentDarkSun" 	change="1" duration="0.5" order="2"/>
-				<Alpha target="$parentSunCover"	change="1" duration="0.5" order="2"/>
+				<Alpha target="$parentSunBar"		fromAlpha="1" toAlpha="0" duration="0.5" order="1"/>
+				<Alpha target="$parentDarkMoon"		fromAlpha="1" toAlpha="0" duration="0.5" order="1"/>
+				<Alpha target="$parentMoonCover"		fromAlpha="1" toAlpha="0" duration="0.5" order="1"/>
+				<Alpha target="$parentMoonBar" 		fromAlpha="0" toAlpha="1" duration="0.5" order="2"/>
+				<Alpha target="$parentGlow" 		fromAlpha="0" toAlpha="1" duration="0.5" order="2"/>
+				<Alpha target="$parentDarkSun" 	fromAlpha="0" toAlpha="1" duration="0.5" order="2"/>
+				<Alpha target="$parentSunCover"	fromAlpha="0" toAlpha="1" duration="0.5" order="2"/>
 				<Scripts>
 					<OnPlay>
 						self:GetParent().Glow:SetAlpha(0);

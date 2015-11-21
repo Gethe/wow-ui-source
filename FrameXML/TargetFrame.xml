@@ -259,6 +259,12 @@
 								<Anchor point="TOPRIGHT" x="3" y="-20"/>
 							</Anchors>
 						</Texture>
+						<Texture name="$parentPrestigePortrait" hidden="true">
+							<Size x="50" y="52"/>
+							<Anchors>
+								<Anchor point="TOPRIGHT" x="-13" y="-14"/>
+							</Anchors>
+						</Texture>
 						<Texture name="$parentRaidTargetIcon" file="Interface\TargetingFrame\UI-RaidTargetingIcons" hidden="true">
 							<Size x="26" y="26"/>
 							<Anchors>
@@ -281,6 +287,12 @@
 					<Layer level="ARTWORK" textureSubLevel="1">
 						<Texture name="$parentOverAbsorbGlow" inherits="OverAbsorbGlowTemplate"/>
 						<Texture name="$parentOverHealAbsorbGlow" inherits="OverHealAbsorbGlowTemplate"/>
+						<Texture name="$parentPrestigeBadge" hidden="true">
+							<Size x="20" y="20"/>
+							<Anchors>
+								<Anchor point="CENTER" relativeTo="$parentPrestigePortrait" relativePoint="CENTER"/>
+							</Anchors>
+						</Texture>
 					</Layer>
 				</Layers>
 			</Frame>

@@ -1,5 +1,5 @@
 # Do not delete the following line!
-## Interface: 60200
+## Interface: 70000
 GlobalStrings.lua
 Constants.lua
 Localization.xml
@@ -11,6 +11,9 @@ FontStyles.xml
 
 ## add snippets independent of modules here
 ..\SharedXML\Util.lua
+..\SharedXML\IME.xml
+MixinUtil.lua
+AnimatedStatusBar.xml
 FlowContainer.lua
 FrameLocks.lua
 
@@ -64,8 +67,10 @@ CoinPickupFrame.xml
 StackSplitFrame.xml
 FadingFrame.xml
 ZoneText.xml
+BuilderSpenderFrame.xml
 UnitFrame.xml
 Cooldown.xml
+PVPHonorSystem.xml
 ActionBarController.xml
 TutorialFrame.xml
 Minimap.xml
@@ -73,6 +78,7 @@ GameTime.xml
 ##ActionWindow.xml
 EquipmentFlyout.xml
 BuffFrame.xml
+LowHealthFrame.xml
 CombatFeedback.xml
 UnitPowerBarAlt.xml
 CastingBarFrame.xml
@@ -140,9 +146,11 @@ MovieRecordingProgress.xml
 RatingMenuFrame.xml
 TalentFrameBase.lua
 TalentFrameTemplates.xml
+ClassPowerBar.xml
 RuneFrame.xml
 ShardBar.xml
 EclipseBarFrame.xml
+ComboFramePlayer.xml
 EasyMenu.lua
 ChatConfigFrame.xml
 MovieFrame.xml
@@ -157,6 +165,7 @@ CompactPartyFrame.xml
 RolePoll.xml
 SpellFlyout.xml
 PaladinPowerBar.xml
+MageArcaneChargesBar.xml
 SpellActivationOverlay.xml
 GuildInviteFrame.xml
 GhostFrame.xml
@@ -180,8 +189,10 @@ PVPHelper.xml
 MapBar.xml
 ProductChoice.xml
 DraenorZoneAbility.xml
+ArtifactToasts.xml
 ..\SharedXML\ModelPreviewFrame.xml
 SplashFrame.xml
+..\SharedXML\LayoutFrame.xml
 
 #Save off whatever we need available unmodified.
 SecureCapsule.lua

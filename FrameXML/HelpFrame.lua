@@ -379,13 +379,22 @@ function HelpFrame_SetButtonEnabled(button, enabled)
 	end
 end
 
-function HelpFrame_ShowReportPlayerNameDialog(target)
+function HelpFrame_SetReportPlayerByName(frame, name)
+	frame.target = name;
+end
+
+function HelpFrame_SetReportPlayerByLineID(frame, lineID)
+	SetPendingReportTarget(lineID);
+	frame.target = "pending";
+end
+
+function HelpFrame_SetReportPlayerByBattlefieldScoreIndex(frame, battlefieldScoreIndex)
+	BattlefieldSetPendingReportTarget(battlefieldScoreIndex);
+	frame.target = "pending";
+end
+
+function HelpFrame_ShowReportPlayerNameDialog()
 	local frame = ReportPlayerNameDialog;
-	if ( type(target) == "string" ) then
-		SetPendingReportTarget(target);
-		target = "pending";
-	end
-	frame.target = target;
 	frame.reportType = nil;
 	frame.CommentFrame.EditBox:SetText("");
 	frame.CommentFrame.EditBox.InformationText:Show();
@@ -411,13 +420,8 @@ function HelpFrame_UpdateReportPlayerNameDialog()
 	end
 end
 
-function HelpFrame_ShowReportCheatingDialog(target)
+function HelpFrame_ShowReportCheatingDialog()
 	local frame = ReportCheatingDialog;
-	if ( type(target) == "string" ) then
-		SetPendingReportTarget(target);
-		target = "pending";
-	end
-	frame.target = target;
 	frame.CommentFrame.EditBox:SetText("");
 	frame.CommentFrame.EditBox.InformationText:Show();
 	StaticPopupSpecial_Show(frame);

@@ -1,0 +1,34 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\FrameXML\UI.xsd">
+  <Script file="ClassResourceOverlayDemonHunter.lua"/>
+
+	<Frame name="DemonHunterResourceOverlayFrame" inherits="ClassResourceOverlayFrame" mixin="ClassResourceOverlay, DemonHunterResourceOverlay">
+		<Size x="118" y="11"/>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="Background" atlas="ClassOverlay-FuryBG" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="TOPLEFT"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="ARTWORK">
+				<Texture parentKey="Bar" atlas="ClassOverlay-Fury" useAtlasSize="true" alpha="0.5">
+					<Anchors>
+						<Anchor point="TOPLEFT"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Frame parentKey="FeedbackFrame" useParentLevel="true" inherits="BuilderSpenderFrame">
+				<Size x="118" y="11"/>
+				<Anchors>
+					<Anchor point="TOPLEFT"/>
+				</Anchors>
+			</Frame>
+		</Frames>
+	</Frame>
+</Ui>
+
+

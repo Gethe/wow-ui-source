@@ -338,6 +338,7 @@
 		<xs:simpleContent>
 			<xs:extension base="xs:string">
 				<xs:attribute name="function" type="xs:string"/>
+				<xs:attribute name="method" type="xs:string"/>
 				<xs:attribute name="inherit" type="SCRIPTINHERITTYPE" use="optional" default="none"/>
 			</xs:extension>
 		</xs:simpleContent>
@@ -361,6 +362,8 @@
 		<xs:attribute name="justifyV" type="JUSTIFYVTYPE" default="MIDDLE"/>
 		<xs:attribute name="justifyH" type="JUSTIFYHTYPE" default="CENTER"/>
 		<xs:attribute name="height" type="xs:float"/>
+		<xs:attribute name="fixedSize" type="xs:boolean" default="false"/>
+		<xs:attribute name="filter" type="xs:boolean" default="false"/>
 	</xs:complexType>
 
 	<xs:element name="Font">
@@ -427,10 +430,10 @@
 		<xs:attribute name="parentKey" type="xs:string"/>
 		<xs:attribute name="parentArray" type="xs:string"/>
 		<xs:attribute name="inherits" type="xs:string"/>
+		<xs:attribute name="mixin" type="xs:string"/>
 		<xs:attribute name="virtual" type="xs:boolean" default="false"/>
 		<xs:attribute name="setAllPoints" type="xs:boolean" default="false"/>
 		<xs:attribute name="hidden" type="xs:boolean" default="false"/>
-		<xs:attribute name="mixin" type="xs:string"/>
 	</xs:complexType>
 	<xs:element name="LayoutFrame" type="LayoutFrameType"/>
 
@@ -485,6 +488,7 @@
 				<xs:attribute name="vertTile" type="xs:boolean" default="false"/>
 				<xs:attribute name="atlas" type="xs:string"/>
 				<xs:attribute name="useAtlasSize" type="xs:boolean"/>
+				<xs:attribute name="desaturated" type="xs:boolean" default="false"/>
 			</xs:extension>
 		</xs:complexContent>
 	</xs:complexType>
@@ -523,6 +527,41 @@
 	</xs:complexType>
 	<xs:element name="FontString" type="FontStringType" substitutionGroup="LayoutFrame"/>
 
+	<xs:complexType name="LineType">
+		<xs:complexContent>
+			<xs:extension base="TextureType">
+				<xs:sequence minOccurs="0">
+					<xs:element name="StartAnchor" maxOccurs="1">
+						<xs:complexType>
+							<xs:sequence minOccurs="0">
+								<xs:element name="Offset" type="Dimension"/>
+							</xs:sequence>
+							<xs:attribute name="relativeTo" type="xs:string"/>
+							<xs:attribute name="relativePoint" type="FRAMEPOINT"/>
+							<xs:attribute name="relativeKey" type="xs:string"/>
+							<xs:attribute name="x" type="xs:float"/>
+							<xs:attribute name="y" type="xs:float"/>
+						</xs:complexType>
+					</xs:element>
+					<xs:element name="EndAnchor" maxOccurs="1">
+						<xs:complexType>
+							<xs:sequence minOccurs="0">
+								<xs:element name="Offset" type="Dimension"/>
+							</xs:sequence>
+							<xs:attribute name="relativeTo" type="xs:string"/>
+							<xs:attribute name="relativePoint" type="FRAMEPOINT"/>
+							<xs:attribute name="relativeKey" type="xs:string"/>
+							<xs:attribute name="x" type="xs:float"/>
+							<xs:attribute name="y" type="xs:float"/>
+						</xs:complexType>
+					</xs:element>
+				</xs:sequence>
+				<xs:attribute name="thickness" type="xs:float" default="4"/>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:element name="Line" type="LineType" substitutionGroup="LayoutFrame"/>
+
 	<xs:complexType name="FrameType">
 		<xs:complexContent>
 			<xs:extension base="LayoutFrameType">
@@ -550,6 +589,7 @@
 												<xs:choice maxOccurs="unbounded">
 													<xs:element ref="Texture"/>
 													<xs:element ref="FontString"/>
+													<xs:element ref="Line"/>
 												</xs:choice>
 											</xs:sequence>
 											<xs:attribute name="level" type="DRAWLAYER" default="ARTWORK"/>
@@ -580,6 +620,7 @@
 				<xs:attribute name="alpha" type="xs:float" default="1.0"/>
 				<xs:attribute name="parent" type="xs:string"/>
 				<xs:attribute name="toplevel" type="xs:boolean" default="false"/>
+				<xs:attribute name="flattenRenderLayers" type="xs:boolean" default="false"/>
 				<xs:attribute name="useParentLevel" type="xs:boolean" default="false"/>
 				<xs:attribute name="movable" type="xs:boolean" default="false"/>
 				<xs:attribute name="resizable" type="xs:boolean" default="false"/>
@@ -785,6 +826,7 @@
 				<xs:attribute name="font" type="xs:string"/>
 				<xs:attribute name="fade" type="xs:boolean" default="true"/>
 				<xs:attribute name="fadeDuration" type="xs:float" default="3.0"/>
+				<xs:attribute name="fadePower" type="xs:float" default="1.0"/>
 				<xs:attribute name="displayDuration" type="xs:float" default="10.0"/>
 				<xs:attribute name="insertMode" type="INSERTMODE" default="BOTTOM"/>
 			</xs:extension>
@@ -968,6 +1010,13 @@
 		</xs:complexContent>
 	</xs:complexType>
 	<xs:element name="CinematicModel" type="CinematicModelType" substitutionGroup="ui:Frame"/>
+	
+	<xs:complexType name="UiCameraType">
+		<xs:complexContent>
+			<xs:extension base="ModelType"/>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:element name="UiCamera" type="UiCameraType" substitutionGroup="ui:Frame"/>
 
 	<xs:complexType name="UnitButtonType">
 		<xs:complexContent>
@@ -1067,6 +1116,7 @@
 		<xs:attribute name="target" type="xs:string"/>
 		<xs:attribute name="targetKey" type="xs:string"/>
 		<xs:attribute name="parentKey" type="xs:string"/>
+		<xs:attribute name="childKey" type="xs:string"/>
 		<xs:attribute name="startDelay" type="xs:float" default="0.0"/>
 		<xs:attribute name="endDelay" type="xs:float" default="0.0"/>
 		<xs:attribute name="duration" type="xs:float"/>
@@ -1084,6 +1134,13 @@
 		</xs:complexContent>
 	</xs:complexType>
 	<xs:element name="Translation" type="TranslationType" substitutionGroup="Animation"/>
+
+	<xs:complexType name="LineTranslationType">
+		<xs:complexContent>
+			<xs:extension base="TranslationType" />
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:element name="LineTranslation" type="LineTranslationType" substitutionGroup="Animation"/>
 
 	<xs:complexType name="RotationType">
 		<xs:complexContent>
@@ -1106,15 +1163,27 @@
 				</xs:sequence>
 				<xs:attribute name="scaleX" type="xs:float" default="1.0"/>
 				<xs:attribute name="scaleY" type="xs:float" default="1.0"/>
+				<xs:attribute name="fromScaleX" type="xs:float" default="1.0"/>
+				<xs:attribute name="fromScaleY" type="xs:float" default="1.0"/>
+				<xs:attribute name="toScaleX" type="xs:float" default="1.0"/>
+				<xs:attribute name="toScaleY" type="xs:float" default="1.0"/>
 			</xs:extension>
 		</xs:complexContent>
 	</xs:complexType>
 	<xs:element name="Scale" type="ScaleType" substitutionGroup="Animation"/>
 
+	<xs:complexType name="LineScaleType">
+		<xs:complexContent>
+			<xs:extension base="ScaleType"/>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:element name="LineScale" type="LineScaleType" substitutionGroup="Animation"/>
+
 	<xs:complexType name="AlphaType">
 		<xs:complexContent>
 			<xs:extension base="AnimationType">
-				<xs:attribute name="change" type="xs:float" default="0.0"/>
+				<xs:attribute name="fromAlpha" type="xs:float" default="0.0"/>
+				<xs:attribute name="toAlpha" type="xs:float" default="1.0"/>
 			</xs:extension>
 		</xs:complexContent>
 	</xs:complexType>
@@ -1159,11 +1228,9 @@
 		<xs:attribute name="name" type="xs:string"/>
 		<xs:attribute name="inherits" type="xs:string"/>
 		<xs:attribute name="virtual" type="xs:boolean" default="false"/>
-		<xs:attribute name="looping" type="ANIMLOOPTYPE" default="NONE"/>
 		<xs:attribute name="parentKey" type="xs:string"/>
-		<xs:attribute name="initialOffsetX" type="xs:float" default="0.0"/>
-		<xs:attribute name="initialOffsetY" type="xs:float" default="0.0"/>
-		<xs:attribute name="ignoreFramerateThrottle" type="xs:boolean" default="false"/>
+		<xs:attribute name="looping" type="ANIMLOOPTYPE" default="NONE"/>
+		<xs:attribute name="setToFinalAlpha" type="xs:boolean" default="false"/>
 	</xs:complexType>
 	<xs:element name="AnimationGroup" type="AnimationGroupType"/>
 </xs:schema>

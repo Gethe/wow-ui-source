@@ -13,8 +13,6 @@ function HeirloomsJournal_OnEvent(self, event, ...)
 		local isPendingHeirloomUpgrade = ...;
 		self:SetFindClosestUpgradeablePage(isPendingHeirloomUpgrade);
 		self:RefreshViewIfVisible();
-	elseif event == "INVENTORY_SEARCH_UPDATE" then
-		self:FullRefreshIfVisible();
 	end
 end
 
@@ -23,22 +21,23 @@ function HeirloomsJournal_OnShow(self)
 	SetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_HEIRLOOM_JOURNAL_TAB, true);
 
 	SetPortraitToTexture(CollectionsJournalPortrait, "Interface\\Icons\\inv_misc_enggizmos_19");
-
-	if self.classFilter == nil or self.specFilter == nil then
+	local classFilter, specFilter = C_Heirloom.GetClassAndSpecFilters();
+	if self.filtersSet == nil then
 		if UnitLevel("player") >= GetMaxPlayerLevel() then
 			-- Default to full view for max level players
-			self.classFilter = NO_CLASS_FILTER;
-			self.specFilter = NO_SPEC_FILTER;
+			C_Heirloom.SetClassAndSpecFilters(NO_CLASS_FILTER, NO_SPEC_FILTER);
 		else
 			-- Default to current class/spec view otherwise
 			local classDisplayName, classTag, classID = UnitClass("player");
-			self.classFilter = classID;
+			local specID = nil;
 			local specIndex = GetSpecialization();
 			if specIndex then
-				self.specFilter = GetSpecializationInfo(specIndex);
+				specID = GetSpecializationInfo(specIndex);
 			else
-				self.specFilter = NO_SPEC_FILTER;
+				specID = NO_SPEC_FILTER;
 			end
+			
+			C_Heirloom.SetClassAndSpecFilters(classID, specID);
 		end
 
 		self:UpdateClassFilterDropDownText();
@@ -137,7 +136,6 @@ function HeirloomsMixin:OnLoad()
 
 	self:RegisterEvent("HEIRLOOMS_UPDATED");
 	self:RegisterEvent("HEIRLOOM_UPGRADE_TARGETING_CHANGED");
-	self:RegisterEvent("INVENTORY_SEARCH_UPDATE");
 end
 
 function HeirloomsMixin:OnHeirloomsUpdated(itemID, updateReason, ...)
@@ -234,27 +232,9 @@ local function GetHeirloomCategoryFromInvType(invType)
 	return nil;
 end
 
-function HeirloomsMixin:DoesHeirloomItemIDPassCollectionFilters(itemID)
-	if C_Heirloom.GetCollectedHeirloomFilter() and C_Heirloom.GetUncollectedHeirloomFilter() then
-		return true;
-	end
-
-	local isKnown = C_Heirloom.PlayerHasHeirloom(itemID);
-
-	return (C_Heirloom.GetCollectedHeirloomFilter() and isKnown) 
-		or (C_Heirloom.GetUncollectedHeirloomFilter() and not isKnown);
-end
-
-function HeirloomsMixin:DoesHeirloomMatchClassAndSpecFilters(itemID)
-	if self.classFilter == NO_CLASS_FILTER and self.specFilter == NO_SPEC_FILTER then
-		return true;
-	end
-
-	return DoesItemContainSpec(itemID, self.classFilter, self.specFilter);
-end
-
 function HeirloomsMixin:DetermineViewMode()
-	if self.classFilter == NO_CLASS_FILTER and self.specFilter == NO_SPEC_FILTER then
+	local classFilter, specFilter = C_Heirloom.GetClassAndSpecFilters();
+	if classFilter == NO_CLASS_FILTER and specFilter == NO_SPEC_FILTER then
 		return VIEW_MODE_FULL;
 	end
 
@@ -264,11 +244,10 @@ end
 function HeirloomsMixin:SortHeirloomsIntoEquipmentBuckets()
 	-- Sort them into equipment buckets
 	local equipBuckets = {};
-
-	for i = 1, C_Heirloom.GetNumHeirlooms() do
-		local itemID = C_Heirloom.GetHeirloomItemIDFromIndex(i);
+	for i = 1, C_Heirloom.GetNumDisplayedHeirlooms() do
+		local itemID = C_Heirloom.GetHeirloomItemIDFromDisplayedIndex(i);
 		
-		local name, itemEquipLoc, isPvP, itemTexture, upgradeLevel, source, searchFiltered, effectiveLevel, minLevel, maxLevel = C_Heirloom.GetHeirloomInfo(itemID);
+		local name, itemEquipLoc, isPvP, itemTexture, upgradeLevel, source, _, effectiveLevel, minLevel, maxLevel = C_Heirloom.GetHeirloomInfo(itemID);
 		local category = GetHeirloomCategoryFromInvType(itemEquipLoc);
 		if category then
 			-- Only show source filters for heirlooms that actually have that source
@@ -276,25 +255,19 @@ function HeirloomsMixin:SortHeirloomsIntoEquipmentBuckets()
 				self.validSourceTypes[source] = true;
 			end
 
-			if self:DoesHeirloomMatchClassAndSpecFilters(itemID) then
-				if (not source or not self:IsSourceFiltered(source)) and self:DoesHeirloomItemIDPassCollectionFilters(itemID) then
-					if not searchFiltered then
-						if not equipBuckets[category] then
-							equipBuckets[category] = {};
-						end
-
-						table.insert(equipBuckets[category], itemID);
-					end
-				end
-
-				-- Count this heirloom as long as it has a category and matches the class/spec filter, other filters should not affect the count
-				if C_Heirloom.PlayerHasHeirloom(itemID) then
-					self.numKnownHeirlooms = self.numKnownHeirlooms + 1;
-				end
-				self.numPossibleHeirlooms = self.numPossibleHeirlooms + 1;
-
-				self.itemIDsInCurrentLayout[itemID] = true;
+			if not equipBuckets[category] then
+				equipBuckets[category] = {};
 			end
+
+			table.insert(equipBuckets[category], itemID);
+
+			-- Count this heirloom as long as it has a category and matches the class/spec filter, other filters should not affect the count
+			if C_Heirloom.PlayerHasHeirloom(itemID) then
+				self.numKnownHeirlooms = self.numKnownHeirlooms + 1;
+			end
+			self.numPossibleHeirlooms = self.numPossibleHeirlooms + 1;
+
+			self.itemIDsInCurrentLayout[itemID] = true;
 		end
 	end
 
@@ -531,13 +504,13 @@ function HeirloomsMixin:RefreshView()
 			self.currentPage = closestUpgradeablePage;
 		else
 			--Unable to locate an upgradeable item
-			if self.classFilter ~= NO_CLASS_FILTER or self.specFilter ~= NO_SPEC_FILTER then
+			local classFilter, specFilter = C_Heirloom.GetClassAndSpecFilters();
+			if classFilter ~= NO_CLASS_FILTER or specFilter ~= NO_SPEC_FILTER then
 				-- A filter is set, would we be able to find one if we removed filters?
-				local oldClassFilter = self.classFilter;
-				local oldSpecFilter = self.specFilter;
+				local oldClassFilter = classFilter;
+				local oldSpecFilter = specFilter;
 
-				self.classFilter = NO_CLASS_FILTER;
-				self.specFilter = NO_SPEC_FILTER;
+				C_Heirloom.SetClassAndSpecFilters(NO_CLASS_FILTER, NO_SPEC_FILTER);
 
 				self.needsDataRebuilt = true;
 				self:RebuildLayoutData();
@@ -549,8 +522,7 @@ function HeirloomsMixin:RefreshView()
 					self:UpdateClassFilterDropDownText();
 				else
 					-- Still nothing, reset the filter and just stick to the current page
-					self.classFilter = oldClassFilter;
-					self.specFilter = oldSpecFilter;
+					C_Heirloom.SetClassAndSpecFilters(oldClassFilter, oldSpecFilter);
 
 					self.needsDataRebuilt = true;
 					self:RebuildLayoutData();
@@ -776,17 +748,19 @@ function HeirloomsMixin:OpenCollectedFilterDropDown(level)
 end
 
 function HeirloomsMixin:GetClassFilter()
-	return self.classFilter;
+	local classFilter, specFilter = C_Heirloom.GetClassAndSpecFilters();
+	return classFilter;
 end
 
 function HeirloomsMixin:GetSpecFilter()
-	return self.specFilter;
+	local classFilter, specFilter = C_Heirloom.GetClassAndSpecFilters();
+	return specFilter;
 end
 
-function HeirloomsMixin:SetClassAndSpecFilters(classFilter, specFilter)
-	if self.classFilter ~= classFilter or self.specFilter ~= specFilter then
-		self.classFilter = classFilter;
-		self.specFilter = specFilter;
+function HeirloomsMixin:SetClassAndSpecFilters(newClassFilter, newSpecFilter)
+	local classFilter, specFilter = C_Heirloom.GetClassAndSpecFilters();
+	if not self.filtersSet or classFilter ~= newClassFilter or specFilter ~= newSpecFilter then
+		C_Heirloom.SetClassAndSpecFilters(newClassFilter, newSpecFilter);
 
 		self.currentPage = 1;
 		self:UpdateClassFilterDropDownText();
@@ -794,19 +768,21 @@ function HeirloomsMixin:SetClassAndSpecFilters(classFilter, specFilter)
 	end
 
 	CloseDropDownMenus(1);
+	self.filtersSet = true;
 end
 
 function HeirloomsMixin:UpdateClassFilterDropDownText()
 	local text;
-	if self.classFilter == NO_CLASS_FILTER then
+	local classFilter, specFilter = C_Heirloom.GetClassAndSpecFilters();
+	if classFilter == NO_CLASS_FILTER then
 		text = ALL_CLASSES;
 	else
-		local className, classTag = GetClassInfoByID(self.classFilter);
+		local className, classTag = GetClassInfoByID(classFilter);
 		local classColorStr = RAID_CLASS_COLORS[classTag].colorStr;
-		if self.specFilter == NO_SPEC_FILTER then
+		if specFilter == NO_SPEC_FILTER then
 			text = HEIRLOOMS_CLASS_FILTER_FORMAT:format(classColorStr, className);
 		else
-			local specName = GetSpecializationNameForSpecID(self.specFilter);
+			local specName = GetSpecializationNameForSpecID(specFilter);
 			text = HEIRLOOMS_CLASS_SPEC_FILTER_FORMAT:format(classColorStr, className, specName);
 		end
 	end
@@ -890,4 +866,10 @@ do
 			UIDropDownMenu_AddButton(info, level);
 		end
 	end
+end
+
+function HeirloomsJournalSearchBox_OnTextChanged(self)
+	SearchBoxTemplate_OnTextChanged(self);
+	C_Heirloom.SetSearch(self:GetText());
+	HeirloomsJournal:FullRefreshIfVisible();
 end

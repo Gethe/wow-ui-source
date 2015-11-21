@@ -58,7 +58,7 @@ function PVPUIFrame_OnLoad(self)
 end
 
 function PVPUIFrame_OnShow(self)
-	if (UnitLevel("player") < SHOW_PVP_LEVEL or IsBlizzCon()) then
+	if (UnitLevel("player") < SHOW_PVP_LEVEL or IsKioskModeEnabled()) then
 		self:Hide();
 		return;
 	end

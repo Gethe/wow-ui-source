@@ -104,14 +104,12 @@
 		<HitRectInsets>
 			<AbsInset left="4" right="4" top="0" bottom="0"/>
 		</HitRectInsets>
-		<Layers>
-			<Layer level="ARTWORK">
-				<Texture parentKey="Texture" file="Interface\Minimap\ObjectIcons" setAllPoints="true">
-					<TexCoords left="0.25" right="0.375" top="0.75" bottom="0.875"/>
-				</Texture>
-			</Layer>
-		</Layers>
-		<Scripts>
+	<Layers>
+		<Layer level="ARTWORK">
+		<Texture name="$parentTexture" setAllPoints="true"/>
+    </Layer>
+	</Layers>
+	<Scripts>
 			<OnEnter>
 				local questLineName, questName, continentID, x, y = C_Questline.GetQuestlineInfoByIndex(self.index);
 				if ( questName ) then

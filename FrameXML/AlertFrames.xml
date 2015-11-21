@@ -51,11 +51,11 @@
 	</Anchors>
 	<Animations>
 		<AnimationGroup name="$parentAnimIn" parentKey="animIn">
-			<Alpha change="-1" duration="0" order="1"/>
-			<Alpha change="1" duration="0.2" order="2"/>
+			<Alpha fromAlpha="1" toAlpha="0" duration="0" order="1"/>
+			<Alpha fromAlpha="0" toAlpha="1" duration="0.2" order="2"/>
 		</AnimationGroup>
 		<AnimationGroup name="$parentWaitAndAnimOut" parentKey="waitAndAnimOut">
-			<Alpha startDelay="4.05" change="-1" duration="1.5" parentKey="animOut">
+			<Alpha startDelay="4.05" fromAlpha="1" toAlpha="0" duration="1.5" parentKey="animOut">
 				<Scripts>
 					<OnFinished>
 						self:GetRegionParent():Hide();
@@ -139,9 +139,9 @@
 				</Anchors>
 				<Animations>
 					<AnimationGroup name="$parentAnimIn" parentKey="animIn">
-						<Alpha change="1" duration="0.2" order="1"/>
+						<Alpha fromAlpha="0" toAlpha="1" duration="0.2" order="1"/>
 						<Translation offsetX="260" offsetY="0" duration="0.85" order="2"/>
-						<Alpha startDelay="0.35" change="-1" duration="0.5" order="2"/>
+						<Alpha startDelay="0.35" fromAlpha="1" toAlpha="0" duration="0.5" order="2"/>
 						<Scripts>
 							<OnFinished>
 								self:GetParent():Hide();
@@ -165,8 +165,8 @@
 						</Anchors>
 						<Animations>
 							<AnimationGroup name="$parentAnimIn" parentKey="animIn">
-								<Alpha change="1" duration="0.2" order="1"/>
-								<Alpha change="-1" duration="0.5" order="2"/>
+								<Alpha fromAlpha="0" toAlpha="1" duration="0.2" order="1"/>
+								<Alpha fromAlpha="1" toAlpha="0" duration="0.5" order="2"/>
 								<Scripts>
 									<OnFinished>
 										self:GetParent():Hide();
@@ -195,11 +195,11 @@
 	</Anchors>
 	<Animations>
 		<AnimationGroup name="$parentAnimIn" parentKey="animIn">
-			<Alpha change="-1" duration="0" order="1"/>
-			<Alpha change="1" duration="0.2" order="2"/>
+			<Alpha fromAlpha="1" toAlpha="0" duration="0" order="1"/>
+			<Alpha fromAlpha="0" toAlpha="1" duration="0.2" order="2"/>
 		</AnimationGroup>
 		<AnimationGroup name="$parentWaitAndAnimOut" parentKey="waitAndAnimOut">
-			<Alpha startDelay="4.05" change="-1" duration="1.5" parentKey="animOut">
+			<Alpha startDelay="4.05" fromAlpha="1" toAlpha="0" duration="1.5" parentKey="animOut">
 				<Scripts>
 					<OnFinished>
 						self:GetRegionParent():Hide();
@@ -271,8 +271,8 @@
 				</Anchors>
 				<Animations>
 					<AnimationGroup name="$parentAnimIn" parentKey="animIn">
-						<Alpha change="1" duration="0.2" order="1"/>
-						<Alpha change="-1" duration="0.5" order="2"/>
+						<Alpha fromAlpha="0" toAlpha="1" duration="0.2" order="1"/>
+						<Alpha fromAlpha="1" toAlpha="0" duration="0.5" order="2"/>
 						<Scripts>
 							<OnFinished>
 								self:GetParent():Hide();
@@ -289,9 +289,9 @@
 				</Anchors>
 				<Animations>
 					<AnimationGroup name="$parentAnimIn" parentKey="animIn">
-						<Alpha change="1" duration="0.2" order="1"/>
+						<Alpha fromAlpha="0" toAlpha="1" duration="0.2" order="1"/>
 						<Translation offsetX="240" offsetY="0" duration="0.85" order="2"/>
-						<Alpha startDelay="0.35" change="-1" duration="0.5" order="2"/>
+						<Alpha startDelay="0.35" fromAlpha="1" toAlpha="0" duration="0.5" order="2"/>
 						<Scripts>
 							<OnFinished>
 								self:GetParent():Hide();
@@ -386,11 +386,11 @@
 	</Anchors>
 	<Animations>
 		<AnimationGroup name="$parentAnimIn" parentKey="animIn">
-			<Alpha change="-1" duration="0" order="1"/>
-			<Alpha change="1" duration="0.2" order="2"/>
+			<Alpha fromAlpha="1" toAlpha="0" duration="0" order="1"/>
+			<Alpha fromAlpha="0" toAlpha="1" duration="0.2" order="2"/>
 		</AnimationGroup>
 		<AnimationGroup name="$parentWaitAndAnimOut" parentKey="waitAndAnimOut">
-			<Alpha startDelay="4.05" change="-1" duration="1.5" parentKey="animOut">
+			<Alpha startDelay="4.05" fromAlpha="1" toAlpha="0" duration="1.5" parentKey="animOut">
 				<Scripts>
 					<OnFinished>
 						self:GetRegionParent():Hide();
@@ -431,8 +431,8 @@
 				</Anchors>
 				<Animations>
 					<AnimationGroup name="$parentAnimIn" parentKey="animIn">
-						<Alpha change="1" duration="0.2" order="1"/>
-						<Alpha change="-1" duration="0.5" order="2"/>
+						<Alpha fromAlpha="0" toAlpha="1" duration="0.2" order="1"/>
+						<Alpha fromAlpha="1" toAlpha="0" duration="0.5" order="2"/>
 						<Scripts>
 							<OnFinished>
 								self:GetParent():Hide();
@@ -449,9 +449,9 @@
 				</Anchors>
 				<Animations>
 					<AnimationGroup name="$parentAnimIn" parentKey="animIn">
-						<Alpha change="1" duration="0.2" order="1"/>
+						<Alpha fromAlpha="0" toAlpha="1" duration="0.2" order="1"/>
 						<Translation offsetX="210" offsetY="0" duration="0.85" order="2"/>
-						<Alpha startDelay="0.35" change="-1" duration="0.5" order="2"/>
+						<Alpha startDelay="0.35" fromAlpha="1" toAlpha="0" duration="0.5" order="2"/>
 						<Scripts>
 							<OnFinished>
 								self:GetParent():Hide();
@@ -510,11 +510,11 @@
 	</Anchors>
 	<Animations>
 		<AnimationGroup name="$parentAnimIn" parentKey="animIn">
-			<Alpha change="-1" duration="0" order="1"/>
-			<Alpha change="1" duration="0.2" order="2"/>
+			<Alpha fromAlpha="1" toAlpha="0" duration="0" order="1"/>
+			<Alpha fromAlpha="0" toAlpha="1" duration="0.2" order="2"/>
 		</AnimationGroup>
 		<AnimationGroup name="$parentWaitAndAnimOut" parentKey="waitAndAnimOut">
-			<Alpha startDelay="4.05" change="-1" duration="1.5" parentKey="animOut">
+			<Alpha startDelay="4.05" fromAlpha="1" toAlpha="0" duration="1.5" parentKey="animOut">
 				<Scripts>
 					<OnFinished>
 						self:GetRegionParent():Hide();
@@ -580,8 +580,8 @@
 				</Anchors>
 				<Animations>
 					<AnimationGroup name="$parentAnimIn" parentKey="animIn">
-						<Alpha change="1" duration="0.2" order="1"/>
-						<Alpha change="-1" duration="0.5" order="2"/>
+						<Alpha fromAlpha="0" toAlpha="1" duration="0.2" order="1"/>
+						<Alpha fromAlpha="1" toAlpha="0" duration="0.5" order="2"/>
 						<Scripts>
 							<OnFinished>
 								self:GetParent():Hide();
@@ -598,9 +598,9 @@
 				</Anchors>
 				<Animations>
 					<AnimationGroup name="$parentAnimIn" parentKey="animIn">
-						<Alpha change="1" duration="0.2" order="1"/>
+						<Alpha fromAlpha="0" toAlpha="1" duration="0.2" order="1"/>
 						<Translation offsetX="200" offsetY="0" duration="0.71" order="2"/>
-						<Alpha startDelay="0.35" change="-1" duration="0.5" order="2"/>
+						<Alpha startDelay="0.35" fromAlpha="1" toAlpha="0" duration="0.5" order="2"/>
 						<Scripts>
 							<OnFinished>
 								self:GetParent():Hide();
@@ -624,11 +624,11 @@
 	</Anchors>
 	<Animations>
 		<AnimationGroup name="$parentAnimIn" parentKey="animIn">
-			<Alpha change="-1" duration="0" order="1"/>
-			<Alpha change="1" duration="0.2" order="2"/>
+			<Alpha fromAlpha="1" toAlpha="0" duration="0" order="1"/>
+			<Alpha fromAlpha="0" toAlpha="1" duration="0.2" order="2"/>
 		</AnimationGroup>
 		<AnimationGroup name="$parentWaitAndAnimOut" parentKey="waitAndAnimOut">
-			<Alpha startDelay="4.05" change="-1" duration="1.5" parentKey="animOut">
+			<Alpha startDelay="4.05" fromAlpha="1" toAlpha="0" duration="1.5" parentKey="animOut">
 				<Scripts>
 					<OnFinished>
 						self:GetRegionParent():Hide();
@@ -688,9 +688,9 @@
 				</Anchors>
 				<Animations>
 					<AnimationGroup name="$parentAnimIn" parentKey="animIn">
-						<Alpha change="1" duration="0.2" order="1"/>
+						<Alpha fromAlpha="0" toAlpha="1" duration="0.2" order="1"/>
 						<Translation offsetX="260" offsetY="0" duration="0.85" order="2"/>
-						<Alpha startDelay="0.35" change="-1" duration="0.5" order="2"/>
+						<Alpha startDelay="0.35" fromAlpha="1" toAlpha="0" duration="0.5" order="2"/>
 						<Scripts>
 							<OnFinished>
 								self:GetParent():Hide();
@@ -713,8 +713,8 @@
 						</Anchors>
 						<Animations>
 							<AnimationGroup name="$parentAnimIn" parentKey="animIn">
-								<Alpha change="1" duration="0.2" order="1"/>
-								<Alpha change="-1" duration="0.5" order="2"/>
+								<Alpha fromAlpha="0" toAlpha="1" duration="0.2" order="1"/>
+								<Alpha fromAlpha="1" toAlpha="0" duration="0.5" order="2"/>
 								<Scripts>
 									<OnFinished>
 										self:GetParent():Hide();
@@ -743,6 +743,65 @@
 	</Scripts>
 </Button>
 
+<Button name="ScenarioLegionInvasionAlertFrameTemplate" parent="UIParent" hidden="true" frameStrata="DIALOG" virtual="true" inherits="AlertFrameTemplate">
+	<Size x="311" y="78"/>
+	<Anchors>
+		<Anchor point="BOTTOM" x="0" y="128"/>
+	</Anchors>
+	<Animations>
+		<AnimationGroup name="$parentAnimIn" parentKey="animIn">
+			<Alpha fromAlpha="1" toAlpha="0" duration="0" order="1"/>
+			<Alpha fromAlpha="0" toAlpha="1" duration="0.2" order="2"/>
+		</AnimationGroup>
+		<AnimationGroup name="$parentWaitAndAnimOut" parentKey="waitAndAnimOut">
+			<Alpha startDelay="4.05" fromAlpha="1" toAlpha="0" duration="1.5" parentKey="animOut">
+				<Scripts>
+					<OnFinished>
+						self:GetRegionParent():Hide();
+					</OnFinished>
+				</Scripts>
+			</Alpha>
+		</AnimationGroup>
+	</Animations>
+	<Layers>
+		<Layer level="BACKGROUND">
+			<Texture atlas="legioninvasion-Toast-Frame" useAtlasSize="true">
+				<Anchors>
+					<Anchor point="LEFT"/>
+				</Anchors>
+			</Texture>
+		</Layer>
+		<Layer level="BACKGROUND" textureSubLevel="-1">
+			<Texture file="Interface\Icons\Ability_Warlock_DemonicPower">
+				<Size x="48" y="48"/>
+				<Anchors>
+					<Anchor point="LEFT" x="15" y="0"/>
+				</Anchors>
+			</Texture>
+		</Layer>
+		<Layer level="ARTWORK">
+			<FontString inherits="GameFontWhiteTiny" text="SCENARIO_INVASION_COMPLETE">
+				<Size x="200" y="12"/>
+				<Anchors>
+					<Anchor point="TOP" x="28" y="-22"/>
+				</Anchors>
+				<Color r="0.973" g="0.937" b="0.580"/>
+			</FontString>
+			<FontString inherits="GameFontHighlight" text="SCENARIO_DEMON_INVASION">
+				<Size x="200" y="0"/>
+				<Anchors>
+					<Anchor point="CENTER" relativePoint="TOP" x="28" y="-46"/>
+				</Anchors>
+			</FontString>
+			<Texture parentKey="BonusStar" atlas="Bonus-ToastBanner" useAtlasSize="true" hidden="true">
+				<Anchors>
+					<Anchor point="TOPRIGHT" x="-18" y="-5"/>
+				</Anchors>
+			</Texture>
+		</Layer>
+	</Layers>
+</Button>
+
 <Button name="ScenarioAlertFrameTemplate" parent="UIParent" hidden="true" frameStrata="DIALOG" virtual="true" inherits="AlertFrameTemplate">
 	<Size x="311" y="78"/>
 	<Anchors>
@@ -750,11 +809,11 @@
 	</Anchors>
 	<Animations>
 		<AnimationGroup name="$parentAnimIn" parentKey="animIn">
-			<Alpha change="-1" duration="0" order="1"/>
-			<Alpha change="1" duration="0.2" order="2"/>
+			<Alpha fromAlpha="1" toAlpha="0" duration="0" order="1"/>
+			<Alpha fromAlpha="0" toAlpha="1" duration="0.2" order="2"/>
 		</AnimationGroup>
 		<AnimationGroup name="$parentWaitAndAnimOut" parentKey="waitAndAnimOut">
-			<Alpha startDelay="4.05" change="-1" duration="1.5" parentKey="animOut">
+			<Alpha startDelay="4.05" fromAlpha="1" toAlpha="0" duration="1.5" parentKey="animOut">
 				<Scripts>
 					<OnFinished>
 						self:GetRegionParent():Hide();
@@ -810,9 +869,9 @@
 				</Anchors>
 				<Animations>
 					<AnimationGroup name="$parentAnimIn" parentKey="animIn">
-						<Alpha change="1" duration="0.2" order="1"/>
+						<Alpha fromAlpha="0" toAlpha="1" duration="0.2" order="1"/>
 						<Translation offsetX="260" offsetY="0" duration="0.85" order="2"/>
-						<Alpha startDelay="0.35" change="-1" duration="0.5" order="2"/>
+						<Alpha startDelay="0.35" fromAlpha="1" toAlpha="0" duration="0.5" order="2"/>
 						<Scripts>
 							<OnFinished>
 								self:GetParent():Hide();
@@ -833,8 +892,8 @@
 						<Anchors point="CENTER" x="0" y="0"/>
 						<Animations>
 							<AnimationGroup name="$parentAnimIn" parentKey="animIn">
-								<Alpha change="1" duration="0.2" order="1"/>
-								<Alpha change="-1" duration="0.5" order="2"/>
+								<Alpha fromAlpha="0" toAlpha="1" duration="0.2" order="1"/>
+								<Alpha fromAlpha="1" toAlpha="0" duration="0.5" order="2"/>
 								<Scripts>
 									<OnFinished>
 										self:GetParent():Hide();
@@ -861,11 +920,11 @@
 	<Size x="249" y="71"/>
 	<Animations>
 		<AnimationGroup name="$parentAnimIn" parentKey="animIn">
-			<Alpha change="-1" duration="0" order="1"/>
-			<Alpha change="1" duration="0.2" order="2"/>
+			<Alpha fromAlpha="1" toAlpha="0" duration="0" order="1"/>
+			<Alpha fromAlpha="0" toAlpha="1" duration="0.2" order="2"/>
 		</AnimationGroup>
 		<AnimationGroup name="$parentWaitAndAnimOut" parentKey="waitAndAnimOut">
-			<Alpha startDelay="4.05" change="-1" duration="1.5" parentKey="animOut">
+			<Alpha startDelay="4.05" fromAlpha="1" toAlpha="0" duration="1.5" parentKey="animOut">
 				<Scripts>
 					<OnFinished>
 						self:GetRegionParent():Hide();
@@ -919,11 +978,11 @@
 	</KeyValues>
 	<Animations>
 		<AnimationGroup name="$parentAnimIn" parentKey="animIn">
-			<Alpha change="-1" duration="0" order="1"/>
-			<Alpha change="1" duration="0.2" order="2"/>
+			<Alpha fromAlpha="1" toAlpha="0" duration="0" order="1"/>
+			<Alpha fromAlpha="0" toAlpha="1" duration="0.2" order="2"/>
 		</AnimationGroup>
 		<AnimationGroup name="$parentWaitAndAnimOut" parentKey="waitAndAnimOut">
-			<Alpha startDelay="4.05" change="-1" duration="1.5" parentKey="animOut">
+			<Alpha startDelay="4.05" fromAlpha="1" toAlpha="0" duration="1.5" parentKey="animOut">
 				<Scripts>
 					<OnFinished>
 						self:GetRegionParent():Hide();
@@ -1060,8 +1119,8 @@
 				</Anchors>
 				<Animations>
 					<AnimationGroup name="$parentAnimIn" parentKey="animIn">
-						<Alpha change="1" duration="0.2" order="1"/>
-						<Alpha change="-1" duration="0.5" order="2"/>
+						<Alpha fromAlpha="0" toAlpha="1" duration="0.2" order="1"/>
+						<Alpha fromAlpha="1" toAlpha="0" duration="0.5" order="2"/>
 						<Scripts>
 							<OnFinished>
 								self:GetParent():Hide();
@@ -1078,9 +1137,9 @@
 				</Anchors>
 				<Animations>
 					<AnimationGroup name="$parentAnimIn" parentKey="animIn">
-						<Alpha change="1" duration="0.1" order="1"/>
+						<Alpha fromAlpha="0" toAlpha="1" duration="0.1" order="1"/>
 						<Translation offsetX="165" offsetY="0" duration="0.425" order="2"/>
-						<Alpha startDelay="0.175" change="-1" duration="0.25" order="2"/>
+						<Alpha startDelay="0.175" fromAlpha="1" toAlpha="0" duration="0.25" order="2"/>
 						<Scripts>
 							<OnFinished>
 								self:GetParent():Hide();
@@ -1263,7 +1322,7 @@
 			<Translation childKey="Arrow5" startDelay="1.5" duration="0.5" order="1" offsetX="0" offsetY="60" endDelay="360000"/>
 		</AnimationGroup>
 		<AnimationGroup parentKey="waitAndAnimOut">
-			<Alpha startDelay="4.05" change="-1" duration="1.5" parentKey="animOut"/>
+			<Alpha startDelay="4.05" fromAlpha="1" toAlpha="0" duration="1.5" parentKey="animOut"/>
 			<Scripts>
 				<OnFinished function="LootUpgradeFrame_AnimDone"/>
 			</Scripts>
@@ -1291,6 +1350,8 @@
 
 <Button name="ScenarioAlertFrame1" inherits="ScenarioAlertFrameTemplate"/>
 
+<Button name="ScenarioLegionInvasionAlertFrame" inherits="ScenarioLegionInvasionAlertFrameTemplate"/>
+
 <Button name="MoneyWonAlertFrame1" inherits="MoneyWonAlertFrameTemplate">
 	<Scripts>
 		<OnLoad inherit="prepend">
@@ -1306,11 +1367,11 @@
 	</Anchors>
 	<Animations>
 		<AnimationGroup name="$parentAnimIn" parentKey="animIn">
-			<Alpha change="-1" duration="0" order="1"/>
-			<Alpha change="1" duration="0.2" order="2"/>
+			<Alpha fromAlpha="1" toAlpha="0" duration="0" order="1"/>
+			<Alpha fromAlpha="0" toAlpha="1" duration="0.2" order="2"/>
 		</AnimationGroup>
 		<AnimationGroup name="$parentWaitAndAnimOut" parentKey="waitAndAnimOut">
-			<Alpha startDelay="4.05" change="-1" duration="1.5" parentKey="animOut">
+			<Alpha startDelay="4.05" fromAlpha="1" toAlpha="0" duration="1.5" parentKey="animOut">
 				<Scripts>
 					<OnFinished>
 						self:GetRegionParent():Hide();
@@ -1355,8 +1416,8 @@
 				</Anchors>
 				<Animations>
 					<AnimationGroup name="$parentAnimIn" parentKey="animIn">
-						<Alpha change="1" duration="0.2" order="1"/>
-						<Alpha change="-1" duration="0.5" order="2"/>
+						<Alpha fromAlpha="0" toAlpha="1" duration="0.2" order="1"/>
+						<Alpha fromAlpha="1" toAlpha="0" duration="0.5" order="2"/>
 						<Scripts>
 							<OnFinished>
 								self:GetParent():Hide();
@@ -1373,9 +1434,9 @@
 				</Anchors>
 				<Animations>
 					<AnimationGroup name="$parentAnimIn" parentKey="animIn">
-						<Alpha change="1" duration="0.2" order="1"/>
+						<Alpha fromAlpha="0" toAlpha="1" duration="0.2" order="1"/>
 						<Translation offsetX="200" offsetY="0" duration="0.71" order="2"/>
-						<Alpha startDelay="0.35" change="-1" duration="0.5" order="2"/>
+						<Alpha startDelay="0.35" fromAlpha="1" toAlpha="0" duration="0.5" order="2"/>
 						<Scripts>
 							<OnFinished>
 								self:GetParent():Hide();
@@ -1398,11 +1459,11 @@
 	<Size x="294" y="84"/>
 	<Animations>
 		<AnimationGroup name="$parentAnimIn" parentKey="animIn">
-			<Alpha change="-1" duration="0" order="1"/>
-			<Alpha change="1" duration="0.2" order="2"/>
+			<Alpha fromAlpha="1" toAlpha="0" duration="0" order="1"/>
+			<Alpha fromAlpha="0" toAlpha="1" duration="0.2" order="2"/>
 		</AnimationGroup>
 		<AnimationGroup name="$parentWaitAndAnimOut" parentKey="waitAndAnimOut">
-			<Alpha startDelay="4.05" change="-1" duration="1.5" parentKey="animOut">
+			<Alpha startDelay="4.05" fromAlpha="1" toAlpha="0" duration="1.5" parentKey="animOut">
 				<Scripts>
 					<OnFinished>
 						self:GetRegionParent():Hide();
@@ -1445,8 +1506,8 @@
 				</Anchors>
 				<Animations>
 					<AnimationGroup name="$parentAnimIn" parentKey="animIn">
-						<Alpha change="1" duration="0.2" order="1"/>
-						<Alpha change="-1" duration="0.5" order="2"/>
+						<Alpha fromAlpha="0" toAlpha="1" duration="0.2" order="1"/>
+						<Alpha fromAlpha="1" toAlpha="0" duration="0.5" order="2"/>
 						<Scripts>
 							<OnFinished>
 								self:GetParent():Hide();
@@ -1463,9 +1524,9 @@
 				</Anchors>
 				<Animations>
 					<AnimationGroup name="$parentAnimIn" parentKey="animIn">
-						<Alpha change="1" duration="0.2" order="1"/>
+						<Alpha fromAlpha="0" toAlpha="1" duration="0.2" order="1"/>
 						<Translation offsetX="200" offsetY="0" duration="0.71" order="2"/>
-						<Alpha startDelay="0.35" change="-1" duration="0.5" order="2"/>
+						<Alpha startDelay="0.35" fromAlpha="1" toAlpha="0" duration="0.5" order="2"/>
 						<Scripts>
 							<OnFinished>
 								self:GetParent():Hide();
@@ -1489,11 +1550,11 @@
 	</Anchors>
 	<Animations>
 		<AnimationGroup name="$parentAnimIn" parentKey="animIn">
-			<Alpha change="-1" duration="0" order="1"/>
-			<Alpha change="1" duration="0.2" order="2"/>
+			<Alpha fromAlpha="1" toAlpha="0" duration="0" order="1"/>
+			<Alpha fromAlpha="0" toAlpha="1" duration="0.2" order="2"/>
 		</AnimationGroup>
 		<AnimationGroup name="$parentWaitAndAnimOut" parentKey="waitAndAnimOut">
-			<Alpha startDelay="4.05" change="-1" duration="1.5" parentKey="animOut">
+			<Alpha startDelay="4.05" fromAlpha="1" toAlpha="0" duration="1.5" parentKey="animOut">
 				<Scripts>
 					<OnFinished>
 						self:GetRegionParent():Hide();
@@ -1538,8 +1599,8 @@
 				</Anchors>
 				<Animations>
 					<AnimationGroup name="$parentAnimIn" parentKey="animIn">
-						<Alpha change="1" duration="0.2" order="1"/>
-						<Alpha change="-1" duration="0.5" order="2"/>
+						<Alpha fromAlpha="0" toAlpha="1" duration="0.2" order="1"/>
+						<Alpha fromAlpha="1" toAlpha="0" duration="0.5" order="2"/>
 						<Scripts>
 							<OnFinished>
 								self:GetParent():Hide();
@@ -1556,9 +1617,9 @@
 				</Anchors>
 				<Animations>
 					<AnimationGroup name="$parentAnimIn" parentKey="animIn">
-						<Alpha change="1" duration="0.2" order="1"/>
+						<Alpha fromAlpha="0" toAlpha="1" duration="0.2" order="1"/>
 						<Translation offsetX="200" offsetY="0" duration="0.85" order="2"/>
-						<Alpha startDelay="0.35" change="-1" duration="0.5" order="2"/>
+						<Alpha startDelay="0.35" fromAlpha="1" toAlpha="0" duration="0.5" order="2"/>
 						<Scripts>
 							<OnFinished>
 								self:GetParent():Hide();
@@ -1582,11 +1643,11 @@
 		</Anchors>
 		<Animations>
 			<AnimationGroup name="$parentAnimIn" parentKey="animIn">
-				<Alpha change="-1" duration="0" order="1"/>
-				<Alpha change="1" duration="0.2" order="2"/>
+				<Alpha fromAlpha="1" toAlpha="0" duration="0" order="1"/>
+				<Alpha fromAlpha="0" toAlpha="1" duration="0.2" order="2"/>
 			</AnimationGroup>
 			<AnimationGroup name="$parentWaitAndAnimOut" parentKey="waitAndAnimOut">
-				<Alpha startDelay="4.05" change="-1" duration="1.5" parentKey="animOut">
+				<Alpha startDelay="4.05" fromAlpha="1" toAlpha="0" duration="1.5" parentKey="animOut">
 					<Scripts>
 						<OnFinished>
 							self:GetRegionParent():Hide();
@@ -1664,8 +1725,8 @@
 					</Anchors>
 					<Animations>
 						<AnimationGroup name="$parentAnimIn" parentKey="animIn">
-							<Alpha change="1" duration="0.2" order="1"/>
-							<Alpha change="-1" duration="0.5" order="2"/>
+							<Alpha fromAlpha="0" toAlpha="1" duration="0.2" order="1"/>
+							<Alpha fromAlpha="1" toAlpha="0" duration="0.5" order="2"/>
 							<Scripts>
 								<OnFinished>
 									self:GetParent():Hide();
@@ -1682,9 +1743,9 @@
 					</Anchors>
 					<Animations>
 						<AnimationGroup name="$parentAnimIn" parentKey="animIn">
-							<Alpha change="1" duration="0.2" order="1"/>
+							<Alpha fromAlpha="0" toAlpha="1" duration="0.2" order="1"/>
 							<Translation offsetX="200" offsetY="0" duration="0.85" order="2"/>
-							<Alpha startDelay="0.35" change="-1" duration="0.5" order="2"/>
+							<Alpha startDelay="0.35" fromAlpha="1" toAlpha="0" duration="0.5" order="2"/>
 							<Scripts>
 								<OnFinished>
 									self:GetParent():Hide();
@@ -1705,11 +1766,11 @@
 	</Anchors>
 	<Animations>
 		<AnimationGroup name="$parentAnimIn" parentKey="animIn">
-			<Alpha change="-1" duration="0" order="1"/>
-			<Alpha change="1" duration="0.2" order="2"/>
+			<Alpha fromAlpha="1" toAlpha="0" duration="0" order="1"/>
+			<Alpha fromAlpha="0" toAlpha="1" duration="0.2" order="2"/>
 		</AnimationGroup>
 		<AnimationGroup name="$parentWaitAndAnimOut" parentKey="waitAndAnimOut">
-			<Alpha startDelay="4.05" change="-1" duration="1.5" parentKey="animOut">
+			<Alpha startDelay="4.05" fromAlpha="1" toAlpha="0" duration="1.5" parentKey="animOut">
 				<Scripts>
 					<OnFinished>
 						self:GetRegionParent():Hide();
@@ -1739,8 +1800,8 @@
 				</Anchors>
 				<Animations>
 					<AnimationGroup name="$parentAnimIn" parentKey="animIn">
-						<Alpha change="1" duration="0.2" order="1"/>
-						<Alpha change="-1" duration="0.5" order="2"/>
+						<Alpha fromAlpha="0" toAlpha="1" duration="0.2" order="1"/>
+						<Alpha fromAlpha="1" toAlpha="0" duration="0.5" order="2"/>
 						<Scripts>
 							<OnFinished>
 								self:GetParent():Hide();
@@ -1757,9 +1818,9 @@
 				</Anchors>
 				<Animations>
 					<AnimationGroup name="$parentAnimIn" parentKey="animIn">
-						<Alpha change="1" duration="0.2" order="1"/>
+						<Alpha fromAlpha="0" toAlpha="1" duration="0.2" order="1"/>
 						<Translation offsetX="200" offsetY="0" duration="0.85" order="2"/>
-						<Alpha startDelay="0.35" change="-1" duration="0.5" order="2"/>
+						<Alpha startDelay="0.35" fromAlpha="1" toAlpha="0" duration="0.5" order="2"/>
 						<Scripts>
 							<OnFinished>
 								self:GetParent():Hide();
@@ -1797,7 +1858,7 @@
 			<Alpha fromAlpha="0" toAlpha="1" duration="0.2" order="1"/>
 		</AnimationGroup>
 		<AnimationGroup name="$parentWaitAndAnimOut" parentKey="waitAndAnimOut">
-			<Alpha startDelay="4.05" change="-1" duration="1.5" parentKey="animOut">
+			<Alpha startDelay="4.05" fromAlpha="1" toAlpha="0" duration="1.5" parentKey="animOut">
 				<Scripts>
 					<OnFinished>
 						self:GetRegionParent():Hide();
@@ -1830,8 +1891,8 @@
 				</Anchors>
 				<Animations>
 					<AnimationGroup name="$parentAnimIn" parentKey="animIn">
-						<Alpha change="1" duration="0.2" order="1"/>
-						<Alpha change="-1" duration="0.5" order="2"/>
+						<Alpha fromAlpha="0" toAlpha="1" duration="0.2" order="1"/>
+						<Alpha fromAlpha="1" toAlpha="0" duration="0.5" order="2"/>
 						<Scripts>
 							<OnFinished>
 								self:GetParent():Hide();
@@ -1848,9 +1909,9 @@
 				</Anchors>
 				<Animations>
 					<AnimationGroup name="$parentAnimIn" parentKey="animIn">
-						<Alpha change="1" duration="0.2" order="1"/>
+						<Alpha fromAlpha="0" toAlpha="1" duration="0.2" order="1"/>
 						<Translation offsetX="200" offsetY="0" duration="0.85" order="2"/>
-						<Alpha startDelay="0.35" change="-1" duration="0.5" order="2"/>
+						<Alpha startDelay="0.35" fromAlpha="1" toAlpha="0" duration="0.5" order="2"/>
 						<Scripts>
 							<OnFinished>
 								self:GetParent():Hide();

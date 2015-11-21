@@ -16,7 +16,7 @@
 			</Layer>
 		</Layers>
 		<Animations>
-			<AnimationGroup parentKey="Anim" ignoreFramerateThrottle="1">
+			<AnimationGroup parentKey="Anim">
 				<Translation offsetY="50" duration="1" order="1" smoothing="OUT"/>
 				<Alpha change="1" duration="0.1" order="1"/>
 				<Alpha change="-1" duration="0.9" startDelay="0.1" order="1" smoothing="IN"/>
@@ -44,7 +44,7 @@
 			</Layer>
 		</Layers>
 		<Animations>
-			<AnimationGroup parentKey="Anim" ignoreFramerateThrottle="1">
+			<AnimationGroup parentKey="Anim">
 				<Translation offsetY="-50" duration="1" order="1" smoothing="OUT"/>
 					<Alpha change="1" duration="0.1" order="1"/>
 					<Alpha change="-1" duration="0.9" startDelay="0.1" order="1" smoothing="IN"/>
@@ -72,7 +72,7 @@
 			</Layer>
 		</Layers>
 		<Animations>
-			<AnimationGroup parentKey="Anim" ignoreFramerateThrottle="1">
+			<AnimationGroup parentKey="Anim">
 				<Translation offsetX="-50" duration="1" order="1" smoothing="OUT"/>
 				<Alpha change="1" duration="0.1" order="1"/>
 				<Alpha change="-1" duration="0.9" startDelay="0.1" order="1" smoothing="IN"/>
@@ -100,7 +100,7 @@
 			</Layer>
 		</Layers>
 		<Animations>
-			<AnimationGroup parentKey="Anim" ignoreFramerateThrottle="1">
+			<AnimationGroup parentKey="Anim">
 				<Translation offsetX="50" duration="1" order="1" smoothing="OUT"/>
 				<Alpha change="1" duration="0.1" order="1"/>
 				<Alpha change="-1" duration="0.9" startDelay="0.1" order="1" smoothing="IN"/>

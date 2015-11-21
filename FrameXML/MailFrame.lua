@@ -425,13 +425,7 @@ function OpenMailFrame_UpdateButtonPositions(letterIsTakeable, textCreated, stat
 
 			SetItemButtonTexture(attachmentButton, itemTexture);
 			SetItemButtonCount(attachmentButton, count);
-
-			if (quality > LE_ITEM_QUALITY_COMMON and BAG_ITEM_QUALITY_COLORS[quality]) then
-				attachmentButton.IconBorder:Show();
-				attachmentButton.IconBorder:SetVertexColor(BAG_ITEM_QUALITY_COLORS[quality].r, BAG_ITEM_QUALITY_COLORS[quality].g, BAG_ITEM_QUALITY_COLORS[quality].b);
-			else
-				attachmentButton.IconBorder:Hide();
-			end
+			SetItemButtonQuality(attachmentButton, quality, GetInboxItemLink(InboxFrame.openMailID, i));
 
 			if ( canUse ) then
 				SetItemButtonTextureVertexColor(attachmentButton, HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b);
@@ -862,14 +856,9 @@ function SendMailFrame_Update()
 		end
 
 		local attachmentButton = _G["SendMailAttachment"..i];
-		
-		if (quality > LE_ITEM_QUALITY_COMMON and BAG_ITEM_QUALITY_COLORS[quality]) then
-			attachmentButton.IconBorder:Show();
-			attachmentButton.IconBorder:SetVertexColor(BAG_ITEM_QUALITY_COLORS[quality].r, BAG_ITEM_QUALITY_COLORS[quality].g, BAG_ITEM_QUALITY_COLORS[quality].b);
-		else
-			attachmentButton.IconBorder:Hide();
-		end
 
+		SetItemButtonQuality(attachmentButton, quality, GetSendMailItemLink(i));
+		
 		-- determine what a name for the message in case it doesn't already have one
 		if ( itemName ) then
 			itemCount = itemCount + 1;

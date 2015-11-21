@@ -256,13 +256,6 @@ function FCFOptionsDropDown_Initialize(dropDown)
 			info.disabled = 1;
 		end
 		UIDropDownMenu_AddButton(info);
-
-		-- Reset Chat windows to default
-		info = UIDropDownMenu_CreateInfo();
-		info.text = RESET_ALL_WINDOWS;
-		info.func = FCF_ResetAllWindows;
-		info.notCheckable = 1;
-		UIDropDownMenu_AddButton(info);
 	end
 
 	-- Close current chat window
@@ -836,6 +829,10 @@ function FCF_NewChatWindow()
 	StaticPopup_Show("NAME_CHAT");
 end
 
+function FCF_RedockAllWindows()
+	StaticPopup_Show("CONFIRM_REDOCK_CHAT");
+end
+
 function FCF_ResetAllWindows()
 	StaticPopup_Show("RESET_CHAT");
 end
@@ -1174,6 +1171,8 @@ function FCF_RestorePositionAndDimensions(chatFrame)
 	local width, height = GetChatWindowSavedDimensions(chatFrame:GetID());
 	if ( width and height ) then
 		chatFrame:SetSize(width, height);
+	elseif ( chatFrame == DEFAULT_CHAT_FRAME ) then
+		chatFrame:SetSize(430, 120);
 	end
 	
 	local point, xOffset, yOffset = GetChatWindowSavedPosition(chatFrame:GetID());
@@ -1181,6 +1180,11 @@ function FCF_RestorePositionAndDimensions(chatFrame)
 		chatFrame:ClearAllPoints();
 		chatFrame:SetPoint(point, xOffset * GetScreenWidth(), yOffset * GetScreenHeight());
 		chatFrame:SetUserPlaced(true);
+	elseif ( chatFrame == DEFAULT_CHAT_FRAME ) then
+		chatFrame:ClearAllPoints();
+		--ChatFrame1 is a managed frame so UIParent_ManageFramePositions() will reposition it.
+		chatFrame:SetUserPlaced(false);
+		UIParent_ManageFramePositions();
 	else
 		chatFrame:SetUserPlaced(false);
 	end
@@ -1788,7 +1792,7 @@ end
 -- Reset the chat windows to default
 function FCF_ResetChatWindows()
 	ChatFrame1:ClearAllPoints();
-	ChatFrame1:SetPoint("BOTTOMLEFT", "UIParent", "BOTTOMLEFT", 32, 95);
+	--ChatFrame1 is a managed frame so UIParent_ManageFramePositions() will reposition it.
 	ChatFrame1:SetWidth(430);
 	ChatFrame1:SetHeight(120);
 	ChatFrame1.isInitialized = 0;

@@ -1,0 +1,6 @@
+## Interface: 0
+## Title: Blizzard PvP Honor System UI
+## Secure: 1
+## LoadOnDemand: 0
+
+Blizzard_PvPHonorSystemUI.xml

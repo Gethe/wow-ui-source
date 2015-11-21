@@ -29,11 +29,11 @@ function ChallengesFrame_OnLoad(self)
 	end
 
 	-- reward row colors
-	self.RewardRow1.Bg:SetTexture(0.859, 0.545, 0.204);				-- bronze
+	self.RewardRow1.Bg:SetColorTexture(0.859, 0.545, 0.204);				-- bronze
 	self.RewardRow1.MedalName:SetTextColor(0.859, 0.545, 0.204);
-	self.RewardRow2.Bg:SetTexture(0.780, 0.722, 0.741);				-- silver
+	self.RewardRow2.Bg:SetColorTexture(0.780, 0.722, 0.741);				-- silver
 	self.RewardRow2.MedalName:SetTextColor(0.780, 0.722, 0.741);
-	self.RewardRow3.Bg:SetTexture(0.945, 0.882, 0.337);				-- gold
+	self.RewardRow3.Bg:SetColorTexture(0.945, 0.882, 0.337);				-- gold
 	self.RewardRow3.MedalName:SetTextColor(0.945, 0.882, 0.337);
 end
 

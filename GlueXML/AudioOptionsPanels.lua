@@ -107,7 +107,7 @@ SoundPanelOptions = {
 	Sound_EnableSoundWhenGameIsInBG = { text = "ENABLE_BGSOUND" },
 	Sound_EnableReverb = { text = "ENABLE_REVERB" },
 	--Sound_EnableHardware = { text = "ENABLE_HARDWARE" },
-	Sound_EnableSoftwareHRTF = { text = "ENABLE_SOFTWARE_HRTF" },
+	Sound_EnablePositionalLowPassFilter = { text = "ENABLE_SOFTWARE_HRTF" },
 	Sound_EnableDSPEffects = { text = "ENABLE_DSP_EFFECTS" },
 	Sound_SFXVolume = { text = "SOUND_VOLUME", minValue = 0, maxValue = 1, valueStep = 0.1, },
 	Sound_MusicVolume = { text = "MUSIC_VOLUME", minValue = 0, maxValue = 1, valueStep = 0.1, },
@@ -229,7 +229,7 @@ function AudioOptionsSoundPanelSoundChannelsDropDown_OnLoad (self)
 		end
 end
 
-local soundChannelValues = { 24, 32, 64 };
+local soundChannelValues = { 24, 48, 64 };
 local soundChannelText = { "SOUND_CHANNELS_LOW", "SOUND_CHANNELS_MEDIUM", "SOUND_CHANNELS_HIGH" };
 function AudioOptionsSoundPanelSoundChannelsDropDown_Initialize(self)
 	local selectedValue = GlueDropDownMenu_GetSelectedValue(self);
@@ -259,5 +259,68 @@ function AudioOptionsSoundPanelSoundChannelsDropDown_OnClick(self)
 	if ( dropdown.restart and prevValue ~= value ) then
 		AudioOptionsFrame_AudioRestart();
 	end
+end
+
+function AudioOptionsSoundPanelSoundCacheSizeDropDown_OnLoad (self)
+	self.cvar = "Sound_MaxCacheSizeInBytes";
+
+	local selected = BlizzardOptionsPanel_GetCVarSafe(self.cvar);
+	self.defaultValue = BlizzardOptionsPanel_GetCVarDefaultSafe(self.cvar);
+	self.value = selected;
+	self.newValue = selected;
+	self.restart = true;
+
+	GlueDropDownMenu_SetWidth(self, 136);
+	GlueDropDownMenu_Initialize(self, AudioOptionsSoundPanelSoundCacheSizeDropDown_Initialize);
+	GlueDropDownMenu_SetSelectedValue(self, selected);
+
+	self.SetValue = 
+		function (self, value)
+			self.value = value;
+			BlizzardOptionsPanel_SetCVarSafe(self.cvar, value);
+			GlueDropDownMenu_SetSelectedValue(self, value);
+		end
+	self.GetValue =
+		function (self)
+			return BlizzardOptionsPanel_GetCVarSafe(self.cvar);
+		end
+	self.RefreshValue =
+		function (self)
+			local selected = BlizzardOptionsPanel_GetCVarSafe(self.cvar);
+			self.value = selected;
+			self.newValue = selected;
+
+			GlueDropDownMenu_Initialize(self, AudioOptionsSoundPanelSoundCacheSizeDropDown_Initialize);
+			GlueDropDownMenu_SetSelectedValue(self, selected);
+		end
+end
+
+local soundCacheSizeValues = { 16777216, 67108864 }; --value in bytes, displayed in MB
+local soundCacheSizeText = { "SOUND_CACHE_SIZE_SMALL", "SOUND_CACHE_SIZE_LARGE" };
+function AudioOptionsSoundPanelSoundCacheSizeDropDown_Initialize(self)
+	local selectedValue = GlueDropDownMenu_GetSelectedValue(self);
+	local info = GlueDropDownMenu_CreateInfo();
+	
+	for i=1, #soundCacheSizeValues do
+		info.text = format(_G[soundCacheSizeText[i]], soundCacheSizeValues[i]/1024/1024); --convert to MB
+		info.value = soundCacheSizeValues[i];
+		if ( selectedValue and info.value == selectedValue ) then
+			info.checked = 1;
+		else
+			info.checked = nil;
+		end
+		info.func = AudioOptionsSoundPanelSoundCacheSizeDropDown_OnClick;
+		
+		GlueDropDownMenu_AddButton(info);
+	end
+end
+
+function AudioOptionsSoundPanelSoundCacheSizeDropDown_OnClick(self)
+	local value = self.value;
+	local dropdown = AudioOptionsSoundPanelSoundCacheSizeDropDown;
+	GlueDropDownMenu_SetSelectedValue(dropdown, value);
+
+	local prevValue = dropdown:GetValue();
+	dropdown:SetValue(value);
 end
 

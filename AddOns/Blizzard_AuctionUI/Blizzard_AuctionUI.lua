@@ -311,6 +311,13 @@ function AuctionFrame_OnLoad (self)
 end
 
 function AuctionFrame_Show()
+	if (IsKioskModeEnabled()) then
+		UIErrorsFrame:AddMessage(ERR_CLIENT_LOCKED_OUT, 1.0, 0.1, 0.1, 1.0);
+		CloseAuctionHouse();
+		HideUIPanel(AuctionFrame);
+		return;
+	end
+
 	if ( AuctionFrame:IsShown() ) then
 		AuctionFrameBrowse_Update();
 		AuctionFrameBid_Update();
@@ -894,12 +901,7 @@ function AuctionFrameBrowse_Update()
 				itemName:SetVertexColor(color.r, color.g, color.b);
 				local itemButton = _G[buttonName.."Item"];
 
-				if (quality > LE_ITEM_QUALITY_COMMON and BAG_ITEM_QUALITY_COLORS[quality]) then
-					itemButton.IconBorder:Show();
-					itemButton.IconBorder:SetVertexColor(BAG_ITEM_QUALITY_COLORS[quality].r, BAG_ITEM_QUALITY_COLORS[quality].g, BAG_ITEM_QUALITY_COLORS[quality].b);
-				else
-					itemButton.IconBorder:Hide();
-				end
+				SetItemButtonQuality(itemButton, quality, itemId);
 
 				-- Set level
 				if ( levelColHeader == "REQ_LEVEL_ABBR" and level > UnitLevel("player") ) then
@@ -1216,7 +1218,7 @@ function AuctionFrameBid_Update()
 	local offset = FauxScrollFrame_GetOffset(BidScrollFrame);
 	local index;
 	local isLastSlotEmpty;
-	local name, texture, count, quality, canUse, level, levelColHeader, minBid, minIncrement, buyoutPrice, bidAmount, highBidder, bidderFullName, owner, ownerFullName;
+	local name, texture, count, quality, canUse, level, levelColHeader, minBid, minIncrement, buyoutPrice, bidAmount, highBidder, bidderFullName, owner, ownerFullName, itemID;
 	local duration;
 	BidBidButton:Disable();
 	BidBuyoutButton:Disable();
@@ -1239,7 +1241,7 @@ function AuctionFrameBid_Update()
 		else
 			button:Show();
 			buttonName = "BidButton"..i;
-			name, texture, count, quality, canUse, level, levelColHeader, minBid, minIncrement, buyoutPrice, bidAmount, highBidder, bidderFullName, owner, ownerFullName =  GetAuctionItemInfo("bidder", index);
+			name, texture, count, quality, canUse, level, levelColHeader, minBid, minIncrement, buyoutPrice, bidAmount, highBidder, bidderFullName, owner, ownerFullName, _, itemID =  GetAuctionItemInfo("bidder", index);
 			duration = GetAuctionItemTimeLeft("bidder", offset + i);
 
 			-- Resize button if there isn't a scrollbar
@@ -1265,12 +1267,7 @@ function AuctionFrameBid_Update()
 
 			local itemButton = _G[buttonName.."Item"];
 
-			if (quality > LE_ITEM_QUALITY_COMMON and BAG_ITEM_QUALITY_COLORS[quality]) then
-				itemButton.IconBorder:Show();
-				itemButton.IconBorder:SetVertexColor(BAG_ITEM_QUALITY_COLORS[quality].r, BAG_ITEM_QUALITY_COLORS[quality].g, BAG_ITEM_QUALITY_COLORS[quality].b);
-			else
-				itemButton.IconBorder:Hide();
-			end
+			SetItemButtonQuality(itemButton, quality, itemID);
 
 			-- Set level
 			if ( levelColHeader == "REQ_LEVEL_ABBR" and level > UnitLevel("player") ) then
@@ -1550,13 +1547,8 @@ function AuctionFrameAuctions_Update()
 			buttonBuyoutFrame = _G[buttonName.."BuyoutFrame"];
 
 			local itemButton = _G[buttonName.."Item"];
-			
-			if (quality and quality > LE_ITEM_QUALITY_COMMON and BAG_ITEM_QUALITY_COLORS[quality]) then
-				itemButton.IconBorder:Show();
-				itemButton.IconBorder:SetVertexColor(BAG_ITEM_QUALITY_COLORS[quality].r, BAG_ITEM_QUALITY_COLORS[quality].g, BAG_ITEM_QUALITY_COLORS[quality].b);
-			else
-				itemButton.IconBorder:Hide();
-			end
+
+			SetItemButtonQuality(itemButton, quality, itemID);
 
 			if ( saleStatus == 1 ) then
 				-- Sold item
@@ -1812,6 +1804,7 @@ function AuctionSellItemButton_OnEvent(self, event, ...)
 			AuctionsItemButtonName:SetText(name);
 			local color = ITEM_QUALITY_COLORS[quality];
 			AuctionsItemButtonName:SetVertexColor(color.r, color.g, color.b);
+			SetItemButtonQuality(AuctionsItemButton, quality, itemID)
 			AuctionWowToken_UpdateMarketPrice();
 			MoneyFrame_SetType(AuctionsDepositMoneyFrame, "AUCTION_DEPOSIT_TOKEN");
 			MoneyFrame_Update("AuctionsDepositMoneyFrame", 0, true);
@@ -1827,6 +1820,7 @@ function AuctionSellItemButton_OnEvent(self, event, ...)
 			AuctionsItemButtonName:SetText(name);
 			local color = ITEM_QUALITY_COLORS[quality];
 			AuctionsItemButtonName:SetVertexColor(color.r, color.g, color.b);
+			SetItemButtonQuality(AuctionsItemButton, quality, itemID)
 			if ( totalCount > 1 ) then
 				AuctionsItemButtonCount:SetText(totalCount);
 				AuctionsItemButtonCount:Show();

@@ -2,26 +2,28 @@
 ..\FrameXML\UI.xsd">
   <Script file="RuneFrame.lua"/>
   <Button name="RuneButtonIndividualTemplate" virtual="true" hidden="false">
- 	<Animations>
-		<AnimationGroup parentKey="energize">
-			<Scale target="$parentRuneWhiteGlow" endDelay="1" duration="0.15"  scaleX="4" scaleY="4" order="1"/>
-			<Alpha target="$parentRuneWhiteGlow" endDelay="1" change="1.0" duration="0.2" order="1" />
-			<Alpha target="$parentRuneColorGlow" startDelay="0.3" endDelay="4" change="1.0" duration="0.1" order="1" smoothing="IN_OUT"/>
-			<Alpha target="$parentRuneWhiteGlow" change="-1.0" duration="0.1" order="2" smoothing="IN_OUT"/>
-			<Alpha target="$parentRuneColorGlow" change="-1.0" duration="0.1" order="2" smoothing="IN_OUT"/>
+	<Animations>
+		<AnimationGroup parentKey="energize" setToFinalAlpha="true">
+			<Alpha childKey="Textures.EnergizeRing" smoothing="IN_OUT" duration="0.25" order="1" fromAlpha="0" toAlpha="1"/>
+			<Scale parentKey="RingScale" childKey="Textures.EnergizeRing" smoothing="IN_OUT" duration="0.5" order="1" fromScaleX="0.7" fromScaleY="0.8" toScaleX="0.8" toScaleY="0.8"/>
+			<Alpha childKey="Textures.EnergizeRing" startDelay="0.65" smoothing="IN_OUT" duration="0.5" order="1" fromAlpha="1" toAlpha="0"/>
+			<Alpha childKey="Textures.EnergizeGlow" smoothing="IN_OUT" duration="0.25" order="1" fromAlpha="0" toAlpha="1"/>
+			<Scale childKey="Textures.EnergizeGlow" smoothing="IN_OUT" duration="0.25" order="1" fromScaleX="0.25" fromScaleY="0.15" toScaleX="1.15" toScaleY="1.5"/>
+			<Rotation childKey="Textures.EnergizeGlow" smoothing="IN_OUT" duration="0.1" order="1" degrees="45"/>
+			<Alpha childKey="Textures.EnergizeGlow" startDelay="0.5" smoothing="IN_OUT" duration="0.65" order="1" fromAlpha="1" toAlpha="0"/>
 		</AnimationGroup>
 	</Animations>
    <Size>
       <AbsDimension x="18" y="18"/>
     </Size>
     <Frames>
-		<Cooldown name="$parentCooldown" drawEdge="true" frameStrata="LOW" hideCountdownNumbers="true" inherits="CooldownFrameTemplate">
+		<Cooldown parentKey="Cooldown" drawEdge="true" frameStrata="LOW" hideCountdownNumbers="true" inherits="CooldownFrameTemplate">
 			<Size x="15" y="15"/>
 			<Anchors>
 			  <Anchor point="CENTER" x="0" y="-1"/>
 			</Anchors>
 		</Cooldown>
-		<Frame name="$parentBorder" frameStrata="LOW">
+		<Frame parentKey="Border" frameStrata="LOW">
 			<Size x="24" y="24"/>
 			<Anchors>
 				<Anchor point="CENTER">
@@ -41,10 +43,10 @@
 				</OnLoad>
 			</Scripts>
 		</Frame>
-		<Frame frameStrata="MEDIUM" setAllPoints="true" name="$parentShine">
+		<Frame parentKey="Textures" frameStrata="MEDIUM" setAllPoints="true">
 			<Layers>
 				<Layer level="OVERLAY">
-					<Texture name="$parentTexture" file="Interface\ComboFrame\ComboPoint" alphaMode="ADD" hidden="true">
+					<Texture parentKey="Shine" file="Interface\ComboFrame\ComboPoint" alphaMode="ADD" hidden="true" textureSubLevel="1">
 						<Size x="60" y="35"/>
 						<Anchors>
 							<Anchor point="CENTER">
@@ -53,24 +55,16 @@
 						</Anchors>
 						<TexCoords left="0.5625" right="1" top="0" bottom="1"/>
 					</Texture>
-				</Layer>
-			</Layers>
-		</Frame>
-		<Frame frameStrata="HIGH" setAllPoints="true">
-			<Layers>
-				<Layer level="OVERLAY" textureSubLevel = "-1">
-					<Texture name="$parentRuneWhiteGlow" file="Interface\PlayerFrame\Deathknight-Energize-White" alpha="0">
-						<Size x="8" y="8"/>
+					<Texture parentKey="EnergizeRing" hidden="false" alpha="0" alphaMode="BLEND" file="Interface\PlayerFrame\Deathknight-Energize-White" textureSubLevel="2">
+						<Size x="32" y="0"/>
 						<Anchors>
-							<Anchor point="CENTER" x="0" y="-1"/>
+							<Anchor point="CENTER"/>
 						</Anchors>
 					</Texture>
-				</Layer>
-				<Layer level="OVERLAY">
-					<Texture name="$parentRuneColorGlow" file="Interface\PlayerFrame\Deathknight-Energize-Blood" alpha="0">
+					<Texture parentKey="EnergizeGlow" hidden="false" alpha="0" alphaMode="ADD" file="Interface\PlayerFrame\Deathknight-Energize-Glow" textureSubLevel="2">
 						<Size x="32" y="32"/>
 						<Anchors>
-							<Anchor point="CENTER" x="0" y="-1"/>
+							<Anchor point="CENTER"/>
 						</Anchors>
 					</Texture>
 				</Layer>
@@ -79,7 +73,7 @@
     </Frames>
     <Layers>
 		<Layer level="ARTWORK">
-			<Texture name="$parentRune" file="Interface\PlayerFrame\UI-PlayerFrame-Deathknight-Blood" parentKey="rune">
+			<Texture name="$parentRune" file="Interface\PlayerFrame\UI-PlayerFrame-Deathknight-SingleRune" parentKey="rune">
 				<Size>
 					<AbsDimension x="24" y="24"/>
 				</Size>
@@ -118,70 +112,81 @@
         </Offset>
       </Anchor>
     </Anchors>
+	<Frames>
+	  <Button name="RuneButtonIndividual1" inherits="RuneButtonIndividualTemplate" >
+		<Anchors>
+		  <Anchor point="LEFT" relativePoint="LEFT">
+			<Offset>
+			  <AbsDimension x="0" y="0"/>
+			</Offset>
+		  </Anchor>
+		</Anchors>
+	  </Button>
+
+	  <Button name="RuneButtonIndividual2" inherits="RuneButtonIndividualTemplate">
+		<Anchors>
+		  <Anchor point="LEFT" relativeTo="RuneButtonIndividual1" relativePoint="RIGHT">
+			<Offset>
+			  <AbsDimension x="3" y="0"/>
+			</Offset>
+		  </Anchor>
+		</Anchors>
+	  </Button>
+	  
+	  <Button name="RuneButtonIndividual3" inherits="RuneButtonIndividualTemplate" >
+		<Anchors>
+		  <Anchor point="LEFT" relativeTo="RuneButtonIndividual2" relativePoint="RIGHT">
+			<Offset>
+			  <AbsDimension x="3" y="0"/>
+			</Offset>
+		  </Anchor>
+		</Anchors>
+	  </Button>
+
+	  <Button name="RuneButtonIndividual4" inherits="RuneButtonIndividualTemplate" >
+		<Anchors>
+		  <Anchor point="LEFT" relativeTo="RuneButtonIndividual3" relativePoint="RIGHT">
+			<Offset>
+			  <AbsDimension x="3" y="0"/>
+			</Offset>
+		  </Anchor>
+		</Anchors>
+	  </Button>
+
+	  <Button name="RuneButtonIndividual5" inherits="RuneButtonIndividualTemplate" >
+		<Anchors>
+		  <Anchor point="LEFT" relativeTo="RuneButtonIndividual4" relativePoint="RIGHT">
+			<Offset>
+			  <AbsDimension x="3" y="0"/>
+			</Offset>
+		  </Anchor>
+		</Anchors>
+	  </Button>
+
+	  <Button name="RuneButtonIndividual6" inherits="RuneButtonIndividualTemplate" >
+		<Anchors>
+		  <Anchor point="LEFT" relativeTo="RuneButtonIndividual5" relativePoint="RIGHT">
+			<Offset>
+			  <AbsDimension x="3" y="0"/>
+			</Offset>
+		  </Anchor>
+		</Anchors>
+	  </Button>
+	  
+	  <Button name="RuneButtonIndividual7" inherits="RuneButtonIndividualTemplate">
+		<Anchors>
+		  <Anchor point="LEFT" relativeTo="RuneButtonIndividual6" relativePoint="RIGHT">
+			<Offset>
+			  <AbsDimension x="3" y="0"/>
+			</Offset>
+		  </Anchor>
+		</Anchors>
+	  </Button>
+	</Frames>
     <Scripts>
       <OnLoad function="RuneFrame_OnLoad"/>
     </Scripts>
   </Frame>
   
-  <!-- Rune order is 1,2,5,6,3,4  which coresponds to Blood, Blood, Frost, Frost, Unholy, Unholy -->
-  <Button name="RuneButtonIndividual1" inherits="RuneButtonIndividualTemplate" parent="RuneFrame">
-    <Anchors>
-      <Anchor point="LEFT" relativeTo="RuneFrame" relativePoint="LEFT">
-        <Offset>
-          <AbsDimension x="0" y="0"/>
-        </Offset>
-      </Anchor>
-    </Anchors>
-  </Button>
-
-  <Button name="RuneButtonIndividual2" inherits="RuneButtonIndividualTemplate" parent="RuneFrame">
-    <Anchors>
-      <Anchor point="LEFT" relativeTo="RuneButtonIndividual1" relativePoint="RIGHT">
-        <Offset>
-          <AbsDimension x="3" y="0"/>
-        </Offset>
-      </Anchor>
-    </Anchors>
-  </Button>
-
-  <Button name="RuneButtonIndividual5" inherits="RuneButtonIndividualTemplate" parent="RuneFrame">
-    <Anchors>
-      <Anchor point="LEFT" relativeTo="RuneButtonIndividual2" relativePoint="RIGHT">
-        <Offset>
-          <AbsDimension x="3" y="0"/>
-        </Offset>
-      </Anchor>
-    </Anchors>
-  </Button>
-
-  <Button name="RuneButtonIndividual6" inherits="RuneButtonIndividualTemplate" parent="RuneFrame">
-    <Anchors>
-      <Anchor point="LEFT" relativeTo="RuneButtonIndividual5" relativePoint="RIGHT">
-        <Offset>
-          <AbsDimension x="3" y="0"/>
-        </Offset>
-      </Anchor>
-    </Anchors>
-  </Button>
-
-  <Button name="RuneButtonIndividual3" inherits="RuneButtonIndividualTemplate" parent="RuneFrame">
-    <Anchors>
-      <Anchor point="LEFT" relativeTo="RuneButtonIndividual6" relativePoint="RIGHT">
-        <Offset>
-          <AbsDimension x="3" y="0"/>
-        </Offset>
-      </Anchor>
-    </Anchors>
-  </Button>
-
-  <Button name="RuneButtonIndividual4" inherits="RuneButtonIndividualTemplate" parent="RuneFrame">
-    <Anchors>
-      <Anchor point="LEFT" relativeTo="RuneButtonIndividual3" relativePoint="RIGHT">
-        <Offset>
-          <AbsDimension x="3" y="0"/>
-        </Offset>
-      </Anchor>
-    </Anchors>
-  </Button>
 
 </Ui>

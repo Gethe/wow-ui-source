@@ -33,6 +33,8 @@ function TargetFrame_OnLoad(self, unit, menuFunc)
 	self.borderTexture = _G[thisName.."TextureFrameTexture"];
 	self.highLevelTexture = _G[thisName.."TextureFrameHighLevelTexture"];	
 	self.pvpIcon = _G[thisName.."TextureFramePVPIcon"];
+	self.prestigePortrait = _G[thisName.."TextureFramePrestigePortrait"];
+	self.prestigeBadge = _G[thisName.."TextureFramePrestigeBadge"];
 	self.leaderIcon = _G[thisName.."TextureFrameLeaderIcon"];
 	self.raidTargetIcon = _G[thisName.."TextureFrameRaidTargetIcon"];
 	self.questIcon = _G[thisName.."TextureFrameQuestIcon"];
@@ -317,7 +319,7 @@ function BossTargetFrame_UpdateLevelTextAnchor (self, targetLevel)
 end
 
 function TargetFrame_CheckFaction (self)
-	if ( not UnitPlayerControlled(self.unit) and UnitIsTapped(self.unit) and not UnitIsTappedByPlayer(self.unit) and not UnitIsTappedByAllThreatList(self.unit) ) then
+	if ( not UnitPlayerControlled(self.unit) and UnitIsTapDenied(self.unit) ) then
 		self.nameBackground:SetVertexColor(0.5, 0.5, 0.5);
 		if ( self.portrait ) then
 			self.portrait:SetVertexColor(0.5, 0.5, 0.5);
@@ -332,12 +334,36 @@ function TargetFrame_CheckFaction (self)
 	if ( self.showPVP ) then
 		local factionGroup = UnitFactionGroup(self.unit);
 		if ( UnitIsPVPFreeForAll(self.unit) ) then
-			self.pvpIcon:SetTexture("Interface\\TargetingFrame\\UI-PVP-FFA");
-			self.pvpIcon:Show();
+			local prestige = UnitPrestige(self.unit);
+			if (prestige > 0) then
+				self.prestigePortrait:SetAtlas("honorsystem-portrait-neutral", false);
+				self.prestigeBadge:SetTexture(GetPrestigeInfo(prestige));
+				self.prestigePortrait:Show();
+				self.prestigeBadge:Show();
+				self.pvpIcon:Hide();
+			else
+				self.prestigePortrait:Hide();
+				self.prestigeBadge:Hide();
+				self.pvpIcon:SetTexture("Interface\\TargetingFrame\\UI-PVP-FFA");
+				self.pvpIcon:Show();
+			end
 		elseif ( factionGroup and factionGroup ~= "Neutral" and UnitIsPVP(self.unit) ) then
-			self.pvpIcon:SetTexture("Interface\\TargetingFrame\\UI-PVP-"..factionGroup);
-			self.pvpIcon:Show();
+			local prestige = UnitPrestige(self.unit);
+			if (prestige > 0) then
+				self.prestigePortrait:SetAtlas("honorsystem-portrait-"..factionGroup, false);
+				self.prestigeBadge:SetTexture(GetPrestigeInfo(prestige));
+				self.prestigePortrait:Show();
+				self.prestigeBadge:Show();
+				self.pvpIcon:Hide();
+			else
+				self.prestigePortrait:Hide();
+				self.prestigeBadge:Hide();
+				self.pvpIcon:SetTexture("Interface\\TargetingFrame\\UI-PVP-"..factionGroup);
+				self.pvpIcon:Show();
+			end
 		else
+			self.prestigePortrait:Hide();
+			self.prestigeBadge:Hide();
 			self.pvpIcon:Hide();
 		end
 	end
@@ -641,7 +667,7 @@ function TargetFrame_ShouldShowDebuff(unit, index, filter)
 	if ( SHOW_ALL_ENEMY_DEBUFFS == "1" or not UnitCanAttack("player", unit) ) then
 		return true;
 	else		
-		local name, rank, icon, count, debuffType, duration, expirationTime, unitCaster, canStealOrPurge, shouldConsolidate, spellId, canApplyAura, isBossDebuff, isCastByPlayer = UnitDebuff(unit, index, filter);
+		local name, rank, icon, count, debuffType, duration, expirationTime, unitCaster, canStealOrPurge, _, spellId, canApplyAura, isBossDebuff, isCastByPlayer = UnitDebuff(unit, index, filter);
 
 		if SpellIsAlwaysShown(spellId) then
 			return true;
@@ -1022,11 +1048,10 @@ function TargetFrame_CreateSpellbar(self, event, boss)
 	spellbar:SetFrameLevel(_G[self:GetName().."TextureFrame"]:GetFrameLevel() - 1);
 	self.spellbar = spellbar;
 	self.auraRows = 0;
-	spellbar.unit = self.unit;
 	spellbar:RegisterEvent("CVAR_UPDATE");
 	spellbar:RegisterEvent("VARIABLES_LOADED");
 		
-	CastingBarFrame_OnLoad(spellbar, spellbar.unit, false, true);
+	CastingBarFrame_SetUnit(spellbar, self.unit, false, true);
 	if ( event ) then
 		spellbar.updateEvent = event;
 		spellbar:RegisterEvent(event);
@@ -1243,6 +1268,8 @@ function FocusFrame_SetSmallSize(smallSize, onChange)
 		FocusFrame.showLeader = nil;
 		FocusFrame.showPVP = nil;
 		FocusFrame.pvpIcon:Hide();
+		FocusFrame.prestigePortrait:Hide();
+		FocusFrame.prestigeBadge:Hide();
 		FocusFrame.leaderIcon:Hide();
 		FocusFrame.showAuraCount = nil;
 --		TargetFrame_CheckClassification(FocusFrame, true);

@@ -247,7 +247,6 @@ function ItemSocketingSocketButton_OnEvent(self, event, ...)
 end
 
 function ItemSocketingSocketButton_Disable()
-	ItemSocketingSocketButton.disabled = 1;
 	ItemSocketingSocketButton:Disable();
 	ItemSocketingSocketButton.Left:SetTexture("Interface\\Buttons\\UI-Panel-Button-Disabled");
 	ItemSocketingSocketButton.Middle:SetTexture("Interface\\Buttons\\UI-Panel-Button-Disabled");
@@ -255,7 +254,6 @@ function ItemSocketingSocketButton_Disable()
 end
 
 function ItemSocketingSocketButton_Enable()
-	ItemSocketingSocketButton.disabled = nil;
 	ItemSocketingSocketButton:Enable();
 	ItemSocketingSocketButton.Left:SetTexture("Interface\\Buttons\\UI-Panel-Button-Up");
 	ItemSocketingSocketButton.Middle:SetTexture("Interface\\Buttons\\UI-Panel-Button-Up");

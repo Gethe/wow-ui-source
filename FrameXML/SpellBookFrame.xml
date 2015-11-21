@@ -281,6 +281,16 @@
 						</Anchor>
 					</Anchors>
 				</Texture>
+				<Texture parentKey="GlyphActivate" hidden="true" alpha="1" alphaMode="ADD" file="Interface\Buttons\CheckButtonHilight-Blue" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="AbilityHighlight" hidden="true" alpha="1" alphaMode="ADD" file="Interface\Buttons\CheckButtonHilight-Blue" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
 			</Layer>
 			<Layer level="OVERLAY" textureSubLevel="1">
 				<Texture name="$parentFlyoutArrow" file="Interface\Buttons\ActionBarFlyoutButton" parentKey="FlyoutArrow" hidden="true">
@@ -352,6 +362,22 @@
 				GameTooltip:Hide();
 			</OnLeave>
 		</Scripts>
+		<Animations>
+			<AnimationGroup parentKey="GlyphActivateAnim" setToFinalAlpha="true">
+				<Alpha childKey="GlyphActivate" duration="0.25" order="1" fromAlpha="0" toAlpha="1"/>
+				<Alpha childKey="GlyphActivate" startDelay="0.25" duration="0.75" order="1" fromAlpha="1" toAlpha="0"/>
+				<Scale childKey="GlyphActivate" smoothing="OUT" duration="0.25" order="1" fromScaleX="1" fromScaleY="1" toScaleX="1.35" toScaleY="1.35"/>
+				<Scripts>
+					<OnFinished>
+						self:GetParent().GlyphActivate:Hide();
+					</OnFinished>
+				</Scripts>
+			</AnimationGroup>
+			<AnimationGroup parentKey="AbilityHighlightAnim" setToFinalAlpha="true" looping="REPEAT">
+				<Alpha childKey="AbilityHighlight" duration="0.25" order="1" fromAlpha="0.5" toAlpha="1"/>
+				<Alpha childKey="AbilityHighlight" startDelay="0.5" duration="0.75" order="1" fromAlpha="1" toAlpha="0.5"/>
+			</AnimationGroup>
+		</Animations>
 		<PushedTexture file="Interface\Buttons\UI-Quickslot-Depress"/>
 		<HighlightTexture name="$parentHighlight" file="Interface\Buttons\ButtonHilight-Square" alphaMode="ADD"/>
 		<CheckedTexture file="Interface\Buttons\CheckButtonHilight" alphaMode="ADD"/>

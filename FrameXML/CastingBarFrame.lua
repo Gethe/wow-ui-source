@@ -2,25 +2,14 @@ CASTING_BAR_ALPHA_STEP = 0.05;
 CASTING_BAR_FLASH_STEP = 0.2;
 CASTING_BAR_HOLD_TIME = 1;
 
-function CastingBarFrame_OnLoad (self, unit, showTradeSkills, showShield)
-	self:RegisterEvent("UNIT_SPELLCAST_INTERRUPTED");
-	self:RegisterEvent("UNIT_SPELLCAST_DELAYED");
-	self:RegisterEvent("UNIT_SPELLCAST_CHANNEL_START");
-	self:RegisterEvent("UNIT_SPELLCAST_CHANNEL_UPDATE");
-	self:RegisterEvent("UNIT_SPELLCAST_CHANNEL_STOP");
-	self:RegisterEvent("UNIT_SPELLCAST_INTERRUPTIBLE");
-	self:RegisterEvent("UNIT_SPELLCAST_NOT_INTERRUPTIBLE");
-	self:RegisterEvent("PLAYER_ENTERING_WORLD");
-	self:RegisterUnitEvent("UNIT_SPELLCAST_START", unit);
-	self:RegisterUnitEvent("UNIT_SPELLCAST_STOP", unit);
-	self:RegisterUnitEvent("UNIT_SPELLCAST_FAILED", unit);
+function CastingBarFrame_OnLoad(self, unit, showTradeSkills, showShield)
+	self.startCastColor = { 1.0, 0.7, 0.0 };
+	self.startChannelColor = { 0.0, 1.0, 0.0 };
+	self.finishedCastColor = { 0.0, 1.0, 0.0 };
+	self.failedCastColor = { 1.0, 0.0, 0.0 };
 
-	self.unit = unit;
-	self.showTradeSkills = showTradeSkills;
-	self.showShield = showShield;
-	self.casting = nil;
-	self.channeling = nil;
-	self.holdTime = 0;
+	CastingBarFrame_SetUnit(self, unit, showTradeSkills, showShield);
+
 	self.showCastbar = true;
 
 	local barIcon = _G[self:GetName().."Icon"];
@@ -35,27 +24,88 @@ function CastingBarFrame_OnLoad (self, unit, showTradeSkills, showShield)
 	end
 end
 
-function CastingBarFrame_OnShow (self)
-	if ( self.casting ) then
-		local _, _, _, _, startTime = UnitCastingInfo(self.unit);
-		if ( startTime ) then
-			self.value = (GetTime() - (startTime / 1000));
-		end
-	else
-		local _, _, _, _, _, endTime = UnitChannelInfo(self.unit);
-		if ( endTime ) then
-			self.value = ((endTime / 1000) - GetTime());
+function CastingBarFrame_SetStartCastColor(self, r, g, b)
+	self.startCastColor = { r, g, b };
+end
+
+function CastingBarFrame_SetStartChannelColor(self, r, g, b)
+	self.startChannelColor = { r, g, b };
+end
+
+function CastingBarFrame_SetFinishedCastColor(self, r, g, b)
+	self.finishedCastColor = { r, g, b };
+end
+
+function CastingBarFrame_SetFailedCastColor(self, r, g, b)
+	self.failedCastColor = { r, g, b };
+end
+
+function CastingBarFrame_SetUnit(self, unit, showTradeSkills, showShield)
+	if self.unit ~= unit then
+		self.unit = unit;
+		self.showTradeSkills = showTradeSkills;
+		self.showShield = showShield;
+
+		self.casting = nil;
+		self.channeling = nil;
+		self.holdTime = 0;
+		self.fadeOut = nil;
+
+		if unit then
+			self:RegisterEvent("UNIT_SPELLCAST_INTERRUPTED");
+			self:RegisterEvent("UNIT_SPELLCAST_DELAYED");
+			self:RegisterEvent("UNIT_SPELLCAST_CHANNEL_START");
+			self:RegisterEvent("UNIT_SPELLCAST_CHANNEL_UPDATE");
+			self:RegisterEvent("UNIT_SPELLCAST_CHANNEL_STOP");
+			self:RegisterEvent("UNIT_SPELLCAST_INTERRUPTIBLE");
+			self:RegisterEvent("UNIT_SPELLCAST_NOT_INTERRUPTIBLE");
+			self:RegisterEvent("PLAYER_ENTERING_WORLD");
+			self:RegisterUnitEvent("UNIT_SPELLCAST_START", unit);
+			self:RegisterUnitEvent("UNIT_SPELLCAST_STOP", unit);
+			self:RegisterUnitEvent("UNIT_SPELLCAST_FAILED", unit);
+
+			CastingBarFrame_OnEvent(self, "PLAYER_ENTERING_WORLD")
+		else
+			self:UnregisterEvent("UNIT_SPELLCAST_INTERRUPTED");
+			self:UnregisterEvent("UNIT_SPELLCAST_DELAYED");
+			self:UnregisterEvent("UNIT_SPELLCAST_CHANNEL_START");
+			self:UnregisterEvent("UNIT_SPELLCAST_CHANNEL_UPDATE");
+			self:UnregisterEvent("UNIT_SPELLCAST_CHANNEL_STOP");
+			self:UnregisterEvent("UNIT_SPELLCAST_INTERRUPTIBLE");
+			self:UnregisterEvent("UNIT_SPELLCAST_NOT_INTERRUPTIBLE");
+			self:UnregisterEvent("PLAYER_ENTERING_WORLD");
+			self:UnregisterEvent("UNIT_SPELLCAST_START");
+			self:UnregisterEvent("UNIT_SPELLCAST_STOP");
+			self:UnregisterEvent("UNIT_SPELLCAST_FAILED");
+
+			self:Hide();
 		end
 	end
 end
 
-function CastingBarFrame_OnEvent (self, event, ...)
+function CastingBarFrame_OnShow(self)
+	if ( self.unit ) then
+		if ( self.casting ) then
+			local _, _, _, _, startTime = UnitCastingInfo(self.unit);
+			if ( startTime ) then
+				self.value = (GetTime() - (startTime / 1000));
+			end
+		else
+			local _, _, _, _, _, endTime = UnitChannelInfo(self.unit);
+			if ( endTime ) then
+				self.value = ((endTime / 1000) - GetTime());
+			end
+		end
+	end
+end
+
+function CastingBarFrame_OnEvent(self, event, ...)
 	local arg1 = ...;
 	
 	local unit = self.unit;
 	if ( event == "PLAYER_ENTERING_WORLD" ) then
-		local nameChannel  = UnitChannelInfo(unit);
-		local nameSpell  = UnitCastingInfo(unit);
+		local nameChannel = UnitChannelInfo(unit);
+		local nameSpell = UnitCastingInfo(unit);
 		if ( nameChannel ) then
 			event = "UNIT_SPELLCAST_CHANNEL_START";
 			arg1 = unit;
@@ -85,7 +135,7 @@ function CastingBarFrame_OnEvent (self, event, ...)
 			return;
 		end
 
-		self:SetStatusBarColor(1.0, 0.7, 0.0);
+		self:SetStatusBarColor(unpack(self.startCastColor));
 		if ( barSpark ) then
 			barSpark:Show();
 		end
@@ -101,7 +151,7 @@ function CastingBarFrame_OnEvent (self, event, ...)
 		end
 		self:SetAlpha(1.0);
 		self.holdTime = 0;
-		self.casting = 1;
+		self.casting = true;
 		self.castID = castID;
 		self.channeling = nil;
 		self.fadeOut = nil;
@@ -138,7 +188,7 @@ function CastingBarFrame_OnEvent (self, event, ...)
 			self:SetValue(self.maxValue);
 			if ( event == "UNIT_SPELLCAST_STOP" ) then
 				self.casting = nil;
-				self:SetStatusBarColor(0.0, 1.0, 0.0);
+				self:SetStatusBarColor(unpack(self.finishedCastColor));
 			else
 				self.channeling = nil;
 			end
@@ -150,7 +200,7 @@ function CastingBarFrame_OnEvent (self, event, ...)
 		if ( self:IsShown() and
 		     (self.casting and select(4, ...) == self.castID) and not self.fadeOut ) then
 			self:SetValue(self.maxValue);
-			self:SetStatusBarColor(1.0, 0.0, 0.0);
+			self:SetStatusBarColor(unpack(self.failedCastColor));
 			if ( barSpark ) then
 				barSpark:Hide();
 			end
@@ -178,7 +228,7 @@ function CastingBarFrame_OnEvent (self, event, ...)
 			self.maxValue = (endTime - startTime) / 1000;
 			self:SetMinMaxValues(0, self.maxValue);
 			if ( not self.casting ) then
-				self:SetStatusBarColor(1.0, 0.7, 0.0);
+				self:SetStatusBarColor(unpack(self.startCastColor));
 				if ( barSpark ) then
 					barSpark:Show();
 				end
@@ -186,7 +236,7 @@ function CastingBarFrame_OnEvent (self, event, ...)
 					barFlash:SetAlpha(0.0);
 					barFlash:Hide();
 				end
-				self.casting = 1;
+				self.casting = true;
 				self.channeling = nil;
 				self.flash = 0;
 				self.fadeOut = 0;
@@ -200,7 +250,7 @@ function CastingBarFrame_OnEvent (self, event, ...)
 			return;
 		end
 
-		self:SetStatusBarColor(0.0, 1.0, 0.0);
+		self:SetStatusBarColor(unpack(self.startChannelColor));
 		self.value = ((endTime / 1000) - GetTime());
 		self.maxValue = (endTime - startTime) / 1000;
 		self:SetMinMaxValues(0, self.maxValue);
@@ -217,7 +267,7 @@ function CastingBarFrame_OnEvent (self, event, ...)
 		self:SetAlpha(1.0);
 		self.holdTime = 0;
 		self.casting = nil;
-		self.channeling = 1;
+		self.channeling = true;
 		self.fadeOut = nil;
 		if ( barBorderShield ) then
 			if ( self.showShield and notInterruptible ) then
@@ -265,7 +315,7 @@ function CastingBarFrame_OnEvent (self, event, ...)
 	end
 end
 
-function CastingBarFrame_OnUpdate (self, elapsed)
+function CastingBarFrame_OnUpdate(self, elapsed)
 	local barSpark = _G[self:GetName().."Spark"];
 	local barFlash = _G[self:GetName().."Flash"];
 
@@ -322,8 +372,8 @@ function CastingBarFrame_OnUpdate (self, elapsed)
 	end
 end
 
-function CastingBarFrame_FinishSpell (self, barSpark, barFlash)
-	self:SetStatusBarColor(0.0, 1.0, 0.0);
+function CastingBarFrame_FinishSpell(self, barSpark, barFlash)
+	self:SetStatusBarColor(unpack(self.finishedCastColor));
 	if ( barSpark ) then
 		barSpark:Hide();
 	end
@@ -345,70 +395,70 @@ function CastingBarFrame_UpdateIsShown(self)
 	end
 end
 
-function CastingBarFrame_SetLook(castBar, look)
+function CastingBarFrame_SetLook(self, look)
 	if ( look == "CLASSIC" ) then
-		castBar:SetWidth(195);
-		castBar:SetHeight(13);
+		self:SetWidth(195);
+		self:SetHeight(13);
 		-- border
-		castBar.border:ClearAllPoints();
-		castBar.border:SetTexture("Interface\\CastingBar\\UI-CastingBar-Border");
-		castBar.border:SetWidth(256);
-		castBar.border:SetHeight(64);
-		castBar.border:SetPoint("TOP", 0, 28);
+		self.border:ClearAllPoints();
+		self.border:SetTexture("Interface\\CastingBar\\UI-CastingBar-Border");
+		self.border:SetWidth(256);
+		self.border:SetHeight(64);
+		self.border:SetPoint("TOP", 0, 28);
 		-- bordershield
-		castBar.borderShield:ClearAllPoints();
-		castBar.borderShield:SetWidth(256);
-		castBar.borderShield:SetHeight(64);
-		castBar.borderShield:SetPoint("TOP", 0, 28);
+		self.borderShield:ClearAllPoints();
+		self.borderShield:SetWidth(256);
+		self.borderShield:SetHeight(64);
+		self.borderShield:SetPoint("TOP", 0, 28);
 		-- text
-		castBar.text:ClearAllPoints();
-		castBar.text:SetWidth(185);
-		castBar.text:SetHeight(16);
-		castBar.text:SetPoint("TOP", 0, 5);
-		castBar.text:SetFontObject("GameFontHighlight");
+		self.text:ClearAllPoints();
+		self.text:SetWidth(185);
+		self.text:SetHeight(16);
+		self.text:SetPoint("TOP", 0, 5);
+		self.text:SetFontObject("GameFontHighlight");
 		-- icon
-		castBar.icon:Hide();
+		self.icon:Hide();
 		-- bar spark
-		castBar.barSpark.offsetY = 2;
+		self.barSpark.offsetY = 2;
 		-- bar flash
-		castBar.barFlash:ClearAllPoints();
-		castBar.barFlash:SetTexture("Interface\\CastingBar\\UI-CastingBar-Flash");
-		castBar.barFlash:SetWidth(256);
-		castBar.barFlash:SetHeight(64);
-		castBar.barFlash:SetPoint("TOP", 0, 28);
+		self.barFlash:ClearAllPoints();
+		self.barFlash:SetTexture("Interface\\CastingBar\\UI-CastingBar-Flash");
+		self.barFlash:SetWidth(256);
+		self.barFlash:SetHeight(64);
+		self.barFlash:SetPoint("TOP", 0, 28);
 	elseif ( look == "UNITFRAME" ) then
-		castBar:SetWidth(150);
-		castBar:SetHeight(10);
+		self:SetWidth(150);
+		self:SetHeight(10);
 		-- border
-		castBar.border:ClearAllPoints();
-		castBar.border:SetTexture("Interface\\CastingBar\\UI-CastingBar-Border-Small");
-		castBar.border:SetWidth(0);
-		castBar.border:SetHeight(49);
-		castBar.border:SetPoint("TOPLEFT", -23, 20);
-		castBar.border:SetPoint("TOPRIGHT", 23, 20);
+		self.border:ClearAllPoints();
+		self.border:SetTexture("Interface\\CastingBar\\UI-CastingBar-Border-Small");
+		self.border:SetWidth(0);
+		self.border:SetHeight(49);
+		self.border:SetPoint("TOPLEFT", -23, 20);
+		self.border:SetPoint("TOPRIGHT", 23, 20);
 		-- bordershield
-		castBar.borderShield:ClearAllPoints();
-		castBar.borderShield:SetWidth(0);
-		castBar.borderShield:SetHeight(49);
-		castBar.borderShield:SetPoint("TOPLEFT", -28, 20);
-		castBar.borderShield:SetPoint("TOPRIGHT", 18, 20);
+		self.borderShield:ClearAllPoints();
+		self.borderShield:SetWidth(0);
+		self.borderShield:SetHeight(49);
+		self.borderShield:SetPoint("TOPLEFT", -28, 20);
+		self.borderShield:SetPoint("TOPRIGHT", 18, 20);
 		-- text
-		castBar.text:ClearAllPoints();
-		castBar.text:SetWidth(0);
-		castBar.text:SetHeight(16);
-		castBar.text:SetPoint("TOPLEFT", 0, 4);
-		castBar.text:SetPoint("TOPRIGHT", 0, 4);
-		castBar.text:SetFontObject("SystemFont_Shadow_Small");
+		self.text:ClearAllPoints();
+		self.text:SetWidth(0);
+		self.text:SetHeight(16);
+		self.text:SetPoint("TOPLEFT", 0, 4);
+		self.text:SetPoint("TOPRIGHT", 0, 4);
+		self.text:SetFontObject("SystemFont_Shadow_Small");
 		-- icon
-		castBar.icon:Show();
+		self.icon:Show();
 		-- bar spark
-		castBar.barSpark.offsetY = 0;
+		self.barSpark.offsetY = 0;
 		-- bar flash
-		castBar.barFlash:ClearAllPoints();
-		castBar.barFlash:SetTexture("Interface\\CastingBar\\UI-CastingBar-Flash-Small");
-		castBar.barFlash:SetWidth(0);
-		castBar.barFlash:SetHeight(49);
-		castBar.barFlash:SetPoint("TOPLEFT", -23, 20);
-		castBar.barFlash:SetPoint("TOPRIGHT", 23, 20);
+		self.barFlash:ClearAllPoints();
+		self.barFlash:SetTexture("Interface\\CastingBar\\UI-CastingBar-Flash-Small");
+		self.barFlash:SetWidth(0);
+		self.barFlash:SetHeight(49);
+		self.barFlash:SetPoint("TOPLEFT", -23, 20);
+		self.barFlash:SetPoint("TOPRIGHT", 23, 20);
 	end
 end

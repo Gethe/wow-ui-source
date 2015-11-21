@@ -1,7 +1,6 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\..\FrameXML\UI.xsd">
 	<Script file="InspectTalentFrame.lua"/>
-	<Script file="Blizzard_GlyphUI.lua"/>
 	
 	<!-- Talent button template, taken from PlayerTalentButtonTemplate in Blizzard_TalentUI.xml -->
 	<Button name="InspectTalentButtonTemplate" virtual="true">
@@ -65,49 +64,6 @@
 			</Button>
 		</Frames>
 	</Frame>
-	
-	<!-- Glyphy icons (major and minor), taken from GlyphTemplate in Blizzard_GlyphUI.xml, line 138 -->
-	<Button name="InspectGlyphTemplate" virtual="true">
-		<Animations>
-			<AnimationGroup looping="REPEAT" parentKey="glow">
-				<Alpha target="$parentHighlight"  change="0.5" duration="0.8" smoothing="IN_OUT" order="1"/>
-				<Alpha target="$parentHighlight" change="-0.5" duration="0.8" smoothing="IN_OUT" order="2"/>
-			</AnimationGroup>
-		</Animations>
-		<Size x="72" y="72"/>
-		<Layers>
-			<Layer level="BACKGROUND">
-				<Texture name="$parentGlyph" parentKey="glyph">
-					<Size x="57" y="57"/>
-					<Anchors>
-						<Anchor point="CENTER" x="0" y="0"/>
-					</Anchors>
-				</Texture>
-			</Layer>
-			<Layer level="BORDER">
-				<Texture name="$parentHighlight" file="Interface\TalentFrame\glyph-main" alphaMode="ADD" parentKey="highlight">
-					<Anchors>
-						<Anchor point="CENTER" x="0" y="0"/>
-					</Anchors>
-				</Texture>
-			</Layer>
-			<Layer level="OVERLAY">
-				<Texture name="$parentRing" file="Interface\TalentFrame\glyph-main" parentKey="ring">
-					<Anchors>
-						<Anchor point="CENTER" x="0" y="0"/>
-					</Anchors>
-				</Texture>
-			</Layer>
-		</Layers>
-		<Scripts>
-			<OnLoad function="InspectGlyphFrameGlyph_OnLoad"/>
-			<OnShow function="InspectGlyphFrameGlyph_UpdateSlot"/>
-			<OnClick function="InspectGlyphFrameGlyph_OnClick"/>
-			<OnEnter function="InspectGlyphFrameGlyph_OnEnter"/>
-			<OnLeave function="InspectGlyphFrameGlyph_OnLeave"/>
-			<OnUpdate function="InspectGlyphFrameGlyph_OnUpdate"/>
-		</Scripts>
-	</Button>
 	
 	<Frame name="InspectTalentFrame" setAllPoints="true" useParentLevel="true" enableMouse="true" parent="InspectFrame" hidden="true" id="4">
 		<Layers>
@@ -236,49 +192,6 @@
 					<OnShow function="InspectTalentFrameTalents_OnShow"/>
 					<OnLoad function="InspectTalentFrameTalents_OnLoad"/>
 				</Scripts>
-			</Frame>
-			
-			<!-- Glyphs -->
-			<Frame name="InspectGlyphs" parentKey="InspectGlyphs">
-			<Size x="300" y="300"/>
-				<Anchors>
-					<Anchor point="TOPLEFT" x="180" y="-150"/>
-				</Anchors>
-				<Frames>
-					<!-- Minor Glyphs -->
-					<Button name="$parentGlyph1" parentKey="Glyph1" inherits="InspectGlyphTemplate" id="1">
-						<Anchors>
-							<Anchor point="TOPLEFT" x="65" y="0"/>
-						</Anchors>
-					</Button>
-					<Button name="$parentGlyph3" parentKey="Glyph3" inherits="InspectGlyphTemplate" id="3">
-						<Anchors>
-							<Anchor point="TOPLEFT" x="65" y="-90"/>
-						</Anchors>
-					</Button>
-					<Button name="$parentGlyph5" parentKey="Glyph5" inherits="InspectGlyphTemplate" id="5">
-						<Anchors>
-							<Anchor point="TOPLEFT" x="65" y="-180"/>
-						</Anchors>
-					</Button>	
-					
-					<!-- Major Glyphs -->
-					<Button name="$parentGlyph2" parentKey="Glyph2" inherits="InspectGlyphTemplate" id="2">
-						<Anchors>
-							<Anchor point="TOPLEFT" x="0" y="0"/>
-						</Anchors>
-					</Button>
-					<Button name="$parentGlyph4" parentKey="Glyph4" inherits="InspectGlyphTemplate" id="4">
-						<Anchors>
-							<Anchor point="TOPLEFT" x="0" y="-90"/>
-						</Anchors>
-					</Button>
-					<Button name="$parentGlyph6" parentKey="Glyph6" inherits="InspectGlyphTemplate" id="6">
-						<Anchors>
-							<Anchor point="TOPLEFT" x="0" y="-180"/>
-						</Anchors>
-					</Button>
-				</Frames>
 			</Frame>
 			
 		</Frames>

@@ -420,9 +420,9 @@ function ContainerFrame_Update(frame)
 	local id = frame:GetID();
 	local name = frame:GetName();
 	local itemButton;
-	local texture, itemCount, locked, quality, readable, _, isFiltered, noValue;
+	local texture, itemCount, locked, quality, readable, _, isFiltered, noValue, itemID;
 	local isQuestItem, questId, isActive, questTexture;
-	local isNewItem, isBattlePayItem, battlepayItemTexture, newItemTexture, flash, newItemAnim;
+	local battlepayItemTexture, newItemTexture, flash, newItemAnim;
 	local tooltipOwner = GameTooltip:GetOwner();
 	
 	frame.FilterIcon:Hide();
@@ -462,10 +462,11 @@ function ContainerFrame_Update(frame)
 	for i=1, frame.size, 1 do
 		itemButton = _G[name.."Item"..i];
 		
-		texture, itemCount, locked, quality, readable, _, _, isFiltered, noValue = GetContainerItemInfo(id, itemButton:GetID());
+		texture, itemCount, locked, quality, readable, _, _, isFiltered, noValue, itemID = GetContainerItemInfo(id, itemButton:GetID());
 		isQuestItem, questId, isActive = GetContainerItemQuestInfo(id, itemButton:GetID());
 		
 		SetItemButtonTexture(itemButton, texture);
+		SetItemButtonQuality(itemButton, quality, itemID);
 		SetItemButtonCount(itemButton, itemCount);
 		SetItemButtonDesaturated(itemButton, locked);
 		
@@ -480,8 +481,9 @@ function ContainerFrame_Update(frame)
 			questTexture:Hide();
 		end
 		
-		isNewItem = C_NewItems.IsNewItem(id, itemButton:GetID());
-		isBattlePayItem = IsBattlePayItem(id, itemButton:GetID());
+		local isNewItem = C_NewItems.IsNewItem(id, itemButton:GetID());
+		local isBattlePayItem = IsBattlePayItem(id, itemButton:GetID());
+
 		battlepayItemTexture = _G[name.."Item"..i].BattlepayItemTexture;
 		newItemTexture = _G[name.."Item"..i].NewItemTexture;
 		flash = _G[name.."Item"..i].flashAnim;
@@ -512,22 +514,8 @@ function ContainerFrame_Update(frame)
 				newItemAnim:Stop();
 			end
 		end
-		
-		itemButton.JunkIcon:Hide();
-		if (quality) then
-			if (quality >= LE_ITEM_QUALITY_COMMON and BAG_ITEM_QUALITY_COLORS[quality]) then
-				itemButton.IconBorder:Show();
-				itemButton.IconBorder:SetVertexColor(BAG_ITEM_QUALITY_COLORS[quality].r, BAG_ITEM_QUALITY_COLORS[quality].g, BAG_ITEM_QUALITY_COLORS[quality].b);
-			else
-				itemButton.IconBorder:Hide();
-			end
 
-			if (quality == LE_ITEM_QUALITY_POOR and not noValue and MerchantFrame:IsShown()) then
-				itemButton.JunkIcon:Show();
-			end
-		else
-			itemButton.IconBorder:Hide();
-		end
+		itemButton.JunkIcon:SetShown(quality == LE_ITEM_QUALITY_POOR and not noValue and MerchantFrame:IsShown());
 				
 		if ( texture ) then
 			ContainerFrame_UpdateCooldown(id, itemButton);
@@ -1024,17 +1012,40 @@ function ContainerFrameItemButton_OnModifiedClick(self, button)
 	end
 end
 
-function ContainerFrameItemButton_OnEnter(self)
-	local x;
-	x = self:GetRight();
-	if ( x >= ( GetScreenWidth() / 2 ) ) then
-		GameTooltip:SetOwner(self, "ANCHOR_LEFT");
+function ContainerFrameItemButton_CalculateItemTooltipAnchors(self, mainTooltip, secondaryTooltip)
+	local x = self:GetRight();
+
+	local anchorFromLeft = x < GetScreenWidth() / 2;
+
+	if ( secondaryTooltip and secondaryTooltip:IsShown() ) then
+		-- Always put the primary tooltip on the left
+		if ( anchorFromLeft ) then
+			mainTooltip:SetPoint("BOTTOMLEFT", self, "TOPRIGHT");
+			secondaryTooltip:SetPoint("TOPLEFT", mainTooltip, "TOPRIGHT", 0, 0);
+			mainTooltip.overrideComparisonAnchorFrame = secondaryTooltip;
+			mainTooltip.overrideComparisonAnchorSide = "right";
+		else
+			secondaryTooltip:SetPoint("BOTTOMRIGHT", self, "TOPLEFT");
+			mainTooltip:SetPoint("TOPRIGHT", secondaryTooltip, "TOPLEFT", 0, 0);
+			mainTooltip.overrideComparisonAnchorSide = "left";
+		end
+		return true;
 	else
-		GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+		if ( anchorFromLeft ) then
+			mainTooltip:SetPoint("BOTTOMLEFT", self, "TOPRIGHT");
+		else
+			mainTooltip:SetPoint("BOTTOMRIGHT", self, "TOPLEFT");
+		end
 	end
+	return false;
+end
+
+function ContainerFrameItemButton_OnEnter(self)
+	GameTooltip:SetOwner(self, "ANCHOR_NONE");
 
 	-- Keyring specific code
 	if ( self:GetParent():GetID() == KEYRING_CONTAINER ) then
+		ContainerFrameItemButton_CalculateItemTooltipAnchors(self, GameTooltip);
 		GameTooltip:SetInventoryItem("player", KeyRingButtonIDToInvSlotID(self:GetID()));
 		CursorUpdate(self);
 		return;
@@ -1064,6 +1075,12 @@ function ContainerFrameItemButton_OnEnter(self)
 		if (BattlePetTooltip) then
 			BattlePetTooltip:Hide();
 		end
+	end
+
+	local requiresCompareTooltipReanchor = ContainerFrameItemButton_CalculateItemTooltipAnchors(self, GameTooltip);
+
+	if ( requiresCompareTooltipReanchor and (IsModifiedClick("COMPAREITEMS") or GetCVarBool("alwaysCompareItems")) ) then
+		GameTooltip_ShowCompareItem(GameTooltip);
 	end
 
 	if ( InRepairMode() and (repairCost and repairCost > 0) ) then

@@ -1111,17 +1111,11 @@
 				</Backdrop>
 				<Frames>
 					<ScrollFrame name="CalendarCreateEventDescriptionScrollFrame" inherits="CalendarEventDescriptionScrollFrame">
-						<Frames>
-							<Button name="$parentFocusButton" setAllPoints="true">
-								<Scripts>
-									<OnClick>
-										CalendarCreateEventDescriptionEdit:SetFocus();
-									</OnClick>
-								</Scripts>
-							</Button>
-						</Frames>
 						<Scripts>
 							<OnLoad function="CalendarCreateEventDescriptionScrollFrame_OnLoad"/>
+							<OnMouseDown>
+								CalendarCreateEventDescriptionEdit:SetFocus();
+							</OnMouseDown>
 						</Scripts>
 						<ScrollChild>
 							<EditBox name="CalendarCreateEventDescriptionEdit" multiLine="true" letters="255" autoFocus="false">
@@ -1144,13 +1138,11 @@
 									</OnUpdate>
 									<OnEscapePressed function="EditBox_ClearFocus"/>
 									<OnEditFocusGained>
-										CalendarCreateEventDescriptionScrollFrameFocusButton:Hide();
 										if ( self:GetText() == CALENDAR_EVENT_DESCRIPTION ) then
 											self:HighlightText();
 										end
 									</OnEditFocusGained>
 									<OnEditFocusLost>
-										CalendarCreateEventDescriptionScrollFrameFocusButton:Show();
 										self:HighlightText(0, 0);
 										if ( self:GetText() == "" ) then
 											self:SetText(CALENDAR_EVENT_DESCRIPTION);

@@ -16,8 +16,8 @@ CR_HIT_SPELL = 8;
 CR_CRIT_MELEE = 9;
 CR_CRIT_RANGED = 10;
 CR_CRIT_SPELL = 11;
-CR_MULTISTRIKE = 12;
-CR_READINESS = 13;
+CR_UNUSED_2 = 12;
+CR_UNUSED_3 = 13;
 CR_SPEED = 14;
 COMBAT_RATING_RESILIENCE_CRIT_TAKEN = 15;
 COMBAT_RATING_RESILIENCE_PLAYER_DAMAGE_TAKEN = 16;
@@ -80,19 +80,6 @@ MOVING_STAT_CATEGORY = nil;
 local StatCategoryFrames = {};
 
 local STRIPE_COLOR = {r=0.9, g=0.9, b=1};
-
-CLASS_MASTERY_SPELLS = {
-	["DEATHKNIGHT"] = 86471,
-	["DRUID"] = 86470 ,
-	["HUNTER"] = 86472,
-	["MAGE"] = 86473,
-	["PALADIN"] = 86474,
-	["PRIEST"] = 86475,
-	["ROGUE"] = 86476, 
-	["SHAMAN"] = 86477,
-	["WARLOCK"] = 86478,
-	["WARRIOR"] = 86479,
-};
 
 PAPERDOLL_SIDEBARS = {
 	{
@@ -164,9 +151,6 @@ PAPERDOLL_STATINFO = {
 	},
 	["BONUS_ARMOR"] = {
 		updateFunc = function(statFrame, unit) PaperDollFrame_SetBonusArmor(statFrame, unit); end
-	},
-	["MULTISTRIKE"] = {
-		updateFunc = function(statFrame, unit) PaperDollFrame_SetMultistrike(statFrame, unit); end
 	},
 	["LIFESTEAL"] = {
 		updateFunc = function(statFrame, unit) PaperDollFrame_SetLifesteal(statFrame, unit); end
@@ -252,7 +236,6 @@ PAPERDOLL_STATCATEGORIES = {
 			"MASTERY",
 			"SPIRIT",
 			"BONUS_ARMOR",
-			"MULTISTRIKE",
 			"LIFESTEAL",
 			"VERSATILITY",
 			"AVOIDANCE",
@@ -347,7 +330,6 @@ function PaperDollFrame_OnLoad (self)
 	self:RegisterEvent("SKILL_LINES_CHANGED");
 	self:RegisterEvent("COMBAT_RATING_UPDATE");
 	self:RegisterEvent("MASTERY_UPDATE");
-	self:RegisterEvent("MULTISTRIKE_UPDATE");
 	self:RegisterEvent("SPEED_UPDATE");
 	self:RegisterEvent("LIFESTEAL_UPDATE");
 	self:RegisterEvent("AVOIDANCE_UPDATE");
@@ -442,7 +424,6 @@ function PaperDollFrame_OnEvent (self, event, ...)
 	
 	if ( event == "COMBAT_RATING_UPDATE" or 
 			event == "MASTERY_UPDATE" or 
-			event == "MULTISTRIKE_UPDATE" or 
 			event == "SPEED_UPDATE" or 
 			event == "LIFESTEAL_UPDATE" or 
 			event == "AVOIDANCE_UPDATE" or 
@@ -1328,65 +1309,6 @@ function PaperDollFrame_SetMastery(statFrame, unit)
 	statFrame:Show();
 end
 
--- Task 68016: Multistrike gives damaging attacks and heals a chance to repeat the damage or healing at 30% effectiveness
-function PaperDollFrame_SetMultistrike(statFrame, unit)
-	if ( unit ~= "player" ) then
-		statFrame:Hide();
-		return;
-	end
-	
-	_G[statFrame:GetName().."Label"]:SetText(format(STAT_FORMAT, STAT_MULTISTRIKE));
-	local text = _G[statFrame:GetName().."StatText"];
-	local multistrike = GetMultistrike();
-	multistrike = format("%.2F%%", multistrike);
-	text:SetText(multistrike);
-	statFrame.tooltip = HIGHLIGHT_FONT_COLOR_CODE .. format(PAPERDOLLFRAME_TOOLTIP_FORMAT, STAT_MULTISTRIKE) .. " " .. multistrike .. FONT_COLOR_CODE_CLOSE;
-	
-	statFrame.tooltip2 = format(CR_MULTISTRIKE_TOOLTIP, GetMultistrike(), GetMultistrikeEffect(), BreakUpLargeNumbers(GetCombatRating(CR_MULTISTRIKE)), GetCombatRatingBonus(CR_MULTISTRIKE));
-
-	statFrame:Show();
-end
-
--- Task 68016: Readiness reduces the cooldown of core class/spec abilities
-function Readiness_OnEnter(statFrame)
-	if (MOVING_STAT_CATEGORY) then return; end
-	GameTooltip:SetOwner(statFrame, "ANCHOR_RIGHT");
-	
-	local title = HIGHLIGHT_FONT_COLOR_CODE..format(PAPERDOLLFRAME_TOOLTIP_FORMAT, STAT_READINESS).." "..format("%.2F%%", GetReadiness())..FONT_COLOR_CODE_CLOSE;
-
-	GameTooltip:SetText(title);
-	
-	local primaryTalentTree = GetSpecialization();
-	if (primaryTalentTree) then
-		local readinessSpell = GetSpecializationReadinessSpell(primaryTalentTree);
-		if (readinessSpell) then
-			GameTooltip:AddSpellByID(readinessSpell);
-		end
-
-		GameTooltip:AddLine(" ");
-		GameTooltip:AddLine(format(CR_READINESS_TOOLTIP, BreakUpLargeNumbers(GetCombatRating(CR_READINESS)), GetCombatRatingBonus(CR_READINESS)));
-	else
-		GameTooltip:AddLine(CR_READINESS_TOOLTIP_NO_TALENT_SPEC, GRAY_FONT_COLOR.r, GRAY_FONT_COLOR.g, GRAY_FONT_COLOR.b, true);
-	end
-	GameTooltip:Show();
-end
-
--- Task 68016: Readiness reduces the cooldown of core class/spec abilities
-function PaperDollFrame_SetReadiness(statFrame, unit)
-	if ( unit ~= "player" ) then
-		statFrame:Hide();
-		return;
-	end
-	
-	_G[statFrame:GetName().."Label"]:SetText(format(STAT_FORMAT, STAT_READINESS));
-	local text = _G[statFrame:GetName().."StatText"];
-	local readiness = GetReadiness();
-	readiness = format("%.2F%%", readiness);
-	text:SetText(readiness);
-	statFrame:SetScript("OnEnter", Readiness_OnEnter);
-	statFrame:Show();
-end
-
 -- Task 68016: Speed increases run speed
 function PaperDollFrame_SetSpeed(statFrame, unit)
 	if ( unit ~= "player" ) then
@@ -1817,12 +1739,7 @@ function PaperDollItemSlotButton_Update (self)
 	end
 	
 	local quality = GetInventoryItemQuality("player", self:GetID());
-	if (quality and quality > LE_ITEM_QUALITY_COMMON and BAG_ITEM_QUALITY_COLORS[quality]) then
-		self.IconBorder:Show();
-		self.IconBorder:SetVertexColor(BAG_ITEM_QUALITY_COLORS[quality].r, BAG_ITEM_QUALITY_COLORS[quality].g, BAG_ITEM_QUALITY_COLORS[quality].b);
-	else
-		self.IconBorder:Hide();
-	end
+	SetItemButtonQuality(self, quality, GetInventoryItemID("player", self:GetID()));
 	
 	if (not PaperDollEquipmentManagerPane:IsShown()) then
 		self.ignored = nil;
@@ -2100,7 +2017,7 @@ function PaperDollFrame_UpdateStatCategory(categoryFrame)
 				statFrame.Bg:SetPoint("RIGHT", categoryFrame, "RIGHT", 0, 0);
 				statFrame.Bg:SetPoint("TOP");
 				statFrame.Bg:SetPoint("BOTTOM");
-				statFrame.Bg:SetTexture(STRIPE_COLOR.r, STRIPE_COLOR.g, STRIPE_COLOR.b);
+				statFrame.Bg:SetColorTexture(STRIPE_COLOR.r, STRIPE_COLOR.g, STRIPE_COLOR.b);
 				statFrame.Bg:SetAlpha(0.1);
 			end
 		end
@@ -2628,7 +2545,7 @@ function RefreshEquipmentSetIconInfo ()
 	for i = INVSLOT_FIRST_EQUIPPED, INVSLOT_LAST_EQUIPPED do
 		local itemTexture = GetInventoryItemTexture("player", i);
 		if ( itemTexture ) then
-			EM_ICON_FILENAMES[index] = gsub( strupper(itemTexture), "INTERFACE\\ICONS\\", "" );
+			EM_ICON_FILENAMES[index] = itemTexture;
 			if(EM_ICON_FILENAMES[index]) then
 				index = index + 1;
 				--[[
@@ -2679,7 +2596,7 @@ function GearManagerDialogPopup_Update ()
 			texture = GetEquipmentSetIconInfo(index);
 			-- button.name:SetText(index); --dcw
 			if(type(texture) == "number") then
-				button.icon:SetToFileData(texture);
+				button.icon:SetTexture(texture);
 			else
 				button.icon:SetTexture("INTERFACE\\ICONS\\"..texture);
 			end	
@@ -2932,7 +2849,7 @@ function PaperDollEquipmentManagerPane_Update()
 			end
 			
 			if ((i+scrollOffset)%2 == 0) then
-				buttons[i].Stripe:SetTexture(STRIPE_COLOR.r, STRIPE_COLOR.g, STRIPE_COLOR.b);
+				buttons[i].Stripe:SetColorTexture(STRIPE_COLOR.r, STRIPE_COLOR.g, STRIPE_COLOR.b);
 				buttons[i].Stripe:SetAlpha(0.1);
 				buttons[i].Stripe:Show();
 			else
@@ -3007,7 +2924,7 @@ function PaperDollTitlesPane_UpdateScrollFrame()
 			end
 			
 			if ((i+scrollOffset)%2 == 0) then
-				buttons[i].Stripe:SetTexture(STRIPE_COLOR.r, STRIPE_COLOR.g, STRIPE_COLOR.b);
+				buttons[i].Stripe:SetColorTexture(STRIPE_COLOR.r, STRIPE_COLOR.g, STRIPE_COLOR.b);
 				buttons[i].Stripe:SetAlpha(0.1);
 				buttons[i].Stripe:Show();
 			else

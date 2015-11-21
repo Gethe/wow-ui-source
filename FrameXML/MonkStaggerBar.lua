@@ -18,6 +18,15 @@ function MonkStaggerBar_OnLoad(self)
 	if ( not self.powerName ) then
 		self.powerName = BREWMASTER_POWER_BAR_NAME;
 	end
+	
+	self.DefaultBackground:Hide();
+	self.DefaultBorder:Hide();
+	self.DefaultBorderLeft:Hide();
+	self.DefaultBorderRight:Hide();
+	self.MonkBackground:Show();
+	self.MonkBorder:Show();
+	self:SetFrameLevel(100);
+	
 	local _, class = UnitClass("player")
 	self.class = class
 	if (class == "MONK") then
@@ -39,7 +48,6 @@ function MonkStaggerBar_OnEvent(self, event, arg1)
 		MonkStaggerBar_UpdatePowerType(self);
 	elseif ( event == "PLAYER_SPECIALIZATION_CHANGED" ) then
 		if ( arg1 == nil or arg1 == parent.unit) then
-			AlternatePowerBar_SetLook(self);
 			MonkStaggerBar_UpdatePowerType(self);
 			if (self.specRestriction == GetSpecialization()) then
 				self:RegisterEvent("PLAYER_ENTERING_WORLD");
@@ -48,7 +56,6 @@ function MonkStaggerBar_OnEvent(self, event, arg1)
 			end
 		end
 	elseif ( event == "PLAYER_ENTERING_WORLD" ) then
-		AlternatePowerBar_SetLook(self);
 		MonkStaggerBar_UpdateMaxValues(self);
 		MonkStaggerBar_UpdatePowerType(self);
 	end

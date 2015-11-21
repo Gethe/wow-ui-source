@@ -12,13 +12,13 @@ UNITPOPUP_SPACER_SPACING = 6;
 UnitPopupButtons = { };
 UnitPopupButtons["CANCEL"] = { text = CANCEL, dist = 0, space = 1 };
 UnitPopupButtons["TRADE"] = { text = TRADE, dist = 2 };
-UnitPopupButtons["INSPECT"] = { text = INSPECT, dist = 0 };
-UnitPopupButtons["ACHIEVEMENTS"] = { text = COMPARE_ACHIEVEMENTS, dist = 1 };
+UnitPopupButtons["INSPECT"] = { text = INSPECT, dist = 0, disabledInKioskMode = true };
+UnitPopupButtons["ACHIEVEMENTS"] = { text = COMPARE_ACHIEVEMENTS, dist = 1, disabledInKioskMode = true };
 UnitPopupButtons["TARGET"] = { text = TARGET, dist = 0 };
 UnitPopupButtons["IGNORE"]	= { text = IGNORE, dist = 0 };
 UnitPopupButtons["POP_OUT_CHAT"] = { text = MOVE_TO_WHISPER_WINDOW, dist = 0 };
-UnitPopupButtons["DUEL"] = { text = DUEL, dist = 3, space = 1 };
-UnitPopupButtons["PET_BATTLE_PVP_DUEL"] = { text = PET_BATTLE_PVP_DUEL, dist = 5, space = 1 };
+UnitPopupButtons["DUEL"] = { text = DUEL, dist = 3, space = 1, disabledInKioskMode = true };
+UnitPopupButtons["PET_BATTLE_PVP_DUEL"] = { text = PET_BATTLE_PVP_DUEL, dist = 5, space = 1, disabledInKioskMode = true };
 UnitPopupButtons["WHISPER"]	= { text = WHISPER, dist = 0 };
 UnitPopupButtons["INVITE"]	= { text = PARTY_INVITE, dist = 0 };
 UnitPopupButtons["UNINVITE"] = { text = PARTY_UNINVITE, dist = 0 };
@@ -153,11 +153,11 @@ UnitPopupButtons["TARGET_FRAME_BUFFS_ON_TOP"] = { text = BUFFS_ON_TOP, dist = 0,
 UnitPopupButtons["RESET_TARGET_FRAME_POSITION"] = { text = RESET_POSITION, dist = 0 };
 
 -- Add Friend related
-UnitPopupButtons["ADD_FRIEND"] = { text = ADD_FRIEND, dist = 0 };
-UnitPopupButtons["ADD_FRIEND_MENU"] = { text = ADD_FRIEND, dist = 0, nested = 1 };
-UnitPopupButtons["CHARACTER_FRIEND"] = { text = ADD_CHARACTER_FRIEND, dist = 0 };
-UnitPopupButtons["BATTLETAG_FRIEND"] = { text = SEND_BATTLETAG_REQUEST, dist = 0 };
-UnitPopupButtons["GUILD_BATTLETAG_FRIEND"] = { text = SEND_BATTLETAG_REQUEST, dist = 0 };
+UnitPopupButtons["ADD_FRIEND"] = { text = ADD_FRIEND, dist = 0, disabledInKioskMode = true };
+UnitPopupButtons["ADD_FRIEND_MENU"] = { text = ADD_FRIEND, dist = 0, nested = 1, disabledInKioskMode = true };
+UnitPopupButtons["CHARACTER_FRIEND"] = { text = ADD_CHARACTER_FRIEND, dist = 0, disabledInKioskMode = true };
+UnitPopupButtons["BATTLETAG_FRIEND"] = { text = SEND_BATTLETAG_REQUEST, dist = 0, disabledInKioskMode = true };
+UnitPopupButtons["GUILD_BATTLETAG_FRIEND"] = { text = SEND_BATTLETAG_REQUEST, dist = 0, disabledInKioskMode = true };
 
 -- Voice Chat Related
 UnitPopupButtons["MUTE"] = { text = MUTE, dist = 0 };
@@ -224,6 +224,7 @@ UnitPopupMenus["TARGET"] = { "RAID_TARGET_ICON", "SET_FOCUS", "ADD_FRIEND", "ADD
 UnitPopupMenus["ARENAENEMY"] = { "SET_FOCUS", "OTHER_SUBSECTION_TITLE", "CANCEL" };
 UnitPopupMenus["FOCUS"] = { "RAID_TARGET_ICON", "CLEAR_FOCUS", "OTHER_SUBSECTION_TITLE", "LARGE_FOCUS", "MOVE_FOCUS_FRAME", "CANCEL" };
 UnitPopupMenus["BOSS"] = { "RAID_TARGET_ICON", "SET_FOCUS", "OTHER_SUBSECTION_TITLE", "CANCEL" };
+UnitPopupMenus["WORLD_STATE_SCORE"] = { "REPORT_PLAYER", "PVP_REPORT_AFK", "CANCEL" };
 
 -- Second level menus
 UnitPopupMenus["ADD_FRIEND_MENU"] = { "BATTLETAG_FRIEND", "CHARACTER_FRIEND" };
@@ -264,6 +265,7 @@ UnitPopupFrames = {
 	"FriendsDropDown",
 	"PetBattleUnitFrameDropDown",
 	"GuildMemberDropDown",
+	"WorldStateButtonDropDown",
 };
 
 function UnitPopup_ShowMenu (dropdownMenu, which, unit, name, userData)
@@ -289,7 +291,7 @@ function UnitPopup_ShowMenu (dropdownMenu, which, unit, name, userData)
 	
 	-- If only one menu item (the cancel button) then don't show the menu
 	local count = 0;
-	for index, value in ipairs(UnitPopupMenus[which]) do
+	for index, value in ipairs(UnitPopupMenus[UIDROPDOWNMENU_MENU_VALUE] or UnitPopupMenus[which]) do
 		if( UnitPopupShown[UIDROPDOWNMENU_MENU_LEVEL][index] == 1 and value ~= "CANCEL" ) then
 			count = count + 1;
 		end
@@ -872,7 +874,7 @@ function UnitPopup_HideButtons ()
 				UnitPopupShown[UIDROPDOWNMENU_MENU_LEVEL][index] = 0;
 			end
 		elseif ( value == "REPORT_PLAYER" ) then
-			if ( (not dropdownMenu.unit) and 
+			if ( (not dropdownMenu.unit) and (not dropdownMenu.battlefieldScoreIndex) and
 				(not dropdownMenu.lineID or not CanComplainChat(dropdownMenu.lineID)) ) then
 				UnitPopupShown[UIDROPDOWNMENU_MENU_LEVEL][index] = 0;
 			end
@@ -1059,7 +1061,7 @@ function UnitPopup_HideButtons ()
 				UnitPopupShown[UIDROPDOWNMENU_MENU_LEVEL][index] = 0;
 			end
 		elseif ( value == "RAID_DIFFICULTY" ) then
-			if ( UnitLevel("player") < MAX_PLAYER_LEVEL_TABLE[EXPANSION_LEVEL_WRATH_OF_THE_LICH_KING] and GetRaidDifficultyID() == UnitPopupButtons[value].defaultDifficultyID ) then
+			if ( UnitLevel("player") < MAX_PLAYER_LEVEL_TABLE[LE_EXPANSION_WRATH_OF_THE_LICH_KING] and GetRaidDifficultyID() == UnitPopupButtons[value].defaultDifficultyID ) then
 				UnitPopupShown[UIDROPDOWNMENU_MENU_LEVEL][index] = 0;
 			end
 		elseif ( value == "MUTE" ) then
@@ -1399,7 +1401,7 @@ function UnitPopup_OnUpdate (elapsed)
 					local enable = 1;
 					local notClickable = 0;
 					if ( UnitPopupButtons[value].isUninteractable or 
-						(UnitPopupButtons[value].dist > 0 and not CheckInteractDistance(dropdownFrame.unit, UnitPopupButtons[value].dist)) ) then
+						(UnitPopupButtons[value].dist > 0 and not CheckInteractDistance(dropdownFrame.unit, UnitPopupButtons[value].dist)) or (UnitPopupButtons[value].disabledInKioskMode and IsKioskModeEnabled())) then
 						enable = 0;
 					end
 
@@ -1510,7 +1512,7 @@ function UnitPopup_OnUpdate (elapsed)
 						if (toggleDifficultyID) then
 							enable = CheckToggleDifficulty(toggleDifficultyID, UnitPopupButtons[value].difficultyID);
 						end
-						if (UnitPopupButtons[value].difficultyID == DIFFICULTY_PRIMARYRAID_MYTHIC and UnitLevel("player") < MAX_PLAYER_LEVEL_TABLE[EXPANSION_LEVEL_MISTS_OF_PANDARIA]) then
+						if (UnitPopupButtons[value].difficultyID == DIFFICULTY_PRIMARYRAID_MYTHIC and UnitLevel("player") < MAX_PLAYER_LEVEL_TABLE[LE_EXPANSION_MISTS_OF_PANDARIA]) then
 							enable = 0;
 						end
 					elseif ( ( strsub(value, 1, 22) == "LEGACY_RAID_DIFFICULTY" ) and ( strlen(value) > 22 ) ) then
@@ -1658,7 +1660,15 @@ function UnitPopup_OnClick (self)
 		end
 	elseif ( button == "REPORT_BAD_NAME" ) then
 		if ( GMEuropaComplaintsEnabled() and not GMQuickTicketSystemThrottled() ) then
-			HelpFrame_ShowReportPlayerNameDialog(dropdownFrame.unit or tonumber(dropdownFrame.lineID));
+			if (dropdownFrame.unit) then
+				HelpFrame_SetReportPlayerByName(ReportPlayerNameDialog, dropdownFrame.unit);
+			elseif (tonumber(dropdownFrame.lineID)) then
+				HelpFrame_SetReportPlayerByLineID(ReportPlayerNameDialog, tonumber(dropdownFrame.lineID));
+			elseif (dropdownFrame.battlefieldScoreIndex) then
+				HelpFrame_SetReportPlayerByBattlefieldScoreIndex(ReportPlayerNameDialog, dropdownFrame.battlefieldScoreIndex);
+			end
+			
+			HelpFrame_ShowReportPlayerNameDialog();
 		else
 			UIErrorsFrame:AddMessage(ERR_REPORT_SUBMISSION_FAILED , 1.0, 0.1, 0.1, 1.0);
 			local info = ChatTypeInfo["SYSTEM"];
@@ -1676,7 +1686,15 @@ function UnitPopup_OnClick (self)
 		StaticPopup_Show("CONFIRM_REPORT_BATTLEPET_NAME", fullname);
 	elseif ( button == "REPORT_CHEATING" ) then
 		if ( GMEuropaComplaintsEnabled() and not GMQuickTicketSystemThrottled() ) then
-			HelpFrame_ShowReportCheatingDialog(dropdownFrame.unit or tonumber(dropdownFrame.lineID));
+			if (dropdownFrame.unit) then
+				HelpFrame_SetReportPlayerByName(ReportCheatingDialog, dropdownFrame.unit);
+			elseif (tonumber(dropdownFrame.lineID)) then
+				HelpFrame_SetReportPlayerByLineID(ReportCheatingDialog, tonumber(dropdownFrame.lineID));
+			elseif (dropdownFrame.battlefieldScoreIndex) then
+				HelpFrame_SetReportPlayerByBattlefieldScoreIndex(ReportCheatingDialog, dropdownFrame.battlefieldScoreIndex);
+			end
+			
+			HelpFrame_ShowReportCheatingDialog();
 		else
 			UIErrorsFrame:AddMessage(ERR_REPORT_SUBMISSION_FAILED , 1.0, 0.1, 0.1, 1.0);
 			local info = ChatTypeInfo["SYSTEM"];
@@ -1980,7 +1998,7 @@ function SetRaidDifficulties(primaryRaid, difficultyID)
 		if ( isDynamicInstance and CanChangePlayerDifficulty() ) then
 			_, _, _, _, _, _, toggleDifficultyID = GetDifficultyInfo(instanceDifficultyID);
 		end
-		if (UnitLevel("player") >= MAX_PLAYER_LEVEL_TABLE[EXPANSION_LEVEL_MISTS_OF_PANDARIA]) then			
+		if (UnitLevel("player") >= MAX_PLAYER_LEVEL_TABLE[LE_EXPANSION_MISTS_OF_PANDARIA]) then			
 			if (toggleDifficultyID ~= nil and IsLegacyDifficulty(toggleDifficultyID)) then
 				force = true;
 			end

@@ -736,6 +736,14 @@ function TradeSkillSearch_OnTextChanged(self)
 		if ( maxLevel == "" or maxLevel < minLevel ) then
 			maxLevel = minLevel;
 		end
+		minLevel = tonumber(minLevel);
+		maxLevel = tonumber(maxLevel);
+		if (minLevel > 2^30) then
+			minLevel = 2^30;
+		end
+		if (maxLevel > 2^30) then
+			maxLevel = 2^30;
+		end
 		SetTradeSkillItemNameFilter(nil);
 		SetTradeSkillItemLevelFilter(minLevel, maxLevel);
 	else

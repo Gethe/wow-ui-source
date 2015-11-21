@@ -390,6 +390,7 @@
 			</Button>
 		</Frames>
 		<Scripts>
+			<OnLoad function="CreditsFrame_OnLoad"/>
 			<OnShow>
 				CreditsFrame_OnShow(self);
 			</OnShow>

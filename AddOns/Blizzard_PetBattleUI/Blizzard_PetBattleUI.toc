@@ -1,4 +1,4 @@
-## Interface: 60200
+## Interface: 70000
 ## Title: Blizzard Pet Battle UI
 ## Secure: 1
 ## LoadOnDemand: 0

@@ -15,10 +15,16 @@ ECLIPSE_MARKER_COORDS["moon"] 	= { 1, 0, 0, 1 };
 
 
 function EclipseBar_UpdateShown(self)
+
 	if OverrideActionBar:IsShown() then
 		return;
 	end
 
+	if (true) then
+		self:Hide();
+		return;
+	end
+	
 	-- Disable rune frame if not a DRUID.
 	local _, class = UnitClass("player");
 	local form  = GetShapeshiftFormID();

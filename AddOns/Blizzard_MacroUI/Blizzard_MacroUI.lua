@@ -336,7 +336,13 @@ function GetSpellorMacroIconInfo(index)
 	if ( not index ) then
 		return;
 	end
-	return MACRO_ICON_FILENAMES[index];
+	local texture = MACRO_ICON_FILENAMES[index];
+	local texnum = tonumber(texture);
+	if (texnum ~= nil) then
+		return texnum;
+	else
+		return texture;
+	end
 end
 
 function MacroPopupFrame_Update(self)
@@ -362,9 +368,9 @@ function MacroPopupFrame_Update(self)
 		index = (macroPopupOffset * NUM_ICONS_PER_ROW) + i;
 		texture = GetSpellorMacroIconInfo(index);
 
-		if ( index <= numMacroIcons and texture ) then			
+		if ( index <= numMacroIcons and texture ) then
 			if(type(texture) == "number") then
-				macroPopupIcon:SetToFileData(texture);
+				macroPopupIcon:SetTexture(texture);
 			else
 				macroPopupIcon:SetTexture("INTERFACE\\ICONS\\"..texture);
 			end		
@@ -411,7 +417,7 @@ function MacroPopupButton_SelectTexture(selectedIcon)
 	MacroPopupFrame.selectedIconTexture = nil;
 	local curMacroInfo = GetSpellorMacroIconInfo(MacroPopupFrame.selectedIcon);
 	if(type(curMacroInfo) == "number") then
-		MacroFrameSelectedMacroButtonIcon:SetToFileData(curMacroInfo);
+		MacroFrameSelectedMacroButtonIcon:SetTexture(curMacroInfo);
 	else
 		MacroFrameSelectedMacroButtonIcon:SetTexture("INTERFACE\\ICONS\\"..curMacroInfo);
 	end	

@@ -167,18 +167,6 @@ function GlyphFrame_Update (self)
 		end
 	end
 	
-	local name, count, texture, spellID = GetGlyphClearInfo();
-	if name then 
-		self.clearInfo.name:SetText(name);
-		self.clearInfo.count:SetText(count);
-		self.clearInfo.icon:SetTexture(texture);
-		self.clearInfo.spellID = spellID
-	else
-		self.clearInfo.name:SetText("");
-		self.clearInfo.count:SetText("");
-		self.clearInfo.icon:SetTexture("");
-	end
-
 	-- spec icon
 	local specialization = GetSpecialization(false, false, PlayerTalentFrame.talentGroup);
 	if ( specialization ) then
@@ -566,17 +554,10 @@ function GlyphFrameGlyph_OnClick (self, button)
 		if button == "RightButton" then
 			local glyphName;
 			if ( glyphSpell ) then
-				glyphName = GetSpellInfo(glyphSpell);
-				local dialog = StaticPopup_Show("CONFIRM_REMOVE_GLYPH", nil, nil, {name = glyphName, id = id});
+				RemoveGlyphFromSocket(id);
 			end
 		elseif  GlyphMatchesSocket(id)  then
-			if glyphSpell then
-				local glyphIndex = GetSelectedGlyphSpellIndex();
-				local glyphName = GetGlyphInfo(glyphIndex);
-				local dialog = StaticPopup_Show("CONFIRM_GLYPH_PLACEMENT", nil, nil, {name = glyphName, id = id});
-			else
-				PlaceGlyphInSocket(id);
-			end
+			PlaceGlyphInSocket(id);
 		end
 	end
 end

@@ -267,45 +267,6 @@
 					</Layer>
 				</Layers>
 			</Frame>
-			<Button name="$parentClearInfoFrame" parentKey="clearInfo">
-				<Size x="20" y="20"/> 
-				<Anchors>
-					<Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" x="5" y="-5"/>
-				</Anchors>
-				<Layers>
-					<Layer level="OVERLAY">
-						<Texture name="$parentIcon" parentKey="icon">
-							<Size x="20" y="20"/>
-							<Anchors>
-								<Anchor point="CENTER"/>
-							</Anchors>
-						</Texture>
-						<FontString name="$parentCount" inherits="NumberFontNormal" parentKey="count">
-							<Anchors>
-								<Anchor point="BOTTOMRIGHT" relativeTo="$parentIcon" x="-1" y="1"/>
-							</Anchors>
-						</FontString>
-						<FontString name="$parentName" inherits="GameFontNormal" parentKey="name">
-							<Anchors>
-								<Anchor point="LEFT" relativePoint="RIGHT" relativeTo="$parentIcon" x="6"/>
-							</Anchors>
-						</FontString>
-					</Layer>
-				</Layers>
-				<Scripts>
-					<OnEnter>
-						if self.spellID then
-							GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
-							GameTooltip:SetSpellByID(self.spellID);
-							GameTooltip:Show();
-						end
-					</OnEnter>
-					<OnLeave>
-						GameTooltip_Hide();
-						self.showingTooltip = false;
-					</OnLeave>
-				</Scripts>
-			</Button>
 			<EditBox name="$parentSearchBox" inherits="SearchBoxTemplate" autoFocus="false" letters="25">
 				<Size x="180" y="20"/>
 				<Anchors>

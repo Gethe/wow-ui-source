@@ -2,7 +2,7 @@
 
 OBJECTIVE_TRACKER_ITEM_WIDTH = 33;
 OBJECTIVE_TRACKER_HEADER_HEIGHT = 25;
-OBJECTIVE_TRACKER_LINE_WIDTH = 240;
+OBJECTIVE_TRACKER_LINE_WIDTH = 248;
 OBJECTIVE_TRACKER_HEADER_OFFSET_X = -10;
 -- calculated values
 OBJECTIVE_TRACKER_DOUBLE_LINE_HEIGHT = 0;
@@ -41,6 +41,7 @@ OBJECTIVE_TRACKER_UPDATE_MODULE_AUTO_QUEST_POPUP	= 0x0200;
 OBJECTIVE_TRACKER_UPDATE_MODULE_BONUS_OBJECTIVE		= 0x0400;
 OBJECTIVE_TRACKER_UPDATE_MODULE_SCENARIO			= 0x0800;
 OBJECTIVE_TRACKER_UPDATE_MODULE_ACHIEVEMENT			= 0x1000;
+OBJECTIVE_TRACKER_UPDATE_SCENARIO_SPELLS			= 0x2000;
 -- special updates
 OBJECTIVE_TRACKER_UPDATE_STATIC						= 0x0000;
 OBJECTIVE_TRACKER_UPDATE_ALL						= 0xFFFF;
@@ -597,6 +598,7 @@ function ObjectiveTracker_Initialize(self)
 	self:RegisterEvent("SUPER_TRACKED_QUEST_CHANGED");
 	self:RegisterEvent("SCENARIO_UPDATE");
 	self:RegisterEvent("SCENARIO_CRITERIA_UPDATE");
+	self:RegisterEvent("SCENARIO_SPELL_UPDATE");
 	self:RegisterEvent("TRACKED_ACHIEVEMENT_UPDATE");
 	self:RegisterEvent("ZONE_CHANGED_NEW_AREA");
 	self:RegisterEvent("ZONE_CHANGED");
@@ -650,6 +652,8 @@ function ObjectiveTracker_OnEvent(self, event, ...)
 		QuestSuperTracking_OnPOIUpdate();
 	elseif ( event == "SCENARIO_CRITERIA_UPDATE" ) then
 		ObjectiveTracker_Update(OBJECTIVE_TRACKER_UPDATE_SCENARIO);
+	elseif ( event == "SCENARIO_SPELL_UPDATE" ) then
+		ObjectiveTracker_Update(OBJECTIVE_TRACKER_UPDATE_SCENARIO_SPELLS);
 	elseif ( event == "SUPER_TRACKED_QUEST_CHANGED" ) then
 		local questID = ...;
 		QuestPOI_SelectButtonByQuestID(self.BlocksFrame, questID);
@@ -922,7 +926,11 @@ function ObjectiveTracker_OnSlideBlockUpdate(block, elapsed)
 		if ( slideData.scroll ) then
 			block:UpdateScrollChildRect();
 			-- scrolling means the bottom of the content comes in first or leaves last
-			block:SetVerticalScroll(max(slideData.endHeight, slideData.startHeight) - height);
+			if (slideData.expanding) then
+				block:SetVerticalScroll(0);
+			else
+				block:SetVerticalScroll(max(slideData.endHeight, slideData.startHeight) - height);
+			end
 		end
 	end
 

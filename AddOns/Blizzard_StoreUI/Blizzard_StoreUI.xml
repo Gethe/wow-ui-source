@@ -891,7 +891,7 @@
 					</Layers>
 					<Animations>
 						<AnimationGroup parentKey="PulseAnim" looping="BOUNCE">
-							<Alpha change="-1" duration="1.5" order="1"/>
+							<Alpha fromAlpha="1" toAlpha="0" duration="1.5" order="1"/>
 						</AnimationGroup>
 					</Animations>
 				</Frame>
@@ -907,7 +907,7 @@
 					</Layers>
 					<Animations>
 						<AnimationGroup parentKey="FadeAnim">
-							<Alpha change="-0.75" duration=".3"/>
+							<Alpha fromAlpha="0.75" toAlpha="0" duration=".3"/>
 							<Scripts>
 								<OnFinished>
 									self:GetParent():Hide();
@@ -1133,7 +1133,7 @@
 					</Layers>
 					<Animations>
 						<AnimationGroup parentKey="PulseAnim" looping="BOUNCE">
-							<Alpha change="-1" duration="1.5" order="1"/>
+							<Alpha fromAlpha="1" toAlpha="0" duration="1.5" order="1"/>
 						</AnimationGroup>
 					</Animations>
 				</Frame>
@@ -1149,7 +1149,7 @@
 					</Layers>
 					<Animations>
 						<AnimationGroup parentKey="FadeAnim">
-							<Alpha change="-0.75" duration=".3"/>
+							<Alpha fromAlpha="0.75" toAlpha="0" duration=".3"/>
 							<Scripts>
 								<OnFinished>
 									self:GetParent():Hide();
@@ -1912,8 +1912,8 @@
 					<Size x="140" y="30" />
 					<Animations>
 						<AnimationGroup parentKey="PulseAnim">
-							<Alpha childKey="Flash" change="1.0" duration="0.5" order="1"/>
-							<Alpha childKey="Flash" change="-1.0" duration="0.5" order="2"/>
+							<Alpha childKey="Flash" fromAlpha="0" toAlpha="1" duration="0.5" order="1"/>
+							<Alpha childKey="Flash" fromAlpha="1" toAlpha="0" duration="0.5" order="2"/>
 						</AnimationGroup>
 					</Animations>
 					<Anchors>

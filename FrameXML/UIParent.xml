@@ -30,12 +30,8 @@
 				HelpOpenWebTicketButton_OnUpdate(HelpOpenWebTicketButton, elapsed);
 			</OnUpdate>
 			<!-- used to properly hide and show certain frames when the UI is toggled on and off -->
-			<OnShow>
-				if ( self.firstTimeLoaded ~= 1 ) then
-					CloseAllWindows();
-					self.firstTimeLoaded = nil;
-				end
-			</OnShow>
+			<OnShow function="UIParent_OnShow"/>
+			<OnHide function="UIParent_OnHide"/>
 			<OnAttributeChanged function="UpdateUIPanelPositions"/>
 		</Scripts>
 	</Frame>

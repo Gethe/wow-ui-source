@@ -3,7 +3,6 @@ local function SecureNext(elements, key)
 	return securecall(next, elements, key);
 end
 
-
 -- [[ Generic Interface Options Panel ]] --
 
 function InterfaceOptionsPanel_CheckButton_OnClick (checkButton)
@@ -261,6 +260,7 @@ CombatPanelOptions = {
 	showVKeyCastbarSpellName = { text = "SHOW_TARGET_CASTBAR_IN_V_KEY_SPELL_NAME" },
 	displaySpellActivationOverlays = { text = "DISPLAY_SPELL_ALERTS" },
 	spellActivationOverlayOpacity = { text = "SPELL_ALERT_OPACITY", minValue = 0.1, maxValue = 1.0, valueStep = 0.05 },
+	flashLowHealthWarning = { text = "FLASH_LOW_HEALTH_WARNING" },
 	reducedLagTolerance = { text = "REDUCED_LAG_TOLERANCE" },
 	MaxSpellStartRecoveryOffset = { text = "LAG_TOLERANCE", minValue = 0, maxValue = 400, valueStep = 10 },
 	ActionButtonUseKeyDown = { text = "ACTION_BUTTON_USE_KEY_DOWN" },
@@ -541,6 +541,8 @@ DisplayPanelOptions = {
 	threatPlaySounds = { text = "PLAY_AGGRO_SOUNDS" },
 	SpellTooltip_DisplayAvgValues = { text = "SHOW_POINTS_AS_AVG" },
 	emphasizeMySpellEffects = { text = "EMPHASIZE_MY_SPELLS_TEXT" },
+	showAdventureJournalAlerts = { text = "SHOW_ADVENTURE_JOURNAL_ALERTS" };
+	nameplateShowSelf = { text = "DISPLAY_PERSONAL_RESOURCE" },
 }
 
 function InterfaceOptionsDisplayPanel_OnLoad (self)
@@ -576,9 +578,9 @@ end
 local function IsOutlineModeAllowed()
 	local _, instanceType = IsInInstance()
 	if ( instanceType == "raid" or instanceType == "pvp" ) then
-		return GetCVarBool("RaidOutlineEngineMode");
+		return GetCVar("RaidOutlineEngineMode") ~= "0";
 	end
-	return GetCVarBool("OutlineEngineMode");
+	return GetCVar("OutlineEngineMode") ~= "0";
 end
 
 function InterfaceOptionsDisplayPanelOutlineDropDown_OnShow(self)
@@ -840,7 +842,7 @@ function InterfaceOptionsSocialPanel_OnEvent(self, event, ...)
 		InterfaceOptionsSocialPanelProfanityFilter_UpdateDisplay();
 	elseif ( event == "TWITTER_STATUS_UPDATE" ) then
 		local enabled, linked, screenName = ...;
-		if (enabled) then
+		if (enabled and not IsKioskModeEnabled()) then
 			self.EnableTwitter:Show();
 			self.TwitterLoginButton:Show();
 			TwitterData["linked"] = linked;
@@ -1455,6 +1457,8 @@ NamePanelOptions = {
 	nameplateShowEnemyTotems = { text = "UNIT_NAMEPLATES_SHOW_ENEMY_TOTEMS" },
 	nameplateShowEnemyMinus = { text = "UNIT_NAMEPLATES_SHOW_ENEMY_MINUS" },
 	ShowClassColorInNameplate = { text = "SHOW_CLASS_COLOR_IN_V_KEY" },
+	
+	nameplateShowAll = { text = "UNIT_NAMEPLATES_AUTOMODE" },
 }
 
 function InterfaceOptionsNPCNamesDropDown_OnEvent (self, event, ...)
@@ -1582,10 +1586,10 @@ end
 
 function InterfaceOptionsNameplateMotionDropDown_OnEvent (self, event, ...)
 	if ( event == "PLAYER_ENTERING_WORLD" ) then
-		local value = GetCVar("nameplateMotion") +1;
-		self.tooltip = _G["UNIT_NAMEPLATES_TYPE_TOOLTIP_"..value];
+		local value = tonumber(GetCVar("nameplateMotion"));
+		self.tooltip = _G["UNIT_NAMEPLATES_TYPE_TOOLTIP_"..(value + 1)];
 		
-		self.defaultValue = 2;
+		self.defaultValue = 0;
 		self.oldValue = value;
 		self.value = value;
 
@@ -1597,8 +1601,8 @@ function InterfaceOptionsNameplateMotionDropDown_OnEvent (self, event, ...)
 			function (self, value) 
 				self.value = value;
 				UIDropDownMenu_SetSelectedValue(self, value);
-				SetNamePlateMotionType(value);
-				self.tooltip = _G["UNIT_NAMEPLATES_TYPE_TOOLTIP_"..value];				
+				SetCVar("nameplateMotion", value);
+				self.tooltip = _G["UNIT_NAMEPLATES_TYPE_TOOLTIP_"..(value + 1)];				
 			end;	
 		self.GetValue =
 			function (self)
@@ -1620,19 +1624,45 @@ function InterfaceOptionsNameplateMotionDropDown_Initialize(self)
 	local selectedValue = UIDropDownMenu_GetSelectedValue(self);
 	local info = UIDropDownMenu_CreateInfo();
 	
-	local numTypes = GetNumNamePlateMotionTypes();
-	for i=1,numTypes do
-		info.text =  _G["UNIT_NAMEPLATES_TYPE_"..i];
+	local numTypes = C_NamePlate.GetNumNamePlateMotionTypes();
+	for i=1, numTypes do
+		info.text = _G["UNIT_NAMEPLATES_TYPE_"..i];
 		info.func = InterfaceOptionsNameplateMotionDropDown_OnClick;
-		info.value = i;
-		info.checked = i == selectedValue;
+		info.value = i - 1;
+		info.checked = selectedValue and i == selectedValue + 1;
 		info.tooltipTitle = _G["UNIT_NAMEPLATES_TYPE_"..i];
 		info.tooltipText = _G["UNIT_NAMEPLATES_TYPE_TOOLTIP_"..i];
 		UIDropDownMenu_AddButton(info);
 	end
 end
 
+function InterfaceOptionsNameplateFriends_OnEnter(self)
+	local text = GetBindingKey("FRIENDNAMEPLATES");
+	GameTooltip:SetOwner(self, "ANCHOR_TOPLEFT");
+	if (text and (text ~= "")) then
+		GameTooltip:SetText(OPTION_TOOLTIP_UNIT_NAMEPLATES_SHOW_FRIENDS..NORMAL_FONT_COLOR_CODE.." ("..text..")", 1, 1, 1, 1, true);
+	else
+		GameTooltip:SetText(KEYBIND_NOT_SET_TOOLTIP, 1, 1, 1, 1, true);
+	end
+end
 
+function InterfaceOptionsNameplateFriends_OnLeave(self)
+	GameTooltip:Hide();
+end
+
+function InterfaceOptionsNameplateEnemies_OnEnter(self)
+	local text = GetBindingKey("NAMEPLATES");
+	GameTooltip:SetOwner(self, "ANCHOR_TOPLEFT");
+	if (text and (text ~= "")) then
+		GameTooltip:SetText(OPTION_TOOLTIP_UNIT_NAMEPLATES_SHOW_ENEMIES..NORMAL_FONT_COLOR_CODE.." ("..text..")", 1, 1, 1, 1, true);
+	else
+		GameTooltip:SetText(KEYBIND_NOT_SET_TOOLTIP, 1, 1, 1, 1, true);
+	end
+end
+
+function InterfaceOptionsNameplateEnemies_OnLeave(self)
+	GameTooltip:Hide();
+end
 
 -- [[ Combat Text Options Panel ]] --
 
@@ -1644,7 +1674,6 @@ FCTPanelOptions = {
 	fctRepChanges = { text = "COMBAT_TEXT_SHOW_REPUTATION_TEXT" },
 	fctReactives = { text = "COMBAT_TEXT_SHOW_REACTIVES_TEXT" },
 	fctFriendlyHealers = { text = "COMBAT_TEXT_SHOW_FRIENDLY_NAMES_TEXT" },
-	fctComboPoints = { text = "COMBAT_TEXT_SHOW_COMBO_POINTS_TEXT" },
 	fctLowManaHealth = { text = "COMBAT_TEXT_SHOW_LOW_HEALTH_MANA_TEXT" },
 	fctEnergyGains = { text = "COMBAT_TEXT_SHOW_ENERGIZE_TEXT" },
 	fctPeriodicEnergyGains = { text = "COMBAT_TEXT_SHOW_PERIODIC_ENERGIZE_TEXT" },
@@ -1685,29 +1714,6 @@ function InterfaceOptionsCombatTextPanel_OnEvent (self, event, ...)
 
 		-- run the enable FCT button's set func to refresh floating combat text and make sure the addon is loaded
 		control = InterfaceOptionsCombatTextPanelEnableFCT;
-		control.setFunc(GetCVar(control.cvar));
-
-		-- fix for bug 106687: self button can no longer be enabled if you're not a rogue or a druid
-		control = InterfaceOptionsCombatTextPanelComboPoints;
-		control.SetChecked =
-			function (self, checked)
-				local _, class = UnitClass("player");
-				if ( class ~= "ROGUE" and class ~= "DRUID" ) then
-					checked = false;
-				end
-				getmetatable(self).__index.SetChecked(self, checked);
-			end
-		control.Enable =
-			function (self)
-				local _, class = UnitClass("player");
-				if ( class ~= "ROGUE" and class ~= "DRUID" ) then
-					return;
-				end
-				getmetatable(self).__index.Enable(self);
-				local text = _G[self:GetName().."Text"];
-				local fontObject = text:GetFontObject();
-				_G[self:GetName().."Text"]:SetTextColor(fontObject:GetTextColor());
-			end
 		control.setFunc(GetCVar(control.cvar));
 	end
 end
@@ -2146,8 +2152,7 @@ end
 BuffsPanelOptions = {
 	buffDurations = { text = "SHOW_BUFF_DURATION_TEXT" },
 	showDispelDebuffs = { text = "SHOW_DISPELLABLE_DEBUFFS_TEXT" },
-	showCastableBuffs = { text = "SHOW_CASTABLE_BUFFS_TEXT" },	
-	consolidateBuffs = { text = "CONSOLIDATE_BUFFS_TEXT" },	
+	showCastableBuffs = { text = "SHOW_CASTABLE_BUFFS_TEXT" },
 	showAllEnemyDebuffs = { text = "SHOW_ALL_ENEMY_DEBUFFS_TEXT" },
 }
 

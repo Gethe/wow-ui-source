@@ -4,7 +4,7 @@ function PatchDownload_OnLoad(self)
 end
 
 function PatchDownload_OnShow(self)
-	self.PatchDownloadUI.Logo:SetTexture(EXPANSION_LOGOS[GetClientDisplayExpansionLevel()]);
+	SetExpansionLogo(self.PatchDownloadUI.Logo, GetClientDisplayExpansionLevel());
 end
 
 function PatchDownload_OnKeyDown(self, key)

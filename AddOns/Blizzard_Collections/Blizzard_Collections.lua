@@ -5,7 +5,7 @@ function CollectionsJournal_SetTab(self, tab)
 end
 
 local function ShouldShowHeirloomTabHelpTip()
-	if GetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_HEIRLOOM_JOURNAL_TAB) then
+	if GetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_HEIRLOOM_JOURNAL_TAB) or IsKioskModeEnabled() then
 		return false;
 	end
 
@@ -13,23 +13,37 @@ local function ShouldShowHeirloomTabHelpTip()
 		return false;
 	end
 
-	for i = 1, C_Heirloom.GetNumHeirlooms() do
-		local itemID = C_Heirloom.GetHeirloomItemIDFromIndex(i);
-		if C_Heirloom.PlayerHasHeirloom(itemID) then
-			return true;
-		end
+	return C_Heirloom.ShouldShowHeirloomHelp();
+end
+
+function CollectionsJournal_ValidateTab(tabNum)
+	if (not IsKioskModeEnabled()) then
+		return true;
 	end
 
-	return false;
+	if (tabNum ~= 1) then
+		return false;
+	end
 end
 
 function CollectionsJournal_UpdateSelectedTab(self)
 	local selected = PanelTemplates_GetSelectedTab(self);
 
+	if (not CollectionsJournal_ValidateTab(selected)) then
+		PanelTemplates_SetTab(self, 1);
+		selected = 1;
+	end
+	
 	MountJournal:SetShown(selected == 1);
 	PetJournal:SetShown(selected == 2);
 	ToyBox:SetShown(selected == 3);
 	HeirloomsJournal:SetShown(selected == 4);
+	if ( selected == 5 ) then
+		HideUIPanel(WardrobeFrame);
+		WardrobeCollectionFrame_SetContainer(self);
+	else
+		WardrobeCollectionFrame:Hide();
+	end
 
 	if ( selected == 1 ) then
 		CollectionsJournalTitleText:SetText(MOUNTS);
@@ -39,12 +53,15 @@ function CollectionsJournal_UpdateSelectedTab(self)
 		CollectionsJournalTitleText:SetText(TOY_BOX);
 	elseif (selected == 4 ) then
 		CollectionsJournalTitleText:SetText(HEIRLOOMS);
+	elseif (selected == 5 ) then
+		CollectionsJournalTitleText:SetText(WARDROBE);
 	end
 
 	self.HeirloomTabHelpBox:SetShown(ShouldShowHeirloomTabHelpTip());
 end
 
 function CollectionsJournal_OnShow(self)
+	HideUIPanel(WardrobeFrame);
 	CollectionsMicroButtonAlert:Hide();
 	MicroButtonPulseStop(CollectionsMicroButton);
 

@@ -535,8 +535,8 @@
 			<Button name="$parentSetButton" parentKey="setButton" setAllPoints="true" hidden="true">
 				<Animations>
 					<AnimationGroup parentKey="glow" looping="REPEAT">
-						<Alpha change="-1.0" duration="0.9" order="1"/>
-						<Alpha change="1.0" duration="0.9" order="2"/>
+						<Alpha fromAlpha="1" toAlpha="0" duration="0.9" order="1"/>
+						<Alpha fromAlpha="0" toAlpha="1" duration="0.9" order="2"/>
 					</AnimationGroup>
 				</Animations>
 				<Layers>

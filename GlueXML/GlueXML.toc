@@ -10,6 +10,8 @@ GlueLocalization.xml
 
 ..\SharedXML\SharedUIPanelTemplates.xml
 ..\SharedXML\Util.lua
+..\SharedXML\IME.xml
+..\SharedXML\LayoutFrame.xml
 GlueBasicControls.xml
 GlueParent.xml
 GlueButtons.xml
@@ -46,6 +48,7 @@ StarterEditionPopUp.xml
 PromotionFrame.xml
 GlueMenuFrame.xml
 AccountReactivate.xml
+KioskModeSplash.xml
 
 ## This Always Runs Last, Add New Items above it.
 GlueLocalizationPost.xml

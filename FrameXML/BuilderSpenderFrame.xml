@@ -1,0 +1,22 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\FrameXML\UI.xsd">
+	<Script file="BuilderSpenderFrame.lua"/>
+	
+	<Frame name="BuilderSpenderFrame" virtual="true" mixin="BuilderSpender">
+		<Layers>
+			<Layer level="ARTWORK" textureSubLevel="0">
+				<Texture parentKey="BarTexture" file="Interface\TargetingFrame\UI-StatusBar" hidden="true"/>
+			</Layer>
+			<Layer level="ARTWORK" textureSubLevel="1">
+				<Texture file="Interface\TargetingFrame\UI-StatusBar-Glow" parentKey="LossGlowTexture" hidden="true" alphaMode="ADD"/>
+			</Layer>
+			<Layer level="ARTWORK" textureSubLevel="1">
+				<Texture file="Interface\TargetingFrame\UI-StatusBar-Glow" parentKey="GainGlowTexture" hidden="true" alphaMode="ADD"/>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+		</Scripts>
+	</Frame>
+	
+</Ui>

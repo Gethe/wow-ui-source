@@ -1164,6 +1164,12 @@
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeKey="$parent.AbilitiesBG" x="2" y="-9"/>
 				</Anchors>
+				<Scripts>
+					<OnShow>
+						local followerList = self:GetParent():GetParent():GetParent():GetParent();
+						self.followerTypeID = followerList.followerType;
+					</OnShow>
+				</Scripts>
 			</Frame>
 			<Frame parentKey="BusyFrame" hidden="true">
 				<Anchors>
@@ -2033,11 +2039,6 @@
 			</Frame>
 
 		</Frames>
-		<Scripts>
-			<OnShow function="GarrisonShipyardFrame_OnShow"/>
-			<OnEvent function="GarrisonShipyardFrame_OnEvent"/>
-			<OnHide function="GarrisonShipyardFrame_OnHide"/>
-		</Scripts>
 	</Frame>
 	
 </Ui>

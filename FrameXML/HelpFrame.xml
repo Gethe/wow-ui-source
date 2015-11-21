@@ -2236,13 +2236,6 @@
 					</Layer>
 				</Layers>
 				<Frames>
-					<Button name="$parentFocusButton" setAllPoints="true" parentKey="FocusButton">
-						<Scripts>
-							<OnClick>
-								self:GetParent().EditBox:SetFocus();
-							</OnClick>
-						</Scripts>
-					</Button>
 					<EditBox name="$parentEditBox" multiLine="true" letters="255" setAllPoints="true" parentKey="EditBox" autoFocus="false">
 						<Anchors>
 							<Anchor point="TOPLEFT" x="5" y="-5"/>
@@ -2255,11 +2248,9 @@
 						</Layers>
 						<Scripts>
 							<OnEditFocusGained>
-								self:GetParent().FocusButton:Hide();
 								self.InformationText:Hide();
 							</OnEditFocusGained>
 							<OnEditFocusLost>
-								self:GetParent().FocusButton:Show();
 								if ( self:GetText() == "" ) then
 									self.InformationText:Show();
 								end
@@ -2271,6 +2262,11 @@
 						<FontString inherits="GameFontHighlightSmall"/>
 					</EditBox>
 				</Frames>
+				<Scripts>
+					<OnMouseDown>
+						self.EditBox:SetFocus();
+					</OnMouseDown>
+				</Scripts>
 			</Frame>
 			<Button name="$parentReportButton" inherits="UIPanelButtonTemplate" text="REPORT_PLAYER" parentKey="reportButton">
 				<Size x="120" y="22"/>
@@ -2415,13 +2411,6 @@
 					</Layer>
 				</Layers>
 				<Frames>
-					<Button name="$parentFocusButton" setAllPoints="true" parentKey="FocusButton">
-						<Scripts>
-							<OnClick>
-								self:GetParent().EditBox:SetFocus();
-							</OnClick>
-						</Scripts>
-					</Button>
 					<EditBox name="$parentEditBox" multiLine="true" letters="255" setAllPoints="true" parentKey="EditBox" autoFocus="false">
 						<Anchors>
 							<Anchor point="TOPLEFT" x="5" y="-5"/>
@@ -2434,11 +2423,9 @@
 						</Layers>
 						<Scripts>
 							<OnEditFocusGained>
-								self:GetParent().FocusButton:Hide();
 								self.InformationText:Hide();
 							</OnEditFocusGained>
 							<OnEditFocusLost>
-								self:GetParent().FocusButton:Show();
 								if ( self:GetText() == "" ) then
 									self.InformationText:Show();
 								end
@@ -2457,6 +2444,11 @@
 						<FontString inherits="GameFontHighlightSmall"/>
 					</EditBox>
 				</Frames>
+				<Scripts>
+					<OnMouseDown>
+						self.EditBox:SetFocus();
+					</OnMouseDown>
+				</Scripts>
 			</Frame>
 			<Button name="$parentReportButton" inherits="UIPanelButtonTemplate" text="REPORT_PLAYER" parentKey="reportButton">
 				<Size x="120" y="22"/>

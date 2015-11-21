@@ -26,7 +26,6 @@ QUESTFRAME_PADDING = 19;
 WORLDMAP_POI_FRAMELEVEL = 100;		-- needs to be one the highest frames in the MEDIUM strata
 WORLDMAP_WINDOWED_SIZE = 0.695;		-- size corresponds to ratio value
 WORLDMAP_FULLMAP_SIZE = 1.0;
-MINIMAP_QUEST_BONUS_OBJECTIVE = 49;
 local EJ_QUEST_POI_MINDIS_SQR = 2500;
 
 local QUEST_POI_FRAME_INSET = 12;		-- roughly half the width/height of a POI icon
@@ -311,7 +310,8 @@ function WorldMapFrame_OnShow(self)
 	if ( (not NewPlayerExperience or not NewPlayerExperience.IsActive) and not GetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_WORLD_MAP_FRAME) ) then
 		local helpPlate = WorldMapFrame_HelpPlate;
 		if ( helpPlate and not HelpPlate_IsShowing(helpPlate) ) then
-			WorldMapFrame_ToggleTutorial();
+			HelpPlate_ShowTutorialPrompt( helpPlate, WorldMapFrame.MainHelpButton );
+			SetCVarBitfield( "closedInfoFrames", LE_FRAME_TUTORIAL_WORLD_MAP_FRAME, true );
 		end
 	end
 
@@ -494,9 +494,9 @@ function WorldMapFrame_AnimateAlpha(self, useStartDelay, anim, otherAnim, startA
 		self:SetAlpha(startAlpha);
 	end
 
-	local change = endAlpha - startAlpha;
-	local duration = (change / (WORLD_MAP_MAX_ALPHA - WORLD_MAP_MIN_ALPHA)) * tonumber(GetCVar("mapAnimDuration"));
-	anim.Alpha:SetChange(change);
+	local duration = ((endAlpha - startAlpha) / (WORLD_MAP_MAX_ALPHA - WORLD_MAP_MIN_ALPHA)) * tonumber(GetCVar("mapAnimDuration"));
+	anim.Alpha:SetFromAlpha(startAlpha);
+	anim.Alpha:SetToAlpha(endAlpha);
 	anim.Alpha:SetDuration(abs(duration));
 	anim.Alpha:SetStartDelay(startDelay);
 	anim:Play();	
@@ -563,16 +563,14 @@ function WorldMap_UpdateQuestBonusObjectives()
 	local taskIconCount = 1;
 	if ( numTaskPOIs > 0 ) then
 		for _, info  in next, taskInfo do
-			local textureIndex = MINIMAP_QUEST_BONUS_OBJECTIVE;
 			local x = info.x;
 			local y = info.y;
 			local questid = info.questId;
 				
 			local taskPOIName = "WorldMapFrameTaskPOI"..taskIconCount;
 			local taskPOI = _G[taskPOIName];
-				
-			local x1, x2, y1, y2 = GetWorldEffectTextureCoords(textureIndex);
-			_G[taskPOIName.."Texture"]:SetTexCoord(x1, x2, y1, y2);
+
+			_G[taskPOIName.."Texture"]:SetAtlas("QuestBonusObjective", true);
 			x = x * WorldMapButton:GetWidth();
 			y = -y * WorldMapButton:GetHeight();
 			taskPOI:SetPoint("CENTER", "WorldMapButton", "TOPLEFT", x, y);
@@ -616,7 +614,7 @@ function WorldMap_DrawWorldEffects()
 		-- if ( (i <= numPOIWorldEffects) and (WatchFrame.showObjectives == true)) then
 			-- local name, textureIndex, x, y  = GetQuestPOIWorldEffectInfo(i);	
 			-- if (textureIndex) then -- could be outside this map
-				-- local x1, x2, y1, y2 = GetWorldEffectTextureCoords(textureIndex);
+				-- local x1, x2, y1, y2 = GetObjectIconTextureCoords(textureIndex);
 				-- _G[worldEventPOIName.."Texture"]:SetTexCoord(x1, x2, y1, y2);
 				-- x = x * WorldMapButton:GetWidth();
 				-- y = -y * WorldMapButton:GetHeight();
@@ -664,7 +662,7 @@ function WorldMap_DrawWorldEffects()
 			local scenarioPOIName = "WorldMapFrameScenarioPOI"..scenarioIconCount;
 			local scenarioPOI = _G[scenarioPOIName];
 			
-			local x1, x2, y1, y2 = GetWorldEffectTextureCoords(textureIndex);
+			local x1, x2, y1, y2 = GetObjectIconTextureCoords(textureIndex);
 			_G[scenarioPOIName.."Texture"]:SetTexCoord(x1, x2, y1, y2);
 			x = x * WorldMapButton:GetWidth();
 			y = -y * WorldMapButton:GetHeight();
@@ -699,7 +697,7 @@ function WorldMapFrame_Update()
 			AzerothButton:Show();
 			DraenorButton:Show();
 		else
-			-- Temporary Hack (Temporary meaning 6 yrs, haha)
+			-- Temporary Hack (Temporary meaning 11 yrs, haha)
 			mapName = "World";
 			OutlandButton:Hide();
 			AzerothButton:Hide();
@@ -895,7 +893,7 @@ function WorldMapFrame_Update()
 	-- Show debug zone map if available
 	local numDebugZoneMapTextures = 0;
 	if ( HasDebugZoneMap() ) then
-		local ZONEMAP_SIZE = 32;
+		local ZONEMAP_SIZE = 1024;
 		for y=1, ZONEMAP_SIZE do
 			for x=1, ZONEMAP_SIZE do
 				local id, minX, minY, maxX, maxY, r, g, b, a = GetDebugZoneMap(x, y);
@@ -908,7 +906,7 @@ function WorldMapFrame_Update()
 					local texture = WorldMapDetailFrame.zoneMap[numDebugZoneMapTextures];
 					if ( not texture ) then
 						texture = WorldMapDetailFrame:CreateTexture(nil, "OVERLAY");
-						texture:SetTexture(1, 1, 1);
+						texture:SetColorTexture(1, 1, 1);
 						WorldMapDetailFrame.zoneMap[numDebugZoneMapTextures] = texture;
 					end
 
@@ -982,6 +980,10 @@ function WorldMapFrame_Update()
 					frame = CreateFrame("FRAME", "WorldMapStoryLine"..numUsedStoryLineFrames, WorldMapButton, "WorldMapStoryLineTemplate");
 					STORYLINE_FRAMES[numUsedStoryLineFrames] = frame;
 				end
+
+				local texture = frame:CreateTexture(nil,"BACKGROUND");
+				texture:SetAtlas("QuestNormal", true);
+				texture:SetPoint("CENTER", 0, 0);
 				frame.index = i;
 				frame:SetPoint("CENTER", "WorldMapDetailFrame", "TOPLEFT", x * mapWidth, -y * mapHeight);
 				frame:Show();
@@ -1167,12 +1169,16 @@ function TaskPOI_OnEnter(self)
 			WorldMapTaskTooltipStatusBar.Bar.Label:SetFormattedText(PERCENTAGE_STRING, percent);
 		end
 		
-		if ( GetQuestLogRewardXP(self.questID) > 0 or GetNumQuestLogRewardCurrencies(self.questID) > 0 or GetNumQuestLogRewards(self.questID) > 0 or GetQuestLogRewardMoney(self.questID) > 0 ) then
+		if ( GetQuestLogRewardXP(self.questID) > 0 or GetNumQuestLogRewardCurrencies(self.questID) > 0 or GetNumQuestLogRewards(self.questID) > 0 or GetQuestLogRewardMoney(self.questID) > 0 or GetQuestLogRewardArtifactXP(self.questID) > 0 ) then
 			WorldMapTooltip:AddLine(QUEST_REWARDS, 1, 0.82, 0, true);
 			-- xp
 			local xp = GetQuestLogRewardXP(self.questID);
 			if ( xp > 0 ) then
 				WorldMapTooltip:AddLine(string.format(BONUS_OBJECTIVE_EXPERIENCE_FORMAT, xp), 1, 1, 1);
+			end
+			local artifactXP = GetQuestLogRewardArtifactXP(self.questID);
+			if ( artifactXP > 0 ) then
+				WorldMapTooltip:AddLine(string.format(BONUS_OBJECTIVE_ARTIFACT_XP_FORMAT, artifactXP), 1, 1, 1);
 			end
 			-- currency		
 			local numQuestCurrencies = GetNumQuestLogRewardCurrencies(self.questID);
@@ -1263,7 +1269,7 @@ function WorldMap_ResetPOI(button, isObjectIcon, atlasIcon)
 		button.Texture:SetWidth(28);
 		button.Texture:SetHeight(28);
 		button.Texture:SetPoint("CENTER", 0, 0);
-		button.Texture:SetTexture("Interface\\Minimap\\ObjectIcons");
+		button.Texture:SetTexture("Interface\\Minimap\\ObjectIconsAtlas");
 	else
 		button:SetWidth(32);
 		button:SetHeight(32);
@@ -1287,7 +1293,7 @@ function WorldMap_CreateWorldEffectPOI(index)
 	texture:SetWidth(16);
 	texture:SetHeight(16);
 	texture:SetPoint("CENTER", 0, 0);
-	texture:SetTexture("Interface\\Minimap\\OBJECTICONS");
+	texture:SetTexture("Interface\\Minimap\\ObjectIconsAtlas");
 end
 
 function WorldMap_CreateTaskPOI(index)
@@ -1310,7 +1316,7 @@ function WorldMap_CreateScenarioPOI(index)
 	texture:SetWidth(16);
 	texture:SetHeight(16);
 	texture:SetPoint("CENTER", 0, 0);
-	texture:SetTexture("Interface\\Minimap\\OBJECTICONS");
+	texture:SetTexture("Interface\\Minimap\\ObjectIconsAtlas");
 end
 
 function WorldMap_GetGraveyardButton(index)
@@ -1446,17 +1452,18 @@ function WorldMapFakeButton_OnClick(button, mouseButton)
 end
 
 local BLIP_TEX_COORDS = {
-["WARRIOR"] = { 0, 0.125, 0, 0.25 },
-["PALADIN"] = { 0.125, 0.25, 0, 0.25 },
-["HUNTER"] = { 0.25, 0.375, 0, 0.25 },
-["ROGUE"] = { 0.375, 0.5, 0, 0.25 },
-["PRIEST"] = { 0.5, 0.625, 0, 0.25 },
-["DEATHKNIGHT"] = { 0.625, 0.75, 0, 0.25 },
-["SHAMAN"] = { 0.75, 0.875, 0, 0.25 },
-["MAGE"] = { 0.875, 1, 0, 0.25 },
-["WARLOCK"] = { 0, 0.125, 0.25, 0.5 },
-["DRUID"] = { 0.25, 0.375, 0.25, 0.5 },
-["MONK"] = { 0.125, 0.25, 0.25, 0.5 }
+	["WARRIOR"]		 = { 0, 0.125, 0, 0.25 },
+	["PALADIN"]		 = { 0.125, 0.25, 0, 0.25 },
+	["HUNTER"]		 = { 0.25, 0.375, 0, 0.25 },
+	["ROGUE"]		 = { 0.375, 0.5, 0, 0.25 },
+	["PRIEST"]		 = { 0.5, 0.625, 0, 0.25 },
+	["DEATHKNIGHT"]	 = { 0.625, 0.75, 0, 0.25 },
+	["SHAMAN"]		 = { 0.75, 0.875, 0, 0.25 },
+	["MAGE"]		 = { 0.875, 1, 0, 0.25 },
+	["WARLOCK"]		 = { 0, 0.125, 0.25, 0.5 },
+	["DRUID"]		 = { 0.25, 0.375, 0.25, 0.5 },
+	["MONK"]		 = { 0.125, 0.25, 0.25, 0.5 },
+	["DEMONHUNTER"]	 = { 0.375, 0.5, 0.25, 0.5 },
 }
 
 local BLIP_RAID_Y_OFFSET = 0.5;
@@ -2792,6 +2799,12 @@ local SIBLING_MENU_DATA = { };
 local SIBLING_MENU_PARENT_ID;
 local SIBLING_MENU_PARENT_IS_CONTINENT;
 
+local BROKEN_ISLES_ID = 8;
+
+function IsMapAllowedInKioskMode(id)
+	return id ~= BROKEN_ISLES_ID;
+end
+
 function WorldMapNavBar_LoadSiblings(parentID, isContinent, doSort, ...)
 	if ( parentID == SIBLING_MENU_PARENT_ID ) then
 		-- we already have this loaded
@@ -2803,7 +2816,11 @@ function WorldMapNavBar_LoadSiblings(parentID, isContinent, doSort, ...)
 	for i = 1, count, 2 do
 		local id = select(i, ...);
 		local name = select(i+1, ...);
-		if ( name ) then
+		local allowed = true;
+		if (IsKioskModeEnabled()) then
+			allowed = IsMapAllowedInKioskMode(id);
+		end
+		if ( name and allowed ) then
 			local t = { id = id, name = name };
 			tinsert(SIBLING_MENU_DATA, t);
 		end

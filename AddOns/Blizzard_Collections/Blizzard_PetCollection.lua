@@ -122,7 +122,7 @@ function PetJournal_OnShow(self)
 	if ( not GetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_PET_JOURNAL) ) then
 		local helpPlate = PetJournal_HelpPlate;
 		if ( helpPlate and not HelpPlate_IsShowing(helpPlate) ) then
-			HelpPlate_Show( helpPlate, PetJournal, PetJournal.MainHelpButton );
+			HelpPlate_ShowTutorialPrompt( helpPlate, PetJournal.MainHelpButton );
 			SetCVarBitfield( "closedInfoFrames", LE_FRAME_TUTORIAL_PET_JOURNAL, true );
 		end
 	end
@@ -1221,14 +1221,9 @@ function PetJournalFilterDropDown_Initialize(self, level)
 	
 		info.text = COLLECTED
 		info.func = 	function(_, _, _, value)
-							C_PetJournal.SetFlagFilter(LE_PET_JOURNAL_FLAG_COLLECTED, value);
-							if (value) then
-								UIDropDownMenu_EnableButton(1,2);
-							else
-								UIDropDownMenu_DisableButton(1,2);
-							end;
+							C_PetJournal.SetFilterChecked(LE_PET_JOURNAL_FILTER_COLLECTED, value);
 						end 
-		info.checked = not C_PetJournal.IsFlagFiltered(LE_PET_JOURNAL_FLAG_COLLECTED);
+		info.checked = C_PetJournal.IsFilterChecked(LE_PET_JOURNAL_FILTER_COLLECTED);
 		info.isNotRadio = true;
 		UIDropDownMenu_AddButton(info, level)
 		
@@ -1236,9 +1231,9 @@ function PetJournalFilterDropDown_Initialize(self, level)
 
 		info.text = NOT_COLLECTED
 		info.func = 	function(_, _, _, value)
-							C_PetJournal.SetFlagFilter(LE_PET_JOURNAL_FLAG_NOT_COLLECTED, value);
+							C_PetJournal.SetFilterChecked(LE_PET_JOURNAL_FILTER_NOT_COLLECTED, value);
 						end 
-		info.checked = not C_PetJournal.IsFlagFiltered(LE_PET_JOURNAL_FLAG_NOT_COLLECTED);
+		info.checked = C_PetJournal.IsFilterChecked(LE_PET_JOURNAL_FILTER_NOT_COLLECTED);
 		info.isNotRadio = true;
 		UIDropDownMenu_AddButton(info, level)
 	
@@ -1269,14 +1264,14 @@ function PetJournalFilterDropDown_Initialize(self, level)
 		
 			info.text = CHECK_ALL
 			info.func = function()
-							C_PetJournal.AddAllPetTypesFilter();
+							C_PetJournal.SetAllPetTypesChecked(true);
 							UIDropDownMenu_Refresh(PetJournalFilterDropDown, 1, 2);
 						end
 			UIDropDownMenu_AddButton(info, level)
 			
 			info.text = UNCHECK_ALL
 			info.func = function()
-							C_PetJournal.ClearAllPetTypesFilter();
+							C_PetJournal.SetAllPetTypesChecked(false);
 							UIDropDownMenu_Refresh(PetJournalFilterDropDown, 1, 2);
 						end
 			UIDropDownMenu_AddButton(info, level)
@@ -1288,7 +1283,7 @@ function PetJournalFilterDropDown_Initialize(self, level)
 				info.func = function(_, _, _, value)
 							C_PetJournal.SetPetTypeFilter(i, value);
 						end
-				info.checked = function() return not C_PetJournal.IsPetTypeFiltered(i) end;
+				info.checked = function() return C_PetJournal.IsPetTypeChecked(i) end;
 				UIDropDownMenu_AddButton(info, level);
 			end
 		elseif UIDROPDOWNMENU_MENU_VALUE == 2 then
@@ -1299,14 +1294,14 @@ function PetJournalFilterDropDown_Initialize(self, level)
 		
 			info.text = CHECK_ALL
 			info.func = function()
-							C_PetJournal.AddAllPetSourcesFilter();
+							C_PetJournal.SetAllPetSourcesChecked(true);
 							UIDropDownMenu_Refresh(PetJournalFilterDropDown, 2, 2);
 						end
 			UIDropDownMenu_AddButton(info, level)
 			
 			info.text = UNCHECK_ALL
 			info.func = function()
-							C_PetJournal.ClearAllPetSourcesFilter();
+							C_PetJournal.SetAllPetSourcesChecked(false);
 							UIDropDownMenu_Refresh(PetJournalFilterDropDown, 2, 2);
 						end
 			UIDropDownMenu_AddButton(info, level)
@@ -1316,9 +1311,9 @@ function PetJournalFilterDropDown_Initialize(self, level)
 			for i=1,numSources do
 				info.text = _G["BATTLE_PET_SOURCE_"..i];
 				info.func = function(_, _, _, value)
-							C_PetJournal.SetPetSourceFilter(i, value);
+							C_PetJournal.SetPetSourceChecked(i, value);
 						end
-				info.checked = function() return not C_PetJournal.IsPetSourceFiltered(i) end;
+				info.checked = function() return C_PetJournal.IsPetSourceChecked(i) end;
 				UIDropDownMenu_AddButton(info, level);
 			end
 		elseif UIDROPDOWNMENU_MENU_VALUE == 3 then
@@ -1657,7 +1652,7 @@ PetJournal_HelpPlate = {
 function PetJournal_ToggleTutorial()
 	local helpPlate = PetJournal_HelpPlate;
 	if ( helpPlate and not HelpPlate_IsShowing(helpPlate) ) then
-		HelpPlate_Show( helpPlate, PetJournal, PetJournal.MainHelpButton, true );
+		HelpPlate_Show( helpPlate, PetJournal, PetJournal.MainHelpButton );
 		SetCVarBitfield( "closedInfoFrames", LE_FRAME_TUTORIAL_PET_JOURNAL, true );
 	else
 		HelpPlate_Hide(true);

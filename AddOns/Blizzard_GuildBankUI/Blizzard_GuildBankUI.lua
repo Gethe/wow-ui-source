@@ -247,12 +247,7 @@ function GuildBankFrame_Update()
 				button.searchOverlay:Hide();
 			end
 
-			if (quality and quality > LE_ITEM_QUALITY_COMMON and BAG_ITEM_QUALITY_COLORS[quality]) then
-				button.IconBorder:Show();
-				button.IconBorder:SetVertexColor(BAG_ITEM_QUALITY_COLORS[quality].r, BAG_ITEM_QUALITY_COLORS[quality].g, BAG_ITEM_QUALITY_COLORS[quality].b);
-			else
-				button.IconBorder:Hide();
-			end
+			SetItemButtonQuality(button, quality, GetGuildBankItemLink(tab, i));
 		end
 		MoneyFrame_Update("GuildBankMoneyFrame", GetGuildBankMoney());
 		if ( CanWithdrawGuildBankMoney() ) then
@@ -437,12 +432,7 @@ function GuildBankFrame_UpdateTabs()
 		elseif ( i > numTabs ) then
 			tab:Hide();
 		else
-			local iconNumber = tonumber(icon);
-			if(iconNumber) then
-				iconTexture:SetToFileData(iconNumber);
-			else
-				iconTexture:SetTexture(icon);
-			end
+			iconTexture:SetTexture(icon);
 			tab:Show();
 			if ( isViewable ) then
 				tabButton.tooltip = name;
@@ -840,7 +830,7 @@ function GuildBankPopupFrame_Update(tab)
 		texture = GB_ICON_FILENAMES[index];
 		if ( index <= numguildBankIcons ) then
 			if(type(texture) == "number") then
-				guildBankPopupIcon:SetToFileData(texture);
+				guildBankPopupIcon:SetTexture(texture);
 			else
 				guildBankPopupIcon:SetTexture("INTERFACE\\ICONS\\"..texture);
 			end	

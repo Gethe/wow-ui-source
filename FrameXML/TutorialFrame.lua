@@ -869,6 +869,7 @@ function HelpPlate_GetButton()
 	if ( not frame ) then
 		frame = CreateFrame( "Button", nil, HelpPlate, "HelpPlateButton" );
 		frame.box = CreateFrame( "Frame", nil, HelpPlate, "HelpPlateBox" );
+		frame.box.button = frame;
 		frame.boxHighlight = CreateFrame( "Frame", nil, HelpPlate, "HelpPlateBoxHighlight" );
 		table.insert( HELP_PLATE_BUTTONS, frame );
 	end
@@ -884,8 +885,23 @@ function HelpPlateBox_OnLoad(self)
 	end
 end
 
+function HelpPlateBox_OnEnter(self)
+	HelpPlate_Button_OnEnter(self.button);
+end
+
+function HelpPlateBox_OnLeave(self)
+	HelpPlate_Button_OnLeave(self.button);
+end
+
+function HelpPlate_ShowTutorialPrompt( self, mainHelpButton )
+	mainHelpButton.initialTutorial = true;
+	Main_HelpPlate_Button_ShowTooltip(mainHelpButton);
+	HelpPlateTooltip.LingerAndFade:Play();
+	
+end
+
 local HELP_PLATE_CURRENT_PLATE = nil;
-function HelpPlate_Show( self, parent, mainHelpButton, userToggled )
+function HelpPlate_Show( self, parent, mainHelpButton )
 	if ( HELP_PLATE_CURRENT_PLATE ) then
 		HelpPlate_Hide();
 	end
@@ -901,13 +917,13 @@ function HelpPlate_Show( self, parent, mainHelpButton, userToggled )
 			button.toolTipText = self[i].ToolTipText;
 			button.viewed = false;
 			button:Show();
-			if ( not userToggled ) then
-				button.BigI:Show();
-				button.Ring:Show();
+			if ( mainHelpButton.initialTutorial ) then
+				button.HelpIGlow:Show();
+				button.BgGlow:Show();
 				button.Pulse:Play();
 			else
-				button.BigI:Hide();
-				button.Ring:Hide();
+				button.HelpIGlow:Hide();
+				button.BgGlow:Hide();
 				button.Pulse:Stop();
 			end
 			
@@ -924,11 +940,16 @@ function HelpPlate_Show( self, parent, mainHelpButton, userToggled )
 	end
 	HelpPlate:SetPoint( "TOPLEFT", parent, "TOPLEFT", self.FramePos.x, self.FramePos.y );
 	HelpPlate:SetSize( self.FrameSize.width, self.FrameSize.height );
-	HelpPlate.userToggled = userToggled;
 	HelpPlate:Show();
 end
 
 function HelpPlate_Hide(userToggled)
+	if ( not HELP_PLATE_CURRENT_PLATE ) then
+		return;
+	end
+	
+	HELP_PLATE_CURRENT_PLATE.mainHelpButton.initialTutorial = false;
+	
 	if (not userToggled) then
 		for i = 1, #HELP_PLATE_BUTTONS do
 			local button = HELP_PLATE_BUTTONS[i];
@@ -965,10 +986,15 @@ function HelpPlate_IsShowing(plate)
 end
 
 function Main_HelpPlate_Button_OnEnter(self)
+	Main_HelpPlate_Button_ShowTooltip(self);
+	HelpPlateTooltip.LingerAndFade:Stop();
+end
+
+function Main_HelpPlate_Button_ShowTooltip(self)
 	HelpPlateTooltip.ArrowRIGHT:Show();
 	HelpPlateTooltip.ArrowGlowRIGHT:Show();
 	HelpPlateTooltip:SetPoint("LEFT", self, "RIGHT", 10, 0);
-	HelpPlateTooltip.Text:SetText(MAIN_HELP_BUTTON_TOOLTIP)
+	HelpPlateTooltip.Text:SetText(MAIN_HELP_BUTTON_TOOLTIP);
 	HelpPlateTooltip:Show();
 end
 
@@ -984,7 +1010,8 @@ function HelpPlate_Button_OnLoad(self)
 	self.animGroup_Show.translate = self.animGroup_Show:CreateAnimation("Translation");
 	self.animGroup_Show.translate:SetSmoothing("IN");
 	self.animGroup_Show.alpha = self.animGroup_Show:CreateAnimation("Alpha");
-	self.animGroup_Show.alpha:SetChange(-1);
+	self.animGroup_Show.alpha:SetFromAlpha(1);
+	self.animGroup_Show.alpha:SetToAlpha(0);
 	self.animGroup_Show.alpha:SetSmoothing("IN");
 	self.animGroup_Show.parent = self;
 end
@@ -1043,22 +1070,23 @@ function HelpPlate_Button_OnEnter(self)
 	end
 	HelpPlateTooltip.Text:SetText(self.toolTipText)
 	HelpPlateTooltip:Show();
-	self.box:Hide();
+	self.box.BG:Hide();
 	self.boxHighlight:Show();
 	self.Pulse:Stop();
-	self.BigI:Hide();
-	self.Ring:Hide();
+	self.HelpIGlow:Hide();
+	self.BgGlow:Hide();
 end
 
 function HelpPlate_Button_OnLeave(self)
 	HelpPlate_TooltipHide();
-	self.box:Show();
+	self.box.BG:Show();
 	self.boxHighlight:Hide();
 	self.viewed = true;
 
 	-- remind the player to use the main button to toggle the help plate
-	-- but only if they didn't open it to begin with
-	if ( not HelpPlate.userToggled ) then
+	-- but only if this is the first time they have opened the UI and are 
+	-- going through the initial tutorial
+	if ( HELP_PLATE_CURRENT_PLATE.mainHelpButton.initialTutorial ) then
 		for i = 1, #HELP_PLATE_BUTTONS do
 			local button = HELP_PLATE_BUTTONS[i];
 			if ( button:IsShown() and not button.viewed ) then

@@ -1,4 +1,4 @@
-## Interface: 60200
+## Interface: 70000
 ## Title: Blizzard WoW Token UI
 ## Secure: 1
 ## LoadOnDemand: 0

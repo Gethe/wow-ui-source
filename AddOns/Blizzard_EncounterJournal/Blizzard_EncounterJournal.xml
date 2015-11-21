@@ -414,9 +414,17 @@
 		</Scripts>
 	</Button>
 	
-	<Button name="EncounterSearchSMTemplate" virtual="true">
+	<Button name="EncounterSearchSMTemplate" parentArray="searchPreview" virtual="true">
 		<Size x="275" y="27"/>
 		<Layers>
+			<Layer level="OVERLAY" textureSubLevel="3">
+				<Texture parentKey="selectedTexture" atlas="search-highlight" hidden="true">
+					<Anchors>
+						<Anchor point="TOPLEFT"/>
+						<Anchor point="BOTTOMRIGHT"/>
+					</Anchors>
+				</Texture>
+			</Layer>
 			<Layer level="OVERLAY" textureSubLevel="2">
 				<Texture name="$parentIconFrame" inherits="UI-EJ-SearchIconFrameLg">
 					<Size x="21" y="21"/>
@@ -446,8 +454,6 @@
 		</NormalTexture>
 		<PushedTexture inherits="_SearchBarSm">
 		</PushedTexture>
-		<HighlightTexture inherits="UI-EJ-SearchBarHighlightSm">
-		</HighlightTexture>
 		<Scripts>
 			<OnEnter>
 				if self.link then
@@ -455,6 +461,7 @@
 					GameTooltip:SetHyperlink(self.link);
 					self.showingTooltip = true;
 				end
+				EncounterJournal_SetSearchPreviewSelection(self:GetID());
 			</OnEnter>
 			<OnLeave>
 				GameTooltip:Hide();
@@ -757,10 +764,10 @@
 	<Frame name="EncounterInfoTemplate" virtual="true">
 		<Animations>
 			<AnimationGroup parentKey="flashAnim">
-				<Alpha target="$parentHeaderButtonGlow" change="1.0" duration="0.6" order="1"/>
-				<Alpha target="$parentHeaderButtonGlow" change="-1.0"  duration="0.6" order="2"/>
-				<Alpha target="$parentHeaderButtonGlow" change="1.0" duration="0.6" order="3"/>
-				<Alpha target="$parentHeaderButtonGlow" change="-1.0"  duration="0.9" order="4"/>
+				<Alpha target="$parentHeaderButtonGlow" fromAlpha="0" toAlpha="1" duration="0.6" order="1"/>
+				<Alpha target="$parentHeaderButtonGlow" fromAlpha="1" toAlpha="0"  duration="0.6" order="2"/>
+				<Alpha target="$parentHeaderButtonGlow" fromAlpha="0" toAlpha="1" duration="0.6" order="3"/>
+				<Alpha target="$parentHeaderButtonGlow" fromAlpha="1" toAlpha="0"  duration="0.9" order="4"/>
 			</AnimationGroup>
 		</Animations>
 		<Size x="5" y="24"/>
@@ -1391,45 +1398,58 @@
 					<Anchor point="TOPRIGHT" x="-10" y="-32"/>
 				</Anchors>
 				<Frames>
-					<Button name="$parentSearchButton1" inherits="EncounterSearchSMTemplate" parentKey="sbutton1">
+					<Frame parentKey="searchPreviewContainer" hidden="true">
+						<Size x="0" y="24"/>
 						<Anchors>
-							<Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" x="0" y="0"/>
-							<Anchor point="TOPRIGHT" relativePoint="BOTTOMRIGHT" x="-5" y="0"/>
+							<Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT"/>
+							<Anchor point="TOPRIGHT" relativePoint="BOTTOMRIGHT"/>
 						</Anchors>
 						<Layers>
-							<Layer level="OVERLAY">
-								<Texture name="$parentBotLeftCorner" inherits="UI-Frame-BotCornerLeft" parentKey="boarderAnchor">
+							<Layer level="ARTWORK">
+								<Texture parentKey="botLeftCorner" inherits="UI-Frame-BotCornerLeft">
 									<Anchors>
 										<Anchor point="LEFT" x="-7" y="0"/>
 										<Anchor point="BOTTOM" x="0" y="-5"/>
 									</Anchors>
 								</Texture>
-								<Texture name="$parentBotRightCorner" inherits="UI-Frame-BotCornerRight">
+								<Texture parentKey="botRightCorner" inherits="UI-Frame-BotCornerRight">
 									<Anchors>
-										<Anchor point="BOTTOM" relativeTo="$parentBotLeftCorner" x="0" y="0"/>
+										<Anchor point="BOTTOM" x="0" y="-5"/>
 										<Anchor point="RIGHT" x="4" y="0"/>
 									</Anchors>
 								</Texture>
-								<Texture name="$parentBottomBorder" inherits="_UI-Frame-Bot">
+								<Texture parentKey="bottomBorder" inherits="_UI-Frame-Bot">
 									<Anchors>
-										<Anchor point="BOTTOMLEFT" relativeTo="$parentBotLeftCorner" relativePoint="BOTTOMRIGHT" y="0"/>
-										<Anchor point="BOTTOMRIGHT" relativeTo="$parentBotRightCorner" relativePoint="BOTTOMLEFT" y="0"/>
+										<Anchor point="BOTTOMLEFT" relativeKey="$parent.botLeftCorner" relativePoint="BOTTOMRIGHT" y="0"/>
+										<Anchor point="BOTTOMRIGHT" relativeKey="$parent.botRightCorner" relativePoint="BOTTOMLEFT" y="0"/>
 									</Anchors>
 								</Texture>
-								<Texture name="$parentLeftBorder" inherits="!UI-Frame-LeftTile" parentKey="leftBorderBar">
+								<Texture parentKey="leftBorder" inherits="!UI-Frame-LeftTile">
 									<Anchors>
 										<Anchor point="TOP" x="0" y="1" />
-										<Anchor point="BOTTOMLEFT" relativeTo="$parentBotLeftCorner" relativePoint="TOPLEFT"/>
+										<Anchor point="BOTTOMLEFT" relativeKey="$parent.botLeftCorner" relativePoint="TOPLEFT"/>
 									</Anchors>
 								</Texture>
-								<Texture name="$parentRightBorder" inherits="!UI-Frame-RightTile">
+								<Texture parentKey="rightBorder" inherits="!UI-Frame-RightTile">
 									<Anchors>
 										<Anchor point="TOP" x="0" y="1" />
-										<Anchor point="BOTTOMRIGHT" relativeTo="$parentBotRightCorner" relativePoint="TOPRIGHT" x="1" y="0"/>
+										<Anchor point="BOTTOMRIGHT" relativeKey="$parent.botRightCorner" relativePoint="TOPRIGHT" x="1" y="0"/>
+									</Anchors>
+								</Texture>
+								<Texture parentKey="topBorder" inherits="_UI-Frame-Bot">
+									<Anchors>
+										<Anchor point="TOPLEFT" relativePoint="TOPLEFT" x="-2" y="3"/>
+										<Anchor point="BOTTOMRIGHT" relativePoint="TOPRIGHT" x="2" y="-3"/>
 									</Anchors>
 								</Texture>
 							</Layer>
 						</Layers>
+					</Frame>
+					<Button name="$parentSearchButton1" inherits="EncounterSearchSMTemplate" parentKey="sbutton1">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeKey="$parent.searchPreviewContainer" relativePoint="TOPLEFT" x="0" y="0"/>
+							<Anchor point="BOTTOMRIGHT" relativeKey="$parent.searchPreviewContainer" relativePoint="BOTTOMRIGHT" x="0" y="0"/>
+						</Anchors>
 					</Button>
 					<Button name="$parentSearchButton2" inherits="EncounterSearchSMTemplate" parentKey="sbutton2">
 						<Anchors>
@@ -1463,6 +1483,14 @@
 							<Anchor point="TOP" relativeTo="$parentSearchButton5" relativePoint="BOTTOM" x="0" y="0"/>
 						</Anchors>
 						<Layers>
+							<Layer level="OVERLAY" textureSubLevel="2">
+								<Texture parentKey="selectedTexture" atlas="search-highlight" hidden="true">
+									<Anchors>
+										<Anchor point="TOPLEFT"/>
+										<Anchor point="BOTTOMRIGHT"/>
+									</Anchors>
+								</Texture>
+							</Layer>
 							<Layer level="OVERLAY">
 								<FontString name="$parentText" inherits="GameFontNormal" justifyH="LEFT" parentKey="text" text="ENCOUNTER">
 									<Size x="0" y="0"/>
@@ -1476,8 +1504,6 @@
 						</NormalTexture>
 						<PushedTexture inherits="_SearchBarSm">
 						</PushedTexture>
-						<HighlightTexture inherits="UI-EJ-SearchBarHighlightSm">
-						</HighlightTexture>
 						<Scripts>
 							<OnShow>
 								self:SetFrameLevel(self:GetParent():GetFrameLevel() + 10);
@@ -1486,13 +1512,131 @@
 								EncounterJournal_ShowFullSearch()
 								PlaySound("igMainMenuOptionCheckBoxOn");
 							</OnClick>
+							<OnEnter function="EncounterJournalSearchBoxShowAllResults_OnEnter"/>
 						</Scripts>
 					</Button>
+					<Frame name="$parentSearchProgress" parentKey="searchProgress" hidden="true">
+						<Size x="0" y="24"/>
+						<Anchors>
+							<Anchor point="LEFT" relativePoint="LEFT"/>
+							<Anchor point="RIGHT" relativePoint="RIGHT"/>
+							<Anchor point="TOP" relativePoint="BOTTOM"/>
+						</Anchors>
+						<Layers>
+							<Layer level="BACKGROUND">
+								<Texture parentKey="background" atlas="_search-rowbg">
+									<Anchors>
+										<Anchor point="TOPLEFT"/>
+										<Anchor point="BOTTOMRIGHT"/>
+									</Anchors>
+								</Texture>
+							</Layer>
+						</Layers>
+						<Frames>
+							<Frame name="$parentLoading" parentKey="loading">
+								<Anchors>
+									<Anchor point="TOPLEFT" relativePoint="TOPLEFT"/>
+									<Anchor point="BOTTOMRIGHT" relativePoint="BOTTOMRIGHT"/>
+								</Anchors>
+								<Layers>
+									<Layer level="OVERLAY">
+										<FontString name="$parentText" inherits="GameFontHighlight" justifyH="CENTER" parentKey="text" text="SEARCH_LOADING_TEXT" hidden="false">
+											<Size x="0" y="0"/>
+											<Anchors>
+												<Anchor point="CENTER" x="16" y="0"/>
+											</Anchors>
+										</FontString>
+									</Layer>
+								</Layers>
+								<Frames>
+									<Frame parentKey="spinner" inherits="LoadingSpinnerTemplate" hidden="false">
+										<Size x="40" y="40"/>
+										<Anchors>
+											<Anchor point="RIGHT" relativeKey="$parent.text" relativePoint="LEFT"/>
+										</Anchors>
+										<Scripts>
+											<OnLoad>
+												self.Anim:Play();
+											</OnLoad>
+										</Scripts>
+									</Frame>
+								</Frames>
+							</Frame>
+							<StatusBar name="$parentBar" parentKey="bar">
+								<Anchors>
+									<Anchor point="TOPLEFT" relativePoint="TOPLEFT" x="4" y="-4"/>
+									<Anchor point="BOTTOMRIGHT" relativePoint="BOTTOMRIGHT" x="-4" y="6"/>
+								</Anchors>
+								<Layers>
+									<Layer level="BACKGROUND">
+										<Texture parentKey="barBackground">
+											<Anchors>
+												<Anchor point="TOPLEFT"/>
+												<Anchor point="BOTTOMRIGHT"/>
+											</Anchors>
+											<Color r="0" g="0" b="0" a=".4"/>
+										</Texture>
+									</Layer>
+									<Layer level="OVERLAY">
+										<FontString parentKey="text" inherits="GameFontHighlightSmall" text="SEARCH_PROGRESS_BAR_TEXT" justifyV="TOP">
+											<Size x="0" y="0"/>
+											<Anchors>
+												<Anchor point="CENTER" x="0" y="0"/>
+											</Anchors>
+										</FontString>
+									</Layer>
+									<Layer level="ARTWORK">
+										<Texture parentKey="barBorderLeft" file="Interface\AchievementFrame\UI-Achievement-ProgressBar-Border">
+											<Size x="16" y="0"/>
+											<Anchors>
+												<Anchor point="TOPLEFT" x="-6" y="5"/>
+												<Anchor point="BOTTOMLEFT" x="-6" y="-5"/>
+											</Anchors>
+											<TexCoords left="0" right="0.0625" top="0" bottom="0.75"/>
+										</Texture>
+										<Texture parentKey="barBorderRight" file="Interface\AchievementFrame\UI-Achievement-ProgressBar-Border">
+											<Size x="16" y="0"/>
+											<Anchors>
+												<Anchor point="TOPRIGHT" x="6" y="5"/>
+												<Anchor point="BOTTOMRIGHT" x="6" y="-5"/>
+											</Anchors>
+											<TexCoords left="0.812" right="0.8745" top="0" bottom="0.75"/>
+										</Texture>
+										<Texture parentKey="barBorderCenter" file="Interface\AchievementFrame\UI-Achievement-ProgressBar-Border">
+											<Size x="16"/>
+											<Anchors>
+												<Anchor point="TOPLEFT" relativeKey="$parent.barBorderLeft" relativePoint="TOPRIGHT"/>
+												<Anchor point="BOTTOMRIGHT" relativeKey="$parent.barBorderRight" relativePoint="BOTTOMLEFT"/>
+											</Anchors>
+											<TexCoords left="0.0625" right="0.812" top="0" bottom="0.75"/>
+										</Texture>
+									</Layer>
+								</Layers>
+								<Scripts>
+									<OnLoad function="EncounterJournalSearchBoxSearchProgressBar_OnLoad"/>
+									<OnShow function="EncounterJournalSearchBoxSearchProgressBar_OnShow"/>
+									<OnHide function="EncounterJournalSearchBoxSearchProgressBar_OnHide"/>
+								</Scripts>
+								<BarTexture file="Interface\TargetingFrame\UI-StatusBar"/>
+							</StatusBar>
+						</Frames>
+						<Scripts>
+							<OnShow>
+								--always on top
+								self:SetFrameLevel(self:GetParent():GetFrameLevel()+10);
+							</OnShow>
+						</Scripts>
+					</Frame>
 				</Frames>
 				<Scripts>
-					<OnEnterPressed function="EncounterJournal_ShowFullSearch"/>
-					<OnTextChanged function="EncounterJournal_OnSearchTextChanged"/>
-					<OnEditFocusLost function="EncounterJournal_OnSearchFocusLost"/>
+					<OnLoad function="EncounterJournalSearchBox_OnLoad"/>
+					<OnShow function="EncounterJournalSearchBox_OnShow"/>
+					<OnHide function="EncounterJournalSearchBox_OnHide"/>
+					<OnTextChanged function="EncounterJournalSearchBox_OnTextChanged"/>
+					<OnEnterPressed function="EncounterJournalSearchBox_OnEnterPressed"/>
+					<OnKeyDown function="EncounterJournalSearchBox_OnKeyDown"/>
+					<OnEditFocusLost function="EncounterJournalSearchBox_OnFocusLost"/>
+					<OnEditFocusGained function="EncounterJournalSearchBox_OnFocusGained"/>
 				</Scripts>
 			</EditBox>
 			<Frame name="$parentSearchResults" parentKey="searchResults" hidden="true">
@@ -1518,7 +1662,7 @@
 								<Anchor point="RIGHT" x="-60"/>
 							</Anchors>
 						</FontString>
-						<Texture name="$parentTopLeftCorner" inherits="UI-Frame-TopCornerLeft" parentKey="boarderAnchor">
+						<Texture name="$parentTopLeftCorner" inherits="UI-Frame-TopCornerLeft">
 							<Anchors>
 								<Anchor point="TOPLEFT" x="-7" y="4"/>
 							</Anchors>
@@ -1556,7 +1700,7 @@
 						</Texture>
 					</Layer>
 					<Layer level="BORDER" textureSubLevel="1">
-						<Texture name="$parentTopLeftCorner2" inherits="UI-Frame-TopCornerLeft" parentKey="boarderAnchor">
+						<Texture name="$parentTopLeftCorner2" inherits="UI-Frame-TopCornerLeft">
 							<Anchors>
 								<Anchor point="TOPLEFT" x="-7" y="-20"/>
 							</Anchors>

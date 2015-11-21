@@ -711,8 +711,20 @@
 	</Binding>
 	
 	<!-- Target function key bindings header="TARGETING" -->
-	<Binding name="TARGETNEARESTENEMY" category="BINDING_HEADER_TARGETING">
-		TargetNearestEnemy();
+	<Binding name="TARGETNEARESTENEMY" runOnUp="true" category="BINDING_HEADER_TARGETING">
+		local ALLOW_HOLD_TARGETING = GetCVarBool("TargetPriorityHoldHighlight");
+		if ( ALLOW_HOLD_TARGETING ) then
+			if ( keystate == "down" ) then
+				TargetPriorityHighlightStart();
+			else
+				TargetNearestEnemy();
+				TargetPriorityHighlightEnd();
+			end
+		else
+			if ( keystate == "down" ) then
+				TargetNearestEnemy();
+			end
+		end
 	</Binding>
 	<Binding name="TARGETPREVIOUSENEMY" category="BINDING_HEADER_TARGETING">
 		TargetNearestEnemy(true);	-- true means reverse!
@@ -832,33 +844,47 @@
 	
 	<Binding name="NAMEPLATES" category="BINDING_HEADER_TARGETING">
 		local SHOW_ENEMIES = GetCVarBool("nameplateShowEnemies");
-		local SHOW_FRIENDS = GetCVarBool("nameplateShowFriends");
-		if ( SHOW_ENEMIES and not SHOW_FRIENDS ) then
+		if ( SHOW_ENEMIES ) then
 			SetCVar("nameplateShowEnemies", 0);
+			UIErrorsFrame:AddMessage(NAMEPLATES_MESSAGE_ENEMY_OFF, YELLOW_FONT_COLOR.r, YELLOW_FONT_COLOR.g, YELLOW_FONT_COLOR.b);
 		else
 			SetCVar("nameplateShowEnemies", 1);
-			SetCVar("nameplateShowFriends", 0);
+			if ( GetCVarBool("nameplateShowAll") ) then
+				UIErrorsFrame:AddMessage(NAMEPLATES_MESSAGE_ENEMY_ON, YELLOW_FONT_COLOR.r, YELLOW_FONT_COLOR.g, YELLOW_FONT_COLOR.b);
+			else
+				UIErrorsFrame:AddMessage(NAMEPLATES_MESSAGE_ENEMY_ON_AUTO, YELLOW_FONT_COLOR.r, YELLOW_FONT_COLOR.g, YELLOW_FONT_COLOR.b);
+			end
 		end
 	</Binding>
 	<Binding name="FRIENDNAMEPLATES" category="BINDING_HEADER_TARGETING">
-		local SHOW_ENEMIES = GetCVarBool("nameplateShowEnemies");
 		local SHOW_FRIENDS = GetCVarBool("nameplateShowFriends");
-		if ( SHOW_FRIENDS and not SHOW_ENEMIES ) then
+		if ( SHOW_FRIENDS ) then
 			SetCVar("nameplateShowFriends", 0);
+			UIErrorsFrame:AddMessage(NAMEPLATES_MESSAGE_FRIENDLY_OFF, YELLOW_FONT_COLOR.r, YELLOW_FONT_COLOR.g, YELLOW_FONT_COLOR.b);
 		else
 			SetCVar("nameplateShowFriends", 1);
-			SetCVar("nameplateShowEnemies", 0);
+			if ( GetCVarBool("nameplateShowAll") ) then
+				UIErrorsFrame:AddMessage(NAMEPLATES_MESSAGE_FRIENDLY_ON, YELLOW_FONT_COLOR.r, YELLOW_FONT_COLOR.g, YELLOW_FONT_COLOR.b);
+			else
+				UIErrorsFrame:AddMessage(NAMEPLATES_MESSAGE_FRIENDLY_ON_AUTO, YELLOW_FONT_COLOR.r, YELLOW_FONT_COLOR.g, YELLOW_FONT_COLOR.b);
+			end
 		end
 	</Binding>
 	<Binding name="ALLNAMEPLATES" category="BINDING_HEADER_TARGETING">
 		local SHOW_ENEMIES = GetCVarBool("nameplateShowEnemies");
 		local SHOW_FRIENDS = GetCVarBool("nameplateShowFriends");
-		if ( not SHOW_ENEMIES and not SHOW_FRIENDS ) then
+		if ( not SHOW_ENEMIES or not SHOW_FRIENDS ) then
 			SetCVar("nameplateShowEnemies", 1);
 			SetCVar("nameplateShowFriends", 1);
+			if ( GetCVarBool("nameplateShowAll") ) then
+				UIErrorsFrame:AddMessage(NAMEPLATES_MESSAGE_ALL_ON, YELLOW_FONT_COLOR.r, YELLOW_FONT_COLOR.g, YELLOW_FONT_COLOR.b);
+			else
+				UIErrorsFrame:AddMessage(NAMEPLATES_MESSAGE_ALL_ON_AUTO, YELLOW_FONT_COLOR.r, YELLOW_FONT_COLOR.g, YELLOW_FONT_COLOR.b);
+			end
 		else
 			SetCVar("nameplateShowEnemies", 0);
 			SetCVar("nameplateShowFriends", 0);
+			UIErrorsFrame:AddMessage(NAMEPLATES_MESSAGE_ALL_OFF, YELLOW_FONT_COLOR.r, YELLOW_FONT_COLOR.g, YELLOW_FONT_COLOR.b);
 		end
 	</Binding>
 	<Binding name="INTERACTMOUSEOVER" category="BINDING_HEADER_TARGETING">
@@ -946,9 +972,6 @@
 	</Binding>
 	<Binding name="TOGGLETALENTS" category="BINDING_HEADER_INTERFACE">
 		ToggleTalentFrame();
-	</Binding>
-	<Binding name="TOGGLEINSCRIPTION" category="BINDING_HEADER_INTERFACE">
-		ToggleGlyphFrame();
 	</Binding>
 	
 	<Binding name="TOGGLEACHIEVEMENT" header="BLANK10" category="BINDING_HEADER_INTERFACE">
@@ -1106,6 +1129,9 @@
 				UIErrorsFrame:AddMessage(GRAPHICS_SETTING_NORMAL_NOTICE, 1.0, 0.1, 0.1, 1.0);
 			end
 		end
+	</Binding>
+	<Binding name="TOGGLESELFHIGHLIGHT" category="BINDING_HEADER_MISC">
+		ToggleSelfHighlight();
 	</Binding>
 
 	<!-- Debug function key bindings -->
@@ -1284,6 +1310,12 @@
 		else
 			CameraOrSelectOrMoveStop(IsModifiedClick("STICKYCAMERA"));
 		end
+	</Binding>
+	<Binding name="KIOSKMODETYFPDISABLE" kiosk="true">
+		if (not KioskThankYouForPlayingFrame or not IsKioskModeEnabled()) then
+			return;
+		end
+		KioskThankYouForPlayingFrame_Disable();
 	</Binding>
 
 	<!-- iTunes Bindings header="ITUNES_REMOTE" -->

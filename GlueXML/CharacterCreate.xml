@@ -370,11 +370,7 @@
 		<Scripts>
 			<OnLoad>
 				GlueTooltip_OnLoad(self);
-				self:SetFont(CharacterCreateTooltipFont);
 				self.defaultColor = HIGHLIGHT_FONT_COLOR;
-				for i = 1, GLUETOOLTIP_NUM_LINES do
-					_G[self:GetName().."TextLeft"..i]:SetJustifyH("CENTER");
-				end
 			</OnLoad>
 		</Scripts>
 	</Frame>
@@ -382,7 +378,7 @@
 		<Size x="50" y="50"/>
 		<Layers>
 			<Layer level="BACKGROUND">
-				<Texture name="$parentShadow" file="Interface\Glues\CharacterCreate\UI-CharacterCreatePatchwerk">
+				<Texture name="$parentShadow" parentKey="Shadow" file="Interface\Glues\CharacterCreate\UI-CharacterCreatePatchwerk">
 					<Size x="68" y="68"/>
 					<Anchors>
 						<Anchor point="CENTER" x="0" y="0"/>
@@ -398,7 +394,7 @@
 					</Anchors>
 					<TexCoords left="0" right="0.5" top="0.5" bottom="1.0"/>
 				</Texture>
-				<Texture name="$parentDisableTexture" hidden="true">
+				<Texture name="$parentDisableTexture" parentKey="DisableTexture" hidden="true">
 					<Size x="50" y="50"/>
 					<Anchors>
 						<Anchor point="CENTER" x="0" y="0"/>
@@ -410,14 +406,14 @@
 		<Scripts>
 			<OnMouseDown>
 				if( self:IsEnabled() ) then
-					_G[self:GetName().."BevelEdge"]:SetPoint("CENTER", self, "CENTER", 2, -2);
-					_G[self:GetName().."Shadow"]:SetSize(70, 70);
+					self.bevel:SetPoint("CENTER", self, "CENTER", 2, -2);
+					self.Shadow:SetSize(70, 70);
 				end
 			</OnMouseDown>
 			<OnMouseUp>
 				if( self:IsEnabled() ) then
-					_G[self:GetName().."BevelEdge"]:SetPoint("CENTER", self, "CENTER", 0, 0);
-					_G[self:GetName().."Shadow"]:SetSize(76, 76);
+					self.bevel:SetPoint("CENTER", self, "CENTER", 0, 0);
+					self.Shadow:SetSize(76, 76);
 				end
 			</OnMouseUp>
 			<OnEnable>
@@ -485,8 +481,8 @@
 				CharacterRace_OnClick(self, self:GetID());
 			</OnClick>
 		</Scripts>
-		<NormalTexture name="$parentNormalTexture" file="Interface\Glues\CharacterCreate\UI-CharacterCreate-Races"/>
-		<PushedTexture name="$parentPushedTexture" file="Interface\Glues\CharacterCreate\UI-CharacterCreate-Races">
+		<NormalTexture name="$parentNormalTexture" parentKey="NormalTexture" file="Interface\Glues\CharacterCreate\UI-CharacterCreate-Races"/>
+		<PushedTexture name="$parentPushedTexture" parentKey="PushedTexture" file="Interface\Glues\CharacterCreate\UI-CharacterCreate-Races">
 			<Size x="50" y="50"/>
 			<Anchors>
 				<Anchor point="CENTER" x="2" y="-2"/>
@@ -494,7 +490,7 @@
 		</PushedTexture>
 	</CheckButton>
 	<CheckButton name="CharCreateClassButtonTemplate" virtual="true" motionScriptsWhileDisabled="true">
-		<Size x="44" y="44"/>
+		<Size x="40" y="40"/>
 		<Layers>
 			<Layer level="BACKGROUND">
 				<Texture name="$parentShadow" file="Interface\Glues\CharacterCreate\UI-CharacterCreatePatchwerk">
@@ -513,7 +509,7 @@
 					</Anchors>
 					<TexCoords left="0" right="0.5" top="0.5" bottom="1.0"/>
 				</Texture>
-				<Texture name="$parentDisableTexture" hidden="true">
+				<Texture name="$parentDisableTexture" parentKey="DisableTexture" hidden="true">
 					<Size x="44" y="44"/>
 					<Anchors>
 						<Anchor point="CENTER" x="0" y="0"/>
@@ -574,7 +570,7 @@
 					</Layer>
 					<Layer level="ARTWORK">
 						<FontString name="$parentText" inherits="GlueFontNormalSmall" parentKey="text">
-							<Size x="96" y="0"/>
+							<Size x="110" y="0"/>
 							<Anchors>
 								<Anchor point="TOP" x="2" y="-59"/>
 							</Anchors>
@@ -603,21 +599,12 @@
 			</Layer>
 		</Layers>
 		<Scripts>
-			<OnClick>
-				CharacterClass_OnClick(self, self:GetID());	
-			</OnClick>
-			<OnEnter>
-				if ( self.tooltip ) then
-					CharacterCreateTooltip:SetOwner(self, "ANCHOR_RIGHT", -3, -5);
-					CharacterCreateTooltip:SetText(self.tooltip);
-				end
-			</OnEnter>
-			<OnLeave>
-				CharacterCreateTooltip:Hide();
-			</OnLeave>
+			<OnClick function="CharacterClass_OnClick"/>
+			<OnEnter function="CharCreateClassButton_OnEnter"/>
+			<OnLeave function="CharCreateClassButton_OnLeave"/>
 		</Scripts>
-		<NormalTexture name="$parentNormalTexture" file="Interface\Glues\CharacterCreate\UI-CharacterCreate-Classes"/>
-		<PushedTexture name="$parentPushedTexture" file="Interface\Glues\CharacterCreate\UI-CharacterCreate-Classes">
+		<NormalTexture name="$parentNormalTexture" parentKey="NormalTexture" file="Interface\Glues\CharacterCreate\UI-CharacterCreate-Classes"/>
+		<PushedTexture name="$parentPushedTexture" parentKey="PushedTexture" file="Interface\Glues\CharacterCreate\UI-CharacterCreate-Classes">
 			<Size x="44" y="44"/>
 			<Anchors>
 				<Anchor point="CENTER" x="2" y="-2"/>
@@ -786,25 +773,14 @@
 		</Layers>
 	</Frame>
 	<Frame name="CharacterCreateInfoTemplate" hidden="true" virtual="true" inherits="CharCreatePanelTemplate">
-		<Size>
-			<AbsDimension x="243" y="300"/>
-		</Size>
-		<!--
-		<Backdrop bgFile="Interface\Tooltips\UI-Tooltip-Background" edgeFile="Interface\Tooltips\UI-Tooltip-Border" tile="true">
-			<EdgeSize>
-				<AbsValue val="16"/>
-			</EdgeSize>
-			<TileSize>
-				<AbsValue val="16"/>
-			</TileSize>
-			<BackgroundInsets>
-				<AbsInset left="3" right="3" top="27" bottom="3"/>
-			</BackgroundInsets>
-		</Backdrop>
-		-->
+		<Size x="243" y="250"/>
+		<KeyValues>
+			<KeyValue key="maxHeight" value="550" type="number"/>
+			<KeyValue key="minHeight" value="250" type="number"/>
+		</KeyValues>
 		<Layers>
 			<Layer level="BORDER">
-				<Texture name="$parentHeaderTex">
+				<Texture name="$parentHeaderTex" parentKey="headerTex">
 					<Size x="0" y="32"/>
 					<Anchors>
 						<Anchor point="TOPLEFT" x="6" y="-8"/>
@@ -828,7 +804,7 @@
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeTo="$parentHeaderTex" relativePoint="BOTTOMLEFT" x="11" y="0"/>
 					<Anchor point="TOPRIGHT" relativeTo="$parentHeaderTex" relativePoint="BOTTOMRIGHT" x="-31" y="0"/>
-					<Anchor point="BOTTOM" x="0" y="16"/>
+					<Anchor point="BOTTOM" x="0" y="24"/>
 				</Anchors>
 				<Layers>
 					<Layer level="BACKGROUND">
@@ -880,21 +856,30 @@
 					</OnScrollRangeChanged>
 				</Scripts>
 				<ScrollChild>
-					<Frame name="$parentScrollChild" parentKey="scrollChild">
+					<Frame name="$parentScrollChild" parentKey="scrollChild" inherits="VerticalLayoutFrame">
 						<Size x="210" y="10"/>
 						<Layers>
-							<Layer level="BACKGROUND">
+							<Layer level="ARTWORK">
 								<FontString name="$parentBulletText" inherits="GlueFontNormalSmall" justifyH="LEFT" parentKey="bulletText">
 									<Size x="190" y="0"/>
-									<Anchors>
-										<Anchor point="TOPLEFT" x="0" y="0"/>
-									</Anchors>
+									<KeyValues>
+										<KeyValue key="layoutIndex" value="1" type="number"/>
+										<KeyValue key="topPadding" value="8" type="number"/>
+									</KeyValues>
+								</FontString>
+								<FontString name="$parentAbilityText" inherits="GlueFontCharacterCreate" justifyH="LEFT" parentKey="AbilityText" text="CLASS_INFO_SAMPLE_ABILITIES" hidden="true">
+									<Size x="190" y="0"/>
+									<KeyValues>
+										<KeyValue key="topPadding" value="5" type="number"/>
+										<KeyValue key="bottomPadding" value="4" type="number"/>
+									</KeyValues>
 								</FontString>
 								<FontString name="$parentInfoText" inherits="GlueFontCharacterCreate" justifyH="LEFT" parentKey="infoText">
 									<Size x="190" y="0"/>
-									<Anchors>
-										<Anchor point="TOPLEFT" relativeTo="$parentBulletText" relativePoint="BOTTOMLEFT" x="0" y="-2"/>
-									</Anchors>
+									<KeyValues>
+										<KeyValue key="layoutIndex" value="2" type="number"/>
+										<KeyValue key="topPadding" value="8" type="number"/>
+									</KeyValues>
 								</FontString>
 							</Layer>
 						</Layers>
@@ -902,6 +887,9 @@
 				</ScrollChild>
 			</ScrollFrame>
 		</Frames>
+		<Scripts>
+			<OnShow function="CharacterCreate_InfoTemplate_OnShow"/>
+		</Scripts>
 	</Frame>	
 	<Frame name="CharacterCustomizationFrameTemplate" virtual="true">
 		<Size>
@@ -1083,6 +1071,34 @@
 		</Frames>
 	</Frame>
 
+	<Frame name="CharacterCreateSpellIconTemplate" enableMouse="true" parentArray="Spells" virtual="true">
+		<Size x="190" y="40"/>
+		<KeyValues>
+			<KeyValue key="topPadding" value="4" type="number"/>
+			<KeyValue key="align" value="center" type="string"/>
+		</KeyValues>
+		<Layers>
+			<Layer level="ARTWORK">
+				<Texture name="$parentIcon" parentKey="Icon">
+					<Size x="40" y="40"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" x="12" y="0"/>
+					</Anchors>
+				</Texture>
+				<FontString name="$parentText" inherits="GlueFontNormalSmall" parentKey="Text" justifyH="LEFT">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.Icon" relativePoint="TOPRIGHT" x="6" y="0"/>
+						<Anchor point="BOTTOMRIGHT" x="0" y="0"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnEnter function="CharacterCreateSpellIcon_OnEnter"/>
+			<OnLeave function="CharacterCreateSpellIcon_OnLeave"/>
+		</Scripts>
+	</Frame>
+	
 	<ModelFFX name="CharacterCreate" toplevel="true" parent="GlueParent" setAllPoints="true" enableKeyboard="true" hidden="true">
 		<Frames>
 			<Frame name="CharacterCreateFrame" setAllPoints="true" enableMouse="true">
@@ -1543,9 +1559,14 @@
 									<Anchor point="TOPLEFT" relativeTo="CharCreateClassButton10" relativePoint="BOTTOMLEFT" x="0" y="-18"/>
 								</Anchors>
 							</CheckButton>
-							<CheckButton name="CharCreateClassButton6" inherits="CharCreateClassButtonTemplate" id="6">
+							<CheckButton name="CharCreateClassButton12" inherits="CharCreateClassButtonTemplate" id="12">
 								<Anchors>
 									<Anchor point="TOPLEFT" relativeTo="CharCreateClassButton11" relativePoint="BOTTOMLEFT" x="0" y="-18"/>
+								</Anchors>
+							</CheckButton>
+							<CheckButton name="CharCreateClassButton6" inherits="CharCreateClassButtonTemplate" id="6">
+								<Anchors>
+									<Anchor point="TOPLEFT" relativeTo="CharCreateClassButton12" relativePoint="BOTTOMLEFT" x="0" y="-18"/>
 								</Anchors>
 							</CheckButton>
 						</Frames>
@@ -1605,11 +1626,19 @@
 						</Scripts>
 						<Layers>
 							<Layer level="BACKGROUND">
-								<Texture name="$parentBanner" file="Interface\Glues\CharacterCreate\UI-CharacterCreate-Banner">
-									<Size x="200" y="308"/>
-									<TexCoords left="0.109375" right="0.890625" top="0.201171875" bottom="0.80078125"/>
+								<Texture parentKey="BannerTop" atlas="charactercreate-banner-top" useAtlasSize="true">
 									<Anchors>
-										<Anchor point="TOP"  x="0" y="18" relativePoint="BOTTOM"/>
+										<Anchor point="TOP" x="0" y="18" relativePoint="BOTTOM"/>
+									</Anchors>
+								</Texture>
+								<Texture parentKey="BannerMiddle" atlas="charactercreate-banner-middle" useAtlasSize="true">
+									<Anchors>
+										<Anchor point="TOP" relativeKey="$parent.BannerTop" relativePoint="BOTTOM"/>
+									</Anchors>
+								</Texture>
+								<Texture parentKey="BannerBottom" atlas="charactercreate-banner-bottom" useAtlasSize="true">
+									<Anchors>
+										<Anchor point="TOP" relativeKey="$parent.BannerMiddle" relativePoint="BOTTOM"/>
 									</Anchors>
 								</Texture>
 							</Layer>
@@ -1662,6 +1691,21 @@
 							<CheckButton name="CharCreateCustomizationButton5" inherits="CharCreateCustomizationButtonTemplate" id="5">
 								<Anchors>
 									<Anchor point="TOP" relativeTo="CharCreateCustomizationButton4" relativePoint="BOTTOM" x="0" y="0"/>
+								</Anchors>
+							</CheckButton>
+							<CheckButton name="CharCreateCustomizationButton6" inherits="CharCreateCustomizationButtonTemplate" id="6">
+								<Anchors>
+									<Anchor point="TOP" relativeTo="CharCreateCustomizationButton5" relativePoint="BOTTOM" x="0" y="0"/>
+								</Anchors>
+							</CheckButton>
+							<CheckButton name="CharCreateCustomizationButton7" inherits="CharCreateCustomizationButtonTemplate" id="7">
+								<Anchors>
+									<Anchor point="TOP" relativeTo="CharCreateCustomizationButton6" relativePoint="BOTTOM" x="0" y="0"/>
+								</Anchors>
+							</CheckButton>
+							<CheckButton name="CharCreateCustomizationButton8" inherits="CharCreateCustomizationButtonTemplate" id="8">
+								<Anchors>
+									<Anchor point="TOP" relativeTo="CharCreateCustomizationButton7" relativePoint="BOTTOM" x="0" y="0"/>
 								</Anchors>
 							</CheckButton>
 							<Button name="CharCreateRandomizeButton" inherits="GlueButtonSmallTemplate" text="RANDOMIZE">

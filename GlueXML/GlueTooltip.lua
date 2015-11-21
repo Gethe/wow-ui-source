@@ -22,7 +22,7 @@ function GlueTooltip_SetOwner(self, owner, anchor, xOffset, yOffset )
 	xOffset = xOffset or 0;
 	yOffset = yOffset or 0;
 	
-	GlueTooltip:ClearAllPoints();
+	self:ClearAllPoints();
 	-- mimic what tooltip does ingame
 	local myPoint, ownerPoint;
 	if ( anchor == "ANCHOR_LEFT" ) then

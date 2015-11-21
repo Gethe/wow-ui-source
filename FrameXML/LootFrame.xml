@@ -192,12 +192,12 @@
 			</AnimationGroup>
 			<AnimationGroup parentKey="FinishRollAnim">
 				<!--Scale scaleX="0.5" scaleY="0.5" duration="0" order="1" childKey="RollingFrame.LootSpinnerFinalText"/-->
-				<Alpha change="-1" duration="0.2" order="1" childKey="RollingFrame.Label"/>
-				<Alpha change="1" duration="0.2" order="2" childKey="RollingFrame.LootSpinnerFinalText"/>
+				<Alpha fromAlpha="1" toAlpha="0" duration="0.2" order="1" childKey="RollingFrame.Label"/>
+				<Alpha fromAlpha="0" toAlpha="1" duration="0.2" order="2" childKey="RollingFrame.LootSpinnerFinalText"/>
 				<!--Scale scaleX="3" scaleY="3" duration="5" order="2" childKey="RollingFrame.LootSpinnerFinalText"/>
 				<Scale scaleX="0.66" scaleY="0.66" duration="5" order="2" startDelay="5" childKey="RollingFrame.LootSpinnerFinalText"/-->
-				<Alpha change="0.8" duration="0.3" order="3" startDelay="0.5" childKey="WhiteFade"/>
-				<Alpha change="-1" duration="0.3" order="4"/>
+				<Alpha fromAlpha="0" toAlpha="0.8" duration="0.3" order="3" startDelay="0.5" childKey="WhiteFade"/>
+				<Alpha fromAlpha="1" toAlpha="0" duration="0.3" order="4"/>
 				<Scripts>
 					<OnFinished>
 						local parent = self:GetParent();

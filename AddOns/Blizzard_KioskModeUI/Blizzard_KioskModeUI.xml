@@ -1,0 +1,42 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\FrameXML\UI.xsd">
+	<Script file="Blizzard_KioskModeUI.lua"/>
+
+	<Frame name="KioskModeController" hidden="true">
+		<Scripts>
+			<OnLoad function="KioskModeController_OnLoad"/>
+			<OnEvent function="KioskModeController_OnEvent"/>
+		</Scripts>
+	</Frame>
+	
+	<Frame name="KioskThankYouForPlayingFrame" frameStrata="FULLSCREEN_DIALOG" toplevel="true" parent="UIParent" setAllPoints="true" enableMouse="true" hidden="true">
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="BG" file="Interface\Glues\CharacterCreate\LegionSplash-BG" setAllPoints="true"/>
+			</Layer>
+			<Layer level="ARTWORK">
+				<Texture parentKey="Logo" atlas="LegionSplash-Logo">
+					<Size x="256" y="128"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" x="6" y="-6"/>
+					</Anchors>
+				</Texture>
+				<FontString inherits="CombatTextFont" text="KIOSK_THANK_YOU_FOR_PLAYING">
+					<Anchors>
+						<Anchor point="TOP" x="0" y="-300"/>
+					</Anchors>
+				</FontString>
+				<FontString inherits="GameFontNormalHuge3" text="KIOSK_PLEASE_TAKE_THE_SURVEY">
+					<Anchors>
+						<Anchor point="BOTTOM" x="0" y="200"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnLoad function="KioskThankYouForPlayingFrame_OnLoad"/>
+			<OnEvent function="KioskThankYouForPlayingFrame_OnEvent"/>
+			<OnShow function="KioskThankYouForPlayingFrame_OnShow"/>
+		</Scripts>
+	</Frame>
+</Ui>

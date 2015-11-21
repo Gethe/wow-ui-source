@@ -10,8 +10,8 @@ GARRISON_MISSION_TYPE_FONT_COLOR	=	{r=0.8, g=0.7, b=0.53};
 --- Main Frame                                                                ---
 ---------------------------------------------------------------------------------
 function GarrisonLandingPage_OnLoad(self)
-	self.FollowerList:Load(LE_FOLLOWER_TYPE_GARRISON_6_0);
-	self.ShipFollowerList:Load(LE_FOLLOWER_TYPE_SHIPYARD_6_2);
+	self.FollowerList:Initialize(LE_FOLLOWER_TYPE_GARRISON_7_0);
+	self.ShipFollowerList:Initialize(LE_FOLLOWER_TYPE_SHIPYARD_6_2);
 
 	self.selectedTab = 1;
 	
@@ -162,7 +162,7 @@ end
 ---------------------------------------------------------------------------------
 function GarrisonLandingPageReport_GetShipments(self)
 	local shipmentIndex = 1;
-	local buildings = C_Garrison.GetBuildings();
+	local buildings = C_Garrison.GetBuildings(LE_FOLLOWER_TYPE_GARRISON_6_0);
 	for i = 1, #buildings do
 		local buildingID = buildings[i].buildingID;
 		if ( buildingID) then
@@ -564,20 +564,20 @@ function GarrisonLandingPageReportMission_OnEnter(self, button)
 	end
 
 	if ( GarrisonLandingPageReport.selectedTab == GarrisonLandingPageReport.InProgress ) then
-		if (item.followerTypeID == LE_FOLLOWER_TYPE_GARRISON_6_0) then
-			GarrisonMissionButton_SetInProgressTooltip(item, true);
-		elseif (item.followerTypeID == LE_FOLLOWER_TYPE_SHIPYARD_6_2) then
+		if (item.followerTypeID == LE_FOLLOWER_TYPE_SHIPYARD_6_2) then
 			GarrisonShipyardMapMissionTooltip:ClearAllPoints();
 			GarrisonShipyardMapMissionTooltip:SetPoint("LEFT", self, "RIGHT", 0, 0);
 			GarrisonShipyardMapMission_SetTooltip(item, true);
 			return;
+		else
+			GarrisonMissionButton_SetInProgressTooltip(item, true);
 		end
 	else
 		GameTooltip:SetText(item.name);
-		if (item.followerTypeID == LE_FOLLOWER_TYPE_GARRISON_6_0) then
-			GameTooltip:AddLine(string.format(GARRISON_MISSION_TOOLTIP_NUM_REQUIRED_FOLLOWERS, item.numFollowers), 1, 1, 1);
-		elseif (item.followerTypeID == LE_FOLLOWER_TYPE_SHIPYARD_6_2) then
+		if (item.followerTypeID == LE_FOLLOWER_TYPE_SHIPYARD_6_2) then
 			GameTooltip:AddLine(string.format(GARRISON_SHIPYARD_MISSION_TOOLTIP_NUM_REQUIRED_FOLLOWERS, item.numFollowers), 1, 1, 1);
+		else
+			GameTooltip:AddLine(string.format(GARRISON_MISSION_TOOLTIP_NUM_REQUIRED_FOLLOWERS, item.numFollowers), 1, 1, 1);
 		end
 		GarrisonMissionButton_AddThreatsToTooltip(item.missionID, item.followerTypeID);
 		if (item.isRare) then
@@ -640,8 +640,8 @@ end
 
 GarrisonLandingShipFollowerList = {};
 
-function GarrisonLandingShipFollowerList:Load(followerType)
-	GarrisonShipyardFollowerList.Load(self, followerType, self:GetParent().ShipFollowerTab);
+function GarrisonLandingShipFollowerList:Initialize(followerType)
+	GarrisonShipyardFollowerList.Initialize(self, followerType, self:GetParent().ShipFollowerTab);
 end
 
 function GarrisonLandingShipFollowerList:UpdateValidSpellHighlight(followerID, followerInfo)

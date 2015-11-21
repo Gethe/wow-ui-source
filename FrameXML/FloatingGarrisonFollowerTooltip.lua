@@ -97,7 +97,7 @@ function GarrisonFollowerTooltipTemplate_SetGarrisonFollower(tooltipFrame, data,
 		if (not xpWidth) then
 			xpWidth = GARRISON_FOLLOWER_TOOLTIP_FULL_XP_WIDTH;
 		end
-		tooltipFrame.XPBar:SetWidth((data.xp / data.levelxp) * xpWidth);
+		tooltipFrame.XPBar:SetWidth(PercentageBetween(data.xp, 0, data.levelxp) * xpWidth);
 		if (data.xp == 0) then
 			tooltipFrame.XPBar:Hide()
 		else
@@ -309,7 +309,7 @@ function GarrisonFollowerTooltipTemplate_SetShipyardFollower(tooltipFrame, data,
 		if (not xpWidth) then
 			xpWidth = GARRISON_FOLLOWER_TOOLTIP_FULL_XP_WIDTH;
 		end
-		tooltipFrame.XPBar:SetWidth((data.xp / data.levelxp) * xpWidth);
+		tooltipFrame.XPBar:SetWidth(PercentageBetween(data.xp, 0, data.levelxp) * xpWidth);
 		if (data.xp == 0) then
 			tooltipFrame.XPBar:Hide()
 		else

@@ -37,6 +37,9 @@ end
 
 function AlertFrame_OnEvent (self, event, ...)
 	if ( event == "ACHIEVEMENT_EARNED" ) then
+		if (IsKioskModeEnabled()) then
+			return;
+		end
 		local id, alreadyEarned = ...;
 		
 		if ( not AchievementFrame ) then
@@ -45,6 +48,9 @@ function AlertFrame_OnEvent (self, event, ...)
 		
 		AchievementAlertFrame_ShowAlert(id, alreadyEarned);
 	elseif ( event == "CRITERIA_EARNED" ) then
+		if (IsKioskModeEnabled()) then
+			return;
+		end
 		local id, criteriaString = ...;
 		
 		if ( not AchievementFrame ) then
@@ -107,13 +113,13 @@ function AlertFrame_OnEvent (self, event, ...)
 		end
 	elseif ( event == "GARRISON_FOLLOWER_ADDED" ) then
 		local followerID, name, class, displayID, level, quality, isUpgraded, texPrefix, followerType = ...;
-		if (followerType == LE_FOLLOWER_TYPE_GARRISON_6_0) then
-			GarrisonFollowerAlertFrame_ShowAlert(followerID, name, displayID, level, quality, isUpgraded);
-		else
+		if (followerType == LE_FOLLOWER_TYPE_SHIPYARD_6_2) then
 			GarrisonShipFollowerAlertFrame_ShowAlert(followerID, name, class, texPrefix, level, quality, isUpgraded);
+		else
+			GarrisonFollowerAlertFrame_ShowAlert(followerID, name, displayID, level, quality, isUpgraded);
 		end
 	elseif ( event == "GARRISON_RANDOM_MISSION_ADDED" ) then
-		GarrisonRandomMissionAlertFrame_ShowAlert(...);
+		GarrisonRandomMissionAlertFrame_ShowAlert(select(2, ...));
 	end
 end
 
@@ -177,6 +183,7 @@ end
 function AlertFrame_FixAnchors()
 	local alertAnchor = AlertFrame;
 	alertAnchor = AlertFrame_SetLootAnchors(alertAnchor); --This needs to be first as it doesn't actually anchor anything.
+	alertAnchor = AlertFrame_SetTalkingHeadAnchors(alertAnchor);
 	alertAnchor = AlertFrame_SetStorePurchaseAnchors(alertAnchor);
 	alertAnchor = AlertFrame_SetLootWonAnchors(alertAnchor);
 	alertAnchor = AlertFrame_SetLootUpgradeFrameAnchors(alertAnchor);
@@ -208,6 +215,13 @@ function AlertFrame_SetLootAnchors(alertAnchor)
 		return frame;
 	end
 
+	return alertAnchor;
+end
+
+function AlertFrame_SetTalkingHeadAnchors(alertAnchor)
+	if ( TalkingHeadFrame and TalkingHeadFrame:IsShown() ) then
+		return TalkingHeadFrame;
+	end
 	return alertAnchor;
 end
 
@@ -1219,11 +1233,11 @@ function GarrisonBuildingAlertFrame_ShowAlert(name)
 end
 
 -- [[ GarrisonMissionAlertFrame ]] --
-function GarrisonMissionAlertFrame_ShowAlert(missionID)
+function GarrisonMissionAlertFrame_ShowAlert(followerTypeID, missionID)
 	GarrisonLandingPageMinimapButton.MinimapLoopPulseAnim:Play();
 	local missionInfo = C_Garrison.GetBasicMissionInfo(missionID);
 	local alertFrame = GarrisonMissionAlertFrame;
-	if (missionInfo.followerTypeID == LE_FOLLOWER_TYPE_SHIPYARD_6_2) then
+	if (followerTypeID == LE_FOLLOWER_TYPE_SHIPYARD_6_2) then
 		alertFrame = GarrisonShipMissionAlertFrame;
 	end
 	alertFrame.Name:SetText(missionInfo.name);
@@ -1300,7 +1314,7 @@ function GarrisonFollowerAlertFrame_Setup(frame, followerID, name, quality, isUp
 end
 
 function GarrisonFollowerAlertFrame_ShowAlert(followerID, name, displayID, level, quality, isUpgraded)
-	GarrisonFollowerAlertFrame.PortraitFrame.Portrait:SetToFileData(C_Garrison.GetFollowerPortraitIconID(followerID));
+	GarrisonFollowerAlertFrame.PortraitFrame.Portrait:SetTexture(C_Garrison.GetFollowerPortraitIconID(followerID));
 	GarrisonFollowerAlertFrame.PortraitFrame.Level:SetText(level);
 	local color = BAG_ITEM_QUALITY_COLORS[quality];
 	if (color) then

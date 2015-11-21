@@ -72,20 +72,15 @@ function GossipTitleButton_OnClick(self, button)
 end
 
 function GossipFrameAvailableQuestsUpdate(...)
-	local titleButton;
 	local titleIndex = 1;
-	local titleButtonIcon;
-	local isTrivial, frequency, isRepeatable, isLegendary;
+	
 	for i=1, select("#", ...), 6 do
 		if ( GossipFrame.buttonIndex > NUMGOSSIPBUTTONS ) then
 			message("This NPC has too many quests and/or gossip options.");
 		end
-		titleButton = _G["GossipTitleButton" .. GossipFrame.buttonIndex];
-		titleButtonIcon = _G[titleButton:GetName() .. "GossipIcon"];
-		isTrivial = select(i+2, ...);
-		frequency = select(i+3, ...);
-		isRepeatable = select(i+4, ...);
-		isLegendary = select(i+5, ...);
+		local titleButton = _G["GossipTitleButton" .. GossipFrame.buttonIndex];
+		local titleButtonIcon = _G[titleButton:GetName() .. "GossipIcon"];
+		local titleText, level, isTrivial, frequency, isRepeatable, isLegendary = select(i, ...);
 		if ( isLegendary ) then
 			titleButtonIcon:SetTexture("Interface\\GossipFrame\\AvailableLegendaryQuestIcon");
 		elseif ( frequency == LE_QUEST_FREQUENCY_DAILY or frequency == LE_QUEST_FREQUENCY_WEEKLY ) then
@@ -96,10 +91,10 @@ function GossipFrameAvailableQuestsUpdate(...)
 			titleButtonIcon:SetTexture("Interface\\GossipFrame\\AvailableQuestIcon");
 		end
 		if ( isTrivial ) then
-			titleButton:SetFormattedText(TRIVIAL_QUEST_DISPLAY, select(i, ...));
+			titleButton:SetFormattedText(TRIVIAL_QUEST_DISPLAY, titleText);
 			titleButtonIcon:SetVertexColor(0.5,0.5,0.5);
 		else
-			titleButton:SetFormattedText(NORMAL_QUEST_DISPLAY, select(i, ...));
+			titleButton:SetFormattedText(NORMAL_QUEST_DISPLAY, titleText);
 			titleButtonIcon:SetVertexColor(1,1,1);
 		end
 		GossipResize(titleButton);
@@ -110,7 +105,7 @@ function GossipFrameAvailableQuestsUpdate(...)
 		titleButton:Show();
 	end
 	if ( GossipFrame.buttonIndex > 1 ) then
-		titleButton = _G["GossipTitleButton" .. GossipFrame.buttonIndex];
+		local titleButton = _G["GossipTitleButton" .. GossipFrame.buttonIndex];
 		titleButton:Hide();
 		GossipFrame.buttonIndex = GossipFrame.buttonIndex + 1;
 	end

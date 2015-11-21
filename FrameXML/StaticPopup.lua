@@ -87,51 +87,30 @@ StaticPopupDialogs["CONFIRM_DELETE_EQUIPMENT_SET"] = {
 	whileDead = 1,
 }
 
-StaticPopupDialogs["CONFIRM_REMOVE_GLYPH"] = {
+StaticPopupDialogs["CONFIRM_GLYPH_PLACEMENT"] = {
 	text = "",
 	button1 = YES,
 	button2 = NO,
-	OnAccept = function (self)
-		local talentGroup = PlayerTalentFrame and PlayerTalentFrame.talentGroup or 1;
-		if ( talentGroup == GetActiveSpecGroup() ) then
-			RemoveGlyphFromSocket(self.data.id);
-		end
+	OnAccept = function (self) AttachGlyphToSpell(self.data.id); end,
+	OnCancel = function (self)
 	end,
 	OnShow = function(self)
-		local name, count, _, _, cost = GetGlyphClearInfo();
-		if cost == 0 then
-			self.text:SetFormattedText(CONFIRM_REMOVE_GLYPH_NO_COST, self.data.name);
-		elseif count >= cost then
-			self.text:SetFormattedText(CONFIRM_REMOVE_GLYPH, self.data.name, GREEN_FONT_COLOR_CODE, cost, name);
-		else
-			self.text:SetFormattedText(CONFIRM_REMOVE_GLYPH, self.data.name, RED_FONT_COLOR_CODE, cost, name);
-			self.button1:Disable();
-		end
-	end,
-	OnCancel = function (self)
+		self.text:SetFormattedText(CONFIRM_GLYPH_PLACEMENT_NO_COST, self.data.name, self.data.currentName);
 	end,
 	hideOnEscape = 1,
 	timeout = 0,
 	exclusive = 1,
 }
 
-StaticPopupDialogs["CONFIRM_GLYPH_PLACEMENT"] = {
+StaticPopupDialogs["CONFIRM_GLYPH_REMOVAL"] = {
 	text = "",
 	button1 = YES,
 	button2 = NO,
-	OnAccept = function (self) PlaceGlyphInSocket(self.data.id); end,
+	OnAccept = function (self) AttachGlyphToSpell(self.data.id); end,
 	OnCancel = function (self)
 	end,
 	OnShow = function(self)
-		local name, count, _, _, cost = GetGlyphClearInfo();
-		if cost == 0 then
-			self.text:SetFormattedText(CONFIRM_GLYPH_PLACEMENT_NO_COST, self.data.name);
-		elseif count >= cost then
-			self.text:SetFormattedText(CONFIRM_GLYPH_PLACEMENT, self.data.name, GREEN_FONT_COLOR_CODE, cost, name);
-		else
-			self.text:SetFormattedText(CONFIRM_GLYPH_PLACEMENT, self.data.name, RED_FONT_COLOR_CODE, cost, name);
-			self.button1:Disable();
-		end
+		self.text:SetFormattedText(CONFIRM_GLYPH_REMOVAL, self.data.name);
 	end,
 	hideOnEscape = 1,
 	timeout = 0,
@@ -186,6 +165,20 @@ StaticPopupDialogs["CONFIRM_RESET_INTERFACE_SETTINGS"] = {
 	end,
 	OnAlt = function ()
 		InterfaceOptionsFrame_SetCurrentToDefaults();
+	end,
+	OnCancel = function() end,
+	timeout = 0,
+	exclusive = 1,
+	hideOnEscape = 1,
+	whileDead = 1,
+}
+
+StaticPopupDialogs["CONFIRM_REDOCK_CHAT"] = {
+	text = CONFIRM_REDOCK_CHAT,
+	button1 = ACCEPT,
+	button2 = CANCEL,
+	OnAccept = function ()
+		RedockChatWindows();
 	end,
 	OnCancel = function() end,
 	timeout = 0,
@@ -1198,7 +1191,8 @@ StaticPopupDialogs["RESET_CHAT"] = {
 	EditBoxOnEscapePressed = function (self)
 		self:GetParent():Hide();
 	end,
-	hideOnEscape = 1
+	hideOnEscape = 1,
+	exclusive = 1,
 };
 
 StaticPopupDialogs["HELP_TICKET_ABANDON_CONFIRM"] = {
@@ -2682,6 +2676,32 @@ StaticPopupDialogs["TRADE_POTENTIAL_BIND_ENCHANT"] = {
 	hideOnEscape = 1,
 	noCancelOnReuse = 1
 };
+StaticPopupDialogs["TRADE_POTENTIAL_REMOVE_TRANSMOG"] = {
+	text = TRADE_POTENTIAL_REMOVE_TRANSMOG,
+	button1 = OKAY,
+	timeout = 0,
+	showAlert = 1,
+	hideOnEscape = 1,
+};
+StaticPopupDialogs["CONFIRM_MERCHANT_TRADE_TIMER_REMOVAL"] = {
+	text = CONFIRM_MERCHANT_TRADE_TIMER_REMOVAL,
+	button1 = OKAY,
+	button2 = CANCEL,
+	OnAccept = function(self)
+		SellCursorItem();
+	end,
+	OnCancel = function(self)
+		ClearCursor();
+	end,
+	OnUpdate = function (self)
+		if ( not CursorHasItem() ) then
+			self:Hide();
+		end
+	end,
+	timeout = 0,
+	showAlert = 1,
+	hideOnEscape = 1,
+};
 StaticPopupDialogs["END_BOUND_TRADEABLE"] = {
 	text = END_BOUND_TRADEABLE,
 	button1 = OKAY,
@@ -2853,6 +2873,32 @@ StaticPopupDialogs["CONFIRM_BINDER"] = {
 };
 StaticPopupDialogs["CONFIRM_SUMMON"] = {
 	text = CONFIRM_SUMMON;
+	button1 = ACCEPT,
+	button2 = CANCEL,
+	OnShow = function(self)
+		self.timeleft = GetSummonConfirmTimeLeft();
+	end,
+	OnAccept = function(self)
+		ConfirmSummon();
+	end,
+	OnCancel = function()
+		CancelSummon();
+	end,
+	OnUpdate = function(self, elapsed)
+		if ( UnitAffectingCombat("player") or (not PlayerCanTeleport()) ) then
+			self.button1:Disable();
+		else
+			self.button1:Enable();
+		end
+	end,
+	timeout = 0,
+	interruptCinematic = 1,
+	notClosableByLogout = 1,
+	hideOnEscape = 1,
+};
+
+StaticPopupDialogs["CONFIRM_SUMMON_SCENARIO"] = {
+	text = CONFIRM_SUMMON_SCENARIO;
 	button1 = ACCEPT,
 	button2 = CANCEL,
 	OnShow = function(self)
@@ -3081,6 +3127,12 @@ StaticPopupDialogs["TALENTS_INVOLUNTARILY_RESET"] = {
 
 StaticPopupDialogs["TALENTS_INVOLUNTARILY_RESET_PET"] = {
 	text = TALENTS_INVOLUNTARILY_RESET_PET,
+	button1 = OKAY,
+	timeout = 0,
+};
+
+StaticPopupDialogs["SPEC_INVOLUNTARILY_CHANGED"] = {
+	text = SPEC_INVOLUNTARILY_CHANGED,
 	button1 = OKAY,
 	timeout = 0,
 };
@@ -3475,6 +3527,100 @@ StaticPopupDialogs["CONFIRM_FOLLOWER_TEMPORARY_ABILITY"] = {
 	hideOnEscape = 1
 };
 
+StaticPopupDialogs["NAME_TRANSMOG_OUTFIT"] = {
+	text = TRANSMOG_OUTFIT_NAME,
+	button1 = ACCEPT,
+	button2 = CANCEL,
+	OnAccept = function(self)
+		WardrobeOutfitFrame_NameOutfit(self.editBox:GetText(), self.data);
+	end,
+	timeout = 0,
+	whileDead = 1,
+	hideOnEscape = 1,
+	hasEditBox = 1,
+	maxLetters = 31,
+	OnShow = function(self)
+		self.button1:Disable();
+		self.button2:Enable();
+		self.editBox:SetFocus();
+	end,
+	OnHide = function(self)
+		self.editBox:SetText("");
+	end,
+	EditBoxOnEnterPressed = function(self)
+		if ( self:GetParent().button1:IsEnabled() ) then
+			StaticPopup_OnClick(self:GetParent(), 1);
+		end
+	end,
+	EditBoxOnTextChanged = function (self)
+		local parent = self:GetParent();
+		if ( parent.editBox:GetText() ~= "" ) then
+			parent.button1:Enable();
+		else
+			parent.button1:Disable();
+		end
+	end,
+	EditBoxOnEscapePressed = function(self)
+		self:GetParent():Hide();
+	end
+};
+
+StaticPopupDialogs["CONFIRM_OVERWRITE_TRANSMOG_OUTFIT"] = {
+	text = TRANSMOG_OUTFIT_CONFIRM_OVERWRITE,
+	button1 = YES,
+	button2 = NO,
+	OnAccept = function (self) WardrobeOutfitFrame_SaveOutfit(self.data) end,
+	OnCancel = function (self)
+		local name = self.data;
+		self:Hide();
+		local dialog = StaticPopup_Show("NAME_TRANSMOG_OUTFIT");
+		if ( dialog ) then
+			self.editBox:SetText(name);
+		end
+	end,
+	hideOnEscape = 1,
+	timeout = 0,
+	whileDead = 1,
+	noCancelOnEscape = 1,
+}
+
+StaticPopupDialogs["CONFIRM_DELETE_TRANSMOG_OUTFIT"] = {
+	text = TRANSMOG_OUTFIT_CONFIRM_DELETE,
+	button1 = YES,
+	button2 = NO,
+	OnAccept = function (self) WardrobeOutfitFrame_DeleteOutfit(self.data); end,
+	OnCancel = function (self) end,
+	hideOnEscape = 1,
+	timeout = 0,
+	whileDead = 1,
+}
+
+StaticPopupDialogs["CONFIRM_SAVE_TRANSMOG_OUTFIT"] = {
+	text = TRANSMOG_OUTFIT_CONFIRM_SAVE,
+	button1 = YES,
+	button2 = NO,
+	OnAccept = function (self) 	WardrobeOutfitFrame_SaveOutfit(self.data); end,
+	OnCancel = function (self) end,
+	hideOnEscape = 1,
+	timeout = 0,
+	whileDead = 1,
+}
+
+StaticPopupDialogs["TRANSMOG_APPLY_WARNING"] = {
+	text = "%s",
+	button1 = OKAY,
+	button2 = CANCEL,
+	OnAccept = function(self)
+		return WardrobeTransmogFrame_ApplyPending(self.data.warningIndex);
+	end,
+	OnHide = function()
+		WardrobeTransmogFrame_UpdateApplyButton();
+	end,
+	timeout = 0,
+	hideOnEscape = 1,
+	hasItemFrame = 1,
+}
+
 function StaticPopup_FindVisible(which, data)
 	local info = StaticPopupDialogs[which];
 	if ( not info ) then
@@ -3669,6 +3815,7 @@ function StaticPopup_Show(which, text_arg1, text_arg2, data, insertedFrame)
 		 (which == "GARRISON_BOOT") or
 		 (which == "INSTANCE_LOCK") or
 		 (which == "CONFIRM_SUMMON") or
+		 (which == "CONFIRM_SUMMON_SCENARIO") or
 		 (which == "CONFIRM_SUMMON_STARTING_AREA") or
 		 (which == "BFMGR_INVITED_TO_ENTER") or
 		 (which == "AREA_SPIRIT_HEAL") ) then
@@ -3917,6 +4064,7 @@ function StaticPopup_OnUpdate(dialog, elapsed)
 			 (which == "INSTANCE_BOOT") or
 			 (which == "GARRISON_BOOT") or
 			 (which == "CONFIRM_SUMMON") or
+			 (which == "CONFIRM_SUMMON_SCENARIO") or
 			 (which == "CONFIRM_SUMMON_STARTING_AREA") or
 			 (which == "BFMGR_INVITED_TO_ENTER") or
 			 (which == "AREA_SPIRIT_HEAL") or
@@ -3929,7 +4077,7 @@ function StaticPopup_OnUpdate(dialog, elapsed)
 				else
 					text:SetFormattedText(StaticPopupDialogs[which].text, ceil(timeleft / 60), MINUTES);
 				end
-			elseif ( which == "CONFIRM_SUMMON" or which == "CONFIRM_SUMMON_STARTING_AREA" ) then
+			elseif ( which == "CONFIRM_SUMMON" or which == "CONFIRM_SUMMON_SCENARIO" or which == "CONFIRM_SUMMON_STARTING_AREA" ) then
 				if ( timeleft < 60 ) then
 					text:SetFormattedText(StaticPopupDialogs[which].text, GetSummonConfirmSummoner(), GetSummonConfirmAreaName(), timeleft, SECONDS);
 				else

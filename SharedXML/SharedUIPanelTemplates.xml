@@ -990,7 +990,7 @@
 				self:GetParent():SetVerticalScroll(value);
 			</OnValueChanged>
 		</Scripts>
-		<ThumbTexture name="$parentThumbTexture" inherits="UIPanelScrollBarButton" file="Interface\Buttons\UI-ScrollBar-Knob">
+		<ThumbTexture name="$parentThumbTexture" parentKey="ThumbTexture" inherits="UIPanelScrollBarButton" file="Interface\Buttons\UI-ScrollBar-Knob">
 			<Size x="18" y="24"/>
 			<TexCoords left="0.20" right="0.80" top="0.125" bottom="0.875"/>
 		</ThumbTexture>
@@ -1004,21 +1004,21 @@
 				</Texture>
 			</Layer>
 			<Layer level="ARTWORK">
-				<Texture name="$parentTop" file="Interface\PaperDollInfoFrame\UI-Character-ScrollBar">
+				<Texture name="$parentTop" parentKey="Top" file="Interface\PaperDollInfoFrame\UI-Character-ScrollBar">
 					<Size x="24" y="48"/>
 					<Anchors>
 						<Anchor point="TOPLEFT" x="-4" y="17"/>
 					</Anchors>
 					<TexCoords left="0" right="0.45" top="0" bottom=".20"/>
 				</Texture>
-				<Texture name="$parentBottom" file="Interface\PaperDollInfoFrame\UI-Character-ScrollBar">
+				<Texture name="$parentBottom" parentKey="Bottom" file="Interface\PaperDollInfoFrame\UI-Character-ScrollBar">
 					<Size x="24" y="64"/>
 					<Anchors>
 						<Anchor point="BOTTOMLEFT" x="-4" y="-15"/>
 					</Anchors>
 					<TexCoords left="0.515625" right="0.97" top="0.1440625" bottom="0.4140625"/>
 				</Texture>
-				<Texture name="$parentMiddle" file="Interface\PaperDollInfoFrame\UI-Character-ScrollBar">
+				<Texture name="$parentMiddle" parentKey="Middle" file="Interface\PaperDollInfoFrame\UI-Character-ScrollBar">
 					<Anchors>
 						<Anchor point="TOPLEFT" relativeTo="$parentTop" relativePoint="BOTTOMLEFT"/>
 						<Anchor point="BOTTOMRIGHT" relativeTo="$parentBottom" relativePoint="TOPRIGHT"/>
@@ -1028,7 +1028,7 @@
 			</Layer>	
 		</Layers>
 		<Frames>
-			<Button name="$parentScrollUpButton" inherits="UIPanelScrollUpButtonTemplate">
+			<Button name="$parentScrollUpButton" parentKey="ScrollUpButton" inherits="UIPanelScrollUpButtonTemplate">
 				<Anchors>
 					<Anchor point="BOTTOM" relativePoint="TOP" x="0" y="-2"/>
 				</Anchors>
@@ -1041,7 +1041,7 @@
 					</OnClick>
 				</Scripts>
 			</Button>
-			<Button name="$parentScrollDownButton" inherits="UIPanelScrollDownButtonTemplate">
+			<Button name="$parentScrollDownButton" parentKey="ScrollDownButton" inherits="UIPanelScrollDownButtonTemplate">
 				<Anchors>
 					<Anchor point="TOP" relativePoint="BOTTOM" x="0" y="2"/>
 				</Anchors>
@@ -1060,7 +1060,7 @@
 				self:GetParent():SetVerticalScroll(value);
 			</OnValueChanged>
 		</Scripts>
-		<ThumbTexture name="$parentThumbTexture" inherits="UIPanelScrollBarButton" file="Interface\Buttons\UI-ScrollBar-Knob">
+		<ThumbTexture name="$parentThumbTexture" parentKey="ThumbTexture" inherits="UIPanelScrollBarButton" file="Interface\Buttons\UI-ScrollBar-Knob">
 			<Size x="18" y="24"/>
 			<TexCoords left="0.20" right="0.80" top="0.125" bottom="0.875"/>
 		</ThumbTexture>
@@ -1189,20 +1189,19 @@
 			</OnScrollRangeChanged>
 			<!--  The code to disable the ScrollDownButton is pretty hacked, but it works -->
 			<OnVerticalScroll>
-				local scrollbar = _G[self:GetName().."ScrollBar"];
+				local scrollbar = self.ScrollBar or _G[self:GetName().."ScrollBar"];
 				scrollbar:SetValue(offset);
-				local min;
-				local max;
-				min, max = scrollbar:GetMinMaxValues();
+
+				local min, max = scrollbar:GetMinMaxValues();
 				if ( offset == 0 ) then
-					_G[scrollbar:GetName().."ScrollUpButton"]:Disable();
+					(scrollbar.ScrollUpButton or _G[scrollbar:GetName().."ScrollUpButton"]):Disable();
 				else
-					_G[scrollbar:GetName().."ScrollUpButton"]:Enable();
+					(scrollbar.ScrollUpButton or _G[scrollbar:GetName().."ScrollUpButton"]):Enable();
 				end
 				if ((scrollbar:GetValue() - max) == 0) then
-					_G[scrollbar:GetName().."ScrollDownButton"]:Disable();
+					(scrollbar.ScrollDownButton or _G[scrollbar:GetName().."ScrollDownButton"]):Disable();
 				else
-					_G[scrollbar:GetName().."ScrollDownButton"]:Enable();
+					(scrollbar.ScrollDownButton or _G[scrollbar:GetName().."ScrollDownButton"]):Enable();
 				end
 			</OnVerticalScroll>
 			<OnMouseWheel>

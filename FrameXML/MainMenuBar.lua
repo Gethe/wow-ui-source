@@ -5,8 +5,10 @@ local MAINMENU_XPOS = 0;
 function ExpBar_Update()
 	local currXP = UnitXP("player");
 	local nextXP = UnitXPMax("player");
-	MainMenuExpBar:SetMinMaxValues(min(0, currXP), nextXP);
-	MainMenuExpBar:SetValue(currXP);
+	local level = UnitLevel("player");
+
+	local min, max = math.min(0, currXP), nextXP;
+	MainMenuExpBar:SetAnimatedValues(currXP, min, max, level);
 end
 
 
@@ -19,6 +21,34 @@ function MainMenuBar_OnLoad(self)
 	
 	MainMenuBar.state = "player";
 	MainMenuBarPageNumber:SetText(GetActionBarPage());
+end
+
+
+function MainMenuBar_ArtifactUpdateOverlayFrameText()
+	if ArtifactWatchBar.OverlayFrame.Text:IsShown() then
+		local itemID, altItemID, name, icon, xp, xpForNextPoint, quality, artifactAppearanceID, appearanceModID = C_ArtifactUI.GetEquippedArtifactInfo();
+		if itemID then
+			if ArtifactWatchBar.StatusBar:IsAnimating() then
+				xp = ArtifactWatchBar.StatusBar:GetValue();
+			end
+			ArtifactWatchBar.OverlayFrame.Text:SetFormattedText(ARTIFACT_POWER_BAR, xp, xpForNextPoint);
+		end
+	end
+end
+
+function MainMenuBar_HonorUpdateOverlayFrameText()
+	local current = UnitHonor("player");
+	local max = UnitHonorMax("player");
+
+	if (not current or not max) then
+		return;
+	end
+
+	if (CanPrestige()) then
+		HonorWatchBar.OverlayFrame.Text:SetText(PVP_HONOR_PRESTIGE_AVAILABLE);
+	else
+		HonorWatchBar.OverlayFrame.Text:SetText(HONOR_BAR:format(current, max));
+	end
 end
 
 local firstEnteringWorld = true;
@@ -61,6 +91,181 @@ function MainMenuBar_OnEvent(self, event, ...)
 		end
 	elseif ( event == "UNIT_LEVEL" and arg1 == "player" ) then
 		UpdateMicroButtons();
+	end
+end
+
+function MainMenuBar_UpdateExperienceBars(newLevel)
+	local name, reaction, min, max, value, factionID = GetWatchedFactionInfo();
+	local visibilityChanged = nil;
+	if ( not newLevel ) then
+		newLevel = UnitLevel("player");
+	end
+
+	local showArtifact = HasArtifactEquipped();
+	local showXP = newLevel < MAX_PLAYER_LEVEL and not IsXPUserDisabled();
+	local showHonor = newLevel >= MAX_PLAYER_LEVEL and (IsWatchingHonorAsXP() or InActiveBattlefield());
+	local showRep = name;
+	local numBarsShowing = 0;
+	--******************* EXPERIENCE **************************************
+	if ( showXP ~= MainMenuExpBar:IsShown() ) then
+		visibilityChanged = true;
+	end
+	if ( showXP ) then
+		MainMenuExpBar:Show();
+		MainMenuExpBar.pauseUpdates = nil;
+		numBarsShowing = numBarsShowing + 1;
+	else
+		MainMenuExpBar:Hide();
+		MainMenuExpBar.pauseUpdates = true;
+		ExhaustionTick:Hide();
+	end
+	--******************* ARTIFACT ****************************************
+	if ( showArtifact ~= ArtifactWatchBar:IsShown() ) then
+		visibilityChanged = true;
+	end
+	if ( showArtifact ) then
+		local statusBar = ArtifactWatchBar.StatusBar;
+		local itemID, altItemID, name, icon, xp, xpForNextPoint, quality, artifactAppearanceID, appearanceModID = C_ArtifactUI.GetEquippedArtifactInfo();
+		statusBar:SetAnimatedValues(xp, 0, xpForNextPoint, level);
+		if visibilityChanged or statusBar.itemID ~= itemID or C_ArtifactUI.IsAtForge() then
+			statusBar:Reset();
+		end
+		statusBar.itemID = itemID;
+		ArtifactWatchBar:Show();
+		MainMenuTrackingBar_Configure(ArtifactWatchBar, numBarsShowing > 0);
+		numBarsShowing = numBarsShowing + 1;
+	else
+		ArtifactWatchBar:Hide();	
+	end
+	--******************* HONOR *******************************************
+	if ( showHonor and numBarsShowing < 2 ) then
+		if ( showHonor ~= HonorWatchBar:IsShown() ) then
+			visibilityChanged = true;
+		end
+		local statusBar = HonorWatchBar.StatusBar;
+		local current = UnitHonor("player");
+		local max = UnitHonorMax("player");
+
+		local level = UnitHonorLevel("player");
+
+		if (CanPrestige()) then
+			-- Force the bar to full for the max level
+			statusBar:SetAnimatedValues(1, 0, 1, level);
+		else
+			statusBar:SetAnimatedValues(current, 0, max, level);
+		end
+		if ( visibilityChanged ) then
+			statusBar:Reset();
+		end
+		HonorWatchBar:Show();
+		MainMenuTrackingBar_Configure(HonorWatchBar, numBarsShowing > 0);
+		numBarsShowing = numBarsShowing + 1;
+	else
+		HonorWatchBar:Hide();	
+	end
+	--******************* REPUTATION **************************************
+	if ( showRep and numBarsShowing < 2 ) then
+		local colorIndex = reaction;
+		-- if it's a different faction, save possible friendship id
+		if ( ReputationWatchBar.factionID ~= factionID ) then
+			ReputationWatchBar.factionID = factionID;
+			ReputationWatchBar.friendshipID = GetFriendshipReputation(factionID);
+			ReputationWatchBar.StatusBar:Reset();
+		end
+
+		local isCappedFriendship;
+		-- do something different for friendships
+		local level;
+		if ( ReputationWatchBar.friendshipID ) then
+			local friendID, friendRep, friendMaxRep, friendName, friendText, friendTexture, friendTextLevel, friendThreshold, nextFriendThreshold = GetFriendshipReputation(factionID);
+			level = GetFriendshipReputationRanks(factionID);
+			if ( nextFriendThreshold ) then
+				min, max, value = friendThreshold, nextFriendThreshold, friendRep;
+			else
+				-- max rank, make it look like a full bar
+				min, max, value = 0, 1, 1;
+				isCappedFriendship = true;
+			end
+			colorIndex = 5;		-- always color friendships green
+		else
+			level = reaction;
+		end
+
+		-- See if it was already shown or not
+		if ( not ReputationWatchBar:IsShown() ) then
+			visibilityChanged = true;
+		end
+		
+		-- Normalize values
+		max = max - min;
+		value = value - min;
+		min = 0;
+		local statusBar = ReputationWatchBar.StatusBar;
+		statusBar:SetAnimatedValues(value, min, max, level);
+		if ( isCappedFriendship ) then
+			ReputationWatchBar.OverlayFrame.Text:SetText(name);
+		else
+			ReputationWatchBar.OverlayFrame.Text:SetText(name.." "..value.." / "..max);
+		end
+		local color = FACTION_BAR_COLORS[colorIndex];
+		statusBar:SetStatusBarColor(color.r, color.g, color.b);
+		statusBar:SetAnimatedTextureColors(color.r, color.g, color.b);
+		ReputationWatchBar:Show();
+		MainMenuTrackingBar_Configure(ReputationWatchBar, numBarsShowing > 0);
+		numBarsShowing = numBarsShowing + 1;
+	else
+		if ( ReputationWatchBar:IsShown() ) then
+			visibilityChanged = true;
+		end
+		ReputationWatchBar:Hide();	
+	end
+	if ( numBarsShowing > 0 ) then
+		MainMenuBarMaxLevelBar:Hide();
+	else
+		MainMenuBarMaxLevelBar:Show();
+	end
+
+	-- update the xp bar
+	TextStatusBar_UpdateTextString(MainMenuExpBar);
+	ExpBar_Update();
+	
+	if ( visibilityChanged ) then
+		UIParent_ManageFramePositions();
+		UpdateContainerFrameAnchors();
+	end
+end
+
+function MainMenuTrackingBar_Configure(frame, isOnTop)
+	local statusBar = frame.StatusBar;
+	statusBar:SetFrameLevel(MainMenuBarArtFrame:GetFrameLevel()-1);
+	if ( isOnTop ) then
+		statusBar:SetHeight(8);
+		frame:ClearAllPoints();
+		frame:SetPoint("BOTTOM", MainMenuBar, "TOP", 0, -3);
+		frame.OverlayFrame.Text:SetPoint("CENTER", frame.OverlayFrame, "CENTER", 0, 3);
+		statusBar.WatchBarTexture0:Show();
+		statusBar.WatchBarTexture1:Show();
+		statusBar.WatchBarTexture2:Show();
+		statusBar.WatchBarTexture3:Show();
+
+		statusBar.XPBarTexture0:Hide();
+		statusBar.XPBarTexture1:Hide();
+		statusBar.XPBarTexture2:Hide();
+		statusBar.XPBarTexture3:Hide();	
+	else
+		statusBar:SetHeight(13);
+		frame:ClearAllPoints();
+		frame:SetPoint("TOP", MainMenuBar, "TOP", 0, 0);
+		frame.OverlayFrame.Text:SetPoint("CENTER", frame.OverlayFrame, "CENTER", 0, 1);
+		statusBar.WatchBarTexture0:Hide();
+		statusBar.WatchBarTexture1:Hide();
+		statusBar.WatchBarTexture2:Hide();
+		statusBar.WatchBarTexture3:Hide();
+
+		statusBar.XPBarTexture0:Show();
+		statusBar.XPBarTexture1:Show();
+		statusBar.XPBarTexture2:Show();
+		statusBar.XPBarTexture3:Show();
 	end
 end
 
@@ -179,10 +384,12 @@ function ExhaustionTick_OnEvent(self, event, ...)
 		local exhaustionStateID = GetRestState();
 		if (exhaustionStateID == 1) then
 			MainMenuExpBar:SetStatusBarColor(0.0, 0.39, 0.88, 1.0);
+			MainMenuExpBar:SetAnimatedTextureColors(0.0, 0.39, 0.88, 1.0);
 			ExhaustionLevelFillBar:SetVertexColor(0.0, 0.39, 0.88, 0.15);
 			ExhaustionTickHighlight:SetVertexColor(0.0, 0.39, 0.88);
 		elseif (exhaustionStateID == 2) then
 			MainMenuExpBar:SetStatusBarColor(0.58, 0.0, 0.55, 1.0);
+			MainMenuExpBar:SetAnimatedTextureColors(0.58, 0.0, 0.55, 1.0);
 			ExhaustionLevelFillBar:SetVertexColor(0.58, 0.0, 0.55, 0.15);
 			ExhaustionTickHighlight:SetVertexColor(0.58, 0.0, 0.55);
 		end
@@ -492,5 +699,37 @@ function MainMenuExpBar_SetWidth(width)
 	MainMenuExpBar:SetWidth(width);
 	if ExhaustionTick then
 		ExhaustionTick_OnEvent(ExhaustionTick, "UPDATE_EXHAUSTION");
+	end
+end
+
+function HonorWatchBar_OnLoad(self)
+	self:RegisterEvent("PLAYER_ENTERING_WORLD");
+	self:RegisterEvent("HONOR_XP_UPDATE");
+	self:RegisterEvent("CVAR_UPDATE");
+	self.OverlayFrame.Text:SetPoint("CENTER", 0, -1);
+	self.StatusBar:SetOnAnimatedValueChangedCallback(MainMenuBar_HonorUpdateOverlayFrameText);
+	self.StatusBar.OnFinishedCallback = function(...)
+		self.StatusBar:OnAnimFinished(...);
+		HonorExhaustionTick_Update(self.StatusBar.ExhaustionTick);
+	end
+end
+
+function ShowWatchBarText(bar, lock)
+	if ( lock ) then
+		bar.cvarLocked = lock;
+	end
+	if ( bar:IsShown() ) then
+		bar.OverlayFrame.Text:Show();
+		bar.textLocked = 1;
+	else
+		HideWatchBarText(bar);
+	end
+end
+
+function HideWatchBarText(bar, unlock)
+	if ( unlock or not bar.cvarLocked ) then
+		bar.cvarLocked = nil;
+		bar.OverlayFrame.Text:Hide();
+		bar.textLocked = nil;
 	end
 end

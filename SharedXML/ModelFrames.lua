@@ -231,3 +231,30 @@ function ModelControlButton_OnMouseUp(self)
 	self.icon:SetPoint("CENTER", 0, 0);
 	self:GetParent().buttonDown = nil;
 end
+
+MODELFRAME_UI_CAMERA_POSITION = { x = 4, y = 0, z = 0, };
+MODELFRAME_UI_CAMERA_TARGET = { x = 0, y = 0, z = 0, };
+
+function Model_ApplyUICamera(self, uiCameraID)
+	local posX, posY, posZ, yaw, pitch, roll, animId, animVariation, animFrame, centerModel = GetUICameraInfo(uiCameraID);
+	if posX and posY and posZ and yaw and pitch and roll then
+		self:MakeCurrentCameraCustom();
+
+		self:SetPosition(posX, posY, posZ);
+		self:SetFacing(yaw);
+		self:SetPitch(pitch);
+		self:SetRoll(roll);
+		self:UseModelCenterToTransform(centerModel);
+
+		local cameraX, cameraY, cameraZ = self:TransformCameraSpaceToModelSpace(MODELFRAME_UI_CAMERA_POSITION.x, MODELFRAME_UI_CAMERA_POSITION.y, MODELFRAME_UI_CAMERA_POSITION.z);
+		local targetX, targetY, targetZ = self:TransformCameraSpaceToModelSpace(MODELFRAME_UI_CAMERA_TARGET.x, MODELFRAME_UI_CAMERA_TARGET.y, MODELFRAME_UI_CAMERA_TARGET.z);
+
+		self:SetCameraPosition(cameraX, cameraY, cameraZ);
+		self:SetCameraTarget(targetX, targetY, targetZ);
+	end
+	if( animId and animFrame ~= -1 and animId ~= -1 ) then
+		self:FreezeAnimation(animId, animVariation, animFrame);
+	else
+		self:SetAnimation(0, 0);
+	end
+end

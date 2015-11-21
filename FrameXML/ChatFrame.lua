@@ -1176,35 +1176,6 @@ SecureCmdList["CANCELFORM"] = function(msg)
 	end
 end
 
--- Allow friendly names for glyph slots (needs to be local)
-local GLYPH_SLOTS = {
-	minor1 = GLYPH_ID_MINOR_1;
-	minor2 = GLYPH_ID_MINOR_2;
-	minor3 = GLYPH_ID_MINOR_3;
-
-	major1 = GLYPH_ID_MAJOR_1;
-	major2 = GLYPH_ID_MAJOR_2;
-	major3 = GLYPH_ID_MAJOR_3;
-
---	prime1 = GLYPH_ID_PRIME_1;
---	prime2 = GLYPH_ID_PRIME_2;
---	prime3 = GLYPH_ID_PRIME_3;
-};
-
-SecureCmdList["CASTGLYPH"] = function(msg)
-	local action = SecureCmdOptionParse(msg);
-	if ( action ) then
-		local glyph, slot = strmatch(action, "^(.+)%s+(%S+)$");
-		slot = (slot and GLYPH_SLOTS[slot]) or tonumber(slot);
-		local glyphID = tonumber(glyph);
-		if ( glyphID and slot ) then
-			CastGlyphByID(glyphID, slot);
-		elseif ( glyph and slot ) then
-			CastGlyphByName(glyph, slot);
-		end
-	end
-end
-
 SecureCmdList["EQUIP"] = function(msg)
 	local item = SecureCmdOptionParse(msg);
 	if ( item ) then
@@ -1713,6 +1684,9 @@ SlashCmdList["TRADE"] = function(msg)
 end
 
 SlashCmdList["INSPECT"] = function(msg)
+	if (IsKioskModeEnabled()) then
+		return;
+	end
 	InspectUnit("target");
 end
 
@@ -1721,6 +1695,9 @@ SlashCmdList["LOGOUT"] = function(msg)
 end
 
 SlashCmdList["QUIT"] = function(msg)
+	if (IsKioskModeEnabled()) then
+		return;
+	end
 	Quit();
 end
 
@@ -2036,6 +2013,9 @@ SlashCmdList["CHAT_DND"] = function(msg)
 end
 
 SlashCmdList["WHO"] = function(msg)
+	if (IsKioskModeEnabled()) then
+		return;
+	end
 	if ( msg == "" ) then
 		msg = WhoFrame_GetDefaultWhoCommand();
 		ShowWhoPanel();
@@ -2311,7 +2291,7 @@ SlashCmdList["USE_TALENT_SPEC"] = function(msg)
 	if ( group ) then
 		local groupNumber = tonumber(group);
 		if ( groupNumber ) then
-			SetActiveSpecGroup(groupNumber);
+			--SetActiveSpecGroup(groupNumber);
 		end
 	end
 end
@@ -2346,8 +2326,10 @@ SlashCmdList["EVENTTRACE"] = function(msg)
 end
 
 SlashCmdList["DUMP"] = function(msg)
-	UIParentLoadAddOn("Blizzard_DebugTools");
-	DevTools_DumpCommand(msg);
+	if (not IsKioskModeEnabled()) then
+		UIParentLoadAddOn("Blizzard_DebugTools");
+		DevTools_DumpCommand(msg);
+	end
 end
 
 SlashCmdList["RELOAD"] = function(msg)

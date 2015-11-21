@@ -1501,7 +1501,7 @@ function StoreFrame_OnLoad(self)
 		-- background texture
 		local background = bgFrame:CreateTexture(nil, "BACKGROUND");
 		background:SetAllPoints(_G.GlueParent);
-		background:SetTexture(0, 0, 0, 0.75);
+		background:SetColorTexture(0, 0, 0, 0.75);
 	end
 	self:SetPoint("CENTER", nil, "CENTER", 0, 20); --Intentionally not anchored to UIParent.
 	StoreDialog:SetPoint("CENTER", nil, "CENTER", 0, 40);
@@ -2530,8 +2530,8 @@ function StoreProductCard_OnClick(self,button,down)
 		showPreview = IsModifiedClick("DRESSUP");
 	end
 	if ( showPreview ) then
-		if ( entryInfo.modelID ) then
-			StoreFrame_ShowPreview(entryInfo.name, entryInfo.modelID);
+		if ( entryInfo.displayID ) then
+			StoreFrame_ShowPreview(entryInfo.name, entryInfo.displayID);
 		end
 	else
 		selectedEntryID = self:GetID();

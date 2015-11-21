@@ -42,10 +42,11 @@ PROFESSION_RANKS[6] = {450, GRAND_MASTER};
 PROFESSION_RANKS[7] = {525, ILLUSTRIOUS};
 PROFESSION_RANKS[8] = {600, ZEN_MASTER};
 PROFESSION_RANKS[9] = {700, DRAENOR_MASTER};
+PROFESSION_RANKS[10] = {800, LEGION_MASTER};
 
 
-
-
+OPEN_REASON_PENDING_GLYPH = "pendingglyph";
+OPEN_REASON_ACTIVATED_GLYPH = "activatedglyph";
 
 local ceil = ceil;
 local strlen = strlen;
@@ -74,7 +75,7 @@ function ToggleSpellBook(bookType)
 	local tutorial, helpPlate = SpellBookFrame_GetTutorialEnum()
 	if ( tutorial and not GetCVarBitfield("closedInfoFrames", tutorial) and GetCVarBool("showTutorials") ) then
 		if ( helpPlate and not HelpPlate_IsShowing(helpPlate) and SpellBookFrame:IsShown()) then
-			HelpPlate_Show( helpPlate, SpellBookFrame, SpellBookFrame.MainHelpButton );
+			HelpPlate_ShowTutorialPrompt( helpPlate, SpellBookFrame.MainHelpButton );
 			SetCVarBitfield( "closedInfoFrames", tutorial, true );
 		end
 	end
@@ -102,6 +103,9 @@ function SpellBookFrame_OnLoad(self)
 	self:RegisterEvent("SKILL_LINES_CHANGED");
 	self:RegisterEvent("PLAYER_GUILD_UPDATE");
 	self:RegisterEvent("PLAYER_SPECIALIZATION_CHANGED");
+	self:RegisterEvent("USE_GLYPH");
+	self:RegisterEvent("CANCEL_GLYPH_CAST");
+	self:RegisterEvent("ACTIVATE_GLYPH");
 
 	SpellBookFrame.bookType = BOOKTYPE_SPELL;
 	-- Init page nums
@@ -165,6 +169,14 @@ function SpellBookFrame_OnEvent(self, event, ...)
 			SpellBookFrame.selectedSkillLine = 2; -- number of skilllines will change!
 			SpellBookFrame_Update();
 		end
+	elseif ( event == "USE_GLYPH" ) then
+		local slot = ...;
+		SpellBookFrame_OpenToPageForSlot(slot, OPEN_REASON_PENDING_GLYPH);
+	elseif ( event == "CANCEL_GLYPH_CAST" ) then
+		SpellBookFrame_ClearAbilityHighlights();
+	elseif ( event == "ACTIVATE_GLYPH" ) then
+		local slot = ...;
+		SpellBookFrame_OpenToPageForSlot(slot, OPEN_REASON_ACTIVATED_GLYPH);
 	end
 end
 
@@ -243,7 +255,7 @@ function SpellBookFrame_Update()
 	
 	local level = UnitLevel("player");
 	
-	if ( level >= 20 ) then
+	if ( level >= 20 and not IsKioskModeEnabled() ) then
 		local nextTab = _G["SpellBookFrameTabButton"..tabIndex];
 		nextTab:Show();
 		nextTab.bookType = BOOKTYPE_CORE_ABILITIES;
@@ -455,6 +467,23 @@ function SpellButton_OnClick(self, button)
 	if ( slot > MAX_SPELLS or slotType == "FUTURESPELL") then
 		return;
 	end
+
+	if ( HasPendingGlyphCast() and SpellBookFrame.bookType == BOOKTYPE_SPELL ) then
+		local slotType, spellID = GetSpellBookItemInfo(slot, SpellBookFrame.bookType);
+		if (slotType == "SPELL") then
+			if ( HasAttachedGlyph(spellID) ) then
+				if ( IsPendingGlyphRemoval() ) then
+					StaticPopup_Show("CONFIRM_GLYPH_REMOVAL", nil, nil, {name = GetCurrentGlyphNameForSpell(spellID), id = spellID});
+				else
+					StaticPopup_Show("CONFIRM_GLYPH_PLACEMENT", nil, nil, {name = GetPendingGlyphName(), currentName = GetCurrentGlyphNameForSpell(spellID), id = spellID});
+				end
+			else
+				AttachGlyphToSpell(spellID);
+			end
+		end
+		return;
+	end
+
 	if ( button ~= "LeftButton" and SpellBookFrame.bookType == BOOKTYPE_PET ) then
 		if ( self.offSpecID == 0 ) then
 			ToggleSpellAutocast(slot, SpellBookFrame.bookType);
@@ -585,8 +614,8 @@ function SpellButton_UpdateButton(self)
 		texture = GetSpellBookItemTexture(slot, SpellBookFrame.bookType);
 	end
 
-	-- If no spell, hide everything and return
-	if ( not texture or (strlen(texture) == 0) ) then
+	-- If no spell, hide everything and return, or kiosk mode and future spell
+	if ( not texture or (strlen(texture) == 0) or (slotType == "FUTURESPELL" and IsKioskModeEnabled())) then
 		iconTexture:Hide();
 		spellString:Hide();
 		subSpellString:Hide();
@@ -692,6 +721,20 @@ function SpellButton_UpdateButton(self)
 		self.SpellName:SetShadowOffset(self.SpellName.shadowX, self.SpellName.shadowY);
 		self.SpellName:SetPoint("LEFT", self, "RIGHT", 8, 4);
 		self.SpellSubName:SetTextColor(0, 0, 0);
+		if ( slotType == "SPELL" and not isOffSpec ) then
+			local _, spellID = GetSpellBookItemInfo(slot, SpellBookFrame.bookType);
+			if (IsSpellValidForPendingGlyph(spellID)) then
+				self.AbilityHighlight:Show();
+				self.AbilityHighlightAnim:Play();
+			else
+				self.AbilityHighlightAnim:Stop();
+				self.AbilityHighlight:Hide();
+			end
+		else
+			self.AbilityHighlightAnim:Stop();
+			self.AbilityHighlight:Hide();
+		end
+		
 		if ( slotType == "SPELL" and isOffSpec ) then
 			local level = GetSpellLevelLearned(slotID);
 			if ( level and level > UnitLevel("player") ) then
@@ -862,6 +905,62 @@ function SpellBook_GetSpellBookSlot(spellButton)
 		else
 			return nil, nil;
 		end
+	end
+end
+
+function SpellBook_GetButtonForID(id)
+	-- Currently the spell book is mapped such that odd numbered buttons from 1 - 11 match id 1 - 6, while even numbered buttons from 2 - 12 match 7 - 12
+	if (id > 6) then
+		return _G["SpellButton"..((id - 6) * 2)];
+	else
+		return _G["SpellButton"..(((id - 1) * 2) + 1)];
+	end
+end
+
+function SpellBookFrame_OpenToPageForSlot(slot, reason)
+	local alreadyOpen = SpellBookFrame:IsShown();
+	ShowUIPanel(SpellBookFrame);
+	if (SpellBookFrame.selectedSkillLine ~= 2) then
+		SpellBookFrame.selectedSkillLine = 2;
+		SpellBookFrame_Update();
+	end
+
+	if (alreadyOpen) then
+		local page = SPELLBOOK_PAGENUMBERS[SpellBookFrame.selectedSkillLine];
+		for i = 1, 12 do
+			local slot = (i + ( SPELLS_PER_PAGE * (page - 1))) + SpellBookFrame.selectedSkillLineOffset;
+			local slotType, spellID = GetSpellBookItemInfo(slot, SpellBookFrame.bookType);
+			if (slotType == "SPELL") then
+				if (IsSpellValidForPendingGlyph(spellID)) then
+					SpellBookFrame_Update();
+					return;
+				end
+			end
+		end
+	end
+
+	local relativeSlot = slot - SpellBookFrame.selectedSkillLineOffset;
+	local page = math.floor(relativeSlot / SPELLS_PER_PAGE) + 1;
+	SPELLBOOK_PAGENUMBERS[SpellBookFrame.selectedSkillLine] = page;
+	SpellBookFrame_Update();
+	local id = relativeSlot - ( SPELLS_PER_PAGE * (page - 1) );
+	local button = SpellBook_GetButtonForID(id);
+	if (reason == OPEN_REASON_PENDING_GLYPH) then
+		button.AbilityHighlight:Show();
+		button.AbilityHighlightAnim:Play();
+	elseif (reason == OPEN_REASON_ACTIVATED_GLYPH) then
+		button.AbilityHighlightAnim:Stop();
+		button.AbilityHighlight:Hide();
+		button.GlyphActivate:Show();
+		button.GlyphActivateAnim:Play();
+	end
+end
+
+function SpellBookFrame_ClearAbilityHighlights()
+	for i = 1, SPELLS_PER_PAGE do
+		local button = _G["SpellButton"..i];
+		button.AbilityHighlightAnim:Stop();
+		button.AbilityHighlight:Hide();
 	end
 end
 
@@ -1181,6 +1280,10 @@ SPEC_CORE_ABILITY_TEXT[71] = "WARRIOR_ARMS";
 SPEC_CORE_ABILITY_TEXT[72] = "WARRIOR_FURY";
 SPEC_CORE_ABILITY_TEXT[73] = "WARRIOR_PROT";
 
+SPEC_CORE_ABILITY_TEXT[577] = "DH_HAVOC";
+SPEC_CORE_ABILITY_TEXT[581] = "DH_VENGEANCE";
+
+
 -- Hardcoded spell id's for spec display
 SPEC_CORE_ABILITY_DISPLAY = {}
 SPEC_CORE_ABILITY_DISPLAY[250] = {	45462,	45477,	50842,	47541,	49998,	48982,	}; --Blood
@@ -1227,6 +1330,9 @@ SPEC_CORE_ABILITY_DISPLAY[267] = {	348,	17962,	116858,	29722,	17877,		}; --Destr
 SPEC_CORE_ABILITY_DISPLAY[71] = {	100,	167105,	12294,	772,	1680,	163201,	}; --Arms
 SPEC_CORE_ABILITY_DISPLAY[72] = {	100,	23881,	85288,	100130,	5308,	}; --Fury	
 SPEC_CORE_ABILITY_DISPLAY[73] = {	100,	23922,	20243,	6572,	112048,	2565,	}; --Protection
+
+SPEC_CORE_ABILITY_DISPLAY[577] = {	195072,	198013,	162794,	162243	}; --Havoc
+SPEC_CORE_ABILITY_DISPLAY[581] = {	}; --Vengeance	
 
 function SpellBook_GetCoreAbilityButton(index)
 	local button = SpellBookCoreAbilitiesFrame.Abilities[index];
@@ -1399,7 +1505,7 @@ CoreAbilitiesFrame_HelpPlate = {
 function SpellBook_ToggleTutorial()
 	local tutorial, helpPlate = SpellBookFrame_GetTutorialEnum();
 	if ( helpPlate and not HelpPlate_IsShowing(helpPlate) and SpellBookFrame:IsShown()) then
-		HelpPlate_Show( helpPlate, SpellBookFrame, SpellBookFrame.MainHelpButton, true );
+		HelpPlate_Show( helpPlate, SpellBookFrame, SpellBookFrame.MainHelpButton );
 		SetCVarBitfield( "closedInfoFrames", tutorial, true );
 	else
 		HelpPlate_Hide(true);

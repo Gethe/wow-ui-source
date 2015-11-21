@@ -30,24 +30,26 @@ function AccountLogin_OnLoad(self)
 	TokenEnterDialogBackgroundEdit:SetBackdropBorderColor(backdropColor[1], backdropColor[2], backdropColor[3]);
 	TokenEnterDialogBackgroundEdit:SetBackdropColor(backdropColor[4], backdropColor[5], backdropColor[6]);
 
-	SetLoginScreenModel(AccountLogin);
+	SetLoginScreenModel(LoginBackgroundModel);
 	AccountLogin_UpdateLoginType();
 end
 
-function AccountLogin_OnShow(self)	
-	AccountLoginLogo:SetTexture(EXPANSION_LOGOS[GetClientDisplayExpansionLevel()]);
+function AccountLogin_OnShow(self)
+	SetExpansionLogo(AccountLoginLogo, GetClientDisplayExpansionLevel());
 
-	-- special code for BlizzCon
-	if (IsBlizzCon()) then
-		AccountLoginPasswordEdit:SetText(GetCVar("password"));
-		DefaultServerLogin(GetCVar("accountName"), AccountLoginPasswordEdit);
-		AccountLoginUI:Hide();
-		return;
+	-- Kiosk Mode code, do not run this outside of a special build for kiosk mode
+	if (false) then
+		local accountName, password = GetKioskLoginInfo();
+		if (accountName and password) then
+			AccountLoginPasswordEdit:SetText(password);
+			DefaultServerLogin(accountName, AccountLoginPasswordEdit);
+			AccountLoginUI:Hide();
+			return;
+		end
 	end
-	
+
 	local displayedExpansionLevel = GetClientDisplayExpansionLevel();
 	
-	self:SetSequence(0);
 	PlayGlueMusic(EXPANSION_GLUE_MUSIC[displayedExpansionLevel]);
 	PlayGlueAmbience(EXPANSION_GLUE_AMBIENCE[displayedExpansionLevel], 4.0);
 
@@ -87,6 +89,15 @@ function AccountLogin_OnShow(self)
 	ACCOUNT_MSG_CURRENT_INDEX = nil;
 	CHARACTER_SELECT_BACK_FROM_CREATE = false;
 	AccountLogin_UpdateLoginType();
+	
+	local movieID = GetLoginBackgroundMovie();
+	if ( movieID ~= 0 ) then
+		LoginBackgroundMovie:StartMovie(movieID, true);
+		LoginBackgroundMovie:Show();
+	else
+		LoginBackgroundModel:SetSequence(0);
+		LoginBackgroundModel:Show();
+	end
 end
 
 function AccountLogin_OnHide(self)

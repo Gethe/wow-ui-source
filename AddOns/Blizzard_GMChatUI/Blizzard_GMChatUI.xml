@@ -134,13 +134,13 @@
 	<Button name="GMChatStatusFrame" toplevel="true" parent="UIParent" enableMouse="true" hidden="true" frameStrata="FULLSCREEN">
 		<Animations>
 			<AnimationGroup parentKey="pulse" looping="REPEAT">
-				<Alpha target="$parentGlowLeft" 	change="1" duration="0.9" order="1"/>
-				<Alpha target="$parentGlowRight" 	change="1" duration="0.9" order="1"/>
-				<Alpha target="$parentGlowMid" 		change="1" duration="0.9" order="1"/>
+				<Alpha target="$parentGlowLeft" 	fromAlpha="0" toAlpha="1" duration="0.9" order="1"/>
+				<Alpha target="$parentGlowRight" 	fromAlpha="0" toAlpha="1" duration="0.9" order="1"/>
+				<Alpha target="$parentGlowMid" 		fromAlpha="0" toAlpha="1" duration="0.9" order="1"/>
 				
-				<Alpha target="$parentGlowLeft" 	change="-1" duration="0.9" order="2"/>
-				<Alpha target="$parentGlowRight" 	change="-1" duration="0.9" order="2"/>
-				<Alpha target="$parentGlowMid" 		change="-1" duration="0.9" order="2"/>
+				<Alpha target="$parentGlowLeft" 	fromAlpha="1" toAlpha="0" duration="0.9" order="2"/>
+				<Alpha target="$parentGlowRight" 	fromAlpha="1" toAlpha="0" duration="0.9" order="2"/>
+				<Alpha target="$parentGlowMid" 		fromAlpha="1" toAlpha="0" duration="0.9" order="2"/>
 			</AnimationGroup>
 		</Animations>
 		<Size x="290" y="72"/>

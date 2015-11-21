@@ -274,7 +274,7 @@
 				<Scripts>
 					<OnLoad>
 						self.type = CONTROLTYPE_CHECKBOX;
-						self.cvar = "Sound_EnableSoftwareHRTF";
+						self.cvar = "Sound_EnablePositionalLowPassFilter";
 						self.restart = true;
 						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
 					</OnLoad>
@@ -296,7 +296,7 @@
 				</Scripts>
 			</CheckButton>				
 			<Frame name="$parentHardware" inherits="OptionsBoxTemplate">
-				<Size x="186" y="108"/>
+				<Size x="186" y="152"/>
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeTo="$parentPlayback" relativePoint="TOPRIGHT">
 						<Offset x="8" y="0"/>
@@ -377,7 +377,41 @@
 						GlueTooltip:Hide();
 					</OnLeave>
 				</Scripts>
-			</Frame>		
+			</Frame>
+			<Frame name="$parentSoundCacheSizeDropDown" inherits="GlueDropDownMenuTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentSoundChannelsDropDown" relativePoint="BOTTOMLEFT">
+						<Offset x="0" y="-12"/>
+					</Anchor>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<FontString name="$parentLabel" inherits="OptionsFontSmall" text="SOUND_CACHESIZE">
+							<Anchors>
+								<Anchor point="BOTTOM" relativePoint="TOP">
+									<Offset>
+										<AbsDimension x="0" y="2"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnLoad>
+						self.type = CONTROLTYPE_DROPDOWN;
+						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
+						AudioOptionsSoundPanelSoundCacheSizeDropDown_OnLoad(self);
+					</OnLoad>
+					<OnEnter>
+						GlueTooltip:SetOwner(self);
+						GlueTooltip:SetText(OPTION_TOOLTIP_SOUND_CACHE_SIZE, nil, nil, nil, nil, true);
+					</OnEnter>
+					<OnLeave>
+						GlueTooltip:Hide();
+					</OnLeave>
+				</Scripts>
+			</Frame>
 			<!--<CheckButton name="$parentUseHardware" inherits="AudioOptionsSmallCheckButtonTemplate">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeTo="$parentSoundChannelsDropDown" relativePoint="BOTTOMLEFT">

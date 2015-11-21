@@ -94,7 +94,7 @@ size=512,512
 		<Layers>
 			<Layer level="BACKGROUND">
 				<Texture name="$parentIconTexture" parentKey="Icon">
-					<Size x="39" y="39"/>
+					<Size x="37" y="37"/>
 					<Anchors>
 						<Anchor point="TOPLEFT" x="0" y="0"/>
 					</Anchors>
@@ -113,16 +113,20 @@ size=512,512
 					</Anchors>
 				</FontString>
 			</Layer>
+			<Layer level="OVERLAY">
+				<Texture parentKey="IconBorder" file="Interface\Common\WhiteIconFrame">
+					<Size x="37" y="37"/>
+					<Anchors>
+						<Anchor point="TOPLEFT"/>
+					</Anchors>
+				</Texture>
+			</Layer>
 		</Layers>
 		<Scripts>
-			<OnEnter>
-				GameTooltip:SetOwner(self, "ANCHOR_CURSOR_RIGHT");
-				GameTooltip:SetItemByID(self.itemID);
-			</OnEnter>
+			<OnEnter function="QuestChoiceFrame_OnItemEnter" />
 			<OnLeave function="GameTooltip_Hide"/>	
-			<OnUpdate>
-				CursorOnUpdate(self, elapsed);
-			</OnUpdate>
+			<OnUpdate function="QuestChoiceFrame_OnItemUpdate"/>
+			<OnClick function="QuestChoiceFrame_OnItemModifiedClick"/>
 		</Scripts>
 	</Button>
 	<Frame name="QuestChoiceCurrencyTemplate" virtual="true">
@@ -242,16 +246,6 @@ size=512,512
 	</Frame>
 	<Button name="QuestChoiceOptionTemplate" virtual="true">
 		<Size x="210" y="268"/>
-		<Layers>
-			<Layer level="OVERLAY">
-				<Texture parentKey="Artwork">
-					<Size x="256" y="128"/> <!-- Actual art should always be 200x100, centered in 256x128-->
-					<Anchors>
-						<Anchor point="TOP" y="14"/>
-					</Anchors>
-				</Texture>
-			</Layer>
-		</Layers>
 		<Frames>
 			<Button parentKey="OptionButton" inherits="UIPanelButtonTemplate">
 				<Size x="175" y="22"/>
@@ -275,10 +269,32 @@ size=512,512
 					<Anchor point="BOTTOM" relativeKey="$parent.OptionButton" relativePoint="TOP" y="5"/>
 				</Anchors>
 			</Frame>
+			<Frame parentKey="Header">
+				<Size x="256" y="32"/>
+				<Anchors>
+					<Anchor point="TOP" y="10"/>
+				</Anchors>
+				<Layers>
+					<Layer level="BORDER">
+						<Texture parentKey="Background" file="Interface\QuestionFrame\TitleBanner">
+							<TexCoords top="0" left="0" bottom=".5" right="1" />
+						</Texture>
+					</Layer>
+					<Layer level="ARTWORK">
+						<FontString parentKey="Text" font="SystemFont_Large" justifyH="CENTER" justifyV="MIDDLE" maxLines="1">
+							<Anchors>
+								<Anchor point="TOPLEFT" x="25"/>
+								<Anchor point="BOTTOMRIGHT" x="-25" y="2"/>
+							</Anchors>
+							<Color r="0" g="0" b="0"/>
+						</FontString>
+					</Layer>
+				</Layers>
+			</Frame>
 			<SimpleHTML parentKey="OptionText">
 				<Size x="200" y="140"/>
 				<Anchors>
-					<Anchor point="TOP" y="-103"/>
+					<Anchor point="BOTTOM" relativeKey="$parent.Rewards" relativePoint="TOP" y="35"/>
 				</Anchors>
 				<Scripts>
 					<OnHyperlinkClick>
@@ -286,17 +302,37 @@ size=512,512
 					</OnHyperlinkClick>
 					<OnHyperlinkEnter function="QuestChoiceFrame_OnHyperlinkEnter"/>
 					<OnHyperlinkLeave function="GameTooltip_Hide"/>
+					<OnSizeChanged>QuestChoiceFrame_Update(self:GetParent():GetParent());</OnSizeChanged>
 				</Scripts>
 				<FontString inherits="GameFontBlack" justifyH="LEFT" justifyV="TOP"/>
 			</SimpleHTML>
 		</Frames>
+		<Layers>
+			<Layer level="OVERLAY">
+				<Texture parentKey="Artwork">
+					<Size x="256" y="128"/> <!-- Actual art should always be 200x100, centered in 256x128-->
+					<Anchors>
+						<Anchor point="BOTTOM" relativeKey="$parent.OptionText" relativePoint="TOP" y="-8"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
 	</Button>
 	
-	<Frame name="QuestChoiceFrame" frameStrata="HIGH" hidden="true" enableMouse="true" parent="UIParent" toplevel="true">
+	<Frame name="QuestChoiceFrame" frameStrata="HIGH" hidden="true" enableMouse="true" parent="UIParent" toplevel="true" inherits="HorizontalLayoutFrame">
 		<Size x="600" y="480"/>
 		<Anchors>
 			<Anchor point="CENTER" />
 		</Anchors>
+		<KeyValues>
+			<KeyValue key="fixedWidth" value="600" type="number"/>
+			<KeyValue key="expand" value="true" type="boolean"/> 
+			<KeyValue key="topPadding" value="150" type="number"/>
+			<KeyValue key="bottomPadding" value="50" type="number"/>
+			<KeyValue key="leftPadding" value="66" type="number"/>
+			<KeyValue key="rightPadding" value="66" type="number"/>
+			<KeyValue key="spacing" value="47" type="number"/>
+		</KeyValues>
 		<Layers>
 			<Layer level="BORDER">
 				<Texture parentKey="BottomLeftCorner" file="Interface\QuestionFrame\Question-Main" virtual="true" >
@@ -442,15 +478,25 @@ size=512,512
 			</Layer>
 		</Layers>
 		<Frames>
-			<Frame name="$parentOption1" parentKey="Option1" inherits="QuestChoiceOptionTemplate">
-				<Anchors>
-					<Anchor point="TOPLEFT" relativeKey="$parent.QuestionFrameLeft" relativePoint="BOTTOMLEFT" x="24" y="-20" />
-				</Anchors>
+			<Frame name="$parentOption1" parentKey="Option1" parentArray="Options" inherits="QuestChoiceOptionTemplate">
+				<KeyValues>
+					<KeyValue key="layoutIndex" value="1" type="number"/>
+				</KeyValues>
 			</Frame>
-			<Frame name="$parentOption2" parentKey="Option2" inherits="QuestChoiceOptionTemplate">
-				<Anchors>
-					<Anchor point="TOPLEFT" relativeKey="$parent.Option1" relativePoint="TOPRIGHT" x="47" />
-				</Anchors>
+			<Frame name="$parentOption2" parentKey="Option2" parentArray="Options" inherits="QuestChoiceOptionTemplate">
+				<KeyValues>
+					<KeyValue key="layoutIndex" value="2" type="number"/>
+				</KeyValues>
+			</Frame>
+			<Frame name="$parentOption3" parentKey="Option3" parentArray="Options" inherits="QuestChoiceOptionTemplate">
+				<KeyValues>
+					<KeyValue key="layoutIndex" value="3" type="number"/>
+				</KeyValues>
+			</Frame>
+			<Frame name="$parentOption4" parentKey="Option4" parentArray="Options" inherits="QuestChoiceOptionTemplate">
+				<KeyValues>
+					<KeyValue key="layoutIndex" value="4" type="number"/>
+				</KeyValues>
 			</Frame>
 			<Button parentKey="CloseButton" inherits="UIPanelCloseButton">
 				<Anchors>
@@ -459,13 +505,7 @@ size=512,512
 			</Button>
 		</Frames>
 		<Scripts>
-			<OnLoad>
-				self:RegisterEvent("QUEST_CHOICE_UPDATE");
-				self:RegisterEvent("PLAYER_ENTERING_WORLD");
-				self:RegisterEvent("PLAYER_DEAD");
-				self:RegisterEvent("QUEST_CHOICE_CLOSE");
-				QuestChoiceFrame_Update(self);
-			</OnLoad>
+			<OnLoad function="QuestChoiceFrame_OnLoad"/>
 			<OnEvent function="QuestChoiceFrame_OnEvent"/>
 			<OnShow>
 				PlaySound("igQuestListOpen");

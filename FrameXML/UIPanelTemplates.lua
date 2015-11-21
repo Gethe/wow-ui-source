@@ -43,7 +43,6 @@ ITEM_SEARCHBAR_LIST = {
 	"GuildItemSearchBox",
 	"VoidItemSearchBox",
 	"BankItemSearchBox",
-	"HeirloomsJournalSearchBox",
 };
 
 function BagSearch_OnHide(self)
@@ -319,7 +318,6 @@ end
 
 function InputScrollFrame_OnLoad(self)
 	local scrollBar = self.ScrollBar;
-	scrollBar:SetFrameLevel(self.FocusButton:GetFrameLevel() + 2);
 	scrollBar:ClearAllPoints();
 	scrollBar:SetPoint("TOPLEFT", self, "TOPRIGHT", -13, -11);
 	scrollBar:SetPoint("BOTTOMLEFT", self, "BOTTOMRIGHT", -13, 9);
@@ -396,6 +394,6 @@ function GarrisonFollowerPortrait_Set(portrait, iconFileID)
 		-- unknown icon file ID; use the default silhouette portrait
 		portrait:SetTexture("Interface\\Garrison\\Portraits\\FollowerPortrait_NoPortrait");
 	else
-		portrait:SetToFileData(iconFileID);
+		portrait:SetTexture(iconFileID);
 	end
 end

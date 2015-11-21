@@ -179,6 +179,11 @@
 				self:RegisterEvent("PLAYER_SPECIALIZATION_CHANGED");
 				self:RegisterEvent("PLAYER_CHARACTER_UPGRADE_TALENT_COUNT_CHANGED");
 			</OnLoad>
+			<OnShow>
+				if (IsKioskModeEnabled() and select(2, UnitClass("player") ~= "DEMONHUNTER")) then
+					self:Disable();
+				end
+			</OnShow>
 			<OnClick function="ToggleTalentFrame"/>
 			<OnEvent function="TalentMicroButton_OnEvent"/>
 		</Scripts>
@@ -200,10 +205,15 @@
 				self.tooltipText = MicroButtonTooltipText(ACHIEVEMENT_BUTTON, "TOGGLEACHIEVEMENT");
 				self.newbieText = NEWBIE_TOOLTIP_ACHIEVEMENT;
 				self.minLevel = 10;	--Just used for display. But we know that it will become available by level 10 due to the level 10 achievement.
-				if (IsBlizzCon()) then
+				if (IsKioskModeEnabled()) then
 					self:Disable();
 				end
 			</OnLoad>
+			<OnShow>
+				if (IsKioskModeEnabled()) then
+					self:Disable();
+				end
+			</OnShow>
 			<OnEvent function="AchievementMicroButton_OnEvent"/>
 			<OnClick> 
 				ToggleAchievementFrame();
@@ -283,10 +293,15 @@
 					self:Disable();
 					self.disabledTooltip = ERR_RESTRICTED_ACCOUNT_TRIAL;
 				end
-				if (IsBlizzCon()) then
+				if (IsKioskModeEnabled()) then
 					self:Disable();
 				end
 			</OnLoad>
+			<OnShow>
+				if (IsKioskModeEnabled()) then
+					self:Disable();
+				end
+			</OnShow>
 			<OnEvent function="GuildMicroButton_OnEvent"/>
 			<OnClick>
 				ToggleGuildFrame();
@@ -308,12 +323,17 @@
 				self.tooltipText = MicroButtonTooltipText(DUNGEONS_BUTTON, "TOGGLEGROUPFINDER");
 				self.newbieText = NEWBIE_TOOLTIP_LFGPARENT;
 				self.minLevel = math.min(SHOW_LFD_LEVEL, SHOW_PVP_LEVEL);
-				if (IsBlizzCon()) then
+				if (IsKioskModeEnabled()) then
 					self:Disable();
 				end
 			</OnLoad>
+			<OnShow>
+				if (IsKioskModeEnabled()) then
+					self:Disable();
+				end
+			</OnShow>
 			<OnEvent>
-				if (IsBlizzCon()) then
+				if (IsKioskModeEnabled()) then
 					return;
 				end
 				self.tooltipText = MicroButtonTooltipText(DUNGEONS_BUTTON, "TOGGLEGROUPFINDER");
@@ -373,6 +393,11 @@
 		</Frames>
 		<Scripts>
 			<OnLoad function="EJMicroButton_OnLoad"/>
+			<OnShow>
+				if (IsKioskModeEnabled()) then
+					self:Disable();
+				end
+			</OnShow>
 			<OnEvent function="EJMicroButton_OnEvent"/>
 			<OnClick function="ToggleEncounterJournal"/>
 		</Scripts>
@@ -390,13 +415,18 @@
 				LoadMicroButtonTextures(self, "BStore");
 				self.tooltipText = BLIZZARD_STORE;
 				self:RegisterEvent("STORE_STATUS_CHANGED");
-				if (IsBlizzCon()) then
+				if (IsKioskModeEnabled()) then
 					self:Disable();
 				end
 			</OnLoad>
+			<OnShow>
+				if (IsKioskModeEnabled()) then
+					self:Disable();
+				end
+			</OnShow>
 			<OnEvent>
 				UpdateMicroButtons();
-				if (IsBlizzCon()) then
+				if (IsKioskModeEnabled()) then
 					self:Disable();
 				end
 			</OnEvent>
@@ -568,7 +598,7 @@
 				LoadMicroButtonTextures(self, "Help");
 				self.tooltipText = HELP_BUTTON;
 				self.newbieText = NEWBIE_TOOLTIP_HELP;
-				if (IsBlizzCon()) then
+				if (IsKioskModeEnabled()) then
 					self:Disable();
 				end
 			</OnLoad>

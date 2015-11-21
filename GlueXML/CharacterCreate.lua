@@ -1,7 +1,7 @@
 CHARACTER_FACING_INCREMENT = 2;
 MAX_RACES = 14;
-MAX_CLASSES_PER_RACE = 11;
-NUM_CHAR_CUSTOMIZATIONS = 5;
+MAX_CLASSES_PER_RACE = 12;
+NUM_CHAR_CUSTOMIZATIONS = 8;
 MIN_CHAR_NAME_LENGTH = 2;
 CHARACTER_CREATE_ROTATION_START_X = nil;
 CHARACTER_CREATE_INITIAL_FACING = nil;
@@ -70,33 +70,95 @@ RACE_ICON_TCOORDS = {
 	["PANDAREN_FEMALE"]	= {0.750, 0.875, 0.5, 0.75},
 };
 
+CHARCREATE_CLASS_TOOLTIP = {};
 
-RAID_CLASS_COLORS = {
-	["HUNTER"] = { r = 0.67, g = 0.83, b = 0.45, colorStr = "ffabd473" },
-	["WARLOCK"] = { r = 0.58, g = 0.51, b = 0.79, colorStr = "ff9482c9" },
-	["PRIEST"] = { r = 1.0, g = 1.0, b = 1.0, colorStr = "ffffffff" },
-	["PALADIN"] = { r = 0.96, g = 0.55, b = 0.73, colorStr = "fff58cba" },
-	["MAGE"] = { r = 0.41, g = 0.8, b = 0.94, colorStr = "ff69ccf0" },
-	["ROGUE"] = { r = 1.0, g = 0.96, b = 0.41, colorStr = "fffff569" },
-	["DRUID"] = { r = 1.0, g = 0.49, b = 0.04, colorStr = "ffff7d0a" },
-	["SHAMAN"] = { r = 0.0, g = 0.44, b = 0.87, colorStr = "ff0070de" },
-	["WARRIOR"] = { r = 0.78, g = 0.61, b = 0.43, colorStr = "ffc79c6e" },
-	["DEATHKNIGHT"] = { r = 0.77, g = 0.12 , b = 0.23, colorStr = "ffc41f3b" },
-	["MONK"] = { r = 0.0, g = 1.00 , b = 0.59, colorStr = "ff00ff96" },
-};
-CLASS_ICON_TCOORDS = {
-	["WARRIOR"]	= {0, 0.25, 0, 0.25},
-	["MAGE"]	= {0.25, 0.49609375, 0, 0.25},
-	["ROGUE"]	= {0.49609375, 0.7421875, 0, 0.25},
-	["DRUID"]	= {0.7421875, 0.98828125, 0, 0.25},
-	["HUNTER"]	= {0, 0.25, 0.25, 0.5},
-	["SHAMAN"]	= {0.25, 0.49609375, 0.25, 0.5},
-	["PRIEST"]	= {0.49609375, 0.7421875, 0.25, 0.5},
-	["WARLOCK"]	= {0.7421875, 0.98828125, 0.25, 0.5},
-	["PALADIN"]	= {0, 0.25, 0.5, 0.75},
-	["DEATHKNIGHT"]	= {0.25, 0.49609375, 0.5, 0.75},
-	["MONK"]	= {0.49609375, 0.7421875, 0.5, 0.75},
-};
+CHARCREATE_CLASS_INFO = {
+	WARRIOR	= {
+		spells = {	
+			{name = CLASS_WARRIOR_SPELLNAME1, desc = CLASS_WARRIOR_SPELLDESC1, texture = [[Interface\Icons\inv_sword_48]]}, -- Execute
+			{name = CLASS_WARRIOR_SPELLNAME2, desc = CLASS_WARRIOR_SPELLDESC2, texture = [[Interface\Icons\ability_warrior_charge]]}, -- Charge
+			{name = CLASS_WARRIOR_SPELLNAME3, desc = CLASS_WARRIOR_SPELLDESC3, texture = [[Interface\Icons\ability_warrior_shieldwall]]}, -- Sheild Wall
+		},
+	},
+	PALADIN = {
+		spells = {	
+			{name = CLASS_PALADIN_SPELLNAME1, desc = CLASS_PALADIN_SPELLDESC1, texture = [[Interface\Icons\Spell_Holy_AvengersShield]]}, -- Avenger’s Shield
+			{name = CLASS_PALADIN_SPELLNAME2, desc = CLASS_PALADIN_SPELLDESC2, texture = [[Interface\Icons\ability_paladin_beaconoflight]]}, -- Beacon of Light
+			{name = CLASS_PALADIN_SPELLNAME3, desc = CLASS_PALADIN_SPELLDESC3, texture = [[Interface\Icons\spell_holy_divineshield]]}, -- Divine Shield
+		},
+	},
+	HUNTER = {
+		spells = {
+			{name = CLASS_HUNTER_SPELLNAME1, desc = CLASS_HUNTER_SPELLDESC1, texture = [[Interface\Icons\inv_spear_07]]}, -- Aimed Shot
+			{name = CLASS_HUNTER_SPELLNAME2, desc = CLASS_HUNTER_SPELLDESC2, texture = [[Interface\Icons\ability_hunter_beastcall]]}, -- Call Pet
+			{name = CLASS_HUNTER_SPELLNAME3, desc = CLASS_HUNTER_SPELLDESC3, texture = [[Interface\Icons\spell_yorsahj_bloodboil_black]]}, -- Tar Trap
+		},
+	},
+	ROGUE = {
+		spells = {
+			{name = CLASS_ROGUE_SPELLNAME1, desc = CLASS_ROGUE_SPELLDESC1, texture = [[Interface\Icons\ability_cheapshot]]}, -- Cheap Shot
+			{name = CLASS_ROGUE_SPELLNAME2, desc = CLASS_ROGUE_SPELLDESC2, texture = [[Interface\Icons\ability_rogue_dualweild]]}, -- Deadly Poison
+			{name = CLASS_ROGUE_SPELLNAME3, desc = CLASS_ROGUE_SPELLDESC3, texture = [[Interface\Icons\ability_stealth]]}, -- Stealth
+		},
+	},
+	PRIEST = {
+		spells = {
+			{name = CLASS_PRIEST_SPELLNAME1, desc = CLASS_PRIEST_SPELLDESC1, texture = [[Interface\Icons\spell_holy_powerwordshield]]}, -- Power Word: Shield
+			{name = CLASS_PRIEST_SPELLNAME2, desc = CLASS_PRIEST_SPELLDESC2, texture = [[Interface\Icons\spell_holy_prayerofhealing02]]}, -- Prayer of Healing
+			{name = CLASS_PRIEST_SPELLNAME3, desc = CLASS_PRIEST_SPELLDESC3, texture = [[Interface\Icons\spell_shadow_shadowwordpain]]}, -- Shadow Word: Pain
+		},
+	},
+	SHAMAN = {
+		spells = {
+			{name = CLASS_SHAMAN_SPELLNAME1, desc = CLASS_SHAMAN_SPELLDESC1, texture = [[Interface\Icons\spell_nature_healingwavegreater]]}, -- Chain Heal
+			{name = CLASS_SHAMAN_SPELLNAME2, desc = CLASS_SHAMAN_SPELLDESC2, texture = [[Interface\Icons\spell_fire_elemental_totem]]}, -- Fire Elemental
+			{name = CLASS_SHAMAN_SPELLNAME3, desc = CLASS_SHAMAN_SPELLDESC3, texture = [[Interface\Icons\spell_nature_lightning]]}, -- Lightning Bolt
+		},
+	},
+	MAGE = {
+		spells = {
+			{name = CLASS_MAGE_SPELLNAME1, desc = CLASS_MAGE_SPELLDESC1, texture = [[Interface\Icons\spell_arcane_blink]]}, -- Blink 
+			{name = CLASS_MAGE_SPELLNAME2, desc = CLASS_MAGE_SPELLDESC2, texture = [[Interface\Icons\spell_frost_icestorm]]}, -- Blizzard 
+			{name = CLASS_MAGE_SPELLNAME3, desc = CLASS_MAGE_SPELLDESC3, texture = [[Interface\Icons\spell_fire_flamebolt]]}, -- Fireball 
+		},
+	},
+	WARLOCK = {
+		spells = {
+			{name = CLASS_WARLOCK_SPELLNAME1, desc = CLASS_WARLOCK_SPELLDESC1, texture = [[Interface\Icons\spell_shadow_lifedrain02]]}, -- Drain Life
+			{name = CLASS_WARLOCK_SPELLNAME2, desc = CLASS_WARLOCK_SPELLDESC2, texture = [[Interface\Icons\spell_shadow_soulgem]]}, -- Soulstone 
+			{name = CLASS_WARLOCK_SPELLNAME3, desc = CLASS_WARLOCK_SPELLDESC3, texture = [[Interface\Icons\spell_nature_removecurse]]}, -- Summon Demon
+		},
+	},
+	MONK = {
+		spells = {
+			{name = CLASS_MONK_SPELLNAME1, desc = CLASS_MONK_SPELLDESC1, texture = [[Interface\Icons\monk_ability_fistoffury]]}, -- Fists of Fury
+			{name = CLASS_MONK_SPELLNAME2, desc = CLASS_MONK_SPELLDESC2, texture = [[Interface\Icons\achievement_brewery_2]]}, -- Keg Smash
+			{name = CLASS_MONK_SPELLNAME3, desc = CLASS_MONK_SPELLDESC3, texture = [[Interface\Icons\ability_monk_roll]]}, -- Roll 
+		},
+	},
+	DRUID = {
+		spells = {
+			{name = CLASS_DRUID_SPELLNAME1, desc = CLASS_DRUID_SPELLDESC1, texture = [[Interface\Icons\Ability_Racial_BearForm]]}, -- Bear Form
+			{name = CLASS_DRUID_SPELLNAME2, desc = CLASS_DRUID_SPELLDESC2, texture = [[Interface\Icons\Ability_Druid_CatForm]]}, -- Cat Form
+			{name = CLASS_DRUID_SPELLNAME3, desc = CLASS_DRUID_SPELLDESC3, texture = [[Interface\Icons\Spell_Nature_HealingTouch]]}, -- Healing Touch
+		},
+	},
+	DEMONHUNTER = {
+		spells = {
+			{name = CLASS_DEMONHUNTER_SPELLNAME1, desc = CLASS_DEMONHUNTER_SPELLDESC1, texture = [[Interface\Icons\ability_demonhunter_felrush]]}, -- Fel Rush
+			{name = CLASS_DEMONHUNTER_SPELLNAME2, desc = CLASS_DEMONHUNTER_SPELLDESC2, texture = [[Interface\Icons\ability_demonhunter_eyebeam]]}, -- Eye Beam
+			{name = CLASS_DEMONHUNTER_SPELLNAME3, desc = CLASS_DEMONHUNTER_SPELLDESC3, texture = [[Interface\Icons\ability_demonhunter_metamorphasisdps]]}, -- Metamorphosis
+		},
+	},
+	DEATHKNIGHT = {
+		spells = {
+			{name = CLASS_DEATHKNIGHT_SPELLNAME1, desc = CLASS_DEATHKNIGHT_SPELLDESC1, texture = [[Interface\Icons\Spell_DeathKnight_ArmyOfTheDead]]}, -- Army of the Dead
+			{name = CLASS_DEATHKNIGHT_SPELLNAME2, desc = CLASS_DEATHKNIGHT_SPELLDESC2, texture = [[Interface\Icons\Spell_Shadow_DeathAndDecay]]}, -- Death and Decay
+			{name = CLASS_DEATHKNIGHT_SPELLNAME3, desc = CLASS_DEATHKNIGHT_SPELLDESC3, texture = [[Interface\Icons\Spell_DeathKnight_Strangulate]]}, -- Death Grip
+		},
+	},
+}
+
 MODEL_CAMERA_CONFIG = {
 	[2] = { 
 		["Draenei"] = { tx = 0.191, ty = -0.015, tz = 2.302, cz = 2.160, distance = 1.116, light =  0.80 },
@@ -113,6 +175,10 @@ MODEL_CAMERA_CONFIG = {
 		["Human"] = { tx = 0.055, ty = 0.006, tz = 1.863, cz = 1.749, distance = 0.714, light =  0.75 },
 		["Pandaren"] = { tx = 0.046, ty = -0.020, tz = 2.125, cz = 2.201, distance = 1.240, light =  0.90 },
 		["Goblin"] = { tx = 0.127, ty = -0.022, tz = 1.104, cz = 1.009, distance = 0.830, light =  0.80 },
+		["NightElf6"] = { tx = 0, ty = 0, tz = 1.95, cz = 1.792, distance = 1.75, light =  0.80 },
+		["NightElf7"] = { tx = 0.095, ty = -0.008, tz = 2.240, cz = 2.045, distance = 1.230, light =  0.85 },
+		["BloodElf6"] = { tx = -0.1, ty = 0, tz = 1.6, cz = 1.792, distance = 1.65, light =  0.80 },
+		["BloodElf7"] = { tx = 0.009, ty = -0.120, tz = 1.914, cz = 1.712, distance = 1.127, light =  0.80 },
 	},
 	[3] = {
 		["Draenei"] = { tx = 0.155, ty = 0.009, tz = 2.177, cz = 1.971, distance = 0.734, light =  0.75 },
@@ -129,11 +195,12 @@ MODEL_CAMERA_CONFIG = {
 		["Human"] = { tx = -0.044, ty = -0.015, tz = 1.755, cz = 1.689, distance = 0.612, light =  0.75 },
 		["Pandaren"] = { tx = 0.122, ty = -0.002, tz = 1.999, cz = 1.925, distance = 1.065, light =  0.90 },
 		["Goblin"] = { tx = -0.076, ty = 0.006, tz = 1.191, cz = 1.137, distance = 0.970, light =  0.80 },
+		["NightElf6"] = { tx = 0, ty = 0, tz = 1.85, cz = 1.792, distance = 1.6, light =  0.80 },
+		["NightElf7"] = { tx = 0.071, ty = 0.034, tz = 2.068, cz = 2.055, distance = 1.082, light =  0.85 },
+		["BloodElf6"] = { tx = 0, ty = 0, tz = 1.55, cz = 1.792, distance = 1.2, light =  0.80 },
+		["BloodElf7"] = { tx = -0.072, ty = 0.009, tz = 1.789, cz = 1.792, distance = 1.117, light =  0.80 },
 	}
 };
-
-BANNER_DEFAULT_TEXTURE_COORDS = {0.109375, 0.890625, 0.201171875, 0.80078125};
-BANNER_DEFAULT_SIZE = {200, 308};
 
 CHAR_CUSTOMIZE_HAIR_COLOR = 4;
 
@@ -164,6 +231,35 @@ function CharacterCreate_OnLoad(self)
 	CharacterCreateFrame.state = "CLASSRACE";
 	
 	CharCreatePreviewFrame.previews = { };
+	
+	local classes = GetAvailableClasses();
+	for idx, classData in pairs(classes) do
+		-- Class Button Tooltip
+		local classIndex = classData.fileName;
+		CHARCREATE_CLASS_TOOLTIP[classIndex] = {
+			name = classData.className;
+			roles = _G["CLASS_INFO_"..classIndex.."_ROLE_TT"];
+			description = "|n".._G["CLASS_"..classIndex].."|n|n";
+			footer = CLASS_INFO_MORE_INFO_HINT;
+		};
+
+		-- Class More Info Data
+		local classInfo = CHARCREATE_CLASS_INFO[classIndex];
+		classInfo.name = classData.className;
+		local bulletIndex = 0;
+		local tempText = _G["CLASS_INFO_"..classIndex..bulletIndex];
+		local bulletText = "";
+		while ( tempText ) do
+			bulletText = bulletText..tempText.."|n|n";
+			bulletIndex = bulletIndex + 1;
+			tempText = _G["CLASS_INFO_"..classIndex..bulletIndex];
+		end		
+		classInfo.bulletText = bulletText;
+		classInfo.description = _G["CLASS_"..classIndex];
+	end
+	
+	CharCreateClassInfoFrameScrollFrameScrollChildInfoText.topPadding = 18;
+	CharCreateClassInfoFrameScrollFrameScrollChild.Spells = {};
 end
 
 function CharacterCreate_OnShow()
@@ -196,9 +292,11 @@ function CharacterCreate_OnShow()
 	end
 	
 	CharacterCreateEnumerateRaces(GetAvailableRaces());
+
 	SetCharacterRace(GetSelectedRace());
-	
+		
 	CharacterCreateEnumerateClasses(GetAvailableClasses());
+
 	local _,_,index = GetSelectedClass();
 	SetCharacterClass(index);
 
@@ -206,6 +304,7 @@ function CharacterCreate_OnShow()
 	
 	-- Hair customization stuff
 	CharacterCreate_UpdateHairCustomization();
+	CharacterCreate_UpdateDemonHunterCustomization();
 
 	SetCharacterCreateFacing(-15);
 	
@@ -216,8 +315,44 @@ function CharacterCreate_OnShow()
 
 	CharacterCreateFrame_UpdateRecruitInfo();
 	
-	if( IsBlizzCon() ) then
-		BLIZZCON_IS_A_GO = false;
+	if( IsKioskModeEnabled() ) then
+		local data = KioskModeSplash_GetModeData();
+		if (not data) then
+			-- This shouldn't happen, why don't have we have mode data?
+			SetGlueScreen("kioskmodesplash");
+			return;
+		end
+		local available = {};
+		for k, v in pairs(data.races) do
+			if (v) then
+				tinsert(available, k);
+			end
+		end
+
+		local rid = KioskModeSplash_GetIDForSelection("races", available[math.random(1, #available)]);
+		SetSelectedRace(rid);
+		SetCharacterRace(rid);
+	
+		CharacterCreateEnumerateClasses(GetAvailableClasses());
+		
+		local currentRace = GetSelectedRace();
+		local available = {};
+		for k, v in pairs(data.classes) do
+			if (v) then
+				local id = KioskModeSplash_GetIDForSelection("classes", k);
+				if (IsClassAllowedInKioskMode(id) and IsRaceClassValid(currentRace, id)) then
+					tinsert(available, k);
+				end
+			end
+		end
+
+		local cid = KioskModeSplash_GetIDForSelection("classes", available[math.random(1, #available)]);
+		SetSelectedClass(cid);
+		SetCharacterClass(cid);
+		SetCharacterRace(GetSelectedRace());
+
+		RandomizeCharCustomization(true);
+		KioskModeSplash_SetAutoEnterWorld(false);
 	end
 end
 
@@ -306,49 +441,57 @@ function CharacterCreateFrame_UpdateRecruitInfo()
 	end
 end
 
-function CharacterCreateEnumerateRaces(...)
-	CharacterCreate.numRaces = select("#", ...)/3;
+function CharacterCreateEnumerateRaces(races)
+	CharacterCreate.numRaces = #races;
 	if ( CharacterCreate.numRaces > MAX_RACES ) then
 		message("Too many races!  Update MAX_RACES");
 		return;
 	end
 
 	local gender;
-	local selectedSex = GetSelectedSex();
-	if ( selectedSex == SEX_MALE ) then
+	if ( GetSelectedSex() == SEX_MALE ) then
 		gender = "MALE";
 	else
 		gender = "FEMALE";
 	end
 
 	local index = 1;
-	for i=1, select("#", ...), 3 do
+	for i=1, CharacterCreate.numRaces do
 		local button = _G["CharCreateRaceButton"..index];
 		if ( not button  ) then
 			return;
 		end
 		
-		local name = select(i, ...);
-		local coords = RACE_ICON_TCOORDS[strupper(select(i+1, ...).."_"..gender)];
-		_G["CharCreateRaceButton"..index.."NormalTexture"]:SetTexCoord(coords[1], coords[2], coords[3], coords[4]);
-		_G["CharCreateRaceButton"..index.."PushedTexture"]:SetTexCoord(coords[1], coords[2], coords[3], coords[4]);
+		local name = races[i].name;
+		local raceIndex = strupper(races[i].fileName);
+		local coords = RACE_ICON_TCOORDS[raceIndex.."_"..gender];
+		button.NormalTexture:SetTexCoord(coords[1], coords[2], coords[3], coords[4]);
+		button.PushedTexture:SetTexCoord(coords[1], coords[2], coords[3], coords[4]);
 		button.nameFrame.text:SetText(name);
 
-		if ( select(i+2, ...) == 1 ) then
+		local data = IsKioskModeEnabled() and KioskModeSplash_GetModeData();
+		local disableTexture = button.DisableTexture;
+		if ( races[i].enabled and (not data or data.races[raceIndex]) ) then
 			button:Enable();
 			SetButtonDesaturated(button);
 			button.name = name;
 			button.tooltip = name;
+			disableTexture:Hide();
 		else
 			button:Disable();
 			SetButtonDesaturated(button, true);
 			button.name = name;
-			local disabledReason = _G[strupper(select(i+1, ...).."_".."DISABLED")];
-			if ( disabledReason ) then
-				button.tooltip = name.."|n"..disabledReason;
+			if (IsKioskModeEnabled()) then
+				button.tooltip = RACE_DISABLED_KIOSK_MODE;
 			else
-				button.tooltip = nil;
+				local disabledReason = _G[raceIndex.."_DISABLED"];
+				if ( disabledReason ) then
+					button.tooltip = name.."|n"..disabledReason;
+				else
+					button.tooltip = nil;
+				end
 			end
+			disableTexture:SetShown(IsKioskModeEnabled());
 		end
 		index = index + 1;
 	end
@@ -357,8 +500,8 @@ function CharacterCreateEnumerateRaces(...)
 	end
 end
 
-function CharacterCreateEnumerateClasses(...)
-	CharacterCreate.numClasses = select("#", ...)/3;
+function CharacterCreateEnumerateClasses(classes)
+	CharacterCreate.numClasses = #classes;
 	if ( CharacterCreate.numClasses > MAX_CLASSES_PER_RACE ) then
 		message("Too many classes!  Update MAX_CLASSES_PER_RACE");
 		return;
@@ -366,30 +509,49 @@ function CharacterCreateEnumerateClasses(...)
 	local coords;
 	local index = 1;
 	local button;
-	for i=1, select("#", ...), 3 do
-		coords = CLASS_ICON_TCOORDS[strupper(select(i+1, ...))];
-		_G["CharCreateClassButton"..index.."NormalTexture"]:SetTexCoord(coords[1], coords[2], coords[3], coords[4]);
-		_G["CharCreateClassButton"..index.."PushedTexture"]:SetTexCoord(coords[1], coords[2], coords[3], coords[4]);
+	for idx, classData in pairs(classes) do
+		local classIndex = classData.fileName;
+		coords = CLASS_ICON_TCOORDS[classIndex];
 		button = _G["CharCreateClassButton"..index];
+		button.NormalTexture:SetTexCoord(coords[1], coords[2], coords[3], coords[4]);
+		button.PushedTexture:SetTexCoord(coords[1], coords[2], coords[3], coords[4]);
 		button:Show();
-		button.nameFrame.text:SetText(select(i, ...));
-		if ( select(i+2, ...) == true ) then
-			if (IsRaceClassValid(CharacterCreate.selectedRace, index)) then
+		button.nameFrame.text:SetText(classData.className);
+		button.tooltip = CHARCREATE_CLASS_TOOLTIP[classIndex];
+		local data = IsKioskModeEnabled() and KioskModeSplash_GetModeData();
+		local disableTexture = button.DisableTexture;
+		if ( classData.enabled == true ) then
+			if (IsKioskModeEnabled() and (not IsClassAllowedInKioskMode(index) or not data.classes[classIndex])) then
+				button:Disable();
+				SetButtonDesaturated(button, true);
+				button.tooltip.footer = CLASS_DISABLED_KIOSK_MODE;
+				disableTexture:Show();
+			elseif (IsRaceClassValid(CharacterCreate.selectedRace, index)) then
 				button:Enable();
 				SetButtonDesaturated(button);
-				button.tooltip = nil;
-				_G["CharCreateClassButton"..index.."DisableTexture"]:Hide();
+				button.tooltip.footer = CLASS_INFO_MORE_INFO_HINT;
+				disableTexture:Hide();
 			else
 				button:Disable();
 				SetButtonDesaturated(button, true);
-				button.tooltip = CLASS_DISABLED;
-				_G["CharCreateClassButton"..index.."DisableTexture"]:Show();
+				button.tooltip.footer = "|cffff0000"..CLASS_DISABLED.."|r";
+				disableTexture:Show();
 			end
 		else
 			button:Disable();
 			SetButtonDesaturated(button, true);
-			button.tooltip = _G[strupper(select(i+1, ...).."_".."DISABLED")];
-			_G["CharCreateClassButton"..index.."DisableTexture"]:Show();
+			local reason = "";
+			if ( classData.disableReason ) then
+				if ( classData.disableReason == LE_DEMON_HUNTER_CREATION_DISABLED_REASON_HAVE_DH ) then
+					reason = DEMON_HUNTER_RESTRICTED_HAS_DEMON_HUNTER;
+				elseif ( classData.disableReason == LE_DEMON_HUNTER_CREATION_DISABLED_REASON_NEED_LEVEL_70 ) then
+					reason = DEMON_HUNTER_RESTRICTED_NEED_LEVEL_70;
+				end
+			else
+				reason = _G[classIndex.."_DISABLED"];
+			end
+			button.tooltip.footer = "|cffff0000".. reason .."|r";
+			disableTexture:Show();
 		end
 		index = index + 1;
 	end
@@ -401,12 +563,7 @@ end
 function SetCharacterRace(id)
 	CharacterCreate.selectedRace = id;
 	for i=1, CharacterCreate.numRaces, 1 do
-		local button = _G["CharCreateRaceButton"..i];
-		if ( i == id ) then
-			button:SetChecked(true);
-		else
-			button:SetChecked(false);
-		end
+		_G["CharCreateRaceButton"..i]:SetChecked(i == id);
 	end
 
 	local name, faction = GetFactionForRace(CharacterCreate.selectedRace);
@@ -451,7 +608,9 @@ function SetCharacterRace(id)
 	CharCreateClassFrame.factionBg:SetGradient("VERTICAL", 0, 0, 0, backdropColor[7], backdropColor[8], backdropColor[9]);
 	CharCreateCustomizationFrame.factionBg:SetGradient("VERTICAL", 0, 0, 0, backdropColor[7], backdropColor[8], backdropColor[9]);
 	CharCreatePreviewFrame.factionBg:SetGradient("VERTICAL", 0, 0, 0, backdropColor[7], backdropColor[8], backdropColor[9]);
-	CharCreateCustomizationFrameBanner:SetVertexColor(backdropColor[10], backdropColor[11], backdropColor[12]);
+	CharCreateCustomizationFrame.BannerTop:SetVertexColor(backdropColor[10], backdropColor[11], backdropColor[12]);
+	CharCreateCustomizationFrame.BannerMiddle:SetVertexColor(backdropColor[10], backdropColor[11], backdropColor[12]);
+	CharCreateCustomizationFrame.BannerBottom:SetVertexColor(backdropColor[10], backdropColor[11], backdropColor[12]);
 	CharacterCreateNameEdit:SetBackdropColor(backdropColor[4], backdropColor[5], backdropColor[6]);
 	CharCreateRaceInfoFrame.factionBg:SetGradient("VERTICAL", 0, 0, 0, backdropColor[7], backdropColor[8], backdropColor[9]);
 	CharCreateClassInfoFrame.factionBg:SetGradient("VERTICAL", 0, 0, 0, backdropColor[7], backdropColor[8], backdropColor[9]);
@@ -461,13 +620,7 @@ function SetCharacterRace(id)
 	local race, fileString = GetNameForRace();
 	frame.title:SetText(race);
 	fileString = strupper(fileString);
-	local gender;
-	if ( GetSelectedSex() == SEX_MALE ) then
-		gender = "MALE";
-	else
-		gender = "FEMALE";
-	end
-	local raceText = _G["RACE_INFO_"..fileString];
+
 	local abilityIndex = 1;
 	local tempText = _G["ABILITY_INFO_"..fileString..abilityIndex];
 	local abilityText = "";
@@ -477,12 +630,13 @@ function SetCharacterRace(id)
 		tempText = _G["ABILITY_INFO_"..fileString..abilityIndex];
 	end
 	CharCreateRaceInfoFrameScrollFrameScrollBar:SetValue(0);
-	CharCreateRaceInfoFrame.scrollFrame.scrollChild.infoText:SetText(GetFlavorText("RACE_INFO_"..strupper(fileString), GetSelectedSex()).."|n|n");
+	CharCreateRaceInfoFrame.scrollFrame.scrollChild.infoText:SetText(_G["RACE_INFO_"..fileString]);
 	if ( abilityText and abilityText ~= "" ) then
 		CharCreateRaceInfoFrame.scrollFrame.scrollChild.bulletText:SetText(abilityText);
 	else
 		CharCreateRaceInfoFrame.scrollFrame.scrollChild.bulletText:SetText("");
-	end	
+	end
+	CharacterCreate_InfoTemplate_Resize(CharCreateRaceInfoFrame);
 
 	-- Altered form
 	if (HasAlteredForm()) then
@@ -517,18 +671,44 @@ function SetCharacterClass(id)
 	
 	-- class info
 	local frame = CharCreateClassInfoFrame;
-	local className, classFileName, _, tank, healer, damage = GetSelectedClass();
-	local abilityIndex = 0;
-	local tempText = _G["CLASS_INFO_"..classFileName..abilityIndex];
-	local abilityText = "";
-	while ( tempText ) do
-		abilityText = abilityText..tempText.."\n\n";
-		abilityIndex = abilityIndex + 1;
-		tempText = _G["CLASS_INFO_"..classFileName..abilityIndex];
+	local scrollFrame = frame.scrollFrame.scrollChild;
+	local className, classFileName = GetSelectedClass();
+	frame.title:SetText(className);
+	
+	-- hide spell icons
+	for _, spellIcon in pairs(scrollFrame.Spells) do
+		spellIcon:Hide();
+		spellIcon.layoutIndex = nil;
 	end
-	CharCreateClassInfoFrame.title:SetText(className);
-	CharCreateClassInfoFrame.scrollFrame.scrollChild.bulletText:SetText(abilityText);
-	CharCreateClassInfoFrame.scrollFrame.scrollChild.infoText:SetText(GetFlavorText("CLASS_"..strupper(classFileName), GetSelectedSex()).."|n|n");
+
+	-- display spell icons
+	local layoutIndexCount = 2; -- bullet text is always at layout index 1
+	if (#CHARCREATE_CLASS_INFO[classFileName].spells > 0) then
+		scrollFrame.AbilityText:Show();
+		scrollFrame.AbilityText.layoutIndex = layoutIndexCount;
+		layoutIndexCount = layoutIndexCount + 1;
+		for idx, spell in pairs(CHARCREATE_CLASS_INFO[classFileName].spells) do
+			local spellIcon = scrollFrame.Spells[idx];
+			if ( not spellIcon ) then
+				spellIcon = CreateFrame("FRAME", "CharCreateClassInfoFrameSpell"..idx, scrollFrame, "CharacterCreateSpellIconTemplate");
+			end
+			spellIcon.tooltip = spell;
+			spellIcon.layoutIndex = layoutIndexCount;
+			layoutIndexCount = layoutIndexCount + 1;
+			
+			spellIcon.Icon:SetTexture(spell.texture);
+			spellIcon.Text:SetText(spell.name);
+			spellIcon:Show();
+		end
+	else
+		scrollFrame.AbilityText:Hide();
+	end
+
+	scrollFrame.bulletText:SetText(CHARCREATE_CLASS_INFO[classFileName].bulletText);
+	scrollFrame.infoText:SetText(CHARCREATE_CLASS_INFO[classFileName].description);
+	scrollFrame.infoText.layoutIndex = layoutIndexCount;
+
+	CharacterCreate_InfoTemplate_Resize(frame);
 	CharCreateClassInfoFrameScrollFrameScrollBar:SetValue(0);
 end
 
@@ -552,9 +732,9 @@ end
 
 function CharacterCreate_Finish()
 	PlaySound("gsCharacterCreationCreateChar");
-	if( IsBlizzCon() ) then
+	if( IsKioskModeEnabled() ) then
 		CreateCharacter(CharacterCreateNameEdit:GetText());
-		BLIZZCON_IS_A_GO = true;
+		KioskModeSplash_SetAutoEnterWorld(true);
 		return;
 	end
 
@@ -599,7 +779,9 @@ function CharacterCreate_Back()
 		return;
 	end
 
-	if( IsBlizzCon() ) then
+	if( IsKioskModeEnabled() ) then
+		PlaySound("gsCharacterCreationCancel");
+		SetGlueScreen("kioskmodesplash");
 		return;
 	end
 
@@ -647,15 +829,11 @@ function CharacterCreate_Forward()
 end
 
 function CharCreateCustomizationFrame_OnShow ()
-	-- reset size/tex coord to default to facilitate switching between genders for Pandaren
-	CharCreateCustomizationFrameBanner:SetSize(BANNER_DEFAULT_SIZE[1], BANNER_DEFAULT_SIZE[2]);
-	CharCreateCustomizationFrameBanner:SetTexCoord(BANNER_DEFAULT_TEXTURE_COORDS[1], BANNER_DEFAULT_TEXTURE_COORDS[2], BANNER_DEFAULT_TEXTURE_COORDS[3], BANNER_DEFAULT_TEXTURE_COORDS[4]);
-
 	-- check each button and hide it if there are no values select
-	local resize = 0;
+	local numButtons = 0;
 	local lastGood = 0;
 	local isSkinVariantHair = GetSkinVariationIsHairColor(CharacterCreate.selectedRace);
-	local isDefaultSet = 0;
+	local isDefaultSet = false;
 	local checkedButton = 1;
 
 	-- check if this was set, if not, default to 1
@@ -663,15 +841,14 @@ function CharCreateCustomizationFrame_OnShow ()
 		CharacterCreateFrame.customizationType = 1;
 	end
 	for i=1, NUM_CHAR_CUSTOMIZATIONS, 1 do
-		if ( ( GetNumFeatureVariationsForType(i) <= 1 ) or ( isSkinVariantHair and i == CHAR_CUSTOMIZE_HAIR_COLOR ) ) then
-			resize = resize + 1;
+		if ( ( GetNumFeatureVariationsForType(i) <= 1) or ( isSkinVariantHair and i == CHAR_CUSTOMIZE_HAIR_COLOR ) ) then
 			_G["CharCreateCustomizationButton"..i]:Hide();
 		else
 			_G["CharCreateCustomizationButton"..i]:Show();
 			_G["CharCreateCustomizationButton"..i]:SetChecked(false); -- we will handle default selection
 			-- this must be done since a selected button can 'disappear' when swapping genders
-			if ( isDefaultSet == 0 and CharacterCreateFrame.customizationType == i) then
-				isDefaultSet = 1;
+			if ( not isDefaultSet and CharacterCreateFrame.customizationType == i) then
+				isDefaultSet = true;
 				checkedButton = i;
 			end
 			-- set your anchor to be the last good, this currently means button 1 HAS to be shown
@@ -679,46 +856,52 @@ function CharCreateCustomizationFrame_OnShow ()
 				_G["CharCreateCustomizationButton"..i]:SetPoint( "TOP",_G["CharCreateCustomizationButton"..lastGood]:GetName() , "BOTTOM");
 			end
 			lastGood = i;
+			numButtons = numButtons + 1;
 		end
 	end
 
-	if (isDefaultSet == 0) then 
-		CharacterCreateFrame.customizationType = lastGood;
-		checkedButton = lastGood;
+
+	if (not isDefaultSet) then 
+		CharacterCreateFrame.customizationType = 1;
+		checkedButton = 1;
 	end
+
+	local lastGoodButtonName = "CharCreateCustomizationButton"..lastGood;
+	local lastGoodButton = _G[lastGoodButtonName];
+	
 	_G["CharCreateCustomizationButton"..checkedButton]:SetChecked(true);
 
-	if (resize > 0) then
-	-- we need to resize and remap the banner texture
-		local buttonx, buttony = CharCreateCustomizationButton1:GetSize()
-		local screenamount = resize*buttony;
-		local frameX, frameY = CharCreateCustomizationFrameBanner:GetSize();
-		local pctShrink = .2*resize; 
-		local uvXDefaultSize = BANNER_DEFAULT_TEXTURE_COORDS[2] - BANNER_DEFAULT_TEXTURE_COORDS[1];
-		local uvYDefaultSize = BANNER_DEFAULT_TEXTURE_COORDS[4] - BANNER_DEFAULT_TEXTURE_COORDS[3];
-		local newYUV = pctShrink*uvYDefaultSize + BANNER_DEFAULT_TEXTURE_COORDS[3];
-		-- end coord stay the same
-		CharCreateCustomizationFrameBanner:SetTexCoord(BANNER_DEFAULT_TEXTURE_COORDS[1], BANNER_DEFAULT_TEXTURE_COORDS[2], newYUV, BANNER_DEFAULT_TEXTURE_COORDS[4]);
-		CharCreateCustomizationFrameBanner:SetSize(frameX, frameY - screenamount);
-	end
+	-- Set banner height depending on number of buttons to accomodate male Pandaren and demon hunter
+	local buttonHeight = CharCreateCustomizationButton1:GetHeight();
+	CharCreateCustomizationFrame.BannerMiddle:SetHeight(10 + (numButtons - 1) * buttonHeight);
 	
-	CharCreateRandomizeButton:SetPoint("TOP", _G["CharCreateCustomizationButton"..lastGood]:GetName(), "BOTTOM", 0, 0);
+	if (lastGoodButton) then
+		CharCreateRandomizeButton:SetPoint("TOP", lastGoodButton:GetName(), "BOTTOM", 0, 0);
+	end
 end
 
-function CharacterClass_OnClick(self, id)
+function CharacterClass_OnClick(self)
 	if( self:IsEnabled() ) then
 		PlaySound("gsCharacterCreationClass");
 		local _,_,currClass = GetSelectedClass();
+		local id = self:GetID();
 		if ( currClass ~= id ) then
 			SetSelectedClass(id);
 			SetCharacterClass(id);
 			SetCharacterRace(GetSelectedRace());
 			CharacterChangeFixup();
+			local demonHunterID = CLASS_NAME_BUTTON_ID_MAP["DEMONHUNTER"];
+			if (currClass == demonHunterID or id == demonHunterID) then
+				RandomizeCharCustomization(true);
+			end
 		else
 			self:SetChecked(true);
 		end
 	else
 		self:SetChecked(false);
+	end
+	if ( CharCreateMoreInfoButton.infoShown ) then
+		CharacterCreateTooltip:Hide();
 	end
 end
 
@@ -731,12 +914,30 @@ function CharacterRace_OnClick(self, id, forceSelect)
 			SetCharacterGender(GetSelectedSex());
 			SetCharacterCreateFacing(-15);
 			CharacterCreateEnumerateClasses(GetAvailableClasses());
-			local _,_,classIndex = GetSelectedClass();
-			if ( PAID_SERVICE_TYPE ) then
-				classIndex = PaidChange_GetCurrentClassIndex();
-				SetSelectedClass(classIndex);	-- selecting a race would have changed class to default
+			if (IsKioskModeEnabled()) then
+				local data = KioskModeSplash_GetModeData();
+				local available = {};
+				for k, v in pairs(data.classes) do
+					if (v) then
+						local cid = KioskModeSplash_GetIDForSelection("classes", k);
+						if (IsClassAllowedInKioskMode(cid) and IsRaceClassValid(id, cid)) then
+							tinsert(available, k);
+						end
+					end
+				end
+
+				local fcid = KioskModeSplash_GetIDForSelection("classes", available[math.random(1, #available)]);
+				SetSelectedClass(fcid);
+				SetCharacterClass(fcid);
+				SetCharacterRace(GetSelectedRace());
+			else
+				local _,_,classIndex = GetSelectedClass();
+				if ( PAID_SERVICE_TYPE ) then
+					classIndex = PaidChange_GetCurrentClassIndex();
+					SetSelectedClass(classIndex);	-- selecting a race would have changed class to default
+				end
+				SetCharacterClass(classIndex);
 			end
-			SetCharacterClass(classIndex);
 			
 			-- Hair customization stuff
 			CharacterCreate_UpdateHairCustomization();
@@ -826,6 +1027,13 @@ function CharacterCreate_UpdateHairCustomization()
 	CharCreateCustomizationButton5.text:SetText(_G["FACIAL_HAIR_"..GetFacialHairCustomization()]);
 end
 
+function CharacterCreate_UpdateDemonHunterCustomization()
+	-- Buttons 6, 7 and 8 are for the demon hunter and have hardcoded strings
+	CharCreateCustomizationButton6.text:SetText(DEMONHUNTER_TATTOO_STYLE);
+	CharCreateCustomizationButton7.text:SetText(DEMONHUNTER_HORN_STYLE);
+	CharCreateCustomizationButton8.text:SetText(DEMONHUNTER_BLINDFOLD_STYLE);
+end
+
 function SetButtonDesaturated(button, desaturated)
 	if ( not button ) then
 		return;
@@ -836,22 +1044,6 @@ function SetButtonDesaturated(button, desaturated)
 	end
 	
 	icon:SetDesaturated(desaturated);
-end
-
-function GetFlavorText(tagname, sex)
-	local primary, secondary;
-	if ( sex == SEX_MALE ) then
-		primary = "";
-		secondary = "_FEMALE";
-	else
-		primary = "_FEMALE";
-		secondary = "";
-	end
-	local text = _G[tagname..primary];
-	if ( (text == nil) or (text == "") ) then
-		text = _G[tagname..secondary];
-	end
-	return text;
 end
 
 function CharacterCreate_DeathKnightSwap(self)
@@ -931,7 +1123,9 @@ function CharCreateSelectCustomizationType(newType)
 	CharacterCreateFrame.customizationType = newType;
 	CharCreate_ResetFeaturesDisplay();
 
-	if (newType > 1) then
+	-- Use face camera for everything except Skin Color and Tattoos
+	-- DWNOTE: tattoos are mostly upper body so it actually seems better zoomed in
+	if (newType > 1) then --  and newType ~= 5) then
 		SetFaceCustomizeCamera(true);
 	else
 		SetFaceCustomizeCamera(false);
@@ -1005,7 +1199,11 @@ function CharCreate_DisplayPreviewModels(selectionIndex)
 	if ( IsViewingAlteredForm() ) then
 		raceFileName = raceFileName.."Alt";
 	end
-	local config = MODEL_CAMERA_CONFIG[gender][raceFileName];
+
+	local config = MODEL_CAMERA_CONFIG[gender][raceFileName..currentFeatureType];
+	if (not config) then
+		config = MODEL_CAMERA_CONFIG[gender][raceFileName];
+	end
 
 	-- selection index is the center preview
 	-- there are 2 previews above and 2 below, and will pad it out to 1 more on each side, for a total of 7 previews to set up
@@ -1023,10 +1221,11 @@ function CharCreate_DisplayPreviewModels(selectionIndex)
 				SetPreviewFrame(previewFrame.model:GetName(), index);
 			end
 			-- load model if needed, may have been cleared by different race/gender selection
-			if ( previewFrame.race ~= race or previewFrame.gender ~= gender ) then
+			if ( previewFrame.race ~= race or previewFrame.gender ~= gender or previewFrame.currentCamera ~= config) then
 				SetPreviewFrameModel(index);
 				previewFrame.race = race;
 				previewFrame.gender = gender;
+				previewFrame.currentCamera = config;
 				-- apply settings
 				local model = previewFrame.model;
 				model:SetCustomCamera(cameraID);
@@ -1270,4 +1469,48 @@ function PandarenFactionButton_OnClick(self)
 	PandarenFactionButtons_ClearSelection();
 	self:SetChecked(true);
 	CharacterRace_OnClick(CharCreatePandarenFactionFrame.PandarenButton, CharCreatePandarenFactionFrame.PandarenButton:GetID(), true);
+end
+
+---------------------------------------------
+-- CharCreateClassButton script functions
+---------------------------------------------
+function CharCreateClassButton_OnEnter(self)
+	CharacterCreateTooltip:SetOwner(self, "ANCHOR_LEFT", -8, -5);
+	CharacterCreateTooltip:SetText(self.tooltip.name, 1, 1, 1, 1, true);
+	CharacterCreateTooltip:AddLine(self.tooltip.roles, 0.510, 0.773, 1, 1, true);
+	CharacterCreateTooltip:AddLine(self.tooltip.description, NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b, 1, true);
+	CharacterCreateTooltip:AddLine(self.tooltip.footer, nil, nil, nil, nil, true);
+end
+
+function CharCreateClassButton_OnLeave(self)
+	CharacterCreateTooltip:Hide();
+end
+
+---------------------------------------------
+-- CharacterCreateSpellIcon script functions
+---------------------------------------------
+function CharacterCreateSpellIcon_OnEnter(self)
+	CharacterCreateTooltip:SetOwner(self, "ANCHOR_LEFT", 8, -4);
+	CharacterCreateTooltip:SetText(self.tooltip.name, 1, 1, 1, 1);
+	CharacterCreateTooltip:AddLine(self.tooltip.desc, NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b, 1, true);
+end
+
+function CharacterCreateSpellIcon_OnLeave(self)
+	CharacterCreateTooltip:Hide();
+end
+
+---------------------------------------------
+-- CharacterCreate_InfoTemplate script functions
+---------------------------------------------
+function CharacterCreate_InfoTemplate_Resize(frame)
+	if ( frame:IsVisible() ) then
+		frame.scrollFrame.scrollChild:Layout();
+		local height = frame.headerTex:GetTop() - frame.scrollFrame.scrollChild.infoText:GetBottom() + 33; -- 33 pixels to account for the anchor offsets
+		height = min( frame.maxHeight, max(frame.minHeight, height));
+		frame:SetHeight(height);
+	end
+end
+
+function CharacterCreate_InfoTemplate_OnShow(self)
+	CharacterCreate_InfoTemplate_Resize(self);
 end

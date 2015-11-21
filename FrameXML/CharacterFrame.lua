@@ -127,7 +127,7 @@ function CharacterFrame_OnShow (self)
 	ShowTextStatusBarText(MainMenuExpBar);
 	ShowTextStatusBarText(PetFrameHealthBar);
 	ShowTextStatusBarText(PetFrameManaBar);
-	ShowWatchedReputationBarText();
+	ShowWatchBarText(ReputationWatchBar);
 	
 	MicroButtonPulseStop(CharacterMicroButton);	--Stop the button pulse
 end
@@ -149,7 +149,7 @@ function CharacterFrame_OnHide (self)
 	HideTextStatusBarText(MainMenuExpBar);
 	HideTextStatusBarText(PetFrameHealthBar);
 	HideTextStatusBarText(PetFrameManaBar);
-	HideWatchedReputationBarText();
+	HideWatchBarText(ReputationWatchBar);
 	PaperDollFrame.currentSideBar = nil;
 end
 

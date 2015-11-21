@@ -5,7 +5,7 @@ SHADOW_ORB_MINOR_TALENT_ID = 157217
 
 function PriestBarFrame_OnLoad(self)
 	local _, class = UnitClass("player");
-	if ( class == "PRIEST" ) then
+	if (false and class == "PRIEST" ) then -- TODO: Task 86565, remove Shadow Orbs, this part takes care of the UI
 		self:SetFrameLevel(self:GetParent():GetFrameLevel() + 2);
 		if ( UnitLevel("player") < SHADOW_ORBS_SHOW_LEVEL ) then
 			self:RegisterEvent("PLAYER_LEVEL_UP");

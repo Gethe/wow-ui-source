@@ -80,7 +80,7 @@
 		</Layers>
 		<Animations>
 			<AnimationGroup parentKey="AnimAlphaIn">
-				<Alpha parentKey="Alpha" change="0.65" startDelay="0.25" duration="0.55" order="1"/>
+				<Alpha parentKey="Alpha" fromAlpha="0" toAlpha="0.65" startDelay="0.25" duration="0.55" order="1"/>
 				<Scripts>
 					<OnFinished>
 						WorldMapFrame:SetAlpha(WORLD_MAP_MAX_ALPHA);
@@ -88,7 +88,7 @@
 				</Scripts>				
 			</AnimationGroup>
 			<AnimationGroup parentKey="AnimAlphaOut">
-				<Alpha parentKey="Alpha" change="-0.65" startDelay="0.25" duration="0.55" order="1"/>
+				<Alpha parentKey="Alpha" fromAlpha="0.65" toAlpha="0" startDelay="0.25" duration="0.55" order="1"/>
 				<Scripts>
 					<OnFinished>
 						WorldMapFrame:SetAlpha(WORLD_MAP_MIN_ALPHA);

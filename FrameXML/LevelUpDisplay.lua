@@ -15,11 +15,8 @@ LEVEL_UP_EVENTS = {
 --  Level  = {unlock}
 	[10] = {"SpecializationUnlocked", "BGsUnlocked"},
 	[15] = {"TalentsUnlocked","LFDUnlocked"},
-	[25] = {"Glyphs"},
 	[30] = {"DualSpec"},
-	[50] = {"GlyphSlots"},
 	[70] = {"HeroicBurningCrusade"},
-	[75] = {"GlyphSlots"},
 	[80] = {"HeroicWrathOfTheLichKing"},
 	[85] = {"HeroicCataclysm"},
 	[90] = {"HeroicMistsOfPandaria"},
@@ -146,20 +143,6 @@ LEVEL_UP_TYPES = {
 										text=LOOKING_FOR_DUNGEON,
 										subText=LEVEL_UP_FEATURE,
 										link=LEVEL_UP_FEATURE2..LEVEL_UP_LFD_LINK
-									},
-
-	["Glyphs"]					=	{	icon="Interface\\Icons\\Inv_inscription_tradeskill01",
-										subIcon=SUBICON_TEXCOOR_LOCK,
-										text=GLYPHS,
-										subText=LEVEL_UP_FEATURE,
-										link=LEVEL_UP_GLYPHSLOT_LINK
-									},
-
-	["GlyphSlots"]				= 	{	icon="Interface\\Icons\\Inv_inscription_tradeskill01",
-										subIcon=SUBICON_TEXCOOR_LOCK,
-										text=GLYPH_SLOTS,
-										subText=LEVEL_UP_FEATURE,
-										link=LEVEL_UP_GLYPHSLOT_LINK
 									},
 
 	["DualSpec"] 				=	{	icon="Interface\\Icons\\INV_Misc_Coin_01",
@@ -792,6 +775,7 @@ function LevelUpDisplay_StartDisplay(self, beginUnlockList)
 	self.challengeModeBits.MedalIcon:Hide();
 	self.challengeModeBits.BottomFiligree:Hide();	
 	local playAnim;
+	local scenarioType = 0;
 	if  self.currSpell == 0 then
 		local unlockList = beginUnlockList;
 		if ( not self.type ) then
@@ -801,7 +785,8 @@ function LevelUpDisplay_StartDisplay(self, beginUnlockList)
 			self.queuedItems = nil;
 		end
 		if ( self.type == LEVEL_UP_TYPE_SCENARIO ) then
-			local name, currentStage, numStages, flags = C_Scenario.GetInfo();
+			local name, currentStage, numStages, flags, _;
+			name, currentStage, numStages, flags, _, _, _, _, _, scenarioType = C_Scenario.GetInfo();
 			if ( currentStage > 0 and currentStage <= numStages ) then
 				local stageName, stageDescription = C_Scenario.GetStepInfo();
 				if( bit.band(flags, SCENARIO_FLAG_SUPRESS_STAGE_TEXT) == SCENARIO_FLAG_SUPRESS_STAGE_TEXT) then
@@ -816,9 +801,13 @@ function LevelUpDisplay_StartDisplay(self, beginUnlockList)
 					end
 					self.scenarioFrame.name:SetText(stageName);
 				end
+				if (scenarioType == LE_SCENARIO_TYPE_LEGION_INVASION) then
+					playAnim = self.scenarioFrame.LegionInvasionNewStage;
+				else
+					playAnim = self.scenarioFrame.newStage;
+				end
 				self.scenarioFrame.description:SetText(stageDescription);
 				LevelUpDisplay:SetPoint("TOP", 0, -250);
-				playAnim = self.scenarioFrame.newStage;
 			end
 		elseif ( self.type == TOAST_CHALLENGE_MODE_RECORD ) then
 			local medal = self.medal;
@@ -957,7 +946,9 @@ function LevelUpDisplay_StartDisplay(self, beginUnlockList)
 			end
 		end
 
-		if ( playAnim ) then
+		if ( playAnim and scenarioType == LE_SCENARIO_TYPE_LEGION_INVASION) then
+			playAnim:Play();
+		elseif ( playAnim ) then
 			self.gLine:SetTexCoord(unpack(levelUpTexCoords[self.type].gLine));
 			self.gLine2:SetTexCoord(unpack(levelUpTexCoords[self.type].gLine));
 			if (levelUpTexCoords[self.type].tint) then
@@ -1484,13 +1475,9 @@ function BossBanner_ConfigureLootFrame(lootFrame, data)
 	lootFrame.ItemName:SetTextColor(rarityColor.r, rarityColor.g, rarityColor.b);
 	lootFrame.Background:SetVertexColor(rarityColor.r, rarityColor.g, rarityColor.b);
 	lootFrame.Icon:SetTexture(itemTexture);
-	local borderRarityColor = BAG_ITEM_QUALITY_COLORS[itemRarity];
-	if ( borderRarityColor ) then
-		lootFrame.IconHitBox.Border:Show();
-		lootFrame.IconHitBox.Border:SetVertexColor(borderRarityColor.r, borderRarityColor.g, borderRarityColor.b);
-	else
-		lootFrame.IconHitBox.Border:Hide();
-	end
+
+	SetItemButtonQuality(lootFrame.IconHitBox, itemRarity, data.itemLink);
+
 	if ( data.quantity > 1 ) then
 		lootFrame.Count:Show();
 		lootFrame.Count:SetText(data.quantity);

@@ -28,14 +28,14 @@
 	</Button>
 	<!-- CharacterButton scripts may occassionally be disabled for Character Services purposes. -->
 	<Button name="CharSelectCharacterButtonTemplate" virtual="true" hidden="true">
-		<Size x="256" y="70"/>
+		<Size x="256" y="66"/>
 		<HitRectInsets>
 			<AbsInset left="-10" right="30" top="0" bottom="15"/>
 		</HitRectInsets>
 		<Layers>
 			<Layer level="ARTWORK">
 				<Texture file="Interface\Glues\CharacterSelect\Glue-CharacterSelect-Highlight" alphaMode="ADD" parentKey="selection" hidden="true">
-					<Size x="256" y="74"/>
+					<Size x="256" y="70"/>
 					<Anchors>
 						<Anchor point="TOPLEFT" x="-20" y="8"/>
 					</Anchors>
@@ -60,7 +60,7 @@
 						<FontString name="$parentLocation" inherits="GlueFontDisableSmall" justifyH="LEFT" parentKey="Location">
 							<Size x="217" y="16"/>
 							<Anchors>
-								<Anchor point="TOPLEFT" relativeTo="$parentInfo" relativePoint="BOTTOMLEFT" x="0" y="-1"/>
+								<Anchor point="TOPLEFT" relativeTo="$parentInfo" relativePoint="BOTTOMLEFT" x="0" y="1"/>
 							</Anchors>
 						</FontString>
 					</Layer>
@@ -157,7 +157,7 @@
 			</OnLeave>
 		</Scripts>
 		<HighlightTexture file="Interface\Glues\CharacterSelect\Glue-CharacterSelect-Hover" alphaMode="ADD">
-			<Size x="256" y="74"/>
+			<Size x="256" y="70"/>
 			<Anchors>
 				<Anchor point="TOPLEFT" x="-20" y="8"/>
 			</Anchors>
@@ -395,7 +395,7 @@
 				</Layers>
 				<Animations>
 					<AnimationGroup parentKey="PulseAnim" looping="BOUNCE">
-						<Alpha change="-1" duration="1.5" order="1"/>
+						<Alpha fromAlpha="1" toAlpha="0" duration="1.5" order="1"/>
 					</AnimationGroup>
 				</Animations>
 			</Frame>
@@ -547,8 +547,8 @@
 								<Animations>
 									<AnimationGroup parentKey="Anim">
 										<Translation offsetX="-50" duration="1" order="1" smoothing="OUT"/>
-										<Alpha change="1" duration="0.1" order="1"/>
-										<Alpha change="-1" duration="0.9" startDelay="0.1" order="1" smoothing="IN"/>
+										<Alpha fromAlpha="0" toAlpha="1" duration="0.1" order="1"/>
+										<Alpha fromAlpha="1" toAlpha="0" duration="0.9" startDelay="0.1" order="1" smoothing="IN"/>
 										<Scripts>
 											<OnLoad>
 												self:Play();
@@ -998,7 +998,7 @@
 							</Button>
 							<Button name="CharSelectCharacterButton1" inherits="CharSelectCharacterButtonTemplate" id="1">
 								<Anchors>
-									<Anchor point="TOP" x="0" y="-65"/>
+									<Anchor point="TOP" x="0" y="-59"/>
 									<Anchor point="LEFT" x="24" y="0"/>
 								</Anchors>
 							</Button>
@@ -1059,6 +1059,12 @@
 								<Button name="CharSelectCharacterButton11" inherits="CharSelectCharacterButtonTemplate" id="11">
 								<Anchors>
 									<Anchor point="TOP" relativeTo="CharSelectCharacterButton10" relativePoint="BOTTOM" x="0" y="13"/>
+									<Anchor point="LEFT" x="24" y="0"/>
+								</Anchors>
+							</Button>
+							<Button name="CharSelectCharacterButton12" inherits="CharSelectCharacterButtonTemplate" id="12">
+								<Anchors>
+									<Anchor point="TOP" relativeTo="CharSelectCharacterButton11" relativePoint="BOTTOM" x="0" y="13"/>
 									<Anchor point="LEFT" x="24" y="0"/>
 								</Anchors>
 							</Button>
@@ -1214,6 +1220,12 @@
 									<Anchor point="RIGHT" relativeTo="$parent" relativePoint="LEFT" x="9" y="0"/>
 								</Anchors>
 							</Button>
+							<Button name="CharSelectPaidService12" inherits="CharSelectPaidServiceTemplate" id="12">
+								<Anchors>
+									<Anchor point="TOP" relativeTo="CharSelectCharacterButton12" relativePoint="TOP" x="0" y="6"/>
+									<Anchor point="RIGHT" relativeTo="$parent" relativePoint="LEFT" x="9" y="0"/>
+								</Anchors>
+							</Button>
 
 							<Button name="CharacterServicesProcessingIcon1" inherits="CharacterServicesProcessingIconTemplate" id="1" hidden="true">
 								<Anchors>
@@ -1268,6 +1280,11 @@
 							<Button name="CharacterServicesProcessingIcon11" inherits="CharacterServicesProcessingIconTemplate" id="11" hidden="true">
 								<Anchors>
 									<Anchor point="RIGHT" relativeTo="CharSelectCharacterButton11" relativePoint="LEFT" x="-10" y="4"/>
+								</Anchors>
+							</Button>
+							<Button name="CharacterServicesProcessingIcon12" inherits="CharacterServicesProcessingIconTemplate" id="12" hidden="true">
+								<Anchors>
+									<Anchor point="RIGHT" relativeTo="CharSelectCharacterButton12" relativePoint="LEFT" x="-10" y="4"/>
 								</Anchors>
 							</Button>
 						</Frames>
@@ -1444,8 +1461,8 @@
 								<Size x="140" y="38"/>
 								<Animations>
 									<AnimationGroup parentKey="PulseAnim">
-										<Alpha childKey="Flash" change="1.0" duration="0.5" order="1"/>
-										<Alpha childKey="Flash" change="-1.0" duration="0.5" order="2"/>
+										<Alpha childKey="Flash" fromAlpha="0" toAlpha="1" duration="0.5" order="1"/>
+										<Alpha childKey="Flash" fromAlpha="1" toAlpha="0" duration="0.5" order="2"/>
 									</AnimationGroup>
 								</Animations>
 								<Anchors>

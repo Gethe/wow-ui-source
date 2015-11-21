@@ -105,11 +105,11 @@ function GarrisonBuildingFrame_OnLoad(self)
 		BUILDING_TABS[tabInfo[tabInfoIndex].id] = tab;
 		tab.Text:SetText(tabInfo[tabInfoIndex].name);
 		
-		tab.buildings = C_Garrison.GetBuildingsForSize(tab.categoryID);
+		tab.buildings = C_Garrison.GetBuildingsForSize(LE_FOLLOWER_TYPE_GARRISON_6_0, tab.categoryID);
 	end
 	
 	--get buildings owned
-	local buildings = C_Garrison.GetBuildings();
+	local buildings = C_Garrison.GetBuildings(LE_FOLLOWER_TYPE_GARRISON_7_0);
 	--add instance IDs for owned buildings to the corresponding building buttons
 	for i = 1, #buildings do
 		local building = buildings[i];
@@ -123,13 +123,13 @@ function GarrisonBuildingFrame_OnLoad(self)
 		end
 	end
 	
-	C_Garrison.RequestGarrisonUpgradeable();
+	C_Garrison.RequestGarrisonUpgradeable(LE_FOLLOWER_TYPE_GARRISON_6_0);
 	GarrisonBuildingFrame_UpdateGarrisonInfo(self);
 	GarrisonBuildingTab_Select(GarrisonBuildingFrame.BuildingList.Tab1);
 	
 	GarrisonBuildingFrame_UpdateCurrency();
 	
-	self.FollowerList:Load(LE_FOLLOWER_TYPE_GARRISON_6_0);
+	self.FollowerList:Initialize(LE_FOLLOWER_TYPE_GARRISON_7_0);
 	local buttons = self.FollowerList.listScroll.buttons
 	for i = 1, #buttons do
 		buttons[i]:SetScript("OnClick", GarrisonBuildingFollowerButton_OnClick);
@@ -157,12 +157,12 @@ function GarrisonBuildingFrame_OnShow(self)
 		GarrisonBuildingFrame_UpdateGarrisonInfo(self);
 	end
 
-	C_Garrison.RequestGarrisonUpgradeable();
+	C_Garrison.RequestGarrisonUpgradeable(LE_FOLLOWER_TYPE_GARRISON_6_0);
 	GarrisonBuildingTab_Select(GarrisonBuildingFrame.BuildingList.Tab1);
 	GarrisonBuildingList_Show();
 	
 	-- Update building state for owned buildings. This is only really needed to refresh the cooldown timers.
-	local buildings = C_Garrison.GetBuildings();
+	local buildings = C_Garrison.GetBuildings(LE_FOLLOWER_TYPE_GARRISON_6_0);
 	for i = 1, #buildings do
 		GarrisonPlot_UpdateBuilding(buildings[i].plotID);
 	end
@@ -171,7 +171,7 @@ function GarrisonBuildingFrame_OnShow(self)
 	if ( not GetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_GARRISON_BUILDING) ) then
 		local helpPlate = GarrisonBuilding_HelpPlate;
 		if ( helpPlate and not HelpPlate_IsShowing(helpPlate) ) then
-			HelpPlate_Show( helpPlate, GarrisonBuildingFrame, GarrisonBuildingFrame.MainHelpButton );
+			HelpPlate_ShowTutorialPrompt( helpPlate, GarrisonBuildingFrame.MainHelpButton );
 			SetCVarBitfield( "closedInfoFrames", LE_FRAME_TUTORIAL_GARRISON_BUILDING, true );
 		end
 		GarrisonBuildingList_SelectBuilding(BARRACKS_BUILDING_ID);
@@ -258,7 +258,7 @@ function GarrisonBuildingFrame_OnEvent(self, event, ...)
 		for i=1, GARRISON_NUM_BUILDING_SIZES do
 			local tab = list["Tab"..i];
 			if (tab.categoryID == categoryID) then
-				tab.buildings = C_Garrison.GetBuildingsForSize(tab.categoryID);
+				tab.buildings = C_Garrison.GetBuildingsForSize(LE_FOLLOWER_TYPE_GARRISON_6_0, tab.categoryID);
 				if (self.selectedTab == tab) then
 					if (self.selectedBuilding) then
 						buildingID = self.selectedBuilding.buildingID;
@@ -289,7 +289,7 @@ function GarrisonBuildingFrame_OnEvent(self, event, ...)
 end
 
 function GarrisonBuildingFrame_UpdatePlots()
-	local plots = C_Garrison.GetPlots();
+	local plots = C_Garrison.GetPlots(LE_FOLLOWER_TYPE_GARRISON_6_0);
 	local mapWidth = GarrisonBuildingFrame.MapFrame:GetWidth();
 	local mapHeight = GarrisonBuildingFrame.MapFrame:GetHeight();
 	for i = 1, #plots do
@@ -334,7 +334,7 @@ end
 
 function GarrisonBuildingFrame_UpdateBuildingList()
 	for id, tab in pairs(BUILDING_TABS) do
-		tab.buildings = C_Garrison.GetBuildingsForSize(id);
+		tab.buildings = C_Garrison.GetBuildingsForSize(LE_FOLLOWER_TYPE_GARRISON_6_0, id);
 	end
 	if (GarrisonBuildingFrame.selectedTab) then
 		GarrisonBuildingTab_Select(GarrisonBuildingFrame.selectedTab);
@@ -364,7 +364,7 @@ function GarrisonBuildingFrame_UpdateUpgradeButton()
 end
 
 function GarrisonBuildingFrame_UpdateGarrisonInfo(self)
-	local level, mapTexture, townHallX, townHallY = C_Garrison.GetGarrisonInfo();
+	local level, mapTexture, townHallX, townHallY = C_Garrison.GetGarrisonInfo(LE_FOLLOWER_TYPE_GARRISON_6_0);
 	if ( not level or not townHallX or not townHallY ) then
 		return;
 	end
@@ -438,7 +438,7 @@ function GarrisonTownHall_Select()
 	infoBox.RankBadge:SetAtlas("Garr_LevelBadge_"..GarrisonBuildingFrame.level, true);
 	local factionGroup = UnitFactionGroup("player");
 	infoBox.Building:SetAtlas(format(FactionData[factionGroup].townHallInfo, GarrisonBuildingFrame.level), true);
-	local costMaterial, costGold = C_Garrison.GetGarrisonUpgradeCost();
+	local costMaterial, costGold = C_Garrison.GetGarrisonUpgradeCost(LE_FOLLOWER_TYPE_GARRISON_6_0);
 	if (costMaterial and costMaterial > 0) then
 		infoBox.UpgradeCostBar.CostAmountMaterial:SetText(Garrison_GetMaterialCostString(costMaterial));
 		infoBox.UpgradeCostBar:Show();
@@ -456,7 +456,7 @@ function GarrisonTownHall_Select()
 end
 
 function GarrisonTownHall_StartUpgrade(self)
-	local costMaterial, costGold = C_Garrison.GetGarrisonUpgradeCost();
+	local costMaterial, costGold = C_Garrison.GetGarrisonUpgradeCost(LE_FOLLOWER_TYPE_GARRISON_6_0);
 	
 	-- Error if not enough money
 	local _, currencyAmount = GetCurrencyInfo(GARRISON_CURRENCY);
@@ -518,7 +518,7 @@ end
 function GarrisonTownHallBoxMouseOver_OnEnter(self, button)
 	GameTooltip:SetOwner(self, "ANCHOR_BOTTOMLEFT", 15, 15);
 	GameTooltip:SetText(GarrisonTownHall_GetName(), HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b);
-	local garrisonLevel = C_Garrison.GetGarrisonInfo();
+	local garrisonLevel = C_Garrison.GetGarrisonInfo(LE_FOLLOWER_TYPE_GARRISON_6_0);
 	local color;
 	
 	GameTooltip:AddLine(" ");
@@ -1010,7 +1010,7 @@ function GarrisonBuildingAddFollowerButton_OnLeave(self, button)
 end
 
 function GarrisonBuildingFollowerList_OnShow(self)
-	self.followers = C_Garrison.GetPossibleFollowersForBuilding(GarrisonBuildingFrame.selectedBuilding.plotID);
+	self.followers = C_Garrison.GetPossibleFollowersForBuilding(LE_FOLLOWER_TYPE_GARRISON_6_0, GarrisonBuildingFrame.selectedBuilding.plotID);
 	self.followersList = { };
 	for i = 1, #self.followers do
 		tinsert(self.followersList, i);
@@ -1770,7 +1770,7 @@ function GarrisonBuildingFrame_ConfirmUpgrade()
 end
 
 function GarrisonBuildingFrame_ConfirmUpgradeGarrison()
-	C_Garrison.UpgradeGarrison();
+	C_Garrison.UpgradeGarrison(LE_FOLLOWER_TYPE_GARRISON_6_0);
 	GarrisonBuildingFrame_ClearConfirmation();
 end
 
@@ -1857,7 +1857,7 @@ GarrisonBuilding_HelpPlate = {
 function GarrisonBuilding_ToggleTutorial()
 	local helpPlate = GarrisonBuilding_HelpPlate;
 	if ( helpPlate and not HelpPlate_IsShowing(helpPlate) ) then
-		HelpPlate_Show( helpPlate, GarrisonBuildingFrame, GarrisonBuildingFrame.MainHelpButton, true );
+		HelpPlate_Show( helpPlate, GarrisonBuildingFrame, GarrisonBuildingFrame.MainHelpButton );
 		SetCVarBitfield( "closedInfoFrames", LE_FRAME_TUTORIAL_GARRISON_BUILDING, true );
 	else
 		HelpPlate_Hide(true);

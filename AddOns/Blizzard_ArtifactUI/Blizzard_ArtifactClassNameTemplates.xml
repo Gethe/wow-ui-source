@@ -1,0 +1,257 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\FrameXML\UI.xsd">
+	<Script file="Blizzard_ArtifactClassNameTemplates.lua"/>
+
+	<Button name="ArtifactsRelicSlotTemplate" virtual="true">
+		<Size x="72" y="72" />
+		
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="Icon">
+					<Anchors>
+						<Anchor point="CENTER" />
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		
+		<NormalTexture parentKey="NormalTexture" />
+		<HighlightTexture parentKey="HighlightTexture" alphaMode="ADD" />
+
+		<Scripts>
+			<OnEnter>
+				self:GetParent():OnRelicSlotMouseEnter(self);
+			</OnEnter>
+			<OnLeave>
+				self:GetParent():OnRelicSlotMouseLeave(self);
+			</OnLeave>
+			<OnClick>
+				self:GetParent():OnRelicSlotClicked(self);
+			</OnClick>
+			<OnReceiveDrag>
+				self:GetParent():OnRelicSlotClicked(self);
+			</OnReceiveDrag>
+		</Scripts>
+		<Animations>
+			<AnimationGroup parentKey="CanSlotAnim" looping="REPEAT">
+				<Alpha childKey="HighlightTexture" smoothing="OUT" duration=".75" order="1" fromAlpha="0" toAlpha="1"/>
+				<Scale childKey="HighlightTexture" duration=".75" order="1" fromScaleX="1" fromScaleY="1" toScaleX="1.1" toScaleY="1.1"/>
+				
+				<Alpha childKey="HighlightTexture" smoothing="IN" duration=".75" order="2" fromAlpha="1" toAlpha="0"/>
+			</AnimationGroup>
+		</Animations>
+	</Button>
+
+	<Frame name="ArtifactsClassNameTemplateBase" hidden="true" mixin="ArtifactClassNameTemplateMixin" virtual="true">
+		<Size x="400" y="100" />
+		<Layers>
+			<Layer level="OVERLAY">
+				<FontString parentKey="ArtifactName" inherits="CoreAbilityFont">
+					<Anchors>
+						<Anchor point="TOP" />
+					</Anchors>
+					<Color r=".94" g=".733" b=".215" />
+					<Shadow>
+						<Offset x="1" y="-1" />
+						<Color r="0" g="0" b="0"/>
+					</Shadow>
+				</FontString>
+				
+				<FontString parentKey="PointsRemainingLabel" inherits="Fancy27Font" mixin="AnimatedNumericFontStringMixin">
+					<Anchors>
+						<Anchor point="BOTTOM"/>
+					</Anchors>
+					
+					<Color r="1" g="1" b="1"/>
+				</FontString>
+
+				<FontString parentKey="ArtifactPower" inherits="Fancy24Font" text="ARTIFACT_POWER">
+					<Anchors>
+						<Anchor point="BOTTOM" relativeKey="$parent.PointsRemainingLabel" relativePoint="TOP" />
+					</Anchors>
+					
+					<Color r=".94" g=".533" b=".215" />
+				</FontString>
+				
+				<FontString parentKey="MaxRanksLabel" inherits="Fancy16Font">
+					<Anchors>
+						<Anchor point="TOP" relativeKey="$parent.PointsRemainingLabel" relativePoint="BOTTOM" />
+					</Anchors>
+					
+					<Color r="1" g="1" b="1"/>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Button parentKey="RelicSlot1" parentArray="RelicSlots" inherits="ArtifactsRelicSlotTemplate" />
+			<Button parentKey="RelicSlot2" parentArray="RelicSlots" inherits="ArtifactsRelicSlotTemplate" />
+			<Button parentKey="RelicSlot3" parentArray="RelicSlots" inherits="ArtifactsRelicSlotTemplate" />
+		</Frames>
+		<Scripts>
+			<OnShow method="OnShow" />
+			<OnHide method="OnHide" />
+			<OnEvent method="OnEvent" />
+			<OnUpdate method="OnUpdate" />
+		</Scripts>
+	</Frame>
+	
+	<Frame name="Artifacts-PaladinNameTemplate" inherits="ArtifactsClassNameTemplateBase" virtual="true">
+		<Layers>
+			<Layer level="OVERLAY" textureSubLevel="6">
+				<Texture parentKey="BaseGlowLine" parentArray="Colorables" atlas="ArtifactsPaladinFX-GlowLine" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="SmokeStationary" parentArray="Colorables" alphaMode="ADD" atlas="ArtifactsPaladinFX-Smoke">
+					<Size x="304" y="44"/>
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent.BaseGlowLine"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="BaseSmoke" parentArray="Colorables" alpha="0" alphaMode="ADD" atlas="ArtifactsPaladinFX-Smoke" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent.BaseGlowLine"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="BaseSmoke2" parentArray="Colorables" alpha="0" alphaMode="ADD" atlas="ArtifactsPaladinFX-Smoke" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent.BaseGlowLine"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="BaseSmoke3" parentArray="Colorables" alpha="0" alphaMode="ADD" atlas="ArtifactsPaladinFX-Smoke" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent.BaseGlowLine"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="Ember1" parentArray="Colorables" alpha="0" alphaMode="ADD" atlas="ArtifactsPaladinFX-Ember" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent.BaseGlowLine" x="-80" y="0"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="Ember2" parentArray="Colorables" alpha="0" alphaMode="ADD" atlas="ArtifactsPaladinFX-Ember" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent.BaseGlowLine" x="80" y="0"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="Ember3" parentArray="Colorables" alpha="0" alphaMode="ADD" atlas="ArtifactsPaladinFX-Ember" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent.BaseGlowLine" x="25" y="-5"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="Ember4" parentArray="Colorables" alpha="0" alphaMode="ADD" atlas="ArtifactsPaladinFX-Ember" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent.BaseGlowLine" x="-80" y="-5"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="Ember5" parentArray="Colorables" alpha="0" alphaMode="ADD" atlas="ArtifactsPaladinFX-Ember" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent.BaseGlowLine" x="50" y="-5"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="LightningBase" parentArray="Colorables" alpha="0.005" alphaMode="ADD" atlas="ArtifactsPaladinFX-Lightning">
+					<Size x="280" y="40"/>
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="LightningFade" parentArray="Colorables" alpha="0" alphaMode="ADD" atlas="ArtifactsPaladinFX-Lightning">
+					<Size x="283" y="44"/>
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="LightningFade2" parentArray="Colorables" alpha="0" alphaMode="ADD" atlas="ArtifactsPaladinFX-Lightning">
+					<Size x="283" y="44"/>
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="LightningFade3" parentArray="Colorables" alpha="0" alphaMode="ADD" atlas="ArtifactsPaladinFX-Lightning">
+					<Size x="283" y="44"/>
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="OVERLAY" textureSubLevel="7">
+				<Texture parentKey="TempName" atlas="TEMP-Ashbringer" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="TOP" x="5" y="20" />
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Animations>
+			<AnimationGroup parentKey="PersistentAnim" setToFinalAlpha="true" looping="REPEAT">
+				<Alpha childKey="BaseSmoke" duration="1" order="1" fromAlpha="0" toAlpha="1"/>
+				<Scale childKey="BaseSmoke" smoothing="OUT" duration="2" order="1" fromScaleX="1" fromScaleY="1" toScaleX="1.5" toScaleY="1"/>
+				<Alpha childKey="BaseSmoke" startDelay="1" duration="1" order="1" fromAlpha="1" toAlpha="0"/>
+				<Alpha childKey="BaseSmoke2" startDelay="2" duration="1" order="1" fromAlpha="0" toAlpha="1"/>
+				<Scale childKey="BaseSmoke2" startDelay="2" smoothing="OUT" duration="2" order="1" fromScaleX="1" fromScaleY="1" toScaleX="1.5" toScaleY="1"/>
+				<Alpha childKey="BaseSmoke2" startDelay="3" duration="1" order="1" fromAlpha="1" toAlpha="0"/>
+				<Alpha childKey="BaseSmoke3" startDelay="4" duration="1" order="1" fromAlpha="0" toAlpha="1"/>
+				<Scale childKey="BaseSmoke3" startDelay="4" smoothing="OUT" duration="2" order="1" fromScaleX="1" fromScaleY="1" toScaleX="1.5" toScaleY="1"/>
+				<Alpha childKey="BaseSmoke3" startDelay="5" duration="1" order="1" fromAlpha="1" toAlpha="0"/>
+				<Alpha childKey="Ember1" duration="0.25" order="1" fromAlpha="0" toAlpha="1"/>
+				<Rotation childKey="Ember1" duration="1.5" order="1" degrees="120"/>
+				<Translation childKey="Ember1" duration="2" order="1" offsetX="0" offsetY="-50"/>
+				<Alpha childKey="Ember1" startDelay="1.25" duration="0.5" order="1" fromAlpha="1" toAlpha="0"/>
+				<Alpha childKey="Ember2" startDelay="1" duration="0.25" order="1" fromAlpha="0" toAlpha="1"/>
+				<Rotation childKey="Ember2" startDelay="1" duration="1.5" order="1" degrees="-150"/>
+				<Translation childKey="Ember2" startDelay="1" duration="2" order="1" offsetX="0" offsetY="-50"/>
+				<Alpha childKey="Ember2" startDelay="2.5" duration="0.5" order="1" fromAlpha="1" toAlpha="0"/>
+				<Alpha childKey="Ember3" startDelay="2.75" duration="0.25" order="1" fromAlpha="0" toAlpha="1"/>
+				<Rotation childKey="Ember3" startDelay="2.75" duration="1.5" order="1" degrees="-180"/>
+				<Translation childKey="Ember3" startDelay="2.75" duration="1.5" order="1" offsetX="0" offsetY="-25"/>
+				<Alpha childKey="Ember3" startDelay="4" duration="0.5" order="1" fromAlpha="1" toAlpha="0"/>
+				<Alpha childKey="Ember4" startDelay="3.5" duration="0.25" order="1" fromAlpha="0" toAlpha="1"/>
+				<Rotation childKey="Ember4" startDelay="3.5" duration="1.5" order="1" degrees="-180"/>
+				<Translation childKey="Ember4" startDelay="3.5" duration="1.5" order="1" offsetX="-25" offsetY="-15"/>
+				<Alpha childKey="Ember4" startDelay="4.75" duration="0.5" order="1" fromAlpha="1" toAlpha="0"/>
+				<Alpha childKey="Ember5" startDelay="4.5" duration="0.25" order="1" fromAlpha="0" toAlpha="1"/>
+				<Rotation childKey="Ember5" startDelay="4.5" duration="1.5" order="1" degrees="180"/>
+				<Translation childKey="Ember5" startDelay="4.5" duration="1.5" order="1" offsetX="40" offsetY="-20"/>
+				<Alpha childKey="Ember5" startDelay="5.5" duration="0.5" order="1" fromAlpha="1" toAlpha="0"/>
+				<Alpha childKey="LightningFade" startDelay="0.9" duration="0.1" order="1" fromAlpha="0" toAlpha="1"/>
+				<Alpha childKey="LightningFade" startDelay="1.25" duration="0.75" order="1" fromAlpha="1" toAlpha="0"/>
+				<Alpha childKey="LightningFade2" startDelay="2.9" duration="0.1" order="1" fromAlpha="0" toAlpha="1"/>
+				<Alpha childKey="LightningFade2" startDelay="3.25" duration="0.75" order="1" fromAlpha="1" toAlpha="0"/>
+				<Alpha childKey="LightningFade3" startDelay="4.9" duration="0.1" order="1" fromAlpha="0" toAlpha="1"/>
+				<Alpha childKey="LightningFade3" startDelay="5.25" duration="0.75" order="1" fromAlpha="1" toAlpha="0"/>
+			</AnimationGroup>
+		</Animations>
+		<Scripts>
+			<OnShow>
+				self:OnShow();
+				self.PersistentAnim:Play();
+			</OnShow>
+			<OnHide>
+				self:OnHide();
+				self.PersistentAnim:Stop();
+			</OnHide>
+		</Scripts>
+	</Frame>
+
+	<!-- Placeholder templates below! -->
+	<Frame name="ArtifactsPlaceholderClassNameTemplate" inherits="Artifacts-PaladinNameTemplate" virtual="true">
+		<KeyValues>
+			<KeyValue type="boolean" key="isPlaceholder" value="true" />
+		</KeyValues>
+	</Frame>
+	
+	<Frame name="Artifacts-DemonHunterNameTemplate" inherits="ArtifactsPlaceholderClassNameTemplate" virtual="true" />
+	<Frame name="Artifacts-MageArcaneNameTemplate" inherits="ArtifactsPlaceholderClassNameTemplate" virtual="true" />
+	<Frame name="Artifacts-DeathKnightFrostNameTemplate" inherits="ArtifactsPlaceholderClassNameTemplate" virtual="true" />
+	<Frame name="Artifacts-WarriorNameTemplate" inherits="ArtifactsPlaceholderClassNameTemplate" virtual="true" />
+	<Frame name="Artifacts-RogueNameTemplate" inherits="ArtifactsPlaceholderClassNameTemplate" virtual="true" />
+	<Frame name="Artifacts-DruidTemplate" inherits="ArtifactsPlaceholderClassNameTemplate" virtual="true" />
+	<Frame name="Artifacts-ShamanTemplate" inherits="ArtifactsPlaceholderClassNameTemplate" virtual="true" />
+	<Frame name="Artifacts-HunterTemplate" inherits="ArtifactsPlaceholderClassNameTemplate" virtual="true" />
+	<Frame name="Artifacts-HunterTemplate" inherits="ArtifactsPlaceholderClassNameTemplate" virtual="true" />
+	<Frame name="Artifacts-PriestTemplate" inherits="ArtifactsPlaceholderClassNameTemplate" virtual="true" />
+	<Frame name="Artifacts-MonkTemplate" inherits="ArtifactsPlaceholderClassNameTemplate" virtual="true" />
+	<Frame name="Artifacts-WarlockTemplate" inherits="ArtifactsPlaceholderClassNameTemplate" virtual="true" />
+	<Frame name="Artifacts-DeathKnightTemplate" inherits="ArtifactsPlaceholderClassNameTemplate" virtual="true" />
+	<Frame name="Artifacts-MageTemplate" inherits="ArtifactsPlaceholderClassNameTemplate" virtual="true" />
+</Ui>
