@@ -241,7 +241,6 @@ function UIParent_OnLoad(self)
 
 	-- Events for trade skill UI handling
 	self:RegisterEvent("TRADE_SKILL_SHOW");
-	self:RegisterEvent("TRADE_SKILL_CLOSE");
 
 	-- Events for Item socketing UI
 	self:RegisterEvent("SOCKET_INFO_UPDATE");
@@ -331,7 +330,7 @@ function UIParent_OnLoad(self)
 	self:RegisterEvent("GARRISON_SHIPYARD_NPC_OPENED");
 	self:RegisterEvent("GARRISON_SHIPYARD_NPC_CLOSED");
 	self:RegisterEvent("SHIPMENT_CRAFTER_OPENED");
-	self:RegisterEvent("GARRISON_TRADESKILL_NPC_CLOSED");
+
 	self:RegisterEvent("GARRISON_SHOW_LANDING_PAGE");
 	self:RegisterEvent("GARRISON_MONUMENT_SHOW_UI");
 	self:RegisterEvent("GARRISON_RECRUITMENT_NPC_OPENED");
@@ -1382,13 +1381,7 @@ function UIParent_OnEvent(self, event, ...)
 	-- Events for trade skill UI handling
 	elseif ( event == "TRADE_SKILL_SHOW" ) then
 		TradeSkillFrame_LoadUI();
-		if ( TradeSkillFrame_Show ) then
-			TradeSkillFrame_Show();						
-		end
-	elseif ( event == "TRADE_SKILL_CLOSE" ) then
-		if ( TradeSkillFrame_Hide ) then
-			TradeSkillFrame_Hide();
-		end
+		ShowUIPanel(TradeSkillFrame);
 
 	-- Event for item socketing handling
 	elseif ( event == "SOCKET_INFO_UPDATE" ) then
@@ -1688,10 +1681,6 @@ function UIParent_OnEvent(self, event, ...)
 	elseif ( event == "SHIPMENT_CRAFTER_OPENED" ) then
 		if (not GarrisonCapacitiveDisplayFrame) then
 			Garrison_LoadUI();
-		end
-	elseif ( event == "GARRISON_TRADESKILL_NPC_CLOSED" ) then
-		if ( TradeSkillFrame ) then
-			HideUIPanel(TradeSkillFrame);
 		end
 	elseif ( event == "GARRISON_MONUMENT_SHOW_UI") then
 		if(not GarrisonMonumentFrame)then

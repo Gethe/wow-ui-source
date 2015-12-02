@@ -159,7 +159,7 @@
 						end
 					</OnLoad>
 					<OnShow>
-						self:SetEnabled(not IsKioskModeEnabled());
+						self:SetEnabled(not IsKioskModeEnabled() and not ScriptsDisallowedForBeta());
 					</OnShow>
 					<OnClick>
 						PlaySound("igMainMenuOption");

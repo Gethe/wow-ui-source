@@ -805,6 +805,12 @@ local ARMOR_SLOTS = {
 	[LE_TRANSMOG_COLLECTION_TYPE_FEET] = "FEETSLOT",
 };
 
+local HIDE_VISUAL_STRINGS = {
+	["HEADSLOT"] = TRANSMOG_HIDE_HELM,
+	["SHOULDERSLOT"] = TRANSMOG_HIDE_SHOULDERS,
+	["BACKSLOT"] = TRANSMOG_HIDE_CLOAK,
+}
+
 local function TEMP_GetMaxPages()
 	return ceil(#WardrobeCollectionFrame.filteredVisualsList / WARDROBE_PAGE_SIZE);
 end
@@ -1319,6 +1325,9 @@ function WardrobeCollectionFrame_SortVisuals()
 		if ( source1.isFavorite ~= source2.isFavorite ) then
 			return source1.isFavorite;
 		end
+		if ( source1.isHideVisual ~= source2.isHideVisual ) then
+			return source1.isHideVisual;
+		end
 		return source1.visualID > source2.visualID;
 	end
 
@@ -1497,6 +1506,56 @@ function WardrobeCollectionFrame_SelectVisual(visualID)
 	end
 end
 
+function WardrobeCollectionFrame_OpenTransmogLink(link, transmogType)
+	if ( not WardrobeCollectionFrame:IsVisible() ) then
+		ToggleCollectionsJournal(5);
+	end
+	DressUpTransmogLink(link);
+	local linkType, sourceID = strsplit(":", link);
+	sourceID = tonumber(sourceID);
+	local transmogType;
+	if ( linkType == "transmogappearance" ) then
+		transmogType = LE_TRANSMOG_TYPE_APPEARANCE;
+	elseif ( linkType == "transmogillusion" ) then
+		transmogType = LE_TRANSMOG_TYPE_ILLUSION;
+	end
+	if ( transmogType == LE_TRANSMOG_TYPE_APPEARANCE ) then
+		local categoryID = C_TransmogCollection.GetAppearanceSourceInfo(sourceID);
+		if ( categoryID ) then
+			local slot = ARMOR_SLOTS[categoryID];
+			if ( slot ) then
+				WardrobeCollectionFrame_SetActiveSlot(slot, transmogType);
+			else
+				-- it's a weapon, but which hand? check mainhand first
+				local appearanceSourceID = WardrobeCollectionFramePreview_GetInfoForSlot("MAINHANDSLOT", transmogType);
+				if ( appearanceSourceID == sourceID ) then
+					WardrobeCollectionFrame_SetActiveSlot("MAINHANDSLOT", transmogType);
+					WardrobeCollectionFrame_SetActiveCategory(categoryID);
+				else
+					-- try offhand
+					appearanceSourceID = WardrobeCollectionFramePreview_GetInfoForSlot("SECONDARYHANDSLOT", transmogType);
+					if ( appearanceSourceID == sourceID ) then
+						WardrobeCollectionFrame_SetActiveSlot("SECONDARYHANDSLOT", transmogType);
+						WardrobeCollectionFrame_SetActiveCategory(categoryID);
+					end
+				end
+			end
+		end
+	elseif ( transmogType == LE_TRANSMOG_TYPE_ILLUSION ) then
+		-- check main hand first
+		local slot = "MAINHANDSLOT";
+		local appearanceSourceID, illusionSourceID = WardrobeCollectionFrame.PreviewFrame:GetSlotTransmogSources(GetInventorySlotInfo(slot));
+		if ( appearanceSourceID == 0 or illusionSourceID == 0 ) then
+			-- check off hand if main hand was invalid
+			slot = "SECONDARYHANDSLOT";
+			appearanceSourceID, illusionSourceID = WardrobeCollectionFrame.PreviewFrame:GetSlotTransmogSources(GetInventorySlotInfo(slot));
+		end
+		if ( appearanceSourceID > 0 and illusionSourceID > 0 ) then
+			WardrobeCollectionFrame_SetActiveSlot(slot, transmogType);
+		end
+	end
+end
+
 -- ***** MODELS
 
 function WardrobeCollectionFrameModel_OnLoad(self)
@@ -1567,10 +1626,15 @@ function WardrobeCollectionFrameModel_OnEnter(self)
 		GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
 		GameTooltip:SetText(name);
 	else
-		WardrobeCollectionFrame.tooltipAppearanceID = self.visualInfo.visualID;
-		WardrobeCollectionFrame.tooltipIndexOffset = 0;
-		GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
-		WardrobeCollectionFrameModel_SetTooltip();
+		if ( self.visualInfo.isHideVisual ) then
+			GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+			GameTooltip:SetText(HIDE_VISUAL_STRINGS[WardrobeCollectionFrame.activeSlot]);
+		else
+			WardrobeCollectionFrame.tooltipAppearanceID = self.visualInfo.visualID;
+			WardrobeCollectionFrame.tooltipIndexOffset = 0;
+			GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+			WardrobeCollectionFrameModel_SetTooltip();
+		end
 	end
 end
 
@@ -1910,16 +1974,17 @@ end
 
 function WardrobeCollectionFramePreview_GetInfoForSlot(slot, transmogType)
 	if ( WardrobeCollectionFrame.PreviewFrame:IsShown() ) then
-		-- RANGED_INV_TYPE are displayed in the secondary hand and the model frame uses visual slots, not physical
-		-- Have to reverse slots in that case
 		local appearanceSourceID, illusionSourceID = WardrobeCollectionFrame.PreviewFrame:GetSlotTransmogSources(GetInventorySlotInfo(slot));
-		if ( appearanceSourceID ~= NO_SOURCE_ID )  then
-			local categoryID = C_TransmogCollection.GetAppearanceSourceInfo(appearanceSourceID);
-			if ( categoryID and WardrobeCollectionFrame.categoriesList[categoryID].invType == RANGED_INV_TYPE ) then
-				if ( slot == "MAINHANDSLOT" ) then
-					slot = "SECONDARYHANDSLOT";
-				else
-					slot = "MAINHANDSLOT";
+		if ( appearanceSourceID == NO_SOURCE_ID and slot == "MAINHANDSLOT" )  then
+			-- didn't find anything in mainhand, check offhand
+			-- model frame uses visual slots, not physical and RANGED_INV_TYPE are equipped in mainhand but displayed in offhand
+			appearanceSourceID, illusionSourceID = WardrobeCollectionFrame.PreviewFrame:GetSlotTransmogSources(GetInventorySlotInfo("SECONDARYHANDSLOT"));
+			if ( appearanceSourceID ~= NO_SOURCE_ID ) then
+				local categoryID = C_TransmogCollection.GetAppearanceSourceInfo(appearanceSourceID);
+				if ( not categoryID or WardrobeCollectionFrame.categoriesList[categoryID].invType ~= RANGED_INV_TYPE ) then
+					-- nope, item was not RANGED_INV_TYPE
+					appearanceSourceID = 0;
+					illusionSourceID = 0;
 				end
 			end
 		end

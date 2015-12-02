@@ -1695,7 +1695,7 @@
 					</ScrollFrame>
 					<Frame parentKey="ItemLevel" inherits="LFGListRequirementTemplate">
 						<Anchors>
-							<Anchor point="TOPLEFT" relativeKey="$parent.Inset" relativePoint="TOPLEFT" x="20" y="-265"/>
+							<Anchor point="TOPLEFT" relativeKey="$parent.Inset" relativePoint="TOPLEFT" x="20" y="-260"/>
 						</Anchors>
 						<KeyValues>
 							 <KeyValue key="label" value="LFG_LIST_ITEM_LEVEL_REQ" type="global"/>
@@ -1705,12 +1705,24 @@
 							<KeyValue key="tabCategory" value="ENTRY_CREATION" type="string"/>
 						</KeyValues>
 					</Frame>
+					<Frame parentKey="HonorLevel" inherits="LFGListRequirementTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeKey="$parent.ItemLevel" relativePoint="BOTTOMLEFT" x="0" y="-5"/>
+						</Anchors>
+						<KeyValues>
+							 <KeyValue key="label" value="LFG_LIST_HONOR_LEVEL_REQ" type="global"/>
+							 <KeyValue key="numeric" value="true" type="boolean"/>
+							 <KeyValue key="instructions" value="LFG_LIST_HONOR_LEVEL_INSTR_SHORT" type="global"/>
+							 <KeyValue key="validateFunc" value="LFGListUtil_ValidateHonorLevelReq" type="global"/>
+							<KeyValue key="tabCategory" value="ENTRY_CREATION" type="string"/>
+						</KeyValues>
+					</Frame>
 					<Frame parentKey="VoiceChat" inherits="LFGListRequirementTemplate">
 						<KeyValues>
 							<KeyValue key="maxLetters" value="31" type="number"/>
 						</KeyValues>
 						<Anchors>
-							<Anchor point="TOPLEFT" relativeKey="$parent.ItemLevel" relativePoint="BOTTOMLEFT" x="0" y="-5"/>
+							<Anchor point="TOPLEFT" relativeKey="$parent.HonorLevel" relativePoint="BOTTOMLEFT" x="0" y="-5"/>
 						</Anchors>
 						<KeyValues>
 							 <KeyValue key="label" value="LFG_LIST_VOICE_CHAT" type="global"/>

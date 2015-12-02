@@ -355,17 +355,6 @@
 				<BarTexture file="Interface\TargetingFrame\UI-StatusBar"/>
 				<BarColor r="0" g="0" b="1.0"/>
 				<Frames>
-					<Frame parentKey="OverlayFrame" setAllPoints="true">
-						<Size x="119" y="12"/>
-						<Anchors>
-							<Anchor point="TOPLEFT"/>
-						</Anchors>
-						<Layers>
-							<Layer level="OVERLAY">
-								<Texture parentKey="OverlayTexture" hidden="true"/>
-							</Layer>
-						</Layers>
-					</Frame>
 					<Frame parentKey="FeedbackFrame" setAllPoints="true" useParentLevel="true" inherits="BuilderSpenderFrame">
 						<Size x="119" y="12"/>
 						<Anchors>

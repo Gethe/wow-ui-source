@@ -1929,48 +1929,48 @@
 				</Texture>
 			</Layer>
 			<Layer level="BORDER" textureSubLevel="-5">
-				<Texture name="$parentTopLeftCorner" inherits="Dialog-BorderTopLeft">
+				<Texture name="$parentTopLeftCorner" parentKey="TopLeftCorner" inherits="Dialog-BorderTopLeft">
 					<Anchors>
 						<Anchor point="TOPLEFT"/>
 					</Anchors>
 				</Texture>
-				<Texture name="$parentTopRightCorner" inherits="Dialog-BorderTopRight">
+				<Texture name="$parentTopRightCorner" parentKey="TopRightCorner" inherits="Dialog-BorderTopRight">
 					<Anchors>
 						<Anchor point="TOPRIGHT"/>
 					</Anchors>
 				</Texture>
-				<Texture name="$parentBottomLeftCorner" inherits="Dialog-BorderBottomLeft">
+				<Texture name="$parentBottomLeftCorner" parentKey="BottomLeftCorner" inherits="Dialog-BorderBottomLeft">
 					<Anchors>
 						<Anchor point="BOTTOMLEFT"/>
 					</Anchors>
 				</Texture>
-				<Texture name="$parentBottomRightCorner" inherits="Dialog-BorderBottomRight">
+				<Texture name="$parentBottomRightCorner" parentKey="BottomRightCorner" inherits="Dialog-BorderBottomRight">
 					<Anchors>
 						<Anchor point="BOTTOMRIGHT"/>
 					</Anchors>
 				</Texture>
-				<Texture name="$parentTopBorder" inherits="Dialog-BorderTop">
+				<Texture name="$parentTopBorder" parentKey="TopBorder" inherits="Dialog-BorderTop">
 					<Anchors>
-						<Anchor point="TOPLEFT" relativeTo="$parentTopLeftCorner" relativePoint="TOPRIGHT"  x="0" y="-1"/>
-						<Anchor point="TOPRIGHT" relativeTo="$parentTopRightCorner" relativePoint="TOPLEFT"  x="0" y="-1"/>
+						<Anchor point="TOPLEFT" relativeKey="$parent.TopLeftCorner" relativePoint="TOPRIGHT"  x="0" y="-1"/>
+						<Anchor point="TOPRIGHT" relativeKey="$parent.TopRightCorner" relativePoint="TOPLEFT"  x="0" y="-1"/>
 					</Anchors>
 				</Texture>
-				<Texture name="$parentBottomBorder" inherits="Dialog-BorderBottom">
+				<Texture name="$parentBottomBorder" parentKey="BottomBorder" inherits="Dialog-BorderBottom">
 					<Anchors>
-						<Anchor point="BOTTOMLEFT" relativeTo="$parentBottomLeftCorner" relativePoint="BOTTOMRIGHT"/>
-						<Anchor point="BOTTOMRIGHT" relativeTo="$parentBottomRightCorner" relativePoint="BOTTOMLEFT"/>
+						<Anchor point="BOTTOMLEFT" relativeKey="$parent.BottomLeftCorner" relativePoint="BOTTOMRIGHT"/>
+						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.BottomRightCorner" relativePoint="BOTTOMLEFT"/>
 					</Anchors>
 				</Texture>
-				<Texture name="$parentLeftBorder" inherits="Dialog-BorderLeft">
+				<Texture name="$parentLeftBorder" parentKey="LeftBorder" inherits="Dialog-BorderLeft">
 					<Anchors>
-						<Anchor point="TOPLEFT" relativeTo="$parentTopLeftCorner" relativePoint="BOTTOMLEFT" x="1" y="0"/>
-						<Anchor point="BOTTOMLEFT" relativeTo="$parentBottomLeftCorner" relativePoint="TOPLEFT" x="1" y="0"/>
+						<Anchor point="TOPLEFT" relativeKey="$parent.TopLeftCorner" relativePoint="BOTTOMLEFT" x="1" y="0"/>
+						<Anchor point="BOTTOMLEFT" relativeKey="$parent.BottomLeftCorner" relativePoint="TOPLEFT" x="1" y="0"/>
 					</Anchors>
 				</Texture>
-				<Texture name="$parentRightBorder" inherits="Dialog-BorderRight">
+				<Texture name="$parentRightBorder" parentKey="RightBorder" inherits="Dialog-BorderRight">
 					<Anchors>
-						<Anchor point="TOPRIGHT" relativeTo="$parentTopRightCorner" relativePoint="BOTTOMRIGHT"/>
-						<Anchor point="BOTTOMRIGHT" relativeTo="$parentBottomRightCorner" relativePoint="TOPRIGHT"/>
+						<Anchor point="TOPRIGHT" relativeKey="$parent.TopRightCorner" relativePoint="BOTTOMRIGHT"/>
+						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.BottomRightCorner" relativePoint="TOPRIGHT"/>
 					</Anchors>
 				</Texture>
 			</Layer>

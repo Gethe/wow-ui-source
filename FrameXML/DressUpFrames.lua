@@ -5,8 +5,8 @@ function DressUpItemLink(link)
 	return DressUpLink(link);
 end
 
-function DressUpTrasmogLink(link)
-	if ( not link or strsub(link, 1, 16) ~= "transmogillusion" ) then
+function DressUpTransmogLink(link)
+	if ( not link or not (strsub(link, 1, 16) == "transmogillusion" or strsub(link, 1, 18) == "transmogappearance") ) then
 		return false;
 	end
 	return DressUpLink(link);

@@ -99,11 +99,6 @@
 						<Anchor point="CENTER"/>
 					</Anchors>
 				</Texture>
-				<Texture atlas="Talent-Highlight" useAtlasSize="true" alphaMode="ADD" parentKey="learnSelection" hidden="true">
-					<Anchors>
-						<Anchor point="CENTER"/>
-					</Anchors>
-				</Texture>
 			</Layer>
 		</Layers>
 		<HighlightTexture atlas="Talent-Highlight" useAtlasSize="true" alphaMode="ADD" parentKey="highlight">
@@ -118,10 +113,7 @@
 				self:RegisterEvent("PLAYER_TALENT_UPDATE");
 				self:RegisterForDrag("LeftButton");
 			</OnLoad>
-			<OnClick>
-				PlaySound("igMainMenuOptionCheckBoxOn");
-				PlayerTalentFrameTalent_OnClick(self, button);
-			</OnClick>
+			<OnClick function="PlayerTalentButton_OnClick"/>
 			<OnEvent>
 				PlayerTalentFrameTalent_OnEvent(self);
 			</OnEvent>
@@ -207,17 +199,17 @@
 			</Layer>
 		</Layers>
 		<Frames>
-			<Button name="$parentTalent1" inherits="PlayerTalentButtonTemplate" parentKey="talent1">
+			<Button name="$parentTalent1" inherits="PlayerTalentButtonTemplate" parentKey="talent1" parentArray="talents">
 				<Anchors>
 					<Anchor point="LEFT" relativeTo="$parentSeparator1" relativePoint="CENTER" x="0" y="0"/>
 				</Anchors>
 			</Button>
-			<Button name="$parentTalent2" inherits="PlayerTalentButtonTemplate" parentKey="talent2">
+			<Button name="$parentTalent2" inherits="PlayerTalentButtonTemplate" parentKey="talent2" parentArray="talents">
 				<Anchors>
 					<Anchor point="LEFT" relativeTo="$parentSeparator2" relativePoint="CENTER" x="0" y="0"/>
 				</Anchors>
 			</Button>
-			<Button name="$parentTalent3" inherits="PlayerTalentButtonTemplate" parentKey="talent3">
+			<Button name="$parentTalent3" inherits="PlayerTalentButtonTemplate" parentKey="talent3" parentArray="talents">
 				<Anchors>
 					<Anchor point="LEFT" relativeTo="$parentSeparator3" relativePoint="CENTER" x="0" y="0"/>
 				</Anchors>
@@ -298,6 +290,26 @@
 				</Texture>
 			</Layer>
 		</Layers>
+		<Frames>
+			<Button parentKey="PrimarySpecButton">
+				<Size x="25" y="25"/>
+				<Anchors>
+					<Anchor point="TOPLEFT" x="24" y="14"/>
+				</Anchors>
+				<NormalTexture parentKey="Icon" atlas="PetJournal-FavoritesIcon" useAtlasSize="true"/>
+				<Scripts>
+					<OnEnter>
+						GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+						GameTooltip:SetText(SPECIALIZATION_PRIMARY, nil, nil, nil, nil, true);
+						GameTooltip:AddLine(PRIMARY_SPEC_CHANGE_AT_CLASS_TRAINER, 1, 1, 1, true);
+						GameTooltip:Show();
+					</OnEnter>
+					<OnLeave>
+						GameTooltip_Hide();
+					</OnLeave>
+				</Scripts>
+			</Button>
+		</Frames>
 		<HighlightTexture file="Interface\Common\bluemenu-main" alphaMode="ADD" alpha="0.8">
 			<Size x="224" y="80"/>
 			<TexCoords left="0.00390625" right="0.87890625" top="0.75195313" bottom="0.83007813"/>
@@ -951,38 +963,6 @@
 					<Anchor point="TOPLEFT" relativeTo="$parentTalentRow6" relativePoint="BOTTOMLEFT" x="0" y="-9"/>
 				</Anchors>
 			</Frame>
-			<Button name="$parentLearnButton" inherits="MagicButtonTemplate" text="TALENT_SPEC_ACTIVATE" parentKey="learnButton">
-				<Size x="98" y="22"/>
-				<Anchors>
-					<Anchor point="BOTTOM" x="0" y="-22"/>
-				</Anchors>
-				<Layers>
-					<Layer level="OVERLAY">
-						<Texture name="$parentFlash" file="Interface\Buttons\UI-Panel-Button-Glow" alphaMode="ADD" parentKey="Flash" hidden="true">
-							<Size x="150" y="60"/>
-							<Anchors>
-								<Anchor point="TOPLEFT" x="-7" y="7"/>
-							</Anchors>
-						</Texture>
-					</Layer>
-				</Layers>
-				<Scripts>
-					<OnClick>
-						PlaySound("igMainMenuOptionCheckBoxOn");
-						local talentGroup = PlayerTalentFrame and PlayerTalentFrame.talentGroup or 1;
-						if ( talentGroup == GetActiveSpecGroup() ) then
-							if ( PlayerTalentFrame_GetTalentSelections() and LearnTalents(PlayerTalentFrame_GetTalentSelections()) ) then
-								PlayerTalentFrame_ClearTalentSelections();
-							end
-						end
-					</OnClick>
-				</Scripts>
-				<Animations>
-					<AnimationGroup parentKey="FlashAnim" looping="BOUNCE">
-						<Alpha childKey="Flash" fromAlpha="0.75" toAlpha="0" duration="1.0" smoothing="IN_OUT" order="1"/>
-					</AnimationGroup>
-				</Animations>
-			</Button>
 		</Frames>
 		<Scripts>
 			<OnLoad function="PlayerTalentFrameTalents_OnLoad"/>

@@ -1,5 +1,5 @@
 StaticPopupDialogs["CONFIRM_LEARN_SPEC"] = {
-	text = CONFIRM_LEARN_SPEC,
+	text = "",
 	button1 = YES,
 	button2 = NO,
 	OnAccept = function (self)
@@ -7,6 +7,13 @@ StaticPopupDialogs["CONFIRM_LEARN_SPEC"] = {
 		self.data.playLearnAnim = true;
 	end,
 	OnCancel = function (self)
+	end,
+	OnShow = function(self)
+		if (self.data.previewSpecCost) then
+			self.text:SetFormattedText(CONFIRM_LEARN_SPEC_COST, GetMoneyString(GetSpecChangeCost()));
+		else
+			self.text:SetText(CONFIRM_LEARN_SPEC);
+		end
 	end,
 	hideOnEscape = 1,
 	whileDead = 1,
@@ -106,49 +113,49 @@ TALENT_HEADER_CHOOSE_SPEC_Y = -28;
 -- Hardcoded spell id's for spec display
 SPEC_SPELLS_DISPLAY = {}
 SPEC_SPELLS_DISPLAY[62] = { 30451,10, 44425,10,   5143,10, 114664,10	}; --Arcane
-SPEC_SPELLS_DISPLAY[63] = {   133,10, 11366,10, 108853,10,  11129,10	}; --Fire
+SPEC_SPELLS_DISPLAY[63] = {   133,10, 11366,10, 108853,10, 190319,10	}; --Fire
 SPEC_SPELLS_DISPLAY[64] = {   116,10, 30455,10,  31687,10, 112965,10 	}; --Frost
 
-SPEC_SPELLS_DISPLAY[65] = { 20473,10, 85673,10, 82326,10, 53563,10	}; --Holy
-SPEC_SPELLS_DISPLAY[66] = { 31935,10, 35395,10, 53600,10, 85673,10	}; --Protection
-SPEC_SPELLS_DISPLAY[70] = { 35395,10, 85256,10, 87138,10, 24275,10	}; --Retribution
+SPEC_SPELLS_DISPLAY[65] = { 20473,10,  85673,10, 82326,10, 53563,10	}; --Holy
+SPEC_SPELLS_DISPLAY[66] = { 31935,10,  35395,10, 53600,10, 85673,10	}; --Protection
+SPEC_SPELLS_DISPLAY[70] = { 35395,10, 184575,10, 20271,10, 85256,10	}; --Retribution
 
 SPEC_SPELLS_DISPLAY[71] = { 12294,10, 167105,10,    772,10,   1680,10	}; --Arms
-SPEC_SPELLS_DISPLAY[72] = { 23881,10, 5308,10,  85288,10, 100130,10	}; --Fury
-SPEC_SPELLS_DISPLAY[73] = { 23922,10, 20243,10, 112048,10,   2565,10	}; --Protection
+SPEC_SPELLS_DISPLAY[72] = { 23881,10,  85288,10, 184367,10,  18499,10	}; --Fury
+SPEC_SPELLS_DISPLAY[73] = { 23922,10,  20243,10,   2565,10, 190456,10	}; --Protection
 
-SPEC_SPELLS_DISPLAY[102] = { 24858,10,  5176,10,  2912,10, 79577,10	}; --Balance
-SPEC_SPELLS_DISPLAY[103] = {   768,10,  5221,10, 52610,10,  1079,10	}; --Feral
-SPEC_SPELLS_DISPLAY[104] = {  5487,10, 33917,10, 62606,10, 22842,10	}; --Guardian
-SPEC_SPELLS_DISPLAY[105] = {   774,10, 33763,10,  5185,10, 48438,10	}; --Restoration
+SPEC_SPELLS_DISPLAY[102] = { 194153,10,  8921,10, 78674,10, 190984,10	}; --Balance
+SPEC_SPELLS_DISPLAY[103] = {    768,10,  5221,10, 52610,10,   1079,10	}; --Feral
+SPEC_SPELLS_DISPLAY[104] = {   5487,10, 33917,10, 62606,10,  22842,10	}; --Guardian
+SPEC_SPELLS_DISPLAY[105] = {    774,10, 33763,10,  5185,10,  48438,10	}; --Restoration
 
-SPEC_SPELLS_DISPLAY[250] = { 48263,10, 49998,10, 48982,10, 55233,10	}; --Blood
-SPEC_SPELLS_DISPLAY[251] = { 48266,10, 49143,10, 49184,10, 49020,10	}; --Frost
-SPEC_SPELLS_DISPLAY[252] = { 48265,10, 85948,10, 46584,10, 63560,10	}; --Unholy
+SPEC_SPELLS_DISPLAY[250] = { 45902,10, 195182,10, 49998,10,  43265,10	}; --Blood
+SPEC_SPELLS_DISPLAY[251] = { 49143,10,  49184,10, 49020,10, 196770,10	}; --Frost
+SPEC_SPELLS_DISPLAY[252] = { 85948,10,  55090,10, 77575,10,  47541,10	}; --Unholy
 
-SPEC_SPELLS_DISPLAY[253] = { 34026,10, 77767,10, 82692,10, 19574,10	}; --Beastmaster
-SPEC_SPELLS_DISPLAY[254] = { 19434,10, 53209,10, 56641,10,  3045,10	}; --Marksmanship
-SPEC_SPELLS_DISPLAY[255] = {  3674,10, 53301,10, 19387,10,  1499,10	}; --Survival
+SPEC_SPELLS_DISPLAY[253] = {  34026,10,  77767,10,  82692,10,  19574,10	}; --Beastmaster
+SPEC_SPELLS_DISPLAY[254] = {  19434,10, 185358,10, 185901,10, 186387,10	}; --Marksmanship
+SPEC_SPELLS_DISPLAY[255] = { 190928,10, 202800,10, 185855,10, 186270,10	}; --Survival
 
-SPEC_SPELLS_DISPLAY[256] = { 47540,10,    17,10, 132157,10,  596,10	}; --Discipline
-SPEC_SPELLS_DISPLAY[257] = {   139,10, 33076,10,  34861,10,  596,10	}; --Holy
-SPEC_SPELLS_DISPLAY[258] = { 15473,10,   589,10,   8092,10, 2944,10	}; --Shadow
+SPEC_SPELLS_DISPLAY[256] = { 47540,10,     17,10, 132157,10,   596,10	}; --Discipline
+SPEC_SPELLS_DISPLAY[257] = {   139,10,  33076,10,  34861,10,   596,10	}; --Holy
+SPEC_SPELLS_DISPLAY[258] = {  8092,10, 205448,10,    589,10, 34914,10	}; --Shadow
 
-SPEC_SPELLS_DISPLAY[259] = {  1329,10, 111240,10, 32645,10, 79140,10	}; --Assassination
-SPEC_SPELLS_DISPLAY[260] = { 84617,10,   1752,10, 13877,10, 13750,10	}; --Combat
-SPEC_SPELLS_DISPLAY[261] = {    53,10,  16511,10, 51701,10, 51713,10	}; --Subtlety
+SPEC_SPELLS_DISPLAY[259] = {   1329,10, 111240,10, 32645,10, 79140,10	}; --Assassination
+SPEC_SPELLS_DISPLAY[260] = { 193315,10, 185763,10,  5171,10,  2098,10	}; --Outlaw
+SPEC_SPELLS_DISPLAY[261] = {     53,10,  16511,10, 51701,10, 51713,10	}; --Subtlety
 
 SPEC_SPELLS_DISPLAY[262] = { 51505,10,   403,10,  51490,10, 61882,10	}; --Elemental
 SPEC_SPELLS_DISPLAY[263] = { 17364,10, 60103,10,  51530,10, 51533,10	}; --Enhancement
 SPEC_SPELLS_DISPLAY[264] = {   974,10, 77472,10,   1064,10, 73920,10	}; --Restoration
 
-SPEC_SPELLS_DISPLAY[265] = {    980,10, 30108,10,  48181,10,  74434,10	}; --Affliction
+SPEC_SPELLS_DISPLAY[265] = {    172,10,   980,10,  30108,10,    689,10	}; --Affliction
 SPEC_SPELLS_DISPLAY[266] = { 103958,10,   686,10,   6353,10, 114592,10	}; --Demonology
 SPEC_SPELLS_DISPLAY[267] = {    348,10, 17962,10, 116858,10,  29722,10	}; --Destruction
 
 SPEC_SPELLS_DISPLAY[268] = { 115069,10, 119582,10, 115308,10, 121253,10	}; --Brewmaster
-SPEC_SPELLS_DISPLAY[269] = { 100780,10, 113656,10, 107428,10, 116740,10	}; --Windwalker
-SPEC_SPELLS_DISPLAY[270] = { 115175,10, 116694,10, 115151,10, 116670,10	}; --Mistweaver
+SPEC_SPELLS_DISPLAY[269] = { 100784,10, 107428,10, 100780,10, 137639,10	}; --Windwalker
+SPEC_SPELLS_DISPLAY[270] = { 115151,10, 124682,10, 116670,10, 191837,10	}; --Mistweaver
 
 SPEC_SPELLS_DISPLAY[577] = { 162794,10, 179057,10, 195072,10, 191427,10	}; --Havoc
 SPEC_SPELLS_DISPLAY[581] = { 183600,10, 189727,10, 189722,10, 187827,10	}; --Vengeance
@@ -335,11 +342,6 @@ function PlayerTalentFrame_OnHide()
 	if ( not GetSpecialization() ) then
 		MainMenuMicroButton_ShowAlert(TalentMicroButtonAlert, TALENT_MICRO_BUTTON_NO_SPEC);
 		StaticPopup_Hide("CONFIRM_LEARN_SPEC");
-	elseif ( selection ) then
-		local id, name, iconTexture, selected, available = GetTalentInfoByID(selection, activeSpec);
-		if (available) then
-			MainMenuMicroButton_ShowAlert(TalentMicroButtonAlert, TALENT_MICRO_BUTTON_UNSAVED_CHANGES);
-		end
 	elseif ( GetNumUnspentTalents() > 0 and not AreTalentsLocked() ) then
 		MainMenuMicroButton_ShowAlert(TalentMicroButtonAlert, TALENT_MICRO_BUTTON_UNSPENT_TALENTS);
 	end
@@ -628,7 +630,7 @@ end
 function PlayerTalentFrameTalent_OnClick(self, button)
 	if ( IsModifiedClick("CHATLINK") ) then
 		if ( MacroFrameText and MacroFrameText:HasFocus() ) then
-			local _, talentName = GetTalentInfoByID(self:GetID(), specs[selectedSpec].talentGroup);
+			local _, talentName = GetTalentInfoByID(self:GetID(), specs[selectedSpec].talentGroup, false);
 			local spellName, subSpellName = GetSpellInfo(talentName);
 			if ( spellName and not IsPassiveSpell(spellName) ) then
 				if ( subSpellName and (strlen(subSpellName) > 0) ) then
@@ -644,21 +646,10 @@ function PlayerTalentFrameTalent_OnClick(self, button)
 			end
 		end
 	elseif ( selectedSpec and (activeSpec == selectedSpec)) then
-		local _, _, _, selected, available = GetTalentInfoByID(self:GetID(), specs[selectedSpec].talentGroup);
-		if ( available ) then
-			-- only allow functionality if an active spec is selected
-			if ( button == "LeftButton" and not selected ) then
-				PlayerTalentFrame_SelectTalent(self.tier, self:GetID());
-			end
-		else
-			-- if there is something else already learned for this tier, display a dialog about unlearning that one.
-			if ( button == "LeftButton" and not selected ) then
-				local isRowFree, prevSelected = GetTalentRowSelectionInfo(self.tier);
-				if (not isRowFree) then		
-					RemoveTalent(prevSelected);
-					PlayerTalentFrame_SelectTalent(self.tier, self:GetID());
-				end
-			end
+        local talentID = self:GetID()
+		local _, _, _, _, available = GetTalentInfoByID(talentID, specs[selectedSpec].talentGroup, true);
+		if ( available and button == "LeftButton") then
+            LearnTalent(talentID);
 		end
 	end
 end
@@ -1127,9 +1118,6 @@ function SpecButton_OnEnter(self)
 	if ( not self.selected ) then
 		GameTooltip:SetOwner(self, "ANCHOR_TOP");
 		GameTooltip:AddLine(self.tooltip, NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b);
-		if ( self.displayTrainerTooltip and not self:GetParent().isPet ) then
-			GameTooltip:AddLine(TALENT_SPEC_CHANGE_AT_CLASS_TRAINER, RED_FONT_COLOR.r, RED_FONT_COLOR.g, RED_FONT_COLOR.b);
-		end
 		GameTooltip:SetMinimumWidth(300, true);
 		GameTooltip:Show();
 	end
@@ -1193,16 +1181,6 @@ function PlayerTalentFrame_UpdateSpecFrame(self, spec)
 			SetDesaturation(button.ring, false);
 			button.specName:SetFontObject("GameFontNormal");
 		end
-		
-		if ( button.disabled ) then
-			if ( petNotActive) then
-				button.displayTrainerTooltip = false;
-			else
-				button.displayTrainerTooltip = true;
-			end
-		else
-			button.displayTrainerTooltip = false;
-		end
 	end
 	
 	-- save viewed spec for Learn button
@@ -1211,6 +1189,8 @@ function PlayerTalentFrame_UpdateSpecFrame(self, spec)
 	-- display spec info in the scrollframe
 	local scrollChild = self.spellsScroll.child;
 	local id, name, description, icon, background, _, primaryStat = GetSpecializationInfo(shownSpec, nil, self.isPet, nil, sex);
+	local primarySpecID = GetPrimarySpecialization();
+	self.previewSpecCost = (id ~= primarySpecID) and GetSpecChangeCost() or nil;
 	SetPortraitToTexture(scrollChild.specIcon, icon);
 	scrollChild.specName:SetText(name);
 	scrollChild.description:SetText(description);
@@ -1221,8 +1201,9 @@ function PlayerTalentFrame_UpdateSpecFrame(self, spec)
 	-- update spec button names
 	for i = 1, numSpecs do
 		local button = self["specButton"..i];
-		local _, name, description, icon = GetSpecializationInfo(i, false, self.isPet, nil, sex);
+		local id, name, description, icon = GetSpecializationInfo(i, false, self.isPet, nil, sex);
 		button.specName:SetText(name);
+		button.PrimarySpecButton:SetShown(primarySpecID == id);
 	end
 	
 	if ( not self.isPet and primaryStat ~= 0 ) then
@@ -1382,6 +1363,9 @@ function PlayerTalentFrameTalents_OnLoad(self)
 	for i=1, MAX_TALENT_TIERS do
 		self["tier"..i].level:SetText(talentLevels[i]);
 	end
+
+	-- Setup table to support immediate UI updates when picking talents
+	self.talentInfo = {};
 end
 
 function PlayerTalentFrameTalents_OnShow(self)
@@ -1472,10 +1456,7 @@ function PlayerTalentFramePVPTalents_Update(self)
 			else
 				PlayerTalentFramePVPTalents_UnlockButton(button, activeTalentGroup == PlayerTalentFrame.talentGroup);
 				if (talentRow.selectionId == id) then
-					button.learnSelection:Show();
 					numTalentSelections = numTalentSelections + 1;
-				else
-					button.learnSelection:Hide();
 				end
 
 				button.knownSelection:SetShown(selected);
@@ -1496,7 +1477,6 @@ end
 
 function PlayerTalentFramePVPTalents_LockButton(button)
 	button.Icon:SetDesaturated(true);
-	button.learnSelection:Hide();
 	button.knownSelection:Hide();
 	button:Disable();
 	button.Cover:Show();
@@ -1646,5 +1626,42 @@ function PlayerTalentFramePVPTalentsXPBar_OnClick(self, button)
 	if (button == "RightButton") then
 		UIDropDownMenu_Initialize(self.DropDown, InitializePVPTalentsXPBarDropDown);
 		ToggleDropDownMenu(1, nil, self.DropDown, self, 310, 12);
+	end
+end
+
+function PlayerTalentButton_OnClick(self, button)
+	-- With 1-click talent selection, there is a significant amount of lag between clicking the talent and
+	-- getting the server message back saying that your talents have been updated. To make the UI feel more
+	-- responsive, we update the UI immediately as if we got the server response. Then we lock that row so
+	-- that the user cannot try and update that talent row until we receive a response back from the server.
+	
+	local talentRow = self:GetParent();
+	local talentsFrame = talentRow:GetParent();
+	if (talentsFrame.talentInfo[self.tier]) then
+		-- We recently clicked on a talent and are waiting for the server response; don't let the user click again
+		UIErrorsFrame:AddMessage(TALENT_CLICK_TOO_FAST, 1.0, 0.1, 0.1, 1.0);
+		return;
+	elseif (not self.disabled) then
+		-- Pretend like we immediately got the talent by de-selecting the old talent and selecting the new one
+		PlaySound("igMainMenuOptionCheckBoxOn");
+		PlayerTalentFrameTalent_OnClick(self, button);
+		
+		talentsFrame.talentInfo[self.tier] = self.column;
+		
+		-- Highlight this talent
+		self.knownSelection:Show();
+		self.icon:SetDesaturated(false);
+		
+		-- Deselect the other talents in this row and grey out the level text
+		for i = 1, #talentRow.talents do
+			if (i ~= self.column) then
+				local oldTalentButton = talentRow.talents[i];
+				oldTalentButton.knownSelection:Hide();
+				oldTalentButton.icon:SetDesaturated(true);
+			end
+		end
+		if(talentRow.level ~= nil) then
+			talentRow.level:SetTextColor(0.5, 0.5, 0.5);
+		end
 	end
 end

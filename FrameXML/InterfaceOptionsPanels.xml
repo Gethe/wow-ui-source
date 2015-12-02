@@ -1094,9 +1094,21 @@
 					</OnLoad>
 				</Scripts>
 			</CheckButton>
+			<CheckButton name="$parentPersonalResource" inherits="InterfaceOptionsCheckButtonTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentShowSpellPointsAvg" relativePoint="BOTTOMLEFT" x="0" y="-8"/>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						self.type = CONTROLTYPE_CHECKBOX;
+						self.cvar = "nameplateShowSelf";
+						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
+					</OnLoad>
+				</Scripts>
+			</CheckButton>
 			<Frame name="$parentOutlineDropDown" inherits="UIDropDownMenuTemplate" enableMouse="true">
 				<Anchors>
-					<Anchor point="TOPLEFT" relativeTo="$parentShowSpellPointsAvg" relativePoint="BOTTOMLEFT">
+					<Anchor point="TOPLEFT" relativeTo="$parentPersonalResource" relativePoint="BOTTOMLEFT">
 						<Offset>
 							<AbsDimension x="-13" y="-30"/>
 						</Offset>
@@ -1229,15 +1241,79 @@
 					</OnLoad>
 				</Scripts>
 			</CheckButton>
-			<CheckButton name="$parentPersonalResource" inherits="InterfaceOptionsCheckButtonTemplate">
+			<Frame name="$parentSelfHighlightDropDown" inherits="UIDropDownMenuTemplate" enableMouse="true">
 				<Anchors>
-					<Anchor point="TOPLEFT" relativeTo="$parentOutlineDropDown" relativePoint="BOTTOMLEFT" x="13" y="-8"/>
+					<Anchor point="TOPLEFT" relativeTo="$parentOutlineDropDown" relativePoint="BOTTOMLEFT" x="0" y="-24"/>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<FontString name="$parentLabel" inherits="GameFontNormal" text="SELF_HIGHLIGHT_OPTION">
+							<Anchors>
+								<Anchor point="BOTTOMLEFT" relativePoint="TOPLEFT" x="16" y="3"/>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnLoad>
+						self.type = CONTROLTYPE_DROPDOWN;
+						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
+					</OnLoad>
+					<OnEnter>
+						GameTooltip:SetOwner(self, "ANCHOR_TOPRIGHT");
+						GameTooltip:SetText(self.tooltip, nil, nil, nil, nil, true);
+					</OnEnter>
+					<OnLeave function="GameTooltip_Hide"/>
+					<OnShow function="InterfaceOptionsDisplayPanelSelfHighlightDropDown_OnShow"/>
+				</Scripts>
+			</Frame>
+			<CheckButton name="$parentSelfHighlightRaid" inherits="InterfaceOptionsCheckButtonTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentSelfHighlightDropDown" relativePoint="BOTTOMLEFT" x="13" y="-8"/>
 				</Anchors>
 				<Scripts>
 					<OnLoad>
 						self.type = CONTROLTYPE_CHECKBOX;
-						self.cvar = "nameplateShowSelf";
+						self.cvar = "findYourselfInRaid";
 						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
+					</OnLoad>
+				</Scripts>
+			</CheckButton>
+			<CheckButton name="$parentSelfHighlightRaidAlwaysOn" inherits="InterfaceOptionsSmallCheckButtonTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentSelfHighlightRaid" relativePoint="BOTTOMLEFT" x="10" y="4"/>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						self.type = CONTROLTYPE_CHECKBOX;
+						self.cvar = "findYourselfInRaidOnlyInCombat";
+						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
+						BlizzardOptionsPanel_SetupDependentControl(_G[self:GetParent():GetName().."SelfHighlightRaid"], self);
+					</OnLoad>
+				</Scripts>
+			</CheckButton>
+			<CheckButton name="$parentSelfHighlightBG" inherits="InterfaceOptionsCheckButtonTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentSelfHighlightRaidAlwaysOn" relativePoint="BOTTOMLEFT" x="-10" y="0"/>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						self.type = CONTROLTYPE_CHECKBOX;
+						self.cvar = "findYourselfInBG";
+						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
+					</OnLoad>
+				</Scripts>
+			</CheckButton>
+			<CheckButton name="$parentSelfHighlightBGAlwaysOn" inherits="InterfaceOptionsSmallCheckButtonTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentSelfHighlightBG" relativePoint="BOTTOMLEFT" x="10" y="4"/>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						self.type = CONTROLTYPE_CHECKBOX;
+						self.cvar = "findYourselfInBGOnlyInCombat";
+						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
+						BlizzardOptionsPanel_SetupDependentControl(_G[self:GetParent():GetName().."SelfHighlightBG"], self);
 					</OnLoad>
 				</Scripts>
 			</CheckButton>

@@ -1034,7 +1034,9 @@
 		PVEFrame_ToggleFrame("GroupFinderFrame", nil);
 	</Binding>
 	<Binding name="TOGGLECHARACTER4" category="BINDING_HEADER_INTERFACE">
-		TogglePVPUI();
+		if (not ScriptsDisallowedForBeta()) then
+			TogglePVPUI();
+		end
 	</Binding>
 	
 	<Binding name="TOGGLECOLLECTIONS" header="BLANK14" category="BINDING_HEADER_INTERFACE">
@@ -1131,7 +1133,13 @@
 		end
 	</Binding>
 	<Binding name="TOGGLESELFHIGHLIGHT" category="BINDING_HEADER_MISC">
-		ToggleSelfHighlight();
+		local text;
+		if ( ToggleSelfHighlight() ) then
+			text = SELF_HIGHLIGHT_ON;
+		else
+			text = SELF_HIGHLIGHT_OFF;
+		end
+		UIErrorsFrame:AddMessage(text, YELLOW_FONT_COLOR.r, YELLOW_FONT_COLOR.g, YELLOW_FONT_COLOR.b);
 	</Binding>
 
 	<!-- Debug function key bindings -->

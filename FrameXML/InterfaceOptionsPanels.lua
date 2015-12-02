@@ -543,6 +543,11 @@ DisplayPanelOptions = {
 	emphasizeMySpellEffects = { text = "EMPHASIZE_MY_SPELLS_TEXT" },
 	showAdventureJournalAlerts = { text = "SHOW_ADVENTURE_JOURNAL_ALERTS" };
 	nameplateShowSelf = { text = "DISPLAY_PERSONAL_RESOURCE" },
+	
+	findYourselfInRaid = { text = "SELF_HIGHLIGHT_IN_RAID" },
+	findYourselfInRaidOnlyInCombat = { text = "SELF_HIGHLIGHT_IN_RAID_COMBAT" },
+	findYourselfInBG = { text = "SELF_HIGHLIGHT_IN_BG" },
+	findYourselfInBGOnlyInCombat = { text = "SELF_HIGHLIGHT_IN_BG_COMBAT" },
 }
 
 function InterfaceOptionsDisplayPanel_OnLoad (self)
@@ -679,6 +684,56 @@ function InterfaceOptionsDisplayPanelOutline_Initialize()
 	else
 		info.checked = nil;
 	end
+	UIDropDownMenu_AddButton(info);
+end
+
+function InterfaceOptionsDisplayPanelSelfHighlightDropDown_OnShow(self)
+	self.cvar = "findYourselfMode";
+
+	self.defaultValue = GetCVarDefault(self.cvar);
+	self.value = GetCVar(self.cvar);
+	self.oldValue = self.value;
+
+	UIDropDownMenu_SetWidth(self, 180);
+	UIDropDownMenu_Initialize(self, InterfaceOptionsDisplayPanelSelfHighlightDropDown_Initialize);
+	UIDropDownMenu_SetSelectedValue(self, self.value);
+
+	self.SetValue = 
+		function (self, value)
+			self.value = value;
+			SetCVar(self.cvar, self.value);
+			UIDropDownMenu_SetSelectedValue(self, self.value);
+		end
+	self.GetValue =
+		function (self)
+			return UIDropDownMenu_GetSelectedValue(self);
+		end
+	self.RefreshValue =
+		function (self)
+			UIDropDownMenu_Initialize(self, InterfaceOptionsDisplayPanelSelfHighlightDropDown_Initialize);
+			UIDropDownMenu_SetSelectedValue(self, self.value);
+		end
+		
+	self.tooltip = OPTION_TOOLTIP_SELF_HIGHLIGHT;
+end
+
+function InterfaceOptionsDisplayPanelSelfHighlightDropDown_OnClick(self)
+	InterfaceOptionsDisplayPanelSelfHighlightDropDown:SetValue(self.value);
+end
+
+function InterfaceOptionsDisplayPanelSelfHighlightDropDown_Initialize()
+	local selectedValue = UIDropDownMenu_GetSelectedValue(InterfaceOptionsDisplayPanelSelfHighlightDropDown);
+	local info = UIDropDownMenu_CreateInfo();
+
+	info.text = SELF_HIGHLIGHT_MODE_CIRCLE;
+	info.func = InterfaceOptionsDisplayPanelSelfHighlightDropDown_OnClick;
+	info.value = "0";
+	info.checked = info.value == selectedValue;
+	UIDropDownMenu_AddButton(info);
+
+	info.text = SELF_HIGHLIGHT_MODE_CIRCLE_AND_OUTLINE;
+	info.value = "1";
+	info.checked = info.value == selectedValue;
 	UIDropDownMenu_AddButton(info);
 end
 

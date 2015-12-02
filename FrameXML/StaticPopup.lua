@@ -2445,8 +2445,8 @@ StaticPopupDialogs["UNLEARN_SKILL"] = {
 	button2 = CANCEL,
 	OnAccept = function(self, index)
 		AbandonSkill(index);
-		if ( TradeSkillFrame_Hide ) then
-			TradeSkillFrame_Hide();
+		if TradeSkillFrame then
+			HideUIPanel(TradeSkillFrame);
 		end
 	end,
 	timeout = STATICPOPUP_TIMEOUT,

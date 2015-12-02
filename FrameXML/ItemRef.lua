@@ -254,13 +254,25 @@ function SetItemRef(link, text, button, chatFrame)
 	elseif ( strsub(link, 1, 16) == "transmogillusion" ) then
 		local fixedLink = GetFixedLink(text);
 		if ( not HandleModifiedItemClick(fixedLink) ) then
-			DressUpTrasmogLink(link);
-			if ( WardrobeCollectionFrame and WardrobeCollectionFrame.PreviewFrame:IsVisible() ) then
-				local appearanceSourceID, illusionSourceID = WardrobeCollectionFrame.PreviewFrame:GetSlotTransmogSources(GetInventorySlotInfo("MAINHANDSLOT"));
-				if ( appearanceSourceID > 0 and illusionSourceID > 0 ) then
-					WardrobeCollectionFrame_SetActiveSlot("MAINHANDSLOT", LE_TRANSMOG_TYPE_ILLUSION);
-					WardrobeCollectionFrame_ResetPage();
-				end
+			if ( not CollectionsJournal ) then
+				CollectionsJournal_LoadUI();
+			end
+			if ( CollectionsJournal ) then
+				WardrobeCollectionFrame_OpenTransmogLink(link);
+			end
+		end
+		return;
+	elseif ( strsub(link, 1, 18) == "transmogappearance" ) then
+		if ( IsModifiedClick("CHATLINK") ) then
+			local _, sourceID = strsplit(":", link);
+			local itemLink = select(7, C_TransmogCollection.GetAppearanceSourceInfo(sourceID));
+			HandleModifiedItemClick(itemLink);
+		else
+			if ( not CollectionsJournal ) then
+				CollectionsJournal_LoadUI();
+			end
+			if ( CollectionsJournal ) then
+				WardrobeCollectionFrame_OpenTransmogLink(link);
 			end
 		end
 		return;
@@ -305,6 +317,8 @@ function GetFixedLink(text, quality)
 		elseif ( strsub(text, startLink + 2, startLink + 12) == "garrmission" ) then
 			return (gsub(text, "(|H.+|h.+|h)", "|cffffff00%1|r", 1));
 		elseif ( strsub(text, startLink + 2, startLink + 17) == "transmogillusion" ) then
+			return (gsub(text, "(|H.+|h.+|h)", "|cffff80ff%1|r", 1));
+		elseif ( strsub(text, startLink + 2, startLink + 19) == "transmogappearance" ) then
 			return (gsub(text, "(|H.+|h.+|h)", "|cffff80ff%1|r", 1));
 		end
 	end

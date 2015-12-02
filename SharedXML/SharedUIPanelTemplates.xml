@@ -995,6 +995,46 @@
 			<TexCoords left="0.20" right="0.80" top="0.125" bottom="0.875"/>
 		</ThumbTexture>
 	</Slider>
+	<Slider name="UIPanelStretchableArtScrollBarTemplate" inherits="UIPanelScrollBarTemplate" virtual="true">
+		<Anchors>
+			<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" x="6" y="-16"/>
+			<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMRIGHT" x="6" y="16"/>
+		</Anchors>
+		<Layers>
+			<Layer level="ARTWORK">
+				<Texture parentKey="Top" file="Interface\PaperDollInfoFrame\UI-Character-ScrollBar">
+					<Size x="24" y="48"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" x="-4" y="17"/>
+					</Anchors>
+					<TexCoords left="0" right="0.45" top="0" bottom=".20"/>
+				</Texture>
+				<Texture parentKey="Bottom" file="Interface\PaperDollInfoFrame\UI-Character-ScrollBar">
+					<Size x="24" y="64"/>
+					<Anchors>
+						<Anchor point="BOTTOMLEFT" x="-4" y="-15"/>
+					</Anchors>
+					<TexCoords left="0.515625" right="0.97" top="0.1440625" bottom="0.4140625"/>
+				</Texture>
+				<Texture parentKey="Middle" file="Interface\PaperDollInfoFrame\UI-Character-ScrollBar">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.Top" relativePoint="BOTTOMLEFT"/>
+						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Bottom" relativePoint="TOPRIGHT"/>
+					</Anchors>
+					<TexCoords left="0" right="0.45" top="0.1640625" bottom="1"/>
+				</Texture>
+			</Layer>
+			<Layer level="ARTWORK" textureSubLevel="-1">
+				<Texture parentKey="Background">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.Top" x="3" />
+						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Bottom" x="-3"/>
+					</Anchors>
+					<Color r="0" g="0" b="0" a="1"/>
+				</Texture>
+			</Layer>
+		</Layers>
+	</Slider>
 	<Slider name="UIPanelScrollBarTrimTemplate" virtual="true">
 		<Size x="20" y="0"/>
 		<Layers>
@@ -1282,9 +1322,8 @@
 			<OnVerticalScroll>
 				local scrollbar = _G[self:GetName().."ScrollBar"];
 				scrollbar:SetValue(offset);
-				local min;
-				local max;
-				min, max = scrollbar:GetMinMaxValues();
+
+				local min, max = scrollbar:GetMinMaxValues();
 				if ( offset == 0 ) then
 					_G[scrollbar:GetName().."ScrollUpButton"]:Disable();
 				else
@@ -1361,10 +1400,109 @@
 		</Scripts>
 		<FontString inherits="ChatFontNormal"/>
 	</EditBox>
+	<EditBox name="NumericInputSpinnerTemplate" letters="3" numeric="true" autoFocus="false" inherits="InputBoxTemplate" mixin="NumericInputSpinnerMixin" virtual="true">
+		<Size x="31" y="20"/>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="Left" file="Interface\Common\Common-Input-Border">
+					<Size x="8" y="20"/>
+					<Anchors>
+						<Anchor point="LEFT" x="-5" y="0"/>
+					</Anchors>
+					<TexCoords left="0" right="0.0625" top="0" bottom="0.625"/>
+				</Texture>
+				<Texture parentKey="Right" file="Interface\Common\Common-Input-Border">
+					<Size x="8" y="20"/>
+					<Anchors>
+						<Anchor point="RIGHT" x="0" y="0"/>
+					</Anchors>
+					<TexCoords left="0.9375" right="1.0" top="0" bottom="0.625"/>
+				</Texture>
+				<Texture parentKey="Middle" file="Interface\Common\Common-Input-Border">
+					<Size x="10" y="20"/>
+					<Anchors>
+						<Anchor point="LEFT" relativeKey="$parent.Left" relativePoint="RIGHT"/>
+						<Anchor point="RIGHT" relativeKey="$parent.Right" relativePoint="LEFT"/>
+					</Anchors>
+					<TexCoords left="0.0625" right="0.9375" top="0" bottom="0.625"/>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Button parentKey="IncrementButton">
+				<Size x="23" y="22"/>
+				<Anchors>
+					<Anchor point="LEFT" relativePoint="RIGHT" x="0" y="0"/>
+				</Anchors>
+				<Scripts>
+					<OnMouseDown>
+						if self:IsEnabled() then
+							self:GetParent():StartIncrement();
+						end
+					</OnMouseDown>
+					<OnMouseUp>
+						self:GetParent():EndIncrement();
+					</OnMouseUp>
+				</Scripts>
+				<NormalTexture file="Interface\Buttons\UI-SpellbookIcon-NextPage-Up"/>
+				<PushedTexture file="Interface\Buttons\UI-SpellbookIcon-NextPage-Down"/>
+				<DisabledTexture file="Interface\Buttons\UI-SpellbookIcon-NextPage-Disabled"/>
+				<HighlightTexture file="Interface\Buttons\UI-Common-MouseHilight" alphaMode="ADD"/>
+			</Button>
+			
+			<Button parentKey="DecrementButton">
+				<Size x="23" y="22"/>
+				<Anchors>
+					<Anchor point="RIGHT" relativePoint="LEFT" x="-6" y="0"/>
+				</Anchors>
+				<Scripts>
+					<OnMouseDown>
+						if self:IsEnabled() then
+							self:GetParent():StartDecrement();
+						end
+					</OnMouseDown>
+					<OnMouseUp>
+						self:GetParent():EndDecrement();
+					</OnMouseUp>
+				</Scripts>
+				<NormalTexture file="Interface\Buttons\UI-SpellbookIcon-PrevPage-Up"/>
+				<PushedTexture file="Interface\Buttons\UI-SpellbookIcon-PrevPage-Down"/>
+				<DisabledTexture file="Interface\Buttons\UI-SpellbookIcon-PrevPage-Disabled"/>
+				<HighlightTexture file="Interface\Buttons\UI-Common-MouseHilight" alphaMode="ADD"/>
+			</Button>
+
+			<Frame parentKey="MouseWheelCatcher" enableMouse="true" useParentLevel="true">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.DecrementButton" />
+					<Anchor point="BOTTOMRIGHT" relativeKey="$parent.IncrementButton" />
+				</Anchors>
+				<Scripts>
+					<OnMouseWheel>
+						if self:GetParent():IsEnabled() then
+							local amount = IsShiftKeyDown() and 10 or 1;
+							if delta > 0 then
+								self:GetParent():Increment(amount);
+							else
+								self:GetParent():Decrement(amount);
+							end
+							self:GetParent():ClearFocus();
+						end
+					</OnMouseWheel>
+				</Scripts>
+			</Frame>
+		</Frames>
+		<Scripts>
+			<OnEscapePressed function="EditBox_ClearFocus"/>
+			<OnEditFocusLost function="EditBox_ClearHighlight"/>
+			<OnEditFocusGained function="EditBox_HighlightText"/>
+			<OnTextChanged method="OnTextChanged" />
+		</Scripts>
+		<FontString inherits="ChatFontNormal"/>
+	</EditBox>
 	<EditBox name="InputBoxInstructionsTemplate" inherits="InputBoxTemplate" virtual="true">
 		<Layers>
 			<Layer level="ARTWORK">
-				<FontString parentKey="Instructions" justifyH="LEFT" justivyV="TOP" inherits="GameFontDisableSmall" setAllPoints="true">
+				<FontString parentKey="Instructions" justifyH="LEFT" justifyV="MIDDLE" inherits="GameFontDisableSmall" setAllPoints="true">
 					<Color r="0.35" g="0.35" b="0.35"/>
 				</FontString>
 			</Layer>
@@ -1381,7 +1519,7 @@
         </Size>
         <Layers>
         	<Layer level="BACKGROUND">
-        		<Texture name="$parentLeftDisabled" file="Interface\HelpFrame\HelpFrameTab-Active">
+        		<Texture name="$parentLeftDisabled" parentKey="LeftDisabled" file="Interface\HelpFrame\HelpFrameTab-Active">
         			<Size>
         				<AbsDimension x="16" y="32"/>
         			</Size>
@@ -1394,25 +1532,25 @@
         			</Anchors>
 					<TexCoords left="0" right="0.25" top="0" bottom="1.0"/>
         		</Texture>
-				<Texture name="$parentMiddleDisabled" file="Interface\HelpFrame\HelpFrameTab-Active">
+				<Texture name="$parentMiddleDisabled" parentKey="MiddleDisabled" file="Interface\HelpFrame\HelpFrameTab-Active">
         			<Size>
         				<AbsDimension x="32" y="32"/>
         			</Size>
         			<Anchors>
-        				<Anchor point="LEFT" relativeTo="$parentLeftDisabled" relativePoint="RIGHT"/>
+        				<Anchor point="LEFT" relativeKey="$parent.LeftDisabled" relativePoint="RIGHT"/>
         			</Anchors>
 					<TexCoords left="0.25" right="0.75" top="0" bottom="1.0"/>
         		</Texture>
-				<Texture name="$parentRightDisabled" file="Interface\HelpFrame\HelpFrameTab-Active">
+				<Texture name="$parentRightDisabled" parentKey="RightDisabled" file="Interface\HelpFrame\HelpFrameTab-Active">
         			<Size>
         				<AbsDimension x="16" y="32"/>
         			</Size>
         			<Anchors>
-        				<Anchor point="LEFT" relativeTo="$parentMiddleDisabled" relativePoint="RIGHT"/>
+        				<Anchor point="LEFT" relativeKey="$parent.MiddleDisabled" relativePoint="RIGHT"/>
         			</Anchors>
 					<TexCoords left="0.75" right="1.0" top="0" bottom="1.0"/>
         		</Texture>
-				<Texture name="$parentLeft" file="Interface\HelpFrame\HelpFrameTab-Inactive">
+				<Texture name="$parentLeft" parentKey="Left" file="Interface\HelpFrame\HelpFrameTab-Inactive">
         			<Size>
         				<AbsDimension x="16" y="32"/>
         			</Size>
@@ -1421,21 +1559,21 @@
         			</Anchors>
 					<TexCoords left="0" right="0.25" top="0" bottom="1.0"/>
         		</Texture>
-				<Texture name="$parentMiddle" file="Interface\HelpFrame\HelpFrameTab-Inactive">
+				<Texture name="$parentMiddle" parentKey="Middle" file="Interface\HelpFrame\HelpFrameTab-Inactive">
         			<Size>
         				<AbsDimension x="32" y="32"/>
         			</Size>
         			<Anchors>
-        				<Anchor point="LEFT" relativeTo="$parentLeft" relativePoint="RIGHT"/>
+        				<Anchor point="LEFT" relativeKey="$parent.Left" relativePoint="RIGHT"/>
         			</Anchors>
 					<TexCoords left="0.25" right="0.75" top="0" bottom="1.0"/>
         		</Texture>
-				<Texture name="$parentRight" file="Interface\HelpFrame\HelpFrameTab-Inactive">
+				<Texture name="$parentRight" parentKey="Right" file="Interface\HelpFrame\HelpFrameTab-Inactive">
         			<Size>
         				<AbsDimension x="16" y="32"/>
         			</Size>
         			<Anchors>
-        				<Anchor point="LEFT" relativeTo="$parentMiddle" relativePoint="RIGHT"/>
+        				<Anchor point="LEFT" relativeKey="$parent.Middle" relativePoint="RIGHT"/>
         			</Anchors>
 					<TexCoords left="0.75" right="1.0" top="0" bottom="1.0"/>
         		</Texture>
@@ -1444,10 +1582,10 @@
 		<Scripts>
 			<OnLoad>
 				PanelTemplates_TabResize(self, 0);
-				_G[self:GetName().."HighlightTexture"]:SetWidth(self:GetTextWidth() + 31);
+				self.HighlightTexture:SetWidth(self:GetTextWidth() + 31);
 			</OnLoad>
 		</Scripts>
-		<ButtonText name="$parentText">
+		<ButtonText name="$parentText" parentKey="Text">
 			<Size>
 				<AbsDimension x="0" y="13"/>
 			</Size>
@@ -1462,7 +1600,7 @@
 		<NormalFont style="GameFontNormalSmall"/>
 		<HighlightFont style="GameFontHighlightSmall"/>
 		<DisabledFont style="GameFontDisableSmall"/>
-		<HighlightTexture name="$parentHighlightTexture" file="Interface\PaperDollInfoFrame\UI-Character-Tab-Highlight" alphaMode="ADD">
+		<HighlightTexture name="$parentHighlightTexture" parentKey="HighlightTexture" file="Interface\PaperDollInfoFrame\UI-Character-Tab-Highlight" alphaMode="ADD">
 			<Size>
 				<AbsDimension x="5" y="32"/>
 			</Size>

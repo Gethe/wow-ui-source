@@ -1,45 +1,4 @@
 
-function Priest_UpdateInsanityOverlay(manabar, info)
-	if (not manabar.OverlayFrame) then
-		return;
-	end
-	local barTexture = manabar:GetStatusBarTexture();
-	local overlayTexture = manabar.OverlayFrame.OverlayTexture;
-	if ( manabar.disconnected ) then
-		overlayTexture:SetAlpha(0);
-	else
-		-- Calculate whether overlay is shown; if it is, calculate its width
-		local manabarPixelPos = manabar.currValue / 100 * manabar:GetWidth();
-		if (manabarPixelPos > info.leftPos) then
-			overlayTexture:Show();
-		
-			if (manabar.currValue == 100) then
-				-- Show full texture at full alpha
-				overlayTexture:SetWidth(info.width);
-				overlayTexture:SetTexCoord(0, 1, 0, 1);
-				overlayTexture:SetAlpha(1);
-			else
-				-- Show a portion of the texture, and linearly scale alpha up to 1 when power level is at 90%
-				local overlayWidth = manabarPixelPos - info.leftPos;
-				local ninetyPercentWidth = (manabar:GetWidth() - info.leftPos) * 0.9;
-				overlayTexture:SetWidth(overlayWidth);
-				overlayTexture:SetTexCoord(0, overlayWidth / info.width, 0, 1);
-				overlayTexture:SetAlpha(overlayWidth / ninetyPercentWidth);
-			end
-		else
-			overlayTexture:Hide();
-		end
-	end
-end
-
-local InsanityOverlay = 
-{
-	atlas = "Priest-InsanityOverlay",
-	topOffset = 6,								-- Vertical offset of overlay texture from manabar
-	rightOffset = 9,							-- Horizontal offset of overlay texture off right side of manabar
-	updateFunc = Priest_UpdateInsanityOverlay;	-- This function gets called every time the power type value changes
-};
-
 PowerBarColor = {};
 PowerBarColor["MANA"] = { r = 0.00, g = 0.00, b = 1.00 };
 PowerBarColor["RAGE"] = { r = 1.00, g = 0.00, b = 0.00, fullPowerAnim=true };
@@ -52,7 +11,7 @@ PowerBarColor["SOUL_SHARDS"] = { r = 0.50, g = 0.32, b = 0.55 };
 PowerBarColor["LUNAR_POWER"] = { r = 0.30, g = 0.52, b = 0.90, atlas="_Druid-LunarBar" };
 PowerBarColor["HOLY_POWER"] = { r = 0.95, g = 0.90, b = 0.60 };
 PowerBarColor["MAELSTROM"] = { r = 0.00, g = 0.50, b = 1.00, atlas = "_Shaman-MaelstromBar", fullPowerAnim=true };
-PowerBarColor["INSANITY"] = { r = 0.40, g = 0, b = 0.80, atlas = "_Priest-InsanityBar", overlayInfo=InsanityOverlay};
+PowerBarColor["INSANITY"] = { r = 0.40, g = 0, b = 0.80, atlas = "_Priest-InsanityBar"};
 PowerBarColor["CHI"] = { r = 0.71, g = 1.0, b = 0.92 };
 PowerBarColor["ARCANE_CHARGES"] = { r = 0.1, g = 0.1, b = 0.98 };	
 PowerBarColor["FURY"] = { r = 0.788, g = 0.259, b = 0.992, atlas = "_DemonHunter-DemonicFuryBar", fullPowerAnim=true };
@@ -483,20 +442,6 @@ function UnitFrameManaBar_UpdateType (manaBar)
 				manaBar:SetStatusBarColor(1, 1, 1);
 				manaBar:GetStatusBarTexture():SetDesaturated(playerDeadOrGhost);
 				manaBar:GetStatusBarTexture():SetAlpha(playerDeadOrGhost and 0.5 or 1);
-				
-				if ( info.overlayInfo and manaBar.OverlayFrame ) then
-					local overlayTexture = manaBar.OverlayFrame.OverlayTexture;
-					overlayTexture:SetAtlas(info.overlayInfo.atlas, false);
-					local _;
-					_, info.overlayInfo.width, info.overlayInfo.height = GetAtlasInfo(info.overlayInfo.atlas);
-					
-					info.overlayInfo.leftPos =  manaBar:GetWidth() - info.overlayInfo.width + info.overlayInfo.rightOffset;
-					overlayTexture:ClearAllPoints();
-					overlayTexture:SetPoint("TOPLEFT", manaBar, "TOPLEFT", info.overlayInfo.leftPos, info.overlayInfo.topOffset);
-					overlayTexture:SetHeight(info.overlayInfo.height);
-				elseif ( manaBar.OverlayTexture ) then
-					manaBar.OverlayTexture:Hide();
-				end
 			else
 				manaBar:SetStatusBarTexture("Interface\\TargetingFrame\\UI-StatusBar");
 				if ( playerDeadOrGhost ) then
@@ -754,11 +699,6 @@ function UnitFrameManaBar_OnUpdate(self)
 				self:SetValue(currValue);
 				self.currValue = currValue;
 				TextStatusBar_UpdateTextString(self);
-				
-				local info = PowerBarColor[self.powerToken];
-				if ( info and info.overlayInfo and info.overlayInfo.updateFunc ) then
-					info.overlayInfo.updateFunc(self, info.overlayInfo);
-				end
 			end
 		end
 	end
@@ -792,11 +732,6 @@ function UnitFrameManaBar_Update(statusbar, unit)
 
 			statusbar:SetValue(currValue);
 			statusbar.currValue = currValue;
-		end
-		
-		local info = PowerBarColor[statusbar.powerToken];
-		if ( info and info.overlayInfo and info.overlayInfo.updateFunc ) then
-			info.overlayInfo.updateFunc(statusbar, info.overlayInfo);
 		end
 	end
 	TextStatusBar_UpdateTextString(statusbar);

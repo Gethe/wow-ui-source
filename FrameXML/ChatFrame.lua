@@ -2068,7 +2068,9 @@ SlashCmdList["UNIGNORE"] = function(msg)
 end
 
 SlashCmdList["SCRIPT"] = function(msg)
-	RunScript(msg);
+	if ( not ScriptsDisallowedForBeta() ) then
+		RunScript(msg);
+	end
 end
 
 SlashCmdList["LOOT_FFA"] = function(msg)
@@ -2326,7 +2328,7 @@ SlashCmdList["EVENTTRACE"] = function(msg)
 end
 
 SlashCmdList["DUMP"] = function(msg)
-	if (not IsKioskModeEnabled()) then
+	if (not IsKioskModeEnabled() and not ScriptsDisallowedForBeta()) then
 		UIParentLoadAddOn("Blizzard_DebugTools");
 		DevTools_DumpCommand(msg);
 	end
@@ -2339,6 +2341,10 @@ end
 
 
 SlashCmdList["WARGAME"] = function(msg)
+	-- TEMP: Disable the PVP UI for Beta
+	if (ScriptsDisallowedForBeta()) then
+		return;
+	end
 	-- Parameters are (playername, area, isTournamentMode). Since the player name can be multiple words,
 	-- we pass in theses parameters as a whitespace delimited string and let the C side tokenize it
 	StartWarGameByName(msg);
@@ -3899,15 +3905,13 @@ function ChatEdit_InsertLink(text)
 		end
 		return true;
 	end
-	if ( TradeSkillFrame and TradeSkillFrame:IsShown() )  then
+	if ( TradeSkillFrame and TradeSkillFrame.SearchBox:HasFocus() )  then
 		local item;
 		if ( strfind(text, "item:", 1, true) ) then
 			item = GetItemInfo(text);
 		end
 		if ( item ) then
-			TradeSkillFrameSearchBox:SetFontObject("ChatFontSmall");
-			TradeSkillFrameSearchBoxSearchIcon:SetVertexColor(1.0, 1.0, 1.0);
-			TradeSkillFrameSearchBox:SetText(item);
+			TradeSkillFrame.SearchBox:SetText(item);
 			return true;
 		end
 	end

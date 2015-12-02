@@ -92,13 +92,12 @@ function ChallengesFrame_Update(self, mapID)
 				details.LastRunTime:SetTextColor(GRAY_FONT_COLOR.r, GRAY_FONT_COLOR.g, GRAY_FONT_COLOR.b);
 			end
 			
-			local times = { GetChallengeModeMapTimes(mapID) };
 			local rewardRowIndex = 0;
 			for medal = NUM_CHALLENGE_MEDALS, 1, -1 do
 				local rewardsRow = ChallengesFrame["RewardRow"..medal];
 				rewardsRow.MedalIcon:SetTexture(CHALLENGE_MEDAL_TEXTURES_SMALL[medal]);
 				rewardsRow.MedalName:SetText(_G["CHALLENGE_MODE_MEDAL"..medal]);
-				rewardsRow.TimeLimit:SetText(GetTimeStringFromSeconds(times[medal]));
+				rewardsRow.TimeLimit:SetText(GetTimeStringFromSeconds(0));
 				-- go through the rewards
 				-- want rewards to be right-justified
 				local rewardIndexOffset = GetNumChallengeMapRewards(mapID, medal) - NUM_REWARDS_PER_MEDAL;

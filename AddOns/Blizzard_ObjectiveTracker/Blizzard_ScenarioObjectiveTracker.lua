@@ -252,7 +252,7 @@ function ScenarioTimer_CheckTimers(...)
 		if ( type == LE_WORLD_ELAPSED_TIMER_TYPE_CHALLENGE_MODE) then
 			local _, _, _, _, _, _, _, mapID = GetInstanceInfo();
 			if ( mapID ) then
-				Scenario_ChallengeMode_ShowBlock(timerID, elapsedTime, GetChallengeModeMapTimes(mapID));
+				Scenario_ChallengeMode_ShowBlock(timerID, elapsedTime, { });
 				return;
 			end
 		elseif ( type == LE_WORLD_ELAPSED_TIMER_TYPE_PROVING_GROUND ) then

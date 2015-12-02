@@ -151,6 +151,7 @@ RuneFrame.xml
 ShardBar.xml
 EclipseBarFrame.xml
 ComboFramePlayer.xml
+InsanityBar.xml
 EasyMenu.lua
 ChatConfigFrame.xml
 MovieFrame.xml

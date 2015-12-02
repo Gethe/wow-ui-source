@@ -310,7 +310,7 @@
 					</Anchors>
 					<TexCoords left="0.8046875" right="1" top="0" bottom="1"/>
 				</Texture>
-				<FontString name="$parentText" inherits="GameFontHighlightSmall" wordwrap="false" justifyH="RIGHT">
+				<FontString parentKey="Text" name="$parentText" inherits="GameFontHighlightSmall" wordwrap="false" justifyH="RIGHT">
 					<Size>
 						<AbsDimension x="0" y="10"/>
 					</Size>
@@ -324,7 +324,7 @@
 				</FontString>
 			</Layer>
 			<Layer level="OVERLAY">
-				<Texture name="$parentIcon" hidden="true">
+				<Texture parentKey="Icon" name="$parentIcon" hidden="true">
 					<Size>
 						<AbsDimension x="16" y="16"/>
 					</Size>
@@ -337,7 +337,7 @@
 			</Layer>
 		</Layers>
 		<Frames>
-			<Button name="$parentButton"  motionScriptsWhileDisabled="true" >
+			<Button parentKey="Button" name="$parentButton" motionScriptsWhileDisabled="true" >
 				<Size>
 					<AbsDimension x="24" y="24"/>
 				</Size>
