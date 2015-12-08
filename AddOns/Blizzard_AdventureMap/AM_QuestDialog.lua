@@ -172,10 +172,7 @@ function AdventureMapQuestChoiceDialogMixin:RefreshDetails()
 end
 
 function AdventureMapQuestChoiceDialogMixin:AcceptQuest()
-	--TODO_DW yeah, lets not do this...
-	ConsoleExec("startquest " .. self.questID);
-	-- Use this once gameplay is done
-	--C_AdventureMap.StartQuest(self.questID);
+	C_AdventureMap.StartQuest(self.questID);
 	self.result = QUEST_CHOICE_DIALOG_RESULT_ACCEPTED;
 	AdventureMapQuestChoiceDialog:Hide();
 end
