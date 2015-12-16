@@ -158,6 +158,16 @@ function GarrisonFollowerList_UpdateFollowers(self)
 	local followerList = self;
 	if ( followerList.dirtyList ) then
 		followerList.followers = C_Garrison.GetFollowers(self.followerType);
+		if (BlizzardGarrisonTroopList ~= nil and followerList.followers ~= nil) then
+			for j, troop in ipairs(BlizzardGarrisonTroopList) do
+				local troop64 = string.format("0x%016X", troop);
+				for i, f in ipairs(followerList.followers) do
+					if (f.garrFollowerID == troop64) then
+						f.isTroop = true;
+					end
+				end
+			end
+		end
 		followerList.dirtyList = nil;
 	end
 
@@ -626,6 +636,10 @@ function GarrisonFollowerList_SortFollowers(self)
 			return follower1.isCollected;
 		end
 		
+		if ( follower1.isTroop ~= follower2.isTroop ) then
+			return follower2.isTroop;
+		end
+
 		-- treat IN_PARTY status as no status
 		local status1 = follower1.status;
 		if ( status1 == GARRISON_FOLLOWER_IN_PARTY ) then

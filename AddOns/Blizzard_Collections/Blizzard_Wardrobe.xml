@@ -89,6 +89,11 @@
 				PlaySound("igMainMenuOptionCheckBoxOn");
 				WardrobeCollectionFrame_SetActiveSlot(self.slot, self.transmogType);
 			</OnClick>
+			<OnEnter>
+				GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+				GameTooltip:SetText(_G[self.slot]);
+			</OnEnter>
+			<OnLeave function="GameTooltip_Hide"/>
 		</Scripts>
 	</Button>
 	<Button name="WardrobeEnchantButtonTemplate" parentArray="Buttons" frameLevel="10" virtual="true">
@@ -772,7 +777,7 @@
 							</OnEnter>
 							<OnLeave>
 								-- check if we're still resizing
-								if ( not self:GetParent():GetScript("OnUpdate") ) then
+								if ( not self.resizing ) then
 									ResetCursor();
 								end
 							</OnLeave>

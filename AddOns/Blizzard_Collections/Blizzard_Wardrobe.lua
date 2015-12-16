@@ -167,7 +167,7 @@ function WardrobeTransmogFrame_UpdateSlotButton(slotButton)
 	end
 
 	-- show ants frame is the item has a pending transmogrification and is not animating
-	if ( hasChange and not slotButton.AnimFrame:IsShown() ) then
+	if ( hasChange and isPendingCollected and not slotButton.AnimFrame:IsShown() ) then
 		slotButton.PendingFrame:Show();
 		if ( hasUndo ) then
 			slotButton.PendingFrame.Undo:Show();
@@ -373,15 +373,19 @@ function WardrobeTransmogButton_OnEnter(self)
 			self.UndoIcon:Show();
 		end
 		GameTooltip:SetOwner(self, "ANCHOR_RIGHT", 14, 0);
-		if ( hasPending or hasUndo ) then
-			GameTooltip:SetTransmogrifyItem(slotID);
-		elseif ( not canTransmogrify ) then
+		if ( not canTransmogrify ) then
 			GameTooltip:SetText(_G[self.slot]);
 			local errorMsg = _G["TRANSMOGRIFY_INVALID_REASON"..cannotTransmogrifyReason];
 			if ( errorMsg ) then
 				GameTooltip:AddLine(errorMsg, RED_FONT_COLOR.r, RED_FONT_COLOR.g, RED_FONT_COLOR.b, true);
 			end
 			GameTooltip:Show();
+		elseif ( hasPending and not isPendingCollected ) then
+			GameTooltip:SetText(_G[self.slot]);
+			GameTooltip:AddLine(TRANSMOGRIFY_STYLE_UNCOLLECTED, RED_FONT_COLOR.r, RED_FONT_COLOR.g, RED_FONT_COLOR.b, true);
+			GameTooltip:Show();
+		elseif ( hasPending or hasUndo ) then
+			GameTooltip:SetTransmogrifyItem(slotID);
 		else
 			GameTooltip:SetInventoryItem("player", slotID);
 		end
@@ -432,7 +436,9 @@ end
 -- ************************************************************************************************************************************************************
 
 local CURRENT_PAGE;
-local WARDROBE_PAGE_SIZE = 18;
+local WARDROBE_NUM_ROWS = 3;
+local WARDROBE_NUM_COLS = 6;
+local WARDROBE_PAGE_SIZE = WARDROBE_NUM_ROWS * WARDROBE_NUM_COLS;
 local MAIN_HAND_INV_TYPE = 21;
 local OFF_HAND_INV_TYPE = 22;
 local RANGED_INV_TYPE = 15;
@@ -1055,7 +1061,7 @@ function WardrobeCollectionFrame_OnKeyDown(self, key)
 			self.tooltipIndexOffset = self.tooltipIndexOffset + 1;
 		end
 		WardrobeCollectionFrameModel_SetTooltip();
-	elseif ( key == WARDROBE_PREV_VISUAL_KEY or key == WARDROBE_NEXT_VISUAL_KEY ) then
+	elseif ( key == WARDROBE_PREV_VISUAL_KEY or key == WARDROBE_NEXT_VISUAL_KEY or key == WARDROBE_UP_VISUAL_KEY or key == WARDROBE_DOWN_VISUAL_KEY ) then
 		self:SetPropagateKeyboardInput(false);
 		local _, _, _, selectedVisualID = WardrobeCollectionFrame_GetActiveSlotInfo();
 		local visualIndex;
@@ -1065,6 +1071,9 @@ function WardrobeCollectionFrame_OnKeyDown(self, key)
 				visualIndex = i;
 				break;
 			end
+		end
+		if ( not visualIndex ) then
+			return;
 		end
 		if ( key == WARDROBE_PREV_VISUAL_KEY ) then
 			visualIndex = visualIndex - 1;
@@ -1076,6 +1085,26 @@ function WardrobeCollectionFrame_OnKeyDown(self, key)
 			if ( visualIndex > #visualsList ) then
 				visualIndex = 1;
 			end
+		elseif ( key == WARDROBE_DOWN_VISUAL_KEY or key == WARDROBE_UP_VISUAL_KEY ) then
+			local function GetPage(index)
+				return floor((index-1) / WARDROBE_PAGE_SIZE) + 1;
+			end
+
+			local direction = 1;
+			if ( key == WARDROBE_UP_VISUAL_KEY ) then
+				direction = -1;
+			end
+
+			local currentPage = TEMP_GetCurrentPage();
+			local newIndex = visualIndex;
+			newIndex = newIndex + WARDROBE_NUM_COLS * direction;
+			if ( GetPage(newIndex) ~= currentPage or newIndex > #visualsList ) then
+				newIndex = visualIndex + WARDROBE_PAGE_SIZE * -direction;	-- reset by a full page in opposite direction
+				while ( GetPage(newIndex) ~= currentPage or newIndex > #visualsList ) do
+					newIndex = newIndex + WARDROBE_NUM_COLS * direction;
+				end
+			end
+			visualIndex = newIndex;
 		end
 		WardrobeCollectionFrame_SelectVisual(visualsList[visualIndex].visualID);
 		WardrobeCollectionFrame_ResetPage();
@@ -1092,7 +1121,7 @@ function WardrobeCollectionFrame_ChangeModelsSlot(oldCategory, newCategory)
 		else
 			reloadModel = true;
 		end
-	end
+		end
 	local cameraSettings = COLLECTION_CAMERA[newCategory] or COLLECTION_CAMERA["BASE"];
 	local cameraID = WardrobeCollectionFrame.categoriesList[newCategory].cameraID or cameraSettings.cameraID;
 	for i = 1, #WardrobeCollectionFrame.ModelsFrame.Models do
@@ -1835,6 +1864,13 @@ function WardrobeCollectionFrameWeaponDropDown_Init(self)
 	local slot = WardrobeCollectionFrame.activeSlot;
 	local equippedItemID = GetInventoryItemID("player", GetInventorySlotInfo(slot));
 	local checkCategory = equippedItemID and WardrobeFrame_IsAtTransmogrifier();
+	if ( checkCategory ) then
+		-- if the equipped item cannot be transmogrified, relax restrictions
+		local isTransmogrified, hasPending, isPendingCollected, canTransmogrify, cannotTransmogrifyReason, hasUndo = C_Transmog.GetSlotInfo(GetInventorySlotInfo(slot), LE_TRANSMOG_TYPE_APPEARANCE);
+		if ( not canTransmogrify ) then
+			checkCategory = false;
+		end
+	end
 	local buttonsAdded = 0;
 	
 	for categoryID = 1, #categoriesList do
@@ -1878,6 +1914,9 @@ function WardrobeCollectionFramePreview_OnLoad(self)
 	PREVIEW_BOTTOMBG_RATIO = PREVIEW_MIN_HEIGHT / self.BottomBG:GetHeight();
 	Model_OnLoad(self, MODELFRAME_MAX_PLAYER_ZOOM);
 	self:SetUnit("player");
+	self.defaultRotation = -MODELFRAME_DEFAULT_ROTATION;
+	self.rotation = self.defaultRotation;
+	self:SetRotation(self.rotation);
 	self:SetResizable(true);
 	self:SetMinResize(PREVIEW_MIN_WIDTH, PREVIEW_MIN_HEIGHT);
 	self:SetMaxResize(PREVIEW_MAX_WIDTH, PREVIEW_MAX_HEIGHT);

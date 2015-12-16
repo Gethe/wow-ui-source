@@ -51,7 +51,7 @@ function AdventureMap_MissionDataProviderMixin:RefreshAllData(fromOnShow)
 	-- Don't remove rewards, they'll clean themselves up
 
 	local lastMissions = self.currentMissions;
-	self.currentMissions = C_Garrison.GetAvailableMissions(nil, LE_FOLLOWER_TYPE_GARRISON_7_0);
+	self.currentMissions = C_Garrison.GetAvailableMissions(LE_FOLLOWER_TYPE_GARRISON_7_0);
 	if self.currentMissions then
 		local inProgressMissions = C_Garrison.GetInProgressMissions(LE_FOLLOWER_TYPE_GARRISON_7_0);
 		for i, missionInfo in ipairs(inProgressMissions) do

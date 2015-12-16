@@ -4,6 +4,8 @@
 ---------------------------------------------------------------------------------
 GarrisonMission = {};
 
+GARRISON_REQUIRED_CHANCE_NOT_MET = "[PH] Required Chance not met";
+
 function GarrisonMission:OnLoadMainFrame()
 	PanelTemplates_SetNumTabs(self, 2);
 	self.selectedTab = 1;
@@ -391,8 +393,16 @@ function GarrisonMission:UpdateStartButton(missionPage, partyNotFullText)
 		missionPage.CostFrame.Cost:SetText(BreakUpLargeNumbers(missionInfo.cost));
 	end
 
-	if ( not disableError and C_Garrison.GetNumFollowersOnMission(missionPage.missionInfo.missionID) < missionPage.missionInfo.numFollowers ) then
+	if ( not disableError and C_Garrison.GetNumFollowersOnMission(missionPage.missionInfo.missionID) < missionPage.missionInfo.requiredChampionFollowers ) then
 		disableError = partyNotFullText or GARRISON_PARTY_NOT_FULL_TOOLTIP;
+	end
+
+	if ( not disableError) then
+		local successChance = C_Garrison.GetMissionSuccessChance(missionPage.missionInfo.missionID);
+		local requiredSuccessChance = missionPage.missionInfo.requiredSuccessChance;
+		if (successChance < requiredSuccessChance ) then
+			disableError = GARRISON_REQUIRED_CHANCE_NOT_MET;
+		end
 	end
 
 	local startButton = missionPage.StartMissionButton;

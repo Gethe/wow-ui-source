@@ -354,10 +354,11 @@ function UnitPopup_ShowMenu (dropdownMenu, which, unit, name, userData)
 			UnitPopupButtons["RAID_DIFFICULTY"].nested = 1;	
 		end
 	else
-		UnitPopupButtons["DUNGEON_DIFFICULTY"].nested = nil;
-		if ( toggleDifficultyID ) then
+		if (instanceType == "raid") then
 			UnitPopupButtons["RAID_DIFFICULTY"].nested = 1;
+			UnitPopupButtons["DUNGEON_DIFFICULTY"].nested = nil;
 		else
+			UnitPopupButtons["DUNGEON_DIFFICULTY"].nested = 1;
 			UnitPopupButtons["RAID_DIFFICULTY"].nested = nil;
 		end
 	end
@@ -1493,16 +1494,14 @@ function UnitPopup_OnUpdate (elapsed)
 								enable = 0;
 							end
 						end
-					elseif ( value == "DUNGEON_DIFFICULTY" and inInstance ) then
+					elseif ( value == "DUNGEON_DIFFICULTY" and inInstance and instanceType == "raid" ) then
 						enable = 0;
 					elseif ( ( strsub(value, 1, 18) == "DUNGEON_DIFFICULTY" ) and ( strlen(value) > 18 ) ) then
 						if ( ( inParty == 1 and isLeader == 0 ) or inInstance or HasLFGRestrictions() ) then
 							enable = 0;	
 						end
 					elseif ( value == "RAID_DIFFICULTY" ) then
-						if( inInstance and not toggleDifficultyID ) then
-							enable = 0;
-						elseif( inParty == 1 and isLeader == 0 or inPublicParty == 1 ) then
+						if( inPublicParty == 1 or (inInstance and instanceType ~= "raid") ) then
 							enable = 0;
 						end
 					elseif ( ( strsub(value, 1, 15) == "RAID_DIFFICULTY" ) and ( strlen(value) > 15 ) ) then

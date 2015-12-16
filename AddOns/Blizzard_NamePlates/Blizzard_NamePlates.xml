@@ -62,7 +62,22 @@
 
 	<Button name="NamePlateUnitFrameTemplate" parentKey="UnitFrame" setAllPoints="true" useParentLevel="true" virtual="true" inherits="CompactUnitFrameTemplate">
 		<Frames>
-			<StatusBar name="$parentCastBar" inherits="CompactUnitFrameCastBarTemplate" />
+			<StatusBar name="$parentCastBar" inherits="CompactUnitFrameCastBarTemplate">
+				<KeyValues>
+					<KeyValue key="greyWhenNoninterruptible" value="true" type="boolean"/>
+					<KeyValue key="iconWhenNoninterruptible" value="true" type="boolean"/>
+				</KeyValues>
+				<Layers>
+					<Layer level="OVERLAY">
+						<Texture name="$parentIcon" hidden="true" parentKey="icon" forceAlpha="true">
+							<Size x="10" y="10"/>
+							<Anchors>
+								<Anchor point="LEFT" x="-2" y="-1"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+			</StatusBar>
 			<Frame parentKey="BuffFrame" inherits="HorizontalLayoutFrame" mixin="NameplateBuffMixin">
 				<Anchors>
 					<Anchor point="LEFT" relativeKey="$parent.healthBar" x="-1"/>
@@ -75,6 +90,19 @@
 					<OnLoad method="OnLoad"/>
 					<OnEvent method="OnEvent"/>
 				</Scripts>
+			</Frame>
+			<Frame parentKey="RaidTargetFrame">
+				<Size x="32" y="32"/>
+				<Layers>
+					<Layer level="ARTWORK">
+						<Texture parentKey="RaidTargetIcon" file="Interface\TargetingFrame\UI-RaidTargetingIcons" hidden="true">
+							<Size x="32" y="32"/>
+							<Anchors>
+								<Anchor point="CENTER"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
 			</Frame>
 		</Frames>
 	</Button>

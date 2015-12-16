@@ -98,7 +98,7 @@ end
 function LowHealthFrameMixin:GetHealthPercent()
 	local maxHealth = UnitHealthMax("player");
 	if maxHealth <= 0.0 then
-		return 0.0;
+		return 1.0;
 	end
 	return UnitHealth("player") / maxHealth;
 end

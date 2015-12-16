@@ -102,7 +102,7 @@
 			<EditBox parentKey="SearchBox" autoFocus="false" inherits="SearchBoxTemplate">
 				<Size x="130" y="20"/>
 				<Anchors>
-					<Anchor point="TOPLEFT" x="202" y="-54"/>
+					<Anchor point="TOPLEFT" x="200" y="-54"/>
 				</Anchors>
 				<Scripts>
 					<OnShow>
@@ -178,7 +178,7 @@
 			<Button parentKey="FilterButton" inherits="UIMenuButtonStretchTemplate" text="FILTER">
 				<Size x="70" y="22"/>
 				<Anchors>
-					<Anchor point="TOPRIGHT" x="-10" y="-56"/>
+					<Anchor point="TOPRIGHT" x="-12" y="-55"/>
 				</Anchors>
 				<Layers>
 					<Layer level="ARTWORK">
@@ -208,7 +208,7 @@
 			<Button parentKey="LinkToButton">
 				<Size x="30" y="30"/>
 				<Anchors>
-					<Anchor point="BOTTOMRIGHT" relativeKey="$parent.FilterButton" relativePoint="TOPRIGHT" x="0" y="2"/>
+					<Anchor point="BOTTOMRIGHT" relativeKey="$parent.FilterButton" relativePoint="TOPRIGHT" x="3" y="1"/>
 				</Anchors>
 				<Scripts>
 					<OnClick>

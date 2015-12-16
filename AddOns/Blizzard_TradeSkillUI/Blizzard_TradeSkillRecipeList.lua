@@ -374,14 +374,14 @@ function TradeSkillRecipeListMixin:UpdateFilterBar()
 		self:SetHeight(LIST_FULL_HEIGHT);
 
 		self:SetPoint("TOPLEFT", 7, -83);
-		self.LearnedTab:SetPoint("BOTTOMLEFT", self, "TOPLEFT", 18, 3);
+		self.LearnedTab:SetPoint("BOTTOMLEFT", self, "TOPLEFT", 10, 3);
 		self.scrollBar:SetPoint("TOPLEFT", self, "TOPRIGHT", 1, -14);
 	else
 		self:SetHeight(LIST_FULL_HEIGHT - ROW_HEIGHT);
 		self.FilterBar:Show();
 
 		self:SetPoint("TOPLEFT", 7, -83 - ROW_HEIGHT);
-		self.LearnedTab:SetPoint("BOTTOMLEFT", self, "TOPLEFT", 18, 3 + ROW_HEIGHT);
+		self.LearnedTab:SetPoint("BOTTOMLEFT", self, "TOPLEFT", 10, 3 + ROW_HEIGHT);
 		self.scrollBar:SetPoint("TOPLEFT", self, "TOPRIGHT", 1, -14 + ROW_HEIGHT);
 
 		self.FilterBar.Text:SetFormattedText("%s: %s", FILTER, table.concat(filters, PLAYER_LIST_DELIMITER));

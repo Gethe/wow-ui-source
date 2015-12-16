@@ -74,7 +74,7 @@ function TradeSkillDetailsMixin:CalculateContentHeight()
 	return height;
 end
 
-local SPACING_BETWEEN_LINES = 8;
+local SPACING_BETWEEN_LINES = 11;
 function TradeSkillDetailsMixin:RefreshDisplay()
 	self.activeContentWidgets = {};
 
@@ -124,7 +124,7 @@ function TradeSkillDetailsMixin:RefreshDisplay()
 		local recipeDescription = C_TradeSkillUI.GetRecipeDescription(self.selectedRecipeID);
 		if recipeDescription and #recipeDescription > 0 then
 			self.Contents.Description:SetText(recipeDescription);
-			self.Contents.RequirementLabel:SetPoint("TOPLEFT", self.Contents.Description, "BOTTOMLEFT", 0, -SPACING_BETWEEN_LINES);
+			self.Contents.RequirementLabel:SetPoint("TOPLEFT", self.Contents.Description, "BOTTOMLEFT", 0, -18);
 		else
 			self.Contents.Description:SetText("");
 			self.Contents.RequirementLabel:SetPoint("TOPLEFT", self.Contents.Description, "BOTTOMLEFT", 0, 0);

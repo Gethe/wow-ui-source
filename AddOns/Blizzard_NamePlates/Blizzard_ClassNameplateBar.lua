@@ -105,8 +105,11 @@ local NameplatePowerBarColor = {
 };
 
 function ClassNameplateManaBar:OnEvent(event, arg1, arg2)
-	if (event == "UNIT_DISPLAYPOWER" or event == "PLAYER_ENTERING_WORLD") then
+	if (event == "UNIT_DISPLAYPOWER" or event == "PLAYER_ENTERING_WORLD" or event == "UNIT_MAXPOWER") then
 		self:SetupBar();
+		if (event == "UNIT_MAXPOWER") then
+			ClassNameplateBar.OnEvent(self, event, arg1, arg2);
+		end
 	else
 		ClassNameplateBar.OnEvent(self, event, arg1, arg2);
 	end
@@ -130,11 +133,15 @@ function ClassNameplateManaBar:SetupBar()
 			info = PowerBarColor[powerToken];
 		end
 		self:SetStatusBarColor(info.r, info.g, info.b);
+
+		self.FeedbackFrame:Initialize(info, "player", powerType);
+		self:SetScript("OnUpdate", ClassNameplateManaBar_OnUpdate);
 	end
 	self.powerToken = powerToken;
 	self.powerType = powerType;
 	self:UpdateMaxPower();
 	self:UpdatePower();
+	self.currValue = UnitPower("player", powerType);
 end
 
 function ClassNameplateManaBar:UpdateMaxPower()
@@ -143,4 +150,15 @@ end
 
 function ClassNameplateManaBar:UpdatePower()
 	self:SetValue(UnitPower("player", self.powerType));
+end
+
+function ClassNameplateManaBar_OnUpdate(self)
+	local currValue = UnitPower("player", self.powerType);
+	if ( currValue ~= self.currValue ) then
+		-- Only show anim if change is more than 10%
+		if ( math.abs(currValue - self.currValue) / self.FeedbackFrame.maxValue > 0.1 ) then
+			self.FeedbackFrame:StartFeedbackAnim(self.currValue or 0, currValue);
+		end
+		self.currValue = currValue;
+	end
 end

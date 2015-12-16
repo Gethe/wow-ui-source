@@ -591,6 +591,139 @@ function SCENARIO_CONTENT_TRACKER_MODULE:AddSpells(objectiveBlock, spellInfo)
 end
 
 -- *****************************************************************************************************
+-- ***** PROGRESS BAR
+-- *****************************************************************************************************
+
+function ScenarioTrackerProgressBar_SetValue(self, percent)
+	self.Bar:SetValue(percent);
+	self.Bar.Label:SetFormattedText(PERCENTAGE_STRING, percent);
+	self.AnimValue = percent;
+end
+
+function ScenarioTrackerProgressBar_PlayFlareAnim(progressBar, delta)
+	if( progressBar.AnimValue >= 100 ) then
+		return;
+	end
+	
+	if( delta > 1 ) then
+		local width = progressBar.Bar:GetWidth();
+		local offset = width * progressBar.AnimValue/100-12;
+		local prefix = "";
+		if( delta < 10 ) then
+			prefix = "Small";
+		end
+		local flare = progressBar[prefix.."Flare1"];
+		
+		if( flare.FlareAnim:IsPlaying() ) then
+			flare = progressBar[prefix.."Flare2"];
+			if( not flare.FlareAnim:IsPlaying() ) then
+				flare:SetPoint("LEFT", progressBar.Bar, "LEFT", offset,0);
+				flare.FlareAnim:Play();
+			end
+		end
+	end
+	
+	local barFlare = progressBar["FullBarFlare1"];
+	if( barFlare.FlareAnim:IsPlaying() ) then
+		barFlare = progressBar["FullBarFlare2"];
+		if( barFlare.FlareAnim:IsPlaying() ) then
+			return;
+		end
+	end
+	
+	barFlare.FlareAnim:Play();
+end
+
+function ScenarioTrackerProgressBar_OnEvent(self, event)
+	local weightedProgress = select(9, C_Scenario.GetStepInfo());
+	ScenarioTrackerProgressBar_PlayFlareAnim(self, weightedProgress - self.AnimValue);
+	ScenarioTrackerProgressBar_SetValue(self, weightedProgress);
+end
+
+function SCENARIO_TRACKER_MODULE:AddProgressBar(block, line, stepIndex)
+	local progressBar = self.usedProgressBars[block] and self.usedProgressBars[block][line];
+	if ( not progressBar ) then
+		local numFreeProgressBars = #self.freeProgressBars;
+		local parent = block.ScrollContents or block;
+		if ( numFreeProgressBars > 0 ) then
+			progressBar = self.freeProgressBars[numFreeProgressBars];
+			tremove(self.freeProgressBars, numFreeProgressBars);
+			progressBar:SetParent(parent);
+			progressBar:Show();
+		else
+			progressBar = CreateFrame("Frame", nil, parent, "ScenarioTrackerProgressBarTemplate");
+			progressBar.height = progressBar:GetHeight();
+		end
+		if ( not self.usedProgressBars[block] ) then
+			self.usedProgressBars[block] = { };
+		end
+		self.usedProgressBars[block][line] = progressBar;
+		progressBar:RegisterEvent("SCENARIO_CRITERIA_UPDATE");
+		progressBar:Show();
+		ScenarioTrackerProgressBar_SetValue(progressBar, select(9, C_Scenario.GetStepInfo()));
+	end
+	local rewardQuestID = select(10, C_Scenario.GetStepInfo());
+
+	if (rewardQuestID ~= 0) then
+		-- reward icon; try the first item
+		local _, texture = GetQuestLogRewardInfo(1, rewardQuestID);
+		-- artifact xp
+		if ( not texture and GetQuestLogRewardArtifactXP(rewardQuestID) > 0 ) then
+			local name, icon = C_ArtifactUI.GetArtifactXPRewardTargetInfo();
+			texture = icon or "Interface\\Icons\\INV_Misc_QuestionMark";
+		end
+		-- currency
+		if ( not texture and GetNumQuestLogRewardCurrencies(rewardQuestID) > 0 ) then
+			_, texture = GetQuestLogRewardCurrencyInfo(1, rewardQuestID);
+		end
+		-- money?
+		if ( not texture and GetQuestLogRewardMoney(rewardQuestID) > 0 ) then
+			texture = "Interface\\Icons\\inv_misc_coin_02";
+		end
+		-- xp
+		if ( not texture and GetQuestLogRewardXP(rewardQuestID) > 0 and UnitLevel("player") < MAX_PLAYER_LEVEL ) then
+			texture = "Interface\\Icons\\xp_icon";
+		end
+		if ( not texture ) then
+			progressBar.Bar.Icon:Hide();
+			progressBar.Bar.IconBG:Hide();
+			progressBar.Bar.BarGlow:SetAtlas("bonusobjectives-bar-glow", true);
+		else
+			progressBar.Bar.Icon:SetTexture(texture);
+			progressBar.Bar.Icon:Show();
+			progressBar.Bar.IconBG:Show();
+			progressBar.Bar.BarGlow:SetAtlas("bonusobjectives-bar-glow-ring", true);
+		end
+	end
+
+	-- anchor the status bar
+	local anchor = block.currentLine or block.HeaderText;
+	if ( anchor ) then
+		progressBar:SetPoint("TOPLEFT", anchor, "BOTTOMLEFT", 0, -block.module.lineSpacing);
+	else
+		progressBar:SetPoint("TOPLEFT", 0, -block.module.lineSpacing);
+	end
+
+	progressBar.block = block;
+
+	line.ProgressBar = progressBar;
+	block.height = block.height + progressBar.height + block.module.lineSpacing;
+	block.currentLine = progressBar;
+	return progressBar;
+end
+
+function SCENARIO_TRACKER_MODULE:FreeProgressBar(block, line)
+	local progressBar = line.ProgressBar;
+	if ( progressBar ) then
+		self.usedProgressBars[block][line] = nil;
+		tinsert(self.freeProgressBars, progressBar);
+		progressBar:Hide();
+		line.ProgressBar = nil;
+		progressBar:UnregisterEvent("SCENARIO_CRITERIA_UPDATE");
+	end
+end
+
+-- *****************************************************************************************************
 -- ***** UPDATE FUNCTIONS
 -- *****************************************************************************************************
 
@@ -652,7 +785,7 @@ function SCENARIO_CONTENT_TRACKER_MODULE:Update()
 	BlocksFrame.contentsHeight = 0;
 	SCENARIO_TRACKER_MODULE.contentsHeight = 0;
 
-	local stageName, stageDescription, numCriteria, _, _, _, numSpells, spellInfo = C_Scenario.GetStepInfo();
+	local stageName, stageDescription, numCriteria, _, _, _, numSpells, spellInfo, weightedProgress = C_Scenario.GetStepInfo();
 	local inChallengeMode = (scenarioType == LE_SCENARIO_TYPE_CHALLENGE_MODE);
 	local inProvingGrounds = (scenarioType == LE_SCENARIO_TYPE_PROVING_GROUNDS);
 	local dungeonDisplay = (scenarioType == LE_SCENARIO_TYPE_USE_DUNGEON_DISPLAY);
@@ -706,48 +839,65 @@ function SCENARIO_CONTENT_TRACKER_MODULE:Update()
 	BlocksFrame.currentStage = currentStage;
 			
 	if ( not ScenarioProvingGroundsBlock.timerID and not scenariocompleted ) then
-		-- do the criteria
-		for criteriaIndex = 1, numCriteria do
-			local criteriaString, criteriaType, completed, quantity, totalQuantity, flags, assetID, quantityString, criteriaID, duration, elapsed = C_Scenario.GetCriteriaInfo(criteriaIndex);
-			criteriaString = string.format("%d/%d %s", quantity, totalQuantity, criteriaString);
-			if ( criteriaIndex == 1 and not inChallengeMode ) then
-				SCENARIO_TRACKER_MODULE.lineSpacing = 2;
-			else
-				SCENARIO_TRACKER_MODULE.lineSpacing = 12;
-			end
-			if ( completed ) then
-				local existingLine = objectiveBlock.lines[criteriaIndex];
-				SCENARIO_TRACKER_MODULE:AddObjective(objectiveBlock, criteriaIndex, criteriaString, nil, nil, nil, OBJECTIVE_TRACKER_COLOR["Complete"]);
-				objectiveBlock.currentLine.Icon:SetAtlas("Tracker-Check", true);
-				if ( existingLine and not existingLine.completed ) then
-					existingLine.Glow.Anim:Play();
-					existingLine.Sheen.Anim:Play();
-					existingLine.CheckFlash.Anim:Play();
+		if (weightedProgress) then
+			-- A progress bar is the entire tree for scenarios
+			SCENARIO_TRACKER_MODULE.lineSpacing = 2;
+			SCENARIO_TRACKER_MODULE:AddObjective(objectiveBlock, 1, stageDescription);
+			local progressBar = SCENARIO_TRACKER_MODULE:AddProgressBar(objectiveBlock, objectiveBlock.currentLine, currentStage);
+			objectiveBlock:SetHeight(objectiveBlock.height);
+			if ( ObjectiveTracker_AddBlock(objectiveBlock) ) then
+				if ( not BlocksFrame.slidingAction ) then
+					objectiveBlock:Show();
 				end
-				objectiveBlock.currentLine.completed = true;			
 			else
-				SCENARIO_TRACKER_MODULE:AddObjective(objectiveBlock, criteriaIndex, criteriaString);
-				objectiveBlock.currentLine.Icon:SetAtlas("Objective-Nub", true);			
+				objectiveBlock:Hide();
+				stageBlock:Hide();
 			end
-			-- timer bar
-			local line = objectiveBlock.currentLine;
-			if ( duration > 0 and elapsed <= duration ) then
-				SCENARIO_TRACKER_MODULE:AddTimerBar(objectiveBlock, objectiveBlock.currentLine, duration, GetTime() - elapsed);
-			elseif ( line.TimerBar ) then
-				SCENARIO_TRACKER_MODULE:FreeTimerBar(objectiveBlock, objectiveBlock.currentLine);
-			end
-		end
-		self:AddSpells(objectiveBlock, spellInfo);
-		
-		-- add the objective block
-		objectiveBlock:SetHeight(objectiveBlock.height);
-		if ( ObjectiveTracker_AddBlock(objectiveBlock) ) then
-			if ( not BlocksFrame.slidingAction ) then
-				objectiveBlock:Show();
-			end
+			progressBar.Bar.AnimIn:Play();
 		else
-			objectiveBlock:Hide();
-			stageBlock:Hide();
+			-- do the criteria
+			for criteriaIndex = 1, numCriteria do
+				local criteriaString, criteriaType, completed, quantity, totalQuantity, flags, assetID, quantityString, criteriaID, duration, elapsed = C_Scenario.GetCriteriaInfo(criteriaIndex);
+				criteriaString = string.format("%d/%d %s", quantity, totalQuantity, criteriaString);
+				if ( criteriaIndex == 1 and not inChallengeMode ) then
+					SCENARIO_TRACKER_MODULE.lineSpacing = 2;
+				else
+					SCENARIO_TRACKER_MODULE.lineSpacing = 12;
+				end
+				if ( completed ) then
+					local existingLine = objectiveBlock.lines[criteriaIndex];
+					SCENARIO_TRACKER_MODULE:AddObjective(objectiveBlock, criteriaIndex, criteriaString, nil, nil, nil, OBJECTIVE_TRACKER_COLOR["Complete"]);
+					objectiveBlock.currentLine.Icon:SetAtlas("Tracker-Check", true);
+					if ( existingLine and not existingLine.completed ) then
+						existingLine.Glow.Anim:Play();
+						existingLine.Sheen.Anim:Play();
+						existingLine.CheckFlash.Anim:Play();
+					end
+					objectiveBlock.currentLine.completed = true;			
+				else
+					SCENARIO_TRACKER_MODULE:AddObjective(objectiveBlock, criteriaIndex, criteriaString);
+					objectiveBlock.currentLine.Icon:SetAtlas("Objective-Nub", true);			
+				end
+				-- timer bar
+				local line = objectiveBlock.currentLine;
+				if ( duration > 0 and elapsed <= duration ) then
+					SCENARIO_TRACKER_MODULE:AddTimerBar(objectiveBlock, objectiveBlock.currentLine, duration, GetTime() - elapsed);
+				elseif ( line.TimerBar ) then
+					SCENARIO_TRACKER_MODULE:FreeTimerBar(objectiveBlock, objectiveBlock.currentLine);
+				end
+			end
+			self:AddSpells(objectiveBlock, spellInfo);
+			
+			-- add the objective block
+			objectiveBlock:SetHeight(objectiveBlock.height);
+			if ( ObjectiveTracker_AddBlock(objectiveBlock) ) then
+				if ( not BlocksFrame.slidingAction ) then
+					objectiveBlock:Show();
+				end
+			else
+				objectiveBlock:Hide();
+				stageBlock:Hide();
+			end
 		end
 	end
 	ScenarioSpellButtons_UpdateCooldowns();

@@ -11,7 +11,7 @@
 				<Texture file="Interface\TargetingFrame\UI-StatusBar-Glow" parentKey="LossGlowTexture" hidden="true" alphaMode="ADD"/>
 			</Layer>
 			<Layer level="ARTWORK" textureSubLevel="1">
-				<Texture file="Interface\TargetingFrame\UI-StatusBar-Glow" parentKey="GainGlowTexture" hidden="true" alphaMode="ADD"/>
+				<Texture file="Interface\TargetingFrame\UI-StatusBar-Glow" parentKey="GainGlowTexture" hidden="true" alphaMode="ADD" alpha="0.75"/>
 			</Layer>
 		</Layers>
 		<Scripts>

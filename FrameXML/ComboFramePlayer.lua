@@ -12,12 +12,9 @@ function ComboPointPowerBar:OnLoad()
 	for i = 1, #self.ComboPoints do
 		self.ComboPoints[i].on = false;
 	end
-	self.Combo7.Point:SetSize(8, 8);
-	self.Combo8.Point:SetSize(8, 8);
-	self.Combo7.PointOff:Hide();
-	self.Combo8.PointOff:Hide();
-	self.comboPointSize = 15;
 	self.maxUsablePoints = 5;
+	
+	self:SetFrameLevel(self:GetParent():GetFrameLevel() + 2);
 	ClassPowerBar.OnLoad(self);
 end
 
@@ -36,7 +33,7 @@ function ComboPointPowerBar:Setup()
 	local showBar = ClassPowerBar.Setup(self);
 	if (showBar) then
 		self:RegisterUnitEvent("UNIT_MAXPOWER", "player");
-		self:SetPoint("TOP", self:GetParent(), "BOTTOM", 50, 30);
+		self:SetPoint("TOP", self:GetParent(), "BOTTOM", 50, 38);
 		self:UpdateMaxPower();
 	else
 		self:SetupDruid();
@@ -73,34 +70,48 @@ end
 function ComboPointPowerBar:UpdateMaxPower()
 	local maxComboPoints = UnitPowerMax("player", SPELL_POWER_COMBO_POINTS);
 	
-	for i = 1, maxComboPoints do
-		self.ComboPoints[i]:Show();
-	end
-	for i = maxComboPoints + 1, #self.ComboPoints do
-		self.ComboPoints[i]:Hide();
+	self.ComboPoints[6]:SetShown(maxComboPoints == 6);
+	for i = 1, #self.ComboBonus do
+		self.ComboBonus[i]:SetShown(maxComboPoints == 8);
 	end
 	
-	self.maxUsablePoints = 5;
-	if (maxComboPoints == 6) then
+	if (maxComboPoints == 5 or maxComboPoints == 8) then
+		self.maxUsablePoints = 5;
+		for i = 1, 5 do
+			self.ComboPoints[i]:SetSize(20, 21);
+			self.ComboPoints[i].PointOff:SetSize(20, 21);
+			self.ComboPoints[i].Point:SetSize(20, 21);
+			if (i ~= 1) then
+				self.ComboPoints[i]:SetPoint("LEFT", self.ComboPoints[i-1], "RIGHT", 1, 0);
+			end
+		end
+	elseif (maxComboPoints == 6) then
 		self.maxUsablePoints = 6;
-		self.Combo6:SetSize(self.comboPointSize, self.comboPointSize);
-		self.Combo6.Point:SetSize(self.comboPointSize, self.comboPointSize);
-		self.Combo6:ClearAllPoints();
-		self.Combo6:SetPoint("LEFT", self.ComboPoints[5], "RIGHT", 4, 0);
-		self:SetHeight(self.comboPointSize);
-	elseif (maxComboPoints == 8) then
-		self.Combo6:SetSize(8, 8);
-		self.Combo6.Point:SetSize(8, 8);
-		self.Combo6:ClearAllPoints();
-		self.Combo6:SetPoint("BOTTOM", -12, 0);
-		self:SetHeight(22);
-	end
-	self:SetWidth(self.Combo1:GetWidth() * self.maxUsablePoints + 4 * (self.maxUsablePoints - 1));
-	
-	if (self.Combo6.PointOff) then
-		self.Combo6.PointOff:SetShown(maxComboPoints == 6);
+		for i = 1, 6 do
+			self.ComboPoints[i]:SetSize(18, 19);
+			self.ComboPoints[i].PointOff:SetSize(18, 19);
+			self.ComboPoints[i].Point:SetSize(18, 19);
+			if (i ~= 1) then
+				self.ComboPoints[i]:SetPoint("LEFT", self.ComboPoints[i-1], "RIGHT", -1, 0);
+			end
+		end
 	end
 end
+
+function ComboPointPowerBar:AnimIn(frame)
+	if (not frame.on) then
+		frame.on = true;
+		frame.AnimIn:Play();
+	end
+end
+
+function ComboPointPowerBar:AnimOut(frame)
+	if (frame.on) then
+		frame.on = false;
+		frame.AnimOut:Play();
+	end
+end
+
 
 function ComboPointPowerBar:UpdatePower()
 	if ( self.delayedUpdate ) then
@@ -108,30 +119,41 @@ function ComboPointPowerBar:UpdatePower()
 	end
 	
 	local comboPoints = UnitPower("player", SPELL_POWER_COMBO_POINTS);
+	local maxComboPoints = UnitPowerMax("player", SPELL_POWER_COMBO_POINTS);
 	
 	-- If we had more than self.maxUsablePoints and then used a finishing move, fade out
 	-- the top row of points and then move the remaining points from the bottom up to the top
 	if ( self.lastPower and self.lastPower > self.maxUsablePoints and comboPoints == self.lastPower - self.maxUsablePoints ) then
 		for i = 1, self.maxUsablePoints do
-			self:TurnOff(self.ComboPoints[i], self.ComboPoints[i].Point, 0);
+			self:AnimOut(self.ComboPoints[i]);
 		end
 		self.delayedUpdate = true;
 		self.lastPower = nil;
-		C_Timer.After(0.25, function()
+		C_Timer.After(0.45, function()
 			self.delayedUpdate = false;
 			self:UpdatePower();
 		end);
 	else
-		for i = 1, comboPoints do
+		for i = 1, min(comboPoints, self.maxUsablePoints) do
 			if (not self.ComboPoints[i].on) then
-				self:TurnOn(self.ComboPoints[i], self.ComboPoints[i].Point, 1);
+				self:AnimIn(self.ComboPoints[i]);
 			end
 		end
-		for i = comboPoints + 1, #self.ComboPoints do
+		for i = comboPoints + 1, self.maxUsablePoints do
 			if (self.ComboPoints[i].on) then
-				self:TurnOff(self.ComboPoints[i], self.ComboPoints[i].Point, 0);
+				self:AnimOut(self.ComboPoints[i]);
 			end
 		end
+		
+		if (maxComboPoints == 8) then
+			for i = 6, comboPoints do
+				self:AnimIn(self.ComboBonus[i-5]);
+			end
+			for i = max(comboPoints + 1, 6), 8 do
+				self:AnimOut(self.ComboBonus[i-5]);
+			end
+		end
+		
 		self.lastPower = comboPoints;
 	end
 end

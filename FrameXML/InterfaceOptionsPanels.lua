@@ -542,7 +542,6 @@ DisplayPanelOptions = {
 	SpellTooltip_DisplayAvgValues = { text = "SHOW_POINTS_AS_AVG" },
 	emphasizeMySpellEffects = { text = "EMPHASIZE_MY_SPELLS_TEXT" },
 	showAdventureJournalAlerts = { text = "SHOW_ADVENTURE_JOURNAL_ALERTS" };
-	nameplateShowSelf = { text = "DISPLAY_PERSONAL_RESOURCE" },
 	
 	findYourselfInRaid = { text = "SELF_HIGHLIGHT_IN_RAID" },
 	findYourselfInRaidOnlyInCombat = { text = "SELF_HIGHLIGHT_IN_RAID_COMBAT" },
@@ -1514,6 +1513,8 @@ NamePanelOptions = {
 	ShowClassColorInNameplate = { text = "SHOW_CLASS_COLOR_IN_V_KEY" },
 	
 	nameplateShowAll = { text = "UNIT_NAMEPLATES_AUTOMODE" },
+	nameplateShowSelf = { text = "DISPLAY_PERSONAL_RESOURCE" },
+	nameplateResourceOnTarget = { text = "DISPLAY_PERSONAL_RESOURCE_ON_ENEMY" },
 }
 
 function InterfaceOptionsNPCNamesDropDown_OnEvent (self, event, ...)

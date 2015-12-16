@@ -11,7 +11,7 @@
 		<Frames>
 			<Button parentKey="LearnedTab" parentArray="Tabs" inherits="TabButtonTemplate" text="TRADE_SKILLS_LEARNED_TAB">
 				<Anchors>
-					<Anchor point="BOTTOMLEFT" relativePoint="TOPLEFT" x="18" y="3"/>
+					<Anchor point="BOTTOMLEFT" relativePoint="TOPLEFT" x="10" y="3"/>
 				</Anchors>
 				<Scripts>
 					<OnClick>

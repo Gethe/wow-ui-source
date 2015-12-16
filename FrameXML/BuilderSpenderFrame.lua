@@ -5,14 +5,12 @@ function BuilderSpender:OnLoad()
 end
 
 function BuilderSpender:Initialize(textureInfo, unit, powerType)
-	local _, height;
 	if (textureInfo.atlas) then
 		self.BarTexture:SetAtlas(textureInfo.atlas, false);
-		_, _, height = GetAtlasInfo(textureInfo.atlas);
 	else
 		self.BarTexture:SetVertexColor(textureInfo.r, textureInfo.g, textureInfo.b);
-		height = self.BarTexture:GetHeight();
 	end
+	local height = self:GetHeight();
 	self.BarTexture:SetHeight(height);
 	self.LossGlowTexture:SetHeight(height);
 	self.GainGlowTexture:SetHeight(height);
@@ -54,6 +52,7 @@ function BuilderSpender_OnUpdateFeedbackGain(self)
 		self.GainGlowTexture:SetPoint("TOPLEFT", leftPosition, 0);
 		self.GainGlowTexture:SetWidth(width);
 		self.GainGlowTexture:SetTexCoord(texMinX, texMaxX, 0, 1);
+		self.GainGlowTexture:Show();
 	end
 end
 
@@ -111,8 +110,6 @@ function BuilderSpender:StartFeedbackAnim(oldValue, newValue)
 	end
 	
 	if ( newValue > oldValue and showBuilderFeedback ) then -- Gaining power
-		self.GainGlowTexture:Show();
-		self.GainGlowTexture:SetAlpha(0.75);
 		self.updatingGain = true;
 		self:SetScript("OnUpdate", BuilderSpender_OnUpdateFeedback);
 	

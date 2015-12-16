@@ -148,6 +148,9 @@ function CastingBarFrame_OnEvent(self, event, ...)
 		end
 		if ( barIcon ) then
 			barIcon:SetTexture(texture);
+			if ( self.iconWhenNoninterruptible ) then
+				barIcon:SetShown(not notInterruptible);
+			end
 		end
 		self:SetAlpha(1.0);
 		self.holdTime = 0;
@@ -158,11 +161,17 @@ function CastingBarFrame_OnEvent(self, event, ...)
 		if ( barBorderShield ) then
 			if ( self.showShield and notInterruptible ) then
 				barBorderShield:Show();
+				if (self.greyWhenNoninterruptible) then
+					self:SetStatusBarColor(0.7, 0.7, 0.7);
+				end
 				if ( barBorder ) then
 					barBorder:Hide();
 				end
 			else
 				barBorderShield:Hide();
+				if (self.greyWhenNoninterruptible) then
+					self:SetStatusBarColor(1, 0.7, 0);
+				end
 				if ( barBorder ) then
 					barBorder:Show();
 				end

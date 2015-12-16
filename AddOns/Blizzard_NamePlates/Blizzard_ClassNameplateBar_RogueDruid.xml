@@ -5,6 +5,14 @@
 	<Frame name="ClassNameplateBarComboPointFrame" virtual="true">
 		<Size x="13" y="13"/>
 		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="Background" atlas="ClassOverlay-ComboPoint-Off" useAtlasSize="false">
+					<Size x="13" y="13"/>
+					<Anchors>
+						<Anchor point="TOPLEFT"/>
+					</Anchors>
+				</Texture>
+			</Layer>
 			<Layer level="ARTWORK">
 				<Texture parentKey="Point" atlas="ClassOverlay-ComboPoint" useAtlasSize="false" alpha="0">
 					<Size x="13" y="13"/>

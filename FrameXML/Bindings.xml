@@ -1319,12 +1319,6 @@
 			CameraOrSelectOrMoveStop(IsModifiedClick("STICKYCAMERA"));
 		end
 	</Binding>
-	<Binding name="KIOSKMODETYFPDISABLE" kiosk="true">
-		if (not KioskThankYouForPlayingFrame or not IsKioskModeEnabled()) then
-			return;
-		end
-		KioskThankYouForPlayingFrame_Disable();
-	</Binding>
 
 	<!-- iTunes Bindings header="ITUNES_REMOTE" -->
 	<Binding name="ITUNES_PLAYPAUSE" platform="mac" category="BINDING_HEADER_ITUNES_REMOTE">

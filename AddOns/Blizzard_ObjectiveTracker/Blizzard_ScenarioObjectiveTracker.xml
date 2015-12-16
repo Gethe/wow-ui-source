@@ -56,6 +56,132 @@
 		</Animations>
 	</Frame>
 	
+	<Frame name="ScenarioTrackerProgressBarTemplate" virtual="true" hidden="true">
+		<Size x="192" y="38"/>
+		<Anchors>
+			<Anchor point="CENTER"/>
+		</Anchors>
+		<Frames>
+			<StatusBar parentKey="Bar" drawLayer="BACKGROUND" minValue="0" maxValue="100" defaultValue="0">
+				<Size x="191" y="17"/>
+				<Anchors>
+					<Anchor point="LEFT" x="10" y="0"/>
+				</Anchors>
+				<Layers>
+					<Layer level="ARTWORK">
+						<Texture parentKey="BarFrame" atlas="bonusobjectives-bar-frame" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="LEFT" x="-8" y="-1"/>
+							</Anchors>							
+						</Texture>
+						<Texture parentKey="IconBG" atlas="bonusobjectives-bar-ring" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="RIGHT" relativeKey="$parent.BarFrame" x="0" y="0"/>
+							</Anchors>
+						</Texture>
+						<FontString parentKey="Label" inherits="GameFontHighlightMedium" justifyH="CENTER">
+						  <Anchors>
+							<Anchor point="CENTER" x="-1" y="-1"/>
+						  </Anchors>
+						</FontString>
+					</Layer>
+					<Layer level="ARTWORK" textureSubLevel="1">
+						<Texture parentKey="BarFrame2" alpha="0" alphaMode="ADD" atlas="bonusobjectives-bar-frame" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="CENTER" relativeKey="$parent.BarFrame"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+					<Layer level="ARTWORK" textureSubLevel="2">
+						<Texture parentKey="BarFrame3" alpha="0" alphaMode="ADD" atlas="bonusobjectives-bar-frame" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="CENTER" relativeKey="$parent.BarFrame"/>
+							</Anchors>
+						</Texture>				
+					</Layer>
+					<Layer level="BACKGROUND" textureSubLevel="-1">
+						<Texture parentKey="BarBG">
+							<Color r="0.04" g="0.07" b="0.18"/>
+						</Texture>
+						<Texture parentKey="Icon">
+							<Size x="32" y="32"/>
+							<Anchors>
+								<Anchor point="RIGHT" x="33" y="2"/>
+							</Anchors>							
+						</Texture>
+					</Layer>
+					<Layer level="OVERLAY">
+						<Texture parentKey="BarGlow" alpha="0" alphaMode="ADD" atlas="bonusobjectives-bar-glow" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="LEFT" x="-8" y="-1"/>
+							</Anchors>
+						</Texture>
+						<Texture parentKey="Sheen" alpha="0" alphaMode="ADD" atlas="bonusobjectives-bar-sheen">
+							<Size x="97" y="22"/>
+							<Anchors>
+								<Anchor point="LEFT" relativeKey="$parent.BarFrame" x="-60" y="0"/>
+							</Anchors>
+						</Texture>				
+					</Layer>
+					<Layer level="OVERLAY" textureSubLevel="1">
+						<Texture parentKey="Starburst" alpha="0" alphaMode="ADD" atlas="bonusobjectives-bar-starburst" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="TOPRIGHT" relativeKey="$parent.BarFrame" x="1" y="6"/>
+							</Anchors>
+						</Texture>					
+					</Layer>
+				</Layers>
+				<Animations>
+					<AnimationGroup parentKey="AnimIn" setToFinalAlpha="true">
+						<Alpha duration="0.1" order="1" fromAlpha="0" toAlpha="1"/>
+						<Alpha childKey="BarGlow" startDelay="1.34" smoothing="NONE" duration="0.53" order="1" fromAlpha="0" toAlpha="0.5"/>
+						<Alpha childKey="BarGlow" startDelay="1.87" smoothing="IN_OUT" duration="0.53" order="1" fromAlpha="0.5" toAlpha="0"/>
+						<Scale childKey="Starburst" startDelay="1" duration="0.1" order="1" fromScaleX="1" fromScaleY="1" toScaleX="0.5" toScaleY="0.5"/>
+						<Scale childKey="Starburst" startDelay="1.34" duration="0.5" order="1" fromScaleX="1" fromScaleY="1" toScaleX="2" toScaleY="2"/>
+						<Scale childKey="Starburst" startDelay="1.84" duration="0.5" order="1" fromScaleX="1" fromScaleY="1" toScaleX="0.5" toScaleY="0.5"/>
+						<Alpha childKey="Starburst" startDelay="1.34" duration="0.1" order="1" fromAlpha="0" toAlpha="1"/>
+						<Alpha childKey="Starburst" startDelay="1.44" duration="0.9" order="1" fromAlpha="1" toAlpha="0"/>
+						<Rotation childKey="Starburst" startDelay="1" duration="0.1" order="1" degrees="-41"/>
+						<Rotation childKey="Starburst" startDelay="1.2" duration="1.41" order="1" degrees="-35"/>
+						<Alpha childKey="BarFrame2" startDelay="1.34" smoothing="NONE" duration="0.53" order="1" fromAlpha="0" toAlpha="1"/>
+						<Alpha childKey="BarFrame2" startDelay="1.87" smoothing="IN_OUT" duration="0.53" order="1" fromAlpha="1" toAlpha="0"/>
+						<Alpha childKey="BarFrame3" startDelay="1.34" smoothing="NONE" duration="0.53" order="1" fromAlpha="0" toAlpha="1"/>
+						<Alpha childKey="BarFrame3" startDelay="1.87" smoothing="IN_OUT" duration="0.53" order="1" fromAlpha="1" toAlpha="0"/>
+						<Translation childKey="Sheen" startDelay="1.06" duration="0.48" order="1" offsetX="68" offsetY="0"/>
+						<Alpha childKey="Sheen" startDelay="1.09" duration="0.1" order="1" fromAlpha="0" toAlpha="1"/>
+						<Alpha childKey="Sheen" startDelay="1.34" duration="0.05" order="1" fromAlpha="1" toAlpha="0"/>
+					</AnimationGroup>
+				</Animations>
+				<BarTexture file="Interface\TargetingFrame\UI-StatusBar"/>
+				<BarColor r="0.26" g="0.42" b="1"/>
+			</StatusBar>
+			<Frame parentKey="Flare1" inherits="BonusTrackerProgressBarFlareAnimTemplate"/>
+			<Frame parentKey="Flare2" inherits="BonusTrackerProgressBarFlareAnimTemplate"/>
+			
+			<Frame parentKey="SmallFlare1" inherits="BonusTrackerProgressBarSmallFlareAnimTemplate"/>
+			<Frame parentKey="SmallFlare2" inherits="BonusTrackerProgressBarSmallFlareAnimTemplate"/>
+			
+			<Frame parentKey="FullBarFlare1" inherits="BonusTrackerProgressBarFullBarFlareTemplate">
+				<Anchors>
+					<Anchor point="CENTER" relativeKey="$parent.Bar" relativePoint="CENTER" x="12" y="0"/>
+				</Anchors>
+			</Frame>
+			
+			<Frame parentKey="FullBarFlare2" inherits="BonusTrackerProgressBarFullBarFlareTemplate">
+				<Anchors>
+					<Anchor point="CENTER" relativeKey="$parent.Bar" relativePoint="CENTER" x="12" y="0"/>
+				</Anchors>
+			</Frame>
+			
+		</Frames>
+		<Scripts>
+			<OnLoad>
+				self.Bar.Icon:SetMask("Interface\\CharacterFrame\\TempPortraitAlphaMask");
+			</OnLoad>
+			<OnEvent function="ScenarioTrackerProgressBar_OnEvent"/>
+		</Scripts>		
+	</Frame>
+
 	<ScrollFrame name="ScenarioBlocksFrame" parent="ObjectiveTrackerBlocksFrame" hidden="true">
 		<Size x="212" y="10"/>
 		<ScrollChild>

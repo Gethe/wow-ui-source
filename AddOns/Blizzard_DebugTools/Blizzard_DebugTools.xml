@@ -354,10 +354,11 @@
 	
 	<GameTooltip name="FrameStackTooltip" frameStrata="TOOLTIP" hidden="true" inherits="GameTooltipTemplate">
 		<Scripts>
-			<OnLoad function="DebugTooltip_OnLoad"/>
+			<OnLoad function="FrameStackTooltip_OnLoad"/>
 			<OnShow function="FrameStackTooltip_OnShow"/>
 			<OnEnter function="FrameStackTooltip_OnEnter"/>
 			<OnUpdate function="FrameStackTooltip_OnUpdate"/>
+			<OnEvent function="FrameStackTooltip_OnEvent"/>
 		</Scripts>
 	</GameTooltip>
 	

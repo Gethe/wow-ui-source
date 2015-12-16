@@ -28,7 +28,7 @@
 				<Texture parentKey="UnearnedStar" atlas="tradeskills-star-off" alpha=".28" />
 			</Layer>
 			<Layer level="OVERLAY">
-				<Texture parentKey="EarnedStar" atlas="tradeskills-star" alpha=".65" />
+				<Texture parentKey="EarnedStar" atlas="tradeskills-star"/>
 			</Layer>
 		</Layers>
 	</Frame>
@@ -233,7 +233,7 @@
 							</Anchors>
 						</FontString>
 
-						<FontString parentKey="Description" inherits="GameFontHighlight" justifyH="LEFT">
+						<FontString parentKey="Description" inherits="GameFontHighlightSmall2" justifyH="LEFT">
 							<Size x="290" y="0"/>
 							<Anchors>
 								<Anchor point="TOPLEFT" x="8" y="-85"/>
@@ -310,7 +310,7 @@
 					<Frame parentKey="StarsFrame" enableMouse="true">
 						<Size x="45" y="16"/>
 						<Anchors>
-							<Anchor point="TOPLEFT" relativeKey="$parent.RecipeName" relativePoint="BOTTOMLEFT" x="0" y="-3"/>
+							<Anchor point="TOPLEFT" relativeKey="$parent.RecipeName" relativePoint="BOTTOMLEFT" x="1" y="-5"/>
 						</Anchors>
 						<Frames>
 							<Frame parentKey="Star1" inherits="TradeSkillDetailsStarTemplate">
@@ -320,12 +320,12 @@
 							</Frame>
 							<Frame parentKey="Star2" inherits="TradeSkillDetailsStarTemplate">
 								<Anchors>
-									<Anchor point="LEFT" relativeKey="$parent.Star1" relativePoint="RIGHT" />
+									<Anchor point="LEFT" relativeKey="$parent.Star1" relativePoint="RIGHT" x="2" y="0"/>
 								</Anchors>
 							</Frame>
 							<Frame parentKey="Star3" inherits="TradeSkillDetailsStarTemplate">
 								<Anchors>
-									<Anchor point="LEFT" relativeKey="$parent.Star2" relativePoint="RIGHT" />
+									<Anchor point="LEFT" relativeKey="$parent.Star2" relativePoint="RIGHT" x="2" y="0"/>
 								</Anchors>
 							</Frame>
 						</Frames>
@@ -341,7 +341,7 @@
 							<KeyValue key="reagentIndex" type="number" value="1"/>
 						</KeyValues>
 						<Anchors>
-							<Anchor point="TOPLEFT" relativeKey="$parent.ReagentLabel" relativePoint="BOTTOMLEFT" x="-2" y="-3"/>
+							<Anchor point="TOPLEFT" relativeKey="$parent.ReagentLabel" relativePoint="BOTTOMLEFT" x="-5" y="-6"/>
 						</Anchors>
 					</Button>
 					<Button parentKey="Reagent2" inherits="TradeSkillReagentTemplate">

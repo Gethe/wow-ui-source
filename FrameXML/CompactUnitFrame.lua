@@ -309,6 +309,10 @@ function CompactUnitFrame_UpdateVisible(frame)
 	end
 end
 
+function CompactUnitFrame_IsTapDenied(frame)
+	return frame.optionTable.greyOutWhenTapDenied and not UnitPlayerControlled(frame.unit) and UnitIsTapDenied(frame.unit);
+end
+
 function CompactUnitFrame_UpdateHealthColor(frame)
 	local r, g, b;
 	if ( not UnitIsConnected(frame.unit) ) then
@@ -318,20 +322,23 @@ function CompactUnitFrame_UpdateHealthColor(frame)
 		if ( frame.optionTable.healthBarColorOverride ) then
 			local healthBarColorOverride = frame.optionTable.healthBarColorOverride;
 			r, g, b = healthBarColorOverride.r, healthBarColorOverride.g, healthBarColorOverride.b;
-		elseif ( frame.optionTable.colorHealthBySelection ) then
-			r, g, b = UnitSelectionColor(frame.unit);
 		else
 			--Try to color it by class.
 			local localizedClass, englishClass = UnitClass(frame.unit);
 			local classColor = RAID_CLASS_COLORS[englishClass];
 			if ( UnitIsPlayer(frame.unit) and classColor and frame.optionTable.useClassColors ) then
+				-- Use class colors for players if class color option is turned on
 				r, g, b = classColor.r, classColor.g, classColor.b;
+			elseif ( CompactUnitFrame_IsTapDenied(frame) ) then
+				-- Use grey if not a player and can't get tap on unit
+				r, g, b = 0.1, 0.1, 0.1;
+			elseif ( frame.optionTable.colorHealthBySelection ) then
+				-- Use color based on the type of unit (neutral, etc.)
+				r, g, b = UnitSelectionColor(frame.unit);
+			elseif ( UnitIsFriend("player", frame.unit) ) then
+				r, g, b = 0.0, 1.0, 0.0;
 			else
-				if ( UnitIsFriend("player", frame.unit) ) then
-					r, g, b = 0.0, 1.0, 0.0;
-				else
-					r, g, b = 1.0, 0.0, 0.0;
-				end
+				r, g, b = 1.0, 0.0, 0.0;
 			end
 		end
 	end
@@ -439,16 +446,22 @@ end
 function CompactUnitFrame_UpdateName(frame)
 	if ( not ShouldShowName(frame) ) then
 		frame.name:Hide();
-		return;
-	end
+	else
+		frame.name:SetText(GetUnitName(frame.unit, true));
+		
+		if ( CompactUnitFrame_IsTapDenied(frame) ) then
+			-- Use grey if not a player and can't get tap on unit
+			frame.name:SetVertexColor(0.5, 0.5, 0.5);
+		elseif ( frame.optionTable.colorNameBySelection ) then
+			frame.name:SetVertexColor(UnitSelectionColor(frame.unit));
+		end
 
-	frame.name:SetText(GetUnitName(frame.unit, true));
+		frame.name:Show();
+	end
 	
-	if ( frame.optionTable.colorNameBySelection ) then
-		frame.name:SetVertexColor(UnitSelectionColor(frame.unit));
+	if (frame.nameChangedCallback) then
+		frame.nameChangedCallback(frame);
 	end
-
-	frame.name:Show();
 end
 
 function CompactUnitFrame_UpdateAuras(frame)
@@ -1492,6 +1505,7 @@ DefaultCompactNamePlateTargetEnemyFrameOptions = {
 	smoothHealthUpdates = true,
 	displayNameWhenSelected = true,
 	displayNameByPlayerNameRules = true,
+	greyOutWhenTapDenied = true,
 }
 
 DefaultCompactNamePlatePlayerFrameOptions = {

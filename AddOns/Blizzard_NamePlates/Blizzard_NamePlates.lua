@@ -9,7 +9,9 @@ function NamePlateDriverMixin:OnLoad()
 	self:RegisterEvent("UNIT_AURA");
 	self:RegisterEvent("VARIABLES_LOADED");
 	self:RegisterEvent("CVAR_UPDATE");
-
+	self:RegisterEvent("RAID_TARGET_UPDATE");
+	self:RegisterEvent("UNIT_FACTION");
+	
 	self:ApplySizes();
 end
 
@@ -36,6 +38,10 @@ function NamePlateDriverMixin:OnEvent(event, ...)
 		if arg1 == "SHOW_CLASS_COLOR_IN_V_KEY" then
 			self:UpdateNamePlateOptions();
 		end
+	elseif event == "RAID_TARGET_UPDATE" then
+		self:OnRaidTargetUpdate();
+	elseif ( event == "UNIT_FACTION" ) then
+		self:OnUnitFactionChanged(...);
 	end
 end
 
@@ -48,6 +54,9 @@ function NamePlateDriverMixin:OnNamePlateCreated(namePlateFrameBase)
 
 	CreateFrame("BUTTON", "$parentUnitFrame", namePlateFrameBase, "NamePlateUnitFrameTemplate");
 	namePlateFrameBase.UnitFrame:EnableMouse(false);
+	namePlateFrameBase.UnitFrame.nameChangedCallback = function(frame)
+		self:UpdateRaidTargetIconPosition(frame);
+	end
 end
 
 function NamePlateDriverMixin:OnNamePlateAdded(namePlateUnitToken)
@@ -65,6 +74,7 @@ function NamePlateDriverMixin:OnNamePlateAdded(namePlateUnitToken)
 	self:SetupClassNameplateBars();
 	
 	self:OnUnitAuraUpdate(namePlateUnitToken);
+	self:OnRaidTargetUpdate();
 end
 
 function NamePlateDriverMixin:OnNamePlateRemoved(namePlateUnitToken)
@@ -96,13 +106,50 @@ function NamePlateDriverMixin:OnUnitAuraUpdate(unit)
 	end
 end
 
-function NamePlateDriverMixin:SetupClassNameplateBar(mode, bar)
+function NamePlateDriverMixin:UpdateRaidTargetIconPosition(frame)
+	if (frame.RaidTargetFrame.RaidTargetIcon:IsShown()) then
+		local namePos = frame.name:IsShown() and frame.name:GetRect() or nil;
+		local barPos = frame.healthBar:IsShown() and frame.healthBar:GetRect() or nil;
+		if (not barPos or (namePos and namePos < barPos)) then
+			frame.RaidTargetFrame:SetPoint("RIGHT", frame.name, "LEFT", -5, 0);
+		else
+			frame.RaidTargetFrame:SetPoint("RIGHT", frame.healthBar, "LEFT", -5, 0);
+		end
+	end
+end
+		
+function NamePlateDriverMixin:OnRaidTargetUpdate()
+	for _, frame in pairs(C_NamePlate.GetNamePlates()) do
+		local icon = frame.UnitFrame.RaidTargetFrame.RaidTargetIcon;
+		local index = GetRaidTargetIndex(frame.namePlateUnitToken);
+		if ( index ) then
+			SetRaidTargetIconTexture(icon, index);
+			icon:Show();
+			self:UpdateRaidTargetIconPosition(frame.UnitFrame);
+		else
+			icon:Hide();
+		end
+	end
+	
+end
+
+function NamePlateDriverMixin:OnUnitFactionChanged(unit)
+	local nameplate = C_NamePlate.GetNamePlateForUnit(unit);
+	if (nameplate) then
+		CompactUnitFrame_UpdateName(nameplate.UnitFrame);
+		CompactUnitFrame_UpdateHealthColor(nameplate.UnitFrame);
+	end
+end
+
+function NamePlateDriverMixin:SetupClassNameplateBar(onTarget, bar)
 	if (not bar) then
 		return;
 	end
 	
 	bar:Hide();
-	if (mode == "0") then
+	
+	local showSelf = GetCVar("nameplateShowSelf");
+	if (showSelf == "0") then
 		return;
 	end
 	
@@ -113,7 +160,7 @@ function NamePlateDriverMixin:SetupClassNameplateBar(mode, bar)
 		namePlatePlayer.UnitFrame.healthBar:SetAlpha(healthResourceAlpha);
 	end
 	
-	if (mode == "1" and NamePlateTargetResourceFrame) then
+	if (onTarget and NamePlateTargetResourceFrame) then
 		local namePlateTarget = C_NamePlate.GetNamePlateForUnit("target");
 		if (namePlateTarget) then
 			bar:SetParent(NamePlateTargetResourceFrame);
@@ -124,7 +171,7 @@ function NamePlateDriverMixin:SetupClassNameplateBar(mode, bar)
 			NamePlateTargetResourceFrame:Layout();
 		end
 		NamePlateTargetResourceFrame:SetShown(namePlateTarget ~= nil);
-	elseif (mode == "2" and NamePlatePlayerResourceFrame) then
+	elseif (not onTarget and NamePlatePlayerResourceFrame) then
 		local namePlatePlayer = C_NamePlate.GetNamePlateForUnit("player");
 		if (namePlatePlayer) then
 			bar:SetParent(NamePlatePlayerResourceFrame);
@@ -139,11 +186,9 @@ function NamePlateDriverMixin:SetupClassNameplateBar(mode, bar)
 end
 
 function NamePlateDriverMixin:SetupClassNameplateBars()
-	local mode = GetCVar("nameplateBarMode");
-	self:SetupClassNameplateBar(mode, self.nameplateBar);
-	
-	local mode = GetCVar("nameplateManaBarMode");
-	self:SetupClassNameplateBar(mode, self.nameplateManaBar);
+	local mode = GetCVar("nameplateResourceOnTarget");
+	self:SetupClassNameplateBar(mode == "1", self.nameplateBar);
+	self:SetupClassNameplateBar(false, self.nameplateManaBar);
 end
 
 function NamePlateDriverMixin:SetClassNameplateBar(frame)
@@ -158,10 +203,8 @@ end
 
 function NamePlateDriverMixin:UpdateNamePlateOptions()
 	if (GetCVarBool("ShowClassColorInNameplate")) then
-		DefaultCompactNamePlateTargetEnemyFrameOptions.colorHealthBySelection = false;
 		DefaultCompactNamePlateTargetEnemyFrameOptions.useClassColors = true;
 	else
-		DefaultCompactNamePlateTargetEnemyFrameOptions.colorHealthBySelection = true;
 		DefaultCompactNamePlateTargetEnemyFrameOptions.useClassColors = false;
 	end
 	
