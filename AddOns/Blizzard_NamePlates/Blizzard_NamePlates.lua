@@ -247,10 +247,12 @@ function NameplateBuffMixin:OnEvent(event, ...)
 end
 
 function NameplateBuffMixin:UpdateAnchor()
+	local isTarget = self:GetParent().unit and UnitIsUnit(self:GetParent().unit, "target");
+	local targetYOffset = isTarget and GetCVar("nameplateResourceOnTarget") == "1" and 18 or 0;
 	if (self:GetParent().unit and ShouldShowName(self:GetParent())) then
-		self:SetPoint("BOTTOM", self:GetParent(), "TOP");
+		self:SetPoint("BOTTOM", self:GetParent(), "TOP", 0, targetYOffset);
 	else
-		self:SetPoint("BOTTOM", self:GetParent().healthBar, "TOP", 0, 5);
+		self:SetPoint("BOTTOM", self:GetParent().healthBar, "TOP", 0, 5 + targetYOffset);
 	end
 end
 

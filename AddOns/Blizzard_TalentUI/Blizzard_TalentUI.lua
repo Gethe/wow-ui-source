@@ -112,53 +112,53 @@ TALENT_HEADER_CHOOSE_SPEC_Y = -28;
 
 -- Hardcoded spell id's for spec display
 SPEC_SPELLS_DISPLAY = {}
-SPEC_SPELLS_DISPLAY[62] = { 30451,10, 44425,10,   5143,10,   1449,10	}; --Arcane
-SPEC_SPELLS_DISPLAY[63] = {   133,10, 11366,10, 108853,10, 190319,10	}; --Fire
-SPEC_SPELLS_DISPLAY[64] = {   116,10, 30455,10,  84714,10, 31687,10 	}; --Frost
+SPEC_SPELLS_DISPLAY[62] = { 30451,10,	44425,10,	5143,10,	1449,10,	12051,10,	12042,10	}; --Arcane
+SPEC_SPELLS_DISPLAY[63] = { 133,10,	11366,10,	108853,10,	190319,10,	2948,10,	195283,10	}; --Fire
+SPEC_SPELLS_DISPLAY[64] = { 116,10,	30455,10,	84714,10,	31687,10,	190447,10,	112965,10	}; --Frost
 
-SPEC_SPELLS_DISPLAY[65] = { 20473,10,  82326,10, 183998,10,  53563,10	}; --Holy
-SPEC_SPELLS_DISPLAY[66] = { 53595,10,  31935,10,  53600,10, 184092,10	}; --Protection
-SPEC_SPELLS_DISPLAY[70] = { 35395,10, 184575,10,  20271,10,  85256,10	}; --Retribution
+SPEC_SPELLS_DISPLAY[65] = { 20473,10,	82326,10,	183998,10,	53563,10,	19750,10,	85222,10	}; --Holy
+SPEC_SPELLS_DISPLAY[66] = { 53595,10,	31935,10,	53600,10,	184092,10,	26573,10,	31850,10	}; --Protection
+SPEC_SPELLS_DISPLAY[70] = { 35395,10,	184575,10,	20271,10,	85256,10,	53385,10,	185817,10	}; --Retribution
 
-SPEC_SPELLS_DISPLAY[71] = { 12294,10, 167105,10,   1464,10, 184783,10	}; --Arms
-SPEC_SPELLS_DISPLAY[72] = { 23881,10,  85288,10, 184367,10,  18499,10	}; --Fury
-SPEC_SPELLS_DISPLAY[73] = { 23922,10,  20243,10,   2565,10, 190456,10	}; --Protection
+SPEC_SPELLS_DISPLAY[71] = { 12294,10,	167105,10,	1464,10,	184783,10,	163201,10,	1680,10		}; --Arms
+SPEC_SPELLS_DISPLAY[72] = { 23881,10,	85288,10,	184367,10,	100130,10,	190411,10,	184361,10	}; --Fury
+SPEC_SPELLS_DISPLAY[73] = { 23922,10,	20243,10,	2565,10,	190456,10,	6572,10,	6343,10		}; --Protection
 
-SPEC_SPELLS_DISPLAY[102] = { 194153,10,  8921,10,  78674,10, 190984,10	}; --Balance
-SPEC_SPELLS_DISPLAY[103] = {   5221,10,  1822,10,   1079,10,  22568,10	}; --Feral
-SPEC_SPELLS_DISPLAY[104] = {  33917,10, 33745,10, 192081,10,  22842,10	}; --Guardian
-SPEC_SPELLS_DISPLAY[105] = {    774,10,  5185,10,   8936,10,  33763,10	}; --Restoration
+SPEC_SPELLS_DISPLAY[102] = { 194153,10,	8921,10,	78674,10,	190984,10,	93402,10,	191034,10	}; --Balance
+SPEC_SPELLS_DISPLAY[103] = { 5221,10,	1822,10,	1079,10,	22568,10,	106832,10,	106785,10	}; --Feral
+SPEC_SPELLS_DISPLAY[104] = { 33917,10,	33745,10,	192081,10,	22842,10,	106832,10,	22812,10	}; --Guardian
+SPEC_SPELLS_DISPLAY[105] = { 774,10,	5185,10,	8936,10,	33763,10,	48438,10,	740,10		}; --Restoration
 
-SPEC_SPELLS_DISPLAY[250] = { 45902,10, 195182,10, 49998,10,  43265,10	}; --Blood
-SPEC_SPELLS_DISPLAY[251] = { 49143,10,  49184,10, 49020,10, 196770,10	}; --Frost
-SPEC_SPELLS_DISPLAY[252] = { 85948,10,  55090,10, 77575,10,  47541,10	}; --Unholy
+SPEC_SPELLS_DISPLAY[250] = { 45902,10,	195182,10,	49998,10,	43265,10,	50842,10,	49576,10	}; --Blood
+SPEC_SPELLS_DISPLAY[251] = { 49143,10,	49184,10,	49020,10,	196770,10,	51128,10,	59057,10	}; --Frost
+SPEC_SPELLS_DISPLAY[252] = { 85948,10,	55090,10,	77575,10,	47541,10,	43265,10,	46584,10	}; --Unholy
 
-SPEC_SPELLS_DISPLAY[253] = { 120679,10, 193455,10,  34026,10,  19574,10	}; --Beastmaster
-SPEC_SPELLS_DISPLAY[254] = {  19434,10, 185358,10, 185901,10, 186387,10	}; --Marksmanship
-SPEC_SPELLS_DISPLAY[255] = { 190928,10, 202800,10, 185855,10, 186270,10	}; --Survival
+SPEC_SPELLS_DISPLAY[253] = { 120679,10, 193455,10,	34026,10,	19574,10,	2643,10,	193530,10	}; --Beastmaster
+SPEC_SPELLS_DISPLAY[254] = { 19434,10,	185358,10,	185901,10,	186387,10,	2643,10,	185987,10	}; --Marksmanship
+SPEC_SPELLS_DISPLAY[255] = { 190928,10, 202800,10,	185855,10,	186270,10,	187708,10,	191433,10	}; --Survival
 
-SPEC_SPELLS_DISPLAY[256] = {    17,10,  47540,10, 186263,10, 81749,10	}; --Discipline
-SPEC_SPELLS_DISPLAY[257] = {  2060,10,    139,10,   2050,10, 63733,10	}; --Holy
-SPEC_SPELLS_DISPLAY[258] = {  8092,10, 205448,10,    589,10, 34914,10	}; --Shadow
+SPEC_SPELLS_DISPLAY[256] = { 17,10,	47540,10,	186263,10,	81749,10,	186590,10,	589,10		}; --Discipline
+SPEC_SPELLS_DISPLAY[257] = { 2060,10,	139,10,		2050,10,	63733,10,	596,10,		2061,10		}; --Holy
+SPEC_SPELLS_DISPLAY[258] = { 8092,10,	205448,10,	589,10,		34914,10,	15407,10,	185916,10	}; --Shadow
 
-SPEC_SPELLS_DISPLAY[259] = {   1329,10,   1943,10,  32645,10,    703,10	}; --Assassination
-SPEC_SPELLS_DISPLAY[260] = { 193315,10, 185763,10,   5171,10,   2098,10	}; --Outlaw
-SPEC_SPELLS_DISPLAY[261] = {     53,10, 185438,10, 195452,10, 185314,10	}; --Subtlety
+SPEC_SPELLS_DISPLAY[259] = { 1329,10,	1943,10,	32645,10,	703,10,		2823,10,	79134,10	}; --Assassination
+SPEC_SPELLS_DISPLAY[260] = { 193315,10, 185763,10,	5171,10,	2098,10,	13877,10,	199804,10	}; --Outlaw
+SPEC_SPELLS_DISPLAY[261] = { 53,10,	185438,10,	195452,10,	185314,10,	196819,10,	196976,10	}; --Subtlety
 
-SPEC_SPELLS_DISPLAY[262] = { 51505,10, 188196,10, 188389,10,   8042,10	}; --Elemental
-SPEC_SPELLS_DISPLAY[263] = { 17364,10,  60103,10, 193796,10, 193786,10	}; --Enhancement
-SPEC_SPELLS_DISPLAY[264] = {  8004,10,   1064,10,  61295,10,  73920,10	}; --Restoration
+SPEC_SPELLS_DISPLAY[262] = { 51505,10,	188196,10,	188389,10,	8042,10,	188443,10,	77756,10	}; --Elemental
+SPEC_SPELLS_DISPLAY[263] = { 17364,10,  60103,10,	193796,10,	193786,10,	201845,10,	187880,10	}; --Enhancement
+SPEC_SPELLS_DISPLAY[264] = { 8004,10,   1064,10,	61295,10,	73920,10,	77472,10,	51564,10	}; --Restoration
 
-SPEC_SPELLS_DISPLAY[265] = {    172,10,    980,10,  30108,10,    689,10	}; --Affliction
-SPEC_SPELLS_DISPLAY[266] = { 105174,10, 104316,10, 193396,10,    686,10	}; --Demonology
-SPEC_SPELLS_DISPLAY[267] = { 116858,10,    348,10,  29722,10,  17962,10	}; --Destruction
+SPEC_SPELLS_DISPLAY[265] = {    172,10,	980,10,		30108,10,	689,10,		27243,10,	691,10		}; --Affliction
+SPEC_SPELLS_DISPLAY[266] = { 105174,10, 104316,10,	193396,10,	686,10,		603,10,		30146,10	}; --Demonology
+SPEC_SPELLS_DISPLAY[267] = { 116858,10, 348,10,		29722,10,	17962,10,	80240,10,	688,10		}; --Destruction
 
-SPEC_SPELLS_DISPLAY[268] = { 100780,10, 121253,10, 119582,10, 115069,10	}; --Brewmaster
-SPEC_SPELLS_DISPLAY[269] = { 100784,10, 107428,10, 100780,10, 137639,10	}; --Windwalker
-SPEC_SPELLS_DISPLAY[270] = { 115151,10, 124682,10, 116670,10, 191837,10	}; --Mistweaver
+SPEC_SPELLS_DISPLAY[268] = { 100780,10, 121253,10,	119582,10,	115069,10,	115308,10,	115181,10	}; --Brewmaster
+SPEC_SPELLS_DISPLAY[269] = { 100784,10, 107428,10,	100780,10,	137639,10,	113656,10,	101545,10	}; --Windwalker
+SPEC_SPELLS_DISPLAY[270] = { 115151,10, 124682,10,	116670,10,	191837,10,	116694,10,	193884,10	}; --Mistweaver
 
-SPEC_SPELLS_DISPLAY[577] = { 162794,10, 179057,10, 195072,10, 191427,10	}; --Havoc
-SPEC_SPELLS_DISPLAY[581] = { 183600,10, 189727,10, 189722,10, 187827,10	}; --Vengeance
+SPEC_SPELLS_DISPLAY[577] = { 162794,10, 179057,10,	195072,10,	191427,10					}; --Havoc
+SPEC_SPELLS_DISPLAY[581] = { 189110,10, 202138,10,	178740,10,	187827,10,	203720,10,	203798,10 }; --Vengeance
 
 -- Bonus stat to string
 SPEC_STAT_STRINGS = {
@@ -464,7 +464,7 @@ function PlayerTalentFrame_Refresh()
 		PlayerTalentFrame_HidePetSpecTab();
 		PlayerTalentFrame_UpdateSpecFrame(PlayerTalentFrameSpecialization);
 	elseif (selectedTab == PVP_TALENTS_TAB) then
-		ButtonFrameTemplate_HideAttic(PlayerTalentFrame);
+		ButtonFrameTemplate_ShowAttic(PlayerTalentFrame);
 		PlayerTalentFrame_HideTalentTab();
 		PlayerTalentFrame_ShowPVPTalentTab();
 		PlayerTalentFrame_HideSpecsTab();
@@ -661,11 +661,13 @@ function PlayerTalentFrameTalent_OnClick(self, button)
 		end
 	elseif ( selectedSpec and (activeSpec == selectedSpec)) then
         local talentID = self:GetID()
-		local _, _, _, _, available = GetTalentInfoByID(talentID, specs[selectedSpec].talentGroup, true);
-		if ( available and button == "LeftButton") then
+		local _, _, _, _, available, _, _, _, _, known = GetTalentInfoByID(talentID, specs[selectedSpec].talentGroup, true);
+		if ( available and not known and button == "LeftButton") then
             LearnTalent(talentID);
+			return true;
 		end
 	end
+	return false;
 end
 
 function PlayerTalentFrameTalent_OnDrag(self, button)
@@ -1439,7 +1441,6 @@ function PlayerTalentFramePVPTalents_OnHide(self)
 	self.PortraitBackground:Hide();
 	parent.portrait:SetTexture("Interface\\TargetingFrame\\UI-Classes-Circles");
 	parent.portrait:SetTexCoord(unpack(CLASS_ICON_TCOORDS[strupper(class)]));
-	parent.Inset:SetPoint("TOPLEFT", 4, -60);
 	parent.portrait:SetSize(60, 60);
 	parent.portrait:ClearAllPoints();
 	parent.portrait:SetPoint("TOPLEFT", -6, 7);
@@ -1552,7 +1553,7 @@ function PlayerTalentFramePVPTalentsTalent_OnClick(self, button)
 			end
 		end
 	elseif ( selectedSpec and (activeSpec == selectedSpec)) then
-		local id, _, _, selected, available = GetPvpTalentInfoByID(self.pvpTalentID);
+		local id, _, _, selected, available, _, _, _, _, known = GetPvpTalentInfoByID(self.pvpTalentID);
 		if ( button == "LeftButton" and not selected ) then
 			local talentsFrame = PlayerTalentFramePVPTalents;
 			local row = self:GetParent().rowIndex;
@@ -1569,14 +1570,16 @@ function PlayerTalentFramePVPTalentsTalent_OnClick(self, button)
 			-- Pretend like we immediately got the talent by de-selecting the old talent and selecting the new one
 			PlaySound("igMainMenuOptionCheckBoxOn");
 			
-			talentsFrame.talentInfo[row] = id;
-			
-			local isRowFree, prevSelected = GetPvpTalentRowSelectionInfo(row);
-			if (not isRowFree) then
-				RemovePvpTalent(prevSelected);
+			if (not known) then
+				talentsFrame.talentInfo[row] = id;
+				
+				local isRowFree, prevSelected = GetPvpTalentRowSelectionInfo(row);
+				if (not isRowFree) then
+					RemovePvpTalent(prevSelected);
+				end
+				LearnPvpTalent(id);
+				PlayerTalentFramePVPTalents_Update(PlayerTalentFramePVPTalents);
 			end
-			LearnPvpTalent(id);
-			PlayerTalentFramePVPTalents_Update(PlayerTalentFramePVPTalents);
 		end
 	end
 end
@@ -1656,24 +1659,26 @@ function PlayerTalentButton_OnClick(self, button)
 	
 		-- Pretend like we immediately got the talent by de-selecting the old talent and selecting the new one
 		PlaySound("igMainMenuOptionCheckBoxOn");
-		PlayerTalentFrameTalent_OnClick(self, button);
+		local learn = PlayerTalentFrameTalent_OnClick(self, button);
 		
-		talentsFrame.talentInfo[self.tier] = self.column;
-		
-		-- Highlight this talent
-		self.knownSelection:Show();
-		self.icon:SetDesaturated(false);
-		
-		-- Deselect the other talents in this row and grey out the level text
-		for i = 1, #talentRow.talents do
-			if (i ~= self.column) then
-				local oldTalentButton = talentRow.talents[i];
-				oldTalentButton.knownSelection:Hide();
-				oldTalentButton.icon:SetDesaturated(true);
+		if (learn) then
+			talentsFrame.talentInfo[self.tier] = self.column;
+			
+			-- Highlight this talent
+			self.knownSelection:Show();
+			self.icon:SetDesaturated(false);
+			
+			-- Deselect the other talents in this row and grey out the level text
+			for i = 1, #talentRow.talents do
+				if (i ~= self.column) then
+					local oldTalentButton = talentRow.talents[i];
+					oldTalentButton.knownSelection:Hide();
+					oldTalentButton.icon:SetDesaturated(true);
+				end
 			end
-		end
-		if(talentRow.level ~= nil) then
-			talentRow.level:SetTextColor(0.5, 0.5, 0.5);
+			if(talentRow.level ~= nil) then
+				talentRow.level:SetTextColor(0.5, 0.5, 0.5);
+			end
 		end
 	end
 end

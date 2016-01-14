@@ -11,6 +11,10 @@ function ArtifactAppearancesMixin:OnShow()
 	self:Refresh();
 end
 
+function ArtifactAppearancesMixin:OnHide()
+	C_ArtifactUI.SetPreviewAppearance(nil);
+end
+
 function ArtifactAppearancesMixin:OnEvent(event, ...)
 	if event == "ARTIFACT_UPDATE" then
 		self:RefreshIfVisible();
@@ -163,6 +167,10 @@ function ArtifactAppearanceSlotMixin:OnClick(button)
 				self:GetParent():Refresh();
 			end
 		else
+			if not self.isActive then
+				C_ArtifactUI.SetPreviewAppearance(self.appearanceID);
+				self:GetParent():Refresh();
+			end
 			PlaySound("UI_70_Artifact_Forge_Appearance_Locked");
 		end
 	end

@@ -1240,7 +1240,7 @@
 		<Frames>
 			<Frame parentKey="XPBar" inherits="PVPHonorSystemLargeXPBar">
 				<Anchors>
-					<Anchor point="TOP" relativeTo="PlayerTalentFrame" relativePoint="TOP" x="-10" y="-37"/>
+					<Anchor point="TOP" relativeTo="PlayerTalentFrame" relativePoint="TOP" x="-13" y="-48"/>
 				</Anchors>
 				<KeyValues>
 					<KeyValue key="canPrestigeHere" value="true" type="boolean"/>
@@ -1320,7 +1320,7 @@
 				<Frames>
 					<Frame parentKey="Tier1" inherits="PVPTalentRowTemplate">
 						<Anchors>
-							<Anchor point="TOPLEFT" x="4" y="-21"/>
+							<Anchor point="TOPLEFT" x="4" y="-20"/>
 						</Anchors>
 						<KeyValues>
 							<KeyValue key="rowIndex" value="1" type="number"/>

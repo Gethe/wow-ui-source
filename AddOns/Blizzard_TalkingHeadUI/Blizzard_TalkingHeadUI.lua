@@ -6,14 +6,19 @@ function TalkingHeadFrame_OnLoad(self)
 	self:RegisterForClicks("RightButtonUp");
 	
 	self.NameFrame.Name:SetPoint("TOPLEFT", self.PortraitFrame.Portrait, "TOPRIGHT", 2, -22);
+
+	local anchorFrameSubSystem = AlertFrame:AddJustAnchorFrameSubSystem(self);
+	AlertFrame:SetSubSustemAnchorPriority(anchorFrameSubSystem, 30);
 end
 
 function TalkingHeadFrame_OnShow(self)
 	UIParent_ManageFramePositions();
+	AlertFrame:UpdateAnchors();
 end
 
 function TalkingHeadFrame_OnHide(self)
 	UIParent_ManageFramePositions();
+	AlertFrame:UpdateAnchors();
 end
 
 function TalkingHeadFrame_OnEvent(self, event, ...)

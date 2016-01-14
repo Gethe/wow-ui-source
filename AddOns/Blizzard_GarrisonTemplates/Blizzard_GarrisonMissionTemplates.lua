@@ -393,8 +393,21 @@ function GarrisonMission:UpdateStartButton(missionPage, partyNotFullText)
 		missionPage.CostFrame.Cost:SetText(BreakUpLargeNumbers(missionInfo.cost));
 	end
 
-	if ( not disableError and C_Garrison.GetNumFollowersOnMission(missionPage.missionInfo.missionID) < missionPage.missionInfo.requiredChampionFollowers ) then
-		disableError = partyNotFullText or GARRISON_PARTY_NOT_FULL_TOOLTIP;
+	if ( not disableError ) then
+		local requiredChampions = missionPage.missionInfo.requiredChampionFollowers;
+		local numChampions = 0;
+		local followers = missionPage.Followers;
+		for followerIndex = 1, #followers do
+			local followerFrame = followers[followerIndex];
+			if ( followerFrame.info ) then
+				if (not followerFrame.info.isTroop) then
+					numChampions = numChampions + 1;
+				end
+			end
+		end
+		if ( numChampions < requiredChampions ) then
+			disableError = partyNotFullText or GARRISON_PARTY_NOT_FULL_TOOLTIP;
+		end
 	end
 
 	if ( not disableError) then

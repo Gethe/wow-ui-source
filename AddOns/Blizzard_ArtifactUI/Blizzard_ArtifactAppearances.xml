@@ -120,6 +120,7 @@
 		<Scripts>
 			<OnEvent method="OnEvent" />
 			<OnShow method="OnShow" />
+			<OnHide method="OnHide" />
 		</Scripts>
 	</Frame>
 </Ui>

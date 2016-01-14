@@ -1774,7 +1774,7 @@ function PaperDollItemSlotButton_OnEnter (self)
 	if ( not EquipmentFlyout_SetTooltipAnchor(self) ) then
 		GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
 	end
-	local hasItem, hasCooldown, repairCost = GameTooltip:SetInventoryItem("player", self:GetID());
+	local hasItem, hasCooldown, repairCost = GameTooltip:SetInventoryItem("player", self:GetID(), nil, true);
 	if ( not hasItem ) then
 		local text = _G[strupper(strsub(self:GetName(), 10))];
 		if ( self.checkRelic and UnitHasRelicSlot("player") ) then

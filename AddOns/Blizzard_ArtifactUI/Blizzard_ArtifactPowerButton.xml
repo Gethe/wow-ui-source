@@ -341,6 +341,7 @@
 			<OnEnter method="OnEnter"/>
 			<OnLeave function="GameTooltip_Hide" />
 			<OnClick method="OnClick" />
+			<OnDragStart method="OnDragStart" />
 		</Scripts>
 	</Button>
 </Ui>

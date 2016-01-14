@@ -456,14 +456,7 @@ function UnitFrameManaBar_UpdateType (manaBar)
 			end
 			
 			if ( manaBar.FullPowerFrame ) then
-				manaBar.FullPowerFrame.active = info.fullPowerAnim;
-				if ( info.fullPowerAnim ) then
-					manaBar.FullPowerFrame:RegisterEvent("PLAYER_REGEN_ENABLED");
-					manaBar.FullPowerFrame:SetScript("OnEvent", UnitFrameManaBar_FullPowerFrame_OnEvent);
-				else
-					manaBar.FullPowerFrame:UnregisterEvent("PLAYER_REGEN_ENABLED");
-					manaBar.FullPowerFrame:SetScript("OnEvent", nil);
-				end
+				manaBar.FullPowerFrame:Initialize(info.fullPowerAnim);
 			end
 		end
 	else
@@ -658,30 +651,6 @@ function UnitFrameManaBar_OnEvent(self, event, ...)
 	end
 end
 
-function UnitFrameManaBar_FullPowerFrame_OnEvent(self, event, ...)
-	-- Fade out anims if they are playing and player goes out of combat
-	if ( event == "PLAYER_REGEN_ENABLED" ) then
-		if ( self.SpikeFrame.SpikeAnim:IsPlaying() or self.PulseFrame.PulseAnim:IsPlaying() ) then
-			self.FadeoutAnim:Play();
-		end
-	end
-end
-
-function UnitFrameManaBar_FullPowerStartAnim(self, oldValue, newValue)
-	local frame = self.FullPowerFrame;
-	-- If going to max and in combat, show alert/pulse animations
-	if ( newValue == frame.maxValue and UnitAffectingCombat("player") ) then
-		frame.FadeoutAnim:Stop();
-		frame:SetAlpha(1);
-		frame.PulseFrame.PulseAnim:Play();
-		frame.SpikeFrame.SpikeAnim:Play();
-	-- If going from max to less than max and anims are playing, fade out anims
-	elseif ( oldValue == frame.maxValue and (frame.PulseFrame.PulseAnim:IsPlaying() or frame.SpikeFrame.SpikeAnim:IsPlaying()) ) then
-		frame.FadeoutAnim:Play();
-	end
-
-end
-
 function UnitFrameManaBar_OnUpdate(self)
 	if ( not self.disconnected and not self.lockValues ) then
 		local currValue = UnitPower(self.unit, self.powerType);
@@ -694,7 +663,7 @@ function UnitFrameManaBar_OnUpdate(self)
 					end
 				end
 				if ( self.FullPowerFrame and self.FullPowerFrame.active ) then
-					UnitFrameManaBar_FullPowerStartAnim(self, self.currValue or 0, currValue);
+					self.FullPowerFrame:StartAnimIfFull(self.currValue or 0, currValue);
 				end
 				self:SetValue(currValue);
 				self.currValue = currValue;
@@ -727,7 +696,7 @@ function UnitFrameManaBar_Update(statusbar, unit)
 		else
 			local currValue = UnitPower(unit, statusbar.powerType);
 			if ( statusbar.FullPowerFrame ) then
-				statusbar.FullPowerFrame.maxValue = maxValue;
+				statusbar.FullPowerFrame:SetMaxValue(maxValue);
 			end
 
 			statusbar:SetValue(currValue);

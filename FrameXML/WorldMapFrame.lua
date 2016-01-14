@@ -238,7 +238,7 @@ function WorldMapFrame_OnLoad(self)
 	self:RegisterEvent("DISPLAY_SIZE_CHANGED");
 	self:RegisterEvent("REQUEST_CEMETERY_LIST_RESPONSE");
 	self:RegisterEvent("UNIT_PORTRAIT_UPDATE");
-	self:RegisterEvent("ARTIFACT_DIG_SITE_UPDATED");
+	self:RegisterEvent("RESEARCH_ARTIFACT_DIG_SITE_UPDATED");
 	self:RegisterEvent("SUPER_TRACKED_QUEST_CHANGED");
 	self:RegisterEvent("PLAYER_STARTED_MOVING");
 	self:RegisterEvent("PLAYER_STOPPED_MOVING");
@@ -400,7 +400,7 @@ function WorldMapFrame_OnEvent(self, event, ...)
 				end				
 			end
 		end
-	elseif ( event == "ARTIFACT_DIG_SITE_UPDATED" ) then
+	elseif ( event == "RESEARCH_ARTIFACT_DIG_SITE_UPDATED" ) then
 		if ( self:IsShown() ) then
 			RefreshWorldMap();
 		end
@@ -566,11 +566,63 @@ function WorldMap_UpdateQuestBonusObjectives()
 			local x = info.x;
 			local y = info.y;
 			local questid = info.questId;
-				
+			local inProgress = info.inProgress;
+			
 			local taskPOIName = "WorldMapFrameTaskPOI"..taskIconCount;
 			local taskPOI = _G[taskPOIName];
 
-			_G[taskPOIName.."Texture"]:SetAtlas("QuestBonusObjective", true);
+			if ( QuestMapFrame_IsQuestWorldQuest(questid) ) then
+				taskPOI.worldQuest = true;
+				taskPOI.Texture:SetDrawLayer("OVERLAY");
+				taskPOI.Texture:SetAtlas(inProgress and "worldquest-questmarker-questionmark" or "worldquest-questmarker-questbang", true);
+
+				local tagID, tagName = GetQuestTagInfo(questid);
+
+				local isRare = tagID == QUEST_TAG_RARE_WORLD_QUEST or tagID == QUEST_TAG_RARE_ELITE_WORLD_QUEST;
+
+				if ( isRare ) then
+					taskPOI:SetSize(28, 28);
+					taskPOI:SetNormalAtlas("worldquest-questmarker-epic");
+					taskPOI:SetPushedAtlas("worldquest-questmarker-epic-down");
+					taskPOI:SetHighlightAtlas("worldquest-questmarker-epic");
+				else
+					taskPOI:SetSize(45, 45);
+					taskPOI:SetNormalTexture("Interface/WorldMap/UI-QuestPoi-NumberIcons");
+					taskPOI:GetNormalTexture():SetTexCoord(0.875, 1, 0.375, 0.5);
+
+					taskPOI:SetPushedTexture("Interface/WorldMap/UI-QuestPoi-NumberIcons");
+					taskPOI:GetPushedTexture():SetTexCoord(0.750, 0.875, 0.375, 0.5);
+
+					taskPOI:SetHighlightTexture("Interface/WorldMap/UI-QuestPoi-NumberIcons");
+					taskPOI:GetHighlightTexture():SetTexCoord(0.625, 0.750, 0.875, 1);
+				end
+
+				local isElite = tagID == QUEST_TAG_ELITE_WORLD_QUEST or tagID == QUEST_TAG_RARE_ELITE_WORLD_QUEST;
+
+				if ( isElite ) then
+					taskPOI.Underlay:SetAtlas("worldquest-questmarker-dragon");
+					taskPOI.Underlay:Show();
+				else
+					taskPOI.Underlay:Hide();
+				end
+
+				if ( tagID == QUEST_TAG_PVP_WORLD_QUEST) then
+					taskPOI.Overlay:Show();
+					taskPOI.Overlay:SetAtlas("worldquest-icon-pvp");
+				else
+					taskPOI.Overlay:Hide();
+				end
+			else
+				taskPOI:SetSize(32, 32);
+				taskPOI:SetNormalTexture(nil);
+				taskPOI:SetPushedTexture(nil);
+				taskPOI:SetHighlightTexture(nil);
+				taskPOI.Underlay:Hide();
+				taskPOI.Overlay:Hide();
+				taskPOI.Texture:SetAtlas("QuestBonusObjective", true);
+				taskPOI.Texture:SetDrawLayer("BACKGROUND");
+				taskPOI.worldQuest = false;
+			end
 			x = x * WorldMapButton:GetWidth();
 			y = -y * WorldMapButton:GetHeight();
 			taskPOI:SetPoint("CENTER", "WorldMapButton", "TOPLEFT", x, y);
@@ -978,12 +1030,13 @@ function WorldMapFrame_Update()
 				local frame = STORYLINE_FRAMES[numUsedStoryLineFrames];
 				if ( not frame ) then
 					frame = CreateFrame("FRAME", "WorldMapStoryLine"..numUsedStoryLineFrames, WorldMapButton, "WorldMapStoryLineTemplate");
+					
+					local texture = frame:CreateTexture(nil,"BACKGROUND");
+					texture:SetAtlas("QuestNormal", true);
+					texture:SetPoint("CENTER", 0, 0);
+
 					STORYLINE_FRAMES[numUsedStoryLineFrames] = frame;
 				end
-
-				local texture = frame:CreateTexture(nil,"BACKGROUND");
-				texture:SetAtlas("QuestNormal", true);
-				texture:SetPoint("CENTER", 0, 0);
 				frame.index = i;
 				frame:SetPoint("CENTER", "WorldMapDetailFrame", "TOPLEFT", x * mapWidth, -y * mapHeight);
 				frame:Show();
@@ -1219,6 +1272,11 @@ function TaskPOI_OnLeave(self)
 	WorldMapTooltip:Hide();
 end
 
+function TaskPOI_OnClick(self, button)
+	if self.worldQuest then
+		-- TODO: track world quests
+	end
+end
 
 function ScenarioPOI_OnEnter(self)
 	if(ScenarioPOITooltips[self.name] ~= nil) then
@@ -1298,10 +1356,23 @@ end
 
 function WorldMap_CreateTaskPOI(index)
 	local button = CreateFrame("Button", "WorldMapFrameTaskPOI"..index, WorldMapButton);
+	button:RegisterForClicks("LeftButtonUp", "RightButtonUp");
 	button:SetScript("OnEnter", TaskPOI_OnEnter);
 	button:SetScript("OnLeave", TaskPOI_OnLeave);
+	button:SetScript("OnClick", TaskPOI_OnClick);
 	
 	button.Texture = button:CreateTexture(button:GetName().."Texture", "BACKGROUND");
+
+	button.Underlay = button:CreateTexture(button:GetName().."Underlay", "BACKGROUND");
+	button.Underlay:SetWidth(48);
+	button.Underlay:SetHeight(48);
+	button.Underlay:SetPoint("CENTER", 0, -3);
+
+	button.Overlay = button:CreateTexture(button:GetName().."Overlay", "OVERLAY");
+	button.Overlay:SetWidth(24);
+	button.Overlay:SetHeight(21);
+	button.Overlay:SetPoint("CENTER", 13, -8);
+
 	WorldMap_ResetPOI(button, true, false)
 end
 

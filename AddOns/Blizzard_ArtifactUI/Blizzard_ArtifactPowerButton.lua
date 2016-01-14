@@ -16,6 +16,7 @@ ARTIFACT_POWER_STYLE_UNPURCHASED_READ_ONLY = 8;
 
 function ArtifactPowerButtonMixin:OnLoad()
 	self:RegisterForClicks("LeftButtonUp", "RightButtonUp");
+	self:RegisterForDrag("LeftButton");
 
 	local NUM_RUNE_TYPES = 11;
 	local runeIndex = math.random(1, NUM_RUNE_TYPES);
@@ -50,6 +51,12 @@ function ArtifactPowerButtonMixin:OnClick(button)
 				self.sequenceIndex = nil;
 			end
 		end
+	end
+end
+
+function ArtifactPowerButtonMixin:OnDragStart()
+	if not self.locked and self.spellID and not IsPassiveSpell(self.spellID) then
+		PickupSpell(self.spellID);
 	end
 end
 

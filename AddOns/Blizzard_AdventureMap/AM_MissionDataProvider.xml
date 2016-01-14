@@ -1,11 +1,10 @@
-<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
-..\FrameXML\UI.xsd">
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/..\FrameXML\UI.xsd">
 	<Script file="AM_MissionDataProvider.lua"/>
 	<Script file="AM_MissionTooltip.lua"/>
 
 	<Frame name="AdventureMap_MissionPinTemplate" hidden="true" enableMouse="true" mixin="AdventureMap_MissionPinMixin" virtual="true">
 		<Size x="42" y="42"/>
-		
+
 		<Layers>
 			<Layer level="BACKGROUND" textureSubLevel="-1">
 				<Texture parentKey="Icon">
@@ -54,14 +53,14 @@
 					<OnLoad>
 						self:RegisterEvent("UI_SCALE_CHANGED");
 						self:RegisterEvent("DISPLAY_SIZE_CHANGED");
-						
+
 						local factionGroup = UnitFactionGroup("player");
 						if factionGroup == "Horde" then
 							self:SetDisplayInfo(54913);
 						else
 							self:SetDisplayInfo(54912);
 						end
-						
+
 						self:SetTargetDistance(0);
 						self:SetHeightFactor(.25);
 						self:SetFacing(-.4);
@@ -100,7 +99,7 @@
 			<OnUpdate method="OnUpdate" />
 		</Scripts>
 	</Frame>
-	
+
 	<Frame name="AdventureMap_MissionRewardTemplate" parentArray="Rewards" inherits="GarrisonMissionRewardEffectsTemplate" hidden="true" virtual="true">
 		<Layers>
 			<Layer level="BACKGROUND" textureSubLevel="-1">
@@ -117,7 +116,7 @@
 			</OnMouseUp>
 		</Scripts>
 	</Frame>
-	
+
 	<Frame name="AdventureMap_MissionRewardPinTemplate" hidden="true" mixin="AdventureMap_MissionRewardPinMixin" virtual="true">
 		<Size x="152" y="150"/>
 
@@ -127,13 +126,13 @@
 					<Anchor point="CENTER"/>
 				</Anchors>
 			</Frame>
-			
+
 			<Frame parentKey="Reward2" inherits="AdventureMap_MissionRewardTemplate">
 				<Anchors>
 					<Anchor point="TOP" relativeKey="$parent.Reward1" relativePoint="BOTTOM" y="-5"/>
 				</Anchors>
 			</Frame>
-		
+
 			<Frame parentKey="Reward3" inherits="AdventureMap_MissionRewardTemplate">
 				<Anchors>
 					<Anchor point="BOTTOM" relativeKey="$parent.Reward1" relativePoint="TOP" y="5"/>

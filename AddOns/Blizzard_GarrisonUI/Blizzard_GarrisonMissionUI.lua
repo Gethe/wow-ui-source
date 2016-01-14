@@ -1,5 +1,3 @@
-GARRISON_FOLLOWER_LIST_BUTTON_FULL_XP_WIDTH = 205;
-GARRISON_FOLLOWER_MAX_LEVEL = 100;
 GARRISON_MISSION_COMPLETE_BANNER_WIDTH = 300;
 GARRISON_MODEL_PRELOAD_TIME = 20;
 GARRISON_LONG_MISSION_TIME = 8 * 60 * 60;	-- 8 hours
@@ -13,6 +11,14 @@ local MISSION_PAGE_FRAME;	-- set in GarrisonMissionFrame_OnLoad
 
 GarrisonFollowerMission = {};
 
+function GarrisonFollowerMission:SetupMissionList()
+	self.MissionTab.MissionList.listScroll.update = GarrisonMissionList_Update;
+	HybridScrollFrame_CreateButtons(self.MissionTab.MissionList.listScroll, "GarrisonMissionListButtonTemplate", 13, -8, nil, nil, nil, -4);
+	GarrisonMissionList_Update();
+	
+	GarrisonMissionList_SetTab(self.MissionTab.MissionList.Tab1);
+end
+
 function GarrisonFollowerMission:OnLoadMainFrame()
 	GarrisonMission.OnLoadMainFrame(self);
 
@@ -24,11 +30,7 @@ function GarrisonFollowerMission:OnLoadMainFrame()
 
 	self:UpdateCurrency();
 	
-	self.MissionTab.MissionList.listScroll.update = GarrisonMissionList_Update;
-	HybridScrollFrame_CreateButtons(self.MissionTab.MissionList.listScroll, "GarrisonMissionListButtonTemplate", 13, -8, nil, nil, nil, -4);
-	GarrisonMissionList_Update();
-	
-	GarrisonMissionList_SetTab(self.MissionTab.MissionList.Tab1);
+	self:SetupMissionList();
 	
 	local factionGroup = UnitFactionGroup("player");
 	if ( factionGroup == "Horde" ) then
@@ -473,6 +475,8 @@ local tutorials = {
 	[8] = { text1 = GARRISON_MISSION_TUTORIAL9, xOffset = 536, yOffset = -474, downArrow = true, parent = "MissionPage" },	
 }
 
+
+-- TODO: Move these GarrisonMissionFrame_ functions to the GarrisonFollowerMission mixin
 function GarrisonMissionFrame_OnClickMissionTutorialButton(self)
 	PlaySound("igMainMenuOptionCheckBoxOn");
 	GarrisonMissionFrame_CheckTutorials(true);
@@ -599,9 +603,11 @@ end
 
 function GarrisonMissionFrame_UpdateRewards(self, itemID)
 	-- mission list
-	local missionButtons = self.MissionTab.MissionList.listScroll.buttons;
-	for i = 1, #missionButtons do
-		GarrisonMissionFrame_CheckRewardButtons(missionButtons[i].Rewards, itemID);
+	if (self.MissionTab.MissionList) then
+		local missionButtons = self.MissionTab.MissionList.listScroll.buttons;
+		for i = 1, #missionButtons do
+			GarrisonMissionFrame_CheckRewardButtons(missionButtons[i].Rewards, itemID);
+		end
 	end
 	-- mission page
 	GarrisonMissionFrame_CheckRewardButtons(MISSION_PAGE_FRAME.RewardsFrame.Rewards, itemID);
@@ -830,7 +836,7 @@ function GarrisonMissionList_Update()
 				button.IconBG:SetVertexColor(0, 0, 0, 0.4)
 			end
 			local showingItemLevel = false;
-			if ( mission.level == GARRISON_FOLLOWER_MAX_LEVEL and mission.iLevel > 0 ) then
+			if ( mission.isMaxLevel and mission.iLevel > 0 ) then
 				button.ItemLevel:SetFormattedText(NUMBER_IN_PARENTHESES, mission.iLevel);
 				button.ItemLevel:Show();
 				showingItemLevel = true;
@@ -1001,7 +1007,7 @@ end
 function GarrisonMissionButton_SetInProgressTooltip(missionInfo, showRewards)
 	GameTooltip:SetText(missionInfo.name);
 	-- level
-	if ( missionInfo.level == GARRISON_FOLLOWER_MAX_LEVEL and missionInfo.iLevel > 0 ) then
+	if ( missionInfo.isMaxLevel and missionInfo.iLevel > 0 ) then
 		GameTooltip:AddLine(format(GARRISON_MISSION_LEVEL_ITEMLEVEL_TOOLTIP, missionInfo.level, missionInfo.iLevel), 1, 1, 1);
 	else
 		GameTooltip:AddLine(format(GARRISON_MISSION_LEVEL_TOOLTIP, missionInfo.level), 1, 1, 1);
@@ -1194,14 +1200,14 @@ end
 --- Mission Page: Placing Followers/Starting Mission                          ---
 ---------------------------------------------------------------------------------
 function GarrisonFollowerListButton_OnDragStart(self, button)
-	local mainFrame = self:GetParent():GetParent():GetParent():GetParent();
+	local mainFrame = self:GetFollowerList():GetParent();
 	if (mainFrame.OnDragStartFollowerButton) then
 		mainFrame:OnDragStartFollowerButton(GarrisonFollowerPlacer, self, 24);
 	end
 end
 
 function GarrisonFollowerListButton_OnDragStop(self)
-	local mainFrame = self:GetParent():GetParent():GetParent():GetParent();
+	local mainFrame = self:GetFollowerList():GetParent();
 	if (mainFrame.OnDragStopFollowerButton) then
 		mainFrame:OnDragStopFollowerButton(GarrisonFollowerPlacer);
 	end

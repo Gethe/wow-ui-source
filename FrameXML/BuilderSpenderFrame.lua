@@ -144,3 +144,46 @@ function BuilderSpender:StartFeedbackAnim(oldValue, newValue)
 		self.animLossStartTime = GetTime();
 	end
 end
+
+--
+-- Full Resource Pulse
+--
+
+FullResourcePulse = {};
+
+function FullResourcePulse:Initialize(active)
+	self.active = active;
+	if ( active ) then
+		self:RegisterEvent("PLAYER_REGEN_ENABLED");
+		self:SetScript("OnEvent", FullResourcePulse_OnEvent);
+	else
+		self:UnregisterEvent("PLAYER_REGEN_ENABLED");
+		self:SetScript("OnEvent", nil);
+	end
+end
+
+function FullResourcePulse:SetMaxValue(maxValue)
+	self.maxValue = maxValue;
+end
+
+function FullResourcePulse_OnEvent(self, event)
+	-- Fade out anims if they are playing and player goes out of combat
+	if ( event == "PLAYER_REGEN_ENABLED" ) then
+		if ( self.SpikeFrame.SpikeAnim:IsPlaying() or self.PulseFrame.PulseAnim:IsPlaying() ) then
+			self.FadeoutAnim:Play();
+		end
+	end
+end
+
+function FullResourcePulse:StartAnimIfFull(oldValue, newValue)
+	-- If going to max and in combat, show alert/pulse animations
+	if ( newValue == self.maxValue and UnitAffectingCombat("player") ) then
+		self.FadeoutAnim:Stop();
+		self:SetAlpha(1);
+		self.PulseFrame.PulseAnim:Play();
+		self.SpikeFrame.SpikeAnim:Play();
+	-- If going from max to less than max and anims are playing, fade out anims
+	elseif ( oldValue == self.maxValue and (self.PulseFrame.PulseAnim:IsPlaying() or self.SpikeFrame.SpikeAnim:IsPlaying()) ) then
+		self.FadeoutAnim:Play();
+	end
+end

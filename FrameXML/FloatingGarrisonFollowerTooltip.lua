@@ -81,14 +81,14 @@ function GarrisonFollowerTooltipTemplate_SetGarrisonFollower(tooltipFrame, data,
 		tooltipFrame.XP:Hide();
 		tooltipFrame.XPBar:Hide();
 		tooltipFrame.XPBarBackground:Hide();
-	elseif (data.level == GARRISON_FOLLOWER_MAX_LEVEL and data.quality >= GARRISON_FOLLOWER_MAX_UPGRADE_QUALITY) then
+	elseif (data.isMaxLevel and data.quality >= GARRISON_FOLLOWER_MAX_UPGRADE_QUALITY) then
 		tooltipFrame.ILevel:Show();
 		tooltipFrame.XP:Hide();
 		tooltipFrame.XPBar:Hide();
 		tooltipFrame.XPBarBackground:Hide();
 	else
 		tooltipFrame.ILevel:Hide();
-		if (data.level == GARRISON_FOLLOWER_MAX_LEVEL) then
+		if (data.isMaxLevel) then
 			tooltipFrame.XP:SetFormattedText(GARRISON_FOLLOWER_TOOLTIP_UPGRADE_XP, data.levelxp - data.xp);
 		else
 			tooltipFrame.XP:SetFormattedText(GARRISON_FOLLOWER_TOOLTIP_XP, data.levelxp - data.xp);

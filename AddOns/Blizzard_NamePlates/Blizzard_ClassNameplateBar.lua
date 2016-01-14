@@ -136,6 +136,14 @@ function ClassNameplateManaBar:SetupBar()
 
 		self.FeedbackFrame:Initialize(info, "player", powerType);
 		self:SetScript("OnUpdate", ClassNameplateManaBar_OnUpdate);
+			
+		self.FullPowerFrame:SetSize(86, 6);
+		self.FullPowerFrame.SpikeFrame:SetSize(86, 6);
+		self.FullPowerFrame.PulseFrame:SetSize(86, 6);
+		self.FullPowerFrame.SpikeFrame.AlertSpikeStay:SetSize(30, 12);
+		self.FullPowerFrame.PulseFrame.YellowGlow:SetSize(20, 20);
+		self.FullPowerFrame.PulseFrame.SoftGlow:SetSize(20, 20);
+		self.FullPowerFrame:Initialize(info.fullPowerAnim);
 	end
 	self.powerToken = powerToken;
 	self.powerType = powerType;
@@ -145,7 +153,9 @@ function ClassNameplateManaBar:SetupBar()
 end
 
 function ClassNameplateManaBar:UpdateMaxPower()
-	self:SetMinMaxValues(0, UnitPowerMax("player", self.powerType));
+	local maxValue = UnitPowerMax("player", self.powerType);
+	self:SetMinMaxValues(0, maxValue);
+	self.FullPowerFrame:SetMaxValue(maxValue);
 end
 
 function ClassNameplateManaBar:UpdatePower()
@@ -158,6 +168,9 @@ function ClassNameplateManaBar_OnUpdate(self)
 		-- Only show anim if change is more than 10%
 		if ( math.abs(currValue - self.currValue) / self.FeedbackFrame.maxValue > 0.1 ) then
 			self.FeedbackFrame:StartFeedbackAnim(self.currValue or 0, currValue);
+		end
+		if ( self.FullPowerFrame.active ) then
+			self.FullPowerFrame:StartAnimIfFull(self.currValue or 0, currValue);
 		end
 		self.currValue = currValue;
 	end

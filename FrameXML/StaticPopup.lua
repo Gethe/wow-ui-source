@@ -580,7 +580,7 @@ StaticPopupDialogs["CONFIRM_RESET_CHALLENGE_MODE"] = {
 	button1 = YES,
 	button2 = NO,
 	OnAccept = function(self)
-		ResetChallengeMode();
+		C_ChallengeMode.Reset();
 	end,
 	timeout = 0,
 	whileDead = 1,

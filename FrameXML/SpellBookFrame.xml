@@ -281,6 +281,11 @@
 						</Anchor>
 					</Anchors>
 				</Texture>
+				<Texture parentKey="GlyphIcon" hidden="true" alpha="1" alphaMode="BLEND" atlas="GlyphIcon-Spellbook" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="TOPRIGHT" x="5" y="4"/>
+					</Anchors>
+				</Texture>
 				<Texture parentKey="GlyphActivate" hidden="true" alpha="1" alphaMode="ADD" file="Interface\Buttons\CheckButtonHilight-Blue" useAtlasSize="true">
 					<Anchors>
 						<Anchor point="CENTER"/>
@@ -293,6 +298,11 @@
 				</Texture>
 			</Layer>
 			<Layer level="OVERLAY" textureSubLevel="1">
+				<Texture parentKey="GlyphTranslation" hidden="true" alpha="1" alphaMode="ADD" atlas="GlyphIcon-Spellbook" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="TOPRIGHT" x="5" y="4"/>
+					</Anchors>
+				</Texture>
 				<Texture name="$parentFlyoutArrow" file="Interface\Buttons\ActionBarFlyoutButton" parentKey="FlyoutArrow" hidden="true">
 					<Size x="23" y="11"/>	
 					<Anchors>
@@ -367,6 +377,11 @@
 				<Alpha childKey="GlyphActivate" duration="0.25" order="1" fromAlpha="0" toAlpha="1"/>
 				<Alpha childKey="GlyphActivate" startDelay="0.25" duration="0.75" order="1" fromAlpha="1" toAlpha="0"/>
 				<Scale childKey="GlyphActivate" smoothing="OUT" duration="0.25" order="1" fromScaleX="1" fromScaleY="1" toScaleX="1.35" toScaleY="1.35"/>
+				<Alpha childKey="GlyphIcon" smoothing="OUT" duration="0.25" order="1" fromAlpha="0" toAlpha="1"/>
+				<Scale childKey="GlyphIcon" smoothing="IN" duration="0.25" order="1" fromScaleX="1.75" fromScaleY="1.75" toScaleX="1" toScaleY="1"/>
+				<Alpha childKey="GlyphTranslation" smoothing="OUT" duration="0.25" order="1" fromAlpha="0" toAlpha="1"/>
+				<Translation childKey="GlyphTranslation" smoothing="OUT" duration="0.25" order="1" offsetX="-2" offsetY="-2"/>
+				<Alpha childKey="GlyphTranslation" startDelay="0.25" smoothing="OUT" duration="0.25" order="1" fromAlpha="1" toAlpha="0"/>
 				<Scripts>
 					<OnFinished>
 						self:GetParent().GlyphActivate:Hide();

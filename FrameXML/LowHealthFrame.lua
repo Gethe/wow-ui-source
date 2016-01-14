@@ -14,6 +14,8 @@ function LowHealthFrameMixin:OnLoad()
 
 	self.lowHealthMaxAlpha = 1.0;
 	self.lowHealthMinAlpha = .15;
+	self.lowHealthReducedMaxAlpha = 0.5;
+	self.lowHealthReducedMinAlpha = .15;
 	
 	self:EvaluateVisibleState();
 	
@@ -121,24 +123,53 @@ function LowHealthFrameMixin:EvaluateVisibleState()
 			newMaxAlpha = self.lowHealthMaxAlpha;
 		end
 		
-		local alphaAnim = self.pulseAnim.AlphaAnim;
-		alphaAnim:SetFromAlpha(newMinAlpha);
-		alphaAnim:SetToAlpha(newMaxAlpha);
+		if (not self:IsShown()) then
+			local alphaAnim = self.pulseAnim.AlphaAnim;
+			alphaAnim:SetFromAlpha(newMinAlpha);
+			alphaAnim:SetToAlpha(newMaxAlpha);
+		end
 		
 		-- check if the pulse animation is playing
 		if not self.pulseAnim:IsPlaying() then
 			self:Show();
 			self.pulseAnim:Play();
+			if (healthState == LOW_HEALTH_FRAME_STATE_LOW_HEALTH) then
+				self.fadeStart = GetTime() + 2;
+				self.fadeEnd = GetTime() + 3;
+				self:SetScript("OnUpdate", LowHealth_OnUpdate);
+			end
 		end
 	else
 		error("Unknown Low Health Frame State");
 	end
 end
 
+function LowHealth_OnUpdate(self)
+	local healthState = self:DetermineFlashState();
+	if healthState == LOW_HEALTH_FRAME_STATE_DISABLED then
+		self.pulseAnim:Stop();
+		self:Hide();
+		self:SetScript("OnUpdate", nil);
+		return;
+	end
+	
+	local now = GetTime();
+	if (now > self.fadeEnd) then
+		self:SetScript("OnUpdate", nil);
+	elseif (now > self.fadeStart) then
+		local alphaAnim = self.pulseAnim.AlphaAnim;
+		local lerpAmount = (now - self.fadeStart) / (self.fadeEnd - self.fadeStart);
+		alphaAnim:SetFromAlpha(Lerp(self.lowHealthMinAlpha, self.lowHealthReducedMinAlpha, lerpAmount));
+		alphaAnim:SetToAlpha(Lerp(self.lowHealthMaxAlpha, self.lowHealthReducedMaxAlpha, lerpAmount));
+	end
+end
+
 function LowHealthFrameMixin:SetInCombat(inCombat)
 	if self.inCombat ~= inCombat then
 		self.inCombat = inCombat;
-
+		if ( self.inCombat ) then
+			FlashClientIcon();
+		end
 		self:EvaluateVisibleState();
 	end
 end

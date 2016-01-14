@@ -6,6 +6,13 @@ local minFollowersForThreatCountersFrame = 10;
 --- Follower List                                                             ---
 ---------------------------------------------------------------------------------
 
+local FOLLOWER_BUTTON_HEIGHT = 56;
+local TROOP_BUTTON_HEIGHT = 56;
+local CATEGORY_BUTTON_HEIGHT = 20;
+local FOLLOWER_LIST_BUTTON_OFFSET = -6;
+local FOLLOWER_LIST_BUTTON_INITIAL_OFFSET = -7;
+local GARRISON_FOLLOWER_LIST_BUTTON_FULL_XP_WIDTH = 205;
+
 GarrisonFollowerList = {};
 
 function GarrisonFollowerList:Initialize(followerType)
@@ -28,12 +35,12 @@ function GarrisonFollowerList:Setup(mainFrame, followerType, followerTemplate, i
 	self.listScroll.dynamic = function(offset) return GarrisonFollowerList_GetTopButton(self, offset); end;
 
 	if (not followerTemplate) then
-		followerTemplate = "GarrisonMissionFollowerButtonTemplate";
+		followerTemplate = "OrderHallMissionFollowerListButtonTemplate"; --"GarrisonMissionFollowerButtonTemplate";
 	end
 	if (not initialOffsetX) then
 		initialOffsetX = 7;
 	end
-	HybridScrollFrame_CreateButtons(self.listScroll, followerTemplate, initialOffsetX, -7, nil, nil, nil, -6);
+	HybridScrollFrame_CreateButtons(self.listScroll, followerTemplate, initialOffsetX, FOLLOWER_LIST_BUTTON_INITIAL_OFFSET, nil, nil, nil, FOLLOWER_LIST_BUTTON_OFFSET);
 	self.listScroll.followerFrame = mainFrame;
 	
 	GarrisonFollowerList_UpdateFollowers(self);
@@ -46,6 +53,10 @@ function GarrisonFollowerList:Setup(mainFrame, followerType, followerTemplate, i
 	self:RegisterEvent("CURSOR_UPDATE");
 	self:SetScript("OnEvent", GarrisonFollowerList_OnEvent);
 end
+
+--function GarrisonFollowerList:GetMainFrame()
+--	return self:GetParent():GetParent():GetParent():GetParent();
+--end
 
 function GarrisonFollowerList:OnShow()
 	if (self.followerTab) then
@@ -85,6 +96,13 @@ end
 function GarrisonFollowerList:OnHide()
 	self.followers = nil;
 end
+
+GarrisonFollowerListButton = { };
+
+function GarrisonFollowerListButton:GetFollowerList()
+	return self:GetParent():GetParent():GetParent();
+end
+
 
 function GarrisonFollowerList_OnEvent(self, event, ...)
 	if (event == "GARRISON_FOLLOWER_LIST_UPDATE" or event == "GARRISON_FOLLOWER_XP_CHANGED") then
@@ -155,36 +173,50 @@ function GarrisonFollowListEditBox_OnTextChanged(self)
 end
 
 function GarrisonFollowerList_UpdateFollowers(self)
-	local followerList = self;
-	if ( followerList.dirtyList ) then
-		followerList.followers = C_Garrison.GetFollowers(self.followerType);
-		if (BlizzardGarrisonTroopList ~= nil and followerList.followers ~= nil) then
+
+	if ( self.dirtyList ) then
+		self.followers = C_Garrison.GetFollowers(self.followerType);
+		if (BlizzardGarrisonTroopList ~= nil and self.followers ~= nil) then
 			for j, troop in ipairs(BlizzardGarrisonTroopList) do
 				local troop64 = string.format("0x%016X", troop);
-				for i, f in ipairs(followerList.followers) do
+				for i, f in ipairs(self.followers) do
 					if (f.garrFollowerID == troop64) then
 						f.isTroop = true;
 					end
 				end
 			end
 		end
-		followerList.dirtyList = nil;
+		self.dirtyList = nil;
 	end
 
-	if ( not followerList.followers ) then
+	if ( not self.followers ) then
 		return;
 	end
 
-	followerList.followersList = { };
+	self.followersList = { };
+	self.followersLabels = { };
 
 	local searchString = "";
-	if ( followerList.SearchBox ) then
-		searchString = followerList.SearchBox:GetText();
+	if ( self.SearchBox ) then
+		searchString = self.SearchBox:GetText();
 	end
 	
-	for i = 1, #followerList.followers do
+	local numActive = 0;
+	local numTroops = 0;
+	local numInactive = 0;
+	local numUncollected = 0;
+	for i = 1, #self.followers do
 		if ( (self.followers[i].isCollected or self.showUncollected) and (searchString == "" or C_Garrison.SearchForFollower(self.followers[i].followerID, searchString)) ) then
 			tinsert(self.followersList, i);
+			if (not self.followers[i].isCollected) then
+				numUncollected = numUncollected + 1;
+			elseif (self.followers[i].isTroop) then
+				numTroops = numTroops + 1;
+			elseif (self.followers[i].status == GARRISON_FOLLOWER_INACTIVE) then
+				numInactive = numInactive + 1;
+			else
+				numActive = numActive + 1;
+			end
 		end
 	end
 
@@ -207,6 +239,28 @@ function GarrisonFollowerList_UpdateFollowers(self)
 	end
 
 	GarrisonFollowerList_SortFollowers(self);
+
+	-- The sort above will yield the following sort order: Active followers, troops, inactive followers. Insert new entries for the appropriate
+	-- category labels at the correct locations. Category labels will have "followerID" set to 0.
+	self.showCategories = true;
+	if (self.showCategories) then
+	    local additionalOffset = 0;
+	    if ( numTroops > 0 ) then
+		    additionalOffset = additionalOffset + 1;
+		    tinsert(self.followersList, numActive + additionalOffset, 0);
+		    self.followersLabels[numActive + additionalOffset] = FOLLOWERLIST_LABEL_TROOPS;
+	    end
+	    if ( numInactive > 0 ) then
+		    additionalOffset = additionalOffset + 1;
+		    tinsert(self.followersList, numActive + numTroops + additionalOffset, 0);
+		    self.followersLabels[numActive + numTroops + additionalOffset] = FOLLOWERLIST_LABEL_INACTIVE;
+	    end
+		if ( numUncollected > 0 ) then
+		    additionalOffset = additionalOffset + 1;
+			tinsert(self.followersList, numActive + numTroops + numInactive + additionalOffset, 0)
+		    self.followersLabels[numActive + numTroops + numInactive + additionalOffset] = FOLLOWERLIST_LABEL_UNCOLLECTED;
+		end
+	end
 	self:UpdateData();
 end
 
@@ -219,10 +273,14 @@ function GarrisonFollowerList_GetTopButton(self, offset)
 	local totalHeight = 0;
 	for i = 1, #sortedList do
 		local height;
-		if ( followers[sortedList[i]].followerID == expandedFollower ) then
+		if ( sortedList[i] == 0 ) then
+			height = CATEGORY_BUTTON_HEIGHT - FOLLOWER_LIST_BUTTON_OFFSET;
+		elseif ( followers[sortedList[i]].followerID == expandedFollower ) then
 			height = followerFrame.expandedFollowerHeight;
+		elseif ( followers[sortedList[i]].isTroop ) then
+			height = TROOP_BUTTON_HEIGHT - FOLLOWER_LIST_BUTTON_OFFSET;
 		else
-			height = buttonHeight;
+			height = FOLLOWER_BUTTON_HEIGHT - FOLLOWER_LIST_BUTTON_OFFSET;
 		end
 		totalHeight = totalHeight + height;
 		if ( totalHeight > offset ) then
@@ -234,10 +292,31 @@ function GarrisonFollowerList_GetTopButton(self, offset)
 	return #followers, 0;
 end
 
+function GarrisonFollowerList_SetButtonMode(followerList, button, mode)
+	if (mode == "CATEGORY") then
+		followerList:CollapseButton(button.champion);
+		button:SetHeight(CATEGORY_BUTTON_HEIGHT);
+	elseif (mode == "FOLLOWER") then
+		button:SetHeight(FOLLOWER_BUTTON_HEIGHT);
+	elseif (mode == "TROOP") then
+		button:SetHeight(TROOP_BUTTON_HEIGHT);
+	end
+
+	button.mode = mode;
+	button.champion:SetShown(mode == "FOLLOWER" or mode == "TROOP");
+	button.category:SetShown(mode == "CATEGORY");
+
+	button.champion.ILevel:SetShown(mode == "FOLLOWER");
+	for i = 1, #button.champion.durability do
+		button.champion.durability[i]:Hide();
+	end
+end
+
 function GarrisonFollowerList:UpdateData()
 	local followerFrame = self:GetParent();
 	local followers = self.followers;
 	local followersList = self.followersList;
+	local categoryLabels = self.followersLabels;
 	local numFollowers = #followersList;
 	local scrollFrame = self.listScroll;
 	local offset = HybridScrollFrame_GetOffset(scrollFrame);
@@ -247,124 +326,169 @@ function GarrisonFollowerList:UpdateData()
 	local canExpand = self.canExpand;
 	local mentorLevel = GarrisonMissionFrame and GarrisonMissionFrame.MissionTab.MissionPage.mentorLevel or 0;
 	local mentorItemLevel = GarrisonMissionFrame and GarrisonMissionFrame.MissionTab.MissionPage.mentorItemLevel or 0;
-					
+	local totalHeight = -FOLLOWER_LIST_BUTTON_INITIAL_OFFSET;
+
 	for i = 1, numButtons do
 		local button = buttons[i];
 		local index = offset + i; -- adjust index
-		if ( index <= numFollowers ) then
+		if ( index <= numFollowers and followersList[index] == 0 ) then
+			GarrisonFollowerList_SetButtonMode(self, button, "CATEGORY");
+			button.category:SetText(categoryLabels[index]);
+			button:Show();
+		elseif ( index <= numFollowers ) then
 			local follower = followers[followersList[index]];
-			button.id = follower.followerID;
-			button.info = follower;
-			button.Name:SetText(follower.name);
-			button.Class:SetAtlas(follower.classAtlas);
-			button.Status:SetText(follower.status);
-			if ( follower.status == GARRISON_FOLLOWER_INACTIVE ) then
-				button.Status:SetTextColor(1, 0.1, 0.1);
+
+			if (follower.isTroop) then
+				GarrisonFollowerList_SetButtonMode(self, button, "TROOP");
 			else
-				button.Status:SetTextColor(0.698, 0.941, 1);
+				GarrisonFollowerList_SetButtonMode(self, button, "FOLLOWER");
+			end
+
+			button.champion.id = follower.followerID;
+			button.champion.info = follower;
+			button.champion.Name:SetText(follower.name);
+			button.champion.Class:SetAtlas(follower.classAtlas);
+			button.champion.Status:SetText(follower.status);
+			if ( follower.status == GARRISON_FOLLOWER_INACTIVE ) then
+				button.champion.Status:SetTextColor(1, 0.1, 0.1);
+			else
+				button.champion.Status:SetTextColor(0.698, 0.941, 1);
 			end
 			local color = ITEM_QUALITY_COLORS[follower.quality];
-			button.PortraitFrame.LevelBorder:SetVertexColor(color.r, color.g, color.b);
-			button.PortraitFrame.Level:SetText(follower.level);
-			GarrisonFollowerPortrait_Set(button.PortraitFrame.Portrait, follower.portraitIconID);
+			button.champion.PortraitFrame.LevelBorder:SetVertexColor(color.r, color.g, color.b);
+			button.champion.PortraitFrame.Level:SetText(follower.level);
+			GarrisonFollowerPortrait_Set(button.champion.PortraitFrame.Portrait, follower.portraitIconID);
 			if ( follower.isCollected ) then
 				-- have this follower
-				button.isCollected = true;
-				button.Name:SetTextColor(NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b);
-				button.Class:SetDesaturated(false);
-				button.Class:SetAlpha(0.2);
-				button.PortraitFrame.PortraitRingQuality:Show();
-				button.PortraitFrame.PortraitRingQuality:SetVertexColor(color.r, color.g, color.b);
-				button.PortraitFrame.Portrait:SetDesaturated(false);
+				button.champion.isCollected = true;
+				button.champion.Name:SetTextColor(NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b);
+				button.champion.Class:SetDesaturated(false);
+				button.champion.Class:SetAlpha(0.2);
+				button.champion.PortraitFrame.PortraitRingQuality:Show();
+				button.champion.PortraitFrame.PortraitRingQuality:SetVertexColor(color.r, color.g, color.b);
+				button.champion.PortraitFrame.Portrait:SetDesaturated(false);
 				if ( follower.status == GARRISON_FOLLOWER_INACTIVE ) then
-					button.PortraitFrame.PortraitRingCover:Show();
-					button.PortraitFrame.PortraitRingCover:SetAlpha(0.5);
-					button.BusyFrame:Show();
-					button.BusyFrame.Texture:SetColorTexture(unpack(GARRISON_FOLLOWER_INACTIVE_COLOR));
+					button.champion.PortraitFrame.PortraitRingCover:Show();
+					button.champion.PortraitFrame.PortraitRingCover:SetAlpha(0.5);
+					button.champion.BusyFrame:Show();
+					button.champion.BusyFrame.Texture:SetColorTexture(unpack(GARRISON_FOLLOWER_INACTIVE_COLOR));
 				elseif ( follower.status ) then
-					button.PortraitFrame.PortraitRingCover:Show();
-					button.PortraitFrame.PortraitRingCover:SetAlpha(0.5);
-					button.BusyFrame:Show();
-					button.BusyFrame.Texture:SetColorTexture(unpack(GARRISON_FOLLOWER_BUSY_COLOR));
+					button.champion.PortraitFrame.PortraitRingCover:Show();
+					button.champion.PortraitFrame.PortraitRingCover:SetAlpha(0.5);
+					button.champion.BusyFrame:Show();
+					button.champion.BusyFrame.Texture:SetColorTexture(unpack(GARRISON_FOLLOWER_BUSY_COLOR));
 					-- get time remaining for follower
 					if ( follower.status == GARRISON_FOLLOWER_ON_MISSION ) then
-						if (follower.level == GARRISON_FOLLOWER_MAX_LEVEL) then
-							button.Status:SetText(C_Garrison.GetFollowerMissionTimeLeft(follower.followerID));
+						if (follower.isMaxLevel) then
+							button.champion.Status:SetText(C_Garrison.GetFollowerMissionTimeLeft(follower.followerID));
 						else
-							button.Status:SetFormattedText(GARRISON_FOLLOWER_ON_MISSION_WITH_DURATION, C_Garrison.GetFollowerMissionTimeLeft(follower.followerID));
+							button.champion.Status:SetFormattedText(GARRISON_FOLLOWER_ON_MISSION_WITH_DURATION, C_Garrison.GetFollowerMissionTimeLeft(follower.followerID));
 						end
 					end
 				else
-					button.PortraitFrame.PortraitRingCover:Hide();
-					button.BusyFrame:Hide();
+					button.champion.PortraitFrame.PortraitRingCover:Hide();
+					button.champion.BusyFrame:Hide();
 				end
 				if ( canExpand ) then
-					button.DownArrow:SetAlpha(1);
+					button.champion.DownArrow:SetAlpha(1);
 				else
-					button.DownArrow:SetAlpha(0);
+					button.champion.DownArrow:SetAlpha(0);
 				end
 				-- adjust text position if we have additional text to show below name
-				if (follower.level == GARRISON_FOLLOWER_MAX_LEVEL or follower.status) then
-					button.Name:SetPoint("LEFT", button.PortraitFrame, "LEFT", 66, 8);
+				if (follower.isMaxLevel or follower.status) then
+					button.champion.Name:SetPoint("LEFT", button.champion.PortraitFrame, "LEFT", 66, 8);
 				else
-					button.Name:SetPoint("LEFT", button.PortraitFrame, "LEFT", 66, 0);
+					button.champion.Name:SetPoint("LEFT", button.champion.PortraitFrame, "LEFT", 66, 0);
 				end
 				-- show iLevel for max level followers	
-				if (follower.level == GARRISON_FOLLOWER_MAX_LEVEL) then
-					button.ILevel:SetText(ITEM_LEVEL_ABBR.." "..follower.iLevel);
-					button.Status:SetPoint("TOPLEFT", button.ILevel, "TOPRIGHT", 4, 0);
+				if (follower.isMaxLevel) then
+					button.champion.ILevel:SetText(ITEM_LEVEL_ABBR.." "..follower.iLevel);
+					button.champion.Status:SetPoint("TOPLEFT", button.ILevel, "TOPRIGHT", 4, 0);
 				else
-					button.ILevel:SetText(nil);
-					button.Status:SetPoint("TOPLEFT", button.ILevel, "TOPRIGHT", 0, 0);
+					button.champion.ILevel:SetText(nil);
+					button.champion.Status:SetPoint("TOPLEFT", button.ILevel, "TOPRIGHT", 0, 0);
 				end
 				if (follower.xp == 0 or follower.levelXP == 0) then 
-					button.XPBar:Hide();
+					button.champion.XPBar:Hide();
 				else
-					button.XPBar:Show();
-					button.XPBar:SetWidth((follower.xp/follower.levelXP) * GARRISON_FOLLOWER_LIST_BUTTON_FULL_XP_WIDTH);
+					button.champion.XPBar:Show();
+					button.champion.XPBar:SetWidth((follower.xp/follower.levelXP) * GARRISON_FOLLOWER_LIST_BUTTON_FULL_XP_WIDTH);
 				end
 			else
 				-- don't have this follower
-				button.isCollected = nil;
-				button.Name:SetTextColor(0.25, 0.25, 0.25);
-				button.ILevel:SetText(nil);
-				button.Status:SetPoint("TOPLEFT", button.ILevel, "TOPRIGHT", 0, 0);
-				button.Class:SetDesaturated(true);
-				button.Class:SetAlpha(0.1);
-				button.PortraitFrame.PortraitRingQuality:Hide();
-				button.PortraitFrame.Portrait:SetDesaturated(true);
-				button.PortraitFrame.PortraitRingCover:Show();
-				button.PortraitFrame.PortraitRingCover:SetAlpha(0.6);
-				button.XPBar:Hide();
-				button.DownArrow:SetAlpha(0);
-				button.BusyFrame:Hide();
+				button.champion.isCollected = nil;
+				button.champion.Name:SetTextColor(0.25, 0.25, 0.25);
+				button.champion.ILevel:SetText(nil);
+				button.champion.Status:SetPoint("TOPLEFT", button.ILevel, "TOPRIGHT", 0, 0);
+				button.champion.Class:SetDesaturated(true);
+				button.champion.Class:SetAlpha(0.1);
+				button.champion.PortraitFrame.PortraitRingQuality:Hide();
+				button.champion.PortraitFrame.Portrait:SetDesaturated(true);
+				button.champion.PortraitFrame.PortraitRingCover:Show();
+				button.champion.PortraitFrame.PortraitRingCover:SetAlpha(0.6);
+				button.champion.XPBar:Hide();
+				button.champion.DownArrow:SetAlpha(0);
+				button.champion.BusyFrame:Hide();
 			end
 
-			GarrisonFollowerButton_UpdateCounters(self:GetParent(), button, follower, showCounters, followerFrame.lastUpdate);
+			GarrisonFollowerButton_UpdateCounters(self:GetParent(), button.champion, follower, showCounters, followerFrame.lastUpdate);
 
-			if (canExpand and button.id == self.expandedFollower and button.id == followerFrame.selectedFollower) then
-				self:ExpandButton(button, self);
+			if (canExpand and button.champion.id == self.expandedFollower and button.champion.id == followerFrame.selectedFollower) then
+				self:ExpandButton(button.champion, self);
 			else
-				self:CollapseButton(button);
+				self:CollapseButton(button.champion);
 			end
-			if ( button.id == followerFrame.selectedFollower ) then
-				button.Selection:Show();
+			button:SetHeight(button.champion:GetHeight());
+			if ( button.champion.id == followerFrame.selectedFollower ) then
+				button.champion.Selection:Show();
 			else
-				button.Selection:Hide();
+				button.champion.Selection:Hide();
 			end
+
+			if (follower.isTroop) then
+				local durability = min(follower.durability or 3, 12);
+				local maxDurability = min(follower.maxDurability or 3, 12);
+
+				while (#button.champion.durability < maxDurability) do
+					local durabilityTexture = button.champion:CreateTexture(nil, "ARTWORK", "GarrisonMissionFollowerButtonDurabilityTemplate");
+					button.champion["durability"..#button.champion.durability] = durabilityTexture;
+					durabilityTexture:ClearAllPoints();
+					durabilityTexture:SetPoint("TOPLEFT", button.champion.durability[#button.champion.durability - 1], "TOPRIGHT");
+				end
+
+				for i = 1, durability do
+					button.champion.durability[i]:Show();
+					button.champion.durability[i]:SetDesaturated(false);
+				end
+				for i = durability + 1, maxDurability do
+					button.champion.durability[i]:Show();
+					button.champion.durability[i]:SetDesaturated(true);
+				end
+				for i = maxDurability + 1, #button.champion.durability do
+					button.champion.durability[i]:Hide();
+				end
+			end
+
 			button:Show();
 		else
 			button:Hide();
 		end
 	end
-
-	local extraHeight = 0;
-	if ( self.expandedFollower ) then
-		extraHeight = self.expandedFollowerHeight - scrollFrame.buttonHeight;
-	else
-		extraHeight = 0;
+	
+	-- calculate the total height to pass to the HybridScrollFrame
+	for i = 1, numFollowers do
+		if (followersList[i] == 0) then
+			totalHeight = totalHeight + CATEGORY_BUTTON_HEIGHT - FOLLOWER_LIST_BUTTON_OFFSET;
+		elseif (self.followers[followersList[i]].followerID) then
+			totalHeight = totalHeight + TROOP_BUTTON_HEIGHT - FOLLOWER_LIST_BUTTON_OFFSET;
+		else
+			totalHeight = totalHeight + FOLLOWER_BUTTON_HEIGHT - FOLLOWER_LIST_BUTTON_OFFSET;
+		end
 	end
-	local totalHeight = numFollowers * scrollFrame.buttonHeight + extraHeight;
+	if (self.expandedFollower) then
+		totalHeight = totalHeight + self.expandedFollowerHeight - (FOLLOWER_BUTTON_HEIGHT - FOLLOWER_LIST_BUTTON_OFFSET);
+	end
+
 	local displayedHeight = numButtons * scrollFrame.buttonHeight;
 	HybridScrollFrame_Update(scrollFrame, totalHeight, displayedHeight);
 
@@ -528,7 +652,7 @@ function GarrisonFollowerList:CollapseButton(button)
 	self:CollapseButtonAbilities(button);
 	button.UpArrow:Hide();
 	button.DownArrow:Show();
-	button:SetHeight(56);
+	button:SetHeight(FOLLOWER_BUTTON_HEIGHT);
 end
 
 function GarrisonFollowerList:CollapseButtonAbilities(button)
@@ -539,8 +663,12 @@ function GarrisonFollowerList:CollapseButtonAbilities(button)
 end
 
 function GarrisonFollowerListButton_OnClick(self, button)
-	local followerFrame = self:GetParent():GetParent().followerFrame;
-	local followerList = self:GetParent():GetParent():GetParent();
+	if (self.mode == "CATEGORY") then
+		return;
+	end
+
+	local followerList = self:GetFollowerList();
+	local followerFrame = self:GetFollowerList().listScroll.followerFrame;
 	if ( button == "LeftButton" ) then
 		PlaySound("UI_Garrison_CommandTable_SelectFollower");
 		followerFrame.selectedFollower = self.id;
@@ -588,6 +716,9 @@ function GarrisonFollowerListButton_OnClick(self, button)
 end
 
 function GarrisonFollowerListButton_OnModifiedClick(self, button)
+	if (self.mode == "CATEGORY") then
+		return;
+	end
 	if ( IsModifiedClick("CHATLINK") ) then
 		local followerLink;
 		if (self.info.isCollected) then
@@ -631,11 +762,17 @@ function GarrisonFollowerList_SortFollowers(self)
 	local comparison = function(index1, index2)
 		local follower1 = followers[index1];
 		local follower2 = followers[index2];
+		local follower1Active = follower1.status ~= GARRISON_FOLLOWER_INACTIVE;
+		local follower2Active = follower2.status ~= GARRISON_FOLLOWER_INACTIVE;
 
 		if ( follower1.isCollected ~= follower2.isCollected ) then
 			return follower1.isCollected;
 		end
 		
+		if ( follower1Active ~= follower2Active ) then
+			return follower1Active;
+		end
+
 		if ( follower1.isTroop ~= follower2.isTroop ) then
 			return follower2.isTroop;
 		end
@@ -667,7 +804,7 @@ function GarrisonFollowerList_SortFollowers(self)
 		end
 		local follower1ItemLevel = max(follower1.iLevel, mentorItemLevel);
 		local follower2ItemLevel = max(follower2.iLevel, mentorItemLevel);
-		if ( follower1Level == GARRISON_FOLLOWER_MAX_LEVEL and follower1ItemLevel ~= follower2ItemLevel ) then		-- only checking follower 1 because follower 2 has same level at this point
+		if ( follower1.isMaxLevel and follower1ItemLevel ~= follower2ItemLevel ) then		-- only checking follower 1 because follower 2 has same level at this point
 			return follower1ItemLevel > follower2ItemLevel;
 		end
 		if ( checkAbilities and not status1 and follower1.isCollected ) then		-- only checking follower 1 because follower 2 has same status and collected-ness at this point
@@ -814,13 +951,13 @@ function GarrisonFollowerList:ShowFollower(followerID)
 	self.Class:SetAtlas(followerInfo.classAtlas);
 	if ( followerInfo.isCollected ) then
 		-- Follower cannot be upgraded anymore
-		if (followerInfo.level == GARRISON_FOLLOWER_MAX_LEVEL and followerInfo.quality >= GARRISON_FOLLOWER_MAX_UPGRADE_QUALITY) then
+		if (followerInfo.isMaxLevel and followerInfo.quality >= GARRISON_FOLLOWER_MAX_UPGRADE_QUALITY) then
 			self.XPLabel:Hide();
 			self.XPBar:Hide();
 			self.XPText:Hide();
 			self.XPText:SetText("");
 		else
-			if (followerInfo.level == GARRISON_FOLLOWER_MAX_LEVEL) then
+			if (followerInfo.isMaxLevel) then
 				self.XPLabel:SetText(GARRISON_FOLLOWER_XP_UPGRADE_STRING);
 			else
 				self.XPLabel:SetText(GARRISON_FOLLOWER_XP_STRING);
@@ -985,7 +1122,7 @@ function GarrisonFollowerList:ShowFollower(followerID)
 		local weaponItemID, weaponItemLevel, armorItemID, armorItemLevel = C_Garrison.GetFollowerItems(followerInfo.followerID);
 		GarrisonFollowerPage_SetItem(self.ItemWeapon, weaponItemID, weaponItemLevel);
 		GarrisonFollowerPage_SetItem(self.ItemArmor, armorItemID, armorItemLevel);
-		if ( followerInfo.level == GARRISON_FOLLOWER_MAX_LEVEL ) then
+		if ( followerInfo.isMaxLevel ) then
 			self.ItemAverageLevel.Level:SetText(ITEM_LEVEL_ABBR .. " " .. followerInfo.iLevel);
 			self.ItemAverageLevel.Level:Show();
 		else
@@ -1054,7 +1191,7 @@ function GarrisonFollowerPageModelUpgrade_Update(self)
 		local followerID = self:GetParent().followerID;
 		local followerInfo = followerID and C_Garrison.GetFollowerInfo(followerID);
 		if ( followerInfo and followerInfo.isCollected and followerInfo.status ~= GARRISON_FOLLOWER_ON_MISSION and (not C_Garrison.TargetSpellHasFollowerTemporaryAbility() or C_Garrison.CanSpellTargetFollowerIDWithAddAbility(followerID)) ) then
-			local isValidTarget = (followerInfo.level == GARRISON_FOLLOWER_MAX_LEVEL or not C_Garrison.TargetSpellHasFollowerItemLevelUpgrade());
+			local isValidTarget = (followerInfo.isMaxLevel or not C_Garrison.TargetSpellHasFollowerItemLevelUpgrade());
 			self.Text:SetShown(isValidTarget);
 			self.Icon:SetShown(isValidTarget);
 			self.TextInvalid:SetShown(not isValidTarget);
@@ -1075,7 +1212,7 @@ function GarrisionFollowerPageUpgradeTarget_OnEvent(self, event)
 		if ( SpellCanTargetGarrisonFollower() ) then
 			local followerID = self:GetParent().followerID;
 			local followerInfo = followerID and C_Garrison.GetFollowerInfo(followerID);
-			if ( followerInfo and followerInfo.isCollected and followerInfo.status ~= GARRISON_FOLLOWER_ON_MISSION and (followerInfo.level == GARRISON_FOLLOWER_MAX_LEVEL or not C_Garrison.TargetSpellHasFollowerItemLevelUpgrade()) ) then
+			if ( followerInfo and followerInfo.isCollected and followerInfo.status ~= GARRISON_FOLLOWER_ON_MISSION and (followerInfo.isMaxLevel or not C_Garrison.TargetSpellHasFollowerItemLevelUpgrade()) ) then
 				if ( not C_Garrison.TargetSpellHasFollowerTemporaryAbility() or C_Garrison.CanSpellTargetFollowerIDWithAddAbility(followerID) ) then
 					self:Show();
 					return;
@@ -1088,7 +1225,7 @@ end
 
 function GarrisonFollower_DisplayUpgradeConfirmation(followerID)
 	local followerInfo = followerID and C_Garrison.GetFollowerInfo(followerID);
-	if ( followerInfo and followerInfo.isCollected and followerInfo.status ~= GARRISON_FOLLOWER_ON_MISSION and (followerInfo.level == GARRISON_FOLLOWER_MAX_LEVEL or not C_Garrison.TargetSpellHasFollowerItemLevelUpgrade()) ) then
+	if ( followerInfo and followerInfo.isCollected and followerInfo.status ~= GARRISON_FOLLOWER_ON_MISSION and (followerInfo.isMaxLevel or not C_Garrison.TargetSpellHasFollowerItemLevelUpgrade()) ) then
 		local name = ITEM_QUALITY_COLORS[followerInfo.quality].hex..followerInfo.name..FONT_COLOR_CODE_CLOSE;
 		if ( C_Garrison.TargetSpellHasFollowerTemporaryAbility() ) then
 			if ( C_Garrison.CanSpellTargetFollowerIDWithAddAbility(followerID) ) then
@@ -1174,7 +1311,7 @@ function Garrison_SortMissions(missionsList)
 			return mission1.level > mission2.level;
 		end
 
-		if ( mission1.level == GARRISON_FOLLOWER_MAX_LEVEL ) then	-- mission 2 level is same as 1's at this point
+		if ( mission1.isMaxLevel ) then	-- mission 2 level is same as 1's at this point
 			if ( mission1.iLevel ~= mission2.iLevel ) then
 				return mission1.iLevel > mission2.iLevel;
 			end		

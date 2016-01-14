@@ -162,6 +162,7 @@ function PVPFramePopup_SetupPopUp(event, challengerName, bgName, timeout, tourna
 	SetPortraitToTexture(PVPFramePopup.ringIcon,"Interface\\BattlefieldFrame\\UI-Battlefield-Icon");
 	StaticPopupSpecial_Show(PVPFramePopup);
 	PlaySound("ReadyCheck");
+	FlashClientIcon();
 end
 
 
@@ -286,6 +287,7 @@ end
 
 function PVPRoleCheckPopup_OnShow(self)
 	PlaySound("ReadyCheck");
+	FlashClientIcon();
 	PVPRoleCheckPopup_UpdateSelectedRoles(self);
 	PVPRoleCheckPopup_UpdateRolesChangeable(self);
 end

@@ -161,6 +161,7 @@
 		<Scripts>
 			<OnShow>
 				PlaySound("ReadyCheck");
+				FlashClientIcon();
 				LFDRoleCheckPopup_Update();
 			</OnShow>
 		</Scripts>
@@ -219,6 +220,7 @@
 		<Scripts>
 			<OnShow>
 				PlaySound("ReadyCheck");
+				FlashClientIcon();
 			</OnShow>
 		</Scripts>
 	</Frame>

@@ -1,6 +1,6 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\FrameXML\UI.xsd">
-	
+
 	<Script file="Blizzard_ScenarioObjectiveTracker.lua"/>
 
 	<Frame name="ScenarioSpellFrameTemplate" hidden="true" virtual="true">
@@ -55,7 +55,7 @@
 			</AnimationGroup>
 		</Animations>
 	</Frame>
-	
+
 	<Frame name="ScenarioTrackerProgressBarTemplate" virtual="true" hidden="true">
 		<Size x="192" y="38"/>
 		<Anchors>
@@ -72,7 +72,7 @@
 						<Texture parentKey="BarFrame" atlas="bonusobjectives-bar-frame" useAtlasSize="true">
 							<Anchors>
 								<Anchor point="LEFT" x="-8" y="-1"/>
-							</Anchors>							
+							</Anchors>
 						</Texture>
 						<Texture parentKey="IconBG" atlas="bonusobjectives-bar-ring" useAtlasSize="true">
 							<Anchors>
@@ -97,7 +97,7 @@
 							<Anchors>
 								<Anchor point="CENTER" relativeKey="$parent.BarFrame"/>
 							</Anchors>
-						</Texture>				
+						</Texture>
 					</Layer>
 					<Layer level="BACKGROUND" textureSubLevel="-1">
 						<Texture parentKey="BarBG">
@@ -107,7 +107,7 @@
 							<Size x="32" y="32"/>
 							<Anchors>
 								<Anchor point="RIGHT" x="33" y="2"/>
-							</Anchors>							
+							</Anchors>
 						</Texture>
 					</Layer>
 					<Layer level="OVERLAY">
@@ -121,14 +121,14 @@
 							<Anchors>
 								<Anchor point="LEFT" relativeKey="$parent.BarFrame" x="-60" y="0"/>
 							</Anchors>
-						</Texture>				
+						</Texture>
 					</Layer>
 					<Layer level="OVERLAY" textureSubLevel="1">
 						<Texture parentKey="Starburst" alpha="0" alphaMode="ADD" atlas="bonusobjectives-bar-starburst" useAtlasSize="true">
 							<Anchors>
 								<Anchor point="TOPRIGHT" relativeKey="$parent.BarFrame" x="1" y="6"/>
 							</Anchors>
-						</Texture>					
+						</Texture>
 					</Layer>
 				</Layers>
 				<Animations>
@@ -157,29 +157,50 @@
 			</StatusBar>
 			<Frame parentKey="Flare1" inherits="BonusTrackerProgressBarFlareAnimTemplate"/>
 			<Frame parentKey="Flare2" inherits="BonusTrackerProgressBarFlareAnimTemplate"/>
-			
+
 			<Frame parentKey="SmallFlare1" inherits="BonusTrackerProgressBarSmallFlareAnimTemplate"/>
 			<Frame parentKey="SmallFlare2" inherits="BonusTrackerProgressBarSmallFlareAnimTemplate"/>
-			
+
 			<Frame parentKey="FullBarFlare1" inherits="BonusTrackerProgressBarFullBarFlareTemplate">
 				<Anchors>
 					<Anchor point="CENTER" relativeKey="$parent.Bar" relativePoint="CENTER" x="12" y="0"/>
 				</Anchors>
 			</Frame>
-			
+
 			<Frame parentKey="FullBarFlare2" inherits="BonusTrackerProgressBarFullBarFlareTemplate">
 				<Anchors>
 					<Anchor point="CENTER" relativeKey="$parent.Bar" relativePoint="CENTER" x="12" y="0"/>
 				</Anchors>
 			</Frame>
-			
+
 		</Frames>
 		<Scripts>
 			<OnLoad>
 				self.Bar.Icon:SetMask("Interface\\CharacterFrame\\TempPortraitAlphaMask");
 			</OnLoad>
 			<OnEvent function="ScenarioTrackerProgressBar_OnEvent"/>
-		</Scripts>		
+		</Scripts>
+	</Frame>
+
+	<Frame name="ScenarioChallengeModeAffixTemplate" parentArray="Affixes" virtual="true" mixin="ScenarioChallengeModeAffixMixin">
+		<Size x="34" y="34"/>
+		<Layers>
+			<Layer level="OVERLAY">
+				<Texture parentKey="Border" atlas="ChallengeMode-AffixRing-Sm" setAllPoints="true"/>
+			</Layer>
+			<Layer level="ARTWORK">
+				<Texture parentKey="Portrait">
+					<Size x="32" y="32"/>
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent.Border"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnEnter method="OnEnter"/>
+			<OnLeave function="GameTooltip_Hide"/>
+		</Scripts>
 	</Frame>
 
 	<ScrollFrame name="ScenarioBlocksFrame" parent="ObjectiveTrackerBlocksFrame" hidden="true">
@@ -291,94 +312,40 @@
 						</Scripts>
 					</Frame>
 					<Frame name="ScenarioChallengeModeBlock" hidden="true">
-						<Size x="198" y="55"/>
+						<Size x="251" y="87"/>
 						<Layers>
-							<Layer level="BORDER">
-								<Texture atlas="challenges-timerbg" useAtlasSize="true">
+							<Layer level="BACKGROUND">
+								<Texture atlas="ChallengeMode-TimerBG" useAtlasSize="true">
 									<Anchors>
-										<Anchor point="TOPLEFT"/>
+										<Anchor point="BOTTOM" x="0" y="12"/>
 									</Anchors>
-								</Texture>			
+								</Texture>
 							</Layer>
-							<Layer level="ARTWORK">
-								<Texture parentKey="MedalIcon" alphaMode="ADD">
-									<Size x="48" y="48"/>
+							<Layer level="OVERLAY">
+								<Texture atlas="challengemode-timer" setAllPoints="true"/>
+							</Layer>
+							<Layer level="OVERLAY">
+								<FontString parentKey="Level" inherits="GameFontNormalMed2" justifyH="LEFT">
 									<Anchors>
-										<Anchor point="LEFT" x="5" y="-2"/>
+										<Anchor point="TOPLEFT" x="28" y="-18"/>
 									</Anchors>
-								</Texture>
-								<Texture parentKey="NoMedal" atlas="challenges-nomedal" useAtlasSize="true" hidden="true">
+								</FontString>
+								<FontString parentKey="TimeLeft" inherits="GameFontHighlightHuge" justifyH="LEFT">
 									<Anchors>
-										<Anchor point="LEFT" x="24" y="-2"/>
+										<Anchor point="TOPLEFT" relativeKey="$parent.Level" relativePoint="BOTTOMLEFT" x="0" y="-8"/>
 									</Anchors>
-								</Texture>
-							</Layer>		
+								</FontString>
+							</Layer>
 						</Layers>
 						<Frames>
-							<StatusBar parentKey="StatusBar">
-								<Size x="177" y="17"/>
+							<StatusBar parentKey="StatusBar" useParentLevel="true">
+								<Size x="211" y="13"/>
 								<Anchors>
-									<Anchor point="CENTER" x="42" y="-3"/>
-								</Anchors>				
-								<Layers>
-									<Layer level="OVERLAY">
-										<Texture atlas="challenges-timerborder">
-											<Size x="184" y="32"/>
-											<Anchors>
-												<Anchor point="CENTER" x="0" y="0"/>
-											</Anchors>
-										</Texture>
-										<FontString parentKey="TimeLeft" inherits="GameFontHighlight" justifyH="LEFT">
-											<Anchors>
-												<Anchor point="LEFT" x="60" y="0"/>
-											</Anchors>
-										</FontString>
-									</Layer>
-								</Layers>
-								<Scripts>
-									<OnLoad>
-										self:SetStatusBarColor(0, 0.33, 0.61);
-									</OnLoad>
-								</Scripts>
-								<BarTexture file="Interface\TargetingFrame\UI-StatusBar"/>
+									<Anchor point="BOTTOM" x="0" y="10"/>
+								</Anchors>
+								<BarTexture atlas="ChallengeMode-TimerFill"/>
 							</StatusBar>
-							<Frame parentKey="GlowFrame">
-								<Layers>
-									<Layer level="OVERLAY">
-										<Texture parentKey="MedalGlow" file="Interface\Challenges\challenges-metalglow">
-											<Size x="150" y="150"/>
-											<Anchors>
-												<Anchor point="CENTER" relativeKey="$parent.$parent.MedalIcon" />
-											</Anchors>
-										</Texture>
-										<Texture parentKey="MedalIcon" alphaMode="ADD">
-											<Size x="48" y="48"/>
-											<Anchors>
-												<Anchor point="CENTER" relativeKey="$parent.$parent.MedalIcon"/>
-											</Anchors>
-										</Texture>
-									</Layer>
-								</Layers>
-								<Scripts>
-									<OnLoad>
-										self.MedalGlow:SetAlpha(0);
-										self.MedalIcon:SetAlpha(0);
-									</OnLoad>	
-								</Scripts>
-								<Animations>
-									<AnimationGroup parentKey="MedalGlowAnim">
-										<Alpha childKey="MedalGlow" fromAlpha="0" toAlpha="1" duration="0.4" order="1"/>
-										<Alpha childKey="MedalGlow" fromAlpha="1" toAlpha="0" duration="2" order="2"/>
-									</AnimationGroup>
-									<AnimationGroup parentKey="MedalPulseAnim">
-										<Alpha childKey="MedalIcon" fromAlpha="0" toAlpha="1" duration="0.25" order="1"/>
-										<Alpha childKey="MedalIcon" fromAlpha="1" toAlpha="0" endDelay=".5" duration="0.25" order="2"/>
-										<Scripts>
-											<OnFinished function="Scenario_ChallengeMode_MedalPulseAnim_OnFinished"/>
-										</Scripts>
-									</AnimationGroup>
-								</Animations>
-							</Frame>
+							<Frame hidden="true" inherits="ScenarioChallengeModeAffixTemplate"/>
 						</Frames>
 					</Frame>
 					<Frame name="ScenarioProvingGroundsBlock" hidden="true">
@@ -439,7 +406,7 @@
 						</Layers>
 						<Frames>
 							<StatusBar parentKey="StatusBar" useParentLevel="true">
-								<Size x="177" y="15"/>			
+								<Size x="177" y="15"/>
 								<Layers>
 									<Layer level="OVERLAY">
 										<Texture atlas="challenges-timerborder">
@@ -455,7 +422,7 @@
 								<BarColor r="0" g="0.33" b="0.61"/>
 							</StatusBar>
 						</Frames>
-					</Frame>					
+					</Frame>
 				</Frames>
 			</Frame>
 		</ScrollChild>
@@ -464,7 +431,7 @@
 			<OnEvent function="ScenarioBlocksFrame_OnEvent"/>
 		</Scripts>
 	</ScrollFrame>
-	
+
 	<Frame name="ScenarioProvingGroundsBlockAnim" parent="UIParent">
 		<Anchors>
 			<Anchor point="TOPLEFT" relativeTo="ScenarioProvingGroundsBlock"/>
@@ -495,7 +462,7 @@
 						<Anchor point="TOPLEFT" x="4" y="-4"/>
 					</Anchors>
 				</Texture>
-				<Texture file="Interface\AchievementFrame\UI-Achievement-Alert-Glow" parentKey="Glow" alpha="0" alphaMode="ADD">				
+				<Texture file="Interface\AchievementFrame\UI-Achievement-Alert-Glow" parentKey="Glow" alpha="0" alphaMode="ADD">
 					<Anchors>
 						<Anchor point="TOPLEFT" relativeKey="$parent.BGAnim" x="-35" y="45"/>
 						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.BGAnim" x="35" y="-45"/>
@@ -505,7 +472,7 @@
 			</Layer>
 		</Layers>
 	</Frame>
-	
+
 	<Frame name="ObjectiveTrackerScenarioRewardsFrame" parent="UIParent" hidden="true">
         <Size x="168" y="128"/>
 		<Anchors>
@@ -535,13 +502,13 @@
                         <Anchor point="TOP" relativeKey="$parent.RewardsBottom" relativePoint="BOTTOM" x="0" y="10"/>
                     </Anchors>
                 </Texture>
-            </Layer>			
+            </Layer>
             <Layer level="OVERLAY">
 				<FontString parentKey="Header" alpha="0" inherits="QuestFont_Outline_Huge" text="REWARDS">
 					<Anchors>
 						<Anchor point="TOP" x="0" y="2"/>
 					</Anchors>
-				</FontString>			
+				</FontString>
                 <Texture parentKey="HeaderGlow" hidden="false" alpha="0" alphaMode="ADD" atlas="OBJFX_LineGlow" useAtlasSize="true">
                     <Anchors>
                         <Anchor point="CENTER" relativeKey="$parent.HeaderTop" x="-25" y="0"/>
@@ -564,7 +531,7 @@
                 <Alpha childKey="RewardsTop" duration="0.25" order="1" fromAlpha="0" toAlpha="1"/>
                 <Alpha childKey="RewardsTop" startDelay="2" duration="1" order="2" fromAlpha="1" toAlpha="0"/>
                 <Alpha childKey="Header" duration="0.25" order="1" fromAlpha="0" toAlpha="1"/>
-                <Alpha childKey="Header" startDelay="2" duration="1" order="2" fromAlpha="1" toAlpha="0"/>				
+                <Alpha childKey="Header" startDelay="2" duration="1" order="2" fromAlpha="1" toAlpha="0"/>
                 <Scale childKey="HeaderTop" duration="0.25" order="1" fromScaleX="0.25" fromScaleY="1.2" toScaleX="1.2" toScaleY="1.2"/>
                 <Alpha childKey="HeaderTop" duration="0.25" order="1" fromAlpha="0" toAlpha="1"/>
                 <Translation childKey="HeaderTop" duration="0.25" order="1" offsetX="-30" offsetY="0"/>
@@ -583,11 +550,11 @@
                 <Alpha childKey="RewardsShadow" startDelay="2" duration="1" order="2" fromAlpha="1" toAlpha="0"/>
 				<Scripts>
 					<OnFinished function="ScenarioObjectiveTracker_OnAnimateRewardDone"/>
-				</Scripts>				
+				</Scripts>
             </AnimationGroup>
         </Animations>
     </Frame>
-	
+
 	<Frame name="ScenarioTimerFrame" hidden="true">
 		<Scripts>
 			<OnUpdate function="ScenarioTimer_OnUpdate"/>
@@ -597,7 +564,7 @@
 	<Frame name="ScenarioStepRewardTooltip" inherits="VerticalLayoutFrame" parent="UIParent" frameStrata="TOOLTIP" clampedToScreen="true" hidden="true">
 		<KeyValues>
 			<KeyValue key="fixedWidth" value="100" type="number"/>
-			<KeyValue key="expand" value="true" type="boolean"/> 
+			<KeyValue key="expand" value="true" type="boolean"/>
 			<KeyValue key="topPadding" value="10" type="number"/>
 			<KeyValue key="bottomPadding" value="12" type="number"/>
 			<KeyValue key="leftPadding" value="10" type="number"/>
@@ -618,7 +585,7 @@
 					<Size x="100" y="0"/>
 					<KeyValues>
 						<KeyValue key="layoutIndex" value="1" type="number"/>
-						<KeyValue key="expand" value="true" type="boolean"/> 
+						<KeyValue key="expand" value="true" type="boolean"/>
 					</KeyValues>
 				</FontString>
 			</Layer>
@@ -644,5 +611,5 @@
 			</OnLoad>
 		</Scripts>
 	</Frame>
-	
+
 </Ui>

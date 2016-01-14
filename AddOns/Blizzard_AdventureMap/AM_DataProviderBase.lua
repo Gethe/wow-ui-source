@@ -144,7 +144,8 @@ end
 
 -- Adjusts the pin's scale so that at max zoom it is this scale
 function AdventureMapPinMixin:SetMaxZoomScale(scale)
-	self:SetScale(scale / self:GetAdventureMap():GetScaleForMaxZoom());
+	local scaleForMaxZoom = self:GetAdventureMap():GetScaleForMaxZoom();
+	self:SetScale(scale / scaleForMaxZoom);
 end
 
 function AdventureMapPinMixin:PanTo(normalizedXOffset, normalizedYOffset)

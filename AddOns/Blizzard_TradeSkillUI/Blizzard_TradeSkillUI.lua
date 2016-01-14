@@ -41,6 +41,10 @@ function TradeSkillUIMixin:OnEvent(event, ...)
 		if self:IsVisible() then
 			self:RefreshRetrievingDataFrame();
 			self:OnDataSourceChanged();
+			if self.pendingRecipeIDToSelect then
+				self.RecipeList:SelectedAndForceRecipeIDIntoView(self.pendingRecipeIDToSelect);
+				self.pendingRecipeIDToSelect = nil;
+			end
 		end
 	elseif event == "TRADE_SKILL_LIST_UPDATE" then
 		if self:IsVisible() then
@@ -132,12 +136,21 @@ function TradeSkillUIMixin:RefreshTitle()
 		self.TabardBackground:Hide();
 		self.TabardEmblem:Hide();
 		self.TabardBorder:Hide();
-		SetPortraitToTexture(self.portrait, C_TradeSkillUI.GetTradeSkillTexture());
+		SetPortraitToTexture(self.portrait, C_TradeSkillUI.GetTradeSkillTexture(tradeSkillID));
 	end
 end
 
 function TradeSkillUIMixin:OnRecipeChanged(recipeID)
 	self.DetailsFrame:SetSelectedRecipeID(self.RecipeList:GetSelectedRecipeID());
+end
+
+function TradeSkillUIMixin:SelectRecipe(recipeID)
+	if self:IsVisible() and C_TradeSkillUI.IsTradeSkillReady() and not C_TradeSkillUI.IsDataSourceChanging() then
+		self.RecipeList:OnLearnedTabClicked();
+		self.RecipeList:SelectedAndForceRecipeIDIntoView(recipeID);
+	else
+		self.pendingRecipeIDToSelect = recipeID;
+	end
 end
 
 function TradeSkillUIMixin:OnSearchTextChanged(searchBox)

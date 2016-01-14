@@ -295,8 +295,14 @@ function AdventureMap_MissionPinMixin:SetupMission(missionInfo)
 
 		self:UpdateStatusLabel();
 	else
-		self.Icon:SetAtlas("AdventureMapIcon-MissionCombat", true);
-		self.IconHighlight:SetAtlas("AdventureMapIcon-MissionCombat", true);
+		local atlas;
+		if (self.missionInfo.typePrefix) then
+			atlas = self.missionInfo.typePrefix .. "-Map";
+		else
+			atlas = "AdventureMapIcon-MissionCombat";
+		end
+		self.Icon:SetAtlas(atlas, true);
+		self.IconHighlight:SetAtlas(atlas, true);
 		self.Icon:Show();
 		self.Model:Hide();
 		self.PortraitFrame:Hide();

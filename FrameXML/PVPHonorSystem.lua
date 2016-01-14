@@ -232,7 +232,7 @@ function HonorExhaustionTick_OnLoad(self)
 	self:RegisterEvent("HONOR_LEVEL_UPDATE");
 	self:RegisterEvent("PLAYER_UPDATE_RESTING");
 
-	self.fillBarAlpha = 0.15;
+	self.fillBarAlpha = 0.30;
 end
 
 function HonorExhaustionTick_OnEvent(self, event, ...)

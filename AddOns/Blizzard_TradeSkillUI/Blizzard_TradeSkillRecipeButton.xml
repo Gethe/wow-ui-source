@@ -15,7 +15,7 @@
 	</Frame>
 
 	<Button name="TradeSkillRowButtonTemplate" mixin="TradeSkillRecipeButtonMixin" hidden="true" virtual="true">
-		<Size x="293" y="16"/>
+		<Size x="300" y="16"/>
 		<NormalTexture>
 			<Size x="16" y="16"/>
 			<Anchors>
@@ -41,7 +41,7 @@
 			</Anchors>
 		</ButtonText>
 		<NormalFont style="GameFontHighlightLeft"/>
-		
+
 		<Layers>
 			<Layer level="BACKGROUND">
 				<FontString parentKey="SubText" inherits="GameFontNormalSmall" justifyH="LEFT"/>
@@ -191,7 +191,7 @@
 				<BarColor r=".25" g=".25" b=".75"/>
 			</StatusBar>
 		</Frames>
-		
+
 		<Scripts>
 			<OnLoad>
 				self:RegisterForClicks("LeftButtonUp", "RightButtonUp");

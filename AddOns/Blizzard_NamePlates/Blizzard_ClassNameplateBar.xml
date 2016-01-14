@@ -38,6 +38,12 @@
 					<Anchor point="TOPLEFT" x="0" y="-1"/>
 				</Anchors>
 			</Frame>
+			<Frame parentKey="FullPowerFrame" inherits="FullResourcePulseFrame">
+				<Size x="86" y="6"/>
+				<Anchors>
+					<Anchor point="RIGHT"/>
+				</Anchors>
+			</Frame>
 		</Frames>
 		<Scripts>
 			<OnLoad method="OnLoad"/>

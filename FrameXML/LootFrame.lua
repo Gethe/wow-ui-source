@@ -376,6 +376,9 @@ function GroupLootContainer_OnLoad(self)
 	self.rollFrames = {};
 	self.reservedSize = 100;
 	GroupLootContainer_CalcMaxIndex(self);
+
+	local anchorFrameSubSystem = AlertFrame:AddJustAnchorFrameSubSystem(self);
+	AlertFrame:SetSubSustemAnchorPriority(anchorFrameSubSystem, 10);
 end
 
 function GroupLootContainer_CalcMaxIndex(self)
@@ -803,12 +806,12 @@ function MissingLootFrame_Show()
 	local numRows = ceil(numItems / 2);
 	missingLootFrame:SetHeight(numRows * 43 + 36 + MissingLootFrameLabel:GetHeight());
 	missingLootFrame:Show();
-	AlertFrame_FixAnchors();
+	AlertFrame:UpdateAnchors();
 end
 
 function MissingLootFrame_OnHide(self)
 	ClearMissingLootDisplay();
-	AlertFrame_FixAnchors();
+	AlertFrame:UpdateAnchors();
 end
 
 function MissingLootItem_OnEnter(self)

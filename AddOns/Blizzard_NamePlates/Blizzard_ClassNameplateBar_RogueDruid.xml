@@ -66,13 +66,13 @@
 				</Anchors>
 			</Frame>
 			<Frame parentKey="Combo7" parentArray="ComboPoints" inherits="ClassNameplateBarComboPointFrame">
-				<Size x="8" y="8"/>
+				<Size x="10" y="10"/>
 				<Anchors>
 					<Anchor point="LEFT" relativeKey="$parent.Combo6" relativePoint="RIGHT" x="4" y="0"/>
 				</Anchors>
 			</Frame>
 			<Frame parentKey="Combo8" parentArray="ComboPoints" inherits="ClassNameplateBarComboPointFrame">
-				<Size x="8" y="8"/>
+				<Size x="10" y="10"/>
 				<Anchors>
 					<Anchor point="LEFT" relativeKey="$parent.Combo7" relativePoint="RIGHT" x="4" y="0"/>
 				</Anchors>

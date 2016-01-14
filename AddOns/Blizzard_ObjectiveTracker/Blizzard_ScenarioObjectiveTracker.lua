@@ -252,7 +252,8 @@ function ScenarioTimer_CheckTimers(...)
 		if ( type == LE_WORLD_ELAPSED_TIMER_TYPE_CHALLENGE_MODE) then
 			local _, _, _, _, _, _, _, mapID = GetInstanceInfo();
 			if ( mapID ) then
-				Scenario_ChallengeMode_ShowBlock(timerID, elapsedTime, { });
+				local _, _, timeLimit = C_ChallengeMode.GetMapInfo(mapID);
+				Scenario_ChallengeMode_ShowBlock(timerID, elapsedTime, timeLimit);
 				return;
 			end
 		elseif ( type == LE_WORLD_ELAPSED_TIMER_TYPE_PROVING_GROUND ) then
@@ -335,17 +336,16 @@ end
 -- ***** CHALLENGE MODE
 -- *****************************************************************************************************
 
-function Scenario_ChallengeMode_ShowBlock(timerID, elapsedTime, ...)
+function Scenario_ChallengeMode_ShowBlock(timerID, elapsedTime, timeLimit)
 	local block = ScenarioChallengeModeBlock;
-	if not ( block.medalTimes ) then
-		block.medalTimes = { };
-	end
-	for i = 1, select("#", ...) do
-		block.medalTimes[i] = select(i, ...);
-	end
 	block.timerID = timerID;
+	block.timeLimit = timeLimit;
 	block.lastMedalShown = nil;
-	Scenario_ChallengeMode_UpdateMedal(block, elapsedTime);
+	local level, affixes = C_ChallengeMode.GetActiveKeystoneInfo();
+	block.Level:SetText(CHALLENGE_MODE_POWER_LEVEL:format(level));
+	Scenario_ChallengeMode_SetUpAffixes(block, affixes);
+	local statusBar = block.StatusBar;
+	statusBar:SetMinMaxValues(0, block.timeLimit);
 	Scenario_ChallengeMode_UpdateTime(block, elapsedTime);
 	ScenarioTimer_Start(block, Scenario_ChallengeMode_UpdateTime);
 	block:Show();
@@ -353,85 +353,57 @@ function Scenario_ChallengeMode_ShowBlock(timerID, elapsedTime, ...)
 	ObjectiveTracker_Update(OBJECTIVE_TRACKER_UPDATE_MODULE_SCENARIO);
 end
 
-function Scenario_ChallengeMode_UpdateMedal(block, elapsedTime)
-	-- find best medal for current time
-	local prevMedalTime = 0;
-	for i = #block.medalTimes, 1, -1 do
-		local currentMedalTime = block.medalTimes[i];
-		if ( elapsedTime < currentMedalTime ) then
-			block.StatusBar:SetMinMaxValues(0, currentMedalTime - prevMedalTime);
-			block.StatusBar.medalTime = currentMedalTime;
-			if ( CHALLENGE_MEDAL_TEXTURES[i] ) then
-				block.MedalIcon:SetTexture(CHALLENGE_MEDAL_TEXTURES[i]);
-				block.MedalIcon:Show();
-				block.GlowFrame.MedalIcon:SetTexture(CHALLENGE_MEDAL_TEXTURES[i]);
-				block.GlowFrame.MedalGlowAnim:Play();
-			end
-			block.NoMedal:Hide();
-			-- play sound if medal changed
-			if ( block.lastMedalShown and block.lastMedalShown ~= i ) then
-				if ( block.lastMedalShown == CHALLENGE_MEDAL_GOLD ) then
-					PlaySound("UI_Challenges_MedalExpires_GoldtoSilver");
-				elseif ( block.lastMedalShown == CHALLENGE_MEDAL_SILVER ) then
-					PlaySound("UI_Challenges_MedalExpires_SilvertoBronze");
-				else
-					PlaySound("UI_Challenges_MedalExpires");
-				end
-			end
-			block.lastMedalShown = i;
-			return;
-		else
-			prevMedalTime = currentMedalTime;
+ScenarioChallengeModeAffixMixin = {};
+
+function ScenarioChallengeModeAffixMixin:SetUp(affixID)
+	local _, _, filedataid = C_ChallengeMode.GetAffixInfo(affixID);
+	SetPortraitToTexture(self.Portrait, filedataid);
+	
+	self.affixID = affixID;
+
+	self:Show();
+end
+
+function ScenarioChallengeModeAffixMixin:OnEnter()
+	if (self.affixID) then
+		GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+		
+		local name, description = C_ChallengeMode.GetAffixInfo(self.affixID);
+		
+		GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+		GameTooltip:SetText(name, 1, 1, 1, 1, true);
+		GameTooltip:AddLine(description);
+		GameTooltip:Show();
+	end
+end
+
+function Scenario_ChallengeMode_SetUpAffixes(block,affixes)
+	local frameWidth, spacing, distance = 34, 4, -20;
+	local num = #affixes;
+	local leftPoint = 28 + (spacing * (num - 1)) + (frameWidth * num);
+	block.Affixes[1]:SetPoint("TOPLEFT", block, "TOPRIGHT", -leftPoint, distance);
+	for i = 1, num do
+		local affixID = affixes[i];
+		
+		affixFrame = block.Affixes and block.Affixes[i];
+		if (not affixFrame) then
+			local frame = CreateFrame("Frame", nil, block, "ScenarioChallengeModeAffixTemplate");
+			local prev = block.Affixes[i - 1];
+			frame:SetPoint("LEFT", prev, "RIGHT", spacing, 0);
 		end
+		affixFrame:SetUp(affixID);
 	end
-	-- no medal
-	block.StatusBar.TimeLeft:SetText(CHALLENGES_TIMER_NO_MEDAL);
-	block.StatusBar:SetValue(0);
-	block.StatusBar.medalTime = nil;
-	block.NoMedal:Show();
-	block.MedalIcon:Hide();
-	-- play sound if medal changed
-	if ( block.lastMedalShown and block.lastMedalShown ~= 0 ) then
-		PlaySound("UI_Challenges_MedalExpires");
+
+	for i = num + 1, #block.Affixes do
+		block.Affixes[i]:Hide();
 	end
-	block.lastMedalShown = 0;
 end
 
 function Scenario_ChallengeMode_UpdateTime(block, elapsedTime)
+	local timeLeft = math.max(0, block.timeLimit - elapsedTime);
 	local statusBar = block.StatusBar;
-	if ( statusBar.medalTime ) then
-		local timeLeft = statusBar.medalTime - elapsedTime;
-		local anim = block.GlowFrame.MedalPulseAnim;
-		if (timeLeft <= 5) then
-			if (anim:IsPlaying()) then 
-				anim.timeLeft = timeLeft;
-			else
-				block.GlowFrame.MedalPulseAnim:Play();
-			end
-		end
-		if (timeLeft == 10) then
-			if (not block.playedSound) then
-				PlaySoundKitID(34154);
-				block.playedSound = true;
-			end
-		else
-			block.playedSound = false;
-		end
-		if ( timeLeft < 0 ) then
-			Scenario_ChallengeMode_UpdateMedal(block, elapsedTime);
-		else
-			statusBar:SetValue(timeLeft);
-			statusBar.TimeLeft:SetText(GetTimeStringFromSeconds(timeLeft));
-		end
-	end
-end
-
-function Scenario_ChallengeMode_MedalPulseAnim_OnFinished(self)
-	if ( self.timeLeft and self.timeLeft > 0 and self.timeLeft < 5 ) then
-		self:Play();
-	else
-		self.timeLeft = nil;
-	end
+	statusBar:SetValue(timeLeft);
+	block.TimeLeft:SetText(GetTimeStringFromSeconds(timeLeft, false, true));
 end
 
 -- *****************************************************************************************************

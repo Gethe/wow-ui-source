@@ -176,6 +176,17 @@ function QuestMapFrame_CheckTutorials()
 	end
 end
 
+function QuestMapFrame_IsQuestWorldQuest(questID)
+	local tagID, tagName = GetQuestTagInfo(questID);
+
+	return tagID == QUEST_TAG_WORLD_QUEST
+		or tagID == QUEST_TAG_RARE_WORLD_QUEST
+		or tagID == QUEST_TAG_ELITE_WORLD_QUEST
+		or tagID == QUEST_TAG_RARE_ELITE_WORLD_QUEST
+		or tagID == QUEST_TAG_PVP_WORLD_QUEST
+		or tagID == QUEST_TAG_TRADESKILL_WORLD_QUEST;
+end
+
 function QuestMapFrame_UpdateAll()
 	local numPOIs = QuestMapUpdateAllQuests();
 	QuestPOIUpdateIcons();

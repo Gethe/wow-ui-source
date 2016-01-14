@@ -66,7 +66,10 @@ function AlternatePowerBar_UpdateMaxValues(self)
 end
 
 function AlternatePowerBar_UpdatePowerType(self)
-	if ( (UnitPowerType(self:GetParent().unit) ~= self.powerIndex) and (UnitPowerMax(self:GetParent().unit,self.powerIndex) ~= 0) and ( not self.specRestriction or self.specRestriction == GetSpecialization() ) 
+	local _, class = UnitClass(self:GetParent().unit);
+	local powerType = UnitPowerType(self:GetParent().unit);
+	
+	if ( (class == "DRUID") and (powerType == SPELL_POWER_LUNAR_POWER) and (UnitPowerMax(self:GetParent().unit,self.powerIndex) ~= 0) 
 		and not UnitHasVehiclePlayerFrameUI("player") ) then
 		self.pauseUpdates = false;
 		AlternatePowerBar_UpdateValue(self);

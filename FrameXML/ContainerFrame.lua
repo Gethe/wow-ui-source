@@ -1102,6 +1102,61 @@ function ContainerFrameItemButton_OnEnter(self)
 	end
 end
 
+function ContainerFramePortraitButton_OnEnter(self)
+	self.Highlight:Show();
+	GameTooltip:SetOwner(self, "ANCHOR_LEFT");
+	local waitingOnData = false;
+	if ( self:GetID() == 0 ) then
+		GameTooltip:SetText(BACKPACK_TOOLTIP, 1.0, 1.0, 1.0);
+		if (GetBindingKey("TOGGLEBACKPACK")) then
+			GameTooltip:AppendText(" "..NORMAL_FONT_COLOR_CODE.."("..GetBindingKey("TOGGLEBACKPACK")..")"..FONT_COLOR_CODE_CLOSE)
+		end
+	else
+		local parent = self:GetParent();
+		local id = parent:GetID();
+		local link = GetInventoryItemLink("player", ContainerIDToInventoryID(id));
+		local name, _, quality = GetItemInfo(link);
+		if name and quality then
+			local r, g, b = GetItemQualityColor(quality);
+			GameTooltip:SetText(name, r, g, b);
+		else
+			GameTooltip:SetText(RETRIEVING_ITEM_INFO, RED_FONT_COLOR.r, RED_FONT_COLOR.g, RED_FONT_COLOR.b);
+			waitingOnData = true;
+		end
+
+		if (not IsInventoryItemProfessionBag("player", ContainerIDToInventoryID(id))) then
+			if (parent.localFlag and BAG_FILTER_LABELS[parent.localFlag]) then
+				GameTooltip:AddLine(BAG_FILTER_ASSIGNED_TO:format(BAG_FILTER_LABELS[parent.localFlag]));
+			elseif (not parent.localFlag) then
+				for i = LE_BAG_FILTER_FLAG_EQUIPMENT, NUM_LE_BAG_FILTER_FLAGS do
+					local active = false;
+					if ( self:GetID() > NUM_BAG_SLOTS ) then
+						active = GetBankBagSlotFlag(id - NUM_BAG_SLOTS, i);
+					else
+						active = GetBagSlotFlag(id, i);
+					end
+					if ( active ) then
+						GameTooltip:AddLine(BAG_FILTER_ASSIGNED_TO:format(BAG_FILTER_LABELS[i]));
+						break;
+					end
+				end
+			end
+		end
+		local binding = GetBindingKey("TOGGLEBAG"..(4 - self:GetID() + 1));
+		if ( binding ) then
+			GameTooltip:AppendText(" "..NORMAL_FONT_COLOR_CODE.."("..binding..")"..FONT_COLOR_CODE_CLOSE);
+		end
+	end
+	GameTooltip:AddLine(CLICK_BAG_SETTINGS);
+	self.UpdateTooltip = waitingOnData and ContainerFramePortraitButton_OnEnter or nil;
+	GameTooltip:Show();
+end
+
+function ContainerFramePortraitButton_OnLeave(self)
+	self.Highlight:Hide();
+	GameTooltip_Hide();
+end
+
 function ToggleAllBags()
 	if ( not UIParent:IsShown() ) then
 		return;

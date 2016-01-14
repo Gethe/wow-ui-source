@@ -1,0 +1,217 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\FrameXML\UI.xsd">
+	<Script file="Blizzard_OrderHallMissionUI.lua"/>
+
+	<Frame name="OrderHallMissionFrame" inherits="GarrisonMissionFrameTemplate, GarrisonUITemplate" mixin="GarrisonMission, GarrisonFollowerMission, OrderHallMission">
+		<Size x="962" y="662"/>
+		<Anchors>
+			<Anchor point="CENTER"/>
+		</Anchors>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnShow method="OnShow"/>
+			<OnHide method="OnHide"/>
+		</Scripts>
+		<Frames>
+			<Button parentKey="Tab1" name="$parentTab1" inherits="GarrisonMissionFrameTabTemplate" id="1" text="GARRISON_MISSIONS">
+				<Anchors>
+					<Anchor point="BOTTOMLEFT" x="11" y="-42"/>
+				</Anchors>
+			</Button>
+			<Button parentKey="Tab2" name="$parentTab2" inherits="GarrisonMissionFrameTabTemplate" id="2" text="GARRISON_FOLLOWERS">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="$parentTab1" relativePoint="RIGHT" x="-5" y="0"/>
+				</Anchors>
+			</Button>
+			<Frame parentKey="FollowerList" inherits="GarrisonListTemplateHeader" name="$parentFollowers" hidden="true" mixin="GarrisonFollowerList">
+				<Size x="305" y="535"/>
+				<KeyValues>
+					<KeyValue key="showUncollected" value="true" type="boolean"/>
+					<KeyValue key="canCastSpellsOnFollowers" value="true" type="boolean"/>
+				</KeyValues>
+				<Anchors>
+					<Anchor point="TOPLEFT" x="33" y="-64"/>
+				</Anchors>
+				<Frames>
+					<Frame parentKey="MaterialFrame" inherits="MaterialFrameTemplate">
+						<Size x="316" y="43"/>
+						<Anchors>
+							<Anchor point="TOP" relativePoint="BOTTOM" y="8"/>
+						</Anchors>
+					</Frame>
+					<EditBox parentKey="SearchBox" inherits="SearchBoxTemplate" letters="40">
+						<Size x="236" y="20"/>
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeKey="$parent.HeaderLeft" x="17" y="-10"/>
+						</Anchors>
+						<Scripts>
+							<OnTextChanged function="GarrisonFollowListEditBox_OnTextChanged"/>
+						</Scripts>
+					</EditBox>
+					<Frame name="GarrisonFollowerOptionDropDown" inherits="UIDropDownMenuTemplate">
+						<Scripts>
+							<OnLoad>
+								UIDropDownMenu_Initialize(self, GarrisonFollowerOptionDropDown_Initialize, "MENU");
+							</OnLoad>
+						</Scripts>
+					</Frame>
+				</Frames>
+				<Scripts>
+					<OnShow>self:OnShow();</OnShow>
+					<OnHide>self:OnHide();</OnHide>
+				</Scripts>
+			</Frame>
+			<Frame parentKey="MissionTab" mixin="AdventureMapMixin, OrderHallMissionAdventureMapMixin" setAllPoints="true" useParentLevel="true">
+				<Scripts>
+					<OnLoad method="OnLoad"/>
+					<OnShow method="OnShow"/>
+					<OnEvent method="OnEvent"/>
+					<OnHide method="OnHide"/>
+				</Scripts>
+				<Frames>
+					<ScrollFrame parentKey="ScrollContainer" enableMouse="true" mixin="AdventureMapScrollControllerMixin">
+						<Anchors>
+							<Anchor point="LEFT" relativeKey="$parent.$parent.Left" relativePoint="RIGHT"/>
+							<Anchor point="RIGHT" relativeKey="$parent.$parent.Right" relativePoint="LEFT"/>
+							<Anchor point="TOP" relativeKey="$parent.$parent.Top" relativePoint="BOTTOM"/>
+							<Anchor point="BOTTOM" relativeKey="$parent.$parent.Bottom" relativePoint="TOP"/>
+						</Anchors>
+						<ScrollChild>
+							<Frame parentKey="Child" >
+								<Anchors>
+									<Anchor point="TOPLEFT"/>
+								</Anchors>
+								<Layers>
+									<Layer level="BACKGROUND" textureSubLevel="-8">
+										<Texture parentKey="TiledBackground" atlas="AdventureMap_TileBg" horizTile="true" vertTile="true">
+											<Anchors>
+												<Anchor point="CENTER"/>
+											</Anchors>
+										</Texture>
+									</Layer>
+								</Layers>
+							</Frame>
+						</ScrollChild>
+						<Scripts>
+							<OnLoad method="OnLoad"/>
+							<OnHide method="OnHide"/>
+							<OnMouseUp method="OnMouseUp"/>
+							<OnMouseDown method="OnMouseDown"/>
+							<OnMouseWheel method="OnMouseWheel"/>
+							<OnUpdate method="OnUpdate"/>
+						</Scripts>
+					</ScrollFrame>
+					<Button parentKey="MissionPage" inherits="FollowerMissionPageTemplate" hidden="true">
+						<Frames>
+							<Frame parentKey="Enemy1" parentArray="Enemies" inherits="GarrisonMissionPageEnemyTemplate">
+								<Anchors>
+									<Anchor point="TOPLEFT" x="251" y="-146"/>
+								</Anchors>
+							</Frame>
+							<Frame parentKey="Enemy2" parentArray="Enemies" inherits="GarrisonMissionPageEnemyTemplate">
+								<Anchors>
+									<Anchor point="LEFT" relativeKey="$parent.Enemy1" relativePoint="RIGHT" x="120"/>
+								</Anchors>
+							</Frame>
+							<Frame parentKey="Enemy3" parentArray="Enemies" inherits="GarrisonMissionPageEnemyTemplate">
+								<Anchors>
+									<Anchor point="LEFT" relativeKey="$parent.Enemy2" relativePoint="RIGHT" x="120"/>
+								</Anchors>
+							</Frame>
+							<Frame parentKey="Follower1" parentArray="Followers" inherits="GarrisonMissionPageFollowerTemplate">
+								<Anchors>
+									<Anchor point="TOPLEFT" x="22" y="-274"/>
+								</Anchors>
+							</Frame>
+							<Frame parentKey="Follower2" parentArray="Followers" inherits="GarrisonMissionPageFollowerTemplate">
+								<Anchors>
+									<Anchor point="LEFT" relativeKey="$parent.Follower1" relativePoint="RIGHT" x="17" y="0"/>
+								</Anchors>
+							</Frame>
+							<Frame parentKey="Follower3" parentArray="Followers" inherits="GarrisonMissionPageFollowerTemplate">
+								<Anchors>
+									<Anchor point="LEFT" relativeKey="$parent.Follower2" relativePoint="RIGHT" x="17" y="0"/>
+								</Anchors>
+							</Frame>
+							<CinematicModel parentKey="FollowerModel" hidden="true" inherits="GarrisonCinematicModelBaseTemplate">
+								<Size x="265" y="275"/>
+								<Anchors>
+									<Anchor point="BOTTOMRIGHT" x="0" y="148"/>
+								</Anchors>
+								<Scripts>
+									<OnShow function="GarrisonMission_SetFollowerModelItems"/>
+								</Scripts>
+							</CinematicModel>
+							<Frame parentKey="EmptyFollowerModel">
+								<Size x="10" y="10"/>
+								<Anchors>
+									<Anchor point="BOTTOMRIGHT" x="0" y="148"/>
+								</Anchors>
+								<Layers>
+									<Layer level="ARTWORK">
+										<Texture parentKey="Texture" atlas="GarrMission_Silhouettes-1Alliance" useAtlasSize="true">
+											<Anchors>
+												<Anchor point="BOTTOMRIGHT"/>
+											</Anchors>
+										</Texture>
+									</Layer>
+								</Layers>
+							</Frame>
+						</Frames>
+						<Scripts>
+							<OnLoad function="GarrisonMissionPage_OnLoad"/>
+							<OnEvent function="GarrisonMissionPage_OnEvent"/>
+							<OnShow function="GarrisonMissionPage_OnShow"/>
+							<OnHide function="GarrisonMissionPage_OnHide"/>
+							<OnUpdate function="GarrisonMissionPage_OnUpdate"/>
+							<OnClick>
+								self.CloseButton:Click();
+							</OnClick>
+						</Scripts>
+					</Button>
+					<PlayerModel parentArray="MissionCompletePreloadModels" inherits="MissionCompletePreloadModelTemplate"/>
+					<PlayerModel parentArray="MissionCompletePreloadModels" inherits="MissionCompletePreloadModelTemplate"/>
+					<PlayerModel parentArray="MissionCompletePreloadModels" inherits="MissionCompletePreloadModelTemplate"/>
+					<PlayerModel parentArray="MissionCompletePreloadModels" inherits="MissionCompletePreloadModelTemplate"/>
+					<PlayerModel parentArray="MissionCompletePreloadModels" inherits="MissionCompletePreloadModelTemplate"/>
+					<PlayerModel parentArray="MissionCompletePreloadModels" inherits="MissionCompletePreloadModelTemplate"/>
+				</Frames>
+			</Frame>
+			<Frame parentKey="FollowerTab" inherits="GarrisonFollowerTabTemplate">
+			</Frame>
+			<Frame parentKey="MissionCompleteBackground" enableMouse="true" frameStrata="HIGH" hidden="true">
+				<Size x="956" y="637"/>
+				<Anchors>
+					<Anchor point="TOPLEFT" x="2" y="-22"/>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<Texture setAllPoints="true">
+							<Color r="0" g="0" b="0" a="0.8"/>
+						</Texture>
+					</Layer>
+				</Layers>
+			</Frame>
+			<Frame parentKey="MissionComplete" inherits="GarrisonMissionPageBaseTemplate, GarrisonMissionCompleteTemplate" frameStrata="HIGH" hidden="true" mixin="GarrisonMissionComplete,GarrisonFollowerMissionComplete">
+				<Frames>
+					<Frame parentKey="Stage" inherits="GarrisonFollowerMissionCompleteStageTemplate">
+						<Anchors>
+							<Anchor point="TOP"/>
+						</Anchors>
+					</Frame>
+					<Frame parentKey="BonusRewards" inherits="GarrisonFollowerMissionRewardsFrameTemplate, GarrisonMissionBonusRewardsTemplate">
+						<Anchors>
+							<Anchor point="BOTTOM" y="40"/>
+						</Anchors>
+					</Frame>
+					<Frame parentKey="ChanceFrame" inherits="GarrisonMissionChanceFrameTemplate">
+						<Anchors>
+							<Anchor point="BOTTOM" relativeKey="$parent.BonusRewards" relativePoint="TOP" x="0" y="0"/>
+						</Anchors>
+					</Frame>
+				</Frames>
+			</Frame>
+		</Frames>
+	</Frame>
+
+</Ui>

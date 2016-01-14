@@ -1807,7 +1807,7 @@ function GarrisonShipyardFollowerList:ShowFollower(followerID, hideCounters)
 	end
 	
 	-- Follower cannot be upgraded anymore
-	if (followerInfo.level == GARRISON_FOLLOWER_MAX_LEVEL and followerInfo.quality >= GARRISON_FOLLOWER_MAX_UPGRADE_QUALITY) then
+	if (followerInfo.isMaxLevel and followerInfo.quality >= GARRISON_FOLLOWER_MAX_UPGRADE_QUALITY) then
 		self.XPLabel:Hide();
 		self.XPBar:Hide();
 		self.XPText:Hide();

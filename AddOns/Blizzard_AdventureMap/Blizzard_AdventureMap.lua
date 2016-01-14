@@ -2,18 +2,21 @@ UIPanelWindows["AdventureMapFrame"] = { area = "center", pushable = 0, showFaile
 
 AdventureMapMixin = {};
 
-function AdventureMapMixin:OnLoad()
-	self:RegisterEvent("ADVENTURE_MAP_CLOSE");
-	self:RegisterEvent("ADVENTURE_MAP_UPDATE_INSETS");
-	self:RegisterEvent("QUEST_LOG_UPDATE"); -- TODO_DW Remove placeholder event
-	
-
+function AdventureMapMixin:SetupTitle()
 	self.BorderFrame.TitleText:SetText(ADVENTURE_MAP_TITLE);
 	self.BorderFrame.Bg:SetColorTexture(0, 0, 0, 1);
 	self.BorderFrame.Bg:SetParent(self);
 	self.BorderFrame.TopTileStreaks:Hide();
 	
 	SetPortraitToTexture(self.BorderFrame.portrait, [[Interface/Icons/inv_misc_map02]]);
+end
+
+function AdventureMapMixin:OnLoad()
+	self:RegisterEvent("ADVENTURE_MAP_CLOSE");
+	self:RegisterEvent("ADVENTURE_MAP_UPDATE_INSETS");
+	self:RegisterEvent("QUEST_LOG_UPDATE"); -- TODO_DW Remove placeholder event
+	
+	self:SetupTitle();
 
 	self.detailTilePool = CreateTexturePool(self:GetCanvas(), "BACKGROUND", -7, "AdventureMapDetailTileTemplate");
 	self.mapInsetPool = CreateFramePool("FRAME", self:GetCanvas(), "AdventureMapInsetTemplate", function(pool, mapInset) mapInset:OnReleased(); end);

@@ -11,7 +11,7 @@ function ChallengesFrame_OnLoad(self)
 	self.update = ChallengesFrame_Update;
 	-- set up buttons
 	local maps = { };
-	GetChallengeModeMapTable(maps);
+	C_ChallengeMode.GetMapTable(maps);
 	self.numMaps = #maps;
 	local lastButton = ChallengeFrameChallengeButton1;
 	for i = 1, self.numMaps do
@@ -21,7 +21,7 @@ function ChallengesFrame_OnLoad(self)
 			button:SetPoint("TOP", lastButton, "BOTTOM", 0, -2);
 			self["button"..i] = button;
 		end
-		local name, mapID = GetChallengeModeMapInfo(maps[i]);
+		local name, mapID = C_ChallengeMode.GetMapInfo(maps[i]);
 		button.id = maps[i];
 		button.text:SetText(name);
 		button.mapID = mapID;
@@ -100,9 +100,9 @@ function ChallengesFrame_Update(self, mapID)
 				rewardsRow.TimeLimit:SetText(GetTimeStringFromSeconds(0));
 				-- go through the rewards
 				-- want rewards to be right-justified
-				local rewardIndexOffset = GetNumChallengeMapRewards(mapID, medal) - NUM_REWARDS_PER_MEDAL;
+				local rewardIndexOffset = C_ChallengeMode.GetNumMapRewards(mapID, medal) - NUM_REWARDS_PER_MEDAL;
 				for rewardIndex = 1, NUM_REWARDS_PER_MEDAL do
-					local itemID, itemName, iconTexture, quantity, isCurrency = GetChallengeMapRewardInfo(mapID, medal, rewardIndex + rewardIndexOffset);
+					local itemID, itemName, iconTexture, quantity, isCurrency = C_ChallengeMode.GetMapRewardInfo(mapID, medal, rewardIndex + rewardIndexOffset);
 					local rewardButton = rewardsRow["Reward"..rewardIndex];
 					if ( itemID ) then
 						rewardButton:Show();
@@ -156,16 +156,16 @@ end
 function ChallengesFrame_OnShow(self)
 	SetPortraitToTexture(PVEFrame.portrait, "Interface\\Icons\\achievement_bg_wineos_underxminutes");
 	PVEFrame.TitleText:SetText(CHALLENGES);
-	RequestChallengeModeMapInfo();
-	RequestChallengeModeRewards();
+	C_ChallengeMode.RequestMapInfo();
+	C_ChallengeMode.RequestRewards();
 	local mapID = self.selectedMapID or ChallengesFrameDungeonButton1.mapID;
-	RequestChallengeModeLeaders(mapID);
+	C_ChallengeMode.RequestLeaders(mapID);
 end
 
 function ChallengesFrameDungeonButton_OnClick(self, button)
 	PlaySound("igMainMenuOptionCheckBoxOn");
 	ChallengesFrame_Update(ChallengesFrame, self.mapID);
-	RequestChallengeModeLeaders(self.mapID);
+	C_ChallengeMode.RequestLeaders(self.mapID);
 	ChallengesFrameBestTimes_Update(ChallengesFrame, self.mapID);
 end
 
@@ -223,4 +223,224 @@ function ChallengesFrameRealm_OnEnter(self)
 	end
 	
 	GameTooltip:Show();
+end
+
+ChallengesKeystoneFrameMixin = {};
+
+function ChallengesKeystoneFrameMixin:OnLoad()
+	self.baseStates = {};
+	
+	local regions = {self:GetRegions()};
+	for i = 1, #regions do
+		local r = regions[i];
+		self.baseStates[r] = {
+			["shown"] = r:IsShown(),
+			["alpha"] = r:GetAlpha(),
+		};
+	end
+end
+
+function ChallengesKeystoneFrameMixin:OnHide()
+	C_ChallengeMode.CloseKeystoneFrame();
+	C_ChallengeMode.ClearKeystone();
+	self:Reset();
+end
+
+function ChallengesKeystoneFrameMixin:Reset()
+	self.KeystoneSlot:Reset();
+	self.ActivateAnim:Stop();
+	self.ChallengeModeBGAnim:Stop();
+	self.RunesLargeAnim:Stop();
+	self.RunesLargeRotateAnim:Stop();
+	self.RunesSmallAnim:Stop();
+	self.RunesSmallRotateAnim:Stop();
+	for i = 1, #self.Affixes do
+		self.Affixes[i]:Hide();
+	end
+
+	for k, v in pairs(self.baseStates) do
+		k:SetShown(v.shown);
+		k:SetAlpha(v.alpha);
+	end
+end
+
+function ChallengesKeystoneFrameMixin:ShowKeystoneFrame()
+	local _, _, _, _, _, _, _, mapID = GetInstanceInfo();
+	local name, _, timeLimit = C_ChallengeMode.GetMapInfo(mapID);
+
+	self.DungeonName:SetText(name);
+	self.TimeLimit:SetText(SecondsToTime(timeLimit, false, true));
+
+	self:Show();
+end
+
+function ChallengesKeystoneFrameMixin:CreateAndPositionAffixes(num)
+	local index = #self.Affixes + 1;
+	local frameWidth, spacing, distance = 52, 4, -34;
+	while (#self.Affixes < num) do
+		local frame = CreateFrame("Frame", nil, self, "ChallengesKeystoneFrameAffixTemplate");
+		local prev = self.Affixes[index - 1];
+		frame:SetPoint("LEFT", prev, "RIGHT", spacing, 0);
+		index = index + 1;
+	end
+	-- Figure out where to place the leftmost spell
+	local frame = self.Affixes[1];
+	frame:ClearAllPoints();
+	if (num % 2 == 1) then
+		local x = (num - 1) / 2;
+		frame:SetPoint("TOPLEFT", self.Divider, "TOP", -((frameWidth / 2) + (frameWidth * x) + (spacing * x)), distance);
+	else
+		local x = num / 2;
+		frame:SetPoint("TOPLEFT", self.Divider, "TOP", -((frameWidth * x) + (spacing * (x - 1)) + (spacing / 2)), distance);
+	end
+	
+	for i = num + 1, #self.Affixes do
+		self.Affixes[i]:Hide();
+	end
+end
+
+function ChallengesKeystoneFrameMixin:SetUpAffix(index, texture, pct)
+	local frame = self.Affixes[index];
+	
+	SetPortraitToTexture(frame.Portrait, texture);
+	
+	if (pct) then
+		frame.Percent:SetText(("+%d%%"):format(pct));
+		frame.Percent:Show();
+	else
+		frame.Percent:Hide();
+	end
+	
+	frame:Show();
+
+	return frame;
+end
+
+function ChallengesKeystoneFrameMixin:OnKeystoneSlotted()
+	self.ChallengeModeBGAnim:Play();
+	self.RunesLargeAnim:Play();
+	self.RunesSmallAnim:Play();
+	self.RunesLargeRotateAnim:Play();
+	self.RunesSmallRotateAnim:Play();
+	self.StartButton:Enable();
+	self.InstructionBackground:Hide();
+	self.Instructions:Hide();
+	self.TimeLimit:Show();
+	local mapID, affixes, powerLevel, charged = C_ChallengeMode.GetSlottedKeystoneInfo();
+	
+	self.PowerLevel:SetText(CHALLENGE_MODE_POWER_LEVEL:format(powerLevel));
+	self.PowerLevel:Show();
+	
+	local dmgPct, healthPct = C_ChallengeMode.GetPowerLevelDamageHealthMod(powerLevel);
+	
+	self:CreateAndPositionAffixes(2 + #affixes);
+	
+	local affixFrame = self:SetUpAffix(1, "Interface\\Icons\\Ability_DualWield", dmgPct);
+	if (not affixFrame.info) then
+		affixFrame.info = {};
+	end
+
+	affixFrame.info.key = "dmg";
+	affixFrame.info.pct = dmgPct;
+
+	affixFrame = self:SetUpAffix(2, "Interface\\Icons\\Spell_Holy_SealOfSacrifice", healthPct);
+	if (not affixFrame.info) then
+		affixFrame.info = {};
+	end
+	
+	affixFrame.info.key = "health";
+	affixFrame.info.pct = healthPct;
+
+	for i = 1, #affixes do
+		local affixID = affixes[i];
+		local name, description, filedataid = C_ChallengeMode.GetAffixInfo(affixID);
+
+		if (filedataid and filedataid ~= 0) then
+			affixFrame = self:SetUpAffix(i + 2, filedataid);
+			affixFrame.affixID = affixID;
+		end
+	end
+end
+
+function ChallengesKeystoneFrameMixin:OnKeystoneRemoved()
+	self:Reset();
+	self.StartButton:Disable();
+end
+
+function ChallengesKeystoneFrameMixin:OnChallengeStarted()
+	self.ActivateAnim:Play();
+end
+
+ChallengesKeystoneSlotMixin = {};
+
+function ChallengesKeystoneSlotMixin:OnLoad()
+	self:RegisterForDrag("LeftButton");
+	self:RegisterEvent("CHALLENGE_MODE_KEYSTONE_SLOTTED");
+end
+
+function ChallengesKeystoneSlotMixin:OnEvent(event, ...)
+	if (event == "CHALLENGE_MODE_KEYSTONE_SLOTTED") then
+		local itemID = ...;
+		
+		self.slottedItem = itemID;
+		
+		local texture = select(10, GetItemInfo(itemID));
+		
+		SetPortraitToTexture(self.Texture, texture);
+		
+		self:GetParent():OnKeystoneSlotted();
+	end
+end
+
+function ChallengesKeystoneSlotMixin:Reset()
+	self.Texture:SetTexture(nil);
+end
+
+function ChallengesKeystoneSlotMixin:OnReceiveDrag()
+	C_ChallengeMode.SlotKeystone();
+end
+
+function ChallengesKeystoneSlotMixin:OnDragStart()
+	if (C_ChallengeMode.RemoveKeystone()) then
+		self:GetParent():Reset();
+	end
+end
+
+function ChallengesKeystoneSlotMixin:OnClick()
+	if (CursorHasItem()) then
+		C_ChallengeMode.SlotKeystone();
+	end
+end
+
+ChallengesKeystoneFrameAffixMixin = {};
+
+CHALLENGE_MODE_EXTRA_AFFIX_TOOLTIP_INFO = {
+	["dmg"] = {
+		name = CHALLENGE_MODE_ENEMY_EXTRA_DAMAGE,
+		desc = CHALLENGE_MODE_ENEMY_EXTRA_DAMAGE_DESCRIPTION,
+	},
+	["health"] = {
+		name = CHALLENGE_MODE_ENEMY_EXTRA_HEALTH,
+		desc = CHALLENGE_MODE_ENEMY_EXTRA_HEALTH_DESCRIPTION,
+	},
+};
+
+function ChallengesKeystoneFrameAffixMixin:OnEnter()
+	if (self.affixID or self.info) then
+		GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+		
+		local name, description;
+
+		if (self.info) then
+			name = CHALLENGE_MODE_EXTRA_AFFIX_TOOLTIP_INFO[self.info.key].name;
+			description = string.format(CHALLENGE_MODE_EXTRA_AFFIX_TOOLTIP_INFO[self.info.key].desc, self.info.pct);
+		else
+			name, description = C_ChallengeMode.GetAffixInfo(self.affixID);
+		end
+
+		GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+		GameTooltip:SetText(name, 1, 1, 1, 1, true);
+		GameTooltip:AddLine(description);
+		GameTooltip:Show();
+	end
 end

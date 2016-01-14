@@ -7,3 +7,4 @@
 
 Blizzard_GarrisonSharedTemplates.xml
 Blizzard_GarrisonMissionTemplates.xml
+Blizzard_OrderHallFollowerList.xml

@@ -208,6 +208,7 @@ function LFGEventFrame_OnEvent(self, event, ...)
 		LFGDungeonReadyStatus_ResetReadyStates();
 		StaticPopupSpecial_Show(LFGDungeonReadyPopup);
 		PlaySound("ReadyCheck");
+		FlashClientIcon();
 	elseif ( event == "LFG_PROPOSAL_FAILED" ) then
 		LFGDungeonReadyPopup_OnFail();
 	elseif ( event == "LFG_PROPOSAL_SUCCEEDED" ) then

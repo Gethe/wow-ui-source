@@ -1,13 +1,14 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\FrameXML\UI.xsd">
 	<Script file="Blizzard_AdventureMap.lua"/>
-	
+
 	<Texture name="AdventureMapDetailTileTemplate" virtual="true">
 		<Size x="256" y="256" />
 	</Texture>
 
 	<Texture name="AdventureMapDebugTriggerAreaTemplate" virtual="true" alphaMode="ADD" />
-	
+
+	<!--
 	<Frame name="AdventureMapFrame" toplevel="true" enableMouse="true" parent="UIParent" hidden="true" frameStrata="LOW" mixin="AdventureMapMixin">
 		<Size x="1004" y="689"/>
 		<Anchors>
@@ -31,7 +32,7 @@
 						</Texture>
 					</Layer>
 				</Layers>
-				
+
 				<Scripts>
 					<OnLoad>
 						self.onCloseCallback = function() HideParentPanel(self) end;
@@ -78,4 +79,5 @@
 			<OnHide method="OnHide"/>
 		</Scripts>
 	</Frame>
+	-->
 </Ui>

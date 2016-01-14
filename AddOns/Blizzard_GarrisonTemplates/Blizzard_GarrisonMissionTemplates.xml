@@ -1,7 +1,7 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\FrameXML\UI.xsd">
 	<Script file="Blizzard_GarrisonMissionTemplates.lua"/>
-	
+
 	<Button name="GarrisonMissionFrameTabTemplate" virtual="true">
 		<Size x="115" y="42"/>
 		<Layers>
@@ -96,7 +96,7 @@
 		<HighlightFont style="GameFontHighlightSmall"/>
 		<DisabledFont style="GameFontHighlightSmall"/>
 	</Button>
-	
+
 	<Frame name="GarrisonMissionRewardEffectsTemplate" virtual="true">
 		<Size x="152" y="41"/>
 		<Layers>
@@ -125,7 +125,7 @@
 						<Anchor point="CENTER" relativeKey="$parent.Icon"/>
 					</Anchors>
 				</Texture>
-			</Layer>			
+			</Layer>
 			<Layer level="ARTWORK">
 				<FontString parentKey="Name" justifyH="LEFT" inherits="GameFontHighlight">
 					<Size x="95" y="0"/>
@@ -156,7 +156,7 @@
 						<Anchor point="CENTER" relativeKey="$parent.Icon"/>
 					</Anchors>
 				</Texture>
-			</Layer>			
+			</Layer>
 		</Layers>
 		<Animations>
 			<AnimationGroup parentKey="Anim" setToFinalAlpha="true">
@@ -178,7 +178,7 @@
 			<OnLeave function="GarrisonMissionPage_RewardOnLeave"/>
 		</Scripts>
 	</Frame>
-	
+
 	<Frame name="GarrisonMissionPageRewardTemplate" virtual="true">
 		<Size x="454" y="98"/>
 		<Anchors>
@@ -204,7 +204,7 @@
 				<FontString parentKey="MissionXP" inherits="SystemFont_Huge1">
 					<Anchors>
 						<Anchor point="BOTTOM" relativePoint="TOP" x="0" y="12"/>
-					</Anchors>											
+					</Anchors>
 				</FontString>
 				<FontString parentKey="Chance" inherits="ZoneTextFont">
 					<Anchors>
@@ -223,7 +223,7 @@
 					<Anchors>
 						<Anchor point="CENTER" relativeKey="$parent.Chance" x="15" y="-40"/>
 					</Anchors>
-				</Texture>										
+				</Texture>
 			</Layer>
 		</Layers>
 		<Frames>
@@ -321,7 +321,7 @@
 			</OnLeave>
 		</Scripts>
 	</Frame>
-	
+
 	<Frame name="GarrisonMissionCheckTemplate" virtual="true">
 		<Layers>
 			<Layer level="ARTWORK">
@@ -356,7 +356,7 @@
 			</AnimationGroup>
 		</Animations>
 	</Frame>
-	
+
 	<Frame name="GarrisonMissionMechanicTemplate" inherits="GarrisonAbilityCounterTemplate" virtual="true">
 		<Scripts>
 			<OnEnter function="GarrisonMissionMechanic_OnEnter"/>
@@ -365,9 +365,9 @@
 			</OnLeave>
 		</Scripts>
 	</Frame>
-	
+
 	<Frame name="GarrisonMissionEnemyMechanicTemplate" inherits="GarrisonMissionMechanicTemplate, GarrisonMissionCheckTemplate" virtual="true"/>
-	
+
 	<Button name="GarrisonMissionEnemyLargeMechanicTemplate" inherits="GarrisonMissionLargeMechanicTemplate, GarrisonMissionCheckTemplate" virtual="true" enableMouse="true">
 		<Scripts>
 			<OnLoad>
@@ -450,7 +450,7 @@
 			</Frame>
 		</Frames>
 	</Frame>
-	
+
 	<Button name="MissionPageTemplate" hidden="true" virtual="true">
 		<Size x="556" y="580"/>
 		<Anchors>
@@ -527,7 +527,7 @@
 								<Anchor point="TOPLEFT" relativeKey="$parent.Title" relativePoint="BOTTOMLEFT" y="-6"/>
 							</Anchors>
 							<Color r="1" g="1" b="1"/>
-						</FontString>										
+						</FontString>
 						<FontString parentKey="ExhaustingLabel" inherits="GameFontNormalMed2" justifyH="LEFT" text="GARRISON_MISSION_EXHAUSTING" hidden="true">
 							<Anchors>
 								<Anchor point="TOPLEFT" relativeKey="$parent.Header" relativePoint="BOTTOMLEFT" x="7" y="-7"/>
@@ -652,20 +652,20 @@
 			</Frame>
 		</Frames>
 	</Button>
-	
+
 	<Frame name="GarrisonMissionFrameTemplate" parent="UIParent" enableMouse="true" toplevel="true" hidden="true" virtual="true">
 		<Size x="962" y="662"/>
 		<Anchors>
 			<Anchor point="CENTER"/>
 		</Anchors>
 		<Scripts>
-			<OnLoad>self:OnLoadMainFrame();</OnLoad>
-			<OnShow>self:OnShowMainFrame();</OnShow>
-			<OnHide>self:OnHideMainFrame();</OnHide>
-			<OnEvent>self:OnEventMainFrame(event, ...);</OnEvent>
+			<OnLoad method="OnLoadMainFrame"/>
+			<OnShow method="OnShowMainFrame"/>
+			<OnHide method="OnHideMainFrame"/>
+			<OnEvent method="OnEventMainFrame"/>
 		</Scripts>
 	</Frame>
-	
+
 	<Frame name="GarrisonMissionCompleteDialogTemplate" virtual="true">
 		<Size x="690" y="333"/>
 		<Anchors>
@@ -705,7 +705,7 @@
 						local textWidth = self:GetFontString():GetWidth();
 						self:SetWidth(textWidth + 64);
 					</OnLoad>
-					<OnClick function="GarrisonMissionController_OnClickViewCompletedMissionsButton"/> 
+					<OnClick function="GarrisonMissionController_OnClickViewCompletedMissionsButton"/>
 				</Scripts>
 			</Button>
 			<CinematicModel parentKey="Model" inherits="GarrisonCinematicModelBaseTemplate">
@@ -726,7 +726,7 @@
 							</Anchors>
 							<Shadow>
 								<Offset x="1" y="-1"/>
-							</Shadow>		
+							</Shadow>
 							<Color r="1" g="0.82" b="0"/>
 						</FontString>
 						<FontString parentKey="Summary" inherits="GameFontHighlightLarge2" justifyH="CENTER">
@@ -773,7 +773,7 @@
 			</OnKeyDown>
 		</Scripts>
 	</Frame>
-	
+
 	<CinematicModel name="GarrisonMissionCompleteModelTemplate" virtual="true" inherits="GarrisonCinematicModelBaseTemplate">
 		<Animations>
 			<AnimationGroup parentKey="FadeIn" setToFinalAlpha="true">
@@ -784,7 +784,7 @@
 			<OnShow function="GarrisonMission_SetFollowerModelItems"/>
 		</Scripts>
 	</CinematicModel>
-	
+
 	<Frame name="GarrisonMissionChanceFrameTemplate" virtual="true">
 		<Size x="100" y="100"/>
 		<Layers>
@@ -792,7 +792,7 @@
 				<Texture parentKey="ChanceBG" atlas="GarrMission_MissionCompleteChanceBg" useAtlasSize="true">
 					<Anchors>
 						<Anchor point="BOTTOM" x="0" y="-2"/>
-					</Anchors>									
+					</Anchors>
 				</Texture>
 				<Texture parentKey="ChanceGlow" atlas="GarrMission_TabGlow" useAtlasSize="true" alphaMode="ADD" hidden="true">
 					<Anchors>
@@ -803,8 +803,8 @@
 					<Size x="200" y="90"/>
 					<Anchors>
 						<Anchor point="BOTTOM" x="0" y="1"/>
-					</Anchors>					
-				</Texture>		
+					</Anchors>
+				</Texture>
 			</Layer>
 			<Layer level="ARTWORK">
 				<FontString parentKey="ChanceText" inherits="Game24Font">
@@ -817,7 +817,7 @@
 					<Anchors>
 						<Anchor point="CENTER" relativeKey="$parent.Banner" x="0" y="2"/>
 					</Anchors>
-				</FontString>								
+				</FontString>
 			</Layer>
 			<Layer level="OVERLAY">
 				<Texture parentKey="SuccessGlow" hidden="false" alpha="0" alphaMode="ADD" atlas="BonusChest-OrangeGlow-Wide" useAtlasSize="true">
@@ -857,7 +857,7 @@
 			</AnimationGroup>
 		</Animations>
 	</Frame>
-	
+
 	<Frame name="GarrisonMissionBonusRewardsTemplate" virtual="true">
 		<Size x="512" y="133"/>
 		<Layers>
@@ -889,13 +889,13 @@
 							<Anchors>
 								<Anchor point="CENTER" x="-6" y="6"/>
 							</Anchors>
-						</Texture>								
+						</Texture>
 						<Texture parentKey="LockGlow" hidden="false" alpha="0" alphaMode="ADD" atlas="BonusChest-Lock" useAtlasSize="true">
 							<Anchors>
 								<Anchor point="CENTER" relativeKey="$parent.Lock"/>
 							</Anchors>
 						</Texture>
-					</Layer>		
+					</Layer>
 					<Layer level="OVERLAY" textureSubLevel="1">
 						<Texture parentKey="KeyholeGlow" hidden="false" alpha="0" atlas="BonusChest-KeyholeGlow" useAtlasSize="true">
 							<Anchors>
@@ -968,7 +968,7 @@
 							<OnLeave function="GarrisonMissionCompleteChest_OnLeave"/>
 						</Scripts>
 					</Frame>
-				</Frames>			
+				</Frames>
 				<Scripts>
 					<OnLoad>
 						GarrisonCinematicModelBase_OnLoad(self);
@@ -1070,7 +1070,7 @@
 			<OnEvent function="GarrisonMissionComplete_OnRewardEvent"/>
 		</Scripts>
 	</Frame>
-	
+
 	<Frame name="GarrisonMissionCompleteStageTemplate" virtual="true">
 		<Size x="556" y="285"/>
 		<Frames>
@@ -1114,7 +1114,7 @@
 							<Shadow>
 								<Offset x="1" y="-1"/>
 								<Color r="0" g="0" b="0"/>
-							</Shadow>					
+							</Shadow>
 						</FontString>
 					</Layer>
 				</Layers>
@@ -1164,7 +1164,7 @@
 						<Anchor point="BOTTOM" x="60" y="-22"/>
 					</Anchors>
 					<TexCoords left="0.68085" right="1" top="0" bottom="1"/>
-				</Texture>						
+				</Texture>
 			</Layer>
 		</Layers>
 		<Frames>
@@ -1186,7 +1186,7 @@
 						<FontString parentKey="Label" inherits="GameFontHighlight" text="LFG_LIST_LOADING">
 							<Anchors>
 								<Anchor point="LEFT" relativePoint="RIGHT"/>
-							</Anchors>														
+							</Anchors>
 						</FontString>
 					</Layer>
 				</Layers>
@@ -1246,7 +1246,7 @@
 			</OnLoad>
 		</Scripts>
 	</StatusBar>
-	
+
 	<Frame name="GarrisonFollowerXPGainTemplate" virtual="true">
 		<Size x="100" y="20"/>
 		<Animations>
@@ -1278,7 +1278,7 @@
 			</OnHide>
 		</Scripts>
 	</Frame>
-	
+
 	<Frame name="GarrisonFollowerLevelUpTemplate" virtual="true">
 		<Size x="128" y="128"/>
 		<Layers>
@@ -1460,5 +1460,5 @@
 			</Layer>
 		</Layers>
 	</Frame>
-	
+
 </Ui>

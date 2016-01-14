@@ -185,7 +185,7 @@
 			</Layer>
 		</Layers>
 	</Frame>
-	
+
 	<Frame name="GarrisonListTemplate" inherits="GarrisonMissionBaseFrameTemplate" virtual="true">
 		<Size x="300" y="575"/>
 		<Frames>
@@ -211,8 +211,8 @@
 				</Frames>
 			</ScrollFrame>
 		</Frames>
-	</Frame>	
-	
+	</Frame>
+
 	<Frame name="GarrisonListTemplateHeader" inherits="GarrisonListTemplate" virtual="true">
 		<Size x="300" y="575"/>
 		<Layers>
@@ -237,9 +237,9 @@
 					</Anchors>
 				</Texture>
 			</Layer>
-		</Layers> 
+		</Layers>
 	</Frame>
-	
+
 	<Button name="GarrisonFollowerButtonTemplate" virtual="true">
 		<Size x="260" y="56"/>
 		<Anchors>
@@ -316,14 +316,99 @@
 				</Scripts>
 			</Frame>
 		</Frames>
-		<HighlightTexture atlas="GarrMission_FollowerListButton-Highlight" useAtlasSize="true">
+		<HighlightTexture parentKey="Highlight" atlas="GarrMission_FollowerListButton-Highlight" useAtlasSize="true">
 			<Anchors>
 				<Anchor point="TOPRIGHT"/>
 			</Anchors>
 		</HighlightTexture>
 	</Button>
 
-	<Button name="GarrisonMissionFollowerButtonTemplate" inherits="GarrisonFollowerButtonTemplate" virtual="true">
+	<Texture name="GarrisonMissionFollowerButtonDurabilityTemplate" parentArray="durability" atlas="GarrisonTroops-Health" useAtlasSize="true" virtual="true"/>
+	<Button name="GarrisonMissionFollowerButtonTemplate" inherits="GarrisonFollowerButtonTemplate" mixin="GarrisonMissionButton" virtual="true">
+		<Layers>
+			<Layer level="BACKGROUND" textureSubLevel="-1">
+				<Texture parentKey="AbilitiesBG" atlas="GarrMission_FollowerListButton" hidden="true">
+					<Size x="232" y="0"/>
+					<Anchors>
+						<Anchor point="TOPRIGHT" relativeKey="$parent.BG" relativePoint="BOTTOMRIGHT" y="5"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="ARTWORK">
+				<Texture parentKey="UpArrow" file="Interface\Buttons\SquareButtonTextures" hidden="true">
+					<Size x="13" y="13"/>
+					<Anchors>
+						<Anchor point="TOPRIGHT" x="-10" y="-38"/>
+					</Anchors>
+					<TexCoords left="0.45312500" right="0.64062500" bottom="0.20312500" top="0.01562500"/>
+				</Texture>
+				<Texture parentKey="durability1" inherits="GarrisonMissionFollowerButtonDurabilityTemplate">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.Name" relativePoint="BOTTOMLEFT"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="HIGHLIGHT">
+				<Texture parentKey="DownArrow" file="Interface\Buttons\SquareButtonTextures">
+					<Size x="13" y="13"/>
+					<Anchors>
+						<Anchor point="TOPRIGHT" x="-10" y="-38"/>
+					</Anchors>
+					<TexCoords left="0.45312500" right="0.64062500" bottom="0.01562500" top="0.20312500"/>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Frame parentArray="Counters" inherits="GarrisonMissionAbilityCounterTemplate" hidden="true">
+				<Anchors>
+					<Anchor point="TOPRIGHT" x="-8" y="-4"/>
+				</Anchors>
+			</Frame>
+			<Frame parentArray="Abilities" inherits="GarrisonFollowerListButtonAbilityTemplate" hidden="true">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.AbilitiesBG" x="2" y="-9"/>
+				</Anchors>
+				<Scripts>
+					<OnShow>
+						local followerList = self:GetParent():GetFollowerList();
+						self.followerTypeID = followerList.followerType;
+					</OnShow>
+				</Scripts>
+			</Frame>
+			<Frame parentKey="BusyFrame" hidden="true">
+				<Anchors>
+					<Anchor point="TOPLEFT" x="28" y="1"/>
+					<Anchor point="BOTTOMRIGHT" x="0" y="1"/>
+				</Anchors>
+				<Layers>
+					<Layer level="ARTWORK">
+						<Texture parentKey="Texture" setAllPoints="true">
+							<Color r="0" g="0.06" b="0.22" a="0.44"/>
+						</Texture>
+					</Layer>
+				</Layers>
+			</Frame>
+		</Frames>
+		<Scripts>
+			<OnLoad>
+				self:RegisterForClicks("LeftButtonUp", "RightButtonUp");
+				self:RegisterForDrag("LeftButton");
+				self.PortraitFrame:SetFrameLevel(self.BusyFrame:GetFrameLevel() + 1);
+			</OnLoad>
+			<OnClick>
+				if ( IsModifiedClick() ) then
+					GarrisonFollowerListButton_OnModifiedClick(self, button);
+				else
+					GarrisonFollowerListButton_OnClick(self, button);
+				end
+			</OnClick>
+			<OnDragStart function="GarrisonFollowerListButton_OnDragStart"/>
+			<OnDragStop function="GarrisonFollowerListButton_OnDragStop"/>
+		</Scripts>
+	</Button>
+
+
+	<Button name="TroopButtonTemplate" inherits="GarrisonFollowerButtonTemplate" mixin="GarrisonMissionButton" virtual="true">
 		<Layers>
 			<Layer level="BACKGROUND" textureSubLevel="-1">
 				<Texture parentKey="AbilitiesBG" atlas="GarrMission_FollowerListButton" hidden="true">
@@ -364,7 +449,7 @@
 				</Anchors>
 				<Scripts>
 					<OnShow>
-						local followerList = self:GetParent():GetParent():GetParent():GetParent();
+						local followerList = self:GetParent():GetFollowerList();
 						self.followerTypeID = followerList.followerType;
 					</OnShow>
 				</Scripts>
@@ -373,7 +458,7 @@
 				<Anchors>
 					<Anchor point="TOPLEFT" x="28" y="1"/>
 					<Anchor point="BOTTOMRIGHT" x="0" y="1"/>
-				</Anchors>			
+				</Anchors>
 				<Layers>
 					<Layer level="ARTWORK">
 						<Texture parentKey="Texture" setAllPoints="true">
@@ -400,7 +485,7 @@
 			<OnDragStop function="GarrisonFollowerListButton_OnDragStop"/>
 		</Scripts>
 	</Button>
-	
+
 	<Frame name="MaterialFrameTemplate" virtual="true">
 		<KeyValues>
 			<KeyValue key="currencyType" value="824" type="number"/>
@@ -438,7 +523,7 @@
 			<OnLeave function="GameTooltip_Hide"/>
 		</Scripts>
 	</Frame>
-	
+
 	<Frame name="GarrisonFollowerModelUpgradeTemplate" hidden="true" virtual="true">
 		<Size x="10" y="10"/>
 		<Layers>
@@ -560,11 +645,11 @@
 			<OnLeave function="GameTooltip_Hide"/>
 		</Scripts>
 	</Button>
-	
+
 	<Frame name="GarrisonThreatCountersFrameTemplate" virtual="true">
 		<Size x="10" y="10"/>
 		<KeyValues>
-			 <KeyValue key="listName" value="FollowerList" type="string"/>
+			<KeyValue key="listName" value="FollowerList" type="string"/>
 		</KeyValues>
 		<Frames>
 			<Button parentArray="ThreatsList" inherits="GarrisonThreatCounterTemplate">
@@ -579,9 +664,9 @@
 			<OnShow function="GarrisonThreatCountersFrame_Update"/>
 		</Scripts>
 	</Frame>
-	
+
 	<Frame name="GarrisonThreatCountersFrame" inherits="GarrisonThreatCountersFrameTemplate" hidden="true"/>
-	
+
 	<Frame name="GarrisonConfirmFollowerAbilityUpgradeFrame" hidden="true">
 		<Size x="200" y="40"/>
 		<Layers>

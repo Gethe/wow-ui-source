@@ -158,7 +158,12 @@ function AdventureMap_MissionTooltipMixin:AddRewards(missionInfo)
 	self:AddWidget(self.RewardHeader);
 	
 	for id, reward in pairs(missionInfo.rewards) do
-		if reward.itemID then
+		if reward.bonusAbilityID then
+			-- TODO: Add Icon and Description (see shipyard version)
+			self.Reward:SetText(reward.name);
+			self.Reward:Show();
+			self:AddWidget(self.Reward);
+		elseif reward.itemID then
 			EmbeddedItemTooltip_SetItemByID(self.ItemTooltip, reward.itemID);
 			self:AddWidget(self.ItemTooltip, -6, 0);
 		elseif reward.followerXP then

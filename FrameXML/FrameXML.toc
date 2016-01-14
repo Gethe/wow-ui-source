@@ -62,6 +62,7 @@ InterfaceOptionsFrame.xml
 InterfaceOptionsPanels.xml
 ..\SharedXML\AddonList.xml
 AlertFrames.xml
+AlertFrameSystems.xml
 MirrorTimer.xml
 CoinPickupFrame.xml
 StackSplitFrame.xml

@@ -140,7 +140,407 @@
 			</Button>
 		</Frames>
 	</Frame>
-	
+
+	<Frame name="ChallengesKeystoneFrameAffixTemplate" parentArray="Affixes" enableMouse="true" virtual="true" mixin="ChallengesKeystoneFrameAffixMixin">
+		<Size x="52" y="52"/>
+		<Layers>
+			<Layer level="OVERLAY">
+				<Texture parentKey="Border" atlas="ChallengeMode-AffixRing-Lg" setAllPoints="true"/>
+				<FontString parentKey="Percent" inherits="GameFontHighlightLarge">
+					<Anchors>
+						<Anchor point="BOTTOM" relativeKey="$parent.Border" x="0" y="-4"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+			<Layer level="ARTWORK">
+				<Texture parentKey="Portrait">
+					<Size x="50" y="50"/>
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent.Border"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnEnter method="OnEnter"/>
+			<OnLeave function="GameTooltip_Hide"/>
+		</Scripts>
+	</Frame>
+
+	<Frame name="ChallengesKeystoneFrame" hidden="true" parent="UIParent" mixin="ChallengesKeystoneFrameMixin">
+		<Size x="398" y="548"/>
+		<Anchors>
+			<Anchor point="CENTER" x="0" y="40"/>
+		</Anchors>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture atlas="ChallengeMode-KeystoneFrame" setAllPoints="true"/>
+			</Layer>
+			<Layer level="ARTWORK">
+				<Texture parentKey="RuneBG" hidden="false" alpha="1" alphaMode="BLEND" atlas="ChallengeMode-RuneBG">
+					<Size x="360" y="360"/>
+					<Anchors>
+						<Anchor point="CENTER" x="0" y="60"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="InstructionBackground">
+					<Size x="374" y="60"/>
+					<Anchors>
+						<Anchor point="BOTTOM" x="0" y="80"/>
+					</Anchors>
+					<Color r="0" g="0" b="0" a="0.8"/>
+				</Texture>
+			</Layer>
+			<Layer level="ARTWORK" textureSubLevel="1">
+				<Texture parentKey="BgBurst" hidden="false" alpha="0" alphaMode="ADD" atlas="ChallengeMode-Runes-ARTWORKBurst" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent.RuneBG"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="Divider" atlas="ChallengeMode-ThinDivider" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="BOTTOM" relativeKey="$parent.InstructionBackground" relativePoint="TOP"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="ARTWORK" textureSubLevel="2">
+				<Texture parentKey="RuneCoverGlow" hidden="false" alpha="0" alphaMode="BLEND" atlas="ChallengeMode-Runes-ARTWORKCoverGlow" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent.RuneBG"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="OVERLAY">
+				<FontString parentKey="DungeonName" inherits="QuestFont_Enormous">
+					<Anchors>
+						<Anchor point="BOTTOM" relativeKey="$parent.Divider" relativePoint="TOP" x="0" y="4"/>
+					</Anchors>
+				</FontString>
+				<FontString parentKey="PowerLevel" inherits="QuestFont_Enormous" hidden="true">
+					<Anchors>
+						<Anchor point="TOP" x="0" y="-30"/>
+					</Anchors>
+				</FontString>
+				<FontString parentKey="TimeLimit" inherits="GameFontHighlightLarge" hidden="true">
+					<Anchors>
+						<Anchor point="TOP" relativeKey="$parent.Divider" relativePoint="TOP" x="0" y="-6"/>
+					</Anchors>
+				</FontString>
+				<FontString parentKey="Instructions" inherits="GameFontHighlightLarge2" text="CHALLENGE_MODE_INSERT_KEYSTONE">
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent.InstructionBackground"/>
+					</Anchors>
+				</FontString>
+				<Texture parentKey="PentagonLines" hidden="false" alpha="0" alphaMode="BLEND" atlas="ChallengeMode-Runes-LineGlow" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent.RuneBG" x="0" y="6"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="LargeCircleGlow" hidden="false" alpha="0" alphaMode="BLEND" atlas="ChallengeMode-Runes-InnerCircleGlow" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent.RuneBG" x="0" y="5"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="SmallCircleGlow" hidden="false" alpha="0" alphaMode="BLEND" atlas="ChallengeMode-Runes-SmallCircleGlow">
+					<Size x="130" y="130"/>
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent.RuneBG" x="0" y="1"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="Shockwave" hidden="false" alpha="0" alphaMode="ADD" atlas="ChallengeMode-Runes-Shockwave" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="CENTER" x="0" y="60"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="Shockwave2" hidden="false" alpha="0" alphaMode="ADD" atlas="ChallengeMode-Runes-Shockwave" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="CENTER" x="0" y="60"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="RunesLarge" hidden="false" alpha="0.15" alphaMode="BLEND" atlas="ChallengeMode-Runes-Large">
+					<Size x="196" y="196"/>
+					<Anchors>
+						<Anchor point="CENTER" x="0" y="61"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="GlowBurstLarge" hidden="false" alpha="0" alphaMode="ADD" atlas="ChallengeMode-Runes-GlowBurstLarge" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent.RunesLarge" x="-1" y="-3"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="RunesSmall" hidden="false" alpha="0.15" alphaMode="BLEND" atlas="ChallengeMode-Runes-Small">
+					<Size x="125" y="125"/>
+					<Anchors>
+						<Anchor point="CENTER" x="0" y="61"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="GlowBurstSmall" hidden="false" alpha="0" alphaMode="BLEND" atlas="ChallengeMode-Runes-GlowBurstLarge" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="CENTER" x="0" y="60"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="OVERLAY" textureSubLevel="1">
+				<Texture parentKey="SlotBG" hidden="false" alpha="1" alphaMode="BLEND" atlas="ChallengeMode-KeystoneSlotBG" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="CENTER" x="0" y="61"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="RuneCircleT" hidden="false" alpha="0" alphaMode="BLEND" atlas="ChallengeMode-Runes-CircleGlow">
+					<Size x="48" y="48"/>
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent.RuneBG" x="0" y="126"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="RuneCircleR" hidden="false" alpha="0" alphaMode="BLEND" atlas="ChallengeMode-Runes-CircleGlow">
+					<Size x="48" y="48"/>
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent.RuneBG" x="118" y="40"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="RuneCircleBR" hidden="false" alpha="0" alphaMode="BLEND" atlas="ChallengeMode-Runes-CircleGlow">
+					<Size x="48" y="48"/>
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent.RuneBG" x="73" y="-98"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="RuneCircleBL" hidden="false" alpha="0" alphaMode="BLEND" atlas="ChallengeMode-Runes-CircleGlow">
+					<Size x="48" y="48"/>
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent.RuneBG" x="-73" y="-98"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="RuneCircleL" hidden="false" alpha="0" alphaMode="BLEND" atlas="ChallengeMode-Runes-CircleGlow">
+					<Size x="48" y="48"/>
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent.RuneBG" x="-118" y="40"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="OVERLAY" textureSubLevel="3">
+				<Texture parentKey="KeystoneFrame" hidden="false" alpha="1" alphaMode="BLEND" atlas="ChallengeMode-KeystoneSlotFrame" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="CENTER" x="0" y="61"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="RuneT" hidden="false" alpha="0" alphaMode="BLEND" atlas="ChallengeMode-Runes-T-Glow">
+					<Size x="40" y="40"/>
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent.RuneCircleT"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="RuneR" hidden="false" alpha="0" alphaMode="BLEND" atlas="ChallengeMode-Runes-R-Glow">
+					<Size x="40" y="40"/>
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent.RuneCircleR" x="-1" y="0"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="RuneBR" hidden="false" alpha="0" alphaMode="BLEND" atlas="ChallengeMode-Runes-BR-Glow">
+					<Size x="40" y="40"/>
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent.RuneCircleBR" x="-1" y="0"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="RuneBL" hidden="false" alpha="0" alphaMode="BLEND" atlas="ChallengeMode-Runes-BL-Glow">
+					<Size x="40" y="40"/>
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent.RuneCircleBL" x="-1" y="0"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="RuneL" hidden="false" alpha="0" alphaMode="BLEND" atlas="ChallengeMode-Runes-L-Glow">
+					<Size x="40" y="40"/>
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent.RuneCircleL"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="LargeRuneGlow" hidden="false" alpha="0" alphaMode="ADD" atlas="ChallengeMode-Runes-GlowLarge">
+					<Size x="198" y="199"/>
+					<Anchors>
+						<Anchor point="CENTER" x="0" y="61"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="SmallRuneGlow" hidden="false" alpha="0" alphaMode="ADD" atlas="ChallengeMode-Runes-GlowSmall">
+					<Size x="129" y="129"/>
+					<Anchors>
+						<Anchor point="CENTER" x="0" y="61"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="OVERLAY" textureSubLevel="4">
+				<Texture parentKey="KeystoneSlotGlow" hidden="false" alpha="0" alphaMode="ADD" atlas="ChallengeMode-KeystoneSlotFrameGlow" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="CENTER" x="0" y="60"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Button parentKey="CloseButton" inherits="UIPanelCloseButton">
+				<Anchors>
+					<Anchor point="TOPRIGHT" x="-4" y="-4"/>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						self:GetParent():Hide();
+					</OnClick>
+				</Scripts>
+			</Button>
+			<Button parentKey="StartButton" inherits="UIPanelButtonTemplate" text="CHALLENGE_MODE_START_CHALLENGE" enabled="false">
+				<Size x="120" y="24"/>
+				<Anchors>
+					<Anchor point="BOTTOM" x="0" y="20"/>
+				</Anchors>
+				<Scripts>
+					<OnShow>
+						self:SetWidth(self:GetTextWidth() + 60);
+					</OnShow>
+					<OnClick>
+						self:GetParent().ActivateAnim:Play();
+					</OnClick>
+				</Scripts>
+			</Button>
+			<Button parentKey="KeystoneSlot" useParentLevel="true" enableMouse="true" mixin="ChallengesKeystoneSlotMixin">
+				<Size x="48" y="48"/>
+				<Anchors>
+					<Anchor point="CENTER" relativeKey="$parent.SlotBG"/>
+				</Anchors>
+				<Layers>
+					<Layer level="OVERLAY" textureSubLevel="2">
+						<Texture parentKey="Texture" setAllPoints="true"/>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnLoad method="OnLoad"/>
+					<OnEvent method="OnEvent"/>
+					<OnReceiveDrag method="OnReceiveDrag"/>
+					<OnDragStart method="OnDragStart"/>
+					<OnClick method="OnClick"/>
+				</Scripts>
+			</Button>
+			<Frame hidden="true" inherits="ChallengesKeystoneFrameAffixTemplate"/>
+		</Frames>
+		<Animations>
+			<AnimationGroup parentKey="ChallengeModeBGAnim" setToFinalAlpha="true">
+				<Alpha childKey="RuneCoverGlow" startDelay="0.2" duration="0.25" order="1" fromAlpha="0" toAlpha="1"/>
+				<Alpha childKey="RuneCoverGlow" startDelay="1.5" duration="1" order="1" fromAlpha="1" toAlpha="0.25"/>
+				<Alpha childKey="BgBurst" startDelay="0.3" smoothing="OUT" duration="0.3" order="1" fromAlpha="0" toAlpha="1"/>
+				<Scale childKey="BgBurst" startDelay="0.3" smoothing="OUT" duration="0.2" order="1" fromScaleX="0.8" fromScaleY="0.8" toScaleX="1.1" toScaleY="1.1"/>
+				<Alpha childKey="BgBurst" startDelay="1.25" smoothing="IN" duration="0.75" order="1" fromAlpha="1" toAlpha="0"/>
+				<Scale childKey="BgBurst" startDelay="0.7" smoothing="OUT" duration="1.5" order="1" fromScaleX="1" fromScaleY="1" toScaleX="0.8" toScaleY="0.8"/>
+				<Alpha childKey="KeystoneSlotGlow" duration="0.15" order="1" fromAlpha="0" toAlpha="1"/>
+				<Alpha childKey="KeystoneSlotGlow" startDelay="0.25" duration="3" order="1" fromAlpha="1" toAlpha="0"/>
+				<Alpha childKey="PentagonLines" startDelay="0.15" smoothing="IN" duration="0.25" order="1" fromAlpha="0" toAlpha="1"/>
+				<Alpha childKey="PentagonLines" startDelay="0.55" smoothing="IN_OUT" duration="1" order="1" fromAlpha="1" toAlpha="0.25"/>
+				<Alpha childKey="LargeCircleGlow" startDelay="0.05" smoothing="IN" duration="0.25" order="1" fromAlpha="0" toAlpha="1"/>
+				<Alpha childKey="LargeCircleGlow" startDelay="0.35" smoothing="IN_OUT" duration="1" order="1" fromAlpha="1" toAlpha="0.25"/>
+				<Alpha childKey="SmallCircleGlow" smoothing="IN" duration="0.25" order="1" fromAlpha="0" toAlpha="1"/>
+				<Alpha childKey="SmallCircleGlow" startDelay="0.25" smoothing="IN_OUT" duration="1" order="1" fromAlpha="1" toAlpha="0.25"/>
+				<Alpha childKey="RuneCircleT" startDelay="0.35" duration="0.35" order="1" fromAlpha="0" toAlpha="1"/>
+				<Alpha childKey="RuneCircleT" startDelay="1.85" duration="1" order="1" fromAlpha="1" toAlpha="0.25"/>
+				<Alpha childKey="RuneT" startDelay="0.45" smoothing="OUT" duration="0.45" order="1" fromAlpha="0" toAlpha="1"/>
+				<Alpha childKey="RuneT" startDelay="1.85" duration="1" order="1" fromAlpha="1" toAlpha="0.25"/>
+				<Alpha childKey="RuneCircleR" startDelay="0.35" duration="0.35" order="1" fromAlpha="0" toAlpha="1"/>
+				<Alpha childKey="RuneCircleR" startDelay="1.85" duration="1" order="1" fromAlpha="1" toAlpha="0.25"/>
+				<Alpha childKey="RuneR" startDelay="0.45" smoothing="OUT" duration="0.45" order="1" fromAlpha="0" toAlpha="1"/>
+				<Alpha childKey="RuneR" startDelay="1.85" duration="1" order="1" fromAlpha="1" toAlpha="0.25"/>
+				<Alpha childKey="RuneCircleBR" startDelay="0.35" duration="0.35" order="1" fromAlpha="0" toAlpha="1"/>
+				<Alpha childKey="RuneCircleBR" startDelay="1.85" duration="1" order="1" fromAlpha="1" toAlpha="0.25"/>
+				<Alpha childKey="RuneBR" startDelay="0.45" smoothing="OUT" duration="0.45" order="1" fromAlpha="0" toAlpha="1"/>
+				<Alpha childKey="RuneBR" startDelay="1.85" duration="1" order="1" fromAlpha="1" toAlpha="0.25"/>
+				<Alpha childKey="RuneCircleBL" startDelay="0.35" duration="0.35" order="1" fromAlpha="0" toAlpha="1"/>
+				<Alpha childKey="RuneCircleBL" startDelay="1.85" duration="1" order="1" fromAlpha="1" toAlpha="0.25"/>
+				<Alpha childKey="RuneBL" startDelay="0.45" smoothing="OUT" duration="0.45" order="1" fromAlpha="0" toAlpha="1"/>
+				<Alpha childKey="RuneBL" startDelay="1.85" duration="1" order="1" fromAlpha="1" toAlpha="0.25"/>
+				<Alpha childKey="RuneCircleL" startDelay="0.35" duration="0.35" order="1" fromAlpha="0" toAlpha="1"/>
+				<Alpha childKey="RuneCircleL" startDelay="1.85" duration="1" order="1" fromAlpha="1" toAlpha="0.25"/>
+				<Alpha childKey="RuneL" startDelay="0.45" smoothing="OUT" duration="0.45" order="1" fromAlpha="0" toAlpha="1"/>
+				<Alpha childKey="RuneL" startDelay="1.85" duration="1" order="1" fromAlpha="1" toAlpha="0.25"/>
+				<Rotation childKey="Shockwave" smoothing="OUT" duration="1" order="1" degrees="-45"/>
+				<Rotation childKey="Shockwave2" startDelay="0.2" smoothing="OUT" duration="1" order="1" degrees="45"/>
+			</AnimationGroup>
+			<AnimationGroup parentKey="ActivateAnim">
+				<Alpha childKey="RuneL" smoothing="IN" duration="0.35" order="1" fromAlpha="0.25" toAlpha="1"/>
+				<Alpha childKey="RuneL" startDelay="1" smoothing="IN" duration="0.25" order="1" fromAlpha="1" toAlpha="0"/>
+				<Alpha childKey="RuneCircleL" startDelay="0.15" duration="0.5" order="1" fromAlpha="0.25" toAlpha="1"/>
+				<Alpha childKey="RuneCircleL" startDelay="1.15" smoothing="IN" duration="0.25" order="1" fromAlpha="1" toAlpha="0"/>
+				<Alpha childKey="RuneBL" smoothing="IN" duration="0.35" order="1" fromAlpha="0.25" toAlpha="1"/>
+				<Alpha childKey="RuneBL" startDelay="1" smoothing="IN" duration="0.25" order="1" fromAlpha="1" toAlpha="0"/>
+				<Alpha childKey="RuneCircleBL" startDelay="0.15" duration="0.5" order="1" fromAlpha="0.25" toAlpha="1"/>
+				<Alpha childKey="RuneCircleBL" startDelay="1.15" smoothing="IN" duration="0.25" order="1" fromAlpha="1" toAlpha="0"/>
+				<Alpha childKey="RuneBR" smoothing="IN" duration="0.35" order="1" fromAlpha="0.25" toAlpha="1"/>
+				<Alpha childKey="RuneBR" startDelay="1" smoothing="IN" duration="0.25" order="1" fromAlpha="1" toAlpha="0"/>
+				<Alpha childKey="RuneCircleBR" startDelay="0.15" duration="0.5" order="1" fromAlpha="0.25" toAlpha="1"/>
+				<Alpha childKey="RuneCircleBR" startDelay="1.15" smoothing="IN" duration="0.25" order="1" fromAlpha="1" toAlpha="0"/>
+				<Alpha childKey="RuneR" smoothing="IN" duration="0.35" order="1" fromAlpha="0.25" toAlpha="1"/>
+				<Alpha childKey="RuneR" startDelay="1" smoothing="IN" duration="0.25" order="1" fromAlpha="1" toAlpha="0"/>
+				<Alpha childKey="RuneCircleR" startDelay="0.15" duration="0.5" order="1" fromAlpha="0.25" toAlpha="1"/>
+				<Alpha childKey="RuneCircleR" startDelay="1.15" smoothing="IN" duration="0.25" order="1" fromAlpha="1" toAlpha="0"/>
+				<Alpha childKey="RuneT" smoothing="IN" duration="0.35" order="1" fromAlpha="0.25" toAlpha="1"/>
+				<Alpha childKey="RuneT" startDelay="1" smoothing="IN" duration="0.25" order="1" fromAlpha="1" toAlpha="0"/>
+				<Alpha childKey="RuneCircleT" startDelay="0.15" duration="0.5" order="1" fromAlpha="0.25" toAlpha="1"/>
+				<Alpha childKey="RuneCircleT" startDelay="1.15" smoothing="IN" duration="0.25" order="1" fromAlpha="1" toAlpha="0"/>
+				<Alpha childKey="PentagonLines" startDelay="0.25" smoothing="IN_OUT" duration="0.5" order="1" fromAlpha="0.25" toAlpha="1"/>
+				<Alpha childKey="PentagonLines" startDelay="1.2" smoothing="IN" duration="0.25" order="1" fromAlpha="1" toAlpha="0"/>
+				<Alpha childKey="RuneCoverGlow" startDelay="0.2" smoothing="IN_OUT" duration="0.5" order="1" fromAlpha="0.25" toAlpha="1"/>
+				<Alpha childKey="RuneCoverGlow" startDelay="1.15" smoothing="IN" duration="0.25" order="1" fromAlpha="1" toAlpha="0"/>
+				<Alpha childKey="LargeCircleGlow" startDelay="0.35" smoothing="IN_OUT" duration="0.5" order="1" fromAlpha="0.25" toAlpha="1"/>
+				<Alpha childKey="LargeCircleGlow" startDelay="1.3" smoothing="IN" duration="0.25" order="1" fromAlpha="1" toAlpha="0"/>
+				<Alpha childKey="SmallCircleGlow" startDelay="0.55" smoothing="IN_OUT" duration="0.5" order="1" fromAlpha="0.25" toAlpha="1"/>
+				<Alpha childKey="SmallCircleGlow" startDelay="1.5" smoothing="IN" duration="0.25" order="1" fromAlpha="1" toAlpha="0"/>
+				<Alpha childKey="Shockwave" duration="0.25" order="1" fromAlpha="0" toAlpha="1"/>
+				<Scale childKey="Shockwave" smoothing="OUT" duration="0.5" order="1" fromScaleX="0.5" fromScaleY="0.5" toScaleX="1.25" toScaleY="1.25"/>
+				<Scale childKey="Shockwave" startDelay="0.5" smoothing="IN" duration="0.75" order="1" fromScaleX="1" fromScaleY="1" toScaleX="0.5" toScaleY="0.5"/>
+				<Alpha childKey="Shockwave" startDelay="0.5" smoothing="IN" duration="0.5" order="1" fromAlpha="1" toAlpha="0"/>
+				<Alpha childKey="Shockwave2" startDelay="0.2" duration="0.25" order="1" fromAlpha="0" toAlpha="1"/>
+				<Scale childKey="Shockwave2" startDelay="0.2" smoothing="OUT" duration="0.5" order="1" fromScaleX="0.5" fromScaleY="0.5" toScaleX="1.75" toScaleY="1.75"/>
+				<Scale childKey="Shockwave2" startDelay="0.7" smoothing="IN" duration="0.75" order="1" fromScaleX="1" fromScaleY="1" toScaleX="0.5" toScaleY="0.5"/>
+				<Alpha childKey="Shockwave2" startDelay="0.7" smoothing="IN" duration="0.5" order="1" fromAlpha="1" toAlpha="0"/>
+				<Scripts>
+					<OnFinished>
+						if (C_ChallengeMode.StartChallengeMode()) then
+							self:GetParent():Hide();
+							ChallengesKeystoneFrame:Reset();
+						end
+					</OnFinished>
+				</Scripts>
+			</AnimationGroup>
+			<AnimationGroup parentKey="RunesLargeRotateAnim" looping="REPEAT">
+				<Rotation childKey="RunesLarge" duration="60" order="1" degrees="-360"/>
+				<Rotation childKey="LargeRuneGlow" duration="60" order="1" degrees="-360"/>
+				<Rotation childKey="GlowBurstLarge" duration="60" order="1" degrees="-360"/>
+			</AnimationGroup>
+			<AnimationGroup parentKey="RunesLargeAnim" setToFinalAlpha="true">
+				<Alpha childKey="RunesLarge" smoothing="OUT" duration="0.25" order="1" fromAlpha="0.15" toAlpha="1"/>
+				<Alpha childKey="RunesLarge" startDelay="0.5" smoothing="OUT" duration="0.5" order="1" fromAlpha="1" toAlpha="0.5"/>
+				<Alpha childKey="LargeRuneGlow" startDelay="0.1" smoothing="OUT" duration="0.25" order="1" fromAlpha="0" toAlpha="1"/>
+				<Alpha childKey="LargeRuneGlow" startDelay="0.6" smoothing="IN" duration="1" order="1" fromAlpha="1" toAlpha="0"/>
+				<Alpha childKey="GlowBurstLarge" startDelay="0.25" smoothing="OUT" duration="0.25" order="1" fromAlpha="0" toAlpha="1"/>
+				<Alpha childKey="GlowBurstLarge" startDelay="0.5" smoothing="IN" duration="0.5" order="1" fromAlpha="1" toAlpha="0"/>
+				<Scale childKey="GlowBurstLarge" smoothing="OUT" duration="0.5" order="1" fromScaleX="0.8" fromScaleY="0.8" toScaleX="1" toScaleY="1"/>
+				<Alpha childKey="RunesLarge" startDelay="0.5" smoothing="OUT" duration="0.5" order="3" fromAlpha="0.5" toAlpha="0.15"/>
+			</AnimationGroup>
+			<AnimationGroup parentKey="RunesSmallRotateAnim" looping="REPEAT">
+				<Rotation childKey="RunesSmall" duration="60" order="1" degrees="360"/>
+				<Rotation childKey="SmallRuneGlow" duration="60" order="1" degrees="360"/>
+				<Rotation childKey="GlowBurstSmall" duration="60" order="1" degrees="360"/>
+			</AnimationGroup>
+			<AnimationGroup parentKey="RunesSmallAnim" setToFinalAlpha="true">
+				<Alpha childKey="RunesSmall" smoothing="OUT" duration="0.25" order="1" fromAlpha="0.15" toAlpha="1"/>
+				<Alpha childKey="RunesSmall" startDelay="0.5" smoothing="OUT" duration="0.5" order="1" fromAlpha="1" toAlpha="0.5"/>
+				<Alpha childKey="SmallRuneGlow" duration="0.25" order="1" fromAlpha="0" toAlpha="1"/>
+				<Alpha childKey="SmallRuneGlow" startDelay="0.5" smoothing="IN" duration="1" order="1" fromAlpha="1" toAlpha="0"/>
+				<Alpha childKey="GlowBurstSmall" smoothing="OUT" duration="0.25" order="1" fromAlpha="0" toAlpha="1"/>
+				<Alpha childKey="GlowBurstSmall" startDelay="0.25" smoothing="IN" duration="0.5" order="1" fromAlpha="1" toAlpha="0"/>
+				<Scale childKey="GlowBurstSmall" smoothing="OUT" duration="0.5" order="1" fromScaleX="0.5" fromScaleY="0.5" toScaleX="0.65" toScaleY="0.65"/>
+				<Alpha childKey="RunesSmall" startDelay="0.5" smoothing="OUT" duration="0.5" order="3" fromAlpha="0.5" toAlpha="0.15"/>
+			</AnimationGroup>
+		</Animations>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnHide method="OnHide"/>
+		</Scripts>
+	</Frame>
+
 	<Frame name="ChallengesFrame" setAllPoints="true" parent="PVEFrame" hidden="true">
 		<Frames>
 			<Frame name="$parentInset" useParentLevel="true" inherits="InsetFrameTemplate">
@@ -342,7 +742,7 @@
 					<Anchor point="TOPLEFT" x="8" y="-64"/>
 				</Anchors>
 			</Button>
-			
+
 			<Frame name="$parentRewardRow3" inherits="ChallengeRewardRowTemplate" parentKey="RewardRow3">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeTo="$parentDetails" x="0" y="-246"/>

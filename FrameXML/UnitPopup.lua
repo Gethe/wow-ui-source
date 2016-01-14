@@ -1054,7 +1054,7 @@ function UnitPopup_HideButtons ()
 				UnitPopupShown[UIDROPDOWNMENU_MENU_LEVEL][index] = 0;
 			end
 		elseif ( value == "RESET_CHALLENGE_MODE" ) then
-			if ( not inInstance or not GetChallengeMode() or ( inParty == 1 and isLeader == 0 ) ) then
+			if ( not inInstance or not C_ChallengeMode.InChallengeMode() or ( inParty == 1 and isLeader == 0 ) ) then
 				UnitPopupShown[UIDROPDOWNMENU_MENU_LEVEL][index] = 0;
 			end
 		elseif ( value == "DUNGEON_DIFFICULTY" ) then

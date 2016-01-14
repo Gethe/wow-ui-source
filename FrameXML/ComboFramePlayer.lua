@@ -58,7 +58,7 @@ function ComboPointPowerBar:SetupDruid()
 		self:UnregisterEvent("UNIT_MAXPOWER");
 	end
 	if (showBar) then
-		self:SetPoint("TOP", self:GetParent(), "BOTTOM", 50, 18);
+		self:SetPoint("TOP", self:GetParent(), "BOTTOM", 50, 38);
 		self:Show();
 		self:UpdateMaxPower();
 		self:UpdatePower();

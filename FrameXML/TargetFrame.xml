@@ -15,7 +15,7 @@
 						<Anchor point="BOTTOMRIGHT" x="1" y="-1"/>
 					</Anchors>
 					<TexCoords left="0.296875" right="0.5703125" top="0" bottom="0.515625"/>
-				</Texture>	
+				</Texture>
 			</Layer>
 		</Layers>
 		<Frames>
@@ -58,7 +58,7 @@
 						<Anchor point="BOTTOMRIGHT" x="1" y="-1"/>
 					</Anchors>
 					<TexCoords left="0.296875" right="0.5703125" top="0" bottom="0.515625"/>
-				</Texture>	
+				</Texture>
 				<FontString name="$parentCount" inherits="NumberFontNormalSmall" justifyH="RIGHT">
 					<Anchors>
 						<Anchor point="BOTTOMRIGHT" x="5" y="0"/>
@@ -136,7 +136,7 @@
 		<Size x="232" y="100"/>
 		<HitRectInsets>
 			<AbsInset left="0" right="40" top="10" bottom="20"/>
-		</HitRectInsets>	
+		</HitRectInsets>
 		<Layers>
 			<Layer level="BACKGROUND">
 				<Texture name="$parentFlash" file="Interface\TargetingFrame\UI-TargetingFrame-Flash" hidden="true">
@@ -410,7 +410,7 @@
 			</OnLoad>
 		</Scripts>
 	</Button>
-	<Button name="TargetofTargetFrameTemplate" toplevel="true" movable="true" inherits="SecureUnitButtonTemplate" virtual="true" hidden="true">
+	<Button name="TargetofTargetFrameTemplate" movable="true" inherits="SecureUnitButtonTemplate" virtual="true" hidden="true">
 		<Size x="93" y="45"/>
 		<Anchors>
 			<Anchor point="BOTTOMRIGHT" x="-35" y="-10"/>
@@ -527,7 +527,7 @@
 			<OnEvent function="Target_Spellbar_OnEvent"/>
 		</Scripts>
 	</StatusBar>
-			
+
 	<Button name="TargetFrame" inherits="TargetFrameTemplate" movable="true">
 		<Anchors>
 			<Anchor point="TOPLEFT" x="250" y="-4"/>
@@ -599,9 +599,9 @@
 				self:RegisterForDrag("LeftButton");
 			</OnLoad>
 			<OnDragStart function="FocusFrame_OnDragStart"/>
-			<OnDragStop function="FocusFrame_OnDragStop"/>			
+			<OnDragStop function="FocusFrame_OnDragStop"/>
 		</Scripts>
-	</Button>		
+	</Button>
 	<Button name="Boss1TargetFrame" inherits="BossTargetFrameTemplate" id="1">
 		<Anchors>
 			<Anchor point="TOPRIGHT" x="55" y="-236"/>
@@ -621,10 +621,10 @@
 		<Anchors>
 			<Anchor point="TOPLEFT" relativeTo="Boss3TargetFrame" relativePoint="BOTTOMLEFT" x="0" y="-30"/>
 		</Anchors>
-	</Button>	
+	</Button>
 	<Button name="Boss5TargetFrame" inherits="BossTargetFrameTemplate" id="5">
 		<Anchors>
 			<Anchor point="TOPLEFT" relativeTo="Boss4TargetFrame" relativePoint="BOTTOMLEFT" x="0" y="-30"/>
 		</Anchors>
-	</Button>	
+	</Button>
 </Ui>

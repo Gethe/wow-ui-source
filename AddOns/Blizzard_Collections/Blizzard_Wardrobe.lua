@@ -167,7 +167,7 @@ function WardrobeTransmogFrame_UpdateSlotButton(slotButton)
 	end
 
 	-- show ants frame is the item has a pending transmogrification and is not animating
-	if ( hasChange and isPendingCollected and not slotButton.AnimFrame:IsShown() ) then
+	if ( hasChange and (hasUndo or isPendingCollected) and not slotButton.AnimFrame:IsShown() ) then
 		slotButton.PendingFrame:Show();
 		if ( hasUndo ) then
 			slotButton.PendingFrame.Undo:Show();
@@ -375,7 +375,14 @@ function WardrobeTransmogButton_OnEnter(self)
 		GameTooltip:SetOwner(self, "ANCHOR_RIGHT", 14, 0);
 		if ( not canTransmogrify ) then
 			GameTooltip:SetText(_G[self.slot]);
-			local errorMsg = _G["TRANSMOGRIFY_INVALID_REASON"..cannotTransmogrifyReason];
+			local tag = TRANSMOG_INVALID_CODES[cannotTransmogrifyReason];
+			local errorMsg;
+			if ( tag == "CANNOT_USE" ) then
+				local errorCode, errorString = C_Transmog.GetSlotUseError(slotID, self.transmogType);
+				errorMsg = errorString;
+			else
+				errorMsg = tag and _G["TRANSMOGRIFY_INVALID_"..tag];
+			end
 			if ( errorMsg ) then
 				GameTooltip:AddLine(errorMsg, RED_FONT_COLOR.r, RED_FONT_COLOR.g, RED_FONT_COLOR.b, true);
 			end
@@ -1660,7 +1667,7 @@ function WardrobeCollectionFrameModel_OnEnter(self)
 			GameTooltip:SetText(HIDE_VISUAL_STRINGS[WardrobeCollectionFrame.activeSlot]);
 		else
 			WardrobeCollectionFrame.tooltipAppearanceID = self.visualInfo.visualID;
-			WardrobeCollectionFrame.tooltipIndexOffset = 0;
+			WardrobeCollectionFrame.tooltipIndexOffset = nil;
 			GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
 			WardrobeCollectionFrameModel_SetTooltip();
 		end
@@ -1670,12 +1677,29 @@ end
 function WardrobeCollectionFrameModel_OnLeave(self)
 	WardrobeCollectionFrame.tooltipAppearanceID = nil;
 	WardrobeCollectionFrame.tooltipCycle = nil;
-	WardrobeCollectionFrame.tooltipIndexOffset = 0;
+	WardrobeCollectionFrame.tooltipIndexOffset = nil;
 	GameTooltip:Hide();
 end
 
 function WardrobeCollectionFrameModel_SetTooltip()
 	local sources = WardrobeCollectionFrame_GetSortedAppearanceSources(WardrobeCollectionFrame.tooltipAppearanceID);
+	if ( not WardrobeCollectionFrame.tooltipIndexOffset ) then
+		WardrobeCollectionFrame.tooltipIndexOffset = 0;
+		local lowestUseLevel = GetMaxPlayerLevel();
+		for i = 1, #sources do
+			if ( not sources[i].isCollected ) then
+				break;
+			end
+			if ( not sources[i].useError ) then
+				WardrobeCollectionFrame.tooltipIndexOffset = i - 1;
+				break;
+			end
+			if ( sources[i].minLevel and sources[i].minLevel < lowestUseLevel ) then
+				lowestUseLevel = sources[i].minLevel;
+				WardrobeCollectionFrame.tooltipIndexOffset = i - 1;
+			end
+		end
+	end
 	if ( WardrobeCollectionFrame.tooltipIndexOffset < 0 ) then
 		WardrobeCollectionFrame.tooltipIndexOffset = #sources + WardrobeCollectionFrame.tooltipIndexOffset;
 	end
@@ -1699,6 +1723,7 @@ function WardrobeCollectionFrameModel_SetTooltip()
 	GameTooltip:SetText(name, nameColor.r, nameColor.g, nameColor.b);
 	GameTooltip:AddLine(sourceText, sourceColor.r, sourceColor.g, sourceColor.b, 1, 1);
 
+	local useError;
 	if ( #sources > 1 ) then
 		GameTooltip:AddLine(" ");
 		GameTooltip:AddLine(WARDROBE_OTHER_ITEMS, NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b);
@@ -1706,6 +1731,7 @@ function WardrobeCollectionFrameModel_SetTooltip()
 			local name, nameColor, sourceText, sourceColor = WardrobeCollectionFrameModel_GetSourceTooltipInfo(sources[i]);
 			if ( i == headerIndex ) then
 				name = WARDROBE_TOOLTIP_CYCLE_ARROW_ICON..name;
+				useError = sources[i].useError;
 			else
 				name = WARDROBE_TOOLTIP_CYCLE_SPACER_ICON..name;
 			end
@@ -1715,8 +1741,15 @@ function WardrobeCollectionFrameModel_SetTooltip()
 		GameTooltip:AddLine(WARDROBE_TOOLTIP_CYCLE, GRAY_FONT_COLOR.r, GRAY_FONT_COLOR.g, GRAY_FONT_COLOR.b, true);
 		WardrobeCollectionFrame.tooltipCycle = true;
 	else
+		useError = sources[headerIndex].useError;
 		WardrobeCollectionFrame.tooltipCycle = nil;
 	end
+
+	if ( useError ) then
+		GameTooltip:AddLine(" ");
+		GameTooltip:AddLine(useError, RED_FONT_COLOR.r, RED_FONT_COLOR.g, RED_FONT_COLOR.b, true);
+	end
+
 	GameTooltip:Show();
 end
 

@@ -241,6 +241,7 @@ function UIParent_OnLoad(self)
 
 	-- Events for trade skill UI handling
 	self:RegisterEvent("TRADE_SKILL_SHOW");
+	self:RegisterEvent("OBLITERUM_FORGE_SHOW");
 
 	-- Events for Item socketing UI
 	self:RegisterEvent("SOCKET_INFO_UPDATE");
@@ -266,9 +267,6 @@ function UIParent_OnLoad(self)
 	-- Events for Guild bank UI
 	self:RegisterEvent("GUILDBANKFRAME_OPENED");
 	self:RegisterEvent("GUILDBANKFRAME_CLOSED");
-
-	-- Events for Achievements!
-	self:RegisterEvent("ACHIEVEMENT_EARNED");
 
 	--Events for GMChatUI
 	self:RegisterEvent("CHAT_MSG_WHISPER");
@@ -342,6 +340,9 @@ function UIParent_OnLoad(self)
 	
 	-- Talking Head
 	self:RegisterEvent("TALKINGHEAD_REQUESTED");
+
+	-- Challenge Mode 2.0
+	self:RegisterEvent("CHALLENGE_MODE_KEYSTONE_RECEPTABLE_OPEN");
 end
 
 function UIParent_OnShow(self)
@@ -426,6 +427,10 @@ end
 
 function TradeSkillFrame_LoadUI()
 	UIParentLoadAddOn("Blizzard_TradeSkillUI");
+end
+
+function ObliterumForgeFrame_LoadUI()
+	UIParentLoadAddOn("Blizzard_ObliterumUI");
 end
 
 function GMSurveyFrame_LoadUI()
@@ -523,12 +528,20 @@ function Garrison_LoadUI()
 	UIParentLoadAddOn("Blizzard_GarrisonUI");
 end
 
+function OrderHall_LoadUI()
+	UIParentLoadAddOn("Blizzard_OrderHallUI");
+end
+
 function TalkingHead_LoadUI()
 	UIParentLoadAddOn("Blizzard_TalkingHeadUI");
 end
 
 function KioskMode_LoadUI()
 	UIParentLoadAddOn("Blizzard_KioskModeUI");
+end
+
+function ChallengeMode_LoadUI()
+	UIParentLoadAddOn("Blizzard_ChallengesUI");
 end
 
 --[[
@@ -1382,7 +1395,9 @@ function UIParent_OnEvent(self, event, ...)
 	elseif ( event == "TRADE_SKILL_SHOW" ) then
 		TradeSkillFrame_LoadUI();
 		ShowUIPanel(TradeSkillFrame);
-
+	elseif ( event == "OBLITERUM_FORGE_SHOW" ) then
+		ObliterumForgeFrame_LoadUI();
+		ShowUIPanel(ObliterumForgeFrame);
 	-- Event for item socketing handling
 	elseif ( event == "SOCKET_INFO_UPDATE" ) then
 		ItemSocketingFrame_LoadUI();
@@ -1394,8 +1409,8 @@ function UIParent_OnEvent(self, event, ...)
 		ShowUIPanel(ArtifactFrame);
 		
 	elseif ( event == "ADVENTURE_MAP_OPEN" ) then
-		AdventureMapFrame_LoadUI();
-		ShowUIPanel(AdventureMapFrame);
+		OrderHall_LoadUI();
+		ShowUIPanel(OrderHallMissionFrame);
 
 	-- Event for BarberShop handling
 	elseif ( event == "BARBER_SHOP_OPEN" ) then
@@ -1421,15 +1436,6 @@ function UIParent_OnEvent(self, event, ...)
 		if ( GuildBankFrame ) then
 			HideUIPanel(GuildBankFrame);
 		end
-
-	
-	-- Events for achievement handling
-	elseif ( event == "ACHIEVEMENT_EARNED" ) then
-		-- if ( not AchievementFrame ) then
-			-- AchievementFrame_LoadUI();
-			-- AchievementAlertFrame_ShowAlert(...);
-		-- end
-		-- self:UnregisterEvent(event);
 
 	-- Display instance reset info
 	elseif ( event == "RAID_INSTANCE_WELCOME" ) then
@@ -1720,6 +1726,13 @@ function UIParent_OnEvent(self, event, ...)
 			TalkingHeadFrame_PlayCurrent();
 		end
 		self:UnregisterEvent("TALKINGHEAD_REQUESTED");
+	elseif (event == "CHALLENGE_MODE_KEYSTONE_RECEPTABLE_OPEN") then
+		if (not ChallengesKeystoneFrame) then
+			ChallengeMode_LoadUI();
+		end
+		if (not C_ChallengeMode.IsChallengeModeActive()) then
+			ChallengesKeystoneFrame:ShowKeystoneFrame();
+		end
 	end
 end
 

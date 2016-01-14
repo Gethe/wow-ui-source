@@ -730,6 +730,11 @@ function SpellButton_UpdateButton(self)
 				self.AbilityHighlightAnim:Stop();
 				self.AbilityHighlight:Hide();
 			end
+			if (HasAttachedGlyph(spellID)) then
+				self.GlyphIcon:Show();
+			else
+				self.GlyphIcon:Hide();
+			end
 		else
 			self.AbilityHighlightAnim:Stop();
 			self.AbilityHighlight:Hide();
@@ -925,7 +930,7 @@ function SpellBookFrame_OpenToPageForSlot(slot, reason)
 		SpellBookFrame_Update();
 	end
 
-	if (alreadyOpen) then
+	if (alreadyOpen and reason == OPEN_REASON_PENDING_GLYPH) then
 		local page = SPELLBOOK_PAGENUMBERS[SpellBookFrame.selectedSkillLine];
 		for i = 1, 12 do
 			local slot = (i + ( SPELLS_PER_PAGE * (page - 1))) + SpellBookFrame.selectedSkillLineOffset;
@@ -952,6 +957,8 @@ function SpellBookFrame_OpenToPageForSlot(slot, reason)
 		button.AbilityHighlightAnim:Stop();
 		button.AbilityHighlight:Hide();
 		button.GlyphActivate:Show();
+		button.GlyphIcon:Show();
+		button.GlyphTranslation:Show();
 		button.GlyphActivateAnim:Play();
 	end
 end

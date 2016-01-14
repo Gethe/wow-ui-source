@@ -84,7 +84,7 @@ function DeathRecapFrame_OpenRecap( recapID )
 		end
 		dmgInfo.school = evtData.school;
 		
-		if (dmgInfo.casterPrestige > 0) then
+		if (dmgInfo.casterPrestige and dmgInfo.casterPrestige > 0) then
 			entry.SpellInfo.Caster:SetText(("|T%d:16:16:0:2|t %s"):format(GetPrestigeInfo(dmgInfo.casterPrestige) or 0, dmgInfo.caster));
 		else
 			entry.SpellInfo.Caster:SetText(dmgInfo.caster);
