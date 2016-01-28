@@ -1,21 +1,24 @@
 # Do not delete the following line!
 ## Interface: 70000
 GlobalStrings.lua
-Constants.lua
-Localization.xml
-Fonts.xml
-FontStyles.xml
 
 ## add C namespace augmentations here
 ..\SharedXML\C_TimerAugment.lua
 
 ## add snippets independent of modules here
-..\SharedXML\Util.lua
 ..\SharedXML\IME.xml
+..\SharedXML\Util.lua
 MixinUtil.lua
 AnimatedStatusBar.xml
 FlowContainer.lua
 FrameLocks.lua
+
+
+Constants.lua
+Localization.xml
+Fonts.xml
+FontStyles.xml
+
 
 ## add new modules below here
 

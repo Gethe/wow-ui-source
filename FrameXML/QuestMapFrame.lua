@@ -177,14 +177,8 @@ function QuestMapFrame_CheckTutorials()
 end
 
 function QuestMapFrame_IsQuestWorldQuest(questID)
-	local tagID, tagName = GetQuestTagInfo(questID);
-
-	return tagID == QUEST_TAG_WORLD_QUEST
-		or tagID == QUEST_TAG_RARE_WORLD_QUEST
-		or tagID == QUEST_TAG_ELITE_WORLD_QUEST
-		or tagID == QUEST_TAG_RARE_ELITE_WORLD_QUEST
-		or tagID == QUEST_TAG_PVP_WORLD_QUEST
-		or tagID == QUEST_TAG_TRADESKILL_WORLD_QUEST;
+	local tagID, tagName, worldQuestType, isRare, isElite, tradeskillLine = GetQuestTagInfo(questID);
+	return worldQuestType ~= nil;
 end
 
 function QuestMapFrame_UpdateAll()

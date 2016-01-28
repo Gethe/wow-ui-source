@@ -25,6 +25,12 @@
 		</Scripts>
 	</Button>
 
+	<Button name="InvasionAlertFrameRewardTemplate" parentArray="RewardFrames" virtual="true" inherits="DungeonCompletionAlertFrameRewardTemplate">
+		<Scripts>
+			<OnEnter function="InvasionAlertFrameReward_OnEnter"/>
+		</Scripts>
+	</Button>
+
 	<Button name="ChallengeModeAlertFrameRewardTemplate" virtual="true" inherits="DungeonCompletionAlertFrameRewardTemplate">
 		<Scripts>
 			<OnEnter function="ChallengeModeAlertFrameReward_OnEnter"/>
@@ -767,7 +773,7 @@
 					</Anchors>
 					<Color r="0.973" g="0.937" b="0.580"/>
 				</FontString>
-				<FontString inherits="GameFontHighlight" text="SCENARIO_DEMON_INVASION">
+				<FontString inherits="GameFontHighlight" parentKey="ZoneName">
 					<Size x="200" y="0"/>
 					<Anchors>
 						<Anchor point="CENTER" relativePoint="TOP" x="28" y="-46"/>

@@ -426,7 +426,7 @@
 				</Anchors>
 			</Button>
 
-			<Button parentKey="FollowerTab" name="$parentTab2" inherits="GarrisonLandingPageTabTemplate" id="2" text="GARRISON_FOLLOWERS">
+			<Button parentKey="FollowerTabButton" name="$parentTab2" inherits="GarrisonLandingPageTabTemplate" id="2" text="GARRISON_FOLLOWERS">
 				<Anchors>
 					<Anchor point="LEFT" relativeTo="$parentTab1" relativePoint="RIGHT" x="-5" y="0"/>
 				</Anchors>
@@ -670,7 +670,7 @@
 					<Anchor point="TOPLEFT" x="45" y="-120"/>
 				</Anchors>
 			</Frame>
-			<Frame parentKey="FollowerTab">
+			<Frame parentKey="FollowerTab" mixin="GarrisonFollowerTabMixin">
 				<Size x="470" y="565"/>
 				<Anchors>
 					<Anchor point="TOPRIGHT" x="-25" y="-85"/>

@@ -82,8 +82,10 @@ function ArtifactUIMixin:OnEvent(event, ...)
 			self.PerksTab:Refresh();
 		end
 	elseif event == "ARTIFACT_MAX_RANKS_UPDATE" then
-		self.PerksTab:Refresh();
-		self:UpdateForgeLevel();
+		if self:IsShown() then
+			self.PerksTab:Refresh();
+			self:UpdateForgeLevel();
+		end
 	elseif event == "ARTIFACT_CLOSE" then
 		HideUIPanel(self);
 	end

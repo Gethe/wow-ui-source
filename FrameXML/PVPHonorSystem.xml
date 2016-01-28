@@ -120,7 +120,7 @@
 					</Layer>
 				</Layers>
 				<Scripts>
-					<OnEnter function="PVPHonorSystemLargeXPBarNextAvailable_OnEnter"/>
+					<OnEnter function="PVPHonorSystemXPBarNextAvailable_OnEnter"/>
 					<OnLeave function="GameTooltip_Hide"/>
 				</Scripts>
 			</Frame>
@@ -188,24 +188,9 @@
 			</Frame>
 		</Frames>
 		<Scripts>
-			<OnLoad>
-				local tex = self.Bar:GetStatusBarTexture();
-				self.Bar.Spark:ClearAllPoints();
-				self.Bar.Spark:SetPoint("CENTER", tex, "RIGHT", 2, 0);
-				self:RegisterEvent("HONOR_XP_UPDATE");
-				self:RegisterEvent("HONOR_LEVEL_UPDATE");
-				self:RegisterEvent("HONOR_PRESTIGE_UPDATE");
-
-				PVPHonorXPBar_Update(self);
-	 		</OnLoad>
-			<OnShow>
-				self.Level:SetText(UnitHonorLevel("player"));
-				PVPHonorXPBar_SetNextAvailable(self);
-				HonorExhaustionTick_Update(self.Bar.ExhaustionTick);
-			</OnShow>
-	 		<OnEvent>
-	 			PVPHonorXPBar_Update(self);
-	 		</OnEvent>
+			<OnLoad function="PVPHonorXPBar_OnLoad"/>
+	 		<OnShow function="PVPHonorXPBar_OnShow"/>
+	 		<OnEvent function="PVPHonorXPBar_Update"/>
 	 	</Scripts>
 	</Frame>
 	<Frame name="PVPHonorSystemSmallXPBar" virtual="true">
@@ -217,6 +202,11 @@
 						<Anchor point="CENTER"/>
 					</Anchor>
 				</Texture>
+				<FontString parentKey="Level" inherits="GameFontNormal" justifyH="CENTER">
+					<Anchors>
+						<Anchor point="CENTER" relativePoint="LEFT" x="19" y="2"/>
+					</Anchors>
+				</FontString>
 			</Layer>
 		</Layers>
 		<Frames>
@@ -278,29 +268,120 @@
 				</Frames>
 				<BarTexture atlas="_honorsystem-bar-fill"/>
 				<Scripts>
+					<OnLoad inherit="prepend">
+						self.OnFinishedCallback = function(...)
+							self:OnAnimFinished(...);
+							self:GetParent().Level:SetText(UnitHonorLevel("player"));
+							PVPHonorXPBar_SetNextAvailable(self:GetParent());
+							HonorExhaustionTick_Update(self.ExhaustionTick);
+						end
+					</OnLoad>
 					<OnEnter function="PVPHonorXPBar_OnEnter"/>
 					<OnLeave function="PVPHonorXPBar_OnLeave"/>
 				</Scripts>
 			</StatusBar>
+			<Frame parentKey="NextAvailable" enableMouse="true" hidden="true">
+				<Size x="36" y="36"/>
+				<Anchors>
+					<Anchor point="CENTER" relativeKey="$parent.Frame" relativePoint="RIGHT" x="0" y="0"/>
+				</Anchors>
+				<Layers>
+					<Layer level="OVERLAY">
+						<Texture parentKey="GoldBorder" atlas="services-icon-goldborder">
+							<Size x="36" y="36"/>
+							<Anchors>
+								<Anchor point="CENTER"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+					<Layer level="ARTWORK">
+						<Texture parentKey="Icon">
+							<Size x="24" y="24"/>
+							<Anchors>
+								<Anchor point="CENTER"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+					<Layer level="ARTWORK" textureSubLevel="1">
+						<FontString parentKey="Quantity" inherits="NumberFontNormal">
+							<Anchors>
+								<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Icon"/>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnEnter function="PVPHonorSystemXPBarNextAvailable_OnEnter"/>
+					<OnLeave function="GameTooltip_Hide"/>
+				</Scripts>
+			</Frame>
+			<Frame parentKey="PrestigeReward" enableMouse="true" hidden="true">
+				<Size x="60" y="60"/>
+				<Anchors>
+					<Anchor point="CENTER" relativeKey="$parent.Frame" relativePoint="RIGHT"/>
+				</Anchors>
+				<Layers>
+					<Layer level="ARTWORK">
+						<Texture parentKey="Border" atlas="honorsystem-bar-rewardborder-prestige" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="CENTER"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+					<Layer level="OVERLAY">
+						<Texture atlas="honorsystem-bar-rewardborder-prestige-flash" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="CENTER"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+					<Layer level="BACKGROUND">
+						<Texture parentKey="PortraitBg" atlas="honorsystem-prestige-laurel-bg-horde">
+							<Size x="48" y="48"/>
+							<Anchors>
+								<Anchor point="CENTER"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+					<Layer level="BORDER">
+						<Texture parentKey="Icon" atlas="honorsystem-icon-prestige-1">
+							<Size x="30" y="30"/>
+							<Anchors>
+								<Anchor point="CENTER"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+				<Frames>
+					<Button parentKey="Accept" inherits="UIPanelButtonTemplate" text="PVP_PRESTIGE_RANK_UP_TITLE">
+						<Size x="100" y="22"/>
+						<Anchors>
+							<Anchor point="TOP" relativeKey="$parent.Border" relativePoint="BOTTOM" x="0" y="16"/>
+						</Anchors>
+						<Scripts>
+							<OnClick function="PVPHonorXPBarPrestige_OnClick"/>
+							<OnShow>
+								self:SetWidth(self:GetTextWidth()+40);
+							</OnShow>
+						</Scripts>
+					</Button>
+				</Frames>
+				<Scripts>
+					<OnEnter>
+						if (self.tooltip) then
+							GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+							GameTooltip:SetText(self.tooltip);
+							GameTooltip:Show();
+						end
+					</OnEnter>
+					<OnLeave function="GameTooltip_Hide"/>
+				</Scripts>
+			</Frame>
 		</Frames>
 		<Scripts>
-			<OnLoad inherit="prepend">
-				self.Bar.Spark:ClearAllPoints();
-				self.Bar.Spark:SetPoint("CENTER", tex, "RIGHT", 2, 0);
-				self:RegisterEvent("HONOR_XP_UPDATE");
-				self:RegisterEvent("HONOR_LEVEL_UPDATE");
-				self:RegisterEvent("HONOR_PRESTIGE_UPDATE");
-				
-				PVPHonorXPBar_Update(self);
-	 		</OnLoad>
-			<OnShow>
-				self.Level:SetText(UnitHonorLevel("player"));
-				PVPHonorXPBar_SetNextAvailable(self);
-				HonorExhaustionTick_Update(self.Bar.ExhaustionTick);
-			</OnShow>
-	 		<OnEvent>
-	 			PVPHonorXPBar_Update(self);
-	 		</OnEvent>
+			<OnLoad function="PVPHonorXPBar_OnLoad"/>
+	 		<OnShow function="PVPHonorXPBar_OnShow"/>
+	 		<OnEvent function="PVPHonorXPBar_Update"/>
 	 	</Scripts>
 	</Frame>
 
@@ -349,20 +430,20 @@
 				<FontString parentKey="Label" inherits="GameFontHighlightLarge" text="You've Reached" alpha="0">
 					<Anchors>
 						<Anchor point="CENTER" relativeKey="$parent.BG1" x="0" y="16"/>
-					</Anchors>				
+					</Anchors>
 				</FontString>
 				<FontString parentKey="Title" inherits="QuestFont_Super_Huge" alpha="0">
 					<Anchors>
 						<Anchor point="TOP" relativeKey="$parent.Label" relativePoint="BOTTOM" x="0" y="-7"/>
-					</Anchors>				
+					</Anchors>
 				</FontString>
 				<FontString parentKey="TitleFlash" inherits="QuestFont_Super_Huge" alpha="0">
 					<Anchors>
 						<Anchor point="TOP" relativeKey="$parent.Label" relativePoint="BOTTOM" x="0" y="-7"/>
 					</Anchors>
 					<Color r="1" g="1" b="1"/>
-				</FontString>				
-				
+				</FontString>
+
 			</Layer>
 		</Layers>
 		<Animations>
@@ -404,7 +485,7 @@
 			<OnEvent function="HonorLevelUpBanner_OnEvent"/>
 		</Scripts>
 	</Frame>
-	
+
 	<Frame name="PrestigeLevelUpBanner" hidden="true">
 		<Size x="128" y="128"/>
 		<Anchors>

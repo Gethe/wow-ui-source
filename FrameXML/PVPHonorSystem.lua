@@ -99,6 +99,24 @@ function SetWatchingHonorAsXP(value)
 	SetCVar("showHonorAsExperience", value);
 end
 
+function PVPHonorXPBar_OnLoad(self)
+	local tex = self.Bar:GetStatusBarTexture();
+	self.Bar.Spark:ClearAllPoints();
+	self.Bar.Spark:SetPoint("CENTER", tex, "RIGHT", 2, 0);
+	self:RegisterEvent("HONOR_XP_UPDATE");
+	self:RegisterEvent("HONOR_LEVEL_UPDATE");
+	self:RegisterEvent("HONOR_PRESTIGE_UPDATE");
+
+	PVPHonorXPBar_Update(self);
+	self.Bar:Reset();
+end
+
+function PVPHonorXPBar_OnShow(self)
+	self.Level:SetText(UnitHonorLevel("player"));
+	PVPHonorXPBar_SetNextAvailable(self);
+	HonorExhaustionTick_Update(self.Bar.ExhaustionTick);
+end
+
 function PVPHonorXPBar_Update(self)
 	local current = UnitHonor("player");
 	local max = UnitHonorMax("player");
@@ -188,7 +206,7 @@ function PVPHonorXPBar_SetNextAvailable(self)
 	self.PrestigeReward:SetShown(showPrestige);
 end
 
-function PVPHonorSystemLargeXPBarNextAvailable_OnEnter(self)
+function PVPHonorSystemXPBarNextAvailable_OnEnter(self)
 	local rewardInfo = self:GetParent().rewardInfo;
 	if (rewardInfo) then
 		GameTooltip:SetOwner(self, "ANCHOR_RIGHT");

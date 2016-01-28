@@ -169,6 +169,7 @@ function AlertFrameMixin:OnLoad()
 	self:RegisterEvent("ACHIEVEMENT_EARNED");
 	self:RegisterEvent("CRITERIA_EARNED");
 	self:RegisterEvent("LFG_COMPLETION_REWARD");
+	self:RegisterEvent("SCENARIO_COMPLETED");
 	self:RegisterEvent("GUILD_CHALLENGE_COMPLETED");
 	self:RegisterEvent("CHALLENGE_MODE_COMPLETED");
 	self:RegisterEvent("LOOT_ITEM_ROLL_WON");
@@ -209,9 +210,17 @@ function AlertFrameMixin:OnEvent(event, ...)
 		CriteriaAlertSystem:AddAlert(...);
 	elseif ( event == "LFG_COMPLETION_REWARD" ) then
 		if ( C_Scenario.IsInScenario() and not C_Scenario.TreatScenarioAsDungeon() ) then
-			ScenarioAlertSystem:AddAlert();
+			local scenarioType = select(10, C_Scenario.GetInfo());
+			if scenarioType ~= LE_SCENARIO_TYPE_LEGION_INVASION then
+				ScenarioAlertSystem:AddAlert();
+			end
 		else
 			DungeonCompletionAlertSystem:AddAlert();
+		end
+	elseif ( event == "SCENARIO_COMPLETED" ) then
+		local scenarioType = select(10, C_Scenario.GetInfo());
+		if scenarioType == LE_SCENARIO_TYPE_LEGION_INVASION then
+			InvasionAlertSystem:AddAlert();
 		end
 	elseif ( event == "GUILD_CHALLENGE_COMPLETED" ) then
 		GuildChallengeAlertSystem:AddAlert(...);

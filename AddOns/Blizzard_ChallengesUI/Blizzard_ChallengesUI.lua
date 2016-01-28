@@ -299,23 +299,6 @@ function ChallengesKeystoneFrameMixin:CreateAndPositionAffixes(num)
 	end
 end
 
-function ChallengesKeystoneFrameMixin:SetUpAffix(index, texture, pct)
-	local frame = self.Affixes[index];
-	
-	SetPortraitToTexture(frame.Portrait, texture);
-	
-	if (pct) then
-		frame.Percent:SetText(("+%d%%"):format(pct));
-		frame.Percent:Show();
-	else
-		frame.Percent:Hide();
-	end
-	
-	frame:Show();
-
-	return frame;
-end
-
 function ChallengesKeystoneFrameMixin:OnKeystoneSlotted()
 	self.ChallengeModeBGAnim:Play();
 	self.RunesLargeAnim:Play();
@@ -335,30 +318,12 @@ function ChallengesKeystoneFrameMixin:OnKeystoneSlotted()
 	
 	self:CreateAndPositionAffixes(2 + #affixes);
 	
-	local affixFrame = self:SetUpAffix(1, "Interface\\Icons\\Ability_DualWield", dmgPct);
-	if (not affixFrame.info) then
-		affixFrame.info = {};
-	end
-
-	affixFrame.info.key = "dmg";
-	affixFrame.info.pct = dmgPct;
-
-	affixFrame = self:SetUpAffix(2, "Interface\\Icons\\Spell_Holy_SealOfSacrifice", healthPct);
-	if (not affixFrame.info) then
-		affixFrame.info = {};
-	end
+	self.Affixes[1]:SetUp({key = "dmg", pct = dmgPct});
+	self.Affixes[2]:SetUp({key = "health", pct = healthPct});
 	
-	affixFrame.info.key = "health";
-	affixFrame.info.pct = healthPct;
 
 	for i = 1, #affixes do
-		local affixID = affixes[i];
-		local name, description, filedataid = C_ChallengeMode.GetAffixInfo(affixID);
-
-		if (filedataid and filedataid ~= 0) then
-			affixFrame = self:SetUpAffix(i + 2, filedataid);
-			affixFrame.affixID = affixID;
-		end
+		self.Affixes[i+2]:SetUp(affixes[i]);
 	end
 end
 
@@ -380,15 +345,21 @@ end
 
 function ChallengesKeystoneSlotMixin:OnEvent(event, ...)
 	if (event == "CHALLENGE_MODE_KEYSTONE_SLOTTED") then
-		local itemID = ...;
-		
-		self.slottedItem = itemID;
+		local itemID= ...;
 		
 		local texture = select(10, GetItemInfo(itemID));
 		
 		SetPortraitToTexture(self.Texture, texture);
 		
 		self:GetParent():OnKeystoneSlotted();
+	end
+end
+
+function ChallengesKeystoneSlotMixin:OnEnter()
+	if (C_ChallengeMode.HasSlottedKeystone()) then
+		GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+		C_ChallengeMode.SetKeystoneTooltip();
+		GameTooltip:Show();
 	end
 end
 
@@ -414,14 +385,16 @@ end
 
 ChallengesKeystoneFrameAffixMixin = {};
 
-CHALLENGE_MODE_EXTRA_AFFIX_TOOLTIP_INFO = {
+CHALLENGE_MODE_EXTRA_AFFIX_INFO = {
 	["dmg"] = {
 		name = CHALLENGE_MODE_ENEMY_EXTRA_DAMAGE,
 		desc = CHALLENGE_MODE_ENEMY_EXTRA_DAMAGE_DESCRIPTION,
+		texture = "Interface\\Icons\\Ability_DualWield",
 	},
 	["health"] = {
 		name = CHALLENGE_MODE_ENEMY_EXTRA_HEALTH,
 		desc = CHALLENGE_MODE_ENEMY_EXTRA_HEALTH_DESCRIPTION,
+		texture = "Interface\\Icons\\Spell_Holy_SealOfSacrifice",
 	},
 };
 
@@ -432,8 +405,9 @@ function ChallengesKeystoneFrameAffixMixin:OnEnter()
 		local name, description;
 
 		if (self.info) then
-			name = CHALLENGE_MODE_EXTRA_AFFIX_TOOLTIP_INFO[self.info.key].name;
-			description = string.format(CHALLENGE_MODE_EXTRA_AFFIX_TOOLTIP_INFO[self.info.key].desc, self.info.pct);
+			local tbl = CHALLENGE_MODE_EXTRA_AFFIX_INFO[self.info.key];
+			name = tbl.name;
+			description = string.format(tbl.desc, self.info.pct);
 		else
 			name, description = C_ChallengeMode.GetAffixInfo(self.affixID);
 		end
@@ -443,4 +417,29 @@ function ChallengesKeystoneFrameAffixMixin:OnEnter()
 		GameTooltip:AddLine(description);
 		GameTooltip:Show();
 	end
+end
+
+function ChallengesKeystoneFrameAffixMixin:SetUp(affixInfo)
+	if (type(affixInfo) == "table") then
+		local info = affixInfo;
+
+		SetPortraitToTexture(self.Portrait, CHALLENGE_MODE_EXTRA_AFFIX_INFO[info.key].texture);
+	
+		self.Percent:SetText(("+%d%%"):format(info.pct));
+		self.Percent:Show();
+
+		self.info = info;
+	else
+		local affixID = affixInfo;
+
+		local _, _, filedataid = C_ChallengeMode.GetAffixInfo(affixID);
+
+		SetPortraitToTexture(self.Portrait, filedataid);
+
+		self.Percent:Hide();
+
+		self.affixID = affixID;
+	end
+
+	self:Show();
 end

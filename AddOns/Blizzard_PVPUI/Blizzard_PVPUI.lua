@@ -8,6 +8,9 @@ ALLIANCE_TEX_COORDS = {left=0.00195313, right=0.63867188, top=0.19042969, bottom
 WARGAME_HEADER_HEIGHT = 16;
 BATTLEGROUND_BUTTON_HEIGHT = 40;
 
+ASHRAN_MAP_ID = 978;
+ASHRAN_QUEUE_ID = 1127;
+
 local MAX_SHOWN_BATTLEGROUNDS = 8;
 local NUM_BLACKLIST_INFO_LINES = 2;
 local NO_ARENA_SEASON = 0;
@@ -37,10 +40,10 @@ function PVPUIFrame_OnLoad(self)
 	PanelTemplates_SetNumTabs(self, 2);
 
 	if (UnitFactionGroup("player") == PLAYER_FACTION_GROUP[0]) then
-		HonorFrame.BonusFrame.BattlegroundTexture:SetTexCoord(HORDE_TEX_COORDS.left, HORDE_TEX_COORDS.right,
+		HonorFrame.BonusFrame.WorldBattlesTexture:SetTexCoord(HORDE_TEX_COORDS.left, HORDE_TEX_COORDS.right,
 															HORDE_TEX_COORDS.top, HORDE_TEX_COORDS.bottom)
 	else
-		HonorFrame.BonusFrame.BattlegroundTexture:SetTexCoord(ALLIANCE_TEX_COORDS.left, ALLIANCE_TEX_COORDS.right,
+		HonorFrame.BonusFrame.WorldBattlesTexture:SetTexCoord(ALLIANCE_TEX_COORDS.left, ALLIANCE_TEX_COORDS.right,
 															ALLIANCE_TEX_COORDS.top, ALLIANCE_TEX_COORDS.bottom)
 	end
 
@@ -110,10 +113,14 @@ end
 function PVPUIFrame_UpdateRolesChangeable()
 	if ( PVPHelper_CanChangeRoles() ) then
 		PVPUIFrame_UpdateAvailableRoles(HonorFrame.RoleInset.TankIcon, HonorFrame.RoleInset.HealerIcon, HonorFrame.RoleInset.DPSIcon);
+		PVPUIFrame_UpdateAvailableRoles(ConquestFrame.RoleInset.TankIcon, ConquestFrame.RoleInset.HealerIcon, ConquestFrame.RoleInset.DPSIcon);
 	else
 		LFG_DisableRoleButton(HonorFrame.RoleInset.TankIcon);
 		LFG_DisableRoleButton(HonorFrame.RoleInset.HealerIcon);
 		LFG_DisableRoleButton(HonorFrame.RoleInset.DPSIcon);
+		LFG_DisableRoleButton(ConquestFrame.RoleInset.TankIcon);
+		LFG_DisableRoleButton(ConquestFrame.RoleInset.HealerIcon);
+		LFG_DisableRoleButton(ConquestFrame.RoleInset.DPSIcon);
 	end
 end
 
@@ -126,6 +133,9 @@ function PVPUIFrame_UpdateSelectedRoles()
 	HonorFrame.RoleInset.TankIcon.checkButton:SetChecked(tank);
 	HonorFrame.RoleInset.HealerIcon.checkButton:SetChecked(healer);
 	HonorFrame.RoleInset.DPSIcon.checkButton:SetChecked(dps);
+	ConquestFrame.RoleInset.TankIcon.checkButton:SetChecked(tank);
+	ConquestFrame.RoleInset.HealerIcon.checkButton:SetChecked(healer);
+	ConquestFrame.RoleInset.DPSIcon.checkButton:SetChecked(dps);
 end
 
 function PVPRewardTemplate_OnEnter(self)
@@ -148,21 +158,13 @@ function PVPQueueFrame_OnLoad(self)
 	local englishFaction = UnitFactionGroup("player");
 	SetPortraitToTexture(self.CategoryButton1.Icon, "Interface\\Icons\\achievement_bg_winwsg");
 	self.CategoryButton1.Name:SetText(PVP_TAB_HONOR);
-	self.CategoryButton1.CurrencyDisplay.Icon:SetTexture("Interface\\PVPFrame\\PVPCurrency-Honor-"..englishFaction);
-	self.CategoryButton1.CurrencyDisplay.currencyID = HONOR_CURRENCY;
-	local _, currencyAmount = GetCurrencyInfo(HONOR_CURRENCY);
-	self.CategoryButton1.CurrencyDisplay.Amount:SetText(currencyAmount);
 
 	SetPortraitToTexture(self.CategoryButton2.Icon, "Interface\\Icons\\achievement_bg_killxenemies_generalsroom");
-
 	self.CategoryButton2.Name:SetText(PVP_TAB_CONQUEST);
-	self.CategoryButton2.CurrencyDisplay.Icon:SetTexture("Interface\\PVPFrame\\PVPCurrency-Conquest-"..englishFaction);
-	self.CategoryButton2.CurrencyDisplay.currencyID = CONQUEST_CURRENCY;
-	_, currencyAmount = GetCurrencyInfo(CONQUEST_CURRENCY);
-	self.CategoryButton2.CurrencyDisplay.Amount:SetText(currencyAmount);
-	
+
 	SetPortraitToTexture(self.CategoryButton3.Icon, "Interface\\Icons\\ability_warrior_offensivestance");
 	self.CategoryButton3.Name:SetText(WARGAMES);
+	
 	SetPortraitToTexture(self.CategoryButton4.Icon, "Interface\\Icons\\Achievement_General_StayClassy");
 	self.CategoryButton4.Name:SetText(PVP_TAB_GROUPS);
 
@@ -199,18 +201,9 @@ function PVPQueueFrame_OnEvent(self, event, ...)
 			self.CategoryButton2.tooltip = nil;
 			PVPQueueFrame:UnregisterEvent("PLAYER_LEVEL_UP");
 		end
-	elseif(event == "CURRENCY_DISPLAY_UPDATE") then
-		PVPQueueFrame_UpdateCurrencies(self)
-		if ( self:IsShown() ) then
-			RequestPVPRewards();
-		end
 	elseif ( event == "UPDATE_BATTLEFIELD_STATUS" or event == "ZONE_CHANGED_NEW_AREA" or event == "ZONE_CHANGED") then
 		local arg1 = ...
 		PVP_UpdateStatus();
-	elseif ( event == "PVP_RATED_STATS_UPDATE" ) then
-		PVPQueueFrame_UpdateCurrencies(self);
-	elseif ( event == "PVP_REWARDS_UPDATE" ) then
-		PVPQueueFrame_UpdateCurrencies(self);
 	elseif ( event == "BATTLEFIELDS_SHOW" ) then
 		local isArena, bgID = ...;
 		if (isArena) then
@@ -244,55 +237,6 @@ end
 
 function PVPQueueFrame_Update(self, frame)
 	PVPQueueFrame_ShowFrame(frame);
-end
-
-
-function PVPQueueFrame_UpdateCurrencies(self)
-	ConquestFrame_UpdateConquestBar(ConquestFrame)
-	local _, currencyAmount = GetCurrencyInfo(HONOR_CURRENCY);
-	self.CategoryButton1.CurrencyDisplay.Amount:SetText(currencyAmount);
-	_, currencyAmount = GetCurrencyInfo(CONQUEST_CURRENCY);
-	self.CategoryButton2.CurrencyDisplay.Amount:SetText(currencyAmount);
-	
-	-- Random Battleground Reward
-	local numRewards = GetNumRandomBGRewards();
-	local rewardFrame = HonorFrame.BonusFrame.DefaultBattlegroundReward;
-	for i = 1, numRewards do
-		local reward = rewardFrame.Rewards[i];
-		if ( not reward ) then
-			reward = CreateFrame("FRAME", "Reward"..i, rewardFrame, "PVPRewardTemplate");
-			reward:SetPoint("RIGHT", rewardFrame.Rewards[i-1], "LEFT", -2, 0);
-		end
-		local id, name, texture, quantity, isCurrency = GetRandomBGRewardByIndex(i);
-		reward.Icon:SetTexture(texture);
-		reward.itemID = id;
-		reward.isCurrency = isCurrency;
-		reward:Show();
-	end
-	
-	for i = numRewards+1, #rewardFrame.Rewards do
-		rewardFrame.Rewards[i]:Hide();
-	end
-	
-	-- Arena Skirmish Reward
-	local numRewards = GetNumArenaSkirmishRewards();
-	local rewardFrame = HonorFrame.BonusFrame.ArenaSkirmishReward;
-	for i = 1, numRewards do
-		local reward = rewardFrame.Rewards[i];
-		if ( not reward ) then
-			reward = CreateFrame("FRAME", "Reward"..i, rewardFrame, "PVPRewardTemplate");
-			reward:SetPoint("RIGHT", rewardFrame.Rewards[i-1], "LEFT", -2, 0);
-		end
-		local id, name, texture, quantity, isCurrency = GetArenaSkirmishRewardByIndex(i);
-		reward.Icon:SetTexture(texture);
-		reward.itemID = id;
-		reward.isCurrency = isCurrency;
-		reward:Show();
-	end
-	
-	for i = numRewards+1, #rewardFrame.Rewards do
-		rewardFrame.Rewards[i]:Hide();
-	end
 end
 
 function PVPQueueFrame_OnShow(self)
@@ -373,8 +317,6 @@ function HonorFrame_OnLoad(self)
 			BlacklistIDs[mapID] = true;
 		end
 	end
-	
-	self.BonusFrame.BGTitle:SetWidth(self.BonusFrame.BGTitle:GetStringWidth());
 
 	self:RegisterEvent("PLAYER_ENTERING_WORLD");
 	self:RegisterEvent("PVPQUEUE_ANYWHERE_SHOW");
@@ -465,20 +407,30 @@ end
 
 function HonorFrame_UpdateQueueButtons()
 	local HonorFrame = HonorFrame;
-	local canQueue;
+	local canQueue, noSoloQueue;
 	if ( HonorFrame.type == "specific" ) then
 		if ( HonorFrame.SpecificFrame.selectionID ) then
 			canQueue = true;
 		end
 	elseif ( HonorFrame.type == "bonus" ) then
 		if ( HonorFrame.BonusFrame.selectedButton ) then
-			if ( HonorFrame.BonusFrame.selectedButton.canQueue ) then
-				canQueue = true;
-			end
+			canQueue = HonorFrame.BonusFrame.selectedButton.canQueue;
+			noSoloQueue = HonorFrame.BonusFrame.selectedButton.noSoloQueue;
 		end
 	end
 
+	if ( noSoloQueue ) then
+		HonorFrame.GroupQueueButton:Hide();
+		HonorFrame.SoloQueueButton:Hide();
+		HonorFrame.QueueButton:Show();
+	else
+		HonorFrame.GroupQueueButton:Show();
+		HonorFrame.SoloQueueButton:Show();
+		HonorFrame.QueueButton:Hide();
+	end
+
 	if ( canQueue ) then
+		HonorFrame.QueueButton:Enable();
 		HonorFrame.SoloQueueButton:Enable();
 		if ( IsInGroup(LE_PARTY_CATEGORY_HOME) and UnitIsGroupLeader("player", LE_PARTY_CATEGORY_HOME) ) then
 			HonorFrame.GroupQueueButton:Enable();
@@ -486,6 +438,10 @@ function HonorFrame_UpdateQueueButtons()
 			HonorFrame.GroupQueueButton:Disable();
 		end
 	else
+		HonorFrame.QueueButton:Disable();
+		if (HonorFrame.type == "bonus" and HonorFrame.BonusFrame.selectedButton.queueID) then
+			HonorFrame.QueueButton.tooltip = LFGConstructDeclinedMessage(HonorFrame.BonusFrame.selectedButton.queueID);
+		end
 		HonorFrame.SoloQueueButton:Disable();
 		HonorFrame.GroupQueueButton:Disable();
 	end
@@ -510,7 +466,12 @@ function HonorFrame_UpdateQueueButtons()
 end
 
 function HonorFrame_Queue(isParty, forceSolo)
-	if (not isParty and not forceSolo and GetNumGroupMembers() > 1) then
+	local noSoloQueue = false;
+	if ( HonorFrame.type == "bonus" and HonorFrame.BonusFrame.selectedButton ) then
+		noSoloQueue = HonorFrame.BonusFrame.selectedButton.noSoloQueue;
+	end
+
+	if (not noSoloQueue and not isParty and not forceSolo and GetNumGroupMembers() > 1) then
 		StaticPopup_Show("CONFIRM_JOIN_SOLO");
 		return;
 	end
@@ -520,6 +481,8 @@ function HonorFrame_Queue(isParty, forceSolo)
 	elseif ( HonorFrame.type == "bonus" and HonorFrame.BonusFrame.selectedButton ) then
 		if ( HonorFrame.BonusFrame.selectedButton.arenaID ) then
 			JoinSkirmish(HonorFrame.BonusFrame.selectedButton.arenaID, isParty);
+		elseif (HonorFrame.BonusFrame.selectedButton.queueID) then
+			JoinSingleLFG(LE_LFG_CATEGORY_WORLDPVP, HonorFrame.BonusFrame.selectedButton.queueID);
 		else
 			JoinBattlefield(HonorFrame.BonusFrame.selectedButton.bgID, isParty);
 		end
@@ -717,12 +680,11 @@ function HonorFrameBonusFrame_OnShow(self)
 	self.updateTime = 0;
 	HonorFrameBonusFrame_Update();
 	RequestRandomBattlegroundInstanceInfo();
+
+	RequestLFDPlayerLockInfo();
+	RequestLFDPartyLockInfo();
 end
 
-ARENA_DATA = {
-	{ id = 4, name=SKIRMISH_2V2 },
-	{ id = 5, name=SKIRMISH_3V3  }
-}
 function HonorFrameBonusFrame_Update()
 	local englishFaction = UnitFactionGroup("player");
 	local selectButton = nil;
@@ -742,55 +704,20 @@ function HonorFrameBonusFrame_Update()
 	HonorFrameBonusFrame_UpdateExcludedBattlegrounds();
 	button.canQueue = canQueue;
 	button.bgID = battleGroundID;
-	local hasData, canQueue, bgName, battleGroundID, hasWon, winHonorAmount, winConquestAmount, lossHonorAmount, lossConquestAmount, minLevel, maxLevel = GetHolidayBGInfo();
-	if ( hasData ) then
-		-- cap conquest to total earnable
-		if ( arenaReward < winConquestAmount ) then
-			winConquestAmount = arenaReward
-		elseif ( ratedBGReward < winConquestAmount ) then
-			winConquestAmount = ratedBGReward
-		end
-		-- rewards for battlegrounds
-		local rewardIndex = 0;
-		if ( winConquestAmount and winConquestAmount > 0 ) then
-			rewardIndex = rewardIndex + 1;
-			local frame = HonorFrame.BonusFrame["BattlegroundReward"..rewardIndex];
-			frame.currencyID = CONQUEST_CURRENCY;
-			frame.Icon:SetTexture("Interface\\PVPFrame\\PVPCurrency-Conquest-"..englishFaction);
-			frame.Amount:SetText(winConquestAmount);
-			frame:Show();
-		end
-		if ( winHonorAmount and winHonorAmount > 0 ) then
-			rewardIndex = rewardIndex + 1;
-			local frame = HonorFrame.BonusFrame["BattlegroundReward"..rewardIndex];
-			frame.currencyID = HONOR_CURRENCY;
-			frame.Icon:SetTexture("Interface\\PVPFrame\\PVPCurrency-Honor-"..englishFaction);
-			frame.Amount:SetText(winHonorAmount);
-			frame:Show();
-		end
-		for i = rewardIndex + 1, 2 do
-			HonorFrame.BonusFrame["BattlegroundReward"..i]:Hide();
-		end
-		if ( rewardIndex == 0 ) then
-			-- we don't have any specific rewards
-			HonorFrame.BonusFrame.DefaultBattlegroundReward:Show();
-		else
-			HonorFrame.BonusFrame.DefaultBattlegroundReward:Hide();
-		end
-	else
-		HonorFrame.BonusFrame.BattlegroundReward1:Hide();
-		HonorFrame.BonusFrame.BattlegroundReward2:Hide();
-		HonorFrame.BonusFrame.DefaultBattlegroundReward:Show();
-	end
 	
 	-- arena pvp
-	for i = 1, 2 do
-		button = HonorFrame.BonusFrame["Arena"..i.."Button"];
-		button.Contents.Title:SetText(ARENA_DATA[i].name);
-		button.canQueue = true;
-		button.arenaID = ARENA_DATA[i].id;
-	end
+	button = HonorFrame.BonusFrame.Arena1Button;
+	button.Contents.Title:SetText(SKIRMISH);
+	button.canQueue = true;
+	button.arenaID = 4;
 	-- TODO: rewards for world pvp
+
+	-- ashran
+	button = HonorFrame.BonusFrame.AshranButton;
+	button.Contents.Title:SetText(GetMapNameByID(ASHRAN_MAP_ID));
+	button.canQueue = IsLFGDungeonJoinable(ASHRAN_QUEUE_ID);
+	button.noSoloQueue = true;
+	button.queueID = ASHRAN_QUEUE_ID;
 
 	-- select a button if one isn't selected
 	if ( not HonorFrame.BonusFrame.selectedButton and selectButton ) then
@@ -861,20 +788,14 @@ end
 -- CONQUEST FRAME
 ---------------------------------------------------------------
 
-CONQUEST_SIZE_STRINGS = { ARENA_2V2, ARENA_3V3, ARENA_5V5, BATTLEGROUND_10V10 };
-CONQUEST_SIZES = {2, 3, 5, 10};
+CONQUEST_SIZE_STRINGS = { ARENA_2V2, ARENA_3V3, BATTLEGROUND_10V10 };
+CONQUEST_SIZES = {2, 3, 10};
 CONQUEST_BUTTONS = {};
-local RATED_BG_ID = 4;
+local RATED_BG_ID = 3;
 
 function ConquestFrame_OnLoad(self)
 
-	CONQUEST_BUTTONS = {ConquestFrame.Arena2v2, ConquestFrame.Arena3v3, ConquestFrame.Arena5v5, ConquestFrame.RatedBG};
-
-	local factionGroup = UnitFactionGroup("player");
-	self.ArenaReward.currencyID = CONQUEST_CURRENCY;
-	self.ArenaReward.Icon:SetTexture("Interface\\PVPFrame\\PVPCurrency-Conquest-"..factionGroup);
-	self.RatedBGReward.currencyID = CONQUEST_CURRENCY;
-	self.RatedBGReward.Icon:SetTexture("Interface\\PVPFrame\\PVPCurrency-Conquest-"..factionGroup);
+	CONQUEST_BUTTONS = {ConquestFrame.Arena2v2, ConquestFrame.Arena3v3, ConquestFrame.RatedBG};
 
 	RequestRatedInfo();
 	RequestPVPRewards();
@@ -907,19 +828,11 @@ function ConquestFrame_Update(self)
 		ConquestFrame.NoSeason:Show();
 	else
 		ConquestFrame.NoSeason:Hide();
-		local _, _, _, _, _, _, _, _, arenaReward, ratedBGReward = GetPVPRewards();
-		if (arenaReward == 0) then
-			RequestPVPRewards();
-		end
-		self.RatedBGReward.Amount:SetText(ratedBGReward);
-		self.ArenaReward.Amount:SetText(arenaReward);
-		ConquestFrame_UpdateConquestBar(self);
 		
 		for i = 1, RATED_BG_ID do
 			local button = CONQUEST_BUTTONS[i];
 			local rating, seasonBest, weeklyBest, seasonPlayed, seasonWon, weeklyPlayed, weeklyWon = GetPersonalRatedInfo(i);
 			button.Wins:SetText(seasonWon);
-			button.BestRating:SetText(weeklyBest);
 			button.CurrentRating:SetText(rating);
 		end
 		
@@ -930,14 +843,6 @@ function ConquestFrame_Update(self)
 			ConquestFrame_UpdateJoinButton();
 		end
 	end
-end
-
-function ConquestFrame_UpdateConquestBar(self)
-	local currencyName = GetCurrencyInfo(CONQUEST_CURRENCY);
-	local pointsThisWeek, maxPointsThisWeek = GetPVPRewards();
-	-- just want a plain bar
-	CapProgressBar_Update(self.ConquestBar, 0, 0, nil, nil, pointsThisWeek, maxPointsThisWeek);
-	self.ConquestBar.label:SetFormattedText(CURRENCY_THIS_WEEK, currencyName);
 end
 
 function ConquestFrame_UpdateJoinButton()

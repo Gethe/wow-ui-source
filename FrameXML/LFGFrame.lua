@@ -20,6 +20,7 @@ LFG_SUBTYPEID_HEROIC = 2;
 LFG_SUBTYPEID_RAID = 3;
 LFG_SUBTYPEID_SCENARIO = 4;
 LFG_SUBTYPEID_FLEXRAID = 5;
+LFG_SUBTYPEID_WORLDPVP = 6;
 
 LFG_ID_TO_ROLES = { "DAMAGER", "TANK", "HEALER" };
 LFG_RETURN_VALUES = {
@@ -726,7 +727,7 @@ function LFGDungeonReadyPopup_Update()
 			if ( not LFGDungeonReadyPopup:IsShown() or StaticPopup_IsLastDisplayedFrame(LFGDungeonReadyPopup) ) then
 				LFGDungeonReadyPopup:SetHeight(LFGDungeonReadyStatus:GetHeight());
 			end
-		elseif ( subtypeID == LFG_SUBTYPEID_SCENARIO or subtypeID == LFG_SUBTYPEID_FLEXRAID ) then
+		elseif ( subtypeID == LFG_SUBTYPEID_SCENARIO or subtypeID == LFG_SUBTYPEID_FLEXRAID or subtypeID == LFG_SUBTYPEID_WORLDPVP) then
 			LFGDungeonReadyDialog:Hide();
 			-- there may be solo scenarios
 			if ( numMembers > 1 ) then

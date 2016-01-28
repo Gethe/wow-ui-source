@@ -156,7 +156,7 @@ function BlackMarketScrollFrame_Update()
 					button.Item.IconTexture:SetVertexColor(1.0, 1.0, 1.0);
 				end
 
-				SetItemButtonQuality(button, quality, link);
+				SetItemButtonQuality(button.Item, quality, link);
 
 				if (quality and quality >= LE_ITEM_QUALITY_COMMON and BAG_ITEM_QUALITY_COLORS[quality]) then
 					button.Name:SetTextColor(BAG_ITEM_QUALITY_COLORS[quality].r, BAG_ITEM_QUALITY_COLORS[quality].g, BAG_ITEM_QUALITY_COLORS[quality].b);

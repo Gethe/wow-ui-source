@@ -108,89 +108,10 @@ function AdventureMap_MissionDataProviderMixin:AddMissionPin(missionInfo)
 	pin:Show();
 end
 
-local ShowGarrisonMission -- TODO_DW for now, just load up 6.0 missions and do some hacks to make it mostly work..
-do
-
-	local function SetMissionRegionsShown(shown)
-		GarrisonMissionFrame.BackgroundTile:SetShown(shown);
-
-		GarrisonMissionFrame.Top:SetShown(shown);
-		GarrisonMissionFrame.Bottom:SetShown(shown);
-		GarrisonMissionFrame.Left:SetShown(shown);
-		GarrisonMissionFrame.Right:SetShown(shown);
-
-		GarrisonMissionFrame.TopLeftCorner:SetShown(shown);
-		GarrisonMissionFrame.TopRightCorner:SetShown(shown);
-		GarrisonMissionFrame.BotLeftCorner:SetShown(shown);
-		GarrisonMissionFrame.BotRightCorner:SetShown(shown);
-		
-		GarrisonMissionFrame.TopLeftGarrCorner:SetShown(shown);
-		GarrisonMissionFrame.TopRightGarrCorner:SetShown(shown);
-		GarrisonMissionFrame.BottomLeftGarrCorner:SetShown(shown);
-		GarrisonMissionFrame.BottomRightGarrCorner:SetShown(shown);
-
-		GarrisonMissionFrame.BottomBorder:SetShown(shown);
-		GarrisonMissionFrame.LeftBorder:SetShown(shown);
-		GarrisonMissionFrame.RightBorder:SetShown(shown);
-		GarrisonMissionFrame.TopBorder:SetShown(shown);
-
-		GarrisonMissionFrame.CloseButton:SetShown(shown);
-		GarrisonMissionFrame.TitleText:SetShown(shown);
-
-		GarrisonMissionFrameTab1:SetShown(shown);
-		GarrisonMissionFrameTab2:SetShown(shown);
-	end
-
-	local hasHooked = false;
-	local isShownViaAdventureMap = false;
-	local isHidePending = false;
-	local function TryHooks(dataProvider)
-		if hasHooked then return end
-
-		GarrisonMissionFrame:HookScript("OnUpdate", function()
-			if isHidePending then
-				isHidePending = false;
-				GarrisonMissionFrame:Hide();
-			end
-		end);
-
-		GarrisonMissionFrame:HookScript("OnHide", function() 
-			isHidePending = false;
-			isShownViaAdventureMap = false; 
-			GarrisonMissionFrame:SetParent(UIParent);
-			GarrisonFollowerPlacerFrame:SetParent(UIParent);
-			GarrisonFollowerPlacerFrame:SetFrameStrata("HIGH");
-			SetMissionRegionsShown(true);
-			dataProvider:CancelStartMission();
-		end);
-
-		GarrisonMissionFrame.MissionTab.MissionPage:HookScript("OnHide", function()
-			if isShownViaAdventureMap then
-				isHidePending = true;
-			end
-		end);
-
-		hasHooked = true;
-	end
-
-	function ShowGarrisonMission(dataProvider, missionInfo)
-		Garrison_LoadUI();
-		TryHooks(dataProvider);
-
-		GarrisonMissionFrame:SetParent(dataProvider:GetAdventureMap());
-		GarrisonMissionFrame:SetFrameStrata("HIGH");
-		GarrisonMissionFrame.followerTypeID = LE_FOLLOWER_TYPE_GARRISON_7_0;
-		GarrisonMissionFrame:Show();
-		GarrisonMissionFrame:OnClickMission(missionInfo);
-		GarrisonMissionFrame:SelectTab(1);
-
-		GarrisonFollowerPlacerFrame:SetParent(dataProvider:GetAdventureMap());
-		GarrisonFollowerPlacerFrame:SetFrameStrata("DIALOG");
-
-		SetMissionRegionsShown(false);
-
-		isShownViaAdventureMap = true;
-	end
+local function ShowGarrisonMission(dataProvider, missionInfo)
+	dataProvider:GetAdventureMap().MissionPage:Show();
+	local missionFrame = dataProvider:GetAdventureMap():GetParent();
+	missionFrame:OnClickMission(missionInfo);
 end
 
 function AdventureMap_MissionDataProviderMixin:StartMission(missionInfo)
@@ -246,8 +167,8 @@ end
 AdventureMap_MissionPinMixin = CreateFromMixins(AdventureMapPinMixin);
 
 function AdventureMap_MissionPinMixin:OnLoad()
-	self:SetAlphaStyle(AM_PIN_ALPHA_STYLE_VISIBLE_WHEN_ZOOMED_IN);
-	self:SetMaxZoomScale(1.0);
+	self:SetAlphaStyle(AM_PIN_ALPHA_STYLE_VISIBLE_WHEN_ZOOMED_OUT);
+	self:SetScalingLimits(1.25, 3.0, 1.5);
 end
 
 function AdventureMap_MissionPinMixin:OnReleased()
@@ -368,8 +289,8 @@ end
 AdventureMap_MissionRewardPinMixin = CreateFromMixins(AdventureMapPinMixin);
 
 function AdventureMap_MissionRewardPinMixin:OnLoad()
-	self:SetAlphaStyle(AM_PIN_ALPHA_STYLE_VISIBLE_WHEN_ZOOMED_IN);
-	self:SetMaxZoomScale(1.0);
+	self:SetAlphaStyle(AM_PIN_ALPHA_STYLE_VISIBLE_WHEN_ZOOMED_OUT);
+	self:SetScalingLimits(1.25, 3.0, 1.5);
 end
 
 function AdventureMap_MissionRewardPinMixin:ShowRewards(missionInfo)

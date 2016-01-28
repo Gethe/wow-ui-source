@@ -915,6 +915,7 @@ function WardrobeCollectionFrame_OnLoad(self)
 	self:RegisterEvent("PLAYER_SPECIALIZATION_CHANGED");
 	self:RegisterEvent("APPEARANCE_SEARCH_UPDATED");
 	self:RegisterEvent("SEARCH_DB_LOADED");
+	self:RegisterUnitEvent("UNIT_MODEL_CHANGED", "player");
 
 	self.categoriesList = C_TransmogCollection.GetCategories();
 	-- create an enchants category at the end
@@ -923,8 +924,8 @@ function WardrobeCollectionFrame_OnLoad(self)
 	self.categoriesList[FAKE_LE_TRANSMOG_COLLECTION_TYPE_ENCHANT] = { count = #illusions, isEnchant = true };
 
 	WardrobeCollectionFrame_UpdateCategoriesHandInfo();
-	WardrobeCollectionFrame_SetActiveSlot("HEADSLOT", LE_TRANSMOG_TYPE_APPEARANCE);
-	
+	self.updateCameraIDs = true;
+
 	UIDropDownMenu_Initialize(self.ModelsFrame.RightClickDropDown, nil, "MENU");
 	self.ModelsFrame.RightClickDropDown.initialize = WardrobeCollectionFrameRightClickDropDown_Init;
 end
@@ -1011,6 +1012,8 @@ function WardrobeCollectionFrame_OnEvent(self, event, ...)
 		end
 	elseif ( event == "SEARCH_DB_LOADED" ) then
 		WardrobeCollectionFrame_RestartSearchTracking();
+	elseif ( event == "UNIT_MODEL_CHANGED" ) then
+		self.updateCameraIDs = true;
 	end
 end
 
@@ -1022,11 +1025,17 @@ function WardrobeCollectionFrame_OnShow(self)
 	self:RegisterEvent("TRANSMOG_COLLECTION_CAMERA_UPDATE");
 	self:RegisterEvent("TRANSMOG_COLLECTION_UPDATED");
 
+	if ( self.updateCameraIDs ) then
+		for i = 1, #self.categoriesList do
+			self.categoriesList[i].cameraID = C_TransmogCollection.GetCategoryCamera(i);
+		end
+	end
+
 	if ( WardrobeCollectionFrame.activeCategory ) then
 		-- redo the model for the active category
 		WardrobeCollectionFrame_ChangeModelsSlot(nil, WardrobeCollectionFrame.activeCategory);
-	else 
-		WardrobeCollectionFrame_SetActiveCategory(LE_TRANSMOG_COLLECTION_TYPE_HEAD);
+	else
+		WardrobeCollectionFrame_SetActiveSlot("HEADSLOT", LE_TRANSMOG_TYPE_APPEARANCE);
 	end
 
 	SetPortraitToTexture(CollectionsJournalPortrait, "Interface\\Icons\\inv_chest_cloth_17");
@@ -1598,7 +1607,7 @@ function WardrobeCollectionFrameModel_OnLoad(self)
 	self:RegisterEvent("UI_SCALE_CHANGED");
 	self:RegisterEvent("DISPLAY_SIZE_CHANGED");
 	
-	local lightValues = { enabled=1, omni=0, dirX=-1, dirY=0, dirZ=0, ambIntensity=0.8, ambR=1, ambG=1, ambB=1, dirIntensity=0, dirR=1, dirG=1, dirB=1 };
+	local lightValues = { enabled=1, omni=0, dirX=-1, dirY=1, dirZ=-1, ambIntensity=1.05, ambR=1, ambG=1, ambB=1, dirIntensity=0, dirR=1, dirG=1, dirB=1 };
 	self:SetLight(lightValues.enabled, lightValues.omni, 
 			lightValues.dirX, lightValues.dirY, lightValues.dirZ,
 			lightValues.ambIntensity, lightValues.ambR, lightValues.ambG, lightValues.ambB,
@@ -1611,7 +1620,9 @@ function WardrobeCollectionFrameModel_OnEvent(self)
 end
 
 function WardrobeCollectionFrameModel_OnModelLoaded(self)
+	if ( self.cameraID ) then
 		Model_ApplyUICamera(self, self.cameraID);
+	end
 end
 
 function WardrobeCollectionFrameModel_OnMouseDown(self, button)

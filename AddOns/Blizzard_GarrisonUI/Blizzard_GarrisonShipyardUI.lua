@@ -204,7 +204,7 @@ function GarrisonShipyardMission:OnClickMission(missionInfo)
 	self.MissionTab.MissionPage:Show();
 	
 	self:ShowMission(missionInfo);
-	GarrisonFollowerList_UpdateFollowers(self.FollowerList);
+	self.FollowerList:UpdateFollowers();
 end
 
 function GarrisonShipyardMission:ShowMission(missionInfo)
@@ -370,7 +370,7 @@ function GarrisonShipyardMission:AssignFollowerToMission(frame, info)
 	elseif ( info.classSpec == 57 or info.classSpec == 62 ) then
 		PlaySound("UI_Garrison_Shipyard_Place_Submarine", nil, false);
 	end
-	self:SetFollowerPortrait(frame, info, nil, false);
+	self:SetFollowerPortrait(frame, info, false, false);
 	local color = ITEM_QUALITY_COLORS[info.quality];
 	frame.Name:SetText(format(GARRISON_SHIPYARD_SHIP_NAME, info.name));
 	frame.Name:SetTextColor(color.r, color.g, color.b);
@@ -785,7 +785,7 @@ function GarrisonShipyardMissionComplete:SetFollowerData(follower, name, classNa
 	
 	if (texPrefix) then
 		local followerInfo = {texPrefix=texPrefix};
-		self:GetParent():SetFollowerPortrait(follower, followerInfo, nil, false);
+		self:GetParent():SetFollowerPortrait(follower, followerInfo, false, false);
 	end
 end
 
@@ -1674,7 +1674,7 @@ function GarrisonShipyardMissionPage_OnEvent(self, event, ...)
 				local missionID = self.missionInfo.missionID;
 				mainFrame.followerCounters = C_Garrison.GetBuffedFollowersForMission(missionID)
 				mainFrame.followerTraits = C_Garrison.GetFollowersTraitsForMission(missionID);
-				GarrisonFollowerList_UpdateFollowers(mainFrame.FollowerList);
+				mainFrame.FollowerList:UpdateFollowers();
 				mainFrame:UpdateMissionData(self);
 				mainFrame:UpdateMissionParty(self.Followers);
 				GarrisonMissionPage_SetCounters(self.Followers, self.Enemies, self.missionInfo.missionID);

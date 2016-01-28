@@ -1,7 +1,7 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\FrameXML\UI.xsd">
 	<Script file="Blizzard_GarrisonShipyardUI.lua"/>
-	
+
 	<!-- This represents one of the naval mission icons on the naval map -->
 	<Button name="GarrisonShipyardMapMissionTemplate" virtual="true">
 		<Size x="64" y="64"/>
@@ -22,7 +22,7 @@
 				<Texture parentKey="BonusAreaEffect" hidden="true">
 				</Texture>
 			</Layer>
-			
+
 			<!-- Textures for InProgressBoatPulseAnim -->
 			<Layer level="ARTWORK" textureSubLevel="-1">
 				<Texture parentKey="GlowRing" hidden="true" alpha="0.01" alphaMode="BLEND" atlas="ShipMission-RedGlowRing" useAtlasSize="true">
@@ -31,7 +31,7 @@
 					</Anchors>
 				</Texture>
 			</Layer>
-			
+
 			<Layer level="ARTWORK" textureSubLevel="1">
 				<Texture parentKey="TimerBG" atlas="ShipMission-TimerBG" useAtlasSize="true">
 					<Anchors>
@@ -44,7 +44,7 @@
 					</Anchors>
 				</FontString>
 			</Layer>
-			
+
 			<!-- Textures for SiegeBreakerHighlightAnim -->
 			<Layer level="BORDER">
 				<Texture parentKey="YellowSpikeGlow" hidden="false" alpha="0.01" alphaMode="ADD" atlas="GarrMission_CurrentEncounter-SpikeyGlow" useAtlasSize="true">
@@ -59,7 +59,7 @@
 					<Color r="1" g="0.93333333333333" b="0.38823529411765"/>
 				</Texture>
 			</Layer>
-			
+
 			<!-- Textures for ShipMissionStartAnim -->
 			<Layer level="BORDER">
 				<Texture parentKey="RingBurst" hidden="false" alpha="0.01" alphaMode="ADD" atlas="GarrMission_CurrentEncounter-SpikeyGlow" useAtlasSize="true">
@@ -91,7 +91,7 @@
 					</Anchors>
 				</Texture>
 			</Layer>
-			
+
 			<!-- Textures for RareMissionAnim -->
 			<Layer level="ARTWORK" textureSubLevel="-1">
 				<Texture parentKey="BgGlow" hidden="false" alpha="0.01" alphaMode="BLEND" atlas="BonusChest-CircleGlow" useAtlasSize="true">
@@ -101,7 +101,7 @@
 					<Color r="0.4156862745098" g="0.69019607843137" b="1"/>
 				</Texture>
 			</Layer>
-			
+
 			<!-- Textures for BonusMissionPulse -->
 			<Layer level="OVERLAY">
 				<Texture parentKey="StarBurst" hidden="false" alpha="0.01" alphaMode="ADD" atlas="GarrisonFX-StarBurst" useAtlasSize="true">
@@ -115,7 +115,7 @@
 					</Anchors>
 				</Texture>
 			</Layer>
-			
+
 			<!-- Textures for BonusMissionAnim -->
 			<Layer level="ARTWORK">
 				<Texture parentKey="Glow" hidden="false" alpha="0.01" alphaMode="ADD" atlas="BonusChest-CircleGlow">
@@ -188,7 +188,7 @@
 			<OnLeave function="GarrisonShipyardMapMission_OnLeave"/>
 		</Scripts>
 	</Button>
-	
+
 	<Frame name="GarrisonShipyardBonusAreaFrameTemplate" virtual="true" hidden="true">
 		<Size x="132" y="132"/>
 		<NormalTexture parentKey="Icon" atlas="BoatMissionIcon-Combat-Map" useAtlasSize="true"/>
@@ -227,7 +227,7 @@
 			</AnimationGroup>
 		</Animations>
 	</Frame>
-	
+
 	<Frame name="GarrisonBonusEffectFrameTemplate" virtual="true">
 		<Size x="230" y="1"/>
 		<Layers>
@@ -256,7 +256,7 @@
 			<KeyValue key="yspacing" value="8" type="number"/>
 		</KeyValues>
 	</Frame>
-	
+
 	<Frame name="GarrisonBonusAreaTooltipFrameTemplate" virtual="true">
 		<Size x="250" y="1"/>
 		<Layers>
@@ -273,7 +273,7 @@
 						<Anchor point="TOPLEFT" relativeKey="$parent.Title" relativePoint="BOTTOMLEFT" x="0" y="-5"/>
 					</Anchors>
 				</FontString>
-			</Layer>	
+			</Layer>
 		</Layers>
 		<Frames>
 			<Frame parentKey="BonusEffectFrame" inherits="GarrisonBonusEffectFrameTemplate">
@@ -286,7 +286,7 @@
 			<KeyValue key="yspacing" value="33" type="number"/>
 		</KeyValues>
 	</Frame>
-	
+
 	<Frame name="GarrisonBonusAreaTooltip" parent="UIParent" frameStrata="TOOLTIP" clampedToScreen="true" hidden="true">
 		<Size x="250" y="1"/>
 		<Backdrop bgFile="Interface\Tooltips\UI-Tooltip-Background" edgeFile="Interface\Tooltips\UI-Tooltip-Border" tile="true">
@@ -308,7 +308,7 @@
 			</OnLoad>
 		</Scripts>
 	</Frame>
-	
+
 	<Frame name="GarrisonShipyardMapMissionTooltip" parent="UIParent" frameStrata="TOOLTIP" clampedToScreen="true" hidden="true">
 		<Size x="250" y="256"/>
 		<Backdrop bgFile="Interface\Tooltips\UI-Tooltip-Background" edgeFile="Interface\Tooltips\UI-Tooltip-Border" tile="true">
@@ -509,7 +509,7 @@
 			</OnLoad>
 		</Scripts>
 	</Frame>
-	
+
 	<Frame name="GarrisonShipyardMissionPageBaseTemplate" virtual="true">
 		<Size x="556" y="584"/>
 		<Layers>
@@ -590,7 +590,7 @@
 			</Layer>
 		</Layers>
 	</Frame>
-	
+
 	<Frame name="GarrisonShipyardTopBorderTemplate" virtual="true">
 		<Layers>
 			<Layer level="OVERLAY" textureSubLevel="6">
@@ -616,7 +616,7 @@
 			</Layer>
 		</Layers>
 	</Frame>
-	
+
 	<Frame name="GarrisonShipyardMissionRewardsFrameTemplate" virtual="true">
 		<Layers>
 			<Layer level="BACKGROUND">
@@ -682,7 +682,7 @@
 			</Layer>
 		</Layers>
 	</Frame>
-	
+
 	<Frame name="ShipyardMissionPageTemplate" inherits="GarrisonShipyardMissionPageBaseTemplate, MissionPageTemplate" virtual="true">
 		<Layers>
 			<Layer level="ARTWORK">
@@ -758,7 +758,7 @@
 			</Frame>
 		</Frames>
 	</Frame>
-			
+
 	<Frame name="GarrisonShipMissionFollowerTemplate" virtual="true">
 		<Size x="152" y="128"/>
 		<Layers>
@@ -850,7 +850,7 @@
 					<Shadow>
 						<Offset x="1" y="-1"/>
 						<Color r="0" g="0" b="0"/>
-					</Shadow>		
+					</Shadow>
 					<Color r="1" g="0.1" b="0.1" a="0"/>
 				</FontString>
 			</Layer>
@@ -894,7 +894,7 @@
 					<OnModelLoaded function="GarrisonMissionComplete_OnModelLoaded"/>
 				</Scripts>
 			</CinematicModel>
-		</Frames>		
+		</Frames>
 		<Animations>
 			<AnimationGroup parentKey="SurvivedAnim" setToFinalAlpha="true">
 				<Alpha parentKey="WaitAlpha" childKey="SurvivedText" duration="0.1" order="1" fromAlpha="0" toAlpha="0"/>
@@ -1008,7 +1008,7 @@
 			<Button parentArray="Mechanics" inherits="GarrisonMissionEnemyLargeMechanicTemplate"/>
 		</Frames>
 	</Frame>
-	
+
 	<Frame name="GarrisonShipFollowerListTemplateHeader" inherits="GarrisonBaseInfoBoxTemplate" virtual="true">
 		<Size x="305" y="535"/>
 		<Layers>
@@ -1041,7 +1041,7 @@
 					</Anchors>
 				</FontString>
 			</Layer>
-		</Layers> 
+		</Layers>
 		<Frames>
 			<ScrollFrame name="$parentListScrollFrame" parentKey="listScroll" inherits="HybridScrollFrameTemplate">
 				<Anchors>
@@ -1064,17 +1064,17 @@
 								self.trackBG:Show();
 								self.trackBG:SetVertexColor(0, 0, 0, 0.75);
 								self.doNotHide = true;
-								
+
 								self.Top:SetVertexColor(self.colorRed, self.colorGreen, self.colorBlue);
 								self.Bottom:SetVertexColor(self.colorRed, self.colorGreen, self.colorBlue);
 								self.Middle:SetVertexColor(self.colorRed, self.colorGreen, self.colorBlue);
 								self.thumbTexture:SetVertexColor(self.colorRed, self.colorGreen, self.colorBlue);
-								
+
 								self.UpButton.Normal:SetVertexColor(self.colorRed, self.colorGreen, self.colorBlue);
 								self.UpButton.Pushed:SetVertexColor(self.colorRed, self.colorGreen, self.colorBlue);
 								self.UpButton.Disabled:SetVertexColor(self.colorRed, self.colorGreen, self.colorBlue);
 								self.UpButton.Highlight:SetVertexColor(self.colorRed, self.colorGreen, self.colorBlue);
-								
+
 								self.DownButton.Normal:SetVertexColor(self.colorRed, self.colorGreen, self.colorBlue);
 								self.DownButton.Pushed:SetVertexColor(self.colorRed, self.colorGreen, self.colorBlue);
 								self.DownButton.Disabled:SetVertexColor(self.colorRed, self.colorGreen, self.colorBlue);
@@ -1175,7 +1175,7 @@
 				<Anchors>
 					<Anchor point="TOPLEFT"/>
 					<Anchor point="BOTTOMRIGHT"/>
-				</Anchors>			
+				</Anchors>
 				<Layers>
 					<Layer level="ARTWORK">
 						<Texture parentKey="Texture" setAllPoints="true">
@@ -1206,7 +1206,7 @@
 			<OnDragStop function="GarrisonShipFollowerListButton_OnDragStop"/>
 		</Scripts>
 	</Button>
-	
+
 	<Frame name="GarrisonShipFollowerPlacer" hidden="true" parent="UIParent" frameStrata="HIGH">
 		<Size x="152" y="80"/>
 		<Layers>
@@ -1219,7 +1219,7 @@
 			</Layer>
 		</Layers>
 	</Frame>
-	
+
 	<Frame name="GarrisonShipyardMissionCompleteStageTemplate" inherits="GarrisonMissionStageTemplate, GarrisonMissionCompleteStageTemplate" virtual="true">
 		<Frames>
 			<Frame parentKey="EncountersFrame">
@@ -1248,7 +1248,7 @@
 					<Frame parentKey="Encounter3" parentArray="Encounters" inherits="GarrisonShipMissionCompleteEnemyTemplate">
 						<Anchors>
 							<Anchor point="LEFT" relativeKey="$parent.Encounter2" relativePoint="RIGHT" x="17" y="0"/>
-						</Anchors>									
+						</Anchors>
 					</Frame>
 				</Frames>
 				<Scripts>
@@ -1334,7 +1334,7 @@
 							<Color r="0" g="0" b="0" a="0.55"/>
 						</Texture>
 					</Layer>
-					<Layer level="OVERLAY" textureSubLevel="5">										
+					<Layer level="OVERLAY" textureSubLevel="5">
 						<Texture parentKey="MissionType" atlas="ShipMission_MissionIcon-Combat" useAtlasSize="true">
 							<Anchors>
 								<Anchor point="TOPLEFT" x="12" y="-2"/>
@@ -1392,7 +1392,7 @@
 					</Anchors>
 				</Texture>
 			</Layer>
-			
+
 			<Layer level="ARTWORK">
 				<Texture parentKey="HighlightAnimTexture" hidden="false" alpha="0.01" alphaMode="BLEND" atlas="NavalMap-OpenWatersHighlight" useAtlasSize="true">
 					<Anchors>
@@ -1437,7 +1437,7 @@
 			<OnUpdate function="GarrisonShipyardMap_OnFogFrameUpdate"/>
 		</Scripts>
 	</Frame>
-	
+
 	<Button name="GarrisonShipTraitTemplate" virtual="true">
 		<Size x="70" y="92"/>
 		<Layers>
@@ -1470,73 +1470,8 @@
 			<OnLeave function="GarrisonShipTrait_OnHide"/>
 		</Scripts>
 	</Button>
-	
-	<Button name="GarrisonShipEquipmentTemplate" virtual="true">
-		<Size x="78" y="78"/>
-		<!--
-		<KeyValues>
-			 <KeyValue key="quality" value="rare" type="string"/>
-		</KeyValues>
-		-->
-		<Layers>
-			<Layer level="BACKGROUND">
-				<Texture parentKey="BG" atlas="ShipMission_ShipFollower-EquipmentBG" useAtlasSize="true">
-					<Anchors>
-						<Anchor point="TOPLEFT"/>
-					</Anchors>
-				</Texture>
-			</Layer>
-			<Layer level="BORDER" textureSubLevel="0">
-				<Texture parentKey="Icon">
-					<Size x="64" y="64"/>
-					<Anchors>
-						<Anchor point="CENTER"/>
-					</Anchors>
-				</Texture>
-			</Layer>
-			<Layer level="BORDER" textureSubLevel="1">
-				<Texture parentKey="Border" atlas="ShipMission_ShipFollower-EquipmentFrame" useAtlasSize="true">
-					<Anchors>
-						<Anchor point="TOPLEFT"/>
-					</Anchors>
-				</Texture>
-			</Layer>
-			<Layer level="ARTWORK">
-				<Texture parentKey="EquipGlow" hidden="false" alpha="0.01" alphaMode="ADD" atlas="GarrMission-AbilityHighlight" useAtlasSize="false">
-					<Size x="90" y="90"/>
-					<Anchors>
-						<Anchor point="CENTER" relativeKey="$parent.Icon"/>
-					</Anchors>
-				</Texture>
-			</Layer>
-			<Layer level="OVERLAY">
-				<Texture parentKey="ValidSpellHighlight" atlas="GarrMission-AbilityHighlight" useAtlasSize="false" hidden="true">
-					<Size x="90" y="90"/>
-					<Anchors>
-						<Anchor point="CENTER"/>
-					</Anchors>
-				</Texture>
-			</Layer>
-		</Layers>
-		<Animations>
-			<AnimationGroup parentKey="EquipAnim" setToFinalAlpha="true">
-				<Alpha childKey="EquipGlow" smoothing="IN" duration="0.25" order="1" fromAlpha="0" toAlpha="1"/>
-				<Scale childKey="EquipGlow" duration="0.25" order="1" fromScaleX="0.8" fromScaleY="0.8" toScaleX="1.4" toScaleY="1.4"/>
-				<Alpha childKey="EquipGlow" startDelay="0.2" duration="0.5" order="1" fromAlpha="1" toAlpha="0"/>
-				<Scripts>
-					<OnFinished>
-						self:GetParent():GetParent():GetParent().lastUpdate = GetTime();
-					</OnFinished>
-				</Scripts>
-			</AnimationGroup>
-		</Animations>
-		<Frames>
-			<Frame parentKey="Counter" inherits="GarrisonMissionLargeMechanicTemplate" hidden="true">
-				<Anchors>
-					<Anchor point="TOP" relativeKey="$parent.Border" relativePoint="BOTTOM" x="0" y="-5"/>
-				</Anchors>
-			</Frame>
-		</Frames>
+
+	<Button name="GarrisonShipEquipmentTemplate" inherits="GarrisonEquipmentTemplate" virtual="true">
 		<Scripts>
 			<OnClick function="GarrisonShipEquipment_OnClick"/>
 			<OnEnter function="GarrisonShipEquipment_OnEnter"/>
@@ -1544,13 +1479,13 @@
 			<OnReceiveDrag function="GarrisonShipEquipment_OnReceiveDrag"/>
 		</Scripts>
 	</Button>
-	
+
 	<Frame name="GarrisonShipyardFollowerTabTemplate" inherits="GarrisonBaseInfoBoxTemplate" virtual="true">
 		<Size x="580" y="565"/>
 		<Anchors>
 			<Anchor point="TOPRIGHT" x="-35" y="-64"/>
 		</Anchors>
-		<Layers>	
+		<Layers>
 			<Layer level="BORDER" textureSubLevel="4">
 				<Texture atlas="_Garr_InfoBoxBorder-Top" horizTile="true" useAtlasSize="true">
 					<Anchors>
@@ -1635,7 +1570,7 @@
 							<Anchors>
 								<Anchor point="TOPLEFT"/>
 							</Anchors>
-						</FontString>					
+						</FontString>
 					</Layer>
 				</Layers>
 			</Frame>
@@ -1677,7 +1612,7 @@
 						GarrisonMission_SetFollowerModelItems(self);
 					</OnShow>
 					<OnMouseDown function="GarrisonFollowerPageModel_OnMouseDown"/>
-					<OnMouseUp function="GarrisonFollowerPageModel_OnMouseUp"/>	
+					<OnMouseUp function="GarrisonFollowerPageModel_OnMouseUp"/>
 				</Scripts>
 			</CinematicModel>
 			<Button parentKey="Trait1" parentArray="Traits" inherits="GarrisonShipTraitTemplate">
@@ -1769,7 +1704,7 @@
 			</Frame>
 		</Frames>
 	</Frame>
-	
+
 	<Frame name="GarrisonShipyardFrame" inherits="GarrisonMissionFrameTemplate" mixin="GarrisonMission,GarrisonShipyardMission">
 		<Size x="962" y="662"/>
 		<Anchors>
@@ -1786,14 +1721,14 @@
 			</Layer>
 		</Layers>
 		<Frames>
-		
+
 			<!-- Naval Map tab button -->
 			<Button name="$parentTab1" inherits="GarrisonMissionFrameTabTemplate" id="1" text="GARRISON_NAVAL_MAP">
 				<Anchors>
 					<Anchor point="BOTTOMLEFT" x="11" y="-42"/>
 				</Anchors>
 			</Button>
-			
+
 			<!-- Fleet tab button -->
 			<Button name="$parentTab2" inherits="GarrisonMissionFrameTabTemplate" id="2" text="GARRISON_FLEET" motionScriptsWhileDisabled="true">
 				<Anchors>
@@ -1815,10 +1750,10 @@
 					</OnLeave>
 				</Scripts>
 			</Button>
-			
+
 			<!-- List of ships -->
 			<Frame parentKey="FollowerList" name="$parentFollowers" inherits="GarrisonShipFollowerListTemplateHeader" hidden="true" mixin="GarrisonFollowerList, GarrisonShipyardFollowerList">
-				<Size x="305" y="535"/>			
+				<Size x="305" y="535"/>
 				<Anchors>
 					<Anchor point="TOPLEFT" x="33" y="-64"/>
 				</Anchors>
@@ -1868,7 +1803,7 @@
 					<OnHide>self:OnHide();</OnHide>
 				</Scripts>
 			</Frame>
-			
+
 			<!-- Naval Map tab frame -->
 			<Frame parentKey="MissionTab" setAllPoints="true" useParentLevel="true">
 				<Frames>
@@ -1883,12 +1818,12 @@
 							</Layer>
 						</Layers>
 						<Frames>
-							
+
 							<!-- Fog overlays -->
 							<Frame parentKey="FogFrame1" parentArray="FogFrames" inherits="FogFrameTemplate"/>
 							<Frame parentKey="FogFrame2" parentArray="FogFrames" inherits="FogFrameTemplate"/>
 							<Frame parentKey="FogFrame3" parentArray="FogFrames" inherits="FogFrameTemplate"/>
-							
+
 							<Frame parentKey="CompleteDialog" toplevel="true" enableMouse="true" hidden="true">
 								<Size x="956" y="637"/>
 								<Anchors>
@@ -1973,11 +1908,11 @@
 					<PlayerModel parentArray="MissionCompletePreloadModels" inherits="MissionCompletePreloadModelTemplate"/>
 				</Frames>
 			</Frame>
-			
+
 			<!-- Fleet tab frame -->
 			<Frame parentKey="FollowerTab" inherits="GarrisonShipyardFollowerTabTemplate" hidden="true">
 			</Frame>
-			
+
 			<!-- Mission Complete Frames -->
 			<Frame parentKey="MissionCompleteBackground" enableMouse="true" frameStrata="HIGH" hidden="true">
 				<Size x="956" y="637"/>
@@ -1998,7 +1933,7 @@
 						<Anchors>
 							<Anchor point="TOP"/>
 						</Anchors>
-					</Frame>		
+					</Frame>
 					<Frame parentKey="BonusRewards" inherits="GarrisonShipyardMissionRewardsFrameTemplate, GarrisonMissionBonusRewardsTemplate">
 						<Anchors>
 							<Anchor point="BOTTOM" y="40"/>
@@ -2011,7 +1946,7 @@
 					</Frame>
 				</Frames>
 			</Frame>
-		
+
 			<!-- Border frame contains the wooden frame around the dialog. This needs to be a separate frame
 			     for the shipyard UI so that we can raise the frame level above the fog -->
 			<Frame parentKey="BorderFrame" inherits="GarrisonUITemplate" setAllPoints="true">
@@ -2040,5 +1975,5 @@
 
 		</Frames>
 	</Frame>
-	
+
 </Ui>

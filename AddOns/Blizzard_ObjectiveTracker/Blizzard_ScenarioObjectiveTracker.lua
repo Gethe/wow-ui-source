@@ -385,11 +385,11 @@ function Scenario_ChallengeMode_SetUpAffixes(block,affixes)
 	for i = 1, num do
 		local affixID = affixes[i];
 		
-		affixFrame = block.Affixes and block.Affixes[i];
+		local affixFrame = block.Affixes[i];
 		if (not affixFrame) then
-			local frame = CreateFrame("Frame", nil, block, "ScenarioChallengeModeAffixTemplate");
+			affixFrame = CreateFrame("Frame", nil, block, "ScenarioChallengeModeAffixTemplate");
 			local prev = block.Affixes[i - 1];
-			frame:SetPoint("LEFT", prev, "RIGHT", spacing, 0);
+			affixFrame:SetPoint("LEFT", prev, "RIGHT", spacing, 0);
 		end
 		affixFrame:SetUp(affixID);
 	end
@@ -566,6 +566,14 @@ end
 -- ***** PROGRESS BAR
 -- *****************************************************************************************************
 
+function ScenarioTrackerProgressBar_GetProgress(self)
+	if (self.criteriaIndex) then
+		return select(4, C_Scenario.GetCriteriaInfo(self.criteriaIndex));
+	else
+		return select(9, C_Scenario.GetStepInfo());
+	end
+end
+
 function ScenarioTrackerProgressBar_SetValue(self, percent)
 	self.Bar:SetValue(percent);
 	self.Bar.Label:SetFormattedText(PERCENTAGE_STRING, percent);
@@ -607,12 +615,12 @@ function ScenarioTrackerProgressBar_PlayFlareAnim(progressBar, delta)
 end
 
 function ScenarioTrackerProgressBar_OnEvent(self, event)
-	local weightedProgress = select(9, C_Scenario.GetStepInfo());
+	local weightedProgress = ScenarioTrackerProgressBar_GetProgress(self);
 	ScenarioTrackerProgressBar_PlayFlareAnim(self, weightedProgress - self.AnimValue);
 	ScenarioTrackerProgressBar_SetValue(self, weightedProgress);
 end
 
-function SCENARIO_TRACKER_MODULE:AddProgressBar(block, line, stepIndex)
+function SCENARIO_TRACKER_MODULE:AddProgressBar(block, line, criteriaIndex)
 	local progressBar = self.usedProgressBars[block] and self.usedProgressBars[block][line];
 	if ( not progressBar ) then
 		local numFreeProgressBars = #self.freeProgressBars;
@@ -632,42 +640,46 @@ function SCENARIO_TRACKER_MODULE:AddProgressBar(block, line, stepIndex)
 		self.usedProgressBars[block][line] = progressBar;
 		progressBar:RegisterEvent("SCENARIO_CRITERIA_UPDATE");
 		progressBar:Show();
-		ScenarioTrackerProgressBar_SetValue(progressBar, select(9, C_Scenario.GetStepInfo()));
+		progressBar.criteriaIndex = criteriaIndex;
+		ScenarioTrackerProgressBar_SetValue(progressBar, ScenarioTrackerProgressBar_GetProgress(progressBar));
 	end
-	local rewardQuestID = select(10, C_Scenario.GetStepInfo());
+	
+	progressBar.Bar.Icon:Hide();
+	progressBar.Bar.IconBG:Hide();
+	progressBar.Bar.BarGlow:SetAtlas("bonusobjectives-bar-glow", true);
 
-	if (rewardQuestID ~= 0) then
-		-- reward icon; try the first item
-		local _, texture = GetQuestLogRewardInfo(1, rewardQuestID);
-		-- artifact xp
-		if ( not texture and GetQuestLogRewardArtifactXP(rewardQuestID) > 0 ) then
-			local name, icon = C_ArtifactUI.GetArtifactXPRewardTargetInfo();
-			texture = icon or "Interface\\Icons\\INV_Misc_QuestionMark";
-		end
-		-- currency
-		if ( not texture and GetNumQuestLogRewardCurrencies(rewardQuestID) > 0 ) then
-			_, texture = GetQuestLogRewardCurrencyInfo(1, rewardQuestID);
-		end
-		-- money?
-		if ( not texture and GetQuestLogRewardMoney(rewardQuestID) > 0 ) then
-			texture = "Interface\\Icons\\inv_misc_coin_02";
-		end
-		-- xp
-		if ( not texture and GetQuestLogRewardXP(rewardQuestID) > 0 and UnitLevel("player") < MAX_PLAYER_LEVEL ) then
-			texture = "Interface\\Icons\\xp_icon";
-		end
-		if ( not texture ) then
-			progressBar.Bar.Icon:Hide();
-			progressBar.Bar.IconBG:Hide();
-			progressBar.Bar.BarGlow:SetAtlas("bonusobjectives-bar-glow", true);
-		else
-			progressBar.Bar.Icon:SetTexture(texture);
-			progressBar.Bar.Icon:Show();
-			progressBar.Bar.IconBG:Show();
-			progressBar.Bar.BarGlow:SetAtlas("bonusobjectives-bar-glow-ring", true);
+	if (not criteriaIndex) then
+		local rewardQuestID = select(10, C_Scenario.GetStepInfo());
+
+		if (rewardQuestID ~= 0) then
+			-- reward icon; try the first item
+			local _, texture = GetQuestLogRewardInfo(1, rewardQuestID);
+			-- artifact xp
+			if ( not texture and GetQuestLogRewardArtifactXP(rewardQuestID) > 0 ) then
+				local name, icon = C_ArtifactUI.GetArtifactXPRewardTargetInfo();
+				texture = icon or "Interface\\Icons\\INV_Misc_QuestionMark";
+			end
+			-- currency
+			if ( not texture and GetNumQuestLogRewardCurrencies(rewardQuestID) > 0 ) then
+				_, texture = GetQuestLogRewardCurrencyInfo(1, rewardQuestID);
+			end
+			-- money?
+			if ( not texture and GetQuestLogRewardMoney(rewardQuestID) > 0 ) then
+				texture = "Interface\\Icons\\inv_misc_coin_02";
+			end
+			-- xp
+			if ( not texture and GetQuestLogRewardXP(rewardQuestID) > 0 and UnitLevel("player") < MAX_PLAYER_LEVEL ) then
+				texture = "Interface\\Icons\\xp_icon";
+			end
+			if ( texture ) then
+				progressBar.Bar.Icon:SetTexture(texture);
+				progressBar.Bar.Icon:Show();
+				progressBar.Bar.IconBG:Show();
+				progressBar.Bar.BarGlow:SetAtlas("bonusobjectives-bar-glow-ring", true);
+			end
 		end
 	end
-
+	
 	-- anchor the status bar
 	local anchor = block.currentLine or block.HeaderText;
 	if ( anchor ) then
@@ -716,7 +728,7 @@ function ScenarioStage_CustomizeBlock(stageBlock, scenarioType)
 		stageBlock.Stage:SetTextColor(0.753, 1, 0);
 		stageBlock.NormalBG:SetAtlas("legioninvasion-ScenarioTrackerToast", true);
 		local name, texture, itemID = C_Scenario.GetScenarioLastStepRewardInfo();
-		if (texture ~= 0 and itemID ~= 0) then
+		if itemID and texture then
 			stageBlock.RewardButton.RewardIcon:SetTexture(texture);
 			stageBlock.RewardButton.rewardID = itemID;
 			stageBlock.RewardButton:Show();
@@ -815,7 +827,7 @@ function SCENARIO_CONTENT_TRACKER_MODULE:Update()
 			-- A progress bar is the entire tree for scenarios
 			SCENARIO_TRACKER_MODULE.lineSpacing = 2;
 			SCENARIO_TRACKER_MODULE:AddObjective(objectiveBlock, 1, stageDescription);
-			local progressBar = SCENARIO_TRACKER_MODULE:AddProgressBar(objectiveBlock, objectiveBlock.currentLine, currentStage);
+			local progressBar = SCENARIO_TRACKER_MODULE:AddProgressBar(objectiveBlock, objectiveBlock.currentLine);
 			objectiveBlock:SetHeight(objectiveBlock.height);
 			if ( ObjectiveTracker_AddBlock(objectiveBlock) ) then
 				if ( not BlocksFrame.slidingAction ) then
@@ -829,14 +841,16 @@ function SCENARIO_CONTENT_TRACKER_MODULE:Update()
 		else
 			-- do the criteria
 			for criteriaIndex = 1, numCriteria do
-				local criteriaString, criteriaType, completed, quantity, totalQuantity, flags, assetID, quantityString, criteriaID, duration, elapsed = C_Scenario.GetCriteriaInfo(criteriaIndex);
+				local criteriaString, criteriaType, completed, quantity, totalQuantity, flags, assetID, quantityString, criteriaID, duration, elapsed, _, isWeightedProgress = C_Scenario.GetCriteriaInfo(criteriaIndex);
 				criteriaString = string.format("%d/%d %s", quantity, totalQuantity, criteriaString);
-				if ( criteriaIndex == 1 and not inChallengeMode ) then
+				if ( criteriaIndex == 1 and not inChallengeMode or isWeightedProgress ) then
 					SCENARIO_TRACKER_MODULE.lineSpacing = 2;
 				else
 					SCENARIO_TRACKER_MODULE.lineSpacing = 12;
 				end
-				if ( completed ) then
+				if (isWeightedProgress) then
+					SCENARIO_TRACKER_MODULE:AddProgressBar(objectiveBlock, objectiveBlock.currentLine, criteriaIndex);
+				elseif ( completed ) then
 					local existingLine = objectiveBlock.lines[criteriaIndex];
 					SCENARIO_TRACKER_MODULE:AddObjective(objectiveBlock, criteriaIndex, criteriaString, nil, nil, nil, OBJECTIVE_TRACKER_COLOR["Complete"]);
 					objectiveBlock.currentLine.Icon:SetAtlas("Tracker-Check", true);
@@ -845,7 +859,7 @@ function SCENARIO_CONTENT_TRACKER_MODULE:Update()
 						existingLine.Sheen.Anim:Play();
 						existingLine.CheckFlash.Anim:Play();
 					end
-					objectiveBlock.currentLine.completed = true;			
+					objectiveBlock.currentLine.completed = true;
 				else
 					SCENARIO_TRACKER_MODULE:AddObjective(objectiveBlock, criteriaIndex, criteriaString);
 					objectiveBlock.currentLine.Icon:SetAtlas("Objective-Nub", true);			

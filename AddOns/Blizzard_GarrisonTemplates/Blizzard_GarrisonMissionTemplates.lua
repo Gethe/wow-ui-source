@@ -4,8 +4,6 @@
 ---------------------------------------------------------------------------------
 GarrisonMission = {};
 
-GARRISON_REQUIRED_CHANCE_NOT_MET = "[PH] Required Chance not met";
-
 function GarrisonMission:OnLoadMainFrame()
 	PanelTemplates_SetNumTabs(self, 2);
 	self.selectedTab = 1;
@@ -43,7 +41,7 @@ function GarrisonMission:SelectTab(id)
 		self.MissionTab:Show();
 		self.FollowerTab:Hide();
 		if ( self.MissionTab.MissionPage:IsShown() ) then
-			GarrisonFollowerList_UpdateFollowers(self.FollowerList);
+			self.FollowerList:UpdateFollowers();
 		end
 	else
 		self.MissionComplete:Hide();
@@ -51,7 +49,7 @@ function GarrisonMission:SelectTab(id)
 		self.MissionTab:Hide();
 		self.FollowerTab:Show();
 		if ( self.FollowerList:IsShown() ) then
-			GarrisonFollowerList_UpdateFollowers(self.FollowerList);
+			self.FollowerList:UpdateFollowers();
 		else
 			self.FollowerList:Show();
 		end
@@ -333,7 +331,7 @@ function GarrisonMission:UpdateMissionData(frame)
 
 	if ( followersWithAbilitiesGained ) then
 		for followerID in pairs(followersWithAbilitiesGained) do
-			local followerFrame = GarrisonMissionPage_GetFollowerFrameFromID(followerID);
+			local followerFrame = self.MissionTab.MissionPage:GetFollowerFrameFromID(followerID);
 			if ( followerFrame ) then
 				followerFrame.PortraitFrame.PortraitFeedbackGlowAnim:Play();
 			end
@@ -414,7 +412,7 @@ function GarrisonMission:UpdateStartButton(missionPage, partyNotFullText)
 		local successChance = C_Garrison.GetMissionSuccessChance(missionPage.missionInfo.missionID);
 		local requiredSuccessChance = missionPage.missionInfo.requiredSuccessChance;
 		if (successChance < requiredSuccessChance ) then
-			disableError = GARRISON_REQUIRED_CHANCE_NOT_MET;
+			disableError = GARRISON_MISSION_REQUIRED_CHANCE_NOT_MET;
 		end
 	end
 
@@ -434,7 +432,9 @@ end
 
 function GarrisonMission:CloseMission()
 	self.MissionTab.MissionPage:Hide();
-	self.MissionTab.MissionList:Show();
+	if (self.MissionTab.MissionList) then
+		self.MissionTab.MissionList:Show();
+	end
 	self:ClearParty();
 	self.followerCounters = nil;
 	self.MissionTab.MissionPage.missionInfo = nil;	
@@ -455,7 +455,7 @@ function GarrisonMission:OnClickStartMissionButton()
 	end
 	C_Garrison.StartMission(missionID);
 	self:UpdateMissions();
-	GarrisonFollowerList_UpdateFollowers(self.FollowerList);
+	self.FollowerList:UpdateFollowers();
 	self:CloseMission();
 	return true;
 end
@@ -465,16 +465,16 @@ function GarrisonMission:AssignFollowerToMission(frame, info)
 		self:RemoveFollowerFromMission(frame);
 	end
 
-	local missionFrame = self.MissionTab.MissionPage;
+	local missionPage = self.MissionTab.MissionPage;
 	
 	-- frame.info needs to be set for AddFollowerToMission()
 	frame.info = info;	
-	if ( not C_Garrison.AddFollowerToMission(missionFrame.missionInfo.missionID, info.followerID) ) then
+	if ( not C_Garrison.AddFollowerToMission(missionPage.missionInfo.missionID, info.followerID) ) then
 		frame.info = nil;
 		return false;
 	end
 	
-	GarrisonMissionPage_SetCounters(missionFrame.Followers, missionFrame.Enemies, missionFrame.missionInfo.missionID);
+	GarrisonMissionPage_SetCounters(missionPage.Followers, missionPage.Enemies, missionPage.missionInfo.missionID);
 	return true;
 end
 

@@ -24,8 +24,6 @@ setmetatable(C_Login, { __index = C_LoginStubs });
 
 LE_WOW_CONNECTION_STATE_CONNECTING2 = 13;
 
-LE_AUTH_AUTHENTICATOR = 1;
-
 local BNET_STATE = LE_AURORA_STATE_NONE;
 local WOW_STATE;
 local CONNECTED_TO_WOW = false;
@@ -126,11 +124,11 @@ function C_LoginStubs.GetLastError()
 	return LAST_ERROR;
 end
 
-function C_Login.GetExtraAuthInfo()
+function C_LoginStubs.GetExtraAuthInfo()
 	return LE_AUTH_AUTHENTICATOR;
 end
 
-function C_Login.SubmitExtraAuthInfo(info)
+function C_LoginStubs.SubmitExtraAuthInfo(info)
 	StubFrame_CheckPassword();
 end
 

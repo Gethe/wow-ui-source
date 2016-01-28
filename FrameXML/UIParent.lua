@@ -878,7 +878,7 @@ function UIParent_OnEvent(self, event, ...)
 					GarrisonMissionFrame_SelectTab(1);
 				end
 				if ( PanelTemplates_GetSelectedTab(GarrisonMissionFrame.MissionTab.MissionList) ~= 2 ) then
-					GarrisonMissionList_SetTab(GarrisonMissionFrame.MissionTab.MissionList.Tab2);
+					GarrisonMissionListTab_SetTab(GarrisonMissionFrame.MissionTab.MissionList.Tab2);
 				end
 			else
 				if ( not GarrisonLandingPage:IsShown()) then

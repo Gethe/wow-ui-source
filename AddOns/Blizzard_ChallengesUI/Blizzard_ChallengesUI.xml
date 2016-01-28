@@ -412,6 +412,8 @@
 				<Scripts>
 					<OnLoad method="OnLoad"/>
 					<OnEvent method="OnEvent"/>
+					<OnEnter method="OnEnter"/>
+					<OnLeave function="GameTooltip_Hide"/>
 					<OnReceiveDrag method="OnReceiveDrag"/>
 					<OnDragStart method="OnDragStart"/>
 					<OnClick method="OnClick"/>

@@ -898,6 +898,7 @@ LAUNCH_MAC_SYSTEM_REQUIRED = "World of Warcraft requires Mac OS X version %s.";
 LAUNCH_QUICKTIME_REQUIRED = "World of Warcraft requires QuickTime version %s.";
 LAUNCH_USE_SOFTWARE_UPDATE = "Please use Software Update in System Preferences to upgrade your system software.";
 LAUNCH_VIDEO_CARD_UNSUPPORTED = "World of Warcraft cannot run on your video card.";
+LEGAL_REDIRECT_WARNING = "You need to accept some legal documents. Click below to continue to Account Management using your web browser.";
 LEVEL = "Level";
 LIGHTING_QUALITY = "Lighting Quality";
 LIQUID_DETAIL = "Liquid Detail";

@@ -106,9 +106,7 @@ function AdventureMap_QuestChoiceDataProviderMixin:OnQuestPinAreaEnclosedChanged
 				end
 			end
 			self.enclosedPin = nil;
-			if result == QUEST_CHOICE_DIALOG_RESULT_DECLINED then
-				self:GetAdventureMap():ZoomOut();
-			end
+			self:GetAdventureMap():ZoomOut();
 		end
 
 		AdventureMapQuestChoiceDialog:ShowWithQuest(self:GetAdventureMap(), pin, pin.questID, OnClosedCallback);

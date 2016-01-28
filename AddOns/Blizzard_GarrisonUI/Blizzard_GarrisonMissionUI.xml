@@ -1,5 +1,5 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
-..\FrameXML\UI.xsd">
+../FrameXML/UI.xsd">
 	<Script file="Blizzard_GarrisonMissionUI.lua"/>
 
 	<CinematicModel name="GarrisonCinematicModelBaseTemplate" virtual="true">
@@ -18,7 +18,7 @@
 			<OnModelLoaded function="MissionCompletePreload_OnModelLoaded"/>
 		</Scripts>
 	</PlayerModel>
-	
+
 	<Frame name="GarrisonFollowerMissionPortraitTemplate" inherits="GarrisonFollowerPortraitTemplate" virtual="true">
 		<Layers>
 			<Layer level="OVERLAY" textureSubLevel="1">
@@ -60,7 +60,7 @@
 			</AnimationGroup>
 		</Animations>
 	</Frame>
-	
+
 	<Button name="GarrisonMissionListTabTemplate" virtual="true">
 		<Size x="268" y="40"/>
 		<Layers>
@@ -106,7 +106,7 @@
 					</Anchors>
 				</Texture>
 			</Layer>
-		</Layers> 
+		</Layers>
 		<ButtonText name="$parentText" parentKey="Text" inherits="QuestFont_Huge">
 			<Anchors>
 				<Anchor point="CENTER" x="0" y="0"/>
@@ -119,7 +119,7 @@
 			<OnClick function="GarrisonMissionListTab_OnClick"/>
 		</Scripts>
 	</Button>
-	
+
 	<Frame name="GarrisonFollowerListButtonAbilityTemplate" virtual="true">
 		<Size x="234" y="20"/>
 		<KeyValues>
@@ -151,7 +151,7 @@
 			</OnLeave>
 		</Scripts>
 	</Frame>
-	
+
 	<Frame name="GarrisonMissionAbilityCounterTemplate" inherits="GarrisonAbilityCounterTemplate" virtual="true">
 		<Layers>
 			<Layer level="ARTWORK">
@@ -170,13 +170,13 @@
 				<Alpha childKey="AbilityFeedbackGlow" startDelay="0.2" duration="0.5" order="1" fromAlpha="1" toAlpha="0"/>
 			</AnimationGroup>
 		</Animations>
-		
+
 		<Scripts>
 			<OnEnter function="GarrisonMissionMechanicFollowerCounter_OnEnter"/>
 			<OnLeave function="GarrisonMissionMechanicFollowerCounter_OnLeave"/>
 		</Scripts>
 	</Frame>
-	
+
 	<Frame name="GarrisonMissionAbilityLargeCounterTemplate" inherits="GarrisonAbilityLargeCounterTemplate" virtual="true">
 		<Scripts>
 			<OnEnter function="GarrisonMissionMechanicFollowerCounter_OnEnter"/>
@@ -184,15 +184,78 @@
 		</Scripts>
 	</Frame>
 
+	<Button name="GarrisonFollowerPageAbilityIconButtonTemplate" parentKey="IconButton" virtual="true">
+		<Layers>
+			<Layer level="BACKGROUND" textureSubLevel="-1">
+				<Texture parentKey="Icon" alphaMode="BLEND" file="Interface\icons\inv_drink_31_embalmingfluid">
+					<Size x="35" y="35"/>
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="BORDER">
+				<Texture parentKey="SmokeyCenter2" alpha="0" alphaMode="ADD" atlas="BonusChest-CircleGlow" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="BORDER" textureSubLevel="2">
+				<Texture parentKey="OldIcon" alpha="0" alphaMode="BLEND" file="Interface\Icons\ability_warrior_savageblow">
+					<Size x="35" y="35"/>
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="ARTWORK">
+				<Texture parentKey="SmokeyCenter" alpha="0" alphaMode="ADD" atlas="BonusChest-Smoke-Uncommon" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="WideGlow" alpha="0" alphaMode="BLEND" atlas="BonusChest-OrangeGlow-Wide" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="LEFT" relativeKey="$parent.SmokeyCenter2" relativePoint="CENTER" x="-100" y="0"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="OVERLAY">
+				<Texture parentKey="ValidSpellHighlight" atlas="GarrMission-AbilityHighlight" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Size x="35" y="35"/>
+		<Anchors>
+			<Anchor point="TOPLEFT"/>
+		</Anchors>
+		<Scripts>
+			<OnClick function="GarrisonFollowerPageAbility_OnClick"/>
+			<OnEnter>
+				GarrisonFollowerAbilityTooltip:ClearAllPoints();
+				GarrisonFollowerAbilityTooltip:SetPoint("TOPLEFT", self, "BOTTOMRIGHT");
+				GarrisonFollowerAbilityTooltip_Show(self.abilityID, self:GetParent().followerTypeID);
+			</OnEnter>
+			<OnLeave>
+				GarrisonFollowerAbilityTooltip:Hide();
+			</OnLeave>
+		</Scripts>
+	</Button>
+
 	<Frame name="GarrisonFollowerPageAbilityTemplate" virtual="true">
 		<Size x="240" y="60"/>
 		<KeyValues>
 			<Keyvalue key="followerTypeID" value="1" type="number"/>
+			<Keyvalue key="hideCounters" value="false" type="boolean"/>
 		</KeyValues>
 		<Layers>
 			<Layer level="ARTWORK">
 				<FontString parentKey="Name" inherits="GameFontNormalLarge2" justifyH="LEFT" maxLines="1"/>
-							
+
 				<FontString parentKey="Category" inherits="GameFontHighlight" justifyH="LEFT">
 					<Size x="220" y="0"/>
 					<Anchors>
@@ -207,67 +270,7 @@
 			</Layer>
 		</Layers>
 		<Frames>
-			<Button parentKey="IconButton">
-				<Layers>
-					<Layer level="BACKGROUND" textureSubLevel="-1">
-						<Texture parentKey="Icon" alphaMode="BLEND" file="Interface\icons\inv_drink_31_embalmingfluid">
-							<Size x="35" y="35"/>
-							<Anchors>
-								<Anchor point="CENTER"/>
-							</Anchors>
-						</Texture>
-					</Layer>
-					<Layer level="BORDER">
-						<Texture parentKey="SmokeyCenter2" alpha="0" alphaMode="ADD" atlas="BonusChest-CircleGlow" useAtlasSize="true">
-							<Anchors>
-								<Anchor point="CENTER"/>
-							</Anchors>
-						</Texture>
-					</Layer>
-					<Layer level="BORDER" textureSubLevel="2">
-						<Texture parentKey="OldIcon" alpha="0" alphaMode="BLEND" file="Interface\Icons\ability_warrior_savageblow">
-							<Size x="35" y="35"/>
-							<Anchors>
-								<Anchor point="CENTER"/>
-							</Anchors>
-						</Texture>
-					</Layer>
-					<Layer level="ARTWORK">
-						<Texture parentKey="SmokeyCenter" alpha="0" alphaMode="ADD" atlas="BonusChest-Smoke-Uncommon" useAtlasSize="true">
-							<Anchors>
-								<Anchor point="CENTER"/>
-							</Anchors>
-						</Texture>
-						<Texture parentKey="WideGlow" alpha="0" alphaMode="BLEND" atlas="BonusChest-OrangeGlow-Wide" useAtlasSize="true">
-							<Anchors>
-								<Anchor point="LEFT" relativeKey="$parent.SmokeyCenter2" relativePoint="CENTER" x="-100" y="0"/>
-							</Anchors>
-						</Texture>
-					</Layer>
-					<Layer level="OVERLAY">
-						<Texture parentKey="ValidSpellHighlight" atlas="GarrMission-AbilityHighlight" useAtlasSize="true">
-							<Anchors>
-								<Anchor point="CENTER"/>
-							</Anchors>
-						</Texture>
-					</Layer>
-				</Layers>
-				<Size x="35" y="35"/>
-				<Anchors>
-					<Anchor point="TOPLEFT"/>
-				</Anchors>
-				<Scripts>
-					<OnClick function="GarrisonFollowerPageAbility_OnClick"/>
-					<OnEnter>
-						GarrisonFollowerAbilityTooltip:ClearAllPoints();
-						GarrisonFollowerAbilityTooltip:SetPoint("TOPLEFT", self, "BOTTOMRIGHT");
-						GarrisonFollowerAbilityTooltip_Show(self.abilityID, self:GetParent().followerTypeID);
-					</OnEnter>
-					<OnLeave>
-						GarrisonFollowerAbilityTooltip:Hide();
-					</OnLeave>						
-				</Scripts>
-			</Button>
+			<Button inherits="GarrisonFollowerPageAbilityIconButtonTemplate"/>
 		</Frames>
 		<Layers>
 			<Layer level="ARTWORK">
@@ -312,9 +315,9 @@
 					</OnFinished>
 				</Scripts>
 			</AnimationGroup>
-		</Animations>		
+		</Animations>
 	</Frame>
-	
+
 	<Frame name="GarrisonMissionListButtonRewardTemplate" enableMouse="true" virtual="true">
 		<Size x="72" y="72"/>
 		<Layers>
@@ -529,7 +532,7 @@
 					<Anchors>
 						<Anchor point="RIGHT"/>
 					</Anchors>
-				</Texture>			
+				</Texture>
 				<Texture parentKey="RareOverlay" atlas="GarrMission_RareOverlay" useAtlasSize="true">
 					<Anchors>
 						<Anchor point="BOTTOMLEFT" x="-5" y="-4"/>
@@ -559,7 +562,7 @@
 						<Anchor point="TOP" relativeKey="$parent.Level" relativePoint="BOTTOM" x="0" y="2"/>
 					</Anchors>
 					<Color r="0.84" g="0.72" b="0.57"/>
-				</FontString>				
+				</FontString>
 				<Texture parentKey="MissionType" atlas="GarrMission_MissionIcon-Combat">
 					<Size x="75" y="75"/>
 					<Anchors>
@@ -653,7 +656,7 @@
 			<OnLeave function="GameTooltip_Hide"/>
 		</Scripts>
 	</Button>
-	
+
 	<Frame name="GarrisonFollowerMissionRewardsFrameTemplate" virtual="true">
 		<Layers>
 			<Layer level="BACKGROUND">
@@ -741,7 +744,7 @@
 			</AnimationGroup>
 		</Animations>
 		<Scripts>
-			<OnEnter>	
+			<OnEnter>
 				GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
 				GameTooltip:SetText(C_Garrison.GetFollowerAbilityName(self.id), NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b);
 				GameTooltip:AddLine(C_Garrison.GetFollowerAbilityDescription(self.id), HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b, true);
@@ -750,7 +753,7 @@
 			<OnLeave function="GameTooltip_Hide"/>
 		</Scripts>
 	</Frame>
-	
+
 	<Frame name="GarrisonMissionPageFollowerTemplate" virtual="true">
 		<Size x="161" y="58"/>
 		<Layers>
@@ -842,7 +845,7 @@
 
 	<Frame name="GarrisonMissionPageEnemyTemplate" virtual="true">
 		<Size x="53" y="53"/>
-		<Layers>		
+		<Layers>
 			<Layer level="OVERLAY">
 				<FontString parentKey="Name" inherits="GameFontHighlight">
 					<Size x="161" y="0"/>
@@ -861,7 +864,7 @@
 			<Button parentArray="Mechanics" inherits="GarrisonMissionEnemyLargeMechanicTemplate"/>
 		</Frames>
 	</Frame>
-	
+
 	<Frame name="GarrisonEncounterPortraitCheckTemplate" virtual="true">
 		<Size x="64" y="61"/>
 		<Layers>
@@ -876,7 +879,7 @@
 							<Alpha startDelay="1" duration="0.25" order="2" fromAlpha="1" toAlpha="0"/>
 						</AnimationGroup>
 					</Animations>
-				</Texture>				
+				</Texture>
 			</Layer>
 			<Layer level="OVERLAY">
 				<Texture parentKey="CrossLeft" hidden="false" alpha="0" atlas="GarrMission_EncounterBar-Xleft" useAtlasSize="true">
@@ -908,7 +911,7 @@
 					<Anchors>
 						<Anchor point="CENTER"/>
 					</Anchors>
-				</Texture>				
+				</Texture>
 			</Layer>
 		</Layers>
 		<Animations>
@@ -940,10 +943,10 @@
 				<Alpha childKey="CheckSmoke" startDelay="0.25" duration="0.25" order="1" fromAlpha="0" toAlpha="1"/>
 				<Scale childKey="CheckSmoke" startDelay="0.15" duration="0.5" order="1" fromScaleX="0.75" fromScaleY="0.75" toScaleX="1.25" toScaleY="1.25"/>
 				<Alpha childKey="CheckSmoke" startDelay="0.3" duration="0.7" order="1" fromAlpha="1" toAlpha="0"/>
-			</AnimationGroup>	
+			</AnimationGroup>
 		</Animations>
 	</Frame>
-	
+
 	<Frame name="GarrisonEncounterGlowTemplate" virtual="true">
 		<Size x="64" y="61"/>
 		<Layers>
@@ -974,7 +977,7 @@
 			</AnimationGroup>
 		</Animations>
 	</Frame>
-	
+
 	<Frame name="GarrisonEncounterPortraitTemplate" virtual="true">
 		<Size x="64" y="61"/>
 		<Layers>
@@ -1005,7 +1008,7 @@
 						<Anchor point="CENTER"/>
 					</Anchors>
 				</Texture>
-			</Layer>			
+			</Layer>
 		</Layers>
 		<Frames>
 			<Frame parentKey="CheckFrame" inherits="GarrisonEncounterPortraitCheckTemplate">
@@ -1017,10 +1020,10 @@
 				<Anchors>
 					<Anchor point="CENTER"/>
 				</Anchors>
-			</Frame>			
+			</Frame>
 		</Frames>
 	</Frame>
-			
+
 	<Frame name="GarrisonLargeFollowerXPFrameTemplate" virtual="true">
 		<Size x="177" y="72"/>
 		<Layers>
@@ -1069,7 +1072,7 @@
 			</Frame>
 		</Frames>
 	</Frame>
-	
+
 	<Frame name="GarrisonSmallFollowerXPFrameTemplate" virtual="true">
 		<Size x="85" y="90"/>
 		<Layers>
@@ -1105,7 +1108,7 @@
 			</Frame>
 		</Frames>
 	</Frame>
-	
+
 	<Frame name="GarrisonFollowerItemButtonTemplate" hidden="true" virtual="true">
 		<Size x="225" y="42"/>
 		<Layers>
@@ -1120,7 +1123,7 @@
 					<Anchors>
 						<Anchor point="TOPLEFT" relativeKey="$parent.Icon" relativePoint="TOPRIGHT" x="2" y="0"/>
 					</Anchors>
-				</Texture>				
+				</Texture>
 			</Layer>
 			<Layer level="ARTWORK">
 				<FontString parentKey="Name" inherits="GameFontNormalMed3" justifyH="LEFT" justifyV="TOP">
@@ -1133,7 +1136,7 @@
 					<Anchors>
 						<Anchor point="BOTTOMLEFT" relativeKey="$parent.Border" relativePoint="BOTTOMLEFT" x="10" y="5"/>
 					</Anchors>
-				</FontString>				
+				</FontString>
 			</Layer>
 		</Layers>
 		<Scripts>
@@ -1150,7 +1153,7 @@
 			<OnLeave function="GameTooltip_Hide"/>
 		</Scripts>
 	</Frame>
-	
+
 	<Frame name="GarrisonMissionTutorialFrame" frameStrata="DIALOG" enableMouse="true">
 		<Layers>
 			<Layer level="BACKGROUND">
@@ -1187,7 +1190,7 @@
 							<Anchors>
 								<Anchor point="TOP" relativePoint="BOTTOM" x="0" y="1"/>
 							</Anchors>
-						</Texture>								
+						</Texture>
 					</Layer>
 					<Layer level="BORDER">
 						<Texture parentKey="ArrowGlowDown" inherits="HelpPlateArrow-GlowDOWN" alphaMode="ADD" alpha="0.5">
@@ -1212,10 +1215,10 @@
 						</Anchors>
 					</Button>
 				</Frames>
-			</Frame>				
+			</Frame>
 		</Frames>
 	</Frame>
-	
+
 	<Frame name="GarrisonMissionPageBaseTemplate" virtual="true">
 		<Size x="556" y="584"/>
 		<Layers>
@@ -1296,7 +1299,7 @@
 			</Layer>
 		</Layers>
 	</Frame>
-	
+
 	<Frame name="GarrisonMissionTopBorderTemplate" virtual="true">
 		<Layers>
 			<Layer level="BORDER" textureSubLevel="4">
@@ -1322,8 +1325,8 @@
 			</Layer>
 		</Layers>
 	</Frame>
-	
-	<Frame name="GarrisonMissionListTemplate" inherits="GarrisonListTemplate" virtual="true">
+
+	<Frame name="GarrisonMissionListTemplate" inherits="GarrisonListTemplate" virtual="true" mixin="GarrisonMissionListMixin">
 		<Size x="890" y="565"/>
 		<Anchors>
 			<Anchor point="TOPLEFT" x="35" y="-65"/>
@@ -1390,7 +1393,7 @@
 						<Alpha childKey="GlowHighlight" duration="0.2" order="3" fromAlpha="0" toAlpha="1"/>
 						<Alpha childKey="GlowHighlight" startDelay="0.2" duration="0.5" order="3" fromAlpha="1" toAlpha="0"/>
 					</AnimationGroup>
-				</Animations>								
+				</Animations>
 			</Button>
 			<Frame parentKey="MaterialFrame" inherits="MaterialFrameTemplate">
 				<Size x="316" y="43"/>
@@ -1414,17 +1417,17 @@
 					<Frame parentKey="BorderFrame" inherits="GarrisonMissionPageBaseTemplate, GarrisonMissionCompleteDialogTemplate, GarrisonMissionTopBorderTemplate">
 					</Frame>
 				</Frames>
-			</Frame>							
+			</Frame>
 		</Frames>
 		<Scripts>
-			<OnLoad function="GarrisonMissionList_OnLoad"/>
-			<OnShow function="GarrisonMissionList_OnShow"/>
-			<OnHide function="GarrisonMissionList_OnHide"/>
-			<OnUpdate function="GarrisonMissionList_OnUpdate"/>
+			<OnLoad method="OnLoad"/>
+			<OnShow function="OnShow"/>
+			<OnHide function="OnHide"/>
+			<OnUpdate function="OnUpdate"/>
 		</Scripts>
 	</Frame>
-	
-	<Frame name="GarrisonFollowerTabTemplate" inherits="GarrisonMissionBaseFrameTemplate" hidden="true" virtual="true">
+
+	<Frame name="GarrisonFollowerTabTemplate" inherits="GarrisonMissionBaseFrameTemplate" mixin="GarrisonFollowerTabMixin" hidden="true" virtual="true">
 		<Size x="580" y="565"/>
 		<Anchors>
 			<Anchor point="TOPRIGHT" x="-35" y="-64"/>
@@ -1494,7 +1497,7 @@
 							<Anchors>
 								<Anchor point="TOPLEFT"/>
 							</Anchors>
-						</FontString>					
+						</FontString>
 					</Layer>
 				</Layers>
 			</Frame>
@@ -1549,7 +1552,7 @@
 						GarrisonMission_SetFollowerModelItems(self);
 					</OnShow>
 					<OnMouseDown function="GarrisonFollowerPageModel_OnMouseDown"/>
-					<OnMouseUp function="GarrisonFollowerPageModel_OnMouseUp"/>				
+					<OnMouseUp function="GarrisonFollowerPageModel_OnMouseUp"/>
 				</Scripts>
 			</CinematicModel>
 			<Frame parentKey="AbilitiesFrame" setAllPoints="true">
@@ -1604,7 +1607,7 @@
 					<Layer level="OVERLAY">
 						<FontString parentKey="SourceText" inherits="GameFontHighlight" justifyH="LEFT" text="ABILITIES">
 							<Size x="230" y="80"/>
-						</FontString>														
+						</FontString>
 					</Layer>
 				</Layers>
 			</Frame>
@@ -1636,7 +1639,7 @@
 			</OnHide>
 		</Scripts>
 	</Frame>
-	
+
 	<Frame name="FollowerMissionPageTemplate" inherits="GarrisonMissionPageBaseTemplate, MissionPageTemplate" virtual="true">
 		<Layers>
 			<Layer level="ARTWORK">
@@ -1712,7 +1715,7 @@
 			</Frame>
 		</Frames>
 	</Frame>
-	
+
 	<Frame name="GarrisonFollowerMissionCompleteStageTemplate" inherits="GarrisonMissionStageTemplate, GarrisonMissionCompleteStageTemplate" virtual="true">
 		<Anchors>
 			<Anchor point="TOP"/>
@@ -1744,7 +1747,7 @@
 					<Frame parentKey="Encounter3" parentArray="Encounters" inherits="GarrisonEncounterPortraitTemplate">
 						<Anchors>
 							<Anchor point="LEFT" relativeKey="$parent.Encounter2" relativePoint="RIGHT" x="91" y="0"/>
-						</Anchors>									
+						</Anchors>
 					</Frame>
 					<Frame parentKey="MechanicsFrame">
 						<Size x="20" y="20"/>
@@ -1852,7 +1855,7 @@
 								<Anchor point="TOP" relativeKey="$parent.Level" relativePoint="BOTTOM" x="0" y="2"/>
 							</Anchors>
 							<Color r="0.84" g="0.72" b="0.57"/>
-						</FontString>										
+						</FontString>
 						<Texture parentKey="MissionType" atlas="GarrMission_MissionIcon-Combat" useAtlasSize="true">
 							<Anchors>
 								<Anchor point="TOPLEFT" x="48" y="-4"/>
@@ -1925,7 +1928,7 @@
 			</Frame>
 		</Frames>
 	</Frame>
-	
+
 	<Frame name="GarrisonMissionFrame" inherits="GarrisonMissionFrameTemplate, GarrisonUITemplate" mixin="GarrisonMission,GarrisonFollowerMission">
 		<Size x="962" y="662"/>
 		<Anchors>
@@ -1940,14 +1943,14 @@
 			<Button name="$parentTab2" inherits="GarrisonMissionFrameTabTemplate" id="2" text="GARRISON_FOLLOWERS">
 				<Anchors>
 					<Anchor point="LEFT" relativeTo="$parentTab1" relativePoint="RIGHT" x="-5" y="0"/>
-				</Anchors>		
+				</Anchors>
 			</Button>
 			<Frame parentKey="FollowerList" inherits="GarrisonListTemplateHeader" name="$parentFollowers" hidden="true" mixin="GarrisonFollowerList">
 				<Size x="305" y="535"/>
 				<KeyValues>
 					 <KeyValue key="showUncollected" value="true" type="boolean"/>
 					 <KeyValue key="canCastSpellsOnFollowers" value="true" type="boolean"/>
-				</KeyValues>				
+				</KeyValues>
 				<Anchors>
 					<Anchor point="TOPLEFT" x="33" y="-64"/>
 				</Anchors>
@@ -1967,9 +1970,10 @@
 							<OnTextChanged function="GarrisonFollowListEditBox_OnTextChanged"/>
 						</Scripts>
 					</EditBox>
-					<Frame name="GarrisonFollowerOptionDropDown" inherits="UIDropDownMenuTemplate">
+					<Frame name="GarrisonFollowerOptionDropDown" parentKey="OptionDropDown" inherits="UIDropDownMenuTemplate">
 						<Scripts>
 							<OnLoad>
+								self.missionFrame = GarrisonMissionFrame;
 								UIDropDownMenu_Initialize(self, GarrisonFollowerOptionDropDown_Initialize, "MENU");
 							</OnLoad>
 						</Scripts>
@@ -1984,7 +1988,7 @@
 				<Frames>
 					<Frame parentKey="MissionList" inherits="GarrisonMissionListTemplate" name="$parentMissions">
 					</Frame>
-					<Button parentKey="MissionPage" inherits="FollowerMissionPageTemplate" hidden="true">
+					<Button parentKey="MissionPage" inherits="FollowerMissionPageTemplate" hidden="true" mixin="GarrisonMissionPageMixin">
 						<Frames>
 							<Frame parentKey="Enemy1" parentArray="Enemies" inherits="GarrisonMissionPageEnemyTemplate">
 								<Anchors>
@@ -2060,8 +2064,7 @@
 					<PlayerModel parentArray="MissionCompletePreloadModels" inherits="MissionCompletePreloadModelTemplate"/>
 				</Frames>
 			</Frame>
-			<Frame parentKey="FollowerTab" inherits="GarrisonFollowerTabTemplate">
-			</Frame>
+			<Frame parentKey="FollowerTab" inherits="GarrisonFollowerTabTemplate"/>
 			<Frame parentKey="MissionCompleteBackground" enableMouse="true" frameStrata="HIGH" hidden="true">
 				<Size x="956" y="637"/>
 				<Anchors>
@@ -2095,7 +2098,7 @@
 				</Frames>
 			</Frame>
 		</Frames>
-	</Frame>	
+	</Frame>
 
 	<Frame name="GarrisonFollowerPlacer" inherits="GarrisonFollowerPortraitTemplate" hidden="true" parent="UIParent" frameStrata="DIALOG"/>
 

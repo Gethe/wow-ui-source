@@ -27,7 +27,7 @@ DUNGEON_COMPLETION_MAX_REWARDS = 1;
 function DungeonCompletionAlertFrame_SetUp(frame)
 	PlaySound("LFG_Rewards");
 	--For now we only have 1 dungeon alert frame. If you're completing more than one dungeon within ~5 seconds, tough luck.
-	local name, typeID, subtypeID, textureFilename, moneyBase, moneyVar, experienceBase, experienceVar, numStrangers, numRewards= GetLFGCompletionReward();
+	local name, typeID, subtypeID, textureFilename, moneyBase, moneyVar, experienceBase, experienceVar, numStrangers, numRewards = GetLFGCompletionReward();
 	
 	if ( subtypeID == LFG_SUBTYPEID_RAID ) then
 		frame.raidArt:Show();
@@ -285,6 +285,86 @@ function ScenarioAlertFrame_SetUp(frame)
 end
 
 ScenarioAlertSystem = AlertFrame:AddSimpleAlertFrameSubSystem(ScenarioAlertFrame, ScenarioAlertFrame_SetUp);
+
+-- [[ScenarioLegionInvasionAlertFrame ]] --
+function ScenarioLegionInvasionAlertFrame_SetUp(frame)
+	PlaySound("UI_Scenario_Ending");
+
+	local scenarioName, currentStage, numStages, flags, hasBonusStep, isBonusStepComplete, _, xp, money, scenarioType, areaName = C_Scenario.GetInfo();
+	local rewardName, rewardTexture, rewardItemID = C_Scenario.GetScenarioLastStepRewardInfo();
+
+	frame.ZoneName:SetText(areaName or scenarioName);
+	frame.BonusStar:SetShown(hasBonusStep and isBonusStepComplete);
+
+	local numUsedRewardFrames = 0;
+	if money > 0 then
+		local rewardFrame = frame.RewardFrames and frame.RewardFrames[i] or CreateFrame("FRAME", nil, frame, "InvasionAlertFrameRewardTemplate");
+
+		SetPortraitToTexture(rewardFrame.texture, "Interface\\Icons\\inv_misc_coin_02");
+		rewardFrame.itemID = nil;
+		rewardFrame.money = money;
+		rewardFrame.xp = nil;
+		rewardFrame:Show();
+
+		numUsedRewardFrames = numUsedRewardFrames + 1;
+	end
+
+	if xp > 0 and UnitLevel("player") < MAX_PLAYER_LEVEL then
+		local rewardFrame = frame.RewardFrames and frame.RewardFrames[i] or CreateFrame("FRAME", nil, frame, "InvasionAlertFrameRewardTemplate");
+
+		SetPortraitToTexture(rewardFrame.texture, "Interface\\Icons\\xp_icon");
+		rewardFrame.itemID = nil;
+		rewardFrame.money = nil;
+		rewardFrame.xp = xp;
+		rewardFrame:Show();
+
+		numUsedRewardFrames = numUsedRewardFrames + 1;
+	end
+
+	if rewardItemID then
+		local rewardFrame = frame.RewardFrames and frame.RewardFrames[numUsedRewardFrames + 1] or CreateFrame("FRAME", nil, frame, "InvasionAlertFrameRewardTemplate");
+		SetPortraitToTexture(rewardFrame.texture, rewardTexture);
+		rewardFrame.itemID = rewardItemID;
+		rewardFrame.money = nil;
+		rewardFrame.xp = nil;
+		rewardFrame:Show();
+
+		numUsedRewardFrames = numUsedRewardFrames + 1;
+	end
+
+	if frame.RewardFrames then
+		local SPACING = 36;
+		for i = 1, numUsedRewardFrames do
+			if frame.RewardFrames[i - 1] then
+				frame.RewardFrames[i]:SetPoint("CENTER", frame.RewardFrames[i - 1], "CENTER", SPACING, 0);
+			else
+				frame.RewardFrames[i]:SetPoint("TOP", frame, "TOP", -SPACING / 2 * numUsedRewardFrames + 41, 8);
+			end
+		end
+
+		for i = numUsedRewardFrames + 1, #frame.RewardFrames do
+			frame.RewardFrames[i]:Hide();
+		end
+	end
+end
+
+function InvasionAlertFrameReward_OnEnter(self)
+	AlertFrame_StopOutAnimation(self:GetParent());
+
+	GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+	if self.itemID then
+		GameTooltip:SetItemByID(self.itemID);
+	elseif self.money then
+		GameTooltip:AddLine(YOU_RECEIVED);
+		SetTooltipMoney(GameTooltip, self.money, nil);
+	elseif self.xp then
+		GameTooltip:AddLine(YOU_RECEIVED);
+		GameTooltip:AddLine(BONUS_OBJECTIVE_EXPERIENCE_FORMAT:format(self.xp), HIGHLIGHT_FONT_COLOR:GetRGB());
+	end
+	GameTooltip:Show();
+end
+
+InvasionAlertSystem = AlertFrame:AddSimpleAlertFrameSubSystem(ScenarioLegionInvasionAlertFrame, ScenarioLegionInvasionAlertFrame_SetUp);
 
 -- [[ AchievementAlertFrame ]] --
 function AchievementAlertFrame_SetUp(frame, achievementID, alreadyEarned)

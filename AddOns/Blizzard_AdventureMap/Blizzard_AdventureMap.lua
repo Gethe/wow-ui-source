@@ -34,7 +34,7 @@ end
 
 function AdventureMapMixin:AddStandardDataProviders()
 	self:AddDataProvider(CreateFromMixins(AdventureMap_ZoneLabelDataProviderMixin));
-	self:AddDataProvider(CreateFromMixins(AdventureMap_ZoneSummaryProviderMixin));
+	--self:AddDataProvider(CreateFromMixins(AdventureMap_ZoneSummaryProviderMixin));
 	self:AddDataProvider(CreateFromMixins(AdventureMap_QuestChoiceDataProviderMixin));
 	self:AddDataProvider(CreateFromMixins(AdventureMap_QuestOfferDataProviderMixin));
 	self:AddDataProvider(CreateFromMixins(AdventureMap_MissionDataProviderMixin));

@@ -1,17 +1,21 @@
+BonusObjectiveTrackerModuleMixin = {};
 
-BONUS_OBJECTIVE_TRACKER_MODULE = ObjectiveTracker_GetModuleInfoTable();
-BONUS_OBJECTIVE_TRACKER_MODULE.updateReasonModule = OBJECTIVE_TRACKER_UPDATE_MODULE_BONUS_OBJECTIVE;
-BONUS_OBJECTIVE_TRACKER_MODULE.updateReasonEvents = OBJECTIVE_TRACKER_UPDATE_QUEST + OBJECTIVE_TRACKER_UPDATE_TASK_ADDED + OBJECTIVE_TRACKER_UPDATE_SCENARIO + OBJECTIVE_TRACKER_UPDATE_SCENARIO_NEW_STAGE + OBJECTIVE_TRACKER_UPDATE_SCENARIO_BONUS_DELAYED;
-BONUS_OBJECTIVE_TRACKER_MODULE.blockTemplate = "BonusObjectiveTrackerBlockTemplate";
-BONUS_OBJECTIVE_TRACKER_MODULE.blockType = "ScrollFrame";
-BONUS_OBJECTIVE_TRACKER_MODULE.freeBlocks = { };
-BONUS_OBJECTIVE_TRACKER_MODULE.usedBlocks = { };
-BONUS_OBJECTIVE_TRACKER_MODULE.freeLines = { };
-BONUS_OBJECTIVE_TRACKER_MODULE.lineTemplate = "BonusObjectiveTrackerLineTemplate";
-BONUS_OBJECTIVE_TRACKER_MODULE.blockOffsetX = -20;
-BONUS_OBJECTIVE_TRACKER_MODULE.blockOffsetY = -6;
-BONUS_OBJECTIVE_TRACKER_MODULE.fromHeaderOffsetY = -8;
-BONUS_OBJECTIVE_TRACKER_MODULE.blockPadding = 3;	-- need some extra room so scrollframe doesn't cut tails off gjpqy
+function CreateBonusObjectiveTrackerModule()
+	local module = Mixin(ObjectiveTracker_GetModuleInfoTable(), BonusObjectiveTrackerModuleMixin);
+
+	module.blockTemplate = "BonusObjectiveTrackerBlockTemplate";
+	module.blockType = "ScrollFrame";
+	module.freeBlocks = { };
+	module.usedBlocks = { };
+	module.freeLines = { };
+	module.lineTemplate = "BonusObjectiveTrackerLineTemplate";
+	module.blockOffsetX = -20;
+	module.blockOffsetY = -6;
+	module.fromHeaderOffsetY = -8;
+	module.blockPadding = 3;	-- need some extra room so scrollframe doesn't cut tails off gjpqy
+
+	return module;
+end
 
 local COMPLETED_BONUS_DATA = { };
 local COMPLETED_SUPERSEDED_BONUS_OBJECTIVES = { };
@@ -19,7 +23,7 @@ local COMPLETED_SUPERSEDED_BONUS_OBJECTIVES = { };
 -- if multiple bonus objectives are added at the same time, only one will be in the banner 
 local BANNER_BONUS_OBJECTIVE_ID;
 
-function BONUS_OBJECTIVE_TRACKER_MODULE:OnFreeBlock(block)
+function BonusObjectiveTrackerModuleMixin:OnFreeBlock(block)
 	if ( block.state == "LEAVING" ) then
 		block.AnimOut:Stop();
 	elseif ( block.state == "ENTERING" ) then
@@ -27,7 +31,7 @@ function BONUS_OBJECTIVE_TRACKER_MODULE:OnFreeBlock(block)
 	end
 	if ( COMPLETED_BONUS_DATA[block.id] ) then
 		COMPLETED_BONUS_DATA[block.id] = nil;
-		local rewardsFrame = ObjectiveTrackerBonusRewardsFrame;
+		local rewardsFrame = block.module.rewardsFrame;
 		if ( rewardsFrame.id == block.id ) then
 			rewardsFrame:Hide();
 			rewardsFrame.Anim:Stop();
@@ -49,7 +53,7 @@ function BONUS_OBJECTIVE_TRACKER_MODULE:OnFreeBlock(block)
 	block.posIndex = nil;
 end
 
-function BONUS_OBJECTIVE_TRACKER_MODULE:OnFreeLine(line)
+function BonusObjectiveTrackerModuleMixin:OnFreeLine(line)
 	if ( line.finished ) then
 		line.CheckFlash.Anim:Stop();
 		line.finished = nil;
@@ -61,7 +65,26 @@ end
 -- *****************************************************************************************************
 
 function BonusObjectiveTracker_OnHeaderLoad(self)
-	BONUS_OBJECTIVE_TRACKER_MODULE:SetHeader(self, TRACKER_HEADER_BONUS_OBJECTIVES, 0);
+	local module = CreateBonusObjectiveTrackerModule();
+	
+	module.rewardsFrame = self.RewardsFrame;
+	module.ShowWorldQuests = self.ShowWorldQuests;
+	module.DefaultHeaderText = self.DefaultHeaderText;
+
+	if ( module.ShowWorldQuests ) then
+		module.updateReasonModule = OBJECTIVE_TRACKER_UPDATE_MODULE_WORLD_QUEST;
+		module.updateReasonEvents = OBJECTIVE_TRACKER_UPDATE_QUEST + OBJECTIVE_TRACKER_UPDATE_WORLD_QUEST_ADDED;
+	else
+		module.updateReasonModule = OBJECTIVE_TRACKER_UPDATE_MODULE_BONUS_OBJECTIVE;
+		module.updateReasonEvents = OBJECTIVE_TRACKER_UPDATE_QUEST + OBJECTIVE_TRACKER_UPDATE_TASK_ADDED + OBJECTIVE_TRACKER_UPDATE_SCENARIO + OBJECTIVE_TRACKER_UPDATE_SCENARIO_NEW_STAGE + OBJECTIVE_TRACKER_UPDATE_SCENARIO_BONUS_DELAYED;
+	end
+
+	self.module = module;
+	_G[self.ModuleName] = module;
+	self.RewardsFrame.module = module;
+	
+
+	self.module:SetHeader(self, module.DefaultHeaderText, 0);
 	self.height = OBJECTIVE_TRACKER_HEADER_HEIGHT;
 	
 	self:RegisterEvent("CRITERIA_COMPLETE");
@@ -75,7 +98,7 @@ function BonusObjectiveTracker_OnBlockAnimInFinished(self)
 	if ( block.id > 0 ) then
 		local isInArea, isOnMap = GetTaskInfo(block.id);
 		if ( not isInArea ) then
-			ObjectiveTracker_Update(OBJECTIVE_TRACKER_UPDATE_MODULE_BONUS_OBJECTIVE);
+			ObjectiveTracker_Update(block.module.updateReasonModule);
 			return;
 		end
 	end
@@ -88,19 +111,19 @@ function BonusObjectiveTracker_OnBlockAnimOutFinished(self)
 	local block = self:GetParent();
 	block:SetAlpha(0);
 	block.used = nil;
-	BONUS_OBJECTIVE_TRACKER_MODULE:FreeBlock(block);
+	block.module:FreeBlock(block);
 	ObjectiveTracker_Update(OBJECTIVE_TRACKER_UPDATE_ALL);
 end
 
 function BonusObjectiveTracker_OnBlockEnter(block)
-	BONUS_OBJECTIVE_TRACKER_MODULE:OnBlockHeaderEnter(block);
+	block.module:OnBlockHeaderEnter(block);
 	BonusObjectiveTracker_ShowRewardsTooltip(block);
 end
 
 function BonusObjectiveTracker_OnBlockLeave(block)
-	BONUS_OBJECTIVE_TRACKER_MODULE:OnBlockHeaderLeave(block);
+	block.module:OnBlockHeaderLeave(block);
 	GameTooltip:Hide();
-	BONUS_OBJECTIVE_TRACKER_MODULE.tooltipBlock = nil;
+	block.module.tooltipBlock = nil;
 end
 
 function BonusObjectiveTracker_OnEvent(self, event, ...)
@@ -112,7 +135,7 @@ function BonusObjectiveTracker_OnEvent(self, event, ...)
 				local bonusStepIndex = tblBonusSteps[i];
 				local _, _, numCriteria = C_Scenario.GetStepInfo(bonusStepIndex);
 				local blockKey = -bonusStepIndex;	-- so it won't collide with quest IDs
-				local block = BONUS_OBJECTIVE_TRACKER_MODULE:GetBlock(blockKey);
+				local block = self.module:GetBlock(blockKey);
 				if( block ) then
 					for criteriaIndex = 1, numCriteria do
 						local _, _, _, _, _, _, _, _, criteriaID = C_Scenario.GetCriteriaInfoByStep(bonusStepIndex, criteriaIndex);		
@@ -137,6 +160,11 @@ end
 function BonusObjectiveTracker_OnTaskCompleted(questID, xp, money)
 	-- make sure we're already displaying this
 	local block = BONUS_OBJECTIVE_TRACKER_MODULE:GetExistingBlock(questID);
+	if ( block ) then
+		BonusObjectiveTracker_AddReward(questID, block, xp, money);
+	end
+
+	local block = WORLD_QUEST_TRACKER_MODULE:GetExistingBlock(questID);
 	if ( block ) then
 		BonusObjectiveTracker_AddReward(questID, block, xp, money);
 	end
@@ -227,12 +255,12 @@ function BonusObjectiveTracker_AddReward(questID, block, xp, money)
 	else
 		local oldPosIndex = COMPLETED_BONUS_DATA[block.id].posIndex;
 		COMPLETED_BONUS_DATA[block.id] = nil;
-		BonusObjectiveTracker_OnAnimateNextReward(oldPosIndex);
+		BonusObjectiveTracker_OnAnimateNextReward(block.module, oldPosIndex);
 	end
 end
 
 function BonusObjectiveTracker_AnimateReward(block)
-	local rewardsFrame = ObjectiveTrackerBonusRewardsFrame;
+	local rewardsFrame = block.module.rewardsFrame;
 	if ( not rewardsFrame.id ) then
 		local data = COMPLETED_BONUS_DATA[block.id];
 		if ( not data ) then
@@ -287,21 +315,21 @@ function BonusObjectiveTracker_AnimateReward(block)
 end
 
 function BonusObjectiveTracker_OnAnimateRewardDone(self)
-	local rewardsFrame = ObjectiveTrackerBonusRewardsFrame;
+	local rewardsFrame = self:GetParent();
 	-- kill the data
 	local oldPosIndex = COMPLETED_BONUS_DATA[rewardsFrame.id].posIndex;
 	COMPLETED_BONUS_DATA[rewardsFrame.id] = nil;
 	rewardsFrame.id = nil;
 	
-	BonusObjectiveTracker_OnAnimateNextReward(oldPosIndex);
+	BonusObjectiveTracker_OnAnimateNextReward(rewardsFrame.module, oldPosIndex);
 end
 
-function BonusObjectiveTracker_OnAnimateNextReward(oldPosIndex)
-	local rewardsFrame = ObjectiveTrackerBonusRewardsFrame;
+function BonusObjectiveTracker_OnAnimateNextReward(module, oldPosIndex)
+	local rewardsFrame = module.rewardsFrame;
 	-- look for another reward to animate and fix positions
 	local nextAnimBlock;
 	for id, data in pairs(COMPLETED_BONUS_DATA) do
-		local block = BONUS_OBJECTIVE_TRACKER_MODULE:GetExistingBlock(id);
+		local block = module:GetExistingBlock(id);
 		-- make sure we're still showing this
 		if ( block ) then
 			nextAnimBlock = block;
@@ -312,7 +340,7 @@ function BonusObjectiveTracker_OnAnimateNextReward(oldPosIndex)
 		end
 	end
 	-- update tracker to remove dead bonus objective
-	ObjectiveTracker_Update(OBJECTIVE_TRACKER_UPDATE_MODULE_BONUS_OBJECTIVE);
+	ObjectiveTracker_Update(module.updateReasonModule);
 	-- animate if we have something, otherwise clear it all
 	if ( nextAnimBlock ) then
 		BonusObjectiveTracker_AnimateReward(nextAnimBlock);
@@ -353,7 +381,8 @@ function BonusObjectiveTracker_ShowRewardsTooltip(block)
 	if ( not HaveQuestData(questID) ) then
 		GameTooltip:AddLine(RETRIEVING_DATA, RED_FONT_COLOR.r, RED_FONT_COLOR.g, RED_FONT_COLOR.b);
 	else	
-		GameTooltip:AddLine(BONUS_OBJECTIVE_TOOLTIP_DESCRIPTION, 1, 1, 1, 1);
+		local isWorldQuest = block.module.ShowWorldQuests;
+		GameTooltip:AddLine(isWorldQuest and WORLD_QUEST_TOOLTIP_DESCRIPTION or BONUS_OBJECTIVE_TOOLTIP_DESCRIPTION, 1, 1, 1, 1);
 		GameTooltip:AddLine(" ");
 		-- xp
 		local xp = GetQuestLogRewardXP(questID);
@@ -393,7 +422,7 @@ function BonusObjectiveTracker_ShowRewardsTooltip(block)
 		end
 	end
 	GameTooltip:Show();
-	BONUS_OBJECTIVE_TRACKER_MODULE.tooltipBlock = block;
+	block.module.tooltipBlock = block;
 end
 
 -- *****************************************************************************************************
@@ -461,9 +490,9 @@ function BonusObjectiveTracker_GetSupersedingStep(index)
 	end
 end
 
-local function UpdateScenarioBonusObjectives(BlocksFrame)
+local function UpdateScenarioBonusObjectives(module)
 	if ( C_Scenario.IsInScenario() ) then
-		BONUS_OBJECTIVE_TRACKER_MODULE.Header.animateReason = OBJECTIVE_TRACKER_UPDATE_SCENARIO_NEW_STAGE + OBJECTIVE_TRACKER_UPDATE_SCENARIO_BONUS_DELAYED;
+		module.Header.animateReason = OBJECTIVE_TRACKER_UPDATE_SCENARIO_NEW_STAGE + OBJECTIVE_TRACKER_UPDATE_SCENARIO_BONUS_DELAYED;
 		local tblBonusSteps = C_Scenario.GetBonusSteps();
 		-- two steps
 		local supersededToRemove = {};
@@ -500,15 +529,15 @@ local function UpdateScenarioBonusObjectives(BlocksFrame)
 			local bonusStepIndex = tblBonusSteps[i];
 			local name, description, numCriteria, stepFailed, isBonusStep, isForCurrentStepOnly = C_Scenario.GetStepInfo(bonusStepIndex);
 			local blockKey = -bonusStepIndex;	-- so it won't collide with quest IDs
-			local existingBlock = BONUS_OBJECTIVE_TRACKER_MODULE:GetExistingBlock(blockKey);
-			local block = BONUS_OBJECTIVE_TRACKER_MODULE:GetBlock(blockKey);			
+			local existingBlock = module:GetExistingBlock(blockKey);
+			local block = module:GetBlock(blockKey);			
 			local stepFinished = true;
 			for criteriaIndex = 1, numCriteria do
 				local criteriaString, criteriaType, criteriaCompleted, quantity, totalQuantity, flags, assetID, quantityString, criteriaID, duration, elapsed, criteriaFailed = C_Scenario.GetCriteriaInfoByStep(bonusStepIndex, criteriaIndex);		
 				if ( criteriaString ) then
 					if ( criteriaCompleted ) then
 						local existingLine = block.lines[criteriaIndex];
-						BONUS_OBJECTIVE_TRACKER_MODULE:AddObjective(block, criteriaIndex, criteriaString, nil, nil, nil, OBJECTIVE_TRACKER_COLOR["Complete"]);
+						module:AddObjective(block, criteriaIndex, criteriaString, nil, nil, nil, OBJECTIVE_TRACKER_COLOR["Complete"]);
 						local line = block.currentLine;
 						if ( existingLine and not line.finished ) then
 							line.Glow.Anim:Play();
@@ -517,16 +546,16 @@ local function UpdateScenarioBonusObjectives(BlocksFrame)
 						line.finished = true;
 					elseif ( criteriaFailed ) then
 						stepFinished = false;
-						BONUS_OBJECTIVE_TRACKER_MODULE:AddObjective(block, criteriaIndex, criteriaString, nil, nil, nil, OBJECTIVE_TRACKER_COLOR["Failed"]);
+						module:AddObjective(block, criteriaIndex, criteriaString, nil, nil, nil, OBJECTIVE_TRACKER_COLOR["Failed"]);
 					else
 						stepFinished = false;
-						BONUS_OBJECTIVE_TRACKER_MODULE:AddObjective(block, criteriaIndex, criteriaString);
+						module:AddObjective(block, criteriaIndex, criteriaString);
 					end
 					-- timer bar
 					if ( duration > 0 and elapsed <= duration and not (criteriaFailed or criteriaCompleted) ) then
-						BONUS_OBJECTIVE_TRACKER_MODULE:AddTimerBar(block, block.currentLine, duration, GetTime() - elapsed);
+						module:AddTimerBar(block, block.currentLine, duration, GetTime() - elapsed);
 					elseif ( block.currentLine.TimerBar ) then
-						BONUS_OBJECTIVE_TRACKER_MODULE:FreeTimerBar(block, block.currentLine);
+						module:FreeTimerBar(block, block.currentLine);
 					end
 					if ( criteriaIndex > 1 ) then
 						local line = block.currentLine;
@@ -554,7 +583,7 @@ local function UpdateScenarioBonusObjectives(BlocksFrame)
 				end
 				firstLine.Icon:Show();
 			end
-			block:SetHeight(block.height + BONUS_OBJECTIVE_TRACKER_MODULE.blockPadding);
+			block:SetHeight(block.height + module.blockPadding);
 
 			if ( not ObjectiveTracker_AddBlock(block) ) then
 				-- there was no room to show the header and the block, bail
@@ -563,7 +592,7 @@ local function UpdateScenarioBonusObjectives(BlocksFrame)
 			end
 
 			block:Show();
-			BONUS_OBJECTIVE_TRACKER_MODULE:FreeUnusedLines(block);
+			module:FreeUnusedLines(block);
 
 			if ( block.state ~= "FINISHED" ) then
 				if ( not existingBlock and isForCurrentStepOnly ) then
@@ -578,136 +607,167 @@ local function UpdateScenarioBonusObjectives(BlocksFrame)
 	end
 end
 
-local function UpdateQuestBonusObjectives(BlocksFrame)
-	BONUS_OBJECTIVE_TRACKER_MODULE.Header.animateReason = OBJECTIVE_TRACKER_UPDATE_TASK_ADDED;
+local function TryAddingTimeLeftLine(module, block, questID)
+	if ( C_TaskQuest.GetQuestTimeLeftMinutes(questID) ) then
+		local function GetTimeLeftString()
+			local timeLeftMinutes = C_TaskQuest.GetQuestTimeLeftMinutes(questID);
+			if ( timeLeftMinutes < WORLD_QUESTS_TIME_CRITICAL_MINUTES ) then
+				local timeString = SecondsToTime(timeLeftMinutes * 60);
+				return BONUS_OBJECTIVE_TIME_LEFT:format(timeString)
+			end
+			return " ";
+		end
+
+		module:AddObjective(block, "TimeLeft", GetTimeLeftString, nil, nil, nil, OBJECTIVE_TRACKER_COLOR["TimeLeft"]);
+	end
+end
+
+local function UpdateQuestBonusObjectives(module)
+	module.Header.animateReason = OBJECTIVE_TRACKER_UPDATE_TASK_ADDED;
 	local tasksTable = InternalGetTasksTable();
 	local displayObjectiveHeader = false;
 	for i = 1, #tasksTable do
 		local questID = tasksTable[i];
-		local isInArea, isOnMap, numObjectives, taskName, displayAsObjective = InternalGetTaskInfo(questID);
-		-- show task if we're in the area or on the same map and we were displaying it before
-		local existingTask = BONUS_OBJECTIVE_TRACKER_MODULE:GetExistingBlock(questID);
-		if ( isInArea or ( isOnMap and existingTask ) ) then
-			local block = BONUS_OBJECTIVE_TRACKER_MODULE:GetBlock(questID);
-			-- module header?
-			if ( displayAsObjective ) then
-				BONUS_OBJECTIVE_TRACKER_MODULE.headerText = TRACKER_HEADER_OBJECTIVE;
-			end
-			-- block header? add it as objectiveIndex 0
-			if ( taskName ) then
-				BONUS_OBJECTIVE_TRACKER_MODULE:AddObjective(block, 0, taskName, nil, nil, nil, OBJECTIVE_TRACKER_COLOR["Header"]);
-			end
-			local taskFinished = true;
-			for objectiveIndex = 1, numObjectives do
-				local text, objectiveType, finished = InternalGetQuestObjectiveInfo(questID, objectiveIndex);
-				if ( text ) then
-					if ( finished ) then
-						local existingLine = block.lines[objectiveIndex];
-						BONUS_OBJECTIVE_TRACKER_MODULE:AddObjective(block, objectiveIndex, text, nil, nil, nil, OBJECTIVE_TRACKER_COLOR["Complete"]);
-						local line = block.currentLine;
-						if ( existingLine and not line.finished ) then
-							line.Glow.Anim:Play();
-							line.Sheen.Anim:Play();
+		if ( module.ShowWorldQuests == QuestMapFrame_IsQuestWorldQuest(questID) ) then
+			local isInArea, isOnMap, numObjectives, taskName, displayAsObjective = InternalGetTaskInfo(questID);
+			-- show task if we're in the area or on the same map and we were displaying it before
+			local existingTask = module:GetExistingBlock(questID);
+			if ( isInArea or ( isOnMap and existingTask ) ) then
+				local block = module:GetBlock(questID);
+				-- module header?
+				if ( displayAsObjective and not module.ShowWorldQuests ) then
+					module.headerText = TRACKER_HEADER_OBJECTIVE;
+				end
+				-- block header? add it as objectiveIndex 0
+				if ( taskName ) then
+					module:AddObjective(block, 0, taskName, nil, nil, nil, OBJECTIVE_TRACKER_COLOR["Header"]);
+				end
+				local taskFinished = true;
+				local hasAddedTimeLeft = false;
+				for objectiveIndex = 1, numObjectives do
+					local text, objectiveType, finished = InternalGetQuestObjectiveInfo(questID, objectiveIndex);
+					if ( text ) then
+						if ( finished ) then
+							local existingLine = block.lines[objectiveIndex];
+							module:AddObjective(block, objectiveIndex, text, nil, nil, nil, OBJECTIVE_TRACKER_COLOR["Complete"]);
+							local line = block.currentLine;
+							if ( existingLine and not line.finished ) then
+								line.Glow.Anim:Play();
+								line.Sheen.Anim:Play();
+							end
+							line.finished = true;
+						else
+							taskFinished = false;
+							module:AddObjective(block, objectiveIndex, text);
 						end
-						line.finished = true;
-					else
-						taskFinished = false;
-						BONUS_OBJECTIVE_TRACKER_MODULE:AddObjective(block, objectiveIndex, text);
+						if ( objectiveIndex > 1 ) then
+							local line = block.currentLine;
+							line.Icon:Hide();
+						end
 					end
-					if ( objectiveIndex > 1 ) then
-						local line = block.currentLine;
-						line.Icon:Hide();
-					end
-				end
-				if ( objectiveType == "progressbar" ) then
-					local progressBar = BONUS_OBJECTIVE_TRACKER_MODULE:AddProgressBar(block, block.currentLine, questID, finished);
-					if ( OBJECTIVE_TRACKER_UPDATE_REASON == OBJECTIVE_TRACKER_UPDATE_TASK_ADDED ) then
-						progressBar.Bar.AnimIn:Play();
-					end
-				end
-			end
-			-- first line is either going to display the nub or the check
-			local firstLine = block.lines[0] or block.lines[1];
-			if ( firstLine ) then
-				if ( taskFinished ) then
-					firstLine.Icon:SetAtlas("Tracker-Check", true);
-					-- play anim if needed
-					if ( existingTask and not block.finished ) then
-						firstLine.CheckFlash.Anim:Play();
-					end
-					block.finished = true;
-				else
-					firstLine.Icon:SetAtlas("Objective-Nub", true);
-				end
-				firstLine.Icon:Show();
-			end
-			block:SetHeight(block.height + BONUS_OBJECTIVE_TRACKER_MODULE.blockPadding);
-			
-			if ( not ObjectiveTracker_AddBlock(block) ) then
-				-- there was no room to show the header and the block, bail
-				block.used = false;
-				break;
-			end
+					if ( objectiveType == "progressbar" ) then
+						if ( module.ShowWorldQuests and not hasAddedTimeLeft ) then
+							-- Add time left (if any) right before the progress bar
+							TryAddingTimeLeftLine(module, block, questID);
+							hasAddedTimeLeft = true;
+						end
 
-			block.posIndex = i;
-			block:Show();
-			BONUS_OBJECTIVE_TRACKER_MODULE:FreeUnusedLines(block);
-			
-			if ( isInArea ) then
-				if ( questID == OBJECTIVE_TRACKER_UPDATE_ID ) then
-					BonusObjectiveTracker_SetBlockState(block, "ENTERING");
-				else
-					BonusObjectiveTracker_SetBlockState(block, "PRESENT");
+						local progressBar = module:AddProgressBar(block, block.currentLine, questID, finished);
+						if ( OBJECTIVE_TRACKER_UPDATE_REASON == OBJECTIVE_TRACKER_UPDATE_TASK_ADDED or OBJECTIVE_TRACKER_UPDATE_REASON == OBJECTIVE_TRACKER_UPDATE_WORLD_QUEST_ADDED ) then
+							progressBar.Bar.AnimIn:Play();
+						end
+					end
 				end
-			elseif ( existingTask ) then
-				BonusObjectiveTracker_SetBlockState(block, "LEAVING");
+				if ( module.ShowWorldQuests and not hasAddedTimeLeft ) then
+					-- No progress bar, try adding it at the end
+					TryAddingTimeLeftLine(module, block, questID);
+				end
+				-- first line is either going to display the nub or the check
+				local firstLine = block.lines[0] or block.lines[1];
+				if ( firstLine ) then
+					if ( taskFinished ) then
+						firstLine.Icon:SetAtlas("Tracker-Check", true);
+						-- play anim if needed
+						if ( existingTask and not block.finished ) then
+							firstLine.CheckFlash.Anim:Play();
+						end
+						block.finished = true;
+					else
+						firstLine.Icon:SetAtlas("Objective-Nub", true);
+					end
+					firstLine.Icon:Show();
+				end
+				block:SetHeight(block.height + module.blockPadding);
+			
+				if ( not ObjectiveTracker_AddBlock(block) ) then
+					-- there was no room to show the header and the block, bail
+					block.used = false;
+					break;
+				end
+
+				block.posIndex = i;
+				block:Show();
+				module:FreeUnusedLines(block);
+			
+				if ( isInArea ) then
+					if ( questID == OBJECTIVE_TRACKER_UPDATE_ID ) then
+						BonusObjectiveTracker_SetBlockState(block, "ENTERING");
+					else
+						BonusObjectiveTracker_SetBlockState(block, "PRESENT");
+					end
+				elseif ( existingTask ) then
+					BonusObjectiveTracker_SetBlockState(block, "LEAVING");
+				end
 			end
 		end
 	end
-	if ( OBJECTIVE_TRACKER_UPDATE_REASON == OBJECTIVE_TRACKER_UPDATE_TASK_ADDED ) then
+	if ( OBJECTIVE_TRACKER_UPDATE_REASON == OBJECTIVE_TRACKER_UPDATE_TASK_ADDED or OBJECTIVE_TRACKER_UPDATE_REASON == OBJECTIVE_TRACKER_UPDATE_WORLD_QUEST_ADDED ) then
 		PlaySound("UI_Scenario_Stage_End");
-	end	
+	end
 end
 
-function BONUS_OBJECTIVE_TRACKER_MODULE:Update()
+function BonusObjectiveTrackerModuleMixin:Update()
 	-- ugh, cross-module dependance
-	if ( SCENARIO_TRACKER_MODULE.BlocksFrame.slidingAction and BONUS_OBJECTIVE_TRACKER_MODULE.contentsHeight == 0 ) then
+	if ( SCENARIO_TRACKER_MODULE.BlocksFrame.slidingAction and self.contentsHeight == 0 ) then
 		return;
 	end
 
-	if ( OBJECTIVE_TRACKER_UPDATE_REASON == OBJECTIVE_TRACKER_UPDATE_TASK_ADDED ) then
+	if ( OBJECTIVE_TRACKER_UPDATE_REASON == OBJECTIVE_TRACKER_UPDATE_TASK_ADDED or OBJECTIVE_TRACKER_UPDATE_REASON == OBJECTIVE_TRACKER_UPDATE_WORLD_QUEST_ADDED ) then
 		if ( BANNER_BONUS_OBJECTIVE_ID == OBJECTIVE_TRACKER_UPDATE_ID ) then
 			-- we just finished the banner for this, clear the data so the block displays
 			BANNER_BONUS_OBJECTIVE_ID = nil;
-		elseif ( not BONUS_OBJECTIVE_TRACKER_MODULE:GetExistingBlock(OBJECTIVE_TRACKER_UPDATE_ID) and TopBannerManager_IsIdle() ) then
+		elseif ( not self:GetExistingBlock(OBJECTIVE_TRACKER_UPDATE_ID) and TopBannerManager_IsIdle() ) then
 			-- if we don't already have a block for this and there's no other banner playing we should do the banner
 			TopBannerManager_Show(ObjectiveTrackerBonusBannerFrame, OBJECTIVE_TRACKER_UPDATE_ID);
 		end
 	end
 
-	BONUS_OBJECTIVE_TRACKER_MODULE:BeginLayout();
-	BONUS_OBJECTIVE_TRACKER_MODULE.headerText = TRACKER_HEADER_BONUS_OBJECTIVES;
+	self:BeginLayout();
+	self.headerText = self.DefaultHeaderText;
 
-	UpdateScenarioBonusObjectives(BlocksFrame);
-	UpdateQuestBonusObjectives(BlocksFrame);
-	if ( BONUS_OBJECTIVE_TRACKER_MODULE.tooltipBlock ) then
-		BonusObjectiveTracker_ShowRewardsTooltip(BONUS_OBJECTIVE_TRACKER_MODULE.tooltipBlock);
+	if ( not self.ShowWorldQuests ) then
+		UpdateScenarioBonusObjectives(self);
+	end
+
+	UpdateQuestBonusObjectives(self);
+	if ( self.tooltipBlock ) then
+		BonusObjectiveTracker_ShowRewardsTooltip(self.tooltipBlock);
 	end
 	
-	if ( BONUS_OBJECTIVE_TRACKER_MODULE.firstBlock ) then
+	if ( self.firstBlock ) then
 		-- update module header text (certain bonus objectives can force this to change)
-		BONUS_OBJECTIVE_TRACKER_MODULE.Header.Text:SetText(BONUS_OBJECTIVE_TRACKER_MODULE.headerText);
+		self.Header.Text:SetText(self.headerText);
 		-- shadow anim
-		local shadowAnim = BONUS_OBJECTIVE_TRACKER_MODULE.Header.ShadowAnim;
-		if ( BONUS_OBJECTIVE_TRACKER_MODULE.Header.animating and not shadowAnim:IsPlaying() ) then
-			local distance = BONUS_OBJECTIVE_TRACKER_MODULE.contentsAnimHeight - 8;
+		local shadowAnim = self.Header.ShadowAnim;
+		if ( self.Header.animating and not shadowAnim:IsPlaying() ) then
+			local distance = self.contentsAnimHeight - 8;
 			shadowAnim.TransAnim:SetOffset(0, -distance);
 			shadowAnim.TransAnim:SetDuration(distance * 0.33 / 50);
 			shadowAnim:Play();
 		end
 	end
 
-	BONUS_OBJECTIVE_TRACKER_MODULE:EndLayout();
+	self:EndLayout();
 end
 
 function BonusObjectiveTracker_SetBlockState(block, state, force)
@@ -737,7 +797,7 @@ function BonusObjectiveTracker_SetBlockState(block, state, force)
 			block:SetAlpha(0);
 			local anim = block.AnimIn;
 			anim.TransOut:SetOffset((maxStringWidth + 17) * -1, 0);				
-			anim.TransOut:SetEndDelay((BONUS_OBJECTIVE_TRACKER_MODULE.contentsHeight - OBJECTIVE_TRACKER_HEADER_HEIGHT) * 0.33 / 50);					
+			anim.TransOut:SetEndDelay((block.module.contentsHeight - OBJECTIVE_TRACKER_HEADER_HEIGHT) * 0.33 / 50);					
 			anim.TransIn:SetDuration(0.33 * (maxStringWidth + 17)/ 192);
 			anim.TransIn:SetOffset((maxStringWidth + 17), 0); 
 			anim:Play();
@@ -770,7 +830,7 @@ end
 -- *****************************************************************************************************
 -- ***** PROGRESS BAR
 -- *****************************************************************************************************
-function BONUS_OBJECTIVE_TRACKER_MODULE:AddProgressBar(block, line, questID, finished)
+function BonusObjectiveTrackerModuleMixin:AddProgressBar(block, line, questID, finished)
 	local progressBar = self.usedProgressBars[block] and self.usedProgressBars[block][line];
 	if ( not progressBar ) then
 		local numFreeProgressBars = #self.freeProgressBars;
@@ -847,7 +907,7 @@ function BONUS_OBJECTIVE_TRACKER_MODULE:AddProgressBar(block, line, questID, fin
 	return progressBar;
 end
 
-function BONUS_OBJECTIVE_TRACKER_MODULE:FreeProgressBar(block, line)
+function BonusObjectiveTrackerModuleMixin:FreeProgressBar(block, line)
 	local progressBar = line.ProgressBar;
 	if ( progressBar ) then
 		self.usedProgressBars[block][line] = nil;
@@ -930,6 +990,8 @@ function ObjectiveTrackerBonusBannerFrame_PlayBanner(self, questID)
 	end
 	self.Title:SetText(questTitle);
 	self.TitleFlash:SetText(questTitle);
+	local isWorldQuest = QuestMapFrame_IsQuestWorldQuest(questID);
+	self.BonusLabel:SetText(isWorldQuest and WORLD_QUEST_BANNER or BONUS_OBJECTIVE_BANNER);
 	-- offsets for anims
 	local trackerFrame = ObjectiveTrackerFrame;
 	local xOffset = trackerFrame:GetLeft() - self:GetRight();
@@ -954,7 +1016,7 @@ function ObjectiveTrackerBonusBannerFrame_PlayBanner(self, questID)
 	self.Anim:Play();
 	BANNER_BONUS_OBJECTIVE_ID = questID;
 	-- timer to put the bonus objective in the tracker
-	C_Timer.After(2.66, function() ObjectiveTracker_Update(OBJECTIVE_TRACKER_UPDATE_TASK_ADDED, BANNER_BONUS_OBJECTIVE_ID); end);
+	C_Timer.After(2.66, function() if BANNER_BONUS_OBJECTIVE_ID == questID then ObjectiveTracker_Update(isWorldQuest and OBJECTIVE_TRACKER_UPDATE_WORLD_QUEST_ADDED or OBJECTIVE_TRACKER_UPDATE_TASK_ADDED, BANNER_BONUS_OBJECTIVE_ID); end end);
 end
 
 function ObjectiveTrackerBonusBannerFrame_StopBanner(self)

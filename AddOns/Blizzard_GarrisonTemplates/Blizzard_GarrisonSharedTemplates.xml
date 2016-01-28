@@ -39,32 +39,40 @@
 					<TexCoords left="1.0" right="0.0" top="0.0" bottom="1.0"/>
 				</Texture>
 			</Layer>
-			<Layer level="BACKGROUND" textureSubLevel="2">
-				<Texture parentKey="TopLeftGarrCorner" atlas="Garr_WoodFrameCorner" useAtlasSize="true">
-					<Anchors>
-						<Anchor point="TOPLEFT" x="2" y="-22"/>
-					</Anchors>
-				</Texture>
-				<Texture parentKey="TopRightGarrCorner" atlas="Garr_WoodFrameCorner" useAtlasSize="true">
-					<Anchors>
-						<Anchor point="TOPRIGHT" x="-4" y="-22"/>
-					</Anchors>
-					<TexCoords left="1.0" right="0.0" top="0.0" bottom="1.0"/>
-				</Texture>
-				<Texture parentKey="BottomLeftGarrCorner" atlas="Garr_WoodFrameCorner" useAtlasSize="true">
-					<Anchors>
-						<Anchor point="BOTTOMLEFT" x="2" y="2"/>
-					</Anchors>
-					<TexCoords left="0.0" right="1.0" top="1.0" bottom="0.0"/>
-				</Texture>
-				<Texture parentKey="BottomRightGarrCorner" atlas="Garr_WoodFrameCorner" useAtlasSize="true">
-					<Anchors>
-						<Anchor point="BOTTOMRIGHT" x="-4" y="2"/>
-					</Anchors>
-					<TexCoords left="1.0" right="0.0" top="1.0" bottom="0.0"/>
-				</Texture>
-			</Layer>
 		</Layers>
+		<Frames>
+			<!-- This frame is used to position the corner texutures above other frames (for example the scroll frame of the adventure map.)
+				The above textures can be put into this frame as well, but they have anchors via their parentKey, so don't want to move them here.-->
+			<Frame parentKey="GarrCorners" frameStrata="HIGH" setAllPoints="true">
+				<Layers>
+					<Layer level="BACKGROUND" textureSubLevel="2">
+						<Texture parentKey="TopLeftGarrCorner" atlas="Garr_WoodFrameCorner" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="TOPLEFT" x="2" y="-22"/>
+							</Anchors>
+						</Texture>
+						<Texture parentKey="TopRightGarrCorner" atlas="Garr_WoodFrameCorner" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="TOPRIGHT" x="-4" y="-22"/>
+							</Anchors>
+							<TexCoords left="1.0" right="0.0" top="0.0" bottom="1.0"/>
+						</Texture>
+						<Texture parentKey="BottomLeftGarrCorner" atlas="Garr_WoodFrameCorner" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="BOTTOMLEFT" x="2" y="2"/>
+							</Anchors>
+							<TexCoords left="0.0" right="1.0" top="1.0" bottom="0.0"/>
+						</Texture>
+						<Texture parentKey="BottomRightGarrCorner" atlas="Garr_WoodFrameCorner" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="BOTTOMRIGHT" x="-4" y="2"/>
+							</Anchors>
+							<TexCoords left="1.0" right="0.0" top="1.0" bottom="0.0"/>
+						</Texture>
+					</Layer>
+				</Layers>
+			</Frame>
+		</Frames>
 	</Frame>
 
 	<Frame name="GarrisonMissionBaseFrameTemplate" virtual="true">
@@ -685,4 +693,73 @@
 			</Layer>
 		</Layers>
 	</Frame>
+
+	<Button name="GarrisonEquipmentTemplate" virtual="true">
+		<Size x="78" y="78"/>
+		<!--
+		<KeyValues>
+			 <KeyValue key="quality" value="rare" type="string"/>
+		</KeyValues>
+		-->
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="BG" atlas="ShipMission_ShipFollower-EquipmentBG" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="TOPLEFT"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="BORDER" textureSubLevel="0">
+				<Texture parentKey="Icon">
+					<Size x="64" y="64"/>
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="BORDER" textureSubLevel="1">
+				<Texture parentKey="Border" atlas="ShipMission_ShipFollower-EquipmentFrame" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="TOPLEFT"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="ARTWORK">
+				<Texture parentKey="EquipGlow" hidden="false" alpha="0.01" alphaMode="ADD" atlas="GarrMission-AbilityHighlight" useAtlasSize="false">
+					<Size x="90" y="90"/>
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent.Icon"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="OVERLAY">
+				<Texture parentKey="ValidSpellHighlight" atlas="GarrMission-AbilityHighlight" useAtlasSize="false" hidden="true">
+					<Size x="90" y="90"/>
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Animations>
+			<AnimationGroup parentKey="EquipAnim" setToFinalAlpha="true">
+				<Alpha childKey="EquipGlow" smoothing="IN" duration="0.25" order="1" fromAlpha="0" toAlpha="1"/>
+				<Scale childKey="EquipGlow" duration="0.25" order="1" fromScaleX="0.8" fromScaleY="0.8" toScaleX="1.4" toScaleY="1.4"/>
+				<Alpha childKey="EquipGlow" startDelay="0.2" duration="0.5" order="1" fromAlpha="1" toAlpha="0"/>
+				<Scripts>
+					<OnFinished>
+						self:GetParent():GetParent():GetParent().lastUpdate = GetTime();
+					</OnFinished>
+				</Scripts>
+			</AnimationGroup>
+		</Animations>
+		<Frames>
+			<Frame parentKey="Counter" inherits="GarrisonMissionLargeMechanicTemplate" hidden="true">
+				<Anchors>
+					<Anchor point="TOP" relativeKey="$parent.Border" relativePoint="BOTTOM" x="0" y="-5"/>
+				</Anchors>
+			</Frame>
+		</Frames>
+	</Button>
+
 </Ui>
