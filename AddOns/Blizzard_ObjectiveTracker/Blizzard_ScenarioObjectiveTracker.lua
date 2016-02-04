@@ -519,7 +519,7 @@ function ScenarioSpellButton_OnEnter(self)
 end
 
 function ScenarioSpellButton_OnClick(self, button)
-	CastSpellID(self.spellID);
+	CastSpellByID(self.spellID);
 end
 
 function SCENARIO_CONTENT_TRACKER_MODULE:AddSpells(objectiveBlock, spellInfo)
