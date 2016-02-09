@@ -45,6 +45,7 @@ function CharacterSelect_OnLoad(self)
 	self:RegisterEvent("SELECT_FIRST_CHARACTER");
 	self:RegisterEvent("SUGGEST_REALM");
 	self:RegisterEvent("FORCE_RENAME_CHARACTER");
+	self:RegisterEvent("CHAR_RENAME_IN_PROGRESS");
 	self:RegisterEvent("STORE_STATUS_CHANGED");
 	self:RegisterEvent("CHARACTER_UNDELETE_STATUS_CHANGED");
 	self:RegisterEvent("CLIENT_FEATURE_STATUS_CHANGED)");
@@ -54,6 +55,12 @@ function CharacterSelect_OnLoad(self)
 	self:RegisterEvent("TOKEN_MARKET_PRICE_UPDATED");
 	self:RegisterEvent("VAS_CHARACTER_STATE_CHANGED");
 	self:RegisterEvent("STORE_PRODUCTS_UPDATED");
+	self:RegisterEvent("CHARACTER_DELETION_RESULT");
+	self:RegisterEvent("CHARACTER_DUPLICATE_LOGON");
+	self:RegisterEvent("CHARACTER_LIST_RETRIEVING");
+	self:RegisterEvent("CHARACTER_LIST_RETRIEVAL_RESULT");
+	self:RegisterEvent("DELETED_CHARACTER_LIST_RETRIEVING");
+	self:RegisterEvent("DELETED_CHARACTER_LIST_RETRIEVAL_RESULT");
 
 	-- CharacterSelect:SetModel("Interface\\Glues\\Models\\UI_Orc\\UI_Orc.m2");
 
@@ -79,8 +86,16 @@ end
 
 function CharacterSelect_OnShow()
 	DebugLog("Select_OnShow");
+	InitializeCharacterScreenData();
+	SetInCharacterSelect(true);
 	CHARACTER_LIST_OFFSET = 0;
 	CharacterSelect_ResetVeteranStatus();
+
+	if ( #translationTable == 0 ) then
+		for i = 1, GetNumCharacters() do
+			tinsert(translationTable, i);
+		end
+	end
 
 	-- request account data times from the server (so we know if we should refresh keybindings, etc...)
 	CheckCharacterUndeleteCooldown();
@@ -88,7 +103,7 @@ function CharacterSelect_OnShow()
 	local bgTag = CharacterSelect.currentBGTag;
 
 	if ( bgTag ) then
-		PlayGlueAmbience(GlueAmbienceTracks[bgTag], 4.0);
+		PlayGlueAmbience(GLUE_AMBIENCE_TRACKS[bgTag], 4.0);
 	end
 
 	UpdateAddonButton();
@@ -191,7 +206,7 @@ function CharacterSelect_OnShow()
 	end
 	
 	-- fadein the character select ui
-	GlueFrameFadeIn(CharacterSelectUI, CHARACTER_SELECT_FADE_IN)
+	CharacterSelectUI.FadeIn:Play();
 
 	RealmSplitCurrentChoice:Hide();
 
@@ -237,7 +252,7 @@ function CharacterSelect_OnShow()
 	if (C_StoreGlue.GetDisconnectOnLogout()) then
 		C_PurchaseAPI.SetDisconnectOnLogout(false);
 		DisconnectFromServer();
-		GlueDialog:Hide();
+		GlueDialog_Hide();
 		SetGlueScreen("login");
 	end	
 end
@@ -269,6 +284,7 @@ function CharacterSelect_OnHide(self)
 	end
 
 	AccountReactivate_CloseDialogs();
+	SetInCharacterSelect(false);
 end
 
 function CharacterSelect_SaveCharacterOrder()
@@ -316,16 +332,6 @@ function CharacterSelect_OnUpdate(self, elapsed)
 	else
 		CharacterSelectRealmSplitButton:Hide();
 	end
-
-	-- Account Msg stuff
-	if ( (ACCOUNT_MSG_NUM_AVAILABLE > 0) and not GlueDialog:IsShown() ) then
-		if ( ACCOUNT_MSG_HEADERS_LOADED ) then
-			if ( ACCOUNT_MSG_BODY_LOADED ) then
-				local dialogString = AccountMsg_GetHeaderSubject( ACCOUNT_MSG_CURRENT_INDEX ).."\n\n"..AccountMsg_GetBody();
-				GlueDialog_Show("ACCOUNT_MSG", dialogString);
-			end
-		end
-	end
 	
 	if ( self.undeleteFailed ) then
 		if (not GlueDialog:IsShown()) then
@@ -360,9 +366,10 @@ end
 
 function CharacterSelect_OnKeyDown(self,key)
 	if ( key == "ESCAPE" ) then
-		if ( TOSFrame:IsShown() or ConnectionHelpFrame:IsShown() ) then
+		--JS_TODO - Are we keeping TOSFrame?
+		if ( false and (TOSFrame:IsShown() or ConnectionHelpFrame:IsShown() )) then
 			return;
-		elseif ( IsLauncherLogin() ) then
+		elseif ( C_Login.IsLauncherLogin() ) then
 			GlueMenuFrame:SetShown(not GlueMenuFrame:IsShown());
 		elseif (CharSelectServicesFlowFrame:IsShown()) then
 			CharSelectServicesFlowFrame:Hide();
@@ -419,7 +426,7 @@ function CharacterSelect_OnEvent(self, event, ...)
 			self.undeleteNoCharacters = true;
 			return;
 		elseif (not CHARACTER_SELECT_BACK_FROM_CREATE and numChars == 0) then
-			SetGlueScreen("charcreate");
+			GlueParent_SetScreen("charcreate");
 			return;
 		end
 		if (self.undeleteNoCharacters) then
@@ -470,9 +477,12 @@ function CharacterSelect_OnEvent(self, event, ...)
 			end
 		end
 	elseif ( event == "FORCE_RENAME_CHARACTER" ) then
+		GlueDialog_Hide();
 		local message = ...;
 		CharacterRenameDialog:Show();
 		CharacterRenameText1:SetText(_G[message]);
+	elseif ( event == "CHAR_RENAME_IN_PROGRESS" ) then
+		GlueDialog_Show("OKAY", CHAR_RENAME_IN_PROGRESS);
 	elseif ( event == "STORE_STATUS_CHANGED" ) then
 		if (ADDON_LIST_RECEIVED) then
 			CharacterSelect_UpdateStoreButton();
@@ -494,6 +504,8 @@ function CharacterSelect_OnEvent(self, event, ...)
 	elseif ( event == "CLIENT_FEATURE_STATUS_CHANGED" ) then
 		AccountUpgradePanel_Update(CharSelectAccountUpgradeButton.isExpanded);
 	elseif ( event == "CHARACTER_UNDELETE_FINISHED" ) then
+		GlueDialog_Hide("UNDELETING_CHARACTER");
+		CharacterSelect_EndCharacterUndelete();
 		local result, guid = ...;
 
 		if ( result == LE_CHARACTER_UNDELETE_RESULT_OK ) then
@@ -524,6 +536,36 @@ function CharacterSelect_OnEvent(self, event, ...)
 	elseif (event == "VAS_CHARACTER_STATE_CHANGED" or event == "STORE_PRODUCTS_UPDATED") then
 		if ( not IsCharacterListUpdatePending() ) then
 			UpdateCharacterList();
+		end
+	elseif ( event == "CHARACTER_DELETION_RESULT" ) then
+		local success, errorToken = ...;
+		if ( success ) then
+			CHARACTER_LIST_OFFSET = 0;
+			CharacterSelect_SelectCharacter(1, 1);
+			GlueDialog_Hide();
+		else
+			GlueDialog_Show("OKAY", _G[errorToken]);
+		end
+	elseif ( event == "CHARACTER_DUPLICATE_LOGON" ) then
+		local errorCode = ...;
+		GlueDialog_Show("OKAY", _G[errorCode]);
+	elseif ( event == "CHARACTER_LIST_RETRIEVING" ) then
+		GlueDialog_Show("RETRIEVING_CHARACTER_LIST");
+	elseif ( event == "CHARACTER_LIST_RETRIEVAL_RESULT" ) then
+		local success = ...;
+		if ( success ) then
+			GlueDialog_Hide("RETRIEVING_CHARACTER_LIST");
+		else
+			GlueDialog_Show("OKAY", CHAR_LIST_FAILED);
+		end
+	elseif ( event == "DELETED_CHARACTER_LIST_RETRIEVING" ) then
+		GlueDialog_Show("RETRIEVING_CHARACTER_LIST");
+	elseif ( event == "DELETED_CHARACTER_LIST_RETRIEVAL_RESULT" ) then
+		local success = ...;
+		if ( success ) then
+			GlueDialog_Hide("RETRIEVING_CHARACTER_LIST");
+		else
+			GlueDialog_Show("OKAY", CHAR_LIST_FAILED);
 		end
 	end
 end
@@ -778,12 +820,7 @@ function UpdateCharacterList(skipSelect)
 		end
 	end
 	DebugLog(debugText);
-	if ( numChars == 0 ) then
-		CharacterSelectDeleteButton:Disable();
-		CharSelectEnterWorldButton:Disable();
-	else
-		CharacterSelect_UpdateButtonState();
-	end
+	CharacterSelect_UpdateButtonState();
 
 	CharacterSelect_UpdateStoreButton();
 
@@ -918,7 +955,7 @@ function CharacterSelect_SelectCharacter(index, noCreate)
 		if ( not noCreate ) then
 			PlaySound("gsCharacterSelectionCreateNew");
 			ClearCharacterTemplate();
-			SetGlueScreen("charcreate");
+			GlueParent_SetScreen("charcreate");
 		end
 	else
 		local charID = GetCharIDFromIndex(index);
@@ -974,8 +1011,7 @@ end
 function CharacterSelect_Exit()
 	CharacterSelect_SaveCharacterOrder();
 	PlaySound("gsCharacterSelectionExit");
-	DisconnectFromServer();
-	SetGlueScreen("login");
+	C_Login.DisconnectFromServer();
 end
 
 function CharacterSelect_AccountOptions()
@@ -998,17 +1034,21 @@ end
 function CharacterSelect_ChangeRealm()
 	PlaySound("gsCharacterSelectionDelCharacter");
 	CharacterSelect_SaveCharacterOrder();
-	RequestRealmList(true);
+	C_RealmList.RequestChangeRealmList();
 end
 
 function CharacterSelect_AllowedToEnterWorld()
-	if (CharacterSelect.undeleting) then
+	if (GetNumCharacters() == 0) then
+		return false;
+	elseif (CharacterSelect.undeleting) then
 		return false;
 	elseif (AccountReactivationInProgressDialog:IsShown()) then
 		return false;
 	elseif (GoldReactivateConfirmationDialog:IsShown()) then
 		return false;
 	elseif (TokenReactivateConfirmationDialog:IsShown()) then
+		return false;
+	elseif (CharSelectServicesFlowFrame:IsShown()) then
 		return false;
 	end
 
@@ -1088,7 +1128,7 @@ function CharacterSelect_PaidServiceOnClick(self, button, down, service)
 		CharacterSelect.pendingUndeleteGuid = guid;
 		GlueDialog_Show("UNDELETE_CONFIRM", UNDELETE_CONFIRMATION:format(CHARACTER_UNDELETE_COOLDOWN));
 	else
-		SetGlueScreen("charcreate");
+		GlueParent_SetScreen("charcreate");
 	end
 end
 
@@ -1143,10 +1183,12 @@ function CharacterSelectPanelButton_DeathKnightSwap(self)
 		if (self.currentBGTag == deathKnightTag or self.texture ~= textureBase) then
 			self.currentBGTag = nil;
 			self.texture = textureBase;
-			self.Left:SetTexture(textureBase);
-			self.Middle:SetTexture(textureBase);
-			self.Right:SetTexture(textureBase);
-			self:SetHighlightTexture("Interface\\Glues\\Common\\Glue-Panel-Button-Highlight");
+			if ( self.Left ) then
+				self.Left:SetTexture(textureBase);
+				self.Middle:SetTexture(textureBase);
+				self.Right:SetTexture(textureBase);
+				self:SetHighlightTexture("Interface\\Glues\\Common\\Glue-Panel-Button-Highlight");
+			end
 		end
 	end
 end
@@ -1675,15 +1717,16 @@ function CharacterSelect_CheckVeteranStatus()
 end
 
 function CharacterSelect_UpdateButtonState()
+	local hasCharacters = GetNumCharacters() > 0;
 	local servicesEnabled = not CharSelectServicesFlowFrame:IsShown();
 	local undeleting = CharacterSelect.undeleting;
 	local undeleteEnabled, undeleteOnCooldown = GetCharacterUndeleteStatus();
 	local redemptionInProgress = AccountReactivationInProgressDialog:IsShown() or GoldReactivateConfirmationDialog:IsShown() or TokenReactivateConfirmationDialog:IsShown();
 
 	local boostInProgress = select(18,GetCharacterInfo(GetCharacterSelection()));
-	CharSelectEnterWorldButton:SetEnabled(servicesEnabled and not undeleting and not boostInProgress and not redemptionInProgress);
+	CharSelectEnterWorldButton:SetEnabled(CharacterSelect_AllowedToEnterWorld());
 	CharacterSelectBackButton:SetEnabled(servicesEnabled and not undeleting and not boostInProgress);
-	CharacterSelectDeleteButton:SetEnabled(servicesEnabled and not undeleting and not redemptionInProgress);
+	CharacterSelectDeleteButton:SetEnabled(hasCharacters and servicesEnabled and not undeleting and not redemptionInProgress);
 	CharSelectChangeRealmButton:SetEnabled(servicesEnabled and not undeleting and not redemptionInProgress);
 	CharSelectUndeleteCharacterButton:SetEnabled(servicesEnabled and undeleteEnabled and not undeleteOnCooldown and not redemptionInProgress);
 	CharacterSelectAddonsButton:SetEnabled(servicesEnabled and not undeleting and not redemptionInProgress);
@@ -1702,6 +1745,13 @@ function CharacterSelect_UpdateButtonState()
 	end
 	
 	CharSelectAccountUpgradeButton:SetEnabled(not redemptionInProgress and not undeleting);
+end
+
+function CharacterSelect_DeleteCharacter(charID)
+	DeleteCharacter(GetCharIDFromIndex(CharacterSelect.selectedIndex));
+	CharacterDeleteDialog:Hide();
+	PlaySound("gsTitleOptionOK");
+	GlueDialog_Show("CHAR_DELETE_IN_PROGRESS");
 end
 
 -- CHARACTER UNDELETE
@@ -1780,9 +1830,10 @@ function CharacterSelect_EndCharacterUndelete()
 end
 
 function CharacterSelect_FinishUndelete(guid)
+	GlueDialog_Show("UNDELETING_CHARACTER");
+
 	UndeleteCharacter(guid);
 	CharacterSelect.createIndex = 0;
-	CharacterSelect_EndCharacterUndelete();
 end
 
 -- COPY CHARACTER
@@ -1814,6 +1865,14 @@ GlueDialogTypes["COPY_IN_PROGRESS"] = {
 	text = COPY_IN_PROGRESS,
 	button1 = nil,
 	button2 = nil,
+	ignoreKeys = true,
+	spinner = true,
+}
+
+GlueDialogTypes["UNDELETING_CHARACTER"] = {
+	text = RESTORING_CHARACTER_IN_PROGRESS,
+	ignoreKeys = true,
+	spinner = true,
 }
 
 function CopyCharacterFromLive()
@@ -1992,7 +2051,7 @@ function CopyCharacterFrame_OnEvent(self, event, ...)
 		self.SearchButton:Enable();
 	elseif ( event == "CHAR_RESTORE_COMPLETE" or event == "ACCOUNT_DATA_RESTORED") then
 		local success, token = ...;
-		GlueDialog:Hide();
+		GlueDialog_Hide();
 		self:Hide();
 		if (not success) then
 			GlueDialog_Show("OKAY", COPY_FAILED);

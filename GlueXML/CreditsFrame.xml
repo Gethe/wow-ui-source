@@ -390,18 +390,10 @@
 			</Button>
 		</Frames>
 		<Scripts>
-			<OnShow>
-				CreditsFrame_OnShow(self);
-			</OnShow>
-			<OnHide>
-				ShowCursor();
-			</OnHide>
-			<OnUpdate>
-				CreditsFrame_OnUpdate(self, elapsed);
-			</OnUpdate>
-			<OnKeyDown>
-				CreditsFrame_OnKeyDown(key);
-			</OnKeyDown>
+			<OnShow function="CreditsFrame_OnShow"/>
+			<OnHide function="CreditsFrame_OnHide"/>
+			<OnUpdate function="CreditsFrame_OnUpdate"/>
+			<OnKeyDown function="CreditsFrame_OnKeyDown"/>
 		</Scripts>
 	</Frame>
 </Ui>

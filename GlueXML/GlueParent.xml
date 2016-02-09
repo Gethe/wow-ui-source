@@ -2,18 +2,32 @@
 ..\FrameXML\UI.xsd">
 	<Script file="GlueParent.lua"/>
 	<Frame name="GlueParent" setAllPoints="true">
+		<Frames>
+			<Frame parentKey="ScreenFrame" name="GlueParentScreenFrame" setAllPoints="true">
+				<Frames>
+					<Frame parentKey="OptionsResetFrame" toplevel="true" frameStrata="DIALOG" hidden="true">
+						<Size x="1" y="1"/>
+						<Anchors>
+							<Anchor point="TOP"/>
+						</Anchors>
+						<Layers>
+							<Layer level="OVERLAY">
+								<FontString parentKey="Text" inherits="GlueFontRedLarge" text="RESET_WARNING">
+									<Size x="400" y="48"/>
+									<Anchors>
+										<Anchor point="TOP" x="0" y="-32"/>
+									</Anchors>
+								</FontString>
+							</Layer>
+						</Layers>
+					</Frame>
+				</Frames>
+			</Frame>
+		</Frames>
 		<Scripts>
-			<!-- Register here for any events you want to monitor globally -->
-			<OnLoad>
-				GlueParent_OnLoad(self);
-			</OnLoad>
-			<!-- Respond here to any events you want to monitor globally -->
-			<OnEvent>
-				GlueParent_OnEvent(event, ...);
-			</OnEvent>
-			<OnUpdate>
-				GlueFrameFadeUpdate(elapsed);
-			</OnUpdate>
+			<OnLoad function="GlueParent_OnLoad"/>
+			<OnEvent function="GlueParent_OnEvent"/>
+			<OnUpdate function="GlueFrameFadeUpdate"/>
 		</Scripts>
 	</Frame>
 </Ui>

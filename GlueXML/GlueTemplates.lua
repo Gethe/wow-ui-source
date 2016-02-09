@@ -19,7 +19,7 @@ function GlueScrollFrame_Update(frame, numItems, numToDisplay, valueStep, highli
 		frame:Hide();
 	end
 	if ( frame:IsShown() ) then
-		local scrollChildFrame = _G[ frameName.."ScrollChildFrame" ];
+		local scrollChildFrame = frame.ChildFrame or _G[ frameName.."ScrollChildFrame" ];
 		local scrollUpButton = _G[ frameName.."ScrollBarScrollUpButton" ];
 		local scrollDownButton = _G[ frameName.."ScrollBarScrollDownButton" ];
 		local scrollFrameHeight = 0;

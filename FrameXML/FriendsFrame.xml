@@ -1477,7 +1477,6 @@ TRAVEL PASS
 					</Button>
 					<Frame name="FriendsFrameIgnoredHeader" inherits="FriendsFrameHeaderTemplate" hidden="true"/>
 					<Frame name="FriendsFrameBlockedInviteHeader" inherits="FriendsFrameHeaderTemplate" hidden="true"/>
-					<Frame name="FriendsFrameBlockedToonHeader" inherits="FriendsFrameHeaderTemplate" hidden="true"/>
 					<Frame name="FriendsFrameMutedHeader" inherits="FriendsFrameHeaderTemplate" hidden="true"/>
 					<Button name="FriendsFrameIgnoreButton1" inherits="FriendsFrameIgnoreButtonTemplate">
 						<Anchors>
@@ -1501,7 +1500,6 @@ TRAVEL PASS
 					<OnLoad>
 						FriendsFrameIgnoredHeaderTitle:SetText(IGNORED);
 						FriendsFrameBlockedInviteHeaderTitle:SetText(BLOCKED_INVITES);
-						FriendsFrameBlockedToonHeaderTitle:SetText(BLOCKED_COMMUNICATION);
 						FriendsFrameMutedHeaderTitle:SetText(MUTED);
 					</OnLoad>
 				</Scripts>
@@ -1992,18 +1990,18 @@ TRAVEL PASS
 							</Anchors>
 							<Color r="0.510" g="0.773" b="1" />
 						</FontString>
-						<FontString name="$parentToon1Name" inherits="FriendsFont_Small" justifyH="LEFT">
+						<FontString name="$parentGameAccount1Name" inherits="FriendsFont_Small" justifyH="LEFT">
 							<Size x="176" y="0"/>
 							<Anchors>
 								<Anchor point="LEFT" x="12" y="0"/>
 								<Anchor point="TOP" relativeTo="$parentHeader" relativePoint="BOTTOM" x="0" y="-4"/>
 							</Anchors>
 						</FontString>
-						<FontString name="$parentToon1Info" inherits="FriendsFont_Small" justifyH="LEFT">
+						<FontString name="$parentGameAccount1Info" inherits="FriendsFont_Small" justifyH="LEFT">
 							<Size x="168" y="0"/>
 							<Anchors>
 								<Anchor point="LEFT" x="20" y="0"/>
-								<Anchor point="TOP" relativeTo="$parentToon1Name" relativePoint="BOTTOM" x="0" y="-4"/>
+								<Anchor point="TOP" relativeTo="$parentGameAccount1Name" relativePoint="BOTTOM" x="0" y="-4"/>
 							</Anchors>
 							<Color r="0.486" g="0.518" b="0.541" />
 						</FontString>
@@ -2011,7 +2009,7 @@ TRAVEL PASS
 							<Size x="158" y="0"/>
 							<Anchors>
 								<Anchor point="LEFT" x="30" y="0"/>
-								<Anchor point="TOP" relativeTo="$parentToon1Info" relativePoint="BOTTOM" x="0" y="-4"/>
+								<Anchor point="TOP" relativeTo="$parentGameAccount1Info" relativePoint="BOTTOM" x="0" y="-4"/>
 							</Anchors>
 							<Color r="1.0" g="0.82" b="0"/>
 						</FontString>
@@ -2044,78 +2042,78 @@ TRAVEL PASS
 							</Anchors>
 							<Color r="0.486" g="0.518" b="0.541" />
 						</FontString>
-						<FontString name="$parentOtherToons" inherits="FriendsFont_Normal" justifyH="LEFT" text="FRIENDS_LIST_PLAYING" hidden="true">
+						<FontString name="$parentOtherGameAccounts" inherits="FriendsFont_Normal" justifyH="LEFT" text="FRIENDS_LIST_PLAYING" hidden="true">
 							<Anchors>
 								<Anchor point="LEFT" x="12" y="0"/>
 								<Anchor point="TOP" relativeTo="$parentBroadcastText" relativePoint="BOTTOM" x="0" y="-12"/>
 							</Anchors>
 							<Color r="0.996" g="0.882" b="0.361"/>
 						</FontString>
-						<FontString name="$parentToon2Name" inherits="FriendsFont_Small" justifyH="LEFT" hidden="true">
+						<FontString name="$parentGameAccount2Name" inherits="FriendsFont_Small" justifyH="LEFT" hidden="true">
 							<Size x="176" y="0"/>
 							<Anchors>
 								<Anchor point="LEFT" x="12" y="0"/>
-								<Anchor point="TOP" relativeTo="$parentOtherToons" relativePoint="BOTTOM" x="0" y="-4"/>
+								<Anchor point="TOP" relativeTo="$parentOtherGameAccounts" relativePoint="BOTTOM" x="0" y="-4"/>
 							</Anchors>
 						</FontString>
-						<FontString name="$parentToon2Info" inherits="FriendsFont_Small" justifyH="LEFT" hidden="true">
+						<FontString name="$parentGameAccount2Info" inherits="FriendsFont_Small" justifyH="LEFT" hidden="true">
 							<Size x="168" y="0"/>
 							<Anchors>
 								<Anchor point="LEFT" x="20" y="0"/>
-								<Anchor point="TOP" relativeTo="$parentToon2Name" relativePoint="BOTTOM" x="0" y="-1"/>
+								<Anchor point="TOP" relativeTo="$parentGameAccount2Name" relativePoint="BOTTOM" x="0" y="-1"/>
 							</Anchors>
 							<Color r="0.486" g="0.518" b="0.541" />
 						</FontString>
-						<FontString name="$parentToon3Name" inherits="FriendsFont_Small" justifyH="LEFT" hidden="true">
+						<FontString name="$parentGameAccount3Name" inherits="FriendsFont_Small" justifyH="LEFT" hidden="true">
 							<Size x="176" y="0"/>
 							<Anchors>
 								<Anchor point="LEFT" x="12" y="0"/>
-								<Anchor point="TOP" relativeTo="$parentToon2Info" relativePoint="BOTTOM" x="0" y="-4"/>
+								<Anchor point="TOP" relativeTo="$parentGameAccount2Info" relativePoint="BOTTOM" x="0" y="-4"/>
 							</Anchors>
 						</FontString>
-						<FontString name="$parentToon3Info" inherits="FriendsFont_Small" justifyH="LEFT" hidden="true">
+						<FontString name="$parentGameAccount3Info" inherits="FriendsFont_Small" justifyH="LEFT" hidden="true">
 							<Size x="168" y="0"/>
 							<Anchors>
 								<Anchor point="LEFT" x="20" y="0"/>
-								<Anchor point="TOP" relativeTo="$parentToon3Name" relativePoint="BOTTOM" x="0" y="-1"/>
+								<Anchor point="TOP" relativeTo="$parentGameAccount3Name" relativePoint="BOTTOM" x="0" y="-1"/>
 							</Anchors>
 							<Color r="0.486" g="0.518" b="0.541" />
 						</FontString>
-						<FontString name="$parentToon4Name" inherits="FriendsFont_Small" justifyH="LEFT" hidden="true">
+						<FontString name="$parentGameAccount4Name" inherits="FriendsFont_Small" justifyH="LEFT" hidden="true">
 							<Size x="176" y="0"/>
 							<Anchors>
 								<Anchor point="LEFT" x="12" y="0"/>
-								<Anchor point="TOP" relativeTo="$parentToon3Info" relativePoint="BOTTOM" x="0" y="-4"/>
+								<Anchor point="TOP" relativeTo="$parentGameAccount3Info" relativePoint="BOTTOM" x="0" y="-4"/>
 							</Anchors>
 						</FontString>
-						<FontString name="$parentToon4Info" inherits="FriendsFont_Small" justifyH="LEFT" hidden="true">
+						<FontString name="$parentGameAccount4Info" inherits="FriendsFont_Small" justifyH="LEFT" hidden="true">
 							<Size x="168" y="0"/>
 							<Anchors>
 								<Anchor point="LEFT" x="20" y="0"/>
-								<Anchor point="TOP" relativeTo="$parentToon4Name" relativePoint="BOTTOM" x="0" y="-1"/>
+								<Anchor point="TOP" relativeTo="$parentGameAccount4Name" relativePoint="BOTTOM" x="0" y="-1"/>
 							</Anchors>
 							<Color r="0.486" g="0.518" b="0.541" />
 						</FontString>
-						<FontString name="$parentToon5Name" inherits="FriendsFont_Small" justifyH="LEFT" hidden="true">
+						<FontString name="$parentGameAccount5Name" inherits="FriendsFont_Small" justifyH="LEFT" hidden="true">
 							<Size x="176" y="0"/>
 							<Anchors>
 								<Anchor point="LEFT" x="12" y="0"/>
-								<Anchor point="TOP" relativeTo="$parentToon4Info" relativePoint="BOTTOM" x="0" y="-4"/>
+								<Anchor point="TOP" relativeTo="$parentGameAccount4Info" relativePoint="BOTTOM" x="0" y="-4"/>
 							</Anchors>
 						</FontString>
-						<FontString name="$parentToon5Info" inherits="FriendsFont_Small" justifyH="LEFT" hidden="true">
+						<FontString name="$parentGameAccount5Info" inherits="FriendsFont_Small" justifyH="LEFT" hidden="true">
 							<Size x="168" y="0"/>
 							<Anchors>
 								<Anchor point="LEFT" x="20" y="0"/>
-								<Anchor point="TOP" relativeTo="$parentToon5Name" relativePoint="BOTTOM" x="0" y="-1"/>
+								<Anchor point="TOP" relativeTo="$parentGameAccount5Name" relativePoint="BOTTOM" x="0" y="-1"/>
 							</Anchors>
 							<Color r="0.486" g="0.518" b="0.541" />
 						</FontString>
-						<FontString name="$parentToonMany" inherits="FriendsFont_Small" justifyH="LEFT" hidden="true">
+						<FontString name="$parentGameAccountMany" inherits="FriendsFont_Small" justifyH="LEFT" hidden="true">
 							<Size x="176" y="0"/>
 							<Anchors>
 								<Anchor point="LEFT" x="12" y="0"/>
-								<Anchor point="TOP" relativeTo="$parentToon5Info" relativePoint="BOTTOM" x="0" y="-4"/>
+								<Anchor point="TOP" relativeTo="$parentGameAccount5Info" relativePoint="BOTTOM" x="0" y="-4"/>
 							</Anchors>
 						</FontString>
 					</Layer>

@@ -30,7 +30,6 @@ UnitPopupButtons["BN_VIEW_FRIENDS"]	= { text = VIEW_FRIENDS_OF_FRIENDS, dist = 0
 UnitPopupButtons["BN_INVITE"] = { text = PARTY_INVITE, dist = 0 };
 UnitPopupButtons["BN_TARGET"] = { text = TARGET, dist = 0 };
 UnitPopupButtons["BLOCK_COMMUNICATION"] = { text = BLOCK_COMMUNICATION, dist = 0 };
-UnitPopupButtons["CREATE_CONVERSATION_WITH"] = { text = CREATE_CONVERSATION_WITH, dist = 0 };
 UnitPopupButtons["VOTE_TO_KICK"] = { text = VOTE_TO_KICK, dist = 0 };
 UnitPopupButtons["PROMOTE"] = { text = PARTY_PROMOTE, dist = 0 };
 UnitPopupButtons["PROMOTE_GUIDE"] = { text = PARTY_PROMOTE_GUIDE, dist = 0 };
@@ -212,7 +211,7 @@ UnitPopupMenus["RAID_PLAYER"] = { "RAID_TARGET_ICON", "SET_FOCUS", "ADD_FRIEND",
 UnitPopupMenus["RAID"] = { "SET_FOCUS", "INTERACT_SUBSECTION_TITLE", "RAID_LEADER",  "RAID_PROMOTE", "RAID_DEMOTE", "RAID_MAINTANK", "RAID_MAINASSIST", "LOOT_PROMOTE", "OTHER_SUBSECTION_TITLE", "MOVE_PLAYER_FRAME", "MOVE_TARGET_FRAME", "MUTE", "UNMUTE", "RAID_SILENCE", "RAID_UNSILENCE", "BATTLEGROUND_SILENCE", "BATTLEGROUND_UNSILENCE", "REPORT_PLAYER", "PVP_REPORT_AFK", "VOTE_TO_KICK", "RAID_REMOVE", "CANCEL" };
 UnitPopupMenus["FRIEND"] = { "POP_OUT_CHAT", "TARGET", "SET_NOTE", "INTERACT_SUBSECTION_TITLE", "INVITE", "WHISPER", "OTHER_SUBSECTION_TITLE", "IGNORE", "REMOVE_FRIEND", "REPORT_PLAYER", "PVP_REPORT_AFK", "CANCEL" };
 UnitPopupMenus["FRIEND_OFFLINE"] = { "SET_NOTE", "OTHER_SUBSECTION_TITLE", "IGNORE", "REMOVE_FRIEND", "CANCEL" };
-UnitPopupMenus["BN_FRIEND"] = { "POP_OUT_CHAT", "BN_TARGET", "BN_SET_NOTE", "BN_VIEW_FRIENDS", "INTERACT_SUBSECTION_TITLE", "BN_INVITE", "WHISPER", "CREATE_CONVERSATION_WITH", "OTHER_SUBSECTION_TITLE", "BLOCK_COMMUNICATION", "BN_REMOVE_FRIEND", "BN_REPORT", "CANCEL" };
+UnitPopupMenus["BN_FRIEND"] = { "POP_OUT_CHAT", "BN_TARGET", "BN_SET_NOTE", "BN_VIEW_FRIENDS", "INTERACT_SUBSECTION_TITLE", "BN_INVITE", "WHISPER", "OTHER_SUBSECTION_TITLE", "BLOCK_COMMUNICATION", "BN_REMOVE_FRIEND", "BN_REPORT", "CANCEL" };
 UnitPopupMenus["BN_FRIEND_OFFLINE"] = { "BN_SET_NOTE", "BN_VIEW_FRIENDS", "OTHER_SUBSECTION_TITLE", "BN_REMOVE_FRIEND", "BN_REPORT", "CANCEL" };
 UnitPopupMenus["GUILD"] = { "TARGET", "GUILD_BATTLETAG_FRIEND", "INTERACT_SUBSECTION_TITLE", "INVITE", "WHISPER", "GUILD_PROMOTE", "OTHER_SUBSECTION_TITLE", "IGNORE", "GUILD_LEAVE", "CANCEL" };
 UnitPopupMenus["GUILD_OFFLINE"] = { "GUILD_BATTLETAG_FRIEND", "INTERACT_SUBSECTION_TITLE", "GUILD_PROMOTE", "OTHER_SUBSECTION_TITLE", "IGNORE", "GUILD_LEAVE", "CANCEL" };
@@ -793,11 +792,11 @@ function UnitPopup_HideButtons ()
 				end
 			end
 		elseif ( value == "BN_INVITE" ) then
-			if ( not dropdownMenu.presenceID or not BNFeaturesEnabledAndConnected() ) then
+			if ( not dropdownMenu.bnetIDAccount or not BNFeaturesEnabledAndConnected() ) then
 				UnitPopupShown[UIDROPDOWNMENU_MENU_LEVEL][index] = 0;
 			else
-				local presenceID, presenceName, battleTag, isBattleTagPresence, toonName = BNGetFriendInfoByID(dropdownMenu.presenceID);
-				if ( CanCooperateWithToon(dropdownMenu.presenceID) and (UnitInParty(toonName) or UnitInRaid(toonName)) ) then
+				local bnetIDAccount, accountName, battleTag, isBattleTag, characterName, bnetIDGameAccount = BNGetFriendInfoByID(dropdownMenu.bnetIDAccount);
+				if ( CanCooperateWithGameAccount(bnetIDGameAccount) and (UnitInParty(characterName) or UnitInRaid(characterName)) ) then
 					UnitPopupShown[UIDROPDOWNMENU_MENU_LEVEL][index] = 0;
 				end
 			end
@@ -809,15 +808,6 @@ function UnitPopup_HideButtons ()
 			local playerName, playerServer = UnitName("player");
 			if ( dropdownMenu.unit ) then
 				if ( canCoop == 0  or (dropdownMenu.name == playerName and dropdownMenu.server == playerServer) ) then
-					UnitPopupShown[UIDROPDOWNMENU_MENU_LEVEL][index] = 0;
-				end
-			end
-		elseif ( value == "CREATE_CONVERSATION_WITH" ) then
-			if ( not dropdownMenu.presenceID or not BNFeaturesEnabledAndConnected()) then
-				UnitPopupShown[UIDROPDOWNMENU_MENU_LEVEL][index] = 0;
-			else
-				local presenceID, presenceName, battleTag, isBattleTagPresence, toonName, toonID, client, isOnline = BNGetFriendInfoByID(dropdownMenu.presenceID);
-				if ( not isOnline ) then
 					UnitPopupShown[UIDROPDOWNMENU_MENU_LEVEL][index] = 0;
 				end
 			end
@@ -858,9 +848,9 @@ function UnitPopup_HideButtons ()
 				UnitPopupShown[UIDROPDOWNMENU_MENU_LEVEL][index] = 0;
 			end
 		elseif ( value == "BLOCK_COMMUNICATION" ) then
-			-- only show it for presence IDs that are not friends
-			if ( dropdownMenu.presenceID and BNFeaturesEnabledAndConnected()) then
-				local presenceID, presenceName, battleTag, isBattleTagPresence, toonName, toonID, client, isOnline, lastOnline, isAFK, isDND, broadcastText, noteText, isFriend = BNGetFriendInfoByID(dropdownMenu.presenceID);
+			-- only show it for bnetIDAccounts that are not friends
+			if ( dropdownMenu.bnetIDAccount and BNFeaturesEnabledAndConnected()) then
+				local bnetIDAccount, accountName, battleTag, isBattleTag, characterName, bnetIDGameAccount, client, isOnline, lastOnline, isAFK, isDND, broadcastText, noteText, isFriend = BNGetFriendInfoByID(dropdownMenu.bnetIDAccount);
 				if ( isFriend ) then
 					UnitPopupShown[UIDROPDOWNMENU_MENU_LEVEL][index] = 0;
 				end
@@ -868,7 +858,7 @@ function UnitPopup_HideButtons ()
 				UnitPopupShown[UIDROPDOWNMENU_MENU_LEVEL][index] = 0;
 			end
 		elseif ( value == "BN_REPORT" ) then
-			if ( not dropdownMenu.presenceID or not BNFeaturesEnabledAndConnected() ) then
+			if ( not dropdownMenu.bnetIDAccount or not BNFeaturesEnabledAndConnected() ) then
 				UnitPopupShown[UIDROPDOWNMENU_MENU_LEVEL][index] = 0;
 			end
 		elseif ( value == "REPORT_PLAYER" ) then
@@ -898,7 +888,7 @@ function UnitPopup_HideButtons ()
 			end
 		elseif ( value == "BN_TARGET" ) then
 			-- We don't want to show a menu option that will end up being blocked
-			if ( not dropdownMenu.presenceID or InCombatLockdown() or not issecure() ) then
+			if ( not dropdownMenu.bnetIDAccount or InCombatLockdown() or not issecure() ) then
 				UnitPopupShown[UIDROPDOWNMENU_MENU_LEVEL][index] = 0;
 			end
 		elseif ( value == "PROMOTE" ) then
@@ -1424,14 +1414,14 @@ function UnitPopup_OnUpdate (elapsed)
 							enable = 0;
 						end
 					elseif ( value == "BN_INVITE" ) then
-						if ( not currentDropDown.presenceID or not CanGroupWithAccount(currentDropDown.presenceID) ) then
+						if ( not currentDropDown.bnetIDAccount or not CanGroupWithAccount(currentDropDown.bnetIDAccount) ) then
 							enable = 0;
 						end
 					elseif ( value == "BN_TARGET" ) then
-						if ( not currentDropDown.presenceID) then
+						if ( not currentDropDown.bnetIDAccount) then
 							enable = 0;
 						else
-							local _, _, _, _, _, _, client = BNGetFriendInfoByID(currentDropDown.presenceID);
+							local _, _, _, _, _, _, client = BNGetFriendInfoByID(currentDropDown.bnetIDAccount);
 							if (client ~= BNET_CLIENT_WOW) then
 								enable = 0;
 							end
@@ -1631,13 +1621,11 @@ function UnitPopup_OnClick (self)
 	if ( button == "TRADE" ) then
 		InitiateTrade(unit);
 	elseif ( button == "WHISPER" ) then
-		if ( dropdownFrame.presenceID ) then
+		if ( dropdownFrame.bnetIDAccount ) then
 			ChatFrame_SendSmartTell(fullname, dropdownFrame.chatFrame);
 		else
 			ChatFrame_SendTell(fullname, dropdownFrame.chatFrame);
 		end
-	elseif ( button == "CREATE_CONVERSATION_WITH" ) then
-		BNConversationInvite_NewConversation(dropdownFrame.presenceID)
 	elseif ( button == "INSPECT" ) then
 		InspectUnit(unit);
 	elseif ( button == "ACHIEVEMENTS" ) then
@@ -1703,31 +1691,31 @@ function UnitPopup_OnClick (self)
 		StaticPopup_Show("SET_FRIENDNOTE", fullname);
 		PlaySound("igCharacterInfoClose");
 	elseif ( button == "BN_REMOVE_FRIEND" ) then
-		local presenceID, presenceName, _, isBattleTagPresence = BNGetFriendInfoByID(dropdownFrame.presenceID);
-		if ( presenceID ) then
+		local bnetIDAccount, accountName, _, isBattleTag = BNGetFriendInfoByID(dropdownFrame.bnetIDAccount);
+		if ( bnetIDAccount ) then
 			local promptText;
-			if ( isBattleTagPresence ) then
-				promptText = string.format(BATTLETAG_REMOVE_FRIEND_CONFIRMATION, presenceName);
+			if ( isBattleTag ) then
+				promptText = string.format(BATTLETAG_REMOVE_FRIEND_CONFIRMATION, accountName);
 			else
-				promptText = string.format(REMOVE_FRIEND_CONFIRMATION, presenceName);
+				promptText = string.format(REMOVE_FRIEND_CONFIRMATION, accountName);
 			end
-			local dialog = StaticPopup_Show("CONFIRM_REMOVE_FRIEND", promptText, nil, presenceID);
+			local dialog = StaticPopup_Show("CONFIRM_REMOVE_FRIEND", promptText, nil, bnetIDAccount);
 		end
 	elseif ( button == "BN_SET_NOTE" ) then
-		FriendsFrame.NotesID = dropdownFrame.presenceID;
+		FriendsFrame.NotesID = dropdownFrame.bnetIDAccount;
 		StaticPopup_Show("SET_BNFRIENDNOTE", fullname);
 		PlaySound("igCharacterInfoClose");
 	elseif ( button == "BN_VIEW_FRIENDS" ) then
-		FriendsFriendsFrame_Show(dropdownFrame.presenceID);
+		FriendsFriendsFrame_Show(dropdownFrame.bnetIDAccount);
 	elseif ( button == "BN_INVITE" ) then
-		FriendsFrame_BattlenetInvite(nil, dropdownFrame.presenceID);
+		FriendsFrame_BattlenetInvite(nil, dropdownFrame.bnetIDAccount);
 	elseif ( button == "BN_TARGET" ) then
-		local presenceID, presenceName, battleTag, isBattleTagPresence, toonName = BNGetFriendInfoByID(dropdownFrame.presenceID);
-		if ( toonName ) then
-			TargetUnit(toonName);
+		local bnetIDAccount, accountName, battleTag, isBattleTag, characterName = BNGetFriendInfoByID(dropdownFrame.bnetIDAccount);
+		if ( characterName ) then
+			TargetUnit(characterName);
 		end
 	elseif ( button == "BLOCK_COMMUNICATION" ) then
-		BNSetToonBlocked(dropdownFrame.presenceID, true);
+		BNSetBlocked(dropdownFrame.bnetIDAccount, true);
 	elseif ( button == "PROMOTE" or button == "PROMOTE_GUIDE" ) then
 		PromoteToLeader(unit, 1);
 	elseif ( button == "GUILD_PROMOTE" ) then
@@ -1914,7 +1902,7 @@ function UnitPopup_OnClick (self)
 			PlayerFrame_DetachCastBar();
 		end
 	elseif ( strsub(button, 1, 10) == "BN_REPORT_" ) then
-		BNet_InitiateReport(dropdownFrame.presenceID, strsub(button, 11));
+		BNet_InitiateReport(dropdownFrame.bnetIDAccount, strsub(button, 11));
 	elseif ( strsub(button, 1, 9) == "SET_ROLE_" ) then
 		UnitSetRole(dropdownFrame.unit, strsub(button, 10));
 	elseif ( button == "ADD_FRIEND" or button == "CHARACTER_FRIEND" ) then

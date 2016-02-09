@@ -45,7 +45,7 @@
 				<Scripts>
 					<OnClick>
 						GlueMenuFrame_Hide();
-						AccountLogin_Options();
+						GlueParent_ShowOptionsScreen();
 					</OnClick>
 				</Scripts>
 			</Button>
@@ -56,7 +56,7 @@
 				<Scripts>
 					<OnClick>
 						GlueMenuFrame_Hide();
-						AccountLogin_Credits();
+						GlueParent_ShowCreditsScreen();
 					</OnClick>
 				</Scripts>
 			</Button>
@@ -67,24 +67,13 @@
 				<Scripts>
 					<OnClick>
 						GlueMenuFrame_Hide();
-						AccountLogin_Cinematics();
-					</OnClick>
-				</Scripts>
-			</Button>
-			<Button parentKey="TOSButton" inherits="GlueMenuFrameButtonTemplate" text="TOS_FRAME_TITLE">
-				<Anchors>
-					<Anchor point="TOP" relativeKey="$parent.CinematicsButton" relativePoint="BOTTOM" x="0" y="10"/>
-				</Anchors>
-				<Scripts>
-					<OnClick>
-						GlueMenuFrame_Hide();
-						AccountLogin_TOS();
+						GlueParent_ShowCinematicsScreen();
 					</OnClick>
 				</Scripts>
 			</Button>
 			<Button parentKey="ExitGameButton" inherits="GlueMenuFrameButtonTemplate" text="EXIT_GAME">
 				<Anchors>
-					<Anchor point="TOP" relativeKey="$parent.TOSButton" relativePoint="BOTTOM" x="0" y="10"/>
+					<Anchor point="TOP" relativeKey="$parent.CinematicsButton" relativePoint="BOTTOM" x="0" y="10"/>
 				</Anchors>
 				<Scripts>
 					<OnClick>
@@ -103,8 +92,5 @@
 				</Scripts>
 			</Button>
 		</Frames>
-		<Scripts>
-			<OnShow function = "GlueMenuFrame_OnShow"/>
-		</Scripts>
 	</Frame>
 </Ui>

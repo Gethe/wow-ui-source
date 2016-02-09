@@ -1,0 +1,216 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\FrameXML\UI.xsd">
+	<Script file="Blizzard_TradeSkillRecipeButton.lua"/>
+
+	<Frame name="TradeSkillRowStarTemplate" parentArray="Stars" virtual="true">
+		<Size x="12" y="11"/>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="UnearnedStar" atlas="tradeskills-star-off" alpha=".28" />
+			</Layer>
+			<Layer level="OVERLAY">
+				<Texture parentKey="EarnedStar" atlas="tradeskills-star" alpha=".65" />
+			</Layer>
+		</Layers>
+	</Frame>
+
+	<Button name="TradeSkillRowButtonTemplate" mixin="TradeSkillRecipeButtonMixin" hidden="true" virtual="true">
+		<Size x="293" y="16"/>
+		<NormalTexture>
+			<Size x="16" y="16"/>
+			<Anchors>
+				<Anchor point="LEFT" x="3" y="0"/>
+			</Anchors>
+		</NormalTexture>
+		<HighlightTexture parentKey="Highlight" file="Interface\Buttons\UI-PlusButton-Hilight" alphaMode="ADD">
+			<Size x="16" y="16"/>
+			<Anchors>
+				<Anchor point="LEFT" x="3" y="0"/>
+			</Anchors>
+		</HighlightTexture>
+		<DisabledTexture file="Interface\Buttons\UI-PlusButton-Disabled">
+			<Size x="16" y="16"/>
+			<Anchors>
+				<Anchor point="LEFT" x="3" y="0"/>
+			</Anchors>
+		</DisabledTexture>
+		<ButtonText parentKey="Text" wordwrap="false">
+			<Size x="270" y="13"/>
+			<Anchors>
+				<Anchor point="LEFT" relativeKey="$parent.Highlight" relativePoint="RIGHT" x="2" y="1"/>
+			</Anchors>
+		</ButtonText>
+		<NormalFont style="GameFontHighlightLeft"/>
+		
+		<Layers>
+			<Layer level="BACKGROUND">
+				<FontString parentKey="SubText" inherits="GameFontNormalSmall" justifyH="LEFT"/>
+			</Layer>
+			<Layer level="ARTWORK">
+				<Texture parentKey="SelectedTexture" file="Interface\Buttons\UI-Listbox-Highlight2" hidden="true"/>
+			</Layer>
+			<Layer level="OVERLAY">
+				<FontString parentKey="Count" inherits="GameFontNormal">
+					<Size y="13"/>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Button parentKey="SkillUps">
+				<Size x="26" y="16"/>
+				<Anchors>
+					<Anchor point="RIGHT" x="-2" y="0"/>
+				</Anchors>
+				<Layers>
+					<Layer level="OVERLAY">
+						<Texture parentKey="Icon" file="Interface\TradeSkillFrame\UI-TradeSkill-Multiskill">
+							<Size x="16" y="16"/>
+							<Anchors>
+								<Anchor point="RIGHT" x="0" y="-1"/>
+							</Anchors>
+						</Texture>
+						<FontString parentKey="Text" inherits="GameFontNormal">
+							<Size x="0" y="13"/>
+							<Anchors>
+								<Anchor point="RIGHT" relativeKey="$parent.Icon" relativePoint="LEFT" x="0" y="1"/>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnLoad>
+						self:RegisterForClicks("LeftButtonUp", "RightButtonUp");
+					</OnLoad>
+					<OnClick>
+						self:GetParent():Click(button);
+					</OnClick>
+					<OnEnter>
+						GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+						GameTooltip:AddLine(SKILLUP_TOOLTIP:format(self.Text:GetText()), NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b, true);
+						GameTooltip:Show();
+						self:GetParent():OnMouseEnter();
+					</OnEnter>
+					<OnLeave>
+						GameTooltip:Hide();
+						self:GetParent():OnMouseLeave();
+					</OnLeave>
+				</Scripts>
+			</Button>
+			<Frame parentKey="StarsFrame">
+				<Size x="40" y="16"/>
+				<Anchors>
+					<Anchor point="RIGHT" x="3" y="0"/>
+				</Anchors>
+				<Frames>
+					<Frame parentKey="Star1" inherits="TradeSkillRowStarTemplate">
+						<Anchors>
+							<Anchor point="LEFT" />
+						</Anchors>
+					</Frame>
+					<Frame parentKey="Star2" inherits="TradeSkillRowStarTemplate">
+						<Anchors>
+							<Anchor point="LEFT" relativeKey="$parent.Star1" relativePoint="RIGHT" />
+						</Anchors>
+					</Frame>
+					<Frame parentKey="Star3" inherits="TradeSkillRowStarTemplate">
+						<Anchors>
+							<Anchor point="LEFT" relativeKey="$parent.Star2" relativePoint="RIGHT" />
+						</Anchors>
+					</Frame>
+				</Frames>
+			</Frame>
+			<Button parentKey="LockedIcon">
+				<Size x="26" y="16"/>
+				<Anchors>
+					<Anchor point="RIGHT" x="-2" y="0"/>
+				</Anchors>
+				<Layers>
+					<Layer level="OVERLAY">
+						<Texture parentKey="Icon" file="Interface\LFGFrame\UI-LFG-ICON-LOCK">
+							<Size x="16" y="16"/>
+							<Anchors>
+								<Anchor point="RIGHT" x="0" y="-1"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnLoad>
+						self:RegisterForClicks("LeftButtonUp", "RightButtonUp");
+					</OnLoad>
+					<OnClick>
+						self:GetParent():Click(button);
+					</OnClick>
+					<OnEnter>
+						self:GetParent():OnLockIconMouseEnter();
+						self:GetParent():OnMouseEnter();
+					</OnEnter>
+					<OnLeave>
+						GameTooltip_Hide();
+
+						self:GetParent():OnMouseLeave();
+					</OnLeave>
+				</Scripts>
+			</Button>
+			<StatusBar parentKey="SubSkillRankBar" drawLayer="BACKGROUND" minValue="0" maxValue="1" defaultValue="1">
+				<Size x="58" y="14"/>
+				<Anchors>
+					<Anchor point="RIGHT" x="0" y="0"/>
+				</Anchors>
+				<Layers>
+					<Layer level="ARTWORK">
+						<Texture parentKey="BorderLeft" file="Interface\PaperDollInfoFrame\UI-Character-Skills-BarBorder">
+							<Size x="9" y="18"/>
+							<Anchors>
+								<Anchor point="LEFT" x="-2" y="0"/>
+							</Anchors>
+							<TexCoords left="0.007843" right="0.043137" top="0.193548" bottom="0.774193"/>
+						</Texture>
+						<Texture parentKey="BorderRight" file="Interface\PaperDollInfoFrame\UI-Character-Skills-BarBorder">
+							<Size x="9" y="18"/>
+							<Anchors>
+								<Anchor point="RIGHT" x="2" y="0"/>
+							</Anchors>
+							<TexCoords left="0.043137" right="0.007843" top="0.193548" bottom="0.774193"/>
+						</Texture>
+						<Texture parentKey="BorderMid" file="Interface\PaperDollInfoFrame\UI-Character-Skills-BarBorder">
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeKey="$parent.BorderLeft" relativePoint="TOPRIGHT"/>
+								<Anchor point="BOTTOMRIGHT" relativeKey="$parent.BorderRight" relativePoint="BOTTOMLEFT"/>
+							</Anchors>
+							<TexCoords left="0.113726" right="0.1490196" top="0.193548" bottom="0.774193"/>
+						</Texture>
+						<FontString parentKey="Rank" inherits="GameFontHighlightSmall">
+							<Anchors>
+								<Anchor point="CENTER"/>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+				<BarTexture file="Interface\PaperDollInfoFrame\UI-Character-Skills-Bar"/>
+				<BarColor r=".25" g=".25" b=".75"/>
+			</StatusBar>
+		</Frames>
+		
+		<Scripts>
+			<OnLoad>
+				self:RegisterForClicks("LeftButtonUp", "RightButtonUp");
+				self.Count:ClearAllPoints();
+				self.Count:SetPoint("LEFT", self.Text, "RIGHT", 2, 0);
+			</OnLoad>
+			<OnClick>
+				if IsModifiedClick() then
+					HandleModifiedItemClick(C_TradeSkillUI.GetRecipeLink(self.tradeSkillInfo.recipeID));
+				else
+					if self.isHeader then
+						self:GetParent():GetParent():OnHeaderButtonClicked(self, self.tradeSkillInfo, button);
+					else
+						self:GetParent():GetParent():OnRecipeButtonClicked(self, self.tradeSkillInfo, button);
+					end
+				end
+			</OnClick>
+			<OnEnter method="OnMouseEnter" />
+			<OnLeave method="OnMouseLeave" />
+		</Scripts>
+	</Button>
+</Ui>

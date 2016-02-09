@@ -63,11 +63,11 @@ function SetItemRef(link, text, button, chatFrame)
 	elseif ( strsub(link, 1, 8) == "BNplayer" ) then
 		local namelink = strsub(link, 10);
 		
-		local name, presenceID, lineid, chatType, chatTarget = strsplit(":", namelink);
+		local name, bnetIDAccount, lineid, chatType, chatTarget = strsplit(":", namelink);
 		if ( name and (strlen(name) > 0) ) then
 			if ( IsModifiedClick("CHATLINK") ) then
 				--[[
-				disable SHIFT-CLICK for battlenet friends, so we don't put an encoded presence id in chat
+				disable SHIFT-CLICK for battlenet friends, so we don't put an encoded bnetIDAccount in chat
 
 				local staticPopup;
 				staticPopup = StaticPopup_Visible("ADD_IGNORE");
@@ -110,11 +110,11 @@ function SetItemRef(link, text, button, chatFrame)
 				end
 				]]
 			elseif ( button == "RightButton" ) then
-				if ( not BNIsSelf(presenceID) ) then
-					FriendsFrame_ShowBNDropdown(name, 1, nil, chatType, chatFrame, nil, BNet_GetPresenceID(name));
+				if ( not BNIsSelf(bnetIDAccount) ) then
+					FriendsFrame_ShowBNDropdown(name, 1, nil, chatType, chatFrame, nil, BNet_GetBNetIDAccount(name));
 				end
 			else
-				if ( not BNIsSelf(presenceID) ) then
+				if ( not BNIsSelf(bnetIDAccount) ) then
 					ChatFrame_SendSmartTell(name, chatFrame);
 				end
 			end
@@ -124,11 +124,7 @@ function SetItemRef(link, text, button, chatFrame)
 		if ( IsModifiedClick("CHATLINK") ) then
 			local chanLink = strsub(link, 9);
 			local chatType, chatTarget = strsplit(":", chanLink);
-			if ( strupper(chatType) == "BN_CONVERSATION" ) then
-				BNListConversation(chatTarget);
-			else
-				ToggleFriendsFrame(3);
-			end
+			ToggleFriendsFrame(3);
 		elseif ( button == "LeftButton" ) then
 			local chanLink = strsub(link, 9);
 			local chatType, chatTarget = strsplit(":", chanLink);
@@ -136,10 +132,6 @@ function SetItemRef(link, text, button, chatFrame)
 			if ( strupper(chatType) == "CHANNEL" ) then
 				if ( GetChannelName(tonumber(chatTarget))~=0 ) then
 					ChatFrame_OpenChat("/"..chatTarget, chatFrame);
-				end
-			elseif ( strupper(chatType) == "BN_CONVERSATION" ) then
-				if ( BNGetConversationInfo(chatTarget) ) then
-					ChatFrame_OpenChat("/"..(chatTarget + MAX_WOW_CHAT_CHANNELS), chatFrame);
 				end
 			elseif ( strupper(chatType) == "PET_BATTLE_COMBAT_LOG" or strupper(chatType) == "PET_BATTLE_INFO" ) then
 				--Don't do anything
@@ -149,8 +141,7 @@ function SetItemRef(link, text, button, chatFrame)
 		elseif ( button == "RightButton" ) then
 			local chanLink = strsub(link, 9);
 			local chatType, chatTarget = strsplit(":", chanLink);
-			if not ( (strupper(chatType) == "CHANNEL" and GetChannelName(tonumber(chatTarget)) == 0) or	--Don't show the dropdown if this is a channel we are no longer in.
-				(strupper(chatType) == "BN_CONVERSATION" and not BNGetConversationInfo(chatTarget)) ) then	--Or a conversation we are no longer in.
+			if not ( (strupper(chatType) == "CHANNEL" and GetChannelName(tonumber(chatTarget)) == 0) ) then	--Don't show the dropdown if this is a channel we are no longer in.
 				ChatChannelDropDown_Show(chatFrame, strupper(chatType), chatTarget, Chat_GetColoredChatName(strupper(chatType), chatTarget));
 			end
 		end

@@ -1397,20 +1397,8 @@
 					<OnLoad>
 						self.type = CONTROLTYPE_CHECKBOX;
 						self.cvar = "profanityFilter";
-						self.setFunc = function(value) if (BNFeaturesEnabledAndConnected()) then BNSetMatureLanguageFilter(value == "1") end end;
 						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
-						InterfaceOptionsSocialPanelProfanityFilter_UpdateDisplay();
-						self:RegisterEvent("BN_MATURE_LANGUAGE_FILTER");
-						self:RegisterEvent("BN_CONNECTED");
-						self:RegisterEvent("VARIABLES_LOADED");
-						
-						InterfaceOptionsSocialPanelProfanityFilter_SyncWithBattlenet();
 					</OnLoad>
-					<OnEvent>
-						if ( event == "BN_MATURE_LANGUAGE_FILTER" or event == "BN_CONNECTED" or event == "VARIABLES_LOADED" ) then
-							InterfaceOptionsSocialPanelProfanityFilter_SyncWithBattlenet();
-						end
-					</OnEvent>
 				</Scripts>
 			</CheckButton>		
 			<CheckButton name="$parentSpamFilter" inherits="InterfaceOptionsCheckButtonTemplate">
@@ -1713,41 +1701,6 @@
 						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
 					</OnLoad>
 					<OnEvent function="InterfaceOptionsSocialPanelBnWhisperMode_OnEvent"/>
-				</Scripts>
-			</Frame>
-			<Frame name="$parentConversationMode" inherits="UIDropDownMenuTemplate" enableMouse="true">
-				<Anchors>
-					<Anchor point="TOPLEFT" relativeTo="$parentBnWhisperMode" relativePoint="BOTTOMLEFT">
-						<Offset>
-							<AbsDimension x="0" y="-20"/>
-						</Offset>
-					</Anchor>
-				</Anchors>
-				<Layers>
-					<Layer level="BACKGROUND">
-						<FontString name="$parentLabel" inherits="GameFontNormalSmall" text="CONVERSATION_MODE">
-							<Anchors>
-								<Anchor point="BOTTOMLEFT" relativePoint="TOPLEFT">
-									<Offset>
-										<AbsDimension x="16" y="3"/>
-									</Offset>
-								</Anchor>
-							</Anchors>
-						</FontString>
-					</Layer>
-				</Layers>
-				<Scripts>
-					<OnEnter>
-						GameTooltip:SetOwner(self, "ANCHOR_TOPRIGHT");
-						GameTooltip:SetText(self.tooltip, nil, nil, nil, nil, true);
-					</OnEnter>
-					<OnLeave function="GameTooltip_Hide"/>
-					<OnLoad>
-						self.type = CONTROLTYPE_DROPDOWN;
-						self:RegisterEvent("VARIABLES_LOADED");
-						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
-					</OnLoad>
-					<OnEvent function="InterfaceOptionsSocialPanelConversationMode_OnEvent"/>
 				</Scripts>
 			</Frame>
 		</Frames>
@@ -3579,26 +3532,9 @@
 					</OnLoad>
 				</Scripts>
 			</CheckButton>
-			<CheckButton name="$parentConversations" inherits="InterfaceOptionsCheckButtonTemplate">
-				<Anchors>
-					<Anchor point="TOPLEFT" relativeTo="$parentFriendRequests" relativePoint="BOTTOMLEFT">
-						<Offset>
-							<AbsDimension x="0" y="-8"/>
-						</Offset>
-					</Anchor>
-				</Anchors>
-				<Scripts>
-					<OnLoad>
-						self.type = CONTROLTYPE_CHECKBOX;
-						self.cvar = "showToastConversation";
-						self.setFunc = function (value) BNet_UpdateToastEvent(self.cvar, value); end;
-						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
-					</OnLoad>
-				</Scripts>
-			</CheckButton>
 			<CheckButton name="$parentShowToastWindow" inherits="InterfaceOptionsCheckButtonTemplate">
 				<Anchors>
-					<Anchor point="TOPLEFT" relativeTo="$parentConversations" relativePoint="BOTTOMLEFT">
+					<Anchor point="TOPLEFT" relativeTo="$parentFriendRequests" relativePoint="BOTTOMLEFT">
 						<Offset>
 							<AbsDimension x="0" y="-8"/>
 						</Offset>
