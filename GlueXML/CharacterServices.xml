@@ -191,21 +191,7 @@
 			</Layer>
 		</Layers>
 	</Frame>
-	<Frame name="CharacterServicesProcessingIconTemplate" virtual="true">
-		<Size x="42" y="37"/>
-		<Layers>
-			<Layer level="ARTWORK">
-				<Texture parentKey="Icon" inherits="services-icon-processing" setAllPoints="true"/>
-			</Layer>
-		</Layers>
-		<Scripts>
-			<OnEnter function="CharacterServicesProcessingIcon_OnEnter"/>
-			<OnLeave>
-				GlueTooltip:Hide();
-			</OnLeave>
-		</Scripts>
-	</Frame>
-	<Frame name="CharacterUpgradeSelectCharacterFrame" inherits="CharacterServicesBlockTemplate" hidden="true" frameStrata="DIALOG">
+	<Frame name="CharacterUpgradeSelectCharacterFrame" parent="CharSelectServicesFlowFrame" inherits="CharacterServicesBlockTemplate" hidden="true" frameStrata="DIALOG">
 		<Size x="300" y="250"/>
 		<Frames>
 			<Frame parentKey="ControlsFrame" setAllPoints="true">
@@ -370,7 +356,7 @@
 			</Frame>
 		</Frames>
 	</Frame>
-	<Frame name="CharacterUpgradeMaxCharactersFrame" hidden="true" frameStrata="DIALOG">
+	<Frame name="CharacterUpgradeMaxCharactersFrame" parent="CharSelectServicesFlowFrame" hidden="true" frameStrata="DIALOG">
 		<Size x="400" y="250"/>
 		<Layers>
 			<Layer level="ARTWORK">
@@ -396,7 +382,7 @@
 			</Button>
 		</Frames>
 	</Frame>
-	<Frame name="CharacterUpgradeSelectSpecFrame" inherits="CharacterServicesBlockTemplate" hidden="true" frameStrata="DIALOG">
+	<Frame name="CharacterUpgradeSelectSpecFrame" parent="CharSelectServicesFlowFrame" inherits="CharacterServicesBlockTemplate" hidden="true" frameStrata="DIALOG">
 		<Size x="300" y="250"/>
 		<Frames>
 			<Frame parentKey="ControlsFrame" setAllPoints="true">
@@ -410,7 +396,7 @@
 			</Frame>
 		</Frames>
 	</Frame>
-	<Frame name="CharacterUpgradeSelectFactionFrame" inherits="CharacterServicesBlockTemplate" hidden="true" frameStrata="DIALOG">
+	<Frame name="CharacterUpgradeSelectFactionFrame" parent="CharSelectServicesFlowFrame" inherits="CharacterServicesBlockTemplate" hidden="true" frameStrata="DIALOG">
 		<Size x="300" y="150"/>
 		<Frames>
 			<Frame parentKey="ControlsFrame" setAllPoints="true">

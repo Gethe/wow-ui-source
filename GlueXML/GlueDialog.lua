@@ -9,6 +9,14 @@ GlueDialogTypes["OKAY"] = {
 	button2 = nil,
 }
 
+GlueDialogTypes["OKAY_HTML_MUST_ACCEPT"] = {
+	text = "",
+	button1 = OKAY,
+	button2 = nil,
+	explicitAcknowledge = true,
+	html = 1,
+}
+
 GlueDialogTypes["OKAY_MUST_ACCEPT"] = {
 	text = "",
 	button1 = OKAY,
@@ -496,6 +504,8 @@ GlueDialogTypes["REALMLIST_NOT_CONNECTED_TO_BATTLENET"] = {
 	end,
 }
 
+--]]
+
 GlueDialogTypes["BOOST_NOT_RECOMMEND_SPEC_WARNING"] = {
 	text = BOOST_NOT_RECOMMEND_SPEC_WARNING,
 	button1 = OKAY,
@@ -508,7 +518,6 @@ GlueDialogTypes["BOOST_NOT_RECOMMEND_SPEC_WARNING"] = {
 		master.flow:Rewind(master);
 	end,
 }
---]]
 
 GlueDialogTypes["LEGION_PURCHASE_READY"] = {
 	text = BLIZZARD_STORE_LEGION_PURCHASE_READY_DESCRIPTION,

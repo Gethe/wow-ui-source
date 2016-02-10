@@ -282,6 +282,10 @@ function RealmList_OnShow(self)
 
 	--Update the UI
 	RealmList_Update();
+	
+	if ( not C_RealmList.IsRealmListComplete() ) then
+		GlueDialog_Show("OKAY_MUST_ACCEPT", REALM_LIST_PARTIAL_RESULTS);
+	end
 end
 
 function RealmListTab_OnClick(tab)

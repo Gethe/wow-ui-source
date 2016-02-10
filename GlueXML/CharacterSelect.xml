@@ -1,6 +1,20 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\FrameXML\UI.xsd">
 	<Script file="CharacterSelect.lua"/>
+	<Frame name="CharacterServicesProcessingIconTemplate" virtual="true">
+		<Size x="42" y="37"/>
+		<Layers>
+			<Layer level="ARTWORK">
+				<Texture parentKey="Icon" inherits="services-icon-processing" setAllPoints="true"/>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnEnter function="CharacterServicesProcessingIcon_OnEnter"/>
+			<OnLeave>
+				GlueTooltip:Hide();
+			</OnLeave>
+		</Scripts>
+	</Frame>
 	<Button name="CharSelectMoveButtonTemplate" motionScriptsWhileDisabled="true" virtual="true" hidden="true">
 		<Size x="24" y="24"/>
 		<!-- insets to stop a flickering bug when mousing right on the edge -->
@@ -312,7 +326,7 @@
 		</Scripts>
 	</Frame>
 
-	<Button name="CharacterBoostTemplate" parentArray="CharacterBoosts" frameLevel="3" hidden="true" virtual="true">
+	<Button name="CharacterBoostTemplate" parentArray="CharacterBoosts" frameStrata="HIGH" hidden="true" virtual="true">
 		<Size x="59" y="60"/>
 		<Layers>
 			<Layer level="BORDER" textureSubLevel="3">
@@ -1290,7 +1304,7 @@
 						</Layers>
 					</Frame>
 
-					<Frame parentKey="WarningText" frameLevel="2" hidden="true">
+					<Frame parentKey="WarningText" hidden="true">
 						<Size x="340" y="20"/>
 						<Anchors>
 							<Anchor point="TOP" relativeTo="CharacterSelectUI" relativePoint="TOP" x="-70" y="-20"/>
@@ -1310,7 +1324,7 @@
 						</Scripts>
 					</Frame>
 
-					<Frame name="UpgradePopupFrame" frameLevel="3" hidden="true">
+					<Frame name="UpgradePopupFrame" frameStrata="HIGH" hidden="true">
 						<Size x="430" y="250"/>
 						<Layers>
 							<Layer level="BACKGROUND">

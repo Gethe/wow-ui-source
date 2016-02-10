@@ -21,6 +21,8 @@ GlueDropDownMenu.xml
 ..\SharedXML\Util.lua
 ..\SharedXML\HybridScrollFrame.lua
 ..\SharedXML\HybridScrollFrame.xml
+..\SharedXML\ModelFrames.xml
+..\SharedXML\ModelPreviewFrame.xml
 
 ##New stuff!!!
 GlueParent.xml
@@ -28,9 +30,10 @@ GlueParent.xml
 ServerAlert.xml
 AccountLogin.xml
 RealmList.xml
-CharacterServices.xml
 AccountReactivate.xml
+CharacterServicesPatchwerk.xml
 CharacterSelect.xml
+CharacterServices.xml
 CharacterCreate.xml
 PromotionFrame.xml
 StarterEditionPopUp.xml

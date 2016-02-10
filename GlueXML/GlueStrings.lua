@@ -1122,6 +1122,7 @@ REALM_IS_FULL_WARNING = "You have selected a full server which can result in a w
 REALM_LIST_FAILED = "Unable to connect to realm list server";
 REALM_LIST_INVALID = "Invalid realm list";
 REALM_LIST_IN_PROGRESS = "Retrieving realm list";
+REALM_LIST_PARTIAL_RESULTS = "Some realms may currently be unavailable.";
 REALM_LIST_REALM_NOT_FOUND = "The game server you have chosen is currently down.  Use the Change Realm button to choose another Realm.  Check www.worldofwarcraft.com/serverstatus for current server status.";
 REALM_LIST_SUCCESS = "Realm list retrieved";
 REALM_LOAD = "Population";
