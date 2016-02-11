@@ -149,11 +149,11 @@
 						local textureKit, titleName, titleR, titleG, titleB, barConnectedR, barConnectedG, barConnectedB, barDisconnectedR, barDisconnectedG, barDisconnectedB = C_ArtifactUI.GetArtifactArtInfo();
 
 						GameTooltip:SetText(titleName, 1, 1, 1);
-						local purchasedRanks = C_ArtifactUI.GetTotalPurchasedRanks();
-						local maxPurchasedRanks = C_ArtifactUI.GetMaxPurchasedRanks();
+						--local purchasedRanks = C_ArtifactUI.GetTotalPurchasedRanks();
+						--local maxPurchasedRanks = C_ArtifactUI.GetMaxPurchasedRanks();
 
-						GameTooltip:AddLine(ARTIFACTS_KNOWLEDGE_TOOLTIP_LEVEL:format(maxPurchasedRanks), 1, 1, 1);
-						GameTooltip:AddLine(ARTIFACTS_KNOWLEDGE_TOOLTIP_DESC:format(purchasedRanks, maxPurchasedRanks), NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b, true);
+						--GameTooltip:AddLine(ARTIFACTS_KNOWLEDGE_TOOLTIP_LEVEL:format(maxPurchasedRanks), 1, 1, 1);
+						--GameTooltip:AddLine(ARTIFACTS_KNOWLEDGE_TOOLTIP_DESC:format(purchasedRanks, maxPurchasedRanks), NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b, true);
 						GameTooltip:Show();
 					</OnEnter>
 					<OnLeave function="GameTooltip_Hide" />

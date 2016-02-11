@@ -49,12 +49,12 @@ end
 function AdventureMap_MissionTooltipMixin:AddBonusEffects(missionInfo)
 	local bonusEffects = C_Garrison.GetMissionBonusAbilityEffects(missionInfo.missionID);
 	if bonusEffects then
-		--TODO_DW do we care about bonus effects?
+		--TODO do we care about bonus effects?
 	end
 end
 
 function AdventureMap_MissionTooltipMixin:AddThreats(missionInfo)
-	-- TODO_DW Do we care about threats?
+	-- TODO Do we care about threats?
 end
 
 function AdventureMap_MissionTooltipMixin:AddBasicInfo(missionInfo)

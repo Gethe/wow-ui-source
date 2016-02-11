@@ -47,7 +47,6 @@ VideoData["Graphics_Quality"]={
 	initialize = 
 		function(self)
 			self:SetWidth(550);
-			self:SetBackdrop({bgFile = "Interface\\Buttons\\UI-SliderBar-Background", edgeFile = "Interface\\Buttons\\UI-SliderBar-Border", tile = true, tileSize = 8, edgeSize = 8, pieces=93, insets = { left = 3, right = 3, top = 6, bottom = 6 } } );
 			local parent = self:GetParent():GetName();
 			local name = self:GetName();
 

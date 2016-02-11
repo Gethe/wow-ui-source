@@ -21,10 +21,18 @@ function OrderHallMission:OnHide()
 	SetMissionFrame(nil);
 end
 
+function OrderHallMission:EscapePressed()
+	if self:GetMissionPage() and self:GetMissionPage():IsVisible() then
+		self:GetMissionPage().CloseButton:Click();
+		return true;
+	end
+
+	return false;
+end
+
 function OrderHallMission:SelectTab(id)
-	if (GarrisonMissionFrame.MissionTab.MissionPage:IsShown()) then
-		GarrisonMissionFrame.MissionTab.MissionPage.CloseButton:Click();
-		GarrisonMissionFrame:Hide();
+	if (self:GetMissionPage():IsShown()) then
+		self:GetMissionPage().CloseButton:Click();
 	end
 	GarrisonFollowerMission.SelectTab(self, id);
 	if (id == 1) then
@@ -38,19 +46,88 @@ end
 function OrderHallMission:SetupMissionList()
 end
 
+function OrderHallMission:GetMissionPage()
+	if (self.MissionTab.isZoneSupport) then
+		return self.MissionTab.ZoneSupportMissionPage;
+	else
+		return self.MissionTab.MissionPage;
+	end
+end
+
 function OrderHallMission:CheckCompleteMissions(onShow)
-	-- go to the right tab if window is being open
-	if ( onShow ) then
+	-- go to the right tab if window is being opened
+	if (onShow) then
 		self:SelectTab(1);
 	end
+end
+
+function OrderHallMission:OnClickMission(missionInfo)
+	self.MissionTab.isZoneSupport = missionInfo.isZoneSupport;
+	GarrisonFollowerMission.OnClickMission(self, missionInfo);
 end
 
 function OrderHallMission:CloseMission()
 	-- TODO: Can this be moved to GarrisonFollowerMission?
 	GarrisonMission.CloseMission(self);
 	self.FollowerList:Hide();
+	self.MissionTab.ZoneSupportMissionPage:Hide();
+	self.MissionTab:ZoomOut();
+
+	self.MissionTab.isZoneSupport = nil;
 end
 
+function OrderHallMission:ShowMissionStage(missionInfo)
+	if (not self.MissionTab.isZoneSupport) then
+		GarrisonFollowerMission.ShowMissionStage(self, missionInfo);
+	end
+end
+
+
+function OrderHallMission:ShowMission(missionInfo)
+	if (missionInfo.isZoneSupport) then
+		self:GetMissionPage().missionInfo = missionInfo;
+		self:UpdateMissionData(self:GetMissionPage());
+	else
+		GarrisonFollowerMission.ShowMission(self, missionInfo);
+	end
+end
+
+function OrderHallMission:UpdateCostFrame(missionPage, amount)
+	if (not missionPage.missionInfo.isZoneSupport) then
+		GarrisonMission.UpdateCostFrame(self, missionPage, amount);
+	end
+end
+
+function OrderHallMission:UpdateZoneSupportMissionData(missionPage)
+	local texture;
+	local spellID;
+	local timeText
+	if (missionPage.Followers[1] and missionPage.Followers[1].info) then
+		spellID = missionPage.Followers[1].info.zoneSupportSpellID;
+		local _, _, spellTexture = GetSpellInfo(spellID);
+		texture = spellTexture;
+	end
+
+	local totalTimeString = C_Garrison.GetPartyMissionInfo(missionPage.missionInfo.missionID);
+	missionPage.MissionTime:SetFormattedText(GARRISON_MISSION_TIME_TOTAL, totalTimeString);
+
+	missionPage.ZoneSupport.iconTexture:SetTexture(texture);
+	missionPage.ZoneSupport:SetShown(texture ~= nil);
+	missionPage.ZoneSupport.spellID = spellID;
+
+	missionPage:UpdatePortraitPulse();
+	missionPage:UpdateEmptyString();
+
+	self:UpdateStartButton(missionPage);
+end
+
+function OrderHallMission:UpdateMissionData(missionPage)
+	if (missionPage.missionInfo.isZoneSupport) then
+		self:UpdateZoneSupportMissionData(missionPage);
+	else
+		GarrisonFollowerMission.UpdateMissionData(self, missionPage);
+	end
+end
 
 OrderHallMissionAdventureMapMixin = { }
 
@@ -59,11 +136,9 @@ end
 
 function OrderHallMissionAdventureMapMixin:EvaluateLockReasons()
 	if next(self.lockReasons) then
-		-- TODO overlay frame
-
+		self:GetParent().GarrCorners:EnableMouse(true);
 	else
-		-- TODO overlay frame
-
+		self:GetParent().GarrCorners:EnableMouse(false);
 	end
 end
 
@@ -392,4 +467,16 @@ end
 
 function OrderHallFollowerEquipmentMixin:OnLeave()
 	GarrisonFollowerAbilityTooltip:Hide();
+end
+
+ZoneSupportMissionPageMixin = { }
+function ZoneSupportMissionPageMixin:UpdateEmptyString()
+	if ( C_Garrison.GetNumFollowersOnMission(self.missionInfo.missionID) == 0 ) then
+		self.ZoneSupportDescriptionLabel:SetText(self.missionInfo.description);
+	else
+		self.ZoneSupportDescriptionLabel:SetText(ORDER_HALL_ZONE_SUPPORT_DESCRIPTION_IN_ZONE);
+	end
+end
+
+function ZoneSupportMissionPageMixin:UpdateFollowerModel(info)
 end

@@ -195,16 +195,6 @@ function GarrisonFollowerList:UpdateFollowers()
 
 	if ( self.dirtyList ) then
 		self.followers = C_Garrison.GetFollowers(self.followerType);
-		if (BlizzardGarrisonTroopList ~= nil and self.followers ~= nil) then
-			for j, troop in ipairs(BlizzardGarrisonTroopList) do
-				local troop64 = string.format("0x%016X", troop);
-				for i, f in ipairs(self.followers) do
-					if (f.garrFollowerID == troop64) then
-						f.isTroop = true;
-					end
-				end
-			end
-		end
 		self.dirtyList = nil;
 	end
 
@@ -264,7 +254,7 @@ function GarrisonFollowerList:UpdateFollowers()
 	self.showCategories = true;
 	if (self.showCategories) then
 	    local additionalOffset = 0;
-	    if ( numTroops > 0 ) then
+	    if ( true ) then -- Always show the Troops category even if there aren't any.
 		    additionalOffset = additionalOffset + 1;
 		    tinsert(self.followersList, numActive + additionalOffset, 0);
 		    self.followersLabels[numActive + additionalOffset] = FOLLOWERLIST_LABEL_TROOPS;
@@ -720,7 +710,7 @@ function GarrisonFollowerListButton_OnClick(self, button)
 		end
 		CloseDropDownMenus();
 	-- Don't show right click follower menu in landing page
-	elseif ( button == "RightButton" and not self:GetParent():GetParent():GetParent().isLandingPage) then
+	elseif ( button == "RightButton" and not self:GetFollowerList().isLandingPage) then
 		if ( self.isCollected ) then
 			if ( GetMissionFrame().FollowerList.OptionDropDown.followerID ~= self.id ) then
 				CloseDropDownMenus();

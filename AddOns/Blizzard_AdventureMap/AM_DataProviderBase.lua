@@ -27,6 +27,14 @@ function AdventureMapDataProviderMixin:RefreshAllData(fromOnShow)
 	-- Override in your mixin, this method should assume the map is completely blank, and refresh any data necessary on the map
 end
 
+function AdventureMapDataProviderMixin:OnShow()
+	-- Override in your mixin, called when the adventure map is shown
+end
+
+function AdventureMapDataProviderMixin:OnHide()
+	-- Override in your mixin, called when the adventure map is closed
+end
+
 function AdventureMapDataProviderMixin:OnMapInsetSizeChanged(mapInsetIndex, expanded)
 	-- Optionally override in your mixin, called when a map inset changes sizes
 end

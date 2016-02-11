@@ -5,7 +5,6 @@
 ## Version: 1.0
 ## RequiredDep: Blizzard_GarrisonTemplates
 ## LoadOnDemand: 1
-## SavedVariablesPerCharacter: BlizzardGarrisonTroopList
 
 Blizzard_GarrisonBuildingUI.xml
 Blizzard_GarrisonMissionUI.xml

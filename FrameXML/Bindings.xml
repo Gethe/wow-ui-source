@@ -1141,6 +1141,9 @@
 		end
 		UIErrorsFrame:AddMessage(text, YELLOW_FONT_COLOR.r, YELLOW_FONT_COLOR.g, YELLOW_FONT_COLOR.b);
 	</Binding>
+	<Binding name="TOGGLEWINDOWED" category="BINDING_HEADER_MISC">
+		ToggleWindowed();
+	</Binding>
 
 	<!-- Debug function key bindings -->
 	<Binding name="TOGGLESTATS" hidden="true" debug="true" category="BINDING_HEADER_DEBUG">

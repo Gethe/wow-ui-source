@@ -297,7 +297,7 @@
 			<Font font="Fonts\FRIZQT___CYR.TTF" height="32" outline="THICK"/>
 		</Member>
 	</FontFamily>
-	
+
 	<!-- This font is used as a way to localize numbers (in some locations.) -->
 	<FontFamily name="NumberFont_GameNormal" virtual="true">
 		<Member alphabet="roman">
@@ -721,6 +721,60 @@
 		</Member>
 	</FontFamily>
 
+	<FontFamily name="Game11Font" virtual="true">
+		<Member alphabet="roman">
+			<Font font="Fonts\FRIZQT__.ttf" height="11"/>
+		</Member>
+		<Member alphabet="korean">
+			<Font font="Fonts\K_Pagetext.ttf" height="11"/>
+		</Member>
+		<Member alphabet="simplifiedchinese">
+			<Font font="Fonts\ARKai_T.ttf" height="11"/>
+		</Member>
+		<Member alphabet="traditionalchinese">
+			<Font font="Fonts\blei00d.ttf" height="11"/>
+		</Member>
+		<Member alphabet="russian">
+			<Font font="Fonts\MORPHEUS_CYR.ttf" height="11"/>
+		</Member>
+	</FontFamily>
+
+	<FontFamily name="Game12Font" virtual="true">
+		<Member alphabet="roman">
+			<Font font="Fonts\FRIZQT__.ttf" height="12"/>
+		</Member>
+		<Member alphabet="korean">
+			<Font font="Fonts\K_Pagetext.ttf" height="12"/>
+		</Member>
+		<Member alphabet="simplifiedchinese">
+			<Font font="Fonts\ARKai_T.ttf" height="12"/>
+		</Member>
+		<Member alphabet="traditionalchinese">
+			<Font font="Fonts\blei00d.ttf" height="12"/>
+		</Member>
+		<Member alphabet="russian">
+			<Font font="Fonts\MORPHEUS_CYR.ttf" height="12"/>
+		</Member>
+	</FontFamily>
+
+	<FontFamily name="Game13Font" virtual="true">
+		<Member alphabet="roman">
+			<Font font="Fonts\FRIZQT__.ttf" height="13"/>
+		</Member>
+		<Member alphabet="korean">
+			<Font font="Fonts\K_Pagetext.ttf" height="13"/>
+		</Member>
+		<Member alphabet="simplifiedchinese">
+			<Font font="Fonts\ARKai_T.ttf" height="13"/>
+		</Member>
+		<Member alphabet="traditionalchinese">
+			<Font font="Fonts\blei00d.ttf" height="13"/>
+		</Member>
+		<Member alphabet="russian">
+			<Font font="Fonts\MORPHEUS_CYR.ttf" height="13"/>
+		</Member>
+	</FontFamily>
+
 	<FontFamily name="Game18Font" virtual="true">
 		<Member alphabet="roman">
 			<Font font="Fonts\FRIZQT__.ttf" height="18"/>
@@ -739,7 +793,6 @@
 		</Member>
 	</FontFamily>
 
-	
 	<FontFamily name="Game24Font" virtual="true">
 		<Member alphabet="roman">
 			<Font font="Fonts\FRIZQT__.ttf" height="24"/>
@@ -812,7 +865,7 @@
 			<Font font="Fonts\MORPHEUS_CYR.ttf" height="32"/>
 		</Member>
 	</FontFamily>
-	
+
 	<FontFamily name="Game36Font" virtual="true">
 		<Member alphabet="roman">
 			<Font font="Fonts\FRIZQT__.ttf" height="36"/>
@@ -830,7 +883,7 @@
 			<Font font="Fonts\MORPHEUS_CYR.ttf" height="36"/>
 		</Member>
 	</FontFamily>
-	
+
 	<FontFamily name="Game48Font" virtual="true">
 		<Member alphabet="roman">
 			<Font font="Fonts\FRIZQT__.ttf" height="48"/>
@@ -848,7 +901,7 @@
 			<Font font="Fonts\MORPHEUS_CYR.ttf" height="48"/>
 		</Member>
 	</FontFamily>
-	
+
 	<FontFamily name="Game60Font" virtual="true">
 		<Member alphabet="roman">
 			<Font font="Fonts\FRIZQT__.ttf" height="60"/>
@@ -866,7 +919,7 @@
 			<Font font="Fonts\MORPHEUS_CYR.ttf" height="60"/>
 		</Member>
 	</FontFamily>
-	
+
 	<FontFamily name="Game72Font" virtual="true">
 		<Member alphabet="roman">
 			<Font font="Fonts\FRIZQT__.ttf" height="72"/>
@@ -882,6 +935,60 @@
 		</Member>
 		<Member alphabet="russian">
 			<Font font="Fonts\MORPHEUS_CYR.ttf" height="72"/>
+		</Member>
+	</FontFamily>
+
+	<FontFamily name="Game11Font_o1" virtual="true">
+		<Member alphabet="roman">
+			<Font font="Fonts\FRIZQT__.ttf" height="11" outline="NORMAL"/>
+		</Member>
+		<Member alphabet="korean">
+			<Font font="Fonts\K_Pagetext.ttf" height="11" outline="NORMAL"/>
+		</Member>
+		<Member alphabet="simplifiedchinese">
+			<Font font="Fonts\ARKai_T.ttf" height="11" outline="NORMAL"/>
+		</Member>
+		<Member alphabet="traditionalchinese">
+			<Font font="Fonts\blei00d.ttf" height="11" outline="NORMAL"/>
+		</Member>
+		<Member alphabet="russian">
+			<Font font="Fonts\MORPHEUS_CYR.ttf" height="11" outline="NORMAL"/>
+		</Member>
+	</FontFamily>
+
+	<FontFamily name="Game12Font_o1" virtual="true">
+		<Member alphabet="roman">
+			<Font font="Fonts\FRIZQT__.ttf" height="12" outline="NORMAL"/>
+		</Member>
+		<Member alphabet="korean">
+			<Font font="Fonts\K_Pagetext.ttf" height="12" outline="NORMAL"/>
+		</Member>
+		<Member alphabet="simplifiedchinese">
+			<Font font="Fonts\ARKai_T.ttf" height="12" outline="NORMAL"/>
+		</Member>
+		<Member alphabet="traditionalchinese">
+			<Font font="Fonts\blei00d.ttf" height="12" outline="NORMAL"/>
+		</Member>
+		<Member alphabet="russian">
+			<Font font="Fonts\MORPHEUS_CYR.ttf" height="12" outline="NORMAL"/>
+		</Member>
+	</FontFamily>
+
+	<FontFamily name="Game13Font_o1" virtual="true">
+		<Member alphabet="roman">
+			<Font font="Fonts\FRIZQT__.ttf" height="13" outline="NORMAL"/>
+		</Member>
+		<Member alphabet="korean">
+			<Font font="Fonts\K_Pagetext.ttf" height="13" outline="NORMAL"/>
+		</Member>
+		<Member alphabet="simplifiedchinese">
+			<Font font="Fonts\ARKai_T.ttf" height="13" outline="NORMAL"/>
+		</Member>
+		<Member alphabet="traditionalchinese">
+			<Font font="Fonts\blei00d.ttf" height="13" outline="NORMAL"/>
+		</Member>
+		<Member alphabet="russian">
+			<Font font="Fonts\MORPHEUS_CYR.ttf" height="13" outline="NORMAL"/>
 		</Member>
 	</FontFamily>
 
@@ -1539,7 +1646,7 @@
 			<Font font="Fonts\MORPHEUS_CYR.TTF" height="16"/>
 		</Member>
 	</FontFamily>
-	
+
 		<FontFamily name="Fancy18Font" virtual="true">
 		<Member alphabet="roman">
 			<Font font="Fonts\MORPHEUS.TTF" height="18"/>

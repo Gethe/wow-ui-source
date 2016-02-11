@@ -3,7 +3,26 @@
 
 	<Script file="Blizzard_BonusObjectiveTracker.lua"/>
 
-	<Frame name="BonusObjectiveTrackerLineTemplate" inherits="ObjectiveTrackerCheckLineTemplate" virtual="true"/>
+	<Frame name="BonusObjectiveTrackerLineTemplate" inherits="ObjectiveTrackerCheckLineTemplate" virtual="true">
+		<Layers>
+			<Layer level="ARTWORK">
+				<FontString parentKey="Dash" inherits="ObjectiveFont" text="QUEST_DASH">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="20" y="1"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnLoad inherit="append">
+				self.Text:ClearAllPoints();
+				self.Text:SetPoint("TOP");
+				self.Text:SetPoint("LEFT", self.Dash, "RIGHT");
+
+				self.Glow:SetPoint("LEFT", self.Dash, -2, 0);
+			</OnLoad>
+		</Scripts>
+	</Frame>
 
 	<ScrollFrame name="BonusObjectiveTrackerBlockTemplate" hidden="true" virtual="true" alpha="0">
 		<Size x="240" y="10"/>
@@ -545,6 +564,35 @@
 			<KeyValue key="DefaultHeaderText" value="TRACKER_HEADER_WORLD_QUESTS" type="global"/>
 			<KeyValue key="ShowWorldQuests" value="true" type="boolean" />
 		</KeyValues>
+		<Frames>
+			<Button parentKey="TrackedQuest">
+				<Layers>
+					<Layer level="BACKGROUND" textureSubLevel="-2">
+						<Texture parentKey="Glow" alphaMode="ADD" file="Interface/WorldMap/UI-QuestPoi-IconGlow">
+							<Size x="50" y="50" />
+							<Anchors>
+								<Anchor point="CENTER" />
+							</Anchors>
+						</Texture>
+					</Layer>
+					<Layer level="BACKGROUND" textureSubLevel="-1">
+						<Texture parentKey="Underlay">
+							<Size x="34" y="34" />
+							<Anchors>
+								<Anchor point="CENTER" y="-2" />
+							</Anchors>
+						</Texture>
+					</Layer>
+					<Layer level="OVERLAY">
+						<Texture parentKey="Texture">
+							<Anchors>
+								<Anchor point="CENTER" />
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+			</Button>
+		</Frames>
 		<Scripts>
 			<!-- Remove event handler, not needed for world quests currently -->
 			<OnEvent />

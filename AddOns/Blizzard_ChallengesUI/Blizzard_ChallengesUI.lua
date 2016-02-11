@@ -248,12 +248,14 @@ end
 
 function ChallengesKeystoneFrameMixin:Reset()
 	self.KeystoneSlot:Reset();
-	self.ActivateAnim:Stop();
-	self.ChallengeModeBGAnim:Stop();
+	self.PulseAnim:Stop();
+	self.InsertedAnim:Stop();
 	self.RunesLargeAnim:Stop();
 	self.RunesLargeRotateAnim:Stop();
 	self.RunesSmallAnim:Stop();
 	self.RunesSmallRotateAnim:Stop();
+	self.StartButton:Disable();
+	
 	for i = 1, #self.Affixes do
 		self.Affixes[i]:Hide();
 	end
@@ -261,6 +263,12 @@ function ChallengesKeystoneFrameMixin:Reset()
 	for k, v in pairs(self.baseStates) do
 		k:SetShown(v.shown);
 		k:SetAlpha(v.alpha);
+	end
+end
+
+function ChallengesKeystoneFrameMixin:OnMouseUp()
+	if (CursorHasItem()) then
+		C_ChallengeMode.SlotKeystone();
 	end
 end
 
@@ -300,12 +308,11 @@ function ChallengesKeystoneFrameMixin:CreateAndPositionAffixes(num)
 end
 
 function ChallengesKeystoneFrameMixin:OnKeystoneSlotted()
-	self.ChallengeModeBGAnim:Play();
+	self.InsertedAnim:Play();
 	self.RunesLargeAnim:Play();
 	self.RunesSmallAnim:Play();
 	self.RunesLargeRotateAnim:Play();
 	self.RunesSmallRotateAnim:Play();
-	self.StartButton:Enable();
 	self.InstructionBackground:Hide();
 	self.Instructions:Hide();
 	self.TimeLimit:Show();

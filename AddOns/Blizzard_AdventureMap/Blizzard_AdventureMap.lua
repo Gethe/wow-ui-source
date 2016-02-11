@@ -14,7 +14,7 @@ end
 function AdventureMapMixin:OnLoad()
 	self:RegisterEvent("ADVENTURE_MAP_CLOSE");
 	self:RegisterEvent("ADVENTURE_MAP_UPDATE_INSETS");
-	self:RegisterEvent("QUEST_LOG_UPDATE"); -- TODO_DW Remove placeholder event
+	self:RegisterEvent("QUEST_LOG_UPDATE");
 	
 	self:SetupTitle();
 
@@ -37,6 +37,7 @@ function AdventureMapMixin:AddStandardDataProviders()
 	--self:AddDataProvider(CreateFromMixins(AdventureMap_ZoneSummaryProviderMixin));
 	self:AddDataProvider(CreateFromMixins(AdventureMap_QuestChoiceDataProviderMixin));
 	self:AddDataProvider(CreateFromMixins(AdventureMap_QuestOfferDataProviderMixin));
+	self:AddDataProvider(CreateFromMixins(AdventureMap_WorldQuestDataProviderMixin));
 	self:AddDataProvider(CreateFromMixins(AdventureMap_MissionDataProviderMixin));
 end
 
@@ -50,10 +51,18 @@ function AdventureMapMixin:OnShow()
 
 	local FROM_ON_SHOW = true;
 	self:RefreshAll(FROM_ON_SHOW);
+
+	for dataProvider in pairs(self.dataProviders) do
+		dataProvider:OnShow();
+	end
 end
 
 function AdventureMapMixin:OnHide()
 	C_AdventureMap.Close();
+
+	for dataProvider in pairs(self.dataProviders) do
+		dataProvider:OnHide();
+	end
 end
 
 function AdventureMapMixin:OnEvent(event, ...)
@@ -61,7 +70,6 @@ function AdventureMapMixin:OnEvent(event, ...)
 		HideUIPanel(self);
 	else
 		if event == "QUEST_LOG_UPDATE" then
-			-- TODO_DW Remove placeholder event
 			if C_AdventureMap.ForceUpdate then
 				C_AdventureMap.ForceUpdate();
 			end
@@ -121,7 +129,6 @@ do
 
 		local pin, newPin = self.pinPools[pinTemplate]:Acquire();
 
-		--TODO_DW this should either be in an XML template or custom implemented in the map to handle overlapping pins
 		if pin:IsMouseEnabled() then
 			pin:SetScript("OnMouseUp", pin.OnClick);
 			pin:SetScript("OnEnter", pin.OnMouseEnter);
@@ -160,6 +167,13 @@ function AdventureMapMixin:EnumeratePinsByTemplate(pinTemplate)
 		return self.pinPools[pinTemplate]:EnumeracteActive();
 	end
 	return nop;
+end
+
+function AdventureMapMixin:GetNumActivePinsByTemplate(pinTemplate)
+	if self.pinPools[pinTemplate] then
+		return self.pinPools[pinTemplate]:GetNumActive();
+	end
+	return 0;
 end
 
 function AdventureMapMixin:EnumerateAllPins()
@@ -454,6 +468,22 @@ function AdventureMapMixin:PanAndZoomTo(normalizedX, normalizedY)
 	self.ScrollContainer:ZoomIn();
 end
 
+function AdventureMapMixin:SetDefaultMaxZoom()
+	self.ScrollContainer:SetMaxZoom(self.ScrollContainer.defaultMaxScale);
+end
+
+function AdventureMapMixin:SetDefaultMinZoom()
+	self.ScrollContainer:SetMinZoom(self.ScrollContainer.defaultMinScale);
+end
+
+function AdventureMapMixin:SetMaxZoom(scale)
+	self.ScrollContainer:SetMaxZoom(scale);
+end
+
+function AdventureMapMixin:SetMinZoom(scale)
+	self.ScrollContainer:SetMinZoom(scale);
+end
+
 function AdventureMapMixin:GetViewRect()
 	return self.ScrollContainer:GetViewRect();
 end
@@ -472,6 +502,10 @@ end
 
 function AdventureMapMixin:GetScaleForMinZoom()
 	return self.ScrollContainer:GetScaleForMinZoom();
+end
+
+function AdventureMapMixin:CalculateZoomScaleAndPositionForAreaInViewRect(...)
+	return self.ScrollContainer:CalculateZoomScaleAndPositionForAreaInViewRect(...);
 end
 
 function AdventureMapMixin:NormalizeHorizontalSize(size)
@@ -613,8 +647,10 @@ function AdventureMapScrollControllerMixin:SetCanvasSize(width, height)
 end
 
 function AdventureMapScrollControllerMixin:CalculateScaleExtents()
-	self.maxScale = .75;
-	self.minScale = .275;
+	self.defaultMaxScale = .75;
+	self.defaultMinScale = .275;
+	self:SetMaxZoom(self.defaultMaxScale);
+	self:SetMinZoom(self.defaultMinScale);
 
 	self.targetScale = Clamp(self.targetScale or self.minScale, self.minScale, self.maxScale);
 end
@@ -769,6 +805,14 @@ function AdventureMapScrollControllerMixin:GetViewRect()
 	return self.viewRect;
 end
 
+function AdventureMapScrollControllerMixin:SetMaxZoom(scale)
+	self.maxScale = scale;
+end
+
+function AdventureMapScrollControllerMixin:SetMinZoom(scale)
+	self.minScale = scale;
+end
+
 function AdventureMapScrollControllerMixin:GetMaxZoomViewRect()
 	return self:CalculateViewRect(self.maxScale);
 end
@@ -784,6 +828,26 @@ function AdventureMapScrollControllerMixin:CalculateViewRect(scale)
 	local top = self:GetVerticalScroll() / childHeight;
 	local bottom = top + (self:GetHeight() / scale) / childHeight;
 	return CreateRectangle(left, right, top, bottom);
+end
+
+function AdventureMapScrollControllerMixin:CalculateZoomScaleAndPositionForAreaInViewRect(left, right, top, bottom, subViewLeft, subViewRight, subViewTop, subViewBottom)
+	local childWidth, childHeight = self.Child:GetSize();
+	local viewWidth, viewHeight = self:GetSize();
+
+	-- this is the desired width/height of the full view given the desired positions for the subview
+	local fullWidth = (right - left) / (subViewRight - subViewLeft);
+	local fullHeight = (bottom - top) / (subViewTop - subViewBottom);
+
+	scale = ( viewWidth / fullWidth ) / childWidth;
+
+	-- translate from the upper-left of the subview to the center of the view.
+	local fullLeft = left - (fullWidth * subViewLeft);
+	local fullBottom = (1.0 - bottom) - (fullHeight * subViewBottom);
+
+	local fullCenterX = fullLeft + (fullWidth / 2);
+	local fullCenterY = 1.0 - (fullBottom + (fullHeight / 2));
+
+	return scale, fullCenterX, fullCenterY;
 end
 
 function AdventureMapScrollControllerMixin:SetPanTarget(normalizedX, normalizedY)

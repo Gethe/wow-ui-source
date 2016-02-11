@@ -451,6 +451,30 @@
 		</Frames>
 	</Frame>
 
+	<Button name="StartMissionButtonTemplate" parentKey="StartMissionButton" inherits="UIPanelButtonTemplate" text="GARRISON_START_MISSION" motionScriptsWhileDisabled="true" virtual="true">
+		<Size x="130" y="20"/>
+		<Layers>
+			<Layer level="OVERLAY">
+				<Texture parentKey="Flash" file="Interface\Buttons\UI-Panel-Button-Glow" alphaMode="ADD">
+					<Size x="212" y="60"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" x="-14" y="7"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Animations>
+			<AnimationGroup parentKey="FlashAnim" looping="BOUNCE">
+				<Alpha childKey="Flash" change="-0.75" duration="1.0" smoothing="IN_OUT" order="1" fromAlpha="0.75" toAlpha="0"/>
+			</AnimationGroup>
+		</Animations>
+		<Scripts>
+			<OnClick function="GarrisonMissionController_OnClickMissionStartButton"/>
+			<OnEnter function="GarrisonMissionController_OnEnterMissionStartButton"/>
+			<OnLeave function="GameTooltip_Hide"/>
+		</Scripts>
+	</Button>
+
 	<Button name="MissionPageTemplate" hidden="true" virtual="true">
 		<Size x="556" y="580"/>
 		<Anchors>
@@ -597,31 +621,10 @@
 					<Anchor point="BOTTOM" x="0" y="198"/>
 				</Anchors>
 			</Frame>
-			<Button parentKey="StartMissionButton" inherits="UIPanelButtonTemplate" text="GARRISON_START_MISSION" motionScriptsWhileDisabled="true">
-				<Size x="130" y="20"/>
+			<Button inherits="StartMissionButtonTemplate">
 				<Anchors>
 					<Anchor point="RIGHT" relativeKey="$parent.ButtonFrame" x="-50" y="1"/>
 				</Anchors>
-				<Layers>
-					<Layer level="OVERLAY">
-						<Texture parentKey="Flash" file="Interface\Buttons\UI-Panel-Button-Glow" alphaMode="ADD">
-							<Size x="212" y="60"/>
-							<Anchors>
-								<Anchor point="TOPLEFT" x="-14" y="7"/>
-							</Anchors>
-						</Texture>
-					</Layer>
-				</Layers>
-				<Animations>
-					<AnimationGroup parentKey="FlashAnim" looping="BOUNCE">
-						<Alpha childKey="Flash" change="-0.75" duration="1.0" smoothing="IN_OUT" order="1" fromAlpha="0.75" toAlpha="0"/>
-					</AnimationGroup>
-				</Animations>
-				<Scripts>
-					<OnClick function="GarrisonMissionController_OnClickMissionStartButton"/>
-					<OnEnter function="GarrisonMissionController_OnEnterMissionStartButton"/>
-					<OnLeave function="GameTooltip_Hide"/>
-				</Scripts>
 			</Button>
 			<Frame parentKey="CostFrame">
 				<Size x="140" y="38"/>

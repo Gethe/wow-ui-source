@@ -247,6 +247,7 @@ LOOT_BORDER_BY_QUALITY = {
 	[LE_ITEM_QUALITY_EPIC] = "loottoast-itemborder-purple",
 	[LE_ITEM_QUALITY_LEGENDARY] = "loottoast-itemborder-orange",
 	[LE_ITEM_QUALITY_HEIRLOOM] = "loottoast-itemborder-heirloom",
+	[LE_ITEM_QUALITY_ARTIFACT] = "loottoast-itemborder-artifact",
 };
 
 LOOT_ROLL_TYPE_PASS = 0;

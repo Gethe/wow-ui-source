@@ -60,14 +60,14 @@ RACE_ICON_TCOORDS = {
 	["DRAENEI_MALE"]	= {0.5, 0.625, 0, 0.25},
 	["DRAENEI_FEMALE"]	= {0.5, 0.625, 0.5, 0.75}, 
 
-	["GOBLIN_MALE"]		= {0.625, 0.750, 0.25, 0.5},
-	["GOBLIN_FEMALE"]	= {0.625, 0.750, 0.75, 1.0},
+	["GOBLIN_MALE"]		= {0.629, 0.750, 0.25, 0.5},
+	["GOBLIN_FEMALE"]	= {0.629, 0.750, 0.75, 1.0},
 
-	["WORGEN_MALE"]		= {0.625, 0.750, 0, 0.25},
-	["WORGEN_FEMALE"]	= {0.625, 0.750, 0.5, 0.75},
+	["WORGEN_MALE"]		= {0.629, 0.750, 0, 0.25},
+	["WORGEN_FEMALE"]	= {0.629, 0.750, 0.5, 0.75},
 	
-	["PANDAREN_MALE"]	= {0.750, 0.875, 0, 0.25},
-	["PANDAREN_FEMALE"]	= {0.750, 0.875, 0.5, 0.75},
+	["PANDAREN_MALE"]	= {0.756, 0.881, 0, 0.25},
+	["PANDAREN_FEMALE"]	= {0.756, 0.881, 0.5, 0.75},
 };
 
 CHARCREATE_CLASS_TOOLTIP = {};
@@ -206,7 +206,8 @@ CHAR_CUSTOMIZE_HAIR_COLOR = 4;
 
 function CharacterCreate_OnLoad(self)
 	self:RegisterEvent("RANDOM_CHARACTER_NAME_RESULT");
-	self:RegisterEvent("GLUE_UPDATE_EXPANSION_LEVEL");
+	self:RegisterEvent("UPDATE_EXPANSION_LEVEL");
+	self:RegisterEvent("CHARACTER_CREATION_RESULT");
 
 	self:SetSequence(0);
 	self:SetCamera(0);
@@ -263,6 +264,9 @@ function CharacterCreate_OnLoad(self)
 end
 
 function CharacterCreate_OnShow()
+	InitializeCharacterScreenData();
+	SetInCharacterCreate(true);
+
 	for i=1, MAX_CLASSES_PER_RACE, 1 do
 		local button = _G["CharCreateClassButton"..i];
 		button:Enable();
@@ -294,7 +298,7 @@ function CharacterCreate_OnShow()
 	CharacterCreateEnumerateRaces(GetAvailableRaces());
 
 	SetCharacterRace(GetSelectedRace());
-		
+	
 	CharacterCreateEnumerateClasses(GetAvailableClasses());
 
 	local _,_,index = GetSelectedClass();
@@ -319,7 +323,7 @@ function CharacterCreate_OnShow()
 		local data = KioskModeSplash_GetModeData();
 		if (not data) then
 			-- This shouldn't happen, why don't have we have mode data?
-			SetGlueScreen("kioskmodesplash");
+			GlueParent_SetScreen("kioskmodesplash");
 			return;
 		end
 		local available = {};
@@ -365,6 +369,7 @@ function CharacterCreate_OnHide()
 	-- character previews will need to be redone if coming back to character create. One reason is all the memory used for
 	-- tracking the frames (on the c side) will get released if the user returns to the login screen
 	CharCreatePreviewFrame.rebuildPreviews = true;
+	SetInCharacterCreate(false);
 end
 
 function CharacterCreate_OnEvent(event, arg1, arg2, arg3)
@@ -379,11 +384,19 @@ function CharacterCreate_OnEvent(event, arg1, arg2, arg3)
 		CharacterCreateRandomName:Enable();
 		CharCreateOkayButton:Enable();
 		PlaySound("gsCharacterCreationLook");
-	elseif ( event == "GLUE_UPDATE_EXPANSION_LEVEL" ) then
+	elseif ( event == "UPDATE_EXPANSION_LEVEL" ) then
 		-- Expansion level changed while online, so enable buttons as needed
 		if ( CharacterCreateFrame:IsShown() ) then
 			CharacterCreateEnumerateRaces(GetAvailableRaces());
 			CharacterCreateEnumerateClasses(GetAvailableClasses());
+		end
+	elseif ( event == "CHARACTER_CREATION_RESULT" ) then
+		local success, errorCode = arg1, arg2;
+		if ( success ) then
+			CharacterSelect.selectLast = true;
+			GlueParent_SetScreen("charselect");
+		else
+			GlueDialog_Show("OKAY", _G[errorCode]);
 		end
 	end
 end
@@ -509,7 +522,7 @@ function CharacterCreateEnumerateClasses(classes)
 	local coords;
 	local index = 1;
 	local button;
-	for idx, classData in pairs(classes) do
+	for classID, classData in pairs(classes) do
 		local classIndex = classData.fileName;
 		coords = CLASS_ICON_TCOORDS[classIndex];
 		button = _G["CharCreateClassButton"..index];
@@ -521,12 +534,12 @@ function CharacterCreateEnumerateClasses(classes)
 		local data = IsKioskModeEnabled() and KioskModeSplash_GetModeData();
 		local disableTexture = button.DisableTexture;
 		if ( classData.enabled == true ) then
-			if (IsKioskModeEnabled() and (not IsClassAllowedInKioskMode(index) or not data.classes[classIndex])) then
+			if (IsKioskModeEnabled() and (not IsClassAllowedInKioskMode(classID) or not data.classes[classIndex])) then
 				button:Disable();
 				SetButtonDesaturated(button, true);
 				button.tooltip.footer = CLASS_DISABLED_KIOSK_MODE;
 				disableTexture:Show();
-			elseif (IsRaceClassValid(CharacterCreate.selectedRace, index)) then
+			elseif (IsRaceClassValid(CharacterCreate.selectedRace, classID)) then
 				button:Enable();
 				SetButtonDesaturated(button);
 				button.tooltip.footer = CLASS_INFO_MORE_INFO_HINT;
@@ -781,13 +794,13 @@ function CharacterCreate_Back()
 
 	if( IsKioskModeEnabled() ) then
 		PlaySound("gsCharacterCreationCancel");
-		SetGlueScreen("kioskmodesplash");
+		GlueParent_SetScreen("kioskmodesplash");
 		return;
 	end
 
 	PlaySound("gsCharacterCreationCancel");
 	CHARACTER_SELECT_BACK_FROM_CREATE = true;
-	SetGlueScreen("charselect");
+	GlueParent_SetScreen("charselect");
 end
 
 function CharacterCreate_Forward()
@@ -841,7 +854,7 @@ function CharCreateCustomizationFrame_OnShow ()
 		CharacterCreateFrame.customizationType = 1;
 	end
 	for i=1, NUM_CHAR_CUSTOMIZATIONS, 1 do
-		if ( ( GetNumFeatureVariationsForType(i) <= 1) or ( isSkinVariantHair and i == CHAR_CUSTOMIZE_HAIR_COLOR ) ) then
+		if ( ( GetNumFeatureVariationsForType(i) <= 1 ) or ( isSkinVariantHair and i == CHAR_CUSTOMIZE_HAIR_COLOR ) ) then
 			_G["CharCreateCustomizationButton"..i]:Hide();
 		else
 			_G["CharCreateCustomizationButton"..i]:Show();
@@ -931,12 +944,12 @@ function CharacterRace_OnClick(self, id, forceSelect)
 				SetCharacterClass(fcid);
 				SetCharacterRace(GetSelectedRace());
 			else
-				local _,_,classIndex = GetSelectedClass();
+				local _,_,classID = GetSelectedClass();
 				if ( PAID_SERVICE_TYPE ) then
-					classIndex = PaidChange_GetCurrentClassIndex();
-					SetSelectedClass(classIndex);	-- selecting a race would have changed class to default
+					classID = PaidChange_GetCurrentClassID();
+					SetSelectedClass(classID);	-- selecting a race would have changed class to default
 				end
-				SetCharacterClass(classIndex);
+				SetCharacterClass(classID);
 			end
 			
 			-- Hair customization stuff
@@ -967,12 +980,12 @@ function SetCharacterGender(sex)
 	CharacterCreateEnumerateClasses(GetAvailableClasses());
  	SetCharacterRace(GetSelectedRace());
 	
-	local _,_,classIndex = GetSelectedClass();
+	local _,_,classID = GetSelectedClass();
 	if ( PAID_SERVICE_TYPE ) then
-		classIndex = PaidChange_GetCurrentClassIndex();
+		classID = PaidChange_GetCurrentClassID();
 		PandarenFactionButtons_SetTextures();
 	end
-	SetCharacterClass(classIndex);
+	SetCharacterClass(classID);
 
 	CharacterCreate_UpdateHairCustomization();
 	CharacterChangeFixup();

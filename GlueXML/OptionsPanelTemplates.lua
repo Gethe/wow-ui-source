@@ -326,13 +326,12 @@ function BlizzardOptionsPanel_OnLoad (frame, okay, cancel, default, refresh)
 	frame.default = default or BlizzardOptionsPanel_Default;
 	frame.refresh = refresh or BlizzardOptionsPanel_Refresh;
 
-	frame:RegisterEvent("SET_GLUE_SCREEN");
-	frame:RegisterEvent("DISCONNECTED_FROM_SERVER");
+	frame:RegisterEvent("FRAMES_LOADED");
 	frame:SetScript("OnEvent", BlizzardOptionsPanel_OnEvent);
 end
 
 function BlizzardOptionsPanel_OnEvent (frame, event, ...)
-	if ( event == "SET_GLUE_SCREEN" or event == "DISCONNECTED_FROM_SERVER" ) then
+	if ( event == "FRAMES_LOADED" ) then
 		if ( frame.options and frame.controls ) then
 			local entry;
 			local minValue, maxValue;

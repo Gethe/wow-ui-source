@@ -36,7 +36,6 @@ end
 function AdventureMap_MissionDataProviderMixin:RemoveAllData()
 	self:GetAdventureMap():RemoveAllPinsByTemplate("AdventureMap_MissionPinTemplate");
 	self:GetAdventureMap():RemoveAllPinsByTemplate("AdventureMap_MissionRewardPinTemplate");
-	self:GetAdventureMap():RemoveLockReason("AdventureMap_MissionUI");
 end
 
 function AdventureMap_MissionDataProviderMixin:RefreshAllData(fromOnShow)
@@ -109,7 +108,6 @@ function AdventureMap_MissionDataProviderMixin:AddMissionPin(missionInfo)
 end
 
 local function ShowGarrisonMission(dataProvider, missionInfo)
-	dataProvider:GetAdventureMap().MissionPage:Show();
 	local missionFrame = dataProvider:GetAdventureMap():GetParent();
 	missionFrame:OnClickMission(missionInfo);
 end
@@ -117,12 +115,7 @@ end
 function AdventureMap_MissionDataProviderMixin:StartMission(missionInfo)
 	ShowGarrisonMission(self, missionInfo);
 
-	self:GetAdventureMap():AddLockReason("AdventureMap_MissionUI");
 	AdventureMapQuestChoiceDialog:DeclineQuest(true);
-end
-
-function AdventureMap_MissionDataProviderMixin:CancelStartMission()
-	self:GetAdventureMap():RemoveLockReason("AdventureMap_MissionUI");
 end
 
 function AdventureMap_MissionDataProviderMixin:CompleteMission(missionInfo)
@@ -271,6 +264,28 @@ function AdventureMap_MissionPinMixin:OnClick(button)
 			-- Nothing currently
 		else
 			self.dataProvider:StartMission(self.missionInfo);
+			if self.missionInfo.isZoneSupport then
+				local zoneName, left, right, top, bottom = C_AdventureMap.GetZoneInfoByAreaID(self.missionInfo.areaID);
+				if (left and right) then
+					-- debugging
+					if (self:GetAdventureMap().ZoneSupportMissionPage.debugZoneArea) then
+						self:GetAdventureMap().ScrollContainer.Child.ZoneArea:ClearAllPoints();
+						self:GetAdventureMap().ScrollContainer.Child.ZoneArea:SetPoint("TOPLEFT", left * self:GetAdventureMap().ScrollContainer.Child:GetWidth(), -top * self:GetAdventureMap().ScrollContainer.Child:GetHeight());
+						self:GetAdventureMap().ScrollContainer.Child.ZoneArea:SetSize((right - left) * self:GetAdventureMap().ScrollContainer.Child:GetWidth(), (bottom - top) * self:GetAdventureMap().ScrollContainer.Child:GetHeight());
+						self:GetAdventureMap().ScrollContainer.Child.ZoneArea:Show();
+						self:GetAdventureMap().ZoneSupportMissionPage.ZoneArea:Show();
+					end
+
+					local subViewLeft = (self:GetAdventureMap().ZoneSupportMissionPage.ZoneArea:GetLeft() - self:GetAdventureMap().ScrollContainer:GetLeft()) / self:GetAdventureMap().ScrollContainer:GetWidth();
+					local subViewRight = (self:GetAdventureMap().ZoneSupportMissionPage.ZoneArea:GetRight() - self:GetAdventureMap().ScrollContainer:GetLeft()) / self:GetAdventureMap().ScrollContainer:GetWidth();
+					local subViewTop = (self:GetAdventureMap().ZoneSupportMissionPage.ZoneArea:GetTop() - self:GetAdventureMap().ScrollContainer:GetBottom()) / self:GetAdventureMap().ScrollContainer:GetHeight();
+					local subViewBottom = (self:GetAdventureMap().ZoneSupportMissionPage.ZoneArea:GetBottom() - self:GetAdventureMap().ScrollContainer:GetBottom()) / self:GetAdventureMap().ScrollContainer:GetHeight();
+					local scale, centerX, centerY = self:GetAdventureMap():CalculateZoomScaleAndPositionForAreaInViewRect(left, right, top, bottom, subViewLeft, subViewRight, subViewTop, subViewBottom);
+
+					self:GetAdventureMap():SetMaxZoom(scale);
+					self:GetAdventureMap():PanAndZoomTo(centerX, centerY);
+				end
+			end
 		end
 	end
 end

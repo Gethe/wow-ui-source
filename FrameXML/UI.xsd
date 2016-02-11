@@ -1120,7 +1120,7 @@
 		<xs:attribute name="startDelay" type="xs:float" default="0.0"/>
 		<xs:attribute name="endDelay" type="xs:float" default="0.0"/>
 		<xs:attribute name="duration" type="xs:float"/>
-		<xs:attribute name="order" type="AnimOrderType"/>
+		<xs:attribute name="order" type="AnimOrderType" default="0"/>
 		<xs:attribute name="smoothing" type="ANIMSMOOTHTYPE" default="NONE"/>
 	</xs:complexType>
 	<xs:element name="Animation" type="AnimationType"/>

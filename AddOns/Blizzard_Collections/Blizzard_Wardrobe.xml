@@ -30,6 +30,20 @@
 						<Anchor point="BOTTOM" x="0" y="-13"/>
 					</Anchors>
 				</Texture>
+				<FontString parentKey="NewString" inherits="GameFontHighlight" maxLines="1" justifyH="CENTER" text="NEW_CAPS" hidden="true">
+					<Shadow>
+						<Color r="0.32" g="0.5" b="1.0"/>
+					</Shadow>
+					<Anchors>
+						<Anchor point="TOP" x="0" y="8"/>
+					</Anchors>
+				</FontString>
+				<Texture parentKey="NewGlow" atlas="collections-newglow" hidden="true">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.NewString" x="-20" y="10"/>
+						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.NewString" x="20" y="-10"/>
+					</Anchors>
+				</Texture>
 			</Layer>
 			<Layer level="HIGHLIGHT">
 				<Texture atlas="transmog-wardrobe-border-highlighted" alphaMode="ADD" useAtlasSize="true">
@@ -357,32 +371,6 @@
 			<Frame parentKey="ModelsFrame" inherits="CollectionsBackgroundTemplate">
 				<Frames>
 					<Frame name="WardrobeModelRightClickDropDown" parentKey="RightClickDropDown" inherits="UIDropDownMenuTemplate" hidden="true"/>
-					<Frame parentKey="OutfitDropDown" name="WardrobeOutfitDropDown" inherits="UIDropDownMenuTemplate" enableMouse="true" hidden="false">
-						<Size x="87" y="22"/>
-						<Anchors>
-							<Anchor point="TOPRIGHT" x="-6" y="-22"/>
-						</Anchors>
-						<Frames>
-							<Button parentKey="SaveButton" inherits="UIPanelButtonTemplate" text="SAVE">
-								<Size x="88" y="22"/>
-								<Anchors>
-									<Anchor point="LEFT" relativePoint="RIGHT" x="-13" y="-3"/>
-								</Anchors>
-								<Scripts>
-									<OnClick>
-										PlaySound("igMainMenuOptionCheckBoxOn");
-										WardrobeOutfitFrame_SaveOutfit(UIDropDownMenu_GetText(WardrobeOutfitDropDown));
-									</OnClick>
-								</Scripts>
-							</Button>
-						</Frames>
-						<Scripts>
-							<OnLoad function="WardrobeOutfitDropDown_OnLoad"/>
-							<OnEvent function="WardrobeOutfitDropDown_OnEvent"/>
-							<OnShow function="WardrobeOutfitDropDown_OnShow"/>
-							<OnHide function="WardrobeOutfitDropDown_OnHide"/>
-						</Scripts>
-					</Frame>
 					<Frame parentKey="WeaponDropDown" name="$parentWeaponDropDown" inherits="UIDropDownMenuTemplate" enableMouse="true" hidden="true">
 						<Size x="87" y="22"/>
 						<Anchors>
@@ -532,265 +520,6 @@
 					</Button>
 				</Frames>
 			</Frame>
-			<!--
-			<Frame parentKey="UpgradeLevelHelpBox" inherits="GlowBoxTemplate" enableMouse="true" hidden="true" frameStrata="DIALOG">
-				<Size x="220" y="100"/>
-				<Layers>
-					<Layer level="OVERLAY">
-						<FontString parentKey="Text" inherits="GameFontHighlightLeft" justifyV="TOP" text="HEIRLOOMS_JOURNAL_TUTORIAL_UPGRADE">
-							<Size x="188" y="0"/>
-							<Anchors>
-								<Anchor point="TOPLEFT" x="16" y="-24"/>
-							</Anchors>
-						</FontString>
-					</Layer>
-				</Layers>
-				<Frames>
-					<Button parentKey="CloseButton" inherits="UIPanelCloseButton">
-						<Anchors>
-							<Anchor point="TOPRIGHT" x="6" y="6"/>
-						</Anchors>
-						<Scripts>
-							<OnClick>
-								self:GetParent():Hide();
-								SetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_HEIRLOOM_JOURNAL_LEVEL, true);
-							</OnClick>
-						</Scripts>
-					</Button>
-					<Frame parentKey="Arrow" inherits="GlowBoxArrowTemplate">
-						<Anchors>
-							<Anchor point="BOTTOM" relativePoint="TOPLEFT" x="37" y="-3"/>
-						</Anchors>
-					</Frame>
-				</Frames>
-				<Scripts>
-					<OnLoad>
-						self.Text:SetSpacing(4);
-						SetClampedTextureRotation(self.Arrow.Arrow, 180);
-						SetClampedTextureRotation(self.Arrow.Glow, 180);
-						self.Arrow.Glow:ClearAllPoints();
-						self.Arrow.Glow:SetPoint("BOTTOM", self, "TOPLEFT", 37, -3);
-					</OnLoad>
-					<OnShow>
-						self:SetHeight(self.Text:GetHeight() + 42);
-					</OnShow>
-				</Scripts>
-			</Frame>
-			-->
-			<DressUpModel parentKey="PreviewFrame" enableMouse="true" scale="2.0" inherits="ModelWithControlsTemplate">
-				<Size x="199" y="297"/>
-				<Anchors>
-					<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" x="-15" y="-108"/>
-				</Anchors>
-				<Layers>
-					<Layer level="BACKGROUND">
-						<Texture parentKey="BottomBG" file="Interface\DressUpFrame\DressUpBackground-Orc3">
-							<Size x="0" y="76"/>
-							<Anchors>
-								<Anchor point="BOTTOMLEFT" x="2"/>
-								<Anchor point="BOTTOMRIGHT" x="-1"/>
-							</Anchors>
-							<TexCoords left="0.23828125" right="1" top="0" bottom="0.59375"/>
-						</Texture>
-						<Texture parentKey="TopBG" file="Interface\DressUpFrame\DressUpBackground-Orc1">
-							<Anchors>
-								<Anchor point="TOPLEFT" x="2"/>
-								<Anchor point="TOPRIGHT" x="-1"/>
-								<Anchor point="BOTTOM" relativeKey="$parent.BottomBG" relativePoint="TOP" x="-1" y="0"/>
-							</Anchors>
-							<TexCoords left="0.23828125" right="1" top="0.15625" bottom="1"/>
-						</Texture>
-					</Layer>
-					<Layer level="BORDER">
-						<Texture parentKey="BottomDesatBG" file="Interface\DressUpFrame\DressUpBackground-Orc3" alpha="0.5">
-							<Size x="0" y="0"/>
-							<Anchors>
-								<Anchor point="BOTTOMLEFT" relativeKey="$parent.BottomBG"/>
-								<Anchor point="TOPRIGHT" relativeKey="$parent.BottomBG"/>
-							</Anchors>
-							<TexCoords left="0.23828125" right="1" top="0" bottom="0.59375"/>
-						</Texture>
-						<Texture parentKey="TopDesatBG" file="Interface\DressUpFrame\DressUpBackground-Orc1" alpha="0.5">
-							<Anchors>
-								<Anchor point="TOPLEFT" x="2"/>
-								<Anchor point="TOPRIGHT" x="-1"/>
-								<Anchor point="BOTTOM" relativeKey="$parent.BottomBG" relativePoint="TOP" x="-1" y="0"/>
-							</Anchors>
-							<TexCoords left="0.23828125" right="1" top="0.15625" bottom="1"/>
-						</Texture>
-						<Texture parentKey="TilingTop" atlas="_transmog-preview-QuestPortrait-StoneSwirls-Top" horizTile="true">
-							<Size x="0" y="32"/>
-							<Anchors>
-								<Anchor point="TOPLEFT" x="1" y="30"/>
-								<Anchor point="TOPRIGHT" x="-1" y="30"/>
-							</Anchors>
-						</Texture>
-					</Layer>
-					<Layer level="BORDER" textureSubLevel="-1">
-						<Texture parentKey="BGShadow">
-							<Anchors>
-								<Anchor point="TOPLEFT" relativeKey="$parent.TopBG"/>
-								<Anchor point="BOTTOMRIGHT" relativeKey="$parent.BottomBG"/>
-							</Anchors>
-							<Color r="0" g="0" b="0" a="0.75"/>
-						</Texture>
-					</Layer>
-					<Layer level="OVERLAY" textureSubLevel="-1">
-						<Texture parentKey="ShadowOverlay" file="Interface\TalentFrame\PetTalent-ShadowOverlay" setAllPoints="true">
-							<TexCoords left="0.00000000" right="0.537109375" top="0" bottom="0.791015625"/>
-						</Texture>
-					</Layer>
-					<Layer level="OVERLAY">
-						<Texture parentKey="BorderBottomLeft" inherits="UI-Frame-BotCornerLeft">
-							<Anchors>
-								<Anchor point="BOTTOMLEFT" x="-5" y="-5"/>
-							</Anchors>
-						</Texture>
-						<Texture parentKey="BorderBottomRight" inherits="UI-Frame-BotCornerRight">
-							<Anchors>
-								<Anchor point="BOTTOMRIGHT" x="2" y="-5"/>
-							</Anchors>
-						</Texture>
-						<Texture parentKey="BorderTop" inherits="_UI-Frame-TitleTile">
-							<Size x="0" y="42"/>
-							<Anchors>
-								<Anchor point="TOPLEFT" x="-1" y="34"/>
-								<Anchor point="TOPRIGHT" x="1" y="34"/>
-							</Anchors>
-						</Texture>
-						<Texture parentKey="BorderBottom" inherits="_UI-Frame-Bot">
-							<Anchors>
-								<Anchor point="BOTTOMLEFT" relativeKey="$parent.BorderBottomLeft" relativePoint="BOTTOMRIGHT" y="0"/>
-								<Anchor point="BOTTOMRIGHT" relativeKey="$parent.BorderBottomRight" relativePoint="BOTTOMLEFT" y="0"/>
-							</Anchors>
-						</Texture>
-						<Texture parentKey="BorderLeft" inherits="!UI-Frame-LeftTile">
-							<Anchors>
-								<Anchor point="TOPLEFT" x="-5"/>
-								<Anchor point="BOTTOMLEFT" relativeKey="$parent.BorderBottomLeft" relativePoint="TOPLEFT"/>
-							</Anchors>
-						</Texture>
-						<Texture parentKey="BorderRight" inherits="!UI-Frame-RightTile">
-							<Anchors>
-								<Anchor point="TOPRIGHT" x="3"/>
-								<Anchor point="BOTTOMRIGHT" relativeKey="$parent.BorderBottomRight" relativePoint="TOPRIGHT" x="1"/>
-							</Anchors>
-						</Texture>
-					</Layer>
-					<Layer level="OVERLAY" textureSubLevel="1">
-						<Texture parentKey="TilingBottom" atlas="_transmog-preview-QuestPortrait-Divider_noname" horizTile="true">
-							<Size x="0" y="44"/>
-							<Anchors>
-								<Anchor point="BOTTOMLEFT" x="1" y="-30"/>
-								<Anchor point="BOTTOMRIGHT" x="-1" y="-30"/>
-							</Anchors>
-						</Texture>
-						<Texture parentKey="DragCorner" atlas="transmog-preview-drag-corner" useAtlasSize="true">
-							<Anchors>
-								<Anchor point="BOTTOMRIGHT" x="-6" y="6"/>
-							</Anchors>
-						</Texture>
-					</Layer>
-					<Layer level="OVERLAY" textureSubLevel="2">
-						<Texture parentKey="CornerTopLeft" inherits="QuestPortrait-Corner_UL">
-							<Anchors>
-								<Anchor point="TOPLEFT" x="-6" y="38"/>
-							</Anchors>
-						</Texture>
-						<Texture parentKey="CornerTopRight" inherits="QuestPortrait-Corner_UR">
-							<Anchors>
-								<Anchor point="TOPRIGHT" x="7" y="38"/>
-							</Anchors>
-						</Texture>
-						<Texture parentKey="CornerBottomLeft" inherits="QuestPortrait-Corner_BL">
-							<Anchors>
-								<Anchor point="BOTTOMLEFT" x="-6" y="-26"/>
-							</Anchors>
-						</Texture>
-						<Texture parentKey="CornerBottomRight" inherits="QuestPortrait-Corner_BR">
-							<Anchors>
-								<Anchor point="BOTTOMRIGHT" x="7" y="-26"/>
-							</Anchors>
-						</Texture>
-					</Layer>
-				</Layers>
-				<Frames>
-					<Button parentKey="LinkButton" inherits="UIMenuButtonStretchTemplate">
-						<Size x="26" y="26"/>
-						<Anchors>
-							<Anchor point="BOTTOMLEFT" x="8" y="8"/>
-						</Anchors>
-						<Layers>
-							<Layer level="ARTWORK">
-								<Texture parentKey="Icon" atlas="transmog-icon-chat" useAtlasSize="true">
-									<Anchors>
-										<Anchor point="CENTER"/>
-									</Anchors>
-								</Texture>
-							</Layer>
-						</Layers>
-						<HighlightTexture file="Interface\Buttons\UI-Common-MouseHilight" alphaMode="ADD"/>
-						<Scripts>
-							<OnClick>
-								PlaySound("igMainMenuOptionCheckBoxOn");
-								-- TODO: link
-							</OnClick>
-						</Scripts>
-					</Button>
-					<Button parentKey="ResetButton" inherits="UIMenuButtonStretchTemplate">
-						<Size x="26" y="26"/>
-						<Anchors>
-							<Anchor point="TOPRIGHT" x="-7" y="-8"/>
-						</Anchors>
-						<Layers>
-							<Layer level="ARTWORK">
-								<Texture parentKey="Icon" atlas="transmog-icon-revert-small" useAtlasSize="true">
-									<Anchors>
-										<Anchor point="CENTER"/>
-									</Anchors>
-								</Texture>
-							</Layer>
-						</Layers>
-						<HighlightTexture file="Interface\Buttons\UI-Common-MouseHilight" alphaMode="ADD"/>
-						<Scripts>
-							<OnClick>
-								PlaySound("igMainMenuOptionCheckBoxOn");
-								WardrobeCollectionFramePreview_Reset();
-								WardrobeCollectionFrame_Update();
-							</OnClick>
-						</Scripts>
-					</Button>
-					<Button parentKey="ResizeButton">
-						<Size x="26" y="43"/>
-						<Anchors>
-							<Anchor point="BOTTOMRIGHT" x="1" y="-18"/>
-						</Anchors>
-						<Scripts>
-							<OnMouseDown>
-								WardrobeCollectionFramePreview_StartResizing(self:GetParent());
-							</OnMouseDown>
-							<OnMouseUp>
-								WardrobeCollectionFramePreview_StopResizing(self:GetParent());
-							</OnMouseUp>
-							<OnEnter>
-								SetCursor("Interface\\CURSOR\\UI-Cursor-SizeRight");
-							</OnEnter>
-							<OnLeave>
-								-- check if we're still resizing
-								if ( not self.resizing ) then
-									ResetCursor();
-								end
-							</OnLeave>
-						</Scripts>
-					</Button>
-				</Frames>
-				<Scripts>
-					<OnLoad function="WardrobeCollectionFramePreview_OnLoad"/>
-					<OnUpdate function="WardrobeCollectionFramePreview_OnUpdate"/>
-					<OnHide function="WardrobeCollectionFramePreview_StopResizing"/>
-					<OnSizeChanged function="WardrobeOutfitDropDown_Resize"/>
-				</Scripts>
-			</DressUpModel>
 		</Frames>
 		<Scripts>
 			<OnLoad function="WardrobeCollectionFrame_OnLoad"/>
@@ -1139,6 +868,32 @@
 								</Texture>
 							</Layer>
 						</Layers>
+					</Frame>
+					<Frame parentKey="OutfitDropDown" name="WardrobeOutfitDropDown" inherits="UIDropDownMenuTemplate" enableMouse="true" hidden="false">
+						<Size x="188" y="22"/>
+						<Anchors>
+							<Anchor point="TOPLEFT" x="-14" y="28"/>
+						</Anchors>
+						<Frames>
+							<Button parentKey="SaveButton" inherits="UIPanelButtonTemplate" text="SAVE">
+								<Size x="88" y="22"/>
+								<Anchors>
+									<Anchor point="LEFT" relativePoint="RIGHT" x="-13" y="-3"/>
+								</Anchors>
+								<Scripts>
+									<OnClick>
+										PlaySound("igMainMenuOptionCheckBoxOn");
+										WardrobeOutfitFrame_SaveOutfit(UIDropDownMenu_GetText(WardrobeOutfitDropDown));
+									</OnClick>
+								</Scripts>
+							</Button>
+						</Frames>
+						<Scripts>
+							<OnLoad function="WardrobeOutfitDropDown_OnLoad"/>
+							<OnEvent function="WardrobeOutfitDropDown_OnEvent"/>
+							<OnShow function="WardrobeOutfitDropDown_OnShow"/>
+							<OnHide function="WardrobeOutfitDropDown_OnHide"/>
+						</Scripts>
 					</Frame>
 					<DressUpModel parentKey="Model" enableMouse="true" scale="2.0" inherits="ModelWithControlsTemplate">
 						<Size x="294" y="488"/>

@@ -1781,8 +1781,8 @@ StaticPopupDialogs["EQUIP_BIND"] = {
 	whileDead = 1,
 	hideOnEscape = 1
 };
-StaticPopupDialogs["AUTOEQUIP_BIND"] = {
-	text = EQUIP_NO_DROP,
+StaticPopupDialogs["EQUIP_BIND_TRADEABLE"] = {
+	text = END_BOUND_TRADEABLE,
 	button1 = OKAY,
 	button2 = CANCEL,
 	OnAccept = function(self, slot)
@@ -2122,7 +2122,7 @@ StaticPopupDialogs["SET_BNFRIENDNOTE"] = {
 		BNSetFriendNote(FriendsFrame.NotesID, self.editBox:GetText());
 	end,
 	OnShow = function(self)
-		local presenceID, presenceName, battleTag, isBattleTagPresence, toonName, toonID, client, isOnline, lastOnline, isAFK, isDND, messageText, noteText = BNGetFriendInfoByID(FriendsFrame.NotesID);
+		local bnetIDAccount, accountName, battleTag, isBattleTag, characterName, bnetIDGameAccount, client, isOnline, lastOnline, isAFK, isDND, messageText, noteText = BNGetFriendInfoByID(FriendsFrame.NotesID);
 		if ( noteText ) then
 			self.editBox:SetText(noteText);
 		end
@@ -3276,8 +3276,8 @@ StaticPopupDialogs["CONFIRM_REMOVE_FRIEND"] = {
 	text = "%s",
 	button1 = ACCEPT,
 	button2 = CANCEL,
-	OnAccept = function(self, presenceID)
-		BNRemoveFriend(presenceID);
+	OnAccept = function(self, bnetIDAccount)
+		BNRemoveFriend(bnetIDAccount);
 	end,
 	timeout = 0,
 	whileDead = 1,

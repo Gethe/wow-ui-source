@@ -296,7 +296,7 @@ function QuestObjectiveTracker_UpdatePOIs()
 	local playerMoney = GetMoney();
 	local numPOINumeric = 0;
 	for i = 1, GetNumQuestWatches() do
-		local questID, title, questLogIndex, numObjectives, requiredMoney, isComplete, startEvent, isAutoComplete, failureTime, timeElapsed, questType, isTask, isStory, isOnMap, hasLocalPOI = GetQuestWatchInfo(i);
+		local questID, title, questLogIndex, numObjectives, requiredMoney, isComplete, startEvent, isAutoComplete, failureTime, timeElapsed, questType, isTask, isBounty, isStory, isOnMap, hasLocalPOI = GetQuestWatchInfo(i);
 		if ( questID ) then
 			-- see if we already have a block for this quest
 			local block = QUEST_TRACKER_MODULE:GetExistingBlock(questID);
@@ -336,7 +336,7 @@ function QuestObjectiveTracker_DoQuestObjectives(block, numObjectives, questComp
 			if ( questCompleted ) then
 				-- only process existing lines
 				if ( line ) then
-					line = QUEST_TRACKER_MODULE:AddObjective(block, objectiveIndex, text, LINE_TYPE_ANIM, nil, true, OBJECTIVE_TRACKER_COLOR["Complete"]);
+					line = QUEST_TRACKER_MODULE:AddObjective(block, objectiveIndex, text, LINE_TYPE_ANIM, nil, OBJECTIVE_DASH_STYLE_HIDE, OBJECTIVE_TRACKER_COLOR["Complete"]);
 					-- don't do anything else if a line is either COMPLETING or FADING, the anims' OnFinished will continue the process
 					if ( not line.state or line.state == "PRESENT" ) then
 						-- this objective wasn't marked finished
@@ -351,7 +351,7 @@ function QuestObjectiveTracker_DoQuestObjectives(block, numObjectives, questComp
 			else
 				if ( finished ) then		
 					if ( line ) then
-						line = QUEST_TRACKER_MODULE:AddObjective(block, objectiveIndex, text, LINE_TYPE_ANIM, nil, true, OBJECTIVE_TRACKER_COLOR["Complete"]);
+						line = QUEST_TRACKER_MODULE:AddObjective(block, objectiveIndex, text, LINE_TYPE_ANIM, nil, OBJECTIVE_DASH_STYLE_HIDE, OBJECTIVE_TRACKER_COLOR["Complete"]);
 						if ( not line.state or line.state == "PRESENT" ) then
 							-- complete this
 							line.block = block;
@@ -364,7 +364,7 @@ function QuestObjectiveTracker_DoQuestObjectives(block, numObjectives, questComp
 					else
 						-- didn't have a line, just show completed if not sequenced
 						if ( not questSequenced ) then
-							line = QUEST_TRACKER_MODULE:AddObjective(block, objectiveIndex, text, LINE_TYPE_ANIM, nil, true, OBJECTIVE_TRACKER_COLOR["Complete"]);
+							line = QUEST_TRACKER_MODULE:AddObjective(block, objectiveIndex, text, LINE_TYPE_ANIM, nil, OBJECTIVE_DASH_STYLE_HIDE, OBJECTIVE_TRACKER_COLOR["Complete"]);
 							line.Check:Show();
 							line.state = "COMPLETED";
 						end
@@ -426,14 +426,14 @@ function QUEST_TRACKER_MODULE:Update()
 	local showPOIs = GetCVarBool("questPOI");
 
 	for i = 1, GetNumQuestWatches() do
-		local questID, title, questLogIndex, numObjectives, requiredMoney, isComplete, startEvent, isAutoComplete, failureTime, timeElapsed, questType, isTask, isStory, isOnMap, hasLocalPOI = GetQuestWatchInfo(i);
+		local questID, title, questLogIndex, numObjectives, requiredMoney, isComplete, startEvent, isAutoComplete, failureTime, timeElapsed, questType, isTask, isBounty, isStory, isOnMap, hasLocalPOI = GetQuestWatchInfo(i);
 		if ( not questID ) then
 			break;
 		end
 
 		-- check filters
 		local showQuest = true;
-		if ( isTask ) then
+		if ( isTask or ( isBounty and not IsQuestComplete(questID) ) ) then
 			showQuest = false;
 		end
 
@@ -469,14 +469,14 @@ function QUEST_TRACKER_MODULE:Update()
 						QUEST_TRACKER_MODULE:AddObjective(block, "ClickComplete", QUEST_WATCH_CLICK_TO_COMPLETE);
 					else
 						if ( isBreadcrumb ) then
-							QUEST_TRACKER_MODULE:AddObjective(block, "QuestComplete", GetQuestLogCompletionText(questLogIndex), nil, true);
+							QUEST_TRACKER_MODULE:AddObjective(block, "QuestComplete", GetQuestLogCompletionText(questLogIndex), nil, OBJECTIVE_DASH_STYLE_HIDE);
 						else
-							QUEST_TRACKER_MODULE:AddObjective(block, "QuestComplete", QUEST_WATCH_QUEST_READY, nil, nil, true, OBJECTIVE_TRACKER_COLOR["Complete"]);
+							QUEST_TRACKER_MODULE:AddObjective(block, "QuestComplete", QUEST_WATCH_QUEST_READY, nil, nil, OBJECTIVE_DASH_STYLE_HIDE, OBJECTIVE_TRACKER_COLOR["Complete"]);
 						end
 					end
 				end
 			elseif ( questFailed ) then
-				QUEST_TRACKER_MODULE:AddObjective(block, "Failed", FAILED, nil, nil, true, OBJECTIVE_TRACKER_COLOR["Failed"]);
+				QUEST_TRACKER_MODULE:AddObjective(block, "Failed", FAILED, nil, nil, OBJECTIVE_DASH_STYLE_HIDE, OBJECTIVE_TRACKER_COLOR["Failed"]);
 			else
 				QuestObjectiveTracker_DoQuestObjectives(block, numObjectives, false, isSequenced, existingBlock);
 				if ( requiredMoney > playerMoney ) then

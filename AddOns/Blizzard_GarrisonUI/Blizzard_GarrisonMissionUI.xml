@@ -1707,11 +1707,9 @@
 		</Layers>
 		<Frames>
 			<Frame parentKey="RewardsFrame" inherits="GarrisonFollowerMissionRewardsFrameTemplate, GarrisonMissionPageRewardTemplate">
-				<Scripts>
-					<OnLoad>
-						self.tooltipText = GARRISON_MISSION_CHANCE_TOOLTIP_TEXT;
-					</OnLoad>
-				</Scripts>
+				<KeyValues>
+					<KeyValue key="tooltipText" value="GARRISON_MISSION_CHANCE_TOOLTIP_TEXT" type="global"/>
+				</KeyValues>
 			</Frame>
 		</Frames>
 	</Frame>

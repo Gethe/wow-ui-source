@@ -30,7 +30,7 @@
 					</Button>
 				</Frames>
 			</Frame>
-			
+
 			<Frame parentKey="CollapsedFrame" enableMouse="true">
 				<Anchors>
 					<Anchor point="CENTER" />
@@ -42,7 +42,7 @@
 					<Layer level="HIGHLIGHT">
 						<Texture parentKey="IconHighlight" alphaMode="ADD" alpha=".25" />
 					</Layer>
-					
+
 					<Layer level="ARTWORK">
 						<FontString parentKey="Text" inherits="SystemFont_Large">
 							<Anchors>
@@ -61,7 +61,7 @@
 						</Texture>
 					</Layer>
 				</Layers>
-				<Scripts>
+				<!--<Scripts>
 					<OnMouseUp>
 						self:GetParent():Expand();
 					</OnMouseUp>
@@ -76,7 +76,7 @@
 					<OnLeave>
 						self:GetParent():OnMouseLeave();
 					</OnLeave>
-				</Scripts>
+				</Scripts>-->
 			</Frame>
 		</Frames>
 		<Animations>

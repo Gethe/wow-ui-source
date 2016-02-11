@@ -379,6 +379,16 @@
 											</Anchors>
 										</Texture>
 									</Layer>
+									<Layer level="BACKGROUND" textureSubLevel="0">
+										<!-- For debugging -->
+										<Texture parentKey="ZoneArea" hidden="true">
+											<Size x="0" y="0"/>
+											<Color a="0.25" r="0" g="0" b="1"/>
+											<Anchors>
+												<Anchor point="TOPLEFT"/>
+											</Anchors>
+										</Texture>
+									</Layer>
 								</Layers>
 							</Frame>
 						</ScrollChild>
@@ -388,6 +398,91 @@
 							<OnUpdate method="OnUpdate"/>
 						</Scripts>
 					</ScrollFrame>
+					<Button parentKey="ZoneSupportMissionPage" inherits="GarrisonFollowerMissionRewardsFrameTemplate" hidden="true" frameStrata="HIGH" frameLevel="100" mixin="GarrisonMissionPageMixin,ZoneSupportMissionPageMixin">
+						<Size x="520" y="120"/>
+						<Anchors>
+							<Anchor point="BOTTOMRIGHT" x="-60" y="80"/>
+						</Anchors>
+						<KeyValues>
+							<KeyValue key="debugZoneArea" value="false" type="boolean"/>
+						</KeyValues>
+						<Layers>
+							<Layer level="ARTWORK">
+								<!-- Area on the adventure map that we want to zoom the zone to -->
+								<Texture parentKey="ZoneArea" hidden="true">
+									<Anchors>
+										<Anchor point="BOTTOM" relativePoint="TOP" x="0" y="29"/>
+										<Anchor point="LEFT" relativePoint ="RIGHT" relativeKey="$parent.$parent.$parent.FollowerList"/>
+										<Anchor point="TOP" relativeKey="$parent.$parent.ScrollContainer" x="0" y="-10"/>
+										<Anchor point="RIGHT" relativeKey="$parent.$parent.ScrollContainer"/>
+									</Anchors>
+									<Color a="0.25" r="1.0" g="1.0" b="1.0"/>
+								</Texture>
+								<Texture parentKey="ButtonFrame" atlas="GarrMission_MissionCostStartButtonBg" useAtlasSize="true">
+									<Anchors>
+										<Anchor point="TOP" relativePoint="BOTTOM" x="0" y="-4"/>
+									</Anchors>
+								</Texture>
+								<FontString parentKey="MissionTime" inherits="GameFontNormalMed2" justifyH="LEFT" text="Time: ">
+									<Size x="140" y="20"/>
+									<Anchors>
+										<Anchor point="LEFT" relativeKey="$parent.ButtonFrame" x="50" y="1"/>
+									</Anchors>
+									<Color r="1" g="1" b="1"/>
+								</FontString>
+								<FontString parentKey="ZoneSupportDescriptionLabel" inherits="GameFontHighlight" wordwrap="true" text="ORDER_HALL_ZONE_SUPPORT_DESCRIPTION_IN_ZONE">
+									<Size x="290" y="40"></Size>
+									<Anchors>
+										<Anchor point="TOPRIGHT" x="-20" y="-20"/>
+									</Anchors>
+								</FontString>
+							</Layer>
+						</Layers>
+						<Frames>
+							<Button parentKey="CloseButton" inherits="UIPanelCloseButtonNoScripts">
+								<Anchors>
+									<Anchor point="TOPRIGHT" x="4" y="435"/>
+								</Anchors>
+								<Size>
+									<AbsDimension x="40" y="40"/>
+								</Size>
+								<Scripts>
+									<OnClick>
+										PlaySound("UI_Garrison_CommandTable_MissionClose");
+										GarrisonMissionController_CloseMission(self);
+									</OnClick>
+								</Scripts>
+							</Button>
+							<Frame parentKey="Follower1" parentArray="Followers" inherits="GarrisonMissionPageFollowerTemplate" hidden="false">
+								<Anchors>
+									<Anchor point="CENTER" x="-140" y="3"/>
+								</Anchors>
+							</Frame>
+							<Frame parentKey="ZoneSupport" inherits="OrderHallFollowerZoneSupportTemplate">
+								<Anchors>
+									<Anchor point="TOP" relativePoint="BOTTOM" relativeKey="$parent.ZoneSupportDescriptionLabel"/>
+								</Anchors>
+							</Frame>
+							<Button inherits="StartMissionButtonTemplate">
+								<Anchors>
+									<Anchor point="RIGHT" relativeKey="$parent.ButtonFrame" x="-50" y="1"/>
+								</Anchors>
+							</Button>
+							<!--<Frame parentKey="BuffsFrame"/>
+							<Frame parentKey="FollowerModel"/>-->
+						</Frames>
+						<Scripts>
+							<OnLoad function="GarrisonMissionPage_OnLoad"/>
+							<OnEvent function="GarrisonMissionPage_OnEvent"/>
+							<OnShow function="GarrisonMissionPage_OnShow"/>
+							<OnHide function="GarrisonMissionPage_OnHide"/>
+							<OnUpdate function="GarrisonMissionPage_OnUpdate"/>
+							<OnClick>
+								self.CloseButton:Click();
+							</OnClick>
+						</Scripts>
+					</Button>
+
 					<Button parentKey="MissionPage" inherits="FollowerMissionPageTemplate" hidden="true" mixin="GarrisonMissionPageMixin" frameStrata="HIGH" frameLevel="100">
 						<Frames>
 							<Frame parentKey="Enemy1" parentArray="Enemies" inherits="GarrisonMissionPageEnemyTemplate">

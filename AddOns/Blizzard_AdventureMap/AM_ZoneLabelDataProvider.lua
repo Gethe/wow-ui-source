@@ -196,7 +196,7 @@ end
 function AdventureMap_ZoneLabelDataProviderMixin:AddContinent()
 	local areaTrigger = self:GetAdventureMap():AcquireAreaTrigger("AdventureMap_ZoneLabel");
 	areaTrigger.owner = self;
-	areaTrigger.name = C_AdventureMap.GetContinentInfo();
+	areaTrigger.name = select(2, C_AdventureMap.GetContinentInfo());
 	areaTrigger.isContinent = true;
 
 	self:GetAdventureMap():SetAreaTriggerEnclosedCallback(areaTrigger, OnAreaEnclosedChanged);

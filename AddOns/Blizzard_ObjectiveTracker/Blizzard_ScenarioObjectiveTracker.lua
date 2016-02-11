@@ -341,8 +341,13 @@ function Scenario_ChallengeMode_ShowBlock(timerID, elapsedTime, timeLimit)
 	block.timerID = timerID;
 	block.timeLimit = timeLimit;
 	block.lastMedalShown = nil;
-	local level, affixes = C_ChallengeMode.GetActiveKeystoneInfo();
+	local level, affixes, wasEnergized = C_ChallengeMode.GetActiveKeystoneInfo();
 	block.Level:SetText(CHALLENGE_MODE_POWER_LEVEL:format(level));
+	if (not wasEnergized) then
+		block.wasDepleted = true;
+		block.StartedDepleted:Show();
+	end
+	block.TimesUpLootStatus:Hide();
 	Scenario_ChallengeMode_SetUpAffixes(block, affixes);
 	local statusBar = block.StatusBar;
 	statusBar:SetMinMaxValues(0, block.timeLimit);
@@ -403,7 +408,34 @@ function Scenario_ChallengeMode_UpdateTime(block, elapsedTime)
 	local timeLeft = math.max(0, block.timeLimit - elapsedTime);
 	local statusBar = block.StatusBar;
 	statusBar:SetValue(timeLeft);
+	if (timeLeft == 0) then
+		block.TimeLeft:SetTextColor(RED_FONT_COLOR:GetRGB());
+		block.StartedDepleted:Hide();
+		block.TimesUpLootStatus:Show();
+		block.TimesUpLootStatus.NoLoot:SetShown(block.wasDepleted);
+	else
+		block.TimeLeft:SetTextColor(HIGHLIGHT_FONT_COLOR:GetRGB());
+	end
 	block.TimeLeft:SetText(GetTimeStringFromSeconds(timeLeft, false, true));
+end
+
+function Scenario_ChallengeMode_TimesUpLootStatus_OnEnter(self)
+	local block = self:GetParent();
+
+	GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+	GameTooltip:SetText(CHALLENGE_MODE_TIMES_UP, 1, 1, 1);
+	local line;
+	if (block.wasDepleted) then
+		if (UnitIsGroupLeader("player")) then
+			line = CHALLENGE_MODE_TIMES_UP_NO_LOOT_LEADER;
+		else
+			line = CHALLENGE_MODE_TIMES_UP_NO_LOOT;
+		end
+	else
+		line = CHALLENGE_MODE_TIMES_UP_LOOT;
+	end
+	GameTooltip:AddLine(line, nil, nil, nil, true);
+	GameTooltip:Show();
 end
 
 -- *****************************************************************************************************
@@ -824,7 +856,7 @@ function SCENARIO_CONTENT_TRACKER_MODULE:Update()
 			
 	if ( not ScenarioProvingGroundsBlock.timerID and not scenariocompleted ) then
 		if (weightedProgress) then
-			-- A progress bar is the entire tree for scenarios
+			-- A progress bar here is the entire tree for scenarios
 			SCENARIO_TRACKER_MODULE.lineSpacing = 2;
 			SCENARIO_TRACKER_MODULE:AddObjective(objectiveBlock, 1, stageDescription);
 			local progressBar = SCENARIO_TRACKER_MODULE:AddProgressBar(objectiveBlock, objectiveBlock.currentLine);
@@ -842,17 +874,13 @@ function SCENARIO_CONTENT_TRACKER_MODULE:Update()
 			-- do the criteria
 			for criteriaIndex = 1, numCriteria do
 				local criteriaString, criteriaType, completed, quantity, totalQuantity, flags, assetID, quantityString, criteriaID, duration, elapsed, _, isWeightedProgress = C_Scenario.GetCriteriaInfo(criteriaIndex);
-				criteriaString = string.format("%d/%d %s", quantity, totalQuantity, criteriaString);
-				if ( criteriaIndex == 1 and not inChallengeMode or isWeightedProgress ) then
-					SCENARIO_TRACKER_MODULE.lineSpacing = 2;
-				else
-					SCENARIO_TRACKER_MODULE.lineSpacing = 12;
+				if (not isWeightedProgress) then
+					criteriaString = string.format("%d/%d %s", quantity, totalQuantity, criteriaString);
 				end
-				if (isWeightedProgress) then
-					SCENARIO_TRACKER_MODULE:AddProgressBar(objectiveBlock, objectiveBlock.currentLine, criteriaIndex);
-				elseif ( completed ) then
+				SCENARIO_TRACKER_MODULE.lineSpacing = 12;
+				if ( completed ) then
 					local existingLine = objectiveBlock.lines[criteriaIndex];
-					SCENARIO_TRACKER_MODULE:AddObjective(objectiveBlock, criteriaIndex, criteriaString, nil, nil, nil, OBJECTIVE_TRACKER_COLOR["Complete"]);
+					SCENARIO_TRACKER_MODULE:AddObjective(objectiveBlock, criteriaIndex, criteriaString, nil, nil, OBJECTIVE_DASH_STYLE_SHOW, OBJECTIVE_TRACKER_COLOR["Complete"]);
 					objectiveBlock.currentLine.Icon:SetAtlas("Tracker-Check", true);
 					if ( existingLine and not existingLine.completed ) then
 						existingLine.Glow.Anim:Play();
@@ -862,7 +890,14 @@ function SCENARIO_CONTENT_TRACKER_MODULE:Update()
 					objectiveBlock.currentLine.completed = true;
 				else
 					SCENARIO_TRACKER_MODULE:AddObjective(objectiveBlock, criteriaIndex, criteriaString);
-					objectiveBlock.currentLine.Icon:SetAtlas("Objective-Nub", true);			
+					objectiveBlock.currentLine.Icon:SetAtlas("Objective-Nub", true);
+				end
+				local line = objectiveBlock.currentLine;
+				if (isWeightedProgress and not completed) then
+					SCENARIO_TRACKER_MODULE.lineSpacing = 2;
+					SCENARIO_TRACKER_MODULE:AddProgressBar(objectiveBlock, objectiveBlock.currentLine, criteriaIndex);
+				elseif (line.progressBar) then
+					SCENARIO_TRACKER_MODULE:FreeProgressBar(objectiveBlock, objectiveBlock.currentLine);
 				end
 				-- timer bar
 				local line = objectiveBlock.currentLine;

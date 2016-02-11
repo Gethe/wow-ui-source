@@ -183,17 +183,6 @@
 					</Layer>
 				</Layers>
 			</PlayerModel>
-			<Button parentKey="RespecButton" inherits="UIPanelButtonTemplate" text="Respec" motionScriptsWhileDisabled="true">
-				<Size x="100" y="22"/>
-				<Anchors>
-					<Anchor point="BOTTOMLEFT" x="12" y="15"/>
-				</Anchors>
-				<Scripts>
-					<OnClick>
-						StaticPopup_Show("CONFIRM_ARTIFACT_RESPEC");
-					</OnClick>
-				</Scripts>
-			</Button>
 		</Frames>
 		<Scripts>
 			<OnShow method="OnShow" />

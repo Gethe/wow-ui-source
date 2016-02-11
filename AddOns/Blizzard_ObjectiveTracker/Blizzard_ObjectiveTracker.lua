@@ -31,23 +31,24 @@ OBJECTIVE_TRACKER_COLOR = {
 
 
 -- these are generally from events
-OBJECTIVE_TRACKER_UPDATE_QUEST						= 0x0001;
-OBJECTIVE_TRACKER_UPDATE_QUEST_ADDED				= 0x0002;
-OBJECTIVE_TRACKER_UPDATE_TASK_ADDED					= 0x0004;
-OBJECTIVE_TRACKER_UPDATE_WORLD_QUEST_ADDED			= 0x0008;
-OBJECTIVE_TRACKER_UPDATE_SCENARIO					= 0x0010;
-OBJECTIVE_TRACKER_UPDATE_SCENARIO_NEW_STAGE			= 0x0020;
-OBJECTIVE_TRACKER_UPDATE_ACHIEVEMENT				= 0x0040;
-OBJECTIVE_TRACKER_UPDATE_ACHIEVEMENT_ADDED			= 0x0080;
-OBJECTIVE_TRACKER_UPDATE_SCENARIO_BONUS_DELAYED		= 0x0100;
+OBJECTIVE_TRACKER_UPDATE_QUEST						= 0x00001;
+OBJECTIVE_TRACKER_UPDATE_QUEST_ADDED				= 0x00002;
+OBJECTIVE_TRACKER_UPDATE_TASK_ADDED					= 0x00004;
+OBJECTIVE_TRACKER_UPDATE_WORLD_QUEST_ADDED			= 0x00008;
+OBJECTIVE_TRACKER_UPDATE_SCENARIO					= 0x00010;
+OBJECTIVE_TRACKER_UPDATE_SCENARIO_NEW_STAGE			= 0x00020;
+OBJECTIVE_TRACKER_UPDATE_ACHIEVEMENT				= 0x00040;
+OBJECTIVE_TRACKER_UPDATE_ACHIEVEMENT_ADDED			= 0x00080;
+OBJECTIVE_TRACKER_UPDATE_SCENARIO_BONUS_DELAYED		= 0x00100;
+OBJECTIVE_TRACKER_UPDATE_SUPER_TRACK_CHANGED		= 0x00200;
 -- these are for the specific module ONLY!
-OBJECTIVE_TRACKER_UPDATE_MODULE_QUEST				= 0x0200;
-OBJECTIVE_TRACKER_UPDATE_MODULE_AUTO_QUEST_POPUP	= 0x0400;
-OBJECTIVE_TRACKER_UPDATE_MODULE_BONUS_OBJECTIVE		= 0x0800;
-OBJECTIVE_TRACKER_UPDATE_MODULE_WORLD_QUEST			= 0x1000;
-OBJECTIVE_TRACKER_UPDATE_MODULE_SCENARIO			= 0x2000;
-OBJECTIVE_TRACKER_UPDATE_MODULE_ACHIEVEMENT			= 0x4000;
-OBJECTIVE_TRACKER_UPDATE_SCENARIO_SPELLS			= 0x8000;
+OBJECTIVE_TRACKER_UPDATE_MODULE_QUEST				= 0x00400;
+OBJECTIVE_TRACKER_UPDATE_MODULE_AUTO_QUEST_POPUP	= 0x00800;
+OBJECTIVE_TRACKER_UPDATE_MODULE_BONUS_OBJECTIVE		= 0x01000;
+OBJECTIVE_TRACKER_UPDATE_MODULE_WORLD_QUEST			= 0x02000;
+OBJECTIVE_TRACKER_UPDATE_MODULE_SCENARIO			= 0x04000;
+OBJECTIVE_TRACKER_UPDATE_MODULE_ACHIEVEMENT			= 0x08000;
+OBJECTIVE_TRACKER_UPDATE_SCENARIO_SPELLS			= 0x10000;
 -- special updates
 OBJECTIVE_TRACKER_UPDATE_STATIC						= 0x0000;
 OBJECTIVE_TRACKER_UPDATE_ALL						= 0xFFFF;
@@ -284,8 +285,11 @@ function DEFAULT_OBJECTIVE_TRACKER_MODULE:GetLine(block, objectiveKey, lineType)
 end
 
 -- ***** OBJECTIVES
+OBJECTIVE_DASH_STYLE_SHOW = 1;
+OBJECTIVE_DASH_STYLE_HIDE = 2;
+OBJECTIVE_DASH_STYLE_HIDE_AND_COLLAPSE = 3;
 
-function DEFAULT_OBJECTIVE_TRACKER_MODULE:AddObjective(block, objectiveKey, textOrTextFunc, lineType, useFullHeight, hideDash, colorStyle)
+function DEFAULT_OBJECTIVE_TRACKER_MODULE:AddObjective(block, objectiveKey, textOrTextFunc, lineType, useFullHeight, dashStyle, colorStyle)
 	local line = self:GetLine(block, objectiveKey, lineType);
 	-- width
 	if ( block.lineWidth ~= line.width ) then
@@ -293,12 +297,25 @@ function DEFAULT_OBJECTIVE_TRACKER_MODULE:AddObjective(block, objectiveKey, text
 		line.width = block.lineWidth;	-- default should be nil
 	end
 	-- dash
-	if ( hideDash and not line.hideDash ) then
-		line.Dash:Hide();
-		line.hideDash = true;
-	elseif ( not hideDash and line.hideDash ) then
-		line.Dash:Show();
-		line.hideDash = nil;
+	if ( line.Dash ) then
+		if ( not dashStyle ) then
+			dashStyle = OBJECTIVE_DASH_STYLE_SHOW;
+		end
+		if ( line.dashStyle ~= dashStyle ) then
+			if ( dashStyle == OBJECTIVE_DASH_STYLE_SHOW ) then
+				line.Dash:Show();
+				line.Dash:SetText(QUEST_DASH);
+			elseif ( dashStyle == OBJECTIVE_DASH_STYLE_HIDE ) then
+				line.Dash:Hide();
+				line.Dash:SetText(QUEST_DASH);
+			elseif ( dashStyle == OBJECTIVE_DASH_STYLE_HIDE_AND_COLLAPSE ) then
+				line.Dash:Hide();
+				line.Dash:SetText(nil);
+			else
+				error("Invalid dash style: " .. tostring(dashStyle));
+			end
+			line.dashStyle = dashStyle;
+		end
 	end
 
 	if line.ticker then
@@ -649,16 +666,18 @@ function ObjectiveTracker_OnEvent(self, event, ...)
 		AchievementObjectiveTracker_OnAchievementUpdate(...);
 	elseif ( event == "QUEST_ACCEPTED" ) then
 		local questLogIndex, questID = ...;
-		if ( IsQuestTask(questID) ) then
-			if ( QuestMapFrame_IsQuestWorldQuest(questID) ) then
-				ObjectiveTracker_Update(OBJECTIVE_TRACKER_UPDATE_WORLD_QUEST_ADDED, questID);
+		if ( not IsQuestBounty(questID) ) then
+			if ( IsQuestTask(questID) ) then
+				if ( QuestMapFrame_IsQuestWorldQuest(questID) ) then
+					ObjectiveTracker_Update(OBJECTIVE_TRACKER_UPDATE_WORLD_QUEST_ADDED, questID);
+				else
+					ObjectiveTracker_Update(OBJECTIVE_TRACKER_UPDATE_TASK_ADDED, questID);
+				end
 			else
-				ObjectiveTracker_Update(OBJECTIVE_TRACKER_UPDATE_TASK_ADDED, questID);
-			end
-		else
-			if ( AUTO_QUEST_WATCH == "1" and GetNumQuestWatches() < MAX_WATCHABLE_QUESTS ) then
-				AddQuestWatch(questLogIndex);
-				QuestSuperTracking_OnQuestTracked(questID);
+				if ( AUTO_QUEST_WATCH == "1" and GetNumQuestWatches() < MAX_WATCHABLE_QUESTS ) then
+					AddQuestWatch(questLogIndex);
+					QuestSuperTracking_OnQuestTracked(questID);
+				end
 			end
 		end
 	elseif ( event == "TRACKED_ACHIEVEMENT_LIST_CHANGED" ) then
@@ -671,7 +690,7 @@ function ObjectiveTracker_OnEvent(self, event, ...)
 	elseif ( event == "QUEST_WATCH_LIST_CHANGED" ) then
 		local questID, added = ...;
 		if ( added ) then
-			if ( not IsQuestTask(questID) ) then
+			if ( not IsQuestTask(questID) and ( not IsQuestBounty(questID) or IsQuestComplete(questID) ) ) then
 				ObjectiveTracker_Update(OBJECTIVE_TRACKER_UPDATE_QUEST_ADDED, questID);
 			end
 		else
@@ -691,6 +710,7 @@ function ObjectiveTracker_OnEvent(self, event, ...)
 		ObjectiveTracker_Update(OBJECTIVE_TRACKER_UPDATE_SCENARIO_SPELLS);
 	elseif ( event == "SUPER_TRACKED_QUEST_CHANGED" ) then
 		local questID = ...;
+		ObjectiveTracker_Update(OBJECTIVE_TRACKER_UPDATE_SUPER_TRACK_CHANGED, questID);
 		QuestPOI_SelectButtonByQuestID(self.BlocksFrame, questID);
 	elseif ( event == "ZONE_CHANGED" ) then
 		local inMicroDungeon = IsPlayerInMicroDungeon();
@@ -718,7 +738,7 @@ function ObjectiveTracker_OnEvent(self, event, ...)
 		SortQuestWatches();
 	elseif ( event == "QUEST_TURNED_IN" ) then
 		local questID, xp, money = ...;
-		if ( IsQuestTask(questID) ) then
+		if ( IsQuestTask(questID) and not IsQuestBounty(questID) ) then
 			BonusObjectiveTracker_OnTaskCompleted(...);
 		end
 	elseif ( event == "PLAYER_MONEY" and self.watchMoneyReasons > 0 ) then
@@ -1097,6 +1117,8 @@ function ObjectiveTracker_Update(reason, id)
 	else
 		tracker.HeaderMenu:Hide();
 	end
+
+	tracker.BlocksFrame.currentBlock = nil;
 end
 
 function ObjectiveTracker_CheckAndHideHeader(moduleHeader)

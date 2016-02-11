@@ -7,3 +7,4 @@
 ## LoadOnDemand: 1
 
 Blizzard_OrderHallMissionUI.xml
+Blizzard_OrderHallTalents.xml

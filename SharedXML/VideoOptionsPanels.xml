@@ -431,64 +431,23 @@
 					<Slider name="$parentQuality" inherits="VideoOptionsSliderTemplate" minValue="1" maxValue="10" valueStep="1" stepsPerPage="1" >
 						<Size x="10" y="22"/>
 						<Anchors>
-							<Anchor point="TOPLEFT" x="28" y="-17"/>
+							<Anchor point="TOPLEFT" x="28" y="-25"/>
 						</Anchors>
 						<Layers>
 							<Layer level="ARTWORK">
+								<FontString name="Graphics_Title" inherits="OptionsFontHighlight" text="GRAPHICS_QUALITY" >
+									<Anchors>
+										<Anchor point="BOTTOMLEFT" relativePoint="TOPLEFT" x="0" y="2"/>
+									</Anchors>
+								</FontString>
 								<FontString name="Graphics_RightQualityLabel" inherits="OptionsFontHighlight" text="CUSTOM" >
 									<Anchors>
-										<Anchor point="BOTTOMLEFT" relativePoint="TOPLEFT" x="256" y="0"/>
+										<Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" x="256" y="0"/>
 									</Anchors>
 								</FontString>
-								
-								<FontString inherits="OptionsFontSmall" text="VIDEO_QUALITY_LABEL1" justifyH="LEFT"> <!--Low-->
+								<FontString parentKey="displayValue" inherits="OptionsFontLarge" justifyH="CENTER">
 									<Anchors>
-										<Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" x="0" y="3"/>
-									</Anchors>
-								</FontString>
-								<Texture atlas="options-notch" useAtlasSize="true">
-									<Anchors>
-										<Anchor point="TOP" relativePoint="BOTTOMLEFT" x="73" y="3"/>
-									</Anchors>
-								</Texture>
-								<Texture atlas="options-notch" useAtlasSize="true">
-									<Anchors>
-										<Anchor point="TOP" relativePoint="BOTTOMLEFT" x="131" y="3"/>
-									</Anchors>
-								</Texture>
-								<FontString inherits="OptionsFontSmall" text="VIDEO_QUALITY_LABEL2" justifyH="CENTER">
-									<Anchors>
-										<Anchor point="TOP" relativePoint="BOTTOMLEFT" x="189" y="3"/>
-									</Anchors>
-								</FontString>
-								<Texture atlas="options-notch" useAtlasSize="true">
-									<Anchors>
-										<Anchor point="TOP" relativePoint="BOTTOMLEFT" x="246" y="3"/>
-									</Anchors>
-								</Texture>
-								<Texture atlas="options-notch" useAtlasSize="true">
-									<Anchors>
-										<Anchor point="TOP" relativePoint="BOTTOMLEFT" x="303" y="3"/>
-									</Anchors>
-								</Texture>
-								<FontString inherits="OptionsFontSmall" text="VIDEO_QUALITY_LABEL4" justifyH="CENTER">
-									<Anchors>
-										<Anchor point="TOP" relativePoint="BOTTOMLEFT" x="361" y="3"/>
-									</Anchors>
-								</FontString>
-								<Texture atlas="options-notch" useAtlasSize="true">
-									<Anchors>
-										<Anchor point="TOP" relativePoint="BOTTOMLEFT" x="419" y="3"/>
-									</Anchors>
-								</Texture>
-								<Texture atlas="options-notch" useAtlasSize="true">
-									<Anchors>
-										<Anchor point="TOP" relativePoint="BOTTOMLEFT" x="476" y="3"/>
-									</Anchors>
-								</Texture>
-								<FontString inherits="OptionsFontSmall" text="VIDEO_QUALITY_LABEL5" justifyH="RIGHT"> <!--ULTRA-->
-									<Anchors>
-										<Anchor point="TOPRIGHT" relativePoint="BOTTOMLEFT" x="555" y="3"/>
+										<Anchor point="CENTER" relativePoint="CENTER" x="0" y="18"/>
 									</Anchors>
 								</FontString>
 							</Layer>
@@ -499,26 +458,10 @@
 								if(self.onvaluechanged) then
 									BlizzardOptionsPanel_Slider_OnValueChanged(self, value);
 								end
+								self.displayValue:SetText(floor(value + 0.5));
 							</OnValueChanged>
 						</Scripts>
 					</Slider>   	
-					<Frame name="$parentRightQuality">
-						<Size x="553" y="22"/>
-						<Anchors>
-							<Anchor point="TOPLEFT" x="30" y="-17"/>
-						</Anchors>
-						<Backdrop bgFile="Interface\Buttons\UI-SliderBar-Background" edgeFile="Interface\Buttons\UI-SliderBar-Border" tile="true">
-							<EdgeSize>
-								<AbsValue val="8"/>
-							</EdgeSize>
-							<TileSize>
-								<AbsValue val="8"/>
-							</TileSize>
-							<BackgroundInsets>
-								<AbsInset left="3" right="3" top="6" bottom="6"/>
-							</BackgroundInsets>
-						</Backdrop>
-					</Frame>
 
 					<!-- Textures -->
 					<Frame name="$parentTextureResolutionDropDown" inherits="VideoOptionsDropDownMenuTemplate" id="7">

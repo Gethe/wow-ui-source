@@ -1,8 +1,6 @@
 ArtifactPerksMixin = {}
 
-function ArtifactPerksMixin:OnShow()
-	self:RefreshRespec();
-	
+function ArtifactPerksMixin:OnShow()	
 	self.modelTransformElapsed = 0;
 end
 
@@ -129,17 +127,6 @@ function ArtifactPerksMixin:CanRespec()
 	return false;
 end
 
-function ArtifactPerksMixin:RefreshRespec()
-	if C_ArtifactUI.IsAtForge() and not C_ArtifactUI.HasReachedArtifactEndgame() then
-		self.RespecButton:SetShown(true);
-		
-		local canRespec = self:CanRespec();
-		self.RespecButton:SetEnabled(canRespec);
-	else
-		self.RespecButton:SetShown(false);
-	end
-end
-
 function ArtifactPerksMixin:TryRefresh()
 	if self.perksDirty then
 		if self.newItem then
@@ -166,7 +153,6 @@ function ArtifactPerksMixin:TryRefresh()
 		end
 
 		self:RefreshPowers(self.newItem);
-		self:RefreshRespec();
 		
 		self.TitleContainer:SetPointsRemaining(C_ArtifactUI.GetPointsRemaining());
 
@@ -405,8 +391,6 @@ function ArtifactPerksMixin:PlayReveal()
 		end
 
 		PlaySound("UI_70_Artifact_Forge_Trait_FirstTrait");
-
-		self:RefreshRespec();
 	end
 end
 
@@ -415,7 +399,6 @@ function ArtifactPerksMixin:OnRevealAnimationFinished(powerButton)
 		self.numRevealsPlaying = self.numRevealsPlaying - 1;
 		if self.numRevealsPlaying == 0 then
 			self.numRevealsPlaying = nil;
-			self:RefreshRespec();
 			for powerID, powerButton in pairs(self.powerIDToPowerButton) do
 				powerButton:SetLocked(false);
 			end

@@ -13,6 +13,7 @@ AM_ZoneSummaryDataProvider.xml
 AM_QuestDialog.xml
 AM_QuestChoiceDataProvider.xml
 AM_QuestOfferDataProvider.xml
+AM_WorldQuestDataProvider.xml
 AM_MissionDataProvider.xml
 
 Blizzard_AdventureMapInset.xml

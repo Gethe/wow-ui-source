@@ -4,7 +4,12 @@ StaticPopupDialogs["CONFIRM_ARTIFACT_RESPEC"] = {
 	text = "Are you sure you want to respec?",
 	button1 = YES,
 	button2 = NO,
-	OnAccept = function(self) C_ArtifactUI.RemoveAllPowers(); end,
+	OnAccept = function(self) C_ArtifactUI.ConfirmRespec(); end,
+	OnUpdate = function(self, elapsed)
+		if ( not C_ArtifactUI.CheckRespecNPC() ) then
+			self:Hide();
+		end
+	end,
 	hideOnEscape = true,
 	timeout = 0,
 	exclusive = true,
@@ -81,11 +86,6 @@ function ArtifactUIMixin:OnEvent(event, ...)
 		if self:IsShown() then
 			self.PerksTab:Refresh();
 		end
-	elseif event == "ARTIFACT_MAX_RANKS_UPDATE" then
-		if self:IsShown() then
-			self.PerksTab:Refresh();
-			self:UpdateForgeLevel();
-		end
 	elseif event == "ARTIFACT_CLOSE" then
 		HideUIPanel(self);
 	end
@@ -137,23 +137,23 @@ function ArtifactUIMixin:SetupPerArtifactData()
 end
 
 function ArtifactUIMixin:UpdateForgeLevel()
-	local numStartingRanks = C_ArtifactUI.GetNumStartingRanks();
-	local maxRanks = C_ArtifactUI.GetMaxPurchasedRanks();
-	local purchasedRanks = C_ArtifactUI.GetTotalPurchasedRanks();
-
-	if maxRanks > numStartingRanks or purchasedRanks >= numStartingRanks - 2 then
-		self.ForgeBadgeFrame.ForgeLevelLabel:SetText(maxRanks);
-		self.ForgeBadgeFrame.ForgeLevelLabel:Show();
-		self.ForgeBadgeFrame.ForgeLevelBackground:Show();
-
-	    if not GetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_ARTIFACT_KNOWLEDGE_LEVEL_LIMIT) then
-			self.MaxKnowledgeLevelHelpBox:Show();
-			SetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_ARTIFACT_KNOWLEDGE_LEVEL_LIMIT, true);
-	    end
-	else
+	--local numStartingRanks = C_ArtifactUI.GetNumStartingRanks();
+	--local maxRanks = C_ArtifactUI.GetMaxPurchasedRanks();
+	--local purchasedRanks = C_ArtifactUI.GetTotalPurchasedRanks();
+    --
+	--if maxRanks > numStartingRanks or purchasedRanks >= numStartingRanks - 2 then
+	--	self.ForgeBadgeFrame.ForgeLevelLabel:SetText(maxRanks);
+	--	self.ForgeBadgeFrame.ForgeLevelLabel:Show();
+	--	self.ForgeBadgeFrame.ForgeLevelBackground:Show();
+    --
+	--    if not GetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_ARTIFACT_KNOWLEDGE_LEVEL_LIMIT) then
+	--		self.MaxKnowledgeLevelHelpBox:Show();
+	--		SetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_ARTIFACT_KNOWLEDGE_LEVEL_LIMIT, true);
+	--    end
+	--else
 		self.ForgeBadgeFrame.ForgeLevelLabel:Hide();
 		self.ForgeBadgeFrame.ForgeLevelBackground:Hide();
-	end
+	--end
 end
 
 ------------------------------------------------------------------

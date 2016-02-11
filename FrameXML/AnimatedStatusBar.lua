@@ -8,6 +8,7 @@ function AnimatedStatusBarMixin:OnLoad()
 	self.OnSetStatusBarAnimUpdateCallback = function(...) self:OnSetStatusBarAnimUpdate(...); end;
 	self.accumulationTimeoutInterval = DEFAULT_ACCUMULATION_TIMEOUT_SEC;
 	self.matchLevelOnFirstWrap = true;
+	self.matchBarValueToAnimation = false;
 
 	self:Reset();
 end
@@ -22,6 +23,15 @@ end
 
 function AnimatedStatusBarMixin:GetMatchLevelOnFirstWrap()
 	return self.matchLevelOnFirstWrap;
+end
+
+-- If set to false then the status bar's value will immediately pop to the end and the animation will cover it, otherwise the bar's value will smoothly animate under the leading edge
+function AnimatedStatusBarMixin:SetMatchBarValueToAnimation(matchBarValueToAnimation)
+	self.matchBarValueToAnimation = matchBarValueToAnimation;
+end
+
+function AnimatedStatusBarMixin:GetMatchBarValueToAnimation()
+	return self.matchBarValueToAnimation;
 end
 
 function AnimatedStatusBarMixin:SetOnAnimatedValueChangedCallback(animatedValueChangedCallback)
@@ -242,7 +252,11 @@ function AnimatedStatusBarMixin:SetupAnimationForValueChange(anim, startingPerce
 end
 
 function AnimatedStatusBarMixin:OnSetStatusBarAnimUpdate(anim, elapsed)
-	self:SetValue(math.floor(self.startValue + (self.targetValue - self.startValue) * anim:GetProgress()));
+	if self:GetMatchBarValueToAnimation() then
+		self:SetValue(math.floor(self.startValue + (self.targetValue - self.startValue) * anim:GetProgress()));
+	else
+		self:SetValue(self.targetValue);
+	end
 	self:OnValueChanged();
 end
 

@@ -484,6 +484,10 @@ function SpellButton_OnClick(self, button)
 		return;
 	end
 
+	if (self.isPassive) then 
+		return;
+	end
+
 	if ( button ~= "LeftButton" and SpellBookFrame.bookType == BOOKTYPE_PET ) then
 		if ( self.offSpecID == 0 ) then
 			ToggleSpellAutocast(slot, SpellBookFrame.bookType);
@@ -634,6 +638,9 @@ function SpellButton_UpdateButton(self)
 		self.TrainTextBackground:Hide();
 		self.TrainBook:Hide();
 		self.FlyoutArrow:Hide();
+		self.AbilityHighlightAnim:Stop();
+		self.AbilityHighlight:Hide();
+		self.GlyphIcon:Hide();
 		self:Disable();
 		self.TextBackground:SetDesaturated(isOffSpec);
 		self.TextBackground2:SetDesaturated(isOffSpec);
@@ -738,6 +745,7 @@ function SpellButton_UpdateButton(self)
 		else
 			self.AbilityHighlightAnim:Stop();
 			self.AbilityHighlight:Hide();
+			self.GlyphIcon:Hide();
 		end
 		
 		if ( slotType == "SPELL" and isOffSpec ) then
@@ -751,6 +759,9 @@ function SpellButton_UpdateButton(self)
 	else
 		local level = GetSpellAvailableLevel(slot, SpellBookFrame.bookType);
 		slotFrame:Hide();
+		self.AbilityHighlightAnim:Stop();
+		self.AbilityHighlight:Hide();
+		self.GlyphIcon:Hide();
 		self.IconTextureBg:Show();
 		iconTexture:SetAlpha(0.5);
 		iconTexture:SetDesaturated(true);
@@ -945,7 +956,7 @@ function SpellBookFrame_OpenToPageForSlot(slot, reason)
 	end
 
 	local relativeSlot = slot - SpellBookFrame.selectedSkillLineOffset;
-	local page = math.floor(relativeSlot / SPELLS_PER_PAGE) + 1;
+	local page = math.floor((relativeSlot - 1)/ SPELLS_PER_PAGE) + 1;
 	SPELLBOOK_PAGENUMBERS[SpellBookFrame.selectedSkillLine] = page;
 	SpellBookFrame_Update();
 	local id = relativeSlot - ( SPELLS_PER_PAGE * (page - 1) );

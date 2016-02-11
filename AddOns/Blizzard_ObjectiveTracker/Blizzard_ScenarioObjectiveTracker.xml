@@ -315,16 +315,21 @@
 						<Size x="251" y="87"/>
 						<Layers>
 							<Layer level="BACKGROUND">
-								<Texture atlas="ChallengeMode-TimerBG" useAtlasSize="true">
+								<Texture parentKey="TimerBGBack" atlas="ChallengeMode-TimerBG-Back" useAtlasSize="true">
 									<Anchors>
-										<Anchor point="BOTTOM" x="0" y="12"/>
+										<Anchor point="BOTTOM" x="0" y="13"/>
+									</Anchors>
+								</Texture>
+							</Layer>
+							<Layer level="BACKGROUND" textureSublevel="1">
+								<Texture parentKey="TimerBG" atlas="ChallengeMode-TimerBG" useAtlasSize="true">
+									<Anchors>
+										<Anchor point="BOTTOM" x="0" y="13"/>
 									</Anchors>
 								</Texture>
 							</Layer>
 							<Layer level="OVERLAY">
 								<Texture atlas="challengemode-timer" setAllPoints="true"/>
-							</Layer>
-							<Layer level="OVERLAY">
 								<FontString parentKey="Level" inherits="GameFontNormalMed2" justifyH="LEFT">
 									<Anchors>
 										<Anchor point="TOPLEFT" x="28" y="-18"/>
@@ -338,8 +343,65 @@
 							</Layer>
 						</Layers>
 						<Frames>
+							<Frame parentKey="StartedDepleted" hidden="true" enableMouse="true">
+								<Size x="19" y="20"/>
+								<Anchors>
+									<Anchor point="LEFT" relativeKey="$parent.Level" relativePoint="RIGHT" x="4" y="0"/>
+								</Anchors>
+								<Layers>
+									<Layer level="ARTWORK">
+										<Texture atlas="ChallengeMode-icon-chest" useAtlasSize="true">
+											<Anchors>
+												<Anchor point="CENTER"/>
+											</Anchors>
+										</Texture>
+									</Layer>
+									<Layer level="ARTWORK" textureSubLevel="1">
+										<Texture atlas="ChallengeMode-icon-redline" useAtlasSize="true">
+											<Anchors>
+												<Anchor point="CENTER"/>
+											</Anchors>
+										</Texture>
+									</Layer>
+								</Layers>
+								<Scripts>
+									<OnEnter>
+										GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+										GameTooltip:SetText(CHALLENGE_MODE_DEPLETED_KEYSTONE, 1, 1, 1);
+										GameTooltip:AddLine(CHALLENGE_MODE_KEYSTONE_DEPLETED_AT_START, nil, nil, nil, true);
+										GameTooltip:Show();
+									</OnEnter>
+									<OnLeave function="GameTooltip_Hide"/>
+								</Scripts>
+							</Frame>
+							<Frame parentKey="TimesUpLootStatus" hidden="true" enableMouse="true">
+								<Size x="19" y="20"/>
+								<Anchors>
+									<Anchor point="LEFT" relativeKey="$parent.TimeLeft" relativePoint="RIGHT" x="4" y="0"/>
+								</Anchors>
+								<Layers>
+									<Layer level="ARTWORK">
+										<Texture atlas="ChallengeMode-icon-chest" useAtlasSize="true">
+											<Anchors>
+												<Anchor point="CENTER"/>
+											</Anchors>
+										</Texture>
+									</Layer>
+									<Layer level="ARTWORK" textureSubLevel="1">
+										<Texture parentKey="NoLoot" atlas="ChallengeMode-icon-redline" useAtlasSize="true">
+											<Anchors>
+												<Anchor point="CENTER"/>
+											</Anchors>
+										</Texture>
+									</Layer>
+								</Layers>
+								<Scripts>
+									<OnEnter function="Scenario_ChallengeMode_TimesUpLootStatus_OnEnter"/>
+									<OnLeave function="GameTooltip_Hide"/>
+								</Scripts>
+							</Frame>
 							<StatusBar parentKey="StatusBar" useParentLevel="true">
-								<Size x="211" y="13"/>
+								<Size x="207" y="13"/>
 								<Anchors>
 									<Anchor point="BOTTOM" x="0" y="10"/>
 								</Anchors>

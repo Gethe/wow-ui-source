@@ -325,7 +325,8 @@ function ArtifactPowerButtonMixin:SetupButton(powerID, anchorRegion)
 	self.isGoldMedal = isGoldMedal;
 
 	local isAtForge = C_ArtifactUI.IsAtForge();
-	local isAtPointCap = totalPurchasedRanks >= C_ArtifactUI.GetMaxPurchasedRanks();
+	--local isAtPointCap = totalPurchasedRanks >= C_ArtifactUI.GetMaxPurchasedRanks();
+	local isAtPointCap = false;
 
 	self.isCompletelyPurchased = currentRank == maxRank or self.isStart;
 	self.hasSpentAny = currentRank > bonusRanks;

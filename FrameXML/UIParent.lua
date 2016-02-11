@@ -35,7 +35,7 @@ UIPanelWindows["PVPBannerFrame"] =				{ area = "left",			pushable = 1};
 UIPanelWindows["PetStableFrame"] =				{ area = "left",			pushable = 0};
 UIPanelWindows["PVEFrame"] =					{ area = "left",			pushable = 1, 	whileDead = 1, width = 563};
 UIPanelWindows["EncounterJournal"] =			{ area = "left",			pushable = 0, 	whileDead = 1, width = 830};
-UIPanelWindows["CollectionsJournal"] =			{ area = "left",			pushable = 0, 	whileDead = 1, width = 830};
+UIPanelWindows["CollectionsJournal"] =			{ area = "left",			pushable = 0, 	whileDead = 1, width = 733};
 UIPanelWindows["TradeFrame"] =					{ area = "left",			pushable = 1};
 UIPanelWindows["LootFrame"] =					{ area = "left",			pushable = 7};
 UIPanelWindows["MerchantFrame"] =				{ area = "left",			pushable = 0};
@@ -69,6 +69,9 @@ UIPanelWindows["GarrisonLandingPage"] =			{ area = "left",			pushable = 1,		whil
 UIPanelWindows["GarrisonMonumentFrame"] =		{ area = "center",			pushable = 0,		whileDead = 1, 		width = 333, 	allowOtherPanels = 1};
 UIPanelWindows["GarrisonRecruiterFrame"] =		{ area = "left",			pushable = 0};
 UIPanelWindows["GarrisonRecruitSelectFrame"] =	{ area = "center",			pushable = 0};
+UIPanelWindows["OrderHallMissionFrame"] =		{ area = "center",			pushable = 0,		whileDead = 1, 		checkFit = 1,	allowOtherPanels = 1, extraWidth = 20,	extraHeight = 100 };
+UIPanelWindows["OrderHallTalentFrame"] =		{ area = "left",			pushable = 0};
+UIPanelWindows["ChallengesKeystoneFrame"] =		{ area = "center",			pushable = 0};
 
 local function GetUIPanelWindowInfo(frame, name)
 	if ( not frame:GetAttribute("UIPanelLayout-defined") ) then
@@ -158,7 +161,7 @@ function UIParent_OnLoad(self)
 	self:RegisterEvent("LOGOUT_CANCEL");
 	self:RegisterEvent("LOOT_BIND_CONFIRM");
 	self:RegisterEvent("EQUIP_BIND_CONFIRM");
-	self:RegisterEvent("AUTOEQUIP_BIND_CONFIRM");
+	self:RegisterEvent("EQUIP_BIND_TRADEABLE_CONFIRM");
 	self:RegisterEvent("USE_BIND_CONFIRM");
 	self:RegisterEvent("CONFIRM_BEFORE_USE");
 	self:RegisterEvent("DELETE_ITEM_CONFIRM");
@@ -248,6 +251,7 @@ function UIParent_OnLoad(self)
 	
 	-- Events for Artifact UI
 	self:RegisterEvent("ARTIFACT_UPDATE");
+	self:RegisterEvent("ARTIFACT_RESPEC_PROMPT");
 	
 	-- Events for Adventure Map UI
 	self:RegisterEvent("ADVENTURE_MAP_OPEN");
@@ -314,6 +318,9 @@ function UIParent_OnLoad(self)
 	self:RegisterEvent("HEIRLOOM_UPGRADE_TARGETING_CHANGED");
 	self:RegisterEvent("HEIRLOOMS_UPDATED");
 	
+	-- Events for Wardrobe
+	self:RegisterEvent("TRANSMOG_COLLECTION_UPDATED");
+
 	-- Events for Quest Choice
 	self:RegisterEvent("QUEST_CHOICE_UPDATE");
 
@@ -332,6 +339,7 @@ function UIParent_OnLoad(self)
 	self:RegisterEvent("GARRISON_SHOW_LANDING_PAGE");
 	self:RegisterEvent("GARRISON_MONUMENT_SHOW_UI");
 	self:RegisterEvent("GARRISON_RECRUITMENT_NPC_OPENED");
+	self:RegisterEvent("GARRISON_TALENT_NPC_OPENED");
 
 	-- Shop (for Asia promotion)
 	self:RegisterEvent("PRODUCT_DISTRIBUTIONS_UPDATED");
@@ -819,6 +827,13 @@ function ToggleGarrisonMissionUI()
 	GarrisonMissionFrame_ToggleFrame();
 end
 
+function ToggleOrderHallTalentUI()
+	if (not OrderHallTalentFrame) then
+		OrderHall_LoadUI();
+	end
+	OrderHallTalentFrame_ToggleFrame();
+end
+
 function OpenDeathRecapUI(id)
 	if (not DeathRecapFrame) then
 		DeathRecap_LoadUI();
@@ -1032,14 +1047,14 @@ function UIParent_OnEvent(self, event, ...)
 			dialog.data = arg1;
 		end
 	elseif ( event == "EQUIP_BIND_CONFIRM" ) then
-		StaticPopup_Hide("AUTOEQUIP_BIND");
+		StaticPopup_Hide("EQUIP_BIND_TRADEABLE");
 		local dialog = StaticPopup_Show("EQUIP_BIND");
 		if ( dialog ) then
 			dialog.data = arg1;
 		end
-	elseif ( event == "AUTOEQUIP_BIND_CONFIRM" ) then
+	elseif ( event == "EQUIP_BIND_TRADEABLE_CONFIRM" ) then
 		StaticPopup_Hide("EQUIP_BIND");
-		local dialog = StaticPopup_Show("AUTOEQUIP_BIND");
+		local dialog = StaticPopup_Show("EQUIP_BIND_TRADEABLE");
 		if ( dialog ) then
 			dialog.data = arg1;
 		end
@@ -1083,7 +1098,7 @@ function UIParent_OnEvent(self, event, ...)
 	elseif ( event == "CURSOR_UPDATE" ) then
 		if ( not CursorHasItem() ) then
 			StaticPopup_Hide("EQUIP_BIND");
-			StaticPopup_Hide("AUTOEQUIP_BIND");
+			StaticPopup_Hide("EQUIP_BIND_TRADEABLE");
 		end
 	elseif ( event == "PLAYER_ENTERING_WORLD" ) then
 		-- Get multi-actionbar states (before CloseAllWindows() since that may be hooked by AddOns)
@@ -1408,6 +1423,10 @@ function UIParent_OnEvent(self, event, ...)
 		ArtifactFrame_LoadUI();
 		ShowUIPanel(ArtifactFrame);
 		
+	elseif ( event == "ARTIFACT_RESPEC_PROMPT" ) then
+		ArtifactFrame_LoadUI();  -- Need to load because this popup is in Blizzard_ArtifactUI.lua
+		StaticPopup_Show("CONFIRM_ARTIFACT_RESPEC");
+		
 	elseif ( event == "ADVENTURE_MAP_OPEN" ) then
 		OrderHall_LoadUI();
 		ShowUIPanel(OrderHallMissionFrame);
@@ -1626,6 +1645,18 @@ function UIParent_OnEvent(self, event, ...)
 			end
 		end
 		
+	-- Events for Wardrobe
+	elseif ( event == "TRANSMOG_COLLECTION_UPDATED" ) then
+		if ( not CollectionsJournal ) then
+			local categoryID, sourceID, visualID, new = ...;
+			if ( new ) then
+				if ( not self.newTransmogs ) then
+					self.newTransmogs = { };
+				end
+				self.newTransmogs[visualID] = true;
+			end
+		end
+
 	-- Quest Choice trigger event
 	
 	elseif ( event == "QUEST_CHOICE_UPDATE" ) then
@@ -1698,6 +1729,8 @@ function UIParent_OnEvent(self, event, ...)
 			Garrison_LoadUI();
 		end
 		ShowUIPanel(GarrisonRecruiterFrame);
+	elseif ( event == "GARRISON_TALENT_NPC_OPENED") then
+		ToggleOrderHallTalentUI();
 	elseif ( event == "PRODUCT_DISTRIBUTIONS_UPDATED" ) then
 		StoreFrame_CheckForFree(event);
 	elseif ( event == "LOADING_SCREEN_ENABLED" ) then
@@ -3593,6 +3626,8 @@ function ToggleGameMenu()
 	elseif ( GarrisonShipyardFrame_ClearMouse and securecall("GarrisonShipyardFrame_ClearMouse") ) then
 	elseif ( GarrisonShipyardFrame and GarrisonShipyardFrame.MissionTab and GarrisonShipyardFrame.MissionTab.MissionPage and GarrisonShipyardFrame.MissionTab.MissionPage:IsVisible() ) then
 		GarrisonShipyardFrame.MissionTab.MissionPage.CloseButton:Click();
+	elseif ( OrderHallMissionFrame and OrderHallMissionFrame.EscapePressed and OrderHallMissionFrame:EscapePressed() ) then
+	elseif ( OrderHallTalentFrame and OrderHallTalentFrame.EscapePressed and OrderHallTalentFrame:EscapePressed() ) then
 	elseif ( SpellStopCasting() ) then
 	elseif ( SpellStopTargeting() ) then
 	elseif ( securecall("CloseAllWindows") ) then
@@ -3604,6 +3639,8 @@ function ToggleGameMenu()
 		OpacityFrame:Hide();
 	elseif ( SplashFrame:IsShown() ) then
 		SplashFrame_Close();
+	elseif ( ChallengesKeystoneFrame and ChallengesKeystoneFrame:IsShown() ) then
+		ChallengesKeystoneFrame:Hide();
 	else
 		PlaySound("igMainMenuOpen");
 		ShowUIPanel(GameMenuFrame);
@@ -4146,12 +4183,6 @@ end
 
 function ConsolePrint(...)
 	ConsoleAddMessage(strjoin(" ", tostringall(...)));
-end
-
-function GetTexCoordsByGrid(xOffset, yOffset, textureWidth, textureHeight, gridWidth, gridHeight)
-	local widthPerGrid = gridWidth/textureWidth;
-	local heightPerGrid = gridHeight/textureHeight;
-	return (xOffset-1)*widthPerGrid, (xOffset)*widthPerGrid, (yOffset-1)*heightPerGrid, (yOffset)*heightPerGrid;
 end
 
 function LFD_IsEmpowered()
