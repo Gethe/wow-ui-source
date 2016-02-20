@@ -607,7 +607,9 @@ EMOTE450_TOKEN = "OBJECT"
 EMOTE451_TOKEN = "SWEAT"
 EMOTE452_TOKEN = "YW"
 EMOTE453_TOKEN = "READ"
-local MAXEMOTEINDEX = 453;
+EMOTE454_TOKEN = "FORTHEALLIANCE"
+EMOTE455_TOKEN = "FORTHEHORDE"
+local MAXEMOTEINDEX = 455;
 
 
 ICON_LIST = {
@@ -3437,19 +3439,13 @@ function ChatFrame_ReplyTell2(chatFrame)
 	end
 end
 
-function ChatFrame_DisplayStartupText(frame)
+function ChatFrame_DisplayHelpTextSimple(frame)
 	if ( not frame ) then
 		return;
 	end
 
 	local info = ChatTypeInfo["SYSTEM"];
-	local i = 1;
-	local text = _G["STARTUP_TEXT_LINE"..i];
-	while text do
-		frame:AddMessage(text, info.r, info.g, info.b, info.id);
-		i = i + 1;
-		text = _G["STARTUP_TEXT_LINE"..i];
-	end
+	frame:AddMessage(HELP_TEXT_SIMPLE, info.r, info.g, info.b, info.id);
 
 end
 
@@ -4329,16 +4325,18 @@ function ChatEdit_ParseText(editBox, send, parseIfNoSpaces)
 		return;
 	elseif ( hash_EmoteTokenList[command] ) then
 		-- if the code in here changes - change the corresponding code below
-		DoEmote(hash_EmoteTokenList[command], msg);
-		editBox:AddHistoryLine(text);
-		ChatEdit_ClearChat(editBox);
-		return;
+		local restricted = DoEmote(hash_EmoteTokenList[command], msg);
+		-- If the emote is restricted, we want to treat it as if the player entered an unrecognized chat command.
+		if ( not restricted ) then
+		    editBox:AddHistoryLine(text);
+			ChatEdit_ClearChat(editBox);
+			return;
+		end
 	end
 
 	-- Unrecognized chat command, show simple help text
 	if ( editBox.chatFrame ) then
-		local info = ChatTypeInfo["SYSTEM"];
-		editBox.chatFrame:AddMessage(HELP_TEXT_SIMPLE, info.r, info.g, info.b, info.id);
+		ChatFrame_DisplayHelpTextSimple(editBox.chatFrame);
 	end
 	
 	-- Reset the chat type and clear the edit box's contents

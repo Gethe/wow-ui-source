@@ -1,0 +1,68 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\FrameXML\UI.xsd">
+	<Script file="Blizzard_OrderHallCommandBar.lua"/>
+
+	<Frame name="OrderHallTroopSummaryTemplate" parentArray="TroopSummary" virtual="true" mixin="OrderHallTroopSummary">
+		<Size x="100" y="23"/>
+		<Layers>
+			<Layer level="ARTWORK">
+				<Texture parentKey="Icon">
+					<Size x="46" y="23"/>
+					<Anchors>
+						<Anchor point="BOTTOMLEFT" x="5" y="1"/>
+					</Anchors>
+				</Texture>
+				<FontString inherits="GameFontNormal" justifyH="LEFT" parentKey="Count">
+					<Anchors>
+						<Anchor point="LEFT" relativePoint="RIGHT" relativeKey="$parent.Icon" x="-5" y="0"/>
+						<Anchor point="RIGHT"/>
+
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnEnter method="OnEnter"/>
+			<OnLeave method="OnLeave"/>
+		</Scripts>
+	</Frame>
+	<Frame name="OrderHallCommandBar" toplevel="true" parent="UIParent" mixin="OrderHallCommandBarMixin" hidden="true"  frameStrata="BACKGROUND">
+		<Size x="0" y="25"/>
+		<Anchors>
+			<Anchor point="TOPLEFT"/>
+			<Anchor point="TOPRIGHT"/>
+		</Anchors>
+
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="Background" atlas="_orderhall-commandbar-bg" horizTile="true"/>
+			</Layer>
+			<Layer level="ARTWORK">
+				<Texture parentKey="ClassIcon">
+					<Size x="46" y="23"/>
+					<Anchors>
+						<Anchor point="BOTTOMLEFT" x="5" y="2"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="CurrencyIcon">
+					<Size x="18" y="18"/>
+					<Anchors>
+						<Anchor point="LEFT" relativePoint="RIGHT" relativeKey="$parent.ClassIcon" x="15" y="1"/>
+					</Anchors>
+				</Texture>
+				<FontString inherits="GameFontHighlight" parentKey="Currency">
+					<Anchors>
+						<Anchor point="LEFT" relativePoint="RIGHT" relativeKey="$parent.CurrencyIcon" x="5" y="0"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnShow method="OnShow"/>
+			<OnHide method="OnHide"/>
+			<OnEvent method="OnEvent"/>
+		</Scripts>
+	</Frame>
+
+</Ui>

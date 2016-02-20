@@ -663,8 +663,7 @@ function PlayerTalentFrameTalent_OnClick(self, button)
         local talentID = self:GetID()
 		local _, _, _, _, available, _, _, _, _, known = GetTalentInfoByID(talentID, specs[selectedSpec].talentGroup, true);
 		if ( available and not known and button == "LeftButton") then
-            LearnTalent(talentID);
-			return true;
+            return LearnTalent(talentID);
 		end
 	end
 	return false;
@@ -1577,7 +1576,9 @@ function PlayerTalentFramePVPTalentsTalent_OnClick(self, button)
 				if (not isRowFree) then
 					RemovePvpTalent(prevSelected);
 				end
-				LearnPvpTalent(id);
+				if (not LearnPvpTalent(id)) then
+					talentsFrame.talentInfo[row] = nil;
+				end
 				PlayerTalentFramePVPTalents_Update(PlayerTalentFramePVPTalents);
 			end
 		end

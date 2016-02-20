@@ -48,7 +48,8 @@ function AdventureMap_WorldQuestDataProviderMixin:AddQuest(info)
 	pin.numObjectives = info.numObjectives;
 	pin:SetFrameLevel(1000 + self:GetAdventureMap():GetNumActivePinsByTemplate("AdventureMap_WorldQuestPinTemplate"));
 
-	local tagID, tagName, worldQuestType, isRare, isElite, tradeskillLine = GetQuestTagInfo(info.questId);
+	local tagID, tagName, worldQuestType, isRare, isElite, tradeskillLineIndex = GetQuestTagInfo(info.questId);
+	local tradeskillLineID = tradeskillLineIndex and select(7, GetProfessionInfo(tradeskillLineIndex));
 
 	if isRare and not worldQuestType == LE_QUEST_TAG_TYPE_PVP then
 		pin.Background:SetTexCoord(0, 1, 0, 1);
@@ -83,9 +84,13 @@ function AdventureMap_WorldQuestDataProviderMixin:AddQuest(info)
 	elseif worldQuestType == LE_QUEST_TAG_TYPE_PET_BATTLE then
 		pin.Texture:SetAtlas("worldquest-icon-petbattle");
 		pin.Texture:SetSize(26, 22);
-	elseif worldQuestType == LE_QUEST_TAG_TYPE_PROFESSION and WORLD_QUEST_ICONS_BY_PROFESSION[tradeskillLine] then
-		local _, width, height = GetAtlasInfo(WORLD_QUEST_ICONS_BY_PROFESSION[tradeskillLine]);
-		pin.Texture:SetAtlas(WORLD_QUEST_ICONS_BY_PROFESSION[tradeskillLine]);
+	elseif worldQuestType == LE_QUEST_TAG_TYPE_PROFESSION and WORLD_QUEST_ICONS_BY_PROFESSION[tradeskillLineID] then
+		local _, width, height = GetAtlasInfo(WORLD_QUEST_ICONS_BY_PROFESSION[tradeskillLineID]);
+		pin.Texture:SetAtlas(WORLD_QUEST_ICONS_BY_PROFESSION[tradeskillLineID]);
+		pin.Texture:SetSize(width * 2, height * 2);
+	elseif worldQuestType == LE_QUEST_TAG_TYPE_WORLD_BOSS then
+		local _, width, height = GetAtlasInfo("worldquest-icon-boss");
+		pin.Texture:SetAtlas("worldquest-icon-boss");
 		pin.Texture:SetSize(width * 2, height * 2);
 	else
 		pin.Texture:SetAtlas("worldquest-questmarker-questbang");

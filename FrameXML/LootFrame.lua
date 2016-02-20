@@ -754,11 +754,11 @@ function BonusRollFrame_FinishedFading(self)
 	if ( self.rewardType == "item" ) then
 		GroupLootContainer_ReplaceFrame(GroupLootContainer, self, BonusRollLootWonFrame);
 		LootWonAlertFrame_SetUp(BonusRollLootWonFrame, self.rewardLink, self.rewardQuantity, nil, nil, self.rewardSpecID);
-		AlertFrame_AnimateIn(BonusRollLootWonFrame);
+		AlertFrame:AddAlertFrame(BonusRollLootWonFrame);
 	elseif ( self.rewardType == "money" ) then
 		GroupLootContainer_ReplaceFrame(GroupLootContainer, self, BonusRollMoneyWonFrame);
 		MoneyWonAlertFrame_SetUp(BonusRollMoneyWonFrame, self.rewardQuantity);
-		AlertFrame_AnimateIn(BonusRollMoneyWonFrame);
+		AlertFrame:AddAlertFrame(BonusRollMoneyWonFrame);
 	else
 		GroupLootContainer_RemoveFrame(GroupLootContainer, self);
 	end

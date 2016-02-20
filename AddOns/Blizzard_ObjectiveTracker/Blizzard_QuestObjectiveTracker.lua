@@ -3,16 +3,14 @@ QUEST_TRACKER_MODULE = ObjectiveTracker_GetModuleInfoTable();
 QUEST_TRACKER_MODULE.updateReasonModule = OBJECTIVE_TRACKER_UPDATE_MODULE_QUEST;
 QUEST_TRACKER_MODULE.updateReasonEvents = OBJECTIVE_TRACKER_UPDATE_QUEST + OBJECTIVE_TRACKER_UPDATE_QUEST_ADDED;
 QUEST_TRACKER_MODULE.usedBlocks = { };
-QUEST_TRACKER_MODULE.freeItemButtons = { };
 -- because this header is shared, on finishing its anim it has to update all the modules that use it
 QUEST_TRACKER_MODULE:SetHeader(ObjectiveTrackerFrame.BlocksFrame.QuestHeader, TRACKER_HEADER_QUESTS, OBJECTIVE_TRACKER_UPDATE_QUEST_ADDED);
 
 function QUEST_TRACKER_MODULE:OnFreeBlock(block)
 	local itemButton = block.itemButton;
 	if ( itemButton ) then
-		tinsert(self.freeItemButtons, itemButton);
+		QuestObjectiveItem_ReleaseButton(itemButton);
 		block.itemButton = nil;
-		itemButton:Hide();
 	end
 	block.timerLine	= nil;
 	block.questCompleted = nil;
@@ -38,31 +36,20 @@ function QUEST_TRACKER_MODULE:SetBlockHeader(block, text, questLogIndex, isQuest
 	if ( item and ( not isQuestComplete or showItemWhenComplete ) ) then
 		-- if the block doesn't already have an item, get one
 		if ( not itemButton ) then
-			local numFreeButtons = #QUEST_TRACKER_MODULE.freeItemButtons;
-			if ( numFreeButtons > 0 ) then
-				itemButton = QUEST_TRACKER_MODULE.freeItemButtons[numFreeButtons];
-				tremove(QUEST_TRACKER_MODULE.freeItemButtons, numFreeButtons);
-				itemButton:SetParent(block);				
-			else
-				itemButton = CreateFrame("BUTTON", nil, ObjectiveTrackerFrame.BlocksFrame, "QuestObjectiveItemButtonTemplate");
-			end
+			itemButton = QuestObjectiveItem_AcquireButton(block);
 			block.itemButton = itemButton;
 			itemButton:SetPoint("TOPRIGHT", block, -2, 1);
 			itemButton:Show();
 		end
-		itemButton:SetID(questLogIndex);
-		itemButton.charges = charges;
-		itemButton.rangeTimer = -1;
-		SetItemButtonTexture(itemButton, item);
-		SetItemButtonCount(itemButton, charges);
-		QuestObjectiveItem_UpdateCooldown(itemButton);
+
+		QuestObjectiveItem_Initialize(itemButton, questLogIndex);
+		
 		block.lineWidth = OBJECTIVE_TRACKER_TEXT_WIDTH - OBJECTIVE_TRACKER_ITEM_WIDTH;
 		block.HeaderText:SetWidth(block.lineWidth);		
 	else
 		if ( itemButton ) then
-			tinsert(QUEST_TRACKER_MODULE.freeItemButtons, itemButton);
+			QuestObjectiveItem_ReleaseButton(itemButton);
 			block.itemButton = nil;
-			itemButton:Hide();
 		end
 		block.lineWidth = nil;
 		block.HeaderText:SetWidth(OBJECTIVE_TRACKER_TEXT_WIDTH);
@@ -127,88 +114,6 @@ function QuestObjectiveTracker_FinishFadeOutAnim(line)
 		end
 	end
 	ObjectiveTracker_Update(OBJECTIVE_TRACKER_UPDATE_MODULE_QUEST);
-end
-
--- *****************************************************************************************************
--- ***** ITEM FUNCTIONS
--- *****************************************************************************************************
-function QuestObjectiveItem_OnLoad(self)
-	self:RegisterForClicks("AnyUp");
-end
-
-function QuestObjectiveItem_OnEvent(self, event, ...)
-	if ( event == "PLAYER_TARGET_CHANGED" ) then
-		self.rangeTimer = -1;
-	elseif ( event == "BAG_UPDATE_COOLDOWN" ) then
-		QuestObjectiveItem_UpdateCooldown(self);
-	end
-end
-
-function QuestObjectiveItem_OnUpdate(self, elapsed)
-	-- Handle range indicator
-	local rangeTimer = self.rangeTimer;
-	if ( rangeTimer ) then	
-		rangeTimer = rangeTimer - elapsed;		
-		if ( rangeTimer <= 0 ) then
-			local link, item, charges, showItemWhenComplete = GetQuestLogSpecialItemInfo(self:GetID());
-			if ( not charges or charges ~= self.charges ) then
-				ObjectiveTracker_Update(OBJECTIVE_TRACKER_UPDATE_MODULE_QUEST);
-				return;
-			end
-			local count = self.HotKey;
-			local valid = IsQuestLogSpecialItemInRange(self:GetID());
-			if ( valid == 0 ) then
-				count:Show();
-				count:SetVertexColor(1.0, 0.1, 0.1);
-			elseif ( valid == 1 ) then
-				count:Show();
-				count:SetVertexColor(0.6, 0.6, 0.6);
-			else
-				count:Hide();
-			end
-			rangeTimer = TOOLTIP_UPDATE_TIME;
-		end
-		
-		self.rangeTimer = rangeTimer;
-	end
-end
-
-function QuestObjectiveItem_OnShow(self)
-	self:RegisterEvent("PLAYER_TARGET_CHANGED");
-	self:RegisterEvent("BAG_UPDATE_COOLDOWN");
-end
-
-function QuestObjectiveItem_OnHide(self)
-	self:UnregisterEvent("PLAYER_TARGET_CHANGED");
-	self:UnregisterEvent("BAG_UPDATE_COOLDOWN");
-end
-
-function QuestObjectiveItem_OnEnter(self)
-	GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
-	GameTooltip:SetQuestLogSpecialItem(self:GetID());
-end
-		
-function QuestObjectiveItem_OnClick(self, button)
-	if ( IsModifiedClick("CHATLINK") and ChatEdit_GetActiveWindow() ) then
-		local link, item, charges, showItemWhenComplete = GetQuestLogSpecialItemInfo(self:GetID());
-		if ( link ) then
-			ChatEdit_InsertLink(link);
-		end
-	else
-		UseQuestLogSpecialItem(self:GetID());
-	end
-end
-
-function QuestObjectiveItem_UpdateCooldown(itemButton)
-	local start, duration, enable = GetQuestLogSpecialItemCooldown(itemButton:GetID());
-	if ( start ) then
-		CooldownFrame_SetTimer(itemButton.Cooldown, start, duration, enable);
-		if ( duration > 0 and enable == 0 ) then
-			SetItemButtonTextureVertexColor(itemButton, 0.4, 0.4, 0.4);
-		else
-			SetItemButtonTextureVertexColor(itemButton, 1, 1, 1);
-		end
-	end
 end
 
 -- *****************************************************************************************************

@@ -34,8 +34,8 @@ function NamePlateDriverMixin:OnEvent(event, ...)
 	elseif event == "VARIABLES_LOADED" then
 		self:UpdateNamePlateOptions();
 	elseif event == "CVAR_UPDATE" then
-		local arg1 = ...;
-		if arg1 == "SHOW_CLASS_COLOR_IN_V_KEY" then
+		local name = ...;
+		if name == "SHOW_CLASS_COLOR_IN_V_KEY" or name == "SHOW_NAMEPLATE_LOSE_AGGRO_FLASH" then
 			self:UpdateNamePlateOptions();
 		end
 	elseif event == "RAID_TARGET_UPDATE" then
@@ -202,13 +202,10 @@ function NamePlateDriverMixin:SetClassNameplateManaBar(frame)
 end
 
 function NamePlateDriverMixin:UpdateNamePlateOptions()
-	if (GetCVarBool("ShowClassColorInNameplate")) then
-		DefaultCompactNamePlateTargetEnemyFrameOptions.useClassColors = true;
-	else
-		DefaultCompactNamePlateTargetEnemyFrameOptions.useClassColors = false;
-	end
+	DefaultCompactNamePlateTargetEnemyFrameOptions.useClassColors = GetCVarBool("ShowClassColorInNameplate");
+	DefaultCompactNamePlateTargetEnemyFrameOptions.playLoseAggroHighlight = GetCVarBool("ShowNamePlateLoseAggroFlash");
 	
-	for _, frame in pairs(C_NamePlate.GetNamePlates()) do
+	for i, frame in ipairs(C_NamePlate.GetNamePlates()) do
 		CompactUnitFrame_UpdateAll(frame.UnitFrame);
 	end
 end

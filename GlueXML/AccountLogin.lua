@@ -72,8 +72,12 @@ function AccountLogin_OnEvent(self, event, ...)
 	elseif ( event == "LAUNCHER_LOGIN_STATUS_CHANGED" ) then
 		AccountLogin_Update();
 	elseif ( event == "FATAL_AUTHENTICATION_FAILURE" ) then
-		local errorCode = ...;
-		GlueDialog_Show("OKAY_HTML_MUST_ACCEPT", _G[errorCode]);
+		local errorCode, isHtml = ...;
+		if ( isHtml ) then
+			GlueDialog_Show("OKAY_HTML_MUST_ACCEPT", _G[errorCode]);
+		else
+			GlueDialog_Show("OKAY_MUST_ACCEPT", _G[errorCode]);
+		end
 	end
 end
 

@@ -348,11 +348,60 @@ end
 ---------------------------------------------------------------------------------
 --- Follower Portrait                                                         ---
 ---------------------------------------------------------------------------------
-function GarrisonFollowerPortrait_Set(portrait, iconFileID)
+GarrisonFollowerPortraitMixin = { }
+
+function GarrisonFollowerPortraitMixin:SetPortraitIcon(iconFileID)
 	if (iconFileID == nil or iconFileID == 0) then
 		-- unknown icon file ID; use the default silhouette portrait
-		portrait:SetTexture("Interface\\Garrison\\Portraits\\FollowerPortrait_NoPortrait");
+		self.Portrait:SetTexture("Interface\\Garrison\\Portraits\\FollowerPortrait_NoPortrait");
 	else
-		portrait:SetTexture(iconFileID);
+		self.Portrait:SetTexture(iconFileID);
+	end
+end
+
+function GarrisonFollowerPortraitMixin:SetQuality(quality)
+	local color = ITEM_QUALITY_COLORS[quality];
+	if (color) then
+		self:SetQualityColor(color.r, color.g, color.b);
+	else
+		self:SetQualityColor(1, 1, 1);
+	end
+end
+
+function GarrisonFollowerPortraitMixin:SetQualityColor(r, g, b)
+	self.LevelBorder:SetVertexColor(r, g, b);
+	self.PortraitRingQuality:SetVertexColor(r, g, b);
+end
+
+function GarrisonFollowerPortraitMixin:SetNoLevel()
+	self.LevelBorder:Hide();
+	self.Level:Hide();
+end
+
+function GarrisonFollowerPortraitMixin:SetLevel(level)
+	self.LevelBorder:SetAtlas("GarrMission_PortraitRing_LevelBorder");
+	self.LevelBorder:SetWidth(58);
+	self.LevelBorder:Show();
+	self.Level:Show();
+	self.Level:SetText(level);
+end
+
+function GarrisonFollowerPortraitMixin:SetILevel(iLevel)
+	self.LevelBorder:SetAtlas("GarrMission_PortraitRing_iLvlBorder");
+	self.LevelBorder:SetWidth(70);
+	self.LevelBorder:Show();
+	self.Level:Show();
+	self.Level:SetFormattedText(GARRISON_FOLLOWER_ITEM_LEVEL, iLevel);
+end
+
+function GarrisonFollowerPortraitMixin:SetupPortrait(followerInfo, showILevel)
+	self:SetPortraitIcon(followerInfo.portraitIconID);
+	self:SetQuality(followerInfo.quality);
+	if (followerInfo.isTroop) then
+		self:SetNoLevel();
+	elseif (showILevel or GarrisonFollowerOptions[followerInfo.followerTypeID].showILevelOnFollower) then
+		self:SetILevel(followerInfo.iLevel);
+	else
+		self:SetLevel(followerInfo.level);
 	end
 end

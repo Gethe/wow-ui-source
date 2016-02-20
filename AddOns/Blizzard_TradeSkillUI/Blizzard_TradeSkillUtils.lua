@@ -59,3 +59,32 @@ function TradeSkillFrame_CalculateRankInfoFromRankLinks(recipeInfo)
 
 	return totalRanks, currentRank;
 end
+
+function TradeSkillFrame_SetAllSourcesFiltered(filtered)
+	local numSources = C_PetJournal.GetNumPetSources();
+	for i = 1, numSources do
+		if C_TradeSkillUI.IsAnyRecipeFromSource(i) then
+			C_TradeSkillUI.SetRecipeSourceTypeFilter(i, filtered);
+		end
+	end
+end
+
+function TradeSkillFrame_AreAllSourcesFiltered()
+	local numSources = C_PetJournal.GetNumPetSources();
+	for i = 1, numSources do
+		if C_TradeSkillUI.IsAnyRecipeFromSource(i) and not C_TradeSkillUI.IsRecipeSourceTypeFiltered(i) then
+			return false;
+		end
+	end
+	return true;
+end
+
+function TradeSkillFrame_AreAllSourcesUnfiltered()
+	local numSources = C_PetJournal.GetNumPetSources();
+	for i = 1, numSources do
+		if C_TradeSkillUI.IsAnyRecipeFromSource(i) and C_TradeSkillUI.IsRecipeSourceTypeFiltered(i) then
+			return false;
+		end
+	end
+	return true;
+end

@@ -1,3 +1,13 @@
+---------------------------------------------------------------------------------
+-- Display Options
+---------------------------------------------------------------------------------
+GarrisonFollowerOptions = { };
+GarrisonFollowerOptions[LE_FOLLOWER_TYPE_GARRISON_6_0] = {
+	displayCounterAbilityInPlaceOfMechanic = false,
+	useAbilityTooltipStyleWithoutCounters = false,
+	hideCountersInAbilityFrame = false,
+	showILevelOnFollower = false,
+}
 
 ---------------------------------------------------------------------------------
 --- Base Mission Mixin Functions                                              ---
@@ -205,6 +215,14 @@ function GarrisonMission:SortMechanics(mechanics)
 	return keys;
 end
 
+function GarrisonMission:OnSetEnemy(enemyFrame, enemyInfo)
+
+end
+
+function GarrisonMission:OnSetEnemyMechanic(enemyFrame, mechanicFrame, mechanicID)
+
+end
+
 function GarrisonMission:SetEnemies(missionPage, enemies, numFollowers, mechanicYOffset, followerTypeID)
 	local numVisibleEnemies = 0;
 	for i=1, #enemies do
@@ -230,6 +248,7 @@ function GarrisonMission:SetEnemies(missionPage, enemies, numFollowers, mechanic
 			Mechanic.Icon:SetTexture(mechanic.icon);
 			Mechanic.mechanicID = id;
 			Mechanic.followerTypeID = followerTypeID;
+			self:OnSetEnemyMechanic(Frame, Mechanic, id);
 			Mechanic:Show();
 		end
 		Frame.Mechanics[1]:SetPoint("BOTTOM", (numMechs - 1) * -22, mechanicYOffset);
@@ -243,6 +262,7 @@ function GarrisonMission:SetEnemies(missionPage, enemies, numFollowers, mechanic
 			portrait = Frame.PortraitFrame;
 		end
 		self:SetEnemyPortrait(portrait, enemy, portrait.Elite, numMechs);
+		self:OnSetEnemy(Frame, enemy);
 		Frame:Show();
 	end
 	
@@ -376,7 +396,7 @@ function GarrisonMission:UpdateMissionData(missionPage)
 end
 
 function GarrisonMission:UpdateCostFrame(missionPage, amount)
-	local cost = missionPage.missionInfo.cost;
+	local cost = C_Garrison.GetMissionCost(missionPage.missionInfo.missionID);
 	if ( amount < cost ) then
 		missionPage.CostFrame.Cost:SetText(RED_FONT_COLOR_CODE..BreakUpLargeNumbers(cost)..FONT_COLOR_CODE_CLOSE);
 	else
@@ -546,7 +566,11 @@ function GarrisonMission:UpdateMissionParty(followers, counterTemplate)
 					local Counter = followerFrame.Counters[i];
 					Counter.info = counters[i];
 					Counter.info.showCounters = true;
-					Counter.Icon:SetTexture(counters[i].icon);
+					if (GarrisonFollowerOptions[followerInfo.followerTypeID].displayCounterAbilityInPlaceOfMechanic and counters[i].counterID) then
+						Counter.Icon:SetTexture(C_Garrison.GetFollowerAbilityIcon(counters[i].counterID));
+					else
+						Counter.Icon:SetTexture(counters[i].icon);
+					end
 					Counter.tooltip = counters[i].name;
 					Counter:Show();
 					
@@ -1993,6 +2017,12 @@ function GarrisonMissionMechanic_OnEnter(self)
 	if (not self.info) then
 		return;
 	end
+
+	if (GarrisonFollowerOptions[self.followerTypeID].displayCounterAbilityInPlaceOfMechanic and self.counterAbility) then
+		ShowGarrisonFollowerAbilityTooltip(self, self.counterAbility.id, self.followerTypeID);
+		return;
+	end
+
 	local tooltip = GarrisonMissionMechanicTooltip;
 	
 	-- Tooltip needs to be parented to the main frame. Since this tooltip frame is shared between
@@ -2020,14 +2050,21 @@ function GarrisonMissionMechanic_OnEnter(self)
 	tooltip:Show();
 end
 
+function GarrisonMissionMechanic_OnLeave(self)
+	GarrisonMissionMechanicTooltip:Hide();
+	HideGarrisonFollowerAbilityTooltip();
+end
+
+
 function GarrisonMissionMechanicFollowerCounter_OnEnter(self)
 	if (not self.info) then
 		return;
 	end
 	if ( self.info.traitID ) then
-		GarrisonFollowerAbilityTooltip:ClearAllPoints();
-		GarrisonFollowerAbilityTooltip:SetPoint("TOPLEFT", self, "BOTTOMRIGHT");
-		GarrisonFollowerAbilityTooltip_Show(self.info.traitID, self.followerTypeID);
+		ShowGarrisonFollowerAbilityTooltip(self, self.info.traitID, self.followerTypeID);
+		return;
+	elseif (GarrisonFollowerOptions[self.followerTypeID].displayCounterAbilityInPlaceOfMechanic and self.info.counterID) then
+		ShowGarrisonFollowerAbilityTooltip(self, self.info.counterID, self.followerTypeID);
 		return;
 	end
 	local tooltip = GarrisonMissionMechanicFollowerCounterTooltip;
@@ -2067,8 +2104,8 @@ function GarrisonMissionMechanicFollowerCounter_OnEnter(self)
 end
 
 function GarrisonMissionMechanicFollowerCounter_OnLeave(self)
-	GarrisonFollowerAbilityTooltip:Hide();
 	GarrisonMissionMechanicFollowerCounterTooltip:Hide();
+	HideGarrisonFollowerAbilityTooltip();
 end
 
 function GarrisonMission_DetermineCounterableThreats(missionID, followerType)

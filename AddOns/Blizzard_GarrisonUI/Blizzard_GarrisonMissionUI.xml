@@ -142,13 +142,9 @@
 		</Layers>
 		<Scripts>
 			<OnEnter>
-				GarrisonFollowerAbilityTooltip:ClearAllPoints();
-				GarrisonFollowerAbilityTooltip:SetPoint("TOPLEFT", self, "BOTTOMRIGHT");
-				GarrisonFollowerAbilityTooltip_Show(self.abilityID, self.followerTypeID);
+				ShowGarrisonFollowerAbilityTooltip(self, self.abilityID, self.followerTypeID);
 			</OnEnter>
-			<OnLeave>
-				GarrisonFollowerAbilityTooltip:Hide();
-			</OnLeave>
+			<OnLeave function="HideGarrisonFollowerAbilityTooltip"/>
 		</Scripts>
 	</Frame>
 
@@ -236,12 +232,10 @@
 		<Scripts>
 			<OnClick function="GarrisonFollowerPageAbility_OnClick"/>
 			<OnEnter>
-				GarrisonFollowerAbilityTooltip:ClearAllPoints();
-				GarrisonFollowerAbilityTooltip:SetPoint("TOPLEFT", self, "BOTTOMRIGHT");
-				GarrisonFollowerAbilityTooltip_Show(self.abilityID, self:GetParent().followerTypeID);
+				ShowGarrisonFollowerAbilityTooltip(self, self.abilityID, self:GetParent().followerTypeID)
 			</OnEnter>
 			<OnLeave>
-				GarrisonFollowerAbilityTooltip:Hide();
+				HideGarrisonFollowerAbilityTooltip();
 			</OnLeave>
 		</Scripts>
 	</Button>

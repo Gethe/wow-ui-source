@@ -332,6 +332,10 @@
 	</Button>
 
 	<Texture name="GarrisonMissionFollowerButtonDurabilityTemplate" parentArray="durability" atlas="GarrisonTroops-Health" useAtlasSize="true" virtual="true"/>
+	<Frame name="GarrisonMissionFollowerDurabilityFrameTemplate" mixin="GarrisonMissionFollowerDurabilityMixin" virtual="true">
+		<Size x="100" y="12"/>
+	</Frame>
+
 	<Button name="GarrisonMissionFollowerButtonTemplate" inherits="GarrisonFollowerButtonTemplate" mixin="GarrisonMissionButton" virtual="true">
 		<Layers>
 			<Layer level="BACKGROUND" textureSubLevel="-1">
@@ -350,11 +354,6 @@
 					</Anchors>
 					<TexCoords left="0.45312500" right="0.64062500" bottom="0.20312500" top="0.01562500"/>
 				</Texture>
-				<Texture parentKey="durability1" inherits="GarrisonMissionFollowerButtonDurabilityTemplate">
-					<Anchors>
-						<Anchor point="TOPLEFT" relativeKey="$parent.Name" relativePoint="BOTTOMLEFT"/>
-					</Anchors>
-				</Texture>
 			</Layer>
 			<Layer level="HIGHLIGHT">
 				<Texture parentKey="DownArrow" file="Interface\Buttons\SquareButtonTextures">
@@ -367,6 +366,11 @@
 			</Layer>
 		</Layers>
 		<Frames>
+			<Frame parentKey="DurabilityFrame" inherits="GarrisonMissionFollowerDurabilityFrameTemplate" hidden="true">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.Name" relativePoint="BOTTOMLEFT"/>
+				</Anchors>
+			</Frame>
 			<Frame parentArray="Counters" inherits="GarrisonMissionAbilityCounterTemplate" hidden="true">
 				<Anchors>
 					<Anchor point="TOPRIGHT" x="-8" y="-4"/>

@@ -173,7 +173,7 @@
 							<OnTabPressed function="AccountLogin_FocusPassword"/>
 							<OnEscapePressed function="AccountLogin_Exit"/>
 							<OnEnterPressed>
-								if ( C_Login.IsBnetReady() ) then
+								if ( C_Login.IsLoginReady() ) then
 									AccountLogin_Login();
 								end
 							</OnEnterPressed>
@@ -234,7 +234,7 @@
 							<OnTabPressed function="AccountLogin_FocusAccount"/>
 							<OnEscapePressed function="AccountLogin_Exit"/>
 							<OnEnterPressed>
-								if ( C_Login.IsBnetReady() ) then
+								if ( C_Login.IsLoginReady() ) then
 									AccountLogin_Login();
 								end
 							</OnEnterPressed>
@@ -254,7 +254,7 @@
 						<Scripts>
 							<OnClick function="AccountLogin_Login"/>
 							<OnUpdate>
-								if ( C_Login.IsBnetReady() ) then
+								if ( C_Login.IsLoginReady() ) then
 									self:Enable();
 								else
 									self:Disable();

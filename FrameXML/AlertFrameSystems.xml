@@ -31,6 +31,12 @@
 		</Scripts>
 	</Button>
 
+	<Button name="WorldQuestFrameRewardTemplate" parentArray="RewardFrames" virtual="true" inherits="DungeonCompletionAlertFrameRewardTemplate">
+		<Scripts>
+			<OnEnter function="WorldQuestCompleteFrameReward_OnEnter"/>
+		</Scripts>
+	</Button>
+
 	<Button name="ChallengeModeAlertFrameRewardTemplate" virtual="true" inherits="DungeonCompletionAlertFrameRewardTemplate">
 		<Scripts>
 			<OnEnter function="ChallengeModeAlertFrameReward_OnEnter"/>
@@ -1985,49 +1991,10 @@
 			</Layer>
 		</Layers>
 		<Frames>
-			<Frame parentKey="PortraitFrame">
-				<Size x="52" y="60"/>
+			<Frame parentKey="PortraitFrame" inherits="GarrisonFollowerPortraitTemplate" mixin="GarrisonFollowerPortraitMixin" hidden="false">
 				<Anchors>
 					<Anchor point="LEFT" x="23" y="3"/>
 				</Anchors>
-				<Layers>
-					<Layer level="BORDER">
-						<Texture parentKey="PortraitRing" atlas="GarrMission_PortraitRing" useAtlasSize="true">
-							<Anchors>
-								<Anchor point="TOP"/>
-							</Anchors>
-						</Texture>
-					</Layer>
-					<Layer level="BORDER" textureSubLevel="-1">
-						<Texture parentKey="Portrait">
-							<Size x="44" y="44"/>
-							<Anchors>
-								<Anchor point="CENTER" relativeKey="$parent.PortraitRing" y="5"/>
-							</Anchors>
-						</Texture>
-					</Layer>
-					<Layer level="BORDER" textureSubLevel="1">
-						<Texture parentKey="PortraitRingQuality" atlas="GarrMission_PortraitRing_Quality" useAtlasSize="true">
-							<Anchors>
-								<Anchor point="TOP"/>
-							</Anchors>
-						</Texture>
-					</Layer>
-					<Layer level="BORDER" textureSubLevel="2">
-						<Texture parentKey="LevelBorder" atlas="GarrMission_PortraitRing_LevelBorder" useAtlasSize="true">
-							<Anchors>
-								<Anchor point="BOTTOM" y="-3"/>
-							</Anchors>
-						</Texture>
-					</Layer>
-					<Layer level="ARTWORK">
-						<FontString parentKey="Level" inherits="GameFontHighlightSmall" justifyH="CENTER" text="95">
-							<Anchors>
-								<Anchor point="CENTER" relativeKey="$parent.LevelBorder"/>
-							</Anchors>
-						</FontString>
-					</Layer>
-				</Layers>
 			</Frame>
 		</Frames>
 	</Button>
@@ -2206,6 +2173,102 @@
 		<Scripts>
 			<OnClick function="NewRecipeLearnedAlertFrame_OnClick"/>
 		</Scripts>
+	</Button>
+
+	<Button name="WorldQuestCompleteAlertFrame" parent="UIParent" hidden="true" frameStrata="DIALOG" inherits="AlertFrameTemplate">
+		<Size x="311" y="78"/>
+		<Anchors>
+			<Anchor point="BOTTOM" x="0" y="128"/>
+		</Anchors>
+		<Animations>
+			<AnimationGroup name="$parentAnimIn" parentKey="animIn">
+				<Alpha fromAlpha="1" toAlpha="0" duration="0" order="1"/>
+				<Alpha fromAlpha="0" toAlpha="1" duration="0.2" order="2"/>
+			</AnimationGroup>
+			<AnimationGroup name="$parentWaitAndAnimOut" parentKey="waitAndAnimOut">
+				<Alpha startDelay="4.05" fromAlpha="1" toAlpha="0" duration="1.5" parentKey="animOut">
+					<Scripts>
+						<OnFinished>
+							self:GetRegionParent():Hide();
+						</OnFinished>
+					</Scripts>
+				</Alpha>
+			</AnimationGroup>
+		</Animations>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="QuestTexture">
+					<Size x="45" y="45"/>
+					<Anchors>
+						<Anchor point="BOTTOMLEFT" x="13" y="15"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="BORDER">
+				<Texture file="Interface\LFGFrame\UI-LFG-DUNGEONTOAST">
+					<Size x="70" y="72"/>
+					<Anchors>
+						<Anchor point="BOTTOMLEFT"/>
+					</Anchors>
+					<TexCoords left="0" right="0.546875" top="0.28515" bottom="0.5664"/>
+				</Texture>
+				<Texture file="Interface\LFGFrame\UI-LFG-DUNGEONTOAST">
+					<Size x="15" y="72"/>
+					<Anchors>
+						<Anchor point="BOTTOMRIGHT"/>
+					</Anchors>
+					<TexCoords left="0.5546875" right="0.671875" top="0.28515" bottom="0.5664"/>
+				</Texture>
+				<Texture file="Interface\LFGFrame\UI-LFG-DUNGEONTOAST">
+					<Size x="127" y="72"/>
+					<Anchors>
+						<Anchor point="BOTTOMLEFT" x="69" y="0"/>
+					</Anchors>
+					<TexCoords left="0" right="0.9921875" top="0" bottom="0.28125"/>
+				</Texture>
+				<Texture file="Interface\LFGFrame\UI-LFG-DUNGEONTOAST">
+					<Size x="127" y="72"/>
+					<Anchors>
+						<Anchor point="BOTTOMRIGHT" x="-14" y="0"/>
+					</Anchors>
+					<TexCoords left="0" right="0.9921875" top="0.58203" bottom="0.86328"/>
+				</Texture>
+			</Layer>
+			<Layer level="ARTWORK">
+				<FontString inherits="GameFontWhiteTiny" text="WORLD_QUEST_COMPLETE">
+					<Size x="200" y="12"/>
+					<Anchors>
+						<Anchor point="TOP" x="25" y="-29"/>
+					</Anchors>
+				</FontString>
+				<FontString parentKey="QuestName" inherits="GameFontNormal" >
+					<Anchors>
+						<Anchor point="TOP" x="25" y="-44"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+			<Layer level="OVERLAY">
+				<Texture parentKey="shine" file="Interface\AchievementFrame\UI-Achievement-Alert-Glow" alphaMode="ADD" hidden="true">
+					<Size x="67" y="72"/>
+					<Anchors>
+						<Anchor point="BOTTOMLEFT" x="0" y="0"/>
+					</Anchors>
+					<Animations>
+						<AnimationGroup name="$parentAnimIn" parentKey="animIn">
+							<Alpha fromAlpha="0" toAlpha="1" duration="0.2" order="1"/>
+							<Translation offsetX="260" offsetY="0" duration="0.85" order="2"/>
+							<Alpha startDelay="0.35" fromAlpha="1" toAlpha="0" duration="0.5" order="2"/>
+							<Scripts>
+								<OnFinished>
+									self:GetParent():Hide();
+								</OnFinished>
+							</Scripts>
+						</AnimationGroup>
+					</Animations>
+					<TexCoords left="0.78125" right="0.912109375" top="0" bottom="0.28125"/>
+				</Texture>
+			</Layer>
+		</Layers>
 	</Button>
 
 	<Script file="AlertFrameSystems.lua"/>

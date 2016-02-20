@@ -8,7 +8,7 @@
 			<OnEvent method="OnEvent" />
 		</Scripts>
 	</Frame>
-	
+
 	<Frame name="NameplateBuffButtonTemplate" virtual="true" enableMouse="true" hidden="true">
 		<Size x="20" y="14"/>
 		<Layers>
@@ -105,5 +105,11 @@
 				</Layers>
 			</Frame>
 		</Frames>
+		<Animations>
+			<AnimationGroup parentKey="LoseAggroAnim" setToFinalAlpha="true">
+				<Alpha childKey="aggroHighlight" duration=".25" fromAlpha="1" toAlpha="0" order="1"/>
+				<Alpha childKey="aggroHighlight" duration=".25" fromAlpha="1" toAlpha="0" order="2"/>
+			</AnimationGroup>
+		</Animations>
 	</Button>
 </Ui>

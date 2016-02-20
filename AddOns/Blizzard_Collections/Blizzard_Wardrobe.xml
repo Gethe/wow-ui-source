@@ -345,7 +345,7 @@
 				<BarColor r="0.03125" g="0.85" b="0.0"/>
 			</StatusBar>
 
-			<Button name="$parentFilterButton" inherits="UIMenuButtonStretchTemplate" text="FILTER">
+			<Button parentKey="FilterButton" inherits="UIMenuButtonStretchTemplate" text="FILTER">
 				<Size x="93" y="22"/>
 				<Anchors>
 					<Anchor point="TOPRIGHT" x="-12" y="-34"/>
@@ -363,10 +363,15 @@
 				<Scripts>
 					<OnClick>
 						PlaySound("igMainMenuOptionCheckBoxOn");
-						ToggleDropDownMenu(1, nil, self:GetParent().filterDropDown, self:GetName(), 74, 15);
+						ToggleDropDownMenu(1, nil, WardrobeFilterDropDown, self, 74, 15);
 					</OnClick>
 				</Scripts>
 			</Button>
+			<Frame name="WardrobeFilterDropDown" parentKey="FilterDropDown" inherits="UIDropDownMenuTemplate">
+				<Scripts>
+					<OnLoad function="WardrobeFilterDropDown_OnLoad"/>
+				</Scripts>
+			</Frame>
 
 			<Frame parentKey="ModelsFrame" inherits="CollectionsBackgroundTemplate">
 				<Frames>

@@ -14,15 +14,6 @@
 			<AbsDimension x="37" y="37"/>
 		</Size>
 		<Layers>
-			<Layer level="BACKGROUND">
-				<Texture parentKey="selection" color="" hidden="true">
-					<Size x="41" y="41"/>
-					<Anchors>
-						<Anchor point="TOPLEFT" x="-2" y="2"></Anchor>
-					</Anchors>
-					<Color r="1.0" g="1.0" b="1.0" a="1.0"/>
-				</Texture>
-			</Layer>
 			<Layer level="ARTWORK">
 				<Texture parentKey="iconTexture" setAllPoints="true"/>
 			</Layer>
@@ -30,7 +21,6 @@
 		<Scripts>
 			<OnEnter method="OnEnter"/>
 			<OnLeave method="OnLeave"/>
-			<OnClick method="OnClick"/>
 		</Scripts>
 	</Button>
 
@@ -93,6 +83,11 @@
 			</Layer>
 		</Layers>
 		<Frames>
+			<Frame parentKey="DurabilityFrame" inherits="GarrisonMissionFollowerDurabilityFrameTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.Name" relativePoint="BOTTOMLEFT" y="-4"/>
+				</Anchors>
+			</Frame>
 			<Frame parentKey="QualityFrame">
 				<Size x="10" y="10"/>
 				<Anchors>
@@ -197,7 +192,6 @@
 				<Frames>
 					<Frame parentKey="Specialization" inherits="GarrisonFollowerPageAbilityTemplate" hidden="true">
 						<KeyValues>
-							<KeyValue key="hideCounters" value="true" type="boolean"/>
 							<KeyValue key="isSpecialization" value="true" type="boolean"/>
 						</KeyValues>
 					</Frame>
@@ -289,6 +283,32 @@
 			<OnHide>
 				self.lastUpdate = nil;
 			</OnHide>
+		</Scripts>
+	</Frame>
+
+	<Frame name="OrderHallMissionPageEnemyTemplate" inherits="GarrisonMissionPageEnemyTemplate" mixin="OrderHallMissionPageEnemyMixin" virtual="true">
+		<Frames>
+			<Frame parentKey="MechanicEffect">
+				<Size x="12" y="12"/>
+				<Anchors>
+					<Anchor point="BOTTOMRIGHT" x="-10" y="0"/>
+				</Anchors>
+				<Layers>
+					<Layer level="OVERLAY">
+						<Texture parentKey="Icon" inherits="GameFontHighlight">
+							<Color r="1" g="1" b="1"/>
+							<Size x="12" y="12"/>
+							<Anchors>
+								<Anchor point="CENTER"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+			</Frame>
+		</Frames>
+		<Scripts>
+			<OnEnter method="OnEnter"/>
+			<OnLeave method="OnLeave"/>
 		</Scripts>
 	</Frame>
 
@@ -485,17 +505,17 @@
 
 					<Button parentKey="MissionPage" inherits="FollowerMissionPageTemplate" hidden="true" mixin="GarrisonMissionPageMixin" frameStrata="HIGH" frameLevel="100">
 						<Frames>
-							<Frame parentKey="Enemy1" parentArray="Enemies" inherits="GarrisonMissionPageEnemyTemplate">
+							<Frame parentKey="Enemy1" parentArray="Enemies" inherits="OrderHallMissionPageEnemyTemplate">
 								<Anchors>
 									<Anchor point="TOPLEFT" x="251" y="-146"/>
 								</Anchors>
 							</Frame>
-							<Frame parentKey="Enemy2" parentArray="Enemies" inherits="GarrisonMissionPageEnemyTemplate">
+							<Frame parentKey="Enemy2" parentArray="Enemies" inherits="OrderHallMissionPageEnemyTemplate">
 								<Anchors>
 									<Anchor point="LEFT" relativeKey="$parent.Enemy1" relativePoint="RIGHT" x="120"/>
 								</Anchors>
 							</Frame>
-							<Frame parentKey="Enemy3" parentArray="Enemies" inherits="GarrisonMissionPageEnemyTemplate">
+							<Frame parentKey="Enemy3" parentArray="Enemies" inherits="OrderHallMissionPageEnemyTemplate">
 								<Anchors>
 									<Anchor point="LEFT" relativeKey="$parent.Enemy2" relativePoint="RIGHT" x="120"/>
 								</Anchors>

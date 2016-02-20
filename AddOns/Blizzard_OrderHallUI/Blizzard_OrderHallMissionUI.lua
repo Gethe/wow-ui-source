@@ -1,3 +1,18 @@
+---------------------------------------------------------------------------------
+-- Display Options
+---------------------------------------------------------------------------------
+
+GarrisonFollowerOptions[LE_FOLLOWER_TYPE_GARRISON_7_0] = {
+	displayCounterAbilityInPlaceOfMechanic = true,
+	useAbilityTooltipStyleWithoutCounters = true,
+	hideCountersInAbilityFrame = true,
+	showILevelOnFollower = true,
+}
+
+
+---------------------------------------------------------------------------------
+-- Order Hall Mission Frame
+---------------------------------------------------------------------------------
 
 OrderHallMission = { }
 
@@ -13,12 +28,16 @@ function OrderHallMission:OnShow()
 	SetMissionFrame(self);
 	self:OnShowMainFrame();
 	AdventureMapMixin.OnShow(self.MissionTab);
+
+	self.abilityCountersForMechanicTypes = C_Garrison.GetFollowerAbilityCountersForMechanicTypes(LE_FOLLOWER_TYPE_GARRISON_7_0);
 end
 
 function OrderHallMission:OnHide()
 	self:OnHideMainFrame();
 	AdventureMapMixin.OnHide(self.MissionTab);
 	SetMissionFrame(nil);
+
+	self.abilityCountersForMechanicTypes = nil;
 end
 
 function OrderHallMission:EscapePressed()
@@ -129,6 +148,85 @@ function OrderHallMission:UpdateMissionData(missionPage)
 	end
 end
 
+function OrderHallMission:OnSetEnemy(enemyFrame, enemyInfo)
+
+	-- Display the enemy's mechanic ability icon
+
+	local _, mechanic = next(enemyInfo.mechanics);
+
+
+	if (mechanic and mechanic.ability and mechanic.ability.icon) then
+		enemyFrame.mechanicEffectIcon = mechanic.ability.icon;
+	else
+		enemyFrame.mechanicEffectIcon = nil;
+	end
+
+	enemyFrame.MechanicEffect.Icon:SetTexture(enemyFrame.mechanicEffectIcon);
+	enemyFrame.name = enemyInfo.name;
+		
+	
+	if (mechanic and mechanic.ability) then
+		enemyFrame.mechanicName = mechanic.name;
+		enemyFrame.mechanicAbilityName = mechanic.ability.name;
+		enemyFrame.mechanicEffectDescription = mechanic.ability.description;
+	else
+		enemyFrame.mechanicName = nil;
+		enemyFrame.mechanicAbilityName = nil;
+		enemyFrame.mechanicEffectDescription = nil;
+	end
+end
+
+function OrderHallMission:OnSetEnemyMechanic(enemyFrame, mechanicFrame, mechanicID)
+	local counterAbility = self.abilityCountersForMechanicTypes[mechanicID];
+	mechanicFrame.counterAbility = counterAbility;
+	enemyFrame.counterAbility = counterAbility;
+	if (counterAbility and counterAbility.icon) then
+		mechanicFrame.Icon:SetTexture(counterAbility.icon);
+	end
+end
+
+
+
+function OrderHallMission:SetEnemies(frame, enemies, numFollowers, mechanicYOffset)
+	GarrisonFollowerMission.SetEnemies(self, frame, enemies, numFollowers, mechanicYOffset or -32);
+end
+
+---------------------------------------------------------------------------------
+-- Order Hall Mission Page Enemy Frame
+---------------------------------------------------------------------------------
+OrderHallMissionPageEnemyMixin = { }
+
+function OrderHallMissionPageEnemyMixin:OnEnter()
+	if (self.mechanicName and self.mechanicAbilityName) then
+		GameTooltip:SetOwner(self, "ANCHOR_NONE");
+		GameTooltip:SetPoint("TOPLEFT", self, "BOTTOMRIGHT", 0, 0);
+		GameTooltip:AddLine(self.name, 1, 1, 1);
+		GameTooltip:AddLine(self.mechanicName, 0.698, 0.941, 1);
+		GameTooltip:AddLine(" ");
+		local str;
+		if (self.mechanicEffectIcon) then
+			str = "|T"..self.mechanicEffectIcon..":0:0:0:0|t "
+		else
+			str = "";
+		end
+		str = str..self.mechanicAbilityName;
+		GameTooltip:AddLine(str, 1, 1, 1);
+		GameTooltip:AddLine(" ");
+		GameTooltip:AddLine(self.mechanicEffectDescription, nil, nil, nil, true);
+		GameTooltip:Show();
+	end
+end
+
+function OrderHallMissionPageEnemyMixin:OnLeave()
+	GameTooltip_Hide();
+end
+
+
+
+
+---------------------------------------------------------------------------------
+-- Order Hall Adventure Map
+---------------------------------------------------------------------------------
 OrderHallMissionAdventureMapMixin = { }
 
 function AdventureMapMixin:SetupTitle()
@@ -149,6 +247,10 @@ end
 function OrderHallMissionAdventureMapMixin:OnHide()
 end
 
+
+---------------------------------------------------------------------------------
+-- Order Hall Follower Page
+---------------------------------------------------------------------------------
 
 OrderHallFollowerTabMixin = { }
 
@@ -222,7 +324,15 @@ function OrderHallFollowerTabMixin:ShowFollower(followerID, followerList)
 	self.Name:SetText(followerInfo.name);
 	local color = ITEM_QUALITY_COLORS[followerInfo.quality];	
 	self.Name:SetVertexColor(color.r, color.g, color.b);
-	self.ClassSpec:SetText(followerInfo.className);
+	if (followerInfo.isTroop) then
+		self.DurabilityFrame:Show();
+		self.ClassSpec:Hide();
+		self.DurabilityFrame:SetDurability(followerInfo.durability, followerInfo.maxDurability);
+	else
+		self.ClassSpec:Show();
+		self.DurabilityFrame:Hide();
+		self.ClassSpec:SetText(followerInfo.className);
+	end
 	self.Class:SetAtlas(followerInfo.classAtlas);
 
 	self.XPLabel:Hide();
@@ -267,6 +377,7 @@ function OrderHallFollowerTabMixin:ShowFollower(followerID, followerList)
 		
 			if ( not abilityFrame ) then
 				abilityFrame = CreateFrame("Frame", nil, self.AbilitiesFrame, "GarrisonFollowerPageAbilityTemplate");
+				--abilityFrame.hideCounters = true;
 				self.AbilitiesFrame.Abilities[numAbilities] = abilityFrame;
 			end
 		end
@@ -318,7 +429,7 @@ function OrderHallFollowerTabMixin:ShowFollower(followerID, followerList)
 			abilityFrame.ability = ability;
 
 		    local hasCounters = false;
-		    if ( ability.counters and not ability.isTrait and not self.isLandingPage and not abilityFrame.hideCounters ) then
+		    if ( ability.counters and not ability.isTrait and not self.isLandingPage and not GarrisonFollowerOptions[followerInfo.followerTypeID].hideCountersInAbilityFrame ) then
 			    for id, counter in pairs(ability.counters) do
 				    numCounters = numCounters + 1;
 				    local counterFrame = self.AbilitiesFrame.Counters[numCounters];
@@ -416,7 +527,6 @@ function OrderHallFollowerTabMixin:ShowFollower(followerID, followerList)
 		self.AbilitiesFrame.ZoneSupport[i]:Show();
 		self.AbilitiesFrame.ZoneSupport[i].iconTexture:SetTexture(texture);
 		self.AbilitiesFrame.ZoneSupport[i].spellID = zoneSupportSpellIDs[i];
-		self.AbilitiesFrame.ZoneSupport[i].selection:SetShown(followerInfo.zoneSupportSpellID == zoneSupportSpellIDs[i]);
 		self.AbilitiesFrame.ZoneSupport[i].followerID = followerID;
 	end
 	self.AbilitiesFrame.ZoneSupportLabel:SetShown(hasZoneSupport);
@@ -429,13 +539,10 @@ function OrderHallFollowerTabMixin:ShowFollower(followerID, followerList)
 	self.lastUpdate = self:IsShown() and GetTime() or nil;
 end
 
-function OrderHallFollowerTabMixin:UpdateZoneSupportSpell(spellID)
-	for i = 1, #self.AbilitiesFrame.ZoneSupport do
-		self.AbilitiesFrame.ZoneSupport[i].selection:SetShown(spellID == self.AbilitiesFrame.ZoneSupport[i].spellID);
-	end
-end
 
-
+---------------------------------------------------------------------------------
+-- Zone Support Button
+---------------------------------------------------------------------------------
 OrderHallFollowerZoneSupportMixin = { }
 
 function OrderHallFollowerZoneSupportMixin:OnEnter()
@@ -450,23 +557,15 @@ function OrderHallFollowerZoneSupportMixin:OnLeave()
 	GameTooltip:Hide();
 end
 
-function OrderHallFollowerZoneSupportMixin:OnClick()
-	if (C_Garrison.ChangeZoneSupportSpellForFollower(self.followerID, self.spellID)) then
-		self:GetParent():GetParent():UpdateZoneSupportSpell(self.spellID);
-	end
-end
-
 OrderHallFollowerEquipmentMixin = { }
 function OrderHallFollowerEquipmentMixin:OnEnter()
 	if (self.abilityID) then
-		GarrisonFollowerAbilityTooltip:ClearAllPoints();
-		GarrisonFollowerAbilityTooltip:SetPoint("TOPLEFT", self, "BOTTOMRIGHT");
-		GarrisonFollowerAbilityTooltip_Show(self.abilityID, LE_FOLLOWER_TYPE_SHIPYARD_6_2);
+		ShowGarrisonFollowerAbilityTooltip(self, self.abilityID, LE_FOLLOWER_TYPE_SHIPYARD_6_2);
 	end
 end
 
 function OrderHallFollowerEquipmentMixin:OnLeave()
-	GarrisonFollowerAbilityTooltip:Hide();
+	HideGarrisonFollowerAbilityTooltip();
 end
 
 ZoneSupportMissionPageMixin = { }

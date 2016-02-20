@@ -199,13 +199,6 @@ function TradeSkillUIMixin:SetSlotFilter(inventorySlotIndex, categoryID, subCate
 	end
 end
 
-function TradeSkillUIMixin:SetAllSourcesFiltered(filtered)
-	local numSources = C_PetJournal.GetNumPetSources();
-	for i = 1, numSources do
-		C_TradeSkillUI.SetRecipeSourceTypeFilter(i, filtered);
-	end
-end
-
 local function GenerateRankText(skillLineRank, skillLineMaxRank, skillLineModifier)
 	local rankText;
 	if skillLineModifier > 0  then
@@ -327,14 +320,14 @@ function TradeSkillUIMixin:InitFilterMenu(dropdown, level)
 				
 			info.text = CHECK_ALL;
 			info.func = function()
-							self:SetAllSourcesFiltered(false);
+							TradeSkillFrame_SetAllSourcesFiltered(false);
 							UIDropDownMenu_Refresh(self.FilterDropDown, 3, 2);
 						end;
 			UIDropDownMenu_AddButton(info, level);
 			
 			info.text = UNCHECK_ALL;
 			info.func = function()
-							self:SetAllSourcesFiltered(true);
+							TradeSkillFrame_SetAllSourcesFiltered(true);
 							UIDropDownMenu_Refresh(self.FilterDropDown, 3, 2);
 						end;
 			UIDropDownMenu_AddButton(info, level);

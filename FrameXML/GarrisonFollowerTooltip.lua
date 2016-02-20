@@ -43,6 +43,30 @@ end
 
 function GarrisonFollowerAbilityTooltip_Show(garrFollowerAbilityID, followerTypeID)
 	GarrisonFollowerAbilityTooltipTemplate_SetAbility(GarrisonFollowerAbilityTooltip, garrFollowerAbilityID, followerTypeID);
-	
 	GarrisonFollowerAbilityTooltip:Show();
+end
+
+function ShowGarrisonFollowerAbilityTooltip(frame, garrFollowerAbilityID, followerTypeID)
+	if (GarrisonFollowerOptions[followerTypeID].useAbilityTooltipStyleWithoutCounters) then
+		GameTooltip:SetOwner(frame, "ANCHOR_NONE");
+		GameTooltip:SetPoint("TOPLEFT", frame, "BOTTOMRIGHT");
+
+		local icon = C_Garrison.GetFollowerAbilityIcon(garrFollowerAbilityID);
+		local name = C_Garrison.GetFollowerAbilityName(garrFollowerAbilityID);
+		local description = C_Garrison.GetFollowerAbilityDescription(garrFollowerAbilityID);
+
+		local str = "|T"..icon..":24:24|t "..name;
+		GameTooltip:AddLine(str, 1, 1, 1);
+		GameTooltip:AddLine(description, nil, nil, nil, true);
+		GameTooltip:Show();
+	else
+		GarrisonFollowerAbilityTooltip:ClearAllPoints();
+		GarrisonFollowerAbilityTooltip:SetPoint("TOPLEFT", frame, "BOTTOMRIGHT");
+		GarrisonFollowerAbilityTooltip_Show(garrFollowerAbilityID, followerTypeID);
+	end
+end
+
+function HideGarrisonFollowerAbilityTooltip()
+	GarrisonFollowerAbilityTooltip:Hide();
+	GameTooltip:Hide();
 end

@@ -8,3 +8,4 @@
 
 Blizzard_OrderHallMissionUI.xml
 Blizzard_OrderHallTalents.xml
+Blizzard_OrderHallCommandBar.xml

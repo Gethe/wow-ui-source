@@ -309,7 +309,7 @@ function GarrisonRecruitSelectFrame_UpdateRecruits( waiting )
 		if(follower)then
 			frame:Show();
 			frame.Name:SetText(follower.name);
-			frame.PortraitFrame.Level:SetText(follower.level);
+			frame.PortraitFrame:SetLevel(follower.level);
 			SetPortraitTexture(frame.PortraitFrame.Portrait, follower.displayID);
 			GarrisonMission_SetFollowerModel(frame.Model, follower.followerID, follower.displayID);
 			if (follower.displayHeight) then
@@ -323,8 +323,7 @@ function GarrisonRecruitSelectFrame_UpdateRecruits( waiting )
 			
 			local color = ITEM_QUALITY_COLORS[follower.quality];
 			frame.Name:SetVertexColor(color.r, color.g, color.b);
-			frame.PortraitFrame.LevelBorder:SetVertexColor(color.r, color.g, color.b);
-			frame.PortraitFrame.PortraitRingQuality:SetVertexColor(color.r, color.g, color.b);
+			frame.PortraitFrame:SetQuality(follower.quality);
 
 			local abilities = C_Garrison.GetRecruitAbilities(i);
 			local abilityIndex = 0;

@@ -365,14 +365,12 @@ function TradeSkillRecipeListMixin:UpdateFilterBar()
 		end
 	end
 
-	if C_TradeSkillUI.AreAnyRecipeSourceTypesFiltered() then
+	if not TradeSkillFrame_AreAllSourcesUnfiltered() then
 		local numSources = C_PetJournal.GetNumPetSources();
 		for i = 1, numSources do
-			if C_TradeSkillUI.IsAnyRecipeFromSource(i) then
-				if not C_TradeSkillUI.IsRecipeSourceTypeFiltered(i) then
-					filters = filters or {};
-					filters[#filters + 1] = _G["BATTLE_PET_SOURCE_"..i];
-				end
+			if C_TradeSkillUI.IsAnyRecipeFromSource(i) and C_TradeSkillUI.IsRecipeSourceTypeFiltered(i) then
+				filters = filters or {};
+				filters[#filters + 1] = _G["BATTLE_PET_SOURCE_"..i];
 			end
 		end
 	end

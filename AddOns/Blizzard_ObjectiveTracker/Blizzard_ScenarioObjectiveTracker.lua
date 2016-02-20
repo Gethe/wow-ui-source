@@ -896,7 +896,7 @@ function SCENARIO_CONTENT_TRACKER_MODULE:Update()
 				if (isWeightedProgress and not completed) then
 					SCENARIO_TRACKER_MODULE.lineSpacing = 2;
 					SCENARIO_TRACKER_MODULE:AddProgressBar(objectiveBlock, objectiveBlock.currentLine, criteriaIndex);
-				elseif (line.progressBar) then
+				elseif (line.ProgressBar) then
 					SCENARIO_TRACKER_MODULE:FreeProgressBar(objectiveBlock, objectiveBlock.currentLine);
 				end
 				-- timer bar

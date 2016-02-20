@@ -90,6 +90,13 @@ function CompactUnitFrame_OnEvent(self, event, ...)
 			CompactUnitFrame_UpdateAuras(self);
 		elseif ( event == "UNIT_THREAT_SITUATION_UPDATE" ) then
 			CompactUnitFrame_UpdateAggroHighlight(self);
+			CompactUnitFrame_UpdateAggroFlash(self);
+		elseif ( event == "UNIT_THREAT_LIST_UPDATE" ) then
+			if ( self.optionTable.considerSelectionInCombatAsHostile ) then
+				CompactUnitFrame_UpdateHealthColor(self);
+				CompactUnitFrame_UpdateName(self);
+			end
+			CompactUnitFrame_UpdateAggroFlash(self);
 		elseif ( event == "UNIT_CONNECTION" ) then
 			--Might want to set the health/mana to max as well so it's easily visible? This happens unless the player is out of AOI.
 			CompactUnitFrame_UpdateHealthColor(self);
@@ -132,6 +139,7 @@ function CompactUnitFrame_SetUnit(frame, unit)
 		frame.inVehicle = false;
 		frame.readyCheckStatus = nil
 		frame.readyCheckDecay = nil;
+		frame.isTanking = nil;
 		frame:SetAttribute("unit", unit);
 		if ( unit ) then
 			CompactUnitFrame_RegisterEvents(frame);
@@ -205,6 +213,7 @@ function CompactUnitFrame_UpdateUnitEvents(frame)
 	frame:RegisterUnitEvent("UNIT_POWER", unit, displayedUnit);
 	frame:RegisterUnitEvent("UNIT_AURA", unit, displayedUnit);
 	frame:RegisterUnitEvent("UNIT_THREAT_SITUATION_UPDATE", unit, displayedUnit);
+	frame:RegisterUnitEvent("UNIT_THREAT_LIST_UPDATE", unit, displayedUnit);
 	frame:RegisterUnitEvent("UNIT_HEAL_PREDICTION", unit, displayedUnit);
 	frame:RegisterUnitEvent("PLAYER_FLAGS_CHANGED", unit, displayedUnit);
 end
@@ -266,6 +275,7 @@ function CompactUnitFrame_UpdateAll(frame)
 		CompactUnitFrame_UpdateName(frame);
 		CompactUnitFrame_UpdateSelectionHighlight(frame);
 		CompactUnitFrame_UpdateAggroHighlight(frame);
+		CompactUnitFrame_UpdateAggroFlash(frame);
 		CompactUnitFrame_UpdateInRange(frame);
 		CompactUnitFrame_UpdateStatusText(frame);
 		CompactUnitFrame_UpdateHealPrediction(frame);
@@ -313,6 +323,11 @@ function CompactUnitFrame_IsTapDenied(frame)
 	return frame.optionTable.greyOutWhenTapDenied and not UnitPlayerControlled(frame.unit) and UnitIsTapDenied(frame.unit);
 end
 
+function CompactUnitFrame_IsOnThreatListWithPlayer(unit)
+	local _, status = UnitDetailedThreatSituation("player", unit);
+	return status and status > 0;
+end
+
 function CompactUnitFrame_UpdateHealthColor(frame)
 	local r, g, b;
 	if ( not UnitIsConnected(frame.unit) ) then
@@ -334,7 +349,11 @@ function CompactUnitFrame_UpdateHealthColor(frame)
 				r, g, b = 0.1, 0.1, 0.1;
 			elseif ( frame.optionTable.colorHealthBySelection ) then
 				-- Use color based on the type of unit (neutral, etc.)
-				r, g, b = UnitSelectionColor(frame.unit);
+				if ( frame.optionTable.considerSelectionInCombatAsHostile and CompactUnitFrame_IsOnThreatListWithPlayer(frame.displayedUnit) ) then
+					r, g, b = 1.0, 0.0, 0.0;
+				else
+					r, g, b = UnitSelectionColor(frame.unit);
+				end
 			elseif ( UnitIsFriend("player", frame.unit) ) then
 				r, g, b = 0.0, 1.0, 0.0;
 			else
@@ -453,7 +472,11 @@ function CompactUnitFrame_UpdateName(frame)
 			-- Use grey if not a player and can't get tap on unit
 			frame.name:SetVertexColor(0.5, 0.5, 0.5);
 		elseif ( frame.optionTable.colorNameBySelection ) then
-			frame.name:SetVertexColor(UnitSelectionColor(frame.unit));
+			if ( frame.optionTable.considerSelectionInCombatAsHostile and CompactUnitFrame_IsOnThreatListWithPlayer(frame.displayedUnit) ) then
+				frame.name:SetVertexColor(1.0, 0.0, 0.0);
+			else
+				frame.name:SetVertexColor(UnitSelectionColor(frame.unit));
+			end
 		end
 
 		frame.name:Show();
@@ -485,7 +508,9 @@ end
 
 function CompactUnitFrame_UpdateAggroHighlight(frame)
 	if ( not frame.optionTable.displayAggroHighlight ) then
-		frame.aggroHighlight:Hide();
+		if ( not frame.optionTable.playLoseAggroHighlight ) then
+			frame.aggroHighlight:Hide();
+		end
 		return;
 	end
 	
@@ -494,6 +519,38 @@ function CompactUnitFrame_UpdateAggroHighlight(frame)
 		frame.aggroHighlight:SetVertexColor(GetThreatStatusColor(status));
 		frame.aggroHighlight:Show();
 	else
+		frame.aggroHighlight:Hide();
+	end
+end
+
+local function IsPlayerEffectivelyTank()
+	local assignedRole = UnitGroupRolesAssigned("player");
+	if ( assignedRole == "NONE" ) then
+		local spec = GetSpecialization();
+		return spec and GetSpecializationRole(spec) == "TANK";
+	end
+
+	return assignedRole == "TANK";
+end
+
+function CompactUnitFrame_UpdateAggroFlash(frame)
+	if ( frame.optionTable.displayAggroHighlight or not frame.optionTable.playLoseAggroHighlight ) then
+		return;
+	end
+
+	if ( not IsPlayerEffectivelyTank() ) then
+		return;
+	end
+	
+	local isTanking = UnitDetailedThreatSituation("player", frame.displayedUnit);
+	if ( frame.isTanking ~= isTanking ) then
+		if ( frame.isTanking and not isTanking ) then
+			frame.aggroHighlight:Show();
+			frame.LoseAggroAnim:Play();
+		end
+		frame.isTanking = isTanking;
+	end
+	if ( not frame.LoseAggroAnim:IsPlaying() ) then
 		frame.aggroHighlight:Hide();
 	end
 end
@@ -1487,6 +1544,7 @@ DefaultCompactNamePlateTargetFriendlyFrameOptions = {
 	--displayDispelDebuffs = true,
 	colorNameBySelection = true,
 	colorHealthBySelection = true,
+	considerSelectionInCombatAsHostile = true,
 	smoothHealthUpdates = true,
 	displayNameWhenSelected = true,
 	displayNameByPlayerNameRules = true,
@@ -1495,6 +1553,7 @@ DefaultCompactNamePlateTargetFriendlyFrameOptions = {
 DefaultCompactNamePlateTargetEnemyFrameOptions = {
 	displaySelectionHighlight = true,
 	displayAggroHighlight = false,
+	playLoseAggroHighlight = true,
 	displayName = true,
 	fadeOutOfRange = false,
 	--displayStatusText = true,
@@ -1502,6 +1561,7 @@ DefaultCompactNamePlateTargetEnemyFrameOptions = {
 	--displayDispelDebuffs = true,
 	colorNameBySelection = true,
 	colorHealthBySelection = true,
+	considerSelectionInCombatAsHostile = true,
 	smoothHealthUpdates = true,
 	displayNameWhenSelected = true,
 	displayNameByPlayerNameRules = true,
@@ -1643,9 +1703,12 @@ function DefaultCompactNamePlateFrameSetup(frame, setupOptions, frameOptions)
 	frame.selectionHighlight:SetTexture("Interface\\TargetingFrame\\UI-TargetingFrame-BarFill");
 	frame.selectionHighlight:SetBlendMode("ADD");
 	
-	frame.aggroHighlight:SetTexture("Interface\\RaidFrame\\Raid-FrameHighlights");
-	frame.aggroHighlight:SetTexCoord(unpack(texCoords["Raid-AggroFrame"]));
-	frame.aggroHighlight:SetAllPoints(frame.healthBar);
+	frame.LoseAggroAnim:Stop();
+	frame.aggroHighlight:SetTexture("Interface\\TargetingFrame\\UI-TargetingFrame-BarFill");
+	frame.aggroHighlight:SetAlpha(0);
+	frame.aggroHighlight:SetAllPoints(frame.healthBar.background);
+	frame.aggroHighlight:SetDrawLayer("OVERLAY", 2);
+	frame.aggroHighlight:SetBlendMode("ADD");
 	
 	frame.horizTopBorder:Hide();
 	frame.horizBottomBorder:Hide();

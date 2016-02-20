@@ -231,6 +231,8 @@ function PetJournal_UpdateSummonButtonState()
 
 	if ( PetJournalPetCard.petID and PetJournalPetCard.petID == C_PetJournal.GetSummonedPetGUID() ) then
 		PetJournal.SummonButton:SetText(PET_DISMISS);
+	elseif ( C_PetJournal.PetNeedsFanfare(PetJournalPetCard.petID)) then
+		PetJournal.SummonButton:SetText(UNWRAP);
 	else
 		PetJournal.SummonButton:SetText(BATTLE_PET_SUMMON);
 	end

@@ -435,7 +435,7 @@
 						</Anchors>
 						<Layers>
 							<Layer level="ARTWORK">
-								<FontString name="Graphics_Title" inherits="OptionsFontHighlight" text="GRAPHICS_QUALITY" >
+								<FontString name="Graphics_Quality_Title" inherits="OptionsFontHighlight" text="GRAPHICS_QUALITY" >
 									<Anchors>
 										<Anchor point="BOTTOMLEFT" relativePoint="TOPLEFT" x="0" y="2"/>
 									</Anchors>
@@ -458,7 +458,13 @@
 								if(self.onvaluechanged) then
 									BlizzardOptionsPanel_Slider_OnValueChanged(self, value);
 								end
-								self.displayValue:SetText(floor(value + 0.5));
+								local quality = floor(value + 0.5);
+								self.displayValue:SetText(quality);
+								if ( quality == GetDefaultGraphicsQuality() ) then
+									Graphics_Quality_Title:SetText(GRAPHICS_QUALITY_RECOMENDED);
+								else
+									Graphics_Quality_Title:SetText(GRAPHICS_QUALITY);
+								end
 							</OnValueChanged>
 						</Scripts>
 					</Slider>   	
@@ -787,38 +793,23 @@
 					<Slider name="$parentQuality" inherits="RaidVideoOptionsSliderTemplate" minValue="1" maxValue="10" valueStep="1" stepsPerPage="1" >
 						<Size x="10" y="22"/>
 						<Anchors>
-							<Anchor point="TOPLEFT" x="28" y="-17"/>
+							<Anchor point="TOPLEFT" x="28" y="-25"/>
 						</Anchors>
 						<Layers>
 							<Layer level="ARTWORK">
-								<FontString name="$parentLow2" inherits="OptionsFontSmall" text="VIDEO_QUALITY_LABEL1">
+								<FontString name="RaidGraphics_Quality_Title" inherits="OptionsFontHighlight" text="GRAPHICS_QUALITY" >
 									<Anchors>
-										<Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" x="5" y="3"/>
-									</Anchors>
-								</FontString>
-								<FontString name="$parentFair" inherits="OptionsFontSmall" text="VIDEO_QUALITY_LABEL2" justifyH="CENTER">
-									<Anchors>
-										<Anchor point="TOP" relativePoint="BOTTOMLEFT" x="147" y="3"/>
+										<Anchor point="BOTTOMLEFT" relativePoint="TOPLEFT" x="0" y="2"/>
 									</Anchors>
 								</FontString>
 								<FontString name="RaidGraphics_RightQualityLabel" inherits="OptionsFontHighlight" text="CUSTOM" >
 									<Anchors>
-										<Anchor point="BOTTOMLEFT" relativePoint="TOPLEFT" x="256" y="0"/>
+										<Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" x="256" y="0"/>
 									</Anchors>
 								</FontString>
-								<FontString name="$parentMed" inherits="OptionsFontSmall" text="VIDEO_QUALITY_LABEL3" justifyH="CENTER">
+								<FontString parentKey="displayValue" inherits="OptionsFontLarge" justifyH="CENTER">
 									<Anchors>
-										<Anchor point="TOP" relativePoint="BOTTOMLEFT" x="276" y="3"/>
-									</Anchors>
-								</FontString>
-								<FontString name="$parentHigh2" inherits="OptionsFontSmall" text="VIDEO_QUALITY_LABEL4" justifyH="CENTER">
-									<Anchors>
-										<Anchor point="TOP" relativePoint="BOTTOMLEFT" x="406" y="3"/>
-									</Anchors>
-								</FontString>
-								<FontString name="$parentUltra" inherits="OptionsFontSmall" text="VIDEO_QUALITY_LABEL5" justifyH="RIGHT">
-									<Anchors>
-										<Anchor point="TOPRIGHT" relativePoint="BOTTOMLEFT" x="555" y="3"/>
+										<Anchor point="CENTER" relativePoint="CENTER" x="0" y="18"/>
 									</Anchors>
 								</FontString>
 							</Layer>
@@ -829,26 +820,16 @@
 								if(self.onvaluechanged) then
 									BlizzardOptionsPanel_Slider_OnValueChanged(self, value);
 								end
+								local quality = floor(value + 0.5);
+								self.displayValue:SetText(quality);
+								if ( quality == GetDefaultGraphicsQuality() ) then
+									RaidGraphics_Quality_Title:SetText(GRAPHICS_QUALITY_RECOMENDED);
+								else
+									RaidGraphics_Quality_Title:SetText(GRAPHICS_QUALITY);
+								end
 							</OnValueChanged>
 						</Scripts>
 					</Slider>   	
-					<Frame name="$parentRightQuality">
-						<Size x="553" y="22"/>
-						<Anchors>
-							<Anchor point="TOPLEFT" x="30" y="-17"/>
-						</Anchors>
-						<Backdrop bgFile="Interface\Buttons\UI-SliderBar-Background" edgeFile="Interface\Buttons\UI-SliderBar-Border" tile="true">
-							<EdgeSize>
-								<AbsValue val="8"/>
-							</EdgeSize>
-							<TileSize>
-								<AbsValue val="8"/>
-							</TileSize>
-							<BackgroundInsets>
-								<AbsInset left="3" right="3" top="6" bottom="6"/>
-							</BackgroundInsets>
-						</Backdrop>
-					</Frame>
 
 					<!-- Textures -->
 					<Frame name="$parentTextureResolutionDropDown" inherits="RaidVideoOptionsDropDownMenuTemplate" id="7">

@@ -850,15 +850,8 @@ end
 
 function GarrisonFollowerAlertFrame_SetUp(frame, followerID, name, displayID, level, quality, isUpgraded)
 	frame.PortraitFrame.Portrait:SetTexture(C_Garrison.GetFollowerPortraitIconID(followerID));
-	frame.PortraitFrame.Level:SetText(level);
-	local color = BAG_ITEM_QUALITY_COLORS[quality];
-	if (color) then
-		frame.PortraitFrame.LevelBorder:SetVertexColor(color.r, color.g, color.b);
-		frame.PortraitFrame.PortraitRingQuality:SetVertexColor(color.r, color.g, color.b);
-	else
-		frame.PortraitFrame.LevelBorder:SetVertexColor(1, 1, 1);
-		frame.PortraitFrame.PortraitRingQuality:SetVertexColor(1, 1, 1);
-	end
+	frame.PortraitFrame:SetLevel(level);
+	frame.PortraitFrame:SetQuality(quality);
 	if ( isUpgraded ) then
 		frame.Title:SetText(GARRISON_FOLLOWER_ADDED_UPGRADED_TOAST);
 	else
@@ -966,3 +959,103 @@ function NewRecipeLearnedAlertFrame_OnClick(self, button, down)
 end
 
 NewRecipeLearnedAlertSystem = AlertFrame:AddQueuedAlertFrameSubSystem("NewRecipeLearnedAlertFrameTemplate", NewRecipeLearnedAlertFrame_SetUp, 2, 6);
+
+-- [[WorldQuestCompleteAlertFrame ]] --
+function WorldQuestCompleteAlertFrame_GetIconForQuestID(questID)
+	local tagID, tagName, worldQuestType, isRare, isElite, tradeskillLineIndex = GetQuestTagInfo(questID);
+
+	if ( worldQuestType == LE_QUEST_TAG_TYPE_PVP ) then
+		return "Interface\\Icons\\achievement_arena_2v2_1";
+	elseif ( worldQuestType == LE_QUEST_TAG_TYPE_PET_BATTLE ) then
+		return "Interface\\Icons\\INV_Pet_BattlePetTraining";
+	elseif ( worldQuestType == LE_QUEST_TAG_TYPE_PROFESSION ) then
+		return C_TradeSkillUI.GetTradeSkillTexture(tradeskillLine);
+	elseif ( worldQuestType == LE_QUEST_TAG_TYPE_WORLD_BOSS ) then
+		return "Interface\\Icons\\INV_Misc_Bone_Skull_02";
+	end
+
+	return "Interface\\Icons\\Achievement_Quests_Completed_TwilightHighlands";
+end
+
+function WorldQuestCompleteAlertFrame_SetUp(frame, questID)
+	PlaySound("UI_Scenario_Ending");
+
+	local isInArea, isOnMap, numObjectives, taskName, displayAsObjective = GetTaskInfo(questID);
+	frame.QuestName:SetText(taskName);
+
+	local icon = WorldQuestCompleteAlertFrame_GetIconForQuestID(questID);
+	frame.QuestTexture:SetTexture(icon);
+
+	local numUsedRewardFrames = 0;
+	local money = GetQuestLogRewardMoney(questID);
+	if money > 0 then
+		local rewardFrame = frame.RewardFrames and frame.RewardFrames[i] or CreateFrame("FRAME", nil, frame, "WorldQuestFrameRewardTemplate");
+
+		SetPortraitToTexture(rewardFrame.texture, "Interface\\Icons\\inv_misc_coin_02");
+		rewardFrame.itemID = nil;
+		rewardFrame.money = money;
+		rewardFrame.xp = nil;
+		rewardFrame:Show();
+
+		numUsedRewardFrames = numUsedRewardFrames + 1;
+	end
+
+	local xp = GetQuestLogRewardXP(questID);
+	if xp > 0 and UnitLevel("player") < MAX_PLAYER_LEVEL then
+		local rewardFrame = frame.RewardFrames and frame.RewardFrames[i] or CreateFrame("FRAME", nil, frame, "WorldQuestFrameRewardTemplate");
+
+		SetPortraitToTexture(rewardFrame.texture, "Interface\\Icons\\xp_icon");
+		rewardFrame.itemID = nil;
+		rewardFrame.money = nil;
+		rewardFrame.xp = xp;
+		rewardFrame:Show();
+
+		numUsedRewardFrames = numUsedRewardFrames + 1;
+	end
+
+	local numItems = GetNumQuestLogRewards(questID);
+	for i = 1, numItems do
+		local name, texture, count, quality, isUsable, itemID = GetQuestLogRewardInfo(i, questID);
+		local rewardFrame = frame.RewardFrames and frame.RewardFrames[numUsedRewardFrames + 1] or CreateFrame("FRAME", nil, frame, "WorldQuestFrameRewardTemplate");
+		SetPortraitToTexture(rewardFrame.texture, texture);
+		rewardFrame.itemID = itemID;
+		rewardFrame.money = nil;
+		rewardFrame.xp = nil;
+		rewardFrame:Show();
+
+		numUsedRewardFrames = numUsedRewardFrames + 1;
+	end
+
+	if frame.RewardFrames then
+		local SPACING = 36;
+		for i = 1, numUsedRewardFrames do
+			if frame.RewardFrames[i - 1] then
+				frame.RewardFrames[i]:SetPoint("CENTER", frame.RewardFrames[i - 1], "CENTER", SPACING, 0);
+			else
+				frame.RewardFrames[i]:SetPoint("TOP", frame, "TOP", -SPACING / 2 * numUsedRewardFrames + 41, 8);
+			end
+		end
+
+		for i = numUsedRewardFrames + 1, #frame.RewardFrames do
+			frame.RewardFrames[i]:Hide();
+		end
+	end
+end
+
+function WorldQuestCompleteFrameReward_OnEnter(self)
+	AlertFrame_StopOutAnimation(self:GetParent());
+
+	GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+	if self.itemID then
+		GameTooltip:SetItemByID(self.itemID);
+	elseif self.money then
+		GameTooltip:AddLine(YOU_RECEIVED);
+		SetTooltipMoney(GameTooltip, self.money, nil);
+	elseif self.xp then
+		GameTooltip:AddLine(YOU_RECEIVED);
+		GameTooltip:AddLine(BONUS_OBJECTIVE_EXPERIENCE_FORMAT:format(self.xp), HIGHLIGHT_FONT_COLOR:GetRGB());
+	end
+	GameTooltip:Show();
+end
+
+WorldQuestCompleteAlertSystem = AlertFrame:AddSimpleAlertFrameSubSystem(WorldQuestCompleteAlertFrame, WorldQuestCompleteAlertFrame_SetUp);

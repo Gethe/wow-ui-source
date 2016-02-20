@@ -1,5 +1,17 @@
 
 ---------------------------------------------------------------------------------
+-- Display Options
+---------------------------------------------------------------------------------
+
+GarrisonFollowerOptions[LE_FOLLOWER_TYPE_SHIPYARD_6_2] = {
+	displayCounterAbilityInPlaceOfMechanic = false,
+	useAbilityTooltipStyleWithoutCounters = false,
+	hideCountersInAbilityFrame = false,
+	showILevelOnFollower = false,
+}
+
+
+---------------------------------------------------------------------------------
 --- Static Popups                                                             ---
 ---------------------------------------------------------------------------------
 
@@ -2059,13 +2071,11 @@ function GarrisonShipTrait_OnClick(self, button)
 end
 
 function GarrisonShipTrait_OnEnter(self)
-	GarrisonFollowerAbilityTooltip:ClearAllPoints();
-	GarrisonFollowerAbilityTooltip:SetPoint("TOPLEFT", self, "BOTTOMRIGHT");
-	GarrisonFollowerAbilityTooltip_Show(self.abilityID, LE_FOLLOWER_TYPE_SHIPYARD_6_2);
+	ShowGarrisonFollowerAbilityTooltip(self, self.abilityID, LE_FOLLOWER_TYPE_SHIPYARD_6_2);
 end
 
 function GarrisonShipTrait_OnHide(self)
-	GarrisonFollowerAbilityTooltip:Hide();
+	HideGarrisonFollowerAbilityTooltip();
 end
 
 function GarrisonShipEquipment_StopAnimations(frame)
@@ -2126,9 +2136,7 @@ function GarrisonShipEquipment_OnEnter(self)
 		end
 		GameTooltip:Show();
 	elseif (self.Icon:IsShown() and self.abilityID) then
-		GarrisonFollowerAbilityTooltip:ClearAllPoints();
-		GarrisonFollowerAbilityTooltip:SetPoint("TOPLEFT", self, "BOTTOMRIGHT");
-		GarrisonFollowerAbilityTooltip_Show(self.abilityID, LE_FOLLOWER_TYPE_SHIPYARD_6_2);
+		ShowGarrisonFollowerAbilityTooltip(self, self.abilityID, LE_FOLLOWER_TYPE_SHIPYARD_6_2);
 	else
 		GameTooltip:SetOwner(self, "ANCHOR_BOTTOMRIGHT");
 		GameTooltip:SetText(GARRISON_SHIPYARD_EQUIPMENT_EMPTY_SLOT_TOOLTIP);
@@ -2138,7 +2146,7 @@ end
 
 function GarrisonShipEquipment_OnHide(self)
 	GameTooltip_Hide();
-	GarrisonFollowerAbilityTooltip:Hide();
+	HideGarrisonFollowerAbilityTooltip();
 end
 
 function GarrisonShipEquipment_OnReceiveDrag(self)

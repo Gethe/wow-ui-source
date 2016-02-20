@@ -41,6 +41,11 @@ function BonusObjectiveTrackerModuleMixin:OnFreeBlock(block)
 			end
 		end
 	end
+	local itemButton = block.itemButton;
+	if ( itemButton ) then
+		QuestObjectiveItem_ReleaseButton(itemButton);
+		block.itemButton = nil;
+	end
 	if (block.id < 0) then
 		local blockKey = -block.id;
 		if (BonusObjectiveTracker_GetSupersedingStep(blockKey)) then
@@ -166,7 +171,8 @@ function BonusObjectiveTracker_OnTaskCompleted(questID, xp, money)
 
 	local block = WORLD_QUEST_TRACKER_MODULE:GetExistingBlock(questID);
 	if ( block ) then
-		BonusObjectiveTracker_AddReward(questID, block, xp, money);
+		-- Don't animate rewards on WQs, toast instead
+		WorldQuestCompleteAlertSystem:AddAlert(questID);
 	end
 end
 
@@ -635,16 +641,41 @@ local function AddBonusObjectiveQuest(module, questID, posIndex)
 		if ( displayAsObjective and not module.ShowWorldQuests ) then
 			module.headerText = TRACKER_HEADER_OBJECTIVE;
 		end
+
+		-- check if there's an item
+		local questLogIndex = GetQuestLogIndexByID(questID);
+		local link, item, charges, showItemWhenComplete = GetQuestLogSpecialItemInfo(questLogIndex);
+		local itemButton = block.itemButton;	
+		if ( item and ( not isQuestComplete or showItemWhenComplete ) ) then
+			-- if the block doesn't already have an item, get one
+			if ( not itemButton ) then
+				itemButton = QuestObjectiveItem_AcquireButton(block);
+				block.itemButton = itemButton;
+				itemButton:SetPoint("TOPRIGHT", block, -2, 1);
+				itemButton:Show();
+			end
+
+			QuestObjectiveItem_Initialize(itemButton, questLogIndex);
+
+			block.lineWidth = OBJECTIVE_TRACKER_TEXT_WIDTH - OBJECTIVE_TRACKER_ITEM_WIDTH;
+		else
+			if ( itemButton ) then
+				QuestObjectiveItem_ReleaseButton(itemButton);
+				block.itemButton = nil;
+			end
+		end
+
 		-- block header? add it as objectiveIndex 0
 		if ( taskName ) then
 			module:AddObjective(block, 0, taskName, nil, nil, OBJECTIVE_DASH_STYLE_HIDE_AND_COLLAPSE, OBJECTIVE_TRACKER_COLOR["Header"]);
 		end
+
 		if ( isSuperTracked ) then
-			local tagID, tagName, worldQuestType, isRare, isElite, tradeskillLine = GetQuestTagInfo(questID);
+			local tagID, tagName, worldQuestType, isRare, isElite, tradeskillLineIndex = GetQuestTagInfo(questID);
 			assert(worldQuestType);
 
 			local inProgress = GetQuestLogIndexByID(questID) ~= 0;
-			WorldMap_SetupWorldQuestButton(module.Header.TrackedQuest, worldQuestType, isRare, isElite, tradeskillLine, inProgress, true);
+			WorldMap_SetupWorldQuestButton(module.Header.TrackedQuest, worldQuestType, isRare, isElite, tradeskillLineIndex, inProgress, true);
 
 			module.Header.TrackedQuest:SetScale(.9);
 			module.Header.TrackedQuest:SetPoint("TOPRIGHT", block.currentLine, "TOPLEFT", 18, 0);

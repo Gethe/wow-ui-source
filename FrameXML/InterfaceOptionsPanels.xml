@@ -1,9 +1,9 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\FrameXML\UI.xsd">
 	<Script file="InterfaceOptionsPanels.lua"/>
-	
+
 	<!-- Templates -->
-	
+
 	<CheckButton name="InterfaceOptionsBaseCheckButtonTemplate" inherits="OptionsBaseCheckButtonTemplate" virtual="true">
 		<Scripts>
 			<OnClick>
@@ -112,7 +112,7 @@
 						self.cvar = "autoDismountFlying";
 						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
 					</OnLoad>
-				</Scripts>			
+				</Scripts>
 			</CheckButton>
 			<CheckButton name="$parentAutoClearAFK" inherits="InterfaceOptionsCheckButtonTemplate">
 				<Anchors>
@@ -270,7 +270,7 @@
 					<OnEvent function="InterfaceOptionsControlsPanelAutoLootKeyDropDown_OnEvent"/>
 					<OnLeave function="GameTooltip_Hide"/>
 				</Scripts>
-			</Frame>					
+			</Frame>
 			<CheckButton name="$parentAutoOpenLootHistory" inherits="InterfaceOptionsCheckButtonTemplate">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeTo="$parentAutoLootCorpse" relativePoint="BOTTOMLEFT">
@@ -347,7 +347,7 @@
 					</OnLoad>
 				</Scripts>
 			</CheckButton>
-			
+
 		</Frames>
 		<Scripts>
 			<OnLoad>
@@ -357,11 +357,11 @@
 				UIDropDownMenu_SetSelectedValue(InterfaceOptionsControlsPanelAutoLootKeyDropDown, GetModifiedClick("AUTOLOOTTOGGLE"));
 				UIDropDownMenu_EnableDropDown(InterfaceOptionsControlsPanelAutoLootKeyDropDown);
 			</OnLoad>
-		</Scripts>	
+		</Scripts>
 	</Frame>
-	
+
 	<!-- Combat panel -->
-	
+
 	<Frame name="InterfaceOptionsCombatPanel" hidden="true" parent="InterfaceOptionsFramePanelContainer">
 		<Layers>
 			<Layer level="ARTWORK">
@@ -393,7 +393,7 @@
 				</FontString>
 			</Layer>
 		</Layers>
-		<Frames>		
+		<Frames>
 			<CheckButton name="$parentAttackOnAssist" inherits="InterfaceOptionsCheckButtonTemplate">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeTo="$parentSubText" relativePoint="BOTTOMLEFT">
@@ -409,7 +409,7 @@
 						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
 					</OnLoad>
 				</Scripts>
-			</CheckButton>			
+			</CheckButton>
 			<CheckButton name="$parentStopAutoAttack" inherits="InterfaceOptionsCheckButtonTemplate">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeTo="$parentAttackOnAssist" relativePoint="BOTTOMLEFT">
@@ -479,7 +479,7 @@
 						end
 						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
 						self:RegisterEvent("VARIABLES_LOADED");
-						
+
 						BlizzardOptionsPanel_SetupDependentControl(_G[self:GetParent():GetName().."ShowSpellAlerts"], self);
 					</OnLoad>
 					<OnValueChanged>
@@ -560,7 +560,7 @@
 								BlizzardOptionsPanel_RegisterControl(self, self:GetParent():GetParent());
 							</OnLoad>
 						</Scripts>
-					</CheckButton>	
+					</CheckButton>
 					<CheckButton name="$parentOnNameplates" inherits="InterfaceOptionsSmallCheckButtonTemplate">
 						<Anchors>
 							<Anchor point="TOPLEFT" relativeTo="$parentOnPortrait" relativePoint="BOTTOMLEFT">
@@ -576,7 +576,7 @@
 								BlizzardOptionsPanel_RegisterControl(self, self:GetParent():GetParent());
 							</OnLoad>
 						</Scripts>
-					</CheckButton>						
+					</CheckButton>
 					<CheckButton name="$parentOnOnlyTargetNameplates" inherits="InterfaceOptionsSmallCheckButtonTemplate">
 						<Anchors>
 							<Anchor point="TOPLEFT" relativeTo="$parentOnNameplates" relativePoint="BOTTOMLEFT">
@@ -713,7 +713,7 @@
 						self.type = CONTROLTYPE_CHECKBOX;
 						self.cvar = "reducedLagTolerance";
 						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
-						
+
 						self:RegisterEvent("MAX_SPELL_START_RECOVERY_OFFSET_CHANGED");
 						InterfaceOptionsCombatPanelReducedLagTolerance_UpdateText();
 					</OnLoad>
@@ -732,7 +732,7 @@
 						self.cvar = "MaxSpellStartRecoveryOffset";
 						_G[self:GetName().."Low"]:SetFormattedText("%d %s", CombatPanelOptions[self.cvar].minValue, MILLISECONDS_ABBR);
 						_G[self:GetName().."High"]:SetFormattedText("%d %s", CombatPanelOptions[self.cvar].maxValue, MILLISECONDS_ABBR);
-						
+
 						self.SetDisplayValue = self.SetValue;
 						self.SetValue = function (self, value)
 							self:SetDisplayValue(value);
@@ -740,7 +740,7 @@
 							SetCVar(self.cvar, value);
 						end
 						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
-						
+
 						BlizzardOptionsPanel_SetupDependentControl(_G[self:GetParent():GetName().."ReducedLagTolerance"], self);
 					</OnLoad>
 					<OnValueChanged>
@@ -932,9 +932,9 @@
 			</OnLoad>
 		</Scripts>
 	</Frame>
-	
+
 	<!-- Display panel -->
-	
+
 	<Frame name="InterfaceOptionsDisplayPanel" hidden="true" parent="InterfaceOptionsFramePanelContainer">
 		<Layers>
 			<Layer level="ARTWORK">
@@ -1049,7 +1049,7 @@
 					<OnLeave function="GameTooltip_Hide"/>
 					<OnShow function="InterfaceOptionsDisplayPanelOutlineDropDown_OnShow"/>
 				</Scripts>
-			</Frame>					
+			</Frame>
 			<CheckButton name="$parentShowFreeBagSpace" inherits="InterfaceOptionsCheckButtonTemplate">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeTo="$parentShowAggroPercentage" relativePoint="TOPRIGHT">
@@ -1127,7 +1127,7 @@
 						else
 							PlaySound("igMainMenuOptionCheckBoxOff");
 						end
-						self:SetValue(value);     
+						self:SetValue(value);
 					</OnClick>
 					<OnEvent>
 						local arg1 = ...;
@@ -1232,9 +1232,9 @@
 			<OnLoad function="InterfaceOptionsDisplayPanel_OnLoad"/>
 		</Scripts>
 	</Frame>
-	
+
 	<!-- Objectives panel -->
-	
+
 	<Frame name="InterfaceOptionsObjectivesPanel" hidden="true" parent="InterfaceOptionsFramePanelContainer">
 		<Layers>
 			<Layer level="ARTWORK">
@@ -1335,15 +1335,15 @@
 					<OnEvent function="InterfaceOptionsObjectivesPanelQuestSorting_OnEvent"/>
 				</Scripts>
 			</Frame>
-			
+
 		</Frames>
 		<Scripts>
 			<OnLoad function="InterfaceOptionsObjectivesPanel_OnLoad"/>
-		</Scripts>	
+		</Scripts>
 	</Frame>
-	
+
 	<!-- Social panel -->
-	
+
 	<Frame name="InterfaceOptionsSocialPanel" hidden="true" parent="InterfaceOptionsFramePanelContainer">
 		<Layers>
 			<Layer level="ARTWORK">
@@ -1391,7 +1391,7 @@
 						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
 					</OnLoad>
 				</Scripts>
-			</CheckButton>		
+			</CheckButton>
 			<CheckButton name="$parentSpamFilter" inherits="InterfaceOptionsCheckButtonTemplate">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeTo="$parentProfanityFilter" relativePoint="BOTTOMLEFT">
@@ -1423,7 +1423,7 @@
 						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
 					</OnLoad>
 				</Scripts>
-			</CheckButton>			
+			</CheckButton>
 			<CheckButton name="$parentPartyChat" inherits="InterfaceOptionsCheckButtonTemplate">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeTo="$parentChatBubbles" relativePoint="BOTTOMLEFT">
@@ -1505,7 +1505,7 @@
 						<Texture parentKey="Logo" atlas="WoWShare-TwitterLogo" useAtlasSize="true">
 							<Anchors>
 								<Anchor point="LEFT" relativePoint="RIGHT" x="2" y="1"/>
-							</Anchors>						
+							</Anchors>
 						</Texture>
 						<FontString parentKey="LoginStatus" inherits="GameFontHighlight" justifyH="LEFT" justifyV="MIDDLE" text="SOCIAL_TWITTER_STATUS_NOT_CONNECTED">
 							<Anchors>
@@ -1588,7 +1588,7 @@
 						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
 					</OnLoad>
 				</Scripts>
-			</CheckButton>	
+			</CheckButton>
 			<Frame name="$parentTimestamps" inherits="UIDropDownMenuTemplate" enableMouse="true">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeTo="$parentWholeChatWindowClickable" relativePoint="BOTTOMLEFT">
@@ -1700,11 +1700,11 @@
 			<OnShow function="Twitter_Update"/>
 			<OnHide function="InterfaceOptionsSocialPanel_OnHide"/>
 			<OnEvent function="InterfaceOptionsSocialPanel_OnEvent"/>
-		</Scripts>	
+		</Scripts>
 	</Frame>
-	
+
 	<!-- ActionBars panel -->
-	
+
 	<Frame name="InterfaceOptionsActionBarsPanel" hidden="true" parent="InterfaceOptionsFramePanelContainer">
 		<Layers>
 			<Layer level="ARTWORK">
@@ -1857,7 +1857,7 @@
 					<OnLoad>
 						self.type = CONTROLTYPE_DROPDOWN;
 						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
-						BlizzardOptionsPanel_SetupDependentControl(InterfaceOptionsActionBarsPanelLockActionBars, self);						
+						BlizzardOptionsPanel_SetupDependentControl(InterfaceOptionsActionBarsPanelLockActionBars, self);
 						self:RegisterEvent("PLAYER_ENTERING_WORLD");
 					</OnLoad>
 					<OnEnter>
@@ -1903,7 +1903,7 @@
 						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
 					</OnLoad>
 				</Scripts>
-			</CheckButton>			
+			</CheckButton>
 			<CheckButton name="$parentCountdownCooldowns" inherits="InterfaceOptionsCheckButtonTemplate">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeTo="$parentSecureAbilityToggle" relativePoint="BOTTOMLEFT" x="0" y="-8"/>
@@ -1920,11 +1920,11 @@
 		<Scripts>
 			<OnLoad function="InterfaceOptionsActionBarsPanel_OnLoad"/>
 			<OnEvent function="InterfaceOptionsActionBarsPanel_OnEvent"/>
-		</Scripts>	
+		</Scripts>
 	</Frame>
-	
+
 	<!-- Names panel -->
-	
+
 	<Frame name="InterfaceOptionsNamesPanel" hidden="true" parent="InterfaceOptionsFramePanelContainer">
 		<Layers>
 			<Layer level="ARTWORK">
@@ -1972,7 +1972,7 @@
 						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
 					</OnLoad>
 				</Scripts>
-			</CheckButton>		
+			</CheckButton>
 			<Frame name="$parentNPCNamesDropDown" inherits="UIDropDownMenuTemplate" enableMouse="true">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeTo="$parentMyName" relativePoint="BOTTOMLEFT">
@@ -2021,7 +2021,7 @@
 						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
 					</OnLoad>
 				</Scripts>
-			</CheckButton>	
+			</CheckButton>
 			<CheckButton name="$parentGuilds" inherits="InterfaceOptionsCheckButtonTemplate">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeTo="$parentMyName" relativePoint="TOPRIGHT">
@@ -2070,7 +2070,7 @@
 						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
 					</OnLoad>
 				</Scripts>
-			</CheckButton>		
+			</CheckButton>
 			<CheckButton name="$parentNonCombatCreature" inherits="InterfaceOptionsCheckButtonTemplate">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeTo="$parentTitles" relativePoint="BOTTOMLEFT">
@@ -2086,7 +2086,7 @@
 						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
 					</OnLoad>
 				</Scripts>
-			</CheckButton>		
+			</CheckButton>
 			<Frame name="$parentFriendly">
 				<Size>
 					<AbsDimension x="135" y="98"/>
@@ -2098,7 +2098,7 @@
 						</Offset>
 					</Anchor>
 				</Anchors>
-				<Frames>	
+				<Frames>
 					<CheckButton name="$parentPlayerNames" inherits="InterfaceOptionsCheckButtonTemplate">
 						<Anchors>
 							<Anchor point="TOPLEFT" relativeTo="$parent" relativePoint="TOPLEFT">
@@ -2114,7 +2114,7 @@
 								BlizzardOptionsPanel_RegisterControl(self, self:GetParent():GetParent());
 							</OnLoad>
 						</Scripts>
-					</CheckButton>		
+					</CheckButton>
 					<CheckButton name="$parentPets" inherits="InterfaceOptionsSmallCheckButtonTemplate">
 						<Anchors>
 							<Anchor point="TOPLEFT" relativeTo="$parentPlayerNames" relativePoint="BOTTOMLEFT">
@@ -2130,7 +2130,7 @@
 								BlizzardOptionsPanel_RegisterControl(self, self:GetParent():GetParent());
 							</OnLoad>
 						</Scripts>
-					</CheckButton>		
+					</CheckButton>
 					<CheckButton name="$parentGuardians" inherits="InterfaceOptionsSmallCheckButtonTemplate">
 						<Anchors>
 							<Anchor point="TOPLEFT" relativeTo="$parentPets" relativePoint="BOTTOMLEFT">
@@ -2146,7 +2146,7 @@
 								BlizzardOptionsPanel_RegisterControl(self, self:GetParent():GetParent());
 							</OnLoad>
 						</Scripts>
-					</CheckButton>		
+					</CheckButton>
 					<CheckButton name="$parentTotems" inherits="InterfaceOptionsSmallCheckButtonTemplate">
 						<Anchors>
 							<Anchor point="TOPLEFT" relativeTo="$parentGuardians" relativePoint="BOTTOMLEFT">
@@ -2162,7 +2162,7 @@
 								BlizzardOptionsPanel_RegisterControl(self, self:GetParent():GetParent());
 							</OnLoad>
 						</Scripts>
-					</CheckButton>		
+					</CheckButton>
 				</Frames>
 			</Frame>
 			<Frame name="$parentEnemy">
@@ -2192,7 +2192,7 @@
 								BlizzardOptionsPanel_RegisterControl(self, self:GetParent():GetParent());
 							</OnLoad>
 						</Scripts>
-					</CheckButton>		
+					</CheckButton>
 					<CheckButton name="$parentPets" inherits="InterfaceOptionsSmallCheckButtonTemplate">
 						<Anchors>
 							<Anchor point="TOPLEFT" relativeTo="$parentPlayerNames" relativePoint="BOTTOMLEFT">
@@ -2208,7 +2208,7 @@
 								BlizzardOptionsPanel_RegisterControl(self, self:GetParent():GetParent());
 							</OnLoad>
 						</Scripts>
-					</CheckButton>		
+					</CheckButton>
 					<CheckButton name="$parentGuardians" inherits="InterfaceOptionsSmallCheckButtonTemplate">
 						<Anchors>
 							<Anchor point="TOPLEFT" relativeTo="$parentPets" relativePoint="BOTTOMLEFT">
@@ -2224,7 +2224,7 @@
 								BlizzardOptionsPanel_RegisterControl(self, self:GetParent():GetParent());
 							</OnLoad>
 						</Scripts>
-					</CheckButton>		
+					</CheckButton>
 					<CheckButton name="$parentTotems" inherits="InterfaceOptionsSmallCheckButtonTemplate">
 						<Anchors>
 							<Anchor point="TOPLEFT" relativeTo="$parentGuardians" relativePoint="BOTTOMLEFT">
@@ -2240,7 +2240,7 @@
 								BlizzardOptionsPanel_RegisterControl(self, self:GetParent():GetParent());
 							</OnLoad>
 						</Scripts>
-					</CheckButton>		
+					</CheckButton>
 				</Frames>
 			</Frame>
 			<Frame name="$parentUnitNameplates">
@@ -2484,14 +2484,40 @@
 							<OnLeave function="GameTooltip_Hide"/>
 						</Scripts>
 					</Frame>
+					<CheckButton name="$parentMakeLarger" inherits="InterfaceOptionsCheckButtonTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="$parentPersonalResource" relativePoint="TOPLEFT" x="286" y="0"/>
+						</Anchors>
+						<Scripts>
+							<OnLoad>
+								self.type = CONTROLTYPE_CHECKBOX;
+								self.cvar = "nameplateGlobalScale";
+								self.uncheckedValue = "1.0";
+								self.checkedValue = "1.5";
+								BlizzardOptionsPanel_RegisterControl(self, self:GetParent():GetParent());
+							</OnLoad>
+						</Scripts>
+					</CheckButton>
 					<CheckButton name="$parentShowAll" inherits="InterfaceOptionsCheckButtonTemplate">
 						<Anchors>
-							<Anchor point="TOPLEFT" relativeTo="$parentMotionDropDown" relativePoint="TOPLEFT" x="298" y="0"/>
+							<Anchor point="TOPLEFT" relativeTo="$parentMakeLarger" relativePoint="BOTTOMLEFT" x="0" y="-4"/>
 						</Anchors>
 						<Scripts>
 							<OnLoad>
 								self.type = CONTROLTYPE_CHECKBOX;
 								self.cvar = "nameplateShowAll";
+								BlizzardOptionsPanel_RegisterControl(self, self:GetParent():GetParent());
+							</OnLoad>
+						</Scripts>
+					</CheckButton>
+					<CheckButton name="$parentAggroFlash" inherits="InterfaceOptionsCheckButtonTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="$parentShowAll" relativePoint="BOTTOMLEFT" x="0" y="-4"/>
+						</Anchors>
+						<Scripts>
+							<OnLoad>
+								self.type = CONTROLTYPE_CHECKBOX;
+								self.cvar = "ShowNamePlateLoseAggroFlash";
 								BlizzardOptionsPanel_RegisterControl(self, self:GetParent():GetParent());
 							</OnLoad>
 						</Scripts>
@@ -2505,11 +2531,11 @@
 				self.options = NamePanelOptions;
 				InterfaceOptionsPanel_OnLoad(self);
 			</OnLoad>
-		</Scripts>	
+		</Scripts>
 	</Frame>
-	
+
 	<!-- Floating Combat Text panel -->
-	
+
 	<Frame name="InterfaceOptionsCombatTextPanel" hidden="true" parent="InterfaceOptionsFramePanelContainer">
 		<Layers>
 			<Layer level="ARTWORK">
@@ -2543,7 +2569,7 @@
 		</Layers>
 		<Frames>
 			<CheckButton name="$parentTargetDamage" inherits="InterfaceOptionsCheckButtonTemplate">
-				<Anchors>				
+				<Anchors>
 					<Anchor point="TOPLEFT" relativeTo="$parentSubText" relativePoint="BOTTOMLEFT">
 						<Offset>
 							<AbsDimension x="-2" y="-24"/>
@@ -2570,7 +2596,7 @@
 						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
 					</OnLoad>
 				</Scripts>
-			</CheckButton>	
+			</CheckButton>
 			<CheckButton name="$parentPeriodicDamage" inherits="InterfaceOptionsSmallCheckButtonTemplate">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeTo="$parentTargetDamage" relativePoint="BOTTOMLEFT">
@@ -2587,7 +2613,7 @@
 						BlizzardOptionsPanel_SetupDependentControl(InterfaceOptionsCombatTextPanelTargetDamage, self);
 					</OnLoad>
 				</Scripts>
-			</CheckButton>	
+			</CheckButton>
 			<CheckButton name="$parentPetDamage" inherits="InterfaceOptionsSmallCheckButtonTemplate">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeTo="$parentPeriodicDamage" relativePoint="BOTTOMLEFT">
@@ -2605,7 +2631,7 @@
 						BlizzardOptionsPanel_SetupDependentControl(InterfaceOptionsCombatTextPanelTargetDamage, self);
 					</OnLoad>
 				</Scripts>
-			</CheckButton>	
+			</CheckButton>
 			<CheckButton name="$parentHealing" inherits="InterfaceOptionsCheckButtonTemplate">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeTo="$parentPetDamage" relativePoint="BOTTOMLEFT">
@@ -2621,7 +2647,7 @@
 						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
 					</OnLoad>
 				</Scripts>
-			</CheckButton>	
+			</CheckButton>
 			<CheckButton name="$parentHealingAbsorbTarget" inherits="InterfaceOptionsSmallCheckButtonTemplate">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeTo="$parentHealing" relativePoint="BOTTOMLEFT">
@@ -2638,9 +2664,9 @@
 						BlizzardOptionsPanel_SetupDependentControl(InterfaceOptionsCombatTextPanelHealing, self);
 					</OnLoad>
 				</Scripts>
-			</CheckButton>	
+			</CheckButton>
 			<CheckButton name="$parentTargetEffects" inherits="InterfaceOptionsCheckButtonTemplate">
-				<Anchors>				
+				<Anchors>
 					<Anchor point="TOPLEFT" relativeTo="$parentTargetDamage" relativePoint="TOPRIGHT">
 						<Offset>
 							<AbsDimension x="260" y="0"/>
@@ -2867,7 +2893,7 @@
 						BlizzardOptionsPanel_SetupDependentControl(InterfaceOptionsCombatTextPanelEnableFCT, self);
 					</OnLoad>
 				</Scripts>
-			</CheckButton>	
+			</CheckButton>
 			<CheckButton name="$parentLowManaHealth" inherits="InterfaceOptionsSmallCheckButtonTemplate">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeTo="$parentHealingAbsorbSelf" relativePoint="BOTTOMLEFT">
@@ -2954,7 +2980,7 @@
 				</Scripts>
 			</CheckButton>
 			<CheckButton name="$parentPetBattle" inherits="InterfaceOptionsCheckButtonTemplate">
-				<Anchors>				
+				<Anchors>
 					<Anchor point="TOPLEFT" relativeTo="$parentCombatState" relativePoint="BOTTOMLEFT">
 						<Offset>
 							<AbsDimension x="-10" y="-32"/>
@@ -2987,9 +3013,9 @@
 			<OnLoad function="InterfaceOptionsCombatTextPanel_OnLoad"/>
 		</Scripts>
 	</Frame>
-	
+
 	<!-- Status Text panel -->
-	
+
 	<Frame name="InterfaceOptionsStatusTextPanel" hidden="true" parent="InterfaceOptionsFramePanelContainer">
 		<Layers>
 			<Layer level="ARTWORK">
@@ -3037,7 +3063,7 @@
 						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
 					</OnLoad>
 				</Scripts>
-			</CheckButton>		
+			</CheckButton>
 			<CheckButton name="$parentPet" inherits="InterfaceOptionsCheckButtonTemplate">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeTo="$parentPlayer" relativePoint="BOTTOMLEFT">
@@ -3118,7 +3144,7 @@
 					</OnLoad>
 				</Scripts>
 			</CheckButton>
-			
+
 			<Frame name="$parentDisplayDropDown" inherits="UIDropDownMenuTemplate" enableMouse="true">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeTo="$parentXP" relativePoint="BOTTOMLEFT" x="-8" y="-16"/>
@@ -3147,9 +3173,9 @@
 			</OnLoad>
 		</Scripts>
 	</Frame>
-	
+
 	<!-- Unit Frame panel -->
-	
+
 	<Frame name="InterfaceOptionsUnitFramePanel" hidden="true" parent="InterfaceOptionsFramePanelContainer">
 		<Layers>
 			<Layer level="ARTWORK">
@@ -3181,7 +3207,7 @@
 				</FontString>
 			</Layer>
 		</Layers>
-		<Frames>		
+		<Frames>
 			<CheckButton name="$parentPartyPets" inherits="InterfaceOptionsCheckButtonTemplate">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeTo="$parentSubText" relativePoint="BOTTOMLEFT">
@@ -3216,7 +3242,7 @@
 						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
 					</OnLoad>
 				</Scripts>
-			</CheckButton>	
+			</CheckButton>
 			<CheckButton name="$parentArenaEnemyCastBar" inherits="InterfaceOptionsSmallCheckButtonTemplate">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeTo="$parentArenaEnemyFrames" relativePoint="BOTTOMLEFT">
@@ -3238,7 +3264,7 @@
 									frame.showCastbar = (value == "1");
 									CastingBarFrame_UpdateIsShown(frame);
 								end
-							end 
+							end
 						end;
 						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
 						BlizzardOptionsPanel_SetupDependentControl(InterfaceOptionsUnitFramePanelArenaEnemyFrames, self);
@@ -3263,8 +3289,8 @@
 								for i=1, MAX_ARENA_ENEMIES do
 									ArenaEnemyFrame_UpdatePet(_G["ArenaEnemyFrame" .. i], i);
 								end
-							end 
-			
+							end
+
 			end;
 						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
 						BlizzardOptionsPanel_SetupDependentControl(InterfaceOptionsUnitFramePanelArenaEnemyFrames, self);
@@ -3301,7 +3327,7 @@
 	</Frame>
 
 	<!-- Buffs panel -->
-	
+
 	<Frame name="InterfaceOptionsBuffsPanel" hidden="true" parent="InterfaceOptionsFramePanelContainer">
 		<Layers>
 			<Layer level="ARTWORK">
@@ -3354,7 +3380,7 @@
 						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
 					</OnLoad>
 				</Scripts>
-			</CheckButton>	
+			</CheckButton>
 			<CheckButton name="$parentCastableBuffs" inherits="InterfaceOptionsCheckButtonTemplate">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeTo="$parentDispellableDebuffs" relativePoint="BOTTOMLEFT">
@@ -3392,15 +3418,15 @@
 						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
 					</OnLoad>
 				</Scripts>
-			</CheckButton>			
+			</CheckButton>
 		</Frames>
 		<Scripts>
 			<OnLoad function="InterfaceOptionsBuffsPanel_OnLoad"/>
-		</Scripts>	
+		</Scripts>
 	</Frame>
 
 	<!-- Battle.net panel -->
-	
+
 	<Frame name="InterfaceOptionsBattlenetPanel" hidden="true" parent="InterfaceOptionsFramePanelContainer">
 		<Layers>
 			<Layer level="ARTWORK">
@@ -3445,7 +3471,7 @@
 					<OnLoad>
 						self.type = CONTROLTYPE_CHECKBOX;
 						self.cvar = "showToastOnline";
-						self.setFunc = function (value) BNet_UpdateToastEvent(self.cvar, value); end;				
+						self.setFunc = function (value) BNet_UpdateToastEvent(self.cvar, value); end;
 						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
 					</OnLoad>
 				</Scripts>
@@ -3463,10 +3489,10 @@
 						self.type = CONTROLTYPE_CHECKBOX;
 						self.cvar = "showToastOffline";
 						self.setFunc = function (value) BNet_UpdateToastEvent(self.cvar, value); end;
-						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());						
+						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
 					</OnLoad>
 				</Scripts>
-			</CheckButton>	
+			</CheckButton>
 			<CheckButton name="$parentBroadcasts" inherits="InterfaceOptionsCheckButtonTemplate">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeTo="$parentOfflineFriends" relativePoint="BOTTOMLEFT">
@@ -3554,9 +3580,9 @@
 			<OnLoad function="InterfaceOptionsBattlenetPanel_OnLoad"/>
 		</Scripts>
 	</Frame>
-	
+
 	<!-- Camera Panel -->
-	
+
 	<Frame name="InterfaceOptionsCameraPanel" hidden="true" parent="InterfaceOptionsFramePanelContainer">
 		<Layers>
 			<Layer level="ARTWORK">
@@ -3620,7 +3646,7 @@
 						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
 					</OnLoad>
 				</Scripts>
-			</CheckButton>					
+			</CheckButton>
 			<CheckButton name="$parentWaterCollision" inherits="InterfaceOptionsCheckButtonTemplate">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeTo="$parentHeadBob" relativePoint="BOTTOMLEFT">
@@ -3636,7 +3662,7 @@
 						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
 					</OnLoad>
 				</Scripts>
-			</CheckButton>					
+			</CheckButton>
 			<CheckButton name="$parentSmartPivot" inherits="InterfaceOptionsCheckButtonTemplate">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeTo="$parentWaterCollision" relativePoint="BOTTOMLEFT">
@@ -3746,17 +3772,17 @@
 					<OnEvent function="InterfaceOptionsCameraPanelStyleDropDown_OnEvent"/>
 					<OnLeave function="GameTooltip_Hide"/>
 				</Scripts>
-			</Frame>		
+			</Frame>
 		</Frames>
 		<Scripts>
 			<OnLoad>
 				InterfaceOptionsCameraPanel_OnLoad(self);
 			</OnLoad>
-		</Scripts>	
+		</Scripts>
 	</Frame>
-	
+
 	<!-- Mouse panel -->
-	
+
 	<Frame name="InterfaceOptionsMousePanel" hidden="true" parent="InterfaceOptionsFramePanelContainer">
 		<Layers>
 			<Layer level="ARTWORK">
@@ -3804,7 +3830,7 @@
 						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
 					</OnLoad>
 				</Scripts>
-			</CheckButton>					
+			</CheckButton>
 			<Slider name="$parentMouseLookSpeedSlider" inherits="OptionsSliderTemplate">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeTo="$parentInvertMouse" relativePoint="BOTTOM">
@@ -3850,7 +3876,7 @@
 						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
 					</OnLoad>
 				</Scripts>
-			</CheckButton>					
+			</CheckButton>
 			<Slider name="$parentMouseSensitivitySlider" inherits="OptionsSliderTemplate">
 				<Anchors>
 					<Anchor point="LEFT" relativeTo="$parentMouseLookSpeedSlider" relativePoint="LEFT">
@@ -3893,7 +3919,7 @@
 						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
 					</OnLoad>
 				</Scripts>
-			</CheckButton>			
+			</CheckButton>
 			<Frame name="$parentClickMoveStyleDropDown" inherits="UIDropDownMenuTemplate" enableMouse="true">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeTo="$parentClickToMove" relativePoint="BOTTOMLEFT">
@@ -3935,7 +3961,7 @@
 						GameTooltip:Hide();
 					</OnLeave>
 				</Scripts>
-			</Frame>	
+			</Frame>
 			<CheckButton name="$parentWoWMouse" inherits="InterfaceOptionsCheckButtonTemplate">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeTo="$parentClickMoveStyleDropDown" relativePoint="BOTTOMLEFT">
@@ -3954,13 +3980,13 @@
 						InterfaceOptionsPanel_CheckButton_OnClick(self);
 						if ( self:GetChecked() ) then
 							PlaySound("igMainMenuOptionCheckBoxOn");
-							DetectWowMouse();							
+							DetectWowMouse();
 						else
 							PlaySound("igMainMenuOptionCheckBoxOff");
 						end
 					</OnClick>
 				</Scripts>
-			</CheckButton>				
+			</CheckButton>
 		</Frames>
 		<Scripts>
 			<OnLoad>
@@ -3969,11 +3995,11 @@
 				InterfaceOptionsPanel_OnLoad(self);
 				InterfaceOptionsMousePanelEnableMouseSpeed:Show();
 			</OnLoad>
-		</Scripts>	
+		</Scripts>
 	</Frame>
-	
+
 	<!-- Help panel -->
-	
+
 	<Frame name="InterfaceOptionsHelpPanel" hidden="true" parent="InterfaceOptionsFramePanelContainer">
 		<Layers>
 			<Layer level="ARTWORK">
@@ -4038,7 +4064,7 @@
 						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
 					</OnLoad>
 				</Scripts>
-			</CheckButton>		
+			</CheckButton>
 			<CheckButton name="$parentShowLuaErrors" parentKey="ShowLuaErrors" inherits="InterfaceOptionsCheckButtonTemplate">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeTo="$parentEnhancedTooltips" relativePoint="BOTTOMLEFT">
@@ -4054,7 +4080,7 @@
 						BlizzardOptionsPanel_RegisterControl(self, self:GetParent());
 					</OnLoad>
 				</Scripts>
-			</CheckButton>				
+			</CheckButton>
 			<Button name="$parentResetTutorials" inherits="UIPanelButtonTemplate" text="RESET_TUTORIALS">
 				<Size>
 					<AbsDimension x="128" y="22"/>
@@ -4090,7 +4116,7 @@
 					</OnClick>
 				</Scripts>
 				<NormalFont style="GameFontNormalSmall"/>
-				<HighlightFont style="GameFontHighlightSmall"/>				
+				<HighlightFont style="GameFontHighlightSmall"/>
 			</Button>
 			<Frame parentKey="ChatFrameSettings">
 				<Size x="128" y="66"/>
@@ -4156,7 +4182,7 @@
 	<FontString name="ColorblindItemQualityTemplate" parentArray="ItemQuality" inherits="OptionsFontSmall" justifyH="LEFT" justifyV="TOP" virtual="true">
 		<Size x="0" y="14"/>
 	</FontString>
-	
+
 	<Frame name="InterfaceOptionsAccessibilityPanel" hidden="true" parent="InterfaceOptionsFramePanelContainer">
 		<Layers>
 			<Layer level="ARTWORK">
@@ -4172,7 +4198,7 @@
 						<Anchor point="RIGHT" x="-32" y="0" />
 					</Anchors>
 				</FontString>
-				
+
 				<FontString parentKey="ColorblindFiltersTitle" text="COLORBLIND_FILTERS_TITLE" inherits="GameFontNormal" justifyH="LEFT" justifyV="TOP">
 					<Anchors>
 						<Anchor point="TOPLEFT" x="18" y="-170" />
@@ -4325,14 +4351,14 @@
 								<Anchor point="LEFT" relativeKey="$parent.ExampleIcon5" relativePoint="RIGHT" x="10" />
 							</Anchors>
 						</Texture>
-						
+
 						<FontString parentKey="ItemQualityText" text="COLORBLIND_ITEM_QUALITY" inherits="OptionsFontSmall" justifyH="LEFT">
 							<Size x="92" y="10"/>
 							<Anchors>
 								<Anchor point="TOPLEFT" relativeKey="$parent.Friendly" relativePoint="BOTTOMLEFT" x="5" y="-16"/>
 							</Anchors>
 						</FontString>
-						
+
 						<FontString inherits="ColorblindItemQualityTemplate">
 							<Anchors>
 								<Anchor point="TOPLEFT" relativeKey="$parent.ItemQualityText" relativePoint="BOTTOMLEFT" x="0" y="-10"/>
@@ -4452,7 +4478,7 @@
 	</Frame>
 
 	<!-- Social Browser Frame -->
-	
+
 	<Frame name="SocialBrowserFrame" frameStrata="DIALOG" hidden="true" enableMouse="true" parent="InterfaceOptionsFrame" inherits="BasicFrameTemplate">
 		<Size x="666" y="630"/>
 		<Anchors>
@@ -4480,5 +4506,5 @@
 			</Browser>
 		</Frames>
 	</Frame>
-	
+
 </Ui>

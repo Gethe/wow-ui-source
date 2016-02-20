@@ -9,7 +9,7 @@ GARRISON_MISSION_TYPE_FONT_COLOR	=	{r=0.8, g=0.7, b=0.53};
 --- Main Frame                                                                ---
 ---------------------------------------------------------------------------------
 function GarrisonLandingPage_OnLoad(self)
-	self.FollowerList:Initialize(LE_FOLLOWER_TYPE_GARRISON_7_0);
+	self.FollowerList:Initialize(LE_FOLLOWER_TYPE_GARRISON_6_0);
 	self.ShipFollowerList:Initialize(LE_FOLLOWER_TYPE_SHIPYARD_6_2);
 
 	self.selectedTab = 1;

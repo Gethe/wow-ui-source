@@ -228,8 +228,8 @@ function GarrisonFollowerMission:SetPartySize(frame, size, numEnemies)
 	end
 end
 
-function GarrisonFollowerMission:SetEnemies(frame, enemies, numFollowers)
-	local numVisibleEnemies = GarrisonMission.SetEnemies(self, frame, enemies, numFollowers, -16, self.followerTypeID);
+function GarrisonFollowerMission:SetEnemies(frame, enemies, numFollowers, mechanicYOffset)
+	local numVisibleEnemies = GarrisonMission.SetEnemies(self, frame, enemies, numFollowers, mechanicYOffset or -16, self.followerTypeID);
 	
 	if ( numVisibleEnemies == 1 ) then
 		if ( numFollowers == 1 ) then
@@ -323,9 +323,7 @@ function GarrisonFollowerMission:RemoveFollowerFromMission(frame, updateValues)
 		frame.Class:Hide();
 	end
 	frame.PortraitFrame.Empty:Show();
-	frame.PortraitFrame.LevelBorder:SetAtlas("GarrMission_PortraitRing_LevelBorder");
-	frame.PortraitFrame.LevelBorder:SetWidth(58);
-	frame.PortraitFrame.Level:SetText("");
+	frame.PortraitFrame:SetLevel("");
 	frame.PortraitFrame.Caution:Hide();
 
 	if (followerID and self:GetMissionPage().missionInfo.numFollowers == 1 ) then
@@ -558,9 +556,7 @@ function GarrisonMissionFrame_ClearMouse()
 end
 
 function GarrisonMissionPortrait_SetFollowerPortrait(portraitFrame, followerInfo, missionPage)
-	local color = ITEM_QUALITY_COLORS[followerInfo.quality];
-	portraitFrame.PortraitRingQuality:SetVertexColor(color.r, color.g, color.b);
-	portraitFrame.LevelBorder:SetVertexColor(color.r, color.g, color.b);
+	portraitFrame:SetQuality(followerInfo.quality);
 	if ( missionPage ) then
 		local boosted = false;
 		local followerLevel = followerInfo.level;
@@ -568,19 +564,17 @@ function GarrisonMissionPortrait_SetFollowerPortrait(portraitFrame, followerInfo
 			followerLevel = missionPage.mentorLevel;
 			boosted = true;
 		end
-		if ( missionPage.showItemLevel and followerLevel == GarrisonMissionFrame.followerMaxLevel ) then
+		if ( followerInfo.isTroop ) then
+			portraitFrame:SetNoLevel();
+		elseif ( (missionPage.showItemLevel and followerLevel == GarrisonMissionFrame.followerMaxLevel ) or GarrisonFollowerOptions[followerInfo.followerTypeID].showILevelOnFollower) then
 			local followerItemLevel = followerInfo.iLevel;
 			if ( missionPage.mentorItemLevel and missionPage.mentorItemLevel > followerItemLevel ) then
 				followerItemLevel = missionPage.mentorItemLevel;
 				boosted = true;
 			end
-			portraitFrame.Level:SetFormattedText(GARRISON_FOLLOWER_ITEM_LEVEL, followerItemLevel);
-			portraitFrame.LevelBorder:SetAtlas("GarrMission_PortraitRing_iLvlBorder");
-			portraitFrame.LevelBorder:SetWidth(70);
+			portraitFrame:SetILevel(followerItemLevel);
 		else
-			portraitFrame.Level:SetText(followerLevel);
-			portraitFrame.LevelBorder:SetAtlas("GarrMission_PortraitRing_LevelBorder");
-			portraitFrame.LevelBorder:SetWidth(58);
+			portraitFrame:SetLevel(followerLevel);
 		end
 		local followerBias = C_Garrison.GetFollowerBiasForMission(missionPage.missionInfo.missionID, followerInfo.followerID);
 		if ( followerBias == -1 ) then
@@ -593,12 +587,9 @@ function GarrisonMissionPortrait_SetFollowerPortrait(portraitFrame, followerInfo
 			portraitFrame.Level:SetTextColor(1, 1, 1);
 		end
 		portraitFrame.Caution:SetShown(followerBias < 0);
-	
+		portraitFrame:SetPortraitIcon(followerInfo.portraitIconID);
 	else
-		portraitFrame.Level:SetText(followerInfo.level);
-	end
-	if ( followerInfo.displayID ) then
-		GarrisonFollowerPortrait_Set(portraitFrame.Portrait, followerInfo.portraitIconID);
+		portraitFrame:SetupPortrait(followerInfo);
 	end
 end
 
@@ -1429,7 +1420,7 @@ function GarrisonFollowerMissionComplete:BeginAnims(animIndex)
 end
 
 function GarrisonFollowerMissionComplete:SetFollowerData(follower, name, className, classAtlas, portraitIconID)
-	GarrisonFollowerPortrait_Set(follower.PortraitFrame.Portrait, portraitIconID);
+	follower.PortraitFrame:SetPortraitIcon(portraitIconID);
 	follower.Name:SetText(name);
 	follower.Class:SetAtlas(classAtlas);
 end
@@ -1450,10 +1441,8 @@ function GarrisonFollowerMissionComplete:SetFollowerLevel(followerFrame, level, 
 	end
 	followerFrame.XP.level = level;
 	followerFrame.XP.quality = quality;
-	followerFrame.PortraitFrame.Level:SetText(level);
-	local color = ITEM_QUALITY_COLORS[quality];
-	followerFrame.PortraitFrame.LevelBorder:SetVertexColor(color.r, color.g, color.b);
-	followerFrame.PortraitFrame.PortraitRingQuality:SetVertexColor(color.r, color.g, color.b);
+	followerFrame.PortraitFrame:SetLevel(level);
+	followerFrame.PortraitFrame:SetQuality(quality);
 end
 
 function GarrisonFollowerMissionComplete:DetermineFailedEncounter(missionID, succeeded)

@@ -179,7 +179,7 @@
 				<Scripts>
 					<OnClick function="PVEFrame_TabOnClick"/>
 				</Scripts>
-			</Button>			
+			</Button>
 			<Button name="$parentTab3" inherits="CharacterFrameTabButtonTemplate" text="CHALLENGES" id="3" parentKey="tab3">
 				<Anchors>
 					<Anchor point="LEFT" relativeTo="$parentTab2" relativePoint="RIGHT">
@@ -191,7 +191,7 @@
 				<Scripts>
 					<OnClick function="PVEFrame_TabOnClick"/>
 				</Scripts>
-			</Button>	
+			</Button>
 			<Frame name="GroupFinderFrame" useParentLevel="true" setAllPoints="true">
 				<Frames>
 					<Button name="$parentGroupButton1" inherits="GroupFinderGroupButtonTemplate" parentKey="groupButton1" id="1">
@@ -281,6 +281,7 @@
 		<Scripts>
 			<OnLoad function="PVEFrame_OnLoad"/>
 			<OnShow>
+				PVEFrame_OnShow(self);
 				UpdateMicroButtons();
 				PlaySound("igCharacterInfoOpen");
 			</OnShow>

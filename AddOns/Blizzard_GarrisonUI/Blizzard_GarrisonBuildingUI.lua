@@ -109,7 +109,7 @@ function GarrisonBuildingFrame_OnLoad(self)
 	end
 	
 	--get buildings owned
-	local buildings = C_Garrison.GetBuildings(LE_FOLLOWER_TYPE_GARRISON_7_0);
+	local buildings = C_Garrison.GetBuildings(LE_FOLLOWER_TYPE_GARRISON_6_0);
 	--add instance IDs for owned buildings to the corresponding building buttons
 	for i = 1, #buildings do
 		local building = buildings[i];
@@ -129,7 +129,7 @@ function GarrisonBuildingFrame_OnLoad(self)
 	
 	GarrisonBuildingFrame_UpdateCurrency();
 	
-	self.FollowerList:Initialize(LE_FOLLOWER_TYPE_GARRISON_7_0);
+	self.FollowerList:Initialize(LE_FOLLOWER_TYPE_GARRISON_6_0);
 	local buttons = self.FollowerList.listScroll.buttons
 	for i = 1, #buttons do
 		buttons[i]:SetScript("OnClick", GarrisonBuildingFollowerButton_OnClick);
@@ -799,11 +799,9 @@ function GarrisonBuildingInfoBox_ShowFollowerPortrait(owned, hasFollowerSlot, in
 	if (followerName) then
 		infoBox.AddFollowerButton:Hide();
 		local button = infoBox.FollowerPortrait;
-		button.Level:SetText(level);
-		local color = ITEM_QUALITY_COLORS[quality];
-    	button.LevelBorder:SetVertexColor(color.r, color.g, color.b);
-		button.PortraitRing:SetVertexColor(color.r, color.g, color.b);
-		GarrisonFollowerPortrait_Set(button.Portrait, portraitIconID);
+		button:SetLevel(level);
+		button:SetQuality(quality);
+		button:SetPortraitIcon(portraitIconID);
 		button.FollowerName:SetText(followerName);
 		button.FollowerStatus:SetText(status);
 		button.garrFollowerID = garrFollowerID;

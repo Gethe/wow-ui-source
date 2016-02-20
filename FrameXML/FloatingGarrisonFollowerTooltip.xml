@@ -52,7 +52,7 @@ UI.xsd">
 						<Anchor point="TOPLEFT" relativePoint="TOPLEFT" x="66" y="-55"/>
 					</Anchors>
 					<Color r="0.212" g="0" b="0.337" a="1"/>
-				</Texture>				
+				</Texture>
 				<FontString parentKey="XP" inherits="GameFontHighlightSmall" justifyH="CENTER">
 					<Size x="180"/>
 					<Anchors>
@@ -79,55 +79,16 @@ UI.xsd">
 						<Anchor point="TOPRIGHT" relativePoint="TOPRIGHT" x="-15" y="-85" />
 					</Anchors>
 				</FontString>
-			</Layer>			
+			</Layer>
 		</Layers>
-		
+
 		<Frames>
-			<Frame parentKey="Portrait" virtual="false">
-				<Size x="52" y="60"/>
+
+			<Frame parentKey="PortraitFrame" inherits="GarrisonFollowerPortraitTemplate" hidden="false">
 				<Anchors>
 					<Anchor point="TOPLEFT" x="10" y="-10"/>
 				</Anchors>
-				<Layers>
-					<Layer level="BORDER">
-						<Texture parentKey="PortraitRing" atlas="GarrMission_PortraitRing" useAtlasSize="true">
-							<Anchors>
-								<Anchor point="TOP"/>
-							</Anchors>
-						</Texture>
-					</Layer>
-					<Layer level="BORDER" textureSubLevel="-1">
-						<Texture parentKey="Portrait">
-							<Size x="44" y="44"/>
-							<Anchors>
-								<Anchor point="CENTER" relativeKey="$parent.PortraitRing" y="5"/>
-							</Anchors>
-						</Texture>
-					</Layer>
-					<Layer level="BORDER" textureSubLevel="1">	
-						<Texture parentKey="PortraitRingQuality" atlas="GarrMission_PortraitRing_Quality" useAtlasSize="true">
-							<Anchors>
-								<Anchor point="TOP"/>
-							</Anchors>
-						</Texture>
-					</Layer>
-					<Layer level="BORDER" textureSubLevel="2">
-						<Texture parentKey="LevelBorder" atlas="GarrMission_PortraitRing_LevelBorder" useAtlasSize="true">
-							<Anchors>
-								<Anchor point="BOTTOM" y="-3"/>
-							</Anchors>
-						</Texture>
-					</Layer>
-					<Layer level="ARTWORK">
-						<FontString parentKey="Level" inherits="GameFontHighlightSmall" justifyH="CENTER">
-							<Anchors>
-								<Anchor point="CENTER" relativeKey="$parent.LevelBorder"/>
-							</Anchors>
-						</FontString>
-					</Layer>
-				</Layers>
 			</Frame>
-
 			<Frame parentArray="Abilities" inherits="GarrisonFollowerAbilityTemplate" hidden="true">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeKey="$parent.AbilitiesLabel" x="2" relativePoint="BOTTOMLEFT"/>
@@ -139,7 +100,6 @@ UI.xsd">
 					<Anchor point="TOPLEFT" relativeKey="$parent.TraitsLabel" x="2" relativePoint="BOTTOMLEFT"/>
 				</Anchors>
 			</Frame>
-			
 		</Frames>
 		<Scripts>
 			<OnLoad function="GarrisonFollowerTooltip_OnLoad"/>
@@ -183,7 +143,7 @@ UI.xsd">
 						<Anchor point="TOPLEFT" relativePoint="TOPLEFT" x="15" y="-55"/>
 					</Anchors>
 					<Color r="0.212" g="0" b="0.337" a="1"/>
-				</Texture>				
+				</Texture>
 				<FontString parentKey="XP" inherits="GameFontHighlightSmall" justifyH="CENTER">
 					<Size x="231"/>
 					<Anchors>
@@ -191,9 +151,9 @@ UI.xsd">
 					</Anchors>
 					<Color r="1" g="1" b="1" a="1"/>
 				</FontString>
-			</Layer>			
+			</Layer>
 		</Layers>
-		
+
 		<Frames>
 			<Frame parentKey="Property1" parentArray="Properties" inherits="GarrisonFollowerAbilityTemplate" hidden="true">
 				<Anchors>
@@ -257,7 +217,7 @@ UI.xsd">
 					</Anchors>
 					<Color r="0.698" g="0.941" b="1" a="1"/>
 				</FontString>
-				
+
 				<Texture atlas="GarrMission_EncounterAbilityBorder" useAtlasSize="true" parentKey="CounterIconBorder" hidden="true">
 					<Size x="15" y="15"/>
 					<Anchors>

@@ -203,7 +203,9 @@ function MountJournal_UpdateMountDisplay()
 		MountJournal.MountDisplay.NoMountsTex:Hide();
 		MountJournal.MountDisplay.NoMounts:Hide();
 
-		if ( active ) then
+		if (C_MountJournal.NeedsFanfare(MountJournal.selectedMountID) ) then
+			MountJournal.MountButton:SetText(UNWRAP)
+		elseif ( active ) then
 			MountJournal.MountButton:SetText(BINDING_NAME_DISMOUNT);
 		else
 			MountJournal.MountButton:SetText(MOUNT);
@@ -247,6 +249,13 @@ function MountJournalMountButton_OnClick(self)
 		local creatureName, spellID, icon, active = C_MountJournal.GetMountInfoByID(MountJournal.selectedMountID);
 		if ( active ) then
 			C_MountJournal.Dismiss();
+		elseif ( C_MountJournal.NeedsFanfare(MountJournal.selectedMountID) ) then 
+			C_MountJournal.ClearFanfare(MountJournal.selectedMountID);
+			MountJournal.MountDisplay.lastDisplayed = 0;	-- forces a refresh
+			MountJournal_HideMountDropdown();
+			MountJournal_UpdateMountList();
+			MountJournal_UpdateMountDisplay();
+			MountJournal.MountDisplay.ModelFrame:ApplySpellVisualKit(6375, true); -- LEVELUP_SPELLVISUALKIT_ID
 		else
 			C_MountJournal.SummonByID(MountJournal.selectedMountID);
 		end

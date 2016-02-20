@@ -10,9 +10,6 @@ end
 
 OrderHallTalentFrameMixin = { }
 
-local PLACEHOLER_ORDER_HALL_RESOURCE_ID = 1220;
-local PLACEHOLDER_TALENT_TEXTURE = 611417;
-
 local function OnTalentButtonReleased(pool, button)
 	FramePool_HideAndClearAnchors(pool, button);
 	button:OnReleased()
@@ -28,6 +25,9 @@ function OrderHallTalentFrameMixin:OnLoad()
 	self.portrait:SetMask("Interface\\CharacterFrame\\TempPortraitAlphaMask");
 	self.portrait:SetTexture("INTERFACE\\ICONS\\crest_"..className);
 	self.TitleText:SetText(_G["ORDER_HALL_"..className]);
+
+	local primaryCurrency, _ = C_Garrison.GetCurrencyTypes(LE_GARRISON_TYPE_7_0);
+	self.currency = primaryCurrency;
 end
 
 function OrderHallTalentFrameMixin:OnShow()
@@ -76,13 +76,13 @@ function OrderHallTalentFrameMixin:ReleaseAllPools()
 end
 
 function OrderHallTalentFrameMixin:RefreshCurrency()
-	local currencyName, amount, currencyTexture = GetCurrencyInfo(PLACEHOLER_ORDER_HALL_RESOURCE_ID);
+	local currencyName, amount, currencyTexture = GetCurrencyInfo(self.currency);
 	amount = BreakUpLargeNumbers(amount);
 	self.Currency:SetText(amount);
 	self.CurrencyIcon:SetTexture(currencyTexture);
 end
 
-
+	 
 function OrderHallTalentFrameMixin:RefreshAllData()
 	self:ReleaseAllPools();
 
@@ -92,12 +92,12 @@ function OrderHallTalentFrameMixin:RefreshAllData()
 		return;
 	end
 
-	local borderX = 100;
-	local borderY = -70;
-	local treeSpacingX = 170;
+	local borderX = 165;
+	local borderY = -85;
+	local treeSpacingX = 200;
 	local buttonSizeX = 40;
 	local buttonSizeY = 40;
-	local buttonSpacingX = 16;
+	local buttonSpacingX = 58;
 	local buttonSpacingY = 19;
 
 	local choiceBackgroundOffsetX = 14;
@@ -108,9 +108,12 @@ function OrderHallTalentFrameMixin:RefreshAllData()
 	for treeIndex, tree in ipairs(self.trees) do
 		-- count how many talents are in each tier
 		local tierCount = {};
-		local tierArrow = {};
+		local tierCanBeResearchedCount = {};
 		for talentIndex, talent in ipairs(tree) do
 			tierCount[talent.tier + 1] = (tierCount[talent.tier + 1] or 0) + 1;
+			if (talent.canBeResearched) then
+				tierCanBeResearchedCount[talent.tier + 1] = (tierCanBeResearchedCount[talent.tier + 1] or 0) + 1;
+			end
 		end
 
 		-- position arrows and choice backgrounds
@@ -118,30 +121,30 @@ function OrderHallTalentFrameMixin:RefreshAllData()
 			local tier = index - 1;
 			if (tierCount[index] == 2) then
 				local choiceBackground = self.choiceTexturePool:Acquire();
+				if (tierCanBeResearchedCount[index] == 2) then
+					choiceBackground:SetAtlas("orderhalltalents-choice-background-on", true);
+					choiceBackground:SetDesaturated(false);
+				elseif (tierCanBeResearchedCount[index] == 1) then
+					choiceBackground:SetAtlas("orderhalltalents-choice-background", true);
+					choiceBackground:SetDesaturated(false);
+				else
+					choiceBackground:SetAtlas("orderhalltalents-choice-background", true);
+					choiceBackground:SetDesaturated(true);
+				end
 				local tierWidth = (tierCount[index] * (buttonSizeX + buttonSpacingX)) - buttonSpacingX;
 				local xOffset = borderX + ((treeIndex - 1) * treeSpacingX) - (tierWidth / 2) - choiceBackgroundOffsetX;
 				local yOffset = borderY - ((buttonSpacingY + buttonSizeY) * tier) + choiceBackgroundOffsetY;
 				choiceBackground:SetPoint("TOPLEFT", xOffset, yOffset);
 				choiceBackground:Show();
 			end
-			if (index ~= #tierCount) then
-				local arrowTexture = self.arrowTexturePool:Acquire();
-				tierArrow[index] = arrowTexture;
-				local xOffset = borderX + ((treeIndex - 1) * treeSpacingX) - arrowOffsetX;
-				local yOffset = borderY - ((buttonSpacingY + buttonSizeY) * tier) + arrowOffsetY - buttonSizeY;
-				arrowTexture:SetPoint("TOPLEFT", xOffset, yOffset);
-				arrowTexture:SetAtlas("orderhalltalents-arrow-off");
-				arrowTexture:Show();
-			end
 		end
 
 		-- position talent buttons
 		for talentIndex, talent in ipairs(tree) do
 			local currentTierCount = tierCount[talent.tier + 1];
-			local arrowTexture = tierArrow[talent.tier];
 			local tierWidth = (currentTierCount * (buttonSizeX + buttonSpacingX)) - buttonSpacingX;
 			local talentFrame = self.buttonPool:Acquire();
-			talentFrame.Icon:SetTexture(talent.icon or PLACEHOLDER_TALENT_TEXTURE);
+			talentFrame.Icon:SetTexture(talent.icon);
 			local xOffset = borderX + (treeIndex - 1) * treeSpacingX - (tierWidth / 2) + (buttonSizeX + buttonSpacingX) * talent.uiOrder;
 			local yOffset = borderY - (buttonSpacingY + buttonSizeY) * (talent.tier);
 
@@ -150,6 +153,8 @@ function OrderHallTalentFrameMixin:RefreshAllData()
 			if (talent.isBeingResearched) then
 				talentFrame.Cooldown:SetCooldownUNIX(talent.researchStartTime, talent.researchDuration);
 				talentFrame.Cooldown:Show();
+				talentFrame.CooldownBackground:Show();
+				talentFrame.CooldownTimerBackground:Show();
 				if (not talentFrame.timer) then
 					talentFrame.timer = C_Timer.NewTicker(1, function() talentFrame:Refresh(); end);
 				end
@@ -230,6 +235,8 @@ end
 function GarrisonTalentButtonMixin:OnReleased()
 	self.Cooldown:SetCooldownDuration(0);
 	self.Cooldown:Hide();
+	self.CooldownBackground:Hide();
+	self.CooldownTimerBackground:Hide();
 	self.Icon:SetDesaturated(false);
 	self.talent = nil;
 	self.tooltip = nil;

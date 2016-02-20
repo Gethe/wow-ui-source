@@ -734,7 +734,7 @@ function PaperDollFrame_SetStat(statFrame, unit, statIndex)
 			local attackPower = BreakUpLargeNumbers(effectiveStat);
 			statFrame.tooltip2 = format(statFrame.tooltip2, attackPower);
 		elseif ( statIndex == LE_UNIT_STAT_AGILITY ) then
-			statFrame.tooltip2 = format(statFrame.tooltip2, GetCritChanceFromAgility("pet"));
+			statFrame.tooltip2 = format(statFrame.tooltip2, -1000);			-- THIS IS BROKEN, fixme
 		elseif ( statIndex == LE_UNIT_STAT_STAMINA ) then
 			local expectedHealthGain = (((stat - posBuff - negBuff))*CREATURE_HP_PER_STA)*GetUnitHealthModifier("pet");
 			local realHealthGain = (effectiveStat*CREATURE_HP_PER_STA)*GetUnitHealthModifier("pet");
@@ -743,7 +743,7 @@ function PaperDollFrame_SetStat(statFrame, unit, statIndex)
 		elseif ( statIndex == LE_UNIT_STAT_INTELLECT ) then
 			if ( UnitHasMana("pet") ) then
 				local manaGain = BreakUpLargeNumbers((effectiveStat*15)*GetUnitPowerModifier("pet"));
-				statFrame.tooltip2 = format(statFrame.tooltip2, manaGain, max(0, effectiveStat), GetSpellCritChanceFromIntellect("pet"));
+				statFrame.tooltip2 = format(statFrame.tooltip2, manaGain);	 -- THIS IS BROKEN, fixme
 			else
 				statFrame.tooltip2 = nil;
 			end

@@ -9,6 +9,12 @@ GlueDialogTypes["OKAY"] = {
 	button2 = nil,
 }
 
+GlueDialogTypes["PAID_SERVICE_IN_PROGRESS"] = {
+	text = "",
+	button1 = OKAY,
+	button2 = nil,
+}
+
 GlueDialogTypes["OKAY_HTML_MUST_ACCEPT"] = {
 	text = "",
 	button1 = OKAY,
@@ -132,6 +138,42 @@ GlueDialogTypes["OKAY_LEGAL_REDIRECT"] = {
 	end,
 }
 
+GlueDialogTypes["REALM_IS_FULL"] = {
+	text = REALM_IS_FULL_WARNING,
+	button1 = YES,
+	button2 = NO,
+	showAlert = 1,
+	OnAccept = function()
+		SetGlueScreen("charselect");
+		C_RealmList.ConnectToRealm(RealmList.selectedRealm);
+	end,
+	OnCancel = function()
+		CharacterSelect_ChangeRealm();
+	end,
+}
+
+GlueDialogTypes["CONFIRM_PAID_SERVICE"] = {
+	text = CONFIRM_PAID_SERVICE,
+	button1 = DONE,
+	button2 = CANCEL,
+	OnAccept = function()
+		-- need to get desired faction in case of pandaren doing faction change to another pandaren
+		-- this will be nil in any other case
+		CreateCharacter(CharacterCreateNameEdit:GetText(), PandarenFactionButtons_GetSelectedFaction());
+	end,
+}
+
+GlueDialogTypes["REALM_LOCALE_WARNING"] = {
+	text = REALM_TYPE_LOCALE_WARNING,
+	button1 = OKAY,
+	button2 = nil,
+}
+
+GlueDialogTypes["REALM_TOURNAMENT_WARNING"] = {
+	text = REALM_TYPE_TOURNAMENT_WARNING,
+	button1 = OKAY,
+	button2 = nil,
+}
 --[[
 GlueDialogTypes["SYSTEM_INCOMPATIBLE_SSE"] = {
 	text = SYSTEM_INCOMPATIBLE_SSE,
@@ -197,37 +239,6 @@ GlueDialogTypes["SHADER_MODEL_TO_BE_UNSUPPORTED"] = {
 	OnAccept = function ()
 		CheckSystemRequirements("SHADERMODEL_TOBEUNSUPPORTED");
 	end
-}
-
-GlueDialogTypes["REALM_IS_FULL"] = {
-	text = REALM_IS_FULL_WARNING,
-	button1 = YES,
-	button2 = NO,
-	showAlert = 1,
-	OnAccept = function()
-		SetGlueScreen("charselect");
-		ChangeRealm(RealmList.selectedCategory , RealmList.currentRealm);
-	end,
-	OnCancel = function()
-		CharacterSelect_ChangeRealm();
-	end,
-}
-
-GlueDialogTypes["SUGGEST_REALM"] = {
-	text = format(SUGGESTED_REALM_TEXT,"UNKNOWN REALM"),
-	button1 = ACCEPT,
-	button2 = VIEW_ALL_REALMS,
-	OnShow = function()
-		GlueDialogText:SetFormattedText(SUGGESTED_REALM_TEXT, RealmWizard.suggestedRealmName);
-	end,
-	OnAccept = function()
-		SetGlueScreen("charselect");
-		ChangeRealm(RealmWizard.suggestedCategory, RealmWizard.suggestedID);
-	end,
-	OnCancel = function()
-		SetGlueScreen("charselect");
-		CharacterSelect_ChangeRealm();
-	end,
 }
 
 GlueDialogTypes["DISCONNECTED"] = {
@@ -335,17 +346,6 @@ GlueDialogTypes["OKAY_HTML_EXIT"] = {
 	end,
 }
 
-GlueDialogTypes["CONFIRM_PAID_SERVICE"] = {
-	text = CONFIRM_PAID_SERVICE,
-	button1 = DONE,
-	button2 = CANCEL,
-	OnAccept = function()
-		-- need to get desired faction in case of pandaren doing faction change to another pandaren
-		-- this will be nil in any other case
-		CreateCharacter(CharacterCreateNameEdit:GetText(), PandarenFactionButtons_GetSelectedFaction());
-	end,
-}
-
 GlueDialogTypes["OKAY_WITH_URL"] = {
 	text = "",
 	button1 = HELP,
@@ -450,50 +450,6 @@ GlueDialogTypes["SERVER_SPLIT_WITH_CHOICE"] = {
 	end,
 }
 
-GlueDialogTypes["ACCOUNT_MSG"] = {
-	text = "",
-	button1 = OKAY,
-	button2 = ACCOUNT_MESSAGE_BUTTON_READ,
-	html = 1,
-	escapeHides = true,
-
-	OnShow = function()
-		VirtualKeypadFrame:Hide();
-		StatusDialogClick();
-	end,
-	OnAccept = function()
-		ACCOUNT_MSG_NUM_AVAILABLE = ACCOUNT_MSG_NUM_AVAILABLE - 1;
-		if ( ACCOUNT_MSG_NUM_AVAILABLE > 0 ) then
-			ACCOUNT_MSG_CURRENT_INDEX = AccountMsg_GetIndexNextUnreadMsg(ACCOUNT_MSG_CURRENT_INDEX);
-			ACCOUNT_MSG_BODY_LOADED = false;
-			AccountMsg_LoadBody( ACCOUNT_MSG_CURRENT_INDEX );
-		end
-		StatusDialogClick();
-	end,
-	OnCancel = function()
-		AccountMsg_SetMsgRead(ACCOUNT_MSG_CURRENT_INDEX);
-		ACCOUNT_MSG_NUM_AVAILABLE = ACCOUNT_MSG_NUM_AVAILABLE - 1;
-		if ( ACCOUNT_MSG_NUM_AVAILABLE > 0 ) then
-			ACCOUNT_MSG_CURRENT_INDEX = AccountMsg_GetIndexNextUnreadMsg(ACCOUNT_MSG_CURRENT_INDEX);
-			ACCOUNT_MSG_BODY_LOADED = false;
-			AccountMsg_LoadBody( ACCOUNT_MSG_CURRENT_INDEX );
-		end
-		StatusDialogClick();
-	end,
-}
-
-GlueDialogTypes["REALM_LOCALE_WARNING"] = {
-	text = REALM_TYPE_LOCALE_WARNING,
-	button1 = OKAY,
-	button2 = nil,
-}
-
-GlueDialogTypes["REALM_TOURNAMENT_WARNING"] = {
-	text = REALM_TYPE_TOURNAMENT_WARNING,
-	button1 = OKAY,
-	button2 = nil,
-}
-
 GlueDialogTypes["REALMLIST_NOT_CONNECTED_TO_BATTLENET"] = {
 	text = REALMLIST_NOT_CONNECTED_TO_BATTLENET,
 	button1 = OKAY,
@@ -529,7 +485,7 @@ GlueDialogTypes["LEGION_PURCHASE_READY"] = {
 	end,
 }
 
-function GlueDialog_Show(which, text, data, errorNumber)
+function GlueDialog_Show(which, text, data)
 	local dialogInfo = GlueDialogTypes[which];
 	-- Pick a free dialog to use
 	if ( GlueDialog:IsShown() ) then
@@ -562,18 +518,9 @@ function GlueDialog_Show(which, text, data, errorNumber)
 	end
 
 	-- set the optional title
-	local showTitle = false;
-	if ( errorNumber and errorNumber > 0 ) then
-		showTitle = true;
-		GlueDialogTitle:SetFormattedText(BNET_ERROR_CODE_TITLE, errorNumber);
-		GlueDialogTitle:Show();
-		glueText:ClearAllPoints();
-		glueText:SetPoint("TOP", GlueDialogTitle, "BOTTOM", 0, -16);
-	else
-		GlueDialogTitle:Hide();
-		glueText:ClearAllPoints();
-		glueText:SetPoint("TOP", 0, -16);
-	end
+	GlueDialogTitle:Hide();
+	glueText:ClearAllPoints();
+	glueText:SetPoint("TOP", 0, -16);
 	
 	-- Set the buttons of the dialog
 	if ( dialogInfo.button3 ) then
@@ -678,10 +625,6 @@ function GlueDialog_Show(which, text, data, errorNumber)
 		textHeight = GlueDialogText:GetHeight();
 	end
 	
-	if ( showTitle ) then
-		textHeight = textHeight + GlueDialogTitle:GetHeight() + 16;
-	end
-
 	-- now size the dialog box height
 	local displayHeight = 16 + textHeight;
 	if( dialogInfo.displayVertical ) then

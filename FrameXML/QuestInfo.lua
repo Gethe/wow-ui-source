@@ -463,10 +463,7 @@ function QuestInfo_ShowRewards()
 			questItem.Name:SetText(followerInfo.name);
 			questItem.PortraitFrame.Level:SetText(followerInfo.level);
 			questItem.Class:SetAtlas(followerInfo.classAtlas);
-			local color = ITEM_QUALITY_COLORS[followerInfo.quality];
-			questItem.PortraitFrame.PortraitRingQuality:SetVertexColor(color.r, color.g, color.b);
-			questItem.PortraitFrame.LevelBorder:SetVertexColor(color.r, color.g, color.b);
-			GarrisonFollowerPortrait_Set(questItem.PortraitFrame.Portrait, followerInfo.portraitIconID);
+			questItem.PortraitFrame:SetQuality(followerInfo.quality);
 		else
 			rewardsFrame.FollowerFrame:Hide();
 			questItem = rewardsFrame.SpellFrame;

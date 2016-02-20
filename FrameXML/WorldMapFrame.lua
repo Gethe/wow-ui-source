@@ -624,7 +624,7 @@ WORLD_QUEST_ICONS_BY_PROFESSION = {
 	[393] = "worldquest-icon-skinning",
 };
 
-function WorldMap_SetupWorldQuestButton(button, worldQuestType, isRare, isElite, tradeskillLine, inProgress, selected, isCriteria)
+function WorldMap_SetupWorldQuestButton(button, worldQuestType, isRare, isElite, tradeskillLineIndex, inProgress, selected, isCriteria)
 	button.Glow:SetShown(selected);
 
 	if ( isRare and not selected ) then
@@ -640,6 +640,7 @@ function WorldMap_SetupWorldQuestButton(button, worldQuestType, isRare, isElite,
 		button.Underlay:Hide();
 	end
 
+	local tradeskillLineID = tradeskillLineIndex and select(7, GetProfessionInfo(tradeskillLineIndex));
 	if ( worldQuestType == LE_QUEST_TAG_TYPE_PVP ) then
 		ApplyStandardTexturesToPOI(button, selected);
 
@@ -657,12 +658,19 @@ function WorldMap_SetupWorldQuestButton(button, worldQuestType, isRare, isElite,
 		else
 			button.Texture:SetAtlas("worldquest-icon-petbattle", true);
 		end
-	elseif ( worldQuestType == LE_QUEST_TAG_TYPE_PROFESSION and WORLD_QUEST_ICONS_BY_PROFESSION[tradeskillLine] ) then
+	elseif ( worldQuestType == LE_QUEST_TAG_TYPE_PROFESSION and WORLD_QUEST_ICONS_BY_PROFESSION[tradeskillLineID] ) then
 		if ( inProgress ) then
 			button.Texture:SetAtlas("worldquest-questmarker-questionmark");
 			button.Texture:SetSize(10, 15);
 		else
-			button.Texture:SetAtlas(WORLD_QUEST_ICONS_BY_PROFESSION[tradeskillLine], true);
+			button.Texture:SetAtlas(WORLD_QUEST_ICONS_BY_PROFESSION[tradeskillLineID], true);
+		end
+	elseif ( worldQuestType == LE_QUEST_TAG_TYPE_WORLD_BOSS ) then
+		if ( inProgress ) then
+			button.Texture:SetAtlas("worldquest-questmarker-questionmark");
+			button.Texture:SetSize(10, 15);
+		else
+			button.Texture:SetAtlas("worldquest-icon-boss", true);
 		end
 	else
 		if ( inProgress ) then
@@ -699,18 +707,18 @@ function WorldMap_SetupWorldQuestButton(button, worldQuestType, isRare, isElite,
 end
 
 function WorldMap_TryCreatingWorldQuestPOI(info, taskIconIndex)
-	local tagID, tagName, worldQuestType, isRare, isElite, tradeskillLine = GetQuestTagInfo(info.questId);
+	local tagID, tagName, worldQuestType, isRare, isElite, tradeskillLineIndex = GetQuestTagInfo(info.questId);
 
 	if ( worldQuestType == LE_QUEST_TAG_TYPE_PROFESSION ) then
 		local prof1, prof2, arch, fish, cook, firstAid = GetProfessions();
 
-		if ( tradeskillLine == prof1 or tradeskillLine == prof2 ) then
+		if ( tradeskillLineIndex == prof1 or tradeskillLineIndex == prof2 ) then
 			if ( not GetCVarBool("primaryProfessionsFilter") ) then
 				return nil;
 			end
 		end
 
-		if ( tradeskillLine == fish or tradeskillLine == cook or tradeskillLine == firstAid ) then
+		if ( tradeskillLineIndex == fish or tradeskillLineIndex == cook or tradeskillLineIndex == firstAid ) then
 			if ( not GetCVarBool("secondaryProfessionsFilter") ) then
 				return nil;
 			end
@@ -734,7 +742,7 @@ function WorldMap_TryCreatingWorldQuestPOI(info, taskIconIndex)
 	taskPOI.worldQuest = true;
 	taskPOI.Texture:SetDrawLayer("OVERLAY");
 
-	WorldMap_SetupWorldQuestButton(taskPOI, worldQuestType, isRare, isElite, tradeskillLine, info.inProgress, selected, isCriteria)
+	WorldMap_SetupWorldQuestButton(taskPOI, worldQuestType, isRare, isElite, tradeskillLineIndex, info.inProgress, selected, isCriteria)
 
 	return taskPOI;
 end
@@ -1596,7 +1604,7 @@ function TaskPOI_OnEnter(self)
 	local title, factionID = C_TaskQuest.GetQuestInfoByQuestID(self.questID);
 
 	if ( self.worldQuest ) then
-		local tagID, tagName, worldQuestType, isRare, isElite, tradeskillLine = GetQuestTagInfo(self.questID);
+		local tagID, tagName, worldQuestType, isRare, isElite, tradeskillLineIndex = GetQuestTagInfo(self.questID);
 		local color = isRare and ITEM_QUALITY_COLORS[LE_ITEM_QUALITY_EPIC] or HIGHLIGHT_FONT_COLOR;
 		WorldMapTooltip:SetText(title, color.r, color.g, color.b);
 

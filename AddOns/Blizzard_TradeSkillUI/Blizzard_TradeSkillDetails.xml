@@ -32,7 +32,7 @@
 			</Layer>
 		</Layers>
 	</Frame>
-	
+
 	<Button name="TradeSkillGuildCrafterButtonTemplate" virtual="true">
 		<Size x="136" y="16"/>
 		<ButtonText parentKey="Text">
@@ -50,7 +50,7 @@
 				ChatFrame_SendTell(self.fullName);
 			</OnClick>
 		</Scripts>
-	</Button>	
+	</Button>
 
 	<ScrollFrame name="TradeSkillDetailsFrameTemplate" inherits="UIPanelScrollFrameCodeTemplate" mixin="TradeSkillDetailsMixin" virtual="true">
 		<Size x="300" y="385"/>
@@ -88,7 +88,7 @@
 					<OnLeave function="GameTooltip_Hide"/>
 				</Scripts>
 			</Button>
-			
+
 			<Button parentKey="ViewGuildCraftersButton" inherits="MagicButtonTemplate" text="GUILD_TRADE_SKILL_VIEW_CRAFTERS" hidden="true">
 				<Size x="140" y="22"/>
 				<Anchors>
@@ -239,7 +239,7 @@
 								<Anchor point="TOPLEFT" x="8" y="-85"/>
 							</Anchors>
 						</FontString>
-						
+
 						<FontString parentKey="RequirementLabel" inherits="GameFontNormalSmall" text="REQUIRES_LABEL">
 							<Anchors>
 								<Anchor point="TOPLEFT" relativeKey="$parent.Description" relativePoint="BOTTOMLEFT"/>
@@ -266,7 +266,7 @@
 							</Anchors>
 						</FontString>
 
-						<FontString parentKey="SourceText" inherits="GameFontNormal">
+						<FontString parentKey="SourceText" inherits="GameFontHighlight" justifyH="LEFT">
 							<Anchors>
 								<Anchor point="LEFT" relativeKey="$parent.ReagentLabel"/>
 							</Anchors>
@@ -283,6 +283,15 @@
 							<Anchor point="TOPLEFT" x="10" y="-20"/>
 						</Anchors>
 						<Layers>
+							<Layer level="OVERLAY">
+								<Texture parentKey="Background" atlas="tradeskills-iconborder">
+									<Size x="47" y="47"/>
+									<Anchors>
+										<Anchor point="CENTER" x="0"/>
+									</Anchors>
+								</Texture>
+							</Layer>
+
 							<Layer level="ARTWORK">
 								<FontString parentKey="Count" inherits="NumberFontNormal" justifyH="RIGHT" hidden="false">
 									<Anchors>

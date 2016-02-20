@@ -3585,9 +3585,12 @@ function Blizzard_CombatLog_Update_QuickButtons()
 		maxWidth = COMBATLOG:GetWidth() - 31;
 	end
 	
+	local additionalFilterButton = CombatLogQuickButtonFrame_CustomAdditionalFilterButton;
+	
 	local totalWidth = 0;
 	local padding = 13;
 	local showMoreQuickButtons = true;
+	local hasOffBar = false;
 	for index, filter in ipairs(_G.Blizzard_CombatLog_Filters.filters) do
 		buttonName = baseName.."Button"..buttonIndex;
 		button = _G[buttonName];
@@ -3617,6 +3620,7 @@ function Blizzard_CombatLog_Update_QuickButtons()
 			else
 				-- Don't show anymore buttons if the maxwidth has been exceeded
 				showMoreQuickButtons = false;
+				hasOffBar = true;
 				button:Hide();
 				filter.onQuickBar = false;
 			end
@@ -3637,6 +3641,8 @@ function Blizzard_CombatLog_Update_QuickButtons()
 		end
 		buttonIndex = buttonIndex+1;
 	until not button;
+
+	additionalFilterButton:SetShown(hasOffBar);
 end
 _G.Blizzard_CombatLog_Update_QuickButtons = Blizzard_CombatLog_Update_QuickButtons
 

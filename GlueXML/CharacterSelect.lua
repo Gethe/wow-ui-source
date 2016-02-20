@@ -41,7 +41,6 @@ function CharacterSelect_OnLoad(self)
 	self:RegisterEvent("UPDATE_SELECTED_CHARACTER");
 	self:RegisterEvent("SELECT_LAST_CHARACTER");
 	self:RegisterEvent("SELECT_FIRST_CHARACTER");
-	self:RegisterEvent("SUGGEST_REALM");
 	self:RegisterEvent("FORCE_RENAME_CHARACTER");
 	self:RegisterEvent("CHAR_RENAME_IN_PROGRESS");
 	self:RegisterEvent("STORE_STATUS_CHANGED");
@@ -461,19 +460,6 @@ function CharacterSelect_OnEvent(self, event, ...)
 	elseif ( event == "SELECT_FIRST_CHARACTER" ) then
 		CHARACTER_LIST_OFFSET = 0;
 		CharacterSelect_SelectCharacter(1, 1);
-	elseif ( event == "SUGGEST_REALM" ) then
-		local category, id = ...;
-		local name = GetRealmInfo(category, id);
-		if ( name ) then
-			SetGlueScreen("charselect");
-			ChangeRealm(category, id);
-		else
-			if ( RealmListUI:IsShown() ) then
-				RealmListUpdate();
-			else
-				SetGlueScreen("realmlist");
-			end
-		end
 	elseif ( event == "FORCE_RENAME_CHARACTER" ) then
 		GlueDialog_Hide();
 		local message = ...;

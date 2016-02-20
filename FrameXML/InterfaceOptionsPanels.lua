@@ -20,13 +20,13 @@ function InterfaceOptionsPanel_CheckButton_OnClick (checkButton)
 end
 	
 function InterfaceOptionsPanel_CheckButton_Update (checkButton)
-	local setting = "0";
+	local setting = checkButton.uncheckedValue or "0";
 	if ( checkButton:GetChecked() ) then
 		if ( not checkButton.invert ) then
-			setting = "1"
+			setting = checkButton.checkedValue or "1"
 		end
 	elseif ( checkButton.invert ) then
-		setting = "1"
+		setting = checkButton.checkedValue or "1"
 	end
 
 	checkButton.value = setting;
@@ -1448,10 +1448,12 @@ NamePanelOptions = {
 	nameplateShowEnemyTotems = { text = "UNIT_NAMEPLATES_SHOW_ENEMY_TOTEMS" },
 	nameplateShowEnemyMinus = { text = "UNIT_NAMEPLATES_SHOW_ENEMY_MINUS" },
 	ShowClassColorInNameplate = { text = "SHOW_CLASS_COLOR_IN_V_KEY" },
+	ShowNamePlateLoseAggroFlash = { text = "SHOW_NAMEPLATE_LOSE_AGGRO_FLASH" },
 	
 	nameplateShowAll = { text = "UNIT_NAMEPLATES_AUTOMODE" },
 	nameplateShowSelf = { text = "DISPLAY_PERSONAL_RESOURCE" },
 	nameplateResourceOnTarget = { text = "DISPLAY_PERSONAL_RESOURCE_ON_ENEMY" },
+	nameplateGlobalScale = { text = "UNIT_NAMEPLATES_MAKE_LARGER" },
 }
 
 function InterfaceOptionsNPCNamesDropDown_OnEvent (self, event, ...)

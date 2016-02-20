@@ -14,10 +14,6 @@ GLUE_SECONDARY_SCREENS = {
 	["options"] = 		{ frame = "VideoOptionsFrame",	playMusic = true,	playAmbience = false,	fullScreen = false,	showSound = "gsTitleOptions" },
 };
 
-ERRORS = {
-	[104] = { dialogType = "OKAY_HTML", text = LOGIN_UNKNOWN_ACCOUNT, showErrorCode = true }
-}
-
 -- Realm Split info
 SERVER_SPLIT_SHOW_DIALOG = false;
 SERVER_SPLIT_CLIENT_STATE = -1;	--	-1 uninitialized; 0 - no choice; 1 - realm 1; 2 - realm 2
@@ -87,7 +83,6 @@ function GlueParent_IsScreenValid(screen)
 	else
 		return false;
 	end
-
 end
 
 function GlueParent_GetBestScreen()
@@ -140,11 +135,20 @@ end
 function GlueParent_EnsureValidScreen()
 	local currentScreen = GlueParent.currentScreen;
 	if ( not GlueParent_IsScreenValid(currentScreen) ) then
+		local bestScreen = GlueParent_GetBestScreen();
+
+		LogAuroraClient("ae", "Screen invalid. Changing",
+			"changingFrom", currentScreen,
+			"changingTo", bestScreen);
+
 		GlueParent_SetScreen(GlueParent_GetBestScreen());
 	end
 end
 
 local function GlueParent_ChangeScreen(screen, screenTable)
+	LogAuroraClient("ae", "Switching to screen",
+			"screen", screen);
+
 	local screenInfo;
 	for key, info in pairs(screenTable) do
 		if ( key == screen ) then
@@ -286,6 +290,11 @@ function SetExpansionLogo(texture, expansionLevel)
 	else
 		texture:SetAtlas(EXPANSION_LOGOS[expansionLevel].atlas);
 	end
+end
+
+function UpgradeAccount()
+	PlaySound("gsLoginNewAccount");
+	LoadURLIndex(2);
 end
 
 -- =============================================================

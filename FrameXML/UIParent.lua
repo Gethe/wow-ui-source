@@ -351,6 +351,9 @@ function UIParent_OnLoad(self)
 
 	-- Challenge Mode 2.0
 	self:RegisterEvent("CHALLENGE_MODE_KEYSTONE_RECEPTABLE_OPEN");
+
+	-- Used for Order Hall UI
+	self:RegisterUnitEvent("UNIT_AURA", "player");
 end
 
 function UIParent_OnShow(self)
@@ -582,6 +585,15 @@ function NPETutorial_AttemptToBegin(event)
 	end
 	if ( playerEnteredWorld and varsLoaded ) then
 		Tutorial_LoadUI();
+	end
+end
+
+function OrderHall_CheckCommandBar()
+	if (not OrderHallCommandBar or not OrderHallCommandBar:IsShown()) then
+		if (C_Garrison.IsPlayerInGarrison(LE_GARRISON_TYPE_7_0)) then
+			OrderHall_LoadUI();
+			OrderHallCommandBar:Show();
+		end
 	end
 end
 
@@ -1152,7 +1164,8 @@ function UIParent_OnEvent(self, event, ...)
 		for i=1, #pendingLootRollIDs do
 			GroupLootFrame_OpenNewFrame(pendingLootRollIDs[i], GetLootRollTimeLeft(pendingLootRollIDs[i]));
 		end
-		
+		OrderHall_CheckCommandBar();
+
 		NPETutorial_AttemptToBegin(event);
 	elseif ( event == "GROUP_ROSTER_UPDATE" ) then
 		-- Hide/Show party member frames
@@ -1766,6 +1779,8 @@ function UIParent_OnEvent(self, event, ...)
 		if (not C_ChallengeMode.IsChallengeModeActive()) then
 			ChallengesKeystoneFrame:ShowKeystoneFrame();
 		end
+	elseif (event == "UNIT_AURA") then
+		OrderHall_CheckCommandBar();
 	end
 end
 
@@ -1795,11 +1810,46 @@ local petBattleTop = 60;
 function UpdateMenuBarTop ()
 	--Determines the optimal magic number based on resolution and action bar status.
 	menuBarTop = 55;
-	local width, height = string.match((({GetScreenResolutions()})[GetCurrentResolution()] or ""), "(%d+).-(%d+)");
-	if ( tonumber(width) / tonumber(height ) > 4/3 ) then
+	local width = GetScreenWidth();
+	local height = GetScreenHeight();
+	if ( ( width / height ) > 4/3 ) then
 		--Widescreen resolution
 		menuBarTop = 75;
 	end
+end
+
+function UIParent_UpdateTopFramePositions()
+	local topOffset = 0;
+	local buffsAreaTopOffset = 0;
+
+	if (OrderHallCommandBar and OrderHallCommandBar:IsShown()) then
+		topOffset = 12;
+		buffsAreaTopOffset = OrderHallCommandBar:GetHeight();
+	end
+
+	if (PlayerFrame and not PlayerFrame:IsUserPlaced() and not PlayerFrame_IsAnimatedOut(PlayerFrame)) then
+		PlayerFrame:SetPoint("TOPLEFT", UIParent, "TOPLEFT", -19, -4 - topOffset)
+	end
+
+	if (TargetFrame and not TargetFrame:IsUserPlaced()) then
+		TargetFrame:SetPoint("TOPLEFT", UIParent, "TOPLEFT", 250, -4 - topOffset);
+	end
+
+	local ticketStatusFrameShown = TicketStatusFrame and TicketStatusFrame:IsShown();
+	local gmChatStatusFrameShown = GMChatStatusFrame and GMChatStatusFrame:IsShown(); 
+	if (ticketStatusFrameShown) then
+		TicketStatusFrame:SetPoint("TOPRIGHT", UIParent, "TOPRIGHT", -180, 0 - buffsAreaTopOffset);
+		buffsAreaTopOffset = buffsAreaTopOffset + TicketStatusFrame:GetHeight();
+	end
+	if (gmChatStatusFrameShown) then
+		GMChatStatusFrame:SetPoint("TOPRIGHT", UIParent, "TOPRIGHT", -170, -5 - buffsAreaTopOffset);
+		buffsAreaTopOffset = buffsAreaTopOffset + GMChatStatusFrame:GetHeight() + 5;
+	end
+	if (not ticketStatusFrameShown and not gmChatStatusFrameShown) then
+		buffsAreaTopOffset = buffsAreaTopOffset + 13;
+	end
+
+	BuffFrame:SetPoint("TOPRIGHT", UIParent, "TOPRIGHT", -205, 0 - buffsAreaTopOffset);
 end
 
 UIPARENT_ALTERNATE_FRAME_POSITIONS = {

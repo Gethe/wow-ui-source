@@ -116,6 +116,32 @@ function GarrisonFollowerList:OnHide()
 	self.followers = nil;
 end
 
+GarrisonMissionFollowerDurabilityMixin = { }
+
+function GarrisonMissionFollowerDurabilityMixin:SetDurability(durability, maxDurability)
+	while ((self.durability and #self.durability or 0) < maxDurability) do
+		local durabilityTexture = self:CreateTexture(nil, "ARTWORK", "GarrisonMissionFollowerButtonDurabilityTemplate");
+		durabilityTexture:ClearAllPoints();
+		if (#self.durability == 1) then
+			durabilityTexture:SetPoint("TOPLEFT");
+		else
+			durabilityTexture:SetPoint("TOPLEFT", self.durability[#self.durability - 1], "TOPRIGHT");
+		end
+	end
+
+	for i = 1, durability do
+		self.durability[i]:Show();
+		self.durability[i]:SetDesaturated(false);
+	end
+	for i = durability + 1, maxDurability do
+		self.durability[i]:Show();
+		self.durability[i]:SetDesaturated(true);
+	end
+	for i = maxDurability + 1, (self.durability and #self.durability or 0) do
+		self.durability[i]:Hide();
+	end
+end
+
 GarrisonFollowerListButton = { };
 
 function GarrisonFollowerListButton:GetFollowerList()
@@ -316,9 +342,7 @@ function GarrisonFollowerList_SetButtonMode(followerList, button, mode)
 	button.category:SetShown(mode == "CATEGORY");
 
 	button.champion.ILevel:SetShown(mode == "FOLLOWER");
-	for i = 1, #button.champion.durability do
-		button.champion.durability[i]:Hide();
-	end
+	button.champion.DurabilityFrame:SetShown(mode == "TROOP");
 end
 
 function GarrisonFollowerList:UpdateData()
@@ -363,10 +387,7 @@ function GarrisonFollowerList:UpdateData()
 			else
 				button.champion.Status:SetTextColor(0.698, 0.941, 1);
 			end
-			local color = ITEM_QUALITY_COLORS[follower.quality];
-			button.champion.PortraitFrame.LevelBorder:SetVertexColor(color.r, color.g, color.b);
-			button.champion.PortraitFrame.Level:SetText(follower.level);
-			GarrisonFollowerPortrait_Set(button.champion.PortraitFrame.Portrait, follower.portraitIconID);
+			button.champion.PortraitFrame:SetupPortrait(follower);
 			if ( follower.isCollected ) then
 				-- have this follower
 				button.champion.isCollected = true;
@@ -374,7 +395,6 @@ function GarrisonFollowerList:UpdateData()
 				button.champion.Class:SetDesaturated(false);
 				button.champion.Class:SetAlpha(0.2);
 				button.champion.PortraitFrame.PortraitRingQuality:Show();
-				button.champion.PortraitFrame.PortraitRingQuality:SetVertexColor(color.r, color.g, color.b);
 				button.champion.PortraitFrame.Portrait:SetDesaturated(false);
 				if ( follower.status == GARRISON_FOLLOWER_INACTIVE ) then
 					button.champion.PortraitFrame.PortraitRingCover:Show();
@@ -435,6 +455,7 @@ function GarrisonFollowerList:UpdateData()
 				button.champion.PortraitFrame.Portrait:SetDesaturated(true);
 				button.champion.PortraitFrame.PortraitRingCover:Show();
 				button.champion.PortraitFrame.PortraitRingCover:SetAlpha(0.6);
+				button.champion.PortraitFrame:SetQuality(0);
 				button.champion.XPBar:Hide();
 				button.champion.DownArrow:SetAlpha(0);
 				button.champion.BusyFrame:Hide();
@@ -455,27 +476,7 @@ function GarrisonFollowerList:UpdateData()
 			end
 
 			if (follower.isTroop) then
-				local durability = min(follower.durability or 3, 12);
-				local maxDurability = min(follower.maxDurability or 3, 12);
-
-				while (#button.champion.durability < maxDurability) do
-					local durabilityTexture = button.champion:CreateTexture(nil, "ARTWORK", "GarrisonMissionFollowerButtonDurabilityTemplate");
-					button.champion["durability"..#button.champion.durability] = durabilityTexture;
-					durabilityTexture:ClearAllPoints();
-					durabilityTexture:SetPoint("TOPLEFT", button.champion.durability[#button.champion.durability - 1], "TOPRIGHT");
-				end
-
-				for i = 1, durability do
-					button.champion.durability[i]:Show();
-					button.champion.durability[i]:SetDesaturated(false);
-				end
-				for i = durability + 1, maxDurability do
-					button.champion.durability[i]:Show();
-					button.champion.durability[i]:SetDesaturated(true);
-				end
-				for i = maxDurability + 1, #button.champion.durability do
-					button.champion.durability[i]:Hide();
-				end
+				button.champion.DurabilityFrame:SetDurability(follower.durability, follower.maxDurability);
 			end
 
 			button:Show();
@@ -562,7 +563,13 @@ function GarrisonFollowerButton_SetCounterButton(button, followerID, index, info
 		counter = button.Counters[index];
 	end
 	counter.info = info;
-	counter.Icon:SetTexture(info.icon);
+
+	if (GarrisonFollowerOptions[followerTypeID].displayCounterAbilityInPlaceOfMechanic and info.counterID) then
+		local icon = C_Garrison.GetFollowerAbilityIcon(info.counterID);
+		counter.Icon:SetTexture(icon);
+	else
+		counter.Icon:SetTexture(info.icon);
+	end
 	counter.followerTypeID = followerTypeID;
 	if ( info.traitID ) then
 		counter.tooltip = nil;

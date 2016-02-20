@@ -4,7 +4,7 @@
 local panels = {
 	{ name = "GroupFinderFrame", addon = nil },
 	{ name = "PVPUIFrame", addon = "Blizzard_PVPUI" },
-	{ name = "ChallengesFrame", addon = "Blizzard_ChallengesUI" },
+	{ name = "ChallengesFrame", addon = "Blizzard_ChallengesUI", check = function() return UnitLevel("player") >= 110 end, },
 }
 
 function PVEFrame_OnLoad(self)
@@ -23,6 +23,16 @@ function PVEFrame_OnLoad(self)
 	self:RegisterEvent("AJ_PVE_LFG_ACTION");
 	
 	self.maxTabWidth = (self:GetWidth() - 19) / #panels;
+end
+
+function PVEFrame_OnShow(self)
+	for index, panel in pairs(panels) do
+		if (panel.check and not panel.check()) then
+			PanelTemplates_HideTab(self, index);
+		else
+			PanelTemplates_ShowTab(self, index);
+		end
+	end
 end
 
 function PVEFrame_OnEvent(self, event, ...)
@@ -97,6 +107,10 @@ function PVEFrame_ShowFrame(sidePanelName, selection)
 	if ( not tabIndex ) then
 		return;
 	end
+	if ( panels[tabIndex].check and not panels[tabIndex].check() ) then
+		tabIndex = self.activeTabIndex or 1;
+	end
+
 	-- load addon if needed
 	if ( panels[tabIndex].addon ) then
 		UIParentLoadAddOn(panels[tabIndex].addon);

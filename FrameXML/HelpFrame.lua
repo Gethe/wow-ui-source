@@ -785,13 +785,11 @@ end
 
 
 function TicketStatusFrame_OnShow(self)
-	BuffFrame:SetPoint("TOPRIGHT", self:GetParent(), "TOPRIGHT", -205, (-self:GetHeight()));
+	UIParent_UpdateTopFramePositions();
 end
 
 function TicketStatusFrame_OnHide(self)
-	if( not GMChatStatusFrame or not GMChatStatusFrame:IsShown() ) then
-		BuffFrame:SetPoint("TOPRIGHT", "UIParent", "TOPRIGHT", -205, -13);
-	end
+	UIParent_UpdateTopFramePositions();
 end
 
 

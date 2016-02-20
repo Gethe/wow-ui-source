@@ -316,9 +316,7 @@
 	<Frame name="GarrisonMissionLargeMechanicTemplate" inherits="GarrisonAbilityLargeCounterTemplate" virtual="true">
 		<Scripts>
 			<OnEnter function="GarrisonMissionMechanic_OnEnter"/>
-			<OnLeave>
-				GarrisonMissionMechanicTooltip:Hide();
-			</OnLeave>
+			<OnLeave function="GarrisonMissionMechanic_OnLeave"/>
 		</Scripts>
 	</Frame>
 

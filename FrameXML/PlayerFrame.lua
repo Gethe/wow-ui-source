@@ -13,8 +13,8 @@ function PlayerFrame_OnLoad(self)
 						 PlayerFrameMyHealPredictionBar, PlayerFrameOtherHealPredictionBar,
 						 PlayerFrameTotalAbsorbBar, PlayerFrameTotalAbsorbBarOverlay, PlayerFrameOverAbsorbGlow,
 						 PlayerFrameOverHealAbsorbGlow, PlayerFrameHealAbsorbBar, PlayerFrameHealAbsorbBarLeftShadow,
-						 PlayerFrameHealAbsorbBarRightShadow);
-						 
+						 PlayerFrameHealAbsorbBarRightShadow, PlayerFrameManaCostPredictionBar);
+	
 	self.statusCounter = 0;
 	self.statusSign = -1;
 	CombatFeedback_Initialize(self, PlayerHitIndicator, 30);
@@ -57,6 +57,7 @@ function PlayerFrame_OnLoad(self)
 	local showmenu = function()
 		ToggleDropDownMenu(1, nil, PlayerFrameDropDown, "PlayerFrame", 106, 27);
 	end
+	UIParent_UpdateTopFramePositions();
 	SecureUnitButton_OnLoad(self, "player", showmenu);
 end
 
@@ -342,9 +343,8 @@ end
 
 function PlayerFrame_ResetPosition(self)
 	CancelAnimations(PlayerFrame);
-	if ( not self:IsUserPlaced() ) then
-		self:SetPoint(PlayerFrame_AnimPos(self, 0));
-	end
+	self.isAnimatedOut = false;
+	UIParent_UpdateTopFramePositions();
 	self.inSequence = false;
 	PetFrame_Update(PetFrame);
 end
@@ -358,6 +358,7 @@ function PlayerFrame_AnimateOut(self)
 	self.inSeat = false;
 	self.animFinished = false;
 	self.inSequence = true;
+	self.isAnimatedOut = true;
 	if ( self:IsUserPlaced() ) then
 		PlayerFrame_AnimFinished(PlayerFrame);
 	else
@@ -368,6 +369,10 @@ end
 function PlayerFrame_AnimFinished(self)
 	self.animFinished = true;
 	PlayerFrame_UpdateArt(self);
+end
+
+function PlayerFrame_IsAnimatedOut(self)
+	return self.isAnimatedOut;
 end
 
 function PlayerFrame_UpdateArt(self)
@@ -815,10 +820,10 @@ end
 
 function PlayerFrame_ResetUserPlacedPosition()
 	PlayerFrame:ClearAllPoints();
-	PlayerFrame:SetPoint("TOPLEFT", UIParent, "TOPLEFT", -19, -4);
 	PlayerFrame:SetUserPlaced(false);
 	PlayerFrame:SetClampedToScreen(false);
 	PlayerFrame_SetLocked(true);
+	UIParent_UpdateTopFramePositions();
 end
 
 --

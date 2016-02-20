@@ -60,11 +60,13 @@ function GarrisonFollowerTooltipTemplate_SetGarrisonFollower(tooltipFrame, data,
 	tooltipFrame.name = data.name;
 	tooltipFrame.Name:SetText(data.name);
 	tooltipFrame.ILevel:SetFormattedText(GARRISON_FOLLOWER_ITEM_LEVEL, data.itemLevel);
-	tooltipFrame.Portrait.Level:SetText(data.level);
-	GarrisonFollowerPortrait_Set(tooltipFrame.Portrait.Portrait, data.portraitIconID);
-	local color = ITEM_QUALITY_COLORS[data.quality];
-	tooltipFrame.Portrait.LevelBorder:SetVertexColor(color.r, color.g, color.b);
-	tooltipFrame.Portrait.PortraitRingQuality:SetVertexColor(color.r, color.g, color.b);
+	if (GarrisonFollowerOptions[data.followerTypeID].showILevelOnFollower) then
+		tooltipFrame.PortraitFrame:SetILevel(data.itemLevel);
+	else
+		tooltipFrame.PortraitFrame:SetLevel(data.level);
+	end
+	tooltipFrame.PortraitFrame:SetPortraitIcon(data.portraitIconID);
+	tooltipFrame.PortraitFrame:SetQuality(data.quality);
 	if ( data.spec ) then
 		local classSpecName = C_Garrison.GetFollowerClassSpecName(data.garrisonFollowerID);
 		tooltipFrame.ClassSpecName:SetText(classSpecName);
@@ -460,6 +462,7 @@ function GarrisonFollowerAbilityTooltipTemplate_SetAbility(tooltipFrame, garrFol
 			else
 				tooltipFrame.CounterIconBorder:SetAtlas("GarrMission_EncounterAbilityBorder-Lg");
 			end
+			tooltipFrame.Details:SetPoint("TOPLEFT", tooltipFrame.CounterIcon, "TOPRIGHT", 8, -1);
 		else
 			tooltipFrame.CountersLabel:Hide();
 			tooltipFrame.Details:Hide();

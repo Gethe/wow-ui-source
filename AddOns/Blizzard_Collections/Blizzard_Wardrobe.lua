@@ -427,7 +427,7 @@ end
 -- **** COLLECTION ********************************************************************************************************************************************
 -- ************************************************************************************************************************************************************
 
-local CURRENT_PAGE;
+local CURRENT_PAGE = 1;
 local WARDROBE_NUM_ROWS = 3;
 local WARDROBE_NUM_COLS = 6;
 local WARDROBE_PAGE_SIZE = WARDROBE_NUM_ROWS * WARDROBE_NUM_COLS;
@@ -439,310 +439,6 @@ local MODEL_ANIM_STOP = 3;
 -- ************************************************************************************************************************************************************
 -- **** START STUB/TEMP ***************************************************************************************************************************************
 -- ************************************************************************************************************************************************************
-
-local TEMP_SOURCES = {
-  [1] = { t = 'Vendor', n = 'Armorer Moki', l = 'The Jade Forest' },
-  [2] = { t = 'Vendor', n = 'Arnold Raygun', l = 'Isle of Giants' },
-  [3] = { t = 'Vendor', n = 'Arsenio Zerep', l = 'Lunarfall' },
-  [4] = { t = 'Vendor', n = 'Artificer Baleera', l = 'Shadowmoon Valley' },
-  [5] = { t = 'Vendor', n = 'Ashley Zerep', l = 'Lunarfall' },
-  [6] = { t = 'Vendor', n = 'Aster', l = 'Vale of Eternal Blossoms' },
-  [7] = { t = 'Vendor', n = 'Auria Irondreamer', l = 'Lunarfall' },
-  [8] = { t = 'Vendor', n = 'Ayada the White', l = 'Lunarfall' },
-  [9] = { t = 'Vendor', n = 'Bai Hua', l = 'The Wandering Isle' },
-  [10] = { t = 'Vendor', n = 'Barleyflower', l = 'Shrine of Two Moons' },
-  [11] = { t = 'Vendor', n = 'Barnaby Fletcher', l = 'Valley of the Four Winds' },
-  [12] = { t = 'Vendor', n = 'Ben of the Booming Voice', l = 'Valley of the Four Winds' },
-  [13] = { t = 'Vendor', n = 'Bero', l = 'Shrine of Seven Stars' },
-  [14] = { t = 'Vendor', n = 'Big Dan Stormstout', l = 'Timeless Isle' },
-  [15] = { t = 'Vendor', n = 'Big Keech', l = 'Vale of Eternal Blossoms' },
-  [16] = { t = 'Vendor', n = 'Black Arrow', l = 'Kun-Lai Summit' },
-  [17] = { t = 'Vendor', n = 'Bonni Chang', l = 'Shrine of Seven Stars' },
-  [18] = { t = 'Vendor', n = 'Borus', l = 'Shadowmoon Valley' },
-  [19] = { t = 'Vendor', n = 'Bowfitter Suyin', l = 'Krasarang Wilds' },
-  [20] = { t = 'Vendor', n = 'Brewmaster Chani', l = 'Kun-Lai Summit' },
-  [21] = { t = 'Vendor', n = 'Brewmaster Chani', l = 'Timeless Isle' },
-  [22] = { t = 'Vendor', n = 'Brewmaster Roland', l = 'Shrine of Two Moons' },
-  [23] = { t = 'Vendor', n = 'Brewmaster Skye', l = 'Shrine of Two Moons' },
-  [24] = { t = 'Vendor', n = 'Brewmaster Vudia', l = 'Shrine of Two Moons' },
-  [25] = { t = 'Vendor', n = 'Brother Noodle', l = 'Timeless Isle' },
-  [26] = { t = 'Vendor', n = 'Bry Lang', l = 'The Jade Forest' },
-  [27] = { t = 'Vendor', n = 'Card Trader Ami', l = 'Brawl\'gar Arena' },
-  [28] = { t = 'Vendor', n = 'Card Trader Leila', l = 'Deeprun Tram' },
-  [29] = { t = 'Vendor', n = 'Challenger Soong', l = 'Vale of Eternal Blossoms' },
-  [30] = { t = 'Vendor', n = 'Challenger Wuli', l = 'Vale of Eternal Blossoms' },
-  [31] = { t = 'Vendor', n = 'Chao of the Hundred Crabs', l = 'Dread Wastes' },
-  [32] = { t = 'Vendor', n = 'Christopher Macdonald', l = 'Lunarfall' },
-  [33] = { t = 'Vendor', n = 'Clara Henry', l = 'Shrine of Seven Stars' },
-  [34] = { t = 'Vendor', n = 'Collin Gooddreg', l = 'Shrine of Seven Stars' },
-  [35] = { t = 'Vendor', n = 'Commander Lo Ping', l = 'Townlong Steppes' },
-  [36] = { t = 'Vendor', n = 'Commander Oxheart', l = 'Townlong Steppes' },
-  [37] = { t = 'Vendor', n = 'Cook Jun', l = 'Dread Wastes' },
-  [38] = { t = 'Vendor', n = 'Costan Highwall', l = 'Lunarfall' },
-  [39] = { t = 'Vendor', n = 'Cousin Slowhands', l = '' },
-  [40] = { t = 'Vendor', n = 'Crafter Kwon', l = 'Timeless Isle' },
-  [41] = { t = 'Vendor', n = 'Cranfur the Noodler', l = 'Krasarang Wilds' },
-  [42] = { t = 'Vendor', n = 'Cullen Hammerbrow', l = 'Shrine of Seven Stars' },
-  [43] = { t = 'Vendor', n = 'Dame Jesepha', l = 'Deeprun Tram' },
-  [44] = { t = 'Vendor', n = 'Danky', l = 'Vale of Eternal Blossoms' },
-  [45] = { t = 'Vendor', n = 'Dean\'na', l = 'Frostfire Ridge' },
-  [46] = { t = 'Vendor', n = 'Deckmender Lu', l = 'Dread Wastes' },
-  [47] = { t = 'Vendor', n = 'Deedree', l = 'Lunarfall' },
-  [48] = { t = 'Vendor', n = 'Deluwin Whisperfield', l = 'Lunarfall' },
-  [49] = { t = 'Vendor', n = 'Den Den', l = 'Valley of the Four Winds' },
-  [50] = { t = 'Vendor', n = 'Derenda Enkleshin', l = 'Shrine of Two Moons' },
-  [51] = { t = 'Vendor', n = 'Disciple Jusi', l = 'Orgrimmar' },
-  [52] = { t = 'Vendor', n = 'Dorogarr', l = 'Frostwall' },
-  [53] = { t = 'Vendor', n = 'Elisa Vanning', l = 'Lunarfall' },
-  [54] = { t = 'Vendor', n = 'Emdal', l = 'Shadowmoon Valley' },
-  [55] = { t = 'Vendor', n = 'Emma Strikken', l = 'Lunarfall' },
-  [56] = { t = 'Vendor', n = 'Enohar Thunderbrew', l = 'Blasted Lands' },
-  [57] = { t = 'Vendor', n = 'Er', l = 'The Wandering Isle' },
-  [58] = { t = 'Vendor', n = 'Eric Broadoak', l = 'Lunarfall' },
-  [59] = { t = 'Vendor', n = 'Esha the Loommaiden', l = 'Shrine of Two Moons' },
-  [60] = { t = 'Vendor', n = 'Fanara', l = 'Shadowmoon Valley' },
-  [61] = { t = 'Vendor', n = 'Fang Whitescroll', l = 'Shrine of Two Moons' },
-  [62] = { t = 'Vendor', n = 'Faraan', l = 'Shadowmoon Valley' },
-  [63] = { t = 'Vendor', n = 'Field Merchant Skevin', l = 'Krasarang Wilds' },
-  [64] = { t = 'Vendor', n = 'Fei Li', l = 'Timeless Isle' },
-  [65] = { t = 'Vendor', n = '<The Firecracker>', l = '' },
-  [66] = { t = 'Vendor', n = 'Auntie Stormstout', l = 'Stormstout Brewery' },
-  [67] = { t = 'Vendor', n = 'Alchemist Yuan', l = 'Kun-Lai Summit' },
-  [68] = { t = 'Vendor', n = 'Big Sal', l = 'Kun-Lai Summit' },
-  [69] = { t = 'Vendor', n = 'Brother Rabbitsfoot', l = 'Timeless Isle' },
-  [70] = { t = 'Vendor', n = 'Brother Yakshoe', l = 'Kun-Lai Summit' },
-  [71] = { t = 'Vendor', n = 'Brother Yakshoe', l = 'Valley of the Four Winds' },
-  [72] = { t = 'Vendor', n = 'Brother Yakshoe', l = 'Timeless Isle' },
-  [73] = { t = 'Vendor', n = 'Clover Keeper', l = 'Kun-Lai Summit' },
-  [74] = { t = 'Vendor', n = 'Cousin Copperfinder', l = 'Kun-Lai Summit' },
-  [75] = { t = 'Vendor', n = 'Cousin Mountainmusk', l = 'Kun-Lai Summit' },
-  [76] = { t = 'Vendor', n = 'Fixxit Redhammer', l = 'Kun-Lai Summit' },
-  [77] = { t = 'Vendor', n = 'Christofen Moonfeather', l = 'Krasarang Wilds' },
-  [78] = { t = 'Vendor', n = 'Armorer Gang', l = 'Kun-Lai Summit' },
-  [79] = { t = 'Vendor', n = 'Brewmaster Boof', l = 'Kun-Lai Summit, The Veiled Stair' },
-  [80] = { t = 'Vendor', n = 'Brewmaster Boof', l = 'Timeless Isle' },
-  [81] = { t = 'Vendor', n = 'Claretta', l = 'Valley of the Four Winds' },
-  [82] = { t = 'Vendor', n = 'Elyssa Nightquiver', l = 'Krasarang Wilds' },
-  [83] = { t = 'Vendor', n = 'Damek Bloombeard', l = 'Molten Front' },
-  [84] = { t = 'Vendor', n = 'Alin the Finder', l = 'Townlong Steppes' },
-  [85] = { t = 'Vendor', n = 'Ayla Shadowstorm', l = 'Molten Front' },
-  [86] = { t = 'Vendor', n = 'Baird Darkfeather', l = 'Twilight Highlands' },
-  [87] = { t = 'Vendor', n = 'Bario Matalli', l = 'Stormwind City' },
-  [88] = { t = 'Vendor', n = 'Ben Mora', l = 'Twilight Highlands' },
-  [89] = { t = 'Vendor', n = 'Bolo the Elder', l = 'The Jade Forest' },
-  [90] = { t = 'Vendor', n = 'Bren Stoneforge', l = 'Twilight Highlands' },
-  [91] = { t = 'Vendor', n = 'Brewmaster Lei Kanglei', l = 'The Jade Forest' },
-  [92] = { t = 'Vendor', n = 'Brewmother Kiki', l = 'The Jade Forest' },
-  [93] = { t = 'Vendor', n = 'Brian Terrel', l = 'Twilight Highlands' },
-  [94] = { t = 'Vendor', n = 'Carrick Irongrin', l = 'Twilight Highlands' },
-  [95] = { t = 'Vendor', n = 'Cerie Bowden', l = 'Twilight Highlands' },
-  [96] = { t = 'Vendor', n = 'Chef Kyel', l = 'The Jade Forest' },
-  [97] = { t = 'Vendor', n = 'Cheung', l = 'The Jade Forest' },
-  [98] = { t = 'Vendor', n = 'Chin', l = 'The Jade Forest' },
-  [99] = { t = 'Vendor', n = 'Craftsman Hui', l = 'The Jade Forest' },
-  [100] = { t = 'Vendor', n = 'Craw MacGraw', l = 'Twilight Highlands' },
-  [101] = { t = 'Vendor', n = 'Daniel Lanchester', l = 'Twilight Highlands' },
-  [102] = { t = 'Drop', n = 'Beryl Mage Hunter', l = 'Borean Tundra' },
-  [103] = { t = 'Drop', n = 'Dreadwing', l = 'Blade\'s Edge Mountains' },
-  [104] = { t = 'Drop', n = 'Beryl Sorcerer', l = 'Borean Tundra' },
-  [105] = { t = 'Drop', n = 'Dreghood Drudge', l = 'Zangarmarsh' },
-  [106] = { t = 'Drop', n = 'Maaka', l = 'Valley of the Four Winds' },
-  [107] = { t = 'Drop', n = 'Drek\'Maz', l = 'Zul\'Drak' },
-  [108] = { t = 'Drop', n = 'Luthion the Vile', l = 'Borean Tundra' },
-  [109] = { t = 'Drop', n = 'Drillmaster Zurok', l = 'Hellfire Peninsula' },
-  [110] = { t = 'Drop', n = 'Bimba', l = 'Valley of the Four Winds' },
-  [111] = { t = 'Drop', n = 'Droggam', l = 'Blade\'s Edge Mountains' },
-  [112] = { t = 'Drop', n = 'Bishop Street', l = 'Dragonblight' },
-  [113] = { t = 'Drop', n = 'Drowned Gilnean Merchant', l = 'Blasted Lands' },
-  [114] = { t = 'Drop', n = 'Blackmane Brigand', l = 'Kun-Lai Summit' },
-  [115] = { t = 'Drop', n = 'Drowned Gilnean Sailor', l = 'Blasted Lands' },
-  [116] = { t = 'Drop', n = 'Blackrock Forgeworker', l = 'Tanaan Jungle' },
-  [117] = { t = 'Drop', n = 'Druid of the Flame', l = 'Molten Front' },
-  [118] = { t = 'Drop', n = 'Blackrock Slaghauler', l = 'Tanaan Jungle' },
-  [119] = { t = 'Drop', n = 'Druid of the Flame', l = 'Molten Front' },
-  [120] = { t = 'Drop', n = 'Blackscale Myrmidon', l = 'Twilight Highlands' },
-  [121] = { t = 'Drop', n = 'Druid of the Flame', l = 'Molten Front' },
-  [122] = { t = 'Drop', n = 'Blacksmith Goodman', l = 'Dragonblight' },
-  [123] = { t = 'Drop', n = 'Druid of the Flame', l = 'Molten Front' },
-  [124] = { t = 'Drop', n = 'Blacktalon the Savage', l = 'Hellfire Peninsula' },
-  [125] = { t = 'Drop', n = 'Druid of the Flame', l = 'Firelands' },
-  [126] = { t = 'Drop', n = 'Bladespire Battlemage', l = 'Blade\'s Edge Mountains' },
-  [127] = { t = 'Drop', n = 'Master Daellis Dawnstrike', l = 'Netherstorm' },
-  [128] = { t = 'Drop', n = 'Bladespire Champion', l = 'Blade\'s Edge Mountains' },
-  [129] = { t = 'Drop', n = 'Duke Vallenhal', l = 'Dragonblight' },
-  [130] = { t = 'Drop', n = 'Bladespire Crusher', l = 'Blade\'s Edge Mountains' },
-  [131] = { t = 'Drop', n = 'Dullgrom Dredger', l = 'Blade\'s Edge Mountains' },
-  [132] = { t = 'Drop', n = 'Bladespire Mystic', l = 'Blade\'s Edge Mountains' },
-  [133] = { t = 'Drop', n = 'Lunchbox', l = 'Borean Tundra' },
-  [134] = { t = 'Drop', n = 'Bladespire Ravager', l = 'Blade\'s Edge Mountains' },
-  [135] = { t = 'Drop', n = 'Duskhowl Prowler', l = 'Grizzly Hills' },
-  [136] = { t = 'Drop', n = 'Bleeding Hollow Berserker', l = 'Tanaan Jungle' },
-  [137] = { t = 'Drop', n = 'Master Caller', l = 'Isle of Thunder' },
-  [138] = { t = 'Drop', n = 'Bleeding Hollow Grunt', l = 'Hellfire Peninsula' },
-  [139] = { t = 'Drop', n = 'Kz\'Kzik', l = 'Dread Wastes' },
-  [140] = { t = 'Drop', n = 'Bleeding Hollow Necrolyte', l = 'Hellfire Peninsula' },
-  [141] = { t = 'Drop', n = 'Earthen Sculptor', l = 'Uldaman' },
-  [142] = { t = 'Drop', n = 'Bleeding Hollow Ritualist', l = 'Tanaan Jungle' },
-  [143] = { t = 'Drop', n = 'Anub\'ar Cultist', l = 'Dragonblight' },
-  [144] = { t = 'Drop', n = 'Bleeding Hollow Savage', l = 'Tanaan Jungle' },
-  [145] = { t = 'Drop', n = 'Anub\'ar Slayer', l = 'Dragonblight' },
-  [146] = { t = 'Drop', n = 'Bleeding Hollow Worg', l = 'Hellfire Peninsula' },
-  [147] = { t = 'Drop', n = 'Apexis Flayer', l = 'Blade\'s Edge Mountains' },
-  [148] = { t = 'Drop', n = 'Merciless One', l = 'Abyssal Depths' },
-  [149] = { t = 'Drop', n = 'Apprehensive Worker', l = 'Tol Barad Peninsula' },
-  [150] = { t = 'Drop', n = 'Blighted Corpse', l = 'Sholazar Basin' },
-  [151] = { t = 'Drop', n = 'Arazzius the Cruel', l = 'Hellfire Peninsula' },
-  [152] = { t = 'Drop', n = 'Blightguard', l = 'Zul\'Drak' },
-  [153] = { t = 'Drop', n = 'Kyparite Pulverizer', l = 'Dread Wastes' },
-  [154] = { t = 'Drop', n = 'Bloated Abomination', l = 'Zul\'Drak' },
-  [155] = { t = 'Drop', n = 'Arcanital Ra\'kul', l = 'Isle of Thunder' },
-  [156] = { t = 'Drop', n = 'Blood Shade', l = 'Howling Fjord' },
-  [157] = { t = 'Drop', n = 'Arch Mage Xintor', l = 'Hellfire Peninsula' },
-  [158] = { t = 'Drop', n = 'Bloodeye Brute', l = 'Twilight Highlands' },
-  [159] = { t = 'Drop', n = 'Anger Guard', l = 'Blade\'s Edge Mountains' },
-  [160] = { t = 'Drop', n = 'Bloodfeast', l = 'Dragonblight' },
-  [161] = { t = 'Drop', n = 'Emissary of Flame', l = 'Mount Hyjal' },
-  [162] = { t = 'Drop', n = 'Bloodhound', l = 'Blackrock Depths' },
-  [163] = { t = 'Drop', n = 'En\'kilah Abomination', l = 'Borean Tundra' },
-  [164] = { t = 'Drop', n = 'Bloodmaul Battle Worg', l = 'Blade\'s Edge Mountains' },
-  [165] = { t = 'Drop', n = 'En\'kilah Ghoul', l = 'Borean Tundra' },
-  [166] = { t = 'Drop', n = 'Bloodmaul Dire Wolf', l = 'Blade\'s Edge Mountains' },
-  [167] = { t = 'Drop', n = 'En\'kilah Necrolord', l = 'Borean Tundra' },
-  [168] = { t = 'Drop', n = 'Bloodmaul Geomancer', l = 'Blade\'s Edge Mountains' },
-  [169] = { t = 'Drop', n = 'Ango\'rosh Shaman', l = 'Zangarmarsh' },
-  [170] = { t = 'Drop', n = 'Bloodmaul Shaman', l = 'Blade\'s Edge Mountains' },
-  [171] = { t = 'Drop', n = 'Animated Warrior', l = 'Isle of Thunder' },
-  [172] = { t = 'Drop', n = 'Bloodmaul Soothsayer', l = 'Blade\'s Edge Mountains' },
-  [173] = { t = 'Drop', n = 'Anok\'ra the Manipulator', l = 'Dragonblight' },
-  [174] = { t = 'Drop', n = 'Bloodmoon Cultist', l = 'Grizzly Hills' },
-  [175] = { t = 'Drop', n = 'Anub\'ar Ambusher', l = 'Dragonblight' },
-  [176] = { t = 'Drop', n = 'Bloodpaw Shaman', l = 'Dragonblight' },
-  [177] = { t = 'Drop', n = 'Enslaved Bandit', l = 'Lost City of the Tol\'vir' },
-  [178] = { t = 'Drop', n = 'Bloodscale Overseer', l = 'Zangarmarsh' },
-  [179] = { t = 'Drop', n = 'Kypari Crawler', l = 'Dread Wastes' },
-  [180] = { t = 'Drop', n = 'Bloodscale Wavecaller', l = 'Zangarmarsh' },
-  [181] = { t = 'Drop', n = 'Kvaldir Seahorror', l = 'Shimmering Expanse' },
-  [182] = { t = 'Drop', n = 'Bloodspore Harvester', l = 'Borean Tundra' },
-  [183] = { t = 'Drop', n = 'Enslaved Inferno', l = 'Twilight Highlands' },
-  [184] = { t = 'Drop', n = 'Bloodspore Roaster', l = 'Borean Tundra' },
-  [185] = { t = 'Drop', n = 'Enslaved Tempest', l = 'Twilight Highlands' },
-  [186] = { t = 'Drop', n = 'Bloodthirsty Worg', l = 'Howling Fjord' },
-  [187] = { t = 'Drop', n = 'Enthralled Atal\'ai', l = 'Sunken Temple' },
-  [188] = { t = 'Drop', n = 'Lost Shandaral Spirit', l = 'Crystalsong Forest' },
-  [189] = { t = 'Drop', n = 'Enthralled Cultist', l = 'Blasted Lands' },
-  [190] = { t = 'Drop', n = 'Bloodwash Idolater', l = 'Blasted Lands' },
-  [191] = { t = 'Drop', n = 'Envoy Icarius', l = 'Shadowmoon Valley' },
-  [192] = { t = 'Drop', n = 'Blue Drakonid Supplicant', l = 'Borean Tundra' },
-  [193] = { t = 'Drop', n = 'Kvaldir Reaver', l = 'Hrothgar\'s Landing' },
-  [194] = { t = 'Drop', n = 'Lord Klaq', l = 'Zangarmarsh' },
-  [195] = { t = 'Drop', n = 'Et\'kil', l = 'Townlong Steppes' },
-  [196] = { t = 'Drop', n = 'Boldrich Stonerender', l = 'Deepholm' },
-  [197] = { t = 'Drop', n = 'Eternal Protector', l = 'Uldum' },
-  [198] = { t = 'Drop', n = 'Bonechewer Backbreaker', l = 'Terokkar Forest' },
-  [199] = { t = 'Drop', n = 'Ethereal Arcanist', l = 'Terokkar Forest' },
-  [200] = { t = 'Drop', n = 'Bonechewer Evoker', l = 'Hellfire Peninsula' },
-  [201] = { t = 'Drop', n = 'Ethereal Plunderer', l = 'Terokkar Forest' },  
-  [202] = { t = 'Quest', n = 'Breaking Off A Piece' },
-  [203] = { t = 'Quest', n = 'Chasing Icestorm: Thel\'zan\'s Phylactery' },
-  [204] = { t = 'Quest', n = 'Frostmourne Cavern' },
-  [205] = { t = 'Quest', n = 'Imprints on the Past' },
-  [206] = { t = 'Quest', n = 'Leave Nothing to Chance' },
-  [207] = { t = 'Quest', n = 'My Old Enemy' },
-  [208] = { t = 'Quest', n = 'Parting Thoughts' },
-  [209] = { t = 'Quest', n = 'Prevent the Accord' },
-  [210] = { t = 'Quest', n = 'Return to the High Commander' },
-  [211] = { t = 'Quest', n = 'Steamtank Surprise' },
-  [212] = { t = 'Quest', n = 'Strengthen the Ancients' },
-  [213] = { t = 'Quest', n = 'The End of the Line' },
-  [214] = { t = 'Quest', n = 'The Fate of the Dead' },
-  [215] = { t = 'Quest', n = 'The High Cultist' },
-  [216] = { t = 'Quest', n = 'The Noble\'s Crypt' },
-  [217] = { t = 'Quest', n = 'Through Fields of Flame' },
-  [218] = { t = 'Quest', n = 'To Fordragon Hold!' },
-  [219] = { t = 'Quest', n = 'Wanted: High Shaman Bloodpaw' },
-  [220] = { t = 'Quest', n = 'Wanted: Kreug Oathbreaker' },
-  [221] = { t = 'Quest', n = 'Wanted: Onslaught Commander Iustus' },
-  [222] = { t = 'Quest', n = 'The Fall of Magtheridon' },
-  [223] = { t = 'Quest', n = 'Alpha Worg' },
-  [224] = { t = 'Quest', n = 'Bring Down Those Shields' },
-  [225] = { t = 'Quest', n = 'Down to the Wire' },
-  [226] = { t = 'Quest', n = 'Get Me Outa Here!' },
-  [227] = { t = 'Quest', n = 'Hah... You\'re Not So Big Now!' },
-  [228] = { t = 'Quest', n = 'I\'ve Got a Flying Machine!' },
-  [229] = { t = 'Quest', n = 'It Was The Orcs, Honest!' },
-  [230] = { t = 'Quest', n = 'Preying Upon the Weak' },
-  [231] = { t = 'Quest', n = 'Scare the Guano Out of Them!' },
-  [232] = { t = 'Quest', n = 'All Hail the Conqueror of Skorn!' },
-  [233] = { t = 'Quest', n = 'Anguish of Nifflevar' },
-  [234] = { t = 'Quest', n = 'Back to the Airstrip' },
-  [235] = { t = 'Quest', n = 'Buying Some Time' },
-  [236] = { t = 'Quest', n = 'Call to Arms!' },
-  [237] = { t = 'Quest', n = 'Deploy the Shake-n-Quake!' },
-  [238] = { t = 'Quest', n = 'Dragonflayer Battle Plans' },
-  [239] = { t = 'Quest', n = 'Enemies of the Light' },
-  [240] = { t = 'Quest', n = 'Give Fizzcrank the News' },
-  [241] = { t = 'Quest', n = 'In Service to the Light' },
-  [242] = { t = 'Quest', n = 'It Goes to 11...' },
-  [243] = { t = 'Quest', n = 'It\'s Time for Action' },
-  [244] = { t = 'Quest', n = 'Last Rites' },
-  [245] = { t = 'Quest', n = 'Leader of the Deranged' },
-  [246] = { t = 'Quest', n = 'Lightning Infused Relics' },
-  [247] = { t = 'Quest', n = 'Master and Servant' },
-  [248] = { t = 'Quest', n = 'Might As Well Wipe Out the Scourge' },
-  [249] = { t = 'Quest', n = 'Mission: Eternal Flame' },
-  [250] = { t = 'Quest', n = 'Mission: Plague This!' },
-  [251] = { t = 'Quest', n = 'Necro Overlord Mezhen' },
-  [252] = { t = 'Quest', n = 'News From the East' },
-  [253] = { t = 'Quest', n = 'Plug the Sinkholes' },
-  [254] = { t = 'Quest', n = 'Re-Cursive' },
-  [255] = { t = 'Quest', n = 'Repurposed Technology' },
-  [256] = { t = 'Quest', n = 'Rescuing the Rescuers' },
-  [257] = { t = 'Quest', n = 'Return to Valgarde' },
-  [258] = { t = 'Quest', n = 'Stop the Ascension!' },
-  [259] = { t = 'Quest', n = 'Surrounded!' },
-  [260] = { t = 'Quest', n = 'Take No Chances' },
-  [261] = { t = 'Quest', n = 'The Delicate Sound of Thunder' },
-  [262] = { t = 'Quest', n = 'The Frost Wyrm and its Master' },
-  [263] = { t = 'Quest', n = 'The Gearmaster' },
-  [264] = { t = 'Quest', n = 'The Hunt is On' },
-  [265] = { t = 'Quest', n = 'The Late William Allerton' },
-  [266] = { t = 'Quest', n = 'The Shining Light' },
-  [267] = { t = 'Quest', n = 'The Siege' },
-  [268] = { t = 'Quest', n = 'The Yeti Next Door' },
-  [269] = { t = 'Quest', n = 'There Exists No Honor Among Birds' },
-  [270] = { t = 'Quest', n = 'There\'s Something Going On In Those Caves' },
-  [271] = { t = 'Quest', n = 'Two Wrongs...' },
-  [272] = { t = 'Quest', n = 'Blast the Infernals!' },
-  [273] = { t = 'Quest', n = 'News of Victory' },
-  [274] = { t = 'Quest', n = 'Teron Gorefiend, I am...' },
-  [275] = { t = 'Quest', n = 'Wanted: Durn the Hungerer' },
-  [276] = { t = 'Quest', n = 'Cho\'war the Pillager' },
-  [277] = { t = 'Quest', n = 'Crush the Bloodmaul Camp!' },
-  [278] = { t = 'Quest', n = 'Cutting Your Teeth' },
-  [279] = { t = 'Quest', n = 'Gauging the Resonant Frequency' },
-  [280] = { t = 'Quest', n = 'Gorgrom the Dragon-Eater' },
-  [281] = { t = 'Quest', n = 'Into the Draenethyst Mine' },
-  [282] = { t = 'Quest', n = 'Planting the Banner' },
-  [283] = { t = 'Quest', n = 'Protecting Our Own' },
-  [284] = { t = 'Quest', n = 'Ride the Lightning' },
-  [285] = { t = 'Quest', n = 'Ridgespine Menace' },
-  [286] = { t = 'Quest', n = 'Show Them Gnome Mercy!' },
-  [287] = { t = 'Quest', n = 'Showdown' },
-  [288] = { t = 'Quest', n = 'The Bladespire Ogres' },
-  [289] = { t = 'Quest', n = 'The Den Mother' },
-  [290] = { t = 'Quest', n = 'The Ravaged Caravan' },
-  [291] = { t = 'Quest', n = 'What Came First, the Drake or the Egg?' },
-  [292] = { t = 'Quest', n = 'Corki\'s Gone Missing Again!' },
-  [293] = { t = 'Quest', n = 'Message to Telaar' },
-  [294] = { t = 'Quest', n = 'Ortor My Old Friend...' },
-  [295] = { t = 'Quest', n = 'Solving the Problem' },
-  [296] = { t = 'Quest', n = 'Stopping the Spread' },
-  [297] = { t = 'Quest', n = 'The Twin Clefts of Nagrand' },
-  [298] = { t = 'Quest', n = 'Torgos!' },
-  [299] = { t = 'Quest', n = 'Escape from Firewing Point!' },
-  [300] = { t = 'Quest', n = 'Kill the Shadow Council!' },
-  [301] = { t = 'Quest', n = 'Letting Earthbinder Tavgren Know' },  
-}
 
 COLLECTION_CAMERA = {
 	[LE_TRANSMOG_COLLECTION_TYPE_HEAD] = { zoom = 1, rotation = 0.61, x = 2.9, y = 0, z = -0.75, cameraID = 98 },
@@ -1257,6 +953,7 @@ end
 function WardrobeCollectionFrame_SetActiveCategory(category)
 	WardrobeCollectionFrame_ChangeModelsSlot(WardrobeCollectionFrame.activeCategory, category);
 	WardrobeCollectionFrame.activeCategory = category;
+	C_TransmogCollection.SetFilterCategory(category);
 	WardrobeCollectionFrame_GetVisualsList();
 	WardrobeCollectionFrame_UpdateWeaponDropDown();
 
@@ -1321,7 +1018,7 @@ function WardrobeCollectionFrame_SortVisuals()
 		if ( source1.isHideVisual ~= source2.isHideVisual ) then
 			return source1.isHideVisual;
 		end
-		return source1.visualID > source2.visualID;
+		return source1.uiOrder > source2.uiOrder;
 	end
 
 	table.sort(WardrobeCollectionFrame.filteredVisualsList, comparison);
@@ -1661,6 +1358,16 @@ function WardrobeCollectionFrameModel_OnLeave(self)
 	GameTooltip:Hide();
 end
 
+local function GetDropDifficulties(drop)
+	local text = drop.difficulties[1];
+	if ( text ) then
+		for i = 2, #drop.difficulties do
+			text = text..", "..drop.difficulties[i];
+		end
+	end
+	return text;
+end
+
 function WardrobeCollectionFrameModel_SetTooltip()
 	local sources = WardrobeCollectionFrame_GetSortedAppearanceSources(WardrobeCollectionFrame.tooltipAppearanceID);
 	if ( not WardrobeCollectionFrame.tooltipIndexOffset ) then
@@ -1699,8 +1406,83 @@ function WardrobeCollectionFrameModel_SetTooltip()
 		headerIndex = mod(offset, #sources) + 1;
 		headerSourceID = sources[headerIndex].sourceID;
 	end
+
 	local name, nameColor, sourceText, sourceColor = WardrobeCollectionFrameModel_GetSourceTooltipInfo(sources[headerIndex]);
 	GameTooltip:SetText(name, nameColor.r, nameColor.g, nameColor.b);
+	if ( sources[headerIndex].sourceType == TRANSMOG_SOURCE_BOSS_DROP and not sources[headerIndex].isCollected ) then
+		local drops = C_TransmogCollection.GetAppearanceSourceDrops(headerSourceID);
+		if ( drops ) then
+			local showDifficulty = false;
+			if ( #drops == 1 ) then
+				sourceText = _G["TRANSMOG_SOURCE_"..TRANSMOG_SOURCE_BOSS_DROP]..": "..string.format(WARDROBE_TOOLTIP_ENCOUNTER_SOURCE, drops[1].encounter, drops[1].instance);
+				showDifficulty = true;
+			else
+				-- check if the drops are the same instance
+				local sameInstance = true;
+				local firstInstance = drops[1].instance;
+				for i = 2, #drops do
+					if ( drops[i].instance ~= firstInstance ) then
+						sameInstance = false;
+						break;
+					end
+				end
+				-- ok, if multiple instances check if it's the same tier if the drops have a single tier
+				local sameTier = true;
+				local firstTier = drops[1].tiers[1];
+				if ( not sameInstance and #drops[1].tiers == 1 ) then
+					for i = 2, #drops do
+						if ( #drops[i].tiers > 1 or drops[i].tiers[1] ~= firstTier ) then
+							sameTier = false;
+							break;
+						end
+					end
+				end
+				-- if same instance or tier, check if we have same difficulties and same instanceType
+				local sameDifficulty = false;
+				local sameInstanceType = false;
+				if ( sameInstance or sameTier ) then
+					sameDifficulty = true;
+					sameInstanceType = true;
+					for i = 2, #drops do
+						if ( drops[1].instanceType ~= drops[i].instanceType ) then
+							sameInstanceType = false;
+						end
+						if ( #drops[1].difficulties ~= #drops[i].difficulties ) then
+							sameDifficulty = false;
+						else
+							for j = 1, #drops[1].difficulties do
+								if ( drops[1].difficulties[j] ~= drops[i].difficulties[j] ) then
+									sameDifficulty = false;
+									break;
+								end
+							end
+						end
+					end
+				end
+				-- override sourceText if sameInstance or sameTier
+				if ( sameInstance ) then
+					sourceText = _G["TRANSMOG_SOURCE_"..TRANSMOG_SOURCE_BOSS_DROP]..": "..firstInstance;
+					showDifficulty = sameDifficulty;
+				elseif ( sameTier ) then
+					local location = firstTier;
+					if ( sameInstanceType ) then
+						if ( drops[1].instanceType == INSTANCE_TYPE_DUNGEON ) then
+							location = string.format(WARDROBE_TOOLTIP_DUNGEONS, location);
+						elseif ( drops[1].instanceType == INSTANCE_TYPE_RAID ) then
+							location = string.format(WARDROBE_TOOLTIP_RAIDS, location);
+						end
+					end
+					sourceText = _G["TRANSMOG_SOURCE_"..TRANSMOG_SOURCE_BOSS_DROP]..": "..location;
+				end
+			end
+			if ( showDifficulty ) then
+				local diffText = GetDropDifficulties(drops[1]);
+				if ( diffText ) then
+					sourceText = sourceText.." "..string.format(PARENS_TEMPLATE, diffText);
+				end
+			end
+		end
+	end
 	GameTooltip:AddLine(sourceText, sourceColor.r, sourceColor.g, sourceColor.b, 1, 1);
 
 	local useError;
@@ -1748,18 +1530,8 @@ function WardrobeCollectionFrameModel_GetSourceTooltipInfo(source)
 	if ( source.isCollected ) then
 		sourceText = COLLECTED;
 		sourceColor = GREEN_FONT_COLOR;
-	elseif ( not LOCALE_zhCN ) then
-		local sourceData = TEMP_SOURCES[mod(source.sourceID - 1, #TEMP_SOURCES) + 1];
-		sourceText = sourceData.t;
-		if ( i == 1 ) then
-			sourceText = sourceData.t..": "..sourceData.n;
-			if ( sourceData.l ) then
-				sourceText = sourceText.." in "..sourceData.l;
-			end
-		end
-		sourceColor = HIGHLIGHT_FONT_COLOR;
 	else
-		sourceText = " ";
+		sourceText = _G["TRANSMOG_SOURCE_"..source.sourceType];
 		sourceColor = HIGHLIGHT_FONT_COLOR;
 	end
 
@@ -2050,6 +1822,76 @@ function WardrobeCollectionFrameSearchBox_OnTextChanged(self)
 	end
 	
 	WardrobeCollectionFrame_RestartSearchTracking();
+end
+
+-- ***** FILTER
+
+function WardrobeFilterDropDown_OnLoad(self)
+	UIDropDownMenu_Initialize(self, WardrobeFilterDropDown_Initialize, "MENU");
+end
+
+function WardrobeFilterDropDown_Initialize(self, level)
+	local info = UIDropDownMenu_CreateInfo();
+	info.keepShownOnClick = true;
+
+	if level == 1 then
+		info.text = COLLECTED
+		info.func = function(_, _, _, value)
+						C_TransmogCollection.SetCollectedShown(value);
+					end 
+		info.checked = C_TransmogCollection.GetCollectedShown();
+		info.isNotRadio = true;
+		UIDropDownMenu_AddButton(info, level)
+
+		info.text = NOT_COLLECTED
+		info.func = function(_, _, _, value)
+						C_TransmogCollection.SetUncollectedShown(value);
+					end 
+		info.checked = C_TransmogCollection.GetUncollectedShown();
+		info.isNotRadio = true;
+		UIDropDownMenu_AddButton(info, level)
+
+		info.checked = 	nil;
+		info.isNotRadio = nil;
+		info.func =  nil;
+		info.hasArrow = true;
+		info.notCheckable = true;
+
+		info.text = SOURCES
+		info.value = 1;
+		UIDropDownMenu_AddButton(info, level)
+	else
+		if UIDROPDOWNMENU_MENU_VALUE == 1 then
+			info.hasArrow = false;
+			info.isNotRadio = true;
+			info.notCheckable = true;
+
+			info.text = CHECK_ALL
+			info.func = function()
+							C_TransmogCollection.SetAllSourceTypeFilters(true);
+							UIDropDownMenu_Refresh(WardrobeFilterDropDown, 1, 2);
+						end
+			UIDropDownMenu_AddButton(info, level)
+			
+			info.text = UNCHECK_ALL
+			info.func = function()
+							C_TransmogCollection.SetAllSourceTypeFilters(false);
+							UIDropDownMenu_Refresh(WardrobeFilterDropDown, 1, 2);
+						end
+			UIDropDownMenu_AddButton(info, level)
+			info.notCheckable = false;
+
+			local numSources = C_TransmogCollection.GetNumTransmogSources();
+			for i = 1, numSources do
+				info.text = _G["TRANSMOG_SOURCE_"..i];
+				info.func = function(_, _, _, value)
+							C_TransmogCollection.SetSourceTypeFilter(i, value);
+						end
+				info.checked = function() return not C_TransmogCollection.IsSourceTypeFilterChecked(i) end;
+				UIDropDownMenu_AddButton(info, level);
+			end
+		end
+	end
 end
 
 -- ***** OUTFITS

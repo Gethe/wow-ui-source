@@ -5,9 +5,22 @@
 	<Button name="GarrisonTalentButtonTemplate" virtual="true" mixin="GarrisonTalentButtonMixin">
 		<Size x="40" y="40"/>
 		<Layers>
-			<Layer level="ARTWORK">
-				<Texture parentKey="Icon">
+			<Layer level="ARTWORK" textureSubLevel="0">
+				<Texture parentKey="Icon" >
 					<Size x="40" y="40"/>
+				</Texture>
+			</Layer>
+			<Layer level="ARTWORK" textureSubLevel="1">
+				<Texture parentKey="CooldownBackground" textureSubLevel="1">
+					<Color a="0.7" r="0.0" g="0.0" b="0.0"/>
+				</Texture>
+			</Layer>
+			<Layer level="ARTWORK" textureSubLevel="2">
+				<Texture parentKey="CooldownTimerBackground" atlas="orderhalltalents-timer-bg" textureSubLevel="2">
+					<Size x="40" y="40"/>
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
 				</Texture>
 			</Layer>
 			<Layer level="OVERLAY">
@@ -19,11 +32,12 @@
 			</Layer>
 		</Layers>
 		<Frames>
-			<Cooldown parentKey="Cooldown" inherits="CooldownFrameTemplate" reverse="false" hideCountdownNumbers="true">
+			<Cooldown parentKey="Cooldown" reverse="true" hideCountdownNumbers="true">
 				<Size x="40" y="40"/>
 				<Anchors>
 					<Anchor point="CENTER"/>
 				</Anchors>
+				<SwipeTexture file="Interface\Garrison\orderhalltalents-timer-fill"/>
 			</Cooldown>
 		</Frames>
 		<Scripts>
@@ -38,7 +52,7 @@
 
 
 	<Frame name="OrderHallTalentFrame" inherits="PortraitFrameTemplate" toplevel="true" enableMouse="true" parent="UIParent" hidden="true" mixin="OrderHallTalentFrameMixin">
-		<Size x="539" y="425"/>
+		<Size x="334" y="445"/>
 		<Scripts>
 			<OnLoad method="OnLoad"/>
 			<OnShow method="OnShow"/>
@@ -51,7 +65,7 @@
 		<Layers>
 			<Layer level="BACKGROUND">
 				<Texture parentKey="ClassBackground">
-					<Size x="527" y="362"/>
+					<Size x="322" y="382"/>
 					<Anchors>
 						<Anchor point="TOPLEFT" relativeTo="OrderHallTalentFrameBg" x="4" y="-40"/>
 					</Anchors>

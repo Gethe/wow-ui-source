@@ -631,10 +631,10 @@ end
 
 function ObjectiveTracker_Initialize(self)
 	self.MODULES = {	SCENARIO_CONTENT_TRACKER_MODULE,
-						BONUS_OBJECTIVE_TRACKER_MODULE,
-						WORLD_QUEST_TRACKER_MODULE,
 						AUTO_QUEST_POPUP_TRACKER_MODULE,
 						QUEST_TRACKER_MODULE,
+						BONUS_OBJECTIVE_TRACKER_MODULE,
+						WORLD_QUEST_TRACKER_MODULE,
 						ACHIEVEMENT_TRACKER_MODULE,
 	};
 	
@@ -917,41 +917,6 @@ function ObjectiveTracker_CanFitBlock(block, header)
 	return (blocksFrame.contentsHeight + totalHeight) <= blocksFrame.maxHeight;
 end
 
-local function MoveBonusObjectivesBelowQuests()
-	local moduleAnchorOrder = {};
-
-	-- These share headers
-	if QUEST_TRACKER_MODULE.firstBlock then
-		table.insert(moduleAnchorOrder, QUEST_TRACKER_MODULE);
-	elseif AUTO_QUEST_POPUP_TRACKER_MODULE.firstBlock then
-		table.insert(moduleAnchorOrder, AUTO_QUEST_POPUP_TRACKER_MODULE);
-	end
-
-	if WORLD_QUEST_TRACKER_MODULE.firstBlock then
-		table.insert(moduleAnchorOrder, WORLD_QUEST_TRACKER_MODULE);
-	end
-
-	if BONUS_OBJECTIVE_TRACKER_MODULE.firstBlock then
-		table.insert(moduleAnchorOrder, BONUS_OBJECTIVE_TRACKER_MODULE);
-	end
-
-	if ACHIEVEMENT_TRACKER_MODULE.firstBlock then
-		table.insert(moduleAnchorOrder, ACHIEVEMENT_TRACKER_MODULE);
-	end
-
-	if #moduleAnchorOrder == 0 then
-		return;
-	end
-
-	for i, module in ipairs(moduleAnchorOrder) do
-		module.Header:ClearAllPoints();
-	end
-
-	for i, module in ipairs(moduleAnchorOrder) do
-		AnchorBlock(module.Header, moduleAnchorOrder[i - 1] and moduleAnchorOrder[i - 1].lastBlock or nil);
-	end
-end
-
 -- ***** SLIDING
 
 function ObjectiveTracker_SlideBlock(block, slideData)
@@ -1103,10 +1068,6 @@ function ObjectiveTracker_Update(reason, id)
 		end
 	end
 	
-	if ( not C_Scenario.IsInScenario() and ( BONUS_OBJECTIVE_TRACKER_MODULE.BlocksFrame.contentsHeight > 0 or WORLD_QUEST_TRACKER_MODULE.BlocksFrame.contentsHeight > 0 ) ) then
-		MoveBonusObjectivesBelowQuests();
-	end
-
 	-- hide unused headers
 	for i = 1, #tracker.MODULES do
 		ObjectiveTracker_CheckAndHideHeader(tracker.MODULES[i].Header);

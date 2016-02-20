@@ -6,9 +6,7 @@
 		IMPORTANT-->
 	<Button name="PlayerFrame" frameStrata="LOW" toplevel="true" movable="true" inherits="SecureUnitButtonTemplate" parent="UIParent">
 		<Size x="232" y="100"/>
-		<Anchors>
-			<Anchor point="TOPLEFT" x="-19" y="-4"/>
-		</Anchors>
+		<!-- This frame gets positioned in UIParent_UpdateTopFramePositions() -->
 		<HitRectInsets>
 			<AbsInset left="6" right="0" top="4" bottom="9"/>
 		</HitRectInsets>
@@ -50,6 +48,7 @@
 							<Layer level="BACKGROUND">
 								<Texture name="PlayerFrameMyHealPredictionBar" inherits="MyHealPredictionBarTemplate"/>
 								<Texture name="PlayerFrameOtherHealPredictionBar" inherits="OtherHealPredictionBarTemplate"/>
+								<Texture name="PlayerFrameManaCostPredictionBar" inherits="MyManaCostPredictionBarTemplate"/>
 								<Texture name="$parentHealAbsorbBar" inherits="HealAbsorbBarTemplate"/>
 								<Texture name="$parentHealAbsorbBarLeftShadow" inherits="HealAbsorbBarLeftShadowTemplate"/>
 								<Texture name="$parentHealAbsorbBarRightShadow" inherits="HealAbsorbBarRightShadowTemplate"/>
@@ -271,7 +270,7 @@
 							<OnEnter>
 								GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
 								GameTooltip:SetText(self.tooltip, nil, nil, nil, nil, true);
-							</OnEnter>						
+							</OnEnter>
 							<OnLeave function="GameTooltip_Hide"/>
 						</Scripts>
 					</Frame>

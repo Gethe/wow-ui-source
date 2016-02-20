@@ -570,6 +570,16 @@ function PanelTemplates_EnableTab(frame, index)
 	PanelTemplates_UpdateTabs(frame);
 end
 
+function PanelTemplates_HideTab(frame, index)
+	local tab = GetTabByIndex(frame, index);
+	tab:Hide();
+end
+
+function PanelTemplates_ShowTab(frame, index)
+	local tab = GetTabByIndex(frame, index);
+	tab:Show();
+end
+
 function PanelTemplates_DeselectTab(tab)
 	local name = tab:GetName();
 	

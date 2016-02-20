@@ -529,9 +529,7 @@
 	</StatusBar>
 
 	<Button name="TargetFrame" inherits="TargetFrameTemplate" movable="true">
-		<Anchors>
-			<Anchor point="TOPLEFT" x="250" y="-4"/>
-		</Anchors>
+		<!-- This frame gets positioned in UIParent_UpdateTopFramePositions() -->
 		<Frames>
 			<Frame name="$parentPowerBarAlt" parentKey="powerBarAlt" inherits="UnitPowerBarAltTemplate">
 				<Anchors>
@@ -561,6 +559,7 @@
 				self:RegisterEvent("PLAYER_TARGET_CHANGED");
 				self.threatNumericIndicator:SetScript("OnShow", function() TargetFrame_UpdateAuras(self) end);
 				self.threatNumericIndicator:SetScript("OnHide", function() TargetFrame_UpdateAuras(self) end);
+				UIParent_UpdateTopFramePositions();
 			</OnLoad>
 			<OnDragStart function="TargetFrame_OnDragStart"/>
 			<OnDragStop function="TargetFrame_OnDragStop"/>
