@@ -48,15 +48,24 @@ function QuestChoiceFrame_OnLoad(self)
 	self:RegisterEvent("PLAYER_ENTERING_WORLD");
 	self:RegisterEvent("PLAYER_DEAD");
 	self:RegisterEvent("QUEST_CHOICE_CLOSE");
-	QuestChoiceFrame_Update(self);
 end
 
 function QuestChoiceFrame_OnEvent(self, event) 
 	if (event == "QUEST_CHOICE_UPDATE") then
-		QuestChoiceFrame_Update(self)
+		QuestChoiceFrame_SetPendingUpdate(self);
 	elseif (event == "PLAYER_DEAD" or event == "PLAYER_ENTERING_WORLD" or event=="QUEST_CHOICE_CLOSE") then
 		HideUIPanel(self);
 	end
+end
+
+function QuestChoiceFrame_OnUpdate(self, elapsed)
+	if self.hasPendingUpdate then
+		QuestChoiceFrame_Update(self);
+	end
+end
+
+function QuestChoiceFrame_SetPendingUpdate(self)
+	self.hasPendingUpdate = true;
 end
 
 function QuestChoiceFrame_Show()
@@ -109,9 +118,10 @@ function QuestChoiceFrameOptionButton_OnLeave(self)
 end
 
 function QuestChoiceFrame_Update(self)
-	
+	self.hasPendingUpdate = false;
+
 	local choiceID, questionText, numOptions = GetQuestChoiceInfo();
-	if (not choiceID or choiceID==0) then
+	if (not choiceID or choiceID == 0) then
 		self:Hide();
 		return;
 	end
@@ -138,16 +148,13 @@ function QuestChoiceFrame_Update(self)
 	
 	--make window taller if there is too much stuff
 	local maxHeight = INIT_OPTION_HEIGHT;
-	local currHeight;
 	for i=1, numOptions do
 		local option = QuestChoiceFrame["Option"..i];
-		currHeight = OPTION_STATIC_HEIGHT;
-		if option.Header:IsShown() then
-			currHeight = currHeight + 36;
-		end
+		local currHeight = OPTION_STATIC_HEIGHT;
+
 		currHeight = currHeight + option.OptionText:GetContentHeight();
-		currHeight = currHeight + option.Rewards:GetHeight();
-		maxHeight = max(currHeight, maxHeight);
+		currHeight = currHeight + option.Rewards:GetHeight() + 25;
+		maxHeight = math.max(currHeight, maxHeight);
 	end
 	for i=1, numOptions do
 		local option = QuestChoiceFrame["Option"..i];
@@ -187,7 +194,9 @@ function QuestChoiceFrame_ShowRewards(numOptions)
 				SetItemButtonTexture(rewardFrame.Item, texture);
 				SetItemButtonQuality(rewardFrame.Item, quality, itemID);
 				rewardFrame.Item.itemLink = itemLink;
-				height = height + rewardFrame.Item:GetHeight()
+				height = height + rewardFrame.Item:GetHeight();
+			else
+				rewardFrame.Item:Hide();
 			end
 		else
 			rewardFrame.Item:Hide();

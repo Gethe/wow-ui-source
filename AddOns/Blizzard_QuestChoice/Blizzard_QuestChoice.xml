@@ -3,90 +3,90 @@
 <!-- Patchwerk
 size=256,512
 <Texture name="_question-container-htile" file="Interface\QuestionFrame\Question-HTile" virtual="true" horizTile="true" >
-	<Size x="256" y="85"/>	
-	<TexCoords left="0.00000000" right="1.00000000" top="0.00195313" bottom="0.16796875"/>	
+	<Size x="256" y="85"/>
+	<TexCoords left="0.00000000" right="1.00000000" top="0.00195313" bottom="0.16796875"/>
 </Texture>
 <Texture name="_question-bottomtile" file="Interface\QuestionFrame\Question-HTile" virtual="true" horizTile="true" >
-	<Size x="256" y="86"/>	
-	<TexCoords left="0.00000000" right="1.00000000" top="0.17187500" bottom="0.33984375"/>	
+	<Size x="256" y="86"/>
+	<TexCoords left="0.00000000" right="1.00000000" top="0.17187500" bottom="0.33984375"/>
 </Texture>
 <Texture name="_question-toptile" file="Interface\QuestionFrame\Question-HTile" virtual="true" horizTile="true" >
-	<Size x="256" y="91"/>	
-	<TexCoords left="0.00000000" right="1.00000000" top="0.34375000" bottom="0.52148438"/>	
+	<Size x="256" y="91"/>
+	<TexCoords left="0.00000000" right="1.00000000" top="0.34375000" bottom="0.52148438"/>
 </Texture>
 size=256,256
 <Texture name="!question-lefttile" file="Interface\QuestionFrame\Question-VTile" virtual="true" vertTile="true" >
-	<Size x="93" y="256"/>	
-	<TexCoords left="0.00390625" right="0.36718750" top="0.00000000" bottom="1.00000000"/>	
+	<Size x="93" y="256"/>
+	<TexCoords left="0.00390625" right="0.36718750" top="0.00000000" bottom="1.00000000"/>
 </Texture>
 <Texture name="!question-righttile" file="Interface\QuestionFrame\Question-VTile" virtual="true" vertTile="true" >
-	<Size x="94" y="256"/>	
-	<TexCoords left="0.37500000" right="0.74218750" top="0.00000000" bottom="1.00000000"/>	
+	<Size x="94" y="256"/>
+	<TexCoords left="0.37500000" right="0.74218750" top="0.00000000" bottom="1.00000000"/>
 </Texture>
 size=512,512
 <Texture name="question-banner" file="Interface\QuestionFrame\Question-Main" virtual="true" >
-	<Size x="303" y="66"/>	
-	<TexCoords left="0.00195313" right="0.59375000" top="0.00195313" bottom="0.13085938"/>	
+	<Size x="303" y="66"/>
+	<TexCoords left="0.00195313" right="0.59375000" top="0.00195313" bottom="0.13085938"/>
 </Texture>
 <Texture name="question-left-hide" file="Interface\QuestionFrame\Question-Main" virtual="true" >
-	<Size x="86" y="39"/>	
-	<TexCoords left="0.59765625" right="0.76562500" top="0.00195313" bottom="0.07812500"/>	
+	<Size x="86" y="39"/>
+	<TexCoords left="0.59765625" right="0.76562500" top="0.00195313" bottom="0.07812500"/>
 </Texture>
 <Texture name="question-right-hide" file="Interface\QuestionFrame\Question-Main" virtual="true" >
-	<Size x="61" y="32"/>	
-	<TexCoords left="0.76953125" right="0.88867188" top="0.00195313" bottom="0.06445313"/>	
+	<Size x="61" y="32"/>
+	<TexCoords left="0.76953125" right="0.88867188" top="0.00195313" bottom="0.06445313"/>
 </Texture>
 <Texture name="question-top-hide" file="Interface\QuestionFrame\Question-Main" virtual="true" >
-	<Size x="33" y="66"/>	
-	<TexCoords left="0.89257813" right="0.95703125" top="0.00195313" bottom="0.13085938"/>	
+	<Size x="33" y="66"/>
+	<TexCoords left="0.89257813" right="0.95703125" top="0.00195313" bottom="0.13085938"/>
 </Texture>
 <Texture name="question-container-right" file="Interface\QuestionFrame\Question-Main" virtual="true" >
-	<Size x="220" y="85"/>	
-	<TexCoords left="0.00195313" right="0.43164063" top="0.13476563" bottom="0.30078125"/>	
+	<Size x="220" y="85"/>
+	<TexCoords left="0.00195313" right="0.43164063" top="0.13476563" bottom="0.30078125"/>
 </Texture>
 <Texture name="question-container-left" file="Interface\QuestionFrame\Question-Main" virtual="true" >
-	<Size x="219" y="85"/>	
-	<TexCoords left="0.43554688" right="0.86328125" top="0.13476563" bottom="0.30078125"/>	
+	<Size x="219" y="85"/>
+	<TexCoords left="0.43554688" right="0.86328125" top="0.13476563" bottom="0.30078125"/>
 </Texture>
 <Texture name="question-lowerleft" file="Interface\QuestionFrame\Question-Main" virtual="true" >
-	<Size x="209" y="158"/>	
-	<TexCoords left="0.00195313" right="0.41015625" top="0.30468750" bottom="0.61328125"/>	
+	<Size x="209" y="158"/>
+	<TexCoords left="0.00195313" right="0.41015625" top="0.30468750" bottom="0.61328125"/>
 </Texture>
 <Texture name="question-upperleft" file="Interface\QuestionFrame\Question-Main" virtual="true" >
-	<Size x="209" y="158"/>	
-	<TexCoords left="0.00195313" right="0.41015625" top="0.61718750" bottom="0.92578125"/>	
+	<Size x="209" y="158"/>
+	<TexCoords left="0.00195313" right="0.41015625" top="0.61718750" bottom="0.92578125"/>
 </Texture>
 <Texture name="question-lowerright" file="Interface\QuestionFrame\Question-Main" virtual="true" >
-	<Size x="209" y="158"/>	
-	<TexCoords left="0.41406250" right="0.82226563" top="0.30468750" bottom="0.61328125"/>	
+	<Size x="209" y="158"/>
+	<TexCoords left="0.41406250" right="0.82226563" top="0.30468750" bottom="0.61328125"/>
 </Texture>
 <Texture name="question-bottom-hide" file="Interface\QuestionFrame\Question-Main" virtual="true" >
-	<Size x="33" y="90"/>	
-	<TexCoords left="0.82617188" right="0.89062500" top="0.30468750" bottom="0.48046875"/>	
+	<Size x="33" y="90"/>
+	<TexCoords left="0.82617188" right="0.89062500" top="0.30468750" bottom="0.48046875"/>
 </Texture>
 <Texture name="question-upperright" file="Interface\QuestionFrame\Question-Main" virtual="true" >
-	<Size x="208" y="158"/>	
-	<TexCoords left="0.41406250" right="0.82031250" top="0.61718750" bottom="0.92578125"/>	
+	<Size x="208" y="158"/>
+	<TexCoords left="0.41406250" right="0.82031250" top="0.61718750" bottom="0.92578125"/>
 </Texture>
 -->
 	<Script file="Blizzard_QuestChoice.lua"/>
-	
+
 	<!-- Art pieces to hide border seams -->
 	<Texture name="QuestChoiceLeftHide" file="Interface\QuestionFrame\Question-Main" virtual="true">
-		<Size x="86" y="39"/>	
-		<TexCoords left="0.59765625" right="0.76562500" top="0.00195313" bottom="0.07812500"/>	
+		<Size x="86" y="39"/>
+		<TexCoords left="0.59765625" right="0.76562500" top="0.00195313" bottom="0.07812500"/>
 	</Texture>
 	<Texture name="QuestChoiceRightHide" file="Interface\QuestionFrame\Question-Main" virtual="true">
-		<Size x="61" y="32"/>	
-		<TexCoords left="0.76953125" right="0.88867188" top="0.00195313" bottom="0.06445313"/>	
+		<Size x="61" y="32"/>
+		<TexCoords left="0.76953125" right="0.88867188" top="0.00195313" bottom="0.06445313"/>
 	</Texture>
 	<Texture name="QuestChoiceTopHide" file="Interface\QuestionFrame\Question-Main" virtual="true">
-		<Size x="33" y="66"/>	
-		<TexCoords left="0.89257813" right="0.95703125" top="0.00195313" bottom="0.13085938"/>	
+		<Size x="33" y="66"/>
+		<TexCoords left="0.89257813" right="0.95703125" top="0.00195313" bottom="0.13085938"/>
 	</Texture>
 	<Texture name="QuestChoiceBottomHide" file="Interface\QuestionFrame\Question-Main" virtual="true" >
-		<Size x="33" y="90"/>	
-		<TexCoords left="0.82617188" right="0.89062500" top="0.30468750" bottom="0.48046875"/>	
+		<Size x="33" y="90"/>
+		<TexCoords left="0.82617188" right="0.89062500" top="0.30468750" bottom="0.48046875"/>
 	</Texture>
 
 	<Button name="QuestChoiceItemTemplate" virtual="true">
@@ -124,7 +124,7 @@ size=512,512
 		</Layers>
 		<Scripts>
 			<OnEnter function="QuestChoiceFrame_OnItemEnter" />
-			<OnLeave function="GameTooltip_Hide"/>	
+			<OnLeave function="GameTooltip_Hide"/>
 			<OnUpdate function="QuestChoiceFrame_OnItemUpdate"/>
 			<OnClick function="QuestChoiceFrame_OnItemModifiedClick"/>
 		</Scripts>
@@ -161,10 +161,10 @@ size=512,512
 						end
 					</OnEnter>
 					<OnLeave function="GameTooltip_Hide"/>
-				</Scripts>	
+				</Scripts>
 			</Frame>
 		</Frames>
-		
+
 	</Frame>
 	<Frame name="QuestChoiceReputationTemplate" virtual="true">
 		<Size x="200" y="15"/>
@@ -229,7 +229,7 @@ size=512,512
 					</Frame>
 				</Frames>
 			</Frame>
-			<Frame parentKey="ReputationsFrame" hidden="true">					
+			<Frame parentKey="ReputationsFrame" hidden="true">
 				<Size x="210" y="15"/>
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeKey="$parent.Currencies" relativePoint="BOTTOMLEFT" y="-8"/>
@@ -241,11 +241,22 @@ size=512,512
 						</Anchors>
 					</Frame>
 				</Frames>
-			</Frame>			
+			</Frame>
 		</Frames>
 	</Frame>
 	<Button name="QuestChoiceOptionTemplate" virtual="true">
 		<Size x="210" y="268"/>
+		<Layers>
+			<Layer level="OVERLAY">
+				<Texture parentKey="Artwork">
+					<Size x="256" y="128"/>
+					<!-- Actual art should always be 200x100, centered in 256x128-->
+					<Anchors>
+						<Anchor point="TOP"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
 		<Frames>
 			<Button parentKey="OptionButton" inherits="UIPanelButtonTemplate">
 				<Size x="175" y="22"/>
@@ -292,8 +303,9 @@ size=512,512
 				</Layers>
 			</Frame>
 			<SimpleHTML parentKey="OptionText">
-				<Size x="200" y="140"/>
+				<Size x="200"/>
 				<Anchors>
+					<Anchor point="TOP" relativeKey="$parent.Artwork" relativePoint="BOTTOM" y="-8"/>
 					<Anchor point="BOTTOM" relativeKey="$parent.Rewards" relativePoint="TOP" y="35"/>
 				</Anchors>
 				<Scripts>
@@ -302,23 +314,13 @@ size=512,512
 					</OnHyperlinkClick>
 					<OnHyperlinkEnter function="QuestChoiceFrame_OnHyperlinkEnter"/>
 					<OnHyperlinkLeave function="GameTooltip_Hide"/>
-					<OnSizeChanged>QuestChoiceFrame_Update(self:GetParent():GetParent());</OnSizeChanged>
+					<OnSizeChanged>QuestChoiceFrame_SetPendingUpdate(self:GetParent():GetParent());</OnSizeChanged>
 				</Scripts>
 				<FontString inherits="GameFontBlack" justifyH="LEFT" justifyV="TOP"/>
 			</SimpleHTML>
 		</Frames>
-		<Layers>
-			<Layer level="OVERLAY">
-				<Texture parentKey="Artwork">
-					<Size x="256" y="128"/> <!-- Actual art should always be 200x100, centered in 256x128-->
-					<Anchors>
-						<Anchor point="BOTTOM" relativeKey="$parent.OptionText" relativePoint="TOP" y="-8"/>
-					</Anchors>
-				</Texture>
-			</Layer>
-		</Layers>
 	</Button>
-	
+
 	<Frame name="QuestChoiceFrame" frameStrata="HIGH" hidden="true" enableMouse="true" parent="UIParent" toplevel="true" inherits="HorizontalLayoutFrame">
 		<Size x="600" y="480"/>
 		<Anchors>
@@ -326,7 +328,7 @@ size=512,512
 		</Anchors>
 		<KeyValues>
 			<KeyValue key="fixedWidth" value="600" type="number"/>
-			<KeyValue key="expand" value="true" type="boolean"/> 
+			<KeyValue key="expand" value="true" type="boolean"/>
 			<KeyValue key="topPadding" value="150" type="number"/>
 			<KeyValue key="bottomPadding" value="50" type="number"/>
 			<KeyValue key="leftPadding" value="66" type="number"/>
@@ -336,28 +338,28 @@ size=512,512
 		<Layers>
 			<Layer level="BORDER">
 				<Texture parentKey="BottomLeftCorner" file="Interface\QuestionFrame\Question-Main" virtual="true" >
-					<Size x="209" y="158"/>	
+					<Size x="209" y="158"/>
 					<Anchors>
 						<Anchor point="BOTTOMLEFT"/>
 					</Anchors>
-					<TexCoords left="0.00195313" right="0.41015625" top="0.30468750" bottom="0.61328125"/>	
+					<TexCoords left="0.00195313" right="0.41015625" top="0.30468750" bottom="0.61328125"/>
 				</Texture>
 				<Texture parentKey="BottomRightCorner" file="Interface\QuestionFrame\Question-Main" virtual="true" >
-					<Size x="209" y="158"/>	
+					<Size x="209" y="158"/>
 					<Anchors>
 						<Anchor point="BOTTOMRIGHT"/>
 					</Anchors>
-					<TexCoords left="0.41406250" right="0.82226563" top="0.30468750" bottom="0.61328125"/>	
+					<TexCoords left="0.41406250" right="0.82226563" top="0.30468750" bottom="0.61328125"/>
 				</Texture>
 				<Texture parentKey="TopLeftCorner" file="Interface\QuestionFrame\Question-Main" virtual="true" >
-					<Size x="209" y="158"/>	
+					<Size x="209" y="158"/>
 					<Anchors>
 						<Anchor point="TOPLEFT"/>
 					</Anchors>
 					<TexCoords left="0.00195313" right="0.41015625" top="0.61718750" bottom="0.92578125"/>
 				</Texture>
 				<Texture parentKey="TopRightCorner" file="Interface\QuestionFrame\Question-Main" virtual="true" >
-					<Size x="208" y="158"/>	
+					<Size x="208" y="158"/>
 					<Anchors>
 						<Anchor point="TOPRIGHT" x="-1"/>
 					</Anchors>
@@ -366,36 +368,36 @@ size=512,512
 			</Layer>
 			<Layer level="BORDER" textureSubLevel="-1">
 				<Texture parentKey="BottomBorder" file="Interface\QuestionFrame\Question-HTile" horizTile="true" >
-					<Size x="256" y="86"/>	
+					<Size x="256" y="86"/>
 					<Anchors>
 						<Anchor point="BOTTOMLEFT" relativeKey="$parent.BottomLeftCorner" relativePoint="BOTTOMRIGHT" y="2"/>
 						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.BottomRightCorner" relativePoint="BOTTOMLEFT" y="2"/>
 					</Anchors>
-					<TexCoords left="0.00000000" right="1.00000000" top="0.17187500" bottom="0.33984375"/>	
+					<TexCoords left="0.00000000" right="1.00000000" top="0.17187500" bottom="0.33984375"/>
 				</Texture>
 				<Texture parentKey="TopBorder" file="Interface\QuestionFrame\Question-HTile" horizTile="true" >
-					<Size x="256" y="91"/>	
+					<Size x="256" y="91"/>
 					<Anchors>
 						<Anchor point="TOPLEFT" relativeKey="$parent.TopLeftCorner" relativePoint="TOPRIGHT" y="-1"/>
 						<Anchor point="TOPRIGHT" relativeKey="$parent.TopRightCorner" relativePoint="TOPLEFT" y="-1"/>
 					</Anchors>
-					<TexCoords left="0.00000000" right="1.00000000" top="0.34375000" bottom="0.52148438"/>	
+					<TexCoords left="0.00000000" right="1.00000000" top="0.34375000" bottom="0.52148438"/>
 				</Texture>
 				<Texture parentKey="LeftBorder" file="Interface\QuestionFrame\Question-VTile" vertTile="true" >
-					<Size x="93" y="256"/>	
+					<Size x="93" y="256"/>
 					<Anchors>
 						<Anchor point="TOPLEFT" relativeKey="$parent.TopLeftCorner" relativePoint="BOTTOMLEFT" x="2"/>
 						<Anchor point="BOTTOMLEFT" relativeKey="$parent.BottomLeftCorner" relativePoint="TOPLEFT" x="2"/>
 					</Anchors>
-					<TexCoords left="0.00390625" right="0.36718750" top="0.00000000" bottom="1.00000000"/>	
+					<TexCoords left="0.00390625" right="0.36718750" top="0.00000000" bottom="1.00000000"/>
 				</Texture>
 				<Texture parentKey="RightBorder" file="Interface\QuestionFrame\Question-VTile" vertTile="true" >
-					<Size x="94" y="256"/>	
+					<Size x="94" y="256"/>
 					<Anchors>
 						<Anchor point="TOPRIGHT" relativeKey="$parent.TopRightCorner" relativePoint="BOTTOMRIGHT"/>
 						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.BottomRightCorner" relativePoint="TOPRIGHT"/>
 					</Anchors>
-					<TexCoords left="0.37500000" right="0.74218750" top="0.00000000" bottom="1.00000000"/>	
+					<TexCoords left="0.37500000" right="0.74218750" top="0.00000000" bottom="1.00000000"/>
 				</Texture>
 			</Layer>
 			<Layer level="BORDER" textureSubLevel="2">
@@ -446,26 +448,26 @@ size=512,512
 			</Layer>
 			<Layer level="OVERLAY">
 				<Texture parentKey="QuestionFrameRight" file="Interface\QuestionFrame\Question-Main">
-					<Size x="220" y="85"/>	
+					<Size x="220" y="85"/>
 					<Anchors>
 						<Anchor point="TOPRIGHT" x="-42" y="-44"/>
 					</Anchors>
-					<TexCoords left="0.00195313" right="0.43164063" top="0.13476563" bottom="0.30078125"/>	
+					<TexCoords left="0.00195313" right="0.43164063" top="0.13476563" bottom="0.30078125"/>
 				</Texture>
 				<Texture parentKey="QuestionFrameLeft" file="Interface\QuestionFrame\Question-Main" >
-					<Size x="219" y="85"/>	
+					<Size x="219" y="85"/>
 					<Anchors>
 						<Anchor point="TOPLEFT" x="42" y="-44"/>
 					</Anchors>
-					<TexCoords left="0.43554688" right="0.86328125" top="0.13476563" bottom="0.30078125"/>	
+					<TexCoords left="0.43554688" right="0.86328125" top="0.13476563" bottom="0.30078125"/>
 				</Texture>
 				<Texture parentKey="QuestionFrameMiddle" file="Interface\QuestionFrame\Question-HTile" horizTile="true">
-					<Size x="256" y="85"/>	
+					<Size x="256" y="85"/>
 					<Anchors>
 						<Anchor point="TOPLEFT" relativeKey="$parent.QuestionFrameLeft" relativePoint="TOPRIGHT"/>
 						<Anchor point="TOPRIGHT" relativeKey="$parent.QuestionFrameRight" relativePoint="TOPLEFT"/>
 					</Anchors>
-					<TexCoords left="0.00000000" right="1.00000000" top="0.00195313" bottom="0.16796875"/>	
+					<TexCoords left="0.00000000" right="1.00000000" top="0.00195313" bottom="0.16796875"/>
 				</Texture>
 			</Layer>
 			<Layer level="OVERLAY" textureSubLevel="1">
@@ -507,6 +509,7 @@ size=512,512
 		<Scripts>
 			<OnLoad function="QuestChoiceFrame_OnLoad"/>
 			<OnEvent function="QuestChoiceFrame_OnEvent"/>
+			<OnUpdate function="QuestChoiceFrame_OnUpdate"/>
 			<OnShow>
 				PlaySound("igQuestListOpen");
 			</OnShow>

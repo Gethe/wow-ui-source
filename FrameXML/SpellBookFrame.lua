@@ -174,6 +174,7 @@ function SpellBookFrame_OnEvent(self, event, ...)
 		SpellBookFrame_OpenToPageForSlot(slot, OPEN_REASON_PENDING_GLYPH);
 	elseif ( event == "CANCEL_GLYPH_CAST" ) then
 		SpellBookFrame_ClearAbilityHighlights();
+		SpellFlyout:Hide();
 	elseif ( event == "ACTIVATE_GLYPH" ) then
 		local slot = ...;
 		SpellBookFrame_OpenToPageForSlot(slot, OPEN_REASON_ACTIVATED_GLYPH);
@@ -480,6 +481,9 @@ function SpellButton_OnClick(self, button)
 			else
 				AttachGlyphToSpell(spellID);
 			end
+		elseif (slotType == "FLYOUT") then
+			SpellFlyout:Toggle(spellID, self, "RIGHT", 1, false, self.offSpecID, true);
+			SpellFlyout:SetBorderColor(181/256, 162/256, 90/256);
 		end
 		return;
 	end
@@ -608,7 +612,7 @@ function SpellButton_UpdateButton(self)
 	local slotFrame = _G[name.."SlotFrame"];
 
 	-- Hide flyout if it's currently open
-	if (SpellFlyout:IsShown() and SpellFlyout:GetParent() == self)  then
+	if (SpellFlyout:IsShown() and SpellFlyout:GetParent() == self and not HasPendingGlyphCast() and not SpellFlyout.glyphActivating)  then
 		SpellFlyout:Hide();
 	end
 
@@ -955,22 +959,32 @@ function SpellBookFrame_OpenToPageForSlot(slot, reason)
 		end
 	end
 
+	local slotType, spellID = GetSpellBookItemInfo(slot, SpellBookFrame.bookType);
 	local relativeSlot = slot - SpellBookFrame.selectedSkillLineOffset;
 	local page = math.floor((relativeSlot - 1)/ SPELLS_PER_PAGE) + 1;
 	SPELLBOOK_PAGENUMBERS[SpellBookFrame.selectedSkillLine] = page;
 	SpellBookFrame_Update();
 	local id = relativeSlot - ( SPELLS_PER_PAGE * (page - 1) );
 	local button = SpellBook_GetButtonForID(id);
-	if (reason == OPEN_REASON_PENDING_GLYPH) then
-		button.AbilityHighlight:Show();
-		button.AbilityHighlightAnim:Play();
-	elseif (reason == OPEN_REASON_ACTIVATED_GLYPH) then
-		button.AbilityHighlightAnim:Stop();
-		button.AbilityHighlight:Hide();
-		button.GlyphActivate:Show();
-		button.GlyphIcon:Show();
-		button.GlyphTranslation:Show();
-		button.GlyphActivateAnim:Play();
+	if (slotType == "FLYOUT") then
+		if (SpellFlyout:IsShown() and SpellFlyout:GetParent() == button) then
+			SpellFlyout:Hide();
+		end
+
+		SpellFlyout:Toggle(spellID, button, "RIGHT", 1, false, button.offSpecID, true, reason);
+		SpellFlyout:SetBorderColor(181/256, 162/256, 90/256);
+	else
+		if (reason == OPEN_REASON_PENDING_GLYPH) then
+			button.AbilityHighlight:Show();
+			button.AbilityHighlightAnim:Play();
+		elseif (reason == OPEN_REASON_ACTIVATED_GLYPH) then
+			button.AbilityHighlightAnim:Stop();
+			button.AbilityHighlight:Hide();
+			button.GlyphActivate:Show();
+			button.GlyphIcon:Show();
+			button.GlyphTranslation:Show();
+			button.GlyphActivateAnim:Play();
+		end
 	end
 end
 

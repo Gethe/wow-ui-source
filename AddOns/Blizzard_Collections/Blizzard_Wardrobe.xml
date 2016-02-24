@@ -134,12 +134,17 @@
 				PlaySound("igMainMenuOptionCheckBoxOn");
 				WardrobeCollectionFrame_SetActiveSlot(self.slot, self.transmogType);
 			</OnClick>
+			<OnEnter>
+				GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+				GameTooltip:SetText(WEAPON_ENCHANTMENT);
+			</OnEnter>
+			<OnLeave function="GameTooltip_Hide"/>
 		</Scripts>
 	</Button>
 
 	<Frame name="WardrobeCollectionFrame" parent="CollectionsJournal" setAllPoints="true" hidden="true">
 		<Frames>
-			<EditBox name="$parentSearchBox" parentKey="searchBox" inherits="BagSearchBoxTemplate" letters="40">
+			<EditBox name="$parentSearchBox" parentKey="searchBox" inherits="BagSearchBoxTemplate" letters="40" motionScriptsWhileDisabled="true">
 				<Size x="115" y="20"/>
 				<Anchors>
 					<Anchor point="TOPRIGHT" x="-107" y="-35"/>
@@ -149,6 +154,15 @@
 					<OnHide function="WardrobeCollectionFrameSearchBox_OnHide"/>
 					<OnKeyDown function="WardrobeCollectionFrameSearchBox_OnKeyDown"/>
 					<OnTextChanged function="WardrobeCollectionFrameSearchBox_OnTextChanged"/>
+					<OnEnter>
+						if ( not self:IsEnabled() ) then
+							GameTooltip:ClearAllPoints();
+							GameTooltip:SetPoint("BOTTOM", self, "TOP", 0, 0);
+							GameTooltip:SetOwner(self, "ANCHOR_PRESERVE");
+							GameTooltip:SetText(WARDROBE_NO_SEARCH);
+						end
+					</OnEnter>
+					<OnLeave function="GameTooltip_Hide"/>
 				</Scripts>
 			</EditBox>
 			<Frame parentKey="searchProgressFrame" hidden="true">
@@ -365,6 +379,12 @@
 						PlaySound("igMainMenuOptionCheckBoxOn");
 						ToggleDropDownMenu(1, nil, WardrobeFilterDropDown, self, 74, 15);
 					</OnClick>
+					<OnEnable>
+						self.Icon:SetDesaturated(false);
+					</OnEnable>
+					<OnDisable>
+						self.Icon:SetDesaturated(true);
+					</OnDisable>
 				</Scripts>
 			</Button>
 			<Frame name="WardrobeFilterDropDown" parentKey="FilterDropDown" inherits="UIDropDownMenuTemplate">

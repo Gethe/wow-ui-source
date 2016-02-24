@@ -759,6 +759,7 @@ function WorldMap_TryCreatingBonusObjectivePOI(info, taskIconIndex)
 	taskPOI.Texture:SetDrawLayer("BACKGROUND");
 	taskPOI.TimeLowFrame:Hide();
 	taskPOI.CriteriaMatchGlow:Hide();
+	taskPOI.Glow:Hide();
 	taskPOI.worldQuest = false;
 
 	return taskPOI;
@@ -1579,14 +1580,15 @@ function WorldMap_AddQuestRewardsToTooltip(questID)
 
 		-- items
 		local numQuestRewards = GetNumQuestLogRewards(questID);
-		for i = 1, numQuestRewards do
-			local name, texture, numItems, quality, isUsable, itemID = GetQuestLogRewardInfo(i, questID);
+		if numQuestRewards > 0 then
+			if ( hasAnySingleLineRewards ) then
+				WorldMapTooltip:AddLine(" ");
+			end
+			local name, texture, numItems, quality, isUsable, itemID = GetQuestLogRewardInfo(1, questID); -- Only support one currently
 			if name and texture then
-				if ( hasAnySingleLineRewards ) then
-					WorldMapTooltip:AddLine(" ");
-				end
 				EmbeddedItemTooltip_SetItemByID(WorldMapTooltip.ItemTooltip, itemID);
-				break; -- Only support one currently
+			else
+				WorldMapTooltip:AddLine(RETRIEVING_DATA, RED_FONT_COLOR:GetRGB());
 			end
 		end
 	end

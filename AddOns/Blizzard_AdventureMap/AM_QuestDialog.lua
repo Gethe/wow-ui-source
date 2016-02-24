@@ -83,9 +83,9 @@ local MAX_REWARD_FRAMES = 6;
 function AdventureMapQuestChoiceDialogMixin:RefreshRewards()
 	self.rewardPool:ReleaseAll();
 
-	local artifactXP = GetQuestLogRewardArtifactXP(self.questID);
+	local artifactXP, artifactCategory = GetQuestLogRewardArtifactXP(self.questID);
 	if artifactXP > 0 then
-		local name, icon = C_ArtifactUI.GetArtifactXPRewardTargetInfo();
+		local name, icon = C_ArtifactUI.GetArtifactXPRewardTargetInfo(artifactCategory);
 		self:AddReward(BreakUpLargeNumbers(artifactXP), icon or "Interface\\Icons\\INV_Misc_QuestionMark", "Interface\\Artifacts\\ArtifactPower-QuestBorder", 0, "NumberFontNormal", ARTIFACT_XP_REWARD);
 	end
 

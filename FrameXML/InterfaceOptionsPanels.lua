@@ -1453,10 +1453,37 @@ NamePanelOptions = {
 	nameplateShowAll = { text = "UNIT_NAMEPLATES_AUTOMODE" },
 	nameplateShowSelf = { text = "DISPLAY_PERSONAL_RESOURCE" },
 	nameplateResourceOnTarget = { text = "DISPLAY_PERSONAL_RESOURCE_ON_ENEMY" },
-	nameplateGlobalScale = { text = "UNIT_NAMEPLATES_MAKE_LARGER" },
+	MakeLarger = { text = "UNIT_NAMEPLATES_MAKE_LARGER" },
 }
 
-function InterfaceOptionsNPCNamesDropDown_OnEvent (self, event, ...)
+function InterfaceOptionsLargerNamePlate_OnLoad(self)
+	function self:GetValue()
+		if self.value then
+			return self.value;
+		end
+		if math.abs(tonumber(GetCVar("NamePlateHorizontalScale")) - self.normalHorizontalScale) < .001 and math.abs(tonumber(GetCVar("NamePlateVerticalScale")) - self.normalVerticalScale) < .001 then
+			return "0";
+		end
+		return "1";
+	end
+
+	function self.setFunc(value)
+		if value == "1" then
+			SetCVar("NamePlateHorizontalScale", self.largeHorizontalScale);
+			SetCVar("NamePlateVerticalScale", self.largeVerticalScale);
+		else
+			SetCVar("NamePlateHorizontalScale", self.normalHorizontalScale);
+			SetCVar("NamePlateVerticalScale", self.normalVerticalScale);
+		end
+		NamePlateDriverMixin:ApplySizes();
+	end
+
+	self.type = CONTROLTYPE_CHECKBOX;
+	self.defaultValue = "0";
+	BlizzardOptionsPanel_RegisterControl(self, self:GetParent():GetParent());
+end
+
+function InterfaceOptionsNPCNamesDropDown_OnEvent(self, event, ...)
 	if ( event == "PLAYER_ENTERING_WORLD" ) then
 		local value = "2";
 		if ( GetCVarBool("UnitNameNPC") ) then

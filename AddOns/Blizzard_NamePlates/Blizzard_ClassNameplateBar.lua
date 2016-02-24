@@ -110,6 +110,20 @@ function ClassNameplateManaBar:OnEvent(event, arg1, arg2)
 		if (event == "UNIT_MAXPOWER") then
 			ClassNameplateBar.OnEvent(self, event, arg1, arg2);
 		end
+	elseif ( event == "UNIT_SPELLCAST_START" or event == "UNIT_SPELLCAST_STOP" or event == "UNIT_SPELLCAST_FAILED" ) then
+		local spellID = select(10, UnitCastingInfo("player"));
+		local cost = 0;
+		if ( event == "UNIT_SPELLCAST_START" ) then
+			local costTable = GetSpellPowerCost(spellID);
+			for _, costInfo in pairs(costTable) do
+				if (costInfo.type == self.powerType) then
+					cost = costInfo.cost;
+					break;
+				end
+			end
+		end
+		self.predictedPowerCost = cost;
+		self:SetupBar();
 	else
 		ClassNameplateBar.OnEvent(self, event, arg1, arg2);
 	end
@@ -119,8 +133,18 @@ function ClassNameplateManaBar:Setup()
 	self:RegisterUnitEvent("UNIT_DISPLAYPOWER", "player");
 	self:RegisterUnitEvent("UNIT_POWER_FREQUENT", "player");
 	self:RegisterUnitEvent("UNIT_MAXPOWER", "player");
+	self:RegisterUnitEvent("UNIT_SPELLCAST_START", unit);
+	self:RegisterUnitEvent("UNIT_SPELLCAST_STOP", unit);
+	self:RegisterUnitEvent("UNIT_SPELLCAST_FAILED", unit);
 	self:RegisterEvent("PLAYER_ENTERING_WORLD");
 	
+	local tex = self:GetStatusBarTexture();
+	local bar = self.ManaCostPredictionBar;
+
+	bar:ClearAllPoints();
+	bar:SetPoint("TOPLEFT", tex, "TOPRIGHT", 0, 0);
+	bar:SetPoint("BOTTOMLEFT", tex, "BOTTOMRIGHT", 0, 0);
+
 	self:Show();
 	NamePlateDriverFrame:SetClassNameplateManaBar(self);
 end
@@ -149,7 +173,8 @@ function ClassNameplateManaBar:SetupBar()
 	self.powerType = powerType;
 	self:UpdateMaxPower();
 	self:UpdatePower();
-	self.currValue = UnitPower("player", powerType);
+	local predictedCost = self.predictedPowerCost or 0;
+	self.currValue = UnitPower("player", self.powerType) - predictedCost;
 end
 
 function ClassNameplateManaBar:UpdateMaxPower()
@@ -159,11 +184,26 @@ function ClassNameplateManaBar:UpdateMaxPower()
 end
 
 function ClassNameplateManaBar:UpdatePower()
-	self:SetValue(UnitPower("player", self.powerType));
+	local predictedCost = self.predictedPowerCost or 0;
+	local currValue = UnitPower("player", self.powerType) - predictedCost;
+	self:SetValue(currValue);
+	if (predictedCost == 0) then
+		self.ManaCostPredictionBar:Hide();
+	else
+		local bar = self.ManaCostPredictionBar;
+
+		local totalWidth = self:GetWidth();
+		local _, totalMax = self:GetMinMaxValues();
+
+		local barSize = (predictedCost / totalMax) * totalWidth;
+		bar:SetWidth(barSize);
+		bar:Show();
+	end
 end
 
 function ClassNameplateManaBar_OnUpdate(self)
-	local currValue = UnitPower("player", self.powerType);
+	local predictedCost = self.predictedPowerCost or 0;
+	local currValue = UnitPower("player", self.powerType) - predictedCost;
 	if ( currValue ~= self.currValue ) then
 		-- Only show anim if change is more than 10%
 		if ( math.abs(currValue - self.currValue) / self.FeedbackFrame.maxValue > 0.1 ) then

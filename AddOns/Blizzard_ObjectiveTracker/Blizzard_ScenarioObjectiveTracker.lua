@@ -687,8 +687,9 @@ function SCENARIO_TRACKER_MODULE:AddProgressBar(block, line, criteriaIndex)
 			-- reward icon; try the first item
 			local _, texture = GetQuestLogRewardInfo(1, rewardQuestID);
 			-- artifact xp
-			if ( not texture and GetQuestLogRewardArtifactXP(rewardQuestID) > 0 ) then
-				local name, icon = C_ArtifactUI.GetArtifactXPRewardTargetInfo();
+			local artifactXP, artifactCategory = GetQuestLogRewardArtifactXP(rewardQuestID);
+			if ( not texture and artifactXP > 0 ) then
+				local name, icon = C_ArtifactUI.GetArtifactXPRewardTargetInfo(artifactCategory);
 				texture = icon or "Interface\\Icons\\INV_Misc_QuestionMark";
 			end
 			-- currency

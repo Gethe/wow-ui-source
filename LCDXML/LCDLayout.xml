@@ -42,14 +42,6 @@
 			<Font Size="LG_SMALL" Alignment="LG_RIGHT" MaxWidth="25" Wrap="false"/>
 			<Origin x="15" y="24" />
 		</LCDText>
-		<LCDText name="SPIRIT" text="SPI" id="10">
-			<Font Size="LG_SMALL" Alignment="LG_LEFT" MaxWidth="20" Wrap="false"/>
-			<Origin x="0" y="32" />
-		</LCDText>
-		<LCDText name="SPIRIT_FLD" id="11">
-			<Font Size="LG_SMALL" Alignment="LG_RIGHT" MaxWidth="25" Wrap="false"/>
-			<Origin x="15" y="32" />
-		</LCDText>
     <LCDSubscreen name="Melee" id="0">
       <!--<LCDText name="WEAPON_SKILL" text="WEAPON_SKILL" id="43">
         <Font Size="LG_SMALL" Alignment="LG_LEFT" MaxWidth="53" Wrap="false"/>
@@ -171,7 +163,7 @@
 			<Font Size="LG_SMALL" Alignment="LG_RIGHT" MaxWidth="35" Wrap="false"/>
 			<RelOrigin RelTo="SPELL_HIT_FLD" x="0" y="8" />
 		</LCDText>
-		
+
 		<LCDText name="MANA_REGEN" text="MANA_REGEN_ABBR" id="54">
 			<Font Size="LG_SMALL" Alignment="LG_LEFT" MaxWidth="27" Wrap="false"/>
 			<RelOrigin RelTo="SPELL_CRIT" x="0" y="8" />

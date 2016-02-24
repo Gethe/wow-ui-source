@@ -114,7 +114,7 @@ end
 
 function AuraButton_Update(buttonName, index, filter)
 	local unit = PlayerFrame.unit;
-	local name, rank, texture, count, debuffType, duration, expirationTime, _, _, _, spellId = UnitAura(unit, index, filter);
+	local name, rank, texture, count, debuffType, duration, expirationTime, _, _, _, spellId, _, _, _, _, timeMod = UnitAura(unit, index, filter);
 	local buffName = buttonName..index;
 	local buff = _G[buffName];
 	
@@ -175,13 +175,20 @@ function AuraButton_Update(buttonName, index, filter)
 			else
 				buff.duration:Hide();
 			end
+			
+			local timeLeft = (expirationTime - GetTime());
+			if(timeMod > 0) then
+				buff.timeMod = timeMod;
+				timeLeft = timeLeft / timeMod;
+			end
 
 			if ( not buff.timeLeft ) then
-				buff.timeLeft = expirationTime - GetTime();
+				buff.timeLeft = timeLeft;
 				buff:SetScript("OnUpdate", AuraButton_OnUpdate);
 			else
-				buff.timeLeft = expirationTime - GetTime();
-			end			
+				buff.timeLeft = timeLeft;
+			end
+
 			buff.expirationTime = expirationTime;	
 		else
 			buff.duration:Hide();
@@ -221,7 +228,13 @@ function AuraButton_OnUpdate(self)
 
 	-- Update duration
 	securecall("AuraButton_UpdateDuration", self, self.timeLeft); -- Taint issue with SecondsToTimeAbbrev 
-	self.timeLeft = max(self.expirationTime - GetTime(), 0);
+	
+	-- Update our timeLeft
+	local timeLeft = self.expirationTime - GetTime();
+	if ( self.timeMod > 0 ) then
+		timeLeft = timeLeft / self.timeMod;
+	end
+	self.timeLeft = max( timeLeft, 0 );
 
 	if ( BuffFrame.BuffFrameUpdateTime > 0 ) then
 		return;

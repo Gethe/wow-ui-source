@@ -2485,17 +2485,20 @@
 						</Scripts>
 					</Frame>
 					<CheckButton name="$parentMakeLarger" inherits="InterfaceOptionsCheckButtonTemplate">
+						<KeyValues>
+							<KeyValue key="label" value="MakeLarger" type="string"/>
+
+							<KeyValue key="normalHorizontalScale" value="1.0" type="number"/>
+							<KeyValue key="largeHorizontalScale" value="1.1" type="number"/>
+
+							<KeyValue key="normalVerticalScale" value="1.0" type="number"/>
+							<KeyValue key="largeVerticalScale" value="2.1" type="number"/>
+						</KeyValues>
 						<Anchors>
 							<Anchor point="TOPLEFT" relativeTo="$parentPersonalResource" relativePoint="TOPLEFT" x="286" y="0"/>
 						</Anchors>
 						<Scripts>
-							<OnLoad>
-								self.type = CONTROLTYPE_CHECKBOX;
-								self.cvar = "nameplateGlobalScale";
-								self.uncheckedValue = "1.0";
-								self.checkedValue = "1.5";
-								BlizzardOptionsPanel_RegisterControl(self, self:GetParent():GetParent());
-							</OnLoad>
+							<OnLoad function="InterfaceOptionsLargerNamePlate_OnLoad" />
 						</Scripts>
 					</CheckButton>
 					<CheckButton name="$parentShowAll" inherits="InterfaceOptionsCheckButtonTemplate">

@@ -146,9 +146,6 @@ PAPERDOLL_STATINFO = {
 	["MASTERY"] = {
 		updateFunc = function(statFrame, unit) PaperDollFrame_SetMastery(statFrame, unit); end
 	},
-	["SPIRIT"] = {
-		updateFunc = function(statFrame, unit) PaperDollFrame_SetStat(statFrame, unit, LE_UNIT_STAT_SPIRIT); end 
-	},
 	["BONUS_ARMOR"] = {
 		updateFunc = function(statFrame, unit) PaperDollFrame_SetBonusArmor(statFrame, unit); end
 	},
@@ -234,7 +231,6 @@ PAPERDOLL_STATCATEGORIES = {
 			"CRITCHANCE",
 			"HASTE",
 			"MASTERY",
-			"SPIRIT",
 			"BONUS_ARMOR",
 			"LIFESTEAL",
 			"VERSATILITY",
@@ -717,17 +713,6 @@ function PaperDollFrame_SetStat(statFrame, unit, statIndex)
 			else
 				statFrame.tooltip2 = STAT_NO_BENEFIT_TOOLTIP;
 			end
-		-- Spirit
-		elseif ( statIndex == LE_UNIT_STAT_SPIRIT ) then
-			-- All mana regen stats are displayed as mana/5 sec.
-			local _, isNegatedForSpec = GetUnitManaRegenRateFromSpirit("player");
-			local _, regen = GetManaRegen();
-			if ( UnitHasMana("player") and not isNegatedForSpec ) then
-				regen = BreakUpLargeNumbers( floor( regen * 5.0 ) );
-				statFrame.tooltip2 = format(MANA_REGEN_FROM_SPIRIT, regen);
-			else
-				statFrame.tooltip2 = STAT_NO_BENEFIT_TOOLTIP;
-			end
 		end
 	elseif (unit == "pet") then
 		if ( statIndex == LE_UNIT_STAT_STRENGTH ) then
@@ -746,11 +731,6 @@ function PaperDollFrame_SetStat(statFrame, unit, statIndex)
 				statFrame.tooltip2 = format(statFrame.tooltip2, manaGain);	 -- THIS IS BROKEN, fixme
 			else
 				statFrame.tooltip2 = nil;
-			end
-		elseif ( statIndex == LE_UNIT_STAT_SPIRIT ) then
-			statFrame.tooltip2 = "";
-			if ( UnitHasMana("pet") ) then
-				statFrame.tooltip2 = format(MANA_REGEN_FROM_SPIRIT, GetUnitManaRegenRateFromSpirit("pet"));
 			end
 		end
 	end

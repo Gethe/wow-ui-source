@@ -1,7 +1,7 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\FrameXML\UI.xsd">
   <Script file="Blizzard_ClassNameplateBar.lua"/>
- 
+
 	<Frame name="ClassNameplateBarFrame" parentKey="NameplateBar" hidden="true" virtual="true">
 		<KeyValues>
 			<KeyValue key="layoutIndex" value="2"/>
@@ -12,7 +12,7 @@
 			<OnEvent method="OnEvent"/>
 		</Scripts>
 	</Frame>
-	
+
 	<StatusBar name="ClassNameplateManaBarFrame" mixin="ClassNameplateBar, ClassNameplateManaBar">
 		<KeyValues>
 			<KeyValue key="layoutIndex" value="1"/>
@@ -27,6 +27,9 @@
 						<Anchor point="BOTTOMRIGHT" x="2" y="-1"/>
 					</Anchors>
 				</Texture>
+			</Layer>
+			<Layer level="ARTWORK">
+				<Texture parentKey="ManaCostPredictionBar" inherits="MyManaCostPredictionBarTemplate"/>
 			</Layer>
 		</Layers>
 		<BarTexture parentKey="Texture" file="Interface\TargetingFrame\UI-TargetingFrame-BarFill"/>

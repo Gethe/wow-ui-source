@@ -46,7 +46,10 @@ function NamePlateDriverMixin:OnEvent(event, ...)
 end
 
 function NamePlateDriverMixin:ApplySizes()
-	C_NamePlate.SetNamePlateSizes(110, 45);
+	local horizontalScale = tonumber(GetCVar("NamePlateHorizontalScale"));
+	C_NamePlate.SetNamePlateSizes(110 * horizontalScale, 45);
+
+	self:UpdateNamePlateOptions();
 end
 
 function NamePlateDriverMixin:OnNamePlateCreated(namePlateFrameBase)
@@ -61,20 +64,23 @@ end
 
 function NamePlateDriverMixin:OnNamePlateAdded(namePlateUnitToken)
 	local namePlateFrameBase = C_NamePlate.GetNamePlateForUnit(namePlateUnitToken);
-
-	if (UnitIsUnit("player", namePlateUnitToken)) then
-		CompactUnitFrame_SetUpFrame(namePlateFrameBase.UnitFrame, DefaultCompactNamePlatePlayerFrameSetup);
-	elseif (UnitIsFriend("player", namePlateUnitToken)) then
-		CompactUnitFrame_SetUpFrame(namePlateFrameBase.UnitFrame, DefaultCompactNamePlateTargetFriendlyFrameSetup);
-	else
-		CompactUnitFrame_SetUpFrame(namePlateFrameBase.UnitFrame, DefaultCompactNamePlateTargetEnemyFrameSetup);
-	end
+	self:ApplyFrameOptions(namePlateFrameBase, namePlateUnitToken);
 	
 	namePlateFrameBase:OnAdded(namePlateUnitToken);
 	self:SetupClassNameplateBars();
 	
 	self:OnUnitAuraUpdate(namePlateUnitToken);
 	self:OnRaidTargetUpdate();
+end
+
+function NamePlateDriverMixin:ApplyFrameOptions(namePlateFrameBase, namePlateUnitToken)
+	if UnitIsUnit("player", namePlateUnitToken) then
+		CompactUnitFrame_SetUpFrame(namePlateFrameBase.UnitFrame, DefaultCompactNamePlatePlayerFrameSetup);
+	elseif UnitIsFriend("player", namePlateUnitToken) then
+		CompactUnitFrame_SetUpFrame(namePlateFrameBase.UnitFrame, DefaultCompactNamePlateTargetFriendlyFrameSetup);
+	else
+		CompactUnitFrame_SetUpFrame(namePlateFrameBase.UnitFrame, DefaultCompactNamePlateTargetEnemyFrameSetup);
+	end
 end
 
 function NamePlateDriverMixin:OnNamePlateRemoved(namePlateUnitToken)
@@ -204,8 +210,10 @@ end
 function NamePlateDriverMixin:UpdateNamePlateOptions()
 	DefaultCompactNamePlateTargetEnemyFrameOptions.useClassColors = GetCVarBool("ShowClassColorInNameplate");
 	DefaultCompactNamePlateTargetEnemyFrameOptions.playLoseAggroHighlight = GetCVarBool("ShowNamePlateLoseAggroFlash");
+	DefaultCompactNamePlateTargetFrameSetUpOptions.healthBarHeight = 4 * tonumber(GetCVar("NamePlateVerticalScale"));
 	
 	for i, frame in ipairs(C_NamePlate.GetNamePlates()) do
+		self:ApplyFrameOptions(frame, frame.namePlateUnitToken);
 		CompactUnitFrame_UpdateAll(frame.UnitFrame);
 	end
 end

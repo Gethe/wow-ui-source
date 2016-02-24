@@ -209,9 +209,9 @@ function BonusObjectiveTracker_AddReward(questID, block, xp, money)
 		tinsert(data.rewards, t);
 	end
 
-	local artifactXP = GetQuestLogRewardArtifactXP(questID);
+	local artifactXP, artifactCategory = GetQuestLogRewardArtifactXP(questID);
 	if ( artifactXP > 0 ) then
-		local name, icon = C_ArtifactUI.GetArtifactXPRewardTargetInfo();
+		local name, icon = C_ArtifactUI.GetArtifactXPRewardTargetInfo(artifactCategory);
 		local t = { };
 		t.label = artifactXP;
 		t.texture = icon or "Interface\\Icons\\INV_Misc_QuestionMark";
@@ -920,8 +920,9 @@ function BonusObjectiveTrackerModuleMixin:AddProgressBar(block, line, questID, f
 		-- reward icon; try the first item
 		local _, texture = GetQuestLogRewardInfo(1, questID);
 		-- artifact xp
-		if ( not texture and GetQuestLogRewardArtifactXP(questID) > 0 ) then
-			local name, icon = C_ArtifactUI.GetArtifactXPRewardTargetInfo();
+		local artifactXP, artifactCategory = GetQuestLogRewardArtifactXP(questID);
+		if ( not texture and artifactXP > 0 ) then
+			local name, icon = C_ArtifactUI.GetArtifactXPRewardTargetInfo(artifactCategory);
 			texture = icon or "Interface\\Icons\\INV_Misc_QuestionMark";
 		end
 		-- currency

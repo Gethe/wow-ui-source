@@ -211,7 +211,6 @@ function OrderHallMissionPageEnemyMixin:OnEnter()
 		end
 		str = str..self.mechanicAbilityName;
 		GameTooltip:AddLine(str, 1, 1, 1);
-		GameTooltip:AddLine(" ");
 		GameTooltip:AddLine(self.mechanicEffectDescription, nil, nil, nil, true);
 		GameTooltip:Show();
 	end

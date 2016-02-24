@@ -8,6 +8,18 @@ function OrderHallTalentFrame_ToggleFrame()
 	end
 end
 
+StaticPopupDialogs["ORDER_HALL_TALENT_RESEARCH"] = {
+	text = "%s";
+	button1 = ACCEPT,
+	button2 = CANCEL,
+	OnAccept = function(self)
+		C_Garrison.ResearchTalent(self.data);
+	end,
+	timeout = 0,
+	exclusive = 1,
+	hideOnEscape = 1
+};
+
 OrderHallTalentFrameMixin = { }
 
 local function OnTalentButtonReleased(pool, button)
@@ -43,18 +55,13 @@ function OrderHallTalentFrameMixin:OnHide()
 	self:UnregisterEvent("GARRISON_TALENT_NPC_CLOSED");
 
 	self:ReleaseAllPools();
-
+	StaticPopup_Hide("ORDER_HALL_TALENT_RESEARCH");
 	C_Garrison.CloseTalentNPC();
 end
 
 function OrderHallTalentFrameMixin:OnEvent(event, ...)
-	if (event == "CURRENCY_DISPLAY_UPDATE") then
-		self:RefreshCurrency();
-	elseif (event == "GARRISON_TALENT_UPDATE") then
-		local garrType = ...;
-		if (garrType == self.garrisonType) then
-			self:RefreshAllData();
-		end
+	if (event == "CURRENCY_DISPLAY_UPDATE" or event == "GARRISON_TALENT_UPDATE") then
+		self:RefreshAllData();
 	elseif (event == "GARRISON_TALENT_NPC_CLOSED") then
 		self.CloseButton:Click();
 	end
@@ -124,6 +131,10 @@ function OrderHallTalentFrameMixin:RefreshAllData()
 				if (tierCanBeResearchedCount[index] == 2) then
 					choiceBackground:SetAtlas("orderhalltalents-choice-background-on", true);
 					choiceBackground:SetDesaturated(false);
+					local pulsingArrows = self.arrowTexturePool:Acquire();
+					pulsingArrows:SetPoint("CENTER", choiceBackground);
+					pulsingArrows.Pulse:Play();
+					pulsingArrows:Show();
 				elseif (tierCanBeResearchedCount[index] == 1) then
 					choiceBackground:SetAtlas("orderhalltalents-choice-background", true);
 					choiceBackground:SetDesaturated(false);
@@ -142,6 +153,7 @@ function OrderHallTalentFrameMixin:RefreshAllData()
 		-- position talent buttons
 		for talentIndex, talent in ipairs(tree) do
 			local currentTierCount = tierCount[talent.tier + 1];
+			local currentTierCanBeResearchedCount = tierCanBeResearchedCount[talent.tier + 1];
 			local tierWidth = (currentTierCount * (buttonSizeX + buttonSpacingX)) - buttonSpacingX;
 			local talentFrame = self.buttonPool:Acquire();
 			talentFrame.Icon:SetTexture(talent.icon);
@@ -153,7 +165,8 @@ function OrderHallTalentFrameMixin:RefreshAllData()
 			if (talent.isBeingResearched) then
 				talentFrame.Cooldown:SetCooldownUNIX(talent.researchStartTime, talent.researchDuration);
 				talentFrame.Cooldown:Show();
-				talentFrame.CooldownBackground:Show();
+				talentFrame.AlphaIconOverlay:Show();
+				talentFrame.AlphaIconOverlay:SetAlpha(0.7);
 				talentFrame.CooldownTimerBackground:Show();
 				if (not talentFrame.timer) then
 					talentFrame.timer = C_Timer.NewTicker(1, function() talentFrame:Refresh(); end);
@@ -162,13 +175,13 @@ function OrderHallTalentFrameMixin:RefreshAllData()
 
 			if (talent.selected) then
 				talentFrame.Border:SetAtlas("orderhalltalents-spellborder-yellow");
-				if (arrowTexture) then
-					arrowTexture:SetAtlas("orderhalltalents-arrow-on");
-				end
 			elseif (talent.canBeResearched) then
-				talentFrame.Border:SetAtlas("orderhalltalents-spellborder-green");
-				if (arrowTexture) then
-					arrowTexture:SetAtlas("orderhalltalents-arrow-on");
+				if (currentTierCanBeResearchedCount < currentTierCount) then
+					talentFrame.AlphaIconOverlay:Show();
+					talentFrame.AlphaIconOverlay:SetAlpha(0.5);
+					talentFrame.Border:Hide();
+				else
+					talentFrame.Border:SetAtlas("orderhalltalents-spellborder-green");
 				end
 			else
 				talentFrame.Border:SetAtlas("orderhalltalents-spellborder");
@@ -205,7 +218,7 @@ function GarrisonTalentButtonMixin:OnEnter()
 			
 			if (talent.researchCost and talent.researchCurrency) then
 				local _, _, currencyTexture = GetCurrencyInfo(talent.researchCurrency);
-				str = str.." "..talent.researchCost.."|T"..currencyTexture..":0:0:2:0|t";
+				str = str.." "..BreakUpLargeNumbers(talent.researchCost).."|T"..currencyTexture..":0:0:2:0|t";
 			end
 			if (talent.researchGoldCost ~= 0) then
 				str = str.." "..talent.researchGoldCost.."|TINTERFACE\\MONEYFRAME\\UI-MoneyIcons.blp:16:16:2:0:64:16:0:16:0:16|t";
@@ -214,7 +227,10 @@ function GarrisonTalentButtonMixin:OnEnter()
 		end
 
 		if talent.canBeResearched then
-			GameTooltip:AddLine(TOOLTIP_TALENT_LEARN, 0, 1, 0);
+			GameTooltip:AddLine(ORDER_HALL_TALENT_RESEARCH, 0, 1, 0);
+			self.Highlight:Show();
+		else
+			self.Highlight:Hide();
 		end
 	end
 	self.tooltip = GameTooltip;
@@ -223,19 +239,24 @@ end
 
 function GarrisonTalentButtonMixin:OnLeave()
 	GameTooltip_Hide();
+	self.Highlight:Hide();
 	self.tooltip = nil;
 end
 
 function GarrisonTalentButtonMixin:OnClick()
 	if (self.talent.canBeResearched) then
-		C_Garrison.ResearchTalent(self.talent.id);
+		local _, _, currencyTexture = GetCurrencyInfo(self:GetParent().currency);
+
+		local str = string.format(ORDER_HALL_RESEARCH_CONFIRMATION, self.talent.name, BreakUpLargeNumbers(self.talent.researchCost), tostring(currencyTexture), SecondsToTime(self.talent.researchDuration));
+		StaticPopup_Show("ORDER_HALL_TALENT_RESEARCH", str, nil, self.talent.id);
 	end
 end
 
 function GarrisonTalentButtonMixin:OnReleased()
 	self.Cooldown:SetCooldownDuration(0);
 	self.Cooldown:Hide();
-	self.CooldownBackground:Hide();
+	self.Border:Show();
+	self.AlphaIconOverlay:Hide();
 	self.CooldownTimerBackground:Hide();
 	self.Icon:SetDesaturated(false);
 	self.talent = nil;

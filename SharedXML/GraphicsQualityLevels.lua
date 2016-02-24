@@ -1427,3 +1427,29 @@ VideoData["Advanced_GraphicsAPIDropDown"]={
 	clientRestart = true,
 	gameRestart = true,
 }
+
+VideoData["Advanced_PhysicsInteractionDropDown"]={
+	name = PHYSICS_INTERACTION;
+	description = OPTION_PHYSICS_OPTIONS;
+
+	data = {
+		{
+			text = NO_ENVIRONMENT_INTERACTION,
+			cvars =	{
+				physicsLevel = 0,
+			},
+		},
+		{
+			text = PLAYER_ONLY_INTERACTION,
+			cvars =	{
+				physicsLevel = 1,
+			},
+		},
+		{
+			text = PLAYER_AND_NPC_INTERACTION,
+			cvars = {
+				physicsLevel = 2,
+			},
+		},
+	},
+}

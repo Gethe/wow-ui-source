@@ -472,13 +472,6 @@ COLLECTION_CAMERA = {
 	["BASE"] = { zoom = 1, rotation = 0, x = 0, y = 0, z = 0, cameraID = 98 },
 }
 
-local TEMP_GEAR = {
-	["CHESTSLOT"] = 3951,
-	["LEGSSLOT"] = 3952,
-	["FEETSLOT"] = 3954,
-	["HANDSSLOT"] = 3953,
-}
-
 local ARMOR_SLOTS = {
 	[LE_TRANSMOG_COLLECTION_TYPE_HEAD] = "HEADSLOT",
 	[LE_TRANSMOG_COLLECTION_TYPE_SHOULDER] = "SHOULDERSLOT",
@@ -497,6 +490,27 @@ local HIDE_VISUAL_STRINGS = {
 	["HEADSLOT"] = TRANSMOG_HIDE_HELM,
 	["SHOULDERSLOT"] = TRANSMOG_HIDE_SHOULDERS,
 	["BACKSLOT"] = TRANSMOG_HIDE_CLOAK,
+}
+
+local WARDROBE_MODEL_SETUP = {
+	[LE_TRANSMOG_COLLECTION_TYPE_HEAD] 		= { useTransmogSkin = false, slots = { CHESTSLOT = true,  HANDSSLOT = false, LEGSSLOT = false, FEETSLOT = false } },
+	[LE_TRANSMOG_COLLECTION_TYPE_SHOULDER]	= { useTransmogSkin = true,  slots = { CHESTSLOT = false, HANDSSLOT = false, LEGSSLOT = false, FEETSLOT = false } },
+	[LE_TRANSMOG_COLLECTION_TYPE_BACK]		= { useTransmogSkin = true,  slots = { CHESTSLOT = false, HANDSSLOT = false, LEGSSLOT = false, FEETSLOT = false } },
+	[LE_TRANSMOG_COLLECTION_TYPE_CHEST]		= { useTransmogSkin = true,  slots = { CHESTSLOT = false, HANDSSLOT = false, LEGSSLOT = false, FEETSLOT = false } },
+	[LE_TRANSMOG_COLLECTION_TYPE_TABARD]	= { useTransmogSkin = true,  slots = { CHESTSLOT = false, HANDSSLOT = false, LEGSSLOT = false, FEETSLOT = false } },
+	[LE_TRANSMOG_COLLECTION_TYPE_SHIRT]		= { useTransmogSkin = true,  slots = { CHESTSLOT = false, HANDSSLOT = false, LEGSSLOT = false, FEETSLOT = false } },
+	[LE_TRANSMOG_COLLECTION_TYPE_WRIST]		= { useTransmogSkin = true,  slots = { CHESTSLOT = false, HANDSSLOT = false, LEGSSLOT = false, FEETSLOT = false } },
+	[LE_TRANSMOG_COLLECTION_TYPE_HANDS]		= { useTransmogSkin = false, slots = { CHESTSLOT = true,  HANDSSLOT = false, LEGSSLOT = true,  FEETSLOT = false } },
+	[LE_TRANSMOG_COLLECTION_TYPE_WAIST]		= { useTransmogSkin = true,  slots = { CHESTSLOT = false, HANDSSLOT = false, LEGSSLOT = false, FEETSLOT = false } },
+	[LE_TRANSMOG_COLLECTION_TYPE_LEGS]		= { useTransmogSkin = true,  slots = { CHESTSLOT = false, HANDSSLOT = false, LEGSSLOT = false, FEETSLOT = false } },
+	[LE_TRANSMOG_COLLECTION_TYPE_FEET]		= { useTransmogSkin = false, slots = { CHESTSLOT = false, HANDSSLOT = false, LEGSSLOT = true,  FEETSLOT = false } },
+}
+
+local WARDROBE_MODEL_SETUP_GEAR = {
+	["CHESTSLOT"] = 78420,
+	["LEGSSLOT"] = 78425,
+	["FEETSLOT"] = 78427,
+	["HANDSSLOT"] = 78426,
 }
 
 local function TEMP_GetMaxPages()
@@ -798,7 +812,11 @@ function WardrobeCollectionFrame_ChangeModelsSlot(oldCategory, newCategory)
 	local undressSlot, reloadModel;
 	if ( WardrobeCollectionFrame.categoriesList[newCategory].isArmor ) then
 		if ( oldCategory and WardrobeCollectionFrame.categoriesList[oldCategory].isArmor ) then
-			undressSlot = true;
+			if ( WARDROBE_MODEL_SETUP[oldCategory].useTransmogSkin ~= WARDROBE_MODEL_SETUP[newCategory].useTransmogSkin ) then
+				reloadModel = true;
+			else
+				undressSlot = true;
+			end
 		else
 			reloadModel = true;
 		end
@@ -808,28 +826,34 @@ function WardrobeCollectionFrame_ChangeModelsSlot(oldCategory, newCategory)
 	for i = 1, #WardrobeCollectionFrame.ModelsFrame.Models do
 		local model = WardrobeCollectionFrame.ModelsFrame.Models[i];
 		if ( undressSlot ) then
-			local slotID = GetInventorySlotInfo(ARMOR_SLOTS[oldCategory]);
-			model:UndressSlot(slotID);
-			-- if going to shirt, always remove chest temp gear
-			if ( newCategory == LE_TRANSMOG_COLLECTION_TYPE_SHIRT ) then
-				model:UndressSlot(GetInventorySlotInfo("CHESTSLOT"));
-			else
-				-- replace temp gear
-				local gearAppearanceID = TEMP_GEAR[ARMOR_SLOTS[oldCategory]];
-				if ( gearAppearanceID ) then
-					model:TryOn(gearAppearanceID);
-				elseif ( oldCategory == LE_TRANSMOG_COLLECTION_TYPE_SHIRT and newCategory ~= LE_TRANSMOG_COLLECTION_TYPE_CHEST ) then
-					-- leaving shirt, put chest back
-					model:TryOn(TEMP_GEAR["CHESTSLOT"]);
+			local changedOldSlot = false;
+			-- dress/undress setup gear
+			for slot, equip in pairs(WARDROBE_MODEL_SETUP[newCategory].slots) do
+				if ( equip ~= WARDROBE_MODEL_SETUP[oldCategory].slots[slot] ) then
+					if ( equip ) then
+						model:TryOn(WARDROBE_MODEL_SETUP_GEAR[slot]);
+					else
+						model:UndressSlot(GetInventorySlotInfo(slot));
+					end
+					if ( slot == ARMOR_SLOTS[oldCategory] ) then
+						changedOldSlot = true;
+					end
 				end
 			end
+			-- undress old slot
+			if ( not changedOldSlot ) then
+				local slotID = GetInventorySlotInfo(ARMOR_SLOTS[oldCategory]);
+				model:UndressSlot(slotID);
+			end
 		elseif ( reloadModel ) then
+			model:SetUseTransmogSkin(WARDROBE_MODEL_SETUP[newCategory].useTransmogSkin);
 			model:SetUnit("player");
 			model:SetAnimation(MODEL_ANIM_STOP);
 			model:Undress();
-			-- put all the temp gear back
-			for slot, gearAppearanceID in pairs(TEMP_GEAR) do
-				model:TryOn(gearAppearanceID);
+			for slot, equip in pairs(WARDROBE_MODEL_SETUP[newCategory].slots) do
+				if ( equip ) then
+					model:TryOn(WARDROBE_MODEL_SETUP_GEAR[slot]);
+				end
 			end
 		end
 		model.visualInfo = nil;
@@ -953,7 +977,9 @@ end
 function WardrobeCollectionFrame_SetActiveCategory(category)
 	WardrobeCollectionFrame_ChangeModelsSlot(WardrobeCollectionFrame.activeCategory, category);
 	WardrobeCollectionFrame.activeCategory = category;
-	C_TransmogCollection.SetFilterCategory(category);
+	if ( WardrobeCollectionFrame.activeCategory ~= FAKE_LE_TRANSMOG_COLLECTION_TYPE_ENCHANT ) then
+		C_TransmogCollection.SetFilterCategory(category);
+	end
 	WardrobeCollectionFrame_GetVisualsList();
 	WardrobeCollectionFrame_UpdateWeaponDropDown();
 
@@ -1018,7 +1044,10 @@ function WardrobeCollectionFrame_SortVisuals()
 		if ( source1.isHideVisual ~= source2.isHideVisual ) then
 			return source1.isHideVisual;
 		end
-		return source1.uiOrder > source2.uiOrder;
+		if ( source1.uiOrder and source2.uiOrder ) then
+			return source1.uiOrder > source2.uiOrder;
+		end
+		return source1.sourceID > source2.sourceID;
 	end
 
 	table.sort(WardrobeCollectionFrame.filteredVisualsList, comparison);
@@ -1101,10 +1130,11 @@ function WardrobeCollectionFrame_Update()
 		local visualInfo = WardrobeCollectionFrame.filteredVisualsList[index];
 		if ( visualInfo ) then
 			model:SetAlpha(1);
-				model.cameraID = cameraID;
+			model.cameraID = cameraID;
 			if ( visualInfo ~= model.visualInfo or changeModel ) then
 				if ( isArmor ) then
-					model:TryOn(visualInfo.sourceID);
+					local sourceID = WardrobeCollectionFrame_GetAnAppearanceSourceFromVisual(visualInfo.visualID);
+					model:TryOn(sourceID);
 				elseif ( appearanceVisualID ) then
 					-- appearanceVisualID is only set when looking at enchants
 					model:SetItemAppearance(appearanceVisualID, visualInfo.visualID);
@@ -1198,33 +1228,34 @@ function WardrobeCollectionFrame_GetVisualsList()
 	end
 end
 
+function  WardrobeCollectionFrame_GetAnAppearanceSourceFromVisual(visualID)
+	local sourceID = WardrobeCollectionFrameModel_GetChosenVisualSource(visualID);
+	if ( not sourceID ) then
+		local sources = WardrobeCollectionFrame_GetSortedAppearanceSources(visualID);
+		sourceID = sources[1].sourceID;
+	end
+	return sourceID;
+end
+
 function WardrobeCollectionFrame_SelectVisual(visualID)
 	if ( not WardrobeFrame_IsAtTransmogrifier() ) then
 		return;
 	end
 
 	local sourceID;
-	local visualsList = WardrobeCollectionFrame.filteredVisualsList;
-	for i = 1, #visualsList do
-		if ( visualsList[i].visualID == visualID ) then
-			sourceID = visualsList[i].sourceID;
-			break;
-		end
-	end
-
-	local chosenSourceID;
 	if ( WardrobeCollectionFrame.transmogType == LE_TRANSMOG_TYPE_APPEARANCE ) then
-		chosenSourceID = WardrobeCollectionFrameModel_GetChosenVisualSource(visualID);
-		-- if the user hasn't chosen a source for this visual, go with the 1st one
-		if ( not chosenSourceID ) then
-			local sources = WardrobeCollectionFrame_GetSortedAppearanceSources(visualID);
-			chosenSourceID = sources[1].sourceID;
-		end
+		sourceID = WardrobeCollectionFrame_GetAnAppearanceSourceFromVisual(visualID);
 	else
-		chosenSourceID = sourceID;
+		local visualsList = WardrobeCollectionFrame.filteredVisualsList;
+		for i = 1, #visualsList do
+			if ( visualsList[i].visualID == visualID ) then
+				sourceID = visualsList[i].sourceID;
+				break;
+			end
+		end
 	end
 	local slotID = GetInventorySlotInfo(WardrobeCollectionFrame.activeSlot);
-	C_Transmog.SetPending(slotID, WardrobeCollectionFrame.transmogType, chosenSourceID);
+	C_Transmog.SetPending(slotID, WardrobeCollectionFrame.transmogType, sourceID);
 end
 
 function WardrobeCollectionFrame_OpenTransmogLink(link, transmogType)
@@ -1300,7 +1331,8 @@ function WardrobeCollectionFrameModel_OnMouseDown(self, button)
 		return;
 	elseif ( IsModifiedClick("DRESSUP") ) then
 		if ( WardrobeCollectionFrame.transmogType == LE_TRANSMOG_TYPE_APPEARANCE ) then
-			DressUpVisual(self.visualInfo.sourceID, WardrobeCollectionFrame.activeSlot);
+			local sourceID = WardrobeCollectionFrame_GetAnAppearanceSourceFromVisual(self.visualInfo.visualID);
+			DressUpVisual(sourceID, WardrobeCollectionFrame.activeSlot);
 		elseif ( WardrobeCollectionFrame.transmogType == LE_TRANSMOG_TYPE_ILLUSION ) then
 			local weaponSourceID = WardrobeCollectionFrame_GetWeaponInfoForEnchant(WardrobeCollectionFrame.activeSlot);
 			DressUpVisual(weaponSourceID, WardrobeCollectionFrame.activeSlot, self.visualInfo.sourceID);
@@ -1712,6 +1744,15 @@ end
 -- ***** SEARCHING
 
 function WardrobeCollectionFrame_SwitchSearchCategory()
+	if ( WardrobeCollectionFrame.activeCategory == FAKE_LE_TRANSMOG_COLLECTION_TYPE_ENCHANT ) then
+		WardrobeCollectionFrame_ClearSearch();
+		WardrobeCollectionFrame.searchBox:Disable();
+		WardrobeCollectionFrame.FilterButton:Disable();
+		return;
+	end
+
+	WardrobeCollectionFrame.searchBox:Enable();
+	WardrobeCollectionFrame.FilterButton:Enable();
 	if ( WardrobeCollectionFrame.searchBox:GetText() ~= "" )  then
 		local finished = C_TransmogCollection.SetSearch(WardrobeCollectionFrame.activeCategory, WardrobeCollectionFrame.searchBox:GetText());
 		if ( not finished ) then
@@ -1728,6 +1769,10 @@ function WardrobeCollectionFrame_UpdateSearch()
 end
 
 function WardrobeCollectionFrame_RestartSearchTracking()
+	if ( WardrobeCollectionFrame.activeCategory == FAKE_LE_TRANSMOG_COLLECTION_TYPE_ENCHANT ) then
+		return;
+	end
+
 	local searchSize = C_TransmogCollection.SearchSize(WardrobeCollectionFrame.activeCategory);
 	local searchProgress = C_TransmogCollection.SearchProgress(WardrobeCollectionFrame.activeCategory);
 	

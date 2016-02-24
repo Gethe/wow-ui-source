@@ -21,6 +21,18 @@ function SpellFlyoutButton_OnClick(self)
 		end
 		SpellFlyoutButton_UpdateState(self);
 	else
+		if ( HasPendingGlyphCast() ) then
+			if ( HasAttachedGlyph(self.spellID) ) then
+				if ( IsPendingGlyphRemoval() ) then
+					StaticPopup_Show("CONFIRM_GLYPH_REMOVAL", nil, nil, {name = GetCurrentGlyphNameForSpell(self.spellID), id = self.spellID});
+				else
+					StaticPopup_Show("CONFIRM_GLYPH_PLACEMENT", nil, nil, {name = GetPendingGlyphName(), currentName = GetCurrentGlyphNameForSpell(self.spellID), id = self.spellID});
+				end
+			else
+				AttachGlyphToSpell(self.spellID);
+			end
+			return;
+		end
 		local spellID = select(7, GetSpellInfo(self.spellID));
 		if ( self.offSpec ) then
 			return;
@@ -92,6 +104,30 @@ function SpellFlyoutButton_UpdateUsable(self)
 	end
 end
 
+function SpellFlyoutButton_UpdateGlyphState(self, reason)
+	self.GlyphIcon:SetShown(HasAttachedGlyph(self.spellID));
+	if (HasPendingGlyphCast() and IsSpellValidForPendingGlyph(self.spellID)) then
+		self.AbilityHighlight:Show();
+		self.AbilityHighlightAnim:Play();
+		if (reason == OPEN_REASON_ACTIVATED_GLYPH) then
+			if (IsPendingGlyphRemoval()) then
+				self.GlyphIcon:Hide();
+			else
+				self.AbilityHighlightAnim:Stop();
+				self.AbilityHighlight:Hide();
+				self.GlyphIcon:Show();
+				self.GlyphActivate:Show();
+				self.GlyphTranslation:Show();
+				self.GlyphActivateAnim:Play();
+				SpellFlyout.glyphActivating = true;
+			end
+		end
+	else
+		self.AbilityHighlightAnim:Stop();
+		self.AbilityHighlight:Hide();
+	end
+end
+
 function SpellFlyoutButton_UpdateCount (self)
 	local text = _G[self:GetName().."Count"];
 	if ( IsConsumableSpell(self.spellID)) then
@@ -154,6 +190,7 @@ function SpellFlyout_OnEvent(self, event, ...)
 			SpellFlyoutButton_UpdateState(button);
 			SpellFlyoutButton_UpdateUsable(button);
 			SpellFlyoutButton_UpdateCount(button);
+			SpellFlyoutButton_UpdateGlyphState(button);
 			i = i+1;
 			button = _G["SpellFlyoutButton"..i];
 		end
@@ -164,9 +201,14 @@ function SpellFlyout_OnEvent(self, event, ...)
 	end
 end
 
-function SpellFlyout_Toggle(self, flyoutID, parent, direction, distance, isActionBar, specID, showFullTooltip)
+function SpellFlyout_Toggle(self, flyoutID, parent, direction, distance, isActionBar, specID, showFullTooltip, reason)
 	if (self:IsShown() and self:GetParent() == parent) then
+		self.glyphActivating = false;
 		self:Hide();
+		return;
+	end
+
+	if (self:IsShown() and self.glyphActivating) then
 		return;
 	end
 
@@ -254,6 +296,7 @@ function SpellFlyout_Toggle(self, flyoutID, parent, direction, distance, isActio
 			SpellFlyoutButton_UpdateState(button);
 			SpellFlyoutButton_UpdateUsable(button);
 			SpellFlyoutButton_UpdateCount(button);
+			SpellFlyoutButton_UpdateGlyphState(button, reason);
 			
 			prevButton = button;
 			numButtons = numButtons+1;
@@ -328,7 +371,7 @@ function SpellFlyout_Toggle(self, flyoutID, parent, direction, distance, isActio
 	end
 	
 	self:SetBorderColor(0.7, 0.7, 0.7);
-	
+
 	self:Show();
 
 	if (oldParent and oldIsActionBar) then

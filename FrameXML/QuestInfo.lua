@@ -303,6 +303,7 @@ function QuestInfo_ShowRewards()
 	local skillIcon;
 	local xp;
 	local artifactXP;
+	local artifactCategory;
 	local playerTitle;
 	local totalHeight = 0;
 	local rewardsFrame = QuestInfoFrame.rewardsFrame;
@@ -315,7 +316,7 @@ function QuestInfo_ShowRewards()
 		money = GetQuestLogRewardMoney();
 		skillName, skillIcon, skillPoints = GetQuestLogRewardSkillPoints();
 		xp = GetQuestLogRewardXP();
-		artifactXP = GetQuestLogRewardArtifactXP();
+		artifactXP, artifactCategory = GetQuestLogRewardArtifactXP();
 		playerTitle = GetQuestLogRewardTitle();
 		ProcessQuestLogRewardFactions();
 		spellGetter = GetQuestLogRewardSpell;
@@ -326,7 +327,7 @@ function QuestInfo_ShowRewards()
 		money = GetRewardMoney();
 		skillName, skillIcon, skillPoints = GetRewardSkillPoints();
 		xp = GetRewardXP();
-		artifactXP = GetRewardArtifactXP();
+		artifactXP, artifactCategory = GetRewardArtifactXP();
 		playerTitle = GetRewardTitle();
 		spellGetter = GetRewardSpell;
 	end
@@ -360,7 +361,7 @@ function QuestInfo_ShowRewards()
 
 	rewardsFrame.ArtifactXPFrame:ClearAllPoints();
 	if ( artifactXP > 0 ) then
-		local name, icon = C_ArtifactUI.GetArtifactXPRewardTargetInfo();
+		local name, icon = C_ArtifactUI.GetArtifactXPRewardTargetInfo(artifactCategory);
 		rewardsFrame.ArtifactXPFrame:SetPoint("TOPLEFT", lastFrame, "BOTTOMLEFT", 0, -REWARDS_SECTION_OFFSET);
 		rewardsFrame.ArtifactXPFrame.Name:SetText(BreakUpLargeNumbers(artifactXP));
 		rewardsFrame.ArtifactXPFrame.Icon:SetTexture(icon or "Interface\\Icons\\INV_Misc_QuestionMark");

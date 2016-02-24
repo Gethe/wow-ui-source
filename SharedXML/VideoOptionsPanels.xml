@@ -147,7 +147,7 @@
 				else
 					PlaySound("igMainMenuOptionCheckBoxOff");
 				end
-				BlizzardOptionsPanel_CheckButton_OnClick(self); 		
+				BlizzardOptionsPanel_CheckButton_OnClick(self);
 				Graphics_EnableApply(self);
 			</OnClick>
 			<OnLoad>
@@ -178,7 +178,7 @@
 				RaidGraphics_:Hide();
 			</OnLoad>
 			<OnShow function="VideoOptionsPanel_OnShow"/>
-		</Scripts>  
+		</Scripts>
 		<Frames>
 			<!-- Display -->
 			<Frame name="Display_">
@@ -316,7 +316,7 @@
 							</OnShow>
 						</Scripts>
 					</Frame>
-					
+
 					<Frame name="$parentVerticalSyncDropDown" inherits="VideoOptionsDropDownMenuTemplate" id="10">
 						<Anchors>
 							<Anchor point="TOPLEFT" relativeTo="$parentAntiAliasingDropDown" relativePoint="BOTTOMLEFT"/>
@@ -333,7 +333,7 @@
 							</Layer>
 						</Layers>
 					</Frame>
-					
+
 					<!-- Outside the box -->
 					<CheckButton name="$parentRaidSettingsEnabledCheckBox" inherits="VideoOptionsSmallCheckButtonTemplate" motionScriptsWhileDisabled="true">
 						<Anchors>
@@ -353,7 +353,7 @@
 					<OnShow function="VideoOptionsPanel_OnShow"/>
 				</Scripts>
 			</Frame>
-			
+
 			<!-- Graphics -->
 			<Frame name="Graphics_">
 				<Anchors>
@@ -467,7 +467,7 @@
 								end
 							</OnValueChanged>
 						</Scripts>
-					</Slider>   	
+					</Slider>
 
 					<!-- Textures -->
 					<Frame name="$parentTextureResolutionDropDown" inherits="VideoOptionsDropDownMenuTemplate" id="7">
@@ -630,7 +630,7 @@
 							</Layer>
 						</Layers>
 					</Frame>
-					
+
 					<Frame name="$parentParticleDensityDropDown" inherits="VideoOptionsDropDownMenuTemplate" id="15">
 						<Anchors>
 							<Anchor point="TOPLEFT" relativeTo="$parentSunshaftsDropDown" relativePoint="BOTTOMLEFT"/>
@@ -713,7 +713,7 @@
 				</Scripts>
 			</Frame>
 
-			
+
 			<!-- Raid Panel -->
 			<Frame name="RaidGraphics_" hidden="true">
 				<Anchors>
@@ -829,7 +829,7 @@
 								end
 							</OnValueChanged>
 						</Scripts>
-					</Slider>   	
+					</Slider>
 
 					<!-- Textures -->
 					<Frame name="$parentTextureResolutionDropDown" inherits="RaidVideoOptionsDropDownMenuTemplate" id="7">
@@ -993,7 +993,7 @@
 							</Layer>
 						</Layers>
 					</Frame>
-					
+
 					<Frame name="$parentParticleDensityDropDown" inherits="RaidVideoOptionsDropDownMenuTemplate" id="15">
 						<Anchors>
 							<Anchor point="TOPLEFT" relativeTo="$parentSunshaftsDropDown" relativePoint="BOTTOMLEFT"/>
@@ -1075,7 +1075,7 @@
 						self:SetBackdropBorderColor(.6, .6, .6, 1);
 					</OnLoad>
 				</Scripts>
-			</Frame>	
+			</Frame>
 
 			<Button name="GraphicsButton" inherits="TabButtonTemplate" text="BASE_SETTINGS">
 				<Size x="150" y="25"/>
@@ -1125,7 +1125,7 @@
 				GraphicsOptions_SelectBase();
 			</OnShow>
 		</Scripts>
-	</Frame>	
+	</Frame>
 
 
 	<!-- Advanced Panel -->
@@ -1283,7 +1283,7 @@
 					</Layer>
 				</Layers>
 			</Frame>
-			<Frame name="$parentGraphicsAPIDropDown" inherits="AdvancedVideoOptionsDropDownMenuTemplate" id="16">
+			<Frame name="$parentGraphicsAPIDropDown" inherits="AdvancedVideoOptionsDropDownMenuTemplate" id="17">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeTo="$parentResampleQualityDropDown" relativePoint="BOTTOMLEFT">
 						<Offset>
@@ -1301,9 +1301,23 @@
 					</Layer>
 				</Layers>
 			</Frame>
+			<Frame name="$parentPhysicsInteractionDropDown" inherits="AdvancedVideoOptionsDropDownMenuTemplate" id="18">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentGraphicsAPIDropDown" relativePoint="BOTTOMLEFT" x="0" y="-8"/>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<FontString name="$parentLabel" inherits="OptionsFontSmall" text="PHYSICS_INTERACTION" >
+							<Anchors>
+								<Anchor point="RIGHT" relativePoint="LEFT"/>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+			</Frame>
 			<Slider name="$parentUIScaleSlider" inherits="VideoOptionsSliderTemplate" minValue="0.65" maxValue="1.15" valueStep=".05" obeyStepOnDrag="true">
 				<Anchors>
-					<Anchor point="TOPLEFT" relativeTo="$parentGraphicsAPIDropDown" relativePoint="BOTTOMLEFT">
+					<Anchor point="TOPLEFT" relativeTo="$parentPhysicsInteractionDropDown" relativePoint="BOTTOMLEFT">
 						<Offset x="-90" y="-20"/>
 					</Anchor>
 				</Anchors>
@@ -1387,7 +1401,7 @@
 							PlaySound("igMainMenuOptionCheckBoxOff");
 							VideoOptions_Disable(slider);
 						end
-						BlizzardOptionsPanel_CheckButton_OnClick(self); 		
+						BlizzardOptionsPanel_CheckButton_OnClick(self);
 						Graphics_EnableApply(self);
 					</OnClick>
 				</Scripts>
@@ -1401,7 +1415,7 @@
 						<Offset x="80" y="-5"/>
 					</Anchor>
 				</Anchors>
-				<Scripts>		
+				<Scripts>
 					<OnLoad>
 						local name = self:GetName();
 						self.type = CONTROLTYPE_SLIDER;
@@ -1414,14 +1428,14 @@
 							self:SetDisplayValue(value);
 							BlizzardOptionsPanel_SetCVarSafe(self.cvar, value);
 						end
-						self.GetCurrentValue = 
-							function (self) 
+						self.GetCurrentValue =
+							function (self)
 								return BlizzardOptionsPanel_GetCVarSafe(self.cvar);
 							end;
-						
+
 						_G[name.."Text"]:SetFontObject("OptionsFontSmall");
 						_G[name.."Text"]:SetText(MAXFPS);
-						
+
 						_G[name.."High"]:Hide();
 
 						self.Label = _G[name.."Low"];
@@ -1460,7 +1474,7 @@
 							slider.newValue = 0;
 							slider:SetDisplayValue(0);
 						end
-						BlizzardOptionsPanel_CheckButton_OnClick(self); 		
+						BlizzardOptionsPanel_CheckButton_OnClick(self);
 						Graphics_EnableApply(self);
 					</OnClick>
 				</Scripts>
@@ -1484,8 +1498,8 @@
 							self:SetDisplayValue(value);
 							BlizzardOptionsPanel_SetCVarSafe(self.cvar, value);
 						end
-						self.GetCurrentValue = 
-							function (self) 
+						self.GetCurrentValue =
+							function (self)
 								return BlizzardOptionsPanel_GetCVarSafe(self.cvar);
 							end;
 						_G[name.."Text"]:SetFontObject("OptionsFontSmall");
@@ -1505,7 +1519,7 @@
 						self.Label:SetFormattedText(FPS_FORMAT, value);
 					</OnValueChanged>
 				</Scripts>
-			</Slider>   
+			</Slider>
 			<CheckButton name="$parentMaxFPSBKCheckBox" inherits="VideoOptionsSmallCheckButtonTemplate">
 				<Anchors>
 					<Anchor point="RIGHT" relativeTo="$parentMaxFPSBKSlider" relativePoint="LEFT">
@@ -1527,7 +1541,7 @@
 							slider.newValue = 0;
 							slider:SetDisplayValue(0);
 						end
-						BlizzardOptionsPanel_CheckButton_OnClick(self); 		
+						BlizzardOptionsPanel_CheckButton_OnClick(self);
 						Graphics_EnableApply(self);
 					</OnClick>
 				</Scripts>
@@ -1556,28 +1570,28 @@
 				<Scripts>
 					<OnLoad>
 						self:SetMinMaxValues(.5, GetMaxRenderScale());
-						
+
 						local name = self:GetName();
 						self.type = CONTROLTYPE_SLIDER;
 						self.cvar = "RenderScale";
-						
+
 						self.tooltip = OPTION_TOOLTIP_RENDER_SCALE;
 						self.name = RENDER_SCALE;
-						
+
 						self.SetDisplayValue = self.SetValue;
-						
+
 						self.SetValue = function(self, value)
 							self:SetDisplayValue(value);
-							
+
 							if self:IsVisible() then
 								BlizzardOptionsPanel_SetCVarSafe(self.cvar, value);
 							end
 						end
-							
+
 						self.GetCurrentValue = function(self)
 							return BlizzardOptionsPanel_GetCVarSafe(self.cvar);
 						end;
-							
+
 						_G[name.."Text"]:SetFontObject("OptionsFontSmall");
 						_G[name.."Text"]:SetText(RENDER_SCALE);
 						_G[name.."High"]:Hide();
@@ -1628,7 +1642,7 @@
 							SetGamma(value);
 						end
 						self.GetCurrentValue = function (self) return GetGamma(); end;
-						
+
 						_G[self:GetName().."Text"]:SetFontObject("OptionsFontSmall");
 						_G[self:GetName().."Text"]:SetText(GAMMA);
 						_G[self:GetName().."Low"]:SetText("-");
@@ -1778,9 +1792,9 @@
 		<Scripts>
 			<OnLoad function="Advanced_OnLoad" />
 			<OnShow function="VideoOptionsPanel_OnShow"/>
-		</Scripts>  
+		</Scripts>
 	</Frame>
-	
+
 	<!-- Network Panel -->
 	<Frame name="NetworkOptionsPanel" parent="VideoOptionsFramePanelContainer" hidden="true">
 		<Layers>
@@ -1855,7 +1869,7 @@
 		<Scripts>
 			<OnLoad function="NetworkOptionsPanel_OnLoad" />
 			<OnShow function="VideoOptionsPanel_OnShow"/>
-		</Scripts>  
+		</Scripts>
 	</Frame>
 
 	<!-- Languages -->
