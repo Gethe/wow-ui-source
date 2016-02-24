@@ -1007,7 +1007,7 @@ function FriendsFrame_OnEvent(self, event, ...)
 		FriendsFrame_Update();
 	elseif ( event == "VOICE_CHAT_ENABLED_UPDATE" ) then
 		VoiceChat_Toggle();
-	elseif ( event == "PLAYER_FLAGS_CHANGED" ) then
+	elseif ( event == "PLAYER_FLAGS_CHANGED" or event == "BN_INFO_CHANGED") then
 		SynchronizeBNetStatus();
 		FriendsFrameStatusDropDown_Update();
 	elseif ( event == "PLAYER_ENTERING_WORLD" or event == "BN_CONNECTED" or event == "BN_DISCONNECTED" or event == "BN_SELF_ONLINE" or event == "BN_INFO_CHANGED" ) then
@@ -2118,7 +2118,7 @@ end
 function FriendsFriendsFrame_SendRequest()
 	PlaySound("igCharacterInfoTab");
 	FriendsFriendsFrame.requested[FriendsFriendsFrame.selection] = true;
-	BNSendFriendInviteByID(FriendsFriendsFrame.selection, FriendsFriendsNoteEditBox:GetText());
+	BNSendFriendInviteByID(FriendsFriendsFrame.selection);
 	FriendsFriendsFrame_Reset();
 	FriendsFriendsList_Update();
 end
@@ -2151,8 +2151,6 @@ end
 
 function FriendsFriendsFrame_Reset()
 	FriendsFriendsSendRequestButton:Disable();
-	FriendsFriendsNoteEditBox:SetText("");
-	FriendsFriendsNoteEditBox:ClearFocus();
 	FriendsFriendsFrame.selection = nil;
 end
 
@@ -2235,6 +2233,9 @@ function FriendsFrame_BattlenetInvite(button, bnetIDAccount)
 end
 
 function CanCooperateWithGameAccount(bnetIDGameAccount)
+	if (not bnetIDGameAccount) then
+		return false;
+	end
 	local hasFocus, characterName, client, realmName, realmID, faction = BNGetGameAccountInfo(bnetIDGameAccount);
 	return realmID and realmID > 0 and faction == playerFactionGroup;
 end
@@ -2244,7 +2245,13 @@ end
 --
 
 function CanGroupWithAccount(bnetIDAccount)
+	if (not bnetIDAccount) then
+		return false;
+	end
 	local index = BNGetFriendIndex(bnetIDAccount);
+	if (not index) then
+		return false;
+	end
 	local restriction = FriendsFrame_GetInviteRestriction(index, FriendsFrame_HasInvitePermission());
 	return (restriction == INVITE_RESTRICTION_NONE);
 end

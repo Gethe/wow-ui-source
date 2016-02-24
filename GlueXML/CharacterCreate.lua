@@ -141,6 +141,10 @@ function CharacterCreate_OnLoad(self)
 	self:RegisterEvent("RANDOM_CHARACTER_NAME_RESULT");
 	self:RegisterEvent("UPDATE_EXPANSION_LEVEL");
 	self:RegisterEvent("CHARACTER_CREATION_RESULT");
+	self:RegisterEvent("CUSTOMIZE_CHARACTER_STARTED");
+	self:RegisterEvent("CUSTOMIZE_CHARACTER_RESULT");
+	self:RegisterEvent("RACE_FACTION_CHANGE_STARTED");
+	self:RegisterEvent("RACE_FACTION_CHANGE_RESULT");
 
 	self:SetSequence(0);
 	self:SetCamera(0);
@@ -237,14 +241,15 @@ function CharacterCreate_OnHide()
 	SetInCharacterCreate(false);
 end
 
-function CharacterCreate_OnEvent(event, arg1, arg2, arg3)
+function CharacterCreate_OnEvent(event, ...)
 	if ( event == "RANDOM_CHARACTER_NAME_RESULT" ) then
-		if ( arg1 == 0 ) then
+		local success, name = ...;
+		if ( not success ) then
 			-- Failed.  Generate a random name locally.
 			CharacterCreateNameEdit:SetText(GenerateRandomName());
 		else
 			-- Succeeded.  Use what the server sent.
-			CharacterCreateNameEdit:SetText(arg2);
+			CharacterCreateNameEdit:SetText(name);
 		end
 		CharacterCreateRandomName:Enable();
 		CharCreateOkayButton:Enable();
@@ -256,12 +261,37 @@ function CharacterCreate_OnEvent(event, arg1, arg2, arg3)
 			CharacterCreateEnumerateClasses(GetAvailableClasses());
 		end
 	elseif ( event == "CHARACTER_CREATION_RESULT" ) then
-		local success, errorCode = arg1, arg2;
+		local success, errorCode = ...;
 		if ( success ) then
 			CharacterSelect.selectLast = true;
 			GlueParent_SetScreen("charselect");
 		else
 			GlueDialog_Show("OKAY", _G[errorCode]);
+		end
+	elseif ( event == "CUSTOMIZE_CHARACTER_STARTED" ) then
+		GlueDialog_Show("PAID_SERVICE_IN_PROGRESS", CHAR_CUSTOMIZE_IN_PROGRESS);
+	elseif ( event == "CUSTOMIZE_CHARACTER_RESULT" ) then
+		local success, err = ...;
+		if ( success ) then
+			GlueDialog_Hide("PAID_SERVICE_IN_PROGRESS");
+			GlueParent_SetScreen("charselect");
+		else
+			GlueDialog_Show("OKAY", _G[err]);
+		end
+	elseif ( event == "RACE_FACTION_CHANGE_STARTED" ) then
+		local changeType = ...;
+		if ( changeType == "RACE" ) then
+			GlueDialog_Show("PAID_SERVICE_IN_PROGRESS", RACE_CHANGE_IN_PROGRESS);
+		elseif ( changeType == "FACTION" ) then
+			GlueDialog_Show("PAID_SERVICE_IN_PROGRESS", FACTION_CHANGE_IN_PROGRESS);
+		end
+	elseif ( event == "RACE_FACTION_CHANGE_RESULT" ) then
+		local success, err = ...;
+		if ( success ) then
+			GlueDialog_Hide("PAID_SERVICE_IN_PROGRESS");
+			GlueParent_SetScreen("charselect");
+		else
+			GlueDialog_Show("OKAY", _G[err]);
 		end
 	end
 end
