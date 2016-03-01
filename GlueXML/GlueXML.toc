@@ -1,7 +1,6 @@
 ##DebugHook.lua
-Constants.lua
-Stubs.lua
 GlueStrings.lua
+Constants.lua
 GlueFonts.xml
 GlueFontStyles.xml
 GlueLocalization.xml

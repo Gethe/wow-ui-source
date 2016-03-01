@@ -23,7 +23,7 @@ function RealmList_Update()
 	-- Make sure the selected realm is on-screen
 	
 	-- Update the realm buttons
-	local realms = C_RealmList.GetRealmsInCategory(RealmList.selectedCategory);
+	local realms = RealmList.selectedCategory and C_RealmList.GetRealmsInCategory(RealmList.selectedCategory) or {};
 	RealmListUtility_SortRealms(realms);
 	local scrollFrame = RealmListScrollFrame;
 	local offset = HybridScrollFrame_GetOffset(scrollFrame)
@@ -270,8 +270,7 @@ function RealmSelectButton_OnDoubleClick(self)
 end
 
 function RealmList_OnShow(self)
-	--JS_TODO - How do we get the name of the previously selected realm?
-	local name = nil;
+	local name = GetServerName();
 
 	-- If we already have a realm name, find the correct category
 	if ( name ) then
@@ -286,6 +285,23 @@ function RealmList_OnShow(self)
 	if ( not C_RealmList.IsRealmListComplete() ) then
 		GlueDialog_Show("OKAY_MUST_ACCEPT", REALM_LIST_PARTIAL_RESULTS);
 	end
+end
+
+function RealmList_GetInfoFromName(name)
+	local categories = C_RealmList.GetAvailableCategories();
+	for i=1, #categories do
+		local realms = C_RealmList.GetRealmsInCategory(categories[i]);
+		for j=1, #realms do
+			local realmAddr = realms[j];
+			local realmName, numChars, versionMismatch, isPvP, isRP, populationState, versionMajor, versionMinor, versionRev, versionBuild = C_RealmList.GetRealmInfo(realmAddr);
+
+			if ( realmName == name ) then
+				return realmAddr, categories[i];
+			end
+		end
+	end
+
+	return nil, nil;
 end
 
 function RealmListTab_OnClick(tab)

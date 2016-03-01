@@ -47,6 +47,7 @@ function GlueParent_OnEvent(self, event, ...)
 		LocalizeFrames();
 		GlueParent_EnsureValidScreen();
 		GlueParent_UpdateDialogs();
+		GlueParent_CheckCinematic();
 	elseif ( event == "LOGIN_STATE_CHANGED" ) then
 		GlueParent_EnsureValidScreen();
 		GlueParent_UpdateDialogs();
@@ -103,6 +104,18 @@ function GlueParent_UpdateDialogs()
 	elseif ( auroraState == LE_AURORA_STATE_NONE and C_Login.GetLastError() ) then
 		local errorCategory, errorID, localizedString, debugString = C_Login.GetLastError();
 
+		local isHTML = false;
+		local hasURL = false;
+
+		--If we didn't get a string from C, look one up in GlueStrings as HTML
+		if ( not localizedString ) then
+			local tag = string.format("%s_ERROR_%d_HTML", errorCategory, errorID);
+			localizedString = _G[tag];
+			if ( localizedString ) then
+				isHTML = true;
+			end
+		end
+
 		--If we didn't get a string from C, look one up in GlueStrings
 		if ( not localizedString ) then
 			local tag = string.format("%s_ERROR_%d", errorCategory, errorID);
@@ -119,7 +132,20 @@ function GlueParent_UpdateDialogs()
 			localizedString = localizedString.."\n\n(DebugMessage: "..debugString..")";
 		end
 
-		GlueDialog_Show("OKAY", localizedString);
+		--See if we want a URL as well
+		local urlTag = string.format("%s_ERROR_%d_URL", errorCategory, errorID);
+		if ( _G[urlTag] ) then
+			hasURL = true;
+		end
+
+		if ( isHTML ) then
+			GlueDialog_Show("OKAY_HTML", localizedString);
+		elseif ( hasURL ) then
+			GlueDialog_Show("OKAY_WITH_URL", localizedString, urlTag);
+		else
+			GlueDialog_Show("OKAY", localizedString);
+		end
+
 		C_Login.ClearLastError();
 	elseif (  waitingForRealmList ) then
 		GlueDialog_Show("REALM_LIST_IN_PROGRESS");
@@ -144,41 +170,40 @@ function GlueParent_EnsureValidScreen()
 	end
 end
 
-local function GlueParent_ChangeScreen(screen, screenTable)
+local function GlueParent_ChangeScreen(screenInfo, screenTable)
 	LogAuroraClient("ae", "Switching to screen",
-			"screen", screen);
+			"screen", screenInfo.frame);
 
-	local screenInfo;
+	--Hide all other screens
 	for key, info in pairs(screenTable) do
-		if ( key == screen ) then
-			screenInfo = info;
-		else
+		if ( info ~= screenInfo ) then
 			_G[info.frame]:Hide();
 		end
 	end
 
-	if ( screenInfo ) then
-		_G[screenInfo.frame]:Show();
-		local displayedExpansionLevel = GetClientDisplayExpansionLevel();
-		if ( screenInfo.playMusic ) then
-			PlayGlueMusic(EXPANSION_GLUE_MUSIC[displayedExpansionLevel]);
-		end
-		if ( screenInfo.playAmbience ) then
-			PlayGlueAmbience(EXPANSION_GLUE_AMBIENCE[displayedExpansionLevel], 4.0);
-		end
-		return screenInfo;
+	--Start music. Have to do this before showing screen in case its OnShow changes screen.
+	local displayedExpansionLevel = GetClientDisplayExpansionLevel();
+	if ( screenInfo.playMusic ) then
+		PlayGlueMusic(EXPANSION_GLUE_MUSIC[displayedExpansionLevel]);
 	end
+	if ( screenInfo.playAmbience ) then
+		PlayGlueAmbience(EXPANSION_GLUE_AMBIENCE[displayedExpansionLevel], 4.0);
+	end
+
+	--Actually show this screen
+	_G[screenInfo.frame]:Show();
 end
 
 function GlueParent_SetScreen(screen)
-	local screenInfo = GlueParent_ChangeScreen(screen, GLUE_SCREENS);
+	local screenInfo = GLUE_SCREENS[screen];
 	if ( screenInfo ) then
 		GlueParent.currentScreen = screen;
+		GlueParent_ChangeScreen(screenInfo, GLUE_SCREENS);
 	end
 end
 
 function GlueParent_OpenSecondaryScreen(screen)
-	local screenInfo = GlueParent_ChangeScreen(screen, GLUE_SECONDARY_SCREENS);
+	local screenInfo = GLUE_SECONDARY_SCREENS[screen];
 	if ( screenInfo ) then
 		GlueParent.currentSecondaryScreen = screen;
 		if ( screenInfo.fullScreen ) then
@@ -189,17 +214,43 @@ function GlueParent_OpenSecondaryScreen(screen)
 		if ( screenInfo.showSound ) then
 			PlaySound(screenInfo.showSound);
 		end
+		GlueParent_ChangeScreen(screenInfo, GLUE_SECONDARY_SCREENS);
 	end
 end
 
 function GlueParent_CloseSecondaryScreen()
 	if ( GlueParent.currentSecondaryScreen ) then
 		local screenInfo = GLUE_SECONDARY_SCREENS[GlueParent.currentSecondaryScreen];
-		_G[screenInfo.frame]:Hide();
 		GlueParent.currentSecondaryScreen = nil;
+
+		--The secondary screen may have started music. Start the primary screen's music if so
+		local primaryScreen = GlueParent.currentScreen;
+		if ( primaryScreen and GLUE_SCREENS[primaryScreen] ) then
+			local displayedExpansionLevel = GetClientDisplayExpansionLevel();
+			if ( GLUE_SCREENS[primaryScreen].playMusic ) then
+				PlayGlueMusic(EXPANSION_GLUE_MUSIC[displayedExpansionLevel]);
+			end
+			if ( GLUE_SCREENS[primaryScreen].playAmbience ) then
+				PlayGlueAmbience(EXPANSION_GLUE_AMBIENCE[displayedExpansionLevel], 4.0);
+			end
+		end
+
+		_G[screenInfo.frame]:Hide();
+
+		--Show the original screen if we hid it. Have to do this last in case it opens a new secondary screen.
 		if ( screenInfo.fullScreen ) then
 			GlueParent.ScreenFrame:Show();
 		end
+	end
+end
+
+function GlueParent_CheckCinematic()
+	local cinematicIndex = tonumber(GetCVar("playIntroMovie"));
+	local displayExpansionLevel = GetClientDisplayExpansionLevel();
+	if ( not cinematicIndex or cinematicIndex <= displayExpansionLevel ) then
+		SetCVar("playIntroMovie", displayExpansionLevel + 1);
+		MovieFrame.version = tonumber(GetCVar("playIntroMovie"));
+		GlueParent_OpenSecondaryScreen("movie");
 	end
 end
 
@@ -265,7 +316,6 @@ function SetBackgroundModel(model, path)
 	if ( GLUE_AMBIENCE_TRACKS[nameupper] ) then
 		PlayGlueAmbience(GLUE_AMBIENCE_TRACKS[nameupper], 4.0);
 	end
-	-- JS_TODO: remove GetModel
 	if ( ( model == CharacterSelectModel ) and ( string.find(model:GetModel(), 'lowres') == nil ) ) then
 		SetLighting(model, nameupper)
 	else

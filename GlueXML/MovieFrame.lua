@@ -1,5 +1,4 @@
 function MovieFrame_OnLoad(self)
-	self.version = GetCVar("playIntroMovie") + 1;
 	if ( not IsMacClient() ) then
 		MovieFrameSubtitleArea:Hide();
 	end
