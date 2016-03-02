@@ -75,7 +75,7 @@ end
 function GlueParent_IsScreenValid(screen)
 	local auroraState, connectedToWoW, wowConnectionState, hasRealmList = C_Login.GetState();
 	if ( screen == "charselect" or screen == "charcreate" ) then
-		return auroraState == LE_AURORA_STATE_NONE and connectedToWoW and not hasRealmList;
+		return auroraState == LE_AURORA_STATE_NONE and (connectedToWoW or wowConnectionState == LE_WOW_CONNECTION_STATE_CONNECTING) and not hasRealmList;
 	elseif ( screen == "realmlist" ) then
 		return hasRealmList;
 	elseif ( screen == "login" ) then
@@ -151,6 +151,21 @@ function GlueParent_UpdateDialogs()
 		GlueDialog_Show("REALM_LIST_IN_PROGRESS");
 	elseif ( wowConnectionState == LE_WOW_CONNECTION_STATE_CONNECTING ) then
 		GlueDialog_Show("CANCEL", GAME_SERVER_LOGIN);
+	elseif ( wowConnectionState == LE_WOW_CONNECTION_STATE_IN_QUEUE ) then
+		local waitPosition, waitMinutes, hasFCM = C_Login.GetWaitQueueInfo();
+		
+		if ( hasFCM ) then
+			GlueDialog_Show("QUEUED_WITH_FCM", _G["QUEUE_FCM"]);
+		elseif ( waitMinutes == 0 ) then
+			local queueString = string.format(_G["QUEUE_TIME_LEFT_UNKNOWN"], waitPosition);
+			GlueDialog_Show("QUEUED_NORMAL", queueString);
+		elseif (waitMinutes == 1) then
+			local queueString = string.format(_G["QUEUE_TIME_LEFT_SECONDS"], waitPosition);
+			GlueDialog_Show("QUEUED_NORMAL", queueString);
+		else
+			local queueString = string.format(_G["QUEUE_TIME_LEFT"], waitPosition, waitMinutes);
+			GlueDialog_Show("QUEUED_NORMAL", queueString);
+		end
 	else
 		-- JS_TODO: make it so this only cancels state dialogs, like "Connecting"
 		GlueDialog_Hide();

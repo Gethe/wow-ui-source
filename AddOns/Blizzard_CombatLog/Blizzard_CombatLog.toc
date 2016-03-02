@@ -1,4 +1,4 @@
-## Interface: 60200
+## Interface: 0
 ## Title: Blizzard CombatLog
 ## Secure: 1
 ## LoadOnDemand: 1

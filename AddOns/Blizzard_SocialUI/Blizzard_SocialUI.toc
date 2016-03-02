@@ -1,4 +1,4 @@
-## Interface: 60200
+## Interface: 0
 ## Title: Blizzard Social UI
 ## Secure: 1
 ## Author: Blizzard Entertainment

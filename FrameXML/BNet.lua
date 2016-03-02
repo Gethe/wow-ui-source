@@ -26,15 +26,12 @@ BNET_CLIENT_OVERWATCH = "Pro";
 BNET_CLIENT_CLNT = "CLNT";
 
 function BNet_OnLoad(self)
-	self:RegisterEvent("BN_CONNECTED");
 	self:RegisterEvent("BN_DISCONNECTED");
 	self:RegisterEvent("BN_BLOCK_FAILED_TOO_MANY");
 end
 
 function BNet_OnEvent(self, event, ...)
-	if ( event == "BN_CONNECTED" ) then
-		SynchronizeBNetStatus();
-	elseif ( event == "BN_DISCONNECTED" ) then
+	if ( event == "BN_DISCONNECTED" ) then
 		table.wipe(BNToasts);
 	elseif ( event == "BN_BLOCK_FAILED_TOO_MANY" ) then
 		local blockType = ...;
@@ -315,20 +312,6 @@ function BNToastFrame_OnClick(self)
 		local bnetIDAccount, accountName = BNGetFriendInfoByID(toastData);
 		if ( accountName ) then	--This player may have been removed from our friends list, so we may not have a name.
 			ChatFrame_SendSmartTell(accountName);
-		end
-	end
-end
-
-function SynchronizeBNetStatus()
-	if ( BNFeaturesEnabledAndConnected() ) then
-		local wowAFK = (IsChatAFK());
-		local wowDND = (IsChatDND());
-		local _, _, _, _, bnetAFK, bnetDND = BNGetInfo();
-		if ( wowAFK ~= bnetAFK ) then
-			BNSetAFK(wowAFK);
-		end
-		if ( wowDND ~= bnetDND ) then
-			BNSetDND(wowDND);
 		end
 	end
 end

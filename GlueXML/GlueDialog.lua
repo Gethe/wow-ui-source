@@ -184,6 +184,27 @@ GlueDialogTypes["REALM_TOURNAMENT_WARNING"] = {
 	button1 = OKAY,
 	button2 = nil,
 }
+
+GlueDialogTypes["QUEUED_NORMAL"] = {
+	text = "",
+	button1 = CHANGE_REALM,
+	OnAccept = function()
+		C_RealmList.RequestChangeRealmList();
+	end,
+}
+
+GlueDialogTypes["QUEUED_WITH_FCM"] = {
+	text = "",
+	button1 = CHANGE_REALM,
+	button2 = QUEUE_FCM_BUTTON,
+	OnAccept = function()
+		C_RealmList.RequestChangeRealmList();
+	end,
+	OnCancel = function()
+		LaunchURL(QUEUE_FCM_URL)
+	end,
+}
+
 --[[
 GlueDialogTypes["SYSTEM_INCOMPATIBLE_SSE"] = {
 	text = SYSTEM_INCOMPATIBLE_SSE,
