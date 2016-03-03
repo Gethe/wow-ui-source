@@ -879,7 +879,7 @@
 					<Anchor point="BOTTOM" x="0" y="-23"/>
 				</Anchors>
 			</Frame>
-			<CinematicModel parentKey="BoatDeathAnimations" facingLeft="true" inherits="GarrisonCinematicModelBaseTemplate">
+			<CinematicModel parentKey="BoatDeathAnimations" facingLeft="true" inherits="GarrisonCinematicModelBaseTemplate" frameLevel="1">
 				<Size x="400" y="250"/>
 				<Anchors>
 					<Anchor point="CENTER"/>
@@ -887,7 +887,6 @@
 				<Scripts>
 					<OnLoad>
 						GarrisonCinematicModelBase_OnLoad(self);
-						self:SetFrameLevel(self:GetParent():GetFrameLevel() + 1);
 						self:Show();
 						self:SetDisplayInfo(11686); <!-- 11686 is invisible stalker -->
 					</OnLoad>
@@ -1222,7 +1221,7 @@
 
 	<Frame name="GarrisonShipyardMissionCompleteStageTemplate" inherits="GarrisonMissionStageTemplate, GarrisonMissionCompleteStageTemplate" virtual="true">
 		<Frames>
-			<Frame parentKey="EncountersFrame">
+			<Frame parentKey="EncountersFrame" frameLevel="3">
 				<Size x="556" y="285"/>
 				<Anchors>
 					<Anchor point="TOP"/>
@@ -1251,13 +1250,8 @@
 						</Anchors>
 					</Frame>
 				</Frames>
-				<Scripts>
-					<OnLoad>
-						self:SetFrameLevel(self:GetParent():GetFrameLevel() + 3);
-					</OnLoad>
-				</Scripts>
 			</Frame>
-			<Frame parentKey="FollowersFrame">
+			<Frame parentKey="FollowersFrame" frameLevel="3">
 				<Size x="556" y="285"/>
 				<Anchors>
 					<Anchor point="TOP"/>
@@ -1284,13 +1278,8 @@
 						</Anchors>
 					</Frame>
 				</Frames>
-				<Scripts>
-					<OnLoad>
-						self:SetFrameLevel(self:GetParent():GetFrameLevel() + 3);
-					</OnLoad>
-				</Scripts>
 			</Frame>
-			<Frame parentKey="MissionInfo">
+			<Frame parentKey="MissionInfo" frameLevel="3">
 				<Size x="556" y="285"/>
 				<Anchors>
 					<Anchor point="TOP"/>
@@ -1373,16 +1362,11 @@
 						</Texture>
 					</Layer>
 				</Layers>
-				<Scripts>
-					<OnLoad>
-						self:SetFrameLevel(self:GetParent():GetFrameLevel() + 3);
-					</OnLoad>
-				</Scripts>
 			</Frame>
 		</Frames>
 	</Frame>
 
-	<Frame name="FogFrameTemplate" hidden="true" virtual="true">
+	<Frame name="FogFrameTemplate" hidden="true" virtual="true" frameLevel="4">
 		<Size x="452" y="306"/>
 		<Layers>
 			<Layer level="OVERLAY" textureSubLevel="1">
@@ -1431,9 +1415,6 @@
 			</AnimationGroup>
 		</Animations>
 		<Scripts>
-			<OnLoad>
-				self:SetFrameLevel(self:GetParent():GetFrameLevel() + 4);
-			</OnLoad>
 			<OnUpdate function="GarrisonShipyardMap_OnFogFrameUpdate"/>
 		</Scripts>
 	</Frame>
@@ -1824,7 +1805,7 @@
 							<Frame parentKey="FogFrame2" parentArray="FogFrames" inherits="FogFrameTemplate"/>
 							<Frame parentKey="FogFrame3" parentArray="FogFrames" inherits="FogFrameTemplate"/>
 
-							<Frame parentKey="CompleteDialog" toplevel="true" enableMouse="true" hidden="true">
+							<Frame parentKey="CompleteDialog" enableMouse="true" hidden="true" frameLevel="5">
 								<Size x="956" y="637"/>
 								<Anchors>
 									<Anchor point="TOPLEFT" x="2" y="-22"/>
@@ -1949,7 +1930,7 @@
 
 			<!-- Border frame contains the wooden frame around the dialog. This needs to be a separate frame
 			     for the shipyard UI so that we can raise the frame level above the fog -->
-			<Frame parentKey="BorderFrame" inherits="GarrisonUITemplate" setAllPoints="true">
+			<Frame parentKey="BorderFrame" inherits="GarrisonUITemplate" setAllPoints="true" frameLevel="5">
 				<Frames>
 					<Button parentKey="CloseButton2" inherits="UIPanelCloseButtonNoScripts">
 						<Anchors>
@@ -1968,7 +1949,6 @@
 					<OnLoad>
 						self.CloseButton:Hide();
 						self.BackgroundTile:Hide();
-						self:SetFrameLevel(self:GetParent().MissionTab.MissionList.FogFrame1:GetFrameLevel() + 1);
 					</OnLoad>
 				</Scripts>
 			</Frame>

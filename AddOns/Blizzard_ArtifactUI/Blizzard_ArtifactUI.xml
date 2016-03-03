@@ -11,18 +11,12 @@
 		</Scripts>
 	</Button>
 	
-	<Frame name="ArtifactFrameUnderlay" parent="UIParent" enableMouse="true" hidden="true" frameStrata="BACKGROUND" mixin="ArtifactFrameUnderlayMixin">
+	<Frame name="ArtifactFrameUnderlay" parent="UIParent" hidden="true" frameStrata="BACKGROUND" mixin="ArtifactFrameUnderlayMixin">
 		<Anchors>
 			<Anchor point="TOPLEFT" relativeTo="UIParent" />
 			<Anchor point="BOTTOMRIGHT" relativeTo="UIParent" />
 		</Anchors>
 		<Scripts>
-			<OnMouseDown>
-				self:OnMouseDown();
-			</OnMouseDown>
-			<OnMouseUp>
-				self:OnMouseUp();
-			</OnMouseUp>
 			<OnUpdate>
 				self:OnUpdate(elapsed);
 			</OnUpdate>

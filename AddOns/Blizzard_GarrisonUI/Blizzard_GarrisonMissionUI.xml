@@ -1395,7 +1395,7 @@
 					<Anchor point="BOTTOMRIGHT" relativePoint="TOPRIGHT"/>
 				</Anchors>
 			</Frame>
-			<Frame parentKey="CompleteDialog" topLevel="true" enableMouse="true" hidden="true">
+			<Frame parentKey="CompleteDialog" enableMouse="true" hidden="true">
 				<Size x="956" y="637"/>
 				<Anchors>
 					<Anchor point="TOPLEFT" x="-33" y="43"/>
@@ -1415,9 +1415,9 @@
 		</Frames>
 		<Scripts>
 			<OnLoad method="OnLoad"/>
-			<OnShow function="OnShow"/>
-			<OnHide function="OnHide"/>
-			<OnUpdate function="OnUpdate"/>
+			<OnShow method="OnShow"/>
+			<OnHide method="OnHide"/>
+			<OnUpdate method="OnUpdate"/>
 		</Scripts>
 	</Frame>
 
@@ -1978,8 +1978,7 @@
 			</Frame>
 			<Frame parentKey="MissionTab" setAllPoints="true" useParentLevel="true">
 				<Frames>
-					<Frame parentKey="MissionList" inherits="GarrisonMissionListTemplate" name="$parentMissions">
-					</Frame>
+					<Frame parentKey="MissionList" inherits="GarrisonMissionListTemplate" name="$parentMissions"/>
 					<Button parentKey="MissionPage" inherits="FollowerMissionPageTemplate" hidden="true" mixin="GarrisonMissionPageMixin">
 						<Frames>
 							<Frame parentKey="Enemy1" parentArray="Enemies" inherits="GarrisonMissionPageEnemyTemplate">

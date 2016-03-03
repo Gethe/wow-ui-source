@@ -8,6 +8,7 @@ GarrisonFollowerOptions[LE_FOLLOWER_TYPE_SHIPYARD_6_2] = {
 	useAbilityTooltipStyleWithoutCounters = false,
 	hideCountersInAbilityFrame = false,
 	showILevelOnFollower = false,
+	showCategoriesInFollowerList = false,
 }
 
 
@@ -1876,13 +1877,14 @@ function GarrisonShipyardFollowerList:ShowFollower(followerID, hideCounters)
 				local trait = self.Traits[traitIndex];
 				trait.abilityID = ability.id;
 				trait.Portrait:SetTexture(ability.icon);
-				trait.followerTypeID = followerInfo.followerTypeID
+				trait.followerTypeID = followerInfo.followerTypeID;
 				if (not hideCounters) then
 					for id, counter in pairs(ability.counters) do
 						trait.Counter.Icon:SetTexture(counter.icon);
 						trait.Counter.tooltip = counter.name;
 						trait.Counter.mainFrame = mainFrame;
 						trait.Counter.info = counter;
+						trait.Counter.followerTypeID = followerInfo.followerTypeID;
 						trait.Counter:Show();
 						
 						if (counter.factor > GARRISON_HIGH_THREAT_VALUE) then
@@ -1899,7 +1901,7 @@ function GarrisonShipyardFollowerList:ShowFollower(followerID, hideCounters)
 			if (equipmentIndex <= #self.EquipmentFrame.Equipment) then
 				local equipment = self.EquipmentFrame.Equipment[equipmentIndex];
 				equipment.abilityID = ability.id;
-				equipment.followerTypeID = followerInfo.followerTypeID
+				equipment.followerTypeID = followerInfo.followerTypeID;
 				if (ability.icon) then
 					equipment.Icon:SetTexture(ability.icon);
 					equipment.Icon:Show();
@@ -1909,6 +1911,7 @@ function GarrisonShipyardFollowerList:ShowFollower(followerID, hideCounters)
 							equipment.Counter.tooltip = counter.name;
 							equipment.Counter.mainFrame = mainFrame;
 							equipment.Counter.info = counter;
+							equipment.Counter.followerTypeID = followerInfo.followerTypeID;
 							equipment.Counter:Show();
 							
 							if (counter.factor > GARRISON_HIGH_THREAT_VALUE) then

@@ -46,6 +46,17 @@ GlueDialogTypes["OKAY_HTML"] = {
 	html = 1,
 }
 
+GlueDialogTypes["OKAY_WITH_URL"] = {
+	text = "",
+	button1 = DIALOG_HELP_MORE_INFO,
+	button2 = OKAY,
+	OnAccept = function()
+		LaunchURL(_G[GlueDialog.data]);
+	end,
+	OnCancel = function()
+	end,
+}
+
 GlueDialogTypes["ERROR_CINEMATIC"] = {
 	text = ERROR_CINEMATIC,
 	button1 = OKAY,
@@ -144,7 +155,6 @@ GlueDialogTypes["REALM_IS_FULL"] = {
 	button2 = NO,
 	showAlert = 1,
 	OnAccept = function()
-		SetGlueScreen("charselect");
 		C_RealmList.ConnectToRealm(RealmList.selectedRealm);
 	end,
 	OnCancel = function()
@@ -174,6 +184,27 @@ GlueDialogTypes["REALM_TOURNAMENT_WARNING"] = {
 	button1 = OKAY,
 	button2 = nil,
 }
+
+GlueDialogTypes["QUEUED_NORMAL"] = {
+	text = "",
+	button1 = CHANGE_REALM,
+	OnAccept = function()
+		C_RealmList.RequestChangeRealmList();
+	end,
+}
+
+GlueDialogTypes["QUEUED_WITH_FCM"] = {
+	text = "",
+	button1 = CHANGE_REALM,
+	button2 = QUEUE_FCM_BUTTON,
+	OnAccept = function()
+		C_RealmList.RequestChangeRealmList();
+	end,
+	OnCancel = function()
+		LaunchURL(QUEUE_FCM_URL)
+	end,
+}
+
 --[[
 GlueDialogTypes["SYSTEM_INCOMPATIBLE_SSE"] = {
 	text = SYSTEM_INCOMPATIBLE_SSE,
@@ -480,8 +511,7 @@ GlueDialogTypes["LEGION_PURCHASE_READY"] = {
 	button1 = BLIZZARD_STORE_LOG_OUT_NOW,
 	button2 = CANCEL,
 	OnAccept = function()
-		DisconnectFromServer();
-		SetGlueScreen("login");
+		C_Login.DisconnectFromServer();
 	end,
 }
 

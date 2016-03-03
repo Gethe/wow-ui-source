@@ -2,7 +2,7 @@
 ..\FrameXML\UI.xsd">
 	<Script file="Blizzard_Wardrobe.lua"/>
 	
-	<DressUpModel name="WardrobeModelTemplate" inherits="ModelTemplate" virtual="true">
+	<DressUpModel name="WardrobeModelTemplate" virtual="true">
 		<Size x="78" y="104"/>
 		<Layers>
 			<Layer level="BACKGROUND">
@@ -65,17 +65,26 @@
 					</Layer>
 				</Layers>
 			</Frame>
+			<Frame parentKey="HideVisual" setAllPoints="true">
+				<Layers>
+					<Layer level="ARTWORK">
+						<Texture parentKey="Icon" atlas="transmog-icon-hidden" useAtlasSize="true" hidden="true">
+							<Anchors>
+								<Anchor point="TOPLEFT" x="-12" y="13" relativePoint="TOPLEFT"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+			</Frame>
 		</Frames>
 		<Scripts>
 			<OnLoad function="WardrobeCollectionFrameModel_OnLoad"/>
 			<OnEvent function="WardrobeCollectionFrameModel_OnEvent"/>
 			<OnModelLoaded function="WardrobeCollectionFrameModel_OnModelLoaded"/>
-			<OnUpdate>
-				-- empty
-			</OnUpdate>
 			<OnMouseDown function="WardrobeCollectionFrameModel_OnMouseDown"/>
 			<OnEnter function="WardrobeCollectionFrameModel_OnEnter"/>
 			<OnLeave function="WardrobeCollectionFrameModel_OnLeave"/>
+			<OnShow function="WardrobeCollectionFrameModel_OnShow"/>
 		</Scripts>
 	</DressUpModel>
 
@@ -586,14 +595,21 @@
 					</Anchors>
 				</Texture>
 			</Layer>
-			<Layer level="OVERLAY">
-				<Texture parentKey="UndoIcon" file="Interface\Transmogrify\Textures.png" hidden="true">
-					<Size x="24" y="22"/>
+			<Layer level="ARTWORK">
+				<Texture parentKey="HiddenVisualCover" atlas="transmog-frame-blackcover" useAtlasSize="true" hidden="true" alpha="0.6">
 					<Anchors>
-						<Anchor point="TOPRIGHT" x="7" y="6"/>
+						<Anchor point="CENTER"/>
 					</Anchors>
-					<TexCoords left="0.17968750" right="0.36718750" top="0.58203125" bottom="0.62500000"/>
 				</Texture>
+			</Layer>
+			<Layer level="ARTWORK" textureSubLevel="1">
+				<Texture parentKey="HiddenVisualIcon" atlas="transmog-icon-hidden" useAtlasSize="true" hidden="true" alpha="0.7">
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="OVERLAY">
 				<Texture parentKey="SelectedTexture" atlas="transmog-frame-selected" useAtlasSize="true" hidden="true">
 					<Anchors>
 						<Anchor point="CENTER"/>
@@ -602,6 +618,44 @@
 			</Layer>			
 		</Layers>
 		<Frames>
+			<Button parentKey="UndoButton" hidden="true">
+				<Size x="24" y="22"/>
+				<Anchors>
+					<Anchor point="TOPRIGHT" x="7" y="6"/>
+				</Anchors>
+				<Layers>
+					<Layer level="ARTWORK">
+						<Texture parentKey="Icon" file="Interface\Transmogrify\Textures.png">
+							<Size x="24" y="22"/>
+							<Anchors>
+								<Anchor point="TOPLEFT" x="0" y="0"/>
+							</Anchors>
+							<TexCoords left="0.17968750" right="0.36718750" top="0.58203125" bottom="0.62500000"/>
+						</Texture>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnShow>
+						self.Icon:SetPoint("TOPLEFT", 0, 0);
+					</OnShow>
+					<OnMouseDown>
+						self.Icon:SetPoint("TOPLEFT", 1, -1);
+					</OnMouseDown>
+					<OnMouseUp>
+						self.Icon:SetPoint("TOPLEFT", 0, 0);
+					</OnMouseUp>
+					<OnLeave>
+						if ( not self:GetParent():IsMouseOver() ) then
+							self:Hide();
+						end
+					</OnLeave>
+					<OnClick>
+						-- same as a right-click on the parent
+						WardrobeTransmogButton_OnClick(self:GetParent(), "RightButton");
+					</OnClick>
+				</Scripts>
+				<HighlightTexture file="Interface\Buttons\UI-Common-MouseHilight" alphaMode="ADD"/>
+			</Button>
 			<Frame parentKey="PendingFrame" setAllPoints="true" hidden="true">
 				<Layers>
 					<Layer level="ARTWORK">

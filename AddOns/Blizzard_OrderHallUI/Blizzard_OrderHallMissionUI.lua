@@ -7,6 +7,7 @@ GarrisonFollowerOptions[LE_FOLLOWER_TYPE_GARRISON_7_0] = {
 	useAbilityTooltipStyleWithoutCounters = true,
 	hideCountersInAbilityFrame = true,
 	showILevelOnFollower = true,
+	showCategoriesInFollowerList = true,
 }
 
 

@@ -5,12 +5,16 @@
 		DEBUGLOCALS_LEVEL = 4;
 		function _ERRORMESSAGE(message)
 			debuginfo();
+
+			local stack = debugstack(DEBUGLOCALS_LEVEL);
+
+			LogAuroraClient("ae", "Lua Error",
+				"message", message,
+				"stack", stack);
 			
 			if ( not ScriptErrors:IsShown() ) then
 				local ERROR_FORMAT = [[|cffffd200Message:|r|cffffffff %s|r|n|cffffd200Stack:|r|cffffffff %s|r]];
-				local stack = debugstack(DEBUGLOCALS_LEVEL);
 				text = string.format( ERROR_FORMAT, message, stack);
-				
 				ScriptErrors.ScrollFrame.Text:SetText(text);
 				ScriptErrors:Show();
 			end

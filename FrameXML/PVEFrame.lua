@@ -11,15 +11,10 @@ function PVEFrame_OnLoad(self)
 	RaiseFrameLevel(self.shadows);
 	PanelTemplates_SetNumTabs(self, #panels);
 
-	if (not ScriptsDisallowedForBeta()) then
-		self:RegisterEvent("AJ_PVP_ACTION");
-		self:RegisterEvent("AJ_PVP_SKIRMISH_ACTION");
-		self:RegisterEvent("AJ_PVP_LFG_ACTION");
-		self:RegisterEvent("AJ_PVP_RBG_ACTION");
-	else
-		PanelTemplates_DisableTab(self, 2);
-	end
-
+	self:RegisterEvent("AJ_PVP_ACTION");
+	self:RegisterEvent("AJ_PVP_SKIRMISH_ACTION");
+	self:RegisterEvent("AJ_PVP_LFG_ACTION");
+	self:RegisterEvent("AJ_PVP_RBG_ACTION");
 	self:RegisterEvent("AJ_PVE_LFG_ACTION");
 	
 	self.maxTabWidth = (self:GetWidth() - 19) / #panels;

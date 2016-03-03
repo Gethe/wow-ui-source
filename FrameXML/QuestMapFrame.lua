@@ -465,16 +465,6 @@ function QuestLogQuests_Update(poiTable)
 			end
 		end
 		QuestScrollFrame.Contents.StoryHeader.Progress:SetFormattedText(QUEST_STORY_STATUS, completedCriteria, numCriteria);
-		if ( mapHeaderIndex > 0 ) then
-			-- always expand header for story zone
-			local _, _, _, _, isCollapsed = GetQuestLogTitle(mapHeaderIndex);
-			if ( isCollapsed ) then
-				-- ExpandQuestHeader will signal QUEST_LOG_UPDATE which would otherwise trigger another QuestLogQuests_Update
-				QuestMapFrame.ignoreQuestLogUpdate = true;
-				ExpandQuestHeader(mapHeaderIndex);
-				QuestMapFrame.ignoreQuestLogUpdate = nil;
-			end
-		end
 		prevButton = QuestScrollFrame.Contents.StoryHeader;
 	else
 		QuestScrollFrame.Contents.StoryHeader:Hide();
@@ -519,9 +509,6 @@ function QuestLogQuests_Update(poiTable)
 					button:SetPoint("TOPLEFT", 1, -6);
 				end
 				button:Show();				
-				if ( mapHeaderIndex == headerLogIndex ) then
-					mapHeaderButtonIndex = headerIndex;
-				end
 				button.questLogIndex = headerLogIndex;
 				prevButton = button;
 			end

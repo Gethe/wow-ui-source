@@ -82,6 +82,7 @@ function AccountLogin_OnEvent(self, event, ...)
 end
 
 function AccountLogin_OnShow(self)
+	self.UI.GameLogo:SetTexture(EXPANSION_LOGOS[GetClientDisplayExpansionLevel()]);
 	self.UI.AccountEditBox:SetText("");
 	AccountLogin_UpdateSavedData(self);
 
@@ -188,7 +189,6 @@ function WoWAccountSelect_OnLoad(self)
 end
 
 function WoWAccountSelect_OnShow(self)
-	-- JS_TODO: WTF is going on?
 	AccountLogin.UI.AccountEditBox:SetFocus();
 	AccountLogin.UI.AccountEditBox:ClearFocus();
 	self.selectedAccount = 1;

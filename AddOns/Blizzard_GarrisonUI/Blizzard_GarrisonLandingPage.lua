@@ -293,7 +293,7 @@ end
 
 function GarrisonLandingPageReportList_UpdateItems()
 	GarrisonLandingPageReport.List.items = C_Garrison.GetLandingPageItems();
-	GarrisonLandingPageReport.List.AvailableItems = C_Garrison.GetAvailableMissions();
+	GarrisonLandingPageReport.List.AvailableItems = C_Garrison.GetAvailableMissions(LE_FOLLOWER_TYPE_GARRISON_6_0) or {};
 	Garrison_SortMissions(GarrisonLandingPageReport.List.AvailableItems);
 	GarrisonLandingPageReport.InProgress.Text:SetFormattedText(GARRISON_LANDING_IN_PROGRESS, #GarrisonLandingPageReport.List.items);
 	GarrisonLandingPageReport.Available.Text:SetFormattedText(GARRISON_LANDING_AVAILABLE, #GarrisonLandingPageReport.List.AvailableItems);

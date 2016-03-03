@@ -168,4 +168,12 @@ CREDITS_ART_INFO[6][1] = { file="Arrak_Forest_Dark", w=1024, h=512, offsetx=0, o
 CREDITS_ART_INFO[7] = {};
 CREDITS_ART_INFO[7][1] = { file="Illidan", w=1024, h=512, offsetx=0, offsety=0, maxAlpha=0.7 };
 
+GLUE_CREDITS_SOUND_KITS = { };
+GLUE_CREDITS_SOUND_KITS[1] = "Menu-Credits01";
+GLUE_CREDITS_SOUND_KITS[2] = "Menu-Credits02";
+GLUE_CREDITS_SOUND_KITS[3] = "Menu-Credits03";
+GLUE_CREDITS_SOUND_KITS[4] = "Menu-Credits04";
+GLUE_CREDITS_SOUND_KITS[5] = "Menu-Credits05";
+GLUE_CREDITS_SOUND_KITS[6] = "Menu-Credits06";
+
 AUTO_LOGIN_WAIT_TIME = 1.75;

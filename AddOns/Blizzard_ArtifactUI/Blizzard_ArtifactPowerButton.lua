@@ -113,6 +113,11 @@ end
 
 function ArtifactPowerButtonMixin:PlayRevealAnimation(onFinishedAnimation)
 	if self.queuedRevealDelay then
+		if self.hasSpentAny then
+			self.queuedRevealDelay = nil;
+			return false;
+		end
+		
 		self.RevealAnim.Start:SetEndDelay(self.queuedRevealDelay);
 
 		self.LightRune:Show();
@@ -350,7 +355,7 @@ function ArtifactPowerButtonMixin:SetupButton(powerID, anchorRegion)
 end
 
 function ArtifactPowerButtonMixin:EvaluateStyle()
-	if not self.isStart and C_ArtifactUI.GetTotalPurchasedRanks() == 0 then
+	if C_ArtifactUI.GetTotalPurchasedRanks() == 0 and not self.prereqsMet then
 		self:SetStyle(ARTIFACT_POWER_STYLE_RUNE);	
 	elseif C_ArtifactUI.IsAtForge() then
 		if self.isMaxRank then

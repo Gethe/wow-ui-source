@@ -379,12 +379,12 @@ function HelpFrame_SetButtonEnabled(button, enabled)
 	end
 end
 
-function HelpFrame_SetReportPlayerByName(frame, name)
-	frame.target = name;
+function HelpFrame_SetReportPlayerByUnitTag(frame, unitTag)
+	SetPendingReportTarget(unitTag);
+	frame.target = "pending";
 end
 
 function HelpFrame_SetReportPlayerByLineID(frame, lineID)
-	SetPendingReportTarget(lineID);
 	frame.target = "pending";
 end
 

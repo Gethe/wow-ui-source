@@ -9,6 +9,7 @@ end
 
 function ArtifactAppearancesMixin:OnShow()
 	self:Refresh();
+	C_ArtifactUI:SetForgeCamera();
 end
 
 function ArtifactAppearancesMixin:OnHide()

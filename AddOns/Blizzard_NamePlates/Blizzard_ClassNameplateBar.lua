@@ -133,9 +133,9 @@ function ClassNameplateManaBar:Setup()
 	self:RegisterUnitEvent("UNIT_DISPLAYPOWER", "player");
 	self:RegisterUnitEvent("UNIT_POWER_FREQUENT", "player");
 	self:RegisterUnitEvent("UNIT_MAXPOWER", "player");
-	self:RegisterUnitEvent("UNIT_SPELLCAST_START", unit);
-	self:RegisterUnitEvent("UNIT_SPELLCAST_STOP", unit);
-	self:RegisterUnitEvent("UNIT_SPELLCAST_FAILED", unit);
+	self:RegisterUnitEvent("UNIT_SPELLCAST_START", "player");
+	self:RegisterUnitEvent("UNIT_SPELLCAST_STOP", "player");
+	self:RegisterUnitEvent("UNIT_SPELLCAST_FAILED", "player");
 	self:RegisterEvent("PLAYER_ENTERING_WORLD");
 	
 	local tex = self:GetStatusBarTexture();

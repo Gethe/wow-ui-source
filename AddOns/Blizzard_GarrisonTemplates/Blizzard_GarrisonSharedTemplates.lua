@@ -220,7 +220,7 @@ end
 function GarrisonFollowerList:UpdateFollowers()
 
 	if ( self.dirtyList ) then
-		self.followers = C_Garrison.GetFollowers(self.followerType);
+		self.followers = C_Garrison.GetFollowers(self.followerType) or {};
 		self.dirtyList = nil;
 	end
 
@@ -257,7 +257,7 @@ function GarrisonFollowerList:UpdateFollowers()
 
 	if ( self.followerTab ) then
 		local maxFollowers = C_Garrison.GetFollowerSoftCap(self.followerType);
-		local numActiveFollowers = C_Garrison.GetNumActiveFollowers(self.followerType);
+		local numActiveFollowers = C_Garrison.GetNumActiveFollowers(self.followerType) or 0;
 		if ( self.isLandingPage ) then
 			local countColor = HIGHLIGHT_FONT_COLOR_CODE;
 			if ( numActiveFollowers > maxFollowers ) then
@@ -275,10 +275,10 @@ function GarrisonFollowerList:UpdateFollowers()
 
 	GarrisonFollowerList_SortFollowers(self);
 
-	-- The sort above will yield the following sort order: Active followers, troops, inactive followers. Insert new entries for the appropriate
-	-- category labels at the correct locations. Category labels will have "followerID" set to 0.
-	self.showCategories = true;
-	if (self.showCategories) then
+	if (GarrisonFollowerOptions[self.followerType].showCategoriesInFollowerList) then
+		-- The sort above will yield the following sort order: Active followers, troops, inactive followers. Insert new entries for the appropriate
+		-- category labels at the correct locations. Category labels will have "followerID" set to 0.
+
 	    local additionalOffset = 0;
 	    if ( true ) then -- Always show the Troops category even if there aren't any.
 		    additionalOffset = additionalOffset + 1;

@@ -247,9 +247,8 @@ function CharacterSelect_OnShow()
 
 	if (C_StoreGlue.GetDisconnectOnLogout()) then
 		C_PurchaseAPI.SetDisconnectOnLogout(false);
-		DisconnectFromServer();
 		GlueDialog_Hide();
-		SetGlueScreen("login");
+		C_Login.DisconnectFromServer();
 	end	
 end
 
@@ -362,10 +361,7 @@ end
 
 function CharacterSelect_OnKeyDown(self,key)
 	if ( key == "ESCAPE" ) then
-		--JS_TODO - Are we keeping TOSFrame?
-		if ( false and (TOSFrame:IsShown() or ConnectionHelpFrame:IsShown() )) then
-			return;
-		elseif ( C_Login.IsLauncherLogin() ) then
+		if ( C_Login.IsLauncherLogin() ) then
 			GlueMenuFrame:SetShown(not GlueMenuFrame:IsShown());
 		elseif (CharSelectServicesFlowFrame:IsShown()) then
 			CharSelectServicesFlowFrame:Hide();

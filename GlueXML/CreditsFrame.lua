@@ -15,6 +15,7 @@ function CreditsFrame_OnHide(self)
 end
 
 function CreditsFrame_Update(self)
+	PlayGlueMusic(GLUE_CREDITS_SOUND_KITS[CreditsFrame.creditsType]);
 	SetExpansionLogo(CreditsLogo, CreditsFrame.creditsType-1);
 
 	CreditsFrame_SetSpeed(CREDITS_SCROLL_RATE_PLAY);
@@ -65,7 +66,7 @@ function CreditsFrame_Switch(self, buttonID)
 	PlaySound("igMainMenuOptionCheckBoxOff");
 	CreditsFrame.creditsType = buttonID;
 	CreditsFrame_Update(self);
-	SetGlueScreen("credits");	
+	GlueParent_OpenSecondaryScreen("credits");
 end
 
 function CreditsFrame_SetArtTextures(self,textureName, index, alpha)

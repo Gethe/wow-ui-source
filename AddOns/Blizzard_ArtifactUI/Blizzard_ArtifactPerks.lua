@@ -240,7 +240,7 @@ function ArtifactPerksMixin:RefreshDependencies(powers)
 						lineContainer.Fill:SetStartPoint("CENTER", fromButton);
 						lineContainer.Fill:SetEndPoint("CENTER", toButton);
 
-						if self.hasBoughtAnyPowers then
+						if self.hasBoughtAnyPowers or ((toButton:IsStart() or toButton.prereqsMet) and (fromButton:IsStart() or fromButton.prereqsMet)) then
 							local hasSpentAny = fromButton.hasSpentAny and toButton.hasSpentAny;
 							if hasSpentAny or (fromButton.isCompletelyPurchased and (toButton.couldSpendPoints or toButton.isMaxRank)) or (toButton.isCompletelyPurchased and (fromButton.couldSpendPoints or fromButton.isMaxRank)) then
 								if (fromButton.isCompletelyPurchased and toButton.hasSpentAny) or (toButton.isCompletelyPurchased and fromButton.hasSpentAny) then
@@ -347,28 +347,34 @@ local function QueueReveal(self, powerButton, distance)
 	if powerButton:IsStart() or powerButton:QueueRevealAnimation(distance * ARTIFACT_REVEAL_DELAY_SECS_PER_DISTANCE) then
 		for linkedPowerID, linkedLineContainer in pairs(powerButton.links) do
 			local linkedPowerButton = self.powerIDToPowerButton[linkedPowerID];
-			local distanceToLink = powerButton:CalculateDistanceTo(linkedPowerButton);
-			local totalDistance = distance + distanceToLink;
-
-			QueueReveal(self, linkedPowerButton, totalDistance);
-
-			linkedLineContainer.FadeAnim:Stop();
-			linkedLineContainer.ScrollAnim:Stop();
-
-			linkedLineContainer.Background:SetAlpha(0.0);
-			linkedLineContainer.Fill:SetAlpha(0.0);
-			linkedLineContainer.FillScroll1:SetAlpha(0.0);
-			linkedLineContainer.FillScroll2:SetAlpha(0.0);
-
-			local delay = powerButton:IsStart() and .1 or totalDistance * ARTIFACT_REVEAL_DELAY_SECS_PER_DISTANCE;
-			linkedLineContainer.RevealAnim.Start1:SetEndDelay(delay);
-			linkedLineContainer.RevealAnim.Start2:SetEndDelay(delay);
-
-			linkedLineContainer.RevealAnim.LineScale:SetDuration(distanceToLink * ARTIFACT_REVEAL_LINE_DURATION_SECS_PER_DISTANCE);
-
 			
-			linkedLineContainer.RevealAnim:SetScript("OnFinished", OnLineRevealFinished);
-			linkedLineContainer.RevealAnim:Play();
+			if linkedPowerButton.hasSpentAny then
+				QueueReveal(self, linkedPowerButton, distance);
+			else 
+				local distanceToLink = powerButton:CalculateDistanceTo(linkedPowerButton);
+				local totalDistance = distance + distanceToLink;
+
+				QueueReveal(self, linkedPowerButton, totalDistance);
+
+				linkedLineContainer.FadeAnim:Stop();
+				linkedLineContainer.ScrollAnim:Stop();
+
+				linkedLineContainer.Background:SetAlpha(0.0);
+				linkedLineContainer.Fill:SetAlpha(0.0);
+				linkedLineContainer.FillScroll1:SetAlpha(0.0);
+				linkedLineContainer.FillScroll2:SetAlpha(0.0);
+
+				local delay = powerButton:IsStart() and .1 or totalDistance * ARTIFACT_REVEAL_DELAY_SECS_PER_DISTANCE;
+				if not linkedLineContainer.RevealAnim:IsPlaying() or delay < linkedLineContainer.RevealAnim.Start1:GetEndDelay() then
+					linkedLineContainer.RevealAnim.Start1:SetEndDelay(delay);
+					linkedLineContainer.RevealAnim.Start2:SetEndDelay(delay);
+
+					linkedLineContainer.RevealAnim.LineScale:SetDuration(distanceToLink * ARTIFACT_REVEAL_LINE_DURATION_SECS_PER_DISTANCE);
+
+					linkedLineContainer.RevealAnim:SetScript("OnFinished", OnLineRevealFinished);
+					linkedLineContainer.RevealAnim:Play();
+				end
+			end
 		end
 	end
 end

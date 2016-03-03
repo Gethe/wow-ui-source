@@ -771,7 +771,7 @@ function GarrisonBuildingAlertFrame_SetUp(frame, name)
 	PlaySound("UI_Garrison_Toast_BuildingComplete");
 end
 
-GarrisonBuildingAlertSystem = AlertFrame:AddSimpleAlertFrameSubSystem(GarrisonBuildingAlertFrame, StorePurchaseAlertFrame_SetUp);
+GarrisonBuildingAlertSystem = AlertFrame:AddSimpleAlertFrameSubSystem(GarrisonBuildingAlertFrame, GarrisonBuildingAlertFrame_SetUp);
 
 -- [[ GarrisonMissionAlertFrame ]] --
 function GarrisonMissionAlertFrame_SetUp(frame, missionID)

@@ -7,6 +7,7 @@ GarrisonFollowerOptions[LE_FOLLOWER_TYPE_GARRISON_6_0] = {
 	useAbilityTooltipStyleWithoutCounters = false,
 	hideCountersInAbilityFrame = false,
 	showILevelOnFollower = false,
+	showCategoriesInFollowerList = false,
 }
 
 ---------------------------------------------------------------------------------
@@ -843,7 +844,7 @@ function GarrisonMission:MissionCompleteInitialize(missionList, index)
 	frame.ChanceFrame.SuccessChanceInAnim:Stop();
 	frame.ChanceFrame.ResultAnim:Stop();
 	frame.BonusRewards.timerMissionID = nil;
-	if (mission.state >= 0) then
+	if (mission.completed) then
 		-- if the mission is in this state, it's a success
 		frame.currentMission.succeeded = true;
 		frame:SetScript("OnUpdate", nil);
@@ -2115,7 +2116,7 @@ function GarrisonMission_DetermineCounterableThreats(missionID, followerType)
 	threats.away = {};
 	threats.worker = {};
 
-	local followerList = C_Garrison.GetFollowers(followerType);
+	local followerList = C_Garrison.GetFollowers(followerType) or {};
 	for i = 1, #followerList do
 		local follower = followerList[i];
 		if ( follower.isCollected and follower.status ~= GARRISON_FOLLOWER_INACTIVE ) then

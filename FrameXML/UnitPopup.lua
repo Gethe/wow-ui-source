@@ -834,15 +834,15 @@ function UnitPopup_HideButtons ()
 			end
 		elseif ( value == "REPORT_PLAYER" ) then
 			if ( (not dropdownMenu.unit) and (not dropdownMenu.battlefieldScoreIndex) and
-				(not dropdownMenu.lineID or not CanComplainChat(dropdownMenu.lineID)) or not isPlayer ) then
+				(not dropdownMenu.lineID or not CanComplainChat(dropdownMenu.lineID)) ) then
 				UnitPopupShown[UIDROPDOWNMENU_MENU_LEVEL][index] = 0;
 			end
 		elseif ( value == "REPORT_SPAM" ) then
-			if ( not dropdownMenu.lineID or not CanComplainChat(dropdownMenu.lineID) or not isPlayer ) then
+			if ( not dropdownMenu.lineID or not CanComplainChat(dropdownMenu.lineID) ) then
 				UnitPopupShown[UIDROPDOWNMENU_MENU_LEVEL][index] = 0;
 			end
 		elseif ( value == "REPORT_BAD_LANGUAGE" ) then
-			if ( not dropdownMenu.lineID or not CanComplainChat(dropdownMenu.lineID) or not isPlayer ) then
+			if ( not dropdownMenu.lineID or not CanComplainChat(dropdownMenu.lineID) ) then
 				UnitPopupShown[UIDROPDOWNMENU_MENU_LEVEL][index] = 0;
 			end
 		elseif ( value == "POP_OUT_CHAT" ) then
@@ -1588,7 +1588,7 @@ function UnitPopup_OnClick (self)
 	elseif ( button == "REPORT_BAD_NAME" ) then
 		if ( GMEuropaComplaintsEnabled() and not GMQuickTicketSystemThrottled() ) then
 			if (dropdownFrame.unit) then
-				HelpFrame_SetReportPlayerByName(ReportPlayerNameDialog, dropdownFrame.unit);
+				HelpFrame_SetReportPlayerByUnitTag(ReportPlayerNameDialog, dropdownFrame.unit);
 			elseif (tonumber(dropdownFrame.lineID)) then
 				HelpFrame_SetReportPlayerByLineID(ReportPlayerNameDialog, tonumber(dropdownFrame.lineID));
 			elseif (dropdownFrame.battlefieldScoreIndex) then
@@ -1614,7 +1614,7 @@ function UnitPopup_OnClick (self)
 	elseif ( button == "REPORT_CHEATING" ) then
 		if ( GMEuropaComplaintsEnabled() and not GMQuickTicketSystemThrottled() ) then
 			if (dropdownFrame.unit) then
-				HelpFrame_SetReportPlayerByName(ReportCheatingDialog, dropdownFrame.unit);
+				HelpFrame_SetReportPlayerByUnitTag(ReportCheatingDialog, dropdownFrame.unit);
 			elseif (tonumber(dropdownFrame.lineID)) then
 				HelpFrame_SetReportPlayerByLineID(ReportCheatingDialog, tonumber(dropdownFrame.lineID));
 			elseif (dropdownFrame.battlefieldScoreIndex) then

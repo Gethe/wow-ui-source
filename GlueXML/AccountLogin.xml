@@ -124,14 +124,26 @@
 							</Anchors>
 						</FontString>
 					</Layer>
+					<Layer level="OVERLAY">
+						<Texture parentKey="GameLogo">
+							<Size x="256" y="128"/>
+							<Anchors>
+								<Anchor point="TOPLEFT" x="3" y="-7"/>
+							</Anchors>
+						</Texture>
+						<Texture name="WorldOfWarcraftRating" hidden="true">
+							<Size x="128" y="128"/>
+							<Anchors>
+								<Anchor point="TOPRIGHT" x="0" y="0"/>
+							</Anchors>
+						</Texture>
+					</Layer>
 				</Layers>
 				<Frames>
 					<EditBox parentKey="AccountEditBox" parentArray="NormalLoginRegions" letters="320">
 						<Size x="200" y="37"/>
 						<Anchors>
-							<Anchor point="CENTER">
-								<Offset x="0" y="0"/>
-							</Anchor>
+							<Anchor point="BOTTOM" x="0" y="345"/>
 						</Anchors>
 						<Layers>
 							<Layer level="BACKGROUND">

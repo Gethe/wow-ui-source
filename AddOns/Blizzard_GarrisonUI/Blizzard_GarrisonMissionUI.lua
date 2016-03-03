@@ -161,7 +161,7 @@ function GarrisonFollowerMission:SelectTab(id)
 	else
 		self.TitleText:SetText(GARRISON_FOLLOWERS_TITLE);
 	end
-	if ( UIDropDownMenu_GetCurrentDropDown() == GetMissionFrame().OptionDropDown ) then
+	if ( UIDropDownMenu_GetCurrentDropDown() == self.OptionDropDown ) then
 		CloseDropDownMenus();
 	end
 end
@@ -489,7 +489,7 @@ function GarrisonFollowerMission:CheckTutorials(advance)
 			SetCVar("lastGarrisonMissionTutorial", lastTutorial);
 		end
 		local tutorialFrame = GarrisonMissionTutorialFrame;
-		tutorialFrame.GlowBox.Button:SetScript("OnClick", function() self.OnClickMissionTutorialButton() end);
+		tutorialFrame.GlowBox.Button:SetScript("OnClick", function() self:OnClickMissionTutorialButton() end);
 		if ( lastTutorial >= #tutorials ) then
 			tutorialFrame:Hide();
 		else
@@ -713,7 +713,7 @@ end
 function GarrisonMissionListMixin:OnShow()
 	GarrisonMissionList_UpdateMissions();
 	GarrisonMissionFrame.FollowerList:Hide();
-	self:GetParent():CheckTutorials();
+	self:GetParent():GetParent():CheckTutorials();
 end
 
 function GarrisonMissionListMixin:OnHide()

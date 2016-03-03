@@ -162,19 +162,8 @@ end
 
 ArtifactFrameUnderlayMixin = {};
 
-function ArtifactFrameUnderlayMixin:OnMouseDown()
-	self.draggingStartX, self.draggingStartY = GetCursorPosition();
-end
 
-function ArtifactFrameUnderlayMixin:OnMouseUp()
-	if self.draggingStartX and self.draggingStartY then
-		local dx, dy = self:CalculateDeltas();
-		self.rotationOffsetX = self.rotationOffsetX + dx;
-		self.draggingStartX, self.draggingStartY = nil, nil;
-	end
-end
-
-ARTIFACT_ITEM_SPEED_FACTOR = 0;
+ARTIFACT_ITEM_SPEED_FACTOR = 0.15;
 ARTIFACT_ITEM_BASE_Y_ROTATION = 0;
 
 function ArtifactFrameUnderlayMixin:OnUpdate(elapsed)

@@ -360,7 +360,7 @@ function GarrisonFollowerPortraitMixin:SetPortraitIcon(iconFileID)
 end
 
 function GarrisonFollowerPortraitMixin:SetQuality(quality)
-	local color = ITEM_QUALITY_COLORS[quality];
+	local color = quality and ITEM_QUALITY_COLORS[quality] or nil;
 	if (color) then
 		self:SetQualityColor(color.r, color.g, color.b);
 	else
@@ -397,9 +397,11 @@ end
 function GarrisonFollowerPortraitMixin:SetupPortrait(followerInfo, showILevel)
 	self:SetPortraitIcon(followerInfo.portraitIconID);
 	self:SetQuality(followerInfo.quality);
+	local showILevelOnFollower = followerInfo.followerTypeID and GarrisonFollowerOptions[followerInfo.followerTypeID].showILevelOnFollower or false;
+
 	if (followerInfo.isTroop) then
 		self:SetNoLevel();
-	elseif (showILevel or GarrisonFollowerOptions[followerInfo.followerTypeID].showILevelOnFollower) then
+	elseif (showILevel or showILevelOnFollower) then
 		self:SetILevel(followerInfo.iLevel);
 	else
 		self:SetLevel(followerInfo.level);

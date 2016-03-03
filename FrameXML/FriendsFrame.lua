@@ -291,7 +291,7 @@ end
 
 function FriendsFrame_OnShow()
 	VoiceChat_Toggle();
-	FriendsList_Update();
+	FriendsList_Update(true);
 	FriendsFrame_Update();
 	UpdateMicroButtons();
 	PlaySound("igCharacterInfoTab");
@@ -1010,7 +1010,8 @@ function FriendsFrame_OnEvent(self, event, ...)
 	elseif ( event == "PLAYER_FLAGS_CHANGED" or event == "BN_INFO_CHANGED") then
 		SynchronizeBNetStatus();
 		FriendsFrameStatusDropDown_Update();
-	elseif ( event == "PLAYER_ENTERING_WORLD" or event == "BN_CONNECTED" or event == "BN_DISCONNECTED" or event == "BN_SELF_ONLINE" or event == "BN_INFO_CHANGED" ) then
+		FriendsFrame_CheckBattlenetStatus();
+	elseif ( event == "PLAYER_ENTERING_WORLD" or event == "BN_CONNECTED" or event == "BN_DISCONNECTED" or event == "BN_SELF_ONLINE") then
 		FriendsFrame_CheckBattlenetStatus();
 		-- We want to remove any friends from the frame so they don't linger when it's first re-opened.
 		if (event == "BN_DISCONNECTED") then
@@ -1310,8 +1311,8 @@ function FriendsFrame_CheckBattlenetStatus()
 				FriendsFrameBroadcastInput:Hide();
 			else
 				frame:Hide();
-				FriendsFrameBroadcastInput:Show();
-				FriendsFrameBroadcastInput_UpdateDisplay();
+				--FriendsFrameBroadcastInput:Show();
+				--FriendsFrameBroadcastInput_UpdateDisplay();
 			end
 			frame.UnavailableLabel:Hide();
 			frame.BroadcastButton:Show();
@@ -1670,12 +1671,15 @@ function FriendsFrameTooltip_Show(self)
 	local FRIENDS_TOOLTIP_WOW_INFO_TEMPLATE = NORMAL_FONT_COLOR_CODE..FRIENDS_LIST_ZONE.."|r%1$s|n"..NORMAL_FONT_COLOR_CODE..FRIENDS_LIST_REALM.."|r%2$s";
 	local numGameAccounts = 0;
 	local tooltip = FriendsTooltip;	
+	local isOnline = false;
+	local battleTag = "";
 	tooltip.height = 0;
 	tooltip.maxWidth = 0;
 	
 	if ( self.buttonType == FRIENDS_BUTTON_TYPE_BNET ) then
 		local nameText;
-		local bnetIDAccount, accountName, battleTag, isBattleTag, characterName, bnetIDGameAccount, client, isOnline, lastOnline, isAFK, isDND, broadcastText, noteText, isFriend, broadcastTime = BNGetFriendInfo(self.id);
+		local bnetIDAccount, accountName, isBattleTag, characterName, bnetIDGameAccount, client, lastOnline, isAFK, isDND, broadcastText, noteText, isFriend, broadcastTime = BNGetFriendInfo(self.id);
+		bnetIDAccount, accountName, battleTag, isBattleTag, characterName, bnetIDGameAccount, client, isOnline, lastOnline, isAFK, isDND, broadcastText, noteText, isFriend, broadcastTime = BNGetFriendInfo(self.id);
 		-- account name
 		if ( accountName ) then
 			nameText = accountName;

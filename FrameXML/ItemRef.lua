@@ -251,7 +251,7 @@ function SetItemRef(link, text, button, chatFrame)
 	elseif ( strsub(link, 1, 18) == "transmogappearance" ) then
 		if ( IsModifiedClick("CHATLINK") ) then
 			local _, sourceID = strsplit(":", link);
-			local itemLink = select(7, C_TransmogCollection.GetAppearanceSourceInfo(sourceID));
+			local itemLink = select(6, C_TransmogCollection.GetAppearanceSourceInfo(sourceID));
 			HandleModifiedItemClick(itemLink);
 		else
 			if ( not CollectionsJournal ) then
