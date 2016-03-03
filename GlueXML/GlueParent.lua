@@ -40,6 +40,7 @@ function GlueParent_OnLoad(self)
 	self:RegisterEvent("LOGIN_STATE_CHANGED");
 	self:RegisterEvent("LOGIN_FAILED");
 	self:RegisterEvent("OPEN_STATUS_DIALOG");
+	self:RegisterEvent("REALM_LIST_UPDATED");
 end
 
 function GlueParent_OnEvent(self, event, ...)
@@ -54,6 +55,8 @@ function GlueParent_OnEvent(self, event, ...)
 	elseif ( event == "OPEN_STATUS_DIALOG" ) then
 		local dialog, text = ...;
 		GlueDialog_Show(dialog, text);
+	elseif ( event == "REALM_LIST_UPDATED" ) then
+		RealmList_Update();
 	end
 end
 

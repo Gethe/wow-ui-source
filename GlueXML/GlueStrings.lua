@@ -338,6 +338,8 @@ BLIZZARD_STORE_YOU_ALREADY_OWN_THIS = "You already own this item.";
 BLIZZ_DISCLAIMER = "Copyright 2004-2016  Blizzard Entertainment. All Rights Reserved.";
 BLOCK = "BLOCK %.2f";
 BLOODELF_DISABLED = "Requires The Burning Crusade";
+BNET_ERROR_1001_HTML = "<html><body><p align=\"CENTER\">Unable to connect. Please try again later. If the problem persists, please contact technical support at: <a href=\"http://us.blizzard.com/support/index.xml?gameId=11&amp;rootCategoryId=2316\">http://us.blizzard.com/support/index.xml?gameId=11&amp;rootCategoryId=2316</a></p></body></html>";
+BNET_ERROR_1002_HTML = "<html><body><p align=\"CENTER\">Unable to connect. Please try again later. If the problem persists, please contact technical support at: <a href=\"http://us.blizzard.com/support/index.xml?gameId=11&amp;rootCategoryId=2316\">http://us.blizzard.com/support/index.xml?gameId=11&amp;rootCategoryId=2316</a></p></body></html>";
 BNET_ERROR_11 = "Access to this account is currently restricted by parental controls. You can change your control settings from your online account management.";
 BNET_ERROR_3003 = "An error has occurred. Please try again later.";
 BNET_ERROR_3021 = "An error has occurred. Please try again later.";
