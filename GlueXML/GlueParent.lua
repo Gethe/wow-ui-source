@@ -103,7 +103,21 @@ function GlueParent_UpdateDialogs()
 	local auroraState, connectedToWoW, wowConnectionState, hasRealmList, waitingForRealmList = C_Login.GetState();
 
 	if ( auroraState == LE_AURORA_STATE_CONNECTING ) then
-		GlueDialog_Show("CANCEL", LOGIN_STATE_CONNECTING);
+		local isQueued, queuePosition, estimatedSeconds = C_Login.GetLogonQueueInfo();
+		if ( isQueued ) then
+			local queueMessage;
+			if ( estimatedSeconds < 60 ) then
+				queueMessage = string.format(BNET_LOGIN_QUEUE_TIME_LEFT_SECONDS, queuePosition);
+			elseif ( estimatedSeconds > 3600 ) then
+				queueMessage = string.format(BNET_LOGIN_QUEUE_TIME_LEFT_UNKNOWN, queuePosition);
+			else
+				queueMessage = string.format(BNET_LOGIN_QUEUE_TIME_LEFT, queuePosition, estimatedSeconds / 60);
+			end
+
+			GlueDialog_Show("CANCEL", queueMessage);
+		else
+			GlueDialog_Show("CANCEL", LOGIN_STATE_CONNECTING);
+		end
 	elseif ( auroraState == LE_AURORA_STATE_NONE and C_Login.GetLastError() ) then
 		local errorCategory, errorID, localizedString, debugString = C_Login.GetLastError();
 
@@ -269,6 +283,73 @@ function GlueParent_CheckCinematic()
 		SetCVar("playIntroMovie", displayExpansionLevel + 1);
 		MovieFrame.version = tonumber(GetCVar("playIntroMovie"));
 		GlueParent_OpenSecondaryScreen("movie");
+	end
+end
+
+-- =============================================================
+-- Fade functions
+-- =============================================================
+
+FADEFRAMES = {};
+
+function GlueFrameFade(frame, timeToFade, mode, finishedFunction)
+	if ( frame ) then
+		frame.fadeTimer = 0;
+		frame.timeToFade = timeToFade;
+		frame.mode = mode;
+		-- finishedFunction is an optional function that is called when the animation is complete
+		if ( finishedFunction ) then
+			frame.finishedFunction = finishedFunction;
+		end
+		tinsert(FADEFRAMES, frame);
+	end
+end
+
+-- Fade in function
+function GlueFrameFadeIn(frame, timeToFade, finishedFunction)
+	GlueFrameFade(frame, timeToFade, "IN", finishedFunction);
+end
+
+-- Fade out function
+function GlueFrameFadeOut(frame, timeToFade, finishedFunction)
+	GlueFrameFade(frame, timeToFade, "OUT", finishedFunction);
+end
+
+-- Function that actually performs the alpha change
+function GlueFrameFadeUpdate(self, elapsed)
+	local index = 1;
+	while FADEFRAMES[index] do
+		local frame = FADEFRAMES[index];
+		frame.fadeTimer = frame.fadeTimer + elapsed;
+		if ( frame.fadeTimer < frame.timeToFade ) then
+			if ( frame.mode == "IN" ) then
+				frame:SetAlpha(frame.fadeTimer / frame.timeToFade);
+			elseif ( frame.mode == "OUT" ) then
+				frame:SetAlpha((frame.timeToFade - frame.fadeTimer) / frame.timeToFade);
+			end
+		else
+			if ( frame.mode == "IN" ) then
+				frame:SetAlpha(1.0);
+			elseif ( frame.mode == "OUT" ) then
+				frame:SetAlpha(0);
+			end
+			GlueFrameFadeRemoveFrame(frame);
+			if ( frame.finishedFunction ) then
+				frame.finishedFunction();
+				frame.finishedFunction = nil;
+			end
+		end
+		index = index + 1;
+	end
+end
+
+function GlueFrameFadeRemoveFrame(frame)
+	local index = 1;
+	while FADEFRAMES[index] do
+		if ( frame == FADEFRAMES[index] ) then
+			tremove(FADEFRAMES, index);
+		end
+		index = index + 1;
 	end
 end
 

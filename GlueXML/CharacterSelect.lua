@@ -205,7 +205,7 @@ function CharacterSelect_OnShow()
 	end
 	
 	-- fadein the character select ui
-	CharacterSelectUI.FadeIn:Play();
+	GlueFrameFadeIn(CharacterSelectUI, 0.75);
 
 	RealmSplitCurrentChoice:Hide();
 
@@ -666,7 +666,7 @@ function UpdateCharacterList(skipSelect)
 			if (vasServiceState == LE_VAS_PURCHASE_STATE_APPLYING_LICENSE and vasServiceErrors) then
 				local productInfo = C_PurchaseAPI.GetProductInfo(productID);
 				_G["CharSelectCharacterButton"..index.."ButtonTextInfo"]:SetText("|cffff2020"..VAS_ERROR_ERROR_HAS_OCCURRED.."|r");
-				if (productInfo.name) then
+				if (productInfo and productInfo.name) then
 					_G["CharSelectCharacterButton"..index.."ButtonTextLocation"]:SetText("|cffff2020"..productInfo.name.."|r");
 				else
 					_G["CharSelectCharacterButton"..index.."ButtonTextLocation"]:SetText("");

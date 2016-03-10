@@ -1796,11 +1796,6 @@
 						</Scripts>
 					</Frame>
 				</Frames>
-				<Animations>
-					<AnimationGroup parentKey="FadeIn" setToFinalAlpha="true">
-						<Alpha fromAlpha="0" toAlpha="1" duration="0.75" order="1"/>
-					</AnimationGroup>
-				</Animations>
 				<Scripts>
 					<OnMouseDown>
 						CharacterSelectFrame_OnMouseDown(button);

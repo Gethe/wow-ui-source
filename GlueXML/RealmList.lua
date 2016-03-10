@@ -227,13 +227,15 @@ function RealmList_OnKeyDown(key)
 end
 
 function RealmList_OnOk()
-	-- If trying to join a Full realm then popup a dialog
-	local name, numChars, versionMismatch, isPvP, isRP, populationState, versionMajor, versionMinor, versionRev, versionBuild = C_RealmList.GetRealmInfo(RealmList.selectedRealm);
+	if (RealmList.selectedRealm) then
+		-- If trying to join a Full realm then popup a dialog
+		local name, numChars, versionMismatch, isPvP, isRP, populationState, versionMajor, versionMinor, versionRev, versionBuild = C_RealmList.GetRealmInfo(RealmList.selectedRealm);
 
-	if ( populationState == "FULL" and numChars == 0 ) then
-		GlueDialog_Show("REALM_IS_FULL");
-	else
-		C_RealmList.ConnectToRealm(RealmList.selectedRealm);
+		if ( populationState == "FULL" and numChars == 0 ) then
+			GlueDialog_Show("REALM_IS_FULL");
+		else
+			C_RealmList.ConnectToRealm(RealmList.selectedRealm);
+		end
 	end
 end
 
