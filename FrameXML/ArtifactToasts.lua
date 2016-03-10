@@ -26,24 +26,25 @@ function ArtifactLevelUpToastMixin:EvaluateTrigger()
 		self.hasArtifactEquipped = hasArtifactEquipped;
 
 		if self.hasArtifactEquipped then
-			local itemID, altItemID, name, icon, xp, xpForNextPoint, quality, artifactAppearanceID, appearanceModID = C_ArtifactUI.GetEquippedArtifactInfo();
-			self.currentArtifactXP = xp;
+			local itemID, altItemID, name, icon, xp, pointsSpent, quality, artifactAppearanceID, appearanceModID = C_ArtifactUI.GetEquippedArtifactInfo();
+			self.currentArtifactPurchasableTraits = MainMenuBar_GetNumArtifactTraitsPurchasableFromXP(pointsSpent, xp);
 			self.currentItemID = itemID;
 		else
-			self.currentArtifactXP = nil;
+			self.currentArtifactPurchasableTraits = nil;
 			self.currentItemID = nil;
 		end
 	elseif self.hasArtifactEquipped then
-		local itemID, altItemID, name, icon, xp, xpForNextPoint, quality, artifactAppearanceID, appearanceModID = C_ArtifactUI.GetEquippedArtifactInfo();
+		local itemID, altItemID, name, icon, xp, pointsSpent, quality, artifactAppearanceID, appearanceModID = C_ArtifactUI.GetEquippedArtifactInfo();
+		local artifactPurchasableTraits = MainMenuBar_GetNumArtifactTraitsPurchasableFromXP(pointsSpent, xp);
 		if self.currentItemID == itemID then
-			if self.currentArtifactXP < xpForNextPoint and xp >= xpForNextPoint then
+			if self.currentArtifactPurchasableTraits < artifactPurchasableTraits then
 				local _, titleName = C_ArtifactUI.GetEquippedArtifactArtInfo();
 				TopBannerManager_Show(self, { name = titleName, icon = icon, });
 			end
-			self.currentArtifactXP = xp;
+			self.currentArtifactPurchasableTraits = artifactPurchasableTraits;
 		else
 			self.currentItemID = itemID;
-			self.currentArtifactXP = xp;
+			self.currentArtifactPurchasableTraits = artifactPurchasableTraits;
 		end
 	end
 end

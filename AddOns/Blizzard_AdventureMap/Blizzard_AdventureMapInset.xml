@@ -39,44 +39,24 @@
 					<Layer level="BORDER">
 						<Texture parentKey="Icon" />
 					</Layer>
-					<Layer level="HIGHLIGHT">
-						<Texture parentKey="IconHighlight" alphaMode="ADD" alpha=".25" />
-					</Layer>
 
 					<Layer level="ARTWORK">
-						<FontString parentKey="Text" inherits="SystemFont_Large">
+						<FontString parentKey="Text" inherits="SystemFont_Small2">
 							<Anchors>
-								<Anchor point="TOP" relativePoint="BOTTOM" y="15" />
+								<Anchor point="TOP" relativePoint="BOTTOM" y="0" />
 							</Anchors>
-							<Color r="1.0" g="0.82" b="0"/>
+							<Color r="0.38" g="0.24" b="0.06" a="1"/>
 						</FontString>
 					</Layer>
 
 					<Layer level="BORDER" textureSubLevel="1">
-						<Texture parentKey="TextBackground" atlas="AdventureMapLabel-Small" useAtlasSize="true">
+						<Texture parentKey="TextBackground" atlas="AdventureMap-textlabelglow" useAtlasSize="true">
 							<Anchors>
-								<Anchor point="BOTTOMLEFT" relativeKey="$parent.Text" x="-30" y="-10" />
-								<Anchor point="TOPRIGHT" relativeKey="$parent.Text" x="30" y="10" />
+								<Anchor point="CENTER" relativeKey="$parent.Text"/>
 							</Anchors>
 						</Texture>
 					</Layer>
 				</Layers>
-				<!--<Scripts>
-					<OnMouseUp>
-						self:GetParent():Expand();
-					</OnMouseUp>
-					<OnMouseWheel>
-						if delta > 0 then
-							self:GetParent():Expand();
-						end
-					</OnMouseWheel>
-					<OnEnter>
-						self:GetParent():OnMouseEnter();
-					</OnEnter>
-					<OnLeave>
-						self:GetParent():OnMouseLeave();
-					</OnLeave>
-				</Scripts>-->
 			</Frame>
 		</Frames>
 		<Animations>

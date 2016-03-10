@@ -25,9 +25,10 @@ end
 -- ************************************************************************************************************************************************************
 
 function WardrobeTransmogFrame_OnLoad(self)
-	self.Inset.TopDesatBG:SetDesaturated(true);
-	self.Inset.BottomDesatBG:SetDesaturated(true);
-	
+	local race, fileName = UnitRace("player");
+	local atlas = "transmog-background-race-"..fileName;
+	self.Inset.BG:SetAtlas(atlas);
+
 	self:RegisterEvent("TRANSMOGRIFY_UPDATE");
 	self:RegisterEvent("TRANSMOGRIFY_SUCCESS");
 end
@@ -98,6 +99,10 @@ end
 function WardrobeTransmogFrame_OnHide(self)
 	PlaySound("UI_EtherealWindow_Close");
 	StaticPopup_Hide("TRANSMOG_APPLY_WARNING");
+	StaticPopup_Hide("NAME_TRANSMOG_OUTFIT");
+	StaticPopup_Hide("CONFIRM_DELETE_TRANSMOG_OUTFIT");
+	StaticPopup_Hide("CONFIRM_OVERWRITE_TRANSMOG_OUTFIT");
+	StaticPopupSpecial_Hide(WardrobeOutfitEditFrame);
 	self:UnregisterEvent("PLAYER_EQUIPMENT_CHANGED");
 	self:UnregisterEvent("UNIT_MODEL_CHANGED");
 	C_Transmog.Close();
@@ -626,7 +631,11 @@ function WardrobeCollectionFrame_OnLoad(self)
 	WardrobeCollectionFrame_UpdateCategoriesHandInfo();
 
 	self.newTransmogs = UIParent.newTransmogs or {};
+	self.mostRecentCollectedVisualID = UIParent.mostRecentCollectedVisualID;
+	self.mostRecentCollectedCategoryID = UIParent.mostRecentCollectedCategoryID;
 	UIParent.newTransmogs = nil;
+	UIParent.mostRecentCollectedVisualID = nil;
+	UIParent.mostRecentCollectedCategoryID = nil;
 
 	UIDropDownMenu_Initialize(self.ModelsFrame.RightClickDropDown, nil, "MENU");
 	self.ModelsFrame.RightClickDropDown.initialize = WardrobeCollectionFrameRightClickDropDown_Init;
@@ -701,9 +710,18 @@ function WardrobeCollectionFrame_OnEvent(self, event, ...)
 		end
 		WardrobeCollectionFrame_Update();
 	elseif ( event == "TRANSMOG_COLLECTION_UPDATED") then
-		local categoryID, sourceID, visualID, new = ...;
-		if ( new ) then
+		local categoryID, sourceID, visualID, action = ...;
+		if ( action == "add" ) then
 			self.newTransmogs[visualID] = true;
+			self.mostRecentCollectedVisualID = visualID;
+			self.mostRecentCollectedCategoryID = categoryID;
+			CollectionsJournal_SetTab(CollectionsJournal, 5);
+		elseif ( action == "remove" ) then
+			self.newTransmogs[visualID] = nil;
+			if ( self.mostRecentCollectedVisualID == visualID ) then
+				self.mostRecentCollectedVisualID = nil;
+				self.mostRecentCollectedCategoryID = nil;
+			end
 		end
 		if ( self:IsVisible() and categoryID == self.activeCategory ) then
 			WardrobeCollectionFrame_GetVisualsList();
@@ -740,7 +758,14 @@ function WardrobeCollectionFrame_OnShow(self)
 		self.inAlternateForm = inAlternateForm;
 	end
 
-	if ( WardrobeCollectionFrame.activeCategory ) then
+	if ( self.mostRecentCollectedCategoryID ) then
+		local categoryID = self.mostRecentCollectedCategoryID;
+		local slot = WardrobeCollectionFrame_GetSlotFromCategoryID(categoryID);
+		WardrobeCollectionFrame_SetActiveSlot(slot, LE_TRANSMOG_TYPE_APPEARANCE);
+		WardrobeCollectionFrame_SetActiveCategory(categoryID);
+		-- redo the model for the active category
+		WardrobeCollectionFrame_ChangeModelsSlot(nil, WardrobeCollectionFrame.activeCategory);
+	elseif ( WardrobeCollectionFrame.activeCategory ) then
 		-- redo the model for the active category
 		WardrobeCollectionFrame_ChangeModelsSlot(nil, WardrobeCollectionFrame.activeCategory);
 	else
@@ -999,6 +1024,10 @@ function WardrobeCollectionFrame_UpdateWeaponDropDown()
 end
 
 function WardrobeCollectionFrame_SetActiveCategory(category)
+	if ( category == WardrobeCollectionFrame.activeCategory ) then
+		return;
+	end
+
 	WardrobeCollectionFrame_ChangeModelsSlot(WardrobeCollectionFrame.activeCategory, category);
 	WardrobeCollectionFrame.activeCategory = category;
 	if ( WardrobeCollectionFrame.activeCategory ~= FAKE_LE_TRANSMOG_COLLECTION_TYPE_ENCHANT ) then
@@ -1025,6 +1054,10 @@ function WardrobeCollectionFrame_ResetPage()
 	if ( WardrobeCollectionFrame.linkedVisualID ) then
 		selectedVisualID = WardrobeCollectionFrame.linkedVisualID;
 		WardrobeCollectionFrame.linkedVisualID = nil;
+	elseif ( WardrobeCollectionFrame.mostRecentCollectedVisualID ) then
+		selectedVisualID = WardrobeCollectionFrame.mostRecentCollectedVisualID;
+		WardrobeCollectionFrame.mostRecentCollectedVisualID = nil;
+		WardrobeCollectionFrame.mostRecentCollectedCategoryID = nil;
 	end
 	if ( selectedVisualID ~= NO_VISUAL_ID ) then
 		for i = 1, #WardrobeCollectionFrame.filteredVisualsList do
@@ -1302,18 +1335,23 @@ function WardrobeCollectionFrame_OpenTransmogLink(link, transmogType)
 	sourceID = tonumber(sourceID);
 	local categoryID, visualID = C_TransmogCollection.GetAppearanceSourceInfo(sourceID);
 	if ( categoryID ) then
-		local slot = ARMOR_SLOTS[categoryID];
-		if ( not slot ) then
-			if ( WardrobeCollectionFrame.categoriesList[categoryID].canMainHand ) then
-				slot = "MAINHANDSLOT";
-			else
-				slot = "SECONDARYHANDSLOT";
-			end
-		end
+		local slot = WardrobeCollectionFrame_GetSlotFromCategoryID(categoryID);
 		WardrobeCollectionFrame.linkedVisualID = visualID;
 		WardrobeCollectionFrame_SetActiveSlot(slot, LE_TRANSMOG_TYPE_APPEARANCE);
 		WardrobeCollectionFrame_SetActiveCategory(categoryID);
 	end
+end
+
+function WardrobeCollectionFrame_GetSlotFromCategoryID(categoryID)
+	local slot = ARMOR_SLOTS[categoryID];
+	if ( not slot ) then
+		if ( WardrobeCollectionFrame.categoriesList[categoryID].canMainHand ) then
+			slot = "MAINHANDSLOT";
+		elseif ( WardrobeCollectionFrame.categoriesList[categoryID].canOffHand ) then
+			slot = "SECONDARYHANDSLOT";
+		end
+	end
+	return slot;
 end
 
 -- ***** MODELS
@@ -2073,9 +2111,9 @@ function WardrobeOutfitDropDown_SelectOutfit(outfitID, loadOutfit)
 	WardrobeOutfitDropDown_UpdateSaveButton();
 end
 
-local OUTFIT_FRAME_MIN_STRING_WIDTH = 88;
-local OUTFIT_FRAME_MAX_STRING_WIDTH = 164;
-local OUTFIT_FRAME_ADDED_PIXELS = 135;	-- pixels added to string width
+local OUTFIT_FRAME_MIN_STRING_WIDTH = 152;
+local OUTFIT_FRAME_MAX_STRING_WIDTH = 216;
+local OUTFIT_FRAME_ADDED_PIXELS = 90;	-- pixels added to string width
 
 function WardrobeOutfitFrame_OnShow(self)
 	self:SetPoint("TOPLEFT", WardrobeOutfitDropDown, "BOTTOMLEFT", 8, -3);
@@ -2092,19 +2130,13 @@ function WardrobeOutfitFrame_OnUpdate(self, elapsed)
 		local button = self.Buttons[i];
 		if ( button == mouseFocus or button:IsMouseOver() ) then
 			if ( button.outfitID ) then
-				button.DeleteButton:Show();
-				button.RenameButton:Show();
-				button.SaveButton:Show();
+				button.EditButton:Show();
 			else	
-				button.DeleteButton:Hide();
-				button.RenameButton:Hide();
-				button.SaveButton:Hide();
+				button.EditButton:Hide();
 			end
 			button.Highlight:Show();
 		else
-			button.DeleteButton:Hide();
-			button.RenameButton:Hide();
-			button.SaveButton:Hide();
+			button.EditButton:Hide();
 			button.Highlight:Hide();
 		end
 	end
@@ -2134,7 +2166,7 @@ function WardrobeOutfitFrame_Update(self)
 	local stringWidth = 0;
 	self:SetWidth(OUTFIT_FRAME_MAX_STRING_WIDTH + OUTFIT_FRAME_ADDED_PIXELS);
 	for i = 1, MAX_TRANSMOG_OUTFITS do
-		local newOutfitButton = (i == (#outfits + 1)) and (i ~= MAX_TRANSMOG_OUTFITS);
+		local newOutfitButton = (i == (#outfits + 1));
 		if ( outfits[i] or newOutfitButton ) then
 			local button = buttons[i];
 			if ( not button ) then
@@ -2157,17 +2189,15 @@ function WardrobeOutfitFrame_Update(self)
 					button.Selection:Hide();
 					button.Check:Hide();
 				end
-				local colorCode;
-				if ( outfits[i].collected ) then
-					colorCode = NORMAL_FONT_COLOR_CODE;
-				else
-					colorCode = RED_FONT_COLOR_CODE
-				end
-				button:SetText(colorCode..outfits[i].name..FONT_COLOR_CODE_CLOSE);
+				button.Text:SetWidth(0);
+				button:SetText(NORMAL_FONT_COLOR_CODE..outfits[i].name..FONT_COLOR_CODE_CLOSE);
 				button.Icon:SetTexture(outfits[i].icon);
 				button.outfitID = outfits[i].outfitID;
 			end
 			stringWidth = max(stringWidth, button.Text:GetStringWidth());
+			if ( button.Text:GetStringWidth() > OUTFIT_FRAME_MAX_STRING_WIDTH) then
+				button.Text:SetWidth(OUTFIT_FRAME_MAX_STRING_WIDTH);
+			end
 			numButtons = numButtons + 1;
 		else
 			if ( buttons[i] ) then
@@ -2275,31 +2305,30 @@ function WardrobeOutfitButton_OnClick(self)
 	end
 end
 
-function WardrobeOutfitRenameButton_OnClick(self)
+function WardrobeOutfitEditButton_OnClick(self)
 	PlaySound("igMainMenuOptionCheckBoxOn");
 	WardrobeOutfitFrame:Hide();
 	local outfitID = self:GetParent().outfitID;
-	local name = C_TransmogCollection.GetOutfitName(outfitID);
-	local dialog = StaticPopup_Show("NAME_TRANSMOG_OUTFIT", nil, nil, outfitID);
-	if ( dialog ) then
-		dialog.editBox:SetText(name);
-	end
+	StaticPopupSpecial_Show(WardrobeOutfitEditFrame);
+	WardrobeOutfitEditFrame.outfitID = outfitID;
+	WardrobeOutfitEditFrame.EditBox:SetText(C_TransmogCollection.GetOutfitName(outfitID));
 end
 
 function WardrobeOutfitDeleteButton_OnClick(self)
 	PlaySound("igMainMenuOptionCheckBoxOn");
 	WardrobeOutfitFrame:Hide();
+	StaticPopupSpecial_Hide(WardrobeOutfitEditFrame);
 	local outfitID = self:GetParent().outfitID;
 	local name = C_TransmogCollection.GetOutfitName(outfitID);
 	StaticPopup_Show("CONFIRM_DELETE_TRANSMOG_OUTFIT", name, nil, outfitID);
 end
 
-function WardrobeOutfitSaveButton_OnClick(self)
-	PlaySound("igMainMenuOptionCheckBoxOn");
-	WardrobeOutfitFrame:Hide();
-	local outfitID = self:GetParent().outfitID;
-	local name = C_TransmogCollection.GetOutfitName(outfitID);
-	StaticPopup_Show("CONFIRM_SAVE_TRANSMOG_OUTFIT", name, nil, name);
+function WardrobeOutfitEditFrame_OnAccept()
+	if ( not WardrobeOutfitEditFrame.AcceptButton:IsEnabled() ) then
+		return;
+	end
+	StaticPopupSpecial_Hide(WardrobeOutfitEditFrame);
+	WardrobeOutfitFrame_NameOutfit(WardrobeOutfitEditFrame.EditBox:GetText(), WardrobeOutfitEditFrame.outfitID);
 end
 
 -- ***** SPEC DROPDOWN

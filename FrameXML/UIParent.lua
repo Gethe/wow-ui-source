@@ -879,6 +879,8 @@ function UIParent_OnEvent(self, event, ...)
 			if ( followerTypeID == LE_FOLLOWER_TYPE_SHIPYARD_6_2 ) then
 				frame = GarrisonShipyardFrame;
 				landingPageTabIndex = 3;
+			elseif ( followerTypeID == LE_FOLLOWER_TYPE_GARRISON_7_0 ) then
+				frame = OrderHallMissionFrame;
 			end
 			-- if the mission UI is already open, go with that
 			if ( frame:IsShown() ) then
@@ -1661,12 +1663,20 @@ function UIParent_OnEvent(self, event, ...)
 	-- Events for Wardrobe
 	elseif ( event == "TRANSMOG_COLLECTION_UPDATED" ) then
 		if ( not CollectionsJournal ) then
-			local categoryID, sourceID, visualID, new = ...;
-			if ( new ) then
+			local categoryID, sourceID, visualID, action = ...;
+			if ( action == "add" ) then
 				if ( not self.newTransmogs ) then
 					self.newTransmogs = { };
 				end
 				self.newTransmogs[visualID] = true;
+				self.mostRecentCollectedVisualID = visualID;
+				self.mostRecentCollectedCategoryID = categoryID;
+				SetCVar("petJournalTab", 5);
+			elseif ( action == "remove" and self.newTransmogs ) then
+				self.newTransmogs[visualID] = nil;
+				if ( self.mostRecentCollectedVisualID == visualID ) then
+					self.mostRecentCollectedVisualID = nil;
+				end
 			end
 		end
 

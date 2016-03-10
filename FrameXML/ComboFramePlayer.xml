@@ -35,10 +35,11 @@
 			</Layer>
 		</Layers>
 		<Animations>
-			<AnimationGroup parentKey="AnimIn" setToFinalAlpha="true">
-				<Alpha childKey="Point" duration="0.1" order="1" fromAlpha="0" toAlpha="1"/>
+			<AnimationGroup parentKey="PointAnim" setToFinalAlpha="true">
+				<Alpha childKey="Point" duration="0.25" order="1" fromAlpha="0" toAlpha="1"/>
 				<Scale childKey="Point" smoothing="OUT" duration="0.25" order="1" fromScaleX="0.8" fromScaleY="0.8" toScaleX="1" toScaleY="1"/>
-				<Alpha childKey="Star" startDelay="0.1" smoothing="NONE" duration="0.25" order="1" fromAlpha="0" toAlpha="0.75"/>
+			</AnimationGroup>
+			<AnimationGroup parentKey="AnimIn" setToFinalAlpha="true">
 				<Scale childKey="Star" startDelay="0.1" smoothing="OUT" duration="0.5" order="1" fromScaleX="0.25" fromScaleY="0.25" toScaleX="0.9" toScaleY="0.9"/>
 				<Rotation childKey="Star" startDelay="0.1" smoothing="OUT" duration="0.8" order="1" degrees="-60"/>
 				<Alpha childKey="Star" startDelay="0.5" smoothing="IN" duration="0.4" order="1" fromAlpha="0.75" toAlpha="0"/>
@@ -47,8 +48,6 @@
 				<Alpha childKey="CircleBurst" startDelay="0.25" smoothing="IN" duration="0.25" order="1" fromAlpha="1" toAlpha="0"/>
 			</AnimationGroup>
 			<AnimationGroup parentKey="AnimOut" setToFinalAlpha="true">
-				<Alpha childKey="Point" startDelay="0.2" smoothing="OUT" duration="0.25" order="1" fromAlpha="1" toAlpha="0"/>
-				<Scale childKey="Point" smoothing="OUT" duration="0.25" order="1" fromScaleX="1" fromScaleY="1" toScaleX="0.8" toScaleY="0.8"/>
 				<Alpha childKey="CircleBurst" duration="0.1" order="1" fromAlpha="0" toAlpha="1"/>
 				<Scale childKey="CircleBurst" smoothing="OUT" duration="0.4" order="1" fromScaleX="0.8" fromScaleY="0.8" toScaleX="0.6" toScaleY="0.6"/>
 				<Alpha childKey="CircleBurst" startDelay="0.25" smoothing="IN" duration="0.25" order="1" fromAlpha="1" toAlpha="0"/>

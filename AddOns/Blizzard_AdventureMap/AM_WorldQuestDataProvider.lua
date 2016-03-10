@@ -1,11 +1,11 @@
-AdventureMap_WorldQuestDataProviderMixin = CreateFromMixins(AdventureMapDataProviderMixin);
+AdventureMap_WorldQuestDataProviderMixin = CreateFromMixins(MapCanvasDataProviderMixin);
 
-function AdventureMap_WorldQuestDataProviderMixin:OnAdded(adventureMap)
-	AdventureMapDataProviderMixin.OnAdded(self, adventureMap);
+function AdventureMap_WorldQuestDataProviderMixin:OnAdded(mapCanvas)
+	MapCanvasDataProviderMixin.OnAdded(self, mapCanvas);
 end
 
 function AdventureMap_WorldQuestDataProviderMixin:RemoveAllData()
-	self:GetAdventureMap():RemoveAllPinsByTemplate("AdventureMap_WorldQuestPinTemplate");
+	self:GetMap():RemoveAllPinsByTemplate("AdventureMap_WorldQuestPinTemplate");
 end
 
 function AdventureMap_WorldQuestDataProviderMixin:OnShow()
@@ -22,8 +22,8 @@ function AdventureMap_WorldQuestDataProviderMixin:RefreshAllData(fromOnShow)
 	self:RemoveAllData();
 
 	local mapAreaID = C_AdventureMap.GetContinentInfo();
-	for zoneIndex = 1, C_AdventureMap.GetNumZones() do
-		local zoneMapID, zoneName, left, right, top, bottom = C_AdventureMap.GetZoneInfo(zoneIndex);
+	for zoneIndex = 1, C_MapCanvas.GetNumZones(mapAreaID) do
+		local zoneMapID, zoneName, left, right, top, bottom = C_MapCanvas.GetZoneInfo(mapAreaID, zoneIndex);
 		local taskInfo = C_TaskQuest.GetQuestsForPlayerByMapID(zoneMapID, mapAreaID);
 
 		if taskInfo then
@@ -42,11 +42,11 @@ function AdventureMap_WorldQuestDataProviderMixin:RefreshAllData(fromOnShow)
 end
 
 function AdventureMap_WorldQuestDataProviderMixin:AddQuest(info)
-	local pin = self:GetAdventureMap():AcquirePin("AdventureMap_WorldQuestPinTemplate");
+	local pin = self:GetMap():AcquirePin("AdventureMap_WorldQuestPinTemplate");
 	pin.questID = info.questId;
 	pin.worldQuest = true;
 	pin.numObjectives = info.numObjectives;
-	pin:SetFrameLevel(1000 + self:GetAdventureMap():GetNumActivePinsByTemplate("AdventureMap_WorldQuestPinTemplate"));
+	pin:SetFrameLevel(1000 + self:GetMap():GetNumActivePinsByTemplate("AdventureMap_WorldQuestPinTemplate"));
 
 	local tagID, tagName, worldQuestType, isRare, isElite, tradeskillLineIndex = GetQuestTagInfo(info.questId);
 	local tradeskillLineID = tradeskillLineIndex and select(7, GetProfessionInfo(tradeskillLineIndex));
@@ -109,7 +109,7 @@ function AdventureMap_WorldQuestDataProviderMixin:AddQuest(info)
 end
 
 --[[ World Quest Pin ]]--
-AdventureMap_WorldQuestPinMixin = CreateFromMixins(AdventureMapPinMixin);
+AdventureMap_WorldQuestPinMixin = CreateFromMixins(MapCanvasPinMixin);
 
 function AdventureMap_WorldQuestPinMixin:OnLoad()
 	self:SetAlphaStyle(AM_PIN_ALPHA_STYLE_VISIBLE_WHEN_ZOOMED_IN);
@@ -119,7 +119,7 @@ function AdventureMap_WorldQuestPinMixin:OnLoad()
 end
 
 function AdventureMap_WorldQuestPinMixin:OnMouseEnter()
-	WorldMapTooltip:SetParent(self:GetAdventureMap());
+	WorldMapTooltip:SetParent(self:GetMap());
 	WorldMapTooltip:SetFrameStrata("TOOLTIP");
 	TaskPOI_OnEnter(self);
 end

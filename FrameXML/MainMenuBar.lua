@@ -26,14 +26,37 @@ end
 
 function MainMenuBar_ArtifactUpdateOverlayFrameText()
 	if ArtifactWatchBar.OverlayFrame.Text:IsShown() then
-		local itemID, altItemID, name, icon, xp, xpForNextPoint, quality, artifactAppearanceID, appearanceModID = C_ArtifactUI.GetEquippedArtifactInfo();
-		if itemID then
-			if ArtifactWatchBar.StatusBar:IsAnimating() then
-				xp = ArtifactWatchBar.StatusBar:GetValue();
-			end
+		local xp = ArtifactWatchBar.StatusBar:GetAnimatedValue();
+		local _, xpForNextPoint = ArtifactWatchBar.StatusBar:GetMinMaxValues();
+		if xpForNextPoint > 0 then
 			ArtifactWatchBar.OverlayFrame.Text:SetFormattedText(ARTIFACT_POWER_BAR, xp, xpForNextPoint);
 		end
 	end
+end
+
+function MainMenuBar_ArtifactUpdateTick()
+	if ArtifactWatchBar.Tick:IsShown() then
+		local xp = ArtifactWatchBar.StatusBar:GetValue();
+		local _, xpForNextPoint = ArtifactWatchBar.StatusBar:GetMinMaxValues();
+		if xpForNextPoint > 0 then
+			ArtifactWatchBar.Tick:SetPoint("CENTER", ArtifactWatchBar, "LEFT", (xp / xpForNextPoint) * ArtifactWatchBar:GetWidth(), 0);
+		end
+	end
+end
+
+function MainMenuBar_ArtifactOnAnimatedValueChangedCallback()
+	MainMenuBar_ArtifactUpdateOverlayFrameText();
+	MainMenuBar_ArtifactUpdateTick();
+end
+
+function MainMenuBar_ArtifactTick_OnEnter(self)
+	MainMenu_AnchorTickTooltip(self);
+
+	GameTooltip:SetText(ARTIFACT_POWER_TOOLTIP_TITLE:format(ArtifactWatchBar.xp, ArtifactWatchBar.xpForNextPoint), HIGHLIGHT_FONT_COLOR:GetRGB());
+	GameTooltip:AddLine(" ");
+	GameTooltip:AddLine(ARTIFACT_POWER_TOOLTIP_BODY:format(ArtifactWatchBar.numPointsAvailableToSpend), nil, nil, nil, true);
+
+	GameTooltip:Show();
 end
 
 function MainMenuBar_HonorUpdateOverlayFrameText()
@@ -44,8 +67,13 @@ function MainMenuBar_HonorUpdateOverlayFrameText()
 		return;
 	end
 
+	local level = UnitHonorLevel("player");
+	local levelmax = GetMaxPlayerHonorLevel();
+
 	if (CanPrestige()) then
 		HonorWatchBar.OverlayFrame.Text:SetText(PVP_HONOR_PRESTIGE_AVAILABLE);
+	elseif (level == levelmax) then
+		HonorWatchBar.OverlayFrame.Text:SetText(MAX_HONOR_LEVEL);
 	else
 		HonorWatchBar.OverlayFrame.Text:SetText(HONOR_BAR:format(current, max));
 	end
@@ -53,7 +81,6 @@ end
 
 local firstEnteringWorld = true;
 function MainMenuBar_OnEvent(self, event, ...)
-	local arg1, arg2, arg3, arg4, arg5, arg6, arg7 = ...;
 	if ( event == "ACTIONBAR_PAGE_CHANGED" ) then
 		MainMenuBarPageNumber:SetText(GetActionBarPage());
 	elseif ( event == "CURRENCY_DISPLAY_UPDATE" ) then
@@ -89,9 +116,26 @@ function MainMenuBar_OnEvent(self, event, ...)
 			TokenFrame_Update();
 			BackpackTokenFrame_Update();
 		end
-	elseif ( event == "UNIT_LEVEL" and arg1 == "player" ) then
-		UpdateMicroButtons();
+	elseif ( event == "UNIT_LEVEL" ) then
+		local unitToken = ...;
+		if ( unitToken == "player" ) then
+			UpdateMicroButtons();
+		end
 	end
+end
+
+function MainMenuBar_GetNumArtifactTraitsPurchasableFromXP(pointsSpent, artifactXP)
+	local numPoints = 0;
+	local xpForNextPoint = C_ArtifactUI.GetCostForPointAtRank(pointsSpent);
+	while artifactXP >= xpForNextPoint do
+		artifactXP = artifactXP - xpForNextPoint;
+
+		pointsSpent = pointsSpent + 1;
+		numPoints = numPoints + 1;
+
+		xpForNextPoint = C_ArtifactUI.GetCostForPointAtRank(pointsSpent);
+	end
+	return numPoints, artifactXP, xpForNextPoint;
 end
 
 function MainMenuBar_UpdateExperienceBars(newLevel)
@@ -125,15 +169,26 @@ function MainMenuBar_UpdateExperienceBars(newLevel)
 	end
 	if ( showArtifact ) then
 		local statusBar = ArtifactWatchBar.StatusBar;
-		local itemID, altItemID, name, icon, xp, xpForNextPoint, quality, artifactAppearanceID, appearanceModID = C_ArtifactUI.GetEquippedArtifactInfo();
-		statusBar:SetAnimatedValues(xp, 0, xpForNextPoint, level);
+		local itemID, altItemID, name, icon, xp, pointsSpent, quality, artifactAppearanceID, appearanceModID = C_ArtifactUI.GetEquippedArtifactInfo();
+
+		local numPointsAvailableToSpend, xp, xpForNextPoint = MainMenuBar_GetNumArtifactTraitsPurchasableFromXP(pointsSpent, xp);
+
+		statusBar:SetAnimatedValues(xp, 0, xpForNextPoint, numPointsAvailableToSpend + pointsSpent);
 		if visibilityChanged or statusBar.itemID ~= itemID or C_ArtifactUI.IsAtForge() then
 			statusBar:Reset();
 		end
 		statusBar.itemID = itemID;
+		ArtifactWatchBar.xp = xp;
+		ArtifactWatchBar.xpForNextPoint = xpForNextPoint;
+		ArtifactWatchBar.numPointsAvailableToSpend = numPointsAvailableToSpend;
 		ArtifactWatchBar:Show();
+		ArtifactWatchBar.Tick:SetShown(numPointsAvailableToSpend > 0);
+		statusBar.Underlay:SetShown(numPointsAvailableToSpend > 0);
+		statusBar.Overlay:Show();
+		statusBar.Overlay:SetAlpha(numPointsAvailableToSpend > 0 and .5 or .25);
 		MainMenuTrackingBar_Configure(ArtifactWatchBar, numBarsShowing > 0);
 		numBarsShowing = numBarsShowing + 1;
+		MainMenuBar_ArtifactUpdateTick();
 	else
 		ArtifactWatchBar:Hide();	
 	end
@@ -147,8 +202,9 @@ function MainMenuBar_UpdateExperienceBars(newLevel)
 		local max = UnitHonorMax("player");
 
 		local level = UnitHonorLevel("player");
-
-		if (CanPrestige()) then
+        local levelmax = GetPlayerMaxHonorLevel();
+        
+		if (level == levelmax) then
 			-- Force the bar to full for the max level
 			statusBar:SetAnimatedValues(1, 0, 1, level);
 		else
@@ -332,6 +388,19 @@ function MainMenuBarVehicleLeaveButton_OnClicked(self)
 	end
 end
 
+function MainMenu_AnchorTickTooltip(self)
+	if ( self:IsShown() ) then
+		local x, y = self:GetCenter();
+		if ( x >= ( GetScreenWidth() / 2 ) ) then
+			GameTooltip:SetOwner(self, "ANCHOR_LEFT");
+		else
+			GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+		end
+	else
+		GameTooltip_SetDefaultAnchor(GameTooltip, UIParent);
+	end
+end
+
 function ExhaustionTick_OnLoad(self)
 	self:RegisterEvent("PLAYER_ENTERING_WORLD");
 	self:RegisterEvent("PLAYER_XP_UPDATE");
@@ -344,8 +413,6 @@ function ExhaustionTick_OnEvent(self, event, ...)
 	if ((event == "PLAYER_ENTERING_WORLD") or (event == "PLAYER_XP_UPDATE") or (event == "UPDATE_EXHAUSTION") or (event == "PLAYER_LEVEL_UP")) then
 		local playerCurrXP = UnitXP("player");
 		local playerMaxXP = UnitXPMax("player");
-		--local exhaustionCurrXP, exhaustionMaxXP;
-		--exhaustionCurrXP, exhaustionMaxXP = GetXPExhaustion();
 		local exhaustionThreshold = GetXPExhaustion();
 		local exhaustionStateID, exhaustionStateName, exhaustionStateMultiplier;
 		exhaustionStateID, exhaustionStateName, exhaustionStateMultiplier = GetRestState();
@@ -358,15 +425,10 @@ function ExhaustionTick_OnEvent(self, event, ...)
 			ExhaustionLevelFillBar:Hide();
 		else
 			local exhaustionTickSet = max(((playerCurrXP + exhaustionThreshold) / playerMaxXP) * MainMenuExpBar:GetWidth(), 0);
---			local exhaustionTotalXP = playerCurrXP + (exhaustionMaxXP - exhaustionCurrXP);
---			local exhaustionTickSet = (exhaustionTotalXP / playerMaxXP) * MainMenuExpBar:GetWidth();
 			ExhaustionTick:ClearAllPoints();
 			if (exhaustionTickSet > MainMenuExpBar:GetWidth() or MainMenuBarMaxLevelBar:IsShown()) then
 				ExhaustionTick:Hide();
 				ExhaustionLevelFillBar:Hide();
-				-- Saving this code in case we want to always leave the exhaustion tick onscreen
---				ExhaustionTick:SetPoint("CENTER", "MainMenuExpBar", "RIGHT", 0, 0);
---				ExhaustionLevelFillBar:SetPoint("TOPRIGHT", "MainMenuExpBar", "TOPRIGHT", 0, 0);
 			else
 				ExhaustionTick:Show();
 				ExhaustionTick:SetPoint("CENTER", "MainMenuExpBar", "LEFT", exhaustionTickSet, 0);
@@ -401,39 +463,12 @@ function ExhaustionTick_OnEvent(self, event, ...)
 end
 
 function ExhaustionToolTipText()
-	-- If showing newbie tips then only show the explanation
-	--[[if ( SHOW_NEWBIE_TIPS == "1" ) then
-		return;
-	end
-	]]
-
-	if ( SHOW_NEWBIE_TIPS ~= "1" ) then
-		local x,y;
-		x,y = ExhaustionTick:GetCenter();
-		if ( ExhaustionTick:IsShown() ) then
-			if ( x >= ( GetScreenWidth() / 2 ) ) then
-				GameTooltip:SetOwner(ExhaustionTick, "ANCHOR_LEFT");
-			else
-				GameTooltip:SetOwner(ExhaustionTick, "ANCHOR_RIGHT");
-			end
-		else
-			GameTooltip_SetDefaultAnchor(GameTooltip, UIParent);
-		end
-	end
+	MainMenu_AnchorTickTooltip(ExhaustionTick);
 	
-	local exhaustionStateID, exhaustionStateName, exhaustionStateMultiplier;
-	exhaustionStateID, exhaustionStateName, exhaustionStateMultiplier = GetRestState();
+	local exhaustionStateID, exhaustionStateName, exhaustionStateMultiplier = GetRestState();
 
-	-- Saving this code in case we want to display xp to next rest state
 	local exhaustionCurrXP, exhaustionMaxXP;
 	local exhaustionThreshold = GetXPExhaustion();
---	local exhaustionXPDifference;
---	if (exhaustionMaxXP) then
---		exhaustionXPDifference = (exhaustionMaxXP - exhaustionCurrXP) * exhaustionStateMultiplier;
---	else
---		exhaustionXPDifference = 0;
---	end
-
 	exhaustionStateMultiplier = exhaustionStateMultiplier * 100;
 	local exhaustionCountdown = nil;
 	if ( GetTimeToWellRested() ) then
@@ -467,28 +502,6 @@ function ExhaustionToolTipText()
 			GameTooltip.canAddRestStateLine = nil;
 		end
 	end
-
---[[
-	if ((exhaustionStateID == 1) and (IsResting()) and (not exhaustionThreshold)) then
-		GameTooltip:SetText(format(EXHAUST_TOOLTIP1, exhaustionStateName, exhaustionStateMultiplier));
-	elseif ((exhaustionStateID == 1) and (IsResting())) then
-		GameTooltip:SetText(format(EXHAUST_TOOLTIP1,exhaustionStateName,exhaustionStateMultiplier) .. format(EXHAUST_TOOLTIP4,exhaustionCountdown));
-	elseif ((exhaustionStateID == 2) and (IsResting())) then
-		GameTooltip:SetText(format(EXHAUST_TOOLTIP1,exhaustionStateName,exhaustionStateMultiplier) .. format(EXHAUST_TOOLTIP4,exhaustionCountdown));
-	elseif ((exhaustionStateID == 3) and (IsResting())) then
-		GameTooltip:SetText(format(EXHAUST_TOOLTIP1,exhaustionStateName,exhaustionStateMultiplier) .. format(EXHAUST_TOOLTIP4,exhaustionCountdown));
-	elseif ((exhaustionStateID == 4) and (IsResting())) then
-		GameTooltip:SetText(format(EXHAUST_TOOLTIP1,exhaustionStateName,exhaustionStateMultiplier) .. format(EXHAUST_TOOLTIP4,exhaustionCountdown));
-	elseif ((exhaustionStateID == 5) and (IsResting())) then
-		GameTooltip:SetText(format(EXHAUST_TOOLTIP1,exhaustionStateName,exhaustionStateMultiplier) .. format(EXHAUST_TOOLTIP4,exhaustionCountdown));
-	elseif (exhaustionStateID <= 3) then
-		GameTooltip:SetText(format(EXHAUST_TOOLTIP1,exhaustionStateName,exhaustionStateMultiplier));
-	elseif (exhaustionStateID == 4) then
-		GameTooltip:SetText(format(EXHAUST_TOOLTIP1,exhaustionStateName,exhaustionStateMultiplier) .. EXHAUST_TOOLTIP2);
-	elseif (exhaustionStateID == 5) then
-		GameTooltip:SetText(format(EXHAUST_TOOLTIP1,exhaustionStateName,exhaustionStateMultiplier) .. EXHAUST_TOOLTIP2);
-	end
-]]
 end
 
 function ExhaustionTick_OnUpdate(self, elapsed)

@@ -462,9 +462,8 @@ function QuestInfo_ShowRewards()
 			questItem.ID = garrFollowerID;
 			local followerInfo = C_Garrison.GetFollowerInfo(garrFollowerID);
 			questItem.Name:SetText(followerInfo.name);
-			questItem.PortraitFrame.Level:SetText(followerInfo.level);
 			questItem.Class:SetAtlas(followerInfo.classAtlas);
-			questItem.PortraitFrame:SetQuality(followerInfo.quality);
+			questItem.PortraitFrame:SetupPortrait(followerInfo);
 		else
 			rewardsFrame.FollowerFrame:Hide();
 			questItem = rewardsFrame.SpellFrame;

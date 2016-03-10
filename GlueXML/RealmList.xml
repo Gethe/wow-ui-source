@@ -177,7 +177,7 @@
 	
 	<Button name="RealmListRealmButtonTemplate" virtual="true">
 		<Size>
-			<AbsDimension x="512" y="16"/>
+			<AbsDimension x="512" y="20"/>
 		</Size>
 		<Layers>
 			<Layer level="BACKGROUND">
@@ -493,7 +493,7 @@
 							<ScrollFrame parentKey="ScrollFrame" name="RealmListScrollFrame" inherits="HybridScrollFrameTemplate">
 								<Anchors>
 									<Anchor point="TOPLEFT" x="22" y="-56"/>
-									<Anchor point="BOTTOMRIGHT" relativePoint="TOPLEFT" x="564" y="-465"/>
+									<Anchor point="BOTTOMRIGHT" relativePoint="TOPLEFT" x="564" y="-464"/>
 								</Anchors>
 								<Frames>
 									<Slider name="$parentScrollBar" inherits="HybridScrollBarTrimTemplate" parentKey="scrollBar">

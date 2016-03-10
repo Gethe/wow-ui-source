@@ -100,6 +100,78 @@
 		</Scripts>
 	</Frame>
 
+	<Frame name="AdventureMap_CombatAllyMissionPinTemplate" enableMouse="true" mixin="AdventureMap_CombatAllyMissionPinMixin" virtual="true">
+		<Size x="58" y="58"/>
+
+		<Layers>
+			<Layer level="BACKGROUND" textureSubLevel="-1">
+				<Texture parentKey="Background" atlas="AdventureMap-combatally-clouds" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="BACKGROUND" textureSubLevel="0">
+				<Texture parentKey="Icon">
+					<Size x="46" y="46"/>
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+
+			<Layer level="HIGHLIGHT">
+				<Texture parentKey="IconHighlight" alphaMode="ADD" alpha=".25">
+					<Size x="46" y="46"/>
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent.Icon" />
+					</Anchors>
+				</Texture>
+			</Layer>
+
+			<Layer level="BORDER" textureSubLevel="1">
+				<Texture parentKey="PortraitFrame" atlas="AdventureMap-combatally-ring">
+					<Size x="58" y="58"/>
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="OVERLAY">
+				<FontString parentKey="Label" inherits="SystemFont_Small2" text="GARRISON_FOLLOWER_COMBAT_ALLY_MISSION_LABEL">
+					<Color r="0.38" g="0.24" b="0.06" a="1"/>
+					<Anchors>
+						<Anchor point="TOP" relativePoint="BOTTOM" y="-5"/>
+					</Anchors>
+				</FontString>
+				<FontString parentKey="Status" inherits="GameFontHighlight" text="52 min">
+					<Anchors>
+						<Anchor point="LEFT" relativePoint="RIGHT" y="0"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+			<Layer level="ARTWORK">
+				<Texture parentKey="LabelBackground" atlas="AdventureMap-textlabelglow" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="TOP" relativePoint="BOTTOM" y="0"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="StatusBackground" atlas="AdventureMapLabel-MissionTimer" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="LEFT" relativePoint="RIGHT" x="-20" y="0"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="Ability">
+					<Size x="18" y="18"/>
+					<Anchors>
+						<Anchor point="BOTTOMLEFT" x="-5" y="2"/>
+					</Anchors>
+				</Texture>
+
+			</Layer>
+		</Layers>
+	</Frame>
+
 	<Frame name="AdventureMap_MissionRewardTemplate" parentArray="Rewards" inherits="GarrisonMissionRewardEffectsTemplate" hidden="true" virtual="true">
 		<Layers>
 			<Layer level="BACKGROUND" textureSubLevel="-1">

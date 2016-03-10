@@ -1008,7 +1008,6 @@ function FriendsFrame_OnEvent(self, event, ...)
 	elseif ( event == "VOICE_CHAT_ENABLED_UPDATE" ) then
 		VoiceChat_Toggle();
 	elseif ( event == "PLAYER_FLAGS_CHANGED" or event == "BN_INFO_CHANGED") then
-		SynchronizeBNetStatus();
 		FriendsFrameStatusDropDown_Update();
 		FriendsFrame_CheckBattlenetStatus();
 	elseif ( event == "PLAYER_ENTERING_WORLD" or event == "BN_CONNECTED" or event == "BN_DISCONNECTED" or event == "BN_SELF_ONLINE") then
@@ -1384,7 +1383,7 @@ function FriendsFrame_UpdateFriends()
 				button.gameIcon:Hide();
 				FriendsFrame_SummonButton_Update(button.summonButton);
 			elseif ( FriendButtons[index].buttonType == FRIENDS_BUTTON_TYPE_BNET ) then
-				local bnetIDAccount, accountName, battleTag, isBattleTag, characterName, bnetIDGameAccount, client, isOnline, lastOnline, isAFK, isDND, messageText, noteText, isRIDFriend, messageTime, canSoR = BNGetFriendInfo(FriendButtons[index].id);
+				local bnetIDAccount, accountName, battleTag, isBattleTag, characterName, bnetIDGameAccount, client, isOnline, lastOnline, isBnetAFK, isBnetDND, messageText, noteText, isRIDFriend, messageTime, canSoR = BNGetFriendInfo(FriendButtons[index].id);
 				broadcastText = messageText;
 				-- set up player name and character name
 				local characterName = characterName;
@@ -1410,11 +1409,11 @@ function FriendsFrame_UpdateFriends()
 				end
 
 				if ( isOnline ) then
-					local _, _, _, realmName, realmID, faction, _, _, _, zoneName, _, gameText = BNGetGameAccountInfo(bnetIDGameAccount);
+					local _, _, _, realmName, realmID, faction, _, _, _, zoneName, _, gameText, _, _, _, _, _, isGameAFK, isGameBusy = BNGetGameAccountInfo(bnetIDGameAccount);
 					button.background:SetColorTexture(FRIENDS_BNET_BACKGROUND_COLOR.r, FRIENDS_BNET_BACKGROUND_COLOR.g, FRIENDS_BNET_BACKGROUND_COLOR.b, FRIENDS_BNET_BACKGROUND_COLOR.a);
-					if ( isAFK ) then
+					if ( isBnetAFK or isGameAFK ) then
 						button.status:SetTexture(FRIENDS_TEXTURE_AFK);
-					elseif ( isDND ) then
+					elseif ( isBnetDND or isGameBusy ) then
 						button.status:SetTexture(FRIENDS_TEXTURE_DND);
 					else
 						button.status:SetTexture(FRIENDS_TEXTURE_ONLINE);
@@ -1550,9 +1549,10 @@ end
 
 function FriendsFrameStatusDropDown_Update()
 	local status;
-	if ( IsChatAFK() ) then
+	local _, _, _, _, bnetAFK, bnetDND = BNGetInfo();
+	if ( bnetAFK) then
 		status = FRIENDS_TEXTURE_AFK;
-	elseif ( IsChatDND() ) then
+	elseif (bnetDND ) then
 		status = FRIENDS_TEXTURE_DND;
 	else
 		status = FRIENDS_TEXTURE_ONLINE;
@@ -1566,20 +1566,14 @@ function FriendsFrame_SetOnlineStatus(button)
 	if ( status == FriendsFrameStatusDropDown.status ) then
 		return;
 	end
+	local _, _, _, _, bnetAFK, bnetDND = BNGetInfo();
 	if ( status == FRIENDS_TEXTURE_ONLINE ) then
-		if ( IsChatAFK() ) then
-			SendChatMessage("", "AFK");
-		elseif ( IsChatDND() ) then
-			SendChatMessage("", "DND");
-		end
+			BNSetAFK(false);
+			BNSetDND(false);
 	elseif ( status == FRIENDS_TEXTURE_AFK ) then
-		if ( not IsChatAFK() ) then
-			SendChatMessage("", "AFK");
-		end
+			BNSetAFK(true);
 	elseif ( status == FRIENDS_TEXTURE_DND ) then
-		if ( not IsChatDND() ) then
-			SendChatMessage("", "DND");
-		end
+			BNSetDND(true);
 	end
 end
 

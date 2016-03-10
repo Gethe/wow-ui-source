@@ -1,11 +1,10 @@
 MonkPowerBar = {};
 
 function MonkPowerBar:OnLoad()
-	self.tooltipTitle = CHI_POWER;
-	self.tooltip = CHI_TOOLTIP;
+	self:SetTooltip(CHI_POWER, CHI_TOOLTIP);
+	self:SetPowerTokens("CHI", "DARK_FORCE");
 	self.class = "MONK";
 	self.spec = SPEC_MONK_WINDWALKER;
-	self.powerTokens = {"CHI", "DARK_FORCE"};
 	
 	ClassPowerBar.OnLoad(self);
 end

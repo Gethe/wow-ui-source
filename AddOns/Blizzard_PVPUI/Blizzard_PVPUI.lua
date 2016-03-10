@@ -988,67 +988,6 @@ end
 
 --------- Conquest Tooltips ----------
 
-function ConquestFrame_ShowMaximumRewardsTooltip(self)
-	local currencyName = GetCurrencyInfo(CONQUEST_CURRENCY);
-
-	GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
-	GameTooltip:SetText(MAXIMUM_REWARD);
-	GameTooltip:AddLine(format(CURRENCY_RECEIVED_THIS_WEEK, currencyName), 1, 1, 1, true);
-	GameTooltip:AddLine(" ");
-
-	local pointsThisWeek, maxPointsThisWeek, bucket1Quantity, bucket1Limit, bucket2Quantity, bucket2Limit, bucket3Quantity, bucket3Limit, arenaReward, ratedBGReward = GetPVPRewards();
-	
-	-- Hack to make the system more understandable - Display Bucket 2 as a bonus pool that "overflows" into Bucket 1
-	-- (This hack is only valid when there are two buckets, since the underlying system doesn't actually work this way...)
-	if(bucket2Limit > bucket1Limit and bucket3Limit == 0) then
-		bucket2Limit = (bucket2Limit - bucket1Limit); -- Subtract to get the size of the "bonus pool"
-		if(bucket2Quantity > bucket2Limit) then
-			bucket1Quantity = bucket1Quantity + (bucket2Quantity-bucket2Limit); -- put extra in Bucket 1
-			if(bucket1Quantity > bucket1Limit) then
-				bucket1Quantity = bucket1Limit; -- clamp to be safe...
-			end
-			bucket2Quantity = bucket2Limit; -- remove extra from Bucket 2
-		end
-	end
-
-	local r, g, b = 1, 1, 1;
-	local capped;
-	if ( pointsThisWeek >= maxPointsThisWeek ) then
-		r, g, b = 0.5, 0.5, 0.5;
-		capped = true;
-	end
-	GameTooltip:AddDoubleLine(FROM_TOTAL, format(CURRENCY_WEEKLY_CAP_FRACTION, pointsThisWeek, maxPointsThisWeek), r, g, b, r, g, b);
-
-	if(bucket1Limit > 0) then
-		if ( capped or bucket1Quantity >= bucket1Limit ) then
-			r, g, b = 0.5, 0.5, 0.5;
-		else
-			r, g, b = 1, 1, 1;
-		end
-		GameTooltip:AddDoubleLine(" -"..FROM_ALL_SOURCES, format(CURRENCY_WEEKLY_CAP_FRACTION, bucket1Quantity, bucket1Limit), r, g, b, r, g, b);
-	end
-
-	if(bucket2Limit > 0) then
-		if ( capped or bucket2Quantity >= bucket2Limit ) then
-			r, g, b = 0.5, 0.5, 0.5;
-		else
-			r, g, b = 1, 1, 1;
-		end
-		GameTooltip:AddDoubleLine(" -"..FROM_ASHRAN, format(CURRENCY_WEEKLY_CAP_FRACTION, bucket2Quantity, bucket2Limit), r, g, b, r, g, b);
-	end
-
-	if(bucket3Limit > 0) then
-		if ( capped or bucket3Quantity >= bucket3Limit ) then
-			r, g, b = 0.5, 0.5, 0.5;
-		else
-			r, g, b = 1, 1, 1;
-		end
-		GameTooltip:AddDoubleLine(" -"..FROM_RATEDBG, format(CURRENCY_WEEKLY_CAP_FRACTION, bucket3Quantity, bucket3Limit), r, g, b, r, g, b);
-	end
-
-	GameTooltip:Show();
-end
-
 function DefaultBattlegroundReward_ShowTooltip(self)
 	GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
 	GameTooltip:SetText(BATTLEGROUND_BONUS_REWARD_TOOLTIP, nil, nil, nil, nil,
@@ -1065,7 +1004,7 @@ local CONQUEST_TOOLTIP_PADDING = 30 --counts both sides
 function ConquestFrameButton_OnEnter(self)
 	local tooltip = ConquestTooltip;
 	
-	local rating, seasonBest, weeklyBest, seasonPlayed, seasonWon, weeklyPlayed, weeklyWon, cap = GetPersonalRatedInfo(self.id);
+	local rating, seasonBest, weeklyBest, seasonPlayed, seasonWon, weeklyPlayed, weeklyWon = GetPersonalRatedInfo(self.id);
 	
 	tooltip.Title:SetText(self.toolTipTitle);
 	
@@ -1077,11 +1016,9 @@ function ConquestFrameButton_OnEnter(self)
 	tooltip.SeasonWon:SetText(PVP_GAMES_WON..seasonWon);
 	tooltip.SeasonGamesPlayed:SetText(PVP_GAMES_PLAYED..seasonPlayed);
 	
-	tooltip.ProjectedCap:SetText(cap);
-	
 	local maxWidth = max(tooltip.Title:GetStringWidth(),tooltip.WeeklyBest:GetStringWidth(),
 						tooltip.WeeklyGamesPlayed:GetStringWidth(),	tooltip.SeasonBest:GetStringWidth(),
-						tooltip.SeasonGamesPlayed:GetStringWidth(), tooltip.ProjectedCapLabel:GetStringWidth());
+						tooltip.SeasonGamesPlayed:GetStringWidth());
 	
 	tooltip:SetWidth(maxWidth + CONQUEST_TOOLTIP_PADDING);
 	tooltip:SetPoint("TOPLEFT", self, "TOPRIGHT", 0, 0);

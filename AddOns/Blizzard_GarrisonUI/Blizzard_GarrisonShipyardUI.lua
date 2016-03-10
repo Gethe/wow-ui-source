@@ -1,17 +1,3 @@
-
----------------------------------------------------------------------------------
--- Display Options
----------------------------------------------------------------------------------
-
-GarrisonFollowerOptions[LE_FOLLOWER_TYPE_SHIPYARD_6_2] = {
-	displayCounterAbilityInPlaceOfMechanic = false,
-	useAbilityTooltipStyleWithoutCounters = false,
-	hideCountersInAbilityFrame = false,
-	showILevelOnFollower = false,
-	showCategoriesInFollowerList = false,
-}
-
-
 ---------------------------------------------------------------------------------
 --- Static Popups                                                             ---
 ---------------------------------------------------------------------------------
@@ -210,7 +196,7 @@ end
 
 function GarrisonShipyardMission:OnClickMission(missionInfo)
 	if (not GarrisonMission.OnClickMission(self, missionInfo)) then
-		return;
+		return false;
 	end
 	
 	self.MissionTab.MissionList:Hide();
@@ -218,6 +204,7 @@ function GarrisonShipyardMission:OnClickMission(missionInfo)
 	
 	self:ShowMission(missionInfo);
 	self.FollowerList:UpdateFollowers();
+	return true;
 end
 
 function GarrisonShipyardMission:ShowMission(missionInfo)
@@ -1746,7 +1733,6 @@ end
 GarrisonShipyardFollowerList = {};
 
 function GarrisonShipyardFollowerList:Initialize(followerType, followerTab)
-	self.minFollowersForThreatCountersFrame = 1;
 	self.followerCountString = GARRISON_SHIPYARD_FOLLOWER_COUNT;
 	self.followerTab = followerTab or self:GetParent().FollowerTab;
 	self.followerTab.followerList = self;
@@ -2218,6 +2204,7 @@ function GarrisonShipMissionPageFollowerFrame_OnEnter(self)
 		xp,
 		levelXp,
 		C_Garrison.GetFollowerItemLevelAverage(self.info.followerID), 
+		C_Garrison.GetFollowerSpecializationAtIndex(followerID, 1),
 		C_Garrison.GetFollowerAbilityAtIndex(self.info.followerID, 1),
 		C_Garrison.GetFollowerAbilityAtIndex(self.info.followerID, 2),
 		C_Garrison.GetFollowerAbilityAtIndex(self.info.followerID, 3),

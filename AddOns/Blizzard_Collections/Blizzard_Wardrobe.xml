@@ -739,6 +739,12 @@
 			<OnEnter function="WardrobeTransmogButton_OnEnter"/>
 			<OnLeave function="WardrobeTransmogButton_OnLeave"/>
 		</Scripts>
+		<HighlightTexture atlas="transmog-frame-highlighted" alphaMode="ADD">
+			<Size x="42" y="41"/>
+			<Anchors>
+				<Anchor point="CENTER"/>
+			</Anchors>
+		</HighlightTexture>
 	</Button>
 
 	<Button name="WardrobeTransmogEnchantButtonTemplate" virtual="true">
@@ -908,41 +914,10 @@
 					<Frame parentKey="Inset" inherits="InsetFrameTemplate" setAllPoints="true">
 						<Layers>
 							<Layer level="BACKGROUND">
-								<Texture parentKey="TopBG" file="Interface\DressUpFrame\DressUpBackground-Orc1">
-									<Size x="294" y="342"/>
+								<Texture parentKey="BG">
+									<Size x="294" y="494"/>
 									<Anchors>
 										<Anchor point="TOP" x="0" y="-1"/>
-									</Anchors>
-									<TexCoords left="0.42578125" right="1" top="0.33203125" bottom="1"/>
-								</Texture>					
-								<Texture parentKey="BottomBG" file="Interface\DressUpFrame\DressUpBackground-Orc3">
-									<Size x="294" y="152"/>
-									<Anchors>
-										<Anchor point="BOTTOM"/>
-									</Anchors>
-									<TexCoords left="0.42578125" right="1" top="0" bottom="0.59375"/>
-								</Texture>
-							</Layer>
-							<Layer level="BACKGROUND" textureSubLevel="1">
-								<Texture parentKey="TopDesatBG" alpha="0.5" file="Interface\DressUpFrame\DressUpBackground-Orc1">
-									<Size x="294" y="342"/>
-									<Anchors>
-										<Anchor point="TOP" x="0" y="-1"/>
-									</Anchors>
-									<TexCoords left="0.42578125" right="1" top="0.33203125" bottom="1"/>
-								</Texture>					
-								<Texture parentKey="BottomDesatBG" alpha="0.5" file="Interface\DressUpFrame\DressUpBackground-Orc3">
-									<Size x="294" y="152"/>
-									<Anchors>
-										<Anchor point="BOTTOM"/>
-									</Anchors>
-									<TexCoords left="0.42578125" right="1" top="0" bottom="0.59375"/>
-								</Texture>
-							</Layer>
-							<Layer level="BACKGROUND" textureSubLevel="2">
-								<Texture parentKey="Shadow" atlas="transmog-preview-shadow" useAtlasSize="true">
-									<Anchors>
-										<Anchor point="TOP" x="0" y="-3"/>
 									</Anchors>
 								</Texture>
 							</Layer>
@@ -1206,6 +1181,9 @@
 			<OnMouseUp>
 				self.texture:SetPoint("TOPLEFT", 0, 0);
 			</OnMouseUp>
+			<OnShow>
+				self.texture:SetPoint("TOPLEFT", 0, 0);
+			</OnShow>
 		</Scripts>
 	</Button>
 	<Button name="WardrobeOutfitButtonTemplate" parentArray="Buttons" virtual="true">
@@ -1223,7 +1201,7 @@
 				<Texture parentKey="Check" file="Interface\Buttons\UI-CheckBox-Check" hidden="false">
 					<Size x="16" y="16"/>
 					<Anchors>
-						<Anchor point="RIGHT" x="0" y="0"/>
+						<Anchor point="LEFT" relativeKey="$parent.Text" relativePoint="RIGHT" x="4" y="0"/>
 					</Anchors>
 				</Texture>
 				<Texture parentKey="Icon" hidden="false">
@@ -1236,30 +1214,13 @@
 			</Layer>
 		</Layers>
 		<Frames>
-			<Button parentKey="DeleteButton" inherits="WardrobeOutfitButtonButtonTemplate">
+			<Button parentKey="EditButton" inherits="WardrobeOutfitButtonButtonTemplate">
 				<KeyValues>
-					<KeyValue key="tooltipText" value="DELETE" type="global"/>
-				</KeyValues>
-				<Size x="14" y="14"/>
-				<Anchors>
-					<Anchor point="RIGHT" x="-18" y="0"/>
-				</Anchors>
-				<Layers>
-					<Layer level="ARTWORK">
-						<Texture file="Interface\Buttons\UI-GroupLoot-Pass-Up" alpha="0.5" parentKey="texture"/>
-					</Layer>
-				</Layers>
-				<Scripts>
-					<OnClick function="WardrobeOutfitDeleteButton_OnClick"/>
-				</Scripts>
-			</Button>
-			<Button parentKey="RenameButton" inherits="WardrobeOutfitButtonButtonTemplate">
-				<KeyValues>
-					<KeyValue key="tooltipText" value="TRANSMOG_OUTFIT_RENAME" type="global"/>
+					<KeyValue key="tooltipText" value="TRANSMOG_OUTFIT_EDIT" type="global"/>
 				</KeyValues>
 				<Size x="16" y="16"/>
 				<Anchors>
-					<Anchor point="RIGHT" relativeKey="$parent.DeleteButton" relativePoint="LEFT" x="-1"/>
+					<Anchor point="RIGHT" x="-2"/>
 				</Anchors>
 				<Layers>
 					<Layer level="ARTWORK">
@@ -1267,28 +1228,14 @@
 					</Layer>
 				</Layers>
 				<Scripts>
-					<OnClick function="WardrobeOutfitRenameButton_OnClick"/>
-				</Scripts>
-			</Button>
-			<Button parentKey="SaveButton" inherits="WardrobeOutfitButtonButtonTemplate">
-				<KeyValues>
-					<KeyValue key="tooltipText" value="TRANSMOG_OUTFIT_SAVE" type="global"/>
-				</KeyValues>
-				<Size x="16" y="16"/>
-				<Anchors>
-					<Anchor point="RIGHT" relativeKey="$parent.RenameButton" relativePoint="LEFT" x="-1"/>
-				</Anchors>
-				<Layers>
-					<Layer level="ARTWORK">
-						<Texture atlas="transmog-icon-save" alpha="0.5" parentKey="texture"/>
-					</Layer>
-				</Layers>
-				<Scripts>
-					<OnClick function="WardrobeOutfitSaveButton_OnClick"/>
+					<OnClick function="WardrobeOutfitEditButton_OnClick"/>
 				</Scripts>
 			</Button>
 		</Frames>
 		<Scripts>
+			<OnLoad>
+				self.Check:SetPoint("LEFT", self.Text, "RIGHT", 4, 0);
+			</OnLoad>
 			<OnClick function="WardrobeOutfitButton_OnClick"/>
 			<OnEnter>
 				self.Highlight:Show();
@@ -1303,7 +1250,6 @@
 			<Size x="0" y="0"/>
 			<Anchors>
 				<Anchor point="LEFT" x="29" y="0"/>
-				<Anchor point="RIGHT" x="-78" y="0"/>
 			</Anchors>
 		</ButtonText>
 		<NormalFont style="GameFontHighlightSmallLeft"/>
@@ -1330,7 +1276,7 @@
 			<Button inherits="WardrobeOutfitButtonTemplate">
 				<Anchors>
 					<Anchor point="TOPLEFT" x="11" y="-15"/>
-					<Anchor point="TOPRIGHT" x="-17" y="-15"/>
+					<Anchor point="TOPRIGHT" x="-11" y="-15"/>
 				</Anchors>
 			</Button>
 		</Frames>
@@ -1338,6 +1284,123 @@
 			<OnShow function="WardrobeOutfitFrame_OnShow"/>
 			<OnHide function="WardrobeOutfitFrame_OnHide"/>
 			<OnUpdate function="WardrobeOutfitFrame_OnUpdate"/>
+		</Scripts>
+	</Frame>
+	<Frame name="WardrobeOutfitEditFrame" parent="UIParent" hidden="true" frameStrata="DIALOG">
+		<Size x="320" y="174"/>
+		<Anchors>
+			<Anchor point="CENTER"/>
+		</Anchors>
+		<Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background" edgeFile="Interface\DialogFrame\UI-DialogBox-Border" tile="true">
+			<BackgroundInsets>
+				<AbsInset left="11" right="12" top="12" bottom="11"/>
+			</BackgroundInsets>
+			<TileSize>
+				<AbsValue val="32"/>
+			</TileSize>
+			<EdgeSize>
+				<AbsValue val="32"/>
+			</EdgeSize>
+		</Backdrop>
+		<Layers>
+			<Layer level="ARTWORK">
+				<FontString parentKey="Title" inherits="GameFontHighlight" text="TRANSMOG_OUTFIT_NAME">
+					<Anchors>
+						<Anchor point="TOP" x="0" y="-20"/>
+					</Anchors>
+				</FontString>
+				<Texture parentKey="Separator">
+					<Size x="276" y="1"/>
+					<Anchors>
+						<Anchor point="TOP" x="0" y="-127"/>
+					</Anchors>
+					<Color r="1" g="1" b="1" a="0.14"/>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Frames>
+			<EditBox parentKey="EditBox" historyLines="1" inherits="AutoCompleteEditBoxTemplate">
+				<Size x="260" y="32"/>
+				<Anchors>
+					<Anchor point="TOP" x="0" y="-40"/>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<Texture parentKey="LeftTexture" file="Interface\ChatFrame\UI-ChatInputBorder-Left2">
+							<Size x="32" y="32"/>
+							<Anchors>
+								<Anchor point="LEFT" x="-10" y="0"/>
+							</Anchors>
+						</Texture>
+						<Texture parentKey="RightTexture" file="Interface\ChatFrame\UI-ChatInputBorder-Right2">
+							<Size x="32" y="32"/>
+							<Anchors>
+								<Anchor point="RIGHT" x="10" y="0"/>
+							</Anchors>
+						</Texture>
+						<Texture parentKey="MiddleTexture" file="Interface\ChatFrame\UI-ChatInputBorder-Mid2" horizTile="true">
+							<Size x="0" y="32"/>
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeKey="$parent.LeftTexture" relativePoint="TOPRIGHT"/>
+								<Anchor point="TOPRIGHT" relativeKey="$parent.RightTexture" relativePoint="TOPLEFT"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnEnterPressed function="WardrobeOutfitEditFrame_OnAccept"/>
+					<OnEscapePressed>
+						StaticPopupSpecial_Hide(self:GetParent());
+					</OnEscapePressed>
+					<OnTextChanged>
+						if ( self:GetText() == "" ) then
+							self:GetParent().AcceptButton:Disable();
+						else
+							self:GetParent().AcceptButton:Enable();
+						end
+					</OnTextChanged>
+				</Scripts>
+				<FontString inherits="ChatFontNormal"/>
+			</EditBox>
+			<Button parentKey="AcceptButton" inherits="UIPanelButtonTemplate" text="ACCEPT">
+				<Size x="120" y="22"/>
+				<Anchors>
+					<Anchor point="TOPLEFT" x="33" y="-80"/>
+				</Anchors>
+				<Scripts>
+					<OnClick function="WardrobeOutfitEditFrame_OnAccept"/>
+				</Scripts>
+			</Button>
+			<Button parentKey="CancelButton" inherits="UIPanelButtonTemplate" text="CANCEL">
+				<Size x="120" y="22"/>
+				<Anchors>
+					<Anchor point="TOPRIGHT" x="-33" y="-80"/>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						StaticPopupSpecial_Hide(self:GetParent());
+					</OnClick>
+				</Scripts>
+			</Button>
+			<Button parentKey="DeleteButton" inherits="UIPanelButtonTemplate" text="TRANSMOG_OUTFIT_DELETE">
+				<Size x="120" y="22"/>
+				<Anchors>
+					<Anchor point="BOTTOM" x="0" y="17"/>
+				</Anchors>
+				<Scripts>
+					<OnClick function="WardrobeOutfitDeleteButton_OnClick"/>
+				</Scripts>
+			</Button>
+		</Frames>
+		<Scripts>
+			<OnLoad>
+				self.exclusive = true;
+				self.hideOnEscape = true;
+				self.DeleteButton:SetWidth(self.DeleteButton:GetTextWidth() + 50);
+			</OnLoad>
+			<OnHide>
+				PlaySound("igMainMenuClose");
+			</OnHide>
 		</Scripts>
 	</Frame>
 </Ui>

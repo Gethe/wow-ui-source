@@ -1,5 +1,5 @@
 <Bindings>
-	
+
 	<!-- User interface key bindings header="MOVEMENT" -->
 	<Binding name="MOVEANDSTEER" runOnUp="true" category="BINDING_HEADER_MOVEMENT">
 		if ( keystate == "down" ) then
@@ -206,11 +206,11 @@
 			ActionButtonUp(12);
 		end
 	</Binding>
-	
+
 	<Binding name="EXTRAACTIONBUTTON1" runOnUp="true" category="BINDING_HEADER_ACTIONBAR">
 		ExtraActionButtonKey(1, keystate == "down")
 	</Binding>
-	
+
 	<Binding name="SHAPESHIFTBUTTON1" category="BINDING_HEADER_ACTIONBAR">
 		StanceBar_Select(1)
 	</Binding>
@@ -709,7 +709,7 @@
 			MultiActionButtonUp("MultiBarLeft", 12);
 		end
 	</Binding>
-	
+
 	<!-- Target function key bindings header="TARGETING" -->
 	<Binding name="TARGETNEARESTENEMY" runOnUp="true" category="BINDING_HEADER_TARGETING">
 		local ALLOW_HOLD_TARGETING = GetCVarBool("TargetPriorityHoldHighlight");
@@ -841,7 +841,7 @@
 	<Binding name="FOCUSARENA5" category="BINDING_HEADER_TARGETING">
 		FocusUnit("arena5");
 	</Binding>
-	
+
 	<Binding name="NAMEPLATES" category="BINDING_HEADER_TARGETING">
 		local SHOW_ENEMIES = GetCVarBool("nameplateShowEnemies");
 		if ( SHOW_ENEMIES ) then
@@ -921,7 +921,7 @@
 			VoiceChatTalkers.buttons[#VOICECHAT_TALKERS].button:Click();
 		end
 	</Binding>
-	
+
 	<!-- UI Panels header="INTERFACE" -->
 	<Binding name="TOGGLEGAMEMENU" category="BINDING_HEADER_INTERFACE">
 		ToggleGameMenu();
@@ -944,7 +944,7 @@
 	<Binding name="OPENALLBAGS" category="BINDING_HEADER_INTERFACE">
 		ToggleAllBags();
 	</Binding>
-	
+
 	<Binding name="TOGGLECHARACTER0" header="BLANK8" category="BINDING_HEADER_INTERFACE">
 		ToggleCharacter("PaperDollFrame");
 	</Binding>
@@ -957,7 +957,7 @@
 	<Binding name="TOGGLECURRENCY" category="BINDING_HEADER_INTERFACE">
 		ToggleCharacter("TokenFrame");
 	</Binding>
-	
+
 	<Binding name="TOGGLESPELLBOOK" header="BLANK7" category="BINDING_HEADER_INTERFACE">
 		ToggleSpellBook(BOOKTYPE_SPELL);
 	</Binding>
@@ -967,20 +967,17 @@
 	<Binding name="TOGGLEPETBOOK" category="BINDING_HEADER_INTERFACE">
 		ToggleSpellBook(BOOKTYPE_PET);
 	</Binding>
-	<Binding name="TOGGLECOREABILITIESBOOK" category="BINDING_HEADER_INTERFACE">
-		ToggleSpellBook(BOOKTYPE_CORE_ABILITIES);
-	</Binding>
 	<Binding name="TOGGLETALENTS" category="BINDING_HEADER_INTERFACE">
 		ToggleTalentFrame();
 	</Binding>
-	
+
 	<Binding name="TOGGLEACHIEVEMENT" header="BLANK10" category="BINDING_HEADER_INTERFACE">
 		ToggleAchievementFrame();
 	</Binding>
 	<Binding name="TOGGLESTATISTICS" category="BINDING_HEADER_INTERFACE">
 		ToggleAchievementFrame(1);
 	</Binding>
-	
+
 	<Binding name="TOGGLEQUESTLOG" header="BLANK11" category="BINDING_HEADER_INTERFACE">
 		ToggleQuestLog();
 	</Binding>
@@ -1004,7 +1001,7 @@
 	<Binding name="TOGGLEWORLDSTATESCORES" category="BINDING_HEADER_INTERFACE">
 		ToggleWorldStateScoreFrame();
 	</Binding>
-	
+
 	<Binding name="TOGGLEGUILDTAB" header="BLANK12" category="BINDING_HEADER_INTERFACE">
 		ToggleGuildFrame();
 	</Binding>
@@ -1026,7 +1023,7 @@
 	<Binding name="TOGGLECHANNELPULLOUT" category="BINDING_HEADER_INTERFACE">
 		ChannelPullout_ToggleDisplay();
 	</Binding>
-	
+
 	<Binding name="TOGGLEGROUPFINDER" header="BLANK13" category="BINDING_HEADER_INTERFACE">
 		PVEFrame_ToggleFrame();
 	</Binding>
@@ -1034,11 +1031,9 @@
 		PVEFrame_ToggleFrame("GroupFinderFrame", nil);
 	</Binding>
 	<Binding name="TOGGLECHARACTER4" category="BINDING_HEADER_INTERFACE">
-		if (not ScriptsDisallowedForBeta()) then
-			TogglePVPUI();
-		end
+		TogglePVPUI();
 	</Binding>
-	
+
 	<Binding name="TOGGLECOLLECTIONS" header="BLANK14" category="BINDING_HEADER_INTERFACE">
 		ToggleCollectionsJournal();
 	</Binding>
@@ -1054,7 +1049,7 @@
 	<Binding name="TOGGLECOLLECTIONSHEIRLOOM" category="BINDING_HEADER_INTERFACE">
 		ToggleCollectionsJournal(4);
 	</Binding>
-	
+
 	<Binding name="TOGGLEENCOUNTERJOURNAL" header="BLANK15" category="BINDING_HEADER_INTERFACE">
 		ToggleEncounterJournal();
 	</Binding>

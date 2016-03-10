@@ -1651,6 +1651,10 @@ function TaskPOI_OnEnter(self)
 
 	WorldMap_AddQuestRewardsToTooltip(self.questID);
 
+	if ( self.worldQuest and WorldMapTooltip.AddDebugWorldQuestInfo ) then
+		WorldMapTooltip:AddDebugWorldQuestInfo(self.questID);
+	end
+
 	WorldMapTooltip:Show();
 end
 

@@ -85,6 +85,15 @@ function AnimatedStatusBarMixin:GetTargetValue()
 	return self.targetValue or self:GetValue();
 end
 
+-- Discrete value
+function AnimatedStatusBarMixin:GetAnimatedValue()
+	return self.animatedValue or self:GetValue();
+end
+
+function AnimatedStatusBarMixin:GetContinuousAnimatedValue()
+	return self.continuousAnimatedValue or self:GetValue();
+end
+
 function AnimatedStatusBarMixin:OnUpdate(elapsed)
 	if not self:IsAnimating() and self.accumulationTimeout then
 		if self.pendingReset then
@@ -155,6 +164,8 @@ function AnimatedStatusBarMixin:ProcessChanges()
 			local currentValue = self:GetValue();
 			self:SetMinMaxValues(self.pendingMin, self.pendingMax);
 			self:SetValue(currentValue * ratio);
+			self.animatedValue = nil;
+			self.continuousAnimatedValue = nil;
 			self:OnValueChanged();
 		else
 			self:SetMinMaxValues(self.pendingMin, self.pendingMax);
@@ -184,6 +195,9 @@ function AnimatedStatusBarMixin:ProcessChanges()
 
 	local oldValueAsPercent = GetPercentageBetween(min, max, oldValue);
 	local deltaAsPercent = GetPercentageBetween(min, max, newValue) - oldValueAsPercent;
+
+	self.animatedValue = nil;
+	self.continuousAnimatedValue = nil;
 
 	-- No backward animations
 	if deltaAsPercent < 0 then
@@ -252,8 +266,11 @@ function AnimatedStatusBarMixin:SetupAnimationForValueChange(anim, startingPerce
 end
 
 function AnimatedStatusBarMixin:OnSetStatusBarAnimUpdate(anim, elapsed)
+	self.continuousAnimatedValue = self.startValue + (self.targetValue - self.startValue) * anim:GetProgress();
+	self.animatedValue = math.floor(self.continuousAnimatedValue);
+
 	if self:GetMatchBarValueToAnimation() then
-		self:SetValue(math.floor(self.startValue + (self.targetValue - self.startValue) * anim:GetProgress()));
+		self:SetValue(self.animatedValue);
 	else
 		self:SetValue(self.targetValue);
 	end
@@ -262,7 +279,7 @@ end
 
 function AnimatedStatusBarMixin:OnValueChanged()
 	if self.animatedValueChangedCallback then
-		self.animatedValueChangedCallback(self, self:GetValue());
+		self.animatedValueChangedCallback(self, self:GetAnimatedValue());
 	end
 end
 
@@ -283,6 +300,8 @@ function AnimatedStatusBarMixin:OnAnimFinished()
 
 	self.levelIsIncreasing = nil;
 	self.targetValue = nil;
+	self.animatedValue = nil;
+	self.continuousAnimatedValue = nil;
 	self.startValue = nil;
 end
 

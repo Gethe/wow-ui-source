@@ -609,7 +609,11 @@ EMOTE452_TOKEN = "YW"
 EMOTE453_TOKEN = "READ"
 EMOTE454_TOKEN = "FORTHEALLIANCE"
 EMOTE455_TOKEN = "FORTHEHORDE"
-local MAXEMOTEINDEX = 455;
+EMOTE517_TOKEN = "WHOA"
+EMOTE518_TOKEN = "OOPS"
+
+-- NOTE: This indices used to iterate the tokens may not be contiguous, keep that in mind when updating this value.
+local MAXEMOTEINDEX = 518;
 
 
 ICON_LIST = {
@@ -2310,10 +2314,6 @@ end
 
 
 SlashCmdList["WARGAME"] = function(msg)
-	-- TEMP: Disable the PVP UI for Beta
-	if (ScriptsDisallowedForBeta()) then
-		return;
-	end
 	-- Parameters are (playername, area, isTournamentMode). Since the player name can be multiple words,
 	-- we pass in theses parameters as a whitespace delimited string and let the C side tokenize it
 	StartWarGameByName(msg);

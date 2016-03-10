@@ -190,11 +190,6 @@
 					</Layer>
 				</Layers>
 				<Frames>
-					<Frame parentKey="Specialization" inherits="GarrisonFollowerPageAbilityTemplate" hidden="true">
-						<KeyValues>
-							<KeyValue key="isSpecialization" value="true" type="boolean"/>
-						</KeyValues>
-					</Frame>
 					<Frame parentArray="Abilities" inherits="GarrisonFollowerPageAbilityTemplate" hidden="true">
 						<Scripts>
 							<OnShow>
@@ -289,7 +284,7 @@
 	<Frame name="OrderHallMissionPageEnemyTemplate" inherits="GarrisonMissionPageEnemyTemplate" mixin="OrderHallMissionPageEnemyMixin" virtual="true">
 		<Frames>
 			<Frame parentKey="MechanicEffect">
-				<Size x="12" y="12"/>
+				<Size x="16" y="16"/>
 				<Anchors>
 					<Anchor point="BOTTOMRIGHT" x="-10" y="0"/>
 				</Anchors>
@@ -297,7 +292,7 @@
 					<Layer level="OVERLAY">
 						<Texture parentKey="Icon" inherits="GameFontHighlight">
 							<Color r="1" g="1" b="1"/>
-							<Size x="12" y="12"/>
+							<Size x="16" y="16"/>
 							<Anchors>
 								<Anchor point="CENTER"/>
 							</Anchors>
@@ -371,7 +366,7 @@
 					<OnHide>self:OnHide();</OnHide>
 				</Scripts>
 			</Frame>
-			<Frame parentKey="MissionTab" mixin="AdventureMapMixin, OrderHallMissionAdventureMapMixin" setAllPoints="true" useParentLevel="true">
+			<Frame parentKey="MissionTab" mixin="MapCanvasMixin, AdventureMapMixin, OrderHallMissionAdventureMapMixin" setAllPoints="true" useParentLevel="true">
 				<Scripts>
 					<OnLoad method="OnLoad"/>
 					<OnShow method="OnShow"/>
@@ -379,7 +374,7 @@
 					<OnHide method="OnHide"/>
 				</Scripts>
 				<Frames>
-					<ScrollFrame parentKey="ScrollContainer" enableMouse="true" mixin="AdventureMapScrollControllerMixin">
+					<ScrollFrame parentKey="ScrollContainer" enableMouse="true" mixin="MapCanvasScrollControllerMixin">
 						<Anchors>
 							<Anchor point="LEFT" relativeKey="$parent.$parent.Left" relativePoint="RIGHT" x="-6" y="0"/>
 							<Anchor point="RIGHT" relativeKey="$parent.$parent.Right" relativePoint="LEFT" x="6" y="0"/>
@@ -488,14 +483,42 @@
 									<Anchor point="RIGHT" relativeKey="$parent.ButtonFrame" x="-50" y="1"/>
 								</Anchors>
 							</Button>
+							<Frame parentKey="CombatAllyLabel" alpha="0">
+								<Size x="455" y="63"/>
+								<Anchors>
+									<Anchor point="BOTTOM" relativePoint="TOP" x="0" y="5"/>
+								</Anchors>
+
+								<Layers>
+									<Layer level="BACKGROUND">
+										<Texture parentKey="TextBackground" atlas="AdventureMapLabel-Large" />
+									</Layer>
+									<Layer level="BORDER">
+										<FontString parentKey="Text" inherits="SystemFont_Shadow_Huge3" text="GARRISON_FOLLOWER_COMBAT_ALLY" setAllPoints="true" justifyH="CENTER" justifyV="MIDDLE">
+											<Color r="1.0" g="0.82" b="0"/>
+										</FontString>
+									</Layer>
+								</Layers>
+								<Animations>
+									<AnimationGroup parentKey="FadeInAnim" setToFinalAlpha="true">
+										<Alpha fromAlpha="0" toAlpha="1" duration=".3" order="1" />
+									</AnimationGroup>
+								</Animations>
+							</Frame>
 							<!--<Frame parentKey="BuffsFrame"/>
 							<Frame parentKey="FollowerModel"/>-->
 						</Frames>
 						<Scripts>
 							<OnLoad function="GarrisonMissionPage_OnLoad"/>
 							<OnEvent function="GarrisonMissionPage_OnEvent"/>
-							<OnShow function="GarrisonMissionPage_OnShow"/>
-							<OnHide function="GarrisonMissionPage_OnHide"/>
+							<OnShow>
+								GarrisonMissionPage_OnShow(self);
+								self.CombatAllyLabel.FadeInAnim:Play();
+							</OnShow>
+							<OnHide>
+								GarrisonMissionPage_OnHide(self);
+								self.CombatAllyLabel.FadeInAnim:Stop();
+							</OnHide>
 							<OnUpdate function="GarrisonMissionPage_OnUpdate"/>
 							<OnClick>
 								self.CloseButton:Click();

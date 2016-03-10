@@ -1,16 +1,4 @@
 ---------------------------------------------------------------------------------
--- Display Options
----------------------------------------------------------------------------------
-GarrisonFollowerOptions = { };
-GarrisonFollowerOptions[LE_FOLLOWER_TYPE_GARRISON_6_0] = {
-	displayCounterAbilityInPlaceOfMechanic = false,
-	useAbilityTooltipStyleWithoutCounters = false,
-	hideCountersInAbilityFrame = false,
-	showILevelOnFollower = false,
-	showCategoriesInFollowerList = false,
-}
-
----------------------------------------------------------------------------------
 --- Base Mission Mixin Functions                                              ---
 ---------------------------------------------------------------------------------
 GarrisonMission = {};
@@ -397,9 +385,11 @@ function GarrisonMission:UpdateMissionData(missionPage)
 end
 
 function GarrisonMission:UpdateCostFrame(missionPage, amount)
-	local cost = C_Garrison.GetMissionCost(missionPage.missionInfo.missionID);
+	local baseCost, cost = C_Garrison.GetMissionCost(missionPage.missionInfo.missionID);
 	if ( amount < cost ) then
 		missionPage.CostFrame.Cost:SetText(RED_FONT_COLOR_CODE..BreakUpLargeNumbers(cost)..FONT_COLOR_CODE_CLOSE);
+	elseif (cost < baseCost) then
+		missionPage.CostFrame.Cost:SetText(GREEN_FONT_COLOR_CODE..BreakUpLargeNumbers(cost)..FONT_COLOR_CODE_CLOSE);
 	else
 		missionPage.CostFrame.Cost:SetText(BreakUpLargeNumbers(cost));
 	end

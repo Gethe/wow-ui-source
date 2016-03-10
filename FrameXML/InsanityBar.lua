@@ -3,9 +3,9 @@ InsanityPowerBar = {};
 function InsanityPowerBar:OnLoad()
 	self.class = "PRIEST";
 	self.spec = SPEC_PRIEST_SHADOW;
-	self.powerTokens = {"INSANITY"};
+	self:SetPowerTokens("INSANITY");
 	self.insane = false;
-	_, self.fullTentacleWidth = GetAtlasInfo("Insanity-Tentacles");
+	self.fullTentacleWidth = select(2, GetAtlasInfo("Insanity-Tentacles"))
 	
 	ClassPowerBar.OnLoad(self);
 end

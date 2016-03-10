@@ -1,8 +1,8 @@
-function AdventureMap_IsZoneIDBlockedByZoneChoice(zoneMapID)
+function AdventureMap_IsZoneIDBlockedByZoneChoice(mapID, zoneMapID)
 	for choiceIndex = 1, C_AdventureMap.GetNumZoneChoices() do
 		local questID, name, zoneDescription, normalizedX, normalizedY = C_AdventureMap.GetZoneChoiceInfo(choiceIndex);
 		if AdventureMap_IsQuestValid(questID, normalizedX, normalizedY) then
-			if C_AdventureMap.FindZoneAtPosition(normalizedX, normalizedY) == zoneMapID then
+			if C_MapCanvas.FindZoneAtPosition(mapID, normalizedX, normalizedY) == zoneMapID then
 				return true;
 			end
 		end
@@ -10,11 +10,11 @@ function AdventureMap_IsZoneIDBlockedByZoneChoice(zoneMapID)
 	return false;
 end
 
-function AdventureMap_IsPositionBlockedByZoneChoice(normalizedX, normalizedY, insetIndex)
+function AdventureMap_IsPositionBlockedByZoneChoice(mapID, normalizedX, normalizedY, insetIndex)
 	if not insetIndex then
-		local zoneMapID = C_AdventureMap.FindZoneAtPosition(normalizedX, normalizedY);
+		local zoneMapID = C_MapCanvas.FindZoneAtPosition(mapID, normalizedX, normalizedY);
 		if zoneMapID then
-			return AdventureMap_IsZoneIDBlockedByZoneChoice(zoneMapID);
+			return AdventureMap_IsZoneIDBlockedByZoneChoice(mapID, zoneMapID);
 		end
 	end
 	return false;

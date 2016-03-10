@@ -1,7 +1,7 @@
-AdventureMap_QuestOfferDataProviderMixin = CreateFromMixins(AdventureMapDataProviderMixin);
+AdventureMap_QuestOfferDataProviderMixin = CreateFromMixins(MapCanvasDataProviderMixin);
 
-function AdventureMap_QuestOfferDataProviderMixin:OnAdded(adventureMap)
-	AdventureMapDataProviderMixin.OnAdded(self, adventureMap);
+function AdventureMap_QuestOfferDataProviderMixin:OnAdded(mapCanvas)
+	MapCanvasDataProviderMixin.OnAdded(self, mapCanvas);
 
 	self:RegisterEvent("ADVENTURE_MAP_UPDATE_POIS");
 	self:RegisterEvent("ADVENTURE_MAP_QUEST_UPDATE");
@@ -14,9 +14,9 @@ function AdventureMap_QuestOfferDataProviderMixin:OnEvent(event, ...)
 	elseif event == "ADVENTURE_MAP_UPDATE_POIS" then
 		self:RefreshAllData();
 	elseif event == "QUEST_ACCEPTED" then
-		if self:GetAdventureMap():IsVisible() then
+		if self:GetMap():IsVisible() then
 			local questIndex, questID = ...;
-			for pin in self:GetAdventureMap():EnumeratePinsByTemplate("AdventureMap_QuestOfferPinTemplate") do
+			for pin in self:GetMap():EnumeratePinsByTemplate("AdventureMap_QuestOfferPinTemplate") do
 				if pin.questID == questID then
 					self:OnQuestAccepted(pin);
 					break;
@@ -27,8 +27,8 @@ function AdventureMap_QuestOfferDataProviderMixin:OnEvent(event, ...)
 end
 
 function AdventureMap_QuestOfferDataProviderMixin:RemoveAllData()
-	self:GetAdventureMap():RemoveAllPinsByTemplate("AdventureMap_QuestOfferPinTemplate");
-	self:GetAdventureMap():ReleaseAreaTriggers("AdventureMap_QuestOffer");
+	self:GetMap():RemoveAllPinsByTemplate("AdventureMap_QuestOfferPinTemplate");
+	self:GetMap():ReleaseAreaTriggers("AdventureMap_QuestOffer");
 
 	self.offerAreaTrigger = nil;
 	self.currentOfferPin = nil;
@@ -42,9 +42,10 @@ function AdventureMap_QuestOfferDataProviderMixin:RefreshAllData(fromOnShow)
 		return;
 	end
 
+	local mapAreaID = self:GetMap():GetMapID();
 	for offerIndex = 1, C_AdventureMap.GetNumQuestOffers() do
 		local questID, isTrivial, frequency, isLegendary, title, description, normalizedX, normalizedY, insetIndex = C_AdventureMap.GetQuestOfferInfo(offerIndex);
-		if AdventureMap_IsQuestValid(questID, normalizedX, normalizedY) and not AdventureMap_IsPositionBlockedByZoneChoice(normalizedX, normalizedY, insetIndex) then
+		if AdventureMap_IsQuestValid(mapAreaID, questID, normalizedX, normalizedY) and not AdventureMap_IsPositionBlockedByZoneChoice(mapAreaID, normalizedX, normalizedY, insetIndex) then
 			self:AddQuest(questID, isTrivial, frequency, isLegendary, title, description, normalizedX, normalizedY, insetIndex);
 		end
 	end
@@ -61,7 +62,7 @@ local function DetermineAtlas(isTrivial, frequency, isLegendary)
 end
 
 function AdventureMap_QuestOfferDataProviderMixin:AddQuest(questID, isTrivial, frequency, isLegendary, title, description, normalizedX, normalizedY, insetIndex)
-	local pin = self:GetAdventureMap():AcquirePin("AdventureMap_QuestOfferPinTemplate", self.playRevealAnims);
+	local pin = self:GetMap():AcquirePin("AdventureMap_QuestOfferPinTemplate", self.playRevealAnims);
 	pin.dataProvider = self;
 	pin.questID = questID;
 
@@ -77,7 +78,7 @@ function AdventureMap_QuestOfferDataProviderMixin:AddQuest(questID, isTrivial, f
 end
 
 function AdventureMap_QuestOfferDataProviderMixin:OnQuestAccepted(pin)
-	self:GetAdventureMap():RemovePin(pin);
+	self:GetMap():RemovePin(pin);
 end
 
 local function OnQuestPinAreaEnclosedChanged(areaTrigger, areaEnclosed)
@@ -94,19 +95,19 @@ end
 
 function AdventureMap_QuestOfferDataProviderMixin:OnQuestOfferPinClicked(pin)
 	local function OnClosedCallback(result)
-		self:GetAdventureMap():ReleaseAreaTriggers("AdventureMap_QuestOffer");
+		self:GetMap():ReleaseAreaTriggers("AdventureMap_QuestOffer");
 
 		self.offerAreaTrigger = nil;
 		self.currentOfferPin = nil;
 	end
 
-	AdventureMapQuestChoiceDialog:ShowWithQuest(self:GetAdventureMap(), pin, pin.questID, OnClosedCallback, 0);
+	AdventureMapQuestChoiceDialog:ShowWithQuest(self:GetMap(), pin, pin.questID, OnClosedCallback, 0);
 	AdventureMapQuestChoiceDialog:SetPortraitAtlas("FXAM-QuestBang", nil, nil, 0, 7);
 
 	if not self.offerAreaTrigger then
-		self.offerAreaTrigger = self:GetAdventureMap():AcquireAreaTrigger("AdventureMap_QuestOffer");
+		self.offerAreaTrigger = self:GetMap():AcquireAreaTrigger("AdventureMap_QuestOffer");
 		self.offerAreaTrigger.owner = self;
-		self:GetAdventureMap():SetAreaTriggerEnclosedCallback(self.offerAreaTrigger, OnQuestPinAreaEnclosedChanged);
+		self:GetMap():SetAreaTriggerEnclosedCallback(self.offerAreaTrigger, OnQuestPinAreaEnclosedChanged);
 	end
 
 	local normalizedX, normalizedY = pin:GetGlobalPosition();
@@ -120,14 +121,14 @@ function AdventureMap_QuestOfferDataProviderMixin:OnQuestOfferPinClicked(pin)
 end
 
 function AdventureMap_QuestOfferDataProviderMixin:OnCanvasScaleChanged()
-	AdventureMapDataProviderMixin.OnCanvasScaleChanged(self);
-	if self.currentOfferPin and self:GetAdventureMap():IsZoomingOut() then
+	MapCanvasDataProviderMixin.OnCanvasScaleChanged(self);
+	if self.currentOfferPin and self:GetMap():IsZoomingOut() then
 		AdventureMapQuestChoiceDialog:DeclineQuest(true);
 	end
 end
 
 --[[ Quest Offer Pin ]]--
-AdventureMap_QuestOfferPinMixin = CreateFromMixins(AdventureMapPinMixin);
+AdventureMap_QuestOfferPinMixin = CreateFromMixins(MapCanvasPinMixin);
 
 function AdventureMap_QuestOfferPinMixin:OnLoad()
 	self:SetAlphaStyle(AM_PIN_ALPHA_STYLE_VISIBLE_WHEN_ZOOMED_IN);

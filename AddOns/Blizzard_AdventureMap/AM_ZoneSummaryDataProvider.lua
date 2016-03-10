@@ -1,7 +1,7 @@
-AdventureMap_ZoneSummaryProviderMixin = CreateFromMixins(AdventureMapDataProviderMixin);
+AdventureMap_ZoneSummaryProviderMixin = CreateFromMixins(MapCanvasDataProviderMixin);
 
-function AdventureMap_ZoneSummaryProviderMixin:OnAdded(adventureMap)
-	AdventureMapDataProviderMixin.OnAdded(self, adventureMap);
+function AdventureMap_ZoneSummaryProviderMixin:OnAdded(mapCanvas)
+	MapCanvasDataProviderMixin.OnAdded(self, mapCanvas);
 
 	self:RegisterEvent("ADVENTURE_MAP_UPDATE_POIS");
 	self:RegisterEvent("ADVENTURE_MAP_QUEST_UPDATE");
@@ -16,8 +16,8 @@ function AdventureMap_ZoneSummaryProviderMixin:OnEvent(event, ...)
 end
 
 function AdventureMap_ZoneSummaryProviderMixin:RemoveAllData()
-	self:GetAdventureMap():RemoveAllPinsByTemplate("AdventureMap_ZoneSummaryPinTemplate");
-	self:GetAdventureMap():RemoveAllPinsByTemplate("AdventureMap_ZoneSummaryInsetPinTemplate");
+	self:GetMap():RemoveAllPinsByTemplate("AdventureMap_ZoneSummaryPinTemplate");
+	self:GetMap():RemoveAllPinsByTemplate("AdventureMap_ZoneSummaryInsetPinTemplate");
 end
 
 function AdventureMap_ZoneSummaryProviderMixin:RefreshAllData(fromOnShow)
@@ -32,8 +32,9 @@ function AdventureMap_ZoneSummaryProviderMixin:RefreshAllData(fromOnShow)
 	self:GatherQuests();
 	self:GatherMissions();
 
-	for zoneIndex = 1, C_AdventureMap.GetNumZones() do
-		local zoneMapID, zoneName, left, right, top, bottom = C_AdventureMap.GetZoneInfo(zoneIndex);
+	local mapAreaID = self:GetMap():GetMapID();
+	for zoneIndex = 1, C_MapCanvas.GetNumZones(mapAreaID) do
+		local zoneMapID, zoneName, left, right, top, bottom = C_MapCanvas.GetZoneInfo(mapAreaID, zoneIndex);
 		if self.questsByZone[zoneMapID] or self.missionsByZone[zoneMapID] then
 			local centerX = left + (right - left) * .5;
 			local centerY = top + (bottom - top) * .35;
@@ -43,16 +44,16 @@ function AdventureMap_ZoneSummaryProviderMixin:RefreshAllData(fromOnShow)
 	end
 
 	for insetIndex, quests in pairs(self.questsByInset) do
-		local mapID, title, description, collapsedIcon, numDetailTiles, normalizedX, normalizedY = C_AdventureMap.GetMapInsetInfo(insetIndex);
+		local mapID, title, description, collapsedIcon, areaTableID, numDetailTiles, normalizedX, normalizedY = C_AdventureMap.GetMapInsetInfo(insetIndex);
 		self:AddInsetSummaryPin(insetIndex, title, description, normalizedX, normalizedY, quests, nil);
 	end
 
 	self.playRevealAnims = false;
 end
 
-local function TryAddItem(container, x, y, item)
-	local zoneMapID = C_AdventureMap.FindZoneAtPosition(x, y);
-	if zoneMapID and not AdventureMap_IsZoneIDBlockedByZoneChoice(zoneMapID) then
+local function TryAddItem(mapID, container, x, y, item)
+	local zoneMapID = C_MapCanvas.FindZoneAtPosition(mapID, x, y);
+	if zoneMapID and not AdventureMap_IsZoneIDBlockedByZoneChoice(mapID, zoneMapID) then
 		if not container[zoneMapID] then
 			container[zoneMapID] = {}
 		end
@@ -64,6 +65,7 @@ function AdventureMap_ZoneSummaryProviderMixin:GatherQuests()
 	self.questsByZone = {};
 	self.questsByInset = {};
 
+	local mapAreaID = self:GetMap():GetMapID();
 	for offerIndex = 1, C_AdventureMap.GetNumQuestOffers() do
 		local questID, isTrivial, frequency, isLegendary, title, description, normalizedX, normalizedY, insetIndex = C_AdventureMap.GetQuestOfferInfo(offerIndex);
 		if AdventureMap_IsQuestValid(questID, normalizedX, normalizedY) then
@@ -73,7 +75,7 @@ function AdventureMap_ZoneSummaryProviderMixin:GatherQuests()
 				end
 				table.insert(self.questsByInset[insetIndex], questID);
 			else
-				TryAddItem(self.questsByZone, normalizedX, normalizedY, questID);
+				TryAddItem(mapAreaID, self.questsByZone, normalizedX, normalizedY, questID);
 			end
 		end
 	end
@@ -81,24 +83,24 @@ end
 
 function AdventureMap_ZoneSummaryProviderMixin:GatherMissions()
 	self.missionsByZone = {};
-
+	local mapAreaID = self:GetMap():GetMapID();
 	local currentMissions = C_Garrison.GetAvailableMissions(nil, LE_FOLLOWER_TYPE_GARRISON_7_0);
 	if currentMissions then
 		for i, missionInfo in pairs(currentMissions) do
-			TryAddItem(self.missionsByZone, missionInfo.mapPosX, missionInfo.mapPosY, missionInfo);
+			TryAddItem(mapAreaID, self.missionsByZone, missionInfo.mapPosX, missionInfo.mapPosY, missionInfo);
 		end
 	end
 
 	local inProgressMissions = C_Garrison.GetInProgressMissions(LE_FOLLOWER_TYPE_GARRISON_7_0);
 	if inProgressMissions then
 		for i, missionInfo in pairs(inProgressMissions) do
-			TryAddItem(self.missionsByZone, missionInfo.mapPosX, missionInfo.mapPosY, missionInfo);
+			TryAddItem(mapAreaID, self.missionsByZone, missionInfo.mapPosX, missionInfo.mapPosY, missionInfo);
 		end
 	end
 end
 
 function AdventureMap_ZoneSummaryProviderMixin:AddSummaryPin(zoneName, centerX, centerY, quests, missions)
-	local pin = self:GetAdventureMap():AcquirePin("AdventureMap_ZoneSummaryPinTemplate", self.playRevealAnims);
+	local pin = self:GetMap():AcquirePin("AdventureMap_ZoneSummaryPinTemplate", self.playRevealAnims);
 	pin.Text:SetText(zoneName);
 	pin.title = zoneName;
 	pin.quests = quests;
@@ -108,7 +110,7 @@ function AdventureMap_ZoneSummaryProviderMixin:AddSummaryPin(zoneName, centerX, 
 end
 
 function AdventureMap_ZoneSummaryProviderMixin:AddInsetSummaryPin(mapInsetIndex, title, description, centerX, centerY, quests, missions)
-	local pin = self:GetAdventureMap():AcquirePin("AdventureMap_ZoneSummaryInsetPinTemplate", self.playRevealAnims);
+	local pin = self:GetMap():AcquirePin("AdventureMap_ZoneSummaryInsetPinTemplate", self.playRevealAnims);
 	pin.mapInsetIndex = mapInsetIndex;
 	pin.title = title;
 	pin.description = description;
@@ -116,11 +118,11 @@ function AdventureMap_ZoneSummaryProviderMixin:AddInsetSummaryPin(mapInsetIndex,
 	pin.quests = quests;
 	pin.missions = missions;
 	pin:SetPosition(centerX, centerY);
-	pin:SetShown(not self:GetAdventureMap():IsMapInsetExpanded(mapInsetIndex));
+	pin:SetShown(not self:GetMap():IsMapInsetExpanded(mapInsetIndex));
 end
 
 --[[ Zone Summary Pin ]]--
-AdventureMap_ZoneSummaryPinMixin = CreateFromMixins(AdventureMapPinMixin);
+AdventureMap_ZoneSummaryPinMixin = CreateFromMixins(MapCanvasPinMixin);
 
 function AdventureMap_ZoneSummaryPinMixin:OnLoad()
 	self:SetAlphaStyle(AM_PIN_ALPHA_STYLE_VISIBLE_WHEN_ZOOMED_OUT);
@@ -172,7 +174,7 @@ end
 function AdventureMap_ZoneSummaryInsetPinMixin:OnCanvasScaleChanged()
 	AdventureMap_ZoneSummaryPinMixin.OnCanvasScaleChanged(self);
 
-	self:SetScale(1.0 / self:GetAdventureMap():GetCanvasScale());
+	self:SetScale(1.0 / self:GetMap():GetCanvasScale());
 	self:ApplyCurrentPosition();
 end
 

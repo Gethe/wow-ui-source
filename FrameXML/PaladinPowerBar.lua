@@ -4,11 +4,10 @@ PALADINPOWERBAR_SHOW_LEVEL = 9;
 PaladinPowerBar = {};
 
 function PaladinPowerBar:OnLoad()
-	self.tooltipTitle = HOLY_POWER;
-	self.tooltip = HOLY_POWER_TOOLTIP;
+	self:SetTooltip(HOLY_POWER, HOLY_POWER_TOOLTIP);
+	self:SetPowerTokens("HOLY_POWER");
 	self.class = "PALADIN";
 	self.spec = SPEC_PALADIN_RETRIBUTION;
-	self.powerTokens = {"HOLY_POWER"};
 	
 	self.glow:SetAlpha(0);
 	self.rune1:SetAlpha(0);

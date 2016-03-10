@@ -132,9 +132,9 @@ function GarrisonBuildingFrame_OnLoad(self)
 	self.FollowerList:Initialize(LE_FOLLOWER_TYPE_GARRISON_6_0);
 	local buttons = self.FollowerList.listScroll.buttons
 	for i = 1, #buttons do
-		buttons[i]:SetScript("OnClick", GarrisonBuildingFollowerButton_OnClick);
-		buttons[i]:SetScript("OnEnter", GarrisonBuildingFollowerButton_OnEnter);
-		buttons[i]:SetScript("OnLeave", GarrisonBuildingFollowerButton_OnLeave);
+		buttons[i].champion:SetScript("OnClick", GarrisonBuildingFollowerButton_OnClick);
+		buttons[i].champion:SetScript("OnEnter", GarrisonBuildingFollowerButton_OnEnter);
+		buttons[i].champion:SetScript("OnLeave", GarrisonBuildingFollowerButton_OnLeave);
 	end
 	
 	GarrisonBuildingFrame.SPEC_CHANGE_CURRENCY, GarrisonBuildingFrame.SPEC_CHANGE_COST = C_Garrison.GetSpecChangeCost();
@@ -847,6 +847,7 @@ function GarrisonFollowerTooltipShow(self, followerID, garrFollowerID)
 		C_Garrison.GetFollowerXP(followerID),
 		C_Garrison.GetFollowerLevelXP(followerID),
 		C_Garrison.GetFollowerItemLevelAverage(followerID), 
+		C_Garrison.GetFollowerSpecializationAtIndex(followerID, 1),
 		C_Garrison.GetFollowerAbilityAtIndex(followerID, 1),
 		C_Garrison.GetFollowerAbilityAtIndex(followerID, 2),
 		C_Garrison.GetFollowerAbilityAtIndex(followerID, 3),
@@ -1037,8 +1038,12 @@ function GarrisonBuildingFollowerButton_OnClick(self, button)
 	PlaySound("UI_Garrison_CommandTable_SelectFollower");
 end
 
+function GarrisonBuildingFollowerButton_GetFollowerList(self)
+	return self:GetParent():GetParent():GetParent():GetParent().followers;
+end
+
 function GarrisonBuildingFollowerButton_OnEnter(self, button)
-	local followers = self:GetParent():GetParent():GetParent().followers;
+	local followers = GarrisonBuildingFollowerButton_GetFollowerList(self);
 	for i = 1, #followers do
 		if ( followers[i].followerID == self.id ) then
 			GarrisonFollowerTooltipShow(self, self.id, followers[i].garrFollowerID);

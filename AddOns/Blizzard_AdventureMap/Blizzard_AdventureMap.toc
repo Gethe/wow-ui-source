@@ -2,12 +2,11 @@
 ## Title: Blizzard Adventure Map UI
 ## Secure: 1
 ## Author: Blizzard Entertainment
-## RequiredDep: Blizzard_GarrisonTemplates
+## RequiredDep: Blizzard_GarrisonTemplates, Blizzard_MapCanvas
 ## LoadOnDemand: 1
 
 Blizzard_AdventureMapUtils.lua
 
-AM_DataProviderBase.lua
 AM_ZoneLabelDataProvider.xml
 AM_ZoneSummaryDataProvider.xml
 AM_QuestDialog.xml

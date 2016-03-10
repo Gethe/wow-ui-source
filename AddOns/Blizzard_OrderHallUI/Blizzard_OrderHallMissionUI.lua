@@ -1,17 +1,4 @@
 ---------------------------------------------------------------------------------
--- Display Options
----------------------------------------------------------------------------------
-
-GarrisonFollowerOptions[LE_FOLLOWER_TYPE_GARRISON_7_0] = {
-	displayCounterAbilityInPlaceOfMechanic = true,
-	useAbilityTooltipStyleWithoutCounters = true,
-	hideCountersInAbilityFrame = true,
-	showILevelOnFollower = true,
-	showCategoriesInFollowerList = true,
-}
-
-
----------------------------------------------------------------------------------
 -- Order Hall Mission Frame
 ---------------------------------------------------------------------------------
 
@@ -26,7 +13,6 @@ function OrderHallMission:OnLoad()
 end
 
 function OrderHallMission:OnShow()
-	SetMissionFrame(self);
 	self:OnShowMainFrame();
 	AdventureMapMixin.OnShow(self.MissionTab);
 
@@ -36,7 +22,6 @@ end
 function OrderHallMission:OnHide()
 	self:OnHideMainFrame();
 	AdventureMapMixin.OnHide(self.MissionTab);
-	SetMissionFrame(nil);
 
 	self.abilityCountersForMechanicTypes = nil;
 end
@@ -83,7 +68,7 @@ end
 
 function OrderHallMission:OnClickMission(missionInfo)
 	self.MissionTab.isZoneSupport = missionInfo.isZoneSupport;
-	GarrisonFollowerMission.OnClickMission(self, missionInfo);
+	return GarrisonFollowerMission.OnClickMission(self, missionInfo);
 end
 
 function OrderHallMission:CloseMission()
@@ -247,6 +232,10 @@ end
 function OrderHallMissionAdventureMapMixin:OnHide()
 end
 
+function OrderHallMissionAdventureMapMixin:OnLoad()
+	AdventureMapMixin.OnLoad(self);
+	self.ScrollContainer:SetScalingMode("SCALING_MODE_LINEAR");
+end
 
 ---------------------------------------------------------------------------------
 -- Order Hall Follower Page
@@ -255,14 +244,7 @@ end
 OrderHallFollowerTabMixin = { }
 
 function OrderHallFollowerTabMixin:IsSpecializationAbility(followerInfo, ability)
-	if (followerInfo.isTroop) then
-		return false;
-	end
-	if (followerInfo.abilities[1] ~= nil and followerInfo.abilities[1] == ability) then
-		return true;
-	end
-
-	return false;
+	return ability.isSpecialization;
 end
 
 function OrderHallFollowerTabMixin:IsEquipmentAbility(followerInfo, ability)
@@ -282,7 +264,6 @@ end
 
 function OrderHallFollowerTabMixin:UpdateValidSpellHighlight(followerID, followerInfo, hideCounters)
 	GarrisonFollowerTabMixin.UpdateValidSpellHighlight(self, followerID, followerInfo, hideCounters);
-	self:UpdateValidSpellHighlightOnAbilityFrame(self.AbilitiesFrame.Specialization, followerID, followerInfo, hideCounters);
 	for i=1, #self.AbilitiesFrame.Equipment do
 		self:UpdateValidSpellHighlightOnEquipmentFrame(self.AbilitiesFrame.Equipment[i], followerID, followerInfo, true);
 	end
@@ -366,9 +347,7 @@ function OrderHallFollowerTabMixin:ShowFollower(followerID, followerList)
 		local ability = followerInfo.abilities[i];
 
 		local abilityFrame;
-		if (self:IsSpecializationAbility(followerInfo, ability)) then
-			abilityFrame = self.AbilitiesFrame.Specialization;
-		elseif (self:IsEquipmentAbility(followerInfo, ability)) then
+		if (self:IsEquipmentAbility(followerInfo, ability)) then
 			numEquipment = numEquipment + 1;
 			abilityFrame = self.AbilitiesFrame.Equipment[numEquipment];
 		else
@@ -383,6 +362,7 @@ function OrderHallFollowerTabMixin:ShowFollower(followerID, followerList)
 		end
 
 		abilityFrame.followerTypeID = followerInfo.followerTypeID;
+		abilityFrame.isSpecialization = self:IsSpecializationAbility(followerInfo, ability);
 
 		if ( self:IsEquipmentAbility(followerInfo, ability) ) then
 			abilityFrame.abilityID = ability.id;
@@ -496,12 +476,7 @@ function OrderHallFollowerTabMixin:ShowFollower(followerID, followerList)
 	followerList:UpdateValidSpellHighlight(followerID, followerInfo);
 
 	-- Specialization Ability
-	self.AbilitiesFrame.Specialization:SetShown(lastSpecializationAnchor ~= nil);
 	self.AbilitiesFrame.SpecializationLabel:SetShown(lastSpecializationAnchor ~= nil);
-
-	if ( lastSpecializationAnchor ) then
-		self.AbilitiesFrame.Specialization:SetPoint("TOP", self.AbilitiesText, "BOTTOM");
-	end
 
 	-- Abilities
 	self.AbilitiesFrame.AbilitiesText:SetShown( lastAbilityAnchor ~= nil);

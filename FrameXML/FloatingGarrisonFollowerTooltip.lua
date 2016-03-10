@@ -3,7 +3,7 @@ GARRISON_FOLLOWER_TOOLTIP_FULL_XP_WIDTH = 180;
 -------------------------------------------
 local GARRISON_FOLLOWER_FLOATING_TOOLTIP = {};
 
-function FloatingGarrisonFollower_Toggle(garrisonFollowerID, quality, level, itemLevel, ability1, ability2, ability3, ability4, trait1, trait2, trait3, trait4)
+function FloatingGarrisonFollower_Toggle(garrisonFollowerID, quality, level, itemLevel, spec1, ability1, ability2, ability3, ability4, trait1, trait2, trait3, trait4)
 	local followerTypeID = C_Garrison.GetFollowerTypeByID(garrisonFollowerID);
 	local floatingTooltip = FloatingGarrisonFollowerTooltip;
 	if (followerTypeID == LE_FOLLOWER_TYPE_SHIPYARD_6_2) then
@@ -13,11 +13,11 @@ function FloatingGarrisonFollower_Toggle(garrisonFollowerID, quality, level, ite
 		floatingTooltip.garrisonFollowerID == garrisonFollowerID) then
 		floatingTooltip:Hide();
 	else
-		FloatingGarrisonFollower_Show(floatingTooltip, garrisonFollowerID, followerTypeID, quality, level, itemLevel, ability1, ability2, ability3, ability4, trait1, trait2, trait3, trait4);
+		FloatingGarrisonFollower_Show(floatingTooltip, garrisonFollowerID, followerTypeID, quality, level, itemLevel, spec1, ability1, ability2, ability3, ability4, trait1, trait2, trait3, trait4);
 	end
 end
 
-function FloatingGarrisonFollower_Show(floatingTooltip, garrisonFollowerID, followerTypeID, quality, level, itemLevel, ability1, ability2, ability3, ability4, trait1, trait2, trait3, trait4)
+function FloatingGarrisonFollower_Show(floatingTooltip, garrisonFollowerID, followerTypeID, quality, level, itemLevel, spec1, ability1, ability2, ability3, ability4, trait1, trait2, trait3, trait4)
 	if (garrisonFollowerID and garrisonFollowerID > 0) then
 		GARRISON_FOLLOWER_FLOATING_TOOLTIP.garrisonFollowerID = garrisonFollowerID;
 		GARRISON_FOLLOWER_FLOATING_TOOLTIP.followerTypeID = followerTypeID;
@@ -31,7 +31,8 @@ function FloatingGarrisonFollower_Show(floatingTooltip, garrisonFollowerID, foll
 		GARRISON_FOLLOWER_FLOATING_TOOLTIP.level = level;
 		GARRISON_FOLLOWER_FLOATING_TOOLTIP.xp = 0;
 		GARRISON_FOLLOWER_FLOATING_TOOLTIP.levelxp = 0;
-		GARRISON_FOLLOWER_FLOATING_TOOLTIP.itemLevel = itemLevel;
+		GARRISON_FOLLOWER_FLOATING_TOOLTIP.iLevel = itemLevel;
+		GARRISON_FOLLOWER_FLOATING_TOOLTIP.spec1 = spec1;
 		GARRISON_FOLLOWER_FLOATING_TOOLTIP.ability1 = ability1;
 		GARRISON_FOLLOWER_FLOATING_TOOLTIP.ability2 = ability2;
 		GARRISON_FOLLOWER_FLOATING_TOOLTIP.ability3 = ability3;
@@ -40,6 +41,7 @@ function FloatingGarrisonFollower_Show(floatingTooltip, garrisonFollowerID, foll
 		GARRISON_FOLLOWER_FLOATING_TOOLTIP.trait2 = trait2;
 		GARRISON_FOLLOWER_FLOATING_TOOLTIP.trait3 = trait3;
 		GARRISON_FOLLOWER_FLOATING_TOOLTIP.trait4 = trait4;
+		GARRISON_FOLLOWER_FLOATING_TOOLTIP.isTroop = C_Garrison.GetFollowerIsTroopByID(garrisonFollowerID);
 		
 		if (followerTypeID == LE_FOLLOWER_TYPE_SHIPYARD_6_2) then
 			GarrisonFollowerTooltipTemplate_SetShipyardFollower(floatingTooltip, GARRISON_FOLLOWER_FLOATING_TOOLTIP);
@@ -59,14 +61,8 @@ function GarrisonFollowerTooltipTemplate_SetGarrisonFollower(tooltipFrame, data,
 	tooltipFrame.garrisonFollowerID = data.garrisonFollowerID;
 	tooltipFrame.name = data.name;
 	tooltipFrame.Name:SetText(data.name);
-	tooltipFrame.ILevel:SetFormattedText(GARRISON_FOLLOWER_ITEM_LEVEL, data.itemLevel);
-	if (GarrisonFollowerOptions[data.followerTypeID].showILevelOnFollower) then
-		tooltipFrame.PortraitFrame:SetILevel(data.itemLevel);
-	else
-		tooltipFrame.PortraitFrame:SetLevel(data.level);
-	end
-	tooltipFrame.PortraitFrame:SetPortraitIcon(data.portraitIconID);
-	tooltipFrame.PortraitFrame:SetQuality(data.quality);
+	tooltipFrame.ILevel:SetFormattedText(GARRISON_FOLLOWER_ITEM_LEVEL, data.iLevel);
+	tooltipFrame.PortraitFrame:SetupPortrait(data, false);
 	if ( data.spec ) then
 		local classSpecName = C_Garrison.GetFollowerClassSpecName(data.garrisonFollowerID);
 		tooltipFrame.ClassSpecName:SetText(classSpecName);
@@ -110,6 +106,7 @@ function GarrisonFollowerTooltipTemplate_SetGarrisonFollower(tooltipFrame, data,
 
 	local abilities = {data.ability1, data.ability2, data.ability3, data.ability4};
 	local traits = {data.trait1, data.trait2, data.trait3, data.trait4};
+	local specializations = {data.spec1};
 
 	local validAbilities = GarrisonFollowerTooltipTemplate_GetValidAbilities(abilities);
 	local abilityCount = #validAbilities;
@@ -119,6 +116,9 @@ function GarrisonFollowerTooltipTemplate_SetGarrisonFollower(tooltipFrame, data,
 	if (data.trait2 ~= 0 and data.trait2 ~= nil) then traitCount = traitCount + 1 end;
 	if (data.trait3 ~= 0 and data.trait3 ~= nil) then traitCount = traitCount + 1 end;
 	if (data.trait4 ~= 0 and data.trait4 ~= nil) then traitCount = traitCount + 1 end;
+
+	local validSpecializations = GarrisonFollowerTooltipTemplate_GetValidAbilities(specializations);
+	local specializationCount = #validSpecializations;
 
 	local detailed = not data.noAbilityDescriptions;
 	
@@ -145,24 +145,25 @@ function GarrisonFollowerTooltipTemplate_SetGarrisonFollower(tooltipFrame, data,
 		tooltipFrame.AbilitiesLabel:SetPoint("TOPLEFT", 15, -85);
 	end	
 	
-	if abilityCount > 0 then 
-		tooltipFrameHeight = tooltipFrameHeight + tooltipFrame.AbilitiesLabel:GetHeight() + abilityOffset;
-		tooltipFrame.AbilitiesLabel:Show();
+	if specializationCount > 0 then
+		tooltipFrame.SpecializationLabel:SetPoint("TOPLEFT", tooltipFrame, "TOPLEFT", 15, -tooltipFrameHeightBase -5);
+		tooltipFrameHeight = tooltipFrameHeight + tooltipFrame.SpecializationLabel:GetHeight() + abilityOffset;
+		tooltipFrame.SpecializationLabel:Show();
 	else
-		tooltipFrame.AbilitiesLabel:Hide();
+		tooltipFrame.SpecializationLabel:Hide();
 	end
-	
+
 	for i = 1, #tooltipFrame.Abilities do
 		tooltipFrame.Abilities[i]:Hide();
 	end
 
-	for i=1, abilityCount do
+	for i=1, specializationCount do
 		if (not tooltipFrame.Abilities[i]) then
 			tooltipFrame.Abilities[i] = CreateFrame("Frame", nil, tooltipFrame, abilityTemplate);
 		end		
 
 		if i == 1 then
-			tooltipFrame.Abilities[i]:SetPoint("TOPLEFT", tooltipFrame.AbilitiesLabel, "BOTTOMLEFT", 0, -spacingBetweenLabelAndFirstAbility);
+			tooltipFrame.Abilities[i]:SetPoint("TOPLEFT", tooltipFrame.SpecializationLabel, "BOTTOMLEFT", 0, -spacingBetweenLabelAndFirstAbility);
 			tooltipFrameHeight = tooltipFrameHeight + spacingBetweenLabelAndFirstAbility;
 		else
 			tooltipFrame.Abilities[i]:SetPoint("TOPLEFT", tooltipFrame.Abilities[i-1], "BOTTOMLEFT", 0, -abilityOffset);
@@ -170,14 +171,47 @@ function GarrisonFollowerTooltipTemplate_SetGarrisonFollower(tooltipFrame, data,
 		end
 				
 		local Ability = tooltipFrame.Abilities[i];
-		GarrisonFollowerTooltipTemplate_SetAbility(Ability, validAbilities[i], detailed);
+		GarrisonFollowerTooltipTemplate_SetAbility(Ability, validSpecializations[i], detailed, data.followerTypeID);
+		Ability.CounterIconBorder:SetAtlas("GarrMission_EncounterAbilityBorder-Lg");
+		tooltipFrameHeight = tooltipFrameHeight + Ability:GetHeight();
+	end
+
+	if abilityCount > 0 then 
+		if specializationCount > 0 then
+			tooltipFrame.AbilitiesLabel:SetPoint("TOPLEFT", tooltipFrame.Abilities[specializationCount], "BOTTOMLEFT", 0, -abilityOffset);
+		else
+			tooltipFrame.AbilitiesLabel:SetPoint("TOPLEFT", tooltipFrame, "TOPLEFT", 15, -tooltipFrameHeightBase -5);
+		end
+
+		tooltipFrameHeight = tooltipFrameHeight + tooltipFrame.AbilitiesLabel:GetHeight() + abilityOffset;
+		tooltipFrame.AbilitiesLabel:Show();
+	else
+		tooltipFrame.AbilitiesLabel:Hide();
+	end
+	
+	for abilityIndex=1, abilityCount do
+		local effectiveAbilityIndex = abilityIndex + specializationCount;
+		if (not tooltipFrame.Abilities[effectiveAbilityIndex]) then
+			tooltipFrame.Abilities[effectiveAbilityIndex] = CreateFrame("Frame", nil, tooltipFrame, abilityTemplate);
+		end		
+
+		if abilityIndex == 1 then
+			tooltipFrame.Abilities[effectiveAbilityIndex]:SetPoint("TOPLEFT", tooltipFrame.AbilitiesLabel, "BOTTOMLEFT", 0, -spacingBetweenLabelAndFirstAbility);
+			tooltipFrameHeight = tooltipFrameHeight + spacingBetweenLabelAndFirstAbility;
+		else
+			tooltipFrame.Abilities[effectiveAbilityIndex]:SetPoint("TOPLEFT", tooltipFrame.Abilities[effectiveAbilityIndex-1], "BOTTOMLEFT", 0, -abilityOffset);
+			tooltipFrameHeight = tooltipFrameHeight + abilityOffset;
+		end
+				
+		local Ability = tooltipFrame.Abilities[effectiveAbilityIndex];
+		GarrisonFollowerTooltipTemplate_SetAbility(Ability, validAbilities[abilityIndex], detailed, data.followerTypeID);
 		Ability.CounterIconBorder:SetAtlas("GarrMission_EncounterAbilityBorder-Lg");
 		tooltipFrameHeight = tooltipFrameHeight + Ability:GetHeight();
 	end
 		
 	if traitCount > 0 then 
-		if abilityCount > 0 then
-			tooltipFrame.TraitsLabel:SetPoint("TOPLEFT", tooltipFrame.Abilities[abilityCount], "BOTTOMLEFT", 0, -abilityOffset);
+		if (abilityCount + specializationCount) > 0 then
+			tooltipFrame.TraitsLabel:SetPoint("TOPLEFT", tooltipFrame.Abilities[abilityCount + specializationCount], "BOTTOMLEFT", 0, -abilityOffset);
 		else
 			tooltipFrame.TraitsLabel:SetPoint("TOPLEFT", tooltipFrame, "TOPLEFT", 15, -tooltipFrameHeightBase -5);
 		end
@@ -345,7 +379,7 @@ function GarrisonFollowerTooltipTemplate_SetShipyardFollower(tooltipFrame, data,
 		if (i == 1) then
 			property:SetPoint("TOPLEFT", bottomWidget, "BOTTOMLEFT", 2, -10);
 		end
-		GarrisonFollowerTooltipTemplate_SetAbility(property, validProperties[i], detailed);
+		GarrisonFollowerTooltipTemplate_SetAbility(property, validProperties[i], detailed, data.followerTypeID);
 		tooltipFrameHeight = tooltipFrameHeight + abilityOffset;
 		tooltipFrameHeight = tooltipFrameHeight + property:GetHeight();
 		
@@ -374,7 +408,7 @@ function GarrisonFollowerTooltipTemplate_GetValidAbilities(abilities)
 	return validAbilities;
 end
 
-function GarrisonFollowerTooltipTemplate_SetAbility(Ability, ability, detailed)
+function GarrisonFollowerTooltipTemplate_SetAbility(Ability, ability, detailed, followerTypeID)
 	Ability.Name:SetText(ability.name);
 	Ability.Icon:SetTexture(ability.icon);
 	Ability:SetHeight(Ability.Name:GetHeight() + 10);	-- ability frame height w/ no description/details being displayed
@@ -394,7 +428,7 @@ function GarrisonFollowerTooltipTemplate_SetAbility(Ability, ability, detailed)
 		Ability.Description:Show();
 		Ability:SetHeight(Ability:GetHeight() + Ability.Description:GetHeight() + spacingBetweenNameAndDescription);
 		local abilityCounterMechanicID, abilityCounterMechanicName, abilityCounterMechanicIcon = C_Garrison.GetFollowerAbilityCounterMechanicInfo(ability.abilityID);
-		if (abilityCounterMechanicName and abilityCounterMechanicIcon) then
+		if (abilityCounterMechanicName and abilityCounterMechanicIcon and not GarrisonFollowerOptions[followerTypeID].hideCountersInAbilityFrame) then
 			Ability.Details:SetFormattedText(GARRISON_ABILITY_COUNTERS_FORMAT, abilityCounterMechanicName);
 			Ability.Details:Show();
 			Ability:SetHeight(Ability:GetHeight() + Ability.Details:GetHeight() + spacingBetweenDescriptionAndDetails);

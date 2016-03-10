@@ -146,14 +146,11 @@ PAPERDOLL_STATINFO = {
 	["MASTERY"] = {
 		updateFunc = function(statFrame, unit) PaperDollFrame_SetMastery(statFrame, unit); end
 	},
-	["BONUS_ARMOR"] = {
-		updateFunc = function(statFrame, unit) PaperDollFrame_SetBonusArmor(statFrame, unit); end
+	["VERSATILITY"] = {
+		updateFunc = function(statFrame, unit) PaperDollFrame_SetVersatility(statFrame, unit); end
 	},
 	["LIFESTEAL"] = {
 		updateFunc = function(statFrame, unit) PaperDollFrame_SetLifesteal(statFrame, unit); end
-	},
-	["VERSATILITY"] = {
-		updateFunc = function(statFrame, unit) PaperDollFrame_SetVersatility(statFrame, unit); end
 	},
 	["AVOIDANCE"] = {
 		updateFunc = function(statFrame, unit) PaperDollFrame_SetAvoidance(statFrame, unit); end
@@ -231,9 +228,8 @@ PAPERDOLL_STATCATEGORIES = {
 			"CRITCHANCE",
 			"HASTE",
 			"MASTERY",
-			"BONUS_ARMOR",
-			"LIFESTEAL",
 			"VERSATILITY",
+			"LIFESTEAL",
 			"AVOIDANCE",
 		}
 	},
@@ -616,6 +612,11 @@ function PaperDollFrame_SetAlternateMana(statFrame, unit)
 end
 
 function PaperDollFrame_SetStat(statFrame, unit, statIndex)
+	if (unit ~= "player") then
+		statFrame:Hide();
+		return;
+	end
+
 	local label = _G[statFrame:GetName().."Label"];
 	local text = _G[statFrame:GetName().."StatText"];
 	local stat;
@@ -714,25 +715,6 @@ function PaperDollFrame_SetStat(statFrame, unit, statIndex)
 				statFrame.tooltip2 = STAT_NO_BENEFIT_TOOLTIP;
 			end
 		end
-	elseif (unit == "pet") then
-		if ( statIndex == LE_UNIT_STAT_STRENGTH ) then
-			local attackPower = BreakUpLargeNumbers(effectiveStat);
-			statFrame.tooltip2 = format(statFrame.tooltip2, attackPower);
-		elseif ( statIndex == LE_UNIT_STAT_AGILITY ) then
-			statFrame.tooltip2 = format(statFrame.tooltip2, -1000);			-- THIS IS BROKEN, fixme
-		elseif ( statIndex == LE_UNIT_STAT_STAMINA ) then
-			local expectedHealthGain = (((stat - posBuff - negBuff))*CREATURE_HP_PER_STA)*GetUnitHealthModifier("pet");
-			local realHealthGain = (effectiveStat*CREATURE_HP_PER_STA)*GetUnitHealthModifier("pet");
-			local healthGain = BreakUpLargeNumbers((realHealthGain - expectedHealthGain)*GetUnitMaxHealthModifier("pet"));
-			statFrame.tooltip2 = format(statFrame.tooltip2, healthGain);
-		elseif ( statIndex == LE_UNIT_STAT_INTELLECT ) then
-			if ( UnitHasMana("pet") ) then
-				local manaGain = BreakUpLargeNumbers((effectiveStat*15)*GetUnitPowerModifier("pet"));
-				statFrame.tooltip2 = format(statFrame.tooltip2, manaGain);	 -- THIS IS BROKEN, fixme
-			else
-				statFrame.tooltip2 = nil;
-			end
-		end
 	end
 	statFrame:Show();
 end
@@ -774,31 +756,6 @@ function PaperDollFrame_SetArmor(statFrame, unit)
 		if( petBonus > 0 ) then
 			statFrame.tooltip2 = statFrame.tooltip2 .. "\n" .. format(PET_BONUS_TOOLTIP_ARMOR, petBonus);
 		end
-	end
-	
-	statFrame:SetScript("OnEnter", CharacterArmor_OnEnter);
-	statFrame:Show();
-end
-
-function PaperDollFrame_SetBonusArmor(statFrame, unit)
-	local _, effectiveArmor, _, posBuff, negBuff = UnitArmor(unit);
-	_G[statFrame:GetName().."Label"]:SetText(format(STAT_FORMAT, ARMOR));
-	local text = _G[statFrame:GetName().."StatText"];
-
-	local bonusArmor, isNegatedForSpec = UnitBonusArmor(unit);
-
-	PaperDollFrame_SetLabelAndText(statFrame, STAT_BONUS_ARMOR, bonusArmor, false);
-	local armorReduction = PaperDollFrame_GetArmorReduction(effectiveArmor, UnitEffectiveLevel(unit));
-	statFrame.tooltip = HIGHLIGHT_FONT_COLOR_CODE..format(PAPERDOLLFRAME_TOOLTIP_FORMAT, BONUS_ARMOR).." "..string.format("%s", bonusArmor)..FONT_COLOR_CODE_CLOSE;
-
-	local hasAura, percent = GetBladedArmorEffect();
-
-	if (hasAura) then
-		statFrame.tooltip2 = format(STAT_ARMOR_BONUS_ARMOR_BLADED_ARMOR_TOOLTIP, armorReduction, (bonusArmor * (percent / 100)));
-	elseif (not isNegatedForSpec) then
-		statFrame.tooltip2 = format(STAT_ARMOR_TOTAL_TOOLTIP, armorReduction);
-	else
-		statFrame.tooltip2 = STAT_NO_BENEFIT_TOOLTIP;
 	end
 	
 	statFrame:SetScript("OnEnter", CharacterArmor_OnEnter);

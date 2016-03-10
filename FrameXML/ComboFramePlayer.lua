@@ -7,7 +7,7 @@ function ComboPointPowerBar:OnLoad()
 	end
 	
 	self.class = "ROGUE";
-	self.powerTokens = {"COMBO_POINTS"};
+	self:SetPowerTokens("COMBO_POINTS");
 	
 	for i = 1, #self.ComboPoints do
 		self.ComboPoints[i].on = false;
@@ -27,7 +27,6 @@ function ComboPointPowerBar:OnEvent(event, arg1, arg2)
 		ClassPowerBar.OnEvent(self, event, arg1, arg2);
 	end
 end
-
 
 function ComboPointPowerBar:Setup()
 	local showBar = ClassPowerBar.Setup(self);
@@ -67,6 +66,33 @@ function ComboPointPowerBar:SetupDruid()
 	end
 end
 
+-- Data driven layout tweaks for differing numbers of combo point frames.
+-- Indexed by max "usable" combo points (see below)
+local comboPointMaxToLayout = {
+	[5] = {
+		["width"] = 20, 
+		["height"] = 21,
+		["xOffs"] = 1,
+	},
+	[6] = {
+		["width"] = 18,
+		["height"] = 19,
+		["xOffs"] = -1,
+	},
+};
+
+local function UpdateComboPointLayout(maxUsablePoints, comboPoint, previousComboPoint)
+	local layout = comboPointMaxToLayout[maxUsablePoints];
+
+	comboPoint:SetSize(layout.width, layout.height);
+	comboPoint.PointOff:SetSize(layout.width, layout.height);
+	comboPoint.Point:SetSize(layout.width, layout.height);
+
+	if (previousComboPoint) then
+		comboPoint:SetPoint("LEFT", previousComboPoint, "RIGHT", layout.xOffs, 0);
+	end
+end
+
 function ComboPointPowerBar:UpdateMaxPower()
 	local maxComboPoints = UnitPowerMax("player", SPELL_POWER_COMBO_POINTS);
 	
@@ -77,24 +103,12 @@ function ComboPointPowerBar:UpdateMaxPower()
 	
 	if (maxComboPoints == 5 or maxComboPoints == 8) then
 		self.maxUsablePoints = 5;
-		for i = 1, 5 do
-			self.ComboPoints[i]:SetSize(20, 21);
-			self.ComboPoints[i].PointOff:SetSize(20, 21);
-			self.ComboPoints[i].Point:SetSize(20, 21);
-			if (i ~= 1) then
-				self.ComboPoints[i]:SetPoint("LEFT", self.ComboPoints[i-1], "RIGHT", 1, 0);
-			end
-		end
 	elseif (maxComboPoints == 6) then
 		self.maxUsablePoints = 6;
-		for i = 1, 6 do
-			self.ComboPoints[i]:SetSize(18, 19);
-			self.ComboPoints[i].PointOff:SetSize(18, 19);
-			self.ComboPoints[i].Point:SetSize(18, 19);
-			if (i ~= 1) then
-				self.ComboPoints[i]:SetPoint("LEFT", self.ComboPoints[i-1], "RIGHT", -1, 0);
-			end
-		end
+	end
+
+	for i = 1, self.maxUsablePoints do
+		UpdateComboPointLayout(self.maxUsablePoints, self.ComboPoints[i], self.ComboPoints[i - 1]);
 	end
 end
 
@@ -102,12 +116,22 @@ function ComboPointPowerBar:AnimIn(frame)
 	if (not frame.on) then
 		frame.on = true;
 		frame.AnimIn:Play();
+
+		if (frame.PointAnim) then
+			frame.PointAnim:Play();
+		end
 	end
 end
 
 function ComboPointPowerBar:AnimOut(frame)
 	if (frame.on) then
 		frame.on = false;
+
+		if (frame.PointAnim) then
+			frame.PointAnim:Play(true);
+		end
+
+		frame.AnimIn:Stop();
 		frame.AnimOut:Play();
 	end
 end
@@ -141,8 +165,8 @@ function ComboPointPowerBar:UpdatePower()
 		end
 		for i = comboPoints + 1, self.maxUsablePoints do
 			if (self.ComboPoints[i].on) then
-				self:AnimOut(self.ComboPoints[i]);
-			end
+			self:AnimOut(self.ComboPoints[i]);
+		end
 		end
 		
 		if (maxComboPoints == 8) then

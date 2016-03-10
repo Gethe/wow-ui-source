@@ -1,4 +1,10 @@
 
+local TalentUnavailableReasons = {};
+TalentUnavailableReasons[LE_GARRISON_TALENT_AVAILABILITY_UNAVAILABLE_ANOTHER_IS_RESEARCHING] = ORDER_HALL_TALENT_UNAVAILABLE_ANOTHER_IS_RESEARCHING;
+TalentUnavailableReasons[LE_GARRISON_TALENT_AVAILABILITY_UNAVAILABLE_NOT_ENOUGH_RESOURCES] = ORDER_HALL_TALENT_UNAVAILABLE_NOT_ENOUGH_RESOURCES;
+TalentUnavailableReasons[LE_GARRISON_TALENT_AVAILABILITY_UNAVAILABLE_NOT_ENOUGH_GOLD] = ORDER_HALL_TALENT_UNAVAILABLE_NOT_ENOUGH_GOLD;
+TalentUnavailableReasons[LE_GARRISON_TALENT_AVAILABILITY_UNAVAILABLE_TIER_UNAVAILABLE] = ORDER_HALL_TALENT_UNAVAILABLE_TIER_UNAVAILABLE;
+
 
 function OrderHallTalentFrame_ToggleFrame()
 	if (not OrderHallTalentFrame:IsShown()) then
@@ -118,7 +124,7 @@ function OrderHallTalentFrameMixin:RefreshAllData()
 		local tierCanBeResearchedCount = {};
 		for talentIndex, talent in ipairs(tree) do
 			tierCount[talent.tier + 1] = (tierCount[talent.tier + 1] or 0) + 1;
-			if (talent.canBeResearched) then
+			if (talent.talentAvailability == LE_GARRISON_TALENT_AVAILABILITY_AVAILABLE) then
 				tierCanBeResearchedCount[talent.tier + 1] = (tierCanBeResearchedCount[talent.tier + 1] or 0) + 1;
 			end
 		end
@@ -175,7 +181,7 @@ function OrderHallTalentFrameMixin:RefreshAllData()
 
 			if (talent.selected) then
 				talentFrame.Border:SetAtlas("orderhalltalents-spellborder-yellow");
-			elseif (talent.canBeResearched) then
+			elseif (talent.talentAvailability == LE_GARRISON_TALENT_AVAILABILITY_AVAILABLE) then
 				if (currentTierCanBeResearchedCount < currentTierCount) then
 					talentFrame.AlphaIconOverlay:Show();
 					talentFrame.AlphaIconOverlay:SetAlpha(0.5);
@@ -226,10 +232,15 @@ function GarrisonTalentButtonMixin:OnEnter()
 			GameTooltip:AddLine(str, 1, 1, 1);
 		end
 
-		if talent.canBeResearched then
+		if talent.talentAvailability == LE_GARRISON_TALENT_AVAILABILITY_AVAILABLE then
 			GameTooltip:AddLine(ORDER_HALL_TALENT_RESEARCH, 0, 1, 0);
 			self.Highlight:Show();
 		else
+			if (talent.talentAvailability == LE_GARRISON_TALENT_AVAILABILITY_UNAVAILABLE_PLAYER_CONDITION and talent.playerConditionReason) then
+				GameTooltip:AddLine(talent.playerConditionReason, 1, 0, 0);
+			elseif (TalentUnavailableReasons[talent.talentAvailability]) then
+				GameTooltip:AddLine(TalentUnavailableReasons[talent.talentAvailability], 1, 0, 0);
+			end
 			self.Highlight:Hide();
 		end
 	end
@@ -244,7 +255,7 @@ function GarrisonTalentButtonMixin:OnLeave()
 end
 
 function GarrisonTalentButtonMixin:OnClick()
-	if (self.talent.canBeResearched) then
+	if (self.talent.talentAvailability == LE_GARRISON_TALENT_AVAILABILITY_AVAILABLE) then
 		local _, _, currencyTexture = GetCurrencyInfo(self:GetParent().currency);
 
 		local str = string.format(ORDER_HALL_RESEARCH_CONFIRMATION, self.talent.name, BreakUpLargeNumbers(self.talent.researchCost), tostring(currencyTexture), SecondsToTime(self.talent.researchDuration));

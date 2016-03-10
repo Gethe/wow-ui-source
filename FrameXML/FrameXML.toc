@@ -64,6 +64,7 @@ AudioOptionsPanels.xml
 InterfaceOptionsFrame.xml
 InterfaceOptionsPanels.xml
 ..\SharedXML\AddonList.xml
+GarrisonBaseUtils.xml
 AlertFrames.xml
 AlertFrameSystems.xml
 MirrorTimer.xml

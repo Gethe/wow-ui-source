@@ -168,7 +168,7 @@ end
 
 function GarrisonFollowerMission:OnClickMission(missionInfo)
 	if (not GarrisonMission.OnClickMission(self, missionInfo)) then
-		return;
+		return false;
 	end
 
 	if (self.MissionTab.MissionList) then
@@ -180,6 +180,7 @@ function GarrisonFollowerMission:OnClickMission(missionInfo)
 	self:ShowMission(missionInfo);
 	
 	self.FollowerList:UpdateFollowers();
+	return true;
 end
 
 function GarrisonFollowerMission:ShowMissionStage(missionInfo)
@@ -680,7 +681,7 @@ function GarrisonFollowerOptionDropDown_Initialize(self)
 				info.tooltipTitle = GARRISON_DEACTIVATE_FOLLOWER;
 				info.tooltipText = GARRISON_FOLLOWER_CANNOT_DEACTIVATE_ON_MISSION;
 				info.tooltipOnButton = 1;
-			elseif ( not C_Garrison.IsAboveFollowerSoftCap(GetMissionFrame().followerTypeID) ) then
+			elseif ( not C_Garrison.IsAboveFollowerSoftCap(missionFrame.followerTypeID) ) then
 				info.disabled = 1;
 			else
 				info.disabled = nil;
@@ -1237,6 +1238,7 @@ function GarrisonMissionPageFollowerFrame_OnEnter(self)
 		C_Garrison.GetFollowerXP(self.info.followerID),
 		C_Garrison.GetFollowerLevelXP(self.info.followerID),
 		C_Garrison.GetFollowerItemLevelAverage(self.info.followerID), 
+		C_Garrison.GetFollowerSpecializationAtIndex(self.info.followerID, 1),
 		C_Garrison.GetFollowerAbilityAtIndex(self.info.followerID, 1),
 		C_Garrison.GetFollowerAbilityAtIndex(self.info.followerID, 2),
 		C_Garrison.GetFollowerAbilityAtIndex(self.info.followerID, 3),

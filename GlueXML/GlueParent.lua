@@ -41,6 +41,7 @@ function GlueParent_OnLoad(self)
 	self:RegisterEvent("LOGIN_STATE_CHANGED");
 	self:RegisterEvent("LOGIN_FAILED");
 	self:RegisterEvent("OPEN_STATUS_DIALOG");
+	self:RegisterEvent("REALM_LIST_UPDATED");
 end
 
 function GlueParent_OnEvent(self, event, ...)
@@ -55,6 +56,8 @@ function GlueParent_OnEvent(self, event, ...)
 	elseif ( event == "OPEN_STATUS_DIALOG" ) then
 		local dialog, text = ...;
 		GlueDialog_Show(dialog, text);
+	elseif ( event == "REALM_LIST_UPDATED" ) then
+		RealmList_Update();
 	end
 end
 
@@ -101,7 +104,21 @@ function GlueParent_UpdateDialogs()
 	local auroraState, connectedToWoW, wowConnectionState, hasRealmList, waitingForRealmList = C_Login.GetState();
 
 	if ( auroraState == LE_AURORA_STATE_CONNECTING ) then
-		GlueDialog_Show("CANCEL", LOGIN_STATE_CONNECTING);
+		local isQueued, queuePosition, estimatedSeconds = C_Login.GetLogonQueueInfo();
+		if ( isQueued ) then
+			local queueMessage;
+			if ( estimatedSeconds < 60 ) then
+				queueMessage = string.format(BNET_LOGIN_QUEUE_TIME_LEFT_SECONDS, queuePosition);
+			elseif ( estimatedSeconds > 3600 ) then
+				queueMessage = string.format(BNET_LOGIN_QUEUE_TIME_LEFT_UNKNOWN, queuePosition);
+			else
+				queueMessage = string.format(BNET_LOGIN_QUEUE_TIME_LEFT, queuePosition, estimatedSeconds / 60);
+			end
+
+			GlueDialog_Show("CANCEL", queueMessage);
+		else
+			GlueDialog_Show("CANCEL", LOGIN_STATE_CONNECTING);
+		end
 	elseif ( auroraState == LE_AURORA_STATE_NONE and C_Login.GetLastError() ) then
 		local errorCategory, errorID, localizedString, debugString = C_Login.GetLastError();
 

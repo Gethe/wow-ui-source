@@ -9,8 +9,8 @@ local WIDTH_INSET = 22 * TILE_SCALE;
 local HEIGHT_INSET = 100 * TILE_SCALE;
 local TILES_PER_ROW = 4;
 
-function AdventureMapInsetMixin:Initialize(adventureMap, collapsed, insetIndex, mapID, title, description, collapsedIcon, numDetailTiles, normalizedX, normalizedY)
-	self.adventureMap = adventureMap;
+function AdventureMapInsetMixin:Initialize(mapCanvas, collapsed, insetIndex, mapID, title, description, collapsedIcon, numDetailTiles, normalizedX, normalizedY)
+	self.mapCanvas = mapCanvas;
 	self.insetIndex = insetIndex;
 	self.mapID = mapID;
 
@@ -27,27 +27,27 @@ function AdventureMapInsetMixin:Initialize(adventureMap, collapsed, insetIndex, 
 	self.CollapsedFrame:SetShown(self.collapsed);
 
 	local _, collapsedIconWidth, collapsedIconHeight = GetAtlasInfo(collapsedIcon);
-	self.CollapsedFrame.Text:SetText(title);
+	self.CollapsedFrame.Text:SetText(string.upper(title));
+	self.CollapsedFrame.TextBackground:SetWidth(self.CollapsedFrame.Text:GetWidth() + 15);
 	self.CollapsedFrame.Icon:SetAtlas(collapsedIcon, true);
-	self.CollapsedFrame.IconHighlight:SetAtlas(collapsedIcon, true);
-	self.CollapsedFrame:SetSize(collapsedIconWidth, collapsedIconHeight);
+	self.CollapsedFrame:SetSize(collapsedIconWidth or 0, collapsedIconHeight or 0);
 
 	self.normalizedX = normalizedX;
 	self.normalizedY = normalizedY;
 
 	self:BuildDetailTiles(insetIndex, tileIndex, numDetailTiles)
 
-	self.ExpandedFrame.CloseButton:SetScale(1.0 / self:GetAdventureMap():GetScaleForMaxZoom());
+	self.ExpandedFrame.CloseButton:SetScale(1.0 / self:GetMap():GetScaleForMaxZoom());
 
 	if self.normalizedX and self.normalizedY then
-		local canvas = self:GetAdventureMap():GetCanvas();
+		local canvas = self:GetMap():GetCanvas();
 		local scale = self:GetScale();
 		self:SetPoint("CENTER", canvas, "TOPLEFT", (canvas:GetWidth() * self.normalizedX) / scale, -(canvas:GetHeight() * self.normalizedY) / scale);
 	end
 
 	self:Show();
 
-	self:GetAdventureMap():OnMapInsetSizeChanged(self.mapID, self.insetIndex, not self.collapsed);
+	self:GetMap():OnMapInsetSizeChanged(self.mapID, self.insetIndex, not self.collapsed);
 end
 
 function AdventureMapInsetMixin:OnReleased()
@@ -57,9 +57,10 @@ function AdventureMapInsetMixin:OnReleased()
 	end
 
 	if self.areaTrigger then
-		self:GetAdventureMap():ReleaseAreaTrigger("AdventureMap_MapInset", self.areaTrigger)
+		self:GetMap():ReleaseAreaTrigger("AdventureMap_MapInset", self.areaTrigger)
 		self.areaTrigger = nil;
 	end
+	self:Hide();
 end
 
 function AdventureMapInsetMixin:BuildDetailTiles(insetIndex, tileIndex, numDetailTiles)
@@ -116,11 +117,11 @@ function AdventureMapInsetMixin:Collapse()
 		self:SyncAnimation();
 
 		if self.areaTrigger then
-			self:GetAdventureMap():ReleaseAreaTrigger("AdventureMap_MapInset", self.areaTrigger)
+			self:GetMap():ReleaseAreaTrigger("AdventureMap_MapInset", self.areaTrigger)
 			self.areaTrigger = nil;
 		end
 
-		self:GetAdventureMap():OnMapInsetSizeChanged(self.mapID, self.insetIndex, not self.collapsed);
+		self:GetMap():OnMapInsetSizeChanged(self.mapID, self.insetIndex, not self.collapsed);
 	end
 end
 
@@ -136,34 +137,34 @@ end
 
 function AdventureMapInsetMixin:Expand()
 	if self.collapsed then
-		self:GetAdventureMap():PanAndZoomTo(self.normalizedX, self.normalizedY);
+		self:GetMap():PanAndZoomTo(self.normalizedX, self.normalizedY);
 		self.collapsed = false;
 		self:SyncAnimation();
 
 		if not self.areaTrigger then
-			self.areaTrigger = self:GetAdventureMap():AcquireAreaTrigger("AdventureMap_MapInset");
+			self.areaTrigger = self:GetMap():AcquireAreaTrigger("AdventureMap_MapInset");
 			self.areaTrigger.owner = self;
-			self:GetAdventureMap():SetAreaTriggerEnclosedCallback(self.areaTrigger, OnAreaEnclosedChanged);
+			self:GetMap():SetAreaTriggerEnclosedCallback(self.areaTrigger, OnAreaEnclosedChanged);
 		end
 
 		self.areaTrigger:Reset();
 		self.areaTrigger:SetCenter(self.normalizedX, self.normalizedY);
-		self.areaTrigger:Stretch(self:GetAdventureMap():NormalizeHorizontalSize(self.ExpandedFrame:GetWidth()) * .5, self:GetAdventureMap():NormalizeVerticalSize(self.ExpandedFrame:GetHeight()) * .5);
+		self.areaTrigger:Stretch(self:GetMap():NormalizeHorizontalSize(self.ExpandedFrame:GetWidth()) * .5, self:GetMap():NormalizeVerticalSize(self.ExpandedFrame:GetHeight()) * .5);
 
-		self:GetAdventureMap():OnMapInsetSizeChanged(self.mapID, self.insetIndex, not self.collapsed);
+		self:GetMap():OnMapInsetSizeChanged(self.mapID, self.insetIndex, not self.collapsed);
 	end
 end
 
 function AdventureMapInsetMixin:OnCanvasScaleChanged()
-	if not self.collapsed and self:GetAdventureMap():IsZoomingOut() then
+	if not self.collapsed and self:GetMap():IsZoomingOut() then
 		self:Collapse();
 	end
 
-	self.CollapsedFrame:SetScale(1.0 / self:GetAdventureMap():GetCanvasScale());
+	self.CollapsedFrame:SetScale(1.0 / self:GetMap():GetCanvasScale());
 end
 
-function AdventureMapInsetMixin:GetAdventureMap()
-	return self.adventureMap;
+function AdventureMapInsetMixin:GetMap()
+	return self.mapCanvas;
 end
 
 function AdventureMapInsetMixin:SetLocalPinPosition(pin, normalizedX, normalizedY)
@@ -177,19 +178,19 @@ function AdventureMapInsetMixin:SetLocalPinPosition(pin, normalizedX, normalized
 end
 
 function AdventureMapInsetMixin:GetGlobalPosition(normalizedX, normalizedY)
-	local adventureMap = self:GetAdventureMap();
-	local canvas = adventureMap:GetCanvas();
+	local mapCanvas = self:GetMap();
+	local canvas = mapCanvas:GetCanvas();
 
-	local globalNormalizedX = adventureMap:NormalizeHorizontalSize(canvas:GetWidth() * self.normalizedX + self.ExpandedFrame:GetWidth() * (normalizedX - .5));
-	local globalNormalizedY = adventureMap:NormalizeVerticalSize(canvas:GetHeight() * self.normalizedY + self.ExpandedFrame:GetHeight() * (normalizedY - .5));
+	local globalNormalizedX = mapCanvas:NormalizeHorizontalSize(canvas:GetWidth() * self.normalizedX + self.ExpandedFrame:GetWidth() * (normalizedX - .5));
+	local globalNormalizedY = mapCanvas:NormalizeVerticalSize(canvas:GetHeight() * self.normalizedY + self.ExpandedFrame:GetHeight() * (normalizedY - .5));
 
 	return globalNormalizedX, globalNormalizedY;
 end
 
 function AdventureMapInsetMixin:OnMouseEnter()
-	self:GetAdventureMap():OnMapInsetMouseEnter(self.insetIndex);
+	self:GetMap():OnMapInsetMouseEnter(self.insetIndex);
 end
 
 function AdventureMapInsetMixin:OnMouseLeave()
-	self:GetAdventureMap():OnMapInsetMouseLeave(self.insetIndex);
+	self:GetMap():OnMapInsetMouseLeave(self.insetIndex);
 end

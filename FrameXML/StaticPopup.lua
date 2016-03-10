@@ -282,19 +282,7 @@ StaticPopupDialogs["CONFIRM_REFUND_TOKEN_ITEM"] = {
 	button1 = YES,
 	button2 = NO,
 	OnAccept = function()
-		local _, currentHonor, _, _, _, maxHonor = GetCurrencyInfo(HONOR_CURRENCY);
-		local _, currentArenaPoints, _, _, _, maxArenaPoints = GetCurrencyInfo(CONQUEST_CURRENCY);
-		local overflowHonor = maxHonor > 0 and MerchantFrame.honorPoints and ( MerchantFrame.honorPoints + currentHonor > maxHonor );
-		local overflowArena = maxArenaPoints > 0 and MerchantFrame.arenaPoints and ( MerchantFrame.arenaPoints + currentArenaPoints > maxArenaPoints );
-		if ( overflowHonor and overflowArena ) then
-			StaticPopup_Show("CONFIRM_REFUND_MAX_HONOR_AND_ARENA", (MerchantFrame.honorPoints + currentHonor - maxHonor), (MerchantFrame.arenaPoints + currentArenaPoints - maxArenaPoints) )
-		elseif ( overflowHonor ) then
-			StaticPopup_Show("CONFIRM_REFUND_MAX_HONOR", (MerchantFrame.honorPoints + currentHonor - maxHonor) )
-		elseif ( overflowArena ) then
-			StaticPopup_Show("CONFIRM_REFUND_MAX_ARENA_POINTS", (MerchantFrame.arenaPoints + currentArenaPoints - maxArenaPoints))
-		else
-			ContainerRefundItemPurchase(MerchantFrame.refundBag, MerchantFrame.refundSlot, MerchantFrame.refundItemEquipped);
-		end
+		ContainerRefundItemPurchase(MerchantFrame.refundBag, MerchantFrame.refundSlot, MerchantFrame.refundItemEquipped);
 		StackSplitFrame:Hide();
 	end,
 	OnCancel = function()
@@ -3589,17 +3577,6 @@ StaticPopupDialogs["CONFIRM_DELETE_TRANSMOG_OUTFIT"] = {
 	button1 = YES,
 	button2 = NO,
 	OnAccept = function (self) WardrobeOutfitFrame_DeleteOutfit(self.data); end,
-	OnCancel = function (self) end,
-	hideOnEscape = 1,
-	timeout = 0,
-	whileDead = 1,
-}
-
-StaticPopupDialogs["CONFIRM_SAVE_TRANSMOG_OUTFIT"] = {
-	text = TRANSMOG_OUTFIT_CONFIRM_SAVE,
-	button1 = YES,
-	button2 = NO,
-	OnAccept = function (self) 	WardrobeOutfitFrame_SaveOutfit(self.data); end,
 	OnCancel = function (self) end,
 	hideOnEscape = 1,
 	timeout = 0,

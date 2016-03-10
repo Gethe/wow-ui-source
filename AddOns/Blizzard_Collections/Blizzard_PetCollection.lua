@@ -223,15 +223,14 @@ function PetJournalPetList_UpdateScrollPos(self, visibleIndex)
 end
 
 function PetJournal_UpdateSummonButtonState()
-	if ( PetJournalPetCard.petID and C_PetJournal.PetIsSummonable(PetJournalPetCard.petID)) then
-		PetJournal.SummonButton:Enable();
-	else
-		PetJournal.SummonButton:Disable();
-	end
+	local petID = PetJournalPetCard.petID;
+	local hasPetID = petID ~= nil;
 
-	if ( PetJournalPetCard.petID and PetJournalPetCard.petID == C_PetJournal.GetSummonedPetGUID() ) then
+	PetJournal.SummonButton:SetEnabled(hasPetID and C_PetJournal.PetIsSummonable(petID));
+
+	if ( hasPetID and petID == C_PetJournal.GetSummonedPetGUID() ) then
 		PetJournal.SummonButton:SetText(PET_DISMISS);
-	elseif ( C_PetJournal.PetNeedsFanfare(PetJournalPetCard.petID)) then
+	elseif ( hasPetID and C_PetJournal.PetNeedsFanfare(petID)) then
 		PetJournal.SummonButton:SetText(UNWRAP);
 	else
 		PetJournal.SummonButton:SetText(BATTLE_PET_SUMMON);

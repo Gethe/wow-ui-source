@@ -1,18 +1,5 @@
 GARRISON_FOLLOWER_BUSY_COLOR = { 0, 0.06, 0.22, 0.44 };
 GARRISON_FOLLOWER_INACTIVE_COLOR = { 0.22, 0.06, 0, 0.44 };
-local minFollowersForThreatCountersFrame = 10;
-
---- Current Mission Frame
-local missionFrame = nil;
-
-function GetMissionFrame()
-	return missionFrame;
-end
-function SetMissionFrame(frame)
-	missionFrame = frame;
-end
-
-
 
 ---------------------------------------------------------------------------------
 --- Follower List                                                             ---
@@ -28,7 +15,6 @@ local GARRISON_FOLLOWER_LIST_BUTTON_FULL_XP_WIDTH = 205;
 GarrisonFollowerList = {};
 
 function GarrisonFollowerList:Initialize(followerType)
-	self.minFollowersForThreatCountersFrame = minFollowersForThreatCountersFrame;
 	self.followerCountString = GARRISON_FOLLOWER_COUNT;
 	self.followerTab = self:GetParent().FollowerTab;
 	if (self.followerTab) then
@@ -61,6 +47,7 @@ function GarrisonFollowerList:Setup(mainFrame, followerType, followerTemplate, i
 	self:RegisterEvent("GARRISON_FOLLOWER_REMOVED");
 	self:RegisterEvent("GARRISON_FOLLOWER_XP_CHANGED");
 	self:RegisterEvent("GARRISON_FOLLOWER_UPGRADED");
+	self:RegisterEvent("GARRISON_FOLLOWER_DURABILITY_CHANGED");
 	self:RegisterEvent("CURRENT_SPELL_CAST_CHANGED");
 	self:RegisterEvent("CURSOR_UPDATE");
 	self:SetScript("OnEvent", GarrisonFollowerList_OnEvent);
@@ -95,7 +82,7 @@ function GarrisonFollowerList:OnShow()
 			self:ShowFollower(0);
 		end
 	end
-	if (C_Garrison.GetNumFollowers(self.followerType) >= self.minFollowersForThreatCountersFrame) then
+	if (C_Garrison.GetNumFollowers(self.followerType) >= GarrisonFollowerOptions[self.followerType].minFollowersForThreatCountersFrame) then
 		self:ShowThreatCountersFrame();
 	end
 end
@@ -150,7 +137,7 @@ end
 
 
 function GarrisonFollowerList_OnEvent(self, event, ...)
-	if (event == "GARRISON_FOLLOWER_LIST_UPDATE" or event == "GARRISON_FOLLOWER_XP_CHANGED") then
+	if (event == "GARRISON_FOLLOWER_LIST_UPDATE" or event == "GARRISON_FOLLOWER_XP_CHANGED" or event == "GARRISON_FOLLOWER_DURABILITY_CHANGED") then
 		local followerTypeID = ...;
 		if (followerTypeID == self.followerType) then
 			if (self.followerTab and self.followerTab.followerID and self.followerTab:IsVisible()) then
@@ -163,8 +150,7 @@ function GarrisonFollowerList_OnEvent(self, event, ...)
 			end
 			
 			if (self.followerTab and self.followerTab.followerID and self.followerTab:IsVisible()) then
-				local minFollowers = self.minFollowersForThreatCountersFrame or minFollowersForThreatCountersFrame;
-				if (C_Garrison.GetNumFollowers(self.followerType) >= minFollowers) then
+				if (C_Garrison.GetNumFollowers(self.followerType) >= GarrisonFollowerOptions[self.followerType].minFollowersForThreatCountersFrame) then
 					self:ShowThreatCountersFrame();
 				end
 			end
@@ -684,7 +670,7 @@ function GarrisonFollowerListButton_OnClick(self, button)
 	end
 
 	local followerList = self:GetFollowerList();
-	local followerFrame = self:GetFollowerList().listScroll.followerFrame;
+	local followerFrame = followerList.listScroll.followerFrame;
 	if ( button == "LeftButton" ) then
 		PlaySound("UI_Garrison_CommandTable_SelectFollower");
 		followerFrame.selectedFollower = self.id;
@@ -717,15 +703,15 @@ function GarrisonFollowerListButton_OnClick(self, button)
 		end
 		CloseDropDownMenus();
 	-- Don't show right click follower menu in landing page
-	elseif ( button == "RightButton" and not self:GetFollowerList().isLandingPage) then
+	elseif ( button == "RightButton" and not followerList.isLandingPage) then
 		if ( self.isCollected ) then
-			if ( GetMissionFrame().FollowerList.OptionDropDown.followerID ~= self.id ) then
+			if ( followerList.OptionDropDown.followerID ~= self.id ) then
 				CloseDropDownMenus();
 			end
-			GetMissionFrame().FollowerList.OptionDropDown.followerID = self.id;
-			ToggleDropDownMenu(1, nil, GetMissionFrame().FollowerList.OptionDropDown, "cursor", 0, 0);
+			followerList.OptionDropDown.followerID = self.id;
+			ToggleDropDownMenu(1, nil, followerList.OptionDropDown, "cursor", 0, 0);
 		else
-			GetMissionFrame().FollowerList.OptionDropDown.followerID = nil;
+			followerList.OptionDropDown.followerID = nil;
 			CloseDropDownMenus();
 		end
 	end
@@ -1159,6 +1145,7 @@ function GarrisonFollowerTabMixin:ShowFollower(followerID, followerList)
 			self.AbilitiesFrame.Abilities[i] = abilityFrame;
 		end
 
+		abilityFrame.isSpecialization = ability.isSpecialization;
 		abilityFrame.followerTypeID = followerInfo.followerTypeID;
 		if ( self.isLandingPage ) then
 			abilityFrame.Category:SetText("");

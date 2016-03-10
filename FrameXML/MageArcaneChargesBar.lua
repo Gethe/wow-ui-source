@@ -1,12 +1,11 @@
 MagePowerBar = {};
 
 function MagePowerBar:OnLoad()
-	self.tooltipTitle = ARCANE_CHARGES;
-	self.tooltip = ARCANE_CHARGES_TOOLTIP;
+	self:SetTooltip(ARCANE_CHARGES, ARCANE_CHARGES_TOOLTIP);
+	self:SetPowerTokens("ARCANE_CHARGES");
 	self.class = "MAGE";
 	self.spec = SPEC_MAGE_ARCANE;
-	self.powerTokens = {"ARCANE_CHARGES"};
-	
+
 	ClassPowerBar.OnLoad(self);
 end
 

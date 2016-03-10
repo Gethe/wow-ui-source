@@ -13,6 +13,8 @@
 				<Anchors>
 					<Anchor point="TOP"/>
 				</Anchors>
+				<BarTexture parentKey="BarTexture" file="Interface\TargetingFrame\UI-StatusBar"/>
+				<BarColor r="0.58" g="0.0" b="0.55"/>
 				<Layers>
 					<Layer level="ARTWORK">
 						<Texture parentKey="WatchBarTexture0" file="Interface\PaperDollInfoFrame\UI-ReputationWatchBar">
@@ -77,9 +79,17 @@
 							<Color r="0.0" g="0.0" b="0.0" a="0.5"/>
 						</Texture>
 					</Layer>
+					<Layer level="BACKGROUND" textureSubLevel="1">
+						<Texture parentKey="Underlay" hidden="true" file="Interface\TargetingFrame\UI-StatusBar">
+							<Color r=".502" g=".443" b=".278" />
+						</Texture>
+					</Layer>
+					<Layer level="ARTWORK" textureSubLevel="-1">
+						<Texture parentKey="Overlay" hidden="true" atlas="XPBarAnim-OrangeGain" alphaMode="ADD">
+							<Color r=".901" g=".8" b=".601" />
+						</Texture>
+					</Layer>
 				</Layers>
-				<BarTexture file="Interface\TargetingFrame\UI-StatusBar"/>
-				<BarColor r="0.58" g="0.0" b="0.55"/>
 			</StatusBar>
 			<Frame parentKey="OverlayFrame" frameStrata="DIALOG" setAllPoints="true">
 				<Layers>
@@ -238,7 +248,7 @@
 								label = label.." "..RED_FONT_COLOR_CODE..CAP_REACHED_TRIAL.."|r";
 							end
 						end
-						
+
 						GameTooltip_AddNewbieTip(self, label, 1.0, 1.0, 1.0, NEWBIE_TOOLTIP_XPBAR, 1);
 						GameTooltip.canAddRestStateLine = 1;
 						ExhaustionToolTipText();
@@ -458,6 +468,17 @@
 		</Scripts>
 	</Frame>
 	<Frame name="ArtifactWatchBar" inherits="MainMenuBarWatchBarTemplate">
+		<Frames>
+			<Button parentKey="Tick" hidden="true" frameStrata="DIALOG">
+				<Size x="32" y="32"/>
+				<Scripts>
+					<OnEnter function="MainMenuBar_ArtifactTick_OnEnter"/>
+					<OnLeave function="GameTooltip_Hide"/>
+				</Scripts>
+				<NormalTexture parentKey="Normal" file="Interface\MainMenuBar\UI-ExhaustionTickNormal"/>
+				<HighlightTexture parentKey="Highlight" file="Interface\MainMenuBar\UI-ExhaustionTickHighlight" alphaMode="ADD"/>
+			</Button>
+		</Frames>
 		<Scripts>
 			<OnLoad>
 				self:RegisterEvent("PLAYER_ENTERING_WORLD");
@@ -465,21 +486,30 @@
 				self:RegisterEvent("ARTIFACT_XP_UPDATE");
 				self:RegisterEvent("CVAR_UPDATE");
 				self.StatusBar:SetStatusBarColor(.901, .8, .601);
-				self.StatusBar:SetAnimatedTextureColors(1, .6, .34);
+				self.StatusBar:SetAnimatedTextureColors(.901, .8, .601);
 
-				self.StatusBar:SetOnAnimatedValueChangedCallback(MainMenuBar_ArtifactUpdateOverlayFrameText);
+				self.StatusBar.Overlay:SetAllPoints(self.StatusBar:GetStatusBarTexture());
+
+				self.StatusBar:SetOnAnimatedValueChangedCallback(MainMenuBar_ArtifactOnAnimatedValueChangedCallback);
 			</OnLoad>
 			<OnEvent>
-				local arg1, arg2 = ...;
-				if ( event == "UNIT_INVENTORY_CHANGED" and arg1 == "player" ) then
-					MainMenuBar_UpdateExperienceBars();
-				elseif ( event == "CVAR_UPDATE" and arg1 == "XP_BAR_TEXT" ) then
-					if( arg2 == "1" ) then
-						ShowWatchBarText(ArtifactWatchBar, "lock");
-					else
-						HideWatchBarText(ArtifactWatchBar, "unlock");
+				if ( event == "UNIT_INVENTORY_CHANGED" ) then
+					local unitTag = ...;
+					if ( unitTag == "player" ) then
+						MainMenuBar_UpdateExperienceBars();
 					end
+				elseif ( event == "ARTIFACT_XP_UPDATE") then
 					MainMenuBar_UpdateExperienceBars();
+				elseif ( event == "CVAR_UPDATE" ) then
+					local name, value = ...;
+					if ( name == "XP_BAR_TEXT" ) then
+						if( value == "1" ) then
+							ShowWatchBarText(ArtifactWatchBar, "lock");
+						else
+							HideWatchBarText(ArtifactWatchBar, "unlock");
+						end
+						MainMenuBar_UpdateExperienceBars();
+					end
 				end
 			</OnEvent>
 			<OnShow>

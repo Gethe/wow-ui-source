@@ -58,6 +58,9 @@
 	</Texture>
 
 
+	<FontString parentArray="FrameTick" name="OrderHallTalentFrameTick" inherits="SystemFont_Small2" virtual="true">
+		<Color r="0.27" g="0.27" b="0.27"/>
+	</FontString>
 	<Frame name="OrderHallTalentFrame" inherits="PortraitFrameTemplate" toplevel="true" enableMouse="true" parent="UIParent" hidden="true" mixin="OrderHallTalentFrameMixin">
 		<Size x="334" y="445"/>
 		<Scripts>
@@ -89,6 +92,36 @@
 					<Size x="100" y="20"/>
 					<Anchors>
 						<Anchor point="RIGHT" relativeKey="$parent.CurrencyIcon" relativePoint="LEFT" x="-4" y="0"/>
+					</Anchors>
+				</FontString>
+				<FontString inherits="OrderHallTalentFrameTick" text="I">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="20" y="-100"/>
+					</Anchors>
+				</FontString>
+				<FontString inherits="OrderHallTalentFrameTick" text="II">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="20" y="-159"/>
+					</Anchors>
+				</FontString>
+				<FontString inherits="OrderHallTalentFrameTick" text="III">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="20" y="-218"/>
+					</Anchors>
+				</FontString>
+				<FontString inherits="OrderHallTalentFrameTick" text="IV">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="20" y="-277"/>
+					</Anchors>
+				</FontString>
+				<FontString inherits="OrderHallTalentFrameTick" text="V">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="20" y="-336"/>
+					</Anchors>
+				</FontString>
+				<FontString inherits="OrderHallTalentFrameTick" text="VI">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="20" y="-395"/>
 					</Anchors>
 				</FontString>
 			</Layer>

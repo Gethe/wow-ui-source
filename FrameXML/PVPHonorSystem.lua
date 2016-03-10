@@ -122,13 +122,14 @@ function PVPHonorXPBar_Update(self)
 	local max = UnitHonorMax("player");
 
 	local level = UnitHonorLevel("player");
+	local levelmax = GetMaxPlayerHonorLevel();
 
-	if (CanPrestige()) then
+	if (level == levelmax) then
 		-- Force the bar to full for the max level
 		self.Bar:SetAnimatedValues(1, 0, 1, level);
 	else
 		self.Bar:SetAnimatedValues(current, 0, max, level);
-	end		
+	end
 end
 
 function PVPHonorXPBar_OnEnter(self)
@@ -139,8 +140,13 @@ function PVPHonorXPBar_OnEnter(self)
 		return;
 	end
 
+	local level = UnitHonorLevel("player");
+	local levelmax = GetMaxPlayerHonorLevel();
+
 	if (CanPrestige()) then
 		self.OverlayFrame.Text:SetText(PVP_HONOR_PRESTIGE_AVAILABLE);
+	elseif (level == levelmax) then
+		self.OverlayFrame.Text:SetText(MAX_HONOR_LEVEL);
 	else
 		self.OverlayFrame.Text:SetText(HONOR_BAR:format(current, max));
 	end
@@ -259,8 +265,10 @@ end
 
 function HonorExhaustionTick_Update(self)
 	local fillBar = self:GetParent().ExhaustionLevelFillBar;
+    local level = UnitHonorLevel("player");
+    local levelmax = GetMaxPlayerHonorLevel();
 	-- Hide exhaustion tick if player is max level
-	if ( CanPrestige() ) then
+	if ( level == levelmax ) then
 		self:Hide();
 		fillBar:Hide();
 		return;
@@ -296,24 +304,11 @@ function HonorExhaustionTick_Update(self)
 end
 
 function HonorExhaustionToolTipText(self)
-	if ( SHOW_NEWBIE_TIPS ~= "1" ) then
-		local x,y;
-		x,y = self:GetCenter();
-		if ( self:IsShown() ) then
-			if ( x >= ( GetScreenWidth() / 2 ) ) then
-				GameTooltip:SetOwner(self, "ANCHOR_LEFT");
-			else
-				GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
-			end
-		else
-			GameTooltip_SetDefaultAnchor(GameTooltip, UIParent);
-		end
-	end
+	MainMenu_AnchorTickTooltip(self);
 	
 	local exhaustionStateID, exhaustionStateName, exhaustionStateMultiplier;
 	exhaustionStateID, exhaustionStateName, exhaustionStateMultiplier = GetHonorRestState();
 
-	-- Saving this code in case we want to display xp to next rest state
 	local exhaustionCurrXP, exhaustionMaxXP;
 	local exhaustionThreshold = GetHonorExhaustion();
 

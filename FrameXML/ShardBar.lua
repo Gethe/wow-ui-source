@@ -1,11 +1,10 @@
 WarlockPowerBar = {};
 
 function WarlockPowerBar:OnLoad()
-	self.tooltipTitle = SOUL_SHARDS_POWER;
-	self.tooltip = SOUL_SHARDS_TOOLTIP;
+	self:SetTooltip(SOUL_SHARDS_POWER, SOUL_SHARDS_TOOLTIP);
+	self:SetPowerTokens("SOUL_SHARDS");
 	self.class = "WARLOCK";
 	self.spec = nil;
-	self.powerTokens = {"SOUL_SHARDS"};
 	
 	ClassPowerBar.OnLoad(self);
 end

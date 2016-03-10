@@ -35,45 +35,17 @@ function AccountLogin_OnLoad(self)
 	self:RegisterEvent("LAUNCHER_LOGIN_STATUS_CHANGED");
 	self:RegisterEvent("FATAL_AUTHENTICATION_FAILURE");
 
-	--HAAACK. SCREEN_FIRST_DISPLAYED is not working, so we'll just do it here.
-	if ( AccountLogin_CanAutoLogin() ) then
-		AccountLogin_StartAutoLoginTimer();
-	end
+	AccountLogin_CheckLoginState(self);
 end
 
 function AccountLogin_OnEvent(self, event, ...)
 	if ( event == "SCREEN_FIRST_DISPLAYED" ) then
 		AccountLogin_Update();
-		--[[if ( AccountLogin_CanAutoLogin() ) then
+		if ( AccountLogin_CanAutoLogin() ) then
 			AccountLogin_StartAutoLoginTimer();
-		end]]
+		end
 	elseif ( event == "LOGIN_STATE_CHANGED" ) then
-		local auroraState, connectedToWoW, wowConnectionState, hasRealmList, waitingForRealmList = C_Login.GetState();
-
-		-- account select dialog
-		self.UI.WoWAccountSelectDialog:SetShown(auroraState == LE_AURORA_STATE_SELECT_ACCOUNT);
-
-		-- BD_TODO: Captcha stub
-		-- This needs to pop up the captcha dialog, for now we are just hardcoding
-		-- something invalid
-		if ( auroraState == LE_AURORA_STATE_ENTER_CAPTCHA ) then
-			C_Login.SubmitCaptcha("HEGTFKQ2");
-		end
-
-		-- authenticator
-		local tokenEntryShown = false;
-		if ( auroraState == LE_AURORA_STATE_ENTER_EXTRA_AUTH ) then
-			authType = C_Login.GetExtraAuthInfo();
-			if ( authType == LE_AUTH_AUTHENTICATOR ) then
-				tokenEntryShown = true;
-			end
-		end
-
-		if ( auroraState == LE_AURORA_STATE_LEGAL_AGREEMENT ) then
-			GlueDialog_Show("OKAY_LEGAL_REDIRECT");
-		end
-
-		self.UI.TokenEntryDialog:SetShown(tokenEntryShown);
+		AccountLogin_CheckLoginState(self);
 	elseif ( event == "LAUNCHER_LOGIN_STATUS_CHANGED" ) then
 		AccountLogin_Update();
 	elseif ( event == "FATAL_AUTHENTICATION_FAILURE" ) then
@@ -86,13 +58,33 @@ function AccountLogin_OnEvent(self, event, ...)
 	end
 end
 
-function AccountLogin_OnShow(self)
-	local logoInfo = EXPANSION_LOGOS[GetClientDisplayExpansionLevel()];
-	if ( logoInfo.texture ) then
-		self.UI.GameLogo:SetTexture(logoInfo.texture);
-	elseif ( logoInfo.atlas ) then
-		self.UI.GameLogo:SetAtlas(logoInfo.atlas);
+function AccountLogin_CheckLoginState(self)
+	local auroraState, connectedToWoW, wowConnectionState, hasRealmList, waitingForRealmList = C_Login.GetState();
+
+	-- account select dialog
+	self.UI.WoWAccountSelectDialog:SetShown(auroraState == LE_AURORA_STATE_SELECT_ACCOUNT);
+
+	--captcha
+	self.UI.CaptchaEntryDialog:SetShown(auroraState == LE_AURORA_STATE_ENTER_CAPTCHA);
+
+	-- authenticator
+	local tokenEntryShown = false;
+	if ( auroraState == LE_AURORA_STATE_ENTER_EXTRA_AUTH ) then
+		authType = C_Login.GetExtraAuthInfo();
+		if ( authType == LE_AUTH_AUTHENTICATOR ) then
+			tokenEntryShown = true;
+		end
 	end
+
+	if ( auroraState == LE_AURORA_STATE_LEGAL_AGREEMENT ) then
+		GlueDialog_Show("OKAY_LEGAL_REDIRECT");
+	end
+
+	self.UI.TokenEntryDialog:SetShown(tokenEntryShown);
+end
+
+function AccountLogin_OnShow(self)
+	self.UI.GameLogo:SetTexture(EXPANSION_LOGOS[GetClientDisplayExpansionLevel()]);
 	self.UI.AccountEditBox:SetText("");
 	AccountLogin_UpdateSavedData(self);
 
@@ -357,6 +349,54 @@ end
 
 function TokenEntry_Cancel(self)
 	AccountLogin.UI.TokenEntryDialog:Hide();
+	C_Login.DisconnectFromServer();
+end
+
+
+-- =============================================================
+-- Captcha entry
+-- =============================================================
+
+function CaptchaEntry_OnLoad(self)
+	local backdropColor = DEFAULT_TOOLTIP_COLOR;
+	self.Background.EditBox:SetBackdropBorderColor(backdropColor[1], backdropColor[2], backdropColor[3]);
+	self.Background.EditBox:SetBackdropColor(backdropColor[4], backdropColor[5], backdropColor[6]);
+end
+
+function CaptchaEntry_OnShow(self)
+	self.Background.EditBox:SetText("");
+	self.Background.EditBox:SetFocus();
+
+	local success, width, height = C_Login.SetCaptchaTexture(self.Background.CaptchaImage);
+	if ( not success ) then
+		C_Login.DisconnectFromServer();
+		GlueDialog_Show("OKAY", CAPTCHA_LOADING_FAILED);
+		return;
+	end
+
+	self.Background.CaptchaImage:SetSize(width, height);
+	self.Background:SetWidth(math.max(width + 40, 372));
+	self.Background:SetHeight(self.Background.Title:GetTop() - self.Background.OkayButton:GetBottom() + 42);
+end
+
+function CaptchaEntry_OnHide()
+	AccountLogin_FocusPassword();
+end
+
+function CaptchaEntry_OnKeyDown(self, key)
+	if ( key == "ENTER" ) then
+		CaptchaEntry_Okay(self);
+	elseif ( key == "ESCAPE" ) then
+		CaptchaEntry_Cancel(self);
+	end
+end
+
+function CaptchaEntry_Okay(self)
+	C_Login.SubmitCaptcha(AccountLogin.UI.CaptchaEntryDialog.Background.EditBox:GetText());
+	AccountLogin.UI.CaptchaEntryDialog:Hide();
+end
+
+function CaptchaEntry_Cancel(self)
 	C_Login.DisconnectFromServer();
 end
 

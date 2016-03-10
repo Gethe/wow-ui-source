@@ -1,13 +1,8 @@
 ClassNameplateBar = {};
 
 function ClassNameplateBar:OnLoad()
-	--[[ 
-		Initialize these variables in the class-specific OnLoad mixin function. Also make sure to implement
-		a UpdatePower() mixin function that handles UI changes for whenever the power display changes
-	self.class = "PALADIN";
-	self.spec = SPEC_PALADIN_RETRIBUTION;
-	self.powerTokens = {"HOLY_POWER", "MANA"}
-	]]--
+	-- Initialize these variables in the class-specific OnLoad mixin function. Also make sure to implement
+	-- an UpdatePower() mixin function that handles UI changes for whenever the power display changes
 	
 	self:Setup();
 end

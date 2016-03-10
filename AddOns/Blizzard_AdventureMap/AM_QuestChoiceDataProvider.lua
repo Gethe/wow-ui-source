@@ -1,7 +1,7 @@
-AdventureMap_QuestChoiceDataProviderMixin = CreateFromMixins(AdventureMapDataProviderMixin);
+AdventureMap_QuestChoiceDataProviderMixin = CreateFromMixins(MapCanvasDataProviderMixin);
 
-function AdventureMap_QuestChoiceDataProviderMixin:OnAdded(adventureMap)
-	AdventureMapDataProviderMixin.OnAdded(self, adventureMap);
+function AdventureMap_QuestChoiceDataProviderMixin:OnAdded(mapCanvas)
+	MapCanvasDataProviderMixin.OnAdded(self, mapCanvas);
 
 	self:RegisterEvent("ADVENTURE_MAP_UPDATE_POIS");
 	self:RegisterEvent("ADVENTURE_MAP_QUEST_UPDATE");
@@ -14,9 +14,9 @@ function AdventureMap_QuestChoiceDataProviderMixin:OnEvent(event, ...)
 	elseif event == "ADVENTURE_MAP_UPDATE_POIS" then
 		self:RefreshAllData();
 	elseif event == "QUEST_ACCEPTED" then
-		if self:GetAdventureMap():IsVisible() then
+		if self:GetMap():IsVisible() then
 			local questIndex, questID = ...;
-			for pin in self:GetAdventureMap():EnumeratePinsByTemplate("AdventureMap_QuestChoicePinTemplate") do
+			for pin in self:GetMap():EnumeratePinsByTemplate("AdventureMap_QuestChoicePinTemplate") do
 				if pin.questID == questID then
 					self:OnQuestAccepted(pin);
 					break;
@@ -27,10 +27,10 @@ function AdventureMap_QuestChoiceDataProviderMixin:OnEvent(event, ...)
 end
 
 function AdventureMap_QuestChoiceDataProviderMixin:RemoveAllData()
-	self:GetAdventureMap():RemoveAllPinsByTemplate("AdventureMap_QuestChoicePinTemplate");
-	self:GetAdventureMap():RemoveAllPinsByTemplate("AdventureMap_FogPinTemplate");
+	self:GetMap():RemoveAllPinsByTemplate("AdventureMap_QuestChoicePinTemplate");
+	self:GetMap():RemoveAllPinsByTemplate("AdventureMap_FogPinTemplate");
 
-	self:GetAdventureMap():ReleaseAreaTriggers("AdventureMap_QuestChoice");
+	self:GetMap():ReleaseAreaTriggers("AdventureMap_QuestChoice");
 
 	self.enclosedPin = nil;
 end
@@ -64,24 +64,24 @@ end
 
 local APPEAR_PERCENT = .85;
 local function QuestPinAreaTriggerPredicate(areaTrigger)
-	local adventureMap = areaTrigger.owner.adventureMap;
-	return not adventureMap:IsZoomingOut() and adventureMap:GetCanvasZoomPercent() > APPEAR_PERCENT;
+	local mapCanvas = areaTrigger.owner:GetMap();
+	return not mapCanvas:IsZoomingOut() and mapCanvas:GetCanvasZoomPercent() > APPEAR_PERCENT;
 end
 
 function AdventureMap_QuestChoiceDataProviderMixin:AddChoicePin(questID, name, zoneDescription, normalizedX, normalizedY)
-	local pin = self:GetAdventureMap():AcquirePin("AdventureMap_QuestChoicePinTemplate", self.playRevealAnims);
+	local pin = self:GetMap():AcquirePin("AdventureMap_QuestChoicePinTemplate", self.playRevealAnims);
 	pin.questID = questID;
 	pin.Text:SetText(name);
 	pin.zoneDescription = zoneDescription;
 	pin:SetPosition(normalizedX, normalizedY);
 	pin:Show();
 
-	local areaTrigger = self:GetAdventureMap():AcquireAreaTrigger("AdventureMap_QuestChoice");
+	local areaTrigger = self:GetMap():AcquireAreaTrigger("AdventureMap_QuestChoice");
 	areaTrigger.owner = self;
 	areaTrigger.pin = pin;
 
-	self:GetAdventureMap():SetAreaTriggerEnclosedCallback(areaTrigger, OnQuestPinAreaEnclosedChanged);
-	self:GetAdventureMap():SetAreaTriggerPredicate(areaTrigger, QuestPinAreaTriggerPredicate);
+	self:GetMap():SetAreaTriggerEnclosedCallback(areaTrigger, OnQuestPinAreaEnclosedChanged);
+	self:GetMap():SetAreaTriggerPredicate(areaTrigger, QuestPinAreaTriggerPredicate);
 
 	areaTrigger:SetCenter(normalizedX, normalizedY);
 	areaTrigger:Stretch(.1, .1);
@@ -106,10 +106,10 @@ function AdventureMap_QuestChoiceDataProviderMixin:OnQuestPinAreaEnclosedChanged
 				end
 			end
 			self.enclosedPin = nil;
-			self:GetAdventureMap():ZoomOut();
+			self:GetMap():ZoomOut();
 		end
 
-		AdventureMapQuestChoiceDialog:ShowWithQuest(self:GetAdventureMap(), pin, pin.questID, OnClosedCallback);
+		AdventureMapQuestChoiceDialog:ShowWithQuest(self:GetMap(), pin, pin.questID, OnClosedCallback);
 		AdventureMapQuestChoiceDialog:SetPortraitAtlas("QuestPortraitIcon-SandboxQuest", 38, 63, 0, 12);
 		
 		pin:SetSelected(true);
@@ -121,7 +121,7 @@ function AdventureMap_QuestChoiceDataProviderMixin:OnQuestPinAreaEnclosedChanged
 end
 
 function AdventureMap_QuestChoiceDataProviderMixin:AddFogPin(questID, normalizedX, normalizedY)
-	local pin = self:GetAdventureMap():AcquirePin("AdventureMap_FogPinTemplate", self.playRevealAnims);
+	local pin = self:GetMap():AcquirePin("AdventureMap_FogPinTemplate", self.playRevealAnims);
 	pin:SetPosition(normalizedX, normalizedY);
 	pin:Show();
 	return pin;
@@ -130,18 +130,18 @@ end
 function AdventureMap_QuestChoiceDataProviderMixin:OnQuestAccepted(pin)
 	local fogPin = pin.fogPin;
 	fogPin.OnQuestAcceptedAnim:SetScript("OnFinished", function()
-		self:GetAdventureMap():RemovePin(fogPin);
+		self:GetMap():RemovePin(fogPin);
 	end);
 
 	fogPin.OnQuestAcceptedAnim:Play();
 
 	pin.fogPin = nil;
-	self:GetAdventureMap():ReleaseAreaTrigger("AdventureMap_QuestChoice", pin.areaTrigger);
-	self:GetAdventureMap():RemovePin(pin);
+	self:GetMap():ReleaseAreaTrigger("AdventureMap_QuestChoice", pin.areaTrigger);
+	self:GetMap():RemovePin(pin);
 end
 
 --[[ Quest Choice Pin ]]--
-AdventureMap_QuestChoicePinMixin = CreateFromMixins(AdventureMapPinMixin);
+AdventureMap_QuestChoicePinMixin = CreateFromMixins(MapCanvasPinMixin);
 
 function AdventureMap_QuestChoicePinMixin:OnLoad()
 	self:SetScalingLimits(1.25, 3.0, 1.5);
@@ -159,7 +159,7 @@ end
 
 function AdventureMap_QuestChoicePinMixin:OnClick(button)
 	if button == "LeftButton" then
-		self:GetAdventureMap():SetDefaultMaxZoom();
+		self:GetMap():SetDefaultMaxZoom();
 		self:PanAndZoomTo();
 	end
 end
@@ -203,7 +203,7 @@ function AdventureMap_QuestChoicePinMixin:OnMouseLeave()
 end
 
 --[[ Fog Pin ]]--
-AdventureMap_FogPinMixin = CreateFromMixins(AdventureMapPinMixin);
+AdventureMap_FogPinMixin = CreateFromMixins(MapCanvasPinMixin);
 
 function AdventureMap_FogPinMixin:OnLoad()
 	self:SetAlphaStyle(AM_PIN_ALPHA_STYLE_VISIBLE_WHEN_ZOOMED_IN);
@@ -211,7 +211,7 @@ function AdventureMap_FogPinMixin:OnLoad()
 end
 
 function AdventureMap_FogPinMixin:OnAcquired(playAnim)
-	if playAnim and self:GetAdventureMap():IsZoomedIn() then
+	if playAnim and self:GetMap():IsZoomedIn() then
 		self.OnAddAnim:Play();
 	end
 end

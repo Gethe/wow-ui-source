@@ -1,12 +1,12 @@
-AdventureMap_ZoneLabelDataProviderMixin = CreateFromMixins(AdventureMapDataProviderMixin);
+AdventureMap_ZoneLabelDataProviderMixin = CreateFromMixins(MapCanvasDataProviderMixin);
 
-function AdventureMap_ZoneLabelDataProviderMixin:OnAdded(adventureMap)
-	AdventureMapDataProviderMixin.OnAdded(self, adventureMap);
+function AdventureMap_ZoneLabelDataProviderMixin:OnAdded(mapCanvas)
+	MapCanvasDataProviderMixin.OnAdded(self, mapCanvas);
 
 	if self.ZoneLabel then
-		self.ZoneLabel:SetParent(adventureMap);
+		self.ZoneLabel:SetParent(mapCanvas);
 	else
-		self.ZoneLabel = CreateFrame("FRAME", nil, adventureMap, "AdventureMap_ZoneLabelTemplate");
+		self.ZoneLabel = CreateFrame("FRAME", nil, mapCanvas, "AdventureMap_ZoneLabelTemplate");
 		self.ZoneLabel.dataProvider = self;
 	end
 
@@ -15,7 +15,7 @@ end
 
 function AdventureMap_ZoneLabelDataProviderMixin:RemoveAllData()
 	self.bestAreaTrigger = nil;
-	self:GetAdventureMap():ReleaseAreaTriggers("AdventureMap_ZoneLabel");
+	self:GetMap():ReleaseAreaTriggers("AdventureMap_ZoneLabel");
 
 	self.ZoneLabel.FadeOutAnim:Stop();
 	self.ZoneLabel.FadeInAnim:Stop();
@@ -33,8 +33,9 @@ function AdventureMap_ZoneLabelDataProviderMixin:RefreshAllData(fromOnShow)
 	self.numActiveAreas = 0;
 	self.activeAreas = {};
 
-	for zoneIndex = 1, C_AdventureMap.GetNumZones() do
-		local zoneMapID, zoneName, left, right, top, bottom = C_AdventureMap.GetZoneInfo(zoneIndex);
+	local mapAreaID = self:GetMap():GetMapID();
+	for zoneIndex = 1, C_MapCanvas.GetNumZones(mapAreaID) do
+		local zoneMapID, zoneName, left, right, top, bottom = C_MapCanvas.GetZoneInfo(mapAreaID, zoneIndex);
 		self:AddZone(zoneMapID, zoneName, left, right, top, bottom);
 	end
 
@@ -71,7 +72,7 @@ end
 function AdventureMap_ZoneLabelDataProviderMixin:EvaluateBestAreaTrigger()
 	self.labelDirty = false;
 
-	local mapViewRect = self:GetAdventureMap():GetViewRect();
+	local mapViewRect = self:GetMap():GetViewRect();
 	local mapViewRectCenterX, mapViewRectCenterY = mapViewRect:GetCenter();
 	local newBestAreaTrigger;
 	local bestDistSq = math.huge;
@@ -148,8 +149,8 @@ end
 
 local APPEAR_PERCENT = .85;
 local function ZoneAreaTriggerPredicate(areaTrigger)
-	local adventureMap = areaTrigger.owner.adventureMap;
-	return not adventureMap:IsZoomingOut() and adventureMap:GetCanvasZoomPercent() > APPEAR_PERCENT;
+	local mapCanvas = areaTrigger.owner:GetMap();
+	return not mapCanvas:IsZoomingOut() and mapCanvas:GetCanvasZoomPercent() > APPEAR_PERCENT;
 end
 
 local function ContinentAreaTriggerPredicate(areaTrigger)
@@ -173,15 +174,15 @@ local function OnAreaEnclosedChanged(areaTrigger, areaEnclosed)
 end
 
 function AdventureMap_ZoneLabelDataProviderMixin:AddZone(zoneMapID, zoneName, left, right, top, bottom)
-	local areaTrigger = self:GetAdventureMap():AcquireAreaTrigger("AdventureMap_ZoneLabel");
+	local areaTrigger = self:GetMap():AcquireAreaTrigger("AdventureMap_ZoneLabel");
 	areaTrigger.owner = self;
 	areaTrigger.name = zoneName;
 	areaTrigger.isContinent = false;
 
-	self:GetAdventureMap():SetAreaTriggerEnclosedCallback(areaTrigger, OnAreaEnclosedChanged);
-	self:GetAdventureMap():SetAreaTriggerPredicate(areaTrigger, ZoneAreaTriggerPredicate);
+	self:GetMap():SetAreaTriggerEnclosedCallback(areaTrigger, OnAreaEnclosedChanged);
+	self:GetMap():SetAreaTriggerPredicate(areaTrigger, ZoneAreaTriggerPredicate);
 
-	local maxViewRect = self:GetAdventureMap():GetMaxZoomViewRect();
+	local maxViewRect = self:GetMap():GetMaxZoomViewRect();
 
 	local width = (right - left);
 	local height = (bottom - top);
@@ -194,13 +195,13 @@ function AdventureMap_ZoneLabelDataProviderMixin:AddZone(zoneMapID, zoneName, le
 end
 
 function AdventureMap_ZoneLabelDataProviderMixin:AddContinent()
-	local areaTrigger = self:GetAdventureMap():AcquireAreaTrigger("AdventureMap_ZoneLabel");
+	local areaTrigger = self:GetMap():AcquireAreaTrigger("AdventureMap_ZoneLabel");
 	areaTrigger.owner = self;
 	areaTrigger.name = select(2, C_AdventureMap.GetContinentInfo());
 	areaTrigger.isContinent = true;
 
-	self:GetAdventureMap():SetAreaTriggerEnclosedCallback(areaTrigger, OnAreaEnclosedChanged);
-	self:GetAdventureMap():SetAreaTriggerPredicate(areaTrigger, ContinentAreaTriggerPredicate);
+	self:GetMap():SetAreaTriggerEnclosedCallback(areaTrigger, OnAreaEnclosedChanged);
+	self:GetMap():SetAreaTriggerPredicate(areaTrigger, ContinentAreaTriggerPredicate);
 
 	areaTrigger:SetCenter(.5, .5);
 	areaTrigger:Stretch(.01, .01);

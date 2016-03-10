@@ -144,14 +144,6 @@
 		<HighlightTexture file="Interface\Buttons\ButtonHilight-Square" alphaMode="ADD"/>
 		<CheckedTexture file="Interface\Buttons\CheckButtonHilight" alphaMode="ADD"/>
 	</CheckButton>
-	<CheckButton name="CoreAbilitiesSkillLineTabTemplate" inherits="SpellBookSkillLineTabTemplate" virtual="true">
-		<Anchors>
-			<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" x="0" y="-36"/>
-		</Anchors>
-		<Scripts>
-			<OnClick function="SpellBookCoreAbilitiesTab_OnClick"/>
-		</Scripts>
-	</CheckButton>
 	<Button name="SpellBookFrameTabButtonTemplate" inherits="CharacterFrameTabButtonTemplate" virtual="true" hidden="true">
 		<Scripts>
 			<OnClick>
@@ -828,92 +820,6 @@
 			</StatusBar>
 		</Frames>
 	</Frame>
-	<CheckButton name="CoreAbilitySpellTemplate" inherits="SecureFrameTemplate" virtual="true">
-		<Size x="37" y="37"/>
-		<Layers>
-			<Layer level="BACKGROUND">
-				<Texture parentKey="EmptySlot" inherits="Spellbook-EmptySlot">
-					<Anchors>
-						<Anchor point="CENTER"/>
-					</Anchors>
-				</Texture>
-			</Layer>
-			<Layer level="BORDER">
-				<Texture parentKey="iconTexture">
-					<Size x="36" y="36"/>
-					<Anchors>
-						<Anchor point="CENTER"/>
-					</Anchors>
-				</Texture>
-			</Layer>
-			<Layer level="OVERLAY">
-				<Texture parentKey="ActiveTexture" inherits="Spellbook-SlotFrame">
-					<Anchors>
-						<Anchor point="CENTER" x="1.5"/>
-					</Anchors>
-				</Texture>
-				<Texture parentKey="FutureTexture" inherits="Spellbook-UnlearnedSlot" hidden="true">
-					<Anchors>
-						<Anchor point="CENTER" x="1.5" y="-3"/>
-					</Anchors>
-				</Texture>
-				<FontString parentKey="Name" inherits="SystemFont_Large" justifyH="LEFT">
-					<Size x="300" y="0"/>
-					<Anchors>
-						<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" x="15" y="-4"/>
-					</Anchors>
-					<Color r="0.1" g="0.1" b="0.1"/>
-				</FontString>
-				<FontString parentKey="InfoText" inherits="SystemFont_Med1" maxLines="2" justifyH="LEFT" justifyV="TOP">
-					<Size x="360" y="0"/>
-					<Anchors>
-						<Anchor point="TOPLEFT" relativeKey="$parent.Name" relativePoint="BOTTOMLEFT" x="0" y="-1"/>
-					</Anchors>
-					<Color r="0.1" g="0.1" b="0.1"/>
-				</FontString>
-				<FontString parentKey="RequiredLevel" inherits="GameFontBlackSmall" justifyH="LEFT">
-					<Size x="360" y="0"/>
-					<Anchors>
-						<Anchor point="TOPLEFT" relativeKey="$parent.InfoText" relativePoint="BOTTOMLEFT" x="0" y="-1"/>
-					</Anchors>
-					<Color r="0.25" g="0.12" b="0"/>
-				</FontString>
-			</Layer>
-		</Layers>
-		<Scripts>
-			<OnLoad>
-				self:RegisterForDrag("LeftButton");
-				self:RegisterForClicks("LeftButtonUp", "RightButtonUp");
-			</OnLoad>
-			<OnClick>
-				if ( IsModifiedClick() ) then
-					ChatEdit_InsertLink(GetSpellLink(self.spellID));
-				else
-					ClearCursor()
-				end
-			</OnClick>
-			<OnDragStart>
-				if ( self.draggable ) then
-					PickupSpell(self.spellID);
-				end
-			</OnDragStart>
-			<OnReceiveDrag>
-				if ( self.draggable ) then
-					PickupSpell(self.spellID);
-				end
-			</OnReceiveDrag>
-			<OnEnter>
-				GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
-				GameTooltip:SetSpellByID(self.spellID, false, false, true);
-			</OnEnter>
-			<OnLeave>
-				GameTooltip:Hide();
-			</OnLeave>
-		</Scripts>
-		<PushedTexture file="Interface\Buttons\UI-Quickslot-Depress"/>
-		<HighlightTexture file="Interface\Buttons\ButtonHilight-Square" alphaMode="ADD" parentKey="highlightTexture"/>
-		<CheckedTexture file="Interface\Buttons\CheckButtonHilight" alphaMode="ADD"/>
-	</CheckButton>
 
 	<Frame name="SpellBookFrame" toplevel="true" movable="true" enableMouse="true" hidden="true" parent="UIParent" inherits="ButtonFrameTemplate" frameStrata="MEDIUM">
 		<Size>
@@ -1394,33 +1300,6 @@
 							</OnLoad>
 						</Scripts>
 					</Frame>
-				</Frames>
-			</Frame>
-			<Frame name="SpellBookCoreAbilitiesFrame">
-				<Anchors>
-					<Anchor point="TOPLEFT" relativeTo="SpellBookFrame" relativePoint="TOPLEFT"/>
-					<Anchor point="BOTTOMRIGHT" relativeTo="SpellBookFrame" relativePoint="BOTTOMRIGHT"/>
-				</Anchors>
-				<Layers>
-					<Layer level="OVERLAY">
-						<FontString parentKey="SpecName" inherits="CoreAbilityFont" justifyH="CENTER">
-							<Anchors>
-								<Anchor point="TOP" x="20" y="-50"/>
-							</Anchors>
-						</FontString>
-					</Layer>
-				</Layers>
-				<Frames>
-					<Button parentArray="Abilities" inherits="CoreAbilitySpellTemplate">
-						<Anchors>
-							<Anchor point="TOPLEFT" x="100" y="-85"/>
-						</Anchors>
-					</Button>
-					<CheckButton parentArray="SpecTabs" inherits="CoreAbilitiesSkillLineTabTemplate" id="1">
-						<Anchors>
-							<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" x="0" y="-53"/>
-						</Anchors>
-					</CheckButton>
 				</Frames>
 			</Frame>
 		</Frames>
