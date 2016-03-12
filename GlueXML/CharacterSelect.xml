@@ -458,16 +458,16 @@
 					</Layer>
 				</Layers>
 				<Frames>
-				<ModelFFX name="CharacterSelectModel" setAllPoints="true">
-					<Scripts>
-						<OnLoad>
-							SetWorldFrameStrata(self);
-						</OnLoad>
-						<OnUpdateModel>
-							CharacterSelect_UpdateModel(self);
-						</OnUpdateModel>
-					</Scripts>
-				</ModelFFX>
+					<ModelFFX name="CharacterSelectModel" setAllPoints="true">
+						<Scripts>
+							<OnLoad>
+								SetWorldFrameStrata(self);
+							</OnLoad>
+							<OnUpdateModel>
+								CharacterSelect_UpdateModel(self);
+							</OnUpdateModel>
+						</Scripts>
+					</ModelFFX>
 					<Frame name="LogoHoist" frameStrata="HIGH">
 						<Size x="1" y="1"/>
 						<Anchors>
@@ -869,42 +869,6 @@
 							<OnLoad function="CopyCharacterButton_OnLoad"/>
 							<OnClick function="CopyCharacterButton_OnClick"/>
 						</Scripts>
-					</Button>
-					<Button name="CharacterSelectRealmSplitButton" inherits="GlueButtonTemplate" hidden="true" text="SERVER_SPLIT_BUTTON">
-						<Size x="150" y="55"/>
-						<Anchors>
-							<Anchor point="TOP" relativeTo="CharacterSelectLogo" relativePoint="BOTTOM" x="0" y="-5"/>
-						</Anchors>
-						<Layers>
-							<Layer level="OVERLAY">
-								<Texture name="$parentGlow" file="Interface\Glues\Common\Glue-Panel-Button-Glow" hidden="false" alphaMode="ADD">
-									<TexCoords left="0" right="0.578125" top="0" bottom="0.75"/>
-								</Texture>
-							</Layer>
-							<Layer level="BACKGROUND">
-								<FontString name="RealmSplitCurrentChoice" inherits="GlueFontNormal" justifyH="CENTER">
-									<Size x="256" y="0"/>
-									<Anchors>
-										<Anchor point="TOP" relativePoint="BOTTOM" x="0" y="0"/>
-									</Anchors>
-								</FontString>
-								<FontString name="RealmSplitPending" inherits="GlueFontNormal" justifyH="CENTER" text="SERVER_SPLIT_PENDING">
-									<Size x="256" y="0"/>
-									<Anchors>
-										<Anchor point="TOP" relativeTo="RealmSplitCurrentChoice" relativePoint="BOTTOM" x="0" y="-10"/>
-									</Anchors>
-								</FontString>
-							</Layer>
-						</Layers>
-						<Scripts>
-							<OnClick>
-								SERVER_SPLIT_SHOW_DIALOG = true;
-							</OnClick>
-							<OnUpdate>
-								GlueButtonMaster_OnUpdate(self, elapsed);
-							</OnUpdate>
-						</Scripts>
-						<NormalFont style="GlueFontHighlight"/>
 					</Button>
 					<Button name="CharacterSelectDeleteButton" inherits="GlueButtonSmallTemplate" text="DELETE_CHARACTER">
 						<Size x="165" y="35"/>
