@@ -9,8 +9,6 @@ GlueTemplates.xml
 ## add new files after here
 GlueButtons.xml
 GlueBasicControls.xml
-GlueDialog.xml
-GlueTooltip.xml
 GlueDropDownMenuTemplates.xml
 GlueDropDownMenu.xml 
 
@@ -26,13 +24,15 @@ GlueDropDownMenu.xml
 
 ##New stuff!!!
 GlueParent.xml
+GlueDialog.xml
+GlueTooltip.xml
 ..\SharedXML\AddonList.xml
 ServerAlert.xml
 AccountLogin.xml
 RealmList.xml
-AccountReactivate.xml
 CharacterServicesPatchwerk.xml
 CharacterSelect.xml
+AccountReactivate.xml
 CharacterServices.xml
 CharacterCreate.xml
 PromotionFrame.xml

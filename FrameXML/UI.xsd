@@ -330,6 +330,7 @@
 				<xs:element name="OnExternalLink" type="ScriptType"/>
 				<xs:element name="OnButtonUpdate" type="ScriptType"/>
 				<xs:element name="OnError" type="ScriptType"/>
+				<xs:element name="OnDressModel" type="ScriptType"/>
 			</xs:choice>
 		</xs:sequence>
 	</xs:complexType>

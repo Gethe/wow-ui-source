@@ -139,8 +139,6 @@ function CharacterSelect_OnShow()
 		if ( paymentPlan == 0 ) then
 			-- No payment plan
 			GameRoomBillingFrame:Hide();
-			CharacterSelectRealmSplitButton:ClearAllPoints();
-			CharacterSelectRealmSplitButton:SetPoint("TOP", CharacterSelectLogo, "BOTTOM", 0, -5);
 		else
 			local billingTimeLeft = GetBillingTimeRemaining();
 			-- Set default text for the payment plan
@@ -197,15 +195,11 @@ function CharacterSelect_OnShow()
 			GameRoomBillingFrameText:SetText(billingText);
 			GameRoomBillingFrame:SetHeight(GameRoomBillingFrameText:GetHeight() + 26);
 			GameRoomBillingFrame:Show();
-			CharacterSelectRealmSplitButton:ClearAllPoints();
-			CharacterSelectRealmSplitButton:SetPoint("TOP", GameRoomBillingFrame, "BOTTOM", 0, -10);
 		end
 	end
 	
 	-- fadein the character select ui
 	CharacterSelectUI.FadeIn:Play();
-
-	RealmSplitCurrentChoice:Hide();
 
 	--Clear out the addons selected item
 	GlueDropDownMenu_SetSelectedValue(AddonCharacterDropDown, true);
@@ -265,7 +259,6 @@ function CharacterSelect_OnHide(self)
 	if ( DeclensionFrame ) then
 		DeclensionFrame:Hide();
 	end
-	SERVER_SPLIT_STATE_PENDING = -1;
 	
 	PromotionFrame_Hide();
 	C_AuthChallenge.Cancel();
@@ -290,44 +283,6 @@ function CharacterSelect_SaveCharacterOrder()
 end
 
 function CharacterSelect_OnUpdate(self, elapsed)
-	if ( SERVER_SPLIT_STATE_PENDING > 0 ) then
-		CharacterSelectRealmSplitButton:Show();
-
-		if ( SERVER_SPLIT_CLIENT_STATE > 0 ) then
-			RealmSplit_SetChoiceText();
-			RealmSplitPending:SetPoint("TOP", RealmSplitCurrentChoice, "BOTTOM", 0, -10);
-		else
-			RealmSplitPending:SetPoint("TOP", CharacterSelectRealmSplitButton, "BOTTOM", 0, 0);
-			RealmSplitCurrentChoice:Hide();
-		end
-
-		if ( SERVER_SPLIT_STATE_PENDING > 1 ) then
-			CharacterSelectRealmSplitButton:Disable();
-			CharacterSelectRealmSplitButtonGlow:Hide();
-			RealmSplitPending:SetText( SERVER_SPLIT_PENDING );
-		else
-			CharacterSelectRealmSplitButton:Enable();
-			CharacterSelectRealmSplitButtonGlow:Show();
-			local datetext = SERVER_SPLIT_CHOOSE_BY.."\n"..SERVER_SPLIT_DATE;
-			RealmSplitPending:SetText( datetext );
-		end
-
-		if ( SERVER_SPLIT_SHOW_DIALOG and not GlueDialog:IsShown() ) then
-			SERVER_SPLIT_SHOW_DIALOG = false;
-			local dialogString = format(SERVER_SPLIT,SERVER_SPLIT_DATE);
-			if ( SERVER_SPLIT_CLIENT_STATE > 0 ) then
-				local serverChoice = RealmSplit_GetFormatedChoice(SERVER_SPLIT_REALM_CHOICE);
-				local stringWithDate = format(SERVER_SPLIT,SERVER_SPLIT_DATE);
-				dialogString = stringWithDate.."\n\n"..serverChoice;
-				GlueDialog_Show("SERVER_SPLIT_WITH_CHOICE", dialogString);
-			else
-				GlueDialog_Show("SERVER_SPLIT", dialogString);
-			end
-		end
-	else
-		CharacterSelectRealmSplitButton:Hide();
-	end
-
 	if ( self.undeleteFailed ) then
 		if (not GlueDialog:IsShown()) then
 			GlueDialog_Show(self.undeleteFailed == "name" and "UNDELETE_NAME_TAKEN" or "UNDELETE_FAILED");
@@ -1072,21 +1027,6 @@ end
 function CharacterSelect_ManageAccount()
 	PlaySound("gsCharacterSelectionAcctOptions");
 	LaunchURL(AUTH_NO_TIME_URL);
-end
-
-function RealmSplit_GetFormatedChoice(formatText)
-	local realmChoice;
-	if ( SERVER_SPLIT_CLIENT_STATE == 1 ) then
-		realmChoice = SERVER_SPLIT_SERVER_ONE;
-	else
-		realmChoice = SERVER_SPLIT_SERVER_TWO;
-	end
-	return format(formatText, realmChoice);
-end
-
-function RealmSplit_SetChoiceText()
-	RealmSplitCurrentChoice:SetText( RealmSplit_GetFormatedChoice(SERVER_SPLIT_CURRENT_CHOICE) );
-	RealmSplitCurrentChoice:Show();
 end
 
 function CharacterSelect_PaidServiceOnClick(self, button, down, service)

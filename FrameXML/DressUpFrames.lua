@@ -99,6 +99,47 @@ function SetDressUpBackground(frame, fileName)
 	end
 end
 
+function DressUpFrame_OnDressModel(self)
+	-- only want 1 update per frame
+	if ( not self.gotDressed ) then
+		self.gotDressed = true;
+		C_Timer.After(0, function() self.gotDressed = nil; DressUpFrameOutfitDropDown:UpdateSaveButton(); end);
+	end
+end
+
+function DressUpFrame_GetDisplayedSourceID(slot, transmogType)
+	local slotID = GetInventorySlotInfo(slot);
+	local appearanceSourceID, illusionSourceID = DressUpModel:GetSlotTransmogSources(slotID);
+	if ( transmogType == LE_TRANSMOG_TYPE_APPEARANCE ) then
+		return appearanceSourceID;
+	elseif ( transmogType == LE_TRANSMOG_TYPE_ILLUSION ) then
+		return illusionSourceID;
+	end
+end
+
+function DressUpFrame_LoadOutfit(outfitID)
+	if ( not outfitID ) then
+		return;
+	end
+	local appearanceSources, mainHandEnchant, offHandEnchant = C_TransmogCollection.GetOutfitSources(outfitID);
+	if ( not appearanceSources ) then
+		return true;
+	end
+
+	local mainHandSlotID = GetInventorySlotInfo("MAINHANDSLOT");
+	local secondaryHandSlotID = GetInventorySlotInfo("SECONDARYHANDSLOT");
+	for i = 1, #appearanceSources do
+		if ( i ~= mainHandSlotID and i ~= secondaryHandSlotID ) then
+			if ( appearanceSources[i] ~= NO_TRANSMOG_SOURCE_ID ) then
+				DressUpModel:TryOn(appearanceSources[i]);
+			end
+		end
+	end
+
+	DressUpModel:TryOn(appearanceSources[mainHandSlotID], "MAINHANDSLOT", mainHandEnchant);
+	DressUpModel:TryOn(appearanceSources[secondaryHandSlotID], "SECONDARYHANDSLOT", offHandEnchant);
+end
+
 function SideDressUpFrame_OnShow(self)
 	SetUIPanelAttribute(self.parentFrame, "width", self.openWidth);
 	UpdateUIPanelPositions(self.parentFrame);

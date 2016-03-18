@@ -57,6 +57,17 @@ GlueDialogTypes["OKAY_WITH_URL"] = {
 	end,
 }
 
+GlueDialogTypes["OKAY_WITH_GENERIC_URL"] = {
+	text = "",
+	button1 = HELP,
+	button2 = OKAY,
+	OnAccept = function()
+		LaunchURL(BNET_ERROR_GENERIC_URL);
+	end,
+	OnCancel = function()
+	end,
+}
+
 GlueDialogTypes["ERROR_CINEMATIC"] = {
 	text = ERROR_CINEMATIC,
 	button1 = OKAY,
@@ -82,7 +93,6 @@ GlueDialogTypes["RESET_SERVER_SETTINGS"] = {
 	text = RESET_SERVER_SETTINGS,
 	button1 = OKAY,
 	button2 = CANCEL,
-	escapeHides = true,
 	OnAccept = function ()
 		GlueParent.ScreenFrame.OptionsResetFrame:Show();
 		-- Switch the reset settings button to cancel mode
@@ -96,7 +106,6 @@ GlueDialogTypes["CANCEL_RESET_SETTINGS"] = {
 	text = CANCEL_RESET_SETTINGS,
 	button1 = OKAY,
 	button2 = CANCEL,
-	escapeHides = true,
 	OnAccept = function ()
 		GlueParent.ScreenFrame.OptionsResetFrame:Hide();
 		-- Switch the reset settings button back to reset mode
@@ -136,7 +145,11 @@ GlueDialogTypes["CHAR_DELETE_IN_PROGRESS"] = {
 GlueDialogTypes["REALM_LIST_IN_PROGRESS"] = {
 	text = REALM_LIST_IN_PROGRESS,
 	ignoreKeys = true,
-	spinner = true,
+	button1 = CANCEL,
+	button2 = nil,
+	OnAccept = function()
+		RealmList_OnCancel();
+	end,
 }
 
 GlueDialogTypes["OKAY_LEGAL_REDIRECT"] = {
@@ -205,13 +218,11 @@ GlueDialogTypes["QUEUED_WITH_FCM"] = {
 	end,
 }
 
---[[
 GlueDialogTypes["SYSTEM_INCOMPATIBLE_SSE"] = {
 	text = SYSTEM_INCOMPATIBLE_SSE,
 	button1 = OKAY,
 	html = 1,
 	showAlert = 1,
-	escapeHides = true,
 	OnAccept = function ()
 		CheckSystemRequirements("SSE");
 	end
@@ -222,7 +233,6 @@ GlueDialogTypes["DEVICE_BLACKLISTED"] = {
 	button1 = OKAY,
 	html = 1,
 	showAlert = 1,
-	escapeHides = true,
 	OnAccept = function ()
 		CheckSystemRequirements("DEVICE");
 	end
@@ -233,7 +243,6 @@ GlueDialogTypes["FIXEDFUNCTION_UNSUPPORTED"] = {
 	button1 = OKAY,
 	html = 1,
 	showAlert = 1,
-	escapeHides = true,
 	OnAccept = function ()
 		CheckSystemRequirements("SHADERMODEL");
 	end
@@ -244,7 +253,6 @@ GlueDialogTypes["DRIVER_BLACKLISTED"] = {
 	button1 = OKAY,
 	html = 1,
 	showAlert = 1,
-	escapeHides = true,
 	OnAccept = function ()
 		CheckSystemRequirements("DRIVER");
 	end
@@ -255,7 +263,6 @@ GlueDialogTypes["DRIVER_OUTOFDATE"] = {
 	button1 = OKAY,
 	html = 1,
 	showAlert = 1,
-	escapeHides = true,
 	OnAccept = function ()
 		CheckSystemRequirements("DRIVER_OOD");
 	end
@@ -266,11 +273,12 @@ GlueDialogTypes["SHADER_MODEL_TO_BE_UNSUPPORTED"] = {
 	button1 = OKAY,
 	html = 1,
 	showAlert = 1,
-	escapeHides = true,
 	OnAccept = function ()
 		CheckSystemRequirements("SHADERMODEL_TOBEUNSUPPORTED");
 	end
 }
+
+--[[
 
 GlueDialogTypes["DISCONNECTED"] = {
 	text = DISCONNECTED,
@@ -442,42 +450,6 @@ GlueDialogTypes["CLIENT_TRIAL"] = {
 	OnCancel = function()
 		PlaySound("gsTitleQuit");
 		QuitGame();
-	end,
-}
-
-GlueDialogTypes["SERVER_SPLIT"] = {
-	text = SERVER_SPLIT,
-	button1 = SERVER_SPLIT_SERVER_ONE,
-	button2 = SERVER_SPLIT_SERVER_TWO,
-	button3 = SERVER_SPLIT_NOT_NOW,
-	escapeHides = true;
-
-	OnAccept = function()
-		SetStateRequestInfo( 1 );
-	end,
-	OnCancel = function()
-		SetStateRequestInfo( 2 );
-	end,
-	OnAlt = function()
-		SetStateRequestInfo( 0 );
-	end,
-}
-
-GlueDialogTypes["SERVER_SPLIT_WITH_CHOICE"] = {
-	text = SERVER_SPLIT,
-	button1 = SERVER_SPLIT_SERVER_ONE,
-	button2 = SERVER_SPLIT_SERVER_TWO,
-	button3 = SERVER_SPLIT_DONT_CHANGE,
-	escapeHides = true;
-
-	OnAccept = function()
-		SetStateRequestInfo( 1 );
-	end,
-	OnCancel = function()
-		SetStateRequestInfo( 2 );
-	end,
-	OnAlt = function()
-		SetStateRequestInfo( 0 );
 	end,
 }
 
@@ -763,7 +735,7 @@ function GlueDialog_OnKeyDown(self, key)
 		return;
 	end
 
-	if ( info and info.escapeHides ) then
+	if ( info and info.escapeHides and key == "ESCAPE" ) then
 		if ( info.hideSound ) then
 			PlaySound(info.hideSound);
 		end

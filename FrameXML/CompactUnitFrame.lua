@@ -33,6 +33,8 @@ function CompactUnitFrame_OnLoad(self)
 	self:RegisterEvent("UNIT_ABSORB_AMOUNT_CHANGED");
 	self:RegisterEvent("UNIT_HEAL_ABSORB_AMOUNT_CHANGED");
 	self:RegisterEvent("UNIT_PHASE");
+	self:RegisterEvent("GROUP_JOINED");
+	self:RegisterEvent("GROUP_LEFT");
 	-- also see CompactUnitFrame_UpdateUnitEvents for more events
 	
 	self.maxBuffs = 0;
@@ -91,12 +93,14 @@ function CompactUnitFrame_OnEvent(self, event, ...)
 		elseif ( event == "UNIT_THREAT_SITUATION_UPDATE" ) then
 			CompactUnitFrame_UpdateAggroHighlight(self);
 			CompactUnitFrame_UpdateAggroFlash(self);
+			CompactUnitFrame_UpdateHealthBackground(self);
 		elseif ( event == "UNIT_THREAT_LIST_UPDATE" ) then
 			if ( self.optionTable.considerSelectionInCombatAsHostile ) then
 				CompactUnitFrame_UpdateHealthColor(self);
 				CompactUnitFrame_UpdateName(self);
 			end
 			CompactUnitFrame_UpdateAggroFlash(self);
+			CompactUnitFrame_UpdateHealthBackground(self);
 		elseif ( event == "UNIT_CONNECTION" ) then
 			--Might want to set the health/mana to max as well so it's easily visible? This happens unless the player is out of AOI.
 			CompactUnitFrame_UpdateHealthColor(self);
@@ -120,6 +124,11 @@ function CompactUnitFrame_OnEvent(self, event, ...)
 			CompactUnitFrame_UpdateStatusText(self);
 		elseif ( event == "UNIT_PHASE" ) then
 			CompactUnitFrame_UpdateCenterStatusIcon(self);
+		elseif ( event == "GROUP_JOINED" ) then
+			CompactUnitFrame_UpdateAggroFlash(self);
+			CompactUnitFrame_UpdateHealthBackground(self);
+		elseif ( event == "GROUP_LEFT" ) then
+			CompactUnitFrame_UpdateHealthBackground(self);
 		end
 	end
 end
@@ -140,6 +149,7 @@ function CompactUnitFrame_SetUnit(frame, unit)
 		frame.readyCheckStatus = nil
 		frame.readyCheckDecay = nil;
 		frame.isTanking = nil;
+		frame.healthBar.healthBackground = nil;
 		frame:SetAttribute("unit", unit);
 		if ( unit ) then
 			CompactUnitFrame_RegisterEvents(frame);
@@ -276,6 +286,7 @@ function CompactUnitFrame_UpdateAll(frame)
 		CompactUnitFrame_UpdateSelectionHighlight(frame);
 		CompactUnitFrame_UpdateAggroHighlight(frame);
 		CompactUnitFrame_UpdateAggroFlash(frame);
+		CompactUnitFrame_UpdateHealthBackground(frame);
 		CompactUnitFrame_UpdateInRange(frame);
 		CompactUnitFrame_UpdateStatusText(frame);
 		CompactUnitFrame_UpdateHealPrediction(frame);
@@ -323,9 +334,13 @@ function CompactUnitFrame_IsTapDenied(frame)
 	return frame.optionTable.greyOutWhenTapDenied and not UnitPlayerControlled(frame.unit) and UnitIsTapDenied(frame.unit);
 end
 
+local function IsOnThreatList(threatStatus)
+	return threatStatus ~= nil
+end
+
 function CompactUnitFrame_IsOnThreatListWithPlayer(unit)
-	local _, status = UnitDetailedThreatSituation("player", unit);
-	return status and status > 0;
+	local _, threatStatus = UnitDetailedThreatSituation("player", unit);
+	return IsOnThreatList(threatStatus);
 end
 
 function CompactUnitFrame_UpdateHealthColor(frame)
@@ -352,7 +367,7 @@ function CompactUnitFrame_UpdateHealthColor(frame)
 				if ( frame.optionTable.considerSelectionInCombatAsHostile and CompactUnitFrame_IsOnThreatListWithPlayer(frame.displayedUnit) ) then
 					r, g, b = 1.0, 0.0, 0.0;
 				else
-					r, g, b = UnitSelectionColor(frame.unit);
+					r, g, b = UnitSelectionColor(frame.unit, frame.optionTable.colorHealthWithExtendedColors);
 				end
 			elseif ( UnitIsFriend("player", frame.unit) ) then
 				r, g, b = 0.0, 1.0, 0.0;
@@ -363,6 +378,13 @@ function CompactUnitFrame_UpdateHealthColor(frame)
 	end
 	if ( r ~= frame.healthBar.r or g ~= frame.healthBar.g or b ~= frame.healthBar.b ) then
 		frame.healthBar:SetStatusBarColor(r, g, b);
+
+		if (frame.optionTable.colorHealthWithExtendedColors) then
+			frame.selectionHighlight:SetVertexColor(r, g, b);
+		else
+			frame.selectionHighlight:SetVertexColor(1, 1, 1);
+		end
+		
 		frame.healthBar.r, frame.healthBar.g, frame.healthBar.b = r, g, b;
 	end
 end
@@ -475,7 +497,7 @@ function CompactUnitFrame_UpdateName(frame)
 			if ( frame.optionTable.considerSelectionInCombatAsHostile and CompactUnitFrame_IsOnThreatListWithPlayer(frame.displayedUnit) ) then
 				frame.name:SetVertexColor(1.0, 0.0, 0.0);
 			else
-				frame.name:SetVertexColor(UnitSelectionColor(frame.unit));
+				frame.name:SetVertexColor(UnitSelectionColor(frame.unit, frame.optionTable.colorNameWithExtendedColors));
 			end
 		end
 
@@ -533,6 +555,27 @@ local function IsPlayerEffectivelyTank()
 	return assignedRole == "TANK";
 end
 
+function CompactUnitFrame_UpdateHealthBackground(frame)
+	local frameOptions = frame.optionTable;
+	local background = frameOptions.healthBarBackground;
+
+	if ( frameOptions.healthBarBackgroundTank and IsPlayerEffectivelyTank() ) then
+		-- Special cased rules to only use this bg when actually in a party/raid
+		-- for units that are in combat
+		local isTanking, threatStatus = UnitDetailedThreatSituation("player", frame.displayedUnit);
+		local showTankingBackground = (not isTanking) and IsOnThreatList(threatStatus) and IsInGroup();
+
+		if ( showTankingBackground ) then
+			background = frameOptions.healthBarBackgroundTank;
+		end
+	end
+
+	if ( frame.healthBar.healthBackground ~= background ) then
+		frame.healthBar.healthBackground = background;
+		frame.healthBar.background:SetAtlas(background);
+	end
+end
+
 function CompactUnitFrame_UpdateAggroFlash(frame)
 	if ( frame.optionTable.displayAggroHighlight or not frame.optionTable.playLoseAggroHighlight ) then
 		return;
@@ -541,7 +584,7 @@ function CompactUnitFrame_UpdateAggroFlash(frame)
 	if ( not IsPlayerEffectivelyTank() ) then
 		return;
 	end
-	
+
 	local isTanking = UnitDetailedThreatSituation("player", frame.displayedUnit);
 	if ( frame.isTanking ~= isTanking ) then
 		if ( frame.isTanking and not isTanking ) then
@@ -1543,11 +1586,14 @@ DefaultCompactNamePlateTargetFriendlyFrameOptions = {
 	displayHealPrediction = false,
 	--displayDispelDebuffs = true,
 	colorNameBySelection = true,
+	colorNameWithExtendedColors = true,
+	colorHealthWithExtendedColors = true,
 	colorHealthBySelection = true,
 	considerSelectionInCombatAsHostile = true,
 	smoothHealthUpdates = true,
 	displayNameWhenSelected = true,
 	displayNameByPlayerNameRules = true,
+	healthBarBackground = "nameplates-bar-background",
 }
 
 DefaultCompactNamePlateTargetEnemyFrameOptions = {
@@ -1566,6 +1612,8 @@ DefaultCompactNamePlateTargetEnemyFrameOptions = {
 	displayNameWhenSelected = true,
 	displayNameByPlayerNameRules = true,
 	greyOutWhenTapDenied = true,
+	healthBarBackground = "nameplates-bar-background",
+	healthBarBackgroundTank = "nameplates-bar-background-white",
 }
 
 DefaultCompactNamePlatePlayerFrameOptions = {
@@ -1581,18 +1629,17 @@ DefaultCompactNamePlatePlayerFrameOptions = {
 	displayNameWhenSelected = false,
 	hideCastbar = true,
 	healthBarColorOverride = { r = 0, g = 1, b = 0 },
+	healthBarBackground = "nameplates-playerhealth-background",
 }
 
 DefaultCompactNamePlateTargetFrameSetUpOptions = {
 	healthBarHeight = 4,
 	healthBarAlpha = 0.75,
-	healthBarBackground = "nameplates-bar-background",
 }
 
 DefaultCompactNamePlatePlayerFrameSetUpOptions = {
 	healthBarHeight = 4,
 	healthBarAlpha = 1,
-	healthBarBackground = "nameplates-playerhealth-background",
 }
 
 function DefaultCompactNamePlateTargetFrameSetup(frame, options)
@@ -1655,7 +1702,6 @@ function DefaultCompactNamePlateFrameSetup(frame, setupOptions, frameOptions)
 	frame.healthBar.background:ClearAllPoints();
 	frame.healthBar.background:SetPoint("TOPLEFT", frame.healthBar, "TOPLEFT", -2, 1);
 	frame.healthBar.background:SetPoint("BOTTOMRIGHT", frame.healthBar, "BOTTOMRIGHT", 2, -1);
-	frame.healthBar.background:SetAtlas(setupOptions.healthBarBackground);
 	frame.healthBar.background:SetAlpha(setupOptions.healthBarAlpha);
 
 	frame.healthBar.inset = frame.healthBar.inset or frame.healthBar:CreateTexture("$parentInset", "BACKGROUND", 1);
@@ -1699,10 +1745,10 @@ function DefaultCompactNamePlateFrameSetup(frame, setupOptions, frameOptions)
 	frame.name:SetShadowOffset(0, 0);
 
 	frame.selectionHighlight:SetAllPoints(frame.healthBar:GetStatusBarTexture());
-	frame.selectionHighlight:SetAlpha(.5);
-	frame.selectionHighlight:SetTexture("Interface\\TargetingFrame\\UI-TargetingFrame-BarFill");
+	frame.selectionHighlight:SetAlpha(.25);
+	frame.selectionHighlight:SetTexture("Interface\\TargetingFrame\\UI-TargetingFrame-BarFill");	
 	frame.selectionHighlight:SetBlendMode("ADD");
-	
+
 	frame.LoseAggroAnim:Stop();
 	frame.aggroHighlight:SetTexture("Interface\\TargetingFrame\\UI-TargetingFrame-BarFill");
 	frame.aggroHighlight:SetAlpha(0);

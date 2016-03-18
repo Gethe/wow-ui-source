@@ -55,10 +55,14 @@ function ClassNameplateBar:Setup()
 		
 		self:RegisterEvent("PLAYER_TALENT_UPDATE");
 	end
+
 	if (showBar) then
 		self:ShowNameplateBar();
 		self:UpdateMaxPower();
+	else
+		self:HideNameplateBar();
 	end
+
 	return showBar;
 end
 

@@ -292,7 +292,7 @@
 					<Layer level="OVERLAY">
 						<Texture parentKey="Icon" inherits="GameFontHighlight">
 							<Color r="1" g="1" b="1"/>
-							<Size x="16" y="16"/>
+							<Size x="32" y="32"/>
 							<Anchors>
 								<Anchor point="CENTER"/>
 							</Anchors>
@@ -316,6 +316,7 @@
 			<OnLoad method="OnLoad"/>
 			<OnShow method="OnShow"/>
 			<OnHide method="OnHide"/>
+			<OnEvent method="OnEvent"/>
 		</Scripts>
 		<Frames>
 			<Button parentKey="Tab1" name="$parentTab1" inherits="GarrisonMissionFrameTabTemplate" id="1" text="GARRISON_MISSIONS">
@@ -413,6 +414,24 @@
 							<OnUpdate method="OnUpdate"/>
 						</Scripts>
 					</ScrollFrame>
+					<Frame parentKey="CompleteDialog" enableMouse="true" setAllPoints="true" hidden="true" frameLevel="10">
+						<Size x="956" y="637"/>
+						<Anchors>
+							<Anchor point="TOPLEFT" x="1" y="-22"/>
+						</Anchors>
+						<Layers>
+							<Layer level="BACKGROUND" textureSubLevel="0" setAllPoints="true">
+								<Texture parentKey="Background">
+									<Color r="0" g="0" b="0" a="0.8"/>
+								</Texture>
+							</Layer>
+						</Layers>
+						<Frames>
+							<Frame parentKey="BorderFrame" inherits="GarrisonMissionPageBaseTemplate, GarrisonMissionCompleteDialogTemplate, GarrisonMissionTopBorderTemplate">
+							</Frame>
+						</Frames>
+					</Frame>
+
 					<Button parentKey="ZoneSupportMissionPage" inherits="GarrisonFollowerMissionRewardsFrameTemplate" hidden="true" frameStrata="HIGH" frameLevel="100" mixin="GarrisonMissionPageMixin,ZoneSupportMissionPageMixin">
 						<Size x="520" y="120"/>
 						<Anchors>

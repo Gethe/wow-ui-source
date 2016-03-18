@@ -184,7 +184,7 @@ function BattlefieldMinimap_Update()
 	-- Use this value to scale the texture sizes and offsets
 	local battlefieldMinimapScale = BattlefieldMinimap1:GetWidth()/256;
 	for i=1, numOverlays do
-		local textureName, textureWidth, textureHeight, offsetX, offsetY = GetMapOverlayInfo(i);
+		local textureName, textureWidth, textureHeight, offsetX, offsetY, isShownByMouseOver = GetMapOverlayInfo(i);
 		if (textureName ~= "" or textureWidth == 0 or textureHeight == 0) then
 			local numTexturesWide = ceil(textureWidth/256);
 			local numTexturesTall = ceil(textureHeight/256);
@@ -233,7 +233,12 @@ function BattlefieldMinimap_Update()
 					texture:SetPoint("TOPLEFT", "BattlefieldMinimap", "TOPLEFT", (offsetX + (256 * (k-1)))*battlefieldMinimapScale, -((offsetY + (256 * (j - 1)))*battlefieldMinimapScale));
 					texture:SetTexture(textureName..(((j - 1) * numTexturesWide) + k));
 					texture:SetAlpha(1 - ( BattlefieldMinimapOptions.opacity or 0 ));
-					texture:Show();
+
+					if isShownByMouseOver == true then
+						texture:Hide();
+					else
+						texture:Show();
+					end
 				end
 			end
 		end

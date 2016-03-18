@@ -136,6 +136,23 @@ function AccountLogin_UpdateSavedData(self)
 	AccountLoginDropDown_SetupList();
 end
 
+function AccountLogin_CachedLogin()
+	PlaySound("gsLogin");
+
+	local username = AccountLogin.UI.AccountEditBox:GetText();
+	C_Login.CachedLogin(string.gsub(username, "||", "|"));
+	if ( AccountLoginDropDown:IsShown() ) then
+		C_Login.SelectGameAccount(GlueDropDownMenu_GetSelectedValue(AccountLoginDropDown));
+	end
+
+	AccountLogin.UI.PasswordEditBox:SetText("");
+	if ( AccountLogin.UI.SaveAccountNameCheckButton:GetChecked() ) then
+		SetSavedAccountName(AccountLogin.UI.AccountEditBox:GetText());
+	else
+		SetUsesToken(false);
+	end
+end
+
 function AccountLogin_Login()
 	PlaySound("gsLogin");
 

@@ -258,6 +258,27 @@
 							<AbsInset left="12" right="5" bottom="5"/>
 						</TextInsets>
 					</EditBox>
+					<Button parentKey="CachedLoginButton" hidden="true" parentArray="NormalLoginRegions" inherits="GlueButtonTemplateBlue" text="(DEV)Cached Login">
+						<Size x="220" y="45"/>
+						<Anchors>
+							<Anchor point="TOPRIGHT" relativeTo="AccountLogin" x="-5" y="-5"/>
+						</Anchors>
+						<Scripts>
+							<OnClick function="AccountLogin_CachedLogin"/>
+							<OnUpdate>
+								if ( C_Login.HasCachedCredentials() ) then
+									self:Show();
+									if ( C_Login.IsLoginReady() ) then
+										self:Enable();
+									else
+										self:Disable();
+									end
+								else
+									self:Hide();
+								end
+							</OnUpdate>
+						</Scripts>
+					</Button>
 					<Button parentKey="LoginButton" parentArray="NormalLoginRegions" inherits="GlueButtonTemplateBlue" text="LOGIN">
 						<Size x="220" y="45"/>
 						<Anchors>

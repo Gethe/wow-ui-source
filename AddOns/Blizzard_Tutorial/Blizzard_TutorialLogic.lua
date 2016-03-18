@@ -2475,8 +2475,10 @@ function Class_Taxi:OnBegin()
 end
 
 function Class_Taxi:TAXIMAP_OPENED()
-	self:ShowPointerTutorial(str(NPE_TAXICALLOUT), "LEFT", TaxiRouteMap, -10, 0);
-	Dispatcher:RegisterScript(TaxiFrame, "OnHide", function() self:Complete() end);
+	if TaxiFrame_ShouldShowOldStyle() then
+		self:ShowPointerTutorial(str(NPE_TAXICALLOUT), "LEFT", TaxiRouteMap, -10, 0);
+		Dispatcher:RegisterScript(TaxiFrame, "OnHide", function() self:Complete() end);
+	end
 end
 
 -- ------------------------------------------------------------------------------------------------------------

@@ -31,7 +31,7 @@
 				</Frames>
 			</Frame>
 
-			<Frame parentKey="CollapsedFrame" enableMouse="true">
+			<Frame parentKey="CollapsedFrame" enableMouse="true" useParentLevel="true">
 				<Anchors>
 					<Anchor point="CENTER" />
 				</Anchors>

@@ -111,25 +111,30 @@ function PVPHonorXPBar_OnLoad(self)
 	self.Bar:Reset();
 end
 
-function PVPHonorXPBar_OnShow(self)
-	self.Level:SetText(UnitHonorLevel("player"));
-	PVPHonorXPBar_SetNextAvailable(self);
-	HonorExhaustionTick_Update(self.Bar.ExhaustionTick);
-end
-
 function PVPHonorXPBar_Update(self)
 	local current = UnitHonor("player");
 	local max = UnitHonorMax("player");
 
 	local level = UnitHonorLevel("player");
 	local levelmax = GetMaxPlayerHonorLevel();
-
+    
 	if (level == levelmax) then
 		-- Force the bar to full for the max level
 		self.Bar:SetAnimatedValues(1, 0, 1, level);
 	else
 		self.Bar:SetAnimatedValues(current, 0, max, level);
 	end
+    
+    local exhaustionStateID = GetHonorRestState();
+    if (exhaustionStateID == 1) then
+        self.Bar:SetStatusBarAtlas("_honorsystem-bar-fill-rested");
+    else
+        self.Bar:SetStatusBarAtlas("_honorsystem-bar-fill");
+    end
+    
+    self.Level:SetText(UnitHonorLevel("player"));
+	PVPHonorXPBar_SetNextAvailable(self);
+	HonorExhaustionTick_Update(self.Bar.ExhaustionTick);
 end
 
 function PVPHonorXPBar_OnEnter(self)
@@ -256,14 +261,10 @@ function HonorExhaustionTick_OnLoad(self)
 	self:RegisterEvent("HONOR_LEVEL_UPDATE");
 	self:RegisterEvent("PLAYER_UPDATE_RESTING");
 
-	self.fillBarAlpha = 0.30;
+	self.fillBarAlpha = 0.15;
 end
 
-function HonorExhaustionTick_OnEvent(self, event, ...)
-	HonorExhaustionTick_Update(self);
-end
-
-function HonorExhaustionTick_Update(self)
+function HonorExhaustionTick_Update(self, isMainMenuBar)
 	local fillBar = self:GetParent().ExhaustionLevelFillBar;
     local level = UnitHonorLevel("player");
     local levelmax = GetMaxPlayerHonorLevel();
@@ -298,8 +299,12 @@ function HonorExhaustionTick_Update(self)
 
 	local exhaustionStateID = GetHonorRestState();
 	if (exhaustionStateID == 1) then
-		fillBar:SetVertexColor(1.0, 0.50, 0.0, self.fillBarAlpha);
-		self.Highlight:SetVertexColor(1.0, 0.50, 0.0, 1.0);
+        local r, g, b = 1.0, 0.50, 0.0;
+        if (isMainMenuBar) then
+            g = 0.71;
+        end
+		fillBar:SetVertexColor(r, g, b, self.fillBarAlpha);
+		self.Highlight:SetVertexColor(r, g, b, 1.0);
 	end
 end
 

@@ -23,7 +23,7 @@ function GarrisonFollowerTooltip_Show(garrisonFollowerID, collected, quality, le
 	GARRISON_FOLLOWER_TOOLTIP.trait2 = trait2;
 	GARRISON_FOLLOWER_TOOLTIP.trait3 = trait3;
 	GARRISON_FOLLOWER_TOOLTIP.trait4 = trait4;
-	GARRISON_FOLLOWER_TOOLTIP.isTroop = C_Garrison.GetFollowerIsTroopByID(garrisonFollowerID);
+	GARRISON_FOLLOWER_TOOLTIP.isTroop = C_Garrison.GetFollowerIsTroop(garrisonFollowerID);
 	GARRISON_FOLLOWER_TOOLTIP.noAbilityDescriptions = noAbilityDescriptions;
 	GARRISON_FOLLOWER_TOOLTIP.underBiased = underBiased;
 

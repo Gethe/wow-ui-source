@@ -488,13 +488,6 @@ function LevelUpDisplay_BuildCharacterList(self)
 																link=LEVEL_UP_FEATURE2.." "..GetSpellLink(feature)
 															};
 	end	
-	
-	local draenorTalent = GetCurrentLevelDraenorTalent(self.level);
-	if (draenorTalent) then
-		name, _, icon = GetSpellInfo(draenorTalent);
-		self.unlockList[#self.unlockList +1] = { entryType = "draenortalent", text = name, subText = LEVEL_UP_DRAENORTALENT, icon = icon, subIcon = SUBICON_TEXCOOR_BOOK, description = GetSpellDescription(draenorTalent),
-																link=LEVEL_UP_DRAENOR_TALENT2.." "..GetSpellLink(draenorTalent) };
-	end
 
 	self.currSpell = 1;
 end
@@ -985,7 +978,6 @@ function LevelUpDisplay_AnimStep(self, fast)
 		self.currSpell = self.currSpell+1;
 
 		self.spellFrame:Hide();
-		self.DraenorTalentFrame:Hide();
 		self.spellFrame.name:SetText("");
 		self.spellFrame.flavorText:SetText("");
 		self.spellFrame.middleName:SetText("");
@@ -1052,16 +1044,6 @@ function LevelUpDisplay_AnimStep(self, fast)
 			self.spellFrame.subIconRight:SetTexCoord(0.719, 0.779, 0.117, 0.178)
 			self.spellFrame:Show();
 			self.spellFrame.showAnim:Play();
-		elseif ( spellInfo.entryType == "draenortalent" ) then
-			LevelUpDisplayBlackBg:Hide();
-			LevelUpDisplayGLine:Hide();
-			LevelUpDisplayGLine2:Hide();
-			self.DraenorTalentFrame.Icon:SetTexture(spellInfo.icon);
-			self.DraenorTalentFrame.Icon2:SetTexture(spellInfo.icon);
-			self.DraenorTalentFrame.spelltext:SetText(spellInfo.text);
-			self.DraenorTalentFrame.descriptiontext:SetText(spellInfo.description);
-			self.DraenorTalentFrame:Show();
-			self.DraenorTalentFrame.showAnim:Play();
 		elseif ( spellInfo.entryType == "spellbucket" ) then
 			local tierIndex = spellInfo.tierIndex;
 			if (tierIndex > 0) then
@@ -1327,72 +1309,6 @@ function LevelUpDisplay_ChatPrint(self, level, levelUpType, ...)
 			elseif skill.entryType ~= "spell" and skill.entryType ~= "bucketspell" then
 				self:AddMessage(skill.link, info.r, info.g, info.b, info.id);
 			end
-		end
-	end
-end
-
-function LevelUpDraenorTalent_OnLoad(self)
-	self.beginLeft = 0;
-	self.beginRight = 0.43359375;
-
-	self.left = self.beginLeft;
-	self.right = self.beginRight;
-
-	self.beginWidth = 222;
-
-	self.leftWidth = self.beginWidth;
-	self.rightWidth = 0;
-
-	self.Icon2:SetVertexColor(1,1,1);
-	self.book2:SetVertexColor(1,1,1);
-end
-
-function LevelUpDraenorTalent_SpinnerUpdate(self, elapsed)
-	self = self:GetParent():GetParent();
-	-- Shifts 512 pixels every .57 seconds, 898.246 pixels every second
-	self.shift = 898.246 * elapsed;
-	self.move = self.shift / 512;
-
-	if (not self.reset) then
-		self.left = self.left + self.move;
-		self.right = self.right + self.move;
-
-		if (self.right > 1) then
-			local diff = self.right - 1;
-			self.right = 1;
-			self.left = self.left + diff;
-
-			self.reset = true;
-		end
-		self.SpinningPlateLeft:SetTexCoord(self.left, self.right, 0, 1);
-	else
-		self.rightWidth = self.rightWidth + self.shift;
-		self.leftWidth = self.leftWidth - self.shift;
-
-		self.SpinningPlateLeft:SetWidth(self.leftWidth);
-		self.SpinningPlateRight:SetWidth(self.rightWidth);
-
-		if (self.leftWidth <= 0) then
-			self.SpinningPlateRight:Hide();
-			self.SpinningPlateLeft:SetWidth(self.beginWidth);
-			self.SpinningPlateLeft:SetTexCoord(self.beginLeft, self.beginRight, 0, 1);
-
-			self.leftWidth = self.beginWidth;
-			self.rightWidth = 0;
-
-			self.left = self.beginLeft;
-			self.right = self.beginRight;
-
-			self.reset = false;
-		else
-			self.SpinningPlateRight:Show();
-			self.left = self.left + self.move;
-
-			self.SpinningPlateLeft:SetTexCoord(self.left, self.right, 0, 1);
-
-			local tLeft = 0; -- always 0, this is the reset one
-			local tRight = self.rightWidth / 512;
-			self.SpinningPlateRight:SetTexCoord(tLeft, tRight, 0, 1);
 		end
 	end
 end

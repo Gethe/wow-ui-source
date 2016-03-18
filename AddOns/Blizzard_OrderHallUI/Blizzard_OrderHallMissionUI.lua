@@ -4,11 +4,24 @@
 
 OrderHallMission = { }
 
-function OrderHallMission:UpdateCurrency()
-end
+--function OrderHallMission:UpdateCurrency()
+--end
 
 function OrderHallMission:OnLoad()
 	self.followerTypeID = LE_FOLLOWER_TYPE_GARRISON_7_0;
+
+	local primaryCurrency, _ = C_Garrison.GetCurrencyTypes(LE_GARRISON_TYPE_7_0);
+	local _, _, currencyTexture = GetCurrencyInfo(primaryCurrency);
+
+	self.MissionTab.MissionPage.CostFrame.CostIcon:SetTexture(currencyTexture);
+	self.MissionTab.MissionPage.CostFrame.CostIcon:SetSize(18, 18);
+	self.MissionTab.MissionPage.CostFrame.Cost:SetPoint("RIGHT", self.MissionTab.MissionPage.CostFrame.CostIcon, "LEFT", -8, -1);
+
+	self.FollowerList.MaterialFrame.currencyType = primaryCurrency;
+	self.FollowerList.MaterialFrame.Icon:SetTexture(currencyTexture);
+	self.FollowerList.MaterialFrame.Icon:SetSize(18, 18);
+	self.FollowerList.MaterialFrame.Icon:SetPoint("RIGHT", self.FollowerList.MaterialFrame, "RIGHT", -14, 0);
+
 	self:OnLoadMainFrame();
 end
 
@@ -17,6 +30,13 @@ function OrderHallMission:OnShow()
 	AdventureMapMixin.OnShow(self.MissionTab);
 
 	self.abilityCountersForMechanicTypes = C_Garrison.GetFollowerAbilityCountersForMechanicTypes(LE_FOLLOWER_TYPE_GARRISON_7_0);
+	self:SelectTab(1);
+
+	self:RegisterEvent("CURRENCY_DISPLAY_UPDATE");
+	self:RegisterEvent("GET_ITEM_INFO_RECEIVED");
+	self:RegisterEvent("GARRISON_RANDOM_MISSION_ADDED");
+	self:RegisterEvent("CURRENT_SPELL_CAST_CHANGED");
+	self:RegisterEvent("GARRISON_FOLLOWER_XP_CHANGED");
 end
 
 function OrderHallMission:OnHide()
@@ -24,6 +44,19 @@ function OrderHallMission:OnHide()
 	AdventureMapMixin.OnHide(self.MissionTab);
 
 	self.abilityCountersForMechanicTypes = nil;
+
+	self:UnregisterEvent("CURRENCY_DISPLAY_UPDATE");
+	self:UnregisterEvent("GET_ITEM_INFO_RECEIVED");
+	self:UnregisterEvent("GARRISON_RANDOM_MISSION_ADDED");
+	self:UnregisterEvent("CURRENT_SPELL_CAST_CHANGED");
+	self:UnregisterEvent("GARRISON_FOLLOWER_XP_CHANGED");
+
+end
+
+function OrderHallMission:OnEvent(event, ...)
+	if (event ~= "GARRISON_MISSION_LIST_UPDATE") then
+		self:OnEventMainFrame(event, ...);
+	end
 end
 
 function OrderHallMission:EscapePressed()
@@ -59,12 +92,6 @@ function OrderHallMission:GetMissionPage()
 	end
 end
 
-function OrderHallMission:CheckCompleteMissions(onShow)
-	-- go to the right tab if window is being opened
-	if (onShow) then
-		self:SelectTab(1);
-	end
-end
 
 function OrderHallMission:OnClickMission(missionInfo)
 	self.MissionTab.isZoneSupport = missionInfo.isZoneSupport;
@@ -95,6 +122,10 @@ function OrderHallMission:ShowMission(missionInfo)
 	else
 		GarrisonFollowerMission.ShowMission(self, missionInfo);
 	end
+end
+
+function OrderHallMission:GetCompleteDialog()
+	return self.MissionTab.CompleteDialog;
 end
 
 function OrderHallMission:UpdateCostFrame(missionPage, amount)
@@ -177,6 +208,22 @@ function OrderHallMission:SetEnemies(frame, enemies, numFollowers, mechanicYOffs
 	GarrisonFollowerMission.SetEnemies(self, frame, enemies, numFollowers, mechanicYOffset or -32);
 end
 
+
+function OrderHallMission:SetupCompleteDialog()
+	local completeDialog = self:GetCompleteDialog();
+	if (completeDialog) then
+
+		completeDialog.BorderFrame.Model.Title:SetText(ORDERHALL_MISSION_REPORT);
+
+		local _, className = UnitClass("player");
+
+		completeDialog.BorderFrame.Stage.LocBack:SetAtlas("legionmission-complete-background-"..className);
+		completeDialog.BorderFrame.Stage.LocBack:SetTexCoord(0, 1, 0, 1);
+		completeDialog.BorderFrame.Stage.LocMid:Hide();
+		completeDialog.BorderFrame.Stage.LocFore:Hide();
+	end
+end
+
 ---------------------------------------------------------------------------------
 -- Order Hall Mission Page Enemy Frame
 ---------------------------------------------------------------------------------
@@ -235,6 +282,14 @@ end
 function OrderHallMissionAdventureMapMixin:OnLoad()
 	AdventureMapMixin.OnLoad(self);
 	self.ScrollContainer:SetScalingMode("SCALING_MODE_LINEAR");
+end
+
+function OrderHallMissionAdventureMapMixin:UpdateMissions()
+
+end
+
+function OrderHallMissionAdventureMapMixin:Update()
+
 end
 
 ---------------------------------------------------------------------------------

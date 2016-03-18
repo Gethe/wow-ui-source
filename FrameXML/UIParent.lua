@@ -29,7 +29,7 @@ UIPanelWindows["HelpFrame"] =					{ area = "center",		pushable = 0,	whileDead = 
 -- Frames using the new Templates
 UIPanelWindows["CharacterFrame"] =				{ area = "left",			pushable = 3,	whileDead = 1};
 UIPanelWindows["SpellBookFrame"] =				{ area = "left",			pushable = 1,	whileDead = 1, width = 575, height = 545 };
-UIPanelWindows["TaxiFrame"] =					{ area = "left",			pushable = 0, 	width = 605, height = 580 };
+UIPanelWindows["TaxiFrame"] =					{ area = "left",			pushable = 0, 	width = 605, height = 580, showFailedFunc = CloseTaxiMap };
 UIPanelWindows["PVPUIFrame"] =					{ area = "left",			pushable = 0,	whileDead = 1, width = 563};
 UIPanelWindows["PVPBannerFrame"] =				{ area = "left",			pushable = 1};
 UIPanelWindows["PetStableFrame"] =				{ area = "left",			pushable = 0};
@@ -354,6 +354,8 @@ function UIParent_OnLoad(self)
 
 	-- Used for Order Hall UI
 	self:RegisterUnitEvent("UNIT_AURA", "player");
+
+	self:RegisterEvent("TAXIMAP_OPENED");
 end
 
 function UIParent_OnShow(self)
@@ -553,6 +555,10 @@ end
 
 function ChallengeMode_LoadUI()
 	UIParentLoadAddOn("Blizzard_ChallengesUI");
+end
+
+function FlightMap_LoadUI()
+	UIParentLoadAddOn("Blizzard_FlightMap");
 end
 
 --[[
@@ -1791,6 +1797,15 @@ function UIParent_OnEvent(self, event, ...)
 		end
 	elseif (event == "UNIT_AURA") then
 		OrderHall_CheckCommandBar();
+	elseif (event == "TAXIMAP_OPENED") then
+		if (TaxiFrame_ShouldShowOldStyle()) then
+			ShowUIPanel(TaxiFrame);
+		else
+			if (not FlightMapFrame) then
+				FlightMap_LoadUI();
+			end
+			ShowUIPanel(FlightMapFrame);
+		end
 	end
 end
 

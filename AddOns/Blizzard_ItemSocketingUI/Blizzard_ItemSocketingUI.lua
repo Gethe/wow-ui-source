@@ -19,6 +19,7 @@ function ItemSocketingFrame_OnLoad(self)
 	self:RegisterEvent("SOCKET_INFO_CLOSE");
 	self:RegisterEvent("SOCKET_INFO_ACCEPT");
 	self:RegisterEvent("SOCKET_INFO_SUCCESS");
+	self:RegisterEvent("SOCKET_INFO_FAILURE");
 	ItemSocketingScrollFrameScrollBarScrollUpButton:SetPoint("BOTTOM", ItemSocketingScrollFrameScrollBar, "TOP", 0, 1);
 	ItemSocketingScrollFrameScrollBarScrollDownButton:SetPoint("TOP", ItemSocketingScrollFrameScrollBar, "BOTTOM", 0, -3);
 	ItemSocketingScrollFrameTop:SetPoint("TOP", ItemSocketingScrollFrameScrollBarScrollUpButton, "TOP", -2, 3);
@@ -42,6 +43,9 @@ function ItemSocketingFrame_OnEvent(self, event, ...)
 		ItemSocketingSocketButton_Disable();
 		ItemSocketingFrame_DisableSockets();
 	elseif ( event == "SOCKET_INFO_SUCCESS" ) then
+		self.isSocketing = nil;
+		ItemSocketingFrame_EnableSockets();
+	elseif ( event == "SOCKET_INFO_FAILURE" ) then
 		self.isSocketing = nil;
 		ItemSocketingFrame_EnableSockets();
 	end

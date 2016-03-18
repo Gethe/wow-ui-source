@@ -43,7 +43,7 @@
 		<Frames>
 			<!-- This frame is used to position the corner texutures above other frames (for example the scroll frame of the adventure map.)
 				The above textures can be put into this frame as well, but they have anchors via their parentKey, so don't want to move them here.-->
-			<Frame parentKey="GarrCorners" frameStrata="HIGH" setAllPoints="true">
+			<Frame parentKey="GarrCorners" setAllPoints="true" frameLevel="3">
 				<Layers>
 					<Layer level="BACKGROUND" textureSubLevel="2">
 						<Texture parentKey="TopLeftGarrCorner" atlas="Garr_WoodFrameCorner" useAtlasSize="true">

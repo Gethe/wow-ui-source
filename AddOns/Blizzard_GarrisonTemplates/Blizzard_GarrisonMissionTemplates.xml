@@ -227,6 +227,27 @@
 			</Layer>
 		</Layers>
 		<Frames>
+			<Frame parentKey="OvermaxItem">
+				<Size x="24" y="24"/>
+				<Anchors>
+					<Anchor point="LEFT" relativePoint="RIGHT" relativeKey="$parent.MissionXP" x="4"/>
+				</Anchors>
+				<Layers>
+					<Layer level="ARTWORK">
+						<Texture parentKey="Icon" setAllPoints="true"/>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnEnter>
+						if (self.itemID) then
+							GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+							GameTooltip:SetItemByID(self.itemID);
+							GameTooltip:Show();
+						end
+					</OnEnter>
+					<OnLeave function="GameTooltip_Hide"/>
+				</Scripts>
+			</Frame>
 			<Frame parentKey="Reward1" parentArray="Rewards" inherits="GarrisonMissionRewardEffectsTemplate">
 				<Anchors>
 					<Anchor point="LEFT"/>

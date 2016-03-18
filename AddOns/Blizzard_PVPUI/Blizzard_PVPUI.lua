@@ -15,21 +15,6 @@ local MAX_SHOWN_BATTLEGROUNDS = 8;
 local NUM_BLACKLIST_INFO_LINES = 2;
 local NO_ARENA_SEASON = 0;
 
-StaticPopupDialogs["CONFIRM_JOIN_SOLO"] = {
-	text = CONFIRM_JOIN_SOLO,
-	button1 = YES,
-	button2 = NO,
-	OnAccept = function (self)
-		HonorFrame_Queue(false, true);
-	end,
-	OnShow = function(self)
-	end,
-	OnCancel = function (self)
-	end,
-	hideOnEscape = 1,
-	timeout = 0,
-}
-
 ---------------------------------------------------------------
 -- PVP FRAME
 ---------------------------------------------------------------
@@ -401,7 +386,7 @@ end
 
 function HonorFrame_UpdateQueueButtons()
 	local HonorFrame = HonorFrame;
-	local canQueue, noSoloQueue;
+	local canQueue, denied;
 	if ( HonorFrame.type == "specific" ) then
 		if ( HonorFrame.SpecificFrame.selectionID ) then
 			canQueue = true;
@@ -409,35 +394,27 @@ function HonorFrame_UpdateQueueButtons()
 	elseif ( HonorFrame.type == "bonus" ) then
 		if ( HonorFrame.BonusFrame.selectedButton ) then
 			canQueue = HonorFrame.BonusFrame.selectedButton.canQueue;
-			noSoloQueue = HonorFrame.BonusFrame.selectedButton.noSoloQueue;
 		end
-	end
-
-	if ( noSoloQueue ) then
-		HonorFrame.GroupQueueButton:Hide();
-		HonorFrame.SoloQueueButton:Hide();
-		HonorFrame.QueueButton:Show();
-	else
-		HonorFrame.GroupQueueButton:Show();
-		HonorFrame.SoloQueueButton:Show();
-		HonorFrame.QueueButton:Hide();
-	end
+	end    
 
 	if ( canQueue ) then
 		HonorFrame.QueueButton:Enable();
-		HonorFrame.SoloQueueButton:Enable();
-		if ( IsInGroup(LE_PARTY_CATEGORY_HOME) and UnitIsGroupLeader("player", LE_PARTY_CATEGORY_HOME) ) then
-			HonorFrame.GroupQueueButton:Enable();
+		if ( IsInGroup(LE_PARTY_CATEGORY_HOME) ) then
+			HonorFrame.QueueButton:SetText(BATTLEFIELD_GROUP_JOIN);
+			if (not UnitIsGroupLeader("player", LE_PARTY_CATEGORY_HOME)) then
+				HonorFrame.QueueButton:Disable();
+                HonorFrame.QueueButton.tooltip = ERR_NOT_LEADER;
+                denied = true;
+			end
 		else
-			HonorFrame.GroupQueueButton:Disable();
+			HonorFrame.QueueButton:SetText(BATTLEFIELD_JOIN);
 		end
 	else
 		HonorFrame.QueueButton:Disable();
 		if (HonorFrame.type == "bonus" and HonorFrame.BonusFrame.selectedButton.queueID) then
 			HonorFrame.QueueButton.tooltip = LFGConstructDeclinedMessage(HonorFrame.BonusFrame.selectedButton.queueID);
+            denied = true;
 		end
-		HonorFrame.SoloQueueButton:Disable();
-		HonorFrame.GroupQueueButton:Disable();
 	end
 
 	--Disable the button if the person is active in LFGList
@@ -449,27 +426,15 @@ function HonorFrame_UpdateQueueButtons()
 	end
 
 	if ( lfgListDisabled ) then
-		HonorFrame.SoloQueueButton:Disable();
-		HonorFrame.GroupQueueButton:Disable();
-		HonorFrame.SoloQueueButton.tooltip = lfgListDisabled;
-		HonorFrame.GroupQueueButton.tooltip = lfgListDisabled;
-	else
-		HonorFrame.SoloQueueButton.tooltip = nil;
-		HonorFrame.GroupQueueButton.tooltip = nil;
+		HonorFrame.QueueButton.tooltip = lfgListDisabled;
+	elseif (not denied) then
+		HonorFrame.QueueButton.tooltip = nil;
 	end
 end
 
-function HonorFrame_Queue(isParty, forceSolo)
-	local noSoloQueue = false;
-	if ( HonorFrame.type == "bonus" and HonorFrame.BonusFrame.selectedButton ) then
-		noSoloQueue = HonorFrame.BonusFrame.selectedButton.noSoloQueue;
-	end
-
-	if (not noSoloQueue and not isParty and not forceSolo and GetNumGroupMembers() > 1) then
-		StaticPopup_Show("CONFIRM_JOIN_SOLO");
-		return;
-	end
+function HonorFrame_Queue()
 	local HonorFrame = HonorFrame;
+    local isParty = IsInGroup(LE_PARTY_CATEGORY_HOME);
 	if ( HonorFrame.type == "specific" and HonorFrame.SpecificFrame.selectionID ) then
 		JoinBattlefield(HonorFrame.SpecificFrame.selectionID, isParty);
 	elseif ( HonorFrame.type == "bonus" and HonorFrame.BonusFrame.selectedButton ) then
@@ -732,7 +697,6 @@ function HonorFrameBonusFrame_Update()
 	button = HonorFrame.BonusFrame.AshranButton;
 	button.Contents.Title:SetText(GetMapNameByID(ASHRAN_MAP_ID));
 	button.canQueue = IsLFGDungeonJoinable(ASHRAN_QUEUE_ID);
-	button.noSoloQueue = true;
 	button.queueID = ASHRAN_QUEUE_ID;
 
 	-- select a button if one isn't selected

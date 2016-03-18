@@ -3520,7 +3520,7 @@ StaticPopupDialogs["NAME_TRANSMOG_OUTFIT"] = {
 	button1 = ACCEPT,
 	button2 = CANCEL,
 	OnAccept = function(self)
-		WardrobeOutfitFrame_NameOutfit(self.editBox:GetText(), self.data);
+		WardrobeOutfitFrame:NameOutfit(self.editBox:GetText(), self.data);
 	end,
 	timeout = 0,
 	whileDead = 1,
@@ -3557,7 +3557,7 @@ StaticPopupDialogs["CONFIRM_OVERWRITE_TRANSMOG_OUTFIT"] = {
 	text = TRANSMOG_OUTFIT_CONFIRM_OVERWRITE,
 	button1 = YES,
 	button2 = NO,
-	OnAccept = function (self) WardrobeOutfitFrame_SaveOutfit(self.data) end,
+	OnAccept = function (self) WardrobeOutfitFrame:SaveOutfit(self.data) end,
 	OnCancel = function (self)
 		local name = self.data;
 		self:Hide();
@@ -3576,8 +3576,43 @@ StaticPopupDialogs["CONFIRM_DELETE_TRANSMOG_OUTFIT"] = {
 	text = TRANSMOG_OUTFIT_CONFIRM_DELETE,
 	button1 = YES,
 	button2 = NO,
-	OnAccept = function (self) WardrobeOutfitFrame_DeleteOutfit(self.data); end,
+	OnAccept = function (self) WardrobeOutfitFrame:DeleteOutfit(self.data); end,
 	OnCancel = function (self) end,
+	hideOnEscape = 1,
+	timeout = 0,
+	whileDead = 1,
+}
+
+StaticPopupDialogs["TRANSMOG_OUTFIT_CHECKING_APPEARANCES"] = {
+	text = TRANSMOG_OUTFIT_CHECKING_APPEARANCES,
+	button1 = CANCEL,
+	hideOnEscape = 1,
+	timeout = 0,
+	whileDead = 1,
+}
+
+StaticPopupDialogs["TRANSMOG_OUTFIT_ALL_INVALID_APPEARANCES"] = {
+	text = TRANSMOG_OUTFIT_ALL_INVALID_APPEARANCES,
+	button1 = OKAY,
+	hideOnEscape = 1,
+	timeout = 0,
+	whileDead = 1,
+}
+
+StaticPopupDialogs["TRANSMOG_OUTFIT_SOME_INVALID_APPEARANCES"] = {
+	text = TRANSMOG_OUTFIT_SOME_INVALID_APPEARANCES,
+	button1 = OKAY,
+	button2 = CANCEL,
+	OnShow = function(self)
+		if ( WardrobeOutfitFrame.name ) then
+			self.button1:SetText(SAVE);
+		else
+			self.button1:SetText(CONTINUE);
+		end
+	end,
+	OnAccept = function(self)
+		WardrobeOutfitFrame:ContinueWithSave();
+	end,
 	hideOnEscape = 1,
 	timeout = 0,
 	whileDead = 1,

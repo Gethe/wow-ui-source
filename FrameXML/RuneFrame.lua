@@ -55,39 +55,46 @@ function RuneFrame_OnEvent (self, event, ...)
 		RuneFrame_UpdateNumberOfShownRunes();
 	elseif ( event == "PLAYER_ENTERING_WORLD" ) then
 		RuneFrame_UpdateNumberOfShownRunes();
+		for i=1, CURRENT_MAX_RUNES do
+			RuneFrame_RunePowerUpdate(i, false);
+		end
 	elseif ( event == "RUNE_POWER_UPDATE") then
 		local runeIndex, isEnergize = ...;
-		if runeIndex and runeIndex >= 1 and runeIndex <= CURRENT_MAX_RUNES  then 
-			local runeButton = _G["RuneButtonIndividual"..runeIndex];
-			local cooldown = runeButton.Cooldown;
-			
-			local start, duration, runeReady = GetRuneCooldown(runeIndex);
-			
-			if not runeReady  then
-				if start then
-					CooldownFrame_SetTimer(cooldown, start, duration, 1);
-				end
-				runeButton.energize:Stop();
-			else
-				cooldown:Hide();
-				if (not isEnergize and not runeButton.energize:IsPlaying()) then 
-					runeButton.shine:SetVertexColor(1, 1, 1);
-					RuneButton_ShineFadeIn(runeButton.shine)
-				end
-			end
-			
-			if isEnergize  then
-				runeButton.energize:Play();
-			end
-		else 
-			assert(false, "Bad rune index")
-		end
+		RuneFrame_RunePowerUpdate(runeIndex, isEnergize)
 		
 	elseif ( event == "RUNE_TYPE_UPDATE" ) then
 		local runeIndex = ...;
 		if ( runeIndex and runeIndex >= 1 and runeIndex <= CURRENT_MAX_RUNES ) then
 			RuneButton_Flash(_G["RuneButtonIndividual"..runeIndex]);
 		end
+	end
+end
+
+function RuneFrame_RunePowerUpdate(runeIndex, isEnergize)
+	if runeIndex and runeIndex >= 1 and runeIndex <= CURRENT_MAX_RUNES  then 
+		local runeButton = _G["RuneButtonIndividual"..runeIndex];
+		local cooldown = runeButton.Cooldown;
+			
+		local start, duration, runeReady = GetRuneCooldown(runeIndex);
+			
+		if not runeReady  then
+			if start then
+				CooldownFrame_SetTimer(cooldown, start, duration, 1);
+			end
+			runeButton.energize:Stop();
+		else
+			cooldown:Hide();
+			if (not isEnergize and not runeButton.energize:IsPlaying()) then 
+				runeButton.shine:SetVertexColor(1, 1, 1);
+				RuneButton_ShineFadeIn(runeButton.shine)
+			end
+		end
+			
+		if isEnergize  then
+			runeButton.energize:Play();
+		end
+	else 
+		assert(false, "Bad rune index")
 	end
 end
 

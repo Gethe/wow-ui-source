@@ -146,9 +146,9 @@ end
 
 function GarrisonLandingPageReport_OnUpdate()
 	if( GarrisonLandingPageReport.List.items and #GarrisonLandingPageReport.List.items > 0 )then
-		GarrisonLandingPageReport.List.items = C_Garrison.GetLandingPageItems(true); -- don't sort entries again
+		GarrisonLandingPageReport.List.items = C_Garrison.GetLandingPageItems(LE_GARRISON_TYPE_6_0, true); -- don't sort entries again
 	else
-		GarrisonLandingPageReport.List.items = C_Garrison.GetLandingPageItems();
+		GarrisonLandingPageReport.List.items = C_Garrison.GetLandingPageItems(LE_GARRISON_TYPE_6_0);
 	end
 	
 	if( GarrisonLandingPageReportList_Update() ) then
@@ -292,7 +292,7 @@ function GarrisonLandingPageReport_SetTab(self)
 end
 
 function GarrisonLandingPageReportList_UpdateItems()
-	GarrisonLandingPageReport.List.items = C_Garrison.GetLandingPageItems();
+	GarrisonLandingPageReport.List.items = C_Garrison.GetLandingPageItems(LE_GARRISON_TYPE_6_0);
 	GarrisonLandingPageReport.List.AvailableItems = C_Garrison.GetAvailableMissions(LE_FOLLOWER_TYPE_GARRISON_6_0) or {};
 	Garrison_SortMissions(GarrisonLandingPageReport.List.AvailableItems);
 	GarrisonLandingPageReport.InProgress.Text:SetFormattedText(GARRISON_LANDING_IN_PROGRESS, #GarrisonLandingPageReport.List.items);

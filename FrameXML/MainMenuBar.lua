@@ -202,17 +202,28 @@ function MainMenuBar_UpdateExperienceBars(newLevel)
 		local max = UnitHonorMax("player");
 
 		local level = UnitHonorLevel("player");
-        local levelmax = GetPlayerMaxHonorLevel();
+        local levelmax = GetMaxPlayerHonorLevel();
         
-		if (level == levelmax) then
+        if (level == levelmax) then
 			-- Force the bar to full for the max level
 			statusBar:SetAnimatedValues(1, 0, 1, level);
 		else
 			statusBar:SetAnimatedValues(current, 0, max, level);
 		end
+        
+        HonorExhaustionTick_Update(HonorWatchBar.ExhaustionTick, true);
+		
 		if ( visibilityChanged ) then
 			statusBar:Reset();
 		end
+        local exhaustionStateID = GetHonorRestState();
+	    if (exhaustionStateID == 1) then
+            statusBar:SetStatusBarColor(1.0, 0.71, 0);
+            statusBar:SetAnimatedTextureColors(1.0, 0.71, 0);
+        else
+            statusBar:SetStatusBarColor(1.0, 0.24, 0);
+            statusBar:SetAnimatedTextureColors(1.0, 0.24, 0);
+        end
 		HonorWatchBar:Show();
 		MainMenuTrackingBar_Configure(HonorWatchBar, numBarsShowing > 0);
 		numBarsShowing = numBarsShowing + 1;
@@ -719,11 +730,11 @@ function HonorWatchBar_OnLoad(self)
 	self:RegisterEvent("PLAYER_ENTERING_WORLD");
 	self:RegisterEvent("HONOR_XP_UPDATE");
 	self:RegisterEvent("CVAR_UPDATE");
-	self.OverlayFrame.Text:SetPoint("CENTER", 0, -1);
+    self.OverlayFrame.Text:SetPoint("CENTER", 0, -1);
 	self.StatusBar:SetOnAnimatedValueChangedCallback(MainMenuBar_HonorUpdateOverlayFrameText);
 	self.StatusBar.OnFinishedCallback = function(...)
 		self.StatusBar:OnAnimFinished(...);
-		HonorExhaustionTick_Update(self.StatusBar.ExhaustionTick);
+		HonorExhaustionTick_Update(self.ExhaustionTick, true);
 	end
 end
 

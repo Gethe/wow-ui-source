@@ -14,12 +14,6 @@ GLUE_SECONDARY_SCREENS = {
 	["options"] = 		{ frame = "VideoOptionsFrame",	playMusic = true,	playAmbience = false,	fullScreen = false,	showSound = "gsTitleOptions" },
 };
 
--- Realm Split info
-SERVER_SPLIT_SHOW_DIALOG = false;
-SERVER_SPLIT_CLIENT_STATE = -1;	--	-1 uninitialized; 0 - no choice; 1 - realm 1; 2 - realm 2
-SERVER_SPLIT_STATE_PENDING = -1;	--	-1 uninitialized; 0 - no server split; 1 - server split (choice mode); 2 - server split (no choice mode)
-SERVER_SPLIT_DATE = nil;
-
 SEX_NONE = 1;
 SEX_MALE = 2;
 SEX_FEMALE = 3;
@@ -50,6 +44,9 @@ function GlueParent_OnEvent(self, event, ...)
 		GlueParent_EnsureValidScreen();
 		GlueParent_UpdateDialogs();
 		GlueParent_CheckCinematic();
+		if ( AccountLogin:IsVisible() ) then
+			CheckSystemRequirements();
+		end
 	elseif ( event == "LOGIN_STATE_CHANGED" ) then
 		GlueParent_EnsureValidScreen();
 		GlueParent_UpdateDialogs();
@@ -120,10 +117,11 @@ function GlueParent_UpdateDialogs()
 			GlueDialog_Show("CANCEL", LOGIN_STATE_CONNECTING);
 		end
 	elseif ( auroraState == LE_AURORA_STATE_NONE and C_Login.GetLastError() ) then
-		local errorCategory, errorID, localizedString, debugString = C_Login.GetLastError();
+		local errorCategory, errorID, localizedString, debugString, errorCodeString = C_Login.GetLastError();
 
 		local isHTML = false;
 		local hasURL = false;
+		local useGenericURL = false;
 
 		--If we didn't get a string from C, look one up in GlueStrings as HTML
 		if ( not localizedString ) then
@@ -142,24 +140,36 @@ function GlueParent_UpdateDialogs()
 
 		--If we still don't have one, just display a generic error with the ID
 		if ( not localizedString ) then
-			localizedString = string.format(_G[errorCategory.."_ERROR_OTHER"], errorID);
+			localizedString = _G[errorCategory.."_ERROR_OTHER"];
+			useGenericURL = true;
 		end
 
-		--If we got a debug message, stick it on the end
+		--If we got a debug message, stick it on the end of the errorCodeString
 		if ( debugString ) then
-			localizedString = localizedString.."\n\n(DebugMessage: "..debugString..")";
+			errorCodeString = errorCodeString.." [[DBG "..debugString.."]]";
 		end
 
-		--See if we want a URL as well
+		--See if we want a custom URL
 		local urlTag = string.format("%s_ERROR_%d_URL", errorCategory, errorID);
 		if ( _G[urlTag] ) then
 			hasURL = true;
+		end
+
+		--Append the errorCodeString
+		if ( isHTML ) then
+			--Pretty hacky...
+			local endOfHTML = "</p></body></html>";
+			localizedString = string.gsub(localizedString, endOfHTML, string.format(" (%s)%s", errorCodeString, endOfHTML));
+		else
+			localizedString = string.format("%s (%s)", localizedString, errorCodeString);
 		end
 
 		if ( isHTML ) then
 			GlueDialog_Show("OKAY_HTML", localizedString);
 		elseif ( hasURL ) then
 			GlueDialog_Show("OKAY_WITH_URL", localizedString, urlTag);
+		elseif ( useGenericURL ) then
+			GlueDialog_Show("OKAY_WITH_GENERIC_URL", localizedString);
 		else
 			GlueDialog_Show("OKAY", localizedString);
 		end
@@ -380,6 +390,80 @@ function UpgradeAccount()
 	LoadURLIndex(2);
 end
 
+function MinutesToTime(mins, hideDays)
+	local time = "";
+	local count = 0;
+	local tempTime;
+	-- only show days if hideDays is false
+	if ( mins > 1440 and not hideDays ) then
+		tempTime = floor(mins / 1440);
+		time = tempTime..TIME_UNIT_DELIMITER..DAYS_ABBR..TIME_UNIT_DELIMITER;
+		mins = mod(mins, 1440);
+		count = count + 1;
+	end
+	if ( mins > 60  ) then
+		tempTime = floor(mins / 60);
+		time = time..tempTime..TIME_UNIT_DELIMITER..HOURS_ABBR..TIME_UNIT_DELIMITER;
+		mins = mod(mins, 60);
+		count = count + 1;
+	end
+	if ( count < 2 ) then
+		tempTime = mins;
+		time = time..tempTime..TIME_UNIT_DELIMITER..MINUTES_ABBR..TIME_UNIT_DELIMITER;
+		count = count + 1;
+	end
+	return time;
+end
+
+function CheckSystemRequirements( previousCheck )
+	if ( not previousCheck  ) then
+		if ( not IsCPUSupported() ) then
+			GlueDialog_Show("SYSTEM_INCOMPATIBLE_SSE");
+			return;
+		end
+		previousCheck = nil;
+	end
+	
+	if ( not previousCheck or previousCheck == "SSE" ) then
+		if ( not IsShaderModelSupported() ) then
+			GlueDialog_Show("FIXEDFUNCTION_UNSUPPORTED");
+			return;
+		end
+		previousCheck = nil;
+	end
+	
+	if ( not previousCheck or previousCheck == "SHADERMODEL" ) then
+		if ( VideoDeviceState() == 1 ) then
+			GlueDialog_Show("DEVICE_BLACKLISTED");
+			return;
+		end
+		previousCheck = nil;
+	end
+	
+	if ( not previousCheck or previousCheck == "DEVICE" ) then
+		if ( VideoDriverState() == 2 ) then
+			GlueDialog_Show("DRIVER_OUTOFDATE");
+			return;
+		end
+		previousCheck = nil;
+	end
+	
+	if ( not previousCheck or previousCheck == "DRIVER_OOD" ) then
+		if ( VideoDriverState() == 1 ) then
+			GlueDialog_Show("DRIVER_BLACKLISTED");
+			return;
+		end
+		previousCheck = nil;
+	end
+
+	if ( not previousCheck or previousCheck == "DRIVER" ) then
+		if ( not WillShaderModelBeSupported() ) then
+			GlueDialog_Show("SHADER_MODEL_TO_BE_UNSUPPORTED");
+			return;
+		end
+		previousCheck = nil;
+	end
+end
 -- =============================================================
 -- Backwards Compatibility
 -- =============================================================

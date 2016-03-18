@@ -191,6 +191,8 @@ WORLDMAP_SETTINGS = {
 local WorldEffectPOITooltips = {};
 local ScenarioPOITooltips = {};
 
+local WorldMapOverlayHighlights = {};
+
 function ToggleWorldMap()
 	WorldMapFrame.questLogMode = nil;
 	local shouldBeWindowed = GetCVarBool("miniWorldMap");
@@ -367,6 +369,8 @@ function WorldMapFrame_OnHide(self)
 	self:SetAlpha(WORLD_MAP_MAX_ALPHA);
 
 	self.bonusObjectiveUpdateTimeLeft = nil;
+
+	WorldMapOverlayHighlights = {};
 end
 
 function WorldMapFrame_OnEvent(self, event, ...)
@@ -706,33 +710,47 @@ function WorldMap_SetupWorldQuestButton(button, worldQuestType, isRare, isElite,
 	end
 end
 
-function WorldMap_TryCreatingWorldQuestPOI(info, taskIconIndex)
-	local tagID, tagName, worldQuestType, isRare, isElite, tradeskillLineIndex = GetQuestTagInfo(info.questId);
+function WorldMap_DoesWorldQuestInfoPassFilters(info, ignoreTypeFilters, ignoreTimeRequirement)
+	if ( not ignoreTypeFilters ) then
+		local tagID, tagName, worldQuestType, isRare, isElite, tradeskillLineIndex = GetQuestTagInfo(info.questId);
 
-	if ( worldQuestType == LE_QUEST_TAG_TYPE_PROFESSION ) then
-		local prof1, prof2, arch, fish, cook, firstAid = GetProfessions();
+		if ( worldQuestType == LE_QUEST_TAG_TYPE_PROFESSION ) then
+			local prof1, prof2, arch, fish, cook, firstAid = GetProfessions();
 
-		if ( tradeskillLineIndex == prof1 or tradeskillLineIndex == prof2 ) then
-			if ( not GetCVarBool("primaryProfessionsFilter") ) then
-				return nil;
+			if ( tradeskillLineIndex == prof1 or tradeskillLineIndex == prof2 ) then
+				if ( not GetCVarBool("primaryProfessionsFilter") ) then
+					return false;
+				end
 			end
-		end
 
-		if ( tradeskillLineIndex == fish or tradeskillLineIndex == cook or tradeskillLineIndex == firstAid ) then
-			if ( not GetCVarBool("secondaryProfessionsFilter") ) then
-				return nil;
+			if ( tradeskillLineIndex == fish or tradeskillLineIndex == cook or tradeskillLineIndex == firstAid ) then
+				if ( not GetCVarBool("secondaryProfessionsFilter") ) then
+					return false;
+				end
 			end
-		end
-	elseif ( worldQuestType == LE_QUEST_TAG_TYPE_PET_BATTLE ) then
-		if ( not GetCVarBool("showTamers") ) then
-			return nil;
+		elseif ( worldQuestType == LE_QUEST_TAG_TYPE_PET_BATTLE ) then
+			if ( not GetCVarBool("showTamers") ) then
+				return false;
+			end
 		end
 	end
 
-	local timeLeftMinutes = C_TaskQuest.GetQuestTimeLeftMinutes(info.questId);
-	if ( timeLeftMinutes and timeLeftMinutes <= WORLD_QUESTS_TIME_CRITICAL_MINUTES and not info.inProgress ) then
+	if ( not ignoreTimeRequirement ) then
+		local timeLeftMinutes = C_TaskQuest.GetQuestTimeLeftMinutes(info.questId);
+		if ( timeLeftMinutes and timeLeftMinutes <= WORLD_QUESTS_TIME_CRITICAL_MINUTES and not info.inProgress ) then
+			return false;
+		end
+	end
+
+	return true;
+end
+
+function WorldMap_TryCreatingWorldQuestPOI(info, taskIconIndex)
+	if ( not WorldMap_DoesWorldQuestInfoPassFilters(info) ) then
 		return nil;
 	end
+
+	local tagID, tagName, worldQuestType, isRare, isElite, tradeskillLineIndex = GetQuestTagInfo(info.questId);
 
 	local taskPOI = WorldMap_GetOrCreateTaskPOI(taskIconIndex);
 	local selected = info.questId == GetSuperTrackedQuestID();
@@ -1077,8 +1095,10 @@ function WorldMapFrame_Update()
 
 	-- Setup the overlays
 	local textureCount = 0;
+	WorldMapOverlayHighlights = {};
+
 	for i=1, GetNumMapOverlays() do
-		local textureName, textureWidth, textureHeight, offsetX, offsetY = GetMapOverlayInfo(i);
+		local textureName, textureWidth, textureHeight, offsetX, offsetY, isShownByMouseOver = GetMapOverlayInfo(i);
 		if ( textureName and textureName ~= "" ) then
 			local numTexturesWide = ceil(textureWidth/256);
 			local numTexturesTall = ceil(textureHeight/256);
@@ -1125,7 +1145,18 @@ function WorldMapFrame_Update()
 					texture:SetTexCoord(0, texturePixelWidth/textureFileWidth, 0, texturePixelHeight/textureFileHeight);
 					texture:SetPoint("TOPLEFT", offsetX + (256 * (k-1)), -(offsetY + (256 * (j - 1))));
 					texture:SetTexture(textureName..(((j - 1) * numTexturesWide) + k));
-					texture:Show();
+
+					if isShownByMouseOver == true then
+						-- keep track of the textures to show by mouseover
+						texture:Hide();
+						if ( not WorldMapOverlayHighlights[i] ) then
+							WorldMapOverlayHighlights[i] = { };
+						end
+						table.insert(WorldMapOverlayHighlights[i], texture);
+					else
+						texture:Show();
+					end
+
 				end
 			end
 		end
@@ -1989,6 +2020,17 @@ function WorldMapButton_OnUpdate(self, elapsed)
 	local name, fileName, texPercentageX, texPercentageY, textureX, textureY, scrollChildX, scrollChildY, minLevel, maxLevel, petMinLevel, petMaxLevel
 	if ( self:IsMouseOver() ) then
 		name, fileName, texPercentageX, texPercentageY, textureX, textureY, scrollChildX, scrollChildY, minLevel, maxLevel, petMinLevel, petMaxLevel = UpdateMapHighlight( adjustedX, adjustedY );
+
+		for index,textures in pairs(WorldMapOverlayHighlights) do
+			local isHighlighted = IsMapOverlayHighlighted(index, adjustedX, adjustedY);
+			for _,texture in pairs(textures) do
+				if (isHighlighted == true) then
+					texture:Show();
+				else
+					texture:Hide();
+				end
+			end
+		end
 	end
 	
 	WorldMapFrameAreaPetLevels:SetText(""); --make sure pet level is cleared

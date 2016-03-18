@@ -1,7 +1,6 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\FrameXML\UI.xsd">
 	<Script file="MainMenuBar.lua"/>
-	<!-- If you modify this, make sure you modify the HonorWatchBar as well. -->
 	<Frame name="MainMenuBarWatchBarTemplate" enableMouse="true" parent="MainMenuBar" hidden="true" virtual="true">
 		<Size x="1024" y="11"/>
 		<Anchors>
@@ -530,108 +529,39 @@
 			</OnLeave>
 		</Scripts>
 	</Frame>
-	<!-- If you modify MainMenuBarWatchBarTemplate, make sure you modify this as well. -->
-	<Frame name="HonorWatchBar" enableMouse="true" parent="MainMenuBar" hidden="true">
+	<Frame name="HonorWatchBar" enableMouse="true" parent="MainMenuBar" inherits="MainMenuBarWatchBarTemplate" hidden="true">
 		<Size x="1024" y="11"/>
 		<Anchors>
 			<Anchor point="BOTTOM" relativeTo="MainMenuBar" relativePoint="TOP" x="0" y="-3"/>
 		</Anchors>
-		<Frames>
-			<StatusBar parentKey="StatusBar" drawLayer="ARTWORK" inherits="AnimatedStatusBarTemplate">
-				<Size x="1024" y="8"/>
-				<Anchors>
-					<Anchor point="TOP"/>
-				</Anchors>
-				<Layers>
-					<Layer level="BACKGROUND">
-						<Texture parentKey="Background" atlas="honorsystem-bar-background" setAllPoints="true"/>
-					</Layer>
-					<Layer level="BACKGROUND" textureSubLevel="1">
-						<Texture parentKey="ExhaustionLevelFillBar" atlas="_honorsystem-bar-fill" hidden="true">
-							<Size x="40" y="8"/>
-							<Anchors>
-								<Anchor point="LEFT" relativePoint="LEFT" x="0" y="0"/>
-							</Anchors>
-							<Color r="1.0" g="1.0" b="1.0" a="1.0"/>
-						</Texture>
-					</Layer>
-					<Layer level="ARTWORK">
-						<Texture parentKey="WatchBarTexture0" file="Interface\PaperDollInfoFrame\UI-ReputationWatchBar">
-							<Size x="256" y="11"/>
-							<Anchors>
-								<Anchor point="TOPLEFT" x="0" y="2"/>
-							</Anchors>
-							<TexCoords left="0" right="1.0" top="0" bottom="0.171875"/>
-						</Texture>
-						<Texture parentKey="WatchBarTexture1" file="Interface\PaperDollInfoFrame\UI-ReputationWatchBar">
-							<Size x="256" y="11"/>
-							<Anchors>
-								<Anchor point="LEFT" relativeKey="$parent.WatchBarTexture0" relativePoint="RIGHT"/>
-							</Anchors>
-							<TexCoords left="0" right="1.0" top="0.171875" bottom="0.34375"/>
-						</Texture>
-						<Texture parentKey="WatchBarTexture2" file="Interface\PaperDollInfoFrame\UI-ReputationWatchBar">
-							<Size x="256" y="11"/>
-							<Anchors>
-								<Anchor point="LEFT" relativeKey="$parent.WatchBarTexture1" relativePoint="RIGHT"/>
-							</Anchors>
-							<TexCoords left="0" right="1.0" top="0.34375" bottom="0.515625"/>
-						</Texture>
-						<Texture parentKey="WatchBarTexture3" file="Interface\PaperDollInfoFrame\UI-ReputationWatchBar">
-							<Size x="256" y="11"/>
-							<Anchors>
-								<Anchor point="LEFT" relativeKey="$parent.WatchBarTexture2" relativePoint="RIGHT"/>
-							</Anchors>
-							<TexCoords left="0" right="1.0" top="0.515625" bottom="0.6875"/>
-						</Texture>
-						<Texture parentKey="XPBarTexture0" file="Interface\MainMenuBar\UI-MainMenuBar-Dwarf">
-							<Size x="256" y="10"/>
-							<Anchors>
-								<Anchor point="TOPLEFT"/>
-							</Anchors>
-							<TexCoords left="0" right="1.0" top="0.79296875" bottom="0.83203125"/>
-						</Texture>
-						<Texture parentKey="XPBarTexture1" file="Interface\MainMenuBar\UI-MainMenuBar-Dwarf">
-							<Size x="256" y="10"/>
-							<Anchors>
-								<Anchor point="LEFT" relativeKey="$parent.XPBarTexture0" relativePoint="RIGHT"/>
-							</Anchors>
-							<TexCoords left="0" right="1.0" top="0.54296875" bottom="0.58203125"/>
-						</Texture>
-						<Texture parentKey="XPBarTexture2" file="Interface\MainMenuBar\UI-MainMenuBar-Dwarf">
-							<Size x="256" y="10"/>
-							<Anchors>
-								<Anchor point="LEFT" relativeKey="$parent.XPBarTexture1" relativePoint="RIGHT"/>
-							</Anchors>
-							<TexCoords left="0" right="1.0" top="0.29296875" bottom="0.33203125"/>
-						</Texture>
-						<Texture parentKey="XPBarTexture3" file="Interface\MainMenuBar\UI-MainMenuBar-Dwarf">
-							<Size x="256" y="10"/>
-							<Anchors>
-								<Anchor point="LEFT" relativeKey="$parent.XPBarTexture2" relativePoint="RIGHT"/>
-							</Anchors>
-							<TexCoords left="0" right="1.0" top="0.04296875" bottom="0.08203125"/>
-						</Texture>
-					</Layer>
-				</Layers>
-				<Frames>
-					<Button parentKey="ExhaustionTick" hidden="true" frameStrata="DIALOG">
-						<Size x="32" y="32"/>
-						<Anchors>
-							<Anchor point="CENTER" relativeKey="$parent.ExhaustionLevelFillBar" relativePoint="RIGHT" x="0" y="0"/>
-						</Anchors>
-						<Scripts>
-							<OnLoad function="HonorExhaustionTick_OnLoad"/>
-							<OnEvent function="HonorExhaustionTick_OnEvent"/>
-							<OnEnter function="HonorExhaustionToolTipText"/>
-							<OnLeave function="GameTooltip_Hide"/>
-						</Scripts>
-						<NormalTexture parentKey="Normal" file="Interface\MainMenuBar\UI-ExhaustionTickNormal"/>
-						<HighlightTexture parentKey="Highlight" file="Interface\MainMenuBar\UI-ExhaustionTickHighlight" alphaMode="ADD"/>
-					</Button>
-				</Frames>
-				<BarTexture atlas="_honorsystem-bar-fill"/>
-			</StatusBar>
+        <Layers>
+            <Layer level="BORDER">
+                <Texture parentKey="ExhaustionLevelFillBar">
+                    <Size x="0" y="10"/>
+                    <Anchors>
+                        <Anchor point="TOPLEFT" relativeTo="HonorWatchBar" x="0" y="0"/>
+                    </Anchors>
+                    <Color r="1.0" g="1.0" b="1.0" a="1.0"/>
+                </Texture>
+            </Layer>
+        </Layers>
+        <Frames>
+            <Button parentKey="ExhaustionTick" hidden="true" frameStrata="DIALOG">
+                <Size x="32" y="32"/>
+                <Anchors>
+                    <Anchor point="CENTER" relativeKey="$parent.ExhaustionLevelFillBar" relativePoint="RIGHT" x="0" y="0"/>
+                </Anchors>
+                <Scripts>
+                    <OnLoad function="HonorExhaustionTick_OnLoad"/>
+                    <OnEvent>
+						MainMenuBar_UpdateExperienceBars();
+					</OnEvent>
+                    <OnEnter function="HonorExhaustionToolTipText"/>
+                    <OnLeave function="GameTooltip_Hide"/>
+                </Scripts>
+                <NormalTexture parentKey="Normal" file="Interface\MainMenuBar\UI-ExhaustionTickNormal"/>
+                <HighlightTexture parentKey="Highlight" file="Interface\MainMenuBar\UI-ExhaustionTickHighlight" alphaMode="ADD"/>
+            </Button>
 			<Frame parentKey="OverlayFrame" frameStrata="DIALOG" setAllPoints="true">
 				<Layers>
 					<Layer level="ARTWORK">

@@ -199,10 +199,12 @@ Import("BLIZZARD_STORE_DISCLAIMER_FACTION_CHANGE");
 Import("BLIZZARD_STORE_DISCLAIMER_RACE_CHANGE");
 Import("BLIZZARD_STORE_DISCLAIMER_APPEARANCE_CHANGE");
 Import("BLIZZARD_STORE_DISCLAIMER_NAME_CHANGE");
+Import("BLIZZARD_STORE_DISCLAIMER_CHARACTER_TRANSFER");
 Import("BLIZZARD_STORE_DISCLAIMER_FACTION_CHANGE_CN");
 Import("BLIZZARD_STORE_DISCLAIMER_RACE_CHANGE_CN");
 Import("BLIZZARD_STORE_DISCLAIMER_APPEARANCE_CHANGE_CN");
 Import("BLIZZARD_STORE_DISCLAIMER_NAME_CHANGE_CN");
+Import("BLIZZARD_STORE_DISCLAIMER_CHARACTER_TRANSFER_CN");
 Import("BLIZZARD_STORE_BOOST_UNREVOKED_CONSUMPTION");
 Import("TOOLTIP_DEFAULT_COLOR");
 Import("TOOLTIP_DEFAULT_BACKGROUND_COLOR");
@@ -221,10 +223,12 @@ Import("VAS_CHARACTER_SELECTION_DESCRIPTION");
 Import("VAS_SELECTED_CHARACTER_DESCRIPTION");
 Import("VAS_NEW_CHARACTER_NAME_LABEL");
 Import("VAS_NAME_CHANGE_TOOLTIP");
+Import("VAS_DESTINATION_REALM_LABEL");
 Import("VAS_NAME_CHANGE_CONFIRMATION");
 Import("VAS_APPEARANCE_CHANGE_CONFIRMATION");
 Import("VAS_FACTION_CHANGE_CONFIRMATION");
 Import("VAS_RACE_CHANGE_CONFIRMATION");
+Import("VAS_CHARACTER_TRANSFER_CONFIRMATION");
 Import("VAS_RACE_CHANGE_VALIDATION_DESCRIPTION");
 Import("VAS_FACTION_CHANGE_VALIDATION_DESCRIPTION");
 Import("VAS_APPEARANCE_CHANGE_VALIDATION_DESCRIPTION");
@@ -266,6 +270,7 @@ Import("LE_VAS_SERVICE_NAME_CHANGE");
 Import("LE_VAS_SERVICE_APPEARANCE_CHANGE");
 Import("LE_VAS_SERVICE_FACTION_CHANGE");
 Import("LE_VAS_SERVICE_RACE_CHANGE");
+Import("LE_VAS_SERVICE_CHARACTER_TRANSFER");
 Import("LE_VAS_ERROR_REALM_NOT_ELIGIBLE");
 Import("LE_VAS_ERROR_CANNOT_MOVE_GUILDMASTER");
 Import("LE_VAS_ERROR_DUPLICATE_CHARACTER_NAME");
@@ -490,6 +495,9 @@ local currencySpecific = {
 			[LE_VAS_SERVICE_NAME_CHANGE] = {
 				disclaimer = BLIZZARD_STORE_DISCLAIMER_NAME_CHANGE,
 			},
+			[LE_VAS_SERVICE_CHARACTER_TRANSFER] = {
+				disclaimer = BLIZZARD_STORE_DISCLAIMER_CHARACTER_TRANSFER,
+			},
 		},
 	},
 	[CURRENCY_GBP] = {
@@ -519,6 +527,9 @@ local currencySpecific = {
 			},
 			[LE_VAS_SERVICE_NAME_CHANGE] = {
 				disclaimer = BLIZZARD_STORE_DISCLAIMER_NAME_CHANGE,
+			},
+			[LE_VAS_SERVICE_CHARACTER_TRANSFER] = {
+				disclaimer = BLIZZARD_STORE_DISCLAIMER_CHARACTER_TRANSFER,
 			},
 		},
 	},
@@ -550,6 +561,9 @@ local currencySpecific = {
 			[LE_VAS_SERVICE_NAME_CHANGE] = {
 				disclaimer = BLIZZARD_STORE_DISCLAIMER_NAME_CHANGE,
 			},
+			[LE_VAS_SERVICE_CHARACTER_TRANSFER] = {
+				disclaimer = BLIZZARD_STORE_DISCLAIMER_CHARACTER_TRANSFER,
+			},
 		},
 	},
 	[CURRENCY_EUR] = {
@@ -579,6 +593,9 @@ local currencySpecific = {
 			},
 			[LE_VAS_SERVICE_NAME_CHANGE] = {
 				disclaimer = BLIZZARD_STORE_DISCLAIMER_NAME_CHANGE,
+			},
+			[LE_VAS_SERVICE_CHARACTER_TRANSFER] = {
+				disclaimer = BLIZZARD_STORE_DISCLAIMER_CHARACTER_TRANSFER,
 			},
 		},
 	},
@@ -610,6 +627,9 @@ local currencySpecific = {
 			[LE_VAS_SERVICE_NAME_CHANGE] = {
 				disclaimer = BLIZZARD_STORE_DISCLAIMER_NAME_CHANGE,
 			},
+			[LE_VAS_SERVICE_CHARACTER_TRANSFER] = {
+				disclaimer = BLIZZARD_STORE_DISCLAIMER_CHARACTER_TRANSFER,
+			},
 		},
 	},
 	[CURRENCY_ARS] = {
@@ -636,6 +656,9 @@ local currencySpecific = {
 			},
 			[LE_VAS_SERVICE_NAME_CHANGE] = {
 				disclaimer = BLIZZARD_STORE_DISCLAIMER_NAME_CHANGE,
+			},
+			[LE_VAS_SERVICE_CHARACTER_TRANSFER] = {
+				disclaimer = BLIZZARD_STORE_DISCLAIMER_CHARACTER_TRANSFER,
 			},
 		},
 	},
@@ -664,6 +687,9 @@ local currencySpecific = {
 			[LE_VAS_SERVICE_NAME_CHANGE] = {
 				disclaimer = BLIZZARD_STORE_DISCLAIMER_NAME_CHANGE,
 			},
+			[LE_VAS_SERVICE_CHARACTER_TRANSFER] = {
+				disclaimer = BLIZZARD_STORE_DISCLAIMER_CHARACTER_TRANSFER,
+			},
 		},
 	},
 	[CURRENCY_MXN] = {
@@ -690,6 +716,9 @@ local currencySpecific = {
 			},
 			[LE_VAS_SERVICE_NAME_CHANGE] = {
 				disclaimer = BLIZZARD_STORE_DISCLAIMER_NAME_CHANGE,
+			},
+			[LE_VAS_SERVICE_CHARACTER_TRANSFER] = {
+				disclaimer = BLIZZARD_STORE_DISCLAIMER_CHARACTER_TRANSFER,
 			},
 		},
 	},
@@ -718,6 +747,9 @@ local currencySpecific = {
 			[LE_VAS_SERVICE_NAME_CHANGE] = {
 				disclaimer = BLIZZARD_STORE_DISCLAIMER_NAME_CHANGE,
 			},
+			[LE_VAS_SERVICE_CHARACTER_TRANSFER] = {
+				disclaimer = BLIZZARD_STORE_DISCLAIMER_CHARACTER_TRANSFER,
+			},
 		},
 	},
 	[CURRENCY_AUD] = {
@@ -744,6 +776,9 @@ local currencySpecific = {
 			},
 			[LE_VAS_SERVICE_NAME_CHANGE] = {
 				disclaimer = BLIZZARD_STORE_DISCLAIMER_NAME_CHANGE,
+			},
+			[LE_VAS_SERVICE_CHARACTER_TRANSFER] = {
+				disclaimer = BLIZZARD_STORE_DISCLAIMER_CHARACTER_TRANSFER,
 			},
 		},
 	},
@@ -773,6 +808,9 @@ local currencySpecific = {
 			[LE_VAS_SERVICE_NAME_CHANGE] = {
 				disclaimer = BLIZZARD_STORE_DISCLAIMER_NAME_CHANGE_CN,
 			},
+			[LE_VAS_SERVICE_CHARACTER_TRANSFER] = {
+				disclaimer = BLIZZARD_STORE_DISCLAIMER_CHARACTER_TRANSFER_CN,
+			},
 		},
 	},
 	[CURRENCY_TPT] = {
@@ -800,6 +838,9 @@ local currencySpecific = {
 			[LE_VAS_SERVICE_NAME_CHANGE] = {
 				disclaimer = BLIZZARD_STORE_DISCLAIMER_NAME_CHANGE,
 			},
+			[LE_VAS_SERVICE_CHARACTER_TRANSFER] = {
+				disclaimer = BLIZZARD_STORE_DISCLAIMER_CHARACTER_TRANSFER,
+			},
 		},
 	},
 	[CURRENCY_BETA] = {
@@ -825,6 +866,9 @@ local currencySpecific = {
 			},
 			[LE_VAS_SERVICE_NAME_CHANGE] = {
 				disclaimer = BLIZZARD_STORE_DISCLAIMER_NAME_CHANGE,
+			},
+			[LE_VAS_SERVICE_CHARACTER_TRANSFER] = {
+				disclaimer = BLIZZARD_STORE_DISCLAIMER_CHARACTER_TRANSFER,
 			},
 		},
 	},
@@ -2048,6 +2092,8 @@ local VASServiceType = nil;
 local SelectedRealm = nil;
 local SelectedCharacter = nil;
 local NewCharacterName = nil;
+local SelectedDestinationRealm = nil;
+local DestinationRealmMapping = nil;
 local StoreDropdownLists = {};
 
 ------------------------------------------
@@ -2101,6 +2147,9 @@ function StoreConfirmationFrame_SetNotice(self, icon, name, dollars, cents, wall
 			confirmationNotice = info.servicesConfirmationNotice;
 		elseif (VASServiceType == LE_VAS_SERVICE_APPEARANCE_CHANGE) then
 			notice = VAS_APPEARANCE_CHANGE_CONFIRMATION:format(character.name, SelectedRealm);
+			confirmationNotice = info.servicesConfirmationNotice;
+		elseif (VASServiceType == LE_VAS_SERVICE_CHARACTER_TRANSFER) then
+			notice = VAS_CHARACTER_TRANSFER_CONFIRMATION:format(character.name, SelectedRealm, DestinationRealmMapping[SelectedDestinationRealm]);
 			confirmationNotice = info.servicesConfirmationNotice;
 		end
 		notice = notice .. "|n|n" .. confirmationNotice;
@@ -2258,6 +2307,7 @@ function StoreVASValidationFrame_OnLoad(self)
 	self.CharacterSelectionFrame.RealmSelector.Label:SetText(VAS_REALM_LABEL);
 	self.CharacterSelectionFrame.CharacterSelector.Label:SetText(VAS_CHARACTER_LABEL);
 	self.CharacterSelectionFrame.NewCharacterName.Label:SetText(VAS_NEW_CHARACTER_NAME_LABEL);
+	self.CharacterSelectionFrame.DestinationRealmSelector.Label:SetText(VAS_DESTINATION_REALM_LABEL);
 	if (IsOnGlueScreen()) then
 		self.CharacterSelectionFrame.NewCharacterName:SetFontObject("GlueEditBoxFont");
 	end
@@ -2304,11 +2354,14 @@ function StoreVASValidationFrame_SetVASStart(self)
 	else
 		SelectedRealm = GetRealmName();
 	end
+	SelectedDestinationRealm = nil;
 
 	self.CharacterSelectionFrame.RealmSelector.Text:SetText(SelectedRealm);
 	self.CharacterSelectionFrame.CharacterSelector.Text:SetText(VAS_SELECT_CHARACTER);
 	self.CharacterSelectionFrame.CharacterSelector.Button:Enable();
 	self.CharacterSelectionFrame.NewCharacterName:Hide();
+	self.CharacterSelectionFrame.DestinationRealmSelector.Text:SetText(VAS_SELECT_REALM);
+	self.CharacterSelectionFrame.DestinationRealmSelector:Hide();
 	self.CharacterSelectionFrame.ClassIcon:Hide();
 	self.CharacterSelectionFrame.SelectedCharacterFrame:Hide();
 	self.CharacterSelectionFrame.SelectedCharacterName:Hide();
@@ -2377,12 +2430,15 @@ function StoreVASValidationFrame_OnEvent(self, event, ...)
 				end
 			end
 			frame.ChangeIconFrame:Hide();
-			if (VASServiceType ~= LE_VAS_SERVICE_NAME_CHANGE) then
-				frame.ValidationDescription:ClearAllPoints();
-				frame.ValidationDescription:SetPoint("TOPLEFT", frame.SelectedCharacterFrame, "BOTTOMLEFT", 8, -8);
-			else
+			if (VASServiceType == LE_VAS_SERVICE_NAME_CHANGE) then
 				frame.ValidationDescription:ClearAllPoints();
 				frame.ValidationDescription:SetPoint("TOPLEFT", frame.NewCharacterName, "BOTTOMLEFT", -5, -6);
+			elseif (VASServiceType == LE_VAS_SERVICE_CHARACTER_TRANSFER) then
+				frame.ValidationDescription:ClearAllPoints();
+				frame.ValidationDescription:SetPoint("TOPLEFT", frame.DestinationRealmSelector, "BOTTOMLEFT", 8, -8);
+			else
+				frame.ValidationDescription:ClearAllPoints();
+				frame.ValidationDescription:SetPoint("TOPLEFT", frame.SelectedCharacterFrame, "BOTTOMLEFT", 8, -8);
 			end
 			frame.ValidationDescription:SetFontObject("GameFontBlackSmall2");
 			frame.ValidationDescription:SetTextColor(1.0, 0.1, 0.1);
@@ -3174,6 +3230,12 @@ function VASCharacterSelectionCharacterSelector_Callback(value)
 		frame.ContinueButton:Disable();
 		frame.ValidationDescription:ClearAllPoints();
 		frame.ValidationDescription:SetPoint("TOPLEFT", bottomWidget, "BOTTOMLEFT", -5, -6);
+	elseif (VASServiceType == LE_VAS_SERVICE_CHARACTER_TRANSFER) then
+		frame.DestinationRealmSelector:Show();
+		bottomWidget = frame.DestinationRealmSelector;
+		frame.ContinueButton:Disable();
+		frame.ValidationDescription:ClearAllPoints();
+		frame.ValidationDescription:SetPoint("TOPLEFT", bottomWidget, "BOTTOMLEFT", -5, -6);
 	else
 		if (VASServiceType == LE_VAS_SERVICE_RACE_CHANGE) then
 			local races = C_PurchaseAPI.GetEligibleRacesForRaceChange(character.guid);
@@ -3239,6 +3301,13 @@ function VASCharacterSelectionCharacterSelector_Callback(value)
 		frame.ValidationDescription:SetPoint("TOPLEFT", bottomWidget, "BOTTOMLEFT", 8, -16);
 		frame.ContinueButton:Enable();
 	end
+end
+
+function VASCharacterSelectionDestinationRealmSelector_Callback(value)
+	SelectedDestinationRealm = value;
+	local frame = StoreVASValidationFrame.CharacterSelectionFrame;
+	frame.DestinationRealmSelector.Text:SetText(DestinationRealmMapping[value]);
+	frame.ContinueButton:Enable();
 end
 
 function VASCharacterSelectionRealmSelector_OnClick(self)
@@ -3325,7 +3394,7 @@ function VASCharacterSelectionContinueButton_OnClick(self)
 		end
 	end
 
-	if ( C_PurchaseAPI.PurchaseVASProduct(entryInfo.productID, characters[SelectedCharacter].guid, NewCharacterName) ) then
+	if ( C_PurchaseAPI.PurchaseVASProduct(entryInfo.productID, characters[SelectedCharacter].guid, NewCharacterName, SelectedDestinationRealm) ) then
 		WaitingOnConfirmation = true;
 		WaitingOnConfirmationTime = GetTime();
 		StoreFrame_UpdateActivePanel(StoreFrame);
@@ -3336,6 +3405,25 @@ function VASCharacterSelectionNewCharacterName_OnEnter(self)
  	StoreTooltip:ClearAllPoints();
 	StoreTooltip:SetPoint("BOTTOMLEFT", self, "TOPRIGHT");
 	StoreTooltip_Show("", VAS_NAME_CHANGE_TOOLTIP);
+end
+
+function VASCharacterSelectionDestinationRealmSelector_OnClick(self)
+	PlaySound("igMainMenuOptionCheckBoxOn");
+	
+	if (self:GetParent().List:IsShown()) then
+		self:GetParent().List:Hide();
+		return;
+	end
+	
+	local realms = C_PurchaseAPI.GetVASRealmList();
+	local infoTable = {};
+	DestinationRealmMapping = {};
+	for i = 1, #realms do
+		infoTable[#infoTable+1] = {text=realms[i].name, value=realms[i].addr, checked=(SelectedDestinationRealm == realms[i].addr)};
+		DestinationRealmMapping[realms[i].addr] = realms[i].name;
+	end
+	
+	StoreDropDown_SetDropdown(self:GetParent(), infoTable, VASCharacterSelectionDestinationRealmSelector_Callback);
 end
 ------------------------------------
 function ServicesLogoutPopup_OnLoad(self)

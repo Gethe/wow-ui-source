@@ -9,6 +9,11 @@ GarrisonFollowerOptions[LE_FOLLOWER_TYPE_GARRISON_6_0] = {
 	showILevelOnFollower = false,
 	showCategoriesInFollowerList = false,
 	minFollowersForThreatCountersFrame = 10,
+	showSingleMissionCompleteAnimation = false,
+	showCautionSignOnMissionFollowersSmallBias = true,
+	minQualityLevelToShowLevel = LE_ITEM_QUALITY_POOR,
+	usesOvermaxMechanic = false,
+	partyNotFullText = GARRISON_PARTY_NOT_FULL_TOOLTIP,
 }
 
 GarrisonFollowerOptions[LE_FOLLOWER_TYPE_SHIPYARD_6_2] = {
@@ -18,6 +23,11 @@ GarrisonFollowerOptions[LE_FOLLOWER_TYPE_SHIPYARD_6_2] = {
 	showILevelOnFollower = false,
 	showCategoriesInFollowerList = false,
 	minFollowersForThreatCountersFrame = 1,
+	showSingleMissionCompleteAnimation = true,
+	showCautionSignOnMissionFollowersSmallBias = true,
+	minQualityLevelToShowLevel = LE_ITEM_QUALITY_POOR,
+	usesOvermaxMechanic = false,
+	partyNotFullText = GARRISON_SHIPYARD_PARTY_NOT_FULL_TOOLTIP,
 }
 
 GarrisonFollowerOptions[LE_FOLLOWER_TYPE_GARRISON_7_0] = {
@@ -27,6 +37,11 @@ GarrisonFollowerOptions[LE_FOLLOWER_TYPE_GARRISON_7_0] = {
 	showILevelOnFollower = true,
 	showCategoriesInFollowerList = true,
 	minFollowersForThreatCountersFrame = math.huge,
+	showSingleMissionCompleteAnimation = true,
+	showCautionSignOnMissionFollowersSmallBias = false,
+	minQualityLevelToShowLevel = LE_ITEM_QUALITY_EPIC,
+	usesOvermaxMechanic = true,
+	partyNotFullText = GARRISON_PARTY_NOT_ENOUGH_CHAMPIONS,
 }
 
 ---------------------------------------------------------------------------------
@@ -82,8 +97,9 @@ function GarrisonFollowerPortraitMixin:SetupPortrait(followerInfo, showILevel)
 	self:SetPortraitIcon(followerInfo.portraitIconID);
 	self:SetQuality(followerInfo.quality);
 	local showILevelOnFollower = followerInfo.followerTypeID and GarrisonFollowerOptions[followerInfo.followerTypeID].showILevelOnFollower or false;
+	local hideLevelOnFollower = followerInfo.isTroop or (followerInfo.quality < GarrisonFollowerOptions[followerInfo.followerTypeID].minQualityLevelToShowLevel);
 
-	if (followerInfo.isTroop) then
+	if (hideLevelOnFollower) then
 		self:SetNoLevel();
 	elseif (showILevel or showILevelOnFollower) then
 		self:SetILevel(followerInfo.iLevel);

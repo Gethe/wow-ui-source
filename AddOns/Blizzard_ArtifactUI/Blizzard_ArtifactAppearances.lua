@@ -53,7 +53,7 @@ function ArtifactAppearancesMixin:Refresh()
 	local MAX_LARGE_ENTRIES = 5;
 	local useSmallSize = self.appearanceSetPool:GetNumActive() > MAX_LARGE_ENTRIES;
 
-	for appearanceSet in self.appearanceSetPool:EnumeracteActive() do
+	for appearanceSet in self.appearanceSetPool:EnumerateActive() do
 		appearanceSet:SetHeight(useSmallSize and 89 or 103);
 	end
 
@@ -76,7 +76,7 @@ function ArtifactAppearancesMixin:SetupAppearanceSet(setIndex, prevAppearanceSet
 	if setID and numAppearanceSlots > 0 then
 		local appearanceSet;
 		for appearanceIndex = 1, numAppearanceSlots do
-			local appearanceID, appearanceName, displayIndex, appearanceUnlocked, unlockFailureReason, uiCameraID, altHandUICameraID, swatchR, swatchG, swatchB, modelAlpha, modelDesaturation = C_ArtifactUI.GetAppearanceInfo(setIndex, appearanceIndex);
+			local appearanceID, appearanceName, displayIndex, appearanceUnlocked, unlockFailureReason, uiCameraID, altHandUICameraID, swatchR, swatchG, swatchB, modelAlpha, modelDesaturation, freezeAnim = C_ArtifactUI.GetAppearanceInfo(setIndex, appearanceIndex);
 
 			if appearanceID then
 				if not appearanceSet then

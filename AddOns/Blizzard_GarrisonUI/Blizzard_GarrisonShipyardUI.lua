@@ -146,6 +146,7 @@ function GarrisonShipyardMission:OnShowMainFrame()
 	if (self.FollowerList.followerType ~= self.followerTypeID) then
 		self.FollowerList:Initialize(self.followerTypeID);
 	end
+	self.MissionTab.MissionList.followerTypeID = self.followerTypeID;
 	self:CheckCompleteMissions(true);
 	PlaySound("UI_Garrison_CommandTable_Open");
 	self:CheckFollowerCount();
@@ -289,7 +290,7 @@ function GarrisonShipyardMission:UpdateMissionData(frame)
 end
 
 function GarrisonShipyardMission:UpdateStartButton(missionPage)
-	GarrisonMission.UpdateStartButton(self, missionPage, GARRISON_SHIPYARD_PARTY_NOT_FULL_TOOLTIP);
+	GarrisonMission.UpdateStartButton(self, missionPage);
 end
 
 function GarrisonShipyardMission:SetEnemyName(portraitFrame, name)
@@ -443,7 +444,7 @@ function GarrisonShipyardMission:CheckCompleteMissions(onShow)
 	end
 	
 	-- preload one follower and one enemy model for the mission
-	MissionCompletePreload_LoadMission(self, self.MissionComplete.completeMissions[1].missionID, true);
+	MissionCompletePreload_LoadMission(self, self.MissionComplete.completeMissions[1].missionID, GarrisonFollowerOptions[self.followerTypeID].showSingleMissionCompleteAnimation);
 end
 
 function GarrisonShipyardMission:MissionCompleteInitialize(missionList, index)
@@ -623,7 +624,7 @@ function GarrisonShipyardMissionComplete:AnimFollowersIn(entry)
 	local nextIndex = self.currentIndex + 1;
 	local missionList = self.completeMissions;
 	if ( missionList[nextIndex] ) then
-		MissionCompletePreload_LoadMission(self:GetParent(), missionList[nextIndex].missionID);
+		MissionCompletePreload_LoadMission(self:GetParent(), missionList[nextIndex].missionID, GarrisonFollowerOptions[self.followerTypeID].showSingleMissionCompleteAnimation);
 	end
 	
 	if ( entry ) then
@@ -789,17 +790,17 @@ function GarrisonShipyardMissionComplete:SetFollowerData(follower, name, classNa
 	end
 end
 
-function GarrisonShipyardMissionComplete:SetFollowerLevel(followerFrame, level, quality, currXP, maxXP)
-	if ( maxXP and maxXP > 0 ) then
-		followerFrame.XP:SetMinMaxValues(0, maxXP);
-		followerFrame.XP:SetValue(currXP);
+function GarrisonShipyardMissionComplete:SetFollowerLevel(followerFrame, followerInfo)
+	if ( followerInfo.levelXP and followerInfo.levelXP > 0 ) then
+		followerFrame.XP:SetMinMaxValues(0, followerInfo.levelXP);
+		followerFrame.XP:SetValue(followerInfo.xp);
 		followerFrame.XP:Show();
 	else
 		followerFrame.XP:Hide();
 	end
-	followerFrame.XP.level = level;
-	followerFrame.XP.quality = quality;
-	local color = ITEM_QUALITY_COLORS[quality];
+	followerFrame.XP.level = followerInfo.level;
+	followerFrame.XP.quality = followerInfo.quality;
+	local color = ITEM_QUALITY_COLORS[followerInfo.quality];
 	followerFrame.Name:SetTextColor(color.r, color.g, color.b);
 end
 
@@ -2204,7 +2205,7 @@ function GarrisonShipMissionPageFollowerFrame_OnEnter(self)
 		xp,
 		levelXp,
 		C_Garrison.GetFollowerItemLevelAverage(self.info.followerID), 
-		C_Garrison.GetFollowerSpecializationAtIndex(followerID, 1),
+		C_Garrison.GetFollowerSpecializationAtIndex(self.info.followerID, 1),
 		C_Garrison.GetFollowerAbilityAtIndex(self.info.followerID, 1),
 		C_Garrison.GetFollowerAbilityAtIndex(self.info.followerID, 2),
 		C_Garrison.GetFollowerAbilityAtIndex(self.info.followerID, 3),

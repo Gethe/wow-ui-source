@@ -49,6 +49,7 @@ local THROTTLED_MESSAGE_TYPES = {
 	[LE_GAME_ERR_SPELL_ALREADY_KNOWN_S] = true,
 	[LE_GAME_ERR_SPELL_FAILED_SHAPESHIFT_FORM_S] = true,
 	[LE_GAME_ERR_SPELL_FAILED_ALREADY_AT_FULL_MANA] = true,
+	[LE_GAME_ERR_OUT_OF_MANA] = true,
 	[LE_GAME_ERR_SPELL_OUT_OF_RANGE] = true,
 	[LE_GAME_ERR_SPELL_FAILED_S] = true,
 	[LE_GAME_ERR_SPELL_FAILED_REAGENTS] = true,
@@ -78,7 +79,6 @@ local BLACK_LISTED_MESSAGE_TYPES = {
 	[LE_GAME_ERR_OUT_OF_COMBO_POINTS] = true,
 	[LE_GAME_ERR_OUT_OF_CHI] = true,
 	[LE_GAME_ERR_OUT_OF_PAIN] = true,
-	[LE_GAME_ERR_OUT_OF_MANA] = true,
 	[LE_GAME_ERR_OUT_OF_HEALTH] = true,
 	[LE_GAME_ERR_OUT_OF_RAGE] = true,
 	[LE_GAME_ERR_OUT_OF_ARCANE_CHARGES] = true,
@@ -127,7 +127,7 @@ function UIErrorsMixin:TryDisplayMessage(messageType, message, r, g, b)
 
 		local errorName, soundKitID, voiceID = GetGameMessageInfo(messageType);
 		if voiceID then
-			PlayVocalErrorSoundID(voiceID);
+    		PlayVocalErrorSoundID(voiceID);
 		elseif soundKitID then
 			PlaySoundKitID(soundKitID);
 		end

@@ -38,7 +38,7 @@
 						</Texture>
 					</Layer>
 					<Layer level="BACKGROUND" textureSubLevel="1">
-						<Texture parentKey="ExhaustionLevelFillBar" atlas="_honorsystem-bar-fill" hidden="true">
+						<Texture parentKey="ExhaustionLevelFillBar" atlas="_honorsystem-bar-fill-rested" hidden="true">
 							<Size x="40" y="17"/>
 							<Anchors>
 								<Anchor point="LEFT" relativePoint="LEFT" x="0" y="0"/>
@@ -55,7 +55,9 @@
 						</Anchors>
 						<Scripts>
 							<OnLoad function="HonorExhaustionTick_OnLoad"/>
-							<OnEvent function="HonorExhaustionTick_OnEvent"/>
+							<OnEvent>
+                                PVPHonorXPBar_Update(self:GetParent():GetParent());
+                            </OnEvent>
 							<OnEnter function="HonorExhaustionToolTipText"/>
 							<OnLeave function="GameTooltip_Hide"/>
 						</Scripts>
@@ -189,7 +191,7 @@
 		</Frames>
 		<Scripts>
 			<OnLoad function="PVPHonorXPBar_OnLoad"/>
-	 		<OnShow function="PVPHonorXPBar_OnShow"/>
+	 		<OnShow function="PVPHonorXPBar_Update"/>
 	 		<OnEvent function="PVPHonorXPBar_Update"/>
 	 	</Scripts>
 	</Frame>
@@ -230,7 +232,7 @@
 						</Texture>
 					</Layer>
 					<Layer level="BACKGROUND" textureSubLevel="1">
-						<Texture parentKey="ExhaustionLevelFillBar" atlas="_honorsystem-bar-fill" hidden="true">
+						<Texture parentKey="ExhaustionLevelFillBar" atlas="_honorsystem-bar-fill-rested" hidden="true">
 							<Size x="0" y="18"/>
 							<Anchors>
 								<Anchor point="LEFT" relativePoint="LEFT" x="0" y="0"/>
@@ -247,7 +249,9 @@
 						</Anchors>
 						<Scripts>
 							<OnLoad function="HonorExhaustionTick_OnLoad"/>
-							<OnEvent function="HonorExhaustionTick_OnEvent"/>
+							<OnEvent>
+                                PVPHonorXPBar_Update(self:GetParent():GetParent());
+                            </OnEvent>
 							<OnEnter function="HonorExhaustionToolTipText"/>
 							<OnLeave function="GameTooltip_Hide"/>
 						</Scripts>
@@ -380,7 +384,7 @@
 		</Frames>
 		<Scripts>
 			<OnLoad function="PVPHonorXPBar_OnLoad"/>
-	 		<OnShow function="PVPHonorXPBar_OnShow"/>
+	 		<OnShow function="PVPHonorXPBar_Update"/>
 	 		<OnEvent function="PVPHonorXPBar_Update"/>
 	 	</Scripts>
 	</Frame>
@@ -489,20 +493,30 @@
 	<Frame name="PrestigeLevelUpBanner" hidden="true">
 		<Size x="128" y="128"/>
 		<Anchors>
-			<Anchor point="TOP" x="0" y="-170"/>
+			<Anchor point="TOP" x="0" y="-270"/>
 		</Anchors>
 		<Layers>
-			<Layer level="BACKGROUND" textureSubLevel="-3">
-				<Texture parentKey="WingLeft2" hidden="false" alpha="0" alphaMode="ADD" atlas="titleprestige-wings" useAtlasSize="true">
+			<Layer level="BORDER">
+				<Texture parentKey="BG1" hidden="false" alpha="0" alphaMode="BLEND" atlas="titleprestige-title-bg" useAtlasSize="true">
 					<Anchors>
-						<Anchor point="CENTER" relativeKey="$parent.WingLeft"/>
+						<Anchor point="CENTER"/>
 					</Anchors>
 				</Texture>
-				<Texture parentKey="WingRight2" hidden="false" alpha="0" alphaMode="ADD" atlas="titleprestige-wings2" useAtlasSize="true">
+				<Texture parentKey="IconPlate" hidden="false" alpha="0" alphaMode="BLEND" atlas="titleprestige-prestigeiconplate-alliance" useAtlasSize="true">
 					<Anchors>
-						<Anchor point="CENTER" relativeKey="$parent.WingRight"/>
+						<Anchor point="CENTER" x="0" y="111"/>
 					</Anchors>
 				</Texture>
+				<FontString parentKey="Text1" hidden="false" alpha="0" inherits="GameFontHighlightLarge" text="Prestige Level 5">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.BG1" relativePoint="CENTER" x="-68" y="25"/>
+					</Anchors>
+				</FontString>
+				<FontString parentKey="Text2" hidden="false" alpha="0" inherits="QuestFont_Super_Huge" text="Legionnaire">
+					<Anchors>
+						<Anchor point="TOP" relativeKey="$parent.Text1" x="0" y="-18"/>
+					</Anchors>
+				</FontString>
 			</Layer>
 			<Layer level="BACKGROUND" textureSubLevel="-2">
 				<Texture parentKey="WingLeft" hidden="false" alpha="0" alphaMode="ADD" atlas="titleprestige-wings" useAtlasSize="true">
@@ -516,6 +530,19 @@
 					</Anchors>
 				</Texture>
 			</Layer>
+			<Layer level="BACKGROUND" textureSubLevel="-3">
+				<Texture parentKey="WingLeft2" hidden="false" alpha="0" alphaMode="ADD" atlas="titleprestige-wings" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent.WingLeft"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="WingRight2" hidden="false" alpha="0" alphaMode="ADD" atlas="titleprestige-wings2" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent.WingRight"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+
 			<Layer level="BACKGROUND" textureSubLevel="-1">
 				<Texture parentKey="WingLeftWhite" hidden="false" alpha="0" alphaMode="ADD" atlas="titleprestige-wings-white" useAtlasSize="true">
 					<Anchors>
@@ -624,28 +651,7 @@
 					</Anchors>
 				</Texture>
 			</Layer>
-			<Layer level="BORDER">
-				<Texture parentKey="BG1" hidden="false" alpha="0" alphaMode="BLEND" atlas="titleprestige-title-bg" useAtlasSize="true">
-					<Anchors>
-						<Anchor point="CENTER"/>
-					</Anchors>
-				</Texture>
-				<Texture parentKey="IconPlate" hidden="false" alpha="0" alphaMode="BLEND" atlas="titleprestige-prestigeiconplate-alliance" useAtlasSize="true">
-					<Anchors>
-						<Anchor point="CENTER" x="0" y="111"/>
-					</Anchors>
-				</Texture>
-				<FontString parentKey="Text1" hidden="false" alpha="0" inherits="GameFontHighlightLarge" text="Prestige Level 5">
-					<Anchors>
-						<Anchor point="TOPLEFT" relativeKey="$parent.BG1" relativePoint="CENTER" x="-68" y="25"/>
-					</Anchors>
-				</FontString>
-				<FontString parentKey="Text2" hidden="false" alpha="0" inherits="QuestFont_Super_Huge" text="Legionnaire">
-					<Anchors>
-						<Anchor point="TOP" relativeKey="$parent.Text1" x="0" y="-18"/>
-					</Anchors>
-				</FontString>
-			</Layer>
+
 			<Layer level="BORDER" textureSubLevel="1">
 				<Texture parentKey="BG2" hidden="false" alpha="0" alphaMode="ADD" atlas="titleprestige-title-bg" useAtlasSize="true">
 					<Anchors>
@@ -918,6 +924,11 @@
 				<Translation childKey="Ember10" duration="3" order="1" offsetX="300" offsetY="-100"/>
 				<Alpha childKey="Ember10" startDelay="0.33" duration="0.01" order="1" fromAlpha="0" toAlpha="1"/>
 				<Alpha childKey="Ember10" startDelay="0.66" duration="0.5" order="1" fromAlpha="1" toAlpha="0"/>
+                <Scripts>
+					<OnFinished>
+                        self:GetParent():Hide();
+					</OnFinished>
+				</Scripts>
 			</AnimationGroup>
 		</Animations>
 		<Scripts>

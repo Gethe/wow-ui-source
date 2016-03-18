@@ -346,7 +346,7 @@ function ObjectPoolMixin:ReleaseAll()
 	end
 end
 
-function ObjectPoolMixin:EnumeracteActive()
+function ObjectPoolMixin:EnumerateActive()
 	return pairs(self.activeObjects);
 end
 
@@ -425,10 +425,14 @@ function CreateRectangle(left, right, top, bottom)
 end
 
 function RectangleMixin:OnLoad(left, right, top, bottom)
-	self.left = left or 0.0;
-	self.right = right or 0.0;
-	self.top = top or 0.0;
-	self.bottom = bottom or 0.0;
+	self:SetSides(left or 0.0, right or 0.0, top or 0.0, bottom or 0.0);
+end
+
+function RectangleMixin:SetSides(left, right, top, bottom)
+	self.left = left;
+	self.right = right;
+	self.top = top;
+	self.bottom = bottom;
 end
 
 function RectangleMixin:Reset()

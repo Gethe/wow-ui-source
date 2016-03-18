@@ -15,7 +15,8 @@ end
 function AdventureMapMixin:OnLoad()
 	MapCanvasMixin.OnLoad(self);
 
-	self.mapInsetPool = CreateFramePool("FRAME", self:GetCanvas(), "AdventureMapInsetTemplate", function(pool, mapInset) mapInset:OnReleased(); end);
+	local mapInsetPool = CreateFramePool("FRAME", self:GetCanvas(), "AdventureMapInsetTemplate", function(pool, mapInset) mapInset:OnReleased(); end);
+	self:SetMapInsetPool(mapInsetPool);
 
 	self:RegisterEvent("ADVENTURE_MAP_CLOSE");
 	self:RegisterEvent("ADVENTURE_MAP_UPDATE_INSETS");
@@ -27,11 +28,9 @@ function AdventureMapMixin:OnLoad()
 end
 
 function AdventureMapMixin:AddStandardDataProviders()
-	--self:AddDataProvider(CreateFromMixins(AdventureMap_ZoneLabelDataProviderMixin));
 	--self:AddDataProvider(CreateFromMixins(AdventureMap_ZoneSummaryProviderMixin));
 	self:AddDataProvider(CreateFromMixins(AdventureMap_QuestChoiceDataProviderMixin));
 	self:AddDataProvider(CreateFromMixins(AdventureMap_QuestOfferDataProviderMixin));
-	self:AddDataProvider(CreateFromMixins(AdventureMap_WorldQuestDataProviderMixin));
 	self:AddDataProvider(CreateFromMixins(AdventureMap_MissionDataProviderMixin));
 end
 

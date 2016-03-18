@@ -151,7 +151,7 @@ function AlertFrameQueueMixin:CheckQueuedAlerts()
 end
 
 function AlertFrameQueueMixin:AdjustAnchors(relativeAlert)
-	for alertFrame in self.alertFramePool:EnumeracteActive() do
+	for alertFrame in self.alertFramePool:EnumerateActive() do
 		alertFrame:SetPoint("BOTTOM", relativeAlert, "TOP", 0, 10);
 		relativeAlert = alertFrame;
 	end

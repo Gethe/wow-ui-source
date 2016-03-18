@@ -1,6 +1,8 @@
 CHARACTER_FACING_INCREMENT = 2;
 MAX_RACES = 14;
 MAX_CLASSES_PER_RACE = 12;
+MAX_DISPLAYED_CLASSES_PER_RACE = 12;
+
 NUM_CHAR_CUSTOMIZATIONS = 8;
 MIN_CHAR_NAME_LENGTH = 2;
 CHARACTER_CREATE_ROTATION_START_X = nil;
@@ -263,6 +265,15 @@ function CharacterCreate_OnLoad(self)
 		classInfo.description = _G["CLASS_"..classIndex];
 	end
 	
+    if (not IsDemonHunterAvailable()) then
+        MAX_DISPLAYED_CLASSES_PER_RACE = 11;
+        for i=1, MAX_CLASSES_PER_RACE, 1 do
+            local button = _G["CharCreateClassButton"..i];
+            button:SetSize(44, 44);
+        end
+        CharCreateClassButton12:Hide();
+        CharCreateClassButton6:SetPoint("TOPLEFT", CharCreateClassButton11, "BOTTOMLEFT", 0, -18);
+    end
 	CharCreateClassInfoFrameScrollFrameScrollChildInfoText.topPadding = 18;
 	CharCreateClassInfoFrameScrollFrameScrollChild.Spells = {};
 end
@@ -558,7 +569,9 @@ function CharacterCreateEnumerateClasses(classes)
 		button = _G["CharCreateClassButton"..index];
 		button.NormalTexture:SetTexCoord(coords[1], coords[2], coords[3], coords[4]);
 		button.PushedTexture:SetTexCoord(coords[1], coords[2], coords[3], coords[4]);
-		button:Show();
+        if (index <= MAX_DISPLAYED_CLASSES_PER_RACE) then
+    		button:Show();
+        end
 		button.nameFrame.text:SetText(classData.className);
 		button.tooltip = CHARCREATE_CLASS_TOOLTIP[classIndex];
 		local data = IsKioskModeEnabled() and KioskModeSplash_GetModeData();

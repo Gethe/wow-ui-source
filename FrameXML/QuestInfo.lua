@@ -304,6 +304,7 @@ function QuestInfo_ShowRewards()
 	local xp;
 	local artifactXP;
 	local artifactCategory;
+	local honor;
 	local playerTitle;
 	local totalHeight = 0;
 	local rewardsFrame = QuestInfoFrame.rewardsFrame;
@@ -317,6 +318,7 @@ function QuestInfo_ShowRewards()
 		skillName, skillIcon, skillPoints = GetQuestLogRewardSkillPoints();
 		xp = GetQuestLogRewardXP();
 		artifactXP, artifactCategory = GetQuestLogRewardArtifactXP();
+		honor = GetQuestLogRewardHonor();
 		playerTitle = GetQuestLogRewardTitle();
 		ProcessQuestLogRewardFactions();
 		spellGetter = GetQuestLogRewardSpell;
@@ -328,6 +330,7 @@ function QuestInfo_ShowRewards()
 		skillName, skillIcon, skillPoints = GetRewardSkillPoints();
 		xp = GetRewardXP();
 		artifactXP, artifactCategory = GetRewardArtifactXP();
+		honor = GetRewardHonor();
 		playerTitle = GetRewardTitle();
 		spellGetter = GetRewardSpell;
 	end
@@ -651,11 +654,33 @@ function QuestInfo_ShowRewards()
 				end
 			end
 		end
+        
+        rewardsFrame.HonorFrame:ClearAllPoints();
+        if ( honor > 0 ) then
+            local icon;
+            if (UnitFactionGroup("player") == PLAYER_FACTION_GROUP[0]) then
+                icon = "Interface\\Icons\\PVPCurrency-Honor-Horde";
+            else
+                icon = "Interface\\Icons\\PVPCurrency-Honor-Alliance";
+            end
+
+            rewardsFrame.HonorFrame:SetPoint("TOPLEFT", lastFrame, "BOTTOMLEFT", 0, -REWARDS_SECTION_OFFSET);
+            rewardsFrame.HonorFrame.Count:SetText(BreakUpLargeNumbers(honor));
+            rewardsFrame.HonorFrame.Name:SetText(HONOR);
+            rewardsFrame.HonorFrame.Icon:SetTexture(icon);
+            rewardsFrame.HonorFrame:Show();
+
+            lastFrame = rewardsFrame.HonorFrame;
+            totalHeight = totalHeight + rewardsFrame.HonorFrame:GetHeight() + REWARDS_SECTION_OFFSET;
+        else
+            rewardsFrame.HonorFrame:Hide();
+        end
 	else	
 		rewardsFrame.ItemReceiveText:Hide();
 		rewardsFrame.MoneyFrame:Hide();
 		rewardsFrame.XPFrame:Hide();		
 		rewardsFrame.SkillPointFrame:Hide();
+        rewardsFrame.HonorFrame:Hide();
 	end
 
 	-- deselect item

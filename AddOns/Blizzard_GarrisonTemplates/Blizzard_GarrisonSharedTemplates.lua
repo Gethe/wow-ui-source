@@ -266,11 +266,15 @@ function GarrisonFollowerList:UpdateFollowers()
 		-- category labels at the correct locations. Category labels will have "followerID" set to 0.
 
 	    local additionalOffset = 0;
-	    if ( true ) then -- Always show the Troops category even if there aren't any.
-		    additionalOffset = additionalOffset + 1;
-		    tinsert(self.followersList, numActive + additionalOffset, 0);
-		    self.followersLabels[numActive + additionalOffset] = FOLLOWERLIST_LABEL_TROOPS;
-	    end
+
+		additionalOffset = additionalOffset + 1;
+		tinsert(self.followersList, 0 + additionalOffset, 0);
+		self.followersLabels[0 + additionalOffset] = FOLLOWERLIST_LABEL_CHAMPIONS;
+
+		additionalOffset = additionalOffset + 1;
+		tinsert(self.followersList, numActive + additionalOffset, 0);
+		self.followersLabels[numActive + additionalOffset] = FOLLOWERLIST_LABEL_TROOPS;
+
 	    if ( numInactive > 0 ) then
 		    additionalOffset = additionalOffset + 1;
 		    tinsert(self.followersList, numActive + numTroops + additionalOffset, 0);

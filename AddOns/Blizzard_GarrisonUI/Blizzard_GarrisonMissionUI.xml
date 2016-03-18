@@ -1395,7 +1395,7 @@
 					<Anchor point="BOTTOMRIGHT" relativePoint="TOPRIGHT"/>
 				</Anchors>
 			</Frame>
-			<Frame parentKey="CompleteDialog" enableMouse="true" hidden="true">
+			<Frame parentKey="CompleteDialog" enableMouse="true" hidden="true" frameLevel="10">
 				<Size x="956" y="637"/>
 				<Anchors>
 					<Anchor point="TOPLEFT" x="-33" y="43"/>

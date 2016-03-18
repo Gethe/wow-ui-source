@@ -2,6 +2,11 @@ ArtifactPerksMixin = {}
 
 function ArtifactPerksMixin:OnShow()	
 	self.modelTransformElapsed = 0;
+
+	if self.freezeAnim then
+		self.Model:FreezeAnimation(0);
+		self.AltModel:FreezeAnimation(0);
+	end
 end
 
 function ArtifactPerksMixin:OnAppearanceChanging()
@@ -10,8 +15,9 @@ end
 
 function ArtifactPerksMixin:RefreshModel()
 	local itemID, altItemID, _, _, _, _, _, appearanceID, appearanceModID, altOnTop = C_ArtifactUI.GetArtifactInfo();
-	local _, _, _, _, _, _, uiCameraID, altHandUICameraID, _, _, _, modelAlpha, modelDesaturation = C_ArtifactUI.GetAppearanceInfoByID(appearanceID);
+	local _, _, _, _, _, _, uiCameraID, altHandUICameraID, _, _, _, modelAlpha, modelDesaturation, freezeAnim = C_ArtifactUI.GetAppearanceInfoByID(appearanceID);
 
+	self.freezeAnim = freezeAnim;
 	self.Model.uiCameraID = uiCameraID;
 	self.Model.desaturation = modelDesaturation;
 	self.Model:SetItem(itemID, appearanceModID);
@@ -29,6 +35,11 @@ function ArtifactPerksMixin:RefreshModel()
 		self.AltModel:Show();
 	else
 		self.AltModel:Hide();
+	end
+
+	if self.freezeAnim then
+		self.Model:FreezeAnimation(0);
+		self.AltModel:FreezeAnimation(0);
 	end
 end
 

@@ -25,7 +25,7 @@ function ClassNameplateBarPaladin:Setup()
 		self:RegisterEvent("PLAYER_LEVEL_UP");
 		self:HideNameplateBar();
 	else
-		local show = ClassNameplateBar.Setup(self);
+		ClassNameplateBar.Setup(self);
 	end
 end
 

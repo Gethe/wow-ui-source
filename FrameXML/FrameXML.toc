@@ -39,6 +39,7 @@ SecureTemplates.xml
 SecureHandlerTemplates.xml
 SecureGroupHeaders.xml
 ..\SharedXML\ModelFrames.xml
+WardrobeOutfits.xml
 DressUpFrames.xml
 ItemButtonTemplate.xml
 NavigationBar.xml

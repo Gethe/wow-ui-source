@@ -1482,6 +1482,7 @@ function PlayerTalentFramePVPTalents_OnLoad(self)
 	self:RegisterEvent("HONOR_PRESTIGE_UPDATE");
 	self:RegisterEvent("PLAYER_PVP_TALENT_UPDATE");
 	self:RegisterEvent("PLAYER_LEARN_PVP_TALENT_FAILED");
+	self:RegisterEvent("PRESTIGE_AND_HONOR_INVOLUNTARILY_CHANGED");
 
 	self.talentInfo = {};
 end
@@ -1522,7 +1523,7 @@ function PlayerTalentFramePVPTalents_OnHide(self)
 end
 
 function PlayerTalentFramePVPTalents_OnEvent(self, event)
-	if (event == "HONOR_XP_UPDATE" or event == "HONOR_PRESTIGE_UPDATE" or event == "HONOR_LEVEL_UPDATE") then
+	if (event == "HONOR_XP_UPDATE" or event == "HONOR_PRESTIGE_UPDATE" or event == "HONOR_LEVEL_UPDATE" or event == "PRESTIGE_AND_HONOR_INVOLUNTARILY_CHANGED") then
 		PlayerTalentFramePVPTalents_Update(self);
 	elseif (event == "PLAYER_PVP_TALENT_UPDATE") then
 		PlayerTalentFramePVPTalents_Update(self);
@@ -1691,14 +1692,14 @@ local function InitializePVPTalentsXPBarDropDown(self, level)
 	local info = UIDropDownMenu_CreateInfo();
 	info.isNotRadio = true;
 	info.text = SHOW_FACTION_ON_MAINSCREEN;
-	info.checked = IsWatchingHonor();
+	info.checked = IsWatchingHonorAsXP();
 	info.func = function(self)
 		if ( info.checked ) then
 			PlaySound("igMainMenuOptionCheckBoxOff");
-			SetWatchingHonor(false);
+			SetWatchingHonorAsXP(false);
 		else
 			PlaySound("igMainMenuOptionCheckBoxOn");
-			SetWatchingHonor(true);
+			SetWatchingHonorAsXP(true);
 			SetWatchedFactionIndex(0);
 		end
 		
