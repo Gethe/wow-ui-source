@@ -145,7 +145,11 @@ GlueDialogTypes["CHAR_DELETE_IN_PROGRESS"] = {
 GlueDialogTypes["REALM_LIST_IN_PROGRESS"] = {
 	text = REALM_LIST_IN_PROGRESS,
 	ignoreKeys = true,
-	spinner = true,
+	button1 = CANCEL,
+	button2 = nil,
+	OnAccept = function()
+		RealmList_OnCancel();
+	end,
 }
 
 GlueDialogTypes["OKAY_LEGAL_REDIRECT"] = {
