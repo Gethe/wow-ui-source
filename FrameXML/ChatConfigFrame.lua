@@ -94,12 +94,6 @@ CHAT_CONFIG_CHAT_LEFT = {
 		checked = function () return IsListeningForMessageType("INSTANCE_CHAT_LEADER"); end;
 		func = function (self, checked) ToggleChatMessageGroup(checked, "INSTANCE_CHAT_LEADER"); end;
 	},
-	[17] = {
-		type = "BN_CONVERSATION",
-		noClassColor = 1,
-		checked = function () return IsListeningForMessageType("BN_CONVERSATION"); end;
-		func = function (self, checked) ToggleChatMessageGroup(checked, "BN_CONVERSATION"); end;
-	},
 };
 
 CHAT_CONFIG_CHAT_CREATURE_LEFT = {

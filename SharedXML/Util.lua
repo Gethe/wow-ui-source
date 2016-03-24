@@ -56,6 +56,13 @@ function ClearClampedTextureRotation(texture)
 	end
 end
 
+
+function GetTexCoordsByGrid(xOffset, yOffset, textureWidth, textureHeight, gridWidth, gridHeight)
+	local widthPerGrid = gridWidth/textureWidth;
+	local heightPerGrid = gridHeight/textureHeight;
+	return (xOffset-1)*widthPerGrid, (xOffset)*widthPerGrid, (yOffset-1)*heightPerGrid, (yOffset)*heightPerGrid;
+end
+
 function GetTexCoordsForRole(role)
 	local textureHeight, textureWidth = 256, 256;
 	local roleHeight, roleWidth = 67, 67;

@@ -103,47 +103,6 @@ function ScrollingEdit_OnCursorChanged(self, x, y, w, h)
 	self.handleCursorChange = true;
 end
 
--- NOTE: If your edit box never shows partial lines of text, then this function will not work when you use
--- your mouse to move the edit cursor. You need the edit box to cut lines of text so that you can use your
--- mouse to highlight those partially-seen lines; otherwise you won't be able to use the mouse to move the
--- cursor above or below the current scroll area of the edit box.
-function ScrollingEdit_OnUpdate(self, elapsed, scrollFrame)
-local height, range, scroll, size, cursorOffset;
-	if ( self.handleCursorChange ) then
-		if ( not scrollFrame ) then
-			scrollFrame = self:GetParent();
-		end
-		height = scrollFrame:GetHeight();
-		range = scrollFrame:GetVerticalScrollRange();
-		scroll = scrollFrame:GetVerticalScroll();
-		size = height + range;
-		cursorOffset = -self.cursorOffset;
-		
-		if ( math.floor(height) <= 0 or math.floor(range) <= 0 ) then
-			--Frame has no area, nothing to calculate.
-			return;
-		end
-		
-		while ( cursorOffset < scroll ) do
-			scroll = (scroll - (height / 2));
-			if ( scroll < 0 ) then
-				scroll = 0;
-			end
-			scrollFrame:SetVerticalScroll(scroll);
-		end
-
-		while ( (cursorOffset + self.cursorHeight) > (scroll + height) and scroll < range ) do
-			scroll = (scroll + (height / 2));
-			if ( scroll > range ) then
-				scroll = range;
-			end
-			scrollFrame:SetVerticalScroll(scroll);
-		end
-		
-		self.handleCursorChange = false;
-	end
-end
-
 UIFrameCache = CreateFrame("FRAME");
 local caches = {};
 function UIFrameCache:New (frameType, baseName, parent, template)

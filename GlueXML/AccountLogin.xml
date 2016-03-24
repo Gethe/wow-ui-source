@@ -1,53 +1,26 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\FrameXML\UI.xsd">
 	<Script file="AccountLogin.lua"/>
-	<Button name="VirtualKeyPadButtonTemplate" inherits="GlueMenuButtonTemplate" virtual="true">
-		<Size x="40" y="24"/>
-		<Scripts>
-			<OnClick>
-				VirtualKeypadButton_OnClick(self);
-			</OnClick>
-		</Scripts>
-	</Button>
-	
+
 	<Button name="AccountNameButton" virtual="true">
 		<Size x="250" y="20"/>
 		<Layers>
 			<Layer level="ARTWORK">
-				<Texture name="$parentBGHighlight" file="Interface\PaperDollInfoFrame\UI-Character-Tab-Highlight" alphaMode="ADD" hidden="true">
+				<Texture parentKey="BGHighlight" file="Interface\PaperDollInfoFrame\UI-Character-Tab-Highlight" alphaMode="ADD" hidden="true">
 					<Anchors>
-						<Anchor point="LEFT">
-							<Offset>
-								<AbsDimension x="-20" y="0"/>
-							</Offset>
-						</Anchor>
-						<Anchor point="RIGHT">
-							<Offset>
-								<AbsDimension x="-10" y="0"/>
-							</Offset>
-						</Anchor>
+						<Anchor point="LEFT" x="-20" y="0"/>
+						<Anchor point="RIGHT" x="-10" y="0"/>
 					</Anchors>
 				</Texture>
 			</Layer>
 		</Layers>
 		<Scripts>
-			<OnLoad>
-				self.BG_Highlight = _G[self:GetName().."BGHighlight"];
-			</OnLoad>
-			<OnClick>
-				WoWAccountSelectButton_OnClick(self);
-			</OnClick>
-			<OnDoubleClick>
-				WoWAccountSelectButton_OnDoubleClick(self);
-			</OnDoubleClick>
+			<OnClick function="WoWAccountSelectButton_OnClick"/>
+			<OnDoubleClick function="WoWAccountSelectButton_OnDoubleClick"/>
 		</Scripts>
 		<ButtonText>
 			<Anchors>
-				<Anchor point="LEFT">
-					<Offset>
-						<AbsDimension x="2" y="2"/>
-					</Offset>
-				</Anchor>
+				<Anchor point="LEFT" x="2" y="2"/>
 			</Anchors>
 		</ButtonText>
 		<NormalFont style="GlueFontNormalSmall"/>
@@ -55,2399 +28,12 @@
 		<DisabledFont style="GlueFontDisableSmall"/>
 		<PushedTexture name="$parentPushedTexture" file="Interface\PaperDollInfoFrame\UI-Character-Tab-Highlight" alphaMode="ADD">
 			<Anchors>
-				<Anchor point="LEFT">
-					<Offset>
-						<AbsDimension x="-20" y="0"/>
-					</Offset>
-				</Anchor>
-				<Anchor point="RIGHT">
-					<Offset>
-						<AbsDimension x="-10" y="0"/>
-					</Offset>
-				</Anchor>
+				<Anchor point="LEFT" x="-20" y="0"/>
+				<Anchor point="RIGHT" x="-10" y="0"/>
 			</Anchors>
 		</PushedTexture>
 	</Button>
 
-	<Frame name="AccountLoginUIResetFrame" toplevel="true" frameStrata="DIALOG" hidden="true">
-		<Size x="1" y="1"/>
-		<Anchors>
-			<Anchor point="TOP"/>
-		</Anchors>
-		<Layers>
-			<Layer level="OVERLAY">
-				<FontString name="AccountLoginUIResetWarning" inherits="GlueFontRedLarge" text="RESET_WARNING">
-					<Size x="400" y="48"/>
-					<Anchors>
-						<Anchor point="TOP">
-							<Offset>
-								<AbsDimension x="0" y="-32"/>
-							</Offset>
-						</Anchor>
-					</Anchors>
-				</FontString>
-			</Layer>
-		</Layers>
-	</Frame>
-
-	<Frame name="TOSFrame" inherits="GlueModalFrameTemplate" frameStrata="DIALOG" hidden="true">
-		<Size>
-			<AbsDimension x="640" y="512"/>
-		</Size>
-		<Anchors>
-			<Anchor point="CENTER">
-				<Offset>
-					<AbsDimension x="0" y="0"/>
-				</Offset>
-			</Anchor>
-		</Anchors>
-		<HitRectInsets>
-			<AbsInset left="0" right="44" top="0" bottom="13"/>
-		</HitRectInsets>
-		<Layers>
-			<Layer level="BACKGROUND">
-				<Texture file="Interface\HelpFrame\HelpFrame-TopLeft">
-					<Size>
-						<AbsDimension x="256" y="256"/>
-					</Size>
-					<Anchors>
-						<Anchor point="TOPLEFT"/>
-					</Anchors>
-				</Texture>
-				<Texture file="Interface\HelpFrame\HelpFrame-Top">
-					<Size>
-						<AbsDimension x="256" y="256"/>
-					</Size>
-					<Anchors>
-						<Anchor point="TOPLEFT">
-							<Offset>
-								<AbsDimension x="256" y="0"/>
-							</Offset>
-						</Anchor>
-					</Anchors>
-				</Texture>
-				<Texture file="Interface\Glues\Login\Glues-TOS-TopRight">
-					<Size>
-						<AbsDimension x="128" y="256"/>
-					</Size>
-					<Anchors>
-						<Anchor point="TOPRIGHT"/>
-					</Anchors>
-				</Texture>
-				<Texture file="Interface\HelpFrame\HelpFrame-BotLeft">
-					<Size>
-						<AbsDimension x="256" y="256"/>
-					</Size>
-					<Anchors>
-						<Anchor point="BOTTOMLEFT"/>
-					</Anchors>
-				</Texture>
-				<Texture file="Interface\HelpFrame\HelpFrame-Bottom">
-					<Size>
-						<AbsDimension x="256" y="256"/>
-					</Size>
-					<Anchors>
-						<Anchor point="BOTTOMLEFT">
-							<Offset>
-								<AbsDimension x="256" y="0"/>
-							</Offset>
-						</Anchor>
-					</Anchors>
-				</Texture>
-				<Texture file="Interface\HelpFrame\HelpFrame-BotRight">
-					<Size>
-						<AbsDimension x="128" y="256"/>
-					</Size>
-					<Anchors>
-						<Anchor point="BOTTOMRIGHT"/>
-					</Anchors>
-				</Texture>
-			</Layer>
-			<Layer level="ARTWORK">
-				<Texture name="TOSFrameHeader" file="Interface\DialogFrame\UI-DialogBox-Header">
-					<Size>
-						<AbsDimension x="300" y="38"/>
-					</Size>
-					<Anchors>
-						<Anchor point="TOP" relativeTo="TOSFrame">
-							<Offset>
-								<AbsDimension x="-12" y="12"/>
-							</Offset>
-						</Anchor>
-					</Anchors>
-					<TexCoords left="0.3" right="0.7" top="0.015625" bottom="0.609375"/>
-				</Texture>
-				<Texture file="Interface\DialogFrame\UI-DialogBox-Header">
-					<Size>
-						<AbsDimension x="15" y="38"/>
-					</Size>
-					<Anchors>
-						<Anchor point="RIGHT" relativeTo="TOSFrameHeader" relativePoint="LEFT">
-							<Offset>
-								<AbsDimension x="0" y="0"/>
-							</Offset>
-						</Anchor>
-					</Anchors>
-					<TexCoords left="0.23046875" right="0.28515625" top="0.015625" bottom="0.609375"/>
-				</Texture>
-				<Texture file="Interface\DialogFrame\UI-DialogBox-Header">
-					<Size>
-						<AbsDimension x="15" y="38"/>
-					</Size>
-					<Anchors>
-						<Anchor point="LEFT" relativeTo="TOSFrameHeader" relativePoint="RIGHT">
-							<Offset>
-								<AbsDimension x="0" y="0"/>
-							</Offset>
-						</Anchor>
-					</Anchors>
-					<TexCoords left="0.7109375" right="0.76953125" top="0.015625" bottom="0.609375"/>
-				</Texture>
-				<FontString name="TOSFrameTitle" inherits="GlueFontNormal" text="TOS_FRAME_TITLE">
-					<Anchors>
-						<Anchor point="TOP" relativeTo="TOSFrameHeader">
-							<Offset>
-								<AbsDimension x="0" y="-12"/>
-							</Offset>
-						</Anchor>
-					</Anchors>
-				</FontString>
-				<FontString name="TOSNotice" inherits="GlueFontHighlight" text="TOS_NOTICE" hidden="true">
-					<Size>
-						<AbsDimension x="550" y="0"/>
-					</Size>
-					<Anchors>
-						<Anchor point="TOP">
-							<Offset>
-								<AbsDimension x="0" y="75"/>
-							</Offset>
-						</Anchor>
-					</Anchors>
-				</FontString>
-			</Layer>
-		</Layers>
-		<Frames>
-			<ScrollFrame name="TerminationScrollFrame" inherits="GlueScrollFrameTemplate">
-				<Size>
-					<AbsDimension x="540" y="407"/>
-				</Size>
-				<Anchors>
-					<Anchor point="TOPLEFT">
-						<Offset>
-							<AbsDimension x="20" y="-56"/>
-						</Offset>
-					</Anchor>
-				</Anchors>
-				<Layers>
-					<Layer level="ARTWORK">
-						<Texture name="TerminationScrollBarTop" file="Interface\PaperDollInfoFrame\UI-Character-ScrollBar">
-							<Size>
-								<AbsDimension x="31" y="256"/>
-							</Size>
-							<Anchors>
-								<Anchor point="TOPLEFT" relativePoint="TOPRIGHT">
-									<Offset>
-										<AbsDimension x="-2" y="5"/>
-									</Offset>
-								</Anchor>
-							</Anchors>
-							<TexCoords left="0" right="0.484375" top="0" bottom="1.0"/>
-						</Texture>
-						<Texture name="TerminationScrollBarBottom" file="Interface\PaperDollInfoFrame\UI-Character-ScrollBar">
-							<Size>
-								<AbsDimension x="31" y="106"/>
-							</Size>
-							<Anchors>
-								<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMRIGHT">
-									<Offset>
-										<AbsDimension x="-2" y="-2"/>
-									</Offset>
-								</Anchor>
-							</Anchors>
-							<TexCoords left="0.515625" right="1.0" top="0" bottom="0.4140625"/>
-						</Texture>
-						<Texture name="TerminationScrollBarMiddle" file="Interface\PaperDollInfoFrame\UI-Character-ScrollBar">
-							<Size>
-								<AbsDimension x="31" y="60"/>
-							</Size>
-							<Anchors>
-								<Anchor point="TOP" relativeTo="TerminationScrollBarTop" relativePoint="BOTTOM">
-									<Offset>
-										<AbsDimension x="0" y="0"/>
-									</Offset>
-								</Anchor>
-								<Anchor point="BOTTOM" relativeTo="TerminationScrollBarBottom" relativePoint="TOP">
-									<Offset>
-										<AbsDimension x="0" y="0"/>
-									</Offset>
-								</Anchor>
-							</Anchors>
-							<TexCoords left="0" right="0.484375" top=".75" bottom="1.0"/>
-						</Texture>
-					</Layer>
-				</Layers>
-				<ScrollChild>
-					<SimpleHTML name="TerminationText" file="termination.html">
-						<Size>
-							<AbsDimension x="530" y="407"/>
-						</Size>
-						<FontString inherits="TOSFont"/>
-						<FontStringHeader1 inherits="GlueFontNormal"/>
-						<FontStringHeader2 inherits="GlueFontNormalSmall"/>
-					</SimpleHTML>
-				</ScrollChild>
-			</ScrollFrame>
-			<ScrollFrame name="ScanningScrollFrame" inherits="GlueScrollFrameTemplate">
-				<Size>
-					<AbsDimension x="540" y="407"/>
-				</Size>
-				<Anchors>
-					<Anchor point="TOPLEFT">
-						<Offset>
-							<AbsDimension x="20" y="-56"/>
-						</Offset>
-					</Anchor>
-				</Anchors>
-				<Layers>
-					<Layer level="ARTWORK">
-						<Texture name="ScanningScrollBarTop" file="Interface\PaperDollInfoFrame\UI-Character-ScrollBar">
-							<Size>
-								<AbsDimension x="31" y="256"/>
-							</Size>
-							<Anchors>
-								<Anchor point="TOPLEFT" relativePoint="TOPRIGHT">
-									<Offset>
-										<AbsDimension x="-2" y="5"/>
-									</Offset>
-								</Anchor>
-							</Anchors>
-							<TexCoords left="0" right="0.484375" top="0" bottom="1.0"/>
-						</Texture>
-						<Texture name="ScanningScrollBarBottom" file="Interface\PaperDollInfoFrame\UI-Character-ScrollBar">
-							<Size>
-								<AbsDimension x="31" y="106"/>
-							</Size>
-							<Anchors>
-								<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMRIGHT">
-									<Offset>
-										<AbsDimension x="-2" y="-2"/>
-									</Offset>
-								</Anchor>
-							</Anchors>
-							<TexCoords left="0.515625" right="1.0" top="0" bottom="0.4140625"/>
-						</Texture>
-						<Texture name="ScanningScrollBarMiddle" file="Interface\PaperDollInfoFrame\UI-Character-ScrollBar">
-							<Size>
-								<AbsDimension x="31" y="60"/>
-							</Size>
-							<Anchors>
-								<Anchor point="TOP" relativeTo="ScanningScrollBarTop" relativePoint="BOTTOM">
-									<Offset>
-										<AbsDimension x="0" y="0"/>
-									</Offset>
-								</Anchor>
-								<Anchor point="BOTTOM" relativeTo="ScanningScrollBarBottom" relativePoint="TOP">
-									<Offset>
-										<AbsDimension x="0" y="0"/>
-									</Offset>
-								</Anchor>
-							</Anchors>
-							<TexCoords left="0" right="0.484375" top=".75" bottom="1.0"/>
-						</Texture>
-					</Layer>
-				</Layers>
-				<ScrollChild>
-					<SimpleHTML name="ScanningText" file="scan.html">
-						<Size>
-							<AbsDimension x="530" y="407"/>
-						</Size>
-						<FontString inherits="TOSFont"/>
-						<FontStringHeader1 inherits="GlueFontNormal"/>
-						<FontStringHeader2 inherits="GlueFontNormalSmall"/>
-					</SimpleHTML>
-				</ScrollChild>
-			</ScrollFrame>
-			<Button name="TOSDecline" inherits="GlueButtonTemplateBlue" text="TOS_DECLINE">
-				<Size>
-					<AbsDimension x="128" y="34"/>
-				</Size>
-				<Anchors>
-					<Anchor point="BOTTOMRIGHT">
-						<Offset>
-							<AbsDimension x="-53" y="13"/>
-						</Offset>
-					</Anchor>
-				</Anchors>
-				<Scripts>
-					<OnClick>
-						AccountLogin_Exit();
-					</OnClick>
-				</Scripts>
-			</Button>
-			<Button name="TOSAccept" inherits="GlueButtonTemplateBlue" text="TOS_ACCEPT">
-				<Size>
-					<AbsDimension x="128" y="34"/>
-				</Size>
-				<Anchors>
-					<Anchor point="RIGHT" relativeTo="TOSDecline" relativePoint="LEFT">
-						<Offset>
-							<AbsDimension x="0" y="0"/>
-						</Offset>
-					</Anchor>
-				</Anchors>
-				<Scripts>
-					<OnClick>
-						if ( TOSFrame.noticeType == "TERMINATION" ) then
-							AcceptTerminationWithoutNotice();
-						elseif ( TOSFrame.noticeType == "SCAN" ) then
-							AcceptScanning();
-						elseif ( TOSFrame.noticeType == "CONTEST" ) then
-							AcceptContest();
-						end
-						self:GetParent():Hide();
-						TOSNotice:Hide();
-						AccountLogin_ShowUserAgreements();
-						AccountLogin_CheckAutoLogin();
-					</OnClick>
-				</Scripts>
-			</Button>
-		</Frames>
-		<Scripts>
-			<OnShow>
-				PlaySound("igMainMenuOpen");
-			</OnShow>
-			<OnHide>
-				PlaySound("igMainMenuClose");
-			</OnHide>
-		</Scripts>
-	</Frame>
-	<ModelFFX name="AccountLogin" toplevel="true" parent="GlueParent" setAllPoints="true" enableKeyboard="true" hidden="true" fogNear="0" fogFar="1200" glow="0.08">
-		<Frames>
-			<Frame name="AccountLoginUI" setAllPoints="true">
-				<Layers>
-					<Layer level="ARTWORK">
-						<Texture file="Interface\Glues\Mainmenu\Glues-BlizzardLogo">
-							<Size>
-								<AbsDimension x="100" y="100"/>
-							</Size>
-							<Anchors>
-								<Anchor point="BOTTOM">
-									<Offset>
-										<AbsDimension x="0" y="8"/>
-									</Offset>
-								</Anchor>
-							</Anchors>
-						</Texture>
-						<FontString inherits="GlueFontNormalSmall" text="BLIZZ_DISCLAIMER">
-							<Anchors>
-								<Anchor point="BOTTOM">
-									<Offset>
-										<AbsDimension x="0" y="10"/>
-									</Offset>
-								</Anchor>
-							</Anchors>
-						</FontString>
-						<FontString name="AccountLoginVersion" inherits="GlueFontNormalSmall" justifyH="LEFT">
-							<Anchors>
-								<Anchor point="BOTTOMLEFT">
-									<Offset>
-										<AbsDimension x="0" y="10"/>
-									</Offset>
-								</Anchor>
-							</Anchors>
-						</FontString>
-					</Layer>
-					<Layer level="OVERLAY">
-						<Texture name="AccountLoginLogo">
-							<Size>
-								<AbsDimension x="256" y="128"/>
-							</Size>
-							<Anchors>
-								<Anchor point="TOPLEFT">
-									<Offset>
-										<AbsDimension x="3" y="-7"/>
-									</Offset>
-								</Anchor>
-							</Anchors>
-						</Texture>
-						<Texture name="WorldOfWarcraftRating" hidden="true">
-							<Size>
-								<AbsDimension x="128" y="128"/>
-							</Size>
-							<Anchors>
-								<Anchor point="TOPRIGHT">
-									<Offset>
-										<AbsDimension x="0" y="0"/>
-									</Offset>
-								</Anchor>
-							</Anchors>
-						</Texture>
-					</Layer>
-				</Layers>
-				<Frames>
-					<Frame name="AccountLoginNormalLoginFrame" setAllPoints="true" useParentLevel="true">
-						<Frames>
-							<EditBox name="AccountLoginAccountEdit" letters="320">
-								<Size x="200" y="37"/>
-								<Anchors>
-									<Anchor point="BOTTOM">
-										<Offset>
-											<AbsDimension x="0" y="345"/>
-										</Offset>
-									</Anchor>
-								</Anchors>
-								<Layers>
-									<Layer level="BACKGROUND">
-										<FontString name="$parentLabel" inherits="GlueFontNormal" justifyH="CENTER" text="ACCOUNT_NAME">
-											<Size>
-												<AbsDimension x="600" y="64"/>
-											</Size>
-											<Anchors>
-												<Anchor point="BOTTOM" relativePoint="TOP">
-													<Offset>
-														<AbsDimension x="0" y="-23"/>
-													</Offset>
-												</Anchor>
-											</Anchors>
-										</FontString>
-										<FontString name="$parentFill" inherits="GlueFontDisableSmall" justifyH="LEFT" justifyV="MIDDLE" text="ENTER_EMAIL">
-											<Anchors>
-												<Anchor point="CENTER" relativePoint="CENTER">
-													<Offset>
-														<AbsDimension x="0" y="3"/>
-													</Offset>
-												</Anchor>
-											</Anchors>
-										</FontString>
-									</Layer>
-								</Layers>
-								<Backdrop bgFile="Interface\Tooltips\UI-Tooltip-Background" edgeFile="Interface\Glues\Common\Glue-Tooltip-Border" tile="true">
-									<BackgroundInsets>
-										<AbsInset left="10" right="5" top="4" bottom="9"/>
-									</BackgroundInsets>
-									<TileSize>
-										<AbsValue val="16"/>
-									</TileSize>
-									<EdgeSize>
-										<AbsValue val="16"/>
-									</EdgeSize>
-								</Backdrop>
-								<Scripts>
-									<OnTabPressed>
-										if ( AccountLoginTokenEdit:IsShown() and IsShiftKeyDown() ) then
-											AccountLoginTokenEdit:SetFocus();
-										else
-											AccountLogin_FocusPassword();
-										end
-									</OnTabPressed>
-									<OnEscapePressed>
-										AccountLogin_Exit();
-									</OnEscapePressed>
-									<OnEnterPressed>
-										if ( TOSFrame:IsShown() ) then
-											return;
-										end
-										AccountLogin_Login();
-									</OnEnterPressed>
-									<OnEditFocusLost>
-										self:HighlightText(0, 0);
-									</OnEditFocusLost>
-									<OnEditFocusGained>
-										self:HighlightText();
-									</OnEditFocusGained>
-									<OnTextChanged>
-										local accountName = GetSavedAccountName();
-										if ( accountName ~= "" and accountName ~= self:GetText() ) then
-											SetSavedAccountName("");
-											AccountLoginSaveAccountName:SetChecked(false);
-										end
-										if ( self:GetText() ~= "" ) then
-											AccountLoginAccountEditFill:Hide();
-										else
-											AccountLoginAccountEditFill:Show();
-										end
-									</OnTextChanged>
-								</Scripts>
-								<FontString inherits="GlueEditBoxFont"/>
-								<TextInsets>
-									<AbsInset left="12" right="5" bottom="5"/>
-								</TextInsets>
-							</EditBox>
-							<EditBox name="AccountLoginPasswordEdit" letters="16" password="1">
-								<Size x="200" y="37"/>
-								<Anchors>
-									<Anchor point="BOTTOM">
-										<Offset>
-											<AbsDimension x="0" y="275"/>
-										</Offset>
-									</Anchor>
-								</Anchors>
-								<Layers>
-									<Layer level="BACKGROUND">
-										<FontString inherits="GlueFontNormal" justifyH="CENTER" text="PASSWORD">
-											<Size>
-												<AbsDimension x="256" y="64"/>
-											</Size>
-											<Anchors>
-												<Anchor point="BOTTOM" relativePoint="TOP">
-													<Offset>
-														<AbsDimension x="0" y="-23"/>
-													</Offset>
-												</Anchor>
-											</Anchors>
-										</FontString>
-									</Layer>
-								</Layers>
-								<Backdrop bgFile="Interface\Tooltips\UI-Tooltip-Background" edgeFile="Interface\Glues\Common\Glue-Tooltip-Border" tile="true">
-									<BackgroundInsets>
-										<AbsInset left="10" right="5" top="4" bottom="9"/>
-									</BackgroundInsets>
-									<TileSize>
-										<AbsValue val="16"/>
-									</TileSize>
-									<EdgeSize>
-										<AbsValue val="16"/>
-									</EdgeSize>
-								</Backdrop>
-								<Scripts>
-									<OnTabPressed>
-										if ( AccountLoginTokenEdit:IsShown() and not IsShiftKeyDown() ) then
-											AccountLoginTokenEdit:SetFocus();
-										else
-											AccountLogin_FocusAccountName();
-										end
-									</OnTabPressed>
-									<OnEscapePressed>
-										AccountLogin_Exit();
-									</OnEscapePressed>
-									<OnEnterPressed>
-										if ( TOSFrame:IsShown() ) then
-											return;
-										end
-										AccountLogin_Login();
-									</OnEnterPressed>
-									<OnEditFocusLost>
-										self:HighlightText(0, 0);
-									</OnEditFocusLost>
-									<OnEditFocusGained>
-										self:HighlightText();
-									</OnEditFocusGained>
-								</Scripts>
-								<FontString inherits="GlueEditBoxFont"/>
-								<TextInsets>
-									<AbsInset left="12" right="5" bottom="5"/>
-								</TextInsets>
-							</EditBox>
-
-							<EditBox name="AccountLoginTokenEdit" letters="320" hidden="true">
-								<Size x="200" y="37"/>
-								<Anchors>
-									<Anchor point="TOP" relativeTo="AccountLoginPasswordEdit" relativePoint="BOTTOM">
-										<Offset>
-											<AbsDimension x="0" y="-15"/>
-										</Offset>
-									</Anchor>
-								</Anchors>
-								<Layers>
-									<Layer level="BACKGROUND">
-										<FontString name="$parentLabel" inherits="GlueFontNormal" justifyH="CENTER" text="AUTHENTICATOR">
-											<Size>
-												<AbsDimension x="600" y="64"/>
-											</Size>
-											<Anchors>
-												<Anchor point="BOTTOM" relativePoint="TOP">
-													<Offset>
-														<AbsDimension x="0" y="-23"/>
-													</Offset>
-												</Anchor>
-											</Anchors>
-										</FontString>
-									</Layer>
-								</Layers>
-								<Backdrop bgFile="Interface\Tooltips\UI-Tooltip-Background" edgeFile="Interface\Glues\Common\Glue-Tooltip-Border" tile="true">
-									<BackgroundInsets>
-										<AbsInset left="10" right="5" top="4" bottom="9"/>
-									</BackgroundInsets>
-									<TileSize>
-										<AbsValue val="16"/>
-									</TileSize>
-									<EdgeSize>
-										<AbsValue val="16"/>
-									</EdgeSize>
-								</Backdrop>
-								<Scripts>
-									<OnTabPressed>
-										if ( IsShiftKeyDown() ) then
-											AccountLogin_FocusPassword();
-										else
-											AccountLogin_FocusAccountName();
-										end
-									</OnTabPressed>
-									<OnEscapePressed>
-										AccountLogin_Exit();
-									</OnEscapePressed>
-									<OnEnterPressed>
-										if ( TOSFrame:IsShown() ) then
-											return;
-										end
-										AccountLogin_Login();
-									</OnEnterPressed>
-									<OnEditFocusLost>
-										self:HighlightText(0, 0);
-									</OnEditFocusLost>
-									<OnEditFocusGained>
-										self:HighlightText();
-									</OnEditFocusGained>
-								</Scripts>
-								<FontString inherits="GlueEditBoxFont"/>
-								<TextInsets>
-									<AbsInset left="12" right="5" bottom="5"/>
-								</TextInsets>
-							</EditBox>
-
-							
-							<Frame name="AccountLoginDropDown" inherits="GlueDropDownMenuTemplate">
-								<Anchors>
-									<Anchor point="TOP" relativeTo="AccountLoginAccountEdit" relativePoint="BOTTOM">
-										<Offset>
-											<AbsDimension x="2" y="5"/>
-										</Offset>
-									</Anchor>
-								</Anchors>
-								<Scripts>
-									<OnLoad>
-										GlueDropDownMenu_SetWidth(self, 174);
-										GlueDropDownMenu_SetSelectedValue(self, 1);
-										GlueDropDownMenu_Initialize(self, AccountLoginDropDown_Initialize);
-										AccountLoginDropDownText:SetJustifyH("LEFT");
-									</OnLoad>
-								</Scripts>
-							</Frame>
-							<Button name="AccountLoginLoginButton" inherits="GlueButtonTemplateBlue" text="LOGIN">
-								<Size x="220" y="45"/>
-								<Anchors>
-									<Anchor point="BOTTOM">
-										<Offset>
-											<AbsDimension x="0" y="170"/>
-										</Offset>
-									</Anchor>
-								</Anchors>
-								<Scripts>
-									<OnClick>
-										AccountLogin_Login();
-									</OnClick>
-								</Scripts>
-							</Button>
-							<Frame>
-								<Layers>
-									<Layer level="ARTWORK">
-										<FontString name="AccountLoginSaveAccountNameText" inherits="GlueFontNormalSmall" text="SAVE_ACCOUNT_NAME">
-											<Anchors>
-												<Anchor point="TOP" relativeTo="AccountLoginLoginButton" relativePoint="BOTTOM">
-													<Offset>
-														<AbsDimension x="10" y="0"/>
-													</Offset>
-												</Anchor>
-											</Anchors>
-											<FontHeight>
-												<AbsValue val="10"/>
-											</FontHeight>
-											<Shadow>
-												<Offset>
-													<AbsDimension x="1" y="-1"/>
-												</Offset>
-												<Color r="0" g="0" b="0"/>
-											</Shadow>
-											<Color r="1.0" g="0.78" b="0"/>
-										</FontString>
-									</Layer>
-								</Layers>
-							</Frame>
-							<CheckButton name="AccountLoginSaveAccountName">
-								<Size>
-									<AbsDimension x="20" y="20"/>
-								</Size>
-								<Anchors>
-									<Anchor point="RIGHT" relativeTo="AccountLoginSaveAccountNameText" relativePoint="LEFT">
-										<Offset>
-											<AbsDimension x="0" y="0"/>
-										</Offset>
-									</Anchor>
-								</Anchors>
-								<Scripts>
-									<OnLoad>
-										if ( GetSavedAccountName() ~= "" ) then
-											self:SetChecked(true);
-										else
-											self:SetChecked(false);
-										end
-									</OnLoad>
-									<OnClick>
-										if ( self:GetChecked() ) then
-											PlaySound("igMainMenuOptionCheckBoxOff");
-										else
-											PlaySound("igMainMenuOptionCheckBoxOn");
-										end
-									</OnClick>
-								</Scripts>
-								<NormalTexture file="Interface\Buttons\UI-CheckBox-Up"/>
-								<PushedTexture file="Interface\Buttons\UI-CheckBox-Down"/>
-								<HighlightTexture file="Interface\Buttons\UI-CheckBox-Highlight" alphaMode="ADD"/>
-								<CheckedTexture file="Interface\Buttons\UI-CheckBox-Check"/>
-								<DisabledCheckedTexture file="Interface\Buttons\UI-CheckBox-Check-Disabled"/>
-							</CheckButton>
-						</Frames>
-					</Frame>
-					<Frame name="AccountLoginLauncherLoginFrame" setAllPoints="true" useParentLevel="true">
-						<Frames>
-							<Button name="AccountLoginLauncherLogoutButton" inherits="GlueButtonTemplateBlue" text="LOGOUT">
-								<Size x="220" y="45"/>
-								<Anchors>
-									<Anchor point="BOTTOM" x="0" y="170"/>
-								</Anchors>
-								<Scripts>
-									<OnClick>
-										CancelLauncherLogin();
-									</OnClick>
-								</Scripts>
-							</Button>
-							<Button name="AccountLoginLauncherChangeAccountButton" inherits="GlueButtonTemplateBlue" text="CHANGE_ACCOUNT">
-								<Size x="220" y="45"/>
-								<Anchors>
-									<Anchor point="BOTTOM" relativeTo="AccountLoginLauncherLogoutButton" relativePoint="TOP" x="0" y="10"/>
-								</Anchors>
-								<Scripts>
-									<OnClick>
-										SetSavedAccountListSSO("");
-										WoWAccountSelectDialogBackgroundSaveAccountButton:SetChecked(false)
-										AttemptFastLogin();
-									</OnClick>
-								</Scripts>
-							</Button>
-							<Button name="AccountLoginLauncherPlayButton" inherits="GlueButtonTemplateBlue" text="PLAY">
-								<Size x="220" y="45"/>
-								<Anchors>
-									<Anchor point="BOTTOM" relativeTo="AccountLoginLauncherLogoutButton" relativePoint="TOP" x="0" y="10"/>
-								</Anchors>
-								<Scripts>
-									<OnClick>
-										AttemptFastLogin();
-									</OnClick>
-								</Scripts>
-							</Button>
-							<Frame name="AccountLoginLauncherLoggedInNotice" inherits="SoftBlackBGTemplate">
-								<Size x="260" y="80"/>
-								<Anchors>
-									<Anchor point="BOTTOM" relativeTo="AccountLoginLauncherPlayButton" relativePoint="TOP" x="0" y="15"/>
-								</Anchors>
-								<Layers>
-									<Layer level="ARTWORK">
-										<FontString inherits="GlueFontNormalLarge" text="YOU_ARE_LOGGED_IN" justifyH="CENTER" justifyV="MIDDLE">
-											<Anchors>
-												<Anchor point="TOPLEFT" x="5" y="-5"/>
-												<Anchor point="BOTTOMRIGHT" x="-5" y="5"/>
-											</Anchors>
-										</FontString>
-									</Layer>
-								</Layers>
-							</Frame>
-						</Frames>
-					</Frame>
-					<Button name="AccountLoginExitButton" inherits="GlueButtonSmallTemplateBlue" text="QUIT">
-						<Anchors>
-							<Anchor point="BOTTOMRIGHT">
-								<Offset>
-									<AbsDimension x="-5" y="29"/>
-								</Offset>
-							</Anchor>
-						</Anchors>
-						<Layers>
-							<Layer level="BACKGROUND">
-								<FontString name="AccountLoginRealmName" inherits="GlueFontDisableSmall" justifyH="RIGHT">
-									<Size>
-										<AbsDimension x="256" y="0"/>
-									</Size>
-									<Anchors>
-										<Anchor point="BOTTOMRIGHT" relativePoint="TOPRIGHT">
-											<Offset>
-												<AbsDimension x="-8" y="40"/>
-											</Offset>
-										</Anchor>
-									</Anchors>
-								</FontString>
-							</Layer>
-						</Layers>
-						<Scripts>
-							<OnClick>
-								AccountLogin_Exit();
-							</OnClick>
-						</Scripts>
-					</Button>
-					<Button name="AccountLoginTOSButton" inherits="GlueButtonSmallTemplateBlue" text="TOS_FRAME_TITLE">
-						<Anchors>
-							<Anchor point="BOTTOM" relativeTo="AccountLoginExitButton" relativePoint="TOP">
-								<Offset>
-									<AbsDimension x="0" y="80"/>
-								</Offset>
-							</Anchor>
-						</Anchors>
-						<Scripts>
-							<OnClick>
-								AccountLogin_TOS();
-							</OnClick>
-						</Scripts>
-					</Button>
-					<Button name="AccountLoginCreditsButton" inherits="GlueButtonSmallTemplateBlue" text="CREDITS">
-						<Anchors>
-							<Anchor point="BOTTOM" relativeTo="AccountLoginTOSButton" relativePoint="TOP">
-								<Offset>
-									<AbsDimension x="0" y="-2"/>
-								</Offset>
-							</Anchor>
-						</Anchors>
-						<Scripts>
-							<OnClick>
-								AccountLogin_Credits();
-							</OnClick>
-						</Scripts>
-					</Button>
-					<Button name="AccountLoginCinematicsButton" inherits="GlueButtonSmallTemplateBlue" text="CINEMATICS">
-						<Anchors>
-							<Anchor point="BOTTOM" relativeTo="AccountLoginCreditsButton" relativePoint="TOP">
-								<Offset>
-									<AbsDimension x="0" y="-2"/>
-								</Offset>
-							</Anchor>
-						</Anchors>
-						<Scripts>
-							<OnClick> 
-								PlaySound("gsTitleOptions");
-								AccountLogin_Cinematics();
-							</OnClick>
-						</Scripts>
-					</Button>
-					<Button name="OptionsButton" inherits="GlueButtonSmallTemplateBlue" text="SYSTEMOPTIONS_MENU">
-						<Anchors>
-							<Anchor point="BOTTOM" relativeTo="AccountLoginCinematicsButton" relativePoint="TOP">
-								<Offset>
-									<AbsDimension x="0" y="-2"/>
-								</Offset>
-							</Anchor>
-						</Anchors>
-						<Scripts>
-							<OnShow>
-								if (IsBlizzCon()) then
-									self:Disable();
-								else
-									self:Enable();
-								end
-							</OnShow>
-							<OnClick>
-								AccountLogin_Options();
-							</OnClick>
-						</Scripts>
-					</Button>
-					<Button name="GlueMenuButton" inherits="GlueButtonSmallTemplateBlue" text="MAINMENU">
-						<Anchors>
-							<Anchor point="BOTTOM" relativeTo="AccountLoginExitButton" relativePoint="TOP">
-								<Offset>
-									<AbsDimension x="0" y="2"/>
-								</Offset>
-							</Anchor>
-						</Anchors>
-						<Scripts>
-							<OnClick>
-								GlueMenuFrame_Show();
-							</OnClick>
-						</Scripts>
-					</Button>
-					<Button name="AccountLoginCommunityButton" inherits="GlueButtonSmallTemplateBlue" text="COMMUNITY_SITE">
-						<Anchors>
-							<Anchor point="BOTTOMLEFT">
-								<Offset>
-									<AbsDimension x="10" y="84"/>
-								</Offset>
-							</Anchor>
-						</Anchors>
-						<Scripts>
-							<OnClick>
-								AccountLogin_LaunchCommunitySite();
-							</OnClick>
-						</Scripts>
-					</Button>
-					<Button name="AccountLoginManageAccountButton" inherits="GlueButtonSmallTemplateBlue" text="MANAGE_ACCOUNT">
-						<Anchors>
-							<Anchor point="BOTTOM" relativeTo="AccountLoginCommunityButton" relativePoint="TOP">
-								<Offset>
-									<AbsDimension x="0" y="0"/>
-								</Offset>
-							</Anchor>
-						</Anchors>
-						<Scripts>
-							<OnClick>
-								AccountLogin_ManageAccount();
-							</OnClick>
-						</Scripts>
-					</Button>
-					<Button name="AccountLoginCreateAccountButton" inherits="GlueButtonSmallTemplateBlue" text="CREATE_ACCOUNT">
-						<Anchors>
-							<Anchor point="BOTTOM" relativeTo="AccountLoginManageAccountButton" relativePoint="TOP">
-								<Offset>
-									<AbsDimension x="0" y="0"/>
-								</Offset>
-							</Anchor>
-						</Anchors>
-						<Scripts>
-							<OnClick>
-								AccountLogin_ManageAccount();
-							</OnClick>
-						</Scripts>
-					</Button>
-					<Button name="LanguageButton" inherits="GlueButtonSmallTemplateBlue">
-						<Anchors>
-							<Anchor point="BOTTOM" relativeTo="AccountLoginCreateAccountButton" relativePoint="TOP">
-								<Offset>
-									<AbsDimension x="0" y="0"/>
-								</Offset>
-							</Anchor>
-						</Anchors>
-						<Layers>
-							<Layer level="OVERLAY">
-								<Texture file="Interface\Common\Lang-Languages" parentKey="Texture">
-									<Size x="128" y="22"/>
-									<Anchors>
-										<Anchor point="CENTER" relativeTo="$parent" relativePoint="CENTER" x="0" y="2"/>
-									</Anchors>
-								</Texture>
-							</Layer>
-						</Layers>
-						<Scripts>
-							<OnShow>
-								Language_SetOSLanguageTexture(self);
-							</OnShow>
-							<OnClick>
-								OptionsFrame_OpenToCategory(VideoOptionsFrame, LANGUAGES_LABEL);
-							</OnClick>
-						</Scripts>
-					</Button>
-					<Frame name="ServerAlertFrame" hidden="true" inherits="ServerAlertTemplate">
-						<Size>
-							<AbsDimension x="352" y="400"/>
-						</Size>
-						<Anchors>
-							<Anchor point="TOPLEFT">
-								<Offset>
-									<AbsDimension x="10" y="-130"/>
-								</Offset>
-							</Anchor>
-						</Anchors>
-						<Scripts>
-							<OnShow>
-								AccountLogin_UpdateLoginType(); --In case it needs to hide the ServerAlertFrame.
-							</OnShow>
-						</Scripts>
-					</Frame>
-					<Frame name="VirtualKeypadFrame" hidden="true" frameStrata="DIALOG" enableMouse="true">
-						<Size>
-							<AbsDimension x="155" y="175"/>
-						</Size>
-						<Anchors>
-							<Anchor point="TOPLEFT" relativeTo="AccountLoginAccountEdit" relativePoint="TOPRIGHT">
-								<Offset>
-									<AbsDimension x="15" y="-2"/>
-								</Offset>
-							</Anchor>
-						</Anchors>
-						<Layers>
-							<Layer level="ARTWORK">
-								<FontString inherits="GlueFontNormalSmall" text="ENTER_PIN_NUMBER">
-									<Anchors>
-										<Anchor point="TOP">
-											<Offset>
-												<AbsDimension x="-8" y="-5"/>
-											</Offset>
-										</Anchor>
-									</Anchors>
-								</FontString>
-							</Layer>
-						</Layers>
-						<Backdrop bgFile="Interface\TutorialFrame\TutorialFrameBackground" edgeFile="Interface\TutorialFrame\TutorialFrameBorder" tile="true">
-							<EdgeSize>
-								<AbsValue val="32"/>
-							</EdgeSize>
-							<TileSize>
-								<AbsValue val="32"/>
-							</TileSize>
-							<BackgroundInsets>
-								<AbsInset left="6" right="2" top="4" bottom="5"/>
-							</BackgroundInsets>
-						</Backdrop>
-						<Frames>
-							<Frame name="VirtualKeypadPINFrame">
-								<Size x="130" y="20"/>
-								<Anchors>
-									<Anchor point="TOP">
-										<Offset>
-											<AbsDimension x="7" y="-31"/>
-										</Offset>
-									</Anchor>
-								</Anchors>
-								<Layers>
-									<Layer level="BACKGROUND">
-										<Texture name="$parentLeft" file="Interface\Common\Common-Input-Border">
-											<Size>
-												<AbsDimension x="8" y="20"/>
-											</Size>
-											<Anchors>
-												<Anchor point="TOPLEFT">
-													<Offset>
-														<AbsDimension x="-5" y="0"/>
-													</Offset>
-												</Anchor>
-											</Anchors>
-											<TexCoords left="0" right="0.0625" top="0" bottom="0.625"/>
-										</Texture>
-										<Texture name="$parentRight" file="Interface\Common\Common-Input-Border">
-											<Size>
-												<AbsDimension x="8" y="20"/>
-											</Size>
-											<Anchors>
-												<Anchor point="RIGHT">
-													<Offset>
-														<AbsDimension x="-10" y="0"/>
-													</Offset>
-												</Anchor>
-											</Anchors>
-											<TexCoords left="0.9375" right="1.0" top="0" bottom="0.625"/>
-										</Texture>
-										<Texture name="$parentMiddle" file="Interface\Common\Common-Input-Border">
-											<Size>
-												<AbsDimension x="10" y="20"/>
-											</Size>
-											<Anchors>
-												<Anchor point="LEFT" relativeTo="$parentLeft" relativePoint="RIGHT"/>
-												<Anchor point="RIGHT" relativeTo="$parentRight" relativePoint="LEFT"/>
-											</Anchors>
-											<TexCoords left="0.0625" right="0.9375" top="0" bottom="0.625"/>
-										</Texture>
-									</Layer>
-									<Layer level="ARTWORK">
-										<FontString name="VirtualKeypadText" inherits="GlueFontHighlight" justifyH="LEFT">
-											<Anchors>
-												<Anchor point="LEFT">
-													<Offset>
-														<AbsDimension x="0" y="0"/>
-													</Offset>
-												</Anchor>
-											</Anchors>
-											<Size x="120" y="12"/>
-										</FontString>
-									</Layer>
-								</Layers>
-							</Frame>
-							<Button name="VirtualKeypadButton1" inherits="VirtualKeyPadButtonTemplate" id="0">
-								<Anchors>
-									<Anchor point="TOPLEFT" relativeTo="VirtualKeypadPINFrame" relativePoint="BOTTOMLEFT">
-										<Offset>
-											<AbsDimension x="-6" y="-6"/>
-										</Offset>
-									</Anchor>
-								</Anchors>
-							</Button>
-							<Button name="VirtualKeypadButton2" inherits="VirtualKeyPadButtonTemplate" id="1">
-								<Anchors>
-									<Anchor point="LEFT" relativeTo="VirtualKeypadButton1" relativePoint="RIGHT">
-										<Offset>
-											<AbsDimension x="3" y="0"/>
-										</Offset>
-									</Anchor>
-								</Anchors>
-							</Button>
-							<Button name="VirtualKeypadButton3" inherits="VirtualKeyPadButtonTemplate" id="2">
-								<Anchors>
-									<Anchor point="LEFT" relativeTo="VirtualKeypadButton2" relativePoint="RIGHT">
-										<Offset>
-											<AbsDimension x="3" y="0"/>
-										</Offset>
-									</Anchor>
-								</Anchors>
-							</Button>
-							<Button name="VirtualKeypadButton4" inherits="VirtualKeyPadButtonTemplate" id="3">
-								<Anchors>
-									<Anchor point="TOPLEFT" relativeTo="VirtualKeypadButton1" relativePoint="BOTTOMLEFT">
-										<Offset>
-											<AbsDimension x="0" y="-2"/>
-										</Offset>
-									</Anchor>
-								</Anchors>
-							</Button>
-							<Button name="VirtualKeypadButton5" inherits="VirtualKeyPadButtonTemplate" id="4">
-								<Anchors>
-									<Anchor point="LEFT" relativeTo="VirtualKeypadButton4" relativePoint="RIGHT">
-										<Offset>
-											<AbsDimension x="3" y="0"/>
-										</Offset>
-									</Anchor>
-								</Anchors>
-							</Button>
-							<Button name="VirtualKeypadButton6" inherits="VirtualKeyPadButtonTemplate" id="5">
-								<Anchors>
-									<Anchor point="LEFT" relativeTo="VirtualKeypadButton5" relativePoint="RIGHT">
-										<Offset>
-											<AbsDimension x="3" y="0"/>
-										</Offset>
-									</Anchor>
-								</Anchors>
-							</Button>
-							<Button name="VirtualKeypadButton7" inherits="VirtualKeyPadButtonTemplate" id="6">
-								<Anchors>
-									<Anchor point="TOPLEFT" relativeTo="VirtualKeypadButton4" relativePoint="BOTTOMLEFT">
-										<Offset>
-											<AbsDimension x="0" y="-2"/>
-										</Offset>
-									</Anchor>
-								</Anchors>
-							</Button>
-							<Button name="VirtualKeypadButton8" inherits="VirtualKeyPadButtonTemplate" id="7">
-								<Anchors>
-									<Anchor point="LEFT" relativeTo="VirtualKeypadButton7" relativePoint="RIGHT">
-										<Offset>
-											<AbsDimension x="3" y="0"/>
-										</Offset>
-									</Anchor>
-								</Anchors>
-							</Button>
-							<Button name="VirtualKeypadButton9" inherits="VirtualKeyPadButtonTemplate" id="8">
-								<Anchors>
-									<Anchor point="LEFT" relativeTo="VirtualKeypadButton8" relativePoint="RIGHT">
-										<Offset>
-											<AbsDimension x="3" y="0"/>
-										</Offset>
-									</Anchor>
-								</Anchors>
-							</Button>
-							<Button name="VirtualKeypadButton10" inherits="VirtualKeyPadButtonTemplate" id="9">
-								<Anchors>
-									<Anchor point="TOP" relativeTo="VirtualKeypadButton8" relativePoint="BOTTOM">
-										<Offset>
-											<AbsDimension x="0" y="-2"/>
-										</Offset>
-									</Anchor>
-								</Anchors>
-							</Button>
-							<Button name="VirtualKeypadBackButton" inherits="VirtualKeyPadButtonTemplate">
-								<Anchors>
-									<Anchor point="RIGHT" relativeTo="VirtualKeypadButton10" relativePoint="LEFT">
-										<Offset>
-											<AbsDimension x="-3" y="0"/>
-										</Offset>
-									</Anchor>
-								</Anchors>
-								<Layers>
-									<Layer level="OVERLAY">
-										<Texture file="Interface\Glues\Login\UI-BackArrow">
-											<Size>
-												<AbsDimension x="16" y="16"/>
-											</Size>
-											<Anchors>
-												<Anchor point="CENTER">
-													<Offset>
-														<AbsDimension x="0" y="-1"/>
-													</Offset>
-												</Anchor>
-											</Anchors>
-										</Texture>
-									</Layer>
-								</Layers>
-								<Scripts>
-									<OnClick>
-										local numNumbers = strlen(VirtualKeypadText:GetText());
-										VirtualKeypadText:SetText(strsub(VirtualKeypadText:GetText(), 1, numNumbers-1));
-										VirtualKeypadFrame.PIN = strsub(VirtualKeypadFrame.PIN, 1, numNumbers-1);
-										VirtualKeypad_UpdateButtons();
-									</OnClick>
-								</Scripts>
-							</Button>
-							<Button name="VirtualKeypadOkayButton" text="VIRTUAL_KEYPAD_OKAY">
-								<Size x="40" y="24"/>
-								<Anchors>
-									<Anchor point="LEFT" relativeTo="VirtualKeypadButton10" relativePoint="RIGHT">
-										<Offset>
-											<AbsDimension x="3" y="0"/>
-										</Offset>
-									</Anchor>
-								</Anchors>
-								<Scripts>
-									<OnClick>
-										VirtualKeypadOkayButton_OnClick();
-									</OnClick>
-								</Scripts>
-								<NormalTexture inherits="DialogButtonNormalTexture"/>
-								<PushedTexture inherits="DialogButtonPushedTexture"/>
-								<DisabledTexture inherits="DialogButtonDisabledTexture"/>
-								<HighlightTexture inherits="DialogButtonHighlightTexture"/>
-								<NormalFont style="GlueFontNormalSmall"/>
-								<HighlightFont style="GlueFontHighlightSmall"/>
-								<DisabledFont style="GlueFontDisableSmall"/>
-							</Button>
-							<Button name="VirtualKeypadCloseButton" inherits="GlueCloseButton">
-								<Anchors>
-									<Anchor point="TOPRIGHT">
-										<Offset>
-											<AbsDimension x="3" y="4"/>
-										</Offset>
-									</Anchor>
-								</Anchors>
-								<Scripts>
-									<OnClick>
-										self:GetParent():Hide();
-										CancelLogin();
-									</OnClick>
-								</Scripts>
-							</Button>
-						</Frames>
-						<Scripts>
-							<OnLoad>
-								self:RegisterEvent("PLAYER_ENTER_PIN");
-								self.PIN = "";
-								VirtualKeypadText:SetText("");
-							</OnLoad>
-							<OnEvent>
-								VirtualKeypadFrame_OnEvent(event, ...);
-							</OnEvent>
-							<OnHide>
-								VirtualKeypadText:SetText("");
-								self.PIN = "";
-							</OnHide>
-						</Scripts>
-					</Frame>
-					<Frame name="ChangedOptionsDialog" toplevel="true" setAllPoints="true" enableMouse="true" enableKeyboard="true" frameStrata="DIALOG">
-						<Scripts>
-							<OnShow>
-								ChangedOptionsDialog_OnShow(self);
-							</OnShow>
-							<OnKeyDown>
-								ChangedOptionsDialog_OnKeyDown(self,key);
-							</OnKeyDown>
-						</Scripts>
-						<Frames>
-							<Frame name="ChangedOptionsDialogBackground">
-								<Size>
-									<AbsDimension x="512" y="256"/>
-								</Size>
-								<Anchors>
-									<Anchor point="CENTER">
-										<Offset>
-											<AbsDimension x="0" y="0"/>
-										</Offset>
-									</Anchor>
-								</Anchors>
-								<Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background" edgeFile="Interface\DialogFrame\UI-DialogBox-Border" tile="true">
-									<BackgroundInsets>
-										<AbsInset left="11" right="12" top="12" bottom="11"/>
-									</BackgroundInsets>
-									<TileSize>
-										<AbsValue val="32"/>
-									</TileSize>
-									<EdgeSize>
-										<AbsValue val="32"/>
-									</EdgeSize>
-								</Backdrop>
-								<Layers>
-									<Layer level="ARTWORK">
-										<FontString name="ChangedOptionsDialogTitle" inherits="GlueFontNormal" text="CHANGED_OPTIONS_WARNING_TITLE">
-											<Anchors>
-												<Anchor point="TOP">
-													<Offset>
-														<AbsDimension x="0" y="-26"/>
-													</Offset>
-												</Anchor>
-											</Anchors>
-										</FontString>
-										<FontString name="ChangedOptionsDialogText" inherits="TOSFont">
-											<Size>
-												<AbsDimension x="440" y="0"/>
-											</Size>
-											<Anchors>
-												<Anchor point="TOP" relativeTo="ChangedOptionsDialogTitle" relativePoint="BOTTOM">
-													<Offset>
-														<AbsDimension x="0" y="-16"/>
-													</Offset>
-												</Anchor>
-											</Anchors>
-										</FontString>
-									</Layer>
-								</Layers>
-								<Frames>
-									<Button name="ChangedOptionsDialogOkayButton" inherits="GlueButtonTemplateBlue" text="OKAY">
-										<Anchors>
-											<Anchor point="BOTTOM" relativePoint="BOTTOM">
-												<Offset>
-													<AbsDimension x="0" y="16"/>
-												</Offset>
-											</Anchor>
-										</Anchors>
-										<Scripts>
-											<OnClick>
-												ChangedOptionsDialog:Hide();
-												AcceptChangedOptionWarnings();
-											</OnClick>
-										</Scripts>
-									</Button>
-								</Frames>
-							</Frame>
-						</Frames>
-					</Frame>
-					<Frame name="TokenEnterDialog" toplevel="true" setAllPoints="true" hidden="true" enableMouse="true" enableKeyboard="true" frameStrata="FULLSCREEN_DIALOG">
-						<Layers>
-							<Layer level="BACKGROUND">
-								<Texture setAllPoints="true">
-									<Color a="0.75" r="0" g="0" b="0"/>
-								</Texture>
-							</Layer>
-						</Layers>
-						<Frames>
-							<Frame name="$parentBackground">
-								<Size>
-									<AbsDimension x="372" y="200"/>
-								</Size>
-								<Anchors>
-									<Anchor point="CENTER">
-										<Offset>
-											<AbsDimension x="0" y="-20"/>
-										</Offset>
-									</Anchor>
-								</Anchors>
-								<Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background" edgeFile="Interface\DialogFrame\UI-DialogBox-Border" tile="true">
-									<BackgroundInsets>
-										<AbsInset left="11" right="12" top="12" bottom="11"/>
-									</BackgroundInsets>
-									<TileSize>
-										<AbsValue val="32"/>
-									</TileSize>
-									<EdgeSize>
-										<AbsValue val="32"/>
-									</EdgeSize>
-								</Backdrop>
-								<Layers>
-									<Layer level="ARTWORK">
-										<FontString name="$parentTitle" inherits="GlueFontNormal" text="ENTER_AUTHCODE_TITLE">
-											<Anchors>
-												<Anchor point="TOP">
-													<Offset>
-														<AbsDimension x="0" y="-26"/>
-													</Offset>
-												</Anchor>
-											</Anchors>
-										</FontString>
-										<FontString name="$parentText" inherits="TOSFont"  text="ENTER_AUTHCODE_INFO">
-											<Anchors>
-												<Anchor point="TOP" relativeTo="TokenEnterDialogBackgroundTitle" relativePoint="BOTTOM">
-													<Offset>
-														<AbsDimension x="0" y="-16"/>
-													</Offset>
-												</Anchor>
-											</Anchors>
-										</FontString>
-									</Layer>
-								</Layers>
-								<Frames>
-									<EditBox name="$parentEdit" letters="16">
-										<Size>
-											<AbsDimension x="160" y="37"/>
-										</Size>
-										<Anchors>
-											<Anchor point="CENTER">
-												<Offset>
-													<AbsDimension x="0" y="0"/>
-												</Offset>
-											</Anchor>
-										</Anchors>
-										<Layers>
-											<Layer level="BACKGROUND">
-												<FontString inherits="GlueFontNormal">
-													<Size>
-														<AbsDimension x="256" y="64"/>
-													</Size>
-													<Anchors>
-														<Anchor point="BOTTOM" relativePoint="TOP">
-															<Offset>
-																<AbsDimension x="0" y="-23"/>
-															</Offset>
-														</Anchor>
-													</Anchors>
-												</FontString>
-											</Layer>
-										</Layers>
-										<Backdrop bgFile="Interface\Tooltips\UI-Tooltip-Background" edgeFile="Interface\Glues\Common\Glue-Tooltip-Border" tile="true">
-											<BackgroundInsets>
-												<AbsInset left="10" right="5" top="4" bottom="9"/>
-											</BackgroundInsets>
-											<TileSize>
-												<AbsValue val="16"/>
-											</TileSize>
-											<EdgeSize>
-												<AbsValue val="16"/>
-											</EdgeSize>
-										</Backdrop>
-										<Scripts>
-											<OnEscapePressed>
-												TokenEntry_Cancel(self:GetParent());
-											</OnEscapePressed>
-											<OnEnterPressed>
-												TokenEntry_Okay(self:GetParent());
-											</OnEnterPressed>
-											<OnEditFocusLost>
-												self:HighlightText(0, 0);
-											</OnEditFocusLost>
-											<OnEditFocusGained>
-												self:HighlightText();
-											</OnEditFocusGained>
-										</Scripts>
-										<FontString inherits="GlueEditBoxFont"/>
-										<TextInsets>
-											<AbsInset left="15" bottom="5"/>
-										</TextInsets>
-									</EditBox>
-									<Button name="$parentOkayButton" inherits="GlueButtonTemplateBlue" text="OKAY">
-										<Anchors>
-											<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMLEFT">
-												<Offset>
-													<AbsDimension x="20" y="16"/>
-												</Offset>
-											</Anchor>
-										</Anchors>
-										<Scripts>
-											<OnClick>
-												TokenEntry_Okay(self:GetParent());
-											</OnClick>
-										</Scripts>
-									</Button>
-									<Button name="$parentCancelButton" inherits="GlueButtonTemplateBlue" text="CANCEL">
-										<Anchors>
-											<Anchor point="LEFT" relativeTo="$parentOkayButton" relativePoint="RIGHT">
-												<Offset>
-													<AbsDimension x="0" y="0"/>
-												</Offset>
-											</Anchor>
-										</Anchors>
-										<Scripts>
-											<OnClick>
-												TokenEntry_Cancel(self:GetParent());
-											</OnClick>
-										</Scripts>
-									</Button>
-								</Frames>
-							</Frame>
-						</Frames>
-						<Scripts>
-							<OnLoad>
-								TokenEntryOkayButton_OnLoad(self);
-							</OnLoad>
-							<OnEvent>
-								TokenEntryOkayButton_OnEvent(self, event);
-							</OnEvent>
-							<OnShow>
-								TokenEntryOkayButton_OnShow();
-							</OnShow>
-							<OnHide>
-								TokenEntryOkayButton_OnHide();
-							</OnHide>
-							<OnKeyDown>
-								TokenEntryOkayButton_OnKeyDown(self, key);
-							</OnKeyDown>
-						</Scripts>
-					</Frame>
-					<Frame name="WoWAccountSelectDialog" toplevel="true" setAllPoints="true" hidden="true" enableMouse="true" enableKeyboard="true" frameStrata="FULLSCREEN_DIALOG">
-						<Layers>
-							<Layer level="BACKGROUND">
-								<Texture setAllPoints="true">
-									<Color a="0.75" r="0" g="0" b="0"/>
-								</Texture>
-							</Layer>
-						</Layers>
-						<Frames>
-							<Frame name="$parentBackground">
-								<Size>
-									<AbsDimension x="275" y="265"/>
-								</Size>
-								<Anchors>
-									<Anchor point="CENTER">
-										<Offset>
-											<AbsDimension x="0" y="-20"/>
-										</Offset>
-									</Anchor>
-								</Anchors>
-								<Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background" edgeFile="Interface\DialogFrame\UI-DialogBox-Border" tile="true">
-									<BackgroundInsets>
-										<AbsInset left="11" right="12" top="12" bottom="11"/>
-									</BackgroundInsets>
-									<TileSize>
-										<AbsValue val="32"/>
-									</TileSize>
-									<EdgeSize>
-										<AbsValue val="32"/>
-									</EdgeSize>
-								</Backdrop>
-								<Layers>
-									<Layer level="ARTWORK">
-										<FontString name="$parentTitle" inherits="GlueFontNormal" text="WOW_ACCOUNTS">
-											<Anchors>
-												<Anchor point="TOPLEFT">
-													<Offset>
-														<AbsDimension x="20" y="-20"/>
-													</Offset>
-												</Anchor>
-											</Anchors>
-										</FontString>
-										<FontString name="$parentText" inherits="TOSFont"  text="SELECT_ACCOUNT">
-											<Anchors>
-												<Anchor point="TOPLEFT" relativeTo="$parentTitle" relativePoint="BOTTOMLEFT">
-													<Offset>
-														<AbsDimension x="5" y="-4"/>
-													</Offset>
-												</Anchor>
-											</Anchors>
-										</FontString>
-										<FontString name="$parentSaveAccountText" inherits="GlueFontNormalSmall" text="SAVE_ACCOUNT_NAME">
-											<Anchors>
-												<Anchor point="BOTTOM" x="10" y="16"/>
-											</Anchors>
-										</FontString>
-									</Layer>
-								</Layers>
-								<Frames>
-									<Frame name="$parentContainer">
-										<Anchors>
-											<Anchor point="TOPLEFT">
-												<Offset x="12" y="-52"/>
-											</Anchor>
-											<Anchor point="BOTTOMRIGHT">
-												<Offset x="-16" y="36"/>
-											</Anchor>
-										</Anchors>
-										<Backdrop edgeFile="Interface\Glues\Common\Glue-Tooltip-Border" tile="true">
-											<BackgroundInsets>
-												<AbsInset left="10" right="5" top="4" bottom="9"/>
-											</BackgroundInsets>
-											<TileSize>
-												<AbsValue val="16"/>
-											</TileSize>
-											<EdgeSize>
-												<AbsValue val="16"/>
-											</EdgeSize>
-										</Backdrop>
-										<Frames>
-											<Button name="$parentButton1" inherits="AccountNameButton">
-												<Anchors>
-													<Anchor point="TOPLEFT">
-														<Offset x="12" y="-6"/>
-													</Anchor>
-												</Anchors>
-											</Button>
-											<Button name="$parentButton2" inherits="AccountNameButton">
-												<Anchors>
-													<Anchor point="TOPLEFT" relativeTo="$parentButton1" relativePoint="BOTTOMLEFT">
-														<Offset x="0" y="0"/>
-													</Anchor>
-												</Anchors>
-											</Button>
-											<Button name="$parentButton3" inherits="AccountNameButton">
-												<Anchors>
-													<Anchor point="TOPLEFT" relativeTo="$parentButton2" relativePoint="BOTTOMLEFT">
-														<Offset x="0" y="0"/>
-													</Anchor>
-												</Anchors>
-											</Button>
-											<Button name="$parentButton4" inherits="AccountNameButton">
-												<Anchors>
-													<Anchor point="TOPLEFT" relativeTo="$parentButton3" relativePoint="BOTTOMLEFT">
-														<Offset x="0" y="0"/>
-													</Anchor>
-												</Anchors>
-											</Button>
-											<Button name="$parentButton5" inherits="AccountNameButton">
-												<Anchors>
-													<Anchor point="TOPLEFT" relativeTo="$parentButton4" relativePoint="BOTTOMLEFT">
-														<Offset x="0" y="0"/>
-													</Anchor>
-												</Anchors>
-											</Button>
-											<Button name="$parentButton6" inherits="AccountNameButton">
-												<Anchors>
-													<Anchor point="TOPLEFT" relativeTo="$parentButton5" relativePoint="BOTTOMLEFT">
-														<Offset x="0" y="0"/>
-													</Anchor>
-												</Anchors>
-											</Button>
-											<Button name="$parentButton7" inherits="AccountNameButton">
-												<Anchors>
-													<Anchor point="TOPLEFT" relativeTo="$parentButton6" relativePoint="BOTTOMLEFT">
-														<Offset x="0" y="0"/>
-													</Anchor>
-												</Anchors>
-											</Button>
-											<Button name="$parentButton8" inherits="AccountNameButton">
-												<Anchors>
-													<Anchor point="TOPLEFT" relativeTo="$parentButton7" relativePoint="BOTTOMLEFT">
-														<Offset x="0" y="0"/>
-													</Anchor>
-												</Anchors>
-											</Button>
-										
-											<ScrollFrame name="$parentScrollFrame" inherits="GlueScrollFrameTemplate">
-												<Size>
-													<AbsDimension x="219" y="162"/>
-												</Size>
-												<Anchors>
-													<Anchor point="TOPLEFT">
-														<Offset x="0" y="-6"/>
-													</Anchor>
-												</Anchors>
-												<Scripts>
-													<OnVerticalScroll>
-														WoWAccountSelect_OnVerticalScroll(self, offset);
-													</OnVerticalScroll>
-												</Scripts>
-												<ScrollChild>
-													<Frame name="$parentScrollChildFrame">
-														<Size>
-															<AbsDimension x="510" y="395"/>
-														</Size>
-													</Frame>
-												</ScrollChild>
-											</ScrollFrame>
-										</Frames>
-									</Frame>
-									<Button name="$parentAcceptButton" inherits="GlueButtonTemplateBlue" text="ACCEPT">
-										<Size>
-											<AbsDimension x="125" y="37"/>
-										</Size>
-										<Anchors>
-											<Anchor point="BOTTOMLEFT">
-												<Offset>
-													<AbsDimension x="8" y="6"/>
-												</Offset>
-											</Anchor>
-										</Anchors>
-										<Scripts>
-											<OnClick>
-												PlaySound("gsLoginChangeRealmOK");
-												WoWAccountSelect_Accept();
-											</OnClick>
-										</Scripts>
-									</Button>
-									<Button name="$parentCancelButton" inherits="GlueButtonTemplateBlue" text="CANCEL">
-										<Size>
-											<AbsDimension x="125" y="37"/>
-										</Size>
-										<Anchors>
-											<Anchor point="BOTTOMRIGHT">
-												<Offset>
-													<AbsDimension x="-8" y="6"/>
-												</Offset>
-											</Anchor>
-										</Anchors>
-										<Scripts>
-											<OnClick>
-												PlaySound("gsLoginChangeRealmCancel");
-												WoWAccountSelect_OnCancel(WoWAccountSelectDialog);
-											</OnClick>
-										</Scripts>
-									</Button>
-									<CheckButton name="$parentSaveAccountButton">
-										<Size x="20" y="20"/>
-										<Anchors>
-											<Anchor point="RIGHT" relativeTo="$parentSaveAccountText" relativePoint="LEFT"/>
-										</Anchors>
-										<Scripts>
-											<OnLoad>
-												if ( GetSavedAccountListSSO() ~= "" ) then
-													self:SetChecked(true);
-												else
-													self:SetChecked(false);
-												end
-											</OnLoad>
-											<OnClick>
-												if ( self:GetChecked() ) then
-													PlaySound("igMainMenuOptionCheckBoxOff");
-												else
-													PlaySound("igMainMenuOptionCheckBoxOn");
-												end
-											</OnClick>
-										</Scripts>
-										<NormalTexture file="Interface\Buttons\UI-CheckBox-Up"/>
-										<PushedTexture file="Interface\Buttons\UI-CheckBox-Down"/>
-										<HighlightTexture file="Interface\Buttons\UI-CheckBox-Highlight" alphaMode="ADD"/>
-										<CheckedTexture file="Interface\Buttons\UI-CheckBox-Check"/>
-										<DisabledCheckedTexture file="Interface\Buttons\UI-CheckBox-Check-Disabled"/>
-									</CheckButton>
-								</Frames>
-							</Frame>
-						</Frames>
-						<Scripts>
-							<OnLoad>
-								WoWAccountSelect_OnLoad(self);
-							</OnLoad>
-							<OnEvent>
-								WoWAccountSelect_OnEvent(self, event, ...);
-							</OnEvent>
-							<OnKeyDown>
-								WoWAccountSelect_OnKeyDown(self, key);
-							</OnKeyDown>
-							<OnShow>
-								WoWAccountSelect_OnShow(self)
-							</OnShow>
-						</Scripts>
-					</Frame>
-				</Frames>
-				<Scripts>
-					<OnShow>
-						GlueFrameFadeIn(self, LOGIN_FADE_IN);
-						if ( GetSavedAccountName() == "" ) then
-							AccountLogin_FocusAccountName();
-						else
-							AccountLogin_FocusPassword();
-						end
-						CheckSystemRequirements();
-					</OnShow>
-				</Scripts>
-			</Frame>
-<!-- SURVEY NOTIFICATION FRAME BEGIN -->			
-			<Frame name="SurveyNotificationFrame" hidden="true">
-				<Size>
-					<AbsDimension x="640" y="512"/>
-				</Size>
-				<Anchors>
-					<Anchor point="CENTER">
-						<Offset>
-							<AbsDimension x="0" y="0"/>
-						</Offset>
-					</Anchor>
-				</Anchors>
-				<HitRectInsets>
-					<AbsInset left="0" right="44" top="0" bottom="13"/>
-				</HitRectInsets>
-				<Layers>
-					<Layer level="BACKGROUND">
-						<Texture file="Interface\HelpFrame\HelpFrame-TopLeft">
-							<Size>
-								<AbsDimension x="256" y="256"/>
-							</Size>
-							<Anchors>
-								<Anchor point="TOPLEFT"/>
-							</Anchors>
-						</Texture>
-						<Texture file="Interface\HelpFrame\HelpFrame-Top">
-							<Size>
-								<AbsDimension x="256" y="256"/>
-							</Size>
-							<Anchors>
-								<Anchor point="TOPLEFT">
-									<Offset>
-										<AbsDimension x="256" y="0"/>
-									</Offset>
-								</Anchor>
-							</Anchors>
-						</Texture>
-						<Texture file="Interface\Glues\Login\Glues-TOS-TopRight">
-							<Size>
-								<AbsDimension x="128" y="256"/>
-							</Size>
-							<Anchors>
-								<Anchor point="TOPRIGHT"/>
-							</Anchors>
-						</Texture>
-						<Texture file="Interface\HelpFrame\HelpFrame-BotLeft">
-							<Size>
-								<AbsDimension x="256" y="256"/>
-							</Size>
-							<Anchors>
-								<Anchor point="BOTTOMLEFT"/>
-							</Anchors>
-						</Texture>
-						<Texture file="Interface\HelpFrame\HelpFrame-Bottom">
-							<Size>
-								<AbsDimension x="256" y="256"/>
-							</Size>
-							<Anchors>
-								<Anchor point="BOTTOMLEFT">
-									<Offset>
-										<AbsDimension x="256" y="0"/>
-									</Offset>
-								</Anchor>
-							</Anchors>
-						</Texture>
-						<Texture file="Interface\HelpFrame\HelpFrame-BotRight">
-							<Size>
-								<AbsDimension x="128" y="256"/>
-							</Size>
-							<Anchors>
-								<Anchor point="BOTTOMRIGHT"/>
-							</Anchors>
-						</Texture>
-					</Layer>
-					<Layer level="ARTWORK">
-						<Texture name="SurveyNotificationFrameHeader" file="Interface\DialogFrame\UI-DialogBox-Header">
-							<Size>
-								<AbsDimension x="620" y="64"/>
-							</Size>
-							<Anchors>
-								<Anchor point="TOP">
-									<Offset>
-										<AbsDimension x="-12" y="12"/>
-									</Offset>
-								</Anchor>
-							</Anchors>
-						</Texture>
-						<FontString name="SurveyNotificationFrameTitle" inherits="GlueFontNormal" text="HARDWARE_SURVEY_TITLE">
-							<Anchors>
-								<Anchor point="TOP" relativeTo="SurveyNotificationFrameHeader">
-									<Offset>
-										<AbsDimension x="0" y="-14"/>
-									</Offset>
-								</Anchor>
-							</Anchors>
-						</FontString>
-					</Layer>
-				</Layers>
-				<Frames>
-					<ScrollFrame name="SurveyScrollFrame" inherits="GlueScrollFrameTemplate">
-						<Size>
-							<AbsDimension x="540" y="407"/>
-						</Size>
-						<Anchors>
-							<Anchor point="TOPLEFT">
-								<Offset>
-									<AbsDimension x="30" y="-56"/>
-								</Offset>
-							</Anchor>
-						</Anchors>
-						<Scripts>
-							<OnLoad>
-								self.scrollBarHideable = 1;
-								GlueScrollFrame_OnScrollRangeChanged(self);
-							</OnLoad>
-						</Scripts>
-						<ScrollChild>
-							<SimpleHTML name="SurveyText" file="survey.html">
-								<Size>
-									<AbsDimension x="530" y="407"/>
-								</Size>
-								<FontString inherits="GlueFontHighlight"/>
-								<FontStringHeader1 inherits="GlueFontNormal"/>
-								<FontStringHeader2 inherits="GlueFontNormalSmall"/>
-							</SimpleHTML>
-						</ScrollChild>
-					</ScrollFrame>
-					<Button name="SurveyNotificationDecline" inherits="GlueMenuButtonTemplate" text="HARDWARE_SURVEY_DISAGREE">
-						<Anchors>
-							<Anchor point="BOTTOMRIGHT">
-								<Offset>
-									<AbsDimension x="-53" y="21"/>
-								</Offset>
-							</Anchor>
-						</Anchors>
-						<Scripts>
-							<OnClick>
-								AccountLogin_SurveyNotificationDone(false);
-								self:GetParent():Hide();
-							</OnClick>
-							<OnLoad>
-								self:SetWidth(200);
-							</OnLoad>
-						</Scripts>
-					</Button>
-					<Button name="SurveyNotificationAccept" inherits="GlueMenuButtonTemplate" text="HARDWARE_SURVEY_AGREE">
-						<Anchors>
-							<Anchor point="RIGHT" relativeTo="SurveyNotificationDecline" relativePoint="LEFT">
-								<Offset>
-									<AbsDimension x="0" y="0"/>
-								</Offset>
-							</Anchor>
-						</Anchors>
-						<Scripts>
-							<OnLoad>
-								self:SetWidth(200);
-							</OnLoad>
-							<OnClick>
-								AccountLogin_SurveyNotificationDone(true);
-								self:GetParent():Hide();
-							</OnClick>
-						</Scripts>
-					</Button>
-				</Frames>
-			</Frame>
-<!-- SURVEY NOTIFICATION FRAME END -->		
-			<Frame name="ConnectionHelpFrame" hidden="true">
-				<Size>
-					<AbsDimension x="640" y="512"/>
-				</Size>
-				<Anchors>
-					<Anchor point="CENTER">
-						<Offset>
-							<AbsDimension x="0" y="0"/>
-						</Offset>
-					</Anchor>
-				</Anchors>
-				<HitRectInsets>
-					<AbsInset left="0" right="44" top="0" bottom="13"/>
-				</HitRectInsets>
-				<Layers>
-					<Layer level="BACKGROUND">
-						<Texture file="Interface\HelpFrame\HelpFrame-TopLeft">
-							<Size>
-								<AbsDimension x="256" y="256"/>
-							</Size>
-							<Anchors>
-								<Anchor point="TOPLEFT"/>
-							</Anchors>
-						</Texture>
-						<Texture file="Interface\HelpFrame\HelpFrame-Top">
-							<Size>
-								<AbsDimension x="256" y="256"/>
-							</Size>
-							<Anchors>
-								<Anchor point="TOPLEFT">
-									<Offset>
-										<AbsDimension x="256" y="0"/>
-									</Offset>
-								</Anchor>
-							</Anchors>
-						</Texture>
-						<Texture file="Interface\Glues\Login\Glues-TOS-TopRight">
-							<Size>
-								<AbsDimension x="128" y="256"/>
-							</Size>
-							<Anchors>
-								<Anchor point="TOPRIGHT"/>
-							</Anchors>
-						</Texture>
-						<Texture file="Interface\HelpFrame\HelpFrame-BotLeft">
-							<Size>
-								<AbsDimension x="256" y="256"/>
-							</Size>
-							<Anchors>
-								<Anchor point="BOTTOMLEFT"/>
-							</Anchors>
-						</Texture>
-						<Texture file="Interface\HelpFrame\HelpFrame-Bottom">
-							<Size>
-								<AbsDimension x="256" y="256"/>
-							</Size>
-							<Anchors>
-								<Anchor point="BOTTOMLEFT">
-									<Offset>
-										<AbsDimension x="256" y="0"/>
-									</Offset>
-								</Anchor>
-							</Anchors>
-						</Texture>
-						<Texture file="Interface\HelpFrame\HelpFrame-BotRight">
-							<Size>
-								<AbsDimension x="128" y="256"/>
-							</Size>
-							<Anchors>
-								<Anchor point="BOTTOMRIGHT"/>
-							</Anchors>
-						</Texture>
-					</Layer>
-					<Layer level="ARTWORK">
-						<Texture name="ConnectionHelpFrameHeader" file="Interface\DialogFrame\UI-DialogBox-Header">
-							<Size>
-								<AbsDimension x="420" y="64"/>
-							</Size>
-							<Anchors>
-								<Anchor point="TOP">
-									<Offset>
-										<AbsDimension x="-12" y="12"/>
-									</Offset>
-								</Anchor>
-							</Anchors>
-						</Texture>
-						<FontString inherits="GlueFontNormal" text="CONNECTION_HELP_FRAME_TITLE">
-							<Anchors>
-								<Anchor point="TOP" relativeTo="ConnectionHelpFrameHeader">
-									<Offset>
-										<AbsDimension x="0" y="-14"/>
-									</Offset>
-								</Anchor>
-							</Anchors>
-						</FontString>
-					</Layer>
-				</Layers>
-				<Frames>
-					<ScrollFrame name="ConnectionHelpScrollFrame" inherits="GlueScrollFrameTemplate">
-						<Size>
-							<AbsDimension x="540" y="407"/>
-						</Size>
-						<Anchors>
-							<Anchor point="TOPLEFT">
-								<Offset>
-									<AbsDimension x="20" y="-56"/>
-								</Offset>
-							</Anchor>
-						</Anchors>
-						<Layers>
-							<Layer level="ARTWORK">
-								<Texture name="ConnectionHelpScrollBarTop" file="Interface\PaperDollInfoFrame\UI-Character-ScrollBar">
-									<Size>
-										<AbsDimension x="31" y="256"/>
-									</Size>
-									<Anchors>
-										<Anchor point="TOPLEFT" relativePoint="TOPRIGHT">
-											<Offset>
-												<AbsDimension x="-2" y="5"/>
-											</Offset>
-										</Anchor>
-									</Anchors>
-									<TexCoords left="0" right="0.484375" top="0" bottom="1.0"/>
-								</Texture>
-								<Texture name="ConnectionHelpScrollBarBottom" file="Interface\PaperDollInfoFrame\UI-Character-ScrollBar">
-									<Size>
-										<AbsDimension x="31" y="106"/>
-									</Size>
-									<Anchors>
-										<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMRIGHT">
-											<Offset>
-												<AbsDimension x="-2" y="-2"/>
-											</Offset>
-										</Anchor>
-									</Anchors>
-									<TexCoords left="0.515625" right="1.0" top="0" bottom="0.4140625"/>
-								</Texture>
-								<Texture name="ConnectionHelpScrollBarMiddle" file="Interface\PaperDollInfoFrame\UI-Character-ScrollBar">
-									<Size>
-										<AbsDimension x="31" y="60"/>
-									</Size>
-									<Anchors>
-										<Anchor point="TOP" relativeTo="ConnectionHelpScrollBarTop" relativePoint="BOTTOM">
-											<Offset>
-												<AbsDimension x="0" y="0"/>
-											</Offset>
-										</Anchor>
-										<Anchor point="BOTTOM" relativeTo="ConnectionHelpScrollBarBottom" relativePoint="TOP">
-											<Offset>
-												<AbsDimension x="0" y="0"/>
-											</Offset>
-										</Anchor>
-									</Anchors>
-									<TexCoords left="0" right="0.484375" top=".75" bottom="1.0"/>
-								</Texture>
-							</Layer>
-						</Layers>
-						<Scripts>
-							<OnVerticalScroll>
-									local scrollbar = _G[self:GetName().."ScrollBar"];
-									scrollbar:SetValue(offset);
-									local min;
-									local max;
-									min, max = scrollbar:GetMinMaxValues();
-									if ( offset == 0 ) then
-										_G[scrollbar:GetName().."ScrollUpButton"]:Disable();
-									else
-										_G[scrollbar:GetName().."ScrollUpButton"]:Enable();
-									end
-									-- HACK: scrollbars do not handle max properly
-									-- DO NOT CHANGE - without speaking to Mikros/Barris/Thompson
-									if (scrollbar:GetValue() >= max - 20) then
-										_G[scrollbar:GetName().."ScrollDownButton"]:Disable();
-									else
-										_G[scrollbar:GetName().."ScrollDownButton"]:Enable();
-									end
-								</OnVerticalScroll>
-						</Scripts>
-						<ScrollChild>
-							<SimpleHTML name="ConnectionHelpText" file="connection-help.html">
-								<Size>
-									<AbsDimension x="540" y="800"/>
-								</Size>
-								<FontString inherits="TOSFont"/>
-								<FontStringHeader1 inherits="GlueFontNormalLarge"/>
-								<FontStringHeader2 inherits="GlueFontNormal"/>
-								<FontStringHeader3 inherits="GlueFontNormal"/>
-							</SimpleHTML>
-						</ScrollChild>
-					</ScrollFrame>
-					<Button name="ConnectionHelpOkay" inherits="GlueMenuButtonTemplate" text="OKAY">
-						<Anchors>
-							<Anchor point="BOTTOMRIGHT">
-								<Offset>
-									<AbsDimension x="-53" y="21"/>
-								</Offset>
-							</Anchor>
-						</Anchors>
-						<Scripts>
-							<OnClick>
-								ConnectionHelpFrame:Hide();
-								AccountLoginUI:Show();
-							</OnClick>
-						</Scripts>
-					</Button>
-				</Frames>
-			</Frame>
-		</Frames>
-		<Scripts>
-			<OnLoad>
-				AccountLogin_OnLoad(self);
-			</OnLoad>
-			<OnShow>
-				AccountLogin_OnShow(self);
-			</OnShow>
-			<OnHide>
-				AccountLogin_OnHide(self);
-			</OnHide>
-			<OnKeyDown>
-				AccountLogin_OnKeyDown(key);
-			</OnKeyDown>
-			<OnEvent>
-				AccountLogin_OnEvent(event, ...);
-			</OnEvent>
-		</Scripts>
-		<FogColor r="0.25" g="0.06" b="0.015"/>
-	</ModelFFX>
-	
-	<Button name="CinematicsButtonTemplate" virtual="true">
-		<Size x="176" y="78"/>
-		
-		<Layers>
-			<Layer level="OVERLAY">
-				<Texture name="$parentPlayButton" atlas="StreamCinematic-PlayButton" parentKey="PlayButton">
-					<Size x="43" y="43"/>
-					<Anchors>
-						<Anchor point="RIGHT" x="-5" y="1"/>
-					</Anchors>
-				</Texture>
-				<Texture name="$parentDownloadIcon" atlas="StreamCinematic-DownloadIcon" parentKey="DownloadIcon">
-					<Size x="43" y="43"/>
-					<Anchors>
-						<Anchor point="RIGHT" x="-5" y="1"/>
-					</Anchors>
-				</Texture>
-			</Layer>
-		</Layers>
-		
-		<Frames>
-			<Frame name="$parentStreamingIcon" hidden="true" parentKey="StreamingIcon">
-				<Animations>
-					<AnimationGroup parentKey="Loop" looping="REPEAT" >
-						<Rotation target="StreamingIconSpin" order="1" duration="8" degrees="-360" />
-					</AnimationGroup>
-				</Animations>
-				<Size x="48" y="48"/>
-				<Anchors>
-					<Anchor point="RIGHT" x="-2" y="5"/>
-				</Anchors>
-				<Frames>
-					<Frame name="$parentFrame" setAllPoints="true" parentKey="Frame" >
-						<Layers>
-							<Layer level="BACKGROUND" >
-								<Texture file="Interface\COMMON\StreamBackground" name="$parentBackground" setAllPoints="true" parentKey="Background"/>
-							</Layer>
-							<Layer level="ARTWORK">
-								<Texture file="Interface\COMMON\StreamFrame" name="$parenAlpha" setAllPoints="true" />
-							</Layer>
-						</Layers>
-					</Frame>
-					<Frame name="$parentSpin" setAllPoints="true" parentKey="Spin">
-						<Layers>
-							<Layer level="BACKGROUND" >
-								<Texture file="Interface\COMMON\StreamCircle" name="$parentSpinner" setAllPoints="true" parentKey="Spinner"/>
-							</Layer>
-							<Layer level="OVERLAY" >
-								<Texture file="Interface\COMMON\StreamSpark" setAllPoints="true" />
-							</Layer>
-						</Layers>
-					</Frame>
-				</Frames>
-				<Scripts>
-					<OnLoad>
-						self.Spin.Spinner:SetVertexColor(0,1,0);
-						self.Frame.Background:SetVertexColor(0,1,0);
-					</OnLoad>
-				</Scripts>
-			</Frame>
-			<StatusBar name="$parentStatusBar" hidden="true" parentKey="StatusBar">
-				<Size x="168" y="2"/>
-				<Anchors>
-					<Anchor point="BOTTOMLEFT" x="4" y="17"/>
-				</Anchors>
-				<Layers>
-					<Layer level="BACKGROUND">
-						<Texture name="$parentBg" atlas="StreamCinematic-ProgressBarBG">
-							<Size x="8" y="4"/>
-							<Anchors>
-								<Anchor point="TOPLEFT" y="1"/>
-								<Anchor point="TOPRIGHT" y="1"/>
-							</Anchors>
-						</Texture>
-					</Layer>
-				</Layers>
-				<BarTexture name="$parentBar" parentKey="Bar">
-					<Color r="1" g="1" b="1"/>
-				</BarTexture>
-			</StatusBar>
-		</Frames>
-		<Scripts>
-			<OnClick function="CinematicsButton_OnClick"/>
-			<OnMouseDown>
-				self.PlayButton:SetPoint("RIGHT", -8, -2);
-				self.DownloadIcon:SetPoint("RIGHT", -8, -2);
-				self.StreamingIcon:SetPoint("RIGHT", -5, 2);
-				self.StatusBar:SetPoint("BOTTOMLEFT", 4, 14);
-			</OnMouseDown>
-			<OnMouseUp>
-				self.PlayButton:SetPoint("RIGHT", -5, 1);
-				self.DownloadIcon:SetPoint("RIGHT", -5, 1);
-				self.StreamingIcon:SetPoint("RIGHT", -2, 5);
-				self.StatusBar:SetPoint("BOTTOMLEFT", 4, 17);
-			</OnMouseUp>
-			<OnEnter function="CinematicsButton_OnEnter"/>
-			<OnLeave>
-				GlueTooltip:Hide();
-				self.mouseIsOverMe = false;
-			</OnLeave>
-		</Scripts>
-		<NormalFont style="GlueFontNormalExtraSmall"/>
-		<HighlightFont style="GlueFontHighlightExtraSmall"/>
-		<DisabledFont style="GlueFontDisableExtraSmall"/>
-		<HighlightTexture atlas="StreamCinematic-Highlight" alphaMode="ADD">
-			<TexCoords>
-				<Rect ULx="1" ULy="0" URx="1" URy="1" LLx="0" LLy="0" LRx="0" LRy="1" />
-			</TexCoords>
-		</HighlightTexture>
-		<ButtonText>
-			<Size x="176" y="0"/>
-			<Anchors>
-				<Anchor point="BOTTOM" y="5"/>
-			</Anchors>
-		</ButtonText>
-		<PushedTextOffset x="-3" y="-3"/> 
-	</Button>
-
-	<Frame name="CinematicsFrame" inherits="GlueModalFrameTemplate" toplevel="true" parent="GlueParent" setAllPoints="true" enableMouse="true" enableKeyboard="true" frameStrata="DIALOG" hidden="true">
-		<Size x="262" y="512"/>
-		<Anchors>
-			<Anchor point="CENTER"/>
-		</Anchors>
-		<Backdrop edgeFile="Interface\DialogFrame\UI-DialogBox-Border" tile="true">
-			<EdgeSize>
-				<AbsValue val="32"/>
-			</EdgeSize>
-		</Backdrop>
-		<Layers>
-			<Layer level="BACKGROUND">
-				<Texture name="CinematicsFrameBg" alpha="0.8">
-					<Anchors>
-						<Anchor point="TOPLEFT" x="11" y="-11"/>
-						<Anchor point="BOTTOMRIGHT" x="-11" y="11"/>
-					</Anchors>
-					<Color r="0" g="0" b="0"/>
-				</Texture>
-			</Layer>
-			<Layer level="ARTWORK">
-				<FontString inherits="QuestFontNormalLarge" text="CINEMATICS">
-					<Size x="450" y="0"/>
-					<Anchors>
-						<Anchor point="TOP" x="0" y="-16"/>
-					</Anchors>
-				</FontString>
-				<FontString name="CinematicSubtitlesLabel" inherits="GlueFontNormalExtraSmall" text="CINEMATICS_SHOW_SUBTITLES">
-					<Anchors>
-						<Anchor point="BOTTOM" x="12" y="18"/>
-					</Anchors>
-				</FontString>
-			</Layer>
-		</Layers>
-		<Frames>
-			<Button name="CinematicsFrameCloseButton" inherits="GlueCloseButton">
-				<Anchors>
-					<Anchor point="TOPRIGHT" x="-4" y="-4"/>
-				</Anchors>
-				<Scripts>
-					<OnClick>
-						PlaySound("igMainMenuOptionCheckBoxOff");
-						CinematicsFrame:Hide();
-					</OnClick>
-				</Scripts>
-			</Button>
-			<Button name="CinematicsButton1" inherits="CinematicsButtonTemplate" text="WORLD_OF_WARCRAFT" hidden="true" id="1">
-				<Size x="176" y="78"/>
-				<Anchors>
-					<Anchor point="TOP" x="0" y="-44"/>
-				</Anchors>
-				<NormalTexture atlas="StreamCinematic-Classic-Up" />
-				<PushedTexture atlas="StreamCinematic-Classic-Down" />
-			</Button>
-			<Button name="CinematicsButton2" inherits="CinematicsButtonTemplate" text="BURNING_CRUSADE" hidden="true" id="2">
-				<Size x="176" y="78"/>
-				<Anchors>
-					<Anchor point="TOP" relativeTo="CinematicsButton1" relativePoint="BOTTOM" x="0" y="-8"/>
-				</Anchors>
-				<NormalTexture atlas="StreamCinematic-BC-Up" />
-				<PushedTexture atlas="StreamCinematic-BC-Down" />
-			</Button>
-			<Button name="CinematicsButton3" inherits="CinematicsButtonTemplate" text="WRATH_OF_THE_LICH_KING" hidden="true" id="3">
-				<Size x="176" y="78"/>
-				<Anchors>
-					<Anchor point="TOP" relativeTo="CinematicsButton2" relativePoint="BOTTOM" x="0" y="-8"/>
-				</Anchors>
-				<NormalTexture atlas="StreamCinematic-LK-Up" />
-				<PushedTexture atlas="StreamCinematic-LK-Down" />
-			</Button>
-			<Button name="CinematicsButton4" inherits="CinematicsButtonTemplate" text="CATACLYSM" hidden="true" id="4">
-				<Size x="176" y="78"/>
-				<Anchors>
-					<Anchor point="TOP" relativeTo="CinematicsButton3" relativePoint="BOTTOM" x="0" y="-8"/>
-				</Anchors>
-				<NormalTexture atlas="StreamCinematic-CC-Up" />
-				<PushedTexture atlas="StreamCinematic-CC-Down" />
-			</Button>
-			<Button name="CinematicsButton5" inherits="CinematicsButtonTemplate" text="MISTS_OF_PANDARIA" hidden="true" id="5">
-				<Size x="176" y="78"/>
-				<Anchors>
-					<Anchor point="TOP" relativeTo="CinematicsButton4" relativePoint="BOTTOM" x="0" y="-8"/>
-				</Anchors>
-				<NormalTexture atlas="StreamCinematic-MOP-Up" />
-				<PushedTexture atlas="StreamCinematic-MOP-Down" />
-			</Button>
-			<Button name="CinematicsButton6" inherits="CinematicsButtonTemplate" text="WARLORDS_OF_DRAENOR" hidden="true" id="6">
-				<Size x="176" y="78"/>
-				<Anchors>
-					<Anchor point="TOP" relativeTo="CinematicsButton5" relativePoint="BOTTOM" x="0" y="-8"/>
-				</Anchors>
-				<NormalTexture atlas="StreamCinematic-WOD-Up" />
-				<PushedTexture atlas="StreamCinematic-WOD-Down" />
-			</Button>
-			<CheckButton name="CinematicSubtitlesCheckBox" inherits="GlueCheckButtonTemplate">
-				<Size x="20" y="20"/>
-				<Anchors>
-					<Anchor point="RIGHT" relativeTo="CinematicSubtitlesLabel" relativePoint="LEFT" x="-4" y="0"/>
-				</Anchors>
-				<Scripts>
-					<OnShow>
-						self:SetChecked(GetCVarBool("movieSubtitle"));
-					</OnShow>
-					<OnClick inherit="prepend">
-						SetCVar("movieSubtitle", self:GetChecked());
-					</OnClick>
-				</Scripts>
-			</CheckButton>
-		</Frames>
-		<Scripts>
-			<OnLoad>
-				CinematicsFrame_OnLoad(self);
-			</OnLoad>
-			<OnShow>
-				self:Raise();
-				CinematicsFrame_OnShow(self);
-			</OnShow>
-			<OnKeyDown>
-				CinematicsFrame_OnKeyDown(key);
-			</OnKeyDown>
-		</Scripts>
-	</Frame>
-	
 	<Button name="KoreanRatings" toplevel="true" setAllPoints="true" parent="GlueParent" enableMouse="true" enableKeyboard="true" frameStrata="DIALOG" hidden="true">
 		<Anchors>
 			<Anchor point="TOPLEFT" x="0" y="0"/>
@@ -2504,4 +90,728 @@
 			<OnShow function="KoreanRatings_OnShow"/>
 		</Scripts>
 	</Button>
+	<ModelFFX name="AccountLogin" toplevel="true" parent="GlueParentScreenFrame" setAllPoints="true" enableKeyboard="true" hidden="false" fogNear="0" fogFar="1200" glow="0.08">
+		<Frames>
+			<Frame parentKey="UI" setAllPoints="true">
+				<Layers>
+					<Layer level="ARTWORK">
+						<Texture file="Interface\Glues\Mainmenu\Glues-BlizzardLogo">
+							<Size x="100" y="100"/>
+							<Anchors>
+								<Anchor point="BOTTOM" x="0" y="8"/>
+							</Anchors>
+						</Texture>
+						<FontString inherits="GlueFontNormalSmall" text="BLIZZ_DISCLAIMER">
+							<Anchors>
+								<Anchor point="BOTTOM" x="0" y="10"/>
+							</Anchors>
+						</FontString>
+						<FontString parentKey="ClientVersion" inherits="GlueFontNormalSmall" justifyH="LEFT">
+							<Anchors>
+								<Anchor point="BOTTOMLEFT" x="10" y="10"/>
+							</Anchors>
+						</FontString>
+					</Layer>
+					<Layer level="OVERLAY">
+						<Texture parentKey="GameLogo">
+							<Size x="256" y="128"/>
+							<Anchors>
+								<Anchor point="TOPLEFT" x="3" y="-7"/>
+							</Anchors>
+						</Texture>
+						<Texture name="WorldOfWarcraftRating" hidden="true">
+							<Size x="128" y="128"/>
+							<Anchors>
+								<Anchor point="TOPRIGHT" x="0" y="0"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+				<Frames>
+					<EditBox parentKey="AccountEditBox" parentArray="NormalLoginRegions" letters="320">
+						<Size x="200" y="37"/>
+						<Anchors>
+							<Anchor point="BOTTOM" x="0" y="345"/>
+						</Anchors>
+						<Layers>
+							<Layer level="BACKGROUND">
+								<FontString parentKey="Label" inherits="GlueFontNormal" justifyH="CENTER" text="ACCOUNT_NAME">
+									<Size>
+										<AbsDimension x="600" y="64"/>
+									</Size>
+									<Anchors>
+										<Anchor point="BOTTOM" relativePoint="TOP">
+											<Offset>
+												<AbsDimension x="0" y="-23"/>
+											</Offset>
+										</Anchor>
+									</Anchors>
+								</FontString>
+								<FontString parentKey="Fill" inherits="GlueFontDisableSmall" justifyH="LEFT" justifyV="MIDDLE" text="ENTER_EMAIL">
+									<Anchors>
+										<Anchor point="CENTER" relativePoint="CENTER">
+											<Offset>
+												<AbsDimension x="0" y="3"/>
+											</Offset>
+										</Anchor>
+									</Anchors>
+								</FontString>
+							</Layer>
+						</Layers>
+						<Backdrop bgFile="Interface\Tooltips\UI-Tooltip-Background" edgeFile="Interface\Glues\Common\Glue-Tooltip-Border" tile="true">
+							<BackgroundInsets>
+								<AbsInset left="10" right="5" top="4" bottom="9"/>
+							</BackgroundInsets>
+							<TileSize>
+								<AbsValue val="16"/>
+							</TileSize>
+							<EdgeSize>
+								<AbsValue val="16"/>
+							</EdgeSize>
+						</Backdrop>
+						<Scripts>
+							<OnTabPressed function="AccountLogin_FocusPassword"/>
+							<OnEscapePressed function="AccountLogin_Exit"/>
+							<OnEnterPressed>
+								if ( C_Login.IsLoginReady() ) then
+									AccountLogin_Login();
+								end
+							</OnEnterPressed>
+							<OnEditFocusLost function="AccountLogin_OnEditFocusLost"/>
+							<OnEditFocusGained function="AccountLogin_OnEditFocusGained"/>
+							<OnTextChanged>
+								local accountName = GetSavedAccountName();
+								if ( accountName ~= "" and accountName ~= self:GetText() ) then
+									SetSavedAccountName("");
+									ClearSavedAccountList();
+									AccountLogin_UpdateSavedData(AccountLogin);
+								end
+								if ( self:GetText() ~= "" ) then
+									self.Fill:Hide();
+								else
+									self.Fill:Show();
+								end
+							</OnTextChanged>
+						</Scripts>
+						<FontString inherits="GlueEditBoxFont"/>
+						<TextInsets>
+							<AbsInset left="12" right="5" bottom="5"/>
+						</TextInsets>
+					</EditBox>
+					<EditBox parentKey="PasswordEditBox" parentArray="NormalLoginRegions" letters="16" password="1">
+						<Size x="200" y="37"/>
+						<Anchors>
+							<Anchor point="BOTTOM" x="0" y="275"/>
+						</Anchors>
+						<Layers>
+							<Layer level="BACKGROUND">
+								<FontString inherits="GlueFontNormal" justifyH="CENTER" text="PASSWORD">
+									<Size>
+										<AbsDimension x="256" y="64"/>
+									</Size>
+									<Anchors>
+										<Anchor point="BOTTOM" relativePoint="TOP">
+											<Offset>
+												<AbsDimension x="0" y="-23"/>
+											</Offset>
+										</Anchor>
+									</Anchors>
+								</FontString>
+							</Layer>
+						</Layers>
+						<Backdrop bgFile="Interface\Tooltips\UI-Tooltip-Background" edgeFile="Interface\Glues\Common\Glue-Tooltip-Border" tile="true">
+							<BackgroundInsets>
+								<AbsInset left="10" right="5" top="4" bottom="9"/>
+							</BackgroundInsets>
+							<TileSize>
+								<AbsValue val="16"/>
+							</TileSize>
+							<EdgeSize>
+								<AbsValue val="16"/>
+							</EdgeSize>
+						</Backdrop>
+						<Scripts>
+							<OnTabPressed function="AccountLogin_FocusAccount"/>
+							<OnEscapePressed function="AccountLogin_Exit"/>
+							<OnEnterPressed>
+								if ( C_Login.IsLoginReady() ) then
+									AccountLogin_Login();
+								end
+							</OnEnterPressed>
+							<OnEditFocusLost function="AccountLogin_OnEditFocusLost"/>
+							<OnEditFocusGained function="AccountLogin_OnEditFocusGained"/>
+						</Scripts>
+						<FontString inherits="GlueEditBoxFont"/>
+						<TextInsets>
+							<AbsInset left="12" right="5" bottom="5"/>
+						</TextInsets>
+					</EditBox>
+					<Button parentKey="CachedLoginButton" hidden="true" parentArray="NormalLoginRegions" inherits="GlueButtonTemplateBlue" text="(DEV)Cached Login">
+						<Size x="220" y="45"/>
+						<Anchors>
+							<Anchor point="TOPRIGHT" relativeTo="AccountLogin" x="-5" y="-5"/>
+						</Anchors>
+						<Scripts>
+							<OnClick function="AccountLogin_CachedLogin"/>
+							<OnUpdate>
+								if ( C_Login.HasCachedCredentials() ) then
+									self:Show();
+									if ( C_Login.IsLoginReady() ) then
+										self:Enable();
+									else
+										self:Disable();
+									end
+								else
+									self:Hide();
+								end
+							</OnUpdate>
+						</Scripts>
+					</Button>
+					<Button parentKey="LoginButton" parentArray="NormalLoginRegions" inherits="GlueButtonTemplateBlue" text="LOGIN">
+						<Size x="220" y="45"/>
+						<Anchors>
+							<Anchor point="BOTTOM" x="0" y="170"/>
+						</Anchors>
+						<Scripts>
+							<OnClick function="AccountLogin_Login"/>
+							<OnUpdate>
+								if ( C_Login.IsLoginReady() ) then
+									self:Enable();
+								else
+									self:Disable();
+								end
+							</OnUpdate>
+						</Scripts>
+					</Button>
+					<CheckButton parentKey="SaveAccountNameCheckButton" parentArray="NormalLoginRegions">
+						<Size x="20" y="20"/>
+						<Layers>
+							<Layer level="ARTWORK">
+								<FontString parentKey="Label" inherits="GlueFontNormalSmall" text="SAVE_ACCOUNT_NAME">
+									<Anchors>
+										<Anchor point="LEFT" x="20" y="0"/>
+									</Anchors>
+									<FontHeight>
+										<AbsValue val="10"/>
+									</FontHeight>
+									<Shadow>
+										<Offset>
+											<AbsDimension x="1" y="-1"/>
+										</Offset>
+										<Color r="0" g="0" b="0"/>
+									</Shadow>
+									<Color r="1.0" g="0.78" b="0"/>
+								</FontString>
+							</Layer>
+						</Layers>
+						<Scripts>
+							<OnLoad>
+								local width = self.Label:GetWidth();
+								self:SetPoint("TOP", self:GetParent().LoginButton, "BOTTOM", -width / 2, 0);
+								if ( GetSavedAccountName() ~= "" ) then
+									self:SetChecked(true);
+								else
+									self:SetChecked(false);
+								end
+							</OnLoad>
+							<OnClick>
+								if ( self:GetChecked() ) then
+									SetSavedAccountName("");
+									ClearSavedAccountList();
+									AccountLogin_UpdateSavedData(AccountLogin);
+									PlaySound("igMainMenuOptionCheckBoxOff");
+								else
+									PlaySound("igMainMenuOptionCheckBoxOn");
+								end
+							</OnClick>
+						</Scripts>
+						<NormalTexture file="Interface\Buttons\UI-CheckBox-Up"/>
+						<PushedTexture file="Interface\Buttons\UI-CheckBox-Down"/>
+						<HighlightTexture file="Interface\Buttons\UI-CheckBox-Highlight" alphaMode="ADD"/>
+						<CheckedTexture file="Interface\Buttons\UI-CheckBox-Check"/>
+						<DisabledCheckedTexture file="Interface\Buttons\UI-CheckBox-Check-Disabled"/>
+					</CheckButton>
+					<Button parentKey="ExitButton" inherits="GlueButtonSmallTemplate" text="QUIT">
+						<Anchors>
+							<Anchor point="BOTTOMRIGHT" x="-5" y="29"/>
+						</Anchors>
+						<Scripts>
+							<OnClick function="AccountLogin_Exit"/>
+						</Scripts>
+					</Button>
+					<Button parentKey="CreditsButton" parentArray="NormalLoginRegions" inherits="GlueButtonSmallTemplate" text="CREDITS">
+						<Anchors>
+							<Anchor point="BOTTOM" relativeKey="$parent.ExitButton" relativePoint="TOP" x="0" y="80"/>
+						</Anchors>
+						<Scripts>
+							<OnClick function="GlueParent_ShowCreditsScreen"/>
+						</Scripts>
+					</Button>
+					<Button parentKey="CinematicsButton" parentArray="NormalLoginRegions" inherits="GlueButtonSmallTemplate" text="CINEMATICS">
+						<Anchors>
+							<Anchor point="BOTTOM" relativeKey="$parent.CreditsButton" relativePoint="TOP" x="0" y="-2"/>
+						</Anchors>
+						<Scripts>
+							<OnClick function="GlueParent_ShowCinematicsScreen"/>
+						</Scripts>
+					</Button>
+					<Button parentKey="OptionsButton" parentArray="NormalLoginRegions" inherits="GlueButtonSmallTemplate" text="SYSTEMOPTIONS_MENU">
+						<Anchors>
+							<Anchor point="BOTTOM" relativeKey="$parent.CinematicsButton" relativePoint="TOP" x="0" y="-2"/>
+						</Anchors>
+						<Scripts>
+							<OnShow>
+								--JS_TODO - Handle Kiosk Mode
+							</OnShow>
+							<OnClick function="GlueParent_ShowOptionsScreen"/>
+						</Scripts>
+					</Button>
+					<Button parentKey="CommunityButton" parentArray="NormalLoginRegions" inherits="GlueButtonSmallTemplate" text="COMMUNITY_SITE">
+						<Anchors>
+							<Anchor point="BOTTOMLEFT" x="10" y="84"/>
+						</Anchors>
+						<Scripts>
+							<OnClick function="AccountLogin_LaunchCommunitySite"/>
+						</Scripts>
+					</Button>
+					<Button parentKey="ManageAccountButton" parentArray="NormalLoginRegions" inherits="GlueButtonSmallTemplate" text="MANAGE_ACCOUNT">
+						<Anchors>
+							<Anchor point="BOTTOM" relativeKey="$parent.CommunityButton" relativePoint="TOP"/>
+						</Anchors>
+						<Scripts>
+							<OnClick function="AccountLogin_ManageAccount"/>
+						</Scripts>
+					</Button>
+					<Button parentKey="CreateAccountButton" parentArray="NormalLoginRegions" inherits="GlueButtonSmallTemplate" text="CREATE_ACCOUNT">
+						<Anchors>
+							<Anchor point="BOTTOM" relativeKey="$parent.ManageAccountButton" relativePoint="TOP"/>
+						</Anchors>
+						<Scripts>
+							<OnClick function="AccountLogin_ManageAccount"/>
+						</Scripts>
+					</Button>
+					<Frame name="ServerAlertFrame" hidden="true" inherits="ServerAlertTemplate">
+						<Size>
+							<AbsDimension x="352" y="400"/>
+						</Size>
+						<Anchors>
+							<Anchor point="TOPLEFT">
+								<Offset>
+									<AbsDimension x="10" y="-130"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</Frame>
+					<Frame parentKey="WoWAccountSelectDialog" toplevel="true" setAllPoints="true" hidden="true" enableMouse="true" enableKeyboard="true" frameStrata="FULLSCREEN_DIALOG">
+						<Layers>
+							<Layer level="BACKGROUND">
+								<Texture setAllPoints="true">
+									<Color a="0.75" r="0" g="0" b="0"/>
+								</Texture>
+							</Layer>
+						</Layers>
+						<Frames>
+							<Frame parentKey="Background">
+								<Size x="275" y="265"/>
+								<Anchors>
+									<Anchor point="CENTER" x="0" y="-20"/>
+								</Anchors>
+								<Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background" edgeFile="Interface\DialogFrame\UI-DialogBox-Border" tile="true">
+									<BackgroundInsets>
+										<AbsInset left="11" right="12" top="12" bottom="11"/>
+									</BackgroundInsets>
+									<TileSize>
+										<AbsValue val="32"/>
+									</TileSize>
+									<EdgeSize>
+										<AbsValue val="32"/>
+									</EdgeSize>
+								</Backdrop>
+								<Layers>
+									<Layer level="ARTWORK">
+										<FontString parentKey="Title" inherits="GlueFontNormal" text="WOW_ACCOUNTS">
+											<Anchors>
+												<Anchor point="TOPLEFT" x="20" y="-20"/>
+											</Anchors>
+										</FontString>
+										<FontString parentKey="Text" inherits="TOSFont"  text="SELECT_ACCOUNT">
+											<Anchors>
+												<Anchor point="TOPLEFT" relativeKey="$parent.Title" relativePoint="BOTTOMLEFT" x="5" y="-4"/>
+											</Anchors>
+										</FontString>
+									</Layer>
+								</Layers>
+								<Frames>
+									<Frame parentKey="Container">
+										<Anchors>
+											<Anchor point="TOPLEFT" x="12" y="-52"/>
+											<Anchor point="BOTTOMRIGHT" x="-16" y="36"/>
+										</Anchors>
+										<Backdrop edgeFile="Interface\Glues\Common\Glue-Tooltip-Border" tile="true">
+											<BackgroundInsets>
+												<AbsInset left="10" right="5" top="4" bottom="9"/>
+											</BackgroundInsets>
+											<TileSize>
+												<AbsValue val="16"/>
+											</TileSize>
+											<EdgeSize>
+												<AbsValue val="16"/>
+											</EdgeSize>
+										</Backdrop>
+										<Frames>
+											<Button parentKey="Button1" parentArray="Buttons" inherits="AccountNameButton">
+												<Anchors>
+													<Anchor point="TOPLEFT" x="12" y="-6"/>
+												</Anchors>
+											</Button>
+											<Button parentKey="Button2" parentArray="Buttons" inherits="AccountNameButton">
+												<Anchors>
+													<Anchor point="TOPLEFT" relativeKey="$parent.Button1" relativePoint="BOTTOMLEFT"/>
+												</Anchors>
+											</Button>
+											<Button parentKey="Button3" parentArray="Buttons" inherits="AccountNameButton">
+												<Anchors>
+													<Anchor point="TOPLEFT" relativeKey="$parent.Button2" relativePoint="BOTTOMLEFT"/>
+												</Anchors>
+											</Button>
+											<Button parentKey="Button4" parentArray="Buttons" inherits="AccountNameButton">
+												<Anchors>
+													<Anchor point="TOPLEFT" relativeKey="$parent.Button3" relativePoint="BOTTOMLEFT"/>
+												</Anchors>
+											</Button>
+											<Button parentKey="Button5" parentArray="Buttons" inherits="AccountNameButton">
+												<Anchors>
+													<Anchor point="TOPLEFT" relativeKey="$parent.Button4" relativePoint="BOTTOMLEFT"/>
+												</Anchors>
+											</Button>
+											<Button parentKey="Button6" parentArray="Buttons" inherits="AccountNameButton">
+												<Anchors>
+													<Anchor point="TOPLEFT" relativeKey="$parent.Button5" relativePoint="BOTTOMLEFT"/>
+												</Anchors>
+											</Button>
+											<Button parentKey="Button7" parentArray="Buttons" inherits="AccountNameButton">
+												<Anchors>
+													<Anchor point="TOPLEFT" relativeKey="$parent.Button6" relativePoint="BOTTOMLEFT"/>
+												</Anchors>
+											</Button>
+											<Button parentKey="Button8" parentArray="Buttons" inherits="AccountNameButton">
+												<Anchors>
+													<Anchor point="TOPLEFT" relativeKey="$parent.Button7" relativePoint="BOTTOMLEFT"/>
+												</Anchors>
+											</Button>
+											<ScrollFrame parentKey="ScrollFrame" name="WoWAccountSelectDialogScrollFrame" inherits="GlueScrollFrameTemplate">
+												<Size>
+													<AbsDimension x="219" y="162"/>
+												</Size>
+												<Anchors>
+													<Anchor point="TOPLEFT">
+														<Offset x="0" y="-6"/>
+													</Anchor>
+												</Anchors>
+												<Scripts>
+													<OnVerticalScroll function="WoWAccountSelect_OnVerticalScroll"/>
+												</Scripts>
+												<ScrollChild>
+													<Frame parentKey="ChildFrame">
+														<Size x="510" y="395"/>
+													</Frame>
+												</ScrollChild>
+											</ScrollFrame>
+										</Frames>
+									</Frame>
+									<Button parentKey="AcceptButton" inherits="GlueButtonTemplateBlue" text="ACCEPT">
+										<Size>
+											<AbsDimension x="125" y="37"/>
+										</Size>
+										<Anchors>
+											<Anchor point="BOTTOMLEFT">
+												<Offset>
+													<AbsDimension x="8" y="6"/>
+												</Offset>
+											</Anchor>
+										</Anchors>
+										<Scripts>
+											<OnClick>
+												PlaySound("gsLoginChangeRealmOK");
+												WoWAccountSelect_OnAccept();
+											</OnClick>
+										</Scripts>
+									</Button>
+									<Button parentKey="CancelButton" inherits="GlueButtonTemplateBlue" text="CANCEL">
+										<Size>
+											<AbsDimension x="125" y="37"/>
+										</Size>
+										<Anchors>
+											<Anchor point="BOTTOMRIGHT">
+												<Offset>
+													<AbsDimension x="-8" y="6"/>
+												</Offset>
+											</Anchor>
+										</Anchors>
+										<Scripts>
+											<OnClick function="WoWAccountSelect_OnCancel">
+												PlaySound("gsLoginChangeRealmCancel");
+												WoWAccountSelect_OnCancel();
+											</OnClick>
+										</Scripts>
+									</Button>
+								</Frames>
+							</Frame>
+						</Frames>
+						<Scripts>
+							<OnLoad function="WoWAccountSelect_OnLoad"/>
+							<OnEvent function="WoWAccountSelect_OnEvent"/>
+							<OnKeyDown function="WoWAccountSelect_OnKeyDown"/>
+							<OnShow function="WoWAccountSelect_OnShow"/>
+						</Scripts>
+					</Frame>
+					<Frame parentKey="CaptchaEntryDialog" toplevel="true" setAllPoints="true" hidden="true" enableMouse="true" enableKeyboard="true" frameStrata="FULLSCREEN_DIALOG">
+						<Layers>
+							<Layer level="BACKGROUND">
+								<Texture setAllPoints="true">
+									<Color a="0.75" r="0" g="0" b="0"/>
+								</Texture>
+							</Layer>
+						</Layers>
+						<Frames>
+							<Frame parentKey="Background">
+								<Size>
+									<AbsDimension x="372" y="200"/>
+								</Size>
+								<Anchors>
+									<Anchor point="CENTER" x="0" y="-20"/>
+								</Anchors>
+								<Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background" edgeFile="Interface\DialogFrame\UI-DialogBox-Border" tile="true">
+									<BackgroundInsets>
+										<AbsInset left="11" right="12" top="12" bottom="11"/>
+									</BackgroundInsets>
+									<TileSize>
+										<AbsValue val="32"/>
+									</TileSize>
+									<EdgeSize>
+										<AbsValue val="32"/>
+									</EdgeSize>
+								</Backdrop>
+								<Layers>
+									<Layer level="ARTWORK">
+										<FontString parentKey="Title" inherits="GlueFontNormal" text="ENTER_CAPTCHA_TITLE">
+											<Size x="340" y="0"/>
+											<Anchors>
+												<Anchor point="TOP" x="0" y="-26"/>
+											</Anchors>
+										</FontString>
+										<FontString parentKey="Text" inherits="TOSFont"  text="ENTER_CAPTCHA_INFO">
+											<Size x="340" y="0"/>
+											<Anchors>
+												<Anchor point="TOP" relativeKey="$parent.Title" relativePoint="BOTTOM" x="0" y="-16"/>
+											</Anchors>
+										</FontString>
+										<Texture parentKey="CaptchaImage">
+											<Size x="200" y="70"/>
+											<Anchors>
+												<Anchor point="TOP" relativeKey="$parent.Text" relativePoint="BOTTOM" x="0" y="-16"/>
+											</Anchors>
+										</Texture>
+									</Layer>
+								</Layers>
+								<Frames>
+									<EditBox parentKey="EditBox" letters="16">
+										<Size x="160" y="37"/>
+										<Anchors>
+											<Anchor point="TOP" relativeKey="$parent.CaptchaImage" relativePoint="BOTTOM" x="0" y="-16"/>
+										</Anchors>
+										<Layers>
+											<Layer level="BACKGROUND">
+												<FontString inherits="GlueFontNormal">
+													<Size x="256" y="64"/>
+													<Anchors>
+														<Anchor point="BOTTOM" relativePoint="TOP" x="0" y="-23"/>
+													</Anchors>
+												</FontString>
+											</Layer>
+										</Layers>
+										<Backdrop bgFile="Interface\Tooltips\UI-Tooltip-Background" edgeFile="Interface\Glues\Common\Glue-Tooltip-Border" tile="true">
+											<BackgroundInsets>
+												<AbsInset left="10" right="5" top="4" bottom="9"/>
+											</BackgroundInsets>
+											<TileSize>
+												<AbsValue val="16"/>
+											</TileSize>
+											<EdgeSize>
+												<AbsValue val="16"/>
+											</EdgeSize>
+										</Backdrop>
+										<Scripts>
+											<OnEscapePressed function="CaptchaEntry_Cancel"/>
+											<OnEnterPressed function="CaptchaEntry_Okay"/>
+											<OnEditFocusLost>
+												self:HighlightText(0, 0);
+											</OnEditFocusLost>
+											<OnEditFocusGained>
+												self:HighlightText();
+											</OnEditFocusGained>
+										</Scripts>
+										<FontString inherits="GlueEditBoxFont"/>
+										<TextInsets>
+											<AbsInset left="15" bottom="5"/>
+										</TextInsets>
+									</EditBox>
+									<Button parentKey="OkayButton" inherits="GlueButtonTemplateBlue" text="OKAY">
+										<Anchors>
+											<Anchor point="TOPRIGHT" relativeKey="$parent.EditBox" relativePoint="BOTTOM" x="-5" y="-5"/>
+										</Anchors>
+										<Scripts>
+											<OnClick function="CaptchaEntry_Okay"/>
+										</Scripts>
+									</Button>
+									<Button parentKey="CancelButton" inherits="GlueButtonTemplateBlue" text="CANCEL">
+										<Anchors>
+											<Anchor point="TOPLEFT" relativeKey="$parent.EditBox" relativePoint="BOTTOM" x="5" y="-5"/>
+										</Anchors>
+										<Scripts>
+											<OnClick function="CaptchaEntry_Cancel"/>
+										</Scripts>
+									</Button>
+								</Frames>
+							</Frame>
+						</Frames>
+						<Scripts>
+							<OnLoad function="CaptchaEntry_OnLoad"/>
+							<OnShow function="CaptchaEntry_OnShow"/>
+							<OnHide function="CaptchaEntry_OnHide"/>
+							<OnKeyDown function="CaptchaEntry_OnKeyDown"/>
+						</Scripts>
+					</Frame>
+					<Frame parentKey="TokenEntryDialog" toplevel="true" setAllPoints="true" hidden="true" enableMouse="true" enableKeyboard="true" frameStrata="FULLSCREEN_DIALOG">
+						<Layers>
+							<Layer level="BACKGROUND">
+								<Texture setAllPoints="true">
+									<Color a="0.75" r="0" g="0" b="0"/>
+								</Texture>
+							</Layer>
+						</Layers>
+						<Frames>
+							<Frame parentKey="Background">
+								<Size>
+									<AbsDimension x="372" y="200"/>
+								</Size>
+								<Anchors>
+									<Anchor point="CENTER" x="0" y="-20"/>
+								</Anchors>
+								<Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background" edgeFile="Interface\DialogFrame\UI-DialogBox-Border" tile="true">
+									<BackgroundInsets>
+										<AbsInset left="11" right="12" top="12" bottom="11"/>
+									</BackgroundInsets>
+									<TileSize>
+										<AbsValue val="32"/>
+									</TileSize>
+									<EdgeSize>
+										<AbsValue val="32"/>
+									</EdgeSize>
+								</Backdrop>
+								<Layers>
+									<Layer level="ARTWORK">
+										<FontString parentKey="Title" inherits="GlueFontNormal" text="ENTER_AUTHCODE_TITLE">
+											<Anchors>
+												<Anchor point="TOP" x="0" y="-26"/>
+											</Anchors>
+										</FontString>
+										<FontString parentKey="Text" inherits="TOSFont"  text="ENTER_AUTHCODE_INFO">
+											<Anchors>
+												<Anchor point="TOP" relativeKey="$parent.Title" relativePoint="BOTTOM" x="0" y="-16"/>
+											</Anchors>
+										</FontString>
+									</Layer>
+								</Layers>
+								<Frames>
+									<EditBox parentKey="EditBox" letters="16">
+										<Size x="160" y="37"/>
+										<Anchors>
+											<Anchor point="CENTER"/>
+										</Anchors>
+										<Layers>
+											<Layer level="BACKGROUND">
+												<FontString inherits="GlueFontNormal">
+													<Size x="256" y="64"/>
+													<Anchors>
+														<Anchor point="BOTTOM" relativePoint="TOP" x="0" y="-23"/>
+													</Anchors>
+												</FontString>
+											</Layer>
+										</Layers>
+										<Backdrop bgFile="Interface\Tooltips\UI-Tooltip-Background" edgeFile="Interface\Glues\Common\Glue-Tooltip-Border" tile="true">
+											<BackgroundInsets>
+												<AbsInset left="10" right="5" top="4" bottom="9"/>
+											</BackgroundInsets>
+											<TileSize>
+												<AbsValue val="16"/>
+											</TileSize>
+											<EdgeSize>
+												<AbsValue val="16"/>
+											</EdgeSize>
+										</Backdrop>
+										<Scripts>
+											<OnEscapePressed function="TokenEntry_Cancel"/>
+											<OnEnterPressed function="TokenEntry_Okay"/>
+											<OnEditFocusLost>
+												self:HighlightText(0, 0);
+											</OnEditFocusLost>
+											<OnEditFocusGained>
+												self:HighlightText();
+											</OnEditFocusGained>
+										</Scripts>
+										<FontString inherits="GlueEditBoxFont"/>
+										<TextInsets>
+											<AbsInset left="15" bottom="5"/>
+										</TextInsets>
+									</EditBox>
+									<Button parentKey="OkayButton" inherits="GlueButtonTemplateBlue" text="OKAY">
+										<Anchors>
+											<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMLEFT" x="20" y="16"/>
+										</Anchors>
+										<Scripts>
+											<OnClick function="TokenEntry_Okay"/>
+										</Scripts>
+									</Button>
+									<Button parentKey="CancelButton" inherits="GlueButtonTemplateBlue" text="CANCEL">
+										<Anchors>
+											<Anchor point="LEFT" relativeKey="$parent.OkayButton" relativePoint="RIGHT"/>
+										</Anchors>
+										<Scripts>
+											<OnClick function="TokenEntry_Cancel"/>
+										</Scripts>
+									</Button>
+								</Frames>
+							</Frame>
+						</Frames>
+						<Scripts>
+							<OnLoad function="TokenEntry_OnLoad"/>
+							<OnShow function="TokenEntry_OnShow"/>
+							<OnHide function="TokenEntry_OnHide"/>
+							<OnKeyDown function="TokenEntry_OnKeyDown"/>
+						</Scripts>
+					</Frame>
+					<Frame parentKey="AccountsDropDown" name="AccountLoginDropDown" inherits="GlueDropDownMenuTemplate">
+						<Anchors>
+							<Anchor point="TOP" relativeKey="$parent.AccountEditBox" relativePoint="BOTTOM" x="2" y="5"/>
+						</Anchors>
+						<Scripts>
+							<OnLoad function="AccountLoginDropDown_OnLoad"/>
+						</Scripts>
+					</Frame>
+				</Frames>
+				<Scripts>
+					<OnShow>
+						GlueFrameFadeIn(self, 0.75);
+					</OnShow>
+				</Scripts>
+			</Frame>
+		</Frames>
+		<FogColor r="0.25" g="0.06" b="0.015"/>
+		<Scripts>
+			<OnLoad function="AccountLogin_OnLoad"/>
+			<OnEvent function="AccountLogin_OnEvent"/>
+			<OnShow function="AccountLogin_OnShow"/>
+		</Scripts>
+	</ModelFFX>
 </Ui>

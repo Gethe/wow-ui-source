@@ -1,0 +1,412 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\FrameXML\UI.xsd">
+	<Script file="Blizzard_TradeSkillDetails.lua"/>
+
+	<Button name="TradeSkillReagentTemplate" parentArray="Reagents" inherits="LargeItemButtonTemplate" hidden="true" virtual="true">
+		<Scripts>
+			<OnEnter>
+				self:GetParent():GetParent():OnReagentMouseEnter(self);
+			</OnEnter>
+			<OnLeave function="GameTooltip_HideResetCursor" />
+			<OnUpdate function="CursorOnUpdate" />
+			<OnClick>
+				self:GetParent():GetParent():OnReagentClicked(self);
+			</OnClick>
+			<OnLoad>
+				-- Uses in Korean to fix Bug ID: 244689
+				if TRADESKILL_REAGENT_FONT then
+					self.Count:SetFontObject(TRADESKILL_REAGENT_FONT);
+				end
+			</OnLoad>
+		</Scripts>
+	</Button>
+
+	<Frame name="TradeSkillDetailsStarTemplate" parentArray="Stars" virtual="true">
+		<Size x="16" y="15"/>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="UnearnedStar" atlas="tradeskills-star-off" alpha=".28" />
+			</Layer>
+			<Layer level="OVERLAY">
+				<Texture parentKey="EarnedStar" atlas="tradeskills-star" alpha=".65" />
+			</Layer>
+		</Layers>
+	</Frame>
+	
+	<Button name="TradeSkillGuildCrafterButtonTemplate" virtual="true">
+		<Size x="136" y="16"/>
+		<ButtonText parentKey="Text">
+			<Size x="0" y="16"/>
+			<Anchors>
+				<Anchor point="LEFT" x="4" y="0"/>
+			</Anchors>
+		</ButtonText>
+		<NormalFont style="GameFontHighlightLeft"/>
+		<HighlightFont style="GameFontHighlightLeft"/>
+		<DisabledFont style="GameFontDisableLeft"/>
+		<HighlightTexture file="Interface\FriendsFrame\UI-FriendsFrame-HighlightBar-Blue" setAllPoints="true" alphaMode="ADD"/>
+		<Scripts>
+			<OnClick>
+				ChatFrame_SendTell(self.fullName);
+			</OnClick>
+		</Scripts>
+	</Button>	
+
+	<ScrollFrame name="TradeSkillDetailsFrameTemplate" inherits="UIPanelScrollFrameCodeTemplate" mixin="TradeSkillDetailsMixin" virtual="true">
+		<Size x="300" y="385"/>
+		<Anchors>
+			<Anchor point="TOPRIGHT" x="-32" y="-83"/>
+		</Anchors>
+		<Layers>
+			<Layer level="BACKGROUND" textureSubLevel="-1">
+				<Texture parentKey="Background" atlas="tradeskill-background-recipe">
+					<Size x="310" y="383" />
+					<Anchors>
+						<Anchor point="TOPLEFT" x="-5" />
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Slider parentKey="ScrollBar" inherits="UIPanelStretchableArtScrollBarTemplate" />
+
+			<Button parentKey="CreateAllButton" inherits="MagicButtonTemplate" text="CREATE_ALL" motionScriptsWhileDisabled="true">
+				<Size x="80" y="22"/>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" x="-5" y="-3" />
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						self:GetParent():CreateAll();
+					</OnClick>
+					<OnEnter>
+						if self.tooltip then
+							GameTooltip:SetOwner(self, "ANCHOR_LEFT");
+							GameTooltip:SetText(self.tooltip, nil, nil, nil, nil, true);
+						end
+					</OnEnter>
+					<OnLeave function="GameTooltip_Hide"/>
+				</Scripts>
+			</Button>
+			
+			<Button parentKey="ViewGuildCraftersButton" inherits="MagicButtonTemplate" text="GUILD_TRADE_SKILL_VIEW_CRAFTERS" hidden="true">
+				<Size x="140" y="22"/>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" x="-5" y="-3" />
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						self:GetParent():ViewGuildCrafters();
+					</OnClick>
+					<OnEnter>
+						GameTooltip_AddNewbieTip(self, GUILD_TRADE_SKILL_VIEW_CRAFTERS, 1.0, 1.0, 1.0, NEWBIE_TOOLTIP_VIEWGUILD, 1);
+					</OnEnter>
+					<OnLeave function="GameTooltip_Hide"/>
+				</Scripts>
+			</Button>
+
+			<Button parentKey="ExitButton" inherits="MagicButtonTemplate" text="EXIT">
+				<Size x="80" y="22"/>
+				<Anchors>
+					<Anchor point="TOPRIGHT" relativePoint="BOTTOMRIGHT" x="22" y="-3" />
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						HideUIPanel(self:GetParent():GetParent());
+					</OnClick>
+				</Scripts>
+			</Button>
+
+			<Button parentKey="CreateButton" inherits="MagicButtonTemplate" motionScriptsWhileDisabled="true">
+				<Size x="80" y="22"/>
+				<Anchors>
+					<Anchor point="TOPRIGHT" relativeKey="$parent.ExitButton" relativePoint="TOPLEFT" />
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						self:GetParent():Create();
+					</OnClick>
+					<OnEnter>
+						if self.tooltip then
+							GameTooltip:SetOwner(self, "ANCHOR_LEFT");
+							GameTooltip:SetText(self.tooltip, nil, nil, nil, nil, true);
+						end
+					</OnEnter>
+					<OnLeave function="GameTooltip_Hide"/>
+				</Scripts>
+			</Button>
+
+			<EditBox parentKey="CreateMultipleInputBox" inherits="NumericInputSpinnerTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativeKey="$parent.CreateAllButton" relativePoint="RIGHT" x="31" y="0"/>
+				</Anchors>
+			</EditBox>
+			<Frame parentKey="GuildFrame" hidden="true" inherits="TranslucentFrameTemplate" mixin="TradeSkillGuildListingMixin">
+				<Size x="190" y="218"/>
+				<Anchors>
+					<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMRIGHT" x="25" y="19"/>
+				</Anchors>
+				<Layers>
+					<Layer level="ARTWORK">
+						<FontString parentKey="Title" inherits="GameFontNormal" text="GUILD_CRAFTERS">
+							<Anchors>
+								<Anchor point="TOPLEFT" x="18" y="-18"/>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+				<Frames>
+					<Button parentKey="CloseButton" inherits="UIPanelCloseButton">
+						<Anchors>
+							<Anchor point="TOPRIGHT" x="-4" y="-4"/>
+						</Anchors>
+					</Button>
+					<Frame parentKey="Container">
+						<Anchors>
+							<Anchor point="TOPLEFT" x="14" y="-36"/>
+							<Anchor point="TOPRIGHT" x="-14" y="-36"/>
+							<Anchor point="BOTTOM" x="0" y="14"/>
+						</Anchors>
+						<Backdrop bgFile="Interface\Tooltips\UI-Tooltip-Background" edgeFile="Interface\Tooltips\UI-Tooltip-Border" tile="true">
+							<EdgeSize val="12" />
+							<TileSize val="8" />
+							<BackgroundInsets left="1" right="1" top="1" bottom="1" />
+						</Backdrop>
+						<Frames>
+							<ScrollFrame parentKey="ScrollFrame" inherits="HybridScrollFrameTemplate">
+								<Size x="136" y="160" />
+								<Anchors>
+									<Anchor point="TOPLEFT" x="0" y="-4" />
+								</Anchors>
+								<Frames>
+									<Slider inherits="HybridScrollBarTemplate">
+										<KeyValues>
+											<KeyValue key="doNotHide" value="true" type="boolean" />
+										</KeyValues>
+										<Anchors>
+											<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" x="1" y="-14"/>
+											<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMRIGHT" x="1" y="12"/>
+										</Anchors>
+									</Slider>
+								</Frames>
+							</ScrollFrame>
+							<Frame parentKey="Spinner" inherits="LoadingSpinnerTemplate">
+								<Anchors>
+									<Anchor point="CENTER" x="-5" />
+								</Anchors>
+								<Scripts>
+									<OnShow>
+										self.Anim:Play();
+									</OnShow>
+									<OnHide>
+										self.Anim:Stop();
+									</OnHide>
+								</Scripts>
+							</Frame>
+						</Frames>
+						<Scripts>
+							<OnLoad>
+								self:SetBackdropBorderColor(TOOLTIP_DEFAULT_COLOR.r, TOOLTIP_DEFAULT_COLOR.g, TOOLTIP_DEFAULT_COLOR.b);
+								self:SetBackdropColor(0.0, 0.0, 0.0, 0.9);
+							</OnLoad>
+						</Scripts>
+					</Frame>
+				</Frames>
+				<Scripts>
+					<OnLoad method="OnLoad"/>
+					<OnEvent method="OnEvent" />
+				</Scripts>
+			</Frame>
+		</Frames>
+		<ScrollChild>
+			<Frame parentKey="Contents" hidden="true">
+				<Size x="300" y="150"/>
+				<Anchors>
+					<Anchor point="TOPLEFT"/>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<FontString parentKey="RecipeName" inherits="GameFontNormalMed2" justifyH="LEFT">
+							<Size x="230" y="0"/>
+							<Anchors>
+								<Anchor point="TOPLEFT" x="65" y="-20"/>
+							</Anchors>
+						</FontString>
+
+						<FontString parentKey="Description" inherits="GameFontHighlight" justifyH="LEFT">
+							<Size x="290" y="0"/>
+							<Anchors>
+								<Anchor point="TOPLEFT" x="8" y="-85"/>
+							</Anchors>
+						</FontString>
+						
+						<FontString parentKey="RequirementLabel" inherits="GameFontNormalSmall" text="REQUIRES_LABEL">
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeKey="$parent.Description" relativePoint="BOTTOMLEFT"/>
+							</Anchors>
+						</FontString>
+						<FontString parentKey="RequirementText" inherits="GameFontHighlightSmall" justifyV="TOP" justifyH="LEFT">
+							<!-- width set in OnLoad -->
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeKey="$parent.RequirementLabel" relativePoint="TOPRIGHT" x="4" y="0"/>
+							</Anchors>
+						</FontString>
+
+						<FontString parentKey="RecipeCooldown" inherits="GameFontRedSmall" justifyH="LEFT">
+							<Size x="240" y="0"/>
+							<Anchors>
+								<Anchor point="LEFT" relativeKey="$parent.RequirementLabel"/>
+								<Anchor point="TOP" relativeKey="$parent.RequirementText" relativePoint="BOTTOM"/>
+							</Anchors>
+						</FontString>
+
+						<FontString parentKey="ReagentLabel" inherits="GameFontNormalSmall" text="SPELL_REAGENTS">
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeKey="$parent.RecipeCooldown" relativePoint="BOTTOMLEFT"/>
+							</Anchors>
+						</FontString>
+
+						<FontString parentKey="SourceText" inherits="GameFontNormal">
+							<Anchors>
+								<Anchor point="LEFT" relativeKey="$parent.ReagentLabel"/>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+				<Frames>
+					<Button parentKey="ResultIcon">
+						<KeyValues>
+							<KeyValue key="hasItem" value="true" type="boolean"/>
+						</KeyValues>
+						<Size x="47" y="47"/>
+						<Anchors>
+							<Anchor point="TOPLEFT" x="10" y="-20"/>
+						</Anchors>
+						<Layers>
+							<Layer level="ARTWORK">
+								<FontString parentKey="Count" inherits="NumberFontNormal" justifyH="RIGHT" hidden="false">
+									<Anchors>
+										<Anchor point="BOTTOMRIGHT" x="-2" y="3"/>
+									</Anchors>
+								</FontString>
+							</Layer>
+						</Layers>
+						<Scripts>
+							<OnClick>
+								self:GetParent():GetParent():OnResultClicked(self);
+							</OnClick>
+							<OnEnter>
+								self:GetParent():GetParent():OnResultMouseEnter(self);
+							</OnEnter>
+							<OnLeave function="GameTooltip_HideResetCursor"/>
+							<OnUpdate>
+								if GameTooltip:IsOwned(self) then
+									self:GetParent():GetParent():OnResultMouseEnter(self);
+								end
+								CursorOnUpdate(self);
+							</OnUpdate>
+						</Scripts>
+					</Button>
+					<Frame parentKey="StarsFrame" enableMouse="true">
+						<Size x="45" y="16"/>
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeKey="$parent.RecipeName" relativePoint="BOTTOMLEFT" x="0" y="-3"/>
+						</Anchors>
+						<Frames>
+							<Frame parentKey="Star1" inherits="TradeSkillDetailsStarTemplate">
+								<Anchors>
+									<Anchor point="LEFT" />
+								</Anchors>
+							</Frame>
+							<Frame parentKey="Star2" inherits="TradeSkillDetailsStarTemplate">
+								<Anchors>
+									<Anchor point="LEFT" relativeKey="$parent.Star1" relativePoint="RIGHT" />
+								</Anchors>
+							</Frame>
+							<Frame parentKey="Star3" inherits="TradeSkillDetailsStarTemplate">
+								<Anchors>
+									<Anchor point="LEFT" relativeKey="$parent.Star2" relativePoint="RIGHT" />
+								</Anchors>
+							</Frame>
+						</Frames>
+						<Scripts>
+							<OnEnter>
+								self:GetParent():GetParent():OnStarsMouseEnter(self);
+							</OnEnter>
+							<OnLeave function="GameTooltip_Hide" />
+						</Scripts>
+					</Frame>
+					<Button parentKey="Reagent1" inherits="TradeSkillReagentTemplate">
+						<KeyValues>
+							<KeyValue key="reagentIndex" type="number" value="1"/>
+						</KeyValues>
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeKey="$parent.ReagentLabel" relativePoint="BOTTOMLEFT" x="-2" y="-3"/>
+						</Anchors>
+					</Button>
+					<Button parentKey="Reagent2" inherits="TradeSkillReagentTemplate">
+						<KeyValues>
+							<KeyValue key="reagentIndex" type="number" value="2"/>
+						</KeyValues>
+						<Anchors>
+							<Anchor point="LEFT" relativeKey="$parent.Reagent1" relativePoint="RIGHT" x="0" y="0"/>
+						</Anchors>
+					</Button>
+					<Button parentKey="Reagent3" inherits="TradeSkillReagentTemplate">
+						<KeyValues>
+							<KeyValue key="reagentIndex" type="number" value="3"/>
+						</KeyValues>
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeKey="$parent.Reagent1" relativePoint="BOTTOMLEFT" x="0" y="-2"/>
+						</Anchors>
+					</Button>
+					<Button parentKey="Reagent4" inherits="TradeSkillReagentTemplate">
+						<KeyValues>
+							<KeyValue key="reagentIndex" type="number" value="4"/>
+						</KeyValues>
+						<Anchors>
+							<Anchor point="LEFT" relativeKey="$parent.Reagent3" relativePoint="RIGHT" x="0" y="0"/>
+						</Anchors>
+					</Button>
+					<Button parentKey="Reagent5" inherits="TradeSkillReagentTemplate">
+						<KeyValues>
+							<KeyValue key="reagentIndex" type="number" value="5"/>
+						</KeyValues>
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeKey="$parent.Reagent3" relativePoint="BOTTOMLEFT" x="0" y="-2"/>
+						</Anchors>
+					</Button>
+					<Button parentKey="Reagent6" inherits="TradeSkillReagentTemplate">
+						<KeyValues>
+							<KeyValue key="reagentIndex" type="number" value="6"/>
+						</KeyValues>
+						<Anchors>
+							<Anchor point="LEFT" relativeKey="$parent.Reagent5" relativePoint="RIGHT" x="0" y="0"/>
+						</Anchors>
+					</Button>
+					<Button parentKey="Reagent7" inherits="TradeSkillReagentTemplate">
+						<KeyValues>
+							<KeyValue key="reagentIndex" type="number" value="7"/>
+						</KeyValues>
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeKey="$parent.Reagent6" relativePoint="BOTTOMLEFT" x="0" y="-2"/>
+						</Anchors>
+					</Button>
+					<Button parentKey="Reagent8" inherits="TradeSkillReagentTemplate">
+						<KeyValues>
+							<KeyValue key="reagentIndex" type="number" value="8"/>
+						</KeyValues>
+						<Anchors>
+							<Anchor point="LEFT" relativeKey="$parent.Reagent7" relativePoint="RIGHT" x="0" y="0"/>
+						</Anchors>
+					</Button>
+				</Frames>
+			</Frame>
+		</ScrollChild>
+		<Scripts>
+			<OnLoad method="OnLoad" />
+			<OnUpdate method="OnUpdate" />
+			<OnEvent method="OnEvent" />
+		</Scripts>
+	</ScrollFrame>
+</Ui>

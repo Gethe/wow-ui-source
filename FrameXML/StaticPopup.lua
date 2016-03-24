@@ -2128,7 +2128,7 @@ StaticPopupDialogs["SET_BNFRIENDNOTE"] = {
 		BNSetFriendNote(FriendsFrame.NotesID, self.editBox:GetText());
 	end,
 	OnShow = function(self)
-		local presenceID, presenceName, battleTag, isBattleTagPresence, toonName, toonID, client, isOnline, lastOnline, isAFK, isDND, messageText, noteText = BNGetFriendInfoByID(FriendsFrame.NotesID);
+		local bnetIDAccount, accountName, battleTag, isBattleTag, characterName, bnetIDGameAccount, client, isOnline, lastOnline, isAFK, isDND, messageText, noteText = BNGetFriendInfoByID(FriendsFrame.NotesID);
 		if ( noteText ) then
 			self.editBox:SetText(noteText);
 		end
@@ -3224,8 +3224,8 @@ StaticPopupDialogs["CONFIRM_REMOVE_FRIEND"] = {
 	text = "%s",
 	button1 = ACCEPT,
 	button2 = CANCEL,
-	OnAccept = function(self, presenceID)
-		BNRemoveFriend(presenceID);
+	OnAccept = function(self, bnetIDAccount)
+		BNRemoveFriend(bnetIDAccount);
 	end,
 	timeout = 0,
 	whileDead = 1,

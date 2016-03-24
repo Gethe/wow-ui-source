@@ -28,7 +28,6 @@ FRIENDS_WOW_NAME_COLOR = {r=0.996, g=0.882, b=0.361};
 FRIENDS_WOW_BACKGROUND_COLOR = {r=1.0, g=0.824, b=0.0, a=0.05};
 FRIENDS_GRAY_COLOR = {r=0.486, g=0.518, b=0.541};
 FRIENDS_OFFLINE_BACKGROUND_COLOR = {r=0.588, g=0.588, b=0.588, a=0.05};
-FRIENDS_PRESENCE_COLOR_CODE = "|cff7c848a";
 FRIENDS_BNET_NAME_COLOR_CODE = "|cff82c5ff";
 FRIENDS_BROADCAST_TIME_COLOR_CODE = "|cff4381a8"
 FRIENDS_WOW_NAME_COLOR_CODE = "|cfffde05c";
@@ -36,11 +35,10 @@ FRIENDS_OTHER_NAME_COLOR_CODE = "|cff7b8489";
 SQUELCH_TYPE_IGNORE = 1;
 SQUELCH_TYPE_BLOCK_INVITE = 2;
 SQUELCH_TYPE_MUTE = 3;
-SQUELCH_TYPE_BLOCK_TOON = 4;
 FRIENDS_FRIENDS_POTENTIAL = 1;
 FRIENDS_FRIENDS_MUTUAL = 2;
 FRIENDS_FRIENDS_ALL = 3;
-FRIENDS_TOOLTIP_MAX_TOONS = 5;
+FRIENDS_TOOLTIP_MAX_GAME_ACCOUNTS = 5;
 FRIENDS_TOOLTIP_MAX_WIDTH = 200;
 FRIENDS_TOOLTIP_MARGIN_WIDTH = 12;
 
@@ -49,7 +47,7 @@ ADDFRIENDFRAME_BNETHEIGHT = 296;
 
 FRIEND_TABS_MAX_WIDTH = 0;		-- some locales may need to abbreviate tab headers to fit
 
-local INVITE_RESTRICTION_NO_TOONS = 0;
+local INVITE_RESTRICTION_NO_GAME_ACCOUNTS = 0;
 local INVITE_RESTRICTION_CLIENT = 1;
 local INVITE_RESTRICTION_LEADER = 2;
 local INVITE_RESTRICTION_FACTION = 3;
@@ -116,7 +114,7 @@ function FriendsFrame_SummonButton_Update (self)
 		self:Show();
 	elseif ( self:GetParent().buttonType == FRIENDS_BUTTON_TYPE_BNET ) then
 		--Get the information by BNet friends list ID.
-		local presenceID, presenceName, battleTag, isBattleTagPresence, toonName, toonID, client, isOnline, lastOnline, isAFK, isDND, messageText, noteText, isRIDFriend, messageTime, canSoR, isReferAFriend, canSummonFriend = BNGetFriendInfo(id);
+		local bnetIDAccount, accountName, battleTag, isBattleTag, characterName, bnetIDGameAccount, client, isOnline, lastOnline, isAFK, isDND, messageText, noteText, isRIDFriend, messageTime, canSoR, isReferAFriend, canSummonFriend = BNGetFriendInfo(id);
 		
 		if ( not isReferAFriend ) then
 			self:Hide();
@@ -188,13 +186,13 @@ function FriendsFrame_ShowDropdown(name, connected, lineID, chatType, chatFrame,
 		FriendsDropDown.chatType = chatType;
 		FriendsDropDown.chatTarget = name;
 		FriendsDropDown.chatFrame = chatFrame;
-		FriendsDropDown.presenceID = nil;
+		FriendsDropDown.bnetIDAccount = nil;
 		FriendsDropDown.isMobile = isMobile;
 		ToggleDropDownMenu(1, nil, FriendsDropDown, "cursor");
 	end
 end
 
-function FriendsFrame_ShowBNDropdown(name, connected, lineID, chatType, chatFrame, friendsList, presenceID)
+function FriendsFrame_ShowBNDropdown(name, connected, lineID, chatType, chatFrame, friendsList, bnetIDAccount)
 	if ( connected or friendsList ) then
 		if ( connected ) then
 			FriendsDropDown.initialize = FriendsFrameBNDropDown_Initialize;
@@ -208,7 +206,7 @@ function FriendsFrame_ShowBNDropdown(name, connected, lineID, chatType, chatFram
 		FriendsDropDown.chatType = chatType;
 		FriendsDropDown.chatTarget = name;
 		FriendsDropDown.chatFrame = chatFrame;
-		FriendsDropDown.presenceID = presenceID;
+		FriendsDropDown.bnetIDAccount = bnetIDAccount;
 		FriendsDropDown.isMobile = nil;
 		ToggleDropDownMenu(1, nil, FriendsDropDown, "cursor");
 	end
@@ -293,7 +291,7 @@ end
 
 function FriendsFrame_OnShow()
 	VoiceChat_Toggle();
-	FriendsList_Update();
+	FriendsList_Update(true);
 	FriendsFrame_Update();
 	UpdateMicroButtons();
 	PlaySound("igCharacterInfoTab");
@@ -402,14 +400,14 @@ function FriendsListFrame_OnShow(self)
 	ProductChoiceFrame_OnFriendsListShown();
 end
 
-function FriendsList_Update()
+function FriendsList_Update(forceUpdate)
 	local numBNetTotal, numBNetOnline = BNGetNumFriends();
 	local numBNetOffline = numBNetTotal - numBNetOnline;
 	local numWoWTotal, numWoWOnline = GetNumFriends();
 	local numWoWOffline = numWoWTotal - numWoWOnline;
 	
 	FriendsMicroButtonCount:SetText(numBNetOnline + numWoWOnline);
-	if ( not FriendsListFrame:IsShown() ) then
+	if ( not FriendsListFrame:IsShown() and not forceUpdate) then
 		return;
 	end
 
@@ -473,7 +471,7 @@ function FriendsList_Update()
 			selectedFriend = BNGetSelectedFriend();
 		end
 		-- set to first in list if no friend
-		if ( selectedFriend == 0 ) then
+		if ( not selectedFriend or selectedFriend == 0 ) then
 			FriendsFrame_SelectFriend(FriendButtons[1].buttonType, 1);
 			selectedFriend = 1;
 		end
@@ -483,9 +481,9 @@ function FriendsList_Update()
 			local name, level, class, area;
 			name, level, class, area, isOnline = GetFriendInfo(selectedFriend);
 		elseif ( FriendsFrame.selectedFriendType == FRIENDS_BUTTON_TYPE_BNET ) then
-			local presenceID, presenceName, battleTag, isBattleTagPresence, toonName, toonID, client;
-			presenceID, presenceName, battleTag, isBattleTagPresence, toonName, toonID, client, isOnline = BNGetFriendInfo(selectedFriend);
-			if ( not presenceName ) then
+			local bnetIDAccount, accountName, battleTag, isBattleTag, characterName, bnetIDGameAccount, client;
+			bnetIDAccount, accountName, battleTag, isBattleTag, characterName, bnetIDGameAccount, client, isOnline = BNGetFriendInfo(selectedFriend);
+			if ( not accountName ) then
 				isOnline = false;
 			end
 		end
@@ -505,13 +503,12 @@ function IgnoreList_Update()
 	local button;
 	local numIgnores = GetNumIgnores();
 	local numBlocks = BNGetNumBlocked();
-	local numToonBlocks = BNGetNumBlockedToons();
 	local numMutes = 0;
 	if ( IsVoiceChatEnabled() ) then
 		numMutes = GetNumMutes();
 	end
 	-- Headers stuff
-	local ignoredHeader, blockedHeader, mutedHeader, blockedToonHeader;
+	local ignoredHeader, blockedHeader, mutedHeader;
 	if ( numIgnores > 0 ) then
 		ignoredHeader = 1;
 	else
@@ -522,11 +519,6 @@ function IgnoreList_Update()
 	else
 		blockedHeader = 0;
 	end
-	if ( numToonBlocks > 0 ) then
-		blockedToonHeader = 1;
-	else
-		blockedToonHeader = 0;
-	end	
 	if ( numMutes > 0 ) then
 		mutedHeader = 1;
 	else
@@ -535,13 +527,11 @@ function IgnoreList_Update()
 	
 	local lastIgnoredIndex = numIgnores + ignoredHeader;
 	local lastBlockedIndex = lastIgnoredIndex + numBlocks + blockedHeader;
-	local lastBlockedToonIndex = lastBlockedIndex + numToonBlocks + blockedToonHeader;
-	local lastMutedIndex = lastBlockedToonIndex + numMutes + mutedHeader;
+	local lastMutedIndex = lastBlockedIndex + numMutes + mutedHeader;
 	local numEntries = lastMutedIndex;
 
 	FriendsFrameIgnoredHeader:Hide();
 	FriendsFrameBlockedInviteHeader:Hide();
-	FriendsFrameBlockedToonHeader:Hide();
 	FriendsFrameMutedHeader:Hide();
 	local numOnline = 0;
 	
@@ -552,8 +542,6 @@ function IgnoreList_Update()
 		selectedSquelchIndex = GetSelectedIgnore();
 	elseif ( selectedSquelchType == SQUELCH_TYPE_BLOCK_INVITE ) then
 		selectedSquelchIndex = BNGetSelectedBlock();
-	elseif ( selectedSquelchType == SQUELCH_TYPE_BLOCK_TOON ) then
-		selectedSquelchIndex = BNGetSelectedToonBlock();
 	elseif ( selectedSquelchType == SQUELCH_TYPE_MUTE ) then
 		selectedSquelchIndex = GetSelectedMute();
 	end
@@ -565,10 +553,6 @@ function IgnoreList_Update()
 		elseif ( numBlocks > 0 ) then
 			FriendsFrame_SelectSquelched(SQUELCH_TYPE_BLOCK_INVITE, 1);
 			selectedSquelchType = SQUELCH_TYPE_BLOCK_INVITE;
-			selectedSquelchIndex = 1;
-		elseif ( numToonBlocks > 0 ) then
-			FriendsFrame_SelectSquelched(SQUELCH_TYPE_BLOCK_TOON, 1);
-			selectedSquelchType = SQUELCH_TYPE_BLOCK_TOON;
 			selectedSquelchIndex = 1;
 		elseif ( numMutes > 0 ) then
 			FriendsFrame_SelectSquelched(SQUELCH_TYPE_MUTE, 1);
@@ -605,21 +589,12 @@ function IgnoreList_Update()
 			local blockID, blockName = BNGetBlockedInfo(button.index);
 			button.name:SetText(blockName);
 			button.type = SQUELCH_TYPE_BLOCK_INVITE;
-		elseif ( blockedToonHeader == 1 and squelchedIndex == lastBlockedIndex + 1 ) then
-			-- blocked TOON header
-			IgnoreList_SetHeader(FriendsFrameBlockedToonHeader, button);
-		elseif ( squelchedIndex <= lastBlockedToonIndex ) then
-			-- blocked TOON
-			button.index = squelchedIndex - lastBlockedIndex - blockedToonHeader;
-			local blockID, blockName = BNGetBlockedToonInfo(button.index);
-			button.name:SetText(blockName);
-			button.type = SQUELCH_TYPE_BLOCK_TOON;
-		elseif ( mutedHeader == 1 and squelchedIndex == lastBlockedToonIndex + 1 ) then
+		elseif ( mutedHeader == 1 and squelchedIndex == lastBlockedIndex + 1 ) then
 			-- muted header
 			IgnoreList_SetHeader(FriendsFrameMutedHeader, button);
 		elseif ( squelchedIndex <= lastMutedIndex ) then
 			-- muted
-			button.index = squelchedIndex - lastBlockedToonIndex - mutedHeader;
+			button.index = squelchedIndex - lastBlockedIndex - mutedHeader;
 			button.name:SetText(GetMuteName(button.index));
 			button.type = SQUELCH_TYPE_MUTE;
 		end
@@ -660,7 +635,7 @@ function PendingList_Update(newInvite)
 			local _, battleTag, _, _, _, _, isRIDEnabled = BNGetInfo();
 			if ( isRIDEnabled ) then
 				for i = 1, numPending do
-					local inviteID, presenceName, isBattleTag = BNGetFriendInviteInfo(i);
+					local inviteID, accountName, isBattleTag = BNGetFriendInviteInfo(i);
 					if ( not isBattleTag ) then
 						-- found one
 						PendingListInfoFrame:SetFrameLevel(FriendsFramePendingButton1:GetFrameLevel() + 1);
@@ -742,12 +717,12 @@ function PendingList_Scroll(offset)
 		if ( offset > numPending or heightUsed > scrollHeight ) then
 			button:Hide();
 		else
-			local inviteID, presenceName, isBattleTag, message, timeSent = BNGetFriendInviteInfo(offset);
+			local inviteID, accountName, isBattleTag, message, timeSent = BNGetFriendInviteInfo(offset);
 			button.index = offset;
 			button.inviteID = inviteID;
 			buttonHeight = PENDING_BUTTON_MIN_HEIGHT;
-			if ( presenceName ) then
-				button.name:SetText(presenceName);
+			if ( accountName ) then
+				button.name:SetText(accountName);
 			else
 				button.name:SetText(UNKNOWN);
 			end
@@ -799,16 +774,16 @@ function PendingListFrame_OnHide()
 end
 	
 function PendingListFrame_BlockCommunication(self)
-	local inviteID, presenceName = BNGetFriendInviteInfo(self:GetParent().index);
-	local dialog = StaticPopup_Show("CONFIRM_BLOCK_INVITES", presenceName);
+	local inviteID, accountName = BNGetFriendInviteInfo(self:GetParent().index);
+	local dialog = StaticPopup_Show("CONFIRM_BLOCK_INVITES", accountName);
 	if ( dialog ) then
 		dialog.data = inviteID;
 	end
 end
 
 function PendingListFrame_ReportSpam(self)
-	local inviteID, presenceName = BNGetFriendInviteInfo(self:GetParent().index);
-	local dialog = StaticPopup_Show("CONFIRM_REPORT_SPAM_INVITE", presenceName);
+	local inviteID, accountName = BNGetFriendInviteInfo(self:GetParent().index);
+	local dialog = StaticPopup_Show("CONFIRM_REPORT_SPAM_INVITE", accountName);
 	if ( dialog ) then
 		dialog.data = inviteID;
 	end
@@ -998,16 +973,16 @@ function FriendsFrame_OnEvent(self, event, ...)
 	elseif ( event == "BN_FRIEND_LIST_SIZE_CHANGED" or event == "BN_FRIEND_INFO_CHANGED" ) then
 		FriendsList_Update();
 		-- update Friends of Friends
-		local presenceID = ...;
-		if ( event == "BN_FRIEND_LIST_SIZE_CHANGED" and presenceID ) then
-			FriendsFriendsFrame.requested[presenceID] = nil;
+		local bnetIDAccount = ...;
+		if ( event == "BN_FRIEND_LIST_SIZE_CHANGED" and bnetIDAccount ) then
+			FriendsFriendsFrame.requested[bnetIDAccount] = nil;
 			if ( FriendsFriendsFrame:IsShown() ) then
 				FriendsFriendsList_Update();
 			end
 		end
 	elseif ( event == "BN_CUSTOM_MESSAGE_CHANGED" ) then
 		local arg1 = ...;
-		if ( arg1 ) then	--There is no presenceID given if this is ourself.
+		if ( arg1 ) then	--There is no bnetIDAccount given if this is ourself.
 			FriendsList_Update();
 		else
 			FriendsFrameBattlenetFrame_UpdateBroadcast();
@@ -1032,11 +1007,15 @@ function FriendsFrame_OnEvent(self, event, ...)
 		FriendsFrame_Update();
 	elseif ( event == "VOICE_CHAT_ENABLED_UPDATE" ) then
 		VoiceChat_Toggle();
-	elseif ( event == "PLAYER_FLAGS_CHANGED" ) then
-		SynchronizeBNetStatus();
+	elseif ( event == "PLAYER_FLAGS_CHANGED" or event == "BN_INFO_CHANGED") then
 		FriendsFrameStatusDropDown_Update();
-	elseif ( event == "PLAYER_ENTERING_WORLD" or event == "BN_CONNECTED" or event == "BN_DISCONNECTED" or event == "BN_SELF_ONLINE" or event == "BN_INFO_CHANGED" ) then
 		FriendsFrame_CheckBattlenetStatus();
+	elseif ( event == "PLAYER_ENTERING_WORLD" or event == "BN_CONNECTED" or event == "BN_DISCONNECTED" or event == "BN_SELF_ONLINE") then
+		FriendsFrame_CheckBattlenetStatus();
+		-- We want to remove any friends from the frame so they don't linger when it's first re-opened.
+		if (event == "BN_DISCONNECTED") then
+			FriendsList_Update(true);
+		end
 	elseif ( event == "BATTLETAG_INVITE_SHOW" ) then
 		BattleTagInviteFrame_Show(...);
 	end
@@ -1049,17 +1028,17 @@ function FriendsFrameFriendButton_OnClick(self, button)
 		FriendsList_Update();
 		-- if friends of friends frame is being shown, switch list if new selection is another battlenet friend
 		if ( FriendsFriendsFrame:IsShown() and self.buttonType == FRIENDS_BUTTON_TYPE_BNET ) then
-			local presenceID = BNGetFriendInfo(self.id);
-			if ( presenceID ~= FriendsFriendsFrame.presenceID ) then
-				FriendsFriendsFrame_Show(presenceID);
+			local bnetIDAccount = BNGetFriendInfo(self.id);
+			if ( bnetIDAccount ~= FriendsFriendsFrame.bnetIDAccount ) then
+				FriendsFriendsFrame_Show(bnetIDAccount);
 			end
 		end
 	elseif ( button == "RightButton" ) then
 		PlaySound("igMainMenuOptionCheckBoxOn");
 		if ( self.buttonType == FRIENDS_BUTTON_TYPE_BNET ) then
 			-- bnet friend
-			local presenceID, presenceName, battleTag, isBattleTagPresence, toonName, toonID, client, isOnline = BNGetFriendInfo(self.id);
-			FriendsFrame_ShowBNDropdown(presenceName, isOnline, nil, nil, nil, 1, presenceID);
+			local bnetIDAccount, accountName, battleTag, isBattleTag, characterName, bnetIDGameAccount, client, isOnline = BNGetFriendInfo(self.id);
+			FriendsFrame_ShowBNDropdown(accountName, isOnline, nil, nil, nil, 1, bnetIDAccount);
 		else
 			-- wow friend
 			local name, level, class, area, connected = GetFriendInfo(self.id);
@@ -1082,8 +1061,6 @@ function FriendsFrame_SelectSquelched(ignoreType, index)
 		SetSelectedIgnore(index);
 	elseif ( ignoreType == SQUELCH_TYPE_BLOCK_INVITE ) then
 		BNSetSelectedBlock(index);
-	elseif ( ignoreType == SQUELCH_TYPE_BLOCK_TOON ) then
-		BNSetSelectedToonBlock(index);
 	elseif ( ignoreType == SQUELCH_TYPE_MUTE ) then
 		SetSelectedMute(index);
 	end
@@ -1118,8 +1095,8 @@ function FriendsFrameSendMessageButton_OnClick(self)
 		name = GetFriendInfo(FriendsFrame.selectedFriend);
 		ChatFrame_SendTell(name);
 	elseif ( FriendsFrame.selectedFriendType == FRIENDS_BUTTON_TYPE_BNET ) then
-		local presenceID;
-		presenceID, name = BNGetFriendInfo(FriendsFrame.selectedFriend);
+		local bnetIDAccount;
+		bnetIDAccount, name = BNGetFriendInfo(FriendsFrame.selectedFriend);
 		ChatFrame_SendSmartTell(name);
 	end
 	if ( name ) then
@@ -1139,9 +1116,6 @@ function FriendsFrameUnsquelchButton_OnClick(self)
 	elseif ( selectedSquelchType == SQUELCH_TYPE_BLOCK_INVITE ) then
 		local blockID = BNGetBlockedInfo(BNGetSelectedBlock());
 		BNSetBlocked(blockID, false);
-	elseif ( selectedSquelchType == SQUELCH_TYPE_BLOCK_TOON ) then
-		local blockID = BNGetBlockedToonInfo(BNGetSelectedToonBlock());
-		BNSetToonBlocked(blockID, false);
 	elseif ( selectedSquelchType == SQUELCH_TYPE_MUTE ) then
 		local name = GetMuteName(GetSelectedMute());
 		DelMute(name);
@@ -1336,8 +1310,8 @@ function FriendsFrame_CheckBattlenetStatus()
 				FriendsFrameBroadcastInput:Hide();
 			else
 				frame:Hide();
-				FriendsFrameBroadcastInput:Show();
-				FriendsFrameBroadcastInput_UpdateDisplay();
+				--FriendsFrameBroadcastInput:Show();
+				--FriendsFrameBroadcastInput_UpdateDisplay();
 			end
 			frame.UnavailableLabel:Hide();
 			frame.BroadcastButton:Show();
@@ -1373,7 +1347,6 @@ function FriendsFrame_UpdateFriends()
 	local height;
 	local usedHeight = 0;
 
-	local hasTravelPass = HasTravelPass();
 	local hasTravelPassButton;
 	local canInvite = FriendsFrame_HasInvitePermission();
 
@@ -1410,12 +1383,12 @@ function FriendsFrame_UpdateFriends()
 				button.gameIcon:Hide();
 				FriendsFrame_SummonButton_Update(button.summonButton);
 			elseif ( FriendButtons[index].buttonType == FRIENDS_BUTTON_TYPE_BNET ) then
-				local presenceID, presenceName, battleTag, isBattleTagPresence, toonName, toonID, client, isOnline, lastOnline, isAFK, isDND, messageText, noteText, isRIDFriend, messageTime, canSoR = BNGetFriendInfo(FriendButtons[index].id);
+				local bnetIDAccount, accountName, battleTag, isBattleTag, characterName, bnetIDGameAccount, client, isOnline, lastOnline, isBnetAFK, isBnetDND, messageText, noteText, isRIDFriend, messageTime, canSoR = BNGetFriendInfo(FriendButtons[index].id);
 				broadcastText = messageText;
 				-- set up player name and character name
-				local characterName = toonName;
-				if ( presenceName ) then
-					nameText = presenceName;
+				local characterName = characterName;
+				if ( accountName ) then
+					nameText = accountName;
 					if ( isOnline ) then
 						characterName = BNet_GetValidatedCharacterName(characterName, battleTag, client);
 					end
@@ -1423,9 +1396,9 @@ function FriendsFrame_UpdateFriends()
 					nameText = UNKNOWN;				
 				end
 
-				-- append toon
+				-- append character name
 				if ( characterName ) then
-					if ( client == BNET_CLIENT_WOW and CanCooperateWithToon(toonID, hasTravelPass) ) then
+					if ( client == BNET_CLIENT_WOW and CanCooperateWithGameAccount(bnetIDGameAccount) ) then
 						nameText = nameText.." "..FRIENDS_WOW_NAME_COLOR_CODE.."("..characterName..")"..FONT_COLOR_CODE_CLOSE;
 					else
 						if ( ENABLE_COLORBLIND_MODE == "1" ) then
@@ -1436,11 +1409,11 @@ function FriendsFrame_UpdateFriends()
 				end
 
 				if ( isOnline ) then
-					local _, _, _, realmName, realmID, faction, _, _, _, zoneName, _, gameText = BNGetToonInfo(toonID);
+					local _, _, _, realmName, realmID, faction, _, _, _, zoneName, _, gameText, _, _, _, _, _, isGameAFK, isGameBusy = BNGetGameAccountInfo(bnetIDGameAccount);
 					button.background:SetTexture(FRIENDS_BNET_BACKGROUND_COLOR.r, FRIENDS_BNET_BACKGROUND_COLOR.g, FRIENDS_BNET_BACKGROUND_COLOR.b, FRIENDS_BNET_BACKGROUND_COLOR.a);
-					if ( isAFK ) then
+					if ( isBnetAFK or isGameAFK ) then
 						button.status:SetTexture(FRIENDS_TEXTURE_AFK);
-					elseif ( isDND ) then
+					elseif ( isBnetDND or isGameBusy ) then
 						button.status:SetTexture(FRIENDS_TEXTURE_DND);
 					else
 						button.status:SetTexture(FRIENDS_TEXTURE_ONLINE);
@@ -1458,14 +1431,12 @@ function FriendsFrame_UpdateFriends()
 					nameColor = FRIENDS_BNET_NAME_COLOR;
 					button.gameIcon:Show();
 					-- travel pass
-					if ( hasTravelPass ) then
-						hasTravelPassButton = true;
-						local restriction = FriendsFrame_GetInviteRestriction(button.id, canInvite);
-						if ( restriction == INVITE_RESTRICTION_NONE ) then
-							button.travelPassButton:Enable();
-						else
-							button.travelPassButton:Disable();
-						end
+					hasTravelPassButton = true;
+					local restriction = FriendsFrame_GetInviteRestriction(button.id, canInvite);
+					if ( restriction == INVITE_RESTRICTION_NONE ) then
+						button.travelPassButton:Enable();
+					else
+						button.travelPassButton:Disable();
 					end
 				else
 					button.background:SetTexture(FRIENDS_OFFLINE_BACKGROUND_COLOR.r, FRIENDS_OFFLINE_BACKGROUND_COLOR.g, FRIENDS_OFFLINE_BACKGROUND_COLOR.b, FRIENDS_OFFLINE_BACKGROUND_COLOR.a);
@@ -1578,9 +1549,10 @@ end
 
 function FriendsFrameStatusDropDown_Update()
 	local status;
-	if ( IsChatAFK() ) then
+	local _, _, _, _, bnetAFK, bnetDND = BNGetInfo();
+	if ( bnetAFK) then
 		status = FRIENDS_TEXTURE_AFK;
-	elseif ( IsChatDND() ) then
+	elseif (bnetDND ) then
 		status = FRIENDS_TEXTURE_DND;
 	else
 		status = FRIENDS_TEXTURE_ONLINE;
@@ -1594,20 +1566,14 @@ function FriendsFrame_SetOnlineStatus(button)
 	if ( status == FriendsFrameStatusDropDown.status ) then
 		return;
 	end
+	local _, _, _, _, bnetAFK, bnetDND = BNGetInfo();
 	if ( status == FRIENDS_TEXTURE_ONLINE ) then
-		if ( IsChatAFK() ) then
-			SendChatMessage("", "AFK");
-		elseif ( IsChatDND() ) then
-			SendChatMessage("", "DND");
-		end
+			BNSetAFK(false);
+			BNSetDND(false);
 	elseif ( status == FRIENDS_TEXTURE_AFK ) then
-		if ( not IsChatAFK() ) then
-			SendChatMessage("", "AFK");
-		end
+			BNSetAFK(true);
 	elseif ( status == FRIENDS_TEXTURE_DND ) then
-		if ( not IsChatDND() ) then
-			SendChatMessage("", "DND");
-		end
+			BNSetDND(true);
 	end
 end
 
@@ -1697,45 +1663,48 @@ function FriendsFrameTooltip_Show(self)
 	end
 	local anchor, text;
 	local FRIENDS_TOOLTIP_WOW_INFO_TEMPLATE = NORMAL_FONT_COLOR_CODE..FRIENDS_LIST_ZONE.."|r%1$s|n"..NORMAL_FONT_COLOR_CODE..FRIENDS_LIST_REALM.."|r%2$s";
-	local numToons = 0;
+	local numGameAccounts = 0;
 	local tooltip = FriendsTooltip;	
+	local isOnline = false;
+	local battleTag = "";
 	tooltip.height = 0;
 	tooltip.maxWidth = 0;
 	
 	if ( self.buttonType == FRIENDS_BUTTON_TYPE_BNET ) then
 		local nameText;
-		local presenceID, presenceName, battleTag, isBattleTagPresence, toonName, toonID, client, isOnline, lastOnline, isAFK, isDND, broadcastText, noteText, isFriend, broadcastTime = BNGetFriendInfo(self.id);
+		local bnetIDAccount, accountName, isBattleTag, characterName, bnetIDGameAccount, client, lastOnline, isAFK, isDND, broadcastText, noteText, isFriend, broadcastTime = BNGetFriendInfo(self.id);
+		bnetIDAccount, accountName, battleTag, isBattleTag, characterName, bnetIDGameAccount, client, isOnline, lastOnline, isAFK, isDND, broadcastText, noteText, isFriend, broadcastTime = BNGetFriendInfo(self.id);
 		-- account name
-		if ( presenceName ) then
-			nameText = presenceName;
+		if ( accountName ) then
+			nameText = accountName;
 		else
 			nameText = UNKNOWN;
 		end
 		anchor = FriendsFrameTooltip_SetLine(FriendsTooltipHeader, nil, nameText);
-		-- toon 1
-		if ( toonID ) then
-			local hasFocus, toonName, client, realmName, realmID, faction, race, class, guild, zoneName, level, gameText = BNGetToonInfo(toonID);
+		-- game account 1
+		if ( bnetIDGameAccount ) then
+			local hasFocus, characterName, client, realmName, realmID, faction, race, class, _, zoneName, level, gameText = BNGetGameAccountInfo(bnetIDGameAccount);
 			level = level or "";
 			race = race or "";
 			class = class or "";
 			if ( client == BNET_CLIENT_WOW ) then
-				if ( CanCooperateWithToon(toonID, HasTravelPass()) ) then
-					text = string.format(FRIENDS_TOOLTIP_WOW_TOON_TEMPLATE, toonName, level, race, class);
+				if ( CanCooperateWithGameAccount(bnetIDGameAccount) ) then
+					text = string.format(FRIENDS_TOOLTIP_WOW_TOON_TEMPLATE, characterName, level, race, class);
 				else
-					text = string.format(FRIENDS_TOOLTIP_WOW_TOON_TEMPLATE, toonName..CANNOT_COOPERATE_LABEL, level, race, class);
+					text = string.format(FRIENDS_TOOLTIP_WOW_TOON_TEMPLATE, characterName..CANNOT_COOPERATE_LABEL, level, race, class);
 				end
-				FriendsFrameTooltip_SetLine(FriendsTooltipToon1Name, nil, text);
-				anchor = FriendsFrameTooltip_SetLine(FriendsTooltipToon1Info, nil, string.format(FRIENDS_TOOLTIP_WOW_INFO_TEMPLATE, zoneName, realmName), -4);
+				FriendsFrameTooltip_SetLine(FriendsTooltipGameAccount1Name, nil, text);
+				anchor = FriendsFrameTooltip_SetLine(FriendsTooltipGameAccount1Info, nil, string.format(FRIENDS_TOOLTIP_WOW_INFO_TEMPLATE, zoneName, realmName), -4);
 			else
 				if ( isOnline ) then
-					toonName = BNet_GetValidatedCharacterName(toonName, battleTag, client) or "";
+					characterName = BNet_GetValidatedCharacterName(characterName, battleTag, client) or "";
 				end
-				FriendsFrameTooltip_SetLine(FriendsTooltipToon1Name, nil, toonName);			
-				anchor = FriendsFrameTooltip_SetLine(FriendsTooltipToon1Info, nil, gameText, -4);
+				FriendsFrameTooltip_SetLine(FriendsTooltipGameAccount1Name, nil, characterName);			
+				anchor = FriendsFrameTooltip_SetLine(FriendsTooltipGameAccount1Info, nil, gameText, -4);
 			end
 		else
-			FriendsTooltipToon1Info:Hide();
-			FriendsTooltipToon1Name:Hide();
+			FriendsTooltipGameAccount1Info:Hide();
+			FriendsTooltipGameAccount1Name:Hide();
 		end
 		-- note
 		if ( noteText and noteText ~= "" ) then
@@ -1761,7 +1730,7 @@ function FriendsFrameTooltip_Show(self)
 		if ( isOnline ) then
 			FriendsTooltipHeader:SetTextColor(FRIENDS_BNET_NAME_COLOR.r, FRIENDS_BNET_NAME_COLOR.g, FRIENDS_BNET_NAME_COLOR.b);
 			FriendsTooltipLastOnline:Hide();
-			numToons = BNGetNumFriendToons(self.id);
+			numGameAccounts = BNGetNumFriendGameAccounts(self.id);
 		else
 			FriendsTooltipHeader:SetTextColor(FRIENDS_GRAY_COLOR.r, FRIENDS_GRAY_COLOR.g, FRIENDS_GRAY_COLOR.b);
 			if ( not lastOnline or lastOnline == 0 or time() - lastOnline >= ONE_YEAR ) then
@@ -1776,12 +1745,12 @@ function FriendsFrameTooltip_Show(self)
 		anchor = FriendsFrameTooltip_SetLine(FriendsTooltipHeader, nil, name);
 		if ( connected ) then
 			FriendsTooltipHeader:SetTextColor(FRIENDS_WOW_NAME_COLOR.r, FRIENDS_WOW_NAME_COLOR.g, FRIENDS_WOW_NAME_COLOR.b);
-			FriendsFrameTooltip_SetLine(FriendsTooltipToon1Name, nil, string.format(FRIENDS_LEVEL_TEMPLATE, level, class));
-			anchor = FriendsFrameTooltip_SetLine(FriendsTooltipToon1Info, nil, area);
+			FriendsFrameTooltip_SetLine(FriendsTooltipGameAccount1Name, nil, string.format(FRIENDS_LEVEL_TEMPLATE, level, class));
+			anchor = FriendsFrameTooltip_SetLine(FriendsTooltipGameAccount1Info, nil, area);
 		else
 			FriendsTooltipHeader:SetTextColor(FRIENDS_GRAY_COLOR.r, FRIENDS_GRAY_COLOR.g, FRIENDS_GRAY_COLOR.b);
-			FriendsTooltipToon1Name:Hide();
-			FriendsTooltipToon1Info:Hide();
+			FriendsTooltipGameAccount1Name:Hide();
+			FriendsTooltipGameAccount1Info:Hide();
 		end
 		if ( noteText ) then
 			FriendsTooltipNoteIcon:Show();
@@ -1795,60 +1764,60 @@ function FriendsFrameTooltip_Show(self)
 		FriendsTooltipLastOnline:Hide();
 	end
 	
-	-- other toons
-	local toonIndex = 1;
-	local toonNameString;
-	local toonInfoString;
-	if ( numToons > 1 ) then
+	-- other game accounts
+	local gameAccountIndex = 1;
+	local characterNameString;
+	local gameAccountInfoString;
+	if ( numGameAccounts > 1 ) then
 		local headerSet = false;
-		for i = 1, numToons do
-			local hasFocus, toonName, client, realmName, realmID, faction, race, class, guild, zoneName, level, gameText = BNGetFriendToonInfo(self.id, i);
-			-- the focused toon is already at the top of the tooltip
+		for i = 1, numGameAccounts do
+			local hasFocus, characterName, client, realmName, realmID, faction, race, class, _, zoneName, level, gameText = BNGetFriendGameAccountInfo(self.id, i);
+			-- the focused game account is already at the top of the tooltip
 			if ( not hasFocus and client ~= BNET_CLIENT_APP and client ~= BNET_CLIENT_CLNT ) then
 				if ( not headerSet ) then
-					FriendsFrameTooltip_SetLine(FriendsTooltipOtherToons, anchor, nil, -8);
+					FriendsFrameTooltip_SetLine(FriendsTooltipOtherGameAccounts, anchor, nil, -8);
 					headerSet = true;
 				end
-				toonIndex = toonIndex + 1;
-				if ( toonIndex > FRIENDS_TOOLTIP_MAX_TOONS ) then
+				gameAccountIndex = gameAccountIndex + 1;
+				if ( gameAccountIndex > FRIENDS_TOOLTIP_MAX_GAME_ACCOUNTS ) then
 					break;
 				end
-				toonNameString = _G["FriendsTooltipToon"..toonIndex.."Name"];
-				toonInfoString = _G["FriendsTooltipToon"..toonIndex.."Info"];
+				characterNameString = _G["FriendsTooltipGameAccount"..gameAccountIndex.."Name"];
+				gameAccountInfoString = _G["FriendsTooltipGameAccount"..gameAccountIndex.."Info"];
 				text = BNet_GetClientEmbeddedTexture(client, 18).." ";
 				if ( client == BNET_CLIENT_WOW ) then
 					if ( realmName == playerRealmName and faction == playerFactionGroup ) then
-						text = text..string.format(FRIENDS_TOOLTIP_WOW_TOON_TEMPLATE, toonName, level, race, class);
+						text = text..string.format(FRIENDS_TOOLTIP_WOW_TOON_TEMPLATE, characterName, level, race, class);
 					else
-						text = text..string.format(FRIENDS_TOOLTIP_WOW_TOON_TEMPLATE, toonName..CANNOT_COOPERATE_LABEL, level, race, class);
+						text = text..string.format(FRIENDS_TOOLTIP_WOW_TOON_TEMPLATE, characterName..CANNOT_COOPERATE_LABEL, level, race, class);
 					end
 					gameText = zoneName;
 				else
 					if ( isOnline ) then
-						toonName = BNet_GetValidatedCharacterName(toonName, battleTag, client) or "";
+						characterName = BNet_GetValidatedCharacterName(characterName, battleTag, client) or "";
 					end
-					text = text..toonName;
+					text = text..characterName;
 				end
-				FriendsFrameTooltip_SetLine(toonNameString, nil, text);
-				FriendsFrameTooltip_SetLine(toonInfoString, nil, gameText);
+				FriendsFrameTooltip_SetLine(characterNameString, nil, text);
+				FriendsFrameTooltip_SetLine(gameAccountInfoString, nil, gameText);
 			end
 		end
 		if ( not headerSet ) then
-			FriendsTooltipOtherToons:Hide();
+			FriendsTooltipOtherGameAccounts:Hide();
 		end
 	else
-		FriendsTooltipOtherToons:Hide();
+		FriendsTooltipOtherGameAccounts:Hide();
 	end
-	for i = toonIndex + 1, FRIENDS_TOOLTIP_MAX_TOONS do
-		toonNameString = _G["FriendsTooltipToon"..i.."Name"];
-		toonInfoString = _G["FriendsTooltipToon"..i.."Info"];
-		toonNameString:Hide();
-		toonInfoString:Hide();
+	for i = gameAccountIndex + 1, FRIENDS_TOOLTIP_MAX_GAME_ACCOUNTS do
+		characterNameString = _G["FriendsTooltipGameAccount"..i.."Name"];
+		gameAccountInfoString = _G["FriendsTooltipGameAccount"..i.."Info"];
+		characterNameString:Hide();
+		gameAccountInfoString:Hide();
 	end
-	if ( numToons > FRIENDS_TOOLTIP_MAX_TOONS ) then
-		FriendsFrameTooltip_SetLine(FriendsTooltipToonMany, nil, string.format(FRIENDS_TOOLTIP_TOO_MANY_CHARACTERS, numToons - FRIENDS_TOOLTIP_MAX_TOONS), 0);
+	if ( numGameAccounts > FRIENDS_TOOLTIP_MAX_GAME_ACCOUNTS ) then
+		FriendsFrameTooltip_SetLine(FriendsTooltipGameAccountMany, nil, string.format(FRIENDS_TOOLTIP_TOO_MANY_CHARACTERS, numGameAccounts - FRIENDS_TOOLTIP_MAX_GAME_ACCOUNTS), 0);
 	else
-		FriendsTooltipToonMany:Hide();
+		FriendsTooltipGameAccountMany:Hide();
 	end
 
 	tooltip.button = self;
@@ -2078,9 +2047,9 @@ function FriendsFriendsList_Update()
 	local view = FriendsFriendsFrame.view;
 	local selection = FriendsFriendsFrame.selection;
 	local requested = FriendsFriendsFrame.requested;
-	local presenceID = FriendsFriendsFrame.presenceID;
+	local bnetIDAccount = FriendsFriendsFrame.bnetIDAccount;
 	local numFriendsFriends = 0;
-	local numMutual, numPotential = BNGetNumFOF(presenceID);
+	local numMutual, numPotential = BNGetNumFOF(bnetIDAccount);
 	local offset = FauxScrollFrame_GetOffset(FriendsFriendsScrollFrame);
 	local haveSelection;
 	if ( view == FRIENDS_FRIENDS_POTENTIAL or view == FRIENDS_FRIENDS_ALL ) then
@@ -2097,21 +2066,21 @@ function FriendsFriendsList_Update()
 		if ( friendsIndex > numFriendsFriends ) then
 			friendsButton:Hide();
 		else
-			local friendID, presenceName, isMutual = BNGetFOFInfo(showMutual, showPotential, friendsIndex);
+			local friendID, accountName, isMutual = BNGetFOFInfo(showMutual, showPotential, friendsIndex);
 			if ( isMutual ) then
 				friendsButton:Disable();
 				if ( view ~= FRIENDS_FRIENDS_MUTUAL ) then
-					friendsButton.name:SetText(presenceName.." "..HIGHLIGHT_FONT_COLOR_CODE..FRIENDS_FRIENDS_MUTUAL_TEXT..FONT_COLOR_CODE_CLOSE);
+					friendsButton.name:SetText(accountName.." "..HIGHLIGHT_FONT_COLOR_CODE..FRIENDS_FRIENDS_MUTUAL_TEXT..FONT_COLOR_CODE_CLOSE);
 				else
-					friendsButton.name:SetText(presenceName);
+					friendsButton.name:SetText(accountName);
 				end
 				friendsButton.name:SetTextColor(GRAY_FONT_COLOR	.r, GRAY_FONT_COLOR	.g, GRAY_FONT_COLOR	.b);
 			elseif ( requested[friendID] ) then
-				friendsButton.name:SetText(presenceName.." "..HIGHLIGHT_FONT_COLOR_CODE..FRIENDS_FRIENDS_REQUESTED_TEXT..FONT_COLOR_CODE_CLOSE);
+				friendsButton.name:SetText(accountName.." "..HIGHLIGHT_FONT_COLOR_CODE..FRIENDS_FRIENDS_REQUESTED_TEXT..FONT_COLOR_CODE_CLOSE);
 				friendsButton:Disable();
 				friendsButton.name:SetTextColor(GRAY_FONT_COLOR	.r, GRAY_FONT_COLOR	.g, GRAY_FONT_COLOR	.b);
 			else
-				friendsButton.name:SetText(presenceName);
+				friendsButton.name:SetText(accountName);
 				friendsButton:Enable();
 				friendsButton.name:SetTextColor(BATTLENET_FONT_COLOR.r, BATTLENET_FONT_COLOR.g, BATTLENET_FONT_COLOR.b);
 				if ( selection == friendID ) then
@@ -2147,7 +2116,7 @@ end
 function FriendsFriendsFrame_SendRequest()
 	PlaySound("igCharacterInfoTab");
 	FriendsFriendsFrame.requested[FriendsFriendsFrame.selection] = true;
-	BNSendFriendInviteByID(FriendsFriendsFrame.selection, FriendsFriendsNoteEditBox:GetText());
+	BNSendFriendInviteByID(FriendsFriendsFrame.selection);
 	FriendsFriendsFrame_Reset();
 	FriendsFriendsList_Update();
 end
@@ -2180,19 +2149,17 @@ end
 
 function FriendsFriendsFrame_Reset()
 	FriendsFriendsSendRequestButton:Disable();
-	FriendsFriendsNoteEditBox:SetText("");
-	FriendsFriendsNoteEditBox:ClearFocus();
 	FriendsFriendsFrame.selection = nil;
 end
 
-function FriendsFriendsFrame_Show(presenceID)
-	local presenceID, presenceName = BNGetFriendInfoByID(presenceID);
-	-- bail if that presenceID is not valid anymore
-	if ( not presenceID ) then
+function FriendsFriendsFrame_Show(bnetIDAccount)
+	local bnetIDAccount, accountName = BNGetFriendInfoByID(bnetIDAccount);
+	-- bail if that bnetIDAccount is not valid anymore
+	if ( not bnetIDAccount ) then
 		return;
 	end
-	FriendsFriendsFrameTitle:SetFormattedText(FRIENDS_FRIENDS_HEADER, FRIENDS_BNET_NAME_COLOR_CODE..presenceName..FONT_COLOR_CODE_CLOSE);
-	FriendsFriendsFrame.presenceID = presenceID;
+	FriendsFriendsFrameTitle:SetFormattedText(FRIENDS_FRIENDS_HEADER, FRIENDS_BNET_NAME_COLOR_CODE..accountName..FONT_COLOR_CODE_CLOSE);
+	FriendsFriendsFrame.bnetIDAccount = bnetIDAccount;
 	UIDropDownMenu_DisableDropDown(FriendsFriendsFrameDropDown);
 	FriendsFriendsFrame_Reset();
 	FriendsFriendsWaitFrame:Show();
@@ -2201,32 +2168,32 @@ function FriendsFriendsFrame_Show(presenceID)
 	end
 	FauxScrollFrame_Update(FriendsFriendsScrollFrame, 0, FRIENDS_FRIENDS_TO_DISPLAY, FRIENDS_FRAME_FRIENDS_FRIENDS_HEIGHT);
 	StaticPopupSpecial_Show(FriendsFriendsFrame);
-	BNRequestFOFInfo(presenceID);
+	BNRequestFOFInfo(bnetIDAccount);
 end
 
-function FriendsFrame_BattlenetInvite(button, presenceID)
-	-- no button means click from UnitPopup dropdown, find the friend index by presenceID
+function FriendsFrame_BattlenetInvite(button, bnetIDAccount)
+	-- no button means click from UnitPopup dropdown, find the friend index by bnetIDAccount
 	local index;
 	if ( not button ) then
-		index = BNGetFriendIndex(presenceID);
+		index = BNGetFriendIndex(bnetIDAccount);
 	else
 		index = button.id;
 	end
 	if ( index ) then
-		local numToons = BNGetNumFriendToons(index);
-		if ( numToons > 1 ) then
-			-- see if there is exactly one toon we could invite
-			local numValidToons = 0;
-			local lastToonID;
-			for i = 1, numToons do
-				local _, _, client, _, realmID, faction, race, class, _, _, level, _, _, _, _, toonID = BNGetFriendToonInfo(index, i);
+		local numGameAccounts = BNGetNumFriendGameAccounts(index);
+		if ( numGameAccounts > 1 ) then
+			-- see if there is exactly one game account we could invite
+			local numValidGameAccounts = 0;
+			local lastGameAccountID;
+			for i = 1, numGameAccounts do
+				local _, _, client, _, realmID, faction, race, class, _, _, level, _, _, _, _, bnetIDGameAccount = BNGetFriendGameAccountInfo(index, i);
 				if ( client == BNET_CLIENT_WOW and faction == playerFactionGroup and realmID ~= 0 ) then
-					numValidToons = numValidToons + 1;
-					lastToonID = toonID;
+					numValidGameAccounts = numValidGameAccounts + 1;
+					lastGameAccountID = bnetIDGameAccount;
 				end
 			end
-			if ( numValidToons == 1 ) then
-				BNInviteFriend(lastToonID);
+			if ( numValidGameAccounts == 1 ) then
+				BNInviteFriend(lastGameAccountID);
 				return;
 			end
 
@@ -2255,40 +2222,36 @@ function FriendsFrame_BattlenetInvite(button, presenceID)
 				ToggleDropDownMenu(1, nil, dropDown, "cursor", 1, -1);
 			end
 		else
-			local presenceID, presenceName, battleTag, isBattleTagPresence, toonName, toonID = BNGetFriendInfo(index);
-			if ( toonID ) then
-				BNInviteFriend(toonID);
+			local bnetIDAccount, accountName, battleTag, isBattleTag, characterName, bnetIDGameAccount = BNGetFriendInfo(index);
+			if ( bnetIDGameAccount ) then
+				BNInviteFriend(bnetIDGameAccount);
 			end
 		end	
 	end
 end
 
-function CanCooperateWithToon(presenceID, hasTravelPass)
-	local hasFocus, toonName, client, realmName, realmID, faction = BNGetToonInfo(presenceID);
-	if ( hasTravelPass ) then
-		if ( realmID > 0 and faction == playerFactionGroup ) then
-			return true;
-		end
-	else
-		if ( realmName == playerRealmName and faction == playerFactionGroup ) then
-			return true;
-		end
+function CanCooperateWithGameAccount(bnetIDGameAccount)
+	if (not bnetIDGameAccount) then
+		return false;
 	end
-	return false;
+	local hasFocus, characterName, client, realmName, realmID, faction = BNGetGameAccountInfo(bnetIDGameAccount);
+	return realmID and realmID > 0 and faction == playerFactionGroup;
 end
 
 --
 -- travel pass
 --
 
-function CanGroupWithAccount(presenceID)
-	if ( HasTravelPass() ) then
-		local index = BNGetFriendIndex(presenceID);
-		local restriction = FriendsFrame_GetInviteRestriction(index, FriendsFrame_HasInvitePermission());
-		return (restriction == INVITE_RESTRICTION_NONE);
-	else
-		return CanCooperateWithToon(presenceID, false);
+function CanGroupWithAccount(bnetIDAccount)
+	if (not bnetIDAccount) then
+		return false;
 	end
+	local index = BNGetFriendIndex(bnetIDAccount);
+	if (not index) then
+		return false;
+	end
+	local restriction = FriendsFrame_GetInviteRestriction(index, FriendsFrame_HasInvitePermission());
+	return (restriction == INVITE_RESTRICTION_NONE);
 end
 
 function FriendsFrame_HasInvitePermission()
@@ -2301,10 +2264,10 @@ function FriendsFrame_HasInvitePermission()
 end
 
 function FriendsFrame_GetInviteRestriction(index, canInvite)
-	local restriction = INVITE_RESTRICTION_NO_TOONS;
-	local numToons = BNGetNumFriendToons(index);
-	for i = 1, numToons do
-		local hasFocus, toonName, client, realmName, realmID, faction = BNGetFriendToonInfo(index, i);
+	local restriction = INVITE_RESTRICTION_NO_GAME_ACCOUNTS;
+	local numGameAccounts = BNGetNumFriendGameAccounts(index);
+	for i = 1, numGameAccounts do
+		local hasFocus, characterName, client, realmName, realmID, faction = BNGetFriendGameAccountInfo(index, i);
 		if ( client == BNET_CLIENT_WOW ) then
 			if ( faction ~= playerFactionGroup ) then
 				restriction = max(INVITE_RESTRICTION_FACTION, restriction);
@@ -2313,7 +2276,7 @@ function FriendsFrame_GetInviteRestriction(index, canInvite)
 			elseif ( not canInvite ) then
 				restriction = max(INVITE_RESTRICTION_LEADER, restriction);
 			else
-				-- there is at lease 1 toon that can be invited
+				-- there is at lease 1 game account that can be invited
 				return INVITE_RESTRICTION_NONE;
 			end
 		else
@@ -2365,15 +2328,15 @@ function TravelPassDropDown_Initialize(self)
 	info.notCheckable = 1;
 	info.func = TravelPassDropDown_OnClick;
 	
-	local numToons, restriction;
+	local numGameAccounts, restriction;
 	if ( self.index ) then
-		numToons = BNGetNumFriendToons(self.index);
+		numGameAccounts = BNGetNumFriendGameAccounts(self.index);
 	else
-		numToons = 0;
+		numGameAccounts = 0;
 	end
-	for i = 1, numToons do
+	for i = 1, numGameAccounts do
 		restriction = INVITE_RESTRICTION_NONE;
-		local hasFocus, toonName, client, realmName, realmID, faction, race, class, _, _, level, _, _, _, _, toonID = BNGetFriendToonInfo(self.index, i);
+		local hasFocus, characterName, client, realmName, realmID, faction, race, class, _, _, level, _, _, _, _, bnetIDGameAccount = BNGetFriendGameAccountInfo(self.index, i);
 		if ( client == BNET_CLIENT_WOW ) then
 			if ( faction ~= playerFactionGroup ) then
 				restriction = INVITE_RESTRICTION_FACTIONINVITE_RESTRICTION_FACTION;
@@ -2381,16 +2344,16 @@ function TravelPassDropDown_Initialize(self)
 				restriction = INVITE_RESTRICTION_INFO;
 			end
 			if ( restriction == INVITE_RESTRICTION_NONE ) then
-				info.text = string.format(FRIENDS_TOOLTIP_WOW_TOON_TEMPLATE, toonName, level, race, class);
+				info.text = string.format(FRIENDS_TOOLTIP_WOW_TOON_TEMPLATE, characterName, level, race, class);
 			else
-				info.text = string.format(FRIENDS_TOOLTIP_WOW_TOON_TEMPLATE, toonName..CANNOT_COOPERATE_LABEL, level, race, class);
+				info.text = string.format(FRIENDS_TOOLTIP_WOW_TOON_TEMPLATE, characterName..CANNOT_COOPERATE_LABEL, level, race, class);
 			end
 		else
 			restriction = INVITE_RESTRICTION_CLIENT;
-			info.text = BNet_GetClientEmbeddedTexture(client, 18)..toonName;
+			info.text = BNet_GetClientEmbeddedTexture(client, 18)..characterName;
 		end
 		if ( restriction == INVITE_RESTRICTION_NONE ) then
-			info.arg1 = toonID;
+			info.arg1 = bnetIDGameAccount;
 			info.disabled = nil;
 		else
 			info.arg1 = nil;
@@ -2400,8 +2363,8 @@ function TravelPassDropDown_Initialize(self)
 	end
 end
 
-function TravelPassDropDown_OnClick(button, toonID)
-	BNInviteFriend(toonID);
+function TravelPassDropDown_OnClick(button, bnetIDGameAccount)
+	BNInviteFriend(bnetIDGameAccount);
 end
 
 function BattleTagInviteFrame_Show(name)

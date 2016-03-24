@@ -1,24 +1,4 @@
-
-MOVIE_CAPTION_FADE_TIME = 1.0;
-
--- These are movieID from the MOVIE database file.
-MovieList = {
-  -- Movie sequence 1 = Wow Classic
-  { 1, 2 },
-  -- Movie sequence 2 = BC
-  { 27 },
-  -- Movie sequence 3 = LK
-  { 18 },
-  -- Movie sequence 4 = CC
-  { 23 },
-  -- Movie sequence 5 = MP
-  { 115 },
-  -- Movie sequence 6 = WoD
-  { 195 },
-}
-
 function MovieFrame_OnLoad(self)
-	self.version = GetCVar("playIntroMovie") + 1;
 	if ( not IsMacClient() ) then
 		MovieFrameSubtitleArea:Hide();
 	end
@@ -26,11 +6,11 @@ end
 
 function MovieFrame_PlayMovie(self, index)
 	self.movieIndex = index;
-	if ( not MovieList[self.version] or not MovieList[self.version][index] ) then
-		self:Hide();
+	if ( not MOVIE_LIST[self.version] or not MOVIE_LIST[self.version][index] ) then
+		GlueParent_CloseSecondaryScreen();
 		return;
 	end
-	local playSuccess, errorCode = self:StartMovie(MovieList[self.version][index]);
+	local playSuccess, errorCode = self:StartMovie(MOVIE_LIST[self.version][index]);
 	if ( playSuccess ) then
 		StopGlueMusic();
 		StopGlueAmbience();
@@ -38,7 +18,7 @@ function MovieFrame_PlayMovie(self, index)
 		if ( self.showError ) then
 			GlueDialog_Show("ERROR_CINEMATIC");
 		end
-		self:Hide();
+		GlueParent_CloseSecondaryScreen();
 	end
 end
 
@@ -64,13 +44,7 @@ end
 function MovieFrame_OnHide(self)
 	MovieFrameSubtitleString:Hide();
 	self:StopMovie();
-	SetGlueScreen(self.returnTo or "login");	--If this is the cinematic automatically played when starting up, we have no returnTo
 	ShowCursor();
-end
-
-function MovieFrame_Show(self, returnTo)
-	self.returnTo = returnTo;
-	SetGlueScreen("movie");
 end
 
 function MovieFrame_OnUpdate(self, elapsed)
@@ -90,7 +64,7 @@ end
 
 function MovieFrame_OnKeyUp(self, key)
 	if ( key == "ESCAPE" ) then
-		self:Hide();
+		GlueParent_CloseSecondaryScreen();
 	elseif ( key == "SPACE" or key == "ENTER" ) then
 		self:StopMovie();
 	end

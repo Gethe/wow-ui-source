@@ -89,6 +89,7 @@
 		<Scripts>
 			<OnLoad function="VideoOptionsFrame_OnLoad"/>
 			<OnHide function="VideoOptionsFrame_OnHide"/>
+			<OnChar function="nop"/>
 		</Scripts>
 	</Frame>
 </Ui>

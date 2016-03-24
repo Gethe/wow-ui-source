@@ -101,6 +101,20 @@
 					<Button name="GlueDialogButton1" inherits="GlueDialogButtonTemplate" id="1"/>
 					<Button name="GlueDialogButton2" inherits="GlueDialogButtonTemplate" id="2"/>
 					<Button name="GlueDialogButton3" inherits="GlueDialogButtonTemplate" id="3"/>
+
+					<Frame name="GlueDialogSpinner" inherits="LoadingSpinnerTemplate" hidden="true">
+						<Anchors>
+							<Anchor point="BOTTOM" x="0" y="14" />
+						</Anchors>
+						<Scripts>
+							<OnShow>
+								self.Anim:Play();
+							</OnShow>
+							<OnHide>
+								self.Anim:Stop();
+							</OnHide>
+						</Scripts>
+					</Frame>
 				</Frames>
 			</Frame>
 			<EditBox name="$parentEditBox" historyLines="1" hidden="true">
@@ -152,25 +166,10 @@
 			</EditBox>
 		</Frames>
 		<Scripts>
-			<OnLoad>
-				GlueDialog_OnLoad(self);
-			</OnLoad>
-			<OnShow>
-				GlueDialog_OnShow(self);
-				self:Raise();
-			</OnShow>
-			<OnUpdate>
-				GlueDialog_OnUpdate(self, elapsed);
-			</OnUpdate>
-			<OnEvent>
-				GlueDialog_OnEvent(self, event, ...);
-			</OnEvent>
-			<OnHide>
-				GlueDialog_OnHide();
-			</OnHide>
-			<OnKeyDown>
-				GlueDialog_OnKeyDown(key);
-			</OnKeyDown>
+			<OnLoad function="GlueDialog_OnLoad"/>
+			<OnShow function="GlueDialog_OnShow"/>
+			<OnHide function="GlueDialog_OnHide"/>
+			<OnKeyDown function="GlueDialog_OnKeyDown"/>
 		</Scripts>
 	</Frame>
 </Ui>

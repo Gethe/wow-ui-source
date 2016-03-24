@@ -69,7 +69,6 @@
         </Layers>
 		<Scripts>
 			<OnClick>
-				GlueTemplates_SetTab(RealmList, self:GetID());
 				RealmListTab_OnClick(self);
 			</OnClick>
 		</Scripts>
@@ -178,19 +177,19 @@
 	
 	<Button name="RealmListRealmButtonTemplate" virtual="true">
 		<Size>
-			<AbsDimension x="512" y="16"/>
+			<AbsDimension x="512" y="20"/>
 		</Size>
 		<Layers>
 			<Layer level="BACKGROUND">
-				<FontString name="$parentPVP" inherits="GlueFontRedSmall">
+				<FontString parentKey="RealmType" name="$parentPVP" inherits="GlueFontRedSmall">
 					<Size>
 						<AbsDimension x="60" y="12"/>
 					</Size>
 					<Anchors>
-						<Anchor point="LEFT"/>
+						<Anchor point="LEFT" x="235" y="0"/>
 					</Anchors>
 				</FontString>
-				<FontString name="$parentPlayers" inherits="GlueFontHighlightSmall">
+				<FontString parentKey="PlayerCount" name="$parentPlayers" inherits="GlueFontHighlightSmall">
 					<Size>
 						<AbsDimension x="32" y="12"/>
 					</Size>
@@ -202,7 +201,7 @@
 						</Anchor>
 					</Anchors>
 				</FontString>
-				<FontString name="$parentLoad" inherits="GlueFontHighlightSmall">
+				<FontString parentKey="Load" name="$parentLoad" inherits="GlueFontHighlightSmall">
 					<Size>
 						<AbsDimension x="110" y="12"/>
 					</Size>
@@ -217,26 +216,20 @@
 			</Layer>
 		</Layers>
 		<Scripts>
-			<OnLoad>
-				_G[self:GetName().."PVP"]:SetPoint("LEFT", self:GetName().."NormalText", "RIGHT", 10, 0);
-			</OnLoad>
 			<OnEnter>
-				if (self.major) then
+				local name, numChars, versionMismatch, isPvP, isRP, populationState, versionMajor, versionMinor, versionRev, versionBuild, cfgID = C_RealmList.GetRealmInfo(self.realmAddr);
+				if (versionMajor) then
 					GlueTooltip:SetOwner(self, "ANCHOR_RIGHT", -50, 0);
-					GlueTooltip:SetText(self.major.."."..self.minor.."."..self.revision.."  "..self.build.." Type: "..self.type);
+					GlueTooltip:SetText(versionMajor.."."..versionMinor.."."..versionRev.."  "..versionBuild.." CfgID: "..cfgID);
 				end
 			</OnEnter>
 			<OnLeave>
-				if (self.major) then
+				if (GlueTooltip_GetOwner(GlueTooltip) == self) then
 					GlueTooltip:Hide();
 				end
 			</OnLeave>
-			<OnClick>
-				RealmSelectButton_OnClick(self, self:GetID());
-			</OnClick>
-			<OnDoubleClick>
-				RealmSelectButton_OnDoubleClick(self, self:GetID());
-			</OnDoubleClick>
+			<OnClick function="RealmSelectButton_OnClick"/>
+			<OnDoubleClick function="RealmSelectButton_OnDoubleClick"/>
 		</Scripts>
 		<ButtonText name="$parentNormalText">
 			<Size>
@@ -376,7 +369,7 @@
 								</Anchors>
 								<Scripts>
 									<OnClick>
-										SortRealms("name");
+										RealmList_PushSortOrdering("name");
 									</OnClick>
 									<OnEnter>
 										GlueTooltip:SetOwner(self, "ANCHOR_RIGHT", -325, 0);
@@ -400,7 +393,7 @@
 								</Anchors>
 								<Scripts>
 									<OnClick>
-										SortRealms("mode");
+										RealmList_PushSortOrdering("realmType");
 									</OnClick>
 									<OnEnter>
 										GlueTooltip:SetOwner(self, "ANCHOR_RIGHT", -200, 0);
@@ -424,7 +417,7 @@
 								</Anchors>
 								<Scripts>
 									<OnClick>
-										SortRealms("characters");
+										RealmList_PushSortOrdering("numCharacters");
 									</OnClick>
 									<OnEnter>
 										GlueTooltip:SetOwner(self, "ANCHOR_RIGHT", -165, 0);
@@ -448,7 +441,7 @@
 								</Anchors>
 								<Scripts>
 									<OnClick>
-										SortRealms("load");
+										RealmList_PushSortOrdering("population");
 									</OnClick>
 									<OnEnter>
 										GlueTooltip:SetOwner(self, "ANCHOR_RIGHT", -280, 0);
@@ -497,257 +490,25 @@
 									</Layer>
 								</Layers>
 							</Frame>
-							<Button name="RealmListRealmButton1" inherits="RealmListRealmButtonTemplate" hidden="true" id="1">
+							<ScrollFrame parentKey="ScrollFrame" name="RealmListScrollFrame" inherits="HybridScrollFrameTemplate">
 								<Anchors>
-									<Anchor point="TOPLEFT">
-										<Offset>
-											<AbsDimension x="22" y="-56"/>
-										</Offset>
-									</Anchor>
+									<Anchor point="TOPLEFT" x="22" y="-56"/>
+									<Anchor point="BOTTOMRIGHT" relativePoint="TOPLEFT" x="564" y="-464"/>
 								</Anchors>
-							</Button>
-							<Button name="RealmListRealmButton2" inherits="RealmListRealmButtonTemplate" id="2">
-								<Anchors>
-									<Anchor point="TOP" relativeTo="RealmListRealmButton1" relativePoint="BOTTOM">
-										<Offset>
-											<AbsDimension x="0" y="-4"/>
-										</Offset>
-									</Anchor>
-								</Anchors>
-							</Button>
-							<Button name="RealmListRealmButton3" inherits="RealmListRealmButtonTemplate" id="3">
-								<Anchors>
-									<Anchor point="TOP" relativeTo="RealmListRealmButton2" relativePoint="BOTTOM">
-										<Offset>
-											<AbsDimension x="0" y="-4"/>
-										</Offset>
-									</Anchor>
-								</Anchors>
-							</Button>
-							<Button name="RealmListRealmButton4" inherits="RealmListRealmButtonTemplate" id="4">
-								<Anchors>
-									<Anchor point="TOP" relativeTo="RealmListRealmButton3" relativePoint="BOTTOM">
-										<Offset>
-											<AbsDimension x="0" y="-4"/>
-										</Offset>
-									</Anchor>
-								</Anchors>
-							</Button>
-							<Button name="RealmListRealmButton5" inherits="RealmListRealmButtonTemplate" id="5">
-								<Anchors>
-									<Anchor point="TOP" relativeTo="RealmListRealmButton4" relativePoint="BOTTOM">
-										<Offset>
-											<AbsDimension x="0" y="-4"/>
-										</Offset>
-									</Anchor>
-								</Anchors>
-							</Button>
-							<Button name="RealmListRealmButton6" inherits="RealmListRealmButtonTemplate" id="6">
-								<Anchors>
-									<Anchor point="TOP" relativeTo="RealmListRealmButton5" relativePoint="BOTTOM">
-										<Offset>
-											<AbsDimension x="0" y="-4"/>
-										</Offset>
-									</Anchor>
-								</Anchors>
-							</Button>
-							<Button name="RealmListRealmButton7" inherits="RealmListRealmButtonTemplate" id="7">
-								<Anchors>
-									<Anchor point="TOP" relativeTo="RealmListRealmButton6" relativePoint="BOTTOM">
-										<Offset>
-											<AbsDimension x="0" y="-4"/>
-										</Offset>
-									</Anchor>
-								</Anchors>
-							</Button>
-							<Button name="RealmListRealmButton8" inherits="RealmListRealmButtonTemplate" id="8">
-								<Anchors>
-									<Anchor point="TOP" relativeTo="RealmListRealmButton7" relativePoint="BOTTOM">
-										<Offset>
-											<AbsDimension x="0" y="-4"/>
-										</Offset>
-									</Anchor>
-								</Anchors>
-							</Button>
-							<Button name="RealmListRealmButton9" inherits="RealmListRealmButtonTemplate" id="9">
-								<Anchors>
-									<Anchor point="TOP" relativeTo="RealmListRealmButton8" relativePoint="BOTTOM">
-										<Offset>
-											<AbsDimension x="0" y="-4"/>
-										</Offset>
-									</Anchor>
-								</Anchors>
-							</Button>
-							<Button name="RealmListRealmButton10" inherits="RealmListRealmButtonTemplate" id="10">
-								<Anchors>
-									<Anchor point="TOP" relativeTo="RealmListRealmButton9" relativePoint="BOTTOM">
-										<Offset>
-											<AbsDimension x="0" y="-4"/>
-										</Offset>
-									</Anchor>
-								</Anchors>
-							</Button>
-							<Button name="RealmListRealmButton11" inherits="RealmListRealmButtonTemplate" id="11">
-								<Anchors>
-									<Anchor point="TOP" relativeTo="RealmListRealmButton10" relativePoint="BOTTOM">
-										<Offset>
-											<AbsDimension x="0" y="-4"/>
-										</Offset>
-									</Anchor>
-								</Anchors>
-							</Button>
-							<Button name="RealmListRealmButton12" inherits="RealmListRealmButtonTemplate" id="12">
-								<Anchors>
-									<Anchor point="TOP" relativeTo="RealmListRealmButton11" relativePoint="BOTTOM">
-										<Offset>
-											<AbsDimension x="0" y="-4"/>
-										</Offset>
-									</Anchor>
-								</Anchors>
-							</Button>
-							<Button name="RealmListRealmButton13" inherits="RealmListRealmButtonTemplate" id="13">
-								<Anchors>
-									<Anchor point="TOP" relativeTo="RealmListRealmButton12" relativePoint="BOTTOM">
-										<Offset>
-											<AbsDimension x="0" y="-4"/>
-										</Offset>
-									</Anchor>
-								</Anchors>
-							</Button>
-							<Button name="RealmListRealmButton14" inherits="RealmListRealmButtonTemplate" id="14">
-								<Anchors>
-									<Anchor point="TOP" relativeTo="RealmListRealmButton13" relativePoint="BOTTOM">
-										<Offset>
-											<AbsDimension x="0" y="-4"/>
-										</Offset>
-									</Anchor>
-								</Anchors>
-							</Button>
-							<Button name="RealmListRealmButton15" inherits="RealmListRealmButtonTemplate" id="15">
-								<Anchors>
-									<Anchor point="TOP" relativeTo="RealmListRealmButton14" relativePoint="BOTTOM">
-										<Offset>
-											<AbsDimension x="0" y="-4"/>
-										</Offset>
-									</Anchor>
-								</Anchors>
-							</Button>
-							<Button name="RealmListRealmButton16" inherits="RealmListRealmButtonTemplate" id="16">
-								<Anchors>
-									<Anchor point="TOP" relativeTo="RealmListRealmButton15" relativePoint="BOTTOM">
-										<Offset>
-											<AbsDimension x="0" y="-4"/>
-										</Offset>
-									</Anchor>
-								</Anchors>
-							</Button>
-							<Button name="RealmListRealmButton17" inherits="RealmListRealmButtonTemplate" id="17">
-								<Anchors>
-									<Anchor point="TOP" relativeTo="RealmListRealmButton16" relativePoint="BOTTOM">
-										<Offset>
-											<AbsDimension x="0" y="-4"/>
-										</Offset>
-									</Anchor>
-								</Anchors>
-							</Button>
-							<Button name="RealmListRealmButton18" inherits="RealmListRealmButtonTemplate" id="18">
-								<Anchors>
-									<Anchor point="TOP" relativeTo="RealmListRealmButton17" relativePoint="BOTTOM">
-										<Offset>
-											<AbsDimension x="0" y="-4"/>
-										</Offset>
-									</Anchor>
-								</Anchors>
-							</Button>
-							<Button name="RealmListRealmButton19" inherits="RealmListRealmButtonTemplate" id="19">
-								<Anchors>
-									<Anchor point="TOP" relativeTo="RealmListRealmButton18" relativePoint="BOTTOM">
-										<Offset>
-											<AbsDimension x="0" y="-4"/>
-										</Offset>
-									</Anchor>
-								</Anchors>
-							</Button>
-							<Button name="RealmListRealmButton20" inherits="RealmListRealmButtonTemplate" id="20">
-								<Anchors>
-									<Anchor point="TOP" relativeTo="RealmListRealmButton19" relativePoint="BOTTOM">
-										<Offset>
-											<AbsDimension x="0" y="-4"/>
-										</Offset>
-									</Anchor>
-								</Anchors>
-							</Button>
-							<ScrollFrame name="RealmListScrollFrame" inherits="GlueScrollFrameTemplate">
-								<Size>
-									<AbsDimension x="510" y="410"/>
-								</Size>
-								<Anchors>
-									<Anchor point="TOPLEFT">
-										<Offset>
-											<AbsDimension x="49" y="-53"/>
-										</Offset>
-									</Anchor>
-								</Anchors>
-								<Layers>
-									<Layer level="BACKGROUND">
-										<Texture name="$parentScrollBarTop" file="Interface\PaperDollInfoFrame\UI-Character-ScrollBar">
-											<Size>
-												<AbsDimension x="31" y="256"/>
-											</Size>
-											<Anchors>
-												<Anchor point="TOPLEFT" relativePoint="TOPRIGHT">
-													<Offset>
-														<AbsDimension x="-2" y="5"/>
-													</Offset>
-												</Anchor>
-											</Anchors>
-											<TexCoords left="0" right="0.484375" top="0" bottom="1.0"/>
-										</Texture>
-										<Texture name="$parentScrollBarBottom" file="Interface\PaperDollInfoFrame\UI-Character-ScrollBar">
-											<Size>
-												<AbsDimension x="31" y="106"/>
-											</Size>
-											<Anchors>
-												<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMRIGHT">
-													<Offset>
-														<AbsDimension x="-2" y="-2"/>
-													</Offset>
-												</Anchor>
-											</Anchors>
-											<TexCoords left="0.515625" right="1.0" top="0" bottom="0.4140625"/>
-										</Texture>
-										<Texture name="$parentScrollBarMiddle" file="Interface\PaperDollInfoFrame\UI-Character-ScrollBar">
-											<Size>
-												<AbsDimension x="31" y="60"/>
-											</Size>
-											<Anchors>
-												<Anchor point="TOP" relativeTo="$parentScrollBarTop" relativePoint="BOTTOM">
-													<Offset>
-														<AbsDimension x="0" y="0"/>
-													</Offset>
-												</Anchor>
-												<Anchor point="BOTTOM" relativeTo="$parentScrollBarBottom" relativePoint="TOP">
-													<Offset>
-														<AbsDimension x="0" y="0"/>
-													</Offset>
-												</Anchor>
-											</Anchors>
-											<TexCoords left="0" right="0.484375" top=".75" bottom="1.0"/>
-										</Texture>
-									</Layer>
-								</Layers>
-								<Scripts>
-									<OnVerticalScroll>
-										RealmListScrollFrame_OnVerticalScroll(self, offset);
-									</OnVerticalScroll>
-								</Scripts>
-								<ScrollChild>
-									<Frame name="RealmListScrollFrameScrollChildFrame">
-										<Size>
-											<AbsDimension x="510" y="395"/>
-										</Size>
-									</Frame>
-								</ScrollChild>
+								<Frames>
+									<Slider name="$parentScrollBar" inherits="HybridScrollBarTrimTemplate" parentKey="scrollBar">
+										<Anchors>
+											<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" x="4" y="-13"/>
+											<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMRIGHT" x="4" y="12"/>
+										</Anchors>
+										<Scripts>
+											<OnLoad>
+												self.trackBG:Show();
+												self.trackBG:SetVertexColor(0, 0, 0, 0.75);
+											</OnLoad>
+										</Scripts>
+									</Slider>
+								</Frames>
 							</ScrollFrame>
 							<Button name="RealmListCancelButton" inherits="GlueDialogButtonTemplate" text="CANCEL">
 								<Size>
@@ -789,236 +550,12 @@
 					</Frame>
 				</Frames>
 				<Scripts>
-					<OnLoad>
-						RealmList_OnLoad(self);
-					</OnLoad>
-					<OnEvent>
-						RealmList_OnEvent(self, event);
-					</OnEvent>
+					<OnLoad function="RealmList_OnLoad"/>
 					<OnKeyDown>
 						RealmList_OnKeyDown(key);
 					</OnKeyDown>
-					<OnShow>
-						RealmList_OnShow(self);
-					</OnShow>
-					<OnHide>
-						RealmList_OnHide();
-					</OnHide>
-					<OnUpdate>
-						RealmList_OnUpdate(self, elapsed);
-					</OnUpdate>
+					<OnShow function="RealmList_OnShow"/>
 				</Scripts>
-			</Frame>
-			<Frame name="RealmHelpFrame" toplevel="true" hidden="true" frameStrata="FULLSCREEN">
-				<Size>
-					<AbsDimension x="640" y="512"/>
-				</Size>
-				<Anchors>
-					<Anchor point="CENTER">
-						<Offset>
-							<AbsDimension x="0" y="0"/>
-						</Offset>
-					</Anchor>
-				</Anchors>
-				<HitRectInsets>
-					<AbsInset left="0" right="44" top="0" bottom="13"/>
-				</HitRectInsets>
-				<Layers>
-					<Layer level="BACKGROUND">
-						<Texture file="Interface\HelpFrame\HelpFrame-TopLeft">
-							<Size>
-								<AbsDimension x="256" y="256"/>
-							</Size>
-							<Anchors>
-								<Anchor point="TOPLEFT"/>
-							</Anchors>
-						</Texture>
-						<Texture file="Interface\HelpFrame\HelpFrame-Top">
-							<Size>
-								<AbsDimension x="256" y="256"/>
-							</Size>
-							<Anchors>
-								<Anchor point="TOPLEFT">
-									<Offset>
-										<AbsDimension x="256" y="0"/>
-									</Offset>
-								</Anchor>
-							</Anchors>
-						</Texture>
-						<Texture file="Interface\Glues\Login\Glues-TOS-TopRight">
-							<Size>
-								<AbsDimension x="128" y="256"/>
-							</Size>
-							<Anchors>
-								<Anchor point="TOPRIGHT"/>
-							</Anchors>
-						</Texture>
-						<Texture file="Interface\HelpFrame\HelpFrame-BotLeft">
-							<Size>
-								<AbsDimension x="256" y="256"/>
-							</Size>
-							<Anchors>
-								<Anchor point="BOTTOMLEFT"/>
-							</Anchors>
-						</Texture>
-						<Texture file="Interface\HelpFrame\HelpFrame-Bottom">
-							<Size>
-								<AbsDimension x="256" y="256"/>
-							</Size>
-							<Anchors>
-								<Anchor point="BOTTOMLEFT">
-									<Offset>
-										<AbsDimension x="256" y="0"/>
-									</Offset>
-								</Anchor>
-							</Anchors>
-						</Texture>
-						<Texture file="Interface\HelpFrame\HelpFrame-BotRight">
-							<Size>
-								<AbsDimension x="128" y="256"/>
-							</Size>
-							<Anchors>
-								<Anchor point="BOTTOMRIGHT"/>
-							</Anchors>
-						</Texture>
-					</Layer>
-					<Layer level="ARTWORK">
-						<Texture name="RealmHelpFrameHeader" file="Interface\DialogFrame\UI-DialogBox-Header">
-							<Size>
-								<AbsDimension x="420" y="64"/>
-							</Size>
-							<Anchors>
-								<Anchor point="TOP">
-									<Offset>
-										<AbsDimension x="-12" y="12"/>
-									</Offset>
-								</Anchor>
-							</Anchors>
-						</Texture>
-						<FontString inherits="GlueFontNormal" text="REALM_HELP_FRAME_TITLE">
-							<Anchors>
-								<Anchor point="TOP" relativeTo="RealmHelpFrameHeader">
-									<Offset>
-										<AbsDimension x="0" y="-14"/>
-									</Offset>
-								</Anchor>
-							</Anchors>
-						</FontString>
-					</Layer>
-				</Layers>
-				<Frames>
-					<ScrollFrame name="RealmHelpScrollFrame" inherits="GlueScrollFrameTemplate">
-						<Size>
-							<AbsDimension x="540" y="407"/>
-						</Size>
-						<Anchors>
-							<Anchor point="TOPLEFT">
-								<Offset>
-									<AbsDimension x="20" y="-56"/>
-								</Offset>
-							</Anchor>
-						</Anchors>
-						<Layers>
-							<Layer level="ARTWORK">
-								<Texture name="RealmHelpScrollBarTop" file="Interface\PaperDollInfoFrame\UI-Character-ScrollBar">
-									<Size>
-										<AbsDimension x="31" y="256"/>
-									</Size>
-									<Anchors>
-										<Anchor point="TOPLEFT" relativePoint="TOPRIGHT">
-											<Offset>
-												<AbsDimension x="-2" y="5"/>
-											</Offset>
-										</Anchor>
-									</Anchors>
-									<TexCoords left="0" right="0.484375" top="0" bottom="1.0"/>
-								</Texture>
-								<Texture name="RealmHelpScrollBarBottom" file="Interface\PaperDollInfoFrame\UI-Character-ScrollBar">
-									<Size>
-										<AbsDimension x="31" y="106"/>
-									</Size>
-									<Anchors>
-										<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMRIGHT">
-											<Offset>
-												<AbsDimension x="-2" y="-2"/>
-											</Offset>
-										</Anchor>
-									</Anchors>
-									<TexCoords left="0.515625" right="1.0" top="0" bottom="0.4140625"/>
-								</Texture>
-								<Texture name="RealmHelpScrollBarMiddle" file="Interface\PaperDollInfoFrame\UI-Character-ScrollBar">
-									<Size>
-										<AbsDimension x="31" y="60"/>
-									</Size>
-									<Anchors>
-										<Anchor point="TOP" relativeTo="RealmHelpScrollBarTop" relativePoint="BOTTOM">
-											<Offset>
-												<AbsDimension x="0" y="0"/>
-											</Offset>
-										</Anchor>
-										<Anchor point="BOTTOM" relativeTo="RealmHelpScrollBarBottom" relativePoint="TOP">
-											<Offset>
-												<AbsDimension x="0" y="0"/>
-											</Offset>
-										</Anchor>
-									</Anchors>
-									<TexCoords left="0" right="0.484375" top=".75" bottom="1.0"/>
-								</Texture>
-							</Layer>
-						</Layers>
-						<Scripts>
-							<OnVerticalScroll>
-									local scrollbar = _G[self:GetName().."ScrollBar"];
-									scrollbar:SetValue(offset);
-									local min;
-									local max;
-									min, max = scrollbar:GetMinMaxValues();
-									if ( offset == 0 ) then
-										_G[scrollbar:GetName().."ScrollUpButton"]:Disable();
-									else
-										_G[scrollbar:GetName().."ScrollUpButton"]:Enable();
-									end
-									-- HACK: scrollbars do not handle max properly
-									-- DO NOT CHANGE - without speaking to Mikros/Barris/Thompson
-									if (scrollbar:GetValue() >= max - 20) then
-										_G[scrollbar:GetName().."ScrollDownButton"]:Disable();
-									else
-										_G[scrollbar:GetName().."ScrollDownButton"]:Enable();
-									end
-								</OnVerticalScroll>
-						</Scripts>
-						<ScrollChild>
-							<SimpleHTML name="RealmHelpText">
-								<Size>
-									<AbsDimension x="540" y="800"/>
-								</Size>
-								<Scripts>
-									<OnShow>
-										RealmHelpText_OnShow(self);
-									</OnShow>
-								</Scripts>
-								<FontString inherits="TOSFont"/>
-								<FontStringHeader1 inherits="GlueFontNormalLarge"/>
-								<FontStringHeader2 inherits="GlueFontNormal"/>
-								<FontStringHeader3 inherits="GlueFontNormal"/>
-							</SimpleHTML>
-						</ScrollChild>
-					</ScrollFrame>
-					<Button name="RealmHelpOkay" inherits="GlueMenuButtonTemplate" text="OKAY">
-						<Anchors>
-							<Anchor point="BOTTOMRIGHT">
-								<Offset>
-									<AbsDimension x="-53" y="21"/>
-								</Offset>
-							</Anchor>
-						</Anchors>
-						<Scripts>
-							<OnClick>
-								RealmHelpFrame:Hide();
-							</OnClick>
-						</Scripts>
-					</Button>
-				</Frames>
 			</Frame>
 		</Frames>
 		<Scripts>

@@ -139,7 +139,12 @@ CHAR_CUSTOMIZE_HAIR_COLOR = 4;
 
 function CharacterCreate_OnLoad(self)
 	self:RegisterEvent("RANDOM_CHARACTER_NAME_RESULT");
-	self:RegisterEvent("GLUE_UPDATE_EXPANSION_LEVEL");
+	self:RegisterEvent("UPDATE_EXPANSION_LEVEL");
+	self:RegisterEvent("CHARACTER_CREATION_RESULT");
+	self:RegisterEvent("CUSTOMIZE_CHARACTER_STARTED");
+	self:RegisterEvent("CUSTOMIZE_CHARACTER_RESULT");
+	self:RegisterEvent("RACE_FACTION_CHANGE_STARTED");
+	self:RegisterEvent("RACE_FACTION_CHANGE_RESULT");
 
 	self:SetSequence(0);
 	self:SetCamera(0);
@@ -167,6 +172,9 @@ function CharacterCreate_OnLoad(self)
 end
 
 function CharacterCreate_OnShow()
+	InitializeCharacterScreenData();
+	SetInCharacterCreate(true);
+
 	for i=1, MAX_CLASSES_PER_RACE, 1 do
 		local button = _G["CharCreateClassButton"..i];
 		button:Enable();
@@ -197,7 +205,7 @@ function CharacterCreate_OnShow()
 	
 	CharacterCreateEnumerateRaces(GetAvailableRaces());
 	SetCharacterRace(GetSelectedRace());
-	
+		
 	CharacterCreateEnumerateClasses(GetAvailableClasses());
 	local _,_,index = GetSelectedClass();
 	SetCharacterClass(index);
@@ -230,25 +238,60 @@ function CharacterCreate_OnHide()
 	-- character previews will need to be redone if coming back to character create. One reason is all the memory used for
 	-- tracking the frames (on the c side) will get released if the user returns to the login screen
 	CharCreatePreviewFrame.rebuildPreviews = true;
+	SetInCharacterCreate(false);
 end
 
-function CharacterCreate_OnEvent(event, arg1, arg2, arg3)
+function CharacterCreate_OnEvent(event, ...)
 	if ( event == "RANDOM_CHARACTER_NAME_RESULT" ) then
-		if ( arg1 == 0 ) then
+		local success, name = ...;
+		if ( not success ) then
 			-- Failed.  Generate a random name locally.
 			CharacterCreateNameEdit:SetText(GenerateRandomName());
 		else
 			-- Succeeded.  Use what the server sent.
-			CharacterCreateNameEdit:SetText(arg2);
+			CharacterCreateNameEdit:SetText(name);
 		end
 		CharacterCreateRandomName:Enable();
 		CharCreateOkayButton:Enable();
 		PlaySound("gsCharacterCreationLook");
-	elseif ( event == "GLUE_UPDATE_EXPANSION_LEVEL" ) then
+	elseif ( event == "UPDATE_EXPANSION_LEVEL" ) then
 		-- Expansion level changed while online, so enable buttons as needed
 		if ( CharacterCreateFrame:IsShown() ) then
 			CharacterCreateEnumerateRaces(GetAvailableRaces());
 			CharacterCreateEnumerateClasses(GetAvailableClasses());
+		end
+	elseif ( event == "CHARACTER_CREATION_RESULT" ) then
+		local success, errorCode = ...;
+		if ( success ) then
+			CharacterSelect.selectLast = true;
+			GlueParent_SetScreen("charselect");
+		else
+			GlueDialog_Show("OKAY", _G[errorCode]);
+		end
+	elseif ( event == "CUSTOMIZE_CHARACTER_STARTED" ) then
+		GlueDialog_Show("PAID_SERVICE_IN_PROGRESS", CHAR_CUSTOMIZE_IN_PROGRESS);
+	elseif ( event == "CUSTOMIZE_CHARACTER_RESULT" ) then
+		local success, err = ...;
+		if ( success ) then
+			GlueDialog_Hide("PAID_SERVICE_IN_PROGRESS");
+			GlueParent_SetScreen("charselect");
+		else
+			GlueDialog_Show("OKAY", _G[err]);
+		end
+	elseif ( event == "RACE_FACTION_CHANGE_STARTED" ) then
+		local changeType = ...;
+		if ( changeType == "RACE" ) then
+			GlueDialog_Show("PAID_SERVICE_IN_PROGRESS", RACE_CHANGE_IN_PROGRESS);
+		elseif ( changeType == "FACTION" ) then
+			GlueDialog_Show("PAID_SERVICE_IN_PROGRESS", FACTION_CHANGE_IN_PROGRESS);
+		end
+	elseif ( event == "RACE_FACTION_CHANGE_RESULT" ) then
+		local success, err = ...;
+		if ( success ) then
+			GlueDialog_Hide("PAID_SERVICE_IN_PROGRESS");
+			GlueParent_SetScreen("charselect");
+		else
+			GlueDialog_Show("OKAY", _G[err]);
 		end
 	end
 end
@@ -344,12 +387,12 @@ function CharacterCreateEnumerateRaces(...)
 			SetButtonDesaturated(button, true);
 			button.name = name;
 			local disabledReason = _G[strupper(select(i+1, ...).."_".."DISABLED")];
-			if ( disabledReason ) then
-				button.tooltip = name.."|n"..disabledReason;
-			else
-				button.tooltip = nil;
+				if ( disabledReason ) then
+					button.tooltip = name.."|n"..disabledReason;
+				else
+					button.tooltip = nil;
+				end
 			end
-		end
 		index = index + 1;
 	end
 	for i=CharacterCreate.numRaces + 1, MAX_RACES, 1 do
@@ -482,7 +525,7 @@ function SetCharacterRace(id)
 		CharCreateRaceInfoFrame.scrollFrame.scrollChild.bulletText:SetText(abilityText);
 	else
 		CharCreateRaceInfoFrame.scrollFrame.scrollChild.bulletText:SetText("");
-	end	
+	end
 
 	-- Altered form
 	if (HasAlteredForm()) then
@@ -605,7 +648,7 @@ function CharacterCreate_Back()
 
 	PlaySound("gsCharacterCreationCancel");
 	CHARACTER_SELECT_BACK_FROM_CREATE = true;
-	SetGlueScreen("charselect");
+	GlueParent_SetScreen("charselect");
 end
 
 function CharacterCreate_Forward()
@@ -731,12 +774,12 @@ function CharacterRace_OnClick(self, id, forceSelect)
 			SetCharacterGender(GetSelectedSex());
 			SetCharacterCreateFacing(-15);
 			CharacterCreateEnumerateClasses(GetAvailableClasses());
-			local _,_,classIndex = GetSelectedClass();
-			if ( PAID_SERVICE_TYPE ) then
-				classIndex = PaidChange_GetCurrentClassIndex();
-				SetSelectedClass(classIndex);	-- selecting a race would have changed class to default
-			end
-			SetCharacterClass(classIndex);
+				local _,_,classIndex = GetSelectedClass();
+				if ( PAID_SERVICE_TYPE ) then
+					classIndex = PaidChange_GetCurrentClassIndex();
+					SetSelectedClass(classIndex);	-- selecting a race would have changed class to default
+				end
+				SetCharacterClass(classIndex);
 			
 			-- Hair customization stuff
 			CharacterCreate_UpdateHairCustomization();

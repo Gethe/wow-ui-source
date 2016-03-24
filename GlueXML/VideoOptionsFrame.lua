@@ -2,7 +2,7 @@
 
 function VideoOptionsFrame_Toggle ()
 	if ( VideoOptionsFrame:IsShown() ) then
-		VideoOptionsFrame:Hide();
+		GlueParent_CloseSecondaryScreen();
 	else
 		VideoOptionsFrame:Show();
 	end

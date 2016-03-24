@@ -37,8 +37,8 @@ DressUpFrames.xml
 ItemButtonTemplate.xml
 NavigationBar.xml
 SparkleFrame.xml
-HybridScrollFrame.lua
-HybridScrollFrame.xml
+..\SharedXML\HybridScrollFrame.lua
+..\SharedXML\HybridScrollFrame.xml
 GameMenuFrame.xml
 CharacterFrameTemplates.xml
 TextStatusBar.lua
@@ -79,7 +79,6 @@ CastingBarFrame.xml
 UnitPopup.xml
 BNet.xml
 HistoryKeeper.lua
-BNConversations.xml
 ChatFrame.xml
 FloatingChatFrame.xml
 VoiceChat.xml

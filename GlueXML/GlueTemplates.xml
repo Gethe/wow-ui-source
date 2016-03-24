@@ -38,24 +38,6 @@
 	<Texture name="GluePanelButtonDisabledDownTexture" file="Interface\Buttons\UI-Panel-Button-Disabled-Down" virtual="true">
 		<TexCoords left="0" right="0.625" top="0" bottom="0.6875"/>
 	</Texture>
-	<Button name="GluePanelButtonTemplate" virtual="true">
-		<ButtonText name="$parentText">
-			<Anchors>
-				<Anchor point="CENTER">
-					<Offset>
-						<AbsDimension x="0" y="1"/>
-					</Offset>
-				</Anchor>
-			</Anchors>
-		</ButtonText>
-		<NormalFont style="GlueFontNormal"/>
-		<HighlightFont style="GlueFontHighlight"/>
-		<DisabledFont style="GlueFontDisable"/>
-		<NormalTexture inherits="GluePanelButtonUpTexture"/>
-		<PushedTexture inherits="GluePanelButtonDownTexture"/>
-		<DisabledTexture inherits="GluePanelButtonDisabledTexture"/>
-		<HighlightTexture inherits="GluePanelButtonHighlightTexture"/>
-	</Button>
 	<Button name="GluePanelButtonGrayTemplate" virtual="true">
 		<NormalFont style="GlueFontHighlight"/>
 		<HighlightFont style="GlueFontHighlight"/>

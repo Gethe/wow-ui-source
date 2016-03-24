@@ -4082,12 +4082,6 @@ function ConsolePrint(...)
 	ConsoleAddMessage(strjoin(" ", tostringall(...)));
 end
 
-function GetTexCoordsByGrid(xOffset, yOffset, textureWidth, textureHeight, gridWidth, gridHeight)
-	local widthPerGrid = gridWidth/textureWidth;
-	local heightPerGrid = gridHeight/textureHeight;
-	return (xOffset-1)*widthPerGrid, (xOffset)*widthPerGrid, (yOffset-1)*heightPerGrid, (yOffset)*heightPerGrid;
-end
-
 function LFD_IsEmpowered()
 	--Solo players are always empowered.
 	if ( not IsInGroup() ) then

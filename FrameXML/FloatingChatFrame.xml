@@ -338,12 +338,7 @@
 			<OnEnter>
 				local chatFrame = _G["ChatFrame"..self:GetID()];
 				
-				if ( chatFrame.isTemporary and chatFrame.chatType == "BN_CONVERSATION" ) then
-					GameTooltip:SetOwner(self, "ANCHOR_TOPRIGHT");
-					BNConversation_DisplayConversationTooltip(tonumber(chatFrame.chatTarget));
-				else
-					GameTooltip_AddNewbieTip(self, CHAT_OPTIONS_LABEL, 1.0, 1.0, 1.0, NEWBIE_TOOLTIP_CHATOPTIONS, 1);
-				end
+				GameTooltip_AddNewbieTip(self, CHAT_OPTIONS_LABEL, 1.0, 1.0, 1.0, NEWBIE_TOOLTIP_CHATOPTIONS, 1);
 			</OnEnter>
 			<OnLeave>
 				GameTooltip:Hide();
