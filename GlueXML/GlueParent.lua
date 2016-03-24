@@ -240,16 +240,42 @@ function GlueParent_SetScreen(screen)
 	local screenInfo = GLUE_SCREENS[screen];
 	if ( screenInfo ) then
 		GlueParent.currentScreen = screen;
-		GlueParent_ChangeScreen(screenInfo, GLUE_SCREENS);
+
+		local suppressScreen = false;
+		if ( GlueParent.currentSecondaryScreen ) then
+			local secondaryInfo = GLUE_SECONDARY_SCREENS[GlueParent.currentSecondaryScreen];
+			if ( secondaryInfo and secondaryInfo.fullScreen ) then
+				suppressScreen = true;
+			end
+		end
+
+		--If there's a full-screen secondary screen showing right now, we'll wait to show this one.
+		--Once the secondary screen hides, we'll be shown.
+		if ( not suppressScreen ) then
+			GlueParent_ChangeScreen(screenInfo, GLUE_SCREENS);
+		end
 	end
 end
 
 function GlueParent_OpenSecondaryScreen(screen)
 	local screenInfo = GLUE_SECONDARY_SCREENS[screen];
 	if ( screenInfo ) then
+		--Close the last secondary screen
+		if ( GlueParent.currentSecondaryScreen ) then
+			GlueParent_CloseSecondaryScreen();
+		end
+
 		GlueParent.currentSecondaryScreen = screen;
 		if ( screenInfo.fullScreen ) then
 			GlueParent.ScreenFrame:Hide();
+
+			--If it's full-screen, hide the main screen
+			if ( GlueParent.currentScreen ) then
+				local mainScreenInfo = GLUE_SCREENS[GlueParent.currentScreen];
+				if ( mainScreenInfo ) then
+					_G[mainScreenInfo.frame]:Hide();
+				end
+			end
 		else
 			GlueParent.ScreenFrame:Show();
 		end
@@ -282,6 +308,9 @@ function GlueParent_CloseSecondaryScreen()
 		--Show the original screen if we hid it. Have to do this last in case it opens a new secondary screen.
 		if ( screenInfo.fullScreen ) then
 			GlueParent.ScreenFrame:Show();
+			if ( GlueParent.currentScreen ) then
+				GlueParent_SetScreen(GlueParent.currentScreen);
+			end
 		end
 	end
 end
