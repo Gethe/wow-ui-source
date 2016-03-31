@@ -1,19 +1,39 @@
-UIPanelWindows["ArtifactFrame"] =		{ area = "doublewide",	pushable = 0, xoffset = 35, showFailedFunc = C_ArtifactUI.Clear, };
+UIPanelWindows["ArtifactFrame"] =		{ area = "doublewide",	pushable = 0, xoffset = 35, bottomClampOverride = 80, showFailedFunc = C_ArtifactUI.Clear, };
 
 StaticPopupDialogs["CONFIRM_ARTIFACT_RESPEC"] = {
-	text = "Are you sure you want to respec?",
+	text = ARTIFACT_RESPEC,
 	button1 = YES,
 	button2 = NO,
-	OnAccept = function(self) C_ArtifactUI.ConfirmRespec(); end,
+	OnAccept = function(self) C_ArtifactUI.ConfirmRespec(); HideUIPanel(ArtifactFrame); end,
+	OnCancel = function(self) HideUIPanel(ArtifactFrame); end,
+	OnAlt = function(self) HideUIPanel(ArtifactFrame); end,
 	OnUpdate = function(self, elapsed)
 		if ( not C_ArtifactUI.CheckRespecNPC() ) then
-			self:Hide();
+			StaticPopup_Hide("CONFIRM_ARTIFACT_RESPEC");
+			HideUIPanel(ArtifactFrame);
 		end
 	end,
 	hideOnEscape = true,
 	timeout = 0,
 	exclusive = true,
-	whileDead = true,
+	showAlert = true,
+}
+
+StaticPopupDialogs["NOT_ENOUGH_POWER_ARTIFACT_RESPEC"] = {
+	text = ARTIFACT_RESPEC_NOT_ENOUGH_POWER,
+	button1 = OKAY,
+	OnAccept = function(self) HideUIPanel(ArtifactFrame); end,
+	OnCancel = function(self) HideUIPanel(ArtifactFrame); end,
+	OnAlt = function(self) HideUIPanel(ArtifactFrame); end,
+	OnUpdate = function(self, elapsed)
+		if ( not C_ArtifactUI.CheckRespecNPC() ) then
+			StaticPopup_Hide("NOT_ENOUGH_POWER_ARTIFACT_RESPEC");
+			HideUIPanel(ArtifactFrame);
+		end
+	end,
+	hideOnEscape = true,
+	timeout = 0,
+	exclusive = true,
 	showAlert = true,
 }
 
@@ -137,23 +157,25 @@ function ArtifactUIMixin:SetupPerArtifactData()
 end
 
 function ArtifactUIMixin:UpdateForgeLevel()
-	--local numStartingRanks = C_ArtifactUI.GetNumStartingRanks();
-	--local maxRanks = C_ArtifactUI.GetMaxPurchasedRanks();
-	--local purchasedRanks = C_ArtifactUI.GetTotalPurchasedRanks();
-    --
-	--if maxRanks > numStartingRanks or purchasedRanks >= numStartingRanks - 2 then
-	--	self.ForgeBadgeFrame.ForgeLevelLabel:SetText(maxRanks);
-	--	self.ForgeBadgeFrame.ForgeLevelLabel:Show();
-	--	self.ForgeBadgeFrame.ForgeLevelBackground:Show();
-    --
-	--    if not GetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_ARTIFACT_KNOWLEDGE_LEVEL_LIMIT) then
-	--		self.MaxKnowledgeLevelHelpBox:Show();
-	--		SetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_ARTIFACT_KNOWLEDGE_LEVEL_LIMIT, true);
-	--    end
-	--else
-		self.ForgeBadgeFrame.ForgeLevelLabel:Hide();
-		self.ForgeBadgeFrame.ForgeLevelBackground:Hide();
-	--end
+	--TODO: knowledge?
+	self.ForgeBadgeFrame.ForgeLevelLabel:Hide();
+	self.ForgeBadgeFrame.ForgeLevelBackground:Hide();
+end
+
+function ArtifactUIMixin:OnInventoryItemMouseEnter(bag, slot)
+	if self:IsVisible() then
+		local itemID = select(10, GetContainerItemInfo(bag, slot));
+		if itemID and IsArtifactRelicItem(itemID) and not CursorHasItem() then
+			self.PerksTab:ShowHighlightForRelicItemID(itemID);
+		end
+	end
+end
+
+function ArtifactUIMixin:OnInventoryItemMouseLeave(bag, slot)
+	local itemID = select(10, GetContainerItemInfo(bag, slot));
+	if itemID and IsArtifactRelicItem(itemID) and not CursorHasItem() then
+		self.PerksTab:HideHighlightForRelicItemID(itemID);
+	end
 end
 
 ------------------------------------------------------------------

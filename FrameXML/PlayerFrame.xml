@@ -322,7 +322,7 @@
 					<OnLoad>
 						TextStatusBar_Initialize(self);
 						self.textLockable = 1;
-						self.cvar = "playerStatusText";
+						self.cvar = "statusText";
 						self.cvarLabel = "STATUS_TEXT_PLAYER";
 					</OnLoad>
 					<OnMouseUp>
@@ -344,7 +344,7 @@
 					<OnLoad>
 						TextStatusBar_Initialize(self);
 						self.textLockable = 1;
-						self.cvar = "playerStatusText";
+						self.cvar = "statusText";
 						self.cvarLabel = "STATUS_TEXT_PLAYER";
 					</OnLoad>
 					<OnMouseUp>

@@ -260,7 +260,7 @@
 					<OnLoad>
 						TextStatusBar_Initialize(self);
 						self.textLockable = 1;
-						self.cvar = "partyStatusText";
+						self.cvar = "statusText";
 						self.cvarLabel = "STATUS_TEXT_PARTY";
 					</OnLoad>
 					<OnMouseUp>
@@ -281,7 +281,7 @@
 					<OnLoad>
 						TextStatusBar_Initialize(self);
 						self.textLockable = 1;
-						self.cvar = "partyStatusText";
+						self.cvar = "statusText";
 						self.cvarLabel = "STATUS_TEXT_PARTY";
 					</OnLoad>
 					<OnMouseUp>

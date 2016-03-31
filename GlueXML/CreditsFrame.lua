@@ -5,8 +5,8 @@ end
 
 function CreditsFrame_OnShow(self)
 	StopGlueAmbience();
-	CreditsFrame.creditsType = GetClientDisplayExpansionLevel() + 1;	--Expansion levels are off by one from credits indices.
-	CreditsFrame.maxCreditsType = GetClientDisplayExpansionLevel() + 1;
+	CreditsFrame.creditsType = GetClientDisplayExpansionLevel();
+	CreditsFrame.maxCreditsType = CreditsFrame.creditsType;
 	CreditsFrame_Update(self);
 end
 
@@ -16,13 +16,13 @@ end
 
 function CreditsFrame_Update(self)
 	PlayGlueMusic(GLUE_CREDITS_SOUND_KITS[CreditsFrame.creditsType]);
-	SetExpansionLogo(CreditsLogo, CreditsFrame.creditsType-1);
+	SetExpansionLogo(CreditsLogo, CreditsFrame.creditsType);
 
 	CreditsFrame_SetSpeed(CREDITS_SCROLL_RATE_PLAY);
 	CreditsScrollFrame:SetVerticalScroll(0);
 	CreditsScrollFrame.scroll = 0;
 	CreditsScrollFrame.scrollMax = CreditsScrollFrame:GetVerticalScrollRange() + 768;
-	self.artCount = getn(CREDITS_ART_INFO[CreditsFrame.creditsType]);
+	self.artCount = #CREDITS_ART_INFO[CreditsFrame.creditsType];
 	self.currentArt = 0;
 	self.fadingIn = nil;
 	self.fadingOut = nil;
@@ -53,7 +53,8 @@ function CreditsFrame_Update(self)
 	else
 		CreditsFrameSwitchButton1:Hide();
 	end
-	if ( creditsType > 1 ) then
+
+	if ( creditsType > 0 ) then
 		CreditsFrameSwitchButton2:Show();
 		CreditsFrameSwitchButton2:SetText(CREDITS_TITLES[creditsType - 1]);
 		CreditsFrameSwitchButton2:SetID(creditsType - 1);
@@ -65,18 +66,17 @@ end
 function CreditsFrame_Switch(self, buttonID)
 	PlaySound("igMainMenuOptionCheckBoxOff");
 	CreditsFrame.creditsType = buttonID;
-	CreditsFrame_Update(self);
-	GlueParent_OpenSecondaryScreen("credits");
+	CreditsFrame_Update(CreditsFrame);
 end
 
-function CreditsFrame_SetArtTextures(self,textureName, index, alpha)
+local function IsValidTextureIndex(info, index)
+	return info.maxTexIndex == nil or index <= info.maxTexIndex;
+end
+
+function CreditsFrame_SetArtTextures(self, textureName, index, alpha)
 	local info = CREDITS_ART_INFO[self.creditsType][index];
 	if ( not info ) then
 		return;
-	end
-	local path = CREDITS_ART_INFO[self.creditsType].path;
-	if ( not path ) then
-		path = "";
 	end
 
 	local texture;
@@ -97,11 +97,14 @@ function CreditsFrame_SetArtTextures(self,textureName, index, alpha)
 			if ( (width <= 0) or (height <= 0) ) then
 				texture:Hide();
 			else
-				texture:SetTexture("Interface\\Glues\\Credits\\"..path..info.file..texIndex);
-				texture:SetWidth(width);
-				texture:SetHeight(height);
-				texture:SetAlpha(alpha);
-				texture:Show();
+				if (IsValidTextureIndex(info, texIndex)) then
+					texture:SetTexture("Interface\\Glues\\Credits\\"..info.file..texIndex);
+					texture:SetWidth(width);
+					texture:SetHeight(height);
+					texture:SetAlpha(alpha);
+					texture:Show();
+				end
+
 				texIndex = texIndex + 1;
 			end
 		end
@@ -117,12 +120,8 @@ function CreditsFrame_CacheTextures(self, index)
 	if ( not info ) then
 		return;
 	end
-	local path = CREDITS_ART_INFO[CreditsFrame.creditsType].path;
-	if ( not path ) then
-		path = "";
-	end
 
-	CreditsArtCache1:SetTexture("Interface\\Glues\\Credits\\"..path..info.file.."1");
+	CreditsArtCache1:SetTexture("Interface\\Glues\\Credits\\"..info.file.."1");
 end
 
 function CreditsFrame_UpdateCache(self)
@@ -140,12 +139,10 @@ function CreditsFrame_UpdateCache(self)
 	if ( not info ) then
 		return;
 	end
-	local path = CREDITS_ART_INFO[self.creditsType].path;
-	if ( not path ) then
-		path = "";
-	end
 
-	_G["CreditsArtCache"..self.cacheIndex]:SetTexture("Interface\\Glues\\Credits\\"..path..info.file..self.cacheIndex);
+	if (IsValidTextureIndex(info, self.cacheIndex)) then
+		_G["CreditsArtCache"..self.cacheIndex]:SetTexture("Interface\\Glues\\Credits\\"..info.file..self.cacheIndex);
+	end
 end
 
 function CreditsFrame_UpdateArt(self, index, elapsed)

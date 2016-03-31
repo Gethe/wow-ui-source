@@ -146,7 +146,7 @@ function GarrisonCapacitiveDisplayFrame_Update(self, success, maxShipments, plot
 			end
 		end
 
-	    local name, texture, quality, itemID, duration = C_Garrison.GetShipmentItemInfo();
+	    local name, texture, quality, itemID, followerID, duration = C_Garrison.GetShipmentItemInfo();
 
 		if (not quality) then
 			quality = LE_ITEM_QUALITY_COMMON;
@@ -175,7 +175,21 @@ function GarrisonCapacitiveDisplayFrame_Update(self, success, maxShipments, plot
 
 		display.Description:SetText(description);
 
-		display.ShipmentIconFrame.ShipmentName:SetText(name);
+		local followerInfo;
+		if (followerID) then
+			followerInfo = C_Garrison.GetFollowerInfo(followerID);
+		end
+		if (followerInfo) then
+			display.ShipmentIconFrame.ShipmentName:SetFormattedText(FOLLOWER_CLASSNAME_AND_NAME_TEMPLATE, followerInfo.className, followerInfo.name);
+			display.ShipmentIconFrame.Follower:SetupPortrait(followerInfo);
+			display.ShipmentIconFrame.Follower:Show();
+			display.ShipmentIconFrame.Icon:Hide();
+		else
+			display.ShipmentIconFrame.ShipmentName:SetText(name);
+			display.ShipmentIconFrame.Follower:Hide();
+			display.ShipmentIconFrame.Icon:Show();
+		end
+
 		if (available > 0) then
 			if (shipmentUpdater) then
 				shipmentUpdater:Cancel();

@@ -5,7 +5,7 @@ function AlternatePowerBar_OnLoad(self)
 	local _, class = UnitClass("player");
 	if (class ~= "PRIEST" and class ~= "SHAMAN" and class ~= "MONK") then -- TODO: Task 86565, This 'hack' removes the alternate power bar from Shadow Priests, but maybe the code as a whole should be restructured
 		self.textLockable = 1;
-		self.cvar = "playerStatusText";
+		self.cvar = "statusText";
 		self.cvarLabel = "STATUS_TEXT_PLAYER";
 		self.capNumericDisplay = true;
 		AlternatePowerBar_Initialize(self);

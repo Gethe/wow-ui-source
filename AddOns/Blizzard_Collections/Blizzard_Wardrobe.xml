@@ -13,23 +13,18 @@
 			<Layer level="OVERLAY" textureSubLevel="-1">
 				<Texture parentKey="Border" atlas="transmog-wardrobe-border-collected" useAtlasSize="true">
 					<Anchors>
-						<Anchor point="CENTER" x="0" y="-4"/>
+						<Anchor point="CENTER" x="0" y="-3"/>
 					</Anchors>
 				</Texture>
 			</Layer>
 			<Layer level="OVERLAY">
-				<Texture parentKey="SelectedTexture" atlas="transmog-wardrobe-border-selected" useAtlasSize="true" alphaMode="ADD" hidden="true">
+				<Texture parentKey="TransmogStateTexture" atlas="transmog-wardrobe-border-selected" useAtlasSize="true" alphaMode="ADD" hidden="true">
 					<Anchors>
 						<Anchor point="CENTER"/>
 					</Anchors>
 				</Texture>
 			</Layer>
 			<Layer level="OVERLAY" textureSubLevel="1">
-				<Texture parentKey="AppliedTexture" atlas="transmog-icon-checkmark" useAtlasSize="true" hidden="true">
-					<Anchors>
-						<Anchor point="BOTTOM" x="0" y="-13"/>
-					</Anchors>
-				</Texture>
 				<FontString parentKey="NewString" inherits="GameFontHighlight" maxLines="1" justifyH="CENTER" text="NEW_CAPS" hidden="true">
 					<Shadow>
 						<Color r="0.32" g="0.5" b="1.0"/>
@@ -98,6 +93,12 @@
 				<Anchor point="CENTER"/>
 			</Anchors>
 		</NormalTexture>
+		<HighlightTexture parentKey="Highlight" atlas="bags-roundhighlight" alphaMode="ADD" hidden="true">
+			<Size x="31" y="31"/>
+			<Anchors>
+				<Anchor point="CENTER" x="0" y="1"/>
+			</Anchors>
+		</HighlightTexture>
 		<Layers>
 			<Layer level="OVERLAY">
 				<Texture parentKey="SelectedTexture" atlas="transmog-nav-slot-selected" useAtlasSize="true" hidden="true">
@@ -129,6 +130,12 @@
 				<Anchor point="CENTER"/>
 			</Anchors>
 		</NormalTexture>
+		<HighlightTexture parentKey="Highlight" atlas="bags-roundhighlight" alphaMode="ADD" hidden="true">
+			<Size x="21" y="21"/>
+			<Anchors>
+				<Anchor point="CENTER" x="0" y="2"/>
+			</Anchors>
+		</HighlightTexture>
 		<Layers>
 			<Layer level="OVERLAY">
 				<Texture parentKey="SelectedTexture" atlas="transmog-nav-slot-selected-small" useAtlasSize="true" hidden="true">
@@ -151,6 +158,59 @@
 		</Scripts>
 	</Button>
 
+	<Frame name="WardrobeModelPendingTransmogFrame">
+		<Size x="78" y="104"/>
+		<Layers>
+			<Layer level="ARTWORK">
+				<Texture parentKey="Wisp1" hidden="false" alpha="0" alphaMode="BLEND" atlas="transmog-wardrobe-border-selected-wisp" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent.selected" x="33" y="-46"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="Wisp2" hidden="false" alpha="0" alphaMode="BLEND" atlas="transmog-wardrobe-border-selected-wisp" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent.selected" x="-33" y="45"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="Wisp3" hidden="false" alpha="0" alphaMode="BLEND" atlas="transmog-wardrobe-border-selected-wisp" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent.selected" x="-32" y="-46"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="Wisp4" hidden="false" alpha="0" alphaMode="BLEND" atlas="transmog-wardrobe-border-selected-wisp" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent.selected" x="32" y="45"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="OVERLAY">
+				<Texture parentKey="UndoIcon" atlas="transmog-icon-revert" useAtlasSize="true" hidden="true">
+					<Anchors>
+						<Anchor point="BOTTOM" x="0" y="-13"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Animations>
+			<AnimationGroup parentKey="TransmogSelectedAnim" setToFinalAlpha="true" looping="repeat">
+				<Translation childKey="Wisp1" duration="2" order="1" offsetX="-70" offsetY="0"/>
+				<Alpha childKey="Wisp1" duration="1" order="1" fromAlpha="0" toAlpha="1"/>
+				<Alpha childKey="Wisp1" startDelay="1" duration="1" order="1" fromAlpha="1" toAlpha="0"/>
+				<Rotation childKey="Wisp2" duration="0" order="1" degrees="180"/>
+				<Translation childKey="Wisp2" duration="2" order="1" offsetX="70" offsetY="0"/>
+				<Alpha childKey="Wisp2" duration="1" order="1" fromAlpha="0" toAlpha="1"/>
+				<Alpha childKey="Wisp2" startDelay="1" duration="1" order="1" fromAlpha="1" toAlpha="0"/>
+				<Rotation childKey="Wisp3" duration="0" order="1" degrees="-90"/>
+				<Translation childKey="Wisp3" duration="2" order="1" offsetX="0" offsetY="90"/>
+				<Alpha childKey="Wisp3" duration="1" order="1" fromAlpha="0" toAlpha="1"/>
+				<Alpha childKey="Wisp3" startDelay="1" duration="1" order="1" fromAlpha="1" toAlpha="0"/>
+				<Rotation childKey="Wisp4" duration="0" order="1" degrees="90"/>
+				<Translation childKey="Wisp4" duration="2" order="1" offsetX="0" offsetY="-90"/>
+				<Alpha childKey="Wisp4" duration="1" order="1" fromAlpha="0" toAlpha="1"/>
+				<Alpha childKey="Wisp4" startDelay="1" duration="1" order="1" fromAlpha="1" toAlpha="0" endDelay="1"/>
+			</AnimationGroup>
+		</Animations>
+	</Frame>
 	<Frame name="WardrobeCollectionFrame" parent="CollectionsJournal" setAllPoints="true" hidden="true">
 		<Frames>
 			<EditBox name="$parentSearchBox" parentKey="searchBox" inherits="BagSearchBoxTemplate" letters="40" motionScriptsWhileDisabled="true">
@@ -327,7 +387,7 @@
 					<Anchor point="RIGHT" relativeKey="$parent.searchBox" relativePoint="LEFT" x="-32" y="0"/>
 				</Anchors>
 				<Layers>
-					<Layer level="ARTWORK">
+					<Layer level="OVERLAY">
 						<Texture parentKey="borderLeft" file="Interface\PaperDollInfoFrame\UI-Character-Skills-BarBorder">
 							<Size x="8" y="17"/>
 							<TexCoords left="0.007843" right="0.043137" top="0.193548" bottom="0.774193"/>
@@ -350,7 +410,7 @@
 							</Anchors>
 						</Texture>
 					</Layer>
-					<Layer level="OVERLAY">
+					<Layer level="OVERLAY" textureSubLevel="1">
 						<FontString parentKey="text" inherits="TextStatusBarText" justifyH="CENTER">
 							<Size x="0" y="9"/>
 							<Anchors>
@@ -403,6 +463,16 @@
 			</Frame>
 
 			<Frame parentKey="ModelsFrame" inherits="CollectionsBackgroundTemplate">
+				<Layers>
+					<Layer level="ARTWORK">
+						<FontString parentKey="NoValidItemsLabel" inherits="GameFontNormalMed2" text="TRANSMOG_NO_VALID_ITEMS_EQUIPPED">
+							<Anchors>
+								<Anchor point="CENTER"/>
+							</Anchors>
+							<Color r="0.804" g="0.725" b="0.616"/>
+						</FontString>
+					</Layer>
+				</Layers>
 				<Frames>
 					<Frame name="WardrobeModelRightClickDropDown" parentKey="RightClickDropDown" inherits="UIDropDownMenuTemplate" hidden="true"/>
 					<Frame parentKey="WeaponDropDown" name="$parentWeaponDropDown" inherits="UIDropDownMenuTemplate" enableMouse="true" hidden="true">
@@ -422,7 +492,7 @@
 					</Frame>
 					<DressUpModel parentArray="Models" parentKey="ModelR1C1" inherits="WardrobeModelTemplate">
 						<Anchors>
-							<Anchor point="TOP" x="-238" y="-84"/>
+							<Anchor point="TOP" x="-238" y="-85"/>
 						</Anchors>
 					</DressUpModel>
 					<DressUpModel parentArray="Models" parentKey="ModelR1C2" inherits="WardrobeModelTemplate">
@@ -565,7 +635,7 @@
 		</Scripts>
 	</Frame>
 	
-	<Button name="WardrobeTransmogButtonTemplate" virtual="true">
+	<Button name="WardrobeTransmogButtonTemplate" motionScriptsWhileDisabled="true" virtual="true">
 		<KeyValues>
 			<KeyValue key="transmogType" value="LE_TRANSMOG_TYPE_APPEARANCE" type="global"/>
 		</KeyValues>
@@ -945,7 +1015,7 @@
 							<KeyValue key="minMenuStringWidth" value="152" type="number"/>
 							<KeyValue key="maxMenuStringWidth" value="216" type="number"/>
 							<KeyValue key="LoadOutfitFunc" value="WardrobeTransmogFrame_LoadOutfit" type="global"/>
-							<KeyValue key="GetDisplayedSourceIDFunc" value="WardrobeTransmogFrame_GetDisplayedSourceID" type="global"/>
+							<KeyValue key="GetDisplayedSourceIDFunc" value="WardrobeTransmogFrame_GetSourceIDForOutfit" type="global"/>
 						</KeyValues>
 						<Anchors>
 							<Anchor point="TOPLEFT" x="-14" y="28"/>
@@ -1155,6 +1225,7 @@
 					<OnEvent function="WardrobeTransmogFrame_OnEvent"/>
 					<OnShow function="WardrobeTransmogFrame_OnShow"/>
 					<OnHide function="WardrobeTransmogFrame_OnHide"/>
+					<OnUpdate function="WardrobeTransmogFrame_OnUpdate"/>
 				</Scripts>
 			</Frame>
 		</Frames>

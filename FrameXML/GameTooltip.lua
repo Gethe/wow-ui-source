@@ -426,9 +426,29 @@ function EmbeddedItemTooltip_SetItemByID(self, id)
 	self.Tooltip:SetOwner(self, "ANCHOR_NONE");
 	self.Tooltip:SetItemByID(id);
 	SetItemButtonQuality(self, quality, id);
-	self.Count:Hide();
+	SetItemButtonCount(self, 1);
 	self.Icon:SetTexture(itemTexture);
 	self.itemTextureSet = (itemTexture ~= nil);
 	self.Tooltip:SetPoint("TOPLEFT", self.Icon, "TOPRIGHT", 0, 10);
 	self.Tooltip:Show();
+end
+
+function EmbeddedItemTooltip_SetItemByQuestReward(self, questLogIndex, questID)
+	local itemName, itemTexture, quantity, quality, isUsable, itemID = GetQuestLogRewardInfo(questLogIndex, questID);
+	if itemName and itemTexture then
+		self.id = itemID;
+
+		self:Show();
+		self.Tooltip:SetOwner(self, "ANCHOR_NONE");
+		self.Tooltip:SetQuestLogItem("reward", questLogIndex, questID);
+		SetItemButtonQuality(self, quality, itemID);
+		SetItemButtonCount(self, quantity);
+		self.Icon:SetTexture(itemTexture);
+		self.itemTextureSet = (itemTexture ~= nil);
+		self.Tooltip:SetPoint("TOPLEFT", self.Icon, "TOPRIGHT", 0, 10);
+		self.Tooltip:Show();
+
+		return true;
+	end
+	return false;
 end

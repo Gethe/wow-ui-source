@@ -849,9 +849,8 @@ function GarrisonCommonFollowerAlertFrame_SetUp(frame, followerID, name, quality
 end
 
 function GarrisonFollowerAlertFrame_SetUp(frame, followerID, name, displayID, level, quality, isUpgraded)
-	frame.PortraitFrame.Portrait:SetTexture(C_Garrison.GetFollowerPortraitIconID(followerID));
-	frame.PortraitFrame:SetLevel(level);
-	frame.PortraitFrame:SetQuality(quality);
+	frame.followerInfo = C_Garrison.GetFollowerInfo(followerID);
+	frame.PortraitFrame:SetupPortrait(frame.followerInfo);
 	if ( isUpgraded ) then
 		frame.Title:SetText(GARRISON_FOLLOWER_ADDED_UPGRADED_TOAST);
 	else
@@ -875,10 +874,7 @@ function GarrisonShipFollowerAlertFrame_SetUp(frame, followerID, name, class, te
 	GarrisonCommonFollowerAlertFrame_SetUp(GarrisonShipFollowerAlertFrame, followerID, name, 0, isUpgraded);
 end
 
-function GarrisonFollowerAlertFrame_OnEnter(self, button, down)
-	if( AlertFrame_OnClick(self, button, down) ) then
-		return;
-	end
+function GarrisonFollowerAlertFrame_OnEnter(self)
 	AlertFrame_StopOutAnimation(self);
 	
 	local link = C_Garrison.GetFollowerLink(self.followerID);
@@ -896,7 +892,7 @@ function GarrisonFollowerAlertFrame_OnLeave(self)
 	AlertFrame_ResumeOutAnimation(self);
 end
 
-function GarrisonAlertFrame_OnClick(self, button, down)
+function GarrisonFollowerAlertFrame_OnClick(self, button, down)
 	if( AlertFrame_OnClick(self, button, down) ) then
 		return;
 	end
@@ -904,7 +900,7 @@ function GarrisonAlertFrame_OnClick(self, button, down)
 	if (not GarrisonLandingPage) then
 		Garrison_LoadUI();
 	end
-	ShowUIPanel(GarrisonLandingPage);
+	ShowGarrisonLandingPage(GarrisonFollowerOptions[self.followerInfo.followerTypeID].garrisonType);
 end
 
 GarrisonFollowerAlertSystem = AlertFrame:AddSimpleAlertFrameSubSystem(GarrisonFollowerAlertFrame, GarrisonFollowerAlertFrame_SetUp);
@@ -1059,3 +1055,28 @@ function WorldQuestCompleteFrameReward_OnEnter(self)
 end
 
 WorldQuestCompleteAlertSystem = AlertFrame:AddSimpleAlertFrameSubSystem(WorldQuestCompleteAlertFrame, WorldQuestCompleteAlertFrame_SetUp);
+
+-- [[LegendaryItemAlertFrame ]] --
+function LegendaryItemAlertFrame_SetUp(frame, itemLink)
+	itemName, itemHyperLink, itemRarity, _, _, _, _, _, _, itemTexture = GetItemInfo(itemLink);
+	frame.Icon:SetTexture(itemTexture);
+	frame.ItemName:SetText(itemName);
+	local color = ITEM_QUALITY_COLORS[itemRarity];
+	frame.ItemName:SetVertexColor(color.r, color.g, color.b);
+	frame.hyperlink = itemHyperLink;
+	frame.Background2.animIn:Play();
+	frame.Background3.animIn:Play();
+	PlaySound("UI_LegendaryLoot_Toast");
+end
+
+function LegendaryItemAlertFrame_OnClick(self, button, down)
+	if( AlertFrame_OnClick(self, button, down) ) then
+		return;
+	end
+	local bag = SearchBagsForItemLink(self.hyperlink);
+	if (bag >= 0) then
+		OpenBag(bag);
+	end
+end
+
+LegendaryItemAlertSystem = AlertFrame:AddSimpleAlertFrameSubSystem(LegendaryItemAlertFrame, LegendaryItemAlertFrame_SetUp);

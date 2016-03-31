@@ -9,8 +9,8 @@ StaticPopupDialogs["CONFIRM_LEARN_SPEC"] = {
 	OnCancel = function (self)
 	end,
 	OnShow = function(self)
-		if (self.data.previewSpecCost) then
-			self.text:SetFormattedText(CONFIRM_LEARN_SPEC_COST, GetMoneyString(GetSpecChangeCost()));
+		if (self.data.previewSpecCost and self.data.previewSpecCost > 0) then
+			self.text:SetFormattedText(CONFIRM_LEARN_SPEC_COST, GetMoneyString(self.data.previewSpecCost));
 		else
 			self.text:SetText(CONFIRM_LEARN_SPEC);
 		end
@@ -602,7 +602,7 @@ function PlayerTalentFrame_UpdateTitleText(numTalentGroups)
 	elseif ( selectedTab == PVP_TALENTS_TAB ) then
 		local prestigeLevel = UnitPrestige("player");
 		if (prestigeLevel > 0) then
-			local text = PVP_TALENTS_PRESTIGE_RANK_TITLE:format(_G["PRESTIGE_LEVEL_"..prestigeLevel], prestigeLevel)
+			local text = PVP_TALENTS_PRESTIGE_RANK_TITLE:format(select(2, GetPrestigeInfo(prestigeLevel)), prestigeLevel)
 			if ( spec and hasMultipleTalentGroups ) then
 				if (isActiveSpec and spec.nameActive) then
 					text = text .. " " .. spec.nameActive;
@@ -1669,16 +1669,17 @@ function PlayerTalentFramePVPTalentsPortraitMouseOverFrame_OnEnter(self)
 		GameTooltip:ClearAllPoints();
 		GameTooltip:SetPoint("LEFT", self, "RIGHT", 4, 0);
 		GameTooltip:SetOwner(self, "ANCHOR_PRESERVE");
-		GameTooltip:SetText(PRESTIGE_RANK_TOOLTIP_TEXT:format(prestige, _G["PRESTIGE_LEVEL_"..prestige]));
+		GameTooltip:SetText(PRESTIGE_RANK_TOOLTIP_TEXT:format(prestige, select(2, GetPrestigeInfo(prestige))));
 		GameTooltip:AddLine(" ");
-		for i = 1, MAX_PRESTIGE do
+		for i = 1, GetMaxPrestigeLevel() do
 			local color;
 			if (prestige == i) then
 				color = GREEN_FONT_COLOR;
 			else
 				color = NORMAL_FONT_COLOR;
 			end
-			GameTooltip:AddLine(PRESTIGE_RANK_TOOLTIP_LINE:format(GetPrestigeInfo(i) or 0, _G["PRESTIGE_LEVEL_"..i]), color.r, color.g, color.b);
+            local texture, name = GetPrestigeInfo(i);
+			GameTooltip:AddLine(PRESTIGE_RANK_TOOLTIP_LINE:format(texture, name), color.r, color.g, color.b);
 		end
 		GameTooltip:Show();		
 	end

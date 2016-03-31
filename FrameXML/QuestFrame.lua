@@ -14,6 +14,7 @@ function QuestFrame_OnLoad(self)
 	self:RegisterEvent("QUEST_ITEM_UPDATE");
 	self:RegisterEvent("QUEST_LOG_UPDATE");
 	self:RegisterEvent("UNIT_PORTRAIT_UPDATE");
+	self:RegisterEvent("LEARNED_SPELL_IN_TAB");
 end
 
 function QuestFrame_OnEvent(self, event, ...)
@@ -72,6 +73,12 @@ function QuestFrame_OnEvent(self, event, ...)
 		-- just update if at greeting panel
 		if ( QuestFrameGreetingPanel:IsShown() ) then
 			QuestFrameGreetingPanel_OnShow(QuestFrameGreetingPanel);
+		end
+		return;
+	elseif ( event == "LEARNED_SPELL_IN_TAB" ) then
+		if ( QuestInfoFrame.rewardsFrame:IsVisible() ) then
+			QuestInfo_ShowRewards();
+			QuestDetailScrollFrameScrollBar:SetValue(0);
 		end
 		return;
 	end

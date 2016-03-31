@@ -591,6 +591,18 @@ function CharacterCreateEnumerateClasses(classes)
 				button:Disable();
 				SetButtonDesaturated(button, true);
 				button.tooltip.footer = "|cffff0000"..CLASS_DISABLED.."|r";
+				local validRaces = GetValidRacesForClass(button:GetID());
+				if ( validRaces ) then
+					local races = nil;
+					for i = 1, #validRaces do
+						if ( races ) then
+							races = races..", "..validRaces[i];
+						else
+							races = validRaces[i];
+						end
+					end
+					button.tooltip.footer = button.tooltip.footer.."|n|n|cffff0000"..races.."|r";
+				end
 				disableTexture:Show();
 			end
 		else
@@ -936,12 +948,29 @@ function CharCreateCustomizationFrame_OnShow ()
 	end
 end
 
-function CharacterClass_OnClick(self)
+local AdvancedCharacterCreationWarningStrings = {
+	[6]	= ADVANCED_CHARACTER_CREATION_WARNING_DIALOG_TEXT_DEATHKNIGHT,
+	[12] = ADVANCED_CHARACTER_CREATION_WARNING_DIALOG_TEXT_DEMONHUNTER,
+	GenericWarning = ADVANCED_CHARACTER_CREATION_WARNING_DIALOG_TEXT_GENERIC,
+};
+
+local function ShowAdvancedCharacterCreationWarning(classButton)
+	local warningText = AdvancedCharacterCreationWarningStrings[classButton:GetID()] or AdvancedCharacterCreationWarningStrings.GenericWarning;
+	GlueDialog_Show("ADVANCED_CHARACTER_CREATION_WARNING", warningText, classButton);
+end
+
+function CharacterClass_SelectClass(self, forceAccept)
 	if( self:IsEnabled() ) then
 		PlaySound("gsCharacterCreationClass");
 		local _,_,currClass = GetSelectedClass();
 		local id = self:GetID();
 		if ( currClass ~= id ) then
+			if (IsAdvancedClass(id) and not (HasSufficientExperienceForAdvancedCreation() or forceAccept)) then
+				ShowAdvancedCharacterCreationWarning(self);
+				self:SetChecked(false);
+				return;
+			end
+
 			SetSelectedClass(id);
 			SetCharacterClass(id);
 			SetCharacterRace(GetSelectedRace());
@@ -959,6 +988,10 @@ function CharacterClass_OnClick(self)
 	if ( CharCreateMoreInfoButton.infoShown ) then
 		CharacterCreateTooltip:Hide();
 	end
+end
+
+function CharacterClass_OnClick(self)
+	CharacterClass_SelectClass(self, false);
 end
 
 function CharacterRace_OnClick(self, id, forceSelect)
@@ -1531,6 +1564,10 @@ end
 -- CharCreateClassButton script functions
 ---------------------------------------------
 function CharCreateClassButton_OnEnter(self)
+	if CharCreateMoreInfoButton.infoShown and self:GetChecked() then
+		return;
+	end
+		
 	CharacterCreateTooltip:SetOwner(self, "ANCHOR_LEFT", -8, -5);
 	CharacterCreateTooltip:SetText(self.tooltip.name, 1, 1, 1, 1, true);
 	CharacterCreateTooltip:AddLine(self.tooltip.roles, 0.510, 0.773, 1, 1, true);

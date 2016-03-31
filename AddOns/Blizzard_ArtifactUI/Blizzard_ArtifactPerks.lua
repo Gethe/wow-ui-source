@@ -2,10 +2,16 @@ ArtifactPerksMixin = {}
 
 function ArtifactPerksMixin:OnShow()	
 	self.modelTransformElapsed = 0;
+	self:RegisterEvent("CURSOR_UPDATE");
+end
 
-	if self.freezeAnim then
-		self.Model:FreezeAnimation(0);
-		self.AltModel:FreezeAnimation(0);
+function ArtifactPerksMixin:OnHide()	
+	self:UnregisterEvent("CURSOR_UPDATE");
+end
+
+function ArtifactPerksMixin:OnEvent(event, ...)
+	if event == "CURSOR_UPDATE" then
+		self:OnCursorUpdate();
 	end
 end
 
@@ -17,7 +23,7 @@ function ArtifactPerksMixin:RefreshModel()
 	local itemID, altItemID, _, _, _, _, _, appearanceID, appearanceModID, altOnTop = C_ArtifactUI.GetArtifactInfo();
 	local _, _, _, _, _, _, uiCameraID, altHandUICameraID, _, _, _, modelAlpha, modelDesaturation, freezeAnim = C_ArtifactUI.GetAppearanceInfoByID(appearanceID);
 
-	self.freezeAnim = freezeAnim;
+	self.Model.freezeAnim = freezeAnim;
 	self.Model.uiCameraID = uiCameraID;
 	self.Model.desaturation = modelDesaturation;
 	self.Model:SetItem(itemID, appearanceModID);
@@ -28,6 +34,7 @@ function ArtifactPerksMixin:RefreshModel()
 	self.AltModel:SetModelDrawLayer(altOnTop and "ARTWORK" or "BORDER");
 
 	if altItemID and altHandUICameraID then
+		self.AltModel.freezeAnim = freezeAnim;
 		self.AltModel.uiCameraID = altHandUICameraID;
 		self.AltModel.desaturation = modelDesaturation;
 		self.AltModel:SetItem(altItemID, appearanceModID);
@@ -36,10 +43,23 @@ function ArtifactPerksMixin:RefreshModel()
 	else
 		self.AltModel:Hide();
 	end
+end
+
+function ArtifactsModelTemplate_OnModelLoaded(self)
+	local CUSTOM_ANIMATION_SEQUENCE = 213;
+	local animationSequence = self:HasAnimation(CUSTOM_ANIMATION_SEQUENCE) and CUSTOM_ANIMATION_SEQUENCE or 0;
+
+	if self.uiCameraID then
+		Model_ApplyUICamera(self, self.uiCameraID);
+	end
+	self:SetLight(1, 0, 0, 0, 0, .7, 1.0, 1.0, 1.0);
+				
+	self:SetDesaturation(self.desaturation or .5);
 
 	if self.freezeAnim then
-		self.Model:FreezeAnimation(0);
-		self.AltModel:FreezeAnimation(0);
+		self:FreezeAnimation(animationSequence, 0);
+	else
+		self:SetAnimation(animationSequence, 0);
 	end
 end
 
@@ -81,6 +101,8 @@ function ArtifactPerksMixin:RefreshPowers(newItem)
 		if powerButton:IsStart() then
 			self.startingPowerButton = powerButton;
 		end
+
+		powerButton:SetShown(powerButton:ShouldBeVisible());
 	end
 
 	self:HideUnusedWidgets(self.PowerButtons, #powers);
@@ -91,7 +113,6 @@ end
 function ArtifactPerksMixin:GetOrCreatePowerButton(powerIndex)
 	local button = self.PowerButtons and self.PowerButtons[powerIndex];
 	if button then
-		button:Show();
 		return button;
 	end
 	return CreateFrame("BUTTON", nil, self, "ArtifactPowerButtonTemplate");
@@ -118,24 +139,6 @@ function ArtifactPerksMixin:HideUnusedWidgets(widgetTable, numUsed, customHideFu
 			end
 		end
 	end
-end
-
-function ArtifactPerksMixin:CanRespec()
-
-	if(C_ArtifactUI.GetPointsRemaining() < C_ArtifactUI.GetRespecCost()) then
-		return false;
-	end
-
-	if C_ArtifactUI.IsAtForge() and not self.numRevealsPlaying then
-		for i, powerID in ipairs(C_ArtifactUI.GetPowers()) do
-			local spellID, cost, currentRank, maxRank, bonusRanks, x, y, prereqsMet, isStart, isGoldMedal = C_ArtifactUI.GetPowerInfo(powerID);
-			if not isStart and currentRank > 0 then
-				return true;
-			end
-		end
-	end
-
-	return false;
 end
 
 function ArtifactPerksMixin:TryRefresh()
@@ -296,16 +299,24 @@ function ArtifactPerksMixin:RefreshDependencies(powers)
 	self:HideUnusedWidgets(self.DependencyLines, numUsedLines, OnUnusedLineHidden);
 end
 
-local function RelicRefreshHelper(self, relicSlotIndex, ...)
+local function RelicRefreshHelper(self, relicSlotIndex, powersAffected, ...)
 	for i = 1, select("#", ...) do
 		local powerID = select(i, ...);
+		powersAffected[powerID] = true;
 		self:AddRelicToPower(powerID, relicSlotIndex);
 	end
 end
 
 function ArtifactPerksMixin:RefreshRelics()
+	local powersAffected = {};
 	for relicSlotIndex = 1, C_ArtifactUI.GetNumRelicSlots() do
-		RelicRefreshHelper(self, relicSlotIndex, C_ArtifactUI.GetPowersAffectedByRelic(relicSlotIndex));
+		RelicRefreshHelper(self, relicSlotIndex, powersAffected, C_ArtifactUI.GetPowersAffectedByRelic(relicSlotIndex));
+	end
+
+	for powerID, button in pairs(self.powerIDToPowerButton) do
+		if not powersAffected[powerID] then
+			button:RemoveRelicType();
+		end
 	end
 end
 
@@ -313,7 +324,7 @@ function ArtifactPerksMixin:AddRelicToPower(powerID, relicSlotIndex)
 	local button = self.powerIDToPowerButton[powerID];
 	if button then
 		local relicType = C_ArtifactUI.GetRelicSlotType(relicSlotIndex);
-		local relicName, relicIcon, relicLink = C_ArtifactUI.GetRelicInfo(relicSlotIndex);
+		local lockedReason, relicName, relicIcon, relicLink = C_ArtifactUI.GetRelicInfo(relicSlotIndex);
 		button:ApplyRelicType(relicType, relicLink, self.newItem);
 	end
 end
@@ -325,17 +336,66 @@ local function RelicHighlightHelper(self, highlightEnabled, ...)
 	end
 end
 
+local function RelicMouseOverHighlightHelper(self, highlightEnabled, tempRelicType, tempRelicLink, ...)
+	for i = 1, select("#", ...) do
+		local powerID = select(i, ...);
+		self:SetRelicPowerHighlightEnabled(powerID, highlightEnabled, tempRelicType, tempRelicLink);
+	end
+end
+
 function ArtifactPerksMixin:OnRelicSlotMouseEnter(relicSlotIndex)
 	RelicHighlightHelper(self, true, C_ArtifactUI.GetPowersAffectedByRelic(relicSlotIndex));
 end
 
 function ArtifactPerksMixin:OnRelicSlotMouseLeave(relicSlotIndex)
 	RelicHighlightHelper(self, false, C_ArtifactUI.GetPowersAffectedByRelic(relicSlotIndex));
+
+	self:RefreshCursorHighlights();
 end
 
-function ArtifactPerksMixin:SetRelicPowerHighlightEnabled(powerID, highlight)
+function ArtifactPerksMixin:ShowHighlightForRelicItemID(itemID)
+	local couldFitInAnySlot = false;
+	for relicSlotIndex = 1, C_ArtifactUI.GetNumRelicSlots() do
+		if C_ArtifactUI.CanApplyRelicItemIDToSlot(itemID, relicSlotIndex) then
+			self.TitleContainer:SetRelicSlotHighlighted(relicSlotIndex, true);
+			couldFitInAnySlot = true;
+		end
+	end
+
+	if couldFitInAnySlot then
+		local relicName, relicIcon, relicType, relicLink = C_ArtifactUI.GetRelicInfoByItemID(itemID);
+		RelicMouseOverHighlightHelper(self, true, relicType, relicLink, C_ArtifactUI.GetPowersAffectedByRelicItemID(itemID));
+	end
+end
+
+function ArtifactPerksMixin:HideHighlightForRelicItemID(itemID)
+	RelicMouseOverHighlightHelper(self, false, nil, nil, C_ArtifactUI.GetPowersAffectedByRelicItemID(itemID));
+	self.TitleContainer:RefreshCursorRelicHighlights();
+end
+
+function ArtifactPerksMixin:RefreshCursorHighlights()
+	local type, itemID = GetCursorInfo();
+	if type == "item" and IsArtifactRelicItem(itemID) then
+		self.cursorItemID = itemID;
+		self:ShowHighlightForRelicItemID(self.cursorItemID);
+	elseif self.cursorItemID then
+		self:HideHighlightForRelicItemID(self.cursorItemID);
+		self.cursorItemID = nil;
+	end
+end
+
+function ArtifactPerksMixin:OnCursorUpdate()
+	self:RefreshCursorHighlights();
+end
+
+function ArtifactPerksMixin:SetRelicPowerHighlightEnabled(powerID, highlight, tempRelicType, tempRelicLink)
 	local button = self.powerIDToPowerButton[powerID];
 	if button then
+		if highlight and tempRelicType and tempRelicLink then
+			button:ApplyTemporaryRelicType(tempRelicType, tempRelicLink);
+		else
+			button:RemoveTemporaryRelicType();
+		end
 		button:SetRelicHighlightEnabled(highlight);
 	end
 end
@@ -401,7 +461,7 @@ function ArtifactPerksMixin:PlayReveal()
 		QueueReveal(self, self.startingPowerButton, 0);
 
 		for powerID, powerButton in pairs(self.powerIDToPowerButton) do
-			if powerButton:PlayRevealAnimation(OnRevealFinished) then
+			if powerButton:ShouldBeVisible() and powerButton:PlayRevealAnimation(OnRevealFinished) then
 				powerButton:SetLocked(true);
 				self.numRevealsPlaying = self.numRevealsPlaying + 1;
 			end
@@ -450,7 +510,6 @@ function ArtifactTitleTemplateMixin:OnShow()
 
 	self:RegisterEvent("ARTIFACT_UPDATE");
 	self:RegisterEvent("CURSOR_UPDATE");
-	
 end
 
 function ArtifactTitleTemplateMixin:OnHide()
@@ -473,28 +532,44 @@ function ArtifactTitleTemplateMixin:OnCursorUpdate()
 		StaticPopup_Hide("CONFIRM_RELIC_REPLACE");
 	end
 
-	for i, relicSlot in ipairs(self.RelicSlots) do
-		if relicSlot:IsShown() then
-			if C_ArtifactUI.CanApplyCursorRelicToSlot(i) then
-				relicSlot:LockHighlight();
-				relicSlot.HighlightTexture:Show();
-				relicSlot.CanSlotAnim:Play();
-			else
-				relicSlot:UnlockHighlight();
-				relicSlot.CanSlotAnim:Stop();
-				if CursorHasItem() then
-					relicSlot.HighlightTexture:Hide();
-				else
-					relicSlot.HighlightTexture:Show();
-				end
-			end
+	self:RefreshCursorRelicHighlights();
+end
+
+function ArtifactTitleTemplateMixin:RefreshCursorRelicHighlights()
+	for relicSlotIndex in ipairs(self.RelicSlots) do
+		self:SetRelicSlotHighlighted(relicSlotIndex, C_ArtifactUI.CanApplyCursorRelicToSlot(relicSlotIndex));
+	end
+end
+
+function ArtifactTitleTemplateMixin:SetRelicSlotHighlighted(relicSlotIndex, highlighted)
+	local relicSlot = self.RelicSlots[relicSlotIndex];
+	if relicSlot:IsShown() then
+		if highlighted then
+			relicSlot:LockHighlight();
+			relicSlot.HighlightTexture:Show();
+			relicSlot.CanSlotAnim:Play();
+		else
+			relicSlot:UnlockHighlight();
+			relicSlot.CanSlotAnim:Stop();
+			relicSlot.HighlightTexture:Hide();
 		end
 	end
 end
 
-
 function ArtifactTitleTemplateMixin:OnRelicSlotMouseEnter(relicSlot)
-	if relicSlot.relicLink then
+	if relicSlot.lockedReason then
+		GameTooltip:SetOwner(relicSlot, "ANCHOR_BOTTOMRIGHT", 0, 10);
+		local slotName = _G["RELIC_SLOT_TYPE_" .. relicSlot.relicType:upper()];
+		if slotName then
+			GameTooltip:SetText(LOCKED_RELIC_TOOLTIP_TITLE:format(slotName), 1, 1, 1);
+			if relicSlot.lockedReason == "" then
+				GameTooltip:AddLine(LOCKED_RELIC_TOOLTIP_BODY, NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b, true);
+			else
+				GameTooltip:AddLine(relicSlot.lockedReason, NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b, true);
+			end
+			GameTooltip:Show();
+		end
+	elseif relicSlot.relicLink then
 		GameTooltip:SetOwner(relicSlot, "ANCHOR_BOTTOMRIGHT", 0, 10);
 		GameTooltip:SetHyperlink(relicSlot.relicLink);
 	elseif relicSlot.relicType then
@@ -572,19 +647,31 @@ function ArtifactTitleTemplateMixin:EvaluateRelics()
 		relicSlot:GetNormalTexture():SetAtlas(relicAtlasName, true);
 		relicSlot:GetHighlightTexture():SetAtlas(relicAtlasName, true);
 
-		local relicName, relicIcon, relicLink = C_ArtifactUI.GetRelicInfo(i);
-		if relicIcon then
-			relicSlot.Icon:SetSize(34, 34);
-			relicSlot.Icon:SetTexture(relicIcon);
-			relicSlot.Icon:SetMask("Interface\\CharacterFrame\\TempPortraitAlphaMask");
-		else
+		local lockedReason, relicName, relicIcon, relicLink = C_ArtifactUI.GetRelicInfo(i);
+		if lockedReason then
+			relicSlot:GetNormalTexture():SetAlpha(.5);
+			relicSlot:Disable();
+			relicSlot.LockedIcon:Show();
 			relicSlot.Icon:SetMask(nil);
 			relicSlot.Icon:SetAtlas("Relic-SlotBG", true);
+		else
+			relicSlot:GetNormalTexture():SetAlpha(1);
+			relicSlot:Enable();
+			relicSlot.LockedIcon:Hide();
+			if relicIcon then
+				relicSlot.Icon:SetSize(34, 34);
+				relicSlot.Icon:SetTexture(relicIcon);
+				relicSlot.Icon:SetMask("Interface\\CharacterFrame\\TempPortraitAlphaMask");
+			else
+				relicSlot.Icon:SetMask(nil);
+				relicSlot.Icon:SetAtlas("Relic-SlotBG", true);
+			end
 		end
 
 		relicSlot.relicLink = relicLink;
 		relicSlot.relicType = relicType;
 		relicSlot.relicSlotIndex = i;
+		relicSlot.lockedReason = lockedReason;
 		
 		relicSlot:ClearAllPoints();
 		local PADDING = 0;

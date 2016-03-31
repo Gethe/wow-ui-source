@@ -1836,7 +1836,7 @@
 							<OnUpdate function="GarrisonShipyardMap_OnUpdate"/>
 						</Scripts>
 					</Frame>
-					<Button parentKey="MissionPage" inherits="ShipyardMissionPageTemplate" hidden="true">
+					<Button parentKey="MissionPage" inherits="ShipyardMissionPageTemplate" mixin="GarrisonMissionPageMixin" hidden="true">
 						<Frames>
 							<Frame parentKey="Enemy1" parentArray="Enemies" inherits="GarrisonShipMissionEnemyTemplate">
 								<Anchors>

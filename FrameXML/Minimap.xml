@@ -666,8 +666,8 @@
 									<OnClick function="GarrisonLandingPageMinimapButton_OnClick"/>
 									<OnEnter>
 										GameTooltip:SetOwner(self, "ANCHOR_LEFT");
-										GameTooltip:SetText(GARRISON_LANDING_PAGE_TITLE, 1, 1, 1);
-										GameTooltip:AddLine(MINIMAP_GARRISON_LANDING_PAGE_TOOLTIP, nil, nil, nil, true);
+										GameTooltip:SetText(self.title, 1, 1, 1);
+										GameTooltip:AddLine(self.description, nil, nil, nil, true);
 										GameTooltip:Show();
 									</OnEnter>
 									<OnLeave>

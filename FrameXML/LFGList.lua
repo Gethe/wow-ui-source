@@ -42,6 +42,7 @@ LFG_LIST_PER_EXPANSION_TEXTURES = {
 	[3] = "cataclysm",
 	[4] = "mists",
 	[5] = "warlords",
+	[6] = "legion",
 }
 
 LFG_LIST_GROUP_DATA_ATLASES = {

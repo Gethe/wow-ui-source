@@ -99,9 +99,7 @@
 			</Layer>
 		</Layers>
 		<Frames>
-			<MovieFrame name="LoginBackgroundMovie" setAllPoints="true" hidden="true">
-			</MovieFrame>
-			<ModelFFX name="LoginBackgroundModel" setAllPoints="true" hidden="true" fogNear="0" fogFar="1200" glow="0.08">
+			<ModelFFX name="LoginBackgroundModel" setAllPoints="true" fogNear="0" fogFar="1200" glow="0.08">
 				<FogColor r="0.25" g="0.06" b="0.015"/>
 			</ModelFFX>
 			<Frame parentKey="UI" setAllPoints="true">
@@ -159,7 +157,7 @@
 										</Anchor>
 									</Anchors>
 								</FontString>
-								<FontString parentKey="Fill" inherits="GlueFontDisableSmall" justifyH="LEFT" justifyV="MIDDLE" text="ENTER_EMAIL">
+								<FontString parentKey="Fill" inherits="GlueFontDisableSmall" justifyH="LEFT" justifyV="MIDDLE" text="ENTER_YOUR_EMAIL">
 									<Anchors>
 										<Anchor point="CENTER" relativePoint="CENTER">
 											<Offset>

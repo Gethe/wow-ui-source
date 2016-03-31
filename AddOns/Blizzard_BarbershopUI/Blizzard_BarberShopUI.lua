@@ -25,7 +25,7 @@ function BarberShop_OnLoad(self)
 		end
 	end
 	
-	for i = STYLE_CUSTOM_DISPLAY1, STYLE_CUSTOM_DISPLAY1 + STYLE_NUM_CUSTOM_DISPLAY do
+	for i = STYLE_CUSTOM_DISPLAY1, (STYLE_CUSTOM_DISPLAY1 + STYLE_NUM_CUSTOM_DISPLAY - 1) do
 		if ( IsBarberShopStyleValid(i) ) then
 			self.Selector[i]:Show();
 		end

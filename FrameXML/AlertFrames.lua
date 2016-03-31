@@ -265,14 +265,17 @@ function AlertFrameMixin:OnEvent(event, ...)
 			validInstance = true;
 		end
 		-- toast only if not in an instance (except for garrison), and mission frame is not shown, and not in combat
-		if ( validInstance and (not GarrisonMissionFrame or not GarrisonMissionFrame:IsShown()) and not UnitAffectingCombat("player") ) then
-			GarrisonLandingPageMinimapButton.MinimapLoopPulseAnim:Play();
-
+		if ( validInstance and not UnitAffectingCombat("player") ) then
 			local followerTypeID, missionID = ...;
-			if ( followerTypeID == LE_FOLLOWER_TYPE_SHIPYARD_6_2 ) then
-				GarrisonShipMissionAlertSystem:AddAlert(missionID);
-			else
-				GarrisonMissionAlertSystem:AddAlert(missionID);
+			local missionFrame = _G[GarrisonFollowerOptions[followerTypeID].missionFrame];
+			if (not missionFrame or not missionFrame:IsShown()) then
+				GarrisonLandingPageMinimapButton.MinimapLoopPulseAnim:Play();
+
+				if ( followerTypeID == LE_FOLLOWER_TYPE_SHIPYARD_6_2 ) then
+					GarrisonShipMissionAlertSystem:AddAlert(missionID);
+				else
+					GarrisonMissionAlertSystem:AddAlert(missionID);
+				end
 			end
 		end
 	elseif ( event == "GARRISON_FOLLOWER_ADDED" ) then
@@ -286,6 +289,9 @@ function AlertFrameMixin:OnEvent(event, ...)
 		GarrisonRandomMissionAlertSystem:AddAlert(select(2, ...));
 	elseif ( event == "NEW_RECIPE_LEARNED" ) then
 		NewRecipeLearnedAlertSystem:AddAlert(...);
+	elseif ( event == "SHOW_LOOT_TOAST_LEGENDARY_LOOTED") then
+		local itemLink = ...;
+		LegendaryItemAlertSystem:AddAlert(itemLink);
 	end
 end
 

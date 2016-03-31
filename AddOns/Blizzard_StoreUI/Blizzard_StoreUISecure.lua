@@ -2913,14 +2913,22 @@ function StoreProductCardItem_OnEnter(self)
 		y = card:GetTop();
 		point = "BOTTOMLEFT";
 	end
-	StoreTooltip:Hide();
-	Outbound.SetItemTooltip(entryInfo.itemID, x, y, point);
+	
+	if entryInfo.itemID ~= 0 then
+		self.hasItemTooltip = true;
+		StoreTooltip:Hide();
+		Outbound.SetItemTooltip(entryInfo.itemID, x, y, point);
+	end
 end
 
 function StoreProductCardItem_OnLeave(self)
 	StoreProductCard_OnLeave(self:GetParent());
 	StoreProductCard_UpdateState(self:GetParent());
-	Outbound.ClearItemTooltip();
+
+	if self.hasItemTooltip then
+		Outbound.ClearItemTooltip();
+		self.hasItemTooltip = false;
+	end
 end
 
 function StoreProductCardCheckmark_OnLeave(self)

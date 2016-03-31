@@ -38,7 +38,7 @@
 		</Animations>
 	</Frame>
 
-	<Button name="ArtifactsRelicSlotTemplate" virtual="true">
+	<Button name="ArtifactsRelicSlotTemplate" motionScriptsWhileDisabled="true" virtual="true">
 		<Size x="72" y="72" />
 
 		<Layers>
@@ -46,6 +46,13 @@
 				<Texture parentKey="Icon">
 					<Anchors>
 						<Anchor point="CENTER" />
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="OVERLAY">
+				<Texture parentKey="LockedIcon" atlas="Forge-Lock" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="CENTER"/>
 					</Anchors>
 				</Texture>
 			</Layer>
@@ -94,14 +101,7 @@
 					Model_ApplyUICamera(self, self.uiCameraID);
 				end
 			</OnEvent>
-			<OnModelLoaded>
-				if self.uiCameraID then
-					Model_ApplyUICamera(self, self.uiCameraID);
-				end
-				self:SetLight(1, 0, 0, 0, 0, .7, 1.0, 1.0, 1.0);
-				
-				self:SetDesaturation(self.desaturation or .5);
-			</OnModelLoaded>
+			<OnModelLoaded function="ArtifactsModelTemplate_OnModelLoaded" />
 		</Scripts>
 	</PlayerModel>
 
@@ -186,6 +186,8 @@
 		</Frames>
 		<Scripts>
 			<OnShow method="OnShow" />
+			<OnHide method="OnHide" />
+			<OnEvent method="OnEvent" />
 			<OnUpdate method="OnUpdate" />
 		</Scripts>
 	</Frame>

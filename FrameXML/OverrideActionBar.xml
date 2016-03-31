@@ -447,7 +447,7 @@
 						
 						TextStatusBar_Initialize(self);
 						self.textLockable = 1;
-						self.cvar = "playerStatusText";
+						self.cvar = "statusText";
 						self.cvarLabel = "STATUS_TEXT_PLAYER";
 						self.showPercentage = true;
 						self.prefix = HEALTH;
@@ -504,7 +504,7 @@
 					
 						TextStatusBar_Initialize(self);
 						self.textLockable = 1;
-						self.cvar = "playerStatusText";
+						self.cvar = "statusText";
 						self.cvarLabel = "STATUS_TEXT_PLAYER";
 						self.showPercentage = true;
 						self.tooltipAnchorPoint = "ANCHOR_RIGHT";

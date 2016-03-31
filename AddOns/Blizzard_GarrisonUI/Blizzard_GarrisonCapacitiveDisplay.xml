@@ -193,6 +193,13 @@
 								</FontString>
 							</Layer>
 						</Layers>
+						<Frames>
+							<Frame parentKey="Follower" inherits="GarrisonFollowerPortraitTemplate">
+								<Anchors>
+									<Anchor point="CENTER"/>
+								</Anchors>
+							</Frame>							
+						</Frames>
 						<Scripts>
 							<OnEnter>
 								if (self.itemId) then

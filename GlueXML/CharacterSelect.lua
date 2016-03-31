@@ -59,13 +59,6 @@ function CharacterSelect_OnLoad(self)
 	self:RegisterEvent("DELETED_CHARACTER_LIST_RETRIEVING");
 	self:RegisterEvent("DELETED_CHARACTER_LIST_RETRIEVAL_RESULT");
 
-	-- CharacterSelect:SetModel("Interface\\Glues\\Models\\UI_Orc\\UI_Orc.m2");
-
-	-- local fogInfo = CharModelFogInfo["ORC"];
-	-- CharacterSelect:SetFogColor(fogInfo.r, fogInfo.g, fogInfo.b);
-	-- CharacterSelect:SetFogNear(0);
-	-- CharacterSelect:SetFogFar(fogInfo.far);
-
 	SetCharSelectModelFrame("CharacterSelectModel");
 
 	-- Color edit box backdrops
@@ -152,7 +145,7 @@ function CharacterSelect_OnShow()
 			elseif ( paymentPlan == 2 ) then
 				-- Free account
 				if ( billingTimeLeft < (24 * 60) ) then
-					billingText = format(BILLING_FREE_TIME_EXPIRE, billingTimeLeft.." "..MINUTES_ABBR);
+					billingText = format(BILLING_FREE_TIME_EXPIRE, format(MINUTES_ABBR, billingTimeLeft));
 				end				
 			elseif ( paymentPlan == 3 ) then
 				-- Fixed but not recurring
@@ -772,7 +765,7 @@ function UpdateCharacterList(skipSelect)
 		CharacterSelect.createIndex = numChars + 1;
 		if ( connected ) then
 			--If can create characters position and show the create button
-			CharSelectCreateCharacterButton:SetID(numChars + 1);
+			CharSelectCreateCharacterButton:SetID(CharacterSelect.createIndex);
 			CharSelectCreateCharacterButton:Show();
 			CharSelectUndeleteCharacterButton:Show();
 		end
@@ -883,6 +876,10 @@ function CharacterSelect_TabResize(self)
 	buttonMiddle:SetWidth(width);
 	buttonMiddleDisabled:SetWidth(width);
 	self:SetWidth(width + (2 * leftWidth));
+end
+
+function CharacterSelect_CreateNewCharacter()
+	CharacterSelect_SelectCharacter(CharacterSelect.createIndex)
 end
 
 function CharacterSelect_SelectCharacter(index, noCreate)
@@ -1054,21 +1051,21 @@ end
 
 function CharacterSelect_DeathKnightSwap(self)
 	local deathKnightTag = "DEATHKNIGHT";
-		if ( CharacterSelect.currentBGTag == deathKnightTag ) then
-			if (self.currentBGTag ~= deathKnightTag) then
-				self.currentBGTag = deathKnightTag;
-				self:SetNormalTexture("Interface\\Glues\\Common\\Glue-Panel-Button-Up-Blue");
-				self:SetPushedTexture("Interface\\Glues\\Common\\Glue-Panel-Button-Down-Blue");
-				self:SetHighlightTexture("Interface\\Glues\\Common\\Glue-Panel-Button-Highlight-Blue");
-			end
-		else
-			if (self.currentBGTag == deathKnightTag) then
-				self.currentBGTag = nil;
-				self:SetNormalTexture("Interface\\Glues\\Common\\Glue-Panel-Button-Up");
-				self:SetPushedTexture("Interface\\Glues\\Common\\Glue-Panel-Button-Down");
-				self:SetHighlightTexture("Interface\\Glues\\Common\\Glue-Panel-Button-Highlight");
-			end
+	if ( CharacterSelect.currentBGTag == deathKnightTag ) then
+		if (self.currentBGTag ~= deathKnightTag) then
+			self.currentBGTag = deathKnightTag;
+			self:SetNormalTexture("Interface\\Glues\\Common\\Glue-Panel-Button-Up-Blue");
+			self:SetPushedTexture("Interface\\Glues\\Common\\Glue-Panel-Button-Down-Blue");
+			self:SetHighlightTexture("Interface\\Glues\\Common\\Glue-Panel-Button-Highlight-Blue");
 		end
+	else
+		if (self.currentBGTag == deathKnightTag) then
+			self.currentBGTag = nil;
+			self:SetNormalTexture("Interface\\Glues\\Common\\Glue-Panel-Button-Up");
+			self:SetPushedTexture("Interface\\Glues\\Common\\Glue-Panel-Button-Down");
+			self:SetHighlightTexture("Interface\\Glues\\Common\\Glue-Panel-Button-Highlight");
+		end
+	end
 end
 
 
@@ -1327,7 +1324,8 @@ ACCOUNT_UPGRADE_FEATURES = {
 		  displayCheck =  function() return true end,
 		  upgradeOnClick = function() SubscriptionRequestDialog_Open() end,
 		  },
-	[1] =	{ [1] = { icon = "Interface\\Icons\\achievement_level_85", text = UPGRADE_FEATURE_7 },
+	[LE_EXPANSION_BURNING_CRUSADE] =
+		{ [1] = { icon = "Interface\\Icons\\achievement_level_85", text = UPGRADE_FEATURE_7 },
 		  [2] = { icon = "Interface\\Icons\\achievement_firelands raid_ragnaros", text = UPGRADE_FEATURE_8 },
 		  [3] = { icon = "Interface\\Icons\\Ability_Mount_CelestialHorse", text = UPGRADE_FEATURE_9 },
 		  logo = "Interface\\Glues\\Common\\Glues-WoW-CCLogo",
@@ -1336,7 +1334,8 @@ ACCOUNT_UPGRADE_FEATURES = {
 		  displayCheck =  function() return GameLimitedMode_IsActive() or CanUpgradeExpansion() end,
 		  upgradeOnClick = UpgradeAccount,
 		  },
-	[2] =	{ [1] = { icon = "Interface\\Icons\\achievement_level_85", text = UPGRADE_FEATURE_7 },
+	[LE_EXPANSION_WRATH_OF_THE_LICH_KING] =
+		{ [1] = { icon = "Interface\\Icons\\achievement_level_85", text = UPGRADE_FEATURE_7 },
 		  [2] = { icon = "Interface\\Icons\\achievement_firelands raid_ragnaros", text = UPGRADE_FEATURE_8 },
 		  [3] = { icon = "Interface\\Icons\\Ability_Mount_CelestialHorse", text = UPGRADE_FEATURE_9 },
 		  logo = "Interface\\Glues\\Common\\Glues-WoW-CCLogo",
@@ -1345,7 +1344,8 @@ ACCOUNT_UPGRADE_FEATURES = {
 		  displayCheck =  function() return GameLimitedMode_IsActive() or CanUpgradeExpansion() end,
 		  upgradeOnClick = UpgradeAccount,
 		  },
-	[3] =	{ [1] = { icon = "Interface\\Icons\\achievement_level_90", text = UPGRADE_FEATURE_10 },
+	[LE_EXPANSION_CATACLYSM] =
+		{ [1] = { icon = "Interface\\Icons\\achievement_level_90", text = UPGRADE_FEATURE_10 },
 		  [2] = { icon = "Interface\\Glues\\AccountUpgrade\\upgrade-panda", text = UPGRADE_FEATURE_11 },
 		  [3] = { icon = "Interface\\Icons\\achievement_zone_jadeforest", text = UPGRADE_FEATURE_12 },
 		  logo = "Interface\\Glues\\Common\\Glues-WoW-MPLogo",
@@ -1354,7 +1354,8 @@ ACCOUNT_UPGRADE_FEATURES = {
 		  displayCheck =  function() return GameLimitedMode_IsActive() or CanUpgradeExpansion() end,
 		  upgradeOnClick = UpgradeAccount,
 		  },
-	[4] =	{ [1] = { icon = "Interface\\Icons\\UI_Promotion_CharacterBoost", text = UPGRADE_FEATURE_13 },
+	[LE_EXPANSION_MISTS_OF_PANDARIA] =
+		{ [1] = { icon = "Interface\\Icons\\UI_Promotion_CharacterBoost", text = UPGRADE_FEATURE_13 },
 		  [2] = { icon = "Interface\\Icons\\Achievement_Level_100", text = UPGRADE_FEATURE_14 },
 		  [3] = { icon = "Interface\\Icons\\UI_Promotion_Garrisons", text = UPGRADE_FEATURE_15 },
 		  logo = "Interface\\Glues\\Common\\Glues-WoW-WODLOGO",
@@ -1363,7 +1364,8 @@ ACCOUNT_UPGRADE_FEATURES = {
 		  displayCheck =  function() return GameLimitedMode_IsActive() or CanUpgradeExpansion() end,
 		  upgradeOnClick = UpgradeAccount,
 		  },
-	[5] =	{ [1] = { icon = "Interface\\Icons\\ClassIcon_DemonHunter", text = UPGRADE_FEATURE_16 },
+	[LE_EXPANSION_WARLORDS_OF_DRAENOR] =
+		{ [1] = { icon = "Interface\\Icons\\ClassIcon_DemonHunter", text = UPGRADE_FEATURE_16 },
 		  [2] = { icon = "Interface\\Icons\\Icon_TreasureMap", text = UPGRADE_FEATURE_17 },
 		  [3] = { icon = "Interface\\Icons\\UI_Promotion_CharacterBoost", text = UPGRADE_FEATURE_18 },
 		  atlasLogo = "Glues-WoW-LegionLogo",
@@ -1386,8 +1388,7 @@ ACCOUNT_UPGRADE_FEATURES = {
 
 -- Account upgrade panel
 function AccountUpgradePanel_GetExpansionTag(isExpanded)
-	local tag = nil;
-	local logoTag = nil;
+	local tag, logoTag;
 	if ( IsTrialAccount() ) then
 		-- Trial users have the starter edition logo with an upgrade banner that brings you to the lowest expansion level available.
 		tag = max(GetAccountExpansionLevel(), GetExpansionLevel()) - 1;
@@ -1409,12 +1410,8 @@ end
 -- Account upgrade panel
 function AccountUpgradePanel_Update(isExpanded)
 	local tag, logoTag = AccountUpgradePanel_GetExpansionTag();	
-	if ( EXPANSION_LOGOS[logoTag] ) then
-		SetExpansionLogo(CharacterSelectLogo, logoTag);
-		CharacterSelectLogo:Show();
-	else
-		CharacterSelectLogo:Hide();
-	end
+
+	SetExpansionLogo(CharacterSelectLogo, logoTag);
 	
 	if ( not ACCOUNT_UPGRADE_FEATURES[tag] or not ACCOUNT_UPGRADE_FEATURES[tag].displayCheck() ) then
 		CharSelectAccountUpgradePanel:Hide();

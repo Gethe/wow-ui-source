@@ -105,11 +105,11 @@ function GarrisonBuildingFrame_OnLoad(self)
 		BUILDING_TABS[tabInfo[tabInfoIndex].id] = tab;
 		tab.Text:SetText(tabInfo[tabInfoIndex].name);
 		
-		tab.buildings = C_Garrison.GetBuildingsForSize(LE_FOLLOWER_TYPE_GARRISON_6_0, tab.categoryID);
+		tab.buildings = C_Garrison.GetBuildingsForSize(LE_GARRISON_TYPE_6_0, tab.categoryID);
 	end
 	
 	--get buildings owned
-	local buildings = C_Garrison.GetBuildings(LE_FOLLOWER_TYPE_GARRISON_6_0);
+	local buildings = C_Garrison.GetBuildings(LE_GARRISON_TYPE_6_0);
 	--add instance IDs for owned buildings to the corresponding building buttons
 	for i = 1, #buildings do
 		local building = buildings[i];
@@ -130,11 +130,13 @@ function GarrisonBuildingFrame_OnLoad(self)
 	GarrisonBuildingFrame_UpdateCurrency();
 	
 	self.FollowerList:Initialize(LE_FOLLOWER_TYPE_GARRISON_6_0);
+	self.FollowerList:SetSortFuncs(GarrisonFollowerList_DefaultSort, GarrisonFollowerList_InitializeDefaultSort);
+
 	local buttons = self.FollowerList.listScroll.buttons
 	for i = 1, #buttons do
-		buttons[i].champion:SetScript("OnClick", GarrisonBuildingFollowerButton_OnClick);
-		buttons[i].champion:SetScript("OnEnter", GarrisonBuildingFollowerButton_OnEnter);
-		buttons[i].champion:SetScript("OnLeave", GarrisonBuildingFollowerButton_OnLeave);
+		buttons[i].Follower:SetScript("OnClick", GarrisonBuildingFollowerButton_OnClick);
+		buttons[i].Follower:SetScript("OnEnter", GarrisonBuildingFollowerButton_OnEnter);
+		buttons[i].Follower:SetScript("OnLeave", GarrisonBuildingFollowerButton_OnLeave);
 	end
 	
 	GarrisonBuildingFrame.SPEC_CHANGE_CURRENCY, GarrisonBuildingFrame.SPEC_CHANGE_COST = C_Garrison.GetSpecChangeCost();
@@ -162,7 +164,7 @@ function GarrisonBuildingFrame_OnShow(self)
 	GarrisonBuildingList_Show();
 	
 	-- Update building state for owned buildings. This is only really needed to refresh the cooldown timers.
-	local buildings = C_Garrison.GetBuildings(LE_FOLLOWER_TYPE_GARRISON_6_0);
+	local buildings = C_Garrison.GetBuildings(LE_GARRISON_TYPE_6_0);
 	for i = 1, #buildings do
 		GarrisonPlot_UpdateBuilding(buildings[i].plotID);
 	end
@@ -258,7 +260,7 @@ function GarrisonBuildingFrame_OnEvent(self, event, ...)
 		for i=1, GARRISON_NUM_BUILDING_SIZES do
 			local tab = list["Tab"..i];
 			if (tab.categoryID == categoryID) then
-				tab.buildings = C_Garrison.GetBuildingsForSize(LE_FOLLOWER_TYPE_GARRISON_6_0, tab.categoryID);
+				tab.buildings = C_Garrison.GetBuildingsForSize(LE_GARRISON_TYPE_6_0, tab.categoryID);
 				if (self.selectedTab == tab) then
 					if (self.selectedBuilding) then
 						buildingID = self.selectedBuilding.buildingID;
@@ -334,7 +336,7 @@ end
 
 function GarrisonBuildingFrame_UpdateBuildingList()
 	for id, tab in pairs(BUILDING_TABS) do
-		tab.buildings = C_Garrison.GetBuildingsForSize(LE_FOLLOWER_TYPE_GARRISON_6_0, id);
+		tab.buildings = C_Garrison.GetBuildingsForSize(LE_GARRISON_TYPE_6_0, id);
 	end
 	if (GarrisonBuildingFrame.selectedTab) then
 		GarrisonBuildingTab_Select(GarrisonBuildingFrame.selectedTab);
@@ -364,7 +366,7 @@ function GarrisonBuildingFrame_UpdateUpgradeButton()
 end
 
 function GarrisonBuildingFrame_UpdateGarrisonInfo(self)
-	local level, mapTexture, townHallX, townHallY = C_Garrison.GetGarrisonInfo(LE_FOLLOWER_TYPE_GARRISON_6_0);
+	local level, mapTexture, townHallX, townHallY = C_Garrison.GetGarrisonInfo(LE_GARRISON_TYPE_6_0);
 	if ( not level or not townHallX or not townHallY ) then
 		return;
 	end
@@ -518,7 +520,7 @@ end
 function GarrisonTownHallBoxMouseOver_OnEnter(self, button)
 	GameTooltip:SetOwner(self, "ANCHOR_BOTTOMLEFT", 15, 15);
 	GameTooltip:SetText(GarrisonTownHall_GetName(), HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b);
-	local garrisonLevel = C_Garrison.GetGarrisonInfo(LE_FOLLOWER_TYPE_GARRISON_6_0);
+	local garrisonLevel = C_Garrison.GetGarrisonInfo(LE_GARRISON_TYPE_6_0);
 	local color;
 	
 	GameTooltip:AddLine(" ");

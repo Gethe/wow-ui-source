@@ -2,8 +2,8 @@
 GLUE_SCREENS = {
 	["login"] = 		{ frame = "AccountLogin", 		playMusic = true,	playAmbience = true },
 	["realmlist"] = 	{ frame = "RealmListUI", 		playMusic = true,	playAmbience = false },
-	["charselect"] = 	{ frame = "CharacterSelect",	playMusic = true,	playAmbience = false },
-	["charcreate"] =	{ frame = "CharacterCreate",	playMusic = true,	playAmbience = false },
+	["charselect"] = 	{ frame = "CharacterSelect",	playMusic = true,	playAmbience = false, onAttemptShow = function() InitializeCharacterScreenData() end },
+	["charcreate"] =	{ frame = "CharacterCreate",	playMusic = true,	playAmbience = false, onAttemptShow = function() InitializeCharacterScreenData() end },
 	["kioskmodesplash"]={ frame = "KioskModeSplash",	playMusic = true,	playAmbience = false },
 };
 
@@ -241,16 +241,48 @@ function GlueParent_SetScreen(screen)
 	local screenInfo = GLUE_SCREENS[screen];
 	if ( screenInfo ) then
 		GlueParent.currentScreen = screen;
-		GlueParent_ChangeScreen(screenInfo, GLUE_SCREENS);
+
+		--Sometimes, we have to do things we would normally do in OnShow even if the screen doesn't actually
+		--get shown (due to a secondary screen being shown)
+		if ( screenInfo.onAttemptShow ) then
+			screenInfo.onAttemptShow();
+		end
+
+		local suppressScreen = false;
+		if ( GlueParent.currentSecondaryScreen ) then
+			local secondaryInfo = GLUE_SECONDARY_SCREENS[GlueParent.currentSecondaryScreen];
+			if ( secondaryInfo and secondaryInfo.fullScreen ) then
+				suppressScreen = true;
+			end
+		end
+
+		--If there's a full-screen secondary screen showing right now, we'll wait to show this one.
+		--Once the secondary screen hides, we'll be shown.
+		if ( not suppressScreen ) then
+			GlueParent_ChangeScreen(screenInfo, GLUE_SCREENS);
+		end
 	end
 end
 
 function GlueParent_OpenSecondaryScreen(screen)
 	local screenInfo = GLUE_SECONDARY_SCREENS[screen];
 	if ( screenInfo ) then
+		--Close the last secondary screen
+		if ( GlueParent.currentSecondaryScreen ) then
+			GlueParent_CloseSecondaryScreen();
+		end
+
 		GlueParent.currentSecondaryScreen = screen;
 		if ( screenInfo.fullScreen ) then
 			GlueParent.ScreenFrame:Hide();
+
+			--If it's full-screen, hide the main screen
+			if ( GlueParent.currentScreen ) then
+				local mainScreenInfo = GLUE_SCREENS[GlueParent.currentScreen];
+				if ( mainScreenInfo ) then
+					_G[mainScreenInfo.frame]:Hide();
+				end
+			end
 		else
 			GlueParent.ScreenFrame:Show();
 		end
@@ -283,6 +315,9 @@ function GlueParent_CloseSecondaryScreen()
 		--Show the original screen if we hid it. Have to do this last in case it opens a new secondary screen.
 		if ( screenInfo.fullScreen ) then
 			GlueParent.ScreenFrame:Show();
+			if ( GlueParent.currentScreen ) then
+				GlueParent_SetScreen(GlueParent.currentScreen);
+			end
 		end
 	end
 end
@@ -302,8 +337,6 @@ end
 -- =============================================================
 
 function SetLoginScreenModel(model)
-	model:SetCamera(0);
-	model:SetSequence(0);
 
 	local expansionLevel = GetClientDisplayExpansionLevel();
 	local lowResBG = EXPANSION_LOW_RES_BG[expansionLevel];
@@ -311,6 +344,8 @@ function SetLoginScreenModel(model)
 	local background = GetLoginScreenBackground(highResBG, lowResBG);
 
 	model:SetModel(background, true);
+	model:SetCamera(0);
+	model:SetSequence(0);
 end
 
 -- Function to get the background tag from a full path ( '..\UI_tagName.m2' )
@@ -380,8 +415,12 @@ end
 function SetExpansionLogo(texture, expansionLevel)
 	if ( EXPANSION_LOGOS[expansionLevel].texture ) then
 		texture:SetTexture(EXPANSION_LOGOS[expansionLevel].texture);
-	else
+		texture:Show();
+	elseif ( EXPANSION_LOGOS[expansionLevel].atlas ) then
 		texture:SetAtlas(EXPANSION_LOGOS[expansionLevel].atlas);
+		texture:Show();
+	else
+		texture:Hide();
 	end
 end
 
@@ -397,19 +436,19 @@ function MinutesToTime(mins, hideDays)
 	-- only show days if hideDays is false
 	if ( mins > 1440 and not hideDays ) then
 		tempTime = floor(mins / 1440);
-		time = tempTime..TIME_UNIT_DELIMITER..DAYS_ABBR..TIME_UNIT_DELIMITER;
+		time = TIME_UNIT_DELIMITER .. format(DAYS_ABBR, tempTime);
 		mins = mod(mins, 1440);
 		count = count + 1;
 	end
 	if ( mins > 60  ) then
 		tempTime = floor(mins / 60);
-		time = time..tempTime..TIME_UNIT_DELIMITER..HOURS_ABBR..TIME_UNIT_DELIMITER;
+		time = time .. TIME_UNIT_DELIMITER .. format(DAYS_ABBR, tempTime);
 		mins = mod(mins, 60);
 		count = count + 1;
 	end
 	if ( count < 2 ) then
 		tempTime = mins;
-		time = time..tempTime..TIME_UNIT_DELIMITER..MINUTES_ABBR..TIME_UNIT_DELIMITER;
+		time = time .. TIME_UNIT_DELIMITER .. format(MINUTES_ABBR, tempTime);
 		count = count + 1;
 	end
 	return time;

@@ -12,7 +12,7 @@ local RED_INDEX = 3;
 function MonkStaggerBar_OnLoad(self)
 	self.specRestriction = SPEC_MONK_BREWMASTER;
 	self.textLockable = 1;
-	self.cvar = "playerStatusText";
+	self.cvar = "statusText";
 	self.cvarLabel = "STATUS_TEXT_PLAYER";
 	self.capNumericDisplay = true;
 	if ( not self.powerName ) then

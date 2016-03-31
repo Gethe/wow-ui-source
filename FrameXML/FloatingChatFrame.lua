@@ -726,7 +726,7 @@ function FCF_OpenTemporaryWindow(chatType, chatTarget, sourceChatFrame, selectWi
 		--Stop displaying this type of chat in the old chat frame.
 		--Remove the messages from the old frame.
 		if (not (chatType == "WHISPER" and GetCVar("whisperMode") == "popout_and_inline")
-			and not (chatType == "BN_WHISPER" and GetCVar("bnWhisperMode") == "popout_and_inline") ) then
+			and not (chatType == "BN_WHISPER" and GetCVar("whisperMode") == "popout_and_inline") ) then
 
 			if ( chatType == "WHISPER" or chatType == "BN_WHISPER" ) then
 				ChatFrame_ExcludePrivateMessageTarget(sourceChatFrame, chatTarget);
@@ -2457,7 +2457,7 @@ function FCFManager_ShouldSuppressMessage(chatFrame, chatType, chatTarget)
 		return false;
 	end
 	
-	if ( (chatType == "BN_WHISPER" and GetCVar("bnWhisperMode") == "popout")
+	if ( (chatType == "BN_WHISPER" and GetCVar("whisperMode") == "popout")
 		or (chatType == "WHISPER" and GetCVar("whisperMode") == "popout") ) then
 		return true;
 	end
@@ -2472,7 +2472,7 @@ function FCFManager_ShouldSuppressMessageFlash(chatFrame, chatType, chatTarget)
 		return false;
 	end
 	
-	if ( (chatType == "BN_WHISPER" and GetCVar("bnWhisperMode") == "popout_and_inline") 
+	if ( (chatType == "BN_WHISPER" and GetCVar("whisperMode") == "popout_and_inline") 
 		or (chatType == "WHISPER" and GetCVar("whisperMode") == "popout_and_inline") ) then
 		return true;
 	end
@@ -2505,7 +2505,7 @@ function FloatingChatFrameManager_OnEvent(self, event, ...)
 		local chatType = strsub(event, 10);
 		local chatGroup = Chat_GetChatCategory(chatType);
 		
-		if ( (chatGroup == "BN_WHISPER" and (GetCVar("bnWhisperMode") == "popout" or GetCVar("bnWhisperMode") == "popout_and_inline"))
+		if ( (chatGroup == "BN_WHISPER" and (GetCVar("whisperMode") == "popout" or GetCVar("whisperMode") == "popout_and_inline"))
 			or (chatGroup == "WHISPER" and (GetCVar("whisperMode") == "popout" or GetCVar("whisperMode") == "popout_and_inline"))) then
 			local chatTarget = tostring(select(2, ...));
 			
@@ -2515,14 +2515,14 @@ function FloatingChatFrameManager_OnEvent(self, event, ...)
 
 				-- If you started the whisper, immediately select the tab
 				if ((event == "CHAT_MSG_WHISPER_INFORM" and GetCVar("whisperMode") == "popout")
-					or (event == "CHAT_MSG_BN_WHISPER_INFORM" and GetCVar("bnWhisperMode") == "popout") ) then
+					or (event == "CHAT_MSG_BN_WHISPER_INFORM" and GetCVar("whisperMode") == "popout") ) then
 					FCF_SelectDockFrame(chatFrame);
 					FCF_FadeInChatFrame(chatFrame);
 				end
 			else
 				-- While in "Both" mode, if you reply to a whisper, stop the flash on that dedicated whisper tab
 				if ( (chatType == "WHISPER_INFORM" and GetCVar("whisperMode") == "popout_and_inline")
-				or (chatType == "BN_WHISPER_INFORM" and GetCVar("bnWhisperMode") == "popout_and_inline")) then
+				or (chatType == "BN_WHISPER_INFORM" and GetCVar("whisperMode") == "popout_and_inline")) then
 					FCFManager_StopFlashOnDedicatedWindows(chatGroup, chatTarget);
 				end
 			end

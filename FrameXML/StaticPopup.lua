@@ -3389,6 +3389,16 @@ StaticPopupDialogs["SPELL_CONFIRMATION_PROMPT" ] = {
 	hideOnEscape = 1
 }
 
+StaticPopupDialogs["SPELL_CONFIRMATION_WARNING" ] = {
+	button1 = OKAY,
+	OnAccept = function(self)
+		AcceptSpellConfirmationPrompt(self.data);
+	end,
+	exclusive = 0,
+	whileDead = 1,
+	hideOnEscape = 1
+}
+
 StaticPopupDialogs["CONFIRM_LAUNCH_URL"] = {
 	text = CONFIRM_LAUNCH_URL,
 	button1 = OKAY,
@@ -3517,7 +3527,7 @@ StaticPopupDialogs["CONFIRM_FOLLOWER_TEMPORARY_ABILITY"] = {
 
 StaticPopupDialogs["NAME_TRANSMOG_OUTFIT"] = {
 	text = TRANSMOG_OUTFIT_NAME,
-	button1 = ACCEPT,
+	button1 = SAVE,
 	button2 = CANCEL,
 	OnAccept = function(self)
 		WardrobeOutfitFrame:NameOutfit(self.editBox:GetText(), self.data);
@@ -3836,7 +3846,7 @@ function StaticPopup_Show(which, text_arg1, text_arg2, data, insertedFrame)
 		text.text_arg2 = text_arg2;
 	elseif ( which == "BILLING_NAG" ) then
 		text:SetFormattedText(info.text, text_arg1, MINUTES);
-	elseif ( which == "SPELL_CONFIRMATION_PROMPT" ) then
+	elseif ( which == "SPELL_CONFIRMATION_PROMPT" or which == "SPELL_CONFIRMATION_WARNING" ) then
 		text:SetText(text_arg1);
 		info.text = text_arg1;
 		info.timeout = text_arg2;

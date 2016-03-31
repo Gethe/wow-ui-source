@@ -9,25 +9,7 @@ function AccountLogin_OnLoad(self)
 	self.UI.PasswordEditBox:SetBackdropBorderColor(backdropColor[1], backdropColor[2], backdropColor[3]);
 	self.UI.PasswordEditBox:SetBackdropColor(backdropColor[4], backdropColor[5], backdropColor[6]);
 
-
-
-	local movieID = GetLoginBackgroundMovie();
-	if ( movieID ~= 0 ) then
-		LoginBackgroundMovie:StartMovie(movieID, true);
-		LoginBackgroundMovie:Show();
-	else
-		local expansionLevel = GetClientDisplayExpansionLevel();
-		local lowResBG = EXPANSION_LOW_RES_BG[expansionLevel];
-		local highResBG = EXPANSION_HIGH_RES_BG[expansionLevel];
-		local background = GetLoginScreenBackground(highResBG, lowResBG);
-
-		LoginBackgroundModel:SetModel(background, 1);
-		LoginBackgroundModel:SetCamera(0);
-		LoginBackgroundModel:SetSequence(0);
-		LoginBackgroundModel:Show();
-	end
-
-
+	SetLoginScreenModel(LoginBackgroundModel);
 	AccountLogin_UpdateSavedData(self);
 
 	self:RegisterEvent("SCREEN_FIRST_DISPLAYED");
@@ -41,9 +23,7 @@ end
 function AccountLogin_OnEvent(self, event, ...)
 	if ( event == "SCREEN_FIRST_DISPLAYED" ) then
 		AccountLogin_Update();
-		if ( AccountLogin_CanAutoLogin() ) then
-			AccountLogin_StartAutoLoginTimer();
-		end
+		AccountLogin_CheckAutoLogin();
 	elseif ( event == "LOGIN_STATE_CHANGED" ) then
 		AccountLogin_CheckLoginState(self);
 	elseif ( event == "LAUNCHER_LOGIN_STATUS_CHANGED" ) then
@@ -84,11 +64,12 @@ function AccountLogin_CheckLoginState(self)
 end
 
 function AccountLogin_OnShow(self)
-	self.UI.GameLogo:SetTexture(EXPANSION_LOGOS[GetClientDisplayExpansionLevel()]);
+	SetExpansionLogo(self.UI.GameLogo, GetClientDisplayExpansionLevel());
 	self.UI.AccountEditBox:SetText("");
 	AccountLogin_UpdateSavedData(self);
 
 	AccountLogin_Update();
+	AccountLogin_CheckAutoLogin();
 end
 
 function AccountLogin_Update()
@@ -422,6 +403,7 @@ end
 -- =============================================================
 
 function AccountLogin_StartAutoLoginTimer()
+	AccountLogin.timerStarted = true;
 	C_Timer.After(AUTO_LOGIN_WAIT_TIME, AccountLogin_OnTimerFinished);
 end
 
@@ -431,7 +413,7 @@ function AccountLogin_OnTimerFinished()
 end
 
 function AccountLogin_CanAutoLogin()
-	return not SHOW_KOREAN_RATINGS and C_Login.IsLauncherLogin() and not C_Login.AttemptedLauncherLogin();
+	return not SHOW_KOREAN_RATINGS and C_Login.IsLauncherLogin() and not C_Login.AttemptedLauncherLogin() and AccountLogin:IsVisible();
 end
 
 function AccountLogin_CheckAutoLogin()
@@ -442,7 +424,6 @@ function AccountLogin_CheckAutoLogin()
 				C_Login.CancelLauncherLogin();
 			end
 		elseif ( not AccountLogin.timerStarted ) then
-			AccountLogin.timerStarted = true;
 			GlueDialog_Show("CANCEL", LOGIN_STATE_CONNECTING);
 			if ( WasScreenFirstDisplayed() ) then
 				AccountLogin_StartAutoLoginTimer();

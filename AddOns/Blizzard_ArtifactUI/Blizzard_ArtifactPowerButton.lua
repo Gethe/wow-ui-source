@@ -89,7 +89,10 @@ function ArtifactPowerButtonMixin:PlayPurchaseAnimation()
 end
 
 function ArtifactPowerButtonMixin:PlayUnlockAnimation()
-	if self.isGoldMedal == "gold" then
+	if self.isFinal then
+		self.FinalPowerUnlockedAnim:Stop();
+		self.FinalPowerUnlockedAnim:Play();
+	elseif self.isGoldMedal then
 		self.GoldPowerUnlockedAnim:Play();
 	elseif not self.isStart then
 		self.RingGlow:SetVertexColor(1, 0.81960784313725, 0.3921568627451);
@@ -232,7 +235,28 @@ function ArtifactPowerButtonMixin:SetStyle(style)
 	end
 end
 
+function ArtifactPowerButtonMixin:ApplyTemporaryRelicType(relicType, relicLink)
+	if self.style ~= ARTIFACT_POWER_STYLE_RUNE and self.originalRelicType == nil and self.originalRelicLink == nil then
+		self.originalRelicType = self.relicType or false;
+		self.originalRelicLink = self.relicLink or false;
+		self:ApplyRelicType(relicType, relicLink, true);
+	end
+end
+
+function ArtifactPowerButtonMixin:RemoveTemporaryRelicType()
+	if self.style ~= ARTIFACT_POWER_STYLE_RUNE and self.originalRelicType ~= nil and self.originalRelicLink ~= nil then
+		self:ApplyRelicType(self.originalRelicType or nil, self.originalRelicLink or nil, true);
+
+		self.originalRelicType = nil;
+		self.originalRelicLink = nil;
+	end
+end
+
 function ArtifactPowerButtonMixin:ApplyRelicType(relicType, relicLink, suppressAnimation)
+	if self.style == ARTIFACT_POWER_STYLE_RUNE then
+		return;
+	end
+
 	if relicType then
 		local relicTraitBGAtlas = ("Relic-%s-TraitBG"):format(relicType);
 		self.RelicTraitBG:SetAtlas(relicTraitBGAtlas);
@@ -258,7 +282,7 @@ function ArtifactPowerButtonMixin:ApplyRelicType(relicType, relicLink, suppressA
 
 		self:SetRelicHighlightEnabled(false);
 
-		if self.relicLink ~= relicLink and not suppressAnimation then
+		if self.wasBonusRankJustIncreased and not suppressAnimation then
 			self.RelicAppliedAnim:Play();
 		end
 	else
@@ -266,15 +290,30 @@ function ArtifactPowerButtonMixin:ApplyRelicType(relicType, relicLink, suppressA
 		self.RelicTraitGlow:Hide();
 		self.RelicTraitGlowRing:Hide();
 	end
+	self.relicType = relicType;
 	self.relicLink = relicLink;
+end
+
+
+function ArtifactPowerButtonMixin:RemoveRelicType()
+	self.relicType = nil;
+	self.relicLink = nil;
+	self.originalRelicType = nil;
+	self.originalRelicLink = nil;
+
+	self.RelicTraitBG:Hide();
+	self.RelicTraitGlow:Hide();
+	self.RelicTraitGlowRing:Hide();
 end
 
 local HIGHLIGHT_ALPHA = 1.0;
 local NO_HIGHLIGHT_ALPHA = .8;
 function ArtifactPowerButtonMixin:SetRelicHighlightEnabled(enabled)
-	self.RelicTraitGlow:SetShown(enabled);
-	self.RelicTraitGlowRing:SetShown(enabled);
-	self.RelicTraitBG:SetAlpha(enabled and HIGHLIGHT_ALPHA or NO_HIGHLIGHT_ALPHA);
+	if self.style ~= ARTIFACT_POWER_STYLE_RUNE then
+		self.RelicTraitGlow:SetShown(enabled);
+		self.RelicTraitGlowRing:SetShown(enabled);
+		self.RelicTraitBG:SetAlpha(enabled and HIGHLIGHT_ALPHA or NO_HIGHLIGHT_ALPHA);
+	end
 end
 
 function ArtifactPowerButtonMixin:GetPowerID()
@@ -306,7 +345,7 @@ function ArtifactPowerButtonMixin:CalculateDistanceTo(otherPowerButton)
 end
 
 function ArtifactPowerButtonMixin:SetupButton(powerID, anchorRegion)
-	local spellID, cost, currentRank, maxRank, bonusRanks, x, y, prereqsMet, isStart, isGoldMedal = C_ArtifactUI.GetPowerInfo(powerID);
+	local spellID, cost, currentRank, maxRank, bonusRanks, x, y, prereqsMet, isStart, isGoldMedal, isFinal = C_ArtifactUI.GetPowerInfo(powerID);
 	self:ClearAllPoints();
 	self:SetPoint("CENTER", anchorRegion, "TOPLEFT", x * anchorRegion:GetWidth(), -y * anchorRegion:GetHeight());
 
@@ -317,28 +356,29 @@ function ArtifactPowerButtonMixin:SetupButton(powerID, anchorRegion)
 	local totalPurchasedRanks = C_ArtifactUI.GetTotalPurchasedRanks();
 	local wasJustUnlocked = prereqsMet and self.prereqsMet == false;
 	local wasRespecced = self.currentRank and currentRank < self.currentRank;
+	local wasBonusRankJustIncreased = self.bonusRanks and bonusRanks > self.bonusRanks;
 
 	if wasRespecced then
 		self:StopAllAnimations();
 	end
-	
+
 	self.powerID = powerID;
 	self.spellID = spellID;
 	self.currentRank = currentRank;
+	self.bonusRanks = bonusRanks;
 	self.maxRank = maxRank;
 	self.isStart = isStart;
 	self.isGoldMedal = isGoldMedal;
+	self.isFinal = isFinal;
 
 	local isAtForge = C_ArtifactUI.IsAtForge();
-	--local isAtPointCap = totalPurchasedRanks >= C_ArtifactUI.GetMaxPurchasedRanks();
-	local isAtPointCap = false;
 
 	self.isCompletelyPurchased = currentRank == maxRank or self.isStart;
 	self.hasSpentAny = currentRank > bonusRanks;
-	self.couldSpendPoints = C_ArtifactUI.GetPointsRemaining() >= cost and isAtForge and not isAtPointCap;
-	self.isAtPointCap = isAtPointCap;
+	self.couldSpendPoints = C_ArtifactUI.GetPointsRemaining() >= cost and isAtForge;
 	self.isMaxRank = currentRank == maxRank;
 	self.prereqsMet = prereqsMet;
+	self.wasBonusRankJustIncreased = wasBonusRankJustIncreased;
 	self.cost = cost;
 
 	self:UpdatePowerType();
@@ -348,10 +388,10 @@ function ArtifactPowerButtonMixin:SetupButton(powerID, anchorRegion)
 	if totalPurchasedRanks > 1 and wasJustUnlocked then
 		self:PlayUnlockAnimation();
 	end
+end
 
-	self.RelicTraitBG:Hide();
-	self.RelicTraitGlow:Hide();
-	self.RelicTraitGlowRing:Hide();
+function ArtifactPowerButtonMixin:ShouldBeVisible()
+	return not self.isFinal or self.prereqsMet;
 end
 
 function ArtifactPowerButtonMixin:EvaluateStyle()
@@ -360,7 +400,7 @@ function ArtifactPowerButtonMixin:EvaluateStyle()
 	elseif C_ArtifactUI.IsAtForge() then
 		if self.isMaxRank then
 			self:SetStyle(ARTIFACT_POWER_STYLE_MAXED);			
-		elseif self.prereqsMet and C_ArtifactUI.GetPointsRemaining() >= self.cost and not self.isAtPointCap then
+		elseif self.prereqsMet and C_ArtifactUI.GetPointsRemaining() >= self.cost then
 			self:SetStyle(ARTIFACT_POWER_STYLE_CAN_UPGRADE);
 		elseif self.currentRank > 0 then
 			self:SetStyle(ARTIFACT_POWER_STYLE_PURCHASED);
@@ -384,19 +424,25 @@ function ArtifactPowerButtonMixin:ClearOldData()
 	self.powerID = nil;
 	self.spellID = nil;
 	self.currentRank = nil;
+	self.bonusRanks = nil;
 	self.maxRank = nil;
 	self.isStart = nil;
 	self.isGoldMedal = nil;
+	self.isFinal = nil;
 	self.cost = nil;
-	self.isAtPointCap = nil;
 
 	self.isCompletelyPurchased = nil;
 	self.hasSpentAny = nil;
 	self.couldSpendPoints = nil;
 	self.isMaxRank = nil;
 	self.prereqsMet = nil;
+	self.wasBonusRankJustIncreased = nil;
 
+	self.relicType = nil;
 	self.relicLink = nil;
+	self.originalRelicType = nil;
+	self.originalRelicLink = nil;
+
 	self.locked = nil;
 
 	self.queuedRevealDelay = nil;
@@ -413,4 +459,5 @@ function ArtifactPowerButtonMixin:StopAllAnimations()
 	self.GoldPointSpentAnim:Stop();
 	self.RelicAppliedAnim:Stop();
 	self.RevealAnim:Stop();
+	self.FinalPowerUnlockedAnim:Stop();
 end

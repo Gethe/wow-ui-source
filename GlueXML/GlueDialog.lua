@@ -278,6 +278,31 @@ GlueDialogTypes["SHADER_MODEL_TO_BE_UNSUPPORTED"] = {
 	end
 }
 
+GlueDialogTypes["CHARACTER_BOOST_NO_CHARACTERS_WARNING"] = {
+	text = CHARACTER_BOOST_NO_CHARACTERS_WARNING_DIALOG_TEXT,
+	button1 = CHARACTER_BOOST_NO_CHARACTERS_WARNING_DIALOG_ACCEPT_WARNING,
+	button2 = CHARACTER_BOOST_NO_CHARACTERS_WARNING_DIALOG_IGNORE_WARNING,
+	displayVertical = true,
+	ignoreKeys = true,
+	
+	OnAccept = function ()
+		CharSelectServicesFlowFrame:Hide();
+		CharacterSelect_CreateNewCharacter();
+	end,
+}
+
+GlueDialogTypes["ADVANCED_CHARACTER_CREATION_WARNING"] = {
+	text = "",
+	button1 = ADVANCED_CHARACTER_CREATION_WARNING_DIALOG_ACCEPT_WARNING,
+	button2 = ADVANCED_CHARACTER_CREATION_WARNING_DIALOG_IGNORE_WARNING,
+	displayVertical = true,
+	ignoreKeys = true,
+	
+	OnCancel = function ()
+		CharacterClass_SelectClass(GlueDialog.data, true);
+	end,
+}
+
 --[[
 
 GlueDialogTypes["DISCONNECTED"] = {
@@ -610,9 +635,19 @@ function GlueDialog_Show(which, text, data)
 		GlueDialogSpinner:Hide();
 	end
 
+	-- Get the width of the text to aid in determining the width of the dialog
+	local textWidth = 0;
+	if ( dialogInfo.html ) then
+		textWidth = select(3, GlueDialogHTML:GetBoundsRect());
+	else
+		textWidth = GlueDialogText:GetWidth();
+	end	
+
 	-- size the width first
 	if( dialogInfo.displayVertical ) then
-		GlueDialogBackground:SetWidth(16 + GlueDialogButton1:GetWidth() + 16);
+		local borderPadding = 32;
+		local backgroundWidth = math.max(GlueDialogButton1:GetWidth(), textWidth);
+		GlueDialogBackground:SetWidth(backgroundWidth + borderPadding);
 	elseif ( dialogInfo.button3 ) then
 		local displayWidth = 45 + GlueDialogButton1:GetWidth() + 8 + GlueDialogButton2:GetWidth() + 8 + GlueDialogButton3:GetWidth() + 45;
 		GlueDialogBackground:SetWidth(displayWidth);

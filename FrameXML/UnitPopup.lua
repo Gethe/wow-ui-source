@@ -54,10 +54,8 @@ UnitPopupButtons = {
 	["PET_SHOW_IN_JOURNAL"] = { text = PET_SHOW_IN_JOURNAL, dist = 0 },
 	["LOOT_METHOD"] = { text = LOOT_METHOD, dist = 0, nested = 1},
 	["FREE_FOR_ALL"] = { text = LOOT_FREE_FOR_ALL, dist = 0 },
-	["ROUND_ROBIN"] = { text = LOOT_ROUND_ROBIN, dist = 0 },
 	["MASTER_LOOTER"] = { text = LOOT_MASTER_LOOTER, dist = 0 },
 	["GROUP_LOOT"] = { text = LOOT_GROUP_LOOT, dist = 0 },
-	["NEED_BEFORE_GREED"] = { text = LOOT_NEED_BEFORE_GREED, dist = 0 },
 	["PERSONAL_LOOT"] = { text = LOOT_PERSONAL_LOOT, dist = 0 },
 	["RESET_INSTANCES"] = { text = RESET_INSTANCES, dist = 0 },
 	["RESET_CHALLENGE_MODE"] = { text = RESET_CHALLENGE_MODE, dist = 0 },
@@ -84,7 +82,6 @@ UnitPopupButtons = {
 	["DUNGEON_DIFFICULTY1"] = { text = PLAYER_DIFFICULTY1, dist = 0, checkable = 1, difficultyID = 1 },
 	["DUNGEON_DIFFICULTY2"] = { text = PLAYER_DIFFICULTY2, dist = 0, checkable = 1, difficultyID = 2 },
 	["DUNGEON_DIFFICULTY3"] = { text = PLAYER_DIFFICULTY6, dist = 0, checkable = 1, difficultyID = 23 },
-	["DUNGEON_DIFFICULTY4"] = { text = PLAYER_DIFFICULTY5, dist = 0, checkable = 1, difficultyID = 8 },
 
 	["RAID_DIFFICULTY"] = { text = RAID_DIFFICULTY, dist = 0,  nested = 1, defaultDifficultyID = 14 },
 	["RAID_DIFFICULTY1"] = { text = PLAYER_DIFFICULTY1, dist = 0, checkable = 1, difficultyID = 14 },
@@ -233,12 +230,12 @@ UnitPopupMenus = {
 	-- Second level menus
 	["ADD_FRIEND_MENU"] = { "BATTLETAG_FRIEND", "CHARACTER_FRIEND" },
 	["PVP_FLAG"] = { "PVP_ENABLE", "PVP_DISABLE"},
-	["LOOT_METHOD"] = { "FREE_FOR_ALL", "ROUND_ROBIN", "MASTER_LOOTER", "GROUP_LOOT", "NEED_BEFORE_GREED", "PERSONAL_LOOT", "CANCEL" },
+	["LOOT_METHOD"] = { "FREE_FOR_ALL", "MASTER_LOOTER", "GROUP_LOOT", "PERSONAL_LOOT", "CANCEL" },
 	["LOOT_THRESHOLD"] = { "ITEM_QUALITY2_DESC", "ITEM_QUALITY3_DESC", "ITEM_QUALITY4_DESC", "CANCEL" },
 	["SELECT_LOOT_SPECIALIZATION"] = { "LOOT_SPECIALIZATION_DEFAULT","LOOT_SPECIALIZATION_SPEC1", "LOOT_SPECIALIZATION_SPEC2", "LOOT_SPECIALIZATION_SPEC3", "LOOT_SPECIALIZATION_SPEC4"},
 	["OPT_OUT_LOOT_TITLE"] = { "OPT_OUT_LOOT_ENABLE", "OPT_OUT_LOOT_DISABLE"},
 	["REPORT_PLAYER"] = { "REPORT_SPAM", "REPORT_BAD_LANGUAGE", "REPORT_BAD_NAME", "REPORT_CHEATING" },
-	["DUNGEON_DIFFICULTY"] = { "DUNGEON_DIFFICULTY1", "DUNGEON_DIFFICULTY2", "DUNGEON_DIFFICULTY3", "DUNGEON_DIFFICULTY4" },
+	["DUNGEON_DIFFICULTY"] = { "DUNGEON_DIFFICULTY1", "DUNGEON_DIFFICULTY2", "DUNGEON_DIFFICULTY3" },
 	["RAID_DIFFICULTY"] = { "RAID_DIFFICULTY1", "RAID_DIFFICULTY2", "RAID_DIFFICULTY3", "LEGACY_RAID_SUBSECTION_TITLE", "LEGACY_RAID_DIFFICULTY1", "LEGACY_RAID_DIFFICULTY2" },
 	["BN_REPORT"] = { "BN_REPORT_SPAM", "BN_REPORT_ABUSE", "BN_REPORT_NAME" },
 	["MOVE_PLAYER_FRAME"] = { "UNLOCK_PLAYER_FRAME", "LOCK_PLAYER_FRAME", "RESET_PLAYER_FRAME_POSITION", "PLAYER_FRAME_SHOW_CASTBARS" },
@@ -250,10 +247,8 @@ UnitPopupShown = { {}, {}, {}, };
 
 UnitLootMethod = {
 	["freeforall"] = { text = LOOT_FREE_FOR_ALL, tooltipText = NEWBIE_TOOLTIP_UNIT_FREE_FOR_ALL },
-	["roundrobin"] = { text = LOOT_ROUND_ROBIN, tooltipText = NEWBIE_TOOLTIP_UNIT_ROUND_ROBIN },
 	["master"] = { text = LOOT_MASTER_LOOTER, tooltipText = NEWBIE_TOOLTIP_UNIT_MASTER_LOOTER },
 	["group"] = { text = LOOT_GROUP_LOOT, tooltipText = NEWBIE_TOOLTIP_UNIT_GROUP_LOOT },
-	["needbeforegreed"] = { text = LOOT_NEED_BEFORE_GREED, tooltipText = NEWBIE_TOOLTIP_UNIT_NEED_BEFORE_GREED },
 	["personalloot"] = { text = LOOT_PERSONAL_LOOT, tooltipText = NEWBIE_TOOLTIP_UNIT_PERSONAL },
 };
 
@@ -910,20 +905,12 @@ function UnitPopup_HideButtons ()
 			if ( not inParty or (not isLeader and (GetLootMethod() ~= "freeforall")) ) then
 				UnitPopupShown[UIDROPDOWNMENU_MENU_LEVEL][index] = 0;
 			end
-		elseif ( value == "ROUND_ROBIN" ) then
-			if ( not inParty or (not isLeader and (GetLootMethod() ~= "roundrobin")) ) then
-				UnitPopupShown[UIDROPDOWNMENU_MENU_LEVEL][index] = 0;
-			end
 		elseif ( value == "MASTER_LOOTER" ) then
 			if ( not inParty or (not isLeader and (GetLootMethod() ~= "master")) ) then
 				UnitPopupShown[UIDROPDOWNMENU_MENU_LEVEL][index] = 0;
 			end
 		elseif ( value == "GROUP_LOOT" ) then
 			if ( not inParty or (not isLeader and (GetLootMethod() ~= "group")) ) then
-				UnitPopupShown[UIDROPDOWNMENU_MENU_LEVEL][index] = 0;
-			end
-		elseif ( value == "NEED_BEFORE_GREED" ) then
-			if ( not inParty or (not isLeader and (GetLootMethod() ~= "needbeforegreed")) ) then
 				UnitPopupShown[UIDROPDOWNMENU_MENU_LEVEL][index] = 0;
 			end
 		elseif ( value == "PERSONAL_LOOT" ) then
@@ -1724,20 +1711,12 @@ function UnitPopup_OnClick (self)
 		SetLootMethod("freeforall");
 		UIDropDownMenu_SetButtonText(self:GetParent().parentLevel, self:GetParent().parentID, UnitPopupButtons[button].text);
 		UIDropDownMenu_Refresh(dropdownFrame, nil, 1);
-	elseif ( button == "ROUND_ROBIN" ) then
-		SetLootMethod("roundrobin");
-		UIDropDownMenu_SetButtonText(self:GetParent().parentLevel, self:GetParent().parentID, UnitPopupButtons[button].text);
-		UIDropDownMenu_Refresh(dropdownFrame, nil, 1);
 	elseif ( button == "MASTER_LOOTER" ) then
 		SetLootMethod("master", fullname, 1);
 		UIDropDownMenu_SetButtonText(self:GetParent().parentLevel, self:GetParent().parentID, UnitPopupButtons[button].text);
 		UIDropDownMenu_Refresh(dropdownFrame, nil, 1);
 	elseif ( button == "GROUP_LOOT" ) then
 		SetLootMethod("group");
-		UIDropDownMenu_SetButtonText(self:GetParent().parentLevel, self:GetParent().parentID, UnitPopupButtons[button].text);
-		UIDropDownMenu_Refresh(dropdownFrame, nil, 1);
-	elseif ( button == "NEED_BEFORE_GREED" ) then
-		SetLootMethod("needbeforegreed");
 		UIDropDownMenu_SetButtonText(self:GetParent().parentLevel, self:GetParent().parentID, UnitPopupButtons[button].text);
 		UIDropDownMenu_Refresh(dropdownFrame, nil, 1);
 	elseif ( button == "PERSONAL_LOOT" ) then

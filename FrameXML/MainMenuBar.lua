@@ -52,7 +52,7 @@ end
 function MainMenuBar_ArtifactTick_OnEnter(self)
 	MainMenu_AnchorTickTooltip(self);
 
-	GameTooltip:SetText(ARTIFACT_POWER_TOOLTIP_TITLE:format(ArtifactWatchBar.xp, ArtifactWatchBar.xpForNextPoint), HIGHLIGHT_FONT_COLOR:GetRGB());
+	GameTooltip:SetText(ARTIFACT_POWER_TOOLTIP_TITLE:format(BreakUpLargeNumbers(ArtifactWatchBar.totalXP), BreakUpLargeNumbers(ArtifactWatchBar.xp), BreakUpLargeNumbers(ArtifactWatchBar.xpForNextPoint)), HIGHLIGHT_FONT_COLOR:GetRGB());
 	GameTooltip:AddLine(" ");
 	GameTooltip:AddLine(ARTIFACT_POWER_TOOLTIP_BODY:format(ArtifactWatchBar.numPointsAvailableToSpend), nil, nil, nil, true);
 
@@ -169,9 +169,9 @@ function MainMenuBar_UpdateExperienceBars(newLevel)
 	end
 	if ( showArtifact ) then
 		local statusBar = ArtifactWatchBar.StatusBar;
-		local itemID, altItemID, name, icon, xp, pointsSpent, quality, artifactAppearanceID, appearanceModID = C_ArtifactUI.GetEquippedArtifactInfo();
+		local itemID, altItemID, name, icon, totalXP, pointsSpent, quality, artifactAppearanceID, appearanceModID = C_ArtifactUI.GetEquippedArtifactInfo();
 
-		local numPointsAvailableToSpend, xp, xpForNextPoint = MainMenuBar_GetNumArtifactTraitsPurchasableFromXP(pointsSpent, xp);
+		local numPointsAvailableToSpend, xp, xpForNextPoint = MainMenuBar_GetNumArtifactTraitsPurchasableFromXP(pointsSpent, totalXP);
 
 		statusBar:SetAnimatedValues(xp, 0, xpForNextPoint, numPointsAvailableToSpend + pointsSpent);
 		if visibilityChanged or statusBar.itemID ~= itemID or C_ArtifactUI.IsAtForge() then
@@ -179,6 +179,7 @@ function MainMenuBar_UpdateExperienceBars(newLevel)
 		end
 		statusBar.itemID = itemID;
 		ArtifactWatchBar.xp = xp;
+		ArtifactWatchBar.totalXP = totalXP;
 		ArtifactWatchBar.xpForNextPoint = xpForNextPoint;
 		ArtifactWatchBar.numPointsAvailableToSpend = numPointsAvailableToSpend;
 		ArtifactWatchBar:Show();

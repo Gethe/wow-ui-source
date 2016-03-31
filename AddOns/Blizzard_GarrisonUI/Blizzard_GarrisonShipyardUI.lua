@@ -1,3 +1,13 @@
+
+---------------------------------------------------------------------------------
+--- Garrison Follower Options				                                  ---
+---------------------------------------------------------------------------------
+
+-- These are follower options that depend on this AddOn being loaded, and so they can't be set in GarrisonBaseUtils.
+GarrisonFollowerOptions[LE_FOLLOWER_TYPE_SHIPYARD_6_2].missionFollowerSortFunc = GarrisonFollowerList_DefaultMissionSort;
+GarrisonFollowerOptions[LE_FOLLOWER_TYPE_SHIPYARD_6_2].missionFollowerInitSortFunc = GarrisonFollowerList_InitializeDefaultMissionSort;
+
+
 ---------------------------------------------------------------------------------
 --- Static Popups                                                             ---
 ---------------------------------------------------------------------------------
@@ -1678,7 +1688,7 @@ function GarrisonShipyardMissionPage_OnEvent(self, event, ...)
 				mainFrame.FollowerList:UpdateFollowers();
 				mainFrame:UpdateMissionData(self);
 				mainFrame:UpdateMissionParty(self.Followers);
-				GarrisonMissionPage_SetCounters(self.Followers, self.Enemies, self.missionInfo.missionID);
+				self:SetCounters(self.Followers, self.Enemies, self.missionInfo.missionID);
 			end
 		end
 	end
@@ -1687,6 +1697,7 @@ end
 
 function GarrisonShipyardMissionPage_OnShow(self)
 	local mainFrame = self:GetParent():GetParent();
+	mainFrame.FollowerList:SetSortFuncs(GarrisonFollowerOptions[mainFrame.followerTypeID].missionFollowerSortFunc, GarrisonFollowerOptions[mainFrame.followerTypeID].missionFollowerInitSortFunc);
 	mainFrame.FollowerList.showCounters = true;
 	mainFrame.FollowerList.canExpand = true;
 	mainFrame.FollowerList:Show();
@@ -1695,8 +1706,9 @@ end
 
 function GarrisonShipyardMissionPage_OnHide(self)
 	local mainFrame = self:GetParent():GetParent();
-	self:GetParent():GetParent().FollowerList.showCounters = false;
+	mainFrame.FollowerList.showCounters = false;
 	mainFrame.FollowerList.canExpand = false;
+	mainFrame.FollowerList:SetSortFuncs(GarrisonGarrisonFollowerList_DefaultSort, GarrisonFollowerList_InitializeDefaultSort);
 	self.lastUpdate = nil;
 end
 

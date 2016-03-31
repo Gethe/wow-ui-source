@@ -17,11 +17,13 @@ end
 
 function WardrobeOutfitDropDownMixin:OnShow()
 	self:RegisterEvent("TRANSMOG_OUTFITS_CHANGED");
+	self:RegisterEvent("TRANSMOGRIFY_UPDATE");
 	self:SelectOutfit(nil);
 end
 
 function WardrobeOutfitDropDownMixin:OnHide()
 	self:UnregisterEvent("TRANSMOG_OUTFITS_CHANGED");
+	self:UnregisterEvent("TRANSMOGRIFY_UPDATE");
 	WardrobeOutfitFrame:ClosePopups(self);
 	if ( WardrobeOutfitFrame.dropDown == self ) then
 		WardrobeOutfitFrame:Hide();
@@ -37,6 +39,7 @@ function WardrobeOutfitDropDownMixin:OnEvent(event)
 			WardrobeOutfitFrame:Update();
 		end
 	end
+	-- don't need to do anything for "TRANSMOGRIFY_UPDATE" beyond updating the save button
 	self:UpdateSaveButton();
 end
 
@@ -82,7 +85,7 @@ function WardrobeOutfitDropDownMixin:IsOutfitDressed()
 		if ( TRANSMOG_SLOTS[i].transmogType == LE_TRANSMOG_TYPE_APPEARANCE ) then
 			local sourceID = GetDisplayedSourceIDFunc(TRANSMOG_SLOTS[i].slot, LE_TRANSMOG_TYPE_APPEARANCE);
 			local slotID = GetInventorySlotInfo(TRANSMOG_SLOTS[i].slot);
-			if ( sourceID ~= appearanceSources[slotID] ) then
+			if ( sourceID ~= NO_TRANSMOG_SOURCE_ID and sourceID ~= appearanceSources[slotID] ) then
 				return false;
 			end
 		end
@@ -229,7 +232,7 @@ function WardrobeOutfitFrameMixin:Update()
 	local minStringWidth = self.dropDown.minMenuStringWidth or OUTFIT_FRAME_MIN_STRING_WIDTH;
 	local maxStringWidth = self.dropDown.maxMenuStringWidth or OUTFIT_FRAME_MAX_STRING_WIDTH;
 	self:SetWidth(maxStringWidth + OUTFIT_FRAME_ADDED_PIXELS);
-	for i = 1, MAX_TRANSMOG_OUTFITS do
+	for i = 1, C_TransmogCollection.GetNumMaxOutfits() do
 		local newOutfitButton = (i == (#outfits + 1));
 		if ( outfits[i] or newOutfitButton ) then
 			local button = buttons[i];
@@ -278,12 +281,14 @@ end
 function WardrobeOutfitFrameMixin:SaveOutfit(name)
 	local icon;
 	for i = 1, #TRANSMOG_SLOTS do
-		local slotID = GetInventorySlotInfo(TRANSMOG_SLOTS[i].slot);
-		local sourceID = self.sources[slotID];
-		if ( sourceID ) then
-			icon = select(4, C_TransmogCollection.GetAppearanceSourceInfo(sourceID));
-			if ( icon ) then
-				break;
+		if ( TRANSMOG_SLOTS[i].transmogType == LE_TRANSMOG_TYPE_APPEARANCE ) then
+			local slotID = GetInventorySlotInfo(TRANSMOG_SLOTS[i].slot);
+			local sourceID = self.sources[slotID];
+			if ( sourceID ) then
+				icon = select(4, C_TransmogCollection.GetAppearanceSourceInfo(sourceID));
+				if ( icon ) then
+					break;
+				end
 			end
 		end
 	end

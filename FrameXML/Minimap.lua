@@ -509,6 +509,9 @@ function GarrisonLandingPageMinimapButton_OnLoad(self)
 	self:RegisterEvent("GARRISON_INVASION_AVAILABLE");
 	self:RegisterEvent("GARRISON_INVASION_UNAVAILABLE");
 	self:RegisterEvent("SHIPMENT_UPDATE");
+	self:RegisterEvent("ZONE_CHANGED_NEW_AREA");
+	self:RegisterEvent("ZONE_CHANGED");
+	self:RegisterEvent("ZONE_CHANGED_INDOORS");
 end
 
 function GarrisonLandingPageMinimapButton_OnEvent(self, event, ...)
@@ -543,13 +546,27 @@ function GarrisonLandingPageMinimapButton_OnEvent(self, event, ...)
 end
 
 function GarrisonLandingPageMinimapButton_OnShow(self)
-	self.faction = UnitFactionGroup("player");
-	if ( self.faction == "Horde" ) then
-		self:GetNormalTexture():SetAtlas("GarrLanding-MinimapIcon-Horde-Up", true)
-		self:GetPushedTexture():SetAtlas("GarrLanding-MinimapIcon-Horde-Down", true)
+	GarrisonLandingPageMinimapButton_UpdateIcon(self);
+end
+
+function GarrisonLandingPageMinimapButton_UpdateIcon(self)
+	if (C_Garrison.GetLandingPageGarrisonType() == LE_GARRISON_TYPE_6_0) then
+		self.faction = UnitFactionGroup("player");
+		if ( self.faction == "Horde" ) then
+			self:GetNormalTexture():SetAtlas("GarrLanding-MinimapIcon-Horde-Up", true)
+			self:GetPushedTexture():SetAtlas("GarrLanding-MinimapIcon-Horde-Down", true)
+		else
+			self:GetNormalTexture():SetAtlas("GarrLanding-MinimapIcon-Alliance-Up", true)
+			self:GetPushedTexture():SetAtlas("GarrLanding-MinimapIcon-Alliance-Down", true)
+		end
+		self.title = GARRISON_LANDING_PAGE_TITLE;
+		self.description = MINIMAP_GARRISON_LANDING_PAGE_TOOLTIP;
 	else
-		self:GetNormalTexture():SetAtlas("GarrLanding-MinimapIcon-Alliance-Up", true)
-		self:GetPushedTexture():SetAtlas("GarrLanding-MinimapIcon-Alliance-Down", true)
+		local _, className = UnitClass("player");
+		self:GetNormalTexture():SetAtlas("legionmission-landingbutton-"..className.."-up", true);
+		self:GetPushedTexture():SetAtlas("legionmission-landingbutton-"..className.."-down", true);
+		self.title = ORDER_HALL_LANDING_PAGE_TITLE;
+		self.description = MINIMAP_ORDER_HALL_LANDING_PAGE_TOOLTIP;
 	end
 end
 
@@ -558,13 +575,10 @@ function GarrisonLandingPageMinimapButton_OnClick()
 end
 
 function GarrisonLandingPage_Toggle()
-	if (not GarrisonLandingPage) then
-		Garrison_LoadUI();
-	end
-	if (not GarrisonLandingPage:IsShown()) then
-		ShowUIPanel(GarrisonLandingPage);
-	else
+	if (GarrisonLandingPage and GarrisonLandingPage:IsShown()) then
 		HideUIPanel(GarrisonLandingPage);
+	else
+		ShowGarrisonLandingPage();
 	end
 end
 

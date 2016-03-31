@@ -300,7 +300,7 @@
 						</Texture>
 						<FontString parentKey="Label" inherits="GameFontHighlightMedium" justifyH="LEFT">
 						  <Anchors>
-							<Anchor point="CENTER" x="0" y="-2"/>
+							<Anchor point="CENTER" x="0" y="-1"/>
 						  </Anchors>
 						</FontString>
 					</Layer>
@@ -312,14 +312,6 @@
 				</Layers>
 				<BarTexture file="Interface\TargetingFrame\UI-StatusBar"/>
 				<BarColor r="0.26" g="0.42" b="1"/>
-				<Scripts>
-					<OnEnter>
-						self.Label:Show();
-					</OnEnter>
-					<OnLeave>
-						self.Label:Hide();
-					</OnLeave>
-				</Scripts>
 			</StatusBar>
 		</Frames>
 		<Scripts>

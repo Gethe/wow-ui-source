@@ -188,6 +188,19 @@ WORLDMAP_SETTINGS = {
 	
 };
 
+WORLD_MAP_POI_FRAME_LEVEL_OFFSETS = {
+	LANDMARK = 100,
+
+	BONUS_OBJECTIVE = 500,
+	INVASION = 700,
+
+	SCENARIO = 1000,
+	STORY_LINE = 1000,
+
+	TRACKED_QUEST = 1200,
+	WORLD_QUEST = 1200,
+}
+
 local WorldEffectPOITooltips = {};
 local ScenarioPOITooltips = {};
 
@@ -287,11 +300,6 @@ function WorldMapFrame_OnLoad(self)
 	WorldMapFrame.BorderFrame.TitleText:SetText(MAP_AND_QUEST_LOG);
 	WorldMapFrame.BorderFrame.portrait:SetTexture("Interface\\QuestFrame\\UI-QuestLog-BookIcon");
 	WorldMapFrame.BorderFrame.CloseButton:SetScript("OnClick", function() HideUIPanel(WorldMapFrame); end);
-	
-	local frameLevel = WorldMapDetailFrame:GetFrameLevel();
-	WorldMapPlayersFrame:SetFrameLevel(frameLevel + 1);
-	WorldMapPOIFrame:SetFrameLevel(frameLevel + 2);
-	WorldMapFrame.UIElementsFrame:SetFrameLevel(frameLevel + 3);
 	
 	QUEST_POI_FRAME_WIDTH = WorldMapDetailFrame:GetWidth() * WORLDMAP_FULLMAP_SIZE;
 	QUEST_POI_FRAME_HEIGHT = WorldMapDetailFrame:GetHeight() * WORLDMAP_FULLMAP_SIZE;
@@ -448,10 +456,6 @@ function WorldMapFrame_OnEvent(self, event, ...)
 		local questID = ...;
 		self.bonusObjectiveUpdateTimeLeft = 0;
 		WorldMapPOIFrame_SelectPOI(questID);
-		
-		if ( GetSuperTrackedQuestID() ~= GetWorldQuestWatch() ) then
-			ClearWorldQuestWatch();
-		end
 	elseif ( event == "PLAYER_STARTED_MOVING" ) then
 		if ( GetCVarBool("mapFade") ) then
 			WorldMapFrame_AnimAlphaOut(self, true);
@@ -804,14 +808,15 @@ function WorldMap_UpdateQuestBonusObjectives()
 		for i, info  in ipairs(taskInfo) do
 			if ( HaveQuestData(info.questId) ) then
 				local taskPOI;
-				if ( QuestMapFrame_IsQuestWorldQuest(info.questId) ) then
+				local isWorldQuest = QuestMapFrame_IsQuestWorldQuest(info.questId);
+				if ( isWorldQuest ) then
 					taskPOI = WorldMap_TryCreatingWorldQuestPOI(info, taskIconIndex);
 				else
 					taskPOI = WorldMap_TryCreatingBonusObjectivePOI(info, taskIconIndex);
 				end
 
 				if ( taskPOI ) then
-					WorldMapPOIFrame_AnchorPOI(taskPOI, info.x, info.y);
+					WorldMapPOIFrame_AnchorPOI(taskPOI, info.x, info.y, isWorldQuest and WORLD_MAP_POI_FRAME_LEVEL_OFFSETS.WORLD_QUEST or WORLD_MAP_POI_FRAME_LEVEL_OFFSETS.BONUS_OBJECTIVE);
 					taskPOI.questID = info.questId;
 					taskPOI.numObjectives = info.numObjectives;
 					taskPOI:Show();
@@ -900,7 +905,7 @@ function WorldMap_DrawWorldEffects()
 			
 			local x1, x2, y1, y2 = GetObjectIconTextureCoords(textureIndex);
 			_G[scenarioPOIName.."Texture"]:SetTexCoord(x1, x2, y1, y2);
-			WorldMapPOIFrame_AnchorPOI(scenarioPOI, x, y);
+			WorldMapPOIFrame_AnchorPOI(scenarioPOI, x, y, WORLD_MAP_POI_FRAME_LEVEL_OFFSETS.SCENARIO);
 			scenarioPOI.name = scenarioPOIName;		
 			scenarioPOI:Show();
 			ScenarioPOITooltips[scenarioPOIName] = name;
@@ -935,9 +940,9 @@ end
 
 function WorldMap_GetFrameLevelForLandmark(landmarkType)
 	if landmarkType == LE_MAP_LANDMARK_TYPE_INVASION then
-		return 500;
+		return WORLD_MAP_POI_FRAME_LEVEL_OFFSETS.INVASION;
 	end
-	return 100;
+	return WORLD_MAP_POI_FRAME_LEVEL_OFFSETS.LANDMARK;
 end
 
 function WorldMap_UpdateLandmarks()
@@ -958,7 +963,7 @@ function WorldMap_UpdateLandmarks()
 			if( not WorldMap_ShouldShowLandmark(landmarkType) or (mapID ~= WORLDMAP_WINTERGRASP_ID and areaID == WORLDMAP_WINTERGRASP_POI_AREAID) ) then
 				worldMapPOI:Hide();
 			else
-				WorldMapPOIFrame_AnchorPOI(worldMapPOI, x, y);
+				WorldMapPOIFrame_AnchorPOI(worldMapPOI, x, y, WorldMap_GetFrameLevelForLandmark(landmarkType));
 				if ( landmarkType == LE_MAP_LANDMARK_TYPE_NORMAL and WorldMap_IsSpecialPOI(poiID) ) then	--We have special handling for Isle of the Thunder King
 					WorldMap_HandleSpecialPOI(worldMapPOI, poiID);
 				else
@@ -997,8 +1002,6 @@ function WorldMap_UpdateLandmarks()
 					else
 						worldMapPOI.graveyard = nil;
 					end
-					local frameLevel = WorldMap_GetFrameLevelForLandmark(landmarkType);
-					worldMapPOI:SetFrameLevel(frameLevel);
 					worldMapPOI:Show();	
 				end
 			end
@@ -1256,7 +1259,7 @@ function WorldMapFrame_Update()
 					STORYLINE_FRAMES[numUsedStoryLineFrames] = frame;
 				end
 				frame.index = i;
-				WorldMapPOIFrame_AnchorPOI(frame, x, y);
+				WorldMapPOIFrame_AnchorPOI(frame, x, y, WORLD_MAP_POI_FRAME_LEVEL_OFFSETS.STORY_LINE);
 				frame:Show();
 			end
 		end
@@ -1615,10 +1618,8 @@ function WorldMap_AddQuestRewardsToTooltip(questID)
 			if ( hasAnySingleLineRewards ) then
 				WorldMapTooltip:AddLine(" ");
 			end
-			local name, texture, numItems, quality, isUsable, itemID = GetQuestLogRewardInfo(1, questID); -- Only support one currently
-			if name and texture then
-				EmbeddedItemTooltip_SetItemByID(WorldMapTooltip.ItemTooltip, itemID);
-			else
+
+			if not EmbeddedItemTooltip_SetItemByQuestReward(WorldMapTooltip.ItemTooltip, 1, questID) then  -- Only support one currently
 				WorldMapTooltip:AddLine(RETRIEVING_DATA, RED_FONT_COLOR:GetRGB());
 			end
 		end
@@ -1651,14 +1652,21 @@ function TaskPOI_OnEnter(self)
 		local timeLeftMinutes = C_TaskQuest.GetQuestTimeLeftMinutes(self.questID);
 		if ( timeLeftMinutes ) then
 			local color = NORMAL_FONT_COLOR;
-			local displayTimeMinutes = timeLeftMinutes - WORLD_QUESTS_TIME_CRITICAL_MINUTES;
-			if ( displayTimeMinutes <= 0 ) then
+			local timeString;
+			if ( timeLeftMinutes <= WORLD_QUESTS_TIME_CRITICAL_MINUTES ) then
 				-- Grace period, show the actual time left
-				displayTimeMinutes = timeLeftMinutes;
 				color = RED_FONT_COLOR;
+				timeString = SecondsToTime(timeLeftMinutes * 60);
+			elseif timeLeftMinutes < 2 * 60 then
+				timeString = SecondsToTime((timeLeftMinutes - WORLD_QUESTS_TIME_CRITICAL_MINUTES) * 60);
+			elseif timeLeftMinutes < 12 * 60 then
+				timeString = TIME_LEFT_MEDIUM;
+			elseif timeLeftMinutes < 24 * 60 then
+				timeString = TIME_LEFT_LONG;
+			else
+				timeString = TIME_LEFT_VERY_LONG;
 			end
 
-			local timeString = SecondsToTime(displayTimeMinutes * 60);
 			WorldMapTooltip:AddLine(BONUS_OBJECTIVE_TIME_LEFT:format(timeString), color.r, color.g, color.b);
 		end
 	else
@@ -1696,12 +1704,14 @@ end
 function TaskPOI_OnClick(self, button)
 	if self.worldQuest then
 		PlaySound("igMainMenuOptionCheckBoxOn");
-		if GetSuperTrackedQuestID() == self.questID then
-			ClearWorldQuestWatch();
-			SetSuperTrackedQuestID(0);
+		if IsShiftKeyDown() then
+			if IsWorldQuestWatched(self.questID) then
+				BonusObjectiveTracker_UntrackWorldQuest(self.questID);
+			else
+				BonusObjectiveTracker_TrackWorldQuest(self.questID);
+			end
 		else
-			SetWorldQuestWatch(self.questID);
-			SetSuperTrackedQuestID(self.questID);
+			BonusObjectiveTracker_TrackWorldQuest(self.questID);
 		end
 	end
 end
@@ -1808,7 +1818,6 @@ function WorldMap_GetOrCreateTaskPOI(index)
 	button:SetScript("OnEnter", TaskPOI_OnEnter);
 	button:SetScript("OnLeave", TaskPOI_OnLeave);
 	button:SetScript("OnClick", TaskPOI_OnClick);
-	button:SetFrameLevel(1000 + index);
 
 	button.UpdateTooltip = TaskPOI_OnEnter;
 	
@@ -1880,12 +1889,19 @@ function WorldMapLevelDropDown_Update()
 	UIDropDownMenu_Initialize(WorldMapLevelDropDown, WorldMapLevelDropDown_Initialize);
 	UIDropDownMenu_SetWidth(WorldMapLevelDropDown, 130);
 
-	if ( (GetNumDungeonMapLevels() == 0) ) then
+	local dungeonLevels = { GetNumDungeonMapLevels() };
+	if ( #dungeonLevels == 0 ) then
 		UIDropDownMenu_ClearAll(WorldMapLevelDropDown);
 		WorldMapLevelDropDown:Hide();
 	else
-		local floorMapCount, firstFloor = GetNumDungeonMapLevels();
-		local levelID = GetCurrentMapDungeonLevel() - firstFloor + 1;
+		local floorMapCount = #dungeonLevels;
+		local firstFloor = dungeonLevels[1];
+
+		local level = GetCurrentMapDungeonLevel();
+		if (DungeonUsesTerrainMap()) then
+			level = level - 1;
+		end
+		local levelID = level - firstFloor + 1;
 
 		UIDropDownMenu_SetSelectedID(WorldMapLevelDropDown, levelID);
 		WorldMapLevelDropDown:Show();
@@ -1897,37 +1913,36 @@ end
 function WorldMapLevelDropDown_Initialize()
 	local info = UIDropDownMenu_CreateInfo();
 	local level = GetCurrentMapDungeonLevel();
-	
+	if (DungeonUsesTerrainMap()) then
+		level = level - 1;
+	end
+		
 	local mapname = strupper(GetMapInfo() or "");
-	
-	local usesTerrainMap = DungeonUsesTerrainMap();
-	local floorMapCount, firstFloor = GetNumDungeonMapLevels();
-	local _, _, _, isMicroDungeon = GetMapInfo();
-	
-	local lastFloor = firstFloor + floorMapCount - 1;
-	
-	for i=firstFloor, lastFloor do
-		local floorNum = i;
-		if (usesTerrainMap) then
-			floorNum = i - 1;
-		end
-
-		local floorname =_G["DUNGEON_FLOOR_" .. mapname .. floorNum];
-		info.text = floorname or string.format(FLOOR_NUMBER, i - firstFloor + 1);
+	local dungeonLevels = { GetNumDungeonMapLevels() };
+		
+	for i, floorNum in ipairs(dungeonLevels) do
+		local floornameToken = "DUNGEON_FLOOR_" .. mapname .. floorNum;
+		local floorname =_G[floornameToken];
+		info.text = floorname or string.format(FLOOR_NUMBER, i);
 		info.func = WorldMapLevelButton_OnClick;
-		info.checked = (i == level);
+		info.checked = (floorNum == level);
 		UIDropDownMenu_AddButton(info);
 	end
 end
 
 function WorldMapLevelButton_OnClick(self)
-	UIDropDownMenu_SetSelectedID(WorldMapLevelDropDown, self:GetID());
+	local dropDownID = self:GetID();
+	UIDropDownMenu_SetSelectedID(WorldMapLevelDropDown, dropDownID);
 
-	local floorMapCount, firstFloor = GetNumDungeonMapLevels();
-	local level = firstFloor + self:GetID() - 1;
-	
-	SetDungeonMapLevel(level);
-	WorldMapScrollFrame_ResetZoom()
+	local dungeonLevels = { GetNumDungeonMapLevels() };
+	if (dropDownID <= #dungeonLevels) then
+		local level = dungeonLevels[dropDownID];
+		if (DungeonUsesTerrainMap()) then
+			level = level + 1;
+		end
+		SetDungeonMapLevel(level);
+		WorldMapScrollFrame_ResetZoom()
+	end
 end
 
 function WorldMapZoomOutButton_OnClick()
@@ -2344,11 +2359,6 @@ function WorldMap_ClearTextures()
 	end
 end
 
-
-function WorldMapUnit_OnLoad(self)
-	self:SetFrameLevel(self:GetFrameLevel() + 1);
-end
-
 function WorldMapUnit_OnEnter(self, motion)
 	-- Adjust the tooltip based on which side the unit button is on
 	local x, y = self:GetCenter();
@@ -2583,8 +2593,8 @@ function WorldMap_ToggleSizeUp()
 	-- adjust main frame
 	WorldMapFrame:SetParent(nil);
 	WorldMapTooltip:SetFrameStrata("TOOLTIP");	
-	WorldMapPlayerLower:SetFrameStrata("MEDIUM");
-	WorldMapPlayerLower:SetFrameStrata("FULLSCREEN");
+	WorldMapPlayerLower:SetFrameStrata("HIGH");
+	WorldMapPlayerUpper:SetFrameStrata("FULLSCREEN");
 	WorldMapFrame:ClearAllPoints();
 	WorldMapFrame:SetAllPoints();
 	SetUIPanelAttribute(WorldMapFrame, "area", "full");
@@ -2637,8 +2647,8 @@ function WorldMap_ToggleSizeDown()
 	WorldMapFrame:SetParent(UIParent);
 	WorldMapFrame:SetFrameStrata("HIGH");
 	WorldMapTooltip:SetFrameStrata("TOOLTIP");
-	WorldMapPlayerLower:SetFrameStrata("MEDIUM");
-	WorldMapPlayerLower:SetFrameStrata("FULLSCREEN");
+	WorldMapPlayerLower:SetFrameStrata("HIGH");
+	WorldMapPlayerUpper:SetFrameStrata("FULLSCREEN");
 	WorldMapFrame:EnableKeyboard(false);
 	-- adjust map frames
 	WorldMapDetailFrame:SetScale(WORLDMAP_WINDOWED_SIZE);
@@ -2996,7 +3006,7 @@ function WorldMapScrollFrame_ReanchorQuestPOIs()
 		for _, poiButton in pairs(poiType) do
 			if ( poiButton.used ) then
 				local _, posX, posY = QuestPOIGetIconInfo(poiButton.questID);
-				WorldMapPOIFrame_AnchorPOI(poiButton, posX, posY);			
+				WorldMapPOIFrame_AnchorPOI(poiButton, posX, posY, WORLD_MAP_POI_FRAME_LEVEL_OFFSETS.TRACKED_QUEST);			
 			end
 		end
 	end
@@ -3043,7 +3053,7 @@ end
 -- ***** POI FRAME
 -- *****************************************************************************************************
 
-function WorldMapPOIFrame_AnchorPOI(poiButton, posX, posY)
+function WorldMapPOIFrame_AnchorPOI(poiButton, posX, posY, frameLevelOffset)
 	if ( posX and posY ) then
 		posX = posX * QUEST_POI_FRAME_WIDTH;
 		posY = posY * QUEST_POI_FRAME_HEIGHT;
@@ -3059,6 +3069,7 @@ function WorldMapPOIFrame_AnchorPOI(poiButton, posX, posY)
 			posX = QUEST_POI_FRAME_WIDTH - 12;
 		end
 		poiButton:SetPoint("CENTER", WorldMapPOIFrame, "TOPLEFT", posX, -posY);
+		poiButton:SetFrameLevel(poiButton:GetParent():GetFrameLevel() + frameLevelOffset);
 	end
 end
 
@@ -3077,7 +3088,7 @@ function WorldMapPOIFrame_Update(poiTable)
 					-- if a quest is being viewed there is only going to be one POI and it's going to have number 1
 					poiButton = QuestPOI_GetButton(WorldMapPOIFrame, questID, "numeric", (detailQuestID and 1) or index, storyQuest);
 				end
-				WorldMapPOIFrame_AnchorPOI(poiButton, posX, posY);
+				WorldMapPOIFrame_AnchorPOI(poiButton, posX, posY, WORLD_MAP_POI_FRAME_LEVEL_OFFSETS.TRACKED_QUEST);
 			end
 		end
 	end

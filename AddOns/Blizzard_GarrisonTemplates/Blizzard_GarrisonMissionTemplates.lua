@@ -37,7 +37,7 @@ end
 
 function GarrisonMission:SelectTab(id)
 	PanelTemplates_SetTab(self, id);
-	if (id == 1) then
+	if (id == 1) then	-- missions
 		if ( self.MissionComplete.currentIndex ) then
 			self.MissionComplete:Show();
 			self.MissionCompleteBackground:Show();
@@ -48,16 +48,23 @@ function GarrisonMission:SelectTab(id)
 		if ( self:GetMissionPage():IsShown() ) then
 			self.FollowerList:UpdateFollowers();
 		end
-	else
+	elseif (id == 2) then	-- followers
 		self.MissionComplete:Hide();
 		self.MissionCompleteBackground:Hide();
 		self.MissionTab:Hide();
 		self.FollowerTab:Show();
+		self.FollowerList:SetSortFuncs(GarrisonFollowerList_DefaultSort, GarrisonFollowerList_InitializeDefaultSort);
 		if ( self.FollowerList:IsShown() ) then
 			self.FollowerList:UpdateFollowers();
 		else
 			self.FollowerList:Show();
 		end
+	else	-- subclass specific tab
+		self.MissionComplete:Hide();
+		self.MissionCompleteBackground:Hide();
+		self.MissionTab:Hide();
+		self.FollowerTab:Hide();
+		self.FollowerList:Hide();
 	end
 end
 
@@ -179,7 +186,7 @@ function GarrisonMission:ShowMission(missionInfo)
 	self.followerCounters = C_Garrison.GetBuffedFollowersForMission(missionInfo.missionID)
 	self.followerTraits = C_Garrison.GetFollowersTraitsForMission(missionInfo.missionID);
 	
-	GarrisonMissionPage_SetCounters(missionPage.Followers, missionPage.Enemies, missionPage.missionInfo.missionID);
+	missionPage:SetCounters(missionPage.Followers, missionPage.Enemies, missionPage.missionInfo.missionID);
 end
 
 function GarrisonMission:SetPartySize(missionPage, size, numEnemies)
@@ -528,7 +535,7 @@ function GarrisonMission:AssignFollowerToMission(frame, info)
 	end
 	
 	if (missionPage.Followers and missionPage.Enemies) then
-		GarrisonMissionPage_SetCounters(missionPage.Followers, missionPage.Enemies, missionPage.missionInfo.missionID);
+		missionPage:SetCounters(missionPage.Followers, missionPage.Enemies, missionPage.missionInfo.missionID);
 	end
 	return true;
 end
@@ -550,7 +557,7 @@ function GarrisonMission:RemoveFollowerFromMission(frame, updateValues)
 	end
 	
 	if (missionPage.Followers and missionPage.Enemies) then
-		GarrisonMissionPage_SetCounters(missionPage.Followers, missionPage.Enemies, missionPage.missionInfo.missionID);
+		missionPage:SetCounters(missionPage.Followers, missionPage.Enemies, missionPage.missionInfo.missionID);
 	end
 end
 
@@ -1787,18 +1794,20 @@ function GarrisonShowFollowerPlacerFrame(mainFrame, info)
 	GarrisonFollowerPlacerFrame:Show();
 end
 
+GarrisonMissionPageMixin = { }
+
 --this function puts check marks on the encounter mechanics countered by the slotted followers abilities
-function GarrisonMissionPage_SetCounters(Followers, Enemies, missionID)
+function GarrisonMissionPageMixin:SetCounters(followers, enemies, missionID)
 	-- clear counter state
-	for i = 1, #Enemies do
-		local enemyFrame = Enemies[i];
+	for i = 1, #enemies do
+		local enemyFrame = enemies[i];
 		for mechanicIndex = 1, #enemyFrame.Mechanics do
 			enemyFrame.Mechanics[mechanicIndex].hasCounter = nil;
 		end
 	end
 	
-	for i = 1, #Followers do
-		local followerFrame = Followers[i];
+	for i = 1, #followers do
+		local followerFrame = followers[i];
 		if (followerFrame.info) then
 			local followerBias = C_Garrison.GetFollowerBiasForMission(missionID, followerFrame.info.followerID);
 			if ( followerBias > -1 ) then
@@ -1806,7 +1815,7 @@ function GarrisonMissionPage_SetCounters(Followers, Enemies, missionID)
 				for a = 1, #abilities do
 					local ability = abilities[a];
 					for counterID, counterInfo in pairs(ability.counters) do
-						GarrisonMissionPage_CheckCounter(Enemies, counterID);
+						GarrisonMissionPage_CheckCounter(enemies, counterID);
 					end
 				end
 			end
@@ -1817,14 +1826,14 @@ function GarrisonMissionPage_SetCounters(Followers, Enemies, missionID)
 	for i = 1, #bonusEffects do
 		local mechanicTypeID = bonusEffects[i].mechanicTypeID;
 		if(mechanic ~= 0) then
-			GarrisonMissionPage_CheckCounter(Enemies, mechanicTypeID);
+			GarrisonMissionPage_CheckCounter(enemies, mechanicTypeID);
 		end
 	end
 	
 	-- show/remove checks
 	local playSound = false;
-	for i = 1, #Enemies do
-		local enemyFrame = Enemies[i];
+	for i = 1, #enemies do
+		local enemyFrame = enemies[i];
 		for mechanicIndex = 1, #enemyFrame.Mechanics do
 			local mechanicFrame = enemyFrame.Mechanics[mechanicIndex];
 			if ( mechanicFrame.hasCounter ) then
@@ -2201,12 +2210,12 @@ function GarrisonMission_DetermineCounterableThreats(missionID, followerType)
 	return threats;
 end
 
-function GarrisonMissionButton_AddThreatsToTooltip(missionID, followerType, noGameTooltip)
+function GarrisonMissionButton_AddThreatsToTooltip(missionID, followerTypeID, noGameTooltip, abilityCountersForMechanicTypes)
 	local location, xp, environment, environmentDesc, _, locPrefix, isExhausting, enemies = C_Garrison.GetMissionInfo(missionID);
 	local numThreats = 0;
 
 	-- Make a list of all the threats that we can counter.
-	local counterableThreats = GarrisonMission_DetermineCounterableThreats(missionID, followerType);
+	local counterableThreats = GarrisonMission_DetermineCounterableThreats(missionID, followerTypeID);
 
 	for i = 1, #enemies do
 		local enemy = enemies[i];
@@ -2219,13 +2228,22 @@ function GarrisonMissionButton_AddThreatsToTooltip(missionID, followerType, noGa
 				tinsert(GarrisonMissionListTooltipThreatsFrame.Threats, threatFrame);
 			end
 			
-			if ( mechanic.factor <= GARRISON_HIGH_THREAT_VALUE and followerType == LE_FOLLOWER_TYPE_SHIPYARD_6_2 ) then
-				threatFrame.Border:SetAtlas("GarrMission_WeakEncounterAbilityBorder");
+			if (GarrisonFollowerOptions[followerTypeID].displayCounterAbilityInPlaceOfMechanic) then
+				local ability = abilityCountersForMechanicTypes[mechanicID];
+				if (ability.isSpecialization) then
+					threatFrame.Border:SetAtlas("GarrMission_EncounterAbilityBorder");
+				else
+					threatFrame.Border:SetTexture(nil);
+				end
+				threatFrame.Icon:SetTexture(ability.icon);
 			else
-				threatFrame.Border:SetAtlas("GarrMission_EncounterAbilityBorder");
+				if ( mechanic.factor <= GARRISON_HIGH_THREAT_VALUE and followerTypeID == LE_FOLLOWER_TYPE_SHIPYARD_6_2 ) then
+					threatFrame.Border:SetAtlas("GarrMission_WeakEncounterAbilityBorder");
+				else
+					threatFrame.Border:SetAtlas("GarrMission_EncounterAbilityBorder");
+				end
+				threatFrame.Icon:SetTexture(mechanic.icon);
 			end
-			
-			threatFrame.Icon:SetTexture(mechanic.icon);
 			threatFrame:Show();
 			GarrisonMissionButton_CheckTooltipThreat(threatFrame, missionID, mechanicID, counterableThreats);
 		end

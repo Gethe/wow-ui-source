@@ -184,7 +184,7 @@
 							<Anchor point="TOPLEFT" x="0" y="0"/>
 						</Anchors>
 						<Frames>
-							<Frame name="WorldMapDetailFrame" hidden="false">
+							<Frame name="WorldMapDetailFrame" hidden="false" frameLevel="100">
 								<Size x="1002" y="668"/>
 								<Anchors>
 									<Anchor point="TOPLEFT" x="0" y="0"/>
@@ -502,14 +502,14 @@
 									<Frame name="WorldMapBossButtonFrame" setAllPoints="true"/>
 								</Frames>
 							</Frame>
-							<Frame name="WorldMapPlayersFrame">
+							<Frame name="WorldMapPlayersFrame" frameLevel="200">
 								<Anchors>
 									<Anchor point="TOPLEFT" relativeTo="WorldMapDetailFrame" x="0" y="0"/>
 									<Anchor point="BOTTOMRIGHT" relativeTo="WorldMapDetailFrame" x="0" y="0"/>
 								</Anchors>
 								<Frames>
-									<Frame name="WorldMapPlayerLower" inherits="WorldMapPlayerTemplate" frameStrata="MEDIUM" hidden="true"/>
-									<Frame name="WorldMapPlayerUpper" inherits="WorldMapPlayerTemplate" frameStrata="FULLSCREEN" alpha="0.7" hidden="true"/>
+									<Frame name="WorldMapPlayerLower" inherits="WorldMapPlayerTemplate" frameStrata="HIGH" hidden="true" frameLevel="150"/>
+									<Frame name="WorldMapPlayerUpper" inherits="WorldMapPlayerTemplate" frameStrata="FULLSCREEN" alpha="0.7" hidden="true" frameLevel="500"/>
 									<Frame name="WorldMapPing" frameStrata="FULLSCREEN" hidden="true">
 										<Size x="64" y="64"/>
 										<Anchors>
@@ -595,7 +595,7 @@
 									<Frame name="WorldMapRaid40" inherits="WorldMapRaidUnitTemplate" id="40"/>
 								</Frames>
 							</Frame>
-							<Frame name="WorldMapPOIFrame">
+							<Frame name="WorldMapPOIFrame" frameLevel="300">
 								<Anchors>
 									<Anchor point="TOPLEFT" relativeTo="WorldMapDetailFrame" x="0" y="0"/>
 									<Anchor point="BOTTOMRIGHT" relativeTo="WorldMapDetailFrame" x="0" y="0"/>
@@ -605,7 +605,7 @@
 					</Frame>
 				</ScrollChild>
 			</ScrollFrame>
-			<Frame parentKey="UIElementsFrame">
+			<Frame parentKey="UIElementsFrame" frameLevel="10">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeTo="WorldMapScrollFrame" x="0" y="0"/>
 					<Anchor point="BOTTOMRIGHT" relativeTo="WorldMapScrollFrame" x="0" y="0"/>

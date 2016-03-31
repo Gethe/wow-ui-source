@@ -4,6 +4,14 @@ GARRISON_LONG_MISSION_TIME = 8 * 60 * 60;	-- 8 hours
 GARRISON_LONG_MISSION_TIME_FORMAT = "|cffff7d1a%s|r";
 
 ---------------------------------------------------------------------------------
+--- Garrison Follower Options				                                  ---
+---------------------------------------------------------------------------------
+
+-- These are follower options that depend on this AddOn being loaded, and so they can't be set in GarrisonBaseUtils.
+GarrisonFollowerOptions[LE_FOLLOWER_TYPE_GARRISON_6_0].missionFollowerSortFunc = GarrisonFollowerList_DefaultMissionSort;
+GarrisonFollowerOptions[LE_FOLLOWER_TYPE_GARRISON_6_0].missionFollowerInitSortFunc = GarrisonFollowerList_InitializeDefaultMissionSort;
+
+---------------------------------------------------------------------------------
 --- Garrison Follower Mission  Mixin Functions                                ---
 ---------------------------------------------------------------------------------
 
@@ -583,7 +591,7 @@ function GarrisonMissionPortrait_SetFollowerPortrait(portraitFrame, followerInfo
 		end
 		if ( followerInfo.isTroop ) then
 			portraitFrame:SetNoLevel();
-		elseif ( (missionPage.showItemLevel and followerLevel == GarrisonMissionFrame.followerMaxLevel ) or GarrisonFollowerOptions[followerInfo.followerTypeID].showILevelOnFollower) then
+		elseif ( (missionPage.showItemLevel and followerInfo.isMaxLevel ) or GarrisonFollowerOptions[followerInfo.followerTypeID].showILevelOnFollower) then
 			local followerItemLevel = followerInfo.iLevel;
 			if ( missionPage.mentorItemLevel and missionPage.mentorItemLevel > followerItemLevel ) then
 				followerItemLevel = missionPage.mentorItemLevel;
@@ -682,7 +690,7 @@ function GarrisonFollowerOptionDropDown_Initialize(self)
 			elseif ( C_Garrison.GetFollowerActivationCost() > GetMoney() ) then
 				info.tooltipWhileDisabled = 1;
 				info.tooltipTitle = GARRISON_ACTIVATE_FOLLOWER;
-				info.tooltipText = format(GARRISON_CANNOT_AFFORD_FOLLOWER_ACTIVATION, GetMoneyString(GarrisonMissionFrame.followerTypeID));
+				info.tooltipText = format(GARRISON_CANNOT_AFFORD_FOLLOWER_ACTIVATION, GetMoneyString(C_Garrison.GetFollowerActivationCost()));
 				info.tooltipOnButton = 1;			
 				info.disabled = 1;
 			else
@@ -732,10 +740,14 @@ function GarrisonMissionListMixin:OnLoad()
 	self.listScroll:SetScript("OnMouseWheel", function(self, ...) HybridScrollFrame_OnMouseWheel(self, ...); GarrisonMissionList_UpdateMouseOverTooltip(self); end);
 end
 
+function GarrisonMissionListMixin:GetMissionFrame()
+	return self:GetParent():GetParent();
+end
+
 function GarrisonMissionListMixin:OnShow()
 	self:UpdateMissions();
-	GarrisonMissionFrame.FollowerList:Hide();
-	self:GetParent():GetParent():CheckTutorials();
+	self:GetMissionFrame().FollowerList:Hide();
+	self:GetMissionFrame():CheckTutorials();
 end
 
 function GarrisonMissionListMixin:OnHide()
@@ -745,8 +757,9 @@ end
 
 function GarrisonMissionListMixin:OnUpdate()
 	if (self.showInProgress) then
-		local mainFrame = self:GetParent():GetParent();
-		C_Garrison.GetInProgressMissions(self.inProgressMissions, mainFrame.followerTypeID);
+		C_Garrison.GetInProgressMissions(self.inProgressMissions, self:GetMissionFrame().followerTypeID);
+		self:SeparateCombatAllyMission();
+		self:UpdateCombatAllyMission();
 		self.Tab2:SetText(WINTERGRASP_IN_PROGRESS.." - "..#self.inProgressMissions)
 		self:Update();
 	else
@@ -785,9 +798,33 @@ function GarrisonMissonListTab_SetSelected(tab, isSelected)
 	tab.SelectedMid:SetShown(isSelected);
 end
 
+function GarrisonMissionListMixin:SeparateCombatAllyMission()
+	self.combatAllyMission = nil;
+	for i = #self.availableMissions, 1, -1 do
+		if (self.availableMissions[i].isZoneSupport) then
+			self.combatAllyMission = self.availableMissions[i];
+			table.remove(self.availableMissions, i);
+		end
+	end
+
+	for i = #self.inProgressMissions, 1, -1 do
+		if (self.inProgressMissions[i].isZoneSupport) then
+			self.combatAllyMission = self.inProgressMissions[i];
+			table.remove(self.inProgressMissions, i);
+		end
+	end
+
+end
+
+-- overridden by subclasses
+function GarrisonMissionListMixin:UpdateCombatAllyMission()
+end
+
 function GarrisonMissionListMixin:UpdateMissions()
-	C_Garrison.GetInProgressMissions(self.inProgressMissions, GarrisonMissionFrame.followerTypeID);
-	C_Garrison.GetAvailableMissions(self.availableMissions, GarrisonMissionFrame.followerTypeID);
+	C_Garrison.GetInProgressMissions(self.inProgressMissions, self:GetMissionFrame().followerTypeID);
+	C_Garrison.GetAvailableMissions(self.availableMissions, self:GetMissionFrame().followerTypeID);
+	self:SeparateCombatAllyMission();
+	self:UpdateCombatAllyMission();
 	Garrison_SortMissions(self.availableMissions);
 	self.Tab1:SetText(AVAILABLE.." - "..#self.availableMissions)
 	self.Tab2:SetText(WINTERGRASP_IN_PROGRESS.." - "..#self.inProgressMissions)
@@ -997,6 +1034,11 @@ function GarrisonMissionButton_OnClick(self, button)
 	missionFrame:OnClickMission(self.info);
 end
 
+function GarrisonMissionButton_GetMissionFrame(self)
+	local missionList = self:GetParent():GetParent():GetParent();
+	return missionList:GetMissionFrame();
+end
+
 function GarrisonMissionButton_OnEnter(self, button)
 	if (self.info == nil) then
 		return;
@@ -1004,26 +1046,27 @@ function GarrisonMissionButton_OnEnter(self, button)
 
 	GameTooltip:SetOwner(self, "ANCHOR_CURSOR_RIGHT");
 
+	local missionFrame = GarrisonMissionButton_GetMissionFrame(self);
 	if(self.info.inProgress) then
 		GarrisonMissionButton_SetInProgressTooltip(self.info);
 	else
 		GameTooltip:SetText(self.info.name);
 		GameTooltip:AddLine(string.format(GARRISON_MISSION_TOOLTIP_NUM_REQUIRED_FOLLOWERS, self.info.numFollowers), 1, 1, 1);
-		GarrisonMissionButton_AddThreatsToTooltip(self.info.missionID, GarrisonMissionFrame.followerTypeID);
+		GarrisonMissionButton_AddThreatsToTooltip(self.info.missionID, missionFrame.followerTypeID, false, missionFrame.abilityCountersForMechanicTypes );
 		if (self.info.isRare) then
 			GameTooltip:AddLine(GARRISON_MISSION_AVAILABILITY);
 			GameTooltip:AddLine(self.info.offerTimeRemaining, 1, 1, 1);
 		end
-		if not C_Garrison.IsOnGarrisonMap() then
+		if not C_Garrison.IsPlayerInGarrison(GarrisonFollowerOptions[missionFrame.followerTypeID].garrisonType) then
 			GameTooltip:AddLine(" ");
-			GameTooltip:AddLine(GARRISON_MISSION_TOOLTIP_RETURN_TO_START, nil, nil, nil, 1);
+			GameTooltip:AddLine(GarrisonFollowerOptions[missionFrame.followerTypeID].strings.RETURN_TO_START, nil, nil, nil, 1);
 		end
 	end
 
 	GameTooltip:Show();
 
-	GarrisonMissionFrame.MissionTab.MissionList.newMissionIDs[self.info.missionID] = nil;
-	GarrisonMissionFrame.MissionTab.MissionList:Update();
+	missionFrame.MissionTab.MissionList.newMissionIDs[self.info.missionID] = nil;
+	missionFrame.MissionTab.MissionList:Update();
 end
 
 function GarrisonMissionButton_SetInProgressTooltip(missionInfo, showRewards)
@@ -1081,7 +1124,6 @@ end
 ---------------------------------------------------------------------------------
 --- Mission Page                                                              ---
 ---------------------------------------------------------------------------------
-GarrisonMissionPageMixin = { }
 
 function GarrisonMissionPage_OnLoad(self)
 	self:RegisterEvent("GARRISON_FOLLOWER_LIST_UPDATE");
@@ -1114,7 +1156,7 @@ function GarrisonMissionPage_OnEvent(self, event, ...)
 				mainFrame.FollowerList:UpdateFollowers();
 				mainFrame:UpdateMissionData(self);
 				if (self.followers and self.Enemies) then
-					GarrisonMissionPage_SetCounters(self.Followers, self.Enemies, self.missionInfo.missionID);
+					self:SetCounters(self.Followers, self.Enemies, self.missionInfo.missionID);
 				end
 				return;
 			end
@@ -1125,6 +1167,7 @@ end
 
 function GarrisonMissionPage_OnShow(self)
 	local mainFrame = self:GetParent():GetParent();
+	self:SetFollowerListSortFuncsForMission();
 	mainFrame.FollowerList.showUncollected = false;
 	mainFrame.FollowerList.showCounters = true;
 	mainFrame.FollowerList.canExpand = true;
@@ -1137,6 +1180,7 @@ function GarrisonMissionPage_OnHide(self)
 	mainFrame.FollowerList.showCounters = false;
 	mainFrame.FollowerList.canExpand = false;
 	mainFrame.FollowerList.showUncollected = true;
+	mainFrame.FollowerList:SetSortFuncs(GarrisonGarrisonFollowerList_DefaultSort, GarrisonFollowerList_InitializeDefaultSort);
 
 	self.lastUpdate = nil;
 end
@@ -1160,7 +1204,18 @@ function GarrisonMissionPageEnvironment_OnEnter(self)
 	end
 end
 
-function GarrisonMissionPageMixin:UpdateFollowerModel(info)
+GarrisonFollowerMissionPageMixin = { }
+
+function GarrisonFollowerMissionPageMixin:SetCounters(followers, enemies, missionID)
+	GarrisonMissionPageMixin.SetCounters(self, followers, enemies, missionID);
+end
+
+function GarrisonFollowerMissionPageMixin:SetFollowerListSortFuncsForMission()
+	local mainFrame = self:GetParent():GetParent();
+	mainFrame.FollowerList:SetSortFuncs(GarrisonFollowerOptions[mainFrame.followerTypeID].missionFollowerSortFunc, GarrisonFollowerOptions[mainFrame.followerTypeID].missionFollowerInitSortFunc);
+end
+
+function GarrisonFollowerMissionPageMixin:UpdateFollowerModel(info)
 	if ( self.missionInfo.numFollowers == 1 ) then
 		local model = self.FollowerModel;
 		model:Show();
@@ -1173,7 +1228,7 @@ function GarrisonMissionPageMixin:UpdateFollowerModel(info)
 	end
 end
 
-function GarrisonMissionPageMixin:UpdateEmptyString()
+function GarrisonFollowerMissionPageMixin:UpdateEmptyString()
 	if ( C_Garrison.GetNumFollowersOnMission(self.missionInfo.missionID) == 0 ) then
 		self.EmptyString:Show();
 	else
@@ -1181,7 +1236,7 @@ function GarrisonMissionPageMixin:UpdateEmptyString()
 	end
 end
 
-function GarrisonMissionPageMixin:GetFollowerFrameFromID(followerID)
+function GarrisonFollowerMissionPageMixin:GetFollowerFrameFromID(followerID)
 	for i = 1, #self.Followers do
 		local followerFrame = self.Followers[i];
 		if (followerFrame.info and followerFrame.info.followerID == followerID) then
@@ -1191,7 +1246,7 @@ function GarrisonMissionPageMixin:GetFollowerFrameFromID(followerID)
 	return nil;
 end
 
-function GarrisonMissionPageMixin:UpdatePortraitPulse()
+function GarrisonFollowerMissionPageMixin:UpdatePortraitPulse()
 	-- only pulse the first available slot
 	local pulsed = false;
 	for i = 1, #self.Followers do
@@ -1217,7 +1272,7 @@ function GarrisonMissionPageMixin:UpdatePortraitPulse()
 	end
 end
 
-function GarrisonMissionPageMixin:AddFollower(followerID)
+function GarrisonFollowerMissionPageMixin:AddFollower(followerID)
 	local missionFrame = self:GetParent():GetParent();
 	for i = 1, #self.Followers do
 		local followerFrame = self.Followers[i];

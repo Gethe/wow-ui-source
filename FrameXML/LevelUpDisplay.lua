@@ -1,5 +1,4 @@
 LEVEL_UP_TYPE_CHARACTER = "character";	--Name used in globalstring LEVEL_UP
-LEVEL_UP_TYPE_GUILD = "guild";	--Name used in globalstring GUILD_LEVEL_UP
 LEVEL_UP_TYPE_PET = "pet" -- Name used in globalstring PET_LEVEL_UP
 LEVEL_UP_TYPE_SCENARIO = "scenario";
 LEVEL_UP_TYPE_SPELL_BUCKET = "spellbucket";
@@ -31,13 +30,6 @@ local levelUpTexCoords = {
 		dot = { 0.64257813, 0.68359375, 0.18750000, 0.23046875 },
 		goldBG = { 0.56054688, 0.99609375, 0.24218750, 0.46679688 },
 		gLine = { 0.00195313, 0.81835938, 0.01953125, 0.03320313 },
-		gLineDelay = 1.5,
-	},
-	[LEVEL_UP_TYPE_GUILD] = {
-		dot = { 0.64257813, 0.68359375, 0.77734375, 0.8203125 },
-		goldBG = { 0.56054688, 0.99609375, 0.486328125, 0.7109375 },
-		gLine = { 0.00195313, 0.81835938, 0.96484375, 0.97851563 },
-		textTint = {0.11765, 1, 0},
 		gLineDelay = 1.5,
 	},
 	[LEVEL_UP_TYPE_PET] = {
@@ -263,7 +255,11 @@ LEVEL_UP_CLASS_HACKS = {
 							--  Level  = {unlock}
 								[20] = {"PaliMountDraenei1"},
 								[40] = {"PaliMountDraenei2", "Plate"},
-							},	
+							},
+	["DEMONHUNTER"]		= {
+							--  Level  = {unlock}
+								[99] = {"TalentsUnlocked"},
+							},
 }
 
 GARRISON_ABILITY_HACKS = {
@@ -278,7 +274,6 @@ LEVEL_UP_TRAP_LEVELS = {427, 77, 135}
 
 function LevelUpDisplay_OnLoad(self)
 	self:RegisterEvent("PLAYER_LEVEL_UP");
-	self:RegisterEvent("UNIT_GUILD_LEVEL");
 	self:RegisterEvent("UNIT_LEVEL");
 	--self:RegisterEvent("SCENARIO_UPDATE");	this is now handled from the ObjectiveTracker
 	self:RegisterEvent("PET_BATTLE_FINAL_ROUND"); -- display winner, start listening for additional results
@@ -320,14 +315,6 @@ function LevelUpDisplay_OnEvent(self, event, ...)
 		self.type = LEVEL_UP_TYPE_CHARACTER;
 		LevelUpDisplay_Show(self);
 		LevelUpDisplaySide:Hide();
-	elseif event == "UNIT_GUILD_LEVEL" then
-		local unit, level = ...;
-		if ( unit == "player" ) then
-			self.level = level;
-			self.type = LEVEL_UP_TYPE_GUILD;
-			LevelUpDisplay_Show(self);
-			LevelUpDisplaySide:Hide();
-		end
 	elseif event == "UNIT_LEVEL" and arg1 == "pet" then
 		if (UnitName("pet") ~= UNKNOWNOBJECT) then
 			self.level = UnitLevel("pet");
@@ -476,6 +463,8 @@ function LevelUpDisplay_BuildCharacterList(self)
 																			link=LEVEL_UP_ABILITY2.." "..GetSpellLink(LEVEL_UP_TYPES[spelltype].spellID)
 																		};
 				end
+			elseif LEVEL_UP_TYPES[spelltype] then
+				self.unlockList[#self.unlockList +1] = LEVEL_UP_TYPES[spelltype];
 			end
 		end	
 	end
@@ -532,21 +521,6 @@ end
 
 function LevelUpDisplay_BuildEmptyList(self)
 	self.unlockList = {};
-	self.currSpell = 1;
-end
-
-function LevelUpDisplay_BuildGuildList(self)
-	self.unlockList = {};
-	
-	for i=1, GetNumGuildPerks() do
-		local name, spellID, iconTexture, level = GetGuildPerkInfo(i);
-		if ( level == self.level ) then
-			tinsert(self.unlockList, { text = name, subText = GUILD_LEVEL_UP_PERK, icon = iconTexture, subIcon = SUBICON_TEXCOOR_LOCK,
-												link = GUILD_LEVEL_UP_PERK2.." "..GetSpellLink(spellID)
-											});
-		end
-	end
-	
 	self.currSpell = 1;
 end
 
@@ -780,27 +754,29 @@ function LevelUpDisplay_StartDisplay(self, beginUnlockList)
 		if ( self.type == LEVEL_UP_TYPE_SCENARIO ) then
 			local name, currentStage, numStages, flags, _;
 			name, currentStage, numStages, flags, _, _, _, _, _, scenarioType = C_Scenario.GetInfo();
-			if ( currentStage > 0 and currentStage <= numStages ) then
-				local stageName, stageDescription = C_Scenario.GetStepInfo();
-				if( bit.band(flags, SCENARIO_FLAG_SUPRESS_STAGE_TEXT) == SCENARIO_FLAG_SUPRESS_STAGE_TEXT) then
-					-- Bypass the Stage name portion...
-					self.scenarioFrame.level:SetText(stageName);
-					self.scenarioFrame.name:SetText("");
-				else
-					if ( currentStage == numStages ) then
-						self.scenarioFrame.level:SetText(SCENARIO_STAGE_FINAL);
+			if (not IsBoostTutorialScenario()) then
+				if ( currentStage > 0 and currentStage <= numStages ) then
+					local stageName, stageDescription = C_Scenario.GetStepInfo();
+					if( bit.band(flags, SCENARIO_FLAG_SUPRESS_STAGE_TEXT) == SCENARIO_FLAG_SUPRESS_STAGE_TEXT) then
+						-- Bypass the Stage name portion...
+						self.scenarioFrame.level:SetText(stageName);
+						self.scenarioFrame.name:SetText("");
 					else
-						self.scenarioFrame.level:SetFormattedText(SCENARIO_STAGE, currentStage);
+						if ( currentStage == numStages ) then
+							self.scenarioFrame.level:SetText(SCENARIO_STAGE_FINAL);
+						else
+							self.scenarioFrame.level:SetFormattedText(SCENARIO_STAGE, currentStage);
+						end
+						self.scenarioFrame.name:SetText(stageName);
 					end
-					self.scenarioFrame.name:SetText(stageName);
+					if (scenarioType == LE_SCENARIO_TYPE_LEGION_INVASION) then
+						playAnim = self.scenarioFrame.LegionInvasionNewStage;
+					else
+						playAnim = self.scenarioFrame.newStage;
+					end
+					self.scenarioFrame.description:SetText(stageDescription);
+					LevelUpDisplay:SetPoint("TOP", 0, -250);
 				end
-				if (scenarioType == LE_SCENARIO_TYPE_LEGION_INVASION) then
-					playAnim = self.scenarioFrame.LegionInvasionNewStage;
-				else
-					playAnim = self.scenarioFrame.newStage;
-				end
-				self.scenarioFrame.description:SetText(stageDescription);
-				LevelUpDisplay:SetPoint("TOP", 0, -250);
 			end
 		elseif ( self.type == TOAST_CHALLENGE_MODE_RECORD ) then
 			local medal = self.medal;
@@ -834,11 +810,6 @@ function LevelUpDisplay_StartDisplay(self, beginUnlockList)
 				LevelUpDisplay_BuildPetList(self);
 				local petName = UnitName("pet");
 				self.levelFrame.reachedText:SetFormattedText(PET_LEVEL_UP_REACHED, petName or "");
-				self.levelFrame.levelText:SetFormattedText(LEVEL_GAINED,self.level);
-			elseif ( self.type == LEVEL_UP_TYPE_GUILD ) then
-				LevelUpDisplay_BuildGuildList(self);
-				local guildName = GetGuildInfo("player");
-				self.levelFrame.reachedText:SetFormattedText(GUILD_LEVEL_UP_YOU_REACHED, guildName);
 				self.levelFrame.levelText:SetFormattedText(LEVEL_GAINED,self.level);
 			elseif ( self.type == TOAST_PET_BATTLE_WINNER ) then
 				LevelUpDisplay_BuildPetBattleWinnerList(self);
@@ -1172,11 +1143,6 @@ function LevelUpDisplaySide_OnShow(self)
 		local petName = self.arg1;
 		self.reachedText:SetFormattedText(PET_LEVEL_UP_REACHED, petName);
 		self.levelText:SetFormattedText(LEVEL_GAINED,self.level);
-	elseif ( self.type == LEVEL_UP_TYPE_GUILD ) then
-		LevelUpDisplay_BuildGuildList(self);
-		local guildName = GetGuildInfo("player");
-		self.reachedText:SetFormattedText(GUILD_LEVEL_UP_YOU_REACHED, guildName);
-		self.levelText:SetFormattedText(LEVEL_GAINED,self.level);
 	elseif ( self.type == LEVEL_UP_TYPE_SPELL_BUCKET ) then
 		LevelUpDisplay_BuildSpellBucketList(self);
 		self.reachedText:Hide();
@@ -1268,6 +1234,9 @@ end
 
 -- Chat print function 
 function LevelUpDisplay_ChatPrint(self, level, levelUpType, ...)
+	-- Certain situations don't display any level up text, set filters here.
+	local shouldDisplayBucketUnlocks = not IsBoostTutorialScenario();
+
 	local info;
 	local chatLevelUP = {level = level, type = levelUpType};
 	local levelstring;
@@ -1284,12 +1253,7 @@ function LevelUpDisplay_ChatPrint(self, level, levelUpType, ...)
 			levelstring = "";
 		end
 		info = ChatTypeInfo["SYSTEM"];
-	elseif ( levelUpType == LEVEL_UP_TYPE_GUILD ) then
-		LevelUpDisplay_BuildGuildList(chatLevelUP);
-		local guildName = GetGuildInfo("player");
-		levelstring = format(GUILD_LEVEL_UP, guildName, level, level);
-		info = ChatTypeInfo["GUILD"];
-	elseif ( levelUpType == LEVEL_UP_TYPE_SPELL_BUCKET ) then
+	elseif ( shouldDisplayBucketUnlocks and levelUpType == LEVEL_UP_TYPE_SPELL_BUCKET ) then
 		local allUnlocked, _, name = GetSpellsForCharacterUpgradeTier(level);
 		if (allUnlocked) then
 			local class = UnitClass("player");
@@ -1300,7 +1264,11 @@ function LevelUpDisplay_ChatPrint(self, level, levelUpType, ...)
 		end
 		info = ChatTypeInfo["SYSTEM"];
 	end
-	self:AddMessage(levelstring, info.r, info.g, info.b, info.id);
+
+	if (info and levelstring) then
+		self:AddMessage(levelstring, info.r, info.g, info.b, info.id);
+	end
+
 	if (chatLevelUP.unlockList) then
 		for _,skill in pairs(chatLevelUP.unlockList) do
 			if skill.entryType == "heroicdungeon" then

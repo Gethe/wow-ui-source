@@ -87,6 +87,7 @@ function OrderHallCommandBarMixin:RefreshCategories()
 
 	local numCategories = #categoryInfo;
 	local prevCategory, firstCategory;
+	local xSpacing = 20;	-- space between categories
 	for index, category in pairs(categoryInfo) do
 		local categoryInfo = self.categoryPool:Acquire();
 		categoryInfo.Icon:SetTexture(category.icon);
@@ -96,10 +97,11 @@ function OrderHallCommandBarMixin:RefreshCategories()
 		categoryInfo.Count:SetText(string.format("%d/%d", category.count, category.limit));
 		categoryInfo:ClearAllPoints();
 		if (not firstCategory) then
-			categoryInfo:SetPoint("LEFT", self, "LEFT", (self:GetWidth() - (numCategories * categoryInfo:GetWidth()))/2, 0);
+			-- calculate positioning so that the set of categories ends up being centered
+			categoryInfo:SetPoint("LEFT", self, "LEFT", (self:GetWidth() - (numCategories * categoryInfo:GetWidth()))/2 - (numCategories - 1)*xSpacing, 0);
 			firstCategory = categoryInfo;
 		else
-			categoryInfo:SetPoint("LEFT", prevCategory, "RIGHT");
+			categoryInfo:SetPoint("LEFT", prevCategory, "RIGHT", xSpacing, 0);
 		end
 		categoryInfo:Show();
 		prevCategory = categoryInfo;

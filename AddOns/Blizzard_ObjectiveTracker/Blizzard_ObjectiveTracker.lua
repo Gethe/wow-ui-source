@@ -495,7 +495,6 @@ function DEFAULT_OBJECTIVE_TRACKER_MODULE:AddProgressBar(block, line, questID)
 		self.usedProgressBars[block][line] = progressBar;
 		progressBar:RegisterEvent("QUEST_LOG_UPDATE");
 		progressBar:Show();
-		progressBar.Bar.Label:Hide();
 		-- initialize to the right values
 		progressBar.questID = questID;
 		ObjectiveTrackerProgressBar_SetValue(progressBar, GetQuestProgressBarPercent(questID));

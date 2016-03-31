@@ -58,8 +58,10 @@ function ShowGarrisonFollowerAbilityTooltip(frame, garrFollowerAbilityID, follow
 		local name = C_Garrison.GetFollowerAbilityName(garrFollowerAbilityID);
 		local description = C_Garrison.GetFollowerAbilityDescription(garrFollowerAbilityID);
 
-		local str = "|T"..icon..":24:24|t "..name;
-		GameTooltip:AddLine(str, 1, 1, 1);
+		if (icon) then
+			local str = "|T"..icon..":24:24|t "..name;
+			GameTooltip:AddLine(str, 1, 1, 1);
+		end
 		GameTooltip:AddLine(description, nil, nil, nil, true);
 		GameTooltip:Show();
 	else

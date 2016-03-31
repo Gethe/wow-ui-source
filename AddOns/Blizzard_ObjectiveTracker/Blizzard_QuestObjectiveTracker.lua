@@ -285,6 +285,9 @@ function QuestObjectiveTracker_DoQuestObjectives(block, numObjectives, questComp
 							PlaySound("UI_QuestRollingForward_01");
 						else
 							QUEST_TRACKER_MODULE:AddObjective(block, objectiveIndex, text);
+							if ( objectiveType == "progressbar" ) then
+								QUEST_TRACKER_MODULE:AddProgressBar(block, block.currentLine, block.id, finished);
+							end
 						end
 					end
 				end

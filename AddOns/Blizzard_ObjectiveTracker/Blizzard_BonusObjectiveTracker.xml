@@ -26,6 +26,46 @@
 
 	<ScrollFrame name="BonusObjectiveTrackerBlockTemplate" hidden="true" virtual="true" alpha="0">
 		<Size x="240" y="10"/>
+		<Frames>
+			<Button parentKey="TrackedQuest">
+				<Layers>
+					<Layer level="BACKGROUND" textureSubLevel="-2">
+						<Texture parentKey="Glow" alphaMode="ADD" file="Interface/WorldMap/UI-QuestPoi-IconGlow">
+							<Size x="50" y="50" />
+							<Anchors>
+								<Anchor point="CENTER" />
+							</Anchors>
+						</Texture>
+					</Layer>
+					<Layer level="BACKGROUND" textureSubLevel="-1">
+						<Texture parentKey="Underlay">
+							<Size x="34" y="34" />
+							<Anchors>
+								<Anchor point="CENTER" y="-2" />
+							</Anchors>
+						</Texture>
+					</Layer>
+					<Layer level="OVERLAY">
+						<Texture parentKey="Texture">
+							<Anchors>
+								<Anchor point="CENTER" />
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnLoad>
+						self:RegisterForClicks("LeftButtonUp", "RightButtonUp");
+					</OnLoad>
+					<OnClick>
+						PlaySound("igMainMenuOptionCheckBoxOn");
+						if GetSuperTrackedQuestID() ~= self.questID then
+							SetSuperTrackedQuestID(self.questID);
+						end
+					</OnClick>
+				</Scripts>
+			</Button>
+		</Frames>
 		<ScrollChild>
 			<Frame parentKey="ScrollContents">
 				<Size x="10" y="10"/>
@@ -53,6 +93,7 @@
 			</OnLoad>
 			<OnEnter function="BonusObjectiveTracker_OnBlockEnter"/>
 			<OnLeave function="BonusObjectiveTracker_OnBlockLeave"/>
+			<OnMouseUp function="BonusObjectiveTracker_OnBlockClick" />
 		</Scripts>
 	</ScrollFrame>
 
@@ -564,35 +605,6 @@
 			<KeyValue key="DefaultHeaderText" value="TRACKER_HEADER_WORLD_QUESTS" type="global"/>
 			<KeyValue key="ShowWorldQuests" value="true" type="boolean" />
 		</KeyValues>
-		<Frames>
-			<Button parentKey="TrackedQuest">
-				<Layers>
-					<Layer level="BACKGROUND" textureSubLevel="-2">
-						<Texture parentKey="Glow" alphaMode="ADD" file="Interface/WorldMap/UI-QuestPoi-IconGlow">
-							<Size x="50" y="50" />
-							<Anchors>
-								<Anchor point="CENTER" />
-							</Anchors>
-						</Texture>
-					</Layer>
-					<Layer level="BACKGROUND" textureSubLevel="-1">
-						<Texture parentKey="Underlay">
-							<Size x="34" y="34" />
-							<Anchors>
-								<Anchor point="CENTER" y="-2" />
-							</Anchors>
-						</Texture>
-					</Layer>
-					<Layer level="OVERLAY">
-						<Texture parentKey="Texture">
-							<Anchors>
-								<Anchor point="CENTER" />
-							</Anchors>
-						</Texture>
-					</Layer>
-				</Layers>
-			</Button>
-		</Frames>
 		<Scripts>
 			<!-- Remove event handler, not needed for world quests currently -->
 			<OnEvent />

@@ -81,11 +81,10 @@
 				ContainerFrameItemButton_OnLoad(self);
 			</OnLoad>
 			<OnEnter>
-				ContainerFrameItemButton_OnEnter(self, motion);
+				ContainerFrameItemButton_OnEnter(self);
 			</OnEnter>
 			<OnLeave>
-				GameTooltip_Hide();
-				ResetCursor();
+				ContainerFrameItemButton_OnLeave(self);
 			</OnLeave>
 			<OnHide>
 				if ( self.hasStackSplit and (self.hasStackSplit == 1) ) then

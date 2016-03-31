@@ -101,16 +101,7 @@ function WorldMapBountyBoardMixin:RefreshSelectedBounty()
 			if title then
 				self.BountyName:SetText(title);
 
-				for rewardIndex = 1, GetNumQuestLogRewards(bountyData.questID) do
-					local name, texture, numItems, quality, isUsable, itemID = GetQuestLogRewardInfo(rewardIndex, bountyData.questID);
-					if name and texture then
-						self.RewardFrame.Icon:SetTexture(texture);
-						break; -- Just one for now
-					end
-				end
-
 				self:RefreshSelectedBountyObjectives(bountyData);
-
 				return;
 			end
 		end
@@ -132,7 +123,7 @@ function WorldMapBountyBoardMixin:RefreshSelectedBountyObjectives(bountyData)
 
 	local percentFull = (numTotal - 1) / (MAX_BOUNTY_OBJECTIVES - 1);
 	local padding = Lerp(3, -9, percentFull);
-	local startingOffsetX = Lerp(0, -20, percentFull) - ((SUB_OBJECTIVE_FRAME_WIDTH + padding) * (numTotal - 1)) / 2;
+	local startingOffsetX = -((SUB_OBJECTIVE_FRAME_WIDTH + padding) * (numTotal - 1)) / 2;
 
 	for bountyObjectiveIndex = 1, numTotal do
 		local bountyObjectiveFrame = self.bountyObjectivePool:Acquire();

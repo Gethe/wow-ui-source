@@ -409,7 +409,7 @@ function PlayerFrame_ToVehicleArt(self, vehicleType)
 	PetFrame_Update(PetFrame);
 	PlayerFrame_Update();
 	BuffFrame_Update();
-	ComboFrame_Update();
+	ComboFrame_Update(ComboFrame);
 			
 	PlayerFrameTexture:Hide();
 	if ( vehicleType == "Natural" ) then
@@ -450,7 +450,7 @@ function PlayerFrame_ToPlayerArt(self)
 	PetFrame_Update(PetFrame);
 	PlayerFrame_Update();
 	BuffFrame_Update();
-	ComboFrame_Update();
+	ComboFrame_Update(ComboFrame);
 			
 	PlayerFrameTexture:Show();
 	PlayerFrame_HideVehicleTexture();

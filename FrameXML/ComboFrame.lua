@@ -24,11 +24,11 @@ end
 
 function ComboFrame_OnEvent(self, event, ...)
 	if ( event == "PLAYER_TARGET_CHANGED" ) then
-		ComboFrame_Update();
+		ComboFrame_Update(self);
 	elseif ( event == "UNIT_POWER_FREQUENT" ) then
 		local unit = ...;
 		if ( unit == PlayerFrame.unit ) then
-			ComboFrame_Update();
+			ComboFrame_Update(self);
 		end
 	elseif ( event == "UNIT_MAXPOWER" or event == "PLAYER_ENTERING_WORLD" ) then
 		ComboFrame_UpdateMax(self);
@@ -55,8 +55,7 @@ function ComboFrame_UpdateMax(self)
 	end
 end
 	
-function ComboFrame_Update()
-	self = ComboFrame;
+function ComboFrame_Update(self)
 	local comboPoints = GetComboPoints(PlayerFrame.unit, "target");
 	local comboPoint, comboPointHighlight, comboPointShine;
 	

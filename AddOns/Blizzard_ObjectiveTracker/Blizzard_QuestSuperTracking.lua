@@ -41,13 +41,14 @@ function QuestSuperTracking_ChooseClosestQuest()
 	local closestQuestID;
 
 	local minDistSqr = math.huge;
-	local watchedWorldQuestID = GetWorldQuestWatch();
-	if ( watchedWorldQuestID ) then
-		local distanceSq = C_TaskQuest.GetDistanceSqToQuest(watchedWorldQuestID);
-		if distanceSq then
-			closestQuestID = watchedWorldQuestID;
-		else
-			ClearWorldQuestWatch();
+	for i = 1, GetNumWorldQuestWatches() do
+		local watchedWorldQuestID = GetWorldQuestWatchInfo(i);
+		if ( watchedWorldQuestID ) then
+			local distanceSq = C_TaskQuest.GetDistanceSqToQuest(watchedWorldQuestID);
+			if distanceSq and distanceSq <= minDistSqr then
+				minDistSqr = distanceSq;
+				closestQuestID = watchedWorldQuestID;
+			end
 		end
 	end
 	

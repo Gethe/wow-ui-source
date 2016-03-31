@@ -975,8 +975,17 @@
   <xs:complexType name="MinimapType">
 		<xs:complexContent>
 			<xs:extension base="FrameType">
-				<xs:attribute name="minimapArrowModel" type="xs:string"/>
-				<xs:attribute name="minimapPlayerModel" type="xs:string"/>
+				<xs:attribute name="questBlobInsideTexture" type="xs:string"/>
+				<xs:attribute name="questBlobOutsideTexture" type="xs:string"/>
+				<xs:attribute name="questBlobOutsideSelectedTexture" type="xs:string"/>
+				<xs:attribute name="questBlobRingTexture" type="xs:string"/>
+				<xs:attribute name="taskBlobInsideTexture" type="xs:string"/>
+				<xs:attribute name="taskBlobOutsideTexture" type="xs:string"/>
+				<xs:attribute name="taskBlobOutsideSelectedTexture" type="xs:string"/>
+				<xs:attribute name="taskBlobRingTexture" type="xs:string"/>
+				<xs:attribute name="archBlobInsideTexture" type="xs:string"/>
+				<xs:attribute name="archBlobOutsideTexture" type="xs:string"/>
+				<xs:attribute name="archBlobRingTexture" type="xs:string"/>
 			</xs:extension>
 		</xs:complexContent>
 	</xs:complexType>

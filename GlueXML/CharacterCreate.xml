@@ -572,7 +572,7 @@
 						<FontString name="$parentText" inherits="GlueFontNormalSmall" parentKey="text">
 							<Size x="110" y="0"/>
 							<Anchors>
-								<Anchor point="TOP" x="2" y="-59"/>
+								<Anchor point="TOP" x="0" y="-59"/>
 							</Anchors>
 						</FontString>
 					</Layer>
@@ -1511,62 +1511,62 @@
 							</Frame>
 							<CheckButton name="CharCreateClassButton1" inherits="CharCreateClassButtonTemplate" id="1">
 								<Anchors>
-									<Anchor point="TOP" relativeTo="CharCreateClassLabel" relativePoint="BOTTOM" x="0" y="-12"/>
+									<Anchor point="TOP" relativeTo="CharCreateClassLabel" relativePoint="BOTTOM" x="0" y="-8"/>
 								</Anchors>
 							</CheckButton>
 							<CheckButton name="CharCreateClassButton2" inherits="CharCreateClassButtonTemplate" id="2">
 								<Anchors>
-									<Anchor point="TOPLEFT" relativeTo="CharCreateClassButton1" relativePoint="BOTTOMLEFT" x="0" y="-18"/>
+									<Anchor point="TOP" relativeTo="CharCreateClassButton1NameFrameText" relativePoint="BOTTOM" x="0" y="-10"/>
 								</Anchors>
 							</CheckButton>
 							<CheckButton name="CharCreateClassButton3" inherits="CharCreateClassButtonTemplate" id="3">
 								<Anchors>
-									<Anchor point="TOPLEFT" relativeTo="CharCreateClassButton2" relativePoint="BOTTOMLEFT" x="0" y="-18"/>
+									<Anchor point="TOP" relativeTo="CharCreateClassButton2NameFrameText" relativePoint="BOTTOM" x="0" y="-10"/>
 								</Anchors>
 							</CheckButton>
 							<CheckButton name="CharCreateClassButton4" inherits="CharCreateClassButtonTemplate" id="4">
 								<Anchors>
-									<Anchor point="TOPLEFT" relativeTo="CharCreateClassButton3" relativePoint="BOTTOMLEFT" x="0" y="-18"/>
+									<Anchor point="TOP" relativeTo="CharCreateClassButton3NameFrameText" relativePoint="BOTTOM" x="0" y="-10"/>
 								</Anchors>
 							</CheckButton>
 							<CheckButton name="CharCreateClassButton5" inherits="CharCreateClassButtonTemplate" id="5">
 								<Anchors>
-									<Anchor point="TOPLEFT" relativeTo="CharCreateClassButton4" relativePoint="BOTTOMLEFT" x="0" y="-18"/>
+									<Anchor point="TOP" relativeTo="CharCreateClassButton4NameFrameText" relativePoint="BOTTOM" x="0" y="-10"/>
 								</Anchors>
 							</CheckButton>
 							<CheckButton name="CharCreateClassButton7" inherits="CharCreateClassButtonTemplate" id="7">
 								<Anchors>
-									<Anchor point="TOPLEFT" relativeTo="CharCreateClassButton5" relativePoint="BOTTOMLEFT" x="0" y="-18"/>
+									<Anchor point="TOP" relativeTo="CharCreateClassButton5NameFrameText" relativePoint="BOTTOM" x="0" y="-10"/>
 								</Anchors>
 							</CheckButton>
 							<CheckButton name="CharCreateClassButton8" inherits="CharCreateClassButtonTemplate" id="8">
 								<Anchors>
-									<Anchor point="TOPLEFT" relativeTo="CharCreateClassButton7" relativePoint="BOTTOMLEFT" x="0" y="-18"/>
+									<Anchor point="TOP" relativeTo="CharCreateClassButton7NameFrameText" relativePoint="BOTTOM" x="0" y="-10"/>
 								</Anchors>
 							</CheckButton>
 							<CheckButton name="CharCreateClassButton9" inherits="CharCreateClassButtonTemplate" id="9">
 								<Anchors>
-									<Anchor point="TOPLEFT" relativeTo="CharCreateClassButton8" relativePoint="BOTTOMLEFT" x="0" y="-18"/>
+									<Anchor point="TOP" relativeTo="CharCreateClassButton8NameFrameText" relativePoint="BOTTOM" x="0" y="-10"/>
 								</Anchors>
 							</CheckButton>
 							<CheckButton name="CharCreateClassButton10" inherits="CharCreateClassButtonTemplate" id="10">
 								<Anchors>
-									<Anchor point="TOPLEFT" relativeTo="CharCreateClassButton9" relativePoint="BOTTOMLEFT" x="0" y="-18"/>
+									<Anchor point="TOP" relativeTo="CharCreateClassButton9NameFrameText" relativePoint="BOTTOM" x="0" y="-10"/>
 								</Anchors>
 							</CheckButton>
 							<CheckButton name="CharCreateClassButton11" inherits="CharCreateClassButtonTemplate" id="11">
 								<Anchors>
-									<Anchor point="TOPLEFT" relativeTo="CharCreateClassButton10" relativePoint="BOTTOMLEFT" x="0" y="-18"/>
+									<Anchor point="TOP" relativeTo="CharCreateClassButton10NameFrameText" relativePoint="BOTTOM" x="0" y="-10"/>
 								</Anchors>
 							</CheckButton>
 							<CheckButton name="CharCreateClassButton12" inherits="CharCreateClassButtonTemplate" id="12">
 								<Anchors>
-									<Anchor point="TOPLEFT" relativeTo="CharCreateClassButton11" relativePoint="BOTTOMLEFT" x="0" y="-18"/>
+									<Anchor point="TOP" relativeTo="CharCreateClassButton11NameFrameText" relativePoint="BOTTOM" x="0" y="-10"/>
 								</Anchors>
 							</CheckButton>
 							<CheckButton name="CharCreateClassButton6" inherits="CharCreateClassButtonTemplate" id="6">
 								<Anchors>
-									<Anchor point="TOPLEFT" relativeTo="CharCreateClassButton12" relativePoint="BOTTOMLEFT" x="0" y="-18"/>
+									<Anchor point="TOP" relativeTo="CharCreateClassButton12NameFrameText" relativePoint="BOTTOM" x="0" y="-10"/>
 								</Anchors>
 							</CheckButton>
 						</Frames>

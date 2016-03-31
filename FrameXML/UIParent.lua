@@ -356,6 +356,9 @@ function UIParent_OnLoad(self)
 	self:RegisterUnitEvent("UNIT_AURA", "player");
 
 	self:RegisterEvent("TAXIMAP_OPENED");
+
+	-- Used to determine when to load BoostTutorial
+	self:RegisterEvent("SCENARIO_UPDATE");
 end
 
 function UIParent_OnShow(self)
@@ -570,6 +573,12 @@ end
 function Tutorial_LoadUI()
 	if ( GetTutorialsEnabled() and UnitLevel("player") < NPE_TUTORIAL_COMPLETE_LEVEL ) then
 		UIParentLoadAddOn("Blizzard_Tutorial");
+	end
+end
+
+function BoostTutorial_LoadUI()
+	if (not BoostTutorial) then
+		UIParentLoadAddOn("Blizzard_BoostTutorial");
 	end
 end
 
@@ -876,34 +885,35 @@ function UIParent_OnEvent(self, event, ...)
 	local arg1, arg2, arg3, arg4, arg5, arg6 = ...;
 	if ( event == "CURRENT_SPELL_CAST_CHANGED" ) then
 		if ( SpellCanTargetGarrisonFollower() or SpellCanTargetGarrisonFollowerAbility(0, 0) ) then
-			if ( not GarrisonLandingPage ) then
-				Garrison_LoadUI();
-			end
-			local frame = GarrisonMissionFrame;
-			local landingPageTabIndex = 2;
+
 			local followerTypeID = GetFollowerTypeIDFromSpell();
-			if ( followerTypeID == LE_FOLLOWER_TYPE_SHIPYARD_6_2 ) then
-				frame = GarrisonShipyardFrame;
-				landingPageTabIndex = 3;
-			elseif ( followerTypeID == LE_FOLLOWER_TYPE_GARRISON_7_0 ) then
-				frame = OrderHallMissionFrame;
-			end
-			-- if the mission UI is already open, go with that
-			if ( frame:IsShown() ) then
+			local frame = _G[GarrisonFollowerOptions[followerTypeID].missionFrame];
+
+			if (frame and frame:IsShown()) then
 				if ( (not C_Garrison.TargetSpellHasFollowerTemporaryAbility() or not frame:HasMission()) and PanelTemplates_GetSelectedTab(frame) ~= 2 ) then
 					frame:SelectTab(2)
 				end
 			else
-				if ( not GarrisonLandingPage:IsShown()) then
-					ShowUIPanel(GarrisonLandingPage);
-				end
-				-- switch to the followers tab
-				if ( PanelTemplates_GetSelectedTab(GarrisonLandingPage) ~= landingPageTabIndex ) then
-					GarrisonLandingPageTab_SetTab(_G["GarrisonLandingPageTab"..landingPageTabIndex]);
+				local landingPageTabIndex;
+				local garrTypeID = GarrisonFollowerOptions[followerTypeID].garrisonType;
+				if (C_Garrison.HasGarrison(garrTypeID)) then
+					if (followerTypeID == LE_FOLLOWER_TYPE_SHIPYARD_6_2) then
+						landingPageTabIndex = 3;
+					else
+						landingPageTabIndex = 2;
+					end
+
+					ShowGarrisonLandingPage(garrTypeID);
+
+					-- switch to the followers tab
+					if ( PanelTemplates_GetSelectedTab(GarrisonLandingPage) ~= landingPageTabIndex ) then
+						GarrisonLandingPageTab_SetTab(_G["GarrisonLandingPageTab"..landingPageTabIndex]);
+					end
 				end
 			end
 		end
 		if ( SpellCanTargetGarrisonMission() ) then
+			-- TODO: Determine garrison/follower mission type for this spell
 			if ( not GarrisonLandingPage ) then
 				Garrison_LoadUI();
 			end
@@ -916,15 +926,16 @@ function UIParent_OnEvent(self, event, ...)
 					GarrisonMissionListTab_SetTab(GarrisonMissionFrame.MissionTab.MissionList.Tab2);
 				end
 			else
-				if ( not GarrisonLandingPage:IsShown()) then
-					ShowUIPanel(GarrisonLandingPage);
-				end
-				-- switch to the mission tab
-				if ( PanelTemplates_GetSelectedTab(GarrisonLandingPage) ~= 1 ) then
-					GarrisonLandingPageTab_SetTab(GarrisonLandingPageTab1);
-				end
-				if ( PanelTemplates_GetSelectedTab(GarrisonLandingPageReport) ~= GarrisonLandingPageReport.InProgress ) then
-					GarrisonLandingPageReport_SetTab(GarrisonLandingPageReport.InProgress);
+				if (C_Garrison.HasGarrison(LE_GARRISON_TYPE_6_0)) then
+					ShowGarrisonLandingPage(LE_GARRISON_TYPE_6_0);
+					
+					-- switch to the mission tab
+					if ( PanelTemplates_GetSelectedTab(GarrisonLandingPage) ~= 1 ) then
+						GarrisonLandingPageTab_SetTab(GarrisonLandingPageTab1);
+					end
+					if ( PanelTemplates_GetSelectedTab(GarrisonLandingPageReport) ~= GarrisonLandingPageReport.InProgress ) then
+						GarrisonLandingPageReport_SetTab(GarrisonLandingPageReport.InProgress);
+					end
 				end
 			end
 		end
@@ -1155,16 +1166,18 @@ function UIParent_OnEvent(self, event, ...)
 		
 		--Bonus roll/spell confirmation.
 		local spellConfirmations = GetSpellConfirmationPromptsInfo();
-		
-		for i=1, #spellConfirmations do
-			if ( spellConfirmations[i].spellID ) then
-				if ( spellConfirmations[i].confirmType == CONFIRMATION_PROMPT_BONUS_ROLL ) then
-					BonusRollFrame_StartBonusRoll(spellConfirmations[i].spellID, spellConfirmations[i].text, spellConfirmations[i].duration, spellConfirmations[i].currencyID);
-				else
-					StaticPopup_Show("SPELL_CONFIRMATION_PROMPT", spellConfirmations[i].text, spellConfirmations[i].duration, spellConfirmations[i].spellID);
+
+		for i, spellConfirmation in ipairs(spellConfirmations) do
+			if spellConfirmation.spellID then
+				if confirmType == LE_SPELL_CONFIRMATION_PROMPT_TYPE_STATIC_TEXT then
+					StaticPopup_Show("SPELL_CONFIRMATION_PROMPT", spellConfirmation.text, spellConfirmation.duration, spellConfirmation.spellID);
+				elseif spellConfirmation.confirmType == LE_SPELL_CONFIRMATION_PROMPT_TYPE_SIMPLE_WARNING then
+					StaticPopup_Show("SPELL_CONFIRMATION_WARNING", spellConfirmation.text, nil, spellConfirmation.spellID);
+				elseif spellConfirmation.confirmType == LE_SPELL_CONFIRMATION_PROMPT_TYPE_BONUS_ROLL then
+					BonusRollFrame_StartBonusRoll(spellConfirmation.spellID, spellConfirmation.text, spellConfirmation.duration, spellConfirmation.currencyID);
 				end
 			end
-		end
+	end
 		
 		--Group Loot Roll Windows.
 		local pendingLootRollIDs = GetActiveLootRollIDs();
@@ -1310,17 +1323,21 @@ function UIParent_OnEvent(self, event, ...)
 		MissingLootFrame_Show();
 	elseif ( event == "SPELL_CONFIRMATION_PROMPT" ) then
 		local spellID, confirmType, text, duration, currencyID = ...;
-		if ( confirmType == CONFIRMATION_PROMPT_BONUS_ROLL ) then
-			BonusRollFrame_StartBonusRoll(spellID, text, duration, currencyID);
-		else
+		if ( confirmType == LE_SPELL_CONFIRMATION_PROMPT_TYPE_STATIC_TEXT ) then
 			StaticPopup_Show("SPELL_CONFIRMATION_PROMPT", text, duration, spellID);
+		elseif ( confirmType == LE_SPELL_CONFIRMATION_PROMPT_TYPE_SIMPLE_WARNING ) then
+			StaticPopup_Show("SPELL_CONFIRMATION_WARNING", text, nil, spellID);
+		elseif ( confirmType == LE_SPELL_CONFIRMATION_PROMPT_TYPE_BONUS_ROLL ) then
+			BonusRollFrame_StartBonusRoll(spellID, text, duration, currencyID);
 		end
 	elseif ( event == "SPELL_CONFIRMATION_TIMEOUT" ) then
 		local spellID, confirmType = ...;
-		if ( confirmType == CONFIRMATION_PROMPT_BONUS_ROLL ) then
-			BonusRollFrame_CloseBonusRoll();
-		else
+		if ( confirmType == LE_SPELL_CONFIRMATION_PROMPT_TYPE_STATIC_TEXT ) then
 			StaticPopup_Hide("SPELL_CONFIRMATION_PROMPT", spellID);
+		elseif ( confirmType == LE_SPELL_CONFIRMATION_PROMPT_TYPE_SIMPLE_WARNING ) then
+			StaticPopup_Hide("SPELL_CONFIRMATION_WARNING", spellID);
+		elseif ( confirmType == LE_SPELL_CONFIRMATION_PROMPT_TYPE_BONUS_ROLL ) then
+			BonusRollFrame_CloseBonusRoll();
 		end
 	elseif ( event == "SAVED_VARIABLES_TOO_LARGE" ) then
 		local addonName = ...;
@@ -1445,8 +1462,14 @@ function UIParent_OnEvent(self, event, ...)
 		ShowUIPanel(ArtifactFrame);
 		
 	elseif ( event == "ARTIFACT_RESPEC_PROMPT" ) then
-		ArtifactFrame_LoadUI();  -- Need to load because this popup is in Blizzard_ArtifactUI.lua
-		StaticPopup_Show("CONFIRM_ARTIFACT_RESPEC");
+		ArtifactFrame_LoadUI();
+		ShowUIPanel(ArtifactFrame);
+
+		if C_ArtifactUI.GetPointsRemaining() < C_ArtifactUI.GetRespecCost() then
+			StaticPopup_Show("NOT_ENOUGH_POWER_ARTIFACT_RESPEC", BreakUpLargeNumbers(C_ArtifactUI.GetRespecCost()));
+		else
+			StaticPopup_Show("CONFIRM_ARTIFACT_RESPEC", BreakUpLargeNumbers(C_ArtifactUI.GetRespecCost()));
+		end
 		
 	elseif ( event == "ADVENTURE_MAP_OPEN" ) then
 		OrderHall_LoadUI();
@@ -1805,6 +1828,11 @@ function UIParent_OnEvent(self, event, ...)
 				FlightMap_LoadUI();
 			end
 			ShowUIPanel(FlightMapFrame);
+		end
+	elseif (event == "SCENARIO_UPDATE") then
+		if (IsBoostTutorialScenario()) then
+			BoostTutorial_LoadUI();
+			UIParent:UnregisterEvent("SCENARIO_UPDATE");
 		end
 	end
 end
@@ -2404,7 +2432,8 @@ function FramePositionDelegate:UpdateUIPanelPositions(currentFrame)
 	if ( frame ) then
 		local xOff = GetUIPanelWindowInfo(frame,"xoffset") or 0;
 		local yOff = GetUIPanelWindowInfo(frame,"yoffset") or 0;
-		local yPos = ClampUIPanelY(frame, yOff + topOffset);
+		local bottomClampOverride = GetUIPanelWindowInfo(frame,"bottomClampOverride");
+		local yPos = ClampUIPanelY(frame, yOff + topOffset, bottomClampOverride);
 		frame:ClearAllPoints();
 		frame:SetPoint("TOPLEFT", "UIParent", "TOPLEFT", leftOffset + xOff, yPos);
 		centerOffset = leftOffset + GetUIPanelWidth(frame) + xOff;
@@ -2415,7 +2444,8 @@ function FramePositionDelegate:UpdateUIPanelPositions(currentFrame)
 		if ( frame ) then
 			local xOff = GetUIPanelWindowInfo(frame,"xoffset") or 0;
 			local yOff = GetUIPanelWindowInfo(frame,"yoffset") or 0;
-			local yPos = ClampUIPanelY(frame, yOff + topOffset);
+			local bottomClampOverride = GetUIPanelWindowInfo(frame,"bottomClampOverride");
+			local yPos = ClampUIPanelY(frame, yOff + topOffset, bottomClampOverride);
 			frame:ClearAllPoints();
 			frame:SetPoint("TOPLEFT", "UIParent", "TOPLEFT", leftOffset + xOff, yPos);
 			rightOffset = leftOffset + GetUIPanelWidth(frame) + xOff;
@@ -2430,7 +2460,8 @@ function FramePositionDelegate:UpdateUIPanelPositions(currentFrame)
 			local area = GetUIPanelWindowInfo(frame, "area");
 			local xOff = GetUIPanelWindowInfo(frame,"xoffset") or 0;
 			local yOff = GetUIPanelWindowInfo(frame,"yoffset") or 0;
-			local yPos = ClampUIPanelY(frame, yOff + topOffset);
+			local bottomClampOverride = GetUIPanelWindowInfo(frame,"bottomClampOverride");
+			local yPos = ClampUIPanelY(frame, yOff + topOffset, bottomClampOverride);
 			if ( area ~= "center" ) then
 				frame:ClearAllPoints();
 				xOff = xOff + xSpacing; -- add sperating space
@@ -2465,7 +2496,8 @@ function FramePositionDelegate:UpdateUIPanelPositions(currentFrame)
 		if ( CanShowRightUIPanel(frame) ) then
 			local xOff = GetUIPanelWindowInfo(frame,"xoffset") or 0;
 			local yOff = GetUIPanelWindowInfo(frame,"yoffset") or 0;
-			local yPos = ClampUIPanelY(frame, yOff + topOffset);
+			local bottomClampOverride = GetUIPanelWindowInfo(frame,"bottomClampOverride");
+			local yPos = ClampUIPanelY(frame, yOff + topOffset, bottomClampOverride);
 			xOff = xOff + xSpacing; -- add sperating space
 			frame:ClearAllPoints();
 			frame:SetPoint("TOPLEFT", "UIParent", "TOPLEFT", rightOffset  + xOff, yPos);
@@ -2848,10 +2880,11 @@ function GetMaxUIPanelsWidth()
 	return UIParent:GetRight() - UIParent:GetAttribute("RIGHT_OFFSET_BUFFER");
 end
 
-function ClampUIPanelY(frame, yOffset)
+function ClampUIPanelY(frame, yOffset, bottomClampOverride)
 	local bottomPos = UIParent:GetTop() + yOffset - GetUIPanelHeight(frame);
-	if (bottomPos < 140) then
-		yOffset = yOffset + (140 - bottomPos);
+	local bottomClamp = bottomClampOverride or 140;
+	if (bottomPos < bottomClamp) then
+		yOffset = yOffset + (bottomClamp - bottomPos);
 	end	
 	if (yOffset > -10) then
 		yOffset = -10;
@@ -4549,6 +4582,15 @@ function ConfirmOrLeaveBattlefield()
 	else
 		StaticPopup_Show("CONFIRM_LEAVE_BATTLEFIELD");
 	end
+end
+
+function GetCurrentScenarioType()
+	local scenarioType = select(10, C_Scenario.GetInfo());
+	return scenarioType;
+end
+
+function IsBoostTutorialScenario()
+	return GetCurrentScenarioType() == LE_SCENARIO_TYPE_BOOST_TUTORIAL;
 end
 
 function PrintLootSpecialization()

@@ -248,8 +248,9 @@ function PVPHonorXPBarPrestige_OnClick(self)
 	local newPrestigeLevel = UnitPrestige("player") + 1;
 
 	frame.NextRank:SetText(newPrestigeLevel);
-	frame.NextRankLabel:SetText(_G["PRESTIGE_LEVEL_"..newPrestigeLevel]);
-	frame.PrestigeIcon:SetTexture(GetPrestigeInfo(newPrestigeLevel));
+    local texture, name = GetPrestigeInfo(newPrestigeLevel);
+	frame.NextRankLabel:SetText(name);
+	frame.PrestigeIcon:SetTexture(texture);
 	frame.LaurelBackground:SetAtlas("honorsystem-prestige-laurel-bg-"..UnitFactionGroup("player"), false);
 	frame:Show();
 end
@@ -379,9 +380,9 @@ function PrestigeLevelUpBanner_OnEvent(self, event, ...)
 	if (event == "HONOR_PRESTIGE_UPDATE") then
 		local prestige = UnitPrestige("player");
 		local factionGroup = UnitFactionGroup("player");
-		local texture = GetPrestigeInfo(prestige);
+		local texture, name = GetPrestigeInfo(prestige);
 		self.Text1:SetText(PRESTIGE_LEVEL_LABEL:format(prestige));
-		self.Text2:SetText(_G["PRESTIGE_LEVEL_"..prestige]);
+		self.Text2:SetText(name);
 		self.Level:SetText(prestige);
 		self.IconPlate:SetAtlas("titleprestige-prestigeiconplate-"..factionGroup);
 		self.IconPlate2:SetAtlas("titleprestige-prestigeiconplate-"..factionGroup);

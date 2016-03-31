@@ -108,6 +108,7 @@ ChatTypeInfo["BN_WHISPER_PLAYER_OFFLINE"] 				= { sticky = 0, flashTab = false, 
 ChatTypeInfo["COMBAT_GUILD_XP_GAIN"]					= { sticky = 0, flashTab = false, flashTabOnGeneral = false };
 ChatTypeInfo["PET_BATTLE_COMBAT_LOG"]					= { sticky = 0, flashTab = false, flashTabOnGeneral = false };
 ChatTypeInfo["PET_BATTLE_INFO"]							= { sticky = 0, flashTab = false, flashTabOnGeneral = false };
+ChatTypeInfo["GUILD_ITEM_LOOTED"]						= ChatTypeInfo["GUILD_ACHIEVEMENT"];
 
 --NEW_CHAT_TYPE -Add the info here.
 
@@ -161,7 +162,6 @@ ChatTypeGroup["INSTANCE_CHAT_LEADER"] = {
 ChatTypeGroup["GUILD"] = {
 	"CHAT_MSG_GUILD",
 	"GUILD_MOTD",
-	"UNIT_GUILD_LEVEL",
 };
 ChatTypeGroup["OFFICER"] = {
 	"CHAT_MSG_OFFICER",
@@ -243,7 +243,8 @@ ChatTypeGroup["ACHIEVEMENT"] = {
 	"CHAT_MSG_ACHIEVEMENT";
 };
 ChatTypeGroup["GUILD_ACHIEVEMENT"] = {
-	"CHAT_MSG_GUILD_ACHIEVEMENT";
+	"CHAT_MSG_GUILD_ACHIEVEMENT",
+	"CHAT_MSG_GUILD_ITEM_LOOTED",
 };
 ChatTypeGroup["CHANNEL"] = {
 	"CHAT_MSG_CHANNEL_JOIN",
@@ -286,7 +287,7 @@ end
 CHAT_CATEGORY_LIST = {
 	PARTY = { "PARTY_LEADER", "PARTY_GUIDE", "MONSTER_PARTY" },
 	RAID = { "RAID_LEADER", "RAID_WARNING" },
-	GUILD = { "GUILD_ACHIEVEMENT" },
+	GUILD = { "GUILD_ACHIEVEMENT", "GUILD_ITEM_LOOTED" },
 	WHISPER = { "WHISPER_INFORM", "AFK", "DND" },
 	CHANNEL = { "CHANNEL_JOIN", "CHANNEL_LEAVE", "CHANNEL_NOTICE", "CHANNEL_USER" },
 	INSTANCE_CHAT = { "INSTANCE_CHAT_LEADER" },
@@ -2050,20 +2051,12 @@ SlashCmdList["LOOT_FFA"] = function(msg)
 	SetLootMethod("freeforall");
 end
 
-SlashCmdList["LOOT_ROUNDROBIN"] = function(msg)
-	SetLootMethod("roundrobin");
-end
-
 SlashCmdList["LOOT_MASTER"] = function(msg)
 	SetLootMethod("master", msg, 1);
 end
 
 SlashCmdList["LOOT_GROUP"] = function(msg)
 	SetLootMethod("group");
-end
-
-SlashCmdList["LOOT_NEEDBEFOREGREED"] = function(msg)
-	SetLootMethod("needbeforegreed");
 end
 
 SlashCmdList["LOOT_SETTHRESHOLD"] = function(msg)
@@ -2407,7 +2400,7 @@ function ChatFrame_ImportEmoteTokensToHash()
 	while ( i <= MAXEMOTEINDEX ) do
 		local token = _G["EMOTE"..i.."_TOKEN"];
 		-- if the code in here changes - change the corresponding code above
-		if ( token ) then
+		if ( token and cmdString) then
 			hash_EmoteTokenList[strupper(cmdString)] = token;	-- add to hash
 		end
 		j = j + 1;
@@ -2785,11 +2778,6 @@ function ChatFrame_SystemEventHandler(self, event, ...)
 	elseif ( event == "BN_DISCONNECTED" ) then
 		local info = ChatTypeInfo["SYSTEM"];
 		self:AddMessage(BN_CHAT_DISCONNECTED, info.r, info.g, info.b, info.id);
-	elseif ( event == "UNIT_GUILD_LEVEL" ) then
-		local unit, level = ...;
-		if ( unit == "player" ) then
-			LevelUpDisplay_ChatPrint(self, level, LEVEL_UP_TYPE_GUILD);
-		end
 	elseif ( event == "PLAYER_REPORT_SUBMITTED" ) then
 		local guid = ...;
 		FCF_RemoveAllMessagesFromChanSender(self, guid);
@@ -2928,7 +2916,7 @@ function ChatFrame_MessageEventHandler(self, event, ...)
 			if ( self.privateMessageList and not self.privateMessageList[strlower(arg2)] ) then
 				return true;
 			elseif ( self.excludePrivateMessageList and self.excludePrivateMessageList[strlower(arg2)] 
-				and ( (chatGroup == "WHISPER" and GetCVar("whisperMode") ~= "popout_and_inline") or (chatGroup == "BN_WHISPER" and GetCVar("bnWhisperMode") ~= "popout_and_inline") ) ) then
+				and ( (chatGroup == "WHISPER" and GetCVar("whisperMode") ~= "popout_and_inline") or (chatGroup == "BN_WHISPER" and GetCVar("whisperMode") ~= "popout_and_inline") ) ) then
 				return true;
 			end
 		end
@@ -3177,6 +3165,8 @@ function ChatFrame_MessageEventHandler(self, event, ...)
 						body = format(_G["CHAT_"..type.."_GET"]..message, pflag..playerLink..coloredName.."|h");
 					elseif ( type == "TEXT_EMOTE") then
 						body = string.gsub(message, arg2, pflag..playerLink..coloredName.."|h", 1);
+					elseif (type == "GUILD_ITEM_LOOTED") then
+						body = string.gsub(message, "$s", "|Hplayer:"..arg2.."|h".."["..coloredName.."]".."|h");
 					else
 						body = format(_G["CHAT_"..type.."_GET"]..message, pflag..playerLink.."["..coloredName.."]".."|h");
 					end

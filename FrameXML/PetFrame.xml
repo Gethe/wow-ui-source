@@ -125,7 +125,7 @@
 					<OnLoad>
 						TextStatusBar_Initialize(self);
 						self.textLockable = 1;
-						self.cvar = "petStatusText";
+						self.cvar = "statusText";
 						self.cvarLabel = "STATUS_TEXT_PET";
 					</OnLoad>
 					<OnValueChanged function="UnitFrameHealthBar_OnValueChanged"/>
@@ -144,7 +144,7 @@
 					<OnLoad>
 						TextStatusBar_Initialize(self);
 						self.textLockable = 1;
-						self.cvar = "petStatusText";
+						self.cvar = "statusText";
 						self.cvarLabel = "STATUS_TEXT_PET";
 					</OnLoad>
 				</Scripts>

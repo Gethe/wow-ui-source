@@ -43,12 +43,12 @@ function LowHealthFrameMixin:OnEvent(event, ...)
 	elseif event == "VARIABLES_LOADED" then
 		self:UnregisterEvent("VARIABLES_LOADED");
 		self.varsLoaded = true;
-		if GetCVarBool("flashLowHealthWarning") then
+		if not GetCVarBool("doNotFlashLowHealthWarning") then
 			self:ListenForHealthEvents();
 		end
 	elseif event == "CVAR_UPDATE" then
 		if arg1 == "FLASH_LOW_HEALTH_WARNING" then
-			if GetCVarBool("flashLowHealthWarning") then
+			if not GetCVarBool("doNotFlashLowHealthWarning") then
 				self:ListenForHealthEvents();
 			else
 				self:StopListeningForHealthEvents();
@@ -89,7 +89,7 @@ function LowHealthFrameMixin:DetermineFlashState()
 
 	-- flash if our health is low
 	if self:IsAtLowHealth() then
-		if GetCVarBool("flashLowHealthWarning") and not GetUIPanel("fullscreen") and CinematicFrame and not CinematicFrame:IsShown() then
+		if not GetCVarBool("doNotFlashLowHealthWarning") and not GetUIPanel("fullscreen") and CinematicFrame and not CinematicFrame:IsShown() then
 			return LOW_HEALTH_FRAME_STATE_LOW_HEALTH;
 		end
 	end

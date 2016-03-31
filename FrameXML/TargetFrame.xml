@@ -311,7 +311,7 @@
 					<OnLoad>
 						TextStatusBar_Initialize(self);
 						self.textLockable = 1;
-						self.cvar = "targetStatusText";
+						self.cvar = "statusText";
 						self.cvarLabel = "STATUS_TEXT_TARGET";
 						self.zeroText = "";
 					</OnLoad>
@@ -334,7 +334,7 @@
 					<OnLoad>
 						TextStatusBar_Initialize(self);
 						self.textLockable = 1;
-						self.cvar = "targetStatusText";
+						self.cvar = "statusText";
 						self.cvarLabel = "STATUS_TEXT_TARGET";
 					</OnLoad>
 				</Scripts>

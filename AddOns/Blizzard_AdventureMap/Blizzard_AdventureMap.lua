@@ -18,7 +18,6 @@ function AdventureMapMixin:OnLoad()
 	local mapInsetPool = CreateFramePool("FRAME", self:GetCanvas(), "AdventureMapInsetTemplate", function(pool, mapInset) mapInset:OnReleased(); end);
 	self:SetMapInsetPool(mapInsetPool);
 
-	self:RegisterEvent("ADVENTURE_MAP_CLOSE");
 	self:RegisterEvent("ADVENTURE_MAP_UPDATE_INSETS");
 	self:RegisterEvent("QUEST_LOG_UPDATE");
 	
@@ -28,10 +27,8 @@ function AdventureMapMixin:OnLoad()
 end
 
 function AdventureMapMixin:AddStandardDataProviders()
-	--self:AddDataProvider(CreateFromMixins(AdventureMap_ZoneSummaryProviderMixin));
 	self:AddDataProvider(CreateFromMixins(AdventureMap_QuestChoiceDataProviderMixin));
 	self:AddDataProvider(CreateFromMixins(AdventureMap_QuestOfferDataProviderMixin));
-	self:AddDataProvider(CreateFromMixins(AdventureMap_MissionDataProviderMixin));
 end
 
 function AdventureMapMixin:ClearAreaTableIDAvailableForInsets()
@@ -59,19 +56,15 @@ end
 
 -- Override
 function AdventureMapMixin:OnEvent(event, ...)
-	if event == "ADVENTURE_MAP_CLOSE" then
-		HideUIPanel(self);
-	else
-		if event == "QUEST_LOG_UPDATE" then
-			if C_AdventureMap.ForceUpdate then
-				C_AdventureMap.ForceUpdate();
-			end
-		elseif event == "ADVENTURE_MAP_UPDATE_INSETS" then
-			self:RefreshInsets();
+	if event == "QUEST_LOG_UPDATE" then
+		if C_AdventureMap.ForceUpdate then
+			C_AdventureMap.ForceUpdate();
 		end
-
-		MapCanvasMixin.OnEvent(self, event, ...);
+	elseif event == "ADVENTURE_MAP_UPDATE_INSETS" then
+		self:RefreshInsets();
 	end
+
+	MapCanvasMixin.OnEvent(self, event, ...);
 end
 
 -- Override

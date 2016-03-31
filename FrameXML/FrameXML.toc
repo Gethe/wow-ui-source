@@ -1,6 +1,5 @@
 # Do not delete the following line!
 ## Interface: 70000
-GlobalStrings.lua
 
 ## add C namespace augmentations here
 ..\SharedXML\C_TimerAugment.lua

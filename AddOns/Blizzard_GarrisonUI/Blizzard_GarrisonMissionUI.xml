@@ -820,7 +820,7 @@
 				</Texture>
 			</Layer>
 			<Layer level="BACKGROUND">
-				<Texture parentKey="Portrait">
+				<Texture parentKey="Portrait" mask="INTERFACE\CHARACTERFRAME\TempPortraitAlphaMaskSmall">
 					<Size x="50" y="50"/>
 					<Anchors>
 						<Anchor point="CENTER" relativeKey="$parent.PortraitRing"/>
@@ -1909,7 +1909,6 @@
 				<Scripts>
 					<OnEnter>
 						GameTooltip:SetOwner(self, "ANCHOR_BOTTOMRIGHT");
-						<!-- local itemLevel = GarrisonMissionFrame.MissionComplete.currentMission.iLevel; -->
 						local itemLevel = self:GetParent():GetParent().currentMission.iLevel;
 						GameTooltip:SetText(string.format(GARRISON_MISSION_EXPECTED_ILVL, itemLevel), 1, 1, 1);
 						GameTooltip:AddLine(GARRISON_MISSION_EXPECTED_ILVL_TOOLTIP, nil, nil, nil, 1);
@@ -1965,7 +1964,6 @@
 					<Frame name="GarrisonFollowerOptionDropDown" parentKey="OptionDropDown" inherits="UIDropDownMenuTemplate">
 						<Scripts>
 							<OnLoad>
-								self.missionFrame = GarrisonMissionFrame;
 								UIDropDownMenu_Initialize(self, GarrisonFollowerOptionDropDown_Initialize, "MENU");
 							</OnLoad>
 						</Scripts>
@@ -1979,7 +1977,7 @@
 			<Frame parentKey="MissionTab" setAllPoints="true" useParentLevel="true">
 				<Frames>
 					<Frame parentKey="MissionList" inherits="GarrisonMissionListTemplate" name="$parentMissions"/>
-					<Button parentKey="MissionPage" inherits="FollowerMissionPageTemplate" hidden="true" mixin="GarrisonMissionPageMixin">
+					<Button parentKey="MissionPage" inherits="FollowerMissionPageTemplate" hidden="true" mixin="GarrisonMissionPageMixin,GarrisonFollowerMissionPageMixin">
 						<Frames>
 							<Frame parentKey="Enemy1" parentArray="Enemies" inherits="GarrisonMissionPageEnemyTemplate">
 								<Anchors>

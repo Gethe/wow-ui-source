@@ -490,7 +490,7 @@ function EJMicroButton_OnEvent(self, event, ...)
 			if( self:IsEnabled() ) then
 				C_AdventureJournal.UpdateSuggestions();
 				
-				local showAlert = GetCVarBool("showAdventureJournalAlerts");
+				local showAlert = not GetCVarBool("hideAdventureJournalAlerts");
 				if( showAlert ) then
 					-- display alert if the player hasn't opened the journal for a long time
 					local lastTimeOpened = tonumber(GetCVar("advJournalLastOpened"));

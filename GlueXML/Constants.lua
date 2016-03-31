@@ -1,37 +1,34 @@
 --Login Screen Ambience
 EXPANSION_GLUE_AMBIENCE = {
-	TRIAL = "GlueScreenIntro",
-	VETERAN = "GlueScreenIntro",
-	[1] = "GlueScreenIntro",
-	[2] = "GlueScreenIntro",
-	[3] = "GlueScreenIntro",
-	[4] = "GlueScreenIntro",
-	[5] = "AMB_GlueScreen_WarlordsofDraenor",
-	[6] = "GlueScreenIntro", --FIXME
+	[LE_EXPANSION_BURNING_CRUSADE] = "GlueScreenIntro",
+	[LE_EXPANSION_WRATH_OF_THE_LICH_KING] = "GlueScreenIntro",
+	[LE_EXPANSION_CATACLYSM] = "GlueScreenIntro",
+	[LE_EXPANSION_MISTS_OF_PANDARIA] = "GlueScreenIntro",
+	[LE_EXPANSION_WARLORDS_OF_DRAENOR] = "AMB_GlueScreen_WarlordsofDraenor",
+	[LE_EXPANSION_LEGION] = "GlueScreenIntro", --FIXME
 }
 
 --Music
 EXPANSION_GLUE_MUSIC = {
-	TRIAL = "GS_Cataclysm",
-	VETERAN = "GS_Cataclysm",
-	[1] = "MUS_1.0_MainTitle_Original",
-	[2] = "GS_Cataclysm",
-	[3] = "GS_Cataclysm",
-	[4] = "MUS_50_HeartofPandaria_MainTitle",
-	[5] = "MUS_60_MainTitle",
-	[6] = "MUS_70_MainTitle",
+	[LE_EXPANSION_BURNING_CRUSADE] = "MUS_1.0_MainTitle_Original",
+	[LE_EXPANSION_WRATH_OF_THE_LICH_KING] = "GS_Cataclysm",
+	[LE_EXPANSION_CATACLYSM] = "GS_Cataclysm",
+	[LE_EXPANSION_MISTS_OF_PANDARIA] = "MUS_50_HeartofPandaria_MainTitle",
+	[LE_EXPANSION_WARLORDS_OF_DRAENOR] = "MUS_60_MainTitle",
+	[LE_EXPANSION_LEGION] = "MUS_70_MainTitle",
 }
 
 --Logos
 EXPANSION_LOGOS = {
 	TRIAL = {texture="Interface\\Glues\\Common\\Glues-WoW-StarterLogo"},
-	[1] = {texture="Interface\\Glues\\Common\\Glues-WoW-ClassicLogo"},
-	[2] = {texture="Interface\\Glues\\Common\\Glues-WoW-WotLKLogo"},
-	[3] = {texture="Interface\\Glues\\Common\\Glues-WoW-CCLogo"},
-	[4] = {texture="Interface\\Glues\\Common\\Glues-WoW-MPLogo"},
-	[5] = {texture="Interface\\Glues\\Common\\GLUES-WOW-WODLOGO"},
+	[LE_EXPANSION_CLASSIC] = {texture="Interface\\Glues\\Common\\Glues-WoW-ClassicLogo"},
+	[LE_EXPANSION_BURNING_CRUSADE] = {texture="Interface\\Glues\\Common\\Glues-WoW-BCLogo"},
+	[LE_EXPANSION_WRATH_OF_THE_LICH_KING] = {texture="Interface\\Glues\\Common\\Glues-WoW-WotLKLogo"},
+	[LE_EXPANSION_CATACLYSM] = {texture="Interface\\Glues\\Common\\Glues-WoW-CCLogo"},
+	[LE_EXPANSION_MISTS_OF_PANDARIA] = {texture="Interface\\Glues\\Common\\Glues-WoW-MPLogo"},
+	[LE_EXPANSION_WARLORDS_OF_DRAENOR] = {texture="Interface\\Glues\\Common\\GLUES-WOW-WODLOGO"},
 	-- logos after WoD should be atlas
-	[6] = {atlas="Glues-WoW-LegionLogo"},
+	[LE_EXPANSION_LEGION] = {atlas="Glues-WoW-LegionLogo"},
 	--When adding entries to here, make sure to update the zhTW and zhCN localization files.
 };
 
@@ -85,37 +82,33 @@ MAX_ACCOUNTNAME_DISPLAYED = 8;
 ACCOUNTNAME_BUTTON_HEIGHT = 20;
 
 --Credits titles
-CREDITS_TITLES = { --Note: These are off by 1 from the other expansion tables
-	CREDITS_WOW_CLASSIC,
-	CREDITS_WOW_BC,
-	CREDITS_WOW_LK,
-	CREDITS_WOW_CC,
-	CREDITS_WOW_MOP,
-	CREDITS_WOW_WOD,
-	CREDITS_WOW_7,   -- FIXME
+CREDITS_TITLES = {
+	[LE_EXPANSION_CLASSIC] = CREDITS_WOW_CLASSIC,
+	[LE_EXPANSION_BURNING_CRUSADE] = CREDITS_WOW_BC,
+	[LE_EXPANSION_WRATH_OF_THE_LICH_KING] = CREDITS_WOW_LK,
+	[LE_EXPANSION_CATACLYSM] = CREDITS_WOW_CC,
+	[LE_EXPANSION_MISTS_OF_PANDARIA] = CREDITS_WOW_MOP,
+	[LE_EXPANSION_WARLORDS_OF_DRAENOR] = CREDITS_WOW_WOD,
+	[LE_EXPANSION_LEGION] = CREDITS_WOW_LEGION,
 }
 
 --Backgrounds
 EXPANSION_HIGH_RES_BG = {
-	TRIAL = "Interface\\Glues\\Models\\UI_MainMenu_Cataclysm\\UI_MainMenu_Cataclysm.m2",
-	VETERAN = "Interface\\Glues\\Models\\UI_MainMenu_Cataclysm\\UI_MainMenu_Warlords.m2",
-	[1] = "Interface\\Glues\\Models\\UI_MAINMENU\\UI_MainMenu.m2",
-	[2] = "Interface\\Glues\\Models\\UI_MainMenu_Cataclysm\\UI_MainMenu_Cataclysm.m2",
-	[3] = "Interface\\Glues\\Models\\UI_MainMenu_Cataclysm\\UI_MainMenu_Cataclysm.m2",
-	[4] = "Interface\\Glues\\Models\\UI_MainMenu_Pandaria\\UI_MainMenu_Pandaria.m2",
-	[5] = "Interface\\Glues\\Models\\UI_MainMenu_Warlords\\UI_MainMenu_Warlords.m2",
-	[6] = "Interface\\Glues\\Models\\UI_MainMenu_Warlords\\UI_MainMenu_Warlords.m2",	-- TODO: Fix for 7.0
+	[LE_EXPANSION_BURNING_CRUSADE] = "Interface\\Glues\\Models\\UI_MainMenu_BurningCrusade\\UI_MainMenu_BurningCrusade.m2",
+	[LE_EXPANSION_WRATH_OF_THE_LICH_KING] = "Interface\\Glues\\Models\\UI_MainMenu_Northrend\\UI_MainMenu_Northrend.m2",
+	[LE_EXPANSION_CATACLYSM] = "Interface\\Glues\\Models\\UI_MainMenu_Cataclysm\\UI_MainMenu_Cataclysm.m2",
+	[LE_EXPANSION_MISTS_OF_PANDARIA] = "Interface\\Glues\\Models\\UI_MainMenu_Pandaria\\UI_MainMenu_Pandaria.m2",
+	[LE_EXPANSION_WARLORDS_OF_DRAENOR] = "Interface\\Glues\\Models\\UI_MainMenu_Warlords\\UI_MainMenu_Warlords.m2",
+	[LE_EXPANSION_LEGION] = "Interface\\Glues\\Models\\UI_MainMenu_Warlords\\UI_MainMenu_Warlords.m2",	-- TODO: Fix for 7.0
 }
 
 EXPANSION_LOW_RES_BG = {
-	TRIAL =  "Interface\\Glues\\Models\\UI_MainMenu_Cata_LowBandwidth\\UI_MainMenu_Cata_LowBandwidth.m2",
-	VETERAN =  "Interface\\Glues\\Models\\UI_MainMenu_Cata_LowBandwidth\\UI_MainMenu_Warlords_LowBandwidth.m2",
-	[1] =  "Interface\\Glues\\Models\\UI_MAINMENU\\UI_MainMenu.m2",
-	[2] =  "Interface\\Glues\\Models\\UI_MainMenu_Cata_LowBandwidth\\UI_MainMenu_Cata_LowBandwidth.m2",
-	[3] =  "Interface\\Glues\\Models\\UI_MainMenu_Cata_LowBandwidth\\UI_MainMenu_Cata_LowBandwidth.m2",
-	[4] =  "Interface\\Glues\\Models\\UI_MainMenu_LowBandwidth\\UI_MainMenu_LowBandwidth.m2",
-	[5] =  "Interface\\Glues\\Models\\UI_MainMenu_Warlords\\UI_MainMenu_Warlords_LowBandwidth.m2",
-	[6] =  "Interface\\Glues\\Models\\UI_MainMenu_Warlords\\UI_MainMenu_Warlords_LowBandwidth.m2",	-- TODO: Fix for 7.0
+	[LE_EXPANSION_BURNING_CRUSADE] =  "Interface\\Glues\\Models\\UI_MAINMENU\\UI_MainMenu.m2",
+	[LE_EXPANSION_WRATH_OF_THE_LICH_KING] =  "Interface\\Glues\\Models\\UI_MAINMENU\\UI_MainMenu.m2",
+	[LE_EXPANSION_CATACLYSM] =  "Interface\\Glues\\Models\\UI_MainMenu_Cata_LowBandwidth\\UI_MainMenu_Cata_LowBandwidth.m2",
+	[LE_EXPANSION_MISTS_OF_PANDARIA] =  "Interface\\Glues\\Models\\UI_MainMenu_LowBandwidth\\UI_MainMenu_LowBandwidth.m2",
+	[LE_EXPANSION_WARLORDS_OF_DRAENOR] =  "Interface\\Glues\\Models\\UI_MainMenu_Warlords\\UI_MainMenu_Warlords_LowBandwidth.m2",
+	[LE_EXPANSION_LEGION] =  "Interface\\Glues\\Models\\UI_MainMenu_Warlords\\UI_MainMenu_Warlords_LowBandwidth.m2",	-- TODO: Fix for 7.0
 }
 
 --Tooltip
@@ -152,28 +145,44 @@ NUM_CREDITS_ART_TEXTURES_WIDE = 4;
 NUM_CREDITS_ART_TEXTURES_HIGH = 2;
 CACHE_WAIT_TIME = 0.5;
 
-CREDITS_ART_INFO = {};
-CREDITS_ART_INFO[1] = {};
-CREDITS_ART_INFO[1][1] = { file="NightsHollow", w=512, h=512, offsetx=0, offsety=0, maxAlpha=0.7 };
-CREDITS_ART_INFO[2] = {};
-CREDITS_ART_INFO[2][1] = { file="Illidan", w=1024, h=512, offsetx=0, offsety=0, maxAlpha=0.7 };
-CREDITS_ART_INFO[3] = {};
-CREDITS_ART_INFO[3][1] = { file="CinSnow01TGA", w=1024, h=512, offsetx=0, offsety=0, maxAlpha=0.7 };
-CREDITS_ART_INFO[4] = { path="CATACLYSM\\" };
-CREDITS_ART_INFO[4][1] = {  file="Greymane City Map01", w=1024, h=512, offsetx=0, offsety=0, maxAlpha=0.7 };
-CREDITS_ART_INFO[5] = { path="Pandaria\\" };
-CREDITS_ART_INFO[5][1] = { file="Mogu_BossConcept_New", w=1024, h=512, offsetx=0, offsety=0, maxAlpha=0.7 };
-CREDITS_ART_INFO[6] = { path="Warlords\\" };
-CREDITS_ART_INFO[6][1] = { file="Arrak_Forest_Dark", w=1024, h=512, offsetx=0, offsety=0, maxAlpha=0.7 };
-CREDITS_ART_INFO[7] = {};
-CREDITS_ART_INFO[7][1] = { file="Illidan", w=1024, h=512, offsetx=0, offsety=0, maxAlpha=0.7 };
+CREDITS_ART_INFO = {
+	[LE_EXPANSION_CLASSIC] = {
+		{ file="NightsHollow", w=512, h=512, offsetx=0, offsety=0, maxAlpha=0.7,  maxTexIndex = 4 },
+	},
 
-GLUE_CREDITS_SOUND_KITS = { };
-GLUE_CREDITS_SOUND_KITS[1] = "Menu-Credits01";
-GLUE_CREDITS_SOUND_KITS[2] = "Menu-Credits02";
-GLUE_CREDITS_SOUND_KITS[3] = "Menu-Credits03";
-GLUE_CREDITS_SOUND_KITS[4] = "Menu-Credits04";
-GLUE_CREDITS_SOUND_KITS[5] = "Menu-Credits05";
-GLUE_CREDITS_SOUND_KITS[6] = "Menu-Credits06";
+	[LE_EXPANSION_BURNING_CRUSADE] = {
+		{ file="Illidan", w=1024, h=512, offsetx=0, offsety=0, maxAlpha=0.7 },
+	},
+
+	[LE_EXPANSION_WRATH_OF_THE_LICH_KING] = {
+		{ file="CinSnow01TGA", w=1024, h=512, offsetx=0, offsety=0, maxAlpha=0.7 },
+	},
+
+	[LE_EXPANSION_CATACLYSM] = {
+		{  file="CATACLYSM\\Greymane City Map01", w=1024, h=512, offsetx=0, offsety=0, maxAlpha=0.7 },
+	},
+
+	[LE_EXPANSION_MISTS_OF_PANDARIA] = {
+		{ file="Pandaria\\Mogu_BossConcept_New", w=1024, h=512, offsetx=0, offsety=0, maxAlpha=0.7 },
+	},
+
+	[LE_EXPANSION_WARLORDS_OF_DRAENOR] = {
+		{ file="Warlords\\Arrak_Forest_Dark", w=1024, h=512, offsetx=0, offsety=0, maxAlpha=0.7 },
+	},
+
+	[LE_EXPANSION_LEGION] = {
+		{ file="Illidan", w=1024, h=512, offsetx=0, offsety=0, maxAlpha=0.7 },
+	},
+};
+
+GLUE_CREDITS_SOUND_KITS = {
+	[LE_EXPANSION_CLASSIC] = "Menu-Credits01",
+	[LE_EXPANSION_BURNING_CRUSADE] = "Menu-Credits02",
+	[LE_EXPANSION_WRATH_OF_THE_LICH_KING] = "Menu-Credits03",
+	[LE_EXPANSION_CATACLYSM] = "Menu-Credits04",
+	[LE_EXPANSION_MISTS_OF_PANDARIA] = "Menu-Credits05",
+	[LE_EXPANSION_WARLORDS_OF_DRAENOR] = "Menu-Credits06",
+	[LE_EXPANSION_LEGION] = "Menu-Credits07",
+};
 
 AUTO_LOGIN_WAIT_TIME = 1.75;

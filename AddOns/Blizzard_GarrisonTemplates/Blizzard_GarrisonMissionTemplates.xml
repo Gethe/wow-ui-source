@@ -757,9 +757,9 @@
 							</Anchors>
 							<Color r="0.8" g="0.8" b="0.8"/>
 						</FontString>
-						<FontString inherits="GameFontHighlight" text="GARRISON_SKIP_ANIMATION_LABEL">
+						<FontString parentKey="SkipAnimationLabel" inherits="GameFontHighlight" text="GARRISON_SKIP_ANIMATION_LABEL">
 							<Anchors>
-								<Anchor point="BOTTOM" x="315" y="8"/>
+								<Anchor point="TOP" relativeKey="$parent.$parent.ViewButton" relativePoint="BOTTOM" x="0" y="-55"/>
 							</Anchors>
 							<Color r="0.8" g="0.8" b="0.8"/>
 						</FontString>

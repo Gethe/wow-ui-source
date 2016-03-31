@@ -62,7 +62,6 @@ local UPGRADE_90_MAX_LEVEL = 90;
 local UPGRADE_100_MAX_LEVEL = 100;
 local UPGRADE_BONUS_LEVEL = 60;
 
-LE_EXPANSION_7_0 = 6;
 CURRENCY_KRW = 3;
 
 RACE_NAME_BUTTON_ID_MAP = {
@@ -169,21 +168,36 @@ GlueDialogTypes["PRODUCT_ASSIGN_TO_TARGET_FAILED"] = {
 	escapeHides = true,
 };
 
-local CharacterUpgradeCharacterSelectBlock = { Back = false, Next = false, Finish = false, AutoAdvance = true, ActiveLabel = SELECT_CHARACTER_ACTIVE_LABEL, ResultsLabel = SELECT_CHARACTER_RESULTS_LABEL };
+local CharacterUpgradeCharacterSelectBlock = {
+	Back = false, 
+	Next = false,
+	Finish = false,
+	AutoAdvance = true, 
+	ResultsLabel = SELECT_CHARACTER_RESULTS_LABEL,
+	ActiveLabel = SELECT_CHARACTER_ACTIVE_LABEL,
+	AllowBoostWarning = true,
+};
+
 local CharacterUpgradeSpecSelectBlock = { Back = true, Next = true, Finish = false, ActiveLabel = SELECT_SPEC_ACTIVE_LABEL, ResultsLabel = SELECT_SPEC_RESULTS_LABEL, Popup = "BOOST_NOT_RECOMMEND_SPEC_WARNING" };
 local CharacterUpgradeFactionSelectBlock = { Back = true, Next = true, Finish = false, ActiveLabel = SELECT_FACTION_ACTIVE_LABEL, ResultsLabel = SELECT_FACTION_RESULTS_LABEL };
 local CharacterUpgradeEndStep = { Back = true, Next = false, Finish = true, HiddenStep = true, SkipOnRewind = true };
 
 CharacterServicesFlowPrototype = {};
 
-CharacterUpgradeFlow = { Icon = "Interface\\Icons\\achievement_level_90", Text = CHARACTER_UPGRADE_90_FLOW_LABEL, FinishLabel = CHARACTER_UPGRADE_FINISH_LABEL };
-CharacterUpgradeFlow.Steps = {
-	[1] = CharacterUpgradeCharacterSelectBlock,
-	[2] = CharacterUpgradeSpecSelectBlock,
-	[3] = CharacterUpgradeFactionSelectBlock,
-	[4] = CharacterUpgradeEndStep,
-}
-CharacterUpgradeFlow.numSteps = 4;
+CharacterUpgradeFlow = {
+	Icon = "Interface\\Icons\\achievement_level_90",
+	Text = CHARACTER_UPGRADE_90_FLOW_LABEL,
+	FinishLabel = CHARACTER_UPGRADE_FINISH_LABEL,
+
+	Steps = {
+		[1] = CharacterUpgradeCharacterSelectBlock,
+		[2] = CharacterUpgradeSpecSelectBlock,
+		[3] = CharacterUpgradeFactionSelectBlock,
+		[4] = CharacterUpgradeEndStep,
+	},
+
+	numSteps = 4,
+};
 
 CharacterUpgrade_Items = {
 	[LE_BATTLEPAY_PRODUCT_ITEM_LEVEL_90_CHARACTER_UPGRADE] = {
@@ -234,7 +248,7 @@ CharacterUpgrade_Items = {
 			iconBorder = "services-ring",
 			
 			maxLevel = UPGRADE_100_MAX_LEVEL,
-			expansion = LE_EXPANSION_7_0,
+			expansion = LE_EXPANSION_LEGION,
 			popupDesc = {
 				title = CHARACTER_UPGRADE_FREE_100_POPUP_TITLE,
 				desc = CHARACTER_UPGRADE_FREE_100_POPUP_DESCRIPTION,
@@ -537,6 +551,16 @@ local function replaceAllScripts()
 	end
 end
 
+function CharacterUpgradeCharacterSelectBlock:UpdateBoostWarning()
+	if (self.AllowBoostWarning and not HasSufficientExperienceForAdvancedCreation()) then
+		GlueDialog_Show("CHARACTER_BOOST_NO_CHARACTERS_WARNING");
+	end
+end
+
+function CharacterUpgradeCharacterSelectBlock:SetBoostWarningEnabled(enabled)
+	self.AllowBoostWarning = enabled;
+end
+
 function CharacterUpgradeCharacterSelectBlock:Initialize(results)
 	for i = 1, 3 do
 		if (self.frame.BonusResults[i]) then
@@ -551,6 +575,10 @@ function CharacterUpgradeCharacterSelectBlock:Initialize(results)
 
 	local num = math.min(GetNumCharacters(), MAX_CHARACTERS_DISPLAYED);
 
+	-- Ensure this is hidden if the user has no characters
+	self.frame.ControlsFrame.GlowBox:SetShown(num > 0);
+	self.frame.StepActiveLabel:SetShown(num > 0);
+	
 	if (CHARACTER_UPGRADE_CREATE_CHARACTER) then
 		CharacterSelect_UpdateButtonState()
 		CHARACTER_LIST_OFFSET = max(num - MAX_CHARACTERS_DISPLAYED, 0);
@@ -566,6 +594,8 @@ function CharacterUpgradeCharacterSelectBlock:Initialize(results)
 			return;
 		end
 	end
+
+	self:UpdateBoostWarning();
 
 	CharacterSelect_SaveCharacterOrder();
 	-- Set up the GlowBox around the show characters
@@ -646,9 +676,15 @@ function CharacterUpgradeCharacterSelectBlock:Initialize(results)
 	self.frame.ControlsFrame.OrLabel:Hide();
 	self.frame.ControlsFrame.CreateCharacterButton:Hide();
 	if (num < MAX_CHARACTERS_DISPLAYED_BASE) then
-		self.frame.ControlsFrame.OrLabel:Show();
-		self.frame.ControlsFrame.CreateCharacterButton:Show();
-		self.frame.ControlsFrame.CreateCharacterButton:SetID(CharacterSelect.createIndex);
+		self.frame.ControlsFrame.CreateCharacterButton:Show();		
+		self.frame.ControlsFrame.CreateCharacterButton:ClearAllPoints();
+
+		if (num > 0) then
+			self.frame.ControlsFrame.OrLabel:Show();
+			self.frame.ControlsFrame.CreateCharacterButton:SetPoint("TOPLEFT", self.frame.ControlsFrame.OrLabel, "BOTTOMLEFT", -12, 0);
+		else
+			self.frame.ControlsFrame.CreateCharacterButton:SetPoint("LEFT", self.frame.StepNumber, "RIGHT", 20, 0);
+		end
 	elseif (numEligible == 0) then
 		self.frame:Hide();
 		if (not errorFrame.initialized) then
@@ -715,6 +751,7 @@ function CharacterUpgradeCharacterSelectBlock:FormatResult()
 end
 
 function CharacterUpgradeCharacterSelectBlock:OnHide()
+	self:SetBoostWarningEnabled(true);
 	enableScroll(CharacterSelectCharacterFrame.scrollBar);
 
 	local num = math.min(GetNumCharacters(), MAX_CHARACTERS_DISPLAYED);
@@ -761,7 +798,7 @@ function CharacterUpgradeCreateCharacter_OnClick(self)
 	CharacterUpgradeCharacterSelectBlock.createNum = GetNumCharacters();
 	CHARACTER_UPGRADE_CREATE_CHARACTER = true;
 	CHARACTER_UPGRADE_CREATE_CHARACTER_DATA = CharacterServicesMaster.flow.data;
-	CharacterSelect_SelectCharacter(self:GetID());
+	CharacterSelect_CreateNewCharacter();
 end
 
 local function formatDescription(description,results)
@@ -775,6 +812,7 @@ local function formatDescription(description,results)
 end
 
 function CharacterUpgradeSpecSelectBlock:Initialize(results)
+	CharacterUpgradeCharacterSelectBlock:SetBoostWarningEnabled(false);
 	self.selected = nil;
 
 	local classID = CLASS_NAME_BUTTON_ID_MAP[select(4,GetCharacterInfo(results.charid))];

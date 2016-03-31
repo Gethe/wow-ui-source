@@ -460,12 +460,12 @@
 				</Anchors>
 				<Layers>
 					<Layer level="BORDER">
-						<FontString inherits="QuestFont_Enormous" text="GARRISON_LANDING_PAGE_TITLE">
+						<FontString parentKey="Title" inherits="QuestFont_Enormous">
 							<Anchors>
 								<Anchor point="LEFT" relativeKey="$parent.$parent.HeaderBar" x="26"/>
 							</Anchors>
 						</FontString>
-						<Texture atlas="GarrLanding_Watermark-Tradeskill" useAtlasSize="true">
+						<Texture parentKey="Background">
 							<Anchors>
 								<Anchor point="BOTTOMLEFT" x="60" y="40"/>
 							</Anchors>

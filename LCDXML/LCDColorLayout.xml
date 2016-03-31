@@ -125,7 +125,7 @@
 				<Font Size="LG_SMALL" Alignment="LG_RIGHT" MaxWidth="60" Wrap="false"/>
 				<RelOrigin RelTo="ARMOR2" x="90" y="0" />
 			</LCDText>
-			<LCDText name="DODGE" text="DODGE" id="45">
+			<LCDText name="DODGE" text="DODGE_LCD" id="45">
 				<Font Size="LG_SMALL" Alignment="LG_LEFT" MaxWidth="90" Wrap="false"/>
 				<RelOrigin RelTo="ARMOR2" x="0" y="16" />
 			</LCDText>
@@ -133,7 +133,7 @@
 				<Font Size="LG_SMALL" Alignment="LG_RIGHT" MaxWidth="60" Wrap="false"/>
 				<RelOrigin RelTo="ARMOR2_FLD" x="0" y="16" />
 			</LCDText>
-			<LCDText name="PARRY" text="PARRY" id="46">
+			<LCDText name="PARRY" text="PARRY_LCD" id="46">
 				<Font Size="LG_SMALL" Alignment="LG_LEFT" MaxWidth="90" Wrap="false"/>
 				<RelOrigin RelTo="DODGE" x="0" y="16" />
 			</LCDText>
@@ -141,7 +141,7 @@
 				<Font Size="LG_SMALL" Alignment="LG_RIGHT" MaxWidth="60" Wrap="false"/>
 				<RelOrigin RelTo="DODGE_FLD" x="0" y="16" />
 			</LCDText>
-			<LCDText name="BLOCK" text="BLOCK" id="47">
+			<LCDText name="BLOCK" text="BLOCK_LCD" id="47">
 				<Font Size="LG_SMALL" Alignment="LG_LEFT" MaxWidth="90" Wrap="false"/>
 				<RelOrigin RelTo="PARRY" x="0" y="16" />
 			</LCDText>
@@ -149,7 +149,7 @@
 				<Font Size="LG_SMALL" Alignment="LG_RIGHT" MaxWidth="60" Wrap="false"/>
 				<RelOrigin RelTo="PARRY_FLD" x="0" y="16" />
 			</LCDText>
-			<LCDText name="RESILIENCE" text="RESILIENCE" id="48">
+			<LCDText name="RESILIENCE" text="RESILIENCE_LCD" id="48">
 				<Font Size="LG_SMALL" Alignment="LG_LEFT" MaxWidth="110" Wrap="false"/>
 				<RelOrigin RelTo="BLOCK" x="0" y="16" />
 			</LCDText>
@@ -187,7 +187,7 @@
         <Font Size="LG_SMALL" Alignment="LG_LEFT" MaxWidth="110" Wrap="false"/>
         <RelOrigin RelTo="SPELL_HASTE" x="0" y="16" />
       </LCDText>
-      <LCDText name="SPELL_HIT_FLD" text="HIT">
+      <LCDText name="SPELL_HIT_FLD" text="HIT_LCD">
         <Font Size="LG_SMALL" Alignment="LG_RIGHT" MaxWidth="60" Wrap="false"/>
         <RelOrigin RelTo="SPELL_HASTE_FLD" x="0" y="16" />
       </LCDText>
@@ -195,7 +195,7 @@
         <Font Size="LG_SMALL" Alignment="LG_LEFT" MaxWidth="110" Wrap="false"/>
         <RelOrigin RelTo="SPELL_HIT" x="0" y="16" />
       </LCDText>
-      <LCDText name="MANA_REGEN_FLD" text="HIT">
+      <LCDText name="MANA_REGEN_FLD" text="HIT_LCD">
         <Font Size="LG_SMALL" Alignment="LG_RIGHT" MaxWidth="60" Wrap="false"/>
         <RelOrigin RelTo="SPELL_HIT_FLD" x="0" y="16" />
       </LCDText>
@@ -217,7 +217,7 @@
 			<Font Size="LG_SMALL" Alignment="LG_RIGHT" MaxWidth="30" Wrap="false"/>
 			<RelOrigin RelTo="BAG" x="110" y="0" />
 		</LCDText>
-		<LCDText name="DURABILITY" text="DURABILITY" id="41">
+		<LCDText name="DURABILITY" text="DURABILITY_LCD" id="41">
 			<Font Size="LG_SMALL" Alignment="LG_LEFT" MaxWidth="85" Wrap="false"/>
 			<RelOrigin RelTo="BAG" x="0" y="16" />
 		</LCDText>
@@ -239,7 +239,7 @@
 			<Origin x="192" y="0"/>
 			<Size x="128" y="128" />
 		</LCDBitmap>
-		<LCDText name="BATTLEFIELD_ALERT" text="BATTLEFIELD_ALERT" id="22">
+		<LCDText name="BATTLEFIELD_ALERT" text="BATTLEFIELD_ALERT_LCD" id="22">
 			<Font Size="LG_MEDIUM" Alignment="LG_CENTER" MaxWidth="320" Wrap="true"/>
 			<Origin x="0" y="140" />
 			<Size x="320" y="230"/>

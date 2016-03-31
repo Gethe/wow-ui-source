@@ -1,6 +1,6 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\FrameXML\UI.xsd">
-	<Frame name="WorldMapUnitTemplate" hidden="true" virtual="true">
+	<Frame name="WorldMapUnitTemplate" hidden="true" frameLevel="400" virtual="true">
 		<Size>
 			<AbsDimension x="16" y="16"/>
 		</Size>
@@ -13,9 +13,6 @@
 			</Layer>
 		</Layers>
 		<Scripts>
-			<OnLoad>
-				WorldMapUnit_OnLoad(self);
-			</OnLoad>
 			<OnEnter>
 				WorldMapUnit_OnEnter(self, motion);
 			</OnEnter>
@@ -39,7 +36,6 @@
 	<Frame name="WorldMapPartyUnitTemplate" inherits="WorldMapUnitTemplate" virtual="true">
 		<Scripts>
 			<OnLoad>
-				WorldMapUnit_OnLoad(self);
 				self.unit = "party"..self:GetID();
 			</OnLoad>
 		</Scripts>
@@ -47,7 +43,6 @@
 	<Frame name="WorldMapRaidUnitTemplate" inherits="WorldMapUnitTemplate" virtual="true">
 		<Scripts>
 			<OnLoad>
-				WorldMapUnit_OnLoad(self);
 				self.unit = "raid"..self:GetID();
 			</OnLoad>
 		</Scripts>
@@ -347,27 +342,6 @@
 				</FontString>
 			</Layer>
 		</Layers>
-		<Frames>
-			<Frame parentKey="RewardFrame" enableMouse="true" useParentLevel="true">
-				<Size x="30" y="30" />
-				<Anchors>
-					<Anchor point="CENTER" relativeKey="$parent.TrackerBackground" relativePoint="RIGHT" x="-51" y="-10" />
-				</Anchors>
-				<Layers>
-					<Layer level="BACKGROUND" textureSubLevel="-1">
-						<Texture parentKey="Icon" mask="Interface\CharacterFrame\TempPortraitAlphaMask" />
-					</Layer>
-				</Layers>
-				<Scripts>
-					<OnEnter>
-						self:GetParent():OnEnter();
-					</OnEnter>
-					<OnLeave>
-						self:GetParent():OnLeave();
-					</OnLeave>
-				</Scripts>
-			</Frame>
-		</Frames>
 		<Scripts>
 			<OnLoad method="OnLoad" />
 			<OnEvent method="OnEvent" />

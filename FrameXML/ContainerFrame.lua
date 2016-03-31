@@ -1100,6 +1100,19 @@ function ContainerFrameItemButton_OnEnter(self)
 	else
 		ResetCursor();
 	end
+
+	if ArtifactFrame and self.hasItem then
+		ArtifactFrame:OnInventoryItemMouseEnter(self:GetParent():GetID(), self:GetID());
+	end
+end
+
+function ContainerFrameItemButton_OnLeave(self)
+	GameTooltip_Hide();
+	ResetCursor();
+
+	if ArtifactFrame then
+		ArtifactFrame:OnInventoryItemMouseLeave(self:GetParent():GetID(), self:GetID());
+	end
 end
 
 function ContainerFramePortraitButton_OnEnter(self)

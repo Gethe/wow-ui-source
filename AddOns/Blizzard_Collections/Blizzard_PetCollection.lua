@@ -1589,7 +1589,7 @@ end
 function PetJournalPetCount_OnEnter(self)
 	GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
 	GameTooltip:SetText(BATTLE_PETS_TOTAL_PETS, 1, 1, 1);
-	GameTooltip:AddLine(BATTLE_PETS_TOTAL_PETS_TOOLTIP, nil, nil, nil, true);
+	GameTooltip:AddLine(format(BATTLE_PETS_TOTAL_PETS_TOOLTIP, C_PetJournal.GetNumMaxPets()), nil, nil, nil, true);
 	GameTooltip:Show();
 end
 
