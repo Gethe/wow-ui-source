@@ -49,6 +49,13 @@
 					</Anchors>
 				</Texture>
 			</Layer>
+			<Layer level="BORDER">
+				<Texture parentKey="Glass" atlas="Relic-SlotBG-Glass" useAtlasSize="true" hidden="true">
+					<Anchors>
+						<Anchor point="CENTER" />
+					</Anchors>
+				</Texture>
+			</Layer>
 			<Layer level="OVERLAY">
 				<Texture parentKey="LockedIcon" atlas="Forge-Lock" useAtlasSize="true">
 					<Anchors>
@@ -107,8 +114,11 @@
 
 	<Frame name="ArtifactPerksTabTemplate" mixin="ArtifactPerksMixin" virtual="true" useParentLevel="true">
 		<Layers>
-			<Layer level="BORDER" textureSubLevel="-4">
+			<Layer level="BORDER" textureSubLevel="-5">
 				<Texture parentKey="BackgroundBack" />
+			</Layer>
+			<Layer level="BORDER" textureSubLevel="-4">
+				<Texture parentKey="BackgroundBackShadow" atlas="Artifacts-BG-Shadow" useAtlasSize="true" />
 			</Layer>
 			<Layer level="OVERLAY" textureSubLevel="-6">
 				<Texture parentKey="HeaderBackground" atlas="Artifacts-HeaderBG" />
@@ -133,7 +143,7 @@
 					<Layer level="OVERLAY">
 						<FontString parentKey="ArtifactName" inherits="Fancy24Font">
 							<Anchors>
-								<Anchor point="TOP" y="-5" />
+								<Anchor point="TOP" y="-8" />
 							</Anchors>
 							<Shadow>
 								<Offset x="1" y="-1" />
@@ -141,19 +151,17 @@
 							</Shadow>
 						</FontString>
 
-						<FontString parentKey="PointsRemainingLabel" inherits="Fancy18Font" mixin="AnimatedNumericFontStringMixin">
+						<FontString parentKey="PointsRemainingLabel" inherits="SystemFont_Shadow_Large" mixin="AnimatedNumericFontStringMixin">
 							<Anchors>
-								<Anchor point="BOTTOM"/>
+								<Anchor point="BOTTOM" y="-2"/>
 							</Anchors>
-
 							<Color r="1" g="1" b="1"/>
 						</FontString>
 
-						<FontString parentKey="ArtifactPower" inherits="Fancy16Font" text="ARTIFACT_POWER">
+						<FontString parentKey="ArtifactPower" inherits="SystemFont_Shadow_Large" text="ARTIFACT_POWER">
 							<Anchors>
 								<Anchor point="BOTTOM" relativeKey="$parent.PointsRemainingLabel" relativePoint="TOP" />
 							</Anchors>
-
 							<Color r=".901" g=".8" b=".501" />
 						</FontString>
 					</Layer>

@@ -29,22 +29,6 @@ StaticPopupDialogs["DANGEROUS_MISSIONS"] = {
 	hideOnEscape = 1
 };
 
-StaticPopupDialogs["CONFIRM_SHIP_EQUIPMENT"] = {
-	text = "%s",
-	button1 = YES,
-	button2 = NO,
-	OnAccept = function(self)
-		if (self.data.source == "spell") then
-			C_Garrison.CastSpellOnFollowerAbility(self.data.followerID, self.data.abilityID);
-		elseif (self.data.source == "item") then
-			C_Garrison.CastItemSpellOnFollowerAbility(self.data.followerID, self.data.abilityID);
-		end
-	end,
-	timeout = 0,
-	exclusive = 1,
-	hideOnEscape = 1
-};
-
 StaticPopupDialogs["GARRISON_SHIP_RENAME"] = {
 	text = GARRISON_SHIP_RENAME_LABEL,
 	button1 = ACCEPT,
@@ -171,7 +155,7 @@ function GarrisonShipyardMission:OnHideMainFrame()
 	C_Garrison.CloseMissionNPC();
 	MissionCompletePreload_Cancel(self);
 	StaticPopup_Hide("DANGEROUS_MISSIONS");
-	StaticPopup_Hide("CONFIRM_SHIP_EQUIPMENT");
+	StaticPopup_Hide("CONFIRM_FOLLOWER_EQUIPMENT");
 	GarrisonBonusAreaTooltip:Hide();
 	PlaySound("UI_Garrison_CommandTable_Close");
 end
@@ -1738,6 +1722,11 @@ function GarrisonShipyardMissionPage_UpdatePortraitPulse(missionPage)
 	end
 end
 
+GarrisonShipyardFollowerTabMixin = { }
+
+function GarrisonShipyardFollowerTabMixin:GetFollowerList()
+	return self:GetParent():GetFollowerList();
+end
 
 ---------------------------------------------------------------------------------
 --- Garrison Shipyard Follower List Mixin Functions                           ---
@@ -2077,7 +2066,7 @@ function GarrisonShipTrait_OnEnter(self)
 end
 
 function GarrisonShipTrait_OnHide(self)
-	HideGarrisonFollowerAbilityTooltip();
+	HideGarrisonFollowerAbilityTooltip(LE_FOLLOWER_TYPE_SHIPYARD_6_2);
 end
 
 function GarrisonShipEquipment_StopAnimations(frame)
@@ -2086,33 +2075,6 @@ function GarrisonShipEquipment_StopAnimations(frame)
 	end
 end
 
-function GarrisonShipEquipment_AddEquipment(self)
-	local followerList = self:GetParent():GetParent():GetParent().FollowerList;
-	if ( followerList.canCastSpellsOnFollowers ) then
-		local followerID = self:GetParent():GetParent().followerID;
-		local popupData = {};
-		local equipmentName;
-		if ( SpellCanTargetGarrisonFollowerAbility(followerID, self.abilityID) ) then
-			popupData.source = "spell";
-			equipmentName = GetEquipmentNameFromSpell();
-		elseif ( ItemCanTargetGarrisonFollowerAbility(followerID, self.abilityID) ) then
-			popupData.source = "item";
-			local itemType, itemID = GetCursorInfo();
-			equipmentName = GetItemInfo(itemID);
-		else
-			return;
-		end
-		local followerInfo = followerID and C_Garrison.GetFollowerInfo(followerID);
-		if ( not followerInfo or not followerInfo.isCollected or followerInfo.status == GARRISON_FOLLOWER_ON_MISSION or followerInfo.status == GARRISON_FOLLOWER_WORKING ) then
-			return;
-		end
-		
-		popupData.followerID = followerID;
-		popupData.abilityID = self.abilityID;
-		local text = format(GARRISON_SHIPYARD_CONFIRM_EQUIPMENT, equipmentName);
-		StaticPopup_Show("CONFIRM_SHIP_EQUIPMENT", text, nil, popupData);
-	end
-end
 function GarrisonShipEquipment_OnClick(self, button)
 	if ( IsModifiedClick("CHATLINK") and self.Icon:IsShown() ) then
 		local abilityLink = C_Garrison.GetFollowerAbilityLink(self.abilityID);
@@ -2120,9 +2082,8 @@ function GarrisonShipEquipment_OnClick(self, button)
 			ChatEdit_InsertLink(abilityLink);
 		end
 	elseif (self.abilityID) then
-		local followerList = self:GetParent():GetParent():GetParent().FollowerList;
 		if ( button == "LeftButton") then
-			GarrisonShipEquipment_AddEquipment(self);
+			GarrisonEquipment_AddEquipment(self);
 		end	
 	end
 end
@@ -2148,12 +2109,12 @@ end
 
 function GarrisonShipEquipment_OnHide(self)
 	GameTooltip_Hide();
-	HideGarrisonFollowerAbilityTooltip();
+	HideGarrisonFollowerAbilityTooltip(LE_FOLLOWER_TYPE_SHIPYARD_6_2);
 end
 
 function GarrisonShipEquipment_OnReceiveDrag(self)
 	if (self.abilityID) then
-		GarrisonShipEquipment_AddEquipment(self);
+		GarrisonEquipment_AddEquipment(self);
 	end
 end
 

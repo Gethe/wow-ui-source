@@ -6,7 +6,7 @@ OrderHallCommandBarMixin = { }
 
 function OrderHallCommandBarMixin:OnLoad()
 
-	self.categoryPool = CreateFramePool("FRAME", self, "OrderHallClassSpecCategoryTemplate", OnTalentButtonReleased);
+	self.categoryPool = CreateFramePool("FRAME", self, "OrderHallClassSpecCategoryTemplate");
 
 	local primaryCurrency, _ = C_Garrison.GetCurrencyTypes(LE_GARRISON_TYPE_7_0);
 	self.currency = primaryCurrency;
@@ -113,7 +113,7 @@ function OrderHallCommandBarMixin:RefreshCurrency()
 	local currencyName, amount, currencyTexture = GetCurrencyInfo(self.currency);
 	amount = BreakUpLargeNumbers(amount);
 	self.Currency:SetText(amount);
-	self.CurrencyIcon:SetTexture(currencyTexture);
+	-- self.CurrencyIcon:SetTexture(currencyTexture);
 end
 
 

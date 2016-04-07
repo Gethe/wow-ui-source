@@ -18,7 +18,7 @@
 --  .FinishLabel - The label to show on the finish button for this flow.
 --
 -- Blocks are opaque data structures.  Frames that belong to blocks inherit the template for blocks, and all controls used for data collection must be in the ControlsFrame.
--- 
+--
 -- Blocks must have the following methods:
 --  :Initialize() - Initializes the block and any controls to the active state.
 --  :IsFinished() - Returns whether or not the block is finished and its result set.
@@ -55,7 +55,7 @@
 -- CharacterServicesMaster_Update() to advance the flow and button states.
 ----
 
-CHARACTER_UPGRADE_CREATE_CHARACTER = false;
+CHARACTER_UPGRADE_CREATE_CHARACTER = nil;
 CHARACTER_UPGRADE_CREATE_CHARACTER_DATA = nil;
 
 local UPGRADE_90_MAX_LEVEL = 90;
@@ -93,7 +93,7 @@ CLASS_NAME_BUTTON_ID_MAP = {
 	["MONK"] = 10,
 	["DRUID"] = 11,
 	["DEMONHUNTER"] = 12,
-}; 
+};
 
 local factionLogoTextures = {
 	[1]	= "Interface\\Icons\\Inv_Misc_Tournaments_banner_Orc",
@@ -105,26 +105,27 @@ local factionLabels = {
 	[2] = FACTION_ALLIANCE,
 };
 
-local factionIds = {
+-- TODO: Expose enum to Lua?
+FACTION_IDS = {
 	["Horde"] = 1,
 	["Alliance"] = 2,
 };
 
-local factionColors = { 
-	[factionIds["Horde"]] = "ffe50d12", 
-	[factionIds["Alliance"]] = "ff4a54e8"
+local factionColors = {
+	[FACTION_IDS["Horde"]] = "ffe50d12",
+	[FACTION_IDS["Alliance"]] = "ff4a54e8"
 };
 
 local stepTextures = {
-	[1] = { 0.16601563, 0.23535156, 0.00097656, 0.07812500 },	
-	[2] = { 0.23730469, 0.30664063, 0.00097656, 0.07812500 },	
-	[3] = { 0.30859375, 0.37792969, 0.00097656, 0.07812500 },	
-	[4] = { 0.37988281, 0.44921875, 0.00097656, 0.07812500 },	
-	[5] = { 0.45117188, 0.52050781, 0.00097656, 0.07812500 },	
-	[6] = { 0.52246094, 0.59179688, 0.00097656, 0.07812500 },	
-	[7] = { 0.59375000, 0.66308594, 0.00097656, 0.07812500 },	
-	[8] = { 0.66503906, 0.73437500, 0.00097656, 0.07812500 },	
-	[9] = { 0.73632813, 0.80566406, 0.00097656, 0.07812500 },	
+	[1] = { 0.16601563, 0.23535156, 0.00097656, 0.07812500 },
+	[2] = { 0.23730469, 0.30664063, 0.00097656, 0.07812500 },
+	[3] = { 0.30859375, 0.37792969, 0.00097656, 0.07812500 },
+	[4] = { 0.37988281, 0.44921875, 0.00097656, 0.07812500 },
+	[5] = { 0.45117188, 0.52050781, 0.00097656, 0.07812500 },
+	[6] = { 0.52246094, 0.59179688, 0.00097656, 0.07812500 },
+	[7] = { 0.59375000, 0.66308594, 0.00097656, 0.07812500 },
+	[8] = { 0.66503906, 0.73437500, 0.00097656, 0.07812500 },
+	[9] = { 0.73632813, 0.80566406, 0.00097656, 0.07812500 },
 };
 
 local professionsMap = {
@@ -169,10 +170,10 @@ GlueDialogTypes["PRODUCT_ASSIGN_TO_TARGET_FAILED"] = {
 };
 
 local CharacterUpgradeCharacterSelectBlock = {
-	Back = false, 
+	Back = false,
 	Next = false,
 	Finish = false,
-	AutoAdvance = true, 
+	AutoAdvance = true,
 	ResultsLabel = SELECT_CHARACTER_RESULTS_LABEL,
 	ActiveLabel = SELECT_CHARACTER_ACTIVE_LABEL,
 	AllowBoostWarning = true,
@@ -204,9 +205,9 @@ CharacterUpgrade_Items = {
 		free = {
 			productId = LE_BATTLEPAY_PRODUCT_ITEM_LEVEL_90_CHARACTER_UPGRADE,
 			Size = { x = 72, y = 68 },
-			icon = "Interface\\Icons\\achievement_level_90",		
+			icon = "Interface\\Icons\\achievement_level_90",
 			iconBorder = "services-ring-wod",
-			
+
 			maxLevel = UPGRADE_90_MAX_LEVEL,
 			expansion = LE_EXPANSION_WARLORDS_OF_DRAENOR,
 			popupDesc = {
@@ -218,69 +219,69 @@ CharacterUpgrade_Items = {
 				middleAtlas = "boostpopup-wod-middle",
 				bottomAtlas = "boostpopup-wod-bottom",
 			},
-			
+
 			tooltipTitle = CHARACTER_UPGRADE_WOD_TOKEN_TITLE,
 			tooltipDesc = CHARACTER_UPGRADE_WOD_TOKEN_DESCRIPTION,
 			flowTitle = CHARACTER_UPGRADE_90_FLOW_LABEL,
-			
+
 			glowOffset = { x = 2, y = 4 },
 			free = true,
-			
+
 			professionLevel = 600,
 		},
 		paid = {
 			productId = LE_BATTLEPAY_PRODUCT_ITEM_LEVEL_90_CHARACTER_UPGRADE,
 			icon = "Interface\\Icons\\achievement_level_90",
 			iconBorder = "services-ring",
-			
+
 			maxLevel = UPGRADE_90_MAX_LEVEL,
 			tooltipTitle = CHARACTER_UPGRADE_90_TOKEN_TITLE,
 			tooltipDesc = CHARACTER_UPGRADE_90_TOKEN_DESCRIPTION,
 			flowTitle = CHARACTER_UPGRADE_90_FLOW_LABEL,
-			
+
 			professionLevel = 600,
 		},
 	},
 	[LE_BATTLEPAY_PRODUCT_ITEM_LEVEL_100_CHARACTER_UPGRADE] = {
 		free = {
-			productId = LE_BATTLEPAY_PRODUCT_ITEM_LEVEL_100_CHARACTER_UPGRADE;
+			productId = LE_BATTLEPAY_PRODUCT_ITEM_LEVEL_100_CHARACTER_UPGRADE,
 			icon = "Interface\\Icons\\achievement_level_100",
 			iconBorder = "services-ring",
-			
+
 			maxLevel = UPGRADE_100_MAX_LEVEL,
 			expansion = LE_EXPANSION_LEGION,
 			popupDesc = {
 				title = CHARACTER_UPGRADE_FREE_100_POPUP_TITLE,
 				desc = CHARACTER_UPGRADE_FREE_100_POPUP_DESCRIPTION,
 				width = 430,
-				offset = { x = 8, y = 18 },
+				offset = { x = 25, y = -100 },
 				topAtlas = "boostpopup-legion-top",
 				middleAtlas = "boostpopup-legion-middle",
 				bottomAtlas = "boostpopup-legion-bottom",
 			},
-			
+
 			tooltipTitle = CHARACTER_UPGRADE_100_TOKEN_TITLE,
 			tooltipDesc = CHARACTER_UPGRADE_100_TOKEN_DESCRIPTION,
 			flowTitle = CHARACTER_UPGRADE_100_FLOW_LABEL,
 			free = true,
-			
+
 			professionLevel = 700,
 		},
 		paid = {
-			productId = LE_BATTLEPAY_PRODUCT_ITEM_LEVEL_100_CHARACTER_UPGRADE;
-			icon = "Interface\\Icons\\achievement_level_100",		
+			productId = LE_BATTLEPAY_PRODUCT_ITEM_LEVEL_100_CHARACTER_UPGRADE,
+			icon = "Interface\\Icons\\achievement_level_100",
 			iconBorder = "services-ring",
 			maxLevel = UPGRADE_100_MAX_LEVEL,
 			tooltipTitle = CHARACTER_UPGRADE_100_TOKEN_TITLE,
 			tooltipDesc = CHARACTER_UPGRADE_100_TOKEN_DESCRIPTION,
 			flowTitle = CHARACTER_UPGRADE_100_FLOW_LABEL,
-			
+
 			professionLevel = 700,
 		},
 	}
 }
 
-CharacterUpgrade_DisplayOrder = { 
+CharacterUpgrade_DisplayOrder = {
 	{ productId = LE_BATTLEPAY_PRODUCT_ITEM_LEVEL_90_CHARACTER_UPGRADE,		free = false},
 	{ productId = LE_BATTLEPAY_PRODUCT_ITEM_LEVEL_90_CHARACTER_UPGRADE,		free = true	},
 	{ productId = LE_BATTLEPAY_PRODUCT_ITEM_LEVEL_100_CHARACTER_UPGRADE,	free = true	},
@@ -311,7 +312,7 @@ function CharacterServicesFlowPrototype:Rewind(controller)
 			results = self:BuildResults(self.step - 1);
 		end
 		self:SetUpBlock(controller, results);
-	else	
+	else
 		self:HideBlock(self.step);
 		self.step = self.step - 1;
 		while ( self.Steps[self.step].SkipOnRewind ) do
@@ -427,7 +428,7 @@ function CharacterUpgradeFlow:Advance(controller)
 				self.Steps[2].ExtraOffset = 0;
 			end
 			local factionGroup = C_CharacterServices.GetFactionGroupByIndex(results.charid);
-			
+
 			if ( factionGroup ~= "Neutral" ) then
 				self.Steps[3].SkipOnRewind = true;
 			else
@@ -459,7 +460,7 @@ function CharacterUpgradeFlow:Finish(controller)
 	local results = self:BuildResults(self.numSteps);
 	if (not results.faction) then
 		-- Non neutral character, convert faction group to id.
-		results.faction = factionIds[C_CharacterServices.GetFactionGroupByIndex(results.charid)];
+		results.faction = FACTION_IDS[C_CharacterServices.GetFactionGroupByIndex(results.charid)];
 	end
 	local guid = select(14, GetCharacterInfo(results.charid));
 	if (guid ~= results.playerguid) then
@@ -561,6 +562,19 @@ function CharacterUpgradeCharacterSelectBlock:SetBoostWarningEnabled(enabled)
 	self.AllowBoostWarning = enabled;
 end
 
+function CharacterUpgrade_IsCreatedCharacterUpgrade()
+	return CHARACTER_UPGRADE_CREATE_CHARACTER == "boost";
+end
+
+function CharacterUpgrade_IsCreatedCharacterTrialBoost()
+	return CHARACTER_UPGRADE_CREATE_CHARACTER == "trial";
+end
+
+function CharacterUpgrade_ResetBoostData()
+	CHARACTER_UPGRADE_CREATE_CHARACTER = nil;
+	CHARACTER_UPGRADE_CREATE_CHARACTER_DATA = nil;
+end
+
 function CharacterUpgradeCharacterSelectBlock:Initialize(results)
 	for i = 1, 3 do
 		if (self.frame.BonusResults[i]) then
@@ -578,8 +592,8 @@ function CharacterUpgradeCharacterSelectBlock:Initialize(results)
 	-- Ensure this is hidden if the user has no characters
 	self.frame.ControlsFrame.GlowBox:SetShown(num > 0);
 	self.frame.StepActiveLabel:SetShown(num > 0);
-	
-	if (CHARACTER_UPGRADE_CREATE_CHARACTER) then
+
+	if (CharacterUpgrade_IsCreatedCharacterUpgrade()) then
 		CharacterSelect_UpdateButtonState()
 		CHARACTER_LIST_OFFSET = max(num - MAX_CHARACTERS_DISPLAYED, 0);
 		if (self.createNum < GetNumCharacters()) then
@@ -656,7 +670,7 @@ function CharacterUpgradeCharacterSelectBlock:Initialize(results)
 			end)
 		end
 	end
-	
+
 	for i = 1, GetNumCharacters() do
 		local level, _, _, _, _, _, _, _, _, _, _, _, boostInProgress = select(6, GetCharacterInfo(GetCharIDFromIndex(i)));
 		if (level < CharacterUpgradeFlow.data.maxLevel and not boostInProgress) then
@@ -676,7 +690,7 @@ function CharacterUpgradeCharacterSelectBlock:Initialize(results)
 	self.frame.ControlsFrame.OrLabel:Hide();
 	self.frame.ControlsFrame.CreateCharacterButton:Hide();
 	if (num < MAX_CHARACTERS_DISPLAYED_BASE) then
-		self.frame.ControlsFrame.CreateCharacterButton:Show();		
+		self.frame.ControlsFrame.CreateCharacterButton:Show();
 		self.frame.ControlsFrame.CreateCharacterButton:ClearAllPoints();
 
 		if (num > 0) then
@@ -725,10 +739,10 @@ function CharacterUpgradeCharacterSelectBlock:FormatResult()
 				prof2 = defaults[1];
 			end
 		end
-		local bonuses = { 
-			[1] = professionsMap[prof1], 
-			[2] = professionsMap[prof2], 
-			[3] = CHARACTER_PROFESSION_FIRST_AID 
+		local bonuses = {
+			[1] = professionsMap[prof1],
+			[2] = professionsMap[prof2],
+			[3] = CHARACTER_PROFESSION_FIRST_AID
 		};
 		for i = 1,3 do
 			if (not self.frame.BonusResults[i]) then
@@ -794,62 +808,98 @@ function CharacterUpgradeCharacterSelectBlock:OnAdvance()
 	end
 end
 
-function CharacterUpgradeCreateCharacter_OnClick(self)
-	CharacterUpgradeCharacterSelectBlock.createNum = GetNumCharacters();
-	CHARACTER_UPGRADE_CREATE_CHARACTER = true;
-	CHARACTER_UPGRADE_CREATE_CHARACTER_DATA = CharacterServicesMaster.flow.data;
+function CharacterUpgrade_SetupFlowForNewCharacter(characterType)
+	CHARACTER_UPGRADE_CREATE_CHARACTER = characterType;
+
+	if characterType == "boost" then
+		CharacterUpgradeCharacterSelectBlock.createNum = GetNumCharacters();
+
+		if CharacterServicesMaster.flow then
+			CHARACTER_UPGRADE_CREATE_CHARACTER_DATA = CharacterServicesMaster.flow.data;
+		end
+	end
+end
+
+function CharacterUpgrade_BeginNewCharacterCreation(characterType)
+	CharacterUpgrade_SetupFlowForNewCharacter(characterType);
 	CharacterSelect_CreateNewCharacter();
 end
 
-local function formatDescription(description,results)
+function CharacterUpgradeCreateCharacter_OnClick(self)
+	CharacterUpgrade_BeginNewCharacterCreation("boost");
+end
+
+local function formatDescription(description, gender)
 	if (not strfind(description, "%$")) then
 		return description;
 	end
 
 	-- This is a very simple parser that will only handle $G/$g tokens
-	local sex = select(17, GetCharacterInfo(results.charid));
-	return gsub(description, "$[Gg]([^:]+):([^;]+);", "%"..sex);
+	return gsub(description, "$[Gg]([^:]+):([^;]+);", "%"..gender);
 end
 
-function CharacterUpgradeSpecSelectBlock:Initialize(results)
-	CharacterUpgradeCharacterSelectBlock:SetBoostWarningEnabled(false);
-	self.selected = nil;
+local function createTooltipText(description, gender, isRecommended)
+	local tooltipText = formatDescription(description, gender);
 
-	local classID = CLASS_NAME_BUTTON_ID_MAP[select(4,GetCharacterInfo(results.charid))];
-	local sex = select(17, GetCharacterInfo(results.charid));
+	if (not isRecommended) then
+		local warningText = CreateColor(1, 0, 0, 1):WrapTextInColorCode(CHARACTER_BOOST_RECOMMENDED_SPEC_ONLY);
+		tooltipText = CreateColor(.5, .5, .5, 1):WrapTextInColorCode(tooltipText)..warningText;
+	end
+
+	return tooltipText;
+end
+
+function CharacterServices_UpdateSpecializationButtons(classFilename, gender, parentFrame, owner)
+	local classID = CLASS_NAME_BUTTON_ID_MAP[classFilename];
 	local numSpecs = GetNumSpecializationsForClassID(classID);
 
 	for i = 1, 4 do
-		if (not self.frame.ControlsFrame.SpecButtons[i]) then
-			local frame = CreateFrame("CheckButton", nil, self.frame.ControlsFrame, "CharacterUpgradeSelectSpecRadioButtonTemplate");
-			frame:SetPoint("TOP", self.frame.ControlsFrame.SpecButtons[i - 1], "BOTTOM", 0, -35);
-			self.frame.ControlsFrame.SpecButtons[i] = frame;
+		if not parentFrame.SpecButtons[i] then
+			local frame = CreateFrame("CheckButton", nil, parentFrame, "CharacterUpgradeSelectSpecRadioButtonTemplate");
+			frame:SetPoint("TOP", parentFrame.SpecButtons[i - 1], "BOTTOM", 0, -35);
+			parentFrame.SpecButtons[i] = frame;
 		end
-		local button = self.frame.ControlsFrame.SpecButtons[i];
-		if (i <= numSpecs ) then
-			local specID, name, description, icon, _, role, isRecommended  = GetSpecializationInfoForClassID(classID, i, sex);
+
+		local button = parentFrame.SpecButtons[i];
+		button.owner = owner;
+
+		if i <= numSpecs then
+			local specID, name, description, icon, _, role, isRecommended = GetSpecializationInfoForClassID(classID, i, gender);
 			button:SetID(specID);
 			button.SpecIcon:SetTexture(icon);
 			button.SpecName:SetText(name);
 			button.RoleIcon:SetTexCoord(GetTexCoordsForRole(role));
 			button.RoleName:SetText(_G["ROLE_"..role]);
-			if ( isRecommended ) then
+			button:SetEnabled(isRecommended);
+
+			button.Recommended:SetShown(isRecommended);
+
+			if isRecommended then
 				button.SpecName:SetPoint("TOPLEFT", button.Frame, "TOPRIGHT", 6, -3);
-				button.Recommended:Show();
 				button.RoleName:SetPoint("TOPLEFT", button.Recommended, "BOTTOMLEFT");
 			else
 				button.SpecName:SetPoint("TOPLEFT", button.Frame, "TOPRIGHT", 6, -8);
-				button.Recommended:Hide();
 				button.RoleName:SetPoint("TOPLEFT", button.SpecName, "BOTTOMLEFT");
 			end
+
 			button:SetChecked(false);
 			button:Show();
-			button.tooltip = formatDescription(description, results);
+			button.tooltip = createTooltipText(description, gender, isRecommended);
 		else
 			button:Hide();
 		end
 	end
-	self.classID = classID;
+end
+
+function CharacterUpgradeSpecSelectBlock:Initialize(results)
+	CharacterUpgradeCharacterSelectBlock:SetBoostWarningEnabled(false);
+	self.selected = nil;
+	self.specButtonClickedCallback = CharacterServicesMaster_Update;
+
+	local _, _, _, classFilename, _, _, _, _, _, _, _, _, _, _, _, _, gender = GetCharacterInfo(results.charid);
+	self.classID = CLASS_NAME_BUTTON_ID_MAP[classFilename];
+
+	CharacterServices_UpdateSpecializationButtons(classFilename, gender, self.frame.ControlsFrame, CharacterUpgradeSpecSelectBlock);
 end
 
 function CharacterUpgradeSpecSelectBlock:IsFinished()
@@ -874,24 +924,32 @@ function CharacterUpgradeSpecSelectBlock:GetPopupText()
 end
 
 function CharacterUpgradeSelectSpecRadioButton_OnClick(self, button, down)
-	local owner = CharacterUpgradeSpecSelectBlock;
-	local numSpecs = GetNumSpecializationsForClassID(owner.classID);
-	if ( owner.selected == self:GetID() ) then
-		self:SetChecked(true);
-		return;
-	else
-		owner.selected = self:GetID();
-		self:SetChecked(true);
-	end
-	
-	for i = 1, numSpecs do
-		local button = owner.frame.ControlsFrame.SpecButtons[i];
-		if ( button:GetID() ~= self:GetID() ) then
-			button:SetChecked(false);
+	PlaySound("igMainMenuOptionCheckBoxOn");
+
+	local owner = self.owner;
+
+	if owner then
+		if owner.selected == self:GetID() then
+			self:SetChecked(true);
+			return;
+		else
+			owner.selected = self:GetID();
+			self:SetChecked(true);
+		end
+
+		if owner.specButtonClickedCallback then
+			owner.specButtonClickedCallback();
 		end
 	end
 
-	CharacterServicesMaster_Update();
+	local specButtons = self:GetParent().SpecButtons;
+
+	for i = 1, #specButtons do
+		local button = specButtons[i];
+		if button:GetID() ~= self:GetID() then
+			button:SetChecked(false);
+		end
+	end
 end
 
 function CharacterUpgradeFactionSelectBlock:Initialize(results)
@@ -935,7 +993,7 @@ end
 function CharacterUpgradeSelectFactionRadioButton_OnClick(self, button, down)
 	local owner = CharacterUpgradeFactionSelectBlock;
 	local con = owner.ContinueButton;
-	
+
 	if ( owner.selected == self:GetID() ) then
 		self:SetChecked(true);
 		return;
@@ -943,7 +1001,7 @@ function CharacterUpgradeSelectFactionRadioButton_OnClick(self, button, down)
 		owner.selected = self:GetID();
 		self:SetChecked(true);
 	end
-	
+
 	for i = 1, 2 do
 		local button = owner.frame.ControlsFrame.FactionButtons[i];
 		if ( button:GetID() ~= self:GetID() ) then

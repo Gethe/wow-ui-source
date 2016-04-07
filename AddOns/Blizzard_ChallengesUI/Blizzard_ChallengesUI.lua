@@ -42,6 +42,10 @@ function ChallengesFrame_OnEvent(self, event)
 		ChallengesFrame_Update(self);
 	elseif (event == "CHALLENGE_MODE_LEADERS_UPDATE") then
 		ChallengesFrameBestTimes_Update(self);
+	elseif (event == "CHALLENGE_MODE_RESET") then
+		StaticPopup_Hide("RESURRECT");
+		StaticPopup_Hide("RESURRECT_NO_SICKNESS");
+		StaticPopup_Hide("RESURRECT_NO_TIMER");
 	end
 end
 

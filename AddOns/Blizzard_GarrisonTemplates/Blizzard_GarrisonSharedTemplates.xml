@@ -331,9 +331,11 @@
 		</HighlightTexture>
 	</Button>
 
-	<Texture name="GarrisonMissionFollowerButtonDurabilityTemplate" parentArray="durability" atlas="GarrisonTroops-Health" useAtlasSize="true" virtual="true"/>
+	<Texture name="GarrisonMissionFollowerButtonDurabilityTemplate" parentArray="durability" atlas="GarrisonTroops-Health" virtual="true">
+		<Size x="13" y="11"/>
+	</Texture>
 	<Frame name="GarrisonMissionFollowerDurabilityFrameTemplate" mixin="GarrisonMissionFollowerDurabilityMixin" virtual="true">
-		<Size x="100" y="12"/>
+		<Size x="100" y="11"/>
 	</Frame>
 
 	<Button name="GarrisonMissionFollowerButtonTemplate" inherits="GarrisonFollowerButtonTemplate" virtual="true">
@@ -368,7 +370,7 @@
 		<Frames>
 			<Frame parentKey="DurabilityFrame" inherits="GarrisonMissionFollowerDurabilityFrameTemplate" hidden="true">
 				<Anchors>
-					<Anchor point="TOPLEFT" relativeKey="$parent.Name" relativePoint="BOTTOMLEFT"/>
+					<Anchor point="TOPLEFT" relativeKey="$parent.Name" relativePoint="BOTTOMLEFT" x="0" y="-4"/>
 				</Anchors>
 			</Frame>
 			<Frame parentArray="Counters" inherits="GarrisonMissionAbilityCounterTemplate" hidden="true">

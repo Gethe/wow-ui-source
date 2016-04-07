@@ -22,7 +22,6 @@ function ArtifactPowerButtonMixin:OnLoad()
 	local runeIndex = math.random(1, NUM_RUNE_TYPES);
 
 	self.LightRune:SetAtlas(("Rune-%02d-light"):format(runeIndex), true);
-	self.DarkRune:SetAtlas(("Rune-%02d-dark"):format(runeIndex), true);
 end
 
 function ArtifactPowerButtonMixin:OnEnter()
@@ -124,8 +123,6 @@ function ArtifactPowerButtonMixin:PlayRevealAnimation(onFinishedAnimation)
 		self.RevealAnim.Start:SetEndDelay(self.queuedRevealDelay);
 
 		self.LightRune:Show();
-		self.DarkRune:Show();
-		self.DarkRune:SetAlpha(1);
 
 		self.Icon:SetAlpha(0);
 		self.IconBorder:SetAlpha(0);
@@ -178,12 +175,9 @@ function ArtifactPowerButtonMixin:SetStyle(style)
 	self.RankBorder:SetAlpha(1);
 
 	self.LightRune:Hide();
-	self.DarkRune:Hide();
 
 	if style == ARTIFACT_POWER_STYLE_RUNE then
 		self.LightRune:Show();
-		self.DarkRune:Show();
-		self.DarkRune:SetAlpha(1);
 
 		self.Icon:SetAlpha(0);
 		self.IconBorder:SetAlpha(0);
@@ -254,10 +248,12 @@ end
 
 function ArtifactPowerButtonMixin:ApplyRelicType(relicType, relicLink, suppressAnimation)
 	if self.style == ARTIFACT_POWER_STYLE_RUNE then
-		return;
+		-- Runes cannot have relics
+		relicType = nil;
+		relicLink = nil;
 	end
 
-	if relicType then
+	if self.style ~= ARTIFACT_POWER_STYLE_RUNE and relicType then
 		local relicTraitBGAtlas = ("Relic-%s-TraitBG"):format(relicType);
 		self.RelicTraitBG:SetAtlas(relicTraitBGAtlas);
 		self.RelicTraitBG:Show();
@@ -372,10 +368,11 @@ function ArtifactPowerButtonMixin:SetupButton(powerID, anchorRegion)
 	self.isFinal = isFinal;
 
 	local isAtForge = C_ArtifactUI.IsAtForge();
+	local isViewedArtifactEquipped = C_ArtifactUI.IsViewedArtifactEquipped();
 
 	self.isCompletelyPurchased = currentRank == maxRank or self.isStart;
 	self.hasSpentAny = currentRank > bonusRanks;
-	self.couldSpendPoints = C_ArtifactUI.GetPointsRemaining() >= cost and isAtForge;
+	self.couldSpendPoints = C_ArtifactUI.GetPointsRemaining() >= cost and isAtForge and isViewedArtifactEquipped;
 	self.isMaxRank = currentRank == maxRank;
 	self.prereqsMet = prereqsMet;
 	self.wasBonusRankJustIncreased = wasBonusRankJustIncreased;
@@ -397,7 +394,7 @@ end
 function ArtifactPowerButtonMixin:EvaluateStyle()
 	if C_ArtifactUI.GetTotalPurchasedRanks() == 0 and not self.prereqsMet then
 		self:SetStyle(ARTIFACT_POWER_STYLE_RUNE);	
-	elseif C_ArtifactUI.IsAtForge() then
+	elseif C_ArtifactUI.IsAtForge() and C_ArtifactUI.IsViewedArtifactEquipped() then
 		if self.isMaxRank then
 			self:SetStyle(ARTIFACT_POWER_STYLE_MAXED);			
 		elseif self.prereqsMet and C_ArtifactUI.GetPointsRemaining() >= self.cost then

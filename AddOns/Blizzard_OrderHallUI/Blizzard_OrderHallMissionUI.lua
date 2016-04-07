@@ -38,6 +38,8 @@ function OrderHallMission:OnLoadMainFrame()
 
 	GarrisonFollowerMission.OnLoadMainFrame(self);
 	
+	self.MissionTab.MissionPage.RewardsFrame.Chest:SetAtlas("GarrMission-NeutralChest");
+
 	PanelTemplates_SetNumTabs(self, 3);
 
 	self:SelectTab(self:DefaultTab());
@@ -256,6 +258,7 @@ function OrderHallMission:OnSetEnemyMechanic(enemyFrame, mechanicFrame, mechanic
 	enemyFrame.counterAbility = counterAbility;
 	if (counterAbility and counterAbility.icon) then
 		mechanicFrame.Icon:SetTexture(counterAbility.icon);
+		mechanicFrame.Border:SetShown(ShouldShowFollowerAbilityBorder(self.followerTypeID, counterAbility));
 	end
 end
 
@@ -279,6 +282,13 @@ function OrderHallMission:SetupCompleteDialog()
 		completeDialog.BorderFrame.Stage.LocMid:Hide();
 		completeDialog.BorderFrame.Stage.LocFore:Hide();
 	end
+end
+
+
+function OrderHallMission:MissionCompleteInitialize(missionList, index)
+	GarrisonFollowerMission.MissionCompleteInitialize(self, missionList, index);
+
+	self.MissionComplete.BonusText.BonusTextGlowAnim:Stop();
 end
 
 ---------------------------------------------------------------------------------
@@ -340,8 +350,99 @@ function OrderHallMissionPageEnemyMixin:OnLeave()
 	GameTooltip_Hide();
 end
 
+---------------------------------------------------------------------------------
+-- Order Hall Mission Complete
+---------------------------------------------------------------------------------
+OrderHallMissionComplete = { }
 
+function OrderHallMissionComplete:ShowRewards()
+	local bonusRewards = self.BonusRewards;
+	self.NextMissionButton:Enable();
+	if ( not bonusRewards.success and not self.skipAnimations ) then
+		return;
+	end
 
+	self.missionRewardEffectsPool:ReleaseAll();
+
+	local currentMission = self.currentMission;
+	local overmaxSucceeded = currentMission.overmaxSucceeded;
+
+	if (overmaxSucceeded and not self.skipAnimations) then
+		self.BonusText.BonusTextGlowAnim:Play();
+	end
+
+	-- The reward and overmax reward are staggered if there is an overmax reward. Otherwise,
+	-- display the one item immediately as normal.
+	local firstItemDelay = overmaxSucceeded and 0.75 or 0;
+	local secondItemDelay = 1;
+
+	-- There should be exactly 1 base reward, but display them all even if there is more.
+	local hasOvermaxRewardItem = (overmaxSucceeded and currentMission.overmaxRewardItem ~= 0);
+	local numRewards = currentMission.numRewards + (hasOvermaxRewardItem and 1 or 0);
+	local prevRewardFrame;
+	for id, reward in pairs(currentMission.rewards) do
+		local rewardFrame = self.missionRewardEffectsPool:Acquire();
+		if (prevRewardFrame) then
+			rewardFrame:SetPoint("LEFT", prevRewardFrame, "RIGHT", 9, 0);
+		else
+			if (numRewards == 1) then
+				rewardFrame:SetPoint("CENTER", bonusRewards, "CENTER", 0, 0);
+			elseif (numRewards == 2) then
+				rewardFrame:SetPoint("RIGHT", bonusRewards, "CENTER", -5, 0);
+			else
+				rewardFrame:SetPoint("LEFT", bonusRewards, "LEFT", 18, 0);
+			end
+		end
+
+		rewardFrame.id = id;
+		if ( not self.skipAnimations ) then
+			rewardFrame:Hide();
+			C_Timer.After(firstItemDelay,
+				function()
+					GarrisonMissionPage_SetReward(rewardFrame, reward);
+					rewardFrame.Anim:Play();
+				end
+			);
+		else
+			GarrisonMissionPage_SetReward(rewardFrame, reward);
+			if (not self.skipAnimations) then
+				rewardFrame.Anim:Play();
+			end
+		end
+		prevRewardFrame = rewardFrame;
+	end
+
+	if (overmaxSucceeded and currentMission.overmaxRewardItem ~= 0) then
+		local rewardFrame = self.missionRewardEffectsPool:Acquire();
+		if (prevRewardFrame) then
+			rewardFrame:SetPoint("LEFT", prevRewardFrame, "RIGHT", 9, 0);
+		else
+			if (numRewards == 1) then
+				rewardFrame:SetPoint("CENTER", bonusRewards, "CENTER", 0, 0);
+			elseif (numRewards == 2) then
+				rewardFrame:SetPoint("RIGHT", bonusRewards, "CENTER", -5, 0);
+			else
+				rewardFrame:SetPoint("LEFT", bonusRewards, "LEFT", 18, 0);
+			end
+		end
+		if ( not self.skipAnimations ) then
+			rewardFrame:Hide();
+			C_Timer.After(secondItemDelay,
+				function()
+					GarrisonMissionPage_SetRewardFromItem(rewardFrame, currentMission.overmaxRewardItem);
+					rewardFrame.Anim:Play();
+				end
+			);
+		else
+			GarrisonMissionPage_SetRewardFromItem(Reward, currentMission.overmaxRewardItem);
+			if (not self.skipAnimations) then
+				Reward.Anim:Play();
+			end
+		end
+		prevRewardFrame = rewardFrame;
+	end
+	GarrisonMissionPage_UpdateRewardQuantities(bonusRewards, currentMission.currencyMultipliers, currentMission.goldMultiplier);
+end
 
 ---------------------------------------------------------------------------------
 -- Order Hall Adventure Map
@@ -394,10 +495,10 @@ function OrderHallFollowerTabMixin:IsEquipmentAbility(followerInfo, ability)
 end
 
 function OrderHallFollowerTabMixin:UpdateValidSpellHighlightOnEquipmentFrame(equipmentFrame, followerID, followerInfo)
-	local ability = equipmentFrame.ability;
+	local abilityID = equipmentFrame.abilityID;
 	if ( followerInfo and followerInfo.isCollected 
 		and followerInfo.status ~= GARRISON_FOLLOWER_WORKING and followerInfo.status ~= GARRISON_FOLLOWER_ON_MISSION 
-		and ability and SpellCanTargetGarrisonFollowerAbility(followerID, ability.id) ) then
+		and abilityID and SpellCanTargetGarrisonFollowerAbility(followerID, abilityID) ) then
 		equipmentFrame.ValidSpellHighlight:Show();
 	else
 		equipmentFrame.ValidSpellHighlight:Hide();
@@ -508,7 +609,6 @@ function OrderHallFollowerTabMixin:ShowFollower(followerID, followerList)
 
 		if ( self:IsEquipmentAbility(followerInfo, ability) ) then
 			abilityFrame.abilityID = ability.id;
-			abilityFrame.followerTypeID = followerInfo.followerTypeID
 			if (ability.icon) then
 				abilityFrame.Icon:SetTexture(ability.icon);
 				abilityFrame.Icon:Show();
@@ -548,6 +648,7 @@ function OrderHallFollowerTabMixin:ShowFollower(followerID, followerList)
 			abilityFrame.Name:SetText(ability.name);
 			abilityFrame.IconButton.Icon:SetTexture(ability.icon);
 			abilityFrame.IconButton.abilityID = ability.id;
+			abilityFrame.IconButton.Border:SetShown(ShouldShowFollowerAbilityBorder(followerInfo.followerTypeID, ability));
 			abilityFrame.ability = ability;
 
 		    local hasCounters = false;
@@ -677,12 +778,31 @@ end
 OrderHallFollowerEquipmentMixin = { }
 function OrderHallFollowerEquipmentMixin:OnEnter()
 	if (self.abilityID) then
-		ShowGarrisonFollowerAbilityTooltip(self, self.abilityID, LE_FOLLOWER_TYPE_SHIPYARD_6_2);
+		ShowGarrisonFollowerAbilityTooltip(self, self.abilityID, self:GetParent():GetFollowerList().followerType);
 	end
 end
 
 function OrderHallFollowerEquipmentMixin:OnLeave()
-	HideGarrisonFollowerAbilityTooltip();
+	HideGarrisonFollowerAbilityTooltip(self:GetParent():GetFollowerList().followerType);
+end
+
+function OrderHallFollowerEquipmentMixin:OnClick(button)
+	if ( IsModifiedClick("CHATLINK") and self.Icon:IsShown() ) then
+		local abilityLink = C_Garrison.GetFollowerAbilityLink(self.abilityID);
+		if (abilityLink) then
+			ChatEdit_InsertLink(abilityLink);
+		end
+	elseif (self.abilityID) then
+		if ( button == "LeftButton") then
+			GarrisonEquipment_AddEquipment(self);
+		end	
+	end
+end
+
+function OrderHallFollowerEquipmentMixin:OnReceiveDrag()
+	if (self.abilityID) then
+		GarrisonEquipment_AddEquipment(self);
+	end
 end
 
 ---------------------------------------------------------------------------------

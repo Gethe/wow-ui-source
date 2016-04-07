@@ -308,7 +308,7 @@
 		</Scripts>
 	</Frame>
 
-	<Frame name="GarrisonLandingPage" parent="UIParent" enableMouse="true" toplevel="true" hidden="true">
+	<Frame name="GarrisonLandingPage" parent="UIParent" enableMouse="true" toplevel="true" hidden="true" mixin="GarrisonLandingPageMixin">
 		<Size x="830" y="538"/>
 		<Anchors>
 			<Anchor point="CENTER"/>
@@ -905,7 +905,7 @@
 					<Anchor point="TOPLEFT" x="45" y="-120"/>
 				</Anchors>
 			</Frame>
-			<Frame parentKey="ShipFollowerTab">
+			<Frame parentKey="ShipFollowerTab" mixin="GarrisonLandingPageShipyardFollowerMixin">
 				<Size x="470" y="565"/>
 				<Anchors>
 					<Anchor point="TOPRIGHT" x="-25" y="-85"/>
@@ -1068,7 +1068,7 @@
 							</OnLoad>
 						</Scripts>
 					</Button>
-					<Frame parentKey="EquipmentFrame">
+					<Frame parentKey="EquipmentFrame" mixin="GarrisonAbilitiesFrameMixin">
 						<Size x="162" y="84"/>
 						<Anchors>
 							<Anchor point="BOTTOMLEFT" x="250" y="43"/>
@@ -1154,9 +1154,9 @@
 			</Frame>
 		</Frames>
 		<Scripts>
-			<OnLoad function="GarrisonLandingPage_OnLoad"/>
-			<OnShow function="GarrisonLandingPage_OnShow"/>
-			<OnHide function="GarrisonLandingPage_OnHide"/>
+			<OnLoad method="OnLoad"/>
+			<OnShow method="OnShow"/>
+			<OnHide method="OnHide"/>
 		</Scripts>
 	</Frame>
 

@@ -3,8 +3,9 @@
 ---------------------------------------------------------------------------------
 GarrisonFollowerOptions = { };
 GarrisonFollowerOptions[LE_FOLLOWER_TYPE_GARRISON_6_0] = {
-	isPrimaryFollowerType = true;
+	isPrimaryFollowerType = true,
 	displayCounterAbilityInPlaceOfMechanic = false,
+	showSpikyBordersOnSpecializationAbilities = false,
 	useAbilityTooltipStyleWithoutCounters = false,
 	hideCountersInAbilityFrame = false,
 	showILevelOnFollower = false,
@@ -12,21 +13,27 @@ GarrisonFollowerOptions[LE_FOLLOWER_TYPE_GARRISON_6_0] = {
 	minFollowersForThreatCountersFrame = 10,
 	showSingleMissionCompleteAnimation = false,
 	showCautionSignOnMissionFollowersSmallBias = true,
+	showILevelInFollowerList = true,
 	hideMissionTypeInLandingPage = false,
 	minQualityLevelToShowLevel = LE_ITEM_QUALITY_POOR,
 	usesOvermaxMechanic = false,
 	partyNotFullText = GARRISON_PARTY_NOT_FULL_TOOLTIP,
 	garrisonType = LE_GARRISON_TYPE_6_0,
 	missionFrame = "GarrisonMissionFrame",
+	abilityTooltipFrame = "GarrisonFollowerAbilityTooltip",
+	missionAbilityTooltipFrame = "GarrisonFollowerAbilityTooltip",
 	strings = {
 		LANDING_COMPLETE = GARRISON_LANDING_BUILDING_COMPLEATE,
 		RETURN_TO_START = GARRISON_MISSION_TOOLTIP_RETURN_TO_START,
+		CONFIRM_EQUIPMENT = GARRISON_FOLLOWER_CONFIRM_EQUIPMENT,
+		TRAITS_LABEL = GARRISON_TRAITS,
 	},
 }
 
 GarrisonFollowerOptions[LE_FOLLOWER_TYPE_SHIPYARD_6_2] = {
-	isPrimaryFollowerType = false;
+	isPrimaryFollowerType = false,
 	displayCounterAbilityInPlaceOfMechanic = false,
+	showSpikyBordersOnSpecializationAbilities = false,
 	useAbilityTooltipStyleWithoutCounters = false,
 	hideCountersInAbilityFrame = false,
 	showILevelOnFollower = false,
@@ -34,21 +41,27 @@ GarrisonFollowerOptions[LE_FOLLOWER_TYPE_SHIPYARD_6_2] = {
 	minFollowersForThreatCountersFrame = 1,
 	showSingleMissionCompleteAnimation = true,
 	showCautionSignOnMissionFollowersSmallBias = true,
+	showILevelInFollowerList = true,
 	hideMissionTypeInLandingPage = true,
 	minQualityLevelToShowLevel = LE_ITEM_QUALITY_POOR,
 	usesOvermaxMechanic = false,
 	partyNotFullText = GARRISON_SHIPYARD_PARTY_NOT_FULL_TOOLTIP,
 	garrisonType = LE_GARRISON_TYPE_6_0,
 	missionFrame = "GarrisonShipyardFrame",
+	abilityTooltipFrame = "GarrisonFollowerAbilityTooltip",
+	missionAbilityTooltipFrame = "GarrisonFollowerAbilityTooltip",
 	strings = {
 		LANDING_COMPLETE = GARRISON_LANDING_BUILDING_COMPLEATE,
 		RETURN_TO_START = GARRISON_SHIPYARD_MISSION_TOOLTIP_RETURN_TO_START,
+		CONFIRM_EQUIPMENT = GARRISON_SHIPYARD_CONFIRM_EQUIPMENT,
+		TRAITS_LABEL = nil;
 	},
 }
 
 GarrisonFollowerOptions[LE_FOLLOWER_TYPE_GARRISON_7_0] = {
-	isPrimaryFollowerType = true;
+	isPrimaryFollowerType = true,
 	displayCounterAbilityInPlaceOfMechanic = true,
+	showSpikyBordersOnSpecializationAbilities = true,
 	useAbilityTooltipStyleWithoutCounters = true,
 	hideCountersInAbilityFrame = true,
 	showILevelOnFollower = true,
@@ -56,15 +69,20 @@ GarrisonFollowerOptions[LE_FOLLOWER_TYPE_GARRISON_7_0] = {
 	minFollowersForThreatCountersFrame = math.huge,
 	showSingleMissionCompleteAnimation = true,
 	showCautionSignOnMissionFollowersSmallBias = false,
+	showILevelInFollowerList = false,
 	hideMissionTypeInLandingPage = true,
 	minQualityLevelToShowLevel = LE_ITEM_QUALITY_EPIC,
 	usesOvermaxMechanic = true,
 	partyNotFullText = GARRISON_PARTY_NOT_ENOUGH_CHAMPIONS,
 	garrisonType = LE_GARRISON_TYPE_7_0,
 	missionFrame = "OrderHallMissionFrame",
+	abilityTooltipFrame = "GarrisonFollowerAbilityWithoutCountersTooltip",
+	missionAbilityTooltipFrame = "GarrisonFollowerMissionAbilityWithoutCountersTooltip",
 	strings = {
 		LANDING_COMPLETE = ORDER_HALL_LANDING_COMPLETE,
 		RETURN_TO_START = ORDER_HALL_MISSION_TOOLTIP_RETURN_TO_START,
+		CONFIRM_EQUIPMENT = GARRISON_FOLLOWER_CONFIRM_EQUIPMENT,
+		TRAITS_LABEL = ORDER_HALL_EQUIPMENT_SLOTS,
 	},
 }
 
@@ -76,6 +94,16 @@ function GetPrimaryGarrisonFollowerType(garrTypeID)
 	end
 	return nil;
 end
+
+function ShouldShowFollowerAbilityBorder(followerTypeID, abilityInfo) 
+	return GarrisonFollowerOptions[followerTypeID].showSpikyBordersOnSpecializationAbilities and abilityInfo.isSpecialization;
+end
+
+
+function ShouldShowILevelInFollowerList(followerInfo) 
+	return GarrisonFollowerOptions[followerInfo.followerTypeID].showILevelInFollowerList and followerInfo.isMaxLevel;
+end
+
 
 ---------------------------------------------------------------------------------
 --- Landing Page                                                         ---

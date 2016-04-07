@@ -441,6 +441,7 @@ function HonorFrame_Queue()
 		if ( HonorFrame.BonusFrame.selectedButton.arenaID ) then
 			JoinSkirmish(HonorFrame.BonusFrame.selectedButton.arenaID, isParty);
 		elseif (HonorFrame.BonusFrame.selectedButton.queueID) then
+			ClearAllLFGDungeons(LE_LFG_CATEGORY_WORLDPVP);
 			JoinSingleLFG(LE_LFG_CATEGORY_WORLDPVP, HonorFrame.BonusFrame.selectedButton.queueID);
 		else
 			JoinBattlefield(HonorFrame.BonusFrame.selectedButton.bgID, isParty);

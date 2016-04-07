@@ -285,7 +285,7 @@
 						GameTooltip:SetOwner(self, "ANCHOR_PRESERVE");
 						GameTooltip:SetText(GARRISON_MISSION_CHANCE_TOOLTIP_HEADER);
 						local missionID = self:GetParent():GetParent().missionInfo.missionID;
-						GameTooltip:AddLine(string.format(GARRISON_MISSION_PERCENT_CHANCE, C_Garrison.GetRewardChance(missionID)), HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b);
+						GameTooltip:AddLine(string.format(GARRISON_MISSION_PERCENT_CHANCE, C_Garrison.GetMissionSuccessChance(missionID)), HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b);
 						GameTooltip:AddLine(" ");
 						GameTooltip:AddLine(self:GetParent().tooltipText, NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b, 1, 1);
 						GameTooltip:Show();
@@ -1106,7 +1106,7 @@
 						GarrisonCinematicModelBase_OnLoad(self);
 						self:SetFrameLevel(self:GetParent():GetFrameLevel() + 2);
 					</OnLoad>
-					<OnModelLoaded function="GarrisonMissionComplete_OnModelLoaded"/>
+					<OnModelLoaded method="OnModelLoaded"/>
 				</Scripts>
 			</CinematicModel>
 			<CinematicModel parentArray="Models" parentKey="ModelRight" facingLeft="true" inherits="GarrisonMissionCompleteModelTemplate">
@@ -1119,7 +1119,7 @@
 						GarrisonCinematicModelBase_OnLoad(self);
 						self:SetFrameLevel(self:GetParent():GetFrameLevel() + 1);
 					</OnLoad>
-					<OnModelLoaded function="GarrisonMissionComplete_OnModelLoaded"/>
+					<OnModelLoaded method="OnModelLoaded"/>
 				</Scripts>
 			</CinematicModel>
 			<Frame parentKey="Miss" frameStrata="HIGH">
@@ -1167,7 +1167,7 @@
 		</Scripts>
 	</Frame>
 
-	<Frame name="GarrisonMissionCompleteTemplate" frameStrata="HIGH" hidden="true" virtual="true">
+	<Frame name="GarrisonMissionCompleteTemplate" frameStrata="HIGH" hidden="true" virtual="true" mixin="GarrisonMissionComplete">
 		<Anchors>
 			<Anchor point="CENTER"/>
 		</Anchors>
@@ -1221,11 +1221,9 @@
 			</Frame>
 		</Frames>
 		<Scripts>
-			<OnLoad function="GarrisonMissionComplete_OnLoad"/>
-			<OnEvent function="GarrisonMissionComplete_OnEvent"/>
-			<OnKeyDown>
-				GarrisonMissionComplete.OnSkipKeyPressed(self, key);
-			</OnKeyDown>
+			<OnLoad method="OnLoad"/>
+			<OnEvent method="OnEvent"/>
+			<OnKeyDown method="OnSkipKeyPressed"/>
 		</Scripts>
 	</Frame>
 

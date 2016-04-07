@@ -332,14 +332,27 @@
 					</Anchors>
 				</Texture>
 			</Layer>
+			<Layer level="BACKGROUND" textureSubLevel="1">
+				<Texture parentKey="DesaturatedTrackerBackground" atlas="worldquest-tracker" useAtlasSize="true" desaturated="true" alpha=".7">
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent.TrackerBackground" />
+					</Anchors>
+				</Texture>
+			</Layer>
 			<Layer level="ARTWORK">
 				<FontString parentKey="BountyName" mixin="ShrinkUntilTruncateFontStringMixin" maxLines="1">
 					<Size x="170" />
 					<Anchors>
 						<Anchor point="CENTER" relativeKey="$parent.TrackerBackground" y="17" />
 					</Anchors>
-					<Color r="1.0" g="0.82" b="0.0"/>
 				</FontString>
+			</Layer>
+			<Layer level="OVERLAY">
+				<Texture parentKey="Locked" atlas="worldquest-tracker-lock" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="CENTER" y="-25" />
+					</Anchors>
+				</Texture>
 			</Layer>
 		</Layers>
 		<Scripts>

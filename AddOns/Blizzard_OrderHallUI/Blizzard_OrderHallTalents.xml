@@ -3,11 +3,11 @@
 	<Script file="Blizzard_OrderHallTalents.lua"/>
 
 	<Button name="GarrisonTalentButtonTemplate" virtual="true" mixin="GarrisonTalentButtonMixin">
-		<Size x="40" y="40"/>
+		<Size x="39" y="39"/>
 		<Layers>
 			<Layer level="ARTWORK" textureSubLevel="0">
 				<Texture parentKey="Icon" >
-					<Size x="40" y="40"/>
+					<Size x="39" y="39"/>
 				</Texture>
 			</Layer>
 			<Layer level="ARTWORK" textureSubLevel="1">
@@ -17,16 +17,17 @@
 			</Layer>
 			<Layer level="ARTWORK" textureSubLevel="2">
 				<Texture parentKey="CooldownTimerBackground" atlas="orderhalltalents-timer-bg" textureSubLevel="2">
-					<Size x="40" y="40"/>
+					<Size x="37" y="37"/>
 					<Anchors>
 						<Anchor point="CENTER"/>
 					</Anchors>
 				</Texture>
 			</Layer>
 			<Layer level="OVERLAY">
-				<Texture parentKey="Border" atlas="orderhalltalents-spellborder-yellow" useAtlasSize="true">
+				<Texture parentKey="Border" atlas="orderhalltalents-spellborder-yellow">
+					<Size x="50" y="50"/>
 					<Anchors>
-						<Anchor point="TOPLEFT" x="-4" y="4"/>
+						<Anchor point="TOP" x="0" y="5"/>
 					</Anchors>
 				</Texture>
 				<Texture parentKey="Highlight" file="Interface\Buttons\ButtonHilight-Square" alphaMode="ADD" hidden="true"/>
@@ -34,7 +35,7 @@
 		</Layers>
 		<Frames>
 			<Cooldown parentKey="Cooldown" reverse="true" hideCountdownNumbers="true">
-				<Size x="40" y="40"/>
+				<Size x="37" y="37"/>
 				<Anchors>
 					<Anchor point="CENTER"/>
 				</Anchors>
@@ -58,11 +59,11 @@
 	</Texture>
 
 
-	<FontString parentArray="FrameTick" name="OrderHallTalentFrameTick" inherits="SystemFont_Small2" virtual="true">
+	<FontString parentArray="FrameTick" name="OrderHallTalentFrameTick" inherits="GameFontNormal" virtual="true">
 		<Color r="0.27" g="0.27" b="0.27"/>
 	</FontString>
 	<Frame name="OrderHallTalentFrame" inherits="PortraitFrameTemplate" toplevel="true" enableMouse="true" parent="UIParent" hidden="true" mixin="OrderHallTalentFrameMixin">
-		<Size x="334" y="445"/>
+		<Size x="336" y="450"/>
 		<Scripts>
 			<OnLoad method="OnLoad"/>
 			<OnShow method="OnShow"/>
@@ -82,49 +83,74 @@
 				</Texture>
 			</Layer>
 			<Layer level="ARTWORK">
-				<Texture parentKey="CurrencyIcon">
-					<Size x="24" y="24"/>
+				<Texture parentKey="CurrencyIcon" atlas="legionmission-icon-currency" useAtlasSize="false">
+					<Size x="27" y="26"/>
 					<Anchors>
-						<Anchor point="TOPRIGHT" x="-20" y="-33"/>
+						<Anchor point="TOPRIGHT" x="-12" y="-29"/>
 					</Anchors>
 				</Texture>
-				<FontString parentKey="Currency" inherits="GameFontHighlight" justifyH="RIGHT">
+				<FontString parentKey="Currency" inherits="SystemFont_Shadow_Med2" justifyH="RIGHT">
 					<Size x="100" y="20"/>
 					<Anchors>
 						<Anchor point="RIGHT" relativeKey="$parent.CurrencyIcon" relativePoint="LEFT" x="-4" y="0"/>
 					</Anchors>
 				</FontString>
-				<FontString inherits="OrderHallTalentFrameTick" text="I">
+				<FontString parentKey="Tick1" inherits="OrderHallTalentFrameTick" text="I">
 					<Anchors>
-						<Anchor point="TOPLEFT" x="20" y="-100"/>
+						<Anchor point="TOPLEFT" x="24" y="-99"/>
 					</Anchors>
 				</FontString>
-				<FontString inherits="OrderHallTalentFrameTick" text="II">
+				<FontString parentKey="Tick2" inherits="OrderHallTalentFrameTick" text="II">
 					<Anchors>
-						<Anchor point="TOPLEFT" x="20" y="-159"/>
+						<Anchor point="CENTER" relativeKey="$parent.Tick1" relativePoint="CENTER" y="-58"/>
 					</Anchors>
 				</FontString>
-				<FontString inherits="OrderHallTalentFrameTick" text="III">
+				<FontString parentKey="Tick3" inherits="OrderHallTalentFrameTick" text="III">
 					<Anchors>
-						<Anchor point="TOPLEFT" x="20" y="-218"/>
+						<Anchor point="CENTER" relativeKey="$parent.Tick2" relativePoint="CENTER" y="-58"/>
 					</Anchors>
 				</FontString>
-				<FontString inherits="OrderHallTalentFrameTick" text="IV">
+				<FontString parentKey="Tick4" inherits="OrderHallTalentFrameTick" text="IV">
 					<Anchors>
-						<Anchor point="TOPLEFT" x="20" y="-277"/>
+						<Anchor point="CENTER" relativeKey="$parent.Tick3" relativePoint="CENTER" y="-58"/>
 					</Anchors>
 				</FontString>
-				<FontString inherits="OrderHallTalentFrameTick" text="V">
+				<FontString parentKey="Tick5" inherits="OrderHallTalentFrameTick" text="V">
 					<Anchors>
-						<Anchor point="TOPLEFT" x="20" y="-336"/>
+						<Anchor point="CENTER" relativeKey="$parent.Tick4" relativePoint="CENTER" y="-58"/>
 					</Anchors>
 				</FontString>
-				<FontString inherits="OrderHallTalentFrameTick" text="VI">
+				<FontString parentKey="Tick6" inherits="OrderHallTalentFrameTick" text="VI">
 					<Anchors>
-						<Anchor point="TOPLEFT" x="20" y="-395"/>
+						<Anchor point="CENTER" relativeKey="$parent.Tick5" relativePoint="CENTER" y="-58"/>
 					</Anchors>
 				</FontString>
 			</Layer>
 		</Layers>
+		<Frames>
+			<Frame parentKey="CurrencyHitTest">
+				<Anchors>
+					<Anchor point="LEFT" relativeKey="$parent.Currency"/>
+					<Anchor point="RIGHT" relativeKey="$parent.CurrencyIcon"/>
+					<Anchor point="TOP" relativeKey="$parent.CurrencyIcon"/>
+					<Anchor point="BOTTOM" relativeKey="$parent.CurrencyIcon"/>
+				</Anchors>
+				<Scripts>
+					<OnEnter>
+						GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+						GameTooltip:SetCurrencyTokenByID(self:GetParent().currency);
+						GameTooltip:Show();
+					</OnEnter>
+					<OnLeave function="GameTooltip_Hide"/>
+				</Scripts>
+			</Frame>
+			<Frame name="ClassHallTalentInset" inherits="InsetFrameTemplate" parentKey="LeftInset" useParentLevel="true">
+				<Size x="328" y="388"/>
+				<Anchors>
+					<Anchor point="TOPLEFT" x="3" y="-58"/>
+					<Anchor point="BOTTOMRIGHT" relativeTo="TradeFrame" relativePoint="TOPLEFT" x="338" y="-352"/>
+				</Anchors>
+			</Frame>
+		</Frames>
 	</Frame>
 </Ui>

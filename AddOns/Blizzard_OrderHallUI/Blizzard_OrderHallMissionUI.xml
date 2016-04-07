@@ -2,12 +2,14 @@
 ..\FrameXML\UI.xsd">
 	<Script file="Blizzard_OrderHallMissionUI.lua"/>
 
-	<Frame name="OrderHallFollowerEquipmentTemplate" inherits="GarrisonEquipmentTemplate" virtual="true" mixin="OrderHallFollowerEquipmentMixin">
+	<Button name="OrderHallFollowerEquipmentTemplate" inherits="GarrisonEquipmentTemplate" virtual="true" mixin="OrderHallFollowerEquipmentMixin">
 		<Scripts>
 			<OnEnter method="OnEnter"/>
 			<OnLeave method="OnLeave"/>
+			<OnClick method="OnClick"/>
+			<OnReceiveDrag method="OnReceiveDrag"/>
 		</Scripts>
-	</Frame>
+	</Button>
 
 	<Button name="OrderHallFollowerZoneSupportTemplate" virtual="true" mixin="OrderHallFollowerZoneSupportMixin">
 		<Size>
@@ -157,7 +159,7 @@
 					<OnMouseUp function="GarrisonFollowerPageModel_OnMouseUp"/>
 				</Scripts>
 			</CinematicModel>
-			<Frame parentKey="AbilitiesFrame" setAllPoints="true">
+			<Frame parentKey="AbilitiesFrame" setAllPoints="true" mixin="GarrisonAbilitiesFrameMixin">
 				<Layers>
 					<Layer level="ARTWORK">
 						<FontString parentKey="SpecializationLabel" inherits="GameFontNormalLarge2" justifyH="LEFT" text="SPECIALIZATION">
@@ -199,16 +201,16 @@
 						</Scripts>
 					</Frame>
 
-					<Frame parentArray="Equipment" parentKey="Equipment1" inherits="OrderHallFollowerEquipmentTemplate" hidden="false">
+					<Button parentArray="Equipment" parentKey="Equipment1" inherits="OrderHallFollowerEquipmentTemplate" hidden="false">
 						<Anchors>
 							<Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" relativeKey="$parent.EquipmentSlotsLabel" x="60" y="-20"/>
 						</Anchors>
-					</Frame>
-					<Frame parentArray="Equipment" parentKey="Equipment2" inherits="OrderHallFollowerEquipmentTemplate" hidden="false">
+					</Button>
+					<Button parentArray="Equipment" parentKey="Equipment2" inherits="OrderHallFollowerEquipmentTemplate" hidden="false">
 						<Anchors>
 							<Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" relativeKey="$parent.EquipmentSlotsLabel" x="140" y="-20"/>
 						</Anchors>
-					</Frame>
+					</Button>
 					<Frame parentArray="Counters" inherits="GarrisonMissionAbilityCounterTemplate" hidden="true"/>
 					<Button parentArray="ZoneSupport" parentKey="ZoneSupport1" inherits="OrderHallFollowerZoneSupportTemplate">
 						<Anchors>
@@ -785,7 +787,7 @@
 					</Layer>
 				</Layers>
 			</Frame>
-			<Frame parentKey="MissionComplete" inherits="GarrisonMissionPageBaseTemplate, GarrisonMissionCompleteTemplate" frameStrata="HIGH" hidden="true" mixin="GarrisonMissionComplete,GarrisonFollowerMissionComplete">
+			<Frame parentKey="MissionComplete" inherits="GarrisonMissionPageBaseTemplate, GarrisonMissionCompleteTemplate" frameStrata="HIGH" hidden="true" mixin="GarrisonFollowerMissionComplete,OrderHallMissionComplete">
 				<Frames>
 					<Frame parentKey="Stage" inherits="GarrisonFollowerMissionCompleteStageTemplate">
 						<Anchors>
@@ -796,6 +798,37 @@
 						<Anchors>
 							<Anchor point="BOTTOM" y="40"/>
 						</Anchors>
+					</Frame>
+					<Frame parentKey="BonusText">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeKey="$parent.BonusRewards"/>
+							<Anchor point="BOTTOMRIGHT" relativeKey="$parent.BonusRewards"/>
+						</Anchors>
+						<Layers>
+							<Layer level="OVERLAY">
+								<Texture parentKey="BonusGlow" hidden="false" alpha="0" alphaMode="ADD" atlas="BonusChest-BonusTextGlow" useAtlasSize="true">
+									<Anchors>
+										<Anchor point="CENTER"/>
+									</Anchors>
+								</Texture>
+							</Layer>
+							<Layer level="OVERLAY" textureSubLevel="1">
+								<Texture parentKey="BonusText" hidden="false" alpha="0" alphaMode="BLEND" atlas="temp-bonustext" useAtlasSize="true">
+									<Anchors>
+										<Anchor point="CENTER"/>
+									</Anchors>
+								</Texture>
+							</Layer>
+						</Layers>
+						<Animations>
+							<AnimationGroup parentKey="BonusTextGlowAnim" setToFinalAlpha="true">
+								<Alpha childKey="BonusGlow" startDelay="0.25" duration="0.25" order="1" fromAlpha="0" toAlpha="1"/>
+								<Scale childKey="BonusGlow" startDelay="0.25" duration="0.25" order="1" fromScaleX="0.75" fromScaleY="0.75" toScaleX="1" toScaleY="1"/>
+								<Alpha childKey="BonusGlow" startDelay="0.5" duration="0.75" order="1" fromAlpha="1" toAlpha="0"/>
+								<Alpha childKey="BonusText" startDelay="0.25" duration="0.25" order="1" fromAlpha="0" toAlpha="1"/>
+								<Alpha childKey="BonusText" startDelay="0.75" duration="0.75" order="1" fromAlpha="1" toAlpha="0"/>
+							</AnimationGroup>
+						</Animations>
 					</Frame>
 					<Frame parentKey="ChanceFrame" inherits="GarrisonMissionChanceFrameTemplate">
 						<Anchors>

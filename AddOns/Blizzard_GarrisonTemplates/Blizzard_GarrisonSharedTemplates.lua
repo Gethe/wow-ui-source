@@ -2,6 +2,64 @@ GARRISON_FOLLOWER_BUSY_COLOR = { 0, 0.06, 0.22, 0.44 };
 GARRISON_FOLLOWER_INACTIVE_COLOR = { 0.22, 0.06, 0, 0.44 };
 
 ---------------------------------------------------------------------------------
+--- Static Popup Dialogs                                                             ---
+---------------------------------------------------------------------------------
+
+StaticPopupDialogs["CONFIRM_FOLLOWER_UPGRADE"] = {
+	text = "%s",
+	button1 = YES,
+	button2 = NO,
+	OnAccept = function(self)
+		C_Garrison.CastSpellOnFollower(self.data);
+	end,
+	showAlert = 1,
+	timeout = 0,
+	exclusive = 1,
+	hideOnEscape = 1
+};
+
+StaticPopupDialogs["CONFIRM_FOLLOWER_ABILITY_UPGRADE"] = {
+	text = "%s",
+	button1 = YES,
+	button2 = NO,
+	OnAccept = function(self)
+		C_Garrison.CastSpellOnFollowerAbility(self.data.followerID, self.data.abilityID);
+	end,
+	timeout = 0,
+	exclusive = 1,
+	hideOnEscape = 1
+};
+
+StaticPopupDialogs["CONFIRM_FOLLOWER_TEMPORARY_ABILITY"] = {
+	text = CONFIRM_GARRISON_FOLLOWER_TEMPORARY_ABILITY,
+	button1 = YES,
+	button2 = NO,
+	OnAccept = function(self)
+		C_Garrison.CastSpellOnFollower(self.data);
+	end,
+	showAlert = 1,
+	timeout = 0,
+	exclusive = 1,
+	hideOnEscape = 1
+};
+
+StaticPopupDialogs["CONFIRM_FOLLOWER_EQUIPMENT"] = {
+	text = "%s",
+	button1 = YES,
+	button2 = NO,
+	OnAccept = function(self)
+		if (self.data.source == "spell") then
+			C_Garrison.CastSpellOnFollowerAbility(self.data.followerID, self.data.abilityID);
+		elseif (self.data.source == "item") then
+			C_Garrison.CastItemSpellOnFollowerAbility(self.data.followerID, self.data.abilityID);
+		end
+	end,
+	timeout = 0,
+	exclusive = 1,
+	hideOnEscape = 1
+};
+
+---------------------------------------------------------------------------------
 --- Follower List                                                             ---
 ---------------------------------------------------------------------------------
 
@@ -100,29 +158,44 @@ end
 
 GarrisonMissionFollowerDurabilityMixin = { }
 
-function GarrisonMissionFollowerDurabilityMixin:SetDurability(durability, maxDurability)
+function GarrisonMissionFollowerDurabilityMixin:SetDurability(durability, maxDurability, durabilityLoss)
+	local heartWidth = 12;
+	local spacing = 2;
+
 	durability = Clamp(durability, 0, maxDurability);
+	durabilityLoss = Clamp(durabilityLoss or 0, 0, durability);
+	durability = durability - durabilityLoss;
 	while ((self.durability and #self.durability or 0) < maxDurability) do
 		local durabilityTexture = self:CreateTexture(nil, "ARTWORK", "GarrisonMissionFollowerButtonDurabilityTemplate");
 		durabilityTexture:ClearAllPoints();
 		if (#self.durability == 1) then
 			durabilityTexture:SetPoint("TOPLEFT");
 		else
-			durabilityTexture:SetPoint("TOPLEFT", self.durability[#self.durability - 1], "TOPRIGHT");
+			durabilityTexture:SetPoint("TOPLEFT", self.durability[#self.durability - 1], "TOPRIGHT", spacing, 0);
 		end
 	end
 
 	for i = 1, durability do
 		self.durability[i]:Show();
+		self.durability[i]:SetAtlas("GarrisonTroops-Health");
 		self.durability[i]:SetDesaturated(false);
 	end
-	for i = durability + 1, maxDurability do
+	for i = durability + 1, durability + durabilityLoss do
 		self.durability[i]:Show();
+		self.durability[i]:SetAtlas("GarrisonTroops-Health-Consume");
+		self.durability[i]:SetDesaturated(false);
+	end
+	for i = durability + durabilityLoss + 1, maxDurability do
+		self.durability[i]:Show();
+		self.durability[i]:SetAtlas("GarrisonTroops-Health");
 		self.durability[i]:SetDesaturated(true);
 	end
 	for i = maxDurability + 1, (self.durability and #self.durability or 0) do
 		self.durability[i]:Hide();
 	end
+
+	local width = max(1, maxDurability * heartWidth + spacing * (maxDurability - 1));
+	self:SetWidth(width);
 end
 
 GarrisonFollowerListButton = { };
@@ -425,7 +498,7 @@ function GarrisonFollowerList:UpdateData()
 					button.Follower.Name:SetPoint("LEFT", button.Follower.PortraitFrame, "LEFT", 66, 0);
 				end
 				-- show iLevel for max level followers	
-				if (follower.isMaxLevel) then
+				if (ShouldShowILevelInFollowerList(follower)) then
 					button.Follower.ILevel:SetText(ITEM_LEVEL_ABBR.." "..follower.iLevel);
 					button.Follower.Status:SetPoint("TOPLEFT", button.ILevel, "TOPRIGHT", 4, 0);
 				else
@@ -557,16 +630,11 @@ function GarrisonFollowerButton_SetCounterButton(button, followerID, index, info
 	end
 	counter.info = info;
 
-	if (GarrisonFollowerOptions[followerTypeID].displayCounterAbilityInPlaceOfMechanic and info.counterID) then
-		local icon = C_Garrison.GetFollowerAbilityIcon(info.counterID);
-		counter.Icon:SetTexture(icon);
-	else
-		counter.Icon:SetTexture(info.icon);
-	end
 	counter.followerTypeID = followerTypeID;
 	if ( info.traitID ) then
 		counter.tooltip = nil;
 		counter.info.showCounters = false;
+		counter.Icon:SetTexture(info.icon);
 		counter.Border:Hide();
 
 		if ( GarrisonFollowerAbilities_IsNew(lastUpdate, followerID, info.traitID, GARRISON_FOLLOWER_ABILITY_TYPE_TRAIT ) ) then
@@ -579,14 +647,21 @@ function GarrisonFollowerButton_SetCounterButton(button, followerID, index, info
 	else
 		counter.tooltip = info.name;
 		counter.info.showCounters = true;
-		counter.Border:Show();
-
-		if ( counter.info.factor <= GARRISON_HIGH_THREAT_VALUE and followerTypeID == LE_FOLLOWER_TYPE_SHIPYARD_6_2 ) then
-			counter.Border:SetAtlas("GarrMission_WeakEncounterAbilityBorder");
+		if (GarrisonFollowerOptions[followerTypeID].displayCounterAbilityInPlaceOfMechanic and info.counterID) then
+			local abilityInfo = C_Garrison.GetFollowerAbilityInfo(info.counterID);
+			counter.Icon:SetTexture(abilityInfo.icon);
+			counter.Border:SetShown(ShouldShowFollowerAbilityBorder(followerTypeID, abilityInfo));
 		else
-			counter.Border:SetAtlas("GarrMission_EncounterAbilityBorder");
+			counter.Icon:SetTexture(info.icon);
+			counter.Border:Show();
+
+			if ( counter.info.factor <= GARRISON_HIGH_THREAT_VALUE and followerTypeID == LE_FOLLOWER_TYPE_SHIPYARD_6_2 ) then
+				counter.Border:SetAtlas("GarrMission_WeakEncounterAbilityBorder");
+			else
+				counter.Border:SetAtlas("GarrMission_EncounterAbilityBorder");
+			end		
 		end
-		
+
 		counter.AbilityFeedbackGlowAnim.traitID = nil;
 		counter.AbilityFeedbackGlowAnim:Stop();
 	end
@@ -1412,6 +1487,10 @@ function GarrisonFollowerTabMixin:ShowFollower(followerID, followerList)
 	self.lastUpdate = self:IsShown() and GetTime() or nil;
 end
 
+function GarrisonFollowerTabMixin:GetFollowerList()
+	return self:GetParent():GetFollowerList();
+end
+
 function GarrisionFollowerPageUpgradeTarget_OnClick(self, button)
 	GarrisonFollower_DisplayUpgradeConfirmation(self:GetParent().followerID);
 end
@@ -1453,6 +1532,53 @@ function GarrisonFollowerPageAbility_StopAnimations(self)
 		self.IconButton.Icon:SetAlpha(1);
 		self.IconButton.OldIcon:SetAlpha(0);
 	end
+end
+
+---------------------------------------------------------------------------------
+--- Equipment Utils
+---------------------------------------------------------------------------------
+
+function GarrisonEquipment_AddEquipment(self)
+	local followerList = self:GetParent():GetFollowerList();
+	local followerTab = self:GetParent():GetFollowerTab();
+	if ( followerList.canCastSpellsOnFollowers ) then
+		local followerID = followerTab.followerID;
+		local popupData = {};
+		local equipmentName;
+		if ( SpellCanTargetGarrisonFollowerAbility(followerID, self.abilityID) ) then
+			popupData.source = "spell";
+			equipmentName = GetEquipmentNameFromSpell();
+		elseif ( ItemCanTargetGarrisonFollowerAbility(followerID, self.abilityID) ) then
+			popupData.source = "item";
+			local itemType, itemID = GetCursorInfo();
+			equipmentName = GetItemInfo(itemID);
+		else
+			return;
+		end
+		local followerInfo = followerID and C_Garrison.GetFollowerInfo(followerID);
+		if ( not followerInfo or not followerInfo.isCollected or followerInfo.status == GARRISON_FOLLOWER_ON_MISSION or followerInfo.status == GARRISON_FOLLOWER_WORKING ) then
+			return;
+		end
+		
+		popupData.followerID = followerID;
+		popupData.abilityID = self.abilityID;
+		local text = format(GarrisonFollowerOptions[followerList.followerType].strings.CONFIRM_EQUIPMENT, equipmentName);
+		StaticPopup_Show("CONFIRM_FOLLOWER_EQUIPMENT", text, nil, popupData);
+	end
+end
+
+
+---------------------------------------------------------------------------------
+--- Abilities Frame
+---------------------------------------------------------------------------------
+GarrisonAbilitiesFrameMixin = { }
+
+function GarrisonAbilitiesFrameMixin:GetFollowerTab()
+	return self:GetParent();
+end
+
+function GarrisonAbilitiesFrameMixin:GetFollowerList()
+	return self:GetParent():GetFollowerList();
 end
 
 ---------------------------------------------------------------------------------

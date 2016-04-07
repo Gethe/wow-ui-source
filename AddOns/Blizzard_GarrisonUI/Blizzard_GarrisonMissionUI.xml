@@ -144,7 +144,9 @@
 			<OnEnter>
 				ShowGarrisonFollowerAbilityTooltip(self, self.abilityID, self.followerTypeID);
 			</OnEnter>
-			<OnLeave function="HideGarrisonFollowerAbilityTooltip"/>
+			<OnLeave>
+				HideGarrisonFollowerAbilityTooltip(self.followerTypeID);
+			</OnLeave>
 		</Scripts>
 	</Frame>
 
@@ -205,6 +207,14 @@
 					</Anchors>
 				</Texture>
 			</Layer>
+			<Layer level="BORDER" textureSubLevel="3">
+				<Texture parentKey="Border" atlas="GarrMission_EncounterAbilityBorder-Lg" hidden="true">
+					<Size x="60" y="60"/>
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+			</Layer>
 			<Layer level="ARTWORK">
 				<Texture parentKey="SmokeyCenter" alpha="0" alphaMode="ADD" atlas="BonusChest-Smoke-Uncommon" useAtlasSize="true">
 					<Anchors>
@@ -235,7 +245,7 @@
 				ShowGarrisonFollowerAbilityTooltip(self, self.abilityID, self:GetParent().followerTypeID)
 			</OnEnter>
 			<OnLeave>
-				HideGarrisonFollowerAbilityTooltip();
+				HideGarrisonFollowerAbilityTooltip(self:GetParent().followerTypeID);
 			</OnLeave>
 		</Scripts>
 	</Button>
@@ -765,6 +775,13 @@
 					</Anchors>
 				</Texture>
 			</Layer>
+			<Layer level="ARTWORK">
+				<Texture parentKey="DurabilityBackground" atlas="legionmission-hearts-background" useAtlasSize="true" hidden="true">
+					<Anchors>
+						<Anchor point="CENTER" relativePoint="BOTTOM" x="10" y="0"/>
+					</Anchors>
+				</Texture>
+			</Layer>
 			<Layer level="OVERLAY">
 				<FontString parentKey="Name" inherits="GameFontNormal" hidden="true">
 					<Size x="140" y="0"/>
@@ -793,6 +810,11 @@
 			<Frame parentArray="Counters" inherits="GarrisonMissionAbilityLargeCounterTemplate" hidden="true">
 				<Anchors>
 					<Anchor point="LEFT" x="64" y="-1"/>
+				</Anchors>
+			</Frame>
+			<Frame parentKey="Durability" inherits="GarrisonMissionFollowerDurabilityFrameTemplate" hidden="true">
+				<Anchors>
+					<Anchor point="CENTER" relativeKey="$parent.DurabilityBackground"/>
 				</Anchors>
 			</Frame>
 		</Frames>
@@ -2067,7 +2089,7 @@
 					</Layer>
 				</Layers>
 			</Frame>
-			<Frame parentKey="MissionComplete" inherits="GarrisonMissionPageBaseTemplate, GarrisonMissionCompleteTemplate" frameStrata="HIGH" hidden="true" mixin="GarrisonMissionComplete,GarrisonFollowerMissionComplete">
+			<Frame parentKey="MissionComplete" inherits="GarrisonMissionPageBaseTemplate, GarrisonMissionCompleteTemplate" frameStrata="HIGH" hidden="true" mixin="GarrisonFollowerMissionComplete">
 				<Frames>
 					<Frame parentKey="Stage" inherits="GarrisonFollowerMissionCompleteStageTemplate">
 						<Anchors>

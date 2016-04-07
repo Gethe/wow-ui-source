@@ -34,7 +34,7 @@
 					</Anchors>
 				</Texture>
 			</Layer>
-			<Layer level="OVERLAY" textureSubLevel="5">
+			<Layer level="OVERLAY" textureSubLevel="6">
 				<Texture parentKey="RankBorder" atlas="Artifacts-PointsBoxGreen" useAtlasSize="true">
 					<Anchors>
 						<Anchor point="CENTER" relativeKey="$parent.Icon" relativePoint="BOTTOM"/>
@@ -52,7 +52,7 @@
 				</FontString>
 			</Layer>
 
-			<Layer level="OVERLAY" textureSubLevel="-1">
+			<Layer level="OVERLAY" textureSubLevel="-2">
 				<Texture parentKey="RelicTraitBG">
 					<Anchors>
 						<Anchor point="CENTER" relativeKey="$parent.Icon" />
@@ -64,15 +64,10 @@
 					</Anchors>
 				</Texture>
 			</Layer>
-			<Layer level="OVERLAY" textureSubLevel="-2">
-				<Texture parentKey="RelicTraitGlow">
+			<Layer level="OVERLAY" textureSubLevel="-1">
+				<Texture parentKey="RelicTraitGlow" alphaMode="ADD">
 					<Anchors>
 						<Anchor point="CENTER" relativeKey="$parent.Icon" />
-					</Anchors>
-				</Texture>
-				<Texture parentKey="DarkRune" alpha="0" hidden="true">
-					<Anchors>
-						<Anchor point="CENTER"/>
 					</Anchors>
 				</Texture>
 			</Layer>
@@ -350,7 +345,6 @@
 			<AnimationGroup parentKey="RevealAnim" setToFinalAlpha="true">
 				<Alpha parentKey="Start" childKey="Icon" duration=".001" order="1" fromAlpha="0" toAlpha="0"/>
 				
-				<Alpha childKey="DarkRune" startDelay="0.8" smoothing="IN_OUT" duration="0.25" order="2" fromAlpha="1" toAlpha="0"/>
 				<Alpha childKey="LightRune" smoothing="OUT" duration="0.3" order="2" fromAlpha="0" toAlpha="1"/>
 				<Alpha childKey="LightRune" startDelay="0.4" smoothing="IN" duration="1.25" order="2" fromAlpha="1" toAlpha="0"/>
 				<Alpha childKey="WhiteStarBurst" smoothing="OUT" duration="0.4" order="2" fromAlpha="0" toAlpha="0.5"/>

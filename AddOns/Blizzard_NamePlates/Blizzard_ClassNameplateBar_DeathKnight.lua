@@ -1,17 +1,26 @@
 ClassNameplateBarDeathKnight = {};
 
 function ClassNameplateBarDeathKnight:OnLoad()
-	local _, myclass = UnitClass("player");
-	if (myclass == "DEATHKNIGHT") then
-		self:Show();
-		NamePlateDriverFrame:SetClassNameplateBar(self);
-		self:RegisterEvent("PLAYER_ENTERING_WORLD");
+	self.class = "DEATHKNIGHT";
+	self.powerToken = "RUNES";
+	
+	ClassNameplateBar.OnLoad(self);
+end
+
+function ClassNameplateBarDeathKnight:Setup()
+	if ( self:MatchesClass() ) then
 		self:RegisterEvent("RUNE_POWER_UPDATE");
 	end
+
+	return ClassNameplateBar.Setup(self);
 end
 
 function ClassNameplateBarDeathKnight:OnEvent(event, arg1, arg2)
-	self:UpdateRunes(arg1, arg2);
+	if ( event == "RUNE_POWER_UPDATE" ) then
+		self:UpdateRunes(arg1, arg2);
+		return true;
+	end
+	return ClassNameplateBar.OnEvent(self, event, arg1, arg2);
 end
 
 function ClassNameplateBarDeathKnight:UpdateRunes(runeIndex, isEnergize)

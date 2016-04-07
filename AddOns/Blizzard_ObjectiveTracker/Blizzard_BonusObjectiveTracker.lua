@@ -577,8 +577,11 @@ local function UpdateScenarioBonusObjectives(module)
 			local block = module:GetBlock(blockKey);			
 			local stepFinished = true;
 			for criteriaIndex = 1, numCriteria do
-				local criteriaString, criteriaType, criteriaCompleted, quantity, totalQuantity, flags, assetID, quantityString, criteriaID, duration, elapsed, criteriaFailed = C_Scenario.GetCriteriaInfoByStep(bonusStepIndex, criteriaIndex);		
+				local criteriaString, criteriaType, criteriaCompleted, quantity, totalQuantity, flags, assetID, quantityString, criteriaID, duration, elapsed, criteriaFailed, isWeightedProgress = C_Scenario.GetCriteriaInfoByStep(bonusStepIndex, criteriaIndex);		
 				if ( criteriaString ) then
+					if (not isWeightedProgress) then
+						criteriaString = string.format("%d/%d %s", quantity, totalQuantity, criteriaString);
+					end
 					if ( criteriaCompleted ) then
 						local existingLine = block.lines[criteriaIndex];
 						module:AddObjective(block, criteriaIndex, criteriaString, nil, nil, OBJECTIVE_DASH_STYLE_HIDE_AND_COLLAPSE, OBJECTIVE_TRACKER_COLOR["Complete"]);

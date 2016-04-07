@@ -40,7 +40,7 @@
 				end
 			</OnEnter>
 			<OnLeave>
-				HideGarrisonFollowerAbilityTooltip();
+				HideGarrisonFollowerAbilityTooltip(LE_FOLLOWER_TYPE_GARRISON_6_0);
 			</OnLeave>
 		</Scripts>
 	</Frame>

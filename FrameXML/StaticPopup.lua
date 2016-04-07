@@ -3487,44 +3487,6 @@ StaticPopupDialogs["LFG_LIST_ENTRY_EXPIRED_TIMEOUT"] = {
 	whileDead = 1,
 };
 
-StaticPopupDialogs["CONFIRM_FOLLOWER_UPGRADE"] = {
-	text = "%s",
-	button1 = YES,
-	button2 = NO,
-	OnAccept = function(self)
-		C_Garrison.CastSpellOnFollower(self.data);
-	end,
-	showAlert = 1,
-	timeout = 0,
-	exclusive = 1,
-	hideOnEscape = 1
-};
-
-StaticPopupDialogs["CONFIRM_FOLLOWER_ABILITY_UPGRADE"] = {
-	text = "%s",
-	button1 = YES,
-	button2 = NO,
-	OnAccept = function(self)
-		C_Garrison.CastSpellOnFollowerAbility(self.data.followerID, self.data.abilityID);
-	end,
-	timeout = 0,
-	exclusive = 1,
-	hideOnEscape = 1
-};
-
-StaticPopupDialogs["CONFIRM_FOLLOWER_TEMPORARY_ABILITY"] = {
-	text = CONFIRM_GARRISON_FOLLOWER_TEMPORARY_ABILITY,
-	button1 = YES,
-	button2 = NO,
-	OnAccept = function(self)
-		C_Garrison.CastSpellOnFollower(self.data);
-	end,
-	showAlert = 1,
-	timeout = 0,
-	exclusive = 1,
-	hideOnEscape = 1
-};
-
 StaticPopupDialogs["NAME_TRANSMOG_OUTFIT"] = {
 	text = TRANSMOG_OUTFIT_NAME,
 	button1 = SAVE,

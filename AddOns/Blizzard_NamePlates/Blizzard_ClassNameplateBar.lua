@@ -7,22 +7,28 @@ function ClassNameplateBar:OnLoad()
 	self:Setup();
 end
 
-function ClassNameplateBar:OnEvent(event, arg1, arg2)
-	if ( event == "UNIT_POWER_FREQUENT" and arg1 == "player" ) then
-		if (self.powerToken == arg2 ) then
+function ClassNameplateBar:OnEvent(event, ...)
+	if ( event == "UNIT_POWER_FREQUENT" ) then
+		local unitTag, powerToken = ...;
+		if (unitTag == "player" and self.powerToken == powerToken ) then
 			self:UpdatePower();
+			return true;
 		end
-	elseif ( event == "UNIT_MAXPOWER" and arg1 == "player" ) then
-		self:UpdateMaxPower();
+	elseif ( event == "UNIT_MAXPOWER" ) then
+		local unitTag = ...;
+		if (unitTag == "player") then
+			self:UpdateMaxPower();
+			return true;
+		end
 	elseif ( event == "PLAYER_ENTERING_WORLD" ) then
 		self:UpdatePower();
+		return true;
 	elseif (event == "PLAYER_TALENT_UPDATE" ) then
 		self:Setup();
 		self:UpdatePower();
-	else
-		return false;
+		return true;
 	end
-	return true;
+	return false;
 end
 
 function ClassNameplateBar:MatchesClass()
@@ -103,11 +109,11 @@ local NameplatePowerBarColor = {
 	["MANA"] = { r = 0.1, g = 0.25, b = 1.00 }
 };
 
-function ClassNameplateManaBar:OnEvent(event, arg1, arg2)
+function ClassNameplateManaBar:OnEvent(event, ...)
 	if (event == "UNIT_DISPLAYPOWER" or event == "PLAYER_ENTERING_WORLD" or event == "UNIT_MAXPOWER") then
 		self:SetupBar();
 		if (event == "UNIT_MAXPOWER") then
-			ClassNameplateBar.OnEvent(self, event, arg1, arg2);
+			ClassNameplateBar.OnEvent(self, event, ...);
 		end
 	elseif ( event == "UNIT_SPELLCAST_START" or event == "UNIT_SPELLCAST_STOP" or event == "UNIT_SPELLCAST_FAILED" ) then
 		local spellID = select(10, UnitCastingInfo("player"));
@@ -124,7 +130,7 @@ function ClassNameplateManaBar:OnEvent(event, arg1, arg2)
 		self.predictedPowerCost = cost;
 		self:SetupBar();
 	else
-		ClassNameplateBar.OnEvent(self, event, arg1, arg2);
+		ClassNameplateBar.OnEvent(self, event, ...);
 	end
 end
 

@@ -1466,23 +1466,48 @@ function EncounterJournal_TabClicked(self, button)
 	PlaySound("igAbiliityPageTurn");
 end
 
+function EncounterJournal_SetLootButton(item)
+	local itemID, encounterID, name, icon, slot, armorType, link = EJ_GetLootInfoByIndex(item.index);
+	if ( name ) then
+		item.name:SetText(name);
+		item.icon:SetTexture(icon);
+		item.slot:SetText(slot);
+		item.armorType:SetText(armorType);
+
+		local numEncounters = EJ_GetNumEncountersForLootByIndex(item.index);
+		if (numEncounters == 1) then
+			item.boss:SetFormattedText(BOSS_INFO_STRING, EJ_GetEncounterInfo(encounterID));
+		elseif ( numEncounters == 2) then
+			local _, secondEncounterID = EJ_GetLootInfoByIndex(item.index, 2);
+			item.boss:SetFormattedText(BOSS_INFO_STRING_TWO, EJ_GetEncounterInfo(encounterID), EJ_GetEncounterInfo(secondEncounterID));
+		elseif ( numEncounters > 2 ) then
+			item.boss:SetText(BOSS_INFO_STRING_MANY, EJ_GetEncounterInfo(encounterID));
+		end
+	else
+		item.name:SetText(RETRIEVING_ITEM_INFO);
+		item.icon:SetTexture("Interface\\Icons\\INV_Misc_QuestionMark");
+		item.slot:SetText("");
+		item.armorType:SetText("");
+		item.boss:SetText("");
+	end
+	item.encounterID = encounterID;
+	item.itemID = itemID;
+	item.link = link;
+	item:Show();
+	if item.showingTooltip then
+		EncounterJournal_SetTooltip(link);
+	end
+end
 
 function EncounterJournal_LootCallback(itemID)
 	local scrollFrame = EncounterJournal.encounter.info.lootScroll;
 	
 	for i,item in pairs(scrollFrame.buttons) do 
 		if item.itemID == itemID and item:IsShown() then
-			local name, icon, slot, armorType, itemID, link, encounterID = EJ_GetLootInfoByIndex(item.index);
-			item.name:SetText(name);
-			item.icon:SetTexture(icon);
-			item.slot:SetText(slot);
-			item.boss:SetFormattedText(BOSS_INFO_STRING, EJ_GetEncounterInfo(encounterID));
-			item.armorType:SetText(armorType);
-			item.link = link;
+			EncounterJournal_SetLootButton(item, item.index);
 		end
 	end
 end
-
 
 function EncounterJournal_LootUpdate()
 	EncounterJournal_UpdateFilterString();
@@ -1510,21 +1535,8 @@ function EncounterJournal_LootUpdate()
 				item.bossTexture:Show();
 				item.bosslessTexture:Hide();
 			end
-			local name, icon, slot, armorType, itemID, link, encounterID = EJ_GetLootInfoByIndex(index);
-			item.name:SetText(name);
-			item.icon:SetTexture(icon);
-			item.slot:SetText(slot);
-			item.armorType:SetText(armorType);
-			item.boss:SetFormattedText(BOSS_INFO_STRING, EJ_GetEncounterInfo(encounterID));
-			item.encounterID = encounterID;
-			item.itemID = itemID;
 			item.index = index;
-			item.link = link;
-			item:Show();
-			
-			if item.showingTooltip then
-				EncounterJournal_SetTooltip(link);
-			end
+			EncounterJournal_SetLootButton(item);
 		else
 			item:Hide();
 		end
@@ -1574,6 +1586,10 @@ function EncounterJournal_Loot_OnClick(self)
 end
 
 function EncounterJournal_SetTooltip(link)
+	if (not link) then
+		return;
+	end
+
 	local classID, specID = EJ_GetLootFilter();
 
 	if (specID == 0) then
@@ -1640,7 +1656,7 @@ function EncounterJournal_GetSearchDisplay(index)
 		end
 		path = EJ_GetInstanceInfo(instanceID).." > "..EJ_GetEncounterInfo(encounterID);
 	elseif stype == EJ_STYPE_ITEM then
-		name, icon, _, _, itemID = EJ_GetLootInfo(id)
+		itemID, _, name, icon = EJ_GetLootInfo(id)
 		typeText = ENCOUNTER_JOURNAL_ITEM;
 		path = EJ_GetInstanceInfo(instanceID).." > "..EJ_GetEncounterInfo(encounterID);
 	elseif stype == EJ_STYPE_CREATURE then

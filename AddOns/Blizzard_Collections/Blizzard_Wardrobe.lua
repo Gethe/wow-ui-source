@@ -1198,6 +1198,14 @@ function WardrobeCollectionFrame_Update()
 		if ( WardrobeModelPendingTransmogFrame.visualID ~= pendingVisualID ) then
 			WardrobeModelPendingTransmogFrame.TransmogSelectedAnim:Stop();
 			WardrobeModelPendingTransmogFrame.TransmogSelectedAnim:Play();
+			WardrobeModelPendingTransmogFrame.TransmogSelectedAnim2:Stop();
+			WardrobeModelPendingTransmogFrame.TransmogSelectedAnim2:Play();
+			WardrobeModelPendingTransmogFrame.TransmogSelectedAnim3:Stop();
+			WardrobeModelPendingTransmogFrame.TransmogSelectedAnim3:Play();
+			WardrobeModelPendingTransmogFrame.TransmogSelectedAnim4:Stop();
+			WardrobeModelPendingTransmogFrame.TransmogSelectedAnim4:Play();
+			WardrobeModelPendingTransmogFrame.TransmogSelectedAnim5:Stop();
+			WardrobeModelPendingTransmogFrame.TransmogSelectedAnim5:Play();
 		end
 		WardrobeModelPendingTransmogFrame.UndoIcon:SetShown(showUndoIcon);
 		WardrobeModelPendingTransmogFrame.visualID = pendingVisualID;

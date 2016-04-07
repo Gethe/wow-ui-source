@@ -1065,7 +1065,7 @@
 										CharacterSelectPanelButton_DeathKnightSwap(self);
 									</OnUpdate>
 									<OnClick>
-										CharacterSelect_SelectCharacter(self:GetID());
+										CharacterSelect_CreateNewCharacter();
 									</OnClick>
 									<!-- We need to override the templates script because it will reset our textures. -->
 									<OnShow/>
@@ -1344,22 +1344,48 @@
 							</Layer>
 						</Layers>
 						<Frames>
-							<Button parentKey="GetStartedButton" inherits="GlueButtonSmallTemplate" text="CHARACTER_UPGRADE_POPUP_GET_STARTED">
-								<Size x="180" y="36"/>
+							<Button parentKey="CloseButton" inherits="UIPanelCloseButtonNoScripts">
 								<Anchors>
-									<Anchor point="TOP" relativeKey="$parent.Description" relativePoint="BOTTOM" x="-50" y="-20"/>
+									<Anchor point="TOPRIGHT" relativePoint="TOPRIGHT" x="-13" y="-14" />
 								</Anchors>
 								<Scripts>
+									<OnClick function="CharacterUpgradePopup_OnCloseClick"/>
+								</Scripts>
+							</Button>
+							<Button parentKey="GetStartedButton" inherits="GlueButtonSmallTemplate" text="CHARACTER_UPGRADE_POPUP_BOOST_EXISTING_CHARACTER">
+								<Size x="250" y="36"/>
+								<Anchors>
+									<Anchor point="TOP" relativeKey="$parent.Description" relativePoint="BOTTOM" x="0" y="-20"/>
+								</Anchors>
+								<Scripts>
+									<OnEnter>
+										GlueTooltip:SetOwner(self, "ANCHOR_RIGHT");
+										GlueTooltip:SetText(CHARACTER_UPGRADE_POPUP_BOOST_EXISTING_CHARACTER_TOOLTIP, nil, nil, nil, nil, true);
+									</OnEnter>
+									<OnLeave>
+										GlueTooltip:Hide();
+									</OnLeave>
 									<OnClick function="CharacterUpgradePopup_OnStartClick"/>
 								</Scripts>
 							</Button>
-							<Button parentKey="LaterButton" inherits="GlueButtonSmallTemplate" text="CHARACTER_UPGRADE_POPUP_LATER">
-								<Size x="100" y="36"/>
+							<Button parentKey="LaterButton" inherits="GlueButtonSmallTemplate" text="CHARACTER_UPGRADE_POPUP_TRY_NEW_CLASS" motionScriptsWhileDisabled="true">
+								<Size x="250" y="36"/>
 								<Anchors>
-									<Anchor point="TOP" relativeKey="$parent.Description" relativePoint="BOTTOM" x="80" y="-20"/>
+									<Anchor point="TOP" relativeKey="$parent.GetStartedButton" relativePoint="BOTTOM" x="0" y="-6"/>
 								</Anchors>
 								<Scripts>
-									<OnClick function="CharacterUpgradePopup_OnLaterClick"/>
+									<OnShow>
+										self:SetEnabled(C_CharacterServices.IsTrialBoostEnabled());
+									</OnShow>
+									<OnEnter>
+										local buttonTooltip = C_CharacterServices.IsTrialBoostEnabled() and CHARACTER_UPGRADE_POPUP_TRY_NEW_CLASS_TOOLTIP or CHARACTER_UPGRADE_POPUP_TRY_NEW_CLASS_DISABLED_TOOLTIP;
+										GlueTooltip:SetOwner(self, "ANCHOR_RIGHT");
+										GlueTooltip:SetText(buttonTooltip, nil, nil, nil, nil, true);
+									</OnEnter>
+									<OnLeave>
+										GlueTooltip:Hide();
+									</OnLeave>
+									<OnClick function="CharacterUpgradePopup_OnTryNewClick"/>
 								</Scripts>
 							</Button>
 						</Frames>
@@ -1847,12 +1873,8 @@
 			</Frame>
 		</Frames>
 		<Scripts>
-			<OnLoad>
-				CharacterSelect_OnLoad(self);
-			</OnLoad>
-			<OnShow>
-				CharacterSelect_OnShow();
-			</OnShow>
+			<OnLoad function="CharacterSelect_OnLoad"/>
+			<OnShow function="CharacterSelect_OnShow"/>
 			<OnHide function="CharacterSelect_OnHide"/>
 			<OnUpdate function="CharacterSelect_OnUpdate"/>
 			<OnKeyDown>

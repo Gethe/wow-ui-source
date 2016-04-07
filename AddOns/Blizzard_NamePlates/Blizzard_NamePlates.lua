@@ -81,6 +81,8 @@ function NamePlateDriverMixin:ApplyFrameOptions(namePlateFrameBase, namePlateUni
 	else
 		CompactUnitFrame_SetUpFrame(namePlateFrameBase.UnitFrame, DefaultCompactNamePlateTargetEnemyFrameSetup);
 	end
+
+	namePlateFrameBase:OnOptionsUpdated();
 end
 
 function NamePlateDriverMixin:OnNamePlateRemoved(namePlateUnitToken)
@@ -192,9 +194,15 @@ function NamePlateDriverMixin:SetupClassNameplateBar(onTarget, bar)
 end
 
 function NamePlateDriverMixin:SetupClassNameplateBars()
-	local mode = GetCVar("nameplateResourceOnTarget");
-	self:SetupClassNameplateBar(mode == "1", self.nameplateBar);
+	local targetMode = GetCVarBool("nameplateResourceOnTarget");
+	self:SetupClassNameplateBar(targetMode, self.nameplateBar);
 	self:SetupClassNameplateBar(false, self.nameplateManaBar);
+
+	if targetMode and self.nameplateBar then
+		C_NamePlate.SetTargetClampingInsets(tonumber(GetCVar("nameplateClassResourceTopInset")) * UIParent:GetHeight(), 0.0);
+	else
+		C_NamePlate.SetTargetClampingInsets(0.0, 0.0);
+	end
 end
 
 function NamePlateDriverMixin:SetClassNameplateBar(frame)
@@ -224,6 +232,8 @@ function NamePlateBaseMixin:OnAdded(namePlateUnitToken)
 	self.namePlateUnitToken = namePlateUnitToken;
 	
 	CompactUnitFrame_SetUnit(self.UnitFrame, namePlateUnitToken);
+
+	self:ApplyOffsets();
 end
 
 function NamePlateBaseMixin:OnRemoved()
@@ -232,28 +242,50 @@ function NamePlateBaseMixin:OnRemoved()
 	CompactUnitFrame_SetUnit(self.UnitFrame, nil);
 end
 
+function NamePlateBaseMixin:OnOptionsUpdated()
+	self:ApplyOffsets();
+end
+
+function NamePlateBaseMixin:ApplyOffsets()
+	local targetMode = GetCVarBool("nameplateResourceOnTarget");
+	if targetMode then
+		self.UnitFrame.BuffFrame:SetTargetYOffset(18);
+	else
+		self.UnitFrame.BuffFrame:SetTargetYOffset(0);
+	end
+end
+
 --------------------------------------------------------------------------------
 --
 -- Buffs
 --
 --------------------------------------------------------------------------------
 
-NameplateBuffMixin = {};
+NameplateBuffContainerMixin = {};
 
-function NameplateBuffMixin:OnLoad()
+function NameplateBuffContainerMixin:OnLoad()
 	self.buffList = {};
+	self.targetYOffset = 0;
 	self:RegisterEvent("PLAYER_TARGET_CHANGED");
 end
 
-function NameplateBuffMixin:OnEvent(event, ...)
+function NameplateBuffContainerMixin:OnEvent(event, ...)
 	if (event == "PLAYER_TARGET_CHANGED") then
 		self:UpdateAnchor();
 	end
 end
 
-function NameplateBuffMixin:UpdateAnchor()
+function NameplateBuffContainerMixin:SetTargetYOffset(targetYOffset)
+	self.targetYOffset = targetYOffset;
+end
+
+function NameplateBuffContainerMixin:GetTargetYOffset()
+	return self.targetYOffset;
+end
+
+function NameplateBuffContainerMixin:UpdateAnchor()
 	local isTarget = self:GetParent().unit and UnitIsUnit(self:GetParent().unit, "target");
-	local targetYOffset = isTarget and GetCVar("nameplateResourceOnTarget") == "1" and 18 or 0;
+	local targetYOffset = isTarget and self:GetTargetYOffset() or 0.0;
 	if (self:GetParent().unit and ShouldShowName(self:GetParent())) then
 		self:SetPoint("BOTTOM", self:GetParent(), "TOP", 0, targetYOffset);
 	else
@@ -261,7 +293,7 @@ function NameplateBuffMixin:UpdateAnchor()
 	end
 end
 
-function NameplateBuffMixin:ShouldShowBuff(name, caster, nameplateShowPersonal, nameplateShowAll, duration)
+function NameplateBuffContainerMixin:ShouldShowBuff(name, caster, nameplateShowPersonal, nameplateShowAll, duration)
 	if (not name or
 		GetCVar("nameplateShowBuffs") == "0") then
 		return false;
@@ -270,7 +302,7 @@ function NameplateBuffMixin:ShouldShowBuff(name, caster, nameplateShowPersonal, 
 		   (nameplateShowPersonal and (caster == "player" or caster == "pet" or caster == "vehicle"));
 end
 
-function NameplateBuffMixin:UpdateBuffs(unit, filter)
+function NameplateBuffContainerMixin:UpdateBuffs(unit, filter)
 	self.unit = unit;
 	self.filter = filter;
 	self:UpdateAnchor();

@@ -122,7 +122,7 @@ function TalkingHeadFrame_PlayCurrent()
 	end
 	
 	local currentDisplayInfo = model:GetDisplayInfo();
-	local displayInfo, cameraID, vo, duration, lineNumber, numLines, name, text = C_TalkingHead.GetCurrentLineInfo();
+	local displayInfo, cameraID, vo, duration, lineNumber, numLines, name, text, isNewTalkingHead = C_TalkingHead.GetCurrentLineInfo();
 	if ( displayInfo and displayInfo ~= 0 ) then
 		if ( lineNumber > 0 and frame.forceHide ) then
 			return;
@@ -140,7 +140,7 @@ function TalkingHeadFrame_PlayCurrent()
 			TalkingHeadFrame_SetupAnimations(model);
 		end
 		
-		if ( lineNumber == 0 ) then
+		if ( isNewTalkingHead ) then
 			TalkingHeadFrame_Reset(frame, text, name);
 			TalkingHeadFrame_FadeinFrames();
 			frame.forceHide = false;

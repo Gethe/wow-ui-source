@@ -69,9 +69,8 @@ function ArtifactUIMixin:OnShow()
 
 	self:EvaulateForgeState();
 	self:SetupPerArtifactData();
+	self:RefreshKnowledgeRanks();
 	self.PerksTab:Refresh(true);
-
-	self:UpdateForgeLevel();
 end
 
 function ArtifactUIMixin:OnHide()
@@ -91,16 +90,13 @@ function ArtifactUIMixin:OnEvent(event, ...)
 
 		if self:IsShown() then
 			self:EvaulateForgeState();
+			self:RefreshKnowledgeRanks();
 			if newItem then
 				self:SetupPerArtifactData();
 			end
 			self.PerksTab:Refresh(newItem);
 		else
 			ShowUIPanel(self);
-		end
-
-		if self:IsShown() then -- Could fail to show if blocked, only update if we were succesfully shown
-			self:UpdateForgeLevel();
 		end
 	elseif event == "ARTIFACT_XP_UPDATE" then
 		if self:IsShown() then
@@ -117,13 +113,15 @@ end
 
 function ArtifactUIMixin:EvaulateForgeState()
 	local isAtForge = C_ArtifactUI.IsAtForge();
+	local isViewedArtifactEquipped = C_ArtifactUI.IsViewedArtifactEquipped();
 
-	if self.wasAtForge ~= isAtForge then
+	if self.wasAtForge ~= isAtForge or self.wasViewedArtifactEquipped ~= isViewedArtifactEquipped then
 		self.AppearancesTabButton:SetShown(isAtForge);
 
 		self:SetTab(TAB_PERKS);
 
 		self.wasAtForge = isAtForge;
+		self.wasViewedArtifactEquipped = isViewedArtifactEquipped;
 	end
 
 	ArtifactFrameUnderlay:SetShown(isAtForge);
@@ -150,16 +148,64 @@ function ArtifactUIMixin:SetupPerArtifactData()
 	if textureKit then
 		local classBadgeTexture = ("%s-ClassBadge"):format(textureKit);
 		self.ForgeBadgeFrame.ForgeClassBadgeIcon:SetAtlas(classBadgeTexture, true);
-
-		local forgeBackgroundTexture = ("%s-KnowledgeRank"):format(textureKit);
-		self.ForgeBadgeFrame.ForgeLevelBackground:SetAtlas(forgeBackgroundTexture, true);
 	end
 end
 
-function ArtifactUIMixin:UpdateForgeLevel()
-	--TODO: knowledge?
-	self.ForgeBadgeFrame.ForgeLevelLabel:Hide();
-	self.ForgeBadgeFrame.ForgeLevelBackground:Hide();
+local function MetaPowerTooltipHelper(...)
+	local hasAddedAny = false;
+	for i = 1, select("#", ...), 3 do
+		local spellID, cost, currentRank = select(i, ...);
+		local metaPowerDescription = GetSpellDescription(spellID);
+		if metaPowerDescription then
+			if hasAddedAny then
+				GameTooltip:AddLine(" ");
+			end
+			GameTooltip:AddLine(metaPowerDescription, NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b, true);
+			hasAddedAny = true;
+		end
+	end
+
+	return hasAddedAny;
+end
+
+function ArtifactUIMixin:RefreshKnowledgeRanks()
+	local totalRanks = C_ArtifactUI.GetTotalPurchasedRanks();
+	if totalRanks > 0 then
+		self.ForgeBadgeFrame.ForgeLevelLabel:SetText(totalRanks);
+		self.ForgeBadgeFrame.ForgeLevelLabel:Show();
+		self.ForgeBadgeFrame.ForgeLevelBackground:Show();
+		self.ForgeBadgeFrame.ForgeLevelBackgroundBlack:Show();
+		self.ForgeLevelFrame:Show();
+	else
+		self.ForgeBadgeFrame.ForgeLevelLabel:Hide();
+		self.ForgeBadgeFrame.ForgeLevelBackground:Hide();
+		self.ForgeBadgeFrame.ForgeLevelBackgroundBlack:Hide();
+		self.ForgeLevelFrame:Hide();
+	end
+end
+
+function ArtifactUIMixin:OnKnowledgeEnter(knowledgeFrame)
+	GameTooltip:SetOwner(knowledgeFrame, "ANCHOR_BOTTOMRIGHT", -25, 27);
+	local textureKit, titleName, titleR, titleG, titleB, barConnectedR, barConnectedG, barConnectedB, barDisconnectedR, barDisconnectedG, barDisconnectedB = C_ArtifactUI.GetArtifactArtInfo();
+	GameTooltip:SetText(titleName, titleR, titleG, titleB);
+
+	GameTooltip:AddLine(ARTIFACTS_NUM_PURCHASED_RANKS:format(C_ArtifactUI.GetTotalPurchasedRanks()), HIGHLIGHT_FONT_COLOR:GetRGB());
+
+	local addedAnyMetaPowers = MetaPowerTooltipHelper(C_ArtifactUI.GetMetaPowerInfo());
+
+	local knowledgeLevel = C_ArtifactUI.GetArtifactKnowledgeLevel();
+	if knowledgeLevel and knowledgeLevel > 0 then
+		if addedAnyMetaPowers then
+			GameTooltip:AddLine(" ");
+		end
+
+		local knowledgeMultiplier = C_ArtifactUI.GetArtifactKnowledgeMultiplier();
+
+		GameTooltip:AddLine(ARTIFACTS_KNOWLEDGE_TOOLTIP_LEVEL:format(knowledgeLevel), HIGHLIGHT_FONT_COLOR:GetRGB());
+		GameTooltip:AddLine(ARTIFACTS_KNOWLEDGE_TOOLTIP_DESC:format(BreakUpLargeNumbers(knowledgeMultiplier)), NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b, true);
+	end
+	
+	GameTooltip:Show();
 end
 
 function ArtifactUIMixin:OnInventoryItemMouseEnter(bag, slot)

@@ -1624,7 +1624,7 @@
 					</Layer>
 				</Layers>
 			</Button>
-			<Frame parentKey="EquipmentFrame">
+			<Frame parentKey="EquipmentFrame" mixin="GarrisonAbilitiesFrameMixin">
 				<Size x="196" y="96"/>
 				<Anchors>
 					<Anchor point="BOTTOMLEFT" x="300" y="55"/>
@@ -1891,8 +1891,7 @@
 			</Frame>
 
 			<!-- Fleet tab frame -->
-			<Frame parentKey="FollowerTab" inherits="GarrisonShipyardFollowerTabTemplate" hidden="true">
-			</Frame>
+			<Frame parentKey="FollowerTab" inherits="GarrisonShipyardFollowerTabTemplate" mixin="GarrisonShipyardFollowerTabMixin" hidden="true"/>
 
 			<!-- Mission Complete Frames -->
 			<Frame parentKey="MissionCompleteBackground" enableMouse="true" frameStrata="HIGH" hidden="true">
@@ -1908,7 +1907,7 @@
 					</Layer>
 				</Layers>
 			</Frame>
-			<Frame parentKey="MissionComplete" inherits="GarrisonShipyardMissionPageBaseTemplate, GarrisonMissionCompleteTemplate" frameStrata="HIGH" hidden="true" mixin="GarrisonMissionComplete,GarrisonShipyardMissionComplete">
+			<Frame parentKey="MissionComplete" inherits="GarrisonShipyardMissionPageBaseTemplate, GarrisonMissionCompleteTemplate" frameStrata="HIGH" hidden="true" mixin="GarrisonShipyardMissionComplete">
 				<Frames>
 					<Frame parentKey="Stage" inherits="GarrisonShipyardMissionCompleteStageTemplate">
 						<Anchors>

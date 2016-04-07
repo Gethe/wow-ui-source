@@ -8,10 +8,10 @@ function ClassNameplateBarPaladin:OnLoad()
 	ClassNameplateBar.OnLoad(self);
 end
 
-function ClassNameplateBarPaladin:OnEvent(event, arg1, arg2)
-	local eventHandled = ClassNameplateBar.OnEvent(self, event, arg1, arg2);
+function ClassNameplateBarPaladin:OnEvent(event, ...)
+	local eventHandled = ClassNameplateBar.OnEvent(self, event, ...);
 	if( not eventHandled and event == "PLAYER_LEVEL_UP" ) then
-		local level = arg1;
+		local level = ...;
 		if level >= PALADINPOWERBAR_SHOW_LEVEL then
 			self:UnregisterEvent("PLAYER_LEVEL_UP");
 			self:ShowNameplateBar();

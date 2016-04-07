@@ -8,7 +8,8 @@ GARRISON_MISSION_TYPE_FONT_COLOR	=	{r=0.8, g=0.7, b=0.53};
 ---------------------------------------------------------------------------------
 --- Main Frame                                                                ---
 ---------------------------------------------------------------------------------
-function GarrisonLandingPage_OnLoad(self)
+GarrisonLandingPageMixin = { }
+function GarrisonLandingPageMixin:OnLoad()
 	self.selectedTab = 1;
 	
 	GarrisonLandingPage.Report:Show();
@@ -21,7 +22,7 @@ function GarrisonLandingPage_OnLoad(self)
 	GarrisonLandingPage.ShipFollowerTab:Hide();
 end
 
-function GarrisonLandingPage_UpdateTabs(self)
+function GarrisonLandingPageMixin:UpdateTabs()
 	local numTabs = 2;
 	if (self.garrTypeID == LE_GARRISON_TYPE_6_0 and C_Garrison.HasShipyard()) then
 		numTabs = 3;
@@ -43,6 +44,64 @@ function GarrisonLandingPage_UpdateTabs(self)
 	end
 end
 
+function GarrisonLandingPageMixin:OnShow()
+	self:UpdateTabs();
+	if (C_Garrison.IsInvasionAvailable()) then
+		self.InvasionBadge:Show();
+		self.InvasionBadge.InvasionBadgeAnim:Play();
+	else
+		self.InvasionBadge:Hide();
+	end
+
+	if (self.garrTypeID == LE_GARRISON_TYPE_6_0) then
+		self.Report.Background:SetAtlas("GarrLanding_Watermark-Tradeskill", true);
+		self.Report.Background:ClearAllPoints();
+		self.Report.Background:SetPoint("BOTTOMLEFT", 60, 40);
+	elseif (self.garrTypeID == LE_GARRISON_TYPE_7_0) then
+		local _, className = UnitClass("player");
+		self.Report.Background:SetAtlas("legionmission-landingpage-background-"..className, true);
+		self.Report.Background:ClearAllPoints();
+		self.Report.Background:SetPoint("BOTTOM", self.Report, "BOTTOMLEFT", 194, 54);
+	end
+	self.abilityCountersForMechanicTypes = C_Garrison.GetFollowerAbilityCountersForMechanicTypes(GetPrimaryGarrisonFollowerType(self.garrTypeID));
+	GarrisonThreatCountersFrame:SetParent(self.FollowerTab);
+	GarrisonThreatCountersFrame:SetPoint("TOPRIGHT", -152, 30);
+	PlaySound("UI_Garrison_GarrisonReport_Open");
+end
+
+function GarrisonLandingPageMixin:OnHide()
+	PlaySound("UI_Garrison_GarrisonReport_Close");
+	StaticPopup_Hide("CONFIRM_FOLLOWER_TEMPORARY_ABILITY");
+	StaticPopup_Hide("CONFIRM_FOLLOWER_UPGRADE");
+	StaticPopup_Hide("CONFIRM_FOLLOWER_ABILITY_UPGRADE");
+	GarrisonBonusAreaTooltip:Hide();
+	self.abilityCountersForMechanicTypes = nil;
+end
+
+function GarrisonLandingPageMixin:GetFollowerList()
+	return self.FollowerList;
+end
+
+function GarrisonLandingPageMixin:GetShipFollowerList()
+	return self.ShipFollowerList;
+end
+
+
+---------------------------------------------------------------------------------
+--- Shipyard Follower page
+---------------------------------------------------------------------------------
+GarrisonLandingPageShipyardFollowerMixin = { }
+
+function GarrisonLandingPageShipyardFollowerMixin:GetFollowerList()
+	-- in the landing page fleet tab, we'll get the ship follower list instead.
+	return self:GetParent():GetShipFollowerList();
+end
+
+
+
+---------------------------------------------------------------------------------
+--- Landing Page tabs
+---------------------------------------------------------------------------------
 function GarrisonLandingPageTab_OnEnter(self)
 	self.LeftHighlight:Show();
 	self.MiddleHighlight:Show();
@@ -53,36 +112,6 @@ function GarrisonLandingPageTab_OnLeave(self)
 	self.LeftHighlight:Hide();
 	self.MiddleHighlight:Hide();
 	self.RightHighlight:Hide();
-end
-
-function GarrisonLandingPage_OnShow(self)
-	GarrisonLandingPage_UpdateTabs(self);
-	if (C_Garrison.IsInvasionAvailable()) then
-		self.InvasionBadge:Show();
-		self.InvasionBadge.InvasionBadgeAnim:Play();
-	else
-		self.InvasionBadge:Hide();
-	end
-
-	if (self.garrTypeID == LE_GARRISON_TYPE_6_0) then
-		self.Report.Background:SetAtlas("GarrLanding_Watermark-Tradeskill", true);
-	elseif (self.garrTypeID == LE_GARRISON_TYPE_7_0) then
-		local _, className = UnitClass("player");
-		self.Report.Background:SetAtlas("legionmission-landingpage-background-"..className, true);
-	end
-	self.abilityCountersForMechanicTypes = C_Garrison.GetFollowerAbilityCountersForMechanicTypes(GetPrimaryGarrisonFollowerType(self.garrTypeID));
-	GarrisonThreatCountersFrame:SetParent(self.FollowerTab);
-	GarrisonThreatCountersFrame:SetPoint("TOPRIGHT", -152, 30);
-	PlaySound("UI_Garrison_GarrisonReport_Open");
-end
-
-function GarrisonLandingPage_OnHide(self)
-	PlaySound("UI_Garrison_GarrisonReport_Close");
-	StaticPopup_Hide("CONFIRM_FOLLOWER_TEMPORARY_ABILITY");
-	StaticPopup_Hide("CONFIRM_FOLLOWER_UPGRADE");
-	StaticPopup_Hide("CONFIRM_FOLLOWER_ABILITY_UPGRADE");
-	GarrisonBonusAreaTooltip:Hide();
-	self.abilityCountersForMechanicTypes = nil;
 end
 
 function GarrisonLandingPageTab_OnClick(self)

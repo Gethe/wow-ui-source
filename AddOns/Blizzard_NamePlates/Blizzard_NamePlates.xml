@@ -78,7 +78,7 @@
 					</Layer>
 				</Layers>
 			</StatusBar>
-			<Frame parentKey="BuffFrame" inherits="HorizontalLayoutFrame" mixin="NameplateBuffMixin">
+			<Frame parentKey="BuffFrame" inherits="HorizontalLayoutFrame" mixin="NameplateBuffContainerMixin">
 				<Anchors>
 					<Anchor point="LEFT" relativeKey="$parent.healthBar" x="-1"/>
 				</Anchors>

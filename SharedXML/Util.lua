@@ -33,19 +33,19 @@ function SetClampedTextureRotation(texture, rotationDegrees)
 		error("SetRotation: rotationDegrees must be 0, 90, 180, or 270");
 		return;
 	end
-	
+
 	if not (texture.rotationDegrees) then
 		texture.origTexCoords = {texture:GetTexCoord()};
 		texture.origWidth = texture:GetWidth();
 		texture.origHeight = texture:GetHeight();
 	end
-	
+
 	if (texture.rotationDegrees == rotationDegrees) then
 		return;
 	end
 
 	texture.rotationDegrees = rotationDegrees;
-	
+
 	if (rotationDegrees == 0 or rotationDegrees == 180) then
 		texture:SetWidth(texture.origWidth);
 		texture:SetHeight(texture.origHeight);
@@ -53,7 +53,7 @@ function SetClampedTextureRotation(texture, rotationDegrees)
 		texture:SetWidth(texture.origHeight);
 		texture:SetHeight(texture.origWidth);
 	end
-	
+
 	if (rotationDegrees == 0) then
 		texture:SetTexCoord( texture.origTexCoords[1], texture.origTexCoords[2],
 											texture.origTexCoords[3], texture.origTexCoords[4],
@@ -96,7 +96,7 @@ end
 function GetTexCoordsForRole(role)
 	local textureHeight, textureWidth = 256, 256;
 	local roleHeight, roleWidth = 67, 67;
-	
+
 	if ( role == "GUIDE" ) then
 		return GetTexCoordsByGrid(1, 1, textureWidth, textureHeight, roleWidth, roleHeight);
 	elseif ( role == "TANK" ) then
@@ -215,7 +215,7 @@ function GetMoneyString(money, separateThousands)
 		silverString = format(SILVER_AMOUNT_TEXTURE, silver, 0, 0);
 		copperString = format(COPPER_AMOUNT_TEXTURE, copper, 0, 0);
 	end
-	
+
 	local moneyString = "";
 	local separator = "";
 	if ( gold > 0 ) then
@@ -229,7 +229,7 @@ function GetMoneyString(money, separateThousands)
 	if ( copper > 0 or moneyString == "" ) then
 		moneyString = moneyString..separator..copperString;
 	end
-	
+
 	return moneyString;
 end
 
@@ -475,8 +475,8 @@ end
 
 function RectangleMixin:IntersectsRect(otherRect)
 	return not (
-		self.left > otherRect.right or 
-		self.right < otherRect.left or 
+		self.left > otherRect.right or
+		self.right < otherRect.left or
 		self.top > otherRect.bottom or
 		self.bottom < otherRect.top
 	);

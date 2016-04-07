@@ -105,22 +105,4 @@
 			</Anchor>
 		</Anchors>
 	</StatusBar>
-	<!--StatusBar name="PlayerFrameAlternateEnergyBar" inherits="AlternatePowerBarTemplate" parent="PlayerFrame">
-		<Anchors>
-			<Anchor point="TOPLEFT">
-				<Offset>
-					<AbsDimension x="114" y="-10"/>
-				</Offset>
-			</Anchor>
-		</Anchors>`
-		<Scripts>
-			<OnLoad>
-				self.powerName = "ENERGY";
-				self.powerIndex = 3;
-				AlternatePowerBar_OnLoad(self);
-				_G[self:GetName().."Border"]:SetTexCoord(0.0234375, 0.6875, 0.0, 1.0);
-				_G[self:GetName().."Border"]:SetPoint("TOPLEFT", -10, 4)
-			</OnLoad>
-		</Scripts>
-	</StatusBar-->
 </Ui>

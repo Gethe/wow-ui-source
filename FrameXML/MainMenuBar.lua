@@ -169,7 +169,7 @@ function MainMenuBar_UpdateExperienceBars(newLevel)
 	end
 	if ( showArtifact ) then
 		local statusBar = ArtifactWatchBar.StatusBar;
-		local itemID, altItemID, name, icon, totalXP, pointsSpent, quality, artifactAppearanceID, appearanceModID = C_ArtifactUI.GetEquippedArtifactInfo();
+		local itemID, altItemID, name, icon, totalXP, pointsSpent, quality, artifactAppearanceID, appearanceModID, itemAppearanceID, altItemAppearanceID, altOnTop = C_ArtifactUI.GetEquippedArtifactInfo();
 
 		local numPointsAvailableToSpend, xp, xpForNextPoint = MainMenuBar_GetNumArtifactTraitsPurchasableFromXP(pointsSpent, totalXP);
 

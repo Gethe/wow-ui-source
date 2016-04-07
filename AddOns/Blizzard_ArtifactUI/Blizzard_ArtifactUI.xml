@@ -115,19 +115,28 @@
 								<Anchor point="CENTER" relativePoint="TOPLEFT" x="20" y="-20" />
 							</Anchors>
 						</Texture>
-					
-						<FontString parentKey="ForgeLevelLabel" inherits="Game18Font">
+					</Layer>
+					<Layer level="OVERLAY" textureSubLevel="2">
+						<Texture parentKey="ForgeLevelBackground" file="Interface\Minimap\MiniMap-TrackingBorder">
+							<Size x="64" y="64"/>
 							<Anchors>
-								<Anchor point="CENTER" relativePoint="TOPLEFT" x="48" y="-47" />
+								<Anchor point="CENTER" relativePoint="TOPLEFT" x="62" y="-62"/>
 							</Anchors>
-							<Color r="1.0" g="0.82" b="0"/>
+						</Texture>
+						<FontString parentKey="ForgeLevelLabel" inherits="SystemFont_Shadow_Med2">
+							<Anchors>
+								<Anchor point="CENTER" relativeKey="$parent.ForgeLevelBackground" relativePoint="CENTER" x="-13" y="14" />
+							</Anchors>
+							<Color r="1.0" g="0.82" b="0"/> 
 						</FontString>
 					</Layer>
 					<Layer level="OVERLAY" textureSubLevel="1">
-						<Texture parentKey="ForgeLevelBackground">
+						<Texture parentKey="ForgeLevelBackgroundBlack" alpha="0.7">
+							<Size x="22" y="22"/>
 							<Anchors>
-								<Anchor point="CENTER" relativePoint="TOPLEFT" x="48" y="-47" />
+								<Anchor point="TOPLEFT" relativeKey="$parent.ForgeLevelBackground" relativePoint="TOPLEFT" x="8" y="-7"/>
 							</Anchors>
+							<Color r="0" g="0" b="0"/>
 						</Texture>
 					</Layer>
 				</Layers>
@@ -139,16 +148,7 @@
 				</Anchors>
 				<Scripts>
 					<OnEnter>
-						GameTooltip:SetOwner(self, "ANCHOR_BOTTOMRIGHT", 0, 10);
-						local textureKit, titleName, titleR, titleG, titleB, barConnectedR, barConnectedG, barConnectedB, barDisconnectedR, barDisconnectedG, barDisconnectedB = C_ArtifactUI.GetArtifactArtInfo();
-
-						GameTooltip:SetText(titleName, 1, 1, 1);
-						--local purchasedRanks = C_ArtifactUI.GetTotalPurchasedRanks();
-						--local maxPurchasedRanks = C_ArtifactUI.GetMaxPurchasedRanks();
-
-						--GameTooltip:AddLine(ARTIFACTS_KNOWLEDGE_TOOLTIP_LEVEL:format(maxPurchasedRanks), 1, 1, 1);
-						--GameTooltip:AddLine(ARTIFACTS_KNOWLEDGE_TOOLTIP_DESC:format(purchasedRanks, maxPurchasedRanks), NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b, true);
-						GameTooltip:Show();
+						self:GetParent():OnKnowledgeEnter(self);
 					</OnEnter>
 					<OnLeave function="GameTooltip_Hide" />
 				</Scripts>

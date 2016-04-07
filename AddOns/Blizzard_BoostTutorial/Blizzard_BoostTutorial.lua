@@ -32,28 +32,6 @@ function BoostTutorial:UPDATE_BONUS_ACTIONBAR()
 	self:UpdateQueuedActionBarHighlight();
 end
 
--- TODO: Remove asap, see below...server scripts need to change
-function BoostTutorial:EVENT_RAISED(...)
-	local msg, data = ...;
-
-	if (self[msg]) then
-		self[msg](self, unpack(data));
-	end
-end
--- end hack
-
--- TODO: Potential hack here...might need a method by which the server can tell the client
--- how to setup the action bar...this is currently prototyped with the EVENT_RAISED code
-function BoostTutorial:PlaceAction(spellID, actionBarSlot)
-	PickupSpell(spellID);
-	local cursorType, _, _, cursorSpell = GetCursorInfo();
-	if (cursorType == "spell" and cursorSpell == spellID) then
-		PlaceAction(actionBarSlot);
-	end
-end
-
---end hack
-
 function BoostTutorial:OnEvent(event, ...)
 	if (self[event]) then
 		self[event](self, ...);
@@ -155,19 +133,19 @@ function BoostTutorial:HighlightSpell(spellID, textID)
 	-- Check pending actions (actions animating in from being learned)
 	if (not exists) then
 		if (self:IsSpellInPushQueue(spellID)) then
-			self:SetQueuedHighlight(spellID, textID);			
+			self:SetQueuedHighlight(spellID, textID);
 			return;
 		end
 	end
 
 	-- Spell wasn't found on any action bar and wasn't pending, there's nothing to highlight.
-	-- TODO: Potentially just show the desired tutorial in the bottom center of the screen (will also need to do this for addons) 
+	-- TODO: Potentially just show the desired tutorial in the bottom center of the screen (will also need to do this for addons)
 	if (not exists) then
 		return;
 	end
 
 	-- Check and see if the action is currently visible
-	if (not frame) then		
+	if (not frame) then
 		-- Search the (visible) buttons for the action
 		for i = 1, 12 do
 			local f = _G["ActionButton" .. i];
@@ -217,9 +195,6 @@ function BoostTutorial:Init()
 	eventFrame:RegisterEvent("UNIT_SPELLCAST_SUCCEEDED");
 	eventFrame:RegisterEvent("ACTIONBAR_SLOT_CHANGED");
 	eventFrame:RegisterEvent("UPDATE_BONUS_ACTIONBAR");
-
-	-- TODO: Remove...I had to revert a bunch of server script changes, so the only way to get this to work is to listen for them...
-	eventFrame:RegisterEvent("EVENT_RAISED");
 end
 
 BoostTutorial:Init();

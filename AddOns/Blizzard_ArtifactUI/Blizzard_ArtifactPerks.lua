@@ -20,13 +20,17 @@ function ArtifactPerksMixin:OnAppearanceChanging()
 end
 
 function ArtifactPerksMixin:RefreshModel()
-	local itemID, altItemID, _, _, _, _, _, appearanceID, appearanceModID, altOnTop = C_ArtifactUI.GetArtifactInfo();
-	local _, _, _, _, _, _, uiCameraID, altHandUICameraID, _, _, _, modelAlpha, modelDesaturation, freezeAnim = C_ArtifactUI.GetAppearanceInfoByID(appearanceID);
+	local itemID, altItemID, _, _, _, _, _, artifactAppearanceID, appearanceModID, itemAppearanceID, altItemAppearanceID, altOnTop = C_ArtifactUI.GetArtifactInfo();
+	local _, _, _, _, _, _, uiCameraID, altHandUICameraID, _, _, _, modelAlpha, modelDesaturation, freezeAnim = C_ArtifactUI.GetAppearanceInfoByID(artifactAppearanceID);
 
 	self.Model.freezeAnim = freezeAnim;
 	self.Model.uiCameraID = uiCameraID;
 	self.Model.desaturation = modelDesaturation;
-	self.Model:SetItem(itemID, appearanceModID);
+	if itemAppearanceID then
+		self.Model:SetItemAppearance(itemAppearanceID);
+	else
+		self.Model:SetItem(itemID, appearanceModID);
+	end
 
 	self.Model.BackgroundFront:SetAlpha(1.0 - (modelAlpha or 1.0));
 
@@ -37,7 +41,11 @@ function ArtifactPerksMixin:RefreshModel()
 		self.AltModel.freezeAnim = freezeAnim;
 		self.AltModel.uiCameraID = altHandUICameraID;
 		self.AltModel.desaturation = modelDesaturation;
-		self.AltModel:SetItem(altItemID, appearanceModID);
+		if altItemAppearanceID then
+			self.AltModel:SetItemAppearance(altItemAppearanceID);
+		else
+			self.AltModel:SetItem(altItemID, appearanceModID);
+		end
 
 		self.AltModel:Show();
 	else
@@ -490,8 +498,7 @@ end
 
 ArtifactTitleTemplateMixin = {}
 
-
-function ArtifactTitleTemplateMixin:OnShow()
+function ArtifactTitleTemplateMixin:RefreshTitle()
 	self.PointsRemainingLabel:SnapToTarget();
 
 	local textureKit, titleName, titleR, titleG, titleB, barConnectedR, barConnectedG, barConnectedB, barDisconnectedR, barDisconnectedG, barDisconnectedB = C_ArtifactUI.GetArtifactArtInfo();
@@ -505,7 +512,10 @@ function ArtifactTitleTemplateMixin:OnShow()
 	else
 		self.Background:Hide();
 	end
+end
 
+function ArtifactTitleTemplateMixin:OnShow()
+	self:RefreshTitle();
 	self:EvaluateRelics();
 
 	self:RegisterEvent("ARTIFACT_UPDATE");
@@ -520,6 +530,10 @@ end
 
 function ArtifactTitleTemplateMixin:OnEvent(event, ...)
 	if event == "ARTIFACT_UPDATE" then
+		local newItem = ...;
+		if newItem then
+			self:RefreshTitle();
+		end
 		self:EvaluateRelics();
 		self:RefreshRelicTooltips();
 	elseif event == "CURSOR_UPDATE" then
@@ -654,6 +668,7 @@ function ArtifactTitleTemplateMixin:EvaluateRelics()
 			relicSlot.LockedIcon:Show();
 			relicSlot.Icon:SetMask(nil);
 			relicSlot.Icon:SetAtlas("Relic-SlotBG", true);
+			relicSlot.Glass:Hide();
 		else
 			relicSlot:GetNormalTexture():SetAlpha(1);
 			relicSlot:Enable();
@@ -662,9 +677,11 @@ function ArtifactTitleTemplateMixin:EvaluateRelics()
 				relicSlot.Icon:SetSize(34, 34);
 				relicSlot.Icon:SetTexture(relicIcon);
 				relicSlot.Icon:SetMask("Interface\\CharacterFrame\\TempPortraitAlphaMask");
+				relicSlot.Glass:Show();
 			else
 				relicSlot.Icon:SetMask(nil);
 				relicSlot.Icon:SetAtlas("Relic-SlotBG", true);
+				relicSlot.Glass:Hide();
 			end
 		end
 

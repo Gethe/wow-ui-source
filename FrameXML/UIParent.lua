@@ -1601,7 +1601,7 @@ function UIParent_OnEvent(self, event, ...)
 
 	-- Events for adventure journal
 	elseif ( event == "AJ_OPEN" ) then
-		if (not IsKioskModeEnabled() and UnitLevel("player") >= SHOW_EJ_LEVEL) then
+		if (not IsKioskModeEnabled() and C_AdventureJournal.CanBeShown()) then
 			if ( not EncounterJournal ) then
 				EncounterJournal_LoadUI();
 			end

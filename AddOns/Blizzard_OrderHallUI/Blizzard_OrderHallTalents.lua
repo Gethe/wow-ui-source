@@ -92,7 +92,7 @@ function OrderHallTalentFrameMixin:RefreshCurrency()
 	local currencyName, amount, currencyTexture = GetCurrencyInfo(self.currency);
 	amount = BreakUpLargeNumbers(amount);
 	self.Currency:SetText(amount);
-	self.CurrencyIcon:SetTexture(currencyTexture);
+	-- self.CurrencyIcon:SetTexture(currencyTexture);
 end
 
 	 
@@ -105,16 +105,16 @@ function OrderHallTalentFrameMixin:RefreshAllData()
 		return;
 	end
 
-	local borderX = 165;
-	local borderY = -85;
+	local borderX = 168;
+	local borderY = -86;
 	local treeSpacingX = 200;
-	local buttonSizeX = 40;
-	local buttonSizeY = 40;
-	local buttonSpacingX = 58;
+	local buttonSizeX = 39;
+	local buttonSizeY = 39;
+	local buttonSpacingX = 59;
 	local buttonSpacingY = 19;
 
-	local choiceBackgroundOffsetX = 14;
-	local choiceBackgroundOffsetY = 9;
+	local choiceBackgroundOffsetX = 99;
+	local choiceBackgroundOffsetY = 10;
 	local arrowOffsetX = 10;
 	local arrowOffsetY = 0;
 
@@ -151,7 +151,7 @@ function OrderHallTalentFrameMixin:RefreshAllData()
 				local tierWidth = (tierCount[index] * (buttonSizeX + buttonSpacingX)) - buttonSpacingX;
 				local xOffset = borderX + ((treeIndex - 1) * treeSpacingX) - (tierWidth / 2) - choiceBackgroundOffsetX;
 				local yOffset = borderY - ((buttonSpacingY + buttonSizeY) * tier) + choiceBackgroundOffsetY;
-				choiceBackground:SetPoint("TOPLEFT", xOffset, yOffset);
+				choiceBackground:SetPoint("TOP", xOffset, yOffset);
 				choiceBackground:Show();
 			end
 		end
@@ -218,7 +218,7 @@ function GarrisonTalentButtonMixin:OnEnter()
 	elseif not talent.selected then
 		GameTooltip:AddLine(" ");
 		
-		GameTooltip:AddLine(RESEARCH_TIME_LABEL..SecondsToTime(talent.researchDuration));
+		GameTooltip:AddLine(RESEARCH_TIME_LABEL.." "..HIGHLIGHT_FONT_COLOR_CODE..SecondsToTime(talent.researchDuration)..FONT_COLOR_CODE_CLOSE);
 		if ((talent.researchCost and talent.researchCurrency) or talent.researchGoldCost) then
 			local str = NORMAL_FONT_COLOR_CODE..COSTS_LABEL..FONT_COLOR_CODE_CLOSE;
 			

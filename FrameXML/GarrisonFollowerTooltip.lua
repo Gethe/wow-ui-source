@@ -44,34 +44,35 @@ function GarrisonFollowerTooltip_Show(garrisonFollowerID, collected, quality, le
 end
 
 
-function GarrisonFollowerAbilityTooltip_Show(garrFollowerAbilityID, followerTypeID)
-	GarrisonFollowerAbilityTooltipTemplate_SetAbility(GarrisonFollowerAbilityTooltip, garrFollowerAbilityID, followerTypeID);
-	GarrisonFollowerAbilityTooltip:Show();
+function GarrisonFollowerAbilityTooltip_Show(tooltip, garrFollowerAbilityID, followerTypeID)
+	GarrisonFollowerAbilityTooltipTemplate_SetAbility(tooltip, garrFollowerAbilityID, followerTypeID);
+	tooltip:Show();
 end
 
 function ShowGarrisonFollowerAbilityTooltip(frame, garrFollowerAbilityID, followerTypeID)
-	if (GarrisonFollowerOptions[followerTypeID].useAbilityTooltipStyleWithoutCounters) then
-		GameTooltip:SetOwner(frame, "ANCHOR_NONE");
-		GameTooltip:SetPoint("TOPLEFT", frame, "BOTTOMRIGHT");
+	local tooltip = _G[GarrisonFollowerOptions[followerTypeID].abilityTooltipFrame];
 
-		local icon = C_Garrison.GetFollowerAbilityIcon(garrFollowerAbilityID);
-		local name = C_Garrison.GetFollowerAbilityName(garrFollowerAbilityID);
-		local description = C_Garrison.GetFollowerAbilityDescription(garrFollowerAbilityID);
+	tooltip:ClearAllPoints();
+	tooltip:SetPoint("TOPLEFT", frame, "BOTTOMRIGHT");
+	GarrisonFollowerAbilityTooltip_Show(tooltip, garrFollowerAbilityID, followerTypeID);
 
-		if (icon) then
-			local str = "|T"..icon..":24:24|t "..name;
-			GameTooltip:AddLine(str, 1, 1, 1);
-		end
-		GameTooltip:AddLine(description, nil, nil, nil, true);
-		GameTooltip:Show();
-	else
-		GarrisonFollowerAbilityTooltip:ClearAllPoints();
-		GarrisonFollowerAbilityTooltip:SetPoint("TOPLEFT", frame, "BOTTOMRIGHT");
-		GarrisonFollowerAbilityTooltip_Show(garrFollowerAbilityID, followerTypeID);
-	end
 end
 
-function HideGarrisonFollowerAbilityTooltip()
-	GarrisonFollowerAbilityTooltip:Hide();
-	GameTooltip:Hide();
+function HideGarrisonFollowerAbilityTooltip(followerTypeID)
+	local tooltip = _G[GarrisonFollowerOptions[followerTypeID].abilityTooltipFrame];
+	tooltip:Hide();
+end
+
+function ShowGarrisonFollowerMissionAbilityTooltip(frame, garrFollowerAbilityID, followerTypeID)
+	local tooltip = _G[GarrisonFollowerOptions[followerTypeID].missionAbilityTooltipFrame];
+
+	tooltip:ClearAllPoints();
+	tooltip:SetPoint("TOPLEFT", frame, "BOTTOMRIGHT");
+	GarrisonFollowerAbilityTooltip_Show(tooltip, garrFollowerAbilityID, followerTypeID);
+
+end
+
+function HideGarrisonFollowerMissionAbilityTooltip(followerTypeID)
+	local tooltip = _G[GarrisonFollowerOptions[followerTypeID].missionAbilityTooltipFrame];
+	tooltip:Hide();
 end

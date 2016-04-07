@@ -14,9 +14,16 @@
 				</Texture>
 				<FontString inherits="GameFontNormal" justifyH="LEFT" parentKey="Count">
 					<Anchors>
-						<Anchor point="LEFT" relativePoint="RIGHT" relativeKey="$parent.Icon" x="10" y="0"/>
+						<Anchor point="LEFT" relativePoint="RIGHT" relativeKey="$parent.Icon" x="5" y="1"/>
 					</Anchors>
 				</FontString>
+			</Layer>
+			<Layer level="OVERLAY">
+				<Texture parentKey="TroopPortraitCover" atlas="orderhall-commandbar-iconmask" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="CENTER" relativePoint="CENTER" relativeKey="$parent.Icon"/>
+					</Anchors>
+				</Texture>
 			</Layer>
 		</Layers>
 		<Scripts>
@@ -24,7 +31,7 @@
 			<OnLeave method="OnLeave"/>
 		</Scripts>
 	</Frame>
-	<Frame name="OrderHallCommandBar" toplevel="true" parent="UIParent" mixin="OrderHallCommandBarMixin" hidden="true"  frameStrata="BACKGROUND">
+	<Frame name="OrderHallCommandBar" toplevel="true" parent="UIParent" mixin="OrderHallCommandBarMixin" hidden="true" frameStrata="BACKGROUND">
 		<Size x="0" y="25"/>
 		<Anchors>
 			<Anchor point="TOPLEFT"/>
@@ -36,30 +43,30 @@
 				<Texture parentKey="Background" atlas="_orderhall-commandbar-bg" horizTile="true"/>
 			</Layer>
 			<Layer level="ARTWORK">
-				<Texture parentKey="ClassIcon">
+				<Texture parentKey="ClassIcon" alphaMode="ADD" alpha=".55">
 					<Size x="46" y="23"/>
 					<Anchors>
 						<Anchor point="BOTTOMLEFT" x="5" y="2"/>
 					</Anchors>
 				</Texture>
-				<Texture parentKey="CurrencyIcon">
-					<Size x="18" y="18"/>
+				<FontString inherits="GameFontHighlight" parentKey="Currency">
 					<Anchors>
 						<Anchor point="LEFT" relativePoint="RIGHT" relativeKey="$parent.ClassIcon" x="15" y="1"/>
 					</Anchors>
-				</Texture>
-				<FontString inherits="GameFontHighlight" parentKey="Currency">
-					<Anchors>
-						<Anchor point="LEFT" relativePoint="RIGHT" relativeKey="$parent.CurrencyIcon" x="5" y="0"/>
-					</Anchors>
 				</FontString>
+				<Texture parentKey="CurrencyIcon" atlas="legionmission-icon-currency" useAtlasSize="false">
+					<Size x="27" y="26"/>
+					<Anchors>
+						<Anchor point="LEFT" relativePoint="RIGHT" relativeKey="$parent.Currency" x="1" y="-1"/>
+					</Anchors>
+				</Texture>
 			</Layer>
 		</Layers>
 		<Frames>
 			<Frame parentKey="CurrencyHitTest">
 				<Anchors>
-					<Anchor point="LEFT" relativeKey="$parent.CurrencyIcon"/>
-					<Anchor point="RIGHT" relativeKey="$parent.Currency"/>
+					<Anchor point="LEFT" relativeKey="$parent.Currency"/>
+					<Anchor point="RIGHT" relativeKey="$parent.CurrencyIcon"/>
 					<Anchor point="TOP"/>
 					<Anchor point="BOTTOM"/>
 				</Anchors>

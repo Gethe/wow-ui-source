@@ -156,6 +156,7 @@ function GarrisonFollowerMission:OnHideMainFrame()
 	StaticPopup_Hide("CONFIRM_FOLLOWER_TEMPORARY_ABILITY");
 	StaticPopup_Hide("CONFIRM_FOLLOWER_UPGRADE");
 	StaticPopup_Hide("CONFIRM_FOLLOWER_ABILITY_UPGRADE");
+	StaticPopup_Hide("CONFIRM_FOLLOWER_EQUIPMENT");
 
 	if (self.MissionTab.MissionList) then
 		self.MissionTab.MissionList.newMissionIDs = { };
@@ -1144,10 +1145,12 @@ function GarrisonMissionPage_OnEvent(self, event, ...)
 				self.mentorLevel = mentorLevel;
 				self.mentorItemLevel = mentorItemLevel;
 				mainFrame.followerCounters = C_Garrison.GetBuffedFollowersForMission(self.missionInfo.missionID)
-				mainFrame.followerTraits = C_Garrison.GetFollowersTraitsForMission(self.missionInfo.missionID);			
+				mainFrame.followerTraits = C_Garrison.GetFollowersTraitsForMission(self.missionInfo.missionID);	
+				self.missionEffects = select(6, C_Garrison.GetPartyMissionInfo(self.missionInfo.missionID));
 			else
 				self.mentorLevel = nil;
 				self.mentorItemLevel = nil;
+				self.missionEffects = nil;
 			end
 			mainFrame:UpdateMissionParty(self.Followers);
 

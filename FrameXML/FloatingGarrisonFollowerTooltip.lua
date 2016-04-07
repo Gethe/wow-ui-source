@@ -215,7 +215,7 @@ function GarrisonFollowerTooltipTemplate_SetGarrisonFollower(tooltipFrame, data,
 		else
 			tooltipFrame.TraitsLabel:SetPoint("TOPLEFT", tooltipFrame, "TOPLEFT", 15, -tooltipFrameHeightBase -5);
 		end
-
+		tooltipFrame.TraitsLabel:SetText(GarrisonFollowerOptions[data.followerTypeID].strings.TRAITS_LABEL);
 		tooltipFrameHeight = tooltipFrameHeight + tooltipFrame.TraitsLabel:GetHeight();
 		tooltipFrameHeight = tooltipFrameHeight + abilityOffset;
 		tooltipFrame.TraitsLabel:Show();
@@ -398,10 +398,9 @@ function GarrisonFollowerTooltipTemplate_GetValidAbilities(abilities)
 	local validAbilities = {};
 	for i=1, #abilities do
 		if (abilities[i] ~= 0 and abilities[i] ~= nil) then
-			local icon = C_Garrison.GetFollowerAbilityIcon(abilities[i]);
-			local name = C_Garrison.GetFollowerAbilityName(abilities[i]);
-			if (icon and name) then
-				table.insert(validAbilities, {abilityID=abilities[i], icon=icon, name=name});
+			local abilityInfo = C_Garrison.GetFollowerAbilityInfo(abilities[i]);
+			if (abilityInfo) then
+				table.insert(validAbilities, abilityInfo);
 			end
 		end
 	end
@@ -411,6 +410,7 @@ end
 function GarrisonFollowerTooltipTemplate_SetAbility(Ability, ability, detailed, followerTypeID)
 	Ability.Name:SetText(ability.name);
 	Ability.Icon:SetTexture(ability.icon);
+	Ability.Border:SetShown(ShouldShowFollowerAbilityBorder(followerTypeID, ability));
 	Ability:SetHeight(Ability.Name:GetHeight() + 10);	-- ability frame height w/ no description/details being displayed
 
 	local spacingBetweenNameAndDescription = 4;			-- must match the XML ability template setting
@@ -421,13 +421,13 @@ function GarrisonFollowerTooltipTemplate_SetAbility(Ability, ability, detailed, 
 	Ability.CounterIcon:Hide();
 	Ability.CounterIconBorder:Hide();
 	if detailed then
-		local description = C_Garrison.GetFollowerAbilityDescription(ability.abilityID);
+		local description = ability.description;
 		if string.len(description) == 0 then description = "PH - Description Missing"; end
 	
 		Ability.Description:SetText(description);
 		Ability.Description:Show();
 		Ability:SetHeight(Ability:GetHeight() + Ability.Description:GetHeight() + spacingBetweenNameAndDescription);
-		local abilityCounterMechanicID, abilityCounterMechanicName, abilityCounterMechanicIcon = C_Garrison.GetFollowerAbilityCounterMechanicInfo(ability.abilityID);
+		local abilityCounterMechanicID, abilityCounterMechanicName, abilityCounterMechanicIcon = C_Garrison.GetFollowerAbilityCounterMechanicInfo(ability.id);
 		if (abilityCounterMechanicName and abilityCounterMechanicIcon and not GarrisonFollowerOptions[followerTypeID].hideCountersInAbilityFrame) then
 			Ability.Details:SetFormattedText(GARRISON_ABILITY_COUNTERS_FORMAT, abilityCounterMechanicName);
 			Ability.Details:Show();
@@ -461,47 +461,48 @@ function GarrisonFollowerAbilityTooltipTemplate_SetAbility(tooltipFrame, garrFol
 		tooltipFrame.garrFollowerAbilityID = garrFollowerAbilityID;
 		tooltipFrame:Show();
 		
-		tooltipFrame.Name:SetText(C_Garrison.GetFollowerAbilityName(garrFollowerAbilityID));
-		tooltipFrame.Icon:SetTexture(C_Garrison.GetFollowerAbilityIcon(garrFollowerAbilityID));
+		local info = C_Garrison.GetFollowerAbilityInfo(garrFollowerAbilityID);
+		tooltipFrame.Name:SetText(info.name);
+		tooltipFrame.Icon:SetTexture(info.icon);
 
-		local abilityIsTrait = C_Garrison.GetFollowerAbilityIsTrait(garrFollowerAbilityID);
+		if (tooltipFrame.AbilityBorder) then
+			tooltipFrame.AbilityBorder:SetShown(ShouldShowFollowerAbilityBorder(followerTypeID, info));
+		end
+		local headerHeight = tooltipFrame.Header and tooltipFrame.Header:GetHeight() or 0;
+		tooltipFrame:SetHeight(headerHeight + tooltipFrame.abilityFrameHeightBase + tooltipFrame.Name:GetHeight());
 		
-		local abilityFrameHeightBase = 30;
-		local spacingBetweenNameAndDescription = 4;			-- must match the XML ability template setting
-		local spacingBetweenDescriptionAndDetails = 8;		-- must match the XML ability template setting
-
-		tooltipFrame:SetHeight(abilityFrameHeightBase + tooltipFrame.Name:GetHeight());
-		
-		local description = C_Garrison.GetFollowerAbilityDescription(garrFollowerAbilityID);
+		local description = info.description;
 		if string.len(description) == 0 then 
 			description = "PH - Description Missing"; 
 		end
 
 		tooltipFrame.Description:Show();
 		tooltipFrame.Description:SetText(description);
-		tooltipFrame:SetHeight(tooltipFrame:GetHeight() + tooltipFrame.Description:GetHeight() + spacingBetweenNameAndDescription);
+		tooltipFrame:SetHeight(tooltipFrame:GetHeight() + tooltipFrame.Description:GetHeight() + tooltipFrame.spacingBetweenNameAndDescription);
 		
-		local abilityCounterMechanicID, abilityCounterMechanicName, abilityCounterMechanicIcon, abilityCounterFactor = C_Garrison.GetFollowerAbilityCounterMechanicInfo(garrFollowerAbilityID);
-		if (abilityCounterMechanicName and abilityCounterMechanicIcon) then
-			tooltipFrame.CountersLabel:Show();
-			tooltipFrame.Details:Show();
-			tooltipFrame.Details:SetText(abilityCounterMechanicName);
-			tooltipFrame:SetHeight(tooltipFrame:GetHeight() + tooltipFrame.Details:GetHeight() + tooltipFrame.CountersLabel:GetHeight() + spacingBetweenDescriptionAndDetails * 2);
-			tooltipFrame.CounterIcon:SetTexture(abilityCounterMechanicIcon);
-			tooltipFrame.CounterIcon:SetMask("Interface\\CharacterFrame\\TempPortraitAlphaMask");
-			tooltipFrame.CounterIcon:Show();
-			tooltipFrame.CounterIconBorder:Show();
-			if ( abilityCounterFactor <= GARRISON_HIGH_THREAT_VALUE and followerTypeID == LE_FOLLOWER_TYPE_SHIPYARD_6_2 ) then
-				tooltipFrame.CounterIconBorder:SetAtlas("GarrMission_WeakEncounterAbilityBorder-Lg");
+		if (tooltipFrame.CountersLabel) then
+			local abilityCounterMechanicID, abilityCounterMechanicName, abilityCounterMechanicIcon, abilityCounterFactor = C_Garrison.GetFollowerAbilityCounterMechanicInfo(garrFollowerAbilityID);
+			if (abilityCounterMechanicName and abilityCounterMechanicIcon) then
+				tooltipFrame.CountersLabel:Show();
+				tooltipFrame.Details:Show();
+				tooltipFrame.Details:SetText(abilityCounterMechanicName);
+				tooltipFrame:SetHeight(tooltipFrame:GetHeight() + tooltipFrame.Details:GetHeight() + tooltipFrame.CountersLabel:GetHeight() + tooltipFrame.spacingBetweenDescriptionAndDetails * 2);
+				tooltipFrame.CounterIcon:SetTexture(abilityCounterMechanicIcon);
+				tooltipFrame.CounterIcon:SetMask("Interface\\CharacterFrame\\TempPortraitAlphaMask");
+				tooltipFrame.CounterIcon:Show();
+				tooltipFrame.CounterIconBorder:Show();
+				if ( abilityCounterFactor <= GARRISON_HIGH_THREAT_VALUE and followerTypeID == LE_FOLLOWER_TYPE_SHIPYARD_6_2 ) then
+					tooltipFrame.CounterIconBorder:SetAtlas("GarrMission_WeakEncounterAbilityBorder-Lg");
+				else
+					tooltipFrame.CounterIconBorder:SetAtlas("GarrMission_EncounterAbilityBorder-Lg");
+				end
+				tooltipFrame.Details:SetPoint("TOPLEFT", tooltipFrame.CounterIcon, "TOPRIGHT", 8, -1);
 			else
-				tooltipFrame.CounterIconBorder:SetAtlas("GarrMission_EncounterAbilityBorder-Lg");
+				tooltipFrame.CountersLabel:Hide();
+				tooltipFrame.Details:Hide();
+				tooltipFrame.CounterIcon:Hide();
+				tooltipFrame.CounterIconBorder:Hide();
 			end
-			tooltipFrame.Details:SetPoint("TOPLEFT", tooltipFrame.CounterIcon, "TOPRIGHT", 8, -1);
-		else
-			tooltipFrame.CountersLabel:Hide();
-			tooltipFrame.Details:Hide();
-			tooltipFrame.CounterIcon:Hide();
-			tooltipFrame.CounterIconBorder:Hide();
 		end
 	end
 end

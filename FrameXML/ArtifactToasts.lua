@@ -26,7 +26,7 @@ function ArtifactLevelUpToastMixin:EvaluateTrigger()
 		self.hasArtifactEquipped = hasArtifactEquipped;
 
 		if self.hasArtifactEquipped then
-			local itemID, altItemID, name, icon, xp, pointsSpent, quality, artifactAppearanceID, appearanceModID = C_ArtifactUI.GetEquippedArtifactInfo();
+			local itemID, altItemID, name, icon, xp, pointsSpent, quality, artifactAppearanceID, appearanceModID, itemAppearanceID, altItemAppearanceID, altOnTop = C_ArtifactUI.GetEquippedArtifactInfo();
 			self.currentArtifactPurchasableTraits = MainMenuBar_GetNumArtifactTraitsPurchasableFromXP(pointsSpent, xp);
 			self.currentItemID = itemID;
 		else
@@ -34,7 +34,7 @@ function ArtifactLevelUpToastMixin:EvaluateTrigger()
 			self.currentItemID = nil;
 		end
 	elseif self.hasArtifactEquipped then
-		local itemID, altItemID, name, icon, xp, pointsSpent, quality, artifactAppearanceID, appearanceModID = C_ArtifactUI.GetEquippedArtifactInfo();
+		local itemID, altItemID, name, icon, xp, pointsSpent, quality, artifactAppearanceID, appearanceModID, itemAppearanceID, altItemAppearanceID, altOnTop = C_ArtifactUI.GetEquippedArtifactInfo();
 		local artifactPurchasableTraits = MainMenuBar_GetNumArtifactTraitsPurchasableFromXP(pointsSpent, xp);
 		if self.currentItemID == itemID then
 			if self.currentArtifactPurchasableTraits < artifactPurchasableTraits then

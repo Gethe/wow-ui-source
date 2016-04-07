@@ -976,9 +976,11 @@ function WorldMap_UpdateLandmarks()
 						else
 							x1, x2, y1, y2 = GetPOITextureCoords(textureIndex);
 						end
-						_G[worldMapPOIName.."Texture"]:SetTexCoord(x1, x2, y1, y2);
+						worldMapPOI.Texture:SetTexCoord(x1, x2, y1, y2);
+						worldMapPOI.HighlightTexture:SetTexCoord(x1, x2, y1, y2);
 					else
-						_G[worldMapPOIName.."Texture"]:SetTexCoord(0, 1, 0, 1);
+						worldMapPOI.Texture:SetTexCoord(0, 1, 0, 1);
+						worldMapPOI.HighlightTexture:SetTexCoord(0, 1, 0, 1);
 					end
 
 					worldMapPOI.name = name;
@@ -1419,11 +1421,21 @@ do
 	end
 end
 
+function WorldMap_DoesLandMarkTypeShowHighlights(landmarkType)
+	return landmarkType == LE_MAP_LANDMARK_TYPE_NORMAL
+		or landmarkType == LE_MAP_LANDMARK_TYPE_TAMER
+		or landmarkType == LE_MAP_LANDMARK_TYPE_GOSSIP
+		or landmarkType == LE_MAP_LANDMARK_TYPE_TAXINODE
+		or landmarkType == LE_MAP_LANDMARK_TYPE_VIGNETTE
+		or landmarkType == LE_MAP_LANDMARK_TYPE_INVASION;
+end
+
 function WorldMapPOI_OnEnter(self)
 	WorldMapFrame.poiHighlight = true;
 	if ( self.specialPOIInfo and self.specialPOIInfo.onEnter ) then
 		self.specialPOIInfo.onEnter(self, self.specialPOIInfo);
 	else
+		self.HighlightTexture:SetShown(WorldMap_DoesLandMarkTypeShowHighlights(self.landmarkType));
 		if ( self.description and #self.description > 0 ) then
 			WorldMapFrame_SetAreaLabel(WORLDMAP_AREA_LABEL_TYPE.POI, self.name, self.description);
 		else
@@ -1484,6 +1496,8 @@ function WorldMapPOI_OnLeave(self)
 		WorldMapFrame_ClearAreaLabel(WORLDMAP_AREA_LABEL_TYPE.POI);
 		WorldMapTooltip:Hide();
 	end
+
+	self.HighlightTexture:Hide();
 end
 
 function WorldMap_ThunderIslePOI_OnEnter(self, poiInfo)
@@ -1764,13 +1778,20 @@ function WorldMap_CreatePOI(index, isObjectIcon, atlasIcon)
 	button.UpdateTooltip = WorldMapPOI_OnEnter;
 
 	button.Texture = button:CreateTexture(button:GetName().."Texture", "BACKGROUND");
-
+	button.HighlightTexture = button:CreateTexture(button:GetName().."HighlightTexture", "HIGHLIGHT");
+	button.HighlightTexture:SetBlendMode("ADD");
+	button.HighlightTexture:SetAlpha(.4);
+	button.HighlightTexture:SetAllPoints(button.Texture);
+	
 	WorldMap_ResetPOI(button, isObjectIcon, atlasIcon);
 end
 
 function WorldMap_ResetPOI(button, isObjectIcon, atlasIcon)
 	if (atlasIcon) then
 		button.Texture:SetAtlas(atlasIcon, true);
+		if button.HighlightTexture then
+			button.HighlightTexture:SetAtlas(atlasIcon, true);
+		end
 		button:SetSize(button.Texture:GetSize());
 		button.Texture:SetPoint("CENTER", 0, 0);
 	elseif (isObjectIcon == true) then
@@ -1780,6 +1801,9 @@ function WorldMap_ResetPOI(button, isObjectIcon, atlasIcon)
 		button.Texture:SetHeight(28);
 		button.Texture:SetPoint("CENTER", 0, 0);
 		button.Texture:SetTexture("Interface\\Minimap\\ObjectIconsAtlas");
+		if button.HighlightTexture then
+			button.HighlightTexture:SetTexture("Interface\\Minimap\\ObjectIconsAtlas");
+		end
 	else
 		button:SetWidth(32);
 		button:SetHeight(32);
@@ -1787,6 +1811,9 @@ function WorldMap_ResetPOI(button, isObjectIcon, atlasIcon)
 		button.Texture:SetHeight(16);
 		button.Texture:SetPoint("CENTER", 0, 0);
 		button.Texture:SetTexture("Interface\\Minimap\\POIIcons");
+		if button.HighlightTexture then
+			button.HighlightTexture:SetTexture("Interface\\Minimap\\POIIcons");
+		end
 	end
 
 	button.specialPOIInfo = nil;
@@ -1894,14 +1921,18 @@ function WorldMapLevelDropDown_Update()
 		UIDropDownMenu_ClearAll(WorldMapLevelDropDown);
 		WorldMapLevelDropDown:Hide();
 	else
-		local floorMapCount = #dungeonLevels;
-		local firstFloor = dungeonLevels[1];
-
 		local level = GetCurrentMapDungeonLevel();
 		if (DungeonUsesTerrainMap()) then
 			level = level - 1;
 		end
-		local levelID = level - firstFloor + 1;
+
+		-- find the current floor in the list of levels, that's its ID in the dropdown
+		local levelID = 1;
+		for id, floorNum in ipairs(dungeonLevels) do
+			if (floorNum == level) then
+				levelID = id;
+			end
+		end
 
 		UIDropDownMenu_SetSelectedID(WorldMapLevelDropDown, levelID);
 		WorldMapLevelDropDown:Show();

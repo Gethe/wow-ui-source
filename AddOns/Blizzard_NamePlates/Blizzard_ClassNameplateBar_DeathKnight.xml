@@ -23,7 +23,7 @@
 		</Frames>
 	</Button>
 	
-	<Frame name="DeathKnightResourceOverlayFrame" inherits="ClassNameplateBarFrame" mixin="ClassNameplateBarDeathKnight">
+	<Frame name="DeathKnightResourceOverlayFrame" inherits="ClassNameplateBarFrame" mixin="ClassNameplateBar, ClassNameplateBarDeathKnight">
 		<Size x="98" y="20"/>
 		<Frames>
 			<Button parentKey="Rune1" parentArray="Runes" inherits="ClassNameplateBarDeathKnightRuneFrame">
