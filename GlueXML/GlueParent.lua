@@ -2,8 +2,8 @@
 GLUE_SCREENS = {
 	["login"] = 		{ frame = "AccountLogin", 		playMusic = true,	playAmbience = true },
 	["realmlist"] = 	{ frame = "RealmListUI", 		playMusic = true,	playAmbience = false },
-	["charselect"] = 	{ frame = "CharacterSelect",	playMusic = true,	playAmbience = false },
-	["charcreate"] =	{ frame = "CharacterCreate",	playMusic = true,	playAmbience = false },
+	["charselect"] = 	{ frame = "CharacterSelect",	playMusic = true,	playAmbience = false, onAttemptShow = function() InitializeCharacterScreenData() end },
+	["charcreate"] =	{ frame = "CharacterCreate",	playMusic = true,	playAmbience = false, onAttemptShow = function() InitializeCharacterScreenData() end },
 };
 
 GLUE_SECONDARY_SCREENS = {
@@ -240,6 +240,12 @@ function GlueParent_SetScreen(screen)
 	local screenInfo = GLUE_SCREENS[screen];
 	if ( screenInfo ) then
 		GlueParent.currentScreen = screen;
+
+		--Sometimes, we have to do things we would normally do in OnShow even if the screen doesn't actually
+		--get shown (due to a secondary screen being shown)
+		if ( screenInfo.onAttemptShow ) then
+			screenInfo.onAttemptShow();
+		end
 
 		local suppressScreen = false;
 		if ( GlueParent.currentSecondaryScreen ) then

@@ -32,9 +32,7 @@ end
 function AccountLogin_OnEvent(self, event, ...)
 	if ( event == "SCREEN_FIRST_DISPLAYED" ) then
 		AccountLogin_Update();
-		if ( AccountLogin_CanAutoLogin() ) then
-			AccountLogin_StartAutoLoginTimer();
-		end
+		AccountLogin_CheckAutoLogin();
 	elseif ( event == "LOGIN_STATE_CHANGED" ) then
 		AccountLogin_CheckLoginState(self);
 	elseif ( event == "LAUNCHER_LOGIN_STATUS_CHANGED" ) then
@@ -80,6 +78,7 @@ function AccountLogin_OnShow(self)
 	AccountLogin_UpdateSavedData(self);
 
 	AccountLogin_Update();
+	AccountLogin_CheckAutoLogin();
 end
 
 function AccountLogin_Update()
@@ -413,6 +412,7 @@ end
 -- =============================================================
 
 function AccountLogin_StartAutoLoginTimer()
+	AccountLogin.timerStarted = true;
 	C_Timer.After(AUTO_LOGIN_WAIT_TIME, AccountLogin_OnTimerFinished);
 end
 
@@ -422,7 +422,7 @@ function AccountLogin_OnTimerFinished()
 end
 
 function AccountLogin_CanAutoLogin()
-	return not SHOW_KOREAN_RATINGS and C_Login.IsLauncherLogin() and not C_Login.AttemptedLauncherLogin();
+	return not SHOW_KOREAN_RATINGS and C_Login.IsLauncherLogin() and not C_Login.AttemptedLauncherLogin() and AccountLogin:IsVisible();
 end
 
 function AccountLogin_CheckAutoLogin()
@@ -433,7 +433,6 @@ function AccountLogin_CheckAutoLogin()
 				C_Login.CancelLauncherLogin();
 			end
 		elseif ( not AccountLogin.timerStarted ) then
-			AccountLogin.timerStarted = true;
 			GlueDialog_Show("CANCEL", LOGIN_STATE_CONNECTING);
 			if ( WasScreenFirstDisplayed() ) then
 				AccountLogin_StartAutoLoginTimer();
