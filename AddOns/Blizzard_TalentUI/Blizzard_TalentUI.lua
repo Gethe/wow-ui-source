@@ -1497,18 +1497,19 @@ function PlayerTalentFramePVPTalents_SetUp(self)
 	local prestigeLevel = UnitPrestige("player");
 	local numTalentGroups = GetNumSpecGroups(false);
 
-	parent.Inset:SetPoint("TOPLEFT", 4, -104);
+	parent.Inset:SetPoint("TOPLEFT", 4, -110);
 	PlayerTalentFrame_UpdateTitleText(numTalentGroups);
 	
 	if (prestigeLevel > 0) then
 		self.PortraitBackground:SetAtlas("honorsystem-prestige-laurel-bg-"..factionGroup, false);
 		self.PortraitBackground:Show();
-		parent.portrait:SetSize(48,48);
+		parent.portrait:SetSize(57,57);
 		parent.portrait:ClearAllPoints();
-		parent.portrait:SetPoint("CENTER", self.PortraitBackground, "CENTER");
+		parent.portrait:SetPoint("CENTER", self.PortraitBackground, "CENTER", 0, 0);
 		parent.portrait:SetTexture(GetPrestigeInfo(UnitPrestige("player")));
 		parent.portrait:SetTexCoord(0, 1, 0, 1);
 	end
+	self.SmallWreath:SetShown(prestigeLevel > 0);
 end
 
 function PlayerTalentFramePVPTalents_OnHide(self)
@@ -1517,9 +1518,9 @@ function PlayerTalentFramePVPTalents_OnHide(self)
 	self.PortraitBackground:Hide();
 	parent.portrait:SetTexture("Interface\\TargetingFrame\\UI-Classes-Circles");
 	parent.portrait:SetTexCoord(unpack(CLASS_ICON_TCOORDS[strupper(class)]));
-	parent.portrait:SetSize(60, 60);
+	parent.portrait:SetSize(61, 61);
 	parent.portrait:ClearAllPoints();
-	parent.portrait:SetPoint("TOPLEFT", -6, 7);
+	parent.portrait:SetPoint("TOPLEFT", -6, 8);
 end
 
 function PlayerTalentFramePVPTalents_OnEvent(self, event)

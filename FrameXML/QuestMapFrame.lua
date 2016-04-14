@@ -183,7 +183,7 @@ function QuestMapFrame_CheckTutorials()
 end
 
 function QuestMapFrame_IsQuestWorldQuest(questID)
-	local tagID, tagName, worldQuestType, isRare, isElite, tradeskillLineIndex = GetQuestTagInfo(questID);
+	local tagID, tagName, worldQuestType, rarity, isElite, tradeskillLineIndex = GetQuestTagInfo(questID);
 	return worldQuestType ~= nil;
 end
 

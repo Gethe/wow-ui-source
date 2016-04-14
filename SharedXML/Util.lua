@@ -337,12 +337,7 @@ end
 
 function ObjectPoolMixin:ReleaseAll()
 	for obj in pairs(self.activeObjects) do
-		self.activeObjects[obj] = nil;
-		self.numActiveObjects = self.numActiveObjects - 1;
-		self.inactiveObjects[#self.inactiveObjects + 1] = obj;
-		if self.resetterFunc then
-			self.resetterFunc(self, obj);
-		end
+		self:Release(obj);
 	end
 end
 

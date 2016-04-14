@@ -1,6 +1,7 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\FrameXML\UI.xsd">
 	<Script file="WorldMapBountyBoard.lua"/>
+	<Script file="WorldMapActionButton.lua"/>
 	<Script file="WorldMapFrame.lua"/>
 	<Include file="WorldMapFrameTemplates.xml"/>
 	<Frame name="WorldMapPlayerTemplate" virtual="true">
@@ -600,6 +601,21 @@
 									<Anchor point="TOPLEFT" relativeTo="WorldMapDetailFrame" x="0" y="0"/>
 									<Anchor point="BOTTOMRIGHT" relativeTo="WorldMapDetailFrame" x="0" y="0"/>
 								</Anchors>
+								<Frames>
+									<CinematicModel parentKey="WorldQuestCompletedBySpellModel" facingLeft="true">
+										<Size x="400" y="400"/>
+										<Scripts>
+											<OnLoad>
+												self:RegisterEvent("UI_SCALE_CHANGED");
+												self:RegisterEvent("DISPLAY_SIZE_CHANGED");
+												self:SetDisplayInfo(11686); <!-- 11686 is invisible stalker -->
+											</OnLoad>
+											<OnEvent>
+												self:RefreshCamera();
+											</OnEvent>
+										</Scripts>
+									</CinematicModel>
+								</Frames>
 							</Frame>
 						</Frames>
 					</Frame>
@@ -810,6 +826,7 @@
 						</Scripts>
 					</Button>
 					<Frame parentKey="BountyBoard" inherits="WorldMapBountyBoardTemplate" />
+					<Frame parentKey="ActionButton" inherits="WorldMapActionButtonTemplate" />
 				</Frames>
 			</Frame>
 

@@ -5,10 +5,16 @@ local MISSION_BONUS_FONT_COLOR = CreateColor(1.0, 0.82, 0.13);
 
 GarrisonMission = {};
 
+-- overridden
+function GarrisonMission:InitializeFollowerType()
+	self.followerTypeID = nil;
+end
+
 function GarrisonMission:OnLoadMainFrame()
 	PanelTemplates_SetNumTabs(self, 2);
 	self.selectedTab = 1;
 	PanelTemplates_UpdateTabs(self);
+	self:InitializeFollowerType();
 end
 
 function GarrisonMission:OnShowMainFrame()
@@ -38,6 +44,11 @@ end
 function GarrisonMission:GetFollowerList()
 	return self.FollowerList;
 end
+
+function GarrisonMission:GetCompleteDialog()
+	return self.MissionTab.MissionList.CompleteDialog;
+end
+
 
 function GarrisonMission:SelectTab(id)
 	PanelTemplates_SetTab(self, id);
@@ -93,6 +104,12 @@ end
 
 function GarrisonMission:HasMission()
 	return self:GetMissionPage():IsShown() and self:GetMissionPage().missionInfo ~= nil;
+end
+
+function GarrisonMission:GetFollowerBuffsForMission(missionID)
+	self.followerCounters = C_Garrison.GetBuffedFollowersForMission(missionID)
+	self.followerTraits = C_Garrison.GetFollowersTraitsForMission(missionID);
+	self.followerSpells = C_Garrison.GetFollowersSpellsForMission(missionID);
 end
 
 function GarrisonMission:ShowMission(missionInfo)
@@ -187,8 +204,7 @@ function GarrisonMission:ShowMission(missionInfo)
 	
 	self:UpdateMissionData(missionPage);
 	
-	self.followerCounters = C_Garrison.GetBuffedFollowersForMission(missionInfo.missionID)
-	self.followerTraits = C_Garrison.GetFollowersTraitsForMission(missionInfo.missionID);
+	self:GetFollowerBuffsForMission(missionInfo.missionID);
 	
 	missionPage:SetCounters(missionPage.Followers, missionPage.Enemies, missionPage.missionInfo.missionID);
 end
@@ -225,7 +241,7 @@ function GarrisonMission:OnSetEnemyMechanic(enemyFrame, mechanicFrame, mechanicI
 
 end
 
-function GarrisonMission:SetEnemies(missionPage, enemies, numFollowers, mechanicYOffset, followerTypeID)
+function GarrisonMission:SetEnemies(missionPage, enemies, numFollowers)
 	local numVisibleEnemies = 0;
 	for i=1, #enemies do
 		local Frame = missionPage.Enemies[i];
@@ -249,11 +265,11 @@ function GarrisonMission:SetEnemies(missionPage, enemies, numFollowers, mechanic
 			Mechanic.info = mechanic;
 			Mechanic.Icon:SetTexture(mechanic.icon);
 			Mechanic.mechanicID = id;
-			Mechanic.followerTypeID = followerTypeID;
+			Mechanic.followerTypeID = self.followerTypeID;
 			self:OnSetEnemyMechanic(Frame, Mechanic, id);
 			Mechanic:Show();
 		end
-		Frame.Mechanics[1]:SetPoint("BOTTOM", (numMechs - 1) * -22, mechanicYOffset);
+		Frame.Mechanics[1]:SetPoint("BOTTOM", (numMechs - 1) * -22, GarrisonFollowerOptions[self.followerTypeID].missionPageMechanicYOffset);
 		for j=(numMechs + 1), #Frame.Mechanics do
 			Frame.Mechanics[j]:Hide();
 			Frame.Mechanics[j].mechanicID = nil;
@@ -400,8 +416,14 @@ function GarrisonMission:UpdateMissionData(missionPage)
 			if (icon) then
 				rewardsFrame.OvermaxItem.itemID = missionPage.missionInfo.overmaxRewardItem;
 				rewardsFrame.OvermaxItem.Icon:SetTexture(icon);
+				rewardsFrame.OvermaxItem.money = nil;
 				rewardsFrame.OvermaxItem:Show();
 			end
+		elseif (missionPage.missionInfo.overmaxRewardMoney ~= 0) then
+			rewardsFrame.OvermaxItem.title = GARRISON_REWARD_MONEY;
+			rewardsFrame.OvermaxItem.Icon:SetTexture("Interface\\Icons\\inv_misc_coin_01");
+			rewardsFrame.OvermaxItem.money = missionPage.missionInfo.overmaxRewardMoney;
+			rewardsFrame.OvermaxItem:Show();
 		end
 
 	else
@@ -557,8 +579,7 @@ function GarrisonMission:RemoveFollowerFromMission(frame, updateValues)
 		frame.Counters[i]:Hide();
 	end
 	
-	frame.DurabilityBackground:Hide();
-	frame.Durability:Hide();
+	self:GetMissionPage():UpdateFollowerDurability(frame);
 
 	local missionPage = self:GetMissionPage();
 	if (followerID) then
@@ -571,18 +592,6 @@ function GarrisonMission:RemoveFollowerFromMission(frame, updateValues)
 	if (missionPage.Followers and missionPage.Enemies) then
 		missionPage:SetCounters(missionPage.Followers, missionPage.Enemies, missionPage.missionInfo.missionID);
 	end
-end
-
-function GarrisonMission:CalculateDurabilityLoss(missionEffects, followerInfo)
-	local finalDurability = max(0, followerInfo.durability - 1);
-	if (missionEffects.hasKillTroopsEffect) then
-		finalDurability = 0;
-	end
-	if (finalDurability == 0 and missionEffects.hasRessurectTroopsEffect) then
-		finalDurability = 1;
-	end
-
-	return followerInfo.durability - finalDurability;
 end
 
 function GarrisonMission:UpdateMissionParty(followers, counterTemplate)
@@ -626,14 +635,7 @@ function GarrisonMission:UpdateMissionParty(followers, counterTemplate)
 				followerFrame.Counters[i]:Hide();
 			end
 
-			if (followerFrame.info.isTroop) then
-				followerFrame.DurabilityBackground:Show();
-				followerFrame.Durability:Show();
-				followerFrame.Durability:SetDurability(followerFrame.info.durability, followerFrame.info.maxDurability, self:CalculateDurabilityLoss(self:GetMissionPage().missionEffects, followerFrame.info));
-			else
-				followerFrame.DurabilityBackground:Hide();
-				followerFrame.Durability:Hide();
-			end
+			self:GetMissionPage():UpdateFollowerDurability(followerFrame);
 		end
 	end
 end
@@ -1041,11 +1043,12 @@ function GarrisonMissionComplete:OnModelLoaded()
 end
 
 
-function GarrisonMissionComplete:OnMissionCompleteResponse(missionID, canComplete, succeeded, followerDeaths)
+function GarrisonMissionComplete:OnMissionCompleteResponse(missionID, canComplete, succeeded, overmaxSucceeded, followerDeaths)
 	if ( self.currentMission and self.currentMission.missionID == missionID ) then
 		self.NextMissionButton:Enable();
 		if ( canComplete ) then
 			self.currentMission.succeeded = succeeded;
+			self.currentMission.overmaxSucceeded = overmaxSucceeded;
 			local animIndex = 0;
 			if ( self.Stage.EncountersFrame.numEncounters == 0 ) then
 				animIndex = self:FindAnimIndexFor(self.AnimRewards) - 1;
@@ -1067,6 +1070,7 @@ function GarrisonMissionComplete:StopAnims()
 	self:SetScript("OnUpdate", nil);
 	self.animIndex = nil;
 	self.skipAnimations = nil;
+	self.missionRewardEffectsPool:ReleaseAll();
 end
 
 function GarrisonMissionComplete:OnUpdate(elapsed)
@@ -1263,7 +1267,7 @@ function GarrisonMissionComplete:AnimCheckModels(entry)
 	end
 end
 
-local GARRISON_ANIMATION_LENGTH = 1;
+GARRISON_ANIMATION_LENGTH = 1;
 
 function GarrisonMissionComplete:AnimModels(entry, failPanType, successPanType, startPositionScale, speedMultiplier)
 	self.animNumModelHolds = nil;
@@ -1793,7 +1797,7 @@ function GarrisonMissionPage_SetReward(frame, reward)
 	frame:Show();
 end
 
-function GarrisonMissionPage_SetRewardFromItem(frame, itemID)
+function GarrisonMissionPage_SetOvermaxReward(frame, itemID, money)
 	frame.Quantity:Hide();
 	frame.IconBorder:Hide();
 	frame.itemID = nil;
@@ -1801,9 +1805,18 @@ function GarrisonMissionPage_SetRewardFromItem(frame, itemID)
 	frame.currencyQuantity = nil;
 	frame.tooltip = nil;
 	frame.bonusAbilityID = nil;
-	if (itemID) then
+
+	if (itemID and itemID ~= 0) then
 		frame.itemID = itemID;
 		GarrisonMissionFrame_SetItemRewardDetails(frame);
+	elseif (money and money ~= 0) then
+		frame.tooltip = GetMoneyString(money);
+		frame.currencyID = 0;
+		frame.currencyQuantity = money;
+		frame.Icon:SetTexture("Interface\\Icons\\inv_misc_coin_01");
+		if (frame.Name) then
+			frame.Name:SetText(frame.tooltip);
+		end
 	end
 	frame:Show();
 end
@@ -1896,7 +1909,8 @@ GarrisonMissionPageMixin = { }
 --this function puts check marks on the encounter mechanics countered by the slotted followers abilities
 function GarrisonMissionPageMixin:SetCounters(followers, enemies, missionID)
 	-- clear counter state
-	for i = 1, #enemies do
+	local numEnemies = enemies and #enemies or 0;
+	for i = 1, numEnemies do
 		local enemyFrame = enemies[i];
 		for mechanicIndex = 1, #enemyFrame.Mechanics do
 			enemyFrame.Mechanics[mechanicIndex].hasCounter = nil;
@@ -1912,7 +1926,7 @@ function GarrisonMissionPageMixin:SetCounters(followers, enemies, missionID)
 				for a = 1, #abilities do
 					local ability = abilities[a];
 					for counterID, counterInfo in pairs(ability.counters) do
-						GarrisonMissionPage_CheckCounter(enemies, counterID);
+						self:CheckCounter(enemies, counterID);
 					end
 				end
 			end
@@ -1923,13 +1937,13 @@ function GarrisonMissionPageMixin:SetCounters(followers, enemies, missionID)
 	for i = 1, #bonusEffects do
 		local mechanicTypeID = bonusEffects[i].mechanicTypeID;
 		if(mechanic ~= 0) then
-			GarrisonMissionPage_CheckCounter(enemies, mechanicTypeID);
+			self:CheckCounter(enemies, mechanicTypeID);
 		end
 	end
 	
 	-- show/remove checks
 	local playSound = false;
-	for i = 1, #enemies do
+	for i = 1, numEnemies do
 		local enemyFrame = enemies[i];
 		for mechanicIndex = 1, #enemyFrame.Mechanics do
 			local mechanicFrame = enemyFrame.Mechanics[mechanicIndex];
@@ -1952,7 +1966,7 @@ function GarrisonMissionPageMixin:SetCounters(followers, enemies, missionID)
 	end
 end
 
-function GarrisonMissionPage_CheckCounter(enemies, counterID)
+function GarrisonMissionPageMixin:CheckCounter(enemies, counterID)
 	for i = 1, #enemies do
 		local enemyFrame = enemies[i];
 		for mechanicIndex = 1, #enemyFrame.Mechanics do
@@ -1963,6 +1977,11 @@ function GarrisonMissionPage_CheckCounter(enemies, counterID)
 		end
 	end
 end
+
+-- overridden
+function GarrisonMissionPageMixin:UpdateFollowerDurability(followerFrame)
+end
+
 
 ---------------------------------------------------------------------------------
 --- Template Functions                                                        ---
@@ -2172,6 +2191,11 @@ function GarrisonMissionMechanicFollowerCounter_OnEnter(self)
 	if ( self.info.traitID ) then
 		ShowGarrisonFollowerAbilityTooltip(self, self.info.traitID, self.followerTypeID);
 		return;
+	elseif ( self.info.spellID ) then
+		GameTooltip:SetOwner(self, "ANCHOR_BOTTOMRIGHT", 10, 0);
+		GameTooltip:SetSpellByID(self.info.spellID);
+		GameTooltip:Show();
+		return;
 	elseif (GarrisonFollowerOptions[self.followerTypeID].displayCounterAbilityInPlaceOfMechanic and self.info.counterID) then
 		ShowGarrisonFollowerAbilityTooltip(self, self.info.counterID, self.followerTypeID);
 		return;
@@ -2213,6 +2237,7 @@ function GarrisonMissionMechanicFollowerCounter_OnEnter(self)
 end
 
 function GarrisonMissionMechanicFollowerCounter_OnLeave(self)
+	GameTooltip:Hide();
 	GarrisonMissionMechanicFollowerCounterTooltip:Hide();
 	HideGarrisonFollowerAbilityTooltip(self.followerTypeID);
 end
@@ -2245,7 +2270,7 @@ function GarrisonMission_DetermineCounterableThreats(missionID, followerType)
 							end
 						else
 							local isFullCounter = C_Garrison.IsMechanicFullyCountered(missionID, follower.followerID, counterMechanicID, abilities[j].id);
-							if ( isFullCounter ) then
+							if ( isFullCounter or GarrisonFollowerOptions[followerType].missionTooltipShowPartialCountersAsFull ) then
 								threats.full[counterMechanicID] = (threats.full[counterMechanicID] or 0) + 1;
 							else
 								threats.partial[counterMechanicID] = (threats.partial[counterMechanicID] or 0) + 1;

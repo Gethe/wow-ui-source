@@ -362,4 +362,62 @@
 			<OnLeave method="OnLeave" />
 		</Scripts>
 	</Frame>
+
+	<Frame name="WorldMapActionButtonTemplate" mixin="WorldMapActionButtonMixin" virtual="true">
+		<Size x="101" y="86" />
+		<Layers>
+			<Layer level="ARTWORK" textureSubLevel="1">
+				<Texture parentKey="ActionFrameTexture" atlas="worldquest-followerabilityframe" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="CENTER" />
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Button parentKey="SpellButton" useParentLevel="true" registerForClicks="LeftButtonDown" motionScriptsWhileDisabled="true" inherits="SecureFrameTemplate">
+				<Size x="55" y="55" />
+				<Anchors>
+					<Anchor point="CENTER" y="8" />
+				</Anchors>
+				<Frames>
+					<Cooldown parentKey="Cooldown" inherits="CooldownFrameTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT" x="5" y="-6"/>
+							<Anchor point="BOTTOMRIGHT" x="-5" y="3"/>
+						</Anchors>
+					</Cooldown>
+				</Frames>
+				<Scripts>
+					<OnClick>
+						self:GetParent():OnClick();
+					</OnClick>
+					
+					<OnEnter>
+						self:GetParent():OnEnter();
+					</OnEnter>
+					
+					<OnLeave>
+						self:GetParent():OnLeave();
+					</OnLeave>
+				</Scripts>
+				<NormalTexture />
+				<PushedTexture>
+					<Anchors>
+						<Anchor point="TOPLEFT" x="1" y="-1" />
+						<Anchor point="BOTTOMRIGHT" x="1" y="-1" />
+					</Anchors>
+				</PushedTexture>
+				<HighlightTexture file="Interface\Buttons\ButtonHilight-Square" alphaMode="ADD">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="0" y="-2" />
+						<Anchor point="BOTTOMRIGHT" x="0" y="-2" />
+					</Anchors>
+				</HighlightTexture>
+			</Button>
+		</Frames>
+		<Scripts>
+			<OnEvent method="OnEvent" />
+		</Scripts>
+	</Frame>
 </Ui>

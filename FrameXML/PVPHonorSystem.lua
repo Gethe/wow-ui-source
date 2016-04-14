@@ -202,8 +202,12 @@ function PVPHonorXPBar_SetNextAvailable(self)
 	if (CanPrestige()) then
 		showPrestige = true;
 		PVPHonorXPBar_SetPrestige(self.PrestigeReward);
+		self.PrestigeReward.PrestigeSpinAnimation:Play();
+		self.PrestigeReward.PrestigePulseAnimation:Play();
 	else
 		showPrestige = false;
+		self.PrestigeReward.PrestigeSpinAnimation:Stop();
+		self.PrestigeReward.PrestigePulseAnimation:Stop();
 	
 		self.rewardInfo = PVPHonorSystem_GetNextReward();
 

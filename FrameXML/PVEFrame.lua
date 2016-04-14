@@ -152,6 +152,38 @@ function PVEFrame_TabOnClick(self)
 	PVEFrame_ShowFrame(panels[self:GetID()].name);
 end
 
+function PVEFrame_HideLeftInset()
+    PVEFrameLeftInset:Hide();
+    PVEFrameBlueBg:Hide();
+    PVEFrameTLCorner:Hide();
+    PVEFrameTRCorner:Hide();
+    PVEFrameBRCorner:Hide();
+    PVEFrameBLCorner:Hide();
+    PVEFrameLLVert:Hide();
+    PVEFrameRLVert:Hide();
+    PVEFrameBottomLine:Hide();
+    PVEFrameTopLine:Hide();
+    PVEFrameTopFiligree:Hide();
+    PVEFrameBottomFiligree:Hide();
+    PVEFrame.shadows:Hide();
+end
+
+function PVEFrame_ShowLeftInset()
+    PVEFrameLeftInset:Show();
+    PVEFrameBlueBg:Show();
+    PVEFrameTLCorner:Show();
+    PVEFrameTRCorner:Show();
+    PVEFrameBRCorner:Show();
+    PVEFrameBLCorner:Show();
+    PVEFrameLLVert:Show();
+    PVEFrameRLVert:Show();
+    PVEFrameBottomLine:Show();
+    PVEFrameTopLine:Show();
+    PVEFrameTopFiligree:Show();
+    PVEFrameBottomFiligree:Show();
+    PVEFrame.shadows:Show();
+end
+
 ---------------------------------------------------------------
 -- GROUP FINDER
 ---------------------------------------------------------------

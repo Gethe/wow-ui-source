@@ -262,6 +262,7 @@ function WorldMapFrame_OnLoad(self)
 	self:RegisterEvent("PLAYER_STOPPED_MOVING");
 	self:RegisterEvent("QUESTLINE_UPDATE");
 	self:RegisterEvent("QUEST_LOG_UPDATE");
+	self:RegisterEvent("WORLD_QUEST_COMPLETED_BY_SPELL");
 	
 	self:SetClampRectInsets(0, 0, 0, -60);				-- don't overlap the xp/rep bars
 	self.poiHighlight = nil;
@@ -306,8 +307,12 @@ function WorldMapFrame_OnLoad(self)
 	QuestPOI_Initialize(WorldMapPOIFrame, WorldMapPOIButton_Init);
 	
 	WorldMapPlayerUpper:EnableMouse(false);
+	WorldMapFrame.UIElementsFrame.BountyBoard:SetSelectedBountyChangedCallback(WorldMapFrame_SetBonusObjectivesDirty);
+	WorldMapFrame.UIElementsFrame.ActionButton:SetOnCastChangedCallback(WorldMapFrame_SetBonusObjectivesDirty);
+end
 
-	WorldMapFrame.UIElementsFrame.BountyBoard:SetSelectedBountyChangedCallback(function() WorldMapFrame.bonusObjectiveUpdateTimeLeft = 0; end);
+function WorldMapFrame_SetBonusObjectivesDirty() 
+	WorldMapFrame.bonusObjectiveUpdateTimeLeft = 0;
 end
 
 function WorldMapFrame_OnShow(self)
@@ -454,7 +459,7 @@ function WorldMapFrame_OnEvent(self, event, ...)
 		EncounterJournal_UpdateMapButtonPortraits();
 	elseif ( event == "SUPER_TRACKED_QUEST_CHANGED" ) then
 		local questID = ...;
-		self.bonusObjectiveUpdateTimeLeft = 0;
+		WorldMapFrame_SetBonusObjectivesDirty();
 		WorldMapPOIFrame_SelectPOI(questID);
 	elseif ( event == "PLAYER_STARTED_MOVING" ) then
 		if ( GetCVarBool("mapFade") ) then
@@ -467,7 +472,11 @@ function WorldMapFrame_OnEvent(self, event, ...)
 	elseif ( event == "QUEST_LOG_UPDATE" ) then
 		if WorldMapFrame:IsVisible() then
 			WorldMap_UpdateQuestBonusObjectives();
-			WorldMapFrame_UpdateBountyBoardLocation();
+			WorldMapFrame_UpdateOverlayLocations();
+		end
+	elseif ( event == "WORLD_QUEST_COMPLETED_BY_SPELL" ) then
+		if WorldMapFrame:IsVisible() then
+			WorldMapFrame_SetBonusObjectivesDirty();
 		end
 	end
 end
@@ -588,6 +597,11 @@ local function ApplyAtlasTexturesToPOI(button, normal, pushed, highlight, width,
 
 	button:SetHighlightAtlas(highlight);
 	ApplyTextureToPOI(button:GetHighlightTexture(), width, height);
+
+	if button.SelectedGlow then
+		button.SelectedGlow:SetAtlas(pushed);
+		ApplyTextureToPOI(button.SelectedGlow, width, height);
+	end
 end
 
 local function ApplyStandardTexturesToPOI(button, selected)
@@ -632,13 +646,19 @@ WORLD_QUEST_ICONS_BY_PROFESSION = {
 	[393] = "worldquest-icon-skinning",
 };
 
-function WorldMap_SetupWorldQuestButton(button, worldQuestType, isRare, isElite, tradeskillLineIndex, inProgress, selected, isCriteria)
+function WorldMap_SetupWorldQuestButton(button, worldQuestType, rarity, isElite, tradeskillLineIndex, inProgress, selected, isCriteria, isSpellTarget)
 	button.Glow:SetShown(selected);
 
-	if ( isRare and not selected ) then
-		ApplyAtlasTexturesToPOI(button, "worldquest-questmarker-epic", "worldquest-questmarker-epic-down", "worldquest-questmarker-epic", 18, 18);
-	else
+	if rarity == LE_WORLD_QUEST_QUALITY_COMMON then
 		ApplyStandardTexturesToPOI(button, selected);
+	elseif rarity == LE_WORLD_QUEST_QUALITY_RARE then
+		ApplyAtlasTexturesToPOI(button, "worldquest-questmarker-rare", "worldquest-questmarker-rare-down", "worldquest-questmarker-rare", 18, 18);
+	elseif rarity == LE_WORLD_QUEST_QUALITY_EPIC then
+		ApplyAtlasTexturesToPOI(button, "worldquest-questmarker-epic", "worldquest-questmarker-epic-down", "worldquest-questmarker-epic", 18, 18);
+	end
+
+	if ( button.SelectedGlow ) then
+		button.SelectedGlow:SetShown(rarity ~= LE_WORLD_QUEST_QUALITY_COMMON and selected);
 	end
 
 	if ( isElite ) then
@@ -650,14 +670,11 @@ function WorldMap_SetupWorldQuestButton(button, worldQuestType, isRare, isElite,
 
 	local tradeskillLineID = tradeskillLineIndex and select(7, GetProfessionInfo(tradeskillLineIndex));
 	if ( worldQuestType == LE_QUEST_TAG_TYPE_PVP ) then
-		ApplyStandardTexturesToPOI(button, selected);
-
 		if ( inProgress ) then
 			button.Texture:SetAtlas("worldquest-questmarker-questionmark");
 			button.Texture:SetSize(10, 15);
 		else
-			button.Texture:SetAtlas("worldquest-icon-pvp-ffa");
-			button.Texture:SetSize(12, 17);
+			button.Texture:SetAtlas("worldquest-icon-pvp-ffa", true);
 		end
 	elseif ( worldQuestType == LE_QUEST_TAG_TYPE_PET_BATTLE ) then
 		if ( inProgress ) then
@@ -712,11 +729,15 @@ function WorldMap_SetupWorldQuestButton(button, worldQuestType, isRare, isElite,
 			button.CriteriaMatchGlow:Hide();
 		end
 	end
+
+	if ( button.SpellTargetGlow ) then
+		button.SpellTargetGlow:SetShown(isSpellTarget);
+	end
 end
 
 function WorldMap_DoesWorldQuestInfoPassFilters(info, ignoreTypeFilters, ignoreTimeRequirement)
 	if ( not ignoreTypeFilters ) then
-		local tagID, tagName, worldQuestType, isRare, isElite, tradeskillLineIndex = GetQuestTagInfo(info.questId);
+		local tagID, tagName, worldQuestType, rarity, isElite, tradeskillLineIndex = GetQuestTagInfo(info.questId);
 
 		if ( worldQuestType == LE_QUEST_TAG_TYPE_PROFESSION ) then
 			local prof1, prof2, arch, fish, cook, firstAid = GetProfessions();
@@ -750,21 +771,22 @@ function WorldMap_DoesWorldQuestInfoPassFilters(info, ignoreTypeFilters, ignoreT
 end
 
 function WorldMap_TryCreatingWorldQuestPOI(info, taskIconIndex)
-	if ( not WorldMap_DoesWorldQuestInfoPassFilters(info) ) then
+	if ( WorldMap_IsWorldQuestSuppressed(info.questId) or not WorldMap_DoesWorldQuestInfoPassFilters(info) ) then
 		return nil;
 	end
 
-	local tagID, tagName, worldQuestType, isRare, isElite, tradeskillLineIndex = GetQuestTagInfo(info.questId);
+	local tagID, tagName, worldQuestType, rarity, isElite, tradeskillLineIndex = GetQuestTagInfo(info.questId);
 
 	local taskPOI = WorldMap_GetOrCreateTaskPOI(taskIconIndex);
 	local selected = info.questId == GetSuperTrackedQuestID();
 
 	local isCriteria = WorldMapFrame.UIElementsFrame.BountyBoard:IsWorldQuestCriteriaForSelectedBounty(info.questId);
+	local isSpellTarget = SpellCanTargetQuest() and IsQuestIDValidSpellTarget(info.questId);
 
 	taskPOI.worldQuest = true;
 	taskPOI.Texture:SetDrawLayer("OVERLAY");
 
-	WorldMap_SetupWorldQuestButton(taskPOI, worldQuestType, isRare, isElite, tradeskillLineIndex, info.inProgress, selected, isCriteria)
+	WorldMap_SetupWorldQuestButton(taskPOI, worldQuestType, rarity, isElite, tradeskillLineIndex, info.inProgress, selected, isCriteria, isSpellTarget)
 
 	return taskPOI;
 end
@@ -781,7 +803,9 @@ function WorldMap_TryCreatingBonusObjectivePOI(info, taskIconIndex)
 	taskPOI.Texture:SetDrawLayer("BACKGROUND");
 	taskPOI.TimeLowFrame:Hide();
 	taskPOI.CriteriaMatchGlow:Hide();
+	taskPOI.SpellTargetGlow:Hide();
 	taskPOI.Glow:Hide();
+	taskPOI.SelectedGlow:Hide();
 	taskPOI.worldQuest = false;
 
 	return taskPOI;
@@ -803,6 +827,7 @@ function WorldMap_UpdateQuestBonusObjectives()
 		NUM_WORLDMAP_TASK_POIS = numTaskPOIs;
 	end
 
+	local hasWorldQuests = false;
 	local taskIconIndex = 1;
 	if ( numTaskPOIs > 0 ) then
 		for i, info  in ipairs(taskInfo) do
@@ -822,6 +847,10 @@ function WorldMap_UpdateQuestBonusObjectives()
 					taskPOI:Show();
 
 					taskIconIndex = taskIconIndex + 1;
+
+					if ( isWorldQuest ) then
+						hasWorldQuests = true;
+					end
 				end
 			end
 		end
@@ -831,6 +860,8 @@ function WorldMap_UpdateQuestBonusObjectives()
 	for i = taskIconIndex, NUM_WORLDMAP_TASK_POIS do
 		_G["WorldMapFrameTaskPOI"..i]:Hide();
 	end
+
+	WorldMapFrame.UIElementsFrame.ActionButton:SetHasWorldQuests(hasWorldQuests);
 end
 
 function WorldMap_DrawWorldEffects()
@@ -1095,7 +1126,8 @@ function WorldMapFrame_Update()
 	WorldMap_UpdateLandmarks();
 	WorldMap_DrawWorldEffects();
 	WorldMapFrame.UIElementsFrame.BountyBoard:SetMapAreaID(mapID);
-	WorldMapFrame_UpdateBountyBoardLocation();
+	WorldMapFrame.UIElementsFrame.ActionButton:SetMapAreaID(mapID);
+	WorldMapFrame_UpdateOverlayLocations();
 	WorldMap_UpdateQuestBonusObjectives();
 
 	-- Setup the overlays
@@ -1273,20 +1305,30 @@ function WorldMapFrame_Update()
 	WorldMapFrame_UpdateInvasion();
 end
 
-function WorldMapFrame_UpdateBountyBoardLocation(visible)
+function WorldMapFrame_SetOverlayLocation(frame, location)
+	frame:ClearAllPoints();
+	if location == LE_MAP_OVERLAY_DISPLAY_LOCATION_BOTTOM_LEFT then
+		frame:SetPoint("BOTTOMLEFT", 15, 15);
+	elseif location == LE_MAP_OVERLAY_DISPLAY_LOCATION_TOP_LEFT then
+		frame:SetPoint("TOPLEFT", 15, -15);
+	elseif location == LE_MAP_OVERLAY_DISPLAY_LOCATION_BOTTOM_RIGHT then
+		frame:SetPoint("BOTTOMRIGHT", -18, 15);
+	elseif location == LE_MAP_OVERLAY_DISPLAY_LOCATION_TOP_RIGHT then
+		frame:SetPoint("TOPRIGHT", -15, -15);
+	end
+end
+
+function WorldMapFrame_UpdateOverlayLocations()
 	local bountyBoard = WorldMapFrame.UIElementsFrame.BountyBoard;
 	local bountyBoardLocation = bountyBoard:GetDisplayLocation();
 	if bountyBoardLocation then
-		bountyBoard:ClearAllPoints();
-		if bountyBoardLocation == LE_BOUNTY_DISPLAY_LOCATION_BOTTOM_LEFT then
-			bountyBoard:SetPoint("BOTTOMLEFT", 15, 15);
-		elseif bountyBoardLocation == LE_BOUNTY_DISPLAY_LOCATION_TOP_LEFT then
-			bountyBoard:SetPoint("TOPLEFT", 15, -15);
-		elseif bountyBoardLocation == LE_BOUNTY_DISPLAY_LOCATION_BOTTOM_RIGHT then
-			bountyBoard:SetPoint("BOTTOMRIGHT", -18, 15);
-		elseif bountyBoardLocation == LE_BOUNTY_DISPLAY_LOCATION_TOP_RIGHT then
-			bountyBoard:SetPoint("TOPRIGHT", -15, -15);
-		end
+		WorldMapFrame_SetOverlayLocation(bountyBoard, bountyBoardLocation);
+	end
+
+	local actionButton = WorldMapFrame.UIElementsFrame.ActionButton;
+	local actionButtonLocation = actionButton:GetDisplayLocation();
+	if actionButtonLocation then
+		WorldMapFrame_SetOverlayLocation(actionButton, actionButtonLocation);
 	end
 end
 
@@ -1595,6 +1637,62 @@ function WorldEffectPOI_OnLeave()
 	WorldMapTooltip:Hide();
 end
 
+local g_supressedWorldQuestTimeStamps = {};
+function WorldMap_AddWorldQuestSuppression(questID)
+	g_supressedWorldQuestTimeStamps[questID] = GetTime();
+	WorldMapFrame_SetBonusObjectivesDirty();
+end
+
+local WORLD_QUEST_SUPPRESSION_TIME_SECS = 60.0;
+function WorldMap_IsWorldQuestSuppressed(questID)
+	local lastSuppressedTime = g_supressedWorldQuestTimeStamps[questID];
+	if lastSuppressedTime then
+		if GetTime() - lastSuppressedTime < WORLD_QUEST_SUPPRESSION_TIME_SECS then
+			return true;
+		end
+		g_supressedWorldQuestTimeStamps[questID] = nil;
+	end
+	return false;
+end
+
+function WorldMap_OnWorldQuestCompletedBySpell(questID)
+	local mapAreaID = GetCurrentMapAreaID();
+	local x, y = C_TaskQuest.GetQuestLocation(questID, mapAreaID);
+	if x and y then
+		WorldMap_AddWorldQuestSuppression(questID);
+		local spellID, spellVisualKitID = GetWorldMapActionButtonSpellInfo();
+		if spellVisualKitID then
+			WorldMapPOIFrame_AnchorPOI(WorldMapPOIFrame.WorldQuestCompletedBySpellModel, x, y, 5000);
+			WorldMapPOIFrame.WorldQuestCompletedBySpellModel:SetCameraTarget(0, 0, 0);
+			WorldMapPOIFrame.WorldQuestCompletedBySpellModel:SetCameraPosition(0, 0, 25);
+			WorldMapPOIFrame.WorldQuestCompletedBySpellModel:SetSpellVisualKit(spellVisualKitID);
+		end
+	end
+end
+
+function WorldMap_AddQuestTimeToTooltip(questID)
+	local timeLeftMinutes = C_TaskQuest.GetQuestTimeLeftMinutes(questID);
+	if ( timeLeftMinutes ) then
+		local color = NORMAL_FONT_COLOR;
+		local timeString;
+		if ( timeLeftMinutes <= WORLD_QUESTS_TIME_CRITICAL_MINUTES ) then
+			-- Grace period, show the actual time left
+			color = RED_FONT_COLOR;
+			timeString = SecondsToTime(timeLeftMinutes * 60);
+		elseif timeLeftMinutes < 2 * 60 then
+			timeString = SecondsToTime((timeLeftMinutes - WORLD_QUESTS_TIME_CRITICAL_MINUTES) * 60);
+		elseif timeLeftMinutes < 12 * 60 then
+			timeString = TIME_LEFT_MEDIUM;
+		elseif timeLeftMinutes < 24 * 60 then
+			timeString = TIME_LEFT_LONG;
+		else
+			timeString = TIME_LEFT_VERY_LONG;
+		end
+
+		WorldMapTooltip:AddLine(BONUS_OBJECTIVE_TIME_LEFT:format(timeString), color.r, color.g, color.b);
+	end
+end
+
 function WorldMap_AddQuestRewardsToTooltip(questID)
 	if ( GetQuestLogRewardXP(questID) > 0 or GetNumQuestLogRewardCurrencies(questID) > 0 or GetNumQuestLogRewards(questID) > 0 or GetQuestLogRewardMoney(questID) > 0 or GetQuestLogRewardArtifactXP(questID) > 0 ) then
 		WorldMapTooltip:AddLine(" ");
@@ -1652,8 +1750,8 @@ function TaskPOI_OnEnter(self)
 	local title, factionID = C_TaskQuest.GetQuestInfoByQuestID(self.questID);
 
 	if ( self.worldQuest ) then
-		local tagID, tagName, worldQuestType, isRare, isElite, tradeskillLineIndex = GetQuestTagInfo(self.questID);
-		local color = isRare and ITEM_QUALITY_COLORS[LE_ITEM_QUALITY_EPIC] or HIGHLIGHT_FONT_COLOR;
+		local tagID, tagName, worldQuestType, rarity, isElite, tradeskillLineIndex = GetQuestTagInfo(self.questID);
+		local color = WORLD_QUEST_QUALITY_COLORS[rarity];
 		WorldMapTooltip:SetText(title, color.r, color.g, color.b);
 
 		if ( factionID ) then
@@ -1663,26 +1761,7 @@ function TaskPOI_OnEnter(self)
 			end
 		end
 
-		local timeLeftMinutes = C_TaskQuest.GetQuestTimeLeftMinutes(self.questID);
-		if ( timeLeftMinutes ) then
-			local color = NORMAL_FONT_COLOR;
-			local timeString;
-			if ( timeLeftMinutes <= WORLD_QUESTS_TIME_CRITICAL_MINUTES ) then
-				-- Grace period, show the actual time left
-				color = RED_FONT_COLOR;
-				timeString = SecondsToTime(timeLeftMinutes * 60);
-			elseif timeLeftMinutes < 2 * 60 then
-				timeString = SecondsToTime((timeLeftMinutes - WORLD_QUESTS_TIME_CRITICAL_MINUTES) * 60);
-			elseif timeLeftMinutes < 12 * 60 then
-				timeString = TIME_LEFT_MEDIUM;
-			elseif timeLeftMinutes < 24 * 60 then
-				timeString = TIME_LEFT_LONG;
-			else
-				timeString = TIME_LEFT_VERY_LONG;
-			end
-
-			WorldMapTooltip:AddLine(BONUS_OBJECTIVE_TIME_LEFT:format(timeString), color.r, color.g, color.b);
-		end
+		WorldMap_AddQuestTimeToTooltip(self.questID);
 	else
 		WorldMapTooltip:SetText(title);
 	end
@@ -1717,15 +1796,29 @@ end
 
 function TaskPOI_OnClick(self, button)
 	if self.worldQuest then
-		PlaySound("igMainMenuOptionCheckBoxOn");
-		if IsShiftKeyDown() then
-			if IsWorldQuestWatched(self.questID) then
-				BonusObjectiveTracker_UntrackWorldQuest(self.questID);
+		if SpellCanTargetQuest() then
+			if IsQuestIDValidSpellTarget(self.questID) then
+				UseWorldMapActionButtonSpellOnQuest(self.questID);
+				-- Assume success for responsiveness
+				WorldMap_OnWorldQuestCompletedBySpell(self.questID);
 			else
-				BonusObjectiveTracker_TrackWorldQuest(self.questID);
+				UIErrorsFrame:AddMessage(WORLD_QUEST_CANT_COMPLETE_BY_SPELL, RED_FONT_COLOR.r, RED_FONT_COLOR.g, RED_FONT_COLOR.b);
 			end
 		else
-			BonusObjectiveTracker_TrackWorldQuest(self.questID);
+			PlaySound("igMainMenuOptionCheckBoxOn");
+			if IsShiftKeyDown() then
+				if IsWorldQuestHardWatched(self.questID) or (IsWorldQuestWatched(self.questID) and GetSuperTrackedQuestID() == self.questID) then
+					BonusObjectiveTracker_UntrackWorldQuest(self.questID);
+				else
+					BonusObjectiveTracker_TrackWorldQuest(self.questID, true);
+				end
+			else
+				if IsWorldQuestHardWatched(self.questID) then
+					SetSuperTrackedQuestID(self.questID);
+				else
+					BonusObjectiveTracker_TrackWorldQuest(self.questID);
+				end
+			end
 		end
 	end
 end
@@ -1856,9 +1949,18 @@ function WorldMap_GetOrCreateTaskPOI(index)
 	button.Glow:SetTexture("Interface/WorldMap/UI-QuestPoi-IconGlow.tga");
 	button.Glow:SetBlendMode("ADD");
 
+	button.SelectedGlow = button:CreateTexture(button:GetName().."SelectedGlow", "OVERLAY", 2);
+	button.SelectedGlow:SetBlendMode("ADD");
+
 	button.CriteriaMatchGlow = button:CreateTexture(button:GetName().."CriteriaMatchGlow", "BACKGROUND", -1);
 	button.CriteriaMatchGlow:SetAlpha(.6);
 	button.CriteriaMatchGlow:SetBlendMode("ADD");
+	
+	button.SpellTargetGlow = button:CreateTexture(button:GetName().."SpellTargetGlow", "OVERLAY", 1);
+	button.SpellTargetGlow:SetAtlas("worldquest-questmarker-abilityhighlight", true);
+	button.SpellTargetGlow:SetAlpha(.6);
+	button.SpellTargetGlow:SetBlendMode("ADD");
+	button.SpellTargetGlow:SetPoint("CENTER", 0, 0);
 
 	button.Underlay = button:CreateTexture(button:GetName().."Underlay", "BACKGROUND");
 	button.Underlay:SetWidth(34);

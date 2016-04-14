@@ -357,11 +357,11 @@ function LevelUpDisplay_OnEvent(self, event, ...)
 		self.sound = warningSound;
 		LevelUpDisplay_Show(self);
 	elseif ( event == "CHALLENGE_MODE_NEW_RECORD" ) then
-		local mapID, recordTime, medal = ...;
+		local mapID, recordTime, level = ...;
 		self.type = TOAST_CHALLENGE_MODE_RECORD;
 		self.mapID = mapID;
 		self.recordTime = recordTime;
-		self.medal = medal;
+        self.level = level;
 		LevelUpDisplay_Show(self);
 		PlaySoundKitID(33338);
 	elseif ( event == "GARRISON_BUILDING_ACTIVATED" ) then
@@ -779,19 +779,8 @@ function LevelUpDisplay_StartDisplay(self, beginUnlockList)
 				end
 			end
 		elseif ( self.type == TOAST_CHALLENGE_MODE_RECORD ) then
-			local medal = self.medal;
-			if ( CHALLENGE_MEDAL_TEXTURES[medal] ) then
-				self.challengeModeFrame.MedalEarned:SetText(_G["CHALLENGE_MODE_MEDALNAME"..medal]);
-				self.challengeModeFrame.RecordTime:SetFormattedText(CHALLENGE_MODE_NEW_BEST, GetTimeStringFromSeconds(self.recordTime / 1000));
-				self.challengeModeBits.MedalFlare:Show();
-				self.challengeModeBits.MedalIcon:SetTexture(CHALLENGE_MEDAL_TEXTURES[medal]);
-				self.challengeModeBits.MedalIcon:Show();
-				self.challengeModeBits.BottomFiligree:Show();
-			else
-				-- no medal earned, still a record time for player
-				self.challengeModeFrame.MedalEarned:SetText(CHALLENGE_MODE_NEW_RECORD);
-				self.challengeModeFrame.RecordTime:SetText(GetTimeStringFromSeconds(self.recordTime / 1000));
-			end
+			self.challengeModeFrame.LevelCompleted:SetFormattedText(CHALLENGE_MODE_POWER_LEVEL, self.level);
+			self.challengeModeFrame.RecordTime:SetFormattedText(CHALLENGE_MODE_NEW_BEST, GetTimeStringFromSeconds(self.recordTime / 1000));
 			PlaySound("UI_Challenges_NewRecord");
 			LevelUpDisplay:SetPoint("TOP", 0, -190);
 			playAnim = self.challengeModeFrame.challengeComplete;

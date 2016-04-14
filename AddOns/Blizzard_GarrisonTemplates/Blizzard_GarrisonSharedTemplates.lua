@@ -128,7 +128,7 @@ function GarrisonFollowerList:OnShow()
 				break;
 			end
 		end
-		if (index) then
+		if (index and index ~= 0) then
 			self:ShowFollower(self.followers[index].followerID);
 		else
 			-- empty page
@@ -571,6 +571,29 @@ function GarrisonFollowerList:UpdateData()
 	followerFrame.lastUpdate = GetTime();
 end
 
+function GarrisonFollowerButton_AddCounterButtons(button, follower, numShown, counters, lastUpdate)
+	if (not counters) then
+		return numShown;
+	end
+	for i = 1, min(4 - numShown, #counters) do	-- max of 4 icons
+		numShown = numShown + 1;
+		GarrisonFollowerButton_SetCounterButton(button, follower.followerID, numShown, counters[i], lastUpdate, follower.followerTypeID);
+	end
+
+	return numShown;
+end
+
+local function GetFollowerButtonCounterSpacings(followerTypeID)
+	local options = GarrisonFollowerOptions[followerTypeID];
+	local numPerRow = options.followerListCounterNumPerRow;
+	local innerSpacing = options.followerListCounterInnerSpacing;
+	local outerSpacingX = options.followerListCounterOuterSpacingX;
+	local outerSpacingY = options.followerListCounterOuterSpacingY;
+	local scale = options.followerListCounterScale;
+
+	return numPerRow, innerSpacing, outerSpacingX, outerSpacingY, scale;
+end
+
 function GarrisonFollowerButton_UpdateCounters(frame, button, follower, showCounters, lastUpdate)
 	local numShown = 0;
 	if ( showCounters and button.isCollected and follower.status ~= GARRISON_FOLLOWER_INACTIVE ) then
@@ -581,31 +604,24 @@ function GarrisonFollowerButton_UpdateCounters(frame, button, follower, showCoun
 			if ( follower.followerTypeID == LE_FOLLOWER_TYPE_SHIPYARD_6_2 ) then
 				table.sort(counters, function(left, right) return left.factor > right.factor; end);
 			end
-			for i = 1, #counters do
-				-- max of 4 icons
-				if ( numShown == 4 ) then
-					break;
-				end			
-				numShown = numShown + 1;
-				GarrisonFollowerButton_SetCounterButton(button, follower.followerID, numShown, counters[i], lastUpdate, follower.followerTypeID);
-			end
 		end
+
+		numShown = GarrisonFollowerButton_AddCounterButtons(button, follower, numShown, counters, lastUpdate);
+
 		local traits = frame.followerTraits and frame.followerTraits[follower.followerID];
-		if ( traits ) then
-			for i = 1, #traits do
-				-- max of 4 icons
-				if ( numShown == 4 ) then
-					break;
-				end
-				numShown = numShown + 1;
-				GarrisonFollowerButton_SetCounterButton(button, follower.followerID, numShown, traits[i], lastUpdate, follower.followerTypeID);
-			end
-		end
+		numShown = GarrisonFollowerButton_AddCounterButtons(button, follower, numShown, traits, lastUpdate);
+
+		local spells = frame.followerSpells and frame.followerSpells[follower.followerID];
+		numShown = GarrisonFollowerButton_AddCounterButtons(button, follower, numShown, spells, lastUpdate);
+
 	end
-	if ( numShown == 1 or numShown == 2 or follower.followerTypeID == LE_FOLLOWER_TYPE_SHIPYARD_6_2 ) then
-		button.Counters[1]:SetPoint("TOPRIGHT", -8, -16);
+	local numPerRow, innerSpacing, outerSpacingX, outerSpacingY, scale = GetFollowerButtonCounterSpacings(follower.followerTypeID);
+	button.Counters[1]:ClearAllPoints();
+	if ( numShown <= numPerRow ) then
+		local collapsedButtonHeight = 46;
+		button.Counters[1]:SetPoint("RIGHT", button.Counters[1]:GetParent(), "TOPRIGHT", -outerSpacingX, -collapsedButtonHeight/2);
 	else
-		button.Counters[1]:SetPoint("TOPRIGHT", -8, -4);
+		button.Counters[1]:SetPoint("TOPRIGHT", -outerSpacingX, -outerSpacingY);
 	end
 	for i = numShown + 1, #button.Counters do
 		button.Counters[i].info = nil;
@@ -617,17 +633,15 @@ function GarrisonFollowerButton_SetCounterButton(button, followerID, index, info
 	local counter = button.Counters[index];
 	if ( not counter ) then
 		button.Counters[index] = CreateFrame("Frame", nil, button, "GarrisonMissionAbilityCounterTemplate");
-		if ( followerTypeID == LE_FOLLOWER_TYPE_SHIPYARD_6_2 ) then
-			button.Counters[index]:SetPoint("RIGHT", button.Counters[index-1], "LEFT", -6, 0);
-		else
-			if (index % 2 == 0) then
-				button.Counters[index]:SetPoint("RIGHT", button.Counters[index-1], "LEFT", -6, 0);
-			else
-				button.Counters[index]:SetPoint("TOP", button.Counters[index-2], "BOTTOM", 0, -6);
-			end
-		end
 		counter = button.Counters[index];
 	end
+	local numPerRow, innerSpacing, outerSpacingX, outerSpacingY, scale = GetFollowerButtonCounterSpacings(followerTypeID);
+	if ((index - 1) % numPerRow ~= 0) then
+		counter:SetPoint("RIGHT", button.Counters[index-1], "LEFT", -innerSpacing, 0);
+	else
+		counter:SetPoint("TOP", button.Counters[index-2], "BOTTOM", 0, -innerSpacing);
+	end
+	counter:SetScale(scale);
 	counter.info = info;
 
 	counter.followerTypeID = followerTypeID;
@@ -644,6 +658,12 @@ function GarrisonFollowerButton_SetCounterButton(button, followerID, index, info
 			counter.AbilityFeedbackGlowAnim.traitID = nil;
 			counter.AbilityFeedbackGlowAnim:Stop();
 		end
+	elseif (info.spellID) then
+		counter.tooltip = nil;
+		counter.info.showCounters = false;
+		counter.Icon:SetTexture(select(3, GetSpellInfo(info.spellID)));
+		counter.AbilityFeedbackGlowAnim:Stop();
+		counter.Border:Hide();
 	else
 		counter.tooltip = info.name;
 		counter.info.showCounters = true;
@@ -1254,6 +1274,47 @@ function GarrisonFollowerTabMixin:UpdateValidSpellHighlight(followerID, follower
 	end
 end
 
+function GarrisonFollowerTabMixin:SetupXPBar(followerInfo)
+	if ( followerInfo.isCollected ) then
+		-- Follower cannot be upgraded anymore
+		if (GarrisonFollowerOptions[followerInfo.followerTypeID].followerPaneHideXP or followerInfo.isTroop or followerInfo.isMaxLevel and followerInfo.quality >= GARRISON_FOLLOWER_MAX_UPGRADE_QUALITY) then
+			self.XPLabel:Hide();
+			self.XPBar:Hide();
+			self.XPText:Hide();
+			self.XPText:SetText("");
+		else
+			if (followerInfo.isMaxLevel) then
+				self.XPLabel:SetText(GARRISON_FOLLOWER_XP_UPGRADE_STRING);
+			else
+				self.XPLabel:SetText(GARRISON_FOLLOWER_XP_STRING);
+			end
+			self.XPLabel:SetWidth(0);
+			self.XPLabel:SetFontObject("GameFontHighlight");
+			self.XPLabel:SetPoint("TOPRIGHT", self.XPText, "BOTTOMRIGHT", 0, -4);
+			self.XPLabel:Show();
+			-- If the XPLabel text does not fit within 100 pixels, shrink the font. If it wraps to 2 lines, move the text up.
+			if (self.XPLabel:GetWidth() > 100) then
+				self.XPLabel:SetWidth(100);
+				self.XPLabel:SetFontObject("GameFontWhiteSmall");
+				if (self.XPLabel:GetNumLines() > 1) then
+					self.XPLabel:SetPoint("TOPRIGHT", self.XPText, "BOTTOMRIGHT", -1, 0);
+				end
+			end
+			self.XPBar:Show();
+			self.XPBar:SetMinMaxValues(0, followerInfo.levelXP);
+			self.XPBar.Label:SetFormattedText(GARRISON_FOLLOWER_XP_BAR_LABEL, BreakUpLargeNumbers(followerInfo.xp), BreakUpLargeNumbers(followerInfo.levelXP));
+			self.XPBar:SetValue(followerInfo.xp);
+			local xpLeft = followerInfo.levelXP - followerInfo.xp;
+			self.XPText:SetText(format(GARRISON_FOLLOWER_XP_LEFT, xpLeft));
+			self.XPText:Show();
+		end
+	else
+		self.XPText:Hide();
+		self.XPLabel:Hide();
+		self.XPBar:Hide();
+	end
+end
+
 
 function GarrisonFollowerTabMixin:ShowFollower(followerID, followerList)
 
@@ -1291,44 +1352,8 @@ function GarrisonFollowerTabMixin:ShowFollower(followerID, followerList)
 	self.Name:SetVertexColor(color.r, color.g, color.b);
 	self.ClassSpec:SetText(followerInfo.className);
 	self.Class:SetAtlas(followerInfo.classAtlas);
-	if ( followerInfo.isCollected ) then
-		-- Follower cannot be upgraded anymore
-		if (followerInfo.isMaxLevel and followerInfo.quality >= GARRISON_FOLLOWER_MAX_UPGRADE_QUALITY) then
-			self.XPLabel:Hide();
-			self.XPBar:Hide();
-			self.XPText:Hide();
-			self.XPText:SetText("");
-		else
-			if (followerInfo.isMaxLevel) then
-				self.XPLabel:SetText(GARRISON_FOLLOWER_XP_UPGRADE_STRING);
-			else
-				self.XPLabel:SetText(GARRISON_FOLLOWER_XP_STRING);
-			end
-			self.XPLabel:SetWidth(0);
-			self.XPLabel:SetFontObject("GameFontHighlight");
-			self.XPLabel:SetPoint("TOPRIGHT", self.XPText, "BOTTOMRIGHT", 0, -4);
-			self.XPLabel:Show();
-			-- If the XPLabel text does not fit within 100 pixels, shrink the font. If it wraps to 2 lines, move the text up.
-			if (self.XPLabel:GetWidth() > 100) then
-				self.XPLabel:SetWidth(100);
-				self.XPLabel:SetFontObject("GameFontWhiteSmall");
-				if (self.XPLabel:GetNumLines() > 1) then
-					self.XPLabel:SetPoint("TOPRIGHT", self.XPText, "BOTTOMRIGHT", -1, 0);
-				end
-			end
-			self.XPBar:Show();
-			self.XPBar:SetMinMaxValues(0, followerInfo.levelXP);
-			self.XPBar.Label:SetFormattedText(GARRISON_FOLLOWER_XP_BAR_LABEL, BreakUpLargeNumbers(followerInfo.xp), BreakUpLargeNumbers(followerInfo.levelXP));
-			self.XPBar:SetValue(followerInfo.xp);
-			local xpLeft = followerInfo.levelXP - followerInfo.xp;
-			self.XPText:SetText(format(GARRISON_FOLLOWER_XP_LEFT, xpLeft));
-			self.XPText:Show();
-		end
-	else
-		self.XPText:Hide();
-		self.XPLabel:Hide();
-		self.XPBar:Hide();
-	end
+
+	self:SetupXPBar(followerInfo);
 	GarrisonTruncationFrame_Check(self.Name);
 
 	if ( ENABLE_COLORBLIND_MODE == "1" ) then

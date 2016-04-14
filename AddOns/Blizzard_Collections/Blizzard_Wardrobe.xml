@@ -1160,6 +1160,33 @@
 							</OnLoad>
 						</Scripts>
 						<Frames>
+							<Button parentKey="ClearAllPendingButton" inherits="UIMenuButtonStretchTemplate" hidden="true">
+								<Size x="26" y="26"/>
+								<Anchors>
+									<Anchor point="TOPRIGHT" x="-5" y="-10"/>
+								</Anchors>
+								<Layers>
+									<Layer level="ARTWORK">
+										<Texture parentKey="Icon" atlas="transmog-icon-revert-small" useAtlasSize="true">
+											<Anchors>
+												<Anchor point="CENTER"/>
+											</Anchors>
+										</Texture>
+									</Layer>
+								</Layers>
+								<HighlightTexture file="Interface\Buttons\UI-Common-MouseHilight" alphaMode="ADD"/>
+								<Scripts>
+									<OnClick>
+										PlaySound("UI_Transmog_RevertingGearSlot");
+										C_Transmog.ClearPending();
+									</OnClick>
+									<OnEnter>
+										GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+										GameTooltip:SetText(TRANSMOGRIFY_CLEAR_ALL_PENDING);
+									</OnEnter>
+									<OnLeave function="GameTooltip_Hide"/>
+								</Scripts>
+							</Button>
 							<Button parentKey="HeadButton" parentArray="SlotButtons" inherits="WardrobeTransmogButtonTemplate">
 								<KeyValues>
 									<KeyValue key="slot" value="HEADSLOT" type="string"/>

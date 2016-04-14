@@ -472,10 +472,9 @@ function GarrisonFollowerAbilityTooltipTemplate_SetAbility(tooltipFrame, garrFol
 		tooltipFrame:SetHeight(headerHeight + tooltipFrame.abilityFrameHeightBase + tooltipFrame.Name:GetHeight());
 		
 		local description = info.description;
-		if string.len(description) == 0 then 
-			description = "PH - Description Missing"; 
+		if (tooltipFrame.extraDescriptionText) then
+			description = description..tooltipFrame.extraDescriptionText;
 		end
-
 		tooltipFrame.Description:Show();
 		tooltipFrame.Description:SetText(description);
 		tooltipFrame:SetHeight(tooltipFrame:GetHeight() + tooltipFrame.Description:GetHeight() + tooltipFrame.spacingBetweenNameAndDescription);

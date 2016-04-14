@@ -84,7 +84,7 @@ local EJ_TIER_DATA =
 	[4] = { backgroundTexture = "Interface\\EncounterJournal\\UI-EJ-Cataclysm", r = 1.0, g = 0.4, b = 0.0 },
 	[5] = { backgroundTexture = "Interface\\EncounterJournal\\UI-EJ-MistsofPandaria", r = 0.0, g = 0.6, b = 0.2 },
 	[6] = { backgroundTexture = "Interface\\ENCOUNTERJOURNAL\\UI-EJ-WarlordsofDraenor", r = 0.82, g = 0.55, b = 0.1 },
-	[7] = { backgroundTexture = "Interface\\EncounterJournal\\UI-EJ-Classic", r = 1.0, g = 0.8, b = 0.0 },
+	[7] = { backgroundTexture = "Interface\\EncounterJournal\\UI-EJ-Legion", r = 1.0, g = 0.8, b = 0.0 },
 }
 
 ExpansionEnumToEJTierDataTableId = {
@@ -451,7 +451,7 @@ local function EncounterJournal_SearchForOverview(instanceID)
 end
 
 function EncounterJournal_DisplayInstance(instanceID, noButton)
-	EncounterJournal.suggestFrame:Hide();
+	EJ_HideNonInstancePanels();
 
 	local self = EncounterJournal.encounter;
 	EncounterJournal.instanceSelect:Hide();
@@ -2091,7 +2091,7 @@ end
 
 
 function EncounterJournal_OpenJournal(difficultyID, instanceID, encounterID, sectionID, creatureID, itemID, tierIndex)
-	EJHideSuggestPanel();
+	EJ_HideNonInstancePanels();
 	ShowUIPanel(EncounterJournal);
 	if instanceID then
 		NavBar_Reset(EncounterJournal.navBar);
@@ -2216,20 +2216,27 @@ function EJ_ContentTab_Select(id)
 	selectedTab.selectedGlow:SetVertexColor(tierData.r, tierData.g, tierData.b);
 	selectedTab.selectedGlow:Show();	
 	instanceSelect.bg:SetTexture(tierData.backgroundTexture);
-	
+	EncounterJournal.encounter:Hide();
+	EncounterJournal.instanceSelect:Show();
+		
 	if ( id == instanceSelect.suggestTab.id ) then
-		EncounterJournal.encounter:Hide();
-		instanceSelect.scroll:Hide();
 		EJ_HideInstances();
-		EncounterJournal.instanceSelect:Show();
+		EJ_HideLootJournalPanel();
+		instanceSelect.scroll:Hide();
 		EncounterJournal.suggestFrame:Show();
 		if ( not instanceSelect.dungeonsTab.grayBox:IsShown() or not instanceSelect.raidsTab.grayBox:IsShown() ) then
 			UIDropDownMenu_DisableDropDown(instanceSelect.tierDropDown);
 		else
 			UIDropDownMenu_EnableDropDown(instanceSelect.tierDropDown);
 		end
+	elseif ( id == instanceSelect.LootJournalTab.id ) then
+		EJ_HideInstances();
+		EJ_HideSuggestPanel();
+		instanceSelect.scroll:Hide();
+		UIDropDownMenu_DisableDropDown(instanceSelect.tierDropDown);
+		EncounterJournal.LootJournal:Show();
 	elseif ( id == instanceSelect.dungeonsTab.id or id == instanceSelect.raidsTab.id ) then
-		EJHideSuggestPanel();
+		EJ_HideNonInstancePanels();	
 		instanceSelect.scroll:Show();
 		EncounterJournal_ListInstances();
 		UIDropDownMenu_EnableDropDown(instanceSelect.tierDropDown);
@@ -2237,7 +2244,7 @@ function EJ_ContentTab_Select(id)
 	PlaySound("igMainMenuOptionCheckBoxOn");
 end
 
-function EJHideSuggestPanel()
+function EJ_HideSuggestPanel()
 	local instanceSelect = EncounterJournal.instanceSelect;
 	local suggestTab = instanceSelect.suggestTab;
 	if ( not suggestTab:IsEnabled() or EncounterJournal.suggestFrame:IsShown() ) then
@@ -2257,6 +2264,18 @@ function EJHideSuggestPanel()
 	
 		EncounterJournal.suggestFrame:Hide();
 	end
+end
+
+function EJ_HideLootJournalPanel()
+	-- might not exist yet since its xml gets loaded after EJ
+	if ( EncounterJournal.LootJournal ) then
+		EncounterJournal.LootJournal:Hide();
+	end
+end
+
+function EJ_HideNonInstancePanels()
+	EJ_HideSuggestPanel();
+	EJ_HideLootJournalPanel();
 end
 
 function EJTierDropDown_OnLoad(self)

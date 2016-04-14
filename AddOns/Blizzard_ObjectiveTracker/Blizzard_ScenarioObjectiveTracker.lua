@@ -377,7 +377,7 @@ function ScenarioChallengeModeAffixMixin:OnEnter()
 		
 		GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
 		GameTooltip:SetText(name, 1, 1, 1, 1, true);
-		GameTooltip:AddLine(description);
+		GameTooltip:AddLine(description, nil, nil, nil, true);
 		GameTooltip:Show();
 	end
 end
@@ -875,37 +875,39 @@ function SCENARIO_CONTENT_TRACKER_MODULE:Update()
 			-- do the criteria
 			for criteriaIndex = 1, numCriteria do
 				local criteriaString, criteriaType, completed, quantity, totalQuantity, flags, assetID, quantityString, criteriaID, duration, elapsed, _, isWeightedProgress = C_Scenario.GetCriteriaInfo(criteriaIndex);
-				if (not isWeightedProgress) then
-					criteriaString = string.format("%d/%d %s", quantity, totalQuantity, criteriaString);
-				end
-				SCENARIO_TRACKER_MODULE.lineSpacing = 12;
-				if ( completed ) then
-					local existingLine = objectiveBlock.lines[criteriaIndex];
-					SCENARIO_TRACKER_MODULE:AddObjective(objectiveBlock, criteriaIndex, criteriaString, nil, nil, OBJECTIVE_DASH_STYLE_SHOW, OBJECTIVE_TRACKER_COLOR["Complete"]);
-					objectiveBlock.currentLine.Icon:SetAtlas("Tracker-Check", true);
-					if ( existingLine and not existingLine.completed ) then
-						existingLine.Glow.Anim:Play();
-						existingLine.Sheen.Anim:Play();
-						existingLine.CheckFlash.Anim:Play();
+				if (criteriaString) then
+					if (not isWeightedProgress) then
+						criteriaString = string.format("%d/%d %s", quantity, totalQuantity, criteriaString);
 					end
-					objectiveBlock.currentLine.completed = true;
-				else
-					SCENARIO_TRACKER_MODULE:AddObjective(objectiveBlock, criteriaIndex, criteriaString);
-					objectiveBlock.currentLine.Icon:SetAtlas("Objective-Nub", true);
-				end
-				local line = objectiveBlock.currentLine;
-				if (isWeightedProgress and not completed) then
-					SCENARIO_TRACKER_MODULE.lineSpacing = 2;
-					SCENARIO_TRACKER_MODULE:AddProgressBar(objectiveBlock, objectiveBlock.currentLine, criteriaIndex);
-				elseif (line.ProgressBar) then
-					SCENARIO_TRACKER_MODULE:FreeProgressBar(objectiveBlock, objectiveBlock.currentLine);
-				end
-				-- timer bar
-				local line = objectiveBlock.currentLine;
-				if ( duration > 0 and elapsed <= duration ) then
-					SCENARIO_TRACKER_MODULE:AddTimerBar(objectiveBlock, objectiveBlock.currentLine, duration, GetTime() - elapsed);
-				elseif ( line.TimerBar ) then
-					SCENARIO_TRACKER_MODULE:FreeTimerBar(objectiveBlock, objectiveBlock.currentLine);
+					SCENARIO_TRACKER_MODULE.lineSpacing = 12;
+					if ( completed ) then
+						local existingLine = objectiveBlock.lines[criteriaIndex];
+						SCENARIO_TRACKER_MODULE:AddObjective(objectiveBlock, criteriaIndex, criteriaString, nil, nil, OBJECTIVE_DASH_STYLE_SHOW, OBJECTIVE_TRACKER_COLOR["Complete"]);
+						objectiveBlock.currentLine.Icon:SetAtlas("Tracker-Check", true);
+						if ( existingLine and not existingLine.completed ) then
+							existingLine.Glow.Anim:Play();
+							existingLine.Sheen.Anim:Play();
+							existingLine.CheckFlash.Anim:Play();
+						end
+						objectiveBlock.currentLine.completed = true;
+					else
+						SCENARIO_TRACKER_MODULE:AddObjective(objectiveBlock, criteriaIndex, criteriaString);
+						objectiveBlock.currentLine.Icon:SetAtlas("Objective-Nub", true);
+					end
+					local line = objectiveBlock.currentLine;
+					if (isWeightedProgress and not completed) then
+						SCENARIO_TRACKER_MODULE.lineSpacing = 2;
+						SCENARIO_TRACKER_MODULE:AddProgressBar(objectiveBlock, objectiveBlock.currentLine, criteriaIndex);
+					elseif (line.ProgressBar) then
+						SCENARIO_TRACKER_MODULE:FreeProgressBar(objectiveBlock, objectiveBlock.currentLine);
+					end
+					-- timer bar
+					local line = objectiveBlock.currentLine;
+					if ( duration > 0 and elapsed <= duration ) then
+						SCENARIO_TRACKER_MODULE:AddTimerBar(objectiveBlock, objectiveBlock.currentLine, duration, GetTime() - elapsed);
+					elseif ( line.TimerBar ) then
+						SCENARIO_TRACKER_MODULE:FreeTimerBar(objectiveBlock, objectiveBlock.currentLine);
+					end
 				end
 			end
 			self:AddSpells(objectiveBlock, spellInfo);

@@ -40,6 +40,27 @@
 			</OnLeave>
 		</Scripts>
 	</Button>
+	<Button name="CharSelectLockedTrialButtonTemplate" virtual="true" enableMouse="true" motionScriptsWhileDisabled="true" hidden="true">
+		<Size x="63" y="76"/>
+		<Layers>
+			<Layer level="ARTWORK">
+				<Texture atlas="UI-CharacterCreate-PadLock" setAllPoints="true"/>
+			</Layer>
+		</Layers>
+		<HighlightTexture atlas="UI-CharacterCreate-PadLock" alpha="0.1" alphaMode="ADD" setAllPoints="true"/>
+		<Scripts>
+			<OnEnter>
+				GlueTooltip:SetText(CHARACTER_SELECT_INFO_TRIAL_BOOST_LOCKED_TOOLTIP_TITLE, 1, 1, 1, 1, false);
+				GlueTooltip:AddLine(CHARACTER_SELECT_INFO_TRIAL_BOOST_LOCKED_TOOLTIP_TEXT, nil, nil, nil, nil, true);
+				GlueTooltip:Show();
+				GlueTooltip:SetOwner(self, "ANCHOR_LEFT", -16, -5);
+			</OnEnter>
+			<OnLeave>
+				GlueTooltip:Hide();
+			</OnLeave>
+			<OnClick function="CharSelectLockedTrialButton_OnClick"/>
+		</Scripts>
+	</Button>
 	<!-- CharacterButton scripts may occassionally be disabled for Character Services purposes. -->
 	<Button name="CharSelectCharacterButtonTemplate" virtual="true" hidden="true">
 		<Size x="256" y="66"/>

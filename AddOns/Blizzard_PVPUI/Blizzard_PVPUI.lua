@@ -2,9 +2,6 @@
 MAX_ARENA_TEAM_MEMBERS = 10;
 MAX_BLACKLIST_BATTLEGROUNDS = 2;
 
-HORDE_TEX_COORDS = {left=0.00195313, right=0.63867188, top=0.31738281, bottom=0.44238281}
-ALLIANCE_TEX_COORDS = {left=0.00195313, right=0.63867188, top=0.19042969, bottom=0.31542969}
-
 WARGAME_HEADER_HEIGHT = 16;
 BATTLEGROUND_BUTTON_HEIGHT = 40;
 
@@ -25,11 +22,9 @@ function PVPUIFrame_OnLoad(self)
 	PanelTemplates_SetNumTabs(self, 2);
 
 	if (UnitFactionGroup("player") == PLAYER_FACTION_GROUP[0]) then
-		HonorFrame.BonusFrame.WorldBattlesTexture:SetTexCoord(HORDE_TEX_COORDS.left, HORDE_TEX_COORDS.right,
-															HORDE_TEX_COORDS.top, HORDE_TEX_COORDS.bottom)
+		HonorFrame.BonusFrame.WorldBattlesTexture:SetAtlas("pvpqueue-bg-horde", true)
 	else
-		HonorFrame.BonusFrame.WorldBattlesTexture:SetTexCoord(ALLIANCE_TEX_COORDS.left, ALLIANCE_TEX_COORDS.right,
-															ALLIANCE_TEX_COORDS.top, ALLIANCE_TEX_COORDS.bottom)
+		HonorFrame.BonusFrame.WorldBattlesTexture:SetAtlas("pvpqueue-bg-alliance", true)
 	end
 
 	RequestRandomBattlegroundInstanceInfo();
@@ -845,8 +840,8 @@ function ConquestFrame_Update(self)
 		end
 		
 		if ( not ConquestFrame.selectedButton ) then
-			-- if nothing's selected select rated BG cuz why the heck not
-			ConquestFrame_SelectButton(ConquestFrame.RatedBG);
+			-- if nothing's selected select Arena 2v2 cuz why the heck not
+			ConquestFrame_SelectButton(ConquestFrame.Arena2v2);
 		else
 			ConquestFrame_UpdateJoinButton();
 		end

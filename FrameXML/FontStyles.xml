@@ -243,6 +243,9 @@
 	<Font name="CombatTextFont" inherits="SystemFont_World" virtual="true">
 		<Color r="1.0" g="0.82" b="0"/>
 	</Font>
+    <Font name="CombatTextFontOutline" inherits="SystemFont_World_ThickOutline" virtual="true">
+		<Color r="1.0" g="0.82" b="0"/>
+	</Font>
 	<Font name="MovieSubtitleFont" inherits="GameFontNormalHugeOutline2" virtual="true">
 		<Color r="1.0" g="0.78" b="0"/>
 	</Font>

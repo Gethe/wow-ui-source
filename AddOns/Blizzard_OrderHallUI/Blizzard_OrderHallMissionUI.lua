@@ -19,6 +19,10 @@ local function SetupMaterialFrame(materialFrame, currency, currencyTexture)
 	materialFrame.Icon:SetPoint("RIGHT", materialFrame, "RIGHT", -14, 0);
 end
 
+function OrderHallMission:InitializeFollowerType()
+	self.followerTypeID = LE_FOLLOWER_TYPE_GARRISON_7_0;
+end
+
 function OrderHallMission:OnLoadMainFrame()
 	self.followerTypeID = LE_FOLLOWER_TYPE_GARRISON_7_0;
 
@@ -182,6 +186,8 @@ function OrderHallMission:ShowMission(missionInfo)
 	if (missionInfo.isZoneSupport) then
 		self:GetMissionPage().missionInfo = missionInfo;
 		self:UpdateMissionData(self:GetMissionPage());
+		self:GetFollowerBuffsForMission(self:GetMissionPage().missionInfo.missionID);
+		self:GetMissionPage():SetCounters(self:GetMissionPage().Followers, self:GetMissionPage().Enemies, self:GetMissionPage().missionInfo.missionID);
 	else
 		GarrisonFollowerMission.ShowMission(self, missionInfo);
 	end
@@ -264,8 +270,14 @@ end
 
 
 
-function OrderHallMission:SetEnemies(frame, enemies, numFollowers, mechanicYOffset)
-	GarrisonFollowerMission.SetEnemies(self, frame, enemies, numFollowers, mechanicYOffset or -32);
+function OrderHallMission:SetEnemies(frame, enemies, numFollowers)
+	local numVisibleEnemies = GarrisonFollowerMission.SetEnemies(self, frame, enemies, numFollowers);
+
+	for i=1, numVisibleEnemies do
+		local Frame = frame.Enemies[i];
+		Frame.Mechanics[1]:SetScale(1.3);
+	end
+
 end
 
 
@@ -286,9 +298,22 @@ end
 
 
 function OrderHallMission:MissionCompleteInitialize(missionList, index)
-	GarrisonFollowerMission.MissionCompleteInitialize(self, missionList, index);
+	if (not GarrisonFollowerMission.MissionCompleteInitialize(self, missionList, index)) then
+		return false;
+	end
 
 	self.MissionComplete.BonusText.BonusTextGlowAnim:Stop();
+	local mission = missionList[index];
+
+	local bonusChance = Clamp(C_Garrison.GetMissionSuccessChance(mission.missionID) - 100, 0, 100);
+	if (bonusChance > 0) then
+		self.MissionComplete.BonusRewards.BonusChanceLabel:SetFormattedText(GARRISON_MISSION_COMPLETE_BONUS_CHANCE, bonusChance);
+		self.MissionComplete.BonusRewards.BonusChanceLabel:Show();
+	else
+		self.MissionComplete.BonusRewards.BonusChanceLabel:Hide();
+	end
+
+	return true;
 end
 
 ---------------------------------------------------------------------------------
@@ -425,16 +450,17 @@ function OrderHallMissionComplete:ShowRewards()
 				rewardFrame:SetPoint("LEFT", bonusRewards, "LEFT", 18, 0);
 			end
 		end
+		self.BonusRewards.BonusChanceLabel:Hide();
 		if ( not self.skipAnimations ) then
 			rewardFrame:Hide();
 			C_Timer.After(secondItemDelay,
 				function()
-					GarrisonMissionPage_SetRewardFromItem(rewardFrame, currentMission.overmaxRewardItem);
+					GarrisonMissionPage_SetOvermaxReward(rewardFrame, currentMission.overmaxRewardItem, currentMission.overmaxRewardMoney)
 					rewardFrame.Anim:Play();
 				end
 			);
 		else
-			GarrisonMissionPage_SetRewardFromItem(Reward, currentMission.overmaxRewardItem);
+			GarrisonMissionPage_SetOvermaxReward(rewardFrame, currentMission.overmaxRewardItem, currentMission.overmaxRewardMoney)
 			if (not self.skipAnimations) then
 				Reward.Anim:Play();
 			end
@@ -519,6 +545,8 @@ function OrderHallFollowerTabMixin:ShowFollower(followerID, followerList)
 	local lastUpdate = self.lastUpdate;
 	local followerInfo = C_Garrison.GetFollowerInfo(followerID);
 
+	local missionFrame = self:GetParent();
+
 	if (followerInfo) then
 		self.followerID = followerID;
 		self.NoFollowersLabel:Hide();
@@ -535,14 +563,15 @@ function OrderHallFollowerTabMixin:ShowFollower(followerID, followerList)
 		self.followerID = nil;
 		self.NoFollowersLabel:Show();
 		followerInfo = { };
+		followerInfo.followerTypeID = missionFrame.followerTypeID;
 		followerInfo.quality = 1;
 		followerInfo.abilities = { };
+		followerInfo.unlockableAbilities = { };
 		self.PortraitFrame:Hide();
 		self.Model:ClearModel();
 	end
 
 	GarrisonFollowerPageModelUpgrade_Update(self.Model.UpgradeFrame);
-	local missionFrame = self:GetParent();
 
 	missionFrame:SetFollowerPortrait(self.PortraitFrame, followerInfo);
 	self.Name:SetText(followerInfo.name);
@@ -559,13 +588,7 @@ function OrderHallFollowerTabMixin:ShowFollower(followerID, followerList)
 	end
 	self.Class:SetAtlas(followerInfo.classAtlas);
 
-	self.XPLabel:Hide();
-	self.XPBar:Hide();
-	self.XPText:Hide();
-	self.XPText:SetText("");
-	self.ItemWeapon:Hide();
-	self.ItemArmor:Hide();
-	self.ItemAverageLevel.Level:Hide();
+	self:SetupXPBar(followerInfo);
 	self.Source:Hide();
 
 
@@ -578,16 +601,34 @@ function OrderHallFollowerTabMixin:ShowFollower(followerID, followerList)
 		self.QualityFrame:Hide();
 	end
 
-	if (not followerInfo.abilities) then
-		followerInfo.abilities = C_Garrison.GetFollowerAbilities(followerID);
+	if (not followerInfo.abilities or not followerInfo.unlockableAbilities) then
+		local abilities, unlockables = C_Garrison.GetFollowerAbilities(followerID);
+
+		followerInfo.abilities = abilities;
+
+		-- filter out equipment from unlockables
+		followerInfo.unlockableAbilities = { };
+		if (unlockables) then
+			for i, ability in ipairs(unlockables) do
+				if (not ability.isTrait) then
+					tinsert(followerInfo.unlockableAbilities, ability);
+				end
+			end
+		end
 	end
 	local lastAbilityAnchor, lastSpecializationAnchor;
 	local numCounters = 0;
 	local numAbilities = 0;
 	local numEquipment = 0;
 
-	for i=1, #followerInfo.abilities do
-		local ability = followerInfo.abilities[i];
+	local numAbilitiesWithUnlockables = #followerInfo.abilities + #followerInfo.unlockableAbilities;
+	for i=1, numAbilitiesWithUnlockables do
+		local ability;
+		if (i <= #followerInfo.abilities) then
+			ability = followerInfo.abilities[i];
+		else
+			ability = followerInfo.unlockableAbilities[i - #followerInfo.abilities];
+		end
 
 		local abilityFrame;
 		if (self:IsEquipmentAbility(followerInfo, ability)) then
@@ -645,10 +686,20 @@ function OrderHallFollowerTabMixin:ShowFollower(followerID, followerList)
 			else
 				GarrisonFollowerPageAbility_StopAnimations(abilityFrame);
 			end
-			abilityFrame.Name:SetText(ability.name);
+			local name;
+			local extraDescriptionText;
+			if (ability.requiredQualityLevel ~= nil) then
+				name = GRAY_FONT_COLOR:WrapTextInColorCode(ability.name);
+				extraDescriptionText = string.format(GARRISON_ABILITY_UNLOCK_TOOLTIP, followerInfo.name, ITEM_QUALITY_COLORS[ability.requiredQualityLevel].hex.._G["ITEM_QUALITY"..ability.requiredQualityLevel.."_DESC"]..FONT_COLOR_CODE_CLOSE);
+			else
+				name = ability.name;
+			end
+			abilityFrame.Name:SetText(name);
 			abilityFrame.IconButton.Icon:SetTexture(ability.icon);
+			abilityFrame.IconButton.Icon:SetDesaturated(ability.requiredQualityLevel ~= nil);
 			abilityFrame.IconButton.abilityID = ability.id;
 			abilityFrame.IconButton.Border:SetShown(ShouldShowFollowerAbilityBorder(followerInfo.followerTypeID, ability));
+			abilityFrame.IconButton.extraDescriptionText = extraDescriptionText;
 			abilityFrame.ability = ability;
 
 		    local hasCounters = false;

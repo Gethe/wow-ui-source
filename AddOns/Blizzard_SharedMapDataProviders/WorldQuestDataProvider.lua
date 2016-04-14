@@ -65,18 +65,23 @@ function WorldQuestDataProviderMixin:AddWorldQuest(info)
 	pin.numObjectives = info.numObjectives;
 	pin:SetFrameLevel(1000 + self:GetMap():GetNumActivePinsByTemplate("WorldQuestPinTemplate"));
 
-	local tagID, tagName, worldQuestType, isRare, isElite, tradeskillLineIndex = GetQuestTagInfo(info.questId);
+	local tagID, tagName, worldQuestType, rarity, isElite, tradeskillLineIndex = GetQuestTagInfo(info.questId);
 	local tradeskillLineID = tradeskillLineIndex and select(7, GetProfessionInfo(tradeskillLineIndex));
 
-	if isRare and not worldQuestType == LE_QUEST_TAG_TYPE_PVP then
+	if rarity ~= LE_WORLD_QUEST_QUALITY_COMMON then
 		pin.Background:SetTexCoord(0, 1, 0, 1);
 		pin.Highlight:SetTexCoord(0, 1, 0, 1);
 
 		pin.Background:SetSize(45, 45);
 		pin.Highlight:SetSize(45, 45);
-
-		pin.Background:SetAtlas("worldquest-questmarker-epic");
-		pin.Highlight:SetAtlas("worldquest-questmarker-epic");
+		
+		if rarity == LE_WORLD_QUEST_QUALITY_RARE then
+			pin.Background:SetAtlas("worldquest-questmarker-rare");
+			pin.Highlight:SetAtlas("worldquest-questmarker-rare");
+		elseif rarity == LE_WORLD_QUEST_QUALITY_EPIC then
+			pin.Background:SetAtlas("worldquest-questmarker-epic");
+			pin.Highlight:SetAtlas("worldquest-questmarker-epic");
+		end
 	else
 		pin.Background:SetSize(75, 75);
 		pin.Highlight:SetSize(75, 75);
@@ -96,8 +101,9 @@ function WorldQuestDataProviderMixin:AddWorldQuest(info)
 	end
 
 	if worldQuestType == LE_QUEST_TAG_TYPE_PVP then
+		local _, width, height = GetAtlasInfo("worldquest-icon-pvp-ffa");
 		pin.Texture:SetAtlas("worldquest-icon-pvp-ffa");
-		pin.Texture:SetSize(24, 34);
+		pin.Texture:SetSize(width * 2, height * 2);
 	elseif worldQuestType == LE_QUEST_TAG_TYPE_PET_BATTLE then
 		pin.Texture:SetAtlas("worldquest-icon-petbattle");
 		pin.Texture:SetSize(26, 22);

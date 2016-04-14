@@ -45,6 +45,7 @@ function GlueParent_OnEvent(self, event, ...)
 		GlueParent_UpdateDialogs();
 		GlueParent_CheckCinematic();
 		if ( AccountLogin:IsVisible() ) then
+			SetExpansionLogo(AccountLogin.UI.GameLogo, GetClientDisplayExpansionLevel());
 			CheckSystemRequirements();
 		end
 	elseif ( event == "LOGIN_STATE_CHANGED" ) then

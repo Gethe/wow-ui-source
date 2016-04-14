@@ -112,7 +112,7 @@
 
 	<FontFamily name="SystemFont_Shadow_Med3" virtual="true">
 		<Member alphabet="roman">
-			<Font  font="Fonts\FRIZQT__.TTF" height="14">
+			<Font font="Fonts\FRIZQT__.TTF" height="14">
 				<Shadow>
 					<Offset>
 						<AbsDimension x="1" y="-1"/>

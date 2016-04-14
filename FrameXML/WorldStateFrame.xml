@@ -368,7 +368,7 @@
 		</Layers>
 		<Frames>
 			<Frame name="$parentPrestigeButton" enableMouse="true" parentKey="prestige">
-				<Size x="16" y="16"/>
+				<Size x="20" y="20"/>
 				<Anchors>
 					<Anchor point="LEFT" x="0" y="0"/>
 				</Anchors>
@@ -705,7 +705,7 @@
 		<Frames>
 			<Frame parentKey="XPBar" inherits="PVPHonorSystemLargeXPBar">
 				<Anchors>
-					<Anchor point="TOP" x="-10" y="-37"/>
+					<Anchor point="TOP" relativePoint="TOPLEFT" x="387" y="-36"/>
 				</Anchors>
 			</Frame>
 			<Button name="WorldStateScoreFramePrestige" inherits="WorldStateScoreColumnTemplate">
@@ -715,10 +715,10 @@
 				</Anchors>
 				<Layers>
 					<Layer level="BACKGROUND">
-						<Texture parentKey="icon" file="Item\TEXTURECOMPONENTS\TorsoUpperTexture\Mail_DungeonHunter_A_01_Chest_TU_F">
-							<Size x="16" y="16"/>
+						<Texture parentKey="icon" file="Interface\PVPFrame\Icons\prestige-icon-3">
+							<Size x="21" y="21"/>
 							<Anchors>
-								<Anchor point="TOPLEFT" x="0" y="0"/>
+								<Anchor point="TOPLEFT" x="0" y="2"/>
 							</Anchors>
 						</Texture>
 					</Layer>

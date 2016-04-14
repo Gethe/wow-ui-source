@@ -689,7 +689,7 @@ function ObjectiveTracker_OnEvent(self, event, ...)
 	elseif ( event == "QUEST_WATCH_LIST_CHANGED" ) then
 		local questID, added = ...;
 		if ( added ) then
-			if ( not IsQuestTask(questID) and ( not IsQuestBounty(questID) or IsQuestComplete(questID) ) ) then
+			if ( not IsQuestBounty(questID) or IsQuestComplete(questID) ) then
 				ObjectiveTracker_Update(OBJECTIVE_TRACKER_UPDATE_QUEST_ADDED, questID);
 			end
 		else

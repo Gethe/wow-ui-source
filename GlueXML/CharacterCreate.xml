@@ -1046,79 +1046,32 @@
 		</PushedTexture>
 	</CheckButton>
 
-	<!-- TODO: Replace with correct assets, this is purely for functionality and ripped off of the gender button -->
-	<CheckButton name="CharacterCreateCharacterTypeButtonTemplate" motionScriptsWhileDisabled="true" virtual="true">
-		<Size x="90" y="38"/>
+	<Button name="CharacterCreateCharacterTypeButtonTemplate" inherits="GlueHorizontalResizeDarkButtonTemplate" virtual="true">
+		<KeyValues>
+			<KeyValue key="normalOffsetX" value="0" type="number"/>
+			<KeyValue key="normalOffsetY" value="-5" type="number"/>
+			<KeyValue key="pressedOffsetDelta" value="2" type="number"/>
+			<KeyValue key="offsetFrameKey" value="typeText" type="string"/>
+		</KeyValues>
+		<Size x="125" y="41" />
 		<Layers>
-			<Layer level="BACKGROUND">
-				<Texture parentKey="shadow" file="Interface\Glues\CharacterCreate\UI-CharacterCreate-IconShadow">
-					<Size x="110" y="58"/>
-					<Anchors>
-						<Anchor point="CENTER" x="0" y="0"/>
-					</Anchors>
-					<Color r="1.0" g="1.0" b="1.0" a="0.85"/>
-				</Texture>
-			</Layer>
 			<Layer level="ARTWORK">
-				<FontString parentKey="typeText" inherits="GlueFontNormalLarge">
-					<Anchors>
-						<Anchor point="TOPLEFT" x="0" y="-2"/>
-						<Anchor point="TOPRIGHT" x="0" y="-2"/>
-					</Anchors>
-				</FontString>
+				<FontString parentKey="typeText" inherits="GlueFontNormalLarge"/>
+
 				<FontString parentKey="levelText" inherits="GlueFontNormalSmall">
 					<Anchors>
-						<Anchor point="BOTTOMLEFT" x="0" y="2"/>
-						<Anchor point="BOTTOMRIGHT" x="0" y="2"/>
+						<Anchor point="TOPLEFT" relativeKey="$parent.typeText" relativePoint="BOTTOMLEFT" x="0" y="0" />
+						<Anchor point="TOPRIGHT" relativeKey="$parent.typeText" relativePoint="BOTTOMRIGHT" x="0" y="0" />
 					</Anchors>
 				</FontString>
-			</Layer>
-			<Layer level="OVERLAY">
-				<Texture parentKey="bevel" file="Interface\Glues\CharacterCreate\UI-CharacterCreate-Highlights">
-					<Size x="90" y="38"/>
-					<Anchors>
-						<Anchor point="CENTER" x="0" y="0"/>
-					</Anchors>
-					<TexCoords left="0" right="0.5" top="0.5" bottom="1.0"/>
-				</Texture>
-				<Texture parentKey="disableTexture" hidden="true">
-					<Size x="90" y="38"/>
-					<Anchors>
-						<Anchor point="CENTER" x="0" y="0"/>
-					</Anchors>
-					<Color r="0.0" g="0.0" b="0.0" a="0.75"/>
-				</Texture>
 			</Layer>
 		</Layers>
 		<Scripts>
-			<OnMouseDown>
-				if( self:IsEnabled() ) then
-					self.bevel:SetPoint("CENTER", self, "CENTER", 2, -2);
-					self.shadow:SetSize(108, 52);
-				end
-			</OnMouseDown>
-			<OnMouseUp>
-				if( self:IsEnabled() ) then
-					self.bevel:SetPoint("CENTER", self, "CENTER", 0, 0);
-					self.shadow:SetSize(110, 58);
-				end
-			</OnMouseUp>
 			<OnClick function="CharacterCreate_TypeButtonOnClick"/>
+			<OnDisable function="CharacterCreate_TypeButtonOnDisable"/>
+			<OnEnable function="CharacterCreate_TypeButtonOnEnable"/>
 		</Scripts>
-		<HighlightTexture file="Interface\Glues\CharacterCreate\UI-CharacterCreate-Highlights" alphaMode="ADD">
-			<TexCoords left="0" right="0.5" top="0" bottom="0.5"/>
-		</HighlightTexture>
-		<CheckedTexture file="Interface\Glues\CharacterCreate\UI-CharacterCreate-Highlights" alphaMode="ADD">
-			<TexCoords left="0.5" right="1" top="0" bottom="0.5"/>
-		</CheckedTexture>
-		<NormalTexture parentKey="normalTexture" file=""/>
-		<PushedTexture parentKey="pushedTexture" file="">
-			<Size x="58" y="58"/>
-			<Anchors>
-				<Anchor point="CENTER" x="2" y="-2"/>
-			</Anchors>
-		</PushedTexture>
-	</CheckButton>
+	</Button>
 
 	<Frame name="CharCreatePreviewFrameTemplate" virtual="true">
 		<Size x="128" y="118"/>
@@ -1588,7 +1541,7 @@
 						</Frames>
 					</Frame>
 					<Frame name="CharCreateCharacterTypeFrame" inherits="CharCreateResizablePanelTemplate">
-						<Size x="243" y="104"/>
+						<Size x="310" y="104" />
 						<Anchors>
 							<Anchor point="TOP" x="0" y="-3"/>
 						</Anchors>
@@ -1604,7 +1557,7 @@
 							</Layer>
 						</Layers>
 						<Frames>
-							<CheckButton parentArray="typeButtons" inherits="CharacterCreateCharacterTypeButtonTemplate">
+							<Button parentArray="typeButtons" inherits="CharacterCreateCharacterTypeButtonTemplate">
 								<KeyValues>
 									<KeyValue key="characterType" value="new" type="string"/>
 									<KeyValue key="titleText" value="CHARACTER_TYPE_FRAME_NEW_CHARACTER" type="global"/>
@@ -1613,21 +1566,19 @@
 								    <Anchor point="BOTTOMRIGHT" relativePoint="BOTTOM" x="-5" y="21"/>
 								</Anchors>
 								<Scripts>
-									<OnLoad>
-										CharacterCreate_TypeButtonOnLoad(self, "new")
-									</OnLoad>
-									<OnEnter>
+									<OnLoad inherit="append" function="CharacterCreate_TypeButtonOnLoad"/>
+									<OnEnter inherit="append">
 										GlueTooltip:SetOwner(self, "ANCHOR_BOTTOM", 0, -10);
 										GlueTooltip:SetText(CHARACTER_TYPE_FRAME_NEW_CHARACTER);
 										GlueTooltip:AddLine(CHARACTER_TYPE_FRAME_NEW_CHARACTER_TOOLTIP, 1, 1, 1, 1, true);
 									</OnEnter>
-									<OnLeave>
+									<OnLeave inherit="append">
 										GlueTooltip:Hide();
 									</OnLeave>
 								</Scripts>
-							</CheckButton>
+							</Button>
 
-							<CheckButton parentArray="typeButtons" inherits="CharacterCreateCharacterTypeButtonTemplate">
+							<Button parentArray="typeButtons" inherits="CharacterCreateCharacterTypeButtonTemplate">
 								<KeyValues>
 									<KeyValue key="characterType" value="trial" type="string"/>
 									<KeyValue key="titleText" value="CHARACTER_TYPE_FRAME_TRIAL_BOOST_CHARACTER" type="global"/>
@@ -1636,19 +1587,21 @@
 								    <Anchor point="BOTTOMLEFT" relativePoint="BOTTOM" x="5" y="21"/>
 								</Anchors>
 								<Scripts>
-									<OnLoad>
-										CharacterCreate_TypeButtonOnLoad(self, "trial")
-									</OnLoad>
-									<OnEnter>
+									<OnLoad inherit="append" function="CharacterCreate_TypeButtonOnLoad"/>
+									<OnEnter inherit="append">
 										GlueTooltip:SetOwner(self, "ANCHOR_BOTTOM", 0, -10);
 										GlueTooltip:SetText(CHARACTER_TYPE_FRAME_TRIAL_BOOST_CHARACTER);
 										GlueTooltip:AddLine(CHARACTER_TYPE_FRAME_TRIAL_BOOST_CHARACTER_TOOLTIP, 1, 1, 1, 1, true);
+
+										if not self:IsEnabled() then
+											GlueTooltip:AddLine(CHARACTER_TYPE_FRAME_TRIAL_BOOST_CHARACTER_TOOLTIP_INVALID, 1, 0, 0, 1, true);
+										end
 									</OnEnter>
-									<OnLeave>
+									<OnLeave inherit="append">
 										GlueTooltip:Hide();
 									</OnLeave>
 								</Scripts>
-							</CheckButton>
+							</Button>
 						</Frames>
 					</Frame>
 					<Frame name="CharCreateClassFrame" inherits="CharCreateResizablePanelTemplate">

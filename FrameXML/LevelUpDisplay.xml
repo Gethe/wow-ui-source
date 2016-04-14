@@ -494,7 +494,7 @@
 				</Anchors>
 				<Layers>
 					<Layer level="ARTWORK">
-						<FontString inherits="DestinyFontHuge" justifyH="CENTER" parentKey="MedalEarned">
+						<FontString inherits="DestinyFontHuge" justifyH="CENTER" parentKey="LevelCompleted">
 							<Anchors>
 								<Anchor point="TOP" x="0" y="-14"/>
 							</Anchors>

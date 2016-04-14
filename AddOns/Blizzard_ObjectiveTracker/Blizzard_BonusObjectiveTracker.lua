@@ -78,7 +78,7 @@ function BonusObjectiveTracker_OnHeaderLoad(self)
 
 	if ( module.ShowWorldQuests ) then
 		module.updateReasonModule = OBJECTIVE_TRACKER_UPDATE_MODULE_WORLD_QUEST;
-		module.updateReasonEvents = OBJECTIVE_TRACKER_UPDATE_QUEST + OBJECTIVE_TRACKER_UPDATE_WORLD_QUEST_ADDED + OBJECTIVE_TRACKER_UPDATE_SUPER_TRACK_CHANGED;
+		module.updateReasonEvents = OBJECTIVE_TRACKER_UPDATE_QUEST + OBJECTIVE_TRACKER_UPDATE_WORLD_QUEST_ADDED + OBJECTIVE_TRACKER_UPDATE_SUPER_TRACK_CHANGED + OBJECTIVE_TRACKER_UPDATE_QUEST_ADDED;
 	else
 		module.updateReasonModule = OBJECTIVE_TRACKER_UPDATE_MODULE_BONUS_OBJECTIVE;
 		module.updateReasonEvents = OBJECTIVE_TRACKER_UPDATE_QUEST + OBJECTIVE_TRACKER_UPDATE_TASK_ADDED + OBJECTIVE_TRACKER_UPDATE_SCENARIO + OBJECTIVE_TRACKER_UPDATE_SCENARIO_NEW_STAGE + OBJECTIVE_TRACKER_UPDATE_SCENARIO_BONUS_DELAYED;
@@ -131,15 +131,30 @@ function BonusObjectiveTracker_OnBlockLeave(block)
 	block.module.tooltipBlock = nil;
 end
 
-function BonusObjectiveTracker_TrackWorldQuest(questID)
-	AddWorldQuestWatch(questID);
-	SetSuperTrackedQuestID(questID);
+local lastTrackedQuestID = nil;
+function BonusObjectiveTracker_TrackWorldQuest(questID, hardWatch)
+	if AddWorldQuestWatch(questID, hardWatch) then
+		if lastTrackedQuestID and lastTrackedQuestID ~= questID then
+			if not IsWorldQuestHardWatched(lastTrackedQuestID) and hardWatch then
+				AddWorldQuestWatch(lastTrackedQuestID, true); -- Promote to a hard watch
+			end
+		end
+		lastTrackedQuestID = questID;
+	end
+
+	if not hardWatch or GetSuperTrackedQuestID() == 0 then
+		SetSuperTrackedQuestID(questID);
+	end
 end
 
 function BonusObjectiveTracker_UntrackWorldQuest(questID)
-	RemoveWorldQuestWatch(questID);
-	if questID == GetSuperTrackedQuestID() then
-		QuestSuperTracking_ChooseClosestQuest();
+	if RemoveWorldQuestWatch(questID) then
+		if lastTrackedQuestID == questID then
+			lastTrackedQuestID = nil;
+		end
+		if questID == GetSuperTrackedQuestID() then
+			QuestSuperTracking_ChooseClosestQuest();
+		end
 	end
 end
 
@@ -711,12 +726,12 @@ local function AddBonusObjectiveQuest(module, questID, posIndex, isTrackedWorldQ
 			module:AddObjective(block, 0, taskName, nil, nil, OBJECTIVE_DASH_STYLE_HIDE_AND_COLLAPSE, OBJECTIVE_TRACKER_COLOR["Header"]);
 		end
 
-		if QuestMapFrame_IsQuestWorldQuest(questID) then
-			local tagID, tagName, worldQuestType, isRare, isElite, tradeskillLineIndex = GetQuestTagInfo(questID);
+		if ( QuestMapFrame_IsQuestWorldQuest(questID) ) then
+			local tagID, tagName, worldQuestType, rarity, isElite, tradeskillLineIndex = GetQuestTagInfo(questID);
 			assert(worldQuestType);
 
-			local inProgress = GetQuestLogIndexByID(questID) ~= 0;
-			WorldMap_SetupWorldQuestButton(block.TrackedQuest, worldQuestType, isRare, isElite, tradeskillLineIndex, inProgress, isSuperTracked);
+			local inProgress = questLogIndex ~= 0;
+			WorldMap_SetupWorldQuestButton(block.TrackedQuest, worldQuestType, rarity, isElite, tradeskillLineIndex, inProgress, isSuperTracked);
 
 			block.TrackedQuest:SetScale(.9);
 			block.TrackedQuest:SetPoint("TOPRIGHT", block.currentLine, "TOPLEFT", 18, 0);

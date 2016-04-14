@@ -467,7 +467,7 @@
 						</FontString>
 						<Texture parentKey="Background">
 							<Anchors>
-								<Anchor point="BOTTOMLEFT" x="60" y="40"/>
+								<Anchor point="BOTTOM" relativePoint="BOTTOMLEFT" x="205" y="40"/>
 							</Anchors>
 							<Color r="1" g="1" b="1" a=".8"/>
 						</Texture>

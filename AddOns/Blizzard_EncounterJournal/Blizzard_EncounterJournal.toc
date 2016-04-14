@@ -6,4 +6,5 @@
 ## Version: 1.0
 ## LoadOnDemand: 1
 Blizzard_EncounterJournal.xml
+Blizzard_LootJournal.xml
 Localization.lua

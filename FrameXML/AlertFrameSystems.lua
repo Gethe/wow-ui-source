@@ -136,95 +136,6 @@ end
 
 DungeonCompletionAlertSystem = AlertFrame:AddSimpleAlertFrameSubSystem(DungeonCompletionAlertFrame, DungeonCompletionAlertFrame_SetUp);
 
--- [[ ChallengeModeAlertFrame ]] --
-CHALLENGE_MODE_MAX_REWARDS = 1;
-function ChallengeModeAlertFrame_SetUp(frame)
-	PlaySound("LFG_Rewards");
-	--For now we only have 1 challenge mode alert frame
-	local mapID, medal, completionTime, moneyAmount, numRewards = GetChallengeModeCompletionInfo();
-	frame.mapID = mapID;
-
-	--Set up the rewards
-	local rewardsOffset = 0;
-
-	if ( moneyAmount > 0 ) then
-		SetPortraitToTexture(frame.reward1.texture, "Interface\\Icons\\inv_misc_coin_02");
-		frame.reward1.itemID = 0;
-		frame.reward1:Show();
-		rewardsOffset = 1;
-	end
-
-	for i = 1, numRewards do
-		local frameID = (i + rewardsOffset);
-		local reward = _G["ChallengeModeAlertFrameReward"..frameID];
-		if ( not reward ) then
-			reward = CreateFrame("FRAME", "ChallengeModeAlertFrameReward"..frameID, ChallengeModeAlertFrame, "ChallengeModeAlertFrameRewardTemplate");
-			CHALLENGE_MODE_MAX_REWARDS = frameID;
-		end
-		ChallengeModeAlertFrameReward_SetReward(reward, i);
-	end
-
-	local usedButtons = numRewards + rewardsOffset;
-	--Hide the unused ones
-	for i = usedButtons + 1, CHALLENGE_MODE_MAX_REWARDS do
-		_G["ChallengeModeAlertFrameReward"..i]:Hide();
-	end
-
-	if ( usedButtons > 0 ) then
-		--Set up positions
-		local spacing = 36;
-		frame.reward1:SetPoint("TOP", frame, "TOP", -spacing/2 * usedButtons + 41, 10);
-		for i = 2, usedButtons do
-			_G["ChallengeModeAlertFrameReward"..i]:SetPoint("CENTER", "ChallengeModeAlertFrameReward"..(i - 1), "CENTER", spacing, 0);
-		end
-	end
-	--Set up the text and icon
-	if ( CHALLENGE_MEDAL_TEXTURES[medal] ) then
-		frame.medalIcon:SetTexture(CHALLENGE_MEDAL_TEXTURES[medal]);
-		frame.medalIcon:Show();
-	else
-		frame.medalIcon:Hide();
-	end
-	frame.time:SetText(GetTimeStringFromSeconds(completionTime, true));
-	frame.dungeonTexture:SetTexture("Interface\\Icons\\achievement_bg_wineos_underxminutes");
-end
-
-
--- [[ ChallengeModeAlertFrameReward ]] --
-function ChallengeModeAlertFrameReward_SetReward(frame, index)
-	local itemID, name, texturePath, quantity, isCurrency = GetChallengeModeCompletionReward(index);
-	SetPortraitToTexture(frame.texture, texturePath);
-	frame.itemID = itemID;
-	frame.isCurrency = isCurrency;
-	frame:Show();
-end
-
-function ChallengeModeAlertFrameReward_OnEnter(self)
-	AlertFrame_StopOutAnimation(self:GetParent());
-
-	GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
-	if ( self.itemID == 0 ) then
-		local _, _, _, moneyAmount = GetChallengeModeCompletionInfo();
-		if ( moneyAmount > 0 ) then
-			GameTooltip:AddLine(YOU_RECEIVED);
-			SetTooltipMoney(GameTooltip, moneyAmount, nil);
-		end
-	elseif ( self.isCurrency ) then
-		GameTooltip:SetCurrencyByID(self.itemID);
-	else
-		GameTooltip:SetItemByID(self.itemID);
-	end
-	GameTooltip:Show();
-end
-
-function ChallengeModeAlertFrameReward_OnLeave(frame)
-	AlertFrame_ResumeOutAnimation(frame:GetParent());
-	GameTooltip:Hide();
-end
-
-
-ChallengeModeAlertSystem = AlertFrame:AddSimpleAlertFrameSubSystem(ChallengeModeAlertFrame, ChallengeModeAlertFrame_SetUp);
-
 -- [[ ScenarioAlertFrame ]] --
 SCENARIO_MAX_REWARDS = 1;
 function ScenarioAlertFrame_SetUp(frame)
@@ -958,14 +869,15 @@ NewRecipeLearnedAlertSystem = AlertFrame:AddQueuedAlertFrameSubSystem("NewRecipe
 
 -- [[WorldQuestCompleteAlertFrame ]] --
 function WorldQuestCompleteAlertFrame_GetIconForQuestID(questID)
-	local tagID, tagName, worldQuestType, isRare, isElite, tradeskillLineIndex = GetQuestTagInfo(questID);
+	local tagID, tagName, worldQuestType, rarity, isElite, tradeskillLineIndex = GetQuestTagInfo(questID);
 
 	if ( worldQuestType == LE_QUEST_TAG_TYPE_PVP ) then
 		return "Interface\\Icons\\achievement_arena_2v2_1";
 	elseif ( worldQuestType == LE_QUEST_TAG_TYPE_PET_BATTLE ) then
 		return "Interface\\Icons\\INV_Pet_BattlePetTraining";
 	elseif ( worldQuestType == LE_QUEST_TAG_TYPE_PROFESSION ) then
-		return C_TradeSkillUI.GetTradeSkillTexture(tradeskillLine);
+		local tradeskillLineID = select(7, GetProfessionInfo(tradeskillLineIndex));
+		return C_TradeSkillUI.GetTradeSkillTexture(tradeskillLineID);
 	elseif ( worldQuestType == LE_QUEST_TAG_TYPE_WORLD_BOSS ) then
 		return "Interface\\Icons\\INV_Misc_Bone_Skull_02";
 	end

@@ -283,12 +283,9 @@ function WardrobeTransmogFrame_UpdateApplyButton()
 	if ( StaticPopup_FindVisible("TRANSMOG_APPLY_WARNING") ) then
 		canApply = false;
 	end
-	MoneyFrame_Update("WardrobeTransmogMoneyFrame", cost, canApply);	-- force show 0 copper for undo
-	if ( canApply ) then
-		WardrobeTransmogFrame.ApplyButton:Enable();
-	else
-		WardrobeTransmogFrame.ApplyButton:Disable();
-	end
+	MoneyFrame_Update("WardrobeTransmogMoneyFrame", cost, true);	-- always show 0 copper
+	WardrobeTransmogFrame.ApplyButton:SetEnabled(canApply);
+	WardrobeTransmogFrame.Model.ClearAllPendingButton:SetShown(canApply);
 end
 
 function WardrobeTransmogFrame_GetSlotButton(slotID, transmogType)
@@ -1392,13 +1389,17 @@ function WardrobeCollectionFrameModel_OnMouseDown(self, button)
 		else
 			local sources = WardrobeCollectionFrame_GetSortedAppearanceSources(self.visualInfo.visualID);
 			local offset = WardrobeCollectionFrame.tooltipIndexOffset;
-			if ( offset < 0 ) then
-				offset = #sources + offset;
+			if ( offset ) then
+				if ( offset < 0 ) then
+					offset = #sources + offset;
+				end
+				local index = mod(offset, #sources) + 1;
+				link = select(6, C_TransmogCollection.GetAppearanceSourceInfo(sources[index].sourceID));
 			end
-			local index = mod(offset, #sources) + 1;
-			link = select(6, C_TransmogCollection.GetAppearanceSourceInfo(sources[index].sourceID));
 		end
-		HandleModifiedItemClick(link);
+		if ( link ) then
+			HandleModifiedItemClick(link);
+		end
 		return;
 	elseif ( IsModifiedClick("DRESSUP") ) then
 		if ( WardrobeCollectionFrame.transmogType == LE_TRANSMOG_TYPE_APPEARANCE ) then
@@ -1412,15 +1413,15 @@ function WardrobeCollectionFrameModel_OnMouseDown(self, button)
 	end
 
 	if ( button == "LeftButton" ) then
+		CloseDropDownMenus();
 		WardrobeCollectionFrame_SelectVisual(self.visualInfo.visualID);
-	elseif ( button == "RightButton" and self.visualInfo.isCollected and not self.visualInfo.isHideVisual ) then
-		if ( WardrobeCollectionFrame.transmogType == LE_TRANSMOG_TYPE_ILLUSION ) then
-			-- nothing for enchants
-			return;
-		end
+	elseif ( button == "RightButton" ) then
 		local dropDown = WardrobeCollectionFrame.ModelsFrame.RightClickDropDown;
 		if ( dropDown.activeFrame ~= self ) then
 			CloseDropDownMenus();
+		end
+		if ( not self.visualInfo.isCollected or self.visualInfo.isHideVisual or WardrobeCollectionFrame.transmogType == LE_TRANSMOG_TYPE_ILLUSION ) then
+			return;
 		end
 		dropDown.activeFrame = self;
 		ToggleDropDownMenu(1, nil, dropDown, self, -6, -3);
@@ -1547,7 +1548,7 @@ function WardrobeCollectionFrameModel_SetTooltip()
 
 	if ( sources[headerIndex].sourceType == TRANSMOG_SOURCE_BOSS_DROP and not sources[headerIndex].isCollected ) then
 		local drops = C_TransmogCollection.GetAppearanceSourceDrops(headerSourceID);
-		if ( drops ) then
+		if ( drops and #drops > 0 ) then
 			local showDifficulty = false;
 			if ( #drops == 1 ) then
 				sourceText = _G["TRANSMOG_SOURCE_"..TRANSMOG_SOURCE_BOSS_DROP]..": "..string.format(WARDROBE_TOOLTIP_ENCOUNTER_SOURCE, drops[1].encounter, drops[1].instance);

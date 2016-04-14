@@ -243,6 +243,11 @@
 							GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
 							GameTooltip:SetItemByID(self.itemID);
 							GameTooltip:Show();
+						elseif (self.money) then
+							GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+							GameTooltip:SetText(GARRISON_REWARD_MONEY);
+							GameTooltip:AddLine(GetMoneyString(self.money));
+							GameTooltip:Show();
 						end
 					</OnEnter>
 					<OnLeave function="GameTooltip_Hide"/>
@@ -494,6 +499,152 @@
 		</Scripts>
 	</Button>
 
+	<Frame name="GarrisonMissionPageCostFrameTemplate" virtual="true">
+		<Size x="140" y="38"/>
+		<Layers>
+			<Layer level="ARTWORK">
+				<FontString parentKey="CostLabel" inherits="GameFontNormalLarge2" justifyH="LEFT" text="COSTS_LABEL">
+					<Anchors>
+						<Anchor point="LEFT" y="1"/>
+					</Anchors>
+				</FontString>
+				<Texture parentKey="CostIcon" atlas="GarrMission_CurrencyIcon-Material">
+					<Size x="38" y="38"/>
+					<Anchors>
+						<Anchor point="CENTER" relativePoint="RIGHT" x="-16" y="2"/>
+					</Anchors>
+				</Texture>
+				<FontString parentKey="Cost" inherits="GameFontHighlightLarge2" justifyH="RIGHT">
+					<Anchors>
+						<Anchor point="RIGHT" relativeKey="$parent.CostIcon" relativePoint="LEFT" x="0" y="-1"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+	</Frame>
+
+	<Frame name="GarrisonMissionPageStageTemplate" inherits="GarrisonMissionStageTemplate" virtual="true">
+		<Size x="556" y="230"/>
+		<Anchors>
+			<Anchor point="TOP"/>
+		</Anchors>
+		<Layers>
+			<Layer level="OVERLAY" textureSubLevel="3">
+				<Texture parentKey="Header">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="0" y="0"/>
+						<Anchor point="BOTTOMRIGHT" relativePoint="TOPRIGHT" x="0" y="-66"/>
+					</Anchors>
+					<Color r="0" g="0" b="0" a=".35"/>
+				</Texture>
+			</Layer>
+			<Layer level="OVERLAY" textureSubLevel="5">
+				<FontString parentKey="Level" inherits="Game24Font">
+					<Anchors>
+						<Anchor point="CENTER" relativePoint="TOPLEFT" x="30" y="-36"/>
+					</Anchors>
+					<Color r="0.84" g="0.72" b="0.57"/>
+				</FontString>
+				<FontString parentKey="ItemLevel" inherits="GameFontNormalLarge" hidden="true">
+					<Anchors>
+						<Anchor point="TOP" relativeKey="$parent.Level" relativePoint="BOTTOM" x="0" y="2"/>
+					</Anchors>
+					<Color r="0.84" g="0.72" b="0.57"/>
+				</FontString>
+				<FontString parentKey="Title" inherits="QuestFont_Super_Huge" justifyH="LEFT" maxLines="1">
+					<Size x="410" y="0"/>
+					<Shadow>
+						<Offset x="1" y="-1"/>
+					</Shadow>
+					<Anchors>
+						<Anchor point="LEFT" relativeKey="$parent.Header" x="125" y="10"/>
+					</Anchors>
+					<Color r="1" g="1" b="1"/>
+				</FontString>
+				<FontString parentKey="Location" inherits="QuestFont_Huge">
+					<Shadow>
+						<Offset x="1" y="-1"/>
+					</Shadow>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.Title" relativePoint="BOTTOMLEFT" y="-6"/>
+					</Anchors>
+					<Color r="1" g="1" b="1"/>
+				</FontString>
+				<FontString parentKey="ExhaustingLabel" inherits="GameFontNormalMed2" justifyH="LEFT" text="GARRISON_MISSION_EXHAUSTING" hidden="true">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.Header" relativePoint="BOTTOMLEFT" x="7" y="-7"/>
+					</Anchors>
+					<Color r="1" g="0.573" b="0.075"/>
+				</FontString>
+				<FontString parentKey="MissionTime" inherits="GameFontNormalMed2" justifyH="LEFT">
+					<Size x="300" y="0"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.ExhaustingLabel" relativePoint="BOTTOMLEFT" y="-3"/>
+					</Anchors>
+					<Color r="1" g="1" b="1"/>
+				</FontString>
+				<FontString parentKey="MissionEnv" inherits="GameFontNormalMed2" justifyH="LEFT">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.MissionTime" relativePoint="BOTTOMLEFT" y="-3"/>
+					</Anchors>
+					<Color r="1" g="1" b="1"/>
+				</FontString>
+				<FontString parentKey="MissionDescription" inherits="GameFontHighlight" justifyH="LEFT">
+					<Size x="260" y="0"/>
+					<Anchors>
+						<Anchor point="TOPRIGHT" relativeKey="$parent.Header" relativePoint="BOTTOMRIGHT" x="-15" y="-7"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Frame parentKey="MissionEnvIcon" inherits="GarrisonMissionCheckTemplate">
+				<Size x="16" y="16"/>
+				<Anchors>
+					<Anchor point="LEFT" relativeKey="$parent.MissionEnv" relativePoint="RIGHT" x="4" y="0"/>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<Texture parentKey="Texture" setAllPoints="true"/>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnEnter function="GarrisonMissionPageEnvironment_OnEnter"/>
+					<OnLeave function="GameTooltip_Hide"/>
+				</Scripts>
+			</Frame>
+		</Frames>
+		<Scripts>
+			<OnUpdate function="GarrisonMissionController_OnStageUpdate"/>
+		</Scripts>
+	</Frame>
+
+	<Button name="GarrisonMissionPageCloseButtonTemplate" inherits="UIPanelCloseButtonNoScripts" virtual="true">
+		<Size>
+			<AbsDimension x="40" y="40"/>
+		</Size>
+		<Scripts>
+			<OnClick>
+				PlaySound("UI_Garrison_CommandTable_MissionClose");
+				GarrisonMissionController_CloseMission(self);
+			</OnClick>
+		</Scripts>
+	</Button>
+
+	<Frame name="GarrisonMissionPageItemLevelHitboxFrame" enableMouse="true" hidden="true" virtual="true">
+		<Size x="49" y="41"/>
+		<Scripts>
+			<OnEnter>
+				GameTooltip:SetOwner(self, "ANCHOR_BOTTOMRIGHT");
+				local itemLevel = self:GetParent().missionInfo.iLevel;
+				GameTooltip:SetText(string.format(GARRISON_MISSION_EXPECTED_ILVL, itemLevel), 1, 1, 1);
+				GameTooltip:AddLine(GARRISON_MISSION_EXPECTED_ILVL_TOOLTIP, nil, nil, nil, 1);
+				GameTooltip:Show();
+			</OnEnter>
+			<OnLeave function="GameTooltip_Hide"/>
+		</Scripts>
+	</Frame>
+
 	<Button name="MissionPageTemplate" hidden="true" virtual="true">
 		<Size x="556" y="580"/>
 		<Anchors>
@@ -510,134 +661,26 @@
 			</Layer>
 		</Layers>
 		<Frames>
-			<Button parentKey="CloseButton" inherits="UIPanelCloseButtonNoScripts">
+			<Button parentKey="CloseButton" inherits="GarrisonMissionPageCloseButtonTemplate">
 				<Anchors>
 					<Anchor point="TOPRIGHT" x="4" y="6"/>
 				</Anchors>
-				<Size>
-					<AbsDimension x="40" y="40"/>
-				</Size>
-				<Scripts>
-					<OnClick>
-						PlaySound("UI_Garrison_CommandTable_MissionClose");
-						GarrisonMissionController_CloseMission(self);
-					</OnClick>
-				</Scripts>
 			</Button>
-			<Frame parentKey="Stage" inherits="GarrisonMissionStageTemplate">
-				<Size x="556" y="230"/>
-				<Anchors>
-					<Anchor point="TOP"/>
-				</Anchors>
-				<Layers>
-					<Layer level="OVERLAY" textureSubLevel="3">
-						<Texture parentKey="Header">
-							<Anchors>
-								<Anchor point="TOPLEFT" x="0" y="0"/>
-								<Anchor point="BOTTOMRIGHT" relativePoint="TOPRIGHT" x="0" y="-66"/>
-							</Anchors>
-							<Color r="0" g="0" b="0" a=".35"/>
-						</Texture>
-					</Layer>
-					<Layer level="OVERLAY" textureSubLevel="5">
-						<FontString parentKey="Level" inherits="Game24Font">
-							<Anchors>
-								<Anchor point="CENTER" relativePoint="TOPLEFT" x="30" y="-36"/>
-							</Anchors>
-							<Color r="0.84" g="0.72" b="0.57"/>
-						</FontString>
-						<FontString parentKey="ItemLevel" inherits="GameFontNormalLarge" hidden="true">
-							<Anchors>
-								<Anchor point="TOP" relativeKey="$parent.Level" relativePoint="BOTTOM" x="0" y="2"/>
-							</Anchors>
-							<Color r="0.84" g="0.72" b="0.57"/>
-						</FontString>
-						<FontString parentKey="Title" inherits="QuestFont_Super_Huge" justifyH="LEFT" maxLines="1">
-							<Size x="410" y="0"/>
-							<Shadow>
-								<Offset x="1" y="-1"/>
-							</Shadow>
-							<Anchors>
-								<Anchor point="LEFT" relativeKey="$parent.Header" x="125" y="10"/>
-							</Anchors>
-							<Color r="1" g="1" b="1"/>
-						</FontString>
-						<FontString parentKey="Location" inherits="QuestFont_Huge">
-							<Shadow>
-								<Offset x="1" y="-1"/>
-							</Shadow>
-							<Anchors>
-								<Anchor point="TOPLEFT" relativeKey="$parent.Title" relativePoint="BOTTOMLEFT" y="-6"/>
-							</Anchors>
-							<Color r="1" g="1" b="1"/>
-						</FontString>
-						<FontString parentKey="ExhaustingLabel" inherits="GameFontNormalMed2" justifyH="LEFT" text="GARRISON_MISSION_EXHAUSTING" hidden="true">
-							<Anchors>
-								<Anchor point="TOPLEFT" relativeKey="$parent.Header" relativePoint="BOTTOMLEFT" x="7" y="-7"/>
-							</Anchors>
-							<Color r="1" g="0.573" b="0.075"/>
-						</FontString>
-						<FontString parentKey="MissionTime" inherits="GameFontNormalMed2" justifyH="LEFT">
-							<Size x="300" y="0"/>
-							<Anchors>
-								<Anchor point="TOPLEFT" relativeKey="$parent.ExhaustingLabel" relativePoint="BOTTOMLEFT" y="-3"/>
-							</Anchors>
-							<Color r="1" g="1" b="1"/>
-						</FontString>
-						<FontString parentKey="MissionEnv" inherits="GameFontNormalMed2" justifyH="LEFT">
-							<Anchors>
-								<Anchor point="TOPLEFT" relativeKey="$parent.MissionTime" relativePoint="BOTTOMLEFT" y="-3"/>
-							</Anchors>
-							<Color r="1" g="1" b="1"/>
-						</FontString>
-						<FontString parentKey="MissionDescription" inherits="GameFontHighlight" justifyH="LEFT">
-							<Size x="260" y="0"/>
-							<Anchors>
-								<Anchor point="TOPRIGHT" relativeKey="$parent.Header" relativePoint="BOTTOMRIGHT" x="-15" y="-7"/>
-							</Anchors>
-						</FontString>
-					</Layer>
-				</Layers>
-				<Frames>
-					<Frame parentKey="MissionEnvIcon" inherits="GarrisonMissionCheckTemplate">
-						<Size x="16" y="16"/>
-						<Anchors>
-							<Anchor point="LEFT" relativeKey="$parent.MissionEnv" relativePoint="RIGHT" x="4" y="0"/>
-						</Anchors>
-						<Layers>
-							<Layer level="BACKGROUND">
-								<Texture parentKey="Texture" setAllPoints="true"/>
-							</Layer>
-						</Layers>
-						<Scripts>
-							<OnEnter function="GarrisonMissionPageEnvironment_OnEnter"/>
-							<OnLeave function="GameTooltip_Hide"/>
-						</Scripts>
-					</Frame>
-				</Frames>
-				<Scripts>
-					<OnUpdate function="GarrisonMissionController_OnStageUpdate"/>
-				</Scripts>
-			</Frame>
-			<Frame parentKey="ItemLevelHitboxFrame" enableMouse="true" hidden="true">
-				<Size x="49" y="41"/>
+			<Frame parentKey="Stage" inherits="GarrisonMissionPageStageTemplate"/>
+			<Frame parentKey="ItemLevelHitboxFrame" inherits="GarrisonMissionPageItemLevelHitboxFrame">
 				<Anchors>
 					<Anchor point="TOP" relativeKey="$parent.Stage.Level" x="0" y="3"/>
 				</Anchors>
-				<Scripts>
-					<OnEnter>
-						GameTooltip:SetOwner(self, "ANCHOR_BOTTOMRIGHT");
-						local itemLevel = self:GetParent().missionInfo.iLevel;
-						GameTooltip:SetText(string.format(GARRISON_MISSION_EXPECTED_ILVL, itemLevel), 1, 1, 1);
-						GameTooltip:AddLine(GARRISON_MISSION_EXPECTED_ILVL_TOOLTIP, nil, nil, nil, 1);
-						GameTooltip:Show();
-					</OnEnter>
-					<OnLeave function="GameTooltip_Hide"/>
-				</Scripts>
+			</Frame>
+			<Frame parentKey="BuffsFrameAnchor" hidden="true">
+				<Size x="1" y="1"/>
+				<Anchors>
+					<Anchor point="BOTTOM" x="0" y="198"/>
+				</Anchors>
 			</Frame>
 			<Frame parentKey="BuffsFrame" inherits="GarrisonMissionPartyBuffsFrameTemplate" hidden="true">
 				<Anchors>
-					<Anchor point="BOTTOM" x="0" y="198"/>
+					<Anchor point="BOTTOM" relativeKey="$parent.BuffsFrameAnchor" x="0" y="0"/>
 				</Anchors>
 			</Frame>
 			<Button inherits="StartMissionButtonTemplate">
@@ -645,32 +688,11 @@
 					<Anchor point="RIGHT" relativeKey="$parent.ButtonFrame" x="-50" y="1"/>
 				</Anchors>
 			</Button>
-			<Frame parentKey="CostFrame">
-				<Size x="140" y="38"/>
+			<Frame parentKey="CostFrame" inherits="GarrisonMissionPageCostFrameTemplate">
 				<Anchors>
 					<Anchor point="LEFT" relativeKey="$parent.ButtonFrame" x="50"/>
 					<Anchor point="RIGHT" relativeKey="$parent.ButtonFrame" relativePoint="CENTER" />
 				</Anchors>
-				<Layers>
-					<Layer level="ARTWORK">
-						<FontString parentKey="CostLabel" inherits="GameFontNormalLarge2" justifyH="LEFT" text="COSTS_LABEL">
-							<Anchors>
-								<Anchor point="LEFT" y="1"/>
-							</Anchors>
-						</FontString>
-						<Texture parentKey="CostIcon" atlas="GarrMission_CurrencyIcon-Material">
-							<Size x="38" y="38"/>
-							<Anchors>
-								<Anchor point="CENTER" relativePoint="RIGHT" x="-16" y="2"/>
-							</Anchors>
-						</Texture>
-						<FontString parentKey="Cost" inherits="GameFontHighlightLarge2" justifyH="RIGHT">
-							<Anchors>
-								<Anchor point="RIGHT" relativeKey="$parent.CostIcon" relativePoint="LEFT" x="0" y="-1"/>
-							</Anchors>
-						</FontString>
-					</Layer>
-				</Layers>
 			</Frame>
 		</Frames>
 	</Button>
@@ -1000,9 +1022,6 @@
 						self:SetFacing(-.4);
 						self:InitializeCamera(.8);
 					</OnLoad>
-					<OnShow>
-						self:SetCameraPosition(3.5, 0, 1);
-					</OnShow>
 				</Scripts>
 			</CinematicModel>
 			<Frame parentArray="Rewards" hidden="true" inherits="GarrisonMissionRewardEffectsTemplate">

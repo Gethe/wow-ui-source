@@ -1746,6 +1746,16 @@ function CharacterCreate_TypeButtonOnClick(self)
 	CharacterCreate_SelectCharacterType(self.characterType);
 end
 
+function CharacterCreate_TypeButtonOnDisable(self)
+	self.typeText:SetTextColor(.5, .5, .5, 1);
+	self.levelText:SetTextColor(.5, .5, .5, 1);
+end
+
+function CharacterCreate_TypeButtonOnEnable(self)
+	self.typeText:SetTextColor(1, .78, 0, 1);
+	self.levelText:SetTextColor(1, .78, 0, 1);
+end
+
 function SelectSpecFrame_OnLoad(self)
 	self.specButtonClickedCallback = CharacterCreate_UpdateOkayButton;
 	self.selected = nil;

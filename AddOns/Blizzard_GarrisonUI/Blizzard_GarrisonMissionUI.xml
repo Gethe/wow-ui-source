@@ -182,7 +182,7 @@
 		</Scripts>
 	</Frame>
 
-	<Button name="GarrisonFollowerPageAbilityIconButtonTemplate" parentKey="IconButton" virtual="true">
+	<Button name="GarrisonFollowerPageAbilityIconButtonTemplate" virtual="true">
 		<Layers>
 			<Layer level="BACKGROUND" textureSubLevel="-1">
 				<Texture parentKey="Icon" alphaMode="BLEND" file="Interface\icons\inv_drink_31_embalmingfluid">
@@ -242,10 +242,10 @@
 		<Scripts>
 			<OnClick function="GarrisonFollowerPageAbility_OnClick"/>
 			<OnEnter>
-				ShowGarrisonFollowerAbilityTooltip(self, self.abilityID, self:GetParent().followerTypeID)
+				ShowGarrisonFollowerAbilityTooltipWithExtraDescriptionText(self, self.abilityID, self:GetParent().followerTypeID, self.extraDescriptionText);
 			</OnEnter>
 			<OnLeave>
-				HideGarrisonFollowerAbilityTooltip(self:GetParent().followerTypeID);
+				HideGarrisonFollowerAbilityTooltipWithExtraDescriptionText(self:GetParent().followerTypeID);
 			</OnLeave>
 		</Scripts>
 	</Button>
@@ -274,7 +274,7 @@
 			</Layer>
 		</Layers>
 		<Frames>
-			<Button inherits="GarrisonFollowerPageAbilityIconButtonTemplate"/>
+			<Button inherits="GarrisonFollowerPageAbilityIconButtonTemplate" parentKey="IconButton"/>
 		</Frames>
 		<Layers>
 			<Layer level="ARTWORK">
@@ -2016,9 +2016,16 @@
 									<Anchor point="LEFT" relativeKey="$parent.Enemy2" relativePoint="RIGHT" x="120"/>
 								</Anchors>
 							</Frame>
+							<Frame parentKey="FollowerAnchor" hidden="true">
+								<Size x="1" y="1"/>
+								<Anchors>
+									<Anchor point="TOPLEFT" x="0" y="-274"/>
+									<Anchor point="TOPRIGHT" x="0" y="-274"/>
+								</Anchors>
+							</Frame>
 							<Frame parentKey="Follower1" parentArray="Followers" inherits="GarrisonMissionPageFollowerTemplate">
 								<Anchors>
-									<Anchor point="TOPLEFT" x="22" y="-274"/>
+									<Anchor point="TOPLEFT" relativePoint="$parent.FollowerAnchor" x="22" y="0"/>
 								</Anchors>
 							</Frame>
 							<Frame parentKey="Follower2" parentArray="Followers" inherits="GarrisonMissionPageFollowerTemplate">

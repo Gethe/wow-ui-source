@@ -37,13 +37,6 @@
 		</Scripts>
 	</Button>
 
-	<Button name="ChallengeModeAlertFrameRewardTemplate" virtual="true" inherits="DungeonCompletionAlertFrameRewardTemplate">
-		<Scripts>
-			<OnEnter function="ChallengeModeAlertFrameReward_OnEnter"/>
-			<OnLeave function="ChallengeModeAlertFrameReward_OnLeave"/>
-		</Scripts>
-	</Button>
-
 	<Button name="DungeonCompletionAlertFrameTemplate" parent="UIParent" hidden="true" frameStrata="DIALOG" virtual="true" inherits="AlertFrameTemplate">
 		<Size x="336" y="80"/>
 		<Anchors>
@@ -606,132 +599,6 @@
 		</Layers>
 		<Scripts>
 			<OnClick function="GuildChallengeAlertFrame_OnClick"/>
-		</Scripts>
-	</Button>
-
-	<Button name="ChallengeModeAlertFrameTemplate" parent="UIParent" hidden="true" frameStrata="DIALOG" virtual="true" inherits="AlertFrameTemplate">
-		<Size x="311" y="78"/>
-		<Anchors>
-			<Anchor point="BOTTOM" x="0" y="128"/>
-		</Anchors>
-		<Animations>
-			<AnimationGroup parentKey="animIn">
-				<Alpha fromAlpha="1" toAlpha="0" duration="0" order="1"/>
-				<Alpha fromAlpha="0" toAlpha="1" duration="0.2" order="2"/>
-			</AnimationGroup>
-			<AnimationGroup parentKey="waitAndAnimOut">
-				<Alpha startDelay="4.05" fromAlpha="1" toAlpha="0" duration="1.5" parentKey="animOut">
-					<Scripts>
-						<OnFinished>
-							self:GetRegionParent():Hide();
-						</OnFinished>
-					</Scripts>
-				</Alpha>
-			</AnimationGroup>
-		</Animations>
-		<Layers>
-			<Layer level="BACKGROUND">
-				<Texture atlas="challenges-toast" setAllPoints="true">
-				</Texture>
-			</Layer>
-			<Layer level="BORDER">
-				<Texture name="$parentDungeonTexture" parentKey="dungeonTexture">
-					<Size x="45" y="45"/>
-					<Anchors>
-						<Anchor point="LEFT" x="19" y="0"/>
-					</Anchors>
-				</Texture>
-			</Layer>
-			<Layer level="BORDER" textureSubLevel="1">
-				<Texture name="$parentBorder" file="Interface\AchievementFrame\UI-Achievement-IconFrame">
-					<Size x="72" y="72"/>
-					<Anchors>
-						<Anchor point="CENTER" relativeKey="$parent.dungeonTexture" x="0" y="0"/>
-					</Anchors>
-					<TexCoords left="0" right="0.5625" top="0" bottom="0.5625"/>
-				</Texture>
-			</Layer>
-			<Layer level="ARTWORK">
-				<FontString inherits="GameFontWhiteTiny" text="CHALLENGE_MODE_COMPLETED">
-					<Size x="200" y="12"/>
-					<Anchors>
-						<Anchor point="TOP" x="20" y="-22"/>
-					</Anchors>
-					<Color r="0.973" g="0.937" b="0.580"/>
-				</FontString>
-				<FontString name="$parentTime" inherits="GameFontHighlight" parentKey="time">
-					<!--Size x="200" y="16"/-->
-					<Anchors>
-						<Anchor point="TOP" x="20" y="-40"/>
-					</Anchors>
-				</FontString>
-				<Texture name="$parentMedalIcon" file="Interface\Challenges\challenges-silver" parentKey="medalIcon">
-					<Size x="52" y="52"/>
-					<Anchors>
-						<Anchor point="LEFT" relativeKey="$parent.dungeonTexture" relativePoint="RIGHT" x="-21" y="-8"/>
-					</Anchors>
-				</Texture>
-			</Layer>
-			<Layer level="OVERLAY">
-				<Texture name="$parentShine" file="Interface\AchievementFrame\UI-Achievement-Alert-Glow" alphaMode="ADD" hidden="true" parentKey="shine">
-					<Size x="67" y="72"/>
-					<Anchors>
-						<Anchor point="BOTTOMLEFT" x="0" y="0"/>
-					</Anchors>
-					<Animations>
-						<AnimationGroup name="$parentAnimIn" parentKey="animIn">
-							<Alpha fromAlpha="0" toAlpha="1" duration="0.2" order="1"/>
-							<Translation offsetX="260" offsetY="0" duration="0.85" order="2"/>
-							<Alpha startDelay="0.35" fromAlpha="1" toAlpha="0" duration="0.5" order="2"/>
-							<Scripts>
-								<OnFinished>
-									self:GetParent():Hide();
-								</OnFinished>
-							</Scripts>
-						</AnimationGroup>
-					</Animations>
-					<TexCoords left="0.78125" right="0.912109375" top="0" bottom="0.28125"/>
-				</Texture>
-			</Layer>
-		</Layers>
-		<Frames>
-			<Frame name="$parentReward1" inherits="ChallengeModeAlertFrameRewardTemplate" parentKey="reward1"/>
-			<Frame name="$parentGlowFrame" setAllPoints="true" enableMouse="false" parentKey="glowFrame">
-				<Layers>
-					<Layer level="OVERLAY">
-						<Texture name="$parentGlow" atlas="Toast-Flash" useAtlasSize="true" alphaMode="ADD" hidden="true" parentKey="glow">
-							<Anchors>
-								<Anchor point="CENTER" x="0" y="0"/>
-							</Anchors>
-							<Animations>
-								<AnimationGroup name="$parentAnimIn" parentKey="animIn">
-									<Alpha fromAlpha="0" toAlpha="1" duration="0.2" order="1"/>
-									<Alpha fromAlpha="1" toAlpha="0" duration="0.5" order="2"/>
-									<Scripts>
-										<OnFinished>
-											self:GetParent():Hide();
-										</OnFinished>
-									</Scripts>
-								</AnimationGroup>
-							</Animations>
-						</Texture>
-					</Layer>
-				</Layers>
-				<Scripts>
-					<OnLoad function="RaiseFrameLevel"/>
-				</Scripts>
-			</Frame>
-		</Frames>
-		<Scripts>
-			<OnLoad inherit="prepend">
-				self.glow = self.glowFrame.glow;
-			</OnLoad>
-			<OnClick>
-				if ( AlertFrame_OnClick(self, button, down) ) then
-				return;
-				end
-				PVEFrame_ToggleFrame("ChallengesFrame", self.mapID);
-			</OnClick>
 		</Scripts>
 	</Button>
 
@@ -1337,8 +1204,6 @@
 	</Button>
 
 	<Button name="DungeonCompletionAlertFrame" inherits="DungeonCompletionAlertFrameTemplate"/>
-
-	<Button name="ChallengeModeAlertFrame" inherits="ChallengeModeAlertFrameTemplate"/>
 
 	<Button name="ScenarioAlertFrame" inherits="ScenarioAlertFrameTemplate"/>
 

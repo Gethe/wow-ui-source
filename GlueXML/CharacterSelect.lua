@@ -36,6 +36,7 @@ function CharacterSelect_OnLoad(self)
 	self.selectedIndex = 0;
 	self.selectLast = false;
 	self.currentBGTag = nil;
+	self.trialBoostPadlockPool = CreateFramePool("BUTTON", self, "CharSelectLockedTrialButtonTemplate");
 	self:RegisterEvent("ADDON_LIST_UPDATE");
 	self:RegisterEvent("CHARACTER_LIST_UPDATE");
 	self:RegisterEvent("UPDATE_SELECTED_CHARACTER");
@@ -562,7 +563,6 @@ end
 
 function UpdateCharacterList(skipSelect)
 	local numChars = GetNumCharacters();
-	local index = 1;
 	local coords;
 
 	if ( CharacterSelect.undeleteChanged ) then
@@ -608,57 +608,89 @@ function UpdateCharacterList(skipSelect)
 	end
 
 	local debugText = numChars..": ";
-	for i=1, numChars, 1 do
-		local name, race, class, classFileName, classID, level, zone, sex, ghost, PCC, PRC, PFC, PRCDisabled, guid, _, _, _, boostInProgress, _, locked = GetCharacterInfo(GetCharIDFromIndex(i+CHARACTER_LIST_OFFSET));
+	local characterLimit = min(numChars, MAX_CHARACTERS_DISPLAYED);
+	for i=1, characterLimit, 1 do
+		local name, race, class, classFileName, classID, level, zone, sex, ghost, PCC, PRC, PFC, PRCDisabled, guid, _, _, _, boostInProgress, _, locked, isTrialBoost, isTrialBoostLocked = GetCharacterInfo(GetCharIDFromIndex(i+CHARACTER_LIST_OFFSET));
 		local productID, vasServiceState, vasServiceErrors = C_StoreGlue.GetVASPurchaseStateInfo(guid);
-		local button = _G["CharSelectCharacterButton"..index];
+		local button = _G["CharSelectCharacterButton"..i];
 		button.isVeteranLocked = false;
+
+		if (button.trialBoostPadlock) then
+			CharacterSelect.trialBoostPadlockPool:Release(button.trialBoostPadlock);
+			button.trialBoostPadlock = nil;
+		end
+
 		if ( name ) then
-			if ( not zone ) then
-				zone = "";
-			end
+			zone = zone or "";
+
+			local nameText = button.buttonText.name;
+			local infoText = button.buttonText.Info;
+			local locationText = button.buttonText.Location;
+
 			if ( CharacterSelect.undeleting ) then
-				_G["CharSelectCharacterButton"..index.."ButtonTextName"]:SetFormattedText(CHARACTER_SELECT_NAME_DELETED, name);
+				nameText:SetFormattedText(CHARACTER_SELECT_NAME_DELETED, name);
 			elseif ( locked ) then
-				_G["CharSelectCharacterButton"..index.."ButtonTextName"]:SetText(name..CHARSELECT_CHAR_INACTIVE_CHAR);
+				nameText:SetText(name..CHARSELECT_CHAR_INACTIVE_CHAR);
 			else
-				_G["CharSelectCharacterButton"..index.."ButtonTextName"]:SetText(name);
+				nameText:SetText(name);
 			end
+
 			if (vasServiceState == LE_VAS_PURCHASE_STATE_APPLYING_LICENSE and vasServiceErrors) then
 				local productInfo = C_PurchaseAPI.GetProductInfo(productID);
-				_G["CharSelectCharacterButton"..index.."ButtonTextInfo"]:SetText("|cffff2020"..VAS_ERROR_ERROR_HAS_OCCURRED.."|r");
+				infoText:SetText("|cffff2020"..VAS_ERROR_ERROR_HAS_OCCURRED.."|r");
 				if (productInfo and productInfo.name) then
-					_G["CharSelectCharacterButton"..index.."ButtonTextLocation"]:SetText("|cffff2020"..productInfo.name.."|r");
+					locationText:SetText("|cffff2020"..productInfo.name.."|r");
 				else
-					_G["CharSelectCharacterButton"..index.."ButtonTextLocation"]:SetText("");
+					locationText:SetText("");
 				end
 			elseif (vasServiceState == LE_VAS_PURCHASE_STATE_PROCESSING_FACTION_CHANGE) then
-				_G["CharSelectCharacterButton"..index.."ButtonTextInfo"]:SetText(CHARACTER_UPGRADE_PROCESSING);
-				_G["CharSelectCharacterButton"..index.."ButtonTextLocation"]:SetFontObject("GlueFontHighlightSmall");
-				_G["CharSelectCharacterButton"..index.."ButtonTextLocation"]:SetText(FACTION_CHANGE_CHARACTER_LIST_LABEL);
+				infoText:SetText(CHARACTER_UPGRADE_PROCESSING);
+				locationText:SetFontObject("GlueFontHighlightSmall");
+				locationText:SetText(FACTION_CHANGE_CHARACTER_LIST_LABEL);
 			elseif (boostInProgress) then
-				_G["CharSelectCharacterButton"..index.."ButtonTextInfo"]:SetText(CHARACTER_UPGRADE_PROCESSING);
-				_G["CharSelectCharacterButton"..index.."ButtonTextLocation"]:SetFontObject("GlueFontHighlightSmall");
-				_G["CharSelectCharacterButton"..index.."ButtonTextLocation"]:SetText(CHARACTER_UPGRADE_CHARACTER_LIST_LABEL);
+				infoText:SetText(CHARACTER_UPGRADE_PROCESSING);
+				locationText:SetFontObject("GlueFontHighlightSmall");
+				locationText:SetText(CHARACTER_UPGRADE_CHARACTER_LIST_LABEL);
 			else
 				if ( locked ) then
 					button.isVeteranLocked = true;
 				end
-				if( ghost ) then
-					_G["CharSelectCharacterButton"..index.."ButtonTextInfo"]:SetFormattedText(CHARACTER_SELECT_INFO_GHOST, level, class);
+
+				locationText:SetFontObject("GlueFontDisableSmall");
+
+				if isTrialBoost then
+					locationText:SetText(CHARACTER_SELECT_INFO_TRIAL_BOOST_APPLY_BOOST_TOKEN);
+
+					if isTrialBoostLocked then
+						infoText:SetText(CHARACTER_SELECT_INFO_TRIAL_BOOST_LOCKED);
+
+						local trialPadlock = CharacterSelect.trialBoostPadlockPool:Acquire();
+						button.trialBoostPadlock = trialPadlock;
+
+						trialPadlock.guid = guid;
+						trialPadlock:SetParent(button);
+						trialPadlock:SetPoint("TOPRIGHT", button, "TOPLEFT", 5, 12);
+						trialPadlock:Show();
+					else
+						infoText:SetText(CHARACTER_SELECT_INFO_TRIAL_BOOST_PLAYABLE);
+					end
 				else
-					_G["CharSelectCharacterButton"..index.."ButtonTextInfo"]:SetFormattedText(CHARACTER_SELECT_INFO, level, class);
+					if( ghost ) then
+						infoText:SetFormattedText(CHARACTER_SELECT_INFO_GHOST, level, class);
+					else
+						infoText:SetFormattedText(CHARACTER_SELECT_INFO, level, class);
+					end
+
+					locationText:SetText(zone);
 				end
-				_G["CharSelectCharacterButton"..index.."ButtonTextLocation"]:SetFontObject("GlueFontDisableSmall");
-				_G["CharSelectCharacterButton"..index.."ButtonTextLocation"]:SetText(zone);
 			end
 		end
 		button:Show();
 		button.index = i + CHARACTER_LIST_OFFSET;
 
 		-- setup paid service button
-		local paidServiceButton = _G["CharSelectPaidService"..index];
-		local upgradeIcon = _G["CharacterServicesProcessingIcon"..index];
+		local paidServiceButton = _G["CharSelectPaidService"..i];
+		local upgradeIcon = _G["CharacterServicesProcessingIcon"..i];
 		upgradeIcon:Hide();
 		local serviceType, disableService;
 		if (vasServiceState == LE_VAS_PURCHASE_STATE_PAYMENT_PENDING) then
@@ -756,12 +788,8 @@ function UpdateCharacterList(skipSelect)
 				paidServiceButton.VASIcon:SetVertexColor(0.35, 0.35, 0.35);
 			end
 		end
-
-		index = index + 1;
-		if ( index > MAX_CHARACTERS_DISPLAYED ) then
-			break;
-		end
 	end
+
 	DebugLog(debugText);
 	CharacterSelect_UpdateButtonState();
 
@@ -799,7 +827,6 @@ function UpdateCharacterList(skipSelect)
 			_G["CharSelectCharacterButton"..i]:Hide();
 			_G["CharSelectPaidService"..i]:Hide();
 			_G["CharacterServicesProcessingIcon"..i]:Hide();
-			index = index + 1;
 		end
 	end
 
@@ -1826,15 +1853,20 @@ local function HandleUpgradePopupButtonClick(self)
 	return data;
 end
 
-local function BeginCharacterUpdgradeFlow(data)
+function CharacterUpgradePopup_BeginCharacterUpdgradeFlow(data)
 	CharacterUpgradeFlow:SetTarget(data);
 	CharSelectServicesFlowFrame:Show();
 	CharacterServicesMaster_SetFlow(CharacterServicesMaster, CharacterUpgradeFlow);
 end
 
+local function BeginUnlockTrialCharacter(flowData, guid)
+	CharacterUpgradeFlow:SetAutoSelectGuid(guid);
+	CharacterUpgradePopup_BeginCharacterUpdgradeFlow(flowData);
+end
+
 function CharacterUpgradePopup_OnStartClick(self)
-	local data = HandleUpgradePopupButtonClick(self)
-	BeginCharacterUpdgradeFlow(data);
+	local data = HandleUpgradePopupButtonClick(self);
+	CharacterUpgradePopup_BeginCharacterUpdgradeFlow(data);
 end
 
 function CharacterUpgradePopup_OnTryNewClick(self)
@@ -1851,7 +1883,11 @@ function CharacterUpgradePopup_OnCloseClick(self)
 end
 
 function CharacterServicesTokenBoost_OnClick(self)
-	BeginCharacterUpdgradeFlow(self.data);
+	if HasSufficientExperienceForAdvancedCreation() then
+		CharacterUpgradePopup_BeginCharacterUpdgradeFlow(self.data);
+	else
+		GlueDialog_Show("CHARACTER_BOOST_NO_CHARACTERS_WARNING", nil, self.data);
+	end
 end
 
 function CharacterServicesMaster_OnLoad(self)
@@ -2465,4 +2501,32 @@ end
 
 function CopyCharacterCharacterNameEditBox_OnTabPressed(self)
 	self:GetParent().RealmName:SetFocus();
+end
+
+function CharSelectLockedTrialButton_OnClick(self)
+	-- Search user upgrades to see if they have the required boost
+	local upgrades = C_CharacterServices.GetUpgradeDistributions();
+	local hasBoost = false;
+	local useFreeBoost = false;
+
+	for id, data in pairs(upgrades) do
+		if id == LE_BATTLEPAY_PRODUCT_ITEM_LEVEL_100_CHARACTER_UPGRADE then
+			hasBoost = (data.numPaid) > 0 or (data.numFree > 0);
+			useFreeBoost = useFreeBoost or (data.numFree > 0);
+		end
+	end
+
+	if hasBoost then
+		local flowData = CharacterUpgrade_Items[LE_BATTLEPAY_PRODUCT_ITEM_LEVEL_100_CHARACTER_UPGRADE];
+
+		if useFreeBoost then
+			flowData = flowData.free;
+		else
+			flowData = flowData.paid;
+		end
+
+		BeginUnlockTrialCharacter(flowData, self.guid);
+	else
+		-- TODO: Direct user to the shop to buy a token?  Popup error dialog?  Resolve this with design
+	end
 end

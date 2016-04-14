@@ -63,6 +63,22 @@ function HideGarrisonFollowerAbilityTooltip(followerTypeID)
 	tooltip:Hide();
 end
 
+function ShowGarrisonFollowerAbilityTooltipWithExtraDescriptionText(frame, garrFollowerAbilityID, followerTypeID, extraText)
+	local tooltip = _G[GarrisonFollowerOptions[followerTypeID].abilityTooltipFrame];
+	tooltip.extraDescriptionText = extraText;
+
+	tooltip:ClearAllPoints();
+	tooltip:SetPoint("TOPLEFT", frame, "BOTTOMRIGHT");
+	GarrisonFollowerAbilityTooltip_Show(tooltip, garrFollowerAbilityID, followerTypeID);
+
+end
+
+function HideGarrisonFollowerAbilityTooltipWithExtraDescriptionText(followerTypeID)
+	local tooltip = _G[GarrisonFollowerOptions[followerTypeID].abilityTooltipFrame];
+	tooltip.extraDescriptionText = nil;
+	tooltip:Hide();
+end
+
 function ShowGarrisonFollowerMissionAbilityTooltip(frame, garrFollowerAbilityID, followerTypeID)
 	local tooltip = _G[GarrisonFollowerOptions[followerTypeID].missionAbilityTooltipFrame];
 

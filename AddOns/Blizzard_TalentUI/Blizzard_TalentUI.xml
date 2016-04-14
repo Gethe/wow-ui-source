@@ -1227,11 +1227,19 @@
 					</Anchors>
 				</Texture>
 			</Layer>
+			<Layer level="OVERLAY" textureSubLevel="1">
+				<Texture parentKey="SmallWreath" atlas="honorsystem-prestige-smallwreath" useAtlasSize="false" hidden="true">
+					<Size x="73" y="43"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="PlayerTalentFrame" relativePoint="TOPLEFT" x="-12" y="-19" />
+					</Anchors>
+				</Texture>
+			</Layer>
 		</Layers>
 		<Frames>
 			<Frame parentKey="XPBar" inherits="PVPHonorSystemLargeXPBar">
 				<Anchors>
-					<Anchor point="TOP" relativeTo="PlayerTalentFrame" relativePoint="TOP" x="-13" y="-48"/>
+					<Anchor point="TOPLEFT" relativeTo="PlayerTalentFrame" relativePoint="TOPLEFT" x="50" y="-47"/>
 				</Anchors>
 				<KeyValues>
 					<KeyValue key="canPrestigeHere" value="true" type="boolean"/>
@@ -1311,7 +1319,7 @@
 				<Frames>
 					<Frame parentKey="Tier1" inherits="PVPTalentRowTemplate">
 						<Anchors>
-							<Anchor point="TOPLEFT" x="4" y="-20"/>
+							<Anchor point="TOPLEFT" x="4" y="-17"/>
 						</Anchors>
 						<KeyValues>
 							<KeyValue key="rowIndex" value="1" type="number"/>
@@ -1404,9 +1412,9 @@
 					</Layer>
 					<Layer level="OVERLAY">
 						<Texture parentKey="PrestigeIcon" atlas="honorsystem-icon-prestige-5">
-							<Size x="74" y="74"/>
+							<Size x="105" y="105"/>
 							<Anchors>
-								<Anchor point="CENTER" relativeKey="$parent.Laurel"/>
+								<Anchor point="CENTER" relativeKey="$parent.Laurel" y="3"/>
 							</Anchors>
 						</Texture>
 					</Layer>

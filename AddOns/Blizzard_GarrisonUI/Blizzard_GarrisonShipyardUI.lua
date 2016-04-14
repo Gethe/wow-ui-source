@@ -87,6 +87,11 @@ StaticPopupDialogs["GARRISON_SHIP_DECOMMISSION"] = {
 GARRISON_SHIP_OIL_CURRENCY = 1101;
 GarrisonShipyardMission = {};
 
+function GarrisonShipyardMission:InitializeFollowerType()
+	self.followerTypeID = LE_FOLLOWER_TYPE_SHIPYARD_6_2;
+end
+
+
 function GarrisonShipyardMission:OnLoadMainFrame()
 	GarrisonMission.OnLoadMainFrame(self);
 
@@ -124,8 +129,7 @@ function GarrisonShipyardMission:OnEventMainFrame(event, ...)
 	elseif (event == "GARRISON_FOLLOWER_XP_CHANGED" and self.MissionTab.MissionPage:IsShown() and self.MissionTab.MissionPage.missionInfo ) then
 		local followerTypeID = ...;
 		if (followerTypeID == self.followerTypeID) then
-			self.followerCounters = C_Garrison.GetBuffedFollowersForMission(self.MissionTab.MissionPage.missionInfo.missionID);
-			self.followerTraits = C_Garrison.GetFollowersTraitsForMission(self.MissionTab.MissionPage.missionInfo.missionID);	
+			self:GetFollowerBuffsForMission(self.MissionTab.MissionPage.missionInfo.missionID);
 		end
 	elseif (event == "GARRISON_MISSION_FINISHED") then
 		local followerTypeID = ...;
@@ -256,7 +260,7 @@ end
 
 function GarrisonShipyardMission:SetEnemies(frame, enemies, numFollowers)
 	self:SortEnemies(enemies);
-	local numVisibleEnemies = GarrisonMission.SetEnemies(self, frame, enemies, numFollowers, 0, LE_FOLLOWER_TYPE_SHIPYARD_6_2 );
+	local numVisibleEnemies = GarrisonMission.SetEnemies(self, frame, enemies, numFollowers );
 
 	for i=1, #enemies do
 		local Frame = frame.Enemies[i];
@@ -274,6 +278,7 @@ function GarrisonShipyardMission:SetEnemies(frame, enemies, numFollowers)
 	else
 		frame.Enemy1:SetPoint("TOPLEFT", 31, -83);
 	end
+	return numVisibleEnemies;
 end
 
 function GarrisonShipyardMission:UpdateMissionData(frame)
@@ -443,7 +448,7 @@ end
 
 function GarrisonShipyardMission:MissionCompleteInitialize(missionList, index)
 	if (not GarrisonMission.MissionCompleteInitialize(self, missionList, index)) then
-		return;
+		return false;
 	end
 	
 	local destroyAnim, destroySound, surviveAnim, surviveSound, saveAnim, saveSound = C_Garrison.GetShipDeathAnimInfo();
@@ -456,6 +461,8 @@ function GarrisonShipyardMission:MissionCompleteInitialize(missionList, index)
 	
 	-- In the future, it would be nice if a designer could setup this camera in data
 	self.MissionComplete.boatDeathCamPos = {0.7, -7.7, -1.3};
+
+	return true;
 end
 
 function GarrisonShipyardMission:CloseMissionComplete()
@@ -1666,9 +1673,7 @@ function GarrisonShipyardMissionPage_OnEvent(self, event, ...)
 		if (followerTypeID == mainFrame.followerTypeID) then
 			mainFrame:UpdateMissionParty(self.Followers);
 			if ( self.missionInfo ) then
-				local missionID = self.missionInfo.missionID;
-				mainFrame.followerCounters = C_Garrison.GetBuffedFollowersForMission(missionID)
-				mainFrame.followerTraits = C_Garrison.GetFollowersTraitsForMission(missionID);
+				mainFrame:GetFollowerBuffsForMission(self.missionInfo.missionID);
 				mainFrame.FollowerList:UpdateFollowers();
 				mainFrame:UpdateMissionData(self);
 				mainFrame:UpdateMissionParty(self.Followers);

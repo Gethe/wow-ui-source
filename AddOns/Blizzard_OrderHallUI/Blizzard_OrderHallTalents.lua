@@ -42,7 +42,7 @@ function OrderHallTalentFrameMixin:OnLoad()
 	self.ClassBackground:SetAtlas("orderhalltalents-background-"..className);
 	self.portrait:SetMask("Interface\\CharacterFrame\\TempPortraitAlphaMask");
 	self.portrait:SetTexture("INTERFACE\\ICONS\\crest_"..className);
-	self.TitleText:SetText(_G["ORDER_HALL_"..className]);
+	self.TitleText:SetText(ORDER_HALL_TALENT_TITLE);
 
 	local primaryCurrency, _ = C_Garrison.GetCurrencyTypes(LE_GARRISON_TYPE_7_0);
 	self.currency = primaryCurrency;
@@ -258,7 +258,7 @@ function GarrisonTalentButtonMixin:OnClick()
 	if (self.talent.talentAvailability == LE_GARRISON_TALENT_AVAILABILITY_AVAILABLE) then
 		local _, _, currencyTexture = GetCurrencyInfo(self:GetParent().currency);
 
-		local str = string.format(ORDER_HALL_RESEARCH_CONFIRMATION, self.talent.name, BreakUpLargeNumbers(self.talent.researchCost), tostring(currencyTexture), SecondsToTime(self.talent.researchDuration));
+		local str = string.format(ORDER_HALL_RESEARCH_CONFIRMATION, self.talent.name, BreakUpLargeNumbers(self.talent.researchCost), tostring(currencyTexture), SecondsToTime(self.talent.researchDuration, false, true));
 		StaticPopup_Show("ORDER_HALL_TALENT_RESEARCH", str, nil, self.talent.id);
 	end
 end

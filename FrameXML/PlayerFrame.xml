@@ -134,7 +134,7 @@
 								<Texture name="PlayerPrestigePortrait" hidden="true">
 									<Size x="50" y="52"/>
 									<Anchors>
-										<Anchor point="TOPLEFT" x="14" y="-14"/>
+										<Anchor point="TOPLEFT" x="15" y="-13"/>
 									</Anchors>
 								</Texture>
 							</Layer>
@@ -142,7 +142,7 @@
 								<Texture name="$parentOverAbsorbGlow" inherits="OverAbsorbGlowTemplate"/>
 								<Texture name="$parentOverHealAbsorbGlow" inherits="OverHealAbsorbGlowTemplate"/>
 								<Texture name="PlayerPrestigeBadge" hidden="true">
-									<Size x="20" y="20"/>
+									<Size x="30" y="30"/>
 									<Anchors>
 										<Anchor point="CENTER" relativeTo="PlayerPrestigePortrait" relativePoint="CENTER"/>
 									</Anchors>

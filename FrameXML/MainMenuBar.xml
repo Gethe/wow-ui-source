@@ -28,21 +28,21 @@
 							<Anchors>
 								<Anchor point="LEFT" relativeKey="$parent.WatchBarTexture0" relativePoint="RIGHT"/>
 							</Anchors>
-							<TexCoords left="0" right="1.0" top="0.171875" bottom="0.34375"/>
+							<TexCoords left="0" right="1.0" top="0.1875" bottom="0.359375"/>
 						</Texture>
 						<Texture parentKey="WatchBarTexture2" file="Interface\PaperDollInfoFrame\UI-ReputationWatchBar">
 							<Size x="256" y="11"/>
 							<Anchors>
 								<Anchor point="LEFT" relativeKey="$parent.WatchBarTexture1" relativePoint="RIGHT"/>
 							</Anchors>
-							<TexCoords left="0" right="1.0" top="0.34375" bottom="0.515625"/>
+							<TexCoords left="0" right="1.0" top="0.375" bottom="0.546875"/>
 						</Texture>
 						<Texture parentKey="WatchBarTexture3" file="Interface\PaperDollInfoFrame\UI-ReputationWatchBar">
 							<Size x="256" y="11"/>
 							<Anchors>
 								<Anchor point="LEFT" relativeKey="$parent.WatchBarTexture2" relativePoint="RIGHT"/>
 							</Anchors>
-							<TexCoords left="0" right="1.0" top="0.515625" bottom="0.6875"/>
+							<TexCoords left="0" right="1.0" top="0.5625" bottom="0.734375"/>
 						</Texture>
 						<Texture parentKey="XPBarTexture0" file="Interface\MainMenuBar\UI-MainMenuBar-Dwarf">
 							<Size x="256" y="10"/>

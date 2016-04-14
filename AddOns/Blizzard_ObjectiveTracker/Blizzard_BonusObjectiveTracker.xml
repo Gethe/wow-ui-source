@@ -52,6 +52,9 @@
 							</Anchors>
 						</Texture>
 					</Layer>
+					<Layer level="OVERLAY" textureSubLevel="2">
+						<Texture parentKey="SelectedGlow" alphaMode="ADD" />
+					</Layer>
 				</Layers>
 				<Scripts>
 					<OnLoad>

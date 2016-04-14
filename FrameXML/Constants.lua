@@ -59,7 +59,8 @@ MATERIAL_TEXT_COLOR_TABLE = {
 	["Parchment"] = {0.18, 0.12, 0.06},
 	["Marble"] = {0, 0, 0},
 	["Silver"] = {0.12, 0.12, 0.12},
-	["Bronze"] = {0.18, 0.12, 0.06}
+	["Bronze"] = {0.18, 0.12, 0.06},
+	["ParchmentLarge"] = {0.18, 0.12, 0.06}
 };
 MATERIAL_TITLETEXT_COLOR_TABLE = {
 	["Default"] = {0, 0, 0},
@@ -67,7 +68,8 @@ MATERIAL_TITLETEXT_COLOR_TABLE = {
 	["Parchment"] = {0, 0, 0},
 	["Marble"] = {0.93, 0.82, 0},
 	["Silver"] = {0.93, 0.82, 0},
-	["Bronze"] = {0.93, 0.82, 0}
+	["Bronze"] = {0.93, 0.82, 0},
+	["ParchmentLarge"] = {.208, 0, 0}
 };
 
 
